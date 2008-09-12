@@ -13,8 +13,6 @@
 #import <string.h>
 #import "OFString.h"
 
-/* TODO: Use getMem / resizeMem */
-
 @implementation OFString
 + new:(const char*)str
 {
