@@ -21,12 +21,11 @@
 + new:(const char*)str;
 - init;
 - init:(const char*)str;
-- free;
 - (char*)cString;
 - (size_t)length;
-- (void)setTo:(const char*)str;
+- (OFString*)setTo:(const char*)str;
 - (OFString*)clone;
-- (void)append:(const char*)str;
+- (OFString*)append:(const char*)str;
 @end
 
 /* vim: se syn=objc: */

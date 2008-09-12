@@ -30,21 +30,16 @@
 {
 	if ((self = [super init])) {
 		if (str == NULL) {
-			string = NULL;
 			length = 0;
+			string = NULL;
 		} else {
-			string = strdup(str);
 			length = strlen(string);
+			if ((string = [self getMem:length]) == NULL)
+				return NULL;
+			memcpy(string, str, length);
 		}
 	}
 	return self;
-}
-
-- free
-{
-	if (string != NULL)
-		free(string);
-	return [super free];
 }
 
 - (char*)cString
@@ -57,13 +52,32 @@
 	return length;
 }
 
-- (void)setTo:(const char*)str
+- (OFString*)setTo:(const char*)str
 {
-	if (string != NULL)
-		free(string);
+	char *newstr;
+	size_t newlen;
+	
+	if (str == NULL) {
+		[self freeMem:string];
 
-	string = strdup(str);
-	length = strlen(str);
+		length = 0;
+		string = NULL;
+
+		return self;
+	}
+
+	newlen = strlen(str);
+	if ((newstr = [self getMem:newlen]) == NULL)
+		return nil;
+	memcpy(newstr, str, newlen);
+
+	if (string != NULL)
+		[self freeMem:string];
+
+	length = newlen;
+	string = newstr;
+
+	return self;
 }
 
 - (OFString*)clone
@@ -73,22 +87,21 @@
 	return [OFString new];
 }
 
-- (void)append: (const char*)str
+- (OFString*)append: (const char*)str
 {
 	char	*new_string;
 	size_t	new_length, str_length;
 
-	if (str == NULL) {
-		[self setTo:str];
-		return;
-	}
+	if (str == NULL)
+		return [self setTo:str];
 
 	str_length = strlen(str);
 	new_length = length + str_length;
 
-	if ((new_string = realloc(string, new_length + 1)) == NULL) {
+	if ((new_string =
+	    [self resizeMem:string toSize:new_length + 1]) == NULL) {
 		/* FIXME: Add error handling */
-		return;
+		return nil;
 	}
 
 	string = new_string;
@@ -97,5 +110,7 @@
 	string[new_length] = '\0';
 
 	length = new_length;
+
+	return self;
 }
 @end
