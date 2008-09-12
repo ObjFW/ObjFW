@@ -1,0 +1,62 @@
+/*
+ * Copyright (c) 2008
+ *   Jonathan Schleifer <js@webkeks.org>
+ *
+ * All rights reserved.
+ *
+ * This file is part of libobjfw. It may be distributed under the terms of the
+ * Q Public License 1.0, which can be found in the file LICENSE included in
+ * the packaging of this file.
+ */
+
+#import <stdlib.h>
+#import "OFListObject.h"
+
+@implementation OFListObject
++ new:(void*)ptr
+{
+	return [[OFListObject alloc] init:ptr];
+}
+
+- init:(void*)ptr
+{
+	if ((self = [super init])) {
+		next = nil;
+		prev = nil;
+		data = ptr;
+	}
+	return self;
+}
+
+- freeWithData
+{
+	if (data != NULL)
+		free(data);
+	return [super free];
+}
+
+- (void*)data
+{
+	return data;
+}
+
+- (OFListObject*)next
+{
+	return next;
+}
+
+- (OFListObject*)prev
+{
+	return prev;
+}
+
+- (void)setNext:(OFListObject*)ptr
+{
+	next = ptr;
+}
+
+- (void)setPrev:(OFListObject*)ptr
+{
+	prev = ptr;
+}
+@end
