@@ -34,7 +34,7 @@ main()
 
 	[s1 append: [s2 cString]];
 	printf("s1 append s2 = %s\n", [s1 cString]);
-	printf("strlen(s1) = %ld, [s1 length] = %ld\n",
+	printf("strlen(s1) = %zd, [s1 length] = %zd\n",
 	    strlen([s1 cString]), [s1 length]);
 	[s1 free];
 	[s2 free];
