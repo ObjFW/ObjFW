@@ -14,6 +14,8 @@
 
 #import "OFWideString.h"
 
+/* TODO: Do real checks */
+
 int
 main()
 {

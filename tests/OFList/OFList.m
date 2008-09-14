@@ -13,6 +13,8 @@
 
 #import "OFString.h"
 #import "OFList.h"
+
+/* TODO: Do real checks */
  
 int
 main()
