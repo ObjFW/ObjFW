@@ -1,3 +1,3 @@
-SUBDIRS = OFString OFList
+SUBDIRS = OFString OFList OFWideString
 
 include ../buildsys.mk

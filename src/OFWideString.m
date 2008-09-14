@@ -104,7 +104,8 @@
 
 	wstring = newstr;
 
-	memcpy(wstring + length, wstr, strlength);
+	memcpy(wstring + length * sizeof(wchar_t), wstr,
+	    strlength * sizeof(wchar_t));
 	wstring[newlen] = '\0';
 
 	length = newlen;

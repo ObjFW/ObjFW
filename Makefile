@@ -1,4 +1,4 @@
 SUBDIRS = src tests
-DISTCLEAN = autom4te.cache buildsys.mk config.log
+DISTCLEAN = aclocal.m4 autom4te.cache buildsys.mk config.log config.status
 
 include buildsys.mk
