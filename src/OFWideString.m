@@ -34,9 +34,7 @@
 			wstring = NULL;
 		} else {
 			length = wcslen(wstr);
-			if (NULL == (wstring =
-			    [self getMem: (length + 1) * sizeof(wchar_t)]))
-				return NULL;
+			wstring = [self getMem: (length + 1) * sizeof(wchar_t)];
 			memcpy(wstring, wstr, (length + 1) * sizeof(wchar_t));
 		}
 	}

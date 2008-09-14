@@ -39,7 +39,7 @@ main()
 	/* Test freeing memory not allocated by obj */
 	puts("Freeing memory not allocated by object (should throw an "
 	    "exception)...");
-	CATCH_EXCEPTION([obj freeMem: (void*)123], OFMemNotPartOfObjException)
+	CATCH_EXCEPTION([obj freeMem: NULL], OFMemNotPartOfObjException)
 
 	/* Test allocating memory */
 	puts("Allocating memory through object...");

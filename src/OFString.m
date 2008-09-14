@@ -33,8 +33,7 @@
 			string = NULL;
 		} else {
 			length = strlen(str);
-			if ((string = [self getMem: length + 1]) == NULL)
-				return NULL;
+			string = [self getMem: length + 1];
 			memcpy(string, str, length + 1);
 		}
 	}
