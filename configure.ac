@@ -11,7 +11,7 @@ AC_PATH_PROG(AR, ar)
 
 case "$CC" in
 	gcc | *-gcc | gcc-* | *-gcc-*)
-		OBJCFLAGS="$OBJSFLAGS -Wall -Werror -pipe"
+		OBJCFLAGS="$OBJSFLAGS -Wall -Werror -pipe -g"
 		;;
 esac
 

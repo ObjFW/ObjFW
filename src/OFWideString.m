@@ -98,12 +98,10 @@
 
 	/* FIXME: Add error handling */
 	if ((newstr = [self resizeMem: wstring
-			       toSize: (newlen + 1 ) * sizeof(wchar_t)]) == 
-	    NULL)
+			       toSize: (newlen + 1) * sizeof(wchar_t)]) == NULL)
 		return nil;
 
-	memcpy(newstr + length * sizeof(wchar_t), wstr,
-	    (strlength + 1) * sizeof(wchar_t));
+	memcpy(newstr + length, wstr, (strlength + 1) * sizeof(wchar_t));
 
 	length = newlen;
 	wstring = newstr;
