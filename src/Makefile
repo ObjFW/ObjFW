@@ -11,7 +11,6 @@ SRCS = OFConstString.m		\
        OFString.m		\
        OFWideString.m
 
-OBJCFLAGS += -fPIC -DPIC -fno-nil-recivers -fconstant-string-class=OFConstString -fobjc-exceptions
 INCLUDES = OFConstString.h	\
 	   OFConstWideString.h	\
 	   OFException.h	\
@@ -23,5 +22,6 @@ INCLUDES = OFConstString.h	\
 
 include ../buildsys.mk
 
+OBJCFLAGS += -fPIC -DPIC -fno-nil-receivers -fconstant-string-class=OFConstString -fobjc-exceptions
 LD = ${OBJC}
 LIBS += -lobjc
