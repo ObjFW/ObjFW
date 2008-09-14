@@ -78,6 +78,13 @@ main()
 	
 	puts("Trying to allocate more memory than possible...");
 	CATCH_EXCEPTION(p = [obj getMem: 4294967295U], OFNoMemException)
+
+	puts("Allocating 1 byte...");
+	p = [obj getMem: 1];
+
+	puts("Trying to resize that 1 byte to more than possible...");
+	CATCH_EXCEPTION(p = [obj resizeMem: p toSize: 4294967295U],
+	    OFNoMemException)
 	
 	/* TODO: Test if freeing object frees all memory */
 
