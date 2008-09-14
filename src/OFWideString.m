@@ -13,6 +13,7 @@
 #import <string.h>
 #import <wchar.h>
 #import "OFWideString.h"
+#import "OFExceptions.h"
 
 @implementation OFWideString
 + new: (const wchar_t*)wstr
@@ -96,10 +97,8 @@
 	strlength = wcslen(wstr);
 	newlen = length + strlength;
 
-	/* FIXME: Add error handling */
-	if ((newstr = [self resizeMem: wstring
-			       toSize: (newlen + 1) * sizeof(wchar_t)]) == NULL)
-		return nil;
+	newstr = [self resizeMem: wstring
+			  toSize: (newlen + 1) * sizeof(wchar_t)];
 
 	memcpy(newstr + length, wstr, (strlength + 1) * sizeof(wchar_t));
 

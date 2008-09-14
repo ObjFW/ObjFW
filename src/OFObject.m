@@ -9,10 +9,10 @@
  * the packaging of this file.
  */
 
-#import <stdio.h>
 #import <stdlib.h>
 
 #import "OFObject.h"
+#import "OFExceptions.h"
 
 @implementation OFObject
 - init
@@ -26,11 +26,17 @@
 {
 	struct __ofobject_allocated_mem *iter;
 
-	if ((iter = malloc(sizeof(struct __ofobject_allocated_mem))) == NULL)
+	if ((iter = malloc(sizeof(struct __ofobject_allocated_mem))) == NULL) {
+		@throw [OFNoMemException new: self
+				    withSize: sizeof(
+					      struct __ofobject_allocated_mem)];
 		return NULL;
+	}
 
 	if ((iter->ptr = malloc(size)) == NULL) {
 		free(iter);
+		@throw [OFNoMemException new: self
+				    withSize: size];
 		return NULL;
 	}
 
@@ -52,15 +58,19 @@
 
 	for (iter = __mem_pool; iter != NULL; iter = iter->prev) {
 		if (iter->ptr == ptr) {
-			if ((ptr = realloc(iter->ptr, size)) == NULL)
+			if ((ptr = realloc(iter->ptr, size)) == NULL) {
+				@throw [OFNoMemException new: self
+						    withSize: size];
 				return NULL;
+			}
 			
 			iter->ptr = ptr;
 			return ptr;
 		}
 	}
 
-	@throw [OFMemNotPartOfObjException new: ptr fromObject: self];
+	@throw [OFMemNotPartOfObjException new: self
+				       withPtr: ptr];
 	return NULL;
 }
 
@@ -84,7 +94,8 @@
 		}
 	}
 
-	@throw [OFMemNotPartOfObjException new: ptr fromObject: self];
+	@throw [OFMemNotPartOfObjException new: self
+				       withPtr: ptr];
 }
 
 - free
@@ -98,24 +109,5 @@
 	}
 
 	return [super free];
-}
-@end
-
-@implementation OFMemNotPartOfObjException
-+ new: (void*)ptr fromObject: (id)obj
-{
-	return [[OFMemNotPartOfObjException alloc] init: ptr
-					     fromObject: obj];
-}
-
-- init: (void*)ptr fromObject: (id)obj
-{
-	fprintf(stderr, "ERROR: Memory at %p was not allocated as part of "
-	    "object %s!\n"
-	    "ERROR: -> Not changing memory allocation!\n"
-	    "ERROR: (Hint: It is possible that you tried to free the same "
-	    "memory twice!)\n", ptr, [obj name]);
-
-	return [super init];
 }
 @end

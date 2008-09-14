@@ -29,14 +29,3 @@ struct __ofobject_allocated_mem {
 - (void)freeMem: (void*)ptr;
 - free;
 @end
-
-#ifndef __NO_OFEXCEPTION
-#import "OFException.h"
-
-@interface OFMemNotPartOfObjException: OFException
-+        new: (void*)p
-  fromObject: (id)obj;
--       init: (void*)p
-  fromObject: (id)obj;
-@end
-#endif

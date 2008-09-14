@@ -9,8 +9,24 @@
  * the packaging of this file.
  */
 
-#define __NO_OFEXCEPTION
+#import <stddef.h>
 #import "OFObject.h"
 
 @interface OFException: OFObject
++ new: (id)obj;
+- init: (id)obj;
+@end
+
+@interface OFNoMemException: OFException
++      new: (id)obj
+  withSize: (size_t)size;
+-     init: (id)obj
+  withSize: (size_t)size;
+@end
+
+@interface OFMemNotPartOfObjException: OFException
++     new: (id)obj
+  withPtr: (void*)ptr;
+-    init: (id)obj
+  withPtr: (void*)ptr;
 @end

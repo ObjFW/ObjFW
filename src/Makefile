@@ -4,7 +4,7 @@ LIB_MINOR = 0
 
 SRCS = OFConstString.m		\
        OFConstWideString.m	\
-       OFException.m		\
+       OFExceptions.m		\
        OFList.m			\
        OFListObject.m		\
        OFObject.m		\
@@ -13,7 +13,7 @@ SRCS = OFConstString.m		\
 
 INCLUDES = OFConstString.h	\
 	   OFConstWideString.h	\
-	   OFException.h	\
+	   OFExceptions.h	\
 	   OFList.h		\
 	   OFListObject.h	\
 	   OFObject.h		\

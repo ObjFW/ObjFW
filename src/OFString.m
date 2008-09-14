@@ -12,6 +12,7 @@
 #import <stdlib.h>
 #import <string.h>
 #import "OFString.h"
+#import "OFExceptions.h"
 
 @implementation OFString
 + new: (const char*)str
@@ -94,10 +95,8 @@
 	strlength = strlen(str);
 	newlen = length + strlength;
 
-	/* FIXME: Add error handling */
-	if ((newstr = [self resizeMem: string
-			       toSize: newlen + 1]) == NULL)
-		return nil;
+	newstr = [self resizeMem: string
+			  toSize: newlen + 1];
 
 	memcpy(newstr + length, str, strlength + 1);
 

@@ -14,6 +14,7 @@
 #import <stdbool.h>
 
 #import "OFObject.h"
+#import "OFExceptions.h"
 
 int
 main()
