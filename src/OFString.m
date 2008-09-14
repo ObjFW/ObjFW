@@ -31,7 +31,7 @@
 			length = 0;
 			string = NULL;
 		} else {
-			length = strlen(string);
+			length = strlen(str);
 			if ((string = [self getMem:length]) == NULL)
 				return NULL;
 			memcpy(string, str, length);
@@ -80,34 +80,31 @@
 
 - (OFString*)clone
 {
-	if (string != NULL)
-		return [OFString new:string];
-	return [OFString new];
+	return [OFString new:string];
 }
 
 - (OFString*)append: (const char*)str
 {
-	char	*new_string;
-	size_t	new_length, str_length;
+	char	*newstr;
+	size_t	newlen, strlength;
 
 	if (str == NULL)
 		return [self setTo:str];
 
-	str_length = strlen(str);
-	new_length = length + str_length;
+	strlength = strlen(str);
+	newlen = length + strlength;
 
-	if ((new_string =
-	    [self resizeMem:string toSize:new_length + 1]) == NULL) {
+	if ((newstr = [self resizeMem:string toSize:newlen + 1]) == NULL) {
 		/* FIXME: Add error handling */
 		return nil;
 	}
 
-	string = new_string;
+	string = newstr;
 
-	memcpy(string + length, str, str_length);
-	string[new_length] = '\0';
+	memcpy(string + length, str, strlength);
+	string[newlen] = '\0';
 
-	length = new_length;
+	length = newlen;
 
 	return self;
 }

@@ -9,13 +9,13 @@
  * the packaging of this file.
  */
 
-#import <string.h>
-#import "OFConstString.h"
+#import <wchar.h>
+#import "OFConstWideString.h"
 
-@implementation OFConstString
-+ new:(const char*)str
+@implementation OFConstWideString
++ new:(const wchar_t*)wstr
 {
-	return [[OFConstString alloc] init:str];
+	return [[OFConstWideString alloc] init:wstr];
 }
 
 - init
@@ -23,23 +23,23 @@
 	return [self init:NULL];
 }
 
-- init:(const char*)str
+- init:(const wchar_t*)wstr
 {
 	if ((self = [super init])) {
-		if (str == NULL) {
+		if (wstr == NULL) {
 			length = 0;
-			string = NULL;
+			wstring = NULL;
 		} else {
-			length = strlen(str);
-			string = str;
+			length = wcslen(wstr);
+			wstring = wstr;
 		}
 	}
 	return self;
 }
 
-- (const char*)cString
+- (const wchar_t*)wcString
 {
-	return string;
+	return wstring;
 }
 
 - (size_t)length
