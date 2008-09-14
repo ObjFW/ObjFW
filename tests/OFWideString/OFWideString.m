@@ -9,7 +9,6 @@
  * the packaging of this file.
  */
 
-#define _ISOC99_SOURCE
 #import <wchar.h>
 
 #import "OFWideString.h"
@@ -19,25 +18,44 @@
 int
 main()
 {
-	OFWideString *s1 = [OFWideString new: L"foo"];
+	OFWideString *s1 = [OFWideString new: L"test"];
 	OFWideString *s2 = [[OFWideString alloc] init: L""];
 	OFWideString *s3;
 	OFWideString *s4 = [OFWideString new];
 
-	[s2 append: L"bar"];
+	[s2 append: L"123"];
 	s3 = [s1 clone];
 
 	[s4 setTo: [s2 wcString]];
 
-	wprintf(L"s1 = %S\n", [s1 wcString]);
-	wprintf(L"s2 = %S\n", [s2 wcString]);
-	wprintf(L"s3 = %S\n", [s3 wcString]);
-	wprintf(L"s4 = %S\n", [s4 wcString]);
+	if (!wcscmp([s1 wcString], [s3 wcString]))
+		puts("s1 and s3 match! GOOD!");
+	else {
+		puts("s1 and s3 don't match!");
+		return 1;
+	}
 
-	[s1 append: [s2 wcString]];
-	wprintf(L"s1 append s2 = %S\n", [s1 wcString]);
-	wprintf(L"wcslen(s1) = %zd, [s1 length] = %zd\n",
-	    wcslen([s1 wcString]), [s1 length]);
+	if (!wcscmp([s2 wcString], [s4 wcString]))
+		puts("s2 and s4 match! GOOD!");
+	else {
+		puts("s1 and s3 don't match!");
+		return 1;
+	}
+
+	if (!wcscmp([[s1 append: [s2 wcString]] wcString], L"test123"))
+		puts("s1 appended with s2 is the expected string! GOOD!");
+	else {
+		puts("s1 appended with s2 is not the expected string!");
+		return 1;
+	}
+
+	if (wcslen([s1 wcString]) == [s1 length] && [s1 length] == 7)
+		puts("s1 has the expected length. GOOD!");
+	else {
+		puts("s1 does not have the expected length!");
+		return 1;
+	}
+
 	[s1 free];
 	[s2 free];
 	[s3 free];
