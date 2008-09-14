@@ -66,8 +66,7 @@
 	}
 
 	newlen = wcslen(wstr);
-	if ((newstr = [self getMem: (newlen + 1) * sizeof(wchar_t)]) == NULL)
-		return nil;
+	newstr = [self getMem: (newlen + 1) * sizeof(wchar_t)];
 	memcpy(newstr, wstr, (newlen + 1) * sizeof(wchar_t));
 
 	if (wstring != NULL)

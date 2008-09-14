@@ -65,8 +65,7 @@
 	}
 
 	newlen = strlen(str);
-	if ((newstr = [self getMem: newlen + 1]) == NULL)
-		return nil;
+	newstr = [self getMem: newlen + 1];
 	memcpy(newstr, str, newlen + 1);
 
 	if (string != NULL)
