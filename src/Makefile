@@ -22,6 +22,7 @@ INCLUDES = OFConstString.h	\
 
 include ../buildsys.mk
 
-OBJCFLAGS += ${LIB_LDFLAGS}
+OBJCFLAGS += ${LIB_CFLAGS}
 LD = ${OBJC}
+LDFLAGS += ${LIB_LDFLAGS}
 LIBS += -lobjc
