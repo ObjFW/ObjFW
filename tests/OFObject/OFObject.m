@@ -16,6 +16,19 @@
 #import "OFObject.h"
 #import "OFExceptions.h"
 
+#define CATCH_EXCEPTION(code, exception)	\
+	caught = false;				\
+	@try {					\
+		code;				\
+	} @catch (exception *e) {		\
+		caught = true;			\
+		puts("CAUGHT! Resuming...");	\
+	}					\
+	if (!caught) {				\
+		puts("NOT CAUGHT!");		\
+		return 1;			\
+	}
+
 int
 main()
 {
@@ -26,17 +39,7 @@ main()
 	/* Test freeing memory not allocated by obj */
 	puts("Freeing memory not allocated by object (should throw an "
 	    "exception)...");
-	caught = false;
-	@try {
-		[obj freeMem: (void*)123];
-	} @catch (OFMemNotPartOfObjException *e) {
-		caught = true;
-		puts("CAUGHT! Resuming...");
-	}
-	if (!caught) {
-		puts("NOT CAUGHT!");
-		return 1;
-	}
+	CATCH_EXCEPTION([obj freeMem: (void*)123], OFMemNotPartOfObjException)
 
 	/* Test allocating memory */
 	puts("Allocating memory through object...");
@@ -50,17 +53,7 @@ main()
 
 	/* It shouldn't be recognized as part of our obj anymore */
 	puts("Trying to free it again (should throw an exception)...");
-	caught = false;
-	@try {
-		[obj freeMem: p];
-	} @catch (OFMemNotPartOfObjException *e) {
-		caught = true;
-		puts("CAUGHT! Resuming...");
-	}
-	if (!caught) {
-		puts("NOT CAUGHT!");
-		return 1;
-	}
+	CATCH_EXCEPTION([obj freeMem: p], OFMemNotPartOfObjException)
 
 	/* Test multiple memory chunks */
 	puts("Allocating 3 chunks of memory...");
@@ -78,40 +71,13 @@ main()
 
 	/* Try to free again */
 	puts("Now trying to free them again...");
-	caught = false;
-	@try {
-		[obj freeMem: p];
-	} @catch (OFMemNotPartOfObjException *e) {
-		caught = true;
-		puts("CAUGHT! Resuming...");
-	}
-	if (!caught) {
-		puts("NOT CAUGHT!");
-		return 1;
-	}
-	caught = false;
-	@try {
-		[obj freeMem: q];
-	} @catch (OFMemNotPartOfObjException *e) {
-		caught = true;
-		puts("CAUGHT! Resuming...");
-	}
-	if (!caught) {
-		puts("NOT CAUGHT!");
-		return 1;
-	}
-	caught = false;
-	@try {
-		[obj freeMem: r];
-	} @catch (OFMemNotPartOfObjException *e) {
-		caught = true;
-		puts("CAUGHT! Resuming...");
-	}
-	if (!caught) {
-		puts("NOT CAUGHT!");
-		return 1;
-	}
+	CATCH_EXCEPTION([obj freeMem: p], OFMemNotPartOfObjException)
+	CATCH_EXCEPTION([obj freeMem: q], OFMemNotPartOfObjException)
+	CATCH_EXCEPTION([obj freeMem: r], OFMemNotPartOfObjException)
 	puts("Got all 3!");
+	
+	puts("Trying to allocate more memory than possible...");
+	CATCH_EXCEPTION(p = [obj getMem: 4294967295U], OFNoMemException)
 	
 	/* TODO: Test if freeing object frees all memory */
 
