@@ -35,7 +35,7 @@
 -     init: (id)obj
   withSize: (size_t)size
 {
-	fprintf(stderr, "ERROR: Could not allocate %zd byte for object %s!\n",
+	fprintf(stderr, "ERROR: Could not allocate %zu byte for object %s!\n",
 	    size, [obj name]);
 
 	return [super init];

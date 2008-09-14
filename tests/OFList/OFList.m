@@ -38,9 +38,9 @@ main()
  
 	for (iter = [list first], i = 0; iter != nil; iter = [iter next], i++)
 		if (!strcmp([(OFString*)[iter data] cString], strings[i]))
-			printf("Element %zd is expected element. GOOD!\n", i);
+			printf("Element %zu is expected element. GOOD!\n", i);
 		else {
-			printf("Element %zd is not expected element!\n", i);
+			printf("Element %zu is not expected element!\n", i);
 			return 1;
 		}
 
