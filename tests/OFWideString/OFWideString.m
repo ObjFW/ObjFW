@@ -9,7 +9,7 @@
  * the packaging of this file.
  */
 
-#import <stdio.h>
+#define _ISOC99_SOURCE
 #import <wchar.h>
 
 #import "OFWideString.h"
@@ -24,7 +24,7 @@ main()
 	OFWideString *s3;
 	OFWideString *s4 = [OFWideString new];
 
-	printf("%p\n", [s2 append: L"bar"]);
+	[s2 append: L"bar"];
 	s3 = [s1 clone];
 
 	[s4 setTo: [s2 wcString]];
@@ -36,7 +36,7 @@ main()
 
 	[s1 append: [s2 wcString]];
 	wprintf(L"s1 append s2 = %S\n", [s1 wcString]);
-	wprintf(L"strlen(s1) = %zd, [s1 length] = %zd\n",
+	wprintf(L"wcslen(s1) = %zd, [s1 length] = %zd\n",
 	    wcslen([s1 wcString]), [s1 length]);
 	[s1 free];
 	[s2 free];

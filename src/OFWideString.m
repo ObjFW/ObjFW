@@ -33,10 +33,10 @@
 			wstring = NULL;
 		} else {
 			length = wcslen(wstr);
-			if ((wstring =
-			    [self getMem: length * sizeof(wchar_t)]) == NULL)
+			if (NULL == (wstring =
+			    [self getMem: (length + 1) * sizeof(wchar_t)]))
 				return NULL;
-			memcpy(wstring, wstr, length * sizeof(wchar_t));
+			memcpy(wstring, wstr, (length + 1) * sizeof(wchar_t));
 		}
 	}
 	return self;
@@ -67,9 +67,9 @@
 	}
 
 	newlen = wcslen(wstr);
-	if ((newstr = [self getMem: newlen * sizeof(wchar_t)]) == NULL)
+	if ((newstr = [self getMem: (newlen + 1) * sizeof(wchar_t)]) == NULL)
 		return nil;
-	memcpy(newstr, wstr, newlen * sizeof(wchar_t));
+	memcpy(newstr, wstr, (newlen + 1) * sizeof(wchar_t));
 
 	if (wstring != NULL)
 		[self freeMem: wstring];
@@ -98,16 +98,15 @@
 
 	/* FIXME: Add error handling */
 	if ((newstr = [self resizeMem: wstring
-			       toSize: newlen  * sizeof(wchar_t) + 2]) == NULL)
+			       toSize: (newlen + 1 ) * sizeof(wchar_t)]) == 
+	    NULL)
 		return nil;
 
-	wstring = newstr;
-
-	memcpy(wstring + length * sizeof(wchar_t), wstr,
-	    strlength * sizeof(wchar_t));
-	wstring[newlen] = '\0';
+	memcpy(newstr + length * sizeof(wchar_t), wstr,
+	    (strlength + 1) * sizeof(wchar_t));
 
 	length = newlen;
+	wstring = newstr;
 
 	return self;
 }

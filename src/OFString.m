@@ -32,9 +32,9 @@
 			string = NULL;
 		} else {
 			length = strlen(str);
-			if ((string = [self getMem: length]) == NULL)
+			if ((string = [self getMem: length + 1]) == NULL)
 				return NULL;
-			memcpy(string, str, length);
+			memcpy(string, str, length + 1);
 		}
 	}
 	return self;
@@ -65,9 +65,9 @@
 	}
 
 	newlen = strlen(str);
-	if ((newstr = [self getMem: newlen]) == NULL)
+	if ((newstr = [self getMem: newlen + 1]) == NULL)
 		return nil;
-	memcpy(newstr, str, newlen);
+	memcpy(newstr, str, newlen + 1);
 
 	if (string != NULL)
 		[self freeMem: string];
@@ -99,12 +99,10 @@
 			       toSize: newlen + 1]) == NULL)
 		return nil;
 
-	string = newstr;
-
-	memcpy(string + length, str, strlength);
-	string[newlen] = '\0';
+	memcpy(newstr + length, str, strlength + 1);
 
 	length = newlen;
+	string = newstr;
 
 	return self;
 }
