@@ -10,6 +10,10 @@ LIBS += -lobjc -L../../src -lobjfw
 
 all: run
 run: ${PROG_NOINST}
-	LD_PRELOAD=../../src/libobjfw.so \
-	DYLD_LIBRARY_PATH=../../src \
+	rm -f libobjfw.so.1 libobjfw.dylib
+	ln -s ../../src/libobjfw.so libobjfw.so.1
+	ln -s ../../src/libobjfw.dylib libobjfw.dylib
+	LD_LIBRARY_PATH=. \
+	DYLD_LIBRARY_PATH=. \
 	./${PROG_NOINST}
+	rm -f libobjfw.so.1 libobjfw.dylib
