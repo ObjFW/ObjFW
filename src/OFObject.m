@@ -60,9 +60,7 @@
 		}
 	}
 
-	fprintf(stderr, "WARNING: Memory at %p was not allocated as part of "
-	    "object %s!\n-> Memory was not resized!\n", ptr, [self name]);
-
+	@throw [OFMemNotPartOfObjException new: ptr fromObject: self];
 	return NULL;
 }
 
@@ -72,10 +70,12 @@
 
 	for (iter = __mem_pool; iter != NULL; iter = iter->prev) {
 		if (iter->ptr == ptr) {
-			if (iter->prev != NULL)
+			if (iter->prev != NULL) 
 				iter->prev->next = iter->next;
 			if (iter->next != NULL)
 				iter->next->prev = iter->prev;
+			if (__mem_pool == iter)
+				__mem_pool = NULL;
 
 			free(iter);
 			free(ptr);
@@ -84,8 +84,7 @@
 		}
 	}
 
-	fprintf(stderr, "WARNING: Memory at %p was not allocated as part of "
-	    "object %s!\n-> Memory was not free'd!\n", ptr, [self name]);
+	@throw [OFMemNotPartOfObjException new: ptr fromObject: self];
 }
 
 - free
@@ -99,5 +98,24 @@
 	}
 
 	return [super free];
+}
+@end
+
+@implementation OFMemNotPartOfObjException
++ new: (void*)ptr fromObject: (id)obj
+{
+	return [[OFMemNotPartOfObjException alloc] init: ptr
+					     fromObject: obj];
+}
+
+- init: (void*)ptr fromObject: (id)obj
+{
+	fprintf(stderr, "ERROR: Memory at %p was not allocated as part of "
+	    "object %s!\n"
+	    "ERROR: -> Not changing memory allocation!\n"
+	    "ERROR: (Hint: It is possible that you tried to free the same "
+	    "memory twice!)\n", ptr, [obj name]);
+
+	return [super init];
 }
 @end

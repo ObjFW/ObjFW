@@ -4,15 +4,17 @@ LIB_MINOR = 0
 
 SRCS = OFConstString.m		\
        OFConstWideString.m	\
+       OFException.m		\
        OFList.m			\
        OFListObject.m		\
        OFObject.m		\
        OFString.m		\
        OFWideString.m
 
-OBJCFLAGS += -fPIC -DPIC -fno-nil-recivers -fconstant-string-class=OFConstString
+OBJCFLAGS += -fPIC -DPIC -fno-nil-recivers -fconstant-string-class=OFConstString -fobjc-exceptions
 INCLUDES = OFConstString.h	\
 	   OFConstWideString.h	\
+	   OFException.h	\
 	   OFList.h		\
 	   OFListObject.h	\
 	   OFObject.h		\

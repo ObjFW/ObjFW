@@ -101,9 +101,21 @@ depend: pre-depend ${SRCS}
 	test -f .deps || regen=1; \
 	for i in ${SRCS}; do \
 		case $$i in \
-			*.o) \
+			*.c) \
 				test $$i -nt .deps && regen=1; \
-				deps="$${deps%.o}.dep $$i"; \
+				deps="$$deps $${i%.c}.dep"; \
+				;; \
+			*.cc) \
+				test $$i -nt .deps && regen=1; \
+				deps="$$deps $${i%.cc}.dep"; \
+				;; \
+			*.cxx) \
+				test $$i -nt .deps && regen=1; \
+				deps="$$deps $${i%.cxx}.dep"; \
+				;; \
+			*.m) \
+				test $$i -nt .deps && regen=1; \
+				deps="$$deps $${i%.m}.dep"; \
 				;; \
 		esac; \
 	done; \
