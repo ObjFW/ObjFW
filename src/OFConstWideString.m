@@ -13,17 +13,17 @@
 #import "OFConstWideString.h"
 
 @implementation OFConstWideString
-+ new:(const wchar_t*)wstr
++ new: (const wchar_t*)wstr
 {
-	return [[OFConstWideString alloc] init:wstr];
+	return [[OFConstWideString alloc] init: wstr];
 }
 
 - init
 {
-	return [self init:NULL];
+	return [self init: NULL];
 }
 
-- init:(const wchar_t*)wstr
+- init: (const wchar_t*)wstr
 {
 	if ((self = [super init])) {
 		if (wstr == NULL) {

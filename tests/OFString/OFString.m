@@ -17,15 +17,15 @@
 int
 main()
 {
-	OFString *s1 = [OFString new:"foo"];
-	OFString *s2 = [[OFString alloc] init:""];
+	OFString *s1 = [OFString new: "foo"];
+	OFString *s2 = [[OFString alloc] init: ""];
 	OFString *s3;
 	OFString *s4 = [OFString new];
 
-	[s2 append:"bar"];
+	[s2 append: "bar"];
 	s3 = [s1 clone];
 
-	[s4 setTo:[s2 cString]];
+	[s4 setTo: [s2 cString]];
 
 	printf("s1 = %s\n", [s1 cString]);
 	printf("s2 = %s\n", [s2 cString]);

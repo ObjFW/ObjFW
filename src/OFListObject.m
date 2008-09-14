@@ -13,12 +13,12 @@
 #import "OFListObject.h"
 
 @implementation OFListObject
-+ new:(void*)ptr
++ new: (void*)ptr
 {
-	return [[OFListObject alloc] init:ptr];
+	return [[OFListObject alloc] init: ptr];
 }
 
-- init:(void*)ptr
+- init: (void*)ptr
 {
 	if ((self = [super init])) {
 		next = nil;
@@ -50,12 +50,12 @@
 	return prev;
 }
 
-- (void)setNext:(OFListObject*)ptr
+- (void)setNext: (OFListObject*)ptr
 {
 	next = ptr;
 }
 
-- (void)setPrev:(OFListObject*)ptr
+- (void)setPrev: (OFListObject*)ptr
 {
 	prev = ptr;
 }

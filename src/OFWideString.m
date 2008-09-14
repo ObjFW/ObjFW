@@ -15,17 +15,17 @@
 #import "OFWideString.h"
 
 @implementation OFWideString
-+ new:(const wchar_t*)wstr
++ new: (const wchar_t*)wstr
 {
-	return [[OFWideString alloc] init:wstr];
+	return [[OFWideString alloc] init: wstr];
 }
 
 - init
 {
-	return [self init:NULL];
+	return [self init: NULL];
 }
 
-- init:(const wchar_t*)wstr
+- init: (const wchar_t*)wstr
 {
 	if ((self = [super init])) {
 		if (wstr == NULL) {
@@ -34,7 +34,7 @@
 		} else {
 			length = wcslen(wstr);
 			if ((wstring =
-			    [self getMem:length * sizeof(wchar_t)]) == NULL)
+			    [self getMem: length * sizeof(wchar_t)]) == NULL)
 				return NULL;
 			memcpy(wstring, wstr, length * sizeof(wchar_t));
 		}
@@ -52,7 +52,7 @@
 	return length;
 }
 
-- (OFWideString*)setTo:(const wchar_t*)wstr
+- (OFWideString*)setTo: (const wchar_t*)wstr
 {
 	wchar_t *newstr;
 	size_t  newlen;
@@ -67,12 +67,12 @@
 	}
 
 	newlen = wcslen(wstr);
-	if ((newstr = [self getMem:newlen * sizeof(wchar_t)]) == NULL)
+	if ((newstr = [self getMem: newlen * sizeof(wchar_t)]) == NULL)
 		return nil;
 	memcpy(newstr, wstr, newlen * sizeof(wchar_t));
 
 	if (wstring != NULL)
-		[self freeMem:wstring];
+		[self freeMem: wstring];
 
 	length = newlen;
 	wstring = newstr;
@@ -82,7 +82,7 @@
 
 - (OFWideString*)clone
 {
-	return [OFWideString new:wstring];
+	return [OFWideString new: wstring];
 }
 
 - (OFWideString*)append: (const wchar_t*)wstr
@@ -91,16 +91,15 @@
 	size_t	newlen, strlength;
 
 	if (wstr == NULL)
-		return [self setTo:wstr];
+		return [self setTo: wstr];
 
 	strlength = wcslen(wstr);
 	newlen = length + strlength;
 
-	if ((newstr = [self resizeMem:wstring toSize:(newlen + 1) * 
-				      sizeof(wchar_t)]) == NULL) {
-		/* FIXME: Add error handling */
+	/* FIXME: Add error handling */
+	if ((newstr = [self resizeMem: wstring
+			       toSize: newlen  * sizeof(wchar_t) + 2]) == NULL)
 		return nil;
-	}
 
 	wstring = newstr;
 

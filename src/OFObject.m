@@ -22,7 +22,7 @@
 	return self;
 }
 
-- (void*)getMem:(size_t)size
+- (void*)getMem: (size_t)size
 {
 	struct __ofobject_allocated_mem *iter;
 
@@ -45,7 +45,8 @@
 	return iter->ptr;
 }
 
-- (void*)resizeMem:(void*)ptr toSize:(size_t)size
+- (void*)resizeMem: (void*)ptr
+	    toSize: (size_t)size
 {
 	struct __ofobject_allocated_mem *iter;
 
@@ -60,12 +61,12 @@
 	}
 
 	fprintf(stderr, "WARNING: Memory at %p was not allocated as part of "
-	    "object %s!\n", ptr, [self name]);
+	    "object %s!\n-> Memory was not resized!\n", ptr, [self name]);
 
 	return NULL;
 }
 
-- (void)freeMem:(void*)ptr;
+- (void)freeMem: (void*)ptr;
 {
 	struct __ofobject_allocated_mem *iter;
 
@@ -84,7 +85,7 @@
 	}
 
 	fprintf(stderr, "WARNING: Memory at %p was not allocated as part of "
-	    "object %s!\n", ptr, [self name]);
+	    "object %s!\n-> Memory was not free'd!\n", ptr, [self name]);
 }
 
 - free

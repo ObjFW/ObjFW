@@ -13,19 +13,17 @@
 
 @interface OFListObject: OFObject
 {
-	void		*data;
-	OFListObject	*next;
-	OFListObject	*prev;
+	void	     *data;
+	OFListObject *next;
+	OFListObject *prev;
 }
 
-+ new:(void*)ptr;
-- init:(void*)ptr;
++ new: (void*)ptr;
+- init: (void*)ptr;
 - freeWithData;
 - (void*)data;
 - (OFListObject*)next;
 - (OFListObject*)prev;
-- (void)setNext:(OFListObject*)ptr;
-- (void)setPrev:(OFListObject*)ptr;
+- (void)setNext: (OFListObject*)ptr;
+- (void)setPrev: (OFListObject*)ptr;
 @end
-
-/* vim: se syn=objc: */

@@ -15,15 +15,13 @@
 
 @interface OFConstWideString: OFObject
 {
-	const wchar_t	*wstring;
-	size_t		length;
+	const wchar_t *wstring;
+	size_t	      length;
 }
 
-+ new:(const wchar_t*)wstr;
++ new: (const wchar_t*)wstr;
 - init;
-- init:(const wchar_t*)wstr;
+- init: (const wchar_t*)wstr;
 - (const wchar_t*)wcString;
 - (size_t)length;
 @end
-
-/* vim: se syn=objc: */

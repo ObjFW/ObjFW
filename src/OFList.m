@@ -56,21 +56,21 @@
 	return last;
 }
 
-- (void)add:(OFListObject*)ptr
+- (void)add: (OFListObject*)ptr
 {
 	if (!first || !last) {
 		first = last = ptr;
 		return;
 	}
 
-	[ptr setPrev:last];
-	[last setNext:ptr];
+	[ptr setPrev: last];
+	[last setNext: ptr];
 
 	last = ptr;
 }
 
-- (void)addNew:(void*)ptr
+- (void)addNew: (void*)ptr
 {
-	return [self add:[OFListObject new:ptr]];
+	return [self add: [OFListObject new: ptr]];
 }
 @end

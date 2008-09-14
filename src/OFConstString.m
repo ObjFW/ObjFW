@@ -13,17 +13,17 @@
 #import "OFConstString.h"
 
 @implementation OFConstString
-+ new:(const char*)str
++ new: (const char*)str
 {
-	return [[OFConstString alloc] init:str];
+	return [[OFConstString alloc] init: str];
 }
 
 - init
 {
-	return [self init:NULL];
+	return [self init: NULL];
 }
 
-- init:(const char*)str
+- init: (const char*)str
 {
 	if ((self = [super init])) {
 		if (str == NULL) {

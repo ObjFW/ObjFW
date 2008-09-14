@@ -17,8 +17,8 @@
 int
 main()
 {
-	OFList		*list;
-	OFListObject	*iter;
+	OFList	     *list;
+	OFListObject *iter;
 
 	list = [OFList new];
  

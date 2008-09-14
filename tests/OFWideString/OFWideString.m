@@ -17,15 +17,15 @@
 int
 main()
 {
-	OFWideString *s1 = [OFWideString new:L"foo"];
-	OFWideString *s2 = [[OFWideString alloc] init:L""];
+	OFWideString *s1 = [OFWideString new: L"foo"];
+	OFWideString *s2 = [[OFWideString alloc] init: L""];
 	OFWideString *s3;
 	OFWideString *s4 = [OFWideString new];
 
-	printf("%p\n", [s2 append:L"bar"]);
+	printf("%p\n", [s2 append: L"bar"]);
 	s3 = [s1 clone];
 
-	[s4 setTo:[s2 wcString]];
+	[s4 setTo: [s2 wcString]];
 
 	wprintf(L"s1 = %S\n", [s1 wcString]);
 	wprintf(L"s2 = %S\n", [s2 wcString]);

@@ -19,14 +19,12 @@
 	size_t	length;
 }
 
-+ new:(const wchar_t*)wstr;
++ new: (const wchar_t*)wstr;
 - init;
-- init:(const wchar_t*)wstr;
+- init: (const wchar_t*)wstr;
 - (wchar_t*)wcString;
 - (size_t)length;
-- (OFWideString*)setTo:(const wchar_t*)wstr;
+- (OFWideString*)setTo: (const wchar_t*)wstr;
 - (OFWideString*)clone;
-- (OFWideString*)append:(const wchar_t*)wstr;
+- (OFWideString*)append: (const wchar_t*)wstr;
 @end
-
-/* vim: se syn=objc: */

@@ -14,17 +14,17 @@
 #import "OFString.h"
 
 @implementation OFString
-+ new:(const char*)str
++ new: (const char*)str
 {
-	return [[OFString alloc] init:str];
+	return [[OFString alloc] init: str];
 }
 
 - init
 {
-	return [self init:NULL];
+	return [self init: NULL];
 }
 
-- init:(const char*)str
+- init: (const char*)str
 {
 	if ((self = [super init])) {
 		if (str == NULL) {
@@ -32,7 +32,7 @@
 			string = NULL;
 		} else {
 			length = strlen(str);
-			if ((string = [self getMem:length]) == NULL)
+			if ((string = [self getMem: length]) == NULL)
 				return NULL;
 			memcpy(string, str, length);
 		}
@@ -50,13 +50,13 @@
 	return length;
 }
 
-- (OFString*)setTo:(const char*)str
+- (OFString*)setTo: (const char*)str
 {
 	char *newstr;
 	size_t newlen;
 	
 	if (str == NULL) {
-		[self freeMem:string];
+		[self freeMem: string];
 
 		length = 0;
 		string = NULL;
@@ -65,12 +65,12 @@
 	}
 
 	newlen = strlen(str);
-	if ((newstr = [self getMem:newlen]) == NULL)
+	if ((newstr = [self getMem: newlen]) == NULL)
 		return nil;
 	memcpy(newstr, str, newlen);
 
 	if (string != NULL)
-		[self freeMem:string];
+		[self freeMem: string];
 
 	length = newlen;
 	string = newstr;
@@ -80,13 +80,13 @@
 
 - (OFString*)clone
 {
-	return [OFString new:string];
+	return [OFString new: string];
 }
 
 - (OFString*)append: (const char*)str
 {
-	char	*newstr;
-	size_t	newlen, strlength;
+	char   *newstr;
+	size_t newlen, strlength;
 
 	if (str == NULL)
 		return [self setTo:str];
@@ -94,10 +94,10 @@
 	strlength = strlen(str);
 	newlen = length + strlength;
 
-	if ((newstr = [self resizeMem:string toSize:newlen + 1]) == NULL) {
-		/* FIXME: Add error handling */
+	/* FIXME: Add error handling */
+	if ((newstr = [self resizeMem: string
+			       toSize: newlen + 1]) == NULL)
 		return nil;
-	}
 
 	string = newstr;
 

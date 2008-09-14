@@ -12,7 +12,7 @@
 #import <objc/Object.h>
 
 struct __ofobject_allocated_mem {
-	void *ptr;
+	void				*ptr;
 	struct __ofobject_allocated_mem *prev;
 	struct __ofobject_allocated_mem *next;
 };
@@ -23,8 +23,9 @@ struct __ofobject_allocated_mem {
 }
 
 - init;
-- (void*)getMem:(size_t)size;
-- (void*)resizeMem:(void*)ptr toSize:(size_t)size;
-- (void)freeMem:(void*)ptr;
+- (void*)getMem: (size_t)size;
+- (void*)resizeMem: (void*)ptr
+	    toSize: (size_t)size;
+- (void)freeMem: (void*)ptr;
 - free;
 @end

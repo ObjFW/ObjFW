@@ -14,18 +14,16 @@
 
 @interface OFString: OFObject
 {
-	char	*string;
-	size_t	length;
+	char   *string;
+	size_t length;
 }
 
-+ new:(const char*)str;
++ new: (const char*)str;
 - init;
-- init:(const char*)str;
+- init: (const char*)str;
 - (char*)cString;
 - (size_t)length;
-- (OFString*)setTo:(const char*)str;
+- (OFString*)setTo: (const char*)str;
 - (OFString*)clone;
-- (OFString*)append:(const char*)str;
+- (OFString*)append: (const char*)str;
 @end
-
-/* vim: se syn=objc: */

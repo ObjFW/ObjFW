@@ -14,8 +14,8 @@
 
 @interface OFList: OFObject
 {
-	OFListObject	*first;
-	OFListObject	*last;
+	OFListObject *first;
+	OFListObject *last;
 }
 
 - init;
@@ -23,8 +23,6 @@
 - freeWithData;
 - (OFListObject*)first;
 - (OFListObject*)last;
-- (void)add:(OFListObject*)ptr;
-- (void)addNew:(void*)ptr;
+- (void)add: (OFListObject*)ptr;
+- (void)addNew: (void*)ptr;
 @end
-
-/* vim: se syn=objc: */
