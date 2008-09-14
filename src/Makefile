@@ -22,6 +22,6 @@ INCLUDES = OFConstString.h	\
 
 include ../buildsys.mk
 
-OBJCFLAGS += -fPIC -DPIC -fno-nil-receivers -fconstant-string-class=OFConstString -fobjc-exceptions
+OBJCFLAGS += ${LIB_LDFLAGS}
 LD = ${OBJC}
 LIBS += -lobjc

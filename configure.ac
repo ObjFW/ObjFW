@@ -15,6 +15,8 @@ case "$CC" in
 		;;
 esac
 
+OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstString -fobjc-exceptions"
+
 BUILDSYS_SHARED_LIB
 
 AC_SUBST(PACKAGE, objfw)
