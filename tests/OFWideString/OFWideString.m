@@ -23,26 +23,26 @@ main()
 	OFWideString *s3;
 	OFWideString *s4 = [OFWideString new];
 
-	[s2 append: L"123"];
+	[s2 append: [OFConstWideString new: L"123"]];
 	s3 = [s1 clone];
 
-	[s4 setTo: [s2 wcString]];
+	[s4 setTo: (OFConstWideString*)s2];
 
-	if (![s1 compare: s3])
+	if (![s1 compare: (OFConstWideString*)s3])
 		puts("s1 and s3 match! GOOD!");
 	else {
 		puts("s1 and s3 don't match!");
 		return 1;
 	}
 
-	if (![s2 compare: s4])
+	if (![s2 compare: (OFConstWideString*)s4])
 		puts("s2 and s4 match! GOOD!");
 	else {
 		puts("s1 and s3 don't match!");
 		return 1;
 	}
 
-	if (!wcscmp([[s1 append: [s2 wcString]] wcString], L"test123"))
+	if (!wcscmp([[s1 append: (OFConstWideString*)s2] wcString], L"test123"))
 		puts("s1 appended with s2 is the expected string! GOOD!");
 	else {
 		puts("s1 appended with s2 is not the expected string!");

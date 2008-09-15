@@ -11,6 +11,7 @@
 
 #import <stddef.h>
 #import "OFObject.h"
+#import "OFConstString.h"
 
 @interface OFString: OFObject
 {
@@ -23,8 +24,8 @@
 - init: (const char*)str;
 - (char*)cString;
 - (size_t)length;
-- (OFString*)setTo: (const char*)str;
+- (OFString*)setTo: (OFConstString*)str;
 - (OFString*)clone;
-- (OFString*)append: (const char*)str;
-- (int)compare: (OFString*)str;
+- (OFString*)append: (OFConstString*)str;
+- (int)compare: (OFConstString*)str;
 @end

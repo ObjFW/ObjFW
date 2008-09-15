@@ -24,26 +24,26 @@ main()
 	OFString *s3;
 	OFString *s4 = [OFString new];
 
-	[s2 append: "123"];
+	[s2 append: [OFConstString new: "123"]];
 	s3 = [s1 clone];
 
-	[s4 setTo: [s2 cString]];
+	[s4 setTo: (OFConstString*)s2];
 
-	if (![s1 compare: s3])
+	if (![s1 compare: (OFConstString*)s3])
 		puts("s1 and s3 match! GOOD!");
 	else {
 		puts("s1 and s3 don't match!");
 		return 1;
 	}
 
-	if (![s2 compare: s4])
+	if (![s2 compare: (OFConstString*)s4])
 		puts("s2 and s4 match! GOOD!");
 	else {
 		puts("s1 and s3 don't match!");
 		return 1;
 	}
 
-	if (!strcmp([[s1 append: [s2 cString]] cString], "test123"))
+	if (!strcmp([[s1 append: (OFConstString*)s2] cString], "test123"))
 		puts("s1 appended with s2 is the expected string! GOOD!");
 	else {
 		puts("s1 appended with s2 is not the expected string!");

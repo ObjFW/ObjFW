@@ -50,12 +50,12 @@
 	return length;
 }
 
-- (OFString*)setTo: (const char*)str
+- (OFString*)setTo: (OFConstString*)str
 {
 	char *newstr;
 	size_t newlen;
 	
-	if (str == NULL) {
+	if ([str cString] == NULL) {
 		[self freeMem: string];
 
 		length = 0;
@@ -64,9 +64,9 @@
 		return self;
 	}
 
-	newlen = strlen(str);
+	newlen = [str length];
 	newstr = [self getMem: newlen + 1];
-	memcpy(newstr, str, newlen + 1);
+	memcpy(newstr, [str cString], newlen + 1);
 
 	if (string != NULL)
 		[self freeMem: string];
@@ -82,21 +82,21 @@
 	return [OFString new: string];
 }
 
-- (OFString*)append: (const char*)str
+- (OFString*)append: (OFConstString*)str
 {
 	char   *newstr;
 	size_t newlen, strlength;
 
 	if (str == NULL)
-		return [self setTo:str];
+		return [self setTo: str];
 
-	strlength = strlen(str);
+	strlength = [str length];
 	newlen = length + strlength;
 
 	newstr = [self resizeMem: string
 			  toSize: newlen + 1];
 
-	memcpy(newstr + length, str, strlength + 1);
+	memcpy(newstr + length, [str cString], strlength + 1);
 
 	length = newlen;
 	string = newstr;
@@ -104,7 +104,7 @@
 	return self;
 }
 
-- (int)compare: (OFString*)str
+- (int)compare: (OFConstString*)str
 {
 	return strcmp(string, [str cString]);
 }

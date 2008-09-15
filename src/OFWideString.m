@@ -35,7 +35,7 @@
 		} else {
 			length = wcslen(wstr);
 			wstring = [self getMem: (length + 1) * sizeof(wchar_t)];
-			memcpy(wstring, wstr, (length + 1) * sizeof(wchar_t));
+			wmemcpy(wstring, wstr, length + 1);
 		}
 	}
 	return self;
@@ -51,12 +51,12 @@
 	return length;
 }
 
-- (OFWideString*)setTo: (const wchar_t*)wstr
+- (OFWideString*)setTo: (OFConstWideString*)wstr
 {
 	wchar_t *newstr;
 	size_t  newlen;
 	
-	if (wstr == NULL) {
+	if ([wstr wcString] == NULL) {
 		[self freeMem:wstring];
 
 		length = 0;
@@ -65,9 +65,9 @@
 		return self;
 	}
 
-	newlen = wcslen(wstr);
+	newlen = [wstr length];
 	newstr = [self getMem: (newlen + 1) * sizeof(wchar_t)];
-	memcpy(newstr, wstr, (newlen + 1) * sizeof(wchar_t));
+	wmemcpy(newstr, [wstr wcString], newlen + 1);
 
 	if (wstring != NULL)
 		[self freeMem: wstring];
@@ -83,21 +83,21 @@
 	return [OFWideString new: wstring];
 }
 
-- (OFWideString*)append: (const wchar_t*)wstr
+- (OFWideString*)append: (OFConstWideString*)wstr
 {
 	wchar_t	*newstr;
 	size_t	newlen, strlength;
 
-	if (wstr == NULL)
+	if ([wstr wcString] == NULL)
 		return [self setTo: wstr];
 
-	strlength = wcslen(wstr);
+	strlength = [wstr length];
 	newlen = length + strlength;
 
 	newstr = [self resizeMem: wstring
 			  toSize: (newlen + 1) * sizeof(wchar_t)];
 
-	memcpy(newstr + length, wstr, (strlength + 1) * sizeof(wchar_t));
+	wmemcpy(newstr + length, [wstr wcString], strlength + 1);
 
 	length = newlen;
 	wstring = newstr;
@@ -105,7 +105,7 @@
 	return self;
 }
 
-- (int)compare: (OFWideString*)str
+- (int)compare: (OFConstWideString*)str
 {
 	return wcscmp(wstring, [str wcString]);
 }

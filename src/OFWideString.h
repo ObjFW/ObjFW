@@ -11,7 +11,9 @@
 
 #import <stddef.h>
 #import <wchar.h>
+
 #import "OFObject.h"
+#import "OFConstWideString.h"
 
 @interface OFWideString: OFObject
 {
@@ -24,8 +26,8 @@
 - init: (const wchar_t*)wstr;
 - (wchar_t*)wcString;
 - (size_t)length;
-- (OFWideString*)setTo: (const wchar_t*)wstr;
+- (OFWideString*)setTo: (OFConstWideString*)wstr;
 - (OFWideString*)clone;
-- (OFWideString*)append: (const wchar_t*)wstr;
-- (int)compare: (OFWideString*)str;
+- (OFWideString*)append: (OFConstWideString*)wstr;
+- (int)compare: (OFConstWideString*)str;
 @end
