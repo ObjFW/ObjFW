@@ -103,4 +103,9 @@
 
 	return self;
 }
+
+- (int)compare: (OFString*)str
+{
+	return strcmp(string, [str cString]);
+}
 @end

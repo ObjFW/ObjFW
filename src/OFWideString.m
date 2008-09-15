@@ -104,4 +104,9 @@
 
 	return self;
 }
+
+- (int)compare: (OFWideString*)str
+{
+	return wcscmp(wstring, [str wcString]);
+}
 @end

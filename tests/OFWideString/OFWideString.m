@@ -28,14 +28,14 @@ main()
 
 	[s4 setTo: [s2 wcString]];
 
-	if (!wcscmp([s1 wcString], [s3 wcString]))
+	if (![s1 compare: s3])
 		puts("s1 and s3 match! GOOD!");
 	else {
 		puts("s1 and s3 don't match!");
 		return 1;
 	}
 
-	if (!wcscmp([s2 wcString], [s4 wcString]))
+	if (![s2 compare: s4])
 		puts("s2 and s4 match! GOOD!");
 	else {
 		puts("s1 and s3 don't match!");

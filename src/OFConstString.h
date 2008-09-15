@@ -23,4 +23,5 @@
 - init: (const char*)str;
 - (const char*)cString;
 - (size_t)length;
+- (int)compare: (OFConstString*)str;
 @end

@@ -26,4 +26,5 @@
 - (OFString*)setTo: (const char*)str;
 - (OFString*)clone;
 - (OFString*)append: (const char*)str;
+- (int)compare: (OFString*)str;
 @end

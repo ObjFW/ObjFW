@@ -29,14 +29,14 @@ main()
 
 	[s4 setTo: [s2 cString]];
 
-	if (!strcmp([s1 cString], [s3 cString]))
+	if (![s1 compare: s3])
 		puts("s1 and s3 match! GOOD!");
 	else {
 		puts("s1 and s3 don't match!");
 		return 1;
 	}
 
-	if (!strcmp([s2 cString], [s4 cString]))
+	if (![s2 compare: s4])
 		puts("s2 and s4 match! GOOD!");
 	else {
 		puts("s1 and s3 don't match!");

@@ -46,4 +46,9 @@
 {
 	return length;
 }
+
+- (int)compare: (OFConstWideString*)str
+{
+	return wcscmp(wstring, [str wcString]);
+}
 @end

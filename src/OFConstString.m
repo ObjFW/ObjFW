@@ -46,4 +46,9 @@
 {
 	return length;
 }
+
+- (int)compare: (OFConstString*)str
+{
+	return strcmp(string, [str cString]);
+}
 @end

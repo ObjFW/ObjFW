@@ -24,4 +24,5 @@
 - init: (const wchar_t*)wstr;
 - (const wchar_t*)wcString;
 - (size_t)length;
+- (int)compare: (OFConstWideString*)str;
 @end

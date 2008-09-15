@@ -27,4 +27,5 @@
 - (OFWideString*)setTo: (const wchar_t*)wstr;
 - (OFWideString*)clone;
 - (OFWideString*)append: (const wchar_t*)wstr;
+- (int)compare: (OFWideString*)str;
 @end
