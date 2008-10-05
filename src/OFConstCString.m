@@ -10,20 +10,10 @@
  */
 
 #import <string.h>
-#import "OFConstString.h"
+#import "OFConstCString.h"
 
-@implementation OFConstString
-+ new: (const char*)str
-{
-	return [[OFConstString alloc] init: str];
-}
-
-- init
-{
-	return [self init: NULL];
-}
-
-- init: (const char*)str
+@implementation OFConstCString
+- initWithConstCString: (const char*)str
 {
 	if ((self = [super init])) {
 		if (str == NULL) {
@@ -42,12 +32,12 @@
 	return string;
 }
 
-- (size_t)length
+- (OFString*)clone
 {
-	return length;
+	return [OFString newWithConstCString: string];
 }
 
-- (int)compare: (OFConstString*)str
+- (int)compare: (OFString*)str
 {
 	return strcmp(string, [str cString]);
 }

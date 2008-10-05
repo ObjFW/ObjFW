@@ -24,6 +24,13 @@
   withSize: (size_t)size;
 @end
 
+@interface OFNotImplementedException: OFException
++	 new: (id)obj
+  withMethod: (const char*)method;
+-       init: (id)obj
+  withMethod: (const char*)method;
+@end
+
 @interface OFMemNotPartOfObjException: OFException
 +     new: (id)obj
   withPtr: (void*)ptr;

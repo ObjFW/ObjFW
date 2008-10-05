@@ -10,28 +10,18 @@
  */
 
 #import <wchar.h>
-#import "OFConstWideString.h"
+#import "OFConstWideCString.h"
 
-@implementation OFConstWideString
-+ new: (const wchar_t*)wstr
-{
-	return [[OFConstWideString alloc] init: wstr];
-}
-
-- init
-{
-	return [self init: NULL];
-}
-
-- init: (const wchar_t*)wstr
+@implementation OFConstWideCString
+- initWithConstWideCString: (const wchar_t*)str
 {
 	if ((self = [super init])) {
-		if (wstr == NULL) {
+		if (str == NULL) {
 			length = 0;
-			wstring = NULL;
+			string = NULL;
 		} else {
-			length = wcslen(wstr);
-			wstring = wstr;
+			length = wcslen(str);
+			string = str;
 		}
 	}
 	return self;
@@ -39,16 +29,16 @@
 
 - (const wchar_t*)wcString
 {
-	return wstring;
+	return string;
 }
 
-- (size_t)length
+- (OFString*)clone
 {
-	return length;
+	return [OFString newWithConstWideCString: string];
 }
 
-- (int)compare: (OFConstWideString*)str
+- (int)compare: (OFString*)str
 {
-	return wcscmp(wstring, [str wcString]);
+	return wcscmp(string, [str wcString]);
 }
 @end

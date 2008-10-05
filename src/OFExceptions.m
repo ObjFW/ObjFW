@@ -37,7 +37,23 @@
 {
 	fprintf(stderr, "ERROR: Could not allocate %zu bytes for object %s!\n",
 	    size, [obj name]);
+	return [super init];
+}
+@end
 
+@implementation OFNotImplementedException
++        new: (id)obj
+  withMethod: (const char*)method
+{
+	return [[OFNotImplementedException alloc] init: obj
+					    withMethod: method];
+}
+
+-       init: (id)obj
+  withMethod: (const char*)method
+{
+	fprintf(stderr, "ERROR: Requested method %s not implemented in %s!\n",
+	    method, [obj name]);
 	return [super init];
 }
 @end

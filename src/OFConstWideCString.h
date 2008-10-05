@@ -9,19 +9,17 @@
  * the packaging of this file.
  */
 
+#import <wchar.h>
 #import <stddef.h>
-#import "OFObject.h"
+#import "OFString.h"
 
-@interface OFConstString: OFObject
+@interface OFConstWideCString: OFString
 {
-	const char *string;
-	size_t	   length;
+	const wchar_t *string;
 }
 
-+ new: (const char*)str;
-- init;
-- init: (const char*)str;
-- (const char*)cString;
-- (size_t)length;
-- (int)compare: (OFConstString*)str;
+- initWithConstWideCString: (const wchar_t*)wstr;
+- (const wchar_t*)wcString;
+- (OFString*)clone;
+- (int)compare: (OFString*)str;
 @end

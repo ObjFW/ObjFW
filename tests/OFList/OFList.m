@@ -32,9 +32,9 @@ main()
 
 	list = [OFList new];
  
-	[list addNew: [OFString new: strings[0]]];
-	[list addNew: [OFString new: strings[1]]];
-	[list addNew: [OFString new: strings[2]]];
+	[list addNew: [OFString newWithConstCString: strings[0]]];
+	[list addNew: [OFString newWithConstCString: strings[1]]];
+	[list addNew: [OFString newWithConstCString: strings[2]]];
  
 	for (iter = [list first], i = 0; iter != nil; iter = [iter next], i++)
 		if (!strcmp([(OFString*)[iter data] cString], strings[i]))

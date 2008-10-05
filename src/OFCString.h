@@ -10,19 +10,18 @@
  */
 
 #import <stddef.h>
-#import <wchar.h>
-#import "OFObject.h"
 
-@interface OFConstWideString: OFObject
+#import "OFObject.h"
+#import "OFString.h"
+
+@interface OFCString: OFString
 {
-	const wchar_t *wstring;
-	size_t	      length;
+	char   *string;
 }
 
-+ new: (const wchar_t*)wstr;
-- init;
-- init: (const wchar_t*)wstr;
-- (const wchar_t*)wcString;
-- (size_t)length;
-- (int)compare: (OFConstWideString*)str;
+- initWithCString: (char*)str;
+- (char*)cString;
+- (OFString*)clone;
+- (int)compare: (OFString*)str;
+- (OFString*)append: (OFString*)str;
 @end

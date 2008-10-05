@@ -11,38 +11,45 @@
 
 #import <stdlib.h>
 #import <string.h>
+
 #import "OFString.h"
+#import "OFConstCString.h"
+#import "OFConstWideCString.h"
+#import "OFCString.h"
+#import "OFWideCString.h"
 #import "OFExceptions.h"
 
 @implementation OFString
-+ new: (const char*)str
++ newWithConstCString: (const char*)str
 {
-	return [[OFString alloc] init: str];
+	return [[OFConstCString alloc] initWithConstCString: str];
 }
 
-- init
++ newWithConstWideCString: (const wchar_t*)str
 {
-	return [self init: NULL];
+	return [[OFConstWideCString alloc] initWithConstWideCString: str];
 }
 
-- init: (const char*)str
++ newWithCString: (char*)str
 {
-	if ((self = [super init])) {
-		if (str == NULL) {
-			length = 0;
-			string = NULL;
-		} else {
-			length = strlen(str);
-			string = [self getMem: length + 1];
-			memcpy(string, str, length + 1);
-		}
-	}
-	return self;
+	return [[OFCString alloc] initWithCString: str];
+}
+
++ newWithWideCString: (wchar_t*)str
+{
+	return [[OFWideCString alloc] initWithWideCString: str];
 }
 
 - (char*)cString
 {
-	return string;
+	@throw [OFNotImplementedException new: self withMethod: "cString"];
+	return NULL;
+}
+
+- (wchar_t*)wcString
+{
+	@throw [OFNotImplementedException new: self withMethod: "wcString"];
+	return NULL;
 }
 
 - (size_t)length
@@ -50,62 +57,28 @@
 	return length;
 }
 
-- (OFString*)setTo: (OFConstString*)str
+- (OFString*)setTo: (OFString*)str
 {
-	char *newstr;
-	size_t newlen;
-	
-	if ([str cString] == NULL) {
-		[self freeMem: string];
-
-		length = 0;
-		string = NULL;
-
-		return self;
-	}
-
-	newlen = [str length];
-	newstr = [self getMem: newlen + 1];
-	memcpy(newstr, [str cString], newlen + 1);
-
-	if (string != NULL)
-		[self freeMem: string];
-
-	length = newlen;
-	string = newstr;
-
+	[self free];
+	self = [str clone];
 	return self;
 }
 
 - (OFString*)clone
 {
-	return [OFString new: string];
+	@throw [OFNotImplementedException new: self withMethod: "clone"];
+	return nil;
 }
 
-- (OFString*)append: (OFConstString*)str
+- (int)compare: (OFString*)str
 {
-	char   *newstr;
-	size_t newlen, strlength;
-
-	if (str == NULL)
-		return [self setTo: str];
-
-	strlength = [str length];
-	newlen = length + strlength;
-
-	newstr = [self resizeMem: string
-			  toSize: newlen + 1];
-
-	memcpy(newstr + length, [str cString], strlength + 1);
-
-	length = newlen;
-	string = newstr;
-
-	return self;
+	@throw [OFNotImplementedException new: self withMethod: "compare:"];
+	return 0;
 }
 
-- (int)compare: (OFConstString*)str
+- (OFString*)append: (OFString*)str
 {
-	return strcmp(string, [str cString]);
+	@throw [OFNotImplementedException new: self withMethod: "append:"];
+	return nil;
 }
 @end

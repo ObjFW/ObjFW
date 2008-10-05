@@ -11,38 +11,38 @@
 
 #import <wchar.h>
 
-#import "OFWideString.h"
+#import "OFString.h"
 
 /* TODO: Do real checks */
 
 int
 main()
 {
-	OFWideString *s1 = [OFWideString new: L"test"];
-	OFWideString *s2 = [[OFWideString alloc] init: L""];
-	OFWideString *s3;
-	OFWideString *s4 = [OFWideString new];
+	OFString *s1 = [OFString newWithWideCString: L"test"];
+	OFString *s2 = [OFString newWithWideCString: L""];
+	OFString *s3;
+	OFString *s4 = [OFString newWithConstWideCString: NULL];
 
-	[s2 append: [OFConstWideString new: L"123"]];
+	[s2 append: [OFString newWithConstWideCString: L"123"]];
 	s3 = [s1 clone];
 
-	[s4 setTo: (OFConstWideString*)s2];
+	[s4 setTo: s2];
 
-	if (![s1 compare: (OFConstWideString*)s3])
+	if (![s1 compare: s3])
 		puts("s1 and s3 match! GOOD!");
 	else {
 		puts("s1 and s3 don't match!");
 		return 1;
 	}
 
-	if (![s2 compare: (OFConstWideString*)s4])
+	if (![s2 compare: s4])
 		puts("s2 and s4 match! GOOD!");
 	else {
 		puts("s1 and s3 don't match!");
 		return 1;
 	}
 
-	if (!wcscmp([[s1 append: (OFConstWideString*)s2] wcString], L"test123"))
+	if (!wcscmp([[s1 append: s2] wcString], L"test123"))
 		puts("s1 appended with s2 is the expected string! GOOD!");
 	else {
 		puts("s1 appended with s2 is not the expected string!");
