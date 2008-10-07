@@ -10,6 +10,7 @@
  */
 
 #import <stdio.h>
+#import <stdint.h>
 
 #import "OFFile.h"
 #import "OFExceptions.h"
