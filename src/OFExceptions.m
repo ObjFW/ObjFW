@@ -20,8 +20,9 @@
 
 - initWithObject: (id)obj
 {
+	self = [super init];
 	@throw self;
-	return [super init];
+	return self;
 }
 @end
 
@@ -39,8 +40,9 @@
 	fprintf(stderr, "ERROR: Could not allocate %zu bytes for object %s!\n",
 	    size, [obj name]);
 
+	self = [super init];
 	@throw self;
-	return [super init];
+	return self;
 }
 @end
 
@@ -58,8 +60,9 @@
 	fprintf(stderr, "ERROR: Requested method %s not implemented in %s!\n",
 	    method, [obj name]);
 
+	self = [super init];
 	@throw self;
-	return [super init];
+	return self;
 }
 @end
 
@@ -80,8 +83,9 @@
 	    "ERROR: (Hint: It is possible that you tried to free the same "
 	    "memory twice!)\n", ptr, [obj name]);
 
+	self = [super init];
 	@throw self;
-	return [super init];
+	return self;
 }
 @end
 
@@ -95,21 +99,47 @@
 {
 	fprintf(stderr, "ERROR: Overflow in object %s!\n", [obj name]);
 
+	self = [super init];
 	@throw self;
-	return [super init];
+	return self;
 }
 @end
 
-@implementation OFReadFailedException
+@implementation OFOpenFileFailedException
++ newWithObject: (id)obj
+	andPath: (const char*)path
+	andMode: (const char*)mode
+{
+	return [[OFOpenFileFailedException alloc] initWithObject: obj
+							 andPath: path
+							 andMode: mode];
+}
+
+- initWithObject: (id)obj
+	 andPath: (const char*)path
+	 andMode: (const char*)mode
+{
+	fprintf(stderr, "ERROR: Failed to open file %s with mode %s in "
+	    "object %s!\n", path, mode, [self name]);
+
+	self = [super init];
+	@throw self;
+	return self;
+}
+@end
+
+@implementation OFReadOrWriteFailedException
 + newWithObject: (id)obj
 	andSize: (size_t)size
       andNItems: (size_t)nitems
 {
-	return [[OFReadFailedException alloc] initWithObject: obj
-						     andSize: size
-						   andNItems: nitems];
+	return [[OFReadOrWriteFailedException alloc] initWithObject: obj
+							    andSize: size
+							  andNItems: nitems];
 }
+@end
 
+@implementation OFReadFailedException
 - initWithObject: (id)obj
 	 andSize: (size_t)size
        andNItems: (size_t)nitems
@@ -117,7 +147,22 @@
 	fprintf(stderr, "ERROR: Failed to read %zu items of size %zu in "
 	    "object %s!\n", nitems, size, [obj name]);
 
+	self = [super init];
 	@throw self;
-	return [super init];
+	return self;
+}
+@end
+
+@implementation OFWriteFailedException
+- initWithObject: (id)obj
+	 andSize: (size_t)size
+       andNItems: (size_t)nitems
+{
+	fprintf(stderr, "ERROR: Failed to write %zu items of size %zu in "
+	    "object %s!\n", nitems, size, [obj name]);
+
+	self = [super init];
+	@throw self;
+	return self;
 }
 @end

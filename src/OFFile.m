@@ -40,27 +40,64 @@
 	return [super free];
 }
 
+- (BOOL)isEndOfFile
+{
+	return feof(fp);
+}
+
+- (size_t)readIntoBuffer: (char*)buf
+		withSize: (size_t)size
+	       andNItems: (size_t)nitems
+{
+	size_t ret;
+
+	if ((ret = fread(buf, size, nitems, fp)) == 0 && ![self isEndOfFile])
+		[OFReadFailedException newWithObject: self
+					     andSize: size
+					   andNItems: nitems];
+
+	return ret;
+}
+
 - (char*)readWithSize: (size_t)size
 	    andNItems: (size_t)nitems
 {
 	uint64_t memsize;
 	char *ret;
        
-	if ((memsize = (uint64_t)nitems * size) > 0xFFFFFFFF) {
+	if (size >= 0xFFFFFFFF || nitems >= 0xFFFFFFFF ||
+	    (memsize = (uint64_t)nitems * size) > 0xFFFFFFFF) {
 		[OFOverflowException newWithObject: self];
 		return NULL;
 	}
 	
 	ret = [self getMem: (size_t)memsize];
 
-	if (fread(ret, size, nitems, fp) <= 0 && !feof(fp)) {
+	@try {
+		[self readIntoBuffer: ret
+			    withSize: size
+			   andNItems: nitems];
+	} @catch (OFReadFailedException *e) {
 		[self freeMem: ret];
-		[OFReadFailedException newWithObject: self
-					     andSize: size
-					   andNItems: nitems];
+		@throw e;
 		return NULL;
 	}
 
+	return ret;
+}
+
+- (size_t)writeBuffer: (char*)buf
+	     withSize: (size_t)size
+	    andNItems: (size_t)nitems
+{
+	size_t ret;
+
+	if ((ret = fwrite(buf, size, nitems, fp)) == 0 &&
+	    size != 0 && nitems != 0)
+		[OFWriteFailedException newWithObject: self
+					      andSize: size
+					    andNItems: nitems];
+	
 	return ret;
 }
 @end

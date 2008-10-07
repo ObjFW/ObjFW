@@ -23,6 +23,13 @@
 - initWithPath: (const char*)path
        andMode: (const char*)mode;
 - free;
+- (BOOL)isEndOfFile;
+- (size_t)readIntoBuffer: (char*)buf
+		withSize: (size_t)size
+	       andNItems: (size_t)nItems;
 - (char*)readWithSize: (size_t)size
+	    andNItems: (size_t)nitems;
+- (size_t)writeBuffer: (char*)buf
+	     withSize: (size_t)size
 	    andNItems: (size_t)nitems;
 @end

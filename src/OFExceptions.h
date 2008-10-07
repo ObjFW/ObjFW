@@ -43,10 +43,28 @@
 - initWithObject: (id)obj;
 @end
 
-@interface OFReadFailedException: OFException
+@interface OFOpenFileFailedException: OFException
++ newWithObject: (id)obj
+	andPath: (const char*)path
+	andMode: (const char*)mode;
+- initWithObject: (id)obj
+	 andPath: (const char*)path
+	 andMode: (const char*)mode;
+@end
+
+@interface OFReadOrWriteFailedException: OFException
 + newWithObject: (id)obj
 	andSize: (size_t)size
       andNItems: (size_t)nitems;
+@end
+
+@interface OFReadFailedException: OFReadOrWriteFailedException
+- initWithObject: (id)obj
+	 andSize: (size_t)size
+       andNItems: (size_t)nitems;
+@end
+
+@interface OFWriteFailedException: OFReadOrWriteFailedException
 - initWithObject: (id)obj
 	 andSize: (size_t)size
        andNItems: (size_t)nitems;
