@@ -13,61 +13,66 @@
 #import "OFExceptions.h"
 
 @implementation OFException
-+ new: (id)obj
++ newWithObject: (id)obj
 {
-	return [[OFException alloc] init: obj];
+	return [[OFException alloc] initWithObject: obj];
 }
 
-- init: (id)obj
+- initWithObject: (id)obj
 {
+	@throw self;
 	return [super init];
 }
 @end
 
 @implementation OFNoMemException
-+      new: (id)obj
-  withSize: (size_t)size
++ newWithObject: (id)obj
+	andSize: (size_t)size
 {
-	return [[OFNoMemException alloc] init: obj
-				     withSize: size];
+	return [[OFNoMemException alloc] initWithObject: obj
+						andSize: size];
 }
 
--     init: (id)obj
-  withSize: (size_t)size
+- initWithObject: (id)obj
+	 andSize: (size_t)size
 {
 	fprintf(stderr, "ERROR: Could not allocate %zu bytes for object %s!\n",
 	    size, [obj name]);
+
+	@throw self;
 	return [super init];
 }
 @end
 
 @implementation OFNotImplementedException
-+        new: (id)obj
-  withMethod: (const char*)method
++ newWithObject: (id)obj
+      andMethod: (const char*)method
 {
-	return [[OFNotImplementedException alloc] init: obj
-					    withMethod: method];
+	return [[OFNotImplementedException alloc] initWithObject: obj
+						       andMethod: method];
 }
 
--       init: (id)obj
-  withMethod: (const char*)method
+- initWithObject: (id)obj
+       andMethod: (const char*)method
 {
 	fprintf(stderr, "ERROR: Requested method %s not implemented in %s!\n",
 	    method, [obj name]);
+
+	@throw self;
 	return [super init];
 }
 @end
 
 @implementation OFMemNotPartOfObjException
-+     new: (id)obj
-  withPtr: (void*)ptr
++ newWithObject: (id)obj
+     andPointer: (void*)ptr
 {
-	return [[OFMemNotPartOfObjException alloc] init: obj
-						withPtr: ptr];
+	return [[OFMemNotPartOfObjException alloc] initWithObject: obj
+						       andPointer: ptr];
 }
 
--    init: (id)obj
-  withPtr: (void*)ptr
+- initWithObject: (id)obj
+      andPointer: (void*)ptr
 {
 	fprintf(stderr, "ERROR: Memory at %p was not allocated as part of "
 	    "object %s!\n"
@@ -75,6 +80,44 @@
 	    "ERROR: (Hint: It is possible that you tried to free the same "
 	    "memory twice!)\n", ptr, [obj name]);
 
+	@throw self;
+	return [super init];
+}
+@end
+
+@implementation OFOverflowException
++ newWithObject: (id)obj
+{
+	return [[OFOverflowException alloc] initWithObject: obj];
+}
+
+- initWithObject: (id)obj
+{
+	fprintf(stderr, "ERROR: Overflow in object %s!\n", [obj name]);
+
+	@throw self;
+	return [super init];
+}
+@end
+
+@implementation OFReadFailedException
++ newWithObject: (id)obj
+	andSize: (size_t)size
+      andNItems: (size_t)nitems
+{
+	return [[OFReadFailedException alloc] initWithObject: obj
+						     andSize: size
+						   andNItems: nitems];
+}
+
+- initWithObject: (id)obj
+	 andSize: (size_t)size
+       andNItems: (size_t)nitems
+{
+	fprintf(stderr, "ERROR: Failed to read %zu items of size %zu in "
+	    "object %s!\n", nitems, size, [obj name]);
+
+	@throw self;
 	return [super init];
 }
 @end

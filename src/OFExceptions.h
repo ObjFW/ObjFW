@@ -13,27 +13,41 @@
 #import "OFObject.h"
 
 @interface OFException: OFObject
-+ new: (id)obj;
-- init: (id)obj;
++ newWithObject: (id)obj;
+- initWithObject: (id)obj;
 @end
 
 @interface OFNoMemException: OFException
-+      new: (id)obj
-  withSize: (size_t)size;
--     init: (id)obj
-  withSize: (size_t)size;
++ newWithObject: (id)obj
+	andSize: (size_t)size;
+- initWithObject: (id)obj
+	 andSize: (size_t)size;
 @end
 
 @interface OFNotImplementedException: OFException
-+	 new: (id)obj
-  withMethod: (const char*)method;
--       init: (id)obj
-  withMethod: (const char*)method;
++ newWithObject: (id)obj
+      andMethod: (const char*)method;
+- initWithObject: (id)obj
+       andMethod: (const char*)method;
 @end
 
 @interface OFMemNotPartOfObjException: OFException
-+     new: (id)obj
-  withPtr: (void*)ptr;
--    init: (id)obj
-  withPtr: (void*)ptr;
++ newWithObject: (id)obj
+     andPointer: (void*)ptr;
+- initWithObject: (id)obj
+      andPointer: (void*)ptr;
+@end
+
+@interface OFOverflowException: OFException
++ newWithObject: (id)obj;
+- initWithObject: (id)obj;
+@end
+
+@interface OFReadFailedException: OFException
++ newWithObject: (id)obj
+	andSize: (size_t)size
+      andNItems: (size_t)nitems;
+- initWithObject: (id)obj
+	 andSize: (size_t)size
+       andNItems: (size_t)nitems;
 @end

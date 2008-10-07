@@ -6,6 +6,7 @@ SRCS = OFConstCString.m		\
        OFCString.m		\
        OFConstWideCString.m	\
        OFExceptions.m		\
+       OFFile.m			\
        OFList.m			\
        OFListObject.m		\
        OFObject.m		\
@@ -16,6 +17,7 @@ INCLUDES = OFConstString.h	\
 	   OFCString.h		\
 	   OFConstWideString.h	\
 	   OFExceptions.h	\
+	   OFFile.h		\
 	   OFList.h		\
 	   OFListObject.h	\
 	   OFObject.h		\
