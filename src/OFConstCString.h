@@ -19,5 +19,5 @@
 - initWithConstCString: (const char*)str;
 - (const char*)cString;
 - (OFString*)clone;
-- (int)compare: (OFString*)str;
+- (int)compareTo: (OFString*)str;
 @end

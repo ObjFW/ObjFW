@@ -22,6 +22,6 @@
 - initWithWideCString: (wchar_t*)str;
 - (wchar_t*)wcString;
 - (OFString*)clone;
-- (int)compare: (OFString*)str;
+- (int)compareTo: (OFString*)str;
 - (OFString*)append: (OFString*)str;
 @end

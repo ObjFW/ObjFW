@@ -22,21 +22,22 @@
 	return self;
 }
 
-- (void*)getMem: (size_t)size
+- (void*)getMemWithSize: (size_t)size
 {
 	struct __ofobject_allocated_mem *iter;
 
 	if ((iter = malloc(sizeof(struct __ofobject_allocated_mem))) == NULL) {
-		[OFNoMemException newWithObject: self
+		[[OFNoMemException newWithObject: self
 					andSize: sizeof(struct
-						     __ofobject_allocated_mem)];
+						     __ofobject_allocated_mem)
+		    ] raise];
 		return NULL;
 	}
 
 	if ((iter->ptr = malloc(size)) == NULL) {
 		free(iter);
-		[OFNoMemException newWithObject: self
-					andSize: size];
+		[[OFNoMemException newWithObject: self
+					andSize: size] raise];
 		return NULL;
 	}
 
@@ -59,8 +60,8 @@
 	for (iter = __mem_pool; iter != NULL; iter = iter->prev) {
 		if (iter->ptr == ptr) {
 			if ((ptr = realloc(iter->ptr, size)) == NULL) {
-				[OFNoMemException newWithObject: self
-							andSize: size];
+				[[OFNoMemException newWithObject: self
+							 andSize: size] raise];
 				return NULL;
 			}
 			
@@ -69,8 +70,8 @@
 		}
 	}
 
-	[OFMemNotPartOfObjException newWithObject: self
-				       andPointer: ptr];
+	[[OFMemNotPartOfObjException newWithObject: self
+					andPointer: ptr] raise];
 	return NULL;
 }
 
@@ -94,8 +95,8 @@
 		}
 	}
 
-	[OFMemNotPartOfObjException newWithObject: self
-				       andPointer: ptr];
+	[[OFMemNotPartOfObjException newWithObject: self
+					andPointer: ptr] raise];
 }
 
 - free

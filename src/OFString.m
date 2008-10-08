@@ -42,15 +42,15 @@
 
 - (char*)cString
 {
-	[OFNotImplementedException newWithObject: self
-				       andMethod: "cString"];
+	[[OFNotImplementedException newWithObject: self
+				      andSelector: @selector(cString)] raise];
 	return NULL;
 }
 
 - (wchar_t*)wcString
 {
-	[OFNotImplementedException newWithObject: self
-				       andMethod: "wcString"];
+	[[OFNotImplementedException newWithObject: self
+				      andSelector: @selector(wcString)] raise];
 	return NULL;
 }
 
@@ -68,22 +68,23 @@
 
 - (OFString*)clone
 {
-	[OFNotImplementedException newWithObject: self
-				       andMethod: "clone"];
+	[[OFNotImplementedException newWithObject: self
+				      andSelector: @selector(clone)] raise];
 	return nil;
 }
 
-- (int)compare: (OFString*)str
+- (int)compareTo: (OFString*)str
 {
-	[OFNotImplementedException newWithObject: self
-				       andMethod: "compare:"];
+	[[OFNotImplementedException newWithObject: self
+				      andSelector: @selector(compareTo:)]
+	    raise];
 	return 0;
 }
 
 - (OFString*)append: (OFString*)str
 {
-	[OFNotImplementedException newWithObject: self
-				       andMethod: "append:"];
+	[[OFNotImplementedException newWithObject: self
+				      andSelector: @selector(append:)] raise];
 	return nil;
 }
 @end

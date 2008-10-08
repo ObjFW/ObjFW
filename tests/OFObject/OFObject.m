@@ -16,17 +16,19 @@
 #import "OFObject.h"
 #import "OFExceptions.h"
 
-#define CATCH_EXCEPTION(code, exception)	\
-	caught = false;				\
-	@try {					\
-		code;				\
-	} @catch (exception *e) {		\
-		caught = true;			\
-		puts("CAUGHT! Resuming...");	\
-	}					\
-	if (!caught) {				\
-		puts("NOT CAUGHT!");		\
-		return 1;			\
+#define CATCH_EXCEPTION(code, exception)		\
+	caught = false;					\
+	@try {						\
+		code;					\
+	} @catch (exception *e) {			\
+		caught = true;				\
+		puts("CAUGHT! Error string was:");	\
+		fputs([e string], stdout);		\
+		puts("Resuming...");			\
+	}						\
+	if (!caught) {					\
+		puts("NOT CAUGHT!");			\
+		return 1;				\
 	}
 
 int
@@ -43,7 +45,7 @@ main()
 
 	/* Test allocating memory */
 	puts("Allocating memory through object...");
-	p = [obj getMem: 4096];
+	p = [obj getMemWithSize: 4096];
 	puts("Allocated 4096 bytes.");
 
 	/* Test freeing the just allocated memory */
@@ -57,9 +59,9 @@ main()
 
 	/* Test multiple memory chunks */
 	puts("Allocating 3 chunks of memory...");
-	p = [obj getMem: 4096];
-	q = [obj getMem: 4096];
-	r = [obj getMem: 4096];
+	p = [obj getMemWithSize: 4096];
+	q = [obj getMemWithSize: 4096];
+	r = [obj getMemWithSize: 4096];
 	puts("Allocated 3 * 4096 bytes.");
 
 	/* Free them */
@@ -77,10 +79,10 @@ main()
 	puts("Got all 3!");
 	
 	puts("Trying to allocate more memory than possible...");
-	CATCH_EXCEPTION(p = [obj getMem: 4294967295U], OFNoMemException)
+	CATCH_EXCEPTION(p = [obj getMemWithSize: 4294967295U], OFNoMemException)
 
 	puts("Allocating 1 byte...");
-	p = [obj getMem: 1];
+	p = [obj getMemWithSize: 1];
 
 	puts("Trying to resize that 1 byte to more than possible...");
 	CATCH_EXCEPTION(p = [obj resizeMem: p toSize: 4294967295U],

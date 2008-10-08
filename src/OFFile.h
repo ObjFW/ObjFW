@@ -20,10 +20,21 @@
 
 + newWithPath: (const char*)path
       andMode: (const char*)mode;
++ (int)changeModeOfFile: (const char*)path
+		 toMode: (mode_t)mode;
++ (int)changeOwnerOfFile: (const char*)path
+		 toOwner: (uid_t)owner
+		andGroup: (gid_t)group;
++ (int)delete: (const char*)path;
++ (int)link: (const char*)src
+	 to: (const char*)dest;
++ (int)symlink: (const char*)src
+	    to: (const char*)dest;
+
 - initWithPath: (const char*)path
        andMode: (const char*)mode;
 - free;
-- (BOOL)isEndOfFile;
+- (BOOL)atEndOfFile;
 - (size_t)readIntoBuffer: (char*)buf
 		withSize: (size_t)size
 	       andNItems: (size_t)nItems;

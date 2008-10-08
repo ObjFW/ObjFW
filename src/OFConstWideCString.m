@@ -37,7 +37,7 @@
 	return [OFString newWithConstWideCString: string];
 }
 
-- (int)compare: (OFString*)str
+- (int)compareTo: (OFString*)str
 {
 	return wcscmp(string, [str wcString]);
 }

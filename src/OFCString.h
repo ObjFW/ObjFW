@@ -22,6 +22,6 @@
 - initWithCString: (char*)str;
 - (char*)cString;
 - (OFString*)clone;
-- (int)compare: (OFString*)str;
+- (int)compareTo: (OFString*)str;
 - (OFString*)append: (OFString*)str;
 @end

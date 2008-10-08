@@ -23,7 +23,7 @@ struct __ofobject_allocated_mem {
 }
 
 - init;
-- (void*)getMem: (size_t)size;
+- (void*)getMemWithSize: (size_t)size;
 - (void*)resizeMem: (void*)ptr
 	    toSize: (size_t)size;
 - (void)freeMem: (void*)ptr;

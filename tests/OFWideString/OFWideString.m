@@ -28,14 +28,14 @@ main()
 
 	[s4 setTo: s2];
 
-	if (![s1 compare: s3])
+	if (![s1 compareTo: s3])
 		puts("s1 and s3 match! GOOD!");
 	else {
 		puts("s1 and s3 don't match!");
 		return 1;
 	}
 
-	if (![s2 compare: s4])
+	if (![s2 compareTo: s4])
 		puts("s2 and s4 match! GOOD!");
 	else {
 		puts("s1 and s3 don't match!");

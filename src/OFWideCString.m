@@ -24,7 +24,8 @@
 			string = NULL;
 		} else {
 			length = wcslen(str);
-			string = [self getMem: (length + 1) * sizeof(wchar_t)];
+			string = [self getMemWithSize: (length + 1) *
+							   sizeof(wchar_t)];
 			wmemcpy(string, str, length + 1);
 		}
 	}
@@ -41,7 +42,7 @@
 	return [OFString newWithWideCString: string];
 }
 
-- (int)compare: (OFString*)str
+- (int)compareTo: (OFString*)str
 {
 	return wcscmp(string, [str wcString]);
 }

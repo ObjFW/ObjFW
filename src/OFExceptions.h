@@ -12,9 +12,18 @@
 #import <stddef.h>
 #import "OFObject.h"
 
+// FIXME: Exceptions should include which type of error occoured (fopen etc.)
+
 @interface OFException: OFObject
+{
+	char *errstr;
+}
+
 + newWithObject: (id)obj;
 - initWithObject: (id)obj;
+- free;
+- (void)raise;
+- (char*)string;
 @end
 
 @interface OFNoMemException: OFException
@@ -26,9 +35,9 @@
 
 @interface OFNotImplementedException: OFException
 + newWithObject: (id)obj
-      andMethod: (const char*)method;
+    andSelector: (SEL)sel;
 - initWithObject: (id)obj
-       andMethod: (const char*)method;
+     andSelector: (SEL)sel;
 @end
 
 @interface OFMemNotPartOfObjException: OFException

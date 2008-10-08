@@ -37,7 +37,7 @@
 	return [OFString newWithConstCString: string];
 }
 
-- (int)compare: (OFString*)str
+- (int)compareTo: (OFString*)str
 {
 	return strcmp(string, [str cString]);
 }

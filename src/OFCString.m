@@ -24,7 +24,7 @@
 			string = NULL;
 		} else {
 			length = strlen(str);
-			string = [self getMem: length + 1];
+			string = [self getMemWithSize: length + 1];
 			memcpy(string, str, length + 1);
 		}
 	}
@@ -41,7 +41,7 @@
 	return [OFString newWithCString: string];
 }
 
-- (int)compare: (OFString*)str
+- (int)compareTo: (OFString*)str
 {
 	return strcmp(string, [str cString]);
 }

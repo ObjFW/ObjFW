@@ -21,5 +21,5 @@
 - initWithConstWideCString: (const wchar_t*)wstr;
 - (const wchar_t*)wcString;
 - (OFString*)clone;
-- (int)compare: (OFString*)str;
+- (int)compareTo: (OFString*)str;
 @end

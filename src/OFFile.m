@@ -11,6 +11,9 @@
 
 #import <stdio.h>
 #import <stdint.h>
+#import <unistd.h>
+#import <sys/types.h>
+#import <sys/stat.h>
 
 #import "OFFile.h"
 #import "OFExceptions.h"
@@ -21,6 +24,41 @@
 {
 	return [[OFFile alloc] initWithPath: path
 				    andMode: mode];
+}
+
++ (int)changeModeOfFile: (const char*)path
+		 toMode: (mode_t)mode
+{
+	// FIXME: On error, throw exception
+	return chmod(path, mode);
+}
+
++ (int)changeOwnerOfFile: (const char*)path
+		 toOwner: (uid_t)owner
+		andGroup: (gid_t)group
+{
+	// FIXME: On error, throw exception
+	return chown(path, owner, group);
+}
+
++ (int)delete: (const char*)path
+{
+	// FIXME: On error, throw exception
+	return unlink(path);
+}
+
++ (int)link: (const char*)src
+	 to: (const char*)dest
+{
+	// FIXME: On error, throw exception
+	return link(src, dest);
+}
+
++ (int)symlink: (const char*)src
+	    to: (const char*)dest
+{
+	// FIXME: On error, throw exception
+	return symlink(src, dest);
 }
 
 - initWithPath: (const char*)path
@@ -41,7 +79,7 @@
 	return [super free];
 }
 
-- (BOOL)isEndOfFile
+- (BOOL)atEndOfFile
 {
 	return feof(fp);
 }
@@ -52,10 +90,10 @@
 {
 	size_t ret;
 
-	if ((ret = fread(buf, size, nitems, fp)) == 0 && ![self isEndOfFile])
-		[OFReadFailedException newWithObject: self
-					     andSize: size
-					   andNItems: nitems];
+	if ((ret = fread(buf, size, nitems, fp)) == 0 && !feof(fp))
+		[[OFReadFailedException newWithObject: self
+					      andSize: size
+					    andNItems: nitems] raise];
 
 	return ret;
 }
@@ -68,11 +106,11 @@
        
 	if (size >= 0xFFFFFFFF || nitems >= 0xFFFFFFFF ||
 	    (memsize = (uint64_t)nitems * size) > 0xFFFFFFFF) {
-		[OFOverflowException newWithObject: self];
+		[[OFOverflowException newWithObject: self] raise];
 		return NULL;
 	}
 	
-	ret = [self getMem: (size_t)memsize];
+	ret = [self getMemWithSize: (size_t)memsize];
 
 	@try {
 		[self readIntoBuffer: ret
@@ -95,9 +133,9 @@
 
 	if ((ret = fwrite(buf, size, nitems, fp)) == 0 &&
 	    size != 0 && nitems != 0)
-		[OFWriteFailedException newWithObject: self
-					      andSize: size
-					    andNItems: nitems];
+		[[OFWriteFailedException newWithObject: self
+					       andSize: size
+					     andNItems: nitems] raise];
 	
 	return ret;
 }

@@ -22,11 +22,12 @@
 + newWithConstWideCString: (const wchar_t*)str;
 + newWithCString: (char*)str;
 + newWithWideCString: (wchar_t*)str;
+
 - (char*)cString;
 - (wchar_t*)wcString;
 - (size_t)length;
 - (OFString*)setTo: (OFString*)str;
 - (OFString*)clone;
-- (int)compare: (OFString*)str;
+- (int)compareTo: (OFString*)str;
 - (OFString*)append: (OFString*)str;
 @end
