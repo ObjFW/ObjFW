@@ -9,16 +9,18 @@
  * the packaging of this file.
  */
 
+#import "config.h"
+
 #import <stdlib.h>
 #import "OFListObject.h"
 
 @implementation OFListObject
-+ new: (void*)ptr
++ newWithData: (void*)ptr
 {
-	return [[OFListObject alloc] init: ptr];
+	return [[OFListObject alloc] initWithData: ptr];
 }
 
-- init: (void*)ptr
+- initWithData: (void*)ptr
 {
 	if ((self = [super init])) {
 		next = nil;
@@ -28,7 +30,7 @@
 	return self;
 }
 
-- freeWithData
+- freeIncludingData
 {
 	if (data != NULL)
 		free(data);

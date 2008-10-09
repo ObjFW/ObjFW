@@ -9,6 +9,8 @@
  * the packaging of this file.
  */
 
+#import "config.h"
+
 #import <stdlib.h>
 #import <string.h>
 

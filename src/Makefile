@@ -26,6 +26,7 @@ INCLUDES = OFConstString.h	\
 
 include ../buildsys.mk
 
+CPPFLAGS += -I..
 OBJCFLAGS += ${LIB_CFLAGS}
 LD = ${OBJC}
 LDFLAGS += ${LIB_LDFLAGS}

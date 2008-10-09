@@ -9,9 +9,12 @@
  * the packaging of this file.
  */
 
+#import "config.h"
+
 #import <stdlib.h>
 #import <string.h>
 #import <wchar.h>
+
 #import "OFWideCString.h"
 #import "OFExceptions.h"
 

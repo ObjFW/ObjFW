@@ -9,6 +9,8 @@
  * the packaging of this file.
  */
 
+#import "config.h"
+
 #import <stdio.h>
 #import <stdint.h>
 #import <unistd.h>

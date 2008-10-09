@@ -20,7 +20,7 @@
 
 - init;
 - free;
-- freeWithData;
+- freeIncludingData;
 - (OFListObject*)first;
 - (OFListObject*)last;
 - (void)add: (OFListObject*)ptr;

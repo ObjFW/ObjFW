@@ -58,8 +58,7 @@ main()
 		return 1;
 	}
  
-	[iter free];
-	[list free];
+	[list freeIncludingData];
 
 	return 0;
 }

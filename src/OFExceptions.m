@@ -9,10 +9,18 @@
  * the packaging of this file.
  */
 
+#import "config.h"
+
 #import <stdio.h>
 #import <stdlib.h>
 
 #import "OFExceptions.h"
+
+#if defined HAVE_SEL_GET_NAME
+#define SEL_NAME(x) sel_get_name(x)
+#elif defined HAVE_SEL_GETNAME
+#define SEL_NAME(x) sel_getName(x)
+#endif
 
 @implementation OFException
 + newWithObject: (id)obj
@@ -78,9 +86,8 @@
      andSelector: (SEL)sel
 {
 	if ((self = [super init]))
-		/* FIXME: Is casting SEL to char* portable? */
 		asprintf(&errstr, "ERROR: Requested selector %s not "
-		    "implemented in %s!\n", (char*)sel, [obj name]);
+		    "implemented in %s!\n", SEL_NAME(sel), [obj name]);
 
 	return self;
 }

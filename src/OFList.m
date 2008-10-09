@@ -9,6 +9,8 @@
  * the packaging of this file.
  */
 
+#import "config.h"
+
 #import "OFList.h"
 
 @implementation OFList
@@ -33,13 +35,13 @@
 	return [super free];
 }
 
-- freeWithData
+- freeIncludingData
 {
 	OFListObject *iter, *next;
 
 	for (iter = first; iter != nil; iter = next) {
 		next = [iter next];
-		[iter freeWithData];
+		[iter freeIncludingData];
 	}
 
 	first = last = nil;
@@ -71,6 +73,6 @@
 
 - (void)addNew: (void*)ptr
 {
-	return [self add: [OFListObject new: ptr]];
+	return [self add: [OFListObject newWithData: ptr]];
 }
 @end

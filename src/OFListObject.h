@@ -18,9 +18,9 @@
 	OFListObject *prev;
 }
 
-+ new: (void*)ptr;
-- init: (void*)ptr;
-- freeWithData;
++ newWithData: (void*)ptr;
+- initWithData: (void*)ptr;
+- freeIncludingData;
 - (void*)data;
 - (OFListObject*)next;
 - (OFListObject*)prev;
