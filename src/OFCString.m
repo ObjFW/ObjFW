@@ -18,7 +18,7 @@
 #import "OFExceptions.h"
 
 @implementation OFCString
-- initWithCString: (const char*)str
+- initWithCString: (char*)str
 {
 	if ((self = [super init])) {
 		if (str == NULL) {
@@ -36,6 +36,11 @@
 - (char*)cString
 {
 	return string;
+}
+
+- (size_t)length
+{
+	return length;
 }
 
 - (OFString*)clone

@@ -14,10 +14,6 @@
 #import "OFObject.h"
 
 @interface OFString: OFObject
-{
-	size_t length;
-}
-
 + newWithConstCString: (const char*)str;
 + newWithConstWideCString: (const wchar_t*)str;
 + newWithCString: (char*)str;

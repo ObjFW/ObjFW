@@ -11,6 +11,8 @@
 
 #import "config.h"
 
+#import <objc/objc-api.h>
+
 #import <stdio.h>
 #import <stdlib.h>
 

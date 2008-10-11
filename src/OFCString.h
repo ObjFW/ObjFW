@@ -17,10 +17,12 @@
 @interface OFCString: OFString
 {
 	char   *string;
+	size_t length;
 }
 
 - initWithCString: (char*)str;
 - (char*)cString;
+- (size_t)length;
 - (OFString*)clone;
 - (int)compareTo: (OFString*)str;
 - (OFString*)append: (OFString*)str;

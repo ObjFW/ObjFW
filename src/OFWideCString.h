@@ -17,10 +17,12 @@
 @interface OFWideCString: OFString
 {
 	wchar_t	*string;
+	size_t  length;
 }
 
 - initWithWideCString: (wchar_t*)str;
 - (wchar_t*)wcString;
+- (size_t)length;
 - (OFString*)clone;
 - (int)compareTo: (OFString*)str;
 - (OFString*)append: (OFString*)str;

@@ -58,7 +58,9 @@
 
 - (size_t)length
 {
-	return length;
+	[[OFNotImplementedException newWithObject: self
+				      andSelector: @selector(length)] raise];
+	return 0;
 }
 
 - (OFString*)setTo: (OFString*)str

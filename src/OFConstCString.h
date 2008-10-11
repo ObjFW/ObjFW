@@ -14,10 +14,12 @@
 @interface OFConstCString: OFString
 {
 	const char *string;
+	size_t	   length;
 }
 
 - initWithConstCString: (const char*)str;
 - (const char*)cString;
+- (size_t)length;
 - (OFString*)clone;
 - (int)compareTo: (OFString*)str;
 @end

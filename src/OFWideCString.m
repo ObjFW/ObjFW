@@ -40,6 +40,11 @@
 	return string;
 }
 
+- (size_t)length
+{
+	return length;
+}
+
 - (OFString*)clone
 {
 	return [OFString newWithWideCString: string];
