@@ -11,10 +11,11 @@
 
 #import "config.h"
 
-#import <objc/objc-api.h>
-
+#define _GNU_SOURCE
 #import <stdio.h>
 #import <stdlib.h>
+
+#import <objc/objc-api.h>
 
 #import "OFExceptions.h"
 

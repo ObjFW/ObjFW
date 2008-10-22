@@ -15,10 +15,12 @@ case "$CC" in
 		;;
 esac
 
-OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstString -fobjc-exceptions"
+OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstCString -fobjc-exceptions"
 
 BUILDSYS_SHARED_LIB
 
+AC_CHECK_HEADER(objc/runtime.h,
+	[AC_DEFINE(HAVE_OBJC_RUNTIME_H, 1, [Whether we have objc/runtime.h])])
 AC_CHECK_LIB(objc, sel_get_name,
 	[AC_DEFINE(HAVE_SEL_GET_NAME, 1, [Whether we have sel_get_name])])
 AC_CHECK_LIB(objc, sel_getName,

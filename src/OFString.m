@@ -91,4 +91,21 @@
 				      andSelector: @selector(append:)] raise];
 	return nil;
 }
+
+- (OFString*)appendCString: (const char*)str
+{
+	[[OFNotImplementedException newWithObject: self
+				      andSelector: @selector(appendCString:)]
+	    raise];
+	return nil;
+}
+
+- (OFString*)appendWideCString: (const char*)str
+{
+	[[OFNotImplementedException newWithObject: self
+				      andSelector: @selector(
+						       appendWideCString:)]
+	    raise];
+	return nil;
+}
 @end

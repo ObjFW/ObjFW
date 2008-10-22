@@ -55,19 +55,24 @@
 
 - (OFString*)append: (OFString*)str
 {
+	return [self appendCString: [str cString]];
+}
+
+- (OFString*)appendCString: (const char*)str
+{
 	char   *newstr;
 	size_t newlen, strlength;
 
-	if (str == NULL)
-		return [self setTo: str];
+	if (string == NULL) 
+		return [self setTo: [OFString newWithCString: (char*)str]];
 
-	strlength = [str length];
+	strlength = strlen(str);
 	newlen = length + strlength;
 
 	newstr = [self resizeMem: string
 			  toSize: newlen + 1];
 
-	memcpy(newstr + length, [str cString], strlength + 1);
+	memcpy(newstr + length, str, strlength + 1);
 
 	length = newlen;
 	string = newstr;

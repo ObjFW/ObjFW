@@ -57,19 +57,25 @@
 
 - (OFString*)append: (OFString*)str
 {
+	return [self appendWideCString: [str wcString]];
+}
+
+- (OFString*)appendWideCString: (const wchar_t*)str
+{
 	wchar_t	*newstr;
 	size_t	newlen, strlength;
 
-	if ([str wcString] == NULL)
-		return [self setTo: str];
+	if (string == NULL) 
+		return [self setTo: [OFString
+					newWithWideCString: (wchar_t*)str]];
 
-	strlength = [str length];
+	strlength = wcslen(str);
 	newlen = length + strlength;
 
 	newstr = [self resizeMem: string
 			  toSize: (newlen + 1) * sizeof(wchar_t)];
 
-	wmemcpy(newstr + length, [str wcString], strlength + 1);
+	wmemcpy(newstr + length, str, strlength + 1);
 
 	length = newlen;
 	string = newstr;
