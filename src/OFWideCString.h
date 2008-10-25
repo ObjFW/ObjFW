@@ -20,7 +20,7 @@
 	size_t  length;
 }
 
-- initWithWideCString: (wchar_t*)str;
+- initAsWideCString: (wchar_t*)str;
 - (wchar_t*)wcString;
 - (size_t)length;
 - (OFString*)clone;

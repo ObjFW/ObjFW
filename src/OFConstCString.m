@@ -15,7 +15,7 @@
 #import "OFConstCString.h"
 
 @implementation OFConstCString
-- initWithConstCString: (const char*)str
+- initAsConstCString: (const char*)str
 {
 	if ((self = [super init])) {
 		if (str == NULL) {

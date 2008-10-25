@@ -24,22 +24,22 @@
 @implementation OFString
 + newAsConstCString: (const char*)str
 {
-	return [[OFConstCString alloc] initWithConstCString: str];
+	return [[OFConstCString alloc] initAsConstCString: str];
 }
 
 + newAsConstWideCString: (const wchar_t*)str
 {
-	return [[OFConstWideCString alloc] initWithConstWideCString: str];
+	return [[OFConstWideCString alloc] initAsConstWideCString: str];
 }
 
 + newAsCString: (char*)str
 {
-	return [[OFCString alloc] initWithCString: str];
+	return [[OFCString alloc] initAsCString: str];
 }
 
 + newAsWideCString: (wchar_t*)str
 {
-	return [[OFWideCString alloc] initWithWideCString: str];
+	return [[OFWideCString alloc] initAsWideCString: str];
 }
 
 - (char*)cString

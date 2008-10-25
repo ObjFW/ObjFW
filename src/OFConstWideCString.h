@@ -19,7 +19,7 @@
 	size_t	      length;
 }
 
-- initWithConstWideCString: (const wchar_t*)wstr;
+- initAsConstWideCString: (const wchar_t*)wstr;
 - (const wchar_t*)wcString;
 - (size_t)length;
 - (OFString*)clone;

@@ -18,7 +18,7 @@
 #import "OFExceptions.h"
 
 @implementation OFCString
-- initWithCString: (char*)str
+- initAsCString: (char*)str
 {
 	if ((self = [super init])) {
 		if (str == NULL) {

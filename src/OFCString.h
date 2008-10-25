@@ -20,7 +20,7 @@
 	size_t length;
 }
 
-- initWithCString: (char*)str;
+- initAsCString: (char*)str;
 - (char*)cString;
 - (size_t)length;
 - (OFString*)clone;

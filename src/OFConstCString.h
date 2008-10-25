@@ -17,7 +17,7 @@
 	size_t	   length;
 }
 
-- initWithConstCString: (const char*)str;
+- initAsConstCString: (const char*)str;
 - (const char*)cString;
 - (size_t)length;
 - (OFString*)clone;

@@ -15,7 +15,7 @@
 #import "OFConstWideCString.h"
 
 @implementation OFConstWideCString
-- initWithConstWideCString: (const wchar_t*)str
+- initAsConstWideCString: (const wchar_t*)str
 {
 	if ((self = [super init])) {
 		if (str == NULL) {

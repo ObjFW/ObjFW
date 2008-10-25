@@ -19,7 +19,7 @@
 #import "OFExceptions.h"
 
 @implementation OFWideCString
-- initWithWideCString: (wchar_t*)str
+- initAsWideCString: (wchar_t*)str
 {
 	if ((self = [super init])) {
 		if (str == NULL) {
