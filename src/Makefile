@@ -11,18 +11,10 @@ SRCS = OFConstCString.m		\
        OFListObject.m		\
        OFObject.m		\
        OFString.m		\
-       OFWideCString.m
+       OFWideCString.m		\
+       OFXMLFactory.m
 
-INCLUDES = OFConstString.h	\
-	   OFCString.h		\
-	   OFConstWideString.h	\
-	   OFExceptions.h	\
-	   OFFile.h		\
-	   OFList.h		\
-	   OFListObject.h	\
-	   OFObject.h		\
-	   OFString.h		\
-	   OFWideString.h
+INCLUDES = ${SRCS:.m=.h}
 
 include ../buildsys.mk
 

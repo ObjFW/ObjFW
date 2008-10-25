@@ -1,3 +1,3 @@
-SUBDIRS = OFObject OFString OFList OFWideString
+SUBDIRS = OFObject OFString OFList OFWideString OFXMLFactory
 
 include ../buildsys.mk
