@@ -18,7 +18,9 @@ struct __ofobject_allocated_mem {
 };
 
 @interface OFObject: Object
-+ alloc;
+{
+	struct __ofobject_allocated_mem *__mem_pool;
+}
 
 - init;
 - (void*)getMemWithSize: (size_t)size;

@@ -22,43 +22,11 @@
 #import "OFObject.h"
 #import "OFExceptions.h"
 
-#ifdef HAVE_OBJC_RUNTIME_H
-#define MEM_POOL (*(struct __ofobject_allocated_mem**)((char*)self + \
-	class_getInstanceSize([self class])))
-#else
-#define MEM_POOL (*(struct __ofobject_allocated_mem**)((char*)self + \
-	([self class])->instance_size))
-#endif
-
 @implementation OFObject
-+ alloc
-{
-	Class class = [self class];
-	id inst = nil;
-
-#ifdef HAVE_OBJC_RUNTIME_H
-	if ((inst = (id)malloc(class_getInstanceSize(class) +
-	    sizeof(struct __ofobject_allocated_mem*))) != nil) {
-		memset(inst, 0, class_getInstanceSize(class) +
-		    sizeof(struct __ofobject_allocated_mem*));
-		inst->isa = class;
-	}
-#else
-	if ((inst = (id)malloc(class->instance_size) +
-	    sizeof(struct __ofobject_allocated_mem*)) != nil) {
-		memset(inst, 0, class->instance_size +
-		    sizeof(struct __ofobject_allocated_mem*));
-		inst->class_pointer = class;
-	}
-#endif
-
-	return inst;
-}
-
 - init
 {
 	if ((self = [super init]) != nil)
-		MEM_POOL = NULL;
+		__mem_pool = NULL;
 	return self;
 }
 
@@ -66,7 +34,7 @@
 {
 	struct __ofobject_allocated_mem *iter, *iter2;
 
-	for (iter = MEM_POOL; iter != NULL; iter = iter2) {
+	for (iter = __mem_pool; iter != NULL; iter = iter2) {
 		iter2 = iter->prev;
 		free(iter->ptr);
 		free(iter);
@@ -97,12 +65,12 @@
 	}
 
 	iter->next = NULL;
-	iter->prev = MEM_POOL;
+	iter->prev = __mem_pool;
 
-	if (MEM_POOL != NULL)
-		MEM_POOL->next = iter;
+	if (__mem_pool != NULL)
+		__mem_pool->next = iter;
 
-	MEM_POOL = iter;
+	__mem_pool = iter;
 
 	return iter->ptr;
 }
@@ -112,7 +80,7 @@
 {
 	struct __ofobject_allocated_mem *iter;
 
-	for (iter = MEM_POOL; iter != NULL; iter = iter->prev) {
+	for (iter = __mem_pool; iter != NULL; iter = iter->prev) {
 		if (iter->ptr == ptr) {
 			if ((ptr = realloc(iter->ptr, size)) == NULL) {
 				[[OFNoMemException newWithObject: self
@@ -134,14 +102,14 @@
 {
 	struct __ofobject_allocated_mem *iter;
 
-	for (iter = MEM_POOL; iter != NULL; iter = iter->prev) {
+	for (iter = __mem_pool; iter != NULL; iter = iter->prev) {
 		if (iter->ptr == ptr) {
 			if (iter->prev != NULL) 
 				iter->prev->next = iter->next;
 			if (iter->next != NULL)
 				iter->next->prev = iter->prev;
-			if (MEM_POOL == iter)
-				MEM_POOL = NULL;
+			if (__mem_pool == iter)
+				__mem_pool = NULL;
 
 			free(iter);
 			free(ptr);
