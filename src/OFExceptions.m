@@ -14,6 +14,7 @@
 #define _GNU_SOURCE
 #import <stdio.h>
 #import <stdlib.h>
+#import <string.h>
 
 #import <objc/objc-api.h>
 
@@ -69,9 +70,14 @@
 - initWithObject: (id)obj
 	 andSize: (size_t)size
 {
-	if ((self = [super init]))
-		asprintf(&errstr, "ERROR: Could not allocate %zu bytes for "
-		    "object of class %s!\n", size, [obj name]);
+	if ((self = [super init])) {
+		if (obj != nil)
+			asprintf(&errstr, "ERROR: Could not allocate %zu bytes "
+			    "for object of class %s!\n", size, [obj name]);
+		else
+			asprintf(&errstr, "ERROR: Could not allocate %zu bytes "
+			    "for object of class (null)!\n", size);
+	}
 
 	return self;
 }
@@ -127,9 +133,14 @@
 
 - initWithObject: (id)obj
 {
-	if ((self = [super init]))
-		asprintf(&errstr, "ERROR: Overflow in object of class %s!\n",
-		    [obj name]);
+	if ((self = [super init])) {
+		if (obj != nil)
+			asprintf(&errstr, "ERROR: Overflow in object of class "
+			    "%s!\n", [obj name]);
+		else
+			errstr = strdup("ERROR: Overflow in object of class "
+			    "(null)!\n");
+	}
 
 	return self;
 }
