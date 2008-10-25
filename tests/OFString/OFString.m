@@ -19,12 +19,12 @@
 int
 main()
 {
-	OFString *s1 = [OFString newWithCString: "test"];
-	OFString *s2 = [OFString newWithCString: ""];
+	OFString *s1 = [OFString newAsCString: "test"];
+	OFString *s2 = [OFString newAsCString: ""];
 	OFString *s3;
-	OFString *s4 = [OFString newWithConstCString: NULL];
+	OFString *s4 = [OFString newAsConstCString: NULL];
 
-	[s2 append: [OFString newWithConstCString: "123"]];
+	[s2 appendCString: "123"];
 	s3 = [s1 clone];
 
 	[s4 setTo: s2];

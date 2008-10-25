@@ -18,12 +18,12 @@
 int
 main()
 {
-	OFString *s1 = [OFString newWithWideCString: L"test"];
-	OFString *s2 = [OFString newWithWideCString: L""];
+	OFString *s1 = [OFString newAsWideCString: L"test"];
+	OFString *s2 = [OFString newAsWideCString: L""];
 	OFString *s3;
-	OFString *s4 = [OFString newWithConstWideCString: NULL];
+	OFString *s4 = [OFString newAsConstWideCString: NULL];
 
-	[s2 append: [OFString newWithConstWideCString: L"123"]];
+	[s2 appendWideCString: L"123"];
 	s3 = [s1 clone];
 
 	[s4 setTo: s2];

@@ -47,7 +47,7 @@
 
 - (OFString*)clone
 {
-	return [OFString newWithWideCString: string];
+	return [OFString newAsWideCString: string];
 }
 
 - (int)compareTo: (OFString*)str
@@ -67,7 +67,7 @@
 
 	if (string == NULL) 
 		return [self setTo: [OFString
-					newWithWideCString: (wchar_t*)str]];
+					newAsWideCString: (wchar_t*)str]];
 
 	strlength = wcslen(str);
 	newlen = length + strlength;

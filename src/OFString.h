@@ -14,10 +14,10 @@
 #import "OFObject.h"
 
 @interface OFString: OFObject
-+ newWithConstCString: (const char*)str;
-+ newWithConstWideCString: (const wchar_t*)str;
-+ newWithCString: (char*)str;
-+ newWithWideCString: (wchar_t*)str;
++ newAsConstCString: (const char*)str;
++ newAsConstWideCString: (const wchar_t*)str;
++ newAsCString: (char*)str;
++ newAsWideCString: (wchar_t*)str;
 
 - (char*)cString;
 - (wchar_t*)wcString;
@@ -27,5 +27,5 @@
 - (int)compareTo: (OFString*)str;
 - (OFString*)append: (OFString*)str;
 - (OFString*)appendCString: (const char*)str;
-- (OFString*)appendWideCString: (const char*)str;
+- (OFString*)appendWideCString: (const wchar_t*)str;
 @end

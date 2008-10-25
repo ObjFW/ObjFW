@@ -41,7 +41,7 @@
 
 - (OFString*)clone
 {
-	return [OFString newWithConstWideCString: string];
+	return [OFString newAsConstWideCString: string];
 }
 
 - (int)compareTo: (OFString*)str

@@ -45,7 +45,7 @@
 
 - (OFString*)clone
 {
-	return [OFString newWithCString: string];
+	return [OFString newAsCString: string];
 }
 
 - (int)compareTo: (OFString*)str
@@ -64,7 +64,7 @@
 	size_t newlen, strlength;
 
 	if (string == NULL) 
-		return [self setTo: [OFString newWithCString: (char*)str]];
+		return [self setTo: [OFString newAsCString: (char*)str]];
 
 	strlength = strlen(str);
 	newlen = length + strlength;

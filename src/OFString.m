@@ -22,22 +22,22 @@
 #import "OFExceptions.h"
 
 @implementation OFString
-+ newWithConstCString: (const char*)str
++ newAsConstCString: (const char*)str
 {
 	return [[OFConstCString alloc] initWithConstCString: str];
 }
 
-+ newWithConstWideCString: (const wchar_t*)str
++ newAsConstWideCString: (const wchar_t*)str
 {
 	return [[OFConstWideCString alloc] initWithConstWideCString: str];
 }
 
-+ newWithCString: (char*)str
++ newAsCString: (char*)str
 {
 	return [[OFCString alloc] initWithCString: str];
 }
 
-+ newWithWideCString: (wchar_t*)str
++ newAsWideCString: (wchar_t*)str
 {
 	return [[OFWideCString alloc] initWithWideCString: str];
 }
@@ -100,7 +100,7 @@
 	return nil;
 }
 
-- (OFString*)appendWideCString: (const char*)str
+- (OFString*)appendWideCString: (const wchar_t*)str
 {
 	[[OFNotImplementedException newWithObject: self
 				      andSelector: @selector(
