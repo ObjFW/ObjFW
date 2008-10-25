@@ -83,7 +83,7 @@
 
 - (BOOL)atEndOfFile
 {
-	return feof(fp);
+	return (feof(fp) == 0 ? NO : YES);
 }
 
 - (size_t)readIntoBuffer: (char*)buf
