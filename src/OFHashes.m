@@ -21,16 +21,20 @@ inline void
 bswap(uint8_t *buf, size_t len)
 {
 	uint32_t t;
-	do {
+	while (len--) {
 		t = (uint32_t)((uint32_t)buf[3] << 8 | buf[2]) << 16 |
 		    ((uint32_t)buf[1] << 8 | buf[0]);
 		*(uint32_t*)buf = t;
 		buf += 4;
-	} while(--len);
+	}
 }
 #else
 #define bswap(buf, len)
 #endif
+
+/*******
+ * MD5 *
+ *******/
 
 /* The four MD5 core functions - F1 is optimized somewhat */
 #define F1(x, y, z) (z ^ (x & (y ^ z)))
@@ -137,6 +141,8 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 
 		bits[0] = 0;
 		bits[1] = 0;
+
+		calculated = NO;
 	}
 
 	return self;
@@ -146,6 +152,11 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 		  ofSize: (size_t)size
 {
 	uint32_t t;
+
+	if (calculated)
+		return;
+	if (size == 0)
+		return;
 
 	/* Update bitcount */
 	t = bits[0];
@@ -189,6 +200,9 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	uint8_t	*p;
 	size_t	count;
 
+	if (calculated)
+		return (uint8_t*)buf;
+
 	/* Compute number of bytes mod 64 */
 	count = (bits[0] >> 3) & 0x3F;
 
@@ -223,6 +237,8 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 
 	md5_transform(buf, (uint32_t*)in);
 	bswap((uint8_t*)buf, 4);
+
+	calculated = YES;
 
 	return (uint8_t*)buf;
 }

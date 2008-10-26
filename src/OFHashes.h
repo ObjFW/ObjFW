@@ -18,6 +18,8 @@
 	uint32_t buf[4];
 	uint32_t bits[2];
 	uint8_t	 in[64];
+
+	BOOL	 calculated;
 }
 
 - init;
