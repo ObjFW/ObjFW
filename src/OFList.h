@@ -23,6 +23,6 @@
 - freeIncludingData;
 - (OFListObject*)first;
 - (OFListObject*)last;
-- (void)add: (OFListObject*)ptr;
-- (void)addNew: (void*)ptr;
+- add: (OFListObject*)ptr;
+- addNew: (void*)ptr;
 @end

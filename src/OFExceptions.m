@@ -50,9 +50,10 @@
 	return [super free];
 }
 
-- (void)raise
+- raise
 {
 	@throw self;
+	return self;
 }
 
 - (char*)string

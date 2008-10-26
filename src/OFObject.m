@@ -98,7 +98,7 @@
 	return NULL;
 }
 
-- (void)freeMem: (void*)ptr;
+- freeMem: (void*)ptr;
 {
 	struct __ofobject_allocated_mem *iter;
 
@@ -114,11 +114,13 @@
 			free(iter);
 			free(ptr);
 
-			return;
+			return self;
 		}
 	}
 
 	[[OFMemNotPartOfObjException newWithObject: self
 					andPointer: ptr] raise];
+
+	return self;
 }
 @end

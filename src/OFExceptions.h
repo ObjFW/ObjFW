@@ -22,7 +22,7 @@
 + newWithObject: (id)obj;
 - initWithObject: (id)obj;
 - free;
-- (void)raise;
+- raise;
 - (char*)string;
 @end
 

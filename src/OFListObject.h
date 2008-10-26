@@ -24,6 +24,6 @@
 - (void*)data;
 - (OFListObject*)next;
 - (OFListObject*)prev;
-- (void)setNext: (OFListObject*)ptr;
-- (void)setPrev: (OFListObject*)ptr;
+- setNext: (OFListObject*)ptr;
+- setPrev: (OFListObject*)ptr;
 @end

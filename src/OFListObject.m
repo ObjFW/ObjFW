@@ -52,13 +52,15 @@
 	return prev;
 }
 
-- (void)setNext: (OFListObject*)ptr
+- setNext: (OFListObject*)ptr
 {
 	next = ptr;
+	return self;
 }
 
-- (void)setPrev: (OFListObject*)ptr
+- setPrev: (OFListObject*)ptr
 {
 	prev = ptr;
+	return self;
 }
 @end
