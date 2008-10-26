@@ -13,8 +13,6 @@
 #import <stdlib.h>
 #import <string.h>
 
-#import <assert.h>
-
 #import "OFXMLFactory.h"
 
 /* TODO: Do not only print, but check if it's the output it should be */
@@ -133,9 +131,5 @@ test_escape()
 
 int main()
 {
-	assert(test_escape() == 0);
-	assert(test_create_stanza() == 0);
-	assert(test_concat() == 0);
-
-	return 0;
+	return test_escape() + test_create_stanza() + test_concat();
 }
