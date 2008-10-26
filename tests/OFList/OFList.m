@@ -12,8 +12,6 @@
 #import <stdio.h>
 #import <string.h>
 
-#import <assert.h>
-
 #import "OFString.h"
 #import "OFList.h"
 
