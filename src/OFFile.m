@@ -68,6 +68,9 @@
 {
 	if ((self = [super init])) {
 		if ((fp = fopen(path, mode)) == NULL) {
+			[[OFOpenFileFailedException newWithObject: self
+							  andPath: path
+							  andMode: mode] raise];
 			[self free];
 			return nil;
 		}
@@ -86,7 +89,7 @@
 	return (feof(fp) == 0 ? NO : YES);
 }
 
-- (size_t)readIntoBuffer: (char*)buf
+- (size_t)readIntoBuffer: (uint8_t*)buf
 		withSize: (size_t)size
 	       andNItems: (size_t)nitems
 {
@@ -100,11 +103,11 @@
 	return ret;
 }
 
-- (char*)readWithSize: (size_t)size
-	    andNItems: (size_t)nitems
+- (uint8_t*)readWithSize: (size_t)size
+	       andNItems: (size_t)nitems
 {
 	uint64_t memsize;
-	char *ret;
+	uint8_t	 *ret;
        
 	if (size >= 0xFFFFFFFF || nitems >= 0xFFFFFFFF ||
 	    (memsize = (uint64_t)nitems * size) > 0xFFFFFFFF) {
@@ -127,7 +130,7 @@
 	return ret;
 }
 
-- (size_t)writeBuffer: (char*)buf
+- (size_t)writeBuffer: (uint8_t*)buf
 	     withSize: (size_t)size
 	    andNItems: (size_t)nitems
 {

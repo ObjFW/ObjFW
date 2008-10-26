@@ -10,6 +10,7 @@
  */
 
 #import <stdio.h>
+#import <stdint.h>
 
 #import "OFObject.h"
 
@@ -35,12 +36,12 @@
        andMode: (const char*)mode;
 - free;
 - (BOOL)atEndOfFile;
-- (size_t)readIntoBuffer: (char*)buf
+- (size_t)readIntoBuffer: (uint8_t*)buf
 		withSize: (size_t)size
 	       andNItems: (size_t)nItems;
-- (char*)readWithSize: (size_t)size
-	    andNItems: (size_t)nitems;
-- (size_t)writeBuffer: (char*)buf
+- (uint8_t*)readWithSize: (size_t)size
+	       andNItems: (size_t)nitems;
+- (size_t)writeBuffer: (uint8_t*)buf
 	     withSize: (size_t)size
 	    andNItems: (size_t)nitems;
 @end

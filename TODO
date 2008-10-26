@@ -2,13 +2,14 @@ OFArray
 OFDictionary
 OFSortedArray
 OFSocket
+OFThread
 OFAutoreleasePool
 
 OFStack
 OFQueue
 
+OFPlugin
 OFXMLParser
-OFHash [cryptographic]
 
 OFSortedQueue
 

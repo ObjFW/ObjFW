@@ -6,6 +6,7 @@ SRCS = OFConstCString.m		\
        OFCString.m		\
        OFConstWideCString.m	\
        OFExceptions.m		\
+       OFHashes.m		\
        OFFile.m			\
        OFList.m			\
        OFListObject.m		\
