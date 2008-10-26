@@ -12,6 +12,8 @@
 #import <stdio.h>
 #import <stdint.h>
 
+#import <sys/types.h>
+
 #import "OFObject.h"
 
 @interface OFFile: OFObject
