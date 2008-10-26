@@ -13,6 +13,9 @@
 
 #import "OFObject.h"
 
+#define MD5_DIGEST_SIZE	 16
+#define SHA1_DIGEST_SIZE 20
+
 @interface OFMD5Hash: OFObject
 {
 	uint32_t buf[4];
@@ -23,7 +26,23 @@
 }
 
 - init;
-- (void)updateWithBuffer: (const uint8_t*)buf
-		  ofSize: (size_t)size;
+- updateWithBuffer: (const uint8_t*)buf
+	    ofSize: (size_t)size;
+- (uint8_t*)digest;
+@end
+
+@interface OFSHA1Hash: OFObject
+{
+	uint32_t    state[5];
+	uint64_t    count;
+	uint8_t	    buffer[64];
+	uint8_t	    digest[SHA1_DIGEST_SIZE];
+
+	BOOL	 calculated;
+}
+
+- init;
+- updateWithBuffer: (const uint8_t*)buf
+	    ofSize: (size_t)size;
 - (uint8_t*)digest;
 @end
