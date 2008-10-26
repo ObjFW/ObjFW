@@ -43,6 +43,7 @@ main()
 		puts("MD5 SUM MISMATCH!!");
 		return 1;
 	}
+	[md5 free];
 
 	return 0;
 }
