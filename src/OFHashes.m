@@ -255,6 +255,12 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 }
 @end
 
+#undef F1
+#undef F2
+#undef F3
+#undef F4
+#undef MD5STEP
+
 /********
  * SHA1 *
  ********/
@@ -414,3 +420,11 @@ sha1_transform(uint32_t state[5], const uint8_t buffer[64])
 	return digest;
 }
 @end
+
+#undef blk0
+#undef blk
+#undef R0
+#undef R1
+#undef R2
+#undef R3
+#undef R4

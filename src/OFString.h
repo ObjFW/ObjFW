@@ -11,6 +11,7 @@
 
 #import <wchar.h>
 #import <stddef.h>
+
 #import "OFObject.h"
 
 @interface OFString: OFObject

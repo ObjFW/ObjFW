@@ -11,7 +11,6 @@
 
 #import <stddef.h>
 
-#import "OFObject.h"
 #import "OFString.h"
 
 @interface OFCString: OFString
