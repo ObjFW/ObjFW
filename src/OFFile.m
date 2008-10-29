@@ -106,17 +106,10 @@
 - (uint8_t*)readWithSize: (size_t)size
 	       andNItems: (size_t)nitems
 {
-	size_t	memsize;
 	uint8_t	*ret;
 
-	memsize = nitems * size;
-       
-	if (size > SIZE_MAX / nitems) {
-		[[OFOverflowException newWithObject: self] raise];
-		return NULL;
-	}
-	
-	ret = [self getMemWithSize: memsize];
+	ret = [self getMemForNItems: nitems
+			   withSize: size];
 
 	@try {
 		[self readIntoBuffer: ret

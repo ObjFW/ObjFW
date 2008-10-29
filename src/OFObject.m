@@ -75,6 +75,20 @@
 	return iter->ptr;
 }
 
+- (void*)getMemForNItems: (size_t)nitems
+		withSize: (size_t)size
+{
+	size_t memsize;
+
+	if (size > SIZE_MAX / nitems) {
+		[[OFOverflowException newWithObject: self] raise];
+		return NULL;
+	}
+
+	memsize = nitems * size;
+	return [self getMemWithSize: memsize];
+}
+
 - (void*)resizeMem: (void*)ptr
 	    toSize: (size_t)size
 {
@@ -85,7 +99,7 @@
 			if ((ptr = realloc(iter->ptr, size)) == NULL) {
 				[[OFNoMemException newWithObject: self
 							 andSize: size] raise];
-				return NULL;
+				return iter->ptr;
 			}
 			
 			iter->ptr = ptr;
@@ -96,6 +110,22 @@
 	[[OFMemNotPartOfObjException newWithObject: self
 					andPointer: ptr] raise];
 	return NULL;
+}
+
+- (void*)resizeMem: (void*)ptr
+	  toNItems: (size_t)nitems
+	    ofSize: (size_t)size
+{
+	size_t memsize;
+
+	if (size > SIZE_MAX / nitems) {
+		[[OFOverflowException newWithObject: self] raise];
+		return ptr;
+	}
+
+	memsize = nitems * size;
+	return [self resizeMem: ptr
+			toSize: memsize];
 }
 
 - freeMem: (void*)ptr;

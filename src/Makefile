@@ -2,7 +2,8 @@ LIB = ${LIB_PREFIX}objfw${LIB_SUFFIX}
 LIB_MAJOR = 1
 LIB_MINOR = 0
 
-SRCS = OFConstCString.m		\
+SRCS = OFArray.m		\
+       OFConstCString.m		\
        OFCString.m		\
        OFConstWideCString.m	\
        OFExceptions.m		\

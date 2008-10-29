@@ -24,8 +24,13 @@ struct __ofobject_allocated_mem {
 
 - init;
 - (void*)getMemWithSize: (size_t)size;
+- (void*)getMemForNItems: (size_t)nitems
+		withSize: (size_t)size;
 - (void*)resizeMem: (void*)ptr
 	    toSize: (size_t)size;
+- (void*)resizeMem: (void*)ptr
+	  toNItems: (size_t)nitems
+	    ofSize: (size_t)size;
 - freeMem: (void*)ptr;
 - free;
 @end
