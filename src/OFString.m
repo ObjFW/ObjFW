@@ -20,6 +20,7 @@
 #import "OFCString.h"
 #import "OFWideCString.h"
 #import "OFExceptions.h"
+#import "OFMacros.h"
 
 @implementation OFString
 + newAsConstCString: (const char*)str
@@ -44,23 +45,17 @@
 
 - (char*)cString
 {
-	[[OFNotImplementedException newWithObject: self
-				      andSelector: @selector(cString)] raise];
-	return NULL;
+	OF_NOT_IMPLEMENTED(NULL)
 }
 
 - (wchar_t*)wcString
 {
-	[[OFNotImplementedException newWithObject: self
-				      andSelector: @selector(wcString)] raise];
-	return NULL;
+	OF_NOT_IMPLEMENTED(NULL)
 }
 
 - (size_t)length
 {
-	[[OFNotImplementedException newWithObject: self
-				      andSelector: @selector(length)] raise];
-	return 0;
+	OF_NOT_IMPLEMENTED(0)
 }
 
 - (OFString*)setTo: (OFString*)str
@@ -72,40 +67,26 @@
 
 - (OFString*)clone
 {
-	[[OFNotImplementedException newWithObject: self
-				      andSelector: @selector(clone)] raise];
-	return nil;
+	OF_NOT_IMPLEMENTED(nil)
 }
 
 - (int)compareTo: (OFString*)str
 {
-	[[OFNotImplementedException newWithObject: self
-				      andSelector: @selector(compareTo:)]
-	    raise];
-	return 0;
+	OF_NOT_IMPLEMENTED(0)
 }
 
 - (OFString*)append: (OFString*)str
 {
-	[[OFNotImplementedException newWithObject: self
-				      andSelector: @selector(append:)] raise];
-	return nil;
+	OF_NOT_IMPLEMENTED(nil)
 }
 
 - (OFString*)appendCString: (const char*)str
 {
-	[[OFNotImplementedException newWithObject: self
-				      andSelector: @selector(appendCString:)]
-	    raise];
-	return nil;
+	OF_NOT_IMPLEMENTED(nil)
 }
 
 - (OFString*)appendWideCString: (const wchar_t*)str
 {
-	[[OFNotImplementedException newWithObject: self
-				      andSelector: @selector(
-						       appendWideCString:)]
-	    raise];
-	return nil;
+	OF_NOT_IMPLEMENTED(nil)
 }
 @end

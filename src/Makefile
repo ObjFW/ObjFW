@@ -15,7 +15,8 @@ SRCS = OFConstCString.m		\
        OFWideCString.m		\
        OFXMLFactory.m
 
-INCLUDES = ${SRCS:.m=.h}
+INCLUDES = ${SRCS:.m=.h}	\
+	   OFMacros.h
 
 include ../buildsys.mk
 
