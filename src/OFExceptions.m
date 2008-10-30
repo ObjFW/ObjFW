@@ -36,16 +36,18 @@
 
 - initWithObject: (id)obj
 {
-	if ((self = [super init]))
-		errstr = NULL;
+	if ((self = [super init])) {
+		object = obj;
+		string = NULL;
+	}
 
 	return self;
 }
 
 - free
 {
-	if (errstr != NULL)
-		free(errstr);
+	if (string != NULL)
+		free(string);
 
 	return [super free];
 }
@@ -56,9 +58,9 @@
 	return self;
 }
 
-- (char*)string
+- (char*)cString
 {
-	return errstr;
+	return string;
 }
 @end
 
@@ -73,16 +75,26 @@
 - initWithObject: (id)obj
 	 andSize: (size_t)size
 {
-	if ((self = [super init])) {
-		if (obj != nil)
-			asprintf(&errstr, "ERROR: Could not allocate %zu bytes "
-			    "for object of class %s!\n", size, [obj name]);
-		else
-			asprintf(&errstr, "ERROR: Could not allocate %zu bytes "
-			    "for object of class (null)!\n", size);
-	}
+	if ((self = [super initWithObject: obj]))
+		req_size = size;
 
 	return self;
+}
+
+- (char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "ERROR: Could not allocate %zu bytes for object of"
+	    "class %s!\n", req_size, object != nil ? [object name] : "(null)");
+
+	return string;
+}
+
+- (size_t)requestedSize
+{
+	return req_size;
 }
 @end
 
@@ -97,11 +109,26 @@
 - initWithObject: (id)obj
      andSelector: (SEL)sel
 {
-	if ((self = [super init]))
-		asprintf(&errstr, "ERROR: Requested selector %s not "
-		    "implemented in %s!\n", SEL_NAME(sel), [obj name]);
+	if ((self = [super initWithObject: obj]))
+		selector = sel;
 
 	return self;
+}
+
+- (char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "ERROR: Requested selector %s not implemented in "
+	    "%s!\n", SEL_NAME(selector), [object name]);
+
+	return string;
+}
+
+- (SEL)selector
+{
+	return selector;
 }
 @end
 
@@ -116,15 +143,30 @@
 - initWithObject: (id)obj
       andPointer: (void*)ptr
 {
-	if ((self = [super init]))
-		asprintf(&errstr, "ERROR: Memory at %p was not allocated as "
-		    "part of object of class\n"
-		    "ERROR: %s!\n"
-		    "ERROR: -> Not changing memory allocation!\n"
-		    "ERROR: (Hint: It is possible that you tried to free the "
-		    "same memory twice!)\n", ptr, [obj name]);
+	if ((self = [super initWithObject: obj]))
+		pointer = ptr;
 
 	return self;
+}
+
+- (char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "ERROR: Memory at %p was not allocated as part of "
+	    "object of class\n"
+	    "ERROR: %s!\n"
+	    "ERROR: -> Not changing memory allocation!\n"
+	    "ERROR: (Hint: It is also possible that you tried to free the same "
+	    "memory twice!)\n", pointer, [object name]);
+
+	return string;
+}
+
+- (void*)pointer
+{
+	return pointer;
 }
 @end
 
@@ -136,38 +178,72 @@
 
 - initWithObject: (id)obj
 {
-	if ((self = [super init])) {
-		if (obj != nil)
-			asprintf(&errstr, "ERROR: Overflow in object of class "
-			    "%s!\n", [obj name]);
-		else
-			errstr = strdup("ERROR: Overflow in object of class "
-			    "(null)!\n");
-	}
+	return (self = [super initWithObject: obj]);
+}
 
-	return self;
+- (char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "ERROR: Overflow in object of class %s!\n",
+	    object != nil ? [object name] : "(null)");
+
+	return string;
 }
 @end
 
 @implementation OFOpenFileFailedException
 + newWithObject: (id)obj
-	andPath: (const char*)path
-	andMode: (const char*)mode
+	andPath: (const char*)p
+	andMode: (const char*)m
 {
 	return [[OFOpenFileFailedException alloc] initWithObject: obj
-							 andPath: path
-							 andMode: mode];
+							 andPath: p
+							 andMode: m];
 }
 
 - initWithObject: (id)obj
-	 andPath: (const char*)path
-	 andMode: (const char*)mode
+	 andPath: (const char*)p
+	 andMode: (const char*)m
 {
-	if ((self = [super init]))
-		asprintf(&errstr, "ERROR: Failed to open file %s with mode %s "
-		    "in object of class %s!\n", path, mode, [self name]);
+	if ((self = [super init])) {
+		path = p != NULL ? strdup(p) : NULL;
+		mode = m != NULL ? strdup(m) : NULL;
+	}
 
 	return self;
+}
+
+- free
+{
+	if (path != NULL)
+		free(path);
+	if (mode != NULL)
+		free(mode);
+
+	return [super free];
+}
+
+- (char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "ERROR: Failed to open file %s with mode %s "
+	    "in object of class %s!\n", path, mode, [self name]);
+
+	return string;
+}
+
+- (char*)path
+{
+	return path;
+}
+
+- (char*)mode
+{
+	return mode;
 }
 @end
 
@@ -180,30 +256,52 @@
 							    andSize: size
 							  andNItems: nitems];
 }
-@end
 
-@implementation OFReadFailedException
 - initWithObject: (id)obj
 	 andSize: (size_t)size
        andNItems: (size_t)nitems
 {
-	if ((self = [super init]))
-		asprintf(&errstr, "ERROR: Failed to read %zu items of size "
-		    "%zu in object of class %s!\n", nitems, size, [obj name]);
+	if ((self = [super init])) {
+		req_size = size;
+		req_items = nitems;
+	}
 
 	return self;
+}
+
+- (size_t)requestedSize
+{
+	return req_size;
+}
+
+- (size_t)requestedItems
+{
+	return req_items;
+}
+@end
+
+@implementation OFReadFailedException
+- (char*)cString
+{
+	if (string != NULL)
+		return string;;
+
+	asprintf(&string, "ERROR: Failed to read %zu items of size %zu in "
+	    "object of class %s!\n", req_items, req_size, [object name]);
+
+	return string;
 }
 @end
 
 @implementation OFWriteFailedException
-- initWithObject: (id)obj
-	 andSize: (size_t)size
-       andNItems: (size_t)nitems
+- (char*)cString
 {
-	if ((self = [super init]))
-		asprintf(&errstr, "ERROR: Failed to write %zu items of size "
-		    "%zu in object of class %s!\n", nitems, size, [obj name]);
+	if (string != NULL)
+		return string;
 
-	return self;
+	asprintf(&string, "ERROR: Failed to write %zu items of size %zu in "
+	    "object of class %s!\n", req_items, req_size, [object name]);
+
+	return string;
 }
 @end

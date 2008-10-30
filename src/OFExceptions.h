@@ -16,35 +16,54 @@
 
 @interface OFException: OFObject
 {
-	char *errstr;
+	id   object;
+	char *string;
 }
 
 + newWithObject: (id)obj;
 - initWithObject: (id)obj;
 - free;
 - raise;
-- (char*)string;
+- (char*)cString;
 @end
 
 @interface OFNoMemException: OFException
+{
+	size_t req_size;
+}
+
 + newWithObject: (id)obj
 	andSize: (size_t)size;
 - initWithObject: (id)obj
 	 andSize: (size_t)size;
+- (char*)cString;
+- (size_t)requestedSize;
 @end
 
 @interface OFNotImplementedException: OFException
+{
+	SEL selector;
+}
+
 + newWithObject: (id)obj
     andSelector: (SEL)sel;
 - initWithObject: (id)obj
      andSelector: (SEL)sel;
+- (char*)cString;
+- (SEL)selector;
 @end
 
 @interface OFMemNotPartOfObjException: OFException
+{
+	void *pointer;
+}
+
 + newWithObject: (id)obj
      andPointer: (void*)ptr;
 - initWithObject: (id)obj
       andPointer: (void*)ptr;
+- (char*)cString;
+- (void*)pointer;
 @end
 
 @interface OFOverflowException: OFException
@@ -53,28 +72,43 @@
 @end
 
 @interface OFOpenFileFailedException: OFException
+{
+	char *path;
+	char *mode;
+}
+
 + newWithObject: (id)obj
-	andPath: (const char*)path
-	andMode: (const char*)mode;
+	andPath: (const char*)p
+	andMode: (const char*)m;
 - initWithObject: (id)obj
-	 andPath: (const char*)path
-	 andMode: (const char*)mode;
+	 andPath: (const char*)p
+	 andMode: (const char*)m;
+- free;
+- (char*)cString;
+- (char*)path;
+- (char*)mode;
 @end
 
 @interface OFReadOrWriteFailedException: OFException
+{
+	size_t req_size;
+	size_t req_items;
+}
+
 + newWithObject: (id)obj
 	andSize: (size_t)size
       andNItems: (size_t)nitems;
+- initWithObject: (id)obj
+	 andSize: (size_t)size
+       andNItems: (size_t)nitems;
+- (size_t)requestedSize;
+- (size_t)requestedItems;
 @end
 
 @interface OFReadFailedException: OFReadOrWriteFailedException
-- initWithObject: (id)obj
-	 andSize: (size_t)size
-       andNItems: (size_t)nitems;
+- (char*)cString;
 @end
 
 @interface OFWriteFailedException: OFReadOrWriteFailedException
-- initWithObject: (id)obj
-	 andSize: (size_t)size
-       andNItems: (size_t)nitems;
+- (char*)cString;
 @end
