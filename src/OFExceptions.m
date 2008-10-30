@@ -207,7 +207,7 @@
 	 andPath: (const char*)p
 	 andMode: (const char*)m
 {
-	if ((self = [super init])) {
+	if ((self = [super initWithObject: obj])) {
 		path = p != NULL ? strdup(p) : NULL;
 		mode = m != NULL ? strdup(m) : NULL;
 	}
@@ -261,7 +261,7 @@
 	 andSize: (size_t)size
        andNItems: (size_t)nitems
 {
-	if ((self = [super init])) {
+	if ((self = [super initWithObject: obj])) {
 		req_size = size;
 		req_items = nitems;
 	}
