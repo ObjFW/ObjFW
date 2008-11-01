@@ -26,6 +26,6 @@
 - (void*)last;
 - add: (void*)item;
 - addNItems: (size_t)nitems
-    fromCArray: (void*)carray;
+ fromCArray: (void*)carray;
 - removeLastNItems: (size_t)nitems;
 @end

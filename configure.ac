@@ -32,7 +32,9 @@ AC_CHECK_LIB(objc, sel_getName, [
 test x"$have_sel_get_name" != x"yes" -a x"$have_sel_getName" != x"yes" && \
 	AC_ERROR(You need either sel_get_name or sel_getName in libobjc!)
 
+test $cross_compiling != x"yes" && AC_SUBST(TESTS, "tests")
+
 AC_SUBST(PACKAGE, objfw)
-AC_CONFIG_FILES(buildsys.mk)
+AC_CONFIG_FILES([buildsys.mk extra.mk])
 AC_CONFIG_HEADERS(config.h)
 AC_OUTPUT
