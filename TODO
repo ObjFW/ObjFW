@@ -1,3 +1,5 @@
+Tests for OFFile.
+
 OFArray
 OFDictionary
 OFSortedArray

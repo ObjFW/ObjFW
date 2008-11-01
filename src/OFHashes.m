@@ -329,6 +329,29 @@ sha1_transform(uint32_t state[5], const uint8_t buffer[64])
 	state[4] += e;
 }
 
+static inline void
+sha1_update(uint8_t buffer, const uint8_t *buf, size_t size)
+{
+	size_t i, j;
+
+	j = (size_t)((count >> 3) & 63);
+	count += (size << 3);
+
+	if ((j + size) > 63) {
+		memcpy(&buffer[j], buf, (i = 64 - j));
+
+		sha1_transform(state, buffer);
+
+		for (; i + 63 < size; i += 64)
+			sha1_transform(state, &buf[i]);
+
+		j = 0;
+	} else
+		i = 0;
+
+	memcpy(&buffer[j], &buf[i], size - i);
+}
+
 @implementation OFSHA1Hash
 - init
 {
@@ -347,29 +370,12 @@ sha1_transform(uint32_t state[5], const uint8_t buffer[64])
 - updateWithBuffer: (const uint8_t*)buf
 	    ofSize: (size_t)size
 {
-	size_t i, j;
-
 	if (calculated)
 		return self;
 	if (size == 0)
 		return self;
 
-	j = (size_t)((count >> 3) & 63);
-	count += (size << 3);
-
-	if ((j + size) > 63) {
-		memcpy(&buffer[j], buf, (i = 64 - j));
-
-		sha1_transform(state, buffer);
-
-		for (; i + 63 < size; i += 64)
-			sha1_transform(state, &buf[i]);
-
-		j = 0;
-	} else
-		i = 0;
-
-	memcpy(&buffer[j], &buf[i], size - i);
+	sha1_update(buffer, buf, size);
 
 	return self;
 }
@@ -385,15 +391,12 @@ sha1_transform(uint32_t state[5], const uint8_t buffer[64])
 	for (i = 0; i < 8; i++)
 		/* Endian independent */
 		finalcount[i] = (uint8_t)((count >> ((7 - (i & 7)) * 8)) & 255);
-	[self updateWithBuffer: (const uint8_t*)"\200"
-			ofSize: 1];
+	sha1_update(buffer, (const uint8_t*)"\200", 1);
 
 	while ((count & 504) != 448)
-		[self updateWithBuffer: (const uint8_t*)"\0"
-				ofSize: 1];
+		sha1_update(buffer, (const uint8_t*)"\0", 1);
 	/* Should cause a sha1_transform() */
-	[self updateWithBuffer: finalcount
-			ofSize: 8]; 
+	sha1_update(buffer, finalcount, 8);
 
 	for (i = 0; i < SHA1_DIGEST_SIZE; i++)
 		digest[i] = (uint8_t)((state[i >> 2] >>
