@@ -15,25 +15,7 @@
 #import <stdint.h>
 
 #import "OFHashes.h"
-
-#ifdef OF_BIG_ENDIAN
-inline void
-bswap(uint8_t *buf, size_t len)
-{
-	uint32_t t;
-	while (len--) {
-		t = (uint32_t)((uint32_t)buf[3] << 8 | buf[2]) << 16 |
-		    ((uint32_t)buf[1] << 8 | buf[0]);
-		*(uint32_t*)buf = t;
-		buf += 4;
-	}
-}
-#else
-#define bswap(buf, len)
-#endif
-
-#define rol(val, bits) \
-	(((val) << (bits)) | ((val) >> (32 - (bits))))
+#import "OFMacros.h"
 
 /*******
  * MD5 *
@@ -183,7 +165,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 		}
 
 		memcpy(p, buffer, t);
-		bswap(in, 16);
+		OF_BSWAP_V(in, 16);
 		md5_transform(buf, (uint32_t*)in);
 
 		buffer += t;
@@ -193,7 +175,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	/* Process data in 64-byte chunks */
 	while (size >= 64) {
 		memcpy(in, buffer, 64);
-		bswap(in, 16);
+		OF_BSWAP_V(in, 16);
 		md5_transform(buf, (uint32_t*)in);
 
 		buffer += 64;
@@ -231,7 +213,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	if (count < 8) {
 		/* Two lots of padding: Pad the first block to 64 bytes */
 		memset(p, 0, count);
-		bswap(in, 16);
+		OF_BSWAP_V(in, 16);
 		md5_transform(buf, (uint32_t*)in);
 
 		/* Now fill the next block with 56 bytes */
@@ -240,14 +222,14 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 		/* Pad block to 56 bytes */
 		memset(p, 0, count - 8);
 	}
-	bswap(in, 14);
+	OF_BSWAP_V(in, 14);
 
 	/* Append length in bits and transform */
 	((uint32_t*)in)[14] = bits[0];
 	((uint32_t*)in)[15] = bits[1];
 
 	md5_transform(buf, (uint32_t*)in);
-	bswap((uint8_t*)buf, 4);
+	OF_BSWAP_V((uint8_t*)buf, 4);
 
 	calculated = YES;
 
@@ -268,32 +250,32 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 /* blk0() and blk() perform the initial expand. */
 #ifndef OF_BIG_ENDIAN
 #define blk0(i)							\
-	(block->l[i] = (rol(block->l[i], 24) & 0xFF00FF00) |	\
-	    (rol(block->l[i], 8) & 0x00FF00FF))
+	(block->l[i] = (OF_ROL(block->l[i], 24) & 0xFF00FF00) |	\
+	    (OF_ROL(block->l[i], 8) & 0x00FF00FF))
 #else
 #define blk0(i) block->l[i]
 #endif
 #define blk(i) \
-	(block->l[i & 15] = rol(block->l[(i + 13) & 15] ^	\
+	(block->l[i & 15] = OF_ROL(block->l[(i + 13) & 15] ^	\
 	    block->l[(i + 8) & 15] ^ block->l[(i + 2) & 15] ^	\
 	    block->l[i & 15], 1))
 
 /* (R0+R1), R2, R3, R4 are the different operations used in SHA1 */
 #define R0(v, w, x, y, z, i)						\
-	z += ((w & (x ^ y)) ^ y) + blk0(i) + 0x5A827999 + rol(v, 5);	\
-	w = rol(w, 30);
+	z += ((w & (x ^ y)) ^ y) + blk0(i) + 0x5A827999 + OF_ROL(v, 5);	\
+	w = OF_ROL(w, 30);
 #define R1(v, w, x, y, z, i)						\
-	z += ((w & (x ^ y)) ^ y) + blk(i) +  0x5A827999 + rol(v, 5);	\
-	w = rol(w, 30);
+	z += ((w & (x ^ y)) ^ y) + blk(i) +  0x5A827999 + OF_ROL(v, 5);	\
+	w = OF_ROL(w, 30);
 #define R2(v, w, x, y, z, i)						\
-	z += (w ^ x ^ y) + blk(i) + 0x6ED9EBA1 + rol(v, 5);		\
-	w = rol(w, 30);
-#define R3(v, w, x, y, z, i)						  \
-	z += (((w | x) & y) | (w & x)) + blk(i) + 0x8F1BBCDC + rol(v, 5); \
-	w = rol(w, 30);
+	z += (w ^ x ^ y) + blk(i) + 0x6ED9EBA1 + OF_ROL(v, 5);		\
+	w = OF_ROL(w, 30);
+#define R3(v, w, x, y, z, i)						     \
+	z += (((w | x) & y) | (w & x)) + blk(i) + 0x8F1BBCDC + OF_ROL(v, 5); \
+	w = OF_ROL(w, 30);
 #define R4(v, w, x, y, z, i)						\
-	z += (w ^ x ^ y) + blk(i) + 0xCA62C1D6 + rol(v, 5);		\
-	w = rol(w, 30);
+	z += (w ^ x ^ y) + blk(i) + 0xCA62C1D6 + OF_ROL(v, 5);		\
+	w = OF_ROL(w, 30);
 
 typedef union {
 	uint8_t	 c[64];

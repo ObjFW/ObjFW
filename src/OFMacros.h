@@ -13,3 +13,23 @@
 	[[OFNotImplementedException newWithObject: self			\
 				      andSelector: _cmd] raise];	\
 	return ret;
+
+#ifdef OF_BIG_ENDIAN
+inline void
+OF_BSWAP_V(uint8_t *buf, size_t len)
+{
+	uint32_t t;
+
+	while (len--) {
+		t = (uint32_t)((uint32_t)buf[3] << 8 | buf[2]) << 16 |
+		    ((uint32_t)buf[1] << 8 | buf[0]);
+		*(uint32_t*)buf = t;
+		buf += sizeof(t);
+	}
+}
+#else
+#define OF_BSWAP_V(buf, len)
+#endif
+
+#define OF_ROL(val, bits) \
+	(((val) << (bits)) | ((val) >> (32 - (bits))))
