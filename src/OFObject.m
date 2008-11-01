@@ -94,6 +94,9 @@
 {
 	struct __ofobject_allocated_mem *iter;
 
+	if (ptr == NULL)
+		return [self getMemWithSize: size];
+
 	for (iter = __mem_pool; iter != NULL; iter = iter->prev) {
 		if (iter->ptr == ptr) {
 			if ((ptr = realloc(iter->ptr, size)) == NULL) {

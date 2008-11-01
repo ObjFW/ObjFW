@@ -85,8 +85,14 @@ main()
 	p = [obj getMemWithSize: 1];
 
 	puts("Trying to resize that 1 byte to more than possible...");
-	CATCH_EXCEPTION(p = [obj resizeMem: p toSize: 4294967295U],
+	CATCH_EXCEPTION(p = [obj resizeMem: p
+				    toSize: 4294967295U],
 	    OFNoMemException)
+
+	puts("Trying to resize NULL to 1024 bytes...");
+	p = [obj resizeMem: NULL
+		    toSize: 1024];
+	[obj freeMem: p];
 	
 	/* TODO: Test if freeing object frees all memory */
 
