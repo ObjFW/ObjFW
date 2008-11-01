@@ -31,7 +31,7 @@
 #define MD5STEP(f, w, x, y, z, data, s) \
 	(w += f(x, y, z) + data, w = w << s | w >> (32 - s), w += x)
 
-inline void
+static inline void
 md5_transform(uint32_t buf[4], const uint32_t in[16])
 {
 	register uint32_t a, b, c, d;
@@ -282,7 +282,7 @@ typedef union {
 	uint32_t l[16];
 } sha1_c64l16_t;
 
-inline void
+static inline void
 sha1_transform(uint32_t state[5], const uint8_t buffer[64])
 {
 	uint32_t      a, b, c, d, e;

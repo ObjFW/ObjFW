@@ -15,7 +15,7 @@
 	return ret;
 
 #ifdef OF_BIG_ENDIAN
-inline void
+static inline void
 OF_BSWAP_V(uint8_t *buf, size_t len)
 {
 	uint32_t t;

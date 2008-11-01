@@ -25,7 +25,7 @@
  * resize when we append, which would be slow here.
  */
 
-inline BOOL
+static inline BOOL
 xmlfactory_resize(char **str, size_t *len, size_t add)
 {
 	char *str2;
@@ -46,7 +46,7 @@ xmlfactory_resize(char **str, size_t *len, size_t add)
 	return YES;
 }
 
-inline BOOL
+static inline BOOL
 xmlfactory_add2str(char **str, size_t *len, size_t *pos, const char *add)
 {
 	size_t add_len;
