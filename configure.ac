@@ -34,6 +34,8 @@ test x"$have_sel_get_name" != x"yes" -a x"$have_sel_getName" != x"yes" && \
 
 test $cross_compiling != x"yes" && AC_SUBST(TESTS, "tests")
 
+BUILDSYS_TOUCH_DEPS
+
 AC_SUBST(PACKAGE, objfw)
 AC_CONFIG_FILES([buildsys.mk extra.mk])
 AC_CONFIG_HEADERS(config.h)
