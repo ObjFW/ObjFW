@@ -10,6 +10,7 @@
  */
 
 #import <objc/Object.h>
+#import <stdint.h>
 
 struct __ofobject_allocated_mem {
 	void				*ptr;
