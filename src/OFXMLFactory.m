@@ -130,7 +130,7 @@ xmlfactory_add2str(char **str, size_t *len, size_t *pos, const char *add)
 
 + (char*)createStanza: (const char*)name
 	 withCloseTag: (BOOL)close
-	     andCData: (const char*)cdata, ...
+	      andData: (const char*)data, ...
 {
 	char *arg, *val, *xml;
 	size_t i, len;
@@ -150,7 +150,7 @@ xmlfactory_add2str(char **str, size_t *len, size_t *pos, const char *add)
 	i += strlen(name);
 
 	/* Arguments */
-	va_start(args, cdata);
+	va_start(args, data);
 	while ((arg = va_arg(args, char*)) != NULL &&
 	    (val = va_arg(args, char*)) != NULL) {
 		char *esc_val;
@@ -190,7 +190,7 @@ xmlfactory_add2str(char **str, size_t *len, size_t *pos, const char *add)
 
 	/* End of tag */
 	if (close) {
-		if (cdata == NULL) {
+		if (data == NULL) {
 			if (!xmlfactory_resize(&xml, &len, 2 - 1)) {
 				[[OFNoMemException newWithObject: nil
 							 andSize: len + 2 - 1]
@@ -201,12 +201,11 @@ xmlfactory_add2str(char **str, size_t *len, size_t *pos, const char *add)
 			xml[i++] = '/';
 			xml[i++] = '>';
 		} else {
-			if (!xmlfactory_resize(&xml, &len, 1 + strlen(cdata) +
+			if (!xmlfactory_resize(&xml, &len, 1 + strlen(data) +
 			    2 + strlen(name) + 1 - 1)) {
 				[[OFNoMemException newWithObject: nil
 							 andSize: len + 1 +
-								  strlen(
-								      cdata) +
+								  strlen(data) +
 								  2 +
 								  strlen(name) +
 								  1 - 1]
@@ -215,8 +214,8 @@ xmlfactory_add2str(char **str, size_t *len, size_t *pos, const char *add)
 			}
 	
 			xml[i++] = '>';
-			memcpy(xml + i, cdata, strlen(cdata));
-			i += strlen(cdata);
+			memcpy(xml + i, data, strlen(data));
+			i += strlen(data);
 			xml[i++] = '<';
 			xml[i++] = '/';
 			memcpy(xml + i, name, strlen(name));

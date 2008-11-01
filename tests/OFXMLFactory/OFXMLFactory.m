@@ -58,49 +58,49 @@ test_create_stanza()
 {
 	check_result([OFXMLFactory createStanza: "foo"
 				   withCloseTag: NO
-				       andCData: NULL,
+					andData: NULL,
 						 NULL],
 	    "<foo>");
 
 	check_result([OFXMLFactory createStanza: "foo"
 				   withCloseTag: NO
-				       andCData: NULL,
+					andData: NULL,
 						 "bar", "baz",
 						 "blub", "asd",
 						 NULL],
 	    "<foo bar='baz' blub='asd'>");
 	check_result([OFXMLFactory createStanza: "foo"
 				   withCloseTag: YES
-				       andCData: NULL,
+					andData: NULL,
 						 NULL],
 	    "<foo/>");
 	check_result([OFXMLFactory createStanza: "foo"
 				   withCloseTag: YES
-				       andCData: "bar",
+					andData: "bar",
 						 NULL],
 	    "<foo>bar</foo>");
 	check_result([OFXMLFactory createStanza: "foo"
 				   withCloseTag: YES
-				       andCData: NULL,
+					andData: NULL,
 						 "bar", "b&az",
 						 NULL],
 	    "<foo bar='b&amp;az'/>");
 	check_result([OFXMLFactory createStanza: "foo"
 				   withCloseTag: YES
-				       andCData: "bar",
+					andData: "bar",
 						 "bar", "b'az",
 						 NULL],
 	    "<foo bar='b&apos;az'>bar</foo>");
 	check_result([OFXMLFactory createStanza: "foo"
 				   withCloseTag: YES
-				       andCData: NULL,
+					andData: NULL,
 						 "bar", "b&az",
 						 "x", "asd\"",
 						 NULL],
 	    "<foo bar='b&amp;az' x='asd&quot;'/>");
 	check_result([OFXMLFactory createStanza: "foo"
 				   withCloseTag: YES
-				       andCData: "bar",
+					andData: "bar",
 						 "bar", "b'az",
 						 "x", "y",
 						 "a", "b",

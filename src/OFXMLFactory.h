@@ -15,6 +15,6 @@
 + (char*)escapeCString: (const char*)s;
 + (char*)createStanza: (const char*)name
 	 withCloseTag: (BOOL)close
-	     andCData: (const char*)cdata, ...;
+	      andData: (const char*)data, ...;
 + (char*)concatAndFreeCStrings: (char **)strs;
 @end
