@@ -50,8 +50,31 @@
 
 - add: (void*)item
 {
+	return [self addNItems: 1
+		    fromCArray: item];
+}
+
+- addNItems: (size_t)nitems
+ fromCArray: (void*)carray
+{
 	/* FIXME */
 	OF_NOT_IMPLEMENTED(self)
+}
+
+- removeLastNItems: (size_t)nitems
+{
+	/* FIXME */
+	OF_NOT_IMPLEMENTED(self)
+}
+@end
+
+@implementation OFBigArray
+- initWithSize: (size_t)is
+{
+	if ((self = [super init]))
+		realsize = 0;
+
+	return self;
 }
 
 - addNItems: (size_t)nitems

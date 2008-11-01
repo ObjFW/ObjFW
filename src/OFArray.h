@@ -29,3 +29,14 @@
  fromCArray: (void*)carray;
 - removeLastNItems: (size_t)nitems;
 @end
+
+@interface OFBigArray: OFArray
+{
+	size_t realsize;
+}
+
+- initWithSize: (size_t)is;
+- addNItems: (size_t)nitems
+ fromCArray: (void*)carray;
+- removeLastNItems: (size_t)nitems;
+@end
