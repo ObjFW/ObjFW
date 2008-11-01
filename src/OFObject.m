@@ -76,14 +76,12 @@
 }
 
 - (void*)getMemForNItems: (size_t)nitems
-		withSize: (size_t)size
+		  ofSize: (size_t)size
 {
 	size_t memsize;
 
-	if (size > SIZE_MAX / nitems) {
+	if (size > SIZE_MAX / nitems)
 		[[OFOverflowException newWithObject: self] raise];
-		return NULL;
-	}
 
 	memsize = nitems * size;
 	return [self getMemWithSize: memsize];
@@ -99,11 +97,9 @@
 
 	for (iter = __mem_pool; iter != NULL; iter = iter->prev) {
 		if (iter->ptr == ptr) {
-			if ((ptr = realloc(iter->ptr, size)) == NULL) {
+			if ((ptr = realloc(iter->ptr, size)) == NULL)
 				[[OFNoMemException newWithObject: self
 							 andSize: size] raise];
-				return iter->ptr;
-			}
 			
 			iter->ptr = ptr;
 			return ptr;
@@ -112,7 +108,7 @@
 
 	[[OFMemNotPartOfObjException newWithObject: self
 					andPointer: ptr] raise];
-	return NULL;
+	return NULL;	/* never reached, but makes gcc happy */
 }
 
 - (void*)resizeMem: (void*)ptr
@@ -121,10 +117,8 @@
 {
 	size_t memsize;
 
-	if (size > SIZE_MAX / nitems) {
+	if (size > SIZE_MAX / nitems)
 		[[OFOverflowException newWithObject: self] raise];
-		return ptr;
-	}
 
 	memsize = nitems * size;
 	return [self resizeMem: ptr
@@ -153,7 +147,6 @@
 
 	[[OFMemNotPartOfObjException newWithObject: self
 					andPointer: ptr] raise];
-
-	return self;
+	return self	/* never reached, but makes gcc happy */;
 }
 @end

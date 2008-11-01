@@ -70,53 +70,41 @@ xmlfactory_add2str(char **str, size_t *len, size_t *pos, const char *add)
 
 	len = nlen = strlen(s);
 
-	if ((ret = malloc(len + 1)) == NULL) {
+	if ((ret = malloc(len + 1)) == NULL)
 		[[OFNoMemException newWithObject: nil
 					 andSize: len + 1] raise];
-		return NULL;
-	}
 
 	for (i = j = 0; i < len; i++) {
 		switch (s[i]) {
 		case '<':
-			if (!xmlfactory_add2str(&ret, &nlen, &j, "&lt;")) {
+			if (!xmlfactory_add2str(&ret, &nlen, &j, "&lt;"))
 				[[OFNoMemException newWithObject: nil
 							 andSize: nlen + 4]
 				    raise];
-				return NULL;
-			}
 			break;
 		case '>':
-			if (!xmlfactory_add2str(&ret, &nlen, &j, "&gt;")) {
+			if (!xmlfactory_add2str(&ret, &nlen, &j, "&gt;"))
 				[[OFNoMemException newWithObject: nil
 							 andSize: nlen + 4]
 				    raise];
-				return NULL;
-			}
 			break;
 		case '"':
-			if (!xmlfactory_add2str(&ret, &nlen, &j, "&quot;")) {
+			if (!xmlfactory_add2str(&ret, &nlen, &j, "&quot;"))
 				[[OFNoMemException newWithObject: nil
 							 andSize: nlen + 6]
 				    raise];
-				return NULL;
-			}
 			break;
 		case '\'':
-			if (!xmlfactory_add2str(&ret, &nlen, &j, "&apos;")) {
+			if (!xmlfactory_add2str(&ret, &nlen, &j, "&apos;"))
 				[[OFNoMemException newWithObject: nil
 							 andSize: nlen + 6]
 				    raise];
-				return NULL;
-			}
 			break;
 		case '&':
-			if (!xmlfactory_add2str(&ret, &nlen, &j, "&amp;")) {
+			if (!xmlfactory_add2str(&ret, &nlen, &j, "&amp;"))
 				[[OFNoMemException newWithObject: nil
 							 andSize: nlen + 5]
 				    raise];
-				return NULL;
-			}
 			break;
 		default:
 			ret[j++] = s[i];
@@ -138,11 +126,9 @@ xmlfactory_add2str(char **str, size_t *len, size_t *pos, const char *add)
 
 	/* Start of tag */
 	len = strlen(name) + 3;
-	if ((xml = malloc(len)) == NULL) {
+	if ((xml = malloc(len)) == NULL)
 		[[OFNoMemException newWithObject: nil
 					 andSize: len] raise];
-		return NULL;
-	}
 
 	i = 0;
 	xml[i++] = '<';
@@ -172,7 +158,6 @@ xmlfactory_add2str(char **str, size_t *len, size_t *pos, const char *add)
 							  strlen(arg) + 2 +
 							  strlen(esc_val) + 1]
 			    raise];
-			return NULL;
 		}
 
 		xml[i++] = ' ';
@@ -191,18 +176,16 @@ xmlfactory_add2str(char **str, size_t *len, size_t *pos, const char *add)
 	/* End of tag */
 	if (close) {
 		if (data == NULL) {
-			if (!xmlfactory_resize(&xml, &len, 2 - 1)) {
+			if (!xmlfactory_resize(&xml, &len, 2 - 1))
 				[[OFNoMemException newWithObject: nil
 							 andSize: len + 2 - 1]
 				    raise];
-				return NULL;
-			}
 	
 			xml[i++] = '/';
 			xml[i++] = '>';
 		} else {
 			if (!xmlfactory_resize(&xml, &len, 1 + strlen(data) +
-			    2 + strlen(name) + 1 - 1)) {
+			    2 + strlen(name) + 1 - 1))
 				[[OFNoMemException newWithObject: nil
 							 andSize: len + 1 +
 								  strlen(data) +
@@ -210,8 +193,6 @@ xmlfactory_add2str(char **str, size_t *len, size_t *pos, const char *add)
 								  strlen(name) +
 								  1 - 1]
 				    raise];
-				return NULL;
-			}
 	
 			xml[i++] = '>';
 			memcpy(xml + i, data, strlen(data));
@@ -239,11 +220,9 @@ xmlfactory_add2str(char **str, size_t *len, size_t *pos, const char *add)
 
 	len = strlen(*strs) + 1;
 	
-	if ((ret = malloc(len)) == NULL) {
+	if ((ret = malloc(len)) == NULL)
 		[[OFNoMemException newWithObject: nil
 					 andSize: len] raise];
-		return NULL;
-	}
 
 	memcpy(ret, strs[0], len - 1);
 	pos = len - 1;
@@ -254,7 +233,6 @@ xmlfactory_add2str(char **str, size_t *len, size_t *pos, const char *add)
 			[[OFNoMemException newWithObject: nil
 						 andSize: len + strlen(strs[i])]
 			    raise];
-			return NULL;
 		}
 	}
 

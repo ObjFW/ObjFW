@@ -67,13 +67,10 @@
        andMode: (const char*)mode
 {
 	if ((self = [super init])) {
-		if ((fp = fopen(path, mode)) == NULL) {
+		if ((fp = fopen(path, mode)) == NULL)
 			[[OFOpenFileFailedException newWithObject: self
 							  andPath: path
 							  andMode: mode] raise];
-			[self free];
-			return nil;
-		}
 	}
 	return self;
 }
@@ -109,7 +106,7 @@
 	uint8_t	*ret;
 
 	ret = [self getMemForNItems: nitems
-			   withSize: size];
+			     ofSize: size];
 
 	@try {
 		[self readIntoBuffer: ret
