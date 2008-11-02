@@ -9,26 +9,34 @@
  * the packaging of this file.
  */
 
+#import <stdio.h>
+#import <string.h>
+
 #import "OFArray.h"
 
 #import "OFExceptions.h"
 #import "OFMacros.h"
 
 @implementation OFArray
++ newWithItemSize: (size_t)is
+{
+	return [[OFArray alloc] initWithItemSize: is];
+}
+
 - initWithItemSize: (size_t)is
 {
 	if ((self = [super init])) {
 		data = NULL;
 		itemsize = is;
-		size = 0;
+		items = 0;
 	}
 
 	return self;
 }
 
-- (size_t)size
+- (size_t)items
 {
-	return size;
+	return items;
 }
 
 - (size_t)itemsize
@@ -38,33 +46,57 @@
 
 - (void*)item: (size_t)item
 {
-	/* FIXME */
-	OF_NOT_IMPLEMENTED(NULL)
+	if (item >= items)
+		/* FIXME: Maybe OFOutOfRangeException would be better? */
+		[[OFOverflowException newWithObject: self] raise];
+
+	return data + item * itemsize;
 }
 
 - (void*)last
 {
-	/* FIXME */
-	OF_NOT_IMPLEMENTED(NULL)
+	return data + (items - 1) * itemsize;
 }
 
 - add: (void*)item
 {
-	return [self addNItems: 1
-		    fromCArray: item];
+	data = [self resizeMem: data
+		      toNItems: items + 1
+			ofSize: itemsize];
+
+	memcpy(data + items++ * itemsize, item, itemsize);
+
+	return self;
 }
 
 - addNItems: (size_t)nitems
  fromCArray: (void*)carray
 {
-	/* FIXME */
-	OF_NOT_IMPLEMENTED(self)
+	if (nitems > SIZE_MAX - items)
+		[[OFOverflowException newWithObject: self] raise];
+
+	data = [self resizeMem: data
+		      toNItems: items + nitems
+			ofSize: itemsize];
+
+	memcpy(data + items * itemsize, carray, nitems * itemsize);
+	items += nitems;
+
+	return self;
 }
 
-- removeLastNItems: (size_t)nitems
+- removeNItems: (size_t)nitems
 {
-	/* FIXME */
-	OF_NOT_IMPLEMENTED(self)
+	if (nitems > items)
+		[[OFOverflowException newWithObject: self] raise];
+
+	data = [self resizeMem: data
+		      toNItems: items - nitems
+			ofSize: itemsize];
+
+	items -= nitems;
+
+	return self;
 }
 @end
 
@@ -72,7 +104,7 @@
 - initWithSize: (size_t)is
 {
 	if ((self = [super init]))
-		realsize = 0;
+		size = 0;
 
 	return self;
 }
@@ -84,7 +116,7 @@
 	OF_NOT_IMPLEMENTED(self)
 }
 
-- removeLastNItems: (size_t)nitems
+- removeNItems: (size_t)nitems
 {
 	/* FIXME */
 	OF_NOT_IMPLEMENTED(self)
