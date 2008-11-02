@@ -11,17 +11,16 @@
 
 #import <stdio.h>
 #import <stdlib.h>
-#import <stdbool.h>
 
 #import "OFObject.h"
 #import "OFExceptions.h"
 
 #define CATCH_EXCEPTION(code, exception)		\
-	caught = false;					\
+	caught = NO;					\
 	@try {						\
 		code;					\
 	} @catch (exception *e) {			\
-		caught = true;				\
+		caught = YES;				\
 		puts("CAUGHT! Error string was:");	\
 		fputs([e cString], stdout);		\
 		puts("Resuming...");			\
@@ -35,7 +34,7 @@ int
 main()
 {
 	OFObject *obj = [OFObject new];
-	bool caught;
+	BOOL caught;
 	void *p, *q, *r;
 
 	/* Test freeing memory not allocated by obj */

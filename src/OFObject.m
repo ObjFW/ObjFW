@@ -49,19 +49,20 @@
 {
 	struct __ofobject_allocated_mem *iter;
 
+	if (size == 0)
+		return NULL;
+
 	if ((iter = malloc(sizeof(struct __ofobject_allocated_mem))) == NULL) {
 		[[OFNoMemException newWithObject: self
 					andSize: sizeof(struct
 						     __ofobject_allocated_mem)
 		    ] raise];
-		return NULL;
 	}
 
 	if ((iter->ptr = malloc(size)) == NULL) {
 		free(iter);
 		[[OFNoMemException newWithObject: self
 					andSize: size] raise];
-		return NULL;
 	}
 
 	iter->next = NULL;
@@ -79,6 +80,9 @@
 		  ofSize: (size_t)size
 {
 	size_t memsize;
+	
+	if (nitems == 0 || size == 0)
+		return NULL;
 
 	if (size > SIZE_MAX / nitems)
 		[[OFOverflowException newWithObject: self] raise];
@@ -94,6 +98,11 @@
 
 	if (ptr == NULL)
 		return [self getMemWithSize: size];
+
+	if (size == 0) {
+		[self freeMem: ptr];
+		return NULL;
+	}
 
 	for (iter = __mem_pool; iter != NULL; iter = iter->prev) {
 		if (iter->ptr == ptr) {
@@ -117,6 +126,15 @@
 {
 	size_t memsize;
 
+	if (ptr == NULL)
+		return [self getMemForNItems: nitems
+				      ofSize: size];
+	
+	if (nitems == 0 || size == 0) {
+		[self freeMem: ptr];
+		return NULL;
+	}
+
 	if (size > SIZE_MAX / nitems)
 		[[OFOverflowException newWithObject: self] raise];
 
@@ -136,7 +154,7 @@
 			if (iter->next != NULL)
 				iter->next->prev = iter->prev;
 			if (__mem_pool == iter)
-				__mem_pool = NULL;
+				__mem_pool = iter->prev;
 
 			free(iter);
 			free(ptr);
