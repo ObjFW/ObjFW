@@ -44,6 +44,11 @@
 	return itemsize;
 }
 
+- (void*)data
+{
+	return data;
+}
+
 - (void*)item: (size_t)item
 {
 	if (item >= items)

@@ -23,6 +23,7 @@
 + newWithItemSize: (size_t)is;
 - initWithItemSize: (size_t)is;
 - (size_t)items;
+- (void*)data;
 - (void*)item: (size_t)item;
 - (void*)last;
 - add: (void*)item;

@@ -31,6 +31,8 @@
 		return 1;				\
 	}
 
+const char *str = "Hallo!";
+
 int
 main()
 {
@@ -98,5 +100,22 @@ main()
 	CATCH_EXCEPTION([a item: [a items]], OFOverflowException);
 
 	[a free];
+
+	puts("Creating new array and using it to build a string...");
+	a = [OFArray newWithItemSize: 1];
+
+	for (i = 0; i < strlen(str); i++)
+		[a add: (void*)(str + i)];
+	[a add: ""];
+
+	if (!strcmp([a data], str))
+		puts("Built string matches!");
+	else {
+		puts("Built string does not match!");
+		abort();
+	}
+
+	[a free];
+
 	return 0;
 }
