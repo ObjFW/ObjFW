@@ -93,14 +93,47 @@
 - removeNItems: (size_t)nitems;
 @end
 
+/**
+ * The OFBigArray class is nearly the same as the OFArray class, but it
+ * allocates the memory rather in pages than in bytes.
+ * This is faster, but needs more memory. It is especially useful if you want
+ * to store large hunks of data.
+ */
 @interface OFBigArray: OFArray
 {
 	size_t size;
 }
 
+/**
+ * Creates a new OFBigArray whose items all have the same size.
+ *
+ * \param is The size of each element in the OFBigArray
+ * \return A new allocated and initialized OFBigArray
+ */
 + newWithItemSize: (size_t)is;
+
+/**
+ * Initializes an already allocated OFBigArray whose items all have the same
+ * size.
+ * 
+ * \param is The size of each element in the OFBigArray
+ * \return An initialized OFBigArray
+ */
 - initWithItemSize: (size_t)is;
+
+/**
+ * Adds items from a C array to the OFBigArray
+ *
+ * \param nitems The number of items to add
+ * \param carray A C array containing the items to add
+ */
 - addNItems: (size_t)nitems
  fromCArray: (void*)carray;
+
+/**
+ * Removes the last items from the OFBigArray
+ *
+ * \param nitems The number of items to remove
+ */
 - removeNItems: (size_t)nitems;
 @end

@@ -18,20 +18,72 @@ struct __ofobject_allocated_mem {
 	struct __ofobject_allocated_mem *next;
 };
 
+/**
+ * The OFObject class is the base class for all other classes inside ObjFW.
+ */
 @interface OFObject: Object
 {
 	struct __ofobject_allocated_mem *__mem_pool;
 }
 
+/**
+ * Initialize the already allocated object.
+ * Also sets up the memory pool for the object.
+ *
+ * \return An initialized object
+ */
 - init;
+
+/**
+ * Allocate memory and store it in the objects memory pool so it can be free'd
+ * automatically when the object is free'd.
+ *
+ * \param size The size of the memory to allocate
+ * \return A pointer to the allocated memory
+ */
 - (void*)getMemWithSize: (size_t)size;
+
+/**
+ * Allocate memory for a specified number of items and store it in the objects
+ * memory pool so it can be free'd automatically when the object is free'd.
+ *
+ * \param nitems The number of items to allocate
+ * \param size The size of each item to allocate
+ * \return A pointer to the allocated memory
+ */
 - (void*)getMemForNItems: (size_t)nitems
 		  ofSize: (size_t)size;
+
+/**
+ * Resize memory in the memory pool to a specified size.
+ *
+ * \param size The new size for the memory chunk
+ * \return A pointer to the resized memory chunk
+ */
 - (void*)resizeMem: (void*)ptr
 	    toSize: (size_t)size;
+
+/**
+ * Resize memory in the memory pool to a specific number of items of a
+ * specified size.
+ *
+ * \param nitems The number of items to resize to
+ * \param size The size of each item to resize to
+ * \return A pointer to the resized memory chunk
+ */
 - (void*)resizeMem: (void*)ptr
 	  toNItems: (size_t)nitems
 	    ofSize: (size_t)size;
+
+/**
+ * Frees allocated memory and removes it from the memory pool.
+ *
+ * \param ptr A pointer to the allocated memory
+ */
 - freeMem: (void*)ptr;
+
+/**
+ * Frees the object and also frees all memory allocated via its memory pool.
+ */
 - free;
 @end
