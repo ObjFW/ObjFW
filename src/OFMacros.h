@@ -9,6 +9,7 @@
  * the packaging of this file.
  */
 
+/* Return is only to make the compiler happy - it is never reached */
 #define OF_NOT_IMPLEMENTED(ret)						\
 	[[OFNotImplementedException newWithObject: self			\
 				      andSelector: _cmd] raise];	\

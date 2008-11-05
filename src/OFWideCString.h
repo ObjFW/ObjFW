@@ -14,17 +14,59 @@
 
 #import "OFString.h"
 
+/**
+ * An OFString using a wide C string as internal storage.
+ */
 @interface OFWideCString: OFString
 {
 	wchar_t	*string;
 	size_t  length;
 }
 
+/**
+ * Initializes an already allocated OFWideCString.
+ * 
+ * \param str A wide C string to initialize the OFWideCString with.
+ * \returns An initialized OFWideCString
+ */
 - initAsWideCString: (wchar_t*)str;
+
+/**
+ * \return The OFWideCString as a wide C string.
+ */
 - (wchar_t*)wcString;
+
+/**
+ * \return The length of the OFWideCString.
+ */
 - (size_t)length;
+
+/**
+ * Clones the OFWideCString, creating a new one.
+ * 
+ * \return A copy of the OFWideCString
+ */
 - (OFString*)clone;
+
+/**
+ * Compares the OFWideCString to another OFString.
+ *
+ * \param str An OFString in a compatible type to compare with
+ * \return An integer which is the result of the comparison, see wcscmp.
+ */
 - (int)compareTo: (OFString*)str;
+
+/**
+ * Append another OFString to the OFWideCString.
+ *
+ * \param str An OFString in a compatible type to append
+ */
 - append: (OFString*)str;
+
+/**
+ * Append a wide C string to the OFWideCString.
+ *
+ * \param str A wide C string to append
+ */
 - appendWideCString: (const wchar_t*)str;
 @end

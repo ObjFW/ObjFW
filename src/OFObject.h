@@ -57,6 +57,7 @@ struct __ofobject_allocated_mem {
 /**
  * Resize memory in the memory pool to a specified size.
  *
+ * \param ptr A pointer to the already allocated memory
  * \param size The new size for the memory chunk
  * \return A pointer to the resized memory chunk
  */
@@ -67,6 +68,7 @@ struct __ofobject_allocated_mem {
  * Resize memory in the memory pool to a specific number of items of a
  * specified size.
  *
+ * \param ptr A pointer to the already allocated memory
  * \param nitems The number of items to resize to
  * \param size The size of each item to resize to
  * \return A pointer to the resized memory chunk
