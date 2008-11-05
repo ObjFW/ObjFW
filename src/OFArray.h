@@ -77,7 +77,7 @@
 - add: (void*)item;
 
 /**
- * Adds items from a C array to the OFArray
+ * Adds items from a C array to the OFArray.
  *
  * \param nitems The number of items to add
  * \param carray A C array containing the items to add
@@ -86,7 +86,7 @@
  fromCArray: (void*)carray;
 
 /**
- * Removes the last items from the OFArray
+ * Removes a specified amount of the last items from the OFArray.
  *
  * \param nitems The number of items to remove
  */
@@ -122,7 +122,7 @@
 - initWithItemSize: (size_t)is;
 
 /**
- * Adds items from a C array to the OFBigArray
+ * Adds items from a C array to the OFBigArray.
  *
  * \param nitems The number of items to add
  * \param carray A C array containing the items to add
@@ -131,7 +131,7 @@
  fromCArray: (void*)carray;
 
 /**
- * Removes the last items from the OFBigArray
+ * Removes a specified amount of the last items from the OFBigArray.
  *
  * \param nitems The number of items to remove
  */

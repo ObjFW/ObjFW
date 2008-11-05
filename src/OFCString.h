@@ -25,18 +25,18 @@
 /**
  * Initializes an already allocated OFCString.
  * 
- * \param str A C string to initialize the OFCString with.
- * \returns An initialized OFCString
+ * \param str A C string to initialize the OFCString with
+ * \return An initialized OFCString
  */
 - initAsCString: (char*)str;
 
 /**
- * \return The OFCString as a C string.
+ * \return The OFCString as a C string
  */
 - (char*)cString;
 
 /**
- * \return The length of the OFCString.
+ * \return The length of the OFCString
  */
 - (size_t)length;
 
@@ -51,7 +51,7 @@
  * Compares the OFCString to another OFString.
  *
  * \param str An OFString in a compatible type to compare with
- * \return An integer which is the result of the comparison, see strcmp.
+ * \return An integer which is the result of the comparison, see strcmp
  */
 - (int)compareTo: (OFString*)str;
 

@@ -23,18 +23,18 @@
 /**
  * Initializes an already allocated OFConstCString.
  * 
- * \param str A constant C string to initialize the OFConstCString with.
- * \returns An initialized OFConstCString
+ * \param str A constant C string to initialize the OFConstCString with
+ * \return An initialized OFConstCString
  */
 - initAsConstCString: (const char*)str;
 
 /**
- * \return The OFConstCString as a constant C string.
+ * \return The OFConstCString as a constant C strin
  */
 - (const char*)cString;
 
 /**
- * \return The length of the OFConstCString.
+ * \return The length of the OFConstCString
  */
 - (size_t)length;
 
@@ -49,7 +49,7 @@
  * Compares the OFConstCString to another OFString.
  *
  * \param str An OFString in a compatible type to compare with
- * \return An integer which is the result of the comparison, see strcmp.
+ * \return An integer which is the result of the comparison, see strcmp
  */
 - (int)compareTo: (OFString*)str;
 @end

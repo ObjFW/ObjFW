@@ -26,18 +26,18 @@
 /**
  * Initializes an already allocated OFWideCString.
  * 
- * \param str A wide C string to initialize the OFWideCString with.
- * \returns An initialized OFWideCString
+ * \param str A wide C string to initialize the OFWideCString with
+ * \return An initialized OFWideCString
  */
 - initAsWideCString: (wchar_t*)str;
 
 /**
- * \return The OFWideCString as a wide C string.
+ * \return The OFWideCString as a wide C string
  */
 - (wchar_t*)wcString;
 
 /**
- * \return The length of the OFWideCString.
+ * \return The length of the OFWideCString
  */
 - (size_t)length;
 
@@ -52,7 +52,7 @@
  * Compares the OFWideCString to another OFString.
  *
  * \param str An OFString in a compatible type to compare with
- * \return An integer which is the result of the comparison, see wcscmp.
+ * \return An integer which is the result of the comparison, see wcscmp
  */
 - (int)compareTo: (OFString*)str;
 

@@ -26,18 +26,18 @@
  * Initializes an already allocated OFConstWideCString.
  * 
  * \param str A constant wide C string to initialize the OFConstWideCString
- * 	  with.
- * \returns An initialized OFConstWideCString
+ * 	  with
+ * \return An initialized OFConstWideCString
  */
-- initAsConstWideCString: (const wchar_t*)wstr;
+- initAsConstWideCString: (const wchar_t*)str;
 
 /**
- * \return The OFConstWideCString as a constant wide C string.
+ * \return The OFConstWideCString as a constant wide C string
  */
 - (const wchar_t*)wcString;
 
 /**
- * \return The length of the OFConstWideCString.
+ * \return The length of the OFConstWideCString
  */
 - (size_t)length;
 
@@ -52,7 +52,7 @@
  * Compares the OFConstWideCString to another OFString.
  *
  * \param str An OFString in a compatible type to compare with
- * \return An integer which is the result of the comparison, see wcscmp.
+ * \return An integer which is the result of the comparison, see wcscmp
  */
 - (int)compareTo: (OFString*)str;
 @end
