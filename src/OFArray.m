@@ -52,8 +52,7 @@
 - (void*)item: (size_t)item
 {
 	if (item >= items)
-		/* FIXME: Maybe OFOutOfRangeException would be better? */
-		[[OFOverflowException newWithObject: self] raise];
+		[[OFOutOfRangeException newWithObject: self] raise];
 
 	return data + item * itemsize;
 }
@@ -78,7 +77,7 @@
  fromCArray: (void*)carray
 {
 	if (nitems > SIZE_MAX - items)
-		[[OFOverflowException newWithObject: self] raise];
+		[[OFOutOfRangeException newWithObject: self] raise];
 
 	data = [self resizeMem: data
 		      toNItems: items + nitems
@@ -93,7 +92,7 @@
 - removeNItems: (size_t)nitems
 {
 	if (nitems > items)
-		[[OFOverflowException newWithObject: self] raise];
+		[[OFOutOfRangeException newWithObject: self] raise];
 
 	data = [self resizeMem: data
 		      toNItems: items - nitems

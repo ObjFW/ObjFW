@@ -85,7 +85,7 @@
 		return NULL;
 
 	if (size > SIZE_MAX / nitems)
-		[[OFOverflowException newWithObject: self] raise];
+		[[OFOutOfRangeException newWithObject: self] raise];
 
 	memsize = nitems * size;
 	return [self getMemWithSize: memsize];
@@ -136,7 +136,7 @@
 	}
 
 	if (size > SIZE_MAX / nitems)
-		[[OFOverflowException newWithObject: self] raise];
+		[[OFOutOfRangeException newWithObject: self] raise];
 
 	memsize = nitems * size;
 	return [self resizeMem: ptr

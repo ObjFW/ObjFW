@@ -45,7 +45,7 @@ main()
 	a = [OFArray newWithItemSize: 4096];
 	CATCH_EXCEPTION([a addNItems: SIZE_MAX
 			  fromCArray: NULL],
-	    OFOverflowException)
+	    OFOutOfRangeException)
 
 	puts("Trying to add something after that error...");
 	p = [a getMemWithSize: 4096];
@@ -94,10 +94,10 @@ main()
 	}
 
 	puts("Trying to remove more data than we added...");
-	CATCH_EXCEPTION([a removeNItems: [a items] + 1], OFOverflowException);
+	CATCH_EXCEPTION([a removeNItems: [a items] + 1], OFOutOfRangeException);
 
 	puts("Trying to access an index that does not exist...");
-	CATCH_EXCEPTION([a item: [a items]], OFOverflowException);
+	CATCH_EXCEPTION([a item: [a items]], OFOutOfRangeException);
 
 	[a free];
 

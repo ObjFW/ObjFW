@@ -170,10 +170,10 @@
 }
 @end
 
-@implementation OFOverflowException
+@implementation OFOutOfRangeException
 + newWithObject: (id)obj
 {
-	return [[OFOverflowException alloc] initWithObject: obj];
+	return [[OFOutOfRangeException alloc] initWithObject: obj];
 }
 
 - initWithObject: (id)obj
@@ -186,7 +186,7 @@
 	if (string != NULL)
 		return string;
 
-	asprintf(&string, "ERROR: Overflow in object of class %s!\n",
+	asprintf(&string, "ERROR: Value out of range in object of class %s!\n",
 	    object != nil ? [object name] : "(null)");
 
 	return string;

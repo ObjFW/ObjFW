@@ -66,7 +66,7 @@
 - (void*)pointer;
 @end
 
-@interface OFOverflowException: OFException
+@interface OFOutOfRangeException: OFException
 + newWithObject: (id)obj;
 - initWithObject: (id)obj;
 @end
