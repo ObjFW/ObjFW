@@ -105,7 +105,12 @@
 @end
 
 @implementation OFBigArray
-- initWithSize: (size_t)is
++ newWithItemSize: (size_t)is
+{
+	return [[OFBigArray alloc] initWithItemSize: is];
+}
+
+- initWithItemSize: (size_t)is
 {
 	if ((self = [super init]))
 		size = 0;

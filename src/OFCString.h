@@ -13,17 +13,59 @@
 
 #import "OFString.h"
 
+/**
+ * An OFString using a C string as internal storage.
+ */
 @interface OFCString: OFString
 {
 	char   *string;
 	size_t length;
 }
 
+/**
+ * Initializes an already allocated OFCString.
+ * 
+ * \param str A C string to initialize the OFCString with.
+ * \returns An initialized OFCString
+ */
 - initAsCString: (char*)str;
+
+/**
+ * \return The OFCString as a C string.
+ */
 - (char*)cString;
+
+/**
+ * \return The length of the OFCString.
+ */
 - (size_t)length;
+
+/**
+ * Clones the OFCString, creating a new one.
+ * 
+ * \return A copy of the OFCString
+ */
 - (OFString*)clone;
+
+/**
+ * Compares the OFCString to another OFString.
+ *
+ * \param str An OFString in a compatible type to compare with
+ * \return An integer which is the result of the comparison, see strcmp.
+ */
 - (int)compareTo: (OFString*)str;
-- (OFString*)append: (OFString*)str;
-- (OFString*)appendCString: (const char*)str;
+
+/**
+ * Append another OFString to the OFCString.
+ *
+ * \param str An OFString in a compatible type to append
+ */
+- append: (OFString*)str;
+
+/**
+ * Append a C string to the OFCString.
+ *
+ * \param str A C string to append
+ */
+- appendCString: (const char*)str;
 @end

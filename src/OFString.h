@@ -26,7 +26,7 @@
 - (OFString*)setTo: (OFString*)str;
 - (OFString*)clone;
 - (int)compareTo: (OFString*)str;
-- (OFString*)append: (OFString*)str;
-- (OFString*)appendCString: (const char*)str;
-- (OFString*)appendWideCString: (const wchar_t*)str;
+- append: (OFString*)str;
+- appendCString: (const char*)str;
+- appendWideCString: (const wchar_t*)str;
 @end

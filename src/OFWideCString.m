@@ -55,12 +55,12 @@
 	return wcscmp(string, [str wcString]);
 }
 
-- (OFString*)append: (OFString*)str
+- append: (OFString*)str
 {
 	return [self appendWideCString: [str wcString]];
 }
 
-- (OFString*)appendWideCString: (const wchar_t*)str
+- appendWideCString: (const wchar_t*)str
 {
 	wchar_t	*newstr;
 	size_t	newlen, strlength;

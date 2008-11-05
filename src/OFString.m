@@ -75,17 +75,17 @@
 	OF_NOT_IMPLEMENTED(0)
 }
 
-- (OFString*)append: (OFString*)str
+- append: (OFString*)str
 {
 	OF_NOT_IMPLEMENTED(nil)
 }
 
-- (OFString*)appendCString: (const char*)str
+- appendCString: (const char*)str
 {
 	OF_NOT_IMPLEMENTED(nil)
 }
 
-- (OFString*)appendWideCString: (const wchar_t*)str
+- appendWideCString: (const wchar_t*)str
 {
 	OF_NOT_IMPLEMENTED(nil)
 }

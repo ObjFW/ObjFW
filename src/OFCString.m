@@ -53,12 +53,12 @@
 	return strcmp(string, [str cString]);
 }
 
-- (OFString*)append: (OFString*)str
+- append: (OFString*)str
 {
 	return [self appendCString: [str cString]];
 }
 
-- (OFString*)appendCString: (const char*)str
+- appendCString: (const char*)str
 {
 	char   *newstr;
 	size_t newlen, strlength;
