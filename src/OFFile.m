@@ -28,39 +28,39 @@
 				    andMode: mode];
 }
 
-+ (int)changeModeOfFile: (const char*)path
++ (BOOL)changeModeOfFile: (const char*)path
 		 toMode: (mode_t)mode
 {
 	// FIXME: On error, throw exception
-	return chmod(path, mode);
+	return (chmod(path, mode) == 0 ? YES : NO);
 }
 
-+ (int)changeOwnerOfFile: (const char*)path
++ (BOOL)changeOwnerOfFile: (const char*)path
 		 toOwner: (uid_t)owner
 		andGroup: (gid_t)group
 {
 	// FIXME: On error, throw exception
-	return chown(path, owner, group);
+	return (chown(path, owner, group) == 0 ? YES : NO);
 }
 
-+ (int)delete: (const char*)path
++ (BOOL)delete: (const char*)path
 {
 	// FIXME: On error, throw exception
-	return unlink(path);
+	return (unlink(path) == 0 ? YES : NO);
 }
 
-+ (int)link: (const char*)src
++ (BOOL)link: (const char*)src
 	 to: (const char*)dest
 {
 	// FIXME: On error, throw exception
-	return link(src, dest);
+	return (link(src, dest) == 0 ? YES : NO);
 }
 
-+ (int)symlink: (const char*)src
++ (BOOL)symlink: (const char*)src
 	    to: (const char*)dest
 {
 	// FIXME: On error, throw exception
-	return symlink(src, dest);
+	return (symlink(src, dest) == 0 ? YES : NO);
 }
 
 - initWithPath: (const char*)path

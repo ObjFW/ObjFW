@@ -39,9 +39,6 @@
  */
 - initWithObject: (id)obj;
 
-/**
- * Frees an OFException and the memory it allocated.
- */
 - free;
 
 /**
@@ -79,7 +76,7 @@
  *
  * \param obj The object which caused the exception
  * \param size The size of the memory that couldn't be allocated
- * \return An initialized new no memory exception
+ * \return An initialized no memory exception
  */
 - initWithObject: (id)obj
 	 andSize: (size_t)size;
@@ -95,75 +92,216 @@
 - (size_t)requestedSize;
 @end
 
+/**
+ * An OFException indicating the requested selector is not implemented.
+ */
 @interface OFNotImplementedException: OFException
 {
 	SEL selector;
 }
 
+/**
+ * Creates a new not impemented exception.
+ *
+ * \param obj The object which caused the exception
+ * \param sel A selector for the function not implemented
+ * \return A new not implemented exception
+ */
 + newWithObject: (id)obj
     andSelector: (SEL)sel;
+
+/**
+ * Initializes an already allocated not implemented exception.
+ *
+ * \param obj The object which caused the exception
+ * \param sel A selector for the function not implemented
+ * \return An initialized not implemented exception
+ */
 - initWithObject: (id)obj
      andSelector: (SEL)sel;
+
+/**
+ * \return An error message for the exception as a C String
+ */
 - (char*)cString;
+
+/**
+ * \return The requested selector that is not implemented
+ */
 - (SEL)selector;
 @end
 
+/**
+ * An OFException indicating the given memory is not part of the object.
+ */
 @interface OFMemNotPartOfObjException: OFException
 {
 	void *pointer;
 }
 
+/**
+ * Creates a new memory not part of object exception.
+ *
+ * \param obj The object which caused the exception
+ * \param ptr A pointer to the memory that is not part of the object
+ * \return A new memory not part of object exception
+ */
 + newWithObject: (id)obj
      andPointer: (void*)ptr;
+
+/**
+ * Initializes an already allocated memory not part of object exception.
+ *
+ * \param obj The object which caused the exception
+ * \param ptr A pointer to the memory that is not part of the object
+ * \return An initialized memory not part of object exception
+ */
 - initWithObject: (id)obj
       andPointer: (void*)ptr;
+
+/**
+ * \return An error message for the exception as a C String
+ */
 - (char*)cString;
+
+/***
+ * \return A pointer to the memory which is not part of the object
+ */
 - (void*)pointer;
 @end
 
+/**
+ * An OFException indicating the given value is out of range. 
+ */
 @interface OFOutOfRangeException: OFException
+/**
+ * Creates a new out of range exception.
+ *
+ * \param obj The object which caused the exception
+ * \return A new out of range exception
+ */
 + newWithObject: (id)obj;
+
+/**
+ * Initializes an already allocated out of range exception.
+ *
+ * \param obj The object which caused the exception
+ * \return An initialized out of range exception
+ */
 - initWithObject: (id)obj;
 @end
 
+/**
+ * An OFException indicating the file couldn't be opened.
+ */
 @interface OFOpenFileFailedException: OFException
 {
 	char *path;
 	char *mode;
 }
 
+/**
+ * Creates a new open file failed exception.
+ *
+ * \param obj The object which caused the exception
+ * \param p A C string of the path to the file tried to open
+ * \param m A C string of the mode in which the file should have been opened
+ * \return A new open file failed exception
+ */
 + newWithObject: (id)obj
 	andPath: (const char*)p
 	andMode: (const char*)m;
+
+/**
+ * Initializes an already allocated open file failed exception.
+ *
+ * \param obj The object which caused the exception
+ * \param p A C string of the path to the file which couldn't be opened
+ * \param m A C string of the mode in which the file should have been opened
+ * \return An initialized open file failed exception
+ */
 - initWithObject: (id)obj
 	 andPath: (const char*)p
 	 andMode: (const char*)m;
+
 - free;
+
+/**
+ * \return An error message for the exception as a C String
+ */
 - (char*)cString;
+
+/**
+ * \return A C string of the path to the file which couldn't be opened
+ */
 - (char*)path;
+
+/**
+ * \return A C string of the mode in which the file should have been opened
+ */
 - (char*)mode;
 @end
 
+/**
+ * An OFException indicating a read or write to the file failed.
+ */
 @interface OFReadOrWriteFailedException: OFException
 {
 	size_t req_size;
 	size_t req_items;
 }
 
+/**
+ * Creates a new read or write failed exception.
+ *
+ * \param obj The object which caused the exception
+ * \param size The requested size of the data that couldn't be read / written
+ * \param nitems The requested number of items that couldn't be read / written
+ * \return A new open file failed exception
+ */
 + newWithObject: (id)obj
 	andSize: (size_t)size
       andNItems: (size_t)nitems;
+
+/**
+ * Initializes an already allocated read or write failed exception.
+ *
+ * \param obj The object which caused the exception
+ * \param size The requested size of the data that couldn't be read / written
+ * \param nitems The requested number of items that couldn't be read / written
+ * \return A new open file failed exception
+ */
 - initWithObject: (id)obj
 	 andSize: (size_t)size
        andNItems: (size_t)nitems;
+
+/**
+ * \return The requested size of the data that couldn't be read / written
+ */
 - (size_t)requestedSize;
+
+/**
+ * \return The requested number of items that coudln't be read / written
+ */
 - (size_t)requestedItems;
 @end
 
+/**
+ * An OFException indicating a read to the file failed.
+ */
 @interface OFReadFailedException: OFReadOrWriteFailedException
+/**
+ * \return An error message for the exception as a C String
+ */
 - (char*)cString;
 @end
 
+/**
+ * An OFException indicating a write to the file failed.
+ */
 @interface OFWriteFailedException: OFReadOrWriteFailedException
+/**
+ * \return An error message for the exception as a C String
+ */
 - (char*)cString;
 @end
