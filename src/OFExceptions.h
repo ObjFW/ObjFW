@@ -164,7 +164,7 @@
  */
 - (char*)cString;
 
-/***
+/**
  * \return A pointer to the memory which is not part of the object
  */
 - (void*)pointer;
@@ -173,7 +173,7 @@
 /**
  * An OFException indicating the given value is out of range. 
  */
-@interface OFOutOfRangeException: OFException
+@interface OFOutOfRangeException: OFException {}
 /**
  * Creates a new out of range exception.
  *
@@ -289,7 +289,7 @@
 /**
  * An OFException indicating a read to the file failed.
  */
-@interface OFReadFailedException: OFReadOrWriteFailedException
+@interface OFReadFailedException: OFReadOrWriteFailedException {}
 /**
  * \return An error message for the exception as a C String
  */
@@ -299,7 +299,7 @@
 /**
  * An OFException indicating a write to the file failed.
  */
-@interface OFWriteFailedException: OFReadOrWriteFailedException
+@interface OFWriteFailedException: OFReadOrWriteFailedException {}
 /**
  * \return An error message for the exception as a C String
  */

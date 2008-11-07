@@ -58,17 +58,17 @@
 	return last;
 }
 
-- add: (OFListObject*)ptr
+- add: (OFListObject*)obj
 {
 	if (!first || !last) {
-		first = last = ptr;
+		first = last = obj;
 		return self;
 	}
 
-	[ptr setPrev: last];
-	[last setNext: ptr];
+	[obj setPrev: last];
+	[last setNext: obj];
 
-	last = ptr;
+	last = obj;
 
 	return self;
 }

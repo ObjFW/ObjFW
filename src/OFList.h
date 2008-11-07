@@ -12,6 +12,9 @@
 #import "OFObject.h"
 #import "OFListObject.h"
 
+/**
+ * The OFList class provides easy to use double-linked lists.
+ */
 @interface OFList: OFObject
 {
 	OFListObject *first;
@@ -19,10 +22,38 @@
 }
 
 - init;
+
+/**
+ * Frees the OFList and all OFListObjects, but not the data they contian.
+ */
 - free;
+
+/**
+ * Frees the list and the data included in all OFListObjects it contains.
+ */
 - freeIncludingData;
+
+/**
+ * \returns The first OFListObject in the OFList
+ */
 - (OFListObject*)first;
+
+/**
+ * \returns The last OFListObject in the OFList
+ */
 - (OFListObject*)last;
-- add: (OFListObject*)ptr;
+
+/**
+ * Adds a new OFListObject to the OFList.
+ *
+ * \param obj An OFListObject
+ */
+- add: (OFListObject*)obj;
+
+/**
+ * Creates a new OFListObject and adds it to the OFList.
+ *
+ * \param ptr Pointer to the data for the OFListObject which will be added
+ */
 - addNew: (void*)ptr;
 @end

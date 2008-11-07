@@ -52,15 +52,15 @@
 	return prev;
 }
 
-- setNext: (OFListObject*)ptr
+- setNext: (OFListObject*)obj
 {
-	next = ptr;
+	next = obj;
 	return self;
 }
 
-- setPrev: (OFListObject*)ptr
+- setPrev: (OFListObject*)obj
 {
-	prev = ptr;
+	prev = obj;
 	return self;
 }
 @end

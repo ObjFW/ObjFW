@@ -17,7 +17,7 @@
 /**
  * The OFString class can store and modify string of different types.
  */
-@interface OFString: OFObject
+@interface OFString: OFObject {}
 /**
  * \param str A constant C string from which the new OFConstCString will be
  *	  created
