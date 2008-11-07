@@ -135,7 +135,7 @@ static size_t pagesize = 0;
 	if (nitems > SIZE_MAX - items || items + nitems > SIZE_MAX / itemsize)
 		[[OFOutOfRangeException newWithObject: self] raise];
 
-	nsize = (((items + nitems) * itemsize) / pagesize) + 1;
+	nsize = ((items + nitems) * itemsize + pagesize - 1) / pagesize;
 
 	if (size != nsize)
 		data = [self resizeMem: data
@@ -155,7 +155,7 @@ static size_t pagesize = 0;
 	if (nitems > items)
 		[[OFOutOfRangeException newWithObject: self] raise];
 
-	nsize = (((items - nitems) * itemsize) / pagesize) + 1;
+	nsize = ((items - nitems) * itemsize + pagesize - 1) / pagesize;
 
 	if (size != nsize)
 		data = [self resizeMem: data
