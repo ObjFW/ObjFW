@@ -1,6 +1,7 @@
 Tests for OFFile.
 
 OFArray
+OFDirectory
 OFDictionary
 OFSortedArray
 OFSocket

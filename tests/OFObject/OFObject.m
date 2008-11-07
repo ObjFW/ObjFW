@@ -78,14 +78,14 @@ main()
 	puts("Got all 3!");
 	
 	puts("Trying to allocate more memory than possible...");
-	CATCH_EXCEPTION(p = [obj getMemWithSize: 4294967295U], OFNoMemException)
+	CATCH_EXCEPTION(p = [obj getMemWithSize: SIZE_MAX], OFNoMemException)
 
 	puts("Allocating 1 byte...");
 	p = [obj getMemWithSize: 1];
 
 	puts("Trying to resize that 1 byte to more than possible...");
 	CATCH_EXCEPTION(p = [obj resizeMem: p
-				    toSize: 4294967295U],
+				    toSize: SIZE_MAX],
 	    OFNoMemException)
 
 	puts("Trying to resize NULL to 1024 bytes...");

@@ -11,11 +11,14 @@
 
 #import <stdio.h>
 #import <string.h>
+#import <unistd.h>
 
 #import "OFArray.h"
 
 #import "OFExceptions.h"
 #import "OFMacros.h"
+
+static size_t pagesize = 0;
 
 @implementation OFArray
 + newWithItemSize: (size_t)is
@@ -64,6 +67,9 @@
 
 - add: (void*)item
 {
+	if (SIZE_MAX - items < 1)
+		[[OFOutOfRangeException newWithObject: self] raise];
+
 	data = [self resizeMem: data
 		      toNItems: items + 1
 			ofSize: itemsize];
@@ -112,7 +118,10 @@
 
 - initWithItemSize: (size_t)is
 {
-	if ((self = [super init]))
+	if (pagesize == 0)
+		pagesize = getpagesize();
+
+	if ((self = [super initWithItemSize: is]))
 		size = 0;
 
 	return self;
@@ -121,13 +130,40 @@
 - addNItems: (size_t)nitems
  fromCArray: (void*)carray
 {
-	/* FIXME */
-	OF_NOT_IMPLEMENTED(self)
+	size_t nsize;
+
+	if (nitems > SIZE_MAX - items || items + nitems > SIZE_MAX / itemsize)
+		[[OFOutOfRangeException newWithObject: self] raise];
+
+	nsize = (((items + nitems) * itemsize) / pagesize) + 1;
+
+	if (size != nsize)
+		data = [self resizeMem: data
+				toSize: nsize];
+
+	memcpy(data + items * itemsize, carray, nitems * itemsize);
+	items += nitems;
+	size = nsize;
+
+	return self;
 }
 
 - removeNItems: (size_t)nitems
 {
-	/* FIXME */
-	OF_NOT_IMPLEMENTED(self)
+	size_t nsize;
+
+	if (nitems > items)
+		[[OFOutOfRangeException newWithObject: self] raise];
+
+	nsize = (((items - nitems) * itemsize) / pagesize) + 1;
+
+	if (size != nsize)
+		data = [self resizeMem: data
+				toSize: nsize];
+
+	items -= nitems;
+	size = nsize;
+
+	return self;
 }
 @end

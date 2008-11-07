@@ -84,7 +84,7 @@
 	if (nitems == 0 || size == 0)
 		return NULL;
 
-	if (size > SIZE_MAX / nitems)
+	if (nitems > SIZE_MAX / size)
 		[[OFOutOfRangeException newWithObject: self] raise];
 
 	memsize = nitems * size;
@@ -135,7 +135,7 @@
 		return NULL;
 	}
 
-	if (size > SIZE_MAX / nitems)
+	if (nitems > SIZE_MAX / size)
 		[[OFOutOfRangeException newWithObject: self] raise];
 
 	memsize = nitems * size;
