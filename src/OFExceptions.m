@@ -86,7 +86,7 @@
 	if (string != NULL)
 		return string;
 
-	asprintf(&string, "ERROR: Could not allocate %zu bytes for object of"
+	asprintf(&string, "ERROR: Could not allocate %zu bytes for object of "
 	    "class %s!\n", req_size, object != nil ? [object name] : "(null)");
 
 	return string;

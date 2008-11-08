@@ -25,20 +25,22 @@
 @implementation OFObject
 - init
 {
-	if ((self = [super init]) != nil)
-		__mem_pool = NULL;
+	if ((self = [super init]) != nil) {
+		__memchunks = NULL;
+		__memchunks_size = 0;
+	}
 	return self;
 }
 
 - free
 {
-	struct __ofobject_allocated_mem *iter, *iter2;
+	size_t i;
 
-	for (iter = __mem_pool; iter != NULL; iter = iter2) {
-		iter2 = iter->prev;
-		free(iter->ptr);
-		free(iter);
-	}
+	for (i = 0; i < __memchunks_size; i++)
+		free(__memchunks[i]);
+
+	if (__memchunks != NULL)
+		free(__memchunks);
 
 	free(self);
 
@@ -47,33 +49,34 @@
 
 - (void*)getMemWithSize: (size_t)size
 {
-	struct __ofobject_allocated_mem *iter;
+	void *ptr, **memchunks;
+	size_t memchunks_size;
 
 	if (size == 0)
 		return NULL;
 
-	if ((iter = malloc(sizeof(struct __ofobject_allocated_mem))) == NULL) {
+	memchunks_size = __memchunks_size + 1;
+
+	if (SIZE_MAX - __memchunks_size == 0 ||
+	    memchunks_size > SIZE_MAX / sizeof(void*))
+		[[OFOutOfRangeException newWithObject: self] raise];
+	
+	if ((memchunks = realloc(__memchunks,
+	    memchunks_size * sizeof(void*))) == NULL)
 		[[OFNoMemException newWithObject: self
-					andSize: sizeof(struct
-						     __ofobject_allocated_mem)
-		    ] raise];
+					 andSize: memchunks_size] raise];
+
+	if ((ptr = malloc(size)) == NULL) {
+		free(memchunks);
+		[[OFNoMemException newWithObject: self
+					 andSize: size] raise];
 	}
 
-	if ((iter->ptr = malloc(size)) == NULL) {
-		free(iter);
-		[[OFNoMemException newWithObject: self
-					andSize: size] raise];
-	}
+	__memchunks = memchunks;
+	__memchunks[__memchunks_size] = ptr;
+	__memchunks_size = memchunks_size;
 
-	iter->next = NULL;
-	iter->prev = __mem_pool;
-
-	if (__mem_pool != NULL)
-		__mem_pool->next = iter;
-
-	__mem_pool = iter;
-
-	return iter->ptr;
+	return ptr;
 }
 
 - (void*)getMemForNItems: (size_t)nitems
@@ -94,7 +97,7 @@
 - (void*)resizeMem: (void*)ptr
 	    toSize: (size_t)size
 {
-	struct __ofobject_allocated_mem *iter;
+	size_t i;
 
 	if (ptr == NULL)
 		return [self getMemWithSize: size];
@@ -104,13 +107,13 @@
 		return NULL;
 	}
 
-	for (iter = __mem_pool; iter != NULL; iter = iter->prev) {
-		if (iter->ptr == ptr) {
-			if ((ptr = realloc(iter->ptr, size)) == NULL)
+	for (i = 0; i < __memchunks_size; i++) {
+		if (__memchunks[i] == ptr) {
+			if ((ptr = realloc(ptr, size)) == NULL)
 				[[OFNoMemException newWithObject: self
 							 andSize: size] raise];
 			
-			iter->ptr = ptr;
+			__memchunks[i] = ptr;
 			return ptr;
 		}
 	}
@@ -145,19 +148,40 @@
 
 - freeMem: (void*)ptr;
 {
-	struct __ofobject_allocated_mem *iter;
+	void *last, **memchunks;
+	size_t i, memchunks_size;
 
-	for (iter = __mem_pool; iter != NULL; iter = iter->prev) {
-		if (iter->ptr == ptr) {
-			if (iter->prev != NULL) 
-				iter->prev->next = iter->next;
-			if (iter->next != NULL)
-				iter->next->prev = iter->prev;
-			if (__mem_pool == iter)
-				__mem_pool = iter->prev;
+	for (i = 0; i < __memchunks_size; i++) {
+		if (__memchunks[i] == ptr) {
+			memchunks_size = __memchunks_size - 1;
+			last = __memchunks[memchunks_size];
 
-			free(iter);
+			if (__memchunks_size == 0 ||
+			    memchunks_size > SIZE_MAX / sizeof(void*))
+				[[OFOutOfRangeException newWithObject: self]
+				    raise];
+
+			if (memchunks_size == 0) {
+				free(ptr);
+				free(__memchunks);
+
+				__memchunks = NULL;
+				__memchunks_size = 0;
+
+				return self;
+			}
+
+			if ((memchunks = realloc(__memchunks,
+			    memchunks_size * sizeof(void*))) == NULL)
+				[[OFNoMemException newWithObject: self
+							 andSize:
+							     memchunks_size]
+				    raise];
+
 			free(ptr);
+			__memchunks = memchunks;
+			__memchunks[i] = last;
+			__memchunks_size = memchunks_size;
 
 			return self;
 		}

@@ -12,18 +12,13 @@
 #import <objc/Object.h>
 #import <stdint.h>
 
-struct __ofobject_allocated_mem {
-	void				*ptr;
-	struct __ofobject_allocated_mem *prev;
-	struct __ofobject_allocated_mem *next;
-};
-
 /**
  * The OFObject class is the base class for all other classes inside ObjFW.
  */
 @interface OFObject: Object
 {
-	struct __ofobject_allocated_mem *__mem_pool;
+	void **__memchunks;
+	size_t __memchunks_size;
 }
 
 /**
