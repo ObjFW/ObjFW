@@ -18,7 +18,7 @@
 #import "OFExceptions.h"
 #import "OFMacros.h"
 
-static size_t pagesize = 0;
+static size_t lastpagebyte = 0;
 
 @implementation OFArray
 + newWithItemSize: (size_t)is
@@ -118,11 +118,30 @@ static size_t pagesize = 0;
 
 - initWithItemSize: (size_t)is
 {
-	if (pagesize == 0)
-		pagesize = getpagesize();
+	if (lastpagebyte == 0)
+		lastpagebyte = getpagesize() - 1;
 
 	if ((self = [super initWithItemSize: is]))
 		size = 0;
+
+	return self;
+}
+
+- add: (void*)item
+{
+	size_t nsize;
+
+	if (SIZE_MAX - items < 1 || items + 1 > SIZE_MAX / itemsize)
+		[[OFOutOfRangeException newWithObject: self] raise];
+
+	nsize = ((items + 1) * itemsize + lastpagebyte) & ~lastpagebyte;
+
+	if (size != nsize)
+		data = [self resizeMem: data
+				toSize: nsize];
+
+	memcpy(data + items++ * itemsize, item, itemsize);
+	size = nsize;
 
 	return self;
 }
@@ -135,7 +154,7 @@ static size_t pagesize = 0;
 	if (nitems > SIZE_MAX - items || items + nitems > SIZE_MAX / itemsize)
 		[[OFOutOfRangeException newWithObject: self] raise];
 
-	nsize = ((items + nitems) * itemsize + pagesize - 1) / pagesize;
+	nsize = ((items + nitems) * itemsize + lastpagebyte) & ~lastpagebyte;
 
 	if (size != nsize)
 		data = [self resizeMem: data
@@ -155,7 +174,7 @@ static size_t pagesize = 0;
 	if (nitems > items)
 		[[OFOutOfRangeException newWithObject: self] raise];
 
-	nsize = ((items - nitems) * itemsize + pagesize - 1) / pagesize;
+	nsize = ((items - nitems) * itemsize + lastpagebyte) & ~lastpagebyte;
 
 	if (size != nsize)
 		data = [self resizeMem: data

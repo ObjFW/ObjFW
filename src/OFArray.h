@@ -122,6 +122,13 @@
 - initWithItemSize: (size_t)is;
 
 /**
+ * Adds an item to the OFBigArray.
+ *
+ * \param item An arbitrary item
+ */
+- add: (void*)item;
+
+/**
  * Adds items from a C array to the OFBigArray.
  *
  * \param nitems The number of items to add
