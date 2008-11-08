@@ -34,10 +34,10 @@
 
 - free
 {
-	size_t i;
+	void **iter = __memchunks + __memchunks_size;
 
-	for (i = 0; i < __memchunks_size; i++)
-		free(__memchunks[i]);
+	while (iter-- > __memchunks)
+		free(*iter);
 
 	if (__memchunks != NULL)
 		free(__memchunks);
@@ -97,7 +97,7 @@
 - (void*)resizeMem: (void*)ptr
 	    toSize: (size_t)size
 {
-	size_t i;
+	void **iter;
 
 	if (ptr == NULL)
 		return [self getMemWithSize: size];
@@ -107,13 +107,15 @@
 		return NULL;
 	}
 
-	for (i = 0; i < __memchunks_size; i++) {
-		if (__memchunks[i] == ptr) {
+	iter = __memchunks + __memchunks_size;
+
+	while (iter-- > __memchunks) {
+		if (*iter == ptr) {
 			if ((ptr = realloc(ptr, size)) == NULL)
 				[[OFNoMemException newWithObject: self
 							 andSize: size] raise];
 			
-			__memchunks[i] = ptr;
+			*iter = ptr;
 			return ptr;
 		}
 	}
@@ -148,11 +150,16 @@
 
 - freeMem: (void*)ptr;
 {
-	void *last, **memchunks;
+	void **iter, *last, **memchunks;
 	size_t i, memchunks_size;
 
-	for (i = 0; i < __memchunks_size; i++) {
-		if (__memchunks[i] == ptr) {
+	iter = __memchunks + __memchunks_size;
+	i = __memchunks_size;
+
+	while (iter-- > __memchunks) {
+		i--;
+
+		if (*iter == ptr) {
 			memchunks_size = __memchunks_size - 1;
 			last = __memchunks[memchunks_size];
 
