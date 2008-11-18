@@ -1,6 +1,7 @@
 Tests for OFFile.
 
-OFArray
+OFBase64
+
 OFDirectory
 OFDictionary
 OFSortedArray
