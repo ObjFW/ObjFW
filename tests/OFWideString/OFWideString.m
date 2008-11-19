@@ -42,17 +42,24 @@ main()
 		return 1;
 	}
 
-	if (!wcscmp([[s1 append: s2] wcString], L"test123"))
+	if (!wcscmp([[s1 append: s2] wCString], L"test123"))
 		puts("s1 appended with s2 is the expected string! GOOD!");
 	else {
 		puts("s1 appended with s2 is not the expected string!");
 		return 1;
 	}
 
-	if (wcslen([s1 wcString]) == [s1 length] && [s1 length] == 7)
+	if (wcslen([s1 wCString]) == [s1 length] && [s1 length] == 7)
 		puts("s1 has the expected length. GOOD!");
 	else {
 		puts("s1 does not have the expected length!");
+		return 1;
+	}
+
+	if (!wcscmp([[s1 reverse] wCString], L"321tset"))
+		puts("Reversed s1 is expected string! GOOD!");
+	else {
+		puts("Reversed s1 is NOT the expected string!");
 		return 1;
 	}
 

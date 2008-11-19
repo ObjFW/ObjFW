@@ -29,7 +29,7 @@
 	return self;
 }
 
-- (const wchar_t*)wcString
+- (const wchar_t*)wCString
 {
 	return string;
 }
@@ -46,6 +46,6 @@
 
 - (int)compareTo: (OFString*)str
 {
-	return wcscmp(string, [str wcString]);
+	return wcscmp(string, [str wCString]);
 }
 @end

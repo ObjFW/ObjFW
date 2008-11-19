@@ -34,7 +34,7 @@
 /**
  * \return The OFConstWideCString as a constant wide C string
  */
-- (const wchar_t*)wcString;
+- (const wchar_t*)wCString;
 
 /**
  * \return The length of the OFConstWideCString

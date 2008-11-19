@@ -35,7 +35,7 @@
 	return self;
 }
 
-- (wchar_t*)wcString
+- (wchar_t*)wCString
 {
 	return string;
 }
@@ -52,12 +52,12 @@
 
 - (int)compareTo: (OFString*)str
 {
-	return wcscmp(string, [str wcString]);
+	return wcscmp(string, [str wCString]);
 }
 
 - append: (OFString*)str
 {
-	return [self appendWideCString: [str wcString]];
+	return [self appendWideCString: [str wCString]];
 }
 
 - appendWideCString: (const wchar_t*)str
@@ -79,6 +79,19 @@
 
 	length = newlen;
 	string = newstr;
+
+	return self;
+}
+
+- reverse
+{
+	size_t i, j, len = length / 2;
+
+	for (i = 0, j = length - 1; i < len; i++, j--) {
+		string[i] ^= string[j];
+		string[j] ^= string[i];
+		string[i] ^= string[j];
+	}
 
 	return self;
 }

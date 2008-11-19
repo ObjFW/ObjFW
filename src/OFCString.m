@@ -79,4 +79,17 @@
 
 	return self;
 }
+
+- reverse
+{
+	size_t i, j, len = length / 2;
+
+	for (i = 0, j = length - 1; i < len; i++, j--) {
+		string[i] ^= string[j];
+		string[j] ^= string[i];
+		string[i] ^= string[j];
+	}
+
+	return self;
+}
 @end

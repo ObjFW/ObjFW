@@ -52,7 +52,7 @@
 /**
  * \return The OFString as a C-type wide string of the type it was created as
  */
-- (wchar_t*)wcString;
+- (wchar_t*)wCString;
 
 /**
  * \return The length of the OFString
@@ -101,4 +101,9 @@
  * \param str A wide C string to append
  */
 - appendWideCString: (const wchar_t*)str;
+
+/**
+ * Reverse the OFString.
+ */
+- reverse;
 @end

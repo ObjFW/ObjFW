@@ -68,4 +68,9 @@
  * \param str A C string to append
  */
 - appendCString: (const char*)str;
+
+/**
+ * Reverse the OFCString.
+ */
+- reverse;
 @end

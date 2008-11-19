@@ -48,7 +48,7 @@
 	OF_NOT_IMPLEMENTED(NULL)
 }
 
-- (wchar_t*)wcString
+- (wchar_t*)wCString
 {
 	OF_NOT_IMPLEMENTED(NULL)
 }
@@ -86,6 +86,11 @@
 }
 
 - appendWideCString: (const wchar_t*)str
+{
+	OF_NOT_IMPLEMENTED(nil)
+}
+
+- reverse
 {
 	OF_NOT_IMPLEMENTED(nil)
 }

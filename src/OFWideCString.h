@@ -34,7 +34,7 @@
 /**
  * \return The OFWideCString as a wide C string
  */
-- (wchar_t*)wcString;
+- (wchar_t*)wCString;
 
 /**
  * \return The length of the OFWideCString
@@ -69,4 +69,9 @@
  * \param str A wide C string to append
  */
 - appendWideCString: (const wchar_t*)str;
+
+/**
+ * Reverse the OFWideCString.
+ */
+- reverse;
 @end

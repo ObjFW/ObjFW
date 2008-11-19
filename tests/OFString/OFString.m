@@ -57,6 +57,13 @@ main()
 		return 1;
 	}
 
+	if (!strcmp([[s1 reverse] cString], "321tset"))
+		puts("Reversed s1 is expected string! GOOD!");
+	else {
+		puts("Reversed s1 is NOT the expected string!");
+		return 1;
+	}
+
 	[s1 free];
 	[s2 free];
 	[s3 free];
