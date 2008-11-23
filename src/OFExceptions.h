@@ -93,45 +93,6 @@
 @end
 
 /**
- * An OFException indicating the requested selector is not implemented.
- */
-@interface OFNotImplementedException: OFException
-{
-	SEL selector;
-}
-
-/**
- * Creates a new not impemented exception.
- *
- * \param obj The object which caused the exception
- * \param sel A selector for the function not implemented
- * \return A new not implemented exception
- */
-+ newWithObject: (id)obj
-    andSelector: (SEL)sel;
-
-/**
- * Initializes an already allocated not implemented exception.
- *
- * \param obj The object which caused the exception
- * \param sel A selector for the function not implemented
- * \return An initialized not implemented exception
- */
-- initWithObject: (id)obj
-     andSelector: (SEL)sel;
-
-/**
- * \return An error message for the exception as a C String
- */
-- (char*)cString;
-
-/**
- * \return The requested selector that is not implemented
- */
-- (SEL)selector;
-@end
-
-/**
  * An OFException indicating the given memory is not part of the object.
  */
 @interface OFMemNotPartOfObjException: OFException

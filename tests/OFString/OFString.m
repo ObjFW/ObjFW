@@ -19,27 +19,27 @@
 int
 main()
 {
-	OFString *s1 = [OFString newAsCString: "test"];
-	OFString *s2 = [OFString newAsCString: ""];
+	OFString *s1 = [OFString newFromCString: "test"];
+	OFString *s2 = [OFString newFromCString: ""];
 	OFString *s3;
-	OFString *s4 = [OFString newAsConstCString: NULL];
+	OFString *s4 = [OFString new];
 
-	[s2 appendCString: "123"];
 	s3 = [s1 clone];
 
-	[s4 setTo: s2];
-
-	if (![s1 compareTo: s3])
+	if (![s1 compare: s3])
 		puts("s1 and s3 match! GOOD!");
 	else {
 		puts("s1 and s3 don't match!");
 		return 1;
 	}
 
-	if (![s2 compareTo: s4])
+	[s2 appendCString: "123"];
+	[s4 setTo: s2];
+
+	if (![s2 compare: s4])
 		puts("s2 and s4 match! GOOD!");
 	else {
-		puts("s1 and s3 don't match!");
+		puts("s2 and s4 don't match!");
 		return 1;
 	}
 

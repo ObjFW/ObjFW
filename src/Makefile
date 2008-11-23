@@ -3,9 +3,6 @@ LIB_MAJOR = 1
 LIB_MINOR = 0
 
 SRCS = OFArray.m		\
-       OFConstCString.m		\
-       OFCString.m		\
-       OFConstWideCString.m	\
        OFExceptions.m		\
        OFHashes.m		\
        OFFile.m			\
@@ -13,7 +10,6 @@ SRCS = OFArray.m		\
        OFListObject.m		\
        OFObject.m		\
        OFString.m		\
-       OFWideCString.m		\
        OFXMLFactory.m
 
 INCLUDES = ${SRCS:.m=.h}	\

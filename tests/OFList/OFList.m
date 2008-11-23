@@ -9,6 +9,7 @@
  * the packaging of this file.
  */
 
+#import <wchar.h>
 #import <stdio.h>
 #import <string.h>
 
@@ -17,10 +18,10 @@
 
 /* TODO: Do real checks */
  
-const char *strings[] = {
-	"First String Object",
-	"Second String Object",
-	"Third String Object"
+const wchar_t *strings[] = {
+	L"First String Object",
+	L"Second String Object",
+	L"Third String Object"
 };
 
 int
@@ -32,26 +33,26 @@ main()
 
 	list = [OFList new];
  
-	[list addNew: [OFString newAsConstCString: strings[0]]];
-	[list addNew: [OFString newAsConstCString: strings[1]]];
-	[list addNew: [OFString newAsConstCString: strings[2]]];
+	[list addNew: [OFString newFromWideCString: strings[0]]];
+	[list addNew: [OFString newFromWideCString: strings[1]]];
+	[list addNew: [OFString newFromWideCString: strings[2]]];
  
 	for (iter = [list first], i = 0; iter != nil; iter = [iter next], i++)
-		if (!strcmp([(OFString*)[iter data] cString], strings[i]))
+		if (!wcscmp([(OFString*)[iter data] wideCString], strings[i]))
 			printf("Element %zu is expected element. GOOD!\n", i);
 		else {
 			printf("Element %zu is not expected element!\n", i);
 			return 1;
 		}
 
-	if (!strcmp([(OFString*)[[list first] data] cString], strings[0]))
+	if (!wcscmp([(OFString*)[[list first] data] wideCString], strings[0]))
 		puts("First element is expected element. GOOD!");
 	else {
 		puts("First element is not expected element!");
 		return 1;
 	}
 
-	if (!strcmp([(OFString*)[[list last] data] cString], strings[2]))
+	if (!wcscmp([(OFString*)[[list last] data] wideCString], strings[2]))
 		puts("Last element is expected element. GOOD!");
 	else {
 		puts("Last element is not expected element!");

@@ -9,12 +9,6 @@
  * the packaging of this file.
  */
 
-/* Return is only to make the compiler happy - it is never reached */
-#define OF_NOT_IMPLEMENTED(ret)						\
-	[[OFNotImplementedException newWithObject: self			\
-				      andSelector: _cmd] raise];	\
-	return ret;
-
 #ifdef OF_BIG_ENDIAN
 static inline void
 OF_BSWAP_V(uint8_t *buf, size_t len)

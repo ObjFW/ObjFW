@@ -98,40 +98,6 @@
 }
 @end
 
-@implementation OFNotImplementedException
-+ newWithObject: (id)obj
-    andSelector: (SEL)sel
-{
-	return [[OFNotImplementedException alloc] initWithObject: obj
-						     andSelector: sel];
-}
-
-- initWithObject: (id)obj
-     andSelector: (SEL)sel
-{
-	if ((self = [super initWithObject: obj]))
-		selector = sel;
-
-	return self;
-}
-
-- (char*)cString
-{
-	if (string != NULL)
-		return string;
-
-	asprintf(&string, "ERROR: Requested selector %s not implemented in "
-	    "%s!\n", SEL_NAME(selector), [object name]);
-
-	return string;
-}
-
-- (SEL)selector
-{
-	return selector;
-}
-@end
-
 @implementation OFMemNotPartOfObjException
 + newWithObject: (id)obj
      andPointer: (void*)ptr
