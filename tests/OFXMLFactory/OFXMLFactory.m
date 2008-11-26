@@ -12,6 +12,7 @@
 #import <stdio.h>
 #import <stdlib.h>
 #import <string.h>
+#import <wchar.h>
 
 #import "OFXMLFactory.h"
 
@@ -21,7 +22,20 @@ check_result(char *result, const char *should)
 	if (!strcmp(result, should))
 		printf("%s is expected result\n", result);
 	else {
-		printf("%s is NOT expected result!", result);
+		printf("%s is NOT expected result!\n", result);
+		exit(1);
+	}
+
+	free(result);
+}
+
+inline void
+check_result_wide(wchar_t *result, const wchar_t *should)
+{
+	if (!wcscmp(result, should))
+		wprintf(L"%ls is expected result\n", result);
+	else {
+		wprintf(L"%ls is NOT expected result!\n", result);
 		exit(1);
 	}
 
@@ -51,6 +65,31 @@ test_concat()
 
 	check_result([OFXMLFactory concatAndFreeCStrings: strs],
 	    "<foo>bar<test/>");
+}
+
+inline void
+test_concat_wide()
+{
+	const wchar_t *c1 = L"<foo>", *c2 = L"bar", *c3 = L"<test/>";
+	wchar_t *s1, *s2, *s3;
+	wchar_t *strs[4];
+
+	if ((s1 = malloc((wcslen(c1) + 1) * sizeof(wchar_t))) == NULL ||
+	    (s2 = malloc((wcslen(c2) + 1) * sizeof(wchar_t))) == NULL ||
+	    (s3 = malloc((wcslen(c3) + 1) * sizeof(wchar_t))) == NULL)
+		exit(1);
+
+	wcsncpy(s1, c1, wcslen(c1) + 1);
+	wcsncpy(s2, c2, wcslen(c2) + 1);
+	wcsncpy(s3, c3, wcslen(c3) + 1);
+
+	strs[0] = s1;
+	strs[1] = s2;
+	strs[2] = s3;
+	strs[3] = NULL;
+
+	check_result_wide([OFXMLFactory concatAndFreeWideCStrings: strs],
+	    L"<foo>bar<test/>");
 }
 
 inline void
@@ -109,17 +148,87 @@ test_create_stanza()
 }
 
 inline void
+test_create_stanza_wide()
+{
+	check_result_wide([OFXMLFactory createWideStanza: L"foo"
+					    withCloseTag: NO
+						 andData: NULL,
+							  NULL],
+	    L"<foo>");
+
+	check_result_wide([OFXMLFactory createWideStanza: L"foo"
+					    withCloseTag: NO
+						 andData: NULL,
+							  L"bar", L"baz",
+							  L"blub", L"asd",
+							  NULL],
+	    L"<foo bar='baz' blub='asd'>");
+	check_result_wide([OFXMLFactory createWideStanza: L"foo"
+					    withCloseTag: YES
+						 andData: NULL,
+							  NULL],
+	    L"<foo/>");
+	check_result_wide([OFXMLFactory createWideStanza: L"foo"
+					    withCloseTag: YES
+						 andData: L"bar",
+							  NULL],
+	    L"<foo>bar</foo>");
+	check_result_wide([OFXMLFactory createWideStanza: L"foo"
+					    withCloseTag: YES
+						 andData: NULL,
+							  L"bar", L"b&az",
+							  NULL],
+	    L"<foo bar='b&amp;az'/>");
+	check_result_wide([OFXMLFactory createWideStanza: L"foo"
+					    withCloseTag: YES
+						 andData: L"bar",
+							  L"bar", L"b'az",
+							  NULL],
+	    L"<foo bar='b&apos;az'>bar</foo>");
+	check_result_wide([OFXMLFactory createWideStanza: L"foo"
+					    withCloseTag: YES
+						 andData: NULL,
+							  L"bar", L"b&az",
+							  L"x", L"asd\"",
+							  NULL],
+	    L"<foo bar='b&amp;az' x='asd&quot;'/>");
+	check_result_wide([OFXMLFactory createWideStanza: L"foo"
+					    withCloseTag: YES
+						 andData: L"bar",
+							  L"bar", L"b'az",
+							  L"x", L"y",
+							  L"a", L"b",
+							  NULL],
+	    L"<foo bar='b&apos;az' x='y' a='b'>bar</foo>");
+}
+
+inline void
 test_escape()
 {
 	check_result([OFXMLFactory escapeCString: "<hallo> &welt'\"!&"],
 	    "&lt;hallo&gt; &amp;welt&apos;&quot;!&amp;");
 }
 
+inline void
+test_escape_wide()
+{
+	check_result_wide(
+	    [OFXMLFactory escapeWideCString: L"<hallo> &welt'\"!&"],
+	    L"&lt;hallo&gt; &amp;welt&apos;&quot;!&amp;");
+}
+
+
 int main()
 {
 	test_escape();
        	test_create_stanza();
        	test_concat();
+
+	puts("== Now testing with wide C strings ==");
+
+	test_escape_wide();
+	test_create_stanza_wide();
+	test_concat_wide();
 
 	return 0;
 }
