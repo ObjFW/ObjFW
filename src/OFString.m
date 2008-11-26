@@ -60,7 +60,7 @@
 			string = [self getMemForNItems: length + 1
 						ofSize: sizeof(wchar_t)];
 
-			if (mbstowcs(string, str, length) != length) {
+			if (mbstowcs(string, str, length + 1) != length) {
 				[super free];
 				return nil;
 			}
@@ -97,9 +97,9 @@
 		return NULL;
 	}
 
-	str = [self getMemWithSize: len];
+	str = [self getMemWithSize: len + 1];
 
-	if (wcstombs(str, string, len) != len) {
+	if (wcstombs(str, string, len + 1) != len) {
 		/* FIXME: Throw exception */
 		[self freeMem: str];
 		return NULL;
