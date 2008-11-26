@@ -9,9 +9,9 @@
  * the packaging of this file.
  */
 
-#import <wchar.h>
-#import <stdio.h>
+#define _ISOC99_SOURCE
 #import <string.h>
+#import <wchar.h>
 
 #import "OFString.h"
 #import "OFList.h"
@@ -39,23 +39,23 @@ main()
  
 	for (iter = [list first], i = 0; iter != nil; iter = [iter next], i++)
 		if (!wcscmp([(OFString*)[iter data] wideCString], strings[i]))
-			printf("Element %zu is expected element. GOOD!\n", i);
+			wprintf(L"Element %zu is expected element. GOOD!\n", i);
 		else {
-			printf("Element %zu is not expected element!\n", i);
+			wprintf(L"Element %zu is not expected element!\n", i);
 			return 1;
 		}
 
 	if (!wcscmp([(OFString*)[[list first] data] wideCString], strings[0]))
-		puts("First element is expected element. GOOD!");
+		wprintf(L"First element is expected element. GOOD!\n");
 	else {
-		puts("First element is not expected element!");
+		wprintf(L"First element is not expected element!\n");
 		return 1;
 	}
 
 	if (!wcscmp([(OFString*)[[list last] data] wideCString], strings[2]))
-		puts("Last element is expected element. GOOD!");
+		wprintf(L"Last element is expected element. GOOD!\n");
 	else {
-		puts("Last element is not expected element!");
+		wprintf(L"Last element is not expected element!\n");
 		return 1;
 	}
  

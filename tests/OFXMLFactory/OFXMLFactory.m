@@ -9,7 +9,7 @@
  * the packaging of this file.
  */
 
-#import <stdio.h>
+#define _ISOC99_SOURCE
 #import <stdlib.h>
 #import <string.h>
 #import <wchar.h>
@@ -19,10 +19,12 @@
 inline void
 check_result(char *result, const char *should)
 {
+	/* Use wprintf here so we don't mix printf and wprintf! */
+
 	if (!strcmp(result, should))
-		printf("%s is expected result\n", result);
+		wprintf(L"%s is expected result\n", result);
 	else {
-		printf("%s is NOT expected result!\n", result);
+		wprintf(L"%s is NOT expected result!\n", result);
 		exit(1);
 	}
 
@@ -224,7 +226,7 @@ int main()
        	test_create_stanza();
        	test_concat();
 
-	puts("== Now testing with wide C strings ==");
+	wprintf(L"== Now testing with wide C strings ==\n");
 
 	test_escape_wide();
 	test_create_stanza_wide();
