@@ -211,4 +211,24 @@
 
 	return self;
 }
+
+- upper
+{
+	size_t i = length;
+
+	while (i--) 
+		string[i] = towupper(string[i]);
+
+	return self;
+}
+
+- lower
+{
+	size_t i = length;
+
+	while (i--) 
+		string[i] = towlower(string[i]);
+
+	return self;
+}
 @end

@@ -133,4 +133,14 @@
  * Reverse the OFString.
  */
 - reverse;
+
+/**
+ * Upper the OFString.
+ */
+- upper;
+
+/**
+ * Lower the OFString.
+ */
+- lower;
 @end

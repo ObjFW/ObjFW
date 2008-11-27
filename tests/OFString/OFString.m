@@ -64,6 +64,20 @@ main()
 		return 1;
 	}
 
+	if (!strcmp([[s1 upper] cString], "321TSET"))
+		puts("Upper s1 is expected string! GOOD!");
+	else {
+		puts("Upper s1 is NOT expected string!");
+		return 1;
+	}
+
+	if (!strcmp([[s1 lower] cString], "321tset"))
+		puts("Lower s1 is expected string! GOOD!");
+	else {
+		puts("Lower s1 is NOT expected string!");
+		return 1;
+	}
+
 	[s1 free];
 	[s2 free];
 	[s3 free];
