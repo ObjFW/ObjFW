@@ -13,7 +13,9 @@
 
 #import <stdlib.h>
 #import <string.h>
+
 #import <wchar.h>
+#import <wctype.h>
 
 #import "OFString.h"
 #import "OFExceptions.h"
