@@ -28,3 +28,11 @@ OF_BSWAP_V(uint8_t *buf, size_t len)
 
 #define OF_ROL(val, bits) \
 	(((val) << (bits)) | ((val) >> (32 - (bits))))
+
+#ifdef __GNUC__
+#define OF_LIKELY(cond) __builtin_expect(!!(cond), 1)
+#define OF_UNLIKELY(cond) __builtin_expect(!!(cond), 0)
+#else
+#define OF_LIKELY(cond) cond
+#define OF_UNLIKELY(cond) cond
+#endif

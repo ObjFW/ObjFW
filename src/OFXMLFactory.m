@@ -16,6 +16,7 @@
 
 #import "OFXMLFactory.h"
 #import "OFExceptions.h"
+#import "OFMacros.h"
 
 /*
  * We don't use OFString in this file for performance reasons!
@@ -118,31 +119,34 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 	for (i = j = 0; i < len; i++) {
 		switch (s[i]) {
 		case '<':
-			if (!xf_add2chars(&ret, &nlen, &j, "&lt;"))
+			if (OF_UNLIKELY(!xf_add2chars(&ret, &nlen, &j, "&lt;")))
 				[[OFNoMemException newWithObject: nil
 							 andSize: nlen + 4]
 				    raise];
 			break;
 		case '>':
-			if (!xf_add2chars(&ret, &nlen, &j, "&gt;"))
+			if (OF_UNLIKELY(!xf_add2chars(&ret, &nlen, &j, "&gt;")))
 				[[OFNoMemException newWithObject: nil
 							 andSize: nlen + 4]
 				    raise];
 			break;
 		case '"':
-			if (!xf_add2chars(&ret, &nlen, &j, "&quot;"))
+			if (OF_UNLIKELY(!xf_add2chars(&ret, &nlen, &j,
+			    "&quot;")))
 				[[OFNoMemException newWithObject: nil
 							 andSize: nlen + 6]
 				    raise];
 			break;
 		case '\'':
-			if (!xf_add2chars(&ret, &nlen, &j, "&apos;"))
+			if (OF_UNLIKELY(!xf_add2chars(&ret, &nlen, &j,
+			    "&apos;")))
 				[[OFNoMemException newWithObject: nil
 							 andSize: nlen + 6]
 				    raise];
 			break;
 		case '&':
-			if (!xf_add2chars(&ret, &nlen, &j, "&amp;"))
+			if (OF_UNLIKELY(!xf_add2chars(&ret, &nlen, &j,
+			    "&amp;")))
 				[[OFNoMemException newWithObject: nil
 							 andSize: nlen + 5]
 				    raise];
@@ -173,7 +177,8 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 	for (i = j = 0; i < len; i++) {
 		switch (s[i]) {
 		case L'<':
-			if (!xf_add2wchars(&ret, &nlen, &j, L"&lt;"))
+			if (OF_UNLIKELY(!xf_add2wchars(&ret, &nlen, &j,
+			    L"&lt;")))
 				[[OFNoMemException newWithObject: nil
 							 andSize: (nlen + 4) *
 								  sizeof(
@@ -181,7 +186,8 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 				    raise];
 			break;
 		case L'>':
-			if (!xf_add2wchars(&ret, &nlen, &j, L"&gt;"))
+			if (OF_UNLIKELY(!xf_add2wchars(&ret, &nlen, &j,
+			    L"&gt;")))
 				[[OFNoMemException newWithObject: nil
 							 andSize: (nlen + 4) *
 								  sizeof(
@@ -189,7 +195,8 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 				    raise];
 			break;
 		case L'"':
-			if (!xf_add2wchars(&ret, &nlen, &j, L"&quot;"))
+			if (OF_UNLIKELY(!xf_add2wchars(&ret, &nlen, &j,
+			    L"&quot;")))
 				[[OFNoMemException newWithObject: nil
 							 andSize: (nlen + 6) *
 								  sizeof(
@@ -197,7 +204,8 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 				    raise];
 			break;
 		case L'\'':
-			if (!xf_add2wchars(&ret, &nlen, &j, L"&apos;"))
+			if (OF_UNLIKELY(!xf_add2wchars(&ret, &nlen, &j,
+			    L"&apos;")))
 				[[OFNoMemException newWithObject: nil
 							 andSize: (nlen + 6) *
 								  sizeof(
@@ -205,7 +213,8 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 				    raise];
 			break;
 		case L'&':
-			if (!xf_add2wchars(&ret, &nlen, &j, L"&amp;"))
+			if (OF_UNLIKELY(!xf_add2wchars(&ret, &nlen, &j,
+			    L"&amp;")))
 				[[OFNoMemException newWithObject: nil
 							 andSize: (nlen + 5) *
 								  sizeof(
@@ -247,7 +256,8 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 	    (val = va_arg(args, char*)) != NULL) {
 		char *esc_val;
 
-		if ((esc_val = [OFXMLFactory escapeCString: val]) == NULL) {
+		if (OF_UNLIKELY((esc_val =
+		    [OFXMLFactory escapeCString: val]) == NULL)) {
 			/*
 			 * escapeCString already throws an exception,
 			 * no need to throw a second one here.
@@ -256,8 +266,8 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 			return NULL;
 		}
 
-		if (!xf_resize_chars(&xml, &len, 1 + strlen(arg) + 2 +
-		    strlen(esc_val) + 1)) {
+		if (OF_UNLIKELY(!xf_resize_chars(&xml, &len, 1 + strlen(arg) + 
+		    2 + strlen(esc_val) + 1))) {
 			free(esc_val);
 			[[OFNoMemException newWithObject: nil
 						 andSize: len + 1 +
@@ -342,7 +352,8 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 	    (val = va_arg(args, wchar_t*)) != NULL) {
 		wchar_t *esc_val;
 
-		if ((esc_val = [OFXMLFactory escapeWideCString: val]) == NULL) {
+		if (OF_UNLIKELY((esc_val =
+		    [OFXMLFactory escapeWideCString: val]) == NULL)) {
 			/*
 			 * escapeWideCString already throws an exception,
 			 * no need to throw a second one here.
@@ -351,8 +362,8 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 			return NULL;
 		}
 
-		if (!xf_resize_wchars(&xml, &len, 1 + wcslen(arg) + 2 +
-		    wcslen(esc_val) + 1)) {
+		if (OF_UNLIKELY(!xf_resize_wchars(&xml, &len, 1 + wcslen(arg) +
+		    2 + wcslen(esc_val) + 1))) {
 			free(esc_val);
 			[[OFNoMemException newWithObject: nil
 						 andSize: (len + 1 +
@@ -434,7 +445,7 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 	pos = len - 1;
 
 	for (i = 1; strs[i] != NULL; i++) {
-		if (!xf_add2chars(&ret, &len, &pos, strs[i])) {
+		if (OF_UNLIKELY(!xf_add2chars(&ret, &len, &pos, strs[i]))) {
 			free(ret);
 			[[OFNoMemException newWithObject: nil
 						 andSize: len + strlen(strs[i])]

@@ -21,6 +21,7 @@
 
 #import "OFObject.h"
 #import "OFExceptions.h"
+#import "OFMacros.h"
 
 @implementation OFObject
 - init
@@ -110,8 +111,8 @@
 	iter = __memchunks + __memchunks_size;
 
 	while (iter-- > __memchunks) {
-		if (*iter == ptr) {
-			if ((ptr = realloc(ptr, size)) == NULL)
+		if (OF_UNLIKELY(*iter == ptr)) {
+			if (OF_UNLIKELY((ptr = realloc(ptr, size)) == NULL))
 				[[OFNoMemException newWithObject: self
 							 andSize: size] raise];
 			
@@ -159,16 +160,16 @@
 	while (iter-- > __memchunks) {
 		i--;
 
-		if (*iter == ptr) {
+		if (OF_UNLIKELY(*iter == ptr)) {
 			memchunks_size = __memchunks_size - 1;
 			last = __memchunks[memchunks_size];
 
-			if (__memchunks_size == 0 ||
-			    memchunks_size > SIZE_MAX / sizeof(void*))
+			if (OF_UNLIKELY(__memchunks_size == 0 ||
+			    memchunks_size > SIZE_MAX / sizeof(void*)))
 				[[OFOutOfRangeException newWithObject: self]
 				    raise];
 
-			if (memchunks_size == 0) {
+			if (OF_UNLIKELY(memchunks_size == 0)) {
 				free(ptr);
 				free(__memchunks);
 
@@ -178,8 +179,8 @@
 				return self;
 			}
 
-			if ((memchunks = realloc(__memchunks,
-			    memchunks_size * sizeof(void*))) == NULL)
+			if (OF_UNLIKELY((memchunks = realloc(__memchunks,
+			    memchunks_size * sizeof(void*))) == NULL))
 				[[OFNoMemException newWithObject: self
 							 andSize:
 							     memchunks_size]
@@ -196,6 +197,6 @@
 
 	[[OFMemNotPartOfObjException newWithObject: self
 					andPointer: ptr] raise];
-	return self	/* never reached, but makes gcc happy */;
+	return self;	/* never reached, but makes gcc happy */
 }
 @end
