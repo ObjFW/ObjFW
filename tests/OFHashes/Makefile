@@ -3,7 +3,7 @@ SRCS = OFHashes.m
 
 include ../../buildsys.mk
 
-CPPFLAGS += -I../../src
+CPPFLAGS += -I../../src -I../..
 LIBS += -lobjc -L../../src -lobjfw
 
 .PHONY: run

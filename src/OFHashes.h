@@ -9,8 +9,6 @@
  * the packaging of this file.
  */
 
-#import <stdint.h>
-
 #import "OFObject.h"
 
 #define MD5_DIGEST_SIZE	 16

@@ -9,7 +9,6 @@
  * the packaging of this file.
  */
 
-#import <stddef.h>
 #import "OFObject.h"
 
 /* FIXME: Exceptions should include which type of error occoured (fopen etc.) */

@@ -9,7 +9,7 @@
  * the packaging of this file.
  */
 
-#import "wchar.h"
+#import <wchar.h>
 
 #import "OFObject.h"
 

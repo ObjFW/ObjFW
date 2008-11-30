@@ -9,10 +9,12 @@
  * the packaging of this file.
  */
 
+#import "config.h"
+
 #import <stdarg.h>
-#import <stddef.h>
 #import <stdlib.h>
 #import <string.h>
+#import <wchar.h>
 
 #import "OFXMLFactory.h"
 #import "OFExceptions.h"

@@ -18,6 +18,8 @@ esac
 OBJCFLAGS="$OBJCFLAGS -fobjc-exceptions"
 
 BUILDSYS_SHARED_LIB
+
+AC_DEFINE(OF_CONFIG_H, 1, [Define so that we know we got our config.h])
 AC_C_BIGENDIAN([AC_DEFINE(OF_BIG_ENDIAN, 1, [Whether we are big endian])])
 
 AC_CHECK_HEADER(objc/runtime.h,

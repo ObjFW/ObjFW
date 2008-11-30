@@ -9,12 +9,13 @@
  * the packaging of this file.
  */
 
+#import "config.h"
+
 #import <stdio.h>
 #import <string.h>
 #import <unistd.h>
 
 #import "OFArray.h"
-
 #import "OFExceptions.h"
 #import "OFMacros.h"
 

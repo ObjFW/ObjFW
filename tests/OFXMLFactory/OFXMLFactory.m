@@ -9,7 +9,10 @@
  * the packaging of this file.
  */
 
+#import "config.h"
+
 #define _ISOC99_SOURCE
+
 #import <stdlib.h>
 #import <string.h>
 #import <wchar.h>

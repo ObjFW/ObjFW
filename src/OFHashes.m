@@ -12,7 +12,6 @@
 #import "config.h"
 
 #import <string.h>
-#import <stdint.h>
 
 #import "OFHashes.h"
 #import "OFMacros.h"
