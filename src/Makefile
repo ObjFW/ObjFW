@@ -13,7 +13,8 @@ SRCS = OFArray.m		\
        OFXMLFactory.m
 
 INCLUDES = ${SRCS:.m=.h}	\
-	   OFMacros.h
+	   OFMacros.h		\
+	   OFStream.h
 
 include ../buildsys.mk
 
