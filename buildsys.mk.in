@@ -129,13 +129,13 @@ depend: pre-depend ${SRCS}
 			rm -f $$deps; \
 			${DEPEND_OK}; \
 		else \
-			:> $$deps; \
+			:> .deps; \
 			${DEPEND_FAILED}; \
 		fi; \
 	fi
 
 .c.dep .cc.dep .cxx.dep .m.dep:
-	${CPP} ${CPPFLAGS} -M $< >$@
+	${CPP} ${CPPFLAGS} -M $< >$@ || rm -f $@
 
 .d.dep:
 .xpm.dep:
