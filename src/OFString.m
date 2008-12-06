@@ -88,7 +88,7 @@
 	return self;
 }
 
-- (char*)cString
+- (char*)getCString
 {
 	char *str;
 	size_t len;

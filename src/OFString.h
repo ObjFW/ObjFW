@@ -72,7 +72,7 @@
  * \return The OFString as a C string, if possible (if not, returns NULL).
  *         If not needed anymore, it is usefull to call freeMem:.
  */
-- (char*)cString;
+- (char*)getCString;
 
 /**
  * \return The OFString as a wide C string
