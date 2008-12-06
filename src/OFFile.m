@@ -86,9 +86,9 @@
 	return (feof(fp) == 0 ? NO : YES);
 }
 
-- (size_t)readIntoBuffer: (uint8_t*)buf
-		withSize: (size_t)size
-	       andNItems: (size_t)nitems
+- (size_t)readNItems: (size_t)nitems
+	      ofSize: (size_t)size
+	  intoBuffer: (uint8_t*)buf
 {
 	size_t ret;
 
@@ -100,8 +100,16 @@
 	return ret;
 }
 
-- (uint8_t*)readWithSize: (size_t)size
-	       andNItems: (size_t)nitems
+- (size_t)readNBytes: (size_t)size
+	  intoBuffer: (uint8_t*)buf
+{
+	return [self readNItems: size
+			 ofSize: 1
+		     intoBuffer: buf];
+}
+
+- (uint8_t*)readNItems: (size_t)nitems
+		ofSize: (size_t)size
 {
 	uint8_t	*ret;
 
@@ -109,9 +117,9 @@
 			     ofSize: size];
 
 	@try {
-		[self readIntoBuffer: ret
-			    withSize: size
-			   andNItems: nitems];
+		[self readNItems: nitems
+			  ofSize: size
+		      intoBuffer: ret];
 	} @catch (OFReadFailedException *e) {
 		[self freeMem: ret];
 		@throw e;
@@ -121,9 +129,15 @@
 	return ret;
 }
 
-- (size_t)writeBuffer: (uint8_t*)buf
-	     withSize: (size_t)size
-	    andNItems: (size_t)nitems
+- (uint8_t*)readNBytes: (size_t)size
+{
+	return [self readNItems: size
+			 ofSize: 1];
+}
+
+- (size_t)writeNItems: (size_t)nitems
+	       ofSize: (size_t)size
+	   fromBuffer: (uint8_t*)buf
 {
 	size_t ret;
 
@@ -134,5 +148,13 @@
 					     andNItems: nitems] raise];
 	
 	return ret;
+}
+
+- (size_t)writeNBytes: (size_t)size
+	   fromBuffer: (uint8_t*)buf
+{
+	return [self writeNItems: size
+			  ofSize: 1
+		      fromBuffer: buf];
 }
 @end

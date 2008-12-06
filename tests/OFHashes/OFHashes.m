@@ -35,9 +35,8 @@ main()
 				andMode: "rb"];
 
 	while (![f atEndOfFile]) {
-		len = [f readIntoBuffer: buf
-			       withSize: 1
-			      andNItems: 64];
+		len = [f readNBytes: 64
+			 intoBuffer: buf];
 		[md5 updateWithBuffer: buf
 			       ofSize: len];
 		[sha1 updateWithBuffer: buf

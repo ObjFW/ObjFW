@@ -1,0 +1,45 @@
+/*
+ * Copyright (c) 2008
+ *   Jonathan Schleifer <js@webkeks.org>
+ *
+ * All rights reserved.
+ *
+ * This file is part of libobjfw. It may be distributed under the terms of the
+ * Q Public License 1.0, which can be found in the file LICENSE included in
+ * the packaging of this file.
+ */
+
+/**
+ * The OFStream protocol provides functions to read and write streams.
+ */
+@protocol OFStream
+/**
+ * Reads from the stream into a buffer.
+ *
+ * \param buf The buffer into which the data is read
+ * \param size The size of the data that should be read.
+ *	  The buffer MUST be at least size big!
+ * \return The number of bytes read
+ */
+- (size_t)readNBytes: (size_t)size
+	  intoBuffer: (uint8_t*)buf;
+
+/**
+ * Reads from the stream into a new buffer.
+ *
+ * \param size The size of the data that should be read
+ * \return A new buffer with the data read.
+ *	   It is part of the memory pool of the OFFile.
+ */
+- (uint8_t*)readNBytes: (size_t)size;
+
+/**
+ * Writes from a buffer into the file.
+ *
+ * \param buf The buffer from which the data is written to the file
+ * \param size The size of the data that should be written
+ * \return The number of bytes written
+ */
+- (size_t)writeNBytes: (size_t)size
+	   fromBuffer: (uint8_t*)buf;
+@end

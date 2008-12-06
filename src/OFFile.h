@@ -13,11 +13,12 @@
 #import <sys/types.h>
 
 #import "OFObject.h"
+#import "OFStream.h"
 
 /**
  * The OFFile class provides functions to read, write and manipulate files.
  */
-@interface OFFile: OFObject
+@interface OFFile: OFObject <OFStream>
 {
 	FILE *fp;
 }
@@ -108,9 +109,20 @@
  *	  The buffer MUST be at least size * nitems big!
  * \return The number of bytes read
  */
-- (size_t)readIntoBuffer: (uint8_t*)buf
-		withSize: (size_t)size
-	       andNItems: (size_t)nitems;
+- (size_t)readNItems: (size_t)nitems
+	      ofSize: (size_t)size
+	  intoBuffer: (uint8_t*)buf;
+
+/**
+ * Reads from the file into a buffer.
+ *
+ * \param buf The buffer into which the data is read
+ * \param size The size of the data that should be read.
+ *	  The buffer MUST be at least size big!
+ * \return The number of bytes read
+ */
+- (size_t)readNBytes: (size_t)size
+	  intoBuffer: (uint8_t*)buf;
 
 /**
  * Reads from the file into a new buffer.
@@ -120,8 +132,16 @@
  * \return A new buffer with the data read.
  *	   It is part of the memory pool of the OFFile.
  */
-- (uint8_t*)readWithSize: (size_t)size
-	       andNItems: (size_t)nitems;
+- (uint8_t*)readNItems: (size_t)nitems
+		ofSize: (size_t)size;
+/**
+ * Reads from the file into a new buffer.
+ *
+ * \param size The size of the data that should be read
+ * \return A new buffer with the data read.
+ *	   It is part of the memory pool of the OFFile.
+ */
+- (uint8_t*)readNBytes: (size_t)size;
 
 /**
  * Writes from a buffer into the file.
@@ -131,7 +151,17 @@
  * \param nitem The number of items to write
  * \return The number of bytes written
  */
-- (size_t)writeBuffer: (uint8_t*)buf
-	     withSize: (size_t)size
-	    andNItems: (size_t)nitems;
+- (size_t)writeNItems: (size_t)nitems
+	       ofSize: (size_t)size
+	   fromBuffer: (uint8_t*)buf;
+
+/**
+ * Writes from a buffer into the file.
+ *
+ * \param buf The buffer from which the data is written to the file
+ * \param size The size of the data that should be written
+ * \return The number of bytes written
+ */
+- (size_t)writeNBytes: (size_t)size
+	   fromBuffer: (uint8_t*)buf;
 @end
