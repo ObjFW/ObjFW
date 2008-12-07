@@ -120,10 +120,9 @@
 		[self readNItems: nitems
 			  ofSize: size
 		      intoBuffer: ret];
-	} @catch (OFReadFailedException *e) {
+	} @catch (id exception) {
 		[self freeMem: ret];
-		@throw e;
-		return NULL;
+		@throw exception;
 	}
 
 	return ret;

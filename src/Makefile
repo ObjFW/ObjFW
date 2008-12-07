@@ -9,6 +9,7 @@ SRCS = OFArray.m		\
        OFList.m			\
        OFListObject.m		\
        OFObject.m		\
+       OFSocket.m		\
        OFString.m		\
        OFXMLFactory.m
 
