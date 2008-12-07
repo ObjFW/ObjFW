@@ -164,4 +164,14 @@
 			  ofSize: 1
 		      fromBuffer: (const uint8_t*)str];
 }
+
+- close
+{
+	if (fclose(fp)) {
+		/* FIXME: Throw exception */
+		return nil;
+	}
+
+	return self;
+}
 @end

@@ -74,4 +74,9 @@
  * \return The number of bytes written
  */
 - (size_t)writeCString: (const char*)str;
+
+/**
+ * Closes the OFTCPSocket.
+ */
+- close;
 @end

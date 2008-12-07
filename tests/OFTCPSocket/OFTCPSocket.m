@@ -19,12 +19,9 @@
 int
 main()
 {
-	OFTCPSocket *sock;
-
 	@try {
-		sock = [OFTCPSocket new];
-		[sock connectTo: "webkeks.org"
-			 onPort: 80];
+		OFTCPSocket *sock = [[OFTCPSocket new] connectTo: "webkeks.org"
+							  onPort: 80];
 		[sock writeCString: "GET / HTTP/1.1\r\n"
 				    "Host: webkeks.org\r\n\r\n"];
 		puts((char*)[sock readNBytes: 1024]);

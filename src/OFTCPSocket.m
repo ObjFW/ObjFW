@@ -119,4 +119,14 @@
 	return [self writeNBytes: strlen(str)
 		      fromBuffer: (const uint8_t*)str];
 }
+
+- close
+{
+	if (sock < 0) {
+		/* FIXME: Throw exception */
+		return nil;
+	}
+
+	return self;
+}
 @end
