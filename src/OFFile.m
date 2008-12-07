@@ -14,7 +14,6 @@
 #import <stdio.h>
 #import <string.h>
 #import <unistd.h>
-#include <wchar.h>  /* include due to glibc brokenness */
 
 #import <sys/types.h>
 #import <sys/stat.h>
@@ -163,13 +162,6 @@
 {
 	return [self writeNItems: strlen(str)
 			  ofSize: 1
-		      fromBuffer: (const uint8_t*)str];
-}
-
-- (size_t)writeWideCString: (const wchar_t*)str
-{
-	return [self writeNItems: wcslen(str)
-			  ofSize: sizeof(wchar_t)
 		      fromBuffer: (const uint8_t*)str];
 }
 @end

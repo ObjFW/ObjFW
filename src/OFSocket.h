@@ -111,4 +111,12 @@
  */
 - (size_t)writeNBytes: (size_t)size
 	   fromBuffer: (const uint8_t*)buf;
+
+/**
+ * Sends a C string, without the trailing zero.
+ *
+ * \param str The C string from which the data is sent
+ * \return The number of bytes written
+ */
+- (size_t)writeCString: (const char*)str;
 @end

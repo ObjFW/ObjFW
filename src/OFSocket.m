@@ -15,7 +15,6 @@
 #import <stdlib.h>
 #import <string.h>
 #import <unistd.h>
-#include <wchar.h>  /* include due to glibc brokenness */
 
 #import "OFSocket.h"
 #import "OFExceptions.h"
@@ -169,17 +168,6 @@
 - (size_t)writeCString: (const char*)str
 {
 	return [self writeNBytes: strlen(str)
-		      fromBuffer: (const uint8_t*)str];
-}
-
-- (size_t)writeWideCString: (const wchar_t*)str
-{
-	size_t len = wcslen(str);
-
-	if (len > SIZE_MAX / sizeof(wchar_t))
-		[[OFOutOfRangeException newWithObject: self] raise];
-
-	return [self writeNBytes: len * sizeof(wchar_t)
 		      fromBuffer: (const uint8_t*)str];
 }
 @end

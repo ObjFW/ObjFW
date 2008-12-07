@@ -50,12 +50,4 @@
  * \return The number of bytes written
  */
 - (size_t)writeCString: (const char*)str;
-
-/**
- * Writes a C string into the stream, without the trailing zero.
- *
- * \param str The wide C string from which the data is written to the stream
- * \return The number of bytes written
- */
-- (size_t)writeWideCString: (const wchar_t*)str;
 @end
