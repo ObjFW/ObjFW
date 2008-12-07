@@ -16,75 +16,10 @@
 #import <string.h>
 #import <unistd.h>
 
-#import "OFSocket.h"
+#import "OFTCPSocket.h"
 #import "OFExceptions.h"
 
-@implementation OFSocketAddress
-+ newWithHost: (const char*)host
-      andPort: (uint16_t)port
-    andFamily: (int)family
-      andType: (int)type
-  andProtocol: (int)protocol
-{
-	return [[OFSocketAddress alloc] initWithHost: host
-					     andPort: port
-					   andFamily: family
-					     andType: type
-					 andProtocol: protocol];
-}
-
-- initWithHost: (const char*)host
-       andPort: (uint16_t)port
-     andFamily: (int)family
-       andType: (int)type
-   andProtocol: (int)protocol
-{
-	if ((self = [super init])) {
-		if (port == 0) {
-			/* FIXME: Throw exception */
-			[self free];
-			return nil;
-		}
-
-		memset(&hints, 0, sizeof(struct addrinfo));
-		hints.ai_family = family;
-		hints.ai_socktype = type;
-		hints.ai_protocol = protocol;
-
-		hoststr = strdup(host);
-		snprintf(portstr, 6, "%d", port);
-
-		res = NULL;
-	}
-
-	return self;
-}
-
-- (struct addrinfo*)getAddressInfo
-{
-	if (res != NULL)
-		return res;
-
-	if (getaddrinfo(hoststr, portstr, &hints, &res)) {
-		/* FIXME: Throw exception */
-		return NULL;
-	}
-
-	return res;
-}
-
-- free
-{
-	free(hoststr);
-
-	if (res != NULL)
-		freeaddrinfo(res);
-
-	return [super free];
-}
-@end
-
-@implementation OFSocket
+@implementation OFTCPSocket
 - free
 {
 	if (sock >= 0)
@@ -93,17 +28,29 @@
 	return [super free];
 }
 
-- connect: (OFSocketAddress*)addr
+- connectTo: (const char*)host
+     onPort: (uint16_t)port
 {
-	struct addrinfo *ai, *iter;
+	struct addrinfo hints, *res, *res0;
+	char portstr[6];
 
-	ai = [addr getAddressInfo];
-	for (iter = ai; iter != NULL; iter = iter->ai_next) {
-		if ((sock = socket(iter->ai_family, iter->ai_socktype,
-		    iter->ai_protocol)) < 0)
+	memset(&hints, 0, sizeof(struct addrinfo));
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+
+	snprintf(portstr, 6, "%d", port);
+
+	if (getaddrinfo(host, portstr, &hints, &res0)) {
+		/* FIXME: Throw exception */
+		return NULL;
+	}
+
+	for (res = res0; res != NULL; res = res->ai_next) {
+		if ((sock = socket(res->ai_family, res->ai_socktype,
+		    res->ai_protocol)) < 0)
 			continue;
 
-		if (connect(sock, iter->ai_addr, iter->ai_addrlen) < 0) {
+		if (connect(sock, res->ai_addr, res->ai_addrlen) < 0) {
 			close(sock);
 			sock = -1;
 			continue;
@@ -111,6 +58,8 @@
 
 		break;
 	}
+	
+	freeaddrinfo(res0);
 
 	if (sock < 0) {
 		/* FIXME: Throw exception */

@@ -9,8 +9,8 @@ SRCS = OFArray.m		\
        OFList.m			\
        OFListObject.m		\
        OFObject.m		\
-       OFSocket.m		\
        OFString.m		\
+       OFTCPSocket.m		\
        OFXMLFactory.m
 
 INCLUDES = ${SRCS:.m=.h}	\

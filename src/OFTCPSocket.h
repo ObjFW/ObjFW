@@ -19,56 +19,9 @@
 #import "OFStream.h"
 
 /**
- * The OFSocketAddress class is a class to build socket addresses.
+ * The OFTCPSocket class provides functions to create and use sockets.
  */
-@interface OFSocketAddress: OFObject
-{
-	char *hoststr, portstr[6];
-	struct addrinfo hints, *res;
-}
-
-/**
- * \param host The host of the address
- * \param port The port of the address
- * \param family The protocol family to use
- * \param type The socket type to use
- * \param protocol The specific protocol to use
- * \return A new OFSocketAddress
- */
-+ newWithHost: (const char*)host
-      andPort: (uint16_t)port
-    andFamily: (int)family
-      andType: (int)type
-  andProtocol: (int)protocol;
-
-/**
- * Initializes an already allocated OFSocketAddress.
- *
- * \param host The host of the address
- * \param port The port of the address
- * \param family The protocol family to use
- * \param type The socket type to use
- * \param protocol The specific protocol to use
- * \return An initialized OFSocketAddress
- */
-- initWithHost: (const char*)host
-       andPort: (uint16_t)port
-     andFamily: (int)family
-       andType: (int)type
-   andProtocol: (int)protocol;
-
-/*
- * \return The addrinfo struct for the OFSocketAddress
- */
-- (struct addrinfo*)getAddressInfo;
-
-- free;
-@end
-
-/**
- * The OFSocket class provides functions to create and use sockets.
- */
-@interface OFSocket: OFObject <OFStream>
+@interface OFTCPSocket: OFObject <OFStream>
 {
 	int sock;
 }
@@ -76,11 +29,13 @@
 - free;
 
 /**
- * Connect the OFSocket to a destination specified in an OFSocketAddress.
+ * Connect the OFTCPSocket to the specified destination.
  *
- * \param addr A OFSocketAddress to connect to.
+ * \param host The host to connect to
+ * \param port The port of the host to connect to
  */
-- connect: (OFSocketAddress*)addr;
+- connectTo: (const char*)host
+     onPort: (uint16_t)port;
 
 /**
  * Receive data from the socket into a buffer.

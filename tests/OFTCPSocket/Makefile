@@ -1,5 +1,5 @@
-PROG_NOINST = ofsocket
-SRCS = OFSocket.m
+PROG_NOINST = oftcpsocket
+SRCS = OFTCPSocket.m
 
 include ../../buildsys.mk
 

@@ -5,7 +5,6 @@ OFBase64
 OFDirectory
 OFDictionary
 OFSortedArray
-OFSocket
 OFThread
 OFAutoreleasePool
 

@@ -1,8 +1,8 @@
 SUBDIRS = OFObject	\
 	  OFArray	\
 	  OFHashes	\
-	  OFSocket	\
 	  OFString	\
+	  OFTCPSocket	\
 	  OFList	\
 	  OFXMLFactory
 
