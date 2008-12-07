@@ -114,17 +114,6 @@
 	  intoBuffer: (uint8_t*)buf;
 
 /**
- * Reads from the file into a buffer.
- *
- * \param buf The buffer into which the data is read
- * \param size The size of the data that should be read.
- *	  The buffer MUST be at least size big!
- * \return The number of bytes read
- */
-- (size_t)readNBytes: (size_t)size
-	  intoBuffer: (uint8_t*)buf;
-
-/**
  * Reads from the file into a new buffer.
  *
  * \param size The size of the data that should be read
@@ -134,14 +123,6 @@
  */
 - (uint8_t*)readNItems: (size_t)nitems
 		ofSize: (size_t)size;
-/**
- * Reads from the file into a new buffer.
- *
- * \param size The size of the data that should be read
- * \return A new buffer with the data read.
- *	   It is part of the memory pool of the OFFile.
- */
-- (uint8_t*)readNBytes: (size_t)size;
 
 /**
  * Writes from a buffer into the file.
@@ -154,27 +135,4 @@
 - (size_t)writeNItems: (size_t)nitems
 	       ofSize: (size_t)size
 	   fromBuffer: (const uint8_t*)buf;
-
-/**
- * Writes from a buffer into the file.
- *
- * \param buf The buffer from which the data is written to the file
- * \param size The size of the data that should be written
- * \return The number of bytes written
- */
-- (size_t)writeNBytes: (size_t)size
-	   fromBuffer: (const uint8_t*)buf;
-
-/**
- * Writes a C string into the file, without the trailing zero.
- *
- * \param str The C string from which the data is written to the file
- * \return The number of bytes written
- */
-- (size_t)writeCString: (const char*)str;
-
-/**
- * Closes the file.
- */
-- close;
 @end
