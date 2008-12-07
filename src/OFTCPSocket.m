@@ -20,6 +20,17 @@
 #import "OFExceptions.h"
 
 @implementation OFTCPSocket
+- init
+{
+	if ((self = [super init])) {
+		sock = -1;
+		saddr = NULL;
+		saddr_len = 0;
+	}
+
+	return self;
+}
+
 - free
 {
 	if (sock >= 0)
@@ -28,11 +39,32 @@
 	return [super free];
 }
 
+- setSocket: (int)socket
+{
+	sock = socket;
+
+	return self;
+}
+
+- setSocketAddress: (struct sockaddr*)sockaddr
+	withLength: (socklen_t)len
+{
+	saddr = sockaddr;
+	saddr_len = len;
+
+	return self;
+}
+
 - connectTo: (const char*)host
      onPort: (uint16_t)port
 {
 	struct addrinfo hints, *res, *res0;
 	char portstr[6];
+
+	if (!port) {
+		/* FIXME: Throw exception */
+		return nil;
+	}
 
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
@@ -42,7 +74,7 @@
 
 	if (getaddrinfo(host, portstr, &hints, &res0)) {
 		/* FIXME: Throw exception */
-		return NULL;
+		return nil;
 	}
 
 	for (res = res0; res != NULL; res = res->ai_next) {
@@ -69,10 +101,113 @@
 	return self;
 }
 
+-    bindOn: (const char*)host
+   withPort: (uint16_t)port
+  andFamily: (int)family
+{
+	struct addrinfo hints, *res;
+	char portstr[6];
+
+	if (!port) {
+		/* FIXME: Throw exception */
+		return nil;
+	}
+
+	if ((sock = socket(family, SOCK_STREAM, 0)) < 0) {
+		/* FIXME: Throw exception */
+		return nil;
+	}
+
+	memset(&hints, 0, sizeof(struct addrinfo));
+	hints.ai_family = family;
+	hints.ai_socktype = SOCK_STREAM;
+
+	snprintf(portstr, 6, "%d", port);
+
+	if (getaddrinfo(host, portstr, &hints, &res)) {
+		/* FIXME: Throw exception */
+		return nil;
+	}
+
+	if (bind(sock, res->ai_addr, res->ai_addrlen) < 0) {
+		/* FIXME: Throw exception */
+		freeaddrinfo(res);
+		return nil;
+	}
+
+	freeaddrinfo(res);
+
+	return self;
+}
+
+- listenWithBackLog: (int)backlog
+{
+	if (sock < 0) {
+		/* FIXME: Throw exception */
+		return nil;
+	}
+
+	if (listen(sock, backlog) < 0 ) {
+		/* FIXME: Throw exception */
+		return nil;
+	}
+
+	return self;
+}
+
+- listen
+{
+	if (sock < 0) {
+		/* FIXME: Throw exception */
+		return nil;
+	}
+
+	if (listen(sock, 5) < 0 ) {
+		/* FIXME: Throw exception */
+		return nil;
+	}
+
+	return self;
+}
+
+- (OFTCPSocket*)accept
+{
+	OFTCPSocket *newsock;
+	struct sockaddr *addr;
+	socklen_t addrlen;
+	int s;
+
+	newsock = [OFTCPSocket new];
+	addrlen = sizeof(struct sockaddr);
+
+	@try {
+		addr = [newsock getMemWithSize: sizeof(struct sockaddr)];
+	} @catch(id e) {
+		[newsock free];
+		@throw e;
+	}
+
+	if ((s = accept(sock, addr, &addrlen)) < 0) {
+		/* FIXME: Throw exception */
+		return nil;
+	}
+
+	[newsock setSocket: s];
+	[newsock setSocketAddress: addr
+		       withLength: addrlen];
+
+	return newsock;
+}
+
 - (size_t)readNBytes: (size_t)size
 	  intoBuffer: (uint8_t*)buf
 {
 	ssize_t ret;
+
+	if (sock < 0) {
+		/* FIXME: Throw exception */
+		return 0;
+	}
 
 	if ((ret = recv(sock, buf, size, 0)) < 0) {
 		/* FIXME: Throw exception */
@@ -86,6 +221,11 @@
 - (uint8_t*)readNBytes: (size_t)size
 {
 	uint8_t *ret;
+
+	if (sock < 0) {
+		/* FIXME: Throw exception */
+		return NULL;
+	}
 
 	ret = [self getMemWithSize: size];
 
@@ -105,6 +245,11 @@
 {
 	ssize_t ret;
 
+	if (sock < 0) {
+		/* FIXME: Throw exception */
+		return 0;
+	}
+
 	if ((ret = send(sock, buf, size, 0)) < 0) {
 		/* FIXME: Throw exception */
 		return 0;
@@ -116,6 +261,11 @@
 
 - (size_t)writeCString: (const char*)str
 {
+	if (sock < 0) {
+		/* FIXME: Throw exception */
+		return 0;
+	}
+
 	return [self writeNBytes: strlen(str)
 		      fromBuffer: (const uint8_t*)str];
 }

@@ -20,12 +20,68 @@ int
 main()
 {
 	@try {
-		OFTCPSocket *sock = [[OFTCPSocket new] connectTo: "webkeks.org"
-							  onPort: 80];
-		[sock writeCString: "GET / HTTP/1.1\r\n"
-				    "Host: webkeks.org\r\n\r\n"];
-		puts((char*)[sock readNBytes: 1024]);
-		[sock free];
+		OFTCPSocket *server = [OFTCPSocket new];
+		OFTCPSocket *client = [OFTCPSocket new];
+		OFTCPSocket *accepted;
+		char buf[8];
+
+		puts("== IPv4 ==");
+
+		[server bindOn: "localhost"
+		      withPort: 12345
+		     andFamily: AF_INET];
+		[server listen];
+
+		[client connectTo: "localhost"
+			   onPort: 12345];
+
+		accepted = [server accept];
+
+		[client writeCString: "Hallo!"];
+		[accepted readNBytes: 7
+			  intoBuffer: (uint8_t*)buf];
+		buf[7] = 0;
+
+		if (!strcmp(buf, "Hallo!"))
+			puts("Received correct string!");
+		else {
+			puts("Received INCORRECT string!");
+			return 1;
+		}
+
+		memset(buf, 0, 8);
+		
+		[accepted free];
+		[client close];
+		[server close];
+
+		puts("== IPv6 ==");
+
+		[server bindOn: "localhost"
+		      withPort: 12345
+		     andFamily: AF_INET6];
+		[server listen];
+
+		[client connectTo: "localhost"
+			   onPort: 12345];
+
+		accepted = [server accept];
+
+		[client writeCString: "IPv6 :)"];
+		[accepted readNBytes: 7
+			  intoBuffer: (uint8_t*)buf];
+		buf[7] = 0;
+
+		if (!strcmp(buf, "IPv6 :)"))
+			puts("Received correct string!");
+		else {
+			puts("Received INCORRECT string!");
+			return 1;
+		}
+
+		[accepted free];
+		[client close];
+		[server close];
 	} @catch(OFException *e) {
 		printf("EXCEPTION: %s\n", [e cString]);
 	}

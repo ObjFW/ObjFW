@@ -24,16 +24,56 @@
 @interface OFTCPSocket: OFObject <OFStream>
 {
 	int sock;
+	struct sockaddr *saddr;
+	socklen_t saddr_len;
 }
 
+/**
+ * Initializes an already allocated OFTCPSocket.
+ *
+ * \return An initialized OFTCPSocket
+ */
+- init;
+
 - free;
+- setSocket: (int)socket;
+- setSocketAddress: (struct sockaddr*)sockaddr
+	withLength: (socklen_t)len;
 
 /**
  * Connect the OFTCPSocket to the specified destination.
  *
- * \param host The host to connect to
+ * \param host The host or IP to connect to
  * \param port The port of the host to connect to
  */
 - connectTo: (const char*)host
      onPort: (uint16_t)port;
+
+/**
+ * Bind socket to the specified address and port.
+ *
+ * \param host The host or IP to bind to
+ * \param port The port to bind to
+ * \param protocol The protocol to use (AF_INET or AF_INET6)
+ */
+-    bindOn: (const char*)host
+   withPort: (uint16_t)port
+  andFamily: (int)family;
+
+/**
+ * Listen on the socket.
+ *
+ * \param backlog Maximum length for the queue of pending connections.
+ */
+- listenWithBackLog: (int)backlog;
+
+/**
+ * Listen on the socket.
+ */
+- listen;
+
+/**
+ * Accept an incoming connection.
+ */
+- (OFTCPSocket*)accept;
 @end
