@@ -34,8 +34,8 @@ xf_resize_chars(char **str, size_t *len, size_t add)
 	char *str2;
 	size_t len2;
 
-	/* FIXME: Check for overflows on add */
-
+	if (add > SIZE_MAX - *len)
+		[[OFOutOfRangeException newWithObject: nil] raise];
 	len2 = *len + add;
 	
 	if ((str2 = realloc(*str, len2)) == NULL) {
@@ -57,9 +57,12 @@ xf_resize_wchars(wchar_t **str, size_t *len, size_t add)
 	wchar_t *str2;
 	size_t len2;
 
-	/* FIXME: Check for overflows on add and multiply */
-
+	if (add > SIZE_MAX - *len)
+		[[OFOutOfRangeException newWithObject: nil] raise];
 	len2 = *len + add;
+
+	if (len2 > SIZE_MAX / sizeof(wchar_t))
+		[[OFOutOfRangeException newWithObject: nil] raise];
 	
 	if ((str2 = realloc(*str, len2 * sizeof(wchar_t))) == NULL) {
 		if (*str)
@@ -113,10 +116,13 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 	size_t i, j, len, nlen;
 
 	len = nlen = strlen(s);
+	if (SIZE_MAX - len < 1)
+		[[OFOutOfRangeException newWithObject: nil] raise];
+	nlen++;
 
-	if ((ret = malloc(len + 1)) == NULL)
+	if ((ret = malloc(nlen)) == NULL)
 		[[OFNoMemException newWithObject: nil
-					 andSize: len + 1] raise];
+					 andSize: nlen] raise];
 
 	for (i = j = 0; i < len; i++) {
 		switch (s[i]) {
@@ -169,11 +175,16 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 	size_t i, j, len, nlen;
 
 	len = nlen = wcslen(s);
+	if (SIZE_MAX - len < 1)
+		[[OFOutOfRangeException newWithObject: nil] raise];
+	nlen++;
 
-	/* FIXME: Check for overflow in multiply */
-	if ((ret = malloc((len + 1) * sizeof(wchar_t))) == NULL)
+	if (nlen > SIZE_MAX / sizeof(wchar_t))
+		[[OFOutOfRangeException newWithObject: nil] raise];
+
+	if ((ret = malloc(nlen * sizeof(wchar_t))) == NULL)
 		[[OFNoMemException newWithObject: nil
-					 andSize: (len + 1) * sizeof(wchar_t)]
+					 andSize: nlen * sizeof(wchar_t)]
 		     raise];
 
 	for (i = j = 0; i < len; i++) {
@@ -242,7 +253,11 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 	va_list args;
 
 	/* Start of tag */
-	len = strlen(name) + 3;
+	len = strlen(name);
+	if (SIZE_MAX - len < 3)
+		[[OFOutOfRangeException newWithObject: nil] raise];
+	len += 3;
+
 	if ((xml = malloc(len)) == NULL)
 		[[OFNoMemException newWithObject: nil
 					 andSize: len] raise];
@@ -337,9 +352,15 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 	va_list args;
 
 	/* Start of tag */
-	len = wcslen(name) + 3;
-	/* TODO: Check for multiply overflow */
-	if ((xml = malloc(len * sizeof(wchar_t*))) == NULL)
+	len = wcslen(name);
+	if (SIZE_MAX - len < 3)
+		[[OFOutOfRangeException newWithObject: nil] raise];
+	len += 3;
+
+	if (len > SIZE_MAX / sizeof(wchar_t))
+		[[OFOutOfRangeException newWithObject: nil] raise];
+
+	if ((xml = malloc(len * sizeof(wchar_t))) == NULL)
 		[[OFNoMemException newWithObject: nil
 					 andSize: len * sizeof(wchar_t)] raise];
 
@@ -437,7 +458,10 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 	if (strs[0] == NULL)
 		return NULL;
 
-	len = strlen(*strs) + 1;
+	len = strlen(*strs);
+	if (SIZE_MAX - len < 1)
+		[[OFOutOfRangeException newWithObject: nil] raise];
+	len++;
 	
 	if ((ret = malloc(len)) == NULL)
 		[[OFNoMemException newWithObject: nil
@@ -470,9 +494,14 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 	if (strs[0] == NULL)
 		return NULL;
 
-	len = wcslen(*strs) + 1;
-	
-	/* FIXME: Check for overflow on multiply */
+	len = wcslen(*strs);
+	if (SIZE_MAX - len < 1)
+		[[OFOutOfRangeException newWithObject: nil] raise];
+	len++;
+
+	if (len > SIZE_MAX - sizeof(wchar_t))
+		[[OFOutOfRangeException newWithObject: nil] raise];
+
 	if ((ret = malloc(len * sizeof(wchar_t))) == NULL)
 		[[OFNoMemException newWithObject: nil
 					 andSize: len * sizeof(wchar_t)] raise];
