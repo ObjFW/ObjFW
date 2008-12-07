@@ -130,7 +130,7 @@
 	return (self = [str clone]);
 }
 
-- (int)compare: (OFString*)str
+- (int)compareTo: (OFString*)str
 {
 	return wcscmp(string, [str wideCString]);
 }

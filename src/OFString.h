@@ -105,7 +105,7 @@
  * \param str An OFString to compare with
  * \return An integer which is the result of the comparison, see wcscmp
  */
-- (int)compare: (OFString*)str;
+- (int)compareTo: (OFString*)str;
 
 /**
  * Append another OFString to the OFString.

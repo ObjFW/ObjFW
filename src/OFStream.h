@@ -10,7 +10,7 @@
  */
 
 /**
- * The OFStream protocol provides functions to read and write streams.
+ * The OFStream protocol provides functions to read from and write to streams.
  */
 @protocol OFStream
 /**

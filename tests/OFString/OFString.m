@@ -28,7 +28,7 @@ main()
 
 	s3 = [s1 clone];
 
-	if (![s1 compare: s3])
+	if (![s1 compareTo: s3])
 		puts("s1 and s3 match! GOOD!");
 	else {
 		puts("s1 and s3 don't match!");
@@ -38,7 +38,7 @@ main()
 	[s2 appendCString: "123"];
 	[s4 setTo: s2];
 
-	if (![s2 compare: s4])
+	if (![s2 compareTo: s4])
 		puts("s2 and s4 match! GOOD!");
 	else {
 		puts("s2 and s4 don't match!");
