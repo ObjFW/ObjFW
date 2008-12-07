@@ -11,10 +11,11 @@
 
 #import "config.h"
 
+#import <stdio.h>
 #import <stdlib.h>
 #import <string.h>
 #import <unistd.h>
-#import <wchar.h>
+#include <wchar.h>  /* include due to glibc brokenness */
 
 #import "OFSocket.h"
 #import "OFExceptions.h"

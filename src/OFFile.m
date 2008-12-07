@@ -12,9 +12,9 @@
 #import "config.h"
 
 #import <stdio.h>
-#import <unistd.h>
 #import <string.h>
-#import <wchar.h>
+#import <unistd.h>
+#include <wchar.h>  /* include due to glibc brokenness */
 
 #import <sys/types.h>
 #import <sys/stat.h>
