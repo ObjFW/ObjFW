@@ -153,7 +153,7 @@
  */
 - (size_t)writeNItems: (size_t)nitems
 	       ofSize: (size_t)size
-	   fromBuffer: (uint8_t*)buf;
+	   fromBuffer: (const uint8_t*)buf;
 
 /**
  * Writes from a buffer into the file.
@@ -163,5 +163,21 @@
  * \return The number of bytes written
  */
 - (size_t)writeNBytes: (size_t)size
-	   fromBuffer: (uint8_t*)buf;
+	   fromBuffer: (const uint8_t*)buf;
+
+/**
+ * Writes a C string into the file, without the trailing zero.
+ *
+ * \param str The C string from which the data is written to the file
+ * \return The number of bytes written
+ */
+- (size_t)writeCString: (const char*)str;
+
+/**
+ * Writes a C string into the file, without the trailing zero.
+ *
+ * \param str The wide C string from which the data is written to the file
+ * \return The number of bytes written
+ */
+- (size_t)writeWideCString: (const wchar_t*)str;
 @end

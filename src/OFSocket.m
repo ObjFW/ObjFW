@@ -14,8 +14,10 @@
 #import <stdlib.h>
 #import <string.h>
 #import <unistd.h>
+#import <wchar.h>
 
 #import "OFSocket.h"
+#import "OFExceptions.h"
 
 @implementation OFSocketAddress
 + newWithHost: (const char*)host
@@ -150,7 +152,7 @@
 }
 
 - (size_t)writeNBytes: (size_t)size
-	   fromBuffer: (uint8_t*)buf
+	   fromBuffer: (const uint8_t*)buf
 {
 	ssize_t ret;
 
@@ -161,5 +163,22 @@
 
 	/* This is safe, as we already checked < 0 */
 	return ret;
+}
+
+- (size_t)writeCString: (const char*)str
+{
+	return [self writeNBytes: strlen(str)
+		      fromBuffer: (const uint8_t*)str];
+}
+
+- (size_t)writeWideCString: (const wchar_t*)str
+{
+	size_t len = wcslen(str);
+
+	if (len > SIZE_MAX / sizeof(wchar_t))
+		[[OFOutOfRangeException newWithObject: self] raise];
+
+	return [self writeNBytes: len * sizeof(wchar_t)
+		      fromBuffer: (const uint8_t*)str];
 }
 @end

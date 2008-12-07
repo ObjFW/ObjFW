@@ -83,16 +83,13 @@
 - (void*)getMemForNItems: (size_t)nitems
 		  ofSize: (size_t)size
 {
-	size_t memsize;
-	
 	if (nitems == 0 || size == 0)
 		return NULL;
 
 	if (nitems > SIZE_MAX / size)
 		[[OFOutOfRangeException newWithObject: self] raise];
 
-	memsize = nitems * size;
-	return [self getMemWithSize: memsize];
+	return [self getMemWithSize: nitems * size];
 }
 
 - (void*)resizeMem: (void*)ptr

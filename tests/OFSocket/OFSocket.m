@@ -16,8 +16,6 @@
 #import "OFSocket.h"
 #import "OFExceptions.h"
 
-const char *sendstr = "GET / HTTP/1.1\r\nHost: webkeks.org\r\n\r\n";
-
 int
 main()
 {
@@ -34,9 +32,8 @@ main()
 		[sock connect: addr];
 		[addr free];
 
-		[sock writeNBytes: strlen(sendstr)
-		       fromBuffer: (uint8_t*)sendstr];
-
+		[sock writeCString: "GET / HTTP/1.1\r\n"
+				    "Host: webkeks.org\r\n\r\n"];
 		puts((char*)[sock readNBytes: 1024]);
 
 		[sock free];

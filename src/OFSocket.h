@@ -110,5 +110,5 @@
  * \return The number of bytes written
  */
 - (size_t)writeNBytes: (size_t)size
-	   fromBuffer: (uint8_t*)buf;
+	   fromBuffer: (const uint8_t*)buf;
 @end

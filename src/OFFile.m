@@ -13,6 +13,8 @@
 
 #import <stdio.h>
 #import <unistd.h>
+#import <string.h>
+#import <wchar.h>
 
 #import <sys/types.h>
 #import <sys/stat.h>
@@ -136,7 +138,7 @@
 
 - (size_t)writeNItems: (size_t)nitems
 	       ofSize: (size_t)size
-	   fromBuffer: (uint8_t*)buf
+	   fromBuffer: (const uint8_t*)buf
 {
 	size_t ret;
 
@@ -150,10 +152,24 @@
 }
 
 - (size_t)writeNBytes: (size_t)size
-	   fromBuffer: (uint8_t*)buf
+	   fromBuffer: (const uint8_t*)buf
 {
 	return [self writeNItems: size
 			  ofSize: 1
 		      fromBuffer: buf];
+}
+
+- (size_t)writeCString: (const char*)str
+{
+	return [self writeNItems: strlen(str)
+			  ofSize: 1
+		      fromBuffer: (const uint8_t*)str];
+}
+
+- (size_t)writeWideCString: (const wchar_t*)str
+{
+	return [self writeNItems: wcslen(str)
+			  ofSize: sizeof(wchar_t)
+		      fromBuffer: (const uint8_t*)str];
 }
 @end
