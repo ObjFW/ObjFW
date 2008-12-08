@@ -11,36 +11,55 @@
 
 #import "config.h"
 
+#import <time.h>
+#import <stdlib.h>
 #import <string.h>
 
 #import "OFTCPSocket.h"
 #import "OFExceptions.h"
 
+inline uint16_t get_port()
+{
+	uint16_t port = (uint16_t)random();
+
+	if (port < 1024)
+		port += 1024;
+
+	printf("Using port %d...\n", port);
+
+	return port;
+}
+
 int
 main()
 {
+	uint16_t port;
+
+	srandom(time(NULL));
+
 	@try {
 		OFTCPSocket *server = [OFTCPSocket new];
 		OFTCPSocket *client = [OFTCPSocket new];
 		OFTCPSocket *accepted;
-		char buf[8];
+		char buf[7];
 
 		puts("== IPv4 ==");
+		port = get_port();
 
 		[server bindOn: "localhost"
-		      withPort: 12345
+		      withPort: port
 		     andFamily: AF_INET];
 		[server listen];
 
 		[client connectTo: "localhost"
-			   onPort: 12345];
+			   onPort: port];
 
 		accepted = [server accept];
 
 		[client writeCString: "Hallo!"];
-		[accepted readNBytes: 7
+		[accepted readNBytes: 6
 			  intoBuffer: (uint8_t*)buf];
-		buf[7] = 0;
+		buf[6] = 0;
 
 		if (!strcmp(buf, "Hallo!"))
 			puts("Received correct string!");
@@ -49,30 +68,31 @@ main()
 			return 1;
 		}
 
-		memset(buf, 0, 8);
+		memset(buf, 0, 7);
 		
 		[accepted free];
 		[client close];
 		[server close];
 
 		puts("== IPv6 ==");
+		port = get_port();
 
 		[server bindOn: "localhost"
-		      withPort: 12345
+		      withPort: port
 		     andFamily: AF_INET6];
 		[server listen];
 
 		[client connectTo: "localhost"
-			   onPort: 12345];
+			   onPort: port];
 
 		accepted = [server accept];
 
-		[client writeCString: "IPv6 :)"];
-		[accepted readNBytes: 7
+		[client writeCString: "IPv6:)"];
+		[accepted readNBytes: 6
 			  intoBuffer: (uint8_t*)buf];
-		buf[7] = 0;
+		buf[6] = 0;
 
-		if (!strcmp(buf, "IPv6 :)"))
+		if (!strcmp(buf, "IPv6:)"))
 			puts("Received correct string!");
 		else {
 			puts("Received INCORRECT string!");
