@@ -66,6 +66,11 @@
 		return nil;
 	}
 
+	if (sock >= 0) {
+		/* FIXME: Throw exception */
+		return nil;
+	}
+
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
@@ -109,6 +114,11 @@
 	char portstr[6];
 
 	if (!port) {
+		/* FIXME: Throw exception */
+		return nil;
+	}
+
+	if (sock >= 0) {
 		/* FIXME: Throw exception */
 		return nil;
 	}
@@ -276,6 +286,10 @@
 		/* FIXME: Throw exception */
 		return nil;
 	}
+
+	if (saddr != NULL)
+		[self freeMem: saddr];
+	saddr_len = 0;
 
 	return self;
 }
