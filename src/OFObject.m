@@ -60,17 +60,17 @@
 
 	if (SIZE_MAX - __memchunks_size == 0 ||
 	    memchunks_size > SIZE_MAX / sizeof(void*))
-		[[OFOutOfRangeException newWithObject: self] raise];
+		@throw [OFOutOfRangeException newWithObject: self];
 	
 	if ((memchunks = realloc(__memchunks,
 	    memchunks_size * sizeof(void*))) == NULL)
-		[[OFNoMemException newWithObject: self
-					 andSize: memchunks_size] raise];
+		@throw [OFNoMemException newWithObject: self
+					       andSize: memchunks_size];
 
 	if ((ptr = malloc(size)) == NULL) {
 		free(memchunks);
-		[[OFNoMemException newWithObject: self
-					 andSize: size] raise];
+		@throw [OFNoMemException newWithObject: self
+					       andSize: size];
 	}
 
 	__memchunks = memchunks;
@@ -87,7 +87,7 @@
 		return NULL;
 
 	if (nitems > SIZE_MAX / size)
-		[[OFOutOfRangeException newWithObject: self] raise];
+		@throw [OFOutOfRangeException newWithObject: self];
 
 	return [self getMemWithSize: nitems * size];
 }
@@ -110,16 +110,16 @@
 	while (iter-- > __memchunks) {
 		if (OF_UNLIKELY(*iter == ptr)) {
 			if (OF_UNLIKELY((ptr = realloc(ptr, size)) == NULL))
-				[[OFNoMemException newWithObject: self
-							 andSize: size] raise];
+				@throw [OFNoMemException newWithObject: self
+							       andSize: size];
 			
 			*iter = ptr;
 			return ptr;
 		}
 	}
 
-	[[OFMemNotPartOfObjException newWithObject: self
-					andPointer: ptr] raise];
+	@throw [OFMemNotPartOfObjException newWithObject: self
+					      andPointer: ptr];
 	return NULL;	/* never reached, but makes gcc happy */
 }
 
@@ -139,7 +139,7 @@
 	}
 
 	if (nitems > SIZE_MAX / size)
-		[[OFOutOfRangeException newWithObject: self] raise];
+		@throw [OFOutOfRangeException newWithObject: self];
 
 	memsize = nitems * size;
 	return [self resizeMem: ptr
@@ -163,8 +163,8 @@
 
 			if (OF_UNLIKELY(__memchunks_size == 0 ||
 			    memchunks_size > SIZE_MAX / sizeof(void*)))
-				[[OFOutOfRangeException newWithObject: self]
-				    raise];
+				@throw [OFOutOfRangeException
+				    newWithObject: self];
 
 			if (OF_UNLIKELY(memchunks_size == 0)) {
 				free(ptr);
@@ -178,10 +178,9 @@
 
 			if (OF_UNLIKELY((memchunks = realloc(__memchunks,
 			    memchunks_size * sizeof(void*))) == NULL))
-				[[OFNoMemException newWithObject: self
-							 andSize:
-							     memchunks_size]
-				    raise];
+				@throw [OFNoMemException
+				    newWithObject: self
+					  andSize: memchunks_size];
 
 			free(ptr);
 			__memchunks = memchunks;
@@ -192,8 +191,8 @@
 		}
 	}
 
-	[[OFMemNotPartOfObjException newWithObject: self
-					andPointer: ptr] raise];
+	@throw [OFMemNotPartOfObjException newWithObject: self
+					      andPointer: ptr];
 	return self;	/* never reached, but makes gcc happy */
 }
 @end

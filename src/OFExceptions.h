@@ -41,12 +41,6 @@
 - free;
 
 /**
- * Raises an OFException and aborts execution if the exception is not caught.
- */
-
-- raise;
-
-/**
  * \return An error message for the exception as a C String
  */
 - (char*)cString;

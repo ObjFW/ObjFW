@@ -35,7 +35,7 @@ xf_resize_chars(char **str, size_t *len, size_t add)
 	size_t len2;
 
 	if (add > SIZE_MAX - *len)
-		[[OFOutOfRangeException newWithObject: nil] raise];
+		@throw [OFOutOfRangeException newWithObject: nil];
 	len2 = *len + add;
 	
 	if ((str2 = realloc(*str, len2)) == NULL) {
@@ -58,11 +58,11 @@ xf_resize_wchars(wchar_t **str, size_t *len, size_t add)
 	size_t len2;
 
 	if (add > SIZE_MAX - *len)
-		[[OFOutOfRangeException newWithObject: nil] raise];
+		@throw [OFOutOfRangeException newWithObject: nil];
 	len2 = *len + add;
 
 	if (len2 > SIZE_MAX / sizeof(wchar_t))
-		[[OFOutOfRangeException newWithObject: nil] raise];
+		@throw [OFOutOfRangeException newWithObject: nil];
 	
 	if ((str2 = realloc(*str, len2 * sizeof(wchar_t))) == NULL) {
 		if (*str)
@@ -117,47 +117,47 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 
 	len = nlen = strlen(s);
 	if (SIZE_MAX - len < 1)
-		[[OFOutOfRangeException newWithObject: nil] raise];
+		@throw [OFOutOfRangeException newWithObject: nil];
 	nlen++;
 
 	if ((ret = malloc(nlen)) == NULL)
-		[[OFNoMemException newWithObject: nil
-					 andSize: nlen] raise];
+		@throw [OFNoMemException newWithObject: nil
+					       andSize: nlen];
 
 	for (i = j = 0; i < len; i++) {
 		switch (s[i]) {
 		case '<':
 			if (OF_UNLIKELY(!xf_add2chars(&ret, &nlen, &j, "&lt;")))
-				[[OFNoMemException newWithObject: nil
-							 andSize: nlen + 4]
-				    raise];
+				@throw [OFNoMemException
+				    newWithObject: nil
+					  andSize: nlen + 4];
 			break;
 		case '>':
 			if (OF_UNLIKELY(!xf_add2chars(&ret, &nlen, &j, "&gt;")))
-				[[OFNoMemException newWithObject: nil
-							 andSize: nlen + 4]
-				    raise];
+				@throw [OFNoMemException
+				    newWithObject: nil
+					  andSize: nlen + 4];
 			break;
 		case '"':
 			if (OF_UNLIKELY(!xf_add2chars(&ret, &nlen, &j,
 			    "&quot;")))
-				[[OFNoMemException newWithObject: nil
-							 andSize: nlen + 6]
-				    raise];
+				@throw [OFNoMemException
+				    newWithObject: nil
+					  andSize: nlen + 6];
 			break;
 		case '\'':
 			if (OF_UNLIKELY(!xf_add2chars(&ret, &nlen, &j,
 			    "&apos;")))
-				[[OFNoMemException newWithObject: nil
-							 andSize: nlen + 6]
-				    raise];
+				@throw [OFNoMemException
+				    newWithObject: nil
+					  andSize: nlen + 6];
 			break;
 		case '&':
 			if (OF_UNLIKELY(!xf_add2chars(&ret, &nlen, &j,
 			    "&amp;")))
-				[[OFNoMemException newWithObject: nil
-							 andSize: nlen + 5]
-				    raise];
+				@throw [OFNoMemException
+				    newWithObject: nil
+					  andSize: nlen + 5];
 			break;
 		default:
 			ret[j++] = s[i];
@@ -176,63 +176,57 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 
 	len = nlen = wcslen(s);
 	if (SIZE_MAX - len < 1)
-		[[OFOutOfRangeException newWithObject: nil] raise];
+		@throw [OFOutOfRangeException newWithObject: nil];
 	nlen++;
 
 	if (nlen > SIZE_MAX / sizeof(wchar_t))
-		[[OFOutOfRangeException newWithObject: nil] raise];
+		@throw [OFOutOfRangeException newWithObject: nil];
 
 	if ((ret = malloc(nlen * sizeof(wchar_t))) == NULL)
-		[[OFNoMemException newWithObject: nil
-					 andSize: nlen * sizeof(wchar_t)]
-		     raise];
+		@throw [OFNoMemException newWithObject: nil
+					       andSize: nlen * sizeof(wchar_t)];
 
 	for (i = j = 0; i < len; i++) {
 		switch (s[i]) {
 		case L'<':
 			if (OF_UNLIKELY(!xf_add2wchars(&ret, &nlen, &j,
 			    L"&lt;")))
-				[[OFNoMemException newWithObject: nil
-							 andSize: (nlen + 4) *
-								  sizeof(
-								  wchar_t)]
-				    raise];
+				@throw [OFNoMemException
+				    newWithObject: nil
+					  andSize: (nlen + 4) *
+						   sizeof(wchar_t)];
 			break;
 		case L'>':
 			if (OF_UNLIKELY(!xf_add2wchars(&ret, &nlen, &j,
 			    L"&gt;")))
-				[[OFNoMemException newWithObject: nil
-							 andSize: (nlen + 4) *
-								  sizeof(
-								  wchar_t)]
-				    raise];
+				@throw [OFNoMemException
+				    newWithObject: nil
+					  andSize: (nlen + 4) *
+						   sizeof(wchar_t)];
 			break;
 		case L'"':
 			if (OF_UNLIKELY(!xf_add2wchars(&ret, &nlen, &j,
 			    L"&quot;")))
-				[[OFNoMemException newWithObject: nil
-							 andSize: (nlen + 6) *
-								  sizeof(
-								  wchar_t)]
-				    raise];
+				@throw [OFNoMemException
+				    newWithObject: nil
+					  andSize: (nlen + 6) *
+						   sizeof(wchar_t)];
 			break;
 		case L'\'':
 			if (OF_UNLIKELY(!xf_add2wchars(&ret, &nlen, &j,
 			    L"&apos;")))
-				[[OFNoMemException newWithObject: nil
-							 andSize: (nlen + 6) *
-								  sizeof(
-								  wchar_t)]
-				    raise];
+				@throw [OFNoMemException
+				    newWithObject: nil
+					  andSize: (nlen + 6) *
+						   sizeof(wchar_t)];
 			break;
 		case L'&':
 			if (OF_UNLIKELY(!xf_add2wchars(&ret, &nlen, &j,
 			    L"&amp;")))
-				[[OFNoMemException newWithObject: nil
-							 andSize: (nlen + 5) *
-								  sizeof(
-								  wchar_t)]
-				    raise];
+				@throw [OFNoMemException
+				    newWithObject: nil
+					  andSize: (nlen + 5) *
+						   sizeof(wchar_t)];
 			break;
 		default:
 			ret[j++] = s[i];
@@ -255,12 +249,12 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 	/* Start of tag */
 	len = strlen(name);
 	if (SIZE_MAX - len < 3)
-		[[OFOutOfRangeException newWithObject: nil] raise];
+		@throw [OFOutOfRangeException newWithObject: nil];
 	len += 3;
 
 	if ((xml = malloc(len)) == NULL)
-		[[OFNoMemException newWithObject: nil
-					 andSize: len] raise];
+		@throw [OFNoMemException newWithObject: nil
+					       andSize: len];
 
 	i = 0;
 	xml[i++] = '<';
@@ -286,11 +280,10 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 		if (OF_UNLIKELY(!xf_resize_chars(&xml, &len, 1 + strlen(arg) + 
 		    2 + strlen(esc_val) + 1))) {
 			free(esc_val);
-			[[OFNoMemException newWithObject: nil
-						 andSize: len + 1 +
-							  strlen(arg) + 2 +
-							  strlen(esc_val) + 1]
-			    raise];
+			@throw [OFNoMemException
+			    newWithObject: nil
+				  andSize: len + 1 + strlen(arg) + 2 +
+					   strlen(esc_val) + 1];
 		}
 
 		xml[i++] = ' ';
@@ -310,22 +303,19 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 	if (close) {
 		if (data == NULL) {
 			if (!xf_resize_chars(&xml, &len, 2 - 1))
-				[[OFNoMemException newWithObject: nil
-							 andSize: len + 2 - 1]
-				    raise];
+				@throw [OFNoMemException
+				    newWithObject: nil
+					  andSize: len + 2 - 1];
 	
 			xml[i++] = '/';
 			xml[i++] = '>';
 		} else {
 			if (!xf_resize_chars(&xml, &len, 1 + strlen(data) +
 			    2 + strlen(name) + 1 - 1))
-				[[OFNoMemException newWithObject: nil
-							 andSize: len + 1 +
-								  strlen(data) +
-								  2 +
-								  strlen(name) +
-								  1 - 1]
-				    raise];
+				@throw [OFNoMemException
+				    newWithObject: nil
+					  andSize: len + 1 + strlen(data) + 2 +
+						   strlen(name) + 1 - 1];
 	
 			xml[i++] = '>';
 			memcpy(xml + i, data, strlen(data));
@@ -354,15 +344,15 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 	/* Start of tag */
 	len = wcslen(name);
 	if (SIZE_MAX - len < 3)
-		[[OFOutOfRangeException newWithObject: nil] raise];
+		@throw [OFOutOfRangeException newWithObject: nil];
 	len += 3;
 
 	if (len > SIZE_MAX / sizeof(wchar_t))
-		[[OFOutOfRangeException newWithObject: nil] raise];
+		@throw [OFOutOfRangeException newWithObject: nil];
 
 	if ((xml = malloc(len * sizeof(wchar_t))) == NULL)
-		[[OFNoMemException newWithObject: nil
-					 andSize: len * sizeof(wchar_t)] raise];
+		@throw [OFNoMemException newWithObject: nil
+					       andSize: len * sizeof(wchar_t)];
 
 	i = 0;
 	xml[i++] = L'<';
@@ -388,12 +378,11 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 		if (OF_UNLIKELY(!xf_resize_wchars(&xml, &len, 1 + wcslen(arg) +
 		    2 + wcslen(esc_val) + 1))) {
 			free(esc_val);
-			[[OFNoMemException newWithObject: nil
-						 andSize: (len + 1 +
-							  wcslen(arg) + 2 +
-							  wcslen(esc_val) + 1) *
-							  sizeof(wchar_t)]
-			    raise];
+			@throw [OFNoMemException
+			    newWithObject: nil
+				  andSize: (len + 1 + wcslen(arg) + 2 +
+					   wcslen(esc_val) + 1) *
+					   sizeof(wchar_t)];
 		}
 
 		xml[i++] = L' ';
@@ -413,26 +402,21 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 	if (close) {
 		if (data == NULL) {
 			if (!xf_resize_wchars(&xml, &len, 2 - 1))
-				[[OFNoMemException newWithObject: nil
-							 andSize: (len + 2
-								  - 1) * sizeof(
-								  wchar_t)]
-				    raise];
+				@throw [OFNoMemException
+				    newWithObject: nil
+					  andSize: (len + 2 - 1) *
+						   sizeof(wchar_t)];
 	
 			xml[i++] = L'/';
 			xml[i++] = L'>';
 		} else {
 			if (!xf_resize_wchars(&xml, &len, 1 + wcslen(data) +
 			    2 + wcslen(name) + 1 - 1))
-				[[OFNoMemException newWithObject: nil
-							 andSize: (len + 1 +
-								  wcslen(data) +
-								  2 +
-								  wcslen(name) +
-								  1 -
-								  1) * sizeof(
-								  wchar_t)]
-				    raise];
+				@throw [OFNoMemException
+				    newWithObject: nil
+					  andSize: (len + 1 + wcslen(data) + 2 +
+						   wcslen(name) + 1 - 1) *
+						   sizeof(wchar_t)];
 	
 			xml[i++] = L'>';
 			wmemcpy(xml + i, data, wcslen(data));
@@ -460,12 +444,12 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 
 	len = strlen(*strs);
 	if (SIZE_MAX - len < 1)
-		[[OFOutOfRangeException newWithObject: nil] raise];
+		@throw [OFOutOfRangeException newWithObject: nil];
 	len++;
 	
 	if ((ret = malloc(len)) == NULL)
-		[[OFNoMemException newWithObject: nil
-					 andSize: len] raise];
+		@throw [OFNoMemException newWithObject: nil
+					       andSize: len];
 
 	memcpy(ret, strs[0], len - 1);
 	pos = len - 1;
@@ -473,9 +457,9 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 	for (i = 1; strs[i] != NULL; i++) {
 		if (OF_UNLIKELY(!xf_add2chars(&ret, &len, &pos, strs[i]))) {
 			free(ret);
-			[[OFNoMemException newWithObject: nil
-						 andSize: len + strlen(strs[i])]
-			    raise];
+			@throw [OFNoMemException
+			    newWithObject: nil
+				  andSize: len + strlen(strs[i])];
 		}
 	}
 
@@ -496,15 +480,15 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 
 	len = wcslen(*strs);
 	if (SIZE_MAX - len < 1)
-		[[OFOutOfRangeException newWithObject: nil] raise];
+		@throw [OFOutOfRangeException newWithObject: nil];
 	len++;
 
 	if (len > SIZE_MAX - sizeof(wchar_t))
-		[[OFOutOfRangeException newWithObject: nil] raise];
+		@throw [OFOutOfRangeException newWithObject: nil];
 
 	if ((ret = malloc(len * sizeof(wchar_t))) == NULL)
-		[[OFNoMemException newWithObject: nil
-					 andSize: len * sizeof(wchar_t)] raise];
+		@throw [OFNoMemException newWithObject: nil
+					       andSize: len * sizeof(wchar_t)];
 
 	wmemcpy(ret, strs[0], len - 1);
 	pos = len - 1;
@@ -512,11 +496,10 @@ xf_add2wchars(wchar_t **str, size_t *len, size_t *pos, const wchar_t *add)
 	for (i = 1; strs[i] != NULL; i++) {
 		if (!xf_add2wchars(&ret, &len, &pos, strs[i])) {
 			free(ret);
-			[[OFNoMemException newWithObject: nil
-						 andSize: (wcslen(strs[i]) +
-							  len) * sizeof(
-							  wchar_t)]
-			    raise];
+			@throw [OFNoMemException
+			    newWithObject: nil
+				  andSize: (wcslen(strs[i]) + len) *
+					   sizeof(wchar_t)];
 		}
 	}
 

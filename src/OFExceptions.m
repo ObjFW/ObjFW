@@ -52,12 +52,6 @@
 	return [super free];
 }
 
-- raise
-{
-	@throw self;
-	return self;
-}
-
 - (char*)cString
 {
 	return string;

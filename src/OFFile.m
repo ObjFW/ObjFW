@@ -69,9 +69,9 @@
 {
 	if ((self = [super init])) {
 		if ((fp = fopen(path, mode)) == NULL)
-			[[OFOpenFileFailedException newWithObject: self
-							  andPath: path
-							  andMode: mode] raise];
+			@throw [OFOpenFileFailedException newWithObject: self
+								andPath: path
+								andMode: mode];
 	}
 	return self;
 }
@@ -94,9 +94,9 @@
 	size_t ret;
 
 	if ((ret = fread(buf, size, nitems, fp)) == 0 && !feof(fp))
-		[[OFReadFailedException newWithObject: self
-					      andSize: size
-					    andNItems: nitems] raise];
+		@throw [OFReadFailedException newWithObject: self
+						    andSize: size
+						  andNItems: nitems];
 
 	return ret;
 }
@@ -143,9 +143,9 @@
 
 	if ((ret = fwrite(buf, size, nitems, fp)) == 0 &&
 	    size != 0 && nitems != 0)
-		[[OFWriteFailedException newWithObject: self
-					       andSize: size
-					     andNItems: nitems] raise];
+		@throw [OFWriteFailedException newWithObject: self
+						     andSize: size
+						   andNItems: nitems];
 	
 	return ret;
 }

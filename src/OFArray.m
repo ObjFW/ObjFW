@@ -56,7 +56,7 @@ static size_t lastpagebyte = 0;
 - (void*)item: (size_t)item
 {
 	if (item >= items)
-		[[OFOutOfRangeException newWithObject: self] raise];
+		@throw [OFOutOfRangeException newWithObject: self];
 
 	return data + item * itemsize;
 }
@@ -69,7 +69,7 @@ static size_t lastpagebyte = 0;
 - add: (void*)item
 {
 	if (SIZE_MAX - items < 1)
-		[[OFOutOfRangeException newWithObject: self] raise];
+		@throw [OFOutOfRangeException newWithObject: self];
 
 	data = [self resizeMem: data
 		      toNItems: items + 1
@@ -84,7 +84,7 @@ static size_t lastpagebyte = 0;
  fromCArray: (void*)carray
 {
 	if (nitems > SIZE_MAX - items)
-		[[OFOutOfRangeException newWithObject: self] raise];
+		@throw [OFOutOfRangeException newWithObject: self];
 
 	data = [self resizeMem: data
 		      toNItems: items + nitems
@@ -99,7 +99,7 @@ static size_t lastpagebyte = 0;
 - removeNItems: (size_t)nitems
 {
 	if (nitems > items)
-		[[OFOutOfRangeException newWithObject: self] raise];
+		@throw [OFOutOfRangeException newWithObject: self];
 
 	data = [self resizeMem: data
 		      toNItems: items - nitems
@@ -133,7 +133,7 @@ static size_t lastpagebyte = 0;
 	size_t nsize;
 
 	if (SIZE_MAX - items < 1 || items + 1 > SIZE_MAX / itemsize)
-		[[OFOutOfRangeException newWithObject: self] raise];
+		@throw [OFOutOfRangeException newWithObject: self];
 
 	nsize = ((items + 1) * itemsize + lastpagebyte) & ~lastpagebyte;
 
@@ -153,7 +153,7 @@ static size_t lastpagebyte = 0;
 	size_t nsize;
 
 	if (nitems > SIZE_MAX - items || items + nitems > SIZE_MAX / itemsize)
-		[[OFOutOfRangeException newWithObject: self] raise];
+		@throw [OFOutOfRangeException newWithObject: self];
 
 	nsize = ((items + nitems) * itemsize + lastpagebyte) & ~lastpagebyte;
 
@@ -173,7 +173,7 @@ static size_t lastpagebyte = 0;
 	size_t nsize;
 
 	if (nitems > items)
-		[[OFOutOfRangeException newWithObject: self] raise];
+		@throw [OFOutOfRangeException newWithObject: self];
 
 	nsize = ((items - nitems) * itemsize + lastpagebyte) & ~lastpagebyte;
 
