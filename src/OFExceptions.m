@@ -31,7 +31,7 @@
 @implementation OFException
 + newWithObject: (id)obj
 {
-	return [[OFException alloc] initWithObject: obj];
+	return [[self alloc] initWithObject: obj];
 }
 
 - initWithObject: (id)obj
@@ -62,8 +62,8 @@
 + newWithObject: (id)obj
 	andSize: (size_t)size
 {
-	return [[OFNoMemException alloc] initWithObject: obj
-						andSize: size];
+	return [[self alloc] initWithObject: obj
+				    andSize: size];
 }
 
 - initWithObject: (id)obj
@@ -96,8 +96,8 @@
 + newWithObject: (id)obj
      andPointer: (void*)ptr
 {
-	return [[OFMemNotPartOfObjException alloc] initWithObject: obj
-						       andPointer: ptr];
+	return [[self alloc] initWithObject: obj
+				 andPointer: ptr];
 }
 
 - initWithObject: (id)obj
@@ -133,7 +133,7 @@
 @implementation OFOutOfRangeException
 + newWithObject: (id)obj
 {
-	return [[OFOutOfRangeException alloc] initWithObject: obj];
+	return [[self alloc] initWithObject: obj];
 }
 
 - initWithObject: (id)obj
@@ -158,9 +158,9 @@
 	andPath: (const char*)p
 	andMode: (const char*)m
 {
-	return [[OFOpenFileFailedException alloc] initWithObject: obj
-							 andPath: p
-							 andMode: m];
+	return [[self alloc] initWithObject: obj
+				    andPath: p
+				    andMode: m];
 }
 
 - initWithObject: (id)obj
@@ -212,9 +212,9 @@
 	andSize: (size_t)size
       andNItems: (size_t)nitems
 {
-	return [[OFReadOrWriteFailedException alloc] initWithObject: obj
-							    andSize: size
-							  andNItems: nitems];
+	return [[self alloc] initWithObject: obj
+				    andSize: size
+				  andNItems: nitems];
 }
 
 - initWithObject: (id)obj

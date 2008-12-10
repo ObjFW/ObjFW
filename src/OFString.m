@@ -22,17 +22,17 @@
 @implementation OFString
 + new
 {
-	return [[OFString alloc] init];
+	return [[self alloc] init];
 }
 
 + newFromCString: (const char*)str
 {
-	return [[OFString alloc] initFromCString: str];
+	return [[self alloc] initFromCString: str];
 }
 
 + newFromWideCString: (const wchar_t*)str
 {
-	return [[OFString alloc] initFromWideCString: str];
+	return [[self alloc] initFromWideCString: str];
 }
 
 - init

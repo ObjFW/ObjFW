@@ -24,7 +24,7 @@ static size_t lastpagebyte = 0;
 @implementation OFArray
 + newWithItemSize: (size_t)is
 {
-	return [[OFArray alloc] initWithItemSize: is];
+	return [[self alloc] initWithItemSize: is];
 }
 
 - initWithItemSize: (size_t)is
@@ -112,11 +112,6 @@ static size_t lastpagebyte = 0;
 @end
 
 @implementation OFBigArray
-+ newWithItemSize: (size_t)is
-{
-	return [[OFBigArray alloc] initWithItemSize: is];
-}
-
 - initWithItemSize: (size_t)is
 {
 	if (lastpagebyte == 0)

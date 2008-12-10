@@ -103,14 +103,6 @@
 }
 
 /**
- * Creates a new OFBigArray whose items all have the same size.
- *
- * \param is The size of each element in the OFBigArray
- * \return A new allocated and initialized OFBigArray
- */
-+ newWithItemSize: (size_t)is;
-
-/**
  * Initializes an already allocated OFBigArray whose items all have the same
  * size.
  * 

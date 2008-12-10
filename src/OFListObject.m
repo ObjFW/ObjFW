@@ -18,7 +18,7 @@
 @implementation OFListObject
 + newWithData: (void*)ptr
 {
-	return [[OFListObject alloc] initWithData: ptr];
+	return [[self alloc] initWithData: ptr];
 }
 
 - initWithData: (void*)ptr

@@ -25,7 +25,7 @@
 + newWithPath: (const char*)path
       andMode: (const char*)mode
 {
-	return [[OFFile alloc] initWithPath: path
+	return [[self alloc] initWithPath: path
 				    andMode: mode];
 }
 
