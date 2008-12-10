@@ -287,6 +287,8 @@
 		return nil;
 	}
 
+	sock = -1;
+
 	if (saddr != NULL)
 		[self freeMem: saddr];
 	saddr_len = 0;
