@@ -53,9 +53,9 @@
 			string = NULL;
 		} else {
 			if ((length = mbstowcs(NULL, str, 0)) == (size_t)-1) {
-				/* FIXME: Throw exception */
 				[super free];
-				return nil;
+				@throw [OFCharsetConversionFailedException
+				    newWithObject: nil];
 			}
 
 			string = [self getMemForNItems: length + 1
@@ -93,17 +93,14 @@
 	char *str;
 	size_t len;
 
-	if ((len = wcstombs(NULL, string, 0)) == (size_t)-1) {
-		/* FIXME: Throw exception */
-		return NULL;
-	}
+	if ((len = wcstombs(NULL, string, 0)) == (size_t)-1)
+		@throw [OFCharsetConversionFailedException newWithObject: self];
 
 	str = [self getMemWithSize: len + 1];
 
 	if (wcstombs(str, string, len + 1) != len) {
-		/* FIXME: Throw exception */
 		[self freeMem: str];
-		return NULL;
+		@throw [OFCharsetConversionFailedException newWithObject: self];
 	}
 
 	return str;
@@ -148,18 +145,15 @@
 	if (string == NULL) 
 		return [self setTo: [OFString newFromCString: str]];
 
-	if ((strlength = mbstowcs(NULL, str, 0)) == (size_t)-1) {
-		/* FIXME: Throw exception */
-		return nil;
-	} 
+	if ((strlength = mbstowcs(NULL, str, 0)) == (size_t)-1)
+		@throw [OFCharsetConversionFailedException newWithObject: self];
 
 	tmpstr = [self getMemForNItems: strlength + 1
 				ofSize: sizeof(wchar_t)];
 
 	if (mbstowcs(tmpstr, str, strlength) != strlength) {
-		/* FIXME: Throw exception */
 		[self freeMem: tmpstr];
-		return nil;
+		@throw [OFCharsetConversionFailedException newWithObject: self];
 	}
 
 	newlen = length + strlength;

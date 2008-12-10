@@ -140,6 +140,16 @@
 @end
 
 /**
+ * An OFException indicating that the conversation between two charsets failed.
+ */
+@interface OFCharsetConversionFailedException: OFException {}
+/**
+ * \return An error message for the exception as a C String
+ */
+- (char*)cString;
+@end
+
+/**
  * An OFException indicating the file couldn't be opened.
  */
 @interface OFOpenFileFailedException: OFException

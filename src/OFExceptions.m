@@ -146,6 +146,19 @@
 }
 @end
 
+@implementation OFCharsetConversionFailedException
+- (char*)cString
+{
+	if (string != NULL)
+		return string;
+	
+	asprintf(&string, "Charset conversion failed in object of classs %s!",
+	    [object name]);
+
+	return string;
+}
+@end
+
 @implementation OFOpenFileFailedException
 + newWithObject: (id)obj
 	andPath: (const char*)p
