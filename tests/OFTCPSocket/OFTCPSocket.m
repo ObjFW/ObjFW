@@ -104,6 +104,7 @@ main()
 		[server close];
 	} @catch(OFException *e) {
 		printf("EXCEPTION: %s\n", [e cString]);
+		return 1;
 	}
 
 	return 0;

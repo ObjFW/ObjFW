@@ -66,10 +66,8 @@
 		return nil;
 	}
 
-	if (sock >= 0) {
-		/* FIXME: Throw exception */
-		return nil;
-	}
+	if (sock >= 0)
+		@throw [OFAlreadyConnectedException newWithObject: self];
 
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
@@ -118,10 +116,8 @@
 		return nil;
 	}
 
-	if (sock >= 0) {
-		/* FIXME: Throw exception */
-		return nil;
-	}
+	if (sock >= 0)
+		@throw [OFAlreadyConnectedException newWithObject: self];
 
 	if ((sock = socket(family, SOCK_STREAM, 0)) < 0) {
 		/* FIXME: Throw exception */
@@ -152,10 +148,8 @@
 
 - listenWithBackLog: (int)backlog
 {
-	if (sock < 0) {
-		/* FIXME: Throw exception */
-		return nil;
-	}
+	if (sock < 0)
+		@throw [OFNotConnectedException newWithObject: self];
 
 	if (listen(sock, backlog) < 0 ) {
 		/* FIXME: Throw exception */
@@ -167,10 +161,8 @@
 
 - listen
 {
-	if (sock < 0) {
-		/* FIXME: Throw exception */
-		return nil;
-	}
+	if (sock < 0)
+		@throw [OFNotConnectedException newWithObject: self];
 
 	if (listen(sock, 5) < 0 ) {
 		/* FIXME: Throw exception */
@@ -214,10 +206,8 @@
 {
 	ssize_t ret;
 
-	if (sock < 0) {
-		/* FIXME: Throw exception */
-		return 0;
-	}
+	if (sock < 0) 
+		@throw [OFNotConnectedException newWithObject: self];
 
 	if ((ret = recv(sock, buf, size, 0)) < 0) {
 		/* FIXME: Throw exception */
@@ -232,10 +222,8 @@
 {
 	uint8_t *ret;
 
-	if (sock < 0) {
-		/* FIXME: Throw exception */
-		return NULL;
-	}
+	if (sock < 0) 
+		@throw [OFNotConnectedException newWithObject: self];
 
 	ret = [self getMemWithSize: size];
 
@@ -255,10 +243,8 @@
 {
 	ssize_t ret;
 
-	if (sock < 0) {
-		/* FIXME: Throw exception */
-		return 0;
-	}
+	if (sock < 0) 
+		@throw [OFNotConnectedException newWithObject: self];
 
 	if ((ret = send(sock, buf, size, 0)) < 0) {
 		/* FIXME: Throw exception */
@@ -271,10 +257,8 @@
 
 - (size_t)writeCString: (const char*)str
 {
-	if (sock < 0) {
-		/* FIXME: Throw exception */
-		return 0;
-	}
+	if (sock < 0) 
+		@throw [OFNotConnectedException newWithObject: self];
 
 	return [self writeNBytes: strlen(str)
 		      fromBuffer: (const uint8_t*)str];
@@ -282,10 +266,8 @@
 
 - close
 {
-	if (sock < 0) {
-		/* FIXME: Throw exception */
-		return nil;
-	}
+	if (sock < 0) 
+		@throw [OFNotConnectedException newWithObject: self];
 
 	sock = -1;
 

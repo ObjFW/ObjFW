@@ -52,6 +52,11 @@
 	return [super free];
 }
 
+- (id)object
+{
+	return object;
+}
+
 - (char*)cString
 {
 	return string;
@@ -80,8 +85,8 @@
 	if (string != NULL)
 		return string;
 
-	asprintf(&string, "ERROR: Could not allocate %zu bytes for object of "
-	    "class %s!\n", req_size, object != nil ? [object name] : "(null)");
+	asprintf(&string, "Could not allocate %zu bytes for object of class "
+	    "%s!", req_size, object != nil ? [object name] : "(null)");
 
 	return string;
 }
@@ -114,12 +119,10 @@
 	if (string != NULL)
 		return string;
 
-	asprintf(&string, "ERROR: Memory at %p was not allocated as part of "
-	    "object of class\n"
-	    "ERROR: %s!\n"
-	    "ERROR: -> Not changing memory allocation!\n"
-	    "ERROR: (Hint: It is also possible that you tried to free the same "
-	    "memory twice!)\n", pointer, [object name]);
+	asprintf(&string, "Memory at %p was not allocated as part of object "
+	    "of class %s, thus the memory allocation was not changed! It is "
+	    "also possible that there was an attempt to free the same memory "
+	    "twice.", pointer, [object name]);
 
 	return string;
 }
@@ -131,22 +134,12 @@
 @end
 
 @implementation OFOutOfRangeException
-+ newWithObject: (id)obj
-{
-	return [[self alloc] initWithObject: obj];
-}
-
-- initWithObject: (id)obj
-{
-	return (self = [super initWithObject: obj]);
-}
-
 - (char*)cString
 {
 	if (string != NULL)
 		return string;
 
-	asprintf(&string, "ERROR: Value out of range in object of class %s!\n",
+	asprintf(&string, "Value out of range in object of class %s!",
 	    object != nil ? [object name] : "(null)");
 
 	return string;
@@ -190,8 +183,8 @@
 	if (string != NULL)
 		return string;
 
-	asprintf(&string, "ERROR: Failed to open file %s with mode %s "
-	    "in object of class %s!\n", path, mode, [self name]);
+	asprintf(&string, "Failed to open file %s with mode %s in object of "
+	    "class %s!", path, mode, [self name]);
 
 	return string;
 }
@@ -246,8 +239,8 @@
 	if (string != NULL)
 		return string;;
 
-	asprintf(&string, "ERROR: Failed to read %zu items of size %zu in "
-	    "object of class %s!\n", req_items, req_size, [object name]);
+	asprintf(&string, "Failed to read %zu items of size %zu in object of "
+	    "class %s!", req_items, req_size, [object name]);
 
 	return string;
 }
@@ -259,8 +252,34 @@
 	if (string != NULL)
 		return string;
 
-	asprintf(&string, "ERROR: Failed to write %zu items of size %zu in "
-	    "object of class %s!\n", req_items, req_size, [object name]);
+	asprintf(&string, "Failed to write %zu items of size %zu in object of "
+	    "class %s!", req_items, req_size, [object name]);
+
+	return string;
+}
+@end
+
+@implementation OFNotConnectedException
+- (char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "The socket of type %s is not connected or bound!",
+	    [object name]);
+
+	return string;
+}
+@end
+
+@implementation OFAlreadyConnectedException
+- (char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "The socket of type %s is already connected or bound "
+	    "and thus can't be connected or bound again!", [object name]);
 
 	return string;
 }

@@ -41,6 +41,11 @@
 - free;
 
 /**
+ * \return The object that caused the exception
+ */
+- (id)object;
+
+/**
  * \return An error message for the exception as a C String
  */
 - (char*)cString;
@@ -129,20 +134,9 @@
  */
 @interface OFOutOfRangeException: OFException {}
 /**
- * Creates a new out of range exception.
- *
- * \param obj The object which caused the exception
- * \return A new out of range exception
+ * \return An error message for the exception as a C String
  */
-+ newWithObject: (id)obj;
-
-/**
- * Initializes an already allocated out of range exception.
- *
- * \param obj The object which caused the exception
- * \return An initialized out of range exception
- */
-- initWithObject: (id)obj;
+- (char*)cString;
 @end
 
 /**
@@ -256,6 +250,27 @@
 @interface OFWriteFailedException: OFReadOrWriteFailedException {}
 /**
  * \return An error message for the exception as a C String
+ */
+- (char*)cString;
+@end
+
+/**
+ * An OFException indicating a socket is not connected or bound.
+ */
+@interface OFNotConnectedException: OFException {}
+/**
+ * \return An error message for the exception as a C string.
+ */
+- (char*)cString;
+@end
+
+/**
+ * An OFException indicating an attempt to connect or bind an already connected
+ * or bound socket 
+ */
+@interface OFAlreadyConnectedException: OFException {}
+/**
+ * \return An error message for the exception as a C string.
  */
 - (char*)cString;
 @end

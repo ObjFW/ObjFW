@@ -24,7 +24,7 @@
 	} @catch (exception *e) {			\
 		caught = YES;				\
 		puts("CAUGHT! Error string was:");	\
-		fputs([e cString], stdout);		\
+		puts([e cString]);			\
 		puts("Resuming...");			\
 	}						\
 	if (!caught) {					\
