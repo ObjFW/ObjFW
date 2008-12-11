@@ -303,3 +303,13 @@
  */
 - (char*)cString;
 @end
+
+/**
+ * An OFException indicating that the specified port is invalid.
+ */
+@interface OFInvalidPortException: OFException
+/**
+ * \return An error message for the exception as a C string.
+ */
+- (char*)cString;
+@end

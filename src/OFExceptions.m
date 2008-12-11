@@ -325,3 +325,17 @@
 	return string;
 }
 @end
+
+@implementation OFInvalidPortException
+- (char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "The port specified is not valid for a socket of "
+	    "type %s! This usually means you tried to use port 0, which is an "
+	    "invalid port.", [object name]);
+
+	return string;
+}
+@end

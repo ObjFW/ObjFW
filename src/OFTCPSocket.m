@@ -61,10 +61,8 @@
 	struct addrinfo hints, *res, *res0;
 	char portstr[6];
 
-	if (!port) {
-		/* FIXME: Throw exception */
-		return nil;
-	}
+	if (!port)
+		@throw [OFInvalidPortException newWithObject: self];
 
 	if (sock >= 0)
 		@throw [OFAlreadyConnectedException newWithObject: self];
@@ -111,10 +109,8 @@
 	struct addrinfo hints, *res;
 	char portstr[6];
 
-	if (!port) {
-		/* FIXME: Throw exception */
-		return nil;
-	}
+	if (!port)
+		@throw [OFInvalidPortException newWithObject: self];
 
 	if (sock >= 0)
 		@throw [OFAlreadyConnectedException newWithObject: self];
