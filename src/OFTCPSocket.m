@@ -209,10 +209,9 @@
 	if (sock < 0) 
 		@throw [OFNotConnectedException newWithObject: self];
 
-	if ((ret = recv(sock, buf, size, 0)) < 0) {
-		/* FIXME: Throw exception */
-		return 0;
-	}
+	if ((ret = recv(sock, buf, size, 0)) < 0)
+		@throw [OFReadFailedException newWithObject: self
+						    andSize: size];
 
 	/* This is safe, as we already checked < 0 */
 	return ret;
@@ -246,10 +245,9 @@
 	if (sock < 0) 
 		@throw [OFNotConnectedException newWithObject: self];
 
-	if ((ret = send(sock, buf, size, 0)) < 0) {
-		/* FIXME: Throw exception */
-		return 0;
-	}
+	if ((ret = send(sock, buf, size, 0)) < 0)
+		@throw [OFWriteFailedException newWithObject: self
+						     andSize: size];
 
 	/* This is safe, as we already checked < 0 */
 	return ret;
