@@ -50,9 +50,4 @@
  * \return The number of bytes written
  */
 - (size_t)writeCString: (const char*)str;
-
-/**
- * Closes the stream.
- */
-- close;
 @end

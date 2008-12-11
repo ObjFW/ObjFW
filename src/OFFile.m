@@ -79,6 +79,7 @@
 - free
 {
 	fclose(fp);
+
 	return [super free];
 }
 
@@ -163,15 +164,5 @@
 	return [self writeNItems: strlen(str)
 			  ofSize: 1
 		      fromBuffer: (const uint8_t*)str];
-}
-
-- close
-{
-	if (fclose(fp)) {
-		/* FIXME: Throw exception */
-		return nil;
-	}
-
-	return self;
 }
 @end

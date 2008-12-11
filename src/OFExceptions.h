@@ -11,8 +11,6 @@
 
 #import "OFObject.h"
 
-/* FIXME: Exceptions should include which type of error occoured (fopen etc.) */
-
 /**
  * The OFException class is the base class for all exceptions in ObjFW.
  */

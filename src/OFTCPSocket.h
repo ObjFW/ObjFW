@@ -76,4 +76,9 @@
  * Accept an incoming connection.
  */
 - (OFTCPSocket*)accept;
+
+/**
+ * Closes the socket.
+ */
+- close;
 @end
