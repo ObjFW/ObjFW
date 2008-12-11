@@ -205,6 +205,7 @@
 {
 	size_t req_size;
 	size_t req_items;
+	BOOL has_items;
 }
 
 /**
@@ -220,6 +221,16 @@
       andNItems: (size_t)nitems;
 
 /**
+ * Creates a new read or write failed exception.
+ *
+ * \param obj The object which caused the exception
+ * \param size The requested size of the data that couldn't be read / written
+ * \return A new open file failed exception
+ */
++ newWithObject: (id)obj
+	andSize: (size_t)size;
+
+/**
  * Initializes an already allocated read or write failed exception.
  *
  * \param obj The object which caused the exception
@@ -230,6 +241,16 @@
 - initWithObject: (id)obj
 	 andSize: (size_t)size
        andNItems: (size_t)nitems;
+
+/**
+ * Initializes an already allocated read or write failed exception.
+ *
+ * \param obj The object which caused the exception
+ * \param size The requested size of the data that couldn't be read / written
+ * \return A new open file failed exception
+ */
+- initWithObject: (id)obj
+	 andSize: (size_t)size;
 
 /**
  * \return The requested size of the data that couldn't be read / written

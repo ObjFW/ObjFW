@@ -223,6 +223,13 @@
 				  andNItems: nitems];
 }
 
++ newWithObject: (id)obj
+	andSize: (size_t)size
+{
+	return [[self alloc] initWithObject: obj
+				    andSize: size];
+}
+
 - initWithObject: (id)obj
 	 andSize: (size_t)size
        andNItems: (size_t)nitems
@@ -230,6 +237,19 @@
 	if ((self = [super initWithObject: obj])) {
 		req_size = size;
 		req_items = nitems;
+		has_items = YES;
+	}
+
+	return self;
+}
+
+- initWithObject: (id)obj
+	 andSize: (size_t)size
+{
+	if ((self = [super initWithObject: obj])) {
+		req_size = size;
+		req_items = 0;
+		has_items = NO;
 	}
 
 	return self;
@@ -252,8 +272,12 @@
 	if (string != NULL)
 		return string;;
 
-	asprintf(&string, "Failed to read %zu items of size %zu in object of "
-	    "class %s!", req_items, req_size, [object name]);
+	if (has_items)
+		asprintf(&string, "Failed to read %zu items of size %zu in "
+		    "object of class %s!", req_items, req_size, [object name]);
+	else
+		asprintf(&string, "Failed to read %zu bytes in object of class "
+		    "%s!", req_size, [object name]);
 
 	return string;
 }
@@ -265,8 +289,12 @@
 	if (string != NULL)
 		return string;
 
-	asprintf(&string, "Failed to write %zu items of size %zu in object of "
-	    "class %s!", req_items, req_size, [object name]);
+	if (has_items)
+		asprintf(&string, "Failed to write %zu items of size %zu in "
+		    "object of class %s!", req_items, req_size, [object name]);
+	else
+		asprintf(&string, "Failed to write %zu bytes in object of "
+		    "class %s!", req_size, [object name]);
 
 	return string;
 }
