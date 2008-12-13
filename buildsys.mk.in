@@ -123,19 +123,18 @@ depend: pre-depend ${SRCS}
 	done; \
 	if test x"$$regen" = x"1" -a x"$$deps" != "x"; then \
 		${DEPEND_STATUS}; \
-		if ${MAKE} ${MFLAGS} $$deps; then \
-			test -f .deps && rm .deps; \
-			cat $$deps >.deps; \
+		if ${MAKE} ${MFLAGS} $$deps && cat $$deps >.deps; then \
 			rm -f $$deps; \
 			${DEPEND_OK}; \
 		else \
 			:> .deps; \
+			touch -t 0001010000 .deps; \
 			${DEPEND_FAILED}; \
 		fi; \
 	fi
 
 .c.dep .cc.dep .cxx.dep .m.dep:
-	${CPP} ${CPPFLAGS} -M $< >$@ || rm -f $@
+	${CPP} ${CPPFLAGS} -M $< >$@ || (rm -f $@; exit 1)
 
 .d.dep:
 .xpm.dep:
