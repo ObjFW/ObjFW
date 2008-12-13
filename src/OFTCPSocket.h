@@ -11,12 +11,28 @@
 
 #import <stdio.h>
 
+/*
+ * Headers for UNIX systems
+ */
+#ifndef _WIN32
 #import <sys/types.h>
 #import <sys/socket.h>
 #import <netdb.h>
+#else
+#endif
 
 #import "OFObject.h"
 #import "OFStream.h"
+
+/*
+ * Headers for Win32
+ *
+ * These must be imported after objc/Object and thus OFObject!
+ */
+#ifdef _WIN32
+#import <winsock2.h>
+#import <ws2tcpip.h>
+#endif
 
 /**
  * The OFTCPSocket class provides functions to create and use sockets.

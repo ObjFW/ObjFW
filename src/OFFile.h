@@ -10,7 +10,10 @@
  */
 
 #import <stdio.h>
+
+#ifndef _WIN32
 #import <sys/types.h>
+#endif
 
 #import "OFObject.h"
 #import "OFStream.h"
@@ -33,16 +36,22 @@
 /**
  * Changes the mode of a file.
  *
+ * Not available on Windows.
+ *
  * \param path The path to the file of which the mode should be changed as a
  *	  C string
  * \param mode The new mode for the file
  * \return A boolean whether the operation succeeded
  */
+#ifndef _WIN32
 + (BOOL)changeModeOfFile: (const char*)path
 		  toMode: (mode_t)mode;
+#endif
 
 /**
  * Changes the owner of a file.
+ *
+ * Not available on Windows.
  *
  * \param path The path to the file of which the owner should be changed as a
  *	  C string
@@ -50,9 +59,11 @@
  * \param group The new group for the file
  * \return A boolean whether the operation succeeded
  */
+#ifndef _WIN32
 + (BOOL)changeOwnerOfFile: (const char*)path
 		  toOwner: (uid_t)owner
 		 andGroup: (gid_t)group;
+#endif
 
 /**
  * Deletes a file.
@@ -65,22 +76,30 @@
 /**
  * Hardlinks a file.
  *
+ * Not available on Windows.
+ *
  * \param src The path to the file of which should be linked as a C string
  * \param dest The path to where the file should be linked as a C string
  * \return A boolean whether the operation succeeded
  */
+#ifndef _WIN32
 + (BOOL)link: (const char*)src
 	  to: (const char*)dest;
+#endif
 
 /**
  * Symlinks a file.
+ *
+ * Not available on Windows.
  *
  * \param src The path to the file of which should be symlinked as a C string
  * \param dest The path to where the file should be symlinked as a C string
  * \return A boolean whether the operation succeeded
  */
+#ifndef _WIN32
 + (BOOL)symlink: (const char*)src
 	     to: (const char*)dest;
+#endif
 
 /**
  * Initializes an already allocated OFFile.

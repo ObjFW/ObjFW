@@ -15,8 +15,10 @@
 #import <string.h>
 #import <unistd.h>
 
+#ifndef _WIN32
 #import <sys/types.h>
 #import <sys/stat.h>
+#endif
 
 #import "OFFile.h"
 #import "OFExceptions.h"
@@ -29,20 +31,24 @@
 				    andMode: mode];
 }
 
+#ifndef _WIN32
 + (BOOL)changeModeOfFile: (const char*)path
-		 toMode: (mode_t)mode
+		  toMode: (mode_t)mode
 {
 	// FIXME: On error, throw exception
 	return (chmod(path, mode) == 0 ? YES : NO);
 }
+#endif
 
+#ifndef _WIN32
 + (BOOL)changeOwnerOfFile: (const char*)path
-		 toOwner: (uid_t)owner
-		andGroup: (gid_t)group
+		  toOwner: (uid_t)owner
+		 andGroup: (gid_t)group
 {
 	// FIXME: On error, throw exception
 	return (chown(path, owner, group) == 0 ? YES : NO);
 }
+#endif
 
 + (BOOL)delete: (const char*)path
 {
@@ -50,19 +56,21 @@
 	return (unlink(path) == 0 ? YES : NO);
 }
 
+#ifndef _WIN32
 + (BOOL)link: (const char*)src
-	 to: (const char*)dest
+	  to: (const char*)dest
 {
 	// FIXME: On error, throw exception
 	return (link(src, dest) == 0 ? YES : NO);
 }
 
 + (BOOL)symlink: (const char*)src
-	    to: (const char*)dest
+	     to: (const char*)dest
 {
 	// FIXME: On error, throw exception
 	return (symlink(src, dest) == 0 ? YES : NO);
 }
+#endif
 
 - initWithPath: (const char*)path
        andMode: (const char*)mode

@@ -20,6 +20,7 @@
 #import "OFMacros.h"
 
 static size_t lastpagebyte = 0;
+extern int getpagesize(void);
 
 @implementation OFArray
 + newWithItemSize: (size_t)is

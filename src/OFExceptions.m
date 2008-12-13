@@ -28,6 +28,10 @@
 #error "You need either sel_get_name() or sel_getName!"
 #endif
 
+#ifndef HAVE_ASPRINTF
+#import "asprintf.h"
+#endif
+
 @implementation OFException
 + newWithObject: (id)obj
 {

@@ -19,6 +19,7 @@
 #import "OFTCPSocket.h"
 #import "OFExceptions.h"
 
+#ifndef _WIN32	/* FIXME */
 @implementation OFTCPSocket
 - init
 {
@@ -274,3 +275,4 @@
 	return self;
 }
 @end
+#endif

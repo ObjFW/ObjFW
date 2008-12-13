@@ -4,13 +4,17 @@ AC_CONFIG_SRCDIR(src)
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
+AC_PROG_CC
 AC_PROG_OBJC
 AC_PROG_CPP
 AC_PROG_LN_S
 AC_PATH_PROG(AR, ar)
 
+CFLAGS="$CFLAGS -Wall"
+test x"$GCC" = x"yes" && CFLAGS="$CFLAGS -Werror -pipe -g"
+
 OBJCFLAGS="$OBJCFLAGS -Wall"
-test x"$GCC" = x"yes" && OBJCFLAGS="$OBJSFLAGS -Werror -pipe -g"
+test x"$GCC" = x"yes" && OBJCFLAGS="$OBJCFLAGS -Werror -pipe -g"
 OBJCFLAGS="$OBJCFLAGS -fobjc-exceptions"
 
 BUILDSYS_SHARED_LIB
@@ -29,6 +33,8 @@ AC_CHECK_LIB(objc, sel_getName, [
 	AC_DEFINE(HAVE_SEL_GETNAME, 1, [Whether we have sel_getName])])
 test x"$have_sel_get_name" != x"yes" -a x"$have_sel_getName" != x"yes" && \
 	AC_ERROR(You need either sel_get_name or sel_getName in libobjc!)
+
+AC_CHECK_FUNC(asprintf, AC_DEFINE(HAVE_ASPRINTF, 1, "Whether we have asprintf"))
 
 AC_MSG_CHECKING(whether we have IPv6 support)
 AC_TRY_RUN([

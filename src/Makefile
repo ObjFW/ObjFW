@@ -11,7 +11,8 @@ SRCS = OFArray.m		\
        OFObject.m		\
        OFString.m		\
        OFTCPSocket.m		\
-       OFXMLFactory.m
+       OFXMLFactory.m		\
+       asprintf.c
 
 INCLUDES = ${SRCS:.m=.h}	\
 	   OFMacros.h		\
