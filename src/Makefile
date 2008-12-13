@@ -1,3 +1,5 @@
+include ../extra.mk
+
 LIB = ${LIB_PREFIX}objfw${LIB_SUFFIX}
 LIB_MAJOR = 1
 LIB_MINOR = 0
@@ -12,7 +14,7 @@ SRCS = OFArray.m		\
        OFString.m		\
        OFTCPSocket.m		\
        OFXMLFactory.m		\
-       asprintf.c
+       ${ASPRINTF}
 
 INCLUDES = ${SRCS:.m=.h}	\
 	   OFMacros.h		\

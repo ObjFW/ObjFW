@@ -11,7 +11,6 @@
 
 #include "config.h"
 
-#ifndef HAVE_ASPRINTF
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -31,4 +30,3 @@ asprintf(char **strp, const char *fmt, ...)
 
 	return vsnprintf(*strp, (size_t)size + 1, fmt, args);
 }
-#endif
