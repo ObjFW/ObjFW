@@ -94,6 +94,11 @@ main()
 	p = [obj resizeMem: NULL
 		    toSize: 1024];
 	[obj freeMem: p];
+
+	puts("Trying to resize memory that is not part of object...");
+	CATCH_EXCEPTION(p = [obj resizeMem: NULL + 1
+				    toSize: 1024],
+	    OFMemNotPartOfObjException)
 	
 	/* TODO: Test if freeing object frees all memory */
 
