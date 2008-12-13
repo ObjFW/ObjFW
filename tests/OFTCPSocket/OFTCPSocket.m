@@ -68,6 +68,7 @@ main()
 			return 1;
 		}
 
+#ifdef HAVE_IPV6
 		memset(buf, 0, 7);
 		
 		[accepted free];
@@ -98,10 +99,11 @@ main()
 			puts("Received INCORRECT string!");
 			return 1;
 		}
+#endif
 
 		[accepted free];
-		[client close];
-		[server close];
+		[client free];
+		[server free];
 	} @catch(OFException *e) {
 		printf("EXCEPTION: %s\n", [e cString]);
 		return 1;
