@@ -458,3 +458,64 @@
 	return port;
 }
 @end
+
+@implementation OFBindFailedException
++ newWithObject: (id)obj
+	andHost: (const char*)h
+	andPort: (uint16_t)p
+      andFamily: (int)f
+{
+	return [self newWithObject: obj
+			   andHost: h
+			   andPort: p
+			 andFamily: f];
+}
+
+- initWithObject: (id)obj
+	 andHost: (const char*)h
+	 andPort: (uint16_t)p
+       andFamily: (int)f
+{
+	if ((self = [super initWithObject: obj])) {
+		host = (h != NULL ? strdup(h) : NULL);
+		port = p;
+		family = f;
+	}
+
+	return self;
+}
+
+- free
+{
+	if (host != NULL)
+		free(host);
+
+	return [super free];
+}
+
+- (const char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "Binding to port %d on %s using family %d failed in "
+	    "object of type %s!", port, host, family, [object name]);
+
+	return string;
+}
+
+- (const char*)host
+{
+	return host;
+}
+
+- (uint16_t)port
+{
+	return port;
+}
+
+- (int)family
+{
+	return family;
+}
+@end

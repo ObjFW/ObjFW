@@ -402,3 +402,60 @@
  */
 - (uint16_t)port;
 @end
+
+/**
+ * An OFException indicating that binding the socket failed.
+ */
+@interface OFBindFailedException: OFException
+{
+	char *host;
+	uint16_t port;
+	int family;
+}
+
+/**
+ * \param h The host on which binding failed
+ * \param p The port on which binding failed
+ * \param f The family for which binnding failed
+ * \return A new bind failed exception
+ */
++ newWithObject: (id)obj
+	andHost: (const char*)h
+	andPort: (uint16_t)p
+      andFamily: (int)f;
+
+/**
+ * Initializes an already allocated bind failed exception.
+ *
+ * \param h The host on which binding failed
+ * \param p The port on which binding failed
+ * \param f The family for which binnding failed
+ * \return An initialized bind failed exception
+ */
+- initWithObject: (id)obj
+	 andHost: (const char*)h
+	 andPort: (uint16_t)p
+       andFamily: (int)f;
+
+- free;
+
+/**
+ * \return An error message for the exception as a C string.
+ */
+- (const char*)cString;
+
+/**
+ * \return The host on which binding failed
+ */
+- (const char*)host;
+
+/**
+ * \return The port on which binding failed
+ */
+- (uint16_t)port;
+
+/**
+ * \return The family for which binding failed
+ */
+- (int)family;
+@end

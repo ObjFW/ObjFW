@@ -117,10 +117,11 @@
 	if (sock >= 0)
 		@throw [OFAlreadyConnectedException newWithObject: self];
 
-	if ((sock = socket(family, SOCK_STREAM, 0)) < 0) {
-		/* FIXME: Throw exception */
-		return nil;
-	}
+	if ((sock = socket(family, SOCK_STREAM, 0)) < 0)
+		@throw [OFBindFailedException newWithObject: self
+						    andHost: host
+						    andPort: port
+						  andFamily: family];
 
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = family;
@@ -135,9 +136,11 @@
 		       andService: portstr];
 
 	if (bind(sock, res->ai_addr, res->ai_addrlen) < 0) {
-		/* FIXME: Throw exception */
 		freeaddrinfo(res);
-		return nil;
+		@throw [OFBindFailedException newWithObject: self
+						    andHost: host
+						    andPort: port
+						  andFamily: family];
 	}
 
 	freeaddrinfo(res);
