@@ -38,6 +38,9 @@ AC_CHECK_FUNC(asprintf, AC_DEFINE(HAVE_ASPRINTF, 1, "Whether we have asprintf"))
 
 AC_MSG_CHECKING(whether we have IPv6 support)
 AC_TRY_RUN([
+	#include <stdlib.h>
+	#include <string.h>
+
 	#include <sys/types.h>
 	#include <sys/socket.h>
 	#include <netinet/in.h>
@@ -47,7 +50,12 @@ AC_TRY_RUN([
 	{
 		int fd;
 		struct sockaddr_in6 addr;
+
 		fd = socket(AF_INET6, SOCK_STREAM, 0);
+
+		/* Do something with it to prevent an error due to -Werror */
+		memset(&addr, 0, sizeof(addr));
+
 		exit(fd >= 0 ? 0 : 1);
 	}],
 	have_ipv6="yes", have_ipv6="no", have_ipv6="no")
