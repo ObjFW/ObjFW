@@ -57,7 +57,7 @@
 	return object;
 }
 
-- (char*)cString
+- (const char*)cString
 {
 	return string;
 }
@@ -80,7 +80,7 @@
 	return self;
 }
 
-- (char*)cString
+- (const char*)cString
 {
 	if (string != NULL)
 		return string;
@@ -114,7 +114,7 @@
 	return self;
 }
 
-- (char*)cString
+- (const char*)cString
 {
 	if (string != NULL)
 		return string;
@@ -134,7 +134,7 @@
 @end
 
 @implementation OFOutOfRangeException
-- (char*)cString
+- (const char*)cString
 {
 	if (string != NULL)
 		return string;
@@ -147,7 +147,7 @@
 @end
 
 @implementation OFCharsetConversionFailedException
-- (char*)cString
+- (const char*)cString
 {
 	if (string != NULL)
 		return string;
@@ -174,8 +174,8 @@
 	 andMode: (const char*)m
 {
 	if ((self = [super initWithObject: obj])) {
-		path = p != NULL ? strdup(p) : NULL;
-		mode = m != NULL ? strdup(m) : NULL;
+		path = (p != NULL ? strdup(p) : NULL);
+		mode = (m != NULL ? strdup(m) : NULL);
 	}
 
 	return self;
@@ -191,7 +191,7 @@
 	return [super free];
 }
 
-- (char*)cString
+- (const char*)cString
 {
 	if (string != NULL)
 		return string;
@@ -264,10 +264,15 @@
 {
 	return req_items;
 }
+
+- (BOOL)hasNItems
+{
+	return has_items;
+}
 @end
 
 @implementation OFReadFailedException
-- (char*)cString
+- (const char*)cString
 {
 	if (string != NULL)
 		return string;;
@@ -284,7 +289,7 @@
 @end
 
 @implementation OFWriteFailedException
-- (char*)cString
+- (const char*)cString
 {
 	if (string != NULL)
 		return string;
@@ -301,7 +306,7 @@
 @end
 
 @implementation OFNotConnectedException
-- (char*)cString
+- (const char*)cString
 {
 	if (string != NULL)
 		return string;
@@ -314,7 +319,7 @@
 @end
 
 @implementation OFAlreadyConnectedException
-- (char*)cString
+- (const char*)cString
 {
 	if (string != NULL)
 		return string;
@@ -327,7 +332,7 @@
 @end
 
 @implementation OFInvalidPortException
-- (char*)cString
+- (const char*)cString
 {
 	if (string != NULL)
 		return string;
@@ -337,5 +342,63 @@
 	    "invalid port.", [object name]);
 
 	return string;
+}
+@end
+
+@implementation OFAddressTranslationFailedException
++ newWithObject: (id)obj
+	andNode: (const char*)n
+     andService: (const char*)s
+{
+	return [self newWithObject: obj
+			   andNode: n
+			andService: s];
+}
+
+- initWithObject: (id)obj
+	 andNode: (const char*)n
+      andService: (const char*)s
+{
+	if ((self = [super initWithObject: obj])) {
+		node = (n != NULL ? strdup(n) : NULL);
+		service = (s != NULL ? strdup(s) : NULL);
+	}
+
+	return self;
+}
+
+- free
+{
+	if (node != NULL)
+		free(node);
+	if (service != NULL)
+		free(node);
+
+	return [super free];
+}
+
+- (const char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "The specified node with the specified service could "
+	    "not be translated to an address for an object of type %s. This "
+	    "means that either the node was not found, there is no such "
+	    "service on the specified node, there was a problem with the name "
+	    "server, there was a problem with your network connection or you "
+	    "specified an invalid node or service.", [object name]);
+
+	return string;
+}
+
+- (const char*)node
+{
+	return node;
+}
+
+- (const char*)service
+{
+	return service;
 }
 @end

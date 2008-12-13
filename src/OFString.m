@@ -88,6 +88,16 @@
 	return self;
 }
 
+- (const wchar_t*)wideCString
+{
+	return string;
+}
+
+- (size_t)length
+{
+	return length;
+}
+
 - (char*)getCString
 {
 	char *str;
@@ -104,16 +114,6 @@
 	}
 
 	return str;
-}
-
-- (wchar_t*)wideCString
-{
-	return string;
-}
-
-- (size_t)length
-{
-	return length;
 }
 
 - (OFString*)clone

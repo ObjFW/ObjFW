@@ -46,7 +46,7 @@
 /**
  * \return An error message for the exception as a C String
  */
-- (char*)cString;
+- (const char*)cString;
 @end
 
 /**
@@ -58,8 +58,6 @@
 }
 
 /**
- * Creates a new no memory exception.
- *
  * \param obj The object which caused the exception
  * \param size The size of the memory that couldn't be allocated
  * \return A new no memory exception
@@ -80,7 +78,7 @@
 /**
  * \return An error message for the exception as a C String
  */
-- (char*)cString;
+- (const char*)cString;
 
 /**
  * \return The size of the memoory that couldn't be allocated
@@ -97,8 +95,6 @@
 }
 
 /**
- * Creates a new memory not part of object exception.
- *
  * \param obj The object which caused the exception
  * \param ptr A pointer to the memory that is not part of the object
  * \return A new memory not part of object exception
@@ -119,7 +115,7 @@
 /**
  * \return An error message for the exception as a C String
  */
-- (char*)cString;
+- (const char*)cString;
 
 /**
  * \return A pointer to the memory which is not part of the object
@@ -134,7 +130,7 @@
 /**
  * \return An error message for the exception as a C String
  */
-- (char*)cString;
+- (const char*)cString;
 @end
 
 /**
@@ -144,7 +140,7 @@
 /**
  * \return An error message for the exception as a C String
  */
-- (char*)cString;
+- (const char*)cString;
 @end
 
 /**
@@ -157,8 +153,6 @@
 }
 
 /**
- * Creates a new open file failed exception.
- *
  * \param obj The object which caused the exception
  * \param p A C string of the path to the file tried to open
  * \param m A C string of the mode in which the file should have been opened
@@ -185,7 +179,7 @@
 /**
  * \return An error message for the exception as a C String
  */
-- (char*)cString;
+- (const char*)cString;
 
 /**
  * \return A C string of the path to the file which couldn't be opened
@@ -209,8 +203,6 @@
 }
 
 /**
- * Creates a new read or write failed exception.
- *
  * \param obj The object which caused the exception
  * \param size The requested size of the data that couldn't be read / written
  * \param nitems The requested number of items that couldn't be read / written
@@ -221,8 +213,6 @@
       andNItems: (size_t)nitems;
 
 /**
- * Creates a new read or write failed exception.
- *
  * \param obj The object which caused the exception
  * \param size The requested size of the data that couldn't be read / written
  * \return A new open file failed exception
@@ -261,6 +251,11 @@
  * \return The requested number of items that coudln't be read / written
  */
 - (size_t)requestedItems;
+
+/**
+ * \return Whether NItems was specified
+ */
+- (BOOL)hasNItems;
 @end
 
 /**
@@ -270,7 +265,7 @@
 /**
  * \return An error message for the exception as a C String
  */
-- (char*)cString;
+- (const char*)cString;
 @end
 
 /**
@@ -280,7 +275,7 @@
 /**
  * \return An error message for the exception as a C String
  */
-- (char*)cString;
+- (const char*)cString;
 @end
 
 /**
@@ -290,7 +285,7 @@
 /**
  * \return An error message for the exception as a C string.
  */
-- (char*)cString;
+- (const char*)cString;
 @end
 
 /**
@@ -301,15 +296,62 @@
 /**
  * \return An error message for the exception as a C string.
  */
-- (char*)cString;
+- (const char*)cString;
 @end
 
 /**
  * An OFException indicating that the specified port is invalid.
  */
-@interface OFInvalidPortException: OFException
+@interface OFInvalidPortException: OFException {}
 /**
  * \return An error message for the exception as a C string.
  */
-- (char*)cString;
+- (const char*)cString;
+@end
+
+/**
+ * An OFException indicating the translation of an address failed.
+ */
+@interface OFAddressTranslationFailedException: OFException
+{
+	char *node;
+	char *service;
+}
+
+/**
+ * \param n The node for which translation was requested
+ * \param s The service of the node for which translation was requested
+ * \return A new address translation failed exception
+ */
++ newWithObject: (id)obj
+	andNode: (const char*)n
+     andService: (const char*)s;
+
+/**
+ * Initializes an already allocated address translation failed exception.
+ *
+ * \param n The node for which translation was requested
+ * \param s The service of the node for which translation was requested
+ * \return An initialized address translation failed exception
+ */
+- initWithObject: (id)obj
+	 andNode: (const char*)n
+      andService: (const char*)s;
+
+- free;
+
+/**
+ * \return An error message for the exception as a C string.
+ */
+- (const char*)cString;
+
+/**
+ * /return The node for which translation was requested
+ */
+- (const char*)node;
+
+/**
+ * \return The service of the node for which translation was requested
+ */
+- (const char*)service;
 @end

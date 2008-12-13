@@ -69,20 +69,20 @@
 - initFromWideCString: (const wchar_t*)str;
 
 /**
- * \return The OFString as a C string, if possible (if not, returns NULL).
- *         If not needed anymore, it is usefull to call freeMem:.
- */
-- (char*)getCString;
-
-/**
  * \return The OFString as a wide C string
  */
-- (wchar_t*)wideCString;
+- (const wchar_t*)wideCString;
 
 /**
  * \return The length of the OFString
  */
 - (size_t)length;
+
+/**
+ * \return The OFString as a C string, if possible (if not, returns NULL).
+ *         If not needed anymore, it is usefull to call freeMem:.
+ */
+- (char*)getCString;
 
 /**
  * Clones the OFString, creating a new one.
