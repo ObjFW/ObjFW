@@ -34,7 +34,7 @@ check_result(char *result, const char *should)
 		    (i == NUM_TESTS ? 32 : 33), i, NUM_TESTS);
 		fflush(stdout);
 	} else {
-		wprintf(L"\r\033[1;31mchar* test %d/%d failed!\033[0m\n",
+		wprintf(L"\r\033[K\033[1;31mchar* test %d/%d failed!\033[0m\n",
 		    i, NUM_TESTS);
 		wprintf(L"%s is NOT expected result!\n", result);
 		exit(1);
@@ -53,8 +53,8 @@ check_result_wide(wchar_t *result, const wchar_t *should)
 		    (i == NUM_TESTS ? 32 : 33), i, NUM_TESTS);
 		fflush(stdout);
 	} else {
-		wprintf(L"\r\033[1;31mwchar_t* test %d/%d failed!\033[0m\n",
-		    i, NUM_TESTS);
+		wprintf(L"\r\033[K\033[1;31mwchar_t* test %d/%d failed!\033[0m"
+		    "\n", i, NUM_TESTS);
 		wprintf(L"%s is NOT expected result!\n", result);
 		exit(1);
 	}
