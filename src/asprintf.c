@@ -19,15 +19,16 @@
 int
 asprintf(char **strp, const char *fmt, ...)
 {
-	size_t size;
+	int size;
 	va_list args;
 
 	va_start(args, fmt);
 
-	size = vsnprintf(NULL, 0, fmt, args);
-	if ((*strp = malloc(size)) == NULL)
+	if ((size = vsnprintf(NULL, 0, fmt, args)) < 0)
+		return size;
+	if ((*strp = malloc((size_t)size + 1)) == NULL)
 		return -1;
 
-	return vsnprintf(*strp, size, fmt, args);
+	return vsnprintf(*strp, (size_t)size + 1, fmt, args);
 }
 #endif
