@@ -34,6 +34,25 @@ AC_CHECK_LIB(objc, sel_getName, [
 test x"$have_sel_get_name" != x"yes" -a x"$have_sel_getName" != x"yes" && \
 	AC_ERROR(You need either sel_get_name or sel_getName in libobjc!)
 
+AC_MSG_CHECKING(whether we have IPv6 support)
+AC_TRY_RUN([
+	#include <sys/types.h>
+	#include <sys/socket.h>
+	#include <netinet/in.h>
+
+	int
+	main()
+	{
+		int fd;
+		struct sockaddr_in6 addr;
+		fd = socket(AF_INET6, SOCK_STREAM, 0);
+		exit(fd >= 0 ? 0 : 1);
+	}],
+	have_ipv6="yes", have_ipv6="no", have_ipv6="no")
+AC_MSG_RESULT($have_ipv6)
+test x"$have_ipv6" = x"yes" && \
+	AC_DEFINE(HAVE_IPV6, 1, "Whether we have IPv6 support")
+
 test $cross_compiling != x"yes" && AC_SUBST(TESTS, "tests")
 
 BUILDSYS_TOUCH_DEPS
