@@ -73,10 +73,11 @@
 
 	snprintf(portstr, 6, "%d", port);
 
-	if (getaddrinfo(host, portstr, &hints, &res0)) {
-		/* FIXME: Throw exception */
-		return nil;
-	}
+	if (getaddrinfo(host, portstr, &hints, &res0))
+		@throw [OFAddressTranslationFailedException
+		    newWithObject: self
+			  andNode: host
+		       andService: portstr];
 
 	for (res = res0; res != NULL; res = res->ai_next) {
 		if ((sock = socket(res->ai_family, res->ai_socktype,
@@ -126,10 +127,11 @@
 
 	snprintf(portstr, 6, "%d", port);
 
-	if (getaddrinfo(host, portstr, &hints, &res)) {
-		/* FIXME: Throw exception */
-		return nil;
-	}
+	if (getaddrinfo(host, portstr, &hints, &res))
+		@throw [OFAddressTranslationFailedException
+		    newWithObject: self
+			  andNode: host
+		       andService: portstr];
 
 	if (bind(sock, res->ai_addr, res->ai_addrlen) < 0) {
 		/* FIXME: Throw exception */
