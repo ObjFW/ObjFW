@@ -78,12 +78,12 @@ main()
 		puts("== IPv6 ==");
 		port = get_port();
 
-		[server bindOn: "localhost"
+		[server bindOn: "::1"
 		      withPort: port
 		     andFamily: AF_INET6];
 		[server listen];
 
-		[client connectTo: "localhost"
+		[client connectTo: "::1"
 			   onPort: port];
 
 		accepted = [server accept];
