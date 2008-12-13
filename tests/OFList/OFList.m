@@ -18,6 +18,26 @@
 
 #import "OFString.h"
 #import "OFList.h"
+
+#define NUM_TESTS 5
+#define SUCCESS							\
+{								\
+	wprintf(L"\r\033[1;%dmTests successful: %d/%d\033[0m",	\
+	    (i == NUM_TESTS - 1 ? 32 : 33), i + 1, NUM_TESTS);	\
+	fflush(stdout);						\
+}
+#define FAIL							\
+{								\
+	wprintf(L"\r\033[1;31mTest %d/%d failed!\033[m\n",	\
+	    i + 1, NUM_TESTS);					\
+	return 1;						\
+}
+#define CHECK(cond)						\
+	if (cond)						\
+		SUCCESS						\
+	else							\
+		FAIL						\
+	i++;
  
 const wchar_t *strings[] = {
 	L"First String Object",
@@ -40,25 +60,14 @@ main()
  
 	for (iter = [list first], i = 0; iter != nil; iter = [iter next], i++)
 		if (!wcscmp([(OFString*)[iter data] wideCString], strings[i]))
-			wprintf(L"Element %zu is expected element. GOOD!\n", i);
-		else {
-			wprintf(L"Element %zu is not expected element!\n", i);
-			return 1;
-		}
+			SUCCESS
+		else
+			FAIL
 
-	if (!wcscmp([(OFString*)[[list first] data] wideCString], strings[0]))
-		wprintf(L"First element is expected element. GOOD!\n");
-	else {
-		wprintf(L"First element is not expected element!\n");
-		return 1;
-	}
+	CHECK(!wcscmp([(OFString*)[[list first] data] wideCString], strings[0]))
+	CHECK(!wcscmp([(OFString*)[[list last] data] wideCString], strings[2]))
 
-	if (!wcscmp([(OFString*)[[list last] data] wideCString], strings[2]))
-		wprintf(L"Last element is expected element. GOOD!\n");
-	else {
-		wprintf(L"Last element is not expected element!\n");
-		return 1;
-	}
+	wprintf(L"\n");
  
 	[list freeIncludingData];
 
