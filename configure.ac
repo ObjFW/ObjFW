@@ -9,12 +9,8 @@ AC_PROG_CPP
 AC_PROG_LN_S
 AC_PATH_PROG(AR, ar)
 
-case "$CC" in
-	gcc | *-gcc | gcc-* | *-gcc-*)
-		OBJCFLAGS="$OBJSFLAGS -Wall -Werror -pipe -g"
-		;;
-esac
-
+OBJCFLAGS="$OBJCFLAGS -Wall"
+test x"$GCC" = x"yes" && OBJCFLAGS="$OBJSFLAGS -Werror -pipe -g"
 OBJCFLAGS="$OBJCFLAGS -fobjc-exceptions"
 
 BUILDSYS_SHARED_LIB
@@ -53,7 +49,7 @@ AC_MSG_RESULT($have_ipv6)
 test x"$have_ipv6" = x"yes" && \
 	AC_DEFINE(HAVE_IPV6, 1, "Whether we have IPv6 support")
 
-test $cross_compiling != x"yes" && AC_SUBST(TESTS, "tests")
+test x"$cross_compiling" != x"yes" && AC_SUBST(TESTS, "tests")
 
 BUILDSYS_TOUCH_DEPS
 

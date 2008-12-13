@@ -18,8 +18,6 @@
 
 #import "OFString.h"
 #import "OFList.h"
-
-/* TODO: Do real checks */
  
 const wchar_t *strings[] = {
 	L"First String Object",

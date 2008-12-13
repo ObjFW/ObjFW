@@ -16,8 +16,6 @@
 
 #import "OFString.h"
 
-/* TODO: Do real checks */
-
 int
 main()
 {

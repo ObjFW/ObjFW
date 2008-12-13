@@ -23,7 +23,7 @@ dnl
 AC_DEFUN([BUILDSYS_PROG_IMPLIB], [
 	AC_MSG_CHECKING(whether we need an implib)
 	case "$target" in
-		*-*-cygwin | *-*-mingw32)
+		*-*-cygwin* | *-*-mingw*)
 			AC_MSG_RESULT(yes)
 			PROG_IMPLIB_NEEDED='yes'
 			PROG_IMPLIB_LDFLAGS='-Wl,-export-all-symbols,--out-implib,lib${PROG}.a'
@@ -72,7 +72,7 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 			UNINSTALL_LIB='rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$${i%.dylib}.${LIB_MAJOR}.dylib ${DESTDIR}${libdir}/$${i%.dylib}.${LIB_MAJOR}.${LIB_MINOR}.dylib'
 			CLEAN_LIB=''
 			;;
-		*-*-solaris* | *-openbsd-* | *-mirbsd-*)
+		*-*-solaris* | *-*-openbsd* | *-*-mirbsd*)
 			AC_MSG_RESULT(Solaris)
 			LIB_CPPFLAGS='-DPIC'
 			LIB_CFLAGS='-fPIC'
@@ -87,7 +87,7 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 			UNINSTALL_LIB='rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}'
 			CLEAN_LIB=''
 			;;
-		*-*-cygwin | *-*-mingw32)
+		*-*-cygwin* | *-*-mingw*)
 			AC_MSG_RESULT(Win32)
 			LIB_CPPFLAGS='-DPIC'
 			LIB_CFLAGS=''

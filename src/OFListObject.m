@@ -28,6 +28,7 @@
 		prev = nil;
 		data = ptr;
 	}
+
 	return self;
 }
 
@@ -35,6 +36,7 @@
 {
 	if (data != NULL)
 		free(data);
+
 	return [super free];
 }
 
@@ -56,12 +58,14 @@
 - setNext: (OFListObject*)obj
 {
 	next = obj;
+
 	return self;
 }
 
 - setPrev: (OFListObject*)obj
 {
 	prev = obj;
+
 	return self;
 }
 @end
