@@ -355,3 +355,50 @@
  */
 - (const char*)service;
 @end
+
+/**
+ * An OFException indicating that the connection could not be established.
+ */
+@interface OFConnectionFailedException: OFException
+{
+	char *host;
+	uint16_t port;
+}
+
+/**
+ * \param h The host to which the connection failed
+ * \param p The port on the host to which the connection failed
+ * \return A new connection failed exception
+ */
++ newWithObject: (id)obj
+	andHost: (const char*)h
+	andPort: (uint16_t)p;
+
+/**
+ * Initializes an already allocated connection failed exception.
+ *
+ * \param h The host to which the connection failed
+ * \param p The port on the host to which the connection failed
+ * \return An initialized connection failed exception
+ */
+- initWithObject: (id)obj
+	 andHost: (const char*)h
+	 andPort: (uint16_t)p;
+
+- free;
+
+/**
+ * \return An error message for the exception as a C string.
+ */
+- (const char*)cString;
+
+/**
+ * \return The host to which the connection failed
+ */
+- (const char*)host;
+
+/**
+ * \return The port on the host to which the connection failed
+ */
+- (uint16_t)port;
+@end

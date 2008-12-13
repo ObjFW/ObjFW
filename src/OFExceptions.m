@@ -382,12 +382,12 @@
 	if (string != NULL)
 		return string;
 
-	asprintf(&string, "The specified node with the specified service could "
-	    "not be translated to an address for an object of type %s. This "
-	    "means that either the node was not found, there is no such "
-	    "service on the specified node, there was a problem with the name "
-	    "server, there was a problem with your network connection or you "
-	    "specified an invalid node or service.", [object name]);
+	asprintf(&string, "The service %s on %s could not be translated to an "
+	    "address for an object of type %s. This means that either the node "
+	    "was not found, there is no such service on the node, there was a "
+	    "problem with the name server, there was a problem with your "
+	    "network connection or you specified an invalid node or service.",
+	    service, node, [object name]);
 
 	return string;
 }
@@ -400,5 +400,57 @@
 - (const char*)service
 {
 	return service;
+}
+@end
+
+@implementation OFConnectionFailedException
++ newWithObject: (id)obj
+	andHost: (const char*)h
+	andPort: (uint16_t)p
+{
+	return [self newWithObject: obj
+			   andHost: h
+			   andPort: p];
+}
+
+- initWithObject: (id)obj
+	 andHost: (const char*)h
+	 andPort: (uint16_t)p
+{
+	if ((self = [super initWithObject: obj])) {
+		host = (h != NULL ? strdup(h) : NULL);
+		port = p;
+	}
+
+	return self;
+}
+
+- free
+{
+	if (host != NULL)
+		free(host);
+
+	return [super free];
+}
+
+- (const char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "A connection to %s:%d could not be established in "
+	    "object of type %s!", host, port, [object name]);
+
+	return string;
+}
+
+- (const char*)host
+{
+	return host;
+}
+
+- (uint16_t)port
+{
+	return port;
 }
 @end

@@ -95,10 +95,10 @@
 	
 	freeaddrinfo(res0);
 
-	if (sock < 0) {
-		/* FIXME: Throw exception */
-		return nil;
-	}
+	if (sock < 0)
+		@throw [OFConnectionFailedException newWithObject: self
+							  andHost: host
+							  andPort: port];
 
 	return self;
 }
