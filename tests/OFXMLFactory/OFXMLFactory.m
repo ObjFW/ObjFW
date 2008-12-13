@@ -19,14 +19,23 @@
 
 #import "OFXMLFactory.h"
 
+#define NUM_TESTS 10
+
+static int i;
+
 inline void
 check_result(char *result, const char *should)
 {
 	/* Use wprintf here so we don't mix printf and wprintf! */
+	i++;
 
-	if (!strcmp(result, should))
-		wprintf(L"%s is expected result\n", result);
-	else {
+	if (!strcmp(result, should)) {
+		wprintf(L"\r\033[1;%dmchar* tests successful:    %2d/%d\033[0m",
+		    (i == NUM_TESTS ? 32 : 33), i, NUM_TESTS);
+		fflush(stdout);
+	} else {
+		wprintf(L"\r\033[1;31mchar* test %d/%d failed!\033[0m\n",
+		    i, NUM_TESTS);
 		wprintf(L"%s is NOT expected result!\n", result);
 		exit(1);
 	}
@@ -37,10 +46,16 @@ check_result(char *result, const char *should)
 inline void
 check_result_wide(wchar_t *result, const wchar_t *should)
 {
-	if (!wcscmp(result, should))
-		wprintf(L"%ls is expected result\n", result);
-	else {
-		wprintf(L"%ls is NOT expected result!\n", result);
+	i++;
+
+	if (!wcscmp(result, should)) {
+		wprintf(L"\r\033[1;%dmwchar_t* tests successful: %2d/%d\033[0m",
+		    (i == NUM_TESTS ? 32 : 33), i, NUM_TESTS);
+		fflush(stdout);
+	} else {
+		wprintf(L"\r\033[1;31mwchar_t* test %d/%d failed!\033[0m\n",
+		    i, NUM_TESTS);
+		wprintf(L"%s is NOT expected result!\n", result);
 		exit(1);
 	}
 
@@ -225,15 +240,17 @@ test_escape_wide()
 
 int main()
 {
+	i = 0;
 	test_escape();
        	test_create_stanza();
        	test_concat();
+	wprintf(L"\n");
 
-	wprintf(L"== Now testing with wide C strings ==\n");
-
+	i = 0;
 	test_escape_wide();
 	test_create_stanza_wide();
 	test_concat_wide();
+	wprintf(L"\n");
 
 	return 0;
 }
