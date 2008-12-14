@@ -35,7 +35,7 @@ test x"$have_sel_get_name" != x"yes" -a x"$have_sel_getName" != x"yes" && \
 	AC_ERROR(You need either sel_get_name or sel_getName in libobjc!)
 
 AC_CHECK_FUNC(asprintf, [
-	AC_DEFINE(HAVE_ASPRINTF, 1, "Whether we have asprintf")
+	AC_DEFINE(HAVE_ASPRINTF, 1, "Whether we have asprintf")], [
 	AC_SUBST(ASPRINTF, "asprintf.c")])
 
 AC_MSG_CHECKING(whether we have IPv6 support)
