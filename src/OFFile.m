@@ -31,46 +31,51 @@
 				    andMode: mode];
 }
 
-#ifndef _WIN32
-+ (BOOL)changeModeOfFile: (const char*)path
++ (void)changeModeOfFile: (const char*)path
 		  toMode: (mode_t)mode
 {
-	// FIXME: On error, throw exception
-	return (chmod(path, mode) == 0 ? YES : NO);
-}
-#endif
-
+	/*
+	 * FIXME: On error, throw exception
+	 * FIXME: On Win32, change write access
+	 */
 #ifndef _WIN32
-+ (BOOL)changeOwnerOfFile: (const char*)path
+	chmod(path, mode);
+#endif
+}
+
++ (void)changeOwnerOfFile: (const char*)path
 		  toOwner: (uid_t)owner
 		 andGroup: (gid_t)group
 {
-	// FIXME: On error, throw exception
-	return (chown(path, owner, group) == 0 ? YES : NO);
-}
-#endif
-
-+ (BOOL)delete: (const char*)path
-{
-	// FIXME: On error, throw exception
-	return (unlink(path) == 0 ? YES : NO);
-}
-
+	/* FIXME: On error, throw exception */
 #ifndef _WIN32
-+ (BOOL)link: (const char*)src
+	chown(path, owner, group);
+#endif
+}
+
++ (void)delete: (const char*)path
+{
+	/* FIXME: On error, throw exception */
+	unlink(path);
+}
+
++ (void)link: (const char*)src
 	  to: (const char*)dest
 {
-	// FIXME: On error, throw exception
-	return (link(src, dest) == 0 ? YES : NO);
+	/* FIXME: On error, throw exception */
+#ifndef _WIN32
+	link(src, dest);
+#endif
 }
 
-+ (BOOL)symlink: (const char*)src
++ (void)symlink: (const char*)src
 	     to: (const char*)dest
 {
-	// FIXME: On error, throw exception
-	return (symlink(src, dest) == 0 ? YES : NO);
-}
+	/* FIXME: On error, throw exception */
+#ifndef _WIN32
+	symlink(src, dest);
 #endif
+}
 
 - initWithPath: (const char*)path
        andMode: (const char*)mode
