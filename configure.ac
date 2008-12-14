@@ -35,8 +35,26 @@ test x"$have_sel_get_name" != x"yes" -a x"$have_sel_getName" != x"yes" && \
 	AC_ERROR(You need either sel_get_name or sel_getName in libobjc!)
 
 AC_CHECK_FUNC(asprintf, [
+	have_asprintf="yes"
 	AC_DEFINE(HAVE_ASPRINTF, 1, "Whether we have asprintf")], [
+	have_asprintf="no"
 	AC_SUBST(ASPRINTF, "asprintf.c")])
+
+AC_MSG_CHECKING(whether snprintf returns something useful)
+AC_TRY_RUN([
+	#include <stdio.h>
+
+	int
+	main()
+	{
+		return (snprintf(NULL, 0, "asd") == 3 ? 0 : 1);
+	}],
+	snprintf_return_useful="yes", snprintf_return_useful="no",
+	snprintf_return_useful="no")
+AC_MSG_RESULT($snprintf_return_useful)
+
+test x"$have_asprintf" != x"yes" -a x"$snprintf_return_useful" != x"yes" && \
+	AC_MSG_ERROR(No asprintf and no snprintf returning required space!)
 
 AC_MSG_CHECKING(whether we have IPv6 support)
 AC_TRY_RUN([
