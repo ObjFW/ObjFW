@@ -519,3 +519,50 @@
 	return family;
 }
 @end
+
+@implementation OFListenFailedException
++ newWithObject: (id)obj
+     andBackLog: (int)b
+{
+	return [[self alloc] initWithObject: obj
+				 andBackLog: b];
+}
+
+- initWithObject: (id)obj
+      andBackLog: (int)b
+{
+	if ((self = [super initWithObject: obj]))
+		backlog = b;
+
+	return self;
+}
+
+- (const char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "Failed to listen in socket of type %s with a back "
+	    "log of %d!", [object name], backlog);
+
+	return string;
+}
+
+- (int)backLog
+{
+	return backlog;
+}
+@end
+
+@implementation OFAcceptFailedException
+- (const char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "Failed to accept connection in socket of type %s!",
+	    [object name]);
+
+	return string;
+}
+@end

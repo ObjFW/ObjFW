@@ -319,6 +319,7 @@
 }
 
 /**
+ * \param obj The object which caused the exception
  * \param n The node for which translation was requested
  * \param s The service of the node for which translation was requested
  * \return A new address translation failed exception
@@ -330,6 +331,7 @@
 /**
  * Initializes an already allocated address translation failed exception.
  *
+ * \param obj The object which caused the exception
  * \param n The node for which translation was requested
  * \param s The service of the node for which translation was requested
  * \return An initialized address translation failed exception
@@ -366,6 +368,7 @@
 }
 
 /**
+ * \param obj The object which caused the exception
  * \param h The host to which the connection failed
  * \param p The port on the host to which the connection failed
  * \return A new connection failed exception
@@ -377,6 +380,7 @@
 /**
  * Initializes an already allocated connection failed exception.
  *
+ * \param obj The object which caused the exception
  * \param h The host to which the connection failed
  * \param p The port on the host to which the connection failed
  * \return An initialized connection failed exception
@@ -414,6 +418,7 @@
 }
 
 /**
+ * \param obj The object which caused the exception
  * \param h The host on which binding failed
  * \param p The port on which binding failed
  * \param f The family for which binnding failed
@@ -427,6 +432,7 @@
 /**
  * Initializes an already allocated bind failed exception.
  *
+ * \param obj The object which caused the exception
  * \param h The host on which binding failed
  * \param p The port on which binding failed
  * \param f The family for which binnding failed
@@ -458,4 +464,51 @@
  * \return The family for which binding failed
  */
 - (int)family;
+@end
+
+/**
+ * An OFException indicating that listening on the socket failed.
+ */
+@interface OFListenFailedException: OFException
+{
+	int backlog;
+}
+
+/**
+ * \param obj The object which caused the exception
+ * \param b The requested size of the back log
+ * \return A new listen failed exception
+ */
++ newWithObject: (id)obj
+     andBackLog: (int)b;
+
+/**
+ * Initializes an already allocated listen failed exception
+ *
+ * \param obj The object which caused the exception
+ * \param b The requested size of the back log
+ * \return An initialized listen failed exception
+ */
+- initWithObject: (id)obj
+      andBackLog: (int)b;
+
+/**
+ * \return An error message for the exception as a C string.
+ */
+- (const char*)cString;
+
+/**
+ * \return The requested back log.
+ */
+- (int)backLog;
+@end
+
+/**
+ * An OFException indicating that accepting a connection failed.
+ */
+@interface OFAcceptFailedException: OFException {}
+/**
+ * \return An error message for the exception as a C string.
+ */
+- (const char*)cString;
 @end

@@ -153,10 +153,9 @@
 	if (sock < 0)
 		@throw [OFNotConnectedException newWithObject: self];
 
-	if (listen(sock, backlog) < 0 ) {
-		/* FIXME: Throw exception */
-		return nil;
-	}
+	if (listen(sock, backlog) < 0)
+		@throw [OFListenFailedException newWithObject: self
+						   andBackLog: backlog];
 
 	return self;
 }
@@ -166,10 +165,9 @@
 	if (sock < 0)
 		@throw [OFNotConnectedException newWithObject: self];
 
-	if (listen(sock, 5) < 0 ) {
-		/* FIXME: Throw exception */
-		return nil;
-	}
+	if (listen(sock, 5) < 0)
+		@throw [OFListenFailedException newWithObject: self
+						   andBackLog: 5];
 
 	return self;
 }
@@ -192,8 +190,8 @@
 	}
 
 	if ((s = accept(sock, addr, &addrlen)) < 0) {
-		/* FIXME: Throw exception */
-		return nil;
+		[newsock free];
+		@throw [OFAcceptFailedException newWithObject: self];
 	}
 
 	[newsock setSocket: s];
