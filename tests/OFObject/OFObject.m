@@ -96,7 +96,7 @@ main()
 	[obj freeMem: p];
 
 	puts("Trying to resize memory that is not part of object...");
-	CATCH_EXCEPTION(p = [obj resizeMem: NULL + 1
+	CATCH_EXCEPTION(p = [obj resizeMem: (void*)1
 				    toSize: 1024],
 	    OFMemNotPartOfObjException)
 	
