@@ -44,18 +44,19 @@ main()
 	}
 	[f free];
 
-	if (!memcmp([md5 digest], testfile_md5, MD5_DIGEST_SIZE))
-		puts("Correct MD5 sum calculated!");
-	else {
-		puts("MD5 SUM MISMATCH!!");
+	if (!memcmp([md5 digest], testfile_md5, MD5_DIGEST_SIZE)) {
+		fputs("\r\033[1;33mTests successful: 1/2\033[0m", stdout);
+		fflush(stdout);
+	} else {
+		puts("\r\033[K\033[1;31mTest 1/2 failed!\033[0m");
 		return 1;
 	}
 	[md5 free];
 
 	if (!memcmp([sha1 digest], testfile_sha1, SHA1_DIGEST_SIZE))
-		puts("Correct SHA1 sum calculated!");
+		puts("\r\033[1;32mTests successful: 2/2\033[0m");
 	else {
-		puts("SHA1 SUM MISMATCH!!");
+		puts("\r\033[K\033[1;31mTest 2/2 failed!\033[0m");
 		return 1;
 	}
 	[sha1 free];
