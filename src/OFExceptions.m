@@ -16,17 +16,7 @@
 #import <stdlib.h>
 #import <string.h>
 
-#import <objc/objc-api.h>
-
 #import "OFExceptions.h"
-
-#if defined HAVE_SEL_GET_NAME
-#define SEL_NAME(x) sel_get_name(x)
-#elif defined HAVE_SEL_GETNAME
-#define SEL_NAME(x) sel_getName(x)
-#else
-#error "You need either sel_get_name() or sel_getName!"
-#endif
 
 #ifndef HAVE_ASPRINTF
 #import "asprintf.h"

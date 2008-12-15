@@ -22,18 +22,6 @@ BUILDSYS_SHARED_LIB
 AC_DEFINE(OF_CONFIG_H, 1, [Define so that we know we got our config.h])
 AC_C_BIGENDIAN([AC_DEFINE(OF_BIG_ENDIAN, 1, [Whether we are big endian])])
 
-AC_CHECK_HEADER(objc/runtime.h,
-	[AC_DEFINE(HAVE_OBJC_RUNTIME_H, 1, [Whether we have objc/runtime.h])])
-
-AC_CHECK_LIB(objc, sel_get_name, [
-	have_sel_get_name="yes"
-	AC_DEFINE(HAVE_SEL_GET_NAME, 1, [Whether we have sel_get_name])])
-AC_CHECK_LIB(objc, sel_getName, [
-	have_sel_getName="yes"
-	AC_DEFINE(HAVE_SEL_GETNAME, 1, [Whether we have sel_getName])])
-test x"$have_sel_get_name" != x"yes" -a x"$have_sel_getName" != x"yes" && \
-	AC_ERROR(You need either sel_get_name or sel_getName in libobjc!)
-
 AC_CHECK_FUNC(asprintf, [
 	have_asprintf="yes"
 	AC_DEFINE(HAVE_ASPRINTF, 1, "Whether we have asprintf")], [
