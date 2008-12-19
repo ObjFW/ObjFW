@@ -94,6 +94,16 @@
 - (OFTCPSocket*)accept;
 
 /**
+ * Enables/disables non-blocking I/O.
+ */
+- setBlocking: (BOOL)enable;
+
+/**
+ * Enable or disable keep alives for the connection.
+ */
+- enableKeepAlives: (BOOL)enable;
+
+/**
  * Closes the socket.
  */
 - close;

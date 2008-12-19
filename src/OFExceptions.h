@@ -279,6 +279,16 @@
 @end
 
 /**
+ * An OFException indicating that setting an option failed.
+ */
+@interface OFSetOptionFailedException: OFException {}
+/***
+ * \return An error message for the exception as a C string.
+ */
+- (const char*)cString;
+@end
+
+/**
  * An OFException indicating a socket is not connected or bound.
  */
 @interface OFNotConnectedException: OFException {}

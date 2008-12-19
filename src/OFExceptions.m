@@ -299,6 +299,19 @@
 }
 @end
 
+@implementation OFSetOptionFailedException
+- (const char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "Setting an option for an object of type type %s "
+	    "failed!", [object name]);
+
+	return string;
+}
+@end
+
 @implementation OFNotConnectedException
 - (const char*)cString
 {

@@ -15,6 +15,7 @@
 #import <stdlib.h>
 #import <string.h>
 #import <unistd.h>
+#import <fcntl.h>
 
 #import "OFTCPSocket.h"
 #import "OFExceptions.h"
@@ -260,6 +261,33 @@
 
 	return [self writeNBytes: strlen(str)
 		      fromBuffer: (const uint8_t*)str];
+}
+
+- setBlocking: (BOOL)enable
+{
+	int flags;
+
+	if ((flags = fcntl(sock, F_GETFL)) < 0)
+		@throw [OFSetOptionFailedException newWithObject: self];
+
+	if (enable)
+		flags &= ~O_NONBLOCK;
+	else
+		flags |= O_NONBLOCK;
+
+	if (fcntl(sock, F_SETFL, flags) < 0)
+		@throw [OFSetOptionFailedException newWithObject: self];
+
+	return self;
+}
+
+- enableKeepAlives: (BOOL)enable
+{
+	if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &enable,
+	    sizeof(enable)) != 0)
+		@throw [OFSetOptionFailedException newWithObject: self];
+
+	return self;
 }
 
 - close
