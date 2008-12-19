@@ -155,21 +155,21 @@
 
 @implementation OFOpenFileFailedException
 + newWithObject: (id)obj
-	andPath: (const char*)p
-	andMode: (const char*)m
+	andPath: (const char*)path_
+	andMode: (const char*)mode_
 {
 	return [[self alloc] initWithObject: obj
-				    andPath: p
-				    andMode: m];
+				    andPath: path_
+				    andMode: mode_];
 }
 
 - initWithObject: (id)obj
-	 andPath: (const char*)p
-	 andMode: (const char*)m
+	 andPath: (const char*)path_
+	 andMode: (const char*)mode_
 {
 	if ((self = [super initWithObject: obj])) {
-		path = (p != NULL ? strdup(p) : NULL);
-		mode = (m != NULL ? strdup(m) : NULL);
+		path = (path_ != NULL ? strdup(path_) : NULL);
+		mode = (mode_ != NULL ? strdup(mode_) : NULL);
 	}
 
 	return self;
@@ -354,21 +354,21 @@
 
 @implementation OFAddressTranslationFailedException
 + newWithObject: (id)obj
-	andNode: (const char*)n
-     andService: (const char*)s
+	andNode: (const char*)node_
+     andService: (const char*)service_
 {
 	return [self newWithObject: obj
-			   andNode: n
-			andService: s];
+			   andNode: node_
+			andService: service_];
 }
 
 - initWithObject: (id)obj
-	 andNode: (const char*)n
-      andService: (const char*)s
+	 andNode: (const char*)node_
+      andService: (const char*)service_
 {
 	if ((self = [super initWithObject: obj])) {
-		node = (n != NULL ? strdup(n) : NULL);
-		service = (s != NULL ? strdup(s) : NULL);
+		node = (node_ != NULL ? strdup(node_) : NULL);
+		service = (service_ != NULL ? strdup(service_) : NULL);
 	}
 
 	return self;
@@ -412,21 +412,21 @@
 
 @implementation OFConnectionFailedException
 + newWithObject: (id)obj
-	andHost: (const char*)h
-	andPort: (uint16_t)p
+	andHost: (const char*)host_
+	andPort: (uint16_t)port_
 {
 	return [self newWithObject: obj
-			   andHost: h
-			   andPort: p];
+			   andHost: host_
+			   andPort: port_];
 }
 
 - initWithObject: (id)obj
-	 andHost: (const char*)h
-	 andPort: (uint16_t)p
+	 andHost: (const char*)host_
+	 andPort: (uint16_t)port_
 {
 	if ((self = [super initWithObject: obj])) {
-		host = (h != NULL ? strdup(h) : NULL);
-		port = p;
+		host = (host_ != NULL ? strdup(host_) : NULL);
+		port = port_;
 	}
 
 	return self;
@@ -464,25 +464,25 @@
 
 @implementation OFBindFailedException
 + newWithObject: (id)obj
-	andHost: (const char*)h
-	andPort: (uint16_t)p
-      andFamily: (int)f
+	andHost: (const char*)host_
+	andPort: (uint16_t)port_
+      andFamily: (int)family_
 {
 	return [self newWithObject: obj
-			   andHost: h
-			   andPort: p
-			 andFamily: f];
+			   andHost: host_
+			   andPort: port_
+			 andFamily: family_];
 }
 
 - initWithObject: (id)obj
-	 andHost: (const char*)h
-	 andPort: (uint16_t)p
-       andFamily: (int)f
+	 andHost: (const char*)host_
+	 andPort: (uint16_t)port_
+       andFamily: (int)family_
 {
 	if ((self = [super initWithObject: obj])) {
-		host = (h != NULL ? strdup(h) : NULL);
-		port = p;
-		family = f;
+		host = (host_ != NULL ? strdup(host_) : NULL);
+		port = port_;
+		family = family_;
 	}
 
 	return self;
@@ -525,17 +525,17 @@
 
 @implementation OFListenFailedException
 + newWithObject: (id)obj
-     andBackLog: (int)b
+     andBackLog: (int)backlog_
 {
 	return [[self alloc] initWithObject: obj
-				 andBackLog: b];
+				 andBackLog: backlog_];
 }
 
 - initWithObject: (id)obj
-      andBackLog: (int)b
+      andBackLog: (int)backlog_
 {
 	if ((self = [super initWithObject: obj]))
-		backlog = b;
+		backlog = backlog_;
 
 	return self;
 }

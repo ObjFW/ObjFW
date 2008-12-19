@@ -154,25 +154,25 @@
 
 /**
  * \param obj The object which caused the exception
- * \param p A C string of the path to the file tried to open
- * \param m A C string of the mode in which the file should have been opened
+ * \param path A C string of the path to the file tried to open
+ * \param mode A C string of the mode in which the file should have been opened
  * \return A new open file failed exception
  */
 + newWithObject: (id)obj
-	andPath: (const char*)p
-	andMode: (const char*)m;
+	andPath: (const char*)path
+	andMode: (const char*)mode;
 
 /**
  * Initializes an already allocated open file failed exception.
  *
  * \param obj The object which caused the exception
- * \param p A C string of the path to the file which couldn't be opened
- * \param m A C string of the mode in which the file should have been opened
+ * \param path A C string of the path to the file which couldn't be opened
+ * \param mode A C string of the mode in which the file should have been opened
  * \return An initialized open file failed exception
  */
 - initWithObject: (id)obj
-	 andPath: (const char*)p
-	 andMode: (const char*)m;
+	 andPath: (const char*)path
+	 andMode: (const char*)mode;
 
 - free;
 
@@ -330,25 +330,25 @@
 
 /**
  * \param obj The object which caused the exception
- * \param n The node for which translation was requested
- * \param s The service of the node for which translation was requested
+ * \param node The node for which translation was requested
+ * \param service The service of the node for which translation was requested
  * \return A new address translation failed exception
  */
 + newWithObject: (id)obj
-	andNode: (const char*)n
-     andService: (const char*)s;
+	andNode: (const char*)node
+     andService: (const char*)service;
 
 /**
  * Initializes an already allocated address translation failed exception.
  *
  * \param obj The object which caused the exception
- * \param n The node for which translation was requested
- * \param s The service of the node for which translation was requested
+ * \param node The node for which translation was requested
+ * \param service The service of the node for which translation was requested
  * \return An initialized address translation failed exception
  */
 - initWithObject: (id)obj
-	 andNode: (const char*)n
-      andService: (const char*)s;
+	 andNode: (const char*)node
+      andService: (const char*)service;
 
 - free;
 
@@ -379,25 +379,25 @@
 
 /**
  * \param obj The object which caused the exception
- * \param h The host to which the connection failed
- * \param p The port on the host to which the connection failed
+ * \param host The host to which the connection failed
+ * \param port The port on the host to which the connection failed
  * \return A new connection failed exception
  */
 + newWithObject: (id)obj
-	andHost: (const char*)h
-	andPort: (uint16_t)p;
+	andHost: (const char*)host
+	andPort: (uint16_t)port;
 
 /**
  * Initializes an already allocated connection failed exception.
  *
  * \param obj The object which caused the exception
- * \param h The host to which the connection failed
- * \param p The port on the host to which the connection failed
+ * \param host The host to which the connection failed
+ * \param port The port on the host to which the connection failed
  * \return An initialized connection failed exception
  */
 - initWithObject: (id)obj
-	 andHost: (const char*)h
-	 andPort: (uint16_t)p;
+	 andHost: (const char*)host
+	 andPort: (uint16_t)port;
 
 - free;
 
@@ -429,29 +429,29 @@
 
 /**
  * \param obj The object which caused the exception
- * \param h The host on which binding failed
- * \param p The port on which binding failed
- * \param f The family for which binnding failed
+ * \param host The host on which binding failed
+ * \param port The port on which binding failed
+ * \param family The family for which binnding failed
  * \return A new bind failed exception
  */
 + newWithObject: (id)obj
-	andHost: (const char*)h
-	andPort: (uint16_t)p
-      andFamily: (int)f;
+	andHost: (const char*)host
+	andPort: (uint16_t)port
+      andFamily: (int)family;
 
 /**
  * Initializes an already allocated bind failed exception.
  *
  * \param obj The object which caused the exception
- * \param h The host on which binding failed
- * \param p The port on which binding failed
- * \param f The family for which binnding failed
+ * \param host The host on which binding failed
+ * \param port The port on which binding failed
+ * \param family The family for which binnding failed
  * \return An initialized bind failed exception
  */
 - initWithObject: (id)obj
-	 andHost: (const char*)h
-	 andPort: (uint16_t)p
-       andFamily: (int)f;
+	 andHost: (const char*)host
+	 andPort: (uint16_t)port
+       andFamily: (int)family;
 
 - free;
 
@@ -486,21 +486,21 @@
 
 /**
  * \param obj The object which caused the exception
- * \param b The requested size of the back log
+ * \param backlog The requested size of the back log
  * \return A new listen failed exception
  */
 + newWithObject: (id)obj
-     andBackLog: (int)b;
+     andBackLog: (int)backlog;
 
 /**
  * Initializes an already allocated listen failed exception
  *
  * \param obj The object which caused the exception
- * \param b The requested size of the back log
+ * \param backlog The requested size of the back log
  * \return An initialized listen failed exception
  */
 - initWithObject: (id)obj
-      andBackLog: (int)b;
+      andBackLog: (int)backlog;
 
 /**
  * \return An error message for the exception as a C string.
