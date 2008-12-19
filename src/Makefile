@@ -23,6 +23,7 @@ INCLUDES = ${SRCS:.m=.h}	\
 include ../buildsys.mk
 
 CPPFLAGS += -I..
+CFLAGS += ${LIB_CFLAGS}
 OBJCFLAGS += ${LIB_CFLAGS}
 LD = ${OBJC}
 LDFLAGS += ${LIB_LDFLAGS}
