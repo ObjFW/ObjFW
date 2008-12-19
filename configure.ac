@@ -29,46 +29,54 @@ AC_CHECK_FUNC(asprintf, [
 	AC_SUBST(ASPRINTF, "asprintf.c")])
 
 AC_MSG_CHECKING(whether snprintf returns something useful)
-AC_TRY_RUN([
-	#include <stdio.h>
+AC_CACHE_VAL(ac_cv_snprintf_useful_ret, [
+	AC_TRY_RUN([
+		#include <stdio.h>
 
-	int
-	main()
-	{
-		return (snprintf(NULL, 0, "asd") == 3 ? 0 : 1);
-	}],
-	snprintf_return_useful="yes", snprintf_return_useful="no",
-	snprintf_return_useful="no")
-AC_MSG_RESULT($snprintf_return_useful)
+		int
+		main()
+		{
+			return (snprintf(NULL, 0, "asd") == 3 ? 0 : 1);
+		}],
+		ac_cv_snprintf_useful_ret="yes",
+		ac_cv_snprintf_useful_ret="no",
+		ac_cv_snprintf_useful_ret="no")])
+AC_MSG_RESULT($ac_cv_snprintf_useful_ret)
 
-test x"$have_asprintf" != x"yes" -a x"$snprintf_return_useful" != x"yes" && \
+test x"$have_asprintf" != x"yes" -a x"$ac_cv_snprintf_useful_ret" != x"yes" && \
 	AC_MSG_ERROR(No asprintf and no snprintf returning required space!)
 
 AC_MSG_CHECKING(whether we have IPv6 support)
-AC_TRY_RUN([
-	#include <stdlib.h>
-	#include <string.h>
+AC_CACHE_VAL(ac_cv_have_ipv6, [
+	AC_TRY_RUN([
+		#include <stdlib.h>
+		#include <string.h>
 
-	#include <sys/types.h>
-	#include <sys/socket.h>
-	#include <netinet/in.h>
+		#include <sys/types.h>
+		#include <sys/socket.h>
+		#include <netinet/in.h>
 
-	int
-	main()
-	{
-		int fd;
-		struct sockaddr_in6 addr;
+		int
+		main()
+		{
+			int fd;
+			struct sockaddr_in6 addr;
 
-		fd = socket(AF_INET6, SOCK_STREAM, 0);
+			fd = socket(AF_INET6, SOCK_STREAM, 0);
 
-		/* Do something with it to prevent an error due to -Werror */
-		memset(&addr, 0, sizeof(addr));
+			/*
+			 * Do something with it to prevent an error due to
+			 * -Werror
+			 */
+			memset(&addr, 0, sizeof(addr));
 
-		exit(fd >= 0 ? 0 : 1);
-	}],
-	have_ipv6="yes", have_ipv6="no", have_ipv6="no")
-AC_MSG_RESULT($have_ipv6)
-test x"$have_ipv6" = x"yes" && \
+			exit(fd >= 0 ? 0 : 1);
+		}],
+		ac_cv_have_ipv6="yes",
+		ac_cv_have_ipv6="no",
+		ac_cv_have_ipv6="no")])
+AC_MSG_RESULT($ac_cv_have_ipv6)
+test x"$ac_cv_have_ipv6" = x"yes" && \
 	AC_DEFINE(HAVE_IPV6, 1, "Whether we have IPv6 support")
 
 test x"$cross_compiling" != x"yes" && AC_SUBST(TESTS, "tests")
