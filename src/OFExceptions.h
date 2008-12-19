@@ -150,6 +150,7 @@
 {
 	char *path;
 	char *mode;
+	int  err;
 }
 
 /**
@@ -182,6 +183,11 @@
 - (const char*)cString;
 
 /**
+ * \return The errno from when the exception was created
+ */
+- (int)errNo;
+
+/**
  * \return A C string of the path to the file which couldn't be opened
  */
 - (char*)path;
@@ -199,7 +205,8 @@
 {
 	size_t req_size;
 	size_t req_items;
-	BOOL has_items;
+	BOOL   has_items;
+	int    err;
 }
 
 /**
@@ -241,6 +248,11 @@
  */
 - initWithObject: (id)obj
 	 andSize: (size_t)size;
+
+/**
+ * \return The errno from when the exception was created
+ */
+- (int)errNo;
 
 /**
  * \return The requested size of the data that couldn't be read / written
@@ -326,6 +338,7 @@
 {
 	char *node;
 	char *service;
+	int  err;
 }
 
 /**
@@ -358,6 +371,11 @@
 - (const char*)cString;
 
 /**
+ * \return The errno from when the exception was created
+ */
+- (int)errNo;
+
+/**
  * /return The node for which translation was requested
  */
 - (const char*)node;
@@ -373,8 +391,9 @@
  */
 @interface OFConnectionFailedException: OFException
 {
-	char *host;
+	char	 *host;
 	uint16_t port;
+	int	 err;
 }
 
 /**
@@ -407,6 +426,11 @@
 - (const char*)cString;
 
 /**
+ * \return The errno from when the exception was created
+ */
+- (int)errNo;
+
+/**
  * \return The host to which the connection failed
  */
 - (const char*)host;
@@ -422,9 +446,10 @@
  */
 @interface OFBindFailedException: OFException
 {
-	char *host;
+	char	 *host;
 	uint16_t port;
-	int family;
+	int	 family;
+	int	 err;
 }
 
 /**
@@ -461,6 +486,11 @@
 - (const char*)cString;
 
 /**
+ * \return The errno from when the exception was created
+ */
+- (int)errNo;
+
+/**
  * \return The host on which binding failed
  */
 - (const char*)host;
@@ -482,6 +512,7 @@
 @interface OFListenFailedException: OFException
 {
 	int backlog;
+	int err;
 }
 
 /**
@@ -508,6 +539,11 @@
 - (const char*)cString;
 
 /**
+ * \return The errno from when the exception was created
+ */
+- (int)errNo;
+
+/**
  * \return The requested back log.
  */
 - (int)backLog;
@@ -516,9 +552,26 @@
 /**
  * An OFException indicating that accepting a connection failed.
  */
-@interface OFAcceptFailedException: OFException {}
+@interface OFAcceptFailedException: OFException
+{
+	int err;
+}
+
+/**
+ * Initializes an already allocated accept failed exception.
+ *
+ * \param obj The object which caused the exception
+ * \return An initialized accept failed exception
+ */
+- initWithObject: (id)obj;
+
 /**
  * \return An error message for the exception as a C string.
  */
 - (const char*)cString;
+
+/**
+ * \return The errno from when the exception was created
+ */
+- (int)errNo;
 @end

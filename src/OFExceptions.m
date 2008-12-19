@@ -15,6 +15,7 @@
 #import <stdio.h>
 #import <stdlib.h>
 #import <string.h>
+#import <errno.h>
 
 #import "OFExceptions.h"
 
@@ -170,6 +171,7 @@
 	if ((self = [super initWithObject: obj])) {
 		path = (path_ != NULL ? strdup(path_) : NULL);
 		mode = (mode_ != NULL ? strdup(mode_) : NULL);
+		err = errno;
 	}
 
 	return self;
@@ -191,9 +193,15 @@
 		return string;
 
 	asprintf(&string, "Failed to open file %s with mode %s in object of "
-	    "class %s!", path, mode, [self name]);
+	    "class %s! Error string was: %s", path, mode, [self name],
+	    strerror(err));
 
 	return string;
+}
+
+- (int)errNo
+{
+	return err;
 }
 
 - (char*)path
@@ -232,6 +240,7 @@
 		req_size = size;
 		req_items = nitems;
 		has_items = YES;
+		err = errno;
 	}
 
 	return self;
@@ -244,9 +253,15 @@
 		req_size = size;
 		req_items = 0;
 		has_items = NO;
+		err = errno;
 	}
 
 	return self;
+}
+
+- (int)errNo
+{
+	return err;
 }
 
 - (size_t)requestedSize
@@ -273,10 +288,12 @@
 
 	if (has_items)
 		asprintf(&string, "Failed to read %zu items of size %zu in "
-		    "object of class %s!", req_items, req_size, [object name]);
+		    "object of class %s! Error string was: %s", req_items,
+		    req_size, [object name], strerror(err));
 	else
 		asprintf(&string, "Failed to read %zu bytes in object of class "
-		    "%s!", req_size, [object name]);
+		    "%s! Error string was: %s", req_size, [object name],
+		    strerror(err));
 
 	return string;
 }
@@ -290,10 +307,12 @@
 
 	if (has_items)
 		asprintf(&string, "Failed to write %zu items of size %zu in "
-		    "object of class %s!", req_items, req_size, [object name]);
+		    "object of class %s! Error string was: %s", req_items,
+		    req_size, [object name], strerror(err));
 	else
 		asprintf(&string, "Failed to write %zu bytes in object of "
-		    "class %s!", req_size, [object name]);
+		    "class %s! Error string was: %s", req_size, [object name],
+		    strerror(err));
 
 	return string;
 }
@@ -369,6 +388,7 @@
 	if ((self = [super initWithObject: obj])) {
 		node = (node_ != NULL ? strdup(node_) : NULL);
 		service = (service_ != NULL ? strdup(service_) : NULL);
+		err = errno;
 	}
 
 	return self;
@@ -393,10 +413,16 @@
 	    "address for an object of type %s. This means that either the node "
 	    "was not found, there is no such service on the node, there was a "
 	    "problem with the name server, there was a problem with your "
-	    "network connection or you specified an invalid node or service.",
-	    service, node, [object name]);
+	    "network connection or you specified an invalid node or service. "
+	    "Error string was: %s", service, node, [object name],
+	    strerror(err));
 
 	return string;
+}
+
+- (int)errNo
+{
+	return err;
 }
 
 - (const char*)node
@@ -427,6 +453,7 @@
 	if ((self = [super initWithObject: obj])) {
 		host = (host_ != NULL ? strdup(host_) : NULL);
 		port = port_;
+		err = errno;
 	}
 
 	return self;
@@ -446,9 +473,15 @@
 		return string;
 
 	asprintf(&string, "A connection to %s:%d could not be established in "
-	    "object of type %s!", host, port, [object name]);
+	    "object of type %s! Error string was: %s", host, port,
+	    [object name], strerror(err));
 
 	return string;
+}
+
+- (int)errNo
+{
+	return err;
 }
 
 - (const char*)host
@@ -483,6 +516,7 @@
 		host = (host_ != NULL ? strdup(host_) : NULL);
 		port = port_;
 		family = family_;
+		err = errno;
 	}
 
 	return self;
@@ -502,9 +536,15 @@
 		return string;
 
 	asprintf(&string, "Binding to port %d on %s using family %d failed in "
-	    "object of type %s!", port, host, family, [object name]);
+	    "object of type %s! Error string was: %s", port, host, family,
+	    [object name], strerror(err));
 
 	return string;
+}
+
+- (int)errNo
+{
+	return err;
 }
 
 - (const char*)host
@@ -534,8 +574,10 @@
 - initWithObject: (id)obj
       andBackLog: (int)backlog_
 {
-	if ((self = [super initWithObject: obj]))
+	if ((self = [super initWithObject: obj])) {
 		backlog = backlog_;
+		err = errno;
+	}
 
 	return self;
 }
@@ -546,9 +588,15 @@
 		return string;
 
 	asprintf(&string, "Failed to listen in socket of type %s with a back "
-	    "log of %d!", [object name], backlog);
+	    "log of %d! Error string was: %s", [object name], backlog,
+	    strerror(err));
 
 	return string;
+}
+
+- (int)errNo
+{
+	return err;
 }
 
 - (int)backLog
@@ -558,14 +606,27 @@
 @end
 
 @implementation OFAcceptFailedException
+- initWithObject: (id)obj
+{
+	if ((self = [super initWithObject: obj]))
+		err = errno;
+
+	return self;
+}
+
 - (const char*)cString
 {
 	if (string != NULL)
 		return string;
 
-	asprintf(&string, "Failed to accept connection in socket of type %s!",
-	    [object name]);
+	asprintf(&string, "Failed to accept connection in socket of type %s! "
+	    "Error string was: %s", [object name], strerror(err));
 
 	return string;
+}
+
+- (int)errNo
+{
+	return err;
 }
 @end

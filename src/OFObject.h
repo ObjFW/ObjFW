@@ -18,7 +18,7 @@
  */
 @interface OFObject: Object
 {
-	void **__memchunks;
+	void   **__memchunks;
 	size_t __memchunks_size;
 }
 

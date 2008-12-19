@@ -39,8 +39,8 @@
  */
 @interface OFTCPSocket: OFObject <OFStream>
 {
-	int sock;
-	struct sockaddr *saddr;
+	int	  sock;
+	struct	  sockaddr *saddr;
 	socklen_t saddr_len;
 }
 
