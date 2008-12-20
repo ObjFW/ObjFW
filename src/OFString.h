@@ -9,8 +9,6 @@
  * the packaging of this file.
  */
 
-#import <wchar.h>
-
 #import "OFObject.h"
 
 /**
@@ -18,8 +16,8 @@
  */
 @interface OFString: OFObject
 {
-	wchar_t	*string;
-	size_t  length;
+	char   *string;
+	size_t length;
 }
 
 /**
@@ -38,14 +36,6 @@
 + newFromCString: (const char*)str;
 
 /**
- * Creates a new OFString from a wide C string.
- * 
- * \param str A wide C string to initialize the OFString with
- * \return A new OFString
- */
-+ newFromWideCString: (const wchar_t*)str;
-
-/**
  * Initializes an already allocated OFString.
  *
  * \return An initialized OFString
@@ -61,28 +51,14 @@
 - initFromCString: (const char*)str;
 
 /**
- * Initializes an already allocated OFString from a wide C string.
- * 
- * \param str A wide C string to initialize the OFString with
- * \return An initialized OFString
- */
-- initFromWideCString: (const wchar_t*)str;
-
-/**
  * \return The OFString as a wide C string
  */
-- (const wchar_t*)wideCString;
+- (const char*)cString;
 
 /**
  * \return The length of the OFString
  */
 - (size_t)length;
-
-/**
- * \return The OFString as a C string, if possible (if not, returns NULL).
- *         If not needed anymore, it is usefull to call freeMem:.
- */
-- (char*)getCString;
 
 /**
  * Clones the OFString, creating a new one.
@@ -120,13 +96,6 @@
  * \param str A C string to append
  */
 - appendCString: (const char*)str;
-
-/**
- * Append a wide C string to the OFString.
- *
- * \param str A wide C string to append
- */
-- appendWideCString: (const wchar_t*)str;
 
 /**
  * Reverse the OFString.

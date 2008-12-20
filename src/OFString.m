@@ -13,8 +13,7 @@
 
 #import <stdlib.h>
 #import <string.h>
-#import <wchar.h>
-#import <wctype.h>
+#import <ctype.h>
 
 #import "OFString.h"
 #import "OFExceptions.h"
@@ -28,11 +27,6 @@
 + newFromCString: (const char*)str
 {
 	return [[self alloc] initFromCString: str];
-}
-
-+ newFromWideCString: (const wchar_t*)str
-{
-	return [[self alloc] initFromWideCString: str];
 }
 
 - init
@@ -52,43 +46,16 @@
 			length = 0;
 			string = NULL;
 		} else {
-			if ((length = mbstowcs(NULL, str, 0)) == (size_t)-1) {
-				[super free];
-				@throw [OFCharsetConversionFailedException
-				    newWithObject: nil];
-			}
-
-			string = [self getMemForNItems: length + 1
-						ofSize: sizeof(wchar_t)];
-
-			if (mbstowcs(string, str, length + 1) != length) {
-				[super free];
-				return nil;
-			}
+			length = strlen(str);
+			string = [self getMemWithSize: length + 1];
+			memcpy(string, str, length + 1);
 		}
 	}
 
 	return self;
 }
 
-- initFromWideCString: (const wchar_t*)str
-{
-	if ((self = [super init])) {
-		if (str == NULL) {
-			length = 0;
-			string = NULL;
-		} else {
-			length = wcslen(str);
-			string = [self getMemForNItems: length + 1
-						ofSize: sizeof(wchar_t)];
-			wmemcpy(string, str, length + 1);
-		}
-	}
-
-	return self;
-}
-
-- (const wchar_t*)wideCString
+- (const char*)cString
 {
 	return string;
 }
@@ -98,27 +65,9 @@
 	return length;
 }
 
-- (char*)getCString
-{
-	char *str;
-	size_t len;
-
-	if ((len = wcstombs(NULL, string, 0)) == (size_t)-1)
-		@throw [OFCharsetConversionFailedException newWithObject: self];
-
-	str = [self getMemWithSize: len + 1];
-
-	if (wcstombs(str, string, len + 1) != len) {
-		[self freeMem: str];
-		@throw [OFCharsetConversionFailedException newWithObject: self];
-	}
-
-	return str;
-}
-
 - (OFString*)clone
 {
-	return [OFString newFromWideCString: string];
+	return [OFString newFromCString: string];
 }
 
 - (OFString*)setTo: (OFString*)str
@@ -129,64 +78,29 @@
 
 - (int)compareTo: (OFString*)str
 {
-	return wcscmp(string, [str wideCString]);
+	return strcmp(string, [str cString]);
 }
 
 - append: (OFString*)str
 {
-	return [self appendWideCString: [str wideCString]];
+	return [self appendCString: [str cString]];
 }
 
 - appendCString: (const char*)str
 {
-	wchar_t	*newstr, *tmpstr;
-	size_t	newlen, strlength;
+	char   *newstr;
+	size_t newlen, strlength;
 
 	if (string == NULL) 
 		return [self setTo: [OFString newFromCString: str]];
 
-	if ((strlength = mbstowcs(NULL, str, 0)) == (size_t)-1)
-		@throw [OFCharsetConversionFailedException newWithObject: self];
-
-	tmpstr = [self getMemForNItems: strlength + 1
-				ofSize: sizeof(wchar_t)];
-
-	if (mbstowcs(tmpstr, str, strlength) != strlength) {
-		[self freeMem: tmpstr];
-		@throw [OFCharsetConversionFailedException newWithObject: self];
-	}
-
-	newlen = length + strlength;
-	newstr = [self resizeMem: string
-			toNItems: newlen + 1
-			  ofSize: sizeof(wchar_t)];
-
-	wmemcpy(newstr + length, tmpstr, strlength + 1);
-
-	length = newlen;
-	string = newstr;
-
-	[self freeMem: tmpstr];
-
-	return self;
-}
-
-- appendWideCString: (const wchar_t*)str
-{
-	wchar_t	*newstr;
-	size_t	newlen, strlength;
-
-	if (string == NULL) 
-		return [self setTo: [OFString newFromWideCString: str]];
-
-	strlength = wcslen(str);
+	strlength = strlen(str);
 	newlen = length + strlength;
 
 	newstr = [self resizeMem: string
-			toNItems: newlen + 1
-			  ofSize: sizeof(wchar_t)];
+			  toSize: newlen + 1];
 
-	wmemcpy(newstr + length, str, strlength + 1);
+	memcpy(newstr + length, str, strlength + 1);
 
 	length = newlen;
 	string = newstr;
@@ -212,7 +126,7 @@
 	size_t i = length;
 
 	while (i--) 
-		string[i] = towupper(string[i]);
+		string[i] = toupper(string[i]);
 
 	return self;
 }
@@ -222,7 +136,7 @@
 	size_t i = length;
 
 	while (i--) 
-		string[i] = towlower(string[i]);
+		string[i] = tolower(string[i]);
 
 	return self;
 }

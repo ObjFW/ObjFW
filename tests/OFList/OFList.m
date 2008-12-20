@@ -11,10 +11,8 @@
 
 #import "config.h"
 
-#define _ISOC99_SOURCE
-
+#import <stdio.h>
 #import <string.h>
-#import <wchar.h>
 
 #import "OFString.h"
 #import "OFList.h"
@@ -22,13 +20,13 @@
 #define NUM_TESTS 5
 #define SUCCESS								\
 {									\
-	wprintf(L"\r\033[1;%dmTests successful: %d/%d\033[0m",		\
+	printf("\r\033[1;%dmTests successful: %d/%d\033[0m",		\
 	    (i == NUM_TESTS - 1 ? 32 : 33), i + 1, NUM_TESTS);		\
 	fflush(stdout);							\
 }
 #define FAIL								\
 {									\
-	wprintf(L"\r\033[K\033[1;31mTest %d/%d failed!\033[m\n",	\
+	printf("\r\033[K\033[1;31mTest %d/%d failed!\033[m\n",		\
 	    i + 1, NUM_TESTS);						\
 	return 1;							\
 }
@@ -39,10 +37,10 @@
 		FAIL							\
 	i++;
  
-const wchar_t *strings[] = {
-	L"First String Object",
-	L"Second String Object",
-	L"Third String Object"
+const char *strings[] = {
+	"First String Object",
+	"Second String Object",
+	"Third String Object"
 };
 
 int
@@ -54,20 +52,20 @@ main()
 
 	list = [OFList new];
  
-	[list addNew: [OFString newFromWideCString: strings[0]]];
-	[list addNew: [OFString newFromWideCString: strings[1]]];
-	[list addNew: [OFString newFromWideCString: strings[2]]];
+	[list addNew: [OFString newFromCString: strings[0]]];
+	[list addNew: [OFString newFromCString: strings[1]]];
+	[list addNew: [OFString newFromCString: strings[2]]];
  
 	for (iter = [list first], i = 0; iter != nil; iter = [iter next], i++)
-		if (!wcscmp([(OFString*)[iter data] wideCString], strings[i]))
+		if (!strcmp([(OFString*)[iter data] cString], strings[i]))
 			SUCCESS
 		else
 			FAIL
 
-	CHECK(!wcscmp([(OFString*)[[list first] data] wideCString], strings[0]))
-	CHECK(!wcscmp([(OFString*)[[list last] data] wideCString], strings[2]))
+	CHECK(!strcmp([(OFString*)[[list first] data] cString], strings[0]))
+	CHECK(!strcmp([(OFString*)[[list last] data] cString], strings[2]))
 
-	wprintf(L"\n");
+	puts("");
  
 	[list freeIncludingData];
 

@@ -43,35 +43,35 @@ main()
 		return 1;
 	}
 
-	if (!strcmp([[s1 append: s2] getCString], "test123"))
+	if (!strcmp([[s1 append: s2] cString], "test123"))
 		puts("s1 appended with s2 is the expected string! GOOD!");
 	else {
 		puts("s1 appended with s2 is not the expected string!");
 		return 1;
 	}
 
-	if (strlen([s1 getCString]) == [s1 length] && [s1 length] == 7)
+	if (strlen([s1 cString]) == [s1 length] && [s1 length] == 7)
 		puts("s1 has the expected length. GOOD!");
 	else {
 		puts("s1 does not have the expected length!");
 		return 1;
 	}
 
-	if (!strcmp([[s1 reverse] getCString], "321tset"))
+	if (!strcmp([[s1 reverse] cString], "321tset"))
 		puts("Reversed s1 is expected string! GOOD!");
 	else {
 		puts("Reversed s1 is NOT the expected string!");
 		return 1;
 	}
 
-	if (!strcmp([[s1 upper] getCString], "321TSET"))
+	if (!strcmp([[s1 upper] cString], "321TSET"))
 		puts("Upper s1 is expected string! GOOD!");
 	else {
 		puts("Upper s1 is NOT expected string!");
 		return 1;
 	}
 
-	if (!strcmp([[s1 lower] getCString], "321tset"))
+	if (!strcmp([[s1 lower] cString], "321tset"))
 		puts("Lower s1 is expected string! GOOD!");
 	else {
 		puts("Lower s1 is NOT expected string!");
