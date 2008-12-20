@@ -20,13 +20,13 @@
 #define NUM_TESTS 5
 #define SUCCESS								\
 {									\
-	printf("\r\033[1;%dmTests successful: %d/%d\033[0m",		\
+	printf("\r\033[1;%dmTests successful: %zd/%d\033[0m",		\
 	    (i == NUM_TESTS - 1 ? 32 : 33), i + 1, NUM_TESTS);		\
 	fflush(stdout);							\
 }
 #define FAIL								\
 {									\
-	printf("\r\033[K\033[1;31mTest %d/%d failed!\033[m\n",		\
+	printf("\r\033[K\033[1;31mTest %zd/%d failed!\033[m\n",		\
 	    i + 1, NUM_TESTS);						\
 	return 1;							\
 }

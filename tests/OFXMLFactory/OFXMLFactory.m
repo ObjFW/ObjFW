@@ -11,6 +11,7 @@
 
 #import "config.h"
 
+#import <stdio.h>
 #import <stdlib.h>
 #import <string.h>
 
@@ -18,7 +19,7 @@
 
 #define NUM_TESTS 10
 
-static int i;
+static size_t i;
 
 inline void
 check_result(char *result, const char *should)
@@ -26,11 +27,11 @@ check_result(char *result, const char *should)
 	i++;
 
 	if (!strcmp(result, should)) {
-		printf("\r\033[1;%dmTests successful: %2d/%d\033[0m",
+		printf("\r\033[1;%dmTests successful: %2zd/%d\033[0m",
 		    (i == NUM_TESTS ? 32 : 33), i, NUM_TESTS);
 		fflush(stdout);
 	} else {
-		printf("\r\033[K\033[1;31mTest %d/%d failed!\033[0m\n",
+		printf("\r\033[K\033[1;31mTest %zd/%d failed!\033[0m\n",
 		    i, NUM_TESTS);
 		printf("%s is NOT expected result!\n", result);
 		exit(1);
