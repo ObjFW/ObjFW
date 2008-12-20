@@ -16,24 +16,24 @@
  */
 @interface OFListObject: OFObject
 {
-	void	     *data;
+	id	     data;
 	OFListObject *next;
 	OFListObject *prev;
 }
 
 /**
- * \param The data the OFListObject should contain
+ * \param obj The data object the OFListObject should contain
  * \return A new OFListObject.
  */
-+ newWithData: (void*)ptr;
++ newWithData: (id)obj;
 
 /**
  * Initializes an already allocated OFListObjeect.
  *
- * \param The data the OFListObject should contain
+ * \param obj The data object the OFListObject should contain
  * \return An initialized OFListObject.
  */
-- initWithData: (void*)ptr;
+- initWithData: (id)obj;
 
 /**
  * Free the OFListObject and the data it contains.
@@ -41,9 +41,9 @@
 - freeIncludingData;
 
 /**
- * \return The data included in the OFListObject
+ * \return The data object included in the OFListObject
  */
-- (void*)data;
+- (id)data;
 
 /**
  * \return The next OFListObject in the OFList

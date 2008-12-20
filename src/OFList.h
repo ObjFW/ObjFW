@@ -53,7 +53,7 @@
 /**
  * Creates a new OFListObject and adds it to the OFList.
  *
- * \param ptr Pointer to the data for the OFListObject which will be added
+ * \param obj A data object for the OFListObject which will be added
  */
-- addNew: (void*)ptr;
+- addNew: (id)obj;
 @end

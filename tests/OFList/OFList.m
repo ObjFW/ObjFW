@@ -57,13 +57,13 @@ main()
 	[list addNew: [OFString newFromCString: strings[2]]];
  
 	for (iter = [list first], i = 0; iter != nil; iter = [iter next], i++)
-		if (!strcmp([(OFString*)[iter data] cString], strings[i]))
+		if (!strcmp([[iter data] cString], strings[i]))
 			SUCCESS
 		else
 			FAIL
 
-	CHECK(!strcmp([(OFString*)[[list first] data] cString], strings[0]))
-	CHECK(!strcmp([(OFString*)[[list last] data] cString], strings[2]))
+	CHECK(!strcmp([[[list first] data] cString], strings[0]))
+	CHECK(!strcmp([[[list last] data] cString], strings[2]))
 
 	puts("");
  

@@ -73,8 +73,8 @@
 	return self;
 }
 
-- addNew: (void*)ptr
+- addNew: (id)obj
 {
-	return [self add: [OFListObject newWithData: ptr]];
+	return [self add: [OFListObject newWithData: obj]];
 }
 @end

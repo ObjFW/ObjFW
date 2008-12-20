@@ -16,17 +16,17 @@
 #import "OFListObject.h"
 
 @implementation OFListObject
-+ newWithData: (void*)ptr
++ newWithData: (id)obj
 {
-	return [[self alloc] initWithData: ptr];
+	return [[self alloc] initWithData: obj];
 }
 
-- initWithData: (void*)ptr
+- initWithData: (id)obj
 {
 	if ((self = [super init])) {
 		next = nil;
 		prev = nil;
-		data = ptr;
+		data = obj;
 	}
 
 	return self;
@@ -34,13 +34,13 @@
 
 - freeIncludingData
 {
-	if (data != NULL)
-		free(data);
+	if (data != nil)
+		[data free];
 
 	return [super free];
 }
 
-- (void*)data
+- (id)data
 {
 	return data;
 }
