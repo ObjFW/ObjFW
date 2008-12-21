@@ -33,13 +33,13 @@ check_utf8(const char *str, size_t len)
 
 	for (i = 0; i < len; i++) {
 		/* No sign of UTF-8 here */
-		if (OF_LIKELY(~str[i] & 0x80))
+		if (OF_LIKELY(!(str[i] & 0x80)))
 			continue;
 
 		utf8 = YES;
 
 		/* We're missing a start byte here */
-		if (OF_UNLIKELY(~str[i] & 0x40)) {
+		if (OF_UNLIKELY(!(str[i] & 0x40))) {
 			madvise((void*)str, len, MADV_NORMAL);
 			return -1;
 		}
@@ -51,7 +51,7 @@ check_utf8(const char *str, size_t len)
 		}
 
 		/* Check if we have at minimum a 3 byte character */
-		if (OF_LIKELY(~str[i] & 0x20)) {
+		if (OF_LIKELY(!(str[i] & 0x20))) {
 			i++;
 			continue;
 		}
@@ -63,7 +63,7 @@ check_utf8(const char *str, size_t len)
 		}
 
 		/* Check if we have a 4 byte character */
-		if (OF_LIKELY(~str[i] & 0x10)) {
+		if (OF_LIKELY(!(str[i] & 0x10))) {
 			i += 2;
 			continue;
 		}
@@ -218,7 +218,7 @@ check_utf8(const char *str, size_t len)
 
 	for (i = 0; i < length; i++) {
 		/* ASCII */
-		if (OF_LIKELY(~string[i] & 0x80))
+		if (OF_LIKELY(!(string[i] & 0x80)))
 			continue;
 
 		/* A start byte can't happen first as we reversed everything */
@@ -228,7 +228,7 @@ check_utf8(const char *str, size_t len)
 		}
 
 		/* Next byte must not be ASCII */
-		if (OF_UNLIKELY(length < i + 1 || ~string[i + 1] & 0x80)) {
+		if (OF_UNLIKELY(length < i + 1 || !(string[i + 1] & 0x80))) {
 			madvise(string, len, MADV_NORMAL);
 			@throw [OFInvalidEncodingException newWithObject: self];
 		}
@@ -244,7 +244,7 @@ check_utf8(const char *str, size_t len)
 		}
 
 		/* Second next byte must not be ASCII */
-		if (OF_UNLIKELY(length < i + 2 || ~string[i + 2] & 0x80)) {
+		if (OF_UNLIKELY(length < i + 2 || !(string[i + 2] & 0x80))) {
 			madvise(string, len, MADV_NORMAL);
 			@throw [OFInvalidEncodingException newWithObject: self];
 		}
@@ -260,7 +260,7 @@ check_utf8(const char *str, size_t len)
 		}
 
 		/* Third next byte must not be ASCII */
-		if (OF_UNLIKELY(length < i + 3 || ~string[i + 3] & 0x80)) {
+		if (OF_UNLIKELY(length < i + 3 || !(string[i + 3] & 0x80))) {
 			madvise(string, len, MADV_NORMAL);
 			@throw [OFInvalidEncodingException newWithObject: self];
 		}
