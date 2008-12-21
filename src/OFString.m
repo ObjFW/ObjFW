@@ -15,6 +15,8 @@
 #import <string.h>
 #import <ctype.h>
 
+#import <sys/mman.h>
+
 #import "OFString.h"
 #import "OFExceptions.h"
 #import "OFMacros.h"
@@ -27,6 +29,8 @@ check_utf8(const char *str, size_t len)
 
 	utf8 = NO;
 
+	madvise((void*)str, len, MADV_SEQUENTIAL);
+
 	for (i = 0; i < len; i++) {
 		/* No sign of UTF-8 here */
 		if (OF_LIKELY(~str[i] & 0x80))
@@ -35,13 +39,16 @@ check_utf8(const char *str, size_t len)
 		utf8 = YES;
 
 		/* We're missing a start byte here */
-		if (OF_UNLIKELY(~str[i] & 0x40))
+		if (OF_UNLIKELY(~str[i] & 0x40)) {
+			madvise((void*)str, len, MADV_NORMAL);
 			return -1;
+		}
 
 		/* We have at minimum a 2 byte character -> check next byte */
-		if (OF_UNLIKELY(len < i + 1 || ~str[i + 1] & 0x80 ||
-		    str[i + 1] & 0x40))
+		if (OF_UNLIKELY(len < i + 1 || (str[i + 1] & 0xC0) != 0x80)) {
+			madvise((void*)str, len, MADV_NORMAL);
 			return -1;
+		}
 
 		/* Check if we have at minimum a 3 byte character */
 		if (OF_LIKELY(~str[i] & 0x20)) {
@@ -50,9 +57,10 @@ check_utf8(const char *str, size_t len)
 		}
 
 		/* We have at minimum a 3 byte char -> check second next byte */
-		if (OF_UNLIKELY(len < i + 2 || ~str[i + 2] & 0x80 ||
-		    str[i + 2] & 0x40))
+		if (OF_UNLIKELY(len < i + 2 || (str[i + 2] & 0xC0) != 0x80)) {
+			madvise((void*)str, len, MADV_NORMAL);
 			return -1;
+		}
 
 		/* Check if we have a 4 byte character */
 		if (OF_LIKELY(~str[i] & 0x10)) {
@@ -61,19 +69,24 @@ check_utf8(const char *str, size_t len)
 		}
 
 		/* We have a 4 byte character -> check third next byte */
-		if (OF_UNLIKELY(len < i + 3 || ~str[i + 3] & 0x80 ||
-		    str[i + 3] & 0x40))
+		if (OF_UNLIKELY(len < i + 3 || (str[i + 3] & 0xC0) != 0x80)) {
+			madvise((void*)str, len, MADV_NORMAL);
 			return -1;
+		}
 
 		/*
 		 * Just in case, check if there's a 5th character, which is
 		 * forbidden by UTF-8
 		 */
-		if (OF_UNLIKELY(str[i] & 0x08))
+		if (OF_UNLIKELY(str[i] & 0x08)) {
+			madvise((void*)str, len, MADV_NORMAL);
 			return -1;
+		}
 
 		i += 3;
 	}
+
+	madvise((void*)str, len, MADV_NORMAL);
 
 	return (utf8 ? 1 : 0);
 }
@@ -189,6 +202,8 @@ check_utf8(const char *str, size_t len)
 {
 	size_t i, j, len = length / 2;
 
+	madvise(string, len, MADV_SEQUENTIAL);
+
 	/* We reverse all bytes and restore UTF-8 later, if necessary */
 	for (i = 0, j = length - 1; i < len; i++, j--) {
 		string[i] ^= string[j];
@@ -196,8 +211,10 @@ check_utf8(const char *str, size_t len)
 		string[i] ^= string[j];
 	}
 
-	if (!is_utf8)
+	if (!is_utf8) {
+		madvise(string, len, MADV_NORMAL);
 		return self;
+	}
 
 	for (i = 0; i < length; i++) {
 		/* ASCII */
@@ -205,12 +222,16 @@ check_utf8(const char *str, size_t len)
 			continue;
 
 		/* A start byte can't happen first as we reversed everything */
-		if (OF_UNLIKELY(string[i] & 0x40))
+		if (OF_UNLIKELY(string[i] & 0x40)) {
+			madvise(string, len, MADV_NORMAL);
 			@throw [OFInvalidEncodingException newWithObject: self];
+		}
 
 		/* Next byte must not be ASCII */
-		if (OF_UNLIKELY(length < i + 1 || ~string[i + 1] & 0x80))
+		if (OF_UNLIKELY(length < i + 1 || ~string[i + 1] & 0x80)) {
+			madvise(string, len, MADV_NORMAL);
 			@throw [OFInvalidEncodingException newWithObject: self];
+		}
 
 		/* Next byte is the start byte */
 		if (OF_LIKELY(string[i + 1] & 0x40)) {
@@ -223,8 +244,10 @@ check_utf8(const char *str, size_t len)
 		}
 
 		/* Second next byte must not be ASCII */
-		if (OF_UNLIKELY(length < i + 2 || ~string[i + 2] & 0x80))
+		if (OF_UNLIKELY(length < i + 2 || ~string[i + 2] & 0x80)) {
+			madvise(string, len, MADV_NORMAL);
 			@throw [OFInvalidEncodingException newWithObject: self];
+		}
 
 		/* Second next byte is the start byte */
 		if (OF_LIKELY(string[i + 2] & 0x40)) {
@@ -237,8 +260,10 @@ check_utf8(const char *str, size_t len)
 		}
 
 		/* Third next byte must not be ASCII */
-		if (OF_UNLIKELY(length < i + 3 || ~string[i + 3] & 0x80))
+		if (OF_UNLIKELY(length < i + 3 || ~string[i + 3] & 0x80)) {
+			madvise(string, len, MADV_NORMAL);
 			@throw [OFInvalidEncodingException newWithObject: self];
+		}
 
 		/* Third next byte is the start byte */
 		if (OF_LIKELY(string[i + 3] & 0x40)) {
@@ -255,8 +280,11 @@ check_utf8(const char *str, size_t len)
 		}
 
 		/* UTF-8 does not allow more than 4 bytes per character */
+		madvise(string, len, MADV_NORMAL);
 		@throw [OFInvalidEncodingException newWithObject: self];
 	}
+
+	madvise(string, len, MADV_NORMAL);
 
 	return self;
 }
