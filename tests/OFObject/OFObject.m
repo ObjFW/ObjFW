@@ -18,25 +18,21 @@
 #import "OFExceptions.h"
 
 #define CATCH_EXCEPTION(code, exception)		\
-	caught = NO;					\
 	@try {						\
 		code;					\
+							\
+		puts("NOT CAUGHT!");			\
+		return 1;				\
 	} @catch (exception *e) {			\
-		caught = YES;				\
 		puts("CAUGHT! Error string was:");	\
 		puts([e cString]);			\
 		puts("Resuming...");			\
-	}						\
-	if (!caught) {					\
-		puts("NOT CAUGHT!");			\
-		return 1;				\
 	}
 
 int
 main()
 {
 	OFObject *obj = [OFObject new];
-	BOOL caught;
 	void *p, *q, *r;
 
 	/* Test freeing memory not allocated by obj */

@@ -19,18 +19,15 @@
 #import "OFExceptions.h"
 
 #define CATCH_EXCEPTION(code, exception)		\
-	caught = NO;					\
 	@try {						\
 		code;					\
+							\
+		puts("NOT CAUGHT!");			\
+		return 1;				\
 	} @catch (exception *e) {			\
-		caught = YES;				\
 		puts("CAUGHT! Error string was:");	\
 		puts([e cString]);			\
 		puts("Resuming...");			\
-	}						\
-	if (!caught) {					\
-		puts("NOT CAUGHT!");			\
-		return 1;				\
 	}
 
 const char *str = "Hallo!";
@@ -98,7 +95,7 @@ const char *str = "Hallo!";
 	[a free];							\
 									\
 	puts("Creating new array and using it to build a string...");	\
-	a = [type newWithItemSize: 1];				\
+	a = [type newWithItemSize: 1];					\
 									\
 	for (i = 0; i < strlen(str); i++)				\
 		[a add: (void*)(str + i)];				\
@@ -116,7 +113,6 @@ const char *str = "Hallo!";
 int
 main()
 {
-	BOOL caught;
 	id a;
 	void *p, *q;
 	size_t i;
