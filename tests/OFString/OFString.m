@@ -17,9 +17,36 @@
 #import "OFString.h"
 #import "OFExceptions.h"
 
+#define NUM_TESTS 10
+#define SUCCESS								\
+	printf("\r\033[1;%dmTests successful: %zd/%d\033[0m",		\
+	    (i == NUM_TESTS - 1 ? 32 : 33), i + 1, NUM_TESTS);		\
+	fflush(stdout);
+#define FAIL								\
+	printf("\r\033[K\033[1;31mTest %zd/%d failed!\033[m\n",		\
+	    i + 1, NUM_TESTS);						\
+	return 1;
+#define CHECK(cond)							\
+	if (cond) {							\
+		SUCCESS							\
+	} else {							\
+		FAIL							\
+	}								\
+	i++;
+#define CHECK_EXCEPT(code, exception)					\
+	@try {								\
+		code;							\
+		FAIL							\
+	} @catch (exception *e) {					\
+		SUCCESS							\
+	}								\
+	i++;
+
 int
 main()
 {
+	size_t i = 0;
+
 	OFString *s1 = [OFString newFromCString: "test"];
 	OFString *s2 = [OFString newFromCString: ""];
 	OFString *s3;
@@ -27,57 +54,17 @@ main()
 
 	s3 = [s1 clone];
 
-	if (![s1 compareTo: s3])
-		puts("s1 and s3 match! GOOD!");
-	else {
-		puts("s1 and s3 don't match!");
-		return 1;
-	}
+	CHECK(![s1 compareTo: s3])
 
 	[s2 appendCString: "123"];
 	[s4 setTo: s2];
 
-	if (![s2 compareTo: s4])
-		puts("s2 and s4 match! GOOD!");
-	else {
-		puts("s2 and s4 don't match!");
-		return 1;
-	}
-
-	if (!strcmp([[s1 append: s2] cString], "test123"))
-		puts("s1 appended with s2 is the expected string! GOOD!");
-	else {
-		puts("s1 appended with s2 is not the expected string!");
-		return 1;
-	}
-
-	if (strlen([s1 cString]) == [s1 length] && [s1 length] == 7)
-		puts("s1 has the expected length. GOOD!");
-	else {
-		puts("s1 does not have the expected length!");
-		return 1;
-	}
-
-	if (!strcmp([[s1 reverse] cString], "321tset"))
-		puts("Reversed s1 is expected string! GOOD!");
-	else {
-		puts("Reversed s1 is NOT the expected string!");
-		return 1;
-	}
-
-	if (!strcmp([[s1 upper] cString], "321TSET"))
-		puts("Upper s1 is expected string! GOOD!");
-	else {
-		puts("Upper s1 is NOT expected string!");
-		return 1;
-	}
-
-	if (!strcmp([[s1 lower] cString], "321tset"))
-		puts("Lower s1 is expected string! GOOD!");
-	else {
-		puts("Lower s1 is NOT expected string!");
-		return 1;
-	}
+	CHECK(![s2 compareTo: s4])
+	CHECK(!strcmp([[s1 append: s2] cString], "test123"))
+	CHECK(strlen([s1 cString]) == [s1 length] && [s1 length] == 7)
+	CHECK(!strcmp([[s1 reverse] cString], "321tset"))
+	CHECK(!strcmp([[s1 upper] cString], "321TSET"))
+	CHECK(!strcmp([[s1 lower] cString], "321tset"))
 
 	/* Also clears all the memory of the returned C strings */
 	[s1 free];
@@ -86,31 +73,15 @@ main()
 	[s4 free];
 
 	/* UTF-8 tests */
-	@try {
-		s1 = [OFString newFromCString: "\xE0\x80"];
-
-		puts("First invalid UTF-8 not detected!");
-		return 1;
-	} @catch (OFInvalidEncodingException *e) {
-		puts("First invalid UTF-8 successfully detected!");
-	}
-
-	@try {
-		s1 = [OFString newFromCString: "\xF0\x80\x80\xC0"];
-
-		puts("Second UTF-8 not detected!");
-		return 1;
-	} @catch (OFInvalidEncodingException *e) {
-		puts("Second UTF-8 successfully detected!");
-	}
+	CHECK_EXCEPT(s1 = [OFString newFromCString: "\xE0\x80"],
+	    OFInvalidEncodingException)
+	CHECK_EXCEPT(s1 = [OFString newFromCString: "\xF0\x80\x80\xC0"],
+	    OFInvalidEncodingException)
 
 	s1 = [OFString newFromCString: "äöü€𝄞"];
-	if (!strcmp([[s1 reverse] cString], "𝄞€üöä"))
-		puts("Reversed UTF-8 string is expected string! GOOD!");
-	else {
-		puts("Reversed UTF-8 string is NOT expected string!");
-		return 1;
-	}
+	CHECK(!strcmp([[s1 reverse] cString], "𝄞€üöä"))
+
+	puts("");
 
 	return 0;
 }
