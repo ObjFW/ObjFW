@@ -18,6 +18,7 @@
 {
 	char   *string;
 	size_t length;
+	BOOL   is_utf8;
 }
 
 /**

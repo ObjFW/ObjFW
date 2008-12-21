@@ -134,9 +134,9 @@
 @end
 
 /**
- * An OFException indicating that the conversation between two charsets failed.
+ * An OFException indicating that the encoding is invalid for this object.
  */
-@interface OFCharsetConversionFailedException: OFException {}
+@interface OFInvalidEncodingException: OFException {}
 /**
  * \return An error message for the exception as a C String
  */

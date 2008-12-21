@@ -141,13 +141,13 @@
 }
 @end
 
-@implementation OFCharsetConversionFailedException
+@implementation OFInvalidEncodingException
 - (const char*)cString
 {
 	if (string != NULL)
 		return string;
 	
-	asprintf(&string, "Charset conversion failed in object of classs %s!",
+	asprintf(&string, "The encoding is invalid for object of classs %s!",
 	    [object name]);
 
 	return string;

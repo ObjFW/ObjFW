@@ -15,6 +15,7 @@
 #import <string.h>
 
 #import "OFString.h"
+#import "OFExceptions.h"
 
 int
 main()
@@ -83,6 +84,33 @@ main()
 	[s2 free];
 	[s3 free];
 	[s4 free];
+
+	/* UTF-8 tests */
+	@try {
+		s1 = [OFString newFromCString: "\xE0\x80"];
+
+		puts("First invalid UTF-8 not detected!");
+		return 1;
+	} @catch (OFInvalidEncodingException *e) {
+		puts("First invalid UTF-8 successfully detected!");
+	}
+
+	@try {
+		s1 = [OFString newFromCString: "\xF0\x80\x80\xC0"];
+
+		puts("Second UTF-8 not detected!");
+		return 1;
+	} @catch (OFInvalidEncodingException *e) {
+		puts("Second UTF-8 successfully detected!");
+	}
+
+	s1 = [OFString newFromCString: "äöü€𝄞"];
+	if (!strcmp([[s1 reverse] cString], "𝄞€üöä"))
+		puts("Reversed UTF-8 string is expected string! GOOD!");
+	else {
+		puts("Reversed UTF-8 string is NOT expected string!");
+		return 1;
+	}
 
 	return 0;
 }
