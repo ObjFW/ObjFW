@@ -15,7 +15,11 @@
 #import <string.h>
 #import <ctype.h>
 
+#ifndef _WIN32
 #import <sys/mman.h>
+#else
+#define madvise(addr, len, advise)
+#endif
 
 #import "OFString.h"
 #import "OFExceptions.h"
