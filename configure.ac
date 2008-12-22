@@ -11,11 +11,7 @@ AC_PROG_LN_S
 AC_PATH_PROG(AR, ar)
 
 CFLAGS="$CFLAGS -Wall"
-test x"$GCC" = x"yes" && CFLAGS="$CFLAGS -Werror -pipe -g"
-
-OBJCFLAGS="$OBJCFLAGS -Wall"
-test x"$GCC" = x"yes" && OBJCFLAGS="$OBJCFLAGS -Werror -pipe -g"
-OBJCFLAGS="$OBJCFLAGS -fobjc-exceptions"
+OBJCFLAGS="$OBJCFLAGS -Wall -fobjc-exceptions"
 
 BUILDSYS_SHARED_LIB
 
@@ -45,6 +41,8 @@ AC_MSG_RESULT($ac_cv_snprintf_useful_ret)
 
 test x"$have_asprintf" != x"yes" -a x"$ac_cv_snprintf_useful_ret" != x"yes" && \
 	AC_MSG_ERROR(No asprintf and no snprintf returning required space!)
+
+ACX_PTHREAD
 
 AC_MSG_CHECKING(whether we have IPv6 support)
 AC_CACHE_VAL(ac_cv_have_ipv6, [
@@ -79,6 +77,8 @@ AC_MSG_RESULT($ac_cv_have_ipv6)
 test x"$ac_cv_have_ipv6" = x"yes" && \
 	AC_DEFINE(HAVE_IPV6, 1, "Whether we have IPv6 support")
 
+test x"$GCC" = x"yes" && CFLAGS="$CFLAGS -Werror -pipe -g"
+test x"$GCC" = x"yes" && OBJCFLAGS="$OBJCFLAGS -Werror -pipe -g"
 test x"$cross_compiling" != x"yes" && AC_SUBST(TESTS, "tests")
 
 BUILDSYS_TOUCH_DEPS
