@@ -2,6 +2,7 @@ PROG_NOINST = ofhashes${PROG_SUFFIX}
 SRCS = OFHashes.m
 
 include ../../buildsys.mk
+include ../../extra.mk
 
 CPPFLAGS += -I../../src -I../..
 LIBS += -lobjc -L../../src -lobjfw
@@ -17,6 +18,6 @@ run: ${PROG_NOINST}
 	ln -s ../../src/libobjfw.dylib libobjfw.dylib
 	LD_LIBRARY_PATH=.$${LD_LIBRARY_PATH+:}$$LD_LIBRARY_PATH \
 	DYLD_LIBRARY_PATH=.$${DYLD_LIBRARY_PATH+:}$$DYLD_LIBRARY_PATH \
-	./${PROG_NOINST}; EXIT=$$?; \
+	${TEST_LAUNCHER} ./${PROG_NOINST}; EXIT=$$?; \
 	rm -f libobjfw.so.1 libobjfw.so.1.0 libobjfw.dll libobjfw.dylib; \
 	exit $$EXIT

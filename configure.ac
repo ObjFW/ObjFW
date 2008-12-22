@@ -79,7 +79,21 @@ test x"$ac_cv_have_ipv6" = x"yes" && \
 
 test x"$GCC" = x"yes" && CFLAGS="$CFLAGS -Werror -pipe -g"
 test x"$GCC" = x"yes" && OBJCFLAGS="$OBJCFLAGS -Werror -pipe -g"
-test x"$cross_compiling" != x"yes" && AC_SUBST(TESTS, "tests")
+
+if test x"$cross_compiling" = x"yes"; then
+	case "$target" in
+		*-*-mingw*)
+			AC_PATH_PROG(WINE, wine)
+
+			if test x"$WINE" != "x"; then
+				AC_SUBST(TESTS, "tests")
+				AC_SUBST(TEST_LAUNCHER, "$WINE")
+			fi
+			;;
+	esac
+else
+	AC_SUBST(TESTS, "tests")
+fi
 
 BUILDSYS_TOUCH_DEPS
 
