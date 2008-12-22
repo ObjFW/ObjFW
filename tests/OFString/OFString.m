@@ -17,13 +17,19 @@
 #import "OFString.h"
 #import "OFExceptions.h"
 
+#ifndef _WIN32
+#define ZD "%zd"
+#else
+#define ZD "%u"
+#endif
+
 #define NUM_TESTS 10
 #define SUCCESS								\
-	printf("\r\033[1;%dmTests successful: %zd/%d\033[0m",		\
+	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
 	    (i == NUM_TESTS - 1 ? 32 : 33), i + 1, NUM_TESTS);		\
 	fflush(stdout);
 #define FAIL								\
-	printf("\r\033[K\033[1;31mTest %zd/%d failed!\033[m\n",		\
+	printf("\r\033[K\033[1;31mTest " ZD "/%d failed!\033[m\n",	\
 	    i + 1, NUM_TESTS);						\
 	return 1;
 #define CHECK(cond)							\
