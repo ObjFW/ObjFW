@@ -18,7 +18,7 @@
 int
 asprintf(char **strp, const char *fmt, ...)
 {
-	int size;
+	int ret, size;
 	va_list args;
 
 	va_start(args, fmt);
@@ -28,5 +28,8 @@ asprintf(char **strp, const char *fmt, ...)
 	if ((*strp = malloc((size_t)size + 1)) == NULL)
 		return -1;
 
-	return vsnprintf(*strp, (size_t)size + 1, fmt, args);
+	ret = vsnprintf(*strp, (size_t)size + 1, fmt, args);
+	va_end(args);
+
+	return ret;
 }
