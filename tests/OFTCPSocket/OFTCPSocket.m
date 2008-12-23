@@ -18,10 +18,9 @@
 #import "OFTCPSocket.h"
 #import "OFExceptions.h"
 
-#ifndef _WIN32	/* FIXME */
 inline uint16_t get_port()
 {
-	uint16_t port = (uint16_t)random();
+	uint16_t port = (uint16_t)rand();
 
 	if (port < 1024)
 		port += 1024;
@@ -30,17 +29,17 @@ inline uint16_t get_port()
 
 	return port;
 }
-#endif
 
 int
 main()
 {
-#ifndef _WIN32 /* FIXME */
 	uint16_t port;
 
-	srandom(time(NULL));
+	srand(time(NULL));
 
 	@try {
+		[OFTCPSocket startup];
+
 		OFTCPSocket *server = [OFTCPSocket new];
 		OFTCPSocket *client = [OFTCPSocket new];
 		OFTCPSocket *accepted;
@@ -111,7 +110,6 @@ main()
 		printf("EXCEPTION: %s\n", [e cString]);
 		return 1;
 	}
-#endif
 
 	return 0;
 }

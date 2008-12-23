@@ -20,12 +20,25 @@
 #import "OFTCPSocket.h"
 #import "OFExceptions.h"
 
-#ifndef _WIN32	/* FIXME */
+#ifndef INVALID_SOCKET
+#define INVALID_SOCKET -1
+#endif
+
 @implementation OFTCPSocket
++ (void)startup
+{
+#ifdef _WIN32
+	WSADATA wsa;
+
+	if (WSAStartup(MAKEWORD(2, 0), &wsa))
+		@throw [OFInitializationFailedException newWithClass: self];
+#endif
+}
+
 - init
 {
 	if ((self = [super init])) {
-		sock = -1;
+		sock = INVALID_SOCKET;
 		saddr = NULL;
 		saddr_len = 0;
 	}
@@ -35,7 +48,7 @@
 
 - free
 {
-	if (sock >= 0)
+	if (sock != INVALID_SOCKET)
 		close(sock);
 
 	return [super free];
@@ -66,7 +79,7 @@
 	if (!port)
 		@throw [OFInvalidPortException newWithObject: self];
 
-	if (sock >= 0)
+	if (sock != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException newWithObject: self];
 
 	memset(&hints, 0, sizeof(struct addrinfo));
@@ -83,12 +96,12 @@
 
 	for (res = res0; res != NULL; res = res->ai_next) {
 		if ((sock = socket(res->ai_family, res->ai_socktype,
-		    res->ai_protocol)) < 0)
+		    res->ai_protocol)) == INVALID_SOCKET)
 			continue;
 
-		if (connect(sock, res->ai_addr, res->ai_addrlen) < 0) {
+		if (connect(sock, res->ai_addr, res->ai_addrlen) == -1) {
 			close(sock);
-			sock = -1;
+			sock = INVALID_SOCKET;
 			continue;
 		}
 
@@ -97,7 +110,7 @@
 
 	freeaddrinfo(res0);
 
-	if (sock < 0)
+	if (sock == INVALID_SOCKET)
 		@throw [OFConnectionFailedException newWithObject: self
 							  andHost: host
 							  andPort: port];
@@ -115,10 +128,10 @@
 	if (!port)
 		@throw [OFInvalidPortException newWithObject: self];
 
-	if (sock >= 0)
+	if (sock != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException newWithObject: self];
 
-	if ((sock = socket(family, SOCK_STREAM, 0)) < 0)
+	if ((sock = socket(family, SOCK_STREAM, 0)) == INVALID_SOCKET)
 		@throw [OFBindFailedException newWithObject: self
 						    andHost: host
 						    andPort: port
@@ -136,7 +149,7 @@
 			  andNode: host
 		       andService: portstr];
 
-	if (bind(sock, res->ai_addr, res->ai_addrlen) < 0) {
+	if (bind(sock, res->ai_addr, res->ai_addrlen) == -1) {
 		freeaddrinfo(res);
 		@throw [OFBindFailedException newWithObject: self
 						    andHost: host
@@ -151,10 +164,10 @@
 
 - listenWithBackLog: (int)backlog
 {
-	if (sock < 0)
+	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithObject: self];
 
-	if (listen(sock, backlog) < 0)
+	if (listen(sock, backlog) == -1)
 		@throw [OFListenFailedException newWithObject: self
 						   andBackLog: backlog];
 
@@ -163,10 +176,10 @@
 
 - listen
 {
-	if (sock < 0)
+	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithObject: self];
 
-	if (listen(sock, 5) < 0)
+	if (listen(sock, 5) == -1)
 		@throw [OFListenFailedException newWithObject: self
 						   andBackLog: 5];
 
@@ -190,7 +203,7 @@
 		@throw e;
 	}
 
-	if ((s = accept(sock, addr, &addrlen)) < 0) {
+	if ((s = accept(sock, addr, &addrlen)) == INVALID_SOCKET) {
 		[newsock free];
 		@throw [OFAcceptFailedException newWithObject: self];
 	}
@@ -207,14 +220,14 @@
 {
 	ssize_t ret;
 
-	if (sock < 0)
+	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithObject: self];
 
-	if ((ret = recv(sock, buf, size, 0)) < 0)
+	if ((ret = recv(sock, (char*)buf, size, 0)) < 1)
 		@throw [OFReadFailedException newWithObject: self
 						    andSize: size];
 
-	/* This is safe, as we already checked < 0 */
+	/* This is safe, as we already checked < 1 */
 	return ret;
 }
 
@@ -222,7 +235,7 @@
 {
 	uint8_t *ret;
 
-	if (sock < 0)
+	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithObject: self];
 
 	ret = [self getMemWithSize: size];
@@ -243,20 +256,20 @@
 {
 	ssize_t ret;
 
-	if (sock < 0)
+	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithObject: self];
 
-	if ((ret = send(sock, buf, size, 0)) < 0)
+	if ((ret = send(sock, (char*)buf, size, 0)) == -1)
 		@throw [OFWriteFailedException newWithObject: self
 						     andSize: size];
 
-	/* This is safe, as we already checked < 0 */
+	/* This is safe, as we already checked for -1 */
 	return ret;
 }
 
 - (size_t)writeCString: (const char*)str
 {
-	if (sock < 0)
+	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithObject: self];
 
 	return [self writeNBytes: strlen(str)
@@ -265,9 +278,10 @@
 
 - setBlocking: (BOOL)enable
 {
+#ifndef _WIN32
 	int flags;
 
-	if ((flags = fcntl(sock, F_GETFL)) < 0)
+	if ((flags = fcntl(sock, F_GETFL)) == -1)
 		@throw [OFSetOptionFailedException newWithObject: self];
 
 	if (enable)
@@ -275,16 +289,23 @@
 	else
 		flags |= O_NONBLOCK;
 
-	if (fcntl(sock, F_SETFL, flags) < 0)
+	if (fcntl(sock, F_SETFL, flags) == -1)
 		@throw [OFSetOptionFailedException newWithObject: self];
+#else
+	u_long v = enable;
+
+	if (ioctlsocket(sock, FIONBIO, &v) == SOCKET_ERROR)
+		@throw [OFSetOptionFailedException newWithObject: self];
+#endif
 
 	return self;
 }
 
 - enableKeepAlives: (BOOL)enable
 {
-	if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &enable,
-	    sizeof(enable)) != 0)
+	int v = enable;
+
+	if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char*)&v, sizeof(v)))
 		@throw [OFSetOptionFailedException newWithObject: self];
 
 	return self;
@@ -292,10 +313,10 @@
 
 - close
 {
-	if (sock < 0)
+	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithObject: self];
 
-	sock = -1;
+	sock = INVALID_SOCKET;
 
 	if (saddr != NULL)
 		[self freeMem: saddr];
@@ -304,4 +325,3 @@
 	return self;
 }
 @end
-#endif

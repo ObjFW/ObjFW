@@ -29,6 +29,7 @@
  * These must be imported after objc/Object and thus OFObject!
  */
 #ifdef _WIN32
+#define _WIN32_WINNT 0x0501
 #import <winsock2.h>
 #import <ws2tcpip.h>
 #endif
@@ -38,10 +39,19 @@
  */
 @interface OFTCPSocket: OFObject <OFStream>
 {
+#ifndef _WIN32
 	int	  sock;
+#else
+	SOCKET	  sock;
+#endif
 	struct	  sockaddr *saddr;
 	socklen_t saddr_len;
 }
+
+/**
+ * This needs to be called before any socket can be used.
+ */
++ (void)startup;
 
 /**
  * Initializes an already allocated OFTCPSocket.
@@ -51,9 +61,6 @@
 - init;
 
 - free;
-- setSocket: (int)socket;
-- setSocketAddress: (struct sockaddr*)sockaddr
-	withLength: (socklen_t)len;
 
 /**
  * Connect the OFTCPSocket to the specified destination.
