@@ -14,6 +14,7 @@
 #import <stdarg.h>
 #import <stdlib.h>
 #import <string.h>
+#import <limits.h>
 
 #import "OFXMLFactory.h"
 #import "OFExceptions.h"

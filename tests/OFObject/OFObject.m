@@ -13,6 +13,7 @@
 
 #import <stdio.h>
 #import <stdlib.h>
+#import <limits.h>
 
 #import "OFObject.h"
 #import "OFExceptions.h"

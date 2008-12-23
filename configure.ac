@@ -9,14 +9,38 @@ AC_PROG_OBJC
 AC_PROG_CPP
 AC_PROG_LN_S
 AC_PATH_PROG(AR, ar)
+AC_PROG_EGREP
 
 CFLAGS="$CFLAGS -Wall"
 OBJCFLAGS="$OBJCFLAGS -Wall -fobjc-exceptions"
 
-BUILDSYS_SHARED_LIB
-
 AC_DEFINE(OF_CONFIG_H, 1, [Define so that we know we got our config.h])
+
+BUILDSYS_SHARED_LIB
 AC_C_BIGENDIAN([AC_DEFINE(OF_BIG_ENDIAN, 1, [Whether we are big endian])])
+
+AC_MSG_CHECKING(for SIZE_MAX)
+AC_EGREP_CPP(yes, [
+	#include <stdint.h>
+	#include <limits.h>
+
+	#ifdef SIZE_MAX
+	yes
+	#endif], AC_MSG_RESULT(yes), [
+	AC_MSG_RESULT(no)
+	AC_MSG_CHECKING(for SIZE_T_MAX)
+	AC_EGREP_CPP(yes, [
+		#include <stdint.h>
+		#include <limits.h>
+
+		#ifdef SIZE_T_MAX
+		yes
+		#endif], [
+		AC_MSG_RESULT(yes)
+		size_max="SIZE_T_MAX"], [
+		AC_MSG_RESULT(no)
+		size_max="((size_t)-1)"])
+	AC_DEFINE_UNQUOTED(SIZE_MAX, $size_max, [Maximum value for size_t])])
 
 AC_CHECK_FUNC(asprintf, [
 	have_asprintf="yes"

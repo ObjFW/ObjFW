@@ -14,6 +14,7 @@
 #import <stdio.h>
 #import <string.h>
 #import <unistd.h>
+#import <limits.h>
 
 #import "OFArray.h"
 #import "OFExceptions.h"
