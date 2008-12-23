@@ -124,7 +124,7 @@
 @end
 
 /**
- * An OFException indicating the given value is out of range. 
+ * An OFException indicating the given value is out of range.
  */
 @interface OFOutOfRangeException: OFException {}
 /**
@@ -312,7 +312,7 @@
 
 /**
  * An OFException indicating an attempt to connect or bind an already connected
- * or bound socket 
+ * or bound socket.
  */
 @interface OFAlreadyConnectedException: OFException {}
 /**

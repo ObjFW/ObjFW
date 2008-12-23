@@ -70,7 +70,7 @@ main()
 
 #ifdef HAVE_IPV6
 		memset(buf, 0, 7);
-		
+
 		[accepted free];
 		[client close];
 		[server close];

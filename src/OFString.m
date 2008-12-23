@@ -177,7 +177,7 @@ check_utf8(const char *str, size_t len)
 	char   *newstr;
 	size_t newlen, strlength;
 
-	if (string == NULL) 
+	if (string == NULL)
 		return [self setTo: [OFString newFromCString: str]];
 
 	strlength = strlen(str);
@@ -300,7 +300,7 @@ check_utf8(const char *str, size_t len)
 	if (is_utf8)
 		@throw [OFInvalidEncodingException newWithObject: self];
 
-	while (i--) 
+	while (i--)
 		string[i] = toupper(string[i]);
 
 	return self;
@@ -313,7 +313,7 @@ check_utf8(const char *str, size_t len)
 	if (is_utf8)
 		@throw [OFInvalidEncodingException newWithObject: self];
 
-	while (i--) 
+	while (i--)
 		string[i] = tolower(string[i]);
 
 	return self;

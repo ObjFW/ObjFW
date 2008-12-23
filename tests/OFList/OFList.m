@@ -42,7 +42,7 @@
 	else								\
 		FAIL							\
 	i++;
- 
+
 const char *strings[] = {
 	"First String Object",
 	"Second String Object",
@@ -57,11 +57,11 @@ main()
 	OFListObject *iter;
 
 	list = [OFList new];
- 
+
 	[list addNew: [OFString newFromCString: strings[0]]];
 	[list addNew: [OFString newFromCString: strings[1]]];
 	[list addNew: [OFString newFromCString: strings[2]]];
- 
+
 	for (iter = [list first], i = 0; iter != nil; iter = [iter next], i++)
 		if (!strcmp([[iter data] cString], strings[i]))
 			SUCCESS
@@ -72,7 +72,7 @@ main()
 	CHECK(!strcmp([[[list last] data] cString], strings[2]))
 
 	puts("");
- 
+
 	[list freeIncludingData];
 
 	return 0;

@@ -146,7 +146,7 @@
 {
 	if (string != NULL)
 		return string;
-	
+
 	asprintf(&string, "The encoding is invalid for object of classs %s!",
 	    [object name]);
 

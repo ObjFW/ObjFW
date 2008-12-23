@@ -57,7 +57,7 @@
 	if (SIZE_MAX - __memchunks_size == 0 ||
 	    memchunks_size > SIZE_MAX / sizeof(void*))
 		@throw [OFOutOfRangeException newWithObject: self];
-	
+
 	if ((memchunks = realloc(__memchunks,
 	    memchunks_size * sizeof(void*))) == NULL)
 		@throw [OFNoMemException newWithObject: self
@@ -108,7 +108,7 @@
 			if (OF_UNLIKELY((ptr = realloc(ptr, size)) == NULL))
 				@throw [OFNoMemException newWithObject: self
 							       andSize: size];
-			
+
 			*iter = ptr;
 			return ptr;
 		}
@@ -128,7 +128,7 @@
 	if (ptr == NULL)
 		return [self getMemForNItems: nitems
 				      ofSize: size];
-	
+
 	if (nitems == 0 || size == 0) {
 		[self freeMem: ptr];
 		return NULL;

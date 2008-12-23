@@ -166,7 +166,7 @@ xf_add2chars(char **str, size_t *len, size_t *pos, const char *add)
 			return NULL;
 		}
 
-		if (OF_UNLIKELY(!xf_resize_chars(&xml, &len, 1 + strlen(arg) + 
+		if (OF_UNLIKELY(!xf_resize_chars(&xml, &len, 1 + strlen(arg) +
 		    2 + strlen(esc_val) + 1))) {
 			free(esc_val);
 			@throw [OFNoMemException

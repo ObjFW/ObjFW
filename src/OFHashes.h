@@ -30,7 +30,7 @@
 
 /**
  * Adds a buffer to the hash to be calculated.
- * 
+ *
  * \param buf The buffer which should be included into calculation.
  * \param size The size of the buffer
  */
@@ -61,7 +61,7 @@
 
 /**
  * Adds a buffer to the hash to be calculated.
- * 
+ *
  * \param buf The buffer which should be included into calculation.
  * \param size The size of the buffer
  */

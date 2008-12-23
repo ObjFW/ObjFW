@@ -160,7 +160,7 @@
 		@throw [OFWriteFailedException newWithObject: self
 						     andSize: size
 						   andNItems: nitems];
-	
+
 	return ret;
 }
 

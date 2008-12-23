@@ -94,7 +94,7 @@
 
 		break;
 	}
-	
+
 	freeaddrinfo(res0);
 
 	if (sock < 0)
@@ -207,7 +207,7 @@
 {
 	ssize_t ret;
 
-	if (sock < 0) 
+	if (sock < 0)
 		@throw [OFNotConnectedException newWithObject: self];
 
 	if ((ret = recv(sock, buf, size, 0)) < 0)
@@ -222,7 +222,7 @@
 {
 	uint8_t *ret;
 
-	if (sock < 0) 
+	if (sock < 0)
 		@throw [OFNotConnectedException newWithObject: self];
 
 	ret = [self getMemWithSize: size];
@@ -243,7 +243,7 @@
 {
 	ssize_t ret;
 
-	if (sock < 0) 
+	if (sock < 0)
 		@throw [OFNotConnectedException newWithObject: self];
 
 	if ((ret = send(sock, buf, size, 0)) < 0)
@@ -256,7 +256,7 @@
 
 - (size_t)writeCString: (const char*)str
 {
-	if (sock < 0) 
+	if (sock < 0)
 		@throw [OFNotConnectedException newWithObject: self];
 
 	return [self writeNBytes: strlen(str)
@@ -292,7 +292,7 @@
 
 - close
 {
-	if (sock < 0) 
+	if (sock < 0)
 		@throw [OFNotConnectedException newWithObject: self];
 
 	sock = -1;

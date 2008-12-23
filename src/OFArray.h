@@ -33,7 +33,7 @@
 
 /**
  * Initializes an already allocated OFArray whose items all have the same size.
- * 
+ *
  * \param is The size of each element in the OFArray
  * \return An initialized OFArray
  */
@@ -105,7 +105,7 @@
 /**
  * Initializes an already allocated OFBigArray whose items all have the same
  * size.
- * 
+ *
  * \param is The size of each element in the OFBigArray
  * \return An initialized OFBigArray
  */

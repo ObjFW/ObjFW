@@ -75,7 +75,7 @@ main()
 	CATCH_EXCEPTION([obj freeMem: q], OFMemNotPartOfObjException)
 	CATCH_EXCEPTION([obj freeMem: r], OFMemNotPartOfObjException)
 	puts("Got all 3!");
-	
+
 	puts("Trying to allocate more memory than possible...");
 	CATCH_EXCEPTION(p = [obj getMemWithSize: SIZE_MAX], OFNoMemException)
 
@@ -96,7 +96,7 @@ main()
 	CATCH_EXCEPTION(p = [obj resizeMem: (void*)1
 				    toSize: 1024],
 	    OFMemNotPartOfObjException)
-	
+
 	/* TODO: Test if freeing object frees all memory */
 
 	return 0;
