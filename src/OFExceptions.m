@@ -154,6 +154,39 @@
 }
 @end
 
+@implementation OFInitializationFailedException
++ newWithClass: (Class)class_
+{
+	return [[self alloc] initWithClass: class_];
+}
+
+- initWithClass: (Class)class_
+{
+	if ((self = [super init])) {
+		object = nil;
+		string = NULL;
+		class = class_;
+	}
+
+	return self;
+}
+
+- (const char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "Initialization failed for class %s!", [class name]);
+
+	return string;
+}
+
+- (Class)class
+{
+	return class;
+}
+@end
+
 @implementation OFOpenFileFailedException
 + newWithObject: (id)obj
 	andPath: (const char*)path_

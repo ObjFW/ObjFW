@@ -44,7 +44,7 @@
 - (id)object;
 
 /**
- * \return An error message for the exception as a C String
+ * \return An error message for the exception as a C string
  */
 - (const char*)cString;
 @end
@@ -76,7 +76,7 @@
 	 andSize: (size_t)size;
 
 /**
- * \return An error message for the exception as a C String
+ * \return An error message for the exception as a C string
  */
 - (const char*)cString;
 
@@ -113,7 +113,7 @@
       andPointer: (void*)ptr;
 
 /**
- * \return An error message for the exception as a C String
+ * \return An error message for the exception as a C string
  */
 - (const char*)cString;
 
@@ -128,7 +128,7 @@
  */
 @interface OFOutOfRangeException: OFException {}
 /**
- * \return An error message for the exception as a C String
+ * \return An error message for the exception as a C string
  */
 - (const char*)cString;
 @end
@@ -138,9 +138,44 @@
  */
 @interface OFInvalidEncodingException: OFException {}
 /**
- * \return An error message for the exception as a C String
+ * \return An error message for the exception as a C string
  */
 - (const char*)cString;
+@end
+
+/**
+ * An OFException indicating that initializing something failed.
+ */
+@interface OFInitializationFailedException: OFException
+{
+	Class class;
+}
+
+/**
+ * Creates a new exception.
+ *
+ * \param class The class which caused the exception
+ * \return A new exception
+ */
++ newWithClass: (Class)class;
+
+/**
+ * Initializes an already allocated OFException.
+ *
+ * \param obj The object which caused the exception
+ * \return An initialized OFException
+ */
+- initWithClass: (Class)class;
+
+/**
+ * \return An error message for the exception as a C string
+ */
+- (const char*)cString;
+
+/**
+ * \return The class which caused the exception
+ */
+- (Class)class;
 @end
 
 /**
@@ -178,7 +213,7 @@
 - free;
 
 /**
- * \return An error message for the exception as a C String
+ * \return An error message for the exception as a C string
  */
 - (const char*)cString;
 
@@ -275,7 +310,7 @@
  */
 @interface OFReadFailedException: OFReadOrWriteFailedException {}
 /**
- * \return An error message for the exception as a C String
+ * \return An error message for the exception as a C string
  */
 - (const char*)cString;
 @end
@@ -285,7 +320,7 @@
  */
 @interface OFWriteFailedException: OFReadOrWriteFailedException {}
 /**
- * \return An error message for the exception as a C String
+ * \return An error message for the exception as a C string
  */
 - (const char*)cString;
 @end
