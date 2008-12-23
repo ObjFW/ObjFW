@@ -18,7 +18,6 @@
 #import <sys/types.h>
 #import <sys/socket.h>
 #import <netdb.h>
-#else
 #endif
 
 #import "OFObject.h"

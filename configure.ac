@@ -101,6 +101,8 @@ AC_MSG_RESULT($ac_cv_have_ipv6)
 test x"$ac_cv_have_ipv6" = x"yes" && \
 	AC_DEFINE(HAVE_IPV6, 1, "Whether we have IPv6 support")
 
+AC_CHECK_HEADERS(sys/mman.h)
+
 test x"$GCC" = x"yes" && CFLAGS="$CFLAGS -Werror -pipe -g"
 test x"$GCC" = x"yes" && OBJCFLAGS="$OBJCFLAGS -Werror -pipe -g"
 

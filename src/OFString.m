@@ -15,7 +15,7 @@
 #import <string.h>
 #import <ctype.h>
 
-#ifndef _WIN32
+#ifdef HAVE_SYS_MMAN_H
 #import <sys/mman.h>
 #else
 #define madvise(addr, len, advise)
