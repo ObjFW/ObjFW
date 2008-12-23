@@ -8,7 +8,6 @@ AC_PROG_CC
 AC_PROG_OBJC
 AC_PROG_CPP
 AC_PROG_LN_S
-AC_PATH_PROG(AR, ar)
 AC_PROG_EGREP
 
 CFLAGS="$CFLAGS -Wall"
@@ -16,7 +15,7 @@ OBJCFLAGS="$OBJCFLAGS -Wall -fobjc-exceptions"
 
 AC_DEFINE(OF_CONFIG_H, 1, [Define so that we know we got our config.h])
 
-BUILDSYS_SHARED_LIB
+BUILDSYS_LIB
 AC_C_BIGENDIAN([AC_DEFINE(OF_BIG_ENDIAN, 1, [Whether we are big endian])])
 
 AC_MSG_CHECKING(for SIZE_MAX)

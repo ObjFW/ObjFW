@@ -16,7 +16,8 @@ SRCS = OFArray.m		\
        OFXMLFactory.m		\
        ${ASPRINTF}
 
-INCLUDES = ${SRCS:.m=.h}	\
+INCLUDESTMP = ${SRCS:.c=.h}
+INCLUDES = ${INCLUDESTMP:.m=.h}	\
 	   OFMacros.h		\
 	   OFStream.h
 
