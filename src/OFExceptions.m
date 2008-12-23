@@ -15,7 +15,20 @@
 #import <stdio.h>
 #import <stdlib.h>
 #import <string.h>
+
+#ifndef _WIN32
 #import <errno.h>
+#define GET_ERR	     errno
+#define GET_SOCK_ERR errno
+#define ERRFMT	     "Error string was: %s"
+#define ERRPARAM     strerror(err)
+#else
+#import <windows.h>
+#define GET_ERR	     GetLastError()
+#define GET_SOCK_ERR WSAGetLastError()
+#define ERRFMT	     "Error code was: %d"
+#define ERRPARAM     err
+#endif
 
 #import "OFExceptions.h"
 
@@ -204,7 +217,7 @@
 	if ((self = [super initWithObject: obj])) {
 		path = (path_ != NULL ? strdup(path_) : NULL);
 		mode = (mode_ != NULL ? strdup(mode_) : NULL);
-		err = errno;
+		err = GET_ERR;
 	}
 
 	return self;
@@ -226,8 +239,7 @@
 		return string;
 
 	asprintf(&string, "Failed to open file %s with mode %s in object of "
-	    "class %s! Error string was: %s", path, mode, [self name],
-	    strerror(err));
+	    "class %s! " ERRFMT, path, mode, [self name], ERRPARAM);
 
 	return string;
 }
@@ -273,7 +285,7 @@
 		req_size = size;
 		req_items = nitems;
 		has_items = YES;
-		err = errno;
+		err = GET_ERR;
 	}
 
 	return self;
@@ -286,7 +298,7 @@
 		req_size = size;
 		req_items = 0;
 		has_items = NO;
-		err = errno;
+		err = GET_ERR;
 	}
 
 	return self;
@@ -321,12 +333,11 @@
 
 	if (has_items)
 		asprintf(&string, "Failed to read %zu items of size %zu in "
-		    "object of class %s! Error string was: %s", req_items,
-		    req_size, [object name], strerror(err));
+		    "object of class %s! " ERRFMT, req_items, req_size,
+		    [object name], ERRPARAM);
 	else
 		asprintf(&string, "Failed to read %zu bytes in object of class "
-		    "%s! Error string was: %s", req_size, [object name],
-		    strerror(err));
+		    "%s! " ERRFMT, req_size, [object name], ERRPARAM);
 
 	return string;
 }
@@ -340,12 +351,11 @@
 
 	if (has_items)
 		asprintf(&string, "Failed to write %zu items of size %zu in "
-		    "object of class %s! Error string was: %s", req_items,
-		    req_size, [object name], strerror(err));
+		    "object of class %s! " ERRFMT, req_items, req_size,
+		    [object name], ERRPARAM);
 	else
 		asprintf(&string, "Failed to write %zu bytes in object of "
-		    "class %s! Error string was: %s", req_size, [object name],
-		    strerror(err));
+		    "class %s! " ERRFMT, req_size, [object name], ERRFMT);
 
 	return string;
 }
@@ -421,7 +431,7 @@
 	if ((self = [super initWithObject: obj])) {
 		node = (node_ != NULL ? strdup(node_) : NULL);
 		service = (service_ != NULL ? strdup(service_) : NULL);
-		err = errno;
+		err = GET_SOCK_ERR;
 	}
 
 	return self;
@@ -447,8 +457,7 @@
 	    "was not found, there is no such service on the node, there was a "
 	    "problem with the name server, there was a problem with your "
 	    "network connection or you specified an invalid node or service. "
-	    "Error string was: %s", service, node, [object name],
-	    strerror(err));
+	    ERRFMT, service, node, [object name], ERRPARAM);
 
 	return string;
 }
@@ -486,7 +495,7 @@
 	if ((self = [super initWithObject: obj])) {
 		host = (host_ != NULL ? strdup(host_) : NULL);
 		port = port_;
-		err = errno;
+		err = GET_SOCK_ERR;
 	}
 
 	return self;
@@ -506,8 +515,7 @@
 		return string;
 
 	asprintf(&string, "A connection to %s:%d could not be established in "
-	    "object of type %s! Error string was: %s", host, port,
-	    [object name], strerror(err));
+	    "object of type %s! " ERRFMT, host, port, [object name], ERRPARAM);
 
 	return string;
 }
@@ -549,7 +557,7 @@
 		host = (host_ != NULL ? strdup(host_) : NULL);
 		port = port_;
 		family = family_;
-		err = errno;
+		err = GET_SOCK_ERR;
 	}
 
 	return self;
@@ -569,8 +577,8 @@
 		return string;
 
 	asprintf(&string, "Binding to port %d on %s using family %d failed in "
-	    "object of type %s! Error string was: %s", port, host, family,
-	    [object name], strerror(err));
+	    "object of type %s! " ERRFMT, port, host, family, [object name],
+	    ERRPARAM);
 
 	return string;
 }
@@ -609,7 +617,7 @@
 {
 	if ((self = [super initWithObject: obj])) {
 		backlog = backlog_;
-		err = errno;
+		err = GET_SOCK_ERR;
 	}
 
 	return self;
@@ -621,8 +629,7 @@
 		return string;
 
 	asprintf(&string, "Failed to listen in socket of type %s with a back "
-	    "log of %d! Error string was: %s", [object name], backlog,
-	    strerror(err));
+	    "log of %d! "ERRFMT, [object name], backlog, ERRPARAM);
 
 	return string;
 }
@@ -642,7 +649,7 @@
 - initWithObject: (id)obj
 {
 	if ((self = [super initWithObject: obj]))
-		err = errno;
+		err = GET_SOCK_ERR;
 
 	return self;
 }
@@ -653,7 +660,7 @@
 		return string;
 
 	asprintf(&string, "Failed to accept connection in socket of type %s! "
-	    "Error string was: %s", [object name], strerror(err));
+	    ERRFMT, [object name], ERRPARAM);
 
 	return string;
 }
