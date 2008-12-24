@@ -39,9 +39,7 @@
 	if (__memchunks != NULL)
 		free(__memchunks);
 
-	free(self);
-
-	return nil;
+	return [super free];
 }
 
 - addToMemoryPool: (void*)ptr
