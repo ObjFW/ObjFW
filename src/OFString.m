@@ -11,6 +11,8 @@
 
 #import "config.h"
 
+#define _GNU_SOURCE
+#import <stdarg.h>
 #import <stdio.h>
 #import <stdlib.h>
 #import <string.h>
