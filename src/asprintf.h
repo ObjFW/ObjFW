@@ -10,3 +10,4 @@
  */
 
 extern int asprintf(char**, const char*, ...);
+extern int vasprintf(char**, const char*, va_list);

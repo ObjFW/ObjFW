@@ -11,6 +11,7 @@
 
 #import "config.h"
 
+#import <stdio.h>
 #import <stdlib.h>
 #import <string.h>
 #import <ctype.h>
@@ -106,6 +107,26 @@ check_utf8(const char *str, size_t len)
 	return [[self alloc] initFromCString: str];
 }
 
++ newFromFormatCString: (const char*)fmt, ...
+{
+	id ret;
+	va_list args;
+
+	va_start(args, fmt);
+	ret = [[self alloc] initFromFormatCString: fmt
+				    withArguments: args];
+	va_end(args);
+
+	return ret;
+}
+
++ newFromFormatCString: (const char*)fmt
+	 withArguments: (va_list)args
+{
+	return [[self alloc] initFromFormatCString: fmt
+				     withArguments: args];
+}
+
 - init
 {
 	if ((self = [super init])) {
@@ -135,6 +156,59 @@ check_utf8(const char *str, size_t len)
 
 			string = [self getMemWithSize: length + 1];
 			memcpy(string, str, length + 1);
+		}
+	}
+
+	return self;
+}
+
+- initFromFormatCString: (const char*)fmt, ...
+{
+	id ret;
+	va_list args;
+
+	va_start(args, fmt);
+	ret = [self initFromFormatCString: fmt
+			    withArguments: args];
+	va_end(args);
+
+	return ret;
+}
+
+- initFromFormatCString: (const char*)fmt
+	  withArguments: (va_list)args
+{
+	int t;
+
+	if ((self = [super init])) {
+		if (fmt == NULL)
+			@throw [OFInvalidFormatException newWithObject: self];
+
+		if ((t = vasprintf(&string, fmt, args)) == -1)
+			/*
+			 * This is only the most likely error to happen.
+			 * Unfortunately, as errno isn't always thread-safe,
+			 * there's no good way for us to find out what really
+			 * happened.
+			 */
+			@throw [OFNoMemException newWithObject: self];
+		length = t;
+
+		switch (check_utf8(string, length)) {
+		case 1:
+			is_utf8 = YES;
+			break;
+		case -1:
+			free(string);
+			[super free];
+			@throw [OFInvalidEncodingException newWithObject: self];
+		}
+
+		@try {
+			[self addToMemoryPool: string];
+		} @catch (OFException *e) {
+			free(string);
+			@throw e;
 		}
 	}
 
@@ -198,6 +272,41 @@ check_utf8(const char *str, size_t len)
 
 	length = newlen;
 	string = newstr;
+
+	return self;
+}
+
+- appendWithFormatCString: (const char*)fmt, ...
+{
+	id ret;
+	va_list args;
+
+	va_start(args, fmt);
+	ret = [self appendWithFormatCString: fmt
+			       andArguments: args];
+	va_end(args);
+
+	return ret;
+}
+
+- appendWithFormatCString: (const char*)fmt
+	     andArguments: (va_list)args
+{
+	char *t;
+
+	if (fmt == NULL)
+		@throw [OFInvalidFormatException newWithObject: self];
+
+	if ((vasprintf(&t, fmt, args)) == -1)
+		/*
+		 * This is only the most likely error to happen.
+		 * Unfortunately, as errno isn't always thread-safe, there's
+		 * no good way for us to find out what really happened.
+		 */
+		@throw [OFNoMemException newWithObject: self];
+
+	[self appendCString: t];
+	free(t);
 
 	return self;
 }

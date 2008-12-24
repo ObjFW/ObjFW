@@ -167,6 +167,19 @@
 }
 @end
 
+@implementation OFInvalidFormatException
+- (const char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "The format is invalid for object of classs %s!",
+	    [object name]);
+
+	return string;
+}
+@end
+
 @implementation OFInitializationFailedException
 + newWithClass: (Class)class_
 {

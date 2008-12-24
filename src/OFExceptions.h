@@ -144,6 +144,16 @@
 @end
 
 /**
+ * An OFException indicating that the format is invalid.
+ */
+@interface OFInvalidFormatException: OFException {}
+/**
+ * \return An error message for the exception as a C string
+ */
+- (const char*)cString;
+@end
+
+/**
  * An OFException indicating that initializing something failed.
  */
 @interface OFInitializationFailedException: OFException

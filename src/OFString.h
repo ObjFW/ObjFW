@@ -9,6 +9,8 @@
  * the packaging of this file.
  */
 
+#import <stdarg.h>
+
 #import "OFObject.h"
 
 /**
@@ -37,6 +39,26 @@
 + newFromCString: (const char*)str;
 
 /**
+ * Creates a new OFString from a format C string.
+ * See printf for the format syntax.
+ *
+ * \param fmt A C string used as format to initialize the OFString
+ * \return A new OFString
+ */
++ newFromFormatCString: (const char*)fmt, ...;
+
+/**
+ * Creates a new OFString from a format C string.
+ * See printf for the format syntax.
+ *
+ * \param fmt A C string used as format to initialize the OFString
+ * \param args The arguments used in the format string
+ * \return A new OFString
+ */
++ newFromFormatCString: (const char*)fmt
+	 withArguments: (va_list)args;
+
+/**
  * Initializes an already allocated OFString.
  *
  * \return An initialized OFString
@@ -50,6 +72,26 @@
  * \return An initialized OFString
  */
 - initFromCString: (const char*)str;
+
+/**
+ * Initializes an already allocated OFString from a format C string.
+ * See printf for the format syntax.
+ *
+ * \param fmt A C string used as format to initialize the OFString
+ * \return An initialized OFString
+ */
+- initFromFormatCString: (const char*)fmt, ...;
+
+/**
+ * Initializes an already allocated OFString from a format C string.
+ * See printf for the format syntax.
+ *
+ * \param fmt A C string used as format to initialize the OFString
+ * \param args The arguments used in the format string
+ * \return An initialized OFString
+ */
+- initFromFormatCString: (const char*)fmt
+	  withArguments: (va_list)args;
 
 /**
  * \return The OFString as a wide C string
@@ -97,6 +139,24 @@
  * \param str A C string to append
  */
 - appendCString: (const char*)str;
+
+/**
+ * Append a formatted C string to the OFString.
+ * See printf for the format syntax.
+ *
+ * \param fmt A format C string which generates the string to append
+ */
+- appendWithFormatCString: (const char*)fmt, ...;
+
+/**
+ * Append a formatted C string to the OFString.
+ * See printf for the format syntax.
+ *
+ * \param fmt A format C string which generates the string to append
+ * \param args The arguments used in the format string
+ */
+- appendWithFormatCString: (const char*)fmt
+	     andArguments: (va_list)args;
 
 /**
  * Reverse the OFString.

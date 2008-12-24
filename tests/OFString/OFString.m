@@ -23,7 +23,7 @@
 #define ZD "%u"
 #endif
 
-#define NUM_TESTS 10
+#define NUM_TESTS 12
 #define SUCCESS								\
 	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
 	    (i == NUM_TESTS - 1 ? 32 : 33), i + 1, NUM_TESTS);		\
@@ -86,6 +86,14 @@ main()
 
 	s1 = [OFString newFromCString: "äöü€𝄞"];
 	CHECK(!strcmp([[s1 reverse] cString], "𝄞€üöä"))
+	[s1 free];
+
+	/* Format tests */
+	s1 = [OFString newFromFormatCString: "%s: %d", "test", 123];
+	CHECK(!strcmp([s1 cString], "test: 123"))
+
+	[s1 appendWithFormatCString: "%02X", 15];
+	CHECK(!strcmp([s1 cString], "test: 1230F"))
 
 	puts("");
 

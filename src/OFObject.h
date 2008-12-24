@@ -31,6 +31,15 @@
 - init;
 
 /**
+ * Adds a pointer to the memory pool.
+ * This is useful to add memory allocated by functions such as asprintf to the
+ * pool so it gets freed automatically when the object is freed.
+ *
+ * \param ptr A pointer to add to the memory pool
+ */
+- addToMemoryPool: (void*)ptr;
+
+/**
  * Allocate memory and store it in the objects memory pool so it can be free'd
  * automatically when the object is free'd.
  *

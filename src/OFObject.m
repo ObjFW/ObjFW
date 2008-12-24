@@ -44,6 +44,29 @@
 	return nil;
 }
 
+- addToMemoryPool: (void*)ptr
+{
+	void **memchunks;
+	size_t memchunks_size;
+
+	memchunks_size = __memchunks_size + 1;
+
+	if (SIZE_MAX - __memchunks_size == 0 ||
+	    memchunks_size > SIZE_MAX / sizeof(void*))
+		@throw [OFOutOfRangeException newWithObject: self];
+
+	if ((memchunks = realloc(__memchunks,
+	    memchunks_size * sizeof(void*))) == NULL)
+		@throw [OFNoMemException newWithObject: self
+					       andSize: memchunks_size];
+
+	__memchunks = memchunks;
+	__memchunks[__memchunks_size] = ptr;
+	__memchunks_size = memchunks_size;
+
+	return ptr;
+}
+
 - (void*)getMemWithSize: (size_t)size
 {
 	void *ptr, **memchunks;
