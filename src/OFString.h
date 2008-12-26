@@ -24,13 +24,6 @@
 }
 
 /**
- * Creates a new OFString.
- *
- * \return An initialized OFString
- */
-+ new;
-
-/**
  * Creates a new OFString from a C string.
  *
  * \param str A C string to initialize the OFString with

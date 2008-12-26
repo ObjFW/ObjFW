@@ -99,11 +99,6 @@ check_utf8(const char *str, size_t len)
 }
 
 @implementation OFString
-+ new
-{
-	return [[self alloc] init];
-}
-
 + newFromCString: (const char*)str
 {
 	return [[self alloc] initFromCString: str];
