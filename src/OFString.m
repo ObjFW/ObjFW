@@ -227,7 +227,7 @@ check_utf8(const char *str, size_t len)
 	return [OFString newFromCString: string];
 }
 
-- (OFString*)setTo: (OFString*)str
+- setTo: (OFString*)str
 {
 	[self free];
 	return (self = [str clone]);

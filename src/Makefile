@@ -10,6 +10,7 @@ SRCS = OFArray.m		\
        OFFile.m			\
        OFList.m			\
        OFListObject.m		\
+       OFNumber.m		\
        OFObject.m		\
        OFString.m		\
        OFTCPSocket.m		\

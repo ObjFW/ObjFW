@@ -109,7 +109,7 @@
  * \param str An OFString to set the OFString to.
  * \return The new OFString
  */
-- (OFString*)setTo: (OFString*)str;
+- setTo: (OFString*)str;
 
 /**
  * Compares the OFString to another OFString.
