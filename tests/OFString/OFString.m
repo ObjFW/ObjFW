@@ -11,11 +11,12 @@
 
 #import "config.h"
 
-#import <stdio.h>
 #import <string.h>
 
 #import "OFString.h"
 #import "OFExceptions.h"
+
+#import <stdio.h>
 
 #ifndef _WIN32
 #define ZD "%zd"

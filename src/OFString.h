@@ -10,6 +10,7 @@
  */
 
 #import <stdarg.h>
+#import <stdio.h>
 
 #import "OFObject.h"
 

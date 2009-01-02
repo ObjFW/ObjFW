@@ -12,6 +12,7 @@ AC_PROG_EGREP
 
 CFLAGS="$CFLAGS -Wall"
 OBJCFLAGS="$OBJCFLAGS -Wall -fobjc-exceptions"
+LIBS="$LIBS -lobjc"
 
 AC_DEFINE(OF_CONFIG_H, 1, [Define so that we know we got our config.h])
 
@@ -67,9 +68,7 @@ test x"$have_asprintf" != x"yes" -a x"$ac_cv_snprintf_useful_ret" != x"yes" && \
 
 ACX_PTHREAD
 
-AC_CHECK_LIB(ws2_32, main,
-	AC_SUBST(WS2_LIBS, "-lws2_32"),
-	AC_SUBST(WS2_LIBS, ""))
+AC_CHECK_LIB(ws2_32, main, LIBS="$LIBS -lws2_32")
 
 AC_MSG_CHECKING(whether we have IPv6 support)
 AC_CACHE_VAL(ac_cv_have_ipv6, [

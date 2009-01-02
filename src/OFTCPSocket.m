@@ -25,15 +25,15 @@
 #endif
 
 @implementation OFTCPSocket
-+ (void)startup
-{
 #ifdef _WIN32
++ (void)initialize
+{
 	WSADATA wsa;
 
 	if (WSAStartup(MAKEWORD(2, 0), &wsa))
 		@throw [OFInitializationFailedException newWithClass: self];
-#endif
 }
+#endif
 
 - init
 {

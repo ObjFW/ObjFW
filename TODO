@@ -1,6 +1,6 @@
-OFInteger
-
+Serialization
 Tests for OFFile.
+Tests for OFNumber.
 
 OFBase64
 

@@ -49,11 +49,6 @@
 }
 
 /**
- * This needs to be called before any socket can be used.
- */
-+ (void)startup;
-
-/**
  * Initializes an already allocated OFTCPSocket.
  *
  * \return An initialized OFTCPSocket

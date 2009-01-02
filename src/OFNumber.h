@@ -9,6 +9,8 @@
  * the packaging of this file.
  */
 
+#import <unistd.h>
+
 #import "OFObject.h"
 
 enum of_number_type {

@@ -38,8 +38,6 @@ main()
 	srand(time(NULL));
 
 	@try {
-		[OFTCPSocket startup];
-
 		OFTCPSocket *server = [OFTCPSocket new];
 		OFTCPSocket *client = [OFTCPSocket new];
 		OFTCPSocket *accepted;

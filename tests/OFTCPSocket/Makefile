@@ -5,7 +5,7 @@ include ../../buildsys.mk
 include ../../extra.mk
 
 CPPFLAGS += -I../../src -I../..
-LIBS += -L../../src -lobjfw -lobjc ${WS2_LIBS}
+LIBS := -L../../src -lobjfw ${LIBS}
 
 .PHONY: run
 

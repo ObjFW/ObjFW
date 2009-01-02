@@ -28,6 +28,10 @@
 #import "OFExceptions.h"
 #import "OFMacros.h"
 
+#ifndef HAVE_ASPRINTF
+#import "asprintf.h"
+#endif
+
 static OF_INLINE int
 check_utf8(const char *str, size_t len)
 {
