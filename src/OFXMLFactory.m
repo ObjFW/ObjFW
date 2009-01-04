@@ -28,43 +28,39 @@
  * resize when we append, which would be slow here.
  */
 
-static inline BOOL
-xf_resize_chars(char **str, size_t *len, size_t add)
+static inline void
+xf_resize_chars(char **str, size_t *len, size_t add, Class class)
 {
 	char *str2;
 	size_t len2;
 
 	if (add > SIZE_MAX - *len)
-		@throw [OFOutOfRangeException newWithObject: nil];
+		@throw [OFOutOfRangeException newWithClass: class];
 	len2 = *len + add;
 
 	if ((str2 = realloc(*str, len2)) == NULL) {
 		if (*str)
 			free(*str);
 		*str = NULL;
-		return NO;
+		@throw [OFNoMemException newWithClass: class
+					      andSize: len2];
 	}
 
 	*str = str2;
 	*len = len2;
-
-	return YES;
 }
 
-static inline BOOL
-xf_add2chars(char **str, size_t *len, size_t *pos, const char *add)
+static inline void
+xf_add2chars(char **str, size_t *len, size_t *pos, const char *add, Class class)
 {
 	size_t add_len;
 
 	add_len = strlen(add);
 
-	if (!xf_resize_chars(str, len, add_len))
-		return NO;
+	xf_resize_chars(str, len, add_len, class);
 
 	memcpy(*str + *pos, add, add_len);
 	*pos += add_len;
-
-	return YES;
 }
 
 @implementation OFXMLFactory
@@ -75,47 +71,29 @@ xf_add2chars(char **str, size_t *len, size_t *pos, const char *add)
 
 	len = nlen = strlen(s);
 	if (SIZE_MAX - len < 1)
-		@throw [OFOutOfRangeException newWithObject: nil];
+		@throw [OFOutOfRangeException newWithClass: self];
 	nlen++;
 
 	if ((ret = malloc(nlen)) == NULL)
-		@throw [OFNoMemException newWithObject: nil
-					       andSize: nlen];
+		@throw [OFNoMemException newWithClass: self
+					      andSize: nlen];
 
 	for (i = j = 0; i < len; i++) {
 		switch (s[i]) {
 		case '<':
-			if (OF_UNLIKELY(!xf_add2chars(&ret, &nlen, &j, "&lt;")))
-				@throw [OFNoMemException
-				    newWithObject: nil
-					  andSize: nlen + 4];
+			xf_add2chars(&ret, &nlen, &j, "&lt;", self);
 			break;
 		case '>':
-			if (OF_UNLIKELY(!xf_add2chars(&ret, &nlen, &j, "&gt;")))
-				@throw [OFNoMemException
-				    newWithObject: nil
-					  andSize: nlen + 4];
+			xf_add2chars(&ret, &nlen, &j, "&gt;", self);
 			break;
 		case '"':
-			if (OF_UNLIKELY(!xf_add2chars(&ret, &nlen, &j,
-			    "&quot;")))
-				@throw [OFNoMemException
-				    newWithObject: nil
-					  andSize: nlen + 6];
+			xf_add2chars(&ret, &nlen, &j, "&quot;", self);
 			break;
 		case '\'':
-			if (OF_UNLIKELY(!xf_add2chars(&ret, &nlen, &j,
-			    "&apos;")))
-				@throw [OFNoMemException
-				    newWithObject: nil
-					  andSize: nlen + 6];
+			xf_add2chars(&ret, &nlen, &j, "&apos;", self);
 			break;
 		case '&':
-			if (OF_UNLIKELY(!xf_add2chars(&ret, &nlen, &j,
-			    "&amp;")))
-				@throw [OFNoMemException
-				    newWithObject: nil
-					  andSize: nlen + 5];
+			xf_add2chars(&ret, &nlen, &j, "&amp;", self);
 			break;
 		default:
 			ret[j++] = s[i];
@@ -138,12 +116,12 @@ xf_add2chars(char **str, size_t *len, size_t *pos, const char *add)
 	/* Start of tag */
 	len = strlen(name);
 	if (SIZE_MAX - len < 3)
-		@throw [OFOutOfRangeException newWithObject: nil];
+		@throw [OFOutOfRangeException newWithClass: self];
 	len += 3;
 
 	if ((xml = malloc(len)) == NULL)
-		@throw [OFNoMemException newWithObject: nil
-					       andSize: len];
+		@throw [OFNoMemException newWithClass: self
+					      andSize: len];
 
 	i = 0;
 	xml[i++] = '<';
@@ -154,57 +132,43 @@ xf_add2chars(char **str, size_t *len, size_t *pos, const char *add)
 	va_start(args, data);
 	while ((arg = va_arg(args, char*)) != NULL &&
 	    (val = va_arg(args, char*)) != NULL) {
-		char *esc_val;
+		char *esc_val = NULL;
 
-		if (OF_UNLIKELY((esc_val =
-		    [OFXMLFactory escapeCString: val]) == NULL)) {
-			/*
-			 * escapeCString already throws an exception,
-			 * no need to throw a second one here.
-			 */
+		@try {
+			esc_val = [OFXMLFactory escapeCString: val];
+		} @catch (OFException *e) {
 			free(xml);
-			return NULL;
+			@throw e;
 		}
 
-		if (OF_UNLIKELY(!xf_resize_chars(&xml, &len, 1 + strlen(arg) +
-		    2 + strlen(esc_val) + 1))) {
+		@try {
+			xf_resize_chars(&xml, &len, 1 + strlen(arg) + 2 +
+			    strlen(esc_val) + 1, self);
+
+			xml[i++] = ' ';
+			memcpy(xml + i, arg, strlen(arg));
+			i += strlen(arg);
+			xml[i++] = '=';
+			xml[i++] = '\'';
+			memcpy(xml + i, esc_val, strlen(esc_val));
+			i += strlen(esc_val);
+			xml[i++] = '\'';
+		} @finally {
 			free(esc_val);
-			@throw [OFNoMemException
-			    newWithObject: nil
-				  andSize: len + 1 + strlen(arg) + 2 +
-					   strlen(esc_val) + 1];
 		}
-
-		xml[i++] = ' ';
-		memcpy(xml + i, arg, strlen(arg));
-		i += strlen(arg);
-		xml[i++] = '=';
-		xml[i++] = '\'';
-		memcpy(xml + i, esc_val, strlen(esc_val));
-		i += strlen(esc_val);
-		xml[i++] = '\'';
-
-		free(esc_val);
 	}
 	va_end(args);
 
 	/* End of tag */
 	if (close) {
 		if (data == NULL) {
-			if (!xf_resize_chars(&xml, &len, 2 - 1))
-				@throw [OFNoMemException
-				    newWithObject: nil
-					  andSize: len + 2 - 1];
+			xf_resize_chars(&xml, &len, 2 - 1, self);
 
 			xml[i++] = '/';
 			xml[i++] = '>';
 		} else {
-			if (!xf_resize_chars(&xml, &len, 1 + strlen(data) +
-			    2 + strlen(name) + 1 - 1))
-				@throw [OFNoMemException
-				    newWithObject: nil
-					  andSize: len + 1 + strlen(data) + 2 +
-						   strlen(name) + 1 - 1];
+			xf_resize_chars(&xml, &len, 1 + strlen(data) + 2 +
+			    strlen(name) + 1 - 1, self);
 
 			xml[i++] = '>';
 			memcpy(xml + i, data, strlen(data));
@@ -232,24 +196,18 @@ xf_add2chars(char **str, size_t *len, size_t *pos, const char *add)
 
 	len = strlen(*strs);
 	if (SIZE_MAX - len < 1)
-		@throw [OFOutOfRangeException newWithObject: nil];
+		@throw [OFOutOfRangeException newWithClass: self];
 	len++;
 
 	if ((ret = malloc(len)) == NULL)
-		@throw [OFNoMemException newWithObject: nil
-					       andSize: len];
+		@throw [OFNoMemException newWithClass: self
+					      andSize: len];
 
 	memcpy(ret, strs[0], len - 1);
 	pos = len - 1;
 
-	for (i = 1; strs[i] != NULL; i++) {
-		if (OF_UNLIKELY(!xf_add2chars(&ret, &len, &pos, strs[i]))) {
-			free(ret);
-			@throw [OFNoMemException
-			    newWithObject: nil
-				  andSize: len + strlen(strs[i])];
-		}
-	}
+	for (i = 1; strs[i] != NULL; i++)
+		xf_add2chars(&ret, &len, &pos, strs[i], self);
 
 	for (i = 0; strs[i] != NULL; i++)
 		free(strs[i]);

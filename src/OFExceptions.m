@@ -37,15 +37,15 @@
 #endif
 
 @implementation OFException
-+ newWithObject: (id)obj
++ newWithClass: (Class)class_
 {
-	return [[self alloc] initWithObject: obj];
+	return [[self alloc] initWithClass: class_];
 }
 
-- initWithObject: (id)obj
+- initWithClass: (Class)class_
 {
 	if ((self = [super init])) {
-		object = obj;
+		class = class_;
 		string = NULL;
 	}
 
@@ -60,9 +60,9 @@
 	return [super free];
 }
 
-- (id)object
+- (Class)class
 {
-	return object;
+	return class;
 }
 
 - (const char*)cString
@@ -72,17 +72,17 @@
 @end
 
 @implementation OFNoMemException
-+ newWithObject: (id)obj
-	andSize: (size_t)size
++ newWithClass: (Class)class_
+       andSize: (size_t)size
 {
-	return [[self alloc] initWithObject: obj
-				    andSize: size];
+	return [[self alloc] initWithClass: class_
+				   andSize: size];
 }
 
-- initWithObject: (id)obj
-	 andSize: (size_t)size
+- initWithClass: (Class)class_
+	andSize: (size_t)size
 {
-	if ((self = [super initWithObject: obj]))
+	if ((self = [super initWithClass: class_]))
 		req_size = size;
 
 	return self;
@@ -93,8 +93,8 @@
 	if (string != NULL)
 		return string;
 
-	asprintf(&string, "Could not allocate %zu bytes for object of class "
-	    "%s!", req_size, object != nil ? [object name] : "(null)");
+	asprintf(&string, "Could not allocate %zu bytes in class %s!",
+		req_size, [class name]);
 
 	return string;
 }
@@ -106,17 +106,17 @@
 @end
 
 @implementation OFMemNotPartOfObjException
-+ newWithObject: (id)obj
-     andPointer: (void*)ptr
++ newWithClass: (Class)class_
+    andPointer: (void*)ptr
 {
-	return [[self alloc] initWithObject: obj
-				 andPointer: ptr];
+	return [[self alloc] initWithClass: class_
+				andPointer: ptr];
 }
 
-- initWithObject: (id)obj
-      andPointer: (void*)ptr
+- initWithClass: (Class)class_
+     andPointer: (void*)ptr
 {
-	if ((self = [super initWithObject: obj]))
+	if ((self = [super initWithClass: class_]))
 		pointer = ptr;
 
 	return self;
@@ -130,7 +130,7 @@
 	asprintf(&string, "Memory at %p was not allocated as part of object "
 	    "of class %s, thus the memory allocation was not changed! It is "
 	    "also possible that there was an attempt to free the same memory "
-	    "twice.", pointer, [object name]);
+	    "twice.", pointer, [class name]);
 
 	return string;
 }
@@ -147,8 +147,7 @@
 	if (string != NULL)
 		return string;
 
-	asprintf(&string, "Value out of range in object of class %s!",
-	    object != nil ? [object name] : "(null)");
+	asprintf(&string, "Value out of range in class %s!", [class name]);
 
 	return string;
 }
@@ -160,8 +159,8 @@
 	if (string != NULL)
 		return string;
 
-	asprintf(&string, "The encoding is invalid for object of classs %s!",
-	    [object name]);
+	asprintf(&string, "The encoding is invalid for classs %s!",
+	    [class name]);
 
 	return string;
 }
@@ -173,30 +172,13 @@
 	if (string != NULL)
 		return string;
 
-	asprintf(&string, "The format is invalid for object of classs %s!",
-	    [object name]);
+	asprintf(&string, "The format is invalid for classs %s!", [class name]);
 
 	return string;
 }
 @end
 
 @implementation OFInitializationFailedException
-+ newWithClass: (Class)class_
-{
-	return [[self alloc] initWithClass: class_];
-}
-
-- initWithClass: (Class)class_
-{
-	if ((self = [super init])) {
-		object = nil;
-		string = NULL;
-		class = class_;
-	}
-
-	return self;
-}
-
 - (const char*)cString
 {
 	if (string != NULL)
@@ -206,28 +188,23 @@
 
 	return string;
 }
-
-- (Class)class
-{
-	return class;
-}
 @end
 
 @implementation OFOpenFileFailedException
-+ newWithObject: (id)obj
++ newWithClass: (Class)class_
+       andPath: (const char*)path_
+       andMode: (const char*)mode_
+{
+	return [[self alloc] initWithClass: class_
+				   andPath: path_
+				   andMode: mode_];
+}
+
+- initWithClass: (Class)class_
 	andPath: (const char*)path_
 	andMode: (const char*)mode_
 {
-	return [[self alloc] initWithObject: obj
-				    andPath: path_
-				    andMode: mode_];
-}
-
-- initWithObject: (id)obj
-	 andPath: (const char*)path_
-	 andMode: (const char*)mode_
-{
-	if ((self = [super initWithObject: obj])) {
+	if ((self = [super initWithClass: class_])) {
 		path = (path_ != NULL ? strdup(path_) : NULL);
 		mode = (mode_ != NULL ? strdup(mode_) : NULL);
 		err = GET_ERR;
@@ -251,8 +228,8 @@
 	if (string != NULL)
 		return string;
 
-	asprintf(&string, "Failed to open file %s with mode %s in object of "
-	    "class %s! " ERRFMT, path, mode, [self name], ERRPARAM);
+	asprintf(&string, "Failed to open file %s with mode %s in class %s! "
+	    ERRFMT, path, mode, [self name], ERRPARAM);
 
 	return string;
 }
@@ -274,27 +251,27 @@
 @end
 
 @implementation OFReadOrWriteFailedException
-+ newWithObject: (id)obj
++ newWithClass: (Class)class_
+       andSize: (size_t)size
+     andNItems: (size_t)nitems
+{
+	return [[self alloc] initWithClass: class_
+				   andSize: size
+				 andNItems: nitems];
+}
+
++ newWithClass: (Class)class_
+       andSize: (size_t)size
+{
+	return [[self alloc] initWithClass: class_
+				   andSize: size];
+}
+
+- initWithClass: (Class)class_
 	andSize: (size_t)size
       andNItems: (size_t)nitems
 {
-	return [[self alloc] initWithObject: obj
-				    andSize: size
-				  andNItems: nitems];
-}
-
-+ newWithObject: (id)obj
-	andSize: (size_t)size
-{
-	return [[self alloc] initWithObject: obj
-				    andSize: size];
-}
-
-- initWithObject: (id)obj
-	 andSize: (size_t)size
-       andNItems: (size_t)nitems
-{
-	if ((self = [super initWithObject: obj])) {
+	if ((self = [super initWithClass: class_])) {
 		req_size = size;
 		req_items = nitems;
 		has_items = YES;
@@ -304,10 +281,10 @@
 	return self;
 }
 
-- initWithObject: (id)obj
-	 andSize: (size_t)size
+- initWithClass: (Class)class_
+	andSize: (size_t)size
 {
-	if ((self = [super initWithObject: obj])) {
+	if ((self = [super initWithClass: class_])) {
 		req_size = size;
 		req_items = 0;
 		has_items = NO;
@@ -346,11 +323,11 @@
 
 	if (has_items)
 		asprintf(&string, "Failed to read %zu items of size %zu in "
-		    "object of class %s! " ERRFMT, req_items, req_size,
-		    [object name], ERRPARAM);
+		    "class %s! " ERRFMT, req_items, req_size, [class name],
+		    ERRPARAM);
 	else
-		asprintf(&string, "Failed to read %zu bytes in object of class "
-		    "%s! " ERRFMT, req_size, [object name], ERRPARAM);
+		asprintf(&string, "Failed to read %zu bytes in class %s! "
+		    ERRFMT, req_size, [class name], ERRPARAM);
 
 	return string;
 }
@@ -364,11 +341,11 @@
 
 	if (has_items)
 		asprintf(&string, "Failed to write %zu items of size %zu in "
-		    "object of class %s! " ERRFMT, req_items, req_size,
-		    [object name], ERRPARAM);
+		    "class %s! " ERRFMT, req_items, req_size, [class name],
+		    ERRPARAM);
 	else
-		asprintf(&string, "Failed to write %zu bytes in object of "
-		    "class %s! " ERRFMT, req_size, [object name], ERRFMT);
+		asprintf(&string, "Failed to write %zu bytes in class %s! "
+		    ERRFMT, req_size, [class name], ERRFMT);
 
 	return string;
 }
@@ -380,8 +357,8 @@
 	if (string != NULL)
 		return string;
 
-	asprintf(&string, "Setting an option for an object of type type %s "
-	    "failed!", [object name]);
+	asprintf(&string, "Setting an option in class %s failed!",
+	    [class name]);
 
 	return string;
 }
@@ -394,7 +371,7 @@
 		return string;
 
 	asprintf(&string, "The socket of type %s is not connected or bound!",
-	    [object name]);
+	    [class name]);
 
 	return string;
 }
@@ -407,7 +384,7 @@
 		return string;
 
 	asprintf(&string, "The socket of type %s is already connected or bound "
-	    "and thus can't be connected or bound again!", [object name]);
+	    "and thus can't be connected or bound again!", [class name]);
 
 	return string;
 }
@@ -421,27 +398,27 @@
 
 	asprintf(&string, "The port specified is not valid for a socket of "
 	    "type %s! This usually means you tried to use port 0, which is an "
-	    "invalid port.", [object name]);
+	    "invalid port.", [class name]);
 
 	return string;
 }
 @end
 
 @implementation OFAddressTranslationFailedException
-+ newWithObject: (id)obj
++ newWithClass: (Class)class_
+       andNode: (const char*)node_
+    andService: (const char*)service_
+{
+	return [self newWithClass: class_
+			  andNode: node_
+		       andService: service_];
+}
+
+- initWithClass: (Class)class_
 	andNode: (const char*)node_
      andService: (const char*)service_
 {
-	return [self newWithObject: obj
-			   andNode: node_
-			andService: service_];
-}
-
-- initWithObject: (id)obj
-	 andNode: (const char*)node_
-      andService: (const char*)service_
-{
-	if ((self = [super initWithObject: obj])) {
+	if ((self = [super initWithClass: class_])) {
 		node = (node_ != NULL ? strdup(node_) : NULL);
 		service = (service_ != NULL ? strdup(service_) : NULL);
 		err = GET_SOCK_ERR;
@@ -466,11 +443,11 @@
 		return string;
 
 	asprintf(&string, "The service %s on %s could not be translated to an "
-	    "address for an object of type %s. This means that either the node "
-	    "was not found, there is no such service on the node, there was a "
-	    "problem with the name server, there was a problem with your "
-	    "network connection or you specified an invalid node or service. "
-	    ERRFMT, service, node, [object name], ERRPARAM);
+	    "address in class %s. This means that either the node was not "
+	    "found, there is no such service on the node, there was a problem "
+	    "with the name server, there was a problem with your network "
+	    "connection or you specified an invalid node or service. " ERRFMT,
+	    service, node, [class name], ERRPARAM);
 
 	return string;
 }
@@ -492,20 +469,20 @@
 @end
 
 @implementation OFConnectionFailedException
-+ newWithObject: (id)obj
++ newWithClass: (Class)class_
+       andHost: (const char*)host_
+       andPort: (uint16_t)port_
+{
+	return [self newWithClass: class_
+			  andHost: host_
+			  andPort: port_];
+}
+
+- initWithClass: (Class)class_
 	andHost: (const char*)host_
 	andPort: (uint16_t)port_
 {
-	return [self newWithObject: obj
-			   andHost: host_
-			   andPort: port_];
-}
-
-- initWithObject: (id)obj
-	 andHost: (const char*)host_
-	 andPort: (uint16_t)port_
-{
-	if ((self = [super initWithObject: obj])) {
+	if ((self = [super initWithClass: class_])) {
 		host = (host_ != NULL ? strdup(host_) : NULL);
 		port = port_;
 		err = GET_SOCK_ERR;
@@ -528,7 +505,7 @@
 		return string;
 
 	asprintf(&string, "A connection to %s:%d could not be established in "
-	    "object of type %s! " ERRFMT, host, port, [object name], ERRPARAM);
+	    "class %s! " ERRFMT, host, port, [class name], ERRPARAM);
 
 	return string;
 }
@@ -550,23 +527,23 @@
 @end
 
 @implementation OFBindFailedException
-+ newWithObject: (id)obj
++ newWithClass: (Class)class_
+       andHost: (const char*)host_
+       andPort: (uint16_t)port_
+     andFamily: (int)family_
+{
+	return [self newWithClass: class_
+			  andHost: host_
+			  andPort: port_
+			andFamily: family_];
+}
+
+- initWithClass: (Class)class_
 	andHost: (const char*)host_
 	andPort: (uint16_t)port_
       andFamily: (int)family_
 {
-	return [self newWithObject: obj
-			   andHost: host_
-			   andPort: port_
-			 andFamily: family_];
-}
-
-- initWithObject: (id)obj
-	 andHost: (const char*)host_
-	 andPort: (uint16_t)port_
-       andFamily: (int)family_
-{
-	if ((self = [super initWithObject: obj])) {
+	if ((self = [super initWithClass: class_])) {
 		host = (host_ != NULL ? strdup(host_) : NULL);
 		port = port_;
 		family = family_;
@@ -590,8 +567,7 @@
 		return string;
 
 	asprintf(&string, "Binding to port %d on %s using family %d failed in "
-	    "object of type %s! " ERRFMT, port, host, family, [object name],
-	    ERRPARAM);
+	    "class %s! " ERRFMT, port, host, family, [class name], ERRPARAM);
 
 	return string;
 }
@@ -618,17 +594,17 @@
 @end
 
 @implementation OFListenFailedException
-+ newWithObject: (id)obj
-     andBackLog: (int)backlog_
++ newWithClass: (Class)class_
+    andBackLog: (int)backlog_
 {
-	return [[self alloc] initWithObject: obj
-				 andBackLog: backlog_];
+	return [[self alloc] initWithClass: class_
+				andBackLog: backlog_];
 }
 
-- initWithObject: (id)obj
-      andBackLog: (int)backlog_
+- initWithClass: (Class)class_
+     andBackLog: (int)backlog_
 {
-	if ((self = [super initWithObject: obj])) {
+	if ((self = [super initWithClass: class_])) {
 		backlog = backlog_;
 		err = GET_SOCK_ERR;
 	}
@@ -642,7 +618,7 @@
 		return string;
 
 	asprintf(&string, "Failed to listen in socket of type %s with a back "
-	    "log of %d! "ERRFMT, [object name], backlog, ERRPARAM);
+	    "log of %d! "ERRFMT, [class name], backlog, ERRPARAM);
 
 	return string;
 }
@@ -659,9 +635,9 @@
 @end
 
 @implementation OFAcceptFailedException
-- initWithObject: (id)obj
+- initWithClass: (Class)class_
 {
-	if ((self = [super initWithObject: obj]))
+	if ((self = [super initWithClass: class_]))
 		err = GET_SOCK_ERR;
 
 	return self;
@@ -673,7 +649,7 @@
 		return string;
 
 	asprintf(&string, "Failed to accept connection in socket of type %s! "
-	    ERRFMT, [object name], ERRPARAM);
+	    ERRFMT, [class name], ERRPARAM);
 
 	return string;
 }

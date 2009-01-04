@@ -141,6 +141,8 @@ check_utf8(const char *str, size_t len)
 
 - initFromCString: (const char*)str
 {
+	Class c;
+
 	if ((self = [super init])) {
 		if (str != NULL) {
 			length = strlen(str);
@@ -150,9 +152,10 @@ check_utf8(const char *str, size_t len)
 				is_utf8 = YES;
 				break;
 			case -1:
+				c = [self class];
 				[super free];
 				@throw [OFInvalidEncodingException
-				    newWithObject: self];
+				    newWithClass: c];
 			}
 
 			string = [self getMemWithSize: length + 1];
@@ -180,19 +183,21 @@ check_utf8(const char *str, size_t len)
 	  withArguments: (va_list)args
 {
 	int t;
+	Class c;
 
 	if ((self = [super init])) {
-		if (fmt == NULL)
-			@throw [OFInvalidFormatException newWithObject: self];
+		if (fmt == NULL) {
+			c = [self class];
+			[super free];
+			@throw [OFInvalidFormatException newWithClass: c];
+		}
 
-		if ((t = vasprintf(&string, fmt, args)) == -1)
-			/*
-			 * This is only the most likely error to happen.
-			 * Unfortunately, as errno isn't always thread-safe,
-			 * there's no good way for us to find out what really
-			 * happened.
-			 */
-			@throw [OFNoMemException newWithObject: self];
+		if ((t = vasprintf(&string, fmt, args)) == -1) {
+			c = [self class];
+			[super free];
+			@throw [OFInitializationFailedException
+			    newWithClass: c];
+		}
 		length = t;
 
 		switch (check_utf8(string, length)) {
@@ -201,8 +206,9 @@ check_utf8(const char *str, size_t len)
 			break;
 		case -1:
 			free(string);
+			c = [self class];
 			[super free];
-			@throw [OFInvalidEncodingException newWithObject: self];
+			@throw [OFInvalidEncodingException newWithClass: c];
 		}
 
 		@try {
@@ -262,7 +268,7 @@ check_utf8(const char *str, size_t len)
 		is_utf8 = YES;
 		break;
 	case -1:
-		@throw [OFInvalidEncodingException newWithObject: self];
+		@throw [OFInvalidEncodingException newWithClass: [self class]];
 	}
 
 	newlen = length + strlength;
@@ -296,7 +302,7 @@ check_utf8(const char *str, size_t len)
 	char *t;
 
 	if (fmt == NULL)
-		@throw [OFInvalidFormatException newWithObject: self];
+		@throw [OFInvalidFormatException newWithClass: [self class]];
 
 	if ((vasprintf(&t, fmt, args)) == -1)
 		/*
@@ -304,10 +310,13 @@ check_utf8(const char *str, size_t len)
 		 * Unfortunately, as errno isn't always thread-safe, there's
 		 * no good way for us to find out what really happened.
 		 */
-		@throw [OFNoMemException newWithObject: self];
+		@throw [OFNoMemException newWithClass: [self class]];
 
-	[self appendCString: t];
-	free(t);
+	@try {
+		[self appendCString: t];
+	} @finally {
+		free(t);
+	}
 
 	return self;
 }
@@ -338,13 +347,15 @@ check_utf8(const char *str, size_t len)
 		/* A start byte can't happen first as we reversed everything */
 		if (OF_UNLIKELY(string[i] & 0x40)) {
 			madvise(string, len, MADV_NORMAL);
-			@throw [OFInvalidEncodingException newWithObject: self];
+			@throw [OFInvalidEncodingException
+			    newWithClass: [self class]];
 		}
 
 		/* Next byte must not be ASCII */
 		if (OF_UNLIKELY(length < i + 1 || !(string[i + 1] & 0x80))) {
 			madvise(string, len, MADV_NORMAL);
-			@throw [OFInvalidEncodingException newWithObject: self];
+			@throw [OFInvalidEncodingException
+			    newWithClass: [self class]];
 		}
 
 		/* Next byte is the start byte */
@@ -360,7 +371,8 @@ check_utf8(const char *str, size_t len)
 		/* Second next byte must not be ASCII */
 		if (OF_UNLIKELY(length < i + 2 || !(string[i + 2] & 0x80))) {
 			madvise(string, len, MADV_NORMAL);
-			@throw [OFInvalidEncodingException newWithObject: self];
+			@throw [OFInvalidEncodingException
+			    newWithClass: [self class]];
 		}
 
 		/* Second next byte is the start byte */
@@ -376,7 +388,8 @@ check_utf8(const char *str, size_t len)
 		/* Third next byte must not be ASCII */
 		if (OF_UNLIKELY(length < i + 3 || !(string[i + 3] & 0x80))) {
 			madvise(string, len, MADV_NORMAL);
-			@throw [OFInvalidEncodingException newWithObject: self];
+			@throw [OFInvalidEncodingException
+			    newWithClass: [self class]];
 		}
 
 		/* Third next byte is the start byte */
@@ -395,7 +408,7 @@ check_utf8(const char *str, size_t len)
 
 		/* UTF-8 does not allow more than 4 bytes per character */
 		madvise(string, len, MADV_NORMAL);
-		@throw [OFInvalidEncodingException newWithObject: self];
+		@throw [OFInvalidEncodingException newWithClass: [self class]];
 	}
 
 	madvise(string, len, MADV_NORMAL);
@@ -408,7 +421,7 @@ check_utf8(const char *str, size_t len)
 	size_t i = length;
 
 	if (is_utf8)
-		@throw [OFInvalidEncodingException newWithObject: self];
+		@throw [OFInvalidEncodingException newWithClass: [self class]];
 
 	while (i--)
 		string[i] = toupper(string[i]);
@@ -421,7 +434,7 @@ check_utf8(const char *str, size_t len)
 	size_t i = length;
 
 	if (is_utf8)
-		@throw [OFInvalidEncodingException newWithObject: self];
+		@throw [OFInvalidEncodingException newWithClass: [self class]];
 
 	while (i--)
 		string[i] = tolower(string[i]);

@@ -80,11 +80,16 @@
 - initWithPath: (const char*)path
        andMode: (const char*)mode
 {
+	Class c;
+
 	if ((self = [super init])) {
-		if ((fp = fopen(path, mode)) == NULL)
-			@throw [OFOpenFileFailedException newWithObject: self
-								andPath: path
-								andMode: mode];
+		if ((fp = fopen(path, mode)) == NULL) {
+			c = [self class];
+			[super free];
+			@throw [OFOpenFileFailedException newWithClass: c 
+							       andPath: path
+							       andMode: mode];
+		}
 	}
 	return self;
 }
@@ -108,9 +113,9 @@
 	size_t ret;
 
 	if ((ret = fread(buf, size, nitems, fp)) == 0 && !feof(fp))
-		@throw [OFReadFailedException newWithObject: self
-						    andSize: size
-						  andNItems: nitems];
+		@throw [OFReadFailedException newWithClass: [self class]
+						   andSize: size
+						 andNItems: nitems];
 
 	return ret;
 }
@@ -157,9 +162,9 @@
 
 	if ((ret = fwrite(buf, size, nitems, fp)) == 0 &&
 	    size != 0 && nitems != 0)
-		@throw [OFWriteFailedException newWithObject: self
-						     andSize: size
-						   andNItems: nitems];
+		@throw [OFWriteFailedException newWithClass: [self class]
+						    andSize: size
+						  andNItems: nitems];
 
 	return ret;
 }

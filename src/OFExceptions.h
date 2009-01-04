@@ -16,32 +16,30 @@
  */
 @interface OFException: OFObject
 {
-	id   object;
-	char *string;
+	Class class;
+	char  *string;
 }
 
 /**
  * Creates a new exception.
  *
- * \param obj The object which caused the exception
+ * \param class The class of the object which caused the exception
  * \return A new exception
  */
-+ newWithObject: (id)obj;
++ newWithClass: (Class)class;
 
 /**
  * Initializes an already allocated OFException.
  *
- * \param obj The object which caused the exception
+ * \param class The class of the object which caused the exception
  * \return An initialized OFException
  */
-- initWithObject: (id)obj;
-
-- free;
+- initWithClass: (Class)class;
 
 /**
- * \return The object that caused the exception
+ * \return The class of the object which caused the exception
  */
-- (id)object;
+- (Class)class;
 
 /**
  * \return An error message for the exception as a C string
@@ -58,27 +56,22 @@
 }
 
 /**
- * \param obj The object which caused the exception
+ * \param class The class of the object which caused the exception
  * \param size The size of the memory that couldn't be allocated
  * \return A new no memory exception
  */
-+ newWithObject: (id)obj
-	andSize: (size_t)size;
++ newWithClass: (Class)class
+       andSize: (size_t)size;
 
 /**
  * Initializes an already allocated no memory exception.
  *
- * \param obj The object which caused the exception
+ * \param class The class of the object which caused the exception
  * \param size The size of the memory that couldn't be allocated
  * \return An initialized no memory exception
  */
-- initWithObject: (id)obj
-	 andSize: (size_t)size;
-
-/**
- * \return An error message for the exception as a C string
- */
-- (const char*)cString;
+- initWithClass: (Class)class
+	andSize: (size_t)size;
 
 /**
  * \return The size of the memoory that couldn't be allocated
@@ -95,27 +88,22 @@
 }
 
 /**
- * \param obj The object which caused the exception
+ * \param class The class of the object which caused the exception
  * \param ptr A pointer to the memory that is not part of the object
  * \return A new memory not part of object exception
  */
-+ newWithObject: (id)obj
-     andPointer: (void*)ptr;
++ newWithClass: (Class)class
+    andPointer: (void*)ptr;
 
 /**
  * Initializes an already allocated memory not part of object exception.
  *
- * \param obj The object which caused the exception
+ * \param class The class of the object which caused the exception
  * \param ptr A pointer to the memory that is not part of the object
  * \return An initialized memory not part of object exception
  */
-- initWithObject: (id)obj
-      andPointer: (void*)ptr;
-
-/**
- * \return An error message for the exception as a C string
- */
-- (const char*)cString;
+- initWithClass: (Class)class
+     andPointer: (void*)ptr;
 
 /**
  * \return A pointer to the memory which is not part of the object
@@ -127,65 +115,24 @@
  * An OFException indicating the given value is out of range.
  */
 @interface OFOutOfRangeException: OFException {}
-/**
- * \return An error message for the exception as a C string
- */
-- (const char*)cString;
 @end
 
 /**
  * An OFException indicating that the encoding is invalid for this object.
  */
 @interface OFInvalidEncodingException: OFException {}
-/**
- * \return An error message for the exception as a C string
- */
-- (const char*)cString;
 @end
 
 /**
  * An OFException indicating that the format is invalid.
  */
 @interface OFInvalidFormatException: OFException {}
-/**
- * \return An error message for the exception as a C string
- */
-- (const char*)cString;
 @end
 
 /**
  * An OFException indicating that initializing something failed.
  */
 @interface OFInitializationFailedException: OFException
-{
-	Class class;
-}
-
-/**
- * Creates a new exception.
- *
- * \param class The class which caused the exception
- * \return A new exception
- */
-+ newWithClass: (Class)class;
-
-/**
- * Initializes an already allocated OFException.
- *
- * \param obj The object which caused the exception
- * \return An initialized OFException
- */
-- initWithClass: (Class)class;
-
-/**
- * \return An error message for the exception as a C string
- */
-- (const char*)cString;
-
-/**
- * \return The class which caused the exception
- */
-- (Class)class;
 @end
 
 /**
@@ -199,33 +146,26 @@
 }
 
 /**
- * \param obj The object which caused the exception
+ * \param class The class of the object which caused the exception
  * \param path A C string of the path to the file tried to open
  * \param mode A C string of the mode in which the file should have been opened
  * \return A new open file failed exception
  */
-+ newWithObject: (id)obj
-	andPath: (const char*)path
-	andMode: (const char*)mode;
++ newWithClass: (Class)class
+       andPath: (const char*)path
+       andMode: (const char*)mode;
 
 /**
  * Initializes an already allocated open file failed exception.
  *
- * \param obj The object which caused the exception
+ * \param class The class of the object which caused the exception
  * \param path A C string of the path to the file which couldn't be opened
  * \param mode A C string of the mode in which the file should have been opened
  * \return An initialized open file failed exception
  */
-- initWithObject: (id)obj
-	 andPath: (const char*)path
-	 andMode: (const char*)mode;
-
-- free;
-
-/**
- * \return An error message for the exception as a C string
- */
-- (const char*)cString;
+- initWithClass: (Class)class
+	andPath: (const char*)path
+	andMode: (const char*)mode;
 
 /**
  * \return The errno from when the exception was created
@@ -255,44 +195,44 @@
 }
 
 /**
- * \param obj The object which caused the exception
+ * \param class The class of the object which caused the exception
  * \param size The requested size of the data that couldn't be read / written
  * \param nitems The requested number of items that couldn't be read / written
  * \return A new open file failed exception
  */
-+ newWithObject: (id)obj
++ newWithClass: (Class)class
+       andSize: (size_t)size
+     andNItems: (size_t)nitems;
+
+/**
+ * \param class The class of the object which caused the exception
+ * \param size The requested size of the data that couldn't be read / written
+ * \return A new open file failed exception
+ */
++ newWithClass: (Class)class
+       andSize: (size_t)size;
+
+/**
+ * Initializes an already allocated read or write failed exception.
+ *
+ * \param class The class of the object which caused the exception
+ * \param size The requested size of the data that couldn't be read / written
+ * \param nitems The requested number of items that couldn't be read / written
+ * \return A new open file failed exception
+ */
+- initWithClass: (Class)class
 	andSize: (size_t)size
       andNItems: (size_t)nitems;
 
 /**
- * \param obj The object which caused the exception
+ * Initializes an already allocated read or write failed exception.
+ *
+ * \param class The class of the object which caused the exception
  * \param size The requested size of the data that couldn't be read / written
  * \return A new open file failed exception
  */
-+ newWithObject: (id)obj
+- initWithClass: (Class)class
 	andSize: (size_t)size;
-
-/**
- * Initializes an already allocated read or write failed exception.
- *
- * \param obj The object which caused the exception
- * \param size The requested size of the data that couldn't be read / written
- * \param nitems The requested number of items that couldn't be read / written
- * \return A new open file failed exception
- */
-- initWithObject: (id)obj
-	 andSize: (size_t)size
-       andNItems: (size_t)nitems;
-
-/**
- * Initializes an already allocated read or write failed exception.
- *
- * \param obj The object which caused the exception
- * \param size The requested size of the data that couldn't be read / written
- * \return A new open file failed exception
- */
-- initWithObject: (id)obj
-	 andSize: (size_t)size;
 
 /**
  * \return The errno from when the exception was created
@@ -319,40 +259,24 @@
  * An OFException indicating a read to the file failed.
  */
 @interface OFReadFailedException: OFReadOrWriteFailedException {}
-/**
- * \return An error message for the exception as a C string
- */
-- (const char*)cString;
 @end
 
 /**
  * An OFException indicating a write to the file failed.
  */
 @interface OFWriteFailedException: OFReadOrWriteFailedException {}
-/**
- * \return An error message for the exception as a C string
- */
-- (const char*)cString;
 @end
 
 /**
  * An OFException indicating that setting an option failed.
  */
 @interface OFSetOptionFailedException: OFException {}
-/***
- * \return An error message for the exception as a C string.
- */
-- (const char*)cString;
 @end
 
 /**
  * An OFException indicating a socket is not connected or bound.
  */
 @interface OFNotConnectedException: OFException {}
-/**
- * \return An error message for the exception as a C string.
- */
-- (const char*)cString;
 @end
 
 /**
@@ -360,20 +284,12 @@
  * or bound socket.
  */
 @interface OFAlreadyConnectedException: OFException {}
-/**
- * \return An error message for the exception as a C string.
- */
-- (const char*)cString;
 @end
 
 /**
  * An OFException indicating that the specified port is invalid.
  */
 @interface OFInvalidPortException: OFException {}
-/**
- * \return An error message for the exception as a C string.
- */
-- (const char*)cString;
 @end
 
 /**
@@ -387,33 +303,26 @@
 }
 
 /**
- * \param obj The object which caused the exception
+ * \param class The class of the object which caused the exception
  * \param node The node for which translation was requested
  * \param service The service of the node for which translation was requested
  * \return A new address translation failed exception
  */
-+ newWithObject: (id)obj
-	andNode: (const char*)node
-     andService: (const char*)service;
++ newWithClass: (Class)class
+       andNode: (const char*)node
+    andService: (const char*)service;
 
 /**
  * Initializes an already allocated address translation failed exception.
  *
- * \param obj The object which caused the exception
+ * \param class The class of the object which caused the exception
  * \param node The node for which translation was requested
  * \param service The service of the node for which translation was requested
  * \return An initialized address translation failed exception
  */
-- initWithObject: (id)obj
-	 andNode: (const char*)node
-      andService: (const char*)service;
-
-- free;
-
-/**
- * \return An error message for the exception as a C string.
- */
-- (const char*)cString;
+- initWithClass: (Class)class
+	andNode: (const char*)node
+     andService: (const char*)service;
 
 /**
  * \return The errno from when the exception was created
@@ -442,33 +351,26 @@
 }
 
 /**
- * \param obj The object which caused the exception
+ * \param class The class of the object which caused the exception
  * \param host The host to which the connection failed
  * \param port The port on the host to which the connection failed
  * \return A new connection failed exception
  */
-+ newWithObject: (id)obj
-	andHost: (const char*)host
-	andPort: (uint16_t)port;
++ newWithClass: (Class)class
+       andHost: (const char*)host
+       andPort: (uint16_t)port;
 
 /**
  * Initializes an already allocated connection failed exception.
  *
- * \param obj The object which caused the exception
+ * \param class The class of the object which caused the exception
  * \param host The host to which the connection failed
  * \param port The port on the host to which the connection failed
  * \return An initialized connection failed exception
  */
-- initWithObject: (id)obj
-	 andHost: (const char*)host
-	 andPort: (uint16_t)port;
-
-- free;
-
-/**
- * \return An error message for the exception as a C string.
- */
-- (const char*)cString;
+- initWithClass: (Class)class
+	andHost: (const char*)host
+	andPort: (uint16_t)port;
 
 /**
  * \return The errno from when the exception was created
@@ -498,37 +400,30 @@
 }
 
 /**
- * \param obj The object which caused the exception
+ * \param class The class of the object which caused the exception
  * \param host The host on which binding failed
  * \param port The port on which binding failed
  * \param family The family for which binnding failed
  * \return A new bind failed exception
  */
-+ newWithObject: (id)obj
-	andHost: (const char*)host
-	andPort: (uint16_t)port
-      andFamily: (int)family;
++ newWithClass: (Class)class
+       andHost: (const char*)host
+       andPort: (uint16_t)port
+     andFamily: (int)family;
 
 /**
  * Initializes an already allocated bind failed exception.
  *
- * \param obj The object which caused the exception
+ * \param class The class of the object which caused the exception
  * \param host The host on which binding failed
  * \param port The port on which binding failed
  * \param family The family for which binnding failed
  * \return An initialized bind failed exception
  */
-- initWithObject: (id)obj
-	 andHost: (const char*)host
-	 andPort: (uint16_t)port
-       andFamily: (int)family;
-
-- free;
-
-/**
- * \return An error message for the exception as a C string.
- */
-- (const char*)cString;
+- initWithClass: (Class)class
+	andHost: (const char*)host
+	andPort: (uint16_t)port
+      andFamily: (int)family;
 
 /**
  * \return The errno from when the exception was created
@@ -561,27 +456,22 @@
 }
 
 /**
- * \param obj The object which caused the exception
+ * \param class The class of the object which caused the exception
  * \param backlog The requested size of the back log
  * \return A new listen failed exception
  */
-+ newWithObject: (id)obj
-     andBackLog: (int)backlog;
++ newWithClass: (Class)class
+    andBackLog: (int)backlog;
 
 /**
  * Initializes an already allocated listen failed exception
  *
- * \param obj The object which caused the exception
+ * \param class The class of the object which caused the exception
  * \param backlog The requested size of the back log
  * \return An initialized listen failed exception
  */
-- initWithObject: (id)obj
-      andBackLog: (int)backlog;
-
-/**
- * \return An error message for the exception as a C string.
- */
-- (const char*)cString;
+- initWithClass: (Class)class
+     andBackLog: (int)backlog;
 
 /**
  * \return The errno from when the exception was created
@@ -601,19 +491,6 @@
 {
 	int err;
 }
-
-/**
- * Initializes an already allocated accept failed exception.
- *
- * \param obj The object which caused the exception
- * \return An initialized accept failed exception
- */
-- initWithObject: (id)obj;
-
-/**
- * \return An error message for the exception as a C string.
- */
-- (const char*)cString;
 
 /**
  * \return The errno from when the exception was created

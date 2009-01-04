@@ -12,59 +12,59 @@
 #import "OFNumber.h"
 #import "OFExceptions.h"
 
-#define RETURN_AS(t)							\
-	switch (type) {							\
-	case OF_NUMBER_CHAR:						\
-		return (t)value.char_;					\
-	case OF_NUMBER_SHORT:						\
-		return (t)value.short_;					\
-	case OF_NUMBER_INT:						\
-		return (t)value.int_;					\
-	case OF_NUMBER_LONG:						\
-		return (t)value.long_;					\
-	case OF_NUMBER_UCHAR:						\
-		return (t)value.uchar;					\
-	case OF_NUMBER_USHORT:						\
-		return (t)value.ushort;					\
-	case OF_NUMBER_UINT:						\
-		return (t)value.uint;					\
-	case OF_NUMBER_ULONG:						\
-		return (t)value.ulong;					\
-	case OF_NUMBER_INT8:						\
-		return (t)value.int8;					\
-	case OF_NUMBER_INT16:						\
-		return (t)value.int16;					\
-	case OF_NUMBER_INT32:						\
-		return (t)value.int32;					\
-	case OF_NUMBER_INT64:						\
-		return (t)value.int64;					\
-	case OF_NUMBER_UINT8:						\
-		return (t)value.uint8;					\
-	case OF_NUMBER_UINT16:						\
-		return (t)value.uint16;					\
-	case OF_NUMBER_UINT32:						\
-		return (t)value.uint32;					\
-	case OF_NUMBER_UINT64:						\
-		return (t)value.uint64;					\
-	case OF_NUMBER_SIZE:						\
-		return (t)value.size;					\
-	case OF_NUMBER_SSIZE:						\
-		return (t)value.ssize;					\
-	case OF_NUMBER_PTRDIFF:						\
-		return (t)value.ptrdiff;				\
-	case OF_NUMBER_INTPTR:						\
-		return (t)value.intptr;					\
-	case OF_NUMBER_FLOAT:						\
-		return (t)value.float_;					\
-	case OF_NUMBER_DOUBLE:						\
-		return (t)value.double_;				\
-	case OF_NUMBER_LONG_DOUBLE:					\
-		return (t)value.longdouble;				\
-	default:							\
-		@throw [OFInvalidFormatException newWithObject: self];	\
-									\
-		/* Make gcc happy */					\
-		return 0;						\
+#define RETURN_AS(t)							      \
+	switch (type) {							      \
+	case OF_NUMBER_CHAR:						      \
+		return (t)value.char_;					      \
+	case OF_NUMBER_SHORT:						      \
+		return (t)value.short_;					      \
+	case OF_NUMBER_INT:						      \
+		return (t)value.int_;					      \
+	case OF_NUMBER_LONG:						      \
+		return (t)value.long_;					      \
+	case OF_NUMBER_UCHAR:						      \
+		return (t)value.uchar;					      \
+	case OF_NUMBER_USHORT:						      \
+		return (t)value.ushort;					      \
+	case OF_NUMBER_UINT:						      \
+		return (t)value.uint;					      \
+	case OF_NUMBER_ULONG:						      \
+		return (t)value.ulong;					      \
+	case OF_NUMBER_INT8:						      \
+		return (t)value.int8;					      \
+	case OF_NUMBER_INT16:						      \
+		return (t)value.int16;					      \
+	case OF_NUMBER_INT32:						      \
+		return (t)value.int32;					      \
+	case OF_NUMBER_INT64:						      \
+		return (t)value.int64;					      \
+	case OF_NUMBER_UINT8:						      \
+		return (t)value.uint8;					      \
+	case OF_NUMBER_UINT16:						      \
+		return (t)value.uint16;					      \
+	case OF_NUMBER_UINT32:						      \
+		return (t)value.uint32;					      \
+	case OF_NUMBER_UINT64:						      \
+		return (t)value.uint64;					      \
+	case OF_NUMBER_SIZE:						      \
+		return (t)value.size;					      \
+	case OF_NUMBER_SSIZE:						      \
+		return (t)value.ssize;					      \
+	case OF_NUMBER_PTRDIFF:						      \
+		return (t)value.ptrdiff;				      \
+	case OF_NUMBER_INTPTR:						      \
+		return (t)value.intptr;					      \
+	case OF_NUMBER_FLOAT:						      \
+		return (t)value.float_;					      \
+	case OF_NUMBER_DOUBLE:						      \
+		return (t)value.double_;				      \
+	case OF_NUMBER_LONG_DOUBLE:					      \
+		return (t)value.longdouble;				      \
+	default:							      \
+		@throw [OFInvalidFormatException newWithClass: [self class]]; \
+									      \
+		/* Make gcc happy */					      \
+		return 0;						      \
 	}
 
 @implementation OFNumber

@@ -58,7 +58,7 @@ extern int getpagesize(void);
 - (void*)item: (size_t)item
 {
 	if (item >= items)
-		@throw [OFOutOfRangeException newWithObject: self];
+		@throw [OFOutOfRangeException newWithClass: [self class]];
 
 	return data + item * itemsize;
 }
@@ -71,7 +71,7 @@ extern int getpagesize(void);
 - add: (void*)item
 {
 	if (SIZE_MAX - items < 1)
-		@throw [OFOutOfRangeException newWithObject: self];
+		@throw [OFOutOfRangeException newWithClass: [self class]];
 
 	data = [self resizeMem: data
 		      toNItems: items + 1
@@ -86,7 +86,7 @@ extern int getpagesize(void);
  fromCArray: (void*)carray
 {
 	if (nitems > SIZE_MAX - items)
-		@throw [OFOutOfRangeException newWithObject: self];
+		@throw [OFOutOfRangeException newWithClass: [self class]];
 
 	data = [self resizeMem: data
 		      toNItems: items + nitems
@@ -101,7 +101,7 @@ extern int getpagesize(void);
 - removeNItems: (size_t)nitems
 {
 	if (nitems > items)
-		@throw [OFOutOfRangeException newWithObject: self];
+		@throw [OFOutOfRangeException newWithClass: [self class]];
 
 	data = [self resizeMem: data
 		      toNItems: items - nitems
@@ -130,7 +130,7 @@ extern int getpagesize(void);
 	size_t nsize;
 
 	if (SIZE_MAX - items < 1 || items + 1 > SIZE_MAX / itemsize)
-		@throw [OFOutOfRangeException newWithObject: self];
+		@throw [OFOutOfRangeException newWithClass: [self class]];
 
 	nsize = ((items + 1) * itemsize + lastpagebyte) & ~lastpagebyte;
 
@@ -150,7 +150,7 @@ extern int getpagesize(void);
 	size_t nsize;
 
 	if (nitems > SIZE_MAX - items || items + nitems > SIZE_MAX / itemsize)
-		@throw [OFOutOfRangeException newWithObject: self];
+		@throw [OFOutOfRangeException newWithClass: [self class]];
 
 	nsize = ((items + nitems) * itemsize + lastpagebyte) & ~lastpagebyte;
 
@@ -170,7 +170,7 @@ extern int getpagesize(void);
 	size_t nsize;
 
 	if (nitems > items)
-		@throw [OFOutOfRangeException newWithObject: self];
+		@throw [OFOutOfRangeException newWithClass: [self class]];
 
 	nsize = ((items - nitems) * itemsize + lastpagebyte) & ~lastpagebyte;
 

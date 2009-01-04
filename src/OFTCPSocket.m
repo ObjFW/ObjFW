@@ -77,10 +77,10 @@
 	char portstr[6];
 
 	if (!port)
-		@throw [OFInvalidPortException newWithObject: self];
+		@throw [OFInvalidPortException newWithClass: [self class]];
 
 	if (sock != INVALID_SOCKET)
-		@throw [OFAlreadyConnectedException newWithObject: self];
+		@throw [OFAlreadyConnectedException newWithClass: [self class]];
 
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
@@ -90,9 +90,9 @@
 
 	if (getaddrinfo(host, portstr, &hints, &res0))
 		@throw [OFAddressTranslationFailedException
-		    newWithObject: self
-			  andNode: host
-		       andService: portstr];
+		    newWithClass: [self class]
+			 andNode: host
+		      andService: portstr];
 
 	for (res = res0; res != NULL; res = res->ai_next) {
 		if ((sock = socket(res->ai_family, res->ai_socktype,
@@ -111,9 +111,9 @@
 	freeaddrinfo(res0);
 
 	if (sock == INVALID_SOCKET)
-		@throw [OFConnectionFailedException newWithObject: self
-							  andHost: host
-							  andPort: port];
+		@throw [OFConnectionFailedException newWithClass: [self class]
+							 andHost: host
+							 andPort: port];
 
 	return self;
 }
@@ -126,16 +126,16 @@
 	char portstr[6];
 
 	if (!port)
-		@throw [OFInvalidPortException newWithObject: self];
+		@throw [OFInvalidPortException newWithClass: [self class]];
 
 	if (sock != INVALID_SOCKET)
-		@throw [OFAlreadyConnectedException newWithObject: self];
+		@throw [OFAlreadyConnectedException newWithClass: [self class]];
 
 	if ((sock = socket(family, SOCK_STREAM, 0)) == INVALID_SOCKET)
-		@throw [OFBindFailedException newWithObject: self
-						    andHost: host
-						    andPort: port
-						  andFamily: family];
+		@throw [OFBindFailedException newWithClass: [self class]
+						   andHost: host
+						   andPort: port
+						 andFamily: family];
 
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = family;
@@ -145,16 +145,16 @@
 
 	if (getaddrinfo(host, portstr, &hints, &res))
 		@throw [OFAddressTranslationFailedException
-		    newWithObject: self
-			  andNode: host
-		       andService: portstr];
+		    newWithClass: [self class]
+			 andNode: host
+		      andService: portstr];
 
 	if (bind(sock, res->ai_addr, res->ai_addrlen) == -1) {
 		freeaddrinfo(res);
-		@throw [OFBindFailedException newWithObject: self
-						    andHost: host
-						    andPort: port
-						  andFamily: family];
+		@throw [OFBindFailedException newWithClass: [self class]
+						   andHost: host
+						   andPort: port
+						 andFamily: family];
 	}
 
 	freeaddrinfo(res);
@@ -165,11 +165,11 @@
 - listenWithBackLog: (int)backlog
 {
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithObject: self];
+		@throw [OFNotConnectedException newWithClass: [self class]];
 
 	if (listen(sock, backlog) == -1)
-		@throw [OFListenFailedException newWithObject: self
-						   andBackLog: backlog];
+		@throw [OFListenFailedException newWithClass: [self class]
+						  andBackLog: backlog];
 
 	return self;
 }
@@ -177,11 +177,11 @@
 - listen
 {
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithObject: self];
+		@throw [OFNotConnectedException newWithClass: [self class]];
 
 	if (listen(sock, 5) == -1)
-		@throw [OFListenFailedException newWithObject: self
-						   andBackLog: 5];
+		@throw [OFListenFailedException newWithClass: [self class]
+						  andBackLog: 5];
 
 	return self;
 }
@@ -205,7 +205,7 @@
 
 	if ((s = accept(sock, addr, &addrlen)) == INVALID_SOCKET) {
 		[newsock free];
-		@throw [OFAcceptFailedException newWithObject: self];
+		@throw [OFAcceptFailedException newWithClass: [self class]];
 	}
 
 	[newsock setSocket: s];
@@ -221,11 +221,11 @@
 	ssize_t ret;
 
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithObject: self];
+		@throw [OFNotConnectedException newWithClass: [self class]];
 
 	if ((ret = recv(sock, (char*)buf, size, 0)) < 1)
-		@throw [OFReadFailedException newWithObject: self
-						    andSize: size];
+		@throw [OFReadFailedException newWithClass: [self class]
+						   andSize: size];
 
 	/* This is safe, as we already checked < 1 */
 	return ret;
@@ -236,7 +236,7 @@
 	uint8_t *ret;
 
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithObject: self];
+		@throw [OFNotConnectedException newWithClass: [self class]];
 
 	ret = [self getMemWithSize: size];
 
@@ -257,11 +257,11 @@
 	ssize_t ret;
 
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithObject: self];
+		@throw [OFNotConnectedException newWithClass: [self class]];
 
 	if ((ret = send(sock, (char*)buf, size, 0)) == -1)
-		@throw [OFWriteFailedException newWithObject: self
-						     andSize: size];
+		@throw [OFWriteFailedException newWithClass: [self class]
+						    andSize: size];
 
 	/* This is safe, as we already checked for -1 */
 	return ret;
@@ -270,7 +270,7 @@
 - (size_t)writeCString: (const char*)str
 {
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithObject: self];
+		@throw [OFNotConnectedException newWithClass: [self class]];
 
 	return [self writeNBytes: strlen(str)
 		      fromBuffer: (const uint8_t*)str];
@@ -282,7 +282,7 @@
 	int flags;
 
 	if ((flags = fcntl(sock, F_GETFL)) == -1)
-		@throw [OFSetOptionFailedException newWithObject: self];
+		@throw [OFSetOptionFailedException newWithClass: [self class]];
 
 	if (enable)
 		flags &= ~O_NONBLOCK;
@@ -290,12 +290,12 @@
 		flags |= O_NONBLOCK;
 
 	if (fcntl(sock, F_SETFL, flags) == -1)
-		@throw [OFSetOptionFailedException newWithObject: self];
+		@throw [OFSetOptionFailedException newWithClass: [self class]];
 #else
 	u_long v = enable;
 
 	if (ioctlsocket(sock, FIONBIO, &v) == SOCKET_ERROR)
-		@throw [OFSetOptionFailedException newWithObject: self];
+		@throw [OFSetOptionFailedException newWithClass: [self class]];
 #endif
 
 	return self;
@@ -306,7 +306,7 @@
 	int v = enable;
 
 	if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char*)&v, sizeof(v)))
-		@throw [OFSetOptionFailedException newWithObject: self];
+		@throw [OFSetOptionFailedException newWithClass: [self class]];
 
 	return self;
 }
@@ -314,7 +314,7 @@
 - close
 {
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithObject: self];
+		@throw [OFNotConnectedException newWithClass: [self class]];
 
 	sock = INVALID_SOCKET;
 
