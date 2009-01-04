@@ -9,6 +9,9 @@
  * the packaging of this file.
  */
 
+#import <stdarg.h>
+#import <stdio.h>
+
 #import "OFObject.h"
 
 /**

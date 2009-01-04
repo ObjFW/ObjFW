@@ -12,6 +12,7 @@
 #import "config.h"
 
 #import <stdarg.h>
+#import <stdio.h>
 #import <stdlib.h>
 #import <string.h>
 #import <limits.h>
@@ -109,7 +110,7 @@ xf_add2chars(char **str, size_t *len, size_t *pos, const char *add, Class class)
 	 withCloseTag: (BOOL)close
 	      andData: (const char*)data, ...
 {
-	char *arg, *val, *xml;
+	char *arg, *val, *xml, *esc_val;
 	size_t i, len;
 	va_list args;
 
@@ -128,20 +129,20 @@ xf_add2chars(char **str, size_t *len, size_t *pos, const char *add, Class class)
 	memcpy(xml + i, name, strlen(name));
 	i += strlen(name);
 
-	/* Arguments */
-	va_start(args, data);
-	while ((arg = va_arg(args, char*)) != NULL &&
-	    (val = va_arg(args, char*)) != NULL) {
-		char *esc_val = NULL;
+	/*
+	 * Arguments
+	 *
+	 * va_start / va_end need to be INSIDE the @try block due to a bug in
+	 * gcc 4.0.1. (Only in Apple gcc?)
+	 */
+	@try {
+		va_start(args, data);
 
-		@try {
+		while ((arg = va_arg(args, char*)) != NULL &&
+		    (val = va_arg(args, char*)) != NULL) {
+			esc_val = NULL;	/* Needed for our @catch */
 			esc_val = [OFXMLFactory escapeCString: val];
-		} @catch (OFException *e) {
-			free(xml);
-			@throw e;
-		}
 
-		@try {
 			xf_resize_chars(&xml, &len, 1 + strlen(arg) + 2 +
 			    strlen(esc_val) + 1, self);
 
@@ -153,11 +154,19 @@ xf_add2chars(char **str, size_t *len, size_t *pos, const char *add, Class class)
 			memcpy(xml + i, esc_val, strlen(esc_val));
 			i += strlen(esc_val);
 			xml[i++] = '\'';
-		} @finally {
+
 			free(esc_val);
 		}
+
+		va_end(args);
+	} @catch (OFException *e) {
+		if (esc_val != NULL)
+			free(esc_val);
+		if (xml != NULL)
+			free(xml);
+
+		@throw e;
 	}
-	va_end(args);
 
 	/* End of tag */
 	if (close) {
