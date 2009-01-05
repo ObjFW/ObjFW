@@ -1,9 +1,10 @@
-SUBDIRS = OFObject	\
-	  OFArray	\
-	  OFHashes	\
-	  OFString	\
-	  OFTCPSocket	\
-	  OFList	\
+SUBDIRS = OFObject		\
+	  OFAutoreleasePool	\
+	  OFArray		\
+	  OFHashes		\
+	  OFString		\
+	  OFTCPSocket		\
+	  OFList		\
 	  OFXMLFactory
 
 include ../buildsys.mk

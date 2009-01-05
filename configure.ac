@@ -67,11 +67,19 @@ AC_MSG_RESULT($ac_cv_snprintf_useful_ret)
 test x"$have_asprintf" != x"yes" -a x"$ac_cv_snprintf_useful_ret" != x"yes" && \
 	AC_MSG_ERROR(No asprintf and no snprintf returning required space!)
 
-ACX_PTHREAD([
-	CPPLAGS="$CPPFLAGS $PTHREAD_CFLAGS"
-	LIBS="$LIBS $PTHREAD_LIBS"
-	], [
-	AC_MSG_ERROR(You need pthreads!)])
+case "$target" in
+	*-*-mingw*)
+		AC_MSG_CHECKING(for threads)
+		AC_MSG_RESULT(win32)
+		;;
+	*)
+		ACX_PTHREAD([
+			CPPLAGS="$CPPFLAGS $PTHREAD_CFLAGS"
+			LIBS="$LIBS $PTHREAD_LIBS"
+			], [
+			AC_MSG_ERROR(No pthreads or other supported threads!)])
+		;;
+esac
 
 AC_CHECK_LIB(ws2_32, main, LIBS="$LIBS -lws2_32")
 

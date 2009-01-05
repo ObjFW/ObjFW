@@ -20,6 +20,7 @@
 {
 	void   **__memchunks;
 	size_t __memchunks_size;
+	size_t __retain_count;
 }
 
 /**
@@ -29,6 +30,21 @@
  * \return An initialized object
  */
 - init;
+
+/**
+ * Increases the retain count.
+ */
+- retain;
+
+/**
+ * Decreases the retain cound and frees the object if it reaches 0.
+ */
+- release;
+
+/**
+ * Adds the object to the autorelease pool that is on top of the thread's stack.
+ */
+- autorelease;
 
 /**
  * Adds a pointer to the memory pool.

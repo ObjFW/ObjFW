@@ -16,6 +16,7 @@
 #import <limits.h>
 
 #import "OFObject.h"
+#import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 #import "OFMacros.h"
 
@@ -25,7 +26,9 @@
 	if ((self = [super init]) != nil) {
 		__memchunks = NULL;
 		__memchunks_size = 0;
+		__retain_count = 1;
 	}
+
 	return self;
 }
 
@@ -42,6 +45,28 @@
 	return [super free];
 }
 
+- retain
+{
+	__retain_count++;
+
+	return self;
+}
+
+- release
+{
+	if (!--__retain_count)
+		return [self free];
+
+	return self;
+}
+
+- autorelease
+{
+	[OFAutoreleasePool addToPool: self];
+
+	return self;
+}
+
 - addToMemoryPool: (void*)ptr
 {
 	void **memchunks;
@@ -49,7 +74,7 @@
 
 	memchunks_size = __memchunks_size + 1;
 
-	if (SIZE_MAX - __memchunks_size == 0 ||
+	if (SIZE_MAX - __memchunks_size < 1 ||
 	    memchunks_size > SIZE_MAX / sizeof(void*))
 		@throw [OFOutOfRangeException newWithClass: [self class]];
 
@@ -62,7 +87,7 @@
 	__memchunks[__memchunks_size] = ptr;
 	__memchunks_size = memchunks_size;
 
-	return ptr;
+	return self;
 }
 
 - (void*)getMemWithSize: (size_t)size
