@@ -24,7 +24,7 @@
 #define ZD "%u"
 #endif
 
-#define NUM_TESTS 5
+#define NUM_TESTS 10
 #define SUCCESS								\
 {									\
 	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
@@ -38,11 +38,13 @@
 	return 1;							\
 }
 #define CHECK(cond)							\
+{									\
 	if (cond)							\
 		SUCCESS							\
 	else								\
 		FAIL							\
-	i++;
+	i++;								\
+}
 
 const char *strings[] = {
 	"First String Object",
@@ -53,28 +55,41 @@ const char *strings[] = {
 int
 main()
 {
-	size_t	     i;
-	OFList	     *list;
-	OFListObject *iter;
+	size_t i, j;
+	OFList *list;
+	of_list_object_t *iter;
 
 	list = [OFList new];
 
-	[list addNew: [OFString newFromCString: strings[0]]];
-	[list addNew: [OFString newFromCString: strings[1]]];
-	[list addNew: [OFString newFromCString: strings[2]]];
+	[list append: [OFString newFromCString: strings[0]]];
+	[list append: [OFString newFromCString: strings[1]]];
+	[list append: [OFString newFromCString: strings[2]]];
 
-	for (iter = [list first], i = 0; iter != nil; iter = [iter next], i++)
-		if (!strcmp([[iter data] cString], strings[i]))
+	for (iter = [list first], i = 0; iter != NULL; iter = iter->next, i++)
+		if (!strcmp([iter->object cString], strings[i]))
 			SUCCESS
 		else
 			FAIL
 
-	CHECK(!strcmp([[[list first] data] cString], strings[0]))
-	CHECK(!strcmp([[[list last] data] cString], strings[2]))
+	CHECK(!strcmp([[list first]->object cString], strings[0]))
+	CHECK(!strcmp([[list last]->object cString], strings[2]))
+
+	[list remove: [list last]];
+	CHECK(!strcmp([[list last]->object cString], strings[1]))
+
+	[list remove: [list first]];
+	CHECK(!strcmp([[list first]->object cString],
+	    [[list last]->object cString]))
+
+	[list insert: [OFString newFromCString: strings[0]]
+	      before: [list last]];
+	[list insert: [OFString newFromCString: strings[2]]
+	       after: [list first]->next];
+
+	for (iter = [list first], j = 0; iter != NULL; iter = iter->next, j++)
+		CHECK(!strcmp([iter->object cString], strings[j]))
 
 	puts("");
-
-	[list freeIncludingData];
 
 	return 0;
 }

@@ -10,50 +10,81 @@
  */
 
 #import "OFObject.h"
-#import "OFListObject.h"
+
+typedef struct __of_list_object
+{
+	id			object;
+	struct __of_list_object *next;
+	struct __of_list_object *prev;
+} of_list_object_t;
 
 /**
  * The OFList class provides easy to use double-linked lists.
  */
 @interface OFList: OFObject
 {
-	OFListObject *first;
-	OFListObject *last;
+	of_list_object_t *first;
+	of_list_object_t *last;
 }
 
-- init;
-
 /**
- * Frees the OFList and all OFListObjects, but not the data they contian.
+ * \return The first object in the list
  */
-- free;
+- (of_list_object_t*)first;
 
 /**
- * Frees the list and the data included in all OFListObjects it contains.
+ * \return The last object in the list
  */
-- freeIncludingData;
+- (of_list_object_t*)last;
 
 /**
- * \returns The first OFListObject in the OFList
- */
-- (OFListObject*)first;
-
-/**
- * \returns The last OFListObject in the OFList
- */
-- (OFListObject*)last;
-
-/**
- * Adds a new OFListObject to the OFList.
+ * Appends an object to the list.
  *
- * \param obj An OFListObject
+ * \param obj The object to append
+ * \return An of_list_object_t, needed to identify the object inside the list.
+ *	   For example, if you want to remove an object from the list, you need
+ *	   its of_list_object_t.
  */
-- add: (OFListObject*)obj;
+- (of_list_object_t*)append: (id)obj;
 
 /**
- * Creates a new OFListObject and adds it to the OFList.
+ * Prepends an object to the list.
  *
- * \param obj A data object for the OFListObject which will be added
+ * \param obj The object to prepend
+ * \return An of_list_object_t, needed to identify the object inside the list.
+ *	   For example, if you want to remove an object from the list, you need
+ *	   its of_list_object_t.
  */
-- addNew: (id)obj;
+- (of_list_object_t*)prepend: (id)obj;
+
+/**
+ * Inserts an object before another object.
+ * \param obj The object to insert
+ * \param listobj The of_list_object_t of the object before which it should be
+ *	  inserted
+ * \return An of_list_object_t, needed to identify the object inside the list.
+ *	   For example, if you want to remove an object from the list, you need
+ *	   its of_list_object_t.
+ */
+- (of_list_object_t*)insert: (id)obj
+		     before: (of_list_object_t*)listobj;
+
+/**
+ * Inserts an object after another object.
+ * \param obj The object to insert
+ * \param listobj The of_list_object_t of the object after which it should be
+ *	  inserted
+ * \return An of_list_object_t, needed to identify the object inside the list.
+ *	   For example, if you want to remove an object from the list, you need
+ *	   its of_list_object_t.
+ */
+- (of_list_object_t*)insert: (id)obj
+		      after: (of_list_object_t*)listobj;
+
+/**
+ * Removes an object from the list.
+ *
+ * \param listobj The list object returned by append / prepend
+ */
+- remove: (of_list_object_t*)listobj;
 @end

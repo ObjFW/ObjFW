@@ -17,64 +17,126 @@
 - init
 {
 	if ((self = [super init])) {
-		first = nil;
-		last  = nil;
+		first = NULL;
+		last  = NULL;
 	}
+
 	return self;
 }
 
 - free
 {
-	OFListObject *iter, *next;
+	of_list_object_t *iter;
 
-	for (iter = first; iter != nil; iter = next) {
-		next = [iter next];
-		[iter free];
-	}
+	for (iter = first; iter != NULL; iter = iter->next)
+		[iter->object release];
 
 	return [super free];
 }
 
-- freeIncludingData
-{
-	OFListObject *iter, *next;
-
-	for (iter = first; iter != nil; iter = next) {
-		next = [iter next];
-		[iter freeIncludingData];
-	}
-
-	first = last = nil;
-	return [super free];
-}
-
-- (OFListObject*)first
+- (of_list_object_t*)first
 {
 	return first;
 }
 
-- (OFListObject*)last
+- (of_list_object_t*)last
 {
 	return last;
 }
 
-- add: (OFListObject*)obj
+- (of_list_object_t*)append: (id)obj
 {
-	if (!first || !last) {
-		first = last = obj;
-		return self;
-	}
+	of_list_object_t *o = [self getMemWithSize: sizeof(of_list_object_t)];
 
-	[obj setPrev: last];
-	[last setNext: obj];
+	o->object = obj;
+	o->next = NULL;
+	o->prev = last;
 
-	last = obj;
+	if (last != NULL)
+		last->next = o;
 
-	return self;
+	last = o;
+	if (first == NULL)
+		first = o;
+
+	[obj retain];
+	return o;
 }
 
-- addNew: (id)obj
+- (of_list_object_t*)prepend: (id)obj
 {
-	return [self add: [OFListObject newWithData: obj]];
+	of_list_object_t *o = [self getMemWithSize: sizeof(of_list_object_t)];
+
+	o->object = obj;
+	o->next = first;
+	o->prev = NULL;
+
+	if (first != NULL)
+		first->prev = o;
+
+	first = o;
+	if (last == NULL)
+		last = o;
+
+	[obj retain];
+	return o;
+}
+
+- (of_list_object_t*)insert: (id)obj
+		     before: (of_list_object_t*)listobj
+{
+	of_list_object_t *o = [self getMemWithSize: sizeof(of_list_object_t)];
+
+	o->object = obj;
+	o->next = listobj;
+	o->prev = listobj->prev;
+
+	if (listobj->prev != NULL)
+		listobj->prev->next = o;
+
+	listobj->prev = o;
+
+	if (listobj == first)
+		first = o;
+
+	[obj retain];
+	return o;
+}
+
+- (of_list_object_t*)insert: (id)obj
+		      after: (of_list_object_t*)listobj
+{
+	of_list_object_t *o = [self getMemWithSize: sizeof(of_list_object_t)];
+
+	o->object = obj;
+	o->next = listobj->next;
+	o->prev = listobj;
+
+	if (listobj->next != NULL)
+		listobj->next->prev = o;
+
+	listobj->next = o;
+
+	if (listobj == last)
+		last = o;
+
+	[obj retain];
+	return o;
+}
+
+- remove: (of_list_object_t*)listobj
+{
+	if (listobj->prev != NULL)
+		listobj->prev->next = listobj->next;
+	if (listobj->next != NULL)
+		listobj->next->prev = listobj->prev;
+
+	if (first == listobj)
+		first = listobj->next;
+	if (last == listobj)
+		last = listobj->prev;
+
+	[self freeMem: listobj];
+	return self;
 }
 @end
