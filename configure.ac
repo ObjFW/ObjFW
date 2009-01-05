@@ -11,7 +11,6 @@ AC_PROG_LN_S
 AC_PROG_EGREP
 
 CFLAGS="$CFLAGS -Wall"
-CPPFLAGS="$CPPFLAGS -D_RENTRANT"
 OBJCFLAGS="$OBJCFLAGS -Wall -fobjc-exceptions"
 LIBS="$LIBS -lobjc"
 
@@ -86,9 +85,18 @@ AC_CHECK_LIB(ws2_32, main, LIBS="$LIBS -lws2_32")
 AC_MSG_CHECKING(whether we have IPv6 support)
 AC_CACHE_VAL(ac_cv_have_ipv6, [
 	AC_TRY_RUN([
+		#ifndef _WIN32
 		#include <sys/types.h>
 		#include <sys/socket.h>
 		#include <netinet/in.h>
+		#else
+		#include <winsock2.h>
+		#include <ws2tcpip.h>
+		#endif
+
+		#ifndef INVALID_SOCKET
+		#define INVALID_SOCKET -1
+		#endif
 
 		int
 		main()
@@ -98,7 +106,7 @@ AC_CACHE_VAL(ac_cv_have_ipv6, [
 
 			fd = socket(AF_INET6, SOCK_STREAM, 0);
 
-			exit(fd >= 0 ? 0 : 1);
+			exit(fd != INVALID_SOCKET ? 0 : 1);
 		}],
 		ac_cv_have_ipv6="yes",
 		ac_cv_have_ipv6="no",
