@@ -418,26 +418,26 @@ check_utf8(const char *str, size_t len)
 
 - upper
 {
-	size_t i = length;
+	char *p = string + length;
 
 	if (is_utf8)
 		@throw [OFInvalidEncodingException newWithClass: [self class]];
 
-	while (i--)
-		string[i] = toupper(string[i]);
+	while (--p >= string)
+		*p = toupper((int)*p);
 
 	return self;
 }
 
 - lower
 {
-	size_t i = length;
+	char *p = string + length;
 
 	if (is_utf8)
 		@throw [OFInvalidEncodingException newWithClass: [self class]];
 
-	while (i--)
-		string[i] = tolower(string[i]);
+	while (--p >= string)
+		*p = tolower((int)*p);
 
 	return self;
 }

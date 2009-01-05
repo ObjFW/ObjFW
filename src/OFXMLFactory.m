@@ -110,7 +110,7 @@ xf_add2chars(char **str, size_t *len, size_t *pos, const char *add, Class class)
 	 withCloseTag: (BOOL)close
 	      andData: (const char*)data, ...
 {
-	char *arg, *val, *xml, *esc_val;
+	char *arg, *val, *xml, *esc_val = NULL;
 	size_t i, len;
 	va_list args;
 
