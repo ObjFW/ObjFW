@@ -67,6 +67,11 @@
 	return self;
 }
 
+- (size_t)retainCount
+{
+	return __retain_count;
+}
+
 - addToMemoryPool: (void*)ptr
 {
 	void **memchunks;

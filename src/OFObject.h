@@ -47,6 +47,11 @@
 - autorelease;
 
 /**
+ * \return The retain count
+ */
+- (size_t)retainCount;
+
+/**
  * Adds a pointer to the memory pool.
  * This is useful to add memory allocated by functions such as asprintf to the
  * pool so it gets freed automatically when the object is freed.

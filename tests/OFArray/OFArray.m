@@ -99,7 +99,7 @@ const char *str = "Hallo!";
 	a = [type newWithItemSize: 1];					\
 									\
 	for (i = 0; i < strlen(str); i++)				\
-		[a add: (void*)(str + i)];				\
+		[a add: (void*)&str[i]];				\
 	[a add: ""];							\
 									\
 	if (!strcmp([a data], str))					\

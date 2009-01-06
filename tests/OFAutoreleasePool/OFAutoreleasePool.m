@@ -13,11 +13,55 @@
 
 #import "OFAutoreleasePool.h"
 
-/* FIXME: Just crashtests */
+#import <stdio.h>
+
+#ifndef _WIN32
+#define ZD "%zd"
+#else
+#define ZD "%u"
+#endif
+
+@interface TestObject: OFObject
+- init;
+- retain;
+- release;
+@end
+
+@implementation TestObject
+- init
+{
+	id ret;
+       
+	ret = [super init];
+	printf("New %s with retain cnt " ZD "\n", [self name],
+	    [ret retainCount]);
+
+	return ret;
+}
+
+- retain
+{
+	id ret;
+
+	ret = [super retain];
+	printf("Retaining %s to " ZD "\n", [self name], [ret retainCount]);
+
+	return ret;
+}
+
+- release
+{
+	printf("Releasing %s to " ZD "\n", [self name], [self retainCount] - 1);
+
+	return [super release];
+}
+@end
 
 int
 main()
 {
+	[TestObject poseAs: [OFObject class]];
+
 	OFObject *o1, *o2, *o3;
 	OFAutoreleasePool *pool1, *pool2;
 
@@ -25,7 +69,7 @@ main()
 
 	pool1 = [OFAutoreleasePool new];
 	o2 = [[OFObject new] autorelease];
-	[pool1 release];
+	[pool1 releaseObjects];
 
 	o2 = [[OFObject new] autorelease];
 

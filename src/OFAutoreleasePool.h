@@ -10,6 +10,8 @@
  */
 
 #import "OFObject.h"
+#import "OFArray.h"
+#import "OFList.h"
 
 /**
  * The OFAutoreleasePool class provides a class that keeps track of objects
@@ -18,8 +20,8 @@
  */
 @interface OFAutoreleasePool: OFObject
 {
-	OFObject **objects;
-	size_t	 size;
+	OFArray		 *objects;
+	of_list_object_t *listobj;
 }
 
 /**
@@ -41,10 +43,5 @@
 /**
  * Releases all objects in the autorelease pool.
  */
-- release;
-
-/**
- * \returns All objects in the autorelease pool
- */
-- (OFObject**)objects;
+- releaseObjects;
 @end

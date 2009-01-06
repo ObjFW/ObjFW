@@ -70,7 +70,7 @@
 /**
  * Adds an item to the OFArray.
  *
- * \param item An arbitrary item
+ * \param item A pointer to an arbitrary item
  */
 - add: (void*)item;
 

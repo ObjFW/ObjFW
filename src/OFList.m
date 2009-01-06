@@ -18,7 +18,19 @@
 {
 	if ((self = [super init])) {
 		first = NULL;
-		last  = NULL;
+		last = NULL;
+		retain_and_release = YES;
+	}
+
+	return self;
+}
+
+- initWithRetainAndReleaseEnabled: (BOOL)enabled
+{
+	if ((self = [super init])) {
+		first = NULL;
+		last = NULL;
+		retain_and_release = enabled;
 	}
 
 	return self;
@@ -59,7 +71,9 @@
 	if (first == NULL)
 		first = o;
 
-	[obj retain];
+	if (retain_and_release)
+		[obj retain];
+
 	return o;
 }
 
@@ -78,7 +92,9 @@
 	if (last == NULL)
 		last = o;
 
-	[obj retain];
+	if (retain_and_release)
+		[obj retain];
+
 	return o;
 }
 
@@ -99,7 +115,9 @@
 	if (listobj == first)
 		first = o;
 
-	[obj retain];
+	if (retain_and_release)
+		[obj retain];
+
 	return o;
 }
 
@@ -120,7 +138,9 @@
 	if (listobj == last)
 		last = o;
 
-	[obj retain];
+	if (retain_and_release)
+		[obj retain];
+
 	return o;
 }
 
@@ -136,7 +156,11 @@
 	if (last == listobj)
 		last = listobj->prev;
 
+	if (retain_and_release)
+		[listobj->object release];
+
 	[self freeMem: listobj];
+
 	return self;
 }
 @end

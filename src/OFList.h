@@ -25,7 +25,17 @@ typedef struct __of_list_object
 {
 	of_list_object_t *first;
 	of_list_object_t *last;
+	BOOL		 retain_and_release;
 }
+
+/**
+ * Initializes an already allocated OFList.
+ *
+ * \param enabled Whether release / retain should be called when an object is
+ *	  added / removed. Default: YES
+ * \return An initialized OFList
+ */
+- initWithRetainAndReleaseEnabled: (BOOL)enabled;
 
 /**
  * \return The first object in the list
