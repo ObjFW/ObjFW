@@ -35,9 +35,18 @@ static DWORD pool_list_key;
 
 #ifndef _WIN32
 static void
-release_obj(void *obj)
+release_list(void *list)
 {
-	[(OFObject*)obj release];
+	of_list_object_t *first, *iter;
+	IMP release;
+
+	if ((first = [(OFList*)list first]) != NULL)
+		release = [first->object methodFor: @selector(release)];
+
+	for (iter = first; iter != NULL; iter = iter->next)
+		release(iter->object, @selector(release));
+
+	[(OFList*)list release];
 }
 #endif
 
@@ -45,7 +54,7 @@ release_obj(void *obj)
 + (void)initialize
 {
 #ifndef _WIN32
-	if (pthread_key_create(&pool_list_key, release_obj))
+	if (pthread_key_create(&pool_list_key, release_list))
 		@throw [OFInitializationFailedException newWithClass: self];
 #else
 	/* FIXME: Free stuff when thread is terminated! */

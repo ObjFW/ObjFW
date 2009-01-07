@@ -141,7 +141,7 @@ xf_add2chars(char **str, size_t *len, size_t *pos, const char *add, Class class)
 		while ((arg = va_arg(args, char*)) != NULL &&
 		    (val = va_arg(args, char*)) != NULL) {
 			esc_val = NULL;	/* Needed for our @catch */
-			esc_val = [OFXMLFactory escapeCString: val];
+			esc_val = [self escapeCString: val];
 
 			xf_resize_chars(&xml, &len, 1 + strlen(arg) + 2 +
 			    strlen(esc_val) + 1, self);
