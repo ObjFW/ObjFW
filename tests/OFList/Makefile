@@ -11,7 +11,7 @@ LIBS := -L../../src -lobjfw ${LIBS}
 
 all: run
 run: ${PROG_NOINST}
-	rm -f libobjfw.so.1 libobjfw.so.1.0 libobjfw.dylib
+	rm -f libobjfw.so.1 libobjfw.so.1.0 libobjfw.dll libobjfw.dylib
 	ln -s ../../src/libobjfw.so libobjfw.so.1
 	ln -s ../../src/libobjfw.so libobjfw.so.1.0
 	ln -s ../../src/libobjfw.dll libobjfw.dll
