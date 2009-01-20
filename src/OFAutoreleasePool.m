@@ -67,7 +67,7 @@ release_list(void *list)
 {
 	OFList *pool_list = get_tls(pool_list_key);
 
-	if (pool_list == nil) {
+	if (pool_list == nil || [pool_list last] == NULL) {
 		[[self alloc] init];
 		pool_list = get_tls(pool_list_key);
 	}
