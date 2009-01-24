@@ -38,8 +38,8 @@ main()
 	srand(time(NULL));
 
 	@try {
-		OFTCPSocket *server = [OFTCPSocket new];
-		OFTCPSocket *client = [OFTCPSocket new];
+		OFTCPSocket *server = [OFTCPSocket tcpSocket];
+		OFTCPSocket *client = [OFTCPSocket tcpSocket];
 		OFTCPSocket *accepted;
 		char buf[7];
 
@@ -71,7 +71,7 @@ main()
 #ifdef HAVE_IPV6
 		memset(buf, 0, 7);
 
-		[accepted free];
+		[accepted release];
 		[client close];
 		[server close];
 
@@ -101,9 +101,9 @@ main()
 		}
 #endif
 
-		[accepted free];
-		[client free];
-		[server free];
+		[accepted release];
+		[client release];
+		[server release];
 	} @catch(OFException *e) {
 		printf("EXCEPTION: %s\n", [e cString]);
 		return 1;

@@ -24,11 +24,11 @@
 #import "OFExceptions.h"
 
 @implementation OFFile
-+ newWithPath: (const char*)path
-      andMode: (const char*)mode
++ fileWithPath: (const char*)path
+       andMode: (const char*)mode
 {
-	return [[self alloc] initWithPath: path
-				    andMode: mode];
+	return [[[self alloc] initWithPath: path
+				   andMode: mode] autorelease];
 }
 
 + (void)changeModeOfFile: (const char*)path
@@ -182,5 +182,13 @@
 	return [self writeNItems: strlen(str)
 			  ofSize: 1
 		      fromBuffer: (const uint8_t*)str];
+}
+
+- close
+{
+	fclose(fp);
+	fp = NULL;
+
+	return self;
 }
 @end

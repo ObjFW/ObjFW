@@ -59,11 +59,11 @@ main()
 	OFList *list;
 	of_list_object_t *iter;
 
-	list = [OFList new];
+	list = [OFList list];
 
-	[list append: [OFString newFromCString: strings[0]]];
-	[list append: [OFString newFromCString: strings[1]]];
-	[list append: [OFString newFromCString: strings[2]]];
+	[list append: [OFString stringWithCString: strings[0]]];
+	[list append: [OFString stringWithCString: strings[1]]];
+	[list append: [OFString stringWithCString: strings[2]]];
 
 	for (iter = [list first], i = 0; iter != NULL; iter = iter->next, i++)
 		if (!strcmp([iter->object cString], strings[i]))
@@ -81,9 +81,9 @@ main()
 	CHECK(!strcmp([[list first]->object cString],
 	    [[list last]->object cString]))
 
-	[list insert: [OFString newFromCString: strings[0]]
+	[list insert: [OFString stringWithCString: strings[0]]
 	      before: [list last]];
-	[list insert: [OFString newFromCString: strings[2]]
+	[list insert: [OFString stringWithCString: strings[2]]
 	       after: [list first]->next];
 
 	for (iter = [list first], j = 0; iter != NULL; iter = iter->next, j++)

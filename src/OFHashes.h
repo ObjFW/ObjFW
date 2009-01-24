@@ -26,6 +26,11 @@
 	BOOL	 calculated;
 }
 
+/**
+ * \return A new autoreleased MD5 Hash
+ */
++ md5Hash;
+
 - init;
 
 /**
@@ -56,6 +61,11 @@
 
 	BOOL	 calculated;
 }
+
+/**
+ * \return A new autoreleased SHA1 Hash
+ */
++ sha1Hash;
 
 - init;
 

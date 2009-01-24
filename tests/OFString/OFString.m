@@ -15,6 +15,7 @@
 
 #import "OFString.h"
 #import "OFExceptions.h"
+#import "OFAutoreleasePool.h"
 
 #import <stdio.h>
 
@@ -54,10 +55,11 @@ main()
 {
 	size_t i = 0;
 
-	OFString *s1 = [OFString newFromCString: "test"];
-	OFString *s2 = [OFString newFromCString: ""];
+	OFAutoreleasePool *pool = [OFAutoreleasePool new];
+	OFString *s1 = [OFString stringWithCString: "test"];
+	OFString *s2 = [OFString stringWithCString: ""];
 	OFString *s3;
-	OFString *s4 = [OFString new];
+	OFString *s4 = [OFString string];
 
 	s3 = [s1 clone];
 
@@ -74,23 +76,20 @@ main()
 	CHECK(!strcmp([[s1 lower] cString], "321tset"))
 
 	/* Also clears all the memory of the returned C strings */
-	[s1 free];
-	[s2 free];
-	[s3 free];
-	[s4 free];
+	[pool release];
 
 	/* UTF-8 tests */
-	CHECK_EXCEPT(s1 = [OFString newFromCString: "\xE0\x80"],
+	CHECK_EXCEPT(s1 = [OFString stringWithCString: "\xE0\x80"],
 	    OFInvalidEncodingException)
-	CHECK_EXCEPT(s1 = [OFString newFromCString: "\xF0\x80\x80\xC0"],
+	CHECK_EXCEPT(s1 = [OFString stringWithCString: "\xF0\x80\x80\xC0"],
 	    OFInvalidEncodingException)
 
-	s1 = [OFString newFromCString: "äöü€𝄞"];
+	s1 = [OFString stringWithCString: "äöü€𝄞"];
 	CHECK(!strcmp([[s1 reverse] cString], "𝄞€üöä"))
 	[s1 free];
 
 	/* Format tests */
-	s1 = [OFString newFromFormatCString: "%s: %d", "test", 123];
+	s1 = [OFString stringWithFormat: "%s: %d", "test", 123];
 	CHECK(!strcmp([s1 cString], "test: 123"))
 
 	[s1 appendWithFormatCString: "%02X", 15];

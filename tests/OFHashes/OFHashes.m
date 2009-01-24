@@ -29,10 +29,10 @@ main()
 	uint8_t buf[64];
 	size_t	len;
 
-	OFMD5Hash  *md5  = [OFMD5Hash new];
-	OFSHA1Hash *sha1 = [OFSHA1Hash new];
-	OFFile *f = [OFFile newWithPath: "testfile"
-				andMode: "rb"];
+	OFMD5Hash  *md5  = [OFMD5Hash md5Hash];
+	OFSHA1Hash *sha1 = [OFSHA1Hash sha1Hash];
+	OFFile *f = [OFFile fileWithPath: "testfile"
+				 andMode: "rb"];
 
 	while (![f atEndOfFile]) {
 		len = [f readNBytes: 64
@@ -42,7 +42,7 @@ main()
 		[sha1 updateWithBuffer: buf
 				ofSize: len];
 	}
-	[f free];
+	[f close];
 
 	if (!memcmp([md5 digest], testfile_md5, MD5_DIGEST_SIZE)) {
 		fputs("\r\033[1;33mTests successful: 1/2\033[0m", stdout);
@@ -51,7 +51,6 @@ main()
 		puts("\r\033[K\033[1;31mTest 1/2 failed!\033[0m");
 		return 1;
 	}
-	[md5 free];
 
 	if (!memcmp([sha1 digest], testfile_sha1, SHA1_DIGEST_SIZE))
 		puts("\r\033[1;32mTests successful: 2/2\033[0m");
@@ -59,7 +58,6 @@ main()
 		puts("\r\033[K\033[1;31mTest 2/2 failed!\033[0m");
 		return 1;
 	}
-	[sha1 free];
 
 	return 0;
 }

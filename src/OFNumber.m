@@ -68,119 +68,119 @@
 	}
 
 @implementation OFNumber
-+ newWithChar: (char)char_
++ numberWithChar: (char)char_
 {
-	return [[self alloc] initWithChar: char_];
+	return [[[self alloc] initWithChar: char_] autorelease];
 }
 
-+ newWithShort: (short)short_
++ numberWithShort: (short)short_
 {
-	return [[self alloc] initWithShort: short_];
+	return [[[self alloc] initWithShort: short_] autorelease];
 }
 
-+ newWithInt: (int)int_
++ numberWithInt: (int)int_
 {
-	return [[self alloc] initWithInt: int_];
+	return [[[self alloc] initWithInt: int_] autorelease];
 }
 
-+ newWithLong: (long)long_
++ numberWithLong: (long)long_
 {
-	return [[self alloc] initWithLong: long_];
+	return [[[self alloc] initWithLong: long_] autorelease];
 }
 
-+ newWithUChar: (unsigned char)uchar
++ numberWithUChar: (unsigned char)uchar
 {
-	return [[self alloc] initWithUChar: uchar];
+	return [[[self alloc] initWithUChar: uchar] autorelease];
 }
 
-+ newWithUShort: (unsigned short)ushort
++ numberWithUShort: (unsigned short)ushort
 {
-	return [[self alloc] initWithUShort: ushort];
+	return [[[self alloc] initWithUShort: ushort] autorelease];
 }
 
-+ newWithUInt: (unsigned int)uint
++ numberWithUInt: (unsigned int)uint
 {
-	return [[self alloc] initWithUInt: uint];
+	return [[[self alloc] initWithUInt: uint] autorelease];
 }
 
-+ newWithULong: (unsigned long)ulong
++ numberWithULong: (unsigned long)ulong
 {
-	return [[self alloc] initWithULong: ulong];
+	return [[[self alloc] initWithULong: ulong] autorelease];
 }
 
-+ newWithInt8: (int8_t)int8
++ numberWithInt8: (int8_t)int8
 {
-	return [[self alloc] initWithInt8: int8];
+	return [[[self alloc] initWithInt8: int8] autorelease];
 }
 
-+ newWithInt16: (int16_t)int16
++ numberWithInt16: (int16_t)int16
 {
-	return [[self alloc] initWithInt16: int16];
+	return [[[self alloc] initWithInt16: int16] autorelease];
 }
 
-+ newWithInt32: (int32_t)int32
++ numberWithInt32: (int32_t)int32
 {
-	return [[self alloc] initWithInt32: int32];
+	return [[[self alloc] initWithInt32: int32] autorelease];
 }
 
-+ newWithInt64: (int64_t)int64
++ numberWithInt64: (int64_t)int64
 {
-	return [[self alloc] initWithInt64: int64];
+	return [[[self alloc] initWithInt64: int64] autorelease];
 }
 
-+ newWithUInt8: (uint8_t)uint8
++ numberWithUInt8: (uint8_t)uint8
 {
-	return [[self alloc] initWithUInt8: uint8];
+	return [[[self alloc] initWithUInt8: uint8] autorelease];
 }
 
-+ newWithUInt16: (uint16_t)uint16
++ numberWithUInt16: (uint16_t)uint16
 {
-	return [[self alloc] initWithUInt16: uint16];
+	return [[[self alloc] initWithUInt16: uint16] autorelease];
 }
 
-+ newWithUInt32: (uint32_t)uint32
++ numberWithUInt32: (uint32_t)uint32
 {
-	return [[self alloc] initWithUInt32: uint32];
+	return [[[self alloc] initWithUInt32: uint32] autorelease];
 }
 
-+ newWithUInt64: (uint64_t)uint64
++ numberWithUInt64: (uint64_t)uint64
 {
-	return [[self alloc] initWithUInt64: uint64];
+	return [[[self alloc] initWithUInt64: uint64] autorelease];
 }
 
-+ newWithSize: (size_t)size
++ numberWithSize: (size_t)size
 {
-	return [[self alloc] initWithSize: size];
+	return [[[self alloc] initWithSize: size] autorelease];
 }
 
-+ newWithSSize: (ssize_t)ssize
++ numberWithSSize: (ssize_t)ssize
 {
-	return [[self alloc] initWithSSize: ssize];
+	return [[[self alloc] initWithSSize: ssize] autorelease];
 }
 
-+ newWithPtrDiff: (ptrdiff_t)ptrdiff
++ numberWithPtrDiff: (ptrdiff_t)ptrdiff
 {
-	return [[self alloc] initWithPtrDiff: ptrdiff];
+	return [[[self alloc] initWithPtrDiff: ptrdiff] autorelease];
 }
 
-+ newWithIntPtr: (intptr_t)intptr
++ numberWithIntPtr: (intptr_t)intptr
 {
-	return [[self alloc] initWithIntPtr: intptr];
+	return [[[self alloc] initWithIntPtr: intptr] autorelease];
 }
 
-+ newWithFloat: (float)float_
++ numberWithFloat: (float)float_
 {
-	return [[self alloc] initWithFloat: float_];
+	return [[[self alloc] initWithFloat: float_] autorelease];
 }
 
-+ newWithDouble: (double)double_
++ numberWithDouble: (double)double_
 {
-	return [[self alloc] initWithDouble: double_];
+	return [[[self alloc] initWithDouble: double_] autorelease];
 }
 
-+ newWithLongDouble: (long double)longdouble
++ numberWithLongDouble: (long double)longdouble
 {
-	return [[self alloc] initWithLongDouble: longdouble];
+	return [[[self alloc] initWithLongDouble: longdouble] autorelease];
 }
 
 - initWithChar: (char)char_

@@ -109,7 +109,7 @@ release_list(void *list)
 - addToPool: (OFObject*)obj
 {
 	if (objects == nil)
-		objects = [OFArray newWithItemSize: sizeof(char*)];
+		objects = [[OFArray alloc] initWithItemSize: sizeof(char*)];
 
 	[objects add: &obj];
 

@@ -14,6 +14,11 @@
 #import "OFList.h"
 
 @implementation OFList
++ list
+{
+	return [[[self alloc] init] autorelease];
+}
+
 - init
 {
 	if ((self = [super init])) {

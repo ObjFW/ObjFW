@@ -103,29 +103,34 @@ check_utf8(const char *str, size_t len)
 }
 
 @implementation OFString
-+ newFromCString: (const char*)str
++ string
 {
-	return [[self alloc] initFromCString: str];
+	return [[[self alloc] init] autorelease];
 }
 
-+ newFromFormatCString: (const char*)fmt, ...
++ stringWithCString: (const char*)str
+{
+	return [[[self alloc] initWithCString: str] autorelease];
+}
+
++ stringWithFormat: (const char*)fmt, ...
 {
 	id ret;
 	va_list args;
 
 	va_start(args, fmt);
-	ret = [[self alloc] initFromFormatCString: fmt
-				    withArguments: args];
+	ret = [[[self alloc] initWithFormat: fmt
+			       andArguments: args] autorelease];
 	va_end(args);
 
 	return ret;
 }
 
-+ newFromFormatCString: (const char*)fmt
-	 withArguments: (va_list)args
++ stringWithFormat: (const char*)fmt
+      andArguments: (va_list)args
 {
-	return [[self alloc] initFromFormatCString: fmt
-				     withArguments: args];
+	return [[[self alloc] initWithFormat: fmt
+				andArguments: args] autorelease];
 }
 
 - init
@@ -139,7 +144,7 @@ check_utf8(const char *str, size_t len)
 	return self;
 }
 
-- initFromCString: (const char*)str
+- initWithCString: (const char*)str
 {
 	Class c;
 
@@ -166,21 +171,21 @@ check_utf8(const char *str, size_t len)
 	return self;
 }
 
-- initFromFormatCString: (const char*)fmt, ...
+- initWithFormat: (const char*)fmt, ...
 {
 	id ret;
 	va_list args;
 
 	va_start(args, fmt);
-	ret = [self initFromFormatCString: fmt
-			    withArguments: args];
+	ret = [self initWithFormat: fmt
+		      andArguments: args];
 	va_end(args);
 
 	return ret;
 }
 
-- initFromFormatCString: (const char*)fmt
-	  withArguments: (va_list)args
+- initWithFormat: (const char*)fmt
+    andArguments: (va_list)args
 {
 	int t;
 	Class c;
@@ -234,13 +239,35 @@ check_utf8(const char *str, size_t len)
 
 - (OFString*)clone
 {
-	return [OFString newFromCString: string];
+	return [OFString stringWithCString: string];
 }
 
 - setTo: (OFString*)str
 {
-	[self free];
-	return (self = [str clone]);
+	size_t len;
+
+	if (string != NULL)
+		free(string);
+
+	len = [str length];
+
+	switch (check_utf8([str cString], len)) {
+	case 1:
+		is_utf8 = YES;
+		break;
+	case -1:
+		string = NULL;
+		length = 0;
+		is_utf8 = NO;
+
+		@throw [OFInvalidEncodingException newWithClass: [self class]];
+	}
+
+	length = len;
+	string = [self getMemWithSize: length + 1];
+	memcpy(string, [str cString], length + 1);
+
+	return self;
 }
 
 - (int)compareTo: (OFString*)str
@@ -257,9 +284,6 @@ check_utf8(const char *str, size_t len)
 {
 	char   *newstr;
 	size_t newlen, strlength;
-
-	if (string == NULL)
-		return [self setTo: [OFString newFromCString: str]];
 
 	strlength = strlen(str);
 

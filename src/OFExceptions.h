@@ -13,6 +13,8 @@
 
 /**
  * The OFException class is the base class for all exceptions in ObjFW.
+ *
+ * IMPORTANT: Exceptions do NOT use OFAutoreleasePools!!
  */
 @interface OFException: OFObject
 {

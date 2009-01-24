@@ -49,6 +49,11 @@
 }
 
 /**
+ * \return A new autoreleased OFTCPSocket
+ */
++ tcpSocket;
+
+/**
  * Initializes an already allocated OFTCPSocket.
  *
  * \return An initialized OFTCPSocket

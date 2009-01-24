@@ -25,21 +25,26 @@
 }
 
 /**
+ * \return A new autoreleased OFString
+ */
++ string;
+
+/**
  * Creates a new OFString from a C string.
  *
  * \param str A C string to initialize the OFString with
- * \return A new OFString
+ * \return A new autoreleased OFString
  */
-+ newFromCString: (const char*)str;
++ stringWithCString: (const char*)str;
 
 /**
  * Creates a new OFString from a format C string.
  * See printf for the format syntax.
  *
  * \param fmt A C string used as format to initialize the OFString
- * \return A new OFString
+ * \return A new autoreleased OFString
  */
-+ newFromFormatCString: (const char*)fmt, ...;
++ stringWithFormat: (const char*)fmt, ...;
 
 /**
  * Creates a new OFString from a format C string.
@@ -47,10 +52,10 @@
  *
  * \param fmt A C string used as format to initialize the OFString
  * \param args The arguments used in the format string
- * \return A new OFString
+ * \return A new autoreleased OFString
  */
-+ newFromFormatCString: (const char*)fmt
-	 withArguments: (va_list)args;
++ stringWithFormat: (const char*)fmt
+      andArguments: (va_list)args;
 
 /**
  * Initializes an already allocated OFString.
@@ -65,7 +70,7 @@
  * \param str A C string to initialize the OFString with
  * \return An initialized OFString
  */
-- initFromCString: (const char*)str;
+- initWithCString: (const char*)str;
 
 /**
  * Initializes an already allocated OFString from a format C string.
@@ -74,7 +79,7 @@
  * \param fmt A C string used as format to initialize the OFString
  * \return An initialized OFString
  */
-- initFromFormatCString: (const char*)fmt, ...;
+- initWithFormat: (const char*)fmt, ...;
 
 /**
  * Initializes an already allocated OFString from a format C string.
@@ -84,8 +89,8 @@
  * \param args The arguments used in the format string
  * \return An initialized OFString
  */
-- initFromFormatCString: (const char*)fmt
-	  withArguments: (va_list)args;
+- initWithFormat: (const char*)fmt
+    andArguments: (va_list)args;
 
 /**
  * \return The OFString as a wide C string
@@ -100,15 +105,14 @@
 /**
  * Clones the OFString, creating a new one.
  *
- * \return A copy of the OFString
+ * \return A new autoreleased copy of the OFString
  */
 - (OFString*)clone;
 
 /**
- * Frees the OFString and sets it to the specified OFString.
+ * Sets the OFString to the specified OFString.
  *
  * \param str An OFString to set the OFString to.
- * \return The new OFString
  */
 - setTo: (OFString*)str;
 

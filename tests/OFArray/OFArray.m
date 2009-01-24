@@ -35,7 +35,7 @@ const char *str = "Hallo!";
 
 #define TEST(type) \
 	puts("Trying to add too much to an array...");			\
-	a = [type newWithItemSize: 4096];				\
+	a = [[type alloc] initWithItemSize: 4096];			\
 	CATCH_EXCEPTION([a addNItems: SIZE_MAX				\
 			  fromCArray: NULL],				\
 	    OFOutOfRangeException)					\
@@ -93,10 +93,10 @@ const char *str = "Hallo!";
 	puts("Trying to access an index that does not exist...");	\
 	CATCH_EXCEPTION([a item: [a items]], OFOutOfRangeException);	\
 									\
-	[a free];							\
+	[a release];							\
 									\
 	puts("Creating new array and using it to build a string...");	\
-	a = [type newWithItemSize: 1];					\
+	a = [[type alloc] initWithItemSize: 1];				\
 									\
 	for (i = 0; i < strlen(str); i++)				\
 		[a add: (void*)&str[i]];				\
@@ -109,7 +109,7 @@ const char *str = "Hallo!";
 		abort();						\
 	}								\
 									\
-	[a free];
+	[a release];
 
 int
 main()

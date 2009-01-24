@@ -27,9 +27,18 @@
  * Creates a new OFArray whose items all have the same size.
  *
  * \param is The size of each element in the OFArray
- * \return A new allocated and initialized OFArray
+ * \return A new autoreleased OFArray
  */
-+ newWithItemSize: (size_t)is;
++ arrayWithItemSize: (size_t)is;
+
+/*
+ * Creates a new OFArray optimized for big arrays whose items all have the same
+ * size, which means memory is allocated in pages rather than in bytes.
+ *
+ * \param is The size of each element in the OFArray
+ * \return A new autoreleased OFArray
+ */
++ bigArrayWithItemSize: (size_t)is;
 
 /**
  * Initializes an already allocated OFArray whose items all have the same size.
@@ -91,46 +100,14 @@
 - removeNItems: (size_t)nitems;
 @end
 
-/**
- * The OFBigArray class is nearly the same as the OFArray class, but it
- * allocates the memory rather in pages than in bytes.
- * This is faster, but needs more memory. It is especially useful if you want
- * to store large hunks of data.
- */
 @interface OFBigArray: OFArray
 {
 	size_t size;
 }
 
-/**
- * Initializes an already allocated OFBigArray whose items all have the same
- * size.
- *
- * \param is The size of each element in the OFBigArray
- * \return An initialized OFBigArray
- */
 - initWithItemSize: (size_t)is;
-
-/**
- * Adds an item to the OFBigArray.
- *
- * \param item An arbitrary item
- */
 - add: (void*)item;
-
-/**
- * Adds items from a C array to the OFBigArray.
- *
- * \param nitems The number of items to add
- * \param carray A C array containing the items to add
- */
 - addNItems: (size_t)nitems
  fromCArray: (void*)carray;
-
-/**
- * Removes a specified amount of the last items from the OFBigArray.
- *
- * \param nitems The number of items to remove
- */
 - removeNItems: (size_t)nitems;
 @end

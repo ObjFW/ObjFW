@@ -27,6 +27,10 @@ typedef struct __of_list_object
 	of_list_object_t *last;
 	BOOL		 retain_and_release;
 }
+/**
+ * \return A new autoreleased OFList
+ */
++ list;
 
 /**
  * Initializes an already allocated OFList.

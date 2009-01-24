@@ -32,10 +32,10 @@ typedef int gid_t;
 /**
  * \param path The path to the file to open as a C string
  * \param mode The mode in which the file should be opened as a C string
- * \return A new OFFile
+ * \return A new autoreleased OFFile
  */
-+ newWithPath: (const char*)path
-      andMode: (const char*)mode;
++ fileWithPath: (const char*)path
+       andMode: (const char*)mode;
 /**
  * Changes the mode of a file.
  *

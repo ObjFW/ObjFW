@@ -25,6 +25,11 @@
 #endif
 
 @implementation OFTCPSocket
++ tcpSocket
+{
+	return [[[self alloc] init] autorelease];
+}
+
 #ifdef _WIN32
 + (void)initialize
 {

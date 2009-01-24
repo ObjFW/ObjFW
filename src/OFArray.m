@@ -24,9 +24,14 @@ static size_t lastpagebyte = 0;
 extern int getpagesize(void);
 
 @implementation OFArray
-+ newWithItemSize: (size_t)is
++ arrayWithItemSize: (size_t)is
 {
-	return [[self alloc] initWithItemSize: is];
+	return [[[self alloc] initWithItemSize: is] autorelease];
+}
+
++ bigArrayWithItemSize: (size_t)is
+{
+	return [[[OFBigArray alloc] initWithItemSize: is] autorelease];
 }
 
 - initWithItemSize: (size_t)is
