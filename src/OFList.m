@@ -16,7 +16,7 @@
 @implementation OFList
 + list
 {
-	return [[[self alloc] init] autorelease];
+	return [[[OFList alloc] init] autorelease];
 }
 
 - init

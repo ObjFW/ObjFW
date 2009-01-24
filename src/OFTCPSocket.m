@@ -27,7 +27,7 @@
 @implementation OFTCPSocket
 + tcpSocket
 {
-	return [[[self alloc] init] autorelease];
+	return [[[OFTCPSocket alloc] init] autorelease];
 }
 
 #ifdef _WIN32

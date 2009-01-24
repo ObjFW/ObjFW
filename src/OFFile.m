@@ -27,7 +27,7 @@
 + fileWithPath: (const char*)path
        andMode: (const char*)mode
 {
-	return [[[self alloc] initWithPath: path
+	return [[[OFFile alloc] initWithPath: path
 				   andMode: mode] autorelease];
 }
 

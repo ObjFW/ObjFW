@@ -105,12 +105,12 @@ check_utf8(const char *str, size_t len)
 @implementation OFString
 + string
 {
-	return [[[self alloc] init] autorelease];
+	return [[[OFString alloc] init] autorelease];
 }
 
 + stringWithCString: (const char*)str
 {
-	return [[[self alloc] initWithCString: str] autorelease];
+	return [[[OFString alloc] initWithCString: str] autorelease];
 }
 
 + stringWithFormat: (const char*)fmt, ...
@@ -119,7 +119,7 @@ check_utf8(const char *str, size_t len)
 	va_list args;
 
 	va_start(args, fmt);
-	ret = [[[self alloc] initWithFormat: fmt
+	ret = [[[OFString alloc] initWithFormat: fmt
 			       andArguments: args] autorelease];
 	va_end(args);
 
@@ -129,7 +129,7 @@ check_utf8(const char *str, size_t len)
 + stringWithFormat: (const char*)fmt
       andArguments: (va_list)args
 {
-	return [[[self alloc] initWithFormat: fmt
+	return [[[OFString alloc] initWithFormat: fmt
 				andArguments: args] autorelease];
 }
 

@@ -26,7 +26,7 @@ extern int getpagesize(void);
 @implementation OFArray
 + arrayWithItemSize: (size_t)is
 {
-	return [[[self alloc] initWithItemSize: is] autorelease];
+	return [[[OFArray alloc] initWithItemSize: is] autorelease];
 }
 
 + bigArrayWithItemSize: (size_t)is

@@ -117,7 +117,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 @implementation OFMD5Hash
 + md5Hash
 {
-	return [[[self alloc] init] autorelease];
+	return [[[OFMD5Hash alloc] init] autorelease];
 }
 
 - init
@@ -360,7 +360,7 @@ sha1_update(uint32_t *state, uint64_t *count, uint8_t *buffer,
 @implementation OFSHA1Hash
 + sha1Hash
 {
-	return [[[self alloc] init] autorelease];
+	return [[[OFSHA1Hash alloc] init] autorelease];
 }
 
 - init

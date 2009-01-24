@@ -70,117 +70,117 @@
 @implementation OFNumber
 + numberWithChar: (char)char_
 {
-	return [[[self alloc] initWithChar: char_] autorelease];
+	return [[[OFNumber alloc] initWithChar: char_] autorelease];
 }
 
 + numberWithShort: (short)short_
 {
-	return [[[self alloc] initWithShort: short_] autorelease];
+	return [[[OFNumber alloc] initWithShort: short_] autorelease];
 }
 
 + numberWithInt: (int)int_
 {
-	return [[[self alloc] initWithInt: int_] autorelease];
+	return [[[OFNumber alloc] initWithInt: int_] autorelease];
 }
 
 + numberWithLong: (long)long_
 {
-	return [[[self alloc] initWithLong: long_] autorelease];
+	return [[[OFNumber alloc] initWithLong: long_] autorelease];
 }
 
 + numberWithUChar: (unsigned char)uchar
 {
-	return [[[self alloc] initWithUChar: uchar] autorelease];
+	return [[[OFNumber alloc] initWithUChar: uchar] autorelease];
 }
 
 + numberWithUShort: (unsigned short)ushort
 {
-	return [[[self alloc] initWithUShort: ushort] autorelease];
+	return [[[OFNumber alloc] initWithUShort: ushort] autorelease];
 }
 
 + numberWithUInt: (unsigned int)uint
 {
-	return [[[self alloc] initWithUInt: uint] autorelease];
+	return [[[OFNumber alloc] initWithUInt: uint] autorelease];
 }
 
 + numberWithULong: (unsigned long)ulong
 {
-	return [[[self alloc] initWithULong: ulong] autorelease];
+	return [[[OFNumber alloc] initWithULong: ulong] autorelease];
 }
 
 + numberWithInt8: (int8_t)int8
 {
-	return [[[self alloc] initWithInt8: int8] autorelease];
+	return [[[OFNumber alloc] initWithInt8: int8] autorelease];
 }
 
 + numberWithInt16: (int16_t)int16
 {
-	return [[[self alloc] initWithInt16: int16] autorelease];
+	return [[[OFNumber alloc] initWithInt16: int16] autorelease];
 }
 
 + numberWithInt32: (int32_t)int32
 {
-	return [[[self alloc] initWithInt32: int32] autorelease];
+	return [[[OFNumber alloc] initWithInt32: int32] autorelease];
 }
 
 + numberWithInt64: (int64_t)int64
 {
-	return [[[self alloc] initWithInt64: int64] autorelease];
+	return [[[OFNumber alloc] initWithInt64: int64] autorelease];
 }
 
 + numberWithUInt8: (uint8_t)uint8
 {
-	return [[[self alloc] initWithUInt8: uint8] autorelease];
+	return [[[OFNumber alloc] initWithUInt8: uint8] autorelease];
 }
 
 + numberWithUInt16: (uint16_t)uint16
 {
-	return [[[self alloc] initWithUInt16: uint16] autorelease];
+	return [[[OFNumber alloc] initWithUInt16: uint16] autorelease];
 }
 
 + numberWithUInt32: (uint32_t)uint32
 {
-	return [[[self alloc] initWithUInt32: uint32] autorelease];
+	return [[[OFNumber alloc] initWithUInt32: uint32] autorelease];
 }
 
 + numberWithUInt64: (uint64_t)uint64
 {
-	return [[[self alloc] initWithUInt64: uint64] autorelease];
+	return [[[OFNumber alloc] initWithUInt64: uint64] autorelease];
 }
 
 + numberWithSize: (size_t)size
 {
-	return [[[self alloc] initWithSize: size] autorelease];
+	return [[[OFNumber alloc] initWithSize: size] autorelease];
 }
 
 + numberWithSSize: (ssize_t)ssize
 {
-	return [[[self alloc] initWithSSize: ssize] autorelease];
+	return [[[OFNumber alloc] initWithSSize: ssize] autorelease];
 }
 
 + numberWithPtrDiff: (ptrdiff_t)ptrdiff
 {
-	return [[[self alloc] initWithPtrDiff: ptrdiff] autorelease];
+	return [[[OFNumber alloc] initWithPtrDiff: ptrdiff] autorelease];
 }
 
 + numberWithIntPtr: (intptr_t)intptr
 {
-	return [[[self alloc] initWithIntPtr: intptr] autorelease];
+	return [[[OFNumber alloc] initWithIntPtr: intptr] autorelease];
 }
 
 + numberWithFloat: (float)float_
 {
-	return [[[self alloc] initWithFloat: float_] autorelease];
+	return [[[OFNumber alloc] initWithFloat: float_] autorelease];
 }
 
 + numberWithDouble: (double)double_
 {
-	return [[[self alloc] initWithDouble: double_] autorelease];
+	return [[[OFNumber alloc] initWithDouble: double_] autorelease];
 }
 
 + numberWithLongDouble: (long double)longdouble
 {
-	return [[[self alloc] initWithLongDouble: longdouble] autorelease];
+	return [[[OFNumber alloc] initWithLongDouble: longdouble] autorelease];
 }
 
 - initWithChar: (char)char_
