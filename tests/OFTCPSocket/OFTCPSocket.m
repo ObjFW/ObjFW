@@ -102,8 +102,6 @@ main()
 #endif
 
 		[accepted release];
-		[client release];
-		[server release];
 	} @catch(OFException *e) {
 		printf("EXCEPTION: %s\n", [e cString]);
 		return 1;

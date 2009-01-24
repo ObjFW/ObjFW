@@ -96,6 +96,8 @@
 
 /**
  * Accept an incoming connection.
+ * \return An OFTCPSocket for the accepted connection, which is NOT
+ *	   autoreleased!
  */
 - (OFTCPSocket*)accept;
 
