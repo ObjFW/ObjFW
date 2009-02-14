@@ -11,13 +11,13 @@
 
 #import "config.h"
 
-#import <stdio.h>
-#import <string.h>
-#import <unistd.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 
 #ifndef _WIN32
-#import <sys/types.h>
-#import <sys/stat.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #endif
 
 #import "OFFile.h"

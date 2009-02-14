@@ -11,9 +11,9 @@
 
 #import "config.h"
 
-#import <stdlib.h>
-#import <string.h>
-#import <limits.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
 
 #import "OFObject.h"
 #import "OFAutoreleasePool.h"

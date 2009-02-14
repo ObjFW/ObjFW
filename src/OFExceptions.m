@@ -12,18 +12,18 @@
 #import "config.h"
 
 #define _GNU_SOURCE
-#import <stdio.h>
-#import <stdlib.h>
-#import <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #ifndef _WIN32
-#import <errno.h>
+#include <errno.h>
 #define GET_ERR	     errno
 #define GET_SOCK_ERR errno
 #define ERRFMT	     "Error string was: %s"
 #define ERRPARAM     strerror(err)
 #else
-#import <windows.h>
+#include <windows.h>
 #define GET_ERR	     GetLastError()
 #define GET_SOCK_ERR WSAGetLastError()
 #define ERRFMT	     "Error code was: %d"

@@ -9,7 +9,7 @@
  * the packaging of this file.
  */
 
-#import <unistd.h>
+#include <unistd.h>
 
 #import "OFObject.h"
 

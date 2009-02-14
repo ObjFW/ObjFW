@@ -11,11 +11,11 @@
 
 #import "config.h"
 
-#import <stdarg.h>
-#import <stdio.h>
-#import <stdlib.h>
-#import <string.h>
-#import <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <string.h>
+#include <limits.h>
 
 #import "OFXMLFactory.h"
 #import "OFExceptions.h"

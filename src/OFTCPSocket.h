@@ -9,15 +9,15 @@
  * the packaging of this file.
  */
 
-#import <stdio.h>
+#include <stdio.h>
 
 /*
  * Headers for UNIX systems
  */
 #ifndef _WIN32
-#import <sys/types.h>
-#import <sys/socket.h>
-#import <netdb.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
 #endif
 
 #import "OFObject.h"
@@ -30,8 +30,8 @@
  */
 #ifdef _WIN32
 #define _WIN32_WINNT 0x0501
-#import <winsock2.h>
-#import <ws2tcpip.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #endif
 
 /**

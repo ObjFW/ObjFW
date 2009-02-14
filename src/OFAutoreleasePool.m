@@ -9,10 +9,10 @@
  * the packaging of this file.
  */
 
-#import <stdlib.h>
+#include <stdlib.h>
 
 #ifndef _WIN32
-#import <pthread.h>
+#include <pthread.h>
 #endif
 
 #import "OFAutoreleasePool.h"
@@ -20,7 +20,7 @@
 #import "OFList.h"
 
 #ifdef _WIN32
-#import <windows.h>
+#include <windows.h>
 #endif
 
 #ifndef _WIN32

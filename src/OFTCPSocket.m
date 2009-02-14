@@ -11,11 +11,11 @@
 
 #import "config.h"
 
-#import <stdio.h>
-#import <stdlib.h>
-#import <string.h>
-#import <unistd.h>
-#import <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #import "OFTCPSocket.h"
 #import "OFExceptions.h"

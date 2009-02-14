@@ -11,7 +11,7 @@
 
 #import <objc/Object.h>
 
-#import <stdint.h>
+#include <stdint.h>
 
 /**
  * The OFObject class is the base class for all other classes inside ObjFW.

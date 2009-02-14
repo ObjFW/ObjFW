@@ -12,14 +12,14 @@
 #import "config.h"
 
 #define _GNU_SOURCE
-#import <stdarg.h>
-#import <stdio.h>
-#import <stdlib.h>
-#import <string.h>
-#import <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <string.h>
+#include <ctype.h>
 
 #ifdef HAVE_SYS_MMAN_H
-#import <sys/mman.h>
+#include <sys/mman.h>
 #else
 #define madvise(addr, len, advise)
 #endif

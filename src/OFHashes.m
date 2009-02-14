@@ -11,7 +11,7 @@
 
 #import "config.h"
 
-#import <string.h>
+#include <string.h>
 
 #import "OFHashes.h"
 #import "OFMacros.h"

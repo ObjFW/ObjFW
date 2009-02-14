@@ -9,10 +9,10 @@
  * the packaging of this file.
  */
 
-#import <stdio.h>
+#include <stdio.h>
 
 #ifndef _WIN32
-#import <sys/types.h>
+#include <sys/types.h>
 #else
 typedef int uid_t;
 typedef int gid_t;
