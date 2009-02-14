@@ -120,6 +120,33 @@
 @end
 
 /**
+ * An OFException indicating that the argument is invalid for this method.
+ */
+@interface OFInvalidArgumentException: OFException
+{
+	SEL selector;
+}
+
+/**
+ * \param class The class of the object which caused the exception
+ * \param selector The selector which doesn't accept the argument
+ * \return A new invalid argument exception
+ */
++ newWithClass: (Class)class
+   andSelector: (SEL)selector;
+
+/**
+ * Initializes an already allocated invalid argument exception
+ *
+ * \param class The class of the object which caused the exception
+ * \param selector The selector which doesn't accept the argument
+ * \return An initialized invalid argument exception
+ */
+- initWithClass: (Class)class
+    andSelector: (SEL)selector;
+@end
+
+/**
  * An OFException indicating that the encoding is invalid for this object.
  */
 @interface OFInvalidEncodingException: OFException {}

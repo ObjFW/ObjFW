@@ -25,7 +25,7 @@
 #define ZD "%u"
 #endif
 
-#define NUM_TESTS 12
+#define NUM_TESTS 13
 #define SUCCESS								\
 	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
 	    (i == NUM_TESTS - 1 ? 32 : 33), i + 1, NUM_TESTS);		\
@@ -61,14 +61,15 @@ main()
 	OFString *s3;
 	OFString *s4 = [OFString string];
 
-	s3 = [s1 clone];
+	s3 = [s1 copy];
 
-	CHECK(![s1 compareTo: s3])
+	CHECK([s1 isEqual: s3])
+	CHECK(![s1 isEqual: [OFObject new]]);
 
 	[s2 appendCString: "123"];
 	[s4 setTo: s2];
 
-	CHECK(![s2 compareTo: s4])
+	CHECK(![s2 compare: s4])
 	CHECK(!strcmp([[s1 append: s2] cString], "test123"))
 	CHECK(strlen([s1 cString]) == [s1 length] && [s1 length] == 7)
 	CHECK(!strcmp([[s1 reverse] cString], "321tset"))

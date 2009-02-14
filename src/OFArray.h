@@ -10,13 +10,14 @@
  */
 
 #import "OFObject.h"
+#import "OFComparable.h"
 
 /**
  * The OFArray class provides a class for storing dynamically sized arrays.
  * If you plan to store large hunks of data, you should consider using
  * OFBigArray, which allocates the memory in pages and not in bytes.
  */
-@interface OFArray: OFObject
+@interface OFArray: OFObject <OFComparable>
 {
 	char   *data;
 	size_t itemsize;
@@ -98,6 +99,13 @@
  * \param nitems The number of items to remove
  */
 - removeNItems: (size_t)nitems;
+
+/**
+ * Clones the OFArray, creating a new one.
+ *
+ * \return A new autoreleased copy of the OFArray
+ */
+- (id)copy;
 @end
 
 @interface OFBigArray: OFArray

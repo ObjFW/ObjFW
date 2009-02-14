@@ -13,11 +13,12 @@
 #import <stdio.h>
 
 #import "OFObject.h"
+#import "OFComparable.h"
 
 /**
  * A class for storing and modifying strings.
  */
-@interface OFString: OFObject
+@interface OFString: OFObject <OFComparable>
 {
 	char   *string;
 	size_t length;
@@ -107,7 +108,7 @@
  *
  * \return A new autoreleased copy of the OFString
  */
-- (OFString*)clone;
+- (id)copy;
 
 /**
  * Sets the OFString to the specified OFString.
@@ -115,14 +116,6 @@
  * \param str An OFString to set the OFString to.
  */
 - setTo: (OFString*)str;
-
-/**
- * Compares the OFString to another OFString.
- *
- * \param str An OFString to compare with
- * \return An integer which is the result of the comparison, see wcscmp
- */
-- (int)compareTo: (OFString*)str;
 
 /**
  * Append another OFString to the OFString.

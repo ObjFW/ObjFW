@@ -116,6 +116,55 @@ extern int getpagesize(void);
 
 	return self;
 }
+
+- (id)copy
+{
+	OFArray *new = [OFArray arrayWithItemSize: itemsize];
+
+	[new addNItems: items
+	    fromCArray: data];
+
+	return new;
+}
+
+- (BOOL)isEqual: (id)obj
+{
+	if (![obj isKindOf: [OFArray class]])
+		return NO;
+	if ([obj items] != items || [obj itemsize] != itemsize)
+		return NO;
+	if (memcmp([obj data], data, items * itemsize))
+		return NO;
+
+	return YES;
+}
+
+- (int)compare: (id)obj
+{
+	int ret;
+
+	if (![obj isKindOf: [OFArray class]])
+		@throw [OFInvalidArgumentException newWithClass: [self class]
+						    andSelector: _cmd];
+	if ([obj itemsize] != itemsize)
+		@throw [OFInvalidArgumentException newWithClass: [self class]
+						    andSelector: _cmd];
+
+	if ([obj items] == items)
+		return memcmp(data, [obj data], items * itemsize);
+
+	if (items > [obj items]) {
+		if ((ret = memcmp(data, [obj data], [obj items] * itemsize)))
+			return ret;
+
+		return *(char*)[self item: [obj items]];
+	} else {
+		if ((ret = memcmp(data, [obj data], items * itemsize)))
+			return ret;
+
+		return *(char*)[obj item: [self items]] * -1;
+	}
+}
 @end
 
 @implementation OFBigArray
@@ -187,5 +236,15 @@ extern int getpagesize(void);
 	size = nsize;
 
 	return self;
+}
+
+- (id)copy
+{
+	OFArray *new = [OFArray bigArrayWithItemSize: itemsize];
+
+	[new addNItems: items
+	    fromCArray: data];
+
+	return new;
 }
 @end

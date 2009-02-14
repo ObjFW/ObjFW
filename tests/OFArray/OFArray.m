@@ -18,6 +18,7 @@
 
 #import "OFArray.h"
 #import "OFExceptions.h"
+#import "OFAutoreleasePool.h"
 
 #define CATCH_EXCEPTION(code, exception)		\
 	@try {						\
@@ -117,12 +118,55 @@ main()
 	id a;
 	void *p, *q;
 	size_t i;
+	OFArray *x, *y;
+	OFAutoreleasePool *pool;
 
 	puts("== TESTING OFArray ==");
 	TEST(OFArray)
 
 	puts("== TESTING OFBigArray ==");
 	TEST(OFBigArray)
+
+	pool = [OFAutoreleasePool new];
+	x = [OFArray arrayWithItemSize: 1];
+	y = [OFArray bigArrayWithItemSize: 1];
+
+	if (![x isEqual: y]) {
+		puts("FAIL 1!");
+		return 1;
+	}
+
+	[x add: "x"];
+	if ([x isEqual: y]) {
+		puts("FAIL 2!");
+		return 2;
+	}
+	[pool releaseObjects];
+
+	x = [OFArray arrayWithItemSize: 2];
+	y = [OFArray bigArrayWithItemSize: 4];
+
+	if ([x isEqual: y]) {
+		puts("FAIL 3!");
+		return 1;
+	}
+	[pool releaseObjects];
+
+	x = [OFArray arrayWithItemSize: 1];
+	[x addNItems: 3
+	  fromCArray: "abc"];
+	y = [x copy];
+	if ([x compare: y]) {
+		puts("FAIL 4!");
+		return 1;
+	}
+
+	[y add: "de"];
+	if ([x compare: y] != -100) {
+		puts("FAIL 5!");
+		return 1;
+	}
+	[pool release];
 
 	return 0;
 }

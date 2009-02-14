@@ -42,6 +42,13 @@ AC_EGREP_CPP(yes, [
 		size_max="((size_t)-1)"])
 	AC_DEFINE_UNQUOTED(SIZE_MAX, $size_max, [Maximum value for size_t])])
 
+AC_CHECK_HEADER(objc/runtime.h,
+	[AC_DEFINE(HAVE_OBJC_RUNTIME_H, 1, [Whether we have objc/runtime.h])])
+AC_CHECK_LIB(objc, sel_get_name,
+	[AC_DEFINE(HAVE_SEL_GET_NAME, 1, [Whether we have sel_get_name])])
+AC_CHECK_LIB(objc, sel_getName,
+	[AC_DEFINE(HAVE_SEL_GETNAME, 1, [Whether we have sel_getName])])
+
 AC_CHECK_FUNC(asprintf, [
 	have_asprintf="yes"
 	AC_DEFINE(HAVE_ASPRINTF, 1, "Whether we have asprintf")], [

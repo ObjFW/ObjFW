@@ -30,7 +30,19 @@
 #define ERRPARAM     err
 #endif
 
+#ifdef HAVE_OBJC_RUNTIME_H
+#import <objc/runtime.h>
+#endif
+
 #import "OFExceptions.h"
+
+#if defined(HAVE_SEL_GET_NAME)
+#define SEL_NAME(x) sel_get_name(x)
+#elif defined(HAVE_SEL_GETNAME)
+#define SEL_NAME(x) sel_getName(x)
+#else
+#error "You need either sel_get_name() or sel_getName()!"
+#endif
 
 #ifndef HAVE_ASPRINTF
 #import "asprintf.h"
@@ -153,13 +165,42 @@
 }
 @end
 
+@implementation OFInvalidArgumentException
++ newWithClass: (Class)class_
+   andSelector: (SEL)selector_
+{
+	return [[self alloc] initWithClass: class_
+			       andSelector: selector_];
+}
+
+- initWithClass: (Class)class_
+    andSelector: (SEL)selector_
+{
+	if ((self = [super initWithClass: class_]))
+		selector = selector_;
+
+	return self;
+}
+
+- (const char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "The argument for method %s of class %s is invalid!",
+	    SEL_NAME(selector), [class name]);
+
+	return string;
+}
+@end
+
 @implementation OFInvalidEncodingException
 - (const char*)cString
 {
 	if (string != NULL)
 		return string;
 
-	asprintf(&string, "The encoding is invalid for classs %s!",
+	asprintf(&string, "The encoding is invalid for class %s!",
 	    [class name]);
 
 	return string;
@@ -172,7 +213,7 @@
 	if (string != NULL)
 		return string;
 
-	asprintf(&string, "The format is invalid for classs %s!", [class name]);
+	asprintf(&string, "The format is invalid for class %s!", [class name]);
 
 	return string;
 }

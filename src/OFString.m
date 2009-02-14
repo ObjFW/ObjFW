@@ -237,7 +237,7 @@ check_utf8(const char *str, size_t len)
 	return length;
 }
 
-- (OFString*)clone
+- (id)copy
 {
 	return [OFString stringWithCString: string];
 }
@@ -270,9 +270,22 @@ check_utf8(const char *str, size_t len)
 	return self;
 }
 
-- (int)compareTo: (OFString*)str
+- (BOOL)isEqual: (id)obj
 {
-	return strcmp(string, [str cString]);
+	if (![obj isKindOf: [OFString class]])
+		return NO;
+	if (strcmp(string, [obj cString]))
+		return NO;
+
+	return YES;
+}
+
+- (int)compare: (id)obj
+{
+	if (![obj isKindOf: [OFString class]])
+		@throw [OFInvalidArgumentException newWithClass: [self class]];
+
+	return strcmp(string, [obj cString]);
 }
 
 - append: (OFString*)str
