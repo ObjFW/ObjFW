@@ -30,6 +30,7 @@
 #define ERRPARAM     err
 #endif
 
+#import <objc/objc-api.h>
 #ifdef HAVE_OBJC_RUNTIME_H
 #import <objc/runtime.h>
 #endif

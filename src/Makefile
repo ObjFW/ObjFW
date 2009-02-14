@@ -19,6 +19,7 @@ SRCS = OFArray.m		\
 
 INCLUDESTMP = ${SRCS:.c=.h}
 INCLUDES = ${INCLUDESTMP:.m=.h}	\
+	   OFComparable.h	\
 	   OFMacros.h		\
 	   OFStream.h
 
