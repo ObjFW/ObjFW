@@ -115,7 +115,7 @@
  *
  * \param str An OFString to set the OFString to.
  */
-- setTo: (OFString*)str;
+- setTo: (const char*)str;
 
 /**
  * Append another OFString to the OFString.

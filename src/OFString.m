@@ -242,16 +242,16 @@ check_utf8(const char *str, size_t len)
 	return [OFString stringWithCString: string];
 }
 
-- setTo: (OFString*)str
+- setTo: (const char*)str
 {
 	size_t len;
 
 	if (string != NULL)
 		free(string);
 
-	len = [str length];
+	len = strlen(str);
 
-	switch (check_utf8([str cString], len)) {
+	switch (check_utf8(str, len)) {
 	case 1:
 		is_utf8 = YES;
 		break;
@@ -265,7 +265,7 @@ check_utf8(const char *str, size_t len)
 
 	length = len;
 	string = [self getMemWithSize: length + 1];
-	memcpy(string, [str cString], length + 1);
+	memcpy(string, str, length + 1);
 
 	return self;
 }

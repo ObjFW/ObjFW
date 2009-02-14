@@ -67,7 +67,7 @@ main()
 	CHECK(![s1 isEqual: [OFObject new]]);
 
 	[s2 appendCString: "123"];
-	[s4 setTo: s2];
+	[s4 setTo: [s2 cString]];
 
 	CHECK(![s2 compare: s4])
 	CHECK(!strcmp([[s1 append: s2] cString], "test123"))
