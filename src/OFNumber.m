@@ -50,6 +50,10 @@
 		return (t)value.size;					      \
 	case OF_NUMBER_SSIZE:						      \
 		return (t)value.ssize;					      \
+	case OF_NUMBER_INTMAX:						      \
+		return (t)value.intmax;					      \
+	case OF_NUMBER_UINTMAX:						      \
+		return (t)value.uintmax;				      \
 	case OF_NUMBER_PTRDIFF:						      \
 		return (t)value.ptrdiff;				      \
 	case OF_NUMBER_INTPTR:						      \
@@ -156,6 +160,16 @@
 + numberWithSSize: (ssize_t)ssize
 {
 	return [[[OFNumber alloc] initWithSSize: ssize] autorelease];
+}
+
++ numberWithIntMax: (intmax_t)intmax
+{
+	return [[[OFNumber alloc] initWithIntMax: intmax] autorelease];
+}
+
++ numberWithUIntMax: (uintmax_t)uintmax
+{
+	return [[[OFNumber alloc] initWithIntMax: uintmax] autorelease];
 }
 
 + numberWithPtrDiff: (ptrdiff_t)ptrdiff
@@ -363,6 +377,26 @@
 	return self;
 }
 
+- initWithIntMax: (intmax_t)intmax
+{
+	if ((self = [super init])) {
+		value.intmax = intmax;
+		type = OF_NUMBER_INTMAX;
+	}
+
+	return self;
+}
+
+- initWithUIntMax: (uintmax_t)uintmax
+{
+	if ((self = [super init])) {
+		value.uintmax = uintmax;
+		type = OF_NUMBER_UINTMAX;
+	}
+
+	return self;
+}
+
 - initWithPtrDiff: (ptrdiff_t)ptrdiff
 {
 	if ((self = [super init])) {
@@ -506,6 +540,16 @@
 - (ssize_t)asSSize
 {
 	RETURN_AS(ssize_t)
+}
+
+- (intmax_t)asIntMax
+{
+	RETURN_AS(intmax_t)
+}
+
+- (uintmax_t)asUIntMax
+{
+	RETURN_AS(uintmax_t)
 }
 
 - (ptrdiff_t)asPtrDiff

@@ -32,6 +32,8 @@ enum of_number_type {
 	OF_NUMBER_UINT64,
 	OF_NUMBER_SIZE,
 	OF_NUMBER_SSIZE,
+	OF_NUMBER_INTMAX,
+	OF_NUMBER_UINTMAX,
 	OF_NUMBER_PTRDIFF,
 	OF_NUMBER_INTPTR,
 	OF_NUMBER_FLOAT,
@@ -64,6 +66,8 @@ enum of_number_type {
 		uint64_t       uint64;
 		size_t	       size;
 		ssize_t	       ssize;
+		intmax_t       intmax;
+		uintmax_t      uintmax;
 		ptrdiff_t      ptrdiff;
 		intptr_t       intptr;
 		float	       float_;
@@ -91,6 +95,8 @@ enum of_number_type {
 + numberWithUInt64: (uint64_t)uint64;
 + numberWithSize: (size_t)size;
 + numberWithSSize: (ssize_t)ssize;
++ numberWithIntMax: (intmax_t)intmax;
++ numberWithUIntMax: (uintmax_t)uintmax;
 + numberWithPtrDiff: (ptrdiff_t)ptrdiff;
 + numberWithIntPtr: (intptr_t)intptr;
 + numberWithFloat: (float)float_;
@@ -115,6 +121,8 @@ enum of_number_type {
 - initWithUInt64: (uint64_t)uint64;
 - initWithSize: (size_t)size;
 - initWithSSize: (ssize_t)ssize;
+- initWithIntMax: (intmax_t)intmax;
+- initWithUIntMax: (uintmax_t)uintmax;
 - initWithPtrDiff: (ptrdiff_t)ptrdiff;
 - initWithIntPtr: (intptr_t)intptr;
 - initWithFloat: (float)float_;
@@ -141,6 +149,8 @@ enum of_number_type {
 - (uint64_t)asUInt64;
 - (size_t)asSize;
 - (ssize_t)asSSize;
+- (intmax_t)asIntMax;
+- (uintmax_t)asUIntMax;
 - (ptrdiff_t)asPtrDiff;
 - (intptr_t)asIntPtr;
 - (float)asFloat;
