@@ -52,6 +52,30 @@
 - (size_t)retainCount;
 
 /**
+ * Frees the object and also frees all memory allocated via its memory pool.
+ */
+- free;
+
+/**
+ * Compare two objects.
+ * Classes containing data (like strings, arrays, lists etc.) should reimplement
+ * this!
+ *
+ * \param obj The object which is tested for equality
+ * \return A boolean whether the object is equal to the other object
+ */
+- (BOOL)isEqual: (id)obj;
+
+/**
+ * Calculate a hash for the object.
+ * Classes containing data (like strings, arrays, lists etc.) should reimplement
+ * this!
+ *
+ * \return A 24 bit hash for the object
+ */
+- (uint32_t)hash;
+
+/**
  * Adds a pointer to the memory pool.
  * This is useful to add memory allocated by functions such as asprintf to the
  * pool so it gets freed automatically when the object is freed.
@@ -109,9 +133,4 @@
  * \param ptr A pointer to the allocated memory
  */
 - freeMem: (void*)ptr;
-
-/**
- * Frees the object and also frees all memory allocated via its memory pool.
- */
-- free;
 @end

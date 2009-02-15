@@ -72,6 +72,18 @@
 	return __retain_count;
 }
 
+- (BOOL)isEqual: (id)obj
+{
+	/* Classes containing data should reimplement this! */
+	return (self == obj ? YES : NO);
+}
+
+- (uint32_t)hash
+{
+	/* Classes containing data should reimplement this! */
+	return (uint32_t)self & 0xFFFFFF;
+}
+
 - addToMemoryPool: (void*)ptr
 {
 	void **memchunks;

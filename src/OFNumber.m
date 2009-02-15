@@ -576,4 +576,44 @@
 {
 	RETURN_AS(long double)
 }
+
+- (BOOL)isEqual: (id)obj
+{
+	if (![obj isKindOf: [OFNumber class]])
+		return NO;
+
+	switch (type) {
+	case OF_NUMBER_CHAR:
+	case OF_NUMBER_SHORT:
+	case OF_NUMBER_INT:
+	case OF_NUMBER_LONG:
+	case OF_NUMBER_INT8:
+	case OF_NUMBER_INT16:
+	case OF_NUMBER_INT32:
+	case OF_NUMBER_INT64:
+	case OF_NUMBER_INTMAX:
+	case OF_NUMBER_PTRDIFF:
+		return ([obj asIntMax] == [self asIntMax] ? YES : NO);
+	case OF_NUMBER_SSIZE:
+	case OF_NUMBER_UCHAR:
+	case OF_NUMBER_USHORT:
+	case OF_NUMBER_UINT:
+	case OF_NUMBER_ULONG:
+	case OF_NUMBER_UINT8:
+	case OF_NUMBER_UINT16:
+	case OF_NUMBER_UINT32:
+	case OF_NUMBER_UINT64:
+	case OF_NUMBER_SIZE:
+	case OF_NUMBER_UINTMAX:
+	case OF_NUMBER_INTPTR:
+		return ([obj asUIntMax] == [self asUIntMax] ? YES : NO);
+	case OF_NUMBER_FLOAT:
+	case OF_NUMBER_DOUBLE:
+	case OF_NUMBER_LONG_DOUBLE:
+		return ([obj asLongDouble] == [self asLongDouble] ? YES : NO);
+	default:
+		@throw [OFInvalidArgumentException newWithClass: [self class]
+						    andSelector: _cmd];
+	}
+}
 @end

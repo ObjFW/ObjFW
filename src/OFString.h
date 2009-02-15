@@ -13,12 +13,11 @@
 #include <stdarg.h>
 
 #import "OFObject.h"
-#import "OFComparable.h"
 
 /**
  * A class for storing and modifying strings.
  */
-@interface OFString: OFObject <OFComparable>
+@interface OFString: OFObject
 {
 	char   *string;
 	size_t length;
@@ -109,6 +108,15 @@
  * \return A new autoreleased copy of the OFString
  */
 - (id)copy;
+
+/**
+ * Compares the OFString to another object.
+ *
+ * \param obj An object to compare with
+ * \return An integer which is the result of the comparison, see for example
+ *	   strcmp
+ */
+- (int)compare: (id)obj;
 
 /**
  * Sets the OFString to the specified OFString.
