@@ -42,3 +42,17 @@ OF_BSWAP_V(uint8_t *buf, size_t len)
 
 #define OF_ROL(val, bits) \
 	(((val) << (bits)) | ((val) >> (32 - (bits))))
+
+#define OF_HASH_INIT(hash) hash = 0
+#define OF_HASH_ADD(hash, byte)		\
+	{				\
+		hash += byte;		\
+		hash += (hash << 10);	\
+		hash ^= (hash >> 6);	\
+	}
+#define OF_HASH_FINALIZE(hash)		\
+	{				\
+		hash += (hash << 3);	\
+		hash ^= (hash >> 11);	\
+		hash += (hash << 15);	\
+	}

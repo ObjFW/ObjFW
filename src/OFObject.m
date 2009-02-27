@@ -81,7 +81,7 @@
 - (uint32_t)hash
 {
 	/* Classes containing data should reimplement this! */
-	return (uint32_t)self & 0xFFFFFF;
+	return (uint32_t)self;
 }
 
 - addToMemoryPool: (void*)ptr

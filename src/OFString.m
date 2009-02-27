@@ -288,6 +288,19 @@ check_utf8(const char *str, size_t len)
 	return strcmp(string, [obj cString]);
 }
 
+- (uint32_t)hash
+{
+	uint32_t hash;
+	size_t i;
+
+	OF_HASH_INIT(hash);
+	for (i = 0; i < length; i++)
+		OF_HASH_ADD(hash, string[i]);
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
+}
+
 - append: (OFString*)str
 {
 	return [self appendCString: [str cString]];

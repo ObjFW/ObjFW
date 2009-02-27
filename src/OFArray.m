@@ -165,6 +165,19 @@ extern int getpagesize(void);
 		return *(char*)[obj item: [self items]] * -1;
 	}
 }
+
+- (uint32_t)hash
+{
+	uint32_t hash;
+	size_t i;
+
+	OF_HASH_INIT(hash);
+	for (i = 0; i < items * itemsize; i++)
+		OF_HASH_ADD(hash, ((char*)data)[i]);
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
+}
 @end
 
 @implementation OFBigArray

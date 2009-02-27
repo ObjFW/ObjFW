@@ -136,10 +136,15 @@ main()
 		return 1;
 	}
 
+	if ([x hash] != [y hash]) {
+		puts("FAIL 2!");
+		return 1;
+	}
+
 	[x add: "x"];
 	if ([x isEqual: y]) {
-		puts("FAIL 2!");
-		return 2;
+		puts("FAIL 3!");
+		return 1;
 	}
 	[pool releaseObjects];
 
@@ -147,7 +152,7 @@ main()
 	y = [OFArray bigArrayWithItemSize: 4];
 
 	if ([x isEqual: y]) {
-		puts("FAIL 3!");
+		puts("FAIL 4!");
 		return 1;
 	}
 	[pool releaseObjects];
@@ -157,13 +162,18 @@ main()
 	  fromCArray: "abc"];
 	y = [x copy];
 	if ([x compare: y]) {
-		puts("FAIL 4!");
+		puts("FAIL 5!");
 		return 1;
 	}
 
 	[y add: "de"];
 	if ([x compare: y] != -100) {
-		puts("FAIL 5!");
+		puts("FAIL 6!");
+		return 1;
+	}
+
+	if ([y hash] != 0xCD8B6206) {
+		puts("FAIL 7!");
 		return 1;
 	}
 	[pool release];
