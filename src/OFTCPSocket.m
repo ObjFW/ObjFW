@@ -31,12 +31,14 @@
 }
 
 #ifdef _WIN32
-+ (void)initialize
++ initialize
 {
 	WSADATA wsa;
 
 	if (WSAStartup(MAKEWORD(2, 0), &wsa))
 		@throw [OFInitializationFailedException newWithClass: self];
+
+	return self;
 }
 #endif
 

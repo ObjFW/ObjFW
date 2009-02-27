@@ -51,7 +51,7 @@ release_list(void *list)
 #endif
 
 @implementation OFAutoreleasePool
-+ (void)initialize
++ initialize
 {
 #ifndef _WIN32
 	if (pthread_key_create(&pool_list_key, release_list))
@@ -61,6 +61,8 @@ release_list(void *list)
 	if ((pool_list_key = TlsAlloc()) == TLS_OUT_OF_INDEXES)
 		@throw [OFInitializationFailedException newWithClass: self];
 #endif
+
+	return self;
 }
 
 + (void)addToPool: (OFObject*)obj
