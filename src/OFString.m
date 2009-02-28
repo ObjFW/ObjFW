@@ -163,7 +163,12 @@ check_utf8(const char *str, size_t len)
 				    newWithClass: c];
 			}
 
-			string = [self getMemWithSize: length + 1];
+			@try {
+				string = [self getMemWithSize: length + 1];
+			} @catch (OFException *e) {
+				[self free];
+				@throw e;
+			}
 			memcpy(string, str, length + 1);
 		}
 	}
