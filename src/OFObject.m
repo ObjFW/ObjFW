@@ -52,12 +52,10 @@
 	return self;
 }
 
-- release
+- (void)release
 {
 	if (!--__retain_count)
-		return [self free];
-
-	return self;
+		[self free];
 }
 
 - autorelease

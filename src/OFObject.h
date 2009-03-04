@@ -39,7 +39,7 @@
 /**
  * Decreases the retain cound and frees the object if it reaches 0.
  */
-- release;
+- (void)release;
 
 /**
  * Adds the object to the autorelease pool that is on top of the thread's stack.

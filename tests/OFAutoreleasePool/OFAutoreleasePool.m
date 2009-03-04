@@ -24,7 +24,7 @@
 @interface TestObject: OFObject
 - init;
 - retain;
-- release;
+- (void)release;
 @end
 
 @implementation TestObject
@@ -49,7 +49,7 @@
 	return ret;
 }
 
-- release
+- (void)release
 {
 	printf("Releasing %s to " ZD "\n", [self name], [self retainCount] - 1);
 
