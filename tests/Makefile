@@ -1,6 +1,7 @@
 SUBDIRS = OFObject		\
 	  OFAutoreleasePool	\
 	  OFArray		\
+	  OFDictionary		\
 	  OFHashes		\
 	  OFString		\
 	  OFTCPSocket		\
