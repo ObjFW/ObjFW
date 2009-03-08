@@ -9,6 +9,8 @@
  * the packaging of this file.
  */
 
+#include <string.h>
+
 #import "OFDictionary.h"
 #import "OFExceptions.h"
 
