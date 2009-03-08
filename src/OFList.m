@@ -30,12 +30,12 @@
 	return self;
 }
 
-- initWithRetainAndReleaseEnabled: (BOOL)enabled
+- initWithoutRetainAndRelease
 {
 	if ((self = [super init])) {
 		first = NULL;
 		last = NULL;
-		retain_and_release = enabled;
+		retain_and_release = NO;
 	}
 
 	return self;

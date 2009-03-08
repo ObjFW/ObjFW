@@ -91,7 +91,7 @@ release_list(void *list)
 
 		if (pool_list == nil) {
 			pool_list = [[OFList alloc]
-			    initWithRetainAndReleaseEnabled: NO];
+			    initWithoutRetainAndRelease];
 			set_tls(pool_list_key, pool_list);
 		}
 

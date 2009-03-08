@@ -33,13 +33,12 @@ typedef struct __of_list_object
 + list;
 
 /**
- * Initializes an already allocated OFList.
+ * Initializes an already allocated OFList that does not retain/releas objects
+ * added to it..
  *
- * \param enabled Whether release / retain should be called when an object is
- *	  added / removed. Default: YES
  * \return An initialized OFList
  */
-- initWithRetainAndReleaseEnabled: (BOOL)enabled;
+- initWithoutRetainAndRelease;
 
 /**
  * \return The first object in the list
