@@ -7,14 +7,12 @@ Tests for OFNumber.
 OFBase64
 
 OFDirectory
-OFDictionary
 OFSortedArray
 OFThread
 
 OFStack
 OFQueue
 
-OFPlugin
 OFXMLParser
 
 OFSortedQueue

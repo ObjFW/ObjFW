@@ -13,10 +13,11 @@ SRCS = OFArray.m		\
        OFList.m			\
        OFNumber.m		\
        OFObject.m		\
+       ${OFPLUGIN_M}		\
        OFString.m		\
        OFTCPSocket.m		\
        OFXMLFactory.m		\
-       ${ASPRINTF}
+       ${ASPRINTF_C}
 
 INCLUDESTMP = ${SRCS:.c=.h}
 INCLUDES = ${INCLUDESTMP:.m=.h}	\

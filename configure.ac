@@ -17,6 +17,13 @@ LIBS="$LIBS -lobjc"
 AC_DEFINE(OF_CONFIG_H, 1, [Define so that we know we got our config.h])
 
 BUILDSYS_LIB
+AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
+
+if test x"$PLUGIN_SUFFIX" != "x"; then
+	AC_SUBST(OFPLUGIN_M, "OFPlugin.m")
+	AC_SUBST(OFPLUGIN, "OFPlugin")
+fi
+
 AC_C_BIGENDIAN([AC_DEFINE(OF_BIG_ENDIAN, 1, [Whether we are big endian])])
 
 AC_MSG_CHECKING(for SIZE_MAX)
@@ -42,6 +49,8 @@ AC_EGREP_CPP(yes, [
 		size_max="((size_t)-1)"])
 	AC_DEFINE_UNQUOTED(SIZE_MAX, $size_max, [Maximum value for size_t])])
 
+AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
+
 AC_CHECK_HEADER(objc/runtime.h,
 	[AC_DEFINE(HAVE_OBJC_RUNTIME_H, 1, [Whether we have objc/runtime.h])])
 AC_CHECK_LIB(objc, sel_get_name,
@@ -53,7 +62,7 @@ AC_CHECK_FUNC(asprintf, [
 	have_asprintf="yes"
 	AC_DEFINE(HAVE_ASPRINTF, 1, "Whether we have asprintf")], [
 	have_asprintf="no"
-	AC_SUBST(ASPRINTF, "asprintf.c")])
+	AC_SUBST(ASPRINTF_C, "asprintf.c")])
 
 AC_MSG_CHECKING(whether snprintf returns something useful)
 AC_CACHE_VAL(ac_cv_snprintf_useful_ret, [
