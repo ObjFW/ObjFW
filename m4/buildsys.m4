@@ -22,19 +22,17 @@ dnl
 
 AC_DEFUN([BUILDSYS_LIB], [
 	AC_ARG_ENABLE(shared,
-		[  --disable-shared        don't build shared libraries],
-		enable_shared="$enableval")
+		AS_HELP_STRING([--disable-shared], [don't build shared libraries]))
 
-	if test x"$enableval" = x"no"; then
-		BUILDSYS_STATIC_LIB_ONLY
-	else
-		BUILDSYS_SHARED_LIB
-	fi
+	AS_IF([test x"$enable_shared" = x"no"],
+		[BUILDSYS_STATIC_LIB_ONLY],
+		[BUILDSYS_SHARED_LIB])
 ])
 
 AC_DEFUN([BUILDSYS_PROG_IMPLIB], [
+	AC_REQUIRE([AC_CANONICAL_HOST])
 	AC_MSG_CHECKING(whether we need an implib)
-	case "$target" in
+	case "$host" in
 		*-*-cygwin* | *-*-mingw*)
 			AC_MSG_RESULT(yes)
 			PROG_IMPLIB_NEEDED='yes'
@@ -52,8 +50,9 @@ AC_DEFUN([BUILDSYS_PROG_IMPLIB], [
 ])
 
 AC_DEFUN([BUILDSYS_SHARED_LIB], [
+	AC_REQUIRE([AC_CANONICAL_HOST])
 	AC_MSG_CHECKING(for shared library system)
-	case "$target" in
+	case "$host" in
 		intel-apple-*)
 			AC_MSG_RESULT([Mac OS X (Intel)])
 			LIB_CPPFLAGS='-DPIC'
@@ -84,7 +83,7 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 			UNINSTALL_LIB='rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$${i%.dylib}.${LIB_MAJOR}.dylib ${DESTDIR}${libdir}/$${i%.dylib}.${LIB_MAJOR}.${LIB_MINOR}.dylib'
 			CLEAN_LIB=''
 			;;
-		*-*-solaris* | *-*-openbsd* | *-*-mirbsd*)
+		*-*-solaris*)
 			AC_MSG_RESULT(Solaris)
 			LIB_CPPFLAGS='-DPIC'
 			LIB_CFLAGS='-fPIC'
@@ -97,6 +96,21 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 			PLUGIN_SUFFIX='.so'
 			INSTALL_LIB='${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR} && rm -f ${DESTDIR}${libdir}/$$i && ${LN_S} $$i.${LIB_MAJOR}.${LIB_MINOR} ${DESTDIR}${libdir}/$$i'
 			UNINSTALL_LIB='rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}'
+			CLEAN_LIB=''
+			;;
+		*-*-openbsd* | *-*-mirbsd*)
+			AC_MSG_RESULT(Solaris)
+			LIB_CPPFLAGS='-DPIC'
+			LIB_CFLAGS='-fPIC'
+			LIB_LDFLAGS='-shared -fPIC'
+			LIB_PREFIX='lib'
+			LIB_SUFFIX='.so.${LIB_MAJOR}.${LIB_MINOR}'
+			PLUGIN_CPPFLAGS='-DPIC'
+			PLUGIN_CFLAGS='-fPIC'
+			PLUGIN_LDFLAGS='-shared -fPIC'
+			PLUGIN_SUFFIX='.so'
+			INSTALL_LIB='${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$$i'
+			UNINSTALL_LIB='rm -f ${DESTDIR}${libdir}/$$i'
 			CLEAN_LIB=''
 			;;
 		*-*-cygwin* | *-*-mingw*)
@@ -146,8 +160,8 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 ])
 
 AC_DEFUN([BUILDSYS_STATIC_LIB_ONLY], [
-	AC_PATH_PROG(AR, ar)
-	AC_PROG_RANLIB
+	AC_REQUIRE([AC_PROG_RANLIB])
+	AC_PATH_TOOL(AR, ar)
 
 	LIB_CPPFLAGS=''
 	LIB_CFLAGS=''
