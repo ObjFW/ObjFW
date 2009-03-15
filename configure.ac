@@ -88,7 +88,7 @@ AC_MSG_RESULT($ac_cv_snprintf_useful_ret)
 test x"$have_asprintf" != x"yes" -a x"$ac_cv_snprintf_useful_ret" != x"yes" && \
 	AC_MSG_ERROR(No asprintf and no snprintf returning required space!)
 
-case "$target" in
+case "$host" in
 	*-*-mingw*)
 		AC_MSG_CHECKING(for threads)
 		AC_MSG_RESULT(win32)
@@ -140,7 +140,7 @@ test x"$ac_cv_have_ipv6" = x"yes" && \
 AC_CHECK_HEADERS(sys/mman.h)
 
 if test x"$cross_compiling" = x"yes"; then
-	case "$target" in
+	case "$host" in
 		*-*-mingw*)
 			AC_PATH_PROG(WINE, wine)
 
