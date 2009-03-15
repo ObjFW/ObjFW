@@ -15,6 +15,7 @@
 
 #import "OFAutoreleasePool.h"
 #import "OFDictionary.h"
+#import "OFConstString.h"
 #import "OFString.h"
 
 int
@@ -34,7 +35,7 @@ main()
 	       to: value2];
 	[pool release];
 
-	puts([[dict get: key1] cString]);
+	puts([[dict get: @"key1"] cString]);
 	puts([[dict get: key2] cString]);
 
 	return 0;

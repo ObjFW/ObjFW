@@ -57,19 +57,19 @@
  * \param key The key to set
  * \param obj The object to set the key to
  */
-- set: (OFObject*)key
-   to: (OFObject*)obj;
+- set: (id <OFHashable, OFRetainRelease>)key
+   to: (id <OFRetainRelease>)obj;
 
 /*
  * \param key The key whose object should be returned
  * \return The object for the given key
  */
-- get: (OFObject*)key;
+- get: (id <OFHashable>)key;
 
 /*
  * Remove the object with the given key from the dictionary.
  *
  * \param key The key whose object should be removed
  */
-- remove: (OFObject*)key;
+- remove: (id <OFHashable, OFRetainRelease>)key;
 @end

@@ -2,7 +2,6 @@ AC_INIT(objfw, 0.1, js@webkeks.org)
 AC_CONFIG_SRCDIR(src)
 
 AC_CANONICAL_HOST
-AC_CANONICAL_TARGET
 
 AC_PROG_CC
 AC_PROG_OBJC
@@ -12,7 +11,14 @@ AC_PROG_EGREP
 
 CFLAGS="$CFLAGS -Wall"
 OBJCFLAGS="$OBJCFLAGS -Wall -fobjc-exceptions"
+OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstString"
 LIBS="$LIBS -lobjc"
+
+AX_CHECK_COMPILER_FLAGS(-pipe, [
+	CFLAGS="$CFLAGS -pipe"
+	OBJCFLAGS="$OBJCFLAGS -pipe"])
+AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings,
+	[OBJCFLAGS="$OBJCFLAGS -fno-constant-cfstrings"])
 
 AC_DEFINE(OF_CONFIG_H, 1, [Define so that we know we got our config.h])
 
@@ -132,9 +138,6 @@ test x"$ac_cv_have_ipv6" = x"yes" && \
 	AC_DEFINE(HAVE_IPV6, 1, "Whether we have IPv6 support")
 
 AC_CHECK_HEADERS(sys/mman.h)
-
-test x"$GCC" = x"yes" && CFLAGS="$CFLAGS -Werror -pipe -g"
-test x"$GCC" = x"yes" && OBJCFLAGS="$OBJCFLAGS -Werror -pipe -g"
 
 if test x"$cross_compiling" = x"yes"; then
 	case "$target" in

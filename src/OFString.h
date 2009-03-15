@@ -93,7 +93,7 @@
     andArguments: (va_list)args;
 
 /**
- * \return The OFString as a wide C string
+ * \return The OFString as a C string
  */
 - (const char*)cString;
 

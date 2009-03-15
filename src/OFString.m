@@ -25,6 +25,7 @@
 #endif
 
 #import "OFString.h"
+#import "OFConstString.h"
 #import "OFExceptions.h"
 #import "OFMacros.h"
 
@@ -277,7 +278,8 @@ check_utf8(const char *str, size_t len)
 
 - (BOOL)isEqual: (id)obj
 {
-	if (![obj isKindOf: [OFString class]])
+	if (![obj isKindOf: [OFString class]] &&
+	    ![obj isKindOf: [OFConstString class]])
 		return NO;
 	if (strcmp(string, [obj cString]))
 		return NO;
@@ -287,7 +289,8 @@ check_utf8(const char *str, size_t len)
 
 - (int)compare: (id)obj
 {
-	if (![obj isKindOf: [OFString class]])
+	if (![obj isKindOf: [OFString class]] &&
+	    ![obj isKindOf: [OFConstString class]])
 		@throw [OFInvalidArgumentException newWithClass: [self class]];
 
 	return strcmp(string, [obj cString]);

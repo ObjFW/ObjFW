@@ -13,24 +13,7 @@
 
 #include <stdint.h>
 
-/**
- * The OFObject class is the base class for all other classes inside ObjFW.
- */
-@interface OFObject: Object
-{
-	void   **__memchunks;
-	size_t __memchunks_size;
-	size_t __retain_count;
-}
-
-/**
- * Initialize the already allocated object.
- * Also sets up the memory pool for the object.
- *
- * \return An initialized object
- */
-- init;
-
+@protocol OFRetainRelease
 /**
  * Increases the retain count.
  */
@@ -50,12 +33,9 @@
  * \return The retain count
  */
 - (size_t)retainCount;
+@end
 
-/**
- * Frees the object and also frees all memory allocated via its memory pool.
- */
-- free;
-
+@protocol OFHashable
 /**
  * Compare two objects.
  * Classes containing data (like strings, arrays, lists etc.) should reimplement
@@ -74,6 +54,30 @@
  * \return A 24 bit hash for the object
  */
 - (uint32_t)hash;
+@end
+
+/**
+ * The OFObject class is the base class for all other classes inside ObjFW.
+ */
+@interface OFObject: Object <OFRetainRelease, OFHashable>
+{
+	void   **__memchunks;
+	size_t __memchunks_size;
+	size_t __retain_count;
+}
+
+/**
+ * Initialize the already allocated object.
+ * Also sets up the memory pool for the object.
+ *
+ * \return An initialized object
+ */
+- init;
+
+/**
+ * Frees the object and also frees all memory allocated via its memory pool.
+ */
+- free;
 
 /**
  * Adds a pointer to the memory pool.
