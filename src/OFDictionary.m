@@ -9,6 +9,8 @@
  * the packaging of this file.
  */
 
+#import "config.h"
+
 #include <string.h>
 
 #import "OFDictionary.h"
