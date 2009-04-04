@@ -51,7 +51,7 @@
  * Classes containing data (like strings, arrays, lists etc.) should reimplement
  * this!
  *
- * \return A 24 bit hash for the object
+ * \return A 32 bit hash for the object
  */
 - (uint32_t)hash;
 @end
