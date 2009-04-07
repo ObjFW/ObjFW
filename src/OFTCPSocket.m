@@ -238,26 +238,6 @@
 	return ret;
 }
 
-- (uint8_t*)readNBytes: (size_t)size
-{
-	uint8_t *ret;
-
-	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: [self class]];
-
-	ret = [self getMemWithSize: size];
-
-	@try {
-		[self readNBytes: size
-		      intoBuffer: ret];
-	} @catch (id exception) {
-		[self freeMem: ret];
-		@throw exception;
-	}
-
-	return ret;
-}
-
 - (size_t)writeNBytes: (size_t)size
 	   fromBuffer: (const uint8_t*)buf
 {

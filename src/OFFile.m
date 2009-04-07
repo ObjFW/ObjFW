@@ -128,32 +128,6 @@
 		     intoBuffer: buf];
 }
 
-- (uint8_t*)readNItems: (size_t)nitems
-		ofSize: (size_t)size
-{
-	uint8_t	*ret;
-
-	ret = [self getMemForNItems: nitems
-			     ofSize: size];
-
-	@try {
-		[self readNItems: nitems
-			  ofSize: size
-		      intoBuffer: ret];
-	} @catch (id exception) {
-		[self freeMem: ret];
-		@throw exception;
-	}
-
-	return ret;
-}
-
-- (uint8_t*)readNBytes: (size_t)size
-{
-	return [self readNItems: size
-			 ofSize: 1];
-}
-
 - (size_t)writeNItems: (size_t)nitems
 	       ofSize: (size_t)size
 	   fromBuffer: (const uint8_t*)buf

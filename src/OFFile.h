@@ -128,17 +128,6 @@ typedef int gid_t;
 	  intoBuffer: (uint8_t*)buf;
 
 /**
- * Reads from the file into a new buffer.
- *
- * \param size The size of the data that should be read
- * \param nitem The number of items to read
- * \return A new buffer with the data read.
- *	   It is part of the memory pool of the OFFile.
- */
-- (uint8_t*)readNItems: (size_t)nitems
-		ofSize: (size_t)size;
-
-/**
  * Writes from a buffer into the file.
  *
  * \param buf The buffer from which the data is written to the file

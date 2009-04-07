@@ -25,15 +25,6 @@
 	  intoBuffer: (uint8_t*)buf;
 
 /**
- * Reads from the stream into a new buffer.
- *
- * \param size The size of the data that should be read
- * \return A new buffer with the data read.
- *	   It is part of the memory pool of the OFFile.
- */
-- (uint8_t*)readNBytes: (size_t)size;
-
-/**
  * Writes from a buffer into the stream.
  *
  * \param buf The buffer from which the data is written to the stream
