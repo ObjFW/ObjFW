@@ -574,10 +574,10 @@
        andPort: (uint16_t)port_
      andFamily: (int)family_
 {
-	return [self newWithClass: class_
-			  andHost: host_
-			  andPort: port_
-			andFamily: family_];
+	return [[self alloc] initWithClass: class_
+				   andHost: host_
+				   andPort: port_
+				 andFamily: family_];
 }
 
 - initWithClass: (Class)class_
