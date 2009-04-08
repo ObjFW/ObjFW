@@ -230,9 +230,13 @@
 	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithClass: [self class]];
 
-	if ((ret = recv(sock, (char*)buf, size, 0)) < 1)
+	switch ((ret = recv(sock, (char*)buf, size, 0))) {
+	case 0:
+		@throw [OFNotConnectedException newWithClass: [self class]];
+	case -1:
 		@throw [OFReadFailedException newWithClass: [self class]
 						   andSize: size];
+	}
 
 	/* This is safe, as we already checked < 1 */
 	return ret;
