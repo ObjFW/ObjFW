@@ -22,7 +22,7 @@
  * \return The number of bytes read
  */
 - (size_t)readNBytes: (size_t)size
-	  intoBuffer: (uint8_t*)buf;
+	  intoBuffer: (char*)buf;
 
 /**
  * Writes from a buffer into the stream.
@@ -32,7 +32,7 @@
  * \return The number of bytes written
  */
 - (size_t)writeNBytes: (size_t)size
-	   fromBuffer: (const uint8_t*)buf;
+	   fromBuffer: (const char*)buf;
 
 /**
  * Writes a C string into the stream, without the trailing zero.

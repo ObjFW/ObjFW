@@ -137,7 +137,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	return self;
 }
 
-- updateWithBuffer: (const uint8_t*)buffer
+- updateWithBuffer: (const char*)buffer
 	    ofSize: (size_t)size
 {
 	uint32_t t;
@@ -159,7 +159,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 
 	/* Handle any leading odd-sized chunks */
 	if (t) {
-		uint8_t *p = (uint8_t*)in + t;
+		char *p = in + t;
 
 		t = 64 - t;
 
@@ -192,13 +192,13 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	return self;
 }
 
-- (uint8_t*)digest
+- (char*)digest
 {
-	uint8_t	*p;
+	char	*p;
 	size_t	count;
 
 	if (calculated)
-		return (uint8_t*)buf;
+		return (char*)buf;
 
 	/* Compute number of bytes mod 64 */
 	count = (bits[0] >> 3) & 0x3F;
@@ -233,11 +233,11 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	((uint32_t*)in)[15] = bits[1];
 
 	md5_transform(buf, (uint32_t*)in);
-	OF_BSWAP_V((uint8_t*)buf, 4);
+	OF_BSWAP_V((char*)buf, 4);
 
 	calculated = YES;
 
-	return (uint8_t*)buf;
+	return (char*)buf;
 }
 @end
 
@@ -282,15 +282,15 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	w = OF_ROL(w, 30);
 
 typedef union {
-	uint8_t	 c[64];
+	char	 c[64];
 	uint32_t l[16];
 } sha1_c64l16_t;
 
 static inline void
-sha1_transform(uint32_t state[5], const uint8_t buffer[64])
+sha1_transform(uint32_t state[5], const char buffer[64])
 {
 	uint32_t      a, b, c, d, e;
-	uint8_t	      workspace[64];
+	char	      workspace[64];
 	sha1_c64l16_t *block;
 
 	block = (sha1_c64l16_t*)workspace;
@@ -334,8 +334,8 @@ sha1_transform(uint32_t state[5], const uint8_t buffer[64])
 }
 
 static inline void
-sha1_update(uint32_t *state, uint64_t *count, uint8_t *buffer,
-    const uint8_t *buf, size_t size)
+sha1_update(uint32_t *state, uint64_t *count, char *buffer,
+    const char *buf, size_t size)
 {
 	size_t i, j;
 
@@ -377,7 +377,7 @@ sha1_update(uint32_t *state, uint64_t *count, uint8_t *buffer,
 	return self;
 }
 
-- updateWithBuffer: (const uint8_t*)buf
+- updateWithBuffer: (const char*)buf
 	    ofSize: (size_t)size
 {
 	if (calculated)
@@ -390,26 +390,26 @@ sha1_update(uint32_t *state, uint64_t *count, uint8_t *buffer,
 	return self;
 }
 
-- (uint8_t*)digest
+- (char*)digest
 {
 	size_t i;
-	uint8_t finalcount[8];
+	char   finalcount[8];
 
 	if (calculated)
 		return digest;
 
 	for (i = 0; i < 8; i++)
 		/* Endian independent */
-		finalcount[i] = (uint8_t)((count >> ((7 - (i & 7)) * 8)) & 255);
-	sha1_update(state, &count, buffer, (const uint8_t*)"\200", 1);
+		finalcount[i] = (char)((count >> ((7 - (i & 7)) * 8)) & 255);
+	sha1_update(state, &count, buffer, "\200", 1);
 
 	while ((count & 504) != 448)
-		sha1_update(state, &count, buffer, (const uint8_t*)"\0", 1);
+		sha1_update(state, &count, buffer, "\0", 1);
 	/* Should cause a sha1_transform() */
 	sha1_update(state, &count, buffer, finalcount, 8);
 
 	for (i = 0; i < SHA1_DIGEST_SIZE; i++)
-		digest[i] = (uint8_t)((state[i >> 2] >>
+		digest[i] = (char)((state[i >> 2] >>
 		    ((3 - (i & 3)) * 8)) & 255);
 
 	return digest;

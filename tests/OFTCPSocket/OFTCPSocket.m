@@ -58,7 +58,7 @@ main()
 
 		[client writeCString: "Hallo!"];
 		[accepted readNBytes: 6
-			  intoBuffer: (uint8_t*)buf];
+			  intoBuffer: buf];
 		buf[6] = 0;
 
 		if (!strcmp(buf, "Hallo!"))
@@ -90,7 +90,7 @@ main()
 
 		[client writeCString: "IPv6:)"];
 		[accepted readNBytes: 6
-			  intoBuffer: (uint8_t*)buf];
+			  intoBuffer: buf];
 		buf[6] = 0;
 
 		if (!strcmp(buf, "IPv6:)"))

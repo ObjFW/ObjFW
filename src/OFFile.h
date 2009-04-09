@@ -125,7 +125,7 @@ typedef int gid_t;
  */
 - (size_t)readNItems: (size_t)nitems
 	      ofSize: (size_t)size
-	  intoBuffer: (uint8_t*)buf;
+	  intoBuffer: (char*)buf;
 
 /**
  * Writes from a buffer into the file.
@@ -137,5 +137,5 @@ typedef int gid_t;
  */
 - (size_t)writeNItems: (size_t)nitems
 	       ofSize: (size_t)size
-	   fromBuffer: (const uint8_t*)buf;
+	   fromBuffer: (const char*)buf;
 @end

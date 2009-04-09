@@ -108,7 +108,7 @@
 
 - (size_t)readNItems: (size_t)nitems
 	      ofSize: (size_t)size
-	  intoBuffer: (uint8_t*)buf
+	  intoBuffer: (char*)buf
 {
 	size_t ret;
 
@@ -121,7 +121,7 @@
 }
 
 - (size_t)readNBytes: (size_t)size
-	  intoBuffer: (uint8_t*)buf
+	  intoBuffer: (char*)buf
 {
 	return [self readNItems: size
 			 ofSize: 1
@@ -130,7 +130,7 @@
 
 - (size_t)writeNItems: (size_t)nitems
 	       ofSize: (size_t)size
-	   fromBuffer: (const uint8_t*)buf
+	   fromBuffer: (const char*)buf
 {
 	size_t ret;
 
@@ -144,7 +144,7 @@
 }
 
 - (size_t)writeNBytes: (size_t)size
-	   fromBuffer: (const uint8_t*)buf
+	   fromBuffer: (const char*)buf
 {
 	return [self writeNItems: size
 			  ofSize: 1
@@ -155,7 +155,7 @@
 {
 	return [self writeNItems: strlen(str)
 			  ofSize: 1
-		      fromBuffer: (const uint8_t*)str];
+		      fromBuffer: str];
 }
 
 - close

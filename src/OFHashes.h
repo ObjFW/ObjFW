@@ -21,7 +21,7 @@
 {
 	uint32_t buf[4];
 	uint32_t bits[2];
-	uint8_t	 in[64];
+	char	 in[64];
 
 	BOOL	 calculated;
 }
@@ -39,14 +39,14 @@
  * \param buf The buffer which should be included into calculation.
  * \param size The size of the buffer
  */
-- updateWithBuffer: (const uint8_t*)buf
+- updateWithBuffer: (const char*)buf
 	    ofSize: (size_t)size;
 
 /**
  * \return A buffer containing the hash (MD5_DIGEST_SIZE = 16 bytes).
  *	   The buffer is part of object's memory pool.
  */
-- (uint8_t*)digest;
+- (char*)digest;
 @end
 
 /**
@@ -56,8 +56,8 @@
 {
 	uint32_t    state[5];
 	uint64_t    count;
-	uint8_t	    buffer[64];
-	uint8_t	    digest[SHA1_DIGEST_SIZE];
+	char	    buffer[64];
+	char	    digest[SHA1_DIGEST_SIZE];
 
 	BOOL	 calculated;
 }
@@ -75,12 +75,12 @@
  * \param buf The buffer which should be included into calculation.
  * \param size The size of the buffer
  */
-- updateWithBuffer: (const uint8_t*)buf
+- updateWithBuffer: (const char*)buf
 	    ofSize: (size_t)size;
 
 /**
  * \return A buffer containing the hash (SHA1_DIGEST_SIZE = 20 bytes).
  *	   The buffer is part of object's memory pool.
  */
-- (uint8_t*)digest;
+- (char*)digest;
 @end

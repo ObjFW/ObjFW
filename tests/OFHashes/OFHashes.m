@@ -26,8 +26,8 @@ const uint8_t testfile_sha1[SHA1_DIGEST_SIZE] =
 int
 main()
 {
-	uint8_t buf[64];
-	size_t	len;
+	char   buf[64];
+	size_t len;
 
 	OFMD5Hash  *md5  = [OFMD5Hash md5Hash];
 	OFSHA1Hash *sha1 = [OFSHA1Hash sha1Hash];

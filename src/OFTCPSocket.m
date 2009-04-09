@@ -223,14 +223,14 @@
 }
 
 - (size_t)readNBytes: (size_t)size
-	  intoBuffer: (uint8_t*)buf
+	  intoBuffer: (char*)buf
 {
 	ssize_t ret;
 
 	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithClass: [self class]];
 
-	switch ((ret = recv(sock, (char*)buf, size, 0))) {
+	switch ((ret = recv(sock, buf, size, 0))) {
 	case 0:
 		@throw [OFNotConnectedException newWithClass: [self class]];
 	case -1:
@@ -243,14 +243,14 @@
 }
 
 - (size_t)writeNBytes: (size_t)size
-	   fromBuffer: (const uint8_t*)buf
+	   fromBuffer: (const char*)buf
 {
 	ssize_t ret;
 
 	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithClass: [self class]];
 
-	if ((ret = send(sock, (char*)buf, size, 0)) == -1)
+	if ((ret = send(sock, buf, size, 0)) == -1)
 		@throw [OFWriteFailedException newWithClass: [self class]
 						    andSize: size];
 
@@ -264,7 +264,7 @@
 		@throw [OFNotConnectedException newWithClass: [self class]];
 
 	return [self writeNBytes: strlen(str)
-		      fromBuffer: (const uint8_t*)str];
+		      fromBuffer: str];
 }
 
 - setBlocking: (BOOL)enable
