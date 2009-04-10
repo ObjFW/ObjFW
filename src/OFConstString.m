@@ -22,26 +22,17 @@
 #import "OFMacros.h"
 
 #ifndef __objc_INCLUDE_GNU
-struct objc_class _OFConstStringClassReference;
+void *_OFConstStringClassReference;
 #endif
 
 @implementation OFConstString
 #ifndef __objc_INCLUDE_GNU
 + (void)load
 {
-	Class cls = objc_getClass("OFConstString");
-	memcpy(&_OFConstStringClassReference, cls,
-	    sizeof(_OFConstStringClassReference));
-	objc_addClass(&_OFConstStringClassReference);
+	objc_setFutureClass((Class)&_OFConstStringClassReference,
+	    "OFConstString");
 }
 #endif
-
-- (BOOL)isKindOf: (Class)c
-{
-	if (c == [OFConstString class])
-		return YES;
-	return NO;
-}
 
 - (const char*)cString
 {

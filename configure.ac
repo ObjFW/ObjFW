@@ -14,6 +14,11 @@ OBJCFLAGS="$OBJCFLAGS -Wall -fobjc-exceptions"
 OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstString"
 LIBS="$LIBS -lobjc"
 
+if test x"$GCC" = x"yes"; then
+	CFLAGS="$CFLAGS -Werror"
+	OBJCFLAGS="$OBJCFLAGS -Werror"
+fi
+
 AX_CHECK_COMPILER_FLAGS(-pipe, [
 	CFLAGS="$CFLAGS -pipe"
 	OBJCFLAGS="$OBJCFLAGS -pipe"])
