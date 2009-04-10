@@ -159,7 +159,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 
 	/* Handle any leading odd-sized chunks */
 	if (t) {
-		char *p = in + t;
+		uint8_t *p = in + t;
 
 		t = 64 - t;
 
@@ -194,7 +194,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 
 - (char*)digest
 {
-	char	*p;
+	uint8_t	*p;
 	size_t	count;
 
 	if (calculated)
@@ -233,7 +233,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	((uint32_t*)in)[15] = bits[1];
 
 	md5_transform(buf, (uint32_t*)in);
-	OF_BSWAP_V((char*)buf, 4);
+	OF_BSWAP_V((uint8_t*)buf, 4);
 
 	calculated = YES;
 
