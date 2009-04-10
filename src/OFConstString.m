@@ -15,7 +15,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define OFCONSTSTRING_M
 #import "OFConstString.h"
 #import "OFString.h"
 #import "OFExceptions.h"

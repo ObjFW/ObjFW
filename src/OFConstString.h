@@ -11,12 +11,8 @@
 
 #import "OFObject.h"
 
-#if !defined(__objc_INCLUDE_GNU) && !defined(OFCONSTSTRING_M)
-/*
- * This way, projects using libobjfw don't need -Wno-deprecated-declarations on
- * OS X 10.5.
- */
-extern void _OFConstStringClassReference;
+#ifndef __objc_INCLUDE_GNU
+extern void *_OFConstStringClassReference;
 #endif
 
 /**
