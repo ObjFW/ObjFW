@@ -14,11 +14,6 @@ OBJCFLAGS="$OBJCFLAGS -Wall -fobjc-exceptions"
 OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstString"
 LIBS="$LIBS -lobjc"
 
-if test x"$GCC" = x"yes"; then
-	CFLAGS="$CFLAGS -Werror"
-	OBJCFLAGS="$OBJCFLAGS -Werror"
-fi
-
 AX_CHECK_COMPILER_FLAGS(-pipe, [
 	CFLAGS="$CFLAGS -pipe"
 	OBJCFLAGS="$OBJCFLAGS -pipe"])
@@ -143,6 +138,11 @@ test x"$ac_cv_have_ipv6" = x"yes" && \
 	AC_DEFINE(HAVE_IPV6, 1, "Whether we have IPv6 support")
 
 AC_CHECK_HEADERS(sys/mman.h)
+
+if test x"$GCC" = x"yes"; then
+	CFLAGS="$CFLAGS -Werror"
+	OBJCFLAGS="$OBJCFLAGS -Werror"
+fi
 
 if test x"$cross_compiling" = x"yes"; then
 	case "$host" in
