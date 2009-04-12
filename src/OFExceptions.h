@@ -114,6 +114,33 @@
 @end
 
 /**
+ * An OFException indicating that a method or part of it is not implemented.
+ */
+@interface OFNotImplementedException: OFException
+{
+	SEL selector;
+}
+
+/**
+ * \param class The class of the object which caused the exception
+ * \param selector The selector which is not or not fully implemented
+ * \return A new not implemented exception
+ */
++ newWithClass: (Class)class
+   andSelector: (SEL)selector;
+
+/**
+ * Initializes an already allocated not implemented exception.
+ *
+ * \param class The class of the object which caused the exception
+ * \param selector The selector which is not or not fully implemented
+ * \return An initialized not implemented exception
+ */
+- initWithClass: (Class)class
+    andSelector: (SEL)selector;
+@end
+
+/**
  * An OFException indicating the given value is out of range.
  */
 @interface OFOutOfRangeException: OFException {}

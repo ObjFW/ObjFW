@@ -59,10 +59,6 @@ AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
 
 AC_CHECK_HEADER(objc/runtime.h,
 	[AC_DEFINE(HAVE_OBJC_RUNTIME_H, 1, [Whether we have objc/runtime.h])])
-AC_CHECK_LIB(objc, sel_get_name,
-	[AC_DEFINE(HAVE_SEL_GET_NAME, 1, [Whether we have sel_get_name])])
-AC_CHECK_LIB(objc, sel_getName,
-	[AC_DEFINE(HAVE_SEL_GETNAME, 1, [Whether we have sel_getName])])
 
 AC_CHECK_FUNC(asprintf, [
 	have_asprintf="yes"

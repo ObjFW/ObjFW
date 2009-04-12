@@ -31,19 +31,14 @@
 #endif
 
 #import <objc/objc-api.h>
-#ifdef HAVE_OBJC_RUNTIME_H
+#ifdef __objc_INCLUDE_GNU
+#define SEL_NAME(x) sel_get_name(x)
+#else
 #import <objc/runtime.h>
+#define SEL_NAME(x) sel_getName(x)
 #endif
 
 #import "OFExceptions.h"
-
-#if defined(HAVE_SEL_GET_NAME)
-#define SEL_NAME(x) sel_get_name(x)
-#elif defined(HAVE_SEL_GETNAME)
-#define SEL_NAME(x) sel_getName(x)
-#else
-#error "You need either sel_get_name() or sel_getName()!"
-#endif
 
 #ifndef HAVE_ASPRINTF
 #import "asprintf.h"
@@ -151,6 +146,35 @@
 - (void*)pointer
 {
 	return pointer;
+}
+@end
+
+@implementation OFNotImplementedException
++ newWithClass: (Class)class_
+   andSelector: (SEL)selector_
+{
+	return [[self alloc] initWithClass: class_
+			       andSelector: selector_];
+}
+
+- initWithClass: (Class)class_
+    andSelector: (SEL)selector_
+{
+	if ((self = [super initWithClass: class_]))
+		selector = selector_;
+
+	return self;
+}
+
+- (const char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "The method %s of class %s is not or not fully "
+	    "implemented!", SEL_NAME(selector), [class name]);
+
+	return string;
 }
 @end
 
