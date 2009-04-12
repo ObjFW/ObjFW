@@ -9,33 +9,131 @@
  * the packaging of this file.
  */
 
-#import <objc/Object.h>
-
+#include <stddef.h>
 #include <stdint.h>
 
-@protocol OFRetainRelease
-/**
- * Increases the retain count.
- */
-- retain;
+#import <objc/objc.h>
+#ifndef __objc_INCLUDE_GNU
+#import <objc/message.h>
+#endif
 
 /**
- * Decreases the retain cound and frees the object if it reaches 0.
+ * The OFObject class is the base class for all other classes inside ObjFW.
  */
-- (void)release;
+@interface OFObject
+{
+	Class  isa;
+}
 
 /**
- * Adds the object to the autorelease pool that is on top of the thread's stack.
+ * This code is executed once when a method of the class is called for the first
+ * time.
+ * Derived classes can override this to execute their own code on
+ * initialization.
  */
-- autorelease;
++ initialize;
 
 /**
- * \return The retain count
+ * Allocates memory for an instance of the class.
  */
-- (size_t)retainCount;
-@end
++ alloc;
 
-@protocol OFHashable
+/**
+ * Allocated memory for an instance of the class and initializes the instance.
+ */
++ new;
+
+/**
+ * \return The class pointer
+ */
++ (Class)class;
+
+/**
+ * \return The name of the class as a C string
+ */
++ (const char*)name;
+
+/**
+ * Replace a method with a method from another class.
+ *
+ * \param selector The selector of the method to replace
+ * \param class The class from which the new method should be taken
+ * \return The old implementation
+ */
++ (IMP)replaceMethod: (SEL)selector
+ withMethodFromClass: (Class)class;
+
+/**
+ * Initialize the already allocated object.
+ * Also sets up the memory pool for the object.
+ *
+ * \return An initialized object
+ */
+- init;
+
+/**
+ * \return A pointer to the class of the instance
+ */
+- (Class)class;
+
+/**
+ * \return The name of the instance's class as a C string
+ */
+- (const char*)name;
+
+/**
+ * \param class The class whose kind is checked
+ *
+ * \return A boolean whether the object is of the specified kind
+ */
+- (BOOL)isKindOf: (Class)class;
+
+/**
+ * \param selector The selector which should be checked
+ *
+ * \return A boolean whether the objects responds to the specified selector
+ */
+- (BOOL)respondsTo: (SEL)selector;
+
+/**
+ * \param selector The selector for which the method should be returned
+ *
+ * \return The implementation for the specified selector
+ */
+- (IMP)methodFor: (SEL)selector;
+
+/**
+ * This method is called when a method was called which isn't implemented.
+ * It's possible to override it so the method call cann be forwarded to another
+ * object.
+ *
+ * \param selector The selector which was called
+ * \param args The arguments with which the selector was called
+ * \return The return value of the call
+ */
+#ifdef __objc_INCLUDE_GNU
+- (retval_t)forward: (SEL)selector
+		   : (arglist_t)args;
+#else
+- (id)forward: (SEL)selector
+	     : (marg_list)args;
+#endif
+
+/**
+ * Perform the given selector with the given arguments.
+ *
+ * \param selector The selector to perform
+ * \param args The arguments with which the selector is performed
+ * \return The return value of the performed selector
+ */
+#ifdef __objc_INCLUDE_GNU
+- (retval_t)performv: (SEL)selector
+		    : (arglist_t)args;
+#else
+- performv: (SEL)selector
+	  : (marg_list)args;
+#endif
+
 /**
  * Compare two objects.
  * Classes containing data (like strings, arrays, lists etc.) should reimplement
@@ -54,30 +152,6 @@
  * \return A 32 bit hash for the object
  */
 - (uint32_t)hash;
-@end
-
-/**
- * The OFObject class is the base class for all other classes inside ObjFW.
- */
-@interface OFObject: Object <OFRetainRelease, OFHashable>
-{
-	void   **__memchunks;
-	size_t __memchunks_size;
-	size_t __retain_count;
-}
-
-/**
- * Initialize the already allocated object.
- * Also sets up the memory pool for the object.
- *
- * \return An initialized object
- */
-- init;
-
-/**
- * Frees the object and also frees all memory allocated via its memory pool.
- */
-- free;
 
 /**
  * Adds a pointer to the memory pool.
@@ -137,4 +211,29 @@
  * \param ptr A pointer to the allocated memory
  */
 - freeMem: (void*)ptr;
+
+/**
+ * Increases the retain count.
+ */
+- retain;
+
+/**
+ * Adds the object to the autorelease pool that is on top of the thread's stack.
+ */
+- autorelease;
+
+/**
+ * \return The retain count
+ */
+- (size_t)retainCount;
+
+/**
+ * Decreases the retain cound and frees the object if it reaches 0.
+ */
+- (void)release;
+
+/**
+ * Frees the object and also frees all memory allocated via its memory pool.
+ */
+- free;
 @end

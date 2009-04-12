@@ -9,6 +9,12 @@
  * the packaging of this file.
  */
 
+/*
+ * Get rid of the stupid warnings until we have our own implementation for
+ * objc_msgSendv.
+ */
+#define OBJC2_UNAVAILABLE
+
 #import "config.h"
 
 #include <stdlib.h>
@@ -20,55 +26,210 @@
 #import "OFExceptions.h"
 #import "OFMacros.h"
 
+#import <objc/objc-api.h>
+#ifndef __objc_INCLUDE_GNU
+#import <objc/runtime.h>
+#endif
+
+struct pre_ivar {
+	void   **memchunks;
+	size_t memchunks_size;
+	size_t retain_count;
+};
+
+/* Hopefully no arch needs more than 16 bytes padding */
+#define PRE_IVAR_ALIGN ((sizeof(struct pre_ivar) + 15) & ~15)
+#define PRE_IVAR ((struct pre_ivar*)((char*)self - PRE_IVAR_ALIGN))
+
 @implementation OFObject
+#ifndef __objc_INCLUDE_GNU
++ load
+{
+	return self;
+}
+#endif
+
++ initialize
+{
+	return self;
+}
+
++ alloc
+{
+	OFObject *instance;
+#ifdef __objc_INCLUDE_GNU
+	size_t isize = class_get_instance_size(self);
+#else
+	size_t isize = class_getInstanceSize(self);
+#endif
+
+	if ((instance = malloc(isize + PRE_IVAR_ALIGN)) == NULL)
+		return nil;
+
+	((struct pre_ivar*)instance)->memchunks = NULL;
+	((struct pre_ivar*)instance)->memchunks_size = 0;
+	((struct pre_ivar*)instance)->retain_count = 1;
+
+	instance = (OFObject*)((char*)instance + PRE_IVAR_ALIGN);
+	memset(instance, 0, isize);
+	instance->isa = self;
+
+	return instance;
+}
+
++ new
+{
+	return [[self alloc] init];
+}
+
++ (Class)class
+{
+	return self;
+}
+
++ (const char*)name
+{
+#ifdef __objc_INCLUDE_GNU
+	return class_get_class_name(self);
+#else
+	return class_getName(self);
+#endif
+}
+
++ (IMP)replaceMethod: (SEL)selector
+ withMethodFromClass: (Class)class;
+{
+#ifdef __objc_INCLUDE_GNU
+	Method_t method = class_get_instance_method(self, selector);
+	IMP oldimp, newimp;
+
+	if (method == NULL)
+		@throw [OFInvalidArgumentException newWithClass: self
+						    andSelector: _cmd];
+
+	oldimp = method_get_imp(method);
+	newimp = method_get_imp(class_get_instance_method(class, selector));
+
+	if (oldimp == (IMP)0 || newimp == (IMP)0)
+		@throw [OFInvalidArgumentException newWithClass: self
+						    andSelector: _cmd];
+
+	method->method_imp = newimp;
+	return oldimp;
+#else
+	IMP imp = class_getMethodImplementation(class, selector);
+	Method method = class_getInstanceMethod(self, selector);
+
+	if (imp == NULL || method == NULL)
+		@throw [OFInvalidArgumentException newWithClass: self
+						    andSelector: _cmd];
+
+	return method_setImplementation(method, imp);
+#endif
+}
+
 - init
 {
-	if ((self = [super init]) != nil) {
-		__memchunks = NULL;
-		__memchunks_size = 0;
-		__retain_count = 1;
-	}
-
 	return self;
 }
 
-- free
+- (Class)class
 {
-	void **iter = __memchunks + __memchunks_size;
-
-	while (iter-- > __memchunks)
-		free(*iter);
-
-	if (__memchunks != NULL)
-		free(__memchunks);
-
-	return [super free];
+	return isa;
 }
 
-- retain
+- (const char*)name
 {
-	__retain_count++;
+#ifdef __objc_INCLUDE_GNU
+	return object_get_class_name(self);
+#else
+	return class_getName(isa);
+#endif
+}
 
+- (BOOL)isKindOf: (Class)class
+{
+	Class iter;
+
+#ifdef __objc_INCLUDE_GNU
+	for (iter = isa; iter != Nil; iter = class_get_super_class(iter))
+#else
+	for (iter = isa; iter != Nil; iter = class_getSuperclass(iter))
+#endif
+		if (iter == class)
+			return YES;
+
+	return NO;
+}
+
+- (BOOL)respondsTo: (SEL)selector
+{
+#ifdef __objc_INCLUDE_GNU
+	if (object_is_instance(self))
+		return class_get_instance_method(isa, selector) != METHOD_NULL;
+	else
+		return class_get_class_method(isa, selector) != METHOD_NULL;
+#else
+	return class_respondsToSelector(isa, selector);
+#endif
+}
+
+- (IMP)methodFor: (SEL)selector
+{
+#ifdef __objc_INCLUDE_GNU
+	if (object_is_instance(self))
+		return method_get_imp(class_get_instance_method(isa, selector));
+	else
+		return method_get_imp(class_get_class_method(isa, selector));
+#else
+	return class_getMethodImplementation(isa, selector);
+#endif
+}
+
+#ifdef __objc_INCLUDE_GNU
+- (retval_t)forward: (SEL)selector
+		   : (arglist_t)args
+#else
+- (id)forward: (SEL)selector
+	     : (marg_list)args
+#endif
+{
+	@throw [OFNotImplementedException newWithClass: [self class]
+					   andSelector: _cmd];
 	return self;
 }
 
-- (void)release
+#ifdef __objc_INCLUDE_GNU
+- (retval_t)performv: (SEL)selector
+		    : (arglist_t)args
 {
-	if (!--__retain_count)
-		[self free];
+	return objc_msg_sendv(self, selector, args);
 }
-
-- autorelease
+#else
+- performv: (SEL)selector
+	  : (marg_list)args
 {
-	[OFAutoreleasePool addToPool: self];
+#if !__OBJC2__
+	Method method;
+	unsigned size;
 
-	return self;
-}
+	if ((method = class_getInstanceMethod(isa, selector)) != NULL)
+		size = method_getSizeOfArguments(method);
+	else
+		size = 0;
 
-- (size_t)retainCount
-{
-	return __retain_count;
+	if (!size)
+		return [self forward: selector
+				    : args];
+
+	return objc_msgSendv(self, selector, size, args);
+#else
+#warning ObjC2 removed objc_msgSendv and there is
+#warning no own implementation for it yet!
+	return nil;
+#endif
 }
+#endif
 
 - (BOOL)isEqual: (id)obj
 {
@@ -87,20 +248,20 @@
 	void **memchunks;
 	size_t memchunks_size;
 
-	memchunks_size = __memchunks_size + 1;
+	memchunks_size = PRE_IVAR->memchunks_size + 1;
 
-	if (SIZE_MAX - __memchunks_size < 1 ||
+	if (SIZE_MAX - PRE_IVAR->memchunks_size < 1 ||
 	    memchunks_size > SIZE_MAX / sizeof(void*))
 		@throw [OFOutOfRangeException newWithClass: [self class]];
 
-	if ((memchunks = realloc(__memchunks,
+	if ((memchunks = realloc(PRE_IVAR->memchunks,
 	    memchunks_size * sizeof(void*))) == NULL)
 		@throw [OFNoMemException newWithClass: [self class]
 					      andSize: memchunks_size];
 
-	__memchunks = memchunks;
-	__memchunks[__memchunks_size] = ptr;
-	__memchunks_size = memchunks_size;
+	PRE_IVAR->memchunks = memchunks;
+	PRE_IVAR->memchunks[PRE_IVAR->memchunks_size] = ptr;
+	PRE_IVAR->memchunks_size = memchunks_size;
 
 	return self;
 }
@@ -113,9 +274,9 @@
 	if (size == 0)
 		return NULL;
 
-	memchunks_size = __memchunks_size + 1;
+	memchunks_size = PRE_IVAR->memchunks_size + 1;
 
-	if (SIZE_MAX - __memchunks_size == 0 ||
+	if (SIZE_MAX - PRE_IVAR->memchunks_size == 0 ||
 	    memchunks_size > SIZE_MAX / sizeof(void*))
 		@throw [OFOutOfRangeException newWithClass: [self class]];
 
@@ -123,16 +284,16 @@
 		@throw [OFNoMemException newWithClass: [self class]
 					      andSize: size];
 
-	if ((memchunks = realloc(__memchunks,
+	if ((memchunks = realloc(PRE_IVAR->memchunks,
 	    memchunks_size * sizeof(void*))) == NULL) {
 		free(ptr);
 		@throw [OFNoMemException newWithClass: [self class]
 					      andSize: memchunks_size];
 	}
 
-	__memchunks = memchunks;
-	__memchunks[__memchunks_size] = ptr;
-	__memchunks_size = memchunks_size;
+	PRE_IVAR->memchunks = memchunks;
+	PRE_IVAR->memchunks[PRE_IVAR->memchunks_size] = ptr;
+	PRE_IVAR->memchunks_size = memchunks_size;
 
 	return ptr;
 }
@@ -162,9 +323,9 @@
 		return NULL;
 	}
 
-	iter = __memchunks + __memchunks_size;
+	iter = PRE_IVAR->memchunks + PRE_IVAR->memchunks_size;
 
-	while (iter-- > __memchunks) {
+	while (iter-- > PRE_IVAR->memchunks) {
 		if (OF_UNLIKELY(*iter == ptr)) {
 			if (OF_UNLIKELY((ptr = realloc(ptr, size)) == NULL))
 				@throw [OFNoMemException
@@ -209,41 +370,42 @@
 	void **iter, *last, **memchunks;
 	size_t i, memchunks_size;
 
-	iter = __memchunks + __memchunks_size;
-	i = __memchunks_size;
+	iter = PRE_IVAR->memchunks + PRE_IVAR->memchunks_size;
+	i = PRE_IVAR->memchunks_size;
 
-	while (iter-- > __memchunks) {
+	while (iter-- > PRE_IVAR->memchunks) {
 		i--;
 
 		if (OF_UNLIKELY(*iter == ptr)) {
-			memchunks_size = __memchunks_size - 1;
-			last = __memchunks[memchunks_size];
+			memchunks_size = PRE_IVAR->memchunks_size - 1;
+			last = PRE_IVAR->memchunks[memchunks_size];
 
-			if (OF_UNLIKELY(__memchunks_size == 0 ||
+			if (OF_UNLIKELY(PRE_IVAR->memchunks_size == 0 ||
 			    memchunks_size > SIZE_MAX / sizeof(void*)))
 				@throw [OFOutOfRangeException
 				    newWithClass: [self class]];
 
 			if (OF_UNLIKELY(memchunks_size == 0)) {
 				free(ptr);
-				free(__memchunks);
+				free(PRE_IVAR->memchunks);
 
-				__memchunks = NULL;
-				__memchunks_size = 0;
+				PRE_IVAR->memchunks = NULL;
+				PRE_IVAR->memchunks_size = 0;
 
 				return self;
 			}
 
-			if (OF_UNLIKELY((memchunks = realloc(__memchunks,
-			    memchunks_size * sizeof(void*))) == NULL))
+			if (OF_UNLIKELY((memchunks = realloc(
+			    PRE_IVAR->memchunks, memchunks_size *
+			    sizeof(void*))) == NULL))
 				@throw [OFNoMemException
 				    newWithClass: [self class]
 					 andSize: memchunks_size];
 
 			free(ptr);
-			__memchunks = memchunks;
-			__memchunks[i] = last;
-			__memchunks_size = memchunks_size;
+			PRE_IVAR->memchunks = memchunks;
+			PRE_IVAR->memchunks[i] = last;
+			PRE_IVAR->memchunks_size = memchunks_size;
 
 			return self;
 		}
@@ -252,5 +414,44 @@
 	@throw [OFMemNotPartOfObjException newWithClass: [self class]
 					     andPointer: ptr];
 	return self;	/* never reached, but makes gcc happy */
+}
+
+- retain
+{
+	PRE_IVAR->retain_count++;
+
+	return self;
+}
+
+- autorelease
+{
+	[OFAutoreleasePool addToPool: self];
+
+	return self;
+}
+
+- (size_t)retainCount
+{
+	return PRE_IVAR->retain_count;
+}
+
+- (void)release
+{
+	if (!--PRE_IVAR->retain_count)
+		[self free];
+}
+
+- free
+{
+	void **iter = PRE_IVAR->memchunks + PRE_IVAR->memchunks_size;
+
+	while (iter-- > PRE_IVAR->memchunks)
+		free(*iter);
+
+	if (PRE_IVAR->memchunks != NULL)
+		free(PRE_IVAR->memchunks);
+
+	free((char*)self - PRE_IVAR_ALIGN);
+	return nil;
 }
 @end

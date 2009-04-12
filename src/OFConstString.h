@@ -12,13 +12,15 @@
 #import "OFObject.h"
 
 #ifndef __objc_INCLUDE_GNU
+#import <objc/runtime.h>
+
 extern void *_OFConstStringClassReference;
 #endif
 
 /**
  * A class for storing static strings using the @"" literal.
  */
-@interface OFConstString: Object <OFHashable, OFRetainRelease>
+@interface OFConstString: OFObject
 {
 	char   *string;
 	size_t length;

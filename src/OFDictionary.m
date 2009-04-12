@@ -82,8 +82,8 @@
 	return [super free];
 }
 
-- set: (id <OFHashable, OFRetainRelease>)key
-   to: (id <OFRetainRelease>)obj
+- set: (OFObject*)key
+   to: (OFObject*)obj
 {
 	uint32_t hash = [key hash] & (size - 1);
 	of_list_object_t *iter;
@@ -111,7 +111,7 @@
 	return self;
 }
 
-- get: (id <OFHashable>)key
+- get: (OFObject*)key
 {
 	uint32_t hash = [key hash] & (size - 1);
 	of_list_object_t *iter;
@@ -126,7 +126,7 @@
 	return nil;
 }
 
-- remove: (id <OFHashable, OFRetainRelease>)key
+- remove: (OFObject*)key
 {
 	uint32_t hash = [key hash] & (size - 1);
 	of_list_object_t *iter;

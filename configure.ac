@@ -17,6 +17,9 @@ LIBS="$LIBS -lobjc"
 AX_CHECK_COMPILER_FLAGS(-pipe, [
 	CFLAGS="$CFLAGS -pipe"
 	OBJCFLAGS="$OBJCFLAGS -pipe"])
+AX_CHECK_COMPILER_FLAGS(-fno-common, [
+	CFLAGS="$CFLAGS -fno-common"
+	OBJCFLAGS="$OBJCFLAGS -fno-common"])
 AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings,
 	[OBJCFLAGS="$OBJCFLAGS -fno-constant-cfstrings"])
 
