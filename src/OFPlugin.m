@@ -46,9 +46,7 @@
 		memcpy(file + pathlen, PLUGIN_SUFFIX, suffixlen);
 		file[pathlen + suffixlen] = 0;
 
-		if ((handle = dlopen(file, RTLD_NOW)) == NULL ||
-		    (init_plugin = dlsym(handle, "init_plugin")) == NULL ||
-		    (plugin = init_plugin()) == nil) {
+		if ((handle = dlopen(file, RTLD_NOW)) == NULL) {
 			free(file);
 			c = [self class];
 			[super free];
@@ -56,6 +54,15 @@
 			    newWithClass: c];
 		}
 		free(file);
+
+		if ((init_plugin = dlsym(handle, "init_plugin")) == NULL ||
+		    (plugin = init_plugin()) == nil) {
+			dlclose(handle);
+			c = [self class];
+			[super free];
+			@throw [OFInitializationFailedException
+			    newWithClass: c];
+		}
 	}
 
 	return self;
