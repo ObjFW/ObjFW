@@ -22,8 +22,15 @@ extern void *_OFConstStringClassReference;
  */
 @interface OFConstString: OFObject
 {
-	char   *string;
-	size_t length;
+	char	     *string;
+#ifdef __objc_INCLUDE_GNU
+	unsigned int length;
+#else
+	int	     length;
+#if __LP64__
+	int	     _unused;
+#endif
+#endif
 }
 
 /**

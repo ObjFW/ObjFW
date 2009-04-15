@@ -117,14 +117,15 @@ struct pre_ivar {
 	method->method_imp = newimp;
 	return oldimp;
 #else
-	IMP imp = class_getMethodImplementation(class, selector);
-	Method method = class_getInstanceMethod(self, selector);
+	Method m;
+	IMP imp;
 
-	if (imp == NULL || method == NULL)
+	if ((m = class_getInstanceMethod(self, selector)) == NULL ||
+	    (imp = method_getImplementation(m)) == NULL)
 		@throw [OFInvalidArgumentException newWithClass: self
 						    andSelector: _cmd];
 
-	return method_setImplementation(method, imp);
+	return method_setImplementation(m, imp);
 #endif
 }
 
@@ -240,7 +241,7 @@ struct pre_ivar {
 - (uint32_t)hash
 {
 	/* Classes containing data should reimplement this! */
-	return (uint32_t)self;
+	return (uint32_t)(intptr_t)self;
 }
 
 - addToMemoryPool: (void*)ptr
