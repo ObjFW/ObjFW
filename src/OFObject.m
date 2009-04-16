@@ -210,24 +210,54 @@ struct pre_ivar {
 - performv: (SEL)selector
 	  : (marg_list)args
 {
-#if !__OBJC2__
-	Method method;
-	unsigned size;
+	Method m;
+	char *encoding, rettype;
+	size_t depth, argsize;
 
-	if ((method = class_getInstanceMethod(isa, selector)) != NULL)
-		size = method_getSizeOfArguments(method);
-	else
-		size = 0;
+	if ((m = class_getInstanceMethod(isa, selector)) == NULL ||
+	    (encoding = (char*)method_getTypeEncoding(m)) == NULL)
+		@throw [OFInvalidArgumentException newWithClass: [self class]
+						    andSelector: _cmd];
 
-	if (!size)
-		return [self forward: selector
-				    : args];
+	rettype = *encoding;
 
-	return objc_msgSendv(self, selector, size, args);
+	/* Skip the return type */
+	switch (*encoding) {
+	case '{':
+		for (depth = 0; *encoding; encoding++) {
+			if (OF_UNLIKELY(*encoding == '{'))
+				depth++;
+			else if (OF_UNLIKELY(*encoding == '}') &&
+			    OF_LIKELY(!--depth))
+				break;
+		}
+		break;
+	case '(':
+		for (depth = 0; *encoding; encoding++) {
+			if (OF_UNLIKELY(*encoding == '('))
+				depth++;
+			else if (OF_UNLIKELY(*encoding == ')') &&
+			    OF_LIKELY(!--depth))
+				break;
+		}
+		break;
+	}
+	encoding++;
+
+	for (argsize = 0; *encoding >= '0' && *encoding <= '9'; encoding++)
+		argsize = argsize * 10 + (*encoding - '0');
+
+	/* We don't support returning structs or unions yet */
+	if (rettype == '{' || rettype == '(')
+		@throw [OFNotImplementedException newWithClass: [self class]
+						   andSelector: _cmd];
+
+#if __OBJC2__
+	@throw [OFNotImplementedException newWithClass: [self class]
+					   andSelector: _cmd];
+	return self;
 #else
-#warning ObjC2 removed objc_msgSendv and there is
-#warning no own implementation for it yet!
-	return nil;
+	return objc_msgSendv(self, selector, argsize, args);
 #endif
 }
 #endif
