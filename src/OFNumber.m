@@ -618,4 +618,9 @@
 						    andSelector: _cmd];
 	}
 }
+
+- (uint32_t)hash
+{
+	return [self asUInt32];
+}
 @end
