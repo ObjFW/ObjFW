@@ -81,8 +81,9 @@ void *_OFConstStringClassReference;
 	return self;
 }
 
-- (void)release
+- release
 {
+	return self;
 }
 
 - (size_t)retainCount

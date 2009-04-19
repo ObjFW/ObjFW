@@ -385,10 +385,12 @@ struct pre_ivar {
 	return PRE_IVAR->retain_count;
 }
 
-- (void)release
+- release
 {
 	if (!--PRE_IVAR->retain_count)
-		[self free];
+		return [self free];
+
+	return self;
 }
 
 - free

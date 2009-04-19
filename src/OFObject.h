@@ -198,7 +198,7 @@
 /**
  * Decreases the retain cound and frees the object if it reaches 0.
  */
-- (void)release;
+- release;
 
 /**
  * Frees the object and also frees all memory allocated via its memory pool.
