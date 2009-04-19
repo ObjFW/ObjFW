@@ -1,21 +1,19 @@
 Test if autorelease pool releases everything correctly when thread is ended
 
-Serialization
+Proper UTF-8 support!
 Tests for OFFile.
 Tests for OFNumber.
 
-OFBase64
-
-OFDirectory
-OFSortedArray
 OFThread
 
-OFStack
+Serialization
+
 OFQueue
+OFSortedArray
+
+OFBase64
+OFDirectory
 
 OFXMLParser
 
-OFSortedQueue
-
-OFTLSSocket
-OFXMPPClient
+... and of course enhance the already existing classes!
