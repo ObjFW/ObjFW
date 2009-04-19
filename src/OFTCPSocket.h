@@ -60,8 +60,6 @@
  */
 - init;
 
-- free;
-
 /**
  * Connect the OFTCPSocket to the specified destination.
  *

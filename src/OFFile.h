@@ -106,8 +106,6 @@ typedef int gid_t;
 - initWithPath: (const char*)path
        andMode: (const char*)mode;
 
-- free;
-
 /**
  * \return A boolean whether the end of the file has been reached
  */
