@@ -21,14 +21,11 @@
 @implementation OFPlugin
 + pluginFromFile: (const char*)path
 {
-	return [[[OFPlugin alloc] initFromFile: path] autorelease];
-}
-
-- initFromFile: (const char*)path
-{
 	char *file;
 	size_t pathlen, suffixlen;
-	id (*init_plugin)();
+	void *handle;
+	OFPlugin *(*init_plugin)();
+	OFPlugin *plugin;
 	Class c;
 
 	if ((self = [super init])) {
@@ -63,6 +60,9 @@
 			@throw [OFInitializationFailedException
 			    newWithClass: c];
 		}
+
+		plugin->handle = handle;
+		return plugin;
 	}
 
 	return self;
@@ -70,29 +70,8 @@
 
 - free
 {
-	[plugin free];
 	dlclose(handle);
 
 	return [super free];
-}
-
-#ifdef __objc_INCLUDE_GNU
-- (retval_t)forward: (SEL)selector
-		   : (arglist_t)args
-#else
-- (id)forward: (SEL)selector
-	     : (marg_list)args
-#endif
-{
-	return [plugin performv: selector
-			       : args];
-}
-
-- (IMP)methodFor: (SEL)selector
-{
-	if ([self respondsTo: selector])
-		return [self methodFor: selector];
-	else
-		return [plugin methodFor: selector];
 }
 @end

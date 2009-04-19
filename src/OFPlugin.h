@@ -17,7 +17,6 @@
 @interface OFPlugin: OFObject
 {
 	void *handle;
-	id   plugin;
 }
 
 /**
@@ -27,12 +26,4 @@
  * \return A new autoreleased OFPlugin
  */
 + pluginFromFile: (const char*)path;
-
-/**
- * Initializes an already allocated OFPlugin from a file.
- *
- * \param path Path to the OFPlugin file. The suffix is appended automatically.
- * \return An initialized OFPlugin
- */
-- initFromFile: (const char*)path;
 @end

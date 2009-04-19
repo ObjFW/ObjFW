@@ -9,11 +9,8 @@
  * the packaging of this file.
  */
 
-#import "OFObject.h"
+#import "OFPlugin.h"
 
-@protocol TestPlugin
+@interface TestPlugin: OFPlugin
 - (void)test;
-@end
-
-@interface TestPlugin: OFObject <TestPlugin>
 @end

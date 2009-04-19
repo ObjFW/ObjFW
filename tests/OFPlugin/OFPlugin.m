@@ -17,7 +17,7 @@
 int
 main()
 {
-	OFPlugin <TestPlugin> *plugin;
+	TestPlugin *plugin;
 
 	plugin = [OFPlugin pluginFromFile: "TestPlugin/TestPlugin"];
 	[plugin test];
