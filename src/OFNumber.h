@@ -151,4 +151,11 @@ enum of_number_type {
 - (intptr_t)asIntPtr;
 - (float)asFloat;
 - (double)asDouble;
+
+- add: (OFNumber*)num;
+- subtract: (OFNumber*)num;
+- multiplyWith: (OFNumber*)num;
+- divideBy: (OFNumber*)num;
+- increase;
+- decrease;
 @end

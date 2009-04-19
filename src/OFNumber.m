@@ -68,6 +68,114 @@
 		@throw [OFInvalidFormatException newWithClass: isa];	\
 		return 0;	/* Make gcc happy */			\
 	}
+#define CALCULATE(o)							\
+	switch (type) {							\
+	case OF_NUMBER_CHAR:						\
+		value.char_ o;						\
+	case OF_NUMBER_SHORT:						\
+		value.short_ o;						\
+	case OF_NUMBER_INT:						\
+		value.int_ o;						\
+	case OF_NUMBER_LONG:						\
+		value.long_ o;						\
+	case OF_NUMBER_UCHAR:						\
+		value.uchar o;						\
+	case OF_NUMBER_USHORT:						\
+		value.ushort o;						\
+	case OF_NUMBER_UINT:						\
+		value.uint o;						\
+	case OF_NUMBER_ULONG:						\
+		value.ulong o;						\
+	case OF_NUMBER_INT8:						\
+		value.int8 o;						\
+	case OF_NUMBER_INT16:						\
+		value.int16 o;						\
+	case OF_NUMBER_INT32:						\
+		value.int32 o;						\
+	case OF_NUMBER_INT64:						\
+		value.int64 o;						\
+	case OF_NUMBER_UINT8:						\
+		value.uint8 o;						\
+	case OF_NUMBER_UINT16:						\
+		value.uint16 o;						\
+	case OF_NUMBER_UINT32:						\
+		value.uint32 o;						\
+	case OF_NUMBER_UINT64:						\
+		value.uint64 o;						\
+	case OF_NUMBER_SIZE:						\
+		value.size o;						\
+	case OF_NUMBER_SSIZE:						\
+		value.ssize o;						\
+	case OF_NUMBER_INTMAX:						\
+		value.intmax o;						\
+	case OF_NUMBER_UINTMAX:						\
+		value.uintmax o;					\
+	case OF_NUMBER_PTRDIFF:						\
+		value.ptrdiff o;					\
+	case OF_NUMBER_INTPTR:						\
+		value.intptr o;						\
+	case OF_NUMBER_FLOAT:						\
+		value.float_ o;						\
+	case OF_NUMBER_DOUBLE:						\
+		value.double_ o;					\
+	default:							\
+		@throw [OFInvalidFormatException newWithClass: isa];	\
+		return nil;	/* make gcc happy */			\
+	}
+#define CALCULATE2(o, n)						\
+	switch ([n type]) { 						\
+	case OF_NUMBER_CHAR:						\
+		value.char_ o [n asChar];				\
+	case OF_NUMBER_SHORT:						\
+		value.short_ o [n asShort];				\
+	case OF_NUMBER_INT:						\
+		value.int_ o [n asInt];					\
+	case OF_NUMBER_LONG:						\
+		value.long_ o [n asLong];				\
+	case OF_NUMBER_UCHAR:						\
+		value.uchar o [n asUChar];				\
+	case OF_NUMBER_USHORT:						\
+		value.ushort o [n asUShort];				\
+	case OF_NUMBER_UINT:						\
+		value.uint o [n asUInt];				\
+	case OF_NUMBER_ULONG:						\
+		value.ulong o [n asULong];				\
+	case OF_NUMBER_INT8:						\
+		value.int8 o [n asInt8];				\
+	case OF_NUMBER_INT16:						\
+		value.int16 o [n asInt16];				\
+	case OF_NUMBER_INT32:						\
+		value.int32 o [n asInt32];				\
+	case OF_NUMBER_INT64:						\
+		value.int64 o [n asInt64];				\
+	case OF_NUMBER_UINT8:						\
+		value.uint8 o [n asUInt8];				\
+	case OF_NUMBER_UINT16:						\
+		value.uint16 o [n asUInt16];				\
+	case OF_NUMBER_UINT32:						\
+		value.uint32 o [n asUInt32];				\
+	case OF_NUMBER_UINT64:						\
+		value.uint64 o [n asUInt64];				\
+	case OF_NUMBER_SIZE:						\
+		value.size o [n asSize];				\
+	case OF_NUMBER_SSIZE:						\
+		value.ssize o [n asSSize];				\
+	case OF_NUMBER_INTMAX:						\
+		value.intmax o [n asIntMax];				\
+	case OF_NUMBER_UINTMAX:						\
+		value.uintmax o [n asUIntMax];				\
+	case OF_NUMBER_PTRDIFF:						\
+		value.ptrdiff o [n asPtrDiff];				\
+	case OF_NUMBER_INTPTR:						\
+		value.intptr o [n asIntPtr];				\
+	case OF_NUMBER_FLOAT:						\
+		value.float_ o [n asFloat];				\
+	case OF_NUMBER_DOUBLE:						\
+		value.double_ o [n asDouble];				\
+	default:							\
+		@throw [OFInvalidFormatException newWithClass: isa];	\
+		return nil;	/* make gcc happy */			\
+	}
 
 @implementation OFNumber
 + numberWithChar: (char)char_
@@ -602,5 +710,41 @@
 - (uint32_t)hash
 {
 	return [self asUInt32];
+}
+
+- add: (OFNumber*)num
+{
+	CALCULATE2(+=, num)
+	return self;
+}
+
+- subtract: (OFNumber*)num
+{
+	CALCULATE2(-=, num)
+	return self;
+}
+
+- multiplyWith: (OFNumber*)num
+{
+	CALCULATE2(*=, num)
+	return self;
+}
+
+- divideBy: (OFNumber*)num
+{
+	CALCULATE2(/=, num)
+	return self;
+}
+
+- increase
+{
+	CALCULATE(++)
+	return self;
+}
+
+- decrease
+{
+	CALCULATE(--)
+	return self;
 }
 @end
