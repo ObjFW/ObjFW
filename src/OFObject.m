@@ -202,11 +202,11 @@ struct pre_ivar {
 
 	if (SIZE_MAX - PRE_IVAR->memchunks_size < 1 ||
 	    memchunks_size > SIZE_MAX / sizeof(void*))
-		@throw [OFOutOfRangeException newWithClass: [self class]];
+		@throw [OFOutOfRangeException newWithClass: isa];
 
 	if ((memchunks = realloc(PRE_IVAR->memchunks,
 	    memchunks_size * sizeof(void*))) == NULL)
-		@throw [OFNoMemException newWithClass: [self class]
+		@throw [OFNoMemException newWithClass: isa
 					      andSize: memchunks_size];
 
 	PRE_IVAR->memchunks = memchunks;
@@ -228,16 +228,16 @@ struct pre_ivar {
 
 	if (SIZE_MAX - PRE_IVAR->memchunks_size == 0 ||
 	    memchunks_size > SIZE_MAX / sizeof(void*))
-		@throw [OFOutOfRangeException newWithClass: [self class]];
+		@throw [OFOutOfRangeException newWithClass: isa];
 
 	if ((ptr = malloc(size)) == NULL)
-		@throw [OFNoMemException newWithClass: [self class]
+		@throw [OFNoMemException newWithClass: isa
 					      andSize: size];
 
 	if ((memchunks = realloc(PRE_IVAR->memchunks,
 	    memchunks_size * sizeof(void*))) == NULL) {
 		free(ptr);
-		@throw [OFNoMemException newWithClass: [self class]
+		@throw [OFNoMemException newWithClass: isa
 					      andSize: memchunks_size];
 	}
 
@@ -255,7 +255,7 @@ struct pre_ivar {
 		return NULL;
 
 	if (nitems > SIZE_MAX / size)
-		@throw [OFOutOfRangeException newWithClass: [self class]];
+		@throw [OFOutOfRangeException newWithClass: isa];
 
 	return [self getMemWithSize: nitems * size];
 }
@@ -278,16 +278,15 @@ struct pre_ivar {
 	while (iter-- > PRE_IVAR->memchunks) {
 		if (OF_UNLIKELY(*iter == ptr)) {
 			if (OF_UNLIKELY((ptr = realloc(ptr, size)) == NULL))
-				@throw [OFNoMemException
-				    newWithClass: [self class]
-					 andSize: size];
+				@throw [OFNoMemException newWithClass: isa
+							      andSize: size];
 
 			*iter = ptr;
 			return ptr;
 		}
 	}
 
-	@throw [OFMemNotPartOfObjException newWithClass: [self class]
+	@throw [OFMemNotPartOfObjException newWithClass: isa
 					     andPointer: ptr];
 	return NULL;	/* never reached, but makes gcc happy */
 }
@@ -308,7 +307,7 @@ struct pre_ivar {
 	}
 
 	if (nitems > SIZE_MAX / size)
-		@throw [OFOutOfRangeException newWithClass: [self class]];
+		@throw [OFOutOfRangeException newWithClass: isa];
 
 	memsize = nitems * size;
 	return [self resizeMem: ptr
@@ -333,7 +332,7 @@ struct pre_ivar {
 			if (OF_UNLIKELY(PRE_IVAR->memchunks_size == 0 ||
 			    memchunks_size > SIZE_MAX / sizeof(void*)))
 				@throw [OFOutOfRangeException
-				    newWithClass: [self class]];
+				    newWithClass: isa];
 
 			if (OF_UNLIKELY(memchunks_size == 0)) {
 				free(ptr);
@@ -349,7 +348,7 @@ struct pre_ivar {
 			    PRE_IVAR->memchunks, memchunks_size *
 			    sizeof(void*))) == NULL))
 				@throw [OFNoMemException
-				    newWithClass: [self class]
+				    newWithClass: isa
 					 andSize: memchunks_size];
 
 			free(ptr);
@@ -361,7 +360,7 @@ struct pre_ivar {
 		}
 	}
 
-	@throw [OFMemNotPartOfObjException newWithClass: [self class]
+	@throw [OFMemNotPartOfObjException newWithClass: isa
 					     andPointer: ptr];
 	return self;	/* never reached, but makes gcc happy */
 }

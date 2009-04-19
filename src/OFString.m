@@ -158,7 +158,7 @@ check_utf8(const char *str, size_t len)
 				is_utf8 = YES;
 				break;
 			case -1:
-				c = [self class];
+				c = isa;
 				[super free];
 				@throw [OFInvalidEncodingException
 				    newWithClass: c];
@@ -198,13 +198,13 @@ check_utf8(const char *str, size_t len)
 
 	if ((self = [super init])) {
 		if (fmt == NULL) {
-			c = [self class];
+			c = isa;
 			[super free];
 			@throw [OFInvalidFormatException newWithClass: c];
 		}
 
 		if ((t = vasprintf(&string, fmt, args)) == -1) {
-			c = [self class];
+			c = isa;
 			[super free];
 			@throw [OFInitializationFailedException
 			    newWithClass: c];
@@ -217,7 +217,7 @@ check_utf8(const char *str, size_t len)
 			break;
 		case -1:
 			free(string);
-			c = [self class];
+			c = isa;
 			[super free];
 			@throw [OFInvalidEncodingException newWithClass: c];
 		}
@@ -266,7 +266,7 @@ check_utf8(const char *str, size_t len)
 		length = 0;
 		is_utf8 = NO;
 
-		@throw [OFInvalidEncodingException newWithClass: [self class]];
+		@throw [OFInvalidEncodingException newWithClass: isa];
 	}
 
 	length = len;
@@ -291,7 +291,7 @@ check_utf8(const char *str, size_t len)
 {
 	if (![obj isKindOf: [OFString class]] &&
 	    ![obj isKindOf: [OFConstString class]])
-		@throw [OFInvalidArgumentException newWithClass: [self class]];
+		@throw [OFInvalidArgumentException newWithClass: isa];
 
 	return strcmp(string, [obj cString]);
 }
@@ -326,7 +326,7 @@ check_utf8(const char *str, size_t len)
 		is_utf8 = YES;
 		break;
 	case -1:
-		@throw [OFInvalidEncodingException newWithClass: [self class]];
+		@throw [OFInvalidEncodingException newWithClass: isa];
 	}
 
 	newlen = length + strlength;
@@ -360,7 +360,7 @@ check_utf8(const char *str, size_t len)
 	char *t;
 
 	if (fmt == NULL)
-		@throw [OFInvalidFormatException newWithClass: [self class]];
+		@throw [OFInvalidFormatException newWithClass: isa];
 
 	if ((vasprintf(&t, fmt, args)) == -1)
 		/*
@@ -368,7 +368,7 @@ check_utf8(const char *str, size_t len)
 		 * Unfortunately, as errno isn't always thread-safe, there's
 		 * no good way for us to find out what really happened.
 		 */
-		@throw [OFNoMemException newWithClass: [self class]];
+		@throw [OFNoMemException newWithClass: isa];
 
 	@try {
 		[self appendCString: t];
@@ -405,15 +405,13 @@ check_utf8(const char *str, size_t len)
 		/* A start byte can't happen first as we reversed everything */
 		if (OF_UNLIKELY(string[i] & 0x40)) {
 			madvise(string, len, MADV_NORMAL);
-			@throw [OFInvalidEncodingException
-			    newWithClass: [self class]];
+			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
 
 		/* Next byte must not be ASCII */
 		if (OF_UNLIKELY(length < i + 1 || !(string[i + 1] & 0x80))) {
 			madvise(string, len, MADV_NORMAL);
-			@throw [OFInvalidEncodingException
-			    newWithClass: [self class]];
+			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
 
 		/* Next byte is the start byte */
@@ -429,8 +427,7 @@ check_utf8(const char *str, size_t len)
 		/* Second next byte must not be ASCII */
 		if (OF_UNLIKELY(length < i + 2 || !(string[i + 2] & 0x80))) {
 			madvise(string, len, MADV_NORMAL);
-			@throw [OFInvalidEncodingException
-			    newWithClass: [self class]];
+			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
 
 		/* Second next byte is the start byte */
@@ -446,8 +443,7 @@ check_utf8(const char *str, size_t len)
 		/* Third next byte must not be ASCII */
 		if (OF_UNLIKELY(length < i + 3 || !(string[i + 3] & 0x80))) {
 			madvise(string, len, MADV_NORMAL);
-			@throw [OFInvalidEncodingException
-			    newWithClass: [self class]];
+			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
 
 		/* Third next byte is the start byte */
@@ -466,7 +462,7 @@ check_utf8(const char *str, size_t len)
 
 		/* UTF-8 does not allow more than 4 bytes per character */
 		madvise(string, len, MADV_NORMAL);
-		@throw [OFInvalidEncodingException newWithClass: [self class]];
+		@throw [OFInvalidEncodingException newWithClass: isa];
 	}
 
 	madvise(string, len, MADV_NORMAL);
@@ -479,7 +475,7 @@ check_utf8(const char *str, size_t len)
 	char *p = string + length;
 
 	if (is_utf8)
-		@throw [OFInvalidEncodingException newWithClass: [self class]];
+		@throw [OFInvalidEncodingException newWithClass: isa];
 
 	while (--p >= string)
 		*p = toupper((int)*p);
@@ -492,7 +488,7 @@ check_utf8(const char *str, size_t len)
 	char *p = string + length;
 
 	if (is_utf8)
-		@throw [OFInvalidEncodingException newWithClass: [self class]];
+		@throw [OFInvalidEncodingException newWithClass: isa];
 
 	while (--p >= string)
 		*p = tolower((int)*p);

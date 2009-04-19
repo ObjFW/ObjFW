@@ -49,7 +49,7 @@
 {
 	if ((self = [super init])) {
 		if (hashsize < 8 || hashsize > 31) {
-			Class c = [self class];
+			Class c = isa;
 			[self free];
 			@throw [OFInvalidArgumentException
 			    newWithClass: c

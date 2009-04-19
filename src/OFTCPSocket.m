@@ -84,10 +84,10 @@
 	char portstr[6];
 
 	if (!port)
-		@throw [OFInvalidPortException newWithClass: [self class]];
+		@throw [OFInvalidPortException newWithClass: isa];
 
 	if (sock != INVALID_SOCKET)
-		@throw [OFAlreadyConnectedException newWithClass: [self class]];
+		@throw [OFAlreadyConnectedException newWithClass: isa];
 
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
@@ -97,7 +97,7 @@
 
 	if (getaddrinfo(host, portstr, &hints, &res0))
 		@throw [OFAddressTranslationFailedException
-		    newWithClass: [self class]
+		    newWithClass: isa
 			 andNode: host
 		      andService: portstr];
 
@@ -118,7 +118,7 @@
 	freeaddrinfo(res0);
 
 	if (sock == INVALID_SOCKET)
-		@throw [OFConnectionFailedException newWithClass: [self class]
+		@throw [OFConnectionFailedException newWithClass: isa
 							 andHost: host
 							 andPort: port];
 
@@ -133,13 +133,13 @@
 	char portstr[6];
 
 	if (!port)
-		@throw [OFInvalidPortException newWithClass: [self class]];
+		@throw [OFInvalidPortException newWithClass: isa];
 
 	if (sock != INVALID_SOCKET)
-		@throw [OFAlreadyConnectedException newWithClass: [self class]];
+		@throw [OFAlreadyConnectedException newWithClass: isa];
 
 	if ((sock = socket(family, SOCK_STREAM, 0)) == INVALID_SOCKET)
-		@throw [OFBindFailedException newWithClass: [self class]
+		@throw [OFBindFailedException newWithClass: isa
 						   andHost: host
 						   andPort: port
 						 andFamily: family];
@@ -152,13 +152,13 @@
 
 	if (getaddrinfo(host, portstr, &hints, &res))
 		@throw [OFAddressTranslationFailedException
-		    newWithClass: [self class]
+		    newWithClass: isa
 			 andNode: host
 		      andService: portstr];
 
 	if (bind(sock, res->ai_addr, res->ai_addrlen) == -1) {
 		freeaddrinfo(res);
-		@throw [OFBindFailedException newWithClass: [self class]
+		@throw [OFBindFailedException newWithClass: isa
 						   andHost: host
 						   andPort: port
 						 andFamily: family];
@@ -172,10 +172,10 @@
 - listenWithBackLog: (int)backlog
 {
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: [self class]];
+		@throw [OFNotConnectedException newWithClass: isa];
 
 	if (listen(sock, backlog) == -1)
-		@throw [OFListenFailedException newWithClass: [self class]
+		@throw [OFListenFailedException newWithClass: isa
 						  andBackLog: backlog];
 
 	return self;
@@ -184,10 +184,10 @@
 - listen
 {
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: [self class]];
+		@throw [OFNotConnectedException newWithClass: isa];
 
 	if (listen(sock, 5) == -1)
-		@throw [OFListenFailedException newWithClass: [self class]
+		@throw [OFListenFailedException newWithClass: isa
 						  andBackLog: 5];
 
 	return self;
@@ -212,7 +212,7 @@
 
 	if ((s = accept(sock, addr, &addrlen)) == INVALID_SOCKET) {
 		[newsock free];
-		@throw [OFAcceptFailedException newWithClass: [self class]];
+		@throw [OFAcceptFailedException newWithClass: isa];
 	}
 
 	[newsock setSocket: s];
@@ -228,13 +228,13 @@
 	ssize_t ret;
 
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: [self class]];
+		@throw [OFNotConnectedException newWithClass: isa];
 
 	switch ((ret = recv(sock, buf, size, 0))) {
 	case 0:
-		@throw [OFNotConnectedException newWithClass: [self class]];
+		@throw [OFNotConnectedException newWithClass: isa];
 	case -1:
-		@throw [OFReadFailedException newWithClass: [self class]
+		@throw [OFReadFailedException newWithClass: isa
 						   andSize: size];
 	}
 
@@ -248,10 +248,10 @@
 	ssize_t ret;
 
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: [self class]];
+		@throw [OFNotConnectedException newWithClass: isa];
 
 	if ((ret = send(sock, buf, size, 0)) == -1)
-		@throw [OFWriteFailedException newWithClass: [self class]
+		@throw [OFWriteFailedException newWithClass: isa
 						    andSize: size];
 
 	/* This is safe, as we already checked for -1 */
@@ -261,7 +261,7 @@
 - (size_t)writeCString: (const char*)str
 {
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: [self class]];
+		@throw [OFNotConnectedException newWithClass: isa];
 
 	return [self writeNBytes: strlen(str)
 		      fromBuffer: str];
@@ -273,7 +273,7 @@
 	int flags;
 
 	if ((flags = fcntl(sock, F_GETFL)) == -1)
-		@throw [OFSetOptionFailedException newWithClass: [self class]];
+		@throw [OFSetOptionFailedException newWithClass: isa];
 
 	if (enable)
 		flags &= ~O_NONBLOCK;
@@ -281,12 +281,12 @@
 		flags |= O_NONBLOCK;
 
 	if (fcntl(sock, F_SETFL, flags) == -1)
-		@throw [OFSetOptionFailedException newWithClass: [self class]];
+		@throw [OFSetOptionFailedException newWithClass: isa];
 #else
 	u_long v = enable;
 
 	if (ioctlsocket(sock, FIONBIO, &v) == SOCKET_ERROR)
-		@throw [OFSetOptionFailedException newWithClass: [self class]];
+		@throw [OFSetOptionFailedException newWithClass: isa];
 #endif
 
 	return self;
@@ -297,7 +297,7 @@
 	int v = enable;
 
 	if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char*)&v, sizeof(v)))
-		@throw [OFSetOptionFailedException newWithClass: [self class]];
+		@throw [OFSetOptionFailedException newWithClass: isa];
 
 	return self;
 }
@@ -305,7 +305,7 @@
 - close
 {
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: [self class]];
+		@throw [OFNotConnectedException newWithClass: isa];
 
 	sock = INVALID_SOCKET;
 

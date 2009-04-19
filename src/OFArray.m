@@ -63,7 +63,7 @@ extern int getpagesize(void);
 - (void*)item: (size_t)item
 {
 	if (item >= items)
-		@throw [OFOutOfRangeException newWithClass: [self class]];
+		@throw [OFOutOfRangeException newWithClass: isa];
 
 	return data + item * itemsize;
 }
@@ -76,7 +76,7 @@ extern int getpagesize(void);
 - add: (void*)item
 {
 	if (SIZE_MAX - items < 1 || items + 1 > SIZE_MAX / itemsize)
-		@throw [OFOutOfRangeException newWithClass: [self class]];
+		@throw [OFOutOfRangeException newWithClass: isa];
 
 	data = [self resizeMem: data
 		      toNItems: items + 1
@@ -91,7 +91,7 @@ extern int getpagesize(void);
  fromCArray: (void*)carray
 {
 	if (nitems > SIZE_MAX - items || items + nitems > SIZE_MAX / itemsize)
-		@throw [OFOutOfRangeException newWithClass: [self class]];
+		@throw [OFOutOfRangeException newWithClass: isa];
 
 	data = [self resizeMem: data
 		      toNItems: items + nitems
@@ -106,7 +106,7 @@ extern int getpagesize(void);
 - removeNItems: (size_t)nitems
 {
 	if (nitems > items)
-		@throw [OFOutOfRangeException newWithClass: [self class]];
+		@throw [OFOutOfRangeException newWithClass: isa];
 
 	data = [self resizeMem: data
 		      toNItems: items - nitems
@@ -144,10 +144,10 @@ extern int getpagesize(void);
 	int ret;
 
 	if (![obj isKindOf: [OFArray class]])
-		@throw [OFInvalidArgumentException newWithClass: [self class]
+		@throw [OFInvalidArgumentException newWithClass: isa
 						    andSelector: _cmd];
 	if ([obj itemsize] != itemsize)
-		@throw [OFInvalidArgumentException newWithClass: [self class]
+		@throw [OFInvalidArgumentException newWithClass: isa
 						    andSelector: _cmd];
 
 	if ([obj items] == items)
@@ -197,7 +197,7 @@ extern int getpagesize(void);
 	size_t nsize;
 
 	if (SIZE_MAX - items < 1 || items + 1 > SIZE_MAX / itemsize)
-		@throw [OFOutOfRangeException newWithClass: [self class]];
+		@throw [OFOutOfRangeException newWithClass: isa];
 
 	nsize = ((items + 1) * itemsize + lastpagebyte) & ~lastpagebyte;
 
@@ -217,7 +217,7 @@ extern int getpagesize(void);
 	size_t nsize;
 
 	if (nitems > SIZE_MAX - items || items + nitems > SIZE_MAX / itemsize)
-		@throw [OFOutOfRangeException newWithClass: [self class]];
+		@throw [OFOutOfRangeException newWithClass: isa];
 
 	nsize = ((items + nitems) * itemsize + lastpagebyte) & ~lastpagebyte;
 
@@ -237,7 +237,7 @@ extern int getpagesize(void);
 	size_t nsize;
 
 	if (nitems > items)
-		@throw [OFOutOfRangeException newWithClass: [self class]];
+		@throw [OFOutOfRangeException newWithClass: isa];
 
 	nsize = ((items - nitems) * itemsize + lastpagebyte) & ~lastpagebyte;
 

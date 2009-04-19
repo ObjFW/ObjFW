@@ -84,7 +84,7 @@
 
 	if ((self = [super init])) {
 		if ((fp = fopen(path, mode)) == NULL) {
-			c = [self class];
+			c = isa;
 			[super free];
 			@throw [OFOpenFileFailedException newWithClass: c 
 							       andPath: path
@@ -113,7 +113,7 @@
 	size_t ret;
 
 	if ((ret = fread(buf, size, nitems, fp)) == 0 && !feof(fp))
-		@throw [OFReadFailedException newWithClass: [self class]
+		@throw [OFReadFailedException newWithClass: isa
 						   andSize: size
 						 andNItems: nitems];
 
@@ -136,7 +136,7 @@
 
 	if ((ret = fwrite(buf, size, nitems, fp)) == 0 &&
 	    size != 0 && nitems != 0)
-		@throw [OFWriteFailedException newWithClass: [self class]
+		@throw [OFWriteFailedException newWithClass: isa
 						    andSize: size
 						  andNItems: nitems];
 

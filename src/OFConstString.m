@@ -58,7 +58,7 @@ void *_OFConstStringClassReference;
 {
 	if (![obj isKindOf: [OFString class]] &&
 	    ![obj isKindOf: [OFConstString class]])
-		@throw [OFInvalidArgumentException newWithClass: [self class]];
+		@throw [OFInvalidArgumentException newWithClass: isa];
 
 	return strcmp(string, [obj cString]);
 }
