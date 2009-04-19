@@ -38,7 +38,6 @@ enum of_number_type {
 	OF_NUMBER_INTPTR,
 	OF_NUMBER_FLOAT,
 	OF_NUMBER_DOUBLE,
-	OF_NUMBER_LONG_DOUBLE
 };
 
 /**
@@ -72,7 +71,6 @@ enum of_number_type {
 		intptr_t       intptr;
 		float	       float_;
 		double	       double_;
-		long double    longdouble;
 	} value;
 	enum of_number_type type;
 }
@@ -101,7 +99,6 @@ enum of_number_type {
 + numberWithIntPtr: (intptr_t)intptr;
 + numberWithFloat: (float)float_;
 + numberWithDouble: (double)double_;
-+ numberWithLongDouble: (long double)longdouble;
 
 - initWithChar: (char)char_;
 - initWithShort: (short)short_;
@@ -127,7 +124,6 @@ enum of_number_type {
 - initWithIntPtr: (intptr_t)intptr;
 - initWithFloat: (float)float_;
 - initWithDouble: (double)double_;
-- initWithLongDouble: (long double)longdouble;
 
 - (enum of_number_type)type;
 
@@ -155,5 +151,4 @@ enum of_number_type {
 - (intptr_t)asIntPtr;
 - (float)asFloat;
 - (double)asDouble;
-- (long double)asLongDouble;
 @end

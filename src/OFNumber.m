@@ -64,8 +64,6 @@
 		return (t)value.float_;					\
 	case OF_NUMBER_DOUBLE:						\
 		return (t)value.double_;				\
-	case OF_NUMBER_LONG_DOUBLE:					\
-		return (t)value.longdouble;				\
 	default:							\
 		@throw [OFInvalidFormatException newWithClass: isa];	\
 		return 0;	/* Make gcc happy */			\
@@ -190,11 +188,6 @@
 + numberWithDouble: (double)double_
 {
 	return [[[OFNumber alloc] initWithDouble: double_] autorelease];
-}
-
-+ numberWithLongDouble: (long double)longdouble
-{
-	return [[[OFNumber alloc] initWithLongDouble: longdouble] autorelease];
 }
 
 - initWithChar: (char)char_
@@ -437,16 +430,6 @@
 	return self;
 }
 
-- initWithLongDouble: (long double)longdouble
-{
-	if ((self = [super init])) {
-		value.longdouble = longdouble;
-		type = OF_NUMBER_LONG_DOUBLE;
-	}
-
-	return self;
-}
-
 - (enum of_number_type)type
 {
 	return type;
@@ -609,8 +592,7 @@
 		return ([obj asUIntMax] == [self asUIntMax] ? YES : NO);
 	case OF_NUMBER_FLOAT:
 	case OF_NUMBER_DOUBLE:
-	case OF_NUMBER_LONG_DOUBLE:
-		return ([obj asLongDouble] == [self asLongDouble] ? YES : NO);
+		return ([obj asDouble] == [self asDouble] ? YES : NO);
 	default:
 		@throw [OFInvalidArgumentException newWithClass: isa
 						    andSelector: _cmd];
