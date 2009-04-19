@@ -9,12 +9,6 @@
  * the packaging of this file.
  */
 
-/*
- * Get rid of the stupid warnings until we have our own implementation for
- * objc_msgSendv.
- */
-#define OBJC2_UNAVAILABLE
-
 #import "config.h"
 
 #include <stdlib.h>
@@ -186,81 +180,6 @@ struct pre_ivar {
 	return class_getMethodImplementation(isa, selector);
 #endif
 }
-
-#ifdef __objc_INCLUDE_GNU
-- (retval_t)forward: (SEL)selector
-		   : (arglist_t)args
-#else
-- (id)forward: (SEL)selector
-	     : (marg_list)args
-#endif
-{
-	@throw [OFNotImplementedException newWithClass: [self class]
-					   andSelector: _cmd];
-	return self;
-}
-
-#ifdef __objc_INCLUDE_GNU
-- (retval_t)performv: (SEL)selector
-		    : (arglist_t)args
-{
-	return objc_msg_sendv(self, selector, args);
-}
-#else
-- performv: (SEL)selector
-	  : (marg_list)args
-{
-	Method m;
-	char *encoding, rettype;
-	size_t depth, argsize;
-
-	if ((m = class_getInstanceMethod(isa, selector)) == NULL ||
-	    (encoding = (char*)method_getTypeEncoding(m)) == NULL)
-		@throw [OFInvalidArgumentException newWithClass: [self class]
-						    andSelector: _cmd];
-
-	rettype = *encoding;
-
-	/* Skip the return type */
-	switch (*encoding) {
-	case '{':
-		for (depth = 0; *encoding; encoding++) {
-			if (OF_UNLIKELY(*encoding == '{'))
-				depth++;
-			else if (OF_UNLIKELY(*encoding == '}') &&
-			    OF_LIKELY(!--depth))
-				break;
-		}
-		break;
-	case '(':
-		for (depth = 0; *encoding; encoding++) {
-			if (OF_UNLIKELY(*encoding == '('))
-				depth++;
-			else if (OF_UNLIKELY(*encoding == ')') &&
-			    OF_LIKELY(!--depth))
-				break;
-		}
-		break;
-	}
-	encoding++;
-
-	for (argsize = 0; *encoding >= '0' && *encoding <= '9'; encoding++)
-		argsize = argsize * 10 + (*encoding - '0');
-
-	/* We don't support returning structs or unions yet */
-	if (rettype == '{' || rettype == '(')
-		@throw [OFNotImplementedException newWithClass: [self class]
-						   andSelector: _cmd];
-
-#if __OBJC2__
-	@throw [OFNotImplementedException newWithClass: [self class]
-					   andSelector: _cmd];
-	return self;
-#else
-	return objc_msgSendv(self, selector, argsize, args);
-#endif
-}
-#endif
 
 - (BOOL)isEqual: (id)obj
 {

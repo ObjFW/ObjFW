@@ -103,38 +103,6 @@
 - (IMP)methodFor: (SEL)selector;
 
 /**
- * This method is called when a method was called which isn't implemented.
- * It's possible to override it so the method call cann be forwarded to another
- * object.
- *
- * \param selector The selector which was called
- * \param args The arguments with which the selector was called
- * \return The return value of the call
- */
-#ifdef __objc_INCLUDE_GNU
-- (retval_t)forward: (SEL)selector
-		   : (arglist_t)args;
-#else
-- (id)forward: (SEL)selector
-	     : (marg_list)args;
-#endif
-
-/**
- * Perform the given selector with the given arguments.
- *
- * \param selector The selector to perform
- * \param args The arguments with which the selector is performed
- * \return The return value of the performed selector
- */
-#ifdef __objc_INCLUDE_GNU
-- (retval_t)performv: (SEL)selector
-		    : (arglist_t)args;
-#else
-- performv: (SEL)selector
-	  : (marg_list)args;
-#endif
-
-/**
  * Compare two objects.
  * Classes containing data (like strings, arrays, lists etc.) should reimplement
  * this!
