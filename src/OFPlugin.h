@@ -23,7 +23,7 @@
  * Loads an OFPlugin from a file.
  *
  * \param path Path to the OFPlugin file. The suffix is appended automatically.
- * \return A new autoreleased OFPlugin
+ * \return The loaded OFPlugin
  */
 + pluginFromFile: (const char*)path;
 @end
