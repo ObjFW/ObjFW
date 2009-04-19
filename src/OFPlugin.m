@@ -26,16 +26,13 @@
 	void *handle;
 	OFPlugin *(*init_plugin)();
 	OFPlugin *plugin;
-	Class c;
 
 	if ((self = [super init])) {
 		pathlen = strlen(path);
 		suffixlen = strlen(PLUGIN_SUFFIX);
 
 		if ((file = malloc(pathlen + suffixlen + 1)) == NULL) {
-			c = [self class];
-			[super free];
-			@throw [OFNoMemException newWithClass: c
+			@throw [OFNoMemException newWithClass: self
 						      andSize: pathlen +
 							       suffixlen + 1];
 		}
@@ -45,20 +42,16 @@
 
 		if ((handle = dlopen(file, RTLD_NOW)) == NULL) {
 			free(file);
-			c = [self class];
-			[super free];
 			@throw [OFInitializationFailedException
-			    newWithClass: c];
+			    newWithClass: self];
 		}
 		free(file);
 
 		if ((init_plugin = dlsym(handle, "init_plugin")) == NULL ||
 		    (plugin = init_plugin()) == nil) {
 			dlclose(handle);
-			c = [self class];
-			[super free];
 			@throw [OFInitializationFailedException
-			    newWithClass: c];
+			    newWithClass: self];
 		}
 
 		plugin->handle = handle;
