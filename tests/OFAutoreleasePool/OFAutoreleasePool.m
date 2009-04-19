@@ -36,7 +36,7 @@ IMP release;
 {
 	id ret;
        
-	ret = init(self, @selector(init));
+	ret = init(self, _cmd);
 	printf("New %s with retain cnt " ZD "\n", [self name],
 	    [ret retainCount]);
 
@@ -47,7 +47,7 @@ IMP release;
 {
 	id ret;
 
-	ret = retain(self, @selector(retain));
+	ret = retain(self, _cmd);
 	printf("Retaining %s to " ZD "\n", [self name], [ret retainCount]);
 
 	return ret;
@@ -57,7 +57,7 @@ IMP release;
 {
 	printf("Releasing %s to " ZD "\n", [self name], [self retainCount] - 1);
 
-	release(self, @selector(release));
+	release(self, _cmd);
 }
 @end
 
