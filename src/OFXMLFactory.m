@@ -30,7 +30,7 @@
  */
 
 static inline void
-xf_resize_chars(char **str, size_t *len, size_t add, Class class)
+resize(char **str, size_t *len, size_t add, Class class)
 {
 	char *str2;
 	size_t len2;
@@ -52,13 +52,13 @@ xf_resize_chars(char **str, size_t *len, size_t add, Class class)
 }
 
 static inline void
-xf_add2chars(char **str, size_t *len, size_t *pos, const char *add, Class class)
+append(char **str, size_t *len, size_t *pos, const char *add, Class class)
 {
 	size_t add_len;
 
 	add_len = strlen(add);
 
-	xf_resize_chars(str, len, add_len, class);
+	resize(str, len, add_len, class);
 
 	memcpy(*str + *pos, add, add_len);
 	*pos += add_len;
@@ -68,41 +68,41 @@ xf_add2chars(char **str, size_t *len, size_t *pos, const char *add, Class class)
 + (char*)escapeCString: (const char*)s
 {
 	char *ret;
-	size_t i, j, len, nlen;
+	size_t i, len;
 
-	len = nlen = strlen(s);
+	len = strlen(s);
 	if (SIZE_MAX - len < 1)
 		@throw [OFOutOfRangeException newWithClass: self];
-	nlen++;
 
-	if ((ret = malloc(nlen)) == NULL)
+	len++;
+	if ((ret = malloc(len)) == NULL)
 		@throw [OFNoMemException newWithClass: self
-					      andSize: nlen];
+					      andSize: len];
 
-	for (i = j = 0; i < len; i++) {
-		switch (s[i]) {
+	for (i = 0; *s; s++) {
+		switch (*s) {
 		case '<':
-			xf_add2chars(&ret, &nlen, &j, "&lt;", self);
+			append(&ret, &len, &i, "&lt;", self);
 			break;
 		case '>':
-			xf_add2chars(&ret, &nlen, &j, "&gt;", self);
+			append(&ret, &len, &i, "&gt;", self);
 			break;
 		case '"':
-			xf_add2chars(&ret, &nlen, &j, "&quot;", self);
+			append(&ret, &len, &i, "&quot;", self);
 			break;
 		case '\'':
-			xf_add2chars(&ret, &nlen, &j, "&apos;", self);
+			append(&ret, &len, &i, "&apos;", self);
 			break;
 		case '&':
-			xf_add2chars(&ret, &nlen, &j, "&amp;", self);
+			append(&ret, &len, &i, "&amp;", self);
 			break;
 		default:
-			ret[j++] = s[i];
+			ret[i++] = *s;
 			break;
 		}
 	}
 
-	ret[j] = 0;
+	ret[i] = 0;
 	return ret;
 }
 
@@ -143,7 +143,7 @@ xf_add2chars(char **str, size_t *len, size_t *pos, const char *add, Class class)
 			esc_val = NULL;	/* Needed for our @catch */
 			esc_val = [self escapeCString: val];
 
-			xf_resize_chars(&xml, &len, 1 + strlen(arg) + 2 +
+			resize(&xml, &len, 1 + strlen(arg) + 2 +
 			    strlen(esc_val) + 1, self);
 
 			xml[i++] = ' ';
@@ -171,13 +171,13 @@ xf_add2chars(char **str, size_t *len, size_t *pos, const char *add, Class class)
 	/* End of tag */
 	if (close) {
 		if (data == NULL) {
-			xf_resize_chars(&xml, &len, 2 - 1, self);
+			resize(&xml, &len, 2 - 1, self);
 
 			xml[i++] = '/';
 			xml[i++] = '>';
 		} else {
-			xf_resize_chars(&xml, &len, 1 + strlen(data) + 2 +
-			    strlen(name) + 1 - 1, self);
+			resize(&xml, &len, 1 + strlen(data) + 2 + strlen(name) +
+			    1 - 1, self);
 
 			xml[i++] = '>';
 			memcpy(xml + i, data, strlen(data));
@@ -216,7 +216,7 @@ xf_add2chars(char **str, size_t *len, size_t *pos, const char *add, Class class)
 	pos = len - 1;
 
 	for (i = 1; strs[i] != NULL; i++)
-		xf_add2chars(&ret, &len, &pos, strs[i], self);
+		append(&ret, &len, &pos, strs[i], self);
 
 	for (i = 0; strs[i] != NULL; i++)
 		free(strs[i]);
