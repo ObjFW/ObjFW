@@ -120,10 +120,11 @@ release_list(void *list)
 	return self;
 }
 
-- (void)release
+- release
 {
 	[self releaseObjects];
-	[super release];
+
+	return [super release];
 }
 
 - releaseObjects

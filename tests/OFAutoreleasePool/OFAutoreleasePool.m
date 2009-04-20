@@ -28,7 +28,7 @@ IMP release;
 @interface TestObject: OFObject
 - init;
 - retain;
-- (void)release;
+- release;
 @end
 
 @implementation TestObject
@@ -53,11 +53,11 @@ IMP release;
 	return ret;
 }
 
-- (void)release
+- release
 {
 	printf("Releasing %s to " ZD "\n", [self name], [self retainCount] - 1);
 
-	release(self, _cmd);
+	return release(self, _cmd);
 }
 @end
 
