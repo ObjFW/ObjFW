@@ -111,15 +111,14 @@ struct pre_ivar {
 	method->method_imp = newimp;
 	return oldimp;
 #else
-	Method m;
-	IMP imp;
+	Method method = class_getInstanceMethod(self, selector);
+	IMP imp = class_getMethodImplementation(class, selector);
 
-	if ((m = class_getInstanceMethod(self, selector)) == NULL ||
-	    (imp = method_getImplementation(m)) == NULL)
+	if (method == NULL || imp == NULL)
 		@throw [OFInvalidArgumentException newWithClass: self
 						    andSelector: _cmd];
 
-	return method_setImplementation(m, imp);
+	return method_setImplementation(method, imp);
 #endif
 }
 

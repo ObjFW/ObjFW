@@ -21,6 +21,10 @@
 #define ZD "%u"
 #endif
 
+int inits;
+int retains;
+int releases;
+
 IMP init;
 IMP retain;
 IMP release;
@@ -35,6 +39,8 @@ IMP release;
 - init
 {
 	id ret;
+
+	inits++;
        
 	ret = init(self, _cmd);
 	printf("New %s with retain cnt " ZD "\n", [self name],
@@ -47,6 +53,8 @@ IMP release;
 {
 	id ret;
 
+	retains++;
+
 	ret = retain(self, _cmd);
 	printf("Retaining %s to " ZD "\n", [self name], [ret retainCount]);
 
@@ -55,6 +63,8 @@ IMP release;
 
 - release
 {
+	releases++;
+
 	printf("Releasing %s to " ZD "\n", [self name], [self retainCount] - 1);
 
 	return release(self, _cmd);
@@ -64,6 +74,8 @@ IMP release;
 int
 main()
 {
+	inits = retains = releases = 0;
+
 	init    = [OFObject replaceMethod: @selector(init)
 		      withMethodFromClass: [TestObject class]];
 	retain  = [OFObject replaceMethod: @selector(retain)
@@ -85,8 +97,10 @@ main()
 	pool2 = [OFAutoreleasePool new];
 	o3 = [[OFObject new] autorelease];
 
+	[pool1 retain];
+	[pool1 release];
 	[pool1 release];
 	[o3 free];
 
-	return 0;
+	return (inits == 12 && retains == 1 && releases == 6 ? 0 : 1);
 }
