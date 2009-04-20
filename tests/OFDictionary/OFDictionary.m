@@ -11,7 +11,8 @@
 
 #import "config.h"
 
-#import <stdio.h>
+#include <stdio.h>
+#include <string.h>
 
 #import "OFAutoreleasePool.h"
 #import "OFDictionary.h"
@@ -35,8 +36,16 @@ main()
 	       to: value2];
 	[pool release];
 
-	puts([[dict get: @"key1"] cString]);
-	puts([[dict get: key2] cString]);
+	if (strcmp([[dict get: @"key1"] cString], "value1")) {
+		puts("\033[K\033[1;31mTest 1/2 failed!\033[m");
+		return 1;
+	}
 
+	if (strcmp([[dict get: key2] cString], "value2")) {
+		puts("\033[K\033[1;31mTest 2/2 failed!\033[m");
+		return 1;
+	}
+
+	puts("\033[1;32mTests successful: 2/2\033[0m");
 	return 0;
 }

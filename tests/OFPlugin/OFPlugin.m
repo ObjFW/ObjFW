@@ -11,6 +11,8 @@
 
 #import "config.h"
 
+#include <stdio.h>
+
 #import "OFPlugin.h"
 #import "TestPlugin/TestPlugin.h"
 
@@ -20,7 +22,11 @@ main()
 	TestPlugin *plugin;
 
 	plugin = [OFPlugin pluginFromFile: "TestPlugin/TestPlugin"];
-	[plugin test];
+	if ([plugin test: 1234] != 2468) {
+		puts("\033[K\033[1;31mTest 1/1 failed!\033[m");
+		return 1;
+	}
 
+	puts("\033[1;32mTests successful: 1/1\033[0m");
 	return 0;
 }

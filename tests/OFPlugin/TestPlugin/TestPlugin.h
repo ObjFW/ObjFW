@@ -12,5 +12,5 @@
 #import "OFPlugin.h"
 
 @interface TestPlugin: OFPlugin
-- (void)test;
+- (int)test: (int)num;
 @end

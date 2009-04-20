@@ -9,14 +9,12 @@
  * the packaging of this file.
  */
 
-#include <stdio.h>
-
 #import "TestPlugin.h"
 
 @implementation TestPlugin
-- (void)test
+- (int)test: (int)num
 {
-	puts("Test successfull!");
+	return num * 2;
 }
 @end
 
