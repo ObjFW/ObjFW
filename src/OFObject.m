@@ -40,13 +40,6 @@ static struct {
 } alloc_failed_exception;
 
 @implementation OFObject
-#ifndef __objc_INCLUDE_GNU
-+ load
-{
-	return self;
-}
-#endif
-
 + initialize
 {
 	return self;
