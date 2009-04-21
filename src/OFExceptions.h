@@ -12,6 +12,30 @@
 #import "OFObject.h"
 
 /**
+ * An exception indicating an object could not be allocated.
+ *
+ * This exception is preallocated, as if there's no memory, no exception can
+ * be allocated of course. That's why you shouldn't and even can't free it.
+ *
+ * This is the only exception that is not an OFException as it's special.
+ * It does not know for which class allocation failed and it should not be
+ * handled like other exceptions, as the exception handling code is not
+ * allowed to allocate ANY memory.
+ */
+@interface OFAllocFailedException
+{
+	Class isa;
+}
+
++ (Class)class;
+
+/**
+ * \return An error message for the exception as a C string
+ */
+- (const char*)cString;
+@end
+
+/**
  * The OFException class is the base class for all exceptions in ObjFW.
  *
  * IMPORTANT: Exceptions do NOT use OFAutoreleasePools!!

@@ -35,6 +35,10 @@ struct pre_ivar {
 #define PRE_IVAR_ALIGN ((sizeof(struct pre_ivar) + 15) & ~15)
 #define PRE_IVAR ((struct pre_ivar*)((char*)self - PRE_IVAR_ALIGN))
 
+static struct {
+	Class isa;
+} alloc_failed_exception;
+
 @implementation OFObject
 #ifndef __objc_INCLUDE_GNU
 + load
@@ -57,8 +61,10 @@ struct pre_ivar {
 	size_t isize = class_getInstanceSize(self);
 #endif
 
-	if ((instance = malloc(isize + PRE_IVAR_ALIGN)) == NULL)
-		return nil;
+	if ((instance = malloc(isize + PRE_IVAR_ALIGN)) == NULL) {
+		alloc_failed_exception.isa = [OFAllocFailedException class];
+		@throw (OFAllocFailedException*)&alloc_failed_exception;
+	}
 
 	((struct pre_ivar*)instance)->memchunks = NULL;
 	((struct pre_ivar*)instance)->memchunks_size = 0;

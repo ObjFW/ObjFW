@@ -44,6 +44,18 @@
 #import "asprintf.h"
 #endif
 
+@implementation OFAllocFailedException
++ (Class)class
+{
+	return self;
+}
+
+- (const char*)cString
+{
+	return "Allocating an object failed!";
+}
+@end
+
 @implementation OFException
 + newWithClass: (Class)class_
 {
