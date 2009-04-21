@@ -72,109 +72,157 @@
 	switch (type) {							\
 	case OF_NUMBER_CHAR:						\
 		value.char_ o;						\
+		break;							\
 	case OF_NUMBER_SHORT:						\
 		value.short_ o;						\
+		break;							\
 	case OF_NUMBER_INT:						\
 		value.int_ o;						\
+		break;							\
 	case OF_NUMBER_LONG:						\
 		value.long_ o;						\
+		break;							\
 	case OF_NUMBER_UCHAR:						\
 		value.uchar o;						\
+		break;							\
 	case OF_NUMBER_USHORT:						\
 		value.ushort o;						\
+		break;							\
 	case OF_NUMBER_UINT:						\
 		value.uint o;						\
+		break;							\
 	case OF_NUMBER_ULONG:						\
 		value.ulong o;						\
+		break;							\
 	case OF_NUMBER_INT8:						\
 		value.int8 o;						\
+		break;							\
 	case OF_NUMBER_INT16:						\
 		value.int16 o;						\
+		break;							\
 	case OF_NUMBER_INT32:						\
 		value.int32 o;						\
+		break;							\
 	case OF_NUMBER_INT64:						\
 		value.int64 o;						\
+		break;							\
 	case OF_NUMBER_UINT8:						\
 		value.uint8 o;						\
+		break;							\
 	case OF_NUMBER_UINT16:						\
 		value.uint16 o;						\
+		break;							\
 	case OF_NUMBER_UINT32:						\
 		value.uint32 o;						\
+		break;							\
 	case OF_NUMBER_UINT64:						\
 		value.uint64 o;						\
+		break;							\
 	case OF_NUMBER_SIZE:						\
 		value.size o;						\
+		break;							\
 	case OF_NUMBER_SSIZE:						\
 		value.ssize o;						\
+		break;							\
 	case OF_NUMBER_INTMAX:						\
 		value.intmax o;						\
+		break;							\
 	case OF_NUMBER_UINTMAX:						\
 		value.uintmax o;					\
+		break;							\
 	case OF_NUMBER_PTRDIFF:						\
 		value.ptrdiff o;					\
+		break;							\
 	case OF_NUMBER_INTPTR:						\
 		value.intptr o;						\
+		break;							\
 	case OF_NUMBER_FLOAT:						\
 		value.float_ o;						\
+		break;							\
 	case OF_NUMBER_DOUBLE:						\
 		value.double_ o;					\
+		break;							\
 	default:							\
 		@throw [OFInvalidFormatException newWithClass: isa];	\
-		return nil;	/* make gcc happy */			\
+		break;							\
 	}
 #define CALCULATE2(o, n)						\
 	switch ([n type]) { 						\
 	case OF_NUMBER_CHAR:						\
 		value.char_ o [n asChar];				\
+		break;							\
 	case OF_NUMBER_SHORT:						\
 		value.short_ o [n asShort];				\
+		break;							\
 	case OF_NUMBER_INT:						\
 		value.int_ o [n asInt];					\
+		break;							\
 	case OF_NUMBER_LONG:						\
 		value.long_ o [n asLong];				\
+		break;							\
 	case OF_NUMBER_UCHAR:						\
 		value.uchar o [n asUChar];				\
+		break;							\
 	case OF_NUMBER_USHORT:						\
 		value.ushort o [n asUShort];				\
+		break;							\
 	case OF_NUMBER_UINT:						\
 		value.uint o [n asUInt];				\
+		break;							\
 	case OF_NUMBER_ULONG:						\
 		value.ulong o [n asULong];				\
+		break;							\
 	case OF_NUMBER_INT8:						\
 		value.int8 o [n asInt8];				\
+		break;							\
 	case OF_NUMBER_INT16:						\
 		value.int16 o [n asInt16];				\
+		break;							\
 	case OF_NUMBER_INT32:						\
 		value.int32 o [n asInt32];				\
+		break;							\
 	case OF_NUMBER_INT64:						\
 		value.int64 o [n asInt64];				\
+		break;							\
 	case OF_NUMBER_UINT8:						\
 		value.uint8 o [n asUInt8];				\
+		break;							\
 	case OF_NUMBER_UINT16:						\
 		value.uint16 o [n asUInt16];				\
+		break;							\
 	case OF_NUMBER_UINT32:						\
 		value.uint32 o [n asUInt32];				\
+		break;							\
 	case OF_NUMBER_UINT64:						\
 		value.uint64 o [n asUInt64];				\
+		break;							\
 	case OF_NUMBER_SIZE:						\
 		value.size o [n asSize];				\
+		break;							\
 	case OF_NUMBER_SSIZE:						\
 		value.ssize o [n asSSize];				\
+		break;							\
 	case OF_NUMBER_INTMAX:						\
 		value.intmax o [n asIntMax];				\
+		break;							\
 	case OF_NUMBER_UINTMAX:						\
 		value.uintmax o [n asUIntMax];				\
+		break;							\
 	case OF_NUMBER_PTRDIFF:						\
 		value.ptrdiff o [n asPtrDiff];				\
+		break;							\
 	case OF_NUMBER_INTPTR:						\
 		value.intptr o [n asIntPtr];				\
+		break;							\
 	case OF_NUMBER_FLOAT:						\
 		value.float_ o [n asFloat];				\
+		break;							\
 	case OF_NUMBER_DOUBLE:						\
 		value.double_ o [n asDouble];				\
+		break;							\
 	default:							\
 		@throw [OFInvalidFormatException newWithClass: isa];	\
-		return nil;	/* make gcc happy */			\
+		break;							\
 	}
 
 @implementation OFNumber
