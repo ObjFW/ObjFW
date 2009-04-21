@@ -91,10 +91,6 @@
 	if (data[hash] == nil)
 		data[hash] = [OFList new];
 
-	if (data[hash] == nil)
-		@throw [OFInitializationFailedException
-		    newWithClass: [OFList class]];
-
 	for (iter = [data[hash] first]; iter != NULL; iter = iter->next->next) {
 		if ([iter->object isEqual: key]) {
 			[iter->next->object release];
