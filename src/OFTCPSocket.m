@@ -44,11 +44,11 @@
 
 - init
 {
-	if ((self = [super init])) {
-		sock = INVALID_SOCKET;
-		saddr = NULL;
-		saddr_len = 0;
-	}
+	self = [super init];
+
+	sock = INVALID_SOCKET;
+	saddr = NULL;
+	saddr_len = 0;
 
 	return self;
 }

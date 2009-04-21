@@ -35,6 +35,11 @@
 
 /**
  * Allocates memory for an instance of the class.
+ *
+ * alloc will never return nil, instead, it will throw an 
+ * OFAllocFailedException.
+ *
+ * \return The allocated object.
  */
 + alloc;
 
@@ -66,6 +71,10 @@
 /**
  * Initialize the already allocated object.
  * Also sets up the memory pool for the object.
+ *
+ * Derived classes may override this, but need to do self = [super init] before
+ * they do any initialization themselves. init may never return nil, instead
+ * an exception (for example OFInitializationFailed) should be thrown.
  *
  * \return An initialized object
  */

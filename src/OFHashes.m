@@ -122,17 +122,17 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 
 - init
 {
-	if ((self = [super init])) {
-		buf[0] = 0x67452301;
-		buf[1] = 0xEFCDAB89;
-		buf[2] = 0x98BADCFE;
-		buf[3] = 0x10325476;
+	self = [super init];
 
-		bits[0] = 0;
-		bits[1] = 0;
+	buf[0] = 0x67452301;
+	buf[1] = 0xEFCDAB89;
+	buf[2] = 0x98BADCFE;
+	buf[3] = 0x10325476;
 
-		calculated = NO;
-	}
+	bits[0] = 0;
+	bits[1] = 0;
+
+	calculated = NO;
 
 	return self;
 }
@@ -365,14 +365,14 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 
 - init
 {
-	if ((self = [super init])) {
-		count = 0;
-		state[0] = 0x67452301;
-		state[1] = 0xEFCDAB89;
-		state[2] = 0x98BADCFE;
-		state[3] = 0x10325476;
-		state[4] = 0xC3D2E1F0;
-	}
+	self = [super init];
+
+	count = 0;
+	state[0] = 0x67452301;
+	state[1] = 0xEFCDAB89;
+	state[2] = 0x98BADCFE;
+	state[3] = 0x10325476;
+	state[4] = 0xC3D2E1F0;
 
 	return self;
 }

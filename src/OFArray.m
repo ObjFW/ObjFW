@@ -36,11 +36,11 @@ extern int getpagesize(void);
 
 - initWithItemSize: (size_t)is
 {
-	if ((self = [super init])) {
-		data = NULL;
-		itemsize = is;
-		items = 0;
-	}
+	self = [super init];
+
+	data = NULL;
+	itemsize = is;
+	items = 0;
 
 	return self;
 }
@@ -183,11 +183,11 @@ extern int getpagesize(void);
 @implementation OFBigArray
 - initWithItemSize: (size_t)is
 {
+	self = [super initWithItemSize: is];
+
 	if (lastpagebyte == 0)
 		lastpagebyte = getpagesize() - 1;
-
-	if ((self = [super initWithItemSize: is]))
-		size = 0;
+	size = 0;
 
 	return self;
 }

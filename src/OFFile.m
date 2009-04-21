@@ -82,15 +82,16 @@
 {
 	Class c;
 
-	if ((self = [super init])) {
-		if ((fp = fopen(path, mode)) == NULL) {
-			c = isa;
-			[super free];
-			@throw [OFOpenFileFailedException newWithClass: c 
-							       andPath: path
-							       andMode: mode];
-		}
+	self = [super init];
+
+	if ((fp = fopen(path, mode)) == NULL) {
+		c = isa;
+		[super free];
+		@throw [OFOpenFileFailedException newWithClass: c 
+						       andPath: path
+						       andMode: mode];
 	}
+
 	return self;
 }
 

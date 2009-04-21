@@ -64,10 +64,10 @@
 
 - initWithClass: (Class)class_
 {
-	if ((self = [super init])) {
-		class = class_;
-		string = NULL;
-	}
+	self = [super init];
+
+	class = class_;
+	string = NULL;
 
 	return self;
 }
@@ -102,8 +102,9 @@
 - initWithClass: (Class)class_
 	andSize: (size_t)size
 {
-	if ((self = [super initWithClass: class_]))
-		req_size = size;
+	self = [super initWithClass: class_];
+
+	req_size = size;
 
 	return self;
 }
@@ -136,8 +137,9 @@
 - initWithClass: (Class)class_
      andPointer: (void*)ptr
 {
-	if ((self = [super initWithClass: class_]))
-		pointer = ptr;
+	self = [super initWithClass: class_];
+
+	pointer = ptr;
 
 	return self;
 }
@@ -172,8 +174,9 @@
 - initWithClass: (Class)class_
     andSelector: (SEL)selector_
 {
-	if ((self = [super initWithClass: class_]))
-		selector = selector_;
+	self = [super initWithClass: class_];
+
+	selector = selector_;
 
 	return self;
 }
@@ -213,8 +216,9 @@
 - initWithClass: (Class)class_
     andSelector: (SEL)selector_
 {
-	if ((self = [super initWithClass: class_]))
-		selector = selector_;
+	self = [super initWithClass: class_];
+
+	selector = selector_;
 
 	return self;
 }
@@ -282,11 +286,11 @@
 	andPath: (const char*)path_
 	andMode: (const char*)mode_
 {
-	if ((self = [super initWithClass: class_])) {
-		path = (path_ != NULL ? strdup(path_) : NULL);
-		mode = (mode_ != NULL ? strdup(mode_) : NULL);
-		err = GET_ERR;
-	}
+	self = [super initWithClass: class_];
+
+	path = (path_ != NULL ? strdup(path_) : NULL);
+	mode = (mode_ != NULL ? strdup(mode_) : NULL);
+	err = GET_ERR;
 
 	return self;
 }
@@ -349,12 +353,12 @@
 	andSize: (size_t)size
       andNItems: (size_t)nitems
 {
-	if ((self = [super initWithClass: class_])) {
-		req_size = size;
-		req_items = nitems;
-		has_items = YES;
-		err = GET_ERR;
-	}
+	self = [super initWithClass: class_];
+
+	req_size = size;
+	req_items = nitems;
+	has_items = YES;
+	err = GET_ERR;
 
 	return self;
 }
@@ -362,12 +366,12 @@
 - initWithClass: (Class)class_
 	andSize: (size_t)size
 {
-	if ((self = [super initWithClass: class_])) {
-		req_size = size;
-		req_items = 0;
-		has_items = NO;
-		err = GET_ERR;
-	}
+	self = [super initWithClass: class_];
+
+	req_size = size;
+	req_items = 0;
+	has_items = NO;
+	err = GET_ERR;
 
 	return self;
 }
@@ -496,11 +500,11 @@
 	andNode: (const char*)node_
      andService: (const char*)service_
 {
-	if ((self = [super initWithClass: class_])) {
-		node = (node_ != NULL ? strdup(node_) : NULL);
-		service = (service_ != NULL ? strdup(service_) : NULL);
-		err = GET_SOCK_ERR;
-	}
+	self = [super initWithClass: class_];
+
+	node = (node_ != NULL ? strdup(node_) : NULL);
+	service = (service_ != NULL ? strdup(service_) : NULL);
+	err = GET_SOCK_ERR;
 
 	return self;
 }
@@ -560,11 +564,11 @@
 	andHost: (const char*)host_
 	andPort: (uint16_t)port_
 {
-	if ((self = [super initWithClass: class_])) {
-		host = (host_ != NULL ? strdup(host_) : NULL);
-		port = port_;
-		err = GET_SOCK_ERR;
-	}
+	self = [super initWithClass: class_];
+
+	host = (host_ != NULL ? strdup(host_) : NULL);
+	port = port_;
+	err = GET_SOCK_ERR;
 
 	return self;
 }
@@ -621,12 +625,12 @@
 	andPort: (uint16_t)port_
       andFamily: (int)family_
 {
-	if ((self = [super initWithClass: class_])) {
-		host = (host_ != NULL ? strdup(host_) : NULL);
-		port = port_;
-		family = family_;
-		err = GET_SOCK_ERR;
-	}
+	self = [super initWithClass: class_];
+
+	host = (host_ != NULL ? strdup(host_) : NULL);
+	port = port_;
+	family = family_;
+	err = GET_SOCK_ERR;
 
 	return self;
 }
@@ -682,10 +686,10 @@
 - initWithClass: (Class)class_
      andBackLog: (int)backlog_
 {
-	if ((self = [super initWithClass: class_])) {
-		backlog = backlog_;
-		err = GET_SOCK_ERR;
-	}
+	self = [super initWithClass: class_];
+
+	backlog = backlog_;
+	err = GET_SOCK_ERR;
 
 	return self;
 }
@@ -715,8 +719,9 @@
 @implementation OFAcceptFailedException
 - initWithClass: (Class)class_
 {
-	if ((self = [super initWithClass: class_]))
-		err = GET_SOCK_ERR;
+	self = [super initWithClass: class_];
+
+	err = GET_SOCK_ERR;
 
 	return self;
 }

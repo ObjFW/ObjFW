@@ -136,11 +136,11 @@ check_utf8(const char *str, size_t len)
 
 - init
 {
-	if ((self = [super init])) {
-		length = 0;
-		string = NULL;
-		is_utf8 = NO;
-	}
+	[super init];
+
+	length = 0;
+	string = NULL;
+	is_utf8 = NO;
 
 	return self;
 }
@@ -149,11 +149,12 @@ check_utf8(const char *str, size_t len)
 {
 	Class c;
 
-	if ((self = [super init])) {
-		if (str != NULL) {
-			length = strlen(str);
+	self = [super init];
 
-			switch (check_utf8(str, length)) {
+	if (str != NULL) {
+		length = strlen(str);
+
+		switch (check_utf8(str, length)) {
 			case 1:
 				is_utf8 = YES;
 				break;
@@ -161,17 +162,16 @@ check_utf8(const char *str, size_t len)
 				c = isa;
 				[super free];
 				@throw [OFInvalidEncodingException
-				    newWithClass: c];
-			}
-
-			@try {
-				string = [self getMemWithSize: length + 1];
-			} @catch (OFException *e) {
-				[self free];
-				@throw e;
-			}
-			memcpy(string, str, length + 1);
+					newWithClass: c];
 		}
+
+		@try {
+			string = [self getMemWithSize: length + 1];
+		} @catch (OFException *e) {
+			[self free];
+			@throw e;
+		}
+		memcpy(string, str, length + 1);
 	}
 
 	return self;
@@ -196,22 +196,22 @@ check_utf8(const char *str, size_t len)
 	int t;
 	Class c;
 
-	if ((self = [super init])) {
-		if (fmt == NULL) {
-			c = isa;
-			[super free];
-			@throw [OFInvalidFormatException newWithClass: c];
-		}
+	self = [super init];
 
-		if ((t = vasprintf(&string, fmt, args)) == -1) {
-			c = isa;
-			[super free];
-			@throw [OFInitializationFailedException
-			    newWithClass: c];
-		}
-		length = t;
+	if (fmt == NULL) {
+		c = isa;
+		[super free];
+		@throw [OFInvalidFormatException newWithClass: c];
+	}
 
-		switch (check_utf8(string, length)) {
+	if ((t = vasprintf(&string, fmt, args)) == -1) {
+		c = isa;
+		[super free];
+		@throw [OFInitializationFailedException newWithClass: c];
+	}
+	length = t;
+
+	switch (check_utf8(string, length)) {
 		case 1:
 			is_utf8 = YES;
 			break;
@@ -220,14 +220,13 @@ check_utf8(const char *str, size_t len)
 			c = isa;
 			[super free];
 			@throw [OFInvalidEncodingException newWithClass: c];
-		}
+	}
 
-		@try {
-			[self addToMemoryPool: string];
-		} @catch (OFException *e) {
-			free(string);
-			@throw e;
-		}
+	@try {
+		[self addToMemoryPool: string];
+	} @catch (OFException *e) {
+		free(string);
+		@throw e;
 	}
 
 	return self;

@@ -27,38 +27,32 @@
 	OFPlugin *(*init_plugin)();
 	OFPlugin *plugin;
 
-	if ((self = [super init])) {
-		pathlen = strlen(path);
-		suffixlen = strlen(PLUGIN_SUFFIX);
+	pathlen = strlen(path);
+	suffixlen = strlen(PLUGIN_SUFFIX);
 
-		if ((file = malloc(pathlen + suffixlen + 1)) == NULL) {
-			@throw [OFNoMemException newWithClass: self
-						      andSize: pathlen +
-							       suffixlen + 1];
-		}
-		memcpy(file, path, pathlen);
-		memcpy(file + pathlen, PLUGIN_SUFFIX, suffixlen);
-		file[pathlen + suffixlen] = 0;
+	if ((file = malloc(pathlen + suffixlen + 1)) == NULL) {
+		@throw [OFNoMemException newWithClass: self
+					      andSize: pathlen +
+					      suffixlen + 1];
+	}
+	memcpy(file, path, pathlen);
+	memcpy(file + pathlen, PLUGIN_SUFFIX, suffixlen);
+	file[pathlen + suffixlen] = 0;
 
-		if ((handle = dlopen(file, RTLD_NOW)) == NULL) {
-			free(file);
-			@throw [OFInitializationFailedException
-			    newWithClass: self];
-		}
+	if ((handle = dlopen(file, RTLD_NOW)) == NULL) {
 		free(file);
+		@throw [OFInitializationFailedException newWithClass: self];
+	}
+	free(file);
 
-		if ((init_plugin = dlsym(handle, "init_plugin")) == NULL ||
-		    (plugin = init_plugin()) == nil) {
-			dlclose(handle);
-			@throw [OFInitializationFailedException
-			    newWithClass: self];
-		}
-
-		plugin->handle = handle;
-		return plugin;
+	if ((init_plugin = dlsym(handle, "init_plugin")) == NULL ||
+	    (plugin = init_plugin()) == nil) {
+		dlclose(handle);
+		@throw [OFInitializationFailedException newWithClass: self];
 	}
 
-	return self;
+	plugin->handle = handle;
+	return plugin;
 }
 
 - free

@@ -29,44 +29,44 @@
 
 - init
 {
-	if ((self = [super init])) {
-		size = 4096;
+	self = [super init];
 
-		@try {
-			data = [self getMemForNItems: size
-					      ofSize: sizeof(OFList*)];
-		} @catch (OFException *e) {
-			[self free];
-			@throw e;
-		}
-		memset(data, 0, size);
+	size = 4096;
+
+	@try {
+		data = [self getMemForNItems: size
+				      ofSize: sizeof(OFList*)];
+	} @catch (OFException *e) {
+		[self free];
+		@throw e;
 	}
+	memset(data, 0, size);
 
 	return self;
 }
 
 - initWithHashSize: (int)hashsize
 {
-	if ((self = [super init])) {
-		if (hashsize < 8 || hashsize > 31) {
-			Class c = isa;
-			[self free];
-			@throw [OFInvalidArgumentException
-			    newWithClass: c
-			     andSelector: _cmd];
-		}
+	self = [super init];
 
-		size = (size_t)1 << hashsize;
-
-		@try {
-			data = [self getMemForNItems: size
-					      ofSize: sizeof(OFList*)];
-		} @catch (OFException *e) {
-			[self free];
-			@throw e;
-		}
-		memset(data, 0, size);
+	if (hashsize < 8 || hashsize > 31) {
+		Class c = isa;
+		[self free];
+		@throw [OFInvalidArgumentException
+			newWithClass: c
+			 andSelector: _cmd];
 	}
+
+	size = (size_t)1 << hashsize;
+
+	@try {
+		data = [self getMemForNItems: size
+				      ofSize: sizeof(OFList*)];
+	} @catch (OFException *e) {
+		[self free];
+		@throw e;
+	}
+	memset(data, 0, size);
 
 	return self;
 }

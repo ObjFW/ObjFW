@@ -21,22 +21,22 @@
 
 - init
 {
-	if ((self = [super init])) {
-		first = NULL;
-		last = NULL;
-		retain_and_release = YES;
-	}
+	self = [super init];
+
+	first = NULL;
+	last = NULL;
+	retain_and_release = YES;
 
 	return self;
 }
 
 - initWithoutRetainAndRelease
 {
-	if ((self = [super init])) {
-		first = NULL;
-		last = NULL;
-		retain_and_release = NO;
-	}
+	self = [super init];
+
+	first = NULL;
+	last = NULL;
+	retain_and_release = NO;
 
 	return self;
 }

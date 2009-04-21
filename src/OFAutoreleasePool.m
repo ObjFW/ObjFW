@@ -86,19 +86,17 @@ release_list(void *list)
 {
 	OFList *pool_list;
 
-	if ((self = [super init])) {
-		objects = nil;
+	self = [super init];
 
-		pool_list = get_tls(pool_list_key);
+	objects = nil;
+	pool_list = get_tls(pool_list_key);
 
-		if (pool_list == nil) {
-			pool_list = [[OFList alloc]
-			    initWithoutRetainAndRelease];
-			set_tls(pool_list_key, pool_list);
-		}
-
-		listobj = [pool_list append: self];
+	if (pool_list == nil) {
+		pool_list = [[OFList alloc] initWithoutRetainAndRelease];
+		set_tls(pool_list_key, pool_list);
 	}
+
+	listobj = [pool_list append: self];
 
 	return self;
 }

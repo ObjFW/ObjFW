@@ -300,240 +300,240 @@
 
 - initWithChar: (char)char_
 {
-	if ((self = [super init])) {
-		value.char_ = char_;
-		type = OF_NUMBER_CHAR;
-	}
+	self = [super init];
+
+	value.char_ = char_;
+	type = OF_NUMBER_CHAR;
 
 	return self;
 }
 
 - initWithShort: (short)short_
 {
-	if ((self = [super init])) {
-		value.short_ = short_;
-		type = OF_NUMBER_SHORT;
-	}
+	self = [super init];
+
+	value.short_ = short_;
+	type = OF_NUMBER_SHORT;
 
 	return self;
 }
 
 - initWithInt: (int)int_
 {
-	if ((self = [super init])) {
-		value.int_ = int_;
-		type = OF_NUMBER_INT;
-	}
+	self = [super init];
+
+	value.int_ = int_;
+	type = OF_NUMBER_INT;
 
 	return self;
 }
 
 - initWithLong: (long)long_
 {
-	if ((self = [super init])) {
-		value.long_ = long_;
-		type = OF_NUMBER_LONG;
-	}
+	self = [super init];
+
+	value.long_ = long_;
+	type = OF_NUMBER_LONG;
 
 	return self;
 }
 
 - initWithUChar: (unsigned char)uchar
 {
-	if ((self = [super init])) {
-		value.uchar = uchar;
-		type = OF_NUMBER_UCHAR;
-	}
+	self = [super init];
+
+	value.uchar = uchar;
+	type = OF_NUMBER_UCHAR;
 
 	return self;
 }
 
 - initWithUShort: (unsigned short)ushort
 {
-	if ((self = [super init])) {
-		value.ushort = ushort;
-		type = OF_NUMBER_USHORT;
-	}
+	self = [super init];
+
+	value.ushort = ushort;
+	type = OF_NUMBER_USHORT;
 
 	return self;
 }
 
 - initWithUInt: (unsigned int)uint
 {
-	if ((self = [super init])) {
-		value.uint = uint;
-		type = OF_NUMBER_UINT;
-	}
+	self = [super init];
+
+	value.uint = uint;
+	type = OF_NUMBER_UINT;
 
 	return self;
 }
 
 - initWithULong: (unsigned long)ulong
 {
-	if ((self = [super init])) {
-		value.ulong = ulong;
-		type = OF_NUMBER_ULONG;
-	}
+	self = [super init];
+
+	value.ulong = ulong;
+	type = OF_NUMBER_ULONG;
 
 	return self;
 }
 
 - initWithInt8: (int8_t)int8
 {
-	if ((self = [super init])) {
-		value.int8 = int8;
-		type = OF_NUMBER_INT8;
-	}
+	self = [super init];
+
+	value.int8 = int8;
+	type = OF_NUMBER_INT8;
 
 	return self;
 }
 
 - initWithInt16: (int16_t)int16
 {
-	if ((self = [super init])) {
-		value.int16 = int16;
-		type = OF_NUMBER_INT16;
-	}
+	self = [super init];
+
+	value.int16 = int16;
+	type = OF_NUMBER_INT16;
 
 	return self;
 }
 
 - initWithInt32: (int32_t)int32
 {
-	if ((self = [super init])) {
-		value.int32 = int32;
-		type = OF_NUMBER_INT32;
-	}
+	self = [super init];
+
+	value.int32 = int32;
+	type = OF_NUMBER_INT32;
 
 	return self;
 }
 
 - initWithInt64: (int64_t)int64
 {
-	if ((self = [super init])) {
-		value.int64 = int64;
-		type = OF_NUMBER_INT64;
-	}
+	self = [super init];
+
+	value.int64 = int64;
+	type = OF_NUMBER_INT64;
 
 	return self;
 }
 
 - initWithUInt8: (uint8_t)uint8
 {
-	if ((self = [super init])) {
-		value.uint8 = uint8;
-		type = OF_NUMBER_UINT8;
-	}
+	self = [super init];
+
+	value.uint8 = uint8;
+	type = OF_NUMBER_UINT8;
 
 	return self;
 }
 
 - initWithUInt16: (uint16_t)uint16
 {
-	if ((self = [super init])) {
-		value.uint16 = uint16;
-		type = OF_NUMBER_UINT16;
-	}
+	self = [super init];
+
+	value.uint16 = uint16;
+	type = OF_NUMBER_UINT16;
 
 	return self;
 }
 
 - initWithUInt32: (uint32_t)uint32
 {
-	if ((self = [super init])) {
-		value.uint32 = uint32;
-		type = OF_NUMBER_UINT32;
-	}
+	self = [super init];
+
+	value.uint32 = uint32;
+	type = OF_NUMBER_UINT32;
 
 	return self;
 }
 
 - initWithUInt64: (uint64_t)uint64
 {
-	if ((self = [super init])) {
-		value.uint64 = uint64;
-		type = OF_NUMBER_UINT64;
-	}
+	self = [super init];
+
+	value.uint64 = uint64;
+	type = OF_NUMBER_UINT64;
 
 	return self;
 }
 
 - initWithSize: (size_t)size
 {
-	if ((self = [super init])) {
-		value.size = size;
-		type = OF_NUMBER_SIZE;
-	}
+	self = [super init];
+
+	value.size = size;
+	type = OF_NUMBER_SIZE;
 
 	return self;
 }
 
 - initWithSSize: (ssize_t)ssize
 {
-	if ((self = [super init])) {
-		value.ssize = ssize;
-		type = OF_NUMBER_SSIZE;
-	}
+	self = [super init];
+
+	value.ssize = ssize;
+	type = OF_NUMBER_SSIZE;
 
 	return self;
 }
 
 - initWithIntMax: (intmax_t)intmax
 {
-	if ((self = [super init])) {
-		value.intmax = intmax;
-		type = OF_NUMBER_INTMAX;
-	}
+	self = [super init];
+
+	value.intmax = intmax;
+	type = OF_NUMBER_INTMAX;
 
 	return self;
 }
 
 - initWithUIntMax: (uintmax_t)uintmax
 {
-	if ((self = [super init])) {
-		value.uintmax = uintmax;
-		type = OF_NUMBER_UINTMAX;
-	}
+	self = [super init];
+
+	value.uintmax = uintmax;
+	type = OF_NUMBER_UINTMAX;
 
 	return self;
 }
 
 - initWithPtrDiff: (ptrdiff_t)ptrdiff
 {
-	if ((self = [super init])) {
-		value.ptrdiff = ptrdiff;
-		type = OF_NUMBER_PTRDIFF;
-	}
+	self = [super init];
+
+	value.ptrdiff = ptrdiff;
+	type = OF_NUMBER_PTRDIFF;
 
 	return self;
 }
 
 - initWithIntPtr: (intptr_t)intptr
 {
-	if ((self = [super init])) {
-		value.intptr = intptr;
-		type = OF_NUMBER_INTPTR;
-	}
+	self = [super init];
+
+	value.intptr = intptr;
+	type = OF_NUMBER_INTPTR;
 
 	return self;
 }
 
 - initWithFloat: (float)float_
 {
-	if ((self = [super init])) {
-		value.float_ = float_;
-		type = OF_NUMBER_FLOAT;
-	}
+	self = [super init];
+
+	value.float_ = float_;
+	type = OF_NUMBER_FLOAT;
 
 	return self;
 }
 
 - initWithDouble: (double)double_
 {
-	if ((self = [super init])) {
-		value.double_ = double_;
-		type = OF_NUMBER_DOUBLE;
-	}
+	self = [super init];
+
+	value.double_ = double_;
+	type = OF_NUMBER_DOUBLE;
 
 	return self;
 }
