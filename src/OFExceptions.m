@@ -80,7 +80,7 @@
 	return [super free];
 }
 
-- (Class)class
+- (Class)inClass
 {
 	return class;
 }

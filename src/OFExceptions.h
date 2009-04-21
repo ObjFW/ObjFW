@@ -63,9 +63,9 @@
 - initWithClass: (Class)class;
 
 /**
- * \return The class of the object which caused the exception
+ * \return The class of the object in which the exception happened
  */
-- (Class)class;
+- (Class)inClass;
 
 /**
  * \return An error message for the exception as a C string
