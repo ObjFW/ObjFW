@@ -66,7 +66,6 @@
 		return (t)value.double_;				\
 	default:							\
 		@throw [OFInvalidFormatException newWithClass: isa];	\
-		return 0;	/* Make gcc happy */			\
 	}
 #define CALCULATE(o)							\
 	switch (type) {							\
@@ -144,7 +143,6 @@
 		break;							\
 	default:							\
 		@throw [OFInvalidFormatException newWithClass: isa];	\
-		break;							\
 	}
 #define CALCULATE2(o, n)						\
 	switch ([n type]) { 						\
@@ -222,7 +220,6 @@
 		break;							\
 	default:							\
 		@throw [OFInvalidFormatException newWithClass: isa];	\
-		break;							\
 	}
 
 @implementation OFNumber

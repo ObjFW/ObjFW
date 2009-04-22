@@ -286,7 +286,6 @@ static struct {
 
 	@throw [OFMemNotPartOfObjException newWithClass: isa
 					     andPointer: ptr];
-	return NULL;	/* never reached, but makes gcc happy */
 }
 
 - (void*)resizeMem: (void*)ptr
@@ -360,7 +359,6 @@ static struct {
 
 	@throw [OFMemNotPartOfObjException newWithClass: isa
 					     andPointer: ptr];
-	return self;	/* never reached, but makes gcc happy */
 }
 
 - retain
