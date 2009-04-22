@@ -18,10 +18,13 @@
 #import "OFDictionary.h"
 #import "OFConstString.h"
 #import "OFString.h"
+#import "OFExceptions.h"
 
 int
 main()
 {
+	BOOL caught;
+
 	OFDictionary *dict = [OFDictionary dictionaryWithHashSize: 16];
 
 	OFAutoreleasePool *pool = [OFAutoreleasePool new];
@@ -37,15 +40,38 @@ main()
 	[pool release];
 
 	if (strcmp([[dict get: @"key1"] cString], "value1")) {
-		puts("\033[K\033[1;31mTest 1/2 failed!\033[m");
+		puts("\033[K\033[1;31mTest 1/4 failed!\033[m");
 		return 1;
 	}
 
 	if (strcmp([[dict get: key2] cString], "value2")) {
-		puts("\033[K\033[1;31mTest 2/2 failed!\033[m");
+		puts("\033[K\033[1;31mTest 2/4 failed!\033[m");
 		return 1;
 	}
 
-	puts("\033[1;32mTests successful: 2/2\033[0m");
+	caught = NO;
+	@try {
+		[dict get: @"key3"];
+	} @catch (OFNotInSetException *e) {
+		caught = YES;
+	}
+	if (!caught) {
+		puts("\033[K\033[1;31mTest 3/4 failed!\033[m");
+		return 1;
+	}
+
+	[dict remove: @"key2"];
+	caught = NO;
+	@try {
+		[dict remove: @"key2"];
+	} @catch (OFNotInSetException *e) {
+		caught = YES;
+	}
+	if (!caught) {
+		puts("\033[K\033[1;31mTest 4/4 failed!\033[m");
+		return 1;
+	}
+
+	puts("\033[1;32mTests successful: 4/4\033[0m");
 	return 0;
 }

@@ -273,6 +273,19 @@
 }
 @end
 
+@implementation OFNotInSetException
+- (const char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "The requested key is not in the set of type %s!",
+	    [class name]);
+
+	return string;
+}
+@end
+
 @implementation OFOpenFileFailedException
 + newWithClass: (Class)class_
        andPath: (const char*)path_

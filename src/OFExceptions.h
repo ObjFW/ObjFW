@@ -212,7 +212,13 @@
 /**
  * An OFException indicating that initializing something failed.
  */
-@interface OFInitializationFailedException: OFException
+@interface OFInitializationFailedException: OFException {}
+@end
+
+/**
+ * An OFException indicating that the requested key is not in the set.
+ */
+@interface OFNotInSetException: OFException {}
 @end
 
 /**

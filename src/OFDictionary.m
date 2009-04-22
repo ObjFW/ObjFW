@@ -113,13 +113,13 @@
 	of_list_object_t *iter;
 
 	if (data[hash] == nil)
-		return nil;
+		@throw [OFNotInSetException newWithClass: isa];
 
 	for (iter = [data[hash] first]; iter != NULL; iter = iter->next->next)
 		if ([iter->object isEqual: key])
 			return iter->next->object;
 
-	return nil;
+	@throw [OFNotInSetException newWithClass: isa];
 }
 
 - remove: (OFObject*)key
@@ -128,7 +128,7 @@
 	of_list_object_t *iter;
 
 	if (data[hash] == nil)
-		return self; // FIXME: Throw exception?
+		@throw [OFNotInSetException newWithClass: isa];
 
 	for (iter = [data[hash] first]; iter != NULL; iter = iter->next->next) {
 		if ([iter->object isEqual: key]) {
@@ -139,7 +139,7 @@
 		}
 	}
 
-	return self;  // FIXME: Throw exception?
+	@throw [OFNotInSetException newWithClass: isa];
 }
 
 /* FIXME: Implement this! */
