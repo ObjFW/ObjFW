@@ -97,13 +97,17 @@
 
 - free
 {
-	fclose(fp);
+	if (fp != NULL)
+		fclose(fp);
 
 	return [super free];
 }
 
 - (BOOL)atEndOfFile
 {
+	if (fp == NULL)
+		return YES;
+
 	return (feof(fp) == 0 ? NO : YES);
 }
 
@@ -113,7 +117,9 @@
 {
 	size_t ret;
 
-	if ((ret = fread(buf, size, nitems, fp)) == 0 && !feof(fp))
+	if (fp == NULL || feof(fp) ||
+	    ((ret = fread(buf, size, nitems, fp)) == 0 &&
+	    size != 0 && nitems != 0 && !feof(fp)))
 		@throw [OFReadFailedException newWithClass: isa
 						   andSize: size
 						 andNItems: nitems];
@@ -135,8 +141,9 @@
 {
 	size_t ret;
 
-	if ((ret = fwrite(buf, size, nitems, fp)) == 0 &&
-	    size != 0 && nitems != 0)
+	if (fp == NULL || feof(fp) ||
+	    ((ret = fwrite(buf, size, nitems, fp)) < nitems &&
+	    size != 0 && nitems != 0))
 		@throw [OFWriteFailedException newWithClass: isa
 						    andSize: size
 						  andNItems: nitems];
