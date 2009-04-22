@@ -16,6 +16,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+#import <objc/objc-api.h>
+#ifdef __objc_INCLUDE_GNU
+#define SEL_NAME(x) sel_get_name(x)
+#else
+#import <objc/runtime.h>
+#define SEL_NAME(x) sel_getName(x)
+#endif
+
+#import "OFExceptions.h"
+#import "OFTCPSocket.h"
+
 #ifndef _WIN32
 #include <errno.h>
 #define GET_ERR	     errno
@@ -29,16 +40,6 @@
 #define ERRFMT	     "Error code was: %d"
 #define ERRPARAM     err
 #endif
-
-#import <objc/objc-api.h>
-#ifdef __objc_INCLUDE_GNU
-#define SEL_NAME(x) sel_get_name(x)
-#else
-#import <objc/runtime.h>
-#define SEL_NAME(x) sel_getName(x)
-#endif
-
-#import "OFExceptions.h"
 
 #ifndef HAVE_ASPRINTF
 #import "asprintf.h"
@@ -358,7 +359,11 @@
 	req_size = size;
 	req_items = nitems;
 	has_items = YES;
-	err = GET_ERR;
+
+	if (class_ == [OFTCPSocket class])
+		err = GET_SOCK_ERR;
+	else
+		err = GET_ERR;
 
 	return self;
 }
@@ -371,7 +376,11 @@
 	req_size = size;
 	req_items = 0;
 	has_items = NO;
-	err = GET_ERR;
+
+	if (class_ == [OFTCPSocket class])
+		err = GET_SOCK_ERR;
+	else
+		err = GET_ERR;
 
 	return self;
 }
