@@ -135,6 +135,11 @@
 			[data[hash] remove: iter->next];
 			[data[hash] remove: iter];
 
+			if ([data[hash] first] == NULL) {
+				[data[hash] release];
+				data[hash] = nil;
+			}
+
 			return self;
 		}
 	}
