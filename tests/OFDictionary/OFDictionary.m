@@ -16,6 +16,7 @@
 
 #import "OFAutoreleasePool.h"
 #import "OFDictionary.h"
+#import "OFIterator.h"
 #import "OFConstString.h"
 #import "OFString.h"
 #import "OFExceptions.h"
@@ -26,6 +27,7 @@ main()
 	BOOL caught;
 
 	OFDictionary *dict = [OFDictionary dictionaryWithHashSize: 16];
+	OFIterator *iter = [dict getIterator];
 
 	OFAutoreleasePool *pool = [OFAutoreleasePool new];
 	OFString *key1 = [OFString stringWithCString: "key1"];
@@ -40,12 +42,31 @@ main()
 	[pool release];
 
 	if (strcmp([[dict get: @"key1"] cString], "value1")) {
-		puts("\033[K\033[1;31mTest 1/4 failed!\033[m");
+		puts("\033[K\033[1;31mTest 1/6 failed!\033[m");
 		return 1;
 	}
 
 	if (strcmp([[dict get: key2] cString], "value2")) {
-		puts("\033[K\033[1;31mTest 2/4 failed!\033[m");
+		puts("\033[K\033[1;31mTest 2/6 failed!\033[m");
+		return 1;
+	}
+
+	if (![[iter nextObject] isEqual: @"key2"] ||
+	    ![[iter nextObject] isEqual: @"value2"] ||
+	    ![[iter nextObject] isEqual: @"key1"] ||
+	    ![[iter nextObject] isEqual: @"value1"]) {
+		puts("\033[K\033[1;31mTest 3/6 failed!\033[m");
+		return 1;
+	}
+
+	caught = NO;
+	@try {
+		[iter nextObject];
+	} @catch (OFNotInSetException *e) {
+		caught = YES;
+	}
+	if (!caught) {
+		puts("\033[K\033[1;31mTest 4/6 failed!\033[m");
 		return 1;
 	}
 
@@ -56,7 +77,7 @@ main()
 		caught = YES;
 	}
 	if (!caught) {
-		puts("\033[K\033[1;31mTest 3/4 failed!\033[m");
+		puts("\033[K\033[1;31mTest 5/6 failed!\033[m");
 		return 1;
 	}
 
@@ -68,10 +89,11 @@ main()
 		caught = YES;
 	}
 	if (!caught) {
-		puts("\033[K\033[1;31mTest 4/4 failed!\033[m");
+		puts("\033[K\033[1;31mTest 6/6 failed!\033[m");
 		return 1;
 	}
 
-	puts("\033[1;32mTests successful: 4/4\033[0m");
+	puts("\033[1;32mTests successful: 6/6\033[0m");
+
 	return 0;
 }

@@ -9,8 +9,9 @@ SRCS = OFArray.m		\
        OFConstString.m		\
        OFDictionary.m		\
        OFExceptions.m		\
-       OFHashes.m		\
        OFFile.m			\
+       OFHashes.m		\
+       OFIterator.m		\
        OFList.m			\
        OFNumber.m		\
        OFObject.m		\
