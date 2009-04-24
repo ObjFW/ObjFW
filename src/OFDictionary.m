@@ -85,8 +85,13 @@
 - set: (OFObject*)key
    to: (OFObject*)obj
 {
-	uint32_t hash = [key hash] & (size - 1);
+	uint32_t hash;
 	of_list_object_t *iter;
+
+	if (key == nil || obj == nil)
+		@throw [OFInvalidArgumentException newWithClass: isa];
+
+	hash = [key hash] & (size - 1);
 
 	if (data[hash] == nil)
 		data[hash] = [OFList new];
@@ -109,8 +114,13 @@
 
 - get: (OFObject*)key
 {
-	uint32_t hash = [key hash] & (size - 1);
+	uint32_t hash;
 	of_list_object_t *iter;
+
+	if (key == nil)
+		@throw [OFInvalidArgumentException newWithClass: isa];
+
+	hash = [key hash] & (size - 1);
 
 	if (data[hash] == nil)
 		@throw [OFNotInSetException newWithClass: isa];
@@ -124,8 +134,13 @@
 
 - remove: (OFObject*)key
 {
-	uint32_t hash = [key hash] & (size - 1);
+	uint32_t hash;
 	of_list_object_t *iter;
+
+	if (key == nil)
+		@throw [OFInvalidArgumentException newWithClass: isa];
+
+	hash = [key hash] & (size - 1);
 
 	if (data[hash] == nil)
 		@throw [OFNotInSetException newWithClass: isa];
