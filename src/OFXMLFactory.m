@@ -79,27 +79,32 @@ append(char **str, size_t *len, size_t *pos, const char *add, Class class)
 		@throw [OFNoMemException newWithClass: self
 					      andSize: len];
 
-	for (i = 0; *s; s++) {
-		switch (*s) {
-		case '<':
-			append(&ret, &len, &i, "&lt;", self);
-			break;
-		case '>':
-			append(&ret, &len, &i, "&gt;", self);
-			break;
-		case '"':
-			append(&ret, &len, &i, "&quot;", self);
-			break;
-		case '\'':
-			append(&ret, &len, &i, "&apos;", self);
-			break;
-		case '&':
-			append(&ret, &len, &i, "&amp;", self);
-			break;
-		default:
-			ret[i++] = *s;
-			break;
+	@try {
+		for (i = 0; *s; s++) {
+			switch (*s) {
+				case '<':
+					append(&ret, &len, &i, "&lt;", self);
+					break;
+				case '>':
+					append(&ret, &len, &i, "&gt;", self);
+					break;
+				case '"':
+					append(&ret, &len, &i, "&quot;", self);
+					break;
+				case '\'':
+					append(&ret, &len, &i, "&apos;", self);
+					break;
+				case '&':
+					append(&ret, &len, &i, "&amp;", self);
+					break;
+				default:
+					ret[i++] = *s;
+					break;
+			}
 		}
+	} @catch (OFException *e) {
+		free(ret);
+		@throw e;
 	}
 
 	ret[i] = 0;
@@ -159,37 +164,35 @@ append(char **str, size_t *len, size_t *pos, const char *add, Class class)
 		}
 
 		va_end(args);
+
+		/* End of tag */
+		if (close) {
+			if (data == NULL) {
+				resize(&xml, &len, 2 - 1, self);
+
+				xml[i++] = '/';
+				xml[i++] = '>';
+			} else {
+				resize(&xml, &len, 1 + strlen(data) + 2 +
+				    strlen(name) + 1 - 1, self);
+
+				xml[i++] = '>';
+				memcpy(xml + i, data, strlen(data));
+				i += strlen(data);
+				xml[i++] = '<';
+				xml[i++] = '/';
+				memcpy(xml + i, name, strlen(name));
+				i += strlen(name);
+				xml[i++] = '>';
+			}
+		} else
+			xml[i++] = '>';
 	} @catch (OFException *e) {
 		if (esc_val != NULL)
 			free(esc_val);
-		if (xml != NULL)
-			free(xml);
-
+		free(xml);
 		@throw e;
 	}
-
-	/* End of tag */
-	if (close) {
-		if (data == NULL) {
-			resize(&xml, &len, 2 - 1, self);
-
-			xml[i++] = '/';
-			xml[i++] = '>';
-		} else {
-			resize(&xml, &len, 1 + strlen(data) + 2 + strlen(name) +
-			    1 - 1, self);
-
-			xml[i++] = '>';
-			memcpy(xml + i, data, strlen(data));
-			i += strlen(data);
-			xml[i++] = '<';
-			xml[i++] = '/';
-			memcpy(xml + i, name, strlen(name));
-			i += strlen(name);
-			xml[i++] = '>';
-		}
-	} else
-		xml[i++] = '>';
 
 	xml[i] = 0;
 	return xml;
@@ -215,11 +218,16 @@ append(char **str, size_t *len, size_t *pos, const char *add, Class class)
 	memcpy(ret, strs[0], len - 1);
 	pos = len - 1;
 
-	for (i = 1; strs[i] != NULL; i++)
-		append(&ret, &len, &pos, strs[i], self);
+	@try {
+		for (i = 1; strs[i] != NULL; i++)
+			append(&ret, &len, &pos, strs[i], self);
 
-	for (i = 0; strs[i] != NULL; i++)
-		free(strs[i]);
+		for (i = 0; strs[i] != NULL; i++)
+			free(strs[i]);
+	} @catch (OFException *e) {
+		free(ret);
+		@throw e;
+	}
 
 	ret[pos] = 0;
 	return ret;
