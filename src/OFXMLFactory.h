@@ -30,6 +30,35 @@
  * Creates an XML stanza.
  *
  * \param name The name of the tag as a C string
+ * \param ... Field / value pairs for the tag in the form "field", "value" as
+ *	  C strings.
+ *	  Last element must be NULL.
+ *	  Example: "field1", "value1", "field2", "value2", NULL
+ * \return The created XML stanza as a C string.
+ *	   You need to free it manually!
+ */
++ (char*)createStanza: (const char*)name, ...;
+
+/**
+ * Creates an XML stanza.
+ *
+ * \param name The name of the tag as a C string
+ * \param data Data that should be inside the tag as a C string.
+ *	  It will NOT be escaped, so you can also include other stanzas.
+ * \param ... Field / value pairs for the tag in the form "field", "value" as
+ *	  C strings.
+ *	  Last element must be NULL.
+ *	  Example: "field1", "value1", "field2", "value2", NULL
+ * \return The created XML stanza as a C string.
+ *	   You need to free it manually!
+ */
++ (char*)createStanza: (const char*)name
+	     withData: (const char*)data, ...;
+
+/**
+ * Creates an XML stanza.
+ *
+ * \param name The name of the tag as a C string
  * \param close A boolean whether the tag should be closed
  * \param data Data that should be inside the tag as a C string.
  *	  It will NOT be escaped, so you can also include other stanzas.
@@ -43,6 +72,25 @@
 + (char*)createStanza: (const char*)name
 	 withCloseTag: (BOOL)close
 	      andData: (const char*)data, ...;
+
+/**
+ * Creates an XML stanza.
+ *
+ * \param name The name of the tag as a C string
+ * \param close A boolean whether the tag should be closed
+ * \param attrs Field / value pairs for the tag in the form "field", "value" as
+ *	  C strings inside a va_list.
+ *	  Last element must be NULL.
+ *	  Example: "field1", "value1", "field2", "value2", NULL in a va_list
+ * \param data Data that should be inside the tag as a C string.
+ *	  It will NOT be escaped, so you can also include other stanzas.
+ * \return The created XML stanza as a C string.
+ *	   You need to free it manually!
+ */
++ (char*)createStanza: (const char*)name
+	 withCloseTag: (BOOL)close
+	andAttributes: (va_list)attrs
+	      andData: (const char*)data;
 
 /**
  * Concats an array of C strings into one C string and frees the array of C

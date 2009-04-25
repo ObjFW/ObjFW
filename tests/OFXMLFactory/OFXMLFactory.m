@@ -40,6 +40,7 @@ check_result(char *result, const char *should)
 		printf("\r\033[K\033[1;31mTest %" ZD "/%d failed!\033[0m\n",
 		    i, NUM_TESTS);
 		printf("%s is NOT expected result!\n", result);
+		printf("Should have been: %s\n", result);
 		exit(1);
 	}
 
@@ -87,38 +88,27 @@ test_create_stanza()
 						 "blub", "asd",
 						 NULL],
 	    "<foo bar='baz' blub='asd'>");
+	check_result([OFXMLFactory createStanza: "foo", NULL], "<foo/>");
 	check_result([OFXMLFactory createStanza: "foo"
-				   withCloseTag: YES
-					andData: NULL,
-						 NULL],
-	    "<foo/>");
-	check_result([OFXMLFactory createStanza: "foo"
-				   withCloseTag: YES
-					andData: "bar",
+				       withData: "bar",
 						 NULL],
 	    "<foo>bar</foo>");
-	check_result([OFXMLFactory createStanza: "foo"
-				   withCloseTag: YES
-					andData: NULL,
+	check_result([OFXMLFactory createStanza: "foo",
 						 "bar", "b&az",
 						 NULL],
 	    "<foo bar='b&amp;az'/>");
 	check_result([OFXMLFactory createStanza: "foo"
-				   withCloseTag: YES
-					andData: "bar",
+				       withData: "bar",
 						 "bar", "b'az",
 						 NULL],
 	    "<foo bar='b&apos;az'>bar</foo>");
-	check_result([OFXMLFactory createStanza: "foo"
-				   withCloseTag: YES
-					andData: NULL,
+	check_result([OFXMLFactory createStanza: "foo",
 						 "bar", "b&az",
 						 "x", "asd\"",
 						 NULL],
 	    "<foo bar='b&amp;az' x='asd&quot;'/>");
 	check_result([OFXMLFactory createStanza: "foo"
-				   withCloseTag: YES
-					andData: "bar",
+				       withData: "bar",
 						 "bar", "b'az",
 						 "x", "y",
 						 "a", "b",

@@ -111,13 +111,61 @@ append(char **str, size_t *len, size_t *pos, const char *add, Class class)
 	return ret;
 }
 
++ (char*)createStanza: (const char*)name, ...
+{
+	char *ret;
+	va_list attrs;
+
+	va_start(attrs, name);
+	ret = [self createStanza: name
+		    withCloseTag: YES
+		   andAttributes: attrs
+			 andData: NULL];
+	va_end(attrs);
+
+	return ret;
+}
+
++ (char*)createStanza: (const char*)name
+	     withData: (const char*)data, ...
+{
+	char *ret;
+	va_list attrs;
+
+	va_start(attrs, data);
+	ret = [self createStanza: name
+		    withCloseTag: YES
+		   andAttributes: attrs
+			 andData: data];
+	va_end(attrs);
+
+	return ret;
+}
+
 + (char*)createStanza: (const char*)name
 	 withCloseTag: (BOOL)close
 	      andData: (const char*)data, ...
 {
+	char *ret;
+	va_list attrs;
+
+	va_start(attrs, data);
+	ret = [self createStanza: name
+		    withCloseTag: close
+		   andAttributes: attrs
+			 andData: data];
+	va_end(attrs);
+
+	return ret;
+}
+
++ (char*)createStanza: (const char*)name
+	 withCloseTag: (BOOL)close
+	andAttributes: (va_list)attrs
+	      andData: (const char*)data
+{
 	char *arg, *val, *xml, *esc_val = NULL;
 	size_t i, len;
-	va_list args;
 
 	/* Start of tag */
 	len = strlen(name);
@@ -134,17 +182,9 @@ append(char **str, size_t *len, size_t *pos, const char *add, Class class)
 	memcpy(xml + i, name, strlen(name));
 	i += strlen(name);
 
-	/*
-	 * Arguments
-	 *
-	 * va_start / va_end need to be INSIDE the @try block due to a bug in
-	 * gcc 4.0.1. (Only in Apple gcc?)
-	 */
 	@try {
-		va_start(args, data);
-
-		while ((arg = va_arg(args, char*)) != NULL &&
-		    (val = va_arg(args, char*)) != NULL) {
+		while ((arg = va_arg(attrs, char*)) != NULL &&
+		    (val = va_arg(attrs, char*)) != NULL) {
 			esc_val = NULL;	/* Needed for our @catch */
 			esc_val = [self escapeCString: val];
 
@@ -162,8 +202,6 @@ append(char **str, size_t *len, size_t *pos, const char *add, Class class)
 
 			free(esc_val);
 		}
-
-		va_end(args);
 
 		/* End of tag */
 		if (close) {
