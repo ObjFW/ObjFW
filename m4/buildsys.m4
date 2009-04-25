@@ -1,5 +1,5 @@
 dnl
-dnl Copyright (c) 2007 - 2008, Jonathan Schleifer <js-buildsys@webkeks.org>
+dnl Copyright (c) 2007 - 2009, Jonathan Schleifer <js@webkeks.org>
 dnl
 dnl https://webkeks.org/hg/buildsys/
 dnl
@@ -54,7 +54,7 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 	AC_MSG_CHECKING(for shared library system)
 	case "$host" in
 		intel-apple-*)
-			AC_MSG_RESULT([Mac OS X (Intel)])
+			AC_MSG_RESULT([MacOS X (Intel)])
 			LIB_CPPFLAGS='-DPIC'
 			LIB_CFLAGS='-fPIC'
 			LIB_LDFLAGS='-dynamiclib -fPIC -install_name ${libdir}/${LIB}'
@@ -69,7 +69,7 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 			CLEAN_LIB=''
 			;;
 		*-apple-*)
-			AC_MSG_RESULT(Mac OS X)
+			AC_MSG_RESULT(MacOS X)
 			LIB_CPPFLAGS='-DPIC'
 			LIB_CFLAGS=''
 			LIB_LDFLAGS='-dynamiclib -fPIC -install_name ${libdir}/${LIB}'
