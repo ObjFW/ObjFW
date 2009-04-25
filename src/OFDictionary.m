@@ -14,7 +14,11 @@
 #include <string.h>
 
 #import "OFDictionary.h"
+#import "OFIterator.h"
 #import "OFExceptions.h"
+
+/* Reference for static linking */
+void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 
 @implementation OFDictionary
 + dictionary;
