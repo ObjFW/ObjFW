@@ -36,7 +36,15 @@ extern int getpagesize(void);
 
 - initWithItemSize: (size_t)is
 {
+	Class c;
+
 	self = [super init];
+
+	if (is == 0) {
+		c = isa;
+		[self free];
+		@throw [OFInvalidArgumentException newWithClass: c];
+	}
 
 	data = NULL;
 	itemsize = is;
