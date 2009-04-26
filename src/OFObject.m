@@ -214,7 +214,7 @@ static struct {
 	return self;
 }
 
-- (void*)getMemWithSize: (size_t)size
+- (void*)allocWithSize: (size_t)size
 {
 	void *ptr, **memchunks;
 	size_t memchunks_size;
@@ -246,8 +246,8 @@ static struct {
 	return ptr;
 }
 
-- (void*)getMemForNItems: (size_t)nitems
-		  ofSize: (size_t)size
+- (void*)allocNItems: (size_t)nitems
+	    withSize: (size_t)size
 {
 	if (nitems == 0 || size == 0)
 		return NULL;
@@ -255,7 +255,7 @@ static struct {
 	if (nitems > SIZE_MAX / size)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	return [self getMemWithSize: nitems * size];
+	return [self allocWithSize: nitems * size];
 }
 
 - (void*)resizeMem: (void*)ptr
@@ -264,7 +264,7 @@ static struct {
 	void **iter;
 
 	if (ptr == NULL)
-		return [self getMemWithSize: size];
+		return [self allocWithSize: size];
 
 	if (size == 0) {
 		[self freeMem: ptr];
@@ -290,13 +290,13 @@ static struct {
 
 - (void*)resizeMem: (void*)ptr
 	  toNItems: (size_t)nitems
-	    ofSize: (size_t)size
+	  withSize: (size_t)size
 {
 	size_t memsize;
 
 	if (ptr == NULL)
-		return [self getMemForNItems: nitems
-				      ofSize: size];
+		return [self allocNItems: nitems
+				withSize: size];
 
 	if (nitems == 0 || size == 0) {
 		[self freeMem: ptr];

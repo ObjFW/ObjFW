@@ -63,7 +63,7 @@
 
 - (of_list_object_t*)append: (id)obj
 {
-	of_list_object_t *o = [self getMemWithSize: sizeof(of_list_object_t)];
+	of_list_object_t *o = [self allocWithSize: sizeof(of_list_object_t)];
 
 	o->object = obj;
 	o->next = NULL;
@@ -84,7 +84,7 @@
 
 - (of_list_object_t*)prepend: (id)obj
 {
-	of_list_object_t *o = [self getMemWithSize: sizeof(of_list_object_t)];
+	of_list_object_t *o = [self allocWithSize: sizeof(of_list_object_t)];
 
 	o->object = obj;
 	o->next = first;
@@ -106,7 +106,7 @@
 - (of_list_object_t*)insert: (id)obj
 		     before: (of_list_object_t*)listobj
 {
-	of_list_object_t *o = [self getMemWithSize: sizeof(of_list_object_t)];
+	of_list_object_t *o = [self allocWithSize: sizeof(of_list_object_t)];
 
 	o->object = obj;
 	o->next = listobj;
@@ -129,7 +129,7 @@
 - (of_list_object_t*)insert: (id)obj
 		      after: (of_list_object_t*)listobj
 {
-	of_list_object_t *o = [self getMemWithSize: sizeof(of_list_object_t)];
+	of_list_object_t *o = [self allocWithSize: sizeof(of_list_object_t)];
 
 	o->object = obj;
 	o->next = listobj->next;

@@ -42,7 +42,7 @@ const char *str = "Hallo!";
 	    OFOutOfRangeException)					\
 									\
 	puts("Trying to add something after that error...");		\
-	p = [a getMemWithSize: 4096];					\
+	p = [a allocWithSize: 4096];					\
 	memset(p, 255, 4096);						\
 	[a add: p];							\
 	if (!memcmp([a last], p, 4096))					\
@@ -54,7 +54,7 @@ const char *str = "Hallo!";
 	[a freeMem: p];							\
 									\
 	puts("Adding more data...");					\
-	q = [a getMemWithSize: 4096];					\
+	q = [a allocWithSize: 4096];					\
 	memset(q, 42, 4096);						\
 	[a add: q];							\
 	if (!memcmp([a last], q, 4096))					\
@@ -66,7 +66,7 @@ const char *str = "Hallo!";
 	[a freeMem: q];							\
 									\
 	puts("Adding multiple items at once...");			\
-	p = [a getMemWithSize: 8192];					\
+	p = [a allocWithSize: 8192];					\
 	memset(p, 64, 8192);						\
 	[a addNItems: 2							\
 	  fromCArray: p];						\

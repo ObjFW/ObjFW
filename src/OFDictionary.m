@@ -38,8 +38,8 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 	size = 4096;
 
 	@try {
-		data = [self getMemForNItems: size
-				      ofSize: sizeof(OFList*)];
+		data = [self allocNItems: size
+				withSize: sizeof(OFList*)];
 	} @catch (OFException *e) {
 		[self free];
 		@throw e;
@@ -64,8 +64,8 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 	size = (size_t)1 << hashsize;
 
 	@try {
-		data = [self getMemForNItems: size
-				      ofSize: sizeof(OFList*)];
+		data = [self allocNItems: size
+				withSize: sizeof(OFList*)];
 	} @catch (OFException *e) {
 		[self free];
 		@throw e;

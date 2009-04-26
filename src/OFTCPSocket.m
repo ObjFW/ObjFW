@@ -204,7 +204,7 @@
 	addrlen = sizeof(struct sockaddr);
 
 	@try {
-		addr = [newsock getMemWithSize: sizeof(struct sockaddr)];
+		addr = [newsock allocWithSize: sizeof(struct sockaddr)];
 	} @catch(id e) {
 		[newsock free];
 		@throw e;

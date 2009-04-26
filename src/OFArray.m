@@ -88,7 +88,7 @@ extern int getpagesize(void);
 
 	data = [self resizeMem: data
 		      toNItems: items + 1
-			ofSize: itemsize];
+		      withSize: itemsize];
 
 	memcpy(data + items++ * itemsize, item, itemsize);
 
@@ -103,7 +103,7 @@ extern int getpagesize(void);
 
 	data = [self resizeMem: data
 		      toNItems: items + nitems
-			ofSize: itemsize];
+		      withSize: itemsize];
 
 	memcpy(data + items * itemsize, carray, nitems * itemsize);
 	items += nitems;
@@ -118,7 +118,7 @@ extern int getpagesize(void);
 
 	data = [self resizeMem: data
 		      toNItems: items - nitems
-			ofSize: itemsize];
+		      withSize: itemsize];
 
 	items -= nitems;
 

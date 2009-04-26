@@ -166,7 +166,7 @@ check_utf8(const char *str, size_t len)
 		}
 
 		@try {
-			string = [self getMemWithSize: length + 1];
+			string = [self allocWithSize: length + 1];
 		} @catch (OFException *e) {
 			[self free];
 			@throw e;
@@ -269,7 +269,7 @@ check_utf8(const char *str, size_t len)
 	}
 
 	length = len;
-	string = [self getMemWithSize: length + 1];
+	string = [self allocWithSize: length + 1];
 	memcpy(string, str, length + 1);
 
 	return self;

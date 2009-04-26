@@ -146,7 +146,7 @@
  * \param size The size of the memory to allocate
  * \return A pointer to the allocated memory
  */
-- (void*)getMemWithSize: (size_t)size;
+- (void*)allocWithSize: (size_t)size;
 
 /**
  * Allocate memory for a specified number of items and store it in the objects
@@ -156,8 +156,8 @@
  * \param size The size of each item to allocate
  * \return A pointer to the allocated memory
  */
-- (void*)getMemForNItems: (size_t)nitems
-		  ofSize: (size_t)size;
+- (void*)allocNItems: (size_t)nitems
+	    withSize: (size_t)size;
 
 /**
  * Resize memory in the memory pool to a specified size.
@@ -180,7 +180,7 @@
  */
 - (void*)resizeMem: (void*)ptr
 	  toNItems: (size_t)nitems
-	    ofSize: (size_t)size;
+	  withSize: (size_t)size;
 
 /**
  * Frees allocated memory and removes it from the memory pool.

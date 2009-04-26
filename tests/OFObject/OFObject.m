@@ -43,7 +43,7 @@ main()
 
 	/* Test allocating memory */
 	puts("Allocating memory through object...");
-	p = [obj getMemWithSize: 4096];
+	p = [obj allocWithSize: 4096];
 	puts("Allocated 4096 bytes.");
 
 	/* Test freeing the just allocated memory */
@@ -57,9 +57,9 @@ main()
 
 	/* Test multiple memory chunks */
 	puts("Allocating 3 chunks of memory...");
-	p = [obj getMemWithSize: 4096];
-	q = [obj getMemWithSize: 4096];
-	r = [obj getMemWithSize: 4096];
+	p = [obj allocWithSize: 4096];
+	q = [obj allocWithSize: 4096];
+	r = [obj allocWithSize: 4096];
 	puts("Allocated 3 * 4096 bytes.");
 
 	/* Free them */
@@ -77,10 +77,10 @@ main()
 	puts("Got all 3!");
 
 	puts("Trying to allocate more memory than possible...");
-	CATCH_EXCEPTION(p = [obj getMemWithSize: SIZE_MAX], OFNoMemException)
+	CATCH_EXCEPTION(p = [obj allocWithSize: SIZE_MAX], OFNoMemException)
 
 	puts("Allocating 1 byte...");
-	p = [obj getMemWithSize: 1];
+	p = [obj allocWithSize: 1];
 
 	puts("Trying to resize that 1 byte to more than possible...");
 	CATCH_EXCEPTION(p = [obj resizeMem: p
