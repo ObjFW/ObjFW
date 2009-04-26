@@ -27,7 +27,7 @@ main()
 	BOOL caught;
 
 	OFDictionary *dict = [OFDictionary dictionaryWithHashSize: 16];
-	OFIterator *iter = [dict getIterator];
+	OFIterator *iter = [dict iterator];
 
 	OFAutoreleasePool *pool = [OFAutoreleasePool new];
 	OFString *key1 = [OFString stringWithCString: "key1"];

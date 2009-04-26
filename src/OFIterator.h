@@ -53,5 +53,5 @@
 /**
  * \return An OFIterator for the OFDictionary
  */
-- (OFIterator*)getIterator;
+- (OFIterator*)iterator;
 @end

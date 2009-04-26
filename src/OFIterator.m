@@ -57,7 +57,7 @@
 @end
 
 @implementation OFDictionary (OFIterator)
-- (OFIterator*)getIterator
+- (OFIterator*)iterator
 {
 	return [[[OFIterator alloc] initWithData: data
 					 andSize: size] autorelease];
