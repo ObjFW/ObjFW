@@ -205,7 +205,7 @@
 
 	@try {
 		addr = [newsock allocWithSize: sizeof(struct sockaddr)];
-	} @catch(id e) {
+	} @catch (id e) {
 		[newsock free];
 		@throw e;
 	}

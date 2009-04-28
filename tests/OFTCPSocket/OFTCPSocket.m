@@ -102,7 +102,7 @@ main()
 #endif
 
 		[accepted release];
-	} @catch(OFException *e) {
+	} @catch (OFException *e) {
 		printf("EXCEPTION: %s\n", [e cString]);
 		return 1;
 	}
