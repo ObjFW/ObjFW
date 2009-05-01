@@ -168,7 +168,12 @@ check_utf8(const char *str, size_t len)
 		@try {
 			string = [self allocWithSize: length + 1];
 		} @catch (OFException *e) {
-			[super free];
+			/*
+			 * We can't use [super free] on OS X here. Compiler bug?
+			 * [self free] will do here as we don't reimplement
+			 * free.
+			 */
+			[self free];
 			@throw e;
 		}
 		memcpy(string, str, length + 1);

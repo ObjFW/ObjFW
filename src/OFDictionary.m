@@ -41,7 +41,12 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 		data = [self allocNItems: size
 				withSize: sizeof(OFList*)];
 	} @catch (OFException *e) {
-		[super free];
+		/*
+		 * We can't use [super free] on OS X here. Compiler bug?
+		 * Anyway, set size to 0 so that [self free] works.
+		 */
+		size = 0;
+		[self free];
 		@throw e;
 	}
 	memset(data, 0, size);
@@ -67,7 +72,12 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 		data = [self allocNItems: size
 				withSize: sizeof(OFList*)];
 	} @catch (OFException *e) {
-		[super free];
+		/*
+		 * We can't use [super free] on OS X here. Compiler bug?
+		 * Anyway, set size to 0 so that [self free] works.
+		 */
+		size = 0;
+		[self free];
 		@throw e;
 	}
 	memset(data, 0, size);
