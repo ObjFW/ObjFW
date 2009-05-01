@@ -583,3 +583,15 @@
  */
 - (int)errNo;
 @end
+
+/**
+ * An OFException indicating that joining the thread failed.
+ */
+@interface OFThreadJoinFailedException: OFException {}
+@end
+
+/**
+ * An OFException indicating that the thread has been canceled.
+ */
+@interface OFThreadCanceledException: OFException {}
+@end

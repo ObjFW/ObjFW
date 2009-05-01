@@ -18,6 +18,7 @@ SRCS = OFArray.m		\
        ${OFPLUGIN_M}		\
        OFString.m		\
        OFTCPSocket.m		\
+       OFThread.m		\
        OFXMLFactory.m		\
        ${ASPRINTF_C}
 

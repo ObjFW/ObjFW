@@ -764,3 +764,30 @@
 	return err;
 }
 @end
+
+@implementation OFThreadJoinFailedException
+- (const char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "Joining a thread of class %s failed! Most likely, "
+	    "another thread already waits for the thread to join.",
+	    [class name]);
+
+	return string;
+}
+@end
+
+@implementation OFThreadCanceledException
+- (const char*)cString
+{
+	if (string != NULL)
+		return string;
+
+	asprintf(&string, "The requested action cannot be performed because "
+	    "the thread of class %s was canceled!", [class name]);
+
+	return string;
+}
+@end

@@ -8,6 +8,7 @@ SUBDIRS = OFObject		\
 	  ${OFPLUGIN}		\
 	  OFString		\
 	  OFTCPSocket		\
+	  OFThread		\
 	  OFList		\
 	  OFXMLFactory
 
