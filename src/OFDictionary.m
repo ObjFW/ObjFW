@@ -41,7 +41,7 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 		data = [self allocNItems: size
 				withSize: sizeof(OFList*)];
 	} @catch (OFException *e) {
-		[self free];
+		[super free];
 		@throw e;
 	}
 	memset(data, 0, size);
@@ -55,7 +55,7 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 
 	if (hashsize < 8 || hashsize > 31) {
 		Class c = isa;
-		[self free];
+		[super free];
 		@throw [OFInvalidArgumentException
 			newWithClass: c
 			 andSelector: _cmd];
@@ -67,7 +67,7 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 		data = [self allocNItems: size
 				withSize: sizeof(OFList*)];
 	} @catch (OFException *e) {
-		[self free];
+		[super free];
 		@throw e;
 	}
 	memset(data, 0, size);

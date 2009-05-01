@@ -42,7 +42,7 @@ extern int getpagesize(void);
 
 	if (is == 0) {
 		c = isa;
-		[self free];
+		[super free];
 		@throw [OFInvalidArgumentException newWithClass: c];
 	}
 

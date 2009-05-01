@@ -168,7 +168,7 @@ check_utf8(const char *str, size_t len)
 		@try {
 			string = [self allocWithSize: length + 1];
 		} @catch (OFException *e) {
-			[self free];
+			[super free];
 			@throw e;
 		}
 		memcpy(string, str, length + 1);
