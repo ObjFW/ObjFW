@@ -11,9 +11,9 @@
 
 #import "config.h"
 
-#import <stdio.h>
-#import <stdlib.h>
-#import <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
 
 #import "OFObject.h"
 #import "OFExceptions.h"

@@ -11,9 +11,9 @@
 
 #import "config.h"
 
-#import <stdio.h>
-#import <stdlib.h>
-#import <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #import "OFXMLFactory.h"
 

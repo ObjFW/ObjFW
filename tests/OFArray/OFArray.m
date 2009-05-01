@@ -11,10 +11,10 @@
 
 #import "config.h"
 
-#import <stdio.h>
-#import <stdlib.h>
-#import <string.h>
-#import <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
 
 #import "OFArray.h"
 #import "OFExceptions.h"

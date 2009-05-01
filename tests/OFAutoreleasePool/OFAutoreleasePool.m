@@ -11,9 +11,9 @@
 
 #import "config.h"
 
-#import "OFAutoreleasePool.h"
+#include <stdio.h>
 
-#import <stdio.h>
+#import "OFAutoreleasePool.h"
 
 #ifndef _WIN32
 #define ZD "%zd"

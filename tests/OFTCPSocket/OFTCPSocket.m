@@ -11,9 +11,9 @@
 
 #import "config.h"
 
-#import <time.h>
-#import <stdlib.h>
-#import <string.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
 #import "OFTCPSocket.h"
 #import "OFExceptions.h"

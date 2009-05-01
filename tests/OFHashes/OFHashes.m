@@ -11,8 +11,8 @@
 
 #import "config.h"
 
-#import <stdio.h>
-#import <string.h>
+#include <stdio.h>
+#include <string.h>
 
 #import "OFHashes.h"
 #import "OFFile.h"
