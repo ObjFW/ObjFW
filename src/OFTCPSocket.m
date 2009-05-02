@@ -61,22 +61,6 @@
 	return [super free];
 }
 
-- setSocket: (int)socket
-{
-	sock = socket;
-
-	return self;
-}
-
-- setSocketAddress: (struct sockaddr*)sockaddr
-	withLength: (socklen_t)len
-{
-	saddr = sockaddr;
-	saddr_len = len;
-
-	return self;
-}
-
 - connectTo: (const char*)host
      onPort: (uint16_t)port
 {
@@ -215,9 +199,9 @@
 		@throw [OFAcceptFailedException newWithClass: isa];
 	}
 
-	[newsock setSocket: s];
-	[newsock setSocketAddress: addr
-		       withLength: addrlen];
+	newsock->sock = s;
+	newsock->saddr = addr;
+	newsock->saddr_len = addrlen;
 
 	return newsock;
 }
