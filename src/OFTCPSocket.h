@@ -40,12 +40,14 @@
 @interface OFTCPSocket: OFObject <OFStream>
 {
 #ifndef _WIN32
-	int	  sock;
+	int		sock;
 #else
-	SOCKET	  sock;
+	SOCKET		sock;
 #endif
-	struct	  sockaddr *saddr;
-	socklen_t saddr_len;
+	struct sockaddr	*saddr;
+	socklen_t	saddr_len;
+	char		*cache;
+	size_t		cache_len;
 }
 
 /**
@@ -98,6 +100,30 @@
  *	   autoreleased!
  */
 - (OFTCPSocket*)accept;
+
+/**
+ * Read until a newline or \0 occurs.
+ *
+ * If you want to use readNBytes afterwards again, you have to clear the cache
+ * before and optionally get the cache before clearing it!
+ *
+ * \return The line that was read. Use freeMem: to free it!
+ */
+- (char*)readLine;
+
+/**
+ * Sets a specified pointer to the cache and returns the length of the cache.
+ *
+ * \param ptr A pointer to a pointer. It will be set to the cache.
+ *	      If it is NULL, only the number of bytes in the cache is returned.
+ * \return The number of bytes in the cache.
+ */
+- (size_t)getCache: (char**)ptr;
+
+/**
+ * Clears the cache.
+ */
+- clearCache;
 
 /**
  * Enables/disables non-blocking I/O.
