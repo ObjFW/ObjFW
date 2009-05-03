@@ -18,13 +18,12 @@ typedef int uid_t;
 typedef int gid_t;
 #endif
 
-#import "OFObject.h"
 #import "OFStream.h"
 
 /**
  * The OFFile class provides functions to read, write and manipulate files.
  */
-@interface OFFile: OFObject <OFStream>
+@interface OFFile: OFStream
 {
 	FILE *fp;
 }

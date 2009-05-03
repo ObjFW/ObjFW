@@ -16,6 +16,7 @@ SRCS = OFArray.m		\
        OFNumber.m		\
        OFObject.m		\
        ${OFPLUGIN_M}		\
+       OFStream.m		\
        OFString.m		\
        OFTCPSocket.m		\
        OFThread.m		\
@@ -24,8 +25,7 @@ SRCS = OFArray.m		\
 
 INCLUDESTMP = ${SRCS:.c=.h}
 INCLUDES = ${INCLUDESTMP:.m=.h}	\
-	   OFMacros.h		\
-	   OFStream.h
+	   OFMacros.h
 
 include ../buildsys.mk
 
