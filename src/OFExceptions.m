@@ -513,9 +513,9 @@
        andNode: (const char*)node_
     andService: (const char*)service_
 {
-	return [self newWithClass: class_
-			  andNode: node_
-		       andService: service_];
+	return [[self alloc] initWithClass: class_
+				   andNode: node_
+				andService: service_];
 }
 
 - initWithClass: (Class)class_
@@ -577,9 +577,9 @@
        andHost: (const char*)host_
        andPort: (uint16_t)port_
 {
-	return [self newWithClass: class_
-			  andHost: host_
-			  andPort: port_];
+	return [[self alloc] initWithClass: class_
+				   andHost: host_
+				   andPort: port_];
 }
 
 - initWithClass: (Class)class_
