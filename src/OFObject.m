@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <assert.h>
 
 #import "OFObject.h"
 #import "OFAutoreleasePool.h"
@@ -326,10 +327,8 @@ static struct {
 			memchunks_size = PRE_IVAR->memchunks_size - 1;
 			last = PRE_IVAR->memchunks[memchunks_size];
 
-			if (OF_UNLIKELY(PRE_IVAR->memchunks_size == 0 ||
-			    memchunks_size > SIZE_MAX / sizeof(void*)))
-				@throw [OFOutOfRangeException
-				    newWithClass: isa];
+			assert(PRE_IVAR->memchunks_size != 0 &&
+			    memchunks_size <= SIZE_MAX / sizeof(void*));
 
 			if (OF_UNLIKELY(memchunks_size == 0)) {
 				free(ptr);
@@ -344,9 +343,7 @@ static struct {
 			if (OF_UNLIKELY((memchunks = realloc(
 			    PRE_IVAR->memchunks, memchunks_size *
 			    sizeof(void*))) == NULL))
-				@throw [OFNoMemException
-				    newWithClass: isa
-					 andSize: memchunks_size];
+				return self;
 
 			free(ptr);
 			PRE_IVAR->memchunks = memchunks;
