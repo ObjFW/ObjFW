@@ -293,8 +293,6 @@ static struct {
 	  toNItems: (size_t)nitems
 	  withSize: (size_t)size
 {
-	size_t memsize;
-
 	if (ptr == NULL)
 		return [self allocNItems: nitems
 				withSize: size];
@@ -307,9 +305,8 @@ static struct {
 	if (nitems > SIZE_MAX / size)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	memsize = nitems * size;
 	return [self resizeMem: ptr
-			toSize: memsize];
+			toSize: nitems * size];
 }
 
 - freeMem: (void*)ptr;
