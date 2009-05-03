@@ -320,8 +320,7 @@ check_utf8(const char *str, size_t len)
 
 - appendCString: (const char*)str
 {
-	char   *newstr;
-	size_t newlen, strlength;
+	size_t strlength;
 
 	strlength = strlen(str);
 
@@ -333,14 +332,10 @@ check_utf8(const char *str, size_t len)
 		@throw [OFInvalidEncodingException newWithClass: isa];
 	}
 
-	newlen = length + strlength;
-	newstr = [self resizeMem: string
-			  toSize: newlen + 1];
-
-	memcpy(newstr + length, str, strlength + 1);
-
-	length = newlen;
-	string = newstr;
+	string = [self resizeMem: string
+			  toSize: length + strlength + 1];
+	memcpy(string + length, str, strlength + 1);
+	length += strlength;
 
 	return self;
 }
