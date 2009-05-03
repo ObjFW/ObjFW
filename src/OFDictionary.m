@@ -108,7 +108,7 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 	hash = [key hash] & (size - 1);
 
 	if (data[hash] == nil)
-		data[hash] = [OFList new];
+		data[hash] = [[OFList alloc] init];
 
 	for (iter = [data[hash] first]; iter != NULL; iter = iter->next->next) {
 		if ([iter->object isEqual: key]) {

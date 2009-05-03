@@ -29,7 +29,7 @@ main()
 	OFDictionary *dict = [OFDictionary dictionaryWithHashSize: 16];
 	OFIterator *iter = [dict iterator];
 
-	OFAutoreleasePool *pool = [OFAutoreleasePool new];
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFString *key1 = [OFString stringWithCString: "key1"];
 	OFString *key2 = [OFString stringWithCString: "key2"];
 	OFString *value1 = [OFString stringWithCString: "value1"];

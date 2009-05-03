@@ -54,7 +54,7 @@ main()
 {
 	size_t i = 0;
 
-	OFAutoreleasePool *pool = [OFAutoreleasePool new];
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFString *s1 = [OFString stringWithCString: "test"];
 	OFString *s2 = [OFString stringWithCString: ""];
 	OFString *s3;
@@ -63,7 +63,7 @@ main()
 	s3 = [s1 copy];
 
 	CHECK([s1 isEqual: s3])
-	CHECK(![s1 isEqual: [OFObject new]])
+	CHECK(![s1 isEqual: [[OFObject alloc] init]])
 	CHECK([s1 hash] == [s3 hash])
 
 	[s2 appendCString: "123"];

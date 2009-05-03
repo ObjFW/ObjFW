@@ -71,11 +71,6 @@ static struct {
 	return instance;
 }
 
-+ new
-{
-	return [[self alloc] init];
-}
-
 + (Class)class
 {
 	return self;

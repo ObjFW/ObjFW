@@ -86,16 +86,16 @@ main()
 	OFObject *o1, *o2, *o3;
 	OFAutoreleasePool *pool1, *pool2;
 
-	o1 = [[OFObject new] autorelease];
+	o1 = [[[OFObject alloc] init] autorelease];
 
-	pool1 = [OFAutoreleasePool new];
-	o2 = [[OFObject new] autorelease];
+	pool1 = [[OFAutoreleasePool alloc] init];
+	o2 = [[[OFObject alloc] init] autorelease];
 	[pool1 releaseObjects];
 
-	o2 = [[OFObject new] autorelease];
+	o2 = [[[OFObject alloc] init] autorelease];
 
-	pool2 = [OFAutoreleasePool new];
-	o3 = [[OFObject new] autorelease];
+	pool2 = [[OFAutoreleasePool alloc] init];
+	o3 = [[[OFObject alloc] init] autorelease];
 
 	[pool1 retain];
 	[pool1 release];

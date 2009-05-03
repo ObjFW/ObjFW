@@ -21,5 +21,5 @@
 id
 init_plugin()
 {
-	return [TestPlugin new];
+	return [[TestPlugin alloc] init];
 }

@@ -33,7 +33,7 @@
 int
 main()
 {
-	OFObject *obj = [OFObject new];
+	OFObject *obj = [[OFObject alloc] init];
 	void *p, *q, *r;
 
 	/* Test freeing memory not allocated by obj */

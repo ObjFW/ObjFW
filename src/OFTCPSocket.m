@@ -184,7 +184,7 @@
 	socklen_t addrlen;
 	int s;
 
-	newsock = [OFTCPSocket new];
+	newsock = [OFTCPSocket tcpSocket];
 	addrlen = sizeof(struct sockaddr);
 
 	@try {

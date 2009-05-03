@@ -44,11 +44,6 @@
 + alloc;
 
 /**
- * Allocated memory for an instance of the class and initializes the instance.
- */
-+ new;
-
-/**
  * \return The class pointer
  */
 + (Class)class;

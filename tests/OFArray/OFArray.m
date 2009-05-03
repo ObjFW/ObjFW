@@ -127,7 +127,7 @@ main()
 	puts("== TESTING OFBigArray ==");
 	TEST(OFBigArray)
 
-	pool = [OFAutoreleasePool new];
+	pool = [[OFAutoreleasePool alloc] init];
 	x = [OFArray arrayWithItemSize: 1];
 	y = [OFArray bigArrayWithItemSize: 1];
 
