@@ -83,7 +83,7 @@ extern int getpagesize(void);
 
 - add: (void*)item
 {
-	if (SIZE_MAX - items < 1 || items + 1 > SIZE_MAX / itemsize)
+	if (SIZE_MAX - items < 1)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	data = [self resizeMem: data
@@ -98,7 +98,7 @@ extern int getpagesize(void);
 - addNItems: (size_t)nitems
  fromCArray: (void*)carray
 {
-	if (nitems > SIZE_MAX - items || items + nitems > SIZE_MAX / itemsize)
+	if (nitems > SIZE_MAX - items)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	data = [self resizeMem: data
