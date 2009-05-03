@@ -257,7 +257,7 @@ check_utf8(const char *str, size_t len)
 	size_t len;
 
 	if (string != NULL)
-		free(string);
+		[self freeMem: string];
 
 	len = strlen(str);
 
