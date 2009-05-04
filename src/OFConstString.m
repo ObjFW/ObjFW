@@ -9,16 +9,9 @@
  * the packaging of this file.
  */
 
-#import "config.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#import <config.h>
 
 #import "OFConstString.h"
-#import "OFString.h"
-#import "OFExceptions.h"
-#import "OFMacros.h"
 
 #ifndef __objc_INCLUDE_GNU
 void *_OFConstStringClassReference;
@@ -32,49 +25,6 @@ void *_OFConstStringClassReference;
 	    "OFConstString");
 }
 #endif
-
-- (const char*)cString
-{
-	return string;
-}
-
-- (size_t)length
-{
-	return length;
-}
-
-- (BOOL)isEqual: (id)obj
-{
-	if (![obj isKindOf: [OFString class]] &&
-	    ![obj isKindOf: [OFConstString class]])
-		return NO;
-	if (strcmp(string, [obj cString]))
-		return NO;
-
-	return YES;
-}
-
-- (int)compare: (id)obj
-{
-	if (![obj isKindOf: [OFString class]] &&
-	    ![obj isKindOf: [OFConstString class]])
-		@throw [OFInvalidArgumentException newWithClass: isa];
-
-	return strcmp(string, [obj cString]);
-}
-
-- (uint32_t)hash
-{
-	uint32_t hash;
-	size_t i;
-
-	OF_HASH_INIT(hash);
-	for (i = 0; i < length; i++)
-		OF_HASH_ADD(hash, string[i]);
-	OF_HASH_FINALIZE(hash);
-
-	return hash;
-}
 
 - retain
 {

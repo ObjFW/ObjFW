@@ -9,7 +9,7 @@
  * the packaging of this file.
  */
 
-#import "OFObject.h"
+#import "OFString.h"
 
 #ifndef __objc_INCLUDE_GNU
 #import <objc/runtime.h>
@@ -20,35 +20,5 @@ extern void *_OFConstStringClassReference;
 /**
  * A class for storing static strings using the @"" literal.
  */
-@interface OFConstString: OFObject
-{
-	char	     *string;
-#ifdef __objc_INCLUDE_GNU
-	unsigned int length;
-#else
-	int	     length;
-#if __LP64__
-	int	     _unused;
-#endif
-#endif
-}
-
-/**
- * \return The OFString as a C string
- */
-- (const char*)cString;
-
-/**
- * \return The length of the OFString
- */
-- (size_t)length;
-
-/**
- * Compares the OFString to another object.
- *
- * \param obj An object to compare with
- * \return An integer which is the result of the comparison, see for example
- *	   strcmp
- */
-- (int)compare: (id)obj;
+@interface OFConstString: OFString {}
 @end

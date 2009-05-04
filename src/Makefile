@@ -13,6 +13,7 @@ SRCS = OFArray.m		\
        OFHashes.m		\
        OFIterator.m		\
        OFList.m			\
+       OFMutableString.m	\
        OFNumber.m		\
        OFObject.m		\
        ${OFPLUGIN_M}		\

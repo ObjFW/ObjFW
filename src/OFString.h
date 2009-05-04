@@ -15,13 +15,19 @@
 #import "OFObject.h"
 
 /**
- * A class for storing and modifying strings.
+ * A class for managing strings.
  */
 @interface OFString: OFObject
 {
-	char   *string;
-	size_t length;
-	BOOL   is_utf8;
+	char	     *string;
+#ifdef __objc_INCLUDE_GNU
+	unsigned int length;
+#else
+	int	     length;
+#if __LP64__
+	int	     _unused;
+#endif
+#endif
 }
 
 /**
@@ -63,34 +69,6 @@
  * \return An initialized OFString
  */
 - init;
-
-/**
- * Initializes an already allocated OFString from a C string.
- *
- * \param str A C string to initialize the OFString with
- * \return An initialized OFString
- */
-- initWithCString: (const char*)str;
-
-/**
- * Initializes an already allocated OFString from a format C string.
- * See printf for the format syntax.
- *
- * \param fmt A C string used as format to initialize the OFString
- * \return An initialized OFString
- */
-- initWithFormat: (const char*)fmt, ...;
-
-/**
- * Initializes an already allocated OFString from a format C string.
- * See printf for the format syntax.
- *
- * \param fmt A C string used as format to initialize the OFString
- * \param args The arguments used in the format string
- * \return An initialized OFString
- */
-- initWithFormat: (const char*)fmt
-    andArguments: (va_list)args;
 
 /**
  * \return The OFString as a C string
