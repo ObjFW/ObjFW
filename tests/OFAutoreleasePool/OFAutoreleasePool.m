@@ -102,5 +102,5 @@ main()
 	[pool1 release];
 	[o3 free];
 
-	return (inits == 12 && retains == 1 && releases == 6 ? 0 : 1);
+	return (inits == 16 && retains == 2 && releases == 7 ? 0 : 1);
 }

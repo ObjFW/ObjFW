@@ -13,29 +13,13 @@
 
 #include <stdlib.h>
 
-#ifndef _WIN32
-#include <pthread.h>
-#endif
-
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
 #import "OFList.h"
+#import "OFThread.h"
+#import "OFExceptions.h"
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
+static OFTLSKey *pool_list_key;
 
-#ifndef _WIN32
-#define get_tls(t) pthread_getspecific(pool_list_key)
-#define set_tls(t, v) pthread_setspecific(t, v)
-static pthread_key_t pool_list_key;
-#else
-#define get_tls(t) TlsGetValue(t)
-#define set_tls(t, v) TlsSetValue(t, v)
-static DWORD pool_list_key;
-#endif
-
-#ifndef _WIN32
 static void
 release_list(void *list)
 {
@@ -50,33 +34,31 @@ release_list(void *list)
 
 	[(OFList*)list release];
 }
-#endif
 
 @implementation OFAutoreleasePool
 + initialize
 {
-#ifndef _WIN32
-	if (pthread_key_create(&pool_list_key, release_list))
-		@throw [OFInitializationFailedException newWithClass: self];
-#else
-	/* FIXME: Free stuff when thread is terminated! */
-	if ((pool_list_key = TlsAlloc()) == TLS_OUT_OF_INDEXES)
-		@throw [OFInitializationFailedException newWithClass: self];
-#endif
+	pool_list_key = [[OFTLSKey alloc] initWithDestructor: release_list];
 
 	return self;
 }
 
 + (void)addToPool: (OFObject*)obj
 {
-	OFList *pool_list = get_tls(pool_list_key);
+	OFList *pool_list;
 
-	if (pool_list == nil || [pool_list last] == NULL) {
+	@try {
+		pool_list = [OFThread objectForTLSKey: pool_list_key];
+	} @catch (OFNotInSetException *e) {
+		[e free];
 		[[self alloc] init];
-		pool_list = get_tls(pool_list_key);
+		pool_list = [OFThread objectForTLSKey: pool_list_key];
 	}
 
-	if (pool_list == nil || [pool_list last] == NULL)
+	if ([pool_list last] == NULL)
+		[[self alloc] init];
+
+	if ([pool_list last] == NULL)
 		@throw [OFInitializationFailedException newWithClass: self];
 
 	[[pool_list last]->object addToPool: obj];
@@ -89,11 +71,15 @@ release_list(void *list)
 	self = [super init];
 
 	objects = nil;
-	pool_list = get_tls(pool_list_key);
 
-	if (pool_list == nil) {
+	@try {
+		pool_list = [OFThread objectForTLSKey: pool_list_key];
+	} @catch (OFNotInSetException *e) {
+		[e free];
 		pool_list = [[OFList alloc] initWithoutRetainAndRelease];
-		set_tls(pool_list_key, pool_list);
+		[OFThread setObject: pool_list
+			  forTLSKey: pool_list_key];
+		[pool_list release];
 	}
 
 	listobj = [pool_list append: self];
@@ -103,7 +89,7 @@ release_list(void *list)
 
 - free
 {
-	[(OFList*)get_tls(pool_list_key) remove: listobj];
+	[[OFThread objectForTLSKey: pool_list_key] remove: listobj];
 
 	return [super free];
 }
