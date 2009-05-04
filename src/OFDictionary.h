@@ -74,6 +74,13 @@
 - remove: (OFObject*)key;
 
 /**
+ * \return The average number of items in a used bucket. Buckets that are
+ *	   completely empty are not in the calculation. If this value is >= 2.0,
+ *	   you should resize the dictionary, in most cases even earlier!
+ */
+- (float)averageItemsPerBucket;
+
+/**
  * Changes the hash size of the dictionary.
  *
  * \param hashsize The new hash size for the dictionary

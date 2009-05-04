@@ -176,6 +176,23 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 	@throw [OFNotInSetException newWithClass: isa];
 }
 
+- (float)averageItemsPerBucket
+{
+	size_t items, buckets, i;
+
+	items = 0;
+	buckets = 0;
+
+	for (i = 0; i < size; i++) {
+		if (data[i] != nil) {
+			items += [data[i] items] / 2;
+			buckets++;
+		}
+	}
+
+	return (float)items / buckets;
+}
+
 - changeHashSize: (int)hashsize
 {
 	OFList **newdata;
