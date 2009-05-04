@@ -120,10 +120,4 @@
 {
 	size_t size;
 }
-
-- initWithItemSize: (size_t)is;
-- add: (void*)item;
-- addNItems: (size_t)nitems
- fromCArray: (void*)carray;
-- removeNItems: (size_t)nitems;
 @end
