@@ -168,4 +168,15 @@
 
 	return self;
 }
+
+- (size_t)items
+{
+	size_t i;
+	of_list_object_t *iter;
+
+	for (i = 0, iter = first; iter != NULL; iter = iter->next)
+		i++;
+
+	return i;
+}
 @end

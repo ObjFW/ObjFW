@@ -23,7 +23,7 @@
 #define ZD "%u"
 #endif
 
-#define NUM_TESTS 10
+#define NUM_TESTS 11
 #define SUCCESS								\
 {									\
 	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
@@ -87,6 +87,8 @@ main()
 
 	for (iter = [list first], j = 0; iter != NULL; iter = iter->next, j++)
 		CHECK(!strcmp([iter->object cString], strings[j]))
+
+	CHECK ([list items] == 3)
 
 	puts("");
 

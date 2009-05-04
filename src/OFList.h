@@ -100,4 +100,12 @@ typedef struct __of_list_object
  * \param listobj The list object returned by append / prepend
  */
 - remove: (of_list_object_t*)listobj;
+
+/**
+ * Get the number of items in the list. Use with caution, as this means one
+ * iteration through the whole list!
+ *
+ * \return The number of items in the list.
+ */
+- (size_t)items;
 @end
