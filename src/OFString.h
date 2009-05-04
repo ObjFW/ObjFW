@@ -31,34 +31,34 @@
 }
 
 /**
- * \return A new autoreleased OFString
+ * \return A new autoreleased OFMutableString
  */
 + string;
 
 /**
- * Creates a new OFString from a C string.
+ * Creates a new OFMutableString from a C string.
  *
- * \param str A C string to initialize the OFString with
- * \return A new autoreleased OFString
+ * \param str A C string to initialize the OFMutableString with
+ * \return A new autoreleased OFMutableString
  */
 + stringWithCString: (const char*)str;
 
 /**
- * Creates a new OFString from a format C string.
+ * Creates a new OFMutableString from a format C string.
  * See printf for the format syntax.
  *
- * \param fmt A C string used as format to initialize the OFString
- * \return A new autoreleased OFString
+ * \param fmt A C string used as format to initialize the OFMutableString
+ * \return A new autoreleased OFMutableString
  */
 + stringWithFormat: (const char*)fmt, ...;
 
 /**
- * Creates a new OFString from a format C string.
+ * Creates a new OFMutableString from a format C string.
  * See printf for the format syntax.
  *
- * \param fmt A C string used as format to initialize the OFString
+ * \param fmt A C string used as format to initialize the OFMutableString
  * \param args The arguments used in the format string
- * \return A new autoreleased OFString
+ * \return A new autoreleased OFMutableString
  */
 + stringWithFormat: (const char*)fmt
       andArguments: (va_list)args;
@@ -83,7 +83,7 @@
 /**
  * Clones the OFString, creating a new one.
  *
- * \return A new autoreleased copy of the OFString
+ * \return A new autoreleased copy of the OFString as a OFMutableString
  */
 - (id)copy;
 
@@ -104,21 +104,21 @@
 - setTo: (const char*)str;
 
 /**
- * Append another OFString to the OFString.
+ * Appends another OFString to the OFString.
  *
  * \param str An OFString to append
  */
 - append: (OFString*)str;
 
 /**
- * Append a C string to the OFString.
+ * Appends a C string to the OFString.
  *
  * \param str A C string to append
  */
 - appendCString: (const char*)str;
 
 /**
- * Append a formatted C string to the OFString.
+ * Appends a formatted C string to the OFString.
  * See printf for the format syntax.
  *
  * \param fmt A format C string which generates the string to append
@@ -126,7 +126,7 @@
 - appendWithFormatCString: (const char*)fmt, ...;
 
 /**
- * Append a formatted C string to the OFString.
+ * Appends a formatted C string to the OFString.
  * See printf for the format syntax.
  *
  * \param fmt A format C string which generates the string to append

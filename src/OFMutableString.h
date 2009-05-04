@@ -23,36 +23,29 @@
 }
 
 /**
- * Initializes an already allocated OFString.
+ * Initializes an already allocated OFMutableString from a C string.
  *
- * \return An initialized OFString
- */
-- init;
-
-/**
- * Initializes an already allocated OFString from a C string.
- *
- * \param str A C string to initialize the OFString with
- * \return An initialized OFString
+ * \param str A C string to initialize the OFMutableString with
+ * \return An initialized OFMutableString
  */
 - initWithCString: (const char*)str;
 
 /**
- * Initializes an already allocated OFString from a format C string.
+ * Initializes an already allocated OFMutableString from a format C string.
  * See printf for the format syntax.
  *
- * \param fmt A C string used as format to initialize the OFString
- * \return An initialized OFString
+ * \param fmt A C string used as format to initialize the OFMutableString
+ * \return An initialized OFMutableString
  */
 - initWithFormat: (const char*)fmt, ...;
 
 /**
- * Initializes an already allocated OFString from a format C string.
+ * Initializes an already allocated OFMutableString from a format C string.
  * See printf for the format syntax.
  *
- * \param fmt A C string used as format to initialize the OFString
+ * \param fmt A C string used as format to initialize the OFMutableString
  * \param args The arguments used in the format string
- * \return An initialized OFString
+ * \return An initialized OFMutableString
  */
 - initWithFormat: (const char*)fmt
     andArguments: (va_list)args;
