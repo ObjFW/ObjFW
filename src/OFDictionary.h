@@ -28,7 +28,7 @@
  */
 + dictionary;
 
-/*
+/**
  * Creates a new OFDictionary with a hash of N bits.
  *
  * \param bits The size of the hash to use
@@ -43,7 +43,7 @@
  */
 - init;
 
-/*
+/**
  * Initializes an already allocated OFDictionary with a hash of N bits.
  *
  * \param bits The size of the hash to use
@@ -51,7 +51,7 @@
  */
 - initWithHashSize: (int)hashsize;
 
-/*
+/**
  * Sets a key to an object. A key can be any object.
  *
  * \param key The key to set
@@ -60,16 +60,23 @@
 - set: (OFObject*)key
    to: (OFObject*)obj;
 
-/*
+/**
  * \param key The key whose object should be returned
  * \return The object for the given key
  */
 - get: (OFObject*)key;
 
-/*
+/**
  * Remove the object with the given key from the dictionary.
  *
  * \param key The key whose object should be removed
  */
 - remove: (OFObject*)key;
+
+/**
+ * Changes the hash size of the dictionary.
+ *
+ * \param hashsize The new hash size for the dictionary
+ */
+- changeHashSize: (int)hashsize;
 @end

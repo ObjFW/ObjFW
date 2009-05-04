@@ -16,6 +16,7 @@
 #import "OFDictionary.h"
 #import "OFIterator.h"
 #import "OFExceptions.h"
+#import "OFMacros.h"
 
 /* Reference for static linking */
 void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
@@ -58,12 +59,11 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 {
 	self = [super init];
 
-	if (hashsize < 8 || hashsize > 31) {
+	if (hashsize < 8 || hashsize >= 28) {
 		Class c = isa;
 		[super free];
-		@throw [OFInvalidArgumentException
-			newWithClass: c
-			 andSelector: _cmd];
+		@throw [OFInvalidArgumentException newWithClass: c
+						    andSelector: _cmd];
 	}
 
 	size = (size_t)1 << hashsize;
@@ -174,6 +174,46 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 	}
 
 	@throw [OFNotInSetException newWithClass: isa];
+}
+
+- changeHashSize: (int)hashsize
+{
+	OFList **newdata;
+	size_t newsize, i;
+	of_list_object_t *iter;
+
+	if (hashsize < 8 || hashsize >= 28)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						    andSelector: _cmd];
+
+	newsize = (size_t)1 << hashsize;
+	newdata = [self allocNItems: newsize
+			   withSize: sizeof(OFList*)];
+	memset(data, 0, newsize * sizeof(OFList*));
+
+	for (i = 0; i < size; i++) {
+		if (OF_LIKELY(data[i] == nil))
+			continue;
+
+		for (iter = [data[i] first]; iter != NULL;
+		    iter = iter->next->next) {
+			uint32_t hash = [iter->object hash] & (newsize - 1);
+
+			if (newdata[hash] == nil)
+				newdata[hash] = [[OFList alloc] init];
+
+			[newdata[hash] append: iter->object];
+			[newdata[hash] append: iter->next->object];
+		}
+
+		[data[i] release];
+	}
+
+	[self freeMem: data];
+	data = newdata;
+	size = newsize;
+
+	return self;
 }
 
 /* FIXME: Implement this! */
