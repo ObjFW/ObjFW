@@ -18,6 +18,32 @@
 #import "OFObject.h"
 
 /**
+ * A Thread Local Storage key.
+ */
+@interface OFTLSKey: OFObject
+{
+@public
+#ifndef _WIN32
+	pthread_key_t key;
+#else
+	DWORD key;
+#endif
+}
+
+/**
+ * \param destructor A destructor that is called when the thread is terminated
+ * \return A new autoreleased Thread Local Storage key
+ */
++ tlsKeyWithDestructor: (void(*)(void*))destructor;
+
+/**
+ * \param destructor A destructor that is called when the thread is terminated
+ * \return An initialized Thread Local Storage key
+ */
+- initWithDestructor: (void(*)(void*))destructor;
+@end
+
+/**
  * The OFThread class provides portable threads.
  *
  * To use it, you should create a new class derived from it and reimplement
@@ -41,6 +67,26 @@
  * \return A new, autoreleased thread
  */
 + threadWithObject: (id)obj;
+
+/**
+ * Sets the Thread Local Storage for the specified key.
+ *
+ * The specified object is first retained and then the object stored before is
+ * released. You can specify nil as object if you want the old object to be
+ * released and don't want any new object for the TLS key.
+ *
+ * \param key The Thread Local Storage key
+ * \param obj The object the Thread Local Storage key will be set to
+ */
++ setObject: (id)obj
+  forTLSKey: (OFTLSKey*)key;
+
+/**
+ * Returns the object for the specified Thread Local Storage key.
+ *
+ * \param key The Thread Local Storage key
+ */
++ (id)objectForTLSKey: (OFTLSKey*)key;
 
 /**
  * \param obj An object that is passed to the main method

@@ -45,6 +45,55 @@ call_main(LPVOID obj)
 	return [[[self alloc] initWithObject: obj] autorelease];
 }
 
++ setObject: (id)obj
+  forTLSKey: (OFTLSKey*)key
+{
+	id old;
+
+	@try {
+		old = [self objectForTLSKey: key];
+	} @catch (OFNotInSetException *e) {
+		[e free];
+		old = nil;
+	}
+
+#ifndef _WIN32
+	if (pthread_setspecific(key->key, obj))
+#else
+	if (!TlsSetValue(key->key, obj))
+#endif
+		/* FIXME: Maybe another exception would be better */
+		@throw [OFNotInSetException newWithClass: self];
+
+	if (obj != nil)
+		[obj retain];
+	if (old != nil)
+		[old release];
+
+	return self;
+}
+
++ (id)objectForTLSKey: (OFTLSKey*)key
+{
+	void *ret;
+
+#ifndef _WIN32
+	ret = pthread_getspecific(key->key);
+#else
+	ret = TlsGetValue(key->key);
+#endif
+
+	/*
+	 * NULL and nil might be different on some platforms. NULL is returned
+	 * if the key is missing, nil can be returned if it was explicitly set
+	 * to nil to release the old object.
+	 */
+	if (ret == NULL || (id)ret == nil)
+		@throw [OFNotInSetException newWithClass: self];
+
+	return (id)ret;
+}
+
 - initWithObject: (id)obj
 {
 	Class c;
@@ -111,5 +160,32 @@ call_main(LPVOID obj)
 #endif
 
 	return [super free];
+}
+@end
+
+@implementation OFTLSKey
++ tlsKeyWithDestructor: (void(*)(void*))destructor
+{
+	return [[[OFTLSKey alloc] initWithDestructor: destructor] autorelease];
+}
+
+- initWithDestructor: (void(*)(void*))destructor
+{
+	Class c;
+
+	self = [super init];
+
+	/* FIXME: Call destructor on Win32 */
+#ifndef _WIN32
+	if (pthread_key_create(&key, destructor)) {
+#else
+	if ((key = TlsAlloc()) == TLS_OUT_OF_INDEXES) {
+#endif
+		c = isa;
+		[super free];
+		@throw [OFInitializationFailedException newWithClass: c];
+	}
+
+	return self;
 }
 @end
