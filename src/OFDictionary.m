@@ -49,7 +49,7 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 		[self free];
 		@throw e;
 	}
-	memset(data, 0, size);
+	memset(data, 0, size * sizeof(OFList*));
 
 	return self;
 }
@@ -80,7 +80,7 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 		[self free];
 		@throw e;
 	}
-	memset(data, 0, size);
+	memset(data, 0, size * sizeof(OFList*));
 
 	return self;
 }
