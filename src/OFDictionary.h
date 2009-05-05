@@ -64,7 +64,7 @@
  * \param key The key whose object should be returned
  * \return The object for the given key
  */
-- get: (OFObject*)key;
+- (id)get: (OFObject*)key;
 
 /**
  * Remove the object with the given key from the dictionary.

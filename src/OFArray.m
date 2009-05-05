@@ -62,12 +62,12 @@
 	return new;
 }
 
-- (OFObject*)object: (size_t)index
+- (id)object: (size_t)index
 {
 	return *((OFObject**)[array item: index]);
 }
 
-- (OFObject*)last
+- (id)last
 {
 	return *((OFObject**)[array last]);
 }

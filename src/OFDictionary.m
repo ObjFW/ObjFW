@@ -126,7 +126,7 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 	return self;
 }
 
-- get: (OFObject*)key
+- (id)get: (OFObject*)key
 {
 	uint32_t hash;
 	of_list_object_t *iter;
