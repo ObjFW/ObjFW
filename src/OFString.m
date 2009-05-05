@@ -12,10 +12,12 @@
 #import "config.h"
 
 #include <stdarg.h>
+#include <stdlib.h>
 #include <string.h>
 
 #import "OFString.h"
 #import "OFMutableString.h"
+#import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 #import "OFMacros.h"
 
@@ -153,5 +155,60 @@
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					   andSelector: _cmd];
+}
+
+- (OFArray*)splitWithDelimiter: (OFString*)delimiter
+{
+	OFAutoreleasePool *pool;
+	OFArray *array = [[OFArray alloc] init];
+	const char *delim = [delimiter cString];
+	size_t delim_len = [delimiter length];
+	size_t i, last;
+
+	@try {
+		pool = [[OFAutoreleasePool alloc] init];
+	} @catch (OFException *e) {
+		[array release];
+		@throw e;
+	}
+
+	@try {
+		for (i = 0, last = 0; i <= length; i++) {
+			if (OF_UNLIKELY(i == length ||
+			    !memcmp(string + i, delim, delim_len))) {
+				OFString *str;
+				char *tmp;
+
+				/*
+				 * We can't use [self allocWithSize:] here as
+				 * self might be a @""-literal.
+				 */
+				if ((tmp = malloc(i - last + 1)) == NULL)
+					@throw [OFNoMemException
+					    newWithClass: isa
+						 andSize: i - last + 1];
+				memcpy(tmp, string + last, i - last);
+				tmp[i - last] = '\0';
+				@try {
+					str = [OFString stringWithCString: tmp];
+				} @finally {
+					free(tmp);
+				}
+
+				[array add: str];
+				[pool releaseObjects];
+
+				i += delim_len - 1;
+				last = i + 1;
+			}
+		}
+	} @catch (OFException *e) {
+		[array release];
+		@throw e;
+	} @finally {
+		[pool release];
+	}
+
+	return [array autorelease];
 }
 @end

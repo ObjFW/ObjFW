@@ -13,6 +13,7 @@
 #include <stdarg.h>
 
 #import "OFObject.h"
+#import "OFArray.h"
 
 /**
  * A class for managing strings.
@@ -149,4 +150,12 @@
  * Lower the OFString.
  */
 - lower;
+
+/**
+ * Splits an OFString into an OFArray of OFStrings.
+ *
+ * \param delimiter The delimiter for splitting
+ * \return An autoreleased OFArray with the splitted string
+ */
+- (OFArray*)splitWithDelimiter: (OFString*)delimiter;
 @end

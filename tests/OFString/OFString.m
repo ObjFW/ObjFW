@@ -15,8 +15,10 @@
 #include <string.h>
 
 #import "OFString.h"
-#import "OFExceptions.h"
+#import "OFConstString.h"
+#import "OFArray.h"
 #import "OFAutoreleasePool.h"
+#import "OFExceptions.h"
 
 #ifndef _WIN32
 #define ZD "%zd"
@@ -24,7 +26,7 @@
 #define ZD "%u"
 #endif
 
-#define NUM_TESTS 15
+#define NUM_TESTS 21
 #define SUCCESS								\
 	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
 	    (i == NUM_TESTS - 1 ? 32 : 33), i + 1, NUM_TESTS);		\
@@ -53,12 +55,14 @@ int
 main()
 {
 	size_t i = 0;
+	size_t j = 0;
 
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFString *s1 = [OFString stringWithCString: "test"];
 	OFString *s2 = [OFString stringWithCString: ""];
 	OFString *s3;
 	OFString *s4 = [OFString string];
+	OFArray *a;
 
 	s3 = [s1 copy];
 
@@ -96,6 +100,14 @@ main()
 
 	[s1 appendWithFormatCString: "%02X", 15];
 	CHECK(!strcmp([s1 cString], "test: 1230F"))
+
+	a = [@"fooXXbarXXXXbazXXXX" splitWithDelimiter: @"XX"];
+	CHECK([[a object: j++] isEqual: @"foo"])
+	CHECK([[a object: j++] isEqual: @"bar"])
+	CHECK([[a object: j++] isEqual: @""])
+	CHECK([[a object: j++] isEqual: @"baz"])
+	CHECK([[a object: j++] isEqual: @""])
+	CHECK([[a object: j++] isEqual: @""])
 
 	puts("");
 
