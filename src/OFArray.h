@@ -10,58 +10,25 @@
  */
 
 #import "OFObject.h"
+#import "OFDataArray.h"
 
 /**
- * The OFArray class provides a class for storing dynamically sized arrays.
- * If you plan to store large hunks of data, you should consider using
- * OFBigArray, which allocates the memory in pages and not in bytes.
+ * The OFArray class provides a class for storing objects in an array.
  */
 @interface OFArray: OFObject
 {
-	char   *data;
-	size_t itemsize;
-	size_t items;
+	OFDataArray *array;
 }
 
 /**
- * Creates a new OFArray whose items all have the same size.
- *
- * \param is The size of each element in the OFArray
  * \return A new autoreleased OFArray
  */
-+ arrayWithItemSize: (size_t)is;
-
-/*
- * Creates a new OFArray optimized for big arrays whose items all have the same
- * size, which means memory is allocated in pages rather than in bytes.
- *
- * \param is The size of each element in the OFArray
- * \return A new autoreleased OFArray
- */
-+ bigArrayWithItemSize: (size_t)is;
++ array;
 
 /**
- * Initializes an already allocated OFArray whose items all have the same size.
- *
- * \param is The size of each element in the OFArray
- * \return An initialized OFArray
+ * \return The number of objects in the OFArray
  */
-- initWithItemSize: (size_t)is;
-
-/**
- * \return The number of items in the OFArray
- */
-- (size_t)items;
-
-/**
- * \return The size of each item in the OFArray in bytes
- */
-- (size_t)itemsize;
-
-/**
- * \return All elements of the OFArray
- */
-- (void*)data;
+- (size_t)objects;
 
 /**
  * Clones the OFArray, creating a new one.
@@ -71,53 +38,29 @@
 - (id)copy;
 
 /**
- * Compares the OFArray to another object.
+ * Returns a specific object of the OFDataArray.
  *
- * \param obj An object to compare with
- * \return An integer which is the result of the comparison, see for example
- *	   strcmp
+ * \param index The number of the object to return
+ * \return The specified object of the OFArray
  */
-- (int)compare: (id)obj;
+- (OFObject*)object: (size_t)index;
 
 /**
- * Returns a specific item of the OFArray.
- *
- * \param item The number of the item to return
- * \return The specified item of the OFArray
+ * \return The last object of the OFDataArray
  */
-- (void*)item: (size_t)item;
+- (OFObject*)last;
 
 /**
- * \return The last item of the OFArray
+ * Adds an object to the OFDataArray.
+ *
+ * \param obj An object to add
  */
-- (void*)last;
+- add: (OFObject*)obj;
 
 /**
- * Adds an item to the OFArray.
+ * Removes the specified amount of object from the end of the OFDataArray.
  *
- * \param item A pointer to an arbitrary item
+ * \param nobjects The number of objects to remove
  */
-- add: (void*)item;
-
-/**
- * Adds items from a C array to the OFArray.
- *
- * \param nitems The number of items to add
- * \param carray A C array containing the items to add
- */
-- addNItems: (size_t)nitems
- fromCArray: (void*)carray;
-
-/**
- * Removes a specified amount of the last items from the OFArray.
- *
- * \param nitems The number of items to remove
- */
-- removeNItems: (size_t)nitems;
-@end
-
-@interface OFBigArray: OFArray
-{
-	size_t size;
-}
+- removeNObjects: (size_t)nobjects;
 @end

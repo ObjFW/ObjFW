@@ -1,9 +1,9 @@
 Test if autorelease pool releases everything correctly when thread is ended
 
 Proper UTF-8 support!
+Tests for OFArray.
 Tests for OFFile.
 Tests for OFNumber.
-readLine: for OFFile.
 Tests for readLine:.
 
 Serialization

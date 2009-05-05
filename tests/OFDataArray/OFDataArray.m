@@ -16,7 +16,7 @@
 #include <string.h>
 #include <limits.h>
 
-#import "OFArray.h"
+#import "OFDataArray.h"
 #import "OFExceptions.h"
 #import "OFAutoreleasePool.h"
 
@@ -118,18 +118,18 @@ main()
 	id a;
 	void *p, *q;
 	size_t i;
-	OFArray *x, *y;
+	OFDataArray *x, *y;
 	OFAutoreleasePool *pool;
 
-	puts("== TESTING OFArray ==");
-	TEST(OFArray)
+	puts("== TESTING OFDataArray ==");
+	TEST(OFDataArray)
 
 	puts("== TESTING OFBigArray ==");
-	TEST(OFBigArray)
+	TEST(OFBigDataArray)
 
 	pool = [[OFAutoreleasePool alloc] init];
-	x = [OFArray arrayWithItemSize: 1];
-	y = [OFArray bigArrayWithItemSize: 1];
+	x = [OFDataArray dataArrayWithItemSize: 1];
+	y = [OFDataArray bigDataArrayWithItemSize: 1];
 
 	if (![x isEqual: y]) {
 		puts("FAIL 1!");
@@ -148,8 +148,8 @@ main()
 	}
 	[pool releaseObjects];
 
-	x = [OFArray arrayWithItemSize: 2];
-	y = [OFArray bigArrayWithItemSize: 4];
+	x = [OFDataArray dataArrayWithItemSize: 2];
+	y = [OFDataArray bigDataArrayWithItemSize: 4];
 
 	if ([x isEqual: y]) {
 		puts("FAIL 4!");
@@ -157,7 +157,7 @@ main()
 	}
 	[pool releaseObjects];
 
-	x = [OFArray arrayWithItemSize: 1];
+	x = [OFDataArray dataArrayWithItemSize: 1];
 	[x addNItems: 3
 	  fromCArray: "abc"];
 	y = [x copy];

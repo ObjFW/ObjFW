@@ -97,9 +97,10 @@ release_list(void *list)
 - addToPool: (OFObject*)obj
 {
 	if (objects == nil)
-		objects = [[OFArray alloc] initWithItemSize: sizeof(char*)];
+		objects = [[OFArray alloc] init];
 
-	[objects add: &obj];
+	[objects add: obj];
+	[obj release];
 
 	return self;
 }
@@ -113,17 +114,8 @@ release_list(void *list)
 
 - releaseObjects
 {
-	size_t i, size;
-	IMP get_item;
-
 	if (objects == nil)
 		return self;
-
-	size = [objects items];
-	get_item = [objects methodFor: @selector(item:)];
-
-	for (i = 0; i < size; i++)
-		[*((OFObject**)get_item(objects, @selector(item:), i)) release];
 
 	[objects release];
 	objects = nil;

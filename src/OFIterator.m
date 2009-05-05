@@ -9,7 +9,7 @@
  * the packaging of this file.
  */
 
-#import <config.h>
+#import "config.h"
 
 #import "OFIterator.h"
 #import "OFDictionary.h"

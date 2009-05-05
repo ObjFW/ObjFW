@@ -1,5 +1,5 @@
-PROG_NOINST = ofarray${PROG_SUFFIX}
-SRCS = OFArray.m
+PROG_NOINST = ofdataarray${PROG_SUFFIX}
+SRCS = OFDataArray.m
 
 include ../../buildsys.mk
 include ../../extra.mk

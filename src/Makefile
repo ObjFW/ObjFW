@@ -7,6 +7,7 @@ LIB_MINOR = 0
 SRCS = OFArray.m		\
        OFAutoreleasePool.m	\
        OFConstString.m		\
+       OFDataArray.m		\
        OFDictionary.m		\
        OFExceptions.m		\
        OFFile.m			\
