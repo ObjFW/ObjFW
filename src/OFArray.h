@@ -28,7 +28,7 @@
 /**
  * \return The number of objects in the OFArray
  */
-- (size_t)objects;
+- (size_t)count;
 
 /**
  * Clones the OFArray, creating a new one.

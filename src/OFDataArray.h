@@ -22,7 +22,7 @@
 {
 	char   *data;
 	size_t itemsize;
-	size_t items;
+	size_t count;
 }
 
 /**
@@ -54,7 +54,7 @@
 /**
  * \return The number of items in the OFDataArray
  */
-- (size_t)items;
+- (size_t)count;
 
 /**
  * \return The size of each item in the OFDataArray in bytes

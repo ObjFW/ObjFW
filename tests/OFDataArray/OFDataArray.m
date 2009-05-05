@@ -70,29 +70,29 @@ const char *str = "Hallo!";
 	memset(p, 64, 8192);						\
 	[a addNItems: 2							\
 	  fromCArray: p];						\
-	if (!memcmp([a last], [a item: [a items] - 2], 4096) &&		\
-	    !memcmp([a item: [a items] - 2], p, 4096))			\
-		puts("[a last], [a item: [a items] - 2] and p match!");	\
+	if (!memcmp([a last], [a item: [a count] - 2], 4096) &&		\
+	    !memcmp([a item: [a count] - 2], p, 4096))			\
+		puts("[a last], [a item: [a count] - 2] and p match!");	\
 	else {								\
-		puts("[a last], [a item: [a items] - 2] and p did not match!");\
+		puts("[a last], [a item: [a count] - 2] and p did not match!");\
 		abort();						\
 	}								\
 	[a freeMem: p];							\
 									\
-	i = [a items];							\
+	i = [a count];							\
 	puts("Removing 2 items...");					\
 	[a removeNItems: 2];						\
-	if ([a items] + 2 != i) {					\
-		puts("[a items] + 2 != i!");				\
+	if ([a count] + 2 != i) {					\
+		puts("[a count] + 2 != i!");				\
 		abort();						\
 	}								\
 									\
 	puts("Trying to remove more data than we added...");		\
-	CATCH_EXCEPTION([a removeNItems: [a items] + 1],		\
+	CATCH_EXCEPTION([a removeNItems: [a count] + 1],		\
 	    OFOutOfRangeException);					\
 									\
 	puts("Trying to access an index that does not exist...");	\
-	CATCH_EXCEPTION([a item: [a items]], OFOutOfRangeException);	\
+	CATCH_EXCEPTION([a item: [a count]], OFOutOfRangeException);	\
 									\
 	[a release];							\
 									\

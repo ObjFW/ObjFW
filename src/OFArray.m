@@ -39,9 +39,9 @@
 	return self;
 }
 
-- (size_t)objects
+- (size_t)count
 {
-	return [array items];
+	return [array count];
 }
 
 - (id)copy
@@ -51,7 +51,7 @@
 	size_t len, i;
 
 	objs = [array data];
-	len = [array items];
+	len = [array count];
 
 	[new->array addNItems: len
 		   fromCArray: objs];
@@ -86,7 +86,7 @@
 	size_t len, i;
 
 	objs = [array data];
-	len = [array items];
+	len = [array count];
 
 	if (nobjects > len)
 		@throw [OFOutOfRangeException newWithClass: isa];
@@ -106,7 +106,7 @@
 
 	if (array != nil) {
 		objs = [array data];
-		len = [array items];
+		len = [array count];
 
 		for (i = 0; i < len; i++)
 			[objs[i] release];

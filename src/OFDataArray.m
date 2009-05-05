@@ -48,14 +48,14 @@ extern int getpagesize(void);
 
 	data = NULL;
 	itemsize = is;
-	items = 0;
+	count = 0;
 
 	return self;
 }
 
-- (size_t)items
+- (size_t)count
 {
-	return items;
+	return count;
 }
 
 - (size_t)itemsize
@@ -70,7 +70,7 @@ extern int getpagesize(void);
 
 - (void*)item: (size_t)index
 {
-	if (index >= items)
+	if (index >= count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	return data + index * itemsize;
@@ -78,19 +78,19 @@ extern int getpagesize(void);
 
 - (void*)last
 {
-	return data + (items - 1) * itemsize;
+	return data + (count - 1) * itemsize;
 }
 
 - add: (void*)item
 {
-	if (SIZE_MAX - items < 1)
+	if (SIZE_MAX - count < 1)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	data = [self resizeMem: data
-		      toNItems: items + 1
+		      toNItems: count + 1
 		      withSize: itemsize];
 
-	memcpy(data + items++ * itemsize, item, itemsize);
+	memcpy(data + count++ * itemsize, item, itemsize);
 
 	return self;
 }
@@ -98,29 +98,29 @@ extern int getpagesize(void);
 - addNItems: (size_t)nitems
  fromCArray: (void*)carray
 {
-	if (nitems > SIZE_MAX - items)
+	if (nitems > SIZE_MAX - count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	data = [self resizeMem: data
-		      toNItems: items + nitems
+		      toNItems: count + nitems
 		      withSize: itemsize];
 
-	memcpy(data + items * itemsize, carray, nitems * itemsize);
-	items += nitems;
+	memcpy(data + count * itemsize, carray, nitems * itemsize);
+	count += nitems;
 
 	return self;
 }
 
 - removeNItems: (size_t)nitems
 {
-	if (nitems > items)
+	if (nitems > count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	data = [self resizeMem: data
-		      toNItems: items - nitems
+		      toNItems: count - nitems
 		      withSize: itemsize];
 
-	items -= nitems;
+	count -= nitems;
 
 	return self;
 }
@@ -128,7 +128,7 @@ extern int getpagesize(void);
 - (id)copy
 {
 	OFDataArray *new = [OFDataArray dataArrayWithItemSize: itemsize];
-	[new addNItems: items
+	[new addNItems: count
 	    fromCArray: data];
 
 	return new;
@@ -138,9 +138,9 @@ extern int getpagesize(void);
 {
 	if (![obj isKindOf: [OFDataArray class]])
 		return NO;
-	if ([obj items] != items || [obj itemsize] != itemsize)
+	if ([obj count] != count || [obj itemsize] != itemsize)
 		return NO;
-	if (memcmp([obj data], data, items * itemsize))
+	if (memcmp([obj data], data, count * itemsize))
 		return NO;
 
 	return YES;
@@ -157,19 +157,19 @@ extern int getpagesize(void);
 		@throw [OFInvalidArgumentException newWithClass: isa
 						    andSelector: _cmd];
 
-	if ([obj items] == items)
-		return memcmp(data, [obj data], items * itemsize);
+	if ([obj count] == count)
+		return memcmp(data, [obj data], count * itemsize);
 
-	if (items > [obj items]) {
-		if ((ret = memcmp(data, [obj data], [obj items] * itemsize)))
+	if (count > [obj count]) {
+		if ((ret = memcmp(data, [obj data], [obj count] * itemsize)))
 			return ret;
 
-		return *(char*)[self item: [obj items]];
+		return *(char*)[self item: [obj count]];
 	} else {
-		if ((ret = memcmp(data, [obj data], items * itemsize)))
+		if ((ret = memcmp(data, [obj data], count * itemsize)))
 			return ret;
 
-		return *(char*)[obj item: [self items]] * -1;
+		return *(char*)[obj item: count] * -1;
 	}
 }
 
@@ -179,7 +179,7 @@ extern int getpagesize(void);
 	size_t i;
 
 	OF_HASH_INIT(hash);
-	for (i = 0; i < items * itemsize; i++)
+	for (i = 0; i < count * itemsize; i++)
 		OF_HASH_ADD(hash, ((char*)data)[i]);
 	OF_HASH_FINALIZE(hash);
 
@@ -203,16 +203,16 @@ extern int getpagesize(void);
 {
 	size_t nsize;
 
-	if (SIZE_MAX - items < 1 || items + 1 > SIZE_MAX / itemsize)
+	if (SIZE_MAX - count < 1 || count + 1 > SIZE_MAX / itemsize)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	nsize = ((items + 1) * itemsize + lastpagebyte) & ~lastpagebyte;
+	nsize = ((count + 1) * itemsize + lastpagebyte) & ~lastpagebyte;
 
 	if (size != nsize)
 		data = [self resizeMem: data
 				toSize: nsize];
 
-	memcpy(data + items++ * itemsize, item, itemsize);
+	memcpy(data + count++ * itemsize, item, itemsize);
 	size = nsize;
 
 	return self;
@@ -223,17 +223,17 @@ extern int getpagesize(void);
 {
 	size_t nsize;
 
-	if (nitems > SIZE_MAX - items || items + nitems > SIZE_MAX / itemsize)
+	if (nitems > SIZE_MAX - count || count + nitems > SIZE_MAX / itemsize)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	nsize = ((items + nitems) * itemsize + lastpagebyte) & ~lastpagebyte;
+	nsize = ((count + nitems) * itemsize + lastpagebyte) & ~lastpagebyte;
 
 	if (size != nsize)
 		data = [self resizeMem: data
 				toSize: nsize];
 
-	memcpy(data + items * itemsize, carray, nitems * itemsize);
-	items += nitems;
+	memcpy(data + count * itemsize, carray, nitems * itemsize);
+	count += nitems;
 	size = nsize;
 
 	return self;
@@ -243,16 +243,16 @@ extern int getpagesize(void);
 {
 	size_t nsize;
 
-	if (nitems > items)
+	if (nitems > count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	nsize = ((items - nitems) * itemsize + lastpagebyte) & ~lastpagebyte;
+	nsize = ((count - nitems) * itemsize + lastpagebyte) & ~lastpagebyte;
 
 	if (size != nsize)
 		data = [self resizeMem: data
 				toSize: nsize];
 
-	items -= nitems;
+	count -= nitems;
 	size = nsize;
 
 	return self;
@@ -262,7 +262,7 @@ extern int getpagesize(void);
 {
 	OFDataArray *new = [OFDataArray bigDataArrayWithItemSize: itemsize];
 
-	[new addNItems: items
+	[new addNItems: count
 	    fromCArray: data];
 
 	return new;
