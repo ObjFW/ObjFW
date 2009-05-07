@@ -101,7 +101,7 @@ main()
 	[s1 appendWithFormatCString: "%02X", 15];
 	CHECK(!strcmp([s1 cString], "test: 1230F"))
 
-	a = [@"fooXXbarXXXXbazXXXX" splitWithDelimiter: @"XX"];
+	a = [@"fooXXbarXXXXbazXXXX" splitWithDelimiter: "XX"];
 	CHECK([[a object: j++] isEqual: @"foo"])
 	CHECK([[a object: j++] isEqual: @"bar"])
 	CHECK([[a object: j++] isEqual: @""])

@@ -157,25 +157,19 @@
 					   andSelector: _cmd];
 }
 
-- (OFArray*)splitWithDelimiter: (OFString*)delimiter
+- (OFArray*)splitWithDelimiter: (const char*)delimiter
 {
-	OFAutoreleasePool *pool;
-	OFArray *array = [[OFArray alloc] init];
-	const char *delim = [delimiter cString];
-	size_t delim_len = [delimiter length];
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFArray *array = nil;
+	size_t delim_len = strlen(delimiter);
 	size_t i, last;
 
 	@try {
-		pool = [[OFAutoreleasePool alloc] init];
-	} @catch (OFException *e) {
-		[array release];
-		@throw e;
-	}
+		array = [[OFArray alloc] init];
 
-	@try {
 		for (i = 0, last = 0; i <= length; i++) {
 			if (OF_UNLIKELY(i == length ||
-			    !memcmp(string + i, delim, delim_len))) {
+			    !memcmp(string + i, delimiter, delim_len))) {
 				OFString *str;
 				char *tmp;
 
@@ -203,7 +197,8 @@
 			}
 		}
 	} @catch (OFException *e) {
-		[array release];
+		if (array != nil)
+			[array release];
 		@throw e;
 	} @finally {
 		[pool release];

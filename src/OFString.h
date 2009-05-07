@@ -157,5 +157,5 @@
  * \param delimiter The delimiter for splitting
  * \return An autoreleased OFArray with the splitted string
  */
-- (OFArray*)splitWithDelimiter: (OFString*)delimiter;
+- (OFArray*)splitWithDelimiter: (const char*)delimiter;
 @end
