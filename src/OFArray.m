@@ -44,6 +44,11 @@
 	return [array count];
 }
 
+- (id*)data
+{
+	return [array data];
+}
+
 - (id)copy
 {
 	OFArray *new = [OFArray array];

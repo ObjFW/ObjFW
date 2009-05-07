@@ -31,6 +31,11 @@
 - (size_t)count;
 
 /**
+ * \return The objects of the array as a C array
+ */
+- (id*)data;
+
+/**
  * Clones the OFArray, creating a new one.
  *
  * \return A new autoreleased copy of the OFArray
