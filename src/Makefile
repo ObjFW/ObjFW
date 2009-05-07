@@ -18,6 +18,7 @@ SRCS = OFArray.m		\
        OFNumber.m		\
        OFObject.m		\
        ${OFPLUGIN_M}		\
+       OFSocket.m		\
        OFStream.m		\
        OFString.m		\
        OFTCPSocket.m		\

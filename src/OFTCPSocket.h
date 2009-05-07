@@ -9,44 +9,12 @@
  * the packaging of this file.
  */
 
-#include <stdio.h>
-
-/*
- * Headers for UNIX systems
- */
-#ifndef _WIN32
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#endif
-
-#import "OFStream.h"
-
-/*
- * Headers for Win32
- *
- * These must be imported after objc/Object and thus OFObject!
- */
-#ifdef _WIN32
-#define _WIN32_WINNT 0x0501
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#endif
+#import "OFSocket.h"
 
 /**
  * The OFTCPSocket class provides functions to create and use sockets.
  */
-@interface OFTCPSocket: OFStream
-{
-#ifndef _WIN32
-	int		sock;
-#else
-	SOCKET		sock;
-#endif
-	struct sockaddr	*saddr;
-	socklen_t	saddr_len;
-}
-
+@interface OFTCPSocket: OFSocket {}
 /**
  * \return A new autoreleased OFTCPSocket
  */
@@ -96,11 +64,6 @@
  * \return An autoreleased OFTCPSocket for the accepted connection.
  */
 - (OFTCPSocket*)accept;
-
-/**
- * Enables/disables non-blocking I/O.
- */
-- setBlocking: (BOOL)enable;
 
 /**
  * Enable or disable keep alives for the connection.

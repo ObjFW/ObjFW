@@ -12,10 +12,8 @@
 #import "config.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <fcntl.h>
 
 #import "OFTCPSocket.h"
 #import "OFExceptions.h"
@@ -29,18 +27,6 @@
 {
 	return [[[OFTCPSocket alloc] init] autorelease];
 }
-
-#ifdef _WIN32
-+ initialize
-{
-	WSADATA wsa;
-
-	if (WSAStartup(MAKEWORD(2, 0), &wsa))
-		@throw [OFInitializationFailedException newWithClass: self];
-
-	return self;
-}
-#endif
 
 - init
 {
@@ -204,76 +190,6 @@
 	newsock->saddr_len = addrlen;
 
 	return newsock;
-}
-
-- (size_t)readNBytes: (size_t)size
-	  intoBuffer: (char*)buf
-{
-	ssize_t ret;
-
-	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: isa];
-
-	switch ((ret = recv(sock, buf, size, 0))) {
-	case 0:
-		@throw [OFNotConnectedException newWithClass: isa];
-	case -1:
-		@throw [OFReadFailedException newWithClass: isa
-						   andSize: size];
-	}
-
-	/* This is safe, as we already checked < 1 */
-	return ret;
-}
-
-- (size_t)writeNBytes: (size_t)size
-	   fromBuffer: (const char*)buf
-{
-	ssize_t ret;
-
-	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: isa];
-
-	if ((ret = send(sock, buf, size, 0)) == -1)
-		@throw [OFWriteFailedException newWithClass: isa
-						    andSize: size];
-
-	/* This is safe, as we already checked for -1 */
-	return ret;
-}
-
-- (size_t)writeCString: (const char*)str
-{
-	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: isa];
-
-	return [self writeNBytes: strlen(str)
-		      fromBuffer: str];
-}
-
-- setBlocking: (BOOL)enable
-{
-#ifndef _WIN32
-	int flags;
-
-	if ((flags = fcntl(sock, F_GETFL)) == -1)
-		@throw [OFSetOptionFailedException newWithClass: isa];
-
-	if (enable)
-		flags &= ~O_NONBLOCK;
-	else
-		flags |= O_NONBLOCK;
-
-	if (fcntl(sock, F_SETFL, flags) == -1)
-		@throw [OFSetOptionFailedException newWithClass: isa];
-#else
-	u_long v = enable;
-
-	if (ioctlsocket(sock, FIONBIO, &v) == SOCKET_ERROR)
-		@throw [OFSetOptionFailedException newWithClass: isa];
-#endif
-
-	return self;
 }
 
 - enableKeepAlives: (BOOL)enable

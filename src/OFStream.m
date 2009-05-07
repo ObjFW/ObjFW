@@ -146,8 +146,8 @@ extern int getpagesize(void);
 
 - (size_t)writeCString: (const char*)str
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+	return [self writeNBytes: strlen(str)
+		      fromBuffer: str];
 }
 
 - (size_t)getCache: (char**)ptr
