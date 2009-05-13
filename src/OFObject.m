@@ -368,14 +368,10 @@ static struct {
 	return PRE_IVAR->retain_count;
 }
 
-- release
+- (void)release
 {
-	if (!--PRE_IVAR->retain_count) {
+	if (!--PRE_IVAR->retain_count)
 		[self dealloc];
-		return nil;
-	}
-
-	return self;
 }
 
 - (void)dealloc

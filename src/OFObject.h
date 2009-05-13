@@ -203,7 +203,7 @@
 /**
  * Decreases the retain cound and deallocates the object if it reaches 0.
  */
-- release;
+- (void)release;
 
 /**
  * Deallocates the object and also frees all memory allocated via its memory
