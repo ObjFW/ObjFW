@@ -164,46 +164,42 @@
 	size_t delim_len = strlen(delimiter);
 	size_t i, last;
 
-	@try {
-		array = [[OFArray alloc] init];
+	array = [OFArray array];
 
-		for (i = 0, last = 0; i <= length; i++) {
-			if (OF_UNLIKELY(i == length ||
-			    !memcmp(string + i, delimiter, delim_len))) {
-				OFString *str;
-				char *tmp;
+	for (i = 0, last = 0; i <= length; i++) {
+		if (OF_UNLIKELY(i == length ||
+		    !memcmp(string + i, delimiter, delim_len))) {
+			OFString *str;
+			char *tmp;
 
-				/*
-				 * We can't use [self allocWithSize:] here as
-				 * self might be a @""-literal.
-				 */
-				if ((tmp = malloc(i - last + 1)) == NULL)
-					@throw [OFNoMemException
-					    newWithClass: isa
-						 andSize: i - last + 1];
-				memcpy(tmp, string + last, i - last);
-				tmp[i - last] = '\0';
-				@try {
-					str = [OFString stringWithCString: tmp];
-				} @finally {
-					free(tmp);
-				}
-
-				[array add: str];
-				[pool releaseObjects];
-
-				i += delim_len - 1;
-				last = i + 1;
+			/*
+			 * We can't use [self allocWithSize:] here as
+			 * self might be a @""-literal.
+			 */
+			if ((tmp = malloc(i - last + 1)) == NULL)
+				@throw [OFNoMemException
+				    newWithClass: isa
+					 andSize: i - last + 1];
+			memcpy(tmp, string + last, i - last);
+			tmp[i - last] = '\0';
+			@try {
+				str = [OFString stringWithCString: tmp];
+			} @finally {
+				free(tmp);
 			}
+
+			[array add: str];
+			[array retain];
+			[pool releaseObjects];
+
+			i += delim_len - 1;
+			last = i + 1;
 		}
-	} @catch (OFException *e) {
-		if (array != nil)
-			[array release];
-		@throw e;
-	} @finally {
-		[pool release];
 	}
 
-	return [array autorelease];
+	[array retain];
+	[pool release];
+
+	return array;
 }
 @end
