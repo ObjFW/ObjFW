@@ -48,7 +48,7 @@ release_list(void *list)
 	@try {
 		pool_list = [OFThread objectForTLSKey: pool_list_key];
 	} @catch (OFNotInSetException *e) {
-		[e free];
+		[e dealloc];
 		[[self alloc] init];
 		pool_list = [OFThread objectForTLSKey: pool_list_key];
 	}
@@ -73,7 +73,7 @@ release_list(void *list)
 	@try {
 		pool_list = [OFThread objectForTLSKey: pool_list_key];
 	} @catch (OFNotInSetException *e) {
-		[e free];
+		[e dealloc];
 		pool_list = [[OFList alloc] initWithoutRetainAndRelease];
 		[OFThread setObject: pool_list
 			  forTLSKey: pool_list_key];
@@ -85,7 +85,7 @@ release_list(void *list)
 	return self;
 }
 
-- free
+- (void)dealloc
 {
 	/*
 	 * FIXME:
@@ -98,7 +98,7 @@ release_list(void *list)
 
 	[[OFThread objectForTLSKey: pool_list_key] remove: listobj];
 
-	return [super free];
+	[super dealloc];
 }
 
 - addToPool: (OFObject*)obj

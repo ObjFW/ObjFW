@@ -370,13 +370,15 @@ static struct {
 
 - release
 {
-	if (!--PRE_IVAR->retain_count)
-		return [self free];
+	if (!--PRE_IVAR->retain_count) {
+		[self dealloc];
+		return nil;
+	}
 
 	return self;
 }
 
-- free
+- (void)dealloc
 {
 	void **iter = PRE_IVAR->memchunks + PRE_IVAR->memchunks_size;
 
@@ -387,6 +389,5 @@ static struct {
 		free(PRE_IVAR->memchunks);
 
 	free((char*)self - PRE_IVAR_ALIGN);
-	return nil;
 }
 @end

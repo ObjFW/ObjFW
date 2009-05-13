@@ -127,8 +127,9 @@
 
 /**
  * Adds a pointer to the memory pool.
+ *
  * This is useful to add memory allocated by functions such as asprintf to the
- * pool so it gets freed automatically when the object is freed.
+ * pool so it gets free'd automatically when the object is deallocated.
  *
  * \param ptr A pointer to add to the memory pool
  */
@@ -136,7 +137,7 @@
 
 /**
  * Allocate memory and store it in the objects memory pool so it can be free'd
- * automatically when the object is free'd.
+ * automatically when the object is deallocated.
  *
  * \param size The size of the memory to allocate
  * \return A pointer to the allocated memory
@@ -145,7 +146,7 @@
 
 /**
  * Allocate memory for a specified number of items and store it in the objects
- * memory pool so it can be free'd automatically when the object is free'd.
+ * memory pool so it can be free'd automatically when the object is deallocated.
  *
  * \param nitems The number of items to allocate
  * \param size The size of each item to allocate
@@ -200,12 +201,13 @@
 - (size_t)retainCount;
 
 /**
- * Decreases the retain cound and frees the object if it reaches 0.
+ * Decreases the retain cound and deallocates the object if it reaches 0.
  */
 - release;
 
 /**
- * Frees the object and also frees all memory allocated via its memory pool.
+ * Deallocates the object and also frees all memory allocated via its memory
+ * pool.
  */
-- free;
+- (void)dealloc;
 @end

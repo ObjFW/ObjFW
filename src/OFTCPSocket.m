@@ -39,12 +39,12 @@
 	return self;
 }
 
-- free
+- (void)dealloc
 {
 	if (sock != INVALID_SOCKET)
 		close(sock);
 
-	return [super free];
+	[super dealloc];
 }
 
 - connectTo: (const char*)host
@@ -176,12 +176,12 @@
 	@try {
 		addr = [newsock allocWithSize: sizeof(struct sockaddr)];
 	} @catch (OFException *e) {
-		[newsock free];
+		[newsock dealloc];
 		@throw e;
 	}
 
 	if ((s = accept(sock, addr, &addrlen)) == INVALID_SOCKET) {
-		[newsock free];
+		[newsock dealloc];
 		@throw [OFAcceptFailedException newWithClass: isa];
 	}
 

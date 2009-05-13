@@ -41,14 +41,14 @@
 	return self;
 }
 
-- free
+- (void)dealloc
 {
 	of_list_object_t *iter;
 
 	for (iter = first; iter != NULL; iter = iter->next)
 		[iter->object release];
 
-	return [super free];
+	[super dealloc];
 }
 
 - (of_list_object_t*)first

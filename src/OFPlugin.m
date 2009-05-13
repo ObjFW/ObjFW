@@ -55,10 +55,10 @@
 	return plugin;
 }
 
-- free
+- (void)dealloc
 {
 	dlclose(handle);
 
-	return [super free];
+	[super dealloc];
 }
 @end

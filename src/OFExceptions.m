@@ -73,12 +73,12 @@
 	return self;
 }
 
-- free
+- (void)dealloc
 {
 	if (string != NULL)
 		free(string);
 
-	return [super free];
+	[super dealloc];
 }
 
 - (Class)inClass
@@ -309,14 +309,14 @@
 	return self;
 }
 
-- free
+- (void)dealloc
 {
 	if (path != NULL)
 		free(path);
 	if (mode != NULL)
 		free(mode);
 
-	return [super free];
+	[super dealloc];
 }
 
 - (const char*)cString
@@ -531,14 +531,14 @@
 	return self;
 }
 
-- free
+- (void)dealloc
 {
 	if (node != NULL)
 		free(node);
 	if (service != NULL)
 		free(node);
 
-	return [super free];
+	[super dealloc];
 }
 
 - (const char*)cString
@@ -595,12 +595,12 @@
 	return self;
 }
 
-- free
+- (void)dealloc
 {
 	if (host != NULL)
 		free(host);
 
-	return [super free];
+	[super dealloc];
 }
 
 - (const char*)cString
@@ -657,12 +657,12 @@
 	return self;
 }
 
-- free
+- (void)dealloc
 {
 	if (host != NULL)
 		free(host);
 
-	return [super free];
+	[super dealloc];
 }
 
 - (const char*)cString

@@ -53,7 +53,7 @@ call_main(LPVOID obj)
 	@try {
 		old = [self objectForTLSKey: key];
 	} @catch (OFNotInSetException *e) {
-		[e free];
+		[e dealloc];
 		old = nil;
 	}
 
@@ -108,7 +108,7 @@ call_main(LPVOID obj)
 	    CreateThread(NULL, 0, call_main, self, 0, NULL)) == NULL) {
 #endif
 		c = isa;
-		[super free];
+		[super dealloc];
 		@throw [OFInitializationFailedException newWithClass: c];
 	}
 
@@ -143,7 +143,7 @@ call_main(LPVOID obj)
 #endif
 }
 
-- free
+- (void)dealloc
 {
 	/*
 	 * No need to handle errors - if canceling the thread fails, we can't
@@ -159,7 +159,7 @@ call_main(LPVOID obj)
 	}
 #endif
 
-	return [super free];
+	[super dealloc];
 }
 @end
 
@@ -182,7 +182,7 @@ call_main(LPVOID obj)
 	if ((key = TlsAlloc()) == TLS_OUT_OF_INDEXES) {
 #endif
 		c = isa;
-		[super free];
+		[super dealloc];
 		@throw [OFInitializationFailedException newWithClass: c];
 	}
 

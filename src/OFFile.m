@@ -86,7 +86,7 @@
 
 	if ((fp = fopen(path, mode)) == NULL) {
 		c = isa;
-		[super free];
+		[super dealloc];
 		@throw [OFOpenFileFailedException newWithClass: c 
 						       andPath: path
 						       andMode: mode];
@@ -95,12 +95,12 @@
 	return self;
 }
 
-- free
+- (void)dealloc
 {
 	if (fp != NULL)
 		fclose(fp);
 
-	return [super free];
+	[super dealloc];
 }
 
 - (BOOL)atEndOfFile

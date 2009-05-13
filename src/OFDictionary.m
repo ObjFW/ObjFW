@@ -43,11 +43,11 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 				withSize: sizeof(OFList*)];
 	} @catch (OFException *e) {
 		/*
-		 * We can't use [super free] on OS X here. Compiler bug?
-		 * Anyway, set size to 0 so that [self free] works.
+		 * We can't use [super dealloc] on OS X here. Compiler bug?
+		 * Anyway, set size to 0 so that [self dealloc] works.
 		 */
 		size = 0;
-		[self free];
+		[self dealloc];
 		@throw e;
 	}
 	memset(data, 0, size * sizeof(OFList*));
@@ -61,7 +61,7 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 
 	if (hashsize < 8 || hashsize >= 28) {
 		Class c = isa;
-		[super free];
+		[super dealloc];
 		@throw [OFInvalidArgumentException newWithClass: c
 						    andSelector: _cmd];
 	}
@@ -73,11 +73,11 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 				withSize: sizeof(OFList*)];
 	} @catch (OFException *e) {
 		/*
-		 * We can't use [super free] on OS X here. Compiler bug?
-		 * Anyway, set size to 0 so that [self free] works.
+		 * We can't use [super dealloc] on OS X here. Compiler bug?
+		 * Anyway, set size to 0 so that [self dealloc] works.
 		 */
 		size = 0;
-		[self free];
+		[self dealloc];
 		@throw e;
 	}
 	memset(data, 0, size * sizeof(OFList*));
@@ -85,7 +85,7 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 	return self;
 }
 
-- free
+- (void)dealloc
 {
 	size_t i;
 
@@ -93,7 +93,7 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 		if (data[i] != nil)
 			[data[i] release];
 
-	return [super free];
+	[super dealloc];
 }
 
 - set: (OFObject*)key

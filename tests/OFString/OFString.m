@@ -92,7 +92,7 @@ main()
 
 	s1 = [OFString stringWithCString: "äöü€𝄞"];
 	CHECK(!strcmp([[s1 reverse] cString], "𝄞€üöä"))
-	[s1 free];
+	[s1 dealloc];
 
 	/* Format tests */
 	s1 = [OFString stringWithFormat: "%s: %d", "test", 123];

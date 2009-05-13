@@ -29,10 +29,10 @@
 		    initWithItemSize: sizeof(OFObject*)];
 	} @catch (OFException *e) {
 		/*
-		 * We can't use [super free] on OS X here. Compiler bug?
-		 * [self free] will do here as we check for nil in free.
+		 * We can't use [super dealloc] on OS X here. Compiler bug?
+		 * [self dealloc] will do here as we check for nil in dealloc.
 		 */
-		[self free];
+		[self dealloc];
 		@throw e;
 	}
 
@@ -104,7 +104,7 @@
 	return self;
 }
 
-- free
+- (void)dealloc
 {
 	OFObject **objs;
 	size_t len, i;
@@ -119,6 +119,6 @@
 		[array release];
 	}
 
-	return [super free];
+	[super dealloc];
 }
 @end

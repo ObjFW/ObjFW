@@ -127,7 +127,7 @@ check_utf8(const char *str, size_t len)
 				break;
 			case -1:
 				c = isa;
-				[super free];
+				[super dealloc];
 				@throw [OFInvalidEncodingException
 					newWithClass: c];
 		}
@@ -136,11 +136,11 @@ check_utf8(const char *str, size_t len)
 			string = [self allocWithSize: length + 1];
 		} @catch (OFException *e) {
 			/*
-			 * We can't use [super free] on OS X here. Compiler bug?
-			 * [self free] will do here as we don't reimplement
-			 * free.
+			 * We can't use [super dealloc] on OS X here.
+			 * Compiler bug? Anyway, [self dealloc] will do here as
+			 * we don't reimplement dealloc.
 			 */
-			[self free];
+			[self dealloc];
 			@throw e;
 		}
 		memcpy(string, str, length + 1);
@@ -172,13 +172,13 @@ check_utf8(const char *str, size_t len)
 
 	if (fmt == NULL) {
 		c = isa;
-		[super free];
+		[super dealloc];
 		@throw [OFInvalidFormatException newWithClass: c];
 	}
 
 	if ((t = vasprintf(&string, fmt, args)) == -1) {
 		c = isa;
-		[super free];
+		[super dealloc];
 		@throw [OFInitializationFailedException newWithClass: c];
 	}
 	length = t;
@@ -190,7 +190,7 @@ check_utf8(const char *str, size_t len)
 		case -1:
 			free(string);
 			c = isa;
-			[super free];
+			[super dealloc];
 			@throw [OFInvalidEncodingException newWithClass: c];
 	}
 
