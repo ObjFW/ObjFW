@@ -41,9 +41,8 @@ static struct {
 } alloc_failed_exception;
 
 @implementation OFObject
-+ initialize
++ (void)initialize
 {
-	return self;
 }
 
 + alloc

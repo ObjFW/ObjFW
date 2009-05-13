@@ -31,7 +31,7 @@
  * Derived classes can override this to execute their own code on
  * initialization.
  */
-+ initialize;
++ (void)initialize;
 
 /**
  * Allocates memory for an instance of the class.

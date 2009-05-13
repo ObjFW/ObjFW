@@ -36,11 +36,9 @@ release_list(void *list)
 }
 
 @implementation OFAutoreleasePool
-+ initialize
++ (void)initialize
 {
 	pool_list_key = [[OFTLSKey alloc] initWithDestructor: release_list];
-
-	return self;
 }
 
 + (void)addToPool: (OFObject*)obj

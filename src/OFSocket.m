@@ -23,14 +23,12 @@
 
 @implementation OFSocket
 #ifdef _WIN32
-+ initialize
++ (void)initialize
 {
 	WSADATA wsa;
 
 	if (WSAStartup(MAKEWORD(2, 0), &wsa))
 		@throw [OFInitializationFailedException newWithClass: self];
-
-	return self;
 }
 #endif
 
