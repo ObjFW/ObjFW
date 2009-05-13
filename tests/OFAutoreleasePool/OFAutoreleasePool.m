@@ -97,10 +97,7 @@ main()
 	pool2 = [[OFAutoreleasePool alloc] init];
 	o3 = [[[OFObject alloc] init] autorelease];
 
-	[pool1 retain];
 	[pool1 release];
-	[pool1 release];
-	[o3 free];
 
-	return (inits == 20 && retains == 6 && releases == 13 ? 0 : 1);
+	return (inits == 20 && retains == 5 && releases == 16 ? 0 : 1);
 }

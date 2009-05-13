@@ -89,6 +89,15 @@ release_list(void *list)
 
 - free
 {
+	/*
+	 * FIXME:
+	 * Maybe we should get the objects ourself, release them and then
+	 * release the pool without calling its release method? This way,
+	 * there wouldn't be a recursion.
+	 */
+	if (listobj->next != NULL)
+		[listobj->next->object release];
+
 	[[OFThread objectForTLSKey: pool_list_key] remove: listobj];
 
 	return [super free];
@@ -121,5 +130,19 @@ release_list(void *list)
 	objects = nil;
 
 	return self;
+}
+
+- retain
+{
+	// FIXME: Maybe another exception would be better here?
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
+
+- autorelease
+{
+	// FIXME: Maybe another exception would be better here?
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
 }
 @end
