@@ -96,6 +96,8 @@ release_list(void *list)
 	if (listobj->next != NULL)
 		[listobj->next->object release];
 
+	[self releaseObjects];
+
 	[[OFThread objectForTLSKey: pool_list_key] remove: listobj];
 
 	[super dealloc];
@@ -120,6 +122,9 @@ release_list(void *list)
 
 - releaseObjects
 {
+	if (listobj->next != NULL)
+		[listobj->next->object releaseObjects];
+
 	if (objects == nil)
 		return self;
 
