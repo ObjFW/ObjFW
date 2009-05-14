@@ -35,8 +35,7 @@
 	if (last == NULL) {
 		for (; pos < size && data[pos] == nil; pos++);
 		if (pos == size)
-			@throw [OFNotInSetException
-			    newWithClass: [OFDictionary class]];
+			return nil;
 
 		return (last = [data[pos++] first])->object;
 	}

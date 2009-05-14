@@ -43,7 +43,8 @@ extern int getpagesize(void);
 	if (is == 0) {
 		c = isa;
 		[super dealloc];
-		@throw [OFInvalidArgumentException newWithClass: c];
+		@throw [OFInvalidArgumentException newWithClass: c
+						    andSelector: _cmd];
 	}
 
 	data = NULL;

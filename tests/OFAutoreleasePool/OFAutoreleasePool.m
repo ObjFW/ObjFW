@@ -98,5 +98,7 @@ main()
 
 	[pool1 release];
 
-	return (inits == 20 && retains == 5 && releases == 16 ? 0 : 1);
+	printf("inits:    %02d\nretains:  %02d\nreleases: %02d\n",
+	   inits, retains, releases);
+	return (inits == 17 && retains == 5 && releases == 16 ? 0 : 1);
 }

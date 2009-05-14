@@ -62,7 +62,7 @@
 
 /**
  * \param key The key whose object should be returned
- * \return The object for the given key
+ * \return The object for the given key or nil if the key was not found
  */
 - (id)get: (OFObject*)key;
 

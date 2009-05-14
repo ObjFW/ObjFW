@@ -217,12 +217,6 @@
 @end
 
 /**
- * An OFException indicating that the requested key is not in the set.
- */
-@interface OFNotInSetException: OFException {}
-@end
-
-/**
  * An OFException indicating the file couldn't be opened.
  */
 @interface OFOpenFileFailedException: OFException

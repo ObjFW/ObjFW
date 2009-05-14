@@ -103,7 +103,8 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 	of_list_object_t *iter;
 
 	if (key == nil || obj == nil)
-		@throw [OFInvalidArgumentException newWithClass: isa];
+		@throw [OFInvalidArgumentException newWithClass: isa
+						    andSelector: _cmd];
 
 	hash = [key hash] & (size - 1);
 
@@ -132,18 +133,19 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 	of_list_object_t *iter;
 
 	if (key == nil)
-		@throw [OFInvalidArgumentException newWithClass: isa];
+		@throw [OFInvalidArgumentException newWithClass: isa
+						    andSelector: _cmd];
 
 	hash = [key hash] & (size - 1);
 
 	if (data[hash] == nil)
-		@throw [OFNotInSetException newWithClass: isa];
+		return nil;
 
 	for (iter = [data[hash] first]; iter != NULL; iter = iter->next->next)
 		if ([iter->object isEqual: key])
 			return iter->next->object;
 
-	@throw [OFNotInSetException newWithClass: isa];
+	return nil;
 }
 
 - remove: (OFObject*)key
@@ -152,12 +154,13 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 	of_list_object_t *iter;
 
 	if (key == nil)
-		@throw [OFInvalidArgumentException newWithClass: isa];
+		@throw [OFInvalidArgumentException newWithClass: isa
+						    andSelector: _cmd];
 
 	hash = [key hash] & (size - 1);
 
 	if (data[hash] == nil)
-		@throw [OFNotInSetException newWithClass: isa];
+		return self;
 
 	for (iter = [data[hash] first]; iter != NULL; iter = iter->next->next) {
 		if ([iter->object isEqual: key]) {
@@ -173,7 +176,7 @@ void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
 		}
 	}
 
-	@throw [OFNotInSetException newWithClass: isa];
+	return self;
 }
 
 - (float)averageItemsPerBucket

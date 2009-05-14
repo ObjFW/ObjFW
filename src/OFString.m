@@ -90,7 +90,8 @@
 - (int)compare: (id)obj
 {
 	if (![obj isKindOf: [OFString class]])
-		@throw [OFInvalidArgumentException newWithClass: isa];
+		@throw [OFInvalidArgumentException newWithClass: isa
+						    andSelector: _cmd];
 
 	return strcmp(string, [obj cString]);
 }

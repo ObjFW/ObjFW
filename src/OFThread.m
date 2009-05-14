@@ -48,14 +48,7 @@ call_main(LPVOID obj)
 + setObject: (id)obj
   forTLSKey: (OFTLSKey*)key
 {
-	id old;
-
-	@try {
-		old = [self objectForTLSKey: key];
-	} @catch (OFNotInSetException *e) {
-		[e dealloc];
-		old = nil;
-	}
+	id old = [self objectForTLSKey: key];
 
 #ifndef _WIN32
 	if (pthread_setspecific(key->key, obj))
@@ -63,7 +56,8 @@ call_main(LPVOID obj)
 	if (!TlsSetValue(key->key, obj))
 #endif
 		/* FIXME: Maybe another exception would be better */
-		@throw [OFNotInSetException newWithClass: self];
+		@throw [OFInvalidArgumentException newWithClass: self
+						    andSelector: _cmd];
 
 	if (obj != nil)
 		[obj retain];
@@ -88,8 +82,8 @@ call_main(LPVOID obj)
 	 * if the key is missing, nil can be returned if it was explicitly set
 	 * to nil to release the old object.
 	 */
-	if (ret == NULL || (id)ret == nil)
-		@throw [OFNotInSetException newWithClass: self];
+	if (ret == NULL)
+		return nil;
 
 	return (id)ret;
 }
