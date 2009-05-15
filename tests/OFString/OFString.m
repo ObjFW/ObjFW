@@ -15,7 +15,6 @@
 #include <string.h>
 
 #import "OFString.h"
-#import "OFConstString.h"
 #import "OFArray.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
@@ -70,7 +69,8 @@ main()
 	CHECK(![s1 isEqual: [[OFObject alloc] init]])
 	CHECK([s1 hash] == [s3 hash])
 
-	[s2 appendCString: "123"];
+	[s2 appendCString: "12"];
+	[s2 append: @"3"];
 	[s4 setTo: [s2 cString]];
 
 	CHECK(![s2 compare: s4])
@@ -95,13 +95,13 @@ main()
 	[s1 dealloc];
 
 	/* Format tests */
-	s1 = [OFString stringWithFormat: "%s: %d", "test", 123];
+	s1 = [OFString stringWithFormat: @"%s: %d", "test", 123];
 	CHECK(!strcmp([s1 cString], "test: 123"))
 
-	[s1 appendWithFormatCString: "%02X", 15];
+	[s1 appendWithFormat: @"%02X", 15];
 	CHECK(!strcmp([s1 cString], "test: 1230F"))
 
-	a = [@"fooXXbarXXXXbazXXXX" splitWithDelimiter: "XX"];
+	a = [@"fooXXbarXXXXbazXXXX" splitWithDelimiter: @"XX"];
 	CHECK([[a object: j++] isEqual: @"foo"])
 	CHECK([[a object: j++] isEqual: @"bar"])
 	CHECK([[a object: j++] isEqual: @""])

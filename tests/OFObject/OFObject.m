@@ -26,7 +26,7 @@
 		return 1;				\
 	} @catch (exception *e) {			\
 		puts("CAUGHT! Error string was:");	\
-		puts([e cString]);			\
+		puts([[e string] cString]);		\
 		puts("Resuming...");			\
 	}
 

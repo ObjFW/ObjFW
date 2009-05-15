@@ -14,7 +14,7 @@
 #include <stdio.h>
 
 #import "OFThread.h"
-#import "OFConstString.h"
+#import "OFString.h"
 
 @interface MyThread: OFThread
 @end

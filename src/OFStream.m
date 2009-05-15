@@ -38,25 +38,26 @@ extern int getpagesize(void);
 					   andSelector: _cmd];
 }
 
-- (char*)readLine
+- (OFString*)readLine
 {
 	size_t i, len;
-	char *ret, *tmp, *tmp2;
+	char *ret_c, *tmp, *tmp2;
+	OFString *ret;
 
 	/* Look if there's a line or \0 in our cache */
 	if (cache != NULL) {
 		for (i = 0; i < cache_len; i++) {
 			if (OF_UNLIKELY(cache[i] == '\n' ||
 			    cache[i] == '\0')) {
-				ret = [self allocWithSize: i + 1];
-				memcpy(ret, cache, i);
-				ret[i] = '\0';
+				ret_c = [self allocWithSize: i + 1];
+				memcpy(ret_c, cache, i);
+				ret_c[i] = '\0';
 
 				@try {
 					tmp = [self allocWithSize: cache_len -
 								   i - 1];
 				} @catch (OFException *e) {
-					[self freeMem: ret];
+					[self freeMem: ret_c];
 					@throw e;
 				}
 				memcpy(tmp, cache + i + 1, cache_len - i - 1);
@@ -65,6 +66,12 @@ extern int getpagesize(void);
 				cache = tmp;
 				cache_len = cache_len - i - 1;
 
+				@try {
+					ret = [OFString
+					    stringWithCString: ret_c];
+				} @finally {
+					[self freeMem: ret_c];
+				}
 				return ret;
 			}
 		}
@@ -86,23 +93,23 @@ extern int getpagesize(void);
 		for (i = 0; i < len; i++) {
 			if (OF_UNLIKELY(tmp[i] == '\n' || tmp[i] == '\0')) {
 				@try {
-					ret = [self
+					ret_c = [self
 					    allocWithSize: cache_len + i + 1];
 				} @catch (OFException *e) {
 					[self freeMem: tmp];
 					@throw e;
 				}
 				if (cache != NULL)
-					memcpy(ret, cache, cache_len);
-				memcpy(ret + cache_len, tmp, i);
-				ret[i] = '\0';
+					memcpy(ret_c, cache, cache_len);
+				memcpy(ret_c + cache_len, tmp, i);
+				ret_c[i] = '\0';
 
 				if (i < len) {
 					@try {
 						tmp2 = [self
 						    allocWithSize: len - i - 1];
 					} @catch (OFException *e) {
-						[self freeMem: ret];
+						[self freeMem: ret_c];
 						[self freeMem: tmp];
 						@throw e;
 					}
@@ -120,6 +127,12 @@ extern int getpagesize(void);
 				}
 
 				[self freeMem: tmp];
+				@try {
+					ret = [OFString
+					    stringWithCString: ret_c];
+				} @finally {
+					[self freeMem: ret_c];
+				}
 				return ret;
 			}
 		}
@@ -144,10 +157,10 @@ extern int getpagesize(void);
 					   andSelector: _cmd];
 }
 
-- (size_t)writeCString: (const char*)str
+- (size_t)writeString: (OFString*)str
 {
-	return [self writeNBytes: strlen(str)
-		      fromBuffer: str];
+	return [self writeNBytes: [str length]
+		      fromBuffer: [str cString]];
 }
 
 - (size_t)getCache: (char**)ptr

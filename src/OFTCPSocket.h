@@ -10,6 +10,7 @@
  */
 
 #import "OFSocket.h"
+#import "OFString.h"
 
 /**
  * The OFTCPSocket class provides functions to create and use sockets.
@@ -30,22 +31,22 @@
 /**
  * Connect the OFTCPSocket to the specified destination.
  *
- * \param host The host or IP to connect to
- * \param port The port of the host to connect to
+ * \param service The service on the node to connect to
+ * \param node The node to connect to
  */
-- connectTo: (const char*)host
-     onPort: (uint16_t)port;
+- connectToService: (OFString*)service
+	    onNode: (OFString*)node;
 
 /**
- * Bind socket to the specified address and port.
+ * Bind socket on the specified node and service.
  *
- * \param host The host or IP to bind to
- * \param port The port to bind to
+ * \param service The service to bind
+ * \param node The node to bind to
  * \param protocol The protocol to use (AF_INET or AF_INET6)
  */
--    bindOn: (const char*)host
-   withPort: (uint16_t)port
-  andFamily: (int)family;
+- bindService: (OFString*)service
+       onNode: (OFString*)node
+   withFamily: (int)family;
 
 /**
  * Listen on the socket.

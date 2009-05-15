@@ -10,6 +10,7 @@
  */
 
 #import "OFObject.h"
+#import "OFString.h"
 
 /**
  * The OFStream class provides a base class for different types of streams.
@@ -37,9 +38,9 @@
  * If you want to use readNBytes afterwards again, you have to clear the cache
  * before and optionally get the cache before clearing it!
  *
- * \return The line that was read. Use freeMem: to free it!
+ * \return The line that was read, autoreleased.
  */
-- (char*)readLine;
+- (OFString*)readLine;
 
 /**
  * Writes from a buffer into the stream.
@@ -52,12 +53,12 @@
 	   fromBuffer: (const char*)buf;
 
 /**
- * Writes a C string into the stream, without the trailing zero.
+ * Writes a string into the stream, without the trailing zero.
  *
- * \param str The C string from which the data is written to the stream
+ * \param str The string from which the data is written to the stream
  * \return The number of bytes written
  */
-- (size_t)writeCString: (const char*)str;
+- (size_t)writeString: (OFString*)str;
 
 /**
  * Sets a specified pointer to the cache and returns the length of the cache.

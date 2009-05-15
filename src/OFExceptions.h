@@ -10,6 +10,7 @@
  */
 
 #import "OFObject.h"
+#import "OFString.h"
 
 /**
  * An exception indicating an object could not be allocated.
@@ -31,9 +32,9 @@
 + (Class)class;
 
 /**
- * \return An error message for the exception as a C string
+ * \return An error message for the exception as a string
  */
-- (const char*)cString;
+- (OFString*)string;
 @end
 
 /**
@@ -43,8 +44,8 @@
  */
 @interface OFException: OFObject
 {
-	Class class;
-	char  *string;
+	Class	 class;
+	OFString *string;
 }
 
 /**
@@ -69,9 +70,9 @@
 - (Class)inClass;
 
 /**
- * \return An error message for the exception as a C string
+ * \return An error message for the exception as a string
  */
-- (const char*)cString;
+- (OFString*)string;
 @end
 
 /**
@@ -221,32 +222,32 @@
  */
 @interface OFOpenFileFailedException: OFException
 {
-	char *path;
-	char *mode;
+	OFString *path;
+	OFString *mode;
 	int  err;
 }
 
 /**
  * \param class The class of the object which caused the exception
- * \param path A C string of the path to the file tried to open
- * \param mode A C string of the mode in which the file should have been opened
+ * \param path A string of the path to the file tried to open
+ * \param mode A string of the mode in which the file should have been opened
  * \return A new open file failed exception
  */
 + newWithClass: (Class)class
-       andPath: (const char*)path
-       andMode: (const char*)mode;
+       andPath: (OFString*)path
+       andMode: (OFString*)mode;
 
 /**
  * Initializes an already allocated open file failed exception.
  *
  * \param class The class of the object which caused the exception
- * \param path A C string of the path to the file which couldn't be opened
- * \param mode A C string of the mode in which the file should have been opened
+ * \param path A string of the path to the file which couldn't be opened
+ * \param mode A string of the mode in which the file should have been opened
  * \return An initialized open file failed exception
  */
 - initWithClass: (Class)class
-	andPath: (const char*)path
-	andMode: (const char*)mode;
+	andPath: (OFString*)path
+	andMode: (OFString*)mode;
 
 /**
  * \return The errno from when the exception was created
@@ -254,14 +255,14 @@
 - (int)errNo;
 
 /**
- * \return A C string of the path to the file which couldn't be opened
+ * \return A string of the path to the file which couldn't be opened
  */
-- (char*)path;
+- (OFString*)path;
 
 /**
- * \return A C string of the mode in which the file should have been opened
+ * \return A string of the mode in which the file should have been opened
  */
-- (char*)mode;
+- (OFString*)mode;
 @end
 
 /**
@@ -368,19 +369,13 @@
 @end
 
 /**
- * An OFException indicating that the specified port is invalid.
- */
-@interface OFInvalidPortException: OFException {}
-@end
-
-/**
  * An OFException indicating the translation of an address failed.
  */
 @interface OFAddressTranslationFailedException: OFException
 {
-	char *node;
-	char *service;
-	int  err;
+	OFString *node;
+	OFString *service;
+	int	 err;
 }
 
 /**
@@ -390,8 +385,8 @@
  * \return A new address translation failed exception
  */
 + newWithClass: (Class)class
-       andNode: (const char*)node
-    andService: (const char*)service;
+       andNode: (OFString*)node
+    andService: (OFString*)service;
 
 /**
  * Initializes an already allocated address translation failed exception.
@@ -402,8 +397,8 @@
  * \return An initialized address translation failed exception
  */
 - initWithClass: (Class)class
-	andNode: (const char*)node
-     andService: (const char*)service;
+	andNode: (OFString*)node
+     andService: (OFString*)service;
 
 /**
  * \return The errno from when the exception was created
@@ -413,12 +408,12 @@
 /**
  * /return The node for which translation was requested
  */
-- (const char*)node;
+- (OFString*)node;
 
 /**
  * \return The service of the node for which translation was requested
  */
-- (const char*)service;
+- (OFString*)service;
 @end
 
 /**
@@ -426,32 +421,32 @@
  */
 @interface OFConnectionFailedException: OFException
 {
-	char	 *host;
-	uint16_t port;
+	OFString *node;
+	OFString *service;
 	int	 err;
 }
 
 /**
  * \param class The class of the object which caused the exception
- * \param host The host to which the connection failed
- * \param port The port on the host to which the connection failed
+ * \param node The node to which the connection failed
+ * \param service The service on the node to which the connection failed
  * \return A new connection failed exception
  */
 + newWithClass: (Class)class
-       andHost: (const char*)host
-       andPort: (uint16_t)port;
+       andNode: (OFString*)node
+    andService: (OFString*)service;
 
 /**
  * Initializes an already allocated connection failed exception.
  *
  * \param class The class of the object which caused the exception
- * \param host The host to which the connection failed
- * \param port The port on the host to which the connection failed
+ * \param node The node to which the connection failed
+ * \param service The service on the node to which the connection failed
  * \return An initialized connection failed exception
  */
 - initWithClass: (Class)class
-	andHost: (const char*)host
-	andPort: (uint16_t)port;
+	andNode: (OFString*)node
+     andService: (OFString*)service;
 
 /**
  * \return The errno from when the exception was created
@@ -459,14 +454,14 @@
 - (int)errNo;
 
 /**
- * \return The host to which the connection failed
+ * \return The node to which the connection failed
  */
-- (const char*)host;
+- (OFString*)node;
 
 /**
- * \return The port on the host to which the connection failed
+ * \return The service on the node to which the connection failed
  */
-- (uint16_t)port;
+- (OFString*)service;
 @end
 
 /**
@@ -474,36 +469,36 @@
  */
 @interface OFBindFailedException: OFException
 {
-	char	 *host;
-	uint16_t port;
+	OFString *node;
+	OFString *service;
 	int	 family;
 	int	 err;
 }
 
 /**
  * \param class The class of the object which caused the exception
- * \param host The host on which binding failed
- * \param port The port on which binding failed
+ * \param node The node on which binding failed
+ * \param service The service on which binding failed
  * \param family The family for which binnding failed
  * \return A new bind failed exception
  */
 + newWithClass: (Class)class
-       andHost: (const char*)host
-       andPort: (uint16_t)port
+       andNode: (OFString*)node
+    andService: (OFString*)service
      andFamily: (int)family;
 
 /**
  * Initializes an already allocated bind failed exception.
  *
  * \param class The class of the object which caused the exception
- * \param host The host on which binding failed
- * \param port The port on which binding failed
+ * \param node The node on which binding failed
+ * \param service The service on which binding failed
  * \param family The family for which binnding failed
  * \return An initialized bind failed exception
  */
 - initWithClass: (Class)class
-	andHost: (const char*)host
-	andPort: (uint16_t)port
+	andNode: (OFString*)node
+     andService: (OFString*)service
       andFamily: (int)family;
 
 /**
@@ -512,14 +507,14 @@
 - (int)errNo;
 
 /**
- * \return The host on which binding failed
+ * \return The node on which binding failed
  */
-- (const char*)host;
+- (OFString*)node;
 
 /**
- * \return The port on which binding failed
+ * \return The service on which binding failed
  */
-- (uint16_t)port;
+- (OFString*)service;
 
 /**
  * \return The family for which binding failed

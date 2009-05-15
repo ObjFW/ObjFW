@@ -17,7 +17,6 @@
 #import "OFAutoreleasePool.h"
 #import "OFDictionary.h"
 #import "OFIterator.h"
-#import "OFConstString.h"
 #import "OFString.h"
 #import "OFExceptions.h"
 

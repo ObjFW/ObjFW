@@ -51,9 +51,9 @@
 	return self;
 }
 
-- (const char*)cString
+- (OFString*)string
 {
-	return "Allocating an object failed!";
+	return @"Allocating an object failed!";
 }
 @end
 
@@ -68,15 +68,14 @@
 	self = [super init];
 
 	class = class_;
-	string = NULL;
+	string = nil;
 
 	return self;
 }
 
 - (void)dealloc
 {
-	if (string != NULL)
-		free(string);
+	[string release];
 
 	[super dealloc];
 }
@@ -86,7 +85,7 @@
 	return class;
 }
 
-- (const char*)cString
+- (OFString*)string
 {
 	return string;
 }
@@ -110,13 +109,14 @@
 	return self;
 }
 
-- (const char*)cString
+- (OFString*)string
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;
 
-	asprintf(&string, "Could not allocate %zu bytes in class %s!",
-		req_size, [class name]);
+	string = [[OFMutableString alloc]
+	    initWithFormat: @"Could not allocate %zu bytes in class %s!",
+			    req_size, [class name]];
 
 	return string;
 }
@@ -145,15 +145,17 @@
 	return self;
 }
 
-- (const char*)cString
+- (OFString*)string
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;
 
-	asprintf(&string, "Memory at %p was not allocated as part of object "
-	    "of class %s, thus the memory allocation was not changed! It is "
-	    "also possible that there was an attempt to free the same memory "
-	    "twice.", pointer, [class name]);
+	string = [[OFMutableString alloc]
+	    initWithFormat: @"Memory at %p was not allocated as part of object "
+			    @"of class %s, thus the memory allocation was not "
+			    @"changed! It is also possible that there was an "
+			    @"attempt to free the same memory twice.",
+			    pointer, [class name]];
 
 	return string;
 }
@@ -182,25 +184,29 @@
 	return self;
 }
 
-- (const char*)cString
+- (OFString*)string
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;
 
-	asprintf(&string, "The method %s of class %s is not or not fully "
-	    "implemented!", SEL_NAME(selector), [class name]);
+	string = [[OFMutableString alloc]
+	    initWithFormat: @"The method %s of class %s is not or not fully "
+			    @"implemented!",
+			    SEL_NAME(selector), [class name]];
 
 	return string;
 }
 @end
 
 @implementation OFOutOfRangeException
-- (const char*)cString
+- (OFString*)string
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;
 
-	asprintf(&string, "Value out of range in class %s!", [class name]);
+	string = [[OFMutableString alloc]
+	    initWithFormat: @"Value out of range in class %s!",
+			    [class name]];
 
 	return string;
 }
@@ -224,50 +230,57 @@
 	return self;
 }
 
-- (const char*)cString
+- (OFString*)string
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;
 
-	asprintf(&string, "The argument for method %s of class %s is invalid!",
-	    SEL_NAME(selector), [class name]);
+	string = [[OFMutableString alloc]
+	    initWithFormat: @"The argument for method %s of class %s is "
+	    		    @"invalid!",
+			    SEL_NAME(selector), [class name]];
 
 	return string;
 }
 @end
 
 @implementation OFInvalidEncodingException
-- (const char*)cString
+- (OFString*)string
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;
 
-	asprintf(&string, "The encoding is invalid for class %s!",
-	    [class name]);
+	string = [[OFMutableString alloc]
+	    initWithFormat: @"The encoding is invalid for class %s!",
+			    [class name]];
 
 	return string;
 }
 @end
 
 @implementation OFInvalidFormatException
-- (const char*)cString
+- (OFString*)string
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;
 
-	asprintf(&string, "The format is invalid for class %s!", [class name]);
+	string = [[OFMutableString alloc]
+	    initWithFormat: @"The format is invalid for class %s!",
+			    [class name]];
 
 	return string;
 }
 @end
 
 @implementation OFInitializationFailedException
-- (const char*)cString
+- (OFString*)cString
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;
 
-	asprintf(&string, "Initialization failed for class %s!", [class name]);
+	string = [[OFMutableString alloc]
+	    initWithFormat: @"Initialization failed for class %s!",
+			    [class name]];
 
 	return string;
 }
@@ -275,8 +288,8 @@
 
 @implementation OFOpenFileFailedException
 + newWithClass: (Class)class_
-       andPath: (const char*)path_
-       andMode: (const char*)mode_
+       andPath: (OFString*)path_
+       andMode: (OFString*)mode_
 {
 	return [[self alloc] initWithClass: class_
 				   andPath: path_
@@ -284,13 +297,13 @@
 }
 
 - initWithClass: (Class)class_
-	andPath: (const char*)path_
-	andMode: (const char*)mode_
+	andPath: (OFString*)path_
+	andMode: (OFString*)mode_
 {
 	self = [super initWithClass: class_];
 
-	path = (path_ != NULL ? strdup(path_) : NULL);
-	mode = (mode_ != NULL ? strdup(mode_) : NULL);
+	path = [path_ retain];
+	mode = [mode_ retain];
 	err = GET_ERR;
 
 	return self;
@@ -298,21 +311,22 @@
 
 - (void)dealloc
 {
-	if (path != NULL)
-		free(path);
-	if (mode != NULL)
-		free(mode);
+	[path release];
+	[mode release];
 
 	[super dealloc];
 }
 
-- (const char*)cString
+- (OFString*)string
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;
 
-	asprintf(&string, "Failed to open file %s with mode %s in class %s! "
-	    ERRFMT, path, mode, [self name], ERRPARAM);
+	string = [[OFMutableString alloc]
+	    initWithFormat: @"Failed to open file %s with mode %s in class %s! "
+			    ERRFMT,
+			    [path cString], [mode cString], [self name],
+			    ERRPARAM];
 
 	return string;
 }
@@ -322,12 +336,12 @@
 	return err;
 }
 
-- (char*)path
+- (OFString*)path
 {
 	return path;
 }
 
-- (char*)mode
+- (OFString*)mode
 {
 	return mode;
 }
@@ -407,89 +421,88 @@
 @end
 
 @implementation OFReadFailedException
-- (const char*)cString
+- (OFString*)string
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;;
 
 	if (has_items)
-		asprintf(&string, "Failed to read %zu items of size %zu in "
-		    "class %s! " ERRFMT, req_items, req_size, [class name],
-		    ERRPARAM);
+		string = [[OFMutableString alloc]
+		    initWithFormat: @"Failed to read %zu items of size %zu in "
+				    @"class %s! " ERRFMT,
+				    req_items, req_size, [class name],
+				    ERRPARAM];
 	else
-		asprintf(&string, "Failed to read %zu bytes in class %s! "
-		    ERRFMT, req_size, [class name], ERRPARAM);
+		string = [[OFMutableString alloc]
+		    initWithFormat: @"Failed to read %zu bytes in class %s! "
+				    ERRFMT,
+				    req_size, [class name], ERRPARAM];
 
 	return string;
 }
 @end
 
 @implementation OFWriteFailedException
-- (const char*)cString
+- (OFString*)string
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;
 
 	if (has_items)
-		asprintf(&string, "Failed to write %zu items of size %zu in "
-		    "class %s! " ERRFMT, req_items, req_size, [class name],
-		    ERRPARAM);
+		string = [[OFMutableString alloc]
+		    initWithFormat: @"Failed to write %zu items of size %zu in "
+				    @"class %s! " ERRFMT,
+				    req_items, req_size, [class name],
+				    ERRPARAM];
 	else
-		asprintf(&string, "Failed to write %zu bytes in class %s! "
-		    ERRFMT, req_size, [class name], ERRFMT);
+		string = [[OFMutableString alloc]
+		    initWithFormat: @"Failed to write %zu bytes in class %s! "
+				    ERRFMT,
+				    req_size, [class name], ERRPARAM];
 
 	return string;
 }
 @end
 
 @implementation OFSetOptionFailedException
-- (const char*)cString
+- (OFString*)string
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;
 
-	asprintf(&string, "Setting an option in class %s failed!",
-	    [class name]);
+	string = [[OFMutableString alloc]
+	    initWithFormat: @"Setting an option in class %s failed!",
+			    [class name]];
 
 	return string;
 }
 @end
 
 @implementation OFNotConnectedException
-- (const char*)cString
+- (OFString*)string
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;
 
-	asprintf(&string, "The socket of type %s is not connected or bound!",
-	    [class name]);
+	string = [[OFMutableString alloc]
+	    initWithFormat: @"The socket of type %s is not connected or bound!",
+			    [class name]];
 
 	return string;
 }
 @end
 
 @implementation OFAlreadyConnectedException
-- (const char*)cString
+- (OFString*)string
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;
 
-	asprintf(&string, "The socket of type %s is already connected or bound "
-	    "and thus can't be connected or bound again!", [class name]);
-
-	return string;
-}
-@end
-
-@implementation OFInvalidPortException
-- (const char*)cString
-{
-	if (string != NULL)
-		return string;
-
-	asprintf(&string, "The port specified is not valid for a socket of "
-	    "type %s! This usually means you tried to use port 0, which is an "
-	    "invalid port.", [class name]);
+	string = [[OFMutableString alloc]
+	    initWithFormat: @"The socket of type %s is already connected or "
+			    @"bound and thus can't be connected or bound "
+			    @"again!",
+			    [class name]];
 
 	return string;
 }
@@ -497,8 +510,8 @@
 
 @implementation OFAddressTranslationFailedException
 + newWithClass: (Class)class_
-       andNode: (const char*)node_
-    andService: (const char*)service_
+       andNode: (OFString*)node_
+    andService: (OFString*)service_
 {
 	return [[self alloc] initWithClass: class_
 				   andNode: node_
@@ -506,13 +519,13 @@
 }
 
 - initWithClass: (Class)class_
-	andNode: (const char*)node_
-     andService: (const char*)service_
+	andNode: (OFString*)node_
+     andService: (OFString*)service_
 {
 	self = [super initWithClass: class_];
 
-	node = (node_ != NULL ? strdup(node_) : NULL);
-	service = (service_ != NULL ? strdup(service_) : NULL);
+	node = [node_ retain];
+	service = [service_ retain];
 	err = GET_SOCK_ERR;
 
 	return self;
@@ -520,25 +533,27 @@
 
 - (void)dealloc
 {
-	if (node != NULL)
-		free(node);
-	if (service != NULL)
-		free(node);
+	[node release];
+	[service release];
 
 	[super dealloc];
 }
 
-- (const char*)cString
+- (OFString*)string
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;
 
-	asprintf(&string, "The service %s on %s could not be translated to an "
-	    "address in class %s. This means that either the node was not "
-	    "found, there is no such service on the node, there was a problem "
-	    "with the name server, there was a problem with your network "
-	    "connection or you specified an invalid node or service. " ERRFMT,
-	    service, node, [class name], ERRPARAM);
+	string = [[OFMutableString alloc]
+	    initWithFormat: @"The service %s on %s could not be translated to "
+			    @"an address in class %s. This means that either "
+			    @"the node was not found, there is no such service "
+			    @"on the node, there was a problem with the name "
+			    @"server, there was a problem with your network "
+			    @"connection or you specified an invalid node or "
+			    @"service. " ERRFMT,
+			    [service cString], [node cString], [class name],
+			    ERRPARAM];
 
 	return string;
 }
@@ -548,12 +563,12 @@
 	return err;
 }
 
-- (const char*)node
+- (OFString*)node
 {
 	return node;
 }
 
-- (const char*)service
+- (OFString*)service
 {
 	return service;
 }
@@ -561,42 +576,45 @@
 
 @implementation OFConnectionFailedException
 + newWithClass: (Class)class_
-       andHost: (const char*)host_
-       andPort: (uint16_t)port_
+       andNode: (OFString*)node_
+    andService: (OFString*)service_
 {
 	return [[self alloc] initWithClass: class_
-				   andHost: host_
-				   andPort: port_];
+				   andNode: node_
+				andService: service_];
 }
 
 - initWithClass: (Class)class_
-	andHost: (const char*)host_
-	andPort: (uint16_t)port_
+	andNode: (OFString*)node_
+     andService: (OFString*)service_
 {
 	self = [super initWithClass: class_];
 
-	host = (host_ != NULL ? strdup(host_) : NULL);
-	port = port_;
-	err = GET_SOCK_ERR;
+	node	= [node_ retain];
+	service	= [service_ retain];
+	err	= GET_SOCK_ERR;
 
 	return self;
 }
 
 - (void)dealloc
 {
-	if (host != NULL)
-		free(host);
+	[node release];
+	[service release];
 
 	[super dealloc];
 }
 
-- (const char*)cString
+- (OFString*)string
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;
 
-	asprintf(&string, "A connection to %s:%d could not be established in "
-	    "class %s! " ERRFMT, host, port, [class name], ERRPARAM);
+	string = [[OFMutableString alloc]
+	    initWithFormat: @"A connection to service %s on node %s could not "
+			    @"be established in class %s! " ERRFMT,
+			    [node cString], [service cString], [class name],
+			    ERRPARAM];
 
 	return string;
 }
@@ -606,59 +624,62 @@
 	return err;
 }
 
-- (const char*)host
+- (OFString*)node
 {
-	return host;
+	return node;
 }
 
-- (uint16_t)port
+- (OFString*)service
 {
-	return port;
+	return service;
 }
 @end
 
 @implementation OFBindFailedException
 + newWithClass: (Class)class_
-       andHost: (const char*)host_
-       andPort: (uint16_t)port_
+       andNode: (OFString*)node_
+    andService: (OFString*)service_
      andFamily: (int)family_
 {
 	return [[self alloc] initWithClass: class_
-				   andHost: host_
-				   andPort: port_
+				   andNode: node_
+				andService: service_
 				 andFamily: family_];
 }
 
 - initWithClass: (Class)class_
-	andHost: (const char*)host_
-	andPort: (uint16_t)port_
+	andNode: (OFString*)node_
+     andService: (OFString*)service_
       andFamily: (int)family_
 {
 	self = [super initWithClass: class_];
 
-	host = (host_ != NULL ? strdup(host_) : NULL);
-	port = port_;
-	family = family_;
-	err = GET_SOCK_ERR;
+	node	= [node_ retain];
+	service	= [service_ retain];
+	family	= family_;
+	err	= GET_SOCK_ERR;
 
 	return self;
 }
 
 - (void)dealloc
 {
-	if (host != NULL)
-		free(host);
+	[node release];
+	[service release];
 
 	[super dealloc];
 }
 
-- (const char*)cString
+- (OFString*)string
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;
 
-	asprintf(&string, "Binding to port %d on %s using family %d failed in "
-	    "class %s! " ERRFMT, port, host, family, [class name], ERRPARAM);
+	string = [[OFMutableString alloc]
+	    initWithFormat: @"Binding service %s on node %s using family %d "
+			    @"failed in class %s! " ERRFMT,
+			    [service cString], [node cString], family,
+			    [class name], ERRPARAM];
 
 	return string;
 }
@@ -668,14 +689,14 @@
 	return err;
 }
 
-- (const char*)host
+- (OFString*)node
 {
-	return host;
+	return node;
 }
 
-- (uint16_t)port
+- (OFString*)service
 {
-	return port;
+	return service;
 }
 
 - (int)family
@@ -703,13 +724,15 @@
 	return self;
 }
 
-- (const char*)cString
+- (OFString*)string
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;
 
-	asprintf(&string, "Failed to listen in socket of type %s with a back "
-	    "log of %d! "ERRFMT, [class name], backlog, ERRPARAM);
+	string = [[OFMutableString alloc]
+	    initWithFormat: @"Failed to listen in socket of type %s with a "
+			    @"back log of %d! " ERRFMT,
+			    [class name], backlog, ERRPARAM];
 
 	return string;
 }
@@ -735,13 +758,15 @@
 	return self;
 }
 
-- (const char*)cString
+- (OFString*)string
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;
 
-	asprintf(&string, "Failed to accept connection in socket of type %s! "
-	    ERRFMT, [class name], ERRPARAM);
+	string = [[OFMutableString alloc]
+	    initWithFormat: @"Failed to accept connection in socket of type "
+			    @"%s! " ERRFMT,
+			    [class name], ERRPARAM];
 
 	return string;
 }
@@ -753,27 +778,31 @@
 @end
 
 @implementation OFThreadJoinFailedException
-- (const char*)cString
+- (OFString*)string
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;
 
-	asprintf(&string, "Joining a thread of class %s failed! Most likely, "
-	    "another thread already waits for the thread to join.",
-	    [class name]);
+	string = [[OFMutableString alloc]
+	    initWithFormat: @"Joining a thread of class %s failed! Most "
+			    @"likely, another thread already waits for the "
+			    @"thread to join.",
+			    [class name]];
 
 	return string;
 }
 @end
 
 @implementation OFThreadCanceledException
-- (const char*)cString
+- (OFString*)string
 {
-	if (string != NULL)
+	if (string != nil)
 		return string;
 
-	asprintf(&string, "The requested action cannot be performed because "
-	    "the thread of class %s was canceled!", [class name]);
+	string = [[OFMutableString alloc]
+	    initWithFormat: @"The requested action cannot be performed because "
+			    @"the thread of class %s was canceled!",
+			    [class name]];
 
 	return string;
 }

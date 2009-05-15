@@ -19,7 +19,7 @@
 #import "OFExceptions.h"
 
 @implementation OFPlugin
-+ pluginFromFile: (const char*)path
++ pluginFromFile: (OFString*)path
 {
 	char *file;
 	size_t pathlen, suffixlen;
@@ -27,7 +27,7 @@
 	OFPlugin *(*init_plugin)();
 	OFPlugin *plugin;
 
-	pathlen = strlen(path);
+	pathlen = [path length];
 	suffixlen = strlen(PLUGIN_SUFFIX);
 
 	if ((file = malloc(pathlen + suffixlen + 1)) == NULL) {
@@ -35,7 +35,7 @@
 					      andSize: pathlen +
 					      suffixlen + 1];
 	}
-	memcpy(file, path, pathlen);
+	memcpy(file, [path cString], pathlen);
 	memcpy(file + pathlen, PLUGIN_SUFFIX, suffixlen);
 	file[pathlen + suffixlen] = 0;
 

@@ -48,20 +48,20 @@
  * Creates a new OFMutableString from a format C string.
  * See printf for the format syntax.
  *
- * \param fmt A C string used as format to initialize the OFMutableString
+ * \param fmt A string used as format to initialize the OFMutableString
  * \return A new autoreleased OFMutableString
  */
-+ stringWithFormat: (const char*)fmt, ...;
++ stringWithFormat: (OFString*)fmt, ...;
 
 /**
  * Creates a new OFMutableString from a format C string.
  * See printf for the format syntax.
  *
- * \param fmt A C string used as format to initialize the OFMutableString
+ * \param fmt A string used as format to initialize the OFMutableString
  * \param args The arguments used in the format string
  * \return A new autoreleased OFMutableString
  */
-+ stringWithFormat: (const char*)fmt
++ stringWithFormat: (OFString*)fmt
       andArguments: (va_list)args;
 
 /**
@@ -122,19 +122,19 @@
  * Appends a formatted C string to the OFString.
  * See printf for the format syntax.
  *
- * \param fmt A format C string which generates the string to append
+ * \param fmt A format string which generates the string to append
  */
-- appendWithFormatCString: (const char*)fmt, ...;
+- appendWithFormat: (OFString*)fmt, ...;
 
 /**
  * Appends a formatted C string to the OFString.
  * See printf for the format syntax.
  *
- * \param fmt A format C string which generates the string to append
+ * \param fmt A format string which generates the string to append
  * \param args The arguments used in the format string
  */
-- appendWithFormatCString: (const char*)fmt
-	     andArguments: (va_list)args;
+- appendWithFormat: (OFString*)fmt
+      andArguments: (va_list)args;
 
 /**
  * Reverse the OFString.
@@ -157,5 +157,8 @@
  * \param delimiter The delimiter for splitting
  * \return An autoreleased OFArray with the splitted string
  */
-- (OFArray*)splitWithDelimiter: (const char*)delimiter;
+- (OFArray*)splitWithDelimiter: (OFString*)delimiter;
 @end
+
+#import "OFConstString.h"
+#import "OFMutableString.h"

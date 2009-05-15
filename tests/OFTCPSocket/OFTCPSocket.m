@@ -35,6 +35,7 @@ int
 main()
 {
 	uint16_t port;
+	OFString *service;
 
 	srand(time(NULL));
 
@@ -46,18 +47,19 @@ main()
 
 		puts("== IPv4 ==");
 		port = get_port();
+		service = [OFString stringWithFormat: @"%d", port];
 
-		[server bindOn: "localhost"
-		      withPort: port
-		     andFamily: AF_INET];
+		[server bindService: service
+			     onNode: @"localhost"
+			 withFamily: AF_INET];
 		[server listen];
 
-		[client connectTo: "localhost"
-			   onPort: port];
+		[client connectToService: service
+				  onNode: @"localhost"];
 
 		accepted = [server accept];
 
-		[client writeCString: "Hallo!"];
+		[client writeString: @"Hallo!"];
 		[accepted readNBytes: 6
 			  intoBuffer: buf];
 		buf[6] = 0;
@@ -78,18 +80,19 @@ main()
 
 		puts("== IPv6 ==");
 		port = get_port();
+		service = [OFString stringWithFormat: @"%d", port];
 
-		[server bindOn: "::1"
-		      withPort: port
-		     andFamily: AF_INET6];
+		[server bindService: service
+			     onNode: @"::1"
+			 withFamily: AF_INET6];
 		[server listen];
 
-		[client connectTo: "::1"
-			   onPort: port];
+		[client connectToService: service
+				  onNode: @"::1"];
 
 		accepted = [server accept];
 
-		[client writeCString: "IPv6:)"];
+		[client writeString: @"IPv6:)"];
 		[accepted readNBytes: 6
 			  intoBuffer: buf];
 		buf[6] = 0;
@@ -104,7 +107,7 @@ main()
 
 		[accepted release];
 	} @catch (OFException *e) {
-		printf("EXCEPTION: %s\n", [e cString]);
+		printf("EXCEPTION: %s\n", [[e string] cString]);
 		return 1;
 	}
 

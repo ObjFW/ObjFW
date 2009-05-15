@@ -16,7 +16,6 @@
 #include <string.h>
 
 #import "OFString.h"
-#import "OFMutableString.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 #import "OFMacros.h"
@@ -32,7 +31,7 @@
 	return [[[OFMutableString alloc] initWithCString: str] autorelease];
 }
 
-+ stringWithFormat: (const char*)fmt, ...
++ stringWithFormat: (OFString*)fmt, ...
 {
 	id ret;
 	va_list args;
@@ -45,7 +44,7 @@
 	return ret;
 }
 
-+ stringWithFormat: (const char*)fmt
++ stringWithFormat: (OFString*)fmt
       andArguments: (va_list)args
 {
 	return [[[OFMutableString alloc] initWithFormat: fmt
@@ -127,14 +126,14 @@
 					   andSelector: _cmd];
 }
 
-- appendWithFormatCString: (const char*)fmt, ...
+- appendWithFormat: (OFString*)fmt, ...
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					   andSelector: _cmd];
 }
 
-- appendWithFormatCString: (const char*)fmt
-	     andArguments: (va_list)args
+- appendWithFormat: (OFString*)fmt
+      andArguments: (va_list)args
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					   andSelector: _cmd];
@@ -158,18 +157,19 @@
 					   andSelector: _cmd];
 }
 
-- (OFArray*)splitWithDelimiter: (const char*)delimiter
+- (OFArray*)splitWithDelimiter: (OFString*)delimiter
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFArray *array = nil;
-	size_t delim_len = strlen(delimiter);
+	const char *delim = [delimiter cString];
+	size_t delim_len = [delimiter length];
 	size_t i, last;
 
 	array = [OFArray array];
 
 	for (i = 0, last = 0; i <= length; i++) {
 		if (OF_UNLIKELY(i == length ||
-		    !memcmp(string + i, delimiter, delim_len))) {
+		    !memcmp(string + i, delim, delim_len))) {
 			OFString *str;
 			char *tmp;
 

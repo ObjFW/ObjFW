@@ -24,14 +24,14 @@
 #import "OFExceptions.h"
 
 @implementation OFFile
-+ fileWithPath: (const char*)path
-       andMode: (const char*)mode
++ fileWithPath: (OFString*)path
+       andMode: (OFString*)mode
 {
 	return [[[OFFile alloc] initWithPath: path
 				   andMode: mode] autorelease];
 }
 
-+ (void)changeModeOfFile: (const char*)path
++ (void)changeModeOfFile: (OFString*)path
 		  toMode: (mode_t)mode
 {
 	/*
@@ -39,52 +39,52 @@
 	 * FIXME: On Win32, change write access
 	 */
 #ifndef _WIN32
-	chmod(path, mode);
+	chmod([path cString], mode);
 #endif
 }
 
-+ (void)changeOwnerOfFile: (const char*)path
++ (void)changeOwnerOfFile: (OFString*)path
 		  toOwner: (uid_t)owner
 		 andGroup: (gid_t)group
 {
 	/* FIXME: On error, throw exception */
 #ifndef _WIN32
-	chown(path, owner, group);
+	chown([path cString], owner, group);
 #endif
 }
 
-+ (void)delete: (const char*)path
++ (void)delete: (OFString*)path
 {
 	/* FIXME: On error, throw exception */
-	unlink(path);
+	unlink([path cString]);
 }
 
-+ (void)link: (const char*)src
-	  to: (const char*)dest
-{
-	/* FIXME: On error, throw exception */
-#ifndef _WIN32
-	link(src, dest);
-#endif
-}
-
-+ (void)symlink: (const char*)src
-	     to: (const char*)dest
++ (void)link: (OFString*)src
+	  to: (OFString*)dest
 {
 	/* FIXME: On error, throw exception */
 #ifndef _WIN32
-	symlink(src, dest);
+	link([src cString], [dest cString]);
 #endif
 }
 
-- initWithPath: (const char*)path
-       andMode: (const char*)mode
++ (void)symlink: (OFString*)src
+	     to: (OFString*)dest
+{
+	/* FIXME: On error, throw exception */
+#ifndef _WIN32
+	symlink([src cString], [dest cString]);
+#endif
+}
+
+- initWithPath: (OFString*)path
+       andMode: (OFString*)mode
 {
 	Class c;
 
 	self = [super init];
 
-	if ((fp = fopen(path, mode)) == NULL) {
+	if ((fp = fopen([path cString], [mode cString])) == NULL) {
 		c = isa;
 		[super dealloc];
 		@throw [OFOpenFileFailedException newWithClass: c 

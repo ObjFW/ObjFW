@@ -10,6 +10,7 @@
  */
 
 #import "OFObject.h"
+#import "OFString.h"
 
 /**
  * The OFPlugin class provides a system for loading plugins at runtime.
@@ -25,5 +26,5 @@
  * \param path Path to the OFPlugin file. The suffix is appended automatically.
  * \return The loaded OFPlugin
  */
-+ pluginFromFile: (const char*)path;
++ pluginFromFile: (OFString*)path;
 @end

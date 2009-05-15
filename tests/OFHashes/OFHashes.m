@@ -31,8 +31,8 @@ main()
 
 	OFMD5Hash  *md5  = [OFMD5Hash md5Hash];
 	OFSHA1Hash *sha1 = [OFSHA1Hash sha1Hash];
-	OFFile *f = [OFFile fileWithPath: "testfile"
-				 andMode: "rb"];
+	OFFile *f = [OFFile fileWithPath: @"testfile"
+				 andMode: @"rb"];
 
 	while (![f atEndOfFile]) {
 		len = [f readNBytes: 64

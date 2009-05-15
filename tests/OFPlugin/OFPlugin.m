@@ -21,7 +21,7 @@ main()
 {
 	TestPlugin *plugin;
 
-	plugin = [OFPlugin pluginFromFile: "TestPlugin/TestPlugin"];
+	plugin = [OFPlugin pluginFromFile: @"TestPlugin/TestPlugin"];
 	if ([plugin test: 1234] != 2468) {
 		puts("\033[K\033[1;31mTest 1/1 failed!\033[m");
 		return 1;

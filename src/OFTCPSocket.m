@@ -47,14 +47,10 @@
 	[super dealloc];
 }
 
-- connectTo: (const char*)host
-     onPort: (uint16_t)port
+- connectToService: (OFString*)service
+	    onNode: (OFString*)node
 {
 	struct addrinfo hints, *res, *res0;
-	char portstr[6];
-
-	if (!port)
-		@throw [OFInvalidPortException newWithClass: isa];
 
 	if (sock != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException newWithClass: isa];
@@ -63,13 +59,11 @@
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 
-	snprintf(portstr, 6, "%d", port);
-
-	if (getaddrinfo(host, portstr, &hints, &res0))
+	if (getaddrinfo([node cString], [service cString], &hints, &res0))
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
-			 andNode: host
-		      andService: portstr];
+			 andNode: node
+		      andService: service];
 
 	for (res = res0; res != NULL; res = res->ai_next) {
 		if ((sock = socket(res->ai_family, res->ai_socktype,
@@ -89,48 +83,42 @@
 
 	if (sock == INVALID_SOCKET)
 		@throw [OFConnectionFailedException newWithClass: isa
-							 andHost: host
-							 andPort: port];
+							 andNode: node
+						      andService: service];
 
 	return self;
 }
 
--    bindOn: (const char*)host
-   withPort: (uint16_t)port
-  andFamily: (int)family
+- bindService: (OFString*)service
+       onNode: (OFString*)node
+   withFamily: (int)family
 {
 	struct addrinfo hints, *res;
-	char portstr[6];
-
-	if (!port)
-		@throw [OFInvalidPortException newWithClass: isa];
 
 	if (sock != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException newWithClass: isa];
 
 	if ((sock = socket(family, SOCK_STREAM, 0)) == INVALID_SOCKET)
 		@throw [OFBindFailedException newWithClass: isa
-						   andHost: host
-						   andPort: port
+						   andNode: node
+						andService: service
 						 andFamily: family];
 
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = family;
 	hints.ai_socktype = SOCK_STREAM;
 
-	snprintf(portstr, 6, "%d", port);
-
-	if (getaddrinfo(host, portstr, &hints, &res))
+	if (getaddrinfo([node cString], [service cString], &hints, &res))
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
-			 andNode: host
-		      andService: portstr];
+			 andNode: node
+		      andService: service];
 
 	if (bind(sock, res->ai_addr, res->ai_addrlen) == -1) {
 		freeaddrinfo(res);
 		@throw [OFBindFailedException newWithClass: isa
-						   andHost: host
-						   andPort: port
+						   andNode: node
+						andService: service
 						 andFamily: family];
 	}
 

@@ -19,6 +19,7 @@ typedef int gid_t;
 #endif
 
 #import "OFStream.h"
+#import "OFString.h"
 
 /**
  * The OFFile class provides functions to read, write and manipulate files.
@@ -29,23 +30,23 @@ typedef int gid_t;
 }
 
 /**
- * \param path The path to the file to open as a C string
- * \param mode The mode in which the file should be opened as a C string
+ * \param path The path to the file to open as a string
+ * \param mode The mode in which the file should be opened as a string
  * \return A new autoreleased OFFile
  */
-+ fileWithPath: (const char*)path
-       andMode: (const char*)mode;
++ fileWithPath: (OFString*)path
+       andMode: (OFString*)mode;
 /**
  * Changes the mode of a file.
  *
  * Not available on Windows.
  *
  * \param path The path to the file of which the mode should be changed as a
- *	  C string
+ *	       string
  * \param mode The new mode for the file
  * \return A boolean whether the operation succeeded
  */
-+ (void)changeModeOfFile: (const char*)path
++ (void)changeModeOfFile: (OFString*)path
 		  toMode: (mode_t)mode;
 
 /**
@@ -54,56 +55,56 @@ typedef int gid_t;
  * Not available on Windows.
  *
  * \param path The path to the file of which the owner should be changed as a
- *	  C string
+ *	       string
  * \param owner The new owner for the file
  * \param group The new group for the file
  * \return A boolean whether the operation succeeded
  */
-+ (void)changeOwnerOfFile: (const char*)path
++ (void)changeOwnerOfFile: (OFString*)path
 		  toOwner: (uid_t)owner
 		 andGroup: (gid_t)group;
 
 /**
  * Deletes a file.
  *
- * \param path The path to the file of which should be deleted as a C string
+ * \param path The path to the file of which should be deleted as a string
  * \return A boolean whether the operation succeeded
  */
-+ (void)delete: (const char*)path;
++ (void)delete: (OFString*)path;
 
 /**
  * Hardlinks a file.
  *
  * Not available on Windows.
  *
- * \param src The path to the file of which should be linked as a C string
- * \param dest The path to where the file should be linked as a C string
+ * \param src The path to the file of which should be linked as a string
+ * \param dest The path to where the file should be linked as a string
  * \return A boolean whether the operation succeeded
  */
-+ (void)link: (const char*)src
-	  to: (const char*)dest;
++ (void)link: (OFString*)src
+	  to: (OFString*)dest;
 
 /**
  * Symlinks a file.
  *
  * Not available on Windows.
  *
- * \param src The path to the file of which should be symlinked as a C string
- * \param dest The path to where the file should be symlinked as a C string
+ * \param src The path to the file of which should be symlinked as a string
+ * \param dest The path to where the file should be symlinked as a string
  * \return A boolean whether the operation succeeded
  */
-+ (void)symlink: (const char*)src
-	     to: (const char*)dest;
++ (void)symlink: (OFString*)src
+	     to: (OFString*)dest;
 
 /**
  * Initializes an already allocated OFFile.
  *
- * \param path The path to the file to open as a C string
- * \param mode The mode in which the file should be opened as a C string
+ * \param path The path to the file to open as a string
+ * \param mode The mode in which the file should be opened as a string
  * \return An initialized OFFile
  */
-- initWithPath: (const char*)path
-       andMode: (const char*)mode;
+- initWithPath: (OFString*)path
+       andMode: (OFString*)mode;
 
 /**
  * \return A boolean whether the end of the file has been reached

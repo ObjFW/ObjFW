@@ -149,7 +149,7 @@ check_utf8(const char *str, size_t len)
 	return self;
 }
 
-- initWithFormat: (const char*)fmt, ...
+- initWithFormat: (OFString*)fmt, ...
 {
 	id ret;
 	va_list args;
@@ -162,7 +162,7 @@ check_utf8(const char *str, size_t len)
 	return ret;
 }
 
-- initWithFormat: (const char*)fmt
+- initWithFormat: (OFString*)fmt
     andArguments: (va_list)args
 {
 	int t;
@@ -176,7 +176,7 @@ check_utf8(const char *str, size_t len)
 		@throw [OFInvalidFormatException newWithClass: c];
 	}
 
-	if ((t = vasprintf(&string, fmt, args)) == -1) {
+	if ((t = vasprintf(&string, [fmt cString], args)) == -1) {
 		c = isa;
 		[super dealloc];
 		@throw [OFInitializationFailedException newWithClass: c];
@@ -259,28 +259,28 @@ check_utf8(const char *str, size_t len)
 	return self;
 }
 
-- appendWithFormatCString: (const char*)fmt, ...
+- appendWithFormat: (OFString*)fmt, ...
 {
 	id ret;
 	va_list args;
 
 	va_start(args, fmt);
-	ret = [self appendWithFormatCString: fmt
-			       andArguments: args];
+	ret = [self appendWithFormat: fmt
+			andArguments: args];
 	va_end(args);
 
 	return ret;
 }
 
-- appendWithFormatCString: (const char*)fmt
-	     andArguments: (va_list)args
+- appendWithFormat: (OFString*)fmt
+      andArguments: (va_list)args
 {
 	char *t;
 
 	if (fmt == NULL)
 		@throw [OFInvalidFormatException newWithClass: isa];
 
-	if ((vasprintf(&t, fmt, args)) == -1)
+	if ((vasprintf(&t, [fmt cString], args)) == -1)
 		/*
 		 * This is only the most likely error to happen.
 		 * Unfortunately, as errno isn't always thread-safe, there's

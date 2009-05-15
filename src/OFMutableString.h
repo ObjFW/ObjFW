@@ -34,19 +34,19 @@
  * Initializes an already allocated OFMutableString from a format C string.
  * See printf for the format syntax.
  *
- * \param fmt A C string used as format to initialize the OFMutableString
+ * \param fmt A string used as format to initialize the OFMutableString
  * \return An initialized OFMutableString
  */
-- initWithFormat: (const char*)fmt, ...;
+- initWithFormat: (OFString*)fmt, ...;
 
 /**
  * Initializes an already allocated OFMutableString from a format C string.
  * See printf for the format syntax.
  *
- * \param fmt A C string used as format to initialize the OFMutableString
+ * \param fmt A string used as format to initialize the OFMutableString
  * \param args The arguments used in the format string
  * \return An initialized OFMutableString
  */
-- initWithFormat: (const char*)fmt
+- initWithFormat: (OFString*)fmt
     andArguments: (va_list)args;
 @end
