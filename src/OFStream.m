@@ -26,7 +26,6 @@ extern int getpagesize(void);
 	self = [super init];
 
 	cache = NULL;
-	cache_len = 0;
 
 	return self;
 }

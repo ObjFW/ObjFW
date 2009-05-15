@@ -103,15 +103,6 @@ check_utf8(const char *str, size_t len)
 }
 
 @implementation OFMutableString
-- init
-{
-	[super init];
-
-	is_utf8 = NO;
-
-	return self;
-}
-
 - initWithCString: (const char*)str
 {
 	Class c;

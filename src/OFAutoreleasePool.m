@@ -62,8 +62,6 @@ release_list(void *list)
 
 	self = [super init];
 
-	objects = nil;
-
 	if ((pool_list = [OFThread objectForTLSKey: pool_list_key]) == nil) {
 		pool_list = [[OFList alloc] initWithoutRetainAndRelease];
 		[OFThread setObject: pool_list

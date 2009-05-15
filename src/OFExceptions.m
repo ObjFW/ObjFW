@@ -68,7 +68,6 @@
 	self = [super init];
 
 	class = class_;
-	string = nil;
 
 	return self;
 }

@@ -55,7 +55,6 @@
 {
 	[super init];
 
-	length = 0;
 	string = NULL;
 
 	return self;

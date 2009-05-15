@@ -59,10 +59,8 @@ call_main(LPVOID obj)
 		@throw [OFInvalidArgumentException newWithClass: self
 						    andSelector: _cmd];
 
-	if (obj != nil)
-		[obj retain];
-	if (old != nil)
-		[old release];
+	[obj retain];
+	[old release];
 
 	return self;
 }

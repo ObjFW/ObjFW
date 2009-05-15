@@ -49,7 +49,6 @@ extern int getpagesize(void);
 
 	data = NULL;
 	itemsize = is;
-	count = 0;
 
 	return self;
 }
@@ -195,7 +194,6 @@ extern int getpagesize(void);
 
 	if (lastpagebyte == 0)
 		lastpagebyte = getpagesize() - 1;
-	size = 0;
 
 	return self;
 }

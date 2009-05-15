@@ -129,11 +129,6 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	buf[2] = 0x98BADCFE;
 	buf[3] = 0x10325476;
 
-	bits[0] = 0;
-	bits[1] = 0;
-
-	calculated = NO;
-
 	return self;
 }
 
@@ -367,7 +362,6 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 {
 	self = [super init];
 
-	count = 0;
 	state[0] = 0x67452301;
 	state[1] = 0xEFCDAB89;
 	state[2] = 0x98BADCFE;

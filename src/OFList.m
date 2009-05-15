@@ -36,7 +36,6 @@
 
 	first = NULL;
 	last = NULL;
-	retain_and_release = NO;
 
 	return self;
 }

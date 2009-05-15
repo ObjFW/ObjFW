@@ -34,7 +34,6 @@
 
 	sock = INVALID_SOCKET;
 	saddr = NULL;
-	saddr_len = 0;
 
 	return self;
 }

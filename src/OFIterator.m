@@ -24,7 +24,6 @@
 	data = data_;
 	size = size_;
 
-	pos = 0;
 	last = NULL;
 
 	return self;
