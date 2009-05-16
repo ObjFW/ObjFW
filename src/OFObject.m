@@ -37,7 +37,7 @@ struct pre_ivar {
 #define PRE_IVAR ((struct pre_ivar*)((char*)self - PRE_IVAR_ALIGN))
 
 static struct {
-	Class isa;
+	@defs(OFAllocFailedException)
 } alloc_failed_exception;
 
 @implementation OFObject

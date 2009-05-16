@@ -54,10 +54,10 @@
  */
 @interface OFSHA1Hash: OFObject
 {
-	uint32_t    state[5];
-	uint64_t    count;
-	char	    buffer[64];
-	char	    digest[SHA1_DIGEST_SIZE];
+	uint32_t state[5];
+	uint64_t count;
+	char	 buffer[64];
+	char	 digest[SHA1_DIGEST_SIZE];
 
 	BOOL	 calculated;
 }
