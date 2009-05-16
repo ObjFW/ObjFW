@@ -1,0 +1,54 @@
+#!/bin/sh
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+CFLAGS=""
+CPPFLAGS="-I@includedir@/objfw"
+CXXFLAGS=""
+OBJCFLAGS="-fobjc-exceptions -fconstant-string-class=OFConstString"
+OBJCFLAGS="$OBJCFLAGS @NO_CONST_CFSTRINGS@"
+LIBS="-L@libdir@ -lobjfw @LIBS@"
+VERSION="0.1"
+
+show_help() {
+	echo "$0: Available arguments are:"
+	echo
+	echo "	--cflags	Outputs the required CFLAGS"
+	echo "	--cppflags	Outputs the required CPPFLAGS"
+	echo "	--cxxflags	Outputs the required CXXFLAGS"
+	echo "	--objcflags	Outputs the required OBJCFLAGS"
+	echo "	--libs		Outputs the required LIBS"
+	echo "	--version	Outputs the installed version"
+	echo
+	exit 0
+}
+
+test -z "$1" && show_help
+
+while test ! -z "$1"; do
+	case "$1" in
+		--cflags)
+			echo "$CFLAGS"
+			;;
+		--cppflags)
+			echo "$CPPFLAGS"
+			;;
+		--cxxflags)
+			echo "$CXXFLAGS"
+			;;
+		--objcflags)
+			echo "$OBJCFLAGS"
+			;;
+		--libs)
+			echo "$LIBS"
+			;;
+		--version)
+			echo "$VERSION"
+			;;
+		*)
+			echo "Invalid option: $1"
+			exit 1
+			;;
+	esac
+
+	shift
+done

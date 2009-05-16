@@ -132,8 +132,10 @@ LIBS="$LIBS -lobjc"
 
 AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
 AX_CHECK_COMPILER_FLAGS(-fno-common, [OBJCFLAGS="$OBJCFLAGS -fno-common"])
-AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings,
-	[OBJCFLAGS="$OBJCFLAGS -fno-constant-cfstrings"])
+AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings, [
+	NO_CONST_CFSTRINGS="-fno-constant-cfstrings"
+	OBJCFLAGS="$OBJCFLAGS -fno-constant-cfstrings"])
+AC_SUBST(NO_CONST_CFSTRINGS)
 
 AC_CHECK_HEADER(objc/runtime.h,
 	[AC_DEFINE(HAVE_OBJC_RUNTIME_H, 1, [Whether we have objc/runtime.h])])
@@ -182,6 +184,6 @@ fi
 BUILDSYS_TOUCH_DEPS
 
 AC_SUBST(PACKAGE, objfw)
-AC_CONFIG_FILES([buildsys.mk extra.mk])
+AC_CONFIG_FILES([buildsys.mk extra.mk objfw-config])
 AC_CONFIG_HEADERS(config.h)
 AC_OUTPUT
