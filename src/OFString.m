@@ -17,8 +17,15 @@
 
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
+#import "OFURLEncoding.h"
 #import "OFExceptions.h"
 #import "OFMacros.h"
+
+/* Reference for static linking */
+void _reference_to_OFURLEncoding_in_OFString()
+{
+	_OFURLEncoding_reference = 1;
+};
 
 @implementation OFString
 + string

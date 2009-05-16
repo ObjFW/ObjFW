@@ -13,6 +13,8 @@
 #import "OFList.h"
 #import "OFDictionary.h"
 
+extern int _OFIterator_reference;
+
 /**
  * The OFIterator class provides methods to iterate through objects.
  */

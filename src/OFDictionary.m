@@ -19,7 +19,10 @@
 #import "OFMacros.h"
 
 /* Reference for static linking */
-void _reference_to_OFIterator_in_OFDictionary() { [OFIterator class]; }
+void _reference_to_OFIterator_in_OFDictionary()
+{
+	_OFIterator_reference = 1;
+}
 
 @implementation OFDictionary
 + dictionary;

@@ -15,6 +15,9 @@
 #import "OFDictionary.h"
 #import "OFExceptions.h"
 
+/* Reference for static linking */
+int _OFIterator_reference;
+
 @implementation OFIterator
 - initWithData: (OFList**)data_
        andSize: (size_t)size_

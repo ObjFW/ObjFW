@@ -87,3 +87,5 @@
  */
 - changeHashSize: (int)hashsize;
 @end
+
+#import "OFIterator.h"
