@@ -34,6 +34,13 @@ void _reference_to_OFIterator_in_OFDictionary()
 	return [[[self alloc] initWithHashSize: hashsize] autorelease];
 }
 
++ dictionaryWithKey: (OFObject <OFCopying>*)key
+	  andObject: (OFObject*)obj
+{
+	return [[[self alloc] initWithKey: key
+				andObject: obj] autorelease];
+}
+
 + dictionaryWithKeysAndObjects: (OFObject <OFCopying>*)first, ...
 {
 	id ret;
@@ -100,6 +107,45 @@ void _reference_to_OFIterator_in_OFDictionary()
 	return self;
 }
 
+- initWithKey: (OFObject <OFCopying>*)key
+    andObject: (OFObject*)obj
+{
+	Class c;
+	uint32_t hash;
+
+	self = [self init];
+
+	if (key == nil || obj == nil) {
+		c = isa;
+		[self dealloc];
+		@throw [OFInvalidArgumentException newWithClass: isa
+						    andSelector: _cmd];
+	}
+
+	hash = [key hash] & (size - 1);
+
+	@try {
+		key = [key copy];
+	} @catch (OFException *e) {
+		[self dealloc];
+		@throw e;
+	}
+
+	@try {
+		data[hash] = [[OFList alloc] init];
+
+		[data[hash] append: key];
+		[data[hash] append: obj];
+	} @catch (OFException *e) {
+		[self dealloc];
+		@throw e;
+	} @finally {
+		[key release];
+	}
+
+	return self;
+}
+
 - initWithKeysAndObjects: (OFObject <OFCopying>*)first, ...
 {
 	id ret;
@@ -123,7 +169,7 @@ void _reference_to_OFIterator_in_OFDictionary()
 	self = [self init];
 	obj = va_arg(args, id);
 
-	if (obj == nil) {
+	if (first == nil || obj == nil) {
 		c = isa;
 		[self dealloc];
 		@throw [OFInvalidArgumentException newWithClass: isa
@@ -131,7 +177,13 @@ void _reference_to_OFIterator_in_OFDictionary()
 	}
 
 	hash = [first hash] & (size - 1);
-	key = [first copy];
+
+	@try {
+		key = [first copy];
+	} @catch (OFException *e) {
+		[self dealloc];
+		@throw e;
+	}
 
 	@try {
 		if (data[hash] == nil)

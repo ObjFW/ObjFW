@@ -39,7 +39,17 @@
 + dictionaryWithHashSize: (int)hashsize;
 
 /**
- * Creates a new OFDictionary with the specified objects.
+ * Creates a new OFDictionary with the specified key and object.
+ *
+ * \param key The key
+ * \param obj The object
+ * \return A new autoreleased OFDictionary
+ */
++ dictionaryWithKey: (OFObject <OFCopying>*)key
+	  andObject: (OFObject*)obj;
+
+/**
+ * Creates a new OFDictionary with the specified keys objects.
  *
  * \param first The first key
  * \return A new autoreleased OFDictionary
@@ -62,7 +72,19 @@
 - initWithHashSize: (int)hashsize;
 
 /**
- * Initialized an already allocated OFDictionary with the specified objects.
+ * Initializes an already allocated OFDictionary with the specified key and
+ * object.
+ *
+ * \param key The key
+ * \param obj The object
+ * \return A new initialized OFDictionary
+ */
+- initWithKey: (OFObject <OFCopying>*)key
+    andObject: (OFObject*)obj;
+
+/**
+ * Initializes an already allocated OFDictionary with the specified keys and
+ * objects.
  *
  * \param first The first key
  * \return A new initialized OFDictionary
@@ -70,7 +92,8 @@
 - initWithKeysAndObjects: (OFObject <OFCopying>*)first, ...;
 
 /**
- * Initialized an already allocated OFDictionary with the specified objects.
+ * Initializes an already allocated OFDictionary with the specified key and
+ * va_list.
  *
  * \param first The first key
  * \return A new initialized OFDictionary

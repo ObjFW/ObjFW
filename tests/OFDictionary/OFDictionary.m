@@ -19,11 +19,14 @@
 #import "OFString.h"
 #import "OFExceptions.h"
 
+#define TESTS 10
+
 int
 main()
 {
+	int i = 0;
+
 	OFDictionary *dict = [OFMutableDictionary dictionaryWithHashSize: 16];
-	OFDictionary *dict2;
 	OFIterator *iter = [dict iterator];
 
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
@@ -38,64 +41,83 @@ main()
 	       to: value2];
 	[pool release];
 
+	i++;
 	if (strcmp([[dict get: @"key1"] cString], "value1")) {
-		puts("\033[K\033[1;31mTest 1/9 failed!\033[m");
+		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}
 
+	i++;
 	if (strcmp([[dict get: key2] cString], "value2")) {
-		puts("\033[K\033[1;31mTest 2/9 failed!\033[m");
+		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}
 
+	i++;
 	if (![[iter nextObject] isEqual: @"key2"] ||
 	    ![[iter nextObject] isEqual: @"value2"] ||
 	    ![[iter nextObject] isEqual: @"key1"] ||
 	    ![[iter nextObject] isEqual: @"value1"]) {
-		puts("\033[K\033[1;31mTest 3/9 failed!\033[m");
+		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}
 
+	i++;
 	[dict changeHashSize: 8];
 	iter = [dict iterator];
 	if (![[iter nextObject] isEqual: @"key1"] ||
 	    ![[iter nextObject] isEqual: @"value1"] ||
 	    ![[iter nextObject] isEqual: @"key2"] ||
 	    ![[iter nextObject] isEqual: @"value2"]) {
-		puts("\033[K\033[1;31mTest 4/9 failed!\033[m");
+		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}
 
+	i++;
 	if ([dict averageItemsPerBucket] != 1.0) {
-		puts("\033[K\033[1;31mTest 5/9 failed!\033[m");
+		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}
 
+	i++;
 	if ([iter nextObject] != nil) {
-		puts("\033[K\033[1;31mTest 6/9 failed!\033[m");
+		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}
 
+	i++;
 	if ([dict get: @"key3"] != nil) {
-		puts("\033[K\033[1;31mTest 7/9 failed!\033[m");
+		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}
 
-	dict2 = [OFDictionary dictionaryWithKeysAndObjects: @"foo", @"bar",
+	i++;
+	[dict release];
+	dict = [OFDictionary dictionaryWithKeysAndObjects: @"foo", @"bar",
 							    @"baz", @"qux",
 							    nil];
 
-	if (![[dict2 get: @"foo"] isEqual: @"bar"]) {
-		puts("\033[K\033[1;31mTest 8/9 failed!\033[m");
+	if (![[dict get: @"foo"] isEqual: @"bar"]) {
+		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}
 
-	if (![[dict2 get: @"baz"] isEqual: @"qux"]) {
-		puts("\033[K\033[1;31mTest 9/9 failed!\033[m");
+	i++;
+	if (![[dict get: @"baz"] isEqual: @"qux"]) {
+		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}
 
-	puts("\033[1;32mTests successful: 9/9\033[0m");
+	i++;
+	[dict release];
+	dict = [OFDictionary dictionaryWithKey: @"foo"
+				     andObject: @"bar"];
+	if (![[dict get: @"foo"] isEqual: @"bar"]) {
+		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
+		return 1;
+	}
+
+	printf("\033[1;32mTests successful: %d/%d\033[0m\n", i, TESTS);
 
 	return 0;
 }
