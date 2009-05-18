@@ -160,6 +160,30 @@
 	return *((OFObject**)[array last]);
 }
 
+- (BOOL)isEqual: (id)obj
+{
+	OFObject **objs, **objs2;
+	size_t i, len, len2;
+
+	if (![obj isKindOf: [OFArray class]])
+		return NO;
+
+	len = [array count];
+	len2 = [obj count];
+
+	if (len != len2)
+		return NO;
+
+	objs = [array data];
+	objs2 = [obj data];
+
+	for (i = 0; i < len; i++)
+		if (![objs[i] isEqual: objs2[i]])
+			return NO;
+
+	return YES;
+}
+
 - add: (OFObject*)obj
 {
 	@throw [OFNotImplementedException newWithClass: isa
