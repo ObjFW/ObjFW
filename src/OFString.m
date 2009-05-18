@@ -243,7 +243,7 @@ of_string_check_utf8(const char *str, size_t len)
 
 - (id)copy
 {
-	return [OFString stringWithCString: string];
+	return [self retain];
 }
 
 - (id)mutableCopy

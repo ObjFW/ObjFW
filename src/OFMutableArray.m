@@ -15,6 +15,24 @@
 #import "OFExceptions.h"
 
 @implementation OFMutableArray
+- (id)copy
+{
+	OFArray *new = [OFArray array];
+	OFObject **objs;
+	size_t len, i;
+
+	objs = [array data];
+	len = [array count];
+
+	[new->array addNItems: len
+		   fromCArray: objs];
+
+	for (i = 0; i < len; i++)
+		[objs[i] retain];
+
+	return new;
+}
+
 - add: (OFObject*)obj
 {
 	[array add: &obj];

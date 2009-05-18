@@ -33,6 +33,11 @@
 #endif
 
 @implementation OFMutableString
+- (id)copy
+{
+	return [OFString stringWithCString: string];
+}
+
 - setToCString: (const char*)str
 {
 	size_t len;
