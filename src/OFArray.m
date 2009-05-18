@@ -97,27 +97,19 @@
       andArgList: (va_list)args
 {
 	id obj;
-	OFObject **objs;
-	size_t len, i;
 
 	self = [self init];
 
 	@try {
 		[array add: &first];
-		while ((obj = va_arg(args, id)) != nil)
+		while ((obj = va_arg(args, id)) != nil) {
 			[array add: &obj];
+			[obj retain];
+		}
 	} @catch (OFException *e) {
 		[self dealloc];
 		@throw e;
 	}
-
-	/* Retain objects after adding them for the case adding failed */
-	objs = [array data];
-	len = [array count];
-
-	[first retain];
-	for (i = 0; i < len; i++)
-		[objs[i] retain];
 
 	return self;
 }
@@ -129,16 +121,14 @@
 	self = [self init];
 
 	@try {
-		for (obj = objs; *obj != nil; obj++)
+		for (obj = objs; *obj != nil; obj++) {
 			[array add: obj];
+			[*obj retain];
+		}
 	} @catch (OFException *e) {
 		[self dealloc];
 		@throw e;
 	}
-
-	/* Retain objects after adding them for the case adding failed */
-	for (obj = objs; *obj != nil; obj++)
-		[*obj retain];
 
 	return self;
 }
