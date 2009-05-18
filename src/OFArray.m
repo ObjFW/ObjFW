@@ -134,7 +134,7 @@
 
 - (id)mutableCopy
 {
-	OFArray *new = [OFMutableArray array];
+	OFArray *new = [[OFMutableArray alloc] init];
 	OFObject **objs;
 	size_t len, i;
 

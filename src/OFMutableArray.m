@@ -17,7 +17,7 @@
 @implementation OFMutableArray
 - (id)copy
 {
-	OFArray *new = [OFArray array];
+	OFArray *new = [[OFArray alloc] init];
 	OFObject **objs;
 	size_t len, i;
 

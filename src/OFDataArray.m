@@ -122,7 +122,7 @@ extern int getpagesize(void);
 
 - (id)copy
 {
-	OFDataArray *new = [OFDataArray dataArrayWithItemSize: itemsize];
+	OFDataArray *new = [[OFDataArray alloc] initWithItemSize: itemsize];
 	[new addNItems: count
 	    fromCArray: data];
 
@@ -254,7 +254,7 @@ extern int getpagesize(void);
 
 - (id)copy
 {
-	OFDataArray *new = [OFBigDataArray dataArrayWithItemSize: itemsize];
+	OFDataArray *new = [[OFBigDataArray alloc] initWithItemSize: itemsize];
 
 	[new addNItems: count
 	    fromCArray: data];

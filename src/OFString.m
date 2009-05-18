@@ -248,7 +248,7 @@ of_string_check_utf8(const char *str, size_t len)
 
 - (id)mutableCopy
 {
-	return [OFMutableString stringWithCString: string];
+	return [[OFMutableString alloc] initWithCString: string];
 }
 
 - (BOOL)isEqual: (id)obj
