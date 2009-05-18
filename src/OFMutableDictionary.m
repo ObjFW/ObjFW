@@ -104,7 +104,7 @@
 	newsize = (size_t)1 << hashsize;
 	newdata = [self allocNItems: newsize
 			   withSize: sizeof(OFList*)];
-	memset(data, 0, newsize * sizeof(OFList*));
+	memset(newdata, 0, newsize * sizeof(OFList*));
 
 	for (i = 0; i < size; i++) {
 		if (OF_LIKELY(data[i] == nil))
