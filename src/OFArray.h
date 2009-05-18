@@ -62,3 +62,5 @@
  */
 - removeNObjects: (size_t)nobjects;
 @end
+
+#import "OFMutableArray.h"

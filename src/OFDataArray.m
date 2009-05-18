@@ -26,12 +26,7 @@ extern int getpagesize(void);
 @implementation OFDataArray
 + dataArrayWithItemSize: (size_t)is
 {
-	return [[[OFDataArray alloc] initWithItemSize: is] autorelease];
-}
-
-+ bigDataArrayWithItemSize: (size_t)is
-{
-	return [[[OFBigDataArray alloc] initWithItemSize: is] autorelease];
+	return [[[self alloc] initWithItemSize: is] autorelease];
 }
 
 - initWithItemSize: (size_t)is
@@ -259,7 +254,7 @@ extern int getpagesize(void);
 
 - (id)copy
 {
-	OFDataArray *new = [OFDataArray bigDataArrayWithItemSize: itemsize];
+	OFDataArray *new = [OFBigDataArray dataArrayWithItemSize: itemsize];
 
 	[new addNItems: count
 	    fromCArray: data];

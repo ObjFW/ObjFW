@@ -95,7 +95,7 @@ release_list(void *list)
 - addToPool: (OFObject*)obj
 {
 	if (objects == nil)
-		objects = [[OFArray alloc] init];
+		objects = [[OFMutableArray alloc] init];
 
 	[objects add: obj];
 	[obj release];

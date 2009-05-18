@@ -129,7 +129,7 @@ main()
 
 	pool = [[OFAutoreleasePool alloc] init];
 	x = [OFDataArray dataArrayWithItemSize: 1];
-	y = [OFDataArray bigDataArrayWithItemSize: 1];
+	y = [OFBigDataArray dataArrayWithItemSize: 1];
 
 	if (![x isEqual: y]) {
 		puts("FAIL 1!");
@@ -149,7 +149,7 @@ main()
 	[pool releaseObjects];
 
 	x = [OFDataArray dataArrayWithItemSize: 2];
-	y = [OFDataArray bigDataArrayWithItemSize: 4];
+	y = [OFBigDataArray dataArrayWithItemSize: 4];
 
 	if ([x isEqual: y]) {
 		puts("FAIL 4!");

@@ -171,7 +171,7 @@ void _reference_to_OFURLEncoding_in_OFString()
 	size_t delim_len = [delimiter length];
 	size_t i, last;
 
-	array = [OFArray array];
+	array = [OFMutableArray array];
 
 	for (i = 0, last = 0; i <= length; i++) {
 		if (OF_UNLIKELY(i == length ||

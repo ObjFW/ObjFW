@@ -33,15 +33,6 @@
  */
 + dataArrayWithItemSize: (size_t)is;
 
-/*
- * Creates a new OFDataArray optimized for big arrays whose items all have the
- * same size, which means memory is allocated in pages rather than in bytes.
- *
- * \param is The size of each element in the OFBigDataArray
- * \return A new autoreleased OFBigDataArray
- */
-+ bigDataArrayWithItemSize: (size_t)is;
-
 /**
  * Initializes an already allocated OFDataArray whose items all have the same
  * size.

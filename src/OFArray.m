@@ -17,7 +17,7 @@
 @implementation OFArray
 + array
 {
-	return [[[OFArray alloc] init] autorelease];
+	return [[[self alloc] init] autorelease];
 }
 
 - init
@@ -79,29 +79,14 @@
 
 - add: (OFObject*)obj
 {
-	[array add: &obj];
-	[obj retain];
-
-	return self;
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
 }
 
 - removeNObjects: (size_t)nobjects
 {
-	OFObject **objs;
-	size_t len, i;
-
-	objs = [array data];
-	len = [array count];
-
-	if (nobjects > len)
-		@throw [OFOutOfRangeException newWithClass: isa];
-
-	for (i = len - nobjects; i < len; i++)
-		[objs[i] release];
-
-	[array removeNItems: nobjects];
-
-	return self;
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
 }
 
 - (void)dealloc
