@@ -15,6 +15,7 @@ SRCS = OFArray.m		\
        OFIterator.m		\
        OFList.m			\
        OFMutableArray.m		\
+       OFMutableDictionary.m	\
        OFMutableString.m	\
        OFNumber.m		\
        OFObject.m		\

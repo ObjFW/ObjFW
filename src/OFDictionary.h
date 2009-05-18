@@ -52,6 +52,19 @@
 - initWithHashSize: (int)hashsize;
 
 /**
+ * \return The average number of items in a used bucket. Buckets that are
+ *	   completely empty are not in the calculation. If this value is >= 2.0,
+ *	   you should resize the dictionary, in most cases even earlier!
+ */
+- (float)averageItemsPerBucket;
+
+/**
+ * \param key The key whose object should be returned
+ * \return The object for the given key or nil if the key was not found
+ */
+- (id)get: (OFObject*)key;
+
+/**
  * Sets a key to an object. A key can be any object.
  *
  * \param key The key to set
@@ -61,24 +74,11 @@
    to: (OFObject*)obj;
 
 /**
- * \param key The key whose object should be returned
- * \return The object for the given key or nil if the key was not found
- */
-- (id)get: (OFObject*)key;
-
-/**
  * Remove the object with the given key from the dictionary.
  *
  * \param key The key whose object should be removed
  */
 - remove: (OFObject*)key;
-
-/**
- * \return The average number of items in a used bucket. Buckets that are
- *	   completely empty are not in the calculation. If this value is >= 2.0,
- *	   you should resize the dictionary, in most cases even earlier!
- */
-- (float)averageItemsPerBucket;
 
 /**
  * Changes the hash size of the dictionary.
@@ -89,3 +89,4 @@
 @end
 
 #import "OFIterator.h"
+#import "OFMutableDictionary.h"

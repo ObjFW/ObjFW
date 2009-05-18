@@ -16,7 +16,6 @@
 #import "OFDictionary.h"
 #import "OFIterator.h"
 #import "OFExceptions.h"
-#import "OFMacros.h"
 
 /* Reference for static linking */
 void _reference_to_OFIterator_in_OFDictionary()
@@ -27,12 +26,12 @@ void _reference_to_OFIterator_in_OFDictionary()
 @implementation OFDictionary
 + dictionary;
 {
-	return [[[OFDictionary alloc] init] autorelease];
+	return [[[self alloc] init] autorelease];
 }
 
 + dictionaryWithHashSize: (int)hashsize
 {
-	return [[[OFDictionary alloc] initWithHashSize: hashsize] autorelease];
+	return [[[self alloc] initWithHashSize: hashsize] autorelease];
 }
 
 - init
@@ -88,57 +87,21 @@ void _reference_to_OFIterator_in_OFDictionary()
 	return self;
 }
 
-- (void)dealloc
+- (float)averageItemsPerBucket
 {
-	size_t i;
+	size_t items, buckets, i;
 
-	for (i = 0; i < size; i++)
-		if (data[i] != nil)
-			[data[i] release];
+	items = 0;
+	buckets = 0;
 
-	[super dealloc];
-}
-
-- set: (OFObject <OFCopying>*)key
-   to: (OFObject*)obj
-{
-	uint32_t hash;
-	of_list_object_t *iter, *key_obj;
-
-	if (key == nil || obj == nil)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						    andSelector: _cmd];
-
-	hash = [key hash] & (size - 1);
-
-	if (data[hash] == nil)
-		data[hash] = [[OFList alloc] init];
-
-	for (iter = [data[hash] first]; iter != NULL; iter = iter->next->next) {
-		if ([iter->object isEqual: key]) {
-			[iter->next->object release];
-			[obj retain];
-			iter->next->object = obj;
-
-			return self;
+	for (i = 0; i < size; i++) {
+		if (data[i] != nil) {
+			items += [data[i] items] / 2;
+			buckets++;
 		}
 	}
 
-	key = [key copy];
-	@try {
-		key_obj = [data[hash] append: key];
-	} @finally {
-		[key release];
-	}
-
-	@try {
-		[data[hash] append: obj];
-	} @catch (OFException *e) {
-		[data[hash] remove: key_obj];
-		@throw e;
-	}
-
-	return self;
+	return (float)items / buckets;
 }
 
 - (id)get: (OFObject*)key
@@ -162,92 +125,23 @@ void _reference_to_OFIterator_in_OFDictionary()
 	return nil;
 }
 
-- remove: (OFObject*)key
+- set: (OFObject <OFCopying>*)key
+   to: (OFObject*)obj
 {
-	uint32_t hash;
-	of_list_object_t *iter;
-
-	if (key == nil)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						    andSelector: _cmd];
-
-	hash = [key hash] & (size - 1);
-
-	if (data[hash] == nil)
-		return self;
-
-	for (iter = [data[hash] first]; iter != NULL; iter = iter->next->next) {
-		if ([iter->object isEqual: key]) {
-			[data[hash] remove: iter->next];
-			[data[hash] remove: iter];
-
-			if ([data[hash] first] == NULL) {
-				[data[hash] release];
-				data[hash] = nil;
-			}
-
-			return self;
-		}
-	}
-
-	return self;
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
 }
 
-- (float)averageItemsPerBucket
+- remove: (OFObject*)key
 {
-	size_t items, buckets, i;
-
-	items = 0;
-	buckets = 0;
-
-	for (i = 0; i < size; i++) {
-		if (data[i] != nil) {
-			items += [data[i] items] / 2;
-			buckets++;
-		}
-	}
-
-	return (float)items / buckets;
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
 }
 
 - changeHashSize: (int)hashsize
 {
-	OFList **newdata;
-	size_t newsize, i;
-	of_list_object_t *iter;
-
-	if (hashsize < 8 || hashsize >= 28)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						    andSelector: _cmd];
-
-	newsize = (size_t)1 << hashsize;
-	newdata = [self allocNItems: newsize
-			   withSize: sizeof(OFList*)];
-	memset(data, 0, newsize * sizeof(OFList*));
-
-	for (i = 0; i < size; i++) {
-		if (OF_LIKELY(data[i] == nil))
-			continue;
-
-		for (iter = [data[i] first]; iter != NULL;
-		    iter = iter->next->next) {
-			uint32_t hash = [iter->object hash] & (newsize - 1);
-
-			if (newdata[hash] == nil)
-				newdata[hash] = [[OFList alloc] init];
-
-			[newdata[hash] append: iter->object];
-			[newdata[hash] append: iter->next->object];
-		}
-
-		[data[i] release];
-	}
-
-	[self freeMem: data];
-	data = newdata;
-	size = newsize;
-
-	return self;
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
 }
 
 /* FIXME: Implement this! */
@@ -255,5 +149,24 @@ void _reference_to_OFIterator_in_OFDictionary()
 - (BOOL)isEqual
 {
 }
+
+- (id)copy
+{
+}
+
+- (id)mutableCopy
+{
+}
 */
+
+- (void)dealloc
+{
+	size_t i;
+
+	for (i = 0; i < size; i++)
+		if (data[i] != nil)
+			[data[i] release];
+
+	[super dealloc];
+}
 @end

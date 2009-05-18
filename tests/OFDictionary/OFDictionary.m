@@ -22,7 +22,7 @@
 int
 main()
 {
-	OFDictionary *dict = [OFDictionary dictionaryWithHashSize: 16];
+	OFDictionary *dict = [OFMutableDictionary dictionaryWithHashSize: 16];
 	OFIterator *iter = [dict iterator];
 
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
