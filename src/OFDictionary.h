@@ -57,7 +57,7 @@
  * \param key The key to set
  * \param obj The object to set the key to
  */
-- set: (OFObject*)key
+- set: (OFObject <OFCopying>*)key
    to: (OFObject*)obj;
 
 /**

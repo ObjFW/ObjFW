@@ -99,11 +99,11 @@ void _reference_to_OFIterator_in_OFDictionary()
 	[super dealloc];
 }
 
-- set: (OFObject*)key
+- set: (OFObject <OFCopying>*)key
    to: (OFObject*)obj
 {
 	uint32_t hash;
-	of_list_object_t *iter;
+	of_list_object_t *iter, *key_obj;
 
 	if (key == nil || obj == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
@@ -124,8 +124,19 @@ void _reference_to_OFIterator_in_OFDictionary()
 		}
 	}
 
-	[data[hash] append: key];
-	[data[hash] append: obj];
+	key = [key copy];
+	@try {
+		key_obj = [data[hash] append: key];
+	} @finally {
+		[key release];
+	}
+
+	@try {
+		[data[hash] append: obj];
+	} @catch (OFException *e) {
+		[data[hash] remove: key_obj];
+		@throw e;
+	}
 
 	return self;
 }
