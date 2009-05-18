@@ -118,6 +118,7 @@
 
 /**
  * Calculate a hash for the object.
+ *
  * Classes containing data (like strings, arrays, lists etc.) should reimplement
  * this!
  *
@@ -210,4 +211,14 @@
  * pool.
  */
 - (void)dealloc;
+@end
+
+/**
+ * Objects implementing this protocol can be copied.
+ */
+@protocol OFCopying
+/**
+ * \return A copy of the object
+ */
+- (id)copy;
 @end

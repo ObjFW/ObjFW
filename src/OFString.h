@@ -18,7 +18,7 @@
 /**
  * A class for managing strings.
  */
-@interface OFString: OFObject
+@interface OFString: OFObject <OFCopying>
 {
 	char	     *string;
 #ifdef __objc_INCLUDE_GNU
@@ -80,13 +80,6 @@
  * \return The length of the OFString
  */
 - (size_t)length;
-
-/**
- * Clones the OFString, creating a new one.
- *
- * \return A new autoreleased copy of the OFString as a OFMutableString
- */
-- (id)copy;
 
 /**
  * Compares the OFString to another object.

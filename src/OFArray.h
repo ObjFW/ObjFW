@@ -15,7 +15,7 @@
 /**
  * The OFArray class provides a class for storing objects in an array.
  */
-@interface OFArray: OFObject
+@interface OFArray: OFObject <OFCopying>
 {
 	OFDataArray *array;
 }
@@ -34,13 +34,6 @@
  * \return The objects of the array as a C array
  */
 - (id*)data;
-
-/**
- * Clones the OFArray, creating a new one.
- *
- * \return A new autoreleased copy of the OFArray
- */
-- (id)copy;
 
 /**
  * Returns a specific object of the OFDataArray.

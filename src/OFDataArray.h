@@ -18,7 +18,7 @@
  * If you plan to store large hunks of data, you should consider using
  * OFBigDataArray, which allocates the memory in pages rather than in bytes.
  */
-@interface OFDataArray: OFObject
+@interface OFDataArray: OFObject <OFCopying>
 {
 	char   *data;
 	size_t itemsize;
@@ -67,13 +67,6 @@
 - (void*)data;
 
 /**
- * Clones the OFDataArray, creating a new one.
- *
- * \return A new autoreleased copy of the OFDataArray
- */
-- (id)copy;
-
-/**
  * Compares the OFDataArray to another object.
  *
  * \param obj An object to compare with
@@ -119,7 +112,7 @@
 - removeNItems: (size_t)nitems;
 @end
 
-@interface OFBigDataArray: OFDataArray
+@interface OFBigDataArray: OFDataArray <OFCopying>
 {
 	size_t size;
 }
