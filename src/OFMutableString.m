@@ -12,9 +12,9 @@
 #import "config.h"
 
 #define _GNU_SOURCE
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -32,170 +32,8 @@
 #import "asprintf.h"
 #endif
 
-static OF_INLINE int
-check_utf8(const char *str, size_t len)
-{
-	size_t i;
-	BOOL utf8;
-
-	utf8 = NO;
-
-	madvise((void*)str, len, MADV_SEQUENTIAL);
-
-	for (i = 0; i < len; i++) {
-		/* No sign of UTF-8 here */
-		if (OF_LIKELY(!(str[i] & 0x80)))
-			continue;
-
-		utf8 = YES;
-
-		/* We're missing a start byte here */
-		if (OF_UNLIKELY(!(str[i] & 0x40))) {
-			madvise((void*)str, len, MADV_NORMAL);
-			return -1;
-		}
-
-		/* We have at minimum a 2 byte character -> check next byte */
-		if (OF_UNLIKELY(len < i + 1 || (str[i + 1] & 0xC0) != 0x80)) {
-			madvise((void*)str, len, MADV_NORMAL);
-			return -1;
-		}
-
-		/* Check if we have at minimum a 3 byte character */
-		if (OF_LIKELY(!(str[i] & 0x20))) {
-			i++;
-			continue;
-		}
-
-		/* We have at minimum a 3 byte char -> check second next byte */
-		if (OF_UNLIKELY(len < i + 2 || (str[i + 2] & 0xC0) != 0x80)) {
-			madvise((void*)str, len, MADV_NORMAL);
-			return -1;
-		}
-
-		/* Check if we have a 4 byte character */
-		if (OF_LIKELY(!(str[i] & 0x10))) {
-			i += 2;
-			continue;
-		}
-
-		/* We have a 4 byte character -> check third next byte */
-		if (OF_UNLIKELY(len < i + 3 || (str[i + 3] & 0xC0) != 0x80)) {
-			madvise((void*)str, len, MADV_NORMAL);
-			return -1;
-		}
-
-		/*
-		 * Just in case, check if there's a 5th character, which is
-		 * forbidden by UTF-8
-		 */
-		if (OF_UNLIKELY(str[i] & 0x08)) {
-			madvise((void*)str, len, MADV_NORMAL);
-			return -1;
-		}
-
-		i += 3;
-	}
-
-	madvise((void*)str, len, MADV_NORMAL);
-
-	return (utf8 ? 1 : 0);
-}
-
 @implementation OFMutableString
-- initWithCString: (const char*)str
-{
-	Class c;
-
-	self = [super init];
-
-	if (str != NULL) {
-		length = strlen(str);
-
-		switch (check_utf8(str, length)) {
-			case 1:
-				is_utf8 = YES;
-				break;
-			case -1:
-				c = isa;
-				[super dealloc];
-				@throw [OFInvalidEncodingException
-					newWithClass: c];
-		}
-
-		@try {
-			string = [self allocWithSize: length + 1];
-		} @catch (OFException *e) {
-			/*
-			 * We can't use [super dealloc] on OS X here.
-			 * Compiler bug? Anyway, [self dealloc] will do here as
-			 * we don't reimplement dealloc.
-			 */
-			[self dealloc];
-			@throw e;
-		}
-		memcpy(string, str, length + 1);
-	}
-
-	return self;
-}
-
-- initWithFormat: (OFString*)fmt, ...
-{
-	id ret;
-	va_list args;
-
-	va_start(args, fmt);
-	ret = [self initWithFormat: fmt
-		      andArguments: args];
-	va_end(args);
-
-	return ret;
-}
-
-- initWithFormat: (OFString*)fmt
-    andArguments: (va_list)args
-{
-	int t;
-	Class c;
-
-	self = [super init];
-
-	if (fmt == NULL) {
-		c = isa;
-		[super dealloc];
-		@throw [OFInvalidFormatException newWithClass: c];
-	}
-
-	if ((t = vasprintf(&string, [fmt cString], args)) == -1) {
-		c = isa;
-		[super dealloc];
-		@throw [OFInitializationFailedException newWithClass: c];
-	}
-	length = t;
-
-	switch (check_utf8(string, length)) {
-		case 1:
-			is_utf8 = YES;
-			break;
-		case -1:
-			free(string);
-			c = isa;
-			[super dealloc];
-			@throw [OFInvalidEncodingException newWithClass: c];
-	}
-
-	@try {
-		[self addToMemoryPool: string];
-	} @catch (OFException *e) {
-		free(string);
-		@throw e;
-	}
-
-	return self;
-}
-
-- setTo: (const char*)str
+- setToCString: (const char*)str
 {
 	size_t len;
 
@@ -204,7 +42,7 @@ check_utf8(const char *str, size_t len)
 
 	len = strlen(str);
 
-	switch (check_utf8(str, len)) {
+	switch (of_string_check_utf8(str, len)) {
 	case 1:
 		is_utf8 = YES;
 		break;
@@ -234,7 +72,7 @@ check_utf8(const char *str, size_t len)
 
 	strlength = strlen(str);
 
-	switch (check_utf8(str, strlength)) {
+	switch (of_string_check_utf8(str, strlength)) {
 	case 1:
 		is_utf8 = YES;
 		break;

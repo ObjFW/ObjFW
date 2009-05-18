@@ -15,6 +15,8 @@
 #import "OFObject.h"
 #import "OFArray.h"
 
+extern int of_string_check_utf8(const char *str, size_t len);
+
 /**
  * A class for managing strings.
  */
@@ -29,6 +31,7 @@
 	int	     _unused;
 #endif
 #endif
+	BOOL	     is_utf8;
 }
 
 /**
@@ -37,7 +40,7 @@
 + string;
 
 /**
- * Creates a new OFMutableString from a C string.
+ * Creates a new OFString from a C string.
  *
  * \param str A C string to initialize the OFMutableString with
  * \return A new autoreleased OFMutableString
@@ -45,7 +48,7 @@
 + stringWithCString: (const char*)str;
 
 /**
- * Creates a new OFMutableString from a format C string.
+ * Creates a new OFString from a format C string.
  * See printf for the format syntax.
  *
  * \param fmt A string used as format to initialize the OFMutableString
@@ -54,7 +57,7 @@
 + stringWithFormat: (OFString*)fmt, ...;
 
 /**
- * Creates a new OFMutableString from a format C string.
+ * Creates a new OFString from a format C string.
  * See printf for the format syntax.
  *
  * \param fmt A string used as format to initialize the OFMutableString
@@ -70,6 +73,34 @@
  * \return An initialized OFString
  */
 - init;
+
+/**
+ * Initializes an already allocated OFMutableString from a C string.
+ *
+ * \param str A C string to initialize the OFMutableString with
+ * \return An initialized OFMutableString
+ */
+- initWithCString: (const char*)str;
+
+/**
+ * Initializes an already allocated OFMutableString from a format C string.
+ * See printf for the format syntax.
+ *
+ * \param fmt A string used as format to initialize the OFMutableString
+ * \return An initialized OFMutableString
+ */
+- initWithFormat: (OFString*)fmt, ...;
+
+/**
+ * Initializes an already allocated OFMutableString from a format C string.
+ * See printf for the format syntax.
+ *
+ * \param fmt A string used as format to initialize the OFMutableString
+ * \param args The arguments used in the format string
+ * \return An initialized OFMutableString
+ */
+- initWithFormat: (OFString*)fmt
+    andArguments: (va_list)args;
 
 /**
  * \return The OFString as a C string
@@ -95,7 +126,7 @@
  *
  * \param str An OFString to set the OFString to.
  */
-- setTo: (const char*)str;
+- setToCString: (const char*)str;
 
 /**
  * Appends another OFString to the OFString.

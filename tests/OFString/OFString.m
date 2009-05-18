@@ -57,10 +57,10 @@ main()
 	size_t j = 0;
 
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFString *s1 = [OFString stringWithCString: "test"];
-	OFString *s2 = [OFString stringWithCString: ""];
+	OFString *s1 = [OFMutableString stringWithCString: "test"];
+	OFString *s2 = [OFMutableString stringWithCString: ""];
 	OFString *s3;
-	OFString *s4 = [OFString string];
+	OFString *s4 = [OFMutableString string];
 	OFArray *a;
 
 	s3 = [s1 copy];
@@ -71,7 +71,7 @@ main()
 
 	[s2 appendCString: "12"];
 	[s2 append: @"3"];
-	[s4 setTo: [s2 cString]];
+	[s4 setToCString: [s2 cString]];
 
 	CHECK(![s2 compare: s4])
 	CHECK(!strcmp([[s1 append: s2] cString], "test123"))
@@ -90,12 +90,12 @@ main()
 	CHECK_EXCEPT(s1 = [OFString stringWithCString: "\xF0\x80\x80\xC0"],
 	    OFInvalidEncodingException)
 
-	s1 = [OFString stringWithCString: "äöü€𝄞"];
+	s1 = [OFMutableString stringWithCString: "äöü€𝄞"];
 	CHECK(!strcmp([[s1 reverse] cString], "𝄞€üöä"))
 	[s1 dealloc];
 
 	/* Format tests */
-	s1 = [OFString stringWithFormat: @"%s: %d", "test", 123];
+	s1 = [OFMutableString stringWithFormat: @"%s: %d", "test", 123];
 	CHECK(!strcmp([s1 cString], "test: 123"))
 
 	[s1 appendWithFormat: @"%02X", 15];

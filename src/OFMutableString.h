@@ -18,35 +18,4 @@
  * A class for storing and modifying strings.
  */
 @interface OFMutableString: OFString
-{
-	BOOL   is_utf8;
-}
-
-/**
- * Initializes an already allocated OFMutableString from a C string.
- *
- * \param str A C string to initialize the OFMutableString with
- * \return An initialized OFMutableString
- */
-- initWithCString: (const char*)str;
-
-/**
- * Initializes an already allocated OFMutableString from a format C string.
- * See printf for the format syntax.
- *
- * \param fmt A string used as format to initialize the OFMutableString
- * \return An initialized OFMutableString
- */
-- initWithFormat: (OFString*)fmt, ...;
-
-/**
- * Initializes an already allocated OFMutableString from a format C string.
- * See printf for the format syntax.
- *
- * \param fmt A string used as format to initialize the OFMutableString
- * \param args The arguments used in the format string
- * \return An initialized OFMutableString
- */
-- initWithFormat: (OFString*)fmt
-    andArguments: (va_list)args;
 @end
