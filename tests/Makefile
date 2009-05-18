@@ -3,6 +3,7 @@ include ../extra.mk
 SUBDIRS = OFObject		\
 	  OFAutoreleasePool	\
 	  OFDataArray		\
+	  OFArray		\
 	  OFDictionary		\
 	  OFHashes		\
 	  ${OFPLUGIN}		\

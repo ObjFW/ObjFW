@@ -17,8 +17,8 @@
 #include <limits.h>
 
 #import "OFDataArray.h"
-#import "OFExceptions.h"
 #import "OFAutoreleasePool.h"
+#import "OFExceptions.h"
 
 #define CATCH_EXCEPTION(code, exception)		\
 	@try {						\
