@@ -40,6 +40,11 @@
 	return ret;
 }
 
++ arrayWithCArray: (OFObject**)objs
+{
+	return [[[self alloc] initWithCArray: objs] autorelease];
+}
+
 - init
 {
 	self = [super init];
@@ -113,6 +118,27 @@
 	[first retain];
 	for (i = 0; i < len; i++)
 		[objs[i] retain];
+
+	return self;
+}
+
+- initWithCArray: (OFObject**)objs
+{
+	id *obj;
+
+	self = [self init];
+
+	@try {
+		for (obj = objs; *obj != nil; obj++)
+			[array add: obj];
+	} @catch (OFException *e) {
+		[self dealloc];
+		@throw e;
+	}
+
+	/* Retain objects after adding them for the case adding failed */
+	for (obj = objs; *obj != nil; obj++)
+		[*obj retain];
 
 	return self;
 }

@@ -31,11 +31,19 @@
 		puts("Resuming...");			\
 	}
 
+id c_array[] = {
+	@"Foo",
+	@"Bar",
+	@"Baz",
+	nil
+};
+
 int
 main()
 {
 	OFArray *a = [OFArray arrayWithObjects: @"Foo", @"Bar", @"Baz", nil];
 	OFArray *b = [OFMutableArray array];
+	OFArray *c = [OFArray arrayWithCArray: c_array];
 
 	[b add: @"Foo"];
 	[b add: @"Bar"];
@@ -43,7 +51,9 @@ main()
 
 	assert([a count] == 3);
 	assert([b count] == 3);
+	assert([c count] == 3);
 	assert([a isEqual: b]);
+	assert([a isEqual: c]);
 
 	[b removeNObjects: 1];
 	[b add: @"Baz"];

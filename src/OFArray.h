@@ -40,6 +40,12 @@
 + arrayWithObjects: (OFObject*)first, ...;
 
 /**
+ * \param objs A C array of objects.
+ * \return A new autoreleased OFArray
+ */
++ arrayWithCArray: (OFObject**)objs;
+
+/**
  * Initializes an OFArray with the specified object.
  *
  * \param obj An object
@@ -64,6 +70,14 @@
  */
 - initWithObject: (OFObject*)first
       andArgList: (va_list)args;
+
+/**
+ * Initializes an OFArray with the objects from the specified C array.
+ *
+ * \param objs A C array of objects
+ * \return An initialized OFArray
+ */
+- initWithCArray: (OFObject**)objs;
 
 /**
  * \return The number of objects in the OFArray
