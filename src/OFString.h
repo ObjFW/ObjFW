@@ -57,17 +57,6 @@ extern int of_string_check_utf8(const char *str, size_t len);
 + stringWithFormat: (OFString*)fmt, ...;
 
 /**
- * Creates a new OFString from a format C string.
- * See printf for the format syntax.
- *
- * \param fmt A string used as format to initialize the OFMutableString
- * \param args The arguments used in the format string
- * \return A new autoreleased OFMutableString
- */
-+ stringWithFormat: (OFString*)fmt
-      andArguments: (va_list)args;
-
-/**
  * Initializes an already allocated OFString.
  *
  * \return An initialized OFString

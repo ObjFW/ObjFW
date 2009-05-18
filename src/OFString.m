@@ -130,13 +130,6 @@ of_string_check_utf8(const char *str, size_t len)
 	return ret;
 }
 
-+ stringWithFormat: (OFString*)fmt
-      andArguments: (va_list)args
-{
-	return [[[self alloc] initWithFormat: fmt
-				andArguments: args] autorelease];
-}
-
 - init
 {
 	[super init];
