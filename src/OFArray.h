@@ -9,6 +9,8 @@
  * the packaging of this file.
  */
 
+#include <stdarg.h>
+
 #import "OFObject.h"
 #import "OFDataArray.h"
 
@@ -24,6 +26,44 @@
  * \return A new autoreleased OFArray
  */
 + array;
+
+/**
+ * \param obj An object
+ * \return A new autoreleased OFArray
+ */
++ arrayWithObject: (OFObject*)obj;
+
+/**
+ * \param first The first object in the array
+ * \return A new autoreleased OFArray
+ */
++ arrayWithObjects: (OFObject*)first, ...;
+
+/**
+ * Initializes an OFArray with the specified object.
+ *
+ * \param obj An object
+ * \return An initialized OFArray
+ */
+- initWithObject: (OFObject*)obj;
+
+/**
+ * Initializes an OFArray with the specified objects.
+ *
+ * \param obj The first object
+ * \return An initialized OFArray
+ */
+- initWithObjects: (OFObject*)first, ...;
+
+/**
+ * Initializes an OFArray with the specified object and a va_list.
+ *
+ * \param first The first object
+ * \param args A va_list
+ * \return An initialized OFArray
+ */
+- initWithObject: (OFObject*)first
+      andArgList: (va_list)args;
 
 /**
  * \return The number of objects in the OFArray

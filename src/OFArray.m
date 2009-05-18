@@ -11,6 +11,8 @@
 
 #import "config.h"
 
+#include <stdarg.h>
+
 #import "OFArray.h"
 #import "OFExceptions.h"
 
@@ -18,6 +20,24 @@
 + array
 {
 	return [[[self alloc] init] autorelease];
+}
+
++ arrayWithObject: (OFObject*)obj
+{
+	return [[[self alloc] initWithObject: obj] autorelease];
+}
+
++ arrayWithObjects: (OFObject*)first, ...
+{
+	id ret;
+	va_list args;
+
+	va_start(args, first);
+	ret = [[[self alloc] initWithObject: first
+				 andArgList: args] autorelease];
+	va_end(args);
+
+	return ret;
 }
 
 - init
@@ -35,6 +55,64 @@
 		[self dealloc];
 		@throw e;
 	}
+
+	return self;
+}
+
+- initWithObject: (OFObject*)obj
+{
+	self = [self init];
+
+	@try {
+		[array add: &obj];
+	} @catch (OFException *e) {
+		[self dealloc];
+		@throw e;
+	}
+
+	[obj retain];
+
+	return self;
+}
+
+- initWithObjects: (OFObject*)first, ...
+{
+	id ret;
+	va_list args;
+
+	va_start(args, first);
+	ret = [self initWithObject: first
+			andArgList: args];
+	va_end(args);
+
+	return ret;
+}
+
+- initWithObject: (OFObject*)first
+      andArgList: (va_list)args
+{
+	id obj;
+	OFObject **objs;
+	size_t len, i;
+
+	self = [self init];
+
+	@try {
+		[array add: &first];
+		while ((obj = va_arg(args, id)) != nil)
+			[array add: &obj];
+	} @catch (OFException *e) {
+		[self dealloc];
+		@throw e;
+	}
+
+	/* Retain objects after adding them for the case adding failed */
+	objs = [array data];
+	len = [array count];
+
+	[first retain];
+	for (i = 0; i < len; i++)
+		[objs[i] retain];
 
 	return self;
 }
