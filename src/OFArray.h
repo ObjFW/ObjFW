@@ -15,7 +15,7 @@
 /**
  * The OFArray class provides a class for storing objects in an array.
  */
-@interface OFArray: OFObject <OFCopying>
+@interface OFArray: OFObject <OFCopying, OFMutableCopying>
 {
 	OFDataArray *array;
 }

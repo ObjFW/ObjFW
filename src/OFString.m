@@ -253,6 +253,11 @@ of_string_check_utf8(const char *str, size_t len)
 	return [OFString stringWithCString: string];
 }
 
+- (id)mutableCopy
+{
+	return [OFMutableString stringWithCString: string];
+}
+
 - (BOOL)isEqual: (id)obj
 {
 	if (![obj isKindOf: [OFString class]])

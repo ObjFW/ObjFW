@@ -67,6 +67,24 @@
 	return new;
 }
 
+- (id)mutableCopy
+{
+	OFArray *new = [OFMutableArray array];
+	OFObject **objs;
+	size_t len, i;
+
+	objs = [array data];
+	len = [array count];
+
+	[new->array addNItems: len
+		   fromCArray: objs];
+
+	for (i = 0; i < len; i++)
+		[objs[i] retain];
+
+	return new;
+}
+
 - (id)object: (size_t)index
 {
 	return *((OFObject**)[array item: index]);

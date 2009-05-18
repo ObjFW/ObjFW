@@ -222,3 +222,14 @@
  */
 - (id)copy;
 @end
+
+/**
+ * This protocol is implemented by objects that can be mutable and immutable
+ * and allows returning a mutable copy.
+ */
+@protocol OFMutableCopying
+/**
+ * \return A copy of the object
+ */
+- (id)mutableCopy;
+@end

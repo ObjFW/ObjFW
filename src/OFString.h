@@ -20,7 +20,7 @@ extern int of_string_check_utf8(const char *str, size_t len);
 /**
  * A class for managing strings.
  */
-@interface OFString: OFObject <OFCopying>
+@interface OFString: OFObject <OFCopying, OFMutableCopying>
 {
 	char	     *string;
 #ifdef __objc_INCLUDE_GNU
