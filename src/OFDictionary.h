@@ -9,6 +9,8 @@
  * the packaging of this file.
  */
 
+#include <stdarg.h>
+
 #import "OFObject.h"
 #import "OFList.h"
 
@@ -37,6 +39,14 @@
 + dictionaryWithHashSize: (int)hashsize;
 
 /**
+ * Creates a new OFDictionary with the specified objects.
+ *
+ * \param first The first key
+ * \return A new autoreleased OFDictionary
+ */
++ dictionaryWithKeysAndObjects: (OFObject <OFCopying>*)first, ...;
+
+/**
  * Initializes an already allocated OFDictionary, defaulting to a 12 bit hash.
  *
  * \return An initialized OFDictionary
@@ -50,6 +60,23 @@
  * \return An initialized OFDictionary
  */
 - initWithHashSize: (int)hashsize;
+
+/**
+ * Initialized an already allocated OFDictionary with the specified objects.
+ *
+ * \param first The first key
+ * \return A new initialized OFDictionary
+ */
+- initWithKeysAndObjects: (OFObject <OFCopying>*)first, ...;
+
+/**
+ * Initialized an already allocated OFDictionary with the specified objects.
+ *
+ * \param first The first key
+ * \return A new initialized OFDictionary
+ */
+- initWithKey: (OFObject <OFCopying>*)first
+   andArgList: (va_list)args;
 
 /**
  * \return The average number of items in a used bucket. Buckets that are

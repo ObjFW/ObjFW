@@ -34,6 +34,19 @@ void _reference_to_OFIterator_in_OFDictionary()
 	return [[[self alloc] initWithHashSize: hashsize] autorelease];
 }
 
++ dictionaryWithKeysAndObjects: (OFObject <OFCopying>*)first, ...
+{
+	id ret;
+	va_list args;
+
+	va_start(args, first);
+	ret = [[[self alloc] initWithKey: first
+			      andArgList: args] autorelease];
+	va_end(args);
+
+	return ret;
+}
+
 - init
 {
 	self = [super init];
@@ -83,6 +96,86 @@ void _reference_to_OFIterator_in_OFDictionary()
 		@throw e;
 	}
 	memset(data, 0, size * sizeof(OFList*));
+
+	return self;
+}
+
+- initWithKeysAndObjects: (OFObject <OFCopying>*)first, ...
+{
+	id ret;
+	va_list args;
+
+	va_start(args, first);
+	ret = [self initWithKey: first
+		     andArgList: args];
+	va_end(args);
+
+	return ret;
+}
+
+- initWithKey: (OFObject <OFCopying>*)first
+   andArgList: (va_list)args
+{
+	id key, obj;
+	Class c;
+	uint32_t hash;
+
+	self = [self init];
+	obj = va_arg(args, id);
+
+	if (obj == nil) {
+		c = isa;
+		[self dealloc];
+		@throw [OFInvalidArgumentException newWithClass: isa
+						    andSelector: _cmd];
+	}
+
+	hash = [first hash] & (size - 1);
+	key = [first copy];
+
+	@try {
+		if (data[hash] == nil)
+			data[hash] = [[OFList alloc] init];
+
+		[data[hash] append: key];
+		[data[hash] append: obj];
+	} @catch (OFException *e) {
+		[self dealloc];
+		@throw e;
+	} @finally {
+		[key release];
+	}
+
+	while ((key = va_arg(args, id)) != nil) {
+		if ((obj = va_arg(args, id)) == nil) {
+			c = isa;
+			[self dealloc];
+			@throw [OFInvalidArgumentException newWithClass: isa
+							    andSelector: _cmd];
+		}
+
+		hash = [key hash] & (size - 1);
+
+		@try {
+			key = [key copy];
+		} @catch (OFException *e) {
+			[self dealloc];
+			@throw e;
+		}
+
+		@try {
+			if (data[hash] == nil)
+				data[hash] = [[OFList alloc] init];
+
+			[data[hash] append: key];
+			[data[hash] append: obj];
+		} @catch (OFException *e) {
+			[self dealloc];
+			@throw e;
+		} @finally {
+			[key release];
+		}
+	}
 
 	return self;
 }

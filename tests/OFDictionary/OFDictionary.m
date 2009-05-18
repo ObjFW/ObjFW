@@ -23,6 +23,7 @@ int
 main()
 {
 	OFDictionary *dict = [OFMutableDictionary dictionaryWithHashSize: 16];
+	OFDictionary *dict2;
 	OFIterator *iter = [dict iterator];
 
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
@@ -38,12 +39,12 @@ main()
 	[pool release];
 
 	if (strcmp([[dict get: @"key1"] cString], "value1")) {
-		puts("\033[K\033[1;31mTest 1/7 failed!\033[m");
+		puts("\033[K\033[1;31mTest 1/9 failed!\033[m");
 		return 1;
 	}
 
 	if (strcmp([[dict get: key2] cString], "value2")) {
-		puts("\033[K\033[1;31mTest 2/7 failed!\033[m");
+		puts("\033[K\033[1;31mTest 2/9 failed!\033[m");
 		return 1;
 	}
 
@@ -51,7 +52,7 @@ main()
 	    ![[iter nextObject] isEqual: @"value2"] ||
 	    ![[iter nextObject] isEqual: @"key1"] ||
 	    ![[iter nextObject] isEqual: @"value1"]) {
-		puts("\033[K\033[1;31mTest 3/7 failed!\033[m");
+		puts("\033[K\033[1;31mTest 3/9 failed!\033[m");
 		return 1;
 	}
 
@@ -61,26 +62,40 @@ main()
 	    ![[iter nextObject] isEqual: @"value1"] ||
 	    ![[iter nextObject] isEqual: @"key2"] ||
 	    ![[iter nextObject] isEqual: @"value2"]) {
-		puts("\033[K\033[1;31mTest 4/7 failed!\033[m");
+		puts("\033[K\033[1;31mTest 4/9 failed!\033[m");
 		return 1;
 	}
 
 	if ([dict averageItemsPerBucket] != 1.0) {
-		puts("\033[K\033[1;31mTest 5/7 failed!\033[m");
+		puts("\033[K\033[1;31mTest 5/9 failed!\033[m");
 		return 1;
 	}
 
 	if ([iter nextObject] != nil) {
-		puts("\033[K\033[1;31mTest 6/7 failed!\033[m");
+		puts("\033[K\033[1;31mTest 6/9 failed!\033[m");
 		return 1;
 	}
 
 	if ([dict get: @"key3"] != nil) {
-		puts("\033[K\033[1;31mTest 7/7 failed!\033[m");
+		puts("\033[K\033[1;31mTest 7/9 failed!\033[m");
 		return 1;
 	}
 
-	puts("\033[1;32mTests successful: 7/7\033[0m");
+	dict2 = [OFDictionary dictionaryWithKeysAndObjects: @"foo", @"bar",
+							    @"baz", @"qux",
+							    nil];
+
+	if (![[dict2 get: @"foo"] isEqual: @"bar"]) {
+		puts("\033[K\033[1;31mTest 8/9 failed!\033[m");
+		return 1;
+	}
+
+	if (![[dict2 get: @"baz"] isEqual: @"qux"]) {
+		puts("\033[K\033[1;31mTest 9/9 failed!\033[m");
+		return 1;
+	}
+
+	puts("\033[1;32mTests successful: 9/9\033[0m");
 
 	return 0;
 }
