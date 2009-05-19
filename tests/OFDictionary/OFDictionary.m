@@ -19,7 +19,7 @@
 #import "OFString.h"
 #import "OFExceptions.h"
 
-#define TESTS 10
+#define TESTS 12
 
 int
 main()
@@ -113,6 +113,22 @@ main()
 	dict = [OFDictionary dictionaryWithKey: @"foo"
 				     andObject: @"bar"];
 	if (![[dict get: @"foo"] isEqual: @"bar"]) {
+		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
+		return 1;
+	}
+
+	i++;
+	[dict release];
+	dict = [OFDictionary
+	    dictionaryWithKeys: [OFArray arrayWithObjects: @"k1", @"k2", nil]
+		    andObjects: [OFArray arrayWithObjects: @"o1", @"o2", nil]];
+	if (![[dict get: @"k1"] isEqual: @"o1"]) {
+		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
+		return 1;
+	}
+
+	i++;
+	if (![[dict get: @"k2"] isEqual: @"o2"]) {
 		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}

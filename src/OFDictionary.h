@@ -13,6 +13,7 @@
 
 #import "OFObject.h"
 #import "OFList.h"
+#import "OFArray.h"
 
 /**
  * The OFDictionary class provides a class for using hash tables.
@@ -49,6 +50,16 @@
 	  andObject: (OFObject*)obj;
 
 /**
+ * Creates a new OFDictionary with the specified keys and objects.
+ *
+ * \param keys An array of keys
+ * \param objs An array of objects
+ * \return A new autoreleased OFDictionary
+ */
++ dictionaryWithKeys: (OFArray*)keys
+	  andObjects: (OFArray*)objs;
+
+/**
  * Creates a new OFDictionary with the specified keys objects.
  *
  * \param first The first key
@@ -81,6 +92,17 @@
  */
 - initWithKey: (OFObject <OFCopying>*)key
     andObject: (OFObject*)obj;
+
+/**
+ * Initializes an already allocated OFDictionary with the specified keys and
+ * objects.
+ *
+ * \param keys An array of keys
+ * \param objs An array of objects
+ * \return A new initialized OFDictionary
+ */
+- initWithKeys: (OFArray*)keys
+    andObjects: (OFArray*)objs;
 
 /**
  * Initializes an already allocated OFDictionary with the specified keys and

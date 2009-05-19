@@ -41,6 +41,13 @@ void _reference_to_OFIterator_in_OFDictionary()
 				andObject: obj] autorelease];
 }
 
++ dictionaryWithKeys: (OFArray*)keys
+	  andObjects: (OFArray*)objs
+{
+	return [[[self alloc] initWithKeys: keys
+				andObjects: objs] autorelease];
+}
+
 + dictionaryWithKeysAndObjects: (OFObject <OFCopying>*)first, ...
 {
 	id ret;
@@ -146,6 +153,64 @@ void _reference_to_OFIterator_in_OFDictionary()
 	return self;
 }
 
+- initWithKeys: (OFArray*)keys
+    andObjects: (OFArray*)objs
+{
+	Class c;
+	OFObject <OFCopying> **keys_data;
+	OFObject **objs_data;
+	size_t count, i;
+
+	self = [self init];
+	count = [keys count];
+
+	if (keys == nil || objs == nil || count != [objs count]) {
+		c = isa;
+		[self dealloc];
+		@throw [OFInvalidArgumentException newWithClass: isa
+						    andSelector: _cmd];
+	}
+
+	keys_data = [keys data];
+	objs_data = [objs data];
+
+	for (i = 0; i < count; i++) {
+		uint32_t hash;
+		OFObject <OFCopying> *key;
+
+		if (keys_data[i] == nil || objs_data[i] == nil) {
+			c = isa;
+			[self dealloc];
+			@throw [OFInvalidArgumentException newWithClass: isa
+							    andSelector: _cmd];
+		}
+
+		hash = [keys_data[i] hash] & (size - 1);
+
+		@try {
+			key = [keys_data[i] copy];
+		} @catch (OFException *e) {
+			[self dealloc];
+			@throw e;
+		}
+
+		@try {
+			if (data[hash] == nil)
+				data[hash] = [[OFList alloc] init];
+
+			[data[hash] append: key];
+			[data[hash] append: objs_data[i]];
+		} @catch (OFException *e) {
+			[self dealloc];
+			@throw e;
+		} @finally {
+			[key release];
+		}
+	}
+
+	return self;
+}
+
 - initWithKeysAndObjects: (OFObject <OFCopying>*)first, ...
 {
 	id ret;
@@ -162,12 +227,13 @@ void _reference_to_OFIterator_in_OFDictionary()
 - initWithKey: (OFObject <OFCopying>*)first
    andArgList: (va_list)args
 {
-	id key, obj;
+	OFObject <OFCopying> *key;
+	OFObject *obj;
 	Class c;
 	uint32_t hash;
 
 	self = [self init];
-	obj = va_arg(args, id);
+	obj = va_arg(args, OFObject*);
 
 	if (first == nil || obj == nil) {
 		c = isa;
@@ -198,8 +264,8 @@ void _reference_to_OFIterator_in_OFDictionary()
 		[key release];
 	}
 
-	while ((key = va_arg(args, id)) != nil) {
-		if ((obj = va_arg(args, id)) == nil) {
+	while ((key = va_arg(args, OFObject <OFCopying>*)) != nil) {
+		if ((obj = va_arg(args, OFObject*)) == nil) {
 			c = isa;
 			[self dealloc];
 			@throw [OFInvalidArgumentException newWithClass: isa
