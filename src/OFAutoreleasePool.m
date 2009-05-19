@@ -46,14 +46,26 @@ release_list(void *list)
 	OFList *pool_list = [OFThread objectForTLSKey: pool_list_key];
 
 	if (pool_list == nil || [pool_list last] == NULL) {
-		[[self alloc] init];
-		pool_list = [OFThread objectForTLSKey: pool_list_key];
+		@try {
+			[[self alloc] init];
+			pool_list = [OFThread objectForTLSKey: pool_list_key];
+		} @catch (OFException *e) {
+			[obj release];
+			@throw e;
+		}
 	}
 
-	if (pool_list == nil || [pool_list last] == NULL)
+	if (pool_list == nil || [pool_list last] == NULL) {
+		[obj release];
 		@throw [OFInitializationFailedException newWithClass: self];
+	}
 
-	[[pool_list last]->object addToPool: obj];
+	@try {
+		[[pool_list last]->object addToPool: obj];
+	} @catch (OFException *e) {
+		[obj release];
+		@throw e;
+	}
 }
 
 - init
@@ -63,13 +75,31 @@ release_list(void *list)
 	self = [super init];
 
 	if ((pool_list = [OFThread objectForTLSKey: pool_list_key]) == nil) {
-		pool_list = [[OFList alloc] initWithoutRetainAndRelease];
-		[OFThread setObject: pool_list
-			  forTLSKey: pool_list_key];
-		[pool_list release];
+		@try {
+			pool_list = [[OFList alloc]
+			    initWithoutRetainAndRelease];
+		} @catch (OFException *e) {
+			[self dealloc];
+			@throw e;
+		}
+
+		@try {
+			[OFThread setObject: pool_list
+				  forTLSKey: pool_list_key];
+		} @catch (OFException *e) {
+			[self dealloc];
+			@throw e;
+		} @finally {
+			[pool_list release];
+		}
 	}
 
-	listobj = [pool_list append: self];
+	@try {
+		listobj = [pool_list append: self];
+	} @catch (OFException *e) {
+		[self dealloc];
+		@throw e;
+	}
 
 	return self;
 }
