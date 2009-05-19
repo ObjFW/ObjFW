@@ -107,5 +107,5 @@ typedef struct __of_list_object
  *
  * \return The number of items in the list.
  */
-- (size_t)items;
+- (size_t)count;
 @end

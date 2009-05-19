@@ -23,7 +23,7 @@
 #define ZD "%u"
 #endif
 
-#define NUM_TESTS 11
+#define NUM_TESTS 14
 #define SUCCESS								\
 {									\
 	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
@@ -45,50 +45,62 @@
 	i++;								\
 }
 
-const char *strings[] = {
-	"First String Object",
-	"Second String Object",
-	"Third String Object"
+const OFString *strings[] = {
+	@"First String Object",
+	@"Second String Object",
+	@"Third String Object"
 };
 
 int
 main()
 {
 	size_t i, j;
-	OFList *list;
+	OFList *list, *list2;
 	of_list_object_t *iter;
 
 	list = [OFList list];
 
-	[list append: [OFString stringWithCString: strings[0]]];
-	[list append: [OFString stringWithCString: strings[1]]];
-	[list append: [OFString stringWithCString: strings[2]]];
+	[list append: strings[0]];
+	[list append: strings[1]];
+	[list append: strings[2]];
 
 	for (iter = [list first], i = 0; iter != NULL; iter = iter->next, i++)
-		if (!strcmp([iter->object cString], strings[i]))
+		if ([iter->object isEqual: strings[i]])
 			SUCCESS
 		else
 			FAIL
 
-	CHECK(!strcmp([[list first]->object cString], strings[0]))
-	CHECK(!strcmp([[list last]->object cString], strings[2]))
+	CHECK([[list first]->object isEqual: strings[0]])
+	CHECK([[list last]->object isEqual: strings[2]])
 
 	[list remove: [list last]];
-	CHECK(!strcmp([[list last]->object cString], strings[1]))
+	CHECK([[list last]->object isEqual: strings[1]])
 
 	[list remove: [list first]];
-	CHECK(!strcmp([[list first]->object cString],
-	    [[list last]->object cString]))
+	CHECK([[list first]->object isEqual: [list last]->object])
 
-	[list insert: [OFString stringWithCString: strings[0]]
+	[list insert: strings[0]
 	      before: [list last]];
-	[list insert: [OFString stringWithCString: strings[2]]
+	[list insert: strings[2]
 	       after: [list first]->next];
 
 	for (iter = [list first], j = 0; iter != NULL; iter = iter->next, j++)
-		CHECK(!strcmp([iter->object cString], strings[j]))
+		CHECK([iter->object isEqual: strings[j]])
 
-	CHECK ([list items] == 3)
+	CHECK([list count] == 3)
+
+	list2 = [OFList list];
+
+	[list2 append: strings[0]];
+	[list2 append: strings[1]];
+	[list2 append: strings[2]];
+	CHECK([list2 isEqual: list]);
+
+	[list2 remove: [list2 last]];
+	CHECK(![list2 isEqual: list]);
+
+	[list2 append: @"foo"];
+	CHECK(![list2 isEqual: list]);
 
 	puts("");
 

@@ -307,7 +307,7 @@ void _reference_to_OFIterator_in_OFDictionary()
 
 	for (i = 0; i < size; i++) {
 		if (data[i] != nil) {
-			items += [data[i] items] / 2;
+			items += [data[i] count] / 2;
 			buckets++;
 		}
 	}

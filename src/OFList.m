@@ -168,7 +168,7 @@
 	return self;
 }
 
-- (size_t)items
+- (size_t)count
 {
 	size_t i;
 	of_list_object_t *iter;
@@ -177,5 +177,24 @@
 		i++;
 
 	return i;
+}
+
+- (BOOL)isEqual: (id)obj
+{
+	of_list_object_t *iter, *iter2;
+
+	if (![obj isKindOf: [OFList class]])
+		return NO;
+
+	for (iter = first, iter2 = [obj first]; iter != NULL && iter2 != NULL;
+	    iter = iter->next, iter2 = iter2->next)
+		if (![iter->object isEqual: iter2->object])
+			return NO;
+
+	/* One has still items */
+	if (iter != NULL || iter2 != NULL)
+		return NO;
+
+	return YES;
 }
 @end
