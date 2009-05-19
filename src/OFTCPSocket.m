@@ -23,7 +23,7 @@
 #endif
 
 @implementation OFTCPSocket
-+ tcpSocket
++ socket
 {
 	return [[[OFTCPSocket alloc] init] autorelease];
 }
@@ -157,7 +157,7 @@
 	socklen_t addrlen;
 	int s;
 
-	newsock = [OFTCPSocket tcpSocket];
+	newsock = [OFTCPSocket socket];
 	addrlen = sizeof(struct sockaddr);
 
 	@try {

@@ -40,8 +40,8 @@ main()
 	srand(time(NULL));
 
 	@try {
-		OFTCPSocket *server = [OFTCPSocket tcpSocket];
-		OFTCPSocket *client = [OFTCPSocket tcpSocket];
+		OFTCPSocket *server = [OFTCPSocket socket];
+		OFTCPSocket *client = [OFTCPSocket socket];
 		OFTCPSocket *accepted;
 		char buf[7];
 

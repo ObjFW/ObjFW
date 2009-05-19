@@ -19,7 +19,7 @@
 /**
  * \return A new autoreleased OFTCPSocket
  */
-+ tcpSocket;
++ socket;
 
 /**
  * Initializes an already allocated OFTCPSocket.
