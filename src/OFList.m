@@ -12,6 +12,7 @@
 #import "config.h"
 
 #import "OFList.h"
+#import "OFExceptions.h"
 
 @implementation OFList
 + list
@@ -196,5 +197,44 @@
 		return NO;
 
 	return YES;
+}
+
+- (id)copy
+{
+	OFList *new;
+	of_list_object_t *iter, *o, *prev;
+
+	if (retain_and_release)
+		new = [[OFList alloc] init];
+	else
+		new = [[OFList alloc] initWithoutRetainAndRelease];
+
+	o = NULL;
+	prev = NULL;
+
+	@try {
+		for (iter = first; iter != NULL; iter = iter->next) {
+			o = [new allocWithSize: sizeof(of_list_object_t)];
+			o->object = iter->object;
+			o->next = NULL;
+			o->prev = prev;
+
+			if (new->first == NULL)
+				new->first = o;
+			if (prev != NULL)
+				prev->next = o;
+			if (retain_and_release)
+				[o->object retain];
+
+			prev = o;
+		}
+	} @catch (OFException *e) {
+		[new release];
+		@throw e;
+	}
+
+	new->last = o;
+
+	return new;
 }
 @end

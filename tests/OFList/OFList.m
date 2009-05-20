@@ -23,7 +23,7 @@
 #define ZD "%u"
 #endif
 
-#define NUM_TESTS 14
+#define NUM_TESTS 23
 #define SUCCESS								\
 {									\
 	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
@@ -55,8 +55,8 @@ int
 main()
 {
 	size_t i, j;
-	OFList *list, *list2;
-	of_list_object_t *iter;
+	OFList *list, *list2, *list3;
+	of_list_object_t *iter, *iter2;
 
 	list = [OFList list];
 
@@ -99,8 +99,24 @@ main()
 	[list2 remove: [list2 last]];
 	CHECK(![list2 isEqual: list]);
 
-	[list2 append: @"foo"];
+	/*
+	 * Only mutableCopy is guaranteed to return a real copy instead of just
+	 * increasing the reference counter.
+	 */
+	[list2 append: [@"foo" mutableCopy]];
 	CHECK(![list2 isEqual: list]);
+
+	list3 = [list2 copy];
+	CHECK([list2 isEqual: list3]);
+
+	for (iter = [list2 first], iter2 = [list3 first];
+	    iter != NULL && iter2 != NULL;
+	    iter = iter->next, iter2 = iter2->next) {
+		CHECK(iter != iter2)
+		CHECK(iter->object == iter2->object)
+	}
+	CHECK(iter == NULL && iter2 == NULL)
+	CHECK([[list2 last]->object retainCount] == 3)
 
 	puts("");
 

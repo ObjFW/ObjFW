@@ -21,7 +21,7 @@ typedef struct __of_list_object
 /**
  * The OFList class provides easy to use double-linked lists.
  */
-@interface OFList: OFObject
+@interface OFList: OFObject <OFCopying>
 {
 	of_list_object_t *first;
 	of_list_object_t *last;
