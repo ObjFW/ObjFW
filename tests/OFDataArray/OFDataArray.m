@@ -44,11 +44,11 @@ const char *str = "Hallo!";
 	puts("Trying to add something after that error...");		\
 	p = [a allocWithSize: 4096];					\
 	memset(p, 255, 4096);						\
-	[a add: p];							\
-	if (!memcmp([a last], p, 4096))					\
-		puts("[a last] matches with p!");			\
+	[a addItem: p];							\
+	if (!memcmp([a lastItem], p, 4096))				\
+		puts("[a lastItem] matches with p!");			\
 	else {								\
-		puts("[a last] does not match p!");			\
+		puts("[a lastItem] does not match p!");			\
 		abort();						\
 	}								\
 	[a freeMem: p];							\
@@ -56,11 +56,11 @@ const char *str = "Hallo!";
 	puts("Adding more data...");					\
 	q = [a allocWithSize: 4096];					\
 	memset(q, 42, 4096);						\
-	[a add: q];							\
-	if (!memcmp([a last], q, 4096))					\
-		puts("[a last] matches with q!");			\
+	[a addItem: q];							\
+	if (!memcmp([a lastItem], q, 4096))				\
+		puts("[a lastItem] matches with q!");			\
 	else {								\
-		puts("[a last] does not match q!");			\
+		puts("[a lastItem] does not match q!");			\
 		abort();						\
 	}								\
 	[a freeMem: q];							\
@@ -70,13 +70,13 @@ const char *str = "Hallo!";
 	memset(p, 64, 8192);						\
 	[a addNItems: 2							\
 	  fromCArray: p];						\
-	if (!memcmp([a last], [a itemAtIndex: [a count] - 2], 4096) &&	\
+	if (!memcmp([a lastItem], [a itemAtIndex: [a count] - 2], 4096) && \
 	    !memcmp([a itemAtIndex: [a count] - 2], p, 4096))		\
-		puts("[a last], [a itemAtIndex: [a count] - 2] and p "	\
-		    "match!");						\
+		puts("[a lastItem], [a itemAtIndex: [a count] - 2] "	\
+		    "and p match!");					\
 	else {								\
-		puts("[a last], [a itemAtIndex: [a count] - 2] and p "	\
-		    "do not match!");					\
+		puts("[a lastItem], [a itemAtIndex: [a count] - 2] "	\
+		    "and p do not match!");				\
 		abort();						\
 	}								\
 	[a freeMem: p];							\
@@ -103,8 +103,8 @@ const char *str = "Hallo!";
 	a = [[type alloc] initWithItemSize: 1];				\
 									\
 	for (i = 0; i < strlen(str); i++)				\
-		[a add: (void*)&str[i]];				\
-	[a add: ""];							\
+		[a addItem: (void*)&str[i]];				\
+	[a addItem: ""];						\
 									\
 	if (!strcmp([a data], str))					\
 		puts("Built string matches!");				\
@@ -144,7 +144,7 @@ main()
 		return 1;
 	}
 
-	[x add: "x"];
+	[x addItem: "x"];
 	if ([x isEqual: y]) {
 		puts("FAIL 3!");
 		return 1;
@@ -169,7 +169,7 @@ main()
 		return 1;
 	}
 
-	[y add: "de"];
+	[y addItem: "de"];
 	if ([x compare: y] != -100) {
 		puts("FAIL 6!");
 		return 1;

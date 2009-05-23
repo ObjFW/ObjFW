@@ -77,14 +77,14 @@
 /**
  * \return The last item of the OFDataArray
  */
-- (void*)last;
+- (void*)lastItem;
 
 /**
  * Adds an item to the OFDataArray.
  *
  * \param item A pointer to an arbitrary item
  */
-- add: (void*)item;
+- addItem: (void*)item;
 
 /**
  * Adds items from a C array to the OFDataArray.

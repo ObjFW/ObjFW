@@ -30,15 +30,14 @@
  *
  * \param obj The object to add to the autorelease pool
  */
-+ (void)addToPool: (OFObject*)obj;
++ (void)addObjectToTopmostPool: (OFObject*)obj;
 
 /**
  * Adds an object to the specific autorelease pool.
- * stack.
  *
  * \param obj The object to add to the autorelease pool
  */
-- addToPool: (OFObject*)obj;
+- addObject: (OFObject*)obj;
 
 /**
  * Releases all objects in the autorelease pool.

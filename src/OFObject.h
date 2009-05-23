@@ -134,7 +134,7 @@
  *
  * \param ptr A pointer to add to the memory pool
  */
-- addToMemoryPool: (void*)ptr;
+- addItemToMemoryPool: (void*)ptr;
 
 /**
  * Allocate memory and store it in the objects memory pool so it can be free'd

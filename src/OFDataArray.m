@@ -71,12 +71,12 @@ extern int getpagesize(void);
 	return data + index * itemsize;
 }
 
-- (void*)last
+- (void*)lastItem
 {
 	return data + (count - 1) * itemsize;
 }
 
-- add: (void*)item
+- addItem: (void*)item
 {
 	if (SIZE_MAX - count < 1)
 		@throw [OFOutOfRangeException newWithClass: isa];
@@ -193,7 +193,7 @@ extern int getpagesize(void);
 	return self;
 }
 
-- add: (void*)item
+- addItem: (void*)item
 {
 	size_t nsize;
 

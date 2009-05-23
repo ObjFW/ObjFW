@@ -222,7 +222,7 @@ of_string_check_utf8(const char *str, size_t len)
 	}
 
 	@try {
-		[self addToMemoryPool: string];
+		[self addItemToMemoryPool: string];
 	} @catch (OFException *e) {
 		free(string);
 		@throw e;
@@ -354,7 +354,7 @@ of_string_check_utf8(const char *str, size_t len)
 		str = [self copy];
 
 		@try {
-			[array add: str];
+			[array addObject: str];
 		} @finally {
 			[str release];
 		}
@@ -386,14 +386,14 @@ of_string_check_utf8(const char *str, size_t len)
 			free(tmp);
 		}
 
-		[array add: str];
+		[array addObject: str];
 		[array retain];
 		[pool releaseObjects];
 
 		i += delim_len - 1;
 		last = i + 1;
 	}
-	[array add: [OFString stringWithCString: string + last]];
+	[array addObject: [OFString stringWithCString: string + last]];
 
 	[array retain];
 	[pool release];

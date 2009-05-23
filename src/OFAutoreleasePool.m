@@ -44,7 +44,7 @@ release_list(void *list)
 	pool_list_key = [[OFTLSKey alloc] initWithDestructor: release_list];
 }
 
-+ (void)addToPool: (OFObject*)obj
++ (void)addObjectToTopmostPool: (OFObject*)obj
 {
 	OFList *pool_list = [OFThread objectForTLSKey: pool_list_key];
 
@@ -64,7 +64,7 @@ release_list(void *list)
 	}
 
 	@try {
-		[[pool_list last]->object addToPool: obj];
+		[[pool_list last]->object addObject: obj];
 	} @catch (OFException *e) {
 		[obj release];
 		@throw e;
@@ -125,12 +125,12 @@ release_list(void *list)
 	[super dealloc];
 }
 
-- addToPool: (OFObject*)obj
+- addObject: (OFObject*)obj
 {
 	if (objects == nil)
 		objects = [[OFMutableArray alloc] init];
 
-	[objects add: obj];
+	[objects addObject: obj];
 	[obj release];
 
 	return self;

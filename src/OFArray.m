@@ -69,7 +69,7 @@
 	self = [self init];
 
 	@try {
-		[array add: &obj];
+		[array addItem: &obj];
 	} @catch (OFException *e) {
 		[self dealloc];
 		@throw e;
@@ -101,9 +101,9 @@
 	self = [self init];
 
 	@try {
-		[array add: &first];
+		[array addItem: &first];
 		while ((obj = va_arg(args, id)) != nil) {
-			[array add: &obj];
+			[array addItem: &obj];
 			[obj retain];
 		}
 	} @catch (OFException *e) {
@@ -122,7 +122,7 @@
 
 	@try {
 		for (obj = objs; *obj != nil; obj++) {
-			[array add: obj];
+			[array addItem: obj];
 			[*obj retain];
 		}
 	} @catch (OFException *e) {
@@ -171,9 +171,9 @@
 	return *((OFObject**)[array itemAtIndex: index]);
 }
 
-- (id)last
+- (id)lastObject
 {
-	return *((OFObject**)[array last]);
+	return *((OFObject**)[array lastItem]);
 }
 
 - (BOOL)isEqual: (id)obj
@@ -200,7 +200,7 @@
 	return YES;
 }
 
-- add: (OFObject*)obj
+- addObject: (OFObject*)obj
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					   andSelector: _cmd];

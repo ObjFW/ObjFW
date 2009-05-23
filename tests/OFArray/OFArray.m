@@ -45,9 +45,9 @@ main()
 	OFArray *b = [OFMutableArray array];
 	OFArray *c = [OFArray arrayWithCArray: c_array];
 
-	[b add: @"Foo"];
-	[b add: @"Bar"];
-	[b add: @"Baz"];
+	[b addObject: @"Foo"];
+	[b addObject: @"Bar"];
+	[b addObject: @"Baz"];
 
 	assert([a count] == 3);
 	assert([b count] == 3);
@@ -56,15 +56,15 @@ main()
 	assert([a isEqual: c]);
 
 	[b removeNObjects: 1];
-	[b add: @"Baz"];
+	[b addObject: @"Baz"];
 	assert([a isEqual: b]);
 
 	[b removeNObjects: 1];
-	[b add: @"Qux"];
+	[b addObject: @"Qux"];
 	assert(![a isEqual: b]);
 
 	CATCH_EXCEPTION([a objectAtIndex: 3], OFOutOfRangeException)
-	CATCH_EXCEPTION([a add: @"foo"], OFNotImplementedException)
+	CATCH_EXCEPTION([a addObject: @"foo"], OFNotImplementedException)
 
 	return 0;
 }

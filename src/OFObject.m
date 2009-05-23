@@ -186,7 +186,7 @@ static struct {
 	return (uint32_t)(intptr_t)self;
 }
 
-- addToMemoryPool: (void*)ptr
+- addItemToMemoryPool: (void*)ptr
 {
 	void **memchunks;
 	size_t memchunks_size;
@@ -358,7 +358,7 @@ static struct {
 
 - autorelease
 {
-	[OFAutoreleasePool addToPool: self];
+	[OFAutoreleasePool addObjectToTopmostPool: self];
 
 	return self;
 }

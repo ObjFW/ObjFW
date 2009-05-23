@@ -33,9 +33,9 @@
 	return new;
 }
 
-- add: (OFObject*)obj
+- addObject: (OFObject*)obj
 {
-	[array add: &obj];
+	[array addItem: &obj];
 	[obj retain];
 
 	return self;

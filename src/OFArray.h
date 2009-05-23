@@ -100,14 +100,14 @@
 /**
  * \return The last object of the OFDataArray
  */
-- (id)last;
+- (id)lastObject;
 
 /**
  * Adds an object to the OFDataArray.
  *
  * \param obj An object to add
  */
-- add: (OFObject*)obj;
+- addObject: (OFObject*)obj;
 
 /**
  * Removes the specified amount of object from the end of the OFDataArray.
