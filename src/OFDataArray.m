@@ -63,7 +63,7 @@ extern int getpagesize(void);
 	return data;
 }
 
-- (void*)item: (size_t)index
+- (void*)itemAtIndex: (size_t)index
 {
 	if (index >= count)
 		@throw [OFOutOfRangeException newWithClass: isa];
@@ -159,12 +159,12 @@ extern int getpagesize(void);
 		if ((ret = memcmp(data, [obj data], [obj count] * itemsize)))
 			return ret;
 
-		return *(char*)[self item: [obj count]];
+		return *(char*)[self itemAtIndex: [obj count]];
 	} else {
 		if ((ret = memcmp(data, [obj data], count * itemsize)))
 			return ret;
 
-		return *(char*)[obj item: count] * -1;
+		return *(char*)[obj itemAtIndex: count] * -1;
 	}
 }
 

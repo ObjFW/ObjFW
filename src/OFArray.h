@@ -95,7 +95,7 @@
  * \param index The number of the object to return
  * \return The specified object of the OFArray
  */
-- (id)object: (size_t)index;
+- (id)objectAtIndex: (size_t)index;
 
 /**
  * \return The last object of the OFDataArray

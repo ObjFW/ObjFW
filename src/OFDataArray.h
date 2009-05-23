@@ -72,7 +72,7 @@
  * \param index The number of the item to return
  * \return The specified item of the OFDataArray
  */
-- (void*)item: (size_t)index;
+- (void*)itemAtIndex: (size_t)index;
 
 /**
  * \return The last item of the OFDataArray

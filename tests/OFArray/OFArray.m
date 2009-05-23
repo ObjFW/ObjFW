@@ -63,7 +63,7 @@ main()
 	[b add: @"Qux"];
 	assert(![a isEqual: b]);
 
-	CATCH_EXCEPTION([a object: 3], OFOutOfRangeException)
+	CATCH_EXCEPTION([a objectAtIndex: 3], OFOutOfRangeException)
 	CATCH_EXCEPTION([a add: @"foo"], OFNotImplementedException)
 
 	return 0;

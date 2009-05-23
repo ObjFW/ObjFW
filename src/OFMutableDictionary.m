@@ -18,8 +18,8 @@
 #import "OFMacros.h"
 
 @implementation OFMutableDictionary
-- set: (OFObject <OFCopying>*)key
-   to: (OFObject*)obj
+- setObject: (OFObject*)obj
+     forKey: (OFObject <OFCopying>*)key
 {
 	uint32_t hash;
 	of_list_object_t *iter, *key_obj;
@@ -60,7 +60,7 @@
 	return self;
 }
 
-- remove: (OFObject*)key
+- removeObjectForKey: (OFObject*)key
 {
 	uint32_t hash;
 	of_list_object_t *iter;

@@ -166,9 +166,9 @@
 	return new;
 }
 
-- (id)object: (size_t)index
+- (id)objectAtIndex: (size_t)index
 {
-	return *((OFObject**)[array item: index]);
+	return *((OFObject**)[array itemAtIndex: index]);
 }
 
 - (id)last

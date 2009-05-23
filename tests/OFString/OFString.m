@@ -102,12 +102,12 @@ main()
 	CHECK(!strcmp([s1 cString], "test: 1230F"))
 
 	a = [@"fooXXbarXXXXbazXXXX" splitWithDelimiter: @"XX"];
-	CHECK([[a object: j++] isEqual: @"foo"])
-	CHECK([[a object: j++] isEqual: @"bar"])
-	CHECK([[a object: j++] isEqual: @""])
-	CHECK([[a object: j++] isEqual: @"baz"])
-	CHECK([[a object: j++] isEqual: @""])
-	CHECK([[a object: j++] isEqual: @""])
+	CHECK([[a objectAtIndex: j++] isEqual: @"foo"])
+	CHECK([[a objectAtIndex: j++] isEqual: @"bar"])
+	CHECK([[a objectAtIndex: j++] isEqual: @""])
+	CHECK([[a objectAtIndex: j++] isEqual: @"baz"])
+	CHECK([[a objectAtIndex: j++] isEqual: @""])
+	CHECK([[a objectAtIndex: j++] isEqual: @""])
 
 	CHECK([[@"foo\"ba'_$" urlencode] isEqual: @"foo%22ba%27_%24"])
 	CHECK([[@"foo%20bar%22%24" urldecode] isEqual: @"foo bar\"$"])

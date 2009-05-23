@@ -315,7 +315,7 @@ void _reference_to_OFIterator_in_OFDictionary()
 	return (float)items / buckets;
 }
 
-- (id)get: (OFObject*)key
+- (id)objectForKey: (OFObject*)key
 {
 	uint32_t hash;
 	of_list_object_t *iter;
@@ -336,14 +336,14 @@ void _reference_to_OFIterator_in_OFDictionary()
 	return nil;
 }
 
-- set: (OFObject <OFCopying>*)key
-   to: (OFObject*)obj
+- setObject: (OFObject*)obj
+     forKey: (OFObject <OFCopying>*)key
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					   andSelector: _cmd];
 }
 
-- remove: (OFObject*)key
+- removeObjectForKey: (OFObject*)key
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					   andSelector: _cmd];

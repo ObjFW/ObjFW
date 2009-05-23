@@ -35,20 +35,20 @@ main()
 	OFString *value1 = [OFString stringWithCString: "value1"];
 	OFString *value2 = [OFString stringWithCString: "value2"];
 
-	[dict set: key1
-	       to: value1];
-	[dict set: key2
-	       to: value2];
+	[dict setObject: value1
+		 forKey: key1];
+	[dict setObject: value2
+		 forKey: key2];
 	[pool release];
 
 	i++;
-	if (strcmp([[dict get: @"key1"] cString], "value1")) {
+	if (strcmp([[dict objectForKey: @"key1"] cString], "value1")) {
 		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}
 
 	i++;
-	if (strcmp([[dict get: key2] cString], "value2")) {
+	if (strcmp([[dict objectForKey: key2] cString], "value2")) {
 		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}
@@ -86,7 +86,7 @@ main()
 	}
 
 	i++;
-	if ([dict get: @"key3"] != nil) {
+	if ([dict objectForKey: @"key3"] != nil) {
 		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}
@@ -97,13 +97,13 @@ main()
 							    @"baz", @"qux",
 							    nil];
 
-	if (![[dict get: @"foo"] isEqual: @"bar"]) {
+	if (![[dict objectForKey: @"foo"] isEqual: @"bar"]) {
 		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}
 
 	i++;
-	if (![[dict get: @"baz"] isEqual: @"qux"]) {
+	if (![[dict objectForKey: @"baz"] isEqual: @"qux"]) {
 		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}
@@ -112,7 +112,7 @@ main()
 	[dict release];
 	dict = [OFDictionary dictionaryWithKey: @"foo"
 				     andObject: @"bar"];
-	if (![[dict get: @"foo"] isEqual: @"bar"]) {
+	if (![[dict objectForKey: @"foo"] isEqual: @"bar"]) {
 		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}
@@ -122,13 +122,13 @@ main()
 	dict = [OFDictionary
 	    dictionaryWithKeys: [OFArray arrayWithObjects: @"k1", @"k2", nil]
 		    andObjects: [OFArray arrayWithObjects: @"o1", @"o2", nil]];
-	if (![[dict get: @"k1"] isEqual: @"o1"]) {
+	if (![[dict objectForKey: @"k1"] isEqual: @"o1"]) {
 		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}
 
 	i++;
-	if (![[dict get: @"k2"] isEqual: @"o2"]) {
+	if (![[dict objectForKey: @"k2"] isEqual: @"o2"]) {
 		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}

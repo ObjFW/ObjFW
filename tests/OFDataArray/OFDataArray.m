@@ -70,11 +70,13 @@ const char *str = "Hallo!";
 	memset(p, 64, 8192);						\
 	[a addNItems: 2							\
 	  fromCArray: p];						\
-	if (!memcmp([a last], [a item: [a count] - 2], 4096) &&		\
-	    !memcmp([a item: [a count] - 2], p, 4096))			\
-		puts("[a last], [a item: [a count] - 2] and p match!");	\
+	if (!memcmp([a last], [a itemAtIndex: [a count] - 2], 4096) &&	\
+	    !memcmp([a itemAtIndex: [a count] - 2], p, 4096))		\
+		puts("[a last], [a itemAtIndex: [a count] - 2] and p "	\
+		    "match!");						\
 	else {								\
-		puts("[a last], [a item: [a count] - 2] and p did not match!");\
+		puts("[a last], [a itemAtIndex: [a count] - 2] and p "	\
+		    "do not match!");					\
 		abort();						\
 	}								\
 	[a freeMem: p];							\
@@ -92,7 +94,8 @@ const char *str = "Hallo!";
 	    OFOutOfRangeException);					\
 									\
 	puts("Trying to access an index that does not exist...");	\
-	CATCH_EXCEPTION([a item: [a count]], OFOutOfRangeException);	\
+	CATCH_EXCEPTION([a itemAtIndex: [a count]],			\
+	    OFOutOfRangeException);					\
 									\
 	[a release];							\
 									\
