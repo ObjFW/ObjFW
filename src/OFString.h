@@ -165,6 +165,15 @@ extern int of_string_check_utf8(const char *str, size_t len);
 - lower;
 
 /**
+ * Replaces all occurrences of a string with another string.
+ *
+ * \param str The string to replace
+ * \param repl The string with which it should be replaced
+ */
+- replaceOccurrencesOfString: (OFString*)str
+		  withString: (OFString*)repl;
+
+/**
  * Splits an OFString into an OFArray of OFStrings.
  *
  * \param delimiter The delimiter for splitting

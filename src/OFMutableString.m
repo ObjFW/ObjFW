@@ -247,4 +247,57 @@
 
 	return self;
 }
+
+- replaceOccurrencesOfString: (OFString*)str
+		  withString: (OFString*)repl
+{
+	const char *str_c = [str cString];
+	const char *repl_c = [repl cString];
+	size_t str_len = [str length];
+	size_t repl_len = [repl length];
+	size_t i, last, tmp_len;
+	char *tmp;
+
+	if (str_len > length)
+		return self;
+
+	tmp = NULL;
+	tmp_len = 0;
+
+	for (i = 0, last = 0; i <= length - str_len; i++) {
+		if (memcmp(string + i, str_c, str_len))
+			continue;
+
+		@try {
+			tmp = [self resizeMem: tmp
+				       toSize: tmp_len + i - last +
+					       repl_len + 1];
+		} @catch (OFException *e) {
+			[self freeMem: tmp];
+			@throw e;
+		}
+		memcpy(tmp + tmp_len, string + last, i - last);
+		memcpy(tmp + tmp_len + i - last, repl_c, repl_len);
+		tmp_len += i - last + repl_len;
+		i += str_len - 1;
+		last = i + 1;
+	}
+
+	@try {
+		tmp = [self resizeMem: tmp
+			       toSize: tmp_len + length - last + 1];
+	} @catch (OFException *e) {
+		[self freeMem: tmp];
+		@throw e;
+	}
+	memcpy(tmp + tmp_len, string + last, length - last);
+	tmp_len += length - last;
+	tmp[tmp_len] = 0;
+
+	[self freeMem: string];
+	string = tmp;
+	length = tmp_len;
+
+	return self;
+}
 @end

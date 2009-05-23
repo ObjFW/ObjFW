@@ -332,6 +332,13 @@ of_string_check_utf8(const char *str, size_t len)
 					   andSelector: _cmd];
 }
 
+- replaceOccurrencesOfString: (OFString*)str
+		  withString: (OFString*)repl
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
+
 - (OFArray*)splitWithDelimiter: (OFString*)delimiter
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];

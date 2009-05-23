@@ -25,7 +25,7 @@
 #define ZD "%u"
 #endif
 
-#define NUM_TESTS 25
+#define NUM_TESTS 27
 #define SUCCESS								\
 	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
 	    (i == NUM_TESTS - 1 ? 32 : 33), i + 1, NUM_TESTS);		\
@@ -113,6 +113,15 @@ main()
 	CHECK([[@"foo%20bar%22%24" urldecode] isEqual: @"foo bar\"$"])
 	CHECK_EXCEPT([@"foo%bar" urldecode], OFInvalidEncodingException)
 	CHECK_EXCEPT([@"foo%FFbar" urldecode], OFInvalidEncodingException)
+
+	s1 = [@"asd fo asd fofo asd" mutableCopy];
+	[s1 replaceOccurrencesOfString: @"fo"
+			    withString: @"foo"];
+	CHECK([s1 isEqual: @"asd foo asd foofoo asd"])
+	s1 = [@"XX" mutableCopy];
+	[s1 replaceOccurrencesOfString: @"X"
+			    withString: @"XX"];
+	CHECK([s1 isEqual: @"XXXX"])
 
 	puts("");
 
