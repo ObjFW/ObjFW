@@ -336,42 +336,57 @@ of_string_check_utf8(const char *str, size_t len)
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFArray *array = nil;
+	OFString *str;
 	const char *delim = [delimiter cString];
 	size_t delim_len = [delimiter length];
 	size_t i, last;
 
 	array = [OFMutableArray array];
 
-	for (i = 0, last = 0; i <= length; i++) {
-		if (OF_UNLIKELY(i == length ||
-		    !memcmp(string + i, delim, delim_len))) {
-			OFString *str;
-			char *tmp;
+	if (delim_len > length) {
+		str = [self copy];
 
-			/*
-			 * We can't use [self allocWithSize:] here as
-			 * self might be a @""-literal.
-			 */
-			if ((tmp = malloc(i - last + 1)) == NULL)
-				@throw [OFNoMemException
-				    newWithClass: isa
-					 andSize: i - last + 1];
-			memcpy(tmp, string + last, i - last);
-			tmp[i - last] = '\0';
-			@try {
-				str = [OFString stringWithCString: tmp];
-			} @finally {
-				free(tmp);
-			}
-
+		@try {
 			[array add: str];
-			[array retain];
-			[pool releaseObjects];
-
-			i += delim_len - 1;
-			last = i + 1;
+		} @finally {
+			[str release];
 		}
+
+		[array retain];
+		[pool release];
+
+		return array;
 	}
+
+	for (i = 0, last = 0; i <= length - delim_len; i++) {
+		char *tmp;
+
+		if (memcmp(string + i, delim, delim_len))
+			continue;
+
+		/*
+		 * We can't use [self allocWithSize:] here as self might be a
+		 * @""-literal.
+		 */
+		if ((tmp = malloc(i - last + 1)) == NULL)
+			@throw [OFNoMemException newWithClass: isa
+						      andSize: i - last + 1];
+		memcpy(tmp, string + last, i - last);
+		tmp[i - last] = '\0';
+		@try {
+			str = [OFString stringWithCString: tmp];
+		} @finally {
+			free(tmp);
+		}
+
+		[array add: str];
+		[array retain];
+		[pool releaseObjects];
+
+		i += delim_len - 1;
+		last = i + 1;
+	}
+	[array add: [OFString stringWithCString: string + last]];
 
 	[array retain];
 	[pool release];
