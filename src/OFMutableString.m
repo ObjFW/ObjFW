@@ -35,7 +35,7 @@
 @implementation OFMutableString
 - (id)copy
 {
-	return [[OFString alloc] initWithCString: string];
+	return [[OFString alloc] initWithString: self];
 }
 
 - setToCString: (const char*)str

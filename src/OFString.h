@@ -35,26 +35,34 @@ extern int of_string_check_utf8(const char *str, size_t len);
 }
 
 /**
- * \return A new autoreleased OFMutableString
+ * \return A new autoreleased OFString
  */
 + string;
 
 /**
  * Creates a new OFString from a C string.
  *
- * \param str A C string to initialize the OFMutableString with
- * \return A new autoreleased OFMutableString
+ * \param str A C string to initialize the OFString with
+ * \return A new autoreleased OFString
  */
 + stringWithCString: (const char*)str;
 
 /**
- * Creates a new OFString from a format C string.
+ * Creates a new OFString from a format string.
  * See printf for the format syntax.
  *
- * \param fmt A string used as format to initialize the OFMutableString
- * \return A new autoreleased OFMutableString
+ * \param fmt A string used as format to initialize the OFString
+ * \return A new autoreleased OFString
  */
 + stringWithFormat: (OFString*)fmt, ...;
+
+/**
+ * Creates a new OFString from another string.
+ *
+ * \param str A string to initialize the OFString with
+ * \return A new autoreleased OFString
+ */
++ stringWithString: (OFString*)str;
 
 /**
  * Initializes an already allocated OFString.
@@ -64,32 +72,40 @@ extern int of_string_check_utf8(const char *str, size_t len);
 - init;
 
 /**
- * Initializes an already allocated OFMutableString from a C string.
+ * Initializes an already allocated OFString with a C string.
  *
- * \param str A C string to initialize the OFMutableString with
- * \return An initialized OFMutableString
+ * \param str A C string to initialize the OFString with
+ * \return An initialized OFString
  */
 - initWithCString: (const char*)str;
 
 /**
- * Initializes an already allocated OFMutableString from a format C string.
+ * Initializes an already allocated OFString with a format string.
  * See printf for the format syntax.
  *
- * \param fmt A string used as format to initialize the OFMutableString
- * \return An initialized OFMutableString
+ * \param fmt A string used as format to initialize the OFString
+ * \return An initialized OFString
  */
 - initWithFormat: (OFString*)fmt, ...;
 
 /**
- * Initializes an already allocated OFMutableString from a format C string.
+ * Initializes an already allocated OFString with a format string.
  * See printf for the format syntax.
  *
- * \param fmt A string used as format to initialize the OFMutableString
+ * \param fmt A string used as format to initialize the OFString
  * \param args The arguments used in the format string
- * \return An initialized OFMutableString
+ * \return An initialized OFString
  */
 - initWithFormat: (OFString*)fmt
     andArguments: (va_list)args;
+
+/**
+ * Initializes an already allocated OFString with another string.
+ *
+ * \param str A string to initialize the OFString with
+ * \return An initialized OFString
+ */
+- initWithString: (OFString*)str;
 
 /**
  * \return The OFString as a C string

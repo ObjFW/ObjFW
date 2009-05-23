@@ -130,6 +130,11 @@ of_string_check_utf8(const char *str, size_t len)
 	return ret;
 }
 
++ stringWithString: (OFString*)str
+{
+	return [[[self alloc] initWithString: str] autorelease];
+}
+
 - init
 {
 	[super init];
@@ -231,6 +236,29 @@ of_string_check_utf8(const char *str, size_t len)
 	return self;
 }
 
+- initWithString: (OFString*)str
+{
+	self = [super init];
+
+	string = strdup([str cString]);
+	length = [str length];
+
+	@try {
+		[self addItemToMemoryPool: string];
+	} @catch (OFException *e) {
+		/*
+		 * We can't use [super dealloc] on OS X here.
+		 * Compiler bug? Anyway, [self dealloc] will do here as we
+		 * don't reimplement dealloc.
+		 */
+		free(string);
+		[self dealloc];
+		@throw e;
+	}
+
+	return self;
+}
+
 - (const char*)cString
 {
 	return string;
@@ -248,7 +276,7 @@ of_string_check_utf8(const char *str, size_t len)
 
 - (id)mutableCopy
 {
-	return [[OFMutableString alloc] initWithCString: string];
+	return [[OFMutableString alloc] initWithString: self];
 }
 
 - (BOOL)isEqual: (id)obj
