@@ -27,6 +27,9 @@
 {
 	WSADATA wsa;
 
+	if (self != [OFSocket class])
+		return;
+
 	if (WSAStartup(MAKEWORD(2, 0), &wsa))
 		@throw [OFInitializationFailedException newWithClass: self];
 }

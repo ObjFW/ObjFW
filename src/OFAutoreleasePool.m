@@ -38,6 +38,9 @@ release_list(void *list)
 @implementation OFAutoreleasePool
 + (void)initialize
 {
+	if (self != [OFAutoreleasePool class])
+		return;
+
 	pool_list_key = [[OFTLSKey alloc] initWithDestructor: release_list];
 }
 
