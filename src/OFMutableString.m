@@ -9,7 +9,7 @@
  * the packaging of this file.
  */
 
-#import "config.h"
+#include "config.h"
 
 #define _GNU_SOURCE
 #include <stdarg.h>

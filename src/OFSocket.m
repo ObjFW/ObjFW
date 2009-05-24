@@ -9,7 +9,7 @@
  * the packaging of this file.
  */
 
-#import "config.h"
+#include "config.h"
 
 #include <string.h>
 #include <fcntl.h>

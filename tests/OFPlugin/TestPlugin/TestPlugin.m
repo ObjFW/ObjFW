@@ -9,6 +9,8 @@
  * the packaging of this file.
  */
 
+#include "config.h"
+
 #import "TestPlugin.h"
 
 @implementation TestPlugin

@@ -9,7 +9,7 @@
  * the packaging of this file.
  */
 
-#import "config.h"
+#include "config.h"
 
 #import "OFList.h"
 #import "OFExceptions.h"
