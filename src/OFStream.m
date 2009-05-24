@@ -18,7 +18,11 @@
 #import "OFExceptions.h"
 #import "OFMacros.h"
 
-extern int getpagesize(void);
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+static int pagesize = 0;
 
 @implementation OFStream
 - init
@@ -26,6 +30,18 @@ extern int getpagesize(void);
 	self = [super init];
 
 	cache = NULL;
+
+#ifndef _WIN32
+	if (pagesize == 0)
+		if ((pagesize = sysconf(_SC_PAGESIZE)) == -1)
+			pagesize = 4096;
+#else
+	if (pagesize == 0) {
+		SYSTEM_INFO si;
+		GetSystemInfo(&si);
+		pagesize = si.dwPageSize - 1;
+	}
+#endif
 
 	return self;
 }
@@ -77,11 +93,11 @@ extern int getpagesize(void);
 	}
 
 	/* Read until we get a newline or \0 */
-	tmp = [self allocWithSize: getpagesize()];
+	tmp = [self allocWithSize: pagesize];
 
 	for (;;) {
 		@try {
-			len = [self readNBytes: getpagesize() - 1
+			len = [self readNBytes: pagesize - 1
 				    intoBuffer: tmp];
 		} @catch (OFException *e) {
 			[self freeMem: tmp];

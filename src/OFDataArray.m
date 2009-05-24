@@ -20,8 +20,11 @@
 #import "OFExceptions.h"
 #import "OFMacros.h"
 
-static size_t lastpagebyte = 0;
-extern int getpagesize(void);
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+static int lastpagebyte = 0;
 
 @implementation OFDataArray
 + dataArrayWithItemSize: (size_t)is
@@ -187,8 +190,17 @@ extern int getpagesize(void);
 {
 	self = [super initWithItemSize: is];
 
-	if (lastpagebyte == 0)
-		lastpagebyte = getpagesize() - 1;
+	if (lastpagebyte == 0) {
+#ifndef _WIN32
+		if ((lastpagebyte = sysconf(_SC_PAGESIZE)) == -1)
+			lastpagebyte = 4096;
+		lastpagebyte--;
+#else
+		SYSTEM_INFO si;
+		GetSystemInfo(&si);
+		lastpagebyte = si.dwPageSize - 1;
+#endif
+	}
 
 	return self;
 }
