@@ -14,7 +14,7 @@ run: ${PROG_NOINST}
 	rm -f libobjfw.so.0 libobjfw.so.0.1 libobjfw.dll libobjfw.dylib
 	ln -s ../../src/libobjfw.so libobjfw.so.0
 	ln -s ../../src/libobjfw.so libobjfw.so.0.1
-	ln -s ../../src/libobjfw.dll libobjfw.dll
+	ln ../../src/libobjfw.dll libobjfw.dll
 	ln -s ../../src/libobjfw.dylib libobjfw.dylib
 	LD_LIBRARY_PATH=.$${LD_LIBRARY_PATH+:}$$LD_LIBRARY_PATH \
 	DYLD_LIBRARY_PATH=.$${DYLD_LIBRARY_PATH+:}$$DYLD_LIBRARY_PATH \
