@@ -379,13 +379,8 @@ of_string_check_utf8(const char *str, size_t len)
 	array = [OFMutableArray array];
 
 	if (delim_len > length) {
-		str = [self copy];
-
-		@try {
-			[array addObject: str];
-		} @finally {
-			[str release];
-		}
+		str = [[self copy] autorelease];
+		[array addObject: str];
 
 		[array retain];
 		[pool release];
