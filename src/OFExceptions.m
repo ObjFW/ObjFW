@@ -30,15 +30,27 @@
 #ifndef _WIN32
 #include <errno.h>
 #define GET_ERR	     errno
+#ifndef HAVE_GETADDRINFO
+#define GET_AT_ERR   h_errno
+#else
+#define GET_AT_ERR   errno
+#endif
 #define GET_SOCK_ERR errno
 #define ERRFMT	     "Error string was: %s"
 #define ERRPARAM     strerror(err)
+#ifndef HAVE_GETADDRINFO
+#define AT_ERRPARAM  hstrerror(err)
+#else
+#define AT_ERRPARAM  strerror(err)
+#endif
 #else
 #include <windows.h>
 #define GET_ERR	     GetLastError()
+#define GET_AT_ERR   WSAGetLastError()
 #define GET_SOCK_ERR WSAGetLastError()
 #define ERRFMT	     "Error code was: %d"
 #define ERRPARAM     err
+#define AT_ERRPARAM  err
 #endif
 
 #ifndef HAVE_ASPRINTF
@@ -525,7 +537,7 @@
 
 	node = [node_ retain];
 	service = [service_ retain];
-	err = GET_SOCK_ERR;
+	err = GET_AT_ERR;
 
 	return self;
 }
@@ -552,7 +564,7 @@
 			    @"connection or you specified an invalid node or "
 			    @"service. " ERRFMT,
 			    [service cString], [node cString], [class name],
-			    ERRPARAM];
+			    AT_ERRPARAM];
 
 	return string;
 }

@@ -15,6 +15,11 @@
 #include <string.h>
 #include <unistd.h>
 
+#ifndef HAVE_GETADDRINFO
+#include <stdlib.h>
+#include <arpa/inet.h>
+#endif
+
 #import "OFTCPSocket.h"
 #import "OFExceptions.h"
 
@@ -22,7 +27,21 @@
 #define INVALID_SOCKET -1
 #endif
 
+#ifndef HAVE_GETADDRINFO
+#import "OFThread.h"
+
+static OFObject *lock = nil;
+#endif
+
 @implementation OFTCPSocket
+#ifndef HAVE_GETADDRINFO
++ (void)initialize
+{
+	if (self == [OFTCPSocket class])
+		lock = [[OFObject alloc] init];
+}
+#endif
+
 + socket
 {
 	return [[[OFTCPSocket alloc] init] autorelease];
@@ -49,10 +68,11 @@
 - connectToService: (OFString*)service
 	    onNode: (OFString*)node
 {
-	struct addrinfo hints, *res, *res0;
-
 	if (sock != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException newWithClass: isa];
+
+#ifdef HAVE_GETADDRINFO
+	struct addrinfo hints, *res, *res0;
 
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
@@ -79,6 +99,58 @@
 	}
 
 	freeaddrinfo(res0);
+#else
+	BOOL connected = NO;
+	struct hostent *he;
+	struct servent *se;
+	struct sockaddr_in addr;
+	uint16_t port;
+	char **ip;
+
+	@synchronized (lock) {
+		if ((he = gethostbyname([node cString])) == NULL)
+			@throw [OFAddressTranslationFailedException
+			    newWithClass: isa
+				 andNode: node
+			      andService: service];
+
+		if ((se = getservbyname([service cString], "TCP")) != NULL)
+			port = se->s_port;
+		else if ((port = htons(atoi([service cString]))) == 0)
+			@throw [OFAddressTranslationFailedException
+			    newWithClass: isa
+				 andNode: node
+			      andService: service];
+
+		memset(&addr, 0, sizeof(addr));
+		addr.sin_family = AF_INET;
+		addr.sin_port = port;
+
+		if (he->h_addrtype != AF_INET ||
+		    (sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
+			@throw [OFConnectionFailedException
+			    newWithClass: isa
+				 andNode: node
+			      andService: service];
+
+		for (ip = he->h_addr_list; *ip != NULL; ip++) {
+			memcpy(&addr.sin_addr.s_addr, *ip, he->h_length);
+
+			if (connect(sock, (struct sockaddr*)&addr,
+			    sizeof(addr)) == -1)
+				continue;
+
+			connected = YES;
+
+			break;
+		}
+
+		if (!connected) {
+			close(sock);
+			sock = INVALID_SOCKET;
+		}
+	}
+#endif
 
 	if (sock == INVALID_SOCKET)
 		@throw [OFConnectionFailedException newWithClass: isa
@@ -92,8 +164,6 @@
        onNode: (OFString*)node
    withFamily: (int)family
 {
-	struct addrinfo hints, *res;
-
 	if (sock != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException newWithClass: isa];
 
@@ -102,6 +172,9 @@
 						   andNode: node
 						andService: service
 						 andFamily: family];
+
+#ifdef HAVE_GETADDRINFO
+	struct addrinfo hints, *res;
 
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = family;
@@ -122,6 +195,52 @@
 	}
 
 	freeaddrinfo(res);
+#else
+	struct hostent *he;
+	struct servent *se;
+	struct sockaddr_in addr;
+	uint16_t port;
+
+	if (family != AF_INET)
+		@throw [OFBindFailedException newWithClass: isa
+						   andNode: node
+						andService: service
+						 andFamily: family];
+
+	@synchronized (lock) {
+		if ((he = gethostbyname([node cString])) == NULL)
+			@throw [OFAddressTranslationFailedException
+			    newWithClass: isa
+				 andNode: node
+			      andService: service];
+
+		if ((se = getservbyname([service cString], "TCP")) != NULL)
+			port = se->s_port;
+		else if ((port = htons(atoi([service cString]))) == 0)
+			@throw [OFAddressTranslationFailedException
+			    newWithClass: isa
+				 andNode: node
+			      andService: service];
+
+		memset(&addr, 0, sizeof(addr));
+		addr.sin_family = AF_INET;
+		addr.sin_port = port;
+
+		if (he->h_addrtype != AF_INET || he->h_addr_list[0] == NULL)
+			@throw [OFAddressTranslationFailedException
+			    newWithClass: isa
+				 andNode: node
+			      andService: service];
+
+		memcpy(&addr.sin_addr.s_addr, he->h_addr_list[0], he->h_length);
+
+		if (bind(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1)
+			@throw [OFBindFailedException newWithClass: isa
+							   andNode: node
+							andService: service
+							 andFamily: family];
+	}
+#endif
 
 	return self;
 }
