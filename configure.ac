@@ -140,6 +140,8 @@ AC_SUBST(NO_CONST_CFSTRINGS)
 AC_CHECK_HEADER(objc/runtime.h,
 	[AC_DEFINE(HAVE_OBJC_RUNTIME_H, 1, [Whether we have objc/runtime.h])])
 
+AC_CHECK_FUNC(objc_sync_enter,, AC_SUBST(OBJC_SYNC_M, "objc_sync.m"))
+
 test x"$GCC" = x"yes" && CFLAGS="$CFLAGS -Werror"
 if test x"$GOBJC" = x"yes"; then
 	old_OBJCFLAGS="$OBJCFLAGS"
