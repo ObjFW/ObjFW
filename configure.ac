@@ -50,7 +50,7 @@ AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
 
 AC_CHECK_FUNC(asprintf, [
 	have_asprintf="yes"
-	AC_DEFINE(HAVE_ASPRINTF, 1, "Whether we have asprintf")], [
+	AC_DEFINE(HAVE_ASPRINTF, 1, [Whether we have asprintf])], [
 	have_asprintf="no"
 	AC_SUBST(ASPRINTF_C, "asprintf.c")])
 
@@ -121,7 +121,7 @@ AC_MSG_RESULT($ac_cv_have_ipv6)
 test x"$ac_cv_have_ipv6" = x"yes" && \
 	AC_DEFINE(HAVE_IPV6, 1, "Whether we have IPv6 support")
 
-AC_CHECK_HEADERS(sys/mman.h)
+AC_CHECK_FUNC(madvise, [AC_DEFINE(HAVE_MADVISE, 1, [Whether we have madvise])])
 
 AC_LANG([Objective C])
 AC_PROG_OBJC

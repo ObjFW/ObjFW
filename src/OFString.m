@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef HAVE_SYS_MMAN_H
+#ifdef HAVE_MADVISE
 #include <sys/mman.h>
 #else
 #define madvise(addr, len, advise)
