@@ -16,9 +16,15 @@
 
 #ifndef _WIN32
 #include <pthread.h>
-#else
+#endif
+
+#import <objc/objc.h>
+
+#ifdef _WIN32
 #include <windows.h>
 #endif
+
+#import "OFMacros.h"
 
 struct locks_s {
 	id		obj;
@@ -33,7 +39,6 @@ struct locks_s {
 #endif
 };
 
-static int initialized = 0;
 #ifndef _WIN32
 static pthread_mutex_t mutex;
 #else
@@ -42,63 +47,110 @@ static HANDLE mutex;
 static struct locks_s *locks = NULL;
 static size_t num_locks = 0;
 
+#ifndef _WIN32
+static OF_INLINE BOOL
+mutex_new(pthread_mutex_t *m)
+{
+	return (pthread_mutex_init(m, NULL) ? NO : YES);
+}
+
+static OF_INLINE BOOL
+mutex_free(pthread_mutex_t *m)
+{
+	return (pthread_mutex_destroy(m) ? NO : YES);
+}
+
+static OF_INLINE BOOL
+mutex_lock(pthread_mutex_t *m)
+{
+	return (pthread_mutex_lock(m) ? NO : YES);
+}
+
+static OF_INLINE BOOL
+mutex_unlock(pthread_mutex_t *m)
+{
+	return (pthread_mutex_unlock(m) ? NO : YES);
+}
+
+static OF_INLINE BOOL
+thread_is_current(pthread_t t)
+{
+	return (pthread_equal(t, pthread_self()) ? YES : NO);
+}
+
+static OF_INLINE pthread_t
+thread_current()
+{
+	return pthread_self();
+}
+#else
+static OF_INLINE BOOL
+mutex_new(HANDLE *m)
+{
+	return (((*m = CreateMutex(NULL, FALSE, NULL)) != NULL) ? YES : NO);
+}
+
+static OF_INLINE BOOL
+mutex_free(HANDLE *m)
+{
+	return (CloseHandle(*m) ? YES : NO);
+}
+
+static OF_INLINE BOOL
+mutex_lock(HANDLE *m)
+{
+	return (WaitForSingleObject(*m, INFINITE) == WAIT_OBJECT_0 ? YES : NO);
+}
+
+static OF_INLINE BOOL
+mutex_unlock(HANDLE *m)
+{
+	return (ReleaseMutex(*m) ? YES : NO);
+}
+
+static OF_INLINE BOOL
+thread_is_current(HANDLE t)
+{
+	return (t == GetCurrentThread() ? YES : NO);
+}
+
+static OF_INLINE HANDLE
+thread_current()
+{
+	return GetCurrentThread();
+}
+#endif
+
+BOOL
+objc_sync_init()
+{
+	return (mutex_new(&mutex) ? YES : NO);
+}
+
 int
 objc_sync_enter(id obj)
 {
 	size_t i;
 
-	/*
-	 * FIXME:
-	 * Theoretically, it's possible to encounter a race condition during
-	 * initialization.
-	 */
-	if (!initialized) {
-#ifndef _WIN32
-		if (pthread_mutex_init(&mutex, NULL))
-#else
-		if ((mutex = CreateMutex(NULL, FALSE, NULL)) == NULL)
-#endif
-			return 1;
+	if (obj == nil)
+		return 0;
 
-		initialized = 1;
-	}
-
-#ifndef _WIN32
-	if (pthread_mutex_lock(&mutex))
-#else
-	if (WaitForSingleObject(mutex, INFINITE) != WAIT_OBJECT_0)
+	if (!mutex_lock(&mutex))
 		return 1;
-#endif
 
 	for (i = 0; i < num_locks; i++) {
 		if (locks[i].obj == obj) {
-#ifndef _WIN32
-			if (pthread_equal(pthread_self(), locks[i].thread))
-#else
-			if (locks[i].thread == GetCurrentThread())
-#endif
+			if (thread_is_current(locks[i].thread))
 				locks[i].recursion++;
 			else
-#ifndef _WIN32
-				if (pthread_mutex_lock(&locks[i].mutex)) {
-					pthread_mutex_unlock(&mutex);
+				if (!mutex_lock(&locks[i].mutex)) {
+					mutex_unlock(&mutex);
 					return 1;
 				}
-#else
-				if (WaitForSingleObject(locks[i].mutex,
-				    INFINITE) != WAIT_OBJECT_0) {
-					ReleaseMutex(mutex);
-					return 1;
-				}
-#endif
 
 			locks[i].count++;
 
-#ifndef _WIN32
-			if (pthread_mutex_unlock(&locks[i].mutex))
-#else
-			if (!ReleaseMutex(mutex))
-#endif
+			if (!mutex_unlock(&mutex))
 				return 1;
 
 			return 0;
@@ -107,11 +159,7 @@ objc_sync_enter(id obj)
 
 	if (locks == NULL) {
 		if ((locks = malloc(sizeof(struct locks_s))) == NULL) {
-#ifndef _WIN32
-			pthread_mutex_unlock(&mutex);
-#else
-			ReleaseMutex(mutex);
-#endif
+			mutex_unlock(&mutex);
 			return 1;
 		}
 	} else {
@@ -119,11 +167,7 @@ objc_sync_enter(id obj)
 
 		if ((new_locks = realloc(locks, (num_locks + 1) *
 		    sizeof(struct locks_s))) == NULL) {
-#ifndef _WIN32
-			pthread_mutex_unlock(&mutex);
-#else
-			ReleaseMutex(mutex);
-#endif
+			mutex_unlock(&mutex);
 			return 1;
 		}
 
@@ -133,35 +177,21 @@ objc_sync_enter(id obj)
 	locks[num_locks].obj = obj;
 	locks[num_locks].count = 1;
 	locks[num_locks].recursion = 0;
+	locks[num_locks].thread = thread_current();
 
-#ifndef _WIN32
-	locks[num_locks].thread = pthread_self();
-
-	if (pthread_mutex_init(&locks[num_locks].mutex, NULL)) {
-		pthread_mutex_unlock(&mutex);
+	if (!mutex_new(&locks[num_locks].mutex)) {
+		mutex_unlock(&mutex);
 		return 1;
 	}
 
-	if (pthread_mutex_lock(&locks[num_locks].mutex)) {
-		pthread_mutex_unlock(&mutex);
+	if (!mutex_lock(&locks[num_locks].mutex)) {
+		mutex_unlock(&mutex);
 		return 1;
 	}
-#else
-	locks[num_locks].thread = GetCurrentThread();
-
-	if ((locks[num_locks].mutex = CreateMutex(NULL, TRUE, NULL)) == NULL) {
-		ReleaseMutex(mutex);
-		return 1;
-	}
-#endif
 
 	num_locks++;
 
-#ifndef _WIN32
-	if (pthread_mutex_unlock(&mutex))
-#else
-	if (!ReleaseMutex(mutex))
-#endif
+	if (!mutex_unlock(&mutex))
 		return 1;
 
 	return 0;
@@ -172,98 +202,58 @@ objc_sync_exit(id obj)
 {
 	size_t i;
 
-#ifndef _WIN32
-	if (pthread_mutex_lock(&mutex))
-#else
-	if (WaitForSingleObject(mutex, INFINITE) != WAIT_OBJECT_0)
+	if (obj == nil)
+		return 0;
+
+	if (!mutex_lock(&mutex))
 		return 1;
-#endif
 
 	for (i = 0; i < num_locks; i++) {
 		if (locks[i].obj == obj) {
-#ifndef _WIN32
-			if (pthread_equal(pthread_self(), locks[i].thread) &&
-			    locks[i].recursion) {
+			if (locks[i].recursion > 0 &&
+			    thread_is_current(locks[i].thread)) {
 				locks[i].recursion--;
 
-				if (pthread_mutex_unlock(&mutex))
+				if (!mutex_unlock(&mutex))
 					return 1;
 
 				return 0;
 			}
-#else
-			if (locks[i].thread == GetCurrentThread() &&
-			    locks[i].recursion) {
-				locks[i].recursion--;
 
-				if (!ReleaseMutex(mutex))
-					return 1;
-
-				return 0;
-			}
-#endif
-
-#ifndef _WIN32
-			if (pthread_mutex_unlock(&locks[i].mutex)) {
-				pthread_mutex_unlock(&mutex);
+			if (!mutex_unlock(&locks[i].mutex)) {
+				mutex_unlock(&mutex);
 				return 1;
 			}
-#else
-			if (!ReleaseMutex(locks[i].mutex)) {
-				ReleaseMutex(mutex);
-				return 1;
-			}
-#endif
 
 			locks[i].count--;
 
 			if (locks[i].count == 0) {
 				struct locks_s *new_locks;
 
-#ifndef _WIN32
-				if (pthread_mutex_destroy(&locks[i].mutex)) {
-					pthread_mutex_unlock(&mutex);
+				if (!mutex_free(&locks[i].mutex)) {
+					mutex_unlock(&mutex);
 					return 1;
 				}
-#else
-				if (!CloseHandle(locks[i].mutex)) {
-					ReleaseMutex(mutex);
-					return 1;
-				}
-#endif
 
 				num_locks--;
 				locks[i] = locks[num_locks];
 
 				if ((new_locks = realloc(locks, (num_locks) *
 				    sizeof(struct locks_s))) == NULL) {
-#ifndef _WIN32
-					pthread_mutex_unlock(&mutex);
-#else
-					ReleaseMutex(mutex);
-#endif
+					mutex_unlock(&mutex);
 					return 1;
 				}
 
 				locks = new_locks;
 			}
 
-#ifndef _WIN32
-			if (pthread_mutex_unlock(&mutex))
-#else
-			if (!ReleaseMutex(mutex))
-#endif
+			if (!mutex_unlock(&mutex))
 				return 1;
 
 			return 0;
 		}
 	}
 
-#ifndef _WIN32
-	pthread_mutex_unlock(&mutex);
-#else
-	ReleaseMutex(mutex);
-#endif
-
+	mutex_unlock(&mutex);
 	return 1;
 }

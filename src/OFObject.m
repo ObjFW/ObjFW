@@ -11,6 +11,7 @@
 
 #include "config.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
@@ -40,9 +41,19 @@ static struct {
 	Class isa;
 } alloc_failed_exception;
 
+#ifdef NEED_OBJC_SYNC_INIT
+extern BOOL objc_sync_init();
+#endif
+
 @implementation OFObject
 + (void)initialize
 {
+#ifdef NEED_OBJC_SYNC_INIT
+	if (!objc_sync_init()) {
+		fputs("Runtime error: objc_sync_init() failed!\n", stderr);
+		abort();
+	}
+#endif
 }
 
 + alloc
