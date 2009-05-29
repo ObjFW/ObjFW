@@ -31,9 +31,9 @@
 	suffixlen = strlen(PLUGIN_SUFFIX);
 
 	if ((file = malloc(pathlen + suffixlen + 1)) == NULL) {
-		@throw [OFNoMemException newWithClass: self
-					      andSize: pathlen +
-					      suffixlen + 1];
+		@throw [OFOutOfMemoryException newWithClass: self
+						    andSize: pathlen +
+							     suffixlen + 1];
 	}
 	memcpy(file, [path cString], pathlen);
 	memcpy(file + pathlen, PLUGIN_SUFFIX, suffixlen);

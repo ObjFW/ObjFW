@@ -43,8 +43,8 @@ resize(char **str, size_t *len, size_t add, Class class)
 		if (*str)
 			free(*str);
 		*str = NULL;
-		@throw [OFNoMemException newWithClass: class
-					      andSize: len2];
+		@throw [OFOutOfMemoryException newWithClass: class
+						    andSize: len2];
 	}
 
 	*str = str2;
@@ -76,8 +76,8 @@ append(char **str, size_t *len, size_t *pos, const char *add, Class class)
 
 	len++;
 	if ((ret = malloc(len)) == NULL)
-		@throw [OFNoMemException newWithClass: self
-					      andSize: len];
+		@throw [OFOutOfMemoryException newWithClass: self
+						    andSize: len];
 
 	@try {
 		for (i = 0; *s; s++) {
@@ -174,8 +174,8 @@ append(char **str, size_t *len, size_t *pos, const char *add, Class class)
 	len += 3;
 
 	if ((xml = malloc(len)) == NULL)
-		@throw [OFNoMemException newWithClass: self
-					      andSize: len];
+		@throw [OFOutOfMemoryException newWithClass: self
+						    andSize: len];
 
 	i = 0;
 	xml[i++] = '<';
@@ -250,8 +250,8 @@ append(char **str, size_t *len, size_t *pos, const char *add, Class class)
 	len++;
 
 	if ((ret = malloc(len)) == NULL)
-		@throw [OFNoMemException newWithClass: self
-					      andSize: len];
+		@throw [OFOutOfMemoryException newWithClass: self
+						    andSize: len];
 
 	memcpy(ret, strs[0], len - 1);
 	pos = len - 1;

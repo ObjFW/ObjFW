@@ -197,7 +197,7 @@ extern BOOL objc_sync_init();
 	return (uint32_t)(intptr_t)self;
 }
 
-- addItemToMemoryPool: (void*)ptr
+- addMemoryToPool: (void*)ptr
 {
 	void **memchunks;
 	size_t memchunks_size;
@@ -210,8 +210,8 @@ extern BOOL objc_sync_init();
 
 	if ((memchunks = realloc(PRE_IVAR->memchunks,
 	    memchunks_size * sizeof(void*))) == NULL)
-		@throw [OFNoMemException newWithClass: isa
-					      andSize: memchunks_size];
+		@throw [OFOutOfMemoryException newWithClass: isa
+						    andSize: memchunks_size];
 
 	PRE_IVAR->memchunks = memchunks;
 	PRE_IVAR->memchunks[PRE_IVAR->memchunks_size] = ptr;
@@ -220,7 +220,7 @@ extern BOOL objc_sync_init();
 	return self;
 }
 
-- (void*)allocWithSize: (size_t)size
+- (void*)allocMemoryWithSize: (size_t)size
 {
 	void *ptr, **memchunks;
 	size_t memchunks_size;
@@ -235,14 +235,14 @@ extern BOOL objc_sync_init();
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	if ((ptr = malloc(size)) == NULL)
-		@throw [OFNoMemException newWithClass: isa
-					      andSize: size];
+		@throw [OFOutOfMemoryException newWithClass: isa
+						    andSize: size];
 
 	if ((memchunks = realloc(PRE_IVAR->memchunks,
 	    memchunks_size * sizeof(void*))) == NULL) {
 		free(ptr);
-		@throw [OFNoMemException newWithClass: isa
-					      andSize: memchunks_size];
+		@throw [OFOutOfMemoryException newWithClass: isa
+						    andSize: memchunks_size];
 	}
 
 	PRE_IVAR->memchunks = memchunks;
@@ -252,8 +252,8 @@ extern BOOL objc_sync_init();
 	return ptr;
 }
 
-- (void*)allocNItems: (size_t)nitems
-	    withSize: (size_t)size
+- (void*)allocMemoryForNItems: (size_t)nitems
+		     withSize: (size_t)size
 {
 	if (nitems == 0 || size == 0)
 		return NULL;
@@ -261,19 +261,19 @@ extern BOOL objc_sync_init();
 	if (nitems > SIZE_MAX / size)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	return [self allocWithSize: nitems * size];
+	return [self allocMemoryWithSize: nitems * size];
 }
 
-- (void*)resizeMem: (void*)ptr
-	    toSize: (size_t)size
+- (void*)resizeMemory: (void*)ptr
+	       toSize: (size_t)size
 {
 	void **iter;
 
 	if (ptr == NULL)
-		return [self allocWithSize: size];
+		return [self allocMemoryWithSize: size];
 
 	if (size == 0) {
-		[self freeMem: ptr];
+		[self freeMemory: ptr];
 		return NULL;
 	}
 
@@ -282,39 +282,40 @@ extern BOOL objc_sync_init();
 	while (iter-- > PRE_IVAR->memchunks) {
 		if (OF_UNLIKELY(*iter == ptr)) {
 			if (OF_UNLIKELY((ptr = realloc(ptr, size)) == NULL))
-				@throw [OFNoMemException newWithClass: isa
-							      andSize: size];
+				@throw [OFOutOfMemoryException
+				    newWithClass: isa
+					 andSize: size];
 
 			*iter = ptr;
 			return ptr;
 		}
 	}
 
-	@throw [OFMemNotPartOfObjException newWithClass: isa
-					     andPointer: ptr];
+	@throw [OFMemoryNotPartOfObjectException newWithClass: isa
+						   andPointer: ptr];
 }
 
-- (void*)resizeMem: (void*)ptr
-	  toNItems: (size_t)nitems
-	  withSize: (size_t)size
+- (void*)resizeMemory: (void*)ptr
+	     toNItems: (size_t)nitems
+	     withSize: (size_t)size
 {
 	if (ptr == NULL)
-		return [self allocNItems: nitems
-				withSize: size];
+		return [self allocMemoryForNItems: nitems
+					 withSize: size];
 
 	if (nitems == 0 || size == 0) {
-		[self freeMem: ptr];
+		[self freeMemory: ptr];
 		return NULL;
 	}
 
 	if (nitems > SIZE_MAX / size)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	return [self resizeMem: ptr
-			toSize: nitems * size];
+	return [self resizeMemory: ptr
+			   toSize: nitems * size];
 }
 
-- freeMem: (void*)ptr;
+- freeMemory: (void*)ptr;
 {
 	void **iter, *last, **memchunks;
 	size_t i, memchunks_size;
@@ -356,8 +357,8 @@ extern BOOL objc_sync_init();
 		}
 	}
 
-	@throw [OFMemNotPartOfObjException newWithClass: isa
-					     andPointer: ptr];
+	@throw [OFMemoryNotPartOfObjectException newWithClass: isa
+						   andPointer: ptr];
 }
 
 - retain

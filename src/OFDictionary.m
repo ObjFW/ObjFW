@@ -68,8 +68,8 @@ void _reference_to_OFIterator_in_OFDictionary()
 	size = 4096;
 
 	@try {
-		data = [self allocNItems: size
-				withSize: sizeof(OFList*)];
+		data = [self allocMemoryForNItems: size
+					 withSize: sizeof(OFList*)];
 	} @catch (OFException *e) {
 		/*
 		 * We can't use [super dealloc] on OS X here. Compiler bug?
@@ -98,8 +98,8 @@ void _reference_to_OFIterator_in_OFDictionary()
 	size = (size_t)1 << hashsize;
 
 	@try {
-		data = [self allocNItems: size
-				withSize: sizeof(OFList*)];
+		data = [self allocMemoryForNItems: size
+					 withSize: sizeof(OFList*)];
 	} @catch (OFException *e) {
 		/*
 		 * We can't use [super dealloc] on OS X here. Compiler bug?

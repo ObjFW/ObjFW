@@ -39,63 +39,65 @@ main()
 	/* Test freeing memory not allocated by obj */
 	puts("Freeing memory not allocated by object (should throw an "
 	    "exception)...");
-	CATCH_EXCEPTION([obj freeMem: NULL], OFMemNotPartOfObjException)
+	CATCH_EXCEPTION([obj freeMemory: NULL],
+	    OFMemoryNotPartOfObjectException)
 
 	/* Test allocating memory */
 	puts("Allocating memory through object...");
-	p = [obj allocWithSize: 4096];
+	p = [obj allocMemoryWithSize: 4096];
 	puts("Allocated 4096 bytes.");
 
 	/* Test freeing the just allocated memory */
 	puts("Freeing just allocated memory...");
-	[obj freeMem: p];
+	[obj freeMemory: p];
 	puts("Free'd.");
 
 	/* It shouldn't be recognized as part of our obj anymore */
 	puts("Trying to free it again (should throw an exception)...");
-	CATCH_EXCEPTION([obj freeMem: p], OFMemNotPartOfObjException)
+	CATCH_EXCEPTION([obj freeMemory: p], OFMemoryNotPartOfObjectException)
 
 	/* Test multiple memory chunks */
 	puts("Allocating 3 chunks of memory...");
-	p = [obj allocWithSize: 4096];
-	q = [obj allocWithSize: 4096];
-	r = [obj allocWithSize: 4096];
+	p = [obj allocMemoryWithSize: 4096];
+	q = [obj allocMemoryWithSize: 4096];
+	r = [obj allocMemoryWithSize: 4096];
 	puts("Allocated 3 * 4096 bytes.");
 
 	/* Free them */
 	puts("Now freeing them...");
-	[obj freeMem: p];
-	[obj freeMem: q];
-	[obj freeMem: r];
+	[obj freeMemory: p];
+	[obj freeMemory: q];
+	[obj freeMemory: r];
 	puts("Freed them all.");
 
 	/* Try to free again */
 	puts("Now trying to free them again...");
-	CATCH_EXCEPTION([obj freeMem: p], OFMemNotPartOfObjException)
-	CATCH_EXCEPTION([obj freeMem: q], OFMemNotPartOfObjException)
-	CATCH_EXCEPTION([obj freeMem: r], OFMemNotPartOfObjException)
+	CATCH_EXCEPTION([obj freeMemory: p], OFMemoryNotPartOfObjectException)
+	CATCH_EXCEPTION([obj freeMemory: q], OFMemoryNotPartOfObjectException)
+	CATCH_EXCEPTION([obj freeMemory: r], OFMemoryNotPartOfObjectException)
 	puts("Got all 3!");
 
 	puts("Trying to allocate more memory than possible...");
-	CATCH_EXCEPTION(p = [obj allocWithSize: SIZE_MAX], OFNoMemException)
+	CATCH_EXCEPTION(p = [obj allocMemoryWithSize: SIZE_MAX],
+	    OFOutOfMemoryException)
 
 	puts("Allocating 1 byte...");
-	p = [obj allocWithSize: 1];
+	p = [obj allocMemoryWithSize: 1];
 
 	puts("Trying to resize that 1 byte to more than possible...");
-	CATCH_EXCEPTION(p = [obj resizeMem: p
-				    toSize: SIZE_MAX],
-	    OFNoMemException)
+	CATCH_EXCEPTION(p = [obj resizeMemory: p
+				       toSize: SIZE_MAX],
+	    OFOutOfMemoryException)
 
 	puts("Trying to resize NULL to 1024 bytes...");
-	p = [obj resizeMem: NULL
-		    toSize: 1024];
-	[obj freeMem: p];
+	p = [obj resizeMemory: NULL
+		       toSize: 1024];
+	[obj freeMemory: p];
 
 	puts("Trying to resize memory that is not part of object...");
-	CATCH_EXCEPTION(p = [obj resizeMem: (void*)1
-				    toSize: 1024],
-	    OFMemNotPartOfObjException)
+	CATCH_EXCEPTION(p = [obj resizeMemory: (void*)1
+				       toSize: 1024],
+	    OFMemoryNotPartOfObjectException)
 
 	/* TODO: Test if freeing object frees all memory */
 

@@ -165,7 +165,7 @@ of_string_check_utf8(const char *str, size_t len)
 		}
 
 		@try {
-			string = [self allocWithSize: length + 1];
+			string = [self allocMemoryWithSize: length + 1];
 		} @catch (OFException *e) {
 			/*
 			 * We can't use [super dealloc] on OS X here.
@@ -227,7 +227,7 @@ of_string_check_utf8(const char *str, size_t len)
 	}
 
 	@try {
-		[self addItemToMemoryPool: string];
+		[self addMemoryToPool: string];
 	} @catch (OFException *e) {
 		free(string);
 		@throw e;
@@ -244,7 +244,7 @@ of_string_check_utf8(const char *str, size_t len)
 	length = [str length];
 
 	@try {
-		[self addItemToMemoryPool: string];
+		[self addMemoryToPool: string];
 	} @catch (OFException *e) {
 		/*
 		 * We can't use [super dealloc] on OS X here.
@@ -395,12 +395,13 @@ of_string_check_utf8(const char *str, size_t len)
 			continue;
 
 		/*
-		 * We can't use [self allocWithSize:] here as self might be a
-		 * @""-literal.
+		 * We can't use [self allocMemoryWithSize:] here as self might
+		 * be a @""-literal.
 		 */
 		if ((tmp = malloc(i - last + 1)) == NULL)
-			@throw [OFNoMemException newWithClass: isa
-						      andSize: i - last + 1];
+			@throw [OFOutOfMemoryException
+			    newWithClass: isa
+				 andSize: i - last + 1];
 		memcpy(tmp, string + last, i - last);
 		tmp[i - last] = '\0';
 		@try {

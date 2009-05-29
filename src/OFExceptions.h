@@ -78,7 +78,7 @@
 /**
  * An OFException indicating there is not enough memory available.
  */
-@interface OFNoMemException: OFException
+@interface OFOutOfMemoryException: OFException
 {
 	size_t req_size;
 }
@@ -110,7 +110,7 @@
 /**
  * An OFException indicating the given memory is not part of the object.
  */
-@interface OFMemNotPartOfObjException: OFException
+@interface OFMemoryNotPartOfObjectException: OFException
 {
 	void *pointer;
 }

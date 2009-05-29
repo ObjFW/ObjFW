@@ -42,7 +42,7 @@ const char *str = "Hallo!";
 	    OFOutOfRangeException)					\
 									\
 	puts("Trying to add something after that error...");		\
-	p = [a allocWithSize: 4096];					\
+	p = [a allocMemoryWithSize: 4096];				\
 	memset(p, 255, 4096);						\
 	[a addItem: p];							\
 	if (!memcmp([a lastItem], p, 4096))				\
@@ -51,10 +51,10 @@ const char *str = "Hallo!";
 		puts("[a lastItem] does not match p!");			\
 		abort();						\
 	}								\
-	[a freeMem: p];							\
+	[a freeMemory: p];						\
 									\
 	puts("Adding more data...");					\
-	q = [a allocWithSize: 4096];					\
+	q = [a allocMemoryWithSize: 4096];				\
 	memset(q, 42, 4096);						\
 	[a addItem: q];							\
 	if (!memcmp([a lastItem], q, 4096))				\
@@ -63,10 +63,10 @@ const char *str = "Hallo!";
 		puts("[a lastItem] does not match q!");			\
 		abort();						\
 	}								\
-	[a freeMem: q];							\
+	[a freeMemory: q];						\
 									\
 	puts("Adding multiple items at once...");			\
-	p = [a allocWithSize: 8192];					\
+	p = [a allocMemoryWithSize: 8192];				\
 	memset(p, 64, 8192);						\
 	[a addNItems: 2							\
 	  fromCArray: p];						\
@@ -79,7 +79,7 @@ const char *str = "Hallo!";
 		    "and p do not match!");				\
 		abort();						\
 	}								\
-	[a freeMem: p];							\
+	[a freeMemory: p];						\
 									\
 	i = [a count];							\
 	puts("Removing 2 items...");					\

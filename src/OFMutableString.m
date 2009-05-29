@@ -43,7 +43,7 @@
 	size_t len;
 
 	if (string != NULL)
-		[self freeMem: string];
+		[self freeMemory: string];
 
 	len = strlen(str);
 
@@ -60,7 +60,7 @@
 	}
 
 	length = len;
-	string = [self allocWithSize: length + 1];
+	string = [self allocMemoryWithSize: length + 1];
 	memcpy(string, str, length + 1);
 
 	return self;
@@ -85,8 +85,8 @@
 		@throw [OFInvalidEncodingException newWithClass: isa];
 	}
 
-	string = [self resizeMem: string
-			  toSize: length + strlength + 1];
+	string = [self resizeMemory: string
+			     toSize: length + strlength + 1];
 	memcpy(string + length, str, strlength + 1);
 	length += strlength;
 
@@ -120,7 +120,7 @@
 		 * Unfortunately, as errno isn't always thread-safe, there's
 		 * no good way for us to find out what really happened.
 		 */
-		@throw [OFNoMemException newWithClass: isa];
+		@throw [OFOutOfMemoryException newWithClass: isa];
 
 	@try {
 		[self appendCString: t];
@@ -269,11 +269,11 @@
 			continue;
 
 		@try {
-			tmp = [self resizeMem: tmp
-				       toSize: tmp_len + i - last +
-					       repl_len + 1];
+			tmp = [self resizeMemory: tmp
+					  toSize: tmp_len + i - last +
+						  repl_len + 1];
 		} @catch (OFException *e) {
-			[self freeMem: tmp];
+			[self freeMemory: tmp];
 			@throw e;
 		}
 		memcpy(tmp + tmp_len, string + last, i - last);
@@ -284,17 +284,17 @@
 	}
 
 	@try {
-		tmp = [self resizeMem: tmp
-			       toSize: tmp_len + length - last + 1];
+		tmp = [self resizeMemory: tmp
+				  toSize: tmp_len + length - last + 1];
 	} @catch (OFException *e) {
-		[self freeMem: tmp];
+		[self freeMemory: tmp];
 		@throw e;
 	}
 	memcpy(tmp + tmp_len, string + last, length - last);
 	tmp_len += length - last;
 	tmp[tmp_len] = 0;
 
-	[self freeMem: string];
+	[self freeMemory: string];
 	string = tmp;
 	length = tmp_len;
 

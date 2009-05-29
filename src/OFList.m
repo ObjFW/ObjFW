@@ -63,8 +63,9 @@
 
 - (of_list_object_t*)append: (id)obj
 {
-	of_list_object_t *o = [self allocWithSize: sizeof(of_list_object_t)];
+	of_list_object_t *o;
 
+	o = [self allocMemoryWithSize: sizeof(of_list_object_t)];
 	o->object = obj;
 	o->next = NULL;
 	o->prev = last;
@@ -84,8 +85,9 @@
 
 - (of_list_object_t*)prepend: (id)obj
 {
-	of_list_object_t *o = [self allocWithSize: sizeof(of_list_object_t)];
+	of_list_object_t *o;
 
+	o = [self allocMemoryWithSize: sizeof(of_list_object_t)];
 	o->object = obj;
 	o->next = first;
 	o->prev = NULL;
@@ -106,8 +108,9 @@
 - (of_list_object_t*)insert: (id)obj
 		     before: (of_list_object_t*)listobj
 {
-	of_list_object_t *o = [self allocWithSize: sizeof(of_list_object_t)];
+	of_list_object_t *o;
 
+	o = [self allocMemoryWithSize: sizeof(of_list_object_t)];
 	o->object = obj;
 	o->next = listobj;
 	o->prev = listobj->prev;
@@ -129,8 +132,9 @@
 - (of_list_object_t*)insert: (id)obj
 		      after: (of_list_object_t*)listobj
 {
-	of_list_object_t *o = [self allocWithSize: sizeof(of_list_object_t)];
+	of_list_object_t *o;
 
+	o = [self allocMemoryWithSize: sizeof(of_list_object_t)];
 	o->object = obj;
 	o->next = listobj->next;
 	o->prev = listobj;
@@ -164,7 +168,7 @@
 	if (retain_and_release)
 		[listobj->object release];
 
-	[self freeMem: listobj];
+	[self freeMemory: listobj];
 
 	return self;
 }
@@ -214,7 +218,7 @@
 
 	@try {
 		for (iter = first; iter != NULL; iter = iter->next) {
-			o = [new allocWithSize: sizeof(of_list_object_t)];
+			o = [new allocMemoryWithSize: sizeof(of_list_object_t)];
 			o->object = iter->object;
 			o->next = NULL;
 			o->prev = prev;

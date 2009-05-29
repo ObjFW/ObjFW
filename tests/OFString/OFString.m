@@ -109,10 +109,11 @@ main()
 	CHECK([[a objectAtIndex: j++] isEqual: @""])
 	CHECK([[a objectAtIndex: j++] isEqual: @""])
 
-	CHECK([[@"foo\"ba'_$" urlencode] isEqual: @"foo%22ba%27_%24"])
-	CHECK([[@"foo%20bar%22%24" urldecode] isEqual: @"foo bar\"$"])
-	CHECK_EXCEPT([@"foo%bar" urldecode], OFInvalidEncodingException)
-	CHECK_EXCEPT([@"foo%FFbar" urldecode], OFInvalidEncodingException)
+	CHECK([[@"foo\"ba'_$" urlEncodedString] isEqual: @"foo%22ba%27_%24"])
+	CHECK([[@"foo%20bar%22%24" urlDecodedString] isEqual: @"foo bar\"$"])
+	CHECK_EXCEPT([@"foo%bar" urlDecodedString], OFInvalidEncodingException)
+	CHECK_EXCEPT([@"foo%FFbar" urlDecodedString],
+	    OFInvalidEncodingException)
 
 	s1 = [@"asd fo asd fofo asd" mutableCopy];
 	[s1 replaceOccurrencesOfString: @"fo"

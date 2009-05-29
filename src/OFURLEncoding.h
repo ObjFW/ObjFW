@@ -23,12 +23,12 @@ extern int _OFURLEncoding_reference;
  *
  * \return A new, autoreleased string
  */
-- (OFString*)urlencode;
+- (OFString*)urlEncodedString;
 
 /**
  * Decodes a string used in a URL.
  *
  * \return A new, autoreleased string
  */
-- (OFString*)urldecode;
+- (OFString*)urlDecodedString;
 @end

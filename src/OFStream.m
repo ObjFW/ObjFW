@@ -64,20 +64,21 @@ static int pagesize = 0;
 		for (i = 0; i < cache_len; i++) {
 			if (OF_UNLIKELY(cache[i] == '\n' ||
 			    cache[i] == '\0')) {
-				ret_c = [self allocWithSize: i + 1];
+				ret_c = [self allocMemoryWithSize: i + 1];
 				memcpy(ret_c, cache, i);
 				ret_c[i] = '\0';
 
 				@try {
-					tmp = [self allocWithSize: cache_len -
-								   i - 1];
+					tmp = [self
+					    allocMemoryWithSize: cache_len -
+								 i - 1];
 				} @catch (OFException *e) {
-					[self freeMem: ret_c];
+					[self freeMemory: ret_c];
 					@throw e;
 				}
 				memcpy(tmp, cache + i + 1, cache_len - i - 1);
 
-				[self freeMem: cache];
+				[self freeMemory: cache];
 				cache = tmp;
 				cache_len = cache_len - i - 1;
 
@@ -85,7 +86,7 @@ static int pagesize = 0;
 					ret = [OFString
 					    stringWithCString: ret_c];
 				} @finally {
-					[self freeMem: ret_c];
+					[self freeMemory: ret_c];
 				}
 				return ret;
 			}
@@ -93,14 +94,14 @@ static int pagesize = 0;
 	}
 
 	/* Read until we get a newline or \0 */
-	tmp = [self allocWithSize: pagesize];
+	tmp = [self allocMemoryWithSize: pagesize];
 
 	for (;;) {
 		@try {
 			len = [self readNBytes: pagesize - 1
 				    intoBuffer: tmp];
 		} @catch (OFException *e) {
-			[self freeMem: tmp];
+			[self freeMemory: tmp];
 			@throw e;
 		}
 
@@ -109,9 +110,10 @@ static int pagesize = 0;
 			if (OF_UNLIKELY(tmp[i] == '\n' || tmp[i] == '\0')) {
 				@try {
 					ret_c = [self
-					    allocWithSize: cache_len + i + 1];
+					    allocMemoryWithSize: cache_len +
+								 i + 1];
 				} @catch (OFException *e) {
-					[self freeMem: tmp];
+					[self freeMemory: tmp];
 					@throw e;
 				}
 				if (cache != NULL)
@@ -122,31 +124,32 @@ static int pagesize = 0;
 				if (i < len) {
 					@try {
 						tmp2 = [self
-						    allocWithSize: len - i - 1];
+						    allocMemoryWithSize: len -
+									 i - 1];
 					} @catch (OFException *e) {
-						[self freeMem: ret_c];
-						[self freeMem: tmp];
+						[self freeMemory: ret_c];
+						[self freeMemory: tmp];
 						@throw e;
 					}
 					memcpy(tmp2, tmp + i + 1, len - i - 1);
 
 					if (cache != NULL)
-						[self freeMem: cache];
+						[self freeMemory: cache];
 					cache = tmp2;
 					cache_len = len - i - 1;
 				} else {
 					if (cache != NULL)
-						[self freeMem: cache];
+						[self freeMemory: cache];
 					cache = NULL;
 					cache_len = 0;
 				}
 
-				[self freeMem: tmp];
+				[self freeMemory: tmp];
 				@try {
 					ret = [OFString
 					    stringWithCString: ret_c];
 				} @finally {
-					[self freeMem: ret_c];
+					[self freeMemory: ret_c];
 				}
 				return ret;
 			}
@@ -154,10 +157,10 @@ static int pagesize = 0;
 
 		/* There was no newline or \0 */
 		@try {
-			cache = [self resizeMem: cache
-					 toSize: cache_len + len];
+			cache = [self resizeMemory: cache
+					    toSize: cache_len + len];
 		} @catch (OFException *e) {
-			[self freeMem: tmp];
+			[self freeMemory: tmp];
 			@throw e;
 		}
 		memcpy(cache + cache_len, tmp, len);
@@ -189,7 +192,7 @@ static int pagesize = 0;
 - clearCache
 {
 	if (cache != NULL)
-		[self freeMem: cache];
+		[self freeMemory: cache];
 
 	cache = NULL;
 	cache_len = 0;

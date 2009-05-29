@@ -23,7 +23,7 @@
 int _OFURLEncoding_reference;
 
 @implementation OFString (OFURLEncoding)
-- (OFString*)urlencode
+- (OFString*)urlEncodedString
 {
 	const char *s;
 	char *ret_c;
@@ -38,8 +38,8 @@ int _OFURLEncoding_reference;
 	 * @"" literal.
 	 */
 	if ((ret_c = malloc((length * 3) + 1)) == NULL)
-		@throw [OFNoMemException newWithClass: isa
-					      andSize: (length * 3) + 1];
+		@throw [OFOutOfMemoryException newWithClass: isa
+						    andSize: (length * 3) + 1];
 
 	for (i = 0; *s != '\0'; s++) {
 		if (isalnum(*s) || *s == '-' || *s == '_' || *s == '.')
@@ -63,7 +63,7 @@ int _OFURLEncoding_reference;
 	return ret;
 }
 
-- (OFString*)urldecode
+- (OFString*)urlDecodedString
 {
 	const char *s;
 	char *ret_c, c;
@@ -74,8 +74,8 @@ int _OFURLEncoding_reference;
 	s = string;
 
 	if ((ret_c = malloc(length + 1)) == NULL)
-		@throw [OFNoMemException newWithClass: isa
-					      andSize: length + 1];
+		@throw [OFOutOfMemoryException newWithClass: isa
+						    andSize: length + 1];
 
 	for (st = 0, i = 0, c = 0; *s; s++) {
 		switch (st) {

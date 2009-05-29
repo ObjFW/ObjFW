@@ -134,7 +134,7 @@
  *
  * \param ptr A pointer to add to the memory pool
  */
-- addItemToMemoryPool: (void*)ptr;
+- addMemoryToPool: (void*)ptr;
 
 /**
  * Allocate memory and store it in the objects memory pool so it can be free'd
@@ -143,7 +143,7 @@
  * \param size The size of the memory to allocate
  * \return A pointer to the allocated memory
  */
-- (void*)allocWithSize: (size_t)size;
+- (void*)allocMemoryWithSize: (size_t)size;
 
 /**
  * Allocate memory for a specified number of items and store it in the objects
@@ -153,8 +153,8 @@
  * \param size The size of each item to allocate
  * \return A pointer to the allocated memory
  */
-- (void*)allocNItems: (size_t)nitems
-	    withSize: (size_t)size;
+- (void*)allocMemoryForNItems: (size_t)nitems
+		     withSize: (size_t)size;
 
 /**
  * Resize memory in the memory pool to a specified size.
@@ -163,8 +163,8 @@
  * \param size The new size for the memory chunk
  * \return A pointer to the resized memory chunk
  */
-- (void*)resizeMem: (void*)ptr
-	    toSize: (size_t)size;
+- (void*)resizeMemory: (void*)ptr
+	       toSize: (size_t)size;
 
 /**
  * Resize memory in the memory pool to a specific number of items of a
@@ -175,16 +175,16 @@
  * \param size The size of each item to resize to
  * \return A pointer to the resized memory chunk
  */
-- (void*)resizeMem: (void*)ptr
-	  toNItems: (size_t)nitems
-	  withSize: (size_t)size;
+- (void*)resizeMemory: (void*)ptr
+	     toNItems: (size_t)nitems
+	     withSize: (size_t)size;
 
 /**
  * Frees allocated memory and removes it from the memory pool.
  *
  * \param ptr A pointer to the allocated memory
  */
-- freeMem: (void*)ptr;
+- freeMemory: (void*)ptr;
 
 /**
  * Increases the retain count.

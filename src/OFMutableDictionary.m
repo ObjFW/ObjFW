@@ -102,8 +102,8 @@
 						    andSelector: _cmd];
 
 	newsize = (size_t)1 << hashsize;
-	newdata = [self allocNItems: newsize
-			   withSize: sizeof(OFList*)];
+	newdata = [self allocMemoryForNItems: newsize
+				    withSize: sizeof(OFList*)];
 	memset(newdata, 0, newsize * sizeof(OFList*));
 
 	for (i = 0; i < size; i++) {
@@ -124,7 +124,7 @@
 		[data[i] release];
 	}
 
-	[self freeMem: data];
+	[self freeMemory: data];
 	data = newdata;
 	size = newsize;
 

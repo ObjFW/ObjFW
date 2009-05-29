@@ -265,7 +265,7 @@ static OFObject *lock = nil;
 	addrlen = sizeof(struct sockaddr);
 
 	@try {
-		addr = [newsock allocWithSize: sizeof(struct sockaddr)];
+		addr = [newsock allocMemoryWithSize: sizeof(struct sockaddr)];
 	} @catch (OFException *e) {
 		[newsock dealloc];
 		@throw e;
@@ -301,7 +301,7 @@ static OFObject *lock = nil;
 	sock = INVALID_SOCKET;
 
 	if (saddr != NULL)
-		[self freeMem: saddr];
+		[self freeMemory: saddr];
 	saddr_len = 0;
 
 	return self;

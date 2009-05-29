@@ -84,9 +84,9 @@ static int lastpagebyte = 0;
 	if (SIZE_MAX - count < 1)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	data = [self resizeMem: data
-		      toNItems: count + 1
-		      withSize: itemsize];
+	data = [self resizeMemory: data
+			 toNItems: count + 1
+			 withSize: itemsize];
 
 	memcpy(data + count++ * itemsize, item, itemsize);
 
@@ -99,9 +99,9 @@ static int lastpagebyte = 0;
 	if (nitems > SIZE_MAX - count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	data = [self resizeMem: data
-		      toNItems: count + nitems
-		      withSize: itemsize];
+	data = [self resizeMemory: data
+			 toNItems: count + nitems
+			 withSize: itemsize];
 
 	memcpy(data + count * itemsize, carray, nitems * itemsize);
 	count += nitems;
@@ -114,9 +114,9 @@ static int lastpagebyte = 0;
 	if (nitems > count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	data = [self resizeMem: data
-		      toNItems: count - nitems
-		      withSize: itemsize];
+	data = [self resizeMemory: data
+			 toNItems: count - nitems
+			 withSize: itemsize];
 
 	count -= nitems;
 
@@ -215,8 +215,8 @@ static int lastpagebyte = 0;
 	nsize = ((count + 1) * itemsize + lastpagebyte) & ~lastpagebyte;
 
 	if (size != nsize)
-		data = [self resizeMem: data
-				toSize: nsize];
+		data = [self resizeMemory: data
+				   toSize: nsize];
 
 	memcpy(data + count++ * itemsize, item, itemsize);
 	size = nsize;
@@ -235,8 +235,8 @@ static int lastpagebyte = 0;
 	nsize = ((count + nitems) * itemsize + lastpagebyte) & ~lastpagebyte;
 
 	if (size != nsize)
-		data = [self resizeMem: data
-				toSize: nsize];
+		data = [self resizeMemory: data
+				   toSize: nsize];
 
 	memcpy(data + count * itemsize, carray, nitems * itemsize);
 	count += nitems;
@@ -255,8 +255,8 @@ static int lastpagebyte = 0;
 	nsize = ((count - nitems) * itemsize + lastpagebyte) & ~lastpagebyte;
 
 	if (size != nsize)
-		data = [self resizeMem: data
-				toSize: nsize];
+		data = [self resizeMemory: data
+				   toSize: nsize];
 
 	count -= nitems;
 	size = nsize;

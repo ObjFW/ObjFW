@@ -102,7 +102,7 @@
 }
 @end
 
-@implementation OFNoMemException
+@implementation OFOutOfMemoryException
 + newWithClass: (Class)class_
        andSize: (size_t)size
 {
@@ -138,7 +138,7 @@
 }
 @end
 
-@implementation OFMemNotPartOfObjException
+@implementation OFMemoryNotPartOfObjectException
 + newWithClass: (Class)class_
     andPointer: (void*)ptr
 {
