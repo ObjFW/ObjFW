@@ -46,6 +46,11 @@
 }
 
 /**
+ * \return A new autoreleased OFTCPSocket
+ */
++ socket;
+
+/**
  * Enables/disables non-blocking I/O.
  */
 - setBlocking: (BOOL)enable;

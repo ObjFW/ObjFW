@@ -34,14 +34,6 @@ call_main(LPVOID obj)
 @implementation OFThread
 + threadWithObject: (id)obj
 {
-	/*
-	 * This is one of the rare cases where the convenience method should
-	 * use self instead of the class.
-	 *
-	 * The reason is that you derive from OFThread and reimplement main.
-	 * If OFThread instead of self would be used here, the reimplemented
-	 * main would never be called.
-	 */
 	return [[[self alloc] initWithObject: obj] autorelease];
 }
 
@@ -158,7 +150,7 @@ call_main(LPVOID obj)
 @implementation OFTLSKey
 + tlsKeyWithDestructor: (void(*)(void*))destructor
 {
-	return [[[OFTLSKey alloc] initWithDestructor: destructor] autorelease];
+	return [[[self alloc] initWithDestructor: destructor] autorelease];
 }
 
 - initWithDestructor: (void(*)(void*))destructor

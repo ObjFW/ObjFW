@@ -27,7 +27,7 @@
 + fileWithPath: (OFString*)path
        andMode: (OFString*)mode
 {
-	return [[[OFFile alloc] initWithPath: path
+	return [[[self alloc] initWithPath: path
 				   andMode: mode] autorelease];
 }
 

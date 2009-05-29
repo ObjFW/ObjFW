@@ -35,6 +35,11 @@
 }
 #endif
 
++ socket
+{
+	return [[[self alloc] init] autorelease];
+}
+
 - init
 {
 	self = [super init];

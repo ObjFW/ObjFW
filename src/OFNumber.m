@@ -225,122 +225,122 @@
 @implementation OFNumber
 + numberWithChar: (char)char_
 {
-	return [[[OFNumber alloc] initWithChar: char_] autorelease];
+	return [[[self alloc] initWithChar: char_] autorelease];
 }
 
 + numberWithShort: (short)short_
 {
-	return [[[OFNumber alloc] initWithShort: short_] autorelease];
+	return [[[self alloc] initWithShort: short_] autorelease];
 }
 
 + numberWithInt: (int)int_
 {
-	return [[[OFNumber alloc] initWithInt: int_] autorelease];
+	return [[[self alloc] initWithInt: int_] autorelease];
 }
 
 + numberWithLong: (long)long_
 {
-	return [[[OFNumber alloc] initWithLong: long_] autorelease];
+	return [[[self alloc] initWithLong: long_] autorelease];
 }
 
 + numberWithUChar: (unsigned char)uchar
 {
-	return [[[OFNumber alloc] initWithUChar: uchar] autorelease];
+	return [[[self alloc] initWithUChar: uchar] autorelease];
 }
 
 + numberWithUShort: (unsigned short)ushort
 {
-	return [[[OFNumber alloc] initWithUShort: ushort] autorelease];
+	return [[[self alloc] initWithUShort: ushort] autorelease];
 }
 
 + numberWithUInt: (unsigned int)uint
 {
-	return [[[OFNumber alloc] initWithUInt: uint] autorelease];
+	return [[[self alloc] initWithUInt: uint] autorelease];
 }
 
 + numberWithULong: (unsigned long)ulong
 {
-	return [[[OFNumber alloc] initWithULong: ulong] autorelease];
+	return [[[self alloc] initWithULong: ulong] autorelease];
 }
 
 + numberWithInt8: (int8_t)int8
 {
-	return [[[OFNumber alloc] initWithInt8: int8] autorelease];
+	return [[[self alloc] initWithInt8: int8] autorelease];
 }
 
 + numberWithInt16: (int16_t)int16
 {
-	return [[[OFNumber alloc] initWithInt16: int16] autorelease];
+	return [[[self alloc] initWithInt16: int16] autorelease];
 }
 
 + numberWithInt32: (int32_t)int32
 {
-	return [[[OFNumber alloc] initWithInt32: int32] autorelease];
+	return [[[self alloc] initWithInt32: int32] autorelease];
 }
 
 + numberWithInt64: (int64_t)int64
 {
-	return [[[OFNumber alloc] initWithInt64: int64] autorelease];
+	return [[[self alloc] initWithInt64: int64] autorelease];
 }
 
 + numberWithUInt8: (uint8_t)uint8
 {
-	return [[[OFNumber alloc] initWithUInt8: uint8] autorelease];
+	return [[[self alloc] initWithUInt8: uint8] autorelease];
 }
 
 + numberWithUInt16: (uint16_t)uint16
 {
-	return [[[OFNumber alloc] initWithUInt16: uint16] autorelease];
+	return [[[self alloc] initWithUInt16: uint16] autorelease];
 }
 
 + numberWithUInt32: (uint32_t)uint32
 {
-	return [[[OFNumber alloc] initWithUInt32: uint32] autorelease];
+	return [[[self alloc] initWithUInt32: uint32] autorelease];
 }
 
 + numberWithUInt64: (uint64_t)uint64
 {
-	return [[[OFNumber alloc] initWithUInt64: uint64] autorelease];
+	return [[[self alloc] initWithUInt64: uint64] autorelease];
 }
 
 + numberWithSize: (size_t)size
 {
-	return [[[OFNumber alloc] initWithSize: size] autorelease];
+	return [[[self alloc] initWithSize: size] autorelease];
 }
 
 + numberWithSSize: (ssize_t)ssize
 {
-	return [[[OFNumber alloc] initWithSSize: ssize] autorelease];
+	return [[[self alloc] initWithSSize: ssize] autorelease];
 }
 
 + numberWithIntMax: (intmax_t)intmax
 {
-	return [[[OFNumber alloc] initWithIntMax: intmax] autorelease];
+	return [[[self alloc] initWithIntMax: intmax] autorelease];
 }
 
 + numberWithUIntMax: (uintmax_t)uintmax
 {
-	return [[[OFNumber alloc] initWithIntMax: uintmax] autorelease];
+	return [[[self alloc] initWithIntMax: uintmax] autorelease];
 }
 
 + numberWithPtrDiff: (ptrdiff_t)ptrdiff
 {
-	return [[[OFNumber alloc] initWithPtrDiff: ptrdiff] autorelease];
+	return [[[self alloc] initWithPtrDiff: ptrdiff] autorelease];
 }
 
 + numberWithIntPtr: (intptr_t)intptr
 {
-	return [[[OFNumber alloc] initWithIntPtr: intptr] autorelease];
+	return [[[self alloc] initWithIntPtr: intptr] autorelease];
 }
 
 + numberWithFloat: (float)float_
 {
-	return [[[OFNumber alloc] initWithFloat: float_] autorelease];
+	return [[[self alloc] initWithFloat: float_] autorelease];
 }
 
 + numberWithDouble: (double)double_
 {
-	return [[[OFNumber alloc] initWithDouble: double_] autorelease];
+	return [[[self alloc] initWithDouble: double_] autorelease];
 }
 
 - initWithChar: (char)char_

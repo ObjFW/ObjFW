@@ -17,18 +17,6 @@
  */
 @interface OFTCPSocket: OFSocket {}
 /**
- * \return A new autoreleased OFTCPSocket
- */
-+ socket;
-
-/**
- * Initializes an already allocated OFTCPSocket.
- *
- * \return An initialized OFTCPSocket
- */
-- init;
-
-/**
  * Connect the OFTCPSocket to the specified destination.
  *
  * \param service The service on the node to connect to
