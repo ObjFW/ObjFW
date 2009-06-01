@@ -160,6 +160,7 @@ AC_CHECK_HEADER(objc/runtime.h,
 	[AC_DEFINE(HAVE_OBJC_RUNTIME_H, 1, [Whether we have objc/runtime.h])])
 
 AC_CHECK_FUNC(objc_sync_enter,, [
+	AC_SUBST(OBJC_SYNC, "objc_sync")
 	AC_SUBST(OBJC_SYNC_M, "objc_sync.m")
 	AC_DEFINE(NEED_OBJC_SYNC_INIT, 1,
 		[Whether objc_sync_init needs to be called])])

@@ -131,7 +131,7 @@ objc_sync_init()
 int
 objc_sync_enter(id obj)
 {
-	size_t i;
+	int i;
 
 	if (obj == nil)
 		return 0;
@@ -139,7 +139,7 @@ objc_sync_enter(id obj)
 	if (!mutex_lock(&mutex))
 		return 1;
 
-	for (i = 0; i < num_locks; i++) {
+	for (i = num_locks - 1; i >= 0; i--) {
 		if (locks[i].obj == obj) {
 			if (thread_is_current(locks[i].thread))
 				locks[i].recursion++;
@@ -215,7 +215,7 @@ objc_sync_enter(id obj)
 int
 objc_sync_exit(id obj)
 {
-	size_t i;
+	int i;
 
 	if (obj == nil)
 		return 0;
@@ -223,7 +223,7 @@ objc_sync_exit(id obj)
 	if (!mutex_lock(&mutex))
 		return 1;
 
-	for (i = 0; i < num_locks; i++) {
+	for (i = num_locks - 1; i >= 0; i--) {
 		if (locks[i].obj == obj) {
 			if (locks[i].recursion > 0 &&
 			    thread_is_current(locks[i].thread)) {

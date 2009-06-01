@@ -11,6 +11,7 @@ SUBDIRS = OFObject		\
 	  OFTCPSocket		\
 	  OFThread		\
 	  OFList		\
-	  OFXMLFactory
+	  OFXMLFactory		\
+	  ${OBJC_SYNC}
 
 include ../buildsys.mk
