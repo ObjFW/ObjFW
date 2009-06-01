@@ -187,24 +187,24 @@ call_main(LPVOID obj)
 
 #ifndef _WIN32
 	if (pthread_mutex_init(&mutex, NULL)) {
-#else
-	if ((mutex = CreateMutex(NULL, FALSE, NULL)) == NULL) {
-#endif
 		Class c = isa;
 		[self dealloc];
 		@throw [OFInitializationFailedException newWithClass: c];
 	}
+#else
+	InitializeCriticalSection(&mutex);
+#endif
 
 	return self;
 }
 
 - lock
 {
-	/* FIXME: Add error-handling */
 #ifndef _WIN32
+	/* FIXME: Add error-handling */
 	pthread_mutex_lock(&mutex);
 #else
-	WaitForSingleObject(mutex, INFINITE);
+	EnterCriticalSection(&mutex);
 #endif
 
 	return self;
@@ -212,13 +212,25 @@ call_main(LPVOID obj)
 
 - unlock
 {
-	/* FIXME: Add error-handling */
 #ifndef _WIN32
+	/* FIXME: Add error-handling */
 	pthread_mutex_unlock(&mutex);
 #else
-	ReleaseMutex(mutex);
+	LeaveCriticalSection(&mutex);
 #endif
 
 	return self;
+}
+
+- (void)dealloc
+{
+#ifndef _WIN32
+	/* FIXME: Add error-handling */
+	pthread_mutex_destroy(&mutex);
+#else
+	DeleteCriticalSection(&mutex);
+#endif
+
+	[super dealloc];
 }
 @end

@@ -120,7 +120,7 @@
 #ifndef _WIN32
 	pthread_mutex_t mutex;
 #else
-	HANDLE mutex;
+	CRITICAL_SECTION mutex;
 #endif
 }
 
