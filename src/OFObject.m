@@ -95,6 +95,31 @@ extern BOOL objc_sync_init();
 #endif
 }
 
++ (BOOL)conformsTo: (Protocol*)protocol
+{
+#ifdef __objc_INCLUDE_GNU
+	Class c;
+	struct objc_protocol_list *pl;
+	size_t i;
+
+	for (c = self; c != Nil; c = class_get_super_class(c))
+		for (pl = c->protocols; pl != NULL; pl = pl->next)
+			for (i = 0; i < pl->count; i++)
+				if ([pl->list[i] conformsTo: protocol])
+					return YES;
+
+	return NO;
+#else
+	Class c;
+
+	for (c = self; c != Nil; c = class_getSuperclass(c))
+		if (class_conformsToProtocol(c, protocol))
+			return YES;
+
+	return NO;
+#endif
+}
+
 + (IMP)replaceMethod: (SEL)selector
  withMethodFromClass: (Class)class;
 {
@@ -171,6 +196,11 @@ extern BOOL objc_sync_init();
 #else
 	return class_respondsToSelector(isa, selector);
 #endif
+}
+
+- (BOOL)conformsTo: (Protocol*)protocol
+{
+	return [isa conformsTo: protocol];
 }
 
 - (IMP)methodFor: (SEL)selector

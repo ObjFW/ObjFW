@@ -54,6 +54,13 @@
 + (const char*)name;
 
 /**
+ * \param protocol The protocol which should be checked for conformance
+ *
+ * \return A boolean whether the class conforms to the specified protocol
+ */
++ (BOOL)conformsTo: (Protocol*)protocol;
+
+/**
  * Replace a method with a method from another class.
  *
  * \param selector The selector of the method to replace
@@ -93,11 +100,18 @@
 - (BOOL)isKindOf: (Class)class;
 
 /**
- * \param selector The selector which should be checked
+ * \param selector The selector which should be checked for respondance
  *
  * \return A boolean whether the objects responds to the specified selector
  */
 - (BOOL)respondsTo: (SEL)selector;
+
+/**
+ * \param protocol The protocol which should be checked for conformance
+ *
+ * \return A boolean whether the objects conforms to the specified protocol
+ */
+- (BOOL)conformsTo: (Protocol*)protocol;
 
 /**
  * \param selector The selector for which the method should be returned
