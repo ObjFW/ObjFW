@@ -17,7 +17,9 @@
 
 #ifndef HAVE_GETADDRINFO
 #include <stdlib.h>
+#ifndef _WIN32
 #include <arpa/inet.h>
+#endif
 #endif
 
 #import "OFTCPSocket.h"
@@ -30,7 +32,7 @@
 #ifndef HAVE_GETADDRINFO
 #import "OFThread.h"
 
-static OFObject *lock = nil;
+static OFMutex *mutex = nil;
 #endif
 
 @implementation OFTCPSocket
@@ -38,7 +40,7 @@ static OFObject *lock = nil;
 + (void)initialize
 {
 	if (self == [OFTCPSocket class])
-		lock = [[OFObject alloc] init];
+		mutex = [[OFMutex alloc] init];
 }
 #endif
 
@@ -92,48 +94,54 @@ static OFObject *lock = nil;
 	uint16_t port;
 	char **ip;
 
-	@synchronized (lock) {
-		if ((he = gethostbyname([node cString])) == NULL)
-			@throw [OFAddressTranslationFailedException
-			    newWithClass: isa
-				 andNode: node
-			      andService: service];
+	[mutex lock];
 
-		if ((se = getservbyname([service cString], "TCP")) != NULL)
-			port = se->s_port;
-		else if ((port = htons(atoi([service cString]))) == 0)
-			@throw [OFAddressTranslationFailedException
-			    newWithClass: isa
-				 andNode: node
-			      andService: service];
+	if ((he = gethostbyname([node cString])) == NULL) {
+		[mutex unlock];
+		@throw [OFAddressTranslationFailedException
+		    newWithClass: isa
+			 andNode: node
+		      andService: service];
+	}
 
-		memset(&addr, 0, sizeof(addr));
-		addr.sin_family = AF_INET;
-		addr.sin_port = port;
+	if ((se = getservbyname([service cString], "TCP")) != NULL)
+		port = se->s_port;
+	else if ((port = htons(atoi([service cString]))) == 0) {
+		[mutex unlock];
+		@throw [OFAddressTranslationFailedException
+		    newWithClass: isa
+			 andNode: node
+		      andService: service];
+	}
 
-		if (he->h_addrtype != AF_INET ||
-		    (sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
-			@throw [OFConnectionFailedException
-			    newWithClass: isa
-				 andNode: node
-			      andService: service];
+	memset(&addr, 0, sizeof(addr));
+	addr.sin_family = AF_INET;
+	addr.sin_port = port;
 
-		for (ip = he->h_addr_list; *ip != NULL; ip++) {
-			memcpy(&addr.sin_addr.s_addr, *ip, he->h_length);
+	if (he->h_addrtype != AF_INET ||
+	    (sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
+		[mutex unlock];
+		@throw [OFConnectionFailedException
+		    newWithClass: isa
+			 andNode: node
+		      andService: service];
+	}
 
-			if (connect(sock, (struct sockaddr*)&addr,
-			    sizeof(addr)) == -1)
-				continue;
+	for (ip = he->h_addr_list; *ip != NULL; ip++) {
+		memcpy(&addr.sin_addr.s_addr, *ip, he->h_length);
 
-			connected = YES;
+		if (connect(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1)
+			continue;
 
-			break;
-		}
+		connected = YES;
+		break;
+	}
 
-		if (!connected) {
-			close(sock);
-			sock = INVALID_SOCKET;
-		}
+	[mutex unlock];
+
+	if (!connected) {
+		close(sock);
+		sock = INVALID_SOCKET;
 	}
 #endif
 
@@ -192,39 +200,47 @@ static OFObject *lock = nil;
 						andService: service
 						 andFamily: family];
 
-	@synchronized (lock) {
-		if ((he = gethostbyname([node cString])) == NULL)
-			@throw [OFAddressTranslationFailedException
-			    newWithClass: isa
-				 andNode: node
-			      andService: service];
+	[mutex lock];
 
-		if ((se = getservbyname([service cString], "TCP")) != NULL)
-			port = se->s_port;
-		else if ((port = htons(atoi([service cString]))) == 0)
-			@throw [OFAddressTranslationFailedException
-			    newWithClass: isa
-				 andNode: node
-			      andService: service];
-
-		memset(&addr, 0, sizeof(addr));
-		addr.sin_family = AF_INET;
-		addr.sin_port = port;
-
-		if (he->h_addrtype != AF_INET || he->h_addr_list[0] == NULL)
-			@throw [OFAddressTranslationFailedException
-			    newWithClass: isa
-				 andNode: node
-			      andService: service];
-
-		memcpy(&addr.sin_addr.s_addr, he->h_addr_list[0], he->h_length);
-
-		if (bind(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1)
-			@throw [OFBindFailedException newWithClass: isa
-							   andNode: node
-							andService: service
-							 andFamily: family];
+	if ((he = gethostbyname([node cString])) == NULL) {
+		[mutex unlock];
+		@throw [OFAddressTranslationFailedException
+		    newWithClass: isa
+			 andNode: node
+		      andService: service];
 	}
+
+	if ((se = getservbyname([service cString], "TCP")) != NULL)
+		port = se->s_port;
+	else if ((port = htons(atoi([service cString]))) == 0) {
+		[mutex unlock];
+		@throw [OFAddressTranslationFailedException
+		    newWithClass: isa
+			 andNode: node
+		      andService: service];
+	}
+
+	memset(&addr, 0, sizeof(addr));
+	addr.sin_family = AF_INET;
+	addr.sin_port = port;
+
+	if (he->h_addrtype != AF_INET || he->h_addr_list[0] == NULL) {
+		[mutex lock];
+		@throw [OFAddressTranslationFailedException
+		    newWithClass: isa
+			 andNode: node
+		      andService: service];
+	}
+
+	memcpy(&addr.sin_addr.s_addr, he->h_addr_list[0], he->h_length);
+
+	[mutex unlock];
+
+	if (bind(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1)
+		@throw [OFBindFailedException newWithClass: isa
+						   andNode: node
+						andService: service
+							 andFamily: family];
 #endif
 
 	return self;

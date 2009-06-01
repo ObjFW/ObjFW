@@ -174,3 +174,51 @@ call_main(LPVOID obj)
 	return self;
 }
 @end
+
+@implementation OFMutex
++ mutex
+{
+	return [[[self alloc] init] autorelease];
+}
+
+- init
+{
+	self = [super init];
+
+#ifndef _WIN32
+	if (pthread_mutex_init(&mutex, NULL)) {
+#else
+	if ((mutex = CreateMutex(NULL, FALSE, NULL)) == NULL) {
+#endif
+		Class c = isa;
+		[self dealloc];
+		@throw [OFInitializationFailedException newWithClass: c];
+	}
+
+	return self;
+}
+
+- lock
+{
+	/* FIXME: Add error-handling */
+#ifndef _WIN32
+	pthread_mutex_lock(&mutex);
+#else
+	WaitForSingleObject(mutex, INFINITE);
+#endif
+
+	return self;
+}
+
+- unlock
+{
+	/* FIXME: Add error-handling */
+#ifndef _WIN32
+	pthread_mutex_unlock(&mutex);
+#else
+	ReleaseMutex(mutex);
+#endif
+
+	return self;
+}
+@end

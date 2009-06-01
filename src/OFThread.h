@@ -63,7 +63,7 @@
 }
 
 /**
- * \param obj An object that is passed to the main method as a copy
+ * \param obj An object that is passed to the main method as a copy or nil
  * \return A new, autoreleased thread
  */
 + threadWithObject: (id)obj;
@@ -89,7 +89,7 @@
 + (id)objectForTLSKey: (OFTLSKey*)key;
 
 /**
- * \param obj An object that is passed to the main method as a copy
+ * \param obj An object that is passed to the main method as a copy or nil
  * \return An initialized OFThread.
  */
 - initWithObject: (id)obj;
@@ -110,4 +110,32 @@
  * \return The object returned by the main method of the thread.
  */
 - join;
+@end
+
+/**
+ * A class for creating mutual exclusions.
+ */
+@interface OFMutex: OFObject
+{
+#ifndef _WIN32
+	pthread_mutex_t mutex;
+#else
+	HANDLE mutex;
+#endif
+}
+
+/**
+ * \return A new, autoreleased mutex.
+ */
++ mutex;
+
+/**
+ * Locks the mutex.
+ */
+- lock;
+
+/**
+ * Unlocks the mutex.
+ */
+- unlock;
 @end
