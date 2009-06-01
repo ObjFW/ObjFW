@@ -11,7 +11,7 @@
 
 #include "config.h"
 
-#include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 
@@ -73,17 +73,8 @@ mutex_unlock(pthread_mutex_t *m)
 	return (pthread_mutex_unlock(m) ? NO : YES);
 }
 
-static OF_INLINE BOOL
-thread_is_current(pthread_t t)
-{
-	return (pthread_equal(t, pthread_self()) ? YES : NO);
-}
-
-static OF_INLINE pthread_t
-thread_current()
-{
-	return pthread_self();
-}
+#define thread_is_current(t) pthread_equal(t, pthread_self())
+#define thread_current() pthread_self()
 #else
 static OF_INLINE BOOL
 mutex_new(CRITICAL_SECTION *m)
@@ -113,18 +104,17 @@ mutex_unlock(CRITICAL_SECTION *m)
 	return YES;
 }
 
-static OF_INLINE BOOL
-thread_is_current(DWORD t)
-{
-	return (t == GetCurrentThreadId() ? YES : NO);
-}
-
-static OF_INLINE DWORD
-thread_current()
-{
-	return GetCurrentThreadId();
-}
+#define thread_is_current(t) (t == GetCurrentThreadId())
+#define thread_current() GetCurrentThreadId()
 #endif
+
+#define ERROR(f)							\
+	{								\
+		fprintf(stderr, "WARNING: %s failed in line %d!\n"	\
+		    "WARNING: This might result in a race "		\
+		    "condition!\n", f, __LINE__);			\
+		return 1;						\
+	}
 
 BOOL
 objc_sync_init()
@@ -141,7 +131,7 @@ objc_sync_enter(id obj)
 		return 0;
 
 	if (!mutex_lock(&mutex))
-		return 1;
+		ERROR("mutex_lock(&mutex)");
 
 	for (i = num_locks - 1; i >= 0; i--) {
 		if (locks[i].obj == obj) {
@@ -153,15 +143,15 @@ objc_sync_enter(id obj)
 
 				/* Unlock so objc_sync_exit can return */
 				if (!mutex_unlock(&mutex))
-					return 1;
+					ERROR("mutex_unlock(&mutex)");
 
 				if (!mutex_lock(&locks[i].mutex)) {
 					mutex_unlock(&mutex);
-					return 1;
+					ERROR("mutex_lock(&locks[i].mutex");
 				}
 
 				if (!mutex_lock(&mutex))
-					return 1;
+					ERROR("mutex_lock(&mutex)");
 
 				assert(locks[i].recursion == 0);
 
@@ -170,7 +160,7 @@ objc_sync_enter(id obj)
 			}
 
 			if (!mutex_unlock(&mutex))
-				return 1;
+				ERROR("mutex_unlock(&mutex)");
 
 			return 0;
 		}
@@ -179,7 +169,7 @@ objc_sync_enter(id obj)
 	if (locks == NULL) {
 		if ((locks = malloc(sizeof(struct locks_s))) == NULL) {
 			mutex_unlock(&mutex);
-			return 1;
+			ERROR("malloc(...)");
 		}
 	} else {
 		struct locks_s *new_locks;
@@ -187,7 +177,7 @@ objc_sync_enter(id obj)
 		if ((new_locks = realloc(locks, (num_locks + 1) *
 		    sizeof(struct locks_s))) == NULL) {
 			mutex_unlock(&mutex);
-			return 1;
+			ERROR("realloc(...)");
 		}
 
 		locks = new_locks;
@@ -200,18 +190,18 @@ objc_sync_enter(id obj)
 
 	if (!mutex_new(&locks[num_locks].mutex)) {
 		mutex_unlock(&mutex);
-		return 1;
+		ERROR("mutex_new(&locks[num_locks].mutex");
 	}
 
 	if (!mutex_lock(&locks[num_locks].mutex)) {
 		mutex_unlock(&mutex);
-		return 1;
+		ERROR("mutex_lock(&locks[num_locks].mutex");
 	}
 
 	num_locks++;
 
 	if (!mutex_unlock(&mutex))
-		return 1;
+		ERROR("mutex_unlock(&mutex)");
 
 	return 0;
 }
@@ -225,7 +215,7 @@ objc_sync_exit(id obj)
 		return 0;
 
 	if (!mutex_lock(&mutex))
-		return 1;
+		ERROR("mutex_lock(&mutex)");
 
 	for (i = num_locks - 1; i >= 0; i--) {
 		if (locks[i].obj == obj) {
@@ -234,14 +224,14 @@ objc_sync_exit(id obj)
 				locks[i].recursion--;
 
 				if (!mutex_unlock(&mutex))
-					return 1;
+					ERROR("mutex_unlock(&mutex)");
 
 				return 0;
 			}
 
 			if (!mutex_unlock(&locks[i].mutex)) {
 				mutex_unlock(&mutex);
-				return 1;
+				ERROR("mutex_unlock(&locks[i].mutex)");
 			}
 
 			locks[i].count--;
@@ -251,7 +241,7 @@ objc_sync_exit(id obj)
 
 				if (!mutex_free(&locks[i].mutex)) {
 					mutex_unlock(&mutex);
-					return 1;
+					ERROR("mutex_free(&locks[i].mutex");
 				}
 
 				num_locks--;
@@ -264,19 +254,19 @@ objc_sync_exit(id obj)
 				    num_locks * sizeof(struct locks_s))) ==
 				    NULL) {
 					mutex_unlock(&mutex);
-					return 1;
+					ERROR("realloc(...)");
 				}
 
 				locks = new_locks;
 			}
 
 			if (!mutex_unlock(&mutex))
-				return 1;
+				ERROR("mutex_unlock(&mutex)");
 
 			return 0;
 		}
 	}
 
 	mutex_unlock(&mutex);
-	return 1;
+	ERROR("objc_sync_exit()");
 }
