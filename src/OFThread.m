@@ -83,7 +83,7 @@ call_main(LPVOID obj)
 	Class c;
 
 	self = [super init];
-	object = obj;
+	object = [obj copy];
 
 #ifndef _WIN32
 	if (pthread_create(&thread, NULL, call_main, self)) {
@@ -143,6 +143,7 @@ call_main(LPVOID obj)
 	}
 #endif
 
+	[object release];
 	[super dealloc];
 }
 @end

@@ -63,7 +63,7 @@
 }
 
 /**
- * \param obj An object that is passed to the main method
+ * \param obj An object that is passed to the main method as a copy
  * \return A new, autoreleased thread
  */
 + threadWithObject: (id)obj;
@@ -89,7 +89,7 @@
 + (id)objectForTLSKey: (OFTLSKey*)key;
 
 /**
- * \param obj An object that is passed to the main method
+ * \param obj An object that is passed to the main method as a copy
  * \return An initialized OFThread.
  */
 - initWithObject: (id)obj;
