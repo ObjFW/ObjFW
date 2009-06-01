@@ -13,6 +13,7 @@
 
 #include <stddef.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #ifndef _WIN32
 #include <pthread.h>
@@ -142,13 +143,27 @@ objc_sync_enter(id obj)
 		if (locks[i].obj == obj) {
 			if (thread_is_current(locks[i].thread))
 				locks[i].recursion++;
-			else
+			else {
+				/* Make sure objc_sync_exit doesn't free it */
+				locks[i].count++;
+
+				/* Unlock so objc_sync_exit can return */
+				if (!mutex_unlock(&mutex))
+					return 1;
+
 				if (!mutex_lock(&locks[i].mutex)) {
 					mutex_unlock(&mutex);
 					return 1;
 				}
 
-			locks[i].count++;
+				if (!mutex_lock(&mutex))
+					return 1;
+
+				assert(locks[i].recursion == 0);
+
+				/* Update lock's active thread */
+				locks[i].thread = thread_current();
+			}
 
 			if (!mutex_unlock(&mutex))
 				return 1;
@@ -228,7 +243,7 @@ objc_sync_exit(id obj)
 			locks[i].count--;
 
 			if (locks[i].count == 0) {
-				struct locks_s *new_locks;
+				struct locks_s *new_locks = NULL;
 
 				if (!mutex_free(&locks[i].mutex)) {
 					mutex_unlock(&mutex);
@@ -238,8 +253,12 @@ objc_sync_exit(id obj)
 				num_locks--;
 				locks[i] = locks[num_locks];
 
-				if ((new_locks = realloc(locks, (num_locks) *
-				    sizeof(struct locks_s))) == NULL) {
+				if (num_locks == 0) {
+					free(locks);
+					new_locks = NULL;
+				} else if ((new_locks = realloc(locks,
+				    num_locks * sizeof(struct locks_s))) ==
+				    NULL) {
 					mutex_unlock(&mutex);
 					return 1;
 				}
