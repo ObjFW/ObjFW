@@ -12,6 +12,7 @@ VERSION="0.1"
 show_help() {
 	echo "$0: Available arguments are:"
 	echo
+	echo "	--all		Outputs all flags + libs"
 	echo "	--cflags	Outputs the required CFLAGS"
 	echo "	--cppflags	Outputs the required CPPFLAGS"
 	echo "	--cxxflags	Outputs the required CXXFLAGS"
@@ -26,6 +27,13 @@ test -z "$1" && show_help
 
 while test ! -z "$1"; do
 	case "$1" in
+		--all)
+			echo "$CFLAGS"
+			echo "$CPPFLAGS"
+			echo "$CXXFLAGS"
+			echo "$OBJCFLAGS"
+			echo "$LIBS"
+			;;
 		--cflags)
 			echo "$CFLAGS"
 			;;
@@ -45,7 +53,7 @@ while test ! -z "$1"; do
 			echo "$VERSION"
 			;;
 		*)
-			echo "Invalid option: $1"
+			echo "Invalid option: $1" >/dev/stderr
 			exit 1
 			;;
 	esac
