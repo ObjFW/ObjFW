@@ -9,10 +9,6 @@
  * the packaging of this file.
  */
 
-#ifndef OF_CONFIG_H
-#error "You need to have the objfw defines in your config.h and include it!"
-#endif
-
 #ifdef __GNUC__
 #define OF_INLINE inline __attribute__((always_inline))
 #define OF_LIKELY(cond) __builtin_expect(!!(cond), 1)
@@ -23,7 +19,7 @@
 #define OF_UNLIKELY(cond) cond
 #endif
 
-#ifdef OF_BIG_ENDIAN
+#if defined(OF_BIG_ENDIAN)
 static OF_INLINE void
 OF_BSWAP_V(uint8_t *buf, size_t len)
 {
@@ -36,8 +32,10 @@ OF_BSWAP_V(uint8_t *buf, size_t len)
 		buf += sizeof(t);
 	}
 }
-#else
+#elif defined(OF_LITTLE_ENDIAN)
 #define OF_BSWAP_V(buf, len)
+#else
+#error Please define either OF_BIG_ENDIAN or OF_LITTLE_ENDIAN!
 #endif
 
 #define OF_ROL(val, bits) \

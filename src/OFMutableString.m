@@ -28,9 +28,7 @@
 #import "OFExceptions.h"
 #import "OFMacros.h"
 
-#ifndef HAVE_ASPRINTF
 #import "asprintf.h"
-#endif
 
 @implementation OFMutableString
 - (id)copy

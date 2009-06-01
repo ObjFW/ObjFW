@@ -19,9 +19,15 @@ AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
 if test x"$PLUGIN_SUFFIX" != "x"; then
 	AC_SUBST(OFPLUGIN_M, "OFPlugin.m")
 	AC_SUBST(OFPLUGIN, "OFPlugin")
+	AC_SUBST(OFPLUGIN_DEF, "-DOF_PLUGINS")
 fi
 
-AC_C_BIGENDIAN([AC_DEFINE(OF_BIG_ENDIAN, 1, [Whether we are big endian])])
+AC_C_BIGENDIAN([
+	AC_DEFINE(OF_BIG_ENDIAN, 1, [Whether we are big endian])
+	AC_SUBST(ENDIANESS_DEF, "-DOF_BIG_ENDIAN")
+	], [
+	AC_DEFINE(OF_LITTLE_ENDIAN, 1, [Whether we are little endian])
+	AC_SUBST(ENDIANESS_DEF, "-DOF_LITTLE_ENDIAN")])
 
 AC_MSG_CHECKING(for SIZE_MAX)
 AC_EGREP_CPP(yes, [
@@ -50,7 +56,9 @@ AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
 
 AC_CHECK_FUNC(asprintf, [
 	have_asprintf="yes"
-	AC_DEFINE(HAVE_ASPRINTF, 1, [Whether we have asprintf])], [
+	AC_DEFINE(OF_HAVE_ASPRINTF, 1, [Whether we have asprintf])
+	AC_SUBST(ASPRINTF_DEF, "-DOF_HAVE_ASPRINTF")
+	], [
 	have_asprintf="no"
 	AC_SUBST(ASPRINTF_C, "asprintf.c")])
 

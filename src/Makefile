@@ -27,13 +27,15 @@ SRCS = OFArray.m		\
        OFThread.m		\
        OFURLEncoding.m		\
        OFXMLFactory.m		\
-       ${ASPRINTF_C}
 
 INCLUDESTMP := ${SRCS:.c=.h}
 INCLUDES := ${INCLUDESTMP:.m=.h}	\
-	   OFMacros.h
+	    OFMacros.h			\
+	    asprintf.h			\
+	    objfw.h
 
-SRCS += ${OBJC_SYNC_M}
+SRCS += ${OBJC_SYNC_M}	\
+	${ASPRINTF_C}
 
 include ../buildsys.mk
 

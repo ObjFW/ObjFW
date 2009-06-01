@@ -9,5 +9,9 @@
  * the packaging of this file.
  */
 
+#ifndef OF_HAVE_ASPRINTF
+#include <stdarg.h>
+
 extern int asprintf(char**, const char*, ...);
 extern int vasprintf(char**, const char*, va_list);
+#endif

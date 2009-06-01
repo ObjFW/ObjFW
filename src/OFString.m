@@ -28,9 +28,7 @@
 #import "OFExceptions.h"
 #import "OFMacros.h"
 
-#ifndef HAVE_ASPRINTF
 #import "asprintf.h"
-#endif
 
 /* Reference for static linking */
 void _reference_to_OFURLEncoding_in_OFString()
