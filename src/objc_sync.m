@@ -28,22 +28,22 @@
 #import "OFMacros.h"
 
 struct locks_s {
-	id		obj;
-	size_t		count;
-	size_t		recursion;
+	id		 obj;
+	size_t		 count;
+	size_t		 recursion;
 #ifndef _WIN32
-	pthread_t	thread;
-	pthread_mutex_t	mutex;
+	pthread_t	 thread;
+	pthread_mutex_t	 mutex;
 #else
-	HANDLE		thread;
-	HANDLE		mutex;
+	DWORD		 thread;
+	CRITICAL_SECTION mutex;
 #endif
 };
 
 #ifndef _WIN32
 static pthread_mutex_t mutex;
 #else
-static HANDLE mutex;
+static CRITICAL_SECTION mutex;
 #endif
 static struct locks_s *locks = NULL;
 static size_t num_locks = 0;
@@ -86,39 +86,43 @@ thread_current()
 }
 #else
 static OF_INLINE BOOL
-mutex_new(HANDLE *m)
+mutex_new(CRITICAL_SECTION *m)
 {
-	return (((*m = CreateMutex(NULL, FALSE, NULL)) != NULL) ? YES : NO);
+	InitializeCriticalSection(m);
+	return YES;
 }
 
 static OF_INLINE BOOL
-mutex_free(HANDLE *m)
+mutex_free(CRITICAL_SECTION *m)
 {
-	return (CloseHandle(*m) ? YES : NO);
+	DeleteCriticalSection(m);
+	return YES;
 }
 
 static OF_INLINE BOOL
-mutex_lock(HANDLE *m)
+mutex_lock(CRITICAL_SECTION *m)
 {
-	return (WaitForSingleObject(*m, INFINITE) == WAIT_OBJECT_0 ? YES : NO);
+	EnterCriticalSection(m);
+	return YES;
 }
 
 static OF_INLINE BOOL
-mutex_unlock(HANDLE *m)
+mutex_unlock(CRITICAL_SECTION *m)
 {
-	return (ReleaseMutex(*m) ? YES : NO);
+	LeaveCriticalSection(m);
+	return YES;
 }
 
 static OF_INLINE BOOL
-thread_is_current(HANDLE t)
+thread_is_current(DWORD t)
 {
-	return (t == GetCurrentThread() ? YES : NO);
+	return (t == GetCurrentThreadId() ? YES : NO);
 }
 
-static OF_INLINE HANDLE
+static OF_INLINE DWORD
 thread_current()
 {
-	return GetCurrentThread();
+	return GetCurrentThreadId();
 }
 #endif
 
