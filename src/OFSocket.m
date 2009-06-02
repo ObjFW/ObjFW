@@ -50,6 +50,13 @@
 	return self;
 }
 
+- (BOOL)atEndOfStream
+{
+	/* FIXME: Implement this! */
+
+	return NO;
+}
+
 - (size_t)readNBytes: (size_t)size
 	  intoBuffer: (char*)buf
 {

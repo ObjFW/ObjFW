@@ -34,7 +34,7 @@ main()
 	OFFile *f = [OFFile fileWithPath: @"testfile"
 				 andMode: @"rb"];
 
-	while (![f atEndOfFile]) {
+	while (![f atEndOfStream]) {
 		len = [f readNBytes: 64
 			 intoBuffer: buf];
 		[md5 updateWithBuffer: buf

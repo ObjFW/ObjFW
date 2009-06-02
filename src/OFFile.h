@@ -107,11 +107,6 @@ typedef int gid_t;
        andMode: (OFString*)mode;
 
 /**
- * \return A boolean whether the end of the file has been reached
- */
-- (BOOL)atEndOfFile;
-
-/**
  * Reads from the file into a buffer.
  *
  * \param buf The buffer into which the data is read

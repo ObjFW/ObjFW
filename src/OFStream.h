@@ -22,6 +22,11 @@
 }
 
 /**
+ * \return A boolean whether the end of the stream has been reached
+ */
+- (BOOL)atEndOfStream;
+
+/**
  * Reads from the stream into a buffer.
  *
  * \param buf The buffer into which the data is read
@@ -38,7 +43,8 @@
  * If you want to use readNBytes afterwards again, you have to clear the cache
  * before and optionally get the cache before clearing it!
  *
- * \return The line that was read, autoreleased.
+ * \return The line that was read, autoreleased, or nil if the end of the
+ *	   stream has been reached.
  */
 - (OFString*)readLine;
 

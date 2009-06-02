@@ -103,7 +103,7 @@
 	[super dealloc];
 }
 
-- (BOOL)atEndOfFile
+- (BOOL)atEndOfStream
 {
 	if (fp == NULL)
 		return YES;

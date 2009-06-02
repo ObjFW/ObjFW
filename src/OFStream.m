@@ -46,6 +46,12 @@ static int pagesize = 0;
 	return self;
 }
 
+- (BOOL)atEndOfStream
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
+
 - (size_t)readNBytes: (size_t)size
 	  intoBuffer: (char*)buf
 {
@@ -97,6 +103,29 @@ static int pagesize = 0;
 	tmp = [self allocMemoryWithSize: pagesize];
 
 	for (;;) {
+		if ([self atEndOfStream]) {
+			[self freeMemory: tmp];
+
+			if (cache == NULL)
+				return nil;
+
+			ret_c = [self allocMemoryWithSize: cache_len + 1];
+			memcpy(ret_c, cache, cache_len);
+			ret_c[cache_len] = '\0';
+
+			@try {
+				ret = [OFString stringWithCString: ret_c];
+			} @finally {
+				[self freeMemory: ret_c];
+			}
+
+			[self freeMemory: cache];
+			cache = NULL;
+			cache_len = 0;
+
+			return ret;
+		}
+
 		@try {
 			len = [self readNBytes: pagesize - 1
 				    intoBuffer: tmp];
@@ -119,7 +148,7 @@ static int pagesize = 0;
 				if (cache != NULL)
 					memcpy(ret_c, cache, cache_len);
 				memcpy(ret_c + cache_len, tmp, i);
-				ret_c[i] = '\0';
+				ret_c[cache_len + i] = '\0';
 
 				if (i < len) {
 					@try {
@@ -143,8 +172,8 @@ static int pagesize = 0;
 					cache = NULL;
 					cache_len = 0;
 				}
-
 				[self freeMemory: tmp];
+
 				@try {
 					ret = [OFString
 					    stringWithCString: ret_c];
