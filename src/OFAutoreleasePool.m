@@ -136,12 +136,6 @@ release_list(void *list)
 	return self;
 }
 
-- (void)release
-{
-	[self releaseObjects];
-	[super release];
-}
-
 - releaseObjects
 {
 	if (listobj->next != NULL)
@@ -158,14 +152,12 @@ release_list(void *list)
 
 - retain
 {
-	// FIXME: Maybe another exception would be better here?
 	@throw [OFNotImplementedException newWithClass: isa
 					   andSelector: _cmd];
 }
 
 - autorelease
 {
-	// FIXME: Maybe another exception would be better here?
 	@throw [OFNotImplementedException newWithClass: isa
 					   andSelector: _cmd];
 }
