@@ -428,4 +428,71 @@ extern BOOL objc_sync_init();
 
 	free((char*)self - PRE_IVAR_ALIGN);
 }
+
+/*
+ * Those are needed as the root class is the superclass of the root class's
+ * metaclass and thus instance methods can be sent to class objects as well.
+ */
++ addMemoryToPool: (void*)ptr
+{
+	@throw [OFNotImplementedException newWithClass: self
+					   andSelector: _cmd];
+}
+
++ (void*)allocMemoryWithSize: (size_t)size
+{
+	@throw [OFNotImplementedException newWithClass: self
+					   andSelector: _cmd];
+}
+
++ (void*)allocMemoryForNItems: (size_t)nitems
+                     withSize: (size_t)size
+{
+	@throw [OFNotImplementedException newWithClass: self
+					   andSelector: _cmd];
+}
+
++ (void*)resizeMemory: (void*)ptr
+	       toSize: (size_t)size
+{
+	@throw [OFNotImplementedException newWithClass: self
+					   andSelector: _cmd];
+}
+
++ (void*)resizeMemory: (void*)ptr
+	     toNItems: (size_t)nitems
+	     withSize: (size_t)size
+{
+	@throw [OFNotImplementedException newWithClass: self
+					   andSelector: _cmd];
+}
+
++ freeMemory: (void*)ptr
+{
+	@throw [OFNotImplementedException newWithClass: self
+					   andSelector: _cmd];
+}
+
++ retain
+{
+	return self;
+}
+
++ autorelease
+{
+	return self;
+}
+
++ (size_t)retainCount
+{
+	return SIZE_MAX;
+}
+
++ (void)release
+{
+}
+
++ (void)dealloc
+{
+}
 @end

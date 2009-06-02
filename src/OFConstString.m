@@ -37,7 +37,7 @@ void *_OFConstStringClassReference;
 
 - (size_t)retainCount
 {
-	return 1;
+	return SIZE_MAX;
 }
 
 - autorelease

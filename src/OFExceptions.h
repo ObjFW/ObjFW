@@ -17,7 +17,7 @@
  *
  * This exception is preallocated, as if there's no memory, no exception can
  * be allocated of course. That's why you shouldn't and even can't deallocate
- *it.
+ * it.
  *
  * This is the only exception that is not an OFException as it's special.
  * It does not know for which class allocation failed and it should not be
