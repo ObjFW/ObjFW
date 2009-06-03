@@ -1,12 +1,14 @@
 #!/bin/sh
 prefix="@prefix@"
 exec_prefix="@exec_prefix@"
+libdir="@libdir@"
 CFLAGS=""
 CPPFLAGS="-I@includedir@/objfw @ENDIANESS_DEF@ @ASPRINTF_DEF@ @OFPLUGIN_DEF@"
 CXXFLAGS=""
 OBJCFLAGS="-fobjc-exceptions -fconstant-string-class=OFConstString"
 OBJCFLAGS="$OBJCFLAGS @NO_CONST_CFSTRINGS@"
-LIBS="-L@libdir@ -lobjfw @LIBS@"
+LDFLAGS="@RPATH_LDFLAGS@"
+LIBS="-L${libdir} -lobjfw @LIBS@"
 VERSION="0.1"
 
 show_help() {
@@ -17,6 +19,7 @@ show_help() {
 	echo "	--cppflags	Outputs the required CPPFLAGS"
 	echo "	--cxxflags	Outputs the required CXXFLAGS"
 	echo "	--objcflags	Outputs the required OBJCFLAGS"
+	echo "	--ldflags	Outputs the required LDFLAGS"
 	echo "	--libs		Outputs the required LIBS"
 	echo "	--version	Outputs the installed version"
 	echo
@@ -32,6 +35,7 @@ while test ! -z "$1"; do
 			echo "$CPPFLAGS"
 			echo "$CXXFLAGS"
 			echo "$OBJCFLAGS"
+			echo "$LDFLAGS"
 			echo "$LIBS"
 			;;
 		--cflags)
@@ -48,6 +52,9 @@ while test ! -z "$1"; do
 			;;
 		--libs)
 			echo "$LIBS"
+			;;
+		--ldflags)
+			echo "$LDFLAGS"
 			;;
 		--version)
 			echo "$VERSION"
