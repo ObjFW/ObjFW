@@ -94,6 +94,7 @@ case "$host" in
 		;;
 esac
 
+AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
 AC_CHECK_LIB(ws2_32, main, LIBS="$LIBS -lws2_32")
 
 AC_MSG_CHECKING(for getaddrinfo)
