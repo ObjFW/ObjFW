@@ -298,4 +298,89 @@
 
 	return self;
 }
+
+- removeLeadingWhitespaces
+{
+	size_t i;
+
+	for (i = 0; i < length; i++)
+		if (string[i] != ' ' && string[i] != '\t')
+			break;
+
+	length -= i;
+	memmove(string, string + i, length);
+	string[length] = '\0';
+
+	@try {
+		string = [self resizeMemory: string
+				     toSize: length + 1];
+	} @catch (OFOutOfMemoryException *e) {
+		/* We don't really care, as we only made it smaller */
+		[e dealloc];
+	}
+
+	return self;
+}
+
+- removeTrailingWhitespaces
+{
+	size_t d;
+	char *p;
+
+	d = 0;
+	for (p = string + length - 1; p >= string; p--) {
+		if (*p != ' ' && *p != '\t')
+			break;
+
+		*p = '\0';
+		d++;
+	}
+
+	length -= d;
+
+	@try {
+		string = [self resizeMemory: string
+				     toSize: length + 1];
+	} @catch (OFOutOfMemoryException *e) {
+		/* We don't really care, as we only made it smaller */
+		[e dealloc];
+	}
+
+	return self;
+}
+
+- removeLeadingAndTrailingWhitespaces
+{
+	size_t d, i;
+	char *p;
+
+	d = 0;
+	for (p = string + length - 1; p >= string; p--) {
+		if (*p != ' ' && *p != '\t')
+			break;
+
+		*p = '\0';
+		d++;
+	}
+
+	length -= d;
+
+	for (i = 0; i < length; i++)
+		if (string[i] != ' ' && string[i] != '\t')
+			break;
+
+	length -= i;
+	memmove(string, string + i, length);
+	string[length] = '\0';
+
+	@try {
+		string = [self resizeMemory: string
+				     toSize: length + 1];
+	} @catch (OFOutOfMemoryException *e) {
+		/* We don't really care, as we only made it smaller */
+		[e dealloc];
+	}
+
+	return self;
+}
 @end

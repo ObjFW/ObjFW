@@ -25,7 +25,7 @@
 #define ZD "%u"
 #endif
 
-#define NUM_TESTS 27
+#define NUM_TESTS 33
 #define SUCCESS								\
 	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
 	    (i == NUM_TESTS - 1 ? 32 : 33), i + 1, NUM_TESTS);		\
@@ -123,6 +123,20 @@ main()
 	[s1 replaceOccurrencesOfString: @"X"
 			    withString: @"XX"];
 	CHECK([s1 isEqual: @"XXXX"])
+
+	s1 = [@"  \t\t \tasd  \t \t\t" mutableCopy];
+	s2 = [s1 mutableCopy];
+	s3 = [s1 mutableCopy];
+	CHECK([[s1 removeLeadingWhitespaces] isEqual: @"asd  \t \t\t"])
+	CHECK([[s2 removeTrailingWhitespaces] isEqual: @"  \t\t \tasd"])
+	CHECK([[s3 removeLeadingAndTrailingWhitespaces] isEqual: @"asd"])
+
+	s1 = [@" \t\t  \t\t  \t \t" mutableCopy];
+	s2 = [s1 mutableCopy];
+	s3 = [s1 mutableCopy];
+	CHECK([[s1 removeLeadingWhitespaces] isEqual: @""])
+	CHECK([[s2 removeTrailingWhitespaces] isEqual: @""])
+	CHECK([[s3 removeLeadingAndTrailingWhitespaces] isEqual: @""])
 
 	puts("");
 

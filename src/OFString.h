@@ -190,6 +190,21 @@ extern int of_string_check_utf8(const char *str, size_t len);
 		  withString: (OFString*)repl;
 
 /**
+ * Removes all whitespaces at the beginning of a string.
+ */
+- removeLeadingWhitespaces;
+
+/**
+ * Removes all whitespaces at the end of a string.
+ */
+- removeTrailingWhitespaces;
+
+/**
+ * Removes all whitespaces at the beginning and the end of a string.
+ */
+- removeLeadingAndTrailingWhitespaces;
+
+/**
  * Splits an OFString into an OFArray of OFStrings.
  *
  * \param delimiter The delimiter for splitting
