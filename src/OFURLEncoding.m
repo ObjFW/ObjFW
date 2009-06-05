@@ -23,7 +23,7 @@
 int _OFURLEncoding_reference;
 
 @implementation OFString (OFURLEncoding)
-- (OFString*)urlEncodedString
+- (OFString*)stringByURLEncoding
 {
 	const char *s;
 	char *ret_c;
@@ -63,7 +63,7 @@ int _OFURLEncoding_reference;
 	return ret;
 }
 
-- (OFString*)urlDecodedString
+- (OFString*)stringByURLDecoding
 {
 	const char *s;
 	char *ret_c, c;
