@@ -12,6 +12,7 @@
 #include "config.h"
 
 #import "OFConstString.h"
+#import "OFExceptions.h"
 
 #ifndef __objc_INCLUDE_GNU
 void *_OFConstStringClassReference;
@@ -25,6 +26,11 @@ void *_OFConstStringClassReference;
 	    "OFConstString");
 }
 #endif
+
+- autorelease
+{
+	return self;
+}
 
 - retain
 {
@@ -40,8 +46,10 @@ void *_OFConstStringClassReference;
 	return SIZE_MAX;
 }
 
-- autorelease
+- (void)dealloc
 {
-	return self;
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+	[super dealloc];	/* Get rid of stupid warning */
 }
 @end

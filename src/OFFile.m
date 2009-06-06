@@ -23,12 +23,43 @@
 #import "OFFile.h"
 #import "OFExceptions.h"
 
+static OFFileSingleton *of_file_stdin = nil;
+static OFFileSingleton *of_file_stdout = nil;
+static OFFileSingleton *of_file_stderr = nil;
+
 @implementation OFFile
 + fileWithPath: (OFString*)path
        andMode: (OFString*)mode
 {
 	return [[[self alloc] initWithPath: path
 				   andMode: mode] autorelease];
+}
+
++ standardInput
+{
+	if (of_file_stdin == nil)
+		of_file_stdin = [[OFFileSingleton alloc]
+		    initWithFilePointer: stdin];
+
+	return of_file_stdin;
+}
+
++ standardOutput
+{
+	if (of_file_stdout == nil)
+		of_file_stdout = [[OFFileSingleton alloc]
+		    initWithFilePointer: stdout];
+
+	return of_file_stdout;
+}
+
++ standardError
+{
+	if (of_file_stderr == nil)
+		of_file_stderr = [[OFFileSingleton alloc]
+		    initWithFilePointer: stderr];
+
+	return of_file_stderr;
 }
 
 + (void)changeModeOfFile: (OFString*)path
@@ -172,5 +203,42 @@
 	fp = NULL;
 
 	return self;
+}
+@end
+
+@implementation OFFileSingleton
+- initWithFilePointer: (FILE*)fp_
+{
+	self = [super init];
+
+	fp = fp_;
+
+	return self;
+}
+
+- autorelease
+{
+	return self;
+}
+
+- retain
+{
+	return self;
+}
+
+- (void)release
+{
+}
+
+- (size_t)retainCount
+{
+	return SIZE_MAX;
+}
+
+- (void)dealloc
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+	[super dealloc];	/* Get rid of stupid warning */
 }
 @end

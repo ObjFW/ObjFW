@@ -36,6 +36,22 @@ typedef int gid_t;
  */
 + fileWithPath: (OFString*)path
        andMode: (OFString*)mode;
+
+/**
+ * \return An OFFile singleton for stdin
+ */
++ standardInput;
+
+/**
+ * \return An OFFile singleton for stdout
+ */
++ standardOutput;
+
+/**
+ * \return An OFFile singleton for stderr
+ */
++ standardError;
+
 /**
  * Changes the mode of a file.
  *
@@ -131,4 +147,8 @@ typedef int gid_t;
 - (size_t)writeNItems: (size_t)nitems
 	       ofSize: (size_t)size
 	   fromBuffer: (const char*)buf;
+@end
+
+@interface OFFileSingleton: OFFile
+- initWithFilePointer: (FILE*)fp;
 @end
