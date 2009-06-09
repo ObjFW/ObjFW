@@ -52,9 +52,7 @@
 
 - (BOOL)atEndOfStream
 {
-	/* FIXME: Implement this! */
-
-	return NO;
+	return eos;
 }
 
 - (size_t)readNBytes: (size_t)size
@@ -62,18 +60,15 @@
 {
 	ssize_t ret;
 
-	if (sock == INVALID_SOCKET)
+	if (sock == INVALID_SOCKET || eos)
 		@throw [OFNotConnectedException newWithClass: isa];
 
-	switch ((ret = recv(sock, buf, size, 0))) {
-	case 0:
-		@throw [OFNotConnectedException newWithClass: isa];
-	case -1:
-		@throw [OFReadFailedException newWithClass: isa
-						   andSize: size];
-	}
+	if ((ret = recv(sock, buf, size, 0)) < 0)
+		@throw [OFReadFailedException newWithClass: isa];
 
-	/* This is safe, as we already checked < 1 */
+	if (ret == 0)
+		eos = YES;
+
 	return ret;
 }
 

@@ -43,6 +43,7 @@
 #endif
 	struct sockaddr	*saddr;
 	socklen_t	saddr_len;
+	BOOL		eos;
 }
 
 /**
