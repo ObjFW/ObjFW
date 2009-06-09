@@ -284,7 +284,7 @@
 @end
 
 @implementation OFInitializationFailedException
-- (OFString*)cString
+- (OFString*)string
 {
 	if (string != nil)
 		return string;
