@@ -309,6 +309,64 @@ of_string_check_utf8(const char *str, size_t len)
 	return hash;
 }
 
+- (OFArray*)splitWithDelimiter: (OFString*)delimiter
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFArray *array = nil;
+	OFString *str;
+	const char *delim = [delimiter cString];
+	size_t delim_len = [delimiter length];
+	size_t i, last;
+
+	array = [OFMutableArray array];
+
+	if (delim_len > length) {
+		str = [[self copy] autorelease];
+		[array addObject: str];
+
+		[array retain];
+		[pool release];
+
+		return array;
+	}
+
+	for (i = 0, last = 0; i <= length - delim_len; i++) {
+		char *tmp;
+
+		if (memcmp(string + i, delim, delim_len))
+			continue;
+
+		/*
+		 * We can't use [self allocMemoryWithSize:] here as self might
+		 * be a @""-literal.
+		 */
+		if ((tmp = malloc(i - last + 1)) == NULL)
+			@throw [OFOutOfMemoryException
+			    newWithClass: isa
+				 andSize: i - last + 1];
+		memcpy(tmp, string + last, i - last);
+		tmp[i - last] = '\0';
+		@try {
+			str = [OFString stringWithCString: tmp];
+		} @finally {
+			free(tmp);
+		}
+
+		[array addObject: str];
+		[array retain];
+		[pool releaseObjects];
+
+		i += delim_len - 1;
+		last = i + 1;
+	}
+	[array addObject: [OFString stringWithCString: string + last]];
+
+	[array retain];
+	[pool release];
+
+	return array;
+}
+
 - setToCString: (const char*)str
 {
 	@throw [OFNotImplementedException newWithClass: isa
@@ -381,63 +439,5 @@ of_string_check_utf8(const char *str, size_t len)
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					   andSelector: _cmd];
-}
-
-- (OFArray*)splitWithDelimiter: (OFString*)delimiter
-{
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFArray *array = nil;
-	OFString *str;
-	const char *delim = [delimiter cString];
-	size_t delim_len = [delimiter length];
-	size_t i, last;
-
-	array = [OFMutableArray array];
-
-	if (delim_len > length) {
-		str = [[self copy] autorelease];
-		[array addObject: str];
-
-		[array retain];
-		[pool release];
-
-		return array;
-	}
-
-	for (i = 0, last = 0; i <= length - delim_len; i++) {
-		char *tmp;
-
-		if (memcmp(string + i, delim, delim_len))
-			continue;
-
-		/*
-		 * We can't use [self allocMemoryWithSize:] here as self might
-		 * be a @""-literal.
-		 */
-		if ((tmp = malloc(i - last + 1)) == NULL)
-			@throw [OFOutOfMemoryException
-			    newWithClass: isa
-				 andSize: i - last + 1];
-		memcpy(tmp, string + last, i - last);
-		tmp[i - last] = '\0';
-		@try {
-			str = [OFString stringWithCString: tmp];
-		} @finally {
-			free(tmp);
-		}
-
-		[array addObject: str];
-		[array retain];
-		[pool releaseObjects];
-
-		i += delim_len - 1;
-		last = i + 1;
-	}
-	[array addObject: [OFString stringWithCString: string + last]];
-
-	[array retain];
-	[pool release];
-
-	return array;
 }
 @end

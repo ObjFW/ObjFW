@@ -336,25 +336,6 @@ void _reference_to_OFIterator_in_OFDictionary()
 	return nil;
 }
 
-- setObject: (OFObject*)obj
-     forKey: (OFObject <OFCopying>*)key
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
-}
-
-- removeObjectForKey: (OFObject*)key
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
-}
-
-- changeHashSize: (int)hashsize
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
-}
-
 /* FIXME: Implement this! */
 /*
 - (BOOL)isEqual
@@ -379,5 +360,24 @@ void _reference_to_OFIterator_in_OFDictionary()
 			[data[i] release];
 
 	[super dealloc];
+}
+
+- setObject: (OFObject*)obj
+     forKey: (OFObject <OFCopying>*)key
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
+
+- removeObjectForKey: (OFObject*)key
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
+
+- changeHashSize: (int)hashsize
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
 }
 @end

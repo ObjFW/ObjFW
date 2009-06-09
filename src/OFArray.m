@@ -200,18 +200,6 @@
 	return YES;
 }
 
-- addObject: (OFObject*)obj
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
-}
-
-- removeNObjects: (size_t)nobjects
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
-}
-
 - (void)dealloc
 {
 	OFObject **objs;
@@ -228,5 +216,17 @@
 	}
 
 	[super dealloc];
+}
+
+- addObject: (OFObject*)obj
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
+
+- removeNObjects: (size_t)nobjects
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
 }
 @end

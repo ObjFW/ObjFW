@@ -136,27 +136,9 @@
  */
 - (id)objectForKey: (OFObject*)key;
 
-/**
- * Sets a key to an object. A key can be any object.
- *
- * \param key The key to set
- * \param obj The object to set the key to
- */
 - setObject: (OFObject*)obj
      forKey: (OFObject <OFCopying>*)key;
-
-/**
- * Remove the object with the given key from the dictionary.
- *
- * \param key The key whose object should be removed
- */
 - removeObjectForKey: (OFObject*)key;
-
-/**
- * Changes the hash size of the dictionary.
- *
- * \param hashsize The new hash size for the dictionary
- */
 - changeHashSize: (int)hashsize;
 @end
 

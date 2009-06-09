@@ -16,4 +16,17 @@
  * objects in an array.
  */
 @interface OFMutableArray: OFArray
+/**
+ * Adds an object to the OFDataArray.
+ *
+ * \param obj An object to add
+ */
+- addObject: (OFObject*)obj;
+
+/**
+ * Removes the specified amount of objects from the end of the OFDataArray.
+ *
+ * \param nobjects The number of objects to remove
+ */
+- removeNObjects: (size_t)nobjects;
 @end
