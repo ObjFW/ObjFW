@@ -23,7 +23,9 @@
 #import "OFMacros.h"
 
 #import <objc/objc-api.h>
-#ifndef __objc_INCLUDE_GNU
+#ifdef __objc_INCLUDE_GNU
+#import <objc/sarray.h>
+#else
 #import <objc/runtime.h>
 #endif
 
@@ -139,6 +141,13 @@ extern BOOL objc_sync_init();
 						    andSelector: _cmd];
 
 	method->method_imp = newimp;
+
+	/* Update the dtable if necessary */
+	if (sarray_get_safe(((Class)self)->dtable,
+	    (sidx)method->method_name->sel_id))
+		sarray_at_put_safe(((Class)self)->dtable,
+		    (sidx)method->method_name->sel_id, method->method_imp);
+
 	return oldimp;
 #else
 	Method method = class_getInstanceMethod(self, selector);
