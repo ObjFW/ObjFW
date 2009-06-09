@@ -108,7 +108,7 @@ mutex_unlock(CRITICAL_SECTION *m)
 #define thread_current() GetCurrentThreadId()
 #endif
 
-#define ERROR(f)							\
+#define SYNC_ERR(f)							\
 	{								\
 		fprintf(stderr, "WARNING: %s failed in line %d!\n"	\
 		    "WARNING: This might result in a race "		\
@@ -131,7 +131,7 @@ objc_sync_enter(id obj)
 		return 0;
 
 	if (!mutex_lock(&mutex))
-		ERROR("mutex_lock(&mutex)");
+		SYNC_ERR("mutex_lock(&mutex)");
 
 	for (i = num_locks - 1; i >= 0; i--) {
 		if (locks[i].obj == obj) {
@@ -143,15 +143,15 @@ objc_sync_enter(id obj)
 
 				/* Unlock so objc_sync_exit can return */
 				if (!mutex_unlock(&mutex))
-					ERROR("mutex_unlock(&mutex)");
+					SYNC_ERR("mutex_unlock(&mutex)");
 
 				if (!mutex_lock(&locks[i].mutex)) {
 					mutex_unlock(&mutex);
-					ERROR("mutex_lock(&locks[i].mutex");
+					SYNC_ERR("mutex_lock(&locks[i].mutex");
 				}
 
 				if (!mutex_lock(&mutex))
-					ERROR("mutex_lock(&mutex)");
+					SYNC_ERR("mutex_lock(&mutex)");
 
 				assert(locks[i].recursion == 0);
 
@@ -160,7 +160,7 @@ objc_sync_enter(id obj)
 			}
 
 			if (!mutex_unlock(&mutex))
-				ERROR("mutex_unlock(&mutex)");
+				SYNC_ERR("mutex_unlock(&mutex)");
 
 			return 0;
 		}
@@ -169,7 +169,7 @@ objc_sync_enter(id obj)
 	if (locks == NULL) {
 		if ((locks = malloc(sizeof(struct locks_s))) == NULL) {
 			mutex_unlock(&mutex);
-			ERROR("malloc(...)");
+			SYNC_ERR("malloc(...)");
 		}
 	} else {
 		struct locks_s *new_locks;
@@ -177,7 +177,7 @@ objc_sync_enter(id obj)
 		if ((new_locks = realloc(locks, (num_locks + 1) *
 		    sizeof(struct locks_s))) == NULL) {
 			mutex_unlock(&mutex);
-			ERROR("realloc(...)");
+			SYNC_ERR("realloc(...)");
 		}
 
 		locks = new_locks;
@@ -190,18 +190,18 @@ objc_sync_enter(id obj)
 
 	if (!mutex_new(&locks[num_locks].mutex)) {
 		mutex_unlock(&mutex);
-		ERROR("mutex_new(&locks[num_locks].mutex");
+		SYNC_ERR("mutex_new(&locks[num_locks].mutex");
 	}
 
 	if (!mutex_lock(&locks[num_locks].mutex)) {
 		mutex_unlock(&mutex);
-		ERROR("mutex_lock(&locks[num_locks].mutex");
+		SYNC_ERR("mutex_lock(&locks[num_locks].mutex");
 	}
 
 	num_locks++;
 
 	if (!mutex_unlock(&mutex))
-		ERROR("mutex_unlock(&mutex)");
+		SYNC_ERR("mutex_unlock(&mutex)");
 
 	return 0;
 }
@@ -215,7 +215,7 @@ objc_sync_exit(id obj)
 		return 0;
 
 	if (!mutex_lock(&mutex))
-		ERROR("mutex_lock(&mutex)");
+		SYNC_ERR("mutex_lock(&mutex)");
 
 	for (i = num_locks - 1; i >= 0; i--) {
 		if (locks[i].obj == obj) {
@@ -224,14 +224,14 @@ objc_sync_exit(id obj)
 				locks[i].recursion--;
 
 				if (!mutex_unlock(&mutex))
-					ERROR("mutex_unlock(&mutex)");
+					SYNC_ERR("mutex_unlock(&mutex)");
 
 				return 0;
 			}
 
 			if (!mutex_unlock(&locks[i].mutex)) {
 				mutex_unlock(&mutex);
-				ERROR("mutex_unlock(&locks[i].mutex)");
+				SYNC_ERR("mutex_unlock(&locks[i].mutex)");
 			}
 
 			locks[i].count--;
@@ -241,7 +241,7 @@ objc_sync_exit(id obj)
 
 				if (!mutex_free(&locks[i].mutex)) {
 					mutex_unlock(&mutex);
-					ERROR("mutex_free(&locks[i].mutex");
+					SYNC_ERR("mutex_free(&locks[i].mutex");
 				}
 
 				num_locks--;
@@ -254,19 +254,19 @@ objc_sync_exit(id obj)
 				    num_locks * sizeof(struct locks_s))) ==
 				    NULL) {
 					mutex_unlock(&mutex);
-					ERROR("realloc(...)");
+					SYNC_ERR("realloc(...)");
 				}
 
 				locks = new_locks;
 			}
 
 			if (!mutex_unlock(&mutex))
-				ERROR("mutex_unlock(&mutex)");
+				SYNC_ERR("mutex_unlock(&mutex)");
 
 			return 0;
 		}
 	}
 
 	mutex_unlock(&mutex);
-	ERROR("objc_sync_exit()");
+	SYNC_ERR("objc_sync_exit()");
 }
