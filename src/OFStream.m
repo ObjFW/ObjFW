@@ -192,7 +192,14 @@ static int pagesize = 0;
 			[self freeMemory: tmp];
 			@throw e;
 		}
-		memcpy(cache + cache_len, tmp, len);
+
+		/*
+		 * It's possible that cache_len + len is 0 and thus cache was
+		 * set to NULL by resizeMemory:toSize:.
+		 */
+		if (cache != NULL)
+			memcpy(cache + cache_len, tmp, len);
+
 		cache_len += len;
 	}
 }
