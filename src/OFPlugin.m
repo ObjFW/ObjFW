@@ -52,7 +52,7 @@
 	}
 
 	plugin->handle = handle;
-	return plugin;
+	return [plugin autorelease];
 }
 
 - (void)dealloc
