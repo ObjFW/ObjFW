@@ -373,13 +373,13 @@ of_string_check_utf8(const char *str, size_t len)
 					   andSelector: _cmd];
 }
 
-- append: (OFString*)str
+- appendCString: (const char*)str
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					   andSelector: _cmd];
 }
 
-- appendCString: (const char*)str
+- appendString: (OFString*)str
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					   andSelector: _cmd];

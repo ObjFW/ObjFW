@@ -135,8 +135,8 @@ extern int of_string_check_utf8(const char *str, size_t len);
 - (OFArray*)splitWithDelimiter: (OFString*)delimiter;
 
 - setToCString: (const char*)str;
-- append: (OFString*)str;
 - appendCString: (const char*)str;
+- appendString: (OFString*)str;
 - appendWithFormat: (OFString*)fmt, ...;
 - appendWithFormat: (OFString*)fmt
       andArguments: (va_list)args;

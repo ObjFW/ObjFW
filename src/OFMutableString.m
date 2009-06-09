@@ -64,11 +64,6 @@
 	return self;
 }
 
-- append: (OFString*)str
-{
-	return [self appendCString: [str cString]];
-}
-
 - appendCString: (const char*)str
 {
 	size_t strlength;
@@ -89,6 +84,11 @@
 	length += strlength;
 
 	return self;
+}
+
+- appendString: (OFString*)str
+{
+	return [self appendCString: [str cString]];
 }
 
 - appendWithFormat: (OFString*)fmt, ...

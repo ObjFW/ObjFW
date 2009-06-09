@@ -26,18 +26,18 @@
 - setToCString: (const char*)str;
 
 /**
- * Appends another OFString to the OFString.
- *
- * \param str An OFString to append
- */
-- append: (OFString*)str;
-
-/**
  * Appends a C string to the OFString.
  *
  * \param str A C string to append
  */
 - appendCString: (const char*)str;
+
+/**
+ * Appends another OFString to the OFString.
+ *
+ * \param str An OFString to append
+ */
+- appendString: (OFString*)str;
 
 /**
  * Appends a formatted C string to the OFString.

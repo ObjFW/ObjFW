@@ -70,11 +70,11 @@ main()
 	CHECK([s1 hash] == [s3 hash])
 
 	[s2 appendCString: "12"];
-	[s2 append: @"3"];
+	[s2 appendString: @"3"];
 	[s4 setToCString: [s2 cString]];
 
 	CHECK(![s2 compare: s4])
-	CHECK(!strcmp([[s1 append: s2] cString], "test123"))
+	CHECK(!strcmp([[s1 appendString: s2] cString], "test123"))
 	CHECK([s1 hash] == 0xC44F49A4)
 	CHECK(strlen([s1 cString]) == [s1 length] && [s1 length] == 7)
 	CHECK(!strcmp([[s1 reverse] cString], "321tset"))
