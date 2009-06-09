@@ -270,7 +270,7 @@ static OFMutex *mutex = nil;
 	return self;
 }
 
-- (OFTCPSocket*)accept
+- (OFSocket*)accept
 {
 	OFTCPSocket *newsock;
 	struct sockaddr *addr;

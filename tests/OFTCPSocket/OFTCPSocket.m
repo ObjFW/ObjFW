@@ -40,9 +40,9 @@ main()
 	srand(time(NULL));
 
 	@try {
-		OFTCPSocket *server = [OFTCPSocket socket];
-		OFTCPSocket *client = [OFTCPSocket socket];
-		OFTCPSocket *accepted;
+		OFSocket *server = [OFTCPSocket socket];
+		OFSocket *client = [OFTCPSocket socket];
+		OFSocket *accepted;
 		char buf[7];
 
 		puts("== IPv4 ==");

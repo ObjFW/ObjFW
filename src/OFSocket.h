@@ -55,4 +55,15 @@
  * Enables/disables non-blocking I/O.
  */
 - setBlocking: (BOOL)enable;
+
+- connectToService: (OFString*)service
+	    onNode: (OFString*)node;
+- bindService: (OFString*)service
+       onNode: (OFString*)node
+   withFamily: (int)family;
+- listenWithBackLog: (int)backlog;
+- listen;
+- (OFSocket*)accept;
+- enableKeepAlives: (BOOL)enable;
+- close;
 @end

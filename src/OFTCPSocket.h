@@ -52,7 +52,7 @@
  * Accept an incoming connection.
  * \return An autoreleased OFTCPSocket for the accepted connection.
  */
-- (OFTCPSocket*)accept;
+- (OFSocket*)accept;
 
 /**
  * Enable or disable keep alives for the connection.

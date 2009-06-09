@@ -121,4 +121,49 @@
 
 	return self;
 }
+
+- connectToService: (OFString*)service
+	    onNode: (OFString*)node
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
+
+- bindService: (OFString*)service
+       onNode: (OFString*)node
+   withFamily: (int)family
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
+
+- listenWithBackLog: (int)backlog
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
+
+- listen
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
+
+- (OFSocket*)accept
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
+
+- enableKeepAlives: (BOOL)enable
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
+
+- close
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
 @end
