@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2008 - 2009
- *   Jonathan Schleifer <js@webkeks.org>
+ *   Jonathan Schleifer "js@webkeks.org"
  *
  * All rights reserved.
  *
@@ -9,36 +9,36 @@
  * the packaging of this file.
  */
 
-#import <OFObject.h>
-#import <OFExceptions.h>
+#import "OFObject.h"
+#import "OFExceptions.h"
 
-#import <OFAutoreleasePool.h>
-#import <OFString.h>
+#import "OFAutoreleasePool.h"
+#import "OFString.h"
 
-#import <OFDataArray.h>
-#import <OFArray.h>
+#import "OFDataArray.h"
+#import "OFArray.h"
 
-#import <OFList.h>
+#import "OFList.h"
 
-#import <OFDictionary.h>
-#import <OFIterator.h>
+#import "OFDictionary.h"
+#import "OFIterator.h"
 
-#import <OFNumber.h>
+#import "OFNumber.h"
 
-#import <OFStream.h>
+#import "OFStream.h"
 
-#import <OFFile.h>
+#import "OFFile.h"
 
-#import <OFSocket.h>
-#import <OFTCPSocket.h>
+#import "OFSocket.h"
+#import "OFTCPSocket.h"
 
-#import <OFHashes.h>
-#import <OFThread.h>
-#import <OFXMLFactory.h>
+#import "OFHashes.h"
+#import "OFThread.h"
+#import "OFXMLFactory.h"
 
 #ifdef OF_PLUGINS
-#import <OFPlugin.h>
+#import "OFPlugin.h"
 #endif
 
-#import <OFMacros.h>
-#import <asprintf.h>
+#import "OFMacros.h"
+#import "asprintf.h"

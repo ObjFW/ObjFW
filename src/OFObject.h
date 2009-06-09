@@ -67,8 +67,8 @@
  * \param class The class from which the new method should be taken
  * \return The old implementation
  */
-+ (IMP)replaceMethod: (SEL)selector
- withMethodFromClass: (Class)class;
++  (IMP)replaceMethod: (SEL)selector
+  withMethodFromClass: (Class)class;
 
 /**
  * Initialize the already allocated object.

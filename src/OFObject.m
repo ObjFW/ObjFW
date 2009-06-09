@@ -120,8 +120,8 @@ extern BOOL objc_sync_init();
 #endif
 }
 
-+ (IMP)replaceMethod: (SEL)selector
- withMethodFromClass: (Class)class;
++  (IMP)replaceMethod: (SEL)selector
+  withMethodFromClass: (Class)class;
 {
 #ifdef __objc_INCLUDE_GNU
 	Method_t method = class_get_instance_method(self, selector);
