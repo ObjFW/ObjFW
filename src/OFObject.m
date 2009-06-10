@@ -122,21 +122,18 @@ extern BOOL objc_sync_init();
 #endif
 }
 
-+  (IMP)replaceMethod: (SEL)selector
-  withMethodFromClass: (Class)class;
++ (IMP)setImplementation: (IMP)newimp
+	       forMethod: (SEL)selector
 {
 #ifdef __objc_INCLUDE_GNU
 	Method_t method = class_get_instance_method(self, selector);
-	IMP oldimp, newimp;
+	IMP oldimp;
 
 	if (method == NULL)
 		@throw [OFInvalidArgumentException newWithClass: self
 						    andSelector: _cmd];
 
-	oldimp = method_get_imp(method);
-	newimp = method_get_imp(class_get_instance_method(class, selector));
-
-	if (oldimp == (IMP)0 || newimp == (IMP)0)
+	if ((oldimp = method_get_imp(method)) == (IMP)0 || newimp == (IMP)0)
 		@throw [OFInvalidArgumentException newWithClass: self
 						    andSelector: _cmd];
 
@@ -150,15 +147,29 @@ extern BOOL objc_sync_init();
 
 	return oldimp;
 #else
-	Method method = class_getInstanceMethod(self, selector);
-	IMP imp = class_getMethodImplementation(class, selector);
+	Method method;
 
-	if (method == NULL || imp == NULL)
+	if ((method = class_getInstanceMethod(self, selector)) == NULL)
 		@throw [OFInvalidArgumentException newWithClass: self
 						    andSelector: _cmd];
 
-	return method_setImplementation(method, imp);
+	return method_setImplementation(method, newimp);
 #endif
+}
+
++  (IMP)replaceMethod: (SEL)selector
+  withMethodFromClass: (Class)class;
+{
+	IMP newimp;
+
+#ifdef __objc_INCLUDE_GNU
+	newimp = method_get_imp(class_get_instance_method(class, selector));
+#else
+	newimp = class_getMethodImplementation(class, selector);
+#endif
+
+	return [self setImplementation: newimp
+			     forMethod: selector];
 }
 
 - init

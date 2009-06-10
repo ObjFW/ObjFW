@@ -61,6 +61,16 @@
 + (BOOL)conformsTo: (Protocol*)protocol;
 
 /**
+ * Replace a method implementation with another implementation.
+ *
+ * \param selector The selector of the method to replace
+ * \param imp The new implementation for the method
+ * \return The old implementation
+ */
++ (IMP)setImplementation: (IMP)newimp
+	       forMethod: (SEL)selector;
+
+/**
  * Replace a method with a method from another class.
  *
  * \param selector The selector of the method to replace
