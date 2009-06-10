@@ -311,7 +311,7 @@ of_string_check_utf8(const char *str, size_t len)
 
 - (OFArray*)splitWithDelimiter: (OFString*)delimiter
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFAutoreleasePool *pool;
 	OFArray *array = nil;
 	OFString *str;
 	const char *delim = [delimiter cString];
@@ -319,12 +319,11 @@ of_string_check_utf8(const char *str, size_t len)
 	size_t i, last;
 
 	array = [OFMutableArray array];
+	pool = [[OFAutoreleasePool alloc] init];
 
 	if (delim_len > length) {
 		str = [[self copy] autorelease];
 		[array addObject: str];
-
-		[array retain];
 		[pool release];
 
 		return array;
@@ -353,7 +352,6 @@ of_string_check_utf8(const char *str, size_t len)
 		}
 
 		[array addObject: str];
-		[array retain];
 		[pool releaseObjects];
 
 		i += delim_len - 1;
@@ -361,7 +359,6 @@ of_string_check_utf8(const char *str, size_t len)
 	}
 	[array addObject: [OFString stringWithCString: string + last]];
 
-	[array retain];
 	[pool release];
 
 	return array;
