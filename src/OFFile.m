@@ -118,7 +118,7 @@ static OFFileSingleton *of_file_stderr = nil;
 	if ((fp = fopen([path cString], [mode cString])) == NULL) {
 		c = isa;
 		[super dealloc];
-		@throw [OFOpenFileFailedException newWithClass: c 
+		@throw [OFOpenFileFailedException newWithClass: c
 						       andPath: path
 						       andMode: mode];
 	}

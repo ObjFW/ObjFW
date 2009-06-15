@@ -36,7 +36,7 @@
 /**
  * Allocates memory for an instance of the class.
  *
- * alloc will never return nil, instead, it will throw an 
+ * alloc will never return nil, instead, it will throw an
  * OFAllocFailedException.
  *
  * \return The allocated object.

@@ -41,7 +41,7 @@ IMP release;
 	id ret;
 
 	inits++;
-       
+
 	ret = init(self, _cmd);
 	printf("New %s with retain cnt " ZD "\n", [self name],
 	    [ret retainCount]);
