@@ -33,6 +33,17 @@
 - appendCString: (const char*)str;
 
 /**
+ * Appends a C string to the OFString without checking whether it is valid
+ * UTF-8.
+ *
+ * Only use this if you are 100% sure the string you append is either ASCII or
+ * UTF-8!
+ *
+ * \param str A C string to append
+ */
+- appendCStringWithoutUTF8Checking: (const char*)str;
+
+/**
  * Appends another OFString to the OFString.
  *
  * \param str An OFString to append

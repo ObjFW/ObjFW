@@ -136,6 +136,7 @@ extern int of_string_check_utf8(const char *str, size_t len);
 
 - setToCString: (const char*)str;
 - appendCString: (const char*)str;
+- appendCStringWithoutUTF8Checking: (const char*)str;
 - appendString: (OFString*)str;
 - appendWithFormat: (OFString*)fmt, ...;
 - appendWithFormat: (OFString*)fmt

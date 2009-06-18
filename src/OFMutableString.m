@@ -86,9 +86,22 @@
 	return self;
 }
 
+- appendCStringWithoutUTF8Checking: (const char*)str
+{
+	size_t strlength;
+
+	strlength = strlen(str);
+	string = [self resizeMemory: string
+			     toSize: length + strlength + 1];
+	memcpy(string + length, str, strlength + 1);
+	length += strlength;
+
+	return self;
+}
+
 - appendString: (OFString*)str
 {
-	return [self appendCString: [str cString]];
+	return [self appendCStringWithoutUTF8Checking: [str cString]];
 }
 
 - appendWithFormat: (OFString*)fmt, ...

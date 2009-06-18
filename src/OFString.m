@@ -31,7 +31,7 @@
 #import "asprintf.h"
 
 /* Reference for static linking */
-void _reference_to_OFURLEncoding_in_OFString()
+void _references_to_categories_of_OFString()
 {
 	_OFURLEncoding_reference = 1;
 };
@@ -371,6 +371,12 @@ of_string_check_utf8(const char *str, size_t len)
 }
 
 - appendCString: (const char*)str
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
+
+- appendCStringWithoutUTF8Checking: (const char*)str
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					   andSelector: _cmd];
