@@ -12,7 +12,6 @@ SUBDIRS = OFObject		\
 	  OFThread		\
 	  OFList		\
 	  OFXMLElement		\
-	  OFXMLFactory		\
 	  ${OBJC_SYNC}
 
 include ../buildsys.mk

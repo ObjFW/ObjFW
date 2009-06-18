@@ -34,7 +34,7 @@
 
 #import "OFHashes.h"
 #import "OFThread.h"
-#import "OFXMLFactory.h"
+#import "OFXMLElement.h"
 
 #ifdef OF_PLUGINS
 #import "OFPlugin.h"
