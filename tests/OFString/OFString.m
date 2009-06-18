@@ -25,7 +25,7 @@
 #define ZD "%u"
 #endif
 
-#define NUM_TESTS 33
+#define NUM_TESTS 34
 #define SUCCESS								\
 	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
 	    (i == NUM_TESTS - 1 ? 32 : 33), i + 1, NUM_TESTS);		\
@@ -101,6 +101,7 @@ main()
 	[s1 appendWithFormat: @"%02X", 15];
 	CHECK(!strcmp([s1 cString], "test: 1230F"))
 
+	/* Split tests */
 	a = [@"fooXXbarXXXXbazXXXX" splitWithDelimiter: @"XX"];
 	CHECK([[a objectAtIndex: j++] isEqual: @"foo"])
 	CHECK([[a objectAtIndex: j++] isEqual: @"bar"])
@@ -109,6 +110,7 @@ main()
 	CHECK([[a objectAtIndex: j++] isEqual: @""])
 	CHECK([[a objectAtIndex: j++] isEqual: @""])
 
+	/* URL encoding tests */
 	CHECK([[@"foo\"ba'_$" stringByURLEncoding] isEqual: @"foo%22ba%27_%24"])
 	CHECK([[@"foo%20bar%22%24" stringByURLDecoding] isEqual: @"foo bar\"$"])
 	CHECK_EXCEPT([@"foo%bar" stringByURLDecoding],
@@ -116,6 +118,7 @@ main()
 	CHECK_EXCEPT([@"foo%FFbar" stringByURLDecoding],
 	    OFInvalidEncodingException)
 
+	/* Replace tests */
 	s1 = [@"asd fo asd fofo asd" mutableCopy];
 	[s1 replaceOccurrencesOfString: @"fo"
 			    withString: @"foo"];
@@ -125,6 +128,7 @@ main()
 			    withString: @"XX"];
 	CHECK([s1 isEqual: @"XXXX"])
 
+	/* Whitespace removing tests */
 	s1 = [@"  \t\t \tasd  \t \t\t" mutableCopy];
 	s2 = [s1 mutableCopy];
 	s3 = [s1 mutableCopy];
@@ -138,6 +142,10 @@ main()
 	CHECK([[s1 removeLeadingWhitespaces] isEqual: @""])
 	CHECK([[s2 removeTrailingWhitespaces] isEqual: @""])
 	CHECK([[s3 removeLeadingAndTrailingWhitespaces] isEqual: @""])
+
+	/* XML escaping tests */
+	s1 = [@"<hello> &world'\"!&" stringByXMLEscaping];
+	CHECK([s1 isEqual: @"&lt;hello&gt; &amp;world&apos;&quot;!&amp;"])
 
 	puts("");
 

@@ -11,6 +11,7 @@ SUBDIRS = OFObject		\
 	  OFTCPSocket		\
 	  OFThread		\
 	  OFList		\
+	  OFXMLElement		\
 	  OFXMLFactory		\
 	  ${OBJC_SYNC}
 

@@ -17,7 +17,7 @@
 #import "OFIterator.h"
 #import "OFExceptions.h"
 
-/* Reference for static linking */
+/* References for static linking */
 void _references_to_categories_of_OFDictionary()
 {
 	_OFIterator_reference = 1;

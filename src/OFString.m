@@ -25,15 +25,17 @@
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
 #import "OFURLEncoding.h"
+#import "OFXMLElement.h"
 #import "OFExceptions.h"
 #import "OFMacros.h"
 
 #import "asprintf.h"
 
-/* Reference for static linking */
+/* References for static linking */
 void _references_to_categories_of_OFString()
 {
 	_OFURLEncoding_reference = 1;
+	_OFXMLElement_reference = 1;
 };
 
 int
