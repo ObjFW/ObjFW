@@ -32,20 +32,32 @@ int _OFIterator_reference;
 	return self;
 }
 
-- (id)nextObject
+- (of_iterator_pair_t)nextKeyObjectPair
 {
-	if (last == NULL) {
-		for (; pos < size && data[pos] == nil; pos++);
-		if (pos == size)
-			return nil;
+	of_iterator_pair_t next;
 
-		return (last = [data[pos++] first])->object;
+	for (;;) {
+		if (last == NULL) {
+			for (; pos < size && data[pos] == nil; pos++);
+			if (pos == size) {
+				next.key = nil;
+				next.object = nil;
+				return next;
+			}
+
+			last = (of_dictionary_list_object_t*)
+			    [data[pos++] first];
+			next.key = last->key;
+			next.object = last->object;
+			return next;
+		}
+
+		if ((last = last->next) != NULL) {
+			next.key = last->key;
+			next.object = last->object;
+			return next;
+		}
 	}
-
-	if ((last = last->next) != NULL)
-		return last->object;
-
-	return [self nextObject];
 }
 
 - reset

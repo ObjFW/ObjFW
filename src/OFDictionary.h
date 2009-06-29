@@ -15,6 +15,17 @@
 #import "OFList.h"
 #import "OFArray.h"
 
+typedef struct __of_dictionary_list_object
+{
+	/* of_list_object_t */
+	struct __of_dictionary_list_object *next;
+	struct __of_dictionary_list_object *prev;
+	id				   object;
+	/* OFDictionary additions */
+	id				   key;
+	uint32_t			   hash;
+} of_dictionary_list_object_t;
+
 /**
  * The OFDictionary class provides a class for using hash tables.
  */

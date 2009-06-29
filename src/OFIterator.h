@@ -13,6 +13,11 @@
 #import "OFList.h"
 #import "OFDictionary.h"
 
+typedef struct __of_iterator_pair {
+	id key;
+	id object;
+} of_iterator_pair_t;
+
 extern int _OFIterator_reference;
 
 /**
@@ -22,28 +27,17 @@ extern int _OFIterator_reference;
 {
 	OFList		 **data;
 	size_t		 size;
-	size_t		 pos;
-	of_list_object_t *last;
+	size_t			    pos;
+	of_dictionary_list_object_t *last;
 }
 
 - initWithData: (OFList**)data
        andSize: (size_t)size;
 
 /**
- * Returns the next object in the dictionary.
- *
- * Always call it twice in a row, as it returns the key on the first call and
- * the value on the second. Therefore, if you want a key value pair, you have
- * to call:
- *
- * key = [iter nextObject];\n
- * value = [iter nextObject];
- *
- * When there is no more object left, an OFNotInSetException is thrown.
- *
- * \return The key on the first call and the value on the second
+ * \return A struct containing the next key and object
  */
-- (id)nextObject;
+- (of_iterator_pair_t)nextKeyObjectPair;
 
 /**
  * Resets the iterator, so the next call to nextObject returns the first again.

@@ -28,6 +28,7 @@ main()
 
 	OFDictionary *dict = [OFMutableDictionary dictionaryWithHashSize: 16];
 	OFIterator *iter = [dict iterator];
+	of_iterator_pair_t pair[2];
 
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFString *key1 = [OFString stringWithCString: "key1"];
@@ -54,10 +55,12 @@ main()
 	}
 
 	i++;
-	if (![[iter nextObject] isEqual: @"key2"] ||
-	    ![[iter nextObject] isEqual: @"value2"] ||
-	    ![[iter nextObject] isEqual: @"key1"] ||
-	    ![[iter nextObject] isEqual: @"value1"]) {
+	pair[0] = [iter nextKeyObjectPair];
+	pair[1] = [iter nextKeyObjectPair];
+	if (![pair[0].key isEqual: @"key2"] ||
+	    ![pair[0].object isEqual: @"value2"] ||
+	    ![pair[1].key isEqual: @"key1"] ||
+	    ![pair[1].object isEqual: @"value1"]) {
 		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}
@@ -65,10 +68,12 @@ main()
 	i++;
 	[dict changeHashSize: 8];
 	iter = [dict iterator];
-	if (![[iter nextObject] isEqual: @"key1"] ||
-	    ![[iter nextObject] isEqual: @"value1"] ||
-	    ![[iter nextObject] isEqual: @"key2"] ||
-	    ![[iter nextObject] isEqual: @"value2"]) {
+	pair[0] = [iter nextKeyObjectPair];
+	pair[1] = [iter nextKeyObjectPair];
+	if (![pair[0].key isEqual: @"key1"] ||
+	    ![pair[0].object isEqual: @"value1"] ||
+	    ![pair[1].key isEqual: @"key2"] ||
+	    ![pair[1].object isEqual: @"value2"]) {
 		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}
@@ -80,7 +85,7 @@ main()
 	}
 
 	i++;
-	if ([iter nextObject] != nil) {
+	if ([iter nextKeyObjectPair].object != nil) {
 		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}

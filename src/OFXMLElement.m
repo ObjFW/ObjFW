@@ -60,7 +60,6 @@ int _OFXMLElement_reference;
 	char *str_c;
 	size_t len, i, j;
 	OFString *ret, *tmp;
-	OFIterator *iter;
 
 	len = [name length] + 4;
 	str_c = [self allocMemoryWithSize: len];
@@ -71,37 +70,40 @@ int _OFXMLElement_reference;
 	i = [name length] + 1;
 
 	/* Attributes */
-	iter = [attrs iterator];
-	for (;;) {
-		OFString *key, *val;
+	if (attrs != nil) {
+		OFIterator *iter = [attrs iterator];
 
-		key = [iter nextObject];
-		val = [iter nextObject];
+		for (;;) {
+			of_iterator_pair_t pair;
 
-		if (key == nil || val == nil)
-			break;
+			pair = [iter nextKeyObjectPair];
 
-		tmp = [val stringByXMLEscaping];
+			if (pair.key == nil || pair.object == nil)
+				break;
 
-		len += [key length] + [tmp length] + 4;
-		@try {
-			str_c = [self resizeMemory: str_c
-					    toSize: len];
-		} @catch (OFException *e) {
-			[self freeMemory: str_c];
-			@throw e;
+			tmp = [pair.object stringByXMLEscaping];
+
+			len += [pair.key length] + [tmp length] + 4;
+			@try {
+				str_c = [self resizeMemory: str_c
+						    toSize: len];
+			} @catch (OFException *e) {
+				[self freeMemory: str_c];
+				@throw e;
+			}
+
+			str_c[i++] = ' ';
+			memcpy(str_c + i, [pair.key cString],
+			    [pair.key length]);
+			i += [pair.key length];
+			str_c[i++] = '=';
+			str_c[i++] = '\'';
+			memcpy(str_c + i, [tmp cString], [tmp length]);
+			i += [tmp length];
+			str_c[i++] = '\'';
+
+			[pool releaseObjects];
 		}
-
-		str_c[i++] = ' ';
-		memcpy(str_c + i, [key cString], [key length]);
-		i += [key length];
-		str_c[i++] = '=';
-		str_c[i++] = '\'';
-		memcpy(str_c + i, [tmp cString], [tmp length]);
-		i += [tmp length];
-		str_c[i++] = '\'';
-
-		[pool releaseObjects];
 	}
 
 	/* Childen */

@@ -20,12 +20,31 @@
 	return [[[self alloc] init] autorelease];
 }
 
++ listWithListObjectSize: (size_t)listobj_size_
+{
+	return [[[self alloc]
+	    initWithListObjectSize: listobj_size_] autorelease];
+}
+
 - init
 {
 	self = [super init];
 
 	first = NULL;
 	last = NULL;
+	listobj_size = sizeof(of_list_object_t);
+	retain_and_release = YES;
+
+	return self;
+}
+
+- initWithListObjectSize: (size_t)listobj_size_;
+{
+	self = [super init];
+
+	first = NULL;
+	last = NULL;
+	listobj_size = listobj_size_;
 	retain_and_release = YES;
 
 	return self;
@@ -37,6 +56,7 @@
 
 	first = NULL;
 	last = NULL;
+	listobj_size = sizeof(of_list_object_t);
 
 	return self;
 }
@@ -65,7 +85,7 @@
 {
 	of_list_object_t *o;
 
-	o = [self allocMemoryWithSize: sizeof(of_list_object_t)];
+	o = [self allocMemoryWithSize: listobj_size];
 	o->object = obj;
 	o->next = NULL;
 	o->prev = last;
@@ -87,7 +107,7 @@
 {
 	of_list_object_t *o;
 
-	o = [self allocMemoryWithSize: sizeof(of_list_object_t)];
+	o = [self allocMemoryWithSize: listobj_size];
 	o->object = obj;
 	o->next = first;
 	o->prev = NULL;
@@ -110,7 +130,7 @@
 {
 	of_list_object_t *o;
 
-	o = [self allocMemoryWithSize: sizeof(of_list_object_t)];
+	o = [self allocMemoryWithSize: listobj_size];
 	o->object = obj;
 	o->next = listobj;
 	o->prev = listobj->prev;
@@ -134,7 +154,7 @@
 {
 	of_list_object_t *o;
 
-	o = [self allocMemoryWithSize: sizeof(of_list_object_t)];
+	o = [self allocMemoryWithSize: listobj_size];
 	o->object = obj;
 	o->next = listobj->next;
 	o->prev = listobj;
@@ -218,7 +238,7 @@
 
 	@try {
 		for (iter = first; iter != NULL; iter = iter->next) {
-			o = [new allocMemoryWithSize: sizeof(of_list_object_t)];
+			o = [new allocMemoryWithSize: listobj_size];
 			o->object = iter->object;
 			o->next = NULL;
 			o->prev = prev;

@@ -21,39 +21,40 @@
 - setObject: (OFObject*)obj
      forKey: (OFObject <OFCopying>*)key
 {
-	uint32_t hash;
-	of_list_object_t *iter, *key_obj;
+	uint32_t fullhash, hash;
+	of_dictionary_list_object_t *iter;
 
 	if (key == nil || obj == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						    andSelector: _cmd];
 
-	hash = [key hash] & (size - 1);
+	fullhash = [key hash];
+	hash = fullhash & (size - 1);
 
 	if (data[hash] == nil)
-		data[hash] = [[OFList alloc] init];
+		data[hash] = [[OFList alloc] initWithListObjectSize:
+		    sizeof(of_dictionary_list_object_t)];
 
-	for (iter = [data[hash] first]; iter != NULL; iter = iter->next->next) {
-		if ([iter->object isEqual: key]) {
-			[iter->next->object release];
-			[obj retain];
-			iter->next->object = obj;
+	for (iter = (of_dictionary_list_object_t*)[data[hash] first];
+	    iter != NULL; iter = iter->next) {
+		if ([iter->key isEqual: key]) {
+			[iter->object release];
+			iter->object = [obj retain];
 
 			return self;
 		}
 	}
 
 	key = [key copy];
-	@try {
-		key_obj = [data[hash] append: key];
-	} @finally {
-		[key release];
-	}
 
 	@try {
-		[data[hash] append: obj];
+		of_dictionary_list_object_t *o;
+
+		o = (of_dictionary_list_object_t*)[data[hash] append: obj];
+		o->key = key;
+		o->hash = fullhash;
 	} @catch (OFException *e) {
-		[data[hash] remove: key_obj];
+		[key release];
 		@throw e;
 	}
 
@@ -63,7 +64,7 @@
 - removeObjectForKey: (OFObject*)key
 {
 	uint32_t hash;
-	of_list_object_t *iter;
+	of_dictionary_list_object_t *iter;
 
 	if (key == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
@@ -74,10 +75,11 @@
 	if (data[hash] == nil)
 		return self;
 
-	for (iter = [data[hash] first]; iter != NULL; iter = iter->next->next) {
+	for (iter = (of_dictionary_list_object_t*)[data[hash] first];
+	    iter != NULL; iter = iter->next) {
 		if ([iter->object isEqual: key]) {
-			[data[hash] remove: iter->next];
-			[data[hash] remove: iter];
+			[iter->key release];
+			[data[hash] remove: (of_list_object_t*)iter];
 
 			if ([data[hash] first] == NULL) {
 				[data[hash] release];
@@ -95,7 +97,7 @@
 {
 	OFList **newdata;
 	size_t newsize, i;
-	of_list_object_t *iter;
+	of_dictionary_list_object_t *iter;
 
 	if (hashsize < 8 || hashsize >= 28)
 		@throw [OFInvalidArgumentException newWithClass: isa
@@ -110,15 +112,20 @@
 		if (OF_LIKELY(data[i] == nil))
 			continue;
 
-		for (iter = [data[i] first]; iter != NULL;
-		    iter = iter->next->next) {
-			uint32_t hash = [iter->object hash] & (newsize - 1);
+		for (iter = (of_dictionary_list_object_t*)[data[i] first];
+		    iter != NULL; iter = iter->next) {
+			uint32_t hash = iter->hash & (newsize - 1);
+			of_dictionary_list_object_t *o;
 
 			if (newdata[hash] == nil)
-				newdata[hash] = [[OFList alloc] init];
+				newdata[hash] = [[OFList alloc]
+				    initWithListObjectSize:
+				    sizeof(of_dictionary_list_object_t)];
 
-			[newdata[hash] append: iter->object];
-			[newdata[hash] append: iter->next->object];
+			o = (of_dictionary_list_object_t*)
+			    [newdata[hash] append: iter->object];
+			o->key = iter->key;
+			o->hash = iter->hash;
 		}
 
 		[data[i] release];

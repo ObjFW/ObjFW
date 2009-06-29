@@ -118,7 +118,7 @@ void _references_to_categories_of_OFDictionary()
     andObject: (OFObject*)obj
 {
 	Class c;
-	uint32_t hash;
+	uint32_t fullhash, hash;
 
 	self = [self init];
 
@@ -129,7 +129,8 @@ void _references_to_categories_of_OFDictionary()
 						    andSelector: _cmd];
 	}
 
-	hash = [key hash] & (size - 1);
+	fullhash = [key hash];
+	hash = fullhash & (size - 1);
 
 	@try {
 		key = [key copy];
@@ -139,15 +140,18 @@ void _references_to_categories_of_OFDictionary()
 	}
 
 	@try {
-		data[hash] = [[OFList alloc] init];
+		of_dictionary_list_object_t *o;
 
-		[data[hash] append: key];
-		[data[hash] append: obj];
+		data[hash] = [[OFList alloc] initWithListObjectSize:
+		    sizeof(of_dictionary_list_object_t)];
+
+		o = (of_dictionary_list_object_t*)[data[hash] append: obj];
+		o->key = key;
+		o->hash = fullhash;
 	} @catch (OFException *e) {
+		[key release];
 		[self dealloc];
 		@throw e;
-	} @finally {
-		[key release];
 	}
 
 	return self;
@@ -175,7 +179,7 @@ void _references_to_categories_of_OFDictionary()
 	objs_data = [objs data];
 
 	for (i = 0; i < count; i++) {
-		uint32_t hash;
+		uint32_t fullhash, hash;
 		OFObject <OFCopying> *key;
 
 		if (keys_data[i] == nil || objs_data[i] == nil) {
@@ -185,7 +189,8 @@ void _references_to_categories_of_OFDictionary()
 							    andSelector: _cmd];
 		}
 
-		hash = [keys_data[i] hash] & (size - 1);
+		fullhash = [keys_data[i] hash];
+		hash = fullhash & (size - 1);
 
 		@try {
 			key = [keys_data[i] copy];
@@ -195,16 +200,21 @@ void _references_to_categories_of_OFDictionary()
 		}
 
 		@try {
-			if (data[hash] == nil)
-				data[hash] = [[OFList alloc] init];
+			of_dictionary_list_object_t *o;
 
-			[data[hash] append: key];
-			[data[hash] append: objs_data[i]];
+			if (data[hash] == nil)
+				data[hash] = [[OFList alloc]
+				    initWithListObjectSize:
+				    sizeof(of_dictionary_list_object_t)];
+
+			o = (of_dictionary_list_object_t*)
+			    [data[hash] append: objs_data[i]];
+			o->key = key;
+			o->hash = fullhash;
 		} @catch (OFException *e) {
+			[key release];
 			[self dealloc];
 			@throw e;
-		} @finally {
-			[key release];
 		}
 	}
 
@@ -230,7 +240,7 @@ void _references_to_categories_of_OFDictionary()
 	OFObject <OFCopying> *key;
 	OFObject *obj;
 	Class c;
-	uint32_t hash;
+	uint32_t fullhash, hash;
 
 	self = [self init];
 	obj = va_arg(args, OFObject*);
@@ -242,7 +252,8 @@ void _references_to_categories_of_OFDictionary()
 						    andSelector: _cmd];
 	}
 
-	hash = [first hash] & (size - 1);
+	fullhash = [first hash];
+	hash = fullhash & (size - 1);
 
 	@try {
 		key = [first copy];
@@ -252,16 +263,19 @@ void _references_to_categories_of_OFDictionary()
 	}
 
 	@try {
-		if (data[hash] == nil)
-			data[hash] = [[OFList alloc] init];
+		of_dictionary_list_object_t *o;
 
-		[data[hash] append: key];
-		[data[hash] append: obj];
+		if (data[hash] == nil)
+			data[hash] = [[OFList alloc] initWithListObjectSize:
+			    sizeof(of_dictionary_list_object_t)];
+
+		o = (of_dictionary_list_object_t*)[data[hash] append: obj];
+		o->key = key;
+		o->hash = fullhash;
 	} @catch (OFException *e) {
+		[key release];
 		[self dealloc];
 		@throw e;
-	} @finally {
-		[key release];
 	}
 
 	while ((key = va_arg(args, OFObject <OFCopying>*)) != nil) {
@@ -272,7 +286,8 @@ void _references_to_categories_of_OFDictionary()
 							    andSelector: _cmd];
 		}
 
-		hash = [key hash] & (size - 1);
+		fullhash = [key hash];
+		hash = fullhash & (size - 1);
 
 		@try {
 			key = [key copy];
@@ -282,16 +297,21 @@ void _references_to_categories_of_OFDictionary()
 		}
 
 		@try {
-			if (data[hash] == nil)
-				data[hash] = [[OFList alloc] init];
+			of_dictionary_list_object_t *o;
 
-			[data[hash] append: key];
-			[data[hash] append: obj];
+			if (data[hash] == nil)
+				data[hash] = [[OFList alloc]
+				    initWithListObjectSize:
+				    sizeof(of_dictionary_list_object_t)];
+
+			o = (of_dictionary_list_object_t*)
+			    [data[hash] append: obj];
+			o->key = key;
+			o->hash = fullhash;
 		} @catch (OFException *e) {
+			[key release];
 			[self dealloc];
 			@throw e;
-		} @finally {
-			[key release];
 		}
 	}
 
@@ -307,7 +327,7 @@ void _references_to_categories_of_OFDictionary()
 
 	for (i = 0; i < size; i++) {
 		if (data[i] != nil) {
-			items += [data[i] count] / 2;
+			items += [data[i] count];
 			buckets++;
 		}
 	}
@@ -318,7 +338,7 @@ void _references_to_categories_of_OFDictionary()
 - (id)objectForKey: (OFObject*)key
 {
 	uint32_t hash;
-	of_list_object_t *iter;
+	of_dictionary_list_object_t *iter;
 
 	if (key == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
@@ -329,9 +349,10 @@ void _references_to_categories_of_OFDictionary()
 	if (data[hash] == nil)
 		return nil;
 
-	for (iter = [data[hash] first]; iter != NULL; iter = iter->next->next)
-		if ([iter->object isEqual: key])
-			return iter->next->object;
+	for (iter = (of_dictionary_list_object_t*)[data[hash] first];
+	    iter != NULL; iter = iter->next)
+		if ([iter->key isEqual: key])
+			return iter->object;
 
 	return nil;
 }
@@ -355,9 +376,17 @@ void _references_to_categories_of_OFDictionary()
 {
 	size_t i;
 
-	for (i = 0; i < size; i++)
-		if (data[i] != nil)
+	for (i = 0; i < size; i++) {
+		if (data[i] != nil) {
+			of_dictionary_list_object_t *iter;
+
+			for (iter = (of_dictionary_list_object_t*)
+			    [data[i] first]; iter != NULL; iter = iter->next)
+				[iter->key release];
+
 			[data[i] release];
+		}
+	}
 
 	[super dealloc];
 }
