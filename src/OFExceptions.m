@@ -53,9 +53,7 @@
 #define AT_ERRPARAM  err
 #endif
 
-#ifndef HAVE_ASPRINTF
 #import "asprintf.h"
-#endif
 
 @implementation OFAllocFailedException
 + (Class)class
@@ -125,9 +123,9 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFMutableString alloc]
-	    initWithFormat: @"Could not allocate %zu bytes in class %s!",
-			    req_size, [class name]];
+	string = [[OFString alloc] initWithFormat:
+	    @"Could not allocate %zu bytes in class %s!", req_size,
+	    [class name]];
 
 	return string;
 }
@@ -161,12 +159,11 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFMutableString alloc]
-	    initWithFormat: @"Memory at %p was not allocated as part of object "
-			    @"of class %s, thus the memory allocation was not "
-			    @"changed! It is also possible that there was an "
-			    @"attempt to free the same memory twice.",
-			    pointer, [class name]];
+	string = [[OFString alloc] initWithFormat:
+	    @"Memory at %p was not allocated as part of object of class %s, "
+	    @"thus the memory allocation was not changed! It is also possible "
+	    @"that there was an attempt to free the same memory twice.",
+	    pointer, [class name]];
 
 	return string;
 }
@@ -200,10 +197,9 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFMutableString alloc]
-	    initWithFormat: @"The method %s of class %s is not or not fully "
-			    @"implemented!",
-			    SEL_NAME(selector), [class name]];
+	string = [[OFString alloc] initWithFormat:
+	    @"The method %s of class %s is not or not fully implemented!",
+	    SEL_NAME(selector), [class name]];
 
 	return string;
 }
@@ -215,9 +211,8 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFMutableString alloc]
-	    initWithFormat: @"Value out of range in class %s!",
-			    [class name]];
+	string = [[OFString alloc] initWithFormat:
+	    @"Value out of range in class %s!", [class name]];
 
 	return string;
 }
@@ -246,10 +241,9 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFMutableString alloc]
-	    initWithFormat: @"The argument for method %s of class %s is "
-	    		    @"invalid!",
-			    SEL_NAME(selector), [class name]];
+	string = [[OFString alloc] initWithFormat:
+	    @"The argument for method %s of class %s is invalid!",
+	    SEL_NAME(selector), [class name]];
 
 	return string;
 }
@@ -261,9 +255,8 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFMutableString alloc]
-	    initWithFormat: @"The encoding is invalid for class %s!",
-			    [class name]];
+	string = [[OFString alloc] initWithFormat:
+	    @"The encoding is invalid for class %s!", [class name]];
 
 	return string;
 }
@@ -275,9 +268,8 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFMutableString alloc]
-	    initWithFormat: @"The format is invalid for class %s!",
-			    [class name]];
+	string = [[OFString alloc] initWithFormat:
+	    @"The format is invalid for class %s!", [class name]];
 
 	return string;
 }
@@ -289,9 +281,8 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFMutableString alloc]
-	    initWithFormat: @"Initialization failed for class %s!",
-			    [class name]];
+	string = [[OFString alloc] initWithFormat:
+	    @"Initialization failed for class %s!", [class name]];
 
 	return string;
 }
@@ -333,11 +324,9 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFMutableString alloc]
-	    initWithFormat: @"Failed to open file %s with mode %s in class %s! "
-			    ERRFMT,
-			    [path cString], [mode cString], [self name],
-			    ERRPARAM];
+	string = [[OFString alloc] initWithFormat:
+	    @"Failed to open file %s with mode %s in class %s! " ERRFMT,
+	    [path cString], [mode cString], [self name], ERRPARAM];
 
 	return string;
 }
@@ -438,16 +427,13 @@
 		return string;;
 
 	if (has_items)
-		string = [[OFMutableString alloc]
-		    initWithFormat: @"Failed to read %zu items of size %zu in "
-				    @"class %s! " ERRFMT,
-				    req_items, req_size, [class name],
-				    ERRPARAM];
+		string = [[OFString alloc] initWithFormat:
+		    @"Failed to read %zu items of size %zu in class %s! "
+		    ERRFMT, req_items, req_size, [class name], ERRPARAM];
 	else
-		string = [[OFMutableString alloc]
-		    initWithFormat: @"Failed to read %zu bytes in class %s! "
-				    ERRFMT,
-				    req_size, [class name], ERRPARAM];
+		string = [[OFString alloc] initWithFormat:
+		    @"Failed to read %zu bytes in class %s! " ERRFMT, req_size,
+		    [class name], ERRPARAM];
 
 	return string;
 }
@@ -460,16 +446,13 @@
 		return string;
 
 	if (has_items)
-		string = [[OFMutableString alloc]
-		    initWithFormat: @"Failed to write %zu items of size %zu in "
-				    @"class %s! " ERRFMT,
-				    req_items, req_size, [class name],
-				    ERRPARAM];
+		string = [[OFString alloc] initWithFormat:
+		    @"Failed to write %zu items of size %zu in class %s! "
+		    ERRFMT, req_items, req_size, [class name], ERRPARAM];
 	else
-		string = [[OFMutableString alloc]
-		    initWithFormat: @"Failed to write %zu bytes in class %s! "
-				    ERRFMT,
-				    req_size, [class name], ERRPARAM];
+		string = [[OFString alloc] initWithFormat:
+		    @"Failed to write %zu bytes in class %s! " ERRFMT, req_size,
+		    [class name], ERRPARAM];
 
 	return string;
 }
@@ -481,9 +464,8 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFMutableString alloc]
-	    initWithFormat: @"Setting an option in class %s failed!",
-			    [class name]];
+	string = [[OFString alloc] initWithFormat:
+	    @"Setting an option in class %s failed!", [class name]];
 
 	return string;
 }
@@ -495,9 +477,8 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFMutableString alloc]
-	    initWithFormat: @"The socket of type %s is not connected or bound!",
-			    [class name]];
+	string = [[OFString alloc] initWithFormat:
+	    @"The socket of type %s is not connected or bound!", [class name]];
 
 	return string;
 }
@@ -509,11 +490,9 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFMutableString alloc]
-	    initWithFormat: @"The socket of type %s is already connected or "
-			    @"bound and thus can't be connected or bound "
-			    @"again!",
-			    [class name]];
+	string = [[OFString alloc] initWithFormat:
+	    @"The socket of type %s is already connected or bound and thus "
+	    @"can't be connected or bound again!", [class name]];
 
 	return string;
 }
@@ -555,16 +534,13 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFMutableString alloc]
-	    initWithFormat: @"The service %s on %s could not be translated to "
-			    @"an address in class %s. This means that either "
-			    @"the node was not found, there is no such service "
-			    @"on the node, there was a problem with the name "
-			    @"server, there was a problem with your network "
-			    @"connection or you specified an invalid node or "
-			    @"service. " ERRFMT,
-			    [service cString], [node cString], [class name],
-			    AT_ERRPARAM];
+	string = [[OFString alloc] initWithFormat:
+	    @"The service %s on %s could not be translated to an address in "
+	    @"class %s. This means that either the node was not found, there "
+	    @"is no such service on the node, there was a problem with the "
+	    @"name server, there was a problem with your network connection "
+	    @"or you specified an invalid node or service. " ERRFMT,
+	    [service cString], [node cString], [class name], AT_ERRPARAM];
 
 	return string;
 }
@@ -621,11 +597,10 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFMutableString alloc]
-	    initWithFormat: @"A connection to service %s on node %s could not "
-			    @"be established in class %s! " ERRFMT,
-			    [node cString], [service cString], [class name],
-			    ERRPARAM];
+	string = [[OFString alloc] initWithFormat:
+	    @"A connection to service %s on node %s could not be established "
+	    @"in class %s! " ERRFMT, [node cString], [service cString],
+	    [class name], ERRPARAM];
 
 	return string;
 }
@@ -686,11 +661,10 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFMutableString alloc]
-	    initWithFormat: @"Binding service %s on node %s using family %d "
-			    @"failed in class %s! " ERRFMT,
-			    [service cString], [node cString], family,
-			    [class name], ERRPARAM];
+	string = [[OFString alloc] initWithFormat:
+	    @"Binding service %s on node %s using family %d failed in class "
+	    @"%s! " ERRFMT, [service cString], [node cString], family,
+	    [class name], ERRPARAM];
 
 	return string;
 }
@@ -740,10 +714,9 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFMutableString alloc]
-	    initWithFormat: @"Failed to listen in socket of type %s with a "
-			    @"back log of %d! " ERRFMT,
-			    [class name], backlog, ERRPARAM];
+	string = [[OFString alloc] initWithFormat:
+	    @"Failed to listen in socket of type %s with a back log of %d! "
+	    ERRFMT, [class name], backlog, ERRPARAM];
 
 	return string;
 }
@@ -774,10 +747,9 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFMutableString alloc]
-	    initWithFormat: @"Failed to accept connection in socket of type "
-			    @"%s! " ERRFMT,
-			    [class name], ERRPARAM];
+	string = [[OFString alloc] initWithFormat:
+	    @"Failed to accept connection in socket of type %s! " ERRFMT,
+	    [class name], ERRPARAM];
 
 	return string;
 }
@@ -794,11 +766,9 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFMutableString alloc]
-	    initWithFormat: @"Joining a thread of class %s failed! Most "
-			    @"likely, another thread already waits for the "
-			    @"thread to join.",
-			    [class name]];
+	string = [[OFString alloc] initWithFormat:
+	    @"Joining a thread of class %s failed! Most likely, another thread "
+	    @"already waits for the thread to join.", [class name]];
 
 	return string;
 }
@@ -810,10 +780,9 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFMutableString alloc]
-	    initWithFormat: @"The requested action cannot be performed because "
-			    @"the thread of class %s was canceled!",
-			    [class name]];
+	string = [[OFString alloc] initWithFormat:
+	    @"The requested action cannot be performed because the thread of "
+	    @"class %s was canceled!", [class name]];
 
 	return string;
 }
