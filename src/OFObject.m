@@ -97,6 +97,15 @@ extern BOOL objc_sync_init();
 #endif
 }
 
++ (BOOL)instancesRespondToSelector: (SEL)selector
+{
+#ifdef __objc_INCLUDE_GNU
+	return class_get_instance_method(self, selector) != METHOD_NULL;
+#else
+	return class_respondsToSelector(self, selector);
+#endif
+}
+
 + (BOOL)conformsToProtocol: (Protocol*)protocol
 {
 #ifdef __objc_INCLUDE_GNU

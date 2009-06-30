@@ -54,6 +54,14 @@
 + (const char*)name;
 
 /**
+ * \param selector The selector which should be checked for respondance
+ *
+ * \return A boolean whether instances of the class respond to the specified
+ *	   selector
+ */
++ (BOOL)instancesRespondToSelector: (SEL)selector;
+
+/**
  * \param protocol The protocol which should be checked for conformance
  *
  * \return A boolean whether the class conforms to the specified protocol
