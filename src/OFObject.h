@@ -58,7 +58,7 @@
  *
  * \return A boolean whether the class conforms to the specified protocol
  */
-+ (BOOL)conformsTo: (Protocol*)protocol;
++ (BOOL)conformsToProtocol: (Protocol*)protocol;
 
 /**
  * Replace a method implementation with another implementation.
@@ -107,28 +107,28 @@
  *
  * \return A boolean whether the object is of the specified kind
  */
-- (BOOL)isKindOf: (Class)class;
+- (BOOL)isKindOfClass: (Class)class;
 
 /**
  * \param selector The selector which should be checked for respondance
  *
  * \return A boolean whether the objects responds to the specified selector
  */
-- (BOOL)respondsTo: (SEL)selector;
+- (BOOL)respondsToSelector: (SEL)selector;
 
 /**
  * \param protocol The protocol which should be checked for conformance
  *
  * \return A boolean whether the objects conforms to the specified protocol
  */
-- (BOOL)conformsTo: (Protocol*)protocol;
+- (BOOL)conformsToProtocol: (Protocol*)protocol;
 
 /**
  * \param selector The selector for which the method should be returned
  *
  * \return The implementation for the specified selector
  */
-- (IMP)methodFor: (SEL)selector;
+- (IMP)methodForSelector: (SEL)selector;
 
 /**
  * Compare two objects.

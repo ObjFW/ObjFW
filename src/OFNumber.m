@@ -715,7 +715,7 @@
 
 - (BOOL)isEqual: (id)obj
 {
-	if (![obj isKindOf: [OFNumber class]])
+	if (![obj isKindOfClass: [OFNumber class]])
 		return NO;
 
 	switch (type) {

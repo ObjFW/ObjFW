@@ -134,7 +134,7 @@ static int lastpagebyte = 0;
 
 - (BOOL)isEqual: (id)obj
 {
-	if (![obj isKindOf: [OFDataArray class]])
+	if (![obj isKindOfClass: [OFDataArray class]])
 		return NO;
 	if ([obj count] != count || [obj itemsize] != itemsize)
 		return NO;
@@ -148,7 +148,7 @@ static int lastpagebyte = 0;
 {
 	int ret;
 
-	if (![obj isKindOf: [OFDataArray class]])
+	if (![obj isKindOfClass: [OFDataArray class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
 						    andSelector: _cmd];
 	if ([obj itemsize] != itemsize)

@@ -208,7 +208,7 @@
 {
 	of_list_object_t *iter, *iter2;
 
-	if (![obj isKindOf: [OFList class]])
+	if (![obj isKindOfClass: [OFList class]])
 		return NO;
 
 	for (iter = first, iter2 = [obj first]; iter != NULL && iter2 != NULL;

@@ -281,7 +281,7 @@ of_string_check_utf8(const char *str, size_t len)
 
 - (BOOL)isEqual: (id)obj
 {
-	if (![obj isKindOf: [OFString class]])
+	if (![obj isKindOfClass: [OFString class]])
 		return NO;
 	if (strcmp(string, [obj cString]))
 		return NO;
@@ -291,7 +291,7 @@ of_string_check_utf8(const char *str, size_t len)
 
 - (int)compare: (id)obj
 {
-	if (![obj isKindOf: [OFString class]])
+	if (![obj isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
 						    andSelector: _cmd];
 

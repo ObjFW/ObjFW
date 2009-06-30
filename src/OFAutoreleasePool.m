@@ -27,7 +27,7 @@ release_list(void *list)
 	IMP release;
 
 	if ((first = [(OFList*)list first]) != NULL)
-		release = [first->object methodFor: @selector(release)];
+		release = [first->object methodForSelector: @selector(release)];
 
 	for (iter = first; iter != NULL; iter = iter->next)
 		release(iter->object, @selector(release));

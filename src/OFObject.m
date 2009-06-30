@@ -97,7 +97,7 @@ extern BOOL objc_sync_init();
 #endif
 }
 
-+ (BOOL)conformsTo: (Protocol*)protocol
++ (BOOL)conformsToProtocol: (Protocol*)protocol
 {
 #ifdef __objc_INCLUDE_GNU
 	Class c;
@@ -107,7 +107,7 @@ extern BOOL objc_sync_init();
 	for (c = self; c != Nil; c = class_get_super_class(c))
 		for (pl = c->protocols; pl != NULL; pl = pl->next)
 			for (i = 0; i < pl->count; i++)
-				if ([pl->list[i] conformsTo: protocol])
+				if ([pl->list[i] conformsToProtocol: protocol])
 					return YES;
 
 	return NO;
@@ -191,7 +191,7 @@ extern BOOL objc_sync_init();
 #endif
 }
 
-- (BOOL)isKindOf: (Class)class
+- (BOOL)isKindOfClass: (Class)class
 {
 	Class iter;
 
@@ -206,7 +206,7 @@ extern BOOL objc_sync_init();
 	return NO;
 }
 
-- (BOOL)respondsTo: (SEL)selector
+- (BOOL)respondsToSelector: (SEL)selector
 {
 #ifdef __objc_INCLUDE_GNU
 	if (object_is_instance(self))
@@ -218,12 +218,12 @@ extern BOOL objc_sync_init();
 #endif
 }
 
-- (BOOL)conformsTo: (Protocol*)protocol
+- (BOOL)conformsToProtocol: (Protocol*)protocol
 {
-	return [isa conformsTo: protocol];
+	return [isa conformsToProtocol: protocol];
 }
 
-- (IMP)methodFor: (SEL)selector
+- (IMP)methodForSelector: (SEL)selector
 {
 #ifdef __objc_INCLUDE_GNU
 	if (object_is_instance(self))

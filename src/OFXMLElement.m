@@ -116,8 +116,8 @@ int _OFXMLElement_reference;
 			IMP append;
 
 			tmp = [OFMutableString string];
-			append = [tmp methodFor: @selector(
-			    appendCStringWithoutUTF8Checking:)];
+			append = [tmp methodForSelector:
+			    @selector(appendCStringWithoutUTF8Checking:)];
 
 			for (j = 0; j < count; j++)
 				append(tmp, @selector(

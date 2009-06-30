@@ -181,7 +181,7 @@
 	OFObject **objs, **objs2;
 	size_t i, len, len2;
 
-	if (![obj isKindOf: [OFArray class]])
+	if (![obj isKindOfClass: [OFArray class]])
 		return NO;
 
 	len = [array count];
