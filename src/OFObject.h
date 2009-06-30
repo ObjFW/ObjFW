@@ -69,6 +69,13 @@
 + (BOOL)conformsToProtocol: (Protocol*)protocol;
 
 /**
+ * \param selector The selector for which the method should be returned
+ *
+ * \return The implementation of the instance method for the specified selector
+ */
++ (IMP)instanceMethodForSelector: (SEL)selector;
+
+/**
  * Replace a method implementation with another implementation.
  *
  * \param selector The selector of the method to replace

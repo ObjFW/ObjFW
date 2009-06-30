@@ -131,6 +131,15 @@ extern BOOL objc_sync_init();
 #endif
 }
 
++ (IMP)instanceMethodForSelector: (SEL)selector
+{
+#ifdef __objc_INCLUDE_GNU
+	return method_get_imp(class_get_instance_method(self, selector));
+#else
+	return class_getMethodImplementation(self, selector);
+#endif
+}
+
 + (IMP)setImplementation: (IMP)newimp
 	       forMethod: (SEL)selector
 {
