@@ -14,7 +14,7 @@
 /**
  * The OFMutableDictionary class provides a class for using mutable hash tables.
  */
-@interface OFMutableDictionary: OFDictionary
+@interface OFMutableDictionary: OFDictionary {}
 /**
  * Sets a key to an object. A key can be any object.
  *

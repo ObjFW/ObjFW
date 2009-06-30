@@ -15,7 +15,7 @@
  * The OFMutableArray class provides a class for storing, adding and removing
  * objects in an array.
  */
-@interface OFMutableArray: OFArray
+@interface OFMutableArray: OFArray {}
 /**
  * Adds an object to the OFDataArray.
  *

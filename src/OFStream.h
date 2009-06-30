@@ -38,7 +38,7 @@
 	  intoBuffer: (char*)buf;
 
 /**
- * Read until a newline or \0 occurs.
+ * Read until a newline, \\0 or end of stream occurs.
  *
  * If you want to use readNBytes afterwards again, you have to clear the cache
  * before and optionally get the cache before clearing it!

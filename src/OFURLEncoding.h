@@ -21,14 +21,14 @@ extern int _OFURLEncoding_reference;
 /**
  * Encodes a string for use in a URL.
  *
- * \return A new, autoreleased string
+ * \return A new autoreleased string
  */
 - (OFString*)stringByURLEncoding;
 
 /**
  * Decodes a string used in a URL.
  *
- * \return A new, autoreleased string
+ * \return A new autoreleased string
  */
 - (OFString*)stringByURLDecoding;
 @end

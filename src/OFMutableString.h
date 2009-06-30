@@ -17,7 +17,7 @@
 /**
  * A class for storing and modifying strings.
  */
-@interface OFMutableString: OFString
+@interface OFMutableString: OFString {}
 /**
  * Sets the OFString to the specified OFString.
  *
