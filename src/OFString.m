@@ -311,6 +311,47 @@ of_string_check_utf8(const char *str, size_t len)
 	return hash;
 }
 
+- (size_t)indexOfFirstOccurrenceOfString: (OFString*)str
+{
+	const char *str_c = [str cString];
+	size_t str_len = [str length];
+	size_t i;
+
+	if (str_len == 0)
+		return 0;
+
+	if (str_len > length)
+		return SIZE_MAX;
+
+	for (i = 0; i <= length - str_len; i++)
+		if (!memcmp(string + i, str_c, str_len))
+			return i;
+
+	return SIZE_MAX;
+}
+
+- (size_t)indexOfLastOccurrenceOfString: (OFString*)str
+{
+	const char *str_c = [str cString];
+	size_t str_len = [str length];
+	size_t i;
+
+	if (str_len == 0)
+		return length;
+
+	if (str_len > length)
+		return SIZE_MAX;
+
+	for (i = length - str_len;; i--) {
+		if (!memcmp(string + i, str_c, str_len))
+			return i;
+
+		/* Did not match and we're at the last char */
+		if (i == 0)
+			return SIZE_MAX;
+	}
+}
+
 - (OFString*)substringFromIndex: (size_t)start
 			toIndex: (size_t)end
 {

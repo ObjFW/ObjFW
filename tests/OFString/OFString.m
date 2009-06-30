@@ -25,7 +25,7 @@
 #define ZD "%u"
 #endif
 
-#define NUM_TESTS 39
+#define NUM_TESTS 47
 #define SUCCESS								\
 	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
 	    (i == NUM_TESTS - 1 ? 32 : 33), i + 1, NUM_TESTS);		\
@@ -100,6 +100,16 @@ main()
 
 	[s1 appendWithFormat: @"%02X", 15];
 	CHECK(!strcmp([s1 cString], "test: 1230F"))
+
+	/* Find index tests */
+	CHECK([@"foo" indexOfFirstOccurrenceOfString: @"oo"] == 1)
+	CHECK([@"foo" indexOfLastOccurrenceOfString: @"oo"] == 1)
+	CHECK([@"foo" indexOfFirstOccurrenceOfString: @"o"] == 1)
+	CHECK([@"foo" indexOfLastOccurrenceOfString: @"o"] == 2)
+	CHECK([@"foo" indexOfFirstOccurrenceOfString: @"f"] == 0)
+	CHECK([@"foo" indexOfLastOccurrenceOfString: @"f"] == 0)
+	CHECK([@"foo" indexOfFirstOccurrenceOfString: @"x"] == SIZE_MAX)
+	CHECK([@"foo" indexOfLastOccurrenceOfString: @"x"] == SIZE_MAX)
 
 	/* Substring tests */
 	CHECK([[@"foo" substringFromIndex: 1

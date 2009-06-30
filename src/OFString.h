@@ -127,6 +127,20 @@ extern int of_string_check_utf8(const char *str, size_t len);
 - (int)compare: (id)obj;
 
 /**
+ * \param str The string to search
+ * \return The index of the first occurrence of the string or SIZE_MAX if it
+ *	   wasn't found
+ */
+- (size_t)indexOfFirstOccurrenceOfString: (OFString*)str;
+
+/**
+ * \param str The string to search
+ * \return The index of the last occurrence of the string or SIZE_MAX if it
+ *	   wasn't found
+ */
+- (size_t)indexOfLastOccurrenceOfString: (OFString*)str;
+
+/**
  * \param start The index where the substring starts
  * \param end The index where the substring ends.
  *	      This points BEHIND the last character!
