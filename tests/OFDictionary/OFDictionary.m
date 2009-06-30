@@ -19,7 +19,7 @@
 #import "OFString.h"
 #import "OFExceptions.h"
 
-#define TESTS 12
+#define TESTS 15
 
 int
 main()
@@ -27,6 +27,7 @@ main()
 	int i = 0;
 
 	OFDictionary *dict = [OFMutableDictionary dictionaryWithHashSize: 16];
+	OFDictionary *dict2;
 	OFIterator *iter = [dict iterator];
 	of_iterator_pair_t pair[2];
 
@@ -135,6 +136,34 @@ main()
 	i++;
 	if (![[dict objectForKey: @"k2"] isEqual: @"o2"]) {
 		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
+		return 1;
+	}
+
+	i++;
+	dict2 = [dict copy];
+	[dict release];
+	if (![[dict2 objectForKey: @"k1"] isEqual: @"o1"] ||
+	    ![[dict2 objectForKey: @"k2"] isEqual: @"o2"]) {
+		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
+		return 1;
+	}
+
+	i++;
+	dict = [dict2 mutableCopy];
+	[dict2 release];
+	if (![[dict objectForKey: @"k1"] isEqual: @"o1"] ||
+	    ![[dict objectForKey: @"k2"] isEqual: @"o2"]) {
+		printf("\033[k\033[1;31mtest %d/%d failed!\033[m\n", i, TESTS);
+		return 1;
+	}
+
+	i++;
+	[dict setObject: @"o0" forKey: @"k1"];
+	[dict setObject: @"o3" forKey: @"k3"];
+	if (![[dict objectForKey: @"k1"] isEqual: @"o0"] ||
+	    ![[dict objectForKey: @"k2"] isEqual: @"o2"] ||
+	    ![[dict objectForKey: @"k3"] isEqual: @"o3"]) {
+		printf("\033[k\033[1;31mtest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}
 

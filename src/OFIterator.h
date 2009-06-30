@@ -14,8 +14,9 @@
 #import "OFDictionary.h"
 
 typedef struct __of_iterator_pair {
-	id key;
-	id object;
+	id	 key;
+	id	 object;
+	uint32_t hash;
 } of_iterator_pair_t;
 
 extern int _OFIterator_reference;

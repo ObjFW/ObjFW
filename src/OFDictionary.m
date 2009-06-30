@@ -15,6 +15,7 @@
 
 #import "OFDictionary.h"
 #import "OFIterator.h"
+#import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 
 /* References for static linking */
@@ -27,6 +28,11 @@ void _references_to_categories_of_OFDictionary()
 + dictionary;
 {
 	return [[[self alloc] init] autorelease];
+}
+
++ dictionaryWithDictionary: (OFDictionary*)dict
+{
+	return [[[self alloc] initWithDictionary: dict] autorelease];
 }
 
 + dictionaryWithHashSize: (int)hashsize
@@ -80,6 +86,86 @@ void _references_to_categories_of_OFDictionary()
 		@throw e;
 	}
 	memset(data, 0, size * sizeof(OFList*));
+
+	return self;
+}
+
+- initWithDictionary: (OFDictionary*)dict
+{
+	OFAutoreleasePool *pool;
+	OFIterator *iter;
+	of_iterator_pair_t pair;
+	of_iterator_pair_t (*next)(id, SEL);
+
+	self = [super init];
+
+	if (dict == nil) {
+		Class c = isa;
+		size = 0;
+		[self dealloc];
+		@throw [OFInvalidArgumentException newWithClass: c
+						    andSelector: _cmd];
+	}
+
+	size = dict->size;
+
+	@try {
+		data = [self allocMemoryForNItems: size
+					 withSize: sizeof(OFList*)];
+		memset(data, 0, size * sizeof(OFList*));
+
+		pool = [[OFAutoreleasePool alloc] init];
+		iter = [dict iterator];
+		next = (of_iterator_pair_t(*)(id, SEL))
+		    [iter methodForSelector: @selector(nextKeyObjectPair)];
+	} @catch (OFException *e) {
+		/*
+		 * We can't use [super dealloc] on OS X here. Compiler bug?
+		 * Anyway, set size to 0 so that [self dealloc] works.
+		 */
+		size = 0;
+		[self dealloc];
+		@throw e;
+	}
+
+	for (;;) {
+		uint32_t hash;
+		OFObject <OFCopying> *key;
+
+		pair = next(iter, @selector(nextKeyObjectPair));
+
+		if (pair.key == nil || pair.object == nil)
+			break;
+
+		hash = pair.hash & (size - 1);
+
+		@try {
+			key = [pair.key copy];
+		} @catch (OFException *e) {
+			[self dealloc];
+			@throw e;
+		}
+
+		@try {
+			of_dictionary_list_object_t *o;
+
+			if (data[hash] == nil)
+				data[hash] = [[OFList alloc]
+				    initWithListObjectSize:
+				    sizeof(of_dictionary_list_object_t)];
+
+			o = (of_dictionary_list_object_t*)
+			    [data[hash] append: pair.object];
+			o->key = key;
+			o->hash = pair.hash;
+		} @catch (OFException *e) {
+			[key release];
+			[self dealloc];
+			@throw e;
+		}
+	}
+
+	[pool release];
 
 	return self;
 }
@@ -357,17 +443,18 @@ void _references_to_categories_of_OFDictionary()
 	return nil;
 }
 
-/* FIXME: Implement this! */
-/*
-- (BOOL)isEqual
-{
-}
-
 - (id)copy
 {
+	return [self retain];
 }
 
 - (id)mutableCopy
+{
+	return [[OFMutableDictionary alloc] initWithDictionary: self];
+}
+
+/* FIXME: Implement this!
+- (BOOL)isEqual
 {
 }
 */

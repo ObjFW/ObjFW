@@ -31,11 +31,6 @@
 #import "asprintf.h"
 
 @implementation OFMutableString
-- (id)copy
-{
-	return [[OFString alloc] initWithString: self];
-}
-
 - setToCString: (const char*)str
 {
 	size_t len;
@@ -395,5 +390,10 @@
 	}
 
 	return self;
+}
+
+- (id)copy
+{
+	return [[OFString alloc] initWithString: self];
 }
 @end

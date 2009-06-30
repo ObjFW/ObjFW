@@ -269,16 +269,6 @@ of_string_check_utf8(const char *str, size_t len)
 	return length;
 }
 
-- (id)copy
-{
-	return [self retain];
-}
-
-- (id)mutableCopy
-{
-	return [[OFMutableString alloc] initWithString: self];
-}
-
 - (BOOL)isEqual: (id)obj
 {
 	if (![obj isKindOfClass: [OFString class]])
@@ -287,6 +277,16 @@ of_string_check_utf8(const char *str, size_t len)
 		return NO;
 
 	return YES;
+}
+
+- (id)copy
+{
+	return [self retain];
+}
+
+- (id)mutableCopy
+{
+	return [[OFMutableString alloc] initWithString: self];
 }
 
 - (int)compare: (id)obj

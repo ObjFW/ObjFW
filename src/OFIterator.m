@@ -42,6 +42,7 @@ int _OFIterator_reference;
 			if (pos == size) {
 				next.key = nil;
 				next.object = nil;
+				next.hash = 0;
 				return next;
 			}
 
@@ -49,12 +50,14 @@ int _OFIterator_reference;
 			    [data[pos++] first];
 			next.key = last->key;
 			next.object = last->object;
+			next.hash = last->hash;
 			return next;
 		}
 
 		if ((last = last->next) != NULL) {
 			next.key = last->key;
 			next.object = last->object;
+			next.hash = last->hash;
 			return next;
 		}
 	}

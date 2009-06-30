@@ -29,7 +29,7 @@ typedef struct __of_dictionary_list_object
 /**
  * The OFDictionary class provides a class for using hash tables.
  */
-@interface OFDictionary: OFObject
+@interface OFDictionary: OFObject <OFCopying, OFMutableCopying>
 {
 	OFList **data;
 	size_t size;
@@ -41,6 +41,14 @@ typedef struct __of_dictionary_list_object
  * \return A new autoreleased OFDictionary
  */
 + dictionary;
+
+/**
+ * Creates a new OFDictionary with the specified dictionary.
+ *
+ * \param dict An OFDictionary
+ * \return A new autoreleased OFDictionary
+ */
++ dictionaryWithDictionary: (OFDictionary*)dict;
 
 /**
  * Creates a new OFDictionary with a hash of N bits.
@@ -84,6 +92,15 @@ typedef struct __of_dictionary_list_object
  * \return An initialized OFDictionary
  */
 - init;
+
+/**
+ * Initializes an already allocated OFDictionary with the specified
+ * OFDictionary.
+ *
+ * \param dict An OFDictionary
+ * \return An initialized OFDictionary
+ */
+- initWithDictionary: (OFDictionary*)dict;
 
 /**
  * Initializes an already allocated OFDictionary with a hash of N bits.

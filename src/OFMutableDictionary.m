@@ -138,14 +138,8 @@
 	return self;
 }
 
-/* FIXME: Implement this! */
-/*
 - (id)copy
 {
+	return [[OFDictionary alloc] initWithDictionary: self];
 }
-
-- (id)mutableCopy
-{
-}
-*/
 @end
