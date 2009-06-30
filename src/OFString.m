@@ -311,6 +311,39 @@ of_string_check_utf8(const char *str, size_t len)
 	return hash;
 }
 
+- (OFString*)substringFromIndex: (size_t)start
+			toIndex: (size_t)end
+{
+	char *tmp;
+	size_t len;
+	OFString *ret;
+
+	if (start > end)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						    andSelector: _cmd];
+
+	if (end > length)
+		@throw [OFOutOfRangeException newWithClass: isa];
+
+	len = end - start;
+
+	if ((tmp = malloc(len + 1)) == NULL)
+		@throw [OFOutOfMemoryException newWithClass: isa
+						    andSize: len + 1];
+
+	if (len)
+		memcpy(tmp, string + start, len);
+	tmp[len] = 0;
+
+	@try {
+		ret = [OFString stringWithCString: tmp];
+	} @finally {
+		free(tmp);
+	}
+
+	return ret;
+}
+
 - (OFArray*)splitWithDelimiter: (OFString*)delimiter
 {
 	OFAutoreleasePool *pool;

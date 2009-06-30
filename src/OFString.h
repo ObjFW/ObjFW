@@ -127,6 +127,15 @@ extern int of_string_check_utf8(const char *str, size_t len);
 - (int)compare: (id)obj;
 
 /**
+ * \param start The index where the substring starts
+ * \param end The index where the substring ends.
+ *	      This points BEHIND the last character!
+ * \return The substring as a new autoreleased OFString
+ */
+- (OFString*)substringFromIndex: (size_t)start
+			toIndex: (size_t)end;
+
+/**
  * Splits an OFString into an OFArray of OFStrings.
  *
  * \param delimiter The delimiter for splitting

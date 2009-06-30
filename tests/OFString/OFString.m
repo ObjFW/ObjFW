@@ -25,7 +25,7 @@
 #define ZD "%u"
 #endif
 
-#define NUM_TESTS 34
+#define NUM_TESTS 39
 #define SUCCESS								\
 	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
 	    (i == NUM_TESTS - 1 ? 32 : 33), i + 1, NUM_TESTS);		\
@@ -100,6 +100,18 @@ main()
 
 	[s1 appendWithFormat: @"%02X", 15];
 	CHECK(!strcmp([s1 cString], "test: 1230F"))
+
+	/* Substring tests */
+	CHECK([[@"foo" substringFromIndex: 1
+				  toIndex: 2] isEqual: @"o"]);
+	CHECK([[@"foo" substringFromIndex: 3
+				  toIndex: 3] isEqual: @""]);
+	CHECK_EXCEPT([@"foo" substringFromIndex: 2
+					toIndex: 4], OFOutOfRangeException)
+	CHECK_EXCEPT([@"foo" substringFromIndex: 4
+					toIndex: 4], OFOutOfRangeException)
+	CHECK_EXCEPT([@"foo" substringFromIndex: 2
+					toIndex: 0], OFInvalidArgumentException)
 
 	/* Split tests */
 	a = [@"fooXXbarXXXXbazXXXX" splitWithDelimiter: @"XX"];
