@@ -24,7 +24,7 @@
 #define ZD "%u"
 #endif
 
-#define NUM_TESTS 47
+#define NUM_TESTS 49
 #define SUCCESS								\
 	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
 	    (i == NUM_TESTS - 1 ? 32 : 33), i + 1, NUM_TESTS);		\

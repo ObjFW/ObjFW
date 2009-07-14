@@ -403,10 +403,6 @@ of_string_check_utf8(const char *str, size_t len)
 - (OFString*)substringFromIndex: (size_t)start
 			toIndex: (size_t)end
 {
-	char *tmp;
-	size_t len;
-	OFString *ret;
-
 	if (start > end)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						    andSelector: _cmd];
@@ -414,30 +410,14 @@ of_string_check_utf8(const char *str, size_t len)
 	if (end > length)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	len = end - start;
-
-	if ((tmp = malloc(len + 1)) == NULL)
-		@throw [OFOutOfMemoryException newWithClass: isa
-						    andSize: len + 1];
-
-	if (len)
-		memcpy(tmp, string + start, len);
-	tmp[len] = 0;
-
-	@try {
-		ret = [OFString stringWithCString: tmp];
-	} @finally {
-		free(tmp);
-	}
-
-	return ret;
+	return [OFString stringWithCString: string + start
+				 andLength: end - start];
 }
 
 - (OFArray*)splitWithDelimiter: (OFString*)delimiter
 {
 	OFAutoreleasePool *pool;
-	OFArray *array = nil;
-	OFString *str;
+	OFArray *array;
 	const char *delim = [delimiter cString];
 	size_t delim_len = [delimiter length];
 	size_t i, last;
@@ -446,38 +426,18 @@ of_string_check_utf8(const char *str, size_t len)
 	pool = [[OFAutoreleasePool alloc] init];
 
 	if (delim_len > length) {
-		str = [[self copy] autorelease];
-		[array addObject: str];
+		[array addObject: [[self copy] autorelease]];
 		[pool release];
 
 		return array;
 	}
 
 	for (i = 0, last = 0; i <= length - delim_len; i++) {
-		char *tmp;
-
 		if (memcmp(string + i, delim, delim_len))
 			continue;
 
-		/*
-		 * We can't use [self allocMemoryWithSize:] here as self might
-		 * be a @""-literal.
-		 */
-		if ((tmp = malloc(i - last + 1)) == NULL)
-			@throw [OFOutOfMemoryException
-			    newWithClass: isa
-				 andSize: i - last + 1];
-		memcpy(tmp, string + last, i - last);
-		tmp[i - last] = '\0';
-		@try {
-			str = [OFString stringWithCString: tmp];
-		} @finally {
-			free(tmp);
-		}
-
-		[array addObject: str];
-		[pool releaseObjects];
-
+		[array addObject: [OFString stringWithCString: string + last
+						    andLength: i - last]];
 		i += delim_len - 1;
 		last = i + 1;
 	}
