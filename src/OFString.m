@@ -117,6 +117,13 @@ of_string_check_utf8(const char *str, size_t len)
 	return [[[self alloc] initWithCString: str] autorelease];
 }
 
++ stringWithCString: (const char*)str
+	  andLength: (size_t)len
+{
+	return [[[self alloc] initWithCString: str
+				    andLength: len] autorelease];
+}
+
 + stringWithFormat: (OFString*)fmt, ...
 {
 	id ret;
@@ -154,14 +161,13 @@ of_string_check_utf8(const char *str, size_t len)
 		length = strlen(str);
 
 		switch (of_string_check_utf8(str, length)) {
-			case 1:
-				is_utf8 = YES;
-				break;
-			case -1:
-				c = isa;
-				[super dealloc];
-				@throw [OFInvalidEncodingException
-					newWithClass: c];
+		case 1:
+			is_utf8 = YES;
+			break;
+		case -1:
+			c = isa;
+			[super dealloc];
+			@throw [OFInvalidEncodingException newWithClass: c];
 		}
 
 		@try {
@@ -177,6 +183,48 @@ of_string_check_utf8(const char *str, size_t len)
 		}
 		memcpy(string, str, length + 1);
 	}
+
+	return self;
+}
+
+- initWithCString: (const char*)str
+	andLength: (size_t)len
+{
+	Class c;
+
+	self = [super init];
+
+	if (len > strlen(str)) {
+		c = isa;
+		[super dealloc];
+		@throw [OFOutOfRangeException newWithClass: c];
+	}
+
+	length = len;
+
+	switch (of_string_check_utf8(str, length)) {
+	case 1:
+		is_utf8 = YES;
+		break;
+	case -1:
+		c = isa;
+		[super dealloc];
+		@throw [OFInvalidEncodingException newWithClass: c];
+	}
+
+	@try {
+		string = [self allocMemoryWithSize: length + 1];
+	} @catch (OFException *e) {
+		/*
+		 * We can't use [super dealloc] on OS X here.
+		 * Compiler bug? Anyway, [self dealloc] will do here as
+		 * we don't reimplement dealloc.
+		 */
+		[self dealloc];
+		@throw e;
+	}
+	memcpy(string, str, length);
+	string[length] = 0;
 
 	return self;
 }
@@ -452,7 +500,21 @@ of_string_check_utf8(const char *str, size_t len)
 					   andSelector: _cmd];
 }
 
+- appendCString: (const char*)str
+     withLength: (size_t)len
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
+
 - appendCStringWithoutUTF8Checking: (const char*)str
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
+
+- appendCStringWithoutUTF8Checking: (const char*)str
+			 andLength: (size_t)len
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					   andSelector: _cmd];

@@ -33,6 +33,15 @@
 - appendCString: (const char*)str;
 
 /**
+ * Appends a C string with the specified length to the OFString.
+ *
+ * \param str A C string to append
+ * \param len The length of the C string
+ */
+- appendCString: (const char*)str
+     withLength: (size_t)len;
+
+/**
  * Appends a C string to the OFString without checking whether it is valid
  * UTF-8.
  *
@@ -42,6 +51,19 @@
  * \param str A C string to append
  */
 - appendCStringWithoutUTF8Checking: (const char*)str;
+
+/**
+ * Appends a C string with the specified length to the OFString without checking
+ * whether it is valid UTF-8.
+ *
+ * Only use this if you are 100% sure the string you append is either ASCII or
+ * UTF-8!
+ *
+ * \param str A C string to append
+ * \param len The length of the C string
+ */
+- appendCStringWithoutUTF8Checking: (const char*)str
+			 andLength: (size_t)len;
 
 /**
  * Appends another OFString to the OFString.

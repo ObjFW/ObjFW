@@ -81,6 +81,29 @@
 	return self;
 }
 
+- appendCString: (const char*)str
+     withLength: (size_t)len
+{
+	if (len > strlen(str))
+		@throw [OFOutOfRangeException newWithClass: isa];
+
+	switch (of_string_check_utf8(str, len)) {
+	case 1:
+		is_utf8 = YES;
+		break;
+	case -1:
+		@throw [OFInvalidEncodingException newWithClass: isa];
+	}
+
+	string = [self resizeMemory: string
+			     toSize: length + len + 1];
+	memcpy(string + length, str, len);
+	length += len;
+	string[length] = 0;
+
+	return self;
+}
+
 - appendCStringWithoutUTF8Checking: (const char*)str
 {
 	size_t strlength;
@@ -90,6 +113,21 @@
 			     toSize: length + strlength + 1];
 	memcpy(string + length, str, strlength + 1);
 	length += strlength;
+
+	return self;
+}
+
+- appendCStringWithoutUTF8Checking: (const char*)str
+			 andLength: (size_t)len
+{
+	if (len > strlen(str))
+		@throw [OFOutOfRangeException newWithClass: isa];
+
+	string = [self resizeMemory: string
+			     toSize: length + len + 1];
+	memcpy(string + length, str, len);
+	length += len;
+	string[length] = 0;
 
 	return self;
 }

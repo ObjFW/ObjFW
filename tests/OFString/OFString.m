@@ -83,6 +83,14 @@ main()
 	/* Also clears all the memory of the returned C strings */
 	[pool release];
 
+	s1 = [OFMutableString stringWithCString: "foobar"
+				      andLength: 3];
+	CHECK([s1 isEqual: @"foo"])
+
+	[s1 appendCString: "foobarqux" + 3
+	       withLength: 3];
+	CHECK([s1 isEqual: @"foobar"])
+
 	/* UTF-8 tests */
 	CHECK_EXCEPT(s1 = [OFString stringWithCString: "\xE0\x80"],
 	    OFInvalidEncodingException)

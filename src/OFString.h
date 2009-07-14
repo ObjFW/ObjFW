@@ -48,6 +48,16 @@ extern int of_string_check_utf8(const char *str, size_t len);
 + stringWithCString: (const char*)str;
 
 /**
+ * Creates a new OFString from a C string with the specified length.
+ *
+ * \param str A C string to initialize the OFString with
+ * \param len The length of the string
+ * \return A new autoreleased OFString
+ */
++ stringWithCString: (const char*)str
+	  andLength: (size_t)len;
+
+/**
  * Creates a new OFString from a format string.
  * See printf for the format syntax.
  *
@@ -72,12 +82,23 @@ extern int of_string_check_utf8(const char *str, size_t len);
 - init;
 
 /**
- * Initializes an already allocated OFString with a C string.
+ * Initializes an already allocated OFString from a C string.
  *
  * \param str A C string to initialize the OFString with
  * \return An initialized OFString
  */
 - initWithCString: (const char*)str;
+
+/**
+ * Initializes an already allocated OFString from a C string with the specified
+ * length.
+ *
+ * \param str A C string to initialize the OFString with
+ * \param len The length of the string
+ * \return An initialized OFString
+ */
+- initWithCString: (const char*)str
+	andLength: (size_t)len;
 
 /**
  * Initializes an already allocated OFString with a format string.
@@ -159,7 +180,11 @@ extern int of_string_check_utf8(const char *str, size_t len);
 
 - setToCString: (const char*)str;
 - appendCString: (const char*)str;
+- appendCString: (const char*)str
+     withLength: (size_t)len;
 - appendCStringWithoutUTF8Checking: (const char*)str;
+- appendCStringWithoutUTF8Checking: (const char*)str
+			 andLength: (size_t)len;
 - appendString: (OFString*)str;
 - appendWithFormat: (OFString*)fmt, ...;
 - appendWithFormat: (OFString*)fmt
