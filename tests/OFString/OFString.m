@@ -24,7 +24,7 @@
 #define ZD "%u"
 #endif
 
-#define NUM_TESTS 49
+#define NUM_TESTS 53
 #define SUCCESS								\
 	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
 	    (i == NUM_TESTS - 1 ? 32 : 33), i + 1, NUM_TESTS);		\
@@ -49,6 +49,19 @@
 	}								\
 	i++;
 
+@interface EntityHandler: OFObject <OFXMLUnescapingDelegate>
+@end
+
+@implementation EntityHandler
+- (OFString*)foundUnknownEntityNamed: (OFString*)entity
+{
+	if ([entity isEqual: @"foo"])
+		return @"bar";
+
+	return nil;
+}
+@end
+
 int
 main()
 {
@@ -61,6 +74,7 @@ main()
 	OFString *s3;
 	OFString *s4 = [OFMutableString string];
 	OFArray *a;
+	EntityHandler *h;
 
 	s3 = [s1 copy];
 
@@ -175,6 +189,18 @@ main()
 	/* XML escaping tests */
 	s1 = [@"<hello> &world'\"!&" stringByXMLEscaping];
 	CHECK([s1 isEqual: @"&lt;hello&gt; &amp;world&apos;&quot;!&amp;"])
+
+	/* XML unescaping tests */
+	CHECK([[s1 stringByXMLUnescaping] isEqual: @"<hello> &world'\"!&"]);
+	CHECK_EXCEPT([@"&foo;" stringByXMLUnescaping],
+	    OFInvalidEncodingException)
+
+	h = [[EntityHandler alloc] init];
+	s1 = [@"x&foo;y" stringByXMLUnescapingWithHandler: h];
+	CHECK([s1 isEqual: @"xbary"]);
+
+	CHECK_EXCEPT([@"x&amp" stringByXMLUnescaping],
+	    OFInvalidEncodingException)
 
 	puts("");
 

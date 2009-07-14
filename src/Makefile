@@ -26,7 +26,8 @@ SRCS = OFArray.m		\
        OFTCPSocket.m		\
        OFThread.m		\
        OFURLEncoding.m		\
-       OFXMLElement.m
+       OFXMLElement.m		\
+       OFXMLParser.m
 
 INCLUDESTMP := ${SRCS:.c=.h}
 INCLUDES := ${INCLUDESTMP:.m=.h}	\

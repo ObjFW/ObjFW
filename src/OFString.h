@@ -203,3 +203,4 @@ extern int of_string_check_utf8(const char *str, size_t len);
 #import "OFMutableString.h"
 #import "OFURLEncoding.h"
 #import "OFXMLElement.h"
+#import "OFXMLParser.h"
