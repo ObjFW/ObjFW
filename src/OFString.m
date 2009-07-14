@@ -106,7 +106,7 @@ of_string_check_utf8(const char *str, size_t len)
 }
 
 size_t
-of_string_unicode_to_utf8(uint32_t c, uint8_t *buf)
+of_string_unicode_to_utf8(uint32_t c, char *buf)
 {
 	if (c < 0x80) {
 		buf[0] = c;

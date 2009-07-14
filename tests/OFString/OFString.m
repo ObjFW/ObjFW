@@ -24,7 +24,7 @@
 #define ZD "%u"
 #endif
 
-#define NUM_TESTS 53
+#define NUM_TESTS 60
 #define SUCCESS								\
 	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
 	    (i == NUM_TESTS - 1 ? 32 : 33), i + 1, NUM_TESTS);		\
@@ -200,6 +200,17 @@ main()
 	CHECK([s1 isEqual: @"xbary"]);
 
 	CHECK_EXCEPT([@"x&amp" stringByXMLUnescaping],
+	    OFInvalidEncodingException)
+
+	CHECK([[@"&#x79;" stringByXMLUnescaping] isEqual: @"y"]);
+	CHECK([[@"&#xE4;" stringByXMLUnescaping] isEqual: @"ä"]);
+	CHECK([[@"&#8364;" stringByXMLUnescaping] isEqual: @"€"]);
+	CHECK([[@"&#x1D11E;" stringByXMLUnescaping] isEqual: @"𝄞"]);
+
+	CHECK_EXCEPT([@"&#;" stringByXMLUnescaping], OFInvalidEncodingException)
+	CHECK_EXCEPT([@"&#x;" stringByXMLUnescaping],
+	    OFInvalidEncodingException)
+	CHECK_EXCEPT([@"&#xg;" stringByXMLUnescaping],
 	    OFInvalidEncodingException)
 
 	puts("");
