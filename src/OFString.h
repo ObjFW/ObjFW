@@ -15,7 +15,8 @@
 #import "OFObject.h"
 #import "OFArray.h"
 
-extern int of_string_check_utf8(const char *str, size_t len);
+extern int of_string_check_utf8(const char*, size_t);
+extern size_t of_string_unicode_to_utf8(uint32_t, uint8_t*);
 
 /**
  * A class for managing strings.
