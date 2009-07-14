@@ -12,7 +12,6 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <string.h>
 
 #import "OFString.h"
 #import "OFArray.h"
@@ -74,12 +73,12 @@ main()
 	[s4 setToCString: [s2 cString]];
 
 	CHECK(![s2 compare: s4])
-	CHECK(!strcmp([[s1 appendString: s2] cString], "test123"))
+	CHECK([[s1 appendString: s2] isEqual: @"test123"])
+	CHECK([s1 length] == 7)
 	CHECK([s1 hash] == 0xC44F49A4)
-	CHECK(strlen([s1 cString]) == [s1 length] && [s1 length] == 7)
-	CHECK(!strcmp([[s1 reverse] cString], "321tset"))
-	CHECK(!strcmp([[s1 upper] cString], "321TSET"))
-	CHECK(!strcmp([[s1 lower] cString], "321tset"))
+	CHECK([[s1 reverse] isEqual: @"321tset"])
+	CHECK([[s1 upper] isEqual: @"321TSET"])
+	CHECK([[s1 lower] isEqual: @"321tset"])
 
 	/* Also clears all the memory of the returned C strings */
 	[pool release];
@@ -91,15 +90,15 @@ main()
 	    OFInvalidEncodingException)
 
 	s1 = [OFMutableString stringWithCString: "äöü€𝄞"];
-	CHECK(!strcmp([[s1 reverse] cString], "𝄞€üöä"))
+	CHECK([[s1 reverse] isEqual: @"𝄞€üöä"])
 	[s1 dealloc];
 
 	/* Format tests */
 	s1 = [OFMutableString stringWithFormat: @"%s: %d", "test", 123];
-	CHECK(!strcmp([s1 cString], "test: 123"))
+	CHECK([s1 isEqual: @"test: 123"])
 
 	[s1 appendWithFormat: @"%02X", 15];
-	CHECK(!strcmp([s1 cString], "test: 1230F"))
+	CHECK([s1 isEqual: @"test: 1230F"])
 
 	/* Find index tests */
 	CHECK([@"foo" indexOfFirstOccurrenceOfString: @"oo"] == 1)
