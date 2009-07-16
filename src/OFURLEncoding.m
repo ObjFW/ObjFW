@@ -42,7 +42,8 @@ int _OFURLEncoding_reference;
 						    andSize: (length * 3) + 1];
 
 	for (i = 0; *s != '\0'; s++) {
-		if (isalnum(*s) || *s == '-' || *s == '_' || *s == '.')
+		if (isalnum(*s) || *s == '-' || *s == '_' || *s == '.' ||
+		    *s == '~')
 			ret_c[i++] = *s;
 		else {
 			char buf[3];
