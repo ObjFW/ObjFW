@@ -27,9 +27,44 @@ void *_OFConstStringClassReference;
 }
 #endif
 
-- autorelease
+- addMemoryToPool: (void*)ptr
 {
-	return self;
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
+
+- (void*)allocMemoryWithSize: (size_t)size
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
+
+- (void*)allocMemoryForNItems: (size_t)nitems
+                     withSize: (size_t)size
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
+
+- (void*)resizeMemory: (void*)ptr
+	       toSize: (size_t)size
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
+
+- (void*)resizeMemory: (void*)ptr
+	     toNItems: (size_t)nitems
+	     withSize: (size_t)size
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
+}
+
+- freeMemory: (void*)ptr
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					   andSelector: _cmd];
 }
 
 - retain
@@ -37,13 +72,18 @@ void *_OFConstStringClassReference;
 	return self;
 }
 
-- (void)release
+- autorelease
 {
+	return self;
 }
 
 - (size_t)retainCount
 {
 	return SIZE_MAX;
+}
+
+- (void)release
+{
 }
 
 - (void)dealloc
