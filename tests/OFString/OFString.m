@@ -155,7 +155,8 @@ main()
 
 	/* URL encoding tests */
 	CHECK([[@"foo\"ba'_$" stringByURLEncoding] isEqual: @"foo%22ba%27_%24"])
-	CHECK([[@"foo%20bar%22%24" stringByURLDecoding] isEqual: @"foo bar\"$"])
+	CHECK([[@"foo%20bar%22+%24" stringByURLDecoding]
+	    isEqual: @"foo bar\" $"])
 	CHECK_EXCEPT([@"foo%bar" stringByURLDecoding],
 	    OFInvalidEncodingException)
 	CHECK_EXCEPT([@"foo%FFbar" stringByURLDecoding],

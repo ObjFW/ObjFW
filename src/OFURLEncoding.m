@@ -82,6 +82,8 @@ int _OFURLEncoding_reference;
 		case 0:
 			if (*s == '%')
 				st = 1;
+			else if (*s == '+')
+				ret_c[i++] = ' ';
 			else
 				ret_c[i++] = *s;
 			break;
