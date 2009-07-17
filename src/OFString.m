@@ -32,6 +32,7 @@
 /* References for static linking */
 void _references_to_categories_of_OFString()
 {
+	_OFHashing_reference = 1;
 	_OFURLEncoding_reference = 1;
 	_OFXMLElement_reference = 1;
 	_OFXMLParser_reference = 1;

@@ -202,6 +202,7 @@ extern size_t of_string_unicode_to_utf8(uint32_t, char*);
 
 #import "OFConstString.h"
 #import "OFMutableString.h"
+#import "OFHashes.h"
 #import "OFURLEncoding.h"
 #import "OFXMLElement.h"
 #import "OFXMLParser.h"

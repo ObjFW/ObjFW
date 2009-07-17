@@ -10,9 +10,12 @@
  */
 
 #import "OFObject.h"
+#import "OFString.h"
 
 #define MD5_DIGEST_SIZE	 16
 #define SHA1_DIGEST_SIZE 20
+
+extern int _OFHashing_reference;
 
 /**
  * The OFMD5Hash class provides functions to create an MD5 hash.
@@ -46,7 +49,7 @@
  * \return A buffer containing the hash (MD5_DIGEST_SIZE = 16 bytes).
  *	   The buffer is part of object's memory pool.
  */
-- (char*)digest;
+- (uint8_t*)digest;
 @end
 
 /**
@@ -57,7 +60,7 @@
 	uint32_t state[5];
 	uint64_t count;
 	char	 buffer[64];
-	char	 digest[SHA1_DIGEST_SIZE];
+	uint8_t	 digest[SHA1_DIGEST_SIZE];
 
 	BOOL	 calculated;
 }
@@ -82,5 +85,20 @@
  * \return A buffer containing the hash (SHA1_DIGEST_SIZE = 20 bytes).
  *	   The buffer is part of object's memory pool.
  */
-- (char*)digest;
+- (uint8_t*)digest;
+@end
+
+/**
+ * The OFHashing category provides methods to calculate hashes for strings.
+ */
+@interface OFString (OFHashing)
+/**
+ * \return The MD5 hash of the string as an autoreleased OFString
+ */
+- (OFString*)md5Hash;
+
+/**
+ * \return The SHA1 hash of the string as an autoreleased OFString
+ */
+- (OFString*)sha1Hash;
 @end

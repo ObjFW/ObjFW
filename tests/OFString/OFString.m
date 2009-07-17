@@ -24,7 +24,7 @@
 #define ZD "%u"
 #endif
 
-#define NUM_TESTS 60
+#define NUM_TESTS 62
 #define SUCCESS								\
 	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
 	    (i == NUM_TESTS - 1 ? 32 : 33), i + 1, NUM_TESTS);		\
@@ -152,6 +152,12 @@ main()
 	CHECK([[a objectAtIndex: j++] isEqual: @"baz"])
 	CHECK([[a objectAtIndex: j++] isEqual: @""])
 	CHECK([[a objectAtIndex: j++] isEqual: @""])
+
+	/* Hash tests */
+	CHECK([[@"asdfoobar" md5Hash]
+	    isEqual: @"184dce2ec49b5422c7cfd8728864db4c"]);
+	CHECK([[@"asdfoobar" sha1Hash]
+	    isEqual: @"f5f81ac0a8b5cbfdc4585ec1ad32e7b3a12b9b49"]);
 
 	/* URL encoding tests */
 	CHECK([[@"foo\"ba'_~$" stringByURLEncoding]

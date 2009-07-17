@@ -14,7 +14,10 @@
 #include <string.h>
 
 #import "OFHashes.h"
+#import "OFAutoreleasePool.h"
 #import "OFMacros.h"
+
+int _OFHashing_reference;
 
 /*******
  * MD5 *
@@ -187,13 +190,13 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	return self;
 }
 
-- (char*)digest
+- (uint8_t*)digest
 {
 	uint8_t	*p;
 	size_t	count;
 
 	if (calculated)
-		return (char*)buf;
+		return (uint8_t*)buf;
 
 	/* Compute number of bytes mod 64 */
 	count = (bits[0] >> 3) & 0x3F;
@@ -232,7 +235,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 
 	calculated = YES;
 
-	return (char*)buf;
+	return (uint8_t*)buf;
 }
 @end
 
@@ -384,7 +387,7 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 	return self;
 }
 
-- (char*)digest
+- (uint8_t*)digest
 {
 	size_t i;
 	char   finalcount[8];
@@ -417,3 +420,61 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 #undef R2
 #undef R3
 #undef R4
+
+@implementation OFString (OFHashing)
+- (OFString*)md5Hash
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFMD5Hash *hash = [OFMD5Hash md5Hash];
+	uint8_t *digest;
+	char ret_c[33];
+	size_t i;
+
+	[hash updateWithBuffer: string
+			ofSize: length];
+	digest = [hash digest];
+
+	for (i = 0; i < 16; i++) {
+		uint8_t high, low;
+
+		high = digest[i] >> 4;
+		low  = digest[i] & 0x0F;
+
+		ret_c[i * 2] = (high > 9 ? high - 10 + 'a' : high + '0');
+		ret_c[i * 2 + 1] = (low > 9 ? low - 10 + 'a' : low + '0');
+	}
+	ret_c[32] = 0;
+
+	[pool release];
+
+	return [OFString stringWithCString: ret_c];
+}
+
+- (OFString*)sha1Hash
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFMD5Hash *hash = [OFSHA1Hash sha1Hash];
+	uint8_t *digest;
+	char ret_c[41];
+	size_t i;
+
+	[hash updateWithBuffer: string
+			ofSize: length];
+	digest = [hash digest];
+
+	for (i = 0; i < 20; i++) {
+		uint8_t high, low;
+
+		high = digest[i] >> 4;
+		low  = digest[i] & 0x0F;
+
+		ret_c[i * 2] = (high > 9 ? high - 10 + 'a' : high + '0');
+		ret_c[i * 2 + 1] = (low > 9 ? low - 10 + 'a' : low + '0');
+	}
+	ret_c[40] = 0;
+
+	[pool release];
+
+	return [OFString stringWithCString: ret_c];
+}
+@end
