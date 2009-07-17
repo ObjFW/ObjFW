@@ -21,7 +21,7 @@
 int _OFXMLParser_reference;
 
 static OF_INLINE OFString*
-parse_numeric_entity(char *entity, size_t length)
+parse_numeric_entity(const char *entity, size_t length)
 {
 	uint32_t c;
 	size_t i;

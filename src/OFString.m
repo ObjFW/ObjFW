@@ -109,26 +109,28 @@ of_string_check_utf8(const char *str, size_t len)
 size_t
 of_string_unicode_to_utf8(uint32_t c, char *buf)
 {
+	size_t i = 0;
+
 	if (c < 0x80) {
-		buf[0] = c;
+		buf[i] = c;
 		return 1;
 	}
 	if (c < 0x800) {
-		buf[0] = 0xC0 | (c >> 6);
-		buf[1] = 0x80 | (c & 0x3F);
+		buf[i++] = 0xC0 | (c >> 6);
+		buf[i] = 0x80 | (c & 0x3F);
 		return 2;
 	}
 	if (c < 0x10000) {
-		buf[0] = 0xE0 | (c >> 12);
-		buf[1] = 0x80 | (c >> 6 & 0x3F);
-		buf[2] = 0x80 | (c & 0x3F);
+		buf[i++] = 0xE0 | (c >> 12);
+		buf[i++] = 0x80 | (c >> 6 & 0x3F);
+		buf[i] = 0x80 | (c & 0x3F);
 		return 3;
 	}
 	if (c < 0x110000) {
-		buf[0] = 0xF0 | (c >> 18);
-		buf[1] = 0x80 | (c >> 12 & 0x3F);
-		buf[2] = 0x80 | (c >> 6 & 0x3F);
-		buf[3] = 0x80 | (c & 0x3F);
+		buf[i++] = 0xF0 | (c >> 18);
+		buf[i++] = 0x80 | (c >> 12 & 0x3F);
+		buf[i++] = 0x80 | (c >> 6 & 0x3F);
+		buf[i] = 0x80 | (c & 0x3F);
 		return 4;
 	}
 
