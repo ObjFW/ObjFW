@@ -70,30 +70,17 @@ static int pagesize = 0;
 		for (i = 0; i < cache_len; i++) {
 			if (OF_UNLIKELY(cache[i] == '\n' ||
 			    cache[i] == '\0')) {
-				ret_c = [self allocMemoryWithSize: i + 1];
-				memcpy(ret_c, cache, i);
-				ret_c[i] = '\0';
+				ret = [OFString stringWithCString: cache
+							andLength: i];
 
-				@try {
-					tmp = [self
-					    allocMemoryWithSize: cache_len -
+				tmp = [self allocMemoryWithSize: cache_len -
 								 i - 1];
-				} @catch (OFException *e) {
-					[self freeMemory: ret_c];
-					@throw e;
-				}
 				memcpy(tmp, cache + i + 1, cache_len - i - 1);
 
 				[self freeMemory: cache];
 				cache = tmp;
-				cache_len = cache_len - i - 1;
+				cache_len -= i + 1;
 
-				@try {
-					ret = [OFString
-					    stringWithCString: ret_c];
-				} @finally {
-					[self freeMemory: ret_c];
-				}
 				return ret;
 			}
 		}
@@ -109,15 +96,8 @@ static int pagesize = 0;
 			if (cache == NULL)
 				return nil;
 
-			ret_c = [self allocMemoryWithSize: cache_len + 1];
-			memcpy(ret_c, cache, cache_len);
-			ret_c[cache_len] = '\0';
-
-			@try {
-				ret = [OFString stringWithCString: ret_c];
-			} @finally {
-				[self freeMemory: ret_c];
-			}
+			ret = [OFString stringWithCString: cache
+						andLength: cache_len];
 
 			[self freeMemory: cache];
 			cache = NULL;
