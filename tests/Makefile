@@ -12,6 +12,7 @@ SUBDIRS = OFObject		\
 	  OFThread		\
 	  OFList		\
 	  OFXMLElement		\
+	  OFXMLParser		\
 	  ${OBJC_SYNC}
 
 include ../buildsys.mk

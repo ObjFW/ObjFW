@@ -43,11 +43,11 @@ parse_numeric_entity(char *entity, size_t length)
 
 		for (i = 0; i < length; i++) {
 			if (entity[i] >= '0' && entity[i] <= '9')
-				c = (c * 0x10) + (entity[i] - '0');
+				c = (c << 4) + (entity[i] - '0');
 			else if (entity[i] >= 'A' && entity[i] <= 'F')
-				c = (c * 0x10) + (entity[i] - 'A' + 10);
+				c = (c << 4) + (entity[i] - 'A' + 10);
 			else if (entity[i] >= 'a' && entity[i] <= 'f')
-				c = (c * 0x10) + (entity[i] - 'A' + 10);
+				c = (c << 4) + (entity[i] - 'A' + 10);
 			else
 				return nil;
 		}
@@ -73,6 +73,33 @@ parse_numeric_entity(char *entity, size_t length)
 	return [[[self alloc] init] autorelease];
 }
 
+- init
+{
+	self = [super init];
+
+	@try {
+		cache = [[OFMutableString alloc] init];
+	} @catch (OFException *e) {
+		/* We can't use [super dealloc] on OS X here. Compiler bug? */
+		[self dealloc];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[cache release];
+	[name release];
+	[prefix release];
+	[ns release];
+	[attrs release];
+	[attr_name release];
+
+	[super dealloc];
+}
+
 - (id)delegate
 {
 	return [[delegate retain] autorelease];
@@ -82,6 +109,288 @@ parse_numeric_entity(char *entity, size_t length)
 {
 	[delegate release];
 	delegate = [delegate_ retain];
+
+	return self;
+}
+
+- parseBuffer: (const char*)buf
+     withSize: (size_t)size
+{
+	OFAutoreleasePool *pool;
+	size_t i, last, len;
+
+	last = 0;
+
+	for (i = 0; i < size; i++) {
+		switch (state) {
+		/* Not in a tag */
+		case OF_XMLPARSER_OUTSIDE_TAG:
+			if (buf[i] == '<') {
+				len = i - last;
+
+				if (len > 0)
+					[cache appendCString: buf + last
+						  withLength: len];
+
+				if ([cache length] > 0) {
+					OFString *str;
+
+					pool = [[OFAutoreleasePool alloc] init];
+					str = [cache stringByXMLUnescaping];
+
+					[delegate xmlParser: self
+						foundString: str];
+
+					[pool release];
+				}
+
+				[cache setToCString: ""];
+
+				last = i + 1;
+				state = OF_XMLPARSER_TAG_OPENED;
+			}
+			break;
+
+		/* Tag was just opened */
+		case OF_XMLPARSER_TAG_OPENED:
+			if (buf[i] == '/') {
+				last = i + 1;
+				state = OF_XMLPARSER_IN_CLOSE_TAG_NAME;
+			} else {
+				state = OF_XMLPARSER_IN_TAG_NAME;
+				i--;
+			}
+			break;
+
+		/* Inside a tag, no name yet */
+		case OF_XMLPARSER_IN_TAG_NAME:
+			if (buf[i] == ' ' || buf[i] == '>' || buf[i] == '/') {
+				const char *cache_c, *tmp;
+				size_t cache_len;
+
+				len = i - last;
+				if (len > 0)
+					[cache appendCString: buf + last
+						  withLength: len];
+				cache_c = [cache cString];
+				cache_len = [cache length];
+
+				if ((tmp = memchr(cache_c, ':',
+				    cache_len)) != NULL) {
+					prefix = [[OFString alloc]
+					    initWithCString: cache_c
+						  andLength: tmp - cache_c];
+					name = [[OFString alloc]
+					    initWithCString: tmp + 1
+						  andLength: cache_len - (tmp -
+							     cache_c) - 1];
+				} else {
+					prefix = nil;
+					name = [[OFString alloc]
+					    initWithCString: cache_c
+						  andLength: cache_len];
+				}
+
+				[cache setToCString: ""];
+
+				if (buf[i] == '>' || buf[i] == '/') {
+					pool = [[OFAutoreleasePool alloc] init];
+
+					[delegate xmlParser: self
+					didStartTagWithName: name
+						  andPrefix: prefix
+					       andNamespace: ns
+					      andAttributes: nil];
+
+					if (buf[i] == '/')
+						[delegate xmlParser: self
+						  didEndTagWithName: name
+							  andPrefix: prefix
+						       andNamespace: ns];
+
+					[pool release];
+
+					[name release];
+					[prefix release];
+					[ns release];
+
+					state = (buf[i] == '/'
+					    ? OF_XMLPARSER_EXPECT_CLOSE
+					    : OF_XMLPARSER_OUTSIDE_TAG);
+				} else
+					state = OF_XMLPARSER_IN_TAG;
+
+				last = i + 1;
+			}
+			break;
+
+		/* Inside a close tag, no name yet */
+		case OF_XMLPARSER_IN_CLOSE_TAG_NAME:
+			if (buf[i] == ' ' || buf[i] == '>') {
+				const char *cache_c, *tmp;
+				size_t cache_len;
+
+				len = i - last;
+				if (len > 0)
+					[cache appendCString: buf + last
+						  withLength: len];
+				cache_c = [cache cString];
+				cache_len = [cache length];
+
+				if ((tmp = memchr(cache_c, ':',
+				    cache_len)) != NULL) {
+					prefix = [[OFString alloc]
+					    initWithCString: cache_c
+						  andLength: tmp - cache_c];
+					name = [[OFString alloc]
+					    initWithCString: tmp + 1
+						  andLength: cache_len - (tmp -
+							     cache_c) - 1];
+				} else {
+					prefix = nil;
+					name = [[OFString alloc]
+					    initWithCString: cache_c
+						  andLength: cache_len];
+				}
+
+				[cache setToCString: ""];
+
+				pool = [[OFAutoreleasePool alloc] init];
+
+				[delegate xmlParser: self
+				  didEndTagWithName: name
+					  andPrefix: prefix
+				       andNamespace: ns];
+
+				[pool release];
+
+				[name release];
+				[prefix release];
+				[ns release];
+
+				last = i + 1;
+				state = (buf[i] == ' '
+				    ? OF_XMLPARSER_EXPECT_SPACE_OR_CLOSE
+				    : OF_XMLPARSER_OUTSIDE_TAG);
+			}
+			break;
+
+		/* Inside a tag, name found */
+		case OF_XMLPARSER_IN_TAG:
+			if (buf[i] == '>' || buf[i] == '/') {
+				pool = [[OFAutoreleasePool alloc] init];
+
+				[delegate xmlParser: self
+				didStartTagWithName: name
+					  andPrefix: prefix
+				       andNamespace: ns
+				      andAttributes: attrs];
+
+				if (buf[i] == '/')
+					[delegate xmlParser: self
+					  didEndTagWithName: name
+						  andPrefix: prefix
+					       andNamespace: ns];
+
+				[pool release];
+
+				[name release];
+				[prefix release];
+				[ns release];
+				[attrs release];
+
+				attrs = nil;
+
+				last = i + 1;
+				state = (buf[i] == '/'
+				    ? OF_XMLPARSER_EXPECT_CLOSE
+				    : OF_XMLPARSER_OUTSIDE_TAG);
+			} else if (buf[i] != ' ') {
+				last = i;
+				state = OF_XMLPARSER_IN_ATTR_NAME;
+				i--;
+			}
+			break;
+
+		/* Looking for attribute name */
+		case OF_XMLPARSER_IN_ATTR_NAME:
+			if (buf[i] == '=') {
+				len = i - last;
+				if (len > 0)
+					[cache appendCString: buf + last
+						  withLength: len];
+
+				attr_name = [cache copy];
+				[cache setToCString: ""];
+
+				last = i + 1;
+				state = OF_XMLPARSER_EXPECT_DELIM;
+			}
+			break;
+
+		/* Expecting delimiter */
+		case OF_XMLPARSER_EXPECT_DELIM:
+			if (buf[i] != '\'' && buf[i] != '"')
+				@throw [OFInvalidEncodingException
+				    newWithClass: isa];
+
+			delim = buf[i];
+			last = i + 1;
+			state = OF_XMLPARSER_IN_ATTR_VALUE;
+			break;
+
+		/* Looking for attribute value */
+		case OF_XMLPARSER_IN_ATTR_VALUE:
+			if (buf[i] == delim) {
+				len = i - last;
+				if (len > 0)
+					[cache appendCString: buf + last
+						  withLength: len];
+
+				if (attrs == nil)
+					attrs =
+					    [[OFMutableDictionary alloc] init];
+
+				pool = [[OFAutoreleasePool alloc] init];
+				[attrs setObject: [cache stringByXMLUnescaping]
+					  forKey: attr_name];
+				[pool release];
+
+				[cache setToCString: ""];
+				[attr_name release];
+
+				last = i + 1;
+				state = OF_XMLPARSER_IN_TAG;
+			}
+			break;
+
+		/* Expecting closing '>' */
+		case OF_XMLPARSER_EXPECT_CLOSE:
+			if (buf[i] == '>') {
+				last = i + 1;
+				state = OF_XMLPARSER_OUTSIDE_TAG;
+			} else
+				@throw [OFInvalidEncodingException
+				    newWithClass: isa];
+			break;
+
+		/* Expecting closing '>' or space */
+		case OF_XMLPARSER_EXPECT_SPACE_OR_CLOSE:
+			if (buf[i] == '>') {
+				last = i + 1;
+				state = OF_XMLPARSER_OUTSIDE_TAG;
+			} else if (buf[i] != ' ')
+				@throw [OFInvalidEncodingException
+				    newWithClass: isa];
+			break;
+		}
+	}
+
+	len = size - last;
+	/* In OF_XMLPARSER_IN_TAG, there can be only spaces */
+	if (len > 0 && state != OF_XMLPARSER_IN_TAG)
+		[cache appendCString: buf + last
+			  withLength: len];
 
 	return self;
 }

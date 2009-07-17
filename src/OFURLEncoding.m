@@ -11,7 +11,6 @@
 
 #include "config.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -46,11 +45,14 @@ int _OFURLEncoding_reference;
 		    *s == '~')
 			ret_c[i++] = *s;
 		else {
-			char buf[3];
-			snprintf(buf, 3, "%02X", *s);
+			uint8_t high, low;
+
+			high = *s >> 4;
+			low = *s & 0x0F;
+
 			ret_c[i++] = '%';
-			ret_c[i++] = buf[0];
-			ret_c[i++] = buf[1];
+			ret_c[i++] = (high > 9 ? high - 10 + 'A' : high + '0');
+			ret_c[i++] = (low  > 9 ? low  - 10 + 'A' : low  + '0');
 		}
 	}
 	ret_c[i] = '\0';
@@ -91,11 +93,11 @@ int _OFURLEncoding_reference;
 		case 1:
 		case 2:
 			if (*s >= '0' && *s <= '9')
-				c += (*s - '0') * (st == 1 ? 16 : 1);
+				c += (*s - '0') << (st == 1 ? 4 : 0);
 			else if (*s >= 'A' && *s <= 'F')
-				c += (*s - 'A' + 10) * (st == 1 ? 16 : 1);
+				c += (*s - 'A' + 10) << (st == 1 ? 4 : 0);
 			else if (*s >= 'a' && *s <= 'f')
-				c += (*s - 'a' + 10) * (st == 1 ? 16 : 1);
+				c += (*s - 'a' + 10) << (st == 1 ? 4 : 0);
 			else {
 				free(ret_c);
 				@throw [OFInvalidEncodingException
