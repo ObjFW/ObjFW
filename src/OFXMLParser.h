@@ -29,9 +29,15 @@ extern int _OFXMLParser_reference;
 	  namespace: (OFString*)ns;
 - (BOOL)xmlParser: (OFXMLParser*)parser
       foundString: (OFString*)string;
+-    (OFString*)xmlParser: (OFXMLParser*)parser
+  foundUnknownEntityNamed: (OFString*)entity;
 @end
 
-@interface OFXMLParser: OFObject
+@protocol OFXMLUnescapingDelegate
+- (OFString*)foundUnknownEntityNamed: (OFString*)entitiy;
+@end
+
+@interface OFXMLParser: OFObject <OFXMLUnescapingDelegate>
 {
 	OFObject <OFXMLParserDelegate> *delegate;
 	enum {
@@ -60,10 +66,6 @@ extern int _OFXMLParser_reference;
 - setDelegate: (OFObject <OFXMLParserDelegate>*)delegate;
 - parseBuffer: (const char*)buf
      withSize: (size_t)size;
-@end
-
-@protocol OFXMLUnescapingDelegate
-- (OFString*)foundUnknownEntityNamed: (OFString*)entitiy;
 @end
 
 @interface OFString (OFXMLUnescaping)

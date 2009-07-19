@@ -90,6 +90,8 @@ parse_numeric_entity(const char *entity, size_t length)
 
 - (void)dealloc
 {
+	[delegate release];
+
 	[cache release];
 	[name release];
 	[prefix release];
@@ -136,7 +138,9 @@ parse_numeric_entity(const char *entity, size_t length)
 					OFString *str;
 
 					pool = [[OFAutoreleasePool alloc] init];
-					str = [cache stringByXMLUnescaping];
+					str = [cache
+					    stringByXMLUnescapingWithHandler:
+					    self];
 
 					[delegate xmlParser: self
 						foundString: str];
@@ -342,6 +346,8 @@ parse_numeric_entity(const char *entity, size_t length)
 		/* Looking for attribute value */
 		case OF_XMLPARSER_IN_ATTR_VALUE:
 			if (buf[i] == delim) {
+				OFString *attr_val;
+
 				len = i - last;
 				if (len > 0)
 					[cache appendCString: buf + last
@@ -352,7 +358,9 @@ parse_numeric_entity(const char *entity, size_t length)
 					    [[OFMutableDictionary alloc] init];
 
 				pool = [[OFAutoreleasePool alloc] init];
-				[attrs setObject: [cache stringByXMLUnescaping]
+				attr_val = [cache
+				    stringByXMLUnescapingWithHandler: self];
+				[attrs setObject: attr_val
 					  forKey: attr_name];
 				[pool release];
 
@@ -393,6 +401,12 @@ parse_numeric_entity(const char *entity, size_t length)
 			  withLength: len];
 
 	return self;
+}
+
+- (OFString*)foundUnknownEntityNamed: (OFString*)entity
+{
+	return [delegate xmlParser: self
+	   foundUnknownEntityNamed: entity];
 }
 @end
 

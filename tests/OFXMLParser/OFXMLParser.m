@@ -68,13 +68,22 @@
 
 	return YES;
 }
+
+-    (OFString*)xmlParser: (OFXMLParser*)parser
+  foundUnknownEntityNamed: (OFString*)entity
+{
+	if ([entity isEqual: @"foo"])
+		return @"foobar";
+
+	return nil;
+}
 @end
 
 int
 main()
 {
 	const char *foo = "bar<foo:bar  bar='b&amp;az'  qux=\"quux\">foo&lt;bar"
-	    "<qux  >bar<baz name=''/>quxbar</xasd>";
+	    "<qux  >bar<baz name='' test='&foo;'/>quxbar</xasd>";
 	size_t len = strlen(foo);
 	size_t i;
 	OFXMLParser *parser = [OFXMLParser xmlParser];
