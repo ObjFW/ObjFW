@@ -24,7 +24,7 @@
 #define ZD "%u"
 #endif
 
-#define NUM_TESTS 68
+#define NUM_TESTS 69
 #define SUCCESS								\
 	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
 	    (i == NUM_TESTS - 1 ? 32 : 33), i + 1, NUM_TESTS);		\
@@ -114,6 +114,11 @@ main()
 	s1 = [OFMutableString stringWithCString: "äöü€𝄞"];
 	CHECK([[s1 reverse] isEqual: @"𝄞€üöä"])
 	[s1 dealloc];
+
+	/* ISO-8859-1 tests */
+	CHECK([[OFString stringWithCString: "\xE4\xF6\xFC"
+				 encoding: OF_STRING_ENCODING_ISO_8859_1]
+	    isEqual: @"äöü"])
 
 	/* Format tests */
 	s1 = [OFMutableString stringWithFormat: @"%s: %d", "test", 123];

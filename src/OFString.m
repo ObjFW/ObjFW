@@ -149,6 +149,22 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 }
 
 + stringWithCString: (const char*)str
+	   encoding: (enum of_string_encoding)encoding
+{
+	return [[[self alloc] initWithCString: str
+				     encoding: encoding] autorelease];
+}
+
++ stringWithCString: (const char*)str
+	   encoding: (enum of_string_encoding)encoding
+	     length: (size_t)len
+{
+	return [[[self alloc] initWithCString: str
+				     encoding: encoding
+				       length: len] autorelease];
+}
+
++ stringWithCString: (const char*)str
 	     length: (size_t)len
 {
 	return [[[self alloc] initWithCString: str
@@ -184,44 +200,25 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 
 - initWithCString: (const char*)str
 {
-	Class c;
-
-	self = [super init];
-
-	if (str != NULL) {
-		length = strlen(str);
-
-		switch (of_string_check_utf8(str, length)) {
-		case 1:
-			is_utf8 = YES;
-			break;
-		case -1:
-			c = isa;
-			[super dealloc];
-			@throw [OFInvalidEncodingException newWithClass: c];
-		}
-
-		@try {
-			string = [self allocMemoryWithSize: length + 1];
-		} @catch (OFException *e) {
-			/*
-			 * We can't use [super dealloc] on OS X here.
-			 * Compiler bug? Anyway, [self dealloc] will do here as
-			 * we don't reimplement dealloc.
-			 */
-			[self dealloc];
-			@throw e;
-		}
-		memcpy(string, str, length + 1);
-	}
-
-	return self;
+	return [self initWithCString: str
+			    encoding: OF_STRING_ENCODING_UTF_8
+			      length: strlen(str)];
 }
 
 - initWithCString: (const char*)str
+	 encoding: (enum of_string_encoding)encoding
+{
+	return [self initWithCString: str
+			    encoding: encoding
+			      length: strlen(str)];
+}
+
+- initWithCString: (const char*)str
+	 encoding: (enum of_string_encoding)encoding
 	   length: (size_t)len
 {
 	Class c;
+	size_t i, j;
 
 	self = [super init];
 
@@ -233,31 +230,95 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 
 	length = len;
 
-	switch (of_string_check_utf8(str, length)) {
-	case 1:
-		is_utf8 = YES;
-		break;
-	case -1:
-		c = isa;
-		[super dealloc];
-		@throw [OFInvalidEncodingException newWithClass: c];
-	}
-
 	@try {
 		string = [self allocMemoryWithSize: length + 1];
 	} @catch (OFException *e) {
 		/*
 		 * We can't use [super dealloc] on OS X here.
-		 * Compiler bug? Anyway, [self dealloc] will do here as
-		 * we don't reimplement dealloc.
+		 * Compiler bug? Anyway, [self dealloc] will do here as we
+		 * don't reimplement dealloc.
 		 */
 		[self dealloc];
 		@throw e;
 	}
-	memcpy(string, str, length);
-	string[length] = 0;
+
+	switch (encoding) {
+	case OF_STRING_ENCODING_UTF_8:
+		switch (of_string_check_utf8(str, length)) {
+		case 1:
+			is_utf8 = YES;
+			break;
+		case -1:
+			c = isa;
+			[super dealloc];
+			@throw [OFInvalidEncodingException newWithClass: c];
+		}
+
+		memcpy(string, str, length);
+		string[length] = 0;
+
+		break;
+	case OF_STRING_ENCODING_ISO_8859_1:
+		for (i = j = 0; i < length; i++) {
+			if ((uint8_t)str[i] < 0x80)
+				string[j++] = str[i];
+			else {
+				/*
+				 * ISO 8859-1 can only have 2 bytes when encoded
+				 * as UTF-8, nevertheless, let's be on the safe
+				 * side.
+				 */
+				char buf[4];
+
+				is_utf8 = YES;
+
+				if (of_string_unicode_to_utf8(
+				    (uint8_t)str[i], buf) == 0) {
+					c = isa;
+					[super dealloc];
+					@throw [OFInvalidEncodingException
+					    newWithClass: c];
+				}
+
+				length++;
+				@try {
+					string = [self resizeMemory: string
+							     toSize: length +
+								     1];
+				} @catch (OFException *e) {
+					/*
+					 * We can't use [super dealloc] on OS X
+					 * here. Compiler bug? Anyway,
+					 * [self dealloc] will do here as we
+					 * don't reimplement dealloc.
+					 */
+					[self dealloc];
+					@throw e;
+				}
+
+				string[j++] = buf[0];
+				string[j++] = buf[1];
+			}
+		}
+
+		string[length] = 0;
+
+		break;
+	default:
+		c = isa;
+		[super dealloc];
+		@throw [OFInvalidEncodingException newWithClass: c];
+	}
 
 	return self;
+}
+
+- initWithCString: (const char*)str
+	   length: (size_t)len
+{
+	return [self initWithCString: str
+			    encoding: OF_STRING_ENCODING_UTF_8
+			      length: len];
 }
 
 - initWithFormat: (OFString*)fmt, ...

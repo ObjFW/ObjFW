@@ -46,6 +46,21 @@ void *_OFConstStringClassReference;
 }
 
 - initWithCString: (const char*)str
+	 encoding: (enum of_string_encoding)encoding;
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- initWithCString: (const char*)str
+	 encoding: (enum of_string_encoding)encoding
+	   length: (size_t)len
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- initWithCString: (const char*)str
            length: (size_t)len
 {
 	@throw [OFNotImplementedException newWithClass: isa

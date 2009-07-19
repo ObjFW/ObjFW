@@ -15,6 +15,11 @@
 #import "OFObject.h"
 #import "OFArray.h"
 
+enum of_string_encoding {
+	OF_STRING_ENCODING_UTF_8,
+	OF_STRING_ENCODING_ISO_8859_1
+};
+
 extern int of_string_check_utf8(const char*, size_t);
 extern size_t of_string_unicode_to_utf8(uint32_t, char*);
 
@@ -47,6 +52,29 @@ extern size_t of_string_unicode_to_utf8(uint32_t, char*);
  * \return A new autoreleased OFString
  */
 + stringWithCString: (const char*)str;
+
+/**
+ * Creates a new OFString from a C string with the specified encoding.
+ *
+ * \param str A C string to initialize the OFString with
+ * \param encoding The encoding of the C string
+ * \return A new autoreleased OFString
+ */
++ stringWithCString: (const char*)str
+	   encoding: (enum of_string_encoding)encoding;
+
+/**
+ * Creates a new OFString from a C string with the specified encoding and
+ * length.
+ *
+ * \param str A C string to initialize the OFString with
+ * \param encoding The encoding of the C string
+ * \param len The length of the string
+ * \return A new autoreleased OFString
+ */
++ stringWithCString: (const char*)str
+	   encoding: (enum of_string_encoding)encoding
+	     length: (size_t)len;
 
 /**
  * Creates a new OFString from a UTF-8 encoded C string with the specified
@@ -90,6 +118,30 @@ extern size_t of_string_unicode_to_utf8(uint32_t, char*);
  * \return An initialized OFString
  */
 - initWithCString: (const char*)str;
+
+/**
+ * Initializes an already allocated OFString from a C string with the specified
+ * encoding.
+ *
+ * \param str A C string to initialize the OFString with
+ * \param encoding The encoding of the C string
+ * \return An initialized OFString
+ */
+- initWithCString: (const char*)str
+	 encoding: (enum of_string_encoding)encoding;
+
+/**
+ * Initializes an already allocated OFString from a C string with the specified
+ * encoding and length.
+ *
+ * \param str A C string to initialize the OFString with
+ * \param encoding The encoding of the C string
+ * \param len The length of the string
+ * \return An initialized OFString
+ */
+- initWithCString: (const char*)str
+	 encoding: (enum of_string_encoding)encoding
+	   length: (size_t)len;
 
 /**
  * Initializes an already allocated OFString from a UTF-8 encoded C string with
