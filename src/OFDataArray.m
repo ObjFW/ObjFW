@@ -32,6 +32,12 @@ static int lastpagebyte = 0;
 	return [[[self alloc] initWithItemSize: is] autorelease];
 }
 
+- init
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
 - initWithItemSize: (size_t)is
 {
 	Class c;

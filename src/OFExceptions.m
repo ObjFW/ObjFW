@@ -73,6 +73,12 @@
 	return [[self alloc] initWithClass: class_];
 }
 
+- init
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
 - initWithClass: (Class)class_
 {
 	self = [super init];
@@ -106,6 +112,12 @@
 {
 	return [[self alloc] initWithClass: class_
 				      size: size];
+}
+
+- initWithClass: (Class)class_
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 
 - initWithClass: (Class)class_
@@ -145,6 +157,12 @@
 }
 
 - initWithClass: (Class)class_
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class_
 	pointer: (void*)ptr
 {
 	self = [super initWithClass: class_];
@@ -180,6 +198,12 @@
 {
 	return [[self alloc] initWithClass: class_
 				  selector: selector_];
+}
+
+- initWithClass: (Class)class_
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 
 - initWithClass: (Class)class_
@@ -224,6 +248,12 @@
 {
 	return [[self alloc] initWithClass: class_
 				  selector: selector_];
+}
+
+- initWithClass: (Class)class_
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 
 - initWithClass: (Class)class_
@@ -299,6 +329,12 @@
 }
 
 - initWithClass: (Class)class_
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class_
 	   path: (OFString*)path_
 	   mode: (OFString*)mode_
 {
@@ -362,6 +398,12 @@
 {
 	return [[self alloc] initWithClass: class_
 				      size: size];
+}
+
+- initWithClass: (Class)class_
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 
 - initWithClass: (Class)class_
@@ -509,6 +551,12 @@
 }
 
 - initWithClass: (Class)class_
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class_
 	   node: (OFString*)node_
 	service: (OFString*)service_
 {
@@ -569,6 +617,12 @@
 	return [[self alloc] initWithClass: class_
 				      node: node_
 				   service: service_];
+}
+
+- initWithClass: (Class)class_
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 
 - initWithClass: (Class)class_
@@ -634,6 +688,12 @@
 }
 
 - initWithClass: (Class)class_
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class_
 	   node: (OFString*)node_
 	service: (OFString*)service_
 	 family: (int)family_
@@ -696,6 +756,12 @@
 {
 	return [[self alloc] initWithClass: class_
 				   backLog: backlog_];
+}
+
+- initWithClass: (Class)class_
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 
 - initWithClass: (Class)class_

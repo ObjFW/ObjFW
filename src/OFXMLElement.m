@@ -34,6 +34,12 @@ int _OFXMLElement_reference;
 			       stringValue: stringval_] autorelease];
 }
 
+- init
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
 - initWithName: (OFString*)name_
 {
 	self = [super init];

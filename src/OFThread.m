@@ -78,6 +78,12 @@ call_main(LPVOID obj)
 	return (id)ret;
 }
 
+- init
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
 - initWithObject: (id)obj
 {
 	Class c;

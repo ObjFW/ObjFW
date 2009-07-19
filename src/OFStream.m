@@ -29,6 +29,10 @@ static int pagesize = 0;
 {
 	self = [super init];
 
+	if (isa == [OFStream class])
+		@throw [OFNotImplementedException newWithClass: isa
+						      selector: _cmd];
+
 	cache = NULL;
 
 #ifndef _WIN32

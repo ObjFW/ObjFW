@@ -27,6 +27,50 @@ void *_OFConstStringClassReference;
 }
 #endif
 
++ alloc
+{
+	@throw [OFNotImplementedException newWithClass: self
+					      selector: _cmd];
+}
+
+- init
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- initWithCString: (const char*)str
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- initWithCString: (const char*)str
+           length: (size_t)len
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- initWithFormat: (OFString*)fmt, ...
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- initWithFormat: (OFString*)fmt
+       arguments: (va_list)args
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- initWithString: (OFString*)str
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
 - addMemoryToPool: (void*)ptr
 {
 	@throw [OFNotImplementedException newWithClass: isa

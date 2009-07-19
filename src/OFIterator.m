@@ -19,6 +19,12 @@
 int _OFIterator_reference;
 
 @implementation OFIterator
+- init
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
 - initWithData: (OFList**)data_
 	  size: (size_t)size_
 {

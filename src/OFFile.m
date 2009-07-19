@@ -108,6 +108,12 @@ static OFFileSingleton *of_file_stderr = nil;
 #endif
 }
 
+- init
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
 - initWithPath: (OFString*)path
 	  mode: (OFString*)mode
 {

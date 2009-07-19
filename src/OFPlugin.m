@@ -55,6 +55,15 @@
 	return [plugin autorelease];
 }
 
+- init
+{
+	if (isa == [OFPlugin class])
+		@throw [OFNotImplementedException newWithClass: isa
+						      selector: _cmd];
+
+	return [super init];
+}
+
 - (void)dealloc
 {
 	dlclose(handle);

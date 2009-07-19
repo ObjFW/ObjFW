@@ -343,6 +343,12 @@
 	return [[[self alloc] initWithDouble: double_] autorelease];
 }
 
+- init
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
 - initWithChar: (char)char_
 {
 	self = [super init];
