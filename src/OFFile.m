@@ -222,6 +222,13 @@ static OFFileSingleton *of_file_stderr = nil;
 	return self;
 }
 
+- initWithPath: (OFString*)path
+	  mode: (OFString*)mode
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
 - autorelease
 {
 	return self;
