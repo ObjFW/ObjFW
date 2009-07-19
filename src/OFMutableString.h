@@ -19,48 +19,48 @@
  */
 @interface OFMutableString: OFString {}
 /**
- * Sets the OFString to the specified OFString.
+ * Sets the OFString to the specified UTF-8 encoded C string.
  *
- * \param str An OFString to set the OFString to.
+ * \param str A UTF-8 encoded C string to set the OFString to.
  */
 - setToCString: (const char*)str;
 
 /**
- * Appends a C string to the OFString.
+ * Appends a UTF-8 encoded C string to the OFString.
  *
- * \param str A C string to append
+ * \param str A UTF-8 encoded C string to append
  */
 - appendCString: (const char*)str;
 
 /**
- * Appends a C string with the specified length to the OFString.
+ * Appends a UTF-8 encoded C string with the specified length to the OFString.
  *
- * \param str A C string to append
- * \param len The length of the C string
+ * \param str A UTF-8 encoded C string to append
+ * \param len The length of the UTF-8 encoded C string
  */
 - appendCString: (const char*)str
      withLength: (size_t)len;
 
 /**
- * Appends a C string to the OFString without checking whether it is valid
- * UTF-8.
+ * Appends a UTF-8 encoded C string to the OFString without checking whether it
+ * is valid UTF-8.
  *
  * Only use this if you are 100% sure the string you append is either ASCII or
  * UTF-8!
  *
- * \param str A C string to append
+ * \param str A UTF-8 encoded C string to append
  */
 - appendCStringWithoutUTF8Checking: (const char*)str;
 
 /**
- * Appends a C string with the specified length to the OFString without checking
- * whether it is valid UTF-8.
+ * Appends a UTF-8 encoded C string with the specified length to the OFString
+ * without checking whether it is valid UTF-8.
  *
  * Only use this if you are 100% sure the string you append is either ASCII or
  * UTF-8!
  *
- * \param str A C string to append
- * \param len The length of the C string
+ * \param str A UTF-8 encoded C string to append
+ * \param len The length of the UTF-8 encoded C string
  */
 - appendCStringWithoutUTF8Checking: (const char*)str
 			 andLength: (size_t)len;
@@ -73,7 +73,7 @@
 - appendString: (OFString*)str;
 
 /**
- * Appends a formatted C string to the OFString.
+ * Appends a formatted UTF-8 encoded C string to the OFString.
  * See printf for the format syntax.
  *
  * \param fmt A format string which generates the string to append
@@ -81,7 +81,7 @@
 - appendWithFormat: (OFString*)fmt, ...;
 
 /**
- * Appends a formatted C string to the OFString.
+ * Appends a formatted UTF-8 encoded C string to the OFString.
  * See printf for the format syntax.
  *
  * \param fmt A format string which generates the string to append
