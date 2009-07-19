@@ -1,0 +1,26 @@
+libobjfw has been tested on the following platforms, but should run on
+many others as well:
+
+ +-------------------------+--------------+
+ | OS                      | Architecture |
+ +-------------------------+--------------+
+ | Linux                   | x86          |
+ | Linux                   | x86_64       |
+ +-------------------------+--------------+
+ | iPhone OS >= 2.2.1      | arm          |
+ | Mac OS X >= 10.5        | ppc          |
+ | Mac OS X >= 10.5        | ppc64        |
+ | Mac OS X >= 10.5        | x86          |
+ | Mac OS X >= 10.5        | x86_64       |
+ +-------------------------+--------------+
+ | NetBSD >= 4.0           | x86          |
+ +-------------------------+--------------+
+ | OpenSolaris 2009.06     | x86          |
+ | OpenSolaris 2009.06     | x86_64       |
+ +-------------------------+--------------+
+ | Windows >= XP / cygwin  | x86          |
+ | Windows >= XP / mingw32 | x86          |
+ +-------------------------+--------------+
+
+Basically, it should run on any POSIX system to which gcc4 has been
+ported.

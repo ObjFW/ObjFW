@@ -1,5 +1,7 @@
 Test if autorelease pool releases everything correctly when thread is ended
 
+OFTime
+
 Proper UTF-8 support!
 Tests for OFFile.
 Tests for OFNumber.
@@ -12,7 +14,5 @@ OFSortedArray
 
 OFBase64
 OFDirectory
-
-OFXMLParser
 
 ... and of course enhance the already existing classes!
