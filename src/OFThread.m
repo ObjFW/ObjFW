@@ -49,7 +49,7 @@ call_main(LPVOID obj)
 #endif
 		/* FIXME: Maybe another exception would be better */
 		@throw [OFInvalidArgumentException newWithClass: self
-						    andSelector: _cmd];
+						       selector: _cmd];
 
 	[obj retain];
 	[old release];

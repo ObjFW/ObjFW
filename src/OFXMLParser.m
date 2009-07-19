@@ -64,7 +64,7 @@ parse_numeric_entity(const char *entity, size_t length)
 		return nil;
 
 	return [OFString stringWithCString: buf
-				 andLength: i];
+				    length: i];
 }
 
 @implementation OFXMLParser
@@ -179,16 +179,16 @@ parse_numeric_entity(const char *entity, size_t length)
 				    cache_len)) != NULL) {
 					prefix = [[OFString alloc]
 					    initWithCString: cache_c
-						  andLength: tmp - cache_c];
+						     length: tmp - cache_c];
 					name = [[OFString alloc]
 					    initWithCString: tmp + 1
-						  andLength: cache_len - (tmp -
+						     length: cache_len - (tmp -
 							     cache_c) - 1];
 				} else {
 					prefix = nil;
 					name = [[OFString alloc]
 					    initWithCString: cache_c
-						  andLength: cache_len];
+						     length: cache_len];
 				}
 
 				[cache setToCString: ""];
@@ -198,15 +198,15 @@ parse_numeric_entity(const char *entity, size_t length)
 
 					[delegate xmlParser: self
 					didStartTagWithName: name
-						  andPrefix: prefix
-					       andNamespace: ns
-					      andAttributes: nil];
+						     prefix: prefix
+						  namespace: ns
+						 attributes: nil];
 
 					if (buf[i] == '/')
 						[delegate xmlParser: self
 						  didEndTagWithName: name
-							  andPrefix: prefix
-						       andNamespace: ns];
+							     prefix: prefix
+							  namespace: ns];
 
 					[pool release];
 
@@ -241,16 +241,16 @@ parse_numeric_entity(const char *entity, size_t length)
 				    cache_len)) != NULL) {
 					prefix = [[OFString alloc]
 					    initWithCString: cache_c
-						  andLength: tmp - cache_c];
+						     length: tmp - cache_c];
 					name = [[OFString alloc]
 					    initWithCString: tmp + 1
-						  andLength: cache_len - (tmp -
+						     length: cache_len - (tmp -
 							     cache_c) - 1];
 				} else {
 					prefix = nil;
 					name = [[OFString alloc]
 					    initWithCString: cache_c
-						  andLength: cache_len];
+						     length: cache_len];
 				}
 
 				[cache setToCString: ""];
@@ -259,8 +259,8 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				[delegate xmlParser: self
 				  didEndTagWithName: name
-					  andPrefix: prefix
-				       andNamespace: ns];
+					     prefix: prefix
+					  namespace: ns];
 
 				[pool release];
 
@@ -282,15 +282,15 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				[delegate xmlParser: self
 				didStartTagWithName: name
-					  andPrefix: prefix
-				       andNamespace: ns
-				      andAttributes: attrs];
+					     prefix: prefix
+					  namespace: ns
+					 attributes: attrs];
 
 				if (buf[i] == '/')
 					[delegate xmlParser: self
 					  didEndTagWithName: name
-						  andPrefix: prefix
-					       andNamespace: ns];
+						     prefix: prefix
+						  namespace: ns];
 
 				[pool release];
 
@@ -415,7 +415,7 @@ parse_numeric_entity(const char *entity, size_t length)
 	for (i = 0; i < length; i++) {
 		if (!in_entity && string[i] == '&') {
 			[ret appendCStringWithoutUTF8Checking: string + last
-						    andLength: i - last];
+						    length: i - last];
 
 			last = i + 1;
 			in_entity = YES;
@@ -453,7 +453,7 @@ parse_numeric_entity(const char *entity, size_t length)
 				pool = [[OFAutoreleasePool alloc] init];
 
 				n = [OFString stringWithCString: entity
-						      andLength: len];
+							 length: len];
 				tmp = [h foundUnknownEntityNamed: n];
 
 				if (tmp == nil)
@@ -475,7 +475,7 @@ parse_numeric_entity(const char *entity, size_t length)
 		@throw [OFInvalidEncodingException newWithClass: isa];
 
 	[ret appendCStringWithoutUTF8Checking: string + last
-				    andLength: i - last];
+				       length: i - last];
 
 	return ret;
 }

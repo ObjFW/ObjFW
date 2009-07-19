@@ -98,7 +98,7 @@ main()
 	[pool release];
 
 	s1 = [OFMutableString stringWithCString: "foobar"
-				      andLength: 3];
+					 length: 3];
 	CHECK([s1 isEqual: @"foo"])
 
 	[s1 appendCString: "foobarqux" + 3

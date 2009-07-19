@@ -20,13 +20,13 @@ extern int _OFXMLParser_reference;
 @protocol OFXMLParserDelegate
 -     (BOOL)xmlParser: (OFXMLParser*)parser
   didStartTagWithName: (OFString*)name
-	    andPrefix: (OFString*)prefix
-	 andNamespace: (OFString*)ns
-	andAttributes: (OFDictionary*)attrs;
+	       prefix: (OFString*)prefix
+	    namespace: (OFString*)ns
+	   attributes: (OFDictionary*)attrs;
 -   (BOOL)xmlParser: (OFXMLParser*)parser
   didEndTagWithName: (OFString*)name
-	  andPrefix: (OFString*)prefix
-       andNamespace: (OFString*)ns;
+	     prefix: (OFString*)prefix
+	  namespace: (OFString*)ns;
 - (BOOL)xmlParser: (OFXMLParser*)parser
       foundString: (OFString*)string;
 @end

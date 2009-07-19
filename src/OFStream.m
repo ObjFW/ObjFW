@@ -49,14 +49,14 @@ static int pagesize = 0;
 - (BOOL)atEndOfStream
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - (size_t)readNBytes: (size_t)size
 	  intoBuffer: (char*)buf
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - (OFString*)readLine
@@ -71,7 +71,7 @@ static int pagesize = 0;
 			if (OF_UNLIKELY(cache[i] == '\n' ||
 			    cache[i] == '\0')) {
 				ret = [OFString stringWithCString: cache
-							andLength: i];
+							   length: i];
 
 				tmp = [self allocMemoryWithSize: cache_len -
 								 i - 1];
@@ -97,7 +97,7 @@ static int pagesize = 0;
 				return nil;
 
 			ret = [OFString stringWithCString: cache
-						andLength: cache_len];
+						   length: cache_len];
 
 			[self freeMemory: cache];
 			cache = NULL;
@@ -188,7 +188,7 @@ static int pagesize = 0;
 	   fromBuffer: (const char*)buf
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - (size_t)writeString: (OFString*)str
@@ -219,6 +219,6 @@ static int pagesize = 0;
 - close
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 @end

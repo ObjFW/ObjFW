@@ -40,18 +40,18 @@ void _references_to_categories_of_OFDictionary()
 	return [[[self alloc] initWithHashSize: hashsize] autorelease];
 }
 
-+ dictionaryWithKey: (OFObject <OFCopying>*)key
-	  andObject: (OFObject*)obj
++ dictionaryWithObject: (OFObject*)obj
+		forKey: (OFObject <OFCopying>*)key
 {
-	return [[[self alloc] initWithKey: key
-				andObject: obj] autorelease];
+	return [[[self alloc] initWithObject: obj
+				      forKey: key] autorelease];
 }
 
-+ dictionaryWithKeys: (OFArray*)keys
-	  andObjects: (OFArray*)objs
++ dictionaryWithObjects: (OFArray*)objs
+		forKeys: (OFArray*)keys
 {
-	return [[[self alloc] initWithKeys: keys
-				andObjects: objs] autorelease];
+	return [[[self alloc] initWithObjects: objs
+				      forKeys: keys] autorelease];
 }
 
 + dictionaryWithKeysAndObjects: (OFObject <OFCopying>*)first, ...
@@ -61,7 +61,7 @@ void _references_to_categories_of_OFDictionary()
 
 	va_start(args, first);
 	ret = [[[self alloc] initWithKey: first
-			      andArgList: args] autorelease];
+				 argList: args] autorelease];
 	va_end(args);
 
 	return ret;
@@ -104,7 +104,7 @@ void _references_to_categories_of_OFDictionary()
 		size = 0;
 		[self dealloc];
 		@throw [OFInvalidArgumentException newWithClass: c
-						    andSelector: _cmd];
+						       selector: _cmd];
 	}
 
 	size = dict->size;
@@ -178,7 +178,7 @@ void _references_to_categories_of_OFDictionary()
 		Class c = isa;
 		[super dealloc];
 		@throw [OFInvalidArgumentException newWithClass: c
-						    andSelector: _cmd];
+						       selector: _cmd];
 	}
 
 	size = (size_t)1 << hashsize;
@@ -200,8 +200,8 @@ void _references_to_categories_of_OFDictionary()
 	return self;
 }
 
-- initWithKey: (OFObject <OFCopying>*)key
-    andObject: (OFObject*)obj
+- initWithObject: (OFObject*)obj
+	  forKey: (OFObject <OFCopying>*)key
 {
 	Class c;
 	uint32_t fullhash, hash;
@@ -212,7 +212,7 @@ void _references_to_categories_of_OFDictionary()
 		c = isa;
 		[self dealloc];
 		@throw [OFInvalidArgumentException newWithClass: isa
-						    andSelector: _cmd];
+						       selector: _cmd];
 	}
 
 	fullhash = [key hash];
@@ -243,8 +243,8 @@ void _references_to_categories_of_OFDictionary()
 	return self;
 }
 
-- initWithKeys: (OFArray*)keys
-    andObjects: (OFArray*)objs
+- initWithObjects: (OFArray*)objs
+	  forKeys: (OFArray*)keys
 {
 	Class c;
 	OFObject <OFCopying> **keys_data;
@@ -258,7 +258,7 @@ void _references_to_categories_of_OFDictionary()
 		c = isa;
 		[self dealloc];
 		@throw [OFInvalidArgumentException newWithClass: isa
-						    andSelector: _cmd];
+						       selector: _cmd];
 	}
 
 	keys_data = [keys data];
@@ -272,7 +272,7 @@ void _references_to_categories_of_OFDictionary()
 			c = isa;
 			[self dealloc];
 			@throw [OFInvalidArgumentException newWithClass: isa
-							    andSelector: _cmd];
+							       selector: _cmd];
 		}
 
 		fullhash = [keys_data[i] hash];
@@ -314,14 +314,14 @@ void _references_to_categories_of_OFDictionary()
 
 	va_start(args, first);
 	ret = [self initWithKey: first
-		     andArgList: args];
+			argList: args];
 	va_end(args);
 
 	return ret;
 }
 
 - initWithKey: (OFObject <OFCopying>*)first
-   andArgList: (va_list)args
+      argList: (va_list)args
 {
 	OFObject <OFCopying> *key;
 	OFObject *obj;
@@ -335,7 +335,7 @@ void _references_to_categories_of_OFDictionary()
 		c = isa;
 		[self dealloc];
 		@throw [OFInvalidArgumentException newWithClass: isa
-						    andSelector: _cmd];
+						       selector: _cmd];
 	}
 
 	fullhash = [first hash];
@@ -369,7 +369,7 @@ void _references_to_categories_of_OFDictionary()
 			c = isa;
 			[self dealloc];
 			@throw [OFInvalidArgumentException newWithClass: isa
-							    andSelector: _cmd];
+							       selector: _cmd];
 		}
 
 		fullhash = [key hash];
@@ -428,7 +428,7 @@ void _references_to_categories_of_OFDictionary()
 
 	if (key == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
-						    andSelector: _cmd];
+						       selector: _cmd];
 
 	hash = [key hash] & (size - 1);
 
@@ -482,18 +482,18 @@ void _references_to_categories_of_OFDictionary()
      forKey: (OFObject <OFCopying>*)key
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - removeObjectForKey: (OFObject*)key
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - changeHashSize: (int)hashsize
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 @end

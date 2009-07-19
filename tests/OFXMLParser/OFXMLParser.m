@@ -22,9 +22,9 @@
 @implementation ParserDelegate
 -     (BOOL)xmlParser: (OFXMLParser*)parser
   didStartTagWithName: (OFString*)name
-	    andPrefix: (OFString*)prefix
-	 andNamespace: (OFString*)ns
-	andAttributes: (OFDictionary*)attrs
+	       prefix: (OFString*)prefix
+	    namespace: (OFString*)ns
+	   attributes: (OFDictionary*)attrs
 {
 	printf("START\nname=\"%s\"\nprefix=\"%s\"\nns=\"%s\"\n",
 	    [name cString], [prefix cString], [ns cString]);
@@ -52,8 +52,8 @@
 
 -   (BOOL)xmlParser: (OFXMLParser*)parser
   didEndTagWithName: (OFString*)name
-	  andPrefix: (OFString*)prefix
-       andNamespace: (OFString*)ns
+	     prefix: (OFString*)prefix
+	  namespace: (OFString*)ns
 {
 	printf("END\nname=\"%s\"\nprefix=\"%s\"\nns=\"%s\"\n\n",
 	    [name cString], [prefix cString], [ns cString]);

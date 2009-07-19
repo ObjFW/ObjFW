@@ -30,27 +30,27 @@ void *_OFConstStringClassReference;
 - addMemoryToPool: (void*)ptr
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - (void*)allocMemoryWithSize: (size_t)size
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - (void*)allocMemoryForNItems: (size_t)nitems
                      withSize: (size_t)size
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - (void*)resizeMemory: (void*)ptr
 	       toSize: (size_t)size
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - (void*)resizeMemory: (void*)ptr
@@ -58,13 +58,13 @@ void *_OFConstStringClassReference;
 	     withSize: (size_t)size
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - freeMemory: (void*)ptr
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - retain
@@ -89,7 +89,7 @@ void *_OFConstStringClassReference;
 - (void)dealloc
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 	[super dealloc];	/* Get rid of stupid warning */
 }
 @end

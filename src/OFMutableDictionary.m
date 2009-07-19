@@ -26,7 +26,7 @@
 
 	if (key == nil || obj == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
-						    andSelector: _cmd];
+						       selector: _cmd];
 
 	fullhash = [key hash];
 	hash = fullhash & (size - 1);
@@ -68,7 +68,7 @@
 
 	if (key == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
-						    andSelector: _cmd];
+						       selector: _cmd];
 
 	hash = [key hash] & (size - 1);
 
@@ -101,7 +101,7 @@
 
 	if (hashsize < 8 || hashsize >= 28)
 		@throw [OFInvalidArgumentException newWithClass: isa
-						    andSelector: _cmd];
+						       selector: _cmd];
 
 	newsize = (size_t)1 << hashsize;
 	newdata = [self allocMemoryForNItems: newsize

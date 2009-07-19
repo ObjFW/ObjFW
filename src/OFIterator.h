@@ -33,7 +33,7 @@ extern int _OFIterator_reference;
 }
 
 - initWithData: (OFList**)data
-       andSize: (size_t)size;
+	  size: (size_t)size;
 
 /**
  * \return A struct containing the next key and object

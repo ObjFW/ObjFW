@@ -69,7 +69,7 @@
  * \return An initialized OFArray
  */
 - initWithObject: (OFObject*)first
-      andArgList: (va_list)args;
+	 argList: (va_list)args;
 
 /**
  * Initializes an OFArray with the objects from the specified C array.

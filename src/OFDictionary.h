@@ -65,8 +65,8 @@ typedef struct __of_dictionary_list_object
  * \param obj The object
  * \return A new autoreleased OFDictionary
  */
-+ dictionaryWithKey: (OFObject <OFCopying>*)key
-	  andObject: (OFObject*)obj;
++ dictionaryWithObject: (OFObject*)obj
+		forKey: (OFObject <OFCopying>*)key;
 
 /**
  * Creates a new OFDictionary with the specified keys and objects.
@@ -75,8 +75,8 @@ typedef struct __of_dictionary_list_object
  * \param objs An array of objects
  * \return A new autoreleased OFDictionary
  */
-+ dictionaryWithKeys: (OFArray*)keys
-	  andObjects: (OFArray*)objs;
++ dictionaryWithObjects: (OFArray*)objs
+		forKeys: (OFArray*)keys;
 
 /**
  * Creates a new OFDictionary with the specified keys objects.
@@ -118,8 +118,8 @@ typedef struct __of_dictionary_list_object
  * \param obj The object
  * \return A new initialized OFDictionary
  */
-- initWithKey: (OFObject <OFCopying>*)key
-    andObject: (OFObject*)obj;
+- initWithObject: (OFObject*)obj
+	  forKey: (OFObject <OFCopying>*)key;
 
 /**
  * Initializes an already allocated OFDictionary with the specified keys and
@@ -129,8 +129,8 @@ typedef struct __of_dictionary_list_object
  * \param objs An array of objects
  * \return A new initialized OFDictionary
  */
-- initWithKeys: (OFArray*)keys
-    andObjects: (OFArray*)objs;
+- initWithObjects: (OFArray*)objs
+	  forKeys: (OFArray*)keys;
 
 /**
  * Initializes an already allocated OFDictionary with the specified keys and
@@ -149,7 +149,7 @@ typedef struct __of_dictionary_list_object
  * \return A new initialized OFDictionary
  */
 - initWithKey: (OFObject <OFCopying>*)first
-   andArgList: (va_list)args;
+      argList: (va_list)args;
 
 /**
  * \return The average number of items in a used bucket. Buckets that are

@@ -20,7 +20,7 @@ int _OFIterator_reference;
 
 @implementation OFIterator
 - initWithData: (OFList**)data_
-       andSize: (size_t)size_
+	  size: (size_t)size_
 {
 	self = [super init];
 
@@ -76,6 +76,6 @@ int _OFIterator_reference;
 - (OFIterator*)iterator
 {
 	return [[[OFIterator alloc] initWithData: data
-					 andSize: size] autorelease];
+					    size: size] autorelease];
 }
 @end

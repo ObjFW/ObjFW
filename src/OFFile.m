@@ -29,10 +29,10 @@ static OFFileSingleton *of_file_stderr = nil;
 
 @implementation OFFile
 + fileWithPath: (OFString*)path
-       andMode: (OFString*)mode
+	  mode: (OFString*)mode
 {
 	return [[[self alloc] initWithPath: path
-				   andMode: mode] autorelease];
+				      mode: mode] autorelease];
 }
 
 + standardInput
@@ -75,8 +75,8 @@ static OFFileSingleton *of_file_stderr = nil;
 }
 
 + (void)changeOwnerOfFile: (OFString*)path
-		  toOwner: (uid_t)owner
-		 andGroup: (gid_t)group
+		    owner: (uid_t)owner
+		    group: (gid_t)group
 {
 	/* FIXME: On error, throw exception */
 #ifndef _WIN32
@@ -109,7 +109,7 @@ static OFFileSingleton *of_file_stderr = nil;
 }
 
 - initWithPath: (OFString*)path
-       andMode: (OFString*)mode
+	  mode: (OFString*)mode
 {
 	Class c;
 
@@ -119,8 +119,8 @@ static OFFileSingleton *of_file_stderr = nil;
 		c = isa;
 		[super dealloc];
 		@throw [OFOpenFileFailedException newWithClass: c
-						       andPath: path
-						       andMode: mode];
+							  path: path
+							  mode: mode];
 	}
 
 	return self;
@@ -152,8 +152,8 @@ static OFFileSingleton *of_file_stderr = nil;
 	    ((ret = fread(buf, size, nitems, fp)) == 0 &&
 	    size != 0 && nitems != 0 && !feof(fp)))
 		@throw [OFReadFailedException newWithClass: isa
-						   andSize: size
-						 andNItems: nitems];
+						      size: size
+						     items: nitems];
 
 	return ret;
 }
@@ -176,8 +176,8 @@ static OFFileSingleton *of_file_stderr = nil;
 	    ((ret = fwrite(buf, size, nitems, fp)) < nitems &&
 	    size != 0 && nitems != 0))
 		@throw [OFWriteFailedException newWithClass: isa
-						    andSize: size
-						  andNItems: nitems];
+						       size: size
+						      items: nitems];
 
 	return ret;
 }
@@ -238,7 +238,7 @@ static OFFileSingleton *of_file_stderr = nil;
 - (void)dealloc
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 	[super dealloc];	/* Get rid of stupid warning */
 }
 @end

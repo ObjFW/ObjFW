@@ -32,7 +32,7 @@
 
 	if ((file = malloc(pathlen + suffixlen + 1)) == NULL) {
 		@throw [OFOutOfMemoryException newWithClass: self
-						    andSize: pathlen +
+						       size: pathlen +
 							     suffixlen + 1];
 	}
 	memcpy(file, [path cString], pathlen);

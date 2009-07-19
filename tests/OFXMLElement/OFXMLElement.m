@@ -57,18 +57,18 @@ main()
 	CHECK([[elem string] isEqual: @"<foo/>"]);
 
 	[elem addAttributeWithName: @"foo"
-			  andValue: @"b&ar"];
+		       stringValue: @"b&ar"];
 	CHECK([[elem string] isEqual: @"<foo foo='b&amp;ar'/>"])
 
 	[elem addChild: [OFXMLElement elementWithName: @"bar"]];
 	CHECK([[elem string] isEqual: @"<foo foo='b&amp;ar'><bar/></foo>"])
 
 	elem = [OFXMLElement elementWithName: @"foo"
-			      andStringValue: @"b&ar"];
+				 stringValue: @"b&ar"];
 	CHECK([[elem string] isEqual: @"<foo>b&amp;ar</foo>"])
 
 	[elem addAttributeWithName: @"foo"
-			  andValue: @"b&ar"];
+		       stringValue: @"b&ar"];
 	CHECK([[elem string] isEqual: @"<foo foo='b&amp;ar'>b&amp;ar</foo>"])
 
 	puts("");

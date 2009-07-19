@@ -102,14 +102,14 @@
 
 @implementation OFOutOfMemoryException
 + newWithClass: (Class)class_
-       andSize: (size_t)size
+	  size: (size_t)size
 {
 	return [[self alloc] initWithClass: class_
-				   andSize: size];
+				      size: size];
 }
 
 - initWithClass: (Class)class_
-	andSize: (size_t)size
+	   size: (size_t)size
 {
 	self = [super initWithClass: class_];
 
@@ -138,14 +138,14 @@
 
 @implementation OFMemoryNotPartOfObjectException
 + newWithClass: (Class)class_
-    andPointer: (void*)ptr
+       pointer: (void*)ptr
 {
 	return [[self alloc] initWithClass: class_
-				andPointer: ptr];
+				   pointer: ptr];
 }
 
 - initWithClass: (Class)class_
-     andPointer: (void*)ptr
+	pointer: (void*)ptr
 {
 	self = [super initWithClass: class_];
 
@@ -176,14 +176,14 @@
 
 @implementation OFNotImplementedException
 + newWithClass: (Class)class_
-   andSelector: (SEL)selector_
+      selector: (SEL)selector_
 {
 	return [[self alloc] initWithClass: class_
-			       andSelector: selector_];
+				  selector: selector_];
 }
 
 - initWithClass: (Class)class_
-    andSelector: (SEL)selector_
+       selector: (SEL)selector_
 {
 	self = [super initWithClass: class_];
 
@@ -220,14 +220,14 @@
 
 @implementation OFInvalidArgumentException
 + newWithClass: (Class)class_
-   andSelector: (SEL)selector_
+      selector: (SEL)selector_
 {
 	return [[self alloc] initWithClass: class_
-			       andSelector: selector_];
+				  selector: selector_];
 }
 
 - initWithClass: (Class)class_
-    andSelector: (SEL)selector_
+       selector: (SEL)selector_
 {
 	self = [super initWithClass: class_];
 
@@ -290,17 +290,17 @@
 
 @implementation OFOpenFileFailedException
 + newWithClass: (Class)class_
-       andPath: (OFString*)path_
-       andMode: (OFString*)mode_
+	  path: (OFString*)path_
+	  mode: (OFString*)mode_
 {
 	return [[self alloc] initWithClass: class_
-				   andPath: path_
-				   andMode: mode_];
+				      path: path_
+				      mode: mode_];
 }
 
 - initWithClass: (Class)class_
-	andPath: (OFString*)path_
-	andMode: (OFString*)mode_
+	   path: (OFString*)path_
+	   mode: (OFString*)mode_
 {
 	self = [super initWithClass: class_];
 
@@ -349,29 +349,29 @@
 
 @implementation OFReadOrWriteFailedException
 + newWithClass: (Class)class_
-       andSize: (size_t)size
-     andNItems: (size_t)nitems
+	  size: (size_t)size
+	 items: (size_t)items
 {
 	return [[self alloc] initWithClass: class_
-				   andSize: size
-				 andNItems: nitems];
+				      size: size
+				     items: items];
 }
 
 + newWithClass: (Class)class_
-       andSize: (size_t)size
+	  size: (size_t)size
 {
 	return [[self alloc] initWithClass: class_
-				   andSize: size];
+				      size: size];
 }
 
 - initWithClass: (Class)class_
-	andSize: (size_t)size
-      andNItems: (size_t)nitems
+	   size: (size_t)size
+	  items: (size_t)items
 {
 	self = [super initWithClass: class_];
 
 	req_size = size;
-	req_items = nitems;
+	req_items = items;
 	has_items = YES;
 
 	if (class_ == [OFTCPSocket class])
@@ -383,7 +383,7 @@
 }
 
 - initWithClass: (Class)class_
-	andSize: (size_t)size
+	   size: (size_t)size
 {
 	self = [super initWithClass: class_];
 
@@ -500,17 +500,17 @@
 
 @implementation OFAddressTranslationFailedException
 + newWithClass: (Class)class_
-       andNode: (OFString*)node_
-    andService: (OFString*)service_
+	  node: (OFString*)node_
+       service: (OFString*)service_
 {
 	return [[self alloc] initWithClass: class_
-				   andNode: node_
-				andService: service_];
+				      node: node_
+				   service: service_];
 }
 
 - initWithClass: (Class)class_
-	andNode: (OFString*)node_
-     andService: (OFString*)service_
+	   node: (OFString*)node_
+	service: (OFString*)service_
 {
 	self = [super initWithClass: class_];
 
@@ -563,17 +563,17 @@
 
 @implementation OFConnectionFailedException
 + newWithClass: (Class)class_
-       andNode: (OFString*)node_
-    andService: (OFString*)service_
+	  node: (OFString*)node_
+       service: (OFString*)service_
 {
 	return [[self alloc] initWithClass: class_
-				   andNode: node_
-				andService: service_];
+				      node: node_
+				   service: service_];
 }
 
 - initWithClass: (Class)class_
-	andNode: (OFString*)node_
-     andService: (OFString*)service_
+	   node: (OFString*)node_
+	service: (OFString*)service_
 {
 	self = [super initWithClass: class_];
 
@@ -623,20 +623,20 @@
 
 @implementation OFBindFailedException
 + newWithClass: (Class)class_
-       andNode: (OFString*)node_
-    andService: (OFString*)service_
-     andFamily: (int)family_
+	  node: (OFString*)node_
+       service: (OFString*)service_
+	family: (int)family_
 {
 	return [[self alloc] initWithClass: class_
-				   andNode: node_
-				andService: service_
-				 andFamily: family_];
+				      node: node_
+				   service: service_
+				    family: family_];
 }
 
 - initWithClass: (Class)class_
-	andNode: (OFString*)node_
-     andService: (OFString*)service_
-      andFamily: (int)family_
+	   node: (OFString*)node_
+	service: (OFString*)service_
+	 family: (int)family_
 {
 	self = [super initWithClass: class_];
 
@@ -692,14 +692,14 @@
 
 @implementation OFListenFailedException
 + newWithClass: (Class)class_
-    andBackLog: (int)backlog_
+       backLog: (int)backlog_
 {
 	return [[self alloc] initWithClass: class_
-				andBackLog: backlog_];
+				   backLog: backlog_];
 }
 
 - initWithClass: (Class)class_
-     andBackLog: (int)backlog_
+	backLog: (int)backlog_
 {
 	self = [super initWithClass: class_];
 

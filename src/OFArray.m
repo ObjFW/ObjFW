@@ -34,7 +34,7 @@
 
 	va_start(args, first);
 	ret = [[[self alloc] initWithObject: first
-				 andArgList: args] autorelease];
+				    argList: args] autorelease];
 	va_end(args);
 
 	return ret;
@@ -87,14 +87,14 @@
 
 	va_start(args, first);
 	ret = [self initWithObject: first
-			andArgList: args];
+			   argList: args];
 	va_end(args);
 
 	return ret;
 }
 
 - initWithObject: (OFObject*)first
-      andArgList: (va_list)args
+	 argList: (va_list)args
 {
 	id obj;
 
@@ -221,12 +221,12 @@
 - addObject: (OFObject*)obj
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - removeNObjects: (size_t)nobjects
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 @end

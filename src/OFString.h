@@ -57,7 +57,7 @@ extern size_t of_string_unicode_to_utf8(uint32_t, char*);
  * \return A new autoreleased OFString
  */
 + stringWithCString: (const char*)str
-	  andLength: (size_t)len;
+	     length: (size_t)len;
 
 /**
  * Creates a new OFString from a format string.
@@ -100,7 +100,7 @@ extern size_t of_string_unicode_to_utf8(uint32_t, char*);
  * \return An initialized OFString
  */
 - initWithCString: (const char*)str
-	andLength: (size_t)len;
+	   length: (size_t)len;
 
 /**
  * Initializes an already allocated OFString with a format string.
@@ -120,7 +120,7 @@ extern size_t of_string_unicode_to_utf8(uint32_t, char*);
  * \return An initialized OFString
  */
 - initWithFormat: (OFString*)fmt
-    andArguments: (va_list)args;
+       arguments: (va_list)args;
 
 /**
  * Initializes an already allocated OFString with another string.
@@ -210,11 +210,11 @@ extern size_t of_string_unicode_to_utf8(uint32_t, char*);
      withLength: (size_t)len;
 - appendCStringWithoutUTF8Checking: (const char*)str;
 - appendCStringWithoutUTF8Checking: (const char*)str
-			 andLength: (size_t)len;
+			    length: (size_t)len;
 - appendString: (OFString*)str;
 - appendWithFormat: (OFString*)fmt, ...;
 - appendWithFormat: (OFString*)fmt
-      andArguments: (va_list)args;
+	 arguments: (va_list)args;
 - reverse;
 - upper;
 - lower;

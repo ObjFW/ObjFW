@@ -63,7 +63,7 @@
  * \param len The length of the UTF-8 encoded C string
  */
 - appendCStringWithoutUTF8Checking: (const char*)str
-			 andLength: (size_t)len;
+			    length: (size_t)len;
 
 /**
  * Appends another OFString to the OFString.
@@ -88,7 +88,7 @@
  * \param args The arguments used in the format string
  */
 - appendWithFormat: (OFString*)fmt
-      andArguments: (va_list)args;
+	 arguments: (va_list)args;
 
 /**
  * Reverse the OFString.

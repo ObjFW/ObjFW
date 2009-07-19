@@ -68,8 +68,8 @@ static OFMutex *mutex = nil;
 	if (getaddrinfo([node cString], [service cString], &hints, &res0))
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
-			 andNode: node
-		      andService: service];
+			    node: node
+			 service: service];
 
 	for (res = res0; res != NULL; res = res->ai_next) {
 		if ((sock = socket(res->ai_family, res->ai_socktype,
@@ -100,8 +100,8 @@ static OFMutex *mutex = nil;
 		[mutex unlock];
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
-			 andNode: node
-		      andService: service];
+			    node: node
+			 service: service];
 	}
 
 	if ((se = getservbyname([service cString], "TCP")) != NULL)
@@ -110,8 +110,8 @@ static OFMutex *mutex = nil;
 		[mutex unlock];
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
-			 andNode: node
-		      andService: service];
+			    node: node
+			 service: service];
 	}
 
 	memset(&addr, 0, sizeof(addr));
@@ -123,8 +123,8 @@ static OFMutex *mutex = nil;
 		[mutex unlock];
 		@throw [OFConnectionFailedException
 		    newWithClass: isa
-			 andNode: node
-		      andService: service];
+			    node: node
+			 service: service];
 	}
 
 	for (ip = he->h_addr_list; *ip != NULL; ip++) {
@@ -147,8 +147,8 @@ static OFMutex *mutex = nil;
 
 	if (sock == INVALID_SOCKET)
 		@throw [OFConnectionFailedException newWithClass: isa
-							 andNode: node
-						      andService: service];
+							    node: node
+							 service: service];
 
 	return self;
 }
@@ -162,9 +162,9 @@ static OFMutex *mutex = nil;
 
 	if ((sock = socket(family, SOCK_STREAM, 0)) == INVALID_SOCKET)
 		@throw [OFBindFailedException newWithClass: isa
-						   andNode: node
-						andService: service
-						 andFamily: family];
+						      node: node
+						   service: service
+						    family: family];
 
 #ifdef HAVE_GETADDRINFO
 	struct addrinfo hints, *res;
@@ -176,15 +176,15 @@ static OFMutex *mutex = nil;
 	if (getaddrinfo([node cString], [service cString], &hints, &res))
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
-			 andNode: node
-		      andService: service];
+			    node: node
+			 service: service];
 
 	if (bind(sock, res->ai_addr, res->ai_addrlen) == -1) {
 		freeaddrinfo(res);
 		@throw [OFBindFailedException newWithClass: isa
-						   andNode: node
-						andService: service
-						 andFamily: family];
+						      node: node
+						   service: service
+						    family: family];
 	}
 
 	freeaddrinfo(res);
@@ -196,9 +196,9 @@ static OFMutex *mutex = nil;
 
 	if (family != AF_INET)
 		@throw [OFBindFailedException newWithClass: isa
-						   andNode: node
-						andService: service
-						 andFamily: family];
+						      node: node
+						   service: service
+						    family: family];
 
 	[mutex lock];
 
@@ -206,8 +206,8 @@ static OFMutex *mutex = nil;
 		[mutex unlock];
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
-			 andNode: node
-		      andService: service];
+			    node: node
+			 service: service];
 	}
 
 	if ((se = getservbyname([service cString], "TCP")) != NULL)
@@ -216,8 +216,8 @@ static OFMutex *mutex = nil;
 		[mutex unlock];
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
-			 andNode: node
-		      andService: service];
+			    node: node
+			 service: service];
 	}
 
 	memset(&addr, 0, sizeof(addr));
@@ -228,8 +228,8 @@ static OFMutex *mutex = nil;
 		[mutex lock];
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
-			 andNode: node
-		      andService: service];
+			    node: node
+			 service: service];
 	}
 
 	memcpy(&addr.sin_addr.s_addr, he->h_addr_list[0], he->h_length);
@@ -238,9 +238,9 @@ static OFMutex *mutex = nil;
 
 	if (bind(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1)
 		@throw [OFBindFailedException newWithClass: isa
-						   andNode: node
-						andService: service
-							 andFamily: family];
+						      node: node
+						   service: service
+						    family: family];
 #endif
 
 	return self;
@@ -253,7 +253,7 @@ static OFMutex *mutex = nil;
 
 	if (listen(sock, backlog) == -1)
 		@throw [OFListenFailedException newWithClass: isa
-						  andBackLog: backlog];
+						     backLog: backlog];
 
 	return self;
 }
@@ -265,7 +265,7 @@ static OFMutex *mutex = nil;
 
 	if (listen(sock, 5) == -1)
 		@throw [OFListenFailedException newWithClass: isa
-						  andBackLog: 5];
+						     backLog: 5];
 
 	return self;
 }

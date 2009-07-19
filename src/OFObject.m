@@ -149,11 +149,11 @@ extern BOOL objc_sync_init();
 
 	if (method == NULL)
 		@throw [OFInvalidArgumentException newWithClass: self
-						    andSelector: _cmd];
+						       selector: _cmd];
 
 	if ((oldimp = method_get_imp(method)) == (IMP)0 || newimp == (IMP)0)
 		@throw [OFInvalidArgumentException newWithClass: self
-						    andSelector: _cmd];
+						       selector: _cmd];
 
 	method->method_imp = newimp;
 
@@ -169,7 +169,7 @@ extern BOOL objc_sync_init();
 
 	if ((method = class_getInstanceMethod(self, selector)) == NULL)
 		@throw [OFInvalidArgumentException newWithClass: self
-						    andSelector: _cmd];
+						       selector: _cmd];
 
 	return method_setImplementation(method, newimp);
 #endif
@@ -279,7 +279,7 @@ extern BOOL objc_sync_init();
 	if ((memchunks = realloc(PRE_IVAR->memchunks,
 	    memchunks_size * sizeof(void*))) == NULL)
 		@throw [OFOutOfMemoryException newWithClass: isa
-						    andSize: memchunks_size];
+						       size: memchunks_size];
 
 	PRE_IVAR->memchunks = memchunks;
 	PRE_IVAR->memchunks[PRE_IVAR->memchunks_size] = ptr;
@@ -304,13 +304,13 @@ extern BOOL objc_sync_init();
 
 	if ((ptr = malloc(size)) == NULL)
 		@throw [OFOutOfMemoryException newWithClass: isa
-						    andSize: size];
+						       size: size];
 
 	if ((memchunks = realloc(PRE_IVAR->memchunks,
 	    memchunks_size * sizeof(void*))) == NULL) {
 		free(ptr);
 		@throw [OFOutOfMemoryException newWithClass: isa
-						    andSize: memchunks_size];
+						       size: memchunks_size];
 	}
 
 	PRE_IVAR->memchunks = memchunks;
@@ -352,7 +352,7 @@ extern BOOL objc_sync_init();
 			if (OF_UNLIKELY((ptr = realloc(ptr, size)) == NULL))
 				@throw [OFOutOfMemoryException
 				    newWithClass: isa
-					 andSize: size];
+					    size: size];
 
 			*iter = ptr;
 			return ptr;
@@ -360,7 +360,7 @@ extern BOOL objc_sync_init();
 	}
 
 	@throw [OFMemoryNotPartOfObjectException newWithClass: isa
-						   andPointer: ptr];
+						      pointer: ptr];
 }
 
 - (void*)resizeMemory: (void*)ptr
@@ -426,7 +426,7 @@ extern BOOL objc_sync_init();
 	}
 
 	@throw [OFMemoryNotPartOfObjectException newWithClass: isa
-						   andPointer: ptr];
+						      pointer: ptr];
 }
 
 - retain
@@ -474,27 +474,27 @@ extern BOOL objc_sync_init();
 + addMemoryToPool: (void*)ptr
 {
 	@throw [OFNotImplementedException newWithClass: self
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 + (void*)allocMemoryWithSize: (size_t)size
 {
 	@throw [OFNotImplementedException newWithClass: self
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 + (void*)allocMemoryForNItems: (size_t)nitems
                      withSize: (size_t)size
 {
 	@throw [OFNotImplementedException newWithClass: self
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 + (void*)resizeMemory: (void*)ptr
 	       toSize: (size_t)size
 {
 	@throw [OFNotImplementedException newWithClass: self
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 + (void*)resizeMemory: (void*)ptr
@@ -502,13 +502,13 @@ extern BOOL objc_sync_init();
 	     withSize: (size_t)size
 {
 	@throw [OFNotImplementedException newWithClass: self
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 + freeMemory: (void*)ptr
 {
 	@throw [OFNotImplementedException newWithClass: self
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 + retain

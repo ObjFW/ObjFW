@@ -42,7 +42,7 @@ static int lastpagebyte = 0;
 		c = isa;
 		[super dealloc];
 		@throw [OFInvalidArgumentException newWithClass: c
-						    andSelector: _cmd];
+						       selector: _cmd];
 	}
 
 	data = NULL;
@@ -150,10 +150,10 @@ static int lastpagebyte = 0;
 
 	if (![obj isKindOfClass: [OFDataArray class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
-						    andSelector: _cmd];
+						       selector: _cmd];
 	if ([obj itemsize] != itemsize)
 		@throw [OFInvalidArgumentException newWithClass: isa
-						    andSelector: _cmd];
+						       selector: _cmd];
 
 	if ([obj count] == count)
 		return memcmp(data, [obj data], count * itemsize);

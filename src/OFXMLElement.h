@@ -41,7 +41,7 @@ extern int _OFXMLElement_reference;
  *	   value
  */
 + elementWithName: (OFString*)name
-   andStringValue: (OFString*)stringval;
+      stringValue: (OFString*)stringval;
 
 /**
  * Initializes an already allocated OFXMLElement with the specified name.
@@ -60,8 +60,8 @@ extern int _OFXMLElement_reference;
  * \return An initialized OFXMLElement with the specified element name and
  *	   value
  */
--   initWithName: (OFString*)name
-  andStringValue: (OFString*)stringval;
+- initWithName: (OFString*)name
+   stringValue: (OFString*)stringval;
 
 /**
  * \return A new autoreleased OFString representing the OFXMLElement as an
@@ -76,7 +76,7 @@ extern int _OFXMLElement_reference;
  * \param value The value of the attribute
  */
 - addAttributeWithName: (OFString*)name
-	      andValue: (OFString*)value;
+	   stringValue: (OFString*)value;
 
 /**
  * Adds a child to the OFXMLElement.

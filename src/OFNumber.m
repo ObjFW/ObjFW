@@ -748,7 +748,7 @@
 		return ([obj asDouble] == [self asDouble] ? YES : NO);
 	default:
 		@throw [OFInvalidArgumentException newWithClass: isa
-						    andSelector: _cmd];
+						       selector: _cmd];
 	}
 }
 

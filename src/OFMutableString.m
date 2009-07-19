@@ -118,7 +118,7 @@
 }
 
 - appendCStringWithoutUTF8Checking: (const char*)str
-			 andLength: (size_t)len
+			    length: (size_t)len
 {
 	if (len > strlen(str))
 		@throw [OFOutOfRangeException newWithClass: isa];
@@ -144,14 +144,14 @@
 
 	va_start(args, fmt);
 	ret = [self appendWithFormat: fmt
-			andArguments: args];
+			   arguments: args];
 	va_end(args);
 
 	return ret;
 }
 
 - appendWithFormat: (OFString*)fmt
-      andArguments: (va_list)args
+	 arguments: (va_list)args
 {
 	char *t;
 

@@ -28,10 +28,10 @@ int _OFXMLElement_reference;
 }
 
 + elementWithName: (OFString*)name_
-   andStringValue: (OFString*)stringval_
+      stringValue: (OFString*)stringval_
 {
 	return [[[self alloc] initWithName: name_
-			    andStringValue: stringval_] autorelease];
+			       stringValue: stringval_] autorelease];
 }
 
 - initWithName: (OFString*)name_
@@ -43,8 +43,8 @@ int _OFXMLElement_reference;
 	return self;
 }
 
--   initWithName: (OFString*)name_
-  andStringValue: (OFString*)stringval_
+- initWithName: (OFString*)name_
+   stringValue: (OFString*)stringval_
 {
 	self = [super init];
 
@@ -160,7 +160,7 @@ int _OFXMLElement_reference;
 }
 
 - addAttributeWithName: (OFString*)name_
-	      andValue: (OFString*)value_
+	   stringValue: (OFString*)value_
 {
 	if (attrs == nil)
 		attrs = [[OFMutableDictionary alloc] init];
@@ -175,7 +175,7 @@ int _OFXMLElement_reference;
 {
 	if (stringval != nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
-						    andSelector: _cmd];
+						       selector: _cmd];
 
 	if (children == nil)
 		children = [[OFMutableArray alloc] init];
@@ -212,7 +212,7 @@ int _OFXMLElement_reference;
 	 */
 	if ((str_c = malloc(len + 1)) == NULL)
 		@throw [OFOutOfMemoryException newWithClass: isa
-						    andSize: len];
+						       size: len];
 
 	for (i = 0; i < length; i++) {
 		switch (string[i]) {
@@ -246,7 +246,7 @@ int _OFXMLElement_reference;
 				free(str_c);
 				@throw [OFOutOfMemoryException
 				    newWithClass: isa
-					 andSize: len + append_len];
+					    size: len + append_len];
 			}
 			str_c = tmp;
 			len += append_len - 1;

@@ -89,7 +89,7 @@
  * \return A new no memory exception
  */
 + newWithClass: (Class)class
-       andSize: (size_t)size;
+	  size: (size_t)size;
 
 /**
  * Initializes an already allocated no memory exception.
@@ -99,7 +99,7 @@
  * \return An initialized no memory exception
  */
 - initWithClass: (Class)class
-	andSize: (size_t)size;
+	   size: (size_t)size;
 
 /**
  * \return The size of the memoory that couldn't be allocated
@@ -121,7 +121,7 @@
  * \return A new memory not part of object exception
  */
 + newWithClass: (Class)class
-    andPointer: (void*)ptr;
+       pointer: (void*)ptr;
 
 /**
  * Initializes an already allocated memory not part of object exception.
@@ -131,7 +131,7 @@
  * \return An initialized memory not part of object exception
  */
 - initWithClass: (Class)class
-     andPointer: (void*)ptr;
+	pointer: (void*)ptr;
 
 /**
  * \return A pointer to the memory which is not part of the object
@@ -153,7 +153,7 @@
  * \return A new not implemented exception
  */
 + newWithClass: (Class)class
-   andSelector: (SEL)selector;
+      selector: (SEL)selector;
 
 /**
  * Initializes an already allocated not implemented exception.
@@ -163,7 +163,7 @@
  * \return An initialized not implemented exception
  */
 - initWithClass: (Class)class
-    andSelector: (SEL)selector;
+       selector: (SEL)selector;
 @end
 
 /**
@@ -186,7 +186,7 @@
  * \return A new invalid argument exception
  */
 + newWithClass: (Class)class
-   andSelector: (SEL)selector;
+      selector: (SEL)selector;
 
 /**
  * Initializes an already allocated invalid argument exception
@@ -196,7 +196,7 @@
  * \return An initialized invalid argument exception
  */
 - initWithClass: (Class)class
-    andSelector: (SEL)selector;
+       selector: (SEL)selector;
 @end
 
 /**
@@ -234,8 +234,8 @@
  * \return A new open file failed exception
  */
 + newWithClass: (Class)class
-       andPath: (OFString*)path
-       andMode: (OFString*)mode;
+	  path: (OFString*)path
+	  mode: (OFString*)mode;
 
 /**
  * Initializes an already allocated open file failed exception.
@@ -246,8 +246,8 @@
  * \return An initialized open file failed exception
  */
 - initWithClass: (Class)class
-	andPath: (OFString*)path
-	andMode: (OFString*)mode;
+	   path: (OFString*)path
+	   mode: (OFString*)mode;
 
 /**
  * \return The errno from when the exception was created
@@ -279,12 +279,12 @@
 /**
  * \param class The class of the object which caused the exception
  * \param size The requested size of the data that couldn't be read / written
- * \param nitems The requested number of items that couldn't be read / written
+ * \param items The requested number of items that couldn't be read / written
  * \return A new open file failed exception
  */
 + newWithClass: (Class)class
-       andSize: (size_t)size
-     andNItems: (size_t)nitems;
+	  size: (size_t)size
+	 items: (size_t)items;
 
 /**
  * \param class The class of the object which caused the exception
@@ -292,19 +292,19 @@
  * \return A new open file failed exception
  */
 + newWithClass: (Class)class
-       andSize: (size_t)size;
+	  size: (size_t)size;
 
 /**
  * Initializes an already allocated read or write failed exception.
  *
  * \param class The class of the object which caused the exception
  * \param size The requested size of the data that couldn't be read / written
- * \param nitems The requested number of items that couldn't be read / written
+ * \param items The requested number of items that couldn't be read / written
  * \return A new open file failed exception
  */
 - initWithClass: (Class)class
-	andSize: (size_t)size
-      andNItems: (size_t)nitems;
+	   size: (size_t)size
+	  items: (size_t)items;
 
 /**
  * Initializes an already allocated read or write failed exception.
@@ -314,7 +314,7 @@
  * \return A new open file failed exception
  */
 - initWithClass: (Class)class
-	andSize: (size_t)size;
+	   size: (size_t)size;
 
 /**
  * \return The errno from when the exception was created
@@ -385,8 +385,8 @@
  * \return A new address translation failed exception
  */
 + newWithClass: (Class)class
-       andNode: (OFString*)node
-    andService: (OFString*)service;
+	  node: (OFString*)node
+       service: (OFString*)service;
 
 /**
  * Initializes an already allocated address translation failed exception.
@@ -397,8 +397,8 @@
  * \return An initialized address translation failed exception
  */
 - initWithClass: (Class)class
-	andNode: (OFString*)node
-     andService: (OFString*)service;
+	   node: (OFString*)node
+	service: (OFString*)service;
 
 /**
  * \return The errno from when the exception was created
@@ -433,8 +433,8 @@
  * \return A new connection failed exception
  */
 + newWithClass: (Class)class
-       andNode: (OFString*)node
-    andService: (OFString*)service;
+	  node: (OFString*)node
+       service: (OFString*)service;
 
 /**
  * Initializes an already allocated connection failed exception.
@@ -445,8 +445,8 @@
  * \return An initialized connection failed exception
  */
 - initWithClass: (Class)class
-	andNode: (OFString*)node
-     andService: (OFString*)service;
+	   node: (OFString*)node
+	service: (OFString*)service;
 
 /**
  * \return The errno from when the exception was created
@@ -483,9 +483,9 @@
  * \return A new bind failed exception
  */
 + newWithClass: (Class)class
-       andNode: (OFString*)node
-    andService: (OFString*)service
-     andFamily: (int)family;
+	  node: (OFString*)node
+       service: (OFString*)service
+	family: (int)family;
 
 /**
  * Initializes an already allocated bind failed exception.
@@ -497,9 +497,9 @@
  * \return An initialized bind failed exception
  */
 - initWithClass: (Class)class
-	andNode: (OFString*)node
-     andService: (OFString*)service
-      andFamily: (int)family;
+	   node: (OFString*)node
+	service: (OFString*)service
+	 family: (int)family;
 
 /**
  * \return The errno from when the exception was created
@@ -537,7 +537,7 @@
  * \return A new listen failed exception
  */
 + newWithClass: (Class)class
-    andBackLog: (int)backlog;
+       backLog: (int)backlog;
 
 /**
  * Initializes an already allocated listen failed exception
@@ -547,7 +547,7 @@
  * \return An initialized listen failed exception
  */
 - initWithClass: (Class)class
-     andBackLog: (int)backlog;
+	backLog: (int)backlog;
 
 /**
  * \return The errno from when the exception was created

@@ -28,6 +28,7 @@ main()
 
 	OFDictionary *dict = [OFMutableDictionary dictionaryWithHashSize: 16];
 	OFDictionary *dict2;
+	OFArray *keys, *objs;
 	OFIterator *iter = [dict iterator];
 	of_iterator_pair_t pair[2];
 
@@ -116,8 +117,8 @@ main()
 
 	i++;
 	[dict release];
-	dict = [OFDictionary dictionaryWithKey: @"foo"
-				     andObject: @"bar"];
+	dict = [OFDictionary dictionaryWithObject: @"bar"
+					   forKey: @"foo"];
 	if (![[dict objectForKey: @"foo"] isEqual: @"bar"]) {
 		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
@@ -125,9 +126,10 @@ main()
 
 	i++;
 	[dict release];
-	dict = [OFDictionary
-	    dictionaryWithKeys: [OFArray arrayWithObjects: @"k1", @"k2", nil]
-		    andObjects: [OFArray arrayWithObjects: @"o1", @"o2", nil]];
+	keys = [OFArray arrayWithObjects: @"k1", @"k2", nil];
+	objs = [OFArray arrayWithObjects: @"o1", @"o2", nil];
+	dict = [OFDictionary dictionaryWithObjects: objs
+					   forKeys: keys];
 	if (![[dict objectForKey: @"k1"] isEqual: @"o1"]) {
 		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;

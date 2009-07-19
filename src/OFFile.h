@@ -35,7 +35,7 @@ typedef int gid_t;
  * \return A new autoreleased OFFile
  */
 + fileWithPath: (OFString*)path
-       andMode: (OFString*)mode;
+	  mode: (OFString*)mode;
 
 /**
  * \return An OFFile singleton for stdin
@@ -77,8 +77,8 @@ typedef int gid_t;
  * \return A boolean whether the operation succeeded
  */
 + (void)changeOwnerOfFile: (OFString*)path
-		  toOwner: (uid_t)owner
-		 andGroup: (gid_t)group;
+		    owner: (uid_t)owner
+		    group: (gid_t)group;
 
 /**
  * Deletes a file.
@@ -120,7 +120,7 @@ typedef int gid_t;
  * \return An initialized OFFile
  */
 - initWithPath: (OFString*)path
-       andMode: (OFString*)mode;
+	  mode: (OFString*)mode;
 
 /**
  * Reads from the file into a buffer.

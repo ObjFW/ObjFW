@@ -149,10 +149,10 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 }
 
 + stringWithCString: (const char*)str
-	  andLength: (size_t)len
+	     length: (size_t)len
 {
 	return [[[self alloc] initWithCString: str
-				    andLength: len] autorelease];
+				       length: len] autorelease];
 }
 
 + stringWithFormat: (OFString*)fmt, ...
@@ -162,7 +162,7 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 
 	va_start(args, fmt);
 	ret = [[[self alloc] initWithFormat: fmt
-			       andArguments: args] autorelease];
+				  arguments: args] autorelease];
 	va_end(args);
 
 	return ret;
@@ -219,7 +219,7 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 }
 
 - initWithCString: (const char*)str
-	andLength: (size_t)len
+	   length: (size_t)len
 {
 	Class c;
 
@@ -267,14 +267,14 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 
 	va_start(args, fmt);
 	ret = [self initWithFormat: fmt
-		      andArguments: args];
+			 arguments: args];
 	va_end(args);
 
 	return ret;
 }
 
 - initWithFormat: (OFString*)fmt
-    andArguments: (va_list)args
+       arguments: (va_list)args
 {
 	int t;
 	Class c;
@@ -372,7 +372,7 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 {
 	if (![obj isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
-						    andSelector: _cmd];
+						       selector: _cmd];
 
 	return strcmp(string, [obj cString]);
 }
@@ -436,13 +436,13 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 {
 	if (start > end)
 		@throw [OFInvalidArgumentException newWithClass: isa
-						    andSelector: _cmd];
+						       selector: _cmd];
 
 	if (end > length)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	return [OFString stringWithCString: string + start
-				 andLength: end - start];
+				    length: end - start];
 }
 
 - (OFString*)stringByAppendingString: (OFString*)str
@@ -494,7 +494,7 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 			continue;
 
 		[array addObject: [OFString stringWithCString: string + last
-						    andLength: i - last]];
+						       length: i - last]];
 		i += delim_len - 1;
 		last = i + 1;
 	}
@@ -508,94 +508,94 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 - setToCString: (const char*)str
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - appendCString: (const char*)str
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - appendCString: (const char*)str
      withLength: (size_t)len
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - appendCStringWithoutUTF8Checking: (const char*)str
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - appendCStringWithoutUTF8Checking: (const char*)str
-			 andLength: (size_t)len
+			    length: (size_t)len
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - appendString: (OFString*)str
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - appendWithFormat: (OFString*)fmt, ...
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - appendWithFormat: (OFString*)fmt
-      andArguments: (va_list)args
+	 arguments: (va_list)args
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - reverse
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - upper
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - lower
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - replaceOccurrencesOfString: (OFString*)str
 		  withString: (OFString*)repl
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - removeLeadingWhitespaces
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - removeTrailingWhitespaces
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 
 - removeLeadingAndTrailingWhitespaces
 {
 	@throw [OFNotImplementedException newWithClass: isa
-					   andSelector: _cmd];
+					      selector: _cmd];
 }
 @end
