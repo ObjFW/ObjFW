@@ -172,6 +172,30 @@ extern size_t of_string_unicode_to_utf8(uint32_t, char*);
 			toIndex: (size_t)end;
 
 /**
+ * Creates a new string by appending another string.
+ *
+ * \param str The string to append
+ * \return A new autoreleased OFString with the specified string appended
+ */
+- (OFString*)stringByAppendingString: (OFString*)str;
+
+/**
+ * Checks whether the string has the specified prefix.
+ *
+ * \param prefix The prefix to check for
+ * \return A boolean whether the string has the specified prefix
+ */
+- (BOOL)hasPrefix: (OFString*)prefix;
+
+/**
+ * Checks whether the string has the specified suffix.
+ *
+ * \param suffix The suffix to check for
+ * \return A boolean whether the string has the specified suffix
+ */
+- (BOOL)hasSuffix: (OFString*)suffix;
+
+/**
  * Splits an OFString into an OFArray of OFStrings.
  *
  * \param delimiter The delimiter for splitting

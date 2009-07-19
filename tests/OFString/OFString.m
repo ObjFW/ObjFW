@@ -24,7 +24,7 @@
 #define ZD "%u"
 #endif
 
-#define NUM_TESTS 62
+#define NUM_TESTS 68
 #define SUCCESS								\
 	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
 	    (i == NUM_TESTS - 1 ? 32 : 33), i + 1, NUM_TESTS);		\
@@ -144,6 +144,13 @@ main()
 	CHECK_EXCEPT([@"foo" substringFromIndex: 2
 					toIndex: 0], OFInvalidArgumentException)
 
+	/* Misc tests */
+	CHECK([[@"foo" stringByAppendingString: @"bar"] isEqual: @"foobar"])
+	CHECK([@"foobar" hasPrefix: @"foo"])
+	CHECK([@"foobar" hasSuffix: @"bar"])
+	CHECK(![@"foobar" hasPrefix: @"foobar0"])
+	CHECK(![@"foobar" hasSuffix: @"foobar0"])
+
 	/* Split tests */
 	a = [@"fooXXbarXXXXbazXXXX" splitWithDelimiter: @"XX"];
 	CHECK([[a objectAtIndex: j++] isEqual: @"foo"])
@@ -217,6 +224,8 @@ main()
 
 	CHECK_EXCEPT([@"&#;" stringByXMLUnescaping], OFInvalidEncodingException)
 	CHECK_EXCEPT([@"&#x;" stringByXMLUnescaping],
+	    OFInvalidEncodingException)
+	CHECK_EXCEPT([@"&#g;" stringByXMLUnescaping],
 	    OFInvalidEncodingException)
 	CHECK_EXCEPT([@"&#xg;" stringByXMLUnescaping],
 	    OFInvalidEncodingException)

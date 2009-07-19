@@ -445,6 +445,32 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 				 andLength: end - start];
 }
 
+- (OFString*)stringByAppendingString: (OFString*)str
+{
+	return [[OFMutableString stringWithString: self] appendString: str];
+}
+
+- (BOOL)hasPrefix: (OFString*)prefix
+{
+	size_t len = [prefix length];
+
+	if (len > length)
+		return NO;
+
+	return (memcmp(string, [prefix cString], len) ? NO : YES);
+}
+
+- (BOOL)hasSuffix: (OFString*)suffix
+{
+	size_t len = [suffix length];
+
+	if (len > length)
+		return NO;
+
+	return (memcmp(string + (length - len), [suffix cString], len)
+	    ? NO : YES);
+}
+
 - (OFArray*)splitWithDelimiter: (OFString*)delimiter
 {
 	OFAutoreleasePool *pool;
