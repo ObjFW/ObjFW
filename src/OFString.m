@@ -29,6 +29,8 @@
 
 #import "asprintf.h"
 
+#import "encodings/iso_8859_15.h"
+
 /* References for static linking */
 void _references_to_categories_of_OFString()
 {
@@ -249,8 +251,13 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 			is_utf8 = YES;
 			break;
 		case -1:
+			/*
+			 * We can't use [super dealloc] on OS X here.
+			 * Compiler bug? Anyway, [self dealloc] will do here as
+			 * we don't reimplement dealloc.
+			 */
 			c = isa;
-			[super dealloc];
+			[self dealloc];
 			@throw [OFInvalidEncodingException newWithClass: c];
 		}
 
@@ -259,28 +266,53 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 
 		break;
 	case OF_STRING_ENCODING_ISO_8859_1:
-		for (i = j = 0; i < length; i++) {
+	case OF_STRING_ENCODING_ISO_8859_15:
+		for (i = j = 0; i < len; i++) {
 			if ((uint8_t)str[i] < 0x80)
 				string[j++] = str[i];
 			else {
-				/*
-				 * ISO 8859-1 can only have 2 bytes when encoded
-				 * as UTF-8, nevertheless, let's be on the safe
-				 * side.
-				 */
 				char buf[4];
+				uint32_t chr;
+				size_t chr_bytes;
 
-				is_utf8 = YES;
-
-				if (of_string_unicode_to_utf8(
-				    (uint8_t)str[i], buf) == 0) {
+				switch (encoding) {
+				case OF_STRING_ENCODING_ISO_8859_1:
+					chr = (uint8_t)str[i];
+					break;
+				case OF_STRING_ENCODING_ISO_8859_15:
+					chr = iso_8859_15_to_unicode[
+					    (uint8_t)str[i]];
+					break;
+				default:
+					/*
+					 * We can't use [super dealloc] on OS X
+					 * here. Compiler bug? Anyway,
+					 * [self dealloc] will do here as we
+					 * don't reimplement dealloc.
+					 */
 					c = isa;
-					[super dealloc];
+					[self dealloc];
 					@throw [OFInvalidEncodingException
 					    newWithClass: c];
 				}
 
-				length++;
+				is_utf8 = YES;
+				chr_bytes = of_string_unicode_to_utf8(chr, buf);
+
+				if (chr_bytes == 0) {
+					/*
+					 * We can't use [super dealloc] on OS X
+					 * here. Compiler bug? Anyway,
+					 * [self dealloc] will do here as we
+					 * don't reimplement dealloc.
+					 */
+					c = isa;
+					[self dealloc];
+					@throw [OFInvalidEncodingException
+					    newWithClass: c];
+				}
+
+				length += chr_bytes - 1;
 				@try {
 					string = [self resizeMemory: string
 							     toSize: length +
@@ -296,8 +328,8 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 					@throw e;
 				}
 
-				string[j++] = buf[0];
-				string[j++] = buf[1];
+				memcpy(string + j, buf, chr_bytes);
+				j += chr_bytes;
 			}
 		}
 
@@ -305,8 +337,13 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 
 		break;
 	default:
+		/*
+		 * We can't use [super dealloc] on OS X here.
+		 * Compiler bug? Anyway, [self dealloc] will do here as we
+		 * don't reimplement dealloc.
+		 */
 		c = isa;
-		[super dealloc];
+		[self dealloc];
 		@throw [OFInvalidEncodingException newWithClass: c];
 	}
 
