@@ -30,6 +30,7 @@
 #import "asprintf.h"
 
 #import "encodings/iso_8859_15.h"
+#import "encodings/windows_1252.h"
 
 /* References for static linking */
 void _references_to_categories_of_OFString()
@@ -267,6 +268,7 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 		break;
 	case OF_STRING_ENCODING_ISO_8859_1:
 	case OF_STRING_ENCODING_ISO_8859_15:
+	case OF_STRING_ENCODING_WINDOWS_1252:
 		for (i = j = 0; i < len; i++) {
 			if ((uint8_t)str[i] < 0x80)
 				string[j++] = str[i];
@@ -283,7 +285,24 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 					chr = iso_8859_15_to_unicode[
 					    (uint8_t)str[i]];
 					break;
+				case OF_STRING_ENCODING_WINDOWS_1252:
+					chr = windows_1252_to_unicode[
+					    (uint8_t)str[i]];
+					break;
 				default:
+					/*
+					 * We can't use [super dealloc] on OS X
+					 * here. Compiler bug? Anyway,
+					 * [self dealloc] will do here as we
+					 * don't reimplement dealloc.
+					 */
+					c = isa;
+					[self dealloc];
+					@throw [OFInvalidEncodingException
+					    newWithClass: c];
+				}
+
+				if (chr == 0xFFFD) {
 					/*
 					 * We can't use [super dealloc] on OS X
 					 * here. Compiler bug? Anyway,

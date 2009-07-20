@@ -19,6 +19,7 @@ enum of_string_encoding {
 	OF_STRING_ENCODING_UTF_8,
 	OF_STRING_ENCODING_ISO_8859_1,
 	OF_STRING_ENCODING_ISO_8859_15,
+	OF_STRING_ENCODING_WINDOWS_1252
 };
 
 extern int of_string_check_utf8(const char*, size_t);
