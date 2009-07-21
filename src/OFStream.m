@@ -65,6 +65,11 @@ static int pagesize = 0;
 
 - (OFString*)readLine
 {
+	return [self readLineWithEncoding: OF_STRING_ENCODING_UTF_8];
+}
+
+- (OFString*)readLineWithEncoding: (enum of_string_encoding)encoding
+{
 	size_t i, len;
 	char *ret_c, *tmp, *tmp2;
 	OFString *ret;
@@ -75,6 +80,7 @@ static int pagesize = 0;
 			if (OF_UNLIKELY(cache[i] == '\n' ||
 			    cache[i] == '\0')) {
 				ret = [OFString stringWithCString: cache
+							 encoding: encoding
 							   length: i];
 
 				tmp = [self allocMemoryWithSize: cache_len -
@@ -101,6 +107,7 @@ static int pagesize = 0;
 				return nil;
 
 			ret = [OFString stringWithCString: cache
+						 encoding: encoding
 						   length: cache_len];
 
 			[self freeMemory: cache];
@@ -160,7 +167,8 @@ static int pagesize = 0;
 
 				@try {
 					ret = [OFString
-					    stringWithCString: ret_c];
+					    stringWithCString: ret_c
+						     encoding: encoding];
 				} @finally {
 					[self freeMemory: ret_c];
 				}

@@ -49,6 +49,18 @@
 - (OFString*)readLine;
 
 /**
+ * Read with the specified encoding until a newline, \\0 or end of stream
+ * occurs.
+ *
+ * If you want to use readNBytes afterwards again, you have to clear the cache
+ * before and optionally get the cache before clearing it!
+ *
+ * \return The line that was read, autoreleased, or nil if the end of the
+ *	   stream has been reached.
+ */
+- (OFString*)readLineWithEncoding: (enum of_string_encoding)encoding;
+
+/**
  * Writes from a buffer into the stream.
  *
  * \param buf The buffer from which the data is written to the stream
