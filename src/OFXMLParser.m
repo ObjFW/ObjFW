@@ -109,8 +109,9 @@ parse_numeric_entity(const char *entity, size_t length)
 
 - setDelegate: (OFObject <OFXMLParserDelegate>*)delegate_
 {
+	[delegate_ retain];
 	[delegate release];
-	delegate = [delegate_ retain];
+	delegate = delegate_;
 
 	return self;
 }

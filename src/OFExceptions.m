@@ -342,7 +342,7 @@
 
 	path = [path_ retain];
 	mode = [mode_ retain];
-	err = GET_ERR;
+	err  = GET_ERR;
 
 	return self;
 }
@@ -562,9 +562,9 @@
 {
 	self = [super initWithClass: class_];
 
-	node = [node_ retain];
+	node	= [node_ retain];
 	service = [service_ retain];
-	err = GET_AT_ERR;
+	err	= GET_AT_ERR;
 
 	return self;
 }

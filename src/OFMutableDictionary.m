@@ -38,8 +38,9 @@
 	for (iter = (of_dictionary_list_object_t*)[data[hash] first];
 	    iter != NULL; iter = iter->next) {
 		if ([iter->key isEqual: key]) {
+			[obj retain];
 			[iter->object release];
-			iter->object = [obj retain];
+			iter->object = obj;
 
 			return self;
 		}
