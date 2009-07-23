@@ -20,6 +20,8 @@
 #endif
 
 #if defined(OF_BIG_ENDIAN)
+#include <stdint.h>
+
 static OF_INLINE void
 OF_BSWAP_V(uint8_t *buf, size_t len)
 {
