@@ -39,7 +39,7 @@
 	memcpy(file + pathlen, PLUGIN_SUFFIX, suffixlen);
 	file[pathlen + suffixlen] = 0;
 
-	if ((handle = dlopen(file, RTLD_NOW)) == NULL) {
+	if ((handle = dlopen(file, RTLD_LAZY)) == NULL) {
 		free(file);
 		@throw [OFInitializationFailedException newWithClass: self];
 	}
