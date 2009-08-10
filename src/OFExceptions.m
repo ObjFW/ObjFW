@@ -305,6 +305,20 @@
 }
 @end
 
+@implementation OFMalformedXMLException
+- (OFString*)string
+{
+	if (string != nil)
+		return string;
+
+	string = [[OFString alloc] initWithFormat:
+	    @"The parser in class %s encountered malformed or invalid XML!",
+	    [class name]];
+
+	return string;
+}
+@end
+
 @implementation OFInitializationFailedException
 - (OFString*)string
 {

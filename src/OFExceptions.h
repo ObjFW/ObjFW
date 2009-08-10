@@ -212,6 +212,12 @@
 @end
 
 /**
+ * An OFException indicating that a parser encountered malformed or invalid XML.
+ */
+@interface OFMalformedXMLException: OFException {}
+@end
+
+/**
  * An OFException indicating that initializing something failed.
  */
 @interface OFInitializationFailedException: OFException {}

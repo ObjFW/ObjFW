@@ -79,6 +79,7 @@ parse_numeric_entity(const char *entity, size_t length)
 
 	@try {
 		cache = [[OFMutableString alloc] init];
+		previous = [[OFMutableArray alloc] init];
 	} @catch (OFException *e) {
 		/* We can't use [super dealloc] on OS X here. Compiler bug? */
 		[self dealloc];
@@ -98,6 +99,7 @@ parse_numeric_entity(const char *entity, size_t length)
 	[ns release];
 	[attrs release];
 	[attr_name release];
+	[previous release];
 
 	[super dealloc];
 }
@@ -196,8 +198,6 @@ parse_numeric_entity(const char *entity, size_t length)
 						     length: cache_len];
 				}
 
-				[cache setToCString: ""];
-
 				if (buf[i] == '>' || buf[i] == '/') {
 					pool = [[OFAutoreleasePool alloc] init];
 
@@ -212,6 +212,9 @@ parse_numeric_entity(const char *entity, size_t length)
 						  didEndTagWithName: name
 							     prefix: prefix
 							  namespace: ns];
+					else
+						[previous addObject:
+						    [[cache copy] autorelease]];
 
 					[pool release];
 
@@ -225,6 +228,7 @@ parse_numeric_entity(const char *entity, size_t length)
 				} else
 					state = OF_XMLPARSER_IN_TAG;
 
+				[cache setToCString: ""];
 				last = i + 1;
 			}
 			break;
@@ -257,6 +261,11 @@ parse_numeric_entity(const char *entity, size_t length)
 					    initWithCString: cache_c
 						     length: cache_len];
 				}
+
+				if (![[previous lastObject] isEqual: cache])
+					@throw [OFMalformedXMLException
+					    newWithClass: isa];
+				[previous removeNObjects: 1];
 
 				[cache setToCString: ""];
 
@@ -296,6 +305,14 @@ parse_numeric_entity(const char *entity, size_t length)
 					  didEndTagWithName: name
 						     prefix: prefix
 						  namespace: ns];
+				else if (prefix != nil) {
+					OFString *str = [OFString
+					    stringWithFormat: @"%s:%s",
+							      [prefix cString],
+							      [name cString]];
+					[previous addObject: str];
+				} else
+					[previous addObject: name];
 
 				[pool release];
 
@@ -336,7 +353,7 @@ parse_numeric_entity(const char *entity, size_t length)
 		/* Expecting delimiter */
 		case OF_XMLPARSER_EXPECT_DELIM:
 			if (buf[i] != '\'' && buf[i] != '"')
-				@throw [OFInvalidEncodingException
+				@throw [OFMalformedXMLException
 				    newWithClass: isa];
 
 			delim = buf[i];
@@ -379,7 +396,7 @@ parse_numeric_entity(const char *entity, size_t length)
 				last = i + 1;
 				state = OF_XMLPARSER_OUTSIDE_TAG;
 			} else
-				@throw [OFInvalidEncodingException
+				@throw [OFMalformedXMLException
 				    newWithClass: isa];
 			break;
 
@@ -389,7 +406,7 @@ parse_numeric_entity(const char *entity, size_t length)
 				last = i + 1;
 				state = OF_XMLPARSER_OUTSIDE_TAG;
 			} else if (buf[i] != ' ')
-				@throw [OFInvalidEncodingException
+				@throw [OFMalformedXMLException
 				    newWithClass: isa];
 			break;
 		}

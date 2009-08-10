@@ -83,7 +83,7 @@ int
 main()
 {
 	const char *foo = "bar<foo:bar  bar='b&amp;az'  qux=\"quux\">foo&lt;bar"
-	    "<qux  >bar<baz name='' test='&foo;'/>quxbar</xasd>";
+	    "<qux  >bar<baz name='' test='&foo;'/>quxbar</qux></foo:bar>";
 	size_t len = strlen(foo);
 	size_t i;
 	OFXMLParser *parser = [OFXMLParser xmlParser];

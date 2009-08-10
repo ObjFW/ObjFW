@@ -59,6 +59,7 @@ extern int _OFXMLParser_reference;
 	OFDictionary *attrs;
 	OFString *attr_name;
 	char delim;
+	OFArray *previous;
 }
 
 + xmlParser;
