@@ -82,6 +82,9 @@ static int lastpagebyte = 0;
 
 - (void*)lastItem
 {
+	if (data == NULL || count == 0)
+		return NULL;
+
 	return data + (count - 1) * itemsize;
 }
 

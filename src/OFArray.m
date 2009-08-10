@@ -173,7 +173,9 @@
 
 - (id)lastObject
 {
-	return *((OFObject**)[array lastItem]);
+	void *last = [array lastItem];
+
+	return (last != NULL ? *((id*)last) : nil);
 }
 
 - (BOOL)isEqual: (id)obj
