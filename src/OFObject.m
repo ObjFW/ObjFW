@@ -88,7 +88,7 @@ extern BOOL objc_sync_init();
 	return self;
 }
 
-+ (const char*)name
++ (const char*)className
 {
 #ifdef __objc_INCLUDE_GNU
 	return class_get_class_name(self);
@@ -200,7 +200,7 @@ extern BOOL objc_sync_init();
 	return isa;
 }
 
-- (const char*)name
+- (const char*)className
 {
 #ifdef __objc_INCLUDE_GNU
 	return object_get_class_name(self);

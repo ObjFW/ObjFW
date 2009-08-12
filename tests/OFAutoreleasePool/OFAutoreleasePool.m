@@ -43,7 +43,7 @@ IMP release;
 	inits++;
 
 	ret = init(self, _cmd);
-	printf("New %s with retain cnt " ZD "\n", [self name],
+	printf("New %s with retain cnt " ZD "\n", [self className],
 	    [ret retainCount]);
 
 	return ret;
@@ -56,7 +56,7 @@ IMP release;
 	retains++;
 
 	ret = retain(self, _cmd);
-	printf("Retaining %s to " ZD "\n", [self name], [ret retainCount]);
+	printf("Retaining %s to " ZD "\n", [self className], [ret retainCount]);
 
 	return ret;
 }
@@ -65,7 +65,8 @@ IMP release;
 {
 	releases++;
 
-	printf("Releasing %s to " ZD "\n", [self name], [self retainCount] - 1);
+	printf("Releasing %s to " ZD "\n", [self className],
+	    [self retainCount] - 1);
 	release(self, _cmd);
 }
 @end

@@ -51,7 +51,7 @@
 /**
  * \return The name of the class as a C string
  */
-+ (const char*)name;
++ (const char*)className;
 
 /**
  * \param selector The selector which should be checked for respondance
@@ -115,7 +115,7 @@
 /**
  * \return The name of the instance's class as a C string
  */
-- (const char*)name;
+- (const char*)className;
 
 /**
  * \param class The class whose kind is checked
