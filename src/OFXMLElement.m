@@ -21,6 +21,64 @@
 
 int _OFXMLElement_reference;
 
+@implementation OFXMLAttribute
++ attributeWithName: (OFString*)name_
+	     prefix: (OFString*)prefix_
+	  namespace: (OFString*)ns_
+	stringValue: (OFString*)value_
+{
+	return [[[self alloc] initWithName: name_
+				    prefix: prefix_
+				 namespace: ns_
+			       stringValue: value_] autorelease];
+}
+
+- initWithName: (OFString*)name_
+	prefix: (OFString*)prefix_
+     namespace: (OFString*)ns_
+   stringValue: (OFString*)value_
+{
+	self = [super init];
+
+	name = [name_ copy];
+	prefix = [prefix_ copy];
+	ns = [ns_ copy];
+	value = [value_ copy];
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[name release];
+	[prefix release];
+	[ns release];
+	[value release];
+
+	[super dealloc];
+}
+
+- (OFString*)name
+{
+	return [[name copy] autorelease];
+}
+
+- (OFString*)prefix
+{
+	return [[prefix copy] autorelease];
+}
+
+- (OFString*)namespace
+{
+	return [[ns copy] autorelease];
+}
+
+- (OFString*)stringValue
+{
+	return [[value copy] autorelease];
+}
+@end
+
 @implementation OFXMLElement
 + elementWithName: (OFString*)name_
 {
@@ -64,7 +122,8 @@ int _OFXMLElement_reference;
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	char *str_c;
-	size_t len, i, j;
+	size_t len, i, j, attrs_count;
+	OFXMLAttribute **attrs_data;
 	OFString *ret, *tmp;
 
 	len = [name length] + 4;
@@ -76,40 +135,34 @@ int _OFXMLElement_reference;
 	i = [name length] + 1;
 
 	/* Attributes */
-	if (attrs != nil) {
-		OFIterator *iter = [attrs iterator];
+	attrs_data = [attrs data];
+	attrs_count = [attrs count];
 
-		for (;;) {
-			of_iterator_pair_t pair;
+	for (j = 0; j < attrs_count; j++) {
+		/* FIXME: Add namespace support */
+		OFString *attr_name = [attrs_data[j] name];
+		tmp = [[attrs_data[j] stringValue] stringByXMLEscaping];
 
-			pair = [iter nextKeyObjectPair];
-
-			if (pair.key == nil || pair.object == nil)
-				break;
-
-			tmp = [pair.object stringByXMLEscaping];
-
-			len += [pair.key length] + [tmp length] + 4;
-			@try {
-				str_c = [self resizeMemory: str_c
-						    toSize: len];
-			} @catch (OFException *e) {
-				[self freeMemory: str_c];
-				@throw e;
-			}
-
-			str_c[i++] = ' ';
-			memcpy(str_c + i, [pair.key cString],
-			    [pair.key length]);
-			i += [pair.key length];
-			str_c[i++] = '=';
-			str_c[i++] = '\'';
-			memcpy(str_c + i, [tmp cString], [tmp length]);
-			i += [tmp length];
-			str_c[i++] = '\'';
-
-			[pool releaseObjects];
+		len += [attr_name length] + [tmp length] + 4;
+		@try {
+			str_c = [self resizeMemory: str_c
+					    toSize: len];
+		} @catch (OFException *e) {
+			[self freeMemory: str_c];
+			@throw e;
 		}
+
+		str_c[i++] = ' ';
+		memcpy(str_c + i, [attr_name cString],
+				[attr_name length]);
+		i += [attr_name length];
+		str_c[i++] = '=';
+		str_c[i++] = '\'';
+		memcpy(str_c + i, [tmp cString], [tmp length]);
+		i += [tmp length];
+		str_c[i++] = '\'';
+
+		[pool releaseObjects];
 	}
 
 	/* Childen */
@@ -165,17 +218,33 @@ int _OFXMLElement_reference;
 	return ret;
 }
 
-- addAttributeWithName: (OFString*)name_
-	   stringValue: (OFString*)value_
+- addAttribute: (OFXMLAttribute*)attr
 {
 	if (attrs == nil)
-		attrs = [[OFMutableDictionary alloc] init];
+		attrs = [[OFMutableArray alloc] init];
 
-	[attrs setObject: value_
-		  forKey: name_];
+	/* FIXME: Prevent having it twice! */
+
+	[attrs addObject: attr];
 
 	return self;
 }
+
+- addAttributeWithName: (OFString*)name_
+	   stringValue: (OFString*)value
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	[self addAttribute: [OFXMLAttribute attributeWithName: name_
+						       prefix: nil
+						    namespace: nil
+						  stringValue: value]];
+	[pool release];
+
+	return self;
+}
+
+/* TODO: Replace attribute */
+/* TODO: Remove attribute */
 
 - addChild: (OFXMLElement*)child
 {

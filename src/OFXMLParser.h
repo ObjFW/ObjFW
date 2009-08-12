@@ -11,7 +11,6 @@
 
 #import "OFObject.h"
 #import "OFString.h"
-#import "OFDictionary.h"
 
 extern int _OFXMLParser_reference;
 
@@ -22,7 +21,7 @@ extern int _OFXMLParser_reference;
   didStartTagWithName: (OFString*)name
 	       prefix: (OFString*)prefix
 	    namespace: (OFString*)ns
-	   attributes: (OFDictionary*)attrs;
+	   attributes: (OFArray*)attrs;
 -   (BOOL)xmlParser: (OFXMLParser*)parser
   didEndTagWithName: (OFString*)name
 	     prefix: (OFString*)prefix
@@ -56,8 +55,9 @@ extern int _OFXMLParser_reference;
 	OFString *name;
 	OFString *prefix;
 	OFString *ns;
-	OFDictionary *attrs;
+	OFArray *attrs;
 	OFString *attr_name;
+	OFString *attr_prefix;
 	char delim;
 	OFArray *previous;
 }

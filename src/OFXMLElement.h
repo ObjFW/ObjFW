@@ -17,13 +17,71 @@
 extern int _OFXMLElement_reference;
 
 /**
+ * The OFXMLAttribute represents an attribute of an XML element as an object.
+ */
+@interface OFXMLAttribute: OFObject
+{
+	OFString *prefix;
+	OFString *name;
+	OFString *ns;
+	OFString *value;
+}
+
+/**
+ * \param name The name of the attribute
+ * \param prefix The prefix of the attribute
+ * \param ns The namespace of the attribute
+ * \param value The string value of the attribute
+ * \return A new autoreleased OFXMLAttribute with the specified parameters
+ */
++ attributeWithName: (OFString*)name
+	     prefix: (OFString*)prefix
+	  namespace: (OFString*)ns
+	stringValue: (OFString*)value;
+
+/**
+ * Initializes an already allocated OFXMLAttribute.
+ *
+ * \param name The name of the attribute
+ * \param prefix The prefix of the attribute
+ * \param ns The namespace of the attribute
+ * \param value The string value of the attribute
+ * \return An initialized OFXMLAttribute with the specified parameters
+ */
+- initWithName: (OFString*)name
+	prefix: (OFString*)prefix
+     namespace: (OFString*)ns
+   stringValue: (OFString*)value;
+
+/**
+ * \return The name of the attribute as an autoreleased OFString
+ */
+- (OFString*)name;
+
+/**
+ * \return The prefix of the attribute as an autoreleased OFString
+ */
+- (OFString*)prefix;
+
+/**
+ * \return The namespace of the attribute as an autoreleased OFString
+ */
+- (OFString*)namespace;
+
+/**
+ * \return The string value of the attribute as an autoreleased OFString
+ */
+- (OFString*)stringValue;
+@end
+
+/**
  * The OFXMLElement represents an XML element as an object which can be
  * modified and converted back to XML again.
  */
 @interface OFXMLElement: OFObject
 {
 	OFString *name;
-	OFDictionary *attrs;
+	OFArray *attrs;
 	OFString *stringval;
 	OFArray *children;
 }
@@ -68,6 +126,13 @@ extern int _OFXMLElement_reference;
  * XML string
  */
 - (OFString*)string;
+
+/**
+ * Adds the specified attribute.
+ *
+ * \param attr The attribute to add
+ */
+- addAttribute: (OFXMLAttribute*)attr;
 
 /**
  * Adds the specified attribute with the specified value.

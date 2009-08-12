@@ -99,6 +99,7 @@ parse_numeric_entity(const char *entity, size_t length)
 	[ns release];
 	[attrs release];
 	[attr_name release];
+	[attr_prefix release];
 	[previous release];
 
 	[super dealloc];
@@ -184,18 +185,16 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				if ((tmp = memchr(cache_c, ':',
 				    cache_len)) != NULL) {
-					prefix = [[OFString alloc]
-					    initWithCString: cache_c
-						     length: tmp - cache_c];
 					name = [[OFString alloc]
 					    initWithCString: tmp + 1
 						     length: cache_len - (tmp -
 							     cache_c) - 1];
-				} else {
-					prefix = nil;
-					name = [[OFString alloc]
+					prefix = [[OFString alloc]
 					    initWithCString: cache_c
-						     length: cache_len];
+						     length: tmp - cache_c];
+				} else {
+					name = [cache copy];
+					prefix = nil;
 				}
 
 				if (buf[i] == '>' || buf[i] == '/') {
@@ -248,18 +247,16 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				if ((tmp = memchr(cache_c, ':',
 				    cache_len)) != NULL) {
-					prefix = [[OFString alloc]
-					    initWithCString: cache_c
-						     length: tmp - cache_c];
 					name = [[OFString alloc]
 					    initWithCString: tmp + 1
 						     length: cache_len - (tmp -
 							     cache_c) - 1];
-				} else {
-					prefix = nil;
-					name = [[OFString alloc]
+					prefix = [[OFString alloc]
 					    initWithCString: cache_c
-						     length: cache_len];
+						     length: tmp - cache_c];
+				} else {
+					name = [cache copy];
+					prefix = nil;
 				}
 
 				if (![[previous lastObject] isEqual: cache])
@@ -337,12 +334,31 @@ parse_numeric_entity(const char *entity, size_t length)
 		/* Looking for attribute name */
 		case OF_XMLPARSER_IN_ATTR_NAME:
 			if (buf[i] == '=') {
+				const char *cache_c, *tmp;
+				size_t cache_len;
+
 				len = i - last;
 				if (len > 0)
 					[cache appendCString: buf + last
 						  withLength: len];
 
-				attr_name = [cache copy];
+				cache_c = [cache cString];
+				cache_len = [cache length];
+
+				if ((tmp = memchr(cache_c, ':',
+				    cache_len)) != NULL ) {
+					attr_name = [[OFString alloc]
+					    initWithCString: tmp + 1
+						     length: cache_len - (tmp -
+							     cache_c) - 1];
+					attr_prefix = [[OFString alloc]
+					    initWithCString: cache_c
+						     length: tmp - cache_c];
+				} else {
+					attr_name = [cache copy];
+					attr_prefix = nil;
+				}
+
 				[cache setToCString: ""];
 
 				last = i + 1;
@@ -372,18 +388,23 @@ parse_numeric_entity(const char *entity, size_t length)
 						  withLength: len];
 
 				if (attrs == nil)
-					attrs =
-					    [[OFMutableDictionary alloc] init];
+					attrs = [[OFMutableArray alloc] init];
 
 				pool = [[OFAutoreleasePool alloc] init];
 				attr_val = [cache
 				    stringByXMLUnescapingWithHandler: self];
-				[attrs setObject: attr_val
-					  forKey: attr_name];
+				[attrs addObject: [OFXMLAttribute
+				    attributeWithName: attr_name
+					       prefix: attr_prefix
+					    namespace: nil
+					  stringValue: attr_val]];
 				[pool release];
 
 				[cache setToCString: ""];
 				[attr_name release];
+				[attr_prefix release];
+				attr_name = nil;
+				attr_prefix = nil;
 
 				last = i + 1;
 				state = OF_XMLPARSER_IN_TAG;

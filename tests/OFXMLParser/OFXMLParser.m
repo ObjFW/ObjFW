@@ -24,25 +24,29 @@
   didStartTagWithName: (OFString*)name
 	       prefix: (OFString*)prefix
 	    namespace: (OFString*)ns
-	   attributes: (OFDictionary*)attrs
+	   attributes: (OFArray*)attrs
 {
+	OFXMLAttribute **attrs_data;
+	size_t i, attrs_count;
+
 	printf("START\nname=\"%s\"\nprefix=\"%s\"\nns=\"%s\"\n",
 	    [name cString], [prefix cString], [ns cString]);
 
-	if (attrs) {
-		OFIterator *iter = [attrs iterator];
+	attrs_data = [attrs data];
+	attrs_count = [attrs count];
 
-		for (;;) {
-			of_iterator_pair_t pair;
+	for (i = 0; i < attrs_count; i++) {
+		OFString *attr_name = [attrs_data[i] name];
+		OFString *attr_prefix = [attrs_data[i] prefix];
+		OFString *attr_ns = [attrs_data[i] namespace];
+		OFString *attr_value = [attrs_data[i] stringValue];
 
-			pair = [iter nextKeyObjectPair];
-
-			if (pair.key == nil || pair.object == nil)
-				break;
-
-			printf("ATTR: \"%s\"=\"%s\"\n",
-			    [pair.key cString], [pair.object cString]);
-		}
+		printf("ATTR:\n      name=\"%s\"\n", [attr_name cString]);
+		if (attr_prefix != nil)
+			printf("      prefix=\"%s\"\n", [attr_prefix cString]);
+		if (attr_ns != nil)
+			printf("      ns=\"%s\"\n", [attr_ns cString]);
+		printf("      value=\"%s\"\n", [attr_value cString]);
 	}
 
 	puts("");
@@ -82,8 +86,9 @@
 int
 main()
 {
-	const char *foo = "bar<foo:bar  bar='b&amp;az'  qux=\"quux\">foo&lt;bar"
-	    "<qux  >bar<baz name='' test='&foo;'/>quxbar</qux></foo:bar>";
+	const char *foo = "bar<foo:bar  bar='b&amp;az'  qux:qux=\"quux\">"
+	    "foo&lt;bar<qux  >bar<baz name='' test='&foo;'/>quxbar</qux>"
+	    "</foo:bar>";
 	size_t len = strlen(foo);
 	size_t i;
 	OFXMLParser *parser = [OFXMLParser xmlParser];
