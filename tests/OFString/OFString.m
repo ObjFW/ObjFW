@@ -202,11 +202,11 @@ main()
 	CHECK([s1 isEqual: @"XXXX"])
 
 	/* Whitespace removing tests */
-	s1 = [@"  \t\t \tasd  \t \t\t" mutableCopy];
+	s1 = [@" \r \t\n\t \tasd  \t \t\t\r\n" mutableCopy];
 	s2 = [s1 mutableCopy];
 	s3 = [s1 mutableCopy];
-	CHECK([[s1 removeLeadingWhitespaces] isEqual: @"asd  \t \t\t"])
-	CHECK([[s2 removeTrailingWhitespaces] isEqual: @"  \t\t \tasd"])
+	CHECK([[s1 removeLeadingWhitespaces] isEqual: @"asd  \t \t\t\r\n"])
+	CHECK([[s2 removeTrailingWhitespaces] isEqual: @" \r \t\n\t \tasd"])
 	CHECK([[s3 removeLeadingAndTrailingWhitespaces] isEqual: @"asd"])
 
 	s1 = [@" \t\t  \t\t  \t \t" mutableCopy];

@@ -350,7 +350,8 @@
 	size_t i;
 
 	for (i = 0; i < length; i++)
-		if (string[i] != ' ' && string[i] != '\t')
+		if (string[i] != ' '  && string[i] != '\t' &&
+		    string[i] != '\n' && string[i] != '\r')
 			break;
 
 	length -= i;
@@ -375,7 +376,7 @@
 
 	d = 0;
 	for (p = string + length - 1; p >= string; p--) {
-		if (*p != ' ' && *p != '\t')
+		if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\r')
 			break;
 
 		*p = '\0';
@@ -402,7 +403,7 @@
 
 	d = 0;
 	for (p = string + length - 1; p >= string; p--) {
-		if (*p != ' ' && *p != '\t')
+		if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\r')
 			break;
 
 		*p = '\0';
@@ -412,7 +413,8 @@
 	length -= d;
 
 	for (i = 0; i < length; i++)
-		if (string[i] != ' ' && string[i] != '\t')
+		if (string[i] != ' '  && string[i] != '\t' &&
+		    string[i] != '\n' && string[i] != '\r')
 			break;
 
 	length -= i;
