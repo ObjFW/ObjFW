@@ -86,8 +86,8 @@
 int
 main()
 {
-	const char *foo = "bar<foo:bar  bar='b&amp;az'  qux:qux=\"quux\">"
-	    "foo&lt;bar<qux  >bar<baz name='' test='&foo;'/>quxbar</qux>"
+	const char *foo = "bar<foo:bar  bar='b&amp;az'  qux:qux=\" quux \">\r\n"
+	    "foo&lt;bar<qux  >bar <baz name='' test='&foo;'/>  quxbar\r\n</qux>"
 	    "</foo:bar>";
 	size_t len = strlen(foo);
 	size_t i;

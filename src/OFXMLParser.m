@@ -21,6 +21,15 @@
 int _OFXMLParser_reference;
 
 static OF_INLINE OFString*
+transform_string(OFString *cache, OFObject <OFXMLUnescapingDelegate> *handler)
+{
+	/* TODO: Support for xml:space */
+
+	[cache removeLeadingAndTrailingWhitespaces];
+	return [cache stringByXMLUnescapingWithHandler: handler];
+}
+
+static OF_INLINE OFString*
 parse_numeric_entity(const char *entity, size_t length)
 {
 	uint32_t c;
@@ -142,10 +151,7 @@ parse_numeric_entity(const char *entity, size_t length)
 					OFString *str;
 
 					pool = [[OFAutoreleasePool alloc] init];
-					str = [cache
-					    stringByXMLUnescapingWithHandler:
-					    self];
-
+					str = transform_string(cache, self);
 					[delegate xmlParser: self
 						foundString: str];
 
