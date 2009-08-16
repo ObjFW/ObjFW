@@ -102,7 +102,7 @@ int _OFXMLElement_reference;
 {
 	self = [super init];
 
-	name = [name_ retain];
+	name = [name_ copy];
 
 	return self;
 }
@@ -112,8 +112,8 @@ int _OFXMLElement_reference;
 {
 	self = [super init];
 
-	name = [name_ retain];
-	stringval = [stringval_ retain];
+	name = [name_ copy];
+	stringval = [stringval_ copy];
 
 	return self;
 }
