@@ -354,8 +354,8 @@
 {
 	self = [super initWithClass: class_];
 
-	path = [path_ retain];
-	mode = [mode_ retain];
+	path = [path_ copy];
+	mode = [mode_ copy];
 	err  = GET_ERR;
 
 	return self;
@@ -536,8 +536,8 @@
 {
 	self = [super initWithClass: class_];
 
-	src  = [src_ retain];
-	dest = [dest_ retain];
+	src  = [src_ copy];
+	dest = [dest_ copy];
 	err  = GET_ERR;
 
 	return self;
@@ -601,8 +601,8 @@
 {
 	self = [super initWithClass: class_];
 
-	src  = [src_ retain];
-	dest = [dest_ retain];
+	src  = [src_ copy];
+	dest = [dest_ copy];
 	err  = GET_ERR;
 
 	return self;
@@ -707,8 +707,8 @@
 {
 	self = [super initWithClass: class_];
 
-	node	= [node_ retain];
-	service = [service_ retain];
+	node	= [node_ copy];
+	service = [service_ copy];
 	err	= GET_AT_ERR;
 
 	return self;
@@ -776,8 +776,8 @@
 {
 	self = [super initWithClass: class_];
 
-	node	= [node_ retain];
-	service	= [service_ retain];
+	node	= [node_ copy];
+	service	= [service_ copy];
 	err	= GET_SOCK_ERR;
 
 	return self;
@@ -845,8 +845,8 @@
 {
 	self = [super initWithClass: class_];
 
-	node	= [node_ retain];
-	service	= [service_ retain];
+	node	= [node_ copy];
+	service	= [service_ copy];
 	family	= family_;
 	err	= GET_SOCK_ERR;
 
