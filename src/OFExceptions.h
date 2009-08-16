@@ -356,6 +356,102 @@
 @end
 
 /**
+ * An OFException indicating that creating a link failed.
+ */
+@interface OFLinkFailedException: OFException
+{
+	OFString *src;
+	OFString *dest;
+	int err;
+}
+
+/**
+ * \param class The class of the object which caused the exception
+ * \param source The source for the link
+ * \param destination The destination for the link
+ * \return A new link failed exception
+ */
++ newWithClass: (Class)class
+	source: (OFString*)src
+   destination: (OFString*)dest;
+
+/**
+ * Initializes an already allocated open file failed exception.
+ *
+ * \param class The class of the object which caused the exception
+ * \param source The source for the link
+ * \param destination The destination for the link
+ * \return An initialized link failed exception
+ */
+- initWithClass: (Class)class
+	 source: (OFString*)src
+    destination: (OFString*)dest;
+
+/**
+ * \return The errno from when the exception was created
+ */
+- (int)errNo;
+
+/**
+ * \return A string of the source for the link
+ */
+- (OFString*)source;
+
+/**
+ * \return A string of the destination for the link
+ */
+- (OFString*)destination;
+@end
+
+/**
+ * An OFException indicating that creating a symlink failed.
+ */
+@interface OFSymlinkFailedException: OFException
+{
+	OFString *src;
+	OFString *dest;
+	int err;
+}
+
+/**
+ * \param class The class of the object which caused the exception
+ * \param source The source for the symlink
+ * \param destination The destination for the symlink
+ * \return A new symlink failed exception
+ */
++ newWithClass: (Class)class
+	source: (OFString*)src
+   destination: (OFString*)dest;
+
+/**
+ * Initializes an already allocated open file failed exception.
+ *
+ * \param class The class of the object which caused the exception
+ * \param source The source for the symlink
+ * \param destination The destination for the symlink
+ * \return An initialized symlink failed exception
+ */
+- initWithClass: (Class)class
+	 source: (OFString*)src
+    destination: (OFString*)dest;
+
+/**
+ * \return The errno from when the exception was created
+ */
+- (int)errNo;
+
+/**
+ * \return A string of the source for the symlink
+ */
+- (OFString*)source;
+
+/**
+ * \return A string of the destination for the symlink
+ */
+- (OFString*)destination;
+@end
+
+/**
  * An OFException indicating that setting an option failed.
  */
 @interface OFSetOptionFailedException: OFException {}

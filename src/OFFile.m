@@ -62,25 +62,28 @@ static OFFileSingleton *of_file_stderr = nil;
 	return of_file_stderr;
 }
 
-+ (void)changeModeOfFile: (OFString*)path
++ (BOOL)changeModeOfFile: (OFString*)path
 		  toMode: (mode_t)mode
 {
+#ifndef _WIN32
+	return (chmod([path cString], mode) == 0 ? YES : NO);
+#else
 	/*
-	 * FIXME: On error, throw exception
 	 * FIXME: On Win32, change write access
 	 */
-#ifndef _WIN32
-	chmod([path cString], mode);
+	return NO;
 #endif
 }
 
-+ (void)changeOwnerOfFile: (OFString*)path
++ (BOOL)changeOwnerOfFile: (OFString*)path
 		    owner: (uid_t)owner
 		    group: (gid_t)group
 {
 	/* FIXME: On error, throw exception */
 #ifndef _WIN32
-	chown([path cString], owner, group);
+	return (chown([path cString], owner, group) == 0 ? YES : NO);
+#else
+	return NO;
 #endif
 }
 
@@ -93,18 +96,28 @@ static OFFileSingleton *of_file_stderr = nil;
 + (void)link: (OFString*)src
 	  to: (OFString*)dest
 {
-	/* FIXME: On error, throw exception */
 #ifndef _WIN32
-	link([src cString], [dest cString]);
+	if (link([src cString], [dest cString]) != 0)
+		@throw [OFLinkFailedException newWithClass: self
+						    source: src
+					       destination: dest];
+#else
+	@throw [OFNotImplementedException newWithClass: self
+					      selector: _cmd];
 #endif
 }
 
 + (void)symlink: (OFString*)src
 	     to: (OFString*)dest
 {
-	/* FIXME: On error, throw exception */
 #ifndef _WIN32
-	symlink([src cString], [dest cString]);
+	if (symlink([src cString], [dest cString]) != 0)
+		@throw [OFSymlinkFailedException newWithClass: self
+						       source: src
+						  destination: dest];
+#else
+	@throw [OFNotImplementedException newWithClass: self
+					      selector: _cmd];
 #endif
 }
 

@@ -62,7 +62,7 @@ typedef int gid_t;
  * \param mode The new mode for the file
  * \return A boolean whether the operation succeeded
  */
-+ (void)changeModeOfFile: (OFString*)path
++ (BOOL)changeModeOfFile: (OFString*)path
 		  toMode: (mode_t)mode;
 
 /**
@@ -76,7 +76,7 @@ typedef int gid_t;
  * \param group The new group for the file
  * \return A boolean whether the operation succeeded
  */
-+ (void)changeOwnerOfFile: (OFString*)path
++ (BOOL)changeOwnerOfFile: (OFString*)path
 		    owner: (uid_t)owner
 		    group: (gid_t)group;
 

@@ -514,6 +514,136 @@
 }
 @end
 
+@implementation OFLinkFailedException
++ newWithClass: (Class)class_
+	source: (OFString*)src_
+   destination: (OFString*)dest_
+{
+	return [[self alloc] initWithClass: class_
+				    source: src_
+			       destination: dest_];
+}
+
+- initWithClass: (Class)class_
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class_
+	 source: (OFString*)src_
+    destination: (OFString*)dest_
+{
+	self = [super initWithClass: class_];
+
+	src  = [src_ retain];
+	dest = [dest_ retain];
+	err  = GET_ERR;
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[src release];
+	[dest release];
+
+	[super dealloc];
+}
+
+- (OFString*)string
+{
+	if (string != nil)
+		return string;
+
+	string = [[OFString alloc] initWithFormat:
+	    @"Failed to link file %s to %s in class %s! " ERRFMT,
+	    [src cString], [dest cString], [self className], ERRPARAM];
+
+	return string;
+}
+
+- (int)errNo
+{
+	return err;
+}
+
+- (OFString*)source
+{
+	return src;
+}
+
+- (OFString*)destination
+{
+	return dest;
+}
+@end
+
+@implementation OFSymlinkFailedException
++ newWithClass: (Class)class_
+	source: (OFString*)src_
+   destination: (OFString*)dest_
+{
+	return [[self alloc] initWithClass: class_
+				    source: src_
+			       destination: dest_];
+}
+
+- initWithClass: (Class)class_
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class_
+	 source: (OFString*)src_
+    destination: (OFString*)dest_
+{
+	self = [super initWithClass: class_];
+
+	src  = [src_ retain];
+	dest = [dest_ retain];
+	err  = GET_ERR;
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[src release];
+	[dest release];
+
+	[super dealloc];
+}
+
+- (OFString*)string
+{
+	if (string != nil)
+		return string;
+
+	string = [[OFString alloc] initWithFormat:
+	    @"Failed to symlink file %s to %s in class %s! " ERRFMT,
+	    [src cString], [dest cString], [self className], ERRPARAM];
+
+	return string;
+}
+
+- (int)errNo
+{
+	return err;
+}
+
+- (OFString*)source
+{
+	return src;
+}
+
+- (OFString*)destination
+{
+	return dest;
+}
+@end
+
 @implementation OFSetOptionFailedException
 - (OFString*)string
 {
