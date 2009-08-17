@@ -9,6 +9,11 @@
  * the packaging of this file.
  */
 
+#ifndef OF_CONFIGURED
+#error You are missing the libobjfw definitions!
+#error Please use objfw-config!
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 

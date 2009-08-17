@@ -9,6 +9,11 @@
  * the packaging of this file.
  */
 
+#ifndef OF_CONFIGURED
+#error You are missing the libobjfw definitions!
+#error Please use objfw-config!
+#endif
+
 #ifdef __GNUC__
 #define OF_INLINE inline __attribute__((always_inline))
 #define OF_LIKELY(cond) __builtin_expect(!!(cond), 1)

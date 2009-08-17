@@ -13,7 +13,7 @@ CFLAGS="$CFLAGS -Wall"
 AX_CHECK_COMPILER_FLAGS(-pipe, [CFLAGS="$CFLAGS -pipe"])
 AX_CHECK_COMPILER_FLAGS(-fno-common, [CFLAGS="$CFLAGS -fno-common"])
 
-AC_DEFINE(OF_CONFIG_H, 1, [Define so that we know we got our config.h])
+AC_DEFINE(OF_CONFIGURED, 1, [Define so that we know we got our config.h])
 
 BUILDSYS_LIB
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
