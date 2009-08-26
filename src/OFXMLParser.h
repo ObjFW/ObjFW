@@ -17,16 +17,16 @@ extern int _OFXMLParser_reference;
 @class OFXMLParser;
 
 @protocol OFXMLParserDelegate
--     (BOOL)xmlParser: (OFXMLParser*)parser
+-     (void)xmlParser: (OFXMLParser*)parser
   didStartTagWithName: (OFString*)name
 	       prefix: (OFString*)prefix
 	    namespace: (OFString*)ns
 	   attributes: (OFArray*)attrs;
--   (BOOL)xmlParser: (OFXMLParser*)parser
+-   (void)xmlParser: (OFXMLParser*)parser
   didEndTagWithName: (OFString*)name
 	     prefix: (OFString*)prefix
 	  namespace: (OFString*)ns;
-- (BOOL)xmlParser: (OFXMLParser*)parser
+- (void)xmlParser: (OFXMLParser*)parser
       foundString: (OFString*)string;
 -    (OFString*)xmlParser: (OFXMLParser*)parser
   foundUnknownEntityNamed: (OFString*)entity;

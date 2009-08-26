@@ -20,7 +20,7 @@
 @end
 
 @implementation ParserDelegate
--     (BOOL)xmlParser: (OFXMLParser*)parser
+-     (void)xmlParser: (OFXMLParser*)parser
   didStartTagWithName: (OFString*)name
 	       prefix: (OFString*)prefix
 	    namespace: (OFString*)ns
@@ -50,27 +50,21 @@
 	}
 
 	puts("");
-
-	return YES;
 }
 
--   (BOOL)xmlParser: (OFXMLParser*)parser
+-   (void)xmlParser: (OFXMLParser*)parser
   didEndTagWithName: (OFString*)name
 	     prefix: (OFString*)prefix
 	  namespace: (OFString*)ns
 {
 	printf("END\nname=\"%s\"\nprefix=\"%s\"\nns=\"%s\"\n\n",
 	    [name cString], [prefix cString], [ns cString]);
-
-	return YES;
 }
 
-- (BOOL)xmlParser: (OFXMLParser*)parser
+- (void)xmlParser: (OFXMLParser*)parser
       foundString: (OFString*)string
 {
 	printf("STRING\n\"%s\"\n\n", [string cString]);
-
-	return YES;
 }
 
 -    (OFString*)xmlParser: (OFXMLParser*)parser
