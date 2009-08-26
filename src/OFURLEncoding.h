@@ -14,8 +14,8 @@
 extern int _OFURLEncoding_reference;
 
 /**
- * The OFURLEncoding category provides an easy way to encode and decode strings
- * for URLs.
+ * The OFString (OFURLEncoding) category provides an easy way to encode and
+ * decode strings for URLs.
  */
 @interface OFString (OFURLEncoding)
 /**

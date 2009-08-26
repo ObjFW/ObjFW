@@ -75,8 +75,22 @@ extern int _OFXMLParser_reference;
      withSize: (size_t)size;
 @end
 
+/**
+ * The OFString (OFXMLUnescaping) category provides methods to unescape XML in
+ * strings.
+ */
 @interface OFString (OFXMLUnescaping)
+/**
+ * Unescapes XML in the string.
+ */
 - stringByXMLUnescaping;
+
+/**
+ * Unescapes XML in the string and uses the specified handler for unknown
+ * entities.
+ *
+ * \param h An OFXMLUnescapingDelegate as a handler for unknown entities
+ */
 - stringByXMLUnescapingWithHandler: (OFObject <OFXMLUnescapingDelegate>*)h;
 @end
 

@@ -152,8 +152,8 @@ extern int _OFXMLElement_reference;
 @end
 
 /**
- * The OFXMLEscaping category provides an easy way to escape strings for use in
- * an XML document.
+ * The OFString (OFXMLEscaping) category provides an easy way to escape strings
+ * for use in an XML document.
  */
 @interface OFString (OFXMLEscaping)
 /**

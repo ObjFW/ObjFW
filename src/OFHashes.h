@@ -89,7 +89,8 @@ extern int _OFHashing_reference;
 @end
 
 /**
- * The OFHashing category provides methods to calculate hashes for strings.
+ * The OFString (OFHashing) category provides methods to calculate hashes for
+ * strings.
  */
 @interface OFString (OFHashing)
 /**

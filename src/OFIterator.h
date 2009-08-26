@@ -13,9 +13,15 @@
 #import "OFList.h"
 #import "OFDictionary.h"
 
+/**
+ * An iterator pair combines a key and its object in a single struct.
+ */
 typedef struct __of_iterator_pair {
+	/// The key
 	id	 key;
+	/// The object for the key
 	id	 object;
+	/// The hash of the key
 	uint32_t hash;
 } of_iterator_pair_t;
 
