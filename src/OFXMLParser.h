@@ -73,3 +73,6 @@ extern int _OFXMLParser_reference;
 - stringByXMLUnescaping;
 - stringByXMLUnescapingWithHandler: (OFObject <OFXMLUnescapingDelegate>*)h;
 @end
+
+@interface OFObject (OFXMLParserDelegate) <OFXMLParserDelegate>
+@end

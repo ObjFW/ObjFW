@@ -539,3 +539,31 @@ parse_numeric_entity(const char *entity, size_t length)
 	return ret;
 }
 @end
+
+@implementation OFObject (OFXMLParserDelegate)
+-     (void)xmlParser: (OFXMLParser*)parser
+  didStartTagWithName: (OFString*)name
+	       prefix: (OFString*)prefix
+	    namespace: (OFString*)ns
+	   attributes: (OFArray*)attrs
+{
+}
+
+-   (void)xmlParser: (OFXMLParser*)parser
+  didEndTagWithName: (OFString*)name
+	     prefix: (OFString*)prefix
+	  namespace: (OFString*)ns
+{
+}
+
+- (void)xmlParser: (OFXMLParser*)parser
+      foundString: (OFString*)string
+{
+}
+
+-    (OFString*)xmlParser: (OFXMLParser*)parser
+  foundUnknownEntityNamed: (OFString*)entity
+{
+	return nil;
+}
+@end
