@@ -16,7 +16,7 @@
 
 #import "OFXMLParser.h"
 
-@interface ParserDelegate: OFObject <OFXMLParserDelegate>
+@interface ParserDelegate: OFObject
 @end
 
 @implementation ParserDelegate
@@ -67,6 +67,12 @@
 	printf("STRING\n\"%s\"\n\n", [string cString]);
 }
 
+- (void)xmlParser: (OFXMLParser*)parser
+     foundComment: (OFString*)comment
+{
+	printf("COMMENT\n\"%s\"\n\n", [comment cString]);
+}
+
 -    (OFString*)xmlParser: (OFXMLParser*)parser
   foundUnknownEntityNamed: (OFString*)entity
 {
@@ -82,7 +88,7 @@ main()
 {
 	const char *foo = "bar<foo:bar  bar='b&amp;az'  qux:qux=\" quux \">\r\n"
 	    "foo&lt;bar<qux  >bar <baz name='' test='&foo;'/>  quxbar\r\n</qux>"
-	    "</foo:bar>";
+	    "</foo:bar><!-- foo bar-baz -->";
 	size_t len = strlen(foo);
 	size_t i;
 	OFXMLParser *parser = [OFXMLParser xmlParser];

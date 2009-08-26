@@ -28,6 +28,8 @@ extern int _OFXMLParser_reference;
 	  namespace: (OFString*)ns;
 - (void)xmlParser: (OFXMLParser*)parser
       foundString: (OFString*)string;
+- (void)xmlParser: (OFXMLParser*)parser
+     foundComment: (OFString*)comment;
 -    (OFString*)xmlParser: (OFXMLParser*)parser
   foundUnknownEntityNamed: (OFString*)entity;
 @end
@@ -49,7 +51,11 @@ extern int _OFXMLParser_reference;
 		OF_XMLPARSER_EXPECT_DELIM,
 		OF_XMLPARSER_IN_ATTR_VALUE,
 		OF_XMLPARSER_EXPECT_CLOSE,
-		OF_XMLPARSER_EXPECT_SPACE_OR_CLOSE
+		OF_XMLPARSER_EXPECT_SPACE_OR_CLOSE,
+		OF_XMLPARSER_IN_COMMENT_1,
+		OF_XMLPARSER_IN_COMMENT_2,
+		OF_XMLPARSER_IN_COMMENT_3,
+		OF_XMLPARSER_IN_COMMENT_4
 	} state;
 	OFString *cache;
 	OFString *name;

@@ -152,9 +152,9 @@ parse_numeric_entity(const char *entity, size_t length)
 
 					pool = [[OFAutoreleasePool alloc] init];
 					str = transform_string(cache, self);
+					str = [[str copy] autorelease];
 					[delegate xmlParser: self
 						foundString: str];
-
 					[pool release];
 				}
 
@@ -170,6 +170,9 @@ parse_numeric_entity(const char *entity, size_t length)
 			if (buf[i] == '/') {
 				last = i + 1;
 				state = OF_XMLPARSER_IN_CLOSE_TAG_NAME;
+			} else if(buf[i] == '!') {
+				last = i + 1;
+				state = OF_XMLPARSER_IN_COMMENT_1;
 			} else {
 				state = OF_XMLPARSER_IN_TAG_NAME;
 				i--;
@@ -436,6 +439,44 @@ parse_numeric_entity(const char *entity, size_t length)
 				@throw [OFMalformedXMLException
 				    newWithClass: isa];
 			break;
+
+		/* Comment */
+		case OF_XMLPARSER_IN_COMMENT_1:
+		case OF_XMLPARSER_IN_COMMENT_2:
+			if (buf[i] != '-')
+				@throw [OFMalformedXMLException
+				    newWithClass: isa];
+			last = i + 1;
+			state++;
+			break;
+		case OF_XMLPARSER_IN_COMMENT_3:
+			if (buf[i] == '-')
+				state = OF_XMLPARSER_IN_COMMENT_4;
+			break;
+		case OF_XMLPARSER_IN_COMMENT_4:
+			if (buf[i] == '-') {
+				OFString *str;
+
+				[cache appendCString: buf + last
+					  withLength: i - last];
+
+				pool = [[OFAutoreleasePool alloc] init];
+				str = [OFMutableString
+				    stringWithCString: [cache cString]
+					       length: [cache length] - 1];
+				[str removeLeadingAndTrailingWhitespaces];
+				[delegate xmlParser: self
+				       foundComment: str];
+				[pool release];
+
+				[cache setToCString: ""];
+
+				last = i + 1;
+				state = OF_XMLPARSER_EXPECT_CLOSE;
+			} else
+				state = OF_XMLPARSER_IN_COMMENT_3;
+
+			break;
 		}
 	}
 
@@ -558,6 +599,11 @@ parse_numeric_entity(const char *entity, size_t length)
 
 - (void)xmlParser: (OFXMLParser*)parser
       foundString: (OFString*)string
+{
+}
+
+- (void)xmlParser: (OFXMLParser*)parser
+     foundComment: (OFString*)comment
 {
 }
 
