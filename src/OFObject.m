@@ -436,13 +436,6 @@ extern BOOL objc_sync_init();
 	return self;
 }
 
-- autorelease
-{
-	[OFAutoreleasePool addObjectToTopmostPool: self];
-
-	return self;
-}
-
 - (size_t)retainCount
 {
 	return PRE_IVAR->retain_count;
@@ -452,6 +445,13 @@ extern BOOL objc_sync_init();
 {
 	if (!--PRE_IVAR->retain_count)
 		[self dealloc];
+}
+
+- autorelease
+{
+	[OFAutoreleasePool addObjectToTopmostPool: self];
+
+	return self;
 }
 
 - (void)dealloc

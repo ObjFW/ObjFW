@@ -27,19 +27,22 @@
  */
 @interface OFObject
 {
-	Class  isa;
+	/// The class of the object
+	Class isa;
 }
 
 /**
  * This code is executed once when a method of the class is called for the first
  * time.
+ *
  * Derived classes can override this to execute their own code on
  * initialization.
  */
 + (void)initialize;
 
 /**
- * Allocates memory for an instance of the class.
+ * Allocates memory for an instance of the class and sets up the memory pool for
+ * the object.
  *
  * alloc will never return nil, instead, it will throw an
  * OFAllocFailedException.
@@ -49,7 +52,7 @@
 + alloc;
 
 /**
- * \return The class pointer
+ * \return The class
  */
 + (Class)class;
 
@@ -59,29 +62,31 @@
 + (const char*)className;
 
 /**
- * \param selector The selector which should be checked for respondance
+ * Checks whether instances of the class respond to a given selector.
  *
+ * \param selector The selector which should be checked for respondance
  * \return A boolean whether instances of the class respond to the specified
  *	   selector
  */
 + (BOOL)instancesRespondToSelector: (SEL)selector;
 
 /**
- * \param protocol The protocol which should be checked for conformance
+ * Checks whether the class conforms to a given protocol.
  *
+ * \param protocol The protocol which should be checked for conformance
  * \return A boolean whether the class conforms to the specified protocol
  */
 + (BOOL)conformsToProtocol: (Protocol*)protocol;
 
 /**
  * \param selector The selector for which the method should be returned
- *
  * \return The implementation of the instance method for the specified selector
+ *	   or nil if it isn't implemented
  */
 + (IMP)instanceMethodForSelector: (SEL)selector;
 
 /**
- * Replace a method implementation with another implementation.
+ * Replaces a method implementation with another implementation.
  *
  * \param selector The selector of the method to replace
  * \param imp The new implementation for the method
@@ -91,7 +96,7 @@
 	       forMethod: (SEL)selector;
 
 /**
- * Replace a method with a method from another class.
+ * Replaces a method with a method from another class.
  *
  * \param selector The selector of the method to replace
  * \param class The class from which the new method should be taken
@@ -101,8 +106,7 @@
   withMethodFromClass: (Class)class;
 
 /**
- * Initialize the already allocated object.
- * Also sets up the memory pool for the object.
+ * Initializes an already allocated object.
  *
  * Derived classes may override this, but need to do self = [super init] before
  * they do any initialization themselves. init may never return nil, instead
@@ -113,32 +117,29 @@
 - init;
 
 /**
- * \return A pointer to the class of the instance
+ * \return The class of the object
  */
 - (Class)class;
 
 /**
- * \return The name of the instance's class as a C string
+ * \return The name of the object's class as a C string
  */
 - (const char*)className;
 
 /**
  * \param class The class whose kind is checked
- *
  * \return A boolean whether the object is of the specified kind
  */
 - (BOOL)isKindOfClass: (Class)class;
 
 /**
  * \param selector The selector which should be checked for respondance
- *
  * \return A boolean whether the objects responds to the specified selector
  */
 - (BOOL)respondsToSelector: (SEL)selector;
 
 /**
  * \param protocol The protocol which should be checked for conformance
- *
  * \return A boolean whether the objects conforms to the specified protocol
  */
 - (BOOL)conformsToProtocol: (Protocol*)protocol;
@@ -151,17 +152,18 @@
 - (IMP)methodForSelector: (SEL)selector;
 
 /**
- * Compare two objects.
+ * Checks two objects for equality.
+ *
  * Classes containing data (like strings, arrays, lists etc.) should reimplement
  * this!
  *
- * \param obj The object which is tested for equality
- * \return A boolean whether the object is equal to the other object
+ * \param obj The object which should be tested for equality
+ * \return A boolean whether the object is equal to the specified object
  */
 - (BOOL)isEqual: (id)obj;
 
 /**
- * Calculate a hash for the object.
+ * Calculates a hash for the object.
  *
  * Classes containing data (like strings, arrays, lists etc.) should reimplement
  * this!
@@ -171,7 +173,7 @@
 - (uint32_t)hash;
 
 /**
- * Adds a pointer to the memory pool.
+ * Adds a pointer to the object's memory pool.
  *
  * This is useful to add memory allocated by functions such as asprintf to the
  * pool so it gets free'd automatically when the object is deallocated.
@@ -181,8 +183,8 @@
 - addMemoryToPool: (void*)ptr;
 
 /**
- * Allocate memory and store it in the objects memory pool so it can be free'd
- * automatically when the object is deallocated.
+ * Allocates memory and stores it in the object's memory pool so it can be
+ * free'd automatically when the object is deallocated.
  *
  * \param size The size of the memory to allocate
  * \return A pointer to the allocated memory
@@ -190,8 +192,9 @@
 - (void*)allocMemoryWithSize: (size_t)size;
 
 /**
- * Allocate memory for a specified number of items and store it in the objects
- * memory pool so it can be free'd automatically when the object is deallocated.
+ * Allocates memory for the specified number of items and stores it in the
+ * object's memory pool so it can be free'd automatically when the object is
+ * deallocated.
  *
  * \param nitems The number of items to allocate
  * \param size The size of each item to allocate
@@ -201,7 +204,7 @@
 		     withSize: (size_t)size;
 
 /**
- * Resize memory in the memory pool to a specified size.
+ * Resizes memory in the object's memory pool to the specified size.
  *
  * \param ptr A pointer to the already allocated memory
  * \param size The new size for the memory chunk
@@ -211,8 +214,8 @@
 	       toSize: (size_t)size;
 
 /**
- * Resize memory in the memory pool to a specific number of items of a
- * specified size.
+ * Resizes memory in the object's memory pool to the specific number of items of
+ * the specified size.
  *
  * \param ptr A pointer to the already allocated memory
  * \param nitems The number of items to resize to
@@ -224,7 +227,7 @@
 	     withSize: (size_t)size;
 
 /**
- * Frees allocated memory and removes it from the memory pool.
+ * Frees allocated memory and removes it from the object's memory pool.
  *
  * \param ptr A pointer to the allocated memory
  */
@@ -232,13 +235,11 @@
 
 /**
  * Increases the retain count.
+ *
+ * Each time an object is released, the retain count gets decreased and the
+ * object deallocated if it reaches 0.
  */
 - retain;
-
-/**
- * Adds the object to the autorelease pool that is on top of the thread's stack.
- */
-- autorelease;
 
 /**
  * \return The retain count
@@ -246,13 +247,23 @@
 - (size_t)retainCount;
 
 /**
- * Decreases the retain cound and deallocates the object if it reaches 0.
+ * Decreases the retain count.
+ *
+ * Each time an object is released, the retain count gets decreased and the
+ * object deallocated if it reaches 0.
  */
 - (void)release;
 
 /**
- * Deallocates the object and also frees all memory allocated via its memory
- * pool.
+ * Adds the object to the topmost OFAutoreleasePool of the thread's release pool
+ * stack.
+ */
+- autorelease;
+
+/**
+ * Deallocates the object and also frees all memory in its memory pool.
+ *
+ * It is also called when the retain count reaches zero.
  */
 - (void)dealloc;
 

@@ -11,10 +11,17 @@
 
 #import "OFObject.h"
 
+/**
+ * A struct that contains a pointer to the next list object, the previous list
+ * object and the object.
+ */
 typedef struct __of_list_object
 {
+	/// A pointer to the next list object in the list
 	struct __of_list_object *next;
+	/// A pointer to the previous list object in the list
 	struct __of_list_object *prev;
+	/// The object for the list object
 	id			object;
 } of_list_object_t;
 
@@ -48,20 +55,20 @@ typedef struct __of_list_object
 - initWithListObjectSize: (size_t)listobj_size;
 
 /**
- * Initializes an already allocated OFList that does not retain/releas objects
- * added to it..
+ * Initializes an already allocated OFList that does not retain/release objects
+ * added to it.
  *
  * \return An initialized OFList
  */
 - initWithoutRetainAndRelease;
 
 /**
- * \return The first object in the list
+ * \return The first list object in the list
  */
 - (of_list_object_t*)first;
 
 /**
- * \return The last object in the list
+ * \return The last list object in the list
  */
 - (of_list_object_t*)last;
 
@@ -110,7 +117,7 @@ typedef struct __of_list_object
 		      after: (of_list_object_t*)listobj;
 
 /**
- * Removes an object from the list.
+ * Removes the object with the specified list object from the list.
  *
  * \param listobj The list object returned by append / prepend
  */
