@@ -292,6 +292,31 @@
 	return self;
 }
 
+- removeCharactersFromIndex: (size_t)start
+		    toIndex: (size_t)end
+{
+	if (start > end)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
+	if (end > length)
+		@throw [OFOutOfRangeException newWithClass: isa];
+
+	memmove(string + start, string + end, length - end);
+	length -= end - start;
+	string[length] = 0;
+
+	@try {
+		string = [self resizeMemory: string
+				     toSize: length + 1];
+	} @catch (OFOutOfMemoryException *e) {
+		/* We don't really care, as we only made it smaller */
+		[e dealloc];
+	}
+
+	return self;
+}
+
 - replaceOccurrencesOfString: (OFString*)str
 		  withString: (OFString*)repl
 {

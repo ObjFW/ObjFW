@@ -152,7 +152,6 @@ parse_numeric_entity(const char *entity, size_t length)
 
 					pool = [[OFAutoreleasePool alloc] init];
 					str = transform_string(cache, self);
-					str = [[str copy] autorelease];
 					[delegate xmlParser: self
 						foundString: str];
 					[pool release];
@@ -455,18 +454,18 @@ parse_numeric_entity(const char *entity, size_t length)
 			break;
 		case OF_XMLPARSER_IN_COMMENT_4:
 			if (buf[i] == '-') {
-				OFString *str;
+				size_t cache_len;
 
 				[cache appendCString: buf + last
 					  withLength: i - last];
+				cache_len = [cache length];
 
 				pool = [[OFAutoreleasePool alloc] init];
-				str = [OFMutableString
-				    stringWithCString: [cache cString]
-					       length: [cache length] - 1];
-				[str removeLeadingAndTrailingWhitespaces];
+				[cache removeCharactersFromIndex: cache_len - 1
+							 toIndex: cache_len];
+				[cache removeLeadingAndTrailingWhitespaces];
 				[delegate xmlParser: self
-				       foundComment: str];
+				       foundComment: cache];
 				[pool release];
 
 				[cache setToCString: ""];

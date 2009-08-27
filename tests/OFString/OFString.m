@@ -24,7 +24,7 @@
 #define ZD "%u"
 #endif
 
-#define NUM_TESTS 71
+#define NUM_TESTS 73
 #define SUCCESS								\
 	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
 	    (i == NUM_TESTS - 1 ? 32 : 33), i + 1, NUM_TESTS);		\
@@ -190,6 +190,15 @@ main()
 	    OFInvalidEncodingException)
 	CHECK_EXCEPT([@"foo%FFbar" stringByURLDecoding],
 	    OFInvalidEncodingException)
+
+	/* Remove tests */
+	s1 = [@"fooobar" mutableCopy];
+	[s1 removeCharactersFromIndex: 1
+			      toIndex: 4];
+	CHECK([s1 isEqual: @"fbar"])
+	[s1 removeCharactersFromIndex: 0
+			      toIndex: 4];
+	CHECK([s1 isEqual: @""])
 
 	/* Replace tests */
 	s1 = [@"asd fo asd fofo asd" mutableCopy];

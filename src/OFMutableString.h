@@ -106,6 +106,16 @@
 - lower;
 
 /**
+ * Removes the characters at the specified range.
+ *
+ * \param start The index where the deletion should be started
+ * \param end The index until which the characters should be deleted.
+ *	      This points BEHIND the last character!
+ */
+- removeCharactersFromIndex: (size_t)start
+		    toIndex: (size_t)end;
+
+/**
  * Replaces all occurrences of a string with another string.
  *
  * \param str The string to replace

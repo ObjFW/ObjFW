@@ -691,6 +691,13 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 					      selector: _cmd];
 }
 
+- removeCharactersFromIndex: (size_t)start
+		    toIndex: (size_t)end
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
 - replaceOccurrencesOfString: (OFString*)str
 		  withString: (OFString*)repl
 {

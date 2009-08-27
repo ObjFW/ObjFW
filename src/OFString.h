@@ -272,6 +272,8 @@ extern size_t of_string_unicode_to_utf8(uint32_t, char*);
 - reverse;
 - upper;
 - lower;
+- removeCharactersFromIndex: (size_t)start
+		    toIndex: (size_t)end;
 - replaceOccurrencesOfString: (OFString*)str
 		  withString: (OFString*)repl;
 - removeLeadingWhitespaces;
