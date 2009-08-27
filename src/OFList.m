@@ -97,6 +97,8 @@
 	if (first == NULL)
 		first = o;
 
+	count++;
+
 	if (retain_and_release)
 		[obj retain];
 
@@ -118,6 +120,8 @@
 	first = o;
 	if (last == NULL)
 		last = o;
+
+	count++;
 
 	if (retain_and_release)
 		[obj retain];
@@ -143,6 +147,8 @@
 	if (listobj == first)
 		first = o;
 
+	count++;
+
 	if (retain_and_release)
 		[obj retain];
 
@@ -167,6 +173,8 @@
 	if (listobj == last)
 		last = o;
 
+	count++;
+
 	if (retain_and_release)
 		[obj retain];
 
@@ -185,6 +193,8 @@
 	if (last == listobj)
 		last = listobj->prev;
 
+	count--;
+
 	if (retain_and_release)
 		[listobj->object release];
 
@@ -195,13 +205,7 @@
 
 - (size_t)count
 {
-	size_t i;
-	of_list_object_t *iter;
-
-	for (i = 0, iter = first; iter != NULL; iter = iter->next)
-		i++;
-
-	return i;
+	return count;
 }
 
 - (BOOL)isEqual: (id)obj
@@ -247,6 +251,9 @@
 				new->first = o;
 			if (prev != NULL)
 				prev->next = o;
+
+			new->count++;
+
 			if (retain_and_release)
 				[o->object retain];
 

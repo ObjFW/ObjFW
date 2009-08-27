@@ -23,7 +23,7 @@
 #define ZD "%u"
 #endif
 
-#define NUM_TESTS 23
+#define NUM_TESTS 27
 #define SUCCESS								\
 {									\
 	printf("\r\033[1;%dmTests successful: " ZD "/%d\033[0m",	\
@@ -88,6 +88,15 @@ main()
 		CHECK([iter->object isEqual: strings[j]])
 
 	CHECK([list count] == 3)
+
+	list2 = [list copy];
+	CHECK([list2 count] == 3)
+	[list2 remove: [list2 last]];
+	CHECK([list2 count] == 2)
+	[list2 remove: [list2 first]->next];
+	CHECK([list2 count] == 1)
+	[list2 remove: [list2 first]];
+	CHECK([list2 count] == 0)
 
 	list2 = [OFList list];
 

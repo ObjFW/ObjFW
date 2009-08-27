@@ -33,6 +33,7 @@ typedef struct __of_list_object
 	of_list_object_t *first;
 	of_list_object_t *last;
 	size_t		 listobj_size;
+	size_t		 count;
 	BOOL		 retain_and_release;
 }
 /**
@@ -124,9 +125,6 @@ typedef struct __of_list_object
 - remove: (of_list_object_t*)listobj;
 
 /**
- * Get the number of items in the list. Use with caution, as this means one
- * iteration through the whole list!
- *
  * \return The number of items in the list.
  */
 - (size_t)count;
