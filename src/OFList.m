@@ -11,6 +11,8 @@
 
 #include "config.h"
 
+#include "assert.h"
+
 #import "OFList.h"
 #import "OFExceptions.h"
 
@@ -215,14 +217,16 @@
 	if (![obj isKindOfClass: [OFList class]])
 		return NO;
 
+	if ([obj count] != count)
+		return NO;
+
 	for (iter = first, iter2 = [obj first]; iter != NULL && iter2 != NULL;
 	    iter = iter->next, iter2 = iter2->next)
 		if (![iter->object isEqual: iter2->object])
 			return NO;
 
-	/* One has still items */
-	if (iter != NULL || iter2 != NULL)
-		return NO;
+	/* One is bigger than the other although we checked the count */
+	assert(iter == NULL && iter2 == NULL);
 
 	return YES;
 }
