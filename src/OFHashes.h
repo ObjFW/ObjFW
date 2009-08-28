@@ -12,8 +12,8 @@
 #import "OFObject.h"
 #import "OFString.h"
 
-#define MD5_DIGEST_SIZE	 16
-#define SHA1_DIGEST_SIZE 20
+#define OF_MD5_DIGEST_SIZE  16
+#define OF_SHA1_DIGEST_SIZE 20
 
 extern int _OFHashing_reference;
 
@@ -46,7 +46,7 @@ extern int _OFHashing_reference;
 	    ofSize: (size_t)size;
 
 /**
- * \return A buffer containing the hash (MD5_DIGEST_SIZE = 16 bytes).
+ * \return A buffer containing the hash (OF_MD5_DIGEST_SIZE = 16 bytes).
  *	   The buffer is part of object's memory pool.
  */
 - (uint8_t*)digest;
@@ -60,7 +60,7 @@ extern int _OFHashing_reference;
 	uint32_t state[5];
 	uint64_t count;
 	char	 buffer[64];
-	uint8_t	 digest[SHA1_DIGEST_SIZE];
+	uint8_t	 digest[OF_SHA1_DIGEST_SIZE];
 
 	BOOL	 calculated;
 }
@@ -82,7 +82,7 @@ extern int _OFHashing_reference;
 	    ofSize: (size_t)size;
 
 /**
- * \return A buffer containing the hash (SHA1_DIGEST_SIZE = 20 bytes).
+ * \return A buffer containing the hash (OF_SHA1_DIGEST_SIZE = 20 bytes).
  *	   The buffer is part of object's memory pool.
  */
 - (uint8_t*)digest;

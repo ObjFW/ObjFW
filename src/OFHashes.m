@@ -20,9 +20,9 @@
 
 int _OFHashing_reference;
 
-/*******
- * MD5 *
- *******/
+/*
+ * MD5
+ */
 
 /* The four MD5 core functions - F1 is optimized somewhat */
 #define F1(x, y, z) (z ^ (x & (y ^ z)))
@@ -248,9 +248,9 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 #undef F4
 #undef MD5STEP
 
-/********
- * SHA1 *
- ********/
+/*
+ * SHA1
+ */
 
 /* blk0() and blk() perform the initial expand. */
 #ifndef OF_BIG_ENDIAN
@@ -410,9 +410,11 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 	/* Should cause a sha1_transform() */
 	sha1_update(state, &count, buffer, finalcount, 8);
 
-	for (i = 0; i < SHA1_DIGEST_SIZE; i++)
+	for (i = 0; i < OF_SHA1_DIGEST_SIZE; i++)
 		digest[i] = (char)((state[i >> 2] >>
 		    ((3 - (i & 3)) * 8)) & 255);
+
+	calculated = YES;
 
 	return digest;
 }
