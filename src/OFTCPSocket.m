@@ -106,7 +106,7 @@ static OFMutex *mutex = nil;
 
 	if ((se = getservbyname([service cString], "TCP")) != NULL)
 		port = se->s_port;
-	else if ((port = htons(atoi([service cString]))) == 0) {
+	else if ((port = OF_BSWAP16_IF_LE(atoi([service cString]))) == 0) {
 		[mutex unlock];
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
@@ -212,7 +212,7 @@ static OFMutex *mutex = nil;
 
 	if ((se = getservbyname([service cString], "TCP")) != NULL)
 		port = se->s_port;
-	else if ((port = htons(atoi([service cString]))) == 0) {
+	else if ((port = OF_BSWAP16_IF_LE(atoi([service cString]))) == 0) {
 		[mutex unlock];
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa

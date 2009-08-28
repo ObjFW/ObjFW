@@ -58,7 +58,6 @@ OF_BSWAP64(uint64_t i)
 	return i;
 }
 
-#ifdef OF_BIG_ENDIAN
 static OF_INLINE void
 OF_BSWAP32_V(uint32_t *buf, size_t len)
 {
@@ -67,8 +66,23 @@ OF_BSWAP32_V(uint32_t *buf, size_t len)
 		buf++;
 	}
 }
+
+#ifdef OF_BIG_ENDIAN
+#define OF_BSWAP16_IF_BE(i) OF_BSWAP16(i)
+#define OF_BSWAP32_IF_BE(i) OF_BSWAP32(i)
+#define OF_BSWAP64_IF_BE(i) OF_BSWAP64(i)
+#define OF_BSWAP16_IF_LE(i) i
+#define OF_BSWAP32_IF_LE(i) i
+#define OF_BSWAP64_IF_LE(i) i
+#define OF_BSWAP32_V_IF_BE(buf, len) OF_BSWAP32_V(buf, len)
 #else
-#define OF_BSWAP32_V(buf, len)
+#define OF_BSWAP16_IF_BE(i) i
+#define OF_BSWAP32_IF_BE(i) i
+#define OF_BSWAP64_IF_BE(i) i
+#define OF_BSWAP16_IF_LE(i) OF_BSWAP16(i)
+#define OF_BSWAP32_IF_LE(i) OF_BSWAP32(i)
+#define OF_BSWAP64_IF_LE(i) OF_BSWAP64(i)
+#define OF_BSWAP32_V_IF_BE(buf, len)
 #endif
 
 #define OF_ROL(val, bits) \
