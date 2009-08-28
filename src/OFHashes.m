@@ -15,6 +15,7 @@
 
 #import "OFHashes.h"
 #import "OFAutoreleasePool.h"
+#import "OFExceptions.h"
 #import "OFMacros.h"
 
 int _OFHashing_reference;
@@ -140,10 +141,12 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 {
 	uint32_t t;
 
-	if (calculated)
-		return self;
 	if (size == 0)
 		return self;
+
+	if (calculated)
+		/* FIXME: Maybe a new exception would be better */
+		@throw [OFInvalidArgumentException newWithClass: isa];
 
 	/* Update bitcount */
 	t = bits[0];
@@ -377,10 +380,12 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 - updateWithBuffer: (const char*)buf
 	    ofSize: (size_t)size
 {
-	if (calculated)
-		return self;
 	if (size == 0)
 		return self;
+
+	if (calculated)
+		/* FIXME: Maybe a new exception would be better */
+		@throw [OFInvalidArgumentException newWithClass: isa];
 
 	sha1_update(state, &count, buffer, buf, size);
 
