@@ -26,27 +26,50 @@
 #define OF_UNLIKELY(cond) cond
 #endif
 
+#ifdef __GNUC__
+#if defined(__amd64__) || defined(__x86_64__)
+#define OF_AMD64_ASM
+#elif defined(__i386__)
+#define OF_X86_ASM
+#endif
+#endif
+
 static OF_INLINE uint16_t
 OF_BSWAP16(uint16_t i)
 {
+#if defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
+	asm("xchgb	%h0, %b0" : "=Q"(i) : "Q"(i));
+#else
 	i = (i & UINT16_C(0xFF00)) >> 8 |
 	    (i & UINT16_C(0x00FF)) << 8;
+#endif
 	return i;
 }
 
 static OF_INLINE uint32_t
 OF_BSWAP32(uint32_t i)
 {
+#if defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
+	asm("bswap	%0" : "=q"(i) : "q"(i));
+#else
 	i = (i & UINT32_C(0xFF000000)) >> 24 |
 	    (i & UINT32_C(0x00FF0000)) >>  8 |
 	    (i & UINT32_C(0x0000FF00)) <<  8 |
 	    (i & UINT32_C(0x000000FF)) << 24;
+#endif
 	return i;
 }
 
 static OF_INLINE uint64_t
 OF_BSWAP64(uint64_t i)
 {
+#if defined(OF_AMD64_ASM)
+	asm("bswap	%0" : "=r"(i) : "r"(i));
+#elif defined(OF_X86_ASM)
+	asm("bswap	%%eax\n\t"
+	    "bswap	%%edx\n\t"
+	    "xchgl	%%eax, %%edx" : "=A"(i): "A"(i));
+#else
 	i = (i & UINT64_C(0xFF00000000000000)) >> 56 |
 	    (i & UINT64_C(0x00FF000000000000)) >> 40 |
 	    (i & UINT64_C(0x0000FF0000000000)) >> 24 |
@@ -55,6 +78,7 @@ OF_BSWAP64(uint64_t i)
 	    (i & UINT64_C(0x0000000000FF0000)) << 24 |
 	    (i & UINT64_C(0x000000000000FF00)) << 40 |
 	    (i & UINT64_C(0x00000000000000FF)) << 56;
+#endif
 	return i;
 }
 
