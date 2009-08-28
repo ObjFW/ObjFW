@@ -26,9 +26,7 @@ fi
 AC_C_BIGENDIAN([
 	AC_DEFINE(OF_BIG_ENDIAN, 1, [Whether we are big endian])
 	AC_SUBST(ENDIANESS_DEF, "-DOF_BIG_ENDIAN")
-	], [
-	AC_DEFINE(OF_LITTLE_ENDIAN, 1, [Whether we are little endian])
-	AC_SUBST(ENDIANESS_DEF, "-DOF_LITTLE_ENDIAN")])
+	])
 
 AC_MSG_CHECKING(for SIZE_MAX)
 AC_EGREP_CPP(yes, [

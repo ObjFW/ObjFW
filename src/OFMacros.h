@@ -14,6 +14,8 @@
 #error Please use objfw-config!
 #endif
 
+#include <stdint.h>
+
 #ifdef __GNUC__
 #define OF_INLINE inline __attribute__((always_inline))
 #define OF_LIKELY(cond) __builtin_expect(!!(cond), 1)
@@ -24,25 +26,49 @@
 #define OF_UNLIKELY(cond) cond
 #endif
 
-#if defined(OF_BIG_ENDIAN)
-#include <stdint.h>
-
-static OF_INLINE void
-OF_BSWAP_V(uint8_t *buf, size_t len)
+static OF_INLINE uint16_t
+OF_BSWAP16(uint16_t i)
 {
-	uint32_t t;
+	i = (i & UINT16_C(0xFF00)) >> 8 |
+	    (i & UINT16_C(0x00FF)) << 8;
+	return i;
+}
 
+static OF_INLINE uint32_t
+OF_BSWAP32(uint32_t i)
+{
+	i = (i & UINT32_C(0xFF000000)) >> 24 |
+	    (i & UINT32_C(0x00FF0000)) >>  8 |
+	    (i & UINT32_C(0x0000FF00)) <<  8 |
+	    (i & UINT32_C(0x000000FF)) << 24;
+	return i;
+}
+
+static OF_INLINE uint64_t
+OF_BSWAP64(uint64_t i)
+{
+	i = (i & UINT64_C(0xFF00000000000000)) >> 56 |
+	    (i & UINT64_C(0x00FF000000000000)) >> 40 |
+	    (i & UINT64_C(0x0000FF0000000000)) >> 24 |
+	    (i & UINT64_C(0x000000FF00000000)) >>  8 |
+	    (i & UINT64_C(0x00000000FF000000)) <<  8 |
+	    (i & UINT64_C(0x0000000000FF0000)) << 24 |
+	    (i & UINT64_C(0x000000000000FF00)) << 40 |
+	    (i & UINT64_C(0x00000000000000FF)) << 56;
+	return i;
+}
+
+#ifdef OF_BIG_ENDIAN
+static OF_INLINE void
+OF_BSWAP32_V(uint32_t *buf, size_t len)
+{
 	while (len--) {
-		t = (uint32_t)((uint32_t)buf[3] << 8 | buf[2]) << 16 |
-		    ((uint32_t)buf[1] << 8 | buf[0]);
-		*(uint32_t*)buf = t;
-		buf += sizeof(t);
+		*buf = OF_BSWAP32(*buf);
+		buf++;
 	}
 }
-#elif defined(OF_LITTLE_ENDIAN)
-#define OF_BSWAP_V(buf, len)
 #else
-#error Please define either OF_BIG_ENDIAN or OF_LITTLE_ENDIAN!
+#define OF_BSWAP32_V(buf, len)
 #endif
 
 #define OF_ROL(val, bits) \

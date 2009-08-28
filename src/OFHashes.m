@@ -167,7 +167,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 		}
 
 		memcpy(p, buffer, t);
-		OF_BSWAP_V(in, 16);
+		OF_BSWAP32_V((uint32_t*)in, 16);
 		md5_transform(buf, (uint32_t*)in);
 
 		buffer += t;
@@ -177,7 +177,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	/* Process data in 64-byte chunks */
 	while (size >= 64) {
 		memcpy(in, buffer, 64);
-		OF_BSWAP_V(in, 16);
+		OF_BSWAP32_V((uint32_t*)in, 16);
 		md5_transform(buf, (uint32_t*)in);
 
 		buffer += 64;
@@ -215,7 +215,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	if (count < 8) {
 		/* Two lots of padding: Pad the first block to 64 bytes */
 		memset(p, 0, count);
-		OF_BSWAP_V(in, 16);
+		OF_BSWAP32_V((uint32_t*)in, 16);
 		md5_transform(buf, (uint32_t*)in);
 
 		/* Now fill the next block with 56 bytes */
@@ -224,14 +224,14 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 		/* Pad block to 56 bytes */
 		memset(p, 0, count - 8);
 	}
-	OF_BSWAP_V(in, 14);
+	OF_BSWAP32_V((uint32_t*)in, 14);
 
 	/* Append length in bits and transform */
 	((uint32_t*)in)[14] = bits[0];
 	((uint32_t*)in)[15] = bits[1];
 
 	md5_transform(buf, (uint32_t*)in);
-	OF_BSWAP_V((uint8_t*)buf, 4);
+	OF_BSWAP32_V(buf, 4);
 
 	calculated = YES;
 
