@@ -76,14 +76,7 @@ OF_BSWAP64(uint64_t i)
 	    "bswap	%%edx\n\t"
 	    "xchgl	%%eax, %%edx" : "=A"(i): "A"(i));
 #else
-	i = (i & UINT64_C(0xFF00000000000000)) >> 56 |
-	    (i & UINT64_C(0x00FF000000000000)) >> 40 |
-	    (i & UINT64_C(0x0000FF0000000000)) >> 24 |
-	    (i & UINT64_C(0x000000FF00000000)) >>  8 |
-	    (i & UINT64_C(0x00000000FF000000)) <<  8 |
-	    (i & UINT64_C(0x0000000000FF0000)) << 24 |
-	    (i & UINT64_C(0x000000000000FF00)) << 40 |
-	    (i & UINT64_C(0x00000000000000FF)) << 56;
+	i = (uint64_t)OF_BSWAP32(i & 0xFFFFFFFF) << 32 | OF_BSWAP32(i >> 32);
 #endif
 	return i;
 }
