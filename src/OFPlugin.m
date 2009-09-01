@@ -27,7 +27,7 @@
 	OFPlugin *(*init_plugin)();
 	OFPlugin *plugin;
 
-	pathlen = [path length];
+	pathlen = [path cStringLength];
 	suffixlen = strlen(PLUGIN_SUFFIX);
 
 	if ((file = malloc(pathlen + suffixlen + 1)) == NULL) {

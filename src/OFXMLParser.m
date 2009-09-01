@@ -147,7 +147,7 @@ parse_numeric_entity(const char *entity, size_t length)
 					[cache appendCString: buf + last
 						  withLength: len];
 
-				if ([cache length] > 0) {
+				if ([cache cStringLength] > 0) {
 					OFString *str;
 
 					pool = [[OFAutoreleasePool alloc] init];
@@ -189,7 +189,7 @@ parse_numeric_entity(const char *entity, size_t length)
 					[cache appendCString: buf + last
 						  withLength: len];
 				cache_c = [cache cString];
-				cache_len = [cache length];
+				cache_len = [cache cStringLength];
 
 				if ((tmp = memchr(cache_c, ':',
 				    cache_len)) != NULL) {
@@ -251,7 +251,7 @@ parse_numeric_entity(const char *entity, size_t length)
 					[cache appendCString: buf + last
 						  withLength: len];
 				cache_c = [cache cString];
-				cache_len = [cache length];
+				cache_len = [cache cStringLength];
 
 				if ((tmp = memchr(cache_c, ':',
 				    cache_len)) != NULL) {
@@ -351,7 +351,7 @@ parse_numeric_entity(const char *entity, size_t length)
 						  withLength: len];
 
 				cache_c = [cache cString];
-				cache_len = [cache length];
+				cache_len = [cache cStringLength];
 
 				if ((tmp = memchr(cache_c, ':',
 				    cache_len)) != NULL ) {
@@ -458,7 +458,7 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				[cache appendCString: buf + last
 					  withLength: i - last];
-				cache_len = [cache length];
+				cache_len = [cache cStringLength];
 
 				pool = [[OFAutoreleasePool alloc] init];
 				[cache removeCharactersFromIndex: cache_len - 1

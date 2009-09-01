@@ -205,7 +205,7 @@ static int pagesize = 0;
 
 - (size_t)writeString: (OFString*)str
 {
-	return [self writeNBytes: [str length]
+	return [self writeNBytes: [str cStringLength]
 		      fromBuffer: [str cString]];
 }
 

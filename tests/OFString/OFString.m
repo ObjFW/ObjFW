@@ -88,7 +88,7 @@ main()
 
 	CHECK(![s2 compare: s4])
 	CHECK([[s1 appendString: s2] isEqual: @"test123"])
-	CHECK([s1 length] == 7)
+	CHECK([s1 cStringLength] == 7)
 	CHECK([s1 hash] == 0xC44F49A4)
 	CHECK([[s1 reverse] isEqual: @"321tset"])
 	CHECK([[s1 upper] isEqual: @"321TSET"])

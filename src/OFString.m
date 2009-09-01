@@ -437,7 +437,7 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 	self = [super init];
 
 	string = strdup([str cString]);
-	length = [str length];
+	length = [str cStringLength];
 
 	@try {
 		[self addMemoryToPool: string];
@@ -460,7 +460,7 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 	return string;
 }
 
-- (size_t)length
+- (size_t)cStringLength
 {
 	return length;
 }
@@ -510,7 +510,7 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 - (size_t)indexOfFirstOccurrenceOfString: (OFString*)str
 {
 	const char *str_c = [str cString];
-	size_t str_len = [str length];
+	size_t str_len = [str cStringLength];
 	size_t i;
 
 	if (str_len == 0)
@@ -529,7 +529,7 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 - (size_t)indexOfLastOccurrenceOfString: (OFString*)str
 {
 	const char *str_c = [str cString];
-	size_t str_len = [str length];
+	size_t str_len = [str cStringLength];
 	size_t i;
 
 	if (str_len == 0)
@@ -569,7 +569,7 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 
 - (BOOL)hasPrefix: (OFString*)prefix
 {
-	size_t len = [prefix length];
+	size_t len = [prefix cStringLength];
 
 	if (len > length)
 		return NO;
@@ -579,7 +579,7 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 
 - (BOOL)hasSuffix: (OFString*)suffix
 {
-	size_t len = [suffix length];
+	size_t len = [suffix cStringLength];
 
 	if (len > length)
 		return NO;
@@ -593,7 +593,7 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 	OFAutoreleasePool *pool;
 	OFArray *array;
 	const char *delim = [delimiter cString];
-	size_t delim_len = [delimiter length];
+	size_t delim_len = [delimiter cStringLength];
 	size_t i, last;
 
 	array = [OFMutableArray array];

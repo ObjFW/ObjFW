@@ -71,7 +71,7 @@ extern size_t of_string_unicode_to_utf8(uint32_t, char*);
  *
  * \param str A C string to initialize the OFString with
  * \param encoding The encoding of the C string
- * \param len The length of the string
+ * \param len The length of the C string
  * \return A new autoreleased OFString
  */
 + stringWithCString: (const char*)str
@@ -83,7 +83,7 @@ extern size_t of_string_unicode_to_utf8(uint32_t, char*);
  * length.
  *
  * \param str A UTF-8 encoded C string to initialize the OFString with
- * \param len The length of the string
+ * \param len The length of the UTF-8 encoded C string
  * \return A new autoreleased OFString
  */
 + stringWithCString: (const char*)str
@@ -138,7 +138,7 @@ extern size_t of_string_unicode_to_utf8(uint32_t, char*);
  *
  * \param str A C string to initialize the OFString with
  * \param encoding The encoding of the C string
- * \param len The length of the string
+ * \param len The length of the C string
  * \return An initialized OFString
  */
 - initWithCString: (const char*)str
@@ -150,7 +150,7 @@ extern size_t of_string_unicode_to_utf8(uint32_t, char*);
  * the specified length.
  *
  * \param str A UTF-8 encoded C string to initialize the OFString with
- * \param len The length of the string
+ * \param len The length of the UTF-8 encoded C string
  * \return An initialized OFString
  */
 - initWithCString: (const char*)str
@@ -190,9 +190,9 @@ extern size_t of_string_unicode_to_utf8(uint32_t, char*);
 - (const char*)cString;
 
 /**
- * \return The length of the OFString
+ * \return The length of the string which cString would return
  */
-- (size_t)length;
+- (size_t)cStringLength;
 
 /**
  * Compares the OFString to another object.

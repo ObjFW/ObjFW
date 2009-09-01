@@ -126,13 +126,13 @@ int _OFXMLElement_reference;
 	OFXMLAttribute **attrs_data;
 	OFString *ret, *tmp;
 
-	len = [name length] + 4;
+	len = [name cStringLength] + 4;
 	str_c = [self allocMemoryWithSize: len];
 
 	/* Start of tag */
 	*str_c = '<';
-	memcpy(str_c + 1, [name cString], [name length]);
-	i = [name length] + 1;
+	memcpy(str_c + 1, [name cString], [name cStringLength]);
+	i = [name cStringLength] + 1;
 
 	/* Attributes */
 	attrs_data = [attrs data];
@@ -143,7 +143,7 @@ int _OFXMLElement_reference;
 		OFString *attr_name = [attrs_data[j] name];
 		tmp = [[attrs_data[j] stringValue] stringByXMLEscaping];
 
-		len += [attr_name length] + [tmp length] + 4;
+		len += [attr_name cStringLength] + [tmp cStringLength] + 4;
 		@try {
 			str_c = [self resizeMemory: str_c
 					    toSize: len];
@@ -154,12 +154,12 @@ int _OFXMLElement_reference;
 
 		str_c[i++] = ' ';
 		memcpy(str_c + i, [attr_name cString],
-				[attr_name length]);
-		i += [attr_name length];
+				[attr_name cStringLength]);
+		i += [attr_name cStringLength];
 		str_c[i++] = '=';
 		str_c[i++] = '\'';
-		memcpy(str_c + i, [tmp cString], [tmp length]);
-		i += [tmp length];
+		memcpy(str_c + i, [tmp cString], [tmp cStringLength]);
+		i += [tmp cStringLength];
 		str_c[i++] = '\'';
 
 		[pool releaseObjects];
@@ -184,7 +184,7 @@ int _OFXMLElement_reference;
 				    [[data[j] string] cString]);
 		}
 
-		len += [tmp length] + [name length] + 2;
+		len += [tmp cStringLength] + [name cStringLength] + 2;
 		@try {
 			str_c = [self resizeMemory: str_c
 					    toSize: len];
@@ -194,12 +194,12 @@ int _OFXMLElement_reference;
 		}
 
 		str_c[i++] = '>';
-		memcpy(str_c + i, [tmp cString], [tmp length]);
-		i += [tmp length];
+		memcpy(str_c + i, [tmp cString], [tmp cStringLength]);
+		i += [tmp cStringLength];
 		str_c[i++] = '<';
 		str_c[i++] = '/';
-		memcpy(str_c + i, [name cString], [name length]);
-		i += [name length];
+		memcpy(str_c + i, [name cString], [name cStringLength]);
+		i += [name cStringLength];
 	} else
 		str_c[i++] = '/';
 

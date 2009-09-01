@@ -322,8 +322,8 @@
 {
 	const char *str_c = [str cString];
 	const char *repl_c = [repl cString];
-	size_t str_len = [str length];
-	size_t repl_len = [repl length];
+	size_t str_len = [str cStringLength];
+	size_t repl_len = [repl cStringLength];
 	size_t i, last, tmp_len;
 	char *tmp;
 
