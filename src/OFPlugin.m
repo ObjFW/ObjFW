@@ -16,34 +16,26 @@
 #include <dlfcn.h>
 
 #import "OFPlugin.h"
+#import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 
 @implementation OFPlugin
 + pluginFromFile: (OFString*)path
 {
-	char *file;
-	size_t pathlen, suffixlen;
+	OFAutoreleasePool *pool;
+	OFString *file;
 	void *handle;
 	OFPlugin *(*init_plugin)();
 	OFPlugin *plugin;
 
-	pathlen = [path cStringLength];
-	suffixlen = strlen(PLUGIN_SUFFIX);
+	pool = [[OFAutoreleasePool alloc] init];
+	file = [OFMutableString stringWithString: path];
+	[file appendCString: PLUGIN_SUFFIX];
 
-	if ((file = malloc(pathlen + suffixlen + 1)) == NULL) {
-		@throw [OFOutOfMemoryException newWithClass: self
-						       size: pathlen +
-							     suffixlen + 1];
-	}
-	memcpy(file, [path cString], pathlen);
-	memcpy(file + pathlen, PLUGIN_SUFFIX, suffixlen);
-	file[pathlen + suffixlen] = 0;
-
-	if ((handle = dlopen(file, RTLD_LAZY)) == NULL) {
-		free(file);
+	if ((handle = dlopen([file cString], RTLD_LAZY)) == NULL)
 		@throw [OFInitializationFailedException newWithClass: self];
-	}
-	free(file);
+
+	[pool release];
 
 	if ((init_plugin = dlsym(handle, "init_plugin")) == NULL ||
 	    (plugin = init_plugin()) == nil) {
