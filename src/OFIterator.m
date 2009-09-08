@@ -25,54 +25,63 @@ int _OFIterator_reference;
 					      selector: _cmd];
 }
 
-- initWithData: (OFList**)data_
+- initWithData: (struct of_dictionary_bucket*)data_
 	  size: (size_t)size_
 {
+	size_t i;
+
 	self = [super init];
 
-	data = data_;
 	size = size_;
+	data = [self allocMemoryForNItems: size
+				 withSize: sizeof(struct of_dictionary_bucket)];
 
-	last = NULL;
+	for (i = 0; i < size; i++) {
+		if (data_[i].key != nil) {
+			data[i].key = [data_[i].key copy];
+			data[i].object = [data_[i].object retain];
+		} else
+			data[i].key = nil;
+	}
 
 	return self;
+}
+
+- (void)dealloc
+{
+	size_t i;
+
+	for (i = 0; i < size; i++) {
+		if (data[i].key != nil) {
+			[data[i].key release];
+			[data[i].object release];
+		}
+	}
+
+	[super dealloc];
 }
 
 - (of_iterator_pair_t)nextKeyObjectPair
 {
 	of_iterator_pair_t next;
 
-	for (;;) {
-		if (last == NULL) {
-			for (; pos < size && data[pos] == nil; pos++);
-			if (pos == size) {
-				next.key = nil;
-				next.object = nil;
-				next.hash = 0;
-				return next;
-			}
+	for (; pos < size && data[pos].key == nil; pos++);
 
-			last = (of_dictionary_list_object_t*)
-			    [data[pos++] first];
-			next.key = last->key;
-			next.object = last->object;
-			next.hash = last->hash;
-			return next;
-		}
-
-		if ((last = last->next) != NULL) {
-			next.key = last->key;
-			next.object = last->object;
-			next.hash = last->hash;
-			return next;
-		}
+	if (pos < size) {
+		next.key = data[pos].key;
+		next.object = data[pos].object;
+		pos++;
+	} else {
+		next.key = nil;
+		next.object = nil;
 	}
+
+	return next;
 }
 
 - reset
 {
 	pos = 0;
-	last = NULL;
 
 	return self;
 }

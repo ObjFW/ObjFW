@@ -30,11 +30,4 @@
  * \param key The key whose object should be removed
  */
 - removeObjectForKey: (OFObject*)key;
-
-/**
- * Changes the hash size of the dictionary.
- *
- * \param hashsize The new hash size for the dictionary
- */
-- changeHashSize: (int)hashsize;
 @end

@@ -21,8 +21,6 @@ typedef struct __of_iterator_pair {
 	id	 key;
 	/// The object for the key
 	id	 object;
-	/// The hash of the key
-	uint32_t hash;
 } of_iterator_pair_t;
 
 extern int _OFIterator_reference;
@@ -32,13 +30,12 @@ extern int _OFIterator_reference;
  */
 @interface OFIterator: OFObject
 {
-	OFList		 **data;
-	size_t		 size;
+	struct of_dictionary_bucket *data;
+	size_t			    size;
 	size_t			    pos;
-	of_dictionary_list_object_t *last;
 }
 
-- initWithData: (OFList**)data
+- initWithData: (struct of_dictionary_bucket*)data
 	  size: (size_t)size;
 
 /**
@@ -54,6 +51,17 @@ extern int _OFIterator_reference;
 
 @interface OFDictionary (OFIterator)
 /**
+ * Creates an OFIterator for the dictionary.
+ *
+ * It will copy the data of the OFDictionary so that OFIterator will always
+ * operate on the data that was present when it was created. If you changed the
+ * OFDictionary and want to operate on the new data, you need to create a new
+ * OFIterator, as using reset will only reset the OFIterator, but won't update
+ * the data. It will also retain the data inside the OFDictionary so the
+ * OFIterator still works after you released the OFDictionary. Thus, if you want
+ * to get rid of the objects in the OFDictionary, you also need to release the
+ * OFIterator.
+ *
  * \return An OFIterator for the OFDictionary
  */
 - (OFIterator*)iterator;

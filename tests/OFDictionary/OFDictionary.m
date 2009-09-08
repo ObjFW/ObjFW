@@ -19,24 +19,24 @@
 #import "OFString.h"
 #import "OFExceptions.h"
 
-#define TESTS 15
+#define TESTS 14
 
 int
 main()
 {
 	int i = 0;
 
-	OFDictionary *dict = [OFMutableDictionary dictionaryWithHashSize: 16];
+	OFDictionary *dict = [OFMutableDictionary dictionary];
 	OFDictionary *dict2;
 	OFArray *keys, *objs;
-	OFIterator *iter = [dict iterator];
+	OFIterator *iter;
 	of_iterator_pair_t pair[2];
 
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFString *key1 = [OFString stringWithCString: "key1"];
-	OFString *key2 = [OFString stringWithCString: "key2"];
-	OFString *value1 = [OFString stringWithCString: "value1"];
-	OFString *value2 = [OFString stringWithCString: "value2"];
+	OFString *key1 = [OFString stringWithString: @"key1"];
+	OFString *key2 = [OFString stringWithString: @"key2"];
+	OFString *value1 = [OFString stringWithString: @"value1"];
+	OFString *value2 = [OFString stringWithString: @"value2"];
 
 	[dict setObject: value1
 		 forKey: key1];
@@ -57,18 +57,6 @@ main()
 	}
 
 	i++;
-	pair[0] = [iter nextKeyObjectPair];
-	pair[1] = [iter nextKeyObjectPair];
-	if (![pair[0].key isEqual: @"key2"] ||
-	    ![pair[0].object isEqual: @"value2"] ||
-	    ![pair[1].key isEqual: @"key1"] ||
-	    ![pair[1].object isEqual: @"value1"]) {
-		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
-		return 1;
-	}
-
-	i++;
-	[dict changeHashSize: 8];
 	iter = [dict iterator];
 	pair[0] = [iter nextKeyObjectPair];
 	pair[1] = [iter nextKeyObjectPair];
@@ -81,7 +69,7 @@ main()
 	}
 
 	i++;
-	if ([dict averageItemsPerBucket] != 1.0) {
+	if ([dict count] != 2) {
 		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);
 		return 1;
 	}
@@ -101,8 +89,8 @@ main()
 	i++;
 	[dict release];
 	dict = [OFDictionary dictionaryWithKeysAndObjects: @"foo", @"bar",
-							    @"baz", @"qux",
-							    nil];
+							   @"baz", @"qux",
+							   nil];
 
 	if (![[dict objectForKey: @"foo"] isEqual: @"bar"]) {
 		printf("\033[K\033[1;31mTest %d/%d failed!\033[m\n", i, TESTS);

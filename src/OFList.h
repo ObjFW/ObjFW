@@ -32,28 +32,14 @@ typedef struct __of_list_object
 {
 	of_list_object_t *first;
 	of_list_object_t *last;
-	size_t		 listobj_size;
 	size_t		 count;
 	BOOL		 retain_and_release;
 }
+
 /**
  * \return A new autoreleased OFList
  */
 + list;
-
-/**
- * \param listobj_size The size of a list object
- * \return A new autoreleased OFList with the specified list object size
- */
-+ listWithListObjectSize: (size_t)listobj_size;
-
-/**
- * Initializes an already allocated OFList with the specified list object size.
- *
- * \param listobj_size The size of a list object
- * \return An initialized OFList with the specified list object size
- */
-- initWithListObjectSize: (size_t)listobj_size;
 
 /**
  * Initializes an already allocated OFList that does not retain/release objects

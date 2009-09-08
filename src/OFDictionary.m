@@ -18,6 +18,8 @@
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 
+#define BUCKET_SIZE sizeof(struct of_dictionary_bucket)
+
 /* References for static linking */
 void _references_to_categories_of_OFDictionary()
 {
@@ -33,11 +35,6 @@ void _references_to_categories_of_OFDictionary()
 + dictionaryWithDictionary: (OFDictionary*)dict
 {
 	return [[[self alloc] initWithDictionary: dict] autorelease];
-}
-
-+ dictionaryWithHashSize: (int)hashsize
-{
-	return [[[self alloc] initWithHashSize: hashsize] autorelease];
 }
 
 + dictionaryWithObject: (OFObject*)obj
@@ -71,11 +68,10 @@ void _references_to_categories_of_OFDictionary()
 {
 	self = [super init];
 
-	size = 4096;
+	size = 1;
 
 	@try {
-		data = [self allocMemoryForNItems: size
-					 withSize: sizeof(OFList*)];
+		data = [self allocMemoryWithSize: BUCKET_SIZE];
 	} @catch (OFException *e) {
 		/*
 		 * We can't use [super dealloc] on OS X here. Compiler bug?
@@ -85,17 +81,14 @@ void _references_to_categories_of_OFDictionary()
 		[self dealloc];
 		@throw e;
 	}
-	memset(data, 0, size * sizeof(OFList*));
+	data[0].key = nil;
 
 	return self;
 }
 
 - initWithDictionary: (OFDictionary*)dict
 {
-	OFAutoreleasePool *pool;
-	OFIterator *iter;
-	of_iterator_pair_t pair;
-	of_iterator_pair_t (*next)(id, SEL);
+	size_t i;
 
 	self = [super init];
 
@@ -107,95 +100,28 @@ void _references_to_categories_of_OFDictionary()
 						       selector: _cmd];
 	}
 
+	@try {
+		data = [self allocMemoryForNItems: dict->size
+					 withSize: BUCKET_SIZE];
+	} @catch (OFException *e) {
+		/*
+		 * We can't use [super dealloc] on OS X here. Compiler bug?
+		 * Anyway, we didn't do anything yet anyway, so [self dealloc]
+		 * works.
+		 */
+		[self dealloc];
+		@throw e;
+	}
 	size = dict->size;
 
-	@try {
-		data = [self allocMemoryForNItems: size
-					 withSize: sizeof(OFList*)];
-		memset(data, 0, size * sizeof(OFList*));
-
-		pool = [[OFAutoreleasePool alloc] init];
-		iter = [dict iterator];
-		next = (of_iterator_pair_t(*)(id, SEL))
-		    [iter methodForSelector: @selector(nextKeyObjectPair)];
-	} @catch (OFException *e) {
-		/*
-		 * We can't use [super dealloc] on OS X here. Compiler bug?
-		 * Anyway, set size to 0 so that [self dealloc] works.
-		 */
-		size = 0;
-		[self dealloc];
-		@throw e;
+	for (i = 0; i < size; i++) {
+		if (dict->data[i].key != nil) {
+			data[i].key = [dict->data[i].key copy];
+			data[i].object = [dict->data[i].object retain];
+			data[i].hash = dict->data[i].hash;
+		} else
+			data[i].key = nil;
 	}
-
-	for (;;) {
-		uint32_t hash;
-		OFObject <OFCopying> *key;
-
-		pair = next(iter, @selector(nextKeyObjectPair));
-
-		if (pair.key == nil || pair.object == nil)
-			break;
-
-		hash = pair.hash & (size - 1);
-
-		@try {
-			key = [pair.key copy];
-		} @catch (OFException *e) {
-			[self dealloc];
-			@throw e;
-		}
-
-		@try {
-			of_dictionary_list_object_t *o;
-
-			if (data[hash] == nil)
-				data[hash] = [[OFList alloc]
-				    initWithListObjectSize:
-				    sizeof(of_dictionary_list_object_t)];
-
-			o = (of_dictionary_list_object_t*)
-			    [data[hash] append: pair.object];
-			o->key = key;
-			o->hash = pair.hash;
-		} @catch (OFException *e) {
-			[key release];
-			[self dealloc];
-			@throw e;
-		}
-	}
-
-	[pool release];
-
-	return self;
-}
-
-- initWithHashSize: (int)hashsize
-{
-	self = [super init];
-
-	if (hashsize < 8 || hashsize >= 28) {
-		Class c = isa;
-		[super dealloc];
-		@throw [OFInvalidArgumentException newWithClass: c
-						       selector: _cmd];
-	}
-
-	size = (size_t)1 << hashsize;
-
-	@try {
-		data = [self allocMemoryForNItems: size
-					 withSize: sizeof(OFList*)];
-	} @catch (OFException *e) {
-		/*
-		 * We can't use [super dealloc] on OS X here. Compiler bug?
-		 * Anyway, set size to 0 so that [self dealloc] works.
-		 */
-		size = 0;
-		[self dealloc];
-		@throw e;
-	}
-	memset(data, 0, size * sizeof(OFList*));
 
 	return self;
 }
@@ -203,39 +129,14 @@ void _references_to_categories_of_OFDictionary()
 - initWithObject: (OFObject*)obj
 	  forKey: (OFObject <OFCopying>*)key
 {
-	Class c;
-	uint32_t fullhash, hash;
+	const SEL sel = @selector(setObject:forKey:);
+	IMP set = [OFMutableDictionary instanceMethodForSelector: sel];
 
 	self = [self init];
 
-	if (key == nil || obj == nil) {
-		c = isa;
-		[self dealloc];
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
-	}
-
-	fullhash = [key hash];
-	hash = fullhash & (size - 1);
-
 	@try {
-		key = [key copy];
+		set(self, sel, obj, key);
 	} @catch (OFException *e) {
-		[self dealloc];
-		@throw e;
-	}
-
-	@try {
-		of_dictionary_list_object_t *o;
-
-		data[hash] = [[OFList alloc] initWithListObjectSize:
-		    sizeof(of_dictionary_list_object_t)];
-
-		o = (of_dictionary_list_object_t*)[data[hash] append: obj];
-		o->key = key;
-		o->hash = fullhash;
-	} @catch (OFException *e) {
-		[key release];
 		[self dealloc];
 		@throw e;
 	}
@@ -246,62 +147,30 @@ void _references_to_categories_of_OFDictionary()
 - initWithObjects: (OFArray*)objs
 	  forKeys: (OFArray*)keys
 {
-	Class c;
-	OFObject <OFCopying> **keys_data;
-	OFObject **objs_data;
-	size_t count, i;
+	id *objs_data, *keys_data;
+	size_t objs_count, i;
+	const SEL sel = @selector(setObject:forKey:);
+	IMP set = [OFMutableDictionary instanceMethodForSelector: sel];
 
 	self = [self init];
-	count = [keys count];
 
-	if (keys == nil || objs == nil || count != [objs count]) {
-		c = isa;
+	objs_data = [objs data];
+	keys_data = [keys data];
+	objs_count = [objs count];
+
+	if (objs == nil || keys == nil || objs_count != [keys count]) {
+		Class c = isa;
 		[self dealloc];
-		@throw [OFInvalidArgumentException newWithClass: isa
+		@throw [OFInvalidArgumentException newWithClass: c
 						       selector: _cmd];
 	}
 
-	keys_data = [keys data];
-	objs_data = [objs data];
-
-	for (i = 0; i < count; i++) {
-		uint32_t fullhash, hash;
-		OFObject <OFCopying> *key;
-
-		if (keys_data[i] == nil || objs_data[i] == nil) {
-			c = isa;
-			[self dealloc];
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
-		}
-
-		fullhash = [keys_data[i] hash];
-		hash = fullhash & (size - 1);
-
-		@try {
-			key = [keys_data[i] copy];
-		} @catch (OFException *e) {
-			[self dealloc];
-			@throw e;
-		}
-
-		@try {
-			of_dictionary_list_object_t *o;
-
-			if (data[hash] == nil)
-				data[hash] = [[OFList alloc]
-				    initWithListObjectSize:
-				    sizeof(of_dictionary_list_object_t)];
-
-			o = (of_dictionary_list_object_t*)
-			    [data[hash] append: objs_data[i]];
-			o->key = key;
-			o->hash = fullhash;
-		} @catch (OFException *e) {
-			[key release];
-			[self dealloc];
-			@throw e;
-		}
+	@try {
+		for (i = 0; i < objs_count; i++)
+			set(self, sel, objs_data[i], keys_data[i]);
+	} @catch (OFException *e) {
+		[self dealloc];
+		@throw e;
 	}
 
 	return self;
@@ -320,127 +189,54 @@ void _references_to_categories_of_OFDictionary()
 	return ret;
 }
 
-- initWithKey: (OFObject <OFCopying>*)first
+- initWithKey: (OFObject <OFCopying>*)key
       argList: (va_list)args
 {
-	OFObject <OFCopying> *key;
-	OFObject *obj;
-	Class c;
-	uint32_t fullhash, hash;
+	const SEL sel = @selector(setObject:forKey:);
+	IMP set = [OFMutableDictionary instanceMethodForSelector: sel];
 
 	self = [self init];
-	obj = va_arg(args, OFObject*);
-
-	if (first == nil || obj == nil) {
-		c = isa;
-		[self dealloc];
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
-	}
-
-	fullhash = [first hash];
-	hash = fullhash & (size - 1);
 
 	@try {
-		key = [first copy];
+		set(self, sel, va_arg(args, OFObject*), key);
+		while ((key = va_arg(args, OFObject <OFCopying>*)) != nil)
+			set(self, sel, va_arg(args, OFObject*), key);
 	} @catch (OFException *e) {
 		[self dealloc];
 		@throw e;
-	}
-
-	@try {
-		of_dictionary_list_object_t *o;
-
-		if (data[hash] == nil)
-			data[hash] = [[OFList alloc] initWithListObjectSize:
-			    sizeof(of_dictionary_list_object_t)];
-
-		o = (of_dictionary_list_object_t*)[data[hash] append: obj];
-		o->key = key;
-		o->hash = fullhash;
-	} @catch (OFException *e) {
-		[key release];
-		[self dealloc];
-		@throw e;
-	}
-
-	while ((key = va_arg(args, OFObject <OFCopying>*)) != nil) {
-		if ((obj = va_arg(args, OFObject*)) == nil) {
-			c = isa;
-			[self dealloc];
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
-		}
-
-		fullhash = [key hash];
-		hash = fullhash & (size - 1);
-
-		@try {
-			key = [key copy];
-		} @catch (OFException *e) {
-			[self dealloc];
-			@throw e;
-		}
-
-		@try {
-			of_dictionary_list_object_t *o;
-
-			if (data[hash] == nil)
-				data[hash] = [[OFList alloc]
-				    initWithListObjectSize:
-				    sizeof(of_dictionary_list_object_t)];
-
-			o = (of_dictionary_list_object_t*)
-			    [data[hash] append: obj];
-			o->key = key;
-			o->hash = fullhash;
-		} @catch (OFException *e) {
-			[key release];
-			[self dealloc];
-			@throw e;
-		}
 	}
 
 	return self;
 }
 
-- (float)averageItemsPerBucket
+- (id)objectForKey: (OFObject <OFCopying>*)key
 {
-	size_t items, buckets, i;
-
-	items = 0;
-	buckets = 0;
-
-	for (i = 0; i < size; i++) {
-		if (data[i] != nil) {
-			items += [data[i] count];
-			buckets++;
-		}
-	}
-
-	return (float)items / buckets;
-}
-
-- (id)objectForKey: (OFObject*)key
-{
-	uint32_t hash;
-	of_dictionary_list_object_t *iter;
+	uint32_t i, hash;
 
 	if (key == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	hash = [key hash] & (size - 1);
+	hash = [key hash];
 
-	if (data[hash] == nil)
+	for (i = hash & (size - 1); i < size && data[i].key != nil &&
+	    ![data[i].key isEqual: key]; i++);
+
+	/* In case the last bucket is already used */
+	if (i >= size)
+		for (i = 0; i < size && data[i].key != nil &&
+		    ![data[i].key isEqual: key]; i++);
+
+	/* Key not in dictionary */
+	if (i >= size || data[i].key == nil)
 		return nil;
 
-	for (iter = (of_dictionary_list_object_t*)[data[hash] first];
-	    iter != NULL; iter = iter->next)
-		if ([iter->key isEqual: key])
-			return iter->object;
+	return data[i].object;
+}
 
-	return nil;
+- (size_t)count
+{
+	return count;
 }
 
 - (id)copy
@@ -464,14 +260,9 @@ void _references_to_categories_of_OFDictionary()
 	size_t i;
 
 	for (i = 0; i < size; i++) {
-		if (data[i] != nil) {
-			of_dictionary_list_object_t *iter;
-
-			for (iter = (of_dictionary_list_object_t*)
-			    [data[i] first]; iter != NULL; iter = iter->next)
-				[iter->key release];
-
-			[data[i] release];
+		if (data[i].key != nil) {
+			[data[i].key release];
+			[data[i].object release];
 		}
 	}
 
@@ -486,12 +277,6 @@ void _references_to_categories_of_OFDictionary()
 }
 
 - removeObjectForKey: (OFObject*)key
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
-}
-
-- changeHashSize: (int)hashsize
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];

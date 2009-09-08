@@ -12,31 +12,27 @@
 #include <stdarg.h>
 
 #import "OFObject.h"
-#import "OFList.h"
 #import "OFArray.h"
 
-typedef struct __of_dictionary_list_object
+struct of_dictionary_bucket
 {
-	/* of_list_object_t */
-	struct __of_dictionary_list_object *next;
-	struct __of_dictionary_list_object *prev;
-	id				   object;
-	/* OFDictionary additions */
-	id				   key;
-	uint32_t			   hash;
-} of_dictionary_list_object_t;
+	OFObject <OFCopying> *key;
+	OFObject	     *object;
+	uint32_t	     hash;
+};
 
 /**
  * The OFDictionary class provides a class for using hash tables.
  */
 @interface OFDictionary: OFObject <OFCopying, OFMutableCopying>
 {
-	OFList **data;
-	size_t size;
+	struct of_dictionary_bucket *data;
+	size_t			    size;
+	size_t			    count;
 }
 
 /**
- * Creates a new OFDictionary, defaulting to a 12 bit hash.
+ * Creates a new OFDictionary.
  *
  * \return A new autoreleased OFDictionary
  */
@@ -49,14 +45,6 @@ typedef struct __of_dictionary_list_object
  * \return A new autoreleased OFDictionary
  */
 + dictionaryWithDictionary: (OFDictionary*)dict;
-
-/**
- * Creates a new OFDictionary with a hash of N bits.
- *
- * \param bits The size of the hash to use
- * \return A new autoreleased OFDictionary
- */
-+ dictionaryWithHashSize: (int)hashsize;
 
 /**
  * Creates a new OFDictionary with the specified key and object.
@@ -81,13 +69,13 @@ typedef struct __of_dictionary_list_object
 /**
  * Creates a new OFDictionary with the specified keys objects.
  *
- * \param first The first key
+ * \param key The first key
  * \return A new autoreleased OFDictionary
  */
-+ dictionaryWithKeysAndObjects: (OFObject <OFCopying>*)first, ...;
++ dictionaryWithKeysAndObjects: (OFObject <OFCopying>*)key, ...;
 
 /**
- * Initializes an already allocated OFDictionary, defaulting to a 12 bit hash.
+ * Initializes an already allocated OFDictionary.
  *
  * \return An initialized OFDictionary
  */
@@ -101,14 +89,6 @@ typedef struct __of_dictionary_list_object
  * \return An initialized OFDictionary
  */
 - initWithDictionary: (OFDictionary*)dict;
-
-/**
- * Initializes an already allocated OFDictionary with a hash of N bits.
- *
- * \param bits The size of the hash to use
- * \return An initialized OFDictionary
- */
-- initWithHashSize: (int)hashsize;
 
 /**
  * Initializes an already allocated OFDictionary with the specified key and
@@ -152,22 +132,19 @@ typedef struct __of_dictionary_list_object
       argList: (va_list)args;
 
 /**
- * \return The average number of items in a used bucket. Buckets that are
- *	   completely empty are not in the calculation. If this value is >= 2.0,
- *	   you should resize the dictionary, in most cases even earlier!
- */
-- (float)averageItemsPerBucket;
-
-/**
  * \param key The key whose object should be returned
  * \return The object for the given key or nil if the key was not found
  */
-- (id)objectForKey: (OFObject*)key;
+- (id)objectForKey: (OFObject <OFCopying>*)key;
+
+/**
+ * \return The number of objects in the dictionary
+ */
+- (size_t)count;
 
 - setObject: (OFObject*)obj
      forKey: (OFObject <OFCopying>*)key;
 - removeObjectForKey: (OFObject*)key;
-- changeHashSize: (int)hashsize;
 @end
 
 #import "OFIterator.h"

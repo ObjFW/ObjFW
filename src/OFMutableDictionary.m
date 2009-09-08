@@ -17,124 +17,133 @@
 #import "OFExceptions.h"
 #import "OFMacros.h"
 
+#define BUCKET_SIZE sizeof(struct of_dictionary_bucket)
+
+static OF_INLINE void
+resize(id self, size_t count, struct of_dictionary_bucket **data, size_t *size)
+{
+	float fill = (float)count / *size;
+	size_t newsize;
+	struct of_dictionary_bucket *newdata;
+	uint32_t i;
+
+	/*
+	 * FIXME:
+	 *
+	 * Throw an OFOutOfRangeException if it would overflow (unlikely to
+	 * happen).
+	 */
+	if (fill > 0.75)
+		newsize = *size * 2;
+	else if (fill < 0.25)
+		newsize = *size / 2;
+	else
+		return;
+
+	newdata = [self allocMemoryForNItems: newsize
+				    withSize: BUCKET_SIZE];
+	memset(newdata, 0, newsize * BUCKET_SIZE);
+
+	for (i = 0; i < *size; i++) {
+		if ((*data)[i].key != nil) {
+			uint32_t j = (*data)[i].hash & (newsize - 1);
+			for (; j < newsize && newdata[j].key != nil; j++);
+
+			/* In case the last bucket is already used */
+			if (j >= newsize)
+				for (j = 0; j < newsize &&
+				    newdata[j].key != nil; i++);
+			if (j >= newsize)
+				@throw [OFOutOfRangeException
+				    newWithClass: [self class]];
+
+			newdata[j].key = (*data)[i].key;
+			newdata[j].object = (*data)[i].object;
+			newdata[j].hash = (*data)[i].hash;
+		}
+	}
+
+	[self freeMemory: *data];
+	*data = newdata;
+	*size = newsize;
+}
+
 @implementation OFMutableDictionary
 - setObject: (OFObject*)obj
      forKey: (OFObject <OFCopying>*)key
 {
-	uint32_t fullhash, hash;
-	of_dictionary_list_object_t *iter;
+	uint32_t i, hash;
 
 	if (key == nil || obj == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	fullhash = [key hash];
-	hash = fullhash & (size - 1);
+	hash = [key hash];
 
-	if (data[hash] == nil)
-		data[hash] = [[OFList alloc] initWithListObjectSize:
-		    sizeof(of_dictionary_list_object_t)];
+	for (i = hash & (size - 1); i < size && data[i].key != nil &&
+	    ![data[i].key isEqual: key]; i++);
 
-	for (iter = (of_dictionary_list_object_t*)[data[hash] first];
-	    iter != NULL; iter = iter->next) {
-		if ([iter->key isEqual: key]) {
-			[obj retain];
-			[iter->object release];
-			iter->object = obj;
+	/* In case the last bucket is already used */
+	if (i >= size)
+		for (i = 0; i < size && data[i].key != nil &&
+		    ![data[i].key isEqual: key]; i++);
 
-			return self;
-		}
+	/* Key not in dictionary */
+	if (i >= size || data[i].key == nil) {
+		resize(self, count + 1, &data, &size);
+
+		i = hash & (size - 1);
+		for (; i < size && data[i].key != nil; i++);
+
+		/* In case the last bucket is already used */
+		if (i >= size)
+			for (i = 0; i < size && data[i].key != nil; i++);
+		if (i >= size)
+			@throw [OFOutOfRangeException newWithClass: isa];
+
+		data[i].key = [key copy];
+		data[i].object = [obj retain];
+		data[i].hash = hash;
+		count++;
+
+		return self;
 	}
 
-	key = [key copy];
-
-	@try {
-		of_dictionary_list_object_t *o;
-
-		o = (of_dictionary_list_object_t*)[data[hash] append: obj];
-		o->key = key;
-		o->hash = fullhash;
-	} @catch (OFException *e) {
-		[key release];
-		@throw e;
-	}
+	[obj retain];
+	[data[i].object release];
+	data[i].object = obj;
 
 	return self;
 }
 
 - removeObjectForKey: (OFObject*)key
 {
-	uint32_t hash;
-	of_dictionary_list_object_t *iter;
+	uint32_t i, hash;
 
 	if (key == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	hash = [key hash] & (size - 1);
+	hash = [key hash];
 
-	if (data[hash] == nil)
+	for (i = hash & (size - 1); i < size && data[i].key != nil &&
+	    ![data[i].key isEqual: key]; i++);
+
+	/* In case the last bucket is already used */
+	if (i >= size)
+		for (i = 0; i < size && data[i].key != nil &&
+		    ![data[i].key isEqual: key]; i++);
+
+	/* Key not in dictionary */
+	if (i >= size || data[i].key == nil)
 		return self;
 
-	for (iter = (of_dictionary_list_object_t*)[data[hash] first];
-	    iter != NULL; iter = iter->next) {
-		if ([iter->object isEqual: key]) {
-			[iter->key release];
-			[data[hash] remove: (of_list_object_t*)iter];
+	[data[i].key release];
+	[data[i].object release];
+	data[i].key = nil;
 
-			if ([data[hash] first] == NULL) {
-				[data[hash] release];
-				data[hash] = nil;
-			}
-
-			return self;
-		}
-	}
-
-	return self;
-}
-
-- changeHashSize: (int)hashsize
-{
-	OFList **newdata;
-	size_t newsize, i;
-	of_dictionary_list_object_t *iter;
-
-	if (hashsize < 8 || hashsize >= 28)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
-
-	newsize = (size_t)1 << hashsize;
-	newdata = [self allocMemoryForNItems: newsize
-				    withSize: sizeof(OFList*)];
-	memset(newdata, 0, newsize * sizeof(OFList*));
-
-	for (i = 0; i < size; i++) {
-		if (OF_LIKELY(data[i] == nil))
-			continue;
-
-		for (iter = (of_dictionary_list_object_t*)[data[i] first];
-		    iter != NULL; iter = iter->next) {
-			uint32_t hash = iter->hash & (newsize - 1);
-			of_dictionary_list_object_t *o;
-
-			if (newdata[hash] == nil)
-				newdata[hash] = [[OFList alloc]
-				    initWithListObjectSize:
-				    sizeof(of_dictionary_list_object_t)];
-
-			o = (of_dictionary_list_object_t*)
-			    [newdata[hash] append: iter->object];
-			o->key = iter->key;
-			o->hash = iter->hash;
-		}
-
-		[data[i] release];
-	}
-
-	[self freeMemory: data];
-	data = newdata;
-	size = newsize;
+	count--;
+	resize(self, count, &data, &size);
 
 	return self;
 }
