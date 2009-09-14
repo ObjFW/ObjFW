@@ -1,6 +1,7 @@
 PROG_NOINST = tests${PROG_SUFFIX}
 SRCS = main.m	\
-       object.m
+       object.m	\
+       string.m
 
 include ../buildsys.mk
 include ../extra.mk

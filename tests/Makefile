@@ -1,13 +1,11 @@
 include ../extra.mk
 
-SUBDIRS = OFObject		\
-	  OFAutoreleasePool	\
+SUBDIRS = OFAutoreleasePool	\
 	  OFDataArray		\
 	  OFArray		\
 	  OFDictionary		\
 	  OFHashes		\
 	  ${OFPLUGIN}		\
-	  OFString		\
 	  OFTCPSocket		\
 	  OFThread		\
 	  OFList		\

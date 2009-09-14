@@ -18,6 +18,7 @@ extern void failed(OFString*, OFString*);
 #define TEST(test, cond)			\
 	{					\
 		testing(module, test);		\
+						\
 		if (cond)			\
 			success(module, test);	\
 		else				\
@@ -27,6 +28,8 @@ extern void failed(OFString*, OFString*);
 	{					\
 		BOOL caught = NO;		\
 						\
+		testing(module, test);		\
+						\
 		@try {				\
 			code;			\
 		} @catch (exception *e) {	\
@@ -34,5 +37,8 @@ extern void failed(OFString*, OFString*);
 			[e dealloc];		\
 		}				\
 						\
-		TEST(test, caught)		\
+		if (caught)			\
+			success(module, test);	\
+		else				\
+			failed(module, test);	\
 	}

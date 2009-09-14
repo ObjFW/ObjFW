@@ -20,6 +20,9 @@
 #import <OFAutoreleasePool.h>
 
 extern void object_tests();
+extern void string_tests();
+
+static int fails = 0;
 
 static void
 output(OFString *str, int color)
@@ -38,8 +41,8 @@ output(OFString *str, int color)
 	}
 
 	fputs([str cString], stdout);
-
 	fputs("\033[m", stdout);
+	fflush(stdout);
 #else
 #error No output method!
 #endif
@@ -75,14 +78,15 @@ failed(OFString *module, OFString *test)
 						    [module cString],
 						    [test cString]];
 	output(str, 2);
+	fails++;
 	[pool release];
-	exit(1);
 }
 
 int
 main()
 {
 	object_tests();
+	string_tests();
 
-	return 0;
+	return fails;
 }
