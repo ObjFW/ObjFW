@@ -34,7 +34,7 @@ parse_numeric_entity(const char *entity, size_t length)
 {
 	uint32_t c;
 	size_t i;
-	char buf[4];
+	char buf[5];
 
 	if (length == 1 || *entity != '#')
 		return nil;
@@ -71,6 +71,7 @@ parse_numeric_entity(const char *entity, size_t length)
 
 	if ((i = of_string_unicode_to_utf8(c, buf)) == 0)
 		return nil;
+	buf[i] = 0;
 
 	return [OFString stringWithCString: buf
 				    length: i];
