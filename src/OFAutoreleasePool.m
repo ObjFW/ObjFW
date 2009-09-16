@@ -13,26 +13,39 @@
 
 #include <stdlib.h>
 
+#ifndef _WIN32
+#include <pthread.h>
+#else
+#include <windows.h>
+#endif
+
 #import "OFAutoreleasePool.h"
 #import "OFList.h"
 #import "OFThread.h"
 #import "OFExceptions.h"
 
-static OFTLSKey *pool_list_key;
+/*
+ * Pay special attention to NULL and nil in this file, they might be different!
+ * Use NULL for TLS values and nil for instance variables.
+ */
+
+#ifndef _WIN32
+static pthread_key_t first_key, last_key;
+#else
+static DWORD first_key, last_key;
+#endif
 
 static void
-release_list(void *list)
+release_all(void *list)
 {
-	of_list_object_t *first, *iter;
-	IMP release;
+#ifndef _WIN32
+	void *first = pthread_getspecific(first_key);
+#else
+	void *first = TlsGetValue(first_key);
+#endif
 
-	if ((first = [(OFList*)list first]) != NULL)
-		release = [first->object methodForSelector: @selector(release)];
-
-	for (iter = first; iter != NULL; iter = iter->next)
-		release(iter->object, @selector(release));
-
-	[(OFList*)list release];
+	if (first != NULL)
+		[(OFAutoreleasePool*)first release];
 }
 
 @implementation OFAutoreleasePool
@@ -41,30 +54,47 @@ release_list(void *list)
 	if (self != [OFAutoreleasePool class])
 		return;
 
-	pool_list_key = [[OFTLSKey alloc] initWithDestructor: release_list];
+#ifndef _WIN32
+	if (pthread_key_create(&first_key, release_all) ||
+	    pthread_key_create(&last_key, NULL))
+#else
+	/* FIXME: Call destructor */
+	if ((first_key = TlsAlloc()) == TLS_OUT_OF_INDEXES ||
+	    (last_key = TlsAlloc()) == TLS_OUT_OF_INDEXES)
+#endif
+		@throw [OFInitializationFailedException newWithClass: self];
 }
 
 + (void)addObjectToTopmostPool: (OFObject*)obj
 {
-	OFList *pool_list = [OFThread objectForTLSKey: pool_list_key];
+#ifndef _WIN32
+	void *last = pthread_getspecific(last_key);
+#else
+	void *last = TlsGetValue(last_key);
+#endif
 
-	if (pool_list == nil || [pool_list last] == NULL) {
+	if (last == NULL) {
 		@try {
 			[[self alloc] init];
-			pool_list = [OFThread objectForTLSKey: pool_list_key];
 		} @catch (OFException *e) {
 			[obj release];
 			@throw e;
 		}
+
+#ifndef _WIN32
+		last = pthread_getspecific(last_key);
+#else
+		last = TlsGetValue(last_key);
+#endif
 	}
 
-	if (pool_list == nil || [pool_list last] == NULL) {
+	if (last == NULL) {
 		[obj release];
 		@throw [OFInitializationFailedException newWithClass: self];
 	}
 
 	@try {
-		[[pool_list last]->object addObject: obj];
+		[(OFAutoreleasePool*)last addObject: obj];
 	} @catch (OFException *e) {
 		[obj release];
 		@throw e;
@@ -73,35 +103,49 @@ release_list(void *list)
 
 - init
 {
-	OFList *pool_list;
-
 	self = [super init];
 
-	if ((pool_list = [OFThread objectForTLSKey: pool_list_key]) == nil) {
-		@try {
-			pool_list = [[OFList alloc]
-			    initWithoutRetainAndRelease];
-		} @catch (OFException *e) {
-			[self dealloc];
-			@throw e;
-		}
+#ifndef _WIN32
+	void *first = pthread_getspecific(first_key);
+	void *last = pthread_getspecific(last_key);
+#else
+	void *first = TlsGetValue(first_key);
+	void *last = TlsGetValue(last_key);
+#endif
 
-		@try {
-			[OFThread setObject: pool_list
-				  forTLSKey: pool_list_key];
-		} @catch (OFException *e) {
-			[self dealloc];
-			@throw e;
-		} @finally {
-			[pool_list release];
+#ifndef _WIN32
+	if (pthread_setspecific(last_key, self)) {
+#else
+	if (!TlsSetValue(last_key, self)) {
+#endif
+		Class c = isa;
+		[super dealloc];
+		@throw [OFInitializationFailedException newWithClass: c];
+	}
+
+	if (first == NULL) {
+#ifndef _WIN32
+		if (pthread_setspecific(first_key, self)) {
+#else
+		if (!TlsSetValue(first_key, self)) {
+#endif
+			Class c = isa;
+
+#ifndef _WIN32
+			pthread_setspecific(last_key, last);
+#else
+			TlsSetValue(last_key, last);
+#endif
+
+			[super dealloc];
+			@throw [OFInitializationFailedException
+			    newWithClass: c];
 		}
 	}
 
-	@try {
-		listobj = [pool_list append: self];
-	} @catch (OFException *e) {
-		[self dealloc];
-		@throw e;
+	if (last != NULL) {
+		prev = (OFAutoreleasePool*)last;
+		prev->next = self;
 	}
 
 	return self;
@@ -109,18 +153,21 @@ release_list(void *list)
 
 - (void)dealloc
 {
-	/*
-	 * FIXME:
-	 * Maybe we should get the objects ourself, release them and then
-	 * release the pool without calling its release method? This way,
-	 * there wouldn't be a recursion.
-	 */
-	if (listobj->next != NULL)
-		[listobj->next->object release];
+	[next dealloc];
 
-	[self releaseObjects];
+	if (prev != nil)
+		prev->next = nil;
+#ifndef _WIN32
+	pthread_setspecific(last_key, (prev != nil ? prev : NULL));
+	if (pthread_getspecific(first_key) == self)
+		pthread_setspecific(first_key, NULL);
+#else
+	TlsSetValue(last_key, (prev != nil ? prev : NULL));
+	if (TlsGetValue(first_key) == self)
+		TlsSetValue(first_key, NULL);
+#endif
 
-	[[OFThread objectForTLSKey: pool_list_key] remove: listobj];
+	[objects release];
 
 	[super dealloc];
 }
@@ -138,8 +185,7 @@ release_list(void *list)
 
 - releaseObjects
 {
-	if (listobj->next != NULL)
-		[listobj->next->object releaseObjects];
+	[next releaseObjects];
 
 	if (objects == nil)
 		return self;

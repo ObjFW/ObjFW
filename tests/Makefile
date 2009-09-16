@@ -1,7 +1,6 @@
 include ../extra.mk
 
-SUBDIRS = OFAutoreleasePool	\
-	  OFDataArray		\
+SUBDIRS = OFDataArray		\
 	  OFArray		\
 	  OFDictionary		\
 	  OFHashes		\

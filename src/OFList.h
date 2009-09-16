@@ -33,21 +33,12 @@ typedef struct __of_list_object
 	of_list_object_t *first;
 	of_list_object_t *last;
 	size_t		 count;
-	BOOL		 retain_and_release;
 }
 
 /**
  * \return A new autoreleased OFList
  */
 + list;
-
-/**
- * Initializes an already allocated OFList that does not retain/release objects
- * added to it.
- *
- * \return An initialized OFList
- */
-- initWithoutRetainAndRelease;
 
 /**
  * \return The first list object in the list

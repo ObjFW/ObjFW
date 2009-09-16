@@ -28,17 +28,6 @@
 
 	first = NULL;
 	last = NULL;
-	retain_and_release = YES;
-
-	return self;
-}
-
-- initWithoutRetainAndRelease
-{
-	self = [super init];
-
-	first = NULL;
-	last = NULL;
 
 	return self;
 }
@@ -81,8 +70,7 @@
 
 	count++;
 
-	if (retain_and_release)
-		[obj retain];
+	[obj retain];
 
 	return o;
 }
@@ -105,8 +93,7 @@
 
 	count++;
 
-	if (retain_and_release)
-		[obj retain];
+	[obj retain];
 
 	return o;
 }
@@ -131,8 +118,7 @@
 
 	count++;
 
-	if (retain_and_release)
-		[obj retain];
+	[obj retain];
 
 	return o;
 }
@@ -157,8 +143,7 @@
 
 	count++;
 
-	if (retain_and_release)
-		[obj retain];
+	[obj retain];
 
 	return o;
 }
@@ -177,8 +162,7 @@
 
 	count--;
 
-	if (retain_and_release)
-		[listobj->object release];
+	[listobj->object release];
 
 	[self freeMemory: listobj];
 
@@ -213,13 +197,8 @@
 
 - (id)copy
 {
-	OFList *new;
+	OFList *new = [[OFList alloc] init];
 	of_list_object_t *iter, *o, *prev;
-
-	if (retain_and_release)
-		new = [[OFList alloc] init];
-	else
-		new = [[OFList alloc] initWithoutRetainAndRelease];
 
 	o = NULL;
 	prev = NULL;
@@ -238,8 +217,7 @@
 
 			new->count++;
 
-			if (retain_and_release)
-				[o->object retain];
+			[o->object retain];
 
 			prev = o;
 		}

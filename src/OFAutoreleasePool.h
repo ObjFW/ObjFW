@@ -20,8 +20,8 @@
  */
 @interface OFAutoreleasePool: OFObject
 {
-	OFArray		 *objects;
-	of_list_object_t *listobj;
+	OFArray		  *objects;
+	OFAutoreleasePool *next, *prev;
 }
 
 /**

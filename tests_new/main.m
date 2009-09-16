@@ -16,8 +16,8 @@
 #endif
 #include <stdlib.h>
 
-#import <OFString.h>
-#import <OFAutoreleasePool.h>
+#import "OFString.h"
+#import "OFAutoreleasePool.h"
 
 extern void object_tests();
 extern void string_tests();
