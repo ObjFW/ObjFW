@@ -35,6 +35,7 @@ static pthread_key_t first_key, last_key;
 static DWORD first_key, last_key;
 #endif
 
+#ifndef _WIN32 /* Not used on Win32 yet */
 static void
 release_all(void *list)
 {
@@ -47,6 +48,7 @@ release_all(void *list)
 	if (first != NULL)
 		[(OFAutoreleasePool*)first release];
 }
+#endif
 
 @implementation OFAutoreleasePool
 + (void)initialize
