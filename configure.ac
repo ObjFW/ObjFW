@@ -175,7 +175,6 @@ AC_CHECK_FUNC(objc_sync_enter,, [
 
 test x"$GCC" = x"yes" && CFLAGS="$CFLAGS -Werror"
 if test x"$GOBJC" = x"yes"; then
-	old_OBJCFLAGS="$OBJCFLAGS"
 	OBJCFLAGS="$OBJCFLAGS -Werror"
 
 	AC_MSG_CHECKING(whether gcc has bug objc/27438)
@@ -195,8 +194,28 @@ if test x"$GOBJC" = x"yes"; then
 		OFConstString *test = @"";
 		test++; /* Get rid of unused variable warning */
 		], [AC_MSG_RESULT(no)], [
-		AC_MSG_RESULT([yes, disabling -Werror])
-		OBJCFLAGS="$old_OBJCFLAGS"])
+		AC_MSG_RESULT([yes, adding -Wno-unused-variable])
+		OBJCFLAGS="$OBJCFLAGS -Wno-unused-variable"])
+
+	AC_MSG_CHECKING(whether we need -Wno-strict-aliasing due to gcc bugs)
+	AC_TRY_COMPILE([
+		#import <objc/objc.h>
+
+		@interface OFObject
+		{
+			Class isa;
+		}
+		@end
+
+		static struct {
+			Class isa;
+		} object;
+		], [
+		OFObject *test = (OFObject*)&object;
+		test++; /* Get rid of unused variable warning */
+		], [AC_MSG_RESULT(no)], [
+		AC_MSG_RESULT(yes)
+		OBJCFLAGS="$OBJCFLAGS -Wno-strict-aliasing"])
 fi
 
 if test x"$cross_compiling" = x"yes"; then
