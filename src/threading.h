@@ -27,8 +27,8 @@ typedef DWORD of_tlskey_t;
 #define of_thread_is_current(t) pthread_equal(t, pthread_self())
 #define of_thread_current() pthread_self()
 #else
-#define of_thread_is_current(t) (t == GetCurrentThreadId())
-#define of_thread_current() GetCurrentThreadId()
+#define of_thread_is_current(t) (t == GetCurrentThread())
+#define of_thread_current() GetCurrentThread()
 #endif
 
 static OF_INLINE BOOL
@@ -38,7 +38,7 @@ of_thread_new(of_thread_t *thread, id (*main)(id), id data)
 	return (pthread_create(thread, NULL, (void*(*)(void*))main,
 	    (void*)data) ? NO : YES);
 #else
-	*thread = CreateThread(NULL, 0, (void*(*)(void*))main,
+	*thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)main,
 	    (void*)data, 0, NULL);
 
 	return (thread == NULL ? NO : YES);

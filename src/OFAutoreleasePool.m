@@ -27,13 +27,11 @@
 
 static of_tlskey_t first_key, last_key;
 
-#ifndef _WIN32 /* Not used on Win32 yet */
 static void
 release_all(id obj)
 {
 	[of_tlskey_get(first_key) release];
 }
-#endif
 
 @implementation OFAutoreleasePool
 + (void)initialize
