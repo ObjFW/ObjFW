@@ -59,22 +59,22 @@ AC_CHECK_FUNC(asprintf, [
 	AC_SUBST(ASPRINTF_DEF, "-DOF_HAVE_ASPRINTF")
 	], [
 	have_asprintf="no"
-	AC_SUBST(ASPRINTF_C, "asprintf.c")])
+	AC_SUBST(ASPRINTF_C, "asprintf.c")
 
-AC_MSG_CHECKING(whether snprintf returns something useful)
-AC_CACHE_VAL(ac_cv_snprintf_useful_ret, [
-	AC_TRY_RUN([
-		#include <stdio.h>
+	AC_MSG_CHECKING(whether snprintf returns something useful)
+	AC_CACHE_VAL(ac_cv_snprintf_useful_ret, [
+		AC_TRY_RUN([
+			#include <stdio.h>
 
-		int
-		main()
-		{
-			return (snprintf(NULL, 0, "asd") == 3 ? 0 : 1);
-		}],
-		ac_cv_snprintf_useful_ret="yes",
-		ac_cv_snprintf_useful_ret="no",
-		ac_cv_snprintf_useful_ret="no")])
-AC_MSG_RESULT($ac_cv_snprintf_useful_ret)
+			int
+			main()
+			{
+				return (snprintf(NULL, 0, "asd") == 3 ? 0 : 1);
+			}],
+			ac_cv_snprintf_useful_ret="yes",
+			ac_cv_snprintf_useful_ret="no",
+			ac_cv_snprintf_useful_ret="no")])
+		AC_MSG_RESULT($ac_cv_snprintf_useful_ret)])
 
 test x"$have_asprintf" != x"yes" -a x"$ac_cv_snprintf_useful_ret" != x"yes" && \
 	AC_MSG_ERROR(No asprintf and no snprintf returning required space!)
