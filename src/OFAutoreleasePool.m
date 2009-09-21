@@ -13,40 +13,25 @@
 
 #include <stdlib.h>
 
-#ifndef _WIN32
-#include <pthread.h>
-#else
-#include <windows.h>
-#endif
-
 #import "OFAutoreleasePool.h"
 #import "OFList.h"
 #import "OFThread.h"
 #import "OFExceptions.h"
+
+#import "threading.h"
 
 /*
  * Pay special attention to NULL and nil in this file, they might be different!
  * Use NULL for TLS values and nil for instance variables.
  */
 
-#ifndef _WIN32
-static pthread_key_t first_key, last_key;
-#else
-static DWORD first_key, last_key;
-#endif
+static of_tlskey_t first_key, last_key;
 
 #ifndef _WIN32 /* Not used on Win32 yet */
 static void
-release_all(void *list)
+release_all(id obj)
 {
-#ifndef _WIN32
-	void *first = pthread_getspecific(first_key);
-#else
-	void *first = TlsGetValue(first_key);
-#endif
-
-	if (first != NULL)
-		[(OFAutoreleasePool*)first release];
+	[of_tlskey_get(first_key) release];
 }
 #endif
 
@@ -56,26 +41,16 @@ release_all(void *list)
 	if (self != [OFAutoreleasePool class])
 		return;
 
-#ifndef _WIN32
-	if (pthread_key_create(&first_key, release_all) ||
-	    pthread_key_create(&last_key, NULL))
-#else
-	/* FIXME: Call destructor */
-	if ((first_key = TlsAlloc()) == TLS_OUT_OF_INDEXES ||
-	    (last_key = TlsAlloc()) == TLS_OUT_OF_INDEXES)
-#endif
+	if (!of_tlskey_new(&first_key, release_all) ||
+	    !of_tlskey_new(&last_key, NULL))
 		@throw [OFInitializationFailedException newWithClass: self];
 }
 
 + (void)addObjectToTopmostPool: (OFObject*)obj
 {
-#ifndef _WIN32
-	void *last = pthread_getspecific(last_key);
-#else
-	void *last = TlsGetValue(last_key);
-#endif
+	id last = of_tlskey_get(last_key);
 
-	if (last == NULL) {
+	if (last == nil) {
 		@try {
 			[[self alloc] init];
 		} @catch (OFException *e) {
@@ -83,20 +58,16 @@ release_all(void *list)
 			@throw e;
 		}
 
-#ifndef _WIN32
-		last = pthread_getspecific(last_key);
-#else
-		last = TlsGetValue(last_key);
-#endif
+		last = of_tlskey_get(last_key);
 	}
 
-	if (last == NULL) {
+	if (last == nil) {
 		[obj release];
 		@throw [OFInitializationFailedException newWithClass: self];
 	}
 
 	@try {
-		[(OFAutoreleasePool*)last addObject: obj];
+		[last addObject: obj];
 	} @catch (OFException *e) {
 		[obj release];
 		@throw e;
@@ -105,39 +76,24 @@ release_all(void *list)
 
 - init
 {
+	id first;
+
 	self = [super init];
 
-#ifndef _WIN32
-	void *first = pthread_getspecific(first_key);
-	void *last = pthread_getspecific(last_key);
-#else
-	void *first = TlsGetValue(first_key);
-	void *last = TlsGetValue(last_key);
-#endif
+	first = of_tlskey_get(first_key);
+	prev = of_tlskey_get(last_key);
 
-#ifndef _WIN32
-	if (pthread_setspecific(last_key, self)) {
-#else
-	if (!TlsSetValue(last_key, self)) {
-#endif
+	if (!of_tlskey_set(last_key, self)) {
 		Class c = isa;
 		[super dealloc];
 		@throw [OFInitializationFailedException newWithClass: c];
 	}
 
-	if (first == NULL) {
-#ifndef _WIN32
-		if (pthread_setspecific(first_key, self)) {
-#else
-		if (!TlsSetValue(first_key, self)) {
-#endif
+	if (first == nil) {
+		if (!of_tlskey_set(first_key, self)) {
 			Class c = isa;
 
-#ifndef _WIN32
-			pthread_setspecific(last_key, last);
-#else
-			TlsSetValue(last_key, last);
-#endif
+			of_tlskey_set(last_key, prev);
 
 			[super dealloc];
 			@throw [OFInitializationFailedException
@@ -145,10 +101,8 @@ release_all(void *list)
 		}
 	}
 
-	if (last != NULL) {
-		prev = (OFAutoreleasePool*)last;
+	if (prev != nil)
 		prev->next = self;
-	}
 
 	return self;
 }
@@ -159,15 +113,11 @@ release_all(void *list)
 
 	if (prev != nil)
 		prev->next = nil;
-#ifndef _WIN32
-	pthread_setspecific(last_key, (prev != nil ? prev : NULL));
-	if (pthread_getspecific(first_key) == self)
-		pthread_setspecific(first_key, NULL);
-#else
-	TlsSetValue(last_key, (prev != nil ? prev : NULL));
-	if (TlsGetValue(first_key) == self)
-		TlsSetValue(first_key, NULL);
-#endif
+
+	/* FIXME: Add exception? */
+	of_tlskey_set(last_key, prev);
+	if (of_tlskey_get(first_key) == self)
+		of_tlskey_set(first_key, nil);
 
 	[objects release];
 

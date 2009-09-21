@@ -14,22 +14,19 @@
 #import "OFThread.h"
 #import "OFExceptions.h"
 
-#ifndef _WIN32
-static void*
-call_main(void *obj)
+#import "threading.h"
+
+static id
+call_main(id obj)
 {
-	return [(OFThread*)obj main];
-}
-#else
-static DWORD WINAPI
-call_main(LPVOID obj)
-{
-	/* Windows does not support returning a pointer. Nasty workaround. */
-	((OFThread*)obj)->retval = [(OFThread*)obj main];
+	/*
+	 * Nasty workaround for thread implementations which can't return a
+	 * value on join.
+	 */
+	((OFThread*)obj)->retval = [obj main];
 
 	return 0;
 }
-#endif
 
 @implementation OFThread
 + threadWithObject: (id)obj
@@ -40,18 +37,13 @@ call_main(LPVOID obj)
 + setObject: (id)obj
   forTLSKey: (OFTLSKey*)key
 {
-	id old = [self objectForTLSKey: key];
+	id old = of_tlskey_get(key->key);
 
-#ifndef _WIN32
-	if (pthread_setspecific(key->key, obj))
-#else
-	if (!TlsSetValue(key->key, obj))
-#endif
+	if (!of_tlskey_set(key->key, [obj retain]))
 		/* FIXME: Maybe another exception would be better */
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 
-	[obj retain];
 	[old release];
 
 	return self;
@@ -59,23 +51,7 @@ call_main(LPVOID obj)
 
 + (id)objectForTLSKey: (OFTLSKey*)key
 {
-	void *ret;
-
-#ifndef _WIN32
-	ret = pthread_getspecific(key->key);
-#else
-	ret = TlsGetValue(key->key);
-#endif
-
-	/*
-	 * NULL and nil might be different on some platforms. NULL is returned
-	 * if the key is missing, nil can be returned if it was explicitly set
-	 * to nil to release the old object.
-	 */
-	if (ret == NULL)
-		return nil;
-
-	return (id)ret;
+	return [[of_tlskey_get(key->key) retain] autorelease];
 }
 
 - init
@@ -86,18 +62,11 @@ call_main(LPVOID obj)
 
 - initWithObject: (id)obj
 {
-	Class c;
-
 	self = [super init];
 	object = [obj copy];
 
-#ifndef _WIN32
-	if (pthread_create(&thread, NULL, call_main, self)) {
-#else
-	if ((thread =
-	    CreateThread(NULL, 0, call_main, self, 0, NULL)) == NULL) {
-#endif
-		c = isa;
+	if (!of_thread_new(&thread, call_main, self)) {
+		Class c = isa;
 		[super dealloc];
 		@throw [OFInitializationFailedException newWithClass: c];
 	}
@@ -112,25 +81,9 @@ call_main(LPVOID obj)
 
 - join
 {
-#ifndef _WIN32
-	void *ret;
-
-	if (pthread_join(thread, &ret))
-		@throw [OFThreadJoinFailedException newWithClass: isa];
-
-	if (ret == PTHREAD_CANCELED)
-		@throw [OFThreadCanceledException newWithClass: isa];
-
-	return (id)ret;
-#else
-	if (WaitForSingleObject(thread, INFINITE))
-		@throw [OFThreadJoinFailedException newWithClass: isa];
-
-	CloseHandle(thread);
-	thread = INVALID_HANDLE_VALUE;
+	of_thread_join(thread);
 
 	return retval;
-#endif
 }
 
 - (void)dealloc
@@ -140,14 +93,7 @@ call_main(LPVOID obj)
 	 * do anything anyway. Most likely, it finished already or was already
 	 * canceled.
 	 */
-#ifndef _WIN32
-	pthread_cancel(thread);
-#else
-	if (thread != INVALID_HANDLE_VALUE) {
-		TerminateThread(thread, 1);
-		CloseHandle(thread);
-	}
-#endif
+	of_thread_cancel(thread);
 
 	[object release];
 	[super dealloc];
@@ -155,30 +101,26 @@ call_main(LPVOID obj)
 @end
 
 @implementation OFTLSKey
-+ tlsKeyWithDestructor: (void(*)(void*))destructor
++ tlsKeyWithDestructor: (void(*)(id))destructor
 {
 	return [[[self alloc] initWithDestructor: destructor] autorelease];
 }
 
-- initWithDestructor: (void(*)(void*))destructor
+- initWithDestructor: (void(*)(id))destructor
 {
-	Class c;
-
 	self = [super init];
 
 	/* FIXME: Call destructor on Win32 */
-#ifndef _WIN32
-	if (pthread_key_create(&key, destructor)) {
-#else
-	if ((key = TlsAlloc()) == TLS_OUT_OF_INDEXES) {
-#endif
-		c = isa;
+	if (!of_tlskey_new(&key, destructor)) {
+		Class c = isa;
 		[super dealloc];
 		@throw [OFInitializationFailedException newWithClass: c];
 	}
 
 	return self;
 }
+
+/* FIXME: Add dealloc! */
 @end
 
 @implementation OFMutex
@@ -191,51 +133,35 @@ call_main(LPVOID obj)
 {
 	self = [super init];
 
-#ifndef _WIN32
-	if (pthread_mutex_init(&mutex, NULL)) {
+	if (!of_mutex_new(&mutex)) {
 		Class c = isa;
 		[self dealloc];
 		@throw [OFInitializationFailedException newWithClass: c];
 	}
-#else
-	InitializeCriticalSection(&mutex);
-#endif
 
 	return self;
 }
 
 - lock
 {
-#ifndef _WIN32
 	/* FIXME: Add error-handling */
-	pthread_mutex_lock(&mutex);
-#else
-	EnterCriticalSection(&mutex);
-#endif
+	of_mutex_lock(&mutex);
 
 	return self;
 }
 
 - unlock
 {
-#ifndef _WIN32
 	/* FIXME: Add error-handling */
-	pthread_mutex_unlock(&mutex);
-#else
-	LeaveCriticalSection(&mutex);
-#endif
+	of_mutex_unlock(&mutex);
 
 	return self;
 }
 
 - (void)dealloc
 {
-#ifndef _WIN32
 	/* FIXME: Add error-handling */
-	pthread_mutex_destroy(&mutex);
-#else
-	DeleteCriticalSection(&mutex);
-#endif
+	of_mutex_free(&mutex);
 
 	[super dealloc];
 }

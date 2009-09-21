@@ -9,13 +9,9 @@
  * the packaging of this file.
  */
 
-#ifndef _WIN32
-#include <pthread.h>
-#else
-#include <windows.h>
-#endif
-
 #import "OFObject.h"
+
+#import "threading.h"
 
 /**
  * A Thread Local Storage key.
@@ -23,24 +19,20 @@
 @interface OFTLSKey: OFObject
 {
 @public
-#ifndef _WIN32
-	pthread_key_t key;
-#else
-	DWORD key;
-#endif
+	of_tlskey_t key;
 }
 
 /**
  * \param destructor A destructor that is called when the thread is terminated
  * \return A new autoreleased Thread Local Storage key
  */
-+ tlsKeyWithDestructor: (void(*)(void*))destructor;
++ tlsKeyWithDestructor: (void(*)(id))destructor;
 
 /**
  * \param destructor A destructor that is called when the thread is terminated
  * \return An initialized Thread Local Storage key
  */
-- initWithDestructor: (void(*)(void*))destructor;
+- initWithDestructor: (void(*)(id))destructor;
 @end
 
 /**
@@ -52,14 +44,10 @@
 @interface OFThread: OFObject
 {
 	id object;
-#ifndef _WIN32
-	pthread_t thread;
-#else
-	HANDLE thread;
+	of_thread_t thread;
 
 @public
 	id retval;
-#endif
 }
 
 /**
@@ -117,11 +105,7 @@
  */
 @interface OFMutex: OFObject
 {
-#ifndef _WIN32
-	pthread_mutex_t mutex;
-#else
-	CRITICAL_SECTION mutex;
-#endif
+	of_mutex_t mutex;
 }
 
 /**

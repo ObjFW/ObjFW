@@ -985,6 +985,7 @@
 }
 @end
 
+/* FIXME: Not needed anymore? */
 @implementation OFThreadCanceledException
 - (OFString*)string
 {
