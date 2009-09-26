@@ -2,7 +2,6 @@ include ../extra.mk
 
 SUBDIRS = OFDataArray		\
 	  OFArray		\
-	  OFDictionary		\
 	  OFHashes		\
 	  ${OFPLUGIN}		\
 	  OFTCPSocket		\

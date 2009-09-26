@@ -19,6 +19,7 @@
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
 
+extern void dictionary_tests();
 extern void object_tests();
 extern void string_tests();
 
@@ -87,6 +88,7 @@ main()
 {
 	object_tests();
 	string_tests();
+	dictionary_tests();
 
 	return fails;
 }
