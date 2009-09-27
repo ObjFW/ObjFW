@@ -35,6 +35,11 @@ static OFFileSingleton *of_file_stderr = nil;
 				      mode: mode] autorelease];
 }
 
++ fileWithFilePointer: (FILE*)fp_
+{
+	return [[[self alloc] initWithFilePointer: fp_] autorelease];
+}
+
 + standardInput
 {
 	if (of_file_stdin == nil)
@@ -142,12 +147,23 @@ static OFFileSingleton *of_file_stderr = nil;
 							  mode: mode];
 	}
 
+	close = YES;
+
+	return self;
+}
+
+- initWithFilePointer: (FILE*)fp_
+{
+	self = [super init];
+
+	fp = fp_;
+
 	return self;
 }
 
 - (void)dealloc
 {
-	if (fp != NULL)
+	if (close == YES && fp != NULL)
 		fclose(fp);
 
 	[super dealloc];
@@ -226,15 +242,6 @@ static OFFileSingleton *of_file_stderr = nil;
 @end
 
 @implementation OFFileSingleton
-- initWithFilePointer: (FILE*)fp_
-{
-	self = [super init];
-
-	fp = fp_;
-
-	return self;
-}
-
 - initWithPath: (OFString*)path
 	  mode: (OFString*)mode
 {

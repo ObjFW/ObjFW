@@ -27,6 +27,7 @@ typedef int gid_t;
 @interface OFFile: OFStream
 {
 	FILE *fp;
+	BOOL close;
 }
 
 /**
@@ -36,6 +37,13 @@ typedef int gid_t;
  */
 + fileWithPath: (OFString*)path
 	  mode: (OFString*)mode;
+
+/**
+ * \param fp A file pointer, returned from for example fopen().
+ *	     It is not closed when the OFFile object is deallocated!
+ * \return A new autoreleased OFFile
+ */
++ fileWithFilePointer: (FILE*)fp;
 
 /**
  * \return An OFFile singleton for stdin
@@ -123,6 +131,14 @@ typedef int gid_t;
 	  mode: (OFString*)mode;
 
 /**
+ * Initializes an already allocated OFFile.
+ *
+ * \param fp A file pointer, returned from for example fopen().
+ *	     It is not closed when the OFFile object is deallocated!
+ */
+- initWithFilePointer: (FILE*)fp;
+
+/**
  * Reads from the file into a buffer.
  *
  * \param buf The buffer into which the data is read
@@ -150,5 +166,4 @@ typedef int gid_t;
 @end
 
 @interface OFFileSingleton: OFFile
-- initWithFilePointer: (FILE*)fp;
 @end
