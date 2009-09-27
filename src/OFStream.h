@@ -43,6 +43,10 @@
  * If you want to use readNBytes afterwards again, you have to clear the cache
  * before and optionally get the cache before clearing it!
  *
+ * You also need to pay attention to the cache if you want to know if there is
+ * still data left - atEndOfStream can return NO even if there is still data
+ * in the cache!
+ *
  * \return The line that was read, autoreleased, or nil if the end of the
  *	   stream has been reached.
  */
