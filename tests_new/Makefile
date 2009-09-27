@@ -1,5 +1,6 @@
 PROG_NOINST = tests${PROG_SUFFIX}
-SRCS = dictionary.m	\
+SRCS = array.m		\
+       dictionary.m	\
        main.m		\
        object.m		\
        string.m
