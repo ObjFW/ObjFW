@@ -5,7 +5,6 @@ SUBDIRS = OFDataArray		\
 	  ${OFPLUGIN}		\
 	  OFTCPSocket		\
 	  OFThread		\
-	  OFList		\
 	  OFXMLElement		\
 	  OFXMLParser		\
 	  ${OBJC_SYNC}

@@ -21,6 +21,7 @@
 
 extern void array_tests();
 extern void dictionary_tests();
+extern void list_tests();
 extern void object_tests();
 extern void string_tests();
 
@@ -91,6 +92,7 @@ main()
 	string_tests();
 	array_tests();
 	dictionary_tests();
+	list_tests();
 
 	return fails;
 }
