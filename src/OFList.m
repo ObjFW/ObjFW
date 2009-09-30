@@ -230,4 +230,10 @@
 
 	return new;
 }
+
+/* FIXME: Implement!
+- (uint32_t)hash
+{
+}
+*/
 @end

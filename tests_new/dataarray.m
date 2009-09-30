@@ -1,0 +1,103 @@
+/*
+ * Copyright (c) 2008 - 2009
+ *   Jonathan Schleifer <js@webkeks.org>
+ *
+ * All rights reserved.
+ *
+ * This file is part of libobjfw. It may be distributed under the terms of the
+ * Q Public License 1.0, which can be found in the file LICENSE included in
+ * the packaging of this file.
+ */
+
+#include "config.h"
+
+#include <string.h>
+
+#import "OFArray.h"
+#import "OFAutoreleasePool.h"
+#import "OFString.h"
+#import "OFExceptions.h"
+
+#import "main.h"
+
+static OFString *module;
+const char *str = "Hello!";
+
+static void
+do_tests(Class class)
+{
+	OFDataArray *array[2];
+	void *data[2];
+	Class other;
+
+	TEST(@"+[dataArrayWithItemSize:]",
+	    (array[0] = [class dataArrayWithItemSize: 4096]))
+
+	data[0] = [array[0] allocMemoryWithSize: 4096];
+	data[1] = [array[0] allocMemoryWithSize: 4096];
+	memset(data[0], 0xFF, 4096);
+	memset(data[1], 0x42, 4096);
+
+	TEST(@"-[addItem:]", [array[0] addItem: data[0]] &&
+	    [array[0] addItem: data[1]])
+
+	TEST(@"-[itemAtIndex:]",
+	    !memcmp([array[0] itemAtIndex: 0], data[0], 4096) &&
+	    !memcmp([array[0] itemAtIndex: 1], data[1], 4096))
+
+	TEST(@"-[lastItem]", !memcmp([array[0] lastItem], data[1], 4096))
+
+	TEST(@"-[count]", [array[0] count] == 2)
+
+	other = (class == [OFDataArray class]
+	    ? [OFBigDataArray class]
+	    : [OFDataArray class]);
+	TEST(@"-[isEqual:]", (array[1] = [other dataArrayWithItemSize: 4096]) &&
+	    [array[1] addNItems: [array[0] count]
+		     fromCArray: [array[0] data]] &&
+	    [array[1] isEqual: array[0]] &&
+	    [array[1] removeNItems: 1] && ![array[0] isEqual: array[1]])
+
+	TEST(@"-[copy]", (array[1] = [[array[0] copy] autorelease]) &&
+	    [array[0] isEqual: array[1]])
+
+	TEST(@"-[compare]", [array[0] compare: array[1]] == 0 &&
+	    [array[1] removeNItems: 1] &&
+	    [array[0] compare: array[1]] == 0x42 &&
+	    [array[1] compare: array[0]] == -0x42)
+
+	TEST(@"-[hash]", [array[0] hash] == 0xC54621B6)
+
+	TEST(@"-[removeNItems:]", [array[0] removeNItems: 1])
+
+	TEST(@"Building strings",
+	    (array[0] = [class dataArrayWithItemSize: 1]) &&
+	    [array[0] addNItems: 6
+		     fromCArray: (void*)str] && [array[0] addItem: ""] &&
+	    !strcmp([array[0] data], str))
+
+	EXPECT_EXCEPTION(@"Detect out of range in -[itemAtIndex:]",
+	    OFOutOfRangeException, [array[0] itemAtIndex: [array[0] count]])
+
+	EXPECT_EXCEPTION(@"Detect out of range in -[addNItems:fromCArray:]",
+	    OFOutOfRangeException, [array[0] addNItems: SIZE_MAX
+					    fromCArray: NULL])
+
+	EXPECT_EXCEPTION(@"Detect out of range in -[removeNItems:]",
+	    OFOutOfRangeException,
+	    [array[0] removeNItems: [array[0] count] + 1])
+}
+
+void
+dataarray_tests()
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+
+	module = @"OFDataArray";
+	do_tests([OFDataArray class]);
+
+	module = @"OFBigDataArray";
+	do_tests([OFBigDataArray class]);
+
+	[pool release];
+}

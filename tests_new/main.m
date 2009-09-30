@@ -20,6 +20,7 @@
 #import "OFAutoreleasePool.h"
 
 extern void array_tests();
+extern void dataarray_tests();
 extern void dictionary_tests();
 extern void list_tests();
 extern void object_tests();
@@ -92,6 +93,7 @@ main()
 {
 	object_tests();
 	string_tests();
+	dataarray_tests();
 	array_tests();
 	dictionary_tests();
 	list_tests();

@@ -62,7 +62,10 @@ array_tests()
 	    [a[0] count] == 1 && [[a[0] objectAtIndex: 0] isEqual: c_ary[0]])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[objectAtIndex:]",
-	    OFOutOfRangeException, [a[0] objectAtIndex: 1])
+	    OFOutOfRangeException, [a[0] objectAtIndex: [a[0] count]])
+
+	EXPECT_EXCEPTION(@"Detect out of range in -[removeNItems:]",
+	    OFOutOfRangeException, [a[0] removeNObjects: [a[0] count] + 1])
 
 	[pool release];
 }

@@ -1,7 +1,6 @@
 include ../extra.mk
 
-SUBDIRS = OFDataArray		\
-	  OFHashes		\
+SUBDIRS = OFHashes		\
 	  ${OFPLUGIN}		\
 	  OFThread		\
 	  OFXMLParser		\

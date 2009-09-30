@@ -231,4 +231,10 @@
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
+
+/* FIXME: Implement!
+- (uint32_t)hash
+{
+}
+*/
 @end

@@ -281,4 +281,10 @@ void _references_to_categories_of_OFDictionary()
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
+
+/* FIXME: Implement!
+- (uint32_t)hash
+{
+}
+*/
 @end
