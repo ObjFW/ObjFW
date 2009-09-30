@@ -24,6 +24,7 @@ extern void dictionary_tests();
 extern void list_tests();
 extern void object_tests();
 extern void string_tests();
+extern void tcpsocket_tests();
 
 static int fails = 0;
 
@@ -93,6 +94,7 @@ main()
 	array_tests();
 	dictionary_tests();
 	list_tests();
+	tcpsocket_tests();
 
 	return fails;
 }

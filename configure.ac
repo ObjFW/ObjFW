@@ -114,40 +114,6 @@ AC_MSG_RESULT($have_getaddrinfo)
 test x"$have_getaddrinfo" = x"yes" && \
 	AC_DEFINE(HAVE_GETADDRINFO, 1, [Whether we have getaddrinfo])
 
-AC_MSG_CHECKING(whether we have IPv6 support)
-AS_IF([test x"$have_getaddrinfo" = x"yes"], [
-	AC_CACHE_VAL(ac_cv_have_ipv6, [
-		AC_TRY_RUN([
-			#ifndef _WIN32
-			#include <sys/types.h>
-			#include <sys/socket.h>
-			#include <netinet/in.h>
-			#else
-			#include <winsock2.h>
-			#include <ws2tcpip.h>
-			#endif
-
-			#ifndef INVALID_SOCKET
-			#define INVALID_SOCKET -1
-			#endif
-
-			int
-			main()
-			{
-				int fd;
-				struct sockaddr_in6 addr;
-
-				fd = socket(AF_INET6, SOCK_STREAM, 0);
-
-				exit(fd != INVALID_SOCKET ? 0 : 1);
-			}],
-			ac_cv_have_ipv6="yes",
-			ac_cv_have_ipv6="no",
-			ac_cv_have_ipv6="no")])], [ac_cv_have_ipv6="no"])
-AC_MSG_RESULT($ac_cv_have_ipv6)
-test x"$ac_cv_have_ipv6" = x"yes" && \
-	AC_DEFINE(HAVE_IPV6, 1, "Whether we have IPv6 support")
-
 AC_CHECK_FUNC(madvise, [AC_DEFINE(HAVE_MADVISE, 1, [Whether we have madvise])])
 
 AC_LANG([Objective C])

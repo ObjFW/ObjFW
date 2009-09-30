@@ -4,7 +4,8 @@ SRCS = array.m		\
        list.m		\
        main.m		\
        object.m		\
-       string.m
+       string.m		\
+       tcpsocket.m
 
 include ../buildsys.mk
 include ../extra.mk

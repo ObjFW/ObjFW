@@ -3,7 +3,6 @@ include ../extra.mk
 SUBDIRS = OFDataArray		\
 	  OFHashes		\
 	  ${OFPLUGIN}		\
-	  OFTCPSocket		\
 	  OFThread		\
 	  OFXMLElement		\
 	  OFXMLParser		\
