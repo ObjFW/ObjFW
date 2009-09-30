@@ -25,6 +25,7 @@ extern void list_tests();
 extern void object_tests();
 extern void string_tests();
 extern void tcpsocket_tests();
+extern void xmlelement_tests();
 
 static int fails = 0;
 
@@ -95,6 +96,7 @@ main()
 	dictionary_tests();
 	list_tests();
 	tcpsocket_tests();
+	xmlelement_tests();
 
 	return fails;
 }
