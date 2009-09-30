@@ -2,6 +2,7 @@ PROG_NOINST = tests${PROG_SUFFIX}
 SRCS = array.m		\
        dataarray.m	\
        dictionary.m	\
+       hashes.m		\
        list.m		\
        main.m		\
        object.m		\

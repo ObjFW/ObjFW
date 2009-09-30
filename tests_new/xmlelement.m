@@ -43,7 +43,7 @@ xmlelement_tests()
 			      stringValue: @"b&ar"] &&
 	    [[elem[1] string] isEqual: @"<foo foo='b&amp;ar'>b&amp;ar</foo>"])
 
-	TEST(@"-[addChild",
+	TEST(@"-[addChild:]",
 	    [elem[0] addChild: [OFXMLElement elementWithName: @"bar"]] &&
 	    [[elem[0] string] isEqual: @"<foo foo='b&amp;ar'><bar/></foo>"])
 

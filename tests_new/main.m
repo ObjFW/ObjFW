@@ -22,6 +22,7 @@
 extern void array_tests();
 extern void dataarray_tests();
 extern void dictionary_tests();
+extern void hashes_tests();
 extern void list_tests();
 extern void object_tests();
 extern void string_tests();
@@ -92,6 +93,7 @@ int
 main()
 {
 	object_tests();
+	hashes_tests();
 	string_tests();
 	dataarray_tests();
 	array_tests();

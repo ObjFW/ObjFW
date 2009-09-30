@@ -1,7 +1,6 @@
 include ../extra.mk
 
-SUBDIRS = OFHashes		\
-	  ${OFPLUGIN}		\
+SUBDIRS = ${OFPLUGIN}		\
 	  OFThread		\
 	  OFXMLParser		\
 	  ${OBJC_SYNC}
