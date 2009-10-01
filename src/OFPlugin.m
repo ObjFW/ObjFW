@@ -44,7 +44,7 @@
 	}
 
 	plugin->handle = handle;
-	return [plugin autorelease];
+	return plugin;
 }
 
 - init
