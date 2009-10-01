@@ -25,6 +25,9 @@ extern void dictionary_tests();
 extern void hashes_tests();
 extern void list_tests();
 extern void object_tests();
+#ifdef OF_PLUGINS
+extern void plugin_tests();
+#endif
 extern void string_tests();
 extern void tcpsocket_tests();
 extern void xmlelement_tests();
@@ -101,6 +104,9 @@ main()
 	list_tests();
 	tcpsocket_tests();
 	xmlelement_tests();
+#ifdef OF_PLUGINS
+	plugin_tests();
+#endif
 
 	return fails;
 }

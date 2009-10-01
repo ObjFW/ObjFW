@@ -23,5 +23,5 @@
 id
 init_plugin()
 {
-	return [[TestPlugin alloc] init];
+	return [[[TestPlugin alloc] init] autorelease];
 }
