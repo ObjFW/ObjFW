@@ -29,7 +29,7 @@ void
 tcpsocket_tests()
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFSocket *server, *client, *accepted;
+	OFSocket *server, *client = nil, *accepted;
 	OFString *service, *msg;
 	uint16_t port;
 	char buf[6];
