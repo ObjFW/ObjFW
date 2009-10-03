@@ -1,16 +1,8 @@
 PROG_NOINST = objc_sync${PROG_SUFFIX}
-SRCS = objc_sync.m
-
-include ../../buildsys.mk
-include ../../extra.mk
-
-CPPFLAGS += -I../../src -I../..
-LIBS := -L../../src -lobjfw ${LIBS}
+SRCS = test.m
 
 .PHONY: run
-
-all: run
-run: ${PROG_NOINST}
+run: all
 	rm -f libobjfw.so.0 libobjfw.so.0.1 libobjfw.dll libobjfw.dylib
 	if test -f ../../src/libobjfw.so; then \
 		ln -s ../../src/libobjfw.so libobjfw.so.0; \
@@ -27,3 +19,8 @@ run: ${PROG_NOINST}
 	${TEST_LAUNCHER} ./${PROG_NOINST}; EXIT=$$?; \
 	rm -f libobjfw.so.0 libobjfw.so.0.1 libobjfw.dll libobjfw.dylib; \
 	exit $$EXIT
+
+include ../../buildsys.mk
+
+CPPFLAGS += -I../../src -I../..
+LIBS := -L../../src -lobjfw ${LIBS}
