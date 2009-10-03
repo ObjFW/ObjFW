@@ -13,6 +13,7 @@ SRCS = array.m		\
        ${PLUGIN_M}	\
        string.m		\
        tcpsocket.m	\
+       thread.m		\
        xmlelement.m
 
 .PHONY: run

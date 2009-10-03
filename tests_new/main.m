@@ -30,6 +30,7 @@ extern void plugin_tests();
 #endif
 extern void string_tests();
 extern void tcpsocket_tests();
+extern void thread_tests();
 extern void xmlelement_tests();
 
 static int fails = 0;
@@ -103,6 +104,7 @@ main()
 	dictionary_tests();
 	list_tests();
 	tcpsocket_tests();
+	thread_tests();
 	xmlelement_tests();
 #ifdef OF_PLUGINS
 	plugin_tests();
