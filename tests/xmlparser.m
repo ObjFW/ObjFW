@@ -106,7 +106,7 @@ callback(enum event_type et, OFString *name, OFString *prefix, OFString *ns,
 		    [prefix isEqual: @"foo"] && ns == nil)
 		break;
 	case 11:
-		TEST(msg, et == COMMENT && [comment isEqual: @"foo bar-baz"])
+		TEST(msg, et == COMMENT && [comment isEqual: @"foo bär-baz"])
 		break;
 	default:
 		TEST(msg, NO)
@@ -164,7 +164,7 @@ xmlparser_tests()
 	OFXMLParser *parser;
 	const char *str = "bar<foo:bar  bar='b&amp;az'  qux:qux=\" quux \">\r\n"
 	    "foo&lt;bar<qux  >bar <baz name='' test='&foo;'/>  quxbar\r\n</qux>"
-	    "</foo:bar><!-- foo bar-baz -->";
+	    "</foo:bar><!-- foo bär-baz -->";
 	size_t j, len;
 
 	TEST(@"+[xmlParser]", (parser = [OFXMLParser xmlParser]))

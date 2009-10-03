@@ -460,7 +460,7 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				[cache appendCString: buf + last
 					  withLength: i - last];
-				cache_len = [cache cStringLength];
+				cache_len = [cache length];
 
 				pool = [[OFAutoreleasePool alloc] init];
 				[cache removeCharactersFromIndex: cache_len - 1
