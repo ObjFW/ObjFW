@@ -14,7 +14,8 @@ SRCS = array.m		\
        string.m		\
        tcpsocket.m	\
        thread.m		\
-       xmlelement.m
+       xmlelement.m	\
+       xmlparser.m
 
 .PHONY: run
 run: all

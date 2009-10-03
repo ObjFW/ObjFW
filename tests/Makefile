@@ -1,6 +1,5 @@
 include ../extra.mk
 
-SUBDIRS = OFXMLParser		\
-	  ${OBJC_SYNC}
+SUBDIRS = ${OBJC_SYNC}
 
 include ../buildsys.mk
