@@ -229,6 +229,7 @@ parse_numeric_entity(const char *entity, size_t length)
 					[name release];
 					[prefix release];
 					[ns release];
+					name = prefix = ns = nil;
 
 					state = (buf[i] == '/'
 					    ? OF_XMLPARSER_EXPECT_CLOSE
@@ -287,6 +288,7 @@ parse_numeric_entity(const char *entity, size_t length)
 				[name release];
 				[prefix release];
 				[ns release];
+				name = prefix = ns = nil;
 
 				last = i + 1;
 				state = (buf[i] == ' '
@@ -326,7 +328,7 @@ parse_numeric_entity(const char *entity, size_t length)
 				[prefix release];
 				[ns release];
 				[attrs release];
-
+				name = prefix = ns = nil;
 				attrs = nil;
 
 				last = i + 1;
@@ -412,8 +414,7 @@ parse_numeric_entity(const char *entity, size_t length)
 				[cache setToCString: ""];
 				[attr_name release];
 				[attr_prefix release];
-				attr_name = nil;
-				attr_prefix = nil;
+				attr_name = attr_prefix = nil;
 
 				last = i + 1;
 				state = OF_XMLPARSER_IN_TAG;
