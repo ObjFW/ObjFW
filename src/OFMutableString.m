@@ -295,6 +295,9 @@
 - removeCharactersFromIndex: (size_t)start
 		    toIndex: (size_t)end
 {
+	start = of_string_index_to_position(string, start, length);
+	end = of_string_index_to_position(string, end, length);
+
 	if (start > end)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];

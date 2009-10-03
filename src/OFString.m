@@ -140,6 +140,31 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 	return 0;
 }
 
+size_t
+of_string_position_to_index(const char *str, size_t pos)
+{
+	size_t i, idx = pos;
+
+	for (i = 0; i < pos; i++)
+		if (OF_UNLIKELY((str[i] & 0xC0) == 0x80))
+			idx--;
+
+	return idx;
+}
+
+size_t
+of_string_index_to_position(const char *str, size_t idx, size_t len)
+{
+	size_t i;
+
+	for (i = 0; i <= idx; i++)
+		if (OF_UNLIKELY((str[i] & 0xC0) == 0x80))
+			if (++idx > len)
+				return SIZE_MAX;
+
+	return idx;
+}
+
 @implementation OFString
 + string
 {
@@ -521,7 +546,7 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 
 	for (i = 0; i <= length - str_len; i++)
 		if (!memcmp(string + i, str_c, str_len))
-			return i;
+			return of_string_position_to_index(string, i);
 
 	return SIZE_MAX;
 }
@@ -533,14 +558,14 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 	size_t i;
 
 	if (str_len == 0)
-		return length;
+		return of_string_position_to_index(string, length);
 
 	if (str_len > length)
 		return SIZE_MAX;
 
 	for (i = length - str_len;; i--) {
 		if (!memcmp(string + i, str_c, str_len))
-			return i;
+			return of_string_position_to_index(string, i);
 
 		/* Did not match and we're at the last char */
 		if (i == 0)
@@ -551,6 +576,9 @@ of_string_unicode_to_utf8(uint32_t c, char *buf)
 - (OFString*)substringFromIndex: (size_t)start
 			toIndex: (size_t)end
 {
+	start = of_string_index_to_position(string, start, length);
+	end = of_string_index_to_position(string, end, length);
+
 	if (start > end)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];

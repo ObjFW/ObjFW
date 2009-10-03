@@ -115,35 +115,35 @@ string_tests()
 	    [([s[0] appendWithFormat: @"%02X", 15]) isEqual: @"test: 1230F"])
 
 	TEST(@"-[indexOfFirstOccurrenceOfString:]",
-	    [@"foo" indexOfFirstOccurrenceOfString: @"oo"] == 1 &&
-	    [@"foo" indexOfFirstOccurrenceOfString: @"o"] == 1 &&
-	    [@"foo" indexOfFirstOccurrenceOfString: @"f"] == 0 &&
-	    [@"foo" indexOfFirstOccurrenceOfString: @"x"] == SIZE_MAX)
+	    [@"𝄞öö" indexOfFirstOccurrenceOfString: @"öö"] == 1 &&
+	    [@"𝄞öö" indexOfFirstOccurrenceOfString: @"ö"] == 1 &&
+	    [@"𝄞öö" indexOfFirstOccurrenceOfString: @"𝄞"] == 0 &&
+	    [@"𝄞öö" indexOfFirstOccurrenceOfString: @"x"] == SIZE_MAX)
 
 	TEST(@"-[indexOfLastOccurrenceOfString:]",
-	    [@"foo" indexOfLastOccurrenceOfString: @"oo"] == 1 &&
-	    [@"foo" indexOfLastOccurrenceOfString: @"o"] == 2 &&
-	    [@"foo" indexOfLastOccurrenceOfString: @"f"] == 0 &&
-	    [@"foo" indexOfLastOccurrenceOfString: @"x"] == SIZE_MAX)
+	    [@"𝄞öö" indexOfLastOccurrenceOfString: @"öö"] == 1 &&
+	    [@"𝄞öö" indexOfLastOccurrenceOfString: @"ö"] == 2 &&
+	    [@"𝄞öö" indexOfLastOccurrenceOfString: @"𝄞"] == 0 &&
+	    [@"𝄞öö" indexOfLastOccurrenceOfString: @"x"] == SIZE_MAX)
 
 	TEST(@"-[substringFromIndexToIndex:]",
-	    [[@"foo" substringFromIndex: 1
-				toIndex: 2] isEqual: @"o"] &&
-	    [[@"foo" substringFromIndex: 3
+	    [[@"𝄞öö" substringFromIndex: 1
+				toIndex: 2] isEqual: @"ö"] &&
+	    [[@"𝄞öö" substringFromIndex: 3
 				toIndex: 3] isEqual: @""])
 
 	EXPECT_EXCEPTION(@"Detect out of range in "
 	    @"-[substringFromIndex:toIndex:] #1", OFOutOfRangeException,
-	    [@"foo" substringFromIndex: 2
+	    [@"𝄞öö" substringFromIndex: 2
 			       toIndex: 4])
 	EXPECT_EXCEPTION(@"Detect out of range in "
 	    @"-[substringFromIndex:toIndex:] #2", OFOutOfRangeException,
-	    [@"foo" substringFromIndex: 4
+	    [@"𝄞öö" substringFromIndex: 4
 			       toIndex: 4])
 
 	EXPECT_EXCEPTION(@"Detect start > end in "
 	    @"-[substringFromIndex:toIndex:]", OFInvalidArgumentException,
-	    [@"foo" substringFromIndex: 2
+	    [@"𝄞öö" substringFromIndex: 2
 			       toIndex: 0])
 
 	TEST(@"-[stringByAppendingString:]",
@@ -184,13 +184,32 @@ string_tests()
 	    [@"foo%FFbar" stringByURLDecoding])
 
 	TEST(@"-[removeCharactersFromIndex:toIndex:]",
-	    (s[0] = [OFMutableString stringWithString: @"fooobar"]) &&
+	    (s[0] = [OFMutableString stringWithString: @"𝄞öööbä€"]) &&
 	    [s[0] removeCharactersFromIndex: 1
 				    toIndex: 4] &&
-	    [s[0] isEqual: @"fbar"] &&
+	    [s[0] isEqual: @"𝄞bä€"] &&
 	    [s[0] removeCharactersFromIndex: 0
 				    toIndex: 4] &&
 	    [s[0] isEqual: @""])
+
+	EXPECT_EXCEPTION(@"Detect OoR in "
+	    @"-[removeCharactersFromIndex:toIndex:] #1", OFOutOfRangeException,
+	    {
+		s[0] = [OFMutableString stringWithString: @"𝄞öö"];
+		[s[0] substringFromIndex: 2
+				 toIndex: 4];
+	    })
+
+	EXPECT_EXCEPTION(@"Detect OoR in "
+	    @"-[removeCharactersFromIndex:toIndex:] #2", OFOutOfRangeException,
+	    [s[0] substringFromIndex: 4
+			     toIndex: 4])
+
+	EXPECT_EXCEPTION(@"Detect s > e in "
+	    @"-[removeCharactersFromIndex:toIndex:]",
+	    OFInvalidArgumentException,
+	    [s[0] substringFromIndex: 2
+			     toIndex: 0])
 
 	TEST(@"-[replaceOccurrencesOfString:withString:]",
 	    [[[OFMutableString stringWithString: @"asd fo asd fofo asd"]
