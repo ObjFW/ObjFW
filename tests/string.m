@@ -46,7 +46,7 @@ string_tests()
 	int i;
 	EntityHandler *h;
 
-	s[0] = [OFMutableString stringWithString: @"test"];
+	s[0] = [OFMutableString stringWithString: @"täs€"];
 	s[1] = [OFMutableString string];
 	s[2] = [[s[0] copy] autorelease];
 
@@ -60,12 +60,15 @@ string_tests()
 	    [s[0] hash] == [s[2] hash])
 
 	TEST(@"-[appendString:] and -[appendCString:]",
-	    [s[1] appendCString: "12"] && [s[1] appendString: @"3"] &&
-	    [[s[0] appendString: s[1]] isEqual: @"test123"])
+	    [s[1] appendCString: "1𝄞"] && [s[1] appendString: @"3"] &&
+	    [[s[0] appendString: s[1]] isEqual: @"täs€1𝄞3"])
 
-	TEST(@"-[cStringLength]", [s[0] cStringLength] == 7)
-	TEST(@"-[hash]", [s[0] hash] == 0xC44F49A4)
-	TEST(@"-[reverse]", [[s[0] reverse] isEqual: @"321tset"])
+	TEST(@"-[length]", [s[0] length] == 7)
+	TEST(@"-[cStringLength]", [s[0] cStringLength] == 13)
+	TEST(@"-[hash]", [s[0] hash] == 0x8AC1EEF6)
+	TEST(@"-[reverse]", [[s[0] reverse] isEqual: @"3𝄞1€sät"])
+
+	s[0] = [OFMutableString stringWithString: @"321tset"];
 	TEST(@"-[upper]", [[s[0] upper] isEqual: @"321TSET"])
 	TEST(@"-[lower]", [[s[0] lower] isEqual: @"321tset"])
 

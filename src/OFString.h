@@ -192,6 +192,11 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 - (const char*)cString;
 
 /**
+ * \return The length of the string in Unicode characters
+ */
+- (size_t)length;
+
+/**
  * \return The length of the string which cString would return
  */
 - (size_t)cStringLength;

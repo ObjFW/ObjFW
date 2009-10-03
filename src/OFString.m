@@ -504,6 +504,13 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return string;
 }
 
+- (size_t)length
+{
+	/* FIXME: Maybe cache this in an ivar? */
+
+	return of_string_position_to_index(string, length);
+}
+
 - (size_t)cStringLength
 {
 	return length;
