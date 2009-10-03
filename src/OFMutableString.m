@@ -41,6 +41,9 @@
 	len = strlen(str);
 
 	switch (of_string_check_utf8(str, len)) {
+	case 0:
+		is_utf8 = NO;
+		break;
 	case 1:
 		is_utf8 = YES;
 		break;
@@ -134,7 +137,12 @@
 
 - appendString: (OFString*)str
 {
-	return [self appendCStringWithoutUTF8Checking: [str cString]];
+	[self appendCStringWithoutUTF8Checking: [str cString]];
+
+	if (str->is_utf8)
+		is_utf8 = YES;
+
+	return self;
 }
 
 - appendWithFormat: (OFString*)fmt, ...

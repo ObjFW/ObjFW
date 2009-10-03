@@ -512,6 +512,7 @@ parse_numeric_entity(const char *entity, size_t length)
 	last = 0;
 	in_entity = NO;
 	ret = [OFMutableString string];
+	ret->is_utf8 = is_utf8;
 
 	for (i = 0; i < length; i++) {
 		if (!in_entity && string[i] == '&') {
@@ -525,15 +526,20 @@ parse_numeric_entity(const char *entity, size_t length)
 			size_t len = i - last;
 
 			if (len == 2 && !memcmp(entity, "lt", 2))
-				[ret appendString: @"<"];
+				[ret appendCStringWithoutUTF8Checking: "<"
+							       length: 1];
 			else if (len == 2 && !memcmp(entity, "gt", 2))
-				[ret appendString: @">"];
+				[ret appendCStringWithoutUTF8Checking: ">"
+							       length: 1];
 			else if (len == 4 && !memcmp(entity, "quot", 4))
-				[ret appendString: @"\""];
+				[ret appendCStringWithoutUTF8Checking: "\""
+							       length: 1];
 			else if (len == 4 && !memcmp(entity, "apos", 4))
-				[ret appendString: @"'"];
+				[ret appendCStringWithoutUTF8Checking: "'"
+							       length: 1];
 			else if (len == 3 && !memcmp(entity, "amp", 3))
-				[ret appendString: @"&"];
+				[ret appendCStringWithoutUTF8Checking: "&"
+							       length: 1];
 			else if (entity[0] == '#') {
 				OFAutoreleasePool *pool;
 				OFString *tmp;

@@ -459,10 +459,29 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 - initWithString: (OFString*)str
 {
+	Class c;
+
 	self = [super init];
 
-	string = strdup([str cString]);
+	string = (char*)[str cString];
 	length = [str cStringLength];
+
+	switch (of_string_check_utf8(string, length)) {
+		case 1:
+			is_utf8 = YES;
+			break;
+		case -1:
+			c = isa;
+			[self dealloc];
+			@throw [OFInvalidEncodingException newWithClass: c];
+	}
+
+	if ((string = strdup(string)) == NULL) {
+		c = isa;
+		[self dealloc];
+		@throw [OFOutOfMemoryException newWithClass: c
+						       size: length + 1];
+	}
 
 	@try {
 		[self addMemoryToPool: string];
