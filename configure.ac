@@ -192,13 +192,13 @@ if test x"$cross_compiling" = x"yes"; then
 			AC_PATH_PROG(WINE, wine)
 
 			if test x"$WINE" != "x"; then
-				AC_SUBST(TESTS, "tests_new")
+				AC_SUBST(TESTS, "tests")
 				AC_SUBST(TEST_LAUNCHER, "$WINE")
 			fi
 			;;
 	esac
 else
-	AC_SUBST(TESTS, "tests_new")
+	AC_SUBST(TESTS, "tests")
 fi
 
 BUILDSYS_TOUCH_DEPS
