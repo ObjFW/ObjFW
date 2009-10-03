@@ -101,9 +101,27 @@ call_main(id obj)
 @end
 
 @implementation OFTLSKey
++ tlsKey
+{
+	return [[[self alloc] init] autorelease];
+}
+
 + tlsKeyWithDestructor: (void(*)(id))destructor
 {
 	return [[[self alloc] initWithDestructor: destructor] autorelease];
+}
+
+- init
+{
+	self = [super init];
+
+	if (!of_tlskey_new(&key, NULL)) {
+		Class c = isa;
+		[super dealloc];
+		@throw [OFInitializationFailedException newWithClass: c];
+	}
+
+	return self;
 }
 
 - initWithDestructor: (void(*)(id))destructor

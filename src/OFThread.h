@@ -23,10 +23,20 @@
 }
 
 /**
+ * \return A new autoreleased Thread Local Storage key
+ */
++ tlsKey;
+
+/**
  * \param destructor A destructor that is called when the thread is terminated
  * \return A new autoreleased Thread Local Storage key
  */
 + tlsKeyWithDestructor: (void(*)(id))destructor;
+
+/**
+ * \return An initialized Thread Local Storage key
+ */
+- init;
 
 /**
  * \param destructor A destructor that is called when the thread is terminated
