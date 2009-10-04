@@ -23,6 +23,8 @@ run: all
 	if test -f ../src/libobjfw.so; then \
 		ln -s ../src/libobjfw.so libobjfw.so.0; \
 		ln -s ../src/libobjfw.so libobjfw.so.0.1; \
+	elif test -f ../src/libobjfw.so.0.1; then \
+		ln -s ../src/libobjfw.so.0.1 libobjfw.so.0.1; \
 	fi
 	if test -f ../src/libobjfw.dll; then \
 		ln ../src/libobjfw.dll libobjfw.dll; \
