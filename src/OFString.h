@@ -15,6 +15,8 @@
 #import "OFObject.h"
 #import "OFArray.h"
 
+typedef uint32_t of_unichar_t;
+
 enum of_string_encoding {
 	OF_STRING_ENCODING_UTF_8,
 	OF_STRING_ENCODING_ISO_8859_1,
@@ -23,7 +25,7 @@ enum of_string_encoding {
 };
 
 extern int of_string_check_utf8(const char*, size_t);
-extern size_t of_string_unicode_to_utf8(uint32_t, char*);
+extern size_t of_string_unicode_to_utf8(of_unichar_t, char*);
 extern size_t of_string_position_to_index(const char*, size_t);
 extern size_t of_string_index_to_position(const char*, size_t, size_t);
 

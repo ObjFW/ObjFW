@@ -32,7 +32,7 @@ transform_string(OFString *cache, OFObject <OFXMLUnescapingDelegate> *handler)
 static OF_INLINE OFString*
 parse_numeric_entity(const char *entity, size_t length)
 {
-	uint32_t c;
+	of_unichar_t c;
 	size_t i;
 	char buf[5];
 

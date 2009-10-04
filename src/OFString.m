@@ -110,7 +110,7 @@ of_string_check_utf8(const char *str, size_t len)
 }
 
 size_t
-of_string_unicode_to_utf8(uint32_t c, char *buf)
+of_string_unicode_to_utf8(of_unichar_t c, char *buf)
 {
 	size_t i = 0;
 
@@ -299,7 +299,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 				string[j++] = str[i];
 			else {
 				char buf[4];
-				uint32_t chr;
+				of_unichar_t chr;
 				size_t chr_bytes;
 
 				switch (encoding) {
