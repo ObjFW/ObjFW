@@ -15,6 +15,8 @@
 #import "OFObject.h"
 #import "OFArray.h"
 
+#define OF_INVALID_UNICHAR UINT32_MAX
+
 typedef uint32_t of_unichar_t;
 
 enum of_string_encoding {
@@ -26,6 +28,7 @@ enum of_string_encoding {
 
 extern int of_string_check_utf8(const char*, size_t);
 extern size_t of_string_unicode_to_utf8(of_unichar_t, char*);
+extern of_unichar_t of_string_utf8_to_unicode(const char*, size_t);
 extern size_t of_string_position_to_index(const char*, size_t);
 extern size_t of_string_index_to_position(const char*, size_t, size_t);
 
@@ -211,6 +214,12 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  *	   strcmp
  */
 - (int)compare: (id)obj;
+
+/**
+ * \param index The index of the Unicode character to return
+ * \return The Unicode character at the specified index
+ */
+- (of_unichar_t)characterAtIndex: (size_t)index;
 
 /**
  * \param str The string to search

@@ -66,6 +66,15 @@ string_tests()
 	TEST(@"-[length]", [s[0] length] == 7)
 	TEST(@"-[cStringLength]", [s[0] cStringLength] == 13)
 	TEST(@"-[hash]", [s[0] hash] == 0x8AC1EEF6)
+
+	TEST(@"-[characterAtIndex:]", [s[0] characterAtIndex: 0] == 't' &&
+	    [s[0] characterAtIndex: 1] == 0xE4 &&
+	    [s[0] characterAtIndex: 3] == 0x20AC &&
+	    [s[0] characterAtIndex: 5] == 0x1D11E)
+
+	EXPECT_EXCEPTION(@"Detect out of range in -[characterAtIndex:]",
+	    OFOutOfRangeException, [s[0] characterAtIndex: 7])
+
 	TEST(@"-[reverse]", [[s[0] reverse] isEqual: @"3𝄞1€sät"])
 
 	s[0] = [OFMutableString stringWithString: @"321tset"];
