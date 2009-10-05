@@ -35,7 +35,7 @@ callback(enum event_type et, OFString *name, OFString *prefix, OFString *ns,
     OFArray *attrs, OFString *string, OFString *comment)
 {
 	OFString *msg;
-	id *data;
+	id *carray;
 	size_t count;
 
 	i++;
@@ -48,22 +48,22 @@ callback(enum event_type et, OFString *name, OFString *prefix, OFString *ns,
 		break;
 	case 2:
 		/* FIXME: Namespace */
-		data = [attrs data];
+		carray = [attrs cArray];
 		count = [attrs count];
 
 		TEST(msg, et == TAG_START && [name isEqual: @"bar"] &&
 		    [prefix isEqual: @"foo"] && ns == nil &&
 		    attrs != nil && count == 2 &&
 		    /* Attribute 1 */
-		    [[data[0] name] isEqual: @"bar"] &&
-		    [data[0] prefix] == nil &&
-		    [[data[0] stringValue] isEqual: @"b&az"] &&
-		    [data[0] namespace] == nil &&
+		    [[carray[0] name] isEqual: @"bar"] &&
+		    [carray[0] prefix] == nil &&
+		    [[carray[0] stringValue] isEqual: @"b&az"] &&
+		    [carray[0] namespace] == nil &&
 		    /* Attribute 2 */
-		    [[data[1] name] isEqual: @"qux"] &&
-		    [[data[1] prefix] isEqual: @"qux"] &&
-		    [[data[1] stringValue] isEqual: @" quux "] &&
-		    [data[1] namespace] == nil)
+		    [[carray[1] name] isEqual: @"qux"] &&
+		    [[carray[1] prefix] isEqual: @"qux"] &&
+		    [[carray[1] stringValue] isEqual: @" quux "] &&
+		    [carray[1] namespace] == nil)
 		break;
 	case 3:
 		TEST(msg, et == STRING && [string isEqual: @"foo<bar"])
@@ -73,21 +73,21 @@ callback(enum event_type et, OFString *name, OFString *prefix, OFString *ns,
 		    prefix == nil && ns == nil)
 		break;
 	case 6:
-		data = [attrs data];
+		carray = [attrs cArray];
 		count = [attrs count];
 
 		TEST(msg, et == TAG_START && [name isEqual: @"baz"] &&
 		    prefix == nil && ns == nil && attrs != nil && count == 2 &&
 		    /* Attribute 1 */
-		    [[data[0] name] isEqual: @"name"] &&
-		    [data[0] prefix] == nil &&
-		    [[data[0] stringValue] isEqual: @""] &&
-		    [data[0] namespace] == nil &&
+		    [[carray[0] name] isEqual: @"name"] &&
+		    [carray[0] prefix] == nil &&
+		    [[carray[0] stringValue] isEqual: @""] &&
+		    [carray[0] namespace] == nil &&
 		    /* Attribute 2 */
-		    [[data[1] name] isEqual: @"test"] &&
-		    [data[1] prefix] == nil &&
-		    [[data[1] stringValue] isEqual: @"foobar"] &&
-		    [data[1] namespace] == nil)
+		    [[carray[1] name] isEqual: @"test"] &&
+		    [carray[1] prefix] == nil &&
+		    [[carray[1] stringValue] isEqual: @"foobar"] &&
+		    [carray[1] namespace] == nil)
 		break;
 	case 7:
 		TEST(msg, et == TAG_END && [name isEqual: @"baz"] &&

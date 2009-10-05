@@ -147,15 +147,15 @@ void _references_to_categories_of_OFDictionary()
 - initWithObjects: (OFArray*)objs
 	  forKeys: (OFArray*)keys
 {
-	id *objs_data, *keys_data;
+	id *objs_carray, *keys_carray;
 	size_t objs_count, i;
 	const SEL sel = @selector(setObject:forKey:);
 	IMP set = [OFMutableDictionary instanceMethodForSelector: sel];
 
 	self = [self init];
 
-	objs_data = [objs data];
-	keys_data = [keys data];
+	objs_carray = [objs cArray];
+	keys_carray = [keys cArray];
 	objs_count = [objs count];
 
 	if (objs == nil || keys == nil || objs_count != [keys count]) {
@@ -167,7 +167,7 @@ void _references_to_categories_of_OFDictionary()
 
 	@try {
 		for (i = 0; i < objs_count; i++)
-			set(self, sel, objs_data[i], keys_data[i]);
+			set(self, sel, objs_carray[i], keys_carray[i]);
 	} @catch (OFException *e) {
 		[self dealloc];
 		@throw e;

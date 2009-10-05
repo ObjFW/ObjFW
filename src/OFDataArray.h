@@ -53,9 +53,9 @@
 - (size_t)itemsize;
 
 /**
- * \return All elements of the OFDataArray
+ * \return All elements of the OFDataArray as a C array
  */
-- (void*)data;
+- (void*)cArray;
 
 /**
  * Compares the OFDataArray to another object.

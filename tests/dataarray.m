@@ -54,7 +54,7 @@ do_tests(Class class)
 	    : [OFDataArray class]);
 	TEST(@"-[isEqual:]", (array[1] = [other dataArrayWithItemSize: 4096]) &&
 	    [array[1] addNItems: [array[0] count]
-		     fromCArray: [array[0] data]] &&
+		     fromCArray: [array[0] cArray]] &&
 	    [array[1] isEqual: array[0]] &&
 	    [array[1] removeNItems: 1] && ![array[0] isEqual: array[1]])
 
@@ -74,7 +74,7 @@ do_tests(Class class)
 	    (array[0] = [class dataArrayWithItemSize: 1]) &&
 	    [array[0] addNItems: 6
 		     fromCArray: (void*)str] && [array[0] addItem: ""] &&
-	    !strcmp([array[0] data], str))
+	    !strcmp([array[0] cArray], str))
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[itemAtIndex:]",
 	    OFOutOfRangeException, [array[0] itemAtIndex: [array[0] count]])

@@ -87,7 +87,7 @@
 /**
  * \return The objects of the array as a C array
  */
-- (id*)data;
+- (id*)cArray;
 
 /**
  * Returns a specific object of the OFDataArray.

@@ -138,9 +138,9 @@
 	return [array count];
 }
 
-- (id*)data
+- (id*)cArray
 {
-	return [array data];
+	return [array cArray];
 }
 
 - (id)copy
@@ -154,7 +154,7 @@
 	OFObject **objs;
 	size_t len, i;
 
-	objs = [array data];
+	objs = [array cArray];
 	len = [array count];
 
 	[new->array addNItems: len
@@ -192,8 +192,8 @@
 	if (len != len2)
 		return NO;
 
-	objs = [array data];
-	objs2 = [obj data];
+	objs = [array cArray];
+	objs2 = [obj cArray];
 
 	for (i = 0; i < len; i++)
 		if (![objs[i] isEqual: objs2[i]])
@@ -208,7 +208,7 @@
 	size_t len, i;
 
 	if (array != nil) {
-		objs = [array data];
+		objs = [array cArray];
 		len = [array count];
 
 		for (i = 0; i < len; i++)

@@ -67,7 +67,7 @@ static int lastpagebyte = 0;
 	return itemsize;
 }
 
-- (void*)data
+- (void*)cArray
 {
 	return data;
 }
@@ -102,8 +102,8 @@ static int lastpagebyte = 0;
 	return self;
 }
 
-- addNItems: (size_t)nitems
- fromCArray: (void*)carray
+-  addNItems: (size_t)nitems
+  fromCArray: (void*)carray
 {
 	if (nitems > SIZE_MAX - count)
 		@throw [OFOutOfRangeException newWithClass: isa];
@@ -147,7 +147,7 @@ static int lastpagebyte = 0;
 		return NO;
 	if ([obj count] != count || [obj itemsize] != itemsize)
 		return NO;
-	if (memcmp([obj data], data, count * itemsize))
+	if (memcmp([obj cArray], data, count * itemsize))
 		return NO;
 
 	return YES;
@@ -165,15 +165,15 @@ static int lastpagebyte = 0;
 						       selector: _cmd];
 
 	if ([obj count] == count)
-		return memcmp(data, [obj data], count * itemsize);
+		return memcmp(data, [obj cArray], count * itemsize);
 
 	if (count > [obj count]) {
-		if ((ret = memcmp(data, [obj data], [obj count] * itemsize)))
+		if ((ret = memcmp(data, [obj cArray], [obj count] * itemsize)))
 			return ret;
 
 		return *(char*)[self itemAtIndex: [obj count]];
 	} else {
-		if ((ret = memcmp(data, [obj data], count * itemsize)))
+		if ((ret = memcmp(data, [obj cArray], count * itemsize)))
 			return ret;
 
 		return *(char*)[obj itemAtIndex: count] * -1;

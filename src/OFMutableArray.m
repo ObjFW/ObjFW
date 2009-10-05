@@ -21,7 +21,7 @@
 	OFObject **objs;
 	size_t len, i;
 
-	objs = [array data];
+	objs = [array cArray];
 	len = [array count];
 
 	[new->array addNItems: len
@@ -46,7 +46,7 @@
 	OFObject **objs;
 	size_t len, i;
 
-	objs = [array data];
+	objs = [array cArray];
 	len = [array count];
 
 	if (nobjects > len)

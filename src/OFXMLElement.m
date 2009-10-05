@@ -123,7 +123,7 @@ int _OFXMLElement_reference;
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	char *str_c;
 	size_t len, i, j, attrs_count;
-	OFXMLAttribute **attrs_data;
+	OFXMLAttribute **attrs_carray;
 	OFString *ret, *tmp;
 
 	len = [name cStringLength] + 4;
@@ -135,13 +135,13 @@ int _OFXMLElement_reference;
 	i = [name cStringLength] + 1;
 
 	/* Attributes */
-	attrs_data = [attrs data];
+	attrs_carray = [attrs cArray];
 	attrs_count = [attrs count];
 
 	for (j = 0; j < attrs_count; j++) {
 		/* FIXME: Add namespace support */
-		OFString *attr_name = [attrs_data[j] name];
-		tmp = [[attrs_data[j] stringValue] stringByXMLEscaping];
+		OFString *attr_name = [attrs_carray[j] name];
+		tmp = [[attrs_carray[j] stringValue] stringByXMLEscaping];
 
 		len += [attr_name cStringLength] + [tmp cStringLength] + 4;
 		@try {
@@ -170,18 +170,18 @@ int _OFXMLElement_reference;
 		if (stringval != nil)
 			tmp = [stringval stringByXMLEscaping];
 		else if (children != nil) {
-			OFXMLElement **data = [children data];
-			size_t count = [children count];
+			OFXMLElement **children_carray = [children cArray];
+			size_t children_count = [children count];
 			IMP append;
 
 			tmp = [OFMutableString string];
 			append = [tmp methodForSelector:
 			    @selector(appendCStringWithoutUTF8Checking:)];
 
-			for (j = 0; j < count; j++)
+			for (j = 0; j < children_count; j++)
 				append(tmp, @selector(
 				    appendCStringWithoutUTF8Checking:),
-				    [[data[j] string] cString]);
+				    [[children_carray[j] string] cString]);
 		}
 
 		len += [tmp cStringLength] + [name cStringLength] + 2;
