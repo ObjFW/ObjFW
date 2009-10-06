@@ -724,6 +724,57 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return array;
 }
 
+- (intmax_t)decimalValueAsInteger
+{
+	int i = 0;
+	intmax_t num = 0;
+
+	if (string[0] == '-')
+		i++;
+
+	for (; i < length; i++) {
+		if (string[i] >= '0' && string[i] <= '9')
+			num = (num * 10) + (string[i] - '0');
+		else
+			@throw [OFInvalidEncodingException newWithClass: isa];
+	}
+
+	if (string[0] == '-')
+		num *= -1;
+
+	return num;
+}
+
+- (intmax_t)hexadecimalValueAsInteger
+{
+	int i = 0;
+	intmax_t num = 0;
+
+	if (length == 0)
+		return 0;
+
+	if (length >= 2 && string[0] == '0' && string[1] == 'x')
+		i = 2;
+	else if (length >= 1 && (string[0] == 'x' || string[0] == '$'))
+		i = 1;
+
+	if (i == length)
+		@throw [OFInvalidEncodingException newWithClass: isa];
+
+	for (; i < length; i++) {
+		if (string[i] >= '0' && string[i] <= '9')
+			num = (num << 4) | (string[i] - '0');
+		else if (string[i] >= 'A' && string[i] <= 'F')
+			num = (num << 4) | (string[i] - 'A' + 10);
+		else if (string[i] >= 'a' && string[i] <= 'f')
+			num = (num << 4) | (string[i] - 'a' + 10);
+		else
+			@throw [OFInvalidEncodingException newWithClass: isa];
+	}
+
+	return num;
+}
+
 - setToCString: (const char*)str
 {
 	@throw [OFNotImplementedException newWithClass: isa

@@ -276,6 +276,22 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  */
 - (OFArray*)splitWithDelimiter: (OFString*)delimiter;
 
+/**
+ * Returns the decimal value of the string as an intmax_t or throws an
+ * OFInvalidEncoding exception if the string contains any non-number characters.
+ *
+ * \return An OFNumber
+ */
+- (intmax_t)decimalValueAsInteger;
+
+/**
+ * Returns the hexadecimal value of the string as an intmax_t or throws an
+ * OFInvalidEncoding exception if the string contains any non-number characters.
+ *
+ * \return An OFNumber
+ */
+- (intmax_t)hexadecimalValueAsInteger;
+
 - setToCString: (const char*)str;
 - appendCString: (const char*)str;
 - appendCString: (const char*)str

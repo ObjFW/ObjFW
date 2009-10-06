@@ -177,6 +177,34 @@ string_tests()
 	    [[a objectAtIndex: i++] isEqual: @""] &&
 	    [[a objectAtIndex: i++] isEqual: @""])
 
+	TEST(@"-[decimalValueAsInteger]",
+	    [@"1234" decimalValueAsInteger] == 1234 &&
+	    [@"" decimalValueAsInteger] == 0)
+
+	TEST(@"-[hexadecimalValueAsInteger]",
+	    [@"123f" hexadecimalValueAsInteger] == 0x123f &&
+	    [@"0xABcd" hexadecimalValueAsInteger] == 0xABCD &&
+	    [@"xbCDE" hexadecimalValueAsInteger] == 0xBCDE &&
+	    [@"$CdEf" hexadecimalValueAsInteger] == 0xCDEF &&
+	    [@"" hexadecimalValueAsInteger] == 0)
+
+	EXPECT_EXCEPTION(@"Detect invalid characters in "
+	    @"-[decimalValueAsInteger] #1", OFInvalidEncodingException,
+	    [@"abc" decimalValueAsInteger])
+	EXPECT_EXCEPTION(@"Detect invalid characters in "
+	    @"-[decimalValueAsInteger] #2", OFInvalidEncodingException,
+	    [@"0a" decimalValueAsInteger])
+
+	EXPECT_EXCEPTION(@"Detect invalid chars in "
+	    @"-[hexadecimalValueAsInteger] #1", OFInvalidEncodingException,
+	    [@"0xABCDEFG" hexadecimalValueAsInteger])
+	EXPECT_EXCEPTION(@"Detect invalid chars in "
+	    @"-[hexadecimalValueAsInteger] #2", OFInvalidEncodingException,
+	    [@"0x" hexadecimalValueAsInteger])
+	EXPECT_EXCEPTION(@"Detect invalid chars in "
+	    @"-[hexadecimalValueAsInteger] #3", OFInvalidEncodingException,
+	    [@"$" hexadecimalValueAsInteger])
+
 	TEST(@"-[md5Hash]", [[@"asdfoobar" md5Hash]
 	    isEqual: @"184dce2ec49b5422c7cfd8728864db4c"])
 
