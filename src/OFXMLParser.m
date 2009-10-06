@@ -56,7 +56,7 @@ parse_numeric_entity(const char *entity, size_t length)
 			else if (entity[i] >= 'A' && entity[i] <= 'F')
 				c = (c << 4) + (entity[i] - 'A' + 10);
 			else if (entity[i] >= 'a' && entity[i] <= 'f')
-				c = (c << 4) + (entity[i] - 'A' + 10);
+				c = (c << 4) + (entity[i] - 'a' + 10);
 			else
 				return nil;
 		}

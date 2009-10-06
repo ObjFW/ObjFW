@@ -258,7 +258,7 @@ string_tests()
 	TEST(@"-[stringByXMLUnescaping]",
 	    [[s[0] stringByXMLUnescaping] isEqual: @"<hello> &world'\"!&"] &&
 	    [[@"&#x79;" stringByXMLUnescaping] isEqual: @"y"] &&
-	    [[@"&#xE4;" stringByXMLUnescaping] isEqual: @"ä"] &&
+	    [[@"&#xe4;" stringByXMLUnescaping] isEqual: @"ä"] &&
 	    [[@"&#8364;" stringByXMLUnescaping] isEqual: @"€"] &&
 	    [[@"&#x1D11E;" stringByXMLUnescaping] isEqual: @"𝄞"])
 
