@@ -37,7 +37,9 @@ INCLUDES := ${INCLUDESTMP:.m=.h}	\
 	    threading.h
 
 SRCS += ${OBJC_SYNC_M}	\
-	${ASPRINTF_C}
+	${ASPRINTF_C}	\
+	iso_8859_15.c	\
+	windows_1252.c
 
 include ../buildsys.mk
 

@@ -29,8 +29,8 @@
 
 #import "asprintf.h"
 
-#import "encodings/iso_8859_15.h"
-#import "encodings/windows_1252.h"
+extern const uint16_t of_iso_8859_15[256];
+extern const uint16_t of_windows_1252[256];
 
 /* References for static linking */
 void _references_to_categories_of_OFString()
@@ -339,12 +339,10 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 					chr = (uint8_t)str[i];
 					break;
 				case OF_STRING_ENCODING_ISO_8859_15:
-					chr = iso_8859_15_to_unicode[
-					    (uint8_t)str[i]];
+					chr = of_iso_8859_15[(uint8_t)str[i]];
 					break;
 				case OF_STRING_ENCODING_WINDOWS_1252:
-					chr = windows_1252_to_unicode[
-					    (uint8_t)str[i]];
+					chr = of_windows_1252[(uint8_t)str[i]];
 					break;
 				default:
 					/*
