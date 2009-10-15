@@ -163,7 +163,7 @@ static OFFileSingleton *of_file_stderr = nil;
 
 - (void)dealloc
 {
-	if (close == YES && fp != NULL)
+	if (close && fp != NULL)
 		fclose(fp);
 
 	[super dealloc];

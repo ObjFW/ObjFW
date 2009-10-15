@@ -77,9 +77,13 @@ string_tests()
 
 	TEST(@"-[reverse]", [[s[0] reverse] isEqual: @"3𝄞1€sät"])
 
-	s[0] = [OFMutableString stringWithString: @"321tset"];
-	TEST(@"-[upper]", [[s[0] upper] isEqual: @"321TSET"])
-	TEST(@"-[lower]", [[s[0] lower] isEqual: @"321tset"])
+	s[1] = [OFMutableString stringWithString: @"abc"];
+
+	TEST(@"-[upper]", [[s[0] upper] isEqual: @"3𝄞1€SÄT"] &&
+	    [[s[1] upper] isEqual: @"ABC"])
+
+	TEST(@"-[lower]", [[s[0] lower] isEqual: @"3𝄞1€sät"] &&
+	    [[s[1] lower] isEqual: @"abc"])
 
 	TEST(@"+[stringWithCString:length:]",
 	    (s[0] = [OFMutableString stringWithCString: "foobar"

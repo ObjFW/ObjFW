@@ -145,23 +145,25 @@ of_string_utf8_to_unicode(const char *buf_, size_t len)
 {
 	const uint8_t *buf = (const uint8_t*)buf_;
 
-	if (*buf < 0x80)
+	if (!(*buf & 0x80))
 		return buf[0];
 
-	switch (*buf & 0xF0) {
-	case 0xC0:
-	case 0xD0:
+	if ((*buf & 0xE0) == 0xC0) {
 		if (OF_UNLIKELY(len < 2))
 			return OF_INVALID_UNICHAR;
 
 		return ((buf[0] & 0x1F) << 6) | (buf[1] & 0x3F);
-	case 0xE0:
+	}
+
+	if ((*buf & 0xF0) == 0xE0) {
 		if (OF_UNLIKELY(len < 3))
 			return OF_INVALID_UNICHAR;
 
 		return ((buf[0] & 0x0F) << 12) | ((buf[1] & 0x3F) << 6) |
 		    (buf[2] & 0x3F);
-	case 0xF0:
+	}
+
+	if ((*buf & 0xF8) == 0xF0) {
 		if (OF_UNLIKELY(len < 4))
 			return OF_INVALID_UNICHAR;
 
@@ -327,7 +329,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	case OF_STRING_ENCODING_ISO_8859_15:
 	case OF_STRING_ENCODING_WINDOWS_1252:
 		for (i = j = 0; i < len; i++) {
-			if ((uint8_t)str[i] < 0x80)
+			if (!(str[i] & 0x80))
 				string[j++] = str[i];
 			else {
 				char buf[4];
