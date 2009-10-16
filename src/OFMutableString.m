@@ -33,6 +33,101 @@
 extern const of_unichar_t* const of_unicode_upper_table[0x1100];
 extern const of_unichar_t* const of_unicode_lower_table[0x1100];
 
+static void
+apply_table(id self, Class isa, char **string, unsigned int *length,
+    BOOL is_utf8, const of_unichar_t* const table[])
+{
+	of_unichar_t c, tc;
+	of_unichar_t *ustr;
+	size_t ulen, nlen;
+	size_t i, j, d;
+	char *nstr;
+
+	if (!is_utf8) {
+		uint8_t *p = (uint8_t*)*string + *length;
+		uint8_t t;
+
+		while (--p >= (uint8_t*)*string) {
+			t = table[0][*p];
+			if (t != 0)
+				*p = t;
+		}
+
+		return;
+	}
+
+	ulen = [self length];
+	ustr = [self allocMemoryForNItems: [self length]
+				 withSize: ulen];
+
+	j = 0;
+	nlen = 0;
+
+	for (i = 0; i < *length; i++) {
+		c = of_string_utf8_to_unicode(*string + i, *length - i);
+
+		if (c == OF_INVALID_UNICHAR || c > 0x10FFFF) {
+			[self freeMemory: ustr];
+			@throw [OFInvalidEncodingException newWithClass: isa];
+		}
+
+		if ((tc = table[c >> 8][c & 0xFF]) == 0)
+			tc = c;
+		ustr[j++] = tc;
+
+		if (tc < 0x80)
+			nlen++;
+		else if (tc < 0x800)
+			nlen += 2;
+		else if (tc < 0x10000)
+			nlen += 3;
+		else if (tc < 0x110000)
+			nlen += 4;
+		else {
+			[self freeMemory: ustr];
+			@throw [OFInvalidEncodingException newWithClass: isa];
+		}
+
+		if (c < 0x80);
+		else if (c < 0x800)
+			i++;
+		else if (c < 0x10000)
+			i += 2;
+		else if (c < 0x110000)
+			i += 3;
+		else {
+			[self freeMemory: ustr];
+			@throw [OFInvalidEncodingException newWithClass: isa];
+		}
+	}
+
+	@try {
+		nstr = [self allocMemoryWithSize: nlen + 1];
+	} @catch (OFException *e) {
+		[self freeMemory: ustr];
+		@throw e;
+	}
+
+	j = 0;
+
+	for (i = 0; i < ulen; i++) {
+		if ((d = of_string_unicode_to_utf8(ustr[i], nstr + j)) == 0) {
+			[self freeMemory: ustr];
+			[self freeMemory: nstr];
+			@throw [OFInvalidEncodingException newWithClass: isa];
+		}
+		j += d;
+	}
+
+	assert(j == nlen);
+	nstr[j] = 0;
+	[self freeMemory: ustr];
+
+	[self freeMemory: *string];
+	*string = nstr;
+	*length = nlen;
+}
+
 @implementation OFMutableString
 - setToCString: (const char*)str
 {
@@ -279,192 +374,16 @@ extern const of_unichar_t* const of_unicode_lower_table[0x1100];
 
 - upper
 {
-	of_unichar_t c, uc;
-	of_unichar_t *ustr;
-	size_t ulen, nlen;
-	size_t i, j, d;
-	char *nstr;
-
-	if (!is_utf8) {
-		uint8_t *p = (uint8_t*)string + length;
-		uint8_t t;
-
-		while (--p >= (uint8_t*)string) {
-			t = of_unicode_upper_table[0][*p];
-			if (t != 0)
-				*p = t;
-		}
-
-		return self;
-	}
-
-	ulen = [self length];
-	ustr = [self allocMemoryForNItems: [self length]
-				 withSize: ulen];
-
-	j = 0;
-	nlen = 0;
-
-	for (i = 0; i < length; i++) {
-		c = of_string_utf8_to_unicode(string + i, length - i);
-
-		if (c == OF_INVALID_UNICHAR || c > 0x10FFFF) {
-			[self freeMemory: ustr];
-			@throw [OFInvalidEncodingException newWithClass: isa];
-		}
-
-		uc = of_unicode_upper_table[c >> 8][c & 0xFF];
-		if (uc == 0)
-			uc = c;
-		ustr[j++] = uc;
-
-		if (uc < 0x80)
-			nlen++;
-		else if (uc < 0x800)
-			nlen += 2;
-		else if (uc < 0x10000)
-			nlen += 3;
-		else if (uc < 0x110000)
-			nlen += 4;
-		else {
-			[self freeMemory: ustr];
-			@throw [OFInvalidEncodingException newWithClass: isa];
-		}
-
-		if (c < 0x80);
-		else if (c < 0x800)
-			i++;
-		else if (c < 0x10000)
-			i += 2;
-		else if (c < 0x110000)
-			i += 3;
-		else {
-			[self freeMemory: ustr];
-			@throw [OFInvalidEncodingException newWithClass: isa];
-		}
-	}
-
-	@try {
-		nstr = [self allocMemoryWithSize: nlen + 1];
-	} @catch (OFException *e) {
-		[self freeMemory: ustr];
-		@throw e;
-	}
-
-	j = 0;
-
-	for (i = 0; i < ulen; i++) {
-		if ((d = of_string_unicode_to_utf8(ustr[i], nstr + j)) == 0) {
-			[self freeMemory: ustr];
-			[self freeMemory: nstr];
-			@throw [OFInvalidEncodingException newWithClass: isa];
-		}
-		j += d;
-	}
-
-	assert(j == nlen);
-	nstr[j] = 0;
-	[self freeMemory: ustr];
-
-	[self freeMemory: string];
-	string = nstr;
-	length = nlen;
+	apply_table(self, isa, &string, &length, is_utf8,
+	    of_unicode_upper_table);
 
 	return self;
 }
 
 - lower
 {
-	of_unichar_t c, lc;
-	of_unichar_t *ustr;
-	size_t ulen, nlen;
-	size_t i, j, d;
-	char *nstr;
-
-	if (!is_utf8) {
-		uint8_t *p = (uint8_t*)string + length;
-		uint8_t t;
-
-		while (--p >= (uint8_t*)string) {
-			t = of_unicode_lower_table[0][*p];
-			if (t != 0)
-				*p = t;
-		}
-
-		return self;
-	}
-
-	ulen = [self length];
-	ustr = [self allocMemoryForNItems: [self length]
-				 withSize: ulen];
-
-	j = 0;
-	nlen = 0;
-
-	for (i = 0; i < length; i++) {
-		c = of_string_utf8_to_unicode(string + i, length - i);
-
-		if (c == OF_INVALID_UNICHAR || c > 0x10FFFF) {
-			[self freeMemory: ustr];
-			@throw [OFInvalidEncodingException newWithClass: isa];
-		}
-
-		lc = of_unicode_lower_table[c >> 8][c & 0xFF];
-		if (lc == 0)
-			lc = c;
-		ustr[j++] = lc;
-
-		if (lc < 0x80)
-			nlen++;
-		else if (lc < 0x800)
-			nlen += 2;
-		else if (lc < 0x10000)
-			nlen += 3;
-		else if (lc < 0x110000)
-			nlen += 4;
-		else {
-			[self freeMemory: ustr];
-			@throw [OFInvalidEncodingException newWithClass: isa];
-		}
-
-		if (c < 0x80);
-		else if (c < 0x800)
-			i++;
-		else if (c < 0x10000)
-			i += 2;
-		else if (c < 0x110000)
-			i += 3;
-		else {
-			[self freeMemory: ustr];
-			@throw [OFInvalidEncodingException newWithClass: isa];
-		}
-	}
-
-	@try {
-		nstr = [self allocMemoryWithSize: nlen + 1];
-	} @catch (OFException *e) {
-		[self freeMemory: ustr];
-		@throw e;
-	}
-
-	j = 0;
-
-	for (i = 0; i < ulen; i++) {
-		if ((d = of_string_unicode_to_utf8(ustr[i], nstr + j)) == 0) {
-			[self freeMemory: ustr];
-			[self freeMemory: nstr];
-			@throw [OFInvalidEncodingException newWithClass: isa];
-		}
-		j += d;
-	}
-
-	assert(j == nlen);
-	nstr[j] = 0;
-	[self freeMemory: ustr];
-
-	[self freeMemory: string];
-	string = nstr;
-	length = nlen;
+	apply_table(self, isa, &string, &length, is_utf8,
+	    of_unicode_lower_table);
 
 	return self;
 }

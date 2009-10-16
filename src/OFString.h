@@ -38,13 +38,9 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 @interface OFString: OFObject <OFCopying, OFMutableCopying>
 {
 	char	     *string;
-#ifdef __objc_INCLUDE_GNU
 	unsigned int length;
-#else
-	int	     length;
-#if __LP64__
+#if !defined(__objc_INCLUDE_GNU) && __LP64__
 	int	     _unused;
-#endif
 #endif
 	BOOL	     is_utf8;
 }

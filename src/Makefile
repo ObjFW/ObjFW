@@ -40,9 +40,8 @@ SRCS += ${OBJC_SYNC_M}		\
 	${ASPRINTF_C}		\
 	iso_8859_15.c		\
 	windows_1252.c		\
-	unicode_lower.m		\
 	unicode_upper.m		\
-	unicode_titlecase.m
+	unicode_lower.m
 
 include ../buildsys.mk
 
