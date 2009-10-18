@@ -36,11 +36,11 @@ INCLUDES := ${INCLUDESTMP:.m=.h}	\
 	    objfw.h			\
 	    threading.h
 
-SRCS += ${OBJC_SYNC_M}		\
-	${ASPRINTF_C}		\
-	iso_8859_15.c		\
-	windows_1252.c		\
-	unicode_upper.m		\
+SRCS += ${OBJC_SYNC_M}	\
+	${ASPRINTF_C}	\
+	iso_8859_15.c	\
+	windows_1252.c	\
+	unicode_upper.m	\
 	unicode_lower.m
 
 include ../buildsys.mk

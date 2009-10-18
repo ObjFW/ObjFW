@@ -23,7 +23,6 @@
 {
 	of_unichar_t upper[0x110000];
 	of_unichar_t lower[0x110000];
-	of_unichar_t title[0x110000];
 }
 
 - (void)fillTablesFromFile: (OFString*)file;
@@ -32,7 +31,6 @@
 	    toFile: (OFString*)file;
 - (void)writeUpperTableToFile: (OFString*)file;
 - (void)writeLowerTableToFile: (OFString*)file;
-- (void)writeTitlecaseTableToFile: (OFString*)file;
 @end
 
 @implementation TableGenerator
@@ -59,7 +57,6 @@
 		codep = [splitted_carray[0] hexadecimalValueAsInteger];
 		upper[codep] = [splitted_carray[12] hexadecimalValueAsInteger];
 		lower[codep] = [splitted_carray[13] hexadecimalValueAsInteger];
-		title[codep] = [splitted_carray[14] hexadecimalValueAsInteger];
 
 		[pool2 releaseObjects];
 	}
@@ -171,13 +168,6 @@
 		       withName: @"lower"
 			 toFile: file];
 }
-
-- (void)writeTitlecaseTableToFile: (OFString*)file
-{
-	return [self writeTable: title
-		       withName: @"titlecase"
-			 toFile: file];
-}
 @end
 
 int
@@ -189,7 +179,6 @@ main()
 	[tgen fillTablesFromFile: @"UnicodeData.txt"];
 	[tgen writeUpperTableToFile: @"../src/unicode_upper.m"];
 	[tgen writeLowerTableToFile: @"../src/unicode_lower.m"];
-	[tgen writeTitlecaseTableToFile: @"../src/unicode_titlecase.m"];
 
 	[pool release];
 
