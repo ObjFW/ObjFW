@@ -19,6 +19,21 @@
 #import "OFFile.h"
 #import "OFAutoreleasePool.h"
 
+#define COPYRIGHT \
+    @"/*\n" \
+    @" * Copyright (c) 2008 - 2009\n" \
+    @" *   Jonathan Schleifer <js@webkeks.org>\n" \
+    @" *\n" \
+    @" * All rights reserved.\n" \
+    @" *\n" \
+    @" * This file is part of libobjfw. It may be distributed under the " \
+    @"terms of the\n" \
+    @" * Q Public License 1.0, which can be found in the file LICENSE " \
+    @"included in\n" \
+    @" * the packaging of this file.\n" \
+    @" */\n" \
+    @"\n"
+
 @interface TableGenerator: OFObject
 {
 	of_unichar_t upper[0x110000];
@@ -26,11 +41,14 @@
 }
 
 - (void)fillTablesFromFile: (OFString*)file;
-- (void)writeTable: (of_unichar_t*)table
-	  withName: (OFString*)name
-	    toFile: (OFString*)file;
-- (void)writeUpperTableToFile: (OFString*)file;
-- (void)writeLowerTableToFile: (OFString*)file;
+- (size_t)writeTable: (of_unichar_t*)table
+	    withName: (OFString*)name
+	      toFile: (OFString*)file;
+- (size_t)writeUpperTableToFile: (OFString*)file;
+- (size_t)writeLowerTableToFile: (OFString*)file;
+- (void)writeHeaderToFile: (OFString*)file
+       withUpperTableSize: (size_t)upper_size
+	   lowerTableSize: (size_t)lower_size;
 @end
 
 @implementation TableGenerator
@@ -64,9 +82,9 @@
 	[pool release];
 }
 
-- (void)writeTable: (of_unichar_t*)table
-	  withName: (OFString*)name
-	    toFile: (OFString*)file
+- (size_t)writeTable: (of_unichar_t*)table
+	    withName: (OFString*)name
+	      toFile: (OFString*)file
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFAutoreleasePool *pool2;
@@ -74,24 +92,12 @@
 				    mode: @"wb"];
 
 	of_unichar_t i, j;
-	BOOL empty;
+	size_t last_used = SIZE_MAX;
 	BOOL table_used[0x1100];
 
 	memset(table_used, NO, 0x1100);
 
-	[f writeString: @"/*\n"
-	    @" * Copyright (c) 2008 - 2009\n"
-	    @" *   Jonathan Schleifer <js@webkeks.org>\n"
-	    @" *\n"
-	    @" * All rights reserved.\n"
-	    @" *\n"
-	    @" * This file is part of libobjfw. It may be distributed under "
-	    @"the terms of the\n"
-	    @" * Q Public License 1.0, which can be found in the file LICENSE "
-	    @"included in\n"
-	    @" * the packaging of this file.\n"
-	    @" */\n"
-	    @"\n"
+	[f writeString: COPYRIGHT
 	    @"#include \"config.h\"\n"
 	    @"\n"
 	    @"#import \"OFString.h\"\n\n"];
@@ -99,12 +105,15 @@
 	[f writeString: @"static const of_unichar_t nop_page[0x100] = {};\n\n"];
 
 	for (i = 0; i < 0x110000; i += 0x100) {
+		BOOL empty;
+
 		empty = YES;
 
 		for (j = i; j < i + 0x100; j++) {
 			if (table[j] != 0) {
 				empty = NO;
-				table_used[i >> 8] = YES;
+				last_used = i >> 8;
+				table_used[last_used] = YES;
 			}
 		}
 
@@ -130,22 +139,24 @@
 		}
 	}
 
+	last_used++;
+
 	[f writeString: [OFString stringWithFormat:
-	    @"const of_unichar_t* const of_unicode_%s_table[0x1100] = {\n\t",
-	    [name cString]]];
+	    @"const of_unichar_t* const of_unicode_%s_table[0x%X] = {\n\t",
+	    [name cString], last_used]];
 
 	pool2 = [[OFAutoreleasePool alloc] init];
-	for (i = 0; i < 0x1100; i++) {
+	for (i = 0; i < last_used; i++) {
 		if (table_used[i])
-			[f writeString: [OFString stringWithFormat: @"page_%d,",
+			[f writeString: [OFString stringWithFormat: @"page_%d",
 								    i]];
 		else
-			[f writeString: @"nop_page,"];
+			[f writeString: @"nop_page"];
 
-		if ((i + 1) % 4)
-			[f writeString: @" "];
-		else if (i < 0x1100 - 4)
-			[f writeString: @"\n\t"];
+		if ((i + 1) % 4 == 0)
+			[f writeString: @",\n\t"];
+		else if (i + 1 < last_used)
+			[f writeString: @", "];
 
 		[pool2 releaseObjects];
 	}
@@ -153,20 +164,46 @@
 	[f writeString: @"\n};\n"];
 
 	[pool release];
+	return last_used;
 }
 
-- (void)writeUpperTableToFile: (OFString*)file
+- (size_t)writeUpperTableToFile: (OFString*)file
 {
 	return [self writeTable: upper
 		       withName: @"upper"
 			 toFile: file];
 }
 
-- (void)writeLowerTableToFile: (OFString*)file
+- (size_t)writeLowerTableToFile: (OFString*)file
 {
 	return [self writeTable: lower
 		       withName: @"lower"
 			 toFile: file];
+}
+
+- (void)writeHeaderToFile: (OFString*)file
+       withUpperTableSize: (size_t)upper_size
+	   lowerTableSize: (size_t)lower_size
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFFile *f = [OFFile fileWithPath: file
+				    mode: @"wb"];
+
+	[f writeString: COPYRIGHT
+	    @"#import \"OFString.h\"\n\n"];
+
+	[f writeString: [OFString stringWithFormat:
+	    @"#define OF_UNICODE_UPPER_TABLE_SIZE 0x%X\n"
+	    @"#define OF_UNICODE_LOWER_TABLE_SIZE 0x%X\n\n",
+	    upper_size, lower_size]];
+
+	[f writeString:
+	    @"extern const of_unichar_t* const\n"
+	    @"    of_unicode_upper_table[OF_UNICODE_UPPER_TABLE_SIZE];\n"
+	    @"extern const of_unichar_t* const\n"
+	    @"    of_unicode_lower_table[OF_UNICODE_LOWER_TABLE_SIZE];"];
+
+	[pool release];
 }
 @end
 
@@ -175,10 +212,14 @@ main()
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	TableGenerator *tgen = [[[TableGenerator alloc] init] autorelease];
+	size_t upper_size, lower_size;
 
 	[tgen fillTablesFromFile: @"UnicodeData.txt"];
-	[tgen writeUpperTableToFile: @"../src/unicode_upper.m"];
-	[tgen writeLowerTableToFile: @"../src/unicode_lower.m"];
+	upper_size = [tgen writeUpperTableToFile: @"../src/unicode_upper.m"];
+	lower_size = [tgen writeLowerTableToFile: @"../src/unicode_lower.m"];
+	[tgen writeHeaderToFile: @"../src/unicode.h"
+	     withUpperTableSize: upper_size
+		 lowerTableSize: lower_size];
 
 	[pool release];
 
