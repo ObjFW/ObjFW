@@ -67,9 +67,12 @@ call_main(id obj)
 
 	if (!of_thread_new(&thread, call_main, self)) {
 		Class c = isa;
+		[object release];
 		[super dealloc];
 		@throw [OFInitializationFailedException newWithClass: c];
 	}
+
+	running = YES;
 
 	return self;
 }
@@ -82,6 +85,7 @@ call_main(id obj)
 - join
 {
 	of_thread_join(thread);
+	running = NO;
 
 	return retval;
 }
@@ -93,7 +97,8 @@ call_main(id obj)
 	 * do anything anyway. Most likely, it finished already or was already
 	 * canceled.
 	 */
-	of_thread_cancel(thread);
+	if (running)
+		of_thread_cancel(thread);
 
 	[object release];
 	[super dealloc];

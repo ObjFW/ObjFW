@@ -55,6 +55,7 @@
 {
 	id object;
 	of_thread_t thread;
+	BOOL running;
 
 @public
 	id retval;
