@@ -732,6 +732,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	if (string[0] == '-')
 		i++;
 
+	/* FIXME: Add overflow check */
 	for (; i < length; i++) {
 		if (string[i] >= '0' && string[i] <= '9')
 			num = (num * 10) + (string[i] - '0');
@@ -761,6 +762,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	if (i == length)
 		@throw [OFInvalidEncodingException newWithClass: isa];
 
+	/* FIXME: Add overflow check */
 	for (; i < length; i++) {
 		if (string[i] >= '0' && string[i] <= '9')
 			num = (num << 4) | (string[i] - '0');

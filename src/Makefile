@@ -34,7 +34,8 @@ INCLUDES := ${INCLUDESTMP:.m=.h}	\
 	    OFMacros.h			\
 	    asprintf.h			\
 	    objfw.h			\
-	    threading.h
+	    threading.h			\
+	    unicode.h
 
 SRCS += ${OBJC_SYNC_M}	\
 	${ASPRINTF_C}	\

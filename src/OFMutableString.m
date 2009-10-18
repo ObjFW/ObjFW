@@ -29,13 +29,11 @@
 #import "OFMacros.h"
 
 #import "asprintf.h"
-
-extern const of_unichar_t* const of_unicode_upper_table[0x1100];
-extern const of_unichar_t* const of_unicode_lower_table[0x1100];
+#import "unicode.h"
 
 static void
 apply_table(id self, Class isa, char **string, unsigned int *length,
-    BOOL is_utf8, const of_unichar_t* const table[])
+    BOOL is_utf8, const of_unichar_t* const table[], const size_t table_size)
 {
 	of_unichar_t c, tc;
 	of_unichar_t *ustr;
@@ -44,6 +42,8 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 	char *nstr;
 
 	if (!is_utf8) {
+		assert(table_size >= 1);
+
 		uint8_t *p = (uint8_t*)*string + *length;
 		uint8_t t;
 
@@ -69,7 +69,10 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
 
-		if ((tc = table[c >> 8][c & 0xFF]) == 0)
+		if (c >> 8 < table_size) {
+			if ((tc = table[c >> 8][c & 0xFF]) == 0)
+				tc = c;
+		} else
 			tc = c;
 		ustr[j++] = tc;
 
@@ -373,7 +376,7 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 - upper
 {
 	apply_table(self, isa, &string, &length, is_utf8,
-	    of_unicode_upper_table);
+	    of_unicode_upper_table, OF_UNICODE_UPPER_TABLE_SIZE);
 
 	return self;
 }
@@ -381,7 +384,7 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 - lower
 {
 	apply_table(self, isa, &string, &length, is_utf8,
-	    of_unicode_lower_table);
+	    of_unicode_lower_table, OF_UNICODE_LOWER_TABLE_SIZE);
 
 	return self;
 }
