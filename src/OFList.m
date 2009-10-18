@@ -57,7 +57,7 @@
 	of_list_object_t *o;
 
 	o = [self allocMemoryWithSize: sizeof(of_list_object_t)];
-	o->object = obj;
+	o->object = [obj retain];
 	o->next = NULL;
 	o->prev = last;
 
@@ -80,7 +80,7 @@
 	of_list_object_t *o;
 
 	o = [self allocMemoryWithSize: sizeof(of_list_object_t)];
-	o->object = obj;
+	o->object = [obj retain];
 	o->next = first;
 	o->prev = NULL;
 
@@ -104,7 +104,7 @@
 	of_list_object_t *o;
 
 	o = [self allocMemoryWithSize: sizeof(of_list_object_t)];
-	o->object = obj;
+	o->object = [obj retain];
 	o->next = listobj;
 	o->prev = listobj->prev;
 
@@ -129,7 +129,7 @@
 	of_list_object_t *o;
 
 	o = [self allocMemoryWithSize: sizeof(of_list_object_t)];
-	o->object = obj;
+	o->object = [obj retain];
 	o->next = listobj->next;
 	o->prev = listobj;
 
@@ -206,7 +206,7 @@
 	@try {
 		for (iter = first; iter != NULL; iter = iter->next) {
 			o = [new allocMemoryWithSize: sizeof(of_list_object_t)];
-			o->object = iter->object;
+			o->object = [iter->object retain];
 			o->next = NULL;
 			o->prev = prev;
 
