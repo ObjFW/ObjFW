@@ -392,8 +392,10 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 - removeCharactersFromIndex: (size_t)start
 		    toIndex: (size_t)end
 {
-	start = of_string_index_to_position(string, start, length);
-	end = of_string_index_to_position(string, end, length);
+	if (is_utf8) {
+		start = of_string_index_to_position(string, start, length);
+		end = of_string_index_to_position(string, end, length);
+	}
 
 	if (start > end)
 		@throw [OFInvalidArgumentException newWithClass: isa
