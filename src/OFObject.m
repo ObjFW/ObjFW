@@ -411,15 +411,16 @@ extern BOOL objc_sync_init();
 				return self;
 			}
 
+			free(ptr);
+			PRE_IVAR->memchunks[i] = last;
+			PRE_IVAR->memchunks_size = memchunks_size;
+
 			if (OF_UNLIKELY((memchunks = realloc(
 			    PRE_IVAR->memchunks, memchunks_size *
 			    sizeof(void*))) == NULL))
 				return self;
 
-			free(ptr);
 			PRE_IVAR->memchunks = memchunks;
-			PRE_IVAR->memchunks[i] = last;
-			PRE_IVAR->memchunks_size = memchunks_size;
 
 			return self;
 		}
