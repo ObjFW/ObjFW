@@ -2,7 +2,7 @@ PROG_NOINST = gen_tables${PROG_SUFFIX}
 SRCS = gen_tables.m
 
 .PHONY: run
-run: all
+run: all UnicodeData.txt
 	rm -f libobjfw.so.0 libobjfw.so.0.1 libobjfw.dll libobjfw.dylib
 	if test -f ../src/libobjfw.so; then \
 		ln -s ../src/libobjfw.so libobjfw.so.0; \
@@ -22,6 +22,9 @@ run: all
 	${TEST_LAUNCHER} ./${PROG_NOINST}; EXIT=$$?; \
 	rm -f libobjfw.so.0 libobjfw.so.0.1 libobjfw.dll libobjfw.dylib; \
 	exit $$EXIT
+
+UnicodeData.txt:
+	wget http://unicode.org/Public/UNIDATA/UnicodeData.txt
 
 include ../buildsys.mk
 
