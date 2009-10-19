@@ -12,12 +12,19 @@
 #import "OFObject.h"
 #import "OFString.h"
 
+#ifndef _WIN32
+typedef void* of_plugin_handle_t;
+#else
+#include <windows.h>
+typedef HMODULE of_plugin_handle_t;
+#endif
+
 /**
  * The OFPlugin class provides a system for loading plugins at runtime.
  */
 @interface OFPlugin: OFObject
 {
-	void *handle;
+	of_plugin_handle_t handle;
 }
 
 /**

@@ -13,18 +13,27 @@
 
 #include <stdlib.h>
 #include <string.h>
+
+#ifndef _WIN32
 #include <dlfcn.h>
+#endif
 
 #import "OFPlugin.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
+
+#ifdef _WIN32
+#define dlopen(file, mode) LoadLibrary(file)
+#define dlsym(handle, symbol) GetProcAddress(handle, symbol)
+#define dlclose(handle) FreeLibrary(handle)
+#endif
 
 @implementation OFPlugin
 + pluginFromFile: (OFString*)path
 {
 	OFAutoreleasePool *pool;
 	OFString *file;
-	void *handle;
+	of_plugin_handle_t handle;
 	OFPlugin *(*init_plugin)();
 	OFPlugin *plugin;
 
@@ -37,8 +46,8 @@
 
 	[pool release];
 
-	if ((init_plugin = dlsym(handle, "init_plugin")) == NULL ||
-	    (plugin = init_plugin()) == nil) {
+	init_plugin = (OFPlugin*(*)())dlsym(handle, "init_plugin");
+	if (init_plugin == NULL || (plugin = init_plugin()) == nil) {
 		dlclose(handle);
 		@throw [OFInitializationFailedException newWithClass: self];
 	}
