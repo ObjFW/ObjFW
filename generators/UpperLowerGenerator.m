@@ -15,43 +15,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#import "OFString.h"
 #import "OFFile.h"
 #import "OFAutoreleasePool.h"
 
-#define COPYRIGHT \
-    @"/*\n" \
-    @" * Copyright (c) 2008 - 2009\n" \
-    @" *   Jonathan Schleifer <js@webkeks.org>\n" \
-    @" *\n" \
-    @" * All rights reserved.\n" \
-    @" *\n" \
-    @" * This file is part of libobjfw. It may be distributed under the " \
-    @"terms of the\n" \
-    @" * Q Public License 1.0, which can be found in the file LICENSE " \
-    @"included in\n" \
-    @" * the packaging of this file.\n" \
-    @" */\n" \
-    @"\n"
+#import "UpperLowerGenerator.h"
+#import "copyright.h"
 
-@interface TableGenerator: OFObject
-{
-	of_unichar_t upper[0x110000];
-	of_unichar_t lower[0x110000];
-}
-
-- (void)fillTablesFromFile: (OFString*)file;
-- (size_t)writeTable: (of_unichar_t*)table
-	    withName: (OFString*)name
-	      toFile: (OFString*)file;
-- (size_t)writeUpperTableToFile: (OFString*)file;
-- (size_t)writeLowerTableToFile: (OFString*)file;
-- (void)writeHeaderToFile: (OFString*)file
-       withUpperTableSize: (size_t)upper_size
-	   lowerTableSize: (size_t)lower_size;
-@end
-
-@implementation TableGenerator
+@implementation UpperLowerGenerator
 - (void)fillTablesFromFile: (OFString*)file;
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init], *pool2;
@@ -206,22 +176,3 @@
 	[pool release];
 }
 @end
-
-int
-main()
-{
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	TableGenerator *tgen = [[[TableGenerator alloc] init] autorelease];
-	size_t upper_size, lower_size;
-
-	[tgen fillTablesFromFile: @"UnicodeData.txt"];
-	upper_size = [tgen writeUpperTableToFile: @"../src/unicode_upper.m"];
-	lower_size = [tgen writeLowerTableToFile: @"../src/unicode_lower.m"];
-	[tgen writeHeaderToFile: @"../src/unicode.h"
-	     withUpperTableSize: upper_size
-		 lowerTableSize: lower_size];
-
-	[pool release];
-
-	return 0;
-}

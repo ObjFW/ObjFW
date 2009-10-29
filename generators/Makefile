@@ -1,8 +1,9 @@
 PROG_NOINST = gen_tables${PROG_SUFFIX}
-SRCS = gen_tables.m
+SRCS = main.o			\
+       UpperLowerGenerator.m
 
 .PHONY: run
-run: all UnicodeData.txt
+run: all UnicodeData.txt CaseFolding.txt
 	rm -f libobjfw.so.0 libobjfw.so.0.1 libobjfw.dll libobjfw.dylib
 	if test -f ../src/libobjfw.so; then \
 		ln -s ../src/libobjfw.so libobjfw.so.0; \
@@ -25,6 +26,9 @@ run: all UnicodeData.txt
 
 UnicodeData.txt:
 	wget http://unicode.org/Public/UNIDATA/UnicodeData.txt
+
+CaseFolding.txt:
+	wget http://www.unicode.org/Public/UNIDATA/CaseFolding.txt
 
 include ../buildsys.mk
 
