@@ -18,11 +18,11 @@
 #import "OFFile.h"
 #import "OFAutoreleasePool.h"
 
-#import "UpperLowerGenerator.h"
+#import "CaseFoldingGenerator.h"
 #import "copyright.h"
 
-@implementation UpperLowerGenerator
-- (void)fillTablesFromFile: (OFString*)file;
+@implementation CaseFoldingGenerator
+- (void)fillTableFromFile: (OFString*)file;
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init], *pool2;
 	OFFile *src = [OFFile fileWithPath: file
@@ -35,16 +35,22 @@
 		OFString **splitted_carray;
 		of_unichar_t codep;
 
-		splitted = [line splitWithDelimiter: @";"];
-		if ([splitted count] != 15) {
+		if ([line characterAtIndex: 0] == '#')
+			continue;
+
+		splitted = [line splitWithDelimiter: @"; "];
+		if ([splitted count] != 4) {
 			fprintf(stderr, "Invalid line: %s\n", [line cString]);
 			exit(1);
 		}
 		splitted_carray = [splitted cArray];
 
+		if (![splitted_carray[1] isEqual: @"S"] &&
+		    ![splitted_carray[1] isEqual: @"C"])
+			continue;
+
 		codep = [splitted_carray[0] hexadecimalValueAsInteger];
-		upper[codep] = [splitted_carray[12] hexadecimalValueAsInteger];
-		lower[codep] = [splitted_carray[13] hexadecimalValueAsInteger];
+		table[codep] = [splitted_carray[2] hexadecimalValueAsInteger];
 
 		[pool2 releaseObjects];
 	}
@@ -52,9 +58,7 @@
 	[pool release];
 }
 
-- (size_t)writeTable: (of_unichar_t*)table
-	    withName: (OFString*)name
-	      toFile: (OFString*)file
+- (void)writeTableToFile: (OFString*)file
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFAutoreleasePool *pool2;
@@ -72,7 +76,8 @@
 	    @"\n"
 	    @"#import \"OFString.h\"\n\n"];
 
-	[f writeString: @"static const of_unichar_t nop_page[0x100] = {};\n\n"];
+	[f writeString: @"static const of_unichar_t nop_page[0x100] = {};"
+	    @"\n\n"];
 
 	for (i = 0; i < 0x110000; i += 0x100) {
 		BOOL empty;
@@ -91,8 +96,8 @@
 		       	pool2 = [[OFAutoreleasePool alloc] init];
 
 			[f writeString: [OFString stringWithFormat:
-			    @"static const of_unichar_t page_%d[0x100] = {\n",
-			    i >> 8]];
+			    @"static const of_unichar_t page_%d[0x100] = "
+			    @"{\n", i >> 8]];
 
 			for (j = i; j < i + 0x100; j += 4) {
 				[f writeString: [OFString stringWithFormat:
@@ -112,8 +117,8 @@
 	last_used++;
 
 	[f writeString: [OFString stringWithFormat:
-	    @"const of_unichar_t* const of_unicode_%s_table[0x%X] = {\n\t",
-	    [name cString], last_used]];
+	    @"const of_unichar_t* const of_unicode_titlecase_table[0x%X] = "
+	    @"{\n\t", last_used]];
 
 	pool2 = [[OFAutoreleasePool alloc] init];
 	for (i = 0; i < last_used; i++) {
@@ -133,43 +138,24 @@
 
 	[f writeString: @"\n};\n"];
 
+	size =  last_used;
+
 	[pool release];
-	return last_used;
 }
 
-- (void)writeUpperTableToFile: (OFString*)file
-{
-	upper_size = [self writeTable: upper
-			     withName: @"upper"
-			       toFile: file];
-}
-
-- (void)writeLowerTableToFile: (OFString*)file
-{
-	lower_size = [self writeTable: lower
-			     withName: @"lower"
-			       toFile: file];
-}
-
-- (void)writeHeaderToFile: (OFString*)file
+- (void)appendHeaderToFile: (OFString*)file
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFFile *f = [OFFile fileWithPath: file
-				    mode: @"wb"];
-
-	[f writeString: COPYRIGHT
-	    @"#import \"OFString.h\"\n\n"];
+				    mode: @"ab"];
 
 	[f writeString: [OFString stringWithFormat:
-	    @"#define OF_UNICODE_UPPER_TABLE_SIZE 0x%X\n"
-	    @"#define OF_UNICODE_LOWER_TABLE_SIZE 0x%X\n\n",
-	    upper_size, lower_size]];
+	    @"\n#define OF_UNICODE_CASEFOLDING_TABLE_SIZE 0x%X\n\n", size]];
 
 	[f writeString:
 	    @"extern const of_unichar_t* const\n"
-	    @"    of_unicode_upper_table[OF_UNICODE_UPPER_TABLE_SIZE];\n"
-	    @"extern const of_unichar_t* const\n"
-	    @"    of_unicode_lower_table[OF_UNICODE_LOWER_TABLE_SIZE];\n"];
+	    @"    of_unicode_casefolding_table["
+	    @"OF_UNICODE_CASEFOLDING_TABLE_SIZE];\n"];
 
 	[pool release];
 }

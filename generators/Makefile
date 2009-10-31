@@ -1,6 +1,7 @@
 PROG_NOINST = gen_tables${PROG_SUFFIX}
 SRCS = main.o			\
-       UpperLowerGenerator.m
+       UpperLowerGenerator.m	\
+       CaseFoldingGenerator.m
 
 .PHONY: run
 run: all UnicodeData.txt CaseFolding.txt

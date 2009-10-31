@@ -14,21 +14,25 @@
 #import "OFAutoreleasePool.h"
 
 #import "UpperLowerGenerator.h"
+#import "CaseFoldingGenerator.h"
 
 int
 main()
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	UpperLowerGenerator *tgen;
-	size_t upper_size, lower_size;
+	UpperLowerGenerator *ulgen;
+	CaseFoldingGenerator *cfgen;
 
-	tgen = [[[UpperLowerGenerator alloc] init] autorelease];
-	[tgen fillTablesFromFile: @"UnicodeData.txt"];
-	upper_size = [tgen writeUpperTableToFile: @"../src/unicode_upper.m"];
-	lower_size = [tgen writeLowerTableToFile: @"../src/unicode_lower.m"];
-	[tgen writeHeaderToFile: @"../src/unicode.h"
-	     withUpperTableSize: upper_size
-		 lowerTableSize: lower_size];
+	ulgen = [[[UpperLowerGenerator alloc] init] autorelease];
+	[ulgen fillTablesFromFile: @"UnicodeData.txt"];
+	[ulgen writeUpperTableToFile: @"../src/unicode_upper.m"];
+	[ulgen writeLowerTableToFile: @"../src/unicode_lower.m"];
+	[ulgen writeHeaderToFile: @"../src/unicode.h"];
+
+	cfgen = [[[CaseFoldingGenerator alloc] init] autorelease];
+	[cfgen fillTableFromFile: @"CaseFolding.txt"];
+	[cfgen writeTableToFile: @"../src/unicode_casefolding.m"];
+	[cfgen appendHeaderToFile: @"../src/unicode.h"];
 
 	[pool release];
 

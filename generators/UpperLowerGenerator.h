@@ -15,15 +15,15 @@
 {
 	of_unichar_t upper[0x110000];
 	of_unichar_t lower[0x110000];
+	size_t upper_size;
+	size_t lower_size;
 }
 
 - (void)fillTablesFromFile: (OFString*)file;
 - (size_t)writeTable: (of_unichar_t*)table
 	    withName: (OFString*)name
 	      toFile: (OFString*)file;
-- (size_t)writeUpperTableToFile: (OFString*)file;
-- (size_t)writeLowerTableToFile: (OFString*)file;
-- (void)writeHeaderToFile: (OFString*)file
-       withUpperTableSize: (size_t)upper_size
-	   lowerTableSize: (size_t)lower_size;
+- (void)writeUpperTableToFile: (OFString*)file;
+- (void)writeLowerTableToFile: (OFString*)file;
+- (void)writeHeaderToFile: (OFString*)file;
 @end
