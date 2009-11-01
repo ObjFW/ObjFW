@@ -19,7 +19,7 @@ SRCS = array.m		\
 
 .PHONY: run run-tests
 run: all
-	if [ x"$$DONT_RUN_TESTS" != x"" ]; then \
+	if [ x"$$DONT_RUN_TESTS" = x"" ]; then \
 		${MAKE} ${MFLAGS} run-tests; \
 	fi
 
