@@ -284,12 +284,6 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 	self = [super init];
 
-	if (len > strlen(str)) {
-		c = isa;
-		[super dealloc];
-		@throw [OFOutOfRangeException newWithClass: c];
-	}
-
 	length = len;
 
 	@try {
