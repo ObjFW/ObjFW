@@ -17,8 +17,13 @@ SRCS = array.m		\
        xmlelement.m	\
        xmlparser.m
 
-.PHONY: run
+.PHONY: run run-tests
 run: all
+	if [ x"$$DONT_RUN_TESTS" != x"" ]; then \
+		${MAKE} ${MFLAGS} run-tests; \
+	fi
+
+run-tests:
 	rm -f libobjfw.so.0 libobjfw.so.0.1 libobjfw.dll libobjfw.dylib
 	if test -f ../src/libobjfw.so; then \
 		ln -s ../src/libobjfw.so libobjfw.so.0; \

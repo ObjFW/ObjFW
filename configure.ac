@@ -37,7 +37,8 @@ AC_EGREP_CPP(yes, [
 
 	#ifdef SIZE_MAX
 	yes
-	#endif], AC_MSG_RESULT(yes), [
+	#endif
+	], AC_MSG_RESULT(yes), [
 	AC_MSG_RESULT(no)
 	AC_MSG_CHECKING(for SIZE_T_MAX)
 	AC_EGREP_CPP(yes, [
@@ -46,7 +47,8 @@ AC_EGREP_CPP(yes, [
 
 		#ifdef SIZE_T_MAX
 		yes
-		#endif], [
+		#endif
+		], [
 		AC_MSG_RESULT(yes)
 		size_max="SIZE_T_MAX"], [
 		AC_MSG_RESULT(no)
