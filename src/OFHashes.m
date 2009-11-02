@@ -434,7 +434,7 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFMD5Hash *hash = [OFMD5Hash md5Hash];
 	uint8_t *digest;
-	char ret_c[33];
+	char ret_c[32];
 	size_t i;
 
 	[hash updateWithBuffer: string
@@ -450,11 +450,11 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 		ret_c[i * 2] = (high > 9 ? high - 10 + 'a' : high + '0');
 		ret_c[i * 2 + 1] = (low > 9 ? low - 10 + 'a' : low + '0');
 	}
-	ret_c[32] = 0;
 
 	[pool release];
 
-	return [OFString stringWithCString: ret_c];
+	return [OFString stringWithCString: ret_c
+				    length: 32];
 }
 
 - (OFString*)sha1Hash
@@ -462,7 +462,7 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFMD5Hash *hash = [OFSHA1Hash sha1Hash];
 	uint8_t *digest;
-	char ret_c[41];
+	char ret_c[40];
 	size_t i;
 
 	[hash updateWithBuffer: string
@@ -478,10 +478,10 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 		ret_c[i * 2] = (high > 9 ? high - 10 + 'a' : high + '0');
 		ret_c[i * 2 + 1] = (low > 9 ? low - 10 + 'a' : low + '0');
 	}
-	ret_c[40] = 0;
 
 	[pool release];
 
-	return [OFString stringWithCString: ret_c];
+	return [OFString stringWithCString: ret_c
+				    length: 40];
 }
 @end

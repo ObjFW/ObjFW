@@ -126,7 +126,7 @@ int _OFXMLElement_reference;
 	OFXMLAttribute **attrs_carray;
 	OFString *ret, *tmp;
 
-	len = [name cStringLength] + 4;
+	len = [name cStringLength] + 3;
 	str_c = [self allocMemoryWithSize: len];
 
 	/* Start of tag */
@@ -204,17 +204,16 @@ int _OFXMLElement_reference;
 		str_c[i++] = '/';
 
 	str_c[i++] = '>';
-	str_c[i++] = '\0';
 	assert(i == len);
 
 	[pool release];
 
 	@try {
-		ret = [OFString stringWithCString: str_c];
+		ret = [OFString stringWithCString: str_c
+					   length: len];
 	} @finally {
 		[self freeMemory: str_c];
 	}
-
 	return ret;
 }
 
@@ -280,12 +279,12 @@ int _OFXMLElement_reference;
 	OFString *ret;
 
 	j = 0;
-	len = length + 1;
+	len = length;
 
 	/*
 	 * We can't use allocMemoryWithSize: here as it might be a @"" literal
 	 */
-	if ((str_c = malloc(len + 1)) == NULL)
+	if ((str_c = malloc(len)) == NULL)
 		@throw [OFOutOfMemoryException newWithClass: isa
 						       size: len];
 
@@ -332,15 +331,14 @@ int _OFXMLElement_reference;
 			str_c[j++] = string[i];
 	}
 
-	str_c[j++] = '\0';
 	assert(j == len);
 
 	@try {
-		ret = [OFString stringWithCString: str_c];
+		ret = [OFString stringWithCString: str_c
+					   length: len];
 	} @finally {
 		free(str_c);
 	}
-
 	return ret;
 }
 @end

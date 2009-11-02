@@ -130,8 +130,7 @@ static int pagesize = 0;
 			if (OF_UNLIKELY(tmp[i] == '\n' || tmp[i] == '\0')) {
 				@try {
 					ret_c = [self
-					    allocMemoryWithSize: cache_len +
-								 i + 1];
+					    allocMemoryWithSize: cache_len + i];
 				} @catch (OFException *e) {
 					[self freeMemory: tmp];
 					@throw e;
@@ -139,7 +138,6 @@ static int pagesize = 0;
 				if (cache != NULL)
 					memcpy(ret_c, cache, cache_len);
 				memcpy(ret_c + cache_len, tmp, i);
-				ret_c[cache_len + i] = '\0';
 
 				if (i < len) {
 					@try {
@@ -168,7 +166,8 @@ static int pagesize = 0;
 				@try {
 					ret = [OFString
 					    stringWithCString: ret_c
-						     encoding: encoding];
+						     encoding: encoding
+						       length: cache_len + i];
 				} @finally {
 					[self freeMemory: ret_c];
 				}

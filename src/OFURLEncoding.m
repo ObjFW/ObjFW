@@ -55,10 +55,10 @@ int _OFURLEncoding_reference;
 			ret_c[i++] = (low  > 9 ? low  - 10 + 'A' : low  + '0');
 		}
 	}
-	ret_c[i] = '\0';
 
 	@try {
-		ret = [OFString stringWithCString: ret_c];
+		ret = [OFString stringWithCString: ret_c
+					   length: i];
 	} @finally {
 		free(ret_c);
 	}
@@ -125,7 +125,6 @@ int _OFURLEncoding_reference;
 	} @finally {
 		free(ret_c);
 	}
-
 	return ret;
 }
 @end
