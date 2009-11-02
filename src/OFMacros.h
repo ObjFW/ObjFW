@@ -26,6 +26,17 @@
 #define OF_UNLIKELY(cond) cond
 #endif
 
+/* Required to build universal binaries on OS X */
+#if __BIG_ENDIAN__ || __LITTLE_ENDIAN__
+#if __BIG_ENDIAN__ && __LITTLE_ENDIAN__
+#error __BIG_ENDIAN__ and __LITTLE_ENDIAN__ defined!
+#endif
+#undef OF_BIG_ENDIAN
+#if __BIG_ENDIAN__
+#define OF_BIG_ENDIAN
+#endif
+#endif
+
 #ifdef __GNUC__
 #if defined(__amd64__) || defined(__x86_64__)
 #define OF_AMD64_ASM
