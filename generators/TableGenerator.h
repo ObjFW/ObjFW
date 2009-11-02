@@ -11,19 +11,18 @@
 
 #import "OFString.h"
 
-@interface UpperLowerGenerator: OFObject
+@interface TableGenerator: OFObject
 {
 	of_unichar_t upper[0x110000];
 	of_unichar_t lower[0x110000];
+	of_unichar_t casefolding[0x110000];
 	size_t upper_size;
 	size_t lower_size;
+	size_t casefolding_size;
 }
 
-- (void)fillTablesFromFile: (OFString*)file;
-- (size_t)writeTable: (of_unichar_t*)table
-	    withName: (OFString*)name
-	      toFile: (OFString*)file;
-- (void)writeUpperTableToFile: (OFString*)file;
-- (void)writeLowerTableToFile: (OFString*)file;
+- (void)readUnicodeDataFile: (OFString*)path;
+- (void)readCaseFoldingFile: (OFString*)path;
+- (void)writeTablesToFile: (OFString*)file;
 - (void)writeHeaderToFile: (OFString*)file;
 @end
