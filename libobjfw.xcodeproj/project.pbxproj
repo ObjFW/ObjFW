@@ -132,8 +132,6 @@
 		4B67998A1099E7C50041064A /* OFXMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLParser.m; path = src/OFXMLParser.m; sourceTree = SOURCE_ROOT; };
 		4B67998B1099E7C50041064A /* threading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = threading.h; path = src/threading.h; sourceTree = SOURCE_ROOT; };
 		4B67998C1099E7C50041064A /* unicode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unicode.h; path = src/unicode.h; sourceTree = SOURCE_ROOT; };
-		4B67998D1099E7C50041064A /* unicode_lower.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = unicode_lower.m; path = src/unicode_lower.m; sourceTree = SOURCE_ROOT; };
-		4B67998E1099E7C50041064A /* unicode_upper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = unicode_upper.m; path = src/unicode_upper.m; sourceTree = SOURCE_ROOT; };
 		4B67998F1099E7C50041064A /* windows_1252.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = windows_1252.c; path = src/windows_1252.c; sourceTree = SOURCE_ROOT; };
 		4B6799911099E82D0041064A /* array.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = array.m; path = tests/array.m; sourceTree = SOURCE_ROOT; };
 		4B6799921099E82D0041064A /* dataarray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = dataarray.m; path = tests/dataarray.m; sourceTree = SOURCE_ROOT; };
@@ -151,6 +149,7 @@
 		4B67999E1099E82D0041064A /* xmlparser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = xmlparser.m; path = tests/xmlparser.m; sourceTree = SOURCE_ROOT; };
 		4B6799A01099E85D0041064A /* TestPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestPlugin.h; path = tests/plugin/TestPlugin.h; sourceTree = SOURCE_ROOT; };
 		4B6799A11099E85D0041064A /* TestPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestPlugin.m; path = tests/plugin/TestPlugin.m; sourceTree = SOURCE_ROOT; };
+		4BFBDD1610A0724800051AFB /* unicode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = unicode.m; path = src/unicode.m; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -222,8 +221,7 @@
 				4B6799591099E7C50041064A /* objfw.h */,
 				4B67998B1099E7C50041064A /* threading.h */,
 				4B67998C1099E7C50041064A /* unicode.h */,
-				4B67998D1099E7C50041064A /* unicode_lower.m */,
-				4B67998E1099E7C50041064A /* unicode_upper.m */,
+				4BFBDD1610A0724800051AFB /* unicode.m */,
 				4B67998F1099E7C50041064A /* windows_1252.c */,
 			);
 			name = libobjfw;
