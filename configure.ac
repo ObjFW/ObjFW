@@ -165,7 +165,8 @@ if test x"$GOBJC" = x"yes"; then
 		test++; /* Get rid of unused variable warning */
 		], [AC_MSG_RESULT(no)], [
 		AC_MSG_RESULT([yes, adding -Wno-unused-variable])
-		OBJCFLAGS="$OBJCFLAGS -Wno-unused-variable"])
+		OBJCFLAGS="$OBJCFLAGS -Wno-unused-variable"
+		AC_SUBST(NO_WARN_UNUSED, "-Wno-unused-variable")])
 
 	AC_MSG_CHECKING(whether we need -Wno-strict-aliasing due to gcc bugs)
 	AC_TRY_COMPILE([
