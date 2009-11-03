@@ -99,11 +99,11 @@
  * Replaces a method with a method from another class.
  *
  * \param selector The selector of the method to replace
- * \param class The class from which the new method should be taken
+ * \param class_ The class from which the new method should be taken
  * \return The old implementation
  */
 +  (IMP)replaceMethod: (SEL)selector
-  withMethodFromClass: (Class)class;
+  withMethodFromClass: (Class)class_;
 
 /**
  * Initializes an already allocated object.
@@ -127,10 +127,10 @@
 - (const char*)className;
 
 /**
- * \param class The class whose kind is checked
+ * \param class_ The class whose kind is checked
  * \return A boolean whether the object is of the specified kind
  */
-- (BOOL)isKindOfClass: (Class)class;
+- (BOOL)isKindOfClass: (Class)class_;
 
 /**
  * \param selector The selector which should be checked for respondance

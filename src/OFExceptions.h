@@ -44,25 +44,25 @@
  */
 @interface OFException: OFObject
 {
-	Class	 class;
+	Class	 class_;
 	OFString *string;
 }
 
 /**
  * Creates a new exception.
  *
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \return A new exception
  */
-+ newWithClass: (Class)class;
++ newWithClass: (Class)class_;
 
 /**
  * Initializes an already allocated OFException.
  *
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \return An initialized OFException
  */
-- initWithClass: (Class)class;
+- initWithClass: (Class)class_;
 
 /**
  * \return The class of the object in which the exception happened
@@ -84,21 +84,21 @@
 }
 
 /**
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param size The size of the memory that couldn't be allocated
  * \return A new no memory exception
  */
-+ newWithClass: (Class)class
++ newWithClass: (Class)class_
 	  size: (size_t)size;
 
 /**
  * Initializes an already allocated no memory exception.
  *
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param size The size of the memory that couldn't be allocated
  * \return An initialized no memory exception
  */
-- initWithClass: (Class)class
+- initWithClass: (Class)class_
 	   size: (size_t)size;
 
 /**
@@ -116,21 +116,21 @@
 }
 
 /**
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param ptr A pointer to the memory that is not part of the object
  * \return A new memory not part of object exception
  */
-+ newWithClass: (Class)class
++ newWithClass: (Class)class_
        pointer: (void*)ptr;
 
 /**
  * Initializes an already allocated memory not part of object exception.
  *
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param ptr A pointer to the memory that is not part of the object
  * \return An initialized memory not part of object exception
  */
-- initWithClass: (Class)class
+- initWithClass: (Class)class_
 	pointer: (void*)ptr;
 
 /**
@@ -148,21 +148,21 @@
 }
 
 /**
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param selector The selector which is not or not fully implemented
  * \return A new not implemented exception
  */
-+ newWithClass: (Class)class
++ newWithClass: (Class)class_
       selector: (SEL)selector;
 
 /**
  * Initializes an already allocated not implemented exception.
  *
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param selector The selector which is not or not fully implemented
  * \return An initialized not implemented exception
  */
-- initWithClass: (Class)class
+- initWithClass: (Class)class_
        selector: (SEL)selector;
 @end
 
@@ -181,21 +181,21 @@
 }
 
 /**
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param selector The selector which doesn't accept the argument
  * \return A new invalid argument exception
  */
-+ newWithClass: (Class)class
++ newWithClass: (Class)class_
       selector: (SEL)selector;
 
 /**
  * Initializes an already allocated invalid argument exception
  *
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param selector The selector which doesn't accept the argument
  * \return An initialized invalid argument exception
  */
-- initWithClass: (Class)class
+- initWithClass: (Class)class_
        selector: (SEL)selector;
 @end
 
@@ -234,24 +234,24 @@
 }
 
 /**
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param path A string of the path to the file tried to open
  * \param mode A string of the mode in which the file should have been opened
  * \return A new open file failed exception
  */
-+ newWithClass: (Class)class
++ newWithClass: (Class)class_
 	  path: (OFString*)path
 	  mode: (OFString*)mode;
 
 /**
  * Initializes an already allocated open file failed exception.
  *
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param path A string of the path to the file which couldn't be opened
  * \param mode A string of the mode in which the file should have been opened
  * \return An initialized open file failed exception
  */
-- initWithClass: (Class)class
+- initWithClass: (Class)class_
 	   path: (OFString*)path
 	   mode: (OFString*)mode;
 
@@ -283,43 +283,43 @@
 }
 
 /**
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param size The requested size of the data that couldn't be read / written
  * \param items The requested number of items that couldn't be read / written
  * \return A new open file failed exception
  */
-+ newWithClass: (Class)class
++ newWithClass: (Class)class_
 	  size: (size_t)size
 	 items: (size_t)items;
 
 /**
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param size The requested size of the data that couldn't be read / written
  * \return A new open file failed exception
  */
-+ newWithClass: (Class)class
++ newWithClass: (Class)class_
 	  size: (size_t)size;
 
 /**
  * Initializes an already allocated read or write failed exception.
  *
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param size The requested size of the data that couldn't be read / written
  * \param items The requested number of items that couldn't be read / written
  * \return A new open file failed exception
  */
-- initWithClass: (Class)class
+- initWithClass: (Class)class_
 	   size: (size_t)size
 	  items: (size_t)items;
 
 /**
  * Initializes an already allocated read or write failed exception.
  *
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param size The requested size of the data that couldn't be read / written
  * \return A new open file failed exception
  */
-- initWithClass: (Class)class
+- initWithClass: (Class)class_
 	   size: (size_t)size;
 
 /**
@@ -366,24 +366,24 @@
 }
 
 /**
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param source The source for the link
  * \param destination The destination for the link
  * \return A new link failed exception
  */
-+ newWithClass: (Class)class
++ newWithClass: (Class)class_
 	source: (OFString*)src
    destination: (OFString*)dest;
 
 /**
  * Initializes an already allocated open file failed exception.
  *
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param source The source for the link
  * \param destination The destination for the link
  * \return An initialized link failed exception
  */
-- initWithClass: (Class)class
+- initWithClass: (Class)class_
 	 source: (OFString*)src
     destination: (OFString*)dest;
 
@@ -414,24 +414,24 @@
 }
 
 /**
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param source The source for the symlink
  * \param destination The destination for the symlink
  * \return A new symlink failed exception
  */
-+ newWithClass: (Class)class
++ newWithClass: (Class)class_
 	source: (OFString*)src
    destination: (OFString*)dest;
 
 /**
  * Initializes an already allocated open file failed exception.
  *
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param source The source for the symlink
  * \param destination The destination for the symlink
  * \return An initialized symlink failed exception
  */
-- initWithClass: (Class)class
+- initWithClass: (Class)class_
 	 source: (OFString*)src
     destination: (OFString*)dest;
 
@@ -481,24 +481,24 @@
 }
 
 /**
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param node The node for which translation was requested
  * \param service The service of the node for which translation was requested
  * \return A new address translation failed exception
  */
-+ newWithClass: (Class)class
++ newWithClass: (Class)class_
 	  node: (OFString*)node
        service: (OFString*)service;
 
 /**
  * Initializes an already allocated address translation failed exception.
  *
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param node The node for which translation was requested
  * \param service The service of the node for which translation was requested
  * \return An initialized address translation failed exception
  */
-- initWithClass: (Class)class
+- initWithClass: (Class)class_
 	   node: (OFString*)node
 	service: (OFString*)service;
 
@@ -529,24 +529,24 @@
 }
 
 /**
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param node The node to which the connection failed
  * \param service The service on the node to which the connection failed
  * \return A new connection failed exception
  */
-+ newWithClass: (Class)class
++ newWithClass: (Class)class_
 	  node: (OFString*)node
        service: (OFString*)service;
 
 /**
  * Initializes an already allocated connection failed exception.
  *
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param node The node to which the connection failed
  * \param service The service on the node to which the connection failed
  * \return An initialized connection failed exception
  */
-- initWithClass: (Class)class
+- initWithClass: (Class)class_
 	   node: (OFString*)node
 	service: (OFString*)service;
 
@@ -578,13 +578,13 @@
 }
 
 /**
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param node The node on which binding failed
  * \param service The service on which binding failed
  * \param family The family for which binnding failed
  * \return A new bind failed exception
  */
-+ newWithClass: (Class)class
++ newWithClass: (Class)class_
 	  node: (OFString*)node
        service: (OFString*)service
 	family: (int)family;
@@ -592,13 +592,13 @@
 /**
  * Initializes an already allocated bind failed exception.
  *
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param node The node on which binding failed
  * \param service The service on which binding failed
  * \param family The family for which binnding failed
  * \return An initialized bind failed exception
  */
-- initWithClass: (Class)class
+- initWithClass: (Class)class_
 	   node: (OFString*)node
 	service: (OFString*)service
 	 family: (int)family;
@@ -634,21 +634,21 @@
 }
 
 /**
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param backlog The requested size of the back log
  * \return A new listen failed exception
  */
-+ newWithClass: (Class)class
++ newWithClass: (Class)class_
        backLog: (int)backlog;
 
 /**
  * Initializes an already allocated listen failed exception
  *
- * \param class The class of the object which caused the exception
+ * \param class_ The class of the object which caused the exception
  * \param backlog The requested size of the back log
  * \return An initialized listen failed exception
  */
-- initWithClass: (Class)class
+- initWithClass: (Class)class_
 	backLog: (int)backlog;
 
 /**
