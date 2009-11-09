@@ -3,19 +3,19 @@ include ../extra.mk
 SUBDIRS = ${TESTPLUGIN}
 
 PROG_NOINST = tests${PROG_SUFFIX}
-SRCS = array.m		\
-       dataarray.m	\
-       dictionary.m	\
-       hashes.m		\
-       list.m		\
-       main.m		\
-       object.m		\
-       ${PLUGIN_M}	\
-       string.m		\
-       tcpsocket.m	\
-       thread.m		\
-       xmlelement.m	\
-       xmlparser.m
+SRCS = OFArray.m	\
+       OFDataArray.m	\
+       OFDictionary.m	\
+       OFHashes.m	\
+       OFList.m		\
+       OFObject.m	\
+       ${OFPLUGIN_M}	\
+       OFString.m	\
+       OFTCPSocket.m	\
+       OFThread.m	\
+       OFXMLElement.m	\
+       OFXMLParser.m	\
+       main.m
 
 .PHONY: run run-tests
 run: all

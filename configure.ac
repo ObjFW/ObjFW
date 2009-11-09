@@ -27,7 +27,6 @@ BUILDSYS_LIB
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
 if test x"$PLUGIN_SUFFIX" != "x"; then
 	AC_SUBST(OFPLUGIN_M, "OFPlugin.m")
-	AC_SUBST(PLUGIN_M, "plugin.m")
 	AC_SUBST(TESTPLUGIN, "plugin")
 	AC_DEFINE(OF_PLUGINS, 1, [Whether we have plugin support])
 	AC_SUBST(OFPLUGINS_DEF, "-DOF_PLUGINS")
