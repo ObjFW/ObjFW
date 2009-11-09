@@ -70,7 +70,7 @@ static int pagesize = 0;
 
 - (OFString*)readLineWithEncoding: (enum of_string_encoding)encoding
 {
-	size_t i, len;
+	size_t i, len, ret_len;
 	char *ret_c, *tmp, *tmp2;
 	OFString *ret;
 
@@ -128,9 +128,10 @@ static int pagesize = 0;
 		/* Look if there's a newline or \0 */
 		for (i = 0; i < len; i++) {
 			if (OF_UNLIKELY(tmp[i] == '\n' || tmp[i] == '\0')) {
+				ret_len = cache_len + i;
 				@try {
 					ret_c = [self
-					    allocMemoryWithSize: cache_len + i];
+					    allocMemoryWithSize: ret_len];
 				} @catch (OFException *e) {
 					[self freeMemory: tmp];
 					@throw e;
@@ -167,7 +168,7 @@ static int pagesize = 0;
 					ret = [OFString
 					    stringWithCString: ret_c
 						     encoding: encoding
-						       length: cache_len + i];
+						       length: ret_len];
 				} @finally {
 					[self freeMemory: ret_c];
 				}
