@@ -50,7 +50,7 @@
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 4B5D8DF11099E2A7000896FF;
-			remoteInfo = libobjfw;
+			remoteInfo = ObjFW;
 		};
 		4B5D8DEF1099E26D000896FF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -71,7 +71,7 @@
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 4B5D8DF11099E2A7000896FF;
-			remoteInfo = libobjfw;
+			remoteInfo = ObjFW;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -153,16 +153,16 @@
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		08FB7794FE84155DC02AAC07 /* libobjfw */ = {
+		08FB7794FE84155DC02AAC07 /* ObjFW */ = {
 			isa = PBXGroup;
 			children = (
-				4B6799541099E7320041064A /* libobjfw */,
+				4B6799541099E7320041064A /* src */,
 				4B6799901099E7E80041064A /* tests */,
 			);
-			name = libobjfw;
+			name = ObjFW;
 			sourceTree = "<group>";
 		};
-		4B6799541099E7320041064A /* libobjfw */ = {
+		4B6799541099E7320041064A /* src */ = {
 			isa = PBXGroup;
 			children = (
 				4B67995A1099E7C50041064A /* OFArray.h */,
@@ -224,7 +224,7 @@
 				4BFBDD1610A0724800051AFB /* unicode.m */,
 				4B67998F1099E7C50041064A /* windows_1252.c */,
 			);
-			name = libobjfw;
+			name = src;
 			sourceTree = "<group>";
 		};
 		4B6799901099E7E80041064A /* tests */ = {
@@ -274,7 +274,7 @@
 			);
 			name = ObjFW;
 			passBuildSettingsInEnvironment = 1;
-			productName = libobjfw;
+			productName = ObjFW;
 		};
 		4B6CBBCE1099E40200CB0ECD /* tests */ = {
 			isa = PBXLegacyTarget;
@@ -296,10 +296,10 @@
 /* Begin PBXProject section */
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = 1DEB919308733D9F0010E9CD /* Build configuration list for PBXProject "libobjfw" */;
+			buildConfigurationList = 1DEB919308733D9F0010E9CD /* Build configuration list for PBXProject "ObjFW" */;
 			compatibilityVersion = "Xcode 3.1";
 			hasScannedForEncodings = 1;
-			mainGroup = 08FB7794FE84155DC02AAC07 /* libobjfw */;
+			mainGroup = 08FB7794FE84155DC02AAC07 /* ObjFW */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -459,7 +459,7 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				PRODUCT_NAME = libobjfw;
+				PRODUCT_NAME = ObjFW;
 			};
 			name = Debug;
 		};
@@ -469,7 +469,7 @@
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				PRODUCT_NAME = libobjfw;
+				PRODUCT_NAME = ObjFW;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -498,7 +498,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1DEB919308733D9F0010E9CD /* Build configuration list for PBXProject "libobjfw" */ = {
+		1DEB919308733D9F0010E9CD /* Build configuration list for PBXProject "ObjFW" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB919408733D9F0010E9CD /* Debug */,
