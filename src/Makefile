@@ -33,7 +33,7 @@ SRCS = OFArray.m		\
 INCLUDES := ${SRCS:.m=.h}	\
 	    OFMacros.h		\
 	    asprintf.h		\
-	    objfw.h		\
+	    ObjFW.h		\
 	    threading.h
 
 SRCS += ${OBJC_SYNC_M}	\
