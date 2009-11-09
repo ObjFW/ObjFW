@@ -30,17 +30,16 @@ SRCS = OFArray.m		\
        OFXMLParser.m		\
        unicode.m
 
-INCLUDESTMP := ${SRCS:.c=.h}
-INCLUDES := ${INCLUDESTMP:.m=.h}	\
-	    OFMacros.h			\
-	    asprintf.h			\
-	    objfw.h			\
+INCLUDES := ${SRCS:.m=.h}	\
+	    OFMacros.h		\
+	    asprintf.h		\
+	    objfw.h		\
 	    threading.h
 
 SRCS += ${OBJC_SYNC_M}	\
-	${ASPRINTF_C}	\
-	iso_8859_15.c	\
-	windows_1252.c
+	${ASPRINTF_M}	\
+	iso_8859_15.m	\
+	windows_1252.m
 
 include ../buildsys.mk
 

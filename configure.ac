@@ -3,15 +3,23 @@ AC_CONFIG_SRCDIR(src)
 
 AC_CANONICAL_HOST
 
-AC_PROG_CC
+AC_LANG([Objective C])
+AC_PROG_OBJC
 AC_PROG_CPP
 AC_PROG_LN_S
 AC_PROG_INSTALL
 AC_PROG_EGREP
 
-CFLAGS="$CFLAGS -Wall"
-AX_CHECK_COMPILER_FLAGS(-pipe, [CFLAGS="$CFLAGS -pipe"])
-AX_CHECK_COMPILER_FLAGS(-fno-common, [CFLAGS="$CFLAGS -fno-common"])
+OBJCFLAGS="$OBJCFLAGS -Wall -fobjc-exceptions"
+OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstString"
+LIBS="$LIBS -lobjc"
+
+AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
+AX_CHECK_COMPILER_FLAGS(-fno-common, [OBJCFLAGS="$OBJCFLAGS -fno-common"])
+AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings, [
+	NO_CONST_CFSTRINGS="-fno-constant-cfstrings"
+	OBJCFLAGS="$OBJCFLAGS -fno-constant-cfstrings"])
+AC_SUBST(NO_CONST_CFSTRINGS)
 
 AC_DEFINE(OF_CONFIGURED, 1, [Define so that we know we got our config.h])
 
@@ -55,7 +63,14 @@ AC_EGREP_CPP(yes, [
 		size_max="((size_t)-1)"])
 	AC_DEFINE_UNQUOTED(SIZE_MAX, $size_max, [Maximum value for size_t])])
 
-AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
+AC_CHECK_HEADER(objc/runtime.h,
+	[AC_DEFINE(HAVE_OBJC_RUNTIME_H, 1, [Whether we have objc/runtime.h])])
+
+AC_CHECK_FUNC(objc_sync_enter,, [
+	AC_SUBST(OBJC_SYNC, "objc_sync")
+	AC_SUBST(OBJC_SYNC_M, "objc_sync.m")
+	AC_DEFINE(NEED_OBJC_SYNC_INIT, 1,
+		[Whether objc_sync_init needs to be called])])
 
 AC_CHECK_FUNC(asprintf, [
 	have_asprintf="yes"
@@ -63,7 +78,7 @@ AC_CHECK_FUNC(asprintf, [
 	AC_SUBST(ASPRINTF_DEF, "-DOF_HAVE_ASPRINTF")
 	], [
 	have_asprintf="no"
-	AC_SUBST(ASPRINTF_C, "asprintf.c")
+	AC_SUBST(ASPRINTF_M, "asprintf.m")
 
 	AC_MSG_CHECKING(whether snprintf returns something useful)
 	AC_CACHE_VAL(ac_cv_snprintf_useful_ret, [
@@ -82,6 +97,8 @@ AC_CHECK_FUNC(asprintf, [
 
 test x"$have_asprintf" != x"yes" -a x"$ac_cv_snprintf_useful_ret" != x"yes" && \
 	AC_MSG_ERROR(No asprintf and no snprintf returning required space!)
+
+AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
 
 case "$host" in
 	*-*-mingw*)
@@ -120,30 +137,6 @@ test x"$have_getaddrinfo" = x"yes" && \
 
 AC_CHECK_FUNC(madvise, [AC_DEFINE(HAVE_MADVISE, 1, [Whether we have madvise])])
 
-AC_LANG([Objective C])
-AC_PROG_OBJC
-
-OBJCFLAGS="$OBJCFLAGS -Wall -fobjc-exceptions"
-OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstString"
-LIBS="$LIBS -lobjc"
-
-AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
-AX_CHECK_COMPILER_FLAGS(-fno-common, [OBJCFLAGS="$OBJCFLAGS -fno-common"])
-AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings, [
-	NO_CONST_CFSTRINGS="-fno-constant-cfstrings"
-	OBJCFLAGS="$OBJCFLAGS -fno-constant-cfstrings"])
-AC_SUBST(NO_CONST_CFSTRINGS)
-
-AC_CHECK_HEADER(objc/runtime.h,
-	[AC_DEFINE(HAVE_OBJC_RUNTIME_H, 1, [Whether we have objc/runtime.h])])
-
-AC_CHECK_FUNC(objc_sync_enter,, [
-	AC_SUBST(OBJC_SYNC, "objc_sync")
-	AC_SUBST(OBJC_SYNC_M, "objc_sync.m")
-	AC_DEFINE(NEED_OBJC_SYNC_INIT, 1,
-		[Whether objc_sync_init needs to be called])])
-
-test x"$GCC" = x"yes" && CFLAGS="$CFLAGS -Werror"
 if test x"$GOBJC" = x"yes"; then
 	OBJCFLAGS="$OBJCFLAGS -Werror"
 
