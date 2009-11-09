@@ -1,4 +1,4 @@
-AC_INIT(objfw, 0.1, js@webkeks.org)
+AC_INIT(ObjFW, 0.1, js@webkeks.org)
 AC_CONFIG_SRCDIR(src)
 
 AC_CANONICAL_HOST
@@ -206,7 +206,7 @@ fi
 
 BUILDSYS_TOUCH_DEPS
 
-AC_SUBST(PACKAGE, objfw)
+AC_SUBST(PACKAGE, ObjFW)
 AC_CONFIG_FILES([buildsys.mk extra.mk objfw-config])
 AC_CONFIG_HEADERS(config.h)
 AC_OUTPUT
