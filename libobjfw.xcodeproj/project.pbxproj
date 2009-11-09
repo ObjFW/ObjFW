@@ -261,10 +261,10 @@
 /* End PBXGroup section */
 
 /* Begin PBXLegacyTarget section */
-		4B5D8DF11099E2A7000896FF /* libobjfw */ = {
+		4B5D8DF11099E2A7000896FF /* ObjFW */ = {
 			isa = PBXLegacyTarget;
-			buildArgumentsString = "$(ACTION)";
-			buildConfigurationList = 4B5D8DF91099E2ED000896FF /* Build configuration list for PBXLegacyTarget "libobjfw" */;
+			buildArgumentsString = "'LIB=ObjFW' 'LDFLAGS += -install_name /Library/Frameworks/ObjFW.framework/Versions/A/ObjFW' $(ACTION)";
+			buildConfigurationList = 4B5D8DF91099E2ED000896FF /* Build configuration list for PBXLegacyTarget "ObjFW" */;
 			buildPhases = (
 			);
 			buildToolPath = /usr/bin/make;
@@ -272,7 +272,7 @@
 			dependencies = (
 				4B5D8DF51099E2CE000896FF /* PBXTargetDependency */,
 			);
-			name = libobjfw;
+			name = ObjFW;
 			passBuildSettingsInEnvironment = 1;
 			productName = libobjfw;
 		};
@@ -304,9 +304,9 @@
 			projectRoot = "";
 			targets = (
 				4B08AE9E109AE10E00989F6E /* Framework */,
+				4B5D8DF11099E2A7000896FF /* ObjFW */,
 				4B5D8DDD1099E1B0000896FF /* autogen.sh */,
 				4B5D8DE91099E1F1000896FF /* configure */,
-				4B5D8DF11099E2A7000896FF /* libobjfw */,
 				4B6CBBCE1099E40200CB0ECD /* tests */,
 			);
 		};
@@ -324,7 +324,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -fr $TARGET_BUILD_DIR/ObjFW.framework\nmkdir -p $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Headers || exit 1\nmkdir -p $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Resources || exit 1\ninstall -m 755 src/libobjfw.dylib $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/ObjFW || exit 1\ninstall -m 644 src/*.h $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Headers/ || exit 1\ncat >$TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Resources/Info.plist <<__EOF__\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n<plist version=\"1.0\">\n<dict>\n\t<key>CFBundleDevelopmentRegion</key>\n\t<string>English</string>\n\t<key>CFBundleExecutable</key>\n\t<string>ObjFW</string>\n\t<key>CFBundleGetInfoString</key>\n\t<string>https://webkeks.org/hg/libobjfw</string>\n\t<key>CFBundleIdentifier</key>\n\t<string>ObjFW</string>\n\t<key>CFBundleInfoDictionaryVersion</key>\n\t<string>6.0</string>\n\t<key>CFBundleName</key>\n\t<string>libobjfw</string>\n\t<key>CFBundlePackageType</key>\n\t<string>FMWK</string>\n\t<key>CFBundleShortVersionString</key>\n\t<string>0.1</string>\n\t<key>CFBundleSignature</key>\n\t<string>OBJF</string>\n\t<key>CFBundleVersion</key>\n\t<string>0.1</string>\n</dict>\n</plist>\n__EOF__\nif [ ! -f \"$TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Resources/Info.plist\" ]; then\n\texit 1;\nfi\nln -s A $TARGET_BUILD_DIR/ObjFW.framework/Versions/Current || exit 1\nln -s Versions/Current/Headers $TARGET_BUILD_DIR/ObjFW.framework/Headers || exit 1\nln -s Versions/Current/Resources $TARGET_BUILD_DIR/ObjFW.framework/Resources || exit 1\nln -s Versions/Current/ObjFW $TARGET_BUILD_DIR/ObjFW.framework/ObjFW || exit 1";
+			shellScript = "rm -fr $TARGET_BUILD_DIR/ObjFW.framework\nmkdir -p $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Headers || exit 1\nmkdir -p $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Resources || exit 1\ninstall -m 755 src/ObjFW $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/ || exit 1\ninstall -m 644 src/*.h $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Headers/ || exit 1\ncat >$TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Resources/Info.plist <<__EOF__\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n<plist version=\"1.0\">\n<dict>\n\t<key>CFBundleDevelopmentRegion</key>\n\t<string>English</string>\n\t<key>CFBundleExecutable</key>\n\t<string>ObjFW</string>\n\t<key>CFBundleGetInfoString</key>\n\t<string>https://webkeks.org/hg/libobjfw</string>\n\t<key>CFBundleIdentifier</key>\n\t<string>ObjFW</string>\n\t<key>CFBundleInfoDictionaryVersion</key>\n\t<string>6.0</string>\n\t<key>CFBundleName</key>\n\t<string>libobjfw</string>\n\t<key>CFBundlePackageType</key>\n\t<string>FMWK</string>\n\t<key>CFBundleShortVersionString</key>\n\t<string>0.1</string>\n\t<key>CFBundleSignature</key>\n\t<string>OBJF</string>\n\t<key>CFBundleVersion</key>\n\t<string>0.1</string>\n</dict>\n</plist>\n__EOF__\nif [ ! -f \"$TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Resources/Info.plist\" ]; then\n\texit 1;\nfi\nln -s A $TARGET_BUILD_DIR/ObjFW.framework/Versions/Current || exit 1\nln -s Versions/Current/Headers $TARGET_BUILD_DIR/ObjFW.framework/Headers || exit 1\nln -s Versions/Current/Resources $TARGET_BUILD_DIR/ObjFW.framework/Resources || exit 1\nln -s Versions/Current/ObjFW $TARGET_BUILD_DIR/ObjFW.framework/ObjFW || exit 1";
 		};
 		4B5D8DE11099E1BF000896FF /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -357,7 +357,7 @@
 /* Begin PBXTargetDependency section */
 		4B08AEA8109AE2D300989F6E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4B5D8DF11099E2A7000896FF /* libobjfw */;
+			target = 4B5D8DF11099E2A7000896FF /* ObjFW */;
 			targetProxy = 4B08AEA7109AE2D300989F6E /* PBXContainerItemProxy */;
 		};
 		4B5D8DF01099E26D000896FF /* PBXTargetDependency */ = {
@@ -372,7 +372,7 @@
 		};
 		4B6CBBD21099E40900CB0ECD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4B5D8DF11099E2A7000896FF /* libobjfw */;
+			target = 4B5D8DF11099E2A7000896FF /* ObjFW */;
 			targetProxy = 4B6CBBD11099E40900CB0ECD /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -534,7 +534,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4B5D8DF91099E2ED000896FF /* Build configuration list for PBXLegacyTarget "libobjfw" */ = {
+		4B5D8DF91099E2ED000896FF /* Build configuration list for PBXLegacyTarget "ObjFW" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4B5D8DF21099E2A7000896FF /* Debug */,
