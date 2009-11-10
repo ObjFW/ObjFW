@@ -333,7 +333,7 @@
 	    @"extern const of_unichar_t* const\n"
 	    @"    of_unicode_lower_table[OF_UNICODE_LOWER_TABLE_SIZE];\n"
 	    @"extern const of_unichar_t* const\n"
-	    @"    of_unicode_lower_table["
+	    @"    of_unicode_casefolding_table["
 	    @"OF_UNICODE_CASEFOLDING_TABLE_SIZE];\n"];
 
 	[pool release];

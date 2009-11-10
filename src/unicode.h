@@ -20,4 +20,4 @@ extern const of_unichar_t* const
 extern const of_unichar_t* const
     of_unicode_lower_table[OF_UNICODE_LOWER_TABLE_SIZE];
 extern const of_unichar_t* const
-    of_unicode_lower_table[OF_UNICODE_CASEFOLDING_TABLE_SIZE];
+    of_unicode_casefolding_table[OF_UNICODE_CASEFOLDING_TABLE_SIZE];
