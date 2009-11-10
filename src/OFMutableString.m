@@ -37,7 +37,7 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 {
 	of_unichar_t c, tc;
 	of_unichar_t *ustr;
-	size_t ulen, nlen;
+	size_t ulen, nlen, clen;
 	size_t i, j, d;
 	char *nstr;
 
@@ -58,13 +58,14 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 	ustr = [self allocMemoryForNItems: [self length]
 				 withSize: ulen];
 
+	i = 0;
 	j = 0;
 	nlen = 0;
 
-	for (i = 0; i < *length; i++) {
-		c = of_string_utf8_to_unicode(*string + i, *length - i);
+	while (i < *length) {
+		clen = of_string_utf8_to_unicode(*string + i, *length - i, &c);
 
-		if (c == OF_INVALID_UNICHAR || c > 0x10FFFF) {
+		if (clen == 0 || c > 0x10FFFF) {
 			[self freeMemory: ustr];
 			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
@@ -89,17 +90,7 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
 
-		if (c < 0x80);
-		else if (c < 0x800)
-			i++;
-		else if (c < 0x10000)
-			i += 2;
-		else if (c < 0x110000)
-			i += 3;
-		else {
-			[self freeMemory: ustr];
-			@throw [OFInvalidEncodingException newWithClass: isa];
-		}
+		i += clen;
 	}
 
 	@try {

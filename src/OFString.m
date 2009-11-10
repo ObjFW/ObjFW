@@ -140,38 +140,43 @@ of_string_unicode_to_utf8(of_unichar_t c, char *buf)
 	return 0;
 }
 
-of_unichar_t
-of_string_utf8_to_unicode(const char *buf_, size_t len)
+size_t
+of_string_utf8_to_unicode(const char *buf_, size_t len, of_unichar_t *ret)
 {
 	const uint8_t *buf = (const uint8_t*)buf_;
 
-	if (!(*buf & 0x80))
-		return buf[0];
+	if (!(*buf & 0x80)) {
+		*ret = buf[0];
+		return 1;
+	}
 
 	if ((*buf & 0xE0) == 0xC0) {
 		if (OF_UNLIKELY(len < 2))
-			return OF_INVALID_UNICHAR;
+			return 0;
 
-		return ((buf[0] & 0x1F) << 6) | (buf[1] & 0x3F);
+		*ret = ((buf[0] & 0x1F) << 6) | (buf[1] & 0x3F);
+		return 2;
 	}
 
 	if ((*buf & 0xF0) == 0xE0) {
 		if (OF_UNLIKELY(len < 3))
-			return OF_INVALID_UNICHAR;
+			return 0;
 
-		return ((buf[0] & 0x0F) << 12) | ((buf[1] & 0x3F) << 6) |
+		*ret = ((buf[0] & 0x0F) << 12) | ((buf[1] & 0x3F) << 6) |
 		    (buf[2] & 0x3F);
+		return 3;
 	}
 
 	if ((*buf & 0xF8) == 0xF0) {
 		if (OF_UNLIKELY(len < 4))
-			return OF_INVALID_UNICHAR;
+			return 0;
 
-		return ((buf[0] & 0x07) << 18) | ((buf[1] & 0x3F) << 12) |
+		*ret = ((buf[0] & 0x07) << 18) | ((buf[1] & 0x3F) << 12) |
 		    ((buf[2] & 0x3F) << 6) | (buf[3] & 0x3F);
+		return 4;
 	}
 
-	return OF_INVALID_UNICHAR;
+	return 0;
 }
 
 size_t
@@ -615,8 +620,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	if (index >= length)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	if ((c = of_string_utf8_to_unicode(string + index, length - index)) ==
-	    OF_INVALID_UNICHAR)
+	if (!of_string_utf8_to_unicode(string + index, length - index, &c))
 		@throw [OFInvalidEncodingException newWithClass: isa];
 
 	return c;
