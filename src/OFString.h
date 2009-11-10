@@ -203,13 +203,12 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 - (size_t)cStringLength;
 
 /**
- * Compares the OFString to another object.
+ * Compares the OFString to another OFString.
  *
- * \param obj An object to compare with
- * \return An integer which is the result of the comparison, see for example
- *	   strcmp
+ * \param str A string to compare with
+ * \return An of_comparison_result_t
  */
-- (int)compare: (id)obj;
+- (of_comparison_result_t)compare: (OFString*)str;
 
 /**
  * \param index The index of the Unicode character to return

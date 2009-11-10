@@ -23,6 +23,18 @@
 #endif
 
 /**
+ * A result of a comparison.
+ */
+typedef enum {
+	/// The left object is smaller than the right
+	OF_ORDERED_ASCENDING = -1,
+	/// Both objects are equal
+	OF_ORDERED_SAME = 0,
+	/// The left object is bigger than the right
+	OF_ORDERED_DESCENDING = 1
+} of_comparison_result_t;
+
+/**
  * The OFObject class is the base class for all other classes inside ObjFW.
  */
 @interface OFObject

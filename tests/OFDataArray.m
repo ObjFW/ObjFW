@@ -63,8 +63,8 @@ do_tests(Class class)
 
 	TEST(@"-[compare]", [array[0] compare: array[1]] == 0 &&
 	    [array[1] removeNItems: 1] &&
-	    [array[0] compare: array[1]] == 0x42 &&
-	    [array[1] compare: array[0]] == -0x42)
+	    [array[0] compare: array[1]] == OF_ORDERED_DESCENDING &&
+	    [array[1] compare: array[0]] == OF_ORDERED_ASCENDING)
 
 	TEST(@"-[hash]", [array[0] hash] == 0xC54621B6)
 

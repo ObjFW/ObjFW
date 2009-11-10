@@ -60,11 +60,10 @@
 /**
  * Compares the OFDataArray to another object.
  *
- * \param obj An object to compare with
- * \return An integer which is the result of the comparison, see for example
- *	   strcmp
+ * \param ary A data array to compare with
+ * \return An of_comparsion_result_t
  */
-- (int)compare: (id)obj;
+- (of_comparison_result_t)compare: (OFDataArray*)obj;
 
 /**
  * Returns a specific item of the OFDataArray.

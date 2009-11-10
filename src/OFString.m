@@ -562,13 +562,35 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return [[OFMutableString alloc] initWithString: self];
 }
 
-- (int)compare: (id)obj
+- (of_comparison_result_t)compare: (OFString*)str
 {
-	if (![obj isKindOfClass: [OFString class]])
+	int cmp;
+
+	if (![str isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	return strcmp(string, [obj cString]);
+	if ([str length] == [self length]) {
+		if (length != [str cStringLength]) {
+			if (length > [str cStringLength])
+				return OF_ORDERED_DESCENDING;
+			else
+				return OF_ORDERED_ASCENDING;
+		}
+
+		if ((cmp = memcmp(string, [str cString], length)) == 0)
+			return OF_ORDERED_SAME;
+
+		if (cmp > 0)
+			return OF_ORDERED_DESCENDING;
+		else
+			return OF_ORDERED_ASCENDING;
+	}
+
+	if ([self length] > [str length])
+		return OF_ORDERED_DESCENDING;
+	else
+		return OF_ORDERED_ASCENDING;
 }
 
 - (uint32_t)hash

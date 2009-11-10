@@ -53,8 +53,8 @@ string_tests()
 	TEST(@"-[isEqual:]", [s[0] isEqual: s[2]] &&
 	    ![s[0] isEqual: [[[OFObject alloc] init] autorelease]])
 
-	TEST(@"-[compare:]", [s[0] compare: s[2]] == 0 &&
-	    [s[0] compare: @""] != 0)
+	TEST(@"-[compare:]", [s[0] compare: s[2]] == OF_ORDERED_SAME &&
+	    [s[0] compare: @""] != OF_ORDERED_SAME)
 
 	TEST(@"-[hash] is the same if -[isEqual:] is YES",
 	    [s[0] hash] == [s[2] hash])

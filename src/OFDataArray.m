@@ -153,31 +153,31 @@ static int lastpagebyte = 0;
 	return YES;
 }
 
-- (int)compare: (id)obj
+- (of_comparison_result_t)compare: (OFDataArray*)ary
 {
-	int ret;
+	int cmp;
 
-	if (![obj isKindOfClass: [OFDataArray class]])
+	if (![ary isKindOfClass: [OFDataArray class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
-	if ([obj itemsize] != itemsize)
+	if ([ary itemsize] != itemsize)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	if ([obj count] == count)
-		return memcmp(data, [obj cArray], count * itemsize);
+	if ([ary count] == count) {
+		if ((cmp = memcmp(data, [ary cArray], count * itemsize)) == 0)
+			return OF_ORDERED_SAME;
 
-	if (count > [obj count]) {
-		if ((ret = memcmp(data, [obj cArray], [obj count] * itemsize)))
-			return ret;
-
-		return *(char*)[self itemAtIndex: [obj count]];
-	} else {
-		if ((ret = memcmp(data, [obj cArray], count * itemsize)))
-			return ret;
-
-		return *(char*)[obj itemAtIndex: count] * -1;
+		if (cmp > 0)
+			return OF_ORDERED_DESCENDING;
+		else
+			return OF_ORDERED_ASCENDING;
 	}
+
+	if (count > [ary count])
+		return OF_ORDERED_DESCENDING;
+	else
+		return OF_ORDERED_ASCENDING;
 }
 
 - (uint32_t)hash
