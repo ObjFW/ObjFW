@@ -20,22 +20,20 @@
 #define BUCKET_SIZE sizeof(struct of_dictionary_bucket)
 
 static OF_INLINE void
-resize(id self, size_t count, struct of_dictionary_bucket **data, size_t *size)
+resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
+    size_t *size)
 {
 	float fill = (float)count / *size;
 	size_t newsize;
 	struct of_dictionary_bucket *newdata;
 	uint32_t i;
 
-	/*
-	 * FIXME:
-	 *
-	 * Throw an OFOutOfRangeException if it would overflow (unlikely to
-	 * happen).
-	 */
-	if (fill > 0.75)
+	if (fill > 0.75) {
+		if (*size > SIZE_MAX / 2)
+			@throw [OFOutOfRangeException newWithClass: isa];
+
 		newsize = *size * 2;
-	else if (fill < 0.25)
+	} else if (fill < 0.25)
 		newsize = *size / 2;
 	else
 		return;
@@ -90,7 +88,7 @@ resize(id self, size_t count, struct of_dictionary_bucket **data, size_t *size)
 
 	/* Key not in dictionary */
 	if (i >= size || data[i].key == nil) {
-		resize(self, count + 1, &data, &size);
+		resize(self, isa, count + 1, &data, &size);
 
 		i = hash & (size - 1);
 		for (; i < size && data[i].key != nil; i++);
@@ -143,7 +141,7 @@ resize(id self, size_t count, struct of_dictionary_bucket **data, size_t *size)
 	data[i].key = nil;
 
 	count--;
-	resize(self, count, &data, &size);
+	resize(self, isa, count, &data, &size);
 
 	return self;
 }
