@@ -112,7 +112,9 @@ void _references_to_categories_of_OFDictionary()
 		[self dealloc];
 		@throw e;
 	}
+
 	size = dict->size;
+	count = dict->count;
 
 	for (i = 0; i < size; i++) {
 		if (dict->data[i].key != nil) {
