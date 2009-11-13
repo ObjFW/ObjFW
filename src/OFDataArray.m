@@ -156,6 +156,7 @@ static int lastpagebyte = 0;
 - (of_comparison_result_t)compare: (OFDataArray*)ary
 {
 	int cmp;
+	size_t ary_count, min_count;
 
 	if (![ary isKindOfClass: [OFDataArray class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
@@ -164,17 +165,18 @@ static int lastpagebyte = 0;
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	if ([ary count] == count) {
-		if ((cmp = memcmp(data, [ary cArray], count * itemsize)) == 0)
-			return OF_ORDERED_SAME;
+	ary_count = [ary count];
+	min_count = (count > ary_count ? ary_count : count);
 
-		if (cmp > 0)
+	if ((cmp = memcmp(data, [ary cArray], min_count * itemsize)) == 0) {
+		if (count > ary_count)
 			return OF_ORDERED_DESCENDING;
-		else
+		if (count < ary_count)
 			return OF_ORDERED_ASCENDING;
+		return OF_ORDERED_SAME;
 	}
 
-	if (count > [ary count])
+	if (cmp > 0)
 		return OF_ORDERED_DESCENDING;
 	else
 		return OF_ORDERED_ASCENDING;

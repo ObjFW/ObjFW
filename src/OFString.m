@@ -28,6 +28,7 @@
 #import "OFMacros.h"
 
 #import "asprintf.h"
+#import "unicode.h"
 
 extern const uint16_t of_iso_8859_15[256];
 extern const uint16_t of_windows_1252[256];
@@ -570,32 +571,83 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 - (of_comparison_result_t)compare: (OFString*)str
 {
 	int cmp;
+	size_t str_len, min_len;
 
 	if (![str isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	if ([str length] == [self length]) {
-		if (length != [str cStringLength]) {
-			if (length > [str cStringLength])
-				return OF_ORDERED_DESCENDING;
-			else
-				return OF_ORDERED_ASCENDING;
-		}
+	str_len = [str cStringLength];
+	min_len = (length > str_len ? str_len : length);
 
-		if ((cmp = memcmp(string, [str cString], length)) == 0)
-			return OF_ORDERED_SAME;
-
-		if (cmp > 0)
+	if ((cmp = memcmp(string, [str cString], min_len)) == 0) {
+		if (length > str_len)
 			return OF_ORDERED_DESCENDING;
-		else
+		if (length < str_len)
 			return OF_ORDERED_ASCENDING;
+		return OF_ORDERED_SAME;
 	}
 
-	if ([self length] > [str length])
+	if (cmp > 0)
 		return OF_ORDERED_DESCENDING;
 	else
 		return OF_ORDERED_ASCENDING;
+}
+
+- (of_comparison_result_t)caseInsensitiveCompare: (OFString*)str
+{
+	const char *str_cstr;
+	size_t i, j, str_len;
+
+	if (![str isKindOfClass: [OFString class]])
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
+	str_cstr = [str cString];
+	str_len = [str cStringLength];
+
+	i = j = 0;
+
+	while (i < length && j < str_len) {
+		of_unichar_t c1, c2;
+		size_t l1, l2;
+		of_unichar_t tmp;
+
+		l1 = of_string_utf8_to_unicode(string + i, length - i, &c1);
+		l2 = of_string_utf8_to_unicode(str_cstr + j, str_len - j, &c2);
+
+		if (l1 == 0 || l2 == 0 || c1 > 0x10FFFF || c2 > 0x10FFFF)
+			@throw [OFInvalidEncodingException newWithClass: isa];
+
+		if (c1 >> 8 < OF_UNICODE_CASEFOLDING_TABLE_SIZE) {
+			tmp = of_unicode_casefolding_table[c1 >> 8][c1 & 0xFF];
+
+			if (tmp != 0)
+				c1 = tmp;
+		}
+
+		if (c2 >> 8 < OF_UNICODE_CASEFOLDING_TABLE_SIZE) {
+			tmp = of_unicode_casefolding_table[c2 >> 8][c2 & 0xFF];
+
+			if (tmp != 0)
+				c2 = tmp;
+		}
+
+		if (c1 > c2)
+			return OF_ORDERED_DESCENDING;
+		if (c1 < c2)
+			return OF_ORDERED_ASCENDING;
+
+		i += l1;
+		j += l2;
+	}
+
+	if (length - i > str_len - j)
+		return OF_ORDERED_DESCENDING;
+	else if (length - i < str_len - j)
+		return OF_ORDERED_ASCENDING;
+
+	return OF_ORDERED_SAME;
 }
 
 - (uint32_t)hash

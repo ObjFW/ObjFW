@@ -26,7 +26,7 @@ const char *str = "Hello!";
 static void
 do_tests(Class class)
 {
-	OFDataArray *array[2];
+	OFDataArray *array[4];
 	void *data[2];
 	Class other;
 
@@ -61,10 +61,16 @@ do_tests(Class class)
 	TEST(@"-[copy]", (array[1] = [[array[0] copy] autorelease]) &&
 	    [array[0] isEqual: array[1]])
 
+	array[2] = [OFDataArray dataArrayWithItemSize: 1];
+	array[3] = [OFDataArray dataArrayWithItemSize: 1];
+	[array[2] addItem: "a"];
+	[array[2] addItem: "a"];
+	[array[3] addItem: "z"];
 	TEST(@"-[compare]", [array[0] compare: array[1]] == 0 &&
 	    [array[1] removeNItems: 1] &&
 	    [array[0] compare: array[1]] == OF_ORDERED_DESCENDING &&
-	    [array[1] compare: array[0]] == OF_ORDERED_ASCENDING)
+	    [array[1] compare: array[0]] == OF_ORDERED_ASCENDING &&
+	    [array[2] compare: array[3]] == OF_ORDERED_ASCENDING)
 
 	TEST(@"-[hash]", [array[0] hash] == 0xC54621B6)
 

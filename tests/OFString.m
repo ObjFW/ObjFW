@@ -54,7 +54,21 @@ string_tests()
 	    ![s[0] isEqual: [[[OFObject alloc] init] autorelease]])
 
 	TEST(@"-[compare:]", [s[0] compare: s[2]] == OF_ORDERED_SAME &&
-	    [s[0] compare: @""] != OF_ORDERED_SAME)
+	    [s[0] compare: @""] != OF_ORDERED_SAME &&
+	    [@"" compare: @"a"] == OF_ORDERED_ASCENDING &&
+	    [@"a" compare: @"b"] == OF_ORDERED_ASCENDING &&
+	    [@"cd" compare: @"bc"] == OF_ORDERED_DESCENDING &&
+	    [@"ä" compare: @"ö"] == OF_ORDERED_ASCENDING &&
+	    [@"€" compare: @"ß"] == OF_ORDERED_DESCENDING &&
+	    [@"aa" compare: @"z"] == OF_ORDERED_ASCENDING)
+
+	TEST(@"-[caseInsensitiveCompare:]",
+	    [@"a" caseInsensitiveCompare: @"A"] == OF_ORDERED_SAME &&
+	    [@"Ä" caseInsensitiveCompare: @"ä"] == OF_ORDERED_SAME &&
+	    [@"я" caseInsensitiveCompare: @"Я"] == OF_ORDERED_SAME &&
+	    [@"€" caseInsensitiveCompare: @"ß"] == OF_ORDERED_DESCENDING &&
+	    [@"ß" caseInsensitiveCompare: @"→"] == OF_ORDERED_ASCENDING &&
+	    [@"AA" caseInsensitiveCompare: @"z"] == OF_ORDERED_ASCENDING)
 
 	TEST(@"-[hash] is the same if -[isEqual:] is YES",
 	    [s[0] hash] == [s[2] hash])

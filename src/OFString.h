@@ -209,6 +209,14 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 - (of_comparison_result_t)compare: (OFString*)str;
 
 /**
+ * Compares the OFString to another OFString without caring about the case.
+ *
+ * \param str A string to compare with
+ * \return An of_comparison_result_t
+ */
+- (of_comparison_result_t)caseInsensitiveCompare: (OFString*)str;
+
+/**
  * \param index The index of the Unicode character to return
  * \return The Unicode character at the specified index
  */
