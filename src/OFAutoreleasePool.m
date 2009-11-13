@@ -108,16 +108,29 @@ release_all(id obj)
 - (void)dealloc
 {
 	[next dealloc];
+	[objects release];
+
+	/*
+	 * If of_tlskey_set fails, this is a real problem. The best we can do
+	 * is to not change the pool below the current pool and stop
+	 * deallocation. This way, new objects will be added to the current
+	 * pool, but released when the pool below gets released - and maybe
+	 * the pool itself will be released as well then, because maybe
+	 * of_tlskey_set will work this time.
+	 */
+	if (!of_tlskey_set(last_key, prev))
+		return;
 
 	if (prev != nil)
 		prev->next = nil;
 
-	/* FIXME: Add exception? */
-	of_tlskey_set(last_key, prev);
+	/*
+	 * If of_tlskey_set fails here, this is even worse, as this will
+	 * definitely be a memory leak. But this should never happen anyway.
+	 */
 	if (of_tlskey_get(first_key) == self)
-		of_tlskey_set(first_key, nil);
-
-	[objects release];
+		if (!of_tlskey_set(first_key, nil))
+			return;
 
 	[super dealloc];
 }
