@@ -999,3 +999,29 @@
 	return string;
 }
 @end
+
+@implementation OFMutexLockFailedException
+- (OFString*)string
+{
+	if (string != nil)
+		return string;
+
+	string = [[OFString alloc] initWithFormat:
+	    @"A mutex could not be locked in class %s", [class_ className]];
+
+	return string;
+}
+@end
+
+@implementation OFMutexUnlockFailedException
+- (OFString*)string
+{
+	if (string != nil)
+		return string;
+
+	string = [[OFString alloc] initWithFormat:
+	    @"A mutex could not be unlocked in class %s", [class_ className]];
+
+	return string;
+}
+@end

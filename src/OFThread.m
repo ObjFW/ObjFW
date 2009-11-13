@@ -167,23 +167,22 @@ call_main(id obj)
 
 - lock
 {
-	/* FIXME: Add error-handling */
-	of_mutex_lock(&mutex);
+	if (!of_mutex_lock(&mutex))
+		@throw [OFMutexLockFailedException newWithClass: isa];
 
 	return self;
 }
 
 - unlock
 {
-	/* FIXME: Add error-handling */
-	of_mutex_unlock(&mutex);
+	if (!of_mutex_unlock(&mutex))
+		@throw [OFMutexUnlockFailedException newWithClass: isa];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	/* FIXME: Add error-handling */
 	of_mutex_free(&mutex);
 
 	[super dealloc];

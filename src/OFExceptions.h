@@ -687,3 +687,15 @@
  */
 @interface OFThreadCanceledException: OFException {}
 @end
+
+/**
+ * An OFException indicating that locking a mutex failed.
+ */
+@interface OFMutexLockFailedException: OFException {}
+@end
+
+/**
+ * An OFException indicating that unlocking a mutex failed.
+ */
+@interface OFMutexUnlockFailedException: OFException {}
+@end
