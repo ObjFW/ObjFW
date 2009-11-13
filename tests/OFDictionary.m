@@ -32,7 +32,7 @@ void
 dictionary_tests()
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFDictionary *dict = [OFMutableDictionary dictionary];
+	OFDictionary *dict = [OFMutableDictionary dictionary], *dict2;
 	OFIterator *iter;
 	of_iterator_pair_t pair[3];
 	OFArray *akeys, *avalues;
@@ -86,8 +86,10 @@ dictionary_tests()
 	    [[dict objectForKey: keys[0]] isEqual: values[0]] &&
 	    [[dict objectForKey: keys[1]] isEqual: values[1]])
 
+	dict2 = dict;
 	TEST(@"-[mutableCopy]",
 	    (dict = [[dict mutableCopy] autorelease]) &&
+	    [dict count] == [dict2 count] &&
 	    [[dict objectForKey: keys[0]] isEqual: values[0]] &&
 	    [[dict objectForKey: keys[1]] isEqual: values[1]] &&
 	    [dict setObject: @"value3"
@@ -100,6 +102,15 @@ dictionary_tests()
 	TEST(@"-[removeObjectForKey:]",
 	    [dict removeObjectForKey: keys[0]] &&
 	    [dict objectForKey: keys[0]] == nil)
+
+	[dict setObject: @"foo"
+		 forKey: keys[0]];
+	TEST(@"-[isEqual:]", ![dict isEqual: dict2] &&
+	    [dict removeObjectForKey: @"key3"] &&
+	    ![dict isEqual: dict2] &&
+	    [dict setObject: values[0]
+		     forKey: keys[0]] &&
+	    [dict isEqual: dict2])
 
 	[pool release];
 }

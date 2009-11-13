@@ -17,6 +17,7 @@
 #import "OFIterator.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
+#import "OFMacros.h"
 
 #define BUCKET_SIZE sizeof(struct of_dictionary_bucket)
 
@@ -251,11 +252,20 @@ void _references_to_categories_of_OFDictionary()
 	return [[OFMutableDictionary alloc] initWithDictionary: self];
 }
 
-/* FIXME: Implement this!
-- (BOOL)isEqual
+- (BOOL)isEqual: (OFDictionary*)dict
 {
+	size_t i;
+
+	if ([dict count] != count)
+		return NO;
+
+	for (i = 0; i < size; i++)
+		if (data[i].key != nil &&
+		    ![[dict objectForKey: data[i].key] isEqual: data[i].object])
+			return NO;
+
+	return YES;
 }
-*/
 
 - (void)dealloc
 {
@@ -284,9 +294,31 @@ void _references_to_categories_of_OFDictionary()
 					      selector: _cmd];
 }
 
-/* FIXME: Implement!
 - (uint32_t)hash
 {
+	size_t i;
+	uint32_t hash;
+
+	OF_HASH_INIT(hash);
+
+	for (i = 0; i < size; i++) {
+		if (data[i].key != nil) {
+			uint32_t kh = [data[i].key hash];
+
+			OF_HASH_ADD(hash, kh >> 24);
+			OF_HASH_ADD(hash, (kh >> 16) & 0xFF);
+			OF_HASH_ADD(hash, (kh >> 8) & 0xFF);
+			OF_HASH_ADD(hash, kh & 0xFF);
+
+			OF_HASH_ADD(hash, data[i].hash >> 24);
+			OF_HASH_ADD(hash, (data[i].hash >> 16) & 0xFF);
+			OF_HASH_ADD(hash, (data[i].hash >> 8) & 0xFF);
+			OF_HASH_ADD(hash, data[i].hash & 0xFF);
+		}
+	}
+
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
 }
-*/
 @end
