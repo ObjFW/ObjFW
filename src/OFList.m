@@ -15,6 +15,7 @@
 
 #import "OFList.h"
 #import "OFExceptions.h"
+#import "OFMacros.h"
 
 @implementation OFList
 + list
@@ -231,9 +232,24 @@
 	return new;
 }
 
-/* FIXME: Implement!
 - (uint32_t)hash
 {
+	of_list_object_t *iter;
+	uint32_t hash;
+
+	OF_HASH_INIT(hash);
+
+	for (iter = first; iter != NULL; iter = iter->next) {
+		uint32_t h = [iter->object hash];
+
+		OF_HASH_ADD(hash, h >> 24);
+		OF_HASH_ADD(hash, (h >> 16) & 0xFF);
+		OF_HASH_ADD(hash, (h >> 8) & 0xFF);
+		OF_HASH_ADD(hash, h & 0xFF);
+	}
+
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
 }
-*/
 @end
