@@ -54,7 +54,6 @@ of_thread_join(of_thread_t thread)
 	if (pthread_join(thread, &ret))
 		return NO;
 
-	/* FIXME: Do we need a way to differentiate? */
 	return (ret != PTHREAD_CANCELED ? YES : NO);
 #else
 	if (WaitForSingleObject(thread, INFINITE))
@@ -161,5 +160,15 @@ of_tlskey_set(of_tlskey_t key, id obj)
 	return (pthread_setspecific(key, p) ? NO : YES);
 #else
 	return (TlsSetValue(key, p) ? YES : NO);
+#endif
+}
+
+static OF_INLINE BOOL
+of_tlskey_free(of_tlskey_t key)
+{
+#ifndef _WIN32
+	return (pthread_key_delete(key) ? NO : YES);
+#else
+	return (TlsFree(key) ? YES : NO);
 #endif
 }

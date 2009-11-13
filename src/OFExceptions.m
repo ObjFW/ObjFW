@@ -985,21 +985,6 @@
 }
 @end
 
-/* FIXME: Not needed anymore? */
-@implementation OFThreadCanceledException
-- (OFString*)string
-{
-	if (string != nil)
-		return string;
-
-	string = [[OFString alloc] initWithFormat:
-	    @"The requested action cannot be performed because the thread of "
-	    @"class %s was canceled!", [class_ className]];
-
-	return string;
-}
-@end
-
 @implementation OFMutexLockFailedException
 - (OFString*)string
 {

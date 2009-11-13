@@ -133,7 +133,6 @@ call_main(id obj)
 {
 	self = [super init];
 
-	/* FIXME: Call destructor on Win32 */
 	if (!of_tlskey_new(&key, destructor)) {
 		Class c = isa;
 		[super dealloc];
@@ -143,7 +142,12 @@ call_main(id obj)
 	return self;
 }
 
-/* FIXME: Add dealloc! */
+- (void)dealloc
+{
+	of_tlskey_free(key);
+
+	[super dealloc];
+}
 @end
 
 @implementation OFMutex
