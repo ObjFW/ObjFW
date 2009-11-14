@@ -12,9 +12,13 @@
 #include "config.h"
 
 #import "OFThread.h"
+#import "OFList.h"
+#import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 
 #import "threading.h"
+
+static OFList *tlskeys;
 
 static id
 call_main(id obj)
@@ -24,6 +28,9 @@ call_main(id obj)
 	 * value on join.
 	 */
 	((OFThread*)obj)->retval = [obj main];
+
+	[OFTLSKey callAllDestructors];
+	[OFAutoreleasePool releaseAll];
 
 	return 0;
 }
@@ -106,6 +113,12 @@ call_main(id obj)
 @end
 
 @implementation OFTLSKey
++ (void)initialize
+{
+	if (self == [OFTLSKey class])
+		tlskeys = [[OFList alloc] init];
+}
+
 + tlsKey
 {
 	return [[[self alloc] init] autorelease];
@@ -116,35 +129,60 @@ call_main(id obj)
 	return [[[self alloc] initWithDestructor: destructor] autorelease];
 }
 
++ (void)callAllDestructors
+{
+	of_list_object_t *iter;
+
+	@synchronized (tlskeys) {
+		for (iter = [tlskeys first]; iter != NULL; iter = iter->next)
+			((OFTLSKey*)iter->object)->destructor(iter->object);
+	}
+}
+
 - init
 {
 	self = [super init];
 
-	if (!of_tlskey_new(&key, NULL)) {
+	if (!of_tlskey_new(&key)) {
 		Class c = isa;
 		[super dealloc];
 		@throw [OFInitializationFailedException newWithClass: c];
+	}
+
+	destructor = NULL;
+
+	@synchronized (tlskeys) {
+		@try {
+			listobj = [tlskeys append: self];
+		} @catch (OFException *e) {
+			listobj = NULL;
+			[self dealloc];
+			@throw e;
+		}
 	}
 
 	return self;
 }
 
-- initWithDestructor: (void(*)(id))destructor
+- initWithDestructor: (void(*)(id))destructor_
 {
-	self = [super init];
+	self = [self init];
 
-	if (!of_tlskey_new(&key, destructor)) {
-		Class c = isa;
-		[super dealloc];
-		@throw [OFInitializationFailedException newWithClass: c];
-	}
+	destructor = destructor_;
 
 	return self;
 }
 
 - (void)dealloc
 {
+	if (destructor != NULL)
+		destructor(self);
+
 	of_tlskey_free(key);
+
+	@synchronized (tlskeys) {
+		[tlskeys remove: listobj];
+	}
 
 	[super dealloc];
 }

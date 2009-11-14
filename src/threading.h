@@ -125,12 +125,11 @@ of_mutex_unlock(of_mutex_t *mutex)
 }
 
 static OF_INLINE BOOL
-of_tlskey_new(of_tlskey_t *key, void (*destructor)(id))
+of_tlskey_new(of_tlskey_t *key)
 {
 #ifndef _WIN32
-	return (pthread_key_create(key, (void(*)(void*))destructor) ? NO : YES);
+	return (pthread_key_create(key, NULL) ? NO : YES);
 #else
-	/* FIXME: Call destructor */
 	return ((*key = TlsAlloc()) == TLS_OUT_OF_INDEXES ? NO : YES);
 #endif
 }

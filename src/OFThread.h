@@ -10,6 +10,7 @@
  */
 
 #import "OFObject.h"
+#import "OFList.h"
 
 #import "threading.h"
 
@@ -20,6 +21,9 @@
 {
 @public
 	of_tlskey_t key;
+@protected
+	void (*destructor)(id);
+	of_list_object_t *listobj;
 }
 
 /**
@@ -32,6 +36,8 @@
  * \return A new autoreleased Thread Local Storage key
  */
 + tlsKeyWithDestructor: (void(*)(id))destructor;
+
++ (void)callAllDestructors;
 
 /**
  * \return An initialized Thread Local Storage key

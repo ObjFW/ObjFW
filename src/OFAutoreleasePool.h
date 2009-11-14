@@ -32,6 +32,8 @@
  */
 + (void)addObjectToTopmostPool: (OFObject*)obj;
 
++ (void)releaseAll;
+
 /**
  * Adds an object to the specific autorelease pool.
  *

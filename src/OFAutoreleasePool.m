@@ -20,18 +20,7 @@
 
 #import "threading.h"
 
-/*
- * Pay special attention to NULL and nil in this file, they might be different!
- * Use NULL for TLS values and nil for instance variables.
- */
-
 static of_tlskey_t first_key, last_key;
-
-static void
-release_all(id obj)
-{
-	[of_tlskey_get(first_key) release];
-}
 
 @implementation OFAutoreleasePool
 + (void)initialize
@@ -39,8 +28,7 @@ release_all(id obj)
 	if (self != [OFAutoreleasePool class])
 		return;
 
-	if (!of_tlskey_new(&first_key, release_all) ||
-	    !of_tlskey_new(&last_key, NULL))
+	if (!of_tlskey_new(&first_key) || !of_tlskey_new(&last_key))
 		@throw [OFInitializationFailedException newWithClass: self];
 }
 
@@ -70,6 +58,11 @@ release_all(id obj)
 		[obj release];
 		@throw e;
 	}
+}
+
++ (void)releaseAll
+{
+	[of_tlskey_get(first_key) release];
 }
 
 - init
