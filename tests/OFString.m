@@ -197,6 +197,7 @@ string_tests()
 
 	TEST(@"-[decimalValueAsInteger]",
 	    [@"1234" decimalValueAsInteger] == 1234 &&
+	    [@"-500" decimalValueAsInteger] == -500 &&
 	    [@"" decimalValueAsInteger] == 0)
 
 	TEST(@"-[hexadecimalValueAsInteger]",
@@ -222,6 +223,18 @@ string_tests()
 	EXPECT_EXCEPTION(@"Detect invalid chars in "
 	    @"-[hexadecimalValueAsInteger] #3", OFInvalidEncodingException,
 	    [@"$" hexadecimalValueAsInteger])
+
+	EXPECT_EXCEPTION(@"Detect out of range in -[decimalValueAsInteger",
+	    OFOutOfRangeException,
+	    [@"12345678901234567890123456789012345678901234567890"
+	     @"12345678901234567890123456789012345678901234567890"
+	    decimalValueAsInteger])
+
+	EXPECT_EXCEPTION(@"Detect out of range in -[hexadecilamValueAsInteger",
+	    OFOutOfRangeException,
+	    [@"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"
+	     @"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"
+	    hexadecimalValueAsInteger])
 
 	TEST(@"-[md5Hash]", [[@"asdfoobar" md5Hash]
 	    isEqual: @"184dce2ec49b5422c7cfd8728864db4c"])

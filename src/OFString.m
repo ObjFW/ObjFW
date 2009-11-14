@@ -804,11 +804,16 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	if (string[0] == '-')
 		i++;
 
-	/* FIXME: Add overflow check */
 	for (; i < length; i++) {
-		if (string[i] >= '0' && string[i] <= '9')
-			num = (num * 10) + (string[i] - '0');
-		else
+		if (string[i] >= '0' && string[i] <= '9') {
+			intmax_t newnum = (num * 10) + (string[i] - '0');
+
+			if (newnum < num)
+				@throw [OFOutOfRangeException
+				    newWithClass: isa];
+
+			num = newnum;
+		} else
 			@throw [OFInvalidEncodingException newWithClass: isa];
 	}
 
@@ -821,7 +826,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 - (intmax_t)hexadecimalValueAsInteger
 {
 	int i = 0;
-	intmax_t num = 0;
+	uintmax_t num = 0;
 
 	if (length == 0)
 		return 0;
@@ -834,16 +839,22 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	if (i == length)
 		@throw [OFInvalidEncodingException newWithClass: isa];
 
-	/* FIXME: Add overflow check */
 	for (; i < length; i++) {
+		uintmax_t newnum;
+
 		if (string[i] >= '0' && string[i] <= '9')
-			num = (num << 4) | (string[i] - '0');
+			newnum = (num << 4) | (string[i] - '0');
 		else if (string[i] >= 'A' && string[i] <= 'F')
-			num = (num << 4) | (string[i] - 'A' + 10);
+			newnum = (num << 4) | (string[i] - 'A' + 10);
 		else if (string[i] >= 'a' && string[i] <= 'f')
-			num = (num << 4) | (string[i] - 'a' + 10);
+			newnum = (num << 4) | (string[i] - 'a' + 10);
 		else
 			@throw [OFInvalidEncodingException newWithClass: isa];
+
+		if (newnum < num)
+			@throw [OFOutOfRangeException newWithClass: isa];
+
+		num = newnum;
 	}
 
 	return num;
