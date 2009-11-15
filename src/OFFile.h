@@ -46,21 +46,6 @@ typedef int gid_t;
 + fileWithFilePointer: (FILE*)fp;
 
 /**
- * \return An OFFile singleton for stdin
- */
-+ standardInput;
-
-/**
- * \return An OFFile singleton for stdout
- */
-+ standardOutput;
-
-/**
- * \return An OFFile singleton for stderr
- */
-+ standardError;
-
-/**
  * Changes the mode of a file.
  *
  * Not available on Windows.
@@ -68,9 +53,8 @@ typedef int gid_t;
  * \param path The path to the file of which the mode should be changed as a
  *	       string
  * \param mode The new mode for the file
- * \return A boolean whether the operation succeeded
  */
-+ (BOOL)changeModeOfFile: (OFString*)path
++ (void)changeModeOfFile: (OFString*)path
 		  toMode: (mode_t)mode;
 
 /**
@@ -82,17 +66,24 @@ typedef int gid_t;
  *	       string
  * \param owner The new owner for the file
  * \param group The new group for the file
- * \return A boolean whether the operation succeeded
  */
-+ (BOOL)changeOwnerOfFile: (OFString*)path
-		    owner: (uid_t)owner
++ (void)changeOwnerOfFile: (OFString*)path
+		  toOwner: (uid_t)owner
 		    group: (gid_t)group;
+
+/**
+ * Renames a file.
+ *
+ * \param from The file to rename
+ * \param to The new name
+ */
++ (void)rename: (OFString*)from
+	    to: (OFString*)to;
 
 /**
  * Deletes a file.
  *
  * \param path The path to the file of which should be deleted as a string
- * \return A boolean whether the operation succeeded
  */
 + (void)delete: (OFString*)path;
 
@@ -103,7 +94,6 @@ typedef int gid_t;
  *
  * \param src The path to the file of which should be linked as a string
  * \param dest The path to where the file should be linked as a string
- * \return A boolean whether the operation succeeded
  */
 + (void)link: (OFString*)src
 	  to: (OFString*)dest;
@@ -115,7 +105,6 @@ typedef int gid_t;
  *
  * \param src The path to the file of which should be symlinked as a string
  * \param dest The path to where the file should be symlinked as a string
- * \return A boolean whether the operation succeeded
  */
 + (void)symlink: (OFString*)src
 	     to: (OFString*)dest;
@@ -167,3 +156,10 @@ typedef int gid_t;
 
 @interface OFFileSingleton: OFFile
 @end
+
+/// An OFFile object for stdin.
+extern OFFile *of_stdin;
+/// An OFFile object for stdout.
+extern OFFile *of_stdout;
+/// An OFFile object for stderr.
+extern OFFile *of_stderr;

@@ -11,6 +11,7 @@
 
 #import "OFObject.h"
 #import "OFString.h"
+#import "OFFile.h"
 
 /**
  * An exception indicating an object could not be allocated.
@@ -356,6 +357,198 @@
 @end
 
 /**
+ * An OFException indicating that changing the mode of the file failed.
+ */
+@interface OFChangeFileModeFailedException: OFException
+{
+	OFString *path;
+	mode_t mode;
+	int err;
+}
+
+/**
+ * \param class_ The class of the object which caused the exception
+ * \param path The path of the file
+ * \param mode The new mode for the file
+ * \return An initialized change file mode failed exception
+ */
++ newWithClass: (Class)class_
+	  path: (OFString*)path
+	  mode: (mode_t)mode;
+
+/**
+ * Initializes an already allocated change file mode failed exception.
+ *
+ * \param class_ The class of the object which caused the exception
+ * \param path The path of the file
+ * \param mode The new mode for the file
+ * \return An initialized change file mode failed exception
+ */
+- initWithClass: (Class)class_
+	   path: (OFString*)path
+	   mode: (mode_t)mode;
+
+/**
+ * \return The errno from when the exception was created
+ */
+- (int)errNo;
+
+/**
+ * \return The path of the file
+ */
+- (OFString*)path;
+
+/**
+ * \return The new mode for the file
+ */
+- (mode_t)mode;
+@end
+
+/**
+ * An OFException indicating that changing the owner of the file failed.
+ */
+@interface OFChangeFileOwnerFailedException: OFException
+{
+	OFString *path;
+	uid_t owner;
+	gid_t group;
+	int err;
+}
+
+/**
+ * \param class_ The class of the object which caused the exception
+ * \param path The path of the file
+ * \param owner The new owner for the file
+ * \param group The new group for the file
+ * \return An initialized change file owner failed exception
+ */
++ newWithClass: (Class)class_
+	  path: (OFString*)path
+	 owner: (uid_t)owner
+	 group: (gid_t)group;
+
+/**
+ * Initializes an already allocated change file owner failed exception.
+ *
+ * \param class_ The class of the object which caused the exception
+ * \param path The path of the file
+ * \param owner The new owner for the file
+ * \param group The new group for the file
+ * \return An initialized change file owner failed exception
+ */
+- initWithClass: (Class)class_
+	   path: (OFString*)path
+	  owner: (uid_t)owner
+	  group: (gid_t)group;
+
+/**
+ * \return The errno from when the exception was created
+ */
+- (int)errNo;
+
+/**
+ * \return The path of the file
+ */
+- (OFString*)path;
+
+/**
+ * \return The new owner for the file
+ */
+- (uid_t)owner;
+
+/**
+ * \return The new group for the file
+ */
+- (gid_t)group;
+@end
+
+/**
+ * An OFException indicating that renaming a file failed.
+ */
+@interface OFRenameFileFailedException: OFException
+{
+	OFString *from;
+	OFString *to;
+	int err;
+}
+
+/**
+ * \param class_ The class of the object which caused the exception
+ * \param from The original path
+ * \param to The new path
+ * \return A new rename file failed exception
+ */
++ newWithClass: (Class)class_
+	  from: (OFString*)from
+	    to: (OFString*)to;
+
+/**
+ * Initializes an already allocated rename failed exception.
+ *
+ * \param class_ The class of the object which caused the exception
+ * \param from The original path
+ * \param to The new path
+ * \return An initialized rename file failed exception
+ */
+- initWithClass: (Class)class_
+	   from: (OFString*)from
+	     to: (OFString*)to;
+
+/**
+ * \return The errno from when the exception was created
+ */
+- (int)errNo;
+
+/**
+ * \return The original path
+ */
+- (OFString*)from;
+
+/**
+ * \return The new path
+ */
+- (OFString*)to;
+@end
+
+/**
+ * An OFException indicating that deleting a file failed.
+ */
+@interface OFDeleteFileFailedException: OFException
+{
+	OFString *path;
+	int err;
+}
+
+/**
+ * \param class_ The class of the object which caused the exception
+ * \param path The path of the file
+ * \return A new delete file failed exception
+ */
++ newWithClass: (Class)class_
+	  path: (OFString*)path;
+
+/**
+ * Initializes an already allocated delete file failed exception.
+ *
+ * \param class_ The class of the object which caused the exception
+ * \param path The path of the file
+ * \return An initialized delete file failed exception
+ */
+- initWithClass: (Class)class_
+	   path: (OFString*)path;
+
+/**
+ * \return The errno from when the exception was created
+ */
+- (int)errNo;
+
+/**
+ * \return The path of the file
+ */
+- (OFString*)path;
+@end
+
+/**
  * An OFException indicating that creating a link failed.
  */
 @interface OFLinkFailedException: OFException
@@ -376,7 +569,7 @@
    destination: (OFString*)dest;
 
 /**
- * Initializes an already allocated open file failed exception.
+ * Initializes an already allocated link failed exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param source The source for the link
@@ -424,7 +617,7 @@
    destination: (OFString*)dest;
 
 /**
- * Initializes an already allocated open file failed exception.
+ * Initializes an already allocated symlink failed exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param source The source for the symlink

@@ -337,9 +337,9 @@
 	  path: (OFString*)path_
 	  mode: (OFString*)mode_
 {
-	return [[self alloc] initWithClass: class__
-				      path: path_
-				      mode: mode_];
+	return [(OFOpenFileFailedException*)[self alloc] initWithClass: class__
+								  path: path_
+								  mode: mode_];
 }
 
 - initWithClass: (Class)class__
@@ -511,6 +511,264 @@
 		    [class_ className], ERRPARAM];
 
 	return string;
+}
+@end
+
+@implementation OFChangeFileModeFailedException
++ newWithClass: (Class)class__
+	  path: (OFString*)path_
+	  mode: (mode_t)mode_
+{
+	return [(OFChangeFileModeFailedException*)[self alloc]
+	    initWithClass: class__
+		     path: path_
+		     mode: mode_];
+}
+
+- initWithClass: (Class)class__
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class__
+	   path: (OFString*)path_
+	   mode: (mode_t)mode_
+{
+	self = [super initWithClass: class__];
+
+	path = [path_ copy];
+	mode = mode_;
+	err  = GET_ERR;
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[path release];
+
+	[super dealloc];
+}
+
+- (OFString*)string
+{
+	if (string != nil)
+		return string;
+
+	string = [[OFString alloc] initWithFormat:
+	    @"Failed to change mode for file %s to %d in class %s! " ERRFMT,
+	    [path cString], mode, [class_ className], ERRPARAM];
+
+	return string;
+}
+
+- (int)errNo
+{
+	return err;
+}
+
+- (OFString*)path
+{
+	return path;
+}
+
+- (mode_t)mode
+{
+	return mode;
+}
+@end
+
+@implementation OFChangeFileOwnerFailedException
++ newWithClass: (Class)class__
+	  path: (OFString*)path_
+	 owner: (uid_t)owner_
+	 group: (gid_t)group_
+{
+	return [[self alloc] initWithClass: class__
+				      path: path_
+				     owner: owner_
+				     group: group_];
+}
+
+- initWithClass: (Class)class__
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class__
+	   path: (OFString*)path_
+	  owner: (uid_t)owner_
+	  group: (gid_t)group_
+{
+	self = [super initWithClass: class__];
+
+	path  = [path_ copy];
+	owner = owner_;
+	group = group_;
+	err   = GET_ERR;
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[path release];
+
+	[super dealloc];
+}
+
+- (OFString*)string
+{
+	if (string != nil)
+		return string;
+
+	string = [[OFString alloc] initWithFormat:
+	    @"Failed to change owner for file %s to %d:%d in class %s! " ERRFMT,
+	    [path cString], owner, group, [class_ className], ERRPARAM];
+
+	return string;
+}
+
+- (int)errNo
+{
+	return err;
+}
+
+- (OFString*)path
+{
+	return path;
+}
+
+- (uid_t)owner
+{
+	return owner;
+}
+
+- (gid_t)group
+{
+	return group;
+}
+@end
+
+@implementation OFRenameFileFailedException
++ newWithClass: (Class)class__
+	  from: (OFString*)from_
+	    to: (OFString*)to_
+{
+	return [[self alloc] initWithClass: class__
+				      from: from_
+					to: to_];
+}
+
+- initWithClass: (Class)class__
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class__
+	   from: (OFString*)from_
+	     to: (OFString*)to_
+{
+	self = [super initWithClass: class__];
+
+	from = [from_ copy];
+	to   = [to_ copy];
+	err  = GET_ERR;
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[from release];
+	[to release];
+
+	[super dealloc];
+}
+
+- (OFString*)string
+{
+	if (string != nil)
+		return string;
+
+	string = [[OFString alloc] initWithFormat:
+	    @"Failed to rename file %s to %s in class %s! " ERRFMT,
+	    [from cString], [to cString], [class_ className], ERRPARAM];
+
+	return string;
+}
+
+- (int)errNo
+{
+	return err;
+}
+
+- (OFString*)from
+{
+	return from;
+}
+
+- (OFString*)to
+{
+	return to;
+}
+@end
+
+@implementation OFDeleteFileFailedException
++ newWithClass: (Class)class__
+	  path: (OFString*)path_
+{
+	return [[self alloc] initWithClass: class__
+				      path: path_];
+}
+
+- initWithClass: (Class)class__
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class__
+	   path: (OFString*)path_
+{
+	self = [super initWithClass: class__];
+
+	path = [path_ copy];
+	err  = GET_ERR;
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[path release];
+
+	[super dealloc];
+}
+
+- (OFString*)string
+{
+	if (string != nil)
+		return string;
+
+	string = [[OFString alloc] initWithFormat:
+	    @"Failed to delete file %s in class %s! " ERRFMT, [path cString],
+	    [class_ className], ERRPARAM];
+
+	return string;
+}
+
+- (int)errNo
+{
+	return err;
+}
+
+- (OFString*)path
+{
+	return path;
 }
 @end
 

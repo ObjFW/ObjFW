@@ -23,11 +23,25 @@
 #import "OFFile.h"
 #import "OFExceptions.h"
 
-static OFFileSingleton *of_file_stdin = nil;
-static OFFileSingleton *of_file_stdout = nil;
-static OFFileSingleton *of_file_stderr = nil;
+#ifdef _WIN32
+#import <windows.h>
+#endif
+
+OFFile *of_stdin = nil;
+OFFile *of_stdout = nil;
+OFFile *of_stderr = nil;
 
 @implementation OFFile
++ (void)load
+{
+	if (self != [OFFile class])
+		return;
+
+	of_stdin = [[OFFileSingleton alloc] initWithFilePointer: stdin];
+	of_stdout = [[OFFileSingleton alloc] initWithFilePointer: stdout];
+	of_stderr = [[OFFileSingleton alloc] initWithFilePointer: stderr];
+}
+
 + fileWithPath: (OFString*)path
 	  mode: (OFString*)mode
 {
@@ -40,62 +54,69 @@ static OFFileSingleton *of_file_stderr = nil;
 	return [[[self alloc] initWithFilePointer: fp_] autorelease];
 }
 
-+ standardInput
-{
-	if (of_file_stdin == nil)
-		of_file_stdin = [[OFFileSingleton alloc]
-		    initWithFilePointer: stdin];
-
-	return of_file_stdin;
-}
-
-+ standardOutput
-{
-	if (of_file_stdout == nil)
-		of_file_stdout = [[OFFileSingleton alloc]
-		    initWithFilePointer: stdout];
-
-	return of_file_stdout;
-}
-
-+ standardError
-{
-	if (of_file_stderr == nil)
-		of_file_stderr = [[OFFileSingleton alloc]
-		    initWithFilePointer: stderr];
-
-	return of_file_stderr;
-}
-
-+ (BOOL)changeModeOfFile: (OFString*)path
++ (void)changeModeOfFile: (OFString*)path
 		  toMode: (mode_t)mode
 {
 #ifndef _WIN32
-	return (chmod([path cString], mode) == 0 ? YES : NO);
+	if (chmod([path cString], mode))
+		@throw [OFChangeFileModeFailedException newWithClass: self
+								path: path
+								mode: mode];
 #else
-	/*
-	 * FIXME: On Win32, change write access
-	 */
-	return NO;
+	DWORD attrs = GetFileAttributes([path cString]);
+
+	if (attrs == INVALID_FILE_ATTRIBUTES)
+		@throw [OFChangeFileModeFailedException newWithClass: self
+								path: path
+								mode: mode];
+
+	if ((mode / 100) & 2)
+		attrs &= ~FILE_ATTRIBUTE_READONLY;
+	else
+		attrs |= FILE_ATTRIBUTE_READONLY;
+
+	if (!SetFileAttributes([path cString], attrs))
+		@throw [OFChangeFileModeFailedException newWithClass: self
+								path: path
+								mode: mode];
 #endif
 }
 
-+ (BOOL)changeOwnerOfFile: (OFString*)path
-		    owner: (uid_t)owner
++ (void)changeOwnerOfFile: (OFString*)path
+		  toOwner: (uid_t)owner
 		    group: (gid_t)group
 {
-	/* FIXME: On error, throw exception */
 #ifndef _WIN32
-	return (chown([path cString], owner, group) == 0 ? YES : NO);
-#else
-	return NO;
+	if (chown([path cString], owner, group))
+		@throw [OFChangeFileOwnerFailedException newWithClass: self
+								 path: path
+								owner: owner
+								group: group];
 #endif
+}
+
++ (void)rename: (OFString*)from
+	    to: (OFString*)to
+{
+#ifndef _WIN32
+	if (rename([from cString], [to cString]))
+#else
+	if (!MoveFile([from cString], [to cString]))
+#endif
+		@throw [OFRenameFileFailedException newWithClass: self
+							    from: from
+							      to: to];
 }
 
 + (void)delete: (OFString*)path
 {
-	/* FIXME: On error, throw exception */
-	unlink([path cString]);
+#ifndef _WIN32
+	if (unlink([path cString]))
+#else
+	if (!DeleteFile([path cString]))
+#endif
+		@throw [OFDeleteFileFailedException newWithClass: self
+							    path: path];
 }
 
 + (void)link: (OFString*)src
