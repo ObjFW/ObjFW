@@ -155,6 +155,11 @@ call_main(id obj)
 		@try {
 			listobj = [tlskeys append: self];
 		} @catch (OFException *e) {
+			/*
+			 * We can't use [super dealloc] on OS X here.
+			 * Compiler bug? Anyway, [self dealloc] will do here
+			 * as we check listobj != NULL in dealloc.
+			 */
 			listobj = NULL;
 			[self dealloc];
 			@throw e;
@@ -181,7 +186,9 @@ call_main(id obj)
 	of_tlskey_free(key);
 
 	@synchronized (tlskeys) {
-		[tlskeys remove: listobj];
+		/* In case we called [self dealloc] in init */
+		if (listobj != NULL)
+			[tlskeys remove: listobj];
 	}
 
 	[super dealloc];
