@@ -1268,3 +1268,17 @@
 	return string;
 }
 @end
+
+@implementation OFHashAlreadyCalculatedException
+- (OFString*)string
+{
+	if (string != nil)
+		return string;
+
+	string = [[OFString alloc] initWithFormat:
+	    @"The hash has already been calculated in class %s and thus no new "
+	    @"data can be added", [class_ className]];
+
+	return string;
+}
+@end

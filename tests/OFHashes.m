@@ -57,5 +57,12 @@ hashes_tests()
 	    !memcmp([md5 digest], testfile_md5, OF_MD5_DIGEST_SIZE) &&
 	    !memcmp([sha1 digest], testfile_sha1, OF_MD5_DIGEST_SIZE))
 
+	EXPECT_EXCEPTION(@"Detect invalid call of -[updateWithBuffer] #1",
+	    OFHashAlreadyCalculatedException, [md5 updateWithBuffer: ""
+							     ofSize: 1])
+	EXPECT_EXCEPTION(@"Detect invalid call of -[updateWithBuffer] #2",
+	    OFHashAlreadyCalculatedException, [sha1 updateWithBuffer: ""
+							      ofSize: 1])
+
 	[pool release];
 }

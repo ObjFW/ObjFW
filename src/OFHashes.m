@@ -145,8 +145,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 		return self;
 
 	if (calculated)
-		/* FIXME: Maybe a new exception would be better */
-		@throw [OFInvalidArgumentException newWithClass: isa];
+		@throw [OFHashAlreadyCalculatedException newWithClass: isa];
 
 	/* Update bitcount */
 	t = bits[0];
@@ -384,8 +383,7 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 		return self;
 
 	if (calculated)
-		/* FIXME: Maybe a new exception would be better */
-		@throw [OFInvalidArgumentException newWithClass: isa];
+		@throw [OFHashAlreadyCalculatedException newWithClass: isa];
 
 	sha1_update(state, &count, buffer, buf, size);
 

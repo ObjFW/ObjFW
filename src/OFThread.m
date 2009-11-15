@@ -47,7 +47,6 @@ call_main(id obj)
 	id old = of_tlskey_get(key->key);
 
 	if (!of_tlskey_set(key->key, [obj retain]))
-		/* FIXME: Maybe another exception would be better */
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 

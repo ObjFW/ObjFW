@@ -886,3 +886,9 @@
  */
 @interface OFMutexUnlockFailedException: OFException {}
 @end
+
+/**
+ * An OFException indicating that the hash has already been calculated.
+ */
+@interface OFHashAlreadyCalculatedException: OFException {}
+@end
