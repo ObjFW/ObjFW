@@ -44,6 +44,14 @@ typedef enum {
 }
 
 /**
+ * This code is executed once when the class is loaded into the runtime.
+ *
+ * Derived classes can overide this to execute their own code when the class is
+ * loaded.
+ */
++ (void)load;
+
+/**
  * This code is executed once when a method of the class is called for the first
  * time.
  *

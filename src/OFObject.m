@@ -48,7 +48,7 @@ extern BOOL objc_sync_init();
 #endif
 
 @implementation OFObject
-+ (void)initialize
++ (void)load
 {
 #ifdef NEED_OBJC_SYNC_INIT
 	if (!objc_sync_init()) {
@@ -56,6 +56,10 @@ extern BOOL objc_sync_init();
 		abort();
 	}
 #endif
+}
+
++ (void)initialize
+{
 }
 
 + alloc
