@@ -27,6 +27,7 @@ CPP = @CPP@
 DC = @DC@
 ERLC = @ERLC@
 OBJC = @OBJC@
+OBJCXX = @OBJCXX@
 AR = @AR@
 LD = ${CC}
 RANLIB = @RANLIB@
@@ -37,6 +38,7 @@ CPPFLAGS = @CPPFLAGS@
 DFLAGS = @DFLAGS@
 ERLCFLAGS = @ERLCFLAGS@
 OBJCFLAGS = @OBJCFLAGS@
+OBJCXXFLAGS = @OBJCXXFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 PYTHON_FLAGS = @PYTHON_FLAGS@
@@ -60,6 +62,7 @@ LN_S = @LN_S@
 MKDIR_P = mkdir -p
 INSTALL = @INSTALL@
 SHELL = @SHELL@
+MSGFMT = @MSGFMT@
 prefix = @prefix@
 exec_prefix = @exec_prefix@
 bindir = @bindir@
@@ -78,12 +81,14 @@ OBJS3 = ${OBJS2:.cxx=.o}
 OBJS4 = ${OBJS3:.d=.o}
 OBJS5 = ${OBJS4:.erl=.beam}
 OBJS6 = ${OBJS5:.m=.o}
-OBJS7 = ${OBJS6:.py=.pyc}
-OBJS += ${OBJS7:.xpm=.o}
+OBJS7 = ${OBJS6:.mm=.o}
+OBJS8 = ${OBJS7:.py=.pyc}
+OBJS9 = ${OBJS8:.xpm=.o}
+OBJS += ${OBJS9:.po=.gmo}
 
 .SILENT:
 .SUFFIXES:
-.SUFFIXES: .beam .c .cc .cxx .d .dep .erl .m .o .py .pyc .xpm
+.SUFFIXES: .beam .c .cc .cxx .d .dep .erl .gmo .m .mm .o .po .py .pyc .xpm
 .PHONY: all subdirs pre-depend depend install install-extra uninstall uninstall-extra clean distclean
 
 all:
@@ -120,6 +125,10 @@ depend: pre-depend ${SRCS}
 				test $$i -nt .deps && regen=1; \
 				deps="$$deps $${i%.m}.dep"; \
 				;; \
+			*.mm) \
+				test $$i -nt .deps && regen=1; \
+				deps="$$deps $${i%.mm}.dep"; \
+				;; \
 		esac; \
 	done; \
 	if test x"$$regen" = x"1" -a x"$$deps" != "x"; then \
@@ -134,7 +143,7 @@ depend: pre-depend ${SRCS}
 		fi; \
 	fi
 
-.c.dep .cc.dep .cxx.dep .m.dep:
+.c.dep .cc.dep .cxx.dep .m.dep .mm.dep:
 	${CPP} ${CPPFLAGS} -M $< >$@ || (rm -f $@; exit 1)
 
 .d.dep:
@@ -175,7 +184,7 @@ ${PLUGIN} ${PLUGIN_NOINST}: ${EXT_DEPS} ${OBJS}
 
 ${STATIC_LIB} ${STATIC_LIB_NOINST}: ${EXT_DEPS} ${OBJS}
 	${LINK_STATUS}
-	if ${AR} cr $@ ${OBJS} && ${RANLIB} ${@}; then \
+	if ${AR} cr $@ ${OBJS} && ${RANLIB} $@; then \
 		${LINK_OK}; \
 	else \
 		${LINK_FAILED}; \
@@ -225,6 +234,22 @@ ${STATIC_LIB} ${STATIC_LIB_NOINST}: ${EXT_DEPS} ${OBJS}
 .m.o:
 	${COMPILE_STATUS}
 	if ${OBJC} ${OBJCFLAGS} ${CPPFLAGS} -c -o $@ $<; then \
+		${COMPILE_OK}; \
+	else \
+		${COMPILE_FAILED}; \
+	fi
+
+.mm.o:
+	${COMPILE_STATUS}
+	if ${OBJCXX} ${OBJCXXFLAGS} ${OBJCFLAGS} ${CXXFLAGS} ${CPPFLAGS} -c -o $@ $<; then \
+		${COMPILE_OK}; \
+	else \
+		${COMPILE_FAILED}; \
+	fi
+
+.po.gmo:
+	${COMPILE_STATUS}
+	if ${MSGFMT} -c -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
 		${COMPILE_FAILED}; \
