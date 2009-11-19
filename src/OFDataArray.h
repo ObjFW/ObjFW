@@ -95,11 +95,27 @@
   fromCArray: (void*)carray;
 
 /**
+ * Removes the item at the specified index.
+ *
+ * \param index The index of the item to remove
+ */
+- removeItemAtIndex: (size_t)index;
+
+/**
  * Removes the specified amount of items from the end of the OFDataArray.
  *
  * \param nitems The number of items to remove
  */
 - removeNItems: (size_t)nitems;
+
+/**
+ * Removes the specified amount of items at the specified index.
+ *
+ * \param nitems The number of items to remove
+ * \param index The index at which the items are removed
+ */
+- removeNItems: (size_t)nitems
+       atIndex: (size_t)index;
 @end
 
 /**

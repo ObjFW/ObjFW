@@ -118,16 +118,39 @@ static int lastpagebyte = 0;
 	return self;
 }
 
+- removeItemAtIndex: (size_t)index
+{
+	return [self removeNItems: 1
+			  atIndex: index];
+}
+
 - removeNItems: (size_t)nitems
 {
 	if (nitems > count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	data = [self resizeMemory: data
-			 toNItems: count - nitems
-			 withSize: itemsize];
 
 	count -= nitems;
+	data = [self resizeMemory: data
+			 toNItems: count
+			 withSize: itemsize];
+
+	return self;
+}
+
+- removeNItems: (size_t)nitems
+       atIndex: (size_t)index
+{
+	if (nitems > count)
+		@throw [OFOutOfRangeException newWithClass: isa];
+
+	memmove(data + index * itemsize, data + (index + nitems) * itemsize,
+	    nitems * itemsize);
+
+	count -= nitems;
+	data = [self resizeMemory: data
+			 toNItems: count
+			 withSize: itemsize];
 
 	return self;
 }
@@ -263,13 +286,34 @@ static int lastpagebyte = 0;
 	if (nitems > count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	nsize = ((count - nitems) * itemsize + lastpagebyte) & ~lastpagebyte;
+	count -= nitems;
+	nsize = (count * itemsize + lastpagebyte) & ~lastpagebyte;
 
 	if (size != nsize)
 		data = [self resizeMemory: data
 				   toSize: nsize];
+	size = nsize;
+
+	return self;
+}
+
+- removeNItems: (size_t)nitems
+       atIndex: (size_t)index
+{
+	size_t nsize;
+
+	if (nitems > count)
+		@throw [OFOutOfRangeException newWithClass: isa];
+
+	memmove(data + index * itemsize, data + (index + nitems) * itemsize,
+	    nitems * itemsize);
 
 	count -= nitems;
+	nsize = (count * itemsize + lastpagebyte) & ~lastpagebyte;
+
+	if (size != nsize)
+		data = [self resizeMemory: data
+				   toSize: nsize];
 	size = nsize;
 
 	return self;
