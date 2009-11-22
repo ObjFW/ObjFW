@@ -61,6 +61,15 @@ array_tests()
 	TEST(@"-[removeNObjects:]", [a[0] removeNObjects: 2] &&
 	    [a[0] count] == 1 && [[a[0] objectAtIndex: 0] isEqual: c_ary[0]])
 
+	a[1] = [[a[1] mutableCopy] autorelease];
+	TEST(@"-[removeObjectAtIndex:]", [a[1] removeObjectAtIndex: 1] &&
+	    [a[1] count] == 2 && [[a[1] objectAtIndex: 1] isEqual: c_ary[2]])
+
+	a[2] = [[a[2] mutableCopy] autorelease];
+	TEST(@"-[removeNObjects:atIndex:]", [a[2] removeNObjects: 2
+							 atIndex: 0] &&
+	    [a[2] count] == 1 && [[a[2] objectAtIndex: 0] isEqual: c_ary[2]])
+
 	EXPECT_EXCEPTION(@"Detect out of range in -[objectAtIndex:]",
 	    OFOutOfRangeException, [a[0] objectAtIndex: [a[0] count]])
 

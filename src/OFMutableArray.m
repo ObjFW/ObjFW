@@ -41,6 +41,12 @@
 	return self;
 }
 
+- removeObjectAtIndex: (size_t)index
+{
+	return [self removeNObjects: 1
+			    atIndex: index];
+}
+
 - removeNObjects: (size_t)nobjects
 {
 	OFObject **objs;
@@ -56,6 +62,27 @@
 		[objs[i] release];
 
 	[array removeNItems: nobjects];
+
+	return self;
+}
+
+- removeNObjects: (size_t)nobjects
+	 atIndex: (size_t)index
+{
+	OFObject **objs;
+	size_t len, i;
+
+	objs = [array cArray];
+	len = [array count];
+
+	if (nobjects > len)
+		@throw [OFOutOfRangeException newWithClass: isa];
+
+	for (i = index; i < len && i < index + nobjects; i++)
+		[objs[i] release];
+
+	[array removeNItems: nobjects
+		    atIndex: index];
 
 	return self;
 }

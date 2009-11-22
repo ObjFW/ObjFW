@@ -103,7 +103,10 @@
 - (id)lastObject;
 
 - addObject: (OFObject*)obj;
+- removeObjectAtIndex: (size_t)index;
 - removeNObjects: (size_t)nobjects;
+- removeNObjects: (size_t)nobjects
+	 atIndex: (size_t)index;
 @end
 
 #import "OFMutableArray.h"

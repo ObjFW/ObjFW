@@ -24,9 +24,25 @@
 - addObject: (OFObject*)obj;
 
 /**
+ * Removes the object at the specified index.
+ *
+ * \param index The index of the object to remove
+ */
+- removeObjectAtIndex: (size_t)index;
+
+/**
  * Removes the specified amount of objects from the end of the OFDataArray.
  *
  * \param nobjects The number of objects to remove
  */
 - removeNObjects: (size_t)nobjects;
+
+/**
+ * Removes the specified amount of objects at the specified index.
+ *
+ * \param nobjects The number of objects to remove
+ * \param index The index at which the objects are removed
+ */
+- removeNObjects: (size_t)nitems
+	 atIndex: (size_t)index;
 @end

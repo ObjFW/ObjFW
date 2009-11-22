@@ -203,6 +203,28 @@
 	return YES;
 }
 
+- (uint32_t)hash
+{
+	OFObject **carray = [array cArray];
+	size_t i, count = [array count];
+	uint32_t hash;
+
+	OF_HASH_INIT(hash);
+
+	for (i = 0; i < count; i++) {
+		uint32_t h = [carray[i] hash];
+
+		OF_HASH_ADD(hash, h >> 24);
+		OF_HASH_ADD(hash, (h >> 16) & 0xFF);
+		OF_HASH_ADD(hash, (h >> 8) & 0xFF);
+		OF_HASH_ADD(hash, h & 0xFF);
+	}
+
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
+}
+
 - (void)dealloc
 {
 	OFObject **objs;
@@ -227,31 +249,22 @@
 					      selector: _cmd];
 }
 
+- removeObjectAtIndex: (size_t)index
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
 - removeNObjects: (size_t)nobjects
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
-- (uint32_t)hash
+- removeNObjects: (size_t)nobjects
+	 atIndex: (size_t)index
 {
-	OFObject **carray = [array cArray];
-	size_t i, count = [array count];
-	uint32_t hash;
-
-	OF_HASH_INIT(hash);
-
-	for (i = 0; i < count; i++) {
-		uint32_t h = [carray[i] hash];
-
-		OF_HASH_ADD(hash, h >> 24);
-		OF_HASH_ADD(hash, (h >> 16) & 0xFF);
-		OF_HASH_ADD(hash, (h >> 8) & 0xFF);
-		OF_HASH_ADD(hash, h & 0xFF);
-	}
-
-	OF_HASH_FINALIZE(hash);
-
-	return hash;
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 @end
