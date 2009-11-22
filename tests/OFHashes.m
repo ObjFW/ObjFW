@@ -64,5 +64,5 @@ hashes_tests()
 	    OFHashAlreadyCalculatedException, [sha1 updateWithBuffer: ""
 							      ofSize: 1])
 
-	[pool release];
+	[pool drain];
 }

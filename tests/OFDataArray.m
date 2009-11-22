@@ -117,5 +117,5 @@ dataarray_tests()
 	module = @"OFBigDataArray";
 	do_tests([OFBigDataArray class]);
 
-	[pool release];
+	[pool drain];
 }

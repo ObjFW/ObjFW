@@ -63,5 +63,5 @@ tcpsocket_tests()
 						     intoBuffer: buf] &&
 	    !memcmp(buf, "Hello!", 6))
 
-	[pool release];
+	[pool drain];
 }

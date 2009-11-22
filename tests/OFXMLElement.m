@@ -47,5 +47,5 @@ xmlelement_tests()
 	    [elem[0] addChild: [OFXMLElement elementWithName: @"bar"]] &&
 	    [[elem[0] string] isEqual: @"<foo foo='b&amp;ar'><bar/></foo>"])
 
-	[pool release];
+	[pool drain];
 }

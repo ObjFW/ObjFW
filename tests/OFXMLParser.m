@@ -186,5 +186,5 @@ xmlparser_tests()
 
 	TEST(@"Checking if everything was parsed", i == 11)
 
-	[pool release];
+	[pool drain];
 }

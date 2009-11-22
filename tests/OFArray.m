@@ -76,5 +76,5 @@ array_tests()
 	EXPECT_EXCEPTION(@"Detect out of range in -[removeNItems:]",
 	    OFOutOfRangeException, [a[0] removeNObjects: [a[0] count] + 1])
 
-	[pool release];
+	[pool drain];
 }

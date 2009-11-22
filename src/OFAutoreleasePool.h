@@ -43,6 +43,24 @@
 
 /**
  * Releases all objects in the autorelease pool.
+ *
+ * If a garbage collector is added in the future, it will tell the GC that now
+ * is a good time to clean up, as this is often used after a lot of objects
+ * have been added to the pool that should be released before the next iteration
+ * of a loop, which adds objects again. Thus, it is usually a clean up call.
  */
 - releaseObjects;
+
+/**
+ * Releases all objects in the autorelease pool and deallocates the pool.
+ */
+- (void)release;
+
+/**
+ * Calling drain is equivalent to calling release.
+ *
+ * If a garbage collector is added in the future, it will tell the GC that now
+ * is a good time to clean up.
+ */
+- (void)drain;
 @end

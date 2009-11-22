@@ -53,5 +53,5 @@ thread_tests()
 	TEST(@"+[objectForTLSKey:]",
 	    [[OFThread objectForTLSKey: key] isEqual: @"foo"])
 
-	[pool release];
+	[pool drain];
 }

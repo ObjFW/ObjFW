@@ -68,5 +68,5 @@ list_tests()
 
 	TEST(@"-[isEqual:]", [list isEqual: [[list copy] autorelease]])
 
-	[pool release];
+	[pool drain];
 }

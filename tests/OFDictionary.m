@@ -112,5 +112,5 @@ dictionary_tests()
 		     forKey: keys[0]] &&
 	    [dict isEqual: dict2])
 
-	[pool release];
+	[pool drain];
 }

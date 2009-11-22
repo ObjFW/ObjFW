@@ -33,5 +33,5 @@ plugin_tests()
 
 	TEST(@"TestPlugin's -[test:]", [plugin test: 1234] == 2468)
 
-	[pool release];
+	[pool drain];
 }

@@ -63,5 +63,5 @@ object_tests()
 	    OFMemoryNotPartOfObjectException, [obj resizeMemory: (void*)1
 							 toSize: 1024])
 
-	[pool release];
+	[pool drain];
 }

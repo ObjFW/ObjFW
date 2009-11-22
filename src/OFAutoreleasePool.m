@@ -152,6 +152,16 @@ static of_tlskey_t first_key, last_key;
 	return self;
 }
 
+- (void)release
+{
+	[self dealloc];
+}
+
+- (void)drain
+{
+	[self dealloc];
+}
+
 - retain
 {
 	@throw [OFNotImplementedException newWithClass: isa

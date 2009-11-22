@@ -339,5 +339,5 @@ string_tests()
 	    (s[0] = [@"x&foo;y" stringByXMLUnescapingWithHandler: h]) &&
 	    [s[0] isEqual: @"xbary"])
 
-	[pool release];
+	[pool drain];
 }
