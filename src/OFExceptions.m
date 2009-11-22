@@ -104,6 +104,12 @@
 {
 	return string;
 }
+
+- autorelease
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
 @end
 
 @implementation OFOutOfMemoryException
