@@ -74,7 +74,12 @@
 - (void*)itemAtIndex: (size_t)index;
 
 /**
- * \return The last item of the OFDataArray
+ * \return The first item of the OFDataArray or NULL
+ */
+- (void*)firstItem;
+
+/**
+ * \return The last item of the OFDataArray or NULL
  */
 - (void*)lastItem;
 

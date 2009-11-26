@@ -90,7 +90,7 @@
 - (id*)cArray;
 
 /**
- * Returns a specific object of the OFDataArray.
+ * Returns a specific object of the OFArray.
  *
  * \param index The number of the object to return
  * \return The specified object of the OFArray
@@ -98,7 +98,12 @@
 - (id)objectAtIndex: (size_t)index;
 
 /**
- * \return The last object of the OFDataArray
+ * \return The first object of the OFArray or nil
+ */
+- (id)firstObject;
+
+/**
+ * \return The last object of the OFArray or nil
  */
 - (id)lastObject;
 

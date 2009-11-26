@@ -172,6 +172,13 @@
 	return *((OFObject**)[array itemAtIndex: index]);
 }
 
+- (id)firstObject
+{
+	void *first = [array firstItem];
+
+	return (first != NULL ? *((id*)first) : nil);
+}
+
 - (id)lastObject
 {
 	void *last = [array lastItem];

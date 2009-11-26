@@ -80,6 +80,14 @@ static int lastpagebyte = 0;
 	return data + index * itemsize;
 }
 
+- (void*)firstItem
+{
+	if (data == NULL || count == 0)
+		return NULL;
+
+	return data;
+}
+
 - (void*)lastItem
 {
 	if (data == NULL || count == 0)
