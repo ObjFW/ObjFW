@@ -139,9 +139,14 @@ static int lastpagebyte = 0;
 
 
 	count -= nitems;
-	data = [self resizeMemory: data
-			 toNItems: count
-			 withSize: itemsize];
+	@try {
+		data = [self resizeMemory: data
+				 toNItems: count
+				 withSize: itemsize];
+	} @catch (OFOutOfMemoryException *e) {
+		/* We don't really care, as we only made it smaller */
+		[e dealloc];
+	}
 
 	return self;
 }
@@ -156,9 +161,14 @@ static int lastpagebyte = 0;
 	    nitems * itemsize);
 
 	count -= nitems;
-	data = [self resizeMemory: data
-			 toNItems: count
-			 withSize: itemsize];
+	@try {
+		data = [self resizeMemory: data
+				 toNItems: count
+				 withSize: itemsize];
+	} @catch (OFOutOfMemoryException *e) {
+		/* We don't really care, as we only made it smaller */
+		[e dealloc];
+	}
 
 	return self;
 }
