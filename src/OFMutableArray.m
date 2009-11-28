@@ -19,15 +19,15 @@
 {
 	OFArray *new = [[OFArray alloc] init];
 	OFObject **objs;
-	size_t len, i;
+	size_t count, i;
 
 	objs = [array cArray];
-	len = [array count];
+	count = [array count];
 
-	[new->array addNItems: len
+	[new->array addNItems: count
 		   fromCArray: objs];
 
-	for (i = 0; i < len; i++)
+	for (i = 0; i < count; i++)
 		[objs[i] retain];
 
 	return new;
@@ -41,6 +41,36 @@
 	return self;
 }
 
+- removeObject: (id)obj
+{
+	OFObject **objs = [array cArray];
+	size_t i, count = [array count];
+
+	for (i = 0; i < count; i++) {
+		if ([objs[i] isEqual: obj]) {
+			[objs[i] release];
+			[array removeItemAtIndex: i];
+		}
+	}
+
+	return self;
+}
+
+- removeObjectIdenticalTo: (id)obj
+{
+	OFObject **objs = [array cArray];
+	size_t i, count = [array count];
+
+	for (i = 0; i < count; i++) {
+		if (objs[i] == obj) {
+			[obj release];
+			[array removeItemAtIndex: i];
+		}
+	}
+
+	return self;
+}
+
 - removeObjectAtIndex: (size_t)index
 {
 	return [self removeNObjects: 1
@@ -49,16 +79,13 @@
 
 - removeNObjects: (size_t)nobjects
 {
-	OFObject **objs;
-	size_t len, i;
+	OFObject **objs = [array cArray];
+	size_t i, count = [array count];
 
-	objs = [array cArray];
-	len = [array count];
-
-	if (nobjects > len)
+	if (nobjects > count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	for (i = len - nobjects; i < len; i++)
+	for (i = count - nobjects; i < count; i++)
 		[objs[i] release];
 
 	[array removeNItems: nobjects];
@@ -69,16 +96,13 @@
 - removeNObjects: (size_t)nobjects
 	 atIndex: (size_t)index
 {
-	OFObject **objs;
-	size_t len, i;
+	OFObject **objs = [array cArray];
+	size_t i, count = [array count];
 
-	objs = [array cArray];
-	len = [array count];
-
-	if (nobjects > len)
+	if (nobjects > count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	for (i = index; i < len && i < index + nobjects; i++)
+	for (i = index; i < count && i < index + nobjects; i++)
 		[objs[i] release];
 
 	[array removeNItems: nobjects

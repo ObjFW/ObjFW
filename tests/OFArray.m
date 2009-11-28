@@ -63,6 +63,14 @@ array_tests()
 	TEST(@"-[indexOfObjectIdenticalTo:]",
 	    [a[0] indexOfObjectIdenticalTo: c_ary[1]] == 1)
 
+	TEST(@"-[removeObject:]",
+	    [a[0] removeObject: c_ary[1]] && [a[0] count] == 2)
+
+	TEST(@"-[removeObjectIdenticalTo:]",
+	    [a[0] removeObjectIdenticalTo: c_ary[2]] && [a[0] count] == 1)
+
+	[a[0] addObject: c_ary[0]];
+	[a[0] addObject: c_ary[1]];
 	TEST(@"-[removeNObjects:]", [a[0] removeNObjects: 2] &&
 	    [a[0] count] == 1 && [[a[0] objectAtIndex: 0] isEqual: c_ary[0]])
 

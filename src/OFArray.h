@@ -127,6 +127,8 @@
 - (id)lastObject;
 
 - addObject: (OFObject*)obj;
+- removeObject: (id)obj;
+- removeObjectIdenticalTo: (id)obj;
 - removeObjectAtIndex: (size_t)index;
 - removeNObjects: (size_t)nobjects;
 - removeNObjects: (size_t)nobjects

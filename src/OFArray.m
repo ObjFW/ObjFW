@@ -153,15 +153,15 @@
 {
 	OFArray *new = [[OFMutableArray alloc] init];
 	OFObject **objs;
-	size_t len, i;
+	size_t count, i;
 
 	objs = [array cArray];
-	len = [array count];
+	count = [array count];
 
-	[new->array addNItems: len
+	[new->array addNItems: count
 		   fromCArray: objs];
 
-	for (i = 0; i < len; i++)
+	for (i = 0; i < count; i++)
 		[objs[i] retain];
 
 	return new;
@@ -219,21 +219,21 @@
 - (BOOL)isEqual: (id)obj
 {
 	OFObject **objs, **objs2;
-	size_t i, len, len2;
+	size_t i, count, count2;
 
 	if (![obj isKindOfClass: [OFArray class]])
 		return NO;
 
-	len = [array count];
-	len2 = [obj count];
+	count = [array count];
+	count2 = [obj count];
 
-	if (len != len2)
+	if (count != count2)
 		return NO;
 
 	objs = [array cArray];
 	objs2 = [obj cArray];
 
-	for (i = 0; i < len; i++)
+	for (i = 0; i < count; i++)
 		if (![objs[i] isEqual: objs2[i]])
 			return NO;
 
@@ -264,23 +264,30 @@
 
 - (void)dealloc
 {
-	OFObject **objs;
-	size_t len, i;
+	OFObject **objs = [array cArray];
+	size_t i, count = [array count];
 
-	if (array != nil) {
-		objs = [array cArray];
-		len = [array count];
+	for (i = 0; i < count; i++)
+		[objs[i] release];
 
-		for (i = 0; i < len; i++)
-			[objs[i] release];
-
-		[array release];
-	}
+	[array release];
 
 	[super dealloc];
 }
 
 - addObject: (OFObject*)obj
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- removeObject: (id)obj
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- removeObjectIdenticalTo: (id)obj
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];

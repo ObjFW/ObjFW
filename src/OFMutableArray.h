@@ -24,6 +24,20 @@
 - addObject: (OFObject*)obj;
 
 /**
+ * Removes the first object equivalent to the specified object.
+ *
+ * \param obj The object to remove
+ */
+- removeObject: (id)obj;
+
+/**
+ * Removes the first object that has the same address as the specified object.
+ *
+ * \param obj The object to remove
+ */
+- removeObjectIdenticalTo: (id)obj;
+
+/**
  * Removes the object at the specified index.
  *
  * \param index The index of the object to remove
