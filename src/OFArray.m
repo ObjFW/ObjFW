@@ -172,18 +172,48 @@
 	return *((OFObject**)[array itemAtIndex: index]);
 }
 
+- (size_t)indexOfObject: (id)obj
+{
+	id *objs = [array cArray];
+	size_t i, count = [array count];
+
+	if (objs == NULL)
+		return SIZE_MAX;
+
+	for (i = 0; i < count; i++)
+		if ([objs[i] isEqual: obj])
+			return i;
+
+	return SIZE_MAX;
+}
+
+- (size_t)indexOfObjectIdenticalTo: (id)obj
+{
+	id *objs = [array cArray];
+	size_t i, count = [array count];
+
+	if (objs == NULL)
+		return SIZE_MAX;
+
+	for (i = 0; i < count; i++)
+		if (objs[i] == obj)
+			return i;
+
+	return SIZE_MAX;
+}
+
 - (id)firstObject
 {
-	void *first = [array firstItem];
+	id *first = [array firstItem];
 
-	return (first != NULL ? *((id*)first) : nil);
+	return (first != NULL ? *first : nil);
 }
 
 - (id)lastObject
 {
-	void *last = [array lastItem];
+	id *last = [array lastItem];
 
-	return (last != NULL ? *((id*)last) : nil);
+	return (last != NULL ? *last : nil);
 }
 
 - (BOOL)isEqual: (id)obj
@@ -212,14 +242,14 @@
 
 - (uint32_t)hash
 {
-	OFObject **carray = [array cArray];
+	OFObject **objs = [array cArray];
 	size_t i, count = [array count];
 	uint32_t hash;
 
 	OF_HASH_INIT(hash);
 
 	for (i = 0; i < count; i++) {
-		uint32_t h = [carray[i] hash];
+		uint32_t h = [objs[i] hash];
 
 		OF_HASH_ADD(hash, h >> 24);
 		OF_HASH_ADD(hash, (h >> 16) & 0xFF);

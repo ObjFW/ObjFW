@@ -98,6 +98,25 @@
 - (id)objectAtIndex: (size_t)index;
 
 /**
+ * Returns the index of the first object that is equivalent to the specified
+ * object.
+ *
+ * \param obj The object whose index is returned
+ * \return The index of the first object equivalent to the specified object
+ */
+- (size_t)indexOfObject: (id)obj;
+
+/**
+ * Returns the index of the first object that has the same address as the
+ * specified object.
+ *
+ * \param obj The object whose index is returned
+ * \return The index of the first object that has the same aaddress as
+ *	   the specified object
+ */
+- (size_t)indexOfObjectIdenticalTo: (id)obj;
+
+/**
  * \return The first object of the OFArray or nil
  */
 - (id)firstObject;

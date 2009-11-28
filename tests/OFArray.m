@@ -58,6 +58,11 @@ array_tests()
 	    [[a[2] objectAtIndex: 1] isEqual: c_ary[1]] &&
 	    [[a[2] objectAtIndex: 2] isEqual: c_ary[2]])
 
+	TEST(@"-[indexOfObject:]", [a[0] indexOfObject: c_ary[1]] == 1)
+
+	TEST(@"-[indexOfObjectIdenticalTo:]",
+	    [a[0] indexOfObjectIdenticalTo: c_ary[1]] == 1)
+
 	TEST(@"-[removeNObjects:]", [a[0] removeNObjects: 2] &&
 	    [a[0] count] == 1 && [[a[0] objectAtIndex: 0] isEqual: c_ary[0]])
 
