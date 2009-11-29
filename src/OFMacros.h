@@ -14,6 +14,7 @@
 #error Please use objfw-config!
 #endif
 
+#include <stddef.h>
 #include <stdint.h>
 
 #ifdef __GNUC__
@@ -44,6 +45,8 @@
 #define OF_X86_ASM
 #elif defined(__ppc__) || defined(__PPC__)
 #define OF_PPC_ASM
+#elif defined(__arm__) || defined(__ARM__)
+#define OF_ARM_ASM
 #endif
 #endif
 
@@ -72,6 +75,8 @@ OF_BSWAP16(uint16_t i)
 	asm("xchgb	%h0, %b0" : "=Q"(i) : "Q"(i));
 #elif defined(OF_PPC_ASM)
 	asm("lhbrx	%0, 0, %1" : "=r"(i) : "r"(&i), "m"(i));
+#elif defined(OF_ARM_ASM)
+	asm("rev16	%0, %0" : "=r"(i) : "0"(i));
 #else
 	i = (i & UINT16_C(0xFF00)) >> 8 |
 	    (i & UINT16_C(0x00FF)) << 8;
@@ -86,6 +91,8 @@ OF_BSWAP32(uint32_t i)
 	asm("bswap	%0" : "=q"(i) : "q"(i));
 #elif defined(OF_PPC_ASM)
 	asm("lwbrx	%0, 0, %1" : "=r"(i) : "r"(&i), "m"(i));
+#elif defined(OF_ARM_ASM)
+	asm("rev	%0, %0" : "=r"(i) : "0"(i));
 #else
 	i = (i & UINT32_C(0xFF000000)) >> 24 |
 	    (i & UINT32_C(0x00FF0000)) >>  8 |
