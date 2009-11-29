@@ -72,7 +72,7 @@ static OF_INLINE uint16_t
 OF_BSWAP16_NONCONST(uint16_t i)
 {
 #if defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	asm("xchgb	%h0, %b0" : "=Q"(i) : "Q"(i));
+	asm("xchgb	%h0, %b0" : "=Q"(i) : "0"(i));
 #elif defined(OF_PPC_ASM)
 	asm("lhbrx	%0, 0, %1" : "=r"(i) : "r"(&i), "m"(i));
 #elif defined(OF_ARM_ASM)
@@ -88,7 +88,7 @@ static OF_INLINE uint32_t
 OF_BSWAP32_NONCONST(uint32_t i)
 {
 #if defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	asm("bswap	%0" : "=q"(i) : "q"(i));
+	asm("bswap	%0" : "=q"(i) : "0"(i));
 #elif defined(OF_PPC_ASM)
 	asm("lwbrx	%0, 0, %1" : "=r"(i) : "r"(&i), "m"(i));
 #elif defined(OF_ARM_ASM)
@@ -106,11 +106,11 @@ static OF_INLINE uint64_t
 OF_BSWAP64_NONCONST(uint64_t i)
 {
 #if defined(OF_AMD64_ASM)
-	asm("bswap	%0" : "=r"(i) : "r"(i));
+	asm("bswap	%0" : "=r"(i) : "0"(i));
 #elif defined(OF_X86_ASM)
 	asm("bswap	%%eax\n\t"
 	    "bswap	%%edx\n\t"
-	    "xchgl	%%eax, %%edx" : "=A"(i): "A"(i));
+	    "xchgl	%%eax, %%edx" : "=A"(i): "0"(i));
 #else
 	i = (uint64_t)OF_BSWAP32(i & 0xFFFFFFFF) << 32 | OF_BSWAP32(i >> 32);
 #endif
