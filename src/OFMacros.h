@@ -69,7 +69,7 @@
 	 ((uint64_t)i & UINT64_C(0x00000000000000FF)) << 56)
 
 static OF_INLINE uint16_t
-OF_BSWAP16(uint16_t i)
+OF_BSWAP16_NONCONST(uint16_t i)
 {
 #if defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	asm("xchgb	%h0, %b0" : "=Q"(i) : "Q"(i));
@@ -85,7 +85,7 @@ OF_BSWAP16(uint16_t i)
 }
 
 static OF_INLINE uint32_t
-OF_BSWAP32(uint32_t i)
+OF_BSWAP32_NONCONST(uint32_t i)
 {
 #if defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	asm("bswap	%0" : "=q"(i) : "q"(i));
@@ -103,7 +103,7 @@ OF_BSWAP32(uint32_t i)
 }
 
 static OF_INLINE uint64_t
-OF_BSWAP64(uint64_t i)
+OF_BSWAP64_NONCONST(uint64_t i)
 {
 #if defined(OF_AMD64_ASM)
 	asm("bswap	%0" : "=r"(i) : "r"(i));
@@ -117,6 +117,19 @@ OF_BSWAP64(uint64_t i)
 	return i;
 }
 
+#ifdef __GNUC__
+#define OF_BSWAP16(i) \
+	(__builtin_constant_p(i) ? OF_BSWAP16_CONST(i) : OF_BSWAP16_NONCONST(i))
+#define OF_BSWAP32(i) \
+	(__builtin_constant_p(i) ? OF_BSWAP32_CONST(i) : OF_BSWAP32_NONCONST(i))
+#define OF_BSWAP64(i) \
+	(__builtin_constant_p(i) ? OF_BSWAP64_CONST(i) : OF_BSWAP64_NONCONST(i))
+#else
+#define OF_BSWAP16(i) OF_BSWAP16_CONST(i)
+#define OF_BSWAP32(i) OF_BSWAP32_CONST(i)
+#define OF_BSWAP64(i) OF_BSWAP64_CONST(i)
+#endif
+
 static OF_INLINE void
 OF_BSWAP32_V(uint32_t *buf, size_t len)
 {
@@ -127,12 +140,6 @@ OF_BSWAP32_V(uint32_t *buf, size_t len)
 }
 
 #ifdef OF_BIG_ENDIAN
-#define OF_BSWAP16_CONST_IF_BE(i) OF_BSWAP16_CONST(i)
-#define OF_BSWAP32_CONST_IF_BE(i) OF_BSWAP32_CONST(i)
-#define OF_BSWAP64_CONST_IF_BE(i) OF_BSWAP64_CONST(i)
-#define OF_BSWAP16_CONST_IF_LE(i) i
-#define OF_BSWAP32_CONST_IF_LE(i) i
-#define OF_BSWAP64_CONST_IF_LE(i) i
 #define OF_BSWAP16_IF_BE(i) OF_BSWAP16(i)
 #define OF_BSWAP32_IF_BE(i) OF_BSWAP32(i)
 #define OF_BSWAP64_IF_BE(i) OF_BSWAP64(i)
@@ -141,12 +148,6 @@ OF_BSWAP32_V(uint32_t *buf, size_t len)
 #define OF_BSWAP64_IF_LE(i) i
 #define OF_BSWAP32_V_IF_BE(buf, len) OF_BSWAP32_V(buf, len)
 #else
-#define OF_BSWAP16_CONST_IF_BE(i) i
-#define OF_BSWAP32_CONST_IF_BE(i) i
-#define OF_BSWAP64_CONST_IF_BE(i) i
-#define OF_BSWAP16_CONST_IF_LE(i) OF_BSWAP16_CONST(i)
-#define OF_BSWAP32_CONST_IF_LE(i) OF_BSWAP32_CONST(i)
-#define OF_BSWAP64_CONST_IF_LE(i) OF_BSWAP64_CONST(i)
 #define OF_BSWAP16_IF_BE(i) i
 #define OF_BSWAP32_IF_BE(i) i
 #define OF_BSWAP64_IF_BE(i) i
