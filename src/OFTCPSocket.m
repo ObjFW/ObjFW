@@ -314,10 +314,9 @@ static OFMutex *mutex = nil;
 	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithClass: isa];
 
+	[self freeMemory: saddr];
 	sock = INVALID_SOCKET;
-
-	if (saddr != NULL)
-		[self freeMemory: saddr];
+	saddr = NULL;
 	saddr_len = 0;
 
 	return self;

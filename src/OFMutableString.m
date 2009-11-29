@@ -125,8 +125,7 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 {
 	size_t len;
 
-	if (string != NULL)
-		[self freeMemory: string];
+	[self freeMemory: string];
 
 	len = strlen(str);
 

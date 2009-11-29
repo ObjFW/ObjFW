@@ -392,6 +392,9 @@ extern BOOL objc_sync_init();
 	void **iter, *last, **memchunks;
 	size_t i, memchunks_size;
 
+	if (ptr == NULL)
+		return self;
+
 	iter = PRE_IVAR->memchunks + PRE_IVAR->memchunks_size;
 	i = PRE_IVAR->memchunks_size;
 

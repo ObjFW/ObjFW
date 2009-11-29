@@ -152,13 +152,11 @@ static int pagesize = 0;
 					}
 					memcpy(tmp2, tmp + i + 1, len - i - 1);
 
-					if (cache != NULL)
-						[self freeMemory: cache];
+					[self freeMemory: cache];
 					cache = tmp2;
 					cache_len = len - i - 1;
 				} else {
-					if (cache != NULL)
-						[self freeMemory: cache];
+					[self freeMemory: cache];
 					cache = NULL;
 					cache_len = 0;
 				}
@@ -219,8 +217,7 @@ static int pagesize = 0;
 
 - clearCache
 {
-	if (cache != NULL)
-		[self freeMemory: cache];
+	[self freeMemory: cache];
 
 	cache = NULL;
 	cache_len = 0;

@@ -248,6 +248,7 @@ typedef enum {
 
 /**
  * Frees allocated memory and removes it from the object's memory pool.
+ * Does nothing if ptr is NULL.
  *
  * \param ptr A pointer to the allocated memory
  */
