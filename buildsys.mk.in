@@ -21,6 +21,7 @@
 #
 
 PACKAGE = @PACKAGE@
+AS = @AS@
 CC = @CC@
 CXX = @CXX@
 CPP = @CPP@
@@ -32,6 +33,7 @@ AR = @AR@
 LD = ${CC}
 RANLIB = @RANLIB@
 PYTHON = @PYTHON@
+ASFLAGS = @ASFLAGS@
 CFLAGS = @CFLAGS@
 CXXFLAGS = @CXXFLAGS@
 CPPFLAGS = @CPPFLAGS@
@@ -75,20 +77,21 @@ includesubdir ?= ${PACKAGE}
 mandir = @mandir@
 mansubdir ?= man1
 
-OBJS1 = ${SRCS:.c=.o}
-OBJS2 = ${OBJS1:.cc=.o}
-OBJS3 = ${OBJS2:.cxx=.o}
-OBJS4 = ${OBJS3:.d=.o}
-OBJS5 = ${OBJS4:.erl=.beam}
-OBJS6 = ${OBJS5:.m=.o}
-OBJS7 = ${OBJS6:.mm=.o}
-OBJS8 = ${OBJS7:.py=.pyc}
-OBJS9 = ${OBJS8:.xpm=.o}
-OBJS += ${OBJS9:.po=.gmo}
+OBJS1  = ${SRCS:.c=.o}
+OBJS2  = ${OBJS1:.cc=.o}
+OBJS3  = ${OBJS2:.cxx=.o}
+OBJS4  = ${OBJS3:.d=.o}
+OBJS5  = ${OBJS4:.erl=.beam}
+OBJS6  = ${OBJS5:.m=.o}
+OBJS7  = ${OBJS6:.mm=.o}
+OBJS8  = ${OBJS7:.py=.pyc}
+OBJS9  = ${OBJS8:.xpm=.o}
+OBJS10 = ${OBJS9:.S=.o}
+OBJS  += ${OBJS10:.po=.gmo}
 
 .SILENT:
 .SUFFIXES:
-.SUFFIXES: .beam .c .cc .cxx .d .dep .erl .gmo .m .mm .o .po .py .pyc .xpm
+.SUFFIXES: .beam .c .cc .cxx .d .dep .erl .gmo .m .mm .o .po .py .pyc .xpm .S
 .PHONY: all subdirs pre-depend depend install install-extra uninstall uninstall-extra clean distclean
 
 all:
@@ -129,6 +132,10 @@ depend: pre-depend ${SRCS}
 				test $$i -nt .deps && regen=1; \
 				deps="$$deps $${i%.mm}.dep"; \
 				;; \
+			*.S) \
+				test $$i -nt .deps && regen=1; \
+				deps="$$deps $${i%.S}.dep"; \
+				;; \
 		esac; \
 	done; \
 	if test x"$$regen" = x"1" -a x"$$deps" != "x"; then \
@@ -143,7 +150,7 @@ depend: pre-depend ${SRCS}
 		fi; \
 	fi
 
-.c.dep .cc.dep .cxx.dep .m.dep .mm.dep:
+.c.dep .cc.dep .cxx.dep .m.dep .mm.dep .S.dep:
 	${CPP} ${CPPFLAGS} -M $< >$@ || (rm -f $@; exit 1)
 
 .d.dep:
@@ -266,6 +273,14 @@ ${STATIC_LIB} ${STATIC_LIB_NOINST}: ${EXT_DEPS} ${OBJS}
 .xpm.o:
 	${COMPILE_STATUS}
 	if ${CC} ${CFLAGS} ${CPPFLAGS} -x c -c -o $@ $<; then \
+		${COMPILE_OK}; \
+	else \
+		${COMPILE_FAILED}; \
+	fi
+
+.S.o:
+	${COMPILE_STATUS}
+	if ${AS} ${ASFLAGS} ${CPPFLAGS} -c -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
 		${COMPILE_FAILED}; \
