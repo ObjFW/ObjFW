@@ -26,7 +26,7 @@ object_tests()
 	void *p, *q, *r;
 
 	EXPECT_EXCEPTION(@"Detect freeing of memory not allocated by object",
-	    OFMemoryNotPartOfObjectException, [obj freeMemory: NULL])
+	    OFMemoryNotPartOfObjectException, [obj freeMemory: (void*)1])
 
 	TEST(@"Allocating 4096 bytes",
 	    (p = [obj allocMemoryWithSize: 4096]) != NULL)
