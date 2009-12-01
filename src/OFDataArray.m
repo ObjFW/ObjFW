@@ -158,7 +158,7 @@ static int lastpagebyte = 0;
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	memmove(data + index * itemsize, data + (index + nitems) * itemsize,
-	    nitems * itemsize);
+	    (count - index - nitems) * itemsize);
 
 	count -= nitems;
 	@try {
@@ -324,7 +324,7 @@ static int lastpagebyte = 0;
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	memmove(data + index * itemsize, data + (index + nitems) * itemsize,
-	    nitems * itemsize);
+	    (count - index - nitems) * itemsize);
 
 	count -= nitems;
 	nsize = (count * itemsize + lastpagebyte) & ~lastpagebyte;

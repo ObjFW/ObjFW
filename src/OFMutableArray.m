@@ -50,6 +50,7 @@
 		if ([objs[i] isEqual: obj]) {
 			[objs[i] release];
 			[array removeItemAtIndex: i];
+			return self;
 		}
 	}
 
