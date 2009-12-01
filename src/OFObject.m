@@ -23,10 +23,11 @@
 #import "OFMacros.h"
 
 #import <objc/objc-api.h>
-#ifdef __objc_INCLUDE_GNU
-#import <objc/sarray.h>
-#else
+#ifdef OF_APPLE_RUNTIME
 #import <objc/runtime.h>
+#endif
+#ifdef OF_GNU_RUNTIME
+#import <objc/sarray.h>
 #endif
 
 struct pre_ivar {
@@ -65,10 +66,10 @@ extern BOOL objc_sync_init();
 + alloc
 {
 	OFObject *instance;
-#ifdef __objc_INCLUDE_GNU
-	size_t isize = class_get_instance_size(self);
-#else
+#ifdef OF_APPLE_RUNTIME
 	size_t isize = class_getInstanceSize(self);
+#else
+	size_t isize = class_get_instance_size(self);
 #endif
 
 	if ((instance = malloc(isize + PRE_IVAR_ALIGN)) == NULL) {
@@ -94,25 +95,33 @@ extern BOOL objc_sync_init();
 
 + (const char*)className
 {
-#ifdef __objc_INCLUDE_GNU
-	return class_get_class_name(self);
-#else
+#ifdef OF_APPLE_RUNTIME
 	return class_getName(self);
+#else
+	return class_get_class_name(self);
 #endif
 }
 
 + (BOOL)instancesRespondToSelector: (SEL)selector
 {
-#ifdef __objc_INCLUDE_GNU
-	return class_get_instance_method(self, selector) != METHOD_NULL;
-#else
+#ifdef OF_APPLE_RUNTIME
 	return class_respondsToSelector(self, selector);
+#else
+	return class_get_instance_method(self, selector) != METHOD_NULL;
 #endif
 }
 
 + (BOOL)conformsToProtocol: (Protocol*)protocol
 {
-#ifdef __objc_INCLUDE_GNU
+#ifdef OF_APPLE_RUNTIME
+	Class c;
+
+	for (c = self; c != Nil; c = class_getSuperclass(c))
+		if (class_conformsToProtocol(c, protocol))
+			return YES;
+
+	return NO;
+#else
 	Class c;
 	struct objc_protocol_list *pl;
 	size_t i;
@@ -124,30 +133,30 @@ extern BOOL objc_sync_init();
 					return YES;
 
 	return NO;
-#else
-	Class c;
-
-	for (c = self; c != Nil; c = class_getSuperclass(c))
-		if (class_conformsToProtocol(c, protocol))
-			return YES;
-
-	return NO;
 #endif
 }
 
 + (IMP)instanceMethodForSelector: (SEL)selector
 {
-#ifdef __objc_INCLUDE_GNU
-	return method_get_imp(class_get_instance_method(self, selector));
-#else
+#ifdef OF_APPLE_RUNTIME
 	return class_getMethodImplementation(self, selector);
+#else
+	return method_get_imp(class_get_instance_method(self, selector));
 #endif
 }
 
 + (IMP)setImplementation: (IMP)newimp
 	       forMethod: (SEL)selector
 {
-#ifdef __objc_INCLUDE_GNU
+#ifdef OF_APPLE_RUNTIME
+	Method method;
+
+	if ((method = class_getInstanceMethod(self, selector)) == NULL)
+		@throw [OFInvalidArgumentException newWithClass: self
+						       selector: _cmd];
+
+	return method_setImplementation(method, newimp);
+#else
 	Method_t method = class_get_instance_method(self, selector);
 	IMP oldimp;
 
@@ -168,14 +177,6 @@ extern BOOL objc_sync_init();
 		    (sidx)method->method_name->sel_id, method->method_imp);
 
 	return oldimp;
-#else
-	Method method;
-
-	if ((method = class_getInstanceMethod(self, selector)) == NULL)
-		@throw [OFInvalidArgumentException newWithClass: self
-						       selector: _cmd];
-
-	return method_setImplementation(method, newimp);
 #endif
 }
 
@@ -184,10 +185,10 @@ extern BOOL objc_sync_init();
 {
 	IMP newimp;
 
-#ifdef __objc_INCLUDE_GNU
-	newimp = method_get_imp(class_get_instance_method(class, selector));
-#else
+#ifdef OF_APPLE_RUNTIME
 	newimp = class_getMethodImplementation(class, selector);
+#else
+	newimp = method_get_imp(class_get_instance_method(class, selector));
 #endif
 
 	return [self setImplementation: newimp
@@ -206,10 +207,10 @@ extern BOOL objc_sync_init();
 
 - (const char*)className
 {
-#ifdef __objc_INCLUDE_GNU
-	return object_get_class_name(self);
-#else
+#ifdef OF_APPLE_RUNTIME
 	return class_getName(isa);
+#else
+	return object_get_class_name(self);
 #endif
 }
 
@@ -217,10 +218,10 @@ extern BOOL objc_sync_init();
 {
 	Class iter;
 
-#ifdef __objc_INCLUDE_GNU
-	for (iter = isa; iter != Nil; iter = class_get_super_class(iter))
-#else
+#ifdef OF_APPLE_RUNTIME
 	for (iter = isa; iter != Nil; iter = class_getSuperclass(iter))
+#else
+	for (iter = isa; iter != Nil; iter = class_get_super_class(iter))
 #endif
 		if (iter == class)
 			return YES;
@@ -230,13 +231,13 @@ extern BOOL objc_sync_init();
 
 - (BOOL)respondsToSelector: (SEL)selector
 {
-#ifdef __objc_INCLUDE_GNU
+#ifdef OF_APPLE_RUNTIME
+	return class_respondsToSelector(isa, selector);
+#else
 	if (object_is_instance(self))
 		return class_get_instance_method(isa, selector) != METHOD_NULL;
 	else
 		return class_get_class_method(isa, selector) != METHOD_NULL;
-#else
-	return class_respondsToSelector(isa, selector);
 #endif
 }
 
@@ -247,13 +248,13 @@ extern BOOL objc_sync_init();
 
 - (IMP)methodForSelector: (SEL)selector
 {
-#ifdef __objc_INCLUDE_GNU
+#ifdef OF_APPLE_RUNTIME
+	return class_getMethodImplementation(isa, selector);
+#else
 	if (object_is_instance(self))
 		return method_get_imp(class_get_instance_method(isa, selector));
 	else
 		return method_get_imp(class_get_class_method(isa, selector));
-#else
-	return class_getMethodImplementation(isa, selector);
 #endif
 }
 

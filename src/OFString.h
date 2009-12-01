@@ -37,7 +37,7 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 {
 	char	     *string;
 	unsigned int length;
-#if !defined(__objc_INCLUDE_GNU) && __LP64__
+#if defined(OF_APPLE_RUNTIME) && __LP64__
 	int	     _unused;
 #endif
 	BOOL	     is_utf8;

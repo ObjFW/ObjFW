@@ -25,6 +25,23 @@ AC_SUBST(NO_CONST_CFSTRINGS)
 
 AC_DEFINE(OF_CONFIGURED, 1, [Define so that we know we got our config.h])
 
+AC_MSG_CHECKING(which Objective C runtime we use)
+dnl TODO: This is ugly. Let's think of a better check.
+AC_EGREP_CPP(gnu, [
+	#import <objc/objc.h>
+	#ifdef __objc_INCLUDE_GNU
+	gnu
+	#endif
+	], [
+	AC_DEFINE(OF_GNU_RUNTIME, 1, [Whether we use the GNU ObjC runtime])
+	AC_SUBST(RUNTIME_DEF, "-DOF_GNU_RUNTIME")
+	objc_runtime="GNU"
+	], [
+	AC_DEFINE(OF_APPLE_RUNTIME, 1, [Whether we use the Apple ObjC runtime])
+	AC_SUBST(RUNTIME_DEF, "-DOF_APPLE_RUNTIME")
+	objc_runtime="Apple"])
+AC_MSG_RESULT($objc_runtime)
+
 BUILDSYS_LIB
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
 if test x"$PLUGIN_SUFFIX" != "x"; then
@@ -63,9 +80,6 @@ AC_EGREP_CPP(yes, [
 		AC_MSG_RESULT(no)
 		size_max="((size_t)-1)"])
 	AC_DEFINE_UNQUOTED(SIZE_MAX, $size_max, [Maximum value for size_t])])
-
-AC_CHECK_HEADER(objc/runtime.h,
-	[AC_DEFINE(HAVE_OBJC_RUNTIME_H, 1, [Whether we have objc/runtime.h])])
 
 AC_CHECK_FUNC(objc_sync_enter,, [
 	AC_SUBST(OBJC_SYNC, "objc_sync")

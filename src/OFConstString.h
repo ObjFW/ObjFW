@@ -11,9 +11,7 @@
 
 #import "OFString.h"
 
-#ifndef __objc_INCLUDE_GNU
-#import <objc/runtime.h>
-
+#ifdef OF_APPLE_RUNTIME
 extern void *_OFConstStringClassReference;
 #endif
 

@@ -18,9 +18,6 @@
 #include <stdint.h>
 
 #import <objc/objc.h>
-#ifndef __objc_INCLUDE_GNU
-#import <objc/message.h>
-#endif
 
 /**
  * A result of a comparison.

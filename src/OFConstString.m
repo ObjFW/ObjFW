@@ -14,12 +14,14 @@
 #import "OFConstString.h"
 #import "OFExceptions.h"
 
-#ifndef __objc_INCLUDE_GNU
+#ifdef OF_APPLE_RUNTIME
+#import <objc/runtime.h>
+
 void *_OFConstStringClassReference;
 #endif
 
 @implementation OFConstString
-#ifndef __objc_INCLUDE_GNU
+#ifdef OF_APPLE_RUNTIME
 + (void)load
 {
 	objc_setFutureClass((Class)&_OFConstStringClassReference,
