@@ -7,3 +7,4 @@ include ../../extra.mk
 CPPFLAGS += ${PLUGIN_CPPFLAGS} -I../.. -I../../src
 OBJCFLAGS += ${PLUGIN_CFLAGS}
 LIBS := -L../../src -lobjfw ${LIBS}
+LD = ${OBJC}

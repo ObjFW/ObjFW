@@ -64,3 +64,4 @@ include ../buildsys.mk
 
 CPPFLAGS += -I../src -I.. -DSTDOUT
 LIBS := -L../src -lobjfw ${LIBS}
+LD = ${OBJC}
