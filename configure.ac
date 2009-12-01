@@ -5,11 +5,13 @@ AC_CANONICAL_HOST
 
 AC_LANG([Objective C])
 AC_PROG_OBJC
-AC_PROG_CPP
+AC_PROG_OBJCPP
 AC_PROG_LN_S
 AC_PROG_INSTALL
 AC_PROG_EGREP
 
+CPP="$OBJCPP"
+CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS"
 OBJCFLAGS="$OBJCFLAGS -Wall -fobjc-exceptions"
 OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstString"
 LIBS="$LIBS -lobjc"
@@ -197,6 +199,11 @@ else
 fi
 
 BUILDSYS_TOUCH_DEPS
+
+dnl We don't call AC_PROG_CPP, but only AC_PROG_OBJCPP and set CPP to OBJCPP
+dnl and add OBJCPPFLAGS to CPPFLAGS, thus we need to AC_SUBST these ourself
+AC_SUBST(CPP)
+AC_SUBST(CPPFLAGS)
 
 AC_SUBST(PACKAGE, ObjFW)
 AC_CONFIG_FILES([buildsys.mk extra.mk objfw-config])
