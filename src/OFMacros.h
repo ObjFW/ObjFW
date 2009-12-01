@@ -112,7 +112,8 @@ OF_BSWAP64_NONCONST(uint64_t i)
 	    "bswap	%%edx\n\t"
 	    "xchgl	%%eax, %%edx" : "=A"(i): "0"(i));
 #else
-	i = (uint64_t)OF_BSWAP32(i & 0xFFFFFFFF) << 32 | OF_BSWAP32(i >> 32);
+	i = (uint64_t)OF_BSWAP32_NONCONST(i & 0xFFFFFFFF) << 32 |
+	    OF_BSWAP32_NONCONST(i >> 32);
 #endif
 	return i;
 }
