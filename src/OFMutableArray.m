@@ -41,6 +41,16 @@
 	return self;
 }
 
+- addObject: (OFObject*)obj
+    atIndex: (size_t)index
+{
+	[array addItem: &obj
+	       atIndex: index];
+	[obj retain];
+
+	return self;
+}
+
 - removeObject: (id)obj
 {
 	OFObject **objs = [array cArray];

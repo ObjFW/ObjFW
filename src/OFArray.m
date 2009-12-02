@@ -281,6 +281,13 @@
 					      selector: _cmd];
 }
 
+- addObject: (OFObject*)obj
+    atIndex: (size_t)index
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
 - removeObject: (id)obj
 {
 	@throw [OFNotImplementedException newWithClass: isa

@@ -17,11 +17,20 @@
  */
 @interface OFMutableArray: OFArray {}
 /**
- * Adds an object to the OFDataArray.
+ * Adds an object to the OFArray.
  *
  * \param obj An object to add
  */
 - addObject: (OFObject*)obj;
+
+/**
+ * Adds an object to the OFArray at the specified index.
+ *
+ * \param obj An object to add
+ * \param index The index where the object should be added
+ */
+- addObject: (OFObject*)obj
+    atIndex: (size_t)index;
 
 /**
  * Removes the first object equivalent to the specified object.
@@ -45,7 +54,7 @@
 - removeObjectAtIndex: (size_t)index;
 
 /**
- * Removes the specified amount of objects from the end of the OFDataArray.
+ * Removes the specified amount of objects from the end of the OFArray.
  *
  * \param nobjects The number of objects to remove
  */

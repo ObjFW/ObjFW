@@ -40,7 +40,10 @@ array_tests()
 	TEST(@"+[arrayWithCArray:]", (a[2] = [OFArray arrayWithCArray: c_ary]))
 
 	TEST(@"-[addObject:]", [a[0] addObject: c_ary[0]] &&
-	    [a[0] addObject: c_ary[1]] && [a[0] addObject: c_ary[2]])
+	    [a[0] addObject: c_ary[2]])
+
+	TEST(@"-[addObject:]", [a[0] addObject: c_ary[1]
+				       atIndex: 1])
 
 	TEST(@"-[count]", [a[0] count] == 3 && [a[1] count] == 3 &&
 	    [a[2] count] == 3)
