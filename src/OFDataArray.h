@@ -91,6 +91,15 @@
 - addItem: (void*)item;
 
 /**
+ * Adds an item to the OFDataArray at the specified index.
+ *
+ * \param item A pointer to an arbitrary item
+ * \param index The index where the item should be added
+ */
+- addItem: (void*)item
+  atIndex: (size_t)index;
+
+/**
  * Adds items from a C array to the OFDataArray.
  *
  * \param nitems The number of items to add
@@ -98,6 +107,17 @@
  */
 -  addNItems: (size_t)nitems
   fromCArray: (void*)carray;
+
+/**
+ * Adds items from a C array to the OFDataArray at the specified index.
+ *
+ * \param nitems The number of items to add
+ * \param carray A C array containing the items to add
+ * \param index The index where the items should be added
+ */
+-  addNItems: (size_t)nitems
+  fromCArray: (void*)carray
+     atIndex: (size_t)index;
 
 /**
  * Removes the item at the specified index.

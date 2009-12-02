@@ -86,7 +86,12 @@ do_tests(Class class)
 	    [array[0] removeNItems: 2
 			   atIndex: 1] && [array[0] count] == 3 &&
 	    !memcmp([array[0] cArray], "ade", 3))
-	[array[0] addItem: ""];
+
+	TEST(@"-[addNItems:atIndex:]",
+	    [array[0] addNItems: 2
+		     fromCArray: "bc"
+			atIndex: 1] && [array[0] count] == 5 &&
+	    !memcmp([array[0] cArray], "abcde", 5))
 
 	TEST(@"Building strings",
 	    (array[0] = [class dataArrayWithItemSize: 1]) &&

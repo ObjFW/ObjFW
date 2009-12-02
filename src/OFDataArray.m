@@ -105,9 +105,19 @@ static int lastpagebyte = 0;
 			 toNItems: count + 1
 			 withSize: itemsize];
 
-	memcpy(data + count++ * itemsize, item, itemsize);
+	memcpy(data + count * itemsize, item, itemsize);
+
+	count++;
 
 	return self;
+}
+
+- addItem: (void*)item
+  atIndex: (size_t)index
+{
+	return [self addNItems: 1
+		    fromCArray: item
+		       atIndex: index];
 }
 
 -  addNItems: (size_t)nitems
@@ -121,6 +131,26 @@ static int lastpagebyte = 0;
 			 withSize: itemsize];
 
 	memcpy(data + count * itemsize, carray, nitems * itemsize);
+	count += nitems;
+
+	return self;
+}
+
+- addNItems: (size_t)nitems
+ fromCArray: (void*)carray
+    atIndex: (size_t)index
+{
+	if (nitems > SIZE_MAX - count)
+		@throw [OFOutOfRangeException newWithClass: isa];
+
+	data = [self resizeMemory: data
+			 toNItems: count + nitems
+			 withSize: itemsize];
+
+	memmove(data + (index + nitems) * itemsize, data + index * itemsize,
+	    (count - index) * itemsize);
+	memcpy(data + index * itemsize, carray, nitems * itemsize);
+
 	count += nitems;
 
 	return self;
@@ -270,7 +300,9 @@ static int lastpagebyte = 0;
 		data = [self resizeMemory: data
 				   toSize: nsize];
 
-	memcpy(data + count++ * itemsize, item, itemsize);
+	memcpy(data + count * itemsize, item, itemsize);
+
+	count++;
 	size = nsize;
 
 	return self;
@@ -291,6 +323,33 @@ static int lastpagebyte = 0;
 				   toSize: nsize];
 
 	memcpy(data + count * itemsize, carray, nitems * itemsize);
+
+	count += nitems;
+	size = nsize;
+
+	return self;
+}
+
+- addNItems: (size_t)nitems
+ fromCArray: (void*)carray
+    atIndex: (size_t)index
+{
+	size_t nsize;
+
+	if (nitems > SIZE_MAX - count || count + nitems > SIZE_MAX / itemsize)
+		@throw [OFOutOfRangeException newWithClass: isa];
+
+	nsize = ((count + nitems) * itemsize + lastpagebyte) & ~lastpagebyte;
+
+	if (size != nsize)
+		data = [self resizeMemory: data
+				 toNItems: nsize
+				 withSize: itemsize];
+
+	memmove(data + (index + nitems) * itemsize, data + index * itemsize,
+	    (count - index) * itemsize);
+	memcpy(data + index * itemsize, carray, nitems * itemsize);
+
 	count += nitems;
 	size = nsize;
 
