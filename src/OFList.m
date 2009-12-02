@@ -53,7 +53,7 @@
 	return last;
 }
 
-- (of_list_object_t*)append: (id)obj
+- (of_list_object_t*)append: (OFObject*)obj
 {
 	of_list_object_t *o;
 
@@ -76,7 +76,7 @@
 	return o;
 }
 
-- (of_list_object_t*)prepend: (id)obj
+- (of_list_object_t*)prepend: (OFObject*)obj
 {
 	of_list_object_t *o;
 
@@ -99,7 +99,7 @@
 	return o;
 }
 
-- (of_list_object_t*)insert: (id)obj
+- (of_list_object_t*)insert: (OFObject*)obj
 		     before: (of_list_object_t*)listobj
 {
 	of_list_object_t *o;
@@ -124,7 +124,7 @@
 	return o;
 }
 
-- (of_list_object_t*)insert: (id)obj
+- (of_list_object_t*)insert: (OFObject*)obj
 		      after: (of_list_object_t*)listobj
 {
 	of_list_object_t *o;
@@ -175,18 +175,18 @@
 	return count;
 }
 
-- (BOOL)isEqual: (id)obj
+- (BOOL)isEqual: (OFObject*)obj
 {
 	of_list_object_t *iter, *iter2;
 
 	if (![obj isKindOfClass: [OFList class]])
 		return NO;
 
-	if ([obj count] != count)
+	if ([(OFList*)obj count] != count)
 		return NO;
 
-	for (iter = first, iter2 = [obj first]; iter != NULL && iter2 != NULL;
-	    iter = iter->next, iter2 = iter2->next)
+	for (iter = first, iter2 = [(OFList*)obj first]; iter != NULL &&
+	    iter2 != NULL; iter = iter->next, iter2 = iter2->next)
 		if (![iter->object isEqual: iter2->object])
 			return NO;
 

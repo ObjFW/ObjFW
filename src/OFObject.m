@@ -258,7 +258,7 @@ extern BOOL objc_sync_init();
 #endif
 }
 
-- (BOOL)isEqual: (id)obj
+- (BOOL)isEqual: (OFObject*)obj
 {
 	/* Classes containing data should reimplement this! */
 	return (self == obj ? YES : NO);

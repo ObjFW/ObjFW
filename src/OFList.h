@@ -58,7 +58,7 @@ typedef struct __of_list_object
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)append: (id)obj;
+- (of_list_object_t*)append: (OFObject*)obj;
 
 /**
  * Prepends an object to the list.
@@ -68,7 +68,7 @@ typedef struct __of_list_object
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)prepend: (id)obj;
+- (of_list_object_t*)prepend: (OFObject*)obj;
 
 /**
  * Inserts an object before another object.
@@ -79,7 +79,7 @@ typedef struct __of_list_object
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)insert: (id)obj
+- (of_list_object_t*)insert: (OFObject*)obj
 		     before: (of_list_object_t*)listobj;
 
 /**
@@ -91,7 +91,7 @@ typedef struct __of_list_object
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)insert: (id)obj
+- (of_list_object_t*)insert: (OFObject*)obj
 		      after: (of_list_object_t*)listobj;
 
 /**

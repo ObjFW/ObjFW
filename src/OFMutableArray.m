@@ -51,7 +51,7 @@
 	return self;
 }
 
-- removeObject: (id)obj
+- removeObject: (OFObject*)obj
 {
 	OFObject **objs = [array cArray];
 	size_t i, count = [array count];
@@ -67,7 +67,7 @@
 	return self;
 }
 
-- removeObjectIdenticalTo: (id)obj
+- removeObjectIdenticalTo: (OFObject*)obj
 {
 	OFObject **objs = [array cArray];
 	size_t i, count = [array count];

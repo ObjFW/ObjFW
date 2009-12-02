@@ -172,7 +172,7 @@
 	return *((OFObject**)[array itemAtIndex: index]);
 }
 
-- (size_t)indexOfObject: (id)obj
+- (size_t)indexOfObject: (OFObject*)obj
 {
 	id *objs = [array cArray];
 	size_t i, count = [array count];
@@ -187,7 +187,7 @@
 	return SIZE_MAX;
 }
 
-- (size_t)indexOfObjectIdenticalTo: (id)obj
+- (size_t)indexOfObjectIdenticalTo: (OFObject*)obj
 {
 	id *objs = [array cArray];
 	size_t i, count = [array count];
@@ -216,7 +216,7 @@
 	return (last != NULL ? *last : nil);
 }
 
-- (BOOL)isEqual: (id)obj
+- (BOOL)isEqual: (OFObject*)obj
 {
 	OFObject **objs, **objs2;
 	size_t i, count, count2;
@@ -225,13 +225,13 @@
 		return NO;
 
 	count = [array count];
-	count2 = [obj count];
+	count2 = [(OFArray*)obj count];
 
 	if (count != count2)
 		return NO;
 
 	objs = [array cArray];
-	objs2 = [obj cArray];
+	objs2 = [(OFArray*)obj cArray];
 
 	for (i = 0; i < count; i++)
 		if (![objs[i] isEqual: objs2[i]])
@@ -288,13 +288,13 @@
 					      selector: _cmd];
 }
 
-- removeObject: (id)obj
+- removeObject: (OFObject*)obj
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
-- removeObjectIdenticalTo: (id)obj
+- removeObjectIdenticalTo: (OFObject*)obj
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];

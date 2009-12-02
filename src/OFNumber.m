@@ -719,7 +719,7 @@
 	RETURN_AS(long double)
 }
 
-- (BOOL)isEqual: (id)obj
+- (BOOL)isEqual: (OFObject*)obj
 {
 	if (![obj isKindOfClass: [OFNumber class]])
 		return NO;
@@ -735,7 +735,8 @@
 	case OF_NUMBER_INT64:
 	case OF_NUMBER_INTMAX:
 	case OF_NUMBER_PTRDIFF:
-		return ([obj asIntMax] == [self asIntMax] ? YES : NO);
+		return ([(OFNumber*)obj asIntMax] == [self asIntMax]
+		    ? YES : NO);
 	case OF_NUMBER_SSIZE:
 	case OF_NUMBER_UCHAR:
 	case OF_NUMBER_USHORT:
@@ -748,10 +749,12 @@
 	case OF_NUMBER_SIZE:
 	case OF_NUMBER_UINTMAX:
 	case OF_NUMBER_INTPTR:
-		return ([obj asUIntMax] == [self asUIntMax] ? YES : NO);
+		return ([(OFNumber*)obj asUIntMax] == [self asUIntMax]
+		    ? YES : NO);
 	case OF_NUMBER_FLOAT:
 	case OF_NUMBER_DOUBLE:
-		return ([obj asDouble] == [self asDouble] ? YES : NO);
+		return ([(OFNumber*)obj asDouble] == [self asDouble]
+		    ? YES : NO);
 	default:
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];

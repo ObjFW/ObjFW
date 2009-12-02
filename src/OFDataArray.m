@@ -212,13 +212,14 @@ static int lastpagebyte = 0;
 	return new;
 }
 
-- (BOOL)isEqual: (id)obj
+- (BOOL)isEqual: (OFObject*)obj
 {
 	if (![obj isKindOfClass: [OFDataArray class]])
 		return NO;
-	if ([obj count] != count || [obj itemsize] != itemsize)
+	if ([(OFDataArray*)obj count] != count ||
+	    [(OFDataArray*)obj itemsize] != itemsize)
 		return NO;
-	if (memcmp([obj cArray], data, count * itemsize))
+	if (memcmp([(OFDataArray*)obj cArray], data, count * itemsize))
 		return NO;
 
 	return YES;

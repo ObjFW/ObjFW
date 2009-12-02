@@ -548,11 +548,11 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return length;
 }
 
-- (BOOL)isEqual: (id)obj
+- (BOOL)isEqual: (OFObject*)obj
 {
 	if (![obj isKindOfClass: [OFString class]])
 		return NO;
-	if (strcmp(string, [obj cString]))
+	if (strcmp(string, [(OFString*)obj cString]))
 		return NO;
 
 	return YES;

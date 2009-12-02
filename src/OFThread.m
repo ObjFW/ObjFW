@@ -36,12 +36,12 @@ call_main(id obj)
 }
 
 @implementation OFThread
-+ threadWithObject: (id)obj
++ threadWithObject: (OFObject <OFCopying>*)obj
 {
 	return [[[self alloc] initWithObject: obj] autorelease];
 }
 
-+ setObject: (id)obj
++ setObject: (OFObject*)obj
   forTLSKey: (OFTLSKey*)key
 {
 	id old = of_tlskey_get(key->key);
@@ -66,7 +66,7 @@ call_main(id obj)
 					      selector: _cmd];
 }
 
-- initWithObject: (id)obj
+- initWithObject: (OFObject <OFCopying>*)obj
 {
 	self = [super init];
 	object = [obj copy];

@@ -59,7 +59,7 @@
  */
 @interface OFThread: OFObject
 {
-	id object;
+	OFObject <OFCopying> *object;
 	of_thread_t thread;
 	BOOL running;
 
@@ -71,7 +71,7 @@
  * \param obj An object that is passed to the main method as a copy or nil
  * \return A new autoreleased thread
  */
-+ threadWithObject: (id)obj;
++ threadWithObject: (OFObject <OFCopying>*)obj;
 
 /**
  * Sets the Thread Local Storage for the specified key.
@@ -83,7 +83,7 @@
  * \param key The Thread Local Storage key
  * \param obj The object the Thread Local Storage key will be set to
  */
-+ setObject: (id)obj
++ setObject: (OFObject*)obj
   forTLSKey: (OFTLSKey*)key;
 
 /**
@@ -97,7 +97,7 @@
  * \param obj An object that is passed to the main method as a copy or nil
  * \return An initialized OFThread.
  */
-- initWithObject: (id)obj;
+- initWithObject: (OFObject <OFCopying>*)obj;
 
 /**
  * The main routine of the thread. You need to reimplement this!

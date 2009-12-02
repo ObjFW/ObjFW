@@ -177,7 +177,7 @@ typedef enum {
  * \param obj The object which should be tested for equality
  * \return A boolean whether the object is equal to the specified object
  */
-- (BOOL)isEqual: (id)obj;
+- (BOOL)isEqual: (OFObject*)obj;
 
 /**
  * Calculates a hash for the object.

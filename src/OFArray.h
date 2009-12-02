@@ -104,7 +104,7 @@
  * \param obj The object whose index is returned
  * \return The index of the first object equivalent to the specified object
  */
-- (size_t)indexOfObject: (id)obj;
+- (size_t)indexOfObject: (OFObject*)obj;
 
 /**
  * Returns the index of the first object that has the same address as the
@@ -114,7 +114,7 @@
  * \return The index of the first object that has the same aaddress as
  *	   the specified object
  */
-- (size_t)indexOfObjectIdenticalTo: (id)obj;
+- (size_t)indexOfObjectIdenticalTo: (OFObject*)obj;
 
 /**
  * \return The first object of the OFArray or nil
@@ -129,8 +129,8 @@
 - addObject: (OFObject*)obj;
 - addObject: (OFObject*)obj
     atIndex: (size_t)index;
-- removeObject: (id)obj;
-- removeObjectIdenticalTo: (id)obj;
+- removeObject: (OFObject*)obj;
+- removeObjectIdenticalTo: (OFObject*)obj;
 - removeObjectAtIndex: (size_t)index;
 - removeNObjects: (size_t)nobjects;
 - removeNObjects: (size_t)nobjects
