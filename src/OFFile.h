@@ -144,9 +144,9 @@ typedef int gid_t;
 /**
  * Writes from a buffer into the file.
  *
- * \param buf The buffer from which the data is written to the file
+ * \param nitems The number of items to write
  * \param size The size of the data that should be written
- * \param nitem The number of items to write
+ * \param buf The buffer from which the data is written to the file
  * \return The number of bytes written
  */
 - (size_t)writeNItems: (size_t)nitems

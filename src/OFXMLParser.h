@@ -23,6 +23,7 @@ extern int _OFXMLParser_reference;
 /**
  * This callback is called when the XML parser found the start of a new tag.
  *
+ * \param parser The parser which found a new tag
  * \param name The name of the tag which just started
  * \param prefix The prefix of the tag which just started or nil
  * \param ns The namespace of the tag which just started or nil
@@ -37,6 +38,7 @@ extern int _OFXMLParser_reference;
 /**
  * This callback is called when the XML parser found the end of a tag.
  *
+ * \param parser The parser which found the end of a tag
  * \param name The name of the tag which just ended
  * \param prefix The prefix of the tag which just ended or nil
  * \param ns The namespace of the tag which just ended or nil
@@ -49,6 +51,7 @@ extern int _OFXMLParser_reference;
 /**
  * This callback is called when the XML parser found a string.
  *
+ * \param parser The parser which found a string
  * \param string The string the XML parser found
  */
 - (void)xmlParser: (OFXMLParser*)parser
@@ -57,6 +60,7 @@ extern int _OFXMLParser_reference;
 /**
  * This callback is called when the XML parser found a comment.
  *
+ * \param parser The parser which found a comment
  * \param comment The comment the XML parser found
  */
 - (void)xmlParser: (OFXMLParser*)parser
@@ -68,6 +72,7 @@ extern int _OFXMLParser_reference;
  * it is not known to the callback as well, in which case an exception will be
  * risen.
  *
+ * \param parser The parser which found an unknown entity
  * \param entity The name of the entity the XML parser didn't know
  * \return A substitution for the entity or nil
  */
@@ -89,7 +94,7 @@ extern int _OFXMLParser_reference;
  * \param entity The name of the entity that is unknown
  * \return A substitution for the entity or nil
  */
-- (OFString*)foundUnknownEntityNamed: (OFString*)entitiy;
+- (OFString*)foundUnknownEntityNamed: (OFString*)entity;
 @end
 
 /**

@@ -105,8 +105,8 @@ typedef enum {
 /**
  * Replaces a method implementation with another implementation.
  *
+ * \param newimp The new implementation for the method
  * \param selector The selector of the method to replace
- * \param imp The new implementation for the method
  * \return The old implementation
  */
 + (IMP)setImplementation: (IMP)newimp

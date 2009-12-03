@@ -42,7 +42,7 @@
  * The OFException class is the base class for all exceptions in ObjFW.
  *
  * IMPORTANT: Exceptions do NOT use OFAutoreleasePools and can't be autoreleased
- * either! You have to make sure to dealloc the exception in your @catch block!
+ * either! You have to make sure to dealloc the exception in your \@catch block!
  */
 @interface OFException: OFObject
 {
@@ -561,8 +561,8 @@
 
 /**
  * \param class_ The class of the object which caused the exception
- * \param source The source for the link
- * \param destination The destination for the link
+ * \param src The source for the link
+ * \param dest The destination for the link
  * \return A new link failed exception
  */
 + newWithClass: (Class)class_
@@ -573,8 +573,8 @@
  * Initializes an already allocated link failed exception.
  *
  * \param class_ The class of the object which caused the exception
- * \param source The source for the link
- * \param destination The destination for the link
+ * \param src The source for the link
+ * \param dest The destination for the link
  * \return An initialized link failed exception
  */
 - initWithClass: (Class)class_
@@ -609,8 +609,8 @@
 
 /**
  * \param class_ The class of the object which caused the exception
- * \param source The source for the symlink
- * \param destination The destination for the symlink
+ * \param src The source for the symlink
+ * \param dest The destination for the symlink
  * \return A new symlink failed exception
  */
 + newWithClass: (Class)class_
@@ -621,8 +621,8 @@
  * Initializes an already allocated symlink failed exception.
  *
  * \param class_ The class of the object which caused the exception
- * \param source The source for the symlink
- * \param destination The destination for the symlink
+ * \param src The source for the symlink
+ * \param dest The destination for the symlink
  * \return An initialized symlink failed exception
  */
 - initWithClass: (Class)class_

@@ -126,6 +126,7 @@ struct of_dictionary_bucket
  * va_list.
  *
  * \param first The first key
+ * \param args A va_list of the other arguments
  * \return A new initialized OFDictionary
  */
 - initWithKey: (OFObject <OFCopying>*)first

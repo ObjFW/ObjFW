@@ -196,7 +196,7 @@ enum of_number_type {
 + numberWithUIntMax: (uintmax_t)uintmax;
 
 /**
- * \param ptrdifff A ptrdiff_t which the OFNumber should contain
+ * \param ptrdiff A ptrdiff_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
 + numberWithPtrDiff: (ptrdiff_t)ptrdiff;

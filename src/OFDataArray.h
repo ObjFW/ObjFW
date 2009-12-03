@@ -63,7 +63,7 @@
  * \param ary A data array to compare with
  * \return An of_comparsion_result_t
  */
-- (of_comparison_result_t)compare: (OFDataArray*)obj;
+- (of_comparison_result_t)compare: (OFDataArray*)ary;
 
 /**
  * Returns a specific item of the OFDataArray.

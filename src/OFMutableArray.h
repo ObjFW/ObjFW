@@ -66,6 +66,6 @@
  * \param nobjects The number of objects to remove
  * \param index The index at which the objects are removed
  */
-- removeNObjects: (size_t)nitems
+- removeNObjects: (size_t)nobjects
 	 atIndex: (size_t)index;
 @end

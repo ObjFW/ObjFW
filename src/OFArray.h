@@ -56,7 +56,7 @@
 /**
  * Initializes an OFArray with the specified objects.
  *
- * \param obj The first object
+ * \param first The first object
  * \return An initialized OFArray
  */
 - initWithObjects: (OFObject*)first, ...;

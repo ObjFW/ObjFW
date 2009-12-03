@@ -49,6 +49,9 @@ extern int _OFIterator_reference;
 - reset;
 @end
 
+/**
+ * The OFIterator category adds functions to get an interator to OFDictionary.
+ */
 @interface OFDictionary (OFIterator)
 /**
  * Creates an OFIterator for the dictionary.

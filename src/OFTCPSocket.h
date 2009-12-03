@@ -30,7 +30,7 @@
  *
  * \param service The service to bind
  * \param node The node to bind to
- * \param protocol The protocol to use (AF_INET or AF_INET6)
+ * \param family The family to use (AF_INET or AF_INET6)
  */
 - bindService: (OFString*)service
        onNode: (OFString*)node
