@@ -216,6 +216,33 @@
 	return (last != NULL ? *last : nil);
 }
 
+- (OFString*)componentsJoinedByString: (OFString*)separator
+{
+	OFString *str;
+	OFString **objs = [array cArray];
+	size_t i, count = [array count];
+	IMP append;
+
+	if (count == 0)
+		return [OFString string];
+
+	str = [[OFMutableString alloc] init];
+	@try {
+		append = [str methodForSelector: @selector(appendString:)];
+
+		for (i = 0; i < count - 1; i++) {
+			append(str, @selector(appendString:), objs[i]);
+			append(str, @selector(appendString:), separator);
+		}
+		append(str, @selector(appendString:), objs[i]);
+	} @catch (OFException *e) {
+		[str release];
+		@throw e;
+	}
+
+	return [str autorelease];
+}
+
 - (BOOL)isEqual: (OFObject*)obj
 {
 	OFObject **objs, **objs2;

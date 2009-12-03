@@ -92,5 +92,9 @@ array_tests()
 	EXPECT_EXCEPTION(@"Detect out of range in -[removeNItems:]",
 	    OFOutOfRangeException, [a[0] removeNObjects: [a[0] count] + 1])
 
+	a[0] = [OFArray arrayWithObjects: @"foo", @"bar", @"baz", nil];
+	TEST(@"-[componentsJoinedByString:]",
+	    [[a[0] componentsJoinedByString: @" "] isEqual: @"foo bar baz"])
+
 	[pool drain];
 }

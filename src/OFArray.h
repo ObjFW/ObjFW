@@ -14,6 +14,8 @@
 #import "OFObject.h"
 #import "OFDataArray.h"
 
+@class OFString;
+
 /**
  * The OFArray class provides a class for storing objects in an array.
  */
@@ -126,6 +128,14 @@
  */
 - (id)lastObject;
 
+/**
+ * Creates a string by joining all objects of the array.
+ *
+ * \param separator The string with which the objects should be joined
+ * \return A string containing all objects joined by the separator
+ */
+- (OFString*)componentsJoinedByString: (OFString*)separator;
+
 - addObject: (OFObject*)obj;
 - addObject: (OFObject*)obj
     atIndex: (size_t)index;
@@ -138,3 +148,4 @@
 @end
 
 #import "OFMutableArray.h"
+#import "OFString.h"
