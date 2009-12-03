@@ -406,15 +406,6 @@
 @implementation OFReadOrWriteFailedException
 + newWithClass: (Class)class__
 	  size: (size_t)size
-	 items: (size_t)items
-{
-	return [[self alloc] initWithClass: class__
-				      size: size
-				     items: items];
-}
-
-+ newWithClass: (Class)class__
-	  size: (size_t)size
 {
 	return [[self alloc] initWithClass: class__
 				      size: size];
@@ -428,31 +419,12 @@
 
 - initWithClass: (Class)class__
 	   size: (size_t)size
-	  items: (size_t)items
 {
 	self = [super initWithClass: class__];
 
 	req_size = size;
-	req_items = items;
-	has_items = YES;
 
-	if (class__ == [OFTCPSocket class])
-		err = GET_SOCK_ERR;
-	else
-		err = GET_ERR;
-
-	return self;
-}
-
-- initWithClass: (Class)class__
-	   size: (size_t)size
-{
-	self = [super initWithClass: class__];
-
-	req_size = size;
-	req_items = 0;
-	has_items = NO;
-
+	/* FIXME: We need something that works for subclasses as well */
 	if (class__ == [OFTCPSocket class])
 		err = GET_SOCK_ERR;
 	else
@@ -470,16 +442,6 @@
 {
 	return req_size;
 }
-
-- (size_t)requestedItems
-{
-	return req_items;
-}
-
-- (BOOL)hasNItems
-{
-	return has_items;
-}
 @end
 
 @implementation OFReadFailedException
@@ -488,14 +450,9 @@
 	if (string != nil)
 		return string;;
 
-	if (has_items)
-		string = [[OFString alloc] initWithFormat:
-		    @"Failed to read %zu items of size %zu in class %s! "
-		    ERRFMT, req_items, req_size, [class_ className], ERRPARAM];
-	else
-		string = [[OFString alloc] initWithFormat:
-		    @"Failed to read %zu bytes in class %s! " ERRFMT, req_size,
-		    [class_ className], ERRPARAM];
+	string = [[OFString alloc] initWithFormat:
+	    @"Failed to read %zu bytes in class %s! " ERRFMT, req_size,
+	    [class_ className], ERRPARAM];
 
 	return string;
 }
@@ -507,14 +464,9 @@
 	if (string != nil)
 		return string;
 
-	if (has_items)
-		string = [[OFString alloc] initWithFormat:
-		    @"Failed to write %zu items of size %zu in class %s! "
-		    ERRFMT, req_items, req_size, [class_ className], ERRPARAM];
-	else
-		string = [[OFString alloc] initWithFormat:
-		    @"Failed to write %zu bytes in class %s! " ERRFMT, req_size,
-		    [class_ className], ERRPARAM];
+	string = [[OFString alloc] initWithFormat:
+	    @"Failed to write %zu bytes in class %s! " ERRFMT, req_size,
+	    [class_ className], ERRPARAM];
 
 	return string;
 }

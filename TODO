@@ -1,7 +1,6 @@
 Test if autorelease pool releases everything correctly when thread is ended
 
 Make strings \0-safe
-Make OFStream caching transparent to the coder
 
 Cleanup OFXMLElement
 

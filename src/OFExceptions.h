@@ -279,20 +279,8 @@
 @interface OFReadOrWriteFailedException: OFException
 {
 	size_t req_size;
-	size_t req_items;
-	BOOL   has_items;
 	int    err;
 }
-
-/**
- * \param class_ The class of the object which caused the exception
- * \param size The requested size of the data that couldn't be read / written
- * \param items The requested number of items that couldn't be read / written
- * \return A new open file failed exception
- */
-+ newWithClass: (Class)class_
-	  size: (size_t)size
-	 items: (size_t)items;
 
 /**
  * \param class_ The class of the object which caused the exception
@@ -301,18 +289,6 @@
  */
 + newWithClass: (Class)class_
 	  size: (size_t)size;
-
-/**
- * Initializes an already allocated read or write failed exception.
- *
- * \param class_ The class of the object which caused the exception
- * \param size The requested size of the data that couldn't be read / written
- * \param items The requested number of items that couldn't be read / written
- * \return A new open file failed exception
- */
-- initWithClass: (Class)class_
-	   size: (size_t)size
-	  items: (size_t)items;
 
 /**
  * Initializes an already allocated read or write failed exception.
@@ -333,16 +309,6 @@
  * \return The requested size of the data that couldn't be read / written
  */
 - (size_t)requestedSize;
-
-/**
- * \return The requested number of items that coudln't be read / written
- */
-- (size_t)requestedItems;
-
-/**
- * \return Whether NItems was specified
- */
-- (BOOL)hasNItems;
 @end
 
 /**

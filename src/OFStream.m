@@ -52,12 +52,50 @@ static int pagesize = 0;
 
 - (BOOL)atEndOfStream
 {
+	if (cache != NULL)
+		return NO;
+
+	return [self atEndOfStreamWithoutCache];
+}
+
+- (BOOL)atEndOfStreamWithoutCache
+{
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
 - (size_t)readNBytes: (size_t)size
 	  intoBuffer: (char*)buf
+{
+	if (cache == NULL)
+		return [self readNBytesWithoutCache: size
+					 intoBuffer: buf];
+
+	if (size >= cache_len) {
+		size_t ret = cache_len;
+		memcpy(buf, cache, cache_len);
+
+		[self freeMemory: cache];
+		cache = NULL;
+		cache_len = 0;
+
+		return ret;
+	} else {
+		char *tmp = [self allocMemoryWithSize: cache_len - size];
+		memcpy(tmp, cache + size, cache_len - size);
+
+		memcpy(buf, cache, size);
+
+		[self freeMemory: cache];
+		cache = tmp;
+		cache_len -= size;
+
+		return size;
+	}
+}
+
+- (size_t)readNBytesWithoutCache: (size_t)size
+		      intoBuffer: (char*)buf
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
@@ -100,7 +138,7 @@ static int pagesize = 0;
 	tmp = [self allocMemoryWithSize: pagesize];
 
 	for (;;) {
-		if ([self atEndOfStream]) {
+		if ([self atEndOfStreamWithoutCache]) {
 			[self freeMemory: tmp];
 
 			if (cache == NULL)
@@ -118,8 +156,8 @@ static int pagesize = 0;
 		}
 
 		@try {
-			len = [self readNBytes: pagesize - 1
-				    intoBuffer: tmp];
+			len = [self readNBytesWithoutCache: pagesize
+						intoBuffer: tmp];
 		} @catch (OFException *e) {
 			[self freeMemory: tmp];
 			@throw e;
@@ -205,24 +243,6 @@ static int pagesize = 0;
 {
 	return [self writeNBytes: [str cStringLength]
 		      fromBuffer: [str cString]];
-}
-
-- (size_t)getCache: (char**)ptr
-{
-	if (ptr != NULL)
-		*ptr = cache;
-
-	return cache_len;
-}
-
-- clearCache
-{
-	[self freeMemory: cache];
-
-	cache = NULL;
-	cache_len = 0;
-
-	return self;
 }
 
 - close

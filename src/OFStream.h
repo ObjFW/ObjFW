@@ -22,12 +22,33 @@
 }
 
 /**
+ * Returns a boolean whether the end of the stream has been reached.
+ *
+ * IMPORTANT: Do *NOT* override this in subclasses! Override
+ * atEndOfStreamWithoutCache instead, as otherwise, you *WILL* break caching and
+ * thus get broken results!
+ *
  * \return A boolean whether the end of the stream has been reached
  */
 - (BOOL)atEndOfStream;
 
 /**
+ * Returns a boolean whether the end of the stream has been reached without
+ * looking at the cache.
+ *
+ * IMPORTANT: Do *NOT* use this! Use atEndOfCache instead, as this is *ONLY*
+ * for being overriden in subclasses!
+ *
+ * \return A boolean whether the end of the stream has been reached
+ */
+- (BOOL)atEndOfStreamWithoutCache;
+
+/**
  * Reads from the stream into a buffer.
+ *
+ * IMPORTANT: Do *NOT* override this in subclasses! Override
+ * readNBytesWithoutCache:intoBuffer: instead, as otherwise, you *WILL* break
+ * caching and thus get broken results!
  *
  * \param buf The buffer into which the data is read
  * \param size The size of the data that should be read.
@@ -38,14 +59,21 @@
 	  intoBuffer: (char*)buf;
 
 /**
+ * Reads from the stream into a buffer without looking at the cache.
+ *
+ * IMPORTANT: Do *NOT* use this! Use readNBytes:intoBuffer: instead, as this is
+ * *ONLY* for being overriden in subclasses!
+ *
+ * \param buf The buffer into which the data is read
+ * \param size The size of the data that should be read.
+ *	  The buffer MUST be at least size big!
+ * \return The number of bytes read
+ */
+- (size_t)readNBytesWithoutCache: (size_t)size
+		      intoBuffer: (char*)buf;
+
+/**
  * Read until a newline, \\0 or end of stream occurs.
- *
- * If you want to use readNBytes afterwards again, you have to clear the cache
- * before and optionally get the cache before clearing it!
- *
- * You also need to pay attention to the cache if you want to know if there is
- * still data left - atEndOfStream can return NO even if there is still data
- * in the cache!
  *
  * \return The line that was read, autoreleased, or nil if the end of the
  *	   stream has been reached.
@@ -55,9 +83,6 @@
 /**
  * Read with the specified encoding until a newline, \\0 or end of stream
  * occurs.
- *
- * If you want to use readNBytes afterwards again, you have to clear the cache
- * before and optionally get the cache before clearing it!
  *
  * \return The line that was read, autoreleased, or nil if the end of the
  *	   stream has been reached.
@@ -81,20 +106,6 @@
  * \return The number of bytes written
  */
 - (size_t)writeString: (OFString*)str;
-
-/**
- * Sets a specified pointer to the cache and returns the length of the cache.
- *
- * \param ptr A pointer to a pointer. It will be set to the cache.
- *	      If it is NULL, only the number of bytes in the cache is returned.
- * \return The number of bytes in the cache.
- */
-- (size_t)getCache: (char**)ptr;
-
-/**
- * Clears the cache.
- */
-- clearCache;
 
 /**
  * Closes the stream.

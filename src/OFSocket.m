@@ -50,13 +50,13 @@
 	return self;
 }
 
-- (BOOL)atEndOfStream
+- (BOOL)atEndOfStreamWithoutCache
 {
 	return eos;
 }
 
-- (size_t)readNBytes: (size_t)size
-	  intoBuffer: (char*)buf
+- (size_t)readNBytesWithoutCache: (size_t)size
+		      intoBuffer: (char*)buf
 {
 	ssize_t ret;
 

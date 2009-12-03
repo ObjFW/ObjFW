@@ -126,32 +126,6 @@ typedef int gid_t;
  *	     It is not closed when the OFFile object is deallocated!
  */
 - initWithFilePointer: (FILE*)fp;
-
-/**
- * Reads from the file into a buffer.
- *
- * \param buf The buffer into which the data is read
- * \param size The size of the data that should be read.
- *	  The buffer MUST be at least size * nitems big!
- * \param nitems nitem The number of items to read
- *	  The buffer MUST be at least size * nitems big!
- * \return The number of bytes read
- */
-- (size_t)readNItems: (size_t)nitems
-	      ofSize: (size_t)size
-	  intoBuffer: (char*)buf;
-
-/**
- * Writes from a buffer into the file.
- *
- * \param nitems The number of items to write
- * \param size The size of the data that should be written
- * \param buf The buffer from which the data is written to the file
- * \return The number of bytes written
- */
-- (size_t)writeNItems: (size_t)nitems
-	       ofSize: (size_t)size
-	   fromBuffer: (const char*)buf;
 @end
 
 @interface OFFileSingleton: OFFile

@@ -190,7 +190,7 @@ OFFile *of_stderr = nil;
 	[super dealloc];
 }
 
-- (BOOL)atEndOfStream
+- (BOOL)atEndOfStreamWithoutCache
 {
 	if (fp == NULL)
 		return YES;
@@ -198,42 +198,15 @@ OFFile *of_stderr = nil;
 	return (feof(fp) == 0 ? NO : YES);
 }
 
-- (size_t)readNItems: (size_t)nitems
-	      ofSize: (size_t)size
-	  intoBuffer: (char*)buf
+- (size_t)readNBytesWithoutCache: (size_t)size
+		      intoBuffer: (char*)buf
 {
 	size_t ret;
 
-	if (fp == NULL || feof(fp) ||
-	    ((ret = fread(buf, size, nitems, fp)) == 0 &&
-	    size != 0 && nitems != 0 && !feof(fp)))
+	if (fp == NULL || feof(fp) || ((ret = fread(buf, 1, size, fp)) == 0 &&
+	    size != 0 && !feof(fp)))
 		@throw [OFReadFailedException newWithClass: isa
-						      size: size
-						     items: nitems];
-
-	return ret;
-}
-
-- (size_t)readNBytes: (size_t)size
-	  intoBuffer: (char*)buf
-{
-	return [self readNItems: size
-			 ofSize: 1
-		     intoBuffer: buf];
-}
-
-- (size_t)writeNItems: (size_t)nitems
-	       ofSize: (size_t)size
-	   fromBuffer: (const char*)buf
-{
-	size_t ret;
-
-	if (fp == NULL || feof(fp) ||
-	    ((ret = fwrite(buf, size, nitems, fp)) < nitems &&
-	    size != 0 && nitems != 0))
-		@throw [OFWriteFailedException newWithClass: isa
-						       size: size
-						      items: nitems];
+						      size: size];
 
 	return ret;
 }
@@ -241,16 +214,14 @@ OFFile *of_stderr = nil;
 - (size_t)writeNBytes: (size_t)size
 	   fromBuffer: (const char*)buf
 {
-	return [self writeNItems: size
-			  ofSize: 1
-		      fromBuffer: buf];
-}
+	size_t ret;
 
-- (size_t)writeCString: (const char*)str
-{
-	return [self writeNItems: strlen(str)
-			  ofSize: 1
-		      fromBuffer: str];
+	if (fp == NULL || feof(fp) ||
+	    ((ret = fwrite(buf, 1, size, fp)) < size && size != 0))
+		@throw [OFWriteFailedException newWithClass: isa
+						       size: size];
+
+	return ret;
 }
 
 - close
