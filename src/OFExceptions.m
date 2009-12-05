@@ -424,8 +424,7 @@
 
 	req_size = size;
 
-	/* FIXME: We need something that works for subclasses as well */
-	if (class__ == [OFTCPSocket class])
+	if ([class__ isSubclassOfClass: [OFTCPSocket class]])
 		err = GET_SOCK_ERR;
 	else
 		err = GET_ERR;

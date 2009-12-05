@@ -79,6 +79,13 @@ typedef enum {
 + (const char*)className;
 
 /**
+ * \param class_ The class which is checked for being a superclass
+ * \return A boolean whether the class class is a subclass of the specified
+ *	   class
+ */
++ (BOOL)isSubclassOfClass: (Class)class_;
+
+/**
  * Checks whether instances of the class respond to a given selector.
  *
  * \param selector The selector which should be checked for respondance

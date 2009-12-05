@@ -102,6 +102,21 @@ extern BOOL objc_sync_init();
 #endif
 }
 
++ (BOOL)isSubclassOfClass: (Class)class
+{
+	Class iter;
+
+#ifdef OF_APPLE_RUNTIME
+	for (iter = self; iter != Nil; iter = class_getSuperclass(iter))
+#else
+	for (iter = self; iter != Nil; iter = class_get_super_class(iter))
+#endif
+		if (iter == class)
+			return YES;
+
+	return NO;
+}
+
 + (BOOL)instancesRespondToSelector: (SEL)selector
 {
 #ifdef OF_APPLE_RUNTIME
