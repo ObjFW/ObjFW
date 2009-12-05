@@ -331,7 +331,7 @@ void _references_to_categories_of_OFDictionary()
 	for (i = hash & (size - 1); i < size && data[i].key != nil &&
 	    ![data[i].key isEqual: key]; i++);
 
-	if (data[i].key == nil)
+	if (i < size && data[i].key == nil)
 		return nil;
 
 	/* In case the last bucket is already used */

@@ -135,7 +135,7 @@ resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
 	for (i = hash & (size - 1); i < size && data[i].key != nil &&
 	    ![data[i].key isEqual: key]; i++);
 
-	if (data[i].key == nil)
+	if (i < size && data[i].key == nil)
 		return self;
 
 	/* In case the last bucket is already used */
