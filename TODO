@@ -13,7 +13,6 @@ OFTime
 Tests for OFFile.
 Tests for OFNumber.
 Tests for readLine:.
-Test remove in OFDictionary
 
 Serialization
 
