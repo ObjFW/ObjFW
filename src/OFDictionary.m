@@ -132,17 +132,26 @@ void _references_to_categories_of_OFDictionary()
 - initWithObject: (OFObject*)obj
 	  forKey: (OFObject <OFCopying>*)key
 {
-	const SEL sel = @selector(setObject:forKey:);
-	IMP set = [OFMutableDictionary instanceMethodForSelector: sel];
-
 	self = [self init];
 
 	@try {
-		set(self, sel, obj, key);
+		key = [key copy];
 	} @catch (OFException *e) {
 		[self dealloc];
 		@throw e;
 	}
+
+	@try {
+		[obj retain];
+	} @catch (OFException *e) {
+		[key release];
+		[self dealloc];
+		@throw e;
+	}
+
+	data[0].key = key;
+	data[0].object = obj;
+	data[0].hash = [key hash];
 
 	return self;
 }
