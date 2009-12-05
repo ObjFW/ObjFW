@@ -297,22 +297,154 @@ void _references_to_categories_of_OFDictionary()
 	return ret;
 }
 
-/* FIXME: Possible without resizing? */
 - initWithKey: (OFObject <OFCopying>*)key
       argList: (va_list)args
 {
-	const SEL sel = @selector(setObject:forKey:);
-	IMP set = [OFMutableDictionary instanceMethodForSelector: sel];
+	OFObject *obj;
+	size_t i;
+	uint32_t j, hash;
+	va_list args2;
 
-	self = [self init];
+	self = [super init];
+
+	count = 1;
+	for (va_copy(args2, args); va_arg(args2, OFObject*) != nil; count++);
+	count >>= 1;
+
+	if (count > SIZE_MAX / 8) {
+		Class c = isa;
+		[self dealloc];
+		@throw [OFOutOfRangeException newWithClass: c];
+	}
+
+	for (size = 1; size < count; size <<= 1);
 
 	@try {
-		set(self, sel, va_arg(args, OFObject*), key);
-		while ((key = va_arg(args, OFObject <OFCopying>*)) != nil)
-			set(self, sel, va_arg(args, OFObject*), key);
+		data = [self allocMemoryForNItems: size
+					 withSize: BUCKET_SIZE];
+	} @catch (OFException *e) {
+		/*
+		 * We can't use [super dealloc] on OS X here. Compiler bug?
+		 * Anyway, set size to 0 so that [self dealloc] works.
+		 *                                                    */
+		size = 0;
+		[self dealloc];
+		@throw e;
+	}
+	memset(data, 0, size * BUCKET_SIZE);
+
+	if (key == nil)
+		return self;
+	else if ((obj = va_arg(args, OFObject*)) == nil) {
+		Class c = isa;
+		[self dealloc];
+		@throw [OFInvalidArgumentException newWithClass: c
+						       selector: _cmd];
+	}
+
+	/* Add first key / object pair */
+	hash = [key hash];
+
+	for (j = hash & (size - 1); j < size && data[j].key != nil; j++);
+
+	@try {
+		key = [key copy];
 	} @catch (OFException *e) {
 		[self dealloc];
 		@throw e;
+	}
+
+	@try {
+		[obj retain];
+	} @catch (OFException *e) {
+		[self dealloc];
+		[key release];
+		@throw e;
+	}
+
+	data[j].key = key;
+	data[j].object = obj;
+	data[j].hash = hash;
+
+	for (i = 1; i < count; i++) {
+		key = va_arg(args, OFObject <OFCopying>*);
+		obj = va_arg(args, OFObject*);
+
+		if (key == nil || obj == nil) {
+			Class c = isa;
+			[self dealloc];
+			@throw [OFInvalidArgumentException newWithClass: c
+							       selector: _cmd];
+		}
+
+		hash = [key hash];
+
+		for (j = hash & (size - 1); j < size && data[j].key != nil &&
+		    ![data[j].key isEqual: key]; j++);
+
+		/* In case the last bucket is already used */
+		if (j >= size)
+			for (j = 0; j < size && data[j].key != nil &&
+			    ![data[j].key isEqual: key]; j++);
+
+		/* Key not in dictionary */
+		if (j >= size || ![data[j].key isEqual: key]) {
+			j = hash & (size - 1);
+			for (; j < size && data[j].key != nil; j++);
+
+			/* In case the last bucket is already used */
+			if (j >= size)
+				for (j = 0; j < size && data[j].key != nil;
+				    j++);
+			if (j >= size) {
+				Class c = isa;
+				[self dealloc];
+				@throw [OFOutOfRangeException newWithClass: c];
+			}
+
+			@try {
+				key = [key copy];
+			} @catch (OFException *e) {
+				[self dealloc];
+				@throw e;
+			}
+
+			@try {
+				[obj retain];
+			} @catch (OFException *e) {
+				[self dealloc];
+				[key release];
+				@throw e;
+			}
+
+			data[j].key = key;
+			data[j].object = obj;
+			data[j].hash = hash;
+
+			continue;
+		}
+
+		/*
+		 * They key is already in the dictionary. However, we just
+		 * replace it so that the programmer gets the same behavior
+		 * as if he'd call setObject:forKey: for each key/object pair.
+		 */
+		@try {
+			[obj retain];
+		} @catch (OFException *e) {
+			[self dealloc];
+			@throw e;
+		}
+
+		@try {
+			[data[j].object release];
+		} @catch (OFException *e) {
+			[self dealloc];
+			[obj release];
+			@throw e;
+		}
+
+		data[j].object = obj;
 	}
 
 	return self;
