@@ -87,7 +87,7 @@ resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
 		    ![data[i].key isEqual: key]; i++);
 
 	/* Key not in dictionary */
-	if (i >= size || data[i].key == nil) {
+	if (i >= size || ![data[i].key isEqual: key]) {
 		resize(self, isa, count + 1, &data, &size);
 
 		i = hash & (size - 1);
@@ -127,13 +127,16 @@ resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
 	for (i = hash & (size - 1); i < size && data[i].key != nil &&
 	    ![data[i].key isEqual: key]; i++);
 
+	if (data[i].key == nil)
+		return self;
+
 	/* In case the last bucket is already used */
 	if (i >= size)
 		for (i = 0; i < size && data[i].key != nil &&
 		    ![data[i].key isEqual: key]; i++);
 
 	/* Key not in dictionary */
-	if (i >= size || data[i].key == nil)
+	if (i >= size || ![data[i].key isEqual: key])
 		return self;
 
 	[data[i].key release];
