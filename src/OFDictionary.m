@@ -119,8 +119,25 @@ void _references_to_categories_of_OFDictionary()
 
 	for (i = 0; i < size; i++) {
 		if (dict->data[i].key != nil) {
-			data[i].key = [dict->data[i].key copy];
-			data[i].object = [dict->data[i].object retain];
+			OFObject <OFCopying> *key;
+
+			@try {
+				key = [dict->data[i].key copy];
+			} @catch (OFException *e) {
+				[self dealloc];
+				@throw e;
+			}
+
+			@try {
+				[dict->data[i].object retain];
+			} @catch (OFException *e) {
+				[key release];
+				[self dealloc];
+				@throw e;
+			}
+
+			data[i].key = key;
+			data[i].object = dict->data[i].object;
 			data[i].hash = dict->data[i].hash;
 		} else
 			data[i].key = nil;

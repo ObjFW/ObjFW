@@ -99,8 +99,16 @@ resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
 		if (i >= size)
 			@throw [OFOutOfRangeException newWithClass: isa];
 
-		data[i].key = [key copy];
-		data[i].object = [obj retain];
+		key = [key copy];
+		@try {
+			[obj retain];
+		} @catch (OFException *e) {
+			[key release];
+			@throw e;
+		}
+
+		data[i].key = key;
+		data[i].object = obj;
 		data[i].hash = hash;
 		count++;
 
