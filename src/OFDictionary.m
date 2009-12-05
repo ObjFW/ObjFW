@@ -147,6 +147,7 @@ void _references_to_categories_of_OFDictionary()
 	return self;
 }
 
+/* FIXME: Do it without resizing! */
 - initWithObjects: (OFArray*)objs
 	  forKeys: (OFArray*)keys
 {
@@ -192,6 +193,7 @@ void _references_to_categories_of_OFDictionary()
 	return ret;
 }
 
+/* FIXME: Possible without resizing? */
 - initWithKey: (OFObject <OFCopying>*)key
       argList: (va_list)args
 {

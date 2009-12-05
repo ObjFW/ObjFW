@@ -8,7 +8,8 @@ CPPFLAGS="$CPPFLAGS @ASPRINTF_DEF@ @OFPLUGINS_DEF@"
 CXXFLAGS=""
 OBJCFLAGS="-fobjc-exceptions -fconstant-string-class=OFConstString"
 OBJCFLAGS="$OBJCFLAGS @NO_CONST_CFSTRINGS@ @NO_WARN_UNUSED@"
-LDFLAGS="@RPATH_LDFLAGS@"
+LDFLAGS=""
+LDFLAGS_RPATH="@LDFLAGS_RPATH@"
 LIBS="-L${libdir} -lobjfw @LIBS@"
 VERSION="0.1"
 
@@ -21,6 +22,7 @@ show_help() {
 	echo "	--cxxflags	Outputs the required CXXFLAGS"
 	echo "	--objcflags	Outputs the required OBJCFLAGS"
 	echo "	--ldflags	Outputs the required LDFLAGS"
+	echo "	--rpath		Outputs LDFLAGS for using rpath"
 	echo "	--libs		Outputs the required LIBS"
 	echo "	--version	Outputs the installed version"
 	echo
@@ -37,6 +39,7 @@ while test ! -z "$1"; do
 			echo "$CXXFLAGS"
 			echo "$OBJCFLAGS"
 			echo "$LDFLAGS"
+			echo "$RPATH_LDFLAGS"
 			echo "$LIBS"
 			;;
 		--cflags)
@@ -56,6 +59,9 @@ while test ! -z "$1"; do
 			;;
 		--ldflags)
 			echo "$LDFLAGS"
+			;;
+		--rpath)
+			echo "$LDFLAGS_RPATH"
 			;;
 		--version)
 			echo "$VERSION"

@@ -60,11 +60,11 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 			LIB_LDFLAGS='-dynamiclib -flat_namespace'
 			LIB_PREFIX='lib'
 			LIB_SUFFIX='.dylib'
+			LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
 			PLUGIN_CPPFLAGS='-DPIC'
 			PLUGIN_CFLAGS='-fPIC'
 			PLUGIN_LDFLAGS='-bundle -flat_namespace -undefined suppress'
 			PLUGIN_SUFFIX='.impl'
-			RPATH_LDFLAGS='-Wl,-rpath,${libdir}'
 			INSTALL_LIB='${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$${i%.dylib}.${LIB_MAJOR}.${LIB_MINOR}.dylib && ${LN_S} -f $${i%.dylib}.${LIB_MAJOR}.${LIB_MINOR}.dylib ${DESTDIR}${libdir}/$${i%.dylib}.${LIB_MAJOR}.dylib && ${LN_S} -f $${i%.dylib}.${LIB_MAJOR}.${LIB_MINOR}.dylib ${DESTDIR}${libdir}/$$i'
 			UNINSTALL_LIB='rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$${i%.dylib}.${LIB_MAJOR}.dylib ${DESTDIR}${libdir}/$${i%.dylib}.${LIB_MAJOR}.${LIB_MINOR}.dylib'
 			CLEAN_LIB=''
@@ -76,27 +76,27 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 			LIB_LDFLAGS='-shared -fPIC -Wl,-soname=${LIB}.${LIB_MAJOR}.${LIB_MINOR}'
 			LIB_PREFIX='lib'
 			LIB_SUFFIX='.so'
+			LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
 			PLUGIN_CPPFLAGS='-DPIC'
 			PLUGIN_CFLAGS='-fPIC'
 			PLUGIN_LDFLAGS='-shared -fPIC'
 			PLUGIN_SUFFIX='.so'
-			RPATH_LDFLAGS='-Wl,-rpath,${libdir}'
 			INSTALL_LIB='${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR} && rm -f ${DESTDIR}${libdir}/$$i && ${LN_S} $$i.${LIB_MAJOR}.${LIB_MINOR} ${DESTDIR}${libdir}/$$i'
 			UNINSTALL_LIB='rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}'
 			CLEAN_LIB=''
 			;;
 		*-*-openbsd* | *-*-mirbsd*)
-			AC_MSG_RESULT(Solaris)
+			AC_MSG_RESULT(OpenBSD)
 			LIB_CPPFLAGS='-DPIC'
 			LIB_CFLAGS='-fPIC'
 			LIB_LDFLAGS='-shared -fPIC'
 			LIB_PREFIX='lib'
 			LIB_SUFFIX='.so.${LIB_MAJOR}.${LIB_MINOR}'
+			LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
 			PLUGIN_CPPFLAGS='-DPIC'
 			PLUGIN_CFLAGS='-fPIC'
 			PLUGIN_LDFLAGS='-shared -fPIC'
 			PLUGIN_SUFFIX='.so'
-			RPATH_LDFLAGS='-Wl,-rpath,${libdir}'
 			INSTALL_LIB='${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$$i'
 			UNINSTALL_LIB='rm -f ${DESTDIR}${libdir}/$$i'
 			CLEAN_LIB=''
@@ -108,11 +108,11 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 			LIB_LDFLAGS='-shared -Wl,--out-implib,${LIB}.a'
 			LIB_PREFIX='lib'
 			LIB_SUFFIX='.dll'
+			LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
 			PLUGIN_CPPFLAGS=''
 			PLUGIN_CFLAGS=''
 			PLUGIN_LDFLAGS='-shared'
 			PLUGIN_SUFFIX='.dll'
-			RPATH_LDFLAGS='-Wl,-rpath,${libdir}'
 			INSTALL_LIB='${MKDIR_P} ${DESTDIR}${bindir} && ${INSTALL} -m 755 $$i ${DESTDIR}${bindir}/$$i && ${INSTALL} -m 755 $$i.a ${DESTDIR}${libdir}/$$i.a'
 			UNINSTALL_LIB='rm -f ${DESTDIR}${bindir}/$$i ${DESTDIR}${libdir}/$$i.a'
 			CLEAN_LIB='${LIB}.a'
@@ -124,11 +124,11 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 			LIB_LDFLAGS='-shared -fPIC -Wl,-soname=${LIB}.${LIB_MAJOR}'
 			LIB_PREFIX='lib'
 			LIB_SUFFIX='.so'
+			LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
 			PLUGIN_CPPFLAGS='-DPIC'
 			PLUGIN_CFLAGS='-fPIC'
 			PLUGIN_LDFLAGS='-shared -fPIC'
 			PLUGIN_SUFFIX='.so'
-			RPATH_LDFLAGS='-Wl,-rpath,${libdir}'
 			INSTALL_LIB='${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}.0 && ${LN_S} -f $$i.${LIB_MAJOR}.${LIB_MINOR}.0 ${DESTDIR}${libdir}/$$i.${LIB_MAJOR} && ${LN_S} -f $$i.${LIB_MAJOR}.${LIB_MINOR}.0 ${DESTDIR}${libdir}/$$i'
 			UNINSTALL_LIB='rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR} ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}.0'
 			CLEAN_LIB=''
@@ -140,11 +140,11 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 	AC_SUBST(LIB_LDFLAGS)
 	AC_SUBST(LIB_PREFIX)
 	AC_SUBST(LIB_SUFFIX)
+	AC_SUBST(LDFLAGS_RPATH)
 	AC_SUBST(PLUGIN_CPPFLAGS)
 	AC_SUBST(PLUGIN_CFLAGS)
 	AC_SUBST(PLUGIN_LDFLAGS)
 	AC_SUBST(PLUGIN_SUFFIX)
-	AC_SUBST(RPATH_LDFLAGS)
 	AC_SUBST(INSTALL_LIB)
 	AC_SUBST(UNINSTALL_LIB)
 	AC_SUBST(CLEAN_LIB)
@@ -159,7 +159,7 @@ AC_DEFUN([BUILDSYS_STATIC_LIB_ONLY], [
 	LIB_LDFLAGS=''
 	LIB_PREFIX='lib'
 	LIB_SUFFIX='.a'
-	RPATH_LDFLAGS=''
+	LDFLAGS_RPATH=''
 	INSTALL_LIB='${INSTALL} -m 644 $$i ${DESTDIR}${libdir}/$$i'
 	UNINSTALL_LIB='rm -f ${DESTDIR}${libdir}/$$i'
 	CLEAN_LIB=''
@@ -169,7 +169,7 @@ AC_DEFUN([BUILDSYS_STATIC_LIB_ONLY], [
 	AC_SUBST(LIB_LDFLAGS)
 	AC_SUBST(LIB_PREFIX)
 	AC_SUBST(LIB_SUFFIX)
-	AC_SUBST(RPATH_LDFLAGS)
+	AC_SUBST(LDFLAGS_RPATH)
 	AC_SUBST(INSTALL_LIB)
 	AC_SUBST(UNINSTALL_LIB)
 	AC_SUBST(CLEAN_LIB)
