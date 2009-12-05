@@ -23,18 +23,18 @@ static OF_INLINE void
 resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
     size_t *size)
 {
-	float fill = (float)count / *size;
+	size_t fill = count * 4 / *size;
 	size_t newsize;
 	struct of_dictionary_bucket *newdata;
 	uint32_t i;
 
-	if (fill > 0.75) {
-		if (*size > SIZE_MAX / 2)
+	if (fill > 3) {
+		if (*size > SIZE_MAX / 8)
 			@throw [OFOutOfRangeException newWithClass: isa];
 
-		newsize = *size * 2;
-	} else if (fill < 0.25)
-		newsize = *size / 2;
+		newsize = *size << 1;
+	} else if (fill < 1)
+		newsize = *size >> 1;
 	else
 		return;
 
