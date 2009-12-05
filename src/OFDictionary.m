@@ -135,8 +135,8 @@ void _references_to_categories_of_OFDictionary()
 		@try {
 			[dict->data[i].object retain];
 		} @catch (OFException *e) {
-			[key release];
 			[self dealloc];
+			[key release];
 			@throw e;
 		}
 
@@ -163,8 +163,8 @@ void _references_to_categories_of_OFDictionary()
 	@try {
 		[obj retain];
 	} @catch (OFException *e) {
-		[key release];
 		[self dealloc];
+		[key release];
 		@throw e;
 	}
 
@@ -175,34 +175,110 @@ void _references_to_categories_of_OFDictionary()
 	return self;
 }
 
-/* FIXME: Do it without resizing! */
 - initWithObjects: (OFArray*)objs
 	  forKeys: (OFArray*)keys
 {
 	id *objs_carray, *keys_carray;
-	size_t objs_count, i;
-	const SEL sel = @selector(setObject:forKey:);
-	IMP set = [OFMutableDictionary instanceMethodForSelector: sel];
+	size_t i;
 
-	self = [self init];
-
-	objs_carray = [objs cArray];
-	keys_carray = [keys cArray];
-	objs_count = [objs count];
-
-	if (objs == nil || keys == nil || objs_count != [keys count]) {
-		Class c = isa;
-		[self dealloc];
-		@throw [OFInvalidArgumentException newWithClass: c
-						       selector: _cmd];
-	}
+	self = [super init];
 
 	@try {
-		for (i = 0; i < objs_count; i++)
-			set(self, sel, objs_carray[i], keys_carray[i]);
+		keys_carray = [keys cArray];
+		objs_carray = [objs cArray];
+		count = [keys count];
+
+		if (count > SIZE_MAX / 8)
+			@throw [OFOutOfRangeException newWithClass: isa];
+
+		for (size = 1; size < count; size <<= 1);
+
+		data = [self allocMemoryForNItems: size
+					 withSize: BUCKET_SIZE];
 	} @catch (OFException *e) {
+		/*
+		 * We can't use [super dealloc] on OS X here. Compiler bug?
+		 * Anyway, set size to 0 so that [self dealloc] works.
+		 */
+		size = 0;
 		[self dealloc];
 		@throw e;
+	}
+	memset(data, 0, size * BUCKET_SIZE);
+
+	for (i = 0; i < count; i++) {
+		uint32_t j, hash;
+
+		hash = [keys_carray[i] hash];
+
+		for (j = hash & (size - 1); j < size && data[j].key != nil &&
+		    ![data[j].key isEqual: keys_carray[i]]; j++);
+
+		/* In case the last bucket is already used */
+		if (j >= size)
+			for (j = 0; j < size && data[j].key != nil &&
+			    ![data[j].key isEqual: keys_carray[i]]; j++);
+
+		/* Key not in dictionary */
+		if (j >= size || ![data[j].key isEqual: keys_carray[i]]) {
+			OFObject <OFCopying> *key;
+
+			j = hash & (size - 1);
+			for (; j < size && data[j].key != nil; j++);
+
+			/* In case the last bucket is already used */
+			if (j >= size)
+				for (j = 0; j < size && data[j].key != nil;
+				    j++);
+			if (j >= size) {
+				Class c = isa;
+				[self dealloc];
+				@throw [OFOutOfRangeException newWithClass: c];
+			}
+
+			@try {
+				key = [keys_carray[i] copy];
+			} @catch (OFException *e) {
+				[self dealloc];
+				@throw e;
+			}
+
+			@try {
+				[objs_carray[i] retain];
+			} @catch (OFException *e) {
+				[self dealloc];
+				[key release];
+				@throw e;
+			}
+
+			data[j].key = key;
+			data[j].object = objs_carray[i];
+			data[j].hash = hash;
+
+			continue;
+		}
+
+		/*
+		 * They key is already in the dictionary. However, we just
+		 * replace it so that the programmer gets the same behavior
+		 * as if he'd call setObject:forKey: for each key/object pair.
+		 */
+		@try {
+			[objs_carray[i] retain];
+		} @catch (OFException *e) {
+			[self dealloc];
+			@throw e;
+		}
+
+		@try {
+			[data[j].object release];
+		} @catch (OFException *e) {
+			[self dealloc];
+			[objs_carray[i] release];
+			@throw e;
+		}
+
+		data[j].object = objs_carray[i];
 	}
 
 	return self;
