@@ -714,11 +714,6 @@
 	RETURN_AS(double)
 }
 
-- (long double)asLongDouble
-{
-	RETURN_AS(long double)
-}
-
 - (BOOL)isEqual: (OFObject*)obj
 {
 	if (![obj isKindOfClass: [OFNumber class]])

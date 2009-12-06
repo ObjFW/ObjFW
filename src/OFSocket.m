@@ -88,15 +88,6 @@
 	return ret;
 }
 
-- (size_t)writeCString: (const char*)str
-{
-	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: isa];
-
-	return [self writeNBytes: strlen(str)
-		      fromBuffer: str];
-}
-
 - setBlocking: (BOOL)enable
 {
 #ifndef _WIN32
