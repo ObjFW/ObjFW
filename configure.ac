@@ -23,8 +23,6 @@ AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings, [
 	OBJCFLAGS="$OBJCFLAGS -fno-constant-cfstrings"])
 AC_SUBST(NO_CONST_CFSTRINGS)
 
-AC_DEFINE(OF_CONFIGURED, 1, [Define so that we know we got our config.h])
-
 AC_MSG_CHECKING(which Objective C runtime we use)
 dnl TODO: This is ugly. Let's think of a better check.
 AC_EGREP_CPP(gnu, [
@@ -221,5 +219,5 @@ AC_SUBST(CPPFLAGS)
 
 AC_SUBST(PACKAGE, ObjFW)
 AC_CONFIG_FILES([buildsys.mk extra.mk objfw-config])
-AC_CONFIG_HEADERS(config.h)
+AC_CONFIG_HEADERS([config.h src/objfw-defs.h])
 AC_OUTPUT

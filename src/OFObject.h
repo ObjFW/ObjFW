@@ -9,10 +9,7 @@
  * the packaging of this file.
  */
 
-#ifndef OF_CONFIGURED
-#error You are missing the ObjFW definitions!
-#error Please use objfw-config!
-#endif
+#import "objfw-defs.h"
 
 #include <stddef.h>
 #include <stdint.h>
