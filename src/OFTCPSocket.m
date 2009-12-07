@@ -225,7 +225,7 @@ static OFMutex *mutex = nil;
 	addr.sin_port = port;
 
 	if (he->h_addrtype != AF_INET || he->h_addr_list[0] == NULL) {
-		[mutex lock];
+		[mutex unlock];
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
 			    node: node
