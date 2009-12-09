@@ -17,40 +17,40 @@
 #include <string.h>
 
 #import <objc/objc-api.h>
-#ifdef __objc_INCLUDE_GNU
-#define SEL_NAME(x) sel_get_name(x)
+#ifdef OF_APPLE_RUNTIME
+# import <objc/runtime.h>
+# define SEL_NAME(x) sel_getName(x)
 #else
-#import <objc/runtime.h>
-#define SEL_NAME(x) sel_getName(x)
+# define SEL_NAME(x) sel_get_name(x)
 #endif
 
 #import "OFExceptions.h"
 #import "OFTCPSocket.h"
 
 #ifndef _WIN32
-#include <errno.h>
-#define GET_ERR	     errno
-#ifndef HAVE_GETADDRINFO
-#define GET_AT_ERR   h_errno
+# include <errno.h>
+# define GET_ERR	errno
+# ifndef HAVE_GETADDRINFO
+#  define GET_AT_ERR	h_errno
+# else
+#  define GET_AT_ERR	errno
+# endif
+# define GET_SOCK_ERR	errno
+# define ERRFMT		"Error string was: %s"
+# define ERRPARAM	strerror(err)
+# ifndef HAVE_GETADDRINFO
+#  define AT_ERRPARAM	hstrerror(err)
+# else
+#  define AT_ERRPARAM	strerror(err)
+# endif
 #else
-#define GET_AT_ERR   errno
-#endif
-#define GET_SOCK_ERR errno
-#define ERRFMT	     "Error string was: %s"
-#define ERRPARAM     strerror(err)
-#ifndef HAVE_GETADDRINFO
-#define AT_ERRPARAM  hstrerror(err)
-#else
-#define AT_ERRPARAM  strerror(err)
-#endif
-#else
-#include <windows.h>
-#define GET_ERR	     GetLastError()
-#define GET_AT_ERR   WSAGetLastError()
-#define GET_SOCK_ERR WSAGetLastError()
-#define ERRFMT	     "Error code was: %d"
-#define ERRPARAM     err
-#define AT_ERRPARAM  err
+# include <windows.h>
+# define GET_ERR	GetLastError()
+# define GET_AT_ERR	WSAGetLastError()
+# define GET_SOCK_ERR	WSAGetLastError()
+# define ERRFMT		"Error code was: %d"
+# define ERRPARAM	err
+# define AT_ERRPARAM	err
 #endif
 
 #import "asprintf.h"

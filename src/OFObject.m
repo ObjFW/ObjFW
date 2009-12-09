@@ -24,10 +24,10 @@
 
 #import <objc/objc-api.h>
 #ifdef OF_APPLE_RUNTIME
-#import <objc/runtime.h>
+# import <objc/runtime.h>
 #endif
 #ifdef OF_GNU_RUNTIME
-#import <objc/sarray.h>
+# import <objc/sarray.h>
 #endif
 
 struct pre_ivar {

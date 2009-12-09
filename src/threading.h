@@ -24,11 +24,11 @@ typedef DWORD of_tlskey_t;
 #endif
 
 #ifndef _WIN32
-#define of_thread_is_current(t) pthread_equal(t, pthread_self())
-#define of_thread_current() pthread_self()
+# define of_thread_is_current(t) pthread_equal(t, pthread_self())
+# define of_thread_current() pthread_self()
 #else
-#define of_thread_is_current(t) (t == GetCurrentThread())
-#define of_thread_current() GetCurrentThread()
+# define of_thread_is_current(t) (t == GetCurrentThread())
+# define of_thread_current() GetCurrentThread()
 #endif
 
 static OF_INLINE BOOL

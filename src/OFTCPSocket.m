@@ -16,10 +16,10 @@
 #include <unistd.h>
 
 #ifndef HAVE_GETADDRINFO
-#include <stdlib.h>
-#ifndef _WIN32
-#include <arpa/inet.h>
-#endif
+# include <stdlib.h>
+# ifndef _WIN32
+#  include <arpa/inet.h>
+# endif
 #endif
 
 #import "OFTCPSocket.h"

@@ -15,36 +15,36 @@
 #include <stdint.h>
 
 #ifdef __GNUC__
-#define OF_INLINE inline __attribute__((always_inline))
-#define OF_LIKELY(cond) __builtin_expect(!!(cond), 1)
-#define OF_UNLIKELY(cond) __builtin_expect(!!(cond), 0)
+# define OF_INLINE inline __attribute__((always_inline))
+# define OF_LIKELY(cond) __builtin_expect(!!(cond), 1)
+# define OF_UNLIKELY(cond) __builtin_expect(!!(cond), 0)
 #else
-#define OF_INLINE inline
-#define OF_LIKELY(cond) cond
-#define OF_UNLIKELY(cond) cond
+# define OF_INLINE inline
+# define OF_LIKELY(cond) cond
+# define OF_UNLIKELY(cond) cond
 #endif
 
 /* Required to build universal binaries on OS X */
 #if __BIG_ENDIAN__ || __LITTLE_ENDIAN__
-#if __BIG_ENDIAN__ && __LITTLE_ENDIAN__
-#error __BIG_ENDIAN__ and __LITTLE_ENDIAN__ defined!
-#endif
-#undef OF_BIG_ENDIAN
-#if __BIG_ENDIAN__
-#define OF_BIG_ENDIAN
-#endif
+# if __BIG_ENDIAN__ && __LITTLE_ENDIAN__
+#  error __BIG_ENDIAN__ and __LITTLE_ENDIAN__ defined!
+# endif
+# undef OF_BIG_ENDIAN
+# if __BIG_ENDIAN__
+#  define OF_BIG_ENDIAN
+# endif
 #endif
 
 #ifdef __GNUC__
-#if defined(__amd64__) || defined(__x86_64__)
-#define OF_AMD64_ASM
-#elif defined(__i386__)
-#define OF_X86_ASM
-#elif defined(__ppc__) || defined(__PPC__)
-#define OF_PPC_ASM
-#elif defined(__arm__) || defined(__ARM__)
-#define OF_ARM_ASM
-#endif
+# if defined(__amd64__) || defined(__x86_64__)
+#  define OF_AMD64_ASM
+# elif defined(__i386__)
+#  define OF_X86_ASM
+# elif defined(__ppc__) || defined(__PPC__)
+#  define OF_PPC_ASM
+# elif defined(__arm__) || defined(__ARM__)
+#  define OF_ARM_ASM
+# endif
 #endif
 
 #define OF_BSWAP16_CONST(i)					\
@@ -116,16 +116,16 @@ OF_BSWAP64_NONCONST(uint64_t i)
 }
 
 #ifdef __GNUC__
-#define OF_BSWAP16(i) \
+# define OF_BSWAP16(i) \
 	(__builtin_constant_p(i) ? OF_BSWAP16_CONST(i) : OF_BSWAP16_NONCONST(i))
-#define OF_BSWAP32(i) \
+# define OF_BSWAP32(i) \
 	(__builtin_constant_p(i) ? OF_BSWAP32_CONST(i) : OF_BSWAP32_NONCONST(i))
-#define OF_BSWAP64(i) \
+# define OF_BSWAP64(i) \
 	(__builtin_constant_p(i) ? OF_BSWAP64_CONST(i) : OF_BSWAP64_NONCONST(i))
 #else
-#define OF_BSWAP16(i) OF_BSWAP16_CONST(i)
-#define OF_BSWAP32(i) OF_BSWAP32_CONST(i)
-#define OF_BSWAP64(i) OF_BSWAP64_CONST(i)
+# define OF_BSWAP16(i) OF_BSWAP16_CONST(i)
+# define OF_BSWAP32(i) OF_BSWAP32_CONST(i)
+# define OF_BSWAP64(i) OF_BSWAP64_CONST(i)
 #endif
 
 static OF_INLINE void
@@ -138,21 +138,21 @@ OF_BSWAP32_V(uint32_t *buf, size_t len)
 }
 
 #ifdef OF_BIG_ENDIAN
-#define OF_BSWAP16_IF_BE(i) OF_BSWAP16(i)
-#define OF_BSWAP32_IF_BE(i) OF_BSWAP32(i)
-#define OF_BSWAP64_IF_BE(i) OF_BSWAP64(i)
-#define OF_BSWAP16_IF_LE(i) i
-#define OF_BSWAP32_IF_LE(i) i
-#define OF_BSWAP64_IF_LE(i) i
-#define OF_BSWAP32_V_IF_BE(buf, len) OF_BSWAP32_V(buf, len)
+# define OF_BSWAP16_IF_BE(i) OF_BSWAP16(i)
+# define OF_BSWAP32_IF_BE(i) OF_BSWAP32(i)
+# define OF_BSWAP64_IF_BE(i) OF_BSWAP64(i)
+# define OF_BSWAP16_IF_LE(i) i
+# define OF_BSWAP32_IF_LE(i) i
+# define OF_BSWAP64_IF_LE(i) i
+# define OF_BSWAP32_V_IF_BE(buf, len) OF_BSWAP32_V(buf, len)
 #else
-#define OF_BSWAP16_IF_BE(i) i
-#define OF_BSWAP32_IF_BE(i) i
-#define OF_BSWAP64_IF_BE(i) i
-#define OF_BSWAP16_IF_LE(i) OF_BSWAP16(i)
-#define OF_BSWAP32_IF_LE(i) OF_BSWAP32(i)
-#define OF_BSWAP64_IF_LE(i) OF_BSWAP64(i)
-#define OF_BSWAP32_V_IF_BE(buf, len)
+# define OF_BSWAP16_IF_BE(i) i
+# define OF_BSWAP32_IF_BE(i) i
+# define OF_BSWAP64_IF_BE(i) i
+# define OF_BSWAP16_IF_LE(i) OF_BSWAP16(i)
+# define OF_BSWAP32_IF_LE(i) OF_BSWAP32(i)
+# define OF_BSWAP64_IF_LE(i) OF_BSWAP64(i)
+# define OF_BSWAP32_V_IF_BE(buf, len)
 #endif
 
 #define OF_ROL(val, bits) \
