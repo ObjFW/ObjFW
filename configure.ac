@@ -107,7 +107,6 @@ AC_CHECK_FUNC(asprintf, [
 			ac_cv_snprintf_useful_ret="no",
 			ac_cv_snprintf_useful_ret="no")])
 		AC_MSG_RESULT($ac_cv_snprintf_useful_ret)])
-
 test x"$have_asprintf" != x"yes" -a x"$ac_cv_snprintf_useful_ret" != x"yes" && \
 	AC_MSG_ERROR(No asprintf and no snprintf returning required space!)
 
@@ -143,10 +142,56 @@ AC_TRY_COMPILE([
 	#endif], [
 	struct addrinfo ai;
 	getaddrinfo(NULL, NULL, NULL, NULL);
-	], [have_getaddrinfo="yes"], [have_getaddrinfo="no"])
-AC_MSG_RESULT($have_getaddrinfo)
-test x"$have_getaddrinfo" = x"yes" && \
+	], [
+	AC_MSG_RESULT(yes)
 	AC_DEFINE(HAVE_GETADDRINFO, 1, [Whether we have getaddrinfo])
+
+	AC_MSG_CHECKING(whether getaddrinfo is thread-safe)
+	case "$host_os" in
+		darwin[[12345]].*)
+			have_threadsafe_getaddrinfo="no"
+			;;
+		darwin*)
+			have_threadsafe_getaddrinfo="yes"
+			;;
+		freebsd[[1234]].* | freebsd5.[[1234]]*)
+			have_threadsafe_getaddrinfo="no"
+			;;
+		freebsd*)
+			have_threadsafe_getaddrinfo="yes"
+			;;
+		netbsd[[123]].*)
+			have_threadsafe_getaddrinfo="no"
+			;;
+		netbsd*)
+			have_threadsafe_getaddrinfo="yes"
+			;;
+		solaris*)
+			have_threadsafe_getaddrinfo="yes"
+			;;
+		*)
+			have_threadsafe_getaddrinfo="unknown"
+			;;
+		esac
+
+		if test x"$have_threadsafe_getaddrinfo" = x"unknown"; then
+			AC_EGREP_CPP(yes, [
+				#include <netdb.h>
+				#ifdef h_errno
+				yes
+				#end
+				],
+				[have_threadsafe_getaddrinfo="yes"],
+				[have_threadsafe_getaddrinfo="no"])
+		fi
+
+		test x"$have_threadsafe_getaddrinfo" = x"yes" && \
+			AC_DEFINE(HAVE_THREADSAFE_GETADDRINFO, 1,
+				[Whether getaddrinfo is thread-safe])
+
+		AC_MSG_RESULT($have_threadsafe_getaddrinfo)
+	], [
+	AC_MSG_RESULT(no)])
 
 AC_CHECK_FUNC(madvise, [AC_DEFINE(HAVE_MADVISE, 1, [Whether we have madvise])])
 

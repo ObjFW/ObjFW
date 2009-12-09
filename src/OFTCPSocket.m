@@ -29,14 +29,14 @@
 #define INVALID_SOCKET -1
 #endif
 
-#ifndef HAVE_GETADDRINFO
+#if !defined(HAVE_GETADDRINFO) || !defined(HAVE_THREADSAFE_GETADDRINFO)
 #import "OFThread.h"
 
 static OFMutex *mutex = nil;
 #endif
 
 @implementation OFTCPSocket
-#ifndef HAVE_GETADDRINFO
+#if !defined(HAVE_GETADDRINFO) || !defined(HAVE_THREADSAFE_GETADDRINFO)
 + (void)initialize
 {
 	if (self == [OFTCPSocket class])
@@ -52,6 +52,10 @@ static OFMutex *mutex = nil;
 	[super dealloc];
 }
 
+/*
+ * FIXME: Maybe we could copy the result of the name lookup and release the
+ *	  lock so that we don't keep the lock during connection attemps.
+ */
 - connectToService: (OFString*)service
 	    onNode: (OFString*)node
 {
@@ -65,11 +69,19 @@ static OFMutex *mutex = nil;
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 
-	if (getaddrinfo([node cString], [service cString], &hints, &res0))
+#ifndef HAVE_THREADSAFE_GETADDRINFO
+	[mutex lock];
+#endif
+
+	if (getaddrinfo([node cString], [service cString], &hints, &res0)) {
+#ifndef HAVE_THREADSAFE_GETADDRINFO
+		[mutex unlock];
+#endif
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
 			    node: node
 			 service: service];
+	}
 
 	for (res = res0; res != NULL; res = res->ai_next) {
 		if ((sock = socket(res->ai_family, res->ai_socktype,
@@ -86,6 +98,10 @@ static OFMutex *mutex = nil;
 	}
 
 	freeaddrinfo(res0);
+
+#ifndef HAVE_THREADSAFE_GETADDRINFO
+	[mutex unlock];
+#endif
 #else
 	BOOL connected = NO;
 	struct hostent *he;

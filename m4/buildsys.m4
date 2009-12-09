@@ -32,8 +32,8 @@ AC_DEFUN([BUILDSYS_LIB], [
 AC_DEFUN([BUILDSYS_PROG_IMPLIB], [
 	AC_REQUIRE([AC_CANONICAL_HOST])
 	AC_MSG_CHECKING(whether we need an implib)
-	case "$host" in
-		*-*-cygwin* | *-*-mingw*)
+	case "$host_os" in
+		cygwin* | mingw*)
 			AC_MSG_RESULT(yes)
 			PROG_IMPLIB_NEEDED='yes'
 			PROG_IMPLIB_LDFLAGS='-Wl,-export-all-symbols,--out-implib,lib${PROG}.a'
@@ -52,9 +52,9 @@ AC_DEFUN([BUILDSYS_PROG_IMPLIB], [
 AC_DEFUN([BUILDSYS_SHARED_LIB], [
 	AC_REQUIRE([AC_CANONICAL_HOST])
 	AC_MSG_CHECKING(for shared library system)
-	case "$host" in
-		*-apple-*)
-			AC_MSG_RESULT(Mac OS X)
+	case "$host_os" in
+		darwin*)
+			AC_MSG_RESULT(Darwin)
 			LIB_CPPFLAGS='-DPIC'
 			LIB_CFLAGS='-fPIC'
 			LIB_LDFLAGS='-dynamiclib -flat_namespace'
@@ -69,7 +69,7 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 			UNINSTALL_LIB='rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$${i%.dylib}.${LIB_MAJOR}.dylib ${DESTDIR}${libdir}/$${i%.dylib}.${LIB_MAJOR}.${LIB_MINOR}.dylib'
 			CLEAN_LIB=''
 			;;
-		*-*-solaris*)
+		solaris*)
 			AC_MSG_RESULT(Solaris)
 			LIB_CPPFLAGS='-DPIC'
 			LIB_CFLAGS='-fPIC'
@@ -85,7 +85,7 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 			UNINSTALL_LIB='rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}'
 			CLEAN_LIB=''
 			;;
-		*-*-openbsd* | *-*-mirbsd*)
+		openbsd* | mirbsd*)
 			AC_MSG_RESULT(OpenBSD)
 			LIB_CPPFLAGS='-DPIC'
 			LIB_CFLAGS='-fPIC'
@@ -101,7 +101,7 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 			UNINSTALL_LIB='rm -f ${DESTDIR}${libdir}/$$i'
 			CLEAN_LIB=''
 			;;
-		*-*-cygwin* | *-*-mingw*)
+		cygwin* | mingw*)
 			AC_MSG_RESULT(Win32)
 			LIB_CPPFLAGS='-DPIC'
 			LIB_CFLAGS=''
