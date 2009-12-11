@@ -12,7 +12,7 @@ SRCS = OFArray.m	\
        ${OFPLUGIN_M}	\
        OFString.m	\
        OFTCPSocket.m	\
-       OFThread.m	\
+       ${OFTHREAD_M}	\
        OFXMLElement.m	\
        OFXMLParser.m	\
        main.m

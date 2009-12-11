@@ -3,4 +3,5 @@
 #undef OF_GNU_RUNTIME
 #undef OF_HAVE_ASPRINTF
 #undef OF_PLUGINS
+#undef OF_THREADS
 #undef SIZE_MAX

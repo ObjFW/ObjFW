@@ -79,12 +79,6 @@ AC_EGREP_CPP(yes, [
 		size_max="((size_t)-1)"])
 	AC_DEFINE_UNQUOTED(SIZE_MAX, $size_max, [Maximum value for size_t])])
 
-AC_CHECK_FUNC(objc_sync_enter,, [
-	AC_SUBST(OBJC_SYNC, "objc_sync")
-	AC_SUBST(OBJC_SYNC_M, "objc_sync.m")
-	AC_DEFINE(NEED_OBJC_SYNC_INIT, 1,
-		[Whether objc_sync_init needs to be called])])
-
 AC_CHECK_FUNC(asprintf, [
 	have_asprintf="yes"
 	AC_DEFINE(OF_HAVE_ASPRINTF, 1, [Whether we have asprintf])
@@ -112,19 +106,33 @@ test x"$have_asprintf" != x"yes" -a x"$ac_cv_snprintf_useful_ret" != x"yes" && \
 
 AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
 
-case "$host" in
-	*-*-mingw*)
-		AC_MSG_CHECKING(for threads)
-		AC_MSG_RESULT(win32)
-		;;
-	*)
-		ACX_PTHREAD([
-			CPPLAGS="$CPPFLAGS $PTHREAD_CFLAGS"
-			LIBS="$LIBS $PTHREAD_LIBS"
-			], [
-			AC_MSG_ERROR(No pthreads or other supported threads!)])
-		;;
-esac
+AC_ARG_ENABLE(threads,
+	AS_HELP_STRING([--disable-threads], [disable thread support]))
+if test x"$enable_threads" != x"no"; then
+	case "$host_os" in
+		mingw*)
+			AC_MSG_CHECKING(for threads)
+			AC_MSG_RESULT(win32)
+			;;
+		*)
+			ACX_PTHREAD([
+				CPPLAGS="$CPPFLAGS $PTHREAD_CFLAGS"
+				LIBS="$LIBS $PTHREAD_LIBS"
+				], [
+				AC_MSG_ERROR(No supported threads found!)])
+			;;
+	esac
+
+	AC_DEFINE(OF_THREADS, 1, [Whether we have threads])
+	AC_SUBST(OFTHREAD_M, "OFThread.m")
+	AC_SUBST(THREADING_H, "threading.h")
+
+	AC_CHECK_FUNC(objc_sync_enter,, [
+		AC_SUBST(OBJC_SYNC, "objc_sync")
+		AC_SUBST(OBJC_SYNC_M, "objc_sync.m")
+		AC_DEFINE(NEED_OBJC_SYNC_INIT, 1,
+			[Whether objc_sync_init needs to be called])])
+fi
 
 AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
 AC_CHECK_LIB(ws2_32, main, LIBS="$LIBS -lws2_32")
@@ -146,32 +154,34 @@ AC_TRY_COMPILE([
 	AC_MSG_RESULT(yes)
 	AC_DEFINE(HAVE_GETADDRINFO, 1, [Whether we have getaddrinfo])
 
-	AC_MSG_CHECKING(whether getaddrinfo is thread-safe)
-	case "$host_os" in
-		darwin[[12345]].*)
-			have_threadsafe_getaddrinfo="no"
-			;;
-		darwin*)
-			have_threadsafe_getaddrinfo="yes"
-			;;
-		freebsd[[1234]].* | freebsd5.[[1234]]*)
-			have_threadsafe_getaddrinfo="no"
-			;;
-		freebsd*)
-			have_threadsafe_getaddrinfo="yes"
-			;;
-		netbsd[[123]].*)
-			have_threadsafe_getaddrinfo="no"
-			;;
-		netbsd*)
-			have_threadsafe_getaddrinfo="yes"
-			;;
-		solaris*)
-			have_threadsafe_getaddrinfo="yes"
-			;;
-		*)
-			have_threadsafe_getaddrinfo="unknown"
-			;;
+	if test x"$enable_threads" != x"no"; then
+		AC_MSG_CHECKING(whether getaddrinfo is thread-safe)
+
+		case "$host_os" in
+			darwin[[12345]].*)
+				have_threadsafe_getaddrinfo="no"
+				;;
+			darwin*)
+				have_threadsafe_getaddrinfo="yes"
+				;;
+			freebsd[[1234]].* | freebsd5.[[1234]]*)
+				have_threadsafe_getaddrinfo="no"
+				;;
+			freebsd*)
+				have_threadsafe_getaddrinfo="yes"
+				;;
+			netbsd[[123]].*)
+				have_threadsafe_getaddrinfo="no"
+				;;
+			netbsd*)
+				have_threadsafe_getaddrinfo="yes"
+				;;
+			solaris*)
+				have_threadsafe_getaddrinfo="yes"
+				;;
+			*)
+				have_threadsafe_getaddrinfo="unknown"
+				;;
 		esac
 
 		if test x"$have_threadsafe_getaddrinfo" = x"unknown"; then
@@ -190,6 +200,7 @@ AC_TRY_COMPILE([
 				[Whether getaddrinfo is thread-safe])
 
 		AC_MSG_RESULT($have_threadsafe_getaddrinfo)
+	fi
 	], [
 	AC_MSG_RESULT(no)])
 

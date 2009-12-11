@@ -15,14 +15,18 @@
 
 #import "OFAutoreleasePool.h"
 #import "OFList.h"
-#import "OFThread.h"
 #import "OFExceptions.h"
 
+#ifdef OF_THREADS
 #import "threading.h"
 
 static of_tlskey_t first_key, last_key;
+#else
+static OFAutoreleasePool *first = nil, *last = nil;
+#endif
 
 @implementation OFAutoreleasePool
+#ifdef OF_THREADS
 + (void)initialize
 {
 	if (self != [OFAutoreleasePool class])
@@ -31,10 +35,13 @@ static of_tlskey_t first_key, last_key;
 	if (!of_tlskey_new(&first_key) || !of_tlskey_new(&last_key))
 		@throw [OFInitializationFailedException newWithClass: self];
 }
+#endif
 
 + (void)addObjectToTopmostPool: (OFObject*)obj
 {
+#ifdef OF_THREADS
 	id last = of_tlskey_get(last_key);
+#endif
 
 	if (last == nil) {
 		@try {
@@ -44,7 +51,9 @@ static of_tlskey_t first_key, last_key;
 			@throw e;
 		}
 
+#ifdef OF_THREADS
 		last = of_tlskey_get(last_key);
+#endif
 	}
 
 	if (last == nil) {
@@ -62,15 +71,22 @@ static of_tlskey_t first_key, last_key;
 
 + (void)releaseAll
 {
+#ifdef OF_THREADS
 	[of_tlskey_get(first_key) release];
+#else
+	[first release];
+#endif
 }
 
 - init
 {
+#ifdef OF_THREADS
 	id first;
+#endif
 
 	self = [super init];
 
+#ifdef OF_THREADS
 	first = of_tlskey_get(first_key);
 	prev = of_tlskey_get(last_key);
 
@@ -79,8 +95,13 @@ static of_tlskey_t first_key, last_key;
 		[super dealloc];
 		@throw [OFInitializationFailedException newWithClass: c];
 	}
+#else
+	prev = last;
+	last = self;
+#endif
 
 	if (first == nil) {
+#ifdef OF_THREADS
 		if (!of_tlskey_set(first_key, self)) {
 			Class c = isa;
 
@@ -90,6 +111,9 @@ static of_tlskey_t first_key, last_key;
 			@throw [OFInitializationFailedException
 			    newWithClass: c];
 		}
+#else
+		first = self;
+#endif
 	}
 
 	if (prev != nil)
@@ -111,8 +135,12 @@ static of_tlskey_t first_key, last_key;
 	 * the pool itself will be released as well then, because maybe
 	 * of_tlskey_set will work this time.
 	 */
+#ifdef OF_THREADS
 	if (!of_tlskey_set(last_key, prev))
 		return;
+#else
+	last = prev;
+#endif
 
 	if (prev != nil)
 		prev->next = nil;
@@ -121,9 +149,14 @@ static of_tlskey_t first_key, last_key;
 	 * If of_tlskey_set fails here, this is even worse, as this will
 	 * definitely be a memory leak. But this should never happen anyway.
 	 */
+#ifdef OF_THREADS
 	if (of_tlskey_get(first_key) == self)
 		if (!of_tlskey_set(first_key, nil))
 			return;
+#else
+	if (first == self)
+		first = nil;
+#endif
 
 	[super dealloc];
 }

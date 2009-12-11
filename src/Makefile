@@ -24,7 +24,7 @@ SRCS = OFArray.m		\
        OFStream.m		\
        OFString.m		\
        OFTCPSocket.m		\
-       OFThread.m		\
+       ${OFTHREAD_M}		\
        OFURLEncoding.m		\
        OFXMLElement.m		\
        OFXMLParser.m		\
@@ -35,7 +35,7 @@ INCLUDES := ${SRCS:.m=.h}	\
 	    ObjFW.h		\
 	    asprintf.h		\
 	    objfw-defs.h	\
-	    threading.h
+	    ${THREADING_H}
 
 SRCS += ${OBJC_SYNC_M}	\
 	${ASPRINTF_M}	\

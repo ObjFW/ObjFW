@@ -30,7 +30,9 @@ extern void plugin_tests();
 #endif
 extern void string_tests();
 extern void tcpsocket_tests();
+#ifdef OF_THREADS
 extern void thread_tests();
+#endif
 extern void xmlelement_tests();
 extern void xmlparser_tests();
 
@@ -105,7 +107,9 @@ main()
 	dictionary_tests();
 	list_tests();
 	tcpsocket_tests();
+#ifdef OF_THREADS
 	thread_tests();
+#endif
 	xmlelement_tests();
 	xmlparser_tests();
 #ifdef OF_PLUGINS

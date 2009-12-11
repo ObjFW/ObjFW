@@ -33,11 +33,14 @@
 #import "OFTCPSocket.h"
 
 #import "OFHashes.h"
-#import "OFThread.h"
 #import "OFXMLElement.h"
 
 #ifdef OF_PLUGINS
 #import "OFPlugin.h"
+#endif
+
+#ifdef OF_THREADS
+#import "OFThread.h"
 #endif
 
 #import "OFMacros.h"

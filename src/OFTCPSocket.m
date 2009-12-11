@@ -24,19 +24,20 @@
 
 #import "OFTCPSocket.h"
 #import "OFExceptions.h"
+#import "OFMacros.h"
 
 #ifndef INVALID_SOCKET
 #define INVALID_SOCKET -1
 #endif
 
-#if !defined(HAVE_GETADDRINFO) || !defined(HAVE_THREADSAFE_GETADDRINFO)
+#if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
 #import "OFThread.h"
 
 static OFMutex *mutex = nil;
 #endif
 
 @implementation OFTCPSocket
-#if !defined(HAVE_GETADDRINFO) || !defined(HAVE_THREADSAFE_GETADDRINFO)
+#if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
 + (void)initialize
 {
 	if (self == [OFTCPSocket class])
@@ -69,12 +70,12 @@ static OFMutex *mutex = nil;
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 
-#ifndef HAVE_THREADSAFE_GETADDRINFO
+#if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
 	[mutex lock];
 #endif
 
 	if (getaddrinfo([node cString], [service cString], &hints, &res0)) {
-#ifndef HAVE_THREADSAFE_GETADDRINFO
+#if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
 		[mutex unlock];
 #endif
 		@throw [OFAddressTranslationFailedException
@@ -99,7 +100,7 @@ static OFMutex *mutex = nil;
 
 	freeaddrinfo(res0);
 
-#ifndef HAVE_THREADSAFE_GETADDRINFO
+#if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
 	[mutex unlock];
 #endif
 #else
@@ -110,10 +111,14 @@ static OFMutex *mutex = nil;
 	uint16_t port;
 	char **ip;
 
+#ifdef OF_THREADS
 	[mutex lock];
+#endif
 
 	if ((he = gethostbyname([node cString])) == NULL) {
+#ifdef OF_THREADS
 		[mutex unlock];
+#endif
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
 			    node: node
@@ -123,7 +128,9 @@ static OFMutex *mutex = nil;
 	if ((se = getservbyname([service cString], "TCP")) != NULL)
 		port = se->s_port;
 	else if ((port = OF_BSWAP16_IF_LE(atoi([service cString]))) == 0) {
+#ifdef OF_THREADS
 		[mutex unlock];
+#endif
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
 			    node: node
@@ -136,7 +143,9 @@ static OFMutex *mutex = nil;
 
 	if (he->h_addrtype != AF_INET ||
 	    (sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
+#ifdef OF_THREADS
 		[mutex unlock];
+#endif
 		@throw [OFConnectionFailedException
 		    newWithClass: isa
 			    node: node
@@ -153,7 +162,9 @@ static OFMutex *mutex = nil;
 		break;
 	}
 
+#ifdef OF_THREADS
 	[mutex unlock];
+#endif
 
 	if (!connected) {
 		close(sock);
@@ -189,14 +200,25 @@ static OFMutex *mutex = nil;
 	hints.ai_family = family;
 	hints.ai_socktype = SOCK_STREAM;
 
-	if (getaddrinfo([node cString], [service cString], &hints, &res))
+#if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
+	[mutex lock];
+#endif
+
+	if (getaddrinfo([node cString], [service cString], &hints, &res)) {
+#if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
+		[mutex unlock];
+#endif
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
 			    node: node
 			 service: service];
+	}
 
 	if (bind(sock, res->ai_addr, res->ai_addrlen) == -1) {
 		freeaddrinfo(res);
+#if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
+		[mutex unlock];
+#endif
 		@throw [OFBindFailedException newWithClass: isa
 						      node: node
 						   service: service
@@ -204,6 +226,10 @@ static OFMutex *mutex = nil;
 	}
 
 	freeaddrinfo(res);
+
+#if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
+	[mutex unlock];
+#endif
 #else
 	struct hostent *he;
 	struct servent *se;
@@ -216,10 +242,14 @@ static OFMutex *mutex = nil;
 						   service: service
 						    family: family];
 
+#ifdef OF_THREADS
 	[mutex lock];
+#endif
 
 	if ((he = gethostbyname([node cString])) == NULL) {
+#ifdef OF_THREADS
 		[mutex unlock];
+#endif
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
 			    node: node
@@ -229,7 +259,9 @@ static OFMutex *mutex = nil;
 	if ((se = getservbyname([service cString], "TCP")) != NULL)
 		port = se->s_port;
 	else if ((port = OF_BSWAP16_IF_LE(atoi([service cString]))) == 0) {
+#ifdef OF_THREADS
 		[mutex unlock];
+#endif
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
 			    node: node
@@ -241,7 +273,9 @@ static OFMutex *mutex = nil;
 	addr.sin_port = port;
 
 	if (he->h_addrtype != AF_INET || he->h_addr_list[0] == NULL) {
+#ifdef OF_THREADS
 		[mutex unlock];
+#endif
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
 			    node: node
@@ -250,7 +284,9 @@ static OFMutex *mutex = nil;
 
 	memcpy(&addr.sin_addr.s_addr, he->h_addr_list[0], he->h_length);
 
+#ifdef OF_THREADS
 	[mutex unlock];
+#endif
 
 	if (bind(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1)
 		@throw [OFBindFailedException newWithClass: isa
