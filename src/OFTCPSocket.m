@@ -12,6 +12,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -53,36 +54,24 @@ static OFMutex *mutex = nil;
 	[super dealloc];
 }
 
-/*
- * FIXME: Maybe we could copy the result of the name lookup and release the
- *	  lock so that we don't keep the lock during connection attemps.
- */
 - connectToService: (OFString*)service
 	    onNode: (OFString*)node
 {
 	if (sock != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException newWithClass: isa];
 
-#ifdef HAVE_GETADDRINFO
+#ifdef HAVE_THREADSAFE_GETADDRINFO
 	struct addrinfo hints, *res, *res0;
 
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 
-#if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
-	[mutex lock];
-#endif
-
-	if (getaddrinfo([node cString], [service cString], &hints, &res0)) {
-#if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
-		[mutex unlock];
-#endif
+	if (getaddrinfo([node cString], [service cString], &hints, &res0))
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
 			    node: node
 			 service: service];
-	}
 
 	for (res = res0; res != NULL; res = res->ai_next) {
 		if ((sock = socket(res->ai_family, res->ai_socktype,
@@ -99,10 +88,6 @@ static OFMutex *mutex = nil;
 	}
 
 	freeaddrinfo(res0);
-
-#if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
-	[mutex unlock];
-#endif
 #else
 	BOOL connected = NO;
 	struct hostent *he;
@@ -110,13 +95,16 @@ static OFMutex *mutex = nil;
 	struct sockaddr_in addr;
 	uint16_t port;
 	char **ip;
-
 #ifdef OF_THREADS
+	OFDataArray *addrlist;
+
+	addrlist = [[OFDataArray alloc] initWithItemSize: sizeof(char**)];
 	[mutex lock];
 #endif
 
 	if ((he = gethostbyname([node cString])) == NULL) {
 #ifdef OF_THREADS
+		[addrlist release];
 		[mutex unlock];
 #endif
 		@throw [OFAddressTranslationFailedException
@@ -127,8 +115,10 @@ static OFMutex *mutex = nil;
 
 	if ((se = getservbyname([service cString], "TCP")) != NULL)
 		port = se->s_port;
-	else if ((port = OF_BSWAP16_IF_LE(atoi([service cString]))) == 0) {
+	else if ((port = OF_BSWAP16_IF_LE(strtol([service cString], NULL,
+	    10))) == 0) {
 #ifdef OF_THREADS
+		[addrlist release];
 		[mutex unlock];
 #endif
 		@throw [OFAddressTranslationFailedException
@@ -144,6 +134,7 @@ static OFMutex *mutex = nil;
 	if (he->h_addrtype != AF_INET ||
 	    (sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
 #ifdef OF_THREADS
+		[addrlist release];
 		[mutex unlock];
 #endif
 		@throw [OFConnectionFailedException
@@ -152,7 +143,24 @@ static OFMutex *mutex = nil;
 			 service: service];
 	}
 
+#ifdef OF_THREADS
+	@try {
+		for (ip = he->h_addr_list; *ip != NULL; ip++)
+			[addrlist addItem: ip];
+
+		/* Add the terminating NULL */
+		[addrlist addItem: ip];
+	} @catch (OFException *e) {
+		[addrlist release];
+		@throw e;
+	} @finally {
+		[mutex unlock];
+	}
+
+	for (ip = [addrlist cArray]; *ip != NULL; ip++) {
+#else
 	for (ip = he->h_addr_list; *ip != NULL; ip++) {
+#endif
 		memcpy(&addr.sin_addr.s_addr, *ip, he->h_length);
 
 		if (connect(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1)
@@ -163,7 +171,7 @@ static OFMutex *mutex = nil;
 	}
 
 #ifdef OF_THREADS
-	[mutex unlock];
+	[addrlist release];
 #endif
 
 	if (!connected) {
@@ -193,32 +201,21 @@ static OFMutex *mutex = nil;
 						   service: service
 						    family: family];
 
-#ifdef HAVE_GETADDRINFO
+#ifdef HAVE_THREADSAFE_GETADDRINFO
 	struct addrinfo hints, *res;
 
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = family;
 	hints.ai_socktype = SOCK_STREAM;
 
-#if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
-	[mutex lock];
-#endif
-
-	if (getaddrinfo([node cString], [service cString], &hints, &res)) {
-#if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
-		[mutex unlock];
-#endif
+	if (getaddrinfo([node cString], [service cString], &hints, &res))
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
 			    node: node
 			 service: service];
-	}
 
 	if (bind(sock, res->ai_addr, res->ai_addrlen) == -1) {
 		freeaddrinfo(res);
-#if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
-		[mutex unlock];
-#endif
 		@throw [OFBindFailedException newWithClass: isa
 						      node: node
 						   service: service
@@ -226,10 +223,6 @@ static OFMutex *mutex = nil;
 	}
 
 	freeaddrinfo(res);
-
-#if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
-	[mutex unlock];
-#endif
 #else
 	struct hostent *he;
 	struct servent *se;
@@ -258,7 +251,8 @@ static OFMutex *mutex = nil;
 
 	if ((se = getservbyname([service cString], "TCP")) != NULL)
 		port = se->s_port;
-	else if ((port = OF_BSWAP16_IF_LE(atoi([service cString]))) == 0) {
+	else if ((port = OF_BSWAP16_IF_LE(strtol([service cString], NULL,
+	    10))) == 0) {
 #ifdef OF_THREADS
 		[mutex unlock];
 #endif
