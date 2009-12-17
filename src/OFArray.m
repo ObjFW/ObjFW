@@ -315,6 +315,27 @@
 					      selector: _cmd];
 }
 
+- replaceObject: (OFObject*)old
+     withObject: (OFObject*)new
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- replaceObjectAtIndex: (size_t)index
+	    withObject: (OFObject*)obj
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- replaceObjectIdenticalTo: (OFObject*)old
+		withObject: (OFObject*)new
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
 - removeObject: (OFObject*)obj
 {
 	@throw [OFNotImplementedException newWithClass: isa

@@ -66,6 +66,27 @@ array_tests()
 	TEST(@"-[indexOfObjectIdenticalTo:]",
 	    [a[0] indexOfObjectIdenticalTo: c_ary[1]] == 1)
 
+	TEST(@"-[replaceObject:withObject:]",
+	    [a[0] replaceObject: c_ary[1]
+		     withObject: c_ary[0]] &&
+	    [[a[0] objectAtIndex: 0] isEqual: c_ary[0]] &&
+	    [[a[0] objectAtIndex: 1] isEqual: c_ary[0]] &&
+	    [[a[0] objectAtIndex: 2] isEqual: c_ary[2]])
+
+	TEST(@"-[replaceObject:identicalTo:]",
+	    [a[0] replaceObjectIdenticalTo: c_ary[0]
+				withObject: c_ary[1]] &&
+	    [[a[0] objectAtIndex: 0] isEqual: c_ary[1]] &&
+	    [[a[0] objectAtIndex: 1] isEqual: c_ary[1]] &&
+	    [[a[0] objectAtIndex: 2] isEqual: c_ary[2]])
+
+	TEST(@"-[replaceObjectAtIndex:withObject:]",
+	    [a[0] replaceObjectAtIndex: 0
+			    withObject: c_ary[0]] &&
+	    [[a[0] objectAtIndex: 0] isEqual: c_ary[0]] &&
+	    [[a[0] objectAtIndex: 1] isEqual: c_ary[1]] &&
+	    [[a[0] objectAtIndex: 2] isEqual: c_ary[2]])
+
 	TEST(@"-[removeObject:]",
 	    [a[0] removeObject: c_ary[1]] && [a[0] count] == 2)
 

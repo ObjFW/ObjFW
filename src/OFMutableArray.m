@@ -51,6 +51,55 @@
 	return self;
 }
 
+- replaceObject: (OFObject*)old
+     withObject: (OFObject*)new
+{
+	OFObject **objs = [array cArray];
+	size_t i, count = [array count];
+
+	for (i = 0; i < count; i++) {
+		if ([objs[i] isEqual: old]) {
+			[new retain];
+			[objs[i] release];
+			objs[i] = new;
+		}
+	}
+
+	return self;
+}
+
+- replaceObjectAtIndex: (size_t)index
+	    withObject: (OFObject*)obj
+{
+	OFObject **objs = [array cArray];
+
+	if (index >= [array count])
+		@throw [OFOutOfRangeException newWithClass: isa];
+
+	[obj retain];
+	[objs[index] release];
+	objs[index] = obj;
+
+	return self;
+}
+
+- replaceObjectIdenticalTo: (OFObject*)old
+		withObject: (OFObject*)new
+{
+	OFObject **objs = [array cArray];
+	size_t i, count = [array count];
+
+	for (i = 0; i < count; i++) {
+		if (objs[i] == old) {
+			[new retain];
+			[objs[i] release];
+			objs[i] = new;
+		}
+	}
+
+	return self;
+}
+
 - removeObject: (OFObject*)obj
 {
 	OFObject **objs = [array cArray];
@@ -60,7 +109,6 @@
 		if ([objs[i] isEqual: obj]) {
 			[objs[i] release];
 			[array removeItemAtIndex: i];
-			return self;
 		}
 	}
 

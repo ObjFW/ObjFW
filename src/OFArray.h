@@ -139,6 +139,12 @@
 - addObject: (OFObject*)obj;
 - addObject: (OFObject*)obj
     atIndex: (size_t)index;
+- replaceObject: (OFObject*)old
+     withObject: (OFObject*)new;
+- replaceObjectAtIndex: (size_t)index
+	    withObject: (OFObject*)obj;
+- replaceObjectIdenticalTo: (OFObject*)old
+		withObject: (OFObject*)new;
 - removeObject: (OFObject*)obj;
 - removeObjectIdenticalTo: (OFObject*)obj;
 - removeObjectAtIndex: (size_t)index;

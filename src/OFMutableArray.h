@@ -33,14 +33,43 @@
     atIndex: (size_t)index;
 
 /**
- * Removes the first object equivalent to the specified object.
+ * Replaces all objects equivalent to the first specified object with the
+ * second specified object.
+ *
+ * \param old The object to replace
+ * \param new The replacement object
+ */
+- replaceObject: (OFObject*)old
+     withObject: (OFObject*)new;
+
+/**
+ * Replaces the object at the specified index with the specified object.
+ *
+ * \param index The index of the object to replace
+ * \param obj The replacement object
+ */
+- replaceObjectAtIndex: (size_t)index
+	    withObject: (OFObject*)obj;
+
+/**
+ * Replaces all objects that have the same address as the first specified object
+ * with the second specified object.
+ *
+ * \param old The object to replace
+ * \param new The replacement object
+ */
+- replaceObjectIdenticalTo: (OFObject*)old
+		withObject: (OFObject*)new;
+
+/**
+ * Removes all objects equivalent to the specified object.
  *
  * \param obj The object to remove
  */
 - removeObject: (OFObject*)obj;
 
 /**
- * Removes the first object that has the same address as the specified object.
+ * Removes all objects that have the same address as the specified object.
  *
  * \param obj The object to remove
  */
