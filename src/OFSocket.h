@@ -23,7 +23,7 @@
 /*
  * Headers for Win32
  *
- * These must be imported after objc/Object and thus OFObject!
+ * These must be imported after objc/objc.h and thus OFObject!
  */
 #ifdef _WIN32
 #define _WIN32_WINNT 0x0501

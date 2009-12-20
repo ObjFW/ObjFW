@@ -16,11 +16,8 @@
 #include <string.h>
 #include <unistd.h>
 
-#ifndef HAVE_GETADDRINFO
-# include <stdlib.h>
-# ifndef _WIN32
-#  include <arpa/inet.h>
-# endif
+#if !defined(HAVE_THREADSAFE_GETADDRINFO) && !defined(_WIN32)
+#include <netinet/in.h>
 #endif
 
 #import "OFTCPSocket.h"
