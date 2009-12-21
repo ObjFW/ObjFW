@@ -88,8 +88,8 @@ extern int _OFXMLParser_reference;
 /**
  * This callback is called when an unknown entity was found while trying to
  * unescape XML. The callback is supposed to return a substitution for the
- * entity or nil if it is not known to the callback as well, in which case an
- * exception will be risen.
+ * entity or nil if it is unknown to the callback as well, in which case an
+ * exception will be thrown.
  *
  * \param entity The name of the entity that is unknown
  * \return A substitution for the entity or nil
