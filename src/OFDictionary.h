@@ -22,7 +22,7 @@ struct of_dictionary_bucket
 };
 
 /**
- * The OFDictionary class provides a class for using hash tables.
+ * The OFDictionary class is a class for using hash tables.
  */
 @interface OFDictionary: OFObject <OFCopying, OFMutableCopying>
 {

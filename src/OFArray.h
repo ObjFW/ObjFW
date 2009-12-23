@@ -17,7 +17,7 @@
 @class OFString;
 
 /**
- * The OFArray class provides a class for storing objects in an array.
+ * The OFArray class is a class for storing objects in an array.
  */
 @interface OFArray: OFObject <OFCopying, OFMutableCopying>
 {
@@ -30,18 +30,24 @@
 + array;
 
 /**
+ * Creates a new OFArray with the specified object.
+ *
  * \param obj An object
  * \return A new autoreleased OFArray
  */
 + arrayWithObject: (OFObject*)obj;
 
 /**
+ * Creates a new OFArray with the specified objects, terminated by nil.
+ *
  * \param first The first object in the array
  * \return A new autoreleased OFArray
  */
 + arrayWithObjects: (OFObject*)first, ...;
 
 /**
+ * Creates a new OFArray with the objects from the specified C array.
+ *
  * \param objs A C array of objects.
  * \return A new autoreleased OFArray
  */
@@ -82,7 +88,7 @@
 - initWithCArray: (OFObject**)objs;
 
 /**
- * \return The number of objects in the OFArray
+ * \return The number of objects in the array
  */
 - (size_t)count;
 
@@ -92,7 +98,7 @@
 - (id*)cArray;
 
 /**
- * Returns a specific object of the OFArray.
+ * Returns a specific object of the array.
  *
  * \param index The number of the object to return
  * \return The specified object of the OFArray
@@ -119,12 +125,12 @@
 - (size_t)indexOfObjectIdenticalTo: (OFObject*)obj;
 
 /**
- * \return The first object of the OFArray or nil
+ * \return The first object of the array or nil
  */
 - (id)firstObject;
 
 /**
- * \return The last object of the OFArray or nil
+ * \return The last object of the array or nil
  */
 - (id)lastObject;
 
