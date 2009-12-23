@@ -135,8 +135,8 @@ void _references_to_categories_of_OFDictionary()
 		@try {
 			[dict->data[i].object retain];
 		} @catch (OFException *e) {
-			[self dealloc];
 			[key release];
+			[self dealloc];
 			@throw e;
 		}
 
@@ -163,8 +163,8 @@ void _references_to_categories_of_OFDictionary()
 	@try {
 		[obj retain];
 	} @catch (OFException *e) {
-		[self dealloc];
 		[key release];
+		[self dealloc];
 		@throw e;
 	}
 
@@ -246,8 +246,8 @@ void _references_to_categories_of_OFDictionary()
 			@try {
 				[objs_carray[i] retain];
 			} @catch (OFException *e) {
-				[self dealloc];
 				[key release];
+				[self dealloc];
 				@throw e;
 			}
 
@@ -273,8 +273,8 @@ void _references_to_categories_of_OFDictionary()
 		@try {
 			[data[j].object release];
 		} @catch (OFException *e) {
-			[self dealloc];
 			[objs_carray[i] release];
+			[self dealloc];
 			@throw e;
 		}
 
@@ -357,8 +357,8 @@ void _references_to_categories_of_OFDictionary()
 	@try {
 		[obj retain];
 	} @catch (OFException *e) {
-		[self dealloc];
 		[key release];
+		[self dealloc];
 		@throw e;
 	}
 
@@ -412,8 +412,8 @@ void _references_to_categories_of_OFDictionary()
 			@try {
 				[obj retain];
 			} @catch (OFException *e) {
-				[self dealloc];
 				[key release];
+				[self dealloc];
 				@throw e;
 			}
 
@@ -439,8 +439,8 @@ void _references_to_categories_of_OFDictionary()
 		@try {
 			[data[j].object release];
 		} @catch (OFException *e) {
-			[self dealloc];
 			[obj release];
+			[self dealloc];
 			@throw e;
 		}
 
