@@ -105,19 +105,8 @@
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init], *pool2;
 
 	of_unichar_t i, j;
-	BOOL *upper_table_used;
-	BOOL *lower_table_used;
-	char *casefolding_table_used;
 	OFFile *f = [OFFile fileWithPath: file
 				    mode: @"wb"];
-
-	upper_table_used = [self allocMemoryWithSize: 0x1100];
-	lower_table_used = [self allocMemoryWithSize: 0x1100];
-	casefolding_table_used = [self allocMemoryWithSize: 0x1100];
-
-	memset(upper_table_used, 0, 0x1100);
-	memset(lower_table_used, 0, 0x1100);
-	memset(casefolding_table_used, 0, 0x1100);
 
 	[f writeString: COPYRIGHT
 	    @"#include \"config.h\"\n"
@@ -304,10 +293,6 @@
 	}
 
 	[f writeString: @"\n};\n"];
-
-	[self freeMemory: upper_table_used];
-	[self freeMemory: lower_table_used];
-	[self freeMemory: casefolding_table_used];
 
 	[pool release];
 }
