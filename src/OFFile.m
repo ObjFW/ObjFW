@@ -92,6 +92,9 @@ OFFile *of_stderr = nil;
 								 path: path
 								owner: owner
 								group: group];
+#else
+	@throw [OFNotImplementedException newWithClass: self
+					      selector: _cmd];
 #endif
 }
 
