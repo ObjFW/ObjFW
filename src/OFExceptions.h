@@ -312,7 +312,7 @@
 @end
 
 /**
- * An OFException indicating a read to the file failed.
+ * An OFException indicating a read on the file failed.
  */
 @interface OFReadFailedException: OFReadOrWriteFailedException {}
 @end

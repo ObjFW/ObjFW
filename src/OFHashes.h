@@ -34,8 +34,6 @@ extern int _OFHashing_reference;
  */
 + md5Hash;
 
-- init;
-
 /**
  * Adds a buffer to the hash to be calculated.
  *
@@ -69,8 +67,6 @@ extern int _OFHashing_reference;
  * \return A new autoreleased SHA1 Hash
  */
 + sha1Hash;
-
-- init;
 
 /**
  * Adds a buffer to the hash to be calculated.

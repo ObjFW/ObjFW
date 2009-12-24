@@ -14,8 +14,9 @@
 #import "OFList.h"
 
 /**
- * The OFAutoreleasePool class provides a class that keeps track of objects
- * that will be released when the autorelease pool is released.
+ * The OFAutoreleasePool class is a class that keeps track of objects that will
+ * be released when the autorelease pool is released.
+ *
  * Every thread has its own stack of autorelease pools.
  */
 @interface OFAutoreleasePool: OFObject

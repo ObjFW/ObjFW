@@ -18,7 +18,7 @@ SRCS = OFArray.m	\
 IPHONE_USER = mobile
 IPHONE_TMP = /tmp/objfw-test
 
-.PHONY: run run-tests
+.PHONY: run run-tests run-on-iphone
 run: all
 	if [ -z "${DONT_RUN_TESTS}" ]; then ${MAKE} ${MFLAGS} run-tests; fi
 

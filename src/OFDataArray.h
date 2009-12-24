@@ -12,8 +12,7 @@
 #import "OFObject.h"
 
 /**
- * The OFDataArray class provides a class for storing arbitrary data in an
- * array.
+ * The OFDataArray class is a class for storing arbitrary data in an array.
  *
  * If you plan to store large hunks of data, you should consider using
  * OFBigDataArray, which allocates the memory in pages rather than in bytes.
@@ -144,8 +143,8 @@
 @end
 
 /**
- * The OFBigDataArray class provides a class for storing arbitrary data in an
- * array and is designed to store large hunks of data. Therefore, it allocates
+ * The OFBigDataArray class is a class for storing arbitrary data in an array
+ * and is designed to store large hunks of data. Therefore, it allocates
  * memory in pages rather than a chunk of memory for each item.
  */
 @interface OFBigDataArray: OFDataArray <OFCopying>

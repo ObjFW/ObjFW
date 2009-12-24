@@ -131,9 +131,9 @@ typedef int gid_t;
 @interface OFFileSingleton: OFFile
 @end
 
-/// An OFFile object for stdin.
+/// An OFFile object for stdin
 extern OFFile *of_stdin;
-/// An OFFile object for stdout.
+/// An OFFile object for stdout
 extern OFFile *of_stdout;
-/// An OFFile object for stderr.
+/// An OFFile object for stderr
 extern OFFile *of_stderr;

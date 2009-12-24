@@ -59,7 +59,7 @@
  */
 @interface OFThread: OFObject
 {
-	OFObject <OFCopying> *object;
+	id object;
 	of_thread_t thread;
 	BOOL running;
 

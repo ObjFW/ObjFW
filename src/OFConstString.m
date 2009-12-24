@@ -151,6 +151,6 @@ void *_OFConstStringClassReference;
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
-	[super dealloc];	/* Get rid of stupid warning */
+	[super dealloc];	/* Get rid of a stupid warning */
 }
 @end
