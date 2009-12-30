@@ -69,6 +69,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4B0108C910EB8C9300631877 /* OFEnumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFEnumerator.h; path = src/OFEnumerator.h; sourceTree = SOURCE_ROOT; };
+		4B0108CA10EB8C9300631877 /* OFEnumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFEnumerator.m; path = src/OFEnumerator.m; sourceTree = SOURCE_ROOT; };
 		4B6799561099E7C50041064A /* asprintf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = asprintf.h; path = src/asprintf.h; sourceTree = "<group>"; };
 		4B6799581099E7C50041064A /* objc_sync.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = objc_sync.m; path = src/objc_sync.m; sourceTree = "<group>"; };
 		4B67995A1099E7C50041064A /* OFArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFArray.h; path = src/OFArray.h; sourceTree = "<group>"; };
@@ -87,8 +89,6 @@
 		4B6799671099E7C50041064A /* OFFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFFile.m; path = src/OFFile.m; sourceTree = "<group>"; };
 		4B6799681099E7C50041064A /* OFHashes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFHashes.h; path = src/OFHashes.h; sourceTree = "<group>"; };
 		4B6799691099E7C50041064A /* OFHashes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHashes.m; path = src/OFHashes.m; sourceTree = "<group>"; };
-		4B67996A1099E7C50041064A /* OFIterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFIterator.h; path = src/OFIterator.h; sourceTree = "<group>"; };
-		4B67996B1099E7C50041064A /* OFIterator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFIterator.m; path = src/OFIterator.m; sourceTree = "<group>"; };
 		4B67996C1099E7C50041064A /* OFList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFList.h; path = src/OFList.h; sourceTree = "<group>"; };
 		4B67996D1099E7C50041064A /* OFList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFList.m; path = src/OFList.m; sourceTree = "<group>"; };
 		4B67996E1099E7C50041064A /* OFMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMacros.h; path = src/OFMacros.h; sourceTree = "<group>"; };
@@ -143,14 +143,14 @@
 				4B6799611099E7C50041064A /* OFDataArray.m */,
 				4B6799621099E7C50041064A /* OFDictionary.h */,
 				4B6799631099E7C50041064A /* OFDictionary.m */,
+				4B0108C910EB8C9300631877 /* OFEnumerator.h */,
+				4B0108CA10EB8C9300631877 /* OFEnumerator.m */,
 				4B6799641099E7C50041064A /* OFExceptions.h */,
 				4B6799651099E7C50041064A /* OFExceptions.m */,
 				4B6799661099E7C50041064A /* OFFile.h */,
 				4B6799671099E7C50041064A /* OFFile.m */,
 				4B6799681099E7C50041064A /* OFHashes.h */,
 				4B6799691099E7C50041064A /* OFHashes.m */,
-				4B67996A1099E7C50041064A /* OFIterator.h */,
-				4B67996B1099E7C50041064A /* OFIterator.m */,
 				4B67996C1099E7C50041064A /* OFList.h */,
 				4B67996D1099E7C50041064A /* OFList.m */,
 				4B67996E1099E7C50041064A /* OFMacros.h */,

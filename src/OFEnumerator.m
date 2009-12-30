@@ -11,14 +11,14 @@
 
 #include "config.h"
 
-#import "OFIterator.h"
+#import "OFEnumerator.h"
 #import "OFDictionary.h"
 #import "OFExceptions.h"
 
 /* Reference for static linking */
-int _OFIterator_reference;
+int _OFEnumerator_reference;
 
-@implementation OFIterator
+@implementation OFEnumerator
 - init
 {
 	@throw [OFNotImplementedException newWithClass: isa
@@ -61,9 +61,9 @@ int _OFIterator_reference;
 	[super dealloc];
 }
 
-- (of_iterator_pair_t)nextKeyObjectPair
+- (of_enumerator_pair_t)nextKeyObjectPair
 {
-	of_iterator_pair_t next;
+	of_enumerator_pair_t next;
 
 	for (; pos < size && data[pos].key == nil; pos++);
 
@@ -87,10 +87,10 @@ int _OFIterator_reference;
 }
 @end
 
-@implementation OFDictionary (OFIterator)
-- (OFIterator*)iterator
+@implementation OFDictionary (OFEnumerator)
+- (OFEnumerator*)enumerator
 {
-	return [[[OFIterator alloc] initWithData: data
+	return [[[OFEnumerator alloc] initWithData: data
 					    size: size] autorelease];
 }
 @end

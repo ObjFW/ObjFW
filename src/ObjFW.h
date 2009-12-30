@@ -21,7 +21,7 @@
 #import "OFList.h"
 
 #import "OFDictionary.h"
-#import "OFIterator.h"
+#import "OFNumerator.h"
 
 #import "OFNumber.h"
 

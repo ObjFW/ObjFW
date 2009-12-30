@@ -14,7 +14,7 @@
 #include <string.h>
 
 #import "OFDictionary.h"
-#import "OFIterator.h"
+#import "OFEnumerator.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 #import "OFMacros.h"
@@ -24,7 +24,7 @@
 /* References for static linking */
 void _references_to_categories_of_OFDictionary()
 {
-	_OFIterator_reference = 1;
+	_OFEnumerator_reference = 1;
 }
 
 @implementation OFDictionary

@@ -33,8 +33,8 @@ dictionary_tests()
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFDictionary *dict = [OFMutableDictionary dictionary], *dict2;
-	OFIterator *iter;
-	of_iterator_pair_t pair[3];
+	OFEnumerator *enumerator;
+	of_enumerator_pair_t pair[3];
 	OFArray *akeys, *avalues;
 
 	[dict setObject: values[0]
@@ -47,12 +47,12 @@ dictionary_tests()
 	    [[dict objectForKey: keys[1]] isEqual: values[1]] &&
 	    [dict objectForKey: @"key3"] == nil)
 
-	TEST(@"-[iterator]", (iter = [dict iterator]))
+	TEST(@"-[enumerator]", (enumerator = [dict enumerator]))
 
-	pair[0] = [iter nextKeyObjectPair];
-	pair[1] = [iter nextKeyObjectPair];
-	pair[2] = [iter nextKeyObjectPair];
-	TEST(@"OFIterator's -[nextKeyObjectPair]",
+	pair[0] = [enumerator nextKeyObjectPair];
+	pair[1] = [enumerator nextKeyObjectPair];
+	pair[2] = [enumerator nextKeyObjectPair];
+	TEST(@"OFEnumerator's -[nextKeyObjectPair]",
 	    [pair[0].key isEqual: keys[0]] &&
 	    [pair[0].object isEqual: values[0]] &&
 	    [pair[1].key isEqual: keys[1]] &&

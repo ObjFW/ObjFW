@@ -148,5 +148,5 @@ struct of_dictionary_bucket
 - removeObjectForKey: (OFObject*)key;
 @end
 
-#import "OFIterator.h"
+#import "OFEnumerator.h"
 #import "OFMutableDictionary.h"
