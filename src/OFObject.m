@@ -570,5 +570,7 @@ enumeration_mutation_handler(id object)
 
 + (void)dealloc
 {
+	@throw [OFNotImplementedException newWithClass: self
+					      selector: _cmd];
 }
 @end
