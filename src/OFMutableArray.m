@@ -11,6 +11,8 @@
 
 #include "config.h"
 
+#include <string.h>
+
 #import "OFMutableArray.h"
 #import "OFExceptions.h"
 
@@ -107,8 +109,9 @@
 
 	for (i = 0; i < count; i++) {
 		if ([objs[i] isEqual: obj]) {
-			[objs[i] release];
+			OFObject *obj = objs[i];
 			[array removeItemAtIndex: i];
+			[obj release];
 		}
 	}
 
@@ -122,8 +125,8 @@
 
 	for (i = 0; i < count; i++) {
 		if (objs[i] == obj) {
-			[obj release];
 			[array removeItemAtIndex: i];
+			[obj release];
 		}
 	}
 
@@ -138,16 +141,24 @@
 
 - removeNObjects: (size_t)nobjects
 {
-	OFObject **objs = [array cArray];
+	OFObject **objs = [array cArray], **copy;
 	size_t i, count = [array count];
 
 	if (nobjects > count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	for (i = count - nobjects; i < count; i++)
-		[objs[i] release];
+	copy = [self allocMemoryForNItems: nobjects
+				 withSize: sizeof(OFObject*)];
+	memcpy(copy, objs + (count - nobjects), nobjects * sizeof(OFObject*));
 
-	[array removeNItems: nobjects];
+	@try {
+		[array removeNItems: nobjects];
+
+		for (i = 0; i < nobjects; i++)
+			[copy[i] release];
+	} @finally {
+		[self freeMemory: copy];
+	}
 
 	return self;
 }
@@ -155,17 +166,25 @@
 - removeNObjects: (size_t)nobjects
 	 atIndex: (size_t)index
 {
-	OFObject **objs = [array cArray];
+	OFObject **objs = [array cArray], **copy;
 	size_t i, count = [array count];
 
 	if (nobjects > count - index)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	for (i = index; i < count && i < index + nobjects; i++)
-		[objs[i] release];
+	copy = [self allocMemoryForNItems: nobjects
+				 withSize: sizeof(OFObject*)];
+	memcpy(copy, objs + index, nobjects * sizeof(OFObject*));
 
-	[array removeNItems: nobjects
-		    atIndex: index];
+	@try {
+		[array removeNItems: nobjects
+			    atIndex: index];
+
+		for (i = 0; i < nobjects; i++)
+			[copy[i] release];
+	} @finally {
+		[self freeMemory: copy];
+	}
 
 	return self;
 }
