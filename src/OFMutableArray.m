@@ -40,6 +40,8 @@
 	[array addItem: &obj];
 	[obj retain];
 
+	mutations++;
+
 	return self;
 }
 
@@ -49,6 +51,8 @@
 	[array addItem: &obj
 	       atIndex: index];
 	[obj retain];
+
+	mutations++;
 
 	return self;
 }
@@ -110,7 +114,10 @@
 	for (i = 0; i < count; i++) {
 		if ([objs[i] isEqual: obj]) {
 			OFObject *obj = objs[i];
+
 			[array removeItemAtIndex: i];
+			mutations++;
+
 			[obj release];
 		}
 	}
@@ -126,6 +133,8 @@
 	for (i = 0; i < count; i++) {
 		if (objs[i] == obj) {
 			[array removeItemAtIndex: i];
+			mutations++;
+
 			[obj release];
 		}
 	}
@@ -153,6 +162,7 @@
 
 	@try {
 		[array removeNItems: nobjects];
+		mutations++;
 
 		for (i = 0; i < nobjects; i++)
 			[copy[i] release];
@@ -179,6 +189,7 @@
 	@try {
 		[array removeNItems: nobjects
 			    atIndex: index];
+		mutations++;
 
 		for (i = 0; i < nobjects; i++)
 			[copy[i] release];
