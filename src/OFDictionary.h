@@ -13,6 +13,7 @@
 
 #import "OFObject.h"
 #import "OFArray.h"
+#import "OFFastEnumeration.h"
 
 struct of_dictionary_bucket
 {
@@ -24,7 +25,8 @@ struct of_dictionary_bucket
 /**
  * The OFDictionary class is a class for using hash tables.
  */
-@interface OFDictionary: OFObject <OFCopying, OFMutableCopying>
+@interface OFDictionary: OFObject <OFCopying, OFMutableCopying,
+    OFFastEnumeration>
 {
 	struct of_dictionary_bucket *data;
 	size_t			    size;

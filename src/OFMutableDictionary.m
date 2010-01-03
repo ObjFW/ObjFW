@@ -164,4 +164,27 @@ resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
 {
 	return [[OFDictionary alloc] initWithDictionary: self];
 }
+
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
+			   objects: (id*)objects
+			     count: (int)count_
+{
+	size_t i;
+
+	for (i = 0; i < count_; i++) {
+		for (; state->state < size && data[state->state].key == nil;
+		    state->state++);
+
+		if (state->state < size) {
+			objects[i] = data[state->state].key;
+			state->state++;
+		} else
+			break;
+	}
+
+	state->itemsPtr = objects;
+	state->mutationsPtr = &mutations;
+
+	return i;
+}
 @end

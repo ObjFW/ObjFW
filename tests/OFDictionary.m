@@ -59,6 +59,35 @@ dictionary_tests()
 	    [pair[1].object isEqual: values[1]] &&
 	    pair[2].key == nil && pair[2].object == nil)
 
+#ifdef OF_HAVE_FAST_ENUMERATION
+	size_t i = 0;
+	BOOL ok = YES;
+
+	for (OFString *key in dict) {
+		if (![key isEqual: keys[i]])
+			ok = NO;
+		[dict setObject: [dict objectForKey: key]
+			 forKey: key];
+		i++;
+	}
+
+	TEST(@"Fast Enumeration", ok)
+
+	ok = NO;
+	@try {
+		for (OFString *key in dict)
+			[dict setObject: @""
+				 forKey: @""];
+	} @catch (OFEnumerationMutationException *e) {
+		ok = YES;
+		[e dealloc];
+	}
+
+	TEST(@"Detection of mutation during Fast Enumeration", ok)
+
+	[dict removeObjectForKey: @""];
+#endif
+
 	TEST(@"-[count]", [dict count] == 2)
 
 	TEST(@"+[dictionaryWithKeysAndObjects:]",

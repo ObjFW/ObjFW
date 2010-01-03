@@ -508,6 +508,29 @@ void _references_to_categories_of_OFDictionary()
 	return YES;
 }
 
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
+			   objects: (id*)objects
+			     count: (int)count_
+{
+	size_t i;
+
+	for (i = 0; i < count_; i++) {
+		for (; state->state < size && data[state->state].key == nil;
+		    state->state++);
+
+		if (state->state < size) {
+			objects[i] = data[state->state].key;
+			state->state++;
+		} else
+			break;
+	}
+
+	state->itemsPtr = objects;
+	state->mutationsPtr = (unsigned long*)self;
+
+	return i;
+}
+
 - (void)dealloc
 {
 	size_t i;
