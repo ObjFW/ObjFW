@@ -23,6 +23,18 @@ AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings, [
 	OBJCFLAGS="$OBJCFLAGS -fno-constant-cfstrings"])
 AC_SUBST(NO_CONST_CFSTRINGS)
 
+AC_MSG_CHECKING(whether Objective C compiler supports fast enumeration)
+AC_TRY_COMPILE([
+	#import <objc/objc.h>
+	], [
+	id n = nil;
+	for (id i in n);
+	], [
+	AC_DEFINE(OF_HAVE_FAST_ENUMERATION, 1, [Fast Enumeration support])
+	AC_MSG_RESULT(yes)
+	], [
+	AC_MSG_RESULT(no)])
+
 AC_MSG_CHECKING(which Objective C runtime we use)
 dnl TODO: This is ugly. Let's think of a better check.
 AC_EGREP_CPP(gnu, [
@@ -145,7 +157,8 @@ AC_TRY_COMPILE([
 	#else
 	#define _WIN32_WINNT 0x0501
 	#include <ws2tcpip.h>
-	#endif], [
+	#endif
+	], [
 	struct addrinfo ai;
 	getaddrinfo(NULL, NULL, NULL, NULL);
 	], [

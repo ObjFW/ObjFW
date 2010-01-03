@@ -66,6 +66,19 @@ array_tests()
 	TEST(@"-[indexOfObjectIdenticalTo:]",
 	    [a[0] indexOfObjectIdenticalTo: c_ary[1]] == 1)
 
+#ifdef OF_HAVE_FAST_ENUMERATION
+	size_t i = 0;
+	BOOL ok = YES;
+
+	for (OFString *s in a[0]) {
+		if (![s isEqual: c_ary[i]])
+			ok = NO;
+		i++;
+	}
+
+	TEST(@"Fast Enumeration", ok)
+#endif
+
 	TEST(@"-[replaceObject:withObject:]",
 	    [a[0] replaceObject: c_ary[1]
 		     withObject: c_ary[0]] &&
