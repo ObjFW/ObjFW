@@ -48,6 +48,10 @@ static struct {
 extern BOOL objc_sync_init();
 #endif
 
+#ifndef HAVE_OBJC_ENUMERATIONMUTATION
+#define enumeration_mutation_handler objc_enumerationMutation
+#endif
+
 void
 enumeration_mutation_handler(id object)
 {

@@ -52,6 +52,10 @@ AC_EGREP_CPP(gnu, [
 	objc_runtime="Apple"])
 AC_MSG_RESULT($objc_runtime)
 
+AC_CHECK_FUNC(objc_enumerationMutation, [
+	AC_DEFINE(HAVE_OBJC_ENUMERATIONMUTATION, 1,
+		[Whether we have objc_enumerationMutation])])
+
 BUILDSYS_LIB
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
 if test x"$PLUGIN_SUFFIX" != "x"; then
