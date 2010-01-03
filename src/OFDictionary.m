@@ -475,7 +475,7 @@ void _references_to_categories_of_OFDictionary()
 	if (i >= size || ![data[i].key isEqual: key])
 		return nil;
 
-	return data[i].object;
+	return [[data[i].object retain] autorelease];
 }
 
 - (size_t)count

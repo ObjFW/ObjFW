@@ -169,7 +169,7 @@
 
 - (id)objectAtIndex: (size_t)index
 {
-	return *((OFObject**)[array itemAtIndex: index]);
+	return [[*((OFObject**)[array itemAtIndex: index]) retain] autorelease];
 }
 
 - (size_t)indexOfObject: (OFObject*)obj
@@ -206,14 +206,14 @@
 {
 	id *first = [array firstItem];
 
-	return (first != NULL ? *first : nil);
+	return (first != NULL ? [[*first retain] autorelease] : nil);
 }
 
 - (id)lastObject
 {
 	id *last = [array lastItem];
 
-	return (last != NULL ? *last : nil);
+	return (last != NULL ? [[*last retain] autorelease] : nil);
 }
 
 - (OFString*)componentsJoinedByString: (OFString*)separator
@@ -224,23 +224,18 @@
 	IMP append;
 
 	if (count == 0)
-		return [OFString string];
+		return @"";
 
-	str = [[OFMutableString alloc] init];
-	@try {
-		append = [str methodForSelector: @selector(appendString:)];
+	str = [OFMutableString string];
+	append = [str methodForSelector: @selector(appendString:)];
 
-		for (i = 0; i < count - 1; i++) {
-			append(str, @selector(appendString:), objs[i]);
-			append(str, @selector(appendString:), separator);
-		}
+	for (i = 0; i < count - 1; i++) {
 		append(str, @selector(appendString:), objs[i]);
-	} @catch (OFException *e) {
-		[str release];
-		@throw e;
+		append(str, @selector(appendString:), separator);
 	}
+	append(str, @selector(appendString:), objs[i]);
 
-	return [str autorelease];
+	return str;
 }
 
 - (BOOL)isEqual: (OFObject*)obj
