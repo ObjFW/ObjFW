@@ -73,10 +73,32 @@ array_tests()
 	for (OFString *s in a[0]) {
 		if (![s isEqual: c_ary[i]])
 			ok = NO;
+		[a[0] replaceObjectAtIndex: i
+				withObject: @""];
 		i++;
 	}
 
 	TEST(@"Fast Enumeration", ok)
+
+	[a[0] replaceObjectAtIndex: 0
+			withObject: c_ary[0]];
+	[a[0] replaceObjectAtIndex: 1
+			withObject: c_ary[1]];
+	[a[0] replaceObjectAtIndex: 2
+			withObject: c_ary[2]];
+
+	ok = NO;
+	@try {
+		for (OFString *s in a[0])
+			[a[0] addObject: @""];
+	} @catch (OFEnumerationMutationException *e) {
+		ok = YES;
+		[e dealloc];
+	}
+
+	TEST(@"Detection of mutation during Fast Enumeration", ok)
+
+	[a[0] removeNObjects: 1];
 #endif
 
 	TEST(@"-[replaceObject:withObject:]",
