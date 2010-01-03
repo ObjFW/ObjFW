@@ -158,7 +158,7 @@
 	OFObject **objs = [array cArray];
 	size_t i, count = [array count];
 
-	if (nobjects > count)
+	if (nobjects > count - index)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	for (i = index; i < count && i < index + nobjects; i++)
