@@ -110,6 +110,12 @@
 @end
 
 /**
+ * An OFException indicating that a mutation was detected while enumerating.
+ */
+@interface OFEnumerationMutationException: OFException {}
+@end
+
+/**
  * An OFException indicating the given memory is not part of the object.
  */
 @interface OFMemoryNotPartOfObjectException: OFException

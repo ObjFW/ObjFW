@@ -10,7 +10,6 @@
  */
 
 #import "OFObject.h"
-#import "OFList.h"
 #import "OFDictionary.h"
 
 /**

@@ -48,6 +48,12 @@ static struct {
 extern BOOL objc_sync_init();
 #endif
 
+void
+enumeration_mutation_handler(id object)
+{
+	@throw [OFEnumerationMutationException newWithClass: [object class]];
+}
+
 @implementation OFObject
 + (void)load
 {
@@ -56,6 +62,10 @@ extern BOOL objc_sync_init();
 		fputs("Runtime error: objc_sync_init() failed!\n", stderr);
 		abort();
 	}
+#endif
+
+#ifdef OF_APPLE_RUNTIME
+	objc_setEnumerationMutationHandler(enumeration_mutation_handler);
 #endif
 }
 

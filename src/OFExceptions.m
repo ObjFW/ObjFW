@@ -154,6 +154,20 @@
 }
 @end
 
+@implementation OFEnumerationMutationException
+- (OFString*)string
+{
+	if (string != nil)
+		return string;
+
+	string = [[OFString alloc] initWithFormat:
+	    @"Object of class %s was mutated during enumeration!",
+	    [class_ className]];
+
+	return string;
+}
+@end
+
 @implementation OFMemoryNotPartOfObjectException
 + newWithClass: (Class)class__
        pointer: (void*)ptr
