@@ -199,4 +199,20 @@
 
 	return self;
 }
+
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
+			   objects: (id*)objects
+			     count: (int)count_
+{
+	size_t count = [array count];
+
+	if (state->state >= count)
+		return 0;
+
+	state->state = count;
+	state->itemsPtr = [array cArray];
+	state->mutationsPtr = &mutations;
+
+	return count;
+}
 @end

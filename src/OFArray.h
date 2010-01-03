@@ -13,13 +13,14 @@
 
 #import "OFObject.h"
 #import "OFDataArray.h"
+#import "OFFastEnumeration.h"
 
 @class OFString;
 
 /**
  * The OFArray class is a class for storing objects in an array.
  */
-@interface OFArray: OFObject <OFCopying, OFMutableCopying>
+@interface OFArray: OFObject <OFCopying, OFMutableCopying, OFFastEnumeration>
 {
 	OFDataArray *array;
 }
