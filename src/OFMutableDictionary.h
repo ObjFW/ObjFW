@@ -14,7 +14,11 @@
 /**
  * The OFMutableDictionary class is a class for using mutable hash tables.
  */
-@interface OFMutableDictionary: OFDictionary {}
+@interface OFMutableDictionary: OFDictionary
+{
+	unsigned long mutations;
+}
+
 /**
  * Sets a key to an object. A key can be any object.
  *

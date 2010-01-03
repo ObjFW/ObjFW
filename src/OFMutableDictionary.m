@@ -90,6 +90,8 @@ resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
 	if (i >= size || ![data[i].key isEqual: key]) {
 		resize(self, isa, count + 1, &data, &size);
 
+		mutations++;
+
 		i = hash & (size - 1);
 		for (; i < size && data[i].key != nil; i++);
 
@@ -152,6 +154,7 @@ resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
 	data[i].key = nil;
 
 	count--;
+	mutations++;
 	resize(self, isa, count, &data, &size);
 
 	return self;
