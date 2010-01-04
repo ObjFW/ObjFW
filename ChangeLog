@@ -1,0 +1,17 @@
+ObjFW 0.1 -> 0.1.1, 04.01.2010
+ * Fix a missing out of range check for -[removeNItems:atIndex:] that
+   allowed the programmer to specify too big ranges so it would crash
+   instead of throwing an exception.
+ * Fix missing calls to -[retain] and -[autorelease] when getting
+   objects from an OFArray or OFDictionary.
+ * Safer and more fault-tolerant way to remove objects from an
+   OFMutableArray.
+ * Calling +[dealloc] throws an exception now. If someone really calls
+   [SomeClass dealloc], this should be punished and not ignored, as
+   this is a serious programmer error.
+ * -[readLineWithEncoding:] is more fault-tolerant now and does not
+   lose data when it stumbles upon invalid encoding. Instead, it allows
+   recalling with the correct encoding now.
+
+ObjFW 0.1, 24.12.2009
+ + Initial release
