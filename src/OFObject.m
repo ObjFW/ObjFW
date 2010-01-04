@@ -48,15 +48,19 @@ static struct {
 extern BOOL objc_sync_init();
 #endif
 
-#ifndef HAVE_OBJC_ENUMERATIONMUTATION
-#define enumeration_mutation_handler objc_enumerationMutation
-#endif
-
-void
-enumeration_mutation_handler(id object)
+static void
+enumeration_mutation_handler(id obj)
 {
-	@throw [OFEnumerationMutationException newWithClass: [object class]];
+	@throw [OFEnumerationMutationException newWithClass: [obj class]];
 }
+
+#ifndef HAVE_OBJC_ENUMERATIONMUTATION
+void
+objc_enumerationMutation(id obj)
+{
+	enumeration_mutation_handler(obj);
+}
+#endif
 
 @implementation OFObject
 + (void)load
