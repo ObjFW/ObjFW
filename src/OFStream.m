@@ -13,6 +13,7 @@
 
 #include <string.h>
 #include <unistd.h>
+#include <assert.h>
 
 #import "OFStream.h"
 #import "OFExceptions.h"
@@ -137,99 +138,86 @@ static int pagesize = 0;
 	/* Read until we get a newline or \0 */
 	tmp = [self allocMemoryWithSize: pagesize];
 
-	for (;;) {
-		if ([self atEndOfStreamWithoutCache]) {
-			[self freeMemory: tmp];
+	@try {
+		for (;;) {
+			if ([self atEndOfStreamWithoutCache]) {
+				if (cache == NULL)
+					return nil;
 
-			if (cache == NULL)
-				return nil;
+				ret = [OFString stringWithCString: cache
+							 encoding: encoding
+							   length: cache_len];
 
-			ret = [OFString stringWithCString: cache
-						 encoding: encoding
-						   length: cache_len];
+				[self freeMemory: cache];
+				cache = NULL;
+				cache_len = 0;
 
-			[self freeMemory: cache];
-			cache = NULL;
-			cache_len = 0;
+				return ret;
+			}
 
-			return ret;
-		}
-
-		@try {
 			len = [self readNBytesWithoutCache: pagesize
 						intoBuffer: tmp];
-		} @catch (OFException *e) {
-			[self freeMemory: tmp];
-			@throw e;
-		}
 
-		/* Look if there's a newline or \0 */
-		for (i = 0; i < len; i++) {
-			if (OF_UNLIKELY(tmp[i] == '\n' || tmp[i] == '\0')) {
-				ret_len = cache_len + i;
-				@try {
+			/* Look if there's a newline or \0 */
+			for (i = 0; i < len; i++) {
+				if (OF_UNLIKELY(tmp[i] == '\n' ||
+				    tmp[i] == '\0')) {
+					ret_len = cache_len + i;
 					ret_c = [self
 					    allocMemoryWithSize: ret_len];
-				} @catch (OFException *e) {
-					[self freeMemory: tmp];
-					@throw e;
-				}
-				if (cache != NULL)
-					memcpy(ret_c, cache, cache_len);
-				memcpy(ret_c + cache_len, tmp, i);
 
-				if (i < len) {
+					if (cache != NULL)
+						memcpy(ret_c, cache, cache_len);
+					memcpy(ret_c + cache_len, tmp, i);
+
 					@try {
+						ret = [OFString
+						    stringWithCString: ret_c
+							     encoding: encoding
+							       length: ret_len];
+					} @finally {
+						[self freeMemory: ret_c];
+					}
+
+					if (i < len) {
 						tmp2 = [self
 						    allocMemoryWithSize: len -
 									 i - 1];
-					} @catch (OFException *e) {
-						[self freeMemory: ret_c];
-						[self freeMemory: tmp];
-						@throw e;
+						memcpy(tmp2, tmp + i + 1,
+						    len - i - 1);
+
+						[self freeMemory: cache];
+						cache = tmp2;
+						cache_len = len - i - 1;
+					} else {
+						[self freeMemory: cache];
+						cache = NULL;
+						cache_len = 0;
 					}
-					memcpy(tmp2, tmp + i + 1, len - i - 1);
 
-					[self freeMemory: cache];
-					cache = tmp2;
-					cache_len = len - i - 1;
-				} else {
-					[self freeMemory: cache];
-					cache = NULL;
-					cache_len = 0;
+					return ret;
 				}
-				[self freeMemory: tmp];
-
-				@try {
-					ret = [OFString
-					    stringWithCString: ret_c
-						     encoding: encoding
-						       length: ret_len];
-				} @finally {
-					[self freeMemory: ret_c];
-				}
-				return ret;
 			}
-		}
 
-		/* There was no newline or \0 */
-		@try {
+			/* There was no newline or \0 */
 			cache = [self resizeMemory: cache
 					    toSize: cache_len + len];
-		} @catch (OFException *e) {
-			[self freeMemory: tmp];
-			@throw e;
+
+			/*
+			 * It's possible that cache_len + len is 0 and thus
+			 * cache was set to NULL by resizeMemory:toSize:.
+			 */
+			if (cache != NULL)
+				memcpy(cache + cache_len, tmp, len);
+
+			cache_len += len;
 		}
-
-		/*
-		 * It's possible that cache_len + len is 0 and thus cache was
-		 * set to NULL by resizeMemory:toSize:.
-		 */
-		if (cache != NULL)
-			memcpy(cache + cache_len, tmp, len);
-
-		cache_len += len;
+	} @finally {
+		[self freeMemory: tmp];
 	}
+
+	/* Get rid of a warning, never reached anyway */
+	assert(0);
 }
 
 - (size_t)writeNBytes: (size_t)size
