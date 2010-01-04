@@ -556,5 +556,7 @@ extern BOOL objc_sync_init();
 
 + (void)dealloc
 {
+	@throw [OFNotImplementedException newWithClass: self
+					      selector: _cmd];
 }
 @end
