@@ -52,6 +52,9 @@ AC_EGREP_CPP(gnu, [
 	objc_runtime="Apple"])
 AC_MSG_RESULT($objc_runtime)
 
+AC_CHECK_FUNC(objc_getProperty,, [
+	AC_SUBST(OBJC_PROPERTIES_M, "objc_properties.m")])
+
 AC_CHECK_FUNC(objc_enumerationMutation, [
 	AC_DEFINE(HAVE_OBJC_ENUMERATIONMUTATION, 1,
 		[Whether we have objc_enumerationMutation])])
