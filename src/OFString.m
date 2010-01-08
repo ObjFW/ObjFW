@@ -620,17 +620,29 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 			@throw [OFInvalidEncodingException newWithClass: isa];
 
 		if (c1 >> 8 < OF_UNICODE_CASEFOLDING_TABLE_SIZE) {
-			tmp = of_unicode_casefolding_table[c1 >> 8][c1 & 0xFF];
+			if (of_unicode_casefolding_table[c1 >> 8] == NULL)
+				c1 += of_unicode_lower_table[c1 >> 8]
+				    [c1 & 0xFF];
+			else {
+				tmp = of_unicode_casefolding_table[c1 >> 8]
+				    [c1 & 0xFF];
 
-			if (tmp != 0)
-				c1 = tmp;
+				if (tmp != 0)
+					c1 = tmp;
+			}
 		}
 
 		if (c2 >> 8 < OF_UNICODE_CASEFOLDING_TABLE_SIZE) {
-			tmp = of_unicode_casefolding_table[c2 >> 8][c2 & 0xFF];
+			if (of_unicode_casefolding_table[c2 >> 8] == NULL)
+				c2 += of_unicode_lower_table[c2 >> 8]
+				    [c2 & 0xFF];
+			else {
+				tmp = of_unicode_casefolding_table[c2 >> 8]
+				    [c2 & 0xFF];
 
-			if (tmp != 0)
-				c2 = tmp;
+				if (tmp != 0)
+					c2 = tmp;
+			}
 		}
 
 		if (c1 > c2)

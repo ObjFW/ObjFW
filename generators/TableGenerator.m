@@ -17,6 +17,7 @@
 
 #import "OFFile.h"
 #import "OFAutoreleasePool.h"
+#import "OFExceptions.h"
 
 #import "TableGenerator.h"
 #import "copyright.h"
@@ -45,6 +46,7 @@
 		OFArray *splitted;
 		OFString **splitted_carray;
 		of_unichar_t codep;
+		int32_t tmp;
 
 		splitted = [line splitWithDelimiter: @";"];
 		if ([splitted count] != 15) {
@@ -54,8 +56,20 @@
 		splitted_carray = [splitted cArray];
 
 		codep = [splitted_carray[0] hexadecimalValueAsInteger];
-		upper[codep] = [splitted_carray[12] hexadecimalValueAsInteger];
-		lower[codep] = [splitted_carray[13] hexadecimalValueAsInteger];
+
+		tmp = [splitted_carray[12] hexadecimalValueAsInteger];
+		if (tmp > 0)
+			tmp -= codep;
+		if (tmp > 0x8FFF || tmp < -0x9000)
+			@throw [OFOutOfRangeException newWithClass: isa];
+		upper[codep] = tmp;
+
+		tmp = [splitted_carray[13] hexadecimalValueAsInteger];
+		if (tmp > 0)
+			tmp -= codep;
+		if (tmp > 0x8FFF || tmp < -0x9000)
+			@throw [OFOutOfRangeException newWithClass: isa];
+		lower[codep] = tmp;
 
 		[pool2 releaseObjects];
 	}
@@ -112,7 +126,7 @@
 	    @"#include \"config.h\"\n"
 	    @"\n"
 	    @"#import \"OFString.h\"\n\n"
-	    @"static const of_unichar_t nop_page[0x100] = {};\n\n"];
+	    @"static const int16_t nop_page[0x100] = {};\n\n"];
 
 	pool2 = [[OFAutoreleasePool alloc] init];
 
@@ -126,20 +140,21 @@
 			if (upper[j] != 0) {
 				empty = NO;
 				upper_size = i >> 8;
-				upper_table_used[upper_size] = 1;
+				upper_table_used[upper_size] = YES;
 			}
 		}
 
 		if (!empty) {
 			[f writeString: [OFString stringWithFormat:
-			    @"static const of_unichar_t upper_page_%d[0x100] = "
+			    @"static const int16_t upper_page_%d[0x100] = "
 			    @"{\n", i >> 8]];
 
-			for (j = i; j < i + 0x100; j += 4)
+			for (j = i; j < i + 0x100; j += 8)
 				[f writeString: [OFString stringWithFormat:
-				    @"\t0x%06X, 0x%06X, 0x%06X, 0x%06X,\n",
+				    @"\t%d, %d, %d, %d, %d, %d, %d, %d,\n",
 				    upper[j], upper[j + 1], upper[j + 2],
-				    upper[j + 3]]];
+				    upper[j + 3], upper[j + 4], upper[j + 5],
+				    upper[j + 6], upper[j + 7]]];
 
 			[f writeString: @"};\n\n"];
 
@@ -157,20 +172,21 @@
 			if (lower[j] != 0) {
 				empty = NO;
 				lower_size = i >> 8;
-				lower_table_used[lower_size] = 1;
+				lower_table_used[lower_size] = YES;
 			}
 		}
 
 		if (!empty) {
 			[f writeString: [OFString stringWithFormat:
-			    @"static const of_unichar_t lower_page_%d[0x100] = "
+			    @"static const int16_t lower_page_%d[0x100] = "
 			    @"{\n", i >> 8]];
 
-			for (j = i; j < i + 0x100; j += 4)
+			for (j = i; j < i + 0x100; j += 8)
 				[f writeString: [OFString stringWithFormat:
-				    @"\t0x%06X, 0x%06X, 0x%06X, 0x%06X,\n",
+				    @"\t%d, %d, %d, %d, %d, %d, %d, %d,\n",
 				    lower[j], lower[j + 1], lower[j + 2],
-				    lower[j + 3]]];
+				    lower[j + 3], lower[j + 4], lower[j + 5],
+				    lower[j + 6], lower[j + 7]]];
 
 			[f writeString: @"};\n\n"];
 
@@ -185,19 +201,15 @@
 		empty = YES;
 
 		for (j = i; j < i + 0x100; j++) {
-			if (casefolding[j] != 0) {
+			if (casefolding[j] != 0 &&
+			    casefolding[j] != j + lower[j]) {
 				empty = NO;
 				casefolding_size = i >> 8;
-				casefolding_table_used[casefolding_size] =
-				    (memcmp(lower + i, casefolding + i, 256)
-				    ? 1 : 2);
+				casefolding_table_used[casefolding_size] = YES;
 			}
 		}
 
 		if (!empty) {
-			if (!memcmp(lower + i, casefolding + i, 256))
-				continue;
-
 			[f writeString: [OFString stringWithFormat:
 			    @"static const of_unichar_t cf_page_%d[0x100] = {"
 			    @"\n", i >> 8]];
@@ -224,7 +236,7 @@
 
 	/* Write of_unicode_upper_table */
 	[f writeString: [OFString stringWithFormat:
-	    @"const of_unichar_t* const of_unicode_upper_table[0x%X] = {\n\t",
+	    @"const int16_t* const of_unicode_upper_table[0x%X] = {\n\t",
 	    upper_size]];
 
 	for (i = 0; i < upper_size; i++) {
@@ -235,17 +247,19 @@
 		} else
 			[f writeString: @"nop_page"];
 
-		if ((i + 1) % 4 == 0)
-			[f writeString: @",\n\t"];
-		else if (i + 1 < upper_size)
-			[f writeString: @", "];
+		if (i + 1 < upper_size) {
+			if ((i + 1) % 4 == 0)
+				[f writeString: @",\n\t"];
+			else
+				[f writeString: @", "];
+		}
 	}
 
 	[f writeString: @"\n};\n\n"];
 
 	/* Write of_unicode_lower_table */
 	[f writeString: [OFString stringWithFormat:
-	    @"const of_unichar_t* const of_unicode_lower_table[0x%X] = {\n\t",
+	    @"const int16_t* const of_unicode_lower_table[0x%X] = {\n\t",
 	    lower_size]];
 
 	for (i = 0; i < lower_size; i++) {
@@ -256,10 +270,12 @@
 		} else
 			[f writeString: @"nop_page"];
 
-		if ((i + 1) % 4 == 0)
-			[f writeString: @",\n\t"];
-		else if (i + 1 < lower_size)
-			[f writeString: @", "];
+		if (i + 1 < lower_size) {
+			if ((i + 1) % 4 == 0)
+				[f writeString: @",\n\t"];
+			else
+				[f writeString: @", "];
+		}
 	}
 
 	[f writeString: @"\n};\n\n"];
@@ -270,26 +286,19 @@
 	    @"\n\t", casefolding_size]];
 
 	for (i = 0; i < casefolding_size; i++) {
-		switch (casefolding_table_used[i]) {
-		case 0:
-			[f writeString: @"nop_page"];
-			break;
-		case 1:
+		if (casefolding_table_used[i]) {
 			[f writeString: [OFString stringWithFormat:
 			    @"cf_page_%d", i]];
 			[pool2 releaseObjects];
-			break;
-		case 2:
-			[f writeString: [OFString stringWithFormat:
-			    @"lower_page_%d", i]];
-			[pool2 releaseObjects];
-			break;
-		}
+		} else
+			[f writeString: @"NULL"];
 
-		if ((i + 1) % 4 == 0)
-			[f writeString: @",\n\t"];
-		else if (i + 1 < casefolding_size)
-			[f writeString: @", "];
+		if (i + 1 < casefolding_size) {
+			if ((i + 1) % 4 == 0)
+				[f writeString: @",\n\t"];
+			else
+				[f writeString: @", "];
+		}
 	}
 
 	[f writeString: @"\n};\n"];
@@ -313,9 +322,9 @@
 	    upper_size, lower_size, casefolding_size]];
 
 	[f writeString:
-	    @"extern const of_unichar_t* const\n"
+	    @"extern const int16_t* const\n"
 	    @"    of_unicode_upper_table[OF_UNICODE_UPPER_TABLE_SIZE];\n"
-	    @"extern const of_unichar_t* const\n"
+	    @"extern const int16_t* const\n"
 	    @"    of_unicode_lower_table[OF_UNICODE_LOWER_TABLE_SIZE];\n"
 	    @"extern const of_unichar_t* const\n"
 	    @"    of_unicode_casefolding_table["

@@ -33,9 +33,9 @@
 
 static void
 apply_table(id self, Class isa, char **string, unsigned int *length,
-    BOOL is_utf8, const of_unichar_t* const table[], const size_t table_size)
+    BOOL is_utf8, const int16_t* const table[], const size_t table_size)
 {
-	of_unichar_t c, tc;
+	of_unichar_t c;
 	of_unichar_t *ustr;
 	size_t ulen, nlen, clen;
 	size_t i, j, d;
@@ -45,11 +45,9 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 		assert(table_size >= 1);
 
 		uint8_t *p = (uint8_t*)*string + *length;
-		uint8_t t;
 
 		while (--p >= (uint8_t*)*string)
-			if ((t = table[0][*p]) != 0)
-				*p = t;
+			*p += table[0][*p];
 
 		return;
 	}
@@ -70,20 +68,17 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
 
-		if (c >> 8 < table_size) {
-			if ((tc = table[c >> 8][c & 0xFF]) == 0)
-				tc = c;
-		} else
-			tc = c;
-		ustr[j++] = tc;
+		if (c >> 8 < table_size)
+			c += table[c >> 8][c & 0xFF];
+		ustr[j++] = c;
 
-		if (tc < 0x80)
+		if (c < 0x80)
 			nlen++;
-		else if (tc < 0x800)
+		else if (c < 0x800)
 			nlen += 2;
-		else if (tc < 0x10000)
+		else if (c < 0x10000)
 			nlen += 3;
-		else if (tc < 0x110000)
+		else if (c < 0x110000)
 			nlen += 4;
 		else {
 			[self freeMemory: ustr];
