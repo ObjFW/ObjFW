@@ -119,6 +119,18 @@
 			mutations++;
 
 			[obj release];
+
+			/*
+			 * We need to get the C array again as it might have
+			 * been relocated. We also need to adjust the count
+			 * as otherwise we would have an out of bounds access.
+			 * As another object will be at the current index now,
+			 * we also need to handle the same index again, thus we
+			 * decrease it.
+			 */
+			objs = [array cArray];
+			count--;
+			i--;
 		}
 	}
 
@@ -136,6 +148,18 @@
 			mutations++;
 
 			[obj release];
+
+			/*
+			 * We need to get the C array again as it might have
+			 * been relocated. We also need to adjust the count
+			 * as otherwise we would have an out of bounds access.
+			 * As another object will be at the current index now,
+			 * we also need to handle the same index again, thus we
+			 * decrease it.
+			 */
+			objs = [array cArray];
+			count--;
+			i--;
 		}
 	}
 
