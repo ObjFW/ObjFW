@@ -1,3 +1,9 @@
+ObjFW 0.1.1 -> 0.1.2, 15.01.2010
+ * Fix a bug in OFMutableArray's -[removeObject:] and
+   -[removeObjectIdenticalTo:] that could lead to not removing all
+   occurrences of the object from the array and to out of bounds reads.
+ * Change the URL in the framework plist to the homepage.
+
 ObjFW 0.1 -> 0.1.1, 04.01.2010
  * Fix a missing out of range check for -[removeNItems:atIndex:] that
    allowed the programmer to specify too big ranges so it would crash
