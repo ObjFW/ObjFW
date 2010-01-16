@@ -12,7 +12,7 @@ AC_PROG_EGREP
 
 CPP="$OBJCPP"
 CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS"
-OBJCFLAGS="$OBJCFLAGS -Wall -fobjc-exceptions"
+OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions -fobjc-exceptions"
 OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstString"
 LIBS="$LIBS -lobjc"
 

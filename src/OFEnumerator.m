@@ -91,6 +91,6 @@ int _OFEnumerator_reference;
 - (OFEnumerator*)enumerator
 {
 	return [[[OFEnumerator alloc] initWithData: data
-					    size: size] autorelease];
+					      size: size] autorelease];
 }
 @end
