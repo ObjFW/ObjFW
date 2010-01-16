@@ -10,7 +10,8 @@
  */
 
 #import "OFObject.h"
-#import "OFString.h"
+
+@class OFString;
 
 /**
  * The OFStream class provides a base class for different types of streams.

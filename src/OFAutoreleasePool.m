@@ -14,7 +14,7 @@
 #include <stdlib.h>
 
 #import "OFAutoreleasePool.h"
-#import "OFList.h"
+#import "OFArray.h"
 #import "OFExceptions.h"
 
 #ifdef OF_THREADS

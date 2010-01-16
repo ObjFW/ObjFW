@@ -10,7 +10,8 @@
  */
 
 #import "OFObject.h"
-#import "OFString.h"
+
+@class OFString;
 
 #ifndef _WIN32
 typedef void* of_plugin_handle_t;

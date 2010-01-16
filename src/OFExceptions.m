@@ -25,6 +25,7 @@
 #endif
 
 #import "OFExceptions.h"
+#import "OFString.h"
 #import "OFTCPSocket.h"
 
 #ifndef _WIN32

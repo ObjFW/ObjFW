@@ -16,6 +16,8 @@
 #include <string.h>
 
 #import "OFXMLElement.h"
+#import "OFString.h"
+#import "OFArray.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 

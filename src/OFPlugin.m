@@ -19,6 +19,7 @@
 #endif
 
 #import "OFPlugin.h"
+#import "OFString.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 

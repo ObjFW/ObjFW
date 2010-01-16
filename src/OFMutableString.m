@@ -24,7 +24,7 @@
 #define madvise(addr, len, advise)
 #endif
 
-#import "OFMutableString.h"
+#import "OFString.h"
 #import "OFExceptions.h"
 #import "OFMacros.h"
 

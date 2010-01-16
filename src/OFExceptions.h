@@ -10,8 +10,9 @@
  */
 
 #import "OFObject.h"
-#import "OFString.h"
 #import "OFFile.h"
+
+@class OFString;
 
 /**
  * An exception indicating an object could not be allocated.

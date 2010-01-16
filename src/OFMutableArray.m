@@ -14,6 +14,7 @@
 #include <string.h>
 
 #import "OFMutableArray.h"
+#import "OFDataArray.h"
 #import "OFExceptions.h"
 
 @implementation OFMutableArray

@@ -21,6 +21,7 @@
 #endif
 
 #import "OFFile.h"
+#import "OFString.h"
 #import "OFExceptions.h"
 
 #ifdef _WIN32

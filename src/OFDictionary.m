@@ -15,6 +15,7 @@
 
 #import "OFDictionary.h"
 #import "OFEnumerator.h"
+#import "OFArray.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 #import "OFMacros.h"

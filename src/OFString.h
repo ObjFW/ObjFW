@@ -13,7 +13,6 @@
 #include <stdarg.h>
 
 #import "OFObject.h"
-#import "OFArray.h"
 
 typedef uint32_t of_unichar_t;
 
@@ -29,6 +28,8 @@ extern size_t of_string_unicode_to_utf8(of_unichar_t, char*);
 extern size_t of_string_utf8_to_unicode(const char*, size_t, of_unichar_t*);
 extern size_t of_string_position_to_index(const char*, size_t);
 extern size_t of_string_index_to_position(const char*, size_t, size_t);
+
+@class OFArray;
 
 /**
  * A class for managing strings.

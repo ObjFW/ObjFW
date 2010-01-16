@@ -13,7 +13,7 @@
 
 #include <string.h>
 
-#import "OFArray.h"
+#import "OFDataArray.h"
 #import "OFAutoreleasePool.h"
 #import "OFString.h"
 #import "OFExceptions.h"

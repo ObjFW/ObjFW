@@ -14,8 +14,9 @@
 
 extern int _OFXMLParser_reference;
 
-@class OFMutableString;
 @class OFXMLParser;
+@class OFArray;
+@class OFMutableArray;
 
 /**
  * A protocol that needs to be implemented by delegates for OFXMLParser.

@@ -10,8 +10,8 @@
  */
 
 #import "OFObject.h"
-#import "OFArray.h"
-#import "OFList.h"
+
+@class OFMutableArray;
 
 /**
  * The OFAutoreleasePool class is a class that keeps track of objects that will

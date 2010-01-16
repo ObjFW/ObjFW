@@ -12,8 +12,9 @@
 #include <stdarg.h>
 
 #import "OFObject.h"
-#import "OFArray.h"
 #import "OFFastEnumeration.h"
+
+@class OFArray;
 
 struct of_dictionary_bucket
 {

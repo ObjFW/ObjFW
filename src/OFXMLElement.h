@@ -11,8 +11,9 @@
 
 #import "OFObject.h"
 #import "OFString.h"
-#import "OFDictionary.h"
-#import "OFArray.h"
+
+@class OFDictionary;
+@class OFMutableArray;
 
 extern int _OFXMLElement_reference;
 

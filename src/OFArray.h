@@ -12,9 +12,9 @@
 #include <stdarg.h>
 
 #import "OFObject.h"
-#import "OFDataArray.h"
 #import "OFFastEnumeration.h"
 
+@class OFDataArray;
 @class OFString;
 
 /**

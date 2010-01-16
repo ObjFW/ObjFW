@@ -9,7 +9,7 @@
  * the packaging of this file.
  */
 
-#import "OFMutableString.h"
+#import "OFString.h"
 
 extern int _OFURLEncoding_reference;
 

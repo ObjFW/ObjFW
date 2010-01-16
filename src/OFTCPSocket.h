@@ -10,7 +10,8 @@
  */
 
 #import "OFSocket.h"
-#import "OFString.h"
+
+@class OFString;
 
 /**
  * The OFTCPSocket class provides functions to create and use sockets.

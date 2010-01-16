@@ -14,6 +14,8 @@
 #include <string.h>
 
 #import "OFXMLParser.h"
+#import "OFString.h"
+#import "OFArray.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 #import "OFMacros.h"

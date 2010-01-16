@@ -16,6 +16,7 @@
 #include <assert.h>
 
 #import "OFStream.h"
+#import "OFString.h"
 #import "OFExceptions.h"
 #import "OFMacros.h"
 

@@ -19,7 +19,8 @@ typedef int gid_t;
 #endif
 
 #import "OFStream.h"
-#import "OFString.h"
+
+@class OFString;
 
 /**
  * The OFFile class provides functions to read, write and manipulate files.
