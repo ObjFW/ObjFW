@@ -21,7 +21,7 @@
  */
 @interface OFAutoreleasePool: OFObject
 {
-	OFArray		  *objects;
+	OFMutableArray		 *objects;
 	OFAutoreleasePool *next, *prev;
 }
 

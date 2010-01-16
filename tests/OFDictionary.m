@@ -32,7 +32,7 @@ void
 dictionary_tests()
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFDictionary *dict = [OFMutableDictionary dictionary], *dict2;
+	OFMutableDictionary *dict = [OFMutableDictionary dictionary], *dict2;
 	OFEnumerator *enumerator;
 	of_enumerator_pair_t pair[3];
 	OFArray *akeys, *avalues;

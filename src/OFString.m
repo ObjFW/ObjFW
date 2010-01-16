@@ -777,7 +777,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 - (OFArray*)splitWithDelimiter: (OFString*)delimiter
 {
 	OFAutoreleasePool *pool;
-	OFArray *array;
+	OFMutableArray *array;
 	const char *delim = [delimiter cString];
 	size_t delim_len = [delimiter cStringLength];
 	size_t i, last;
@@ -870,106 +870,5 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	}
 
 	return num;
-}
-
-- setToCString: (const char*)str
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
-}
-
-- appendCString: (const char*)str
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
-}
-
-- appendCString: (const char*)str
-     withLength: (size_t)len
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
-}
-
-- appendCStringWithoutUTF8Checking: (const char*)str
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
-}
-
-- appendCStringWithoutUTF8Checking: (const char*)str
-			    length: (size_t)len
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
-}
-
-- appendString: (OFString*)str
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
-}
-
-- appendWithFormat: (OFString*)fmt, ...
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
-}
-
-- appendWithFormat: (OFString*)fmt
-	 arguments: (va_list)args
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
-}
-
-- reverse
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
-}
-
-- upper
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
-}
-
-- lower
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
-}
-
-- removeCharactersFromIndex: (size_t)start
-		    toIndex: (size_t)end
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
-}
-
-- replaceOccurrencesOfString: (OFString*)str
-		  withString: (OFString*)repl
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
-}
-
-- removeLeadingWhitespaces
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
-}
-
-- removeTrailingWhitespaces
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
-}
-
-- removeLeadingAndTrailingWhitespaces
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
 }
 @end

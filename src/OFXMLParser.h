@@ -14,6 +14,7 @@
 
 extern int _OFXMLParser_reference;
 
+@class OFMutableString;
 @class OFXMLParser;
 
 /**
@@ -120,15 +121,15 @@ extern int _OFXMLParser_reference;
 		OF_XMLPARSER_IN_COMMENT_3,
 		OF_XMLPARSER_IN_COMMENT_4
 	} state;
-	OFString *cache;
+	OFMutableString *cache;
 	OFString *name;
 	OFString *prefix;
 	OFString *ns;
-	OFArray *attrs;
+	OFMutableArray *attrs;
 	OFString *attr_name;
 	OFString *attr_prefix;
 	char delim;
-	OFArray *previous;
+	OFMutableArray *previous;
 }
 
 /**

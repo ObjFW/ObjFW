@@ -292,28 +292,6 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  * \return An OFNumber
  */
 - (intmax_t)hexadecimalValueAsInteger;
-
-- setToCString: (const char*)str;
-- appendCString: (const char*)str;
-- appendCString: (const char*)str
-     withLength: (size_t)len;
-- appendCStringWithoutUTF8Checking: (const char*)str;
-- appendCStringWithoutUTF8Checking: (const char*)str
-			    length: (size_t)len;
-- appendString: (OFString*)str;
-- appendWithFormat: (OFString*)fmt, ...;
-- appendWithFormat: (OFString*)fmt
-	 arguments: (va_list)args;
-- reverse;
-- upper;
-- lower;
-- removeCharactersFromIndex: (size_t)start
-		    toIndex: (size_t)end;
-- replaceOccurrencesOfString: (OFString*)str
-		  withString: (OFString*)repl;
-- removeLeadingWhitespaces;
-- removeTrailingWhitespaces;
-- removeLeadingAndTrailingWhitespaces;
 @end
 
 #import "OFConstString.h"

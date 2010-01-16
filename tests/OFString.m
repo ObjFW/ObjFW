@@ -41,7 +41,7 @@ void
 string_tests()
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFString *s[3];
+	OFMutableString *s[3];
 	OFArray *a;
 	int i;
 	EntityHandler *h;

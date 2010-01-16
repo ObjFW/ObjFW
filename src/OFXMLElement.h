@@ -81,9 +81,9 @@ extern int _OFXMLElement_reference;
 @interface OFXMLElement: OFObject
 {
 	OFString *name;
-	OFArray *attrs;
+	OFMutableArray *attrs;
 	OFString *stringval;
-	OFArray *children;
+	OFMutableArray *children;
 }
 
 /**

@@ -30,7 +30,7 @@ void
 array_tests()
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFArray *a[3];
+	OFMutableArray *a[3];
 
 	TEST(@"+[array]", (a[0] = [OFMutableArray array]))
 

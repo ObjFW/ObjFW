@@ -32,7 +32,7 @@
 + pluginFromFile: (OFString*)path
 {
 	OFAutoreleasePool *pool;
-	OFString *file;
+	OFMutableString *file;
 	of_plugin_handle_t handle;
 	OFPlugin *(*init_plugin)();
 	OFPlugin *plugin;

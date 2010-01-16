@@ -144,10 +144,6 @@ struct of_dictionary_bucket
  * \return The number of objects in the dictionary
  */
 - (size_t)count;
-
-- setObject: (OFObject*)obj
-     forKey: (OFObject <OFCopying>*)key;
-- removeObjectForKey: (OFObject*)key;
 @end
 
 #import "OFEnumerator.h"

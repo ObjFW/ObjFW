@@ -545,19 +545,6 @@ void _references_to_categories_of_OFDictionary()
 	[super dealloc];
 }
 
-- setObject: (OFObject*)obj
-     forKey: (OFObject <OFCopying>*)key
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
-}
-
-- removeObjectForKey: (OFObject*)key
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
-}
-
 - (uint32_t)hash
 {
 	size_t i;

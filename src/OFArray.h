@@ -142,23 +142,6 @@
  * \return A string containing all objects joined by the separator
  */
 - (OFString*)componentsJoinedByString: (OFString*)separator;
-
-- addObject: (OFObject*)obj;
-- addObject: (OFObject*)obj
-    atIndex: (size_t)index;
-- replaceObject: (OFObject*)old
-     withObject: (OFObject*)new;
-- replaceObjectAtIndex: (size_t)index
-	    withObject: (OFObject*)obj;
-- replaceObjectIdenticalTo: (OFObject*)old
-		withObject: (OFObject*)new;
-- removeObject: (OFObject*)obj;
-- removeObjectIdenticalTo: (OFObject*)obj;
-- removeObjectAtIndex: (size_t)index;
-- removeNObjects: (size_t)nobjects;
-- removeNObjects: (size_t)nobjects
-	 atIndex: (size_t)index;
 @end
 
 #import "OFMutableArray.h"
-#import "OFString.h"

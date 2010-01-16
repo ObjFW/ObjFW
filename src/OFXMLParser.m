@@ -21,7 +21,8 @@
 int _OFXMLParser_reference;
 
 static OF_INLINE OFString*
-transform_string(OFString *cache, OFObject <OFXMLUnescapingDelegate> *handler)
+transform_string(OFMutableString *cache,
+    OFObject <OFXMLUnescapingDelegate> *handler)
 {
 	/* TODO: Support for xml:space */
 
@@ -507,12 +508,12 @@ parse_numeric_entity(const char *entity, size_t length)
 {
 	size_t i, last;
 	BOOL in_entity;
-	OFString *ret;
+	OFMutableString *ret;
 
 	last = 0;
 	in_entity = NO;
 	ret = [OFMutableString string];
-	ret->is_utf8 = is_utf8;
+	((OFString*)ret)->is_utf8 = is_utf8;
 
 	for (i = 0; i < length; i++) {
 		if (!in_entity && string[i] == '&') {
