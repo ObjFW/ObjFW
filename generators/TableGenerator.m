@@ -15,6 +15,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#import "OFString.h"
+#import "OFArray.h"
 #import "OFFile.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
