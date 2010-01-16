@@ -26,12 +26,12 @@ run: all
 	if [ -z "${DONT_RUN_TESTS}" ]; then ${MAKE} ${MFLAGS} run-tests; fi
 
 run-tests:
-	rm -f libobjfw.so.0 libobjfw.so.0.1 libobjfw.dll libobjfw.dylib
+	rm -f libobjfw.so.1 libobjfw.so.1.0 libobjfw.dll libobjfw.dylib
 	if test -f ../src/libobjfw.so; then \
-		ln -s ../src/libobjfw.so libobjfw.so.0; \
-		ln -s ../src/libobjfw.so libobjfw.so.0.1; \
-	elif test -f ../src/libobjfw.so.0.1; then \
-		ln -s ../src/libobjfw.so.0.1 libobjfw.so.0.1; \
+		ln -s ../src/libobjfw.so libobjfw.so.1; \
+		ln -s ../src/libobjfw.so libobjfw.so.1.0; \
+	elif test -f ../src/libobjfw.so.1.0; then \
+		ln -s ../src/libobjfw.so.1.0 libobjfw.so.1.0; \
 	fi
 	if test -f ../src/libobjfw.dll; then \
 		ln ../src/libobjfw.dll libobjfw.dll; \
@@ -42,7 +42,7 @@ run-tests:
 	LD_LIBRARY_PATH=.$${LD_LIBRARY_PATH+:}$$LD_LIBRARY_PATH \
 	DYLD_LIBRARY_PATH=.$${DYLD_LIBRARY_PATH+:}$$DYLD_LIBRARY_PATH \
 	${TEST_LAUNCHER} ./${PROG_NOINST}; EXIT=$$?; \
-	rm -f libobjfw.so.0 libobjfw.so.0.1 libobjfw.dll libobjfw.dylib; \
+	rm -f libobjfw.so.1 libobjfw.so.1.0 libobjfw.dll libobjfw.dylib; \
 	exit $$EXIT
 
 run-on-iphone: all
