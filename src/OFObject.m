@@ -509,6 +509,25 @@ objc_enumerationMutation(id obj)
 	free((char*)self - PRE_IVAR_ALIGN);
 }
 
+/* Required to use properties with the Apple runtime */
+- (id)copyWithZone: (void*)zone
+{
+	if (zone != NULL)
+		@throw [OFNotImplementedException newWithClass: isa
+						      selector: _cmd];
+
+	return [(id)self copy];
+}
+
+- (id)mutableCopyWithZone: (void*)zone
+{
+	if (zone != NULL)
+		@throw [OFNotImplementedException newWithClass: isa
+						      selector: _cmd];
+
+	return [(id)self mutableCopy];
+}
+
 /*
  * Those are needed as the root class is the superclass of the root class's
  * metaclass and thus instance methods can be sent to class objects as well.
@@ -573,6 +592,18 @@ objc_enumerationMutation(id obj)
 }
 
 + (void)dealloc
+{
+	@throw [OFNotImplementedException newWithClass: self
+					      selector: _cmd];
+}
+
++ (id)copyWithZone: (void*)zone
+{
+	@throw [OFNotImplementedException newWithClass: self
+					      selector: _cmd];
+}
+
++ (id)mutableCopyWithZone: (void*)zone
 {
 	@throw [OFNotImplementedException newWithClass: self
 					      selector: _cmd];
