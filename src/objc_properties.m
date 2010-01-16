@@ -25,7 +25,7 @@ objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, BOOL atomic)
 		}
 	}
 
-	return [[*(id*)((char*)self + offset) retain] autorelease];
+	return *(id*)((char*)self + offset);
 }
 
 void
