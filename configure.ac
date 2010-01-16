@@ -30,7 +30,30 @@ AC_TRY_COMPILE([
 	id n = nil;
 	for (id i in n);
 	], [
-	AC_DEFINE(OF_HAVE_FAST_ENUMERATION, 1, [Fast Enumeration support])
+	AC_DEFINE(OF_HAVE_FAST_ENUMERATION, 1,
+		[Compiler support for Fast Enumeration])
+	AC_MSG_RESULT(yes)
+	], [
+	AC_MSG_RESULT(no)])
+
+AC_MSG_CHECKING(whether Objective C compiler supports properties)
+AC_TRY_COMPILE([
+	#import <objc/objc.h>
+
+	@interface Foo
+	{
+		id bar;
+	}
+
+	@property (retain, nonatomic) id bar;
+	@end
+	], [
+	Foo *foo = nil;
+	[foo setBar: nil];
+	[foo bar];
+	], [
+	AC_DEFINE(OF_HAVE_PROPERTIES, 1, [Compiler support for properties])
+	AC_SUBST(PROPERTIES_M, "properties.m")
 	AC_MSG_RESULT(yes)
 	], [
 	AC_MSG_RESULT(no)])

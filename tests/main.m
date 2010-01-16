@@ -28,6 +28,9 @@ extern void object_tests();
 #ifdef OF_PLUGINS
 extern void plugin_tests();
 #endif
+#ifdef OF_HAVE_PROPERTIES
+extern void properties_tests();
+#endif
 extern void string_tests();
 extern void tcpsocket_tests();
 #ifdef OF_THREADS
@@ -114,6 +117,9 @@ main()
 	xmlparser_tests();
 #ifdef OF_PLUGINS
 	plugin_tests();
+#endif
+#ifdef OF_HAVE_PROPERTIES
+	properties_tests();
 #endif
 
 	return fails;

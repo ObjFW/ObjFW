@@ -15,7 +15,8 @@ SRCS = OFArray.m	\
        ${OFTHREAD_M}	\
        OFXMLElement.m	\
        OFXMLParser.m	\
-       main.m
+       main.m		\
+       ${PROPERTIES_M}
 
 IPHONE_USER = mobile
 IPHONE_TMP = /tmp/objfw-test
