@@ -1,8 +1,8 @@
 include ../extra.mk
 
 LIB = ${LIB_PREFIX}objfw${LIB_SUFFIX}
-LIB_MAJOR = 0
-LIB_MINOR = 1
+LIB_MAJOR = 1
+LIB_MINOR = 0
 
 SRCS = OFArray.m		\
        OFAutoreleasePool.m	\
