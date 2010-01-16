@@ -288,26 +288,6 @@ typedef enum {
  * It is also called when the retain count reaches zero.
  */
 - (void)dealloc;
-
-/*
- * Those are needed as the root class is the superclass of the root class's
- * metaclass and thus instance methods can be sent to class objects as well.
- */
-+ addMemoryToPool: (void*)ptr;
-+ (void*)allocMemoryWithSize: (size_t)size;
-+ (void*)allocMemoryForNItems: (size_t)nitems
-		     withSize: (size_t)size;
-+ (void*)resizeMemory: (void*)ptr
-	       toSize: (size_t)size;
-+ (void*)resizeMemory: (void*)ptr
-	     toNItems: (size_t)nitems
-	     withSize: (size_t)size;
-+ freeMemory: (void*)ptr;
-+ retain;
-+ autorelease;
-+ (size_t)retainCount;
-+ (void)release;
-+ (void)dealloc;
 @end
 
 /**
