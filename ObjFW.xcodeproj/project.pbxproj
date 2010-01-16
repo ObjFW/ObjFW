@@ -71,6 +71,7 @@
 /* Begin PBXFileReference section */
 		4B0108C910EB8C9300631877 /* OFEnumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFEnumerator.h; path = src/OFEnumerator.h; sourceTree = SOURCE_ROOT; };
 		4B0108CA10EB8C9300631877 /* OFEnumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFEnumerator.m; path = src/OFEnumerator.m; sourceTree = SOURCE_ROOT; };
+		4B4986DF1101F64500A2CFDA /* objc_properties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = objc_properties.m; path = src/objc_properties.m; sourceTree = SOURCE_ROOT; };
 		4B6799561099E7C50041064A /* asprintf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = asprintf.h; path = src/asprintf.h; sourceTree = "<group>"; };
 		4B6799581099E7C50041064A /* objc_sync.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = objc_sync.m; path = src/objc_sync.m; sourceTree = "<group>"; };
 		4B67995A1099E7C50041064A /* OFArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFArray.h; path = src/OFArray.h; sourceTree = "<group>"; };
@@ -188,6 +189,7 @@
 				4B6AF96C10A8D3E40003FB0A /* asprintf.m */,
 				4B6799561099E7C50041064A /* asprintf.h */,
 				4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */,
+				4B4986DF1101F64500A2CFDA /* objc_properties.m */,
 				4B6799581099E7C50041064A /* objc_sync.m */,
 				4B67998B1099E7C50041064A /* threading.h */,
 				4B67998C1099E7C50041064A /* unicode.h */,
