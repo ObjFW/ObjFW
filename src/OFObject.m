@@ -300,7 +300,7 @@ objc_enumerationMutation(id obj)
 - (uint32_t)hash
 {
 	/* Classes containing data should reimplement this! */
-	return (uint32_t)(intptr_t)self;
+	return (uint32_t)(uintptr_t)self;
 }
 
 - addMemoryToPool: (void*)ptr
