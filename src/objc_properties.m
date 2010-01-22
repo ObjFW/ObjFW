@@ -37,7 +37,16 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
 			id *ptr = (id*)((char*)self + offset);
 			id old = *ptr;
 
-			*ptr = (copy ? [value copy] : [value retain]);
+			switch (copy) {
+			case 0:
+				*ptr = [value retain];
+				break;
+			case 2:
+				*ptr = [value mutableCopy];
+				break;
+			default:
+				*ptr = [value copy];
+			}
 			[old release];
 		}
 	}
@@ -45,6 +54,15 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
 	id *ptr = (id*)((char*)self + offset);
 	id old = *ptr;
 
-	*ptr = (copy ? [value copy] : [value retain]);
+	switch (copy) {
+	case 0:
+		*ptr = [value retain];
+		break;
+	case 2:
+		*ptr = [value mutableCopy];
+		break;
+	default:
+		*ptr = [value copy];
+	}
 	[old release];
 }
