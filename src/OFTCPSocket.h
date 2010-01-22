@@ -53,15 +53,10 @@
  * Accept an incoming connection.
  * \return An autoreleased OFTCPSocket for the accepted connection.
  */
-- (OFSocket*)accept;
+- (OFTCPSocket*)accept;
 
 /**
  * Enable or disable keep alives for the connection.
  */
 - enableKeepAlives: (BOOL)enable;
-
-/**
- * Closes the socket.
- */
-- close;
 @end

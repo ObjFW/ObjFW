@@ -314,7 +314,7 @@ static OFMutex *mutex = nil;
 	return self;
 }
 
-- (OFSocket*)accept
+- (OFTCPSocket*)accept
 {
 	OFTCPSocket *newsock;
 	struct sockaddr *addr;
