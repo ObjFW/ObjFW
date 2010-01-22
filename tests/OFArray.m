@@ -30,67 +30,121 @@ void
 array_tests()
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFMutableArray *a[3];
+	OFArray *a[2];
+	OFMutableArray *m[2];
 
-	TEST(@"+[array]", (a[0] = [OFMutableArray array]))
+	TEST(@"+[array]", (m[0] = [OFMutableArray array]))
 
 	TEST(@"+[arrayWithObjects:]",
-	    (a[1] = [OFArray arrayWithObjects: @"Foo", @"Bar", @"Baz", nil]))
+	    (a[0] = [OFArray arrayWithObjects: @"Foo", @"Bar", @"Baz", nil]))
 
-	TEST(@"+[arrayWithCArray:]", (a[2] = [OFArray arrayWithCArray: c_ary]))
+	TEST(@"+[arrayWithCArray:]", (a[1] = [OFArray arrayWithCArray: c_ary]))
 
-	TEST(@"-[addObject:]", [a[0] addObject: c_ary[0]] &&
-	    [a[0] addObject: c_ary[2]])
+	TEST(@"-[addObject:]", [m[0] addObject: c_ary[0]] &&
+	    [m[0] addObject: c_ary[2]])
 
-	TEST(@"-[addObject:]", [a[0] addObject: c_ary[1]
-				       atIndex: 1])
+	TEST(@"-[addObject:atIndex:]", [m[0] addObject: c_ary[1]
+					       atIndex: 1])
 
-	TEST(@"-[count]", [a[0] count] == 3 && [a[1] count] == 3 &&
-	    [a[2] count] == 3)
+	TEST(@"-[count]", [m[0] count] == 3 && [a[0] count] == 3 &&
+	    [a[1] count] == 3)
 
-	TEST(@"-[isEqual:]", [a[0] isEqual: a[1]] && [a[1] isEqual: a[2]])
+	TEST(@"-[isEqual:]", [m[0] isEqual: a[0]] && [a[0] isEqual: a[1]])
 
 	TEST(@"-[objectAtIndex:]",
+	    [[m[0] objectAtIndex: 0] isEqual: c_ary[0]] &&
+	    [[m[0] objectAtIndex: 1] isEqual: c_ary[1]] &&
+	    [[m[0] objectAtIndex: 2] isEqual: c_ary[2]] &&
 	    [[a[0] objectAtIndex: 0] isEqual: c_ary[0]] &&
 	    [[a[0] objectAtIndex: 1] isEqual: c_ary[1]] &&
 	    [[a[0] objectAtIndex: 2] isEqual: c_ary[2]] &&
 	    [[a[1] objectAtIndex: 0] isEqual: c_ary[0]] &&
 	    [[a[1] objectAtIndex: 1] isEqual: c_ary[1]] &&
-	    [[a[1] objectAtIndex: 2] isEqual: c_ary[2]] &&
-	    [[a[2] objectAtIndex: 0] isEqual: c_ary[0]] &&
-	    [[a[2] objectAtIndex: 1] isEqual: c_ary[1]] &&
-	    [[a[2] objectAtIndex: 2] isEqual: c_ary[2]])
+	    [[a[1] objectAtIndex: 2] isEqual: c_ary[2]])
 
 	TEST(@"-[indexOfObject:]", [a[0] indexOfObject: c_ary[1]] == 1)
 
 	TEST(@"-[indexOfObjectIdenticalTo:]",
 	    [a[0] indexOfObjectIdenticalTo: c_ary[1]] == 1)
 
+	TEST(@"-[replaceObject:withObject:]",
+	    [m[0] replaceObject: c_ary[1]
+		     withObject: c_ary[0]] &&
+	    [[m[0] objectAtIndex: 0] isEqual: c_ary[0]] &&
+	    [[m[0] objectAtIndex: 1] isEqual: c_ary[0]] &&
+	    [[m[0] objectAtIndex: 2] isEqual: c_ary[2]])
+
+	TEST(@"-[replaceObject:identicalTo:]",
+	    [m[0] replaceObjectIdenticalTo: c_ary[0]
+				withObject: c_ary[1]] &&
+	    [[m[0] objectAtIndex: 0] isEqual: c_ary[1]] &&
+	    [[m[0] objectAtIndex: 1] isEqual: c_ary[1]] &&
+	    [[m[0] objectAtIndex: 2] isEqual: c_ary[2]])
+
+	TEST(@"-[replaceObjectAtIndex:withObject:]",
+	    [m[0] replaceObjectAtIndex: 0
+			    withObject: c_ary[0]] &&
+	    [[m[0] objectAtIndex: 0] isEqual: c_ary[0]] &&
+	    [[m[0] objectAtIndex: 1] isEqual: c_ary[1]] &&
+	    [[m[0] objectAtIndex: 2] isEqual: c_ary[2]])
+
+	TEST(@"-[removeObject:]",
+	    [m[0] removeObject: c_ary[1]] && [m[0] count] == 2)
+
+	TEST(@"-[removeObjectIdenticalTo:]",
+	    [m[0] removeObjectIdenticalTo: c_ary[2]] && [m[0] count] == 1)
+
+	[m[0] addObject: c_ary[0]];
+	[m[0] addObject: c_ary[1]];
+	TEST(@"-[removeNObjects:]", [m[0] removeNObjects: 2] &&
+	    [m[0] count] == 1 && [[m[0] objectAtIndex: 0] isEqual: c_ary[0]])
+
+	m[1] = [[a[0] mutableCopy] autorelease];
+	TEST(@"-[removeObjectAtIndex:]", [m[1] removeObjectAtIndex: 1] &&
+	    [m[1] count] == 2 && [[m[1] objectAtIndex: 1] isEqual: c_ary[2]])
+
+	m[1] = [[a[0] mutableCopy] autorelease];
+	TEST(@"-[removeNObjects:atIndex:]", [m[1] removeNObjects: 2
+							 atIndex: 0] &&
+	    [m[1] count] == 1 && [[m[1] objectAtIndex: 0] isEqual: c_ary[2]])
+
+	EXPECT_EXCEPTION(@"Detect out of range in -[objectAtIndex:]",
+	    OFOutOfRangeException, [a[0] objectAtIndex: [a[0] count]])
+
+	EXPECT_EXCEPTION(@"Detect out of range in -[removeNItems:]",
+	    OFOutOfRangeException, [m[0] removeNObjects: [m[0] count] + 1])
+
+	a[1] = [OFArray arrayWithObjects: @"foo", @"bar", @"baz", nil];
+	TEST(@"-[componentsJoinedByString:]",
+	    [[a[1] componentsJoinedByString: @" "] isEqual: @"foo bar baz"])
+
 #ifdef OF_HAVE_FAST_ENUMERATION
 	size_t i = 0;
 	BOOL ok = YES;
 
-	for (OFString *s in a[0]) {
+	m[0] = [[a[0] mutableCopy] autorelease];
+
+	for (OFString *s in m[0]) {
 		if (![s isEqual: c_ary[i]])
 			ok = NO;
-		[a[0] replaceObjectAtIndex: i
+		[m[0] replaceObjectAtIndex: i
 				withObject: @""];
 		i++;
 	}
 
 	TEST(@"Fast Enumeration", ok)
 
-	[a[0] replaceObjectAtIndex: 0
+	[m[0] replaceObjectAtIndex: 0
 			withObject: c_ary[0]];
-	[a[0] replaceObjectAtIndex: 1
+	[m[0] replaceObjectAtIndex: 1
 			withObject: c_ary[1]];
-	[a[0] replaceObjectAtIndex: 2
+	[m[0] replaceObjectAtIndex: 2
 			withObject: c_ary[2]];
 
 	ok = NO;
 	@try {
-		for (OFString *s in a[0])
-			[a[0] addObject: @""];
+		for (OFString *s in m[0])
+			[m[0] addObject: @""];
 	} @catch (OFEnumerationMutationException *e) {
 		ok = YES;
 		[e dealloc];
@@ -98,59 +152,8 @@ array_tests()
 
 	TEST(@"Detection of mutation during Fast Enumeration", ok)
 
-	[a[0] removeNObjects: 1];
+	[m[0] removeNObjects: 1];
 #endif
-
-	TEST(@"-[replaceObject:withObject:]",
-	    [a[0] replaceObject: c_ary[1]
-		     withObject: c_ary[0]] &&
-	    [[a[0] objectAtIndex: 0] isEqual: c_ary[0]] &&
-	    [[a[0] objectAtIndex: 1] isEqual: c_ary[0]] &&
-	    [[a[0] objectAtIndex: 2] isEqual: c_ary[2]])
-
-	TEST(@"-[replaceObject:identicalTo:]",
-	    [a[0] replaceObjectIdenticalTo: c_ary[0]
-				withObject: c_ary[1]] &&
-	    [[a[0] objectAtIndex: 0] isEqual: c_ary[1]] &&
-	    [[a[0] objectAtIndex: 1] isEqual: c_ary[1]] &&
-	    [[a[0] objectAtIndex: 2] isEqual: c_ary[2]])
-
-	TEST(@"-[replaceObjectAtIndex:withObject:]",
-	    [a[0] replaceObjectAtIndex: 0
-			    withObject: c_ary[0]] &&
-	    [[a[0] objectAtIndex: 0] isEqual: c_ary[0]] &&
-	    [[a[0] objectAtIndex: 1] isEqual: c_ary[1]] &&
-	    [[a[0] objectAtIndex: 2] isEqual: c_ary[2]])
-
-	TEST(@"-[removeObject:]",
-	    [a[0] removeObject: c_ary[1]] && [a[0] count] == 2)
-
-	TEST(@"-[removeObjectIdenticalTo:]",
-	    [a[0] removeObjectIdenticalTo: c_ary[2]] && [a[0] count] == 1)
-
-	[a[0] addObject: c_ary[0]];
-	[a[0] addObject: c_ary[1]];
-	TEST(@"-[removeNObjects:]", [a[0] removeNObjects: 2] &&
-	    [a[0] count] == 1 && [[a[0] objectAtIndex: 0] isEqual: c_ary[0]])
-
-	a[1] = [[a[1] mutableCopy] autorelease];
-	TEST(@"-[removeObjectAtIndex:]", [a[1] removeObjectAtIndex: 1] &&
-	    [a[1] count] == 2 && [[a[1] objectAtIndex: 1] isEqual: c_ary[2]])
-
-	a[2] = [[a[2] mutableCopy] autorelease];
-	TEST(@"-[removeNObjects:atIndex:]", [a[2] removeNObjects: 2
-							 atIndex: 0] &&
-	    [a[2] count] == 1 && [[a[2] objectAtIndex: 0] isEqual: c_ary[2]])
-
-	EXPECT_EXCEPTION(@"Detect out of range in -[objectAtIndex:]",
-	    OFOutOfRangeException, [a[0] objectAtIndex: [a[0] count]])
-
-	EXPECT_EXCEPTION(@"Detect out of range in -[removeNItems:]",
-	    OFOutOfRangeException, [a[0] removeNObjects: [a[0] count] + 1])
-
-	a[0] = [OFArray arrayWithObjects: @"foo", @"bar", @"baz", nil];
-	TEST(@"-[componentsJoinedByString:]",
-	    [[a[0] componentsJoinedByString: @" "] isEqual: @"foo bar baz"])
 
 	[pool drain];
 }
