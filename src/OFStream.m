@@ -119,9 +119,14 @@ static int pagesize = 0;
 		for (i = 0; i < cache_len; i++) {
 			if (OF_UNLIKELY(cache[i] == '\n' ||
 			    cache[i] == '\0')) {
+				ret_len = i;
+
+				if (i > 0 && cache[i - 1] == '\r')
+					ret_len--;
+
 				ret = [OFString stringWithCString: cache
 							 encoding: encoding
-							   length: i];
+							   length: ret_len];
 
 				tmp = [self allocMemoryWithSize: cache_len -
 								 i - 1];
@@ -145,9 +150,14 @@ static int pagesize = 0;
 				if (cache == NULL)
 					return nil;
 
+				ret_len = cache_len;
+
+				if (ret_len > 0 && cache[ret_len - 1] == '\r')
+					ret_len--;
+
 				ret = [OFString stringWithCString: cache
 							 encoding: encoding
-							   length: cache_len];
+							   length: ret_len];
 
 				[self freeMemory: cache];
 				cache = NULL;
@@ -170,6 +180,10 @@ static int pagesize = 0;
 					if (cache != NULL)
 						memcpy(ret_c, cache, cache_len);
 					memcpy(ret_c + cache_len, tmp, i);
+
+					if (ret_len > 0 &&
+					    ret_c[ret_len - 1] == '\r')
+						ret_len--;
 
 					@try {
 						ret = [OFString
