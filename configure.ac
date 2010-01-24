@@ -172,6 +172,10 @@ if test x"$enable_threads" != x"no"; then
 		AC_SUBST(OBJC_SYNC_M, "objc_sync.m")
 		AC_DEFINE(NEED_OBJC_SYNC_INIT, 1,
 			[Whether objc_sync_init needs to be called])])
+
+	AC_CHECK_HEADER(libkern/OSAtomic.h, [
+		AC_DEFINE(OF_HAVE_LIBKERN_OSATOMIC_H, 1,
+			[Whether we have libkern/OSAtomic.h])])
 fi
 
 AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")

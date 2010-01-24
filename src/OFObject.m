@@ -30,6 +30,8 @@
 # import <objc/sarray.h>
 #endif
 
+#import "atomic.h"
+
 struct pre_ivar {
 	void   **memchunks;
 	size_t memchunks_size;
@@ -473,7 +475,7 @@ objc_enumerationMutation(id obj)
 
 - retain
 {
-	PRE_IVAR->retain_count++;
+	of_atomic_inc32(&PRE_IVAR->retain_count);
 
 	return self;
 }
@@ -485,7 +487,7 @@ objc_enumerationMutation(id obj)
 
 - (void)release
 {
-	if (!--PRE_IVAR->retain_count)
+	if (!of_atomic_dec32(&PRE_IVAR->retain_count))
 		[self dealloc];
 }
 

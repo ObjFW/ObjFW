@@ -35,6 +35,7 @@ INCLUDES := ${SRCS:.m=.h}	\
 	    OFMacros.h		\
 	    ObjFW.h		\
 	    asprintf.h		\
+	    atomic.h		\
 	    objfw-defs.h	\
 	    ${THREADING_H}
 
