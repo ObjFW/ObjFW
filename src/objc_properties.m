@@ -15,13 +15,25 @@
 
 #import "OFExceptions.h"
 
+#import "atomic.h"
+
+#define NUM_SPINLOCKS 8	/* needs to be a power of 2 */
+#define SPINLOCK_HASH(p) ((uintptr_t)p >> 4) & (NUM_SPINLOCKS - 1)
+static of_spinlock_t spinlocks[NUM_SPINLOCKS] = {};
+
 id
 objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, BOOL atomic)
 {
 	if (atomic) {
-		@synchronized (self) {
-			id ptr = *(id*)((char*)self + offset);
-			return [[ptr retain] autorelease];
+		id *ptr = (id*)((char*)self + offset);
+		unsigned hash = SPINLOCK_HASH(ptr);
+
+		of_spinlock_lock(spinlocks[hash]);
+
+		@try {
+			return [[*ptr retain] autorelease];
+		} @finally {
+			of_spinlock_unlock(spinlocks[hash]);
 		}
 	}
 
@@ -33,8 +45,12 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
     BOOL copy)
 {
 	if (atomic) {
-		@synchronized ((atomic ? self : nil)) {
-			id *ptr = (id*)((char*)self + offset);
+		id *ptr = (id*)((char*)self + offset);
+		unsigned hash = SPINLOCK_HASH(ptr);
+
+		of_spinlock_lock(spinlocks[hash]);
+
+		@try {
 			id old = *ptr;
 
 			switch (copy) {
@@ -54,9 +70,11 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
 			}
 
 			[old release];
-
-			return;
+		} @finally {
+			of_spinlock_unlock(spinlocks[hash]);
 		}
+
+		return;
 	}
 
 	id *ptr = (id*)((char*)self + offset);
