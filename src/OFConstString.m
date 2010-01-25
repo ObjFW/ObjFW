@@ -138,9 +138,9 @@ void *_OFConstStringClassReference;
 	return self;
 }
 
-- (size_t)retainCount
+- (uint32_t)retainCount
 {
-	return SIZE_MAX;
+	return UINT32_MAX;
 }
 
 - (void)release
