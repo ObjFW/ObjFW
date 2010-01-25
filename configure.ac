@@ -173,9 +173,47 @@ if test x"$enable_threads" != x"no"; then
 		AC_DEFINE(NEED_OBJC_SYNC_INIT, 1,
 			[Whether objc_sync_init needs to be called])])
 
-	AC_CHECK_HEADER(libkern/OSAtomic.h, [
-		AC_DEFINE(OF_HAVE_LIBKERN_OSATOMIC_H, 1,
-			[Whether we have libkern/OSAtomic.h])])
+	AC_TRY_LINK([#include <stdint.h>], [
+		int32_t i, j;
+		if (__sync_add_and_fetch(&i, 1))
+			j = __sync_sub_and_fetch(&i, 1);
+		while (!__sync_bool_compare_and_swap(&i, 0, 1));
+		], [
+		have_gcc_atomic_ops="yes"
+		AC_DEFINE(OF_HAVE_GCC_ATOMIC_OPS, 1,
+			[Whether gcc atomic operations are available])
+		], [
+		old_OBJCFLAGS="$OBJCFLAGS"
+		OBJCFLAGS="$OBJCFLAGS -march=i486"
+		AC_TRY_LINK([#include <stdint.h>], [
+			int32_t i, j;
+			if (__sync_add_and_fetch(&i, 1))
+				j = __sync_sub_and_fetch(&i, 1);
+			while (!__sync_bool_compare_and_swap(&i, 0, 1));
+			], [
+			have_gcc_atomic_ops="yes"
+			AC_DEFINE(OF_HAVE_GCC_ATOMIC_OPS, 1,
+				[Whether gcc atomic operations are available])
+			], [
+			have_gcc_atomic_ops="no"
+			OBJCFLAGS="$old_OBJCFLAGS"])])
+
+	if test x"$have_gcc_atomic_ops" != x"yes"; then
+		AC_CHECK_HEADER(libkern/OSAtomic.h, [
+			have_libkern_osatomic_h="yes"
+			AC_DEFINE(OF_HAVE_LIBKERN_OSATOMIC_H, 1,
+				[Whether we have libkern/OSAtomic.h])])
+	fi
+
+	AC_MSG_CHECKING(for atomic operations)
+	if test x"$have_gcc_atomic_ops" = x"yes"; then
+		AC_MSG_RESULT(gcc builtins)
+	elif test x"$have_libkern_osatomic_h" = x"yes"; then
+		AC_MSG_RESULT(libkern/OSAtomic.h)
+	else
+		AC_MSG_RESULT(none)
+		AC_MSG_ERROR(No atomic operations found! Try --disable-threads.)
+	fi
 fi
 
 AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")

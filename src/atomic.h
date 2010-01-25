@@ -14,10 +14,10 @@
 #if !defined(OF_THREADS)
 # define of_atomic_inc32(p) ++(*p)
 # define of_atomic_dec32(p) --(*p)
-#elif __GNUC_MINOR__ >= 1
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
 # define of_atomic_inc32(p) __sync_add_and_fetch(p, 1)
 # define of_atomic_dec32(p) __sync_sub_and_fetch(p, 1)
-#elif OF_HAVE_LIBKERN_OSATOMIC_H
+#elif defined(OF_HAVE_LIBKERN_OSATOMIC_H)
 # include <libkern/OSAtomic.h>
 # define of_atomic_inc32(p) OSAtomicIncrement32Barrier((int32_t*)(p))
 # define of_atomic_dec32(p) OSAtomicDecrement32Barrier((int32_t*)(p))
