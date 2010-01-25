@@ -65,7 +65,7 @@ array_tests()
 	TEST(@"-[indexOfObject:]", [a[0] indexOfObject: c_ary[1]] == 1)
 
 	TEST(@"-[indexOfObjectIdenticalTo:]",
-	    [a[0] indexOfObjectIdenticalTo: c_ary[1]] == 1)
+	    [a[1] indexOfObjectIdenticalTo: c_ary[1]] == 1)
 
 	TEST(@"-[replaceObject:withObject:]",
 	    [m[0] replaceObject: c_ary[1]
