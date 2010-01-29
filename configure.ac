@@ -209,8 +209,10 @@ if test x"$enable_threads" != x"no"; then
 
 	AC_MSG_CHECKING(for atomic operations)
 	if test x"$have_gcc_atomic_ops" = x"yes"; then
+		AC_DEFINE(OF_ATOMIC_OPS, 1, [Whether we have atomic operations])
 		AC_MSG_RESULT(gcc builtins)
 	elif test x"$have_libkern_osatomic_h" = x"yes"; then
+		AC_DEFINE(OF_ATOMIC_OPS, 1, [Whether we have atomic operations])
 		AC_MSG_RESULT(libkern/OSAtomic.h)
 	else
 		AC_MSG_RESULT(none)

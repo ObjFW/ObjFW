@@ -1,4 +1,5 @@
 #undef OF_APPLE_RUNTIME
+#undef OF_ATOMIC_OPS
 #undef OF_BIG_ENDIAN
 #undef OF_GNU_RUNTIME
 #undef OF_HAVE_ASPRINTF
