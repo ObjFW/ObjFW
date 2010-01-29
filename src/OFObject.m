@@ -33,9 +33,9 @@
 #import "atomic.h"
 
 struct pre_ivar {
-	void	 **memchunks;
-	size_t	 memchunks_size;
-	uint32_t retain_count;	/* uint32_t because we use 32 bit atomic ops */
+	void	**memchunks;
+	size_t	memchunks_size;
+	int32_t	retain_count;	/* int32_t because atomic ops use int32_t */
 };
 
 /* Hopefully no arch needs more than 16 bytes padding */
@@ -480,7 +480,7 @@ objc_enumerationMutation(id obj)
 	return self;
 }
 
-- (uint32_t)retainCount
+- (int32_t)retainCount
 {
 	return PRE_IVAR->retain_count;
 }
@@ -584,9 +584,9 @@ objc_enumerationMutation(id obj)
 	return self;
 }
 
-+ (uint32_t)retainCount
++ (int32_t)retainCount
 {
-	return UINT32_MAX;
+	return INT32_MAX;
 }
 
 + (void)release
