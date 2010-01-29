@@ -159,6 +159,8 @@ if test x"$enable_threads" != x"no"; then
 			ACX_PTHREAD([
 				CPPLAGS="$CPPFLAGS $PTHREAD_CFLAGS"
 				LIBS="$LIBS $PTHREAD_LIBS"
+				AC_DEFINE(OF_HAVE_PTHREADS, 1,
+					[Whether we have pthreads])
 				], [
 				AC_MSG_ERROR(No supported threads found!)])
 			;;

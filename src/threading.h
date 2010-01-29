@@ -11,22 +11,26 @@
 
 #import "OFMacros.h"
 
-#ifndef _WIN32
+#if !defined(OF_THREADS) || (!defined(OF_HAVE_PTHREADS) && defined(_WIN32))
+# error No threads available!
+#endif
+
+#if defined(OF_HAVE_PTHREADS)
 #include <pthread.h>
 typedef pthread_t of_thread_t;
 typedef pthread_mutex_t of_mutex_t;
 typedef pthread_key_t of_tlskey_t;
-#else
+#elif defined(_WIN32)
 #include <windows.h>
 typedef HANDLE of_thread_t;
 typedef CRITICAL_SECTION of_mutex_t;
 typedef DWORD of_tlskey_t;
 #endif
 
-#ifndef _WIN32
+#if defined(OF_HAVE_PTHREADS)
 # define of_thread_is_current(t) pthread_equal(t, pthread_self())
 # define of_thread_current() pthread_self()
-#else
+#elif defined(_WIN32)
 # define of_thread_is_current(t) (t == GetCurrentThread())
 # define of_thread_current() GetCurrentThread()
 #endif
@@ -34,10 +38,10 @@ typedef DWORD of_tlskey_t;
 static OF_INLINE BOOL
 of_thread_new(of_thread_t *thread, id (*main)(id), id data)
 {
-#ifndef _WIN32
+#if defined(OF_HAVE_PTHREADS)
 	return (pthread_create(thread, NULL, (void*(*)(void*))main,
 	    (void*)data) ? NO : YES);
-#else
+#elif defined(_WIN32)
 	*thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)main,
 	    (void*)data, 0, NULL);
 
@@ -48,14 +52,14 @@ of_thread_new(of_thread_t *thread, id (*main)(id), id data)
 static OF_INLINE BOOL
 of_thread_join(of_thread_t thread)
 {
-#ifndef _WIN32
+#if defined(OF_HAVE_PTHREADS)
 	void *ret;
 
 	if (pthread_join(thread, &ret))
 		return NO;
 
 	return (ret != PTHREAD_CANCELED ? YES : NO);
-#else
+#elif defined(_WIN32)
 	if (WaitForSingleObject(thread, INFINITE))
 		return NO;
 
@@ -68,9 +72,9 @@ of_thread_join(of_thread_t thread)
 static OF_INLINE BOOL
 of_thread_cancel(of_thread_t thread)
 {
-#ifndef _WIN32
+#if defined(OF_HAVE_PTHREADS)
 	return (pthread_cancel(thread) ? NO : YES);
-#else
+#elif defined(_WIN32)
 	if (thread != INVALID_HANDLE_VALUE) {
 		TerminateThread(thread, 1);
 		CloseHandle(thread);
@@ -83,9 +87,9 @@ of_thread_cancel(of_thread_t thread)
 static OF_INLINE BOOL
 of_mutex_new(of_mutex_t *mutex)
 {
-#ifndef _WIN32
+#if defined(OF_HAVE_PTHREADS)
 	return (pthread_mutex_init(mutex, NULL) ? NO : YES);
-#else
+#elif defined(_WIN32)
 	InitializeCriticalSection(mutex);
 	return YES;
 #endif
@@ -94,9 +98,9 @@ of_mutex_new(of_mutex_t *mutex)
 static OF_INLINE BOOL
 of_mutex_free(of_mutex_t *mutex)
 {
-#ifndef _WIN32
+#if defined(OF_HAVE_PTHREADS)
 	return (pthread_mutex_destroy(mutex) ? NO : YES);
-#else
+#elif defined(_WIN32)
 	DeleteCriticalSection(mutex);
 	return YES;
 #endif
@@ -105,9 +109,9 @@ of_mutex_free(of_mutex_t *mutex)
 static OF_INLINE BOOL
 of_mutex_lock(of_mutex_t *mutex)
 {
-#ifndef _WIN32
+#if defined(OF_HAVE_PTHREADS)
 	return (pthread_mutex_lock(mutex) ? NO : YES);
-#else
+#elif defined(_WIN32)
 	EnterCriticalSection(mutex);
 	return YES;
 #endif
@@ -116,9 +120,9 @@ of_mutex_lock(of_mutex_t *mutex)
 static OF_INLINE BOOL
 of_mutex_unlock(of_mutex_t *mutex)
 {
-#ifndef _WIN32
+#if defined(OF_HAVE_PTHREADS)
 	return (pthread_mutex_unlock(mutex) ? NO : YES);
-#else
+#elif defined(_WIN32)
 	LeaveCriticalSection(mutex);
 	return YES;
 #endif
@@ -127,9 +131,9 @@ of_mutex_unlock(of_mutex_t *mutex)
 static OF_INLINE BOOL
 of_tlskey_new(of_tlskey_t *key)
 {
-#ifndef _WIN32
+#if defined(OF_HAVE_PTHREADS)
 	return (pthread_key_create(key, NULL) ? NO : YES);
-#else
+#elif defined(_WIN32)
 	return ((*key = TlsAlloc()) == TLS_OUT_OF_INDEXES ? NO : YES);
 #endif
 }
@@ -137,9 +141,9 @@ of_tlskey_new(of_tlskey_t *key)
 static OF_INLINE id
 of_tlskey_get(of_tlskey_t key)
 {
-#ifndef _WIN32
+#if defined(OF_HAVE_PTHREADS)
 	void *ret = pthread_getspecific(key);
-#else
+#elif defined(_WIN32)
 	void *ret = TlsGetValue(key);
 #endif
 
@@ -155,9 +159,9 @@ of_tlskey_set(of_tlskey_t key, id obj)
 {
 	void *p = (obj != nil ? (void*)obj : NULL);
 
-#ifndef _WIN32
+#if defined(OF_HAVE_PTHREADS)
 	return (pthread_setspecific(key, p) ? NO : YES);
-#else
+#elif defined(_WIN32)
 	return (TlsSetValue(key, p) ? YES : NO);
 #endif
 }
@@ -165,9 +169,9 @@ of_tlskey_set(of_tlskey_t key, id obj)
 static OF_INLINE BOOL
 of_tlskey_free(of_tlskey_t key)
 {
-#ifndef _WIN32
+#if defined(OF_HAVE_PTHREADS)
 	return (pthread_key_delete(key) ? NO : YES);
-#else
+#elif defined(_WIN32)
 	return (TlsFree(key) ? YES : NO);
 #endif
 }
