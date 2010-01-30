@@ -15,17 +15,15 @@
 #include <string.h>
 #include <unistd.h>
 
-#ifndef _WIN32
 #include <sys/types.h>
 #include <sys/stat.h>
-#endif
 
 #import "OFFile.h"
 #import "OFString.h"
 #import "OFExceptions.h"
 
 #ifdef _WIN32
-#import <windows.h>
+# import <windows.h>
 #endif
 
 OFFile *of_stdin = nil;
@@ -83,21 +81,18 @@ OFFile *of_stderr = nil;
 #endif
 }
 
+#ifndef _WIN32
 + (void)changeOwnerOfFile: (OFString*)path
 		  toOwner: (uid_t)owner
 		    group: (gid_t)group
 {
-#ifndef _WIN32
 	if (chown([path cString], owner, group))
 		@throw [OFChangeFileOwnerFailedException newWithClass: self
 								 path: path
 								owner: owner
 								group: group];
-#else
-	@throw [OFNotImplementedException newWithClass: self
-					      selector: _cmd];
-#endif
 }
+#endif
 
 + (void)rename: (OFString*)from
 	    to: (OFString*)to
@@ -123,33 +118,25 @@ OFFile *of_stderr = nil;
 							    path: path];
 }
 
+#ifndef _WIN32
 + (void)link: (OFString*)src
 	  to: (OFString*)dest
 {
-#ifndef _WIN32
 	if (link([src cString], [dest cString]) != 0)
 		@throw [OFLinkFailedException newWithClass: self
 						    source: src
 					       destination: dest];
-#else
-	@throw [OFNotImplementedException newWithClass: self
-					      selector: _cmd];
-#endif
 }
 
 + (void)symlink: (OFString*)src
 	     to: (OFString*)dest
 {
-#ifndef _WIN32
 	if (symlink([src cString], [dest cString]) != 0)
 		@throw [OFSymlinkFailedException newWithClass: self
 						       source: src
 						  destination: dest];
-#else
-	@throw [OFNotImplementedException newWithClass: self
-					      selector: _cmd];
-#endif
 }
+#endif
 
 - init
 {

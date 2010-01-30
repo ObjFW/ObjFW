@@ -551,6 +551,7 @@
 }
 @end
 
+#ifndef _WIN32
 @implementation OFChangeFileOwnerFailedException
 + newWithClass: (Class)class__
 	  path: (OFString*)path_
@@ -623,6 +624,7 @@
 	return group;
 }
 @end
+#endif
 
 @implementation OFRenameFileFailedException
 + newWithClass: (Class)class__
@@ -744,6 +746,7 @@
 }
 @end
 
+#ifndef _WIN32
 @implementation OFLinkFailedException
 + newWithClass: (Class)class__
 	source: (OFString*)src_
@@ -873,6 +876,7 @@
 	return dest;
 }
 @end
+#endif
 
 @implementation OFSetOptionFailedException
 - (OFString*)string

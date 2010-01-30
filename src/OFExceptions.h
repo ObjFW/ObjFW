@@ -9,8 +9,9 @@
  * the packaging of this file.
  */
 
+#include <sys/stat.h>
+
 #import "OFObject.h"
-#import "OFFile.h"
 
 @class OFString;
 
@@ -378,6 +379,7 @@
 - (mode_t)mode;
 @end
 
+#ifndef _WIN32
 /**
  * An OFException indicating that changing the owner of the file failed.
  */
@@ -435,6 +437,7 @@
  */
 - (gid_t)group;
 @end
+#endif
 
 /**
  * An OFException indicating that renaming a file failed.
@@ -522,6 +525,7 @@
 - (OFString*)path;
 @end
 
+#ifndef _WIN32
 /**
  * An OFException indicating that creating a link failed.
  */
@@ -617,6 +621,7 @@
  */
 - (OFString*)destination;
 @end
+#endif
 
 /**
  * An OFException indicating that setting an option failed.

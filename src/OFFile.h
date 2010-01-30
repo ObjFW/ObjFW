@@ -11,12 +11,7 @@
 
 #include <stdio.h>
 
-#ifndef _WIN32
 #include <sys/types.h>
-#else
-typedef int uid_t;
-typedef int gid_t;
-#endif
 
 #import "OFStream.h"
 
@@ -49,7 +44,7 @@ typedef int gid_t;
 /**
  * Changes the mode of a file.
  *
- * Not available on Windows.
+ * Only changes read-only flag on Windows.
  *
  * \param path The path to the file of which the mode should be changed as a
  *	       string
@@ -58,6 +53,7 @@ typedef int gid_t;
 + (void)changeModeOfFile: (OFString*)path
 		  toMode: (mode_t)mode;
 
+#ifndef _WIN32
 /**
  * Changes the owner of a file.
  *
@@ -71,6 +67,7 @@ typedef int gid_t;
 + (void)changeOwnerOfFile: (OFString*)path
 		  toOwner: (uid_t)owner
 		    group: (gid_t)group;
+#endif
 
 /**
  * Renames a file.
@@ -88,6 +85,7 @@ typedef int gid_t;
  */
 + (void)delete: (OFString*)path;
 
+#ifndef _WIN32
 /**
  * Hardlinks a file.
  *
@@ -109,6 +107,7 @@ typedef int gid_t;
  */
 + (void)symlink: (OFString*)src
 	     to: (OFString*)dest;
+#endif
 
 /**
  * Initializes an already allocated OFFile.
