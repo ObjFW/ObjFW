@@ -612,7 +612,6 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	while (i < length && j < str_len) {
 		of_unichar_t c1, c2;
 		size_t l1, l2;
-		of_unichar_t tmp;
 
 		l1 = of_string_utf8_to_unicode(string + i, length - i, &c1);
 		l2 = of_string_utf8_to_unicode(str_cstr + j, str_len - j, &c2);
@@ -621,29 +620,19 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 			@throw [OFInvalidEncodingException newWithClass: isa];
 
 		if (c1 >> 8 < OF_UNICODE_CASEFOLDING_TABLE_SIZE) {
-			if (of_unicode_casefolding_table[c1 >> 8] == NULL)
-				c1 += of_unicode_lower_table[c1 >> 8]
-				    [c1 & 0xFF];
-			else {
-				tmp = of_unicode_casefolding_table[c1 >> 8]
-				    [c1 & 0xFF];
+			of_unichar_t tc =
+			    of_unicode_casefolding_table[c1 >> 8][c1 & 0xFF];
 
-				if (tmp != 0)
-					c1 = tmp;
-			}
+			if (tc)
+				c1 = tc;
 		}
 
 		if (c2 >> 8 < OF_UNICODE_CASEFOLDING_TABLE_SIZE) {
-			if (of_unicode_casefolding_table[c2 >> 8] == NULL)
-				c2 += of_unicode_lower_table[c2 >> 8]
-				    [c2 & 0xFF];
-			else {
-				tmp = of_unicode_casefolding_table[c2 >> 8]
-				    [c2 & 0xFF];
+			of_unichar_t tc =
+			    of_unicode_casefolding_table[c2 >> 8][c2 & 0xFF];
 
-				if (tmp != 0)
-					c2 = tmp;
-			}
+			if (tc)
+				c2 = tc;
 		}
 
 		if (c1 > c2)

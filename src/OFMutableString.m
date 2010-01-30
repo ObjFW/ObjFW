@@ -33,7 +33,7 @@
 
 static void
 apply_table(id self, Class isa, char **string, unsigned int *length,
-    BOOL is_utf8, const int16_t* const table[], const size_t table_size)
+    BOOL is_utf8, const of_unichar_t* const table[], const size_t table_size)
 {
 	of_unichar_t c;
 	of_unichar_t *ustr;
@@ -47,7 +47,8 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 		uint8_t *p = (uint8_t*)*string + *length;
 
 		while (--p >= (uint8_t*)*string)
-			*p += table[0][*p];
+			if (table[0][*p])
+				*p = table[0][*p];
 
 		return;
 	}
@@ -68,8 +69,12 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
 
-		if (c >> 8 < table_size)
-			c += table[c >> 8][c & 0xFF];
+		if (c >> 8 < table_size) {
+			of_unichar_t tc = table[c >> 8][c & 0xFF];
+
+			if (tc)
+				c = tc;
+		}
 		ustr[j++] = c;
 
 		if (c < 0x80)

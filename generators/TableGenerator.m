@@ -48,7 +48,6 @@
 		OFArray *splitted;
 		OFString **splitted_carray;
 		of_unichar_t codep;
-		int32_t tmp;
 
 		splitted = [line splitWithDelimiter: @";"];
 		if ([splitted count] != 15) {
@@ -58,20 +57,8 @@
 		splitted_carray = [splitted cArray];
 
 		codep = [splitted_carray[0] hexadecimalValueAsInteger];
-
-		tmp = [splitted_carray[12] hexadecimalValueAsInteger];
-		if (tmp > 0)
-			tmp -= codep;
-		if (tmp > 0x8FFF || tmp < -0x9000)
-			@throw [OFOutOfRangeException newWithClass: isa];
-		upper[codep] = tmp;
-
-		tmp = [splitted_carray[13] hexadecimalValueAsInteger];
-		if (tmp > 0)
-			tmp -= codep;
-		if (tmp > 0x8FFF || tmp < -0x9000)
-			@throw [OFOutOfRangeException newWithClass: isa];
-		lower[codep] = tmp;
+		upper[codep] = [splitted_carray[12] hexadecimalValueAsInteger];
+		lower[codep] = [splitted_carray[13] hexadecimalValueAsInteger];
 
 		[pool2 releaseObjects];
 	}
@@ -128,11 +115,11 @@
 	    @"#include \"config.h\"\n"
 	    @"\n"
 	    @"#import \"OFString.h\"\n\n"
-	    @"static const int16_t nop_page[0x100] = {};\n\n"];
+	    @"static const of_unichar_t nop_page[0x100] = {};\n\n"];
 
 	pool2 = [[OFAutoreleasePool alloc] init];
 
-	/* Write upper_page_%d */
+	/* Write upper_page_%u */
 	for (i = 0; i < 0x110000; i += 0x100) {
 		BOOL empty;
 
@@ -143,17 +130,18 @@
 				empty = NO;
 				upper_size = i >> 8;
 				upper_table_used[upper_size] = YES;
+				break;
 			}
 		}
 
 		if (!empty) {
 			[f writeString: [OFString stringWithFormat:
-			    @"static const int16_t upper_page_%d[0x100] = "
+			    @"static const of_unichar_t upper_page_%u[0x100] = "
 			    @"{\n", i >> 8]];
 
 			for (j = i; j < i + 0x100; j += 8)
 				[f writeString: [OFString stringWithFormat:
-				    @"\t%d, %d, %d, %d, %d, %d, %d, %d,\n",
+				    @"\t%u, %u, %u, %u, %u, %u, %u, %u,\n",
 				    upper[j], upper[j + 1], upper[j + 2],
 				    upper[j + 3], upper[j + 4], upper[j + 5],
 				    upper[j + 6], upper[j + 7]]];
@@ -164,7 +152,7 @@
 		}
 	}
 
-	/* Write lower_page_%d */
+	/* Write lower_page_%u */
 	for (i = 0; i < 0x110000; i += 0x100) {
 		BOOL empty;
 
@@ -175,17 +163,18 @@
 				empty = NO;
 				lower_size = i >> 8;
 				lower_table_used[lower_size] = YES;
+				break;
 			}
 		}
 
 		if (!empty) {
 			[f writeString: [OFString stringWithFormat:
-			    @"static const int16_t lower_page_%d[0x100] = "
+			    @"static const of_unichar_t lower_page_%u[0x100] = "
 			    @"{\n", i >> 8]];
 
 			for (j = i; j < i + 0x100; j += 8)
 				[f writeString: [OFString stringWithFormat:
-				    @"\t%d, %d, %d, %d, %d, %d, %d, %d,\n",
+				    @"\t%u, %u, %u, %u, %u, %u, %u, %u,\n",
 				    lower[j], lower[j + 1], lower[j + 2],
 				    lower[j + 3], lower[j + 4], lower[j + 5],
 				    lower[j + 6], lower[j + 7]]];
@@ -196,31 +185,35 @@
 		}
 	}
 
-	/* Write cf_page_%d if it does NOT match lower_page_%d */
+	/* Write cf_page_%u if it does NOT match lower_page_%u */
 	for (i = 0; i < 0x110000; i += 0x100) {
 		BOOL empty;
 
 		empty = YES;
 
 		for (j = i; j < i + 0x100; j++) {
-			if (casefolding[j] != 0 &&
-			    casefolding[j] != j + lower[j]) {
-				empty = NO;
+			if (casefolding[j] != 0) {
+				empty = (memcmp(lower + i, casefolding + i,
+				    256 * sizeof(of_unichar_t)) ? NO : YES);
 				casefolding_size = i >> 8;
-				casefolding_table_used[casefolding_size] = YES;
+				casefolding_table_used[casefolding_size] =
+				    (empty ? 2 : 1);
+				break;
 			}
 		}
 
 		if (!empty) {
 			[f writeString: [OFString stringWithFormat:
-			    @"static const of_unichar_t cf_page_%d[0x100] = {"
+			    @"static const of_unichar_t cf_page_%u[0x100] = {"
 			    @"\n", i >> 8]];
 
-			for (j = i; j < i + 0x100; j += 4)
+			for (j = i; j < i + 0x100; j += 8)
 				[f writeString: [OFString stringWithFormat:
-				    @"\t0x%06X, 0x%06X, 0x%06X, 0x%06X,\n",
+				    @"\t%u, %u, %u, %u, %u, %u, %u, %u,\n",
 				    casefolding[j], casefolding[j + 1],
-				    casefolding[j + 2], casefolding[j + 3]]];
+				    casefolding[j + 2], casefolding[j + 3],
+				    casefolding[j + 4], casefolding[j + 5],
+				    casefolding[j + 6], casefolding[j + 7]]];
 
 			[f writeString: @"};\n\n"];
 
@@ -238,13 +231,13 @@
 
 	/* Write of_unicode_upper_table */
 	[f writeString: [OFString stringWithFormat:
-	    @"const int16_t* const of_unicode_upper_table[0x%X] = {\n\t",
+	    @"const of_unichar_t* const of_unicode_upper_table[0x%X] = {\n\t",
 	    upper_size]];
 
 	for (i = 0; i < upper_size; i++) {
 		if (upper_table_used[i]) {
 			[f writeString: [OFString stringWithFormat:
-			    @"upper_page_%d", i]];
+			    @"upper_page_%u", i]];
 			[pool2 releaseObjects];
 		} else
 			[f writeString: @"nop_page"];
@@ -261,13 +254,13 @@
 
 	/* Write of_unicode_lower_table */
 	[f writeString: [OFString stringWithFormat:
-	    @"const int16_t* const of_unicode_lower_table[0x%X] = {\n\t",
+	    @"const of_unichar_t* const of_unicode_lower_table[0x%X] = {\n\t",
 	    lower_size]];
 
 	for (i = 0; i < lower_size; i++) {
 		if (lower_table_used[i]) {
 			[f writeString: [OFString stringWithFormat:
-			    @"lower_page_%d", i]];
+			    @"lower_page_%u", i]];
 			[pool2 releaseObjects];
 		} else
 			[f writeString: @"nop_page"];
@@ -288,12 +281,15 @@
 	    @"\n\t", casefolding_size]];
 
 	for (i = 0; i < casefolding_size; i++) {
-		if (casefolding_table_used[i]) {
+		if (casefolding_table_used[i] == 1) {
 			[f writeString: [OFString stringWithFormat:
-			    @"cf_page_%d", i]];
+			    @"cf_page_%u", i]];
 			[pool2 releaseObjects];
+		} else if (casefolding_table_used[i] == 2) {
+			[f writeString: [OFString stringWithFormat:
+			    @"lower_page_%u", i]];
 		} else
-			[f writeString: @"NULL"];
+			[f writeString: @"nop_page"];
 
 		if (i + 1 < casefolding_size) {
 			if ((i + 1) % 4 == 0)
@@ -324,9 +320,9 @@
 	    upper_size, lower_size, casefolding_size]];
 
 	[f writeString:
-	    @"extern const int16_t* const\n"
+	    @"extern const of_unichar_t* const\n"
 	    @"    of_unicode_upper_table[OF_UNICODE_UPPER_TABLE_SIZE];\n"
-	    @"extern const int16_t* const\n"
+	    @"extern const of_unichar_t* const\n"
 	    @"    of_unicode_lower_table[OF_UNICODE_LOWER_TABLE_SIZE];\n"
 	    @"extern const of_unichar_t* const\n"
 	    @"    of_unicode_casefolding_table["

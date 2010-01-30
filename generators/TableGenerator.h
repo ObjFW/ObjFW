@@ -13,12 +13,12 @@
 
 @interface TableGenerator: OFObject
 {
-	int16_t upper[0x110000];
-	int16_t lower[0x110000];
+	of_unichar_t upper[0x110000];
+	of_unichar_t lower[0x110000];
 	of_unichar_t casefolding[0x110000];
 	BOOL upper_table_used[0x1100];
 	BOOL lower_table_used[0x1100];
-	BOOL casefolding_table_used[0x1100];
+	char casefolding_table_used[0x1100];
 	size_t upper_size;
 	size_t lower_size;
 	size_t casefolding_size;

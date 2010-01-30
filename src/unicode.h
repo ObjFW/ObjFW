@@ -13,11 +13,11 @@
 
 #define OF_UNICODE_UPPER_TABLE_SIZE 0x105
 #define OF_UNICODE_LOWER_TABLE_SIZE 0x105
-#define OF_UNICODE_CASEFOLDING_TABLE_SIZE 0xA8
+#define OF_UNICODE_CASEFOLDING_TABLE_SIZE 0x105
 
-extern const int16_t* const
+extern const of_unichar_t* const
     of_unicode_upper_table[OF_UNICODE_UPPER_TABLE_SIZE];
-extern const int16_t* const
+extern const of_unichar_t* const
     of_unicode_lower_table[OF_UNICODE_LOWER_TABLE_SIZE];
 extern const of_unichar_t* const
     of_unicode_casefolding_table[OF_UNICODE_CASEFOLDING_TABLE_SIZE];
