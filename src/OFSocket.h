@@ -9,26 +9,11 @@
  * the packaging of this file.
  */
 
-/*
- * Headers for UNIX systems
- */
-#ifndef _WIN32
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#endif
-
 #import "OFStream.h"
 
-/*
- * Headers for Win32
- *
- * These must be imported after objc/objc.h and thus OFObject!
- */
 #ifdef _WIN32
-#define _WIN32_WINNT 0x0501
-#include <winsock2.h>
-#include <ws2tcpip.h>
+# define _WIN32_WINNT 0x0501
+# include <winsock2.h>
 #endif
 
 /**
@@ -41,8 +26,6 @@
 #else
 	SOCKET		sock;
 #endif
-	struct sockaddr	*saddr;
-	socklen_t	saddr_len;
 	BOOL		eos;
 }
 

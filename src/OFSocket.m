@@ -40,16 +40,6 @@
 	return [[[self alloc] init] autorelease];
 }
 
-- init
-{
-	self = [super init];
-
-	sock = INVALID_SOCKET;
-	saddr = NULL;
-
-	return self;
-}
-
 - (BOOL)atEndOfStreamWithoutCache
 {
 	return eos;

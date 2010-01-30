@@ -9,14 +9,29 @@
  * the packaging of this file.
  */
 
+#ifndef _WIN32
+# include <sys/types.h>
+# include <sys/socket.h>
+# include <netdb.h>
+#endif
+
 #import "OFSocket.h"
+
+#ifdef _WIN32
+# include <ws2tcpip.h>
+#endif
 
 @class OFString;
 
 /**
  * The OFTCPSocket class provides functions to create and use sockets.
  */
-@interface OFTCPSocket: OFSocket {}
+@interface OFTCPSocket: OFSocket
+{
+	struct sockaddr	*saddr;
+	socklen_t	saddr_len;
+}
+
 /**
  * Connect the OFTCPSocket to the specified destination.
  *
