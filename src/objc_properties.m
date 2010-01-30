@@ -11,6 +11,8 @@
 
 #include "config.h"
 
+#include <assert.h>
+
 #import <objc/objc.h>
 
 #import "OFExceptions.h"
@@ -45,12 +47,12 @@ objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, BOOL atomic)
 #ifdef OF_THREADS
 		unsigned hash = SPINLOCK_HASH(ptr);
 
-		of_spinlock_lock(&spinlocks[hash]);
+		assert(of_spinlock_lock(&spinlocks[hash]));
 
 		@try {
 			return [[*ptr retain] autorelease];
 		} @finally {
-			of_spinlock_unlock(&spinlocks[hash]);
+			assert(of_spinlock_unlock(&spinlocks[hash]));
 		}
 #else
 		return [[*ptr retain] autorelease];
@@ -69,7 +71,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
 #ifdef OF_THREADS
 		unsigned hash = SPINLOCK_HASH(ptr);
 
-		of_spinlock_lock(&spinlocks[hash]);
+		assert(of_spinlock_lock(&spinlocks[hash]));
 
 		@try {
 #endif
@@ -94,7 +96,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
 			[old release];
 #ifdef OF_THREADS
 		} @finally {
-			of_spinlock_unlock(&spinlocks[hash]);
+			assert(of_spinlock_unlock(&spinlocks[hash]));
 		}
 #endif
 

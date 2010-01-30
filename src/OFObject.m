@@ -121,7 +121,10 @@ objc_enumerationMutation(id obj)
 	((struct pre_ivar*)instance)->retain_count = 1;
 
 #ifndef OF_ATOMIC_OPS
-	of_spinlock_new(&((struct pre_ivar*)instance)->retain_spinlock);
+	if (!of_spinlock_new(&((struct pre_ivar*)instance)->retain_spinlock)) {
+		free(instance);
+		@throw [OFInitializationFailedException newWithClass: self];
+	}
 #endif
 
 	instance = (OFObject*)((char*)instance + PRE_IVAR_ALIGN);
@@ -501,9 +504,9 @@ objc_enumerationMutation(id obj)
 #ifdef OF_ATOMIC_OPS
 	of_atomic_inc32(&PRE_IVAR->retain_count);
 #else
-	of_spinlock_lock(&PRE_IVAR->retain_spinlock);
+	assert(of_spinlock_lock(&PRE_IVAR->retain_spinlock));
 	PRE_IVAR->retain_count++;
-	of_spinlock_unlock(&PRE_IVAR->retain_spinlock);
+	assert(of_spinlock_unlock(&PRE_IVAR->retain_spinlock));
 #endif
 
 	return self;
@@ -522,9 +525,9 @@ objc_enumerationMutation(id obj)
 #else
 	int32_t c;
 
-	of_spinlock_lock(&PRE_IVAR->retain_spinlock);
+	assert(of_spinlock_lock(&PRE_IVAR->retain_spinlock));
 	c = --PRE_IVAR->retain_count;
-	of_spinlock_unlock(&PRE_IVAR->retain_spinlock);
+	assert(of_spinlock_unlock(&PRE_IVAR->retain_spinlock));
 
 	if (!c)
 		[self dealloc];
