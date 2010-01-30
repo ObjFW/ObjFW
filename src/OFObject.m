@@ -30,9 +30,9 @@
 # import <objc/sarray.h>
 #endif
 
+#ifdef OF_ATOMIC_OPS
 #import "atomic.h"
-
-#ifndef OF_ATOMIC_OPS
+#else
 #import "threading.h"
 #endif
 
@@ -512,18 +512,19 @@ objc_enumerationMutation(id obj)
 	return self;
 }
 
-- (int32_t)retainCount
+- (size_t)retainCount
 {
-	return PRE_IVAR->retain_count;
+	assert(PRE_IVAR->retain_count >= 0);
+	return (size_t)PRE_IVAR->retain_count;
 }
 
 - (void)release
 {
 #ifdef OF_ATOMIC_OPS
-	if (!of_atomic_dec32(&PRE_IVAR->retain_count))
+	if (of_atomic_dec32(&PRE_IVAR->retain_count) <= 0)
 		[self dealloc];
 #else
-	int32_t c;
+	size_t c;
 
 	assert(of_spinlock_lock(&PRE_IVAR->retain_spinlock));
 	c = --PRE_IVAR->retain_count;
@@ -627,9 +628,9 @@ objc_enumerationMutation(id obj)
 	return self;
 }
 
-+ (int32_t)retainCount
++ (size_t)retainCount
 {
-	return INT32_MAX;
+	return SIZE_MAX;
 }
 
 + (void)release

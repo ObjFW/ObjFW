@@ -266,7 +266,7 @@ typedef enum {
 /**
  * \return The retain count
  */
-- (int32_t)retainCount;
+- (size_t)retainCount;
 
 /**
  * Decreases the retain count.

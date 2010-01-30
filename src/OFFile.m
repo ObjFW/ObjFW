@@ -259,9 +259,9 @@ OFFile *of_stderr = nil;
 {
 }
 
-- (int32_t)retainCount
+- (size_t)retainCount
 {
-	return INT32_MAX;
+	return SIZE_MAX;
 }
 
 - (void)dealloc
