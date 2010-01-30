@@ -209,6 +209,7 @@ if test x"$enable_threads" != x"no"; then
 			atomic_ops="gcc builtins (with -march=i486)"
 			AC_DEFINE(OF_HAVE_GCC_ATOMIC_OPS, 1,
 				[Whether gcc atomic operations are available])
+			AC_SUBST(ATOMIC_OBJCFLAGS, "-march=i486")
 			], [
 			AC_MSG_RESULT(no)
 			OBJCFLAGS="$old_OBJCFLAGS"])])
