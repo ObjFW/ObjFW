@@ -12,6 +12,7 @@
 #include <stdarg.h>
 
 #import "OFObject.h"
+#import "OFEnumerator.h"
 #import "OFFastEnumeration.h"
 
 @class OFArray;
@@ -145,7 +146,36 @@ struct of_dictionary_bucket
  * \return The number of objects in the dictionary
  */
 - (size_t)count;
+
+/**
+ * \returns An OFEnumerator to enumerate through the dictionary's objects
+ */
+- (OFEnumerator*)objectEnumerator;
+
+/**
+ * \return An OFEnumerator to enumerate through the dictionary's keys
+ */
+- (OFEnumerator*)keyEnumerator;
 @end
 
-#import "OFEnumerator.h"
+@interface OFDictionaryEnumerator: OFEnumerator
+{
+	struct of_dictionary_bucket *data;
+	size_t			    size;
+	unsigned long		    mutations;
+	unsigned long		    *mutations_ptr;
+	size_t			    pos;
+}
+
+-     initWithData: (struct of_dictionary_bucket*)data
+	      size: (size_t)size
+  mutationsPointer: (unsigned long*)mutations_ptr;
+@end
+
+@interface OFDictionaryObjectEnumerator: OFDictionaryEnumerator
+@end
+
+@interface OFDictionaryKeyEnumerator: OFDictionaryEnumerator
+@end
+
 #import "OFMutableDictionary.h"

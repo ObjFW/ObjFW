@@ -187,4 +187,20 @@ resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
 
 	return i;
 }
+
+- (OFEnumerator*)objectEnumerator
+{
+	return [[[OFDictionaryObjectEnumerator alloc]
+		initWithData: data
+			size: size
+	    mutationsPointer: &mutations] autorelease];
+}
+
+- (OFEnumerator*)keyEnumerator
+{
+	return [[[OFDictionaryKeyEnumerator alloc]
+		initWithData: data
+			size: size
+	    mutationsPointer: &mutations] autorelease];
+}
 @end

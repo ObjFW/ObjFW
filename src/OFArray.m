@@ -302,6 +302,13 @@
 	return count;
 }
 
+- (OFEnumerator*)enumerator
+{
+	return [[[OFArrayEnumerator alloc]
+	    initWithDataArray: array
+	     mutationsPointer: NULL] autorelease];
+}
+
 - (void)dealloc
 {
 	OFObject **objs = [array cArray];
@@ -313,5 +320,41 @@
 	[array release];
 
 	[super dealloc];
+}
+@end
+
+@implementation OFArrayEnumerator
+- initWithDataArray: (OFDataArray*)array_
+   mutationsPointer: (unsigned long*)mutations_ptr_;
+{
+	self = [super init];
+
+	array = array_;
+	count = [array_ count];
+	mutations = *mutations_ptr_;
+	mutations_ptr = mutations_ptr_;
+
+	return self;
+}
+
+- (id)nextObject
+{
+	if (mutations_ptr != NULL && *mutations_ptr != mutations)
+		@throw [OFEnumerationMutationException newWithClass: isa];
+
+	if (pos < count)
+		return *(OFObject**)[array itemAtIndex: pos++];
+
+	return nil;
+}
+
+- reset
+{
+	if (mutations_ptr != NULL && *mutations_ptr != mutations)
+		@throw [OFEnumerationMutationException newWithClass: isa];
+
+	pos = 0;
+
+	return self;
 }
 @end

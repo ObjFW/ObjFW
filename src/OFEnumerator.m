@@ -12,85 +12,27 @@
 #include "config.h"
 
 #import "OFEnumerator.h"
-#import "OFDictionary.h"
 #import "OFExceptions.h"
-
-/* Reference for static linking */
-int _OFEnumerator_reference;
 
 @implementation OFEnumerator
 - init
+{
+	if (isa == [OFEnumerator class])
+		@throw [OFNotImplementedException newWithClass: isa
+						      selector: _cmd];
+
+	return [super init];
+}
+
+- (id)nextObject
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
-- initWithData: (struct of_dictionary_bucket*)data_
-	  size: (size_t)size_
-{
-	size_t i;
-
-	self = [super init];
-
-	size = size_;
-	data = [self allocMemoryForNItems: size
-				 withSize: sizeof(struct of_dictionary_bucket)];
-
-	for (i = 0; i < size; i++) {
-		if (data_[i].key != nil) {
-			data[i].key = [data_[i].key copy];
-			data[i].object = [data_[i].object retain];
-		} else
-			data[i].key = nil;
-	}
-
-	return self;
-}
-
-- (void)dealloc
-{
-	size_t i;
-
-	for (i = 0; i < size; i++) {
-		if (data[i].key != nil) {
-			[data[i].key release];
-			[data[i].object release];
-		}
-	}
-
-	[super dealloc];
-}
-
-- (of_enumerator_pair_t)nextKeyObjectPair
-{
-	of_enumerator_pair_t next;
-
-	for (; pos < size && data[pos].key == nil; pos++);
-
-	if (pos < size) {
-		next.key = data[pos].key;
-		next.object = data[pos].object;
-		pos++;
-	} else {
-		next.key = nil;
-		next.object = nil;
-	}
-
-	return next;
-}
-
 - reset
 {
-	pos = 0;
-
-	return self;
-}
-@end
-
-@implementation OFDictionary (OFEnumerator)
-- (OFEnumerator*)enumerator
-{
-	return [[[OFEnumerator alloc] initWithData: data
-					      size: size] autorelease];
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 @end

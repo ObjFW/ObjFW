@@ -22,12 +22,6 @@
 
 #define BUCKET_SIZE sizeof(struct of_dictionary_bucket)
 
-/* References for static linking */
-void _references_to_categories_of_OFDictionary()
-{
-	_OFEnumerator_reference = 1;
-}
-
 @implementation OFDictionary
 + dictionary;
 {
@@ -532,6 +526,22 @@ void _references_to_categories_of_OFDictionary()
 	return i;
 }
 
+- (OFEnumerator*)objectEnumerator
+{
+	return [[[OFDictionaryObjectEnumerator alloc]
+		initWithData: data
+			size: size
+	    mutationsPointer: NULL] autorelease];
+}
+
+- (OFEnumerator*)keyEnumerator
+{
+	return [[[OFDictionaryKeyEnumerator alloc]
+		initWithData: data
+			size: size
+	    mutationsPointer: NULL] autorelease];
+}
+
 - (void)dealloc
 {
 	size_t i;
@@ -572,5 +582,61 @@ void _references_to_categories_of_OFDictionary()
 	OF_HASH_FINALIZE(hash);
 
 	return hash;
+}
+@end
+
+@implementation OFDictionaryEnumerator
+-     initWithData: (struct of_dictionary_bucket*)data_
+	      size: (size_t)size_
+  mutationsPointer: (unsigned long*)mutations_ptr_
+{
+	self = [super init];
+
+	data = data_;
+	size = size_;
+	mutations = *mutations_ptr_;
+	mutations_ptr = mutations_ptr_;
+
+	return self;
+}
+
+- reset
+{
+	if (mutations_ptr != NULL && *mutations_ptr != mutations)
+		@throw [OFEnumerationMutationException newWithClass: isa];
+
+	pos = 0;
+
+	return self;
+}
+@end
+
+@implementation OFDictionaryObjectEnumerator
+- (id)nextObject
+{
+	if (mutations_ptr != NULL && *mutations_ptr != mutations)
+		@throw [OFEnumerationMutationException newWithClass: isa];
+
+	for (; pos < size && data[pos].key == nil; pos++);
+
+	if (pos < size)
+		return data[pos++].object;
+	else
+		return nil;
+}
+@end
+
+@implementation OFDictionaryKeyEnumerator
+- (id)nextObject
+{
+	if (mutations_ptr != NULL && *mutations_ptr != mutations)
+		@throw [OFEnumerationMutationException newWithClass: isa];
+
+	for (; pos < size && data[pos].key == nil; pos++);
+
+	if (pos < size)
+		return data[pos++].key;
+	else
+		return nil;
 }
 @end

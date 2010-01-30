@@ -12,6 +12,7 @@
 #include <stdarg.h>
 
 #import "OFObject.h"
+#import "OFEnumerator.h"
 #import "OFFastEnumeration.h"
 
 @class OFDataArray;
@@ -142,6 +143,24 @@
  * \return A string containing all objects joined by the separator
  */
 - (OFString*)componentsJoinedByString: (OFString*)separator;
+
+/**
+ * \return An OFEnumerator to enumarate through the array's objects
+ */
+- (OFEnumerator*)enumerator;
+@end
+
+@interface OFArrayEnumerator: OFEnumerator
+{
+	OFDataArray   *array;
+	size_t	      count;
+	unsigned long mutations;
+	unsigned long *mutations_ptr;
+	size_t	      pos;
+}
+
+- initWithDataArray: (OFDataArray*)data
+   mutationsPointer: (unsigned long*)mutations_ptr;
 @end
 
 #import "OFMutableArray.h"

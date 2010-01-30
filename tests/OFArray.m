@@ -32,6 +32,10 @@ array_tests()
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFArray *a[2];
 	OFMutableArray *m[2];
+	OFEnumerator *enumerator;
+	id obj;
+	BOOL ok;
+	size_t i;
 
 	TEST(@"+[array]", (m[0] = [OFMutableArray array]))
 
@@ -118,11 +122,32 @@ array_tests()
 	TEST(@"-[componentsJoinedByString:]",
 	    [[a[1] componentsJoinedByString: @" "] isEqual: @"foo bar baz"])
 
-#ifdef OF_HAVE_FAST_ENUMERATION
-	size_t i = 0;
-	BOOL ok = YES;
-
 	m[0] = [[a[0] mutableCopy] autorelease];
+	ok = YES;
+	i = 0;
+
+	TEST(@"-[enumerator]", (enumerator = [m[0] enumerator]))
+
+	while ((obj = [enumerator nextObject]) != nil) {
+		if (![obj isEqual: c_ary[i]])
+			ok = NO;
+		[m[0] replaceObjectAtIndex: i
+				withObject: @""];
+		i++;
+	}
+
+	TEST(@"OFEnumerator's -[nextObject]", ok)
+
+	[enumerator reset];
+	[m[0] removeObjectAtIndex: 0];
+
+	EXPECT_EXCEPTION(@"Detection of mutation during enumeration",
+	    OFEnumerationMutationException, [enumerator nextObject])
+
+#ifdef OF_HAVE_FAST_ENUMERATION
+	m[0] = [[a[0] mutableCopy] autorelease];
+	ok = YES;
+	i = 0;
 
 	for (OFString *s in m[0]) {
 		if (![s isEqual: c_ary[i]])

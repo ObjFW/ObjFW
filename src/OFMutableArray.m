@@ -240,4 +240,11 @@
 
 	return count;
 }
+
+- (OFEnumerator*)enumerator
+{
+	return [[[OFArrayEnumerator alloc]
+	    initWithDataArray: array
+	     mutationsPointer: &mutations] autorelease];
+}
 @end

@@ -34,8 +34,7 @@ dictionary_tests()
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFMutableDictionary *dict = [OFMutableDictionary dictionary], *dict2;
-	OFEnumerator *enumerator;
-	of_enumerator_pair_t pair[3];
+	OFEnumerator *key_enum, *obj_enum;
 	OFArray *akeys, *avalues;
 
 	[dict setObject: values[0]
@@ -48,17 +47,24 @@ dictionary_tests()
 	    [[dict objectForKey: keys[1]] isEqual: values[1]] &&
 	    [dict objectForKey: @"key3"] == nil)
 
-	TEST(@"-[enumerator]", (enumerator = [dict enumerator]))
+	TEST(@"-[keyEnumerator]", (key_enum = [dict keyEnumerator]))
+	TEST(@"-[objectEnumerator]", (obj_enum = [dict objectEnumerator]))
 
-	pair[0] = [enumerator nextKeyObjectPair];
-	pair[1] = [enumerator nextKeyObjectPair];
-	pair[2] = [enumerator nextKeyObjectPair];
-	TEST(@"OFEnumerator's -[nextKeyObjectPair]",
-	    [pair[0].key isEqual: keys[0]] &&
-	    [pair[0].object isEqual: values[0]] &&
-	    [pair[1].key isEqual: keys[1]] &&
-	    [pair[1].object isEqual: values[1]] &&
-	    pair[2].key == nil && pair[2].object == nil)
+	TEST(@"OFEnumerator's -[nextObject]",
+	    [[key_enum nextObject] isEqual: keys[0]] &&
+	    [[obj_enum nextObject] isEqual: values[0]] &&
+	    [[key_enum nextObject] isEqual: keys[1]] &&
+	    [[obj_enum nextObject] isEqual: values[1]] &&
+	    [key_enum nextObject] == nil && [obj_enum nextObject] == nil)
+
+	[key_enum reset];
+	[dict removeObjectForKey: keys[0]];
+
+	EXPECT_EXCEPTION(@"Detection of mutation during enumeration",
+	    OFEnumerationMutationException, [key_enum nextObject]);
+
+	[dict setObject: values[0]
+		 forKey: keys[0]];
 
 #ifdef OF_HAVE_FAST_ENUMERATION
 	size_t i = 0;
