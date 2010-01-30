@@ -32,10 +32,17 @@
 
 #import "atomic.h"
 
+#ifndef OF_ATOMIC_OPS
+#import "threading.h"
+#endif
+
 struct pre_ivar {
-	void	**memchunks;
-	size_t	memchunks_size;
-	int32_t	retain_count;	/* int32_t because atomic ops use int32_t */
+	void	      **memchunks;
+	size_t	      memchunks_size;
+	int32_t	      retain_count; /* int32_t because atomic ops use int32_t */
+#ifndef OF_ATOMIC_OPS
+	of_spinlock_t retain_spinlock;
+#endif
 };
 
 /* Hopefully no arch needs more than 16 bytes padding */
@@ -112,6 +119,10 @@ objc_enumerationMutation(id obj)
 	((struct pre_ivar*)instance)->memchunks = NULL;
 	((struct pre_ivar*)instance)->memchunks_size = 0;
 	((struct pre_ivar*)instance)->retain_count = 1;
+
+#ifndef OF_ATOMIC_OPS
+	of_spinlock_new(&((struct pre_ivar*)instance)->retain_spinlock);
+#endif
 
 	instance = (OFObject*)((char*)instance + PRE_IVAR_ALIGN);
 	memset(instance, 0, isize);
@@ -487,7 +498,13 @@ objc_enumerationMutation(id obj)
 
 - retain
 {
+#ifdef OF_ATOMIC_OPS
 	of_atomic_inc32(&PRE_IVAR->retain_count);
+#else
+	of_spinlock_lock(&PRE_IVAR->retain_spinlock);
+	PRE_IVAR->retain_count++;
+	of_spinlock_unlock(&PRE_IVAR->retain_spinlock);
+#endif
 
 	return self;
 }
@@ -499,8 +516,19 @@ objc_enumerationMutation(id obj)
 
 - (void)release
 {
+#ifdef OF_ATOMIC_OPS
 	if (!of_atomic_dec32(&PRE_IVAR->retain_count))
 		[self dealloc];
+#else
+	int32_t c;
+
+	of_spinlock_lock(&PRE_IVAR->retain_spinlock);
+	c = --PRE_IVAR->retain_count;
+	of_spinlock_unlock(&PRE_IVAR->retain_spinlock);
+
+	if (!c)
+		[self dealloc];
+#endif
 }
 
 - autorelease
