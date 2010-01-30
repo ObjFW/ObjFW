@@ -205,7 +205,7 @@ if test x"$enable_threads" != x"no"; then
 				j = __sync_sub_and_fetch(&i, 1);
 			while (!__sync_bool_compare_and_swap(&i, 0, 1));
 			], [
-			AC_MSG_RESULT(yes, with -march=i486)
+			AC_MSG_RESULT([yes, with -march=i486])
 			atomic_ops="gcc builtins (with -march=i486)"
 			AC_DEFINE(OF_HAVE_GCC_ATOMIC_OPS, 1,
 				[Whether gcc atomic operations are available])
