@@ -118,6 +118,16 @@ of_mutex_lock(of_mutex_t *mutex)
 }
 
 static OF_INLINE BOOL
+of_mutex_trylock(of_mutex_t *mutex)
+{
+#if defined(OF_HAVE_PTHREADS)
+	return (pthread_mutex_trylock(mutex) ? NO : YES);
+#elif defined(_WIN32)
+	return (TryEnterCriticalSection(mutex) ? YES : NO);
+#endif
+}
+
+static OF_INLINE BOOL
 of_mutex_unlock(of_mutex_t *mutex)
 {
 #if defined(OF_HAVE_PTHREADS)

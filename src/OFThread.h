@@ -136,6 +136,14 @@
 - lock;
 
 /**
+ * Tries to lock the mutex and returns a boolean whether the mutex could be
+ * acquired.
+ *
+ * \return A boolean whether the mutex could be acquired
+ */
+- (BOOL)tryLock;
+
+/**
  * Unlocks the mutex.
  */
 - unlock;

@@ -221,6 +221,11 @@ call_main(id obj)
 	return self;
 }
 
+- (BOOL)tryLock
+{
+	return of_mutex_trylock(&mutex);
+}
+
 - unlock
 {
 	if (!of_mutex_unlock(&mutex))
