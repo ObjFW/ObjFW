@@ -185,3 +185,33 @@ of_tlskey_free(of_tlskey_t key)
 	return (TlsFree(key) ? YES : NO);
 #endif
 }
+
+#if defined(OF_ATOMIC_OPS)
+# import "atomic.h"
+typedef int32_t of_spinlock_t;
+# define of_spinlock_new(s) ((*(s) = 0) + YES)
+# define of_spinlock_trylock(s) (of_atomic_cmpswap32(s, 0, 1) ? YES : NO)
+# ifdef OF_HAVE_SCHED_YIELD
+#  define of_spinlock_lock(s) \
+	while (!of_spinlock_trylock(s)) \
+		sched_yield()
+# else
+#  define of_spinlock_lock(s) while (!of_spinlock_trylock(s));
+# endif
+# define of_spinlock_unlock(s) *(s) = 0
+# define of_spinlock_free(s) YES
+#elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
+typedef pthread_spinlock_t of_spinlock_t;
+# define of_spinlock_new(s) (pthread_spin_init(s, 0) ? NO : YES)
+# define of_spinlock_trylock(s) (pthread_spin_trylock(s) ? NO : YES)
+# define of_spinlock_lock(s) pthread_spin_lock(s)
+# define of_spinlock_unlock(s) pthread_spin_unlock(s)
+# define of_spinlock_free(s) (pthread_spin_destroy(s) ? NO : YES)
+#else
+typedef of_mutex_t of_spinlock_t;
+# define of_spinlock_new(s) of_mutex_new(s)
+# define of_spinlock_trylock(s) of_mutex_trylock(s)
+# define of_spinlock_lock(s) of_mutex_lock(s)
+# define of_spinlock_unlock(s) of_mutex_unlock(s)
+# define of_spinlock_free(s) of_mutex_free(s)
+#endif

@@ -43,12 +43,3 @@
 # define of_atomic_inc32(p) of_atomic_add32(p, 1)
 # define of_atomic_dec32(p) of_atomic_sub32(p, 1)
 #endif
-
-typedef int32_t of_spinlock_t;
-#ifdef OF_THREADS
-# define of_spinlock_lock(s) while (!of_atomic_cmpswap32(&s, 0, 1));
-# define of_spinlock_unlock(s) s = 0
-#else
-# define of_spinlock_lock(s)
-# define of_spinlock_unlock(s)
-#endif

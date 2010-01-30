@@ -50,6 +50,10 @@ static struct {
 extern BOOL objc_sync_init();
 #endif
 
+#ifdef NEED_OBJC_PROPERTIES_INIT
+extern BOOL objc_properties_init();
+#endif
+
 static void
 enumeration_mutation_handler(id obj)
 {
@@ -70,6 +74,14 @@ objc_enumerationMutation(id obj)
 #ifdef NEED_OBJC_SYNC_INIT
 	if (!objc_sync_init()) {
 		fputs("Runtime error: objc_sync_init() failed!\n", stderr);
+		abort();
+	}
+#endif
+
+#ifdef NEED_OBJC_PROPERTIES_INIT
+	if (!objc_properties_init()) {
+		fputs("Runtime error: objc_properties_init() failed!\n",
+		    stderr);
 		abort();
 	}
 #endif

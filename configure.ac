@@ -76,6 +76,8 @@ AC_EGREP_CPP(gnu, [
 AC_MSG_RESULT($objc_runtime)
 
 AC_CHECK_FUNC(objc_getProperty,, [
+	AC_DEFINE(NEED_OBJC_PROPERTIES_INIT, 1,
+		[Whether objc_properties_init needs to be called])
 	AC_SUBST(OBJC_PROPERTIES_M, "objc_properties.m")])
 
 AC_CHECK_FUNC(objc_enumerationMutation, [
@@ -151,19 +153,25 @@ AC_ARG_ENABLE(threads,
 	AS_HELP_STRING([--disable-threads], [disable thread support]))
 if test x"$enable_threads" != x"no"; then
 	case "$host_os" in
-		mingw*)
-			AC_MSG_CHECKING(for threads)
-			AC_MSG_RESULT(win32)
-			;;
-		*)
-			ACX_PTHREAD([
-				CPPLAGS="$CPPFLAGS $PTHREAD_CFLAGS"
-				LIBS="$LIBS $PTHREAD_LIBS"
-				AC_DEFINE(OF_HAVE_PTHREADS, 1,
-					[Whether we have pthreads])
-				], [
-				AC_MSG_ERROR(No supported threads found!)])
-			;;
+	mingw*)
+		AC_MSG_CHECKING(for threads)
+		AC_MSG_RESULT(win32)
+		;;
+	*)
+		ACX_PTHREAD([
+			CPPLAGS="$CPPFLAGS $PTHREAD_CFLAGS"
+			LIBS="$LIBS $PTHREAD_LIBS"
+			AC_DEFINE(OF_HAVE_PTHREADS, 1,
+				[Whether we have pthreads])
+			AC_CHECK_FUNC(pthread_spin_lock, [
+				AC_DEFINE(OF_HAVE_PTHREAD_SPINLOCKS, 1,
+					[Whether we have pthread spinlocks])])
+			AC_CHECK_FUNC(sched_yield, [
+				AC_DEFINE(OF_HAVE_SCHED_YIELD, 1,
+					[Whether we have sched_yield])])
+			], [
+			AC_MSG_ERROR(No supported threads found!)])
+		;;
 	esac
 
 	AC_DEFINE(OF_THREADS, 1, [Whether we have threads])
@@ -216,7 +224,6 @@ if test x"$enable_threads" != x"no"; then
 		AC_MSG_RESULT(libkern/OSAtomic.h)
 	else
 		AC_MSG_RESULT(none)
-		AC_MSG_ERROR(No atomic operations found! Try --disable-threads.)
 	fi
 else
 	dnl We can only have one thread - therefore everything is atomic

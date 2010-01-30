@@ -15,26 +15,46 @@
 
 #import "OFExceptions.h"
 
-#import "atomic.h"
+#ifdef OF_THREADS
+#import "threading.h"
 
 #define NUM_SPINLOCKS 8	/* needs to be a power of 2 */
 #define SPINLOCK_HASH(p) ((uintptr_t)p >> 4) & (NUM_SPINLOCKS - 1)
-static of_spinlock_t spinlocks[NUM_SPINLOCKS] = {};
+static of_spinlock_t spinlocks[NUM_SPINLOCKS];
+#endif
+
+BOOL
+objc_properties_init()
+{
+#ifdef OF_THREADS
+	size_t i;
+
+	for (i = 0; i < NUM_SPINLOCKS; i++)
+		if (!of_spinlock_new(&spinlocks[i]))
+			return NO;
+#endif
+
+	return YES;
+}
 
 id
 objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, BOOL atomic)
 {
 	if (atomic) {
 		id *ptr = (id*)((char*)self + offset);
+#ifdef OF_THREADS
 		unsigned hash = SPINLOCK_HASH(ptr);
 
-		of_spinlock_lock(spinlocks[hash]);
+		of_spinlock_lock(&spinlocks[hash]);
 
 		@try {
 			return [[*ptr retain] autorelease];
 		} @finally {
-			of_spinlock_unlock(spinlocks[hash]);
+			of_spinlock_unlock(&spinlocks[hash]);
 		}
+#else
+		return [[*ptr retain] autorelease];
+#endif
 	}
 
 	return *(id*)((char*)self + offset);
@@ -46,11 +66,13 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
 {
 	if (atomic) {
 		id *ptr = (id*)((char*)self + offset);
+#ifdef OF_THREADS
 		unsigned hash = SPINLOCK_HASH(ptr);
 
-		of_spinlock_lock(spinlocks[hash]);
+		of_spinlock_lock(&spinlocks[hash]);
 
 		@try {
+#endif
 			id old = *ptr;
 
 			switch (copy) {
@@ -70,9 +92,11 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
 			}
 
 			[old release];
+#ifdef OF_THREADS
 		} @finally {
-			of_spinlock_unlock(spinlocks[hash]);
+			of_spinlock_unlock(&spinlocks[hash]);
 		}
+#endif
 
 		return;
 	}
