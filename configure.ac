@@ -218,6 +218,9 @@ if test x"$enable_threads" != x"no"; then
 		AC_MSG_RESULT(none)
 		AC_MSG_ERROR(No atomic operations found! Try --disable-threads.)
 	fi
+else
+	dnl We can only have one thread - therefore everything is atomic
+	AC_DEFINE(OF_ATOMIC_OPS, 1, [Whether we have atomic operations])
 fi
 
 AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
