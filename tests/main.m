@@ -36,8 +36,6 @@ extern void tcpsocket_tests();
 #ifdef OF_THREADS
 extern void thread_tests();
 #endif
-extern void xmlelement_tests();
-extern void xmlparser_tests();
 
 static int fails = 0;
 
@@ -113,8 +111,6 @@ main()
 #ifdef OF_THREADS
 	thread_tests();
 #endif
-	xmlelement_tests();
-	xmlparser_tests();
 #ifdef OF_PLUGINS
 	plugin_tests();
 #endif

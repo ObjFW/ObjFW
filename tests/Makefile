@@ -13,8 +13,6 @@ SRCS = OFArray.m	\
        OFString.m	\
        OFTCPSocket.m	\
        ${OFTHREAD_M}	\
-       OFXMLElement.m	\
-       OFXMLParser.m	\
        main.m		\
        ${PROPERTIES_M}
 
