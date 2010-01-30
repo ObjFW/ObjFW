@@ -228,6 +228,7 @@ fi
 AC_MSG_CHECKING(for atomic operations)
 if test x"$atomic_ops" != x"none"; then
 	AC_DEFINE(OF_ATOMIC_OPS, 1, [Whether we have atomic operations])
+	AC_SUBST(ATOMIC_H, "atomic.h")
 fi
 AC_MSG_RESULT($atomic_ops)
 
