@@ -9,7 +9,7 @@
  * the packaging of this file.
  */
 
-#import "objfw-defs.h"
+#import "OFMacros.h"
 
 #if !defined(OF_THREADS)
 # define of_atomic_add32(p, i) (*p += i)
@@ -17,7 +17,17 @@
 # define of_atomic_or32(p, i) (*p |= i)
 # define of_atomic_and32(p, i) (*p &= i)
 # define of_atomic_xor32(p, i) (*p ^= i)
-# define of_atomic_cmpswap32(p, o, n) (*p == o ? ((*p = n) ? 1 : 1) : 0)
+
+static OF_INLINE BOOL
+of_atomic_cmpswap32(int32_t *p, int32_t o, int32_t n)
+{
+	if (*p == o) {
+		*p = n;
+		return YES;
+	}
+
+	return NO;
+}
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
 # define of_atomic_add32(p, i) __sync_add_and_fetch(p, i)
 # define of_atomic_sub32(p, i) __sync_sub_and_fetch(p, i)

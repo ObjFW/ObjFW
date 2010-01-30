@@ -27,6 +27,15 @@ typedef CRITICAL_SECTION of_mutex_t;
 typedef DWORD of_tlskey_t;
 #endif
 
+#if defined(OF_ATOMIC_OPS)
+#import "atomic.h"
+typedef int32_t of_spinlock_t;
+#elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
+typedef pthread_spinlock_t of_spinlock_t;
+#else
+typedef pthread_mutex_t of_spinlock_t;
+#endif
+
 #if defined(OF_HAVE_PTHREADS)
 # define of_thread_is_current(t) pthread_equal(t, pthread_self())
 # define of_thread_current() pthread_self()
@@ -186,32 +195,70 @@ of_tlskey_free(of_tlskey_t key)
 #endif
 }
 
+static OF_INLINE BOOL
+of_spinlock_new(of_spinlock_t *s)
+{
 #if defined(OF_ATOMIC_OPS)
-# import "atomic.h"
-typedef int32_t of_spinlock_t;
-# define of_spinlock_new(s) ((*(s) = 0) + YES)
-# define of_spinlock_trylock(s) (of_atomic_cmpswap32(s, 0, 1) ? YES : NO)
-# ifdef OF_HAVE_SCHED_YIELD
-#  define of_spinlock_lock(s) \
-	while (!of_spinlock_trylock(s)) \
-		sched_yield()
-# else
-#  define of_spinlock_lock(s) while (!of_spinlock_trylock(s));
-# endif
-# define of_spinlock_unlock(s) *(s) = 0
-# define of_spinlock_free(s) YES
+	*s = 0;
+	return YES;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
-typedef pthread_spinlock_t of_spinlock_t;
-# define of_spinlock_new(s) (pthread_spin_init(s, 0) ? NO : YES)
-# define of_spinlock_trylock(s) (pthread_spin_trylock(s) ? NO : YES)
-# define of_spinlock_lock(s) pthread_spin_lock(s)
-# define of_spinlock_unlock(s) pthread_spin_unlock(s)
-# define of_spinlock_free(s) (pthread_spin_destroy(s) ? NO : YES)
+	return (pthread_spin_init(s, 0) ? NO : YES);
 #else
-typedef of_mutex_t of_spinlock_t;
-# define of_spinlock_new(s) of_mutex_new(s)
-# define of_spinlock_trylock(s) of_mutex_trylock(s)
-# define of_spinlock_lock(s) of_mutex_lock(s)
-# define of_spinlock_unlock(s) of_mutex_unlock(s)
-# define of_spinlock_free(s) of_mutex_free(s)
+	return of_mutex_new(s);
 #endif
+}
+
+static OF_INLINE BOOL
+of_spinlock_trylock(of_spinlock_t *s)
+{
+#if defined(OF_ATOMIC_OPS)
+	return (of_atomic_cmpswap32(s, 0, 1) ? YES : NO);
+#elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
+	return (pthread_spin_trylock(s) ? NO : YES);
+#else
+	return of_mutex_trylock(s);
+#endif
+}
+
+static OF_INLINE BOOL
+of_spinlock_lock(of_spinlock_t *s)
+{
+#if defined(OF_ATOMIC_OPS)
+	while (!of_spinlock_trylock(s)) {
+# ifdef OF_HAVE_SCHED_YIELD
+		sched_yield();
+# endif
+	}
+
+	return YES;
+#elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
+	return (pthread_spin_lock(s) ? NO : YES);
+#else
+	return of_mutex_lock(s);
+#endif
+}
+
+static OF_INLINE BOOL
+of_spinlock_unlock(of_spinlock_t *s)
+{
+#if defined(OF_ATOMIC_OPS)
+	*s = 0;
+	return YES;
+#elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
+	return (pthread_spin_unlock(s) ? NO : YES);
+#else
+	return of_mutex_unlock(s);
+#endif
+}
+
+static OF_INLINE BOOL
+of_spinlock_free(of_spinlock_t *s)
+{
+#if defined(OF_ATOMIC_OPS)
+	return YES;
+#elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
+	return (pthread_spin_destroy(s) ? NO : YES);
+#else
+	return of_mutex_free(s);
+#endif
+}
