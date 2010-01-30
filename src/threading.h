@@ -11,7 +11,7 @@
 
 #import "OFMacros.h"
 
-#if !defined(OF_THREADS) || (!defined(OF_HAVE_PTHREADS) && defined(_WIN32))
+#if !defined(OF_THREADS) || (!defined(OF_HAVE_PTHREADS) && !defined(_WIN32))
 # error No threads available!
 #endif
 

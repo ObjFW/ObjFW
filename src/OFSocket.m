@@ -14,11 +14,16 @@
 #include <string.h>
 #include <fcntl.h>
 
+#ifndef _WIN32
+# include <sys/types.h>
+# include <sys/socket.h>
+#endif
+
 #import "OFSocket.h"
 #import "OFExceptions.h"
 
 #ifndef INVALID_SOCKET
-#define INVALID_SOCKET -1
+# define INVALID_SOCKET -1
 #endif
 
 @implementation OFSocket

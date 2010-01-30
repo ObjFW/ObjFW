@@ -17,7 +17,7 @@
 #include <unistd.h>
 
 #if !defined(HAVE_THREADSAFE_GETADDRINFO) && !defined(_WIN32)
-#include <netinet/in.h>
+# include <netinet/in.h>
 #endif
 
 #import "OFTCPSocket.h"
@@ -26,11 +26,12 @@
 #import "OFMacros.h"
 
 #ifndef INVALID_SOCKET
-#define INVALID_SOCKET -1
+# define INVALID_SOCKET -1
 #endif
 
 #if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
-#import "OFThread.h"
+# import "OFThread.h"
+# import "OFDataArray.h"
 
 static OFMutex *mutex = nil;
 #endif

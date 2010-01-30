@@ -39,7 +39,7 @@ INCLUDES := ${SRCS:.m=.h}	\
 	    objfw-defs.h	\
 	    ${THREADING_H}
 
-SRCS += ${AS_PRINTF_M} 		\
+SRCS += ${ASPRINTF_M} 		\
 	iso_8859_15.m		\
 	windows_1252.m		\
 	${OBJC_PROPERTIES_M}	\
