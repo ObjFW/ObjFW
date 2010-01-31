@@ -13,7 +13,6 @@
 
 #import "OFObject.h"
 #import "OFEnumerator.h"
-#import "OFFastEnumeration.h"
 
 @class OFDataArray;
 @class OFString;

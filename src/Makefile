@@ -31,7 +31,6 @@ SRCS = OFArray.m		\
        unicode.m
 
 INCLUDES := ${SRCS:.m=.h}	\
-	    OFFastEnumeration.h	\
 	    OFMacros.h		\
 	    ObjFW.h		\
 	    asprintf.h		\
