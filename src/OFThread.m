@@ -69,7 +69,7 @@ call_main(id obj)
 - initWithObject: (OFObject <OFCopying>*)obj
 {
 	self = [super init];
-	object = [obj copy];
+	object = [obj retain];
 
 	if (!of_thread_new(&thread, call_main, self)) {
 		Class c = isa;

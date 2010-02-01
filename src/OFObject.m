@@ -31,9 +31,9 @@
 #endif
 
 #ifdef OF_ATOMIC_OPS
-#import "atomic.h"
+# import "atomic.h"
 #else
-#import "threading.h"
+# import "threading.h"
 #endif
 
 struct pre_ivar {

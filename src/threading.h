@@ -16,19 +16,19 @@
 #endif
 
 #if defined(OF_HAVE_PTHREADS)
-#include <pthread.h>
+# include <pthread.h>
 typedef pthread_t of_thread_t;
 typedef pthread_mutex_t of_mutex_t;
 typedef pthread_key_t of_tlskey_t;
 #elif defined(_WIN32)
-#include <windows.h>
+# include <windows.h>
 typedef HANDLE of_thread_t;
 typedef CRITICAL_SECTION of_mutex_t;
 typedef DWORD of_tlskey_t;
 #endif
 
 #if defined(OF_ATOMIC_OPS)
-#import "atomic.h"
+# import "atomic.h"
 typedef int32_t of_spinlock_t;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 typedef pthread_spinlock_t of_spinlock_t;
@@ -242,7 +242,7 @@ static OF_INLINE BOOL
 of_spinlock_unlock(of_spinlock_t *s)
 {
 #if defined(OF_ATOMIC_OPS)
-	*s = 0;
+	of_atomic_and32((uint32_t*)s, 0);
 	return YES;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return (pthread_spin_unlock(s) ? NO : YES);

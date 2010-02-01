@@ -45,10 +45,11 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 		assert(table_size >= 1);
 
 		uint8_t *p = (uint8_t*)*string + *length;
+		uint8_t t;
 
 		while (--p >= (uint8_t*)*string)
-			if (table[0][*p])
-				*p = table[0][*p];
+			if ((t = table[0][*p]) != 0)
+				*p = t;
 
 		return;
 	}
