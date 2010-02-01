@@ -242,7 +242,7 @@ static OF_INLINE BOOL
 of_spinlock_unlock(of_spinlock_t *s)
 {
 #if defined(OF_ATOMIC_OPS)
-	*s = 0;
+	of_atomic_and32((uint32_t*)s, 0);
 	return YES;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return (pthread_spin_unlock(s) ? NO : YES);
