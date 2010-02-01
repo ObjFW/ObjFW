@@ -1,3 +1,36 @@
+Legend:
+ * Changes of existing features or bugfixes.
+ + New features.
+
+ObjFW 0.1.2 -> 0.2, 01.02.2010
+ + Support for ObjC 2 Fast Enumerations on every platform which has
+   compiler support for fast enumerations.
+ + Support for ObjC 2 properties on every platform with compiler support.
+ + Fast Enumeration through arrays and dictionaries.
+ * OFIterator has been removed.
+ + OFEnumerator was added to replace OFIterator, which is more general
+   and works with arrays and dictionaries.
+ + Portable implementation for atomic operations.
+ + Portable implementation for spinlocks. They use atomic operations if
+   available, if not they fall back to pthread spinlocks. If both are
+   unavailable, mutexes are used as a last fallback.
+ * -[retain] and -[release] are now atomic. If no atomic operations are
+   available, spinlocks are used (which can fall back to mutexes, see
+   above).
+ * -[readLine] now handles \r\n without having the \r included in the
+   returned line.
+ + OFThread now has -[tryLock].
+ * Mutation methods have been removed from immutable interfaces, thus
+   already giving an error at compilation instead of at runtime.
+ * Dependencies between headers have been reduced, leading to faster
+   compile times.
+ * The interfaces of OFSocket and OFStream were cleaned up and some
+   methods were moved to OFTCPSocket, as they make sense only there.
+ * File methods unavailable on Windows don't throw an exception at
+   runtime anymore, but instead are not even in the interface on
+   Windows. This way, it is a compile time error instead of a runtime
+   error.
+
 ObjFW 0.1.1 -> 0.1.2, 15.01.2010
  * Fix a bug in OFMutableArray's -[removeObject:] and
    -[removeObjectIdenticalTo:] that could lead to not removing all
