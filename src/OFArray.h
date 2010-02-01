@@ -49,7 +49,7 @@
 /**
  * Creates a new OFArray with the objects from the specified C array.
  *
- * \param objs A C array of objects.
+ * \param objs A C array of objects, terminated with nil
  * \return A new autoreleased OFArray
  */
 + arrayWithCArray: (OFObject**)objs;
@@ -83,7 +83,7 @@
 /**
  * Initializes an OFArray with the objects from the specified C array.
  *
- * \param objs A C array of objects
+ * \param objs A C array of objects, terminated with nil
  * \return An initialized OFArray
  */
 - initWithCArray: (OFObject**)objs;
