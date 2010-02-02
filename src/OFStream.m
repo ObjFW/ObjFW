@@ -18,7 +18,7 @@
 #import "OFStream.h"
 #import "OFString.h"
 #import "OFExceptions.h"
-#import "OFMacros.h"
+#import "macros.h"
 
 #ifdef _WIN32
 #include <windows.h>

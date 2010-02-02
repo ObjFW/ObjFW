@@ -9,6 +9,8 @@
  * the packaging of this file.
  */
 
+#import "objfw-defs.h"
+
 #import "OFObject.h"
 #import "OFExceptions.h"
 
@@ -43,5 +45,7 @@
 #import "OFThread.h"
 #endif
 
-#import "OFMacros.h"
 #import "asprintf.h"
+#import "atomic.h"
+#import "macros.h"
+#import "threading.h"

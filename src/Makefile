@@ -31,10 +31,10 @@ SRCS = OFArray.m		\
        unicode.m
 
 INCLUDES := ${SRCS:.m=.h}	\
-	    OFMacros.h		\
 	    ObjFW.h		\
 	    asprintf.h		\
 	    ${ATOMIC_H}		\
+	    macros.h		\
 	    objfw-defs.h	\
 	    ${THREADING_H}
 

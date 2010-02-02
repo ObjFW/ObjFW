@@ -9,7 +9,7 @@
  * the packaging of this file.
  */
 
-#import "OFMacros.h"
+#import "macros.h"
 
 #if defined(OF_THREADS) && !defined(OF_HAVE_GCC_ATOMIC_OPS) && \
     !defined(OF_HAVE_LIBKERN_OSATOMIC_H)

@@ -23,7 +23,7 @@
 #import "OFTCPSocket.h"
 #import "OFString.h"
 #import "OFExceptions.h"
-#import "OFMacros.h"
+#import "macros.h"
 
 #ifndef INVALID_SOCKET
 # define INVALID_SOCKET -1

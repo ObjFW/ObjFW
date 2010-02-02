@@ -9,7 +9,7 @@
  * the packaging of this file.
  */
 
-#import "OFMacros.h"
+#import "atomic.h"
 
 #if !defined(OF_THREADS) || (!defined(OF_HAVE_PTHREADS) && !defined(_WIN32))
 # error No threads available!

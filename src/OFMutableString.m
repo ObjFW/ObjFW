@@ -26,7 +26,7 @@
 
 #import "OFString.h"
 #import "OFExceptions.h"
-#import "OFMacros.h"
+#import "macros.h"
 
 #import "asprintf.h"
 #import "unicode.h"

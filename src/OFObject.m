@@ -20,7 +20,7 @@
 #import "OFObject.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
-#import "OFMacros.h"
+#import "macros.h"
 
 #import <objc/objc-api.h>
 #ifdef OF_APPLE_RUNTIME

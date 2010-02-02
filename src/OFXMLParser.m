@@ -18,7 +18,7 @@
 #import "OFArray.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
-#import "OFMacros.h"
+#import "macros.h"
 
 int _OFXMLParser_reference;
 

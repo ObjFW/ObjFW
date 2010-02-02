@@ -16,7 +16,7 @@
 #import "OFHashes.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
-#import "OFMacros.h"
+#import "macros.h"
 
 int _OFHashing_reference;
 

@@ -18,7 +18,7 @@
 
 #import "OFDataArray.h"
 #import "OFExceptions.h"
-#import "OFMacros.h"
+#import "macros.h"
 
 #ifdef _WIN32
 #include <windows.h>

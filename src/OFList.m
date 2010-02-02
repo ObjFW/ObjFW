@@ -15,7 +15,7 @@
 
 #import "OFList.h"
 #import "OFExceptions.h"
-#import "OFMacros.h"
+#import "macros.h"
 
 @implementation OFList
 + list
