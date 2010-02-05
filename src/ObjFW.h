@@ -37,15 +37,19 @@
 #import "OFHashes.h"
 #import "OFXMLElement.h"
 
+#import "macros.h"
+
 #ifdef OF_PLUGINS
-#import "OFPlugin.h"
+# import "OFPlugin.h"
+#endif
+
+#ifdef OF_ATOMIC_OPS
+# import "atomic.h"
 #endif
 
 #ifdef OF_THREADS
-#import "OFThread.h"
+# import "OFThread.h"
+# import "threading.h"
 #endif
 
 #import "asprintf.h"
-#import "atomic.h"
-#import "macros.h"
-#import "threading.h"
