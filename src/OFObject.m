@@ -502,7 +502,7 @@ objc_enumerationMutation(id obj)
 - retain
 {
 #ifdef OF_ATOMIC_OPS
-	of_atomic_inc32(&PRE_IVAR->retain_count);
+	of_atomic_inc_32(&PRE_IVAR->retain_count);
 #else
 	assert(of_spinlock_lock(&PRE_IVAR->retain_spinlock));
 	PRE_IVAR->retain_count++;
@@ -521,7 +521,7 @@ objc_enumerationMutation(id obj)
 - (void)release
 {
 #ifdef OF_ATOMIC_OPS
-	if (of_atomic_dec32(&PRE_IVAR->retain_count) <= 0)
+	if (of_atomic_dec_32(&PRE_IVAR->retain_count) <= 0)
 		[self dealloc];
 #else
 	size_t c;

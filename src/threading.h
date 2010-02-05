@@ -212,7 +212,7 @@ static OF_INLINE BOOL
 of_spinlock_trylock(of_spinlock_t *s)
 {
 #if defined(OF_ATOMIC_OPS)
-	return (of_atomic_cmpswap32(s, 0, 1) ? YES : NO);
+	return (of_atomic_cmpswap_32(s, 0, 1) ? YES : NO);
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return (pthread_spin_trylock(s) ? NO : YES);
 #else
@@ -242,7 +242,7 @@ static OF_INLINE BOOL
 of_spinlock_unlock(of_spinlock_t *s)
 {
 #if defined(OF_ATOMIC_OPS)
-	of_atomic_and32((uint32_t*)s, 0);
+	of_atomic_and_32((uint32_t*)s, 0);
 	return YES;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return (pthread_spin_unlock(s) ? NO : YES);

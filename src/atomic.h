@@ -21,7 +21,7 @@
 #endif
 
 static OF_INLINE int32_t
-of_atomic_add32(volatile int32_t *p, int32_t i)
+of_atomic_add_32(volatile int32_t *p, int32_t i)
 {
 #if !defined(OF_THREADS)
 	return (*p += i);
@@ -33,7 +33,7 @@ of_atomic_add32(volatile int32_t *p, int32_t i)
 }
 
 static OF_INLINE int32_t
-of_atomic_sub32(volatile int32_t *p, int32_t i)
+of_atomic_sub_32(volatile int32_t *p, int32_t i)
 {
 #if !defined(OF_THREADS)
 	return (*p -= i);
@@ -45,7 +45,7 @@ of_atomic_sub32(volatile int32_t *p, int32_t i)
 }
 
 static OF_INLINE int32_t
-of_atomic_inc32(volatile int32_t *p)
+of_atomic_inc_32(volatile int32_t *p)
 {
 #if !defined(OF_THREADS)
 	return ++*p;
@@ -57,7 +57,7 @@ of_atomic_inc32(volatile int32_t *p)
 }
 
 static OF_INLINE int32_t
-of_atomic_dec32(volatile int32_t *p)
+of_atomic_dec_32(volatile int32_t *p)
 {
 #if !defined(OF_THREADS)
 	return --*p;
@@ -69,7 +69,7 @@ of_atomic_dec32(volatile int32_t *p)
 }
 
 static OF_INLINE uint32_t
-of_atomic_or32(volatile uint32_t *p, uint32_t i)
+of_atomic_or_32(volatile uint32_t *p, uint32_t i)
 {
 #if !defined(OF_THREADS)
 	return (*p |= i);
@@ -81,7 +81,7 @@ of_atomic_or32(volatile uint32_t *p, uint32_t i)
 }
 
 static OF_INLINE uint32_t
-of_atomic_and32(volatile uint32_t *p, uint32_t i)
+of_atomic_and_32(volatile uint32_t *p, uint32_t i)
 {
 #if !defined(OF_THREADS)
 	return (*p &= i);
@@ -93,7 +93,7 @@ of_atomic_and32(volatile uint32_t *p, uint32_t i)
 }
 
 static OF_INLINE uint32_t
-of_atomic_xor32(volatile uint32_t *p, uint32_t i)
+of_atomic_xor_32(volatile uint32_t *p, uint32_t i)
 {
 #if !defined(OF_THREADS)
 	return (*p ^= i);
@@ -105,7 +105,7 @@ of_atomic_xor32(volatile uint32_t *p, uint32_t i)
 }
 
 static OF_INLINE BOOL
-of_atomic_cmpswap32(volatile int32_t *p, int32_t o, int32_t n)
+of_atomic_cmpswap_32(volatile int32_t *p, int32_t o, int32_t n)
 {
 #if !defined(OF_THREADS)
 	if (*p == o) {
@@ -118,5 +118,22 @@ of_atomic_cmpswap32(volatile int32_t *p, int32_t o, int32_t n)
 	return __sync_bool_compare_and_swap(p, o, n);
 #elif defined(OF_HAVE_LIBKERN_OSATOMIC_H)
 	return OSAtomicCompareAndSwap32Barrier(o, n, p);
+#endif
+}
+
+static OF_INLINE BOOL
+of_atomic_cmpswap_ptr(void* volatile *p, void *o, void *n)
+{
+#if !defined(OF_THREADS)
+	if (*p == o) {
+		*p = n;
+		return YES;
+	}
+
+	return NO;
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	return __sync_bool_compare_and_swap(p, o, n);
+#elif defined(OF_HAVE_LIBKERN_OSATOMIC_H)
+	return OSAtomicCompareAndSwapPtrBarrier(o, n, p);
 #endif
 }
