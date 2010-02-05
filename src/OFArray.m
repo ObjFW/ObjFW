@@ -227,6 +227,8 @@
 
 	if (count == 0)
 		return @"";
+	if (count == 1)
+		return [objs[0] retain];
 
 	str = [OFMutableString string];
 	append = [str methodForSelector: @selector(appendString:)];
