@@ -30,7 +30,7 @@ void
 array_tests()
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFArray *a[2];
+	OFArray *a[3];
 	OFMutableArray *m[2];
 	OFEnumerator *enumerator;
 	id obj;
@@ -43,6 +43,11 @@ array_tests()
 	    (a[0] = [OFArray arrayWithObjects: @"Foo", @"Bar", @"Baz", nil]))
 
 	TEST(@"+[arrayWithCArray:]", (a[1] = [OFArray arrayWithCArray: c_ary]))
+
+	TEST(@"+[arrayWithCArray:length:]",
+	    (a[2] = [OFArray arrayWithCArray: c_ary
+				      length: 3]) &&
+	    [a[2] isEqual: a[1]])
 
 	TEST(@"-[addObject:]", [m[0] addObject: c_ary[0]] &&
 	    [m[0] addObject: c_ary[2]])

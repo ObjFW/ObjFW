@@ -55,6 +55,17 @@
 + arrayWithCArray: (OFObject**)objs;
 
 /**
+ * Creates a new OFArray with the objects from the specified C array of the
+ * specified length.
+ *
+ * \param objs A C array of objects
+ * \param len The length of the C array
+ * \return A new autoreleased OFArray
+ */
++ arrayWithCArray: (OFObject**)objs
+	   length: (size_t)length;
+
+/**
  * Initializes an OFArray with the specified object.
  *
  * \param obj An object
@@ -87,6 +98,17 @@
  * \return An initialized OFArray
  */
 - initWithCArray: (OFObject**)objs;
+
+/**
+ * Initializes an OFArray with the objects from the specified C array of the
+ * specified length.
+ *
+ * \param objs A C array of objects
+ * \param len The length of the C array
+ * \return An initialized OFArray
+ */
+- initWithCArray: (OFObject**)objs
+	  length: (size_t)len;
 
 /**
  * \return The number of objects in the array

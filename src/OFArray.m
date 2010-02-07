@@ -48,6 +48,13 @@
 	return [[[self alloc] initWithCArray: objs] autorelease];
 }
 
++ arrayWithCArray: (OFObject**)objs
+	   length: (size_t)len
+{
+	return [[[self alloc] initWithCArray: objs
+				      length: len] autorelease];
+}
+
 - init
 {
 	self = [super init];
@@ -127,6 +134,26 @@
 		for (obj = objs; *obj != nil; obj++) {
 			[array addItem: obj];
 			[*obj retain];
+		}
+	} @catch (OFException *e) {
+		[self dealloc];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithCArray: (OFObject**)objs
+	  length: (size_t)len
+{
+	self = [self init];
+
+	@try {
+		size_t i;
+
+		for (i = 0; i < len; i++) {
+			[array addItem: objs + i];
+			[objs[i] retain];
 		}
 	} @catch (OFException *e) {
 		[self dealloc];
