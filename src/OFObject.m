@@ -36,6 +36,13 @@
 # import "threading.h"
 #endif
 
+/* A few macros to reduce #ifdefs */
+#ifndef OF_APPLE_RUNTIME
+# define class_getInstanceSize class_get_instance_size
+# define class_getName class_get_name
+# define class_getSuperclass class_get_super_class
+#endif
+
 struct pre_ivar {
 	void	      **memchunks;
 	size_t	      memchunks_size;
@@ -105,11 +112,7 @@ objc_enumerationMutation(id obj)
 + alloc
 {
 	OFObject *instance;
-#ifdef OF_APPLE_RUNTIME
 	size_t isize = class_getInstanceSize(self);
-#else
-	size_t isize = class_get_instance_size(self);
-#endif
 
 	if ((instance = malloc(isize + PRE_IVAR_ALIGN)) == NULL) {
 		alloc_failed_exception.isa = [OFAllocFailedException class];
@@ -141,22 +144,14 @@ objc_enumerationMutation(id obj)
 
 + (const char*)className
 {
-#ifdef OF_APPLE_RUNTIME
 	return class_getName(self);
-#else
-	return class_get_class_name(self);
-#endif
 }
 
 + (BOOL)isSubclassOfClass: (Class)class
 {
 	Class iter;
 
-#ifdef OF_APPLE_RUNTIME
 	for (iter = self; iter != Nil; iter = class_getSuperclass(iter))
-#else
-	for (iter = self; iter != Nil; iter = class_get_super_class(iter))
-#endif
 		if (iter == class)
 			return YES;
 
@@ -165,11 +160,7 @@ objc_enumerationMutation(id obj)
 
 + (Class)superclass
 {
-#ifdef OF_APPLE_RUNTIME
 	return class_getSuperclass(self);
-#else
-	return class_get_super_class(self);
-#endif
 }
 
 + (BOOL)instancesRespondToSelector: (SEL)selector
@@ -288,11 +279,7 @@ objc_enumerationMutation(id obj)
 {
 	Class iter;
 
-#ifdef OF_APPLE_RUNTIME
 	for (iter = isa; iter != Nil; iter = class_getSuperclass(iter))
-#else
-	for (iter = isa; iter != Nil; iter = class_get_super_class(iter))
-#endif
 		if (iter == class)
 			return YES;
 
