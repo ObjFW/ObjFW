@@ -83,6 +83,11 @@ typedef enum {
 + (BOOL)isSubclassOfClass: (Class)class_;
 
 /**
+ * \return The superclass of the class
+ */
++ (Class)superclass;
+
+/**
  * Checks whether instances of the class respond to a given selector.
  *
  * \param selector The selector which should be checked for respondance

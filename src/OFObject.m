@@ -163,6 +163,15 @@ objc_enumerationMutation(id obj)
 	return NO;
 }
 
++ (Class)superclass
+{
+#ifdef OF_APPLE_RUNTIME
+	return class_getSuperclass(self);
+#else
+	return class_get_super_class(self);
+#endif
+}
+
 + (BOOL)instancesRespondToSelector: (SEL)selector
 {
 #ifdef OF_APPLE_RUNTIME
