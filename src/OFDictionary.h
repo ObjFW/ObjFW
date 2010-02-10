@@ -16,12 +16,14 @@
 
 @class OFArray;
 
+/// \cond internal
 struct of_dictionary_bucket
 {
 	OFObject <OFCopying> *key;
 	OFObject	     *object;
 	uint32_t	     hash;
 };
+/// \endcond
 
 /**
  * The OFDictionary class is a class for using hash tables.

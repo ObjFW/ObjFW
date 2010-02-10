@@ -15,8 +15,7 @@
  * A struct that contains a pointer to the next list object, the previous list
  * object and the object.
  */
-typedef struct __of_list_object
-{
+typedef struct __of_list_object {
 	/// A pointer to the next list object in the list
 	struct __of_list_object *next;
 	/// A pointer to the previous list object in the list

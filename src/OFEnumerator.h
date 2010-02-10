@@ -36,9 +36,13 @@
 #define of_fast_enumeration_state_t NSFastEnumerationState
 #ifndef NSINTEGER_DEFINED
 typedef struct __of_fast_enumeration_state {
+	/// Arbitrary state information for the enumeration
 	unsigned long state;
+	/// Pointer to a C array of objects to return
 	id *itemsPtr;
+	/// Arbitrary state information to detect mutations
 	unsigned long *mutationsPtr;
+	/// Additional arbitrary state information
 	unsigned long extra[5];
 } of_fast_enumeration_state_t;
 #endif

@@ -19,6 +19,7 @@
 
 #import "threading.h"
 
+/// \cond internal
 struct locks_s {
 	id		 obj;
 	size_t		 count;
@@ -26,6 +27,7 @@ struct locks_s {
 	of_thread_t	 thread;
 	of_mutex_t	 mutex;
 };
+/// \endcond
 
 static of_mutex_t mutex;
 static struct locks_s *locks = NULL;
