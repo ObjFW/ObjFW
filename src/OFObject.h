@@ -19,7 +19,7 @@
 /**
  * A result of a comparison.
  */
-typedef enum {
+typedef enum __of_comparison_result {
 	/// The left object is smaller than the right
 	OF_ORDERED_ASCENDING = -1,
 	/// Both objects are equal
@@ -27,6 +27,14 @@ typedef enum {
 	/// The left object is bigger than the right
 	OF_ORDERED_DESCENDING = 1
 } of_comparison_result_t;
+
+/**
+ * A range.
+ */
+typedef struct __of_range {
+	size_t start;
+	size_t length;
+} of_range_t;
 
 /**
  * The OFObject class is the base class for all other classes inside ObjFW.

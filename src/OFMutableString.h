@@ -116,6 +116,13 @@
 		    toIndex: (size_t)end;
 
 /**
+ * Removes the characters at the specified range.
+ *
+ * \param range The range of the characters which should be removed
+ */
+- removeCharactersInRange: (of_range_t)range;
+
+/**
  * Replaces all occurrences of a string with another string.
  *
  * \param str The string to replace

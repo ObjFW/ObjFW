@@ -738,6 +738,12 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 				    length: end - start];
 }
 
+- (OFString*)substringWithRange: (of_range_t)range
+{
+	return [self substringFromIndex: range.start
+				toIndex: range.start + range.length];
+}
+
 - (OFString*)stringByAppendingString: (OFString*)str
 {
 	return [[OFMutableString stringWithString: self] appendString: str];

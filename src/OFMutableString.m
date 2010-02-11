@@ -19,9 +19,9 @@
 #include <assert.h>
 
 #ifdef HAVE_MADVISE
-#include <sys/mman.h>
+# include <sys/mman.h>
 #else
-#define madvise(addr, len, advise)
+# define madvise(addr, len, advise)
 #endif
 
 #import "OFString.h"
@@ -408,6 +408,12 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 	}
 
 	return self;
+}
+
+- removeCharactersInRange: (of_range_t)range
+{
+	return [self removeCharactersFromIndex: range.start
+				       toIndex: range.start + range.length];
 }
 
 - replaceOccurrencesOfString: (OFString*)str

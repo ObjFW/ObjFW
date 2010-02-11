@@ -247,6 +247,12 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 			toIndex: (size_t)end;
 
 /**
+ * \param range The range of the substring
+ * \return The substring as a new autoreleased OFString
+ */
+- (OFString*)substringWithRange: (of_range_t)range;
+
+/**
  * Creates a new string by appending another string.
  *
  * \param str The string to append
