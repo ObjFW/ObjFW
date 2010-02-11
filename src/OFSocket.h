@@ -17,7 +17,7 @@
 #endif
 
 /**
- * The OFTCPSocket class provides functions to create and use sockets.
+ * \brief A class which provides functions to create and use sockets.
  */
 @interface OFSocket: OFStream
 {

@@ -16,7 +16,7 @@ extern void *_OFConstStringClassReference;
 #endif
 
 /**
- * A class for storing constant strings using the @"" literal.
+ * \brief A class for storing constant strings using the \@"" literal.
  */
 @interface OFConstString: OFString {}
 @end

@@ -16,12 +16,12 @@
 #ifndef _WIN32
 typedef void* of_plugin_handle_t;
 #else
-#include <windows.h>
+# include <windows.h>
 typedef HMODULE of_plugin_handle_t;
 #endif
 
 /**
- * The OFPlugin class provides a system for loading plugins at runtime.
+ * \brief Provides a system for loading plugins at runtime.
  */
 @interface OFPlugin: OFObject
 {

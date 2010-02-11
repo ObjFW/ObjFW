@@ -18,7 +18,7 @@
 @class OFString;
 
 /**
- * The OFArray class is a class for storing objects in an array.
+ * \brief A class for storing objects in an array.
  */
 @interface OFArray: OFObject <OFCopying, OFMutableCopying, OFFastEnumeration>
 {
@@ -171,6 +171,7 @@
 - (OFEnumerator*)enumerator;
 @end
 
+/// \cond internal
 @interface OFArrayEnumerator: OFEnumerator
 {
 	OFDataArray   *array;
@@ -183,5 +184,6 @@
 - initWithDataArray: (OFDataArray*)data
    mutationsPointer: (unsigned long*)mutations_ptr;
 @end
+/// \endcond
 
 #import "OFMutableArray.h"

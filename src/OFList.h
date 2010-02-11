@@ -12,6 +12,8 @@
 #import "OFObject.h"
 
 /**
+ * \brief A list object.
+ *
  * A struct that contains a pointer to the next list object, the previous list
  * object and the object.
  */
@@ -25,7 +27,7 @@ typedef struct __of_list_object {
 } of_list_object_t;
 
 /**
- * The OFList class provides easy to use double-linked lists.
+ * \brief A class which provides easy to use double-linked lists.
  */
 @interface OFList: OFObject <OFCopying>
 {

@@ -12,7 +12,7 @@
 #import "OFDictionary.h"
 
 /**
- * The OFMutableDictionary class is a class for using mutable hash tables.
+ * \brief A class for using mutable hash tables.
  */
 @interface OFMutableDictionary: OFDictionary
 {

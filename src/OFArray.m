@@ -352,6 +352,7 @@
 }
 @end
 
+/// \cond internal
 @implementation OFArrayEnumerator
 - initWithDataArray: (OFDataArray*)array_
    mutationsPointer: (unsigned long*)mutations_ptr_;
@@ -387,3 +388,4 @@
 	return self;
 }
 @end
+/// \endcond

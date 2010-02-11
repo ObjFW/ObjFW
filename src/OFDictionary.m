@@ -585,6 +585,7 @@
 }
 @end
 
+/// \cond internal
 @implementation OFDictionaryEnumerator
 -     initWithData: (struct of_dictionary_bucket*)data_
 	      size: (size_t)size_
@@ -640,3 +641,4 @@
 		return nil;
 }
 @end
+/// \endcond

@@ -19,7 +19,7 @@ extern int _OFXMLParser_reference;
 @class OFMutableArray;
 
 /**
- * A protocol that needs to be implemented by delegates for OFXMLParser.
+ * \brief A protocol that needs to be implemented by delegates for OFXMLParser.
  */
 @protocol OFXMLParserDelegate
 /**
@@ -83,8 +83,8 @@ extern int _OFXMLParser_reference;
 @end
 
 /**
- * A protocol that needs to be implemented by delegates for 
- * stringByXMLUnescapingWithHandler:.
+ * \brief A protocol that needs to be implemented by delegates for
+ *	  stringByXMLUnescapingWithHandler:.
  */
 @protocol OFXMLUnescapingDelegate
 /**
@@ -100,8 +100,10 @@ extern int _OFXMLParser_reference;
 @end
 
 /**
- * An event-based XML parser which calls the delegate's callbacks as soon as
- * it finds something, thus suitable for streams as well.
+ * \brief An event-based XML parser.
+ *
+ * OFXMLParser is an event-based XML parser which calls the delegate's callbacks
+ * as soon asit finds something, thus suitable for streams as well.
  */
 @interface OFXMLParser: OFObject <OFXMLUnescapingDelegate>
 {
@@ -161,8 +163,7 @@ extern int _OFXMLParser_reference;
 @end
 
 /**
- * The OFString (OFXMLUnescaping) category provides methods to unescape XML in
- * strings.
+ * \brief A category for unescaping XML in strings.
  */
 @interface OFString (OFXMLUnescaping)
 /**

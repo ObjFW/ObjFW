@@ -17,7 +17,7 @@
 #import <objc/objc.h>
 
 /**
- * A result of a comparison.
+ * \brief A result of a comparison.
  */
 typedef enum __of_comparison_result {
 	/// The left object is smaller than the right
@@ -29,7 +29,7 @@ typedef enum __of_comparison_result {
 } of_comparison_result_t;
 
 /**
- * A range.
+ * \brief A range.
  */
 typedef struct __of_range {
 	size_t start;
@@ -37,7 +37,7 @@ typedef struct __of_range {
 } of_range_t;
 
 /**
- * The OFObject class is the base class for all other classes inside ObjFW.
+ * \brief The root class for all other classes inside ObjFW.
  */
 @interface OFObject
 {
@@ -304,7 +304,7 @@ typedef struct __of_range {
 @end
 
 /**
- * Objects implementing this protocol can be copied.
+ * \brief A protocol for creation of copies.
  */
 @protocol OFCopying
 /**
@@ -314,6 +314,8 @@ typedef struct __of_range {
 @end
 
 /**
+ * \brief A protocol for creation of mutable copies.
+ *
  * This protocol is implemented by objects that can be mutable and immutable
  * and allows returning a mutable copy.
  */

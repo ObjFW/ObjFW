@@ -12,7 +12,7 @@
 #import "objfw-defs.h"
 
 #ifndef OF_HAVE_ASPRINTF
-#include <stdarg.h>
+# include <stdarg.h>
 
 extern int asprintf(char**, const char*, ...);
 extern int vasprintf(char**, const char*, va_list);

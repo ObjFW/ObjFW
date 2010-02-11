@@ -14,7 +14,7 @@
 @class OFString;
 
 /**
- * The OFStream class provides a base class for different types of streams.
+ * \brief A base class for different types of streams.
  */
 @interface OFStream: OFObject
 {

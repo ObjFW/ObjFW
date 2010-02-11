@@ -15,7 +15,7 @@
 #import "OFString.h"
 
 /**
- * A class for storing and modifying strings.
+ * \brief A class for storing and modifying strings.
  */
 @interface OFMutableString: OFString {}
 /**

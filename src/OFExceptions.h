@@ -16,7 +16,7 @@
 @class OFString;
 
 /**
- * An exception indicating an object could not be allocated.
+ * \brief An exception indicating an object could not be allocated.
  *
  * This exception is preallocated, as if there's no memory, no exception can
  * be allocated of course. That's why you shouldn't and even can't deallocate
@@ -41,7 +41,10 @@
 @end
 
 /**
- * The OFException class is the base class for all exceptions in ObjFW.
+ * \brief The base class for all exceptions in ObjFW
+ *
+ * The OFException class is the base class for all exceptions in ObjFW, except
+ * the OFAllocFailedException.
  *
  * IMPORTANT: Exceptions do NOT use OFAutoreleasePools and can't be autoreleased
  * either! You have to make sure to dealloc the exception in your \@catch block!
@@ -80,7 +83,7 @@
 @end
 
 /**
- * An OFException indicating there is not enough memory available.
+ * \brief An exception indicating there is not enough memory available.
  */
 @interface OFOutOfMemoryException: OFException
 {
@@ -112,13 +115,14 @@
 @end
 
 /**
- * An OFException indicating that a mutation was detected while enumerating.
+ * \brief An exception indicating that a mutation was detected while
+ *        enumerating.
  */
 @interface OFEnumerationMutationException: OFException {}
 @end
 
 /**
- * An OFException indicating the given memory is not part of the object.
+ * \brief An exception indicating the given memory is not part of the object.
  */
 @interface OFMemoryNotPartOfObjectException: OFException
 {
@@ -150,7 +154,8 @@
 @end
 
 /**
- * An OFException indicating that a method or part of it is not implemented.
+ * \brief An exception indicating that a method or part of it is not
+ *        implemented.
  */
 @interface OFNotImplementedException: OFException
 {
@@ -177,13 +182,13 @@
 @end
 
 /**
- * An OFException indicating the given value is out of range.
+ * \brief An exception indicating the given value is out of range.
  */
 @interface OFOutOfRangeException: OFException {}
 @end
 
 /**
- * An OFException indicating that the argument is invalid for this method.
+ * \brief An exception indicating that the argument is invalid for this method.
  */
 @interface OFInvalidArgumentException: OFException
 {
@@ -210,31 +215,32 @@
 @end
 
 /**
- * An OFException indicating that the encoding is invalid for this object.
+ * \brief An exception indicating that the encoding is invalid for this object.
  */
 @interface OFInvalidEncodingException: OFException {}
 @end
 
 /**
- * An OFException indicating that the format is invalid.
+ * \brief An exception indicating that the format is invalid.
  */
 @interface OFInvalidFormatException: OFException {}
 @end
 
 /**
- * An OFException indicating that a parser encountered malformed or invalid XML.
+ * \brief An exception indicating that a parser encountered malformed or
+ *        invalid XML.
  */
 @interface OFMalformedXMLException: OFException {}
 @end
 
 /**
- * An OFException indicating that initializing something failed.
+ * \brief An exception indicating that initializing something failed.
  */
 @interface OFInitializationFailedException: OFException {}
 @end
 
 /**
- * An OFException indicating the file couldn't be opened.
+ * \brief An exception indicating the file couldn't be opened.
  */
 @interface OFOpenFileFailedException: OFException
 {
@@ -282,7 +288,7 @@
 @end
 
 /**
- * An OFException indicating a read or write to the file failed.
+ * \brief An exception indicating a read or write to the file failed.
  */
 @interface OFReadOrWriteFailedException: OFException
 {
@@ -320,19 +326,19 @@
 @end
 
 /**
- * An OFException indicating a read on the file failed.
+ * \brief An exception indicating a read on a file failed.
  */
 @interface OFReadFailedException: OFReadOrWriteFailedException {}
 @end
 
 /**
- * An OFException indicating a write to the file failed.
+ * \brief An exception indicating a write to a file failed.
  */
 @interface OFWriteFailedException: OFReadOrWriteFailedException {}
 @end
 
 /**
- * An OFException indicating that changing the mode of the file failed.
+ * \brief An exception indicating that changing the mode of a file failed.
  */
 @interface OFChangeFileModeFailedException: OFException
 {
@@ -381,7 +387,7 @@
 
 #ifndef _WIN32
 /**
- * An OFException indicating that changing the owner of the file failed.
+ * \brief An exception indicating that changing the owner of a file failed.
  */
 @interface OFChangeFileOwnerFailedException: OFException
 {
@@ -440,7 +446,7 @@
 #endif
 
 /**
- * An OFException indicating that renaming a file failed.
+ * \brief An exception indicating that renaming a file failed.
  */
 @interface OFRenameFileFailedException: OFException
 {
@@ -488,7 +494,7 @@
 @end
 
 /**
- * An OFException indicating that deleting a file failed.
+ * \brief An exception indicating that deleting a file failed.
  */
 @interface OFDeleteFileFailedException: OFException
 {
@@ -527,7 +533,7 @@
 
 #ifndef _WIN32
 /**
- * An OFException indicating that creating a link failed.
+ * \brief An exception indicating that creating a link failed.
  */
 @interface OFLinkFailedException: OFException
 {
@@ -575,7 +581,7 @@
 @end
 
 /**
- * An OFException indicating that creating a symlink failed.
+ * \brief An exception indicating that creating a symlink failed.
  */
 @interface OFSymlinkFailedException: OFException
 {
@@ -624,26 +630,26 @@
 #endif
 
 /**
- * An OFException indicating that setting an option failed.
+ * \brief An exception indicating that setting an option failed.
  */
 @interface OFSetOptionFailedException: OFException {}
 @end
 
 /**
- * An OFException indicating a socket is not connected or bound.
+ * \brief An exception indicating a socket is not connected or bound.
  */
 @interface OFNotConnectedException: OFException {}
 @end
 
 /**
- * An OFException indicating an attempt to connect or bind an already connected
- * or bound socket.
+ * \brief An exception indicating an attempt to connect or bind an already
+ *        connected or bound socket.
  */
 @interface OFAlreadyConnectedException: OFException {}
 @end
 
 /**
- * An OFException indicating the translation of an address failed.
+ * \brief An exception indicating the translation of an address failed.
  */
 @interface OFAddressTranslationFailedException: OFException
 {
@@ -691,7 +697,7 @@
 @end
 
 /**
- * An OFException indicating that the connection could not be established.
+ * \brief An exception indicating that the connection could not be established.
  */
 @interface OFConnectionFailedException: OFException
 {
@@ -739,7 +745,7 @@
 @end
 
 /**
- * An OFException indicating that binding the socket failed.
+ * \brief An exception indicating that binding the socket failed.
  */
 @interface OFBindFailedException: OFException
 {
@@ -797,7 +803,7 @@
 @end
 
 /**
- * An OFException indicating that listening on the socket failed.
+ * \brief An exception indicating that listening on the socket failed.
  */
 @interface OFListenFailedException: OFException
 {
@@ -835,7 +841,7 @@
 @end
 
 /**
- * An OFException indicating that accepting a connection failed.
+ * \brief An exception indicating that accepting a connection failed.
  */
 @interface OFAcceptFailedException: OFException
 {
@@ -849,25 +855,25 @@
 @end
 
 /**
- * An OFException indicating that joining the thread failed.
+ * \brief An exception indicating that joining the thread failed.
  */
 @interface OFThreadJoinFailedException: OFException {}
 @end
 
 /**
- * An OFException indicating that locking a mutex failed.
+ * \brief An exception indicating that locking a mutex failed.
  */
 @interface OFMutexLockFailedException: OFException {}
 @end
 
 /**
- * An OFException indicating that unlocking a mutex failed.
+ * \brief An exception indicating that unlocking a mutex failed.
  */
 @interface OFMutexUnlockFailedException: OFException {}
 @end
 
 /**
- * An OFException indicating that the hash has already been calculated.
+ * \brief An exception indicating that the hash has already been calculated.
  */
 @interface OFHashAlreadyCalculatedException: OFException {}
 @end

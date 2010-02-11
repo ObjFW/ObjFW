@@ -18,7 +18,7 @@
 @class OFString;
 
 /**
- * The OFFile class provides functions to read, write and manipulate files.
+ * \brief A class which provides functions to read, write and manipulate files.
  */
 @interface OFFile: OFStream
 {
@@ -126,9 +126,6 @@
  *	     It is not closed when the OFFile object is deallocated!
  */
 - initWithFilePointer: (FILE*)fp;
-@end
-
-@interface OFFileSingleton: OFFile
 @end
 
 /// An OFFile object for stdin

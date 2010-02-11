@@ -26,7 +26,7 @@ struct of_dictionary_bucket
 /// \endcond
 
 /**
- * The OFDictionary class is a class for using hash tables.
+ * \brief A class for storing objects in a hash table.
  */
 @interface OFDictionary: OFObject <OFCopying, OFMutableCopying,
     OFFastEnumeration>
@@ -159,6 +159,7 @@ struct of_dictionary_bucket
 - (OFEnumerator*)keyEnumerator;
 @end
 
+/// \cond internal
 @interface OFDictionaryEnumerator: OFEnumerator
 {
 	struct of_dictionary_bucket *data;
@@ -178,5 +179,6 @@ struct of_dictionary_bucket
 
 @interface OFDictionaryKeyEnumerator: OFDictionaryEnumerator
 @end
+/// \endcond
 
 #import "OFMutableDictionary.h"

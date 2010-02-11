@@ -41,8 +41,7 @@ enum of_number_type {
 };
 
 /**
- * The OFNumber class provides a way to store a number in an object and to
- * manipulate it.
+ * \brief provides a way to store a number in an object and to manipulate it.
  */
 @interface OFNumber: OFObject
 {

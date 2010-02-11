@@ -12,7 +12,7 @@
 #import "OFObject.h"
 
 /**
- * The OFEnumerator class provides methods to enumerate through collections.
+ * \brief A class which provides methods to enumerate through collections.
  */
 @interface OFEnumerator: OFObject {}
 /**
@@ -35,6 +35,9 @@
  */
 #define of_fast_enumeration_state_t NSFastEnumerationState
 #ifndef NSINTEGER_DEFINED
+/**
+ * \brief State information for fast enumerations.
+ */
 typedef struct __of_fast_enumeration_state {
 	/// Arbitrary state information for the enumeration
 	unsigned long state;
@@ -48,6 +51,8 @@ typedef struct __of_fast_enumeration_state {
 #endif
 
 /**
+ * \brief A protocol for fast enumeration.
+ *
  * The OFFastEnumeration protocol needs to be implemented by all classes
  * supporting fast enumeration.
  */

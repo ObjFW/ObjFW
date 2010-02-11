@@ -12,8 +12,7 @@
 #import "OFArray.h"
 
 /**
- * The OFMutableArray class is a class for storing, adding and removing objects
- * in an array.
+ * \brief A class for storing, adding and removing objects in an array.
  */
 @interface OFMutableArray: OFArray
 {

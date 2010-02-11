@@ -18,7 +18,7 @@
 extern int _OFXMLElement_reference;
 
 /**
- * The OFXMLAttribute represents an attribute of an XML element as an object.
+ * \brief A representation of an attribute of an XML element as an object.
  */
 @interface OFXMLAttribute: OFObject
 {
@@ -76,6 +76,8 @@ extern int _OFXMLElement_reference;
 @end
 
 /**
+ * \brief A representation of an XML element as an object.
+ *
  * The OFXMLElement represents an XML element as an object which can be
  * modified and converted back to XML again.
  */
@@ -153,8 +155,7 @@ extern int _OFXMLElement_reference;
 @end
 
 /**
- * The OFString (OFXMLEscaping) category provides an easy way to escape strings
- * for use in an XML document.
+ * \brief A category to escape strings for use in an XML document.
  */
 @interface OFString (OFXMLEscaping)
 /**

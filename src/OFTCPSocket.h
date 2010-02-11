@@ -24,7 +24,7 @@
 @class OFString;
 
 /**
- * The OFTCPSocket class provides functions to create and use sockets.
+ * \brief A class which provides functions to create and use TCP sockets.
  */
 @interface OFTCPSocket: OFSocket
 {

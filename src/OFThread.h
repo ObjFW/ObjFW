@@ -15,7 +15,7 @@
 #import "threading.h"
 
 /**
- * A Thread Local Storage key.
+ * \brief A class for Thread Local Storage keys.
  */
 @interface OFTLSKey: OFObject
 {
@@ -52,7 +52,7 @@
 @end
 
 /**
- * The OFThread class provides portable threads.
+ * \brief A class which provides portable threads.
  *
  * To use it, you should create a new class derived from it and reimplement
  * main.
@@ -62,7 +62,6 @@
 	id object;
 	of_thread_t thread;
 	BOOL running;
-
 @public
 	id retval;
 }
@@ -118,7 +117,7 @@
 @end
 
 /**
- * A class for creating mutual exclusions.
+ * \brief A class for creating mutual exclusions.
  */
 @interface OFMutex: OFObject
 {
