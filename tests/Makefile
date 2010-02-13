@@ -8,6 +8,7 @@ SRCS = OFArray.m	\
        OFDictionary.m	\
        OFHashes.m	\
        OFList.m		\
+       OFNumber.m	\
        OFObject.m	\
        ${OFPLUGIN_M}	\
        OFString.m	\
