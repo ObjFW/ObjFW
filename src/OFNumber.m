@@ -145,7 +145,7 @@
 		@throw [OFInvalidFormatException newWithClass: isa];	\
 	}
 #define CALCULATE2(o, n)						\
-	switch ([n type]) { 						\
+	switch (type) { 						\
 	case OF_NUMBER_CHAR:						\
 		value.char_ o [n asChar];				\
 		break;							\
