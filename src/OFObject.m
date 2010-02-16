@@ -39,7 +39,7 @@
 /* A few macros to reduce #ifdefs */
 #ifndef OF_APPLE_RUNTIME
 # define class_getInstanceSize class_get_instance_size
-# define class_getName class_get_name
+# define class_getName class_get_class_name
 # define class_getSuperclass class_get_super_class
 #endif
 
