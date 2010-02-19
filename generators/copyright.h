@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 - 2009
+ * Copyright (c) 2008 - 2010
  *   Jonathan Schleifer <js@webkeks.org>
  *
  * All rights reserved.
@@ -13,7 +13,7 @@
 
 #define COPYRIGHT \
     @"/*\n" \
-    @" * Copyright (c) 2008 - 2009\n" \
+    @" * Copyright (c) 2008 - 2010\n" \
     @" *   Jonathan Schleifer <js@webkeks.org>\n" \
     @" *\n" \
     @" * All rights reserved.\n" \
