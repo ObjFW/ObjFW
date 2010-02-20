@@ -21,7 +21,7 @@
 #import "macros.h"
 
 #ifdef _WIN32
-#include <windows.h>
+# include <windows.h>
 #endif
 
 static int pagesize = 0;
@@ -130,7 +130,9 @@ static int pagesize = 0;
 
 				tmp = [self allocMemoryWithSize: cache_len -
 								 i - 1];
-				memcpy(tmp, cache + i + 1, cache_len - i - 1);
+				if (tmp != NULL)
+					memcpy(tmp, cache + i + 1,
+					    cache_len - i - 1);
 
 				[self freeMemory: cache];
 				cache = tmp;
@@ -194,27 +196,163 @@ static int pagesize = 0;
 						[self freeMemory: ret_c];
 					}
 
-					if (i < len) {
-						tmp2 = [self
-						    allocMemoryWithSize: len -
-									 i - 1];
+					tmp2 = [self
+					    allocMemoryWithSize: len - i - 1];
+					if (tmp2 != NULL)
 						memcpy(tmp2, tmp + i + 1,
 						    len - i - 1);
 
-						[self freeMemory: cache];
-						cache = tmp2;
-						cache_len = len - i - 1;
-					} else {
-						[self freeMemory: cache];
-						cache = NULL;
-						cache_len = 0;
-					}
+					[self freeMemory: cache];
+					cache = tmp2;
+					cache_len = len - i - 1;
 
 					return ret;
 				}
 			}
 
 			/* There was no newline or \0 */
+			cache = [self resizeMemory: cache
+					    toSize: cache_len + len];
+
+			/*
+			 * It's possible that cache_len + len is 0 and thus
+			 * cache was set to NULL by resizeMemory:toSize:.
+			 */
+			if (cache != NULL)
+				memcpy(cache + cache_len, tmp, len);
+
+			cache_len += len;
+		}
+	} @finally {
+		[self freeMemory: tmp];
+	}
+
+	/* Get rid of a warning, never reached anyway */
+	assert(0);
+}
+
+- (OFString*)readTillDelimiter: (OFString*)delimiter
+{
+	return [self readTillDelimiter: delimiter
+			  withEncoding: OF_STRING_ENCODING_UTF_8];
+}
+
+- (OFString*)readTillDelimiter: (OFString*)delimiter
+		  withEncoding: (enum of_string_encoding)encoding
+{
+	const char *delim;
+	size_t i, j, delim_len, len, ret_len;
+	char *ret_c, *tmp, *tmp2;
+	OFString *ret;
+
+	/* FIXME: Convert delimiter to specified charset */
+	delim = [delimiter cString];
+	delim_len = [delimiter cStringLength];
+	j = 0;
+
+	if (delim_len == 0)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
+	/* Look if there's something in our cache */
+	if (cache != NULL) {
+		for (i = 0; i < cache_len; i++) {
+			if (cache[i] != delim[j++])
+				j = 0;
+
+			if (j == delim_len || cache[i] == '\0') {
+				if (cache[i] == '\0')
+					delim_len = 1;
+
+				ret = [OFString stringWithCString: cache
+							 encoding: encoding
+							   length: i + 1 -
+								   delim_len];
+
+				tmp = [self allocMemoryWithSize: cache_len - i -
+								 1];
+				if (tmp != NULL)
+					memcpy(tmp, cache + i + 1,
+					    cache_len - i - 1);
+
+				[self freeMemory: cache];
+				cache = tmp;
+				cache_len -= i + 1;
+
+				return ret;
+			}
+		}
+	}
+
+	/* Read until we get the delimiter or \0 */
+	tmp = [self allocMemoryWithSize: pagesize];
+
+	@try {
+		for (;;) {
+			if ([self atEndOfStreamWithoutCache]) {
+				if (cache == NULL)
+					return nil;
+
+				ret = [OFString stringWithCString: cache
+							 encoding: encoding
+							   length: cache_len];
+
+				[self freeMemory: cache];
+				cache = NULL;
+				cache_len = 0;
+
+				return ret;
+			}
+
+			len = [self readNBytesWithoutCache: pagesize
+						intoBuffer: tmp];
+
+			/* Look if there's the delimiter or \0 */
+			for (i = 0; i < len; i++) {
+				if (tmp[i] != delim[j++])
+					j = 0;
+
+				if (j == delim_len || tmp[i] == '\0') {
+					if (tmp[i] == '\0')
+						delim_len = 1;
+
+					ret_len = cache_len + i + 1 - delim_len;
+					ret_c = [self
+					    allocMemoryWithSize: ret_len];
+
+					if (cache != NULL &&
+					    cache_len <= ret_len)
+						memcpy(ret_c, cache, cache_len);
+					else if (cache != NULL)
+						memcpy(ret_c, cache, ret_len);
+					if (i >= delim_len)
+						memcpy(ret_c + cache_len, tmp,
+					    	    i + 1 - delim_len);
+
+					@try {
+						ret = [OFString
+						    stringWithCString: ret_c
+							     encoding: encoding
+							       length: ret_len];
+					} @finally {
+						[self freeMemory: ret_c];
+					}
+
+					tmp2 = [self
+					    allocMemoryWithSize: len - i - 1];
+					if (tmp2 != NULL)
+						memcpy(tmp2, tmp + i + 1,
+						    len - i - 1);
+
+					[self freeMemory: cache];
+					cache = tmp2;
+					cache_len = len - i - 1;
+
+					return ret;
+				}
+			}
+
+			/* Neither the delimiter nor \0 was found */
 			cache = [self resizeMemory: cache
 					    toSize: cache_len + len];
 

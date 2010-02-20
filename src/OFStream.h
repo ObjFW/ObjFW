@@ -85,10 +85,31 @@
  * Read with the specified encoding until a newline, \\0 or end of stream
  * occurs.
  *
+ * \param encoding The encoding used by the stream
  * \return The line that was read, autoreleased, or nil if the end of the
  *	   stream has been reached.
  */
 - (OFString*)readLineWithEncoding: (enum of_string_encoding)encoding;
+
+/**
+ * Read until the specified string or \\0 is found or the end of stream occurs.
+ *
+ * \param delimiter The delimiter
+ * \return The line that was read, autoreleased, or nil if the end of the
+ *	   stream has been reached.
+ */
+- (OFString*)readTillDelimiter: (OFString*)delimiter;
+
+/**
+ * Read until the specified string or \\0 is found or the end of stream occurs.
+ *
+ * \param delimiter The delimiter
+ * \param encoding The encoding used by the stream
+ * \return The line that was read, autoreleased, or nil if the end of the
+ *	   stream has been reached.
+ */
+- (OFString*)readTillDelimiter: (OFString*)delimiter
+		  withEncoding: (enum of_string_encoding)encoding;
 
 /**
  * Writes from a buffer into the stream.

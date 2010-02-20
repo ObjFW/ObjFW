@@ -18,10 +18,9 @@
 #import "OFExceptions.h"
 
 #ifdef OF_THREADS
-#import "threading.h"
-
-#define NUM_SPINLOCKS 8	/* needs to be a power of 2 */
-#define SPINLOCK_HASH(p) ((uintptr_t)p >> 4) & (NUM_SPINLOCKS - 1)
+# import "threading.h"
+# define NUM_SPINLOCKS 8	/* needs to be a power of 2 */
+# define SPINLOCK_HASH(p) ((uintptr_t)p >> 4) & (NUM_SPINLOCKS - 1)
 static of_spinlock_t spinlocks[NUM_SPINLOCKS];
 #endif
 
