@@ -209,7 +209,7 @@ objc_enumerationMutation(id obj)
 }
 
 + (IMP)setImplementation: (IMP)newimp
-	       forMethod: (SEL)selector
+       forInstanceMethod: (SEL)selector
 {
 #ifdef OF_APPLE_RUNTIME
 	Method method;
@@ -243,8 +243,8 @@ objc_enumerationMutation(id obj)
 #endif
 }
 
-+  (IMP)replaceMethod: (SEL)selector
-  withMethodFromClass: (Class)class;
++  (IMP)replaceInstanceMethod: (SEL)selector
+  withInstanceMethodFromClass: (Class)class;
 {
 	IMP newimp;
 
@@ -255,7 +255,7 @@ objc_enumerationMutation(id obj)
 #endif
 
 	return [self setImplementation: newimp
-			     forMethod: selector];
+		     forInstanceMethod: selector];
 }
 
 - init

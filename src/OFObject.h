@@ -120,24 +120,24 @@ typedef struct __of_range {
 + (IMP)instanceMethodForSelector: (SEL)selector;
 
 /**
- * Replaces a method implementation with another implementation.
+ * Replaces an instance method implementation with another implementation.
  *
- * \param newimp The new implementation for the method
- * \param selector The selector of the method to replace
+ * \param newimp The new implementation for the instance method
+ * \param selector The selector of the instance method to replace
  * \return The old implementation
  */
 + (IMP)setImplementation: (IMP)newimp
-	       forMethod: (SEL)selector;
+       forInstanceMethod: (SEL)selector;
 
 /**
- * Replaces a method with a method from another class.
+ * Replaces an instance method with an instance method from another class.
  *
- * \param selector The selector of the method to replace
- * \param class_ The class from which the new method should be taken
+ * \param selector The selector of the instance method to replace
+ * \param class_ The class from which the new instance method should be taken
  * \return The old implementation
  */
-+  (IMP)replaceMethod: (SEL)selector
-  withMethodFromClass: (Class)class_;
++  (IMP)replaceInstanceMethod: (SEL)selector
+  withInstanceMethodFromClass: (Class)class_;
 
 /**
  * Initializes an already allocated object.
