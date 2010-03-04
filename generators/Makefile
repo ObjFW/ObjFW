@@ -1,15 +1,19 @@
+include ../extra.mk
+
 PROG_NOINST = gen_tables${PROG_SUFFIX}
 SRCS = main.o		\
        TableGenerator.m
 
 .PHONY: run
 run: all UnicodeData.txt CaseFolding.txt
-	rm -f libobjfw.so.1 libobjfw.so.1.0 libobjfw.dll libobjfw.dylib
+	rm -f libobjfw.so.1 libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}
+	rm -f libobjfw.dll libobjfw.dylib
 	if test -f ../src/libobjfw.so; then \
-		ln -s ../src/libobjfw.so libobjfw.so.1; \
-		ln -s ../src/libobjfw.so libobjfw.so.1.0; \
-	elif test -f ../src/libobjfw.so.1.0; then \
-		ln -s ../src/libobjfw.so.1.0 libobjfw.so.1.0; \
+		ln -s ../src/libobjfw.so libobjfw.so.${OBJFW_LIB_MAJOR}; \
+		ln -s ../src/libobjfw.so libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}; \
+	elif test -f ../src/libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}; then \
+		ln -s ../src/libobjfw.so.${OBJFW_LIB_MAJOR_MINOR} \
+			libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}; \
 	fi
 	if test -f ../src/libobjfw.dll; then \
 		ln ../src/libobjfw.dll libobjfw.dll; \
@@ -21,7 +25,9 @@ run: all UnicodeData.txt CaseFolding.txt
 	LD_LIBRARY_PATH=.$${LD_LIBRARY_PATH+:}$$LD_LIBRARY_PATH \
 	DYLD_LIBRARY_PATH=.$${DYLD_LIBRARY_PATH+:}$$DYLD_LIBRARY_PATH \
 	${TEST_LAUNCHER} ./${PROG_NOINST}; EXIT=$$?; \
-	rm -f libobjfw.so.1 libobjfw.so.1.0 libobjfw.dll libobjfw.dylib; \
+	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}; \
+	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR} libobjfw.dll \
+	rm -f libobjfw.dylib; \
 	exit $$EXIT
 
 UnicodeData.txt:
