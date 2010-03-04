@@ -92,7 +92,6 @@
 		4B6799691099E7C50041064A /* OFHashes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHashes.m; path = src/OFHashes.m; sourceTree = "<group>"; };
 		4B67996C1099E7C50041064A /* OFList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFList.h; path = src/OFList.h; sourceTree = "<group>"; };
 		4B67996D1099E7C50041064A /* OFList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFList.m; path = src/OFList.m; sourceTree = "<group>"; };
-		4B67996E1099E7C50041064A /* OFMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMacros.h; path = src/OFMacros.h; sourceTree = "<group>"; };
 		4B67996F1099E7C50041064A /* OFMutableArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMutableArray.h; path = src/OFMutableArray.h; sourceTree = "<group>"; };
 		4B6799701099E7C50041064A /* OFMutableArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMutableArray.m; path = src/OFMutableArray.m; sourceTree = "<group>"; };
 		4B6799711099E7C50041064A /* OFMutableDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMutableDictionary.h; path = src/OFMutableDictionary.h; sourceTree = "<group>"; };
@@ -127,7 +126,8 @@
 		4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iso_8859_15.m; path = src/iso_8859_15.m; sourceTree = "<group>"; };
 		4B6AF97210A8D42E0003FB0A /* windows_1252.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = windows_1252.m; path = src/windows_1252.m; sourceTree = "<group>"; };
 		4B6AF97310A8D4450003FB0A /* ObjFW.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ObjFW.h; path = src/ObjFW.h; sourceTree = "<group>"; };
-		4B7F32B210EB90D500201BC1 /* OFFastEnumeration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFFastEnumeration.h; path = src/OFFastEnumeration.h; sourceTree = SOURCE_ROOT; };
+		4BBA36C411406AB700CBA3AC /* atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic.h; path = src/atomic.h; sourceTree = SOURCE_ROOT; };
+		4BBA36C511406AB700CBA3AC /* macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = macros.h; path = src/macros.h; sourceTree = SOURCE_ROOT; };
 		4BFBDD1610A0724800051AFB /* unicode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = unicode.m; path = src/unicode.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -149,14 +149,12 @@
 				4B0108CA10EB8C9300631877 /* OFEnumerator.m */,
 				4B6799641099E7C50041064A /* OFExceptions.h */,
 				4B6799651099E7C50041064A /* OFExceptions.m */,
-				4B7F32B210EB90D500201BC1 /* OFFastEnumeration.h */,
 				4B6799661099E7C50041064A /* OFFile.h */,
 				4B6799671099E7C50041064A /* OFFile.m */,
 				4B6799681099E7C50041064A /* OFHashes.h */,
 				4B6799691099E7C50041064A /* OFHashes.m */,
 				4B67996C1099E7C50041064A /* OFList.h */,
 				4B67996D1099E7C50041064A /* OFList.m */,
-				4B67996E1099E7C50041064A /* OFMacros.h */,
 				4B67996F1099E7C50041064A /* OFMutableArray.h */,
 				4B6799701099E7C50041064A /* OFMutableArray.m */,
 				4B6799711099E7C50041064A /* OFMutableDictionary.h */,
@@ -186,9 +184,11 @@
 				4B6799891099E7C50041064A /* OFXMLParser.h */,
 				4B67998A1099E7C50041064A /* OFXMLParser.m */,
 				4B6AF97310A8D4450003FB0A /* ObjFW.h */,
-				4B6AF96C10A8D3E40003FB0A /* asprintf.m */,
 				4B6799561099E7C50041064A /* asprintf.h */,
+				4B6AF96C10A8D3E40003FB0A /* asprintf.m */,
+				4BBA36C411406AB700CBA3AC /* atomic.h */,
 				4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */,
+				4BBA36C511406AB700CBA3AC /* macros.h */,
 				4B4986DF1101F64500A2CFDA /* objc_properties.m */,
 				4B6799581099E7C50041064A /* objc_sync.m */,
 				4B67998B1099E7C50041064A /* threading.h */,
