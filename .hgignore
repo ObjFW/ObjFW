@@ -1,0 +1,27 @@
+syntax: glob
+*.a
+*.dll
+*.dylib
+*.impl
+*.o
+*.orig
+*.so
+*~
+.deps
+aclocal.m4
+autom4te.cache
+build
+buildsys.mk
+config.h
+config.h.in
+config.log
+config.status
+configure
+docs
+extra.mk
+objfw-config
+ObjFW.xcodeproj/*.mode1v3
+ObjFW.xcodeproj/*.pbxuser
+src/objfw-defs.h
+src/ObjFW
+tests/tests
