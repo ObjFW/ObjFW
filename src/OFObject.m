@@ -209,6 +209,61 @@ objc_enumerationMutation(id obj)
 }
 
 + (IMP)setImplementation: (IMP)newimp
+	  forClassMethod: (SEL)selector
+{
+#ifdef OF_APPLE_RUNTIME
+	Method method;
+
+	if ((method = class_getClassMethod(self, selector)) == NULL)
+		@throw [OFInvalidArgumentException newWithClass: self
+						       selector: _cmd];
+
+	return method_setImplementation(method, newimp);
+#else
+	Method_t method;
+	IMP oldimp;
+
+	/* The class method is the instance method of the meta class */
+	if ((method = class_get_instance_method(self->class_pointer,
+	    selector)) == NULL)
+		@throw [OFInvalidArgumentException newWithClass: self
+						       selector: _cmd];
+
+	if ((oldimp = method_get_imp(method)) == (IMP)0 || newimp == (IMP)0)
+		@throw [OFInvalidArgumentException newWithClass: self
+						       selector: _cmd];
+
+	method->method_imp = newimp;
+
+	/* Update the dtable if necessary */
+	if (sarray_get_safe(self->class_pointer->dtable,
+	    (sidx)method->method_name->sel_id))
+		sarray_at_put_safe(self->class_pointer->dtable,
+		    (sidx)method->method_name->sel_id, method->method_imp);
+
+	return oldimp;
+#endif
+}
+
++  (IMP)replaceClassMethod: (SEL)selector
+  withClassMethodFromClass: (Class)class;
+{
+	IMP newimp;
+
+#ifdef OF_APPLE_RUNTIME
+	newimp = method_getImplementation(class_getClassMethod(class,
+	    selector));
+#else
+	/* The class method is the instance method of the meta class */
+	newimp = method_get_imp(class_get_instance_method(class->class_pointer,
+	    selector));
+#endif
+
+	return [self setImplementation: newimp
+			forClassMethod: selector];
+}
+
++ (IMP)setImplementation: (IMP)newimp
        forInstanceMethod: (SEL)selector
 {
 #ifdef OF_APPLE_RUNTIME
@@ -234,9 +289,8 @@ objc_enumerationMutation(id obj)
 	method->method_imp = newimp;
 
 	/* Update the dtable if necessary */
-	if (sarray_get_safe(((Class)self)->dtable,
-	    (sidx)method->method_name->sel_id))
-		sarray_at_put_safe(((Class)self)->dtable,
+	if (sarray_get_safe(self->dtable, (sidx)method->method_name->sel_id))
+		sarray_at_put_safe(self->dtable,
 		    (sidx)method->method_name->sel_id, method->method_imp);
 
 	return oldimp;
