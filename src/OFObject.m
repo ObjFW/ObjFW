@@ -236,9 +236,9 @@ objc_enumerationMutation(id obj)
 	method->method_imp = newimp;
 
 	/* Update the dtable if necessary */
-	if (sarray_get_safe(self->class_pointer->dtable,
+	if (sarray_get_safe(((Class)self->class_pointer)->dtable,
 	    (sidx)method->method_name->sel_id))
-		sarray_at_put_safe(self->class_pointer->dtable,
+		sarray_at_put_safe(((Class)self->class_pointer)->dtable,
 		    (sidx)method->method_name->sel_id, method->method_imp);
 
 	return oldimp;
@@ -289,8 +289,9 @@ objc_enumerationMutation(id obj)
 	method->method_imp = newimp;
 
 	/* Update the dtable if necessary */
-	if (sarray_get_safe(self->dtable, (sidx)method->method_name->sel_id))
-		sarray_at_put_safe(self->dtable,
+	if (sarray_get_safe(((Class)self)->dtable,
+	    (sidx)method->method_name->sel_id))
+		sarray_at_put_safe(((Class)self)->dtable,
 		    (sidx)method->method_name->sel_id, method->method_imp);
 
 	return oldimp;
