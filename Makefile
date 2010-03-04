@@ -32,3 +32,21 @@ uninstall-extra:
 			fi \
 		fi \
 	done
+
+tarball:
+	V=$$(fgrep VERSION= objfw-config.in | sed 's/VERSION="\(.*\)"/\1/'); \
+	V2=$$(fgrep AC_INIT configure.ac | \
+	      sed 's/AC_INIT([^,]*,\([^,]*\),.*/\1/' | sed 's/ //'); \
+	if test x"$$V" != x"$$V2"; then \
+		echo "objfw-config.h.in and configure.ac version mismatch!"; \
+		exit 1; \
+	fi; \
+	echo "Generating tarball for version $$V..."; \
+	rm -f objfw-$$V.tar.gz; \
+	rm -fr objfw-$$V; \
+	hg archive objfw-$$V; \
+	cp configure config.h.in objfw-$$V; \
+	cd objfw-$$V && rm -f .hg_archival.txt .hgignore .hgtags && cd ..; \
+	tar cf objfw-$$V.tar objfw-$$V; \
+	gzip -9 objfw-$$V.tar; \
+	rm -fr objfw-$$V
