@@ -13,6 +13,7 @@
 
 #import "OFNumber.h"
 #import "OFExceptions.h"
+#import "macros.h"
 
 #define RETURN_AS(t)							\
 	switch (type) {							\
@@ -758,7 +759,27 @@
 
 - (uint32_t)hash
 {
-	return [self asUInt32];
+	uint32_t hash;
+	size_t i;
+
+	switch (type) {
+	case OF_NUMBER_FLOAT:
+		OF_HASH_INIT(hash);
+		for (i = 0; i < sizeof(float); i++)
+			OF_HASH_ADD(hash, ((char*)&value.float_)[i]);
+		OF_HASH_FINALIZE(hash);
+
+		return hash;
+	case OF_NUMBER_DOUBLE:
+		OF_HASH_INIT(hash);
+		for (i = 0; i < sizeof(double); i++)
+			OF_HASH_ADD(hash, ((char*)&value.double_)[i]);
+		OF_HASH_FINALIZE(hash);
+
+		return hash;
+	default:
+		return [self asUInt32];
+	}
 }
 
 - add: (OFNumber*)num
