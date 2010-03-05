@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 - 2009
+ * Copyright (c) 2008 - 2010
  *   Jonathan Schleifer <js@webkeks.org>
  *
  * All rights reserved.
@@ -585,6 +585,7 @@
 }
 @end
 
+/// \cond internal
 @implementation OFDictionaryEnumerator
 -     initWithData: (struct of_dictionary_bucket*)data_
 	      size: (size_t)size_
@@ -640,3 +641,4 @@
 		return nil;
 }
 @end
+/// \endcond

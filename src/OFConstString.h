@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 - 2009
+ * Copyright (c) 2008 - 2010
  *   Jonathan Schleifer <js@webkeks.org>
  *
  * All rights reserved.
@@ -16,7 +16,7 @@ extern void *_OFConstStringClassReference;
 #endif
 
 /**
- * A class for storing constant strings using the @"" literal.
+ * \brief A class for storing constant strings using the \@"" literal.
  */
 @interface OFConstString: OFString {}
 @end

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 - 2009
+ * Copyright (c) 2008 - 2010
  *   Jonathan Schleifer <js@webkeks.org>
  *
  * All rights reserved.
@@ -118,9 +118,11 @@ array_tests()
 	EXPECT_EXCEPTION(@"Detect out of range in -[removeNItems:]",
 	    OFOutOfRangeException, [m[0] removeNObjects: [m[0] count] + 1])
 
-	a[1] = [OFArray arrayWithObjects: @"foo", @"bar", @"baz", nil];
 	TEST(@"-[componentsJoinedByString:]",
-	    [[a[1] componentsJoinedByString: @" "] isEqual: @"foo bar baz"])
+	    (a[1] = [OFArray arrayWithObjects: @"foo", @"bar", @"baz", nil]) &&
+	    [[a[1] componentsJoinedByString: @" "] isEqual: @"foo bar baz"] &&
+	    (a[1] = [OFArray arrayWithObject: @"foo"]) &&
+	    [[a[1] componentsJoinedByString: @" "] isEqual: @"foo"])
 
 	m[0] = [[a[0] mutableCopy] autorelease];
 	ok = YES;

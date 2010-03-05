@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 - 2009
+ * Copyright (c) 2008 - 2010
  *   Jonathan Schleifer <js@webkeks.org>
  *
  * All rights reserved.
@@ -14,8 +14,8 @@
 extern int _OFXMLParser_reference;
 
 /**
- * A protocol that needs to be implemented by delegates for 
- * stringByXMLUnescapingWithHandler:.
+ * \brief A protocol that needs to be implemented by delegates for
+ *	  stringByXMLUnescapingWithHandler:.
  */
 @protocol OFXMLUnescapingDelegate
 /**
@@ -31,8 +31,7 @@ extern int _OFXMLParser_reference;
 @end
 
 /**
- * The OFString (OFXMLUnescaping) category provides methods to unescape XML in
- * strings.
+ * \brief A category for unescaping XML in strings.
  */
 @interface OFString (OFXMLUnescaping)
 /**

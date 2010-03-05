@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 - 2009
+ * Copyright (c) 2008 - 2010
  *   Jonathan Schleifer <js@webkeks.org>
  *
  * All rights reserved.
@@ -29,6 +29,11 @@
 OFFile *of_stdin = nil;
 OFFile *of_stdout = nil;
 OFFile *of_stderr = nil;
+
+/// \cond internal
+@interface OFFileSingleton: OFFile
+@end
+/// \endcond
 
 @implementation OFFile
 + (void)load
@@ -224,6 +229,7 @@ OFFile *of_stderr = nil;
 }
 @end
 
+/// \cond internal
 @implementation OFFileSingleton
 - initWithPath: (OFString*)path
 	  mode: (OFString*)mode
@@ -258,3 +264,4 @@ OFFile *of_stderr = nil;
 	[super dealloc];	/* Get rid of stupid warning */
 }
 @end
+/// \endcond

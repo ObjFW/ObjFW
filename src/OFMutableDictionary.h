@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 - 2009
+ * Copyright (c) 2008 - 2010
  *   Jonathan Schleifer <js@webkeks.org>
  *
  * All rights reserved.
@@ -12,7 +12,7 @@
 #import "OFDictionary.h"
 
 /**
- * The OFMutableDictionary class is a class for using mutable hash tables.
+ * \brief A class for using mutable hash tables.
  */
 @interface OFMutableDictionary: OFDictionary
 {

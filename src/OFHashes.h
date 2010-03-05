@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 - 2009
+ * Copyright (c) 2008 - 2010
  *   Jonathan Schleifer <js@webkeks.org>
  *
  * All rights reserved.
@@ -18,7 +18,7 @@
 extern int _OFHashing_reference;
 
 /**
- * The OFMD5Hash class provides functions to create an MD5 hash.
+ * \brief A class which provides functions to create an MD5 hash.
  */
 @interface OFMD5Hash: OFObject
 {
@@ -51,7 +51,7 @@ extern int _OFHashing_reference;
 @end
 
 /**
- * The OFSHA1Hash class provides functions to create an SHA1 hash.
+ * \brief A class which provides functions to create an SHA1 hash.
  */
 @interface OFSHA1Hash: OFObject
 {

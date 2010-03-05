@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 - 2009
+ * Copyright (c) 2008 - 2010
  *   Jonathan Schleifer <js@webkeks.org>
  *
  * All rights reserved.
@@ -41,8 +41,7 @@ enum of_number_type {
 };
 
 /**
- * The OFNumber class provides a way to store a number in an object and to
- * manipulate it.
+ * \brief provides a way to store a number in an object and to manipulate it.
  */
 @interface OFNumber: OFObject
 {
@@ -538,40 +537,36 @@ enum of_number_type {
 - (double)asDouble;
 
 /**
- * Adds the specified OFNumber to the OFNumber.
- *
  * \param num The OFNumber to add
+ * \return The OFNumber added with the specified OFNumber
  */
 - add: (OFNumber*)num;
 
 /**
- * Subtracts the specified OFNumber from the OFNumber.
- *
  * \param num The OFNumber to substract
+ * \return The OFNumber subtracted by the specified OFNumber
  */
 - subtract: (OFNumber*)num;
 
 /**
- * Multiplies the OFNumber with the specified OFNumber.
- *
  * \param num The OFNumber to multiply with
+ * \return The OFNumber multiplied with the specified OFNumber
  */
 - multiplyWith: (OFNumber*)num;
 
 /**
- * Divides the OFNumber by the specified OFNumber.
- *
  * \param num The OFNumber to divide by
+ * \return The OFNumber devided by the specified OFNumber
  */
 - divideBy: (OFNumber*)num;
 
 /**
- * Increases the OFNumber by 1.
+ * \return The OFNumber increased by one.
  */
 - increase;
 
 /**
- * Decreases the OFNumber by 1.
+ * \return The OFNumber decreased by one.
  */
 - decrease;
 @end

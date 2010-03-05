@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 - 2009
+ * Copyright (c) 2008 - 2010
  *   Jonathan Schleifer <js@webkeks.org>
  *
  * All rights reserved.
@@ -17,7 +17,7 @@
 #import <objc/objc.h>
 
 /**
- * A result of a comparison.
+ * \brief A result of a comparison.
  */
 typedef enum {
 	/// The left object is smaller than the right
@@ -29,7 +29,7 @@ typedef enum {
 } of_comparison_result_t;
 
 /**
- * The OFObject class is the base class for all other classes inside ObjFW.
+ * \brief The root class for all other classes inside ObjFW.
  */
 @interface OFObject
 {
@@ -291,7 +291,7 @@ typedef enum {
 @end
 
 /**
- * Objects implementing this protocol can be copied.
+ * \brief A protocol for creation of copies.
  */
 @protocol OFCopying
 /**
@@ -301,6 +301,8 @@ typedef enum {
 @end
 
 /**
+ * \brief A protocol for creation of mutable copies.
+ *
  * This protocol is implemented by objects that can be mutable and immutable
  * and allows returning a mutable copy.
  */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 - 2009
+ * Copyright (c) 2008 - 2010
  *   Jonathan Schleifer <js@webkeks.org>
  *
  * All rights reserved.
@@ -36,6 +36,7 @@
 # import "threading.h"
 #endif
 
+/// \cond internal
 struct pre_ivar {
 	void	      **memchunks;
 	size_t	      memchunks_size;
@@ -44,6 +45,7 @@ struct pre_ivar {
 	of_spinlock_t retain_spinlock;
 #endif
 };
+/// \endcond
 
 /* Hopefully no arch needs more than 16 bytes padding */
 #define PRE_IVAR_ALIGN ((sizeof(struct pre_ivar) + 15) & ~15)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 - 2009
+ * Copyright (c) 2008 - 2010
  *   Jonathan Schleifer <js@webkeks.org>
  *
  * All rights reserved.
@@ -227,6 +227,8 @@
 
 	if (count == 0)
 		return @"";
+	if (count == 1)
+		return [objs[0] retain];
 
 	str = [OFMutableString string];
 	append = [str methodForSelector: @selector(appendString:)];
@@ -323,6 +325,7 @@
 }
 @end
 
+/// \cond internal
 @implementation OFArrayEnumerator
 - initWithDataArray: (OFDataArray*)array_
    mutationsPointer: (unsigned long*)mutations_ptr_;
@@ -358,3 +361,4 @@
 	return self;
 }
 @end
+/// \endcond

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 - 2009
+ * Copyright (c) 2008 - 2010
  *   Jonathan Schleifer <js@webkeks.org>
  *
  * All rights reserved.
@@ -24,6 +24,7 @@ extern void dataarray_tests();
 extern void dictionary_tests();
 extern void hashes_tests();
 extern void list_tests();
+extern void number_tests();
 extern void object_tests();
 #ifdef OF_PLUGINS
 extern void plugin_tests();
@@ -107,6 +108,7 @@ main()
 	array_tests();
 	dictionary_tests();
 	list_tests();
+	number_tests();
 	tcpsocket_tests();
 #ifdef OF_THREADS
 	thread_tests();

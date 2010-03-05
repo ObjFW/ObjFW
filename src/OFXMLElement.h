@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 - 2009
+ * Copyright (c) 2008 - 2010
  *   Jonathan Schleifer <js@webkeks.org>
  *
  * All rights reserved.
@@ -14,8 +14,7 @@
 extern int _OFXMLElement_reference;
 
 /**
- * The OFString (OFXMLEscaping) category provides an easy way to escape strings
- * for use in an XML document.
+ * \brief A category to escape strings for use in an XML document.
  */
 @interface OFString (OFXMLEscaping)
 /**

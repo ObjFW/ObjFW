@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 - 2009
+ * Copyright (c) 2008 - 2010
  *   Jonathan Schleifer <js@webkeks.org>
  *
  * All rights reserved.
@@ -15,7 +15,7 @@
 #import "OFString.h"
 
 /**
- * A class for storing and modifying strings.
+ * \brief A class for storing and modifying strings.
  */
 @interface OFMutableString: OFString {}
 /**

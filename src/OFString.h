@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 - 2009
+ * Copyright (c) 2008 - 2010
  *   Jonathan Schleifer <js@webkeks.org>
  *
  * All rights reserved.
@@ -32,7 +32,7 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 @class OFArray;
 
 /**
- * A class for managing strings.
+ * \brief A class for handling strings.
  */
 @interface OFString: OFObject <OFCopying, OFMutableCopying>
 {

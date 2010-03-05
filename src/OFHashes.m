@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 - 2009
+ * Copyright (c) 2008 - 2010
  *   Jonathan Schleifer <js@webkeks.org>
  *
  * All rights reserved.
@@ -281,10 +281,12 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	z += (w ^ x ^ y) + blk(i) + 0xCA62C1D6 + OF_ROL(v, 5);		\
 	w = OF_ROL(w, 30);
 
+/// \cond internal
 typedef union {
 	char	 c[64];
 	uint32_t l[16];
 } sha1_c64l16_t;
+/// \endcond
 
 static inline void
 sha1_transform(uint32_t state[5], const char buffer[64])

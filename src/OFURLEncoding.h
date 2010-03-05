@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 - 2009
+ * Copyright (c) 2008 - 2010
  *   Jonathan Schleifer <js@webkeks.org>
  *
  * All rights reserved.
@@ -14,8 +14,7 @@
 extern int _OFURLEncoding_reference;
 
 /**
- * The OFString (OFURLEncoding) category provides an easy way to encode and
- * decode strings for URLs.
+ * \brief A category which provides URL encoding and decoding.
  */
 @interface OFString (OFURLEncoding)
 /**

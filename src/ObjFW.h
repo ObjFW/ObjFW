@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2008 - 2009
- *   Jonathan Schleifer "js@webkeks.org"
+ * Copyright (c) 2008 - 2010
+ *   Jonathan Schleifer <js@webkeks.org>
  *
  * All rights reserved.
  *

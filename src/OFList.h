@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 - 2009
+ * Copyright (c) 2008 - 2010
  *   Jonathan Schleifer <js@webkeks.org>
  *
  * All rights reserved.
@@ -12,11 +12,12 @@
 #import "OFObject.h"
 
 /**
+ * \brief A list object.
+ *
  * A struct that contains a pointer to the next list object, the previous list
  * object and the object.
  */
-typedef struct __of_list_object
-{
+typedef struct __of_list_object {
 	/// A pointer to the next list object in the list
 	struct __of_list_object *next;
 	/// A pointer to the previous list object in the list
@@ -26,7 +27,7 @@ typedef struct __of_list_object
 } of_list_object_t;
 
 /**
- * The OFList class provides easy to use double-linked lists.
+ * \brief A class which provides easy to use double-linked lists.
  */
 @interface OFList: OFObject <OFCopying>
 {
