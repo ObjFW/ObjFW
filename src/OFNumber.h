@@ -537,40 +537,36 @@ enum of_number_type {
 - (double)asDouble;
 
 /**
- * Adds the specified OFNumber to the OFNumber.
- *
  * \param num The OFNumber to add
+ * \return The OFNumber added with the specified OFNumber
  */
 - add: (OFNumber*)num;
 
 /**
- * Subtracts the specified OFNumber from the OFNumber.
- *
  * \param num The OFNumber to substract
+ * \return The OFNumber subtracted by the specified OFNumber
  */
 - subtract: (OFNumber*)num;
 
 /**
- * Multiplies the OFNumber with the specified OFNumber.
- *
  * \param num The OFNumber to multiply with
+ * \return The OFNumber multiplied with the specified OFNumber
  */
 - multiplyWith: (OFNumber*)num;
 
 /**
- * Divides the OFNumber by the specified OFNumber.
- *
  * \param num The OFNumber to divide by
+ * \return The OFNumber devided by the specified OFNumber
  */
 - divideBy: (OFNumber*)num;
 
 /**
- * Increases the OFNumber by 1.
+ * \return The OFNumber increased by one.
  */
 - increase;
 
 /**
- * Decreases the OFNumber by 1.
+ * \return The OFNumber decreased by one.
  */
 - decrease;
 @end
