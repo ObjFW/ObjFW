@@ -561,6 +561,58 @@ enum of_number_type {
 - divideBy: (OFNumber*)num;
 
 /**
+ * ANDs two OFNumbers, returning a new one.
+ *
+ * Does not work with floating point types!
+ *
+ * \param num The number to AND with.
+ * \return The OFNumber ANDed with the specified OFNumber
+ */
+- and: (OFNumber*)num;
+
+/**
+ * ORs two OFNumbers, returning a new one.
+ *
+ * Does not work with floating point types!
+ *
+ * \param num The number to OR with.
+ * \return The OFNumber ORed with the specified OFNumber
+ */
+- or: (OFNumber*)num;
+
+/**
+ * XORs two OFNumbers, returning a new one.
+ *
+ * Does not work with floating point types!
+ *
+ * \param num The number to XOR with.
+ * \return The OFNumber XORed with the specified OFNumber
+ */
+- xor: (OFNumber*)num;
+
+/**
+ * Bitshifts the OFNumber to the left by the specified OFNumber, returning a new
+ * one.
+ *
+ * Does not work with floating point types!
+ *
+ * \param num The number of bits to shift to the left
+ * \return The OFNumber bitshifted to the left with the specified OFNumber
+ */
+- shiftLeft: (OFNumber*)num;
+
+/**
+ * Bitshifts the OFNumber to the right by the specified OFNumber, returning a
+ * new one.
+ *
+ * Does not work with floating point types!
+ *
+ * \param num The number of bits to shift to the right
+ * \return The OFNumber bitshifted to the right with the specified OFNumber
+ */
+- shiftRight: (OFNumber*)num;
+
+/**
  * \return The OFNumber increased by one.
  */
 - increase;

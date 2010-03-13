@@ -40,5 +40,11 @@ number_tests()
 	TEST(@"-[divideBy:]",
 	    [[num divideBy: [OFNumber numberWithInt: 2]] asInt] == 61728394)
 
+	TEST(@"-[xor:]",
+	    [[num xor: [OFNumber numberWithInt: 123456831]] asInt] == 42)
+
+	TEST(@"-[shiftRight:]",
+	    [[num shiftRight: [OFNumber numberWithInt: 8]] asInt] == 482253)
+
 	[pool drain];
 }

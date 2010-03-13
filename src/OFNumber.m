@@ -145,7 +145,82 @@
 	default:							\
 		@throw [OFInvalidFormatException newWithClass: isa];	\
 	}
-#define CALCULATE2(o)							\
+#define CALCULATE2(o, n)						\
+	switch (type) { 						\
+	case OF_NUMBER_CHAR:						\
+		return [OFNumber numberWithChar:			\
+		    value.char_ o [n asChar]];				\
+	case OF_NUMBER_SHORT:						\
+		return [OFNumber numberWithShort:			\
+		    value.short_ o [n asShort]];			\
+	case OF_NUMBER_INT:						\
+		return [OFNumber numberWithInt:				\
+		    value.int_ o [n asInt]];				\
+	case OF_NUMBER_LONG:						\
+		return [OFNumber numberWithLong:			\
+		    value.long_ o [n asLong]];				\
+	case OF_NUMBER_UCHAR:						\
+		return [OFNumber numberWithUChar:			\
+		    value.uchar o [n asUChar]];				\
+	case OF_NUMBER_USHORT:						\
+		return [OFNumber numberWithUShort:			\
+		    value.ushort o [n asUShort]];			\
+	case OF_NUMBER_UINT:						\
+		return [OFNumber numberWithUInt:			\
+		    value.uint o [n asUInt]];				\
+	case OF_NUMBER_ULONG:						\
+		return [OFNumber numberWithULong:			\
+		    value.ulong o [n asULong]];				\
+	case OF_NUMBER_INT8:						\
+		return [OFNumber numberWithInt8:			\
+		    value.int8 o [n asInt8]];				\
+	case OF_NUMBER_INT16:						\
+		return [OFNumber numberWithInt16:			\
+		    value.int16 o [n asInt16]];				\
+	case OF_NUMBER_INT32:						\
+		return [OFNumber numberWithInt32:			\
+		    value.int32 o [n asInt32]];				\
+	case OF_NUMBER_INT64:						\
+		return [OFNumber numberWithInt64:			\
+		    value.int64 o [n asInt64]];				\
+	case OF_NUMBER_UINT8:						\
+		return [OFNumber numberWithUInt8:			\
+		    value.uint8 o [n asUInt8]];				\
+	case OF_NUMBER_UINT16:						\
+		return [OFNumber numberWithUInt16:			\
+		    value.uint16 o [n asUInt16]];			\
+	case OF_NUMBER_UINT32:						\
+		return [OFNumber numberWithUInt32:			\
+		    value.uint32 o [n asUInt32]];			\
+	case OF_NUMBER_UINT64:						\
+		return [OFNumber numberWithUInt64:			\
+		    value.uint64 o [n asUInt64]];			\
+	case OF_NUMBER_SIZE:						\
+		return [OFNumber numberWithSize:			\
+		    value.size o [n asSize]];				\
+	case OF_NUMBER_SSIZE:						\
+		return [OFNumber numberWithSSize:			\
+		    value.ssize o [n asSSize]];				\
+	case OF_NUMBER_INTMAX:						\
+		return [OFNumber numberWithIntMax:			\
+		    value.intmax o [n asIntMax]];			\
+	case OF_NUMBER_UINTMAX:						\
+		return [OFNumber numberWithUIntMax:			\
+		    value.uintmax o [n asUIntMax]];			\
+	case OF_NUMBER_PTRDIFF:						\
+		return [OFNumber numberWithPtrDiff:			\
+		    value.ptrdiff o [n asPtrDiff]];			\
+	case OF_NUMBER_INTPTR:						\
+		return [OFNumber numberWithIntPtr:			\
+		    value.intptr o [n asIntPtr]];			\
+	case OF_NUMBER_FLOAT:						\
+	case OF_NUMBER_DOUBLE:						\
+		@throw [OFNotImplementedException newWithClass: isa	\
+						      selector: _cmd];	\
+	default:							\
+		@throw [OFInvalidFormatException newWithClass: isa];	\
+	}
+#define CALCULATE3(o)							\
 	switch (type) {							\
 	case OF_NUMBER_CHAR:						\
 		return [OFNumber numberWithChar: value.char_ o];	\
@@ -778,13 +853,38 @@
 	CALCULATE(/, num)
 }
 
+- and: (OFNumber*)num
+{
+	CALCULATE2(&, num)
+}
+
+- or: (OFNumber*)num
+{
+	CALCULATE2(|, num)
+}
+
+- xor: (OFNumber*)num
+{
+	CALCULATE2(^, num)
+}
+
+- shiftLeft: (OFNumber*)num
+{
+	CALCULATE2(<<, num)
+}
+
+- shiftRight: (OFNumber*)num
+{
+	CALCULATE2(>>, num)
+}
+
 - increase
 {
-	CALCULATE2(+ 1)
+	CALCULATE3(+ 1)
 }
 
 - decrease
 {
-	CALCULATE2(- 1)
+	CALCULATE3(- 1)
 }
 @end
