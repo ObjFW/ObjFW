@@ -32,6 +32,7 @@ extern void plugin_tests();
 #ifdef OF_HAVE_PROPERTIES
 extern void properties_tests();
 #endif
+extern void stream_tests();
 extern void string_tests();
 extern void tcpsocket_tests();
 #ifdef OF_THREADS
@@ -111,6 +112,7 @@ main()
 	dictionary_tests();
 	list_tests();
 	number_tests();
+	stream_tests();
 	tcpsocket_tests();
 #ifdef OF_THREADS
 	thread_tests();
