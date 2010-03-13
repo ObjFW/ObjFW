@@ -345,3 +345,5 @@ typedef struct __of_range {
  */
 - (id)mutableCopy;
 @end
+
+extern size_t of_pagesize;

@@ -12,19 +12,12 @@
 #include "config.h"
 
 #include <string.h>
-#include <unistd.h>
 #include <assert.h>
 
 #import "OFStream.h"
 #import "OFString.h"
 #import "OFExceptions.h"
 #import "macros.h"
-
-#ifdef _WIN32
-# include <windows.h>
-#endif
-
-static int pagesize = 0;
 
 @implementation OFStream
 - init
@@ -36,18 +29,6 @@ static int pagesize = 0;
 						      selector: _cmd];
 
 	cache = NULL;
-
-#ifndef _WIN32
-	if (pagesize == 0)
-		if ((pagesize = sysconf(_SC_PAGESIZE)) == -1)
-			pagesize = 4096;
-#else
-	if (pagesize == 0) {
-		SYSTEM_INFO si;
-		GetSystemInfo(&si);
-		pagesize = si.dwPageSize - 1;
-	}
-#endif
 
 	return self;
 }
@@ -144,7 +125,7 @@ static int pagesize = 0;
 	}
 
 	/* Read until we get a newline or \0 */
-	tmp = [self allocMemoryWithSize: pagesize];
+	tmp = [self allocMemoryWithSize: of_pagesize];
 
 	@try {
 		for (;;) {
@@ -168,7 +149,7 @@ static int pagesize = 0;
 				return ret;
 			}
 
-			len = [self readNBytesWithoutCache: pagesize
+			len = [self readNBytesWithoutCache: of_pagesize
 						intoBuffer: tmp];
 
 			/* Look if there's a newline or \0 */
@@ -285,7 +266,7 @@ static int pagesize = 0;
 	}
 
 	/* Read until we get the delimiter or \0 */
-	tmp = [self allocMemoryWithSize: pagesize];
+	tmp = [self allocMemoryWithSize: of_pagesize];
 
 	@try {
 		for (;;) {
@@ -304,7 +285,7 @@ static int pagesize = 0;
 				return ret;
 			}
 
-			len = [self readNBytesWithoutCache: pagesize
+			len = [self readNBytesWithoutCache: of_pagesize
 						intoBuffer: tmp];
 
 			/* Look if there's the delimiter or \0 */

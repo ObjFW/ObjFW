@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <limits.h>
 #include <assert.h>
 
@@ -28,6 +29,10 @@
 #endif
 #ifdef OF_GNU_RUNTIME
 # import <objc/sarray.h>
+#endif
+
+#ifdef _WIN32
+# include <windows.h>
 #endif
 
 #ifdef OF_ATOMIC_OPS
@@ -61,6 +66,8 @@ struct pre_ivar {
 static struct {
 	Class isa;
 } alloc_failed_exception;
+
+size_t of_pagesize;
 
 #ifdef NEED_OBJC_SYNC_INIT
 extern BOOL objc_sync_init();
@@ -104,6 +111,15 @@ objc_enumerationMutation(id obj)
 
 #ifdef OF_APPLE_RUNTIME
 	objc_setEnumerationMutationHandler(enumeration_mutation_handler);
+#endif
+
+#ifndef _WIN32
+	if ((of_pagesize = sysconf(_SC_PAGESIZE)) < 1)
+		of_pagesize = 4096;
+#else
+	SYSTEM_INFO si;
+	GetSystemInfo(&si);
+	of_pagesize = si.dwPageSize;
 #endif
 }
 

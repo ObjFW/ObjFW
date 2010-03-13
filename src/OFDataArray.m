@@ -13,18 +13,11 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 #include <limits.h>
 
 #import "OFDataArray.h"
 #import "OFExceptions.h"
 #import "macros.h"
-
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
-static int lastpagebyte = 0;
 
 @implementation OFDataArray
 + dataArrayWithItemSize: (size_t)is
@@ -269,32 +262,14 @@ static int lastpagebyte = 0;
 @end
 
 @implementation OFBigDataArray
-- initWithItemSize: (size_t)is
-{
-	self = [super initWithItemSize: is];
-
-	if (lastpagebyte == 0) {
-#ifndef _WIN32
-		if ((lastpagebyte = sysconf(_SC_PAGESIZE)) == -1)
-			lastpagebyte = 4096;
-		lastpagebyte--;
-#else
-		SYSTEM_INFO si;
-		GetSystemInfo(&si);
-		lastpagebyte = si.dwPageSize - 1;
-#endif
-	}
-
-	return self;
-}
-
 - addItem: (void*)item
 {
-	size_t nsize;
+	size_t nsize, lastpagebyte;
 
 	if (SIZE_MAX - count < 1 || count + 1 > SIZE_MAX / itemsize)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
+	lastpagebyte = of_pagesize - 1;
 	nsize = ((count + 1) * itemsize + lastpagebyte) & ~lastpagebyte;
 
 	if (size != nsize)
@@ -312,11 +287,12 @@ static int lastpagebyte = 0;
 -  addNItems: (size_t)nitems
   fromCArray: (void*)carray
 {
-	size_t nsize;
+	size_t nsize, lastpagebyte;
 
 	if (nitems > SIZE_MAX - count || count + nitems > SIZE_MAX / itemsize)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
+	lastpagebyte = of_pagesize - 1;
 	nsize = ((count + nitems) * itemsize + lastpagebyte) & ~lastpagebyte;
 
 	if (size != nsize)
@@ -335,11 +311,12 @@ static int lastpagebyte = 0;
  fromCArray: (void*)carray
     atIndex: (size_t)index
 {
-	size_t nsize;
+	size_t nsize, lastpagebyte;
 
 	if (nitems > SIZE_MAX - count || count + nitems > SIZE_MAX / itemsize)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
+	lastpagebyte = of_pagesize - 1;
 	nsize = ((count + nitems) * itemsize + lastpagebyte) & ~lastpagebyte;
 
 	if (size != nsize)
@@ -359,12 +336,13 @@ static int lastpagebyte = 0;
 
 - removeNItems: (size_t)nitems
 {
-	size_t nsize;
+	size_t nsize, lastpagebyte;
 
 	if (nitems > count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	count -= nitems;
+	lastpagebyte = of_pagesize - 1;
 	nsize = (count * itemsize + lastpagebyte) & ~lastpagebyte;
 
 	if (size != nsize)
@@ -378,7 +356,7 @@ static int lastpagebyte = 0;
 - removeNItems: (size_t)nitems
        atIndex: (size_t)index
 {
-	size_t nsize;
+	size_t nsize, lastpagebyte;
 
 	if (nitems > count)
 		@throw [OFOutOfRangeException newWithClass: isa];
@@ -387,6 +365,7 @@ static int lastpagebyte = 0;
 	    (count - index - nitems) * itemsize);
 
 	count -= nitems;
+	lastpagebyte = of_pagesize - 1;
 	nsize = (count * itemsize + lastpagebyte) & ~lastpagebyte;
 
 	if (size != nsize)
