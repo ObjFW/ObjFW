@@ -10,7 +10,7 @@ OBJCFLAGS="$OBJCFLAGS @NO_CONST_CFSTRINGS@ @NO_WARN_UNUSED@ @ATOMIC_OBJCFLAGS@"
 LDFLAGS=""
 LDFLAGS_RPATH="@LDFLAGS_RPATH@"
 LIBS="-L${libdir} -lobjfw @LIBS@"
-VERSION="0.2"
+VERSION="0.2.1"
 
 show_help() {
 	echo "$0: Available arguments are:"
