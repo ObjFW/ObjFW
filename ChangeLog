@@ -2,6 +2,14 @@ Legend:
  * Changes of existing features or bugfixes.
  + New features.
 
+ObjFW 0.2 -> 0.2.1, 14.03.2010
+ * Fix for OFNumbers not doing calculations.
+ * Improved -[hash] for OFNumbers with floats and doubles.
+ + Tests for OFNumber.
+ * Small optimization for OFArray's -[componentsJoinedByString:].
+ * Documentation improvements.
+ * Updated copyright.
+
 ObjFW 0.1.2 -> 0.2, 01.02.2010
  + Support for ObjC 2 Fast Enumerations on every platform which has
    compiler support for fast enumerations.
