@@ -115,8 +115,8 @@
 @end
 
 /**
- * \brief An exception indicating that a mutation was detected while
- *        enumerating.
+ * \brief An exception indicating that a mutation was detected during
+ *        enumeration.
  */
 @interface OFEnumerationMutationException: OFException {}
 @end
@@ -240,7 +240,7 @@
 @end
 
 /**
- * \brief An exception indicating the file couldn't be opened.
+ * \brief An exception indicating a file couldn't be opened.
  */
 @interface OFOpenFileFailedException: OFException
 {
@@ -288,7 +288,7 @@
 @end
 
 /**
- * \brief An exception indicating a read or write to the file failed.
+ * \brief An exception indicating a read or write to a file failed.
  */
 @interface OFReadOrWriteFailedException: OFException
 {
@@ -697,7 +697,7 @@
 @end
 
 /**
- * \brief An exception indicating that the connection could not be established.
+ * \brief An exception indicating that a connection could not be established.
  */
 @interface OFConnectionFailedException: OFException
 {
@@ -745,7 +745,7 @@
 @end
 
 /**
- * \brief An exception indicating that binding the socket failed.
+ * \brief An exception indicating that binding a socket failed.
  */
 @interface OFBindFailedException: OFException
 {
@@ -855,7 +855,7 @@
 @end
 
 /**
- * \brief An exception indicating that joining the thread failed.
+ * \brief An exception indicating that joining a thread failed.
  */
 @interface OFThreadJoinFailedException: OFException {}
 @end

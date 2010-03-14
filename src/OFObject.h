@@ -324,7 +324,7 @@ typedef struct __of_range {
 @end
 
 /**
- * \brief A protocol for creation of copies.
+ * \brief A protocol for the creation of copies.
  */
 @protocol OFCopying
 /**
@@ -334,7 +334,7 @@ typedef struct __of_range {
 @end
 
 /**
- * \brief A protocol for creation of mutable copies.
+ * \brief A protocol for the creation of mutable copies.
  *
  * This protocol is implemented by objects that can be mutable and immutable
  * and allows returning a mutable copy.
