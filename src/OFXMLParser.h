@@ -15,7 +15,7 @@ extern int _OFXMLParser_reference;
 
 /**
  * \brief A protocol that needs to be implemented by delegates for
- *	  stringByXMLUnescapingWithHandler:.
+ *	  -[stringByXMLUnescapingWithHandler:].
  */
 @protocol OFXMLUnescapingDelegate
 /**
