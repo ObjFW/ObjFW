@@ -37,8 +37,14 @@ tarball:
 	V=$$(fgrep VERSION= objfw-config.in | sed 's/VERSION="\(.*\)"/\1/'); \
 	V2=$$(fgrep AC_INIT configure.ac | \
 	      sed 's/AC_INIT([^,]*,\([^,]*\),.*/\1/' | sed 's/ //'); \
-	if test x"$$V" != x"$$V2"; then \
-		echo "objfw-config.h.in and configure.ac version mismatch!"; \
+	V3=$$(fgrep -A1 CFBundleVersion Info.plist | tail -1 | \
+	      sed 's/.*>\(.*\)<.*/\1/'); \
+	V4=$$(fgrep -A1 CFBundleShortVersion Info.plist | tail -1 | \
+	      sed 's/.*>\(.*\)<.*/\1/'); \
+	if test x"$$V2" != x"$$V" \
+	    -o x"$$V3" != x"$$V" \
+	    -o x"$$V4" != x"$$V4"; then \
+		echo "Not all files have the same version number!"; \
 		exit 1; \
 	fi; \
 	echo "Generating tarball for version $$V..."; \
