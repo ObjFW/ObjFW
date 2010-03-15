@@ -249,7 +249,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -fr $TARGET_BUILD_DIR/ObjFW.framework\nmkdir -p $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Headers || exit 1\nmkdir -p $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Resources || exit 1\ninstall -m 755 src/ObjFW $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/ || exit 1\ninstall -m 644 src/*.h $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Headers/ || exit 1\ncat >$TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Resources/Info.plist <<__EOF__\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n<plist version=\"1.0\">\n<dict>\n\t<key>CFBundleDevelopmentRegion</key>\n\t<string>English</string>\n\t<key>CFBundleExecutable</key>\n\t<string>ObjFW</string>\n\t<key>CFBundleGetInfoString</key>\n\t<string>https://webkeks.org/objfw</string>\n\t<key>CFBundleIdentifier</key>\n\t<string>ObjFW</string>\n\t<key>CFBundleInfoDictionaryVersion</key>\n\t<string>6.0</string>\n\t<key>CFBundleName</key>\n\t<string>objfw</string>\n\t<key>CFBundlePackageType</key>\n\t<string>FMWK</string>\n\t<key>CFBundleShortVersionString</key>\n\t<string>0.1</string>\n\t<key>CFBundleSignature</key>\n\t<string>OBJF</string>\n\t<key>CFBundleVersion</key>\n\t<string>0.1</string>\n</dict>\n</plist>\n__EOF__\nif [ ! -f \"$TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Resources/Info.plist\" ]; then\n\texit 1;\nfi\nln -s A $TARGET_BUILD_DIR/ObjFW.framework/Versions/Current || exit 1\nln -s Versions/Current/Headers $TARGET_BUILD_DIR/ObjFW.framework/Headers || exit 1\nln -s Versions/Current/Resources $TARGET_BUILD_DIR/ObjFW.framework/Resources || exit 1\nln -s Versions/Current/ObjFW $TARGET_BUILD_DIR/ObjFW.framework/ObjFW || exit 1";
+			shellScript = "rm -fr $TARGET_BUILD_DIR/ObjFW.framework\nmkdir -p $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Headers || exit 1\nmkdir -p $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Resources || exit 1\ninstall -m 755 src/ObjFW $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/ || exit 1\ninstall -m 644 src/*.h $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Headers/ || exit 1\ninstall -m 644 Info.plist $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Resources/\nln -s A $TARGET_BUILD_DIR/ObjFW.framework/Versions/Current || exit 1\nln -s Versions/Current/Headers $TARGET_BUILD_DIR/ObjFW.framework/Headers || exit 1\nln -s Versions/Current/Resources $TARGET_BUILD_DIR/ObjFW.framework/Resources || exit 1\nln -s Versions/Current/ObjFW $TARGET_BUILD_DIR/ObjFW.framework/ObjFW || exit 1";
+			showEnvVarsInLog = 0;
 		};
 		4B5D8DE11099E1BF000896FF /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -263,6 +264,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if [ \"configure.ac\" -nt \"configure\" ]; then\n\t./autogen.sh || exit 1\nfi";
+			showEnvVarsInLog = 0;
 		};
 		4B5D8DE81099E1F1000896FF /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -276,6 +278,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if [ \"configure\" -nt \"buildsys.mk\" -o \"buildsys.mk.in\" -nt \"buildsys.mk\" ]; then\n\tCFLAGS=\"-arch ppc -arch i386 -arch x86_64\" \\\n\tOBJCFLAGS=\"-arch ppc -arch i386 -arch x86_64\" \\\n\tLDFLAGS=\"-arch ppc -arch i386 -arch x86_64\" \\\n\t./configure || exit 1\nfi";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
