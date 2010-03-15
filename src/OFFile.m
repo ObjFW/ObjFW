@@ -222,7 +222,8 @@ OFFile *of_stderr = nil;
 
 - close
 {
-	fclose(fp);
+	if (fp != NULL)
+		fclose(fp);
 	fp = NULL;
 
 	return self;
