@@ -204,7 +204,7 @@
 /* Begin PBXLegacyTarget section */
 		4B5D8DF11099E2A7000896FF /* ObjFW */ = {
 			isa = PBXLegacyTarget;
-			buildArgumentsString = "'LIB=ObjFW' 'LDFLAGS += -install_name /Library/Frameworks/ObjFW.framework/Versions/A/ObjFW' $(ACTION)";
+			buildArgumentsString = "'LIB=ObjFW' 'LDFLAGS=-arch ppc -arch i386 -arch x86_64 -install_name /Library/Frameworks/ObjFW.framework/Versions/A/ObjFW' $(ACTION)";
 			buildConfigurationList = 4B5D8DF91099E2ED000896FF /* Build configuration list for PBXLegacyTarget "ObjFW" */;
 			buildPhases = (
 			);
