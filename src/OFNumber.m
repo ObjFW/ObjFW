@@ -61,6 +61,8 @@
 		return (t)value.ptrdiff;				\
 	case OF_NUMBER_INTPTR:						\
 		return (t)value.intptr;					\
+	case OF_NUMBER_UINTPTR:						\
+		return (t)value.uintptr;				\
 	case OF_NUMBER_FLOAT:						\
 		return (t)value.float_;					\
 	case OF_NUMBER_DOUBLE:						\
@@ -136,6 +138,9 @@
 	case OF_NUMBER_INTPTR:						\
 		return [OFNumber numberWithIntPtr:			\
 		    value.intptr o [n asIntPtr]];			\
+	case OF_NUMBER_UINTPTR:						\
+		return [OFNumber numberWithUIntPtr:			\
+		    value.uintptr o [n asUIntPtr]];			\
 	case OF_NUMBER_FLOAT:						\
 		return [OFNumber numberWithFloat:			\
 		    value.float_ o [n asFloat]];			\
@@ -213,6 +218,9 @@
 	case OF_NUMBER_INTPTR:						\
 		return [OFNumber numberWithIntPtr:			\
 		    value.intptr o [n asIntPtr]];			\
+	case OF_NUMBER_UINTPTR:						\
+		return [OFNumber numberWithUIntPtr:			\
+		    value.uintptr o [n asUIntPtr]];			\
 	case OF_NUMBER_FLOAT:						\
 	case OF_NUMBER_DOUBLE:						\
 		@throw [OFNotImplementedException newWithClass: isa	\
@@ -266,6 +274,8 @@
 		return [OFNumber numberWithPtrDiff: value.ptrdiff o];	\
 	case OF_NUMBER_INTPTR:						\
 		return [OFNumber numberWithIntPtr: value.intptr o];	\
+	case OF_NUMBER_UINTPTR:						\
+		return [OFNumber numberWithUIntPtr: value.uintptr o];	\
 	case OF_NUMBER_FLOAT:						\
 		return [OFNumber numberWithFloat: value.float_ o];	\
 	case OF_NUMBER_DOUBLE:						\
@@ -383,6 +393,11 @@
 + numberWithIntPtr: (intptr_t)intptr
 {
 	return [[[self alloc] initWithIntPtr: intptr] autorelease];
+}
+
++ numberWithUIntPtr: (uintptr_t)uintptr
+{
+	return [[[self alloc] initWithUIntPtr: uintptr] autorelease];
 }
 
 + numberWithFloat: (float)float_
@@ -621,6 +636,16 @@
 	return self;
 }
 
+- initWithUIntPtr: (uintptr_t)uintptr
+{
+	self = [super init];
+
+	value.uintptr = uintptr;
+	type = OF_NUMBER_UINTPTR;
+
+	return self;
+}
+
 - initWithFloat: (float)float_
 {
 	self = [super init];
@@ -756,6 +781,11 @@
 	RETURN_AS(intptr_t)
 }
 
+- (uintptr_t)asUIntPtr
+{
+	RETURN_AS(uintptr_t)
+}
+
 - (float)asFloat
 {
 	RETURN_AS(float)
@@ -796,6 +826,7 @@
 	case OF_NUMBER_SIZE:
 	case OF_NUMBER_UINTMAX:
 	case OF_NUMBER_INTPTR:
+	case OF_NUMBER_UINTPTR:
 		return ([(OFNumber*)obj asUIntMax] == [self asUIntMax]
 		    ? YES : NO);
 	case OF_NUMBER_FLOAT:

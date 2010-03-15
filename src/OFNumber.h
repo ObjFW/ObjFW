@@ -36,6 +36,7 @@ enum of_number_type {
 	OF_NUMBER_UINTMAX,
 	OF_NUMBER_PTRDIFF,
 	OF_NUMBER_INTPTR,
+	OF_NUMBER_UINTPTR,
 	OF_NUMBER_FLOAT,
 	OF_NUMBER_DOUBLE,
 };
@@ -68,6 +69,7 @@ enum of_number_type {
 		uintmax_t      uintmax;
 		ptrdiff_t      ptrdiff;
 		intptr_t       intptr;
+		uintptr_t      uintptr;
 		float	       float_;
 		double	       double_;
 	} value;
@@ -205,6 +207,12 @@ enum of_number_type {
  * \return A new autoreleased OFNumber
  */
 + numberWithIntPtr: (intptr_t)intptr;
+
+/**
+ * \param uintptr An uintptr_t which the OFNumber should contain
+ * \return A new autoreleased OFNumber
+ */
++ numberWithUIntPtr: (uintptr_t)uintptr;
 
 /**
  * \param float_ A float which the OFNumber should contain
@@ -395,6 +403,14 @@ enum of_number_type {
 - initWithIntPtr: (intptr_t)intptr;
 
 /**
+ * Initializes an already allocated OFNumber with the specified uintptr_t.
+ *
+ * \param uintptr An uintptr_t which the OFNumber should contain
+ * \return An initialized OFNumber
+ */
+- initWithUIntPtr: (uintptr_t)uintptr;
+
+/**
  * Initializes an already allocated OFNumber with the specified float.
  *
  * \param float_ A float which the OFNumber should contain
@@ -525,6 +541,11 @@ enum of_number_type {
  * \return The OFNumber as an intptr_t
  */
 - (intptr_t)asIntPtr;
+
+/**
+ * \return The OFNumber as an uintptr_t
+ */
+- (uintptr_t)asUIntPtr;
 
 /**
  * \return The OFNumber as a float
