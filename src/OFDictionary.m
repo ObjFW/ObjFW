@@ -20,7 +20,7 @@
 #import "OFExceptions.h"
 #import "macros.h"
 
-const int of_dictionary_deleted_bucket;
+const int of_dictionary_deleted_bucket = 0;
 
 #define BUCKET_SIZE sizeof(struct of_dictionary_bucket)
 #define DELETED (id)&of_dictionary_deleted_bucket
