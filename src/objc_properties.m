@@ -13,9 +13,7 @@
 
 #include <assert.h>
 
-#import <objc/objc.h>
-
-#import "OFExceptions.h"
+#import "OFObject.h"
 
 #ifdef OF_THREADS
 # import "threading.h"
