@@ -149,7 +149,26 @@ const int of_dictionary_deleted_bucket;
 - initWithObject: (OFObject*)obj
 	  forKey: (OFObject <OFCopying>*)key
 {
+	uint32_t i;
+
 	self = [self init];
+
+	@try {
+		data = [self allocMemoryForNItems: 2
+					 withSize: BUCKET_SIZE];
+	} @catch (OFException *e) {
+		/*
+		 * We can't use [super dealloc] on OS X here. Compiler bug?
+		 * Anyway, we didn't do anything yet anyway, so [self dealloc]
+		 * works.
+		 */
+		[self dealloc];
+		@throw e;
+	}
+	memset(data, 0, 2 * BUCKET_SIZE);
+	size = 2;
+
+	i = [key hash] & 1;
 
 	@try {
 		key = [key copy];
@@ -166,9 +185,10 @@ const int of_dictionary_deleted_bucket;
 		@throw e;
 	}
 
-	data[0].key = key;
-	data[0].object = obj;
-	data[0].hash = [key hash];
+	data[i].key = key;
+	data[i].object = obj;
+	data[i].hash = [key hash];
+	count = 1;
 
 	return self;
 }
