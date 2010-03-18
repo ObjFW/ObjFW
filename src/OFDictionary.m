@@ -20,7 +20,10 @@
 #import "OFExceptions.h"
 #import "macros.h"
 
+const int of_dictionary_deleted_bucket;
+
 #define BUCKET_SIZE sizeof(struct of_dictionary_bucket)
+#define DELETED (id)&of_dictionary_deleted_bucket
 
 @implementation OFDictionary
 + dictionary;
@@ -115,7 +118,7 @@
 	for (i = 0; i < size; i++) {
 		OFObject <OFCopying> *key;
 
-		if (dict->data[i].key == nil) {
+		if (dict->data[i].key == nil || dict->data[i].key == DELETED) {
 			data[i].key = nil;
 			continue;
 		}
@@ -202,30 +205,40 @@
 	memset(data, 0, size * BUCKET_SIZE);
 
 	for (i = 0; i < count; i++) {
-		uint32_t j, hash;
+		uint32_t j, hash, last;
 
 		hash = [keys_carray[i] hash];
+		last = size;
 
-		for (j = hash & (size - 1); j < size && data[j].key != nil &&
+		for (j = hash & (size - 1); j < last && data[j].key != nil &&
 		    ![data[j].key isEqual: keys_carray[i]]; j++);
 
 		/* In case the last bucket is already used */
-		if (j >= size)
-			for (j = 0; j < size && data[j].key != nil &&
+		if (j >= last) {
+			last = hash & (size - 1);
+
+			for (j = 0; j < last && data[j].key != nil &&
 			    ![data[j].key isEqual: keys_carray[i]]; j++);
+		}
 
 		/* Key not in dictionary */
-		if (j >= size || ![data[j].key isEqual: keys_carray[i]]) {
+		if (j >= last || ![data[j].key isEqual: keys_carray[i]]) {
 			OFObject <OFCopying> *key;
 
+			last = size;
+
 			j = hash & (size - 1);
-			for (; j < size && data[j].key != nil; j++);
+			for (; j < last && data[j].key != nil; j++);
 
 			/* In case the last bucket is already used */
-			if (j >= size)
-				for (j = 0; j < size && data[j].key != nil;
+			if (j >= last) {
+				last = hash & (size - 1);
+
+				for (j = 0; j < last && data[j].key != nil;
 				    j++);
-			if (j >= size) {
+			}
+
+			if (j >= last) {
 				Class c = isa;
 				[self dealloc];
 				@throw [OFOutOfRangeException newWithClass: c];
@@ -330,7 +343,8 @@
 
 	if (key == nil)
 		return self;
-	else if ((obj = va_arg(args, OFObject*)) == nil) {
+
+	if ((obj = va_arg(args, OFObject*)) == nil) {
 		Class c = isa;
 		[self dealloc];
 		@throw [OFInvalidArgumentException newWithClass: c
@@ -339,8 +353,7 @@
 
 	/* Add first key / object pair */
 	hash = [key hash];
-
-	for (j = hash & (size - 1); j < size && data[j].key != nil; j++);
+	j = hash & (size - 1);
 
 	@try {
 		key = [key copy];
@@ -362,6 +375,8 @@
 	data[j].hash = hash;
 
 	for (i = 1; i < count; i++) {
+		size_t last;
+
 		key = va_arg(args, OFObject <OFCopying>*);
 		obj = va_arg(args, OFObject*);
 
@@ -373,25 +388,35 @@
 		}
 
 		hash = [key hash];
+		last = size;
 
-		for (j = hash & (size - 1); j < size && data[j].key != nil &&
+		for (j = hash & (size - 1); j < last && data[j].key != nil &&
 		    ![data[j].key isEqual: key]; j++);
 
 		/* In case the last bucket is already used */
-		if (j >= size)
-			for (j = 0; j < size && data[j].key != nil &&
+		if (j >= last) {
+			last = hash & (size - 1);
+
+			for (j = 0; j < last && data[j].key != nil &&
 			    ![data[j].key isEqual: key]; j++);
+		}
 
 		/* Key not in dictionary */
-		if (j >= size || ![data[j].key isEqual: key]) {
+		if (j >= last || ![data[j].key isEqual: key]) {
+			last = size;
+
 			j = hash & (size - 1);
-			for (; j < size && data[j].key != nil; j++);
+			for (; j < last && data[j].key != nil; j++);
 
 			/* In case the last bucket is already used */
-			if (j >= size)
-				for (j = 0; j < size && data[j].key != nil;
+			if (j >= last) {
+				last = hash & (size - 1);
+
+				for (j = 0; j < last && data[j].key != nil;
 				    j++);
-			if (j >= size) {
+			}
+
+			if (j >= last) {
 				Class c = isa;
 				[self dealloc];
 				@throw [OFOutOfRangeException newWithClass: c];
@@ -447,27 +472,33 @@
 
 - (id)objectForKey: (OFObject <OFCopying>*)key
 {
-	uint32_t i, hash;
+	uint32_t i, hash, last;
 
 	if (key == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
 	hash = [key hash];
+	last = size;
 
-	for (i = hash & (size - 1); i < size && data[i].key != nil &&
-	    ![data[i].key isEqual: key]; i++);
+	for (i = hash & (size - 1); i < last && data[i].key != nil &&
+	    (data[i].key == DELETED || ![data[i].key isEqual: key]); i++);
 
-	if (i < size && data[i].key == nil)
+	if (i < last && (data[i].key == nil || data[i].key == DELETED))
 		return nil;
 
 	/* In case the last bucket is already used */
-	if (i >= size)
-		for (i = 0; i < size && data[i].key != nil &&
-		    ![data[i].key isEqual: key]; i++);
+	if (i >= last) {
+		last = hash & (size - 1);
+
+		for (i = 0; i < last && data[i].key != nil &&
+		    (data[i].key == DELETED || ![data[i].key isEqual: key]);
+		    i++);
+	}
 
 	/* Key not in dictionary */
-	if (i >= size || ![data[i].key isEqual: key])
+	if (i >= last || data[i].key == nil || data[i].key == DELETED ||
+	    ![data[i].key isEqual: key])
 		return nil;
 
 	return [[data[i].object retain] autorelease];
@@ -496,7 +527,7 @@
 		return NO;
 
 	for (i = 0; i < size; i++)
-		if (data[i].key != nil &&
+		if (data[i].key != nil && data[i].key != DELETED &&
 		    ![[dict objectForKey: data[i].key] isEqual: data[i].object])
 			return NO;
 
@@ -510,8 +541,8 @@
 	size_t i;
 
 	for (i = 0; i < count_; i++) {
-		for (; state->state < size && data[state->state].key == nil;
-		    state->state++);
+		for (; state->state < size && (data[state->state].key == nil ||
+		    data[state->state].key == DELETED); state->state++);
 
 		if (state->state < size) {
 			objects[i] = data[state->state].key;
@@ -547,7 +578,7 @@
 	size_t i;
 
 	for (i = 0; i < size; i++) {
-		if (data[i].key != nil) {
+		if (data[i].key != nil && data[i].key != DELETED) {
 			[data[i].key release];
 			[data[i].object release];
 		}
@@ -564,7 +595,7 @@
 	OF_HASH_INIT(hash);
 
 	for (i = 0; i < size; i++) {
-		if (data[i].key != nil) {
+		if (data[i].key != nil && data[i].key != DELETED) {
 			uint32_t kh = [data[i].key hash];
 
 			OF_HASH_ADD(hash, kh >> 24);
@@ -618,7 +649,8 @@
 	if (mutations_ptr != NULL && *mutations_ptr != mutations)
 		@throw [OFEnumerationMutationException newWithClass: isa];
 
-	for (; pos < size && data[pos].key == nil; pos++);
+	for (; pos < size && (data[pos].key == nil ||
+	    data[pos].key == DELETED); pos++);
 
 	if (pos < size)
 		return data[pos++].object;
@@ -633,7 +665,8 @@
 	if (mutations_ptr != NULL && *mutations_ptr != mutations)
 		@throw [OFEnumerationMutationException newWithClass: isa];
 
-	for (; pos < size && data[pos].key == nil; pos++);
+	for (; pos < size && (data[pos].key == nil ||
+	    data[pos].key == DELETED); pos++);
 
 	if (pos < size)
 		return data[pos++].key;

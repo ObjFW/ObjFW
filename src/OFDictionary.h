@@ -182,3 +182,5 @@ struct of_dictionary_bucket
 /// \endcond
 
 #import "OFMutableDictionary.h"
+
+extern const int of_dictionary_deleted_bucket;

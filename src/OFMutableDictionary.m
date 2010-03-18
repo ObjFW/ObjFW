@@ -18,6 +18,7 @@
 #import "macros.h"
 
 #define BUCKET_SIZE sizeof(struct of_dictionary_bucket)
+#define DELETED (id)&of_dictionary_deleted_bucket
 
 static OF_INLINE void
 resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
@@ -43,15 +44,23 @@ resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
 	memset(newdata, 0, newsize * BUCKET_SIZE);
 
 	for (i = 0; i < *size; i++) {
-		if ((*data)[i].key != nil) {
-			uint32_t j = (*data)[i].hash & (newsize - 1);
-			for (; j < newsize && newdata[j].key != nil; j++);
+		if ((*data)[i].key != nil && (*data)[i].key != DELETED) {
+			uint32_t j, last;
+
+			last = newsize;
+
+			j = (*data)[i].hash & (newsize - 1);
+			for (; j < last && newdata[j].key != nil; j++);
 
 			/* In case the last bucket is already used */
-			if (j >= newsize)
-				for (j = 0; j < newsize &&
+			if (j >= last) {
+				last = (*data)[i].hash & (newsize - 1);
+
+				for (j = 0; j < last &&
 				    newdata[j].key != nil; i++);
-			if (j >= newsize)
+			}
+
+			if (j >= last)
 				@throw [OFOutOfRangeException
 				    newWithClass: [self class]];
 
@@ -70,35 +79,47 @@ resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
 - setObject: (OFObject*)obj
      forKey: (OFObject <OFCopying>*)key
 {
-	uint32_t i, hash;
+	uint32_t i, hash, last;
 
 	if (key == nil || obj == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
 	hash = [key hash];
+	last = size;
 
-	for (i = hash & (size - 1); i < size && data[i].key != nil &&
-	    ![data[i].key isEqual: key]; i++);
+	for (i = hash & (size - 1); i < last && data[i].key != nil &&
+	    (data[i].key == DELETED || ![data[i].key isEqual: key]); i++);
 
 	/* In case the last bucket is already used */
-	if (i >= size)
-		for (i = 0; i < size && data[i].key != nil &&
-		    ![data[i].key isEqual: key]; i++);
+	if (i >= last) {
+		last = hash & (size - 1);
+
+		for (i = 0; i < last && data[i].key != nil &&
+		    (data[i].key == DELETED || ![data[i].key isEqual: key]);
+		    i++);
+	}
 
 	/* Key not in dictionary */
-	if (i >= size || ![data[i].key isEqual: key]) {
+	if (i >= last || data[i].key == nil || data[i].key == DELETED ||
+	    ![data[i].key isEqual: key]) {
 		resize(self, isa, count + 1, &data, &size);
 
 		mutations++;
+		last = size;
 
-		i = hash & (size - 1);
-		for (; i < size && data[i].key != nil; i++);
+		for (i = hash & (size - 1); i < last && data[i].key != nil &&
+		    data[i].key != DELETED; i++);
 
 		/* In case the last bucket is already used */
-		if (i >= size)
-			for (i = 0; i < size && data[i].key != nil; i++);
-		if (i >= size)
+		if (i >= last) {
+			last = hash & (size - 1);
+
+			for (i = 0; i < last && data[i].key != nil &&
+			    data[i].key != DELETED; i++);
+		}
+
+		if (i >= last)
 			@throw [OFOutOfRangeException newWithClass: isa];
 
 		key = [key copy];
@@ -126,32 +147,39 @@ resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
 
 - removeObjectForKey: (OFObject*)key
 {
-	uint32_t i, hash;
+	uint32_t i, hash, last;
 
 	if (key == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
 	hash = [key hash];
+	last = size;
 
-	for (i = hash & (size - 1); i < size && data[i].key != nil &&
-	    ![data[i].key isEqual: key]; i++);
+	for (i = hash & (size - 1); i < last && data[i].key != nil &&
+	    (data[i].key == DELETED || ![data[i].key isEqual: key]); i++);
 
-	if (i < size && data[i].key == nil)
+	if (i < last && (data[i].key == nil || data[i].key == DELETED ||
+	    ![data[i].key isEqual: key]))
 		return self;
 
 	/* In case the last bucket is already used */
-	if (i >= size)
-		for (i = 0; i < size && data[i].key != nil &&
-		    ![data[i].key isEqual: key]; i++);
+	if (i >= last) {
+		last = hash & (size - 1);
+
+		for (i = 0; i < last && data[i].key != nil &&
+		    (data[i].key == DELETED || ![data[i].key isEqual: key]);
+		    i++);
+	}
 
 	/* Key not in dictionary */
-	if (i >= size || ![data[i].key isEqual: key])
+	if (i >= last || data[i].key == nil || data[i].key == DELETED ||
+	    ![data[i].key isEqual: key])
 		return self;
 
 	[data[i].key release];
 	[data[i].object release];
-	data[i].key = nil;
+	data[i].key = DELETED;
 
 	count--;
 	mutations++;
@@ -172,8 +200,8 @@ resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
 	size_t i;
 
 	for (i = 0; i < count_; i++) {
-		for (; state->state < size && data[state->state].key == nil;
-		    state->state++);
+		for (; state->state < size && (data[state->state].key == nil ||
+		    data[state->state].key == DELETED); state->state++);
 
 		if (state->state < size) {
 			objects[i] = data[state->state].key;
