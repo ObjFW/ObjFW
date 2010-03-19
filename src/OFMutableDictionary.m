@@ -32,9 +32,9 @@ resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
 	if (count > SIZE_MAX / 4)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	if (fill > 3)
+	if (fill >= 3)
 		newsize = *size << 1;
-	else if (fill < 1)
+	else if (fill <= 1)
 		newsize = *size >> 1;
 	else
 		return;
