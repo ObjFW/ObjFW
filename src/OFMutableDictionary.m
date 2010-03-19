@@ -29,15 +29,18 @@ resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
 	struct of_dictionary_bucket *newdata;
 	uint32_t i;
 
-	if (fill > 3) {
-		if (*size > SIZE_MAX / 8)
-			@throw [OFOutOfRangeException newWithClass: isa];
+	if (count > SIZE_MAX / 4)
+		@throw [OFOutOfRangeException newWithClass: isa];
 
+	if (fill > 3)
 		newsize = *size << 1;
-	} else if (fill < 1)
+	else if (fill < 1)
 		newsize = *size >> 1;
 	else
 		return;
+
+	if (newsize == 0)
+		@throw [OFOutOfRangeException newWithClass: isa];
 
 	newdata = [self allocMemoryForNItems: newsize
 				    withSize: BUCKET_SIZE];
