@@ -69,11 +69,11 @@ static OF_INLINE uint16_t
 OF_BSWAP16_NONCONST(uint16_t i)
 {
 #if defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	asm("xchgb	%h0, %b0" : "=Q"(i) : "0"(i));
+	__asm__ ("xchgb	%h0, %b0" : "=Q"(i) : "0"(i));
 #elif defined(OF_PPC_ASM)
-	asm("lhbrx	%0, 0, %1" : "=r"(i) : "r"(&i), "m"(i));
+	__asm__ ("lhbrx	%0, 0, %1" : "=r"(i) : "r"(&i), "m"(i));
 #elif defined(OF_ARM_ASM)
-	asm("rev16	%0, %0" : "=r"(i) : "0"(i));
+	__asm__ ("rev16	%0, %0" : "=r"(i) : "0"(i));
 #else
 	i = (i & UINT16_C(0xFF00)) >> 8 |
 	    (i & UINT16_C(0x00FF)) << 8;
@@ -85,11 +85,11 @@ static OF_INLINE uint32_t
 OF_BSWAP32_NONCONST(uint32_t i)
 {
 #if defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	asm("bswap	%0" : "=q"(i) : "0"(i));
+	__asm__ ("bswap	%0" : "=q"(i) : "0"(i));
 #elif defined(OF_PPC_ASM)
-	asm("lwbrx	%0, 0, %1" : "=r"(i) : "r"(&i), "m"(i));
+	__asm__ ("lwbrx	%0, 0, %1" : "=r"(i) : "r"(&i), "m"(i));
 #elif defined(OF_ARM_ASM)
-	asm("rev	%0, %0" : "=r"(i) : "0"(i));
+	__asm__ ("rev	%0, %0" : "=r"(i) : "0"(i));
 #else
 	i = (i & UINT32_C(0xFF000000)) >> 24 |
 	    (i & UINT32_C(0x00FF0000)) >>  8 |
@@ -103,11 +103,11 @@ static OF_INLINE uint64_t
 OF_BSWAP64_NONCONST(uint64_t i)
 {
 #if defined(OF_AMD64_ASM)
-	asm("bswap	%0" : "=r"(i) : "0"(i));
+	__asm__ ("bswap	%0" : "=r"(i) : "0"(i));
 #elif defined(OF_X86_ASM)
-	asm("bswap	%%eax\n\t"
-	    "bswap	%%edx\n\t"
-	    "xchgl	%%eax, %%edx" : "=A"(i): "0"(i));
+	__asm__ ("bswap	%%eax\n\t"
+		 "bswap	%%edx\n\t"
+		 "xchgl	%%eax, %%edx" : "=A"(i) : "0"(i));
 #else
 	i = (uint64_t)OF_BSWAP32_NONCONST(i & 0xFFFFFFFF) << 32 |
 	    OF_BSWAP32_NONCONST(i >> 32);
