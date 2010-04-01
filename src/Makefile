@@ -46,6 +46,6 @@ SRCS += ${ASPRINTF_M} 		\
 
 include ../buildsys.mk
 
-CPPFLAGS += -I..
+CPPFLAGS += -I.. ${LIB_CPPFLAGS}
 OBJCFLAGS += ${LIB_CFLAGS}
 LD = ${OBJC}
