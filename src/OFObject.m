@@ -228,13 +228,8 @@ objc_enumerationMutation(id obj)
 	  forClassMethod: (SEL)selector
 {
 #ifdef OF_APPLE_RUNTIME
-	Method method;
-
-	if ((method = class_getClassMethod(self, selector)) == NULL)
-		@throw [OFInvalidArgumentException newWithClass: self
-						       selector: _cmd];
-
-	return method_setImplementation(method, newimp);
+	return class_replaceMethod(self->isa, selector, newimp,
+	    method_getTypeEncoding(class_getClassMethod(self, selector)));
 #else
 	Method_t method;
 	IMP oldimp;
@@ -283,13 +278,8 @@ objc_enumerationMutation(id obj)
        forInstanceMethod: (SEL)selector
 {
 #ifdef OF_APPLE_RUNTIME
-	Method method;
-
-	if ((method = class_getInstanceMethod(self, selector)) == NULL)
-		@throw [OFInvalidArgumentException newWithClass: self
-						       selector: _cmd];
-
-	return method_setImplementation(method, newimp);
+	return class_replaceMethod(self, selector, newimp,
+	    method_getTypeEncoding(class_getInstanceMethod(self, selector)));
 #else
 	Method_t method = class_get_instance_method(self, selector);
 	IMP oldimp;
