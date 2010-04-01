@@ -23,11 +23,13 @@
 #import "OFExceptions.h"
 #import "macros.h"
 
-#import <objc/objc-api.h>
-#ifdef OF_APPLE_RUNTIME
+#if defined(OF_OBJFW_RUNTIME)
+# import <objfw-rt.h>
+#elif defined(OF_APPLE_RUNTIME)
+# import <objc/objc-api.h>
 # import <objc/runtime.h>
-#endif
-#ifdef OF_GNU_RUNTIME
+#elif defined(OF_GNU_RUNTIME)
+# import <objc/objc-api.h>
 # import <objc/sarray.h>
 #endif
 
@@ -42,7 +44,7 @@
 #endif
 
 /* A few macros to reduce #ifdefs */
-#ifndef OF_APPLE_RUNTIME
+#ifdef OF_GNU_RUNTIME
 # define class_getInstanceSize class_get_instance_size
 # define class_getName class_get_class_name
 # define class_getSuperclass class_get_super_class
@@ -183,24 +185,16 @@ objc_enumerationMutation(id obj)
 
 + (BOOL)instancesRespondToSelector: (SEL)selector
 {
-#ifdef OF_APPLE_RUNTIME
-	return class_respondsToSelector(self, selector);
-#else
+#ifdef OF_GNU_RUNTIME
 	return class_get_instance_method(self, selector) != METHOD_NULL;
+#else
+	return class_respondsToSelector(self, selector);
 #endif
 }
 
 + (BOOL)conformsToProtocol: (Protocol*)protocol
 {
-#ifdef OF_APPLE_RUNTIME
-	Class c;
-
-	for (c = self; c != Nil; c = class_getSuperclass(c))
-		if (class_conformsToProtocol(c, protocol))
-			return YES;
-
-	return NO;
-#else
+#ifdef OF_GNU_RUNTIME
 	Class c;
 	struct objc_protocol_list *pl;
 	size_t i;
@@ -212,12 +206,22 @@ objc_enumerationMutation(id obj)
 					return YES;
 
 	return NO;
+#else
+	Class c;
+
+	for (c = self; c != Nil; c = class_getSuperclass(c))
+		if (class_conformsToProtocol(c, protocol))
+			return YES;
+
+	return NO;
 #endif
 }
 
 + (IMP)instanceMethodForSelector: (SEL)selector
 {
-#ifdef OF_APPLE_RUNTIME
+#if defined(OF_OBJFW_RUNTIME)
+	return objc_get_instance_method(self, selector);
+#elif defined(OF_APPLE_RUNTIME)
 	return class_getMethodImplementation(self, selector);
 #else
 	return method_get_imp(class_get_instance_method(self, selector));
@@ -227,7 +231,9 @@ objc_enumerationMutation(id obj)
 + (IMP)setImplementation: (IMP)newimp
 	  forClassMethod: (SEL)selector
 {
-#ifdef OF_APPLE_RUNTIME
+#if defined(OF_OBJFW_RUNTIME)
+	return objc_replace_class_method(self, selector, newimp);
+#elif defined(OF_APPLE_RUNTIME)
 	return class_replaceMethod(self->isa, selector, newimp,
 	    method_getTypeEncoding(class_getClassMethod(self, selector)));
 #else
@@ -261,7 +267,9 @@ objc_enumerationMutation(id obj)
 {
 	IMP newimp;
 
-#ifdef OF_APPLE_RUNTIME
+#if defined(OF_OBJFW_RUNTIME)
+	newimp = objc_get_class_method(class, selector);
+#elif defined(OF_APPLE_RUNTIME)
 	newimp = method_getImplementation(class_getClassMethod(class,
 	    selector));
 #else
@@ -277,7 +285,9 @@ objc_enumerationMutation(id obj)
 + (IMP)setImplementation: (IMP)newimp
        forInstanceMethod: (SEL)selector
 {
-#ifdef OF_APPLE_RUNTIME
+#if defined(OF_OBJFW_RUNTIME)
+	return objc_replace_instance_method(self, selector, newimp);
+#elif defined(OF_APPLE_RUNTIME)
 	return class_replaceMethod(self, selector, newimp,
 	    method_getTypeEncoding(class_getInstanceMethod(self, selector)));
 #else
@@ -309,7 +319,9 @@ objc_enumerationMutation(id obj)
 {
 	IMP newimp;
 
-#ifdef OF_APPLE_RUNTIME
+#if defined(OF_OBJFW_RUNTIME)
+	newimp = objc_get_instance_method(class, selector);
+#elif defined(OF_APPLE_RUNTIME)
 	newimp = class_getMethodImplementation(class, selector);
 #else
 	newimp = method_get_imp(class_get_instance_method(class, selector));
@@ -331,10 +343,10 @@ objc_enumerationMutation(id obj)
 
 - (const char*)className
 {
-#ifdef OF_APPLE_RUNTIME
-	return class_getName(isa);
-#else
+#ifdef OF_GNU_RUNTIME
 	return object_get_class_name(self);
+#else
+	return class_getName(isa);
 #endif
 }
 
@@ -351,13 +363,13 @@ objc_enumerationMutation(id obj)
 
 - (BOOL)respondsToSelector: (SEL)selector
 {
-#ifdef OF_APPLE_RUNTIME
-	return class_respondsToSelector(isa, selector);
-#else
+#ifdef OF_GNU_RUNTIME
 	if (object_is_instance(self))
 		return class_get_instance_method(isa, selector) != METHOD_NULL;
 	else
 		return class_get_class_method(isa, selector) != METHOD_NULL;
+#else
+	return class_respondsToSelector(isa, selector);
 #endif
 }
 
@@ -371,10 +383,7 @@ objc_enumerationMutation(id obj)
 #ifdef OF_APPLE_RUNTIME
 	return class_getMethodImplementation(isa, selector);
 #else
-	if (object_is_instance(self))
-		return method_get_imp(class_get_instance_method(isa, selector));
-	else
-		return method_get_imp(class_get_class_method(isa, selector));
+	return objc_msg_lookup(self, selector);
 #endif
 }
 

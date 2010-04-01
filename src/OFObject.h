@@ -14,7 +14,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#import <objc/objc.h>
+#ifdef OF_OBJFW_RUNTIME
+# import <objfw-rt.h>
+#else
+# import <objc/objc.h>
+#endif
 
 /**
  * \brief A result of a comparison.

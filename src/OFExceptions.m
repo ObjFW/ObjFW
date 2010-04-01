@@ -16,12 +16,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#import <objc/objc-api.h>
 #ifdef OF_APPLE_RUNTIME
 # import <objc/runtime.h>
-# define SEL_NAME(x) sel_getName(x)
-#else
-# define SEL_NAME(x) sel_get_name(x)
+# import <objc/objc-api.h>
+#endif
+
+#ifdef OF_GNU_RUNTIME
+# import <objc/objc-api.h>
+# define sel_getName(x) sel_get_name(x)
 #endif
 
 #import "OFExceptions.h"
@@ -244,7 +246,7 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"The method %s of class %s is not or not fully implemented!",
-	    SEL_NAME(selector), [class_ className]];
+	    sel_getName(selector), [class_ className]];
 
 	return string;
 }
@@ -294,7 +296,7 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"The argument for method %s of class %s is invalid!",
-	    SEL_NAME(selector), [class_ className]];
+	    sel_getName(selector), [class_ className]];
 
 	return string;
 }

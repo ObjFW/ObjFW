@@ -15,7 +15,11 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#import <objc/objc.h>
+#ifdef OF_OBJFW_RUNTIME
+# import <objfw-rt.h>
+#else
+# import <objc/objc.h>
+#endif
 
 #import "threading.h"
 

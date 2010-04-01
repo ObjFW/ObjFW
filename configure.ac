@@ -14,7 +14,6 @@ CPP="$OBJCPP"
 CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS"
 OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions -fobjc-exceptions"
 OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstString"
-LIBS="$LIBS -lobjc"
 
 AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
 AX_CHECK_COMPILER_FLAGS(-fno-common, [OBJCFLAGS="$OBJCFLAGS -fno-common"])
@@ -58,21 +57,46 @@ AC_TRY_COMPILE([
 	], [
 	AC_MSG_RESULT(no)])
 
+AC_CHECK_HEADERS([objfw-rt.h objc/objc.h])
+
+test x"$ac_cv_header_objfw_rt_h" = x"yes" && objc_runtime="ObjFW-RT"
+
+if test x"$ac_cv_header_objc_objc_h" = x"yes"; then
+	dnl TODO: This is ugly. Let's think of a better check.
+	AC_EGREP_CPP(gnu, [
+		#import <objc/objc.h>
+		#ifdef __objc_INCLUDE_GNU
+		gnu
+		#endif
+		],
+		[test x"$objc_runtime" = "x" && objc_runtime="GNU"],
+		[objc_runtime="Apple"])
+fi
+
 AC_MSG_CHECKING(which Objective C runtime we use)
-dnl TODO: This is ugly. Let's think of a better check.
-AC_EGREP_CPP(gnu, [
-	#import <objc/objc.h>
-	#ifdef __objc_INCLUDE_GNU
-	gnu
-	#endif
-	], [
-	AC_DEFINE(OF_GNU_RUNTIME, 1, [Whether we use the GNU ObjC runtime])
-	AC_SUBST(RUNTIME_DEF, "-DOF_GNU_RUNTIME")
-	objc_runtime="GNU"
-	], [
-	AC_DEFINE(OF_APPLE_RUNTIME, 1, [Whether we use the Apple ObjC runtime])
-	AC_SUBST(RUNTIME_DEF, "-DOF_APPLE_RUNTIME")
-	objc_runtime="Apple"])
+case $objc_runtime in
+	ObjFW-RT)
+		AC_DEFINE(OF_OBJFW_RUNTIME, 1,
+			[Whether we use the ObjFW runtime])
+		AC_SUBST(GNU_RUNTIME, "-fgnu-runtime")
+		OBJCFLAGS="$OBJCFLAGS -fgnu-runtime"
+		LIBS="$LIBS -lobjfw-rt"
+		;;
+	Apple)
+		AC_DEFINE(OF_APPLE_RUNTIME, 1,
+			[Whether we use the Apple ObjC runtime])
+		LIBS="$LIBS -lobjc"
+		;;
+	GNU)
+		AC_DEFINE(OF_GNU_RUNTIME, 1,
+			[Whether we use the GNU ObjC runtime])
+		LIBS="$LIBS -lobjc"
+		;;
+	*)
+		AC_MSG_RESULT(none)
+		AC_MSG_ERROR(No ObjC runtime found! Please install ObjFW-RT!)
+		;;
+esac
 AC_MSG_RESULT($objc_runtime)
 
 AC_CHECK_FUNC(objc_getProperty,, [
@@ -376,3 +400,10 @@ AC_SUBST(PACKAGE, ObjFW)
 AC_CONFIG_FILES([buildsys.mk extra.mk objfw-config])
 AC_CONFIG_HEADERS([config.h src/objfw-defs.h])
 AC_OUTPUT
+
+if test x"$objc_runtime" = x"GNU"; then
+	echo
+	echo "Warning: You are using GNU libobjc! Support for GNU libobjc will "
+	echo "be dropped in the next version! You should upgrade to ObjFW-RT"
+	echo "(the ObjFW runtime) instead!"
+fi
