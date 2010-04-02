@@ -204,6 +204,14 @@ static OFMutex *mutex = nil;
 	if (sock != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException newWithClass: isa];
 
+#ifndef HAVE_THREADSAFE_GETADDRINFO
+	if (family != AF_INET)
+		@throw [OFBindFailedException newWithClass: isa
+						      node: node
+						   service: service
+						    family: family];
+#endif
+
 	if ((sock = socket(family, SOCK_STREAM, 0)) == INVALID_SOCKET)
 		@throw [OFBindFailedException newWithClass: isa
 						      node: node
@@ -217,14 +225,19 @@ static OFMutex *mutex = nil;
 	hints.ai_family = family;
 	hints.ai_socktype = SOCK_STREAM;
 
-	if (getaddrinfo([node cString], [service cString], &hints, &res))
+	if (getaddrinfo([node cString], [service cString], &hints, &res)) {
+		close(sock);
+		sock = INVALID_SOCKET;
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
 			    node: node
 			 service: service];
+	}
 
 	if (bind(sock, res->ai_addr, res->ai_addrlen) == -1) {
 		freeaddrinfo(res);
+		close(sock);
+		sock = INVALID_SOCKET;
 		@throw [OFBindFailedException newWithClass: isa
 						      node: node
 						   service: service
@@ -237,12 +250,6 @@ static OFMutex *mutex = nil;
 	struct servent *se;
 	struct sockaddr_in addr;
 	uint16_t port;
-
-	if (family != AF_INET)
-		@throw [OFBindFailedException newWithClass: isa
-						      node: node
-						   service: service
-						    family: family];
 
 #ifdef OF_THREADS
 	[mutex lock];
@@ -265,6 +272,8 @@ static OFMutex *mutex = nil;
 #ifdef OF_THREADS
 		[mutex unlock];
 #endif
+		close(sock);
+		sock = INVALID_SOCKET;
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
 			    node: node
@@ -279,6 +288,8 @@ static OFMutex *mutex = nil;
 #ifdef OF_THREADS
 		[mutex unlock];
 #endif
+		close(sock);
+		sock = INVALID_SOCKET;
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
 			    node: node
@@ -291,11 +302,14 @@ static OFMutex *mutex = nil;
 	[mutex unlock];
 #endif
 
-	if (bind(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1)
+	if (bind(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
+		close(sock);
+		sock = INVALID_SOCKET;
 		@throw [OFBindFailedException newWithClass: isa
 						      node: node
 						   service: service
 						    family: family];
+	}
 #endif
 
 	return self;
