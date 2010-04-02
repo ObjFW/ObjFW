@@ -22,8 +22,9 @@
  */
 @interface OFFile: OFStream
 {
-	FILE *fp;
-	BOOL close;
+	int fd;
+	BOOL closable;
+	BOOL eos;
 }
 
 /**
@@ -35,11 +36,11 @@
 	  mode: (OFString*)mode;
 
 /**
- * \param fp A file pointer, returned from for example fopen().
+ * \param fd A file descriptor, returned from for example open().
  *	     It is not closed when the OFFile object is deallocated!
  * \return A new autoreleased OFFile
  */
-+ fileWithFilePointer: (FILE*)fp;
++ fileWithFileDescriptor: (int)fd;
 
 /**
  * Changes the mode of a file.
@@ -122,10 +123,10 @@
 /**
  * Initializes an already allocated OFFile.
  *
- * \param fp A file pointer, returned from for example fopen().
+ * \param fd A file descriptor, returned from for example open().
  *	     It is not closed when the OFFile object is deallocated!
  */
-- initWithFilePointer: (FILE*)fp;
+- initWithFileDescriptor: (int)fd;
 @end
 
 /// An OFFile object for stdin

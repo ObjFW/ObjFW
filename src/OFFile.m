@@ -17,6 +17,7 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 
 #import "OFFile.h"
 #import "OFString.h"
@@ -26,9 +27,43 @@
 # import <windows.h>
 #endif
 
+#ifndef O_BINARY
+# define O_BINARY 0
+#endif
+
 OFFile *of_stdin = nil;
 OFFile *of_stdout = nil;
 OFFile *of_stderr = nil;
+
+static int parse_mode(const char *mode)
+{
+	if (!strcmp(mode, "r"))
+		return O_RDONLY;
+	if (!strcmp(mode, "rb"))
+		return O_RDONLY | O_BINARY;
+	if (!strcmp(mode, "r+"))
+		return O_RDWR;
+	if (!strcmp(mode, "rb+") || !strcmp(mode, "r+b"))
+		return O_RDWR | O_BINARY;
+	if (!strcmp(mode, "w"))
+		return O_WRONLY | O_CREAT | O_TRUNC;
+	if (!strcmp(mode, "wb"))
+		return O_WRONLY | O_CREAT | O_TRUNC | O_BINARY;
+	if (!strcmp(mode, "w+"))
+		return O_RDWR | O_CREAT | O_TRUNC;
+	if (!strcmp(mode, "wb+") || !strcmp(mode, "w+b"))
+		return O_RDWR | O_CREAT | O_TRUNC | O_BINARY;
+	if (!strcmp(mode, "a"))
+		return O_WRONLY | O_CREAT | O_APPEND;
+	if (!strcmp(mode, "ab"))
+		return O_WRONLY | O_CREAT | O_APPEND | O_BINARY;
+	if (!strcmp(mode, "a+"))
+		return O_RDWR | O_CREAT | O_APPEND;
+	if (!strcmp(mode, "ab+") || !strcmp(mode, "a+b"))
+		return O_RDWR | O_CREAT | O_APPEND | O_BINARY;
+
+	return -1;
+}
 
 /// \cond internal
 @interface OFFileSingleton: OFFile
@@ -41,9 +76,9 @@ OFFile *of_stderr = nil;
 	if (self != [OFFile class])
 		return;
 
-	of_stdin = [[OFFileSingleton alloc] initWithFilePointer: stdin];
-	of_stdout = [[OFFileSingleton alloc] initWithFilePointer: stdout];
-	of_stderr = [[OFFileSingleton alloc] initWithFilePointer: stderr];
+	of_stdin = [[OFFileSingleton alloc] initWithFileDescriptor: 0];
+	of_stdout = [[OFFileSingleton alloc] initWithFileDescriptor: 1];
+	of_stderr = [[OFFileSingleton alloc] initWithFileDescriptor: 2];
 }
 
 + fileWithPath: (OFString*)path
@@ -53,9 +88,9 @@ OFFile *of_stderr = nil;
 				      mode: mode] autorelease];
 }
 
-+ fileWithFilePointer: (FILE*)fp_
++ fileWithFileDescriptor: (int)fd_
 {
-	return [[[self alloc] initWithFilePointer: fp_] autorelease];
+	return [[[self alloc] initWithFileDescriptor: fd_] autorelease];
 }
 
 + (void)changeModeOfFile: (OFString*)path
@@ -153,10 +188,18 @@ OFFile *of_stderr = nil;
 	  mode: (OFString*)mode
 {
 	Class c;
+	int flags;
 
 	self = [super init];
 
-	if ((fp = fopen([path cString], [mode cString])) == NULL) {
+	if ((flags = parse_mode([mode cString])) == -1) {
+		c = isa;
+		[super dealloc];
+		@throw [OFInvalidArgumentException newWithClass: c
+						       selector: _cmd];
+	}
+
+	if ((fd = open([path cString], flags)) == -1) {
 		c = isa;
 		[super dealloc];
 		@throw [OFOpenFileFailedException newWithClass: c
@@ -164,34 +207,34 @@ OFFile *of_stderr = nil;
 							  mode: mode];
 	}
 
-	close = YES;
+	closable = YES;
 
 	return self;
 }
 
-- initWithFilePointer: (FILE*)fp_
+- initWithFileDescriptor: (int)fd_
 {
 	self = [super init];
 
-	fp = fp_;
+	fd = fd_;
 
 	return self;
 }
 
 - (void)dealloc
 {
-	if (close && fp != NULL)
-		fclose(fp);
+	if (closable && fd != -1)
+		close(fd);
 
 	[super dealloc];
 }
 
 - (BOOL)atEndOfStreamWithoutCache
 {
-	if (fp == NULL)
+	if (fd == -1)
 		return YES;
 
-	return (feof(fp) == 0 ? NO : YES);
+	return eos;
 }
 
 - (size_t)readNBytesWithoutCache: (size_t)size
@@ -199,10 +242,11 @@ OFFile *of_stderr = nil;
 {
 	size_t ret;
 
-	if (fp == NULL || feof(fp) || ((ret = fread(buf, 1, size, fp)) == 0 &&
-	    size != 0 && !feof(fp)))
+	if (fd == -1 || eos)
 		@throw [OFReadFailedException newWithClass: isa
 						      size: size];
+	if ((ret = read(fd, buf, size)) == 0)
+		eos = YES;
 
 	return ret;
 }
@@ -212,8 +256,7 @@ OFFile *of_stderr = nil;
 {
 	size_t ret;
 
-	if (fp == NULL || feof(fp) ||
-	    ((ret = fwrite(buf, 1, size, fp)) < size && size != 0))
+	if (fd == -1 || eos || (ret = write(fd, buf, size)) < size)
 		@throw [OFWriteFailedException newWithClass: isa
 						       size: size];
 
@@ -222,9 +265,9 @@ OFFile *of_stderr = nil;
 
 - close
 {
-	if (fp != NULL)
-		fclose(fp);
-	fp = NULL;
+	if (fd != -1)
+		close(fd);
+	fd = -1;
 
 	return self;
 }
