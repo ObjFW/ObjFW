@@ -831,7 +831,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return num;
 }
 
-- (intmax_t)hexadecimalValueAsInteger
+- (uintmax_t)hexadecimalValueAsInteger
 {
 	int i = 0;
 	uintmax_t num = 0;

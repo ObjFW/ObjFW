@@ -298,7 +298,7 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  *
  * \return An OFNumber
  */
-- (intmax_t)hexadecimalValueAsInteger;
+- (uintmax_t)hexadecimalValueAsInteger;
 @end
 
 #import "OFConstString.h"
