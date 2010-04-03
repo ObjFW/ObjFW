@@ -31,6 +31,8 @@
 # define O_BINARY 0
 #endif
 
+#define DEFAULT_MODE S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
+
 OFFile *of_stdin = nil;
 OFFile *of_stdout = nil;
 OFFile *of_stderr = nil;
@@ -199,7 +201,7 @@ static int parse_mode(const char *mode)
 						       selector: _cmd];
 	}
 
-	if ((fd = open([path cString], flags)) == -1) {
+	if ((fd = open([path cString], flags, DEFAULT_MODE)) == -1) {
 		c = isa;
 		[super dealloc];
 		@throw [OFOpenFileFailedException newWithClass: c
