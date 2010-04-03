@@ -367,6 +367,27 @@
 		      fromBuffer: [str cString]];
 }
 
+- (size_t)writeLine: (OFString*)str
+{
+	size_t len = [str cStringLength];
+	char *tmp;
+
+	tmp = [self allocMemoryWithSize: len + 2];
+	memcpy(tmp, [str cString], len);
+	tmp[len] = '\n';
+	tmp[len + 1] = '\0';
+
+	@try {
+		return [self writeNBytes: len + 1
+			      fromBuffer: tmp];
+	} @finally {
+		[self freeMemory: tmp];
+	}
+
+	/* Get rid of a warning, never reached anyway */
+	assert(0);
+}
+
 - close
 {
 	@throw [OFNotImplementedException newWithClass: isa

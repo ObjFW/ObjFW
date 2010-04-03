@@ -130,6 +130,14 @@
 - (size_t)writeString: (OFString*)str;
 
 /**
+ * Writes a string into the stream with a trailing newline.
+ *
+ * \param str The string from which the data is written to the stream
+ * \return The number of bytes written
+ */
+- (size_t)writeLine: (OFString*)str;
+
+/**
  * Closes the stream.
  */
 - close;
