@@ -12,6 +12,7 @@
 #import "OFObject.h"
 
 @class OFString;
+@class OFDataArray;
 
 /**
  * \brief A base class for different types of streams.
@@ -72,6 +73,12 @@
  */
 - (size_t)readNBytesWithoutCache: (size_t)size
 		      intoBuffer: (char*)buf;
+
+/**
+ * \return An OFDataArray with an item size of 1 with all the data of the
+ *	   stream until the end of the stream is reached.
+ */
+- (OFDataArray*)readDataArrayTillEndOfStream;
 
 /**
  * Read until a newline, \\0 or end of stream occurs.

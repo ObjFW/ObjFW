@@ -16,6 +16,7 @@
 
 #import "OFStream.h"
 #import "OFString.h"
+#import "OFDataArray.h"
 #import "OFExceptions.h"
 #import "macros.h"
 
@@ -82,6 +83,30 @@
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
+}
+
+- (OFDataArray*)readDataArrayTillEndOfStream
+{
+	OFDataArray *a;
+	char *buf;
+
+	a = [OFDataArray dataArrayWithItemSize: 1];
+	buf = [self allocMemoryWithSize: of_pagesize];
+
+	@try {
+		while (![self atEndOfStream]) {
+			size_t size;
+
+			size = [self readNBytes: of_pagesize
+				     intoBuffer: buf];
+			[a addNItems: size
+			  fromCArray: buf];
+		}
+	} @finally {
+		[self freeMemory: buf];
+	}
+
+	return a;
 }
 
 - (OFString*)readLine
