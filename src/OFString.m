@@ -775,7 +775,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	    ? NO : YES);
 }
 
-- (OFArray*)splitWithDelimiter: (OFString*)delimiter
+- (OFArray*)componentsSeparatedByString: (OFString*)delimiter
 {
 	OFAutoreleasePool *pool;
 	OFMutableArray *array;

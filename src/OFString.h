@@ -282,7 +282,7 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  * \param delimiter The delimiter for splitting
  * \return An autoreleased OFArray with the splitted string
  */
-- (OFArray*)splitWithDelimiter: (OFString*)delimiter;
+- (OFArray*)componentsSeparatedByString: (OFString*)delimiter;
 
 /**
  * Returns the decimal value of the string as an intmax_t or throws an

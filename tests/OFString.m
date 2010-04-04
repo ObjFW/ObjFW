@@ -186,8 +186,8 @@ string_tests()
 	    ![@"foobar" hasSuffix: @"foobar0"])
 
 	i = 0;
-	TEST(@"-[splitWithDelimiter:]",
-	    (a = [@"fooXXbarXXXXbazXXXX" splitWithDelimiter: @"XX"]) &&
+	TEST(@"-[componentsSeparatedByString:]",
+	    (a = [@"fooXXbarXXXXbazXXXX" componentsSeparatedByString: @"XX"]) &&
 	    [[a objectAtIndex: i++] isEqual: @"foo"] &&
 	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
 	    [[a objectAtIndex: i++] isEqual: @""] &&
