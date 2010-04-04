@@ -124,12 +124,6 @@
 }
 
 - initWithClass: (Class)class__
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
-}
-
-- initWithClass: (Class)class__
 	   size: (size_t)size
 {
 	self = [super initWithClass: class__];
@@ -144,9 +138,14 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFString alloc] initWithFormat:
-	    @"Could not allocate %zu bytes in class %s!", req_size,
-	    [class_ className]];
+	if (req_size)
+		string = [[OFString alloc] initWithFormat:
+		    @"Could not allocate %zu bytes in class %s!", req_size,
+		    [class_ className]];
+	else
+		string = [[OFString alloc] initWithFormat:
+		    @"Could not allocate enough memory in class %s!",
+		    [class_ className]];
 
 	return string;
 }
