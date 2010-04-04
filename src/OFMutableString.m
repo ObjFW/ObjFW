@@ -258,9 +258,8 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 
 	if ((vasprintf(&t, [fmt cString], args)) == -1)
 		/*
-		 * This is only the most likely error to happen.
-		 * Unfortunately, as errno isn't always thread-safe, there's
-		 * no good way for us to find out what really happened.
+		 * This is only the most likely error to happen. Unfortunately,
+		 * there is no good way to check what really happened.
 		 */
 		@throw [OFOutOfMemoryException newWithClass: isa];
 

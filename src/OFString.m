@@ -465,7 +465,12 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	if ((t = vasprintf(&string, [fmt cString], args)) == -1) {
 		c = isa;
 		[super dealloc];
-		@throw [OFInitializationFailedException newWithClass: c];
+
+		/*
+		 * This is only the most likely error to happen. Unfortunately,
+		 * there is no good way to check what really happened.
+		 */
+		@throw [OFOutOfMemoryException newWithClass: c];
 	}
 	length = t;
 
