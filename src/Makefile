@@ -4,7 +4,8 @@ LIB = ${LIB_PREFIX}objfw${LIB_SUFFIX}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 
-SRCS = OFArray.m		\
+SRCS = OFApplication.m		\
+       OFArray.m		\
        OFAutoreleasePool.m	\
        OFConstString.m		\
        OFDataArray.m		\

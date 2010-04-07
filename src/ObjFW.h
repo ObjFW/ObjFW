@@ -37,6 +37,8 @@
 #import "OFHashes.h"
 #import "OFXMLElement.h"
 
+#import "OFApplication.h"
+
 #import "macros.h"
 
 #ifdef OF_PLUGINS

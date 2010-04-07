@@ -71,6 +71,8 @@
 /* Begin PBXFileReference section */
 		4B0108C910EB8C9300631877 /* OFEnumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFEnumerator.h; path = src/OFEnumerator.h; sourceTree = SOURCE_ROOT; };
 		4B0108CA10EB8C9300631877 /* OFEnumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFEnumerator.m; path = src/OFEnumerator.m; sourceTree = SOURCE_ROOT; };
+		4B175C1D116D130B003C99CB /* OFApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFApplication.h; path = src/OFApplication.h; sourceTree = SOURCE_ROOT; };
+		4B175C1E116D130B003C99CB /* OFApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFApplication.m; path = src/OFApplication.m; sourceTree = SOURCE_ROOT; };
 		4B4986DF1101F64500A2CFDA /* objc_properties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = objc_properties.m; path = src/objc_properties.m; sourceTree = SOURCE_ROOT; };
 		4B6799561099E7C50041064A /* asprintf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = asprintf.h; path = src/asprintf.h; sourceTree = "<group>"; };
 		4B6799581099E7C50041064A /* objc_sync.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = objc_sync.m; path = src/objc_sync.m; sourceTree = "<group>"; };
@@ -135,6 +137,8 @@
 		08FB7794FE84155DC02AAC07 /* ObjFW */ = {
 			isa = PBXGroup;
 			children = (
+				4B175C1D116D130B003C99CB /* OFApplication.h */,
+				4B175C1E116D130B003C99CB /* OFApplication.m */,
 				4B67995A1099E7C50041064A /* OFArray.h */,
 				4B67995B1099E7C50041064A /* OFArray.m */,
 				4B67995C1099E7C50041064A /* OFAutoreleasePool.h */,
