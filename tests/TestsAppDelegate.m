@@ -15,6 +15,8 @@
 
 #import "TestsAppDelegate.h"
 
+OF_APPLICATION_DELEGATE(TestsAppDelegate)
+
 @implementation TestsAppDelegate
 - (void)outputString: (OFString*)str
 	   withColor: (int)color
@@ -97,9 +99,3 @@
 #endif
 }
 @end
-
-int
-main(int argc, char *argv[])
-{
-	return of_application_main(argc, argv, [TestsAppDelegate class]);
-}

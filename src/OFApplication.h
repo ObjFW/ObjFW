@@ -14,6 +14,13 @@
 @class OFArray;
 @class OFMutableArray;
 
+#define OF_APPLICATION_DELEGATE(cls)					\
+	int								\
+	main(int argc, char *argv[])					\
+	{								\
+		return of_application_main(argc, argv, [cls class]);	\
+	}
+
 /**
  * \brief A protocol for delegates of OFApplication.
  */
