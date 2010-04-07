@@ -52,7 +52,7 @@ AC_TRY_COMPILE([
 	[foo bar];
 	], [
 	AC_DEFINE(OF_HAVE_PROPERTIES, 1, [Compiler support for properties])
-	AC_SUBST(PROPERTIES_M, "properties.m")
+	AC_SUBST(PROPERTIESTESTS_M, "PropertiesTests.m")
 	AC_MSG_RESULT(yes)
 	], [
 	AC_MSG_RESULT(no)])
@@ -112,6 +112,7 @@ BUILDSYS_LIB
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
 if test x"$PLUGIN_SUFFIX" != "x"; then
 	AC_SUBST(OFPLUGIN_M, "OFPlugin.m")
+	AC_SUBST(OFPLUGINTESTS_M, "OFPluginTests.m")
 	AC_SUBST(TESTPLUGIN, "plugin")
 	AC_DEFINE(OF_PLUGINS, 1, [Whether we have plugin support])
 	AC_SUBST(OFPLUGINS_DEF, "-DOF_PLUGINS")
@@ -200,6 +201,7 @@ if test x"$enable_threads" != x"no"; then
 
 	AC_DEFINE(OF_THREADS, 1, [Whether we have threads])
 	AC_SUBST(OFTHREAD_M, "OFThread.m")
+	AC_SUBST(OFTHREADTESTS_M, "OFThreadTests.m")
 	AC_SUBST(THREADING_H, "threading.h")
 
 	AC_CHECK_FUNC(objc_sync_enter,, [

@@ -3,21 +3,21 @@ include ../extra.mk
 SUBDIRS = ${TESTPLUGIN}
 
 PROG_NOINST = tests${PROG_SUFFIX}
-SRCS = OFArray.m		\
-       OFDataArray.m		\
-       OFDictionary.m		\
-       OFHashes.m		\
-       OFList.m			\
-       OFNumber.m		\
-       OFObject.m		\
-       ${OFPLUGIN_M}		\
-       OFStream.m		\
-       OFString.m		\
-       OFTCPSocket.m		\
-       ${OFTHREAD_M}		\
-       OFXMLElement.m		\
-       OFXMLParser.m		\
-       ${PROPERTIES_M}		\
+SRCS = OFArrayTests.m		\
+       OFDataArrayTests.m	\
+       OFDictionaryTests.m	\
+       OFHashesTests.m		\
+       OFListTests.m		\
+       OFNumberTests.m		\
+       OFObjectTests.m		\
+       ${OFPLUGINTESTS_M}	\
+       OFStreamTests.m		\
+       OFStringTests.m		\
+       OFTCPSocketTests.m	\
+       ${OFTHREADTESTS_M}	\
+       OFXMLElementTests.m	\
+       OFXMLParserTests.m	\
+       ${PROPERTIES_TESTS_M}	\
        TestsAppDelegate.m
 
 IPHONE_USER = mobile
