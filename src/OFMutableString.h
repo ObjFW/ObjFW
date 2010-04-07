@@ -78,7 +78,7 @@
  *
  * \param fmt A format string which generates the string to append
  */
-- appendWithFormat: (OFString*)fmt, ...;
+- appendFormat: (OFString*)fmt, ...;
 
 /**
  * Appends a formatted UTF-8 encoded C string to the OFString.
@@ -87,8 +87,8 @@
  * \param fmt A format string which generates the string to append
  * \param args The arguments used in the format string
  */
-- appendWithFormat: (OFString*)fmt
-	 arguments: (va_list)args;
+-  appendFormat: (OFString*)fmt
+  withArguments: (va_list)args;
 
 /**
  * Reverse the OFString.

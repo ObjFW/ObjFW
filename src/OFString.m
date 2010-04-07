@@ -456,10 +456,11 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 	self = [super init];
 
-	if (fmt == NULL) {
+	if (fmt == nil) {
 		c = isa;
 		[super dealloc];
-		@throw [OFInvalidFormatException newWithClass: c];
+		@throw [OFInvalidArgumentException newWithClass: c
+						       selector: _cmd];
 	}
 
 	if ((t = vasprintf(&string, [fmt cString], args)) == -1) {

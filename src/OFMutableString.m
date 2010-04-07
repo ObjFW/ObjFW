@@ -235,33 +235,35 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 	return self;
 }
 
-- appendWithFormat: (OFString*)fmt, ...
+- appendFormat: (OFString*)fmt, ...
 {
 	id ret;
 	va_list args;
 
 	va_start(args, fmt);
-	ret = [self appendWithFormat: fmt
-			   arguments: args];
+	ret = [self appendFormat: fmt
+		   withArguments: args];
 	va_end(args);
 
 	return ret;
 }
 
-- appendWithFormat: (OFString*)fmt
-	 arguments: (va_list)args
+-  appendFormat: (OFString*)fmt
+  withArguments: (va_list)args
 {
 	char *t;
 
-	if (fmt == NULL)
-		@throw [OFInvalidFormatException newWithClass: isa];
+	if (fmt == nil)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
 
-	if ((vasprintf(&t, [fmt cString], args)) == -1)
+	if ((vasprintf(&t, [fmt cString], args)) == -1) {
 		/*
 		 * This is only the most likely error to happen. Unfortunately,
 		 * there is no good way to check what really happened.
 		 */
 		@throw [OFOutOfMemoryException newWithClass: isa];
+	}
 
 	@try {
 		[self appendCString: t];

@@ -141,8 +141,8 @@ string_tests()
 	    [(s[0] = [OFMutableString stringWithFormat: @"%s: %d", "test", 123])
 	    isEqual: @"test: 123"])
 
-	TEST(@"-[appendWithFormat:]",
-	    [([s[0] appendWithFormat: @"%02X", 15]) isEqual: @"test: 1230F"])
+	TEST(@"-[appendFormat:]",
+	    [([s[0] appendFormat: @"%02X", 15]) isEqual: @"test: 1230F"])
 
 	TEST(@"-[indexOfFirstOccurrenceOfString:]",
 	    [@"𝄞öö" indexOfFirstOccurrenceOfString: @"öö"] == 1 &&
