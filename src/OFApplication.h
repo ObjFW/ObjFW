@@ -15,7 +15,7 @@
 @class OFMutableArray;
 
 /**
- * \brief A protocol for delegates of OFApplication,
+ * \brief A protocol for delegates of OFApplication.
  */
 @protocol OFApplicationDelegate
 /**
@@ -25,7 +25,7 @@
 - (void)applicationDidFinishLaunching;
 
 /**
- * This method is called when the application is going to get terminated.
+ * This method is called when the application will terminate.
  */
 - (void)applicationWillTerminate;
 @end
