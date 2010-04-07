@@ -14,7 +14,7 @@
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
 
-#import "main.h"
+#import "TestsAppDelegate.h"
 
 static OFString *module = @"Properties";
 
@@ -41,8 +41,8 @@ static OFString *module = @"Properties";
 }
 @end
 
-void
-properties_tests()
+@implementation TestsAppDelegate (PropertiesTests)
+- (void)propertiesTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	PropertiesTest *pt = [[[PropertiesTest alloc] init] autorelease];
@@ -57,3 +57,4 @@ properties_tests()
 
 	[pool drain];
 }
+@end

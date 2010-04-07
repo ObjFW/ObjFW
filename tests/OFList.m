@@ -16,7 +16,7 @@
 #import "OFString.h"
 #import "OFExceptions.h"
 
-#import "main.h"
+#import "TestsAppDelegate.h"
 
 static OFString *module = @"OFList";
 static OFString *strings[] = {
@@ -25,8 +25,8 @@ static OFString *strings[] = {
 	@"Baz"
 };
 
-void
-list_tests()
+@implementation TestsAppDelegate (OFListTests)
+- (void)listTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFList *list;
@@ -70,3 +70,4 @@ list_tests()
 
 	[pool drain];
 }
+@end

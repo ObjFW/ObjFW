@@ -17,7 +17,7 @@
 #import "OFString.h"
 #import "OFExceptions.h"
 
-#import "main.h"
+#import "TestsAppDelegate.h"
 
 static OFString *module = @"OFDictionary";
 static OFString *keys[] = {
@@ -29,8 +29,8 @@ static OFString *values[] = {
 	@"value2"
 };
 
-void
-dictionary_tests()
+@implementation TestsAppDelegate (OFDictionaryTests)
+- (void)dictionaryTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFMutableDictionary *dict = [OFMutableDictionary dictionary], *dict2;
@@ -150,3 +150,4 @@ dictionary_tests()
 
 	[pool drain];
 }
+@end

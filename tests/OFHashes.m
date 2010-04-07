@@ -19,7 +19,7 @@
 #import "OFString.h"
 #import "OFExceptions.h"
 
-#import "main.h"
+#import "TestsAppDelegate.h"
 
 static OFString *module = @"OFHashes";
 
@@ -29,8 +29,8 @@ const uint8_t testfile_sha1[OF_SHA1_DIGEST_SIZE] =
 	"\xC9\x9A\xB8\x7E\x1E\xC8\xEC\x65\xD5\xEB\xE4\x2E\x0D\xA6\x80\x96\xF5"
 	"\x94\xE7\x17";
 
-void
-hashes_tests()
+@implementation TestsAppDelegate (OFHashesTests)
+- (void)hashesTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFMD5Hash *md5;
@@ -66,3 +66,4 @@ hashes_tests()
 
 	[pool drain];
 }
+@end

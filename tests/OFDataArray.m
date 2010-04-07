@@ -18,13 +18,13 @@
 #import "OFString.h"
 #import "OFExceptions.h"
 
-#import "main.h"
+#import "TestsAppDelegate.h"
 
 static OFString *module;
 const char *str = "Hello!";
 
-static void
-do_tests(Class class)
+@implementation TestsAppDelegate (OFDataArrayTests)
+- (void)dataArrayTestsWithClass: (Class)class
 {
 	OFDataArray *array[4];
 	void *data[2];
@@ -111,16 +111,16 @@ do_tests(Class class)
 	    [array[0] removeNItems: [array[0] count] + 1])
 }
 
-void
-dataarray_tests()
+- (void)dataArrayTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 
 	module = @"OFDataArray";
-	do_tests([OFDataArray class]);
+	[self dataArrayTestsWithClass: [OFDataArray class]];
 
 	module = @"OFBigDataArray";
-	do_tests([OFBigDataArray class]);
+	[self dataArrayTestsWithClass: [OFBigDataArray class]];
 
 	[pool drain];
 }
+@end

@@ -11,15 +11,16 @@
 
 #include "config.h"
 
+#import "OFString.h"
 #import "OFNumber.h"
 #import "OFAutoreleasePool.h"
 
-#import "main.h"
+#import "TestsAppDelegate.h"
 
 static OFString *module = @"OFNumber";
 
-void
-number_tests()
+@implementation TestsAppDelegate (OFNumberTests)
+- (void)numberTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFNumber *num;
@@ -48,3 +49,4 @@ number_tests()
 
 	[pool drain];
 }
+@end

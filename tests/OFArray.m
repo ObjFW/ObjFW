@@ -16,7 +16,7 @@
 #import "OFString.h"
 #import "OFExceptions.h"
 
-#import "main.h"
+#import "TestsAppDelegate.h"
 
 static OFString *module = @"OFArray";
 static OFString *c_ary[] = {
@@ -26,8 +26,8 @@ static OFString *c_ary[] = {
 	nil
 };
 
-void
-array_tests()
+@implementation TestsAppDelegate (OFArrayTests)
+- (void)arrayTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFArray *a[3];
@@ -189,3 +189,4 @@ array_tests()
 
 	[pool drain];
 }
+@end

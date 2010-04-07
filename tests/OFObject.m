@@ -11,15 +11,16 @@
 
 #include "config.h"
 
+#import "OFString.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 
-#import "main.h"
+#import "TestsAppDelegate.h"
 
 static OFString *module = @"OFObject";
 
-void
-object_tests()
+@implementation TestsAppDelegate (OFObjectTests)
+- (void)objectTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFObject *obj = [[[OFObject alloc] init] autorelease];
@@ -65,3 +66,4 @@ object_tests()
 
 	[pool drain];
 }
+@end

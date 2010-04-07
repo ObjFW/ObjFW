@@ -13,10 +13,11 @@
 
 #include <string.h>
 
+#import "OFString.h"
 #import "OFStream.h"
 #import "OFAutoreleasePool.h"
 
-#import "main.h"
+#import "TestsAppDelegate.h"
 
 static OFString *module = @"OFStream";
 
@@ -59,8 +60,8 @@ static OFString *module = @"OFStream";
 }
 @end
 
-void
-stream_tests()
+@implementation TestsAppDelegate (OFStreamTests)
+- (void)streamTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	StreamTester *t = [[[StreamTester alloc] init] autorelease];
@@ -77,3 +78,4 @@ stream_tests()
 
 	[pool drain];
 }
+@end

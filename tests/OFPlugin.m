@@ -16,14 +16,14 @@
 #import "OFString.h"
 #import "OFExceptions.h"
 
-#import "main.h"
+#import "TestsAppDelegate.h"
 
 #import "plugin/TestPlugin.h"
 
 static OFString *module = @"OFPlugin";
 
-void
-plugin_tests()
+@implementation TestsAppDelegate (OFPluginTests)
+- (void)pluginTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	TestPlugin *plugin;
@@ -35,3 +35,4 @@ plugin_tests()
 
 	[pool drain];
 }
+@end

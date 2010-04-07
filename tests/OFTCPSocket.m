@@ -21,12 +21,12 @@
 #import "OFExceptions.h"
 #import "macros.h"
 
-#import "main.h"
+#import "TestsAppDelegate.h"
 
 static OFString *module = @"OFTCPSocket";
 
-void
-tcpsocket_tests()
+@implementation TestsAppDelegate (OFTCPSocketTests)
+- (void)TCPSocketTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFTCPSocket *server, *client = nil, *accepted;
@@ -65,3 +65,4 @@ tcpsocket_tests()
 
 	[pool drain];
 }
+@end

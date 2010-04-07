@@ -16,7 +16,7 @@
 #import "OFString.h"
 #import "OFExceptions.h"
 
-#import "main.h"
+#import "TestsAppDelegate.h"
 
 static OFString *module = @"OFThread";
 
@@ -33,8 +33,8 @@ static OFString *module = @"OFThread";
 }
 @end
 
-void
-thread_tests()
+@implementation TestsAppDelegate (OFThreadTests)
+- (void)threadTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	TestThread *t;
@@ -55,3 +55,4 @@ thread_tests()
 
 	[pool drain];
 }
+@end

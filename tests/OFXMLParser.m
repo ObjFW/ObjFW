@@ -20,7 +20,7 @@
 #import "OFString.h"
 #import "OFExceptions.h"
 
-#import "main.h"
+#import "TestsAppDelegate.h"
 
 static OFString *module = @"OFXMLParser";
 static int i = 0;
@@ -32,9 +32,14 @@ enum event_type {
 	COMMENT
 };
 
-static void
-callback(enum event_type et, OFString *name, OFString *prefix, OFString *ns,
-    OFArray *attrs, OFString *string, OFString *comment)
+@implementation TestsAppDelegate (OFXMLParser)
+- (void)xmlParserCallbackWithEventType: (enum event_type)et
+				  name: (OFString*)name
+				prefix: (OFString*)prefix
+			     namespace: (OFString*)ns
+			    attributes: (OFArray*)attrs
+				string: (OFString*)string
+			       comment: (OFString*)comment
 {
 	OFString *msg;
 	id *carray;
@@ -116,17 +121,19 @@ callback(enum event_type et, OFString *name, OFString *prefix, OFString *ns,
 	}
 }
 
-@interface ParserDelegate: OFObject
-@end
-
-@implementation ParserDelegate
 -     (void)xmlParser: (OFXMLParser*)parser
   didStartTagWithName: (OFString*)name
 	       prefix: (OFString*)prefix
 	    namespace: (OFString*)ns
 	   attributes: (OFArray*)attrs
 {
-	callback(TAG_START, name, prefix, ns, attrs, nil, nil);
+	[self xmlParserCallbackWithEventType: TAG_START
+					name: name
+				      prefix: prefix
+				   namespace: ns
+				  attributes: attrs
+				      string: nil
+				     comment: nil];
 }
 
 -   (void)xmlParser: (OFXMLParser*)parser
@@ -134,19 +141,37 @@ callback(enum event_type et, OFString *name, OFString *prefix, OFString *ns,
 	     prefix: (OFString*)prefix
 	  namespace: (OFString*)ns
 {
-	callback(TAG_END, name, prefix, ns, nil, nil, nil);
+	[self xmlParserCallbackWithEventType: TAG_END
+					name: name
+				      prefix: prefix
+				   namespace: ns
+				  attributes: nil
+				      string: nil
+				     comment: nil];
 }
 
 - (void)xmlParser: (OFXMLParser*)parser
       foundString: (OFString*)string
 {
-	callback(STRING, nil, nil, nil, nil, string, nil);
+	[self xmlParserCallbackWithEventType: STRING
+					name: nil
+				      prefix: nil
+				   namespace: nil
+				  attributes: nil
+				      string: string
+				     comment: nil];
 }
 
 - (void)xmlParser: (OFXMLParser*)parser
      foundComment: (OFString*)comment
 {
-	callback(COMMENT, nil, nil, nil, nil, nil, comment);
+	[self xmlParserCallbackWithEventType: COMMENT
+					name: nil
+				      prefix: nil
+				   namespace: nil
+				  attributes: nil
+				      string: nil
+				     comment: comment];
 }
 
 -    (OFString*)xmlParser: (OFXMLParser*)parser
@@ -157,10 +182,8 @@ callback(enum event_type et, OFString *name, OFString *prefix, OFString *ns,
 
 	return nil;
 }
-@end
 
-void
-xmlparser_tests()
+- (void)XMLParserTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFXMLParser *parser;
@@ -171,8 +194,7 @@ xmlparser_tests()
 
 	TEST(@"+[xmlParser]", (parser = [OFXMLParser xmlParser]))
 
-	TEST(@"-[setDelegate:]",
-	    [parser setDelegate: [[[ParserDelegate alloc] init] autorelease]])
+	TEST(@"-[setDelegate:]", [parser setDelegate: self])
 
 	/* Simulate a stream where we only get chunks */
 	len = strlen(str);
@@ -190,3 +212,4 @@ xmlparser_tests()
 
 	[pool drain];
 }
+@end

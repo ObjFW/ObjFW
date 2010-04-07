@@ -16,7 +16,7 @@
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 
-#import "main.h"
+#import "TestsAppDelegate.h"
 
 static OFString *module = @"OFString";
 static OFString* whitespace[] = {
@@ -37,8 +37,8 @@ static OFString* whitespace[] = {
 }
 @end
 
-void
-string_tests()
+@implementation TestsAppDelegate (OFStringTests)
+- (void)stringTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFMutableString *s[3];
@@ -341,3 +341,4 @@ string_tests()
 
 	[pool drain];
 }
+@end

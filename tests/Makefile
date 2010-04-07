@@ -3,22 +3,22 @@ include ../extra.mk
 SUBDIRS = ${TESTPLUGIN}
 
 PROG_NOINST = tests${PROG_SUFFIX}
-SRCS = OFArray.m	\
-       OFDataArray.m	\
-       OFDictionary.m	\
-       OFHashes.m	\
-       OFList.m		\
-       OFNumber.m	\
-       OFObject.m	\
-       ${OFPLUGIN_M}	\
-       OFStream.m	\
-       OFString.m	\
-       OFTCPSocket.m	\
-       ${OFTHREAD_M}	\
-       OFXMLElement.m	\
-       OFXMLParser.m	\
-       main.m		\
-       ${PROPERTIES_M}
+SRCS = OFArray.m		\
+       OFDataArray.m		\
+       OFDictionary.m		\
+       OFHashes.m		\
+       OFList.m			\
+       OFNumber.m		\
+       OFObject.m		\
+       ${OFPLUGIN_M}		\
+       OFStream.m		\
+       OFString.m		\
+       OFTCPSocket.m		\
+       ${OFTHREAD_M}		\
+       OFXMLElement.m		\
+       OFXMLParser.m		\
+       ${PROPERTIES_M}		\
+       TestsAppDelegate.m
 
 IPHONE_USER = mobile
 IPHONE_TMP = /tmp/objfw-test

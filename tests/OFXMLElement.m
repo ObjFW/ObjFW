@@ -18,12 +18,12 @@
 #import "OFString.h"
 #import "OFExceptions.h"
 
-#import "main.h"
+#import "TestsAppDelegate.h"
 
 static OFString *module = @"OFXMLElement";
 
-void
-xmlelement_tests()
+@implementation TestsAppDelegate (OFXMLElementTests)
+- (void)XMLElementTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFXMLElement *elem[2];
@@ -51,3 +51,4 @@ xmlelement_tests()
 
 	[pool drain];
 }
+@end
