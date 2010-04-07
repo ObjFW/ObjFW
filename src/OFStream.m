@@ -11,7 +11,9 @@
 
 #include "config.h"
 
+#include <stdlib.h>
 #include <string.h>
+
 #include <assert.h>
 
 #import "OFStream.h"
@@ -407,6 +409,37 @@
 			      fromBuffer: tmp];
 	} @finally {
 		[self freeMemory: tmp];
+	}
+
+	/* Get rid of a warning, never reached anyway */
+	assert(0);
+}
+
+- (size_t)writeFormat: (OFString*)fmt, ...
+{
+	va_list args;
+	char *t;
+	size_t len;
+
+	if (fmt == nil)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
+	va_start(args, fmt);
+	if ((len = vasprintf(&t, [fmt cString], args)) == -1) {
+		/*
+		 * This is only the most likely error to happen. Unfortunately,
+		 * there is no good way to check what really happened.
+		 */
+		@throw [OFOutOfMemoryException newWithClass: isa];
+	}
+	va_end(args);
+
+	@try {
+		return [self writeNBytes: len
+			      fromBuffer: t];
+	} @finally {
+		free(t);
 	}
 
 	/* Get rid of a warning, never reached anyway */

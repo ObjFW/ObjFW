@@ -145,6 +145,14 @@
 - (size_t)writeLine: (OFString*)str;
 
 /**
+ * Writes a formatted string into the stream.
+ *
+ * \param fmt A string used as format
+ * \return The number of bytes written
+ */
+- (size_t)writeFormat: (OFString*)fmt, ...;
+
+/**
  * Closes the stream.
  */
 - close;
