@@ -46,15 +46,15 @@
 - (BOOL)atEndOfStreamWithoutCache;
 
 /**
- * Reads from the stream into a buffer.
+ * Reads at most size bytes from the stream into a buffer.
  *
  * IMPORTANT: Do *NOT* override this in subclasses! Override
  * readNBytesWithoutCache:intoBuffer: instead, as otherwise, you *WILL* break
  * caching and thus get broken results!
  *
  * \param buf The buffer into which the data is read
- * \param size The size of the data that should be read.
- *	  The buffer MUST be at least size big!
+ * \param size The size of the data that should be read at most.
+ *	       The buffer MUST be at least size big!
  * \return The number of bytes read
  */
 - (size_t)readNBytes: (size_t)size
@@ -67,12 +67,25 @@
  * *ONLY* for being overriden in subclasses!
  *
  * \param buf The buffer into which the data is read
- * \param size The size of the data that should be read.
- *	  The buffer MUST be at least size big!
+ * \param size The size of the data that should be read at most.
+ *	       The buffer MUST be at least size big!
  * \return The number of bytes read
  */
 - (size_t)readNBytesWithoutCache: (size_t)size
 		      intoBuffer: (char*)buf;
+
+/**
+ * Reads exactly size bytes from the stream into a buffer. Unlike
+ * readNBytes:intoBuffer:, this method does not return when less than the
+ * specified size has been read - instead, it waits until it got exactly size
+ * bytes.
+ *
+ * \param buf The buffer into which the data is read
+ * \param size The size of the data that should be read.
+ *	       The buffer MUST be EXACTLY this big!
+ */
+- (void)readExactlyNBytes: (size_t)size
+	       intoBuffer: (char*)buf;
 
 /**
  * \return An OFDataArray with an item size of 1 with all the data of the

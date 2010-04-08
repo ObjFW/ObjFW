@@ -92,6 +92,16 @@
 					      selector: _cmd];
 }
 
+- (void)readExactlyNBytes: (size_t)size
+	       intoBuffer: (char*)buf
+{
+	size_t len = 0;
+
+	while (len < size)
+		len += [self readNBytes: size - len
+			     intoBuffer: buf + len];
+}
+
 - (OFDataArray*)readDataArrayTillEndOfStream
 {
 	OFDataArray *a;
