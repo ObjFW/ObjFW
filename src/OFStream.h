@@ -129,6 +129,14 @@
 	   fromBuffer: (const char*)buf;
 
 /**
+ * Writes from an OFDataArray into the stream.
+ *
+ * \param dataarray The OFDataArray to write into the stream
+ * \return The number of bytes written
+ */
+- (size_t)writeDataArray: (OFDataArray*)dataarray;
+
+/**
  * Writes a string into the stream, without the trailing zero.
  *
  * \param str The string from which the data is written to the stream

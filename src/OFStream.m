@@ -393,6 +393,12 @@
 					      selector: _cmd];
 }
 
+- (size_t)writeDataArray: (OFDataArray*)dataarray
+{
+	return [self writeNBytes: [dataarray count] * [dataarray itemSize]
+		      fromBuffer: [dataarray cArray]];
+}
+
 - (size_t)writeString: (OFString*)str
 {
 	return [self writeNBytes: [str cStringLength]
