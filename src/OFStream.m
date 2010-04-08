@@ -102,6 +102,46 @@
 			     intoBuffer: buf + len];
 }
 
+- (uint8_t)readInt8
+{
+	uint8_t ret;
+
+	[self readExactlyNBytes: 1
+		     intoBuffer: (char*)&ret];
+
+	return ret;
+}
+
+- (uint16_t)readBigEndianInt16
+{
+	uint16_t ret;
+
+	[self readExactlyNBytes: 2
+		     intoBuffer: (char*)&ret];
+
+	return OF_BSWAP16_IF_LE(ret);
+}
+
+- (uint32_t)readBigEndianInt32
+{
+	uint32_t ret;
+
+	[self readExactlyNBytes: 4
+		     intoBuffer: (char*)&ret];
+
+	return OF_BSWAP32_IF_LE(ret);
+}
+
+- (uint64_t)readBigEndianInt64
+{
+	uint64_t ret;
+
+	[self readExactlyNBytes: 8
+		     intoBuffer: (char*)&ret];
+
+	return OF_BSWAP64_IF_LE(ret);
+}
+
 - (OFDataArray*)readDataArrayWithItemSize: (size_t)itemsize
 				andNItems: (size_t)nitems
 {

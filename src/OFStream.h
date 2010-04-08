@@ -86,6 +86,35 @@
  */
 - (void)readExactlyNBytes: (size_t)size
 	       intoBuffer: (char*)buf;
+
+/**
+ * Reads an uint8_t from the stream.
+ *
+ * \return An uint8_t from the stream
+ */
+- (uint8_t)readInt8;
+
+/**
+ * Reads an uint16_t from the stream which is encoded in big endian.
+ *
+ * \return An uint16_t from the stream in native endianess
+ */
+- (uint16_t)readBigEndianInt16;
+
+/**
+ * Reads an uint32_t from the stream which is encoded in big endian.
+ *
+ * \return An uint32_t from the stream in the native endianess
+ */
+- (uint32_t)readBigEndianInt32;
+
+/**
+ * Reads an uint64_t from the stream which is encoded in big endian.
+ *
+ * \return An uint64_t from the stream in the native endianess
+ */
+- (uint64_t)readBigEndianInt64;
+
 /**
  * Reads nitems items with the specified item size from the stream and returns
  * them in an OFDataArray.
