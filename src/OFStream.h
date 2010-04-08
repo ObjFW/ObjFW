@@ -86,6 +86,16 @@
  */
 - (void)readExactlyNBytes: (size_t)size
 	       intoBuffer: (char*)buf;
+/**
+ * Reads nitems items with the specified item size from the stream and returns
+ * them in an OFDataArray.
+ *
+ * \param itemsize The size of each item
+ * \param nitems The number of iteams to read
+ * \return An OFDataArray with at nitems items.
+ */
+- (OFDataArray*)readDataArrayWithItemSize: (size_t)itemsize
+				andNItems: (size_t)nitems;
 
 /**
  * \return An OFDataArray with an item size of 1 with all the data of the

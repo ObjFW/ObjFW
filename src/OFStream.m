@@ -102,6 +102,29 @@
 			     intoBuffer: buf + len];
 }
 
+- (OFDataArray*)readDataArrayWithItemSize: (size_t)itemsize
+				andNItems: (size_t)nitems
+{
+	OFDataArray *da;
+	char *tmp;
+
+	da = [OFDataArray dataArrayWithItemSize: itemsize];
+	tmp = [self allocMemoryForNItems: nitems
+				withSize: itemsize];
+
+	@try {
+		[self readExactlyNBytes: nitems * itemsize
+			     intoBuffer: tmp];
+
+		[da addNItems: nitems
+		   fromCArray: tmp];
+	} @finally {
+		[self freeMemory: tmp];
+	}
+
+	return da;
+}
+
 - (OFDataArray*)readDataArrayTillEndOfStream
 {
 	OFDataArray *a;
