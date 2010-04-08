@@ -181,6 +181,34 @@
 	   fromBuffer: (const char*)buf;
 
 /**
+ * Writes an uint8_t into the stream.
+ *
+ * \param int8 An uint8_t
+ */
+- (void)writeInt8: (uint8_t)int8;
+
+/**
+ * Writes an uint16_t into the stream, encoded in big endian.
+ *
+ * \param int16 An uint16_t
+ */
+- (void)writeBigEndianInt16: (uint16_t)int16;
+
+/**
+ * Writes an uint32_t into the stream, encoded in big endian.
+ *
+ * \param int32 An uint32_t
+ */
+- (void)writeBigEndianInt32: (uint32_t)int32;
+
+/**
+ * Writes an uint64_t into the stream, encoded in big endian.
+ *
+ * \param int64 An uint64_t
+ */
+- (void)writeBigEndianInt64: (uint64_t)int64;
+
+/**
  * Writes from an OFDataArray into the stream.
  *
  * \param dataarray The OFDataArray to write into the stream

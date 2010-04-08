@@ -466,6 +466,36 @@
 					      selector: _cmd];
 }
 
+- (void)writeInt8: (uint8_t)int8
+{
+	[self writeNBytes: 1
+	       fromBuffer: (char*)&int8];
+}
+
+- (void)writeBigEndianInt16: (uint16_t)int16
+{
+	int16 = OF_BSWAP16_IF_LE(int16);
+
+	[self writeNBytes: 2
+	       fromBuffer: (char*)&int16];
+}
+
+- (void)writeBigEndianInt32: (uint32_t)int32
+{
+	int32 = OF_BSWAP32_IF_LE(int32);
+
+	[self writeNBytes: 4
+	       fromBuffer: (char*)&int32];
+}
+
+- (void)writeBigEndianInt64: (uint64_t)int64
+{
+	int64 = OF_BSWAP64_IF_LE(int64);
+
+	[self writeNBytes: 8
+	       fromBuffer: (char*)&int64];
+}
+
 - (size_t)writeDataArray: (OFDataArray*)dataarray
 {
 	return [self writeNBytes: [dataarray count] * [dataarray itemSize]
