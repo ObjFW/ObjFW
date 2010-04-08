@@ -11,7 +11,6 @@
 
 #include "config.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -19,10 +18,13 @@
 #import "OFArray.h"
 #import "OFFile.h"
 #import "OFAutoreleasePool.h"
+#import "OFApplication.h"
 #import "OFExceptions.h"
 
 #import "TableGenerator.h"
 #import "copyright.h"
+
+OF_APPLICATION_DELEGATE(TableGenerator)
 
 @implementation TableGenerator
 - init
@@ -34,6 +36,15 @@
 	casefolding_size = SIZE_MAX;
 
 	return self;
+}
+
+- (void)applicationDidFinishLaunching
+{
+	TableGenerator *tgen = [[[TableGenerator alloc] init] autorelease];
+	[tgen readUnicodeDataFile: @"UnicodeData.txt"];
+	[tgen readCaseFoldingFile: @"CaseFolding.txt"];
+	[tgen writeTablesToFile: @"../src/unicode.m"];
+	[tgen writeHeaderToFile: @"../src/unicode.h"];
 }
 
 - (void)readUnicodeDataFile: (OFString*)path
@@ -49,9 +60,10 @@
 		OFString **splitted_carray;
 		of_unichar_t codep;
 
-		splitted = [line splitWithDelimiter: @";"];
+		splitted = [line componentsSeparatedByString: @";"];
 		if ([splitted count] != 15) {
-			fprintf(stderr, "Invalid line: %s\n", [line cString]);
+			[of_stderr writeFormat: @"Invalid line: %s\n",
+						[line cString]];
 			exit(1);
 		}
 		splitted_carray = [splitted cArray];
@@ -82,9 +94,10 @@
 		if ([line characterAtIndex: 0] == '#')
 			continue;
 
-		splitted = [line splitWithDelimiter: @"; "];
+		splitted = [line componentsSeparatedByString: @"; "];
 		if ([splitted count] != 4) {
-			fprintf(stderr, "Invalid line: %s\n", [line cString]);
+			[of_stderr writeFormat: @"Invalid line: %s\n",
+						[line cString]];
 			exit(1);
 		}
 		splitted_carray = [splitted cArray];

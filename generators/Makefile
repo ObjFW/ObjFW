@@ -1,8 +1,7 @@
 include ../extra.mk
 
 PROG_NOINST = gen_tables${PROG_SUFFIX}
-SRCS = main.o		\
-       TableGenerator.m
+SRCS = TableGenerator.m
 
 .PHONY: run
 run: all UnicodeData.txt CaseFolding.txt
