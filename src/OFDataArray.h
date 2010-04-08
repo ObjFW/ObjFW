@@ -49,7 +49,7 @@
 /**
  * \return The size of each item in the OFDataArray in bytes
  */
-- (size_t)itemsize;
+- (size_t)itemSize;
 
 /**
  * \return All elements of the OFDataArray as a C array

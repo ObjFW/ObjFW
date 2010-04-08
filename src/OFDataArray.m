@@ -55,7 +55,7 @@
 	return count;
 }
 
-- (size_t)itemsize
+- (size_t)itemSize
 {
 	return itemsize;
 }
@@ -210,7 +210,7 @@
 	if (![obj isKindOfClass: [OFDataArray class]])
 		return NO;
 	if ([(OFDataArray*)obj count] != count ||
-	    [(OFDataArray*)obj itemsize] != itemsize)
+	    [(OFDataArray*)obj itemSize] != itemsize)
 		return NO;
 	if (memcmp([(OFDataArray*)obj cArray], data, count * itemsize))
 		return NO;
@@ -226,7 +226,7 @@
 	if (![ary isKindOfClass: [OFDataArray class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
-	if ([ary itemsize] != itemsize)
+	if ([ary itemSize] != itemsize)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
