@@ -11,6 +11,7 @@
 
 #import "OFObject.h"
 
+@class OFString;
 @class OFArray;
 @class OFMutableArray;
 
@@ -42,6 +43,7 @@
  */
 @interface OFApplication: OFObject
 {
+	OFString *progname;
 	OFMutableArray *arguments;
 	id delegate;
 }
@@ -50,6 +52,11 @@
  * \return The only OFApplication instance in the application
  */
 + sharedApplication;
+
+/**
+ * \return The name of the program (argv[0])
+ */
++ (OFString*)programName;
 
 /**
  * \return The arguments passed to the application
@@ -71,6 +78,11 @@
  */
 -  setArgumentCount: (int)argc
   andArgumentValues: (char**)argv;
+
+/**
+ * \return The name of the program (argv[0])
+ */
+- (OFString*)programName;
 
 /**
  * \return The arguments passed to the application

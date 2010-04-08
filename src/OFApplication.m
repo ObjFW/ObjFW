@@ -59,6 +59,11 @@ of_application_main(int argc, char *argv[], Class cls)
 	return app;
 }
 
++ (OFString*)programName
+{
+	return [app programName];
+}
+
 + (OFArray*)arguments
 {
 	return [app arguments];
@@ -84,17 +89,23 @@ of_application_main(int argc, char *argv[], Class cls)
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	int i;
 
-	if (arguments != nil)
-		[arguments release];
+	[progname release];
+	[arguments release];
 
+	progname = [[OFString alloc] initWithCString: argv[0]];
 	arguments = [[OFMutableArray alloc] init];
 
-	for (i = 0; i < argc; i++)
+	for (i = 1; i < argc; i++)
 		[arguments addObject: [OFString stringWithCString: argv[i]]];
 
 	[pool release];
 
 	return self;
+}
+
+- (OFString*)programName
+{
+	return [[progname retain] autorelease];
 }
 
 - (OFArray*)arguments
