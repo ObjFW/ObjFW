@@ -21,6 +21,7 @@ SRCS = OFApplication.m		\
        OFNumber.m		\
        OFObject.m		\
        ${OFPLUGIN_M}		\
+       OFSeekableStream.m	\
        OFSocket.m		\
        OFStream.m		\
        OFString.m		\

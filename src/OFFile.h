@@ -9,18 +9,16 @@
  * the packaging of this file.
  */
 
-#include <stdio.h>
-
 #include <sys/types.h>
 
-#import "OFStream.h"
+#import "OFSeekableStream.h"
 
 @class OFString;
 
 /**
  * \brief A class which provides functions to read, write and manipulate files.
  */
-@interface OFFile: OFStream
+@interface OFFile: OFSeekableStream
 {
 	int fd;
 	BOOL closable;

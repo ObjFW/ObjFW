@@ -128,6 +128,8 @@
 		4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iso_8859_15.m; path = src/iso_8859_15.m; sourceTree = "<group>"; };
 		4B6AF97210A8D42E0003FB0A /* windows_1252.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = windows_1252.m; path = src/windows_1252.m; sourceTree = "<group>"; };
 		4B6AF97310A8D4450003FB0A /* ObjFW.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ObjFW.h; path = src/ObjFW.h; sourceTree = "<group>"; };
+		4B981CDE116F71DD00294DB7 /* OFSeekableStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSeekableStream.h; path = src/OFSeekableStream.h; sourceTree = SOURCE_ROOT; };
+		4B981CDF116F71DD00294DB7 /* OFSeekableStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSeekableStream.m; path = src/OFSeekableStream.m; sourceTree = SOURCE_ROOT; };
 		4BBA36C411406AB700CBA3AC /* atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic.h; path = src/atomic.h; sourceTree = SOURCE_ROOT; };
 		4BBA36C511406AB700CBA3AC /* macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = macros.h; path = src/macros.h; sourceTree = SOURCE_ROOT; };
 		4BFBDD1610A0724800051AFB /* unicode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = unicode.m; path = src/unicode.m; sourceTree = "<group>"; };
@@ -171,6 +173,8 @@
 				4B6799781099E7C50041064A /* OFObject.m */,
 				4B6799791099E7C50041064A /* OFPlugin.h */,
 				4B67997A1099E7C50041064A /* OFPlugin.m */,
+				4B981CDE116F71DD00294DB7 /* OFSeekableStream.h */,
+				4B981CDF116F71DD00294DB7 /* OFSeekableStream.m */,
 				4B67997B1099E7C50041064A /* OFSocket.h */,
 				4B67997C1099E7C50041064A /* OFSocket.m */,
 				4B67997D1099E7C50041064A /* OFStream.h */,

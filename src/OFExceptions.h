@@ -288,7 +288,7 @@
 @end
 
 /**
- * \brief An exception indicating a read or write to a file failed.
+ * \brief An exception indicating a read or write to a stream failed.
  */
 @interface OFReadOrWriteFailedException: OFException
 {
@@ -326,15 +326,29 @@
 @end
 
 /**
- * \brief An exception indicating a read on a file failed.
+ * \brief An exception indicating a read on a stream failed.
  */
 @interface OFReadFailedException: OFReadOrWriteFailedException {}
 @end
 
 /**
- * \brief An exception indicating a write to a file failed.
+ * \brief An exception indicating a write to a stream failed.
  */
 @interface OFWriteFailedException: OFReadOrWriteFailedException {}
+@end
+
+/**
+ * \brief An exception indicating that seeking in a stream failed.
+ */
+@interface OFSeekFailedException: OFException
+{
+	int err;
+}
+
+/**
+ * \return The errno from when the exception was created
+ */
+- (int)errNo;
 @end
 
 /**

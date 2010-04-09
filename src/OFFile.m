@@ -257,6 +257,34 @@ static int parse_mode(const char *mode)
 	return ret;
 }
 
+- _seekToOffset: (off_t)offset
+{
+	if (lseek(fd, offset, SEEK_SET) == -1)
+		@throw [OFSeekFailedException newWithClass: isa];
+
+	return self;
+}
+
+- (size_t)_seekForwardWithOffset: (off_t)offset
+{
+	off_t ret;
+
+	if ((ret = lseek(fd, offset, SEEK_CUR)) == -1)
+		@throw [OFSeekFailedException newWithClass: isa];
+
+	return ret;
+}
+
+- (size_t)_seekToOffsetRelativeToEnd: (off_t)offset
+{
+	off_t ret;
+
+	if ((ret = lseek(fd, offset, SEEK_END)) == -1)
+		@throw [OFSeekFailedException newWithClass: isa];
+
+	return ret;
+}
+
 - close
 {
 	if (fd != -1)

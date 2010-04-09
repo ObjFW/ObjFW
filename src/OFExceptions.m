@@ -487,6 +487,34 @@
 }
 @end
 
+@implementation OFSeekFailedException
+- initWithClass: (Class)class__
+{
+	self = [super initWithClass: class__];
+
+	err = GET_ERR;
+
+	return self;
+}
+
+- (OFString*)string
+{
+	if (string != nil)
+		return string;
+
+	string = [[OFString alloc] initWithFormat:
+	    @"Seeking failed in class %s! " ERRFMT, [class_ className],
+	    ERRPARAM];
+
+	return string;
+}
+
+- (int)errNo
+{
+	return err;
+}
+@end
+
 @implementation OFChangeFileModeFailedException
 + newWithClass: (Class)class__
 	  path: (OFString*)path_
