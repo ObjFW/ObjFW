@@ -90,6 +90,27 @@
 - (uint64_t)readBigEndianInt64;
 
 /**
+ * Reads an uint16_t from the stream which is encoded in little endian.
+ *
+ * \return An uint16_t from the stream in native endianess
+ */
+- (uint16_t)readLittleEndianInt16;
+
+/**
+ * Reads an uint32_t from the stream which is encoded in little endian.
+ *
+ * \return An uint32_t from the stream in the native endianess
+ */
+- (uint32_t)readLittleEndianInt32;
+
+/**
+ * Reads an uint64_t from the stream which is encoded in little endian.
+ *
+ * \return An uint64_t from the stream in the native endianess
+ */
+- (uint64_t)readLittleEndianInt64;
+
+/**
  * Reads nitems items with the specified item size from the stream and returns
  * them in an OFDataArray.
  *
@@ -191,6 +212,27 @@
  * \param int64 An uint64_t
  */
 - (void)writeBigEndianInt64: (uint64_t)int64;
+
+/**
+ * Writes an uint16_t into the stream, encoded in little endian.
+ *
+ * \param int16 An uint16_t
+ */
+- (void)writeLittleEndianInt16: (uint16_t)int16;
+
+/**
+ * Writes an uint32_t into the stream, encoded in little endian.
+ *
+ * \param int32 An uint32_t
+ */
+- (void)writeLittleEndianInt32: (uint32_t)int32;
+
+/**
+ * Writes an uint64_t into the stream, encoded in little endian.
+ *
+ * \param int64 An uint64_t
+ */
+- (void)writeLittleEndianInt64: (uint64_t)int64;
 
 /**
  * Writes from an OFDataArray into the stream.
