@@ -506,6 +506,9 @@
 
 - flushWriteCache
 {
+	if (wcache == NULL)
+		return self;
+
 	[self _writeNBytes: wcache_len
 		fromBuffer: wcache];
 
