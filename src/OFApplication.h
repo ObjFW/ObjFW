@@ -69,6 +69,13 @@
 + (void)terminate;
 
 /**
+ * Terminates the application with the specified status.
+ *
+ * \param status The status with which the application will terminate
+ */
++ (void)terminateWithStatus: (int)status;
+
+/**
  * Sets argc and argv.
  *
  * You should not call this directly! Use of_application_main instead!
@@ -110,6 +117,13 @@
  * Terminates the application.
  */
 - (void)terminate;
+
+/**
+ * Terminates the application with the specified status.
+ *
+ * \param status The status with which the application will terminate
+ */
+- (void)terminateWithStatus: (int)status;
 @end
 
 @interface OFObject (OFApplicationDelegate) <OFApplicationDelegate>

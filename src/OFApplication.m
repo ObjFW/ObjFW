@@ -74,6 +74,11 @@ of_application_main(int argc, char *argv[], Class cls)
 	exit(0);
 }
 
++ (void)terminateWithStatus: (int)status
+{
+	exit(status);
+}
+
 - init
 {
 	self = [super init];
@@ -137,6 +142,11 @@ of_application_main(int argc, char *argv[], Class cls)
 - (void)terminate
 {
 	exit(0);
+}
+
+- (void)terminateWithStatus: (int)status
+{
+	exit(status);
 }
 
 - (void)dealloc

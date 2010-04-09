@@ -11,7 +11,6 @@
 
 #include "config.h"
 
-#include <stdlib.h>
 #include <string.h>
 
 #import "OFString.h"
@@ -64,7 +63,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		if ([splitted count] != 15) {
 			[of_stderr writeFormat: @"Invalid line: %s\n",
 						[line cString]];
-			exit(1);
+			[OFApplication terminateWithStatus: 1];
 		}
 		splitted_carray = [splitted cArray];
 
@@ -98,7 +97,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		if ([splitted count] != 4) {
 			[of_stderr writeFormat: @"Invalid line: %s\n",
 						[line cString]];
-			exit(1);
+			[OFApplication terminateWithStatus: 1];
 		}
 		splitted_carray = [splitted cArray];
 

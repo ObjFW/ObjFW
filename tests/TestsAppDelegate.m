@@ -97,5 +97,8 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 #ifdef OF_HAVE_PROPERTIES
 	[self propertiesTests];
 #endif
+
+	if (fails > 0)
+		[OFApplication terminateWithStatus: fails];
 }
 @end
