@@ -25,6 +25,12 @@ AC_SUBST(NO_CONST_CFSTRINGS)
 AC_MSG_CHECKING(whether Objective C compiler supports fast enumeration)
 AC_TRY_COMPILE([
 	#import <objc/objc.h>
+
+	@protocol OFFastEnumeration
+	- (int)countByEnumeratingWithState: (void*)state
+				   objects: (id*)objects
+				     count: (int)count;
+	@end
 	], [
 	id n = nil;
 	for (id i in n);
