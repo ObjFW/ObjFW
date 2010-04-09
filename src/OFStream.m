@@ -42,26 +42,40 @@
 	return self;
 }
 
+- (BOOL)_atEndOfStream
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- (size_t)_readNBytes: (size_t)size
+	   intoBuffer: (char*)buf
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- (size_t)_writeNBytes: (size_t)size
+	    fromBuffer: (const char*)buf
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
 - (BOOL)atEndOfStream
 {
 	if (cache != NULL)
 		return NO;
 
-	return [self atEndOfStreamWithoutCache];
-}
-
-- (BOOL)atEndOfStreamWithoutCache
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	return [self _atEndOfStream];
 }
 
 - (size_t)readNBytes: (size_t)size
 	  intoBuffer: (char*)buf
 {
 	if (cache == NULL)
-		return [self readNBytesWithoutCache: size
-					 intoBuffer: buf];
+		return [self _readNBytes: size
+			      intoBuffer: buf];
 
 	if (size >= cache_len) {
 		size_t ret = cache_len;
@@ -84,13 +98,6 @@
 
 		return size;
 	}
-}
-
-- (size_t)readNBytesWithoutCache: (size_t)size
-		      intoBuffer: (char*)buf
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
 }
 
 - (void)readExactlyNBytes: (size_t)size
@@ -235,7 +242,7 @@
 
 	@try {
 		for (;;) {
-			if ([self atEndOfStreamWithoutCache]) {
+			if ([self _atEndOfStream]) {
 				if (cache == NULL)
 					return nil;
 
@@ -255,8 +262,8 @@
 				return ret;
 			}
 
-			len = [self readNBytesWithoutCache: of_pagesize
-						intoBuffer: tmp];
+			len = [self _readNBytes: of_pagesize
+				     intoBuffer: tmp];
 
 			/* Look if there's a newline or \0 */
 			for (i = 0; i < len; i++) {
@@ -376,7 +383,7 @@
 
 	@try {
 		for (;;) {
-			if ([self atEndOfStreamWithoutCache]) {
+			if ([self _atEndOfStream]) {
 				if (cache == NULL)
 					return nil;
 
@@ -391,8 +398,8 @@
 				return ret;
 			}
 
-			len = [self readNBytesWithoutCache: of_pagesize
-						intoBuffer: tmp];
+			len = [self _readNBytes: of_pagesize
+				     intoBuffer: tmp];
 
 			/* Look if there's the delimiter or \0 */
 			for (i = 0; i < len; i++) {
@@ -469,8 +476,8 @@
 
 - flushWriteCache
 {
-	[self writeNBytesWithoutCache: wcache_len
-			   fromBuffer: wcache];
+	[self _writeNBytes: wcache_len
+		fromBuffer: wcache];
 
 	[self freeMemory: wcache];
 	wcache = NULL;
@@ -484,8 +491,8 @@
 	   fromBuffer: (const char*)buf
 {
 	if (!use_wcache)
-		return [self writeNBytesWithoutCache: size
-					  fromBuffer: buf];
+		return [self _writeNBytes: size
+			       fromBuffer: buf];
 	else {
 		wcache = [self resizeMemory: wcache
 				     toSize: wcache_len + size];
@@ -494,13 +501,6 @@
 
 		return size;
 	}
-}
-
-- (size_t)writeNBytesWithoutCache: (size_t)size
-		       fromBuffer: (const char*)buf
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
 }
 
 - (void)writeInt8: (uint8_t)int8

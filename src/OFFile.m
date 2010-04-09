@@ -223,15 +223,7 @@ static int parse_mode(const char *mode)
 	return self;
 }
 
-- (void)dealloc
-{
-	if (closable && fd != -1)
-		close(fd);
-
-	[super dealloc];
-}
-
-- (BOOL)atEndOfStreamWithoutCache
+- (BOOL)_atEndOfStream
 {
 	if (fd == -1)
 		return YES;
@@ -239,8 +231,8 @@ static int parse_mode(const char *mode)
 	return eos;
 }
 
-- (size_t)readNBytesWithoutCache: (size_t)size
-		      intoBuffer: (char*)buf
+- (size_t)_readNBytes: (size_t)size
+	   intoBuffer: (char*)buf
 {
 	size_t ret;
 
@@ -253,8 +245,8 @@ static int parse_mode(const char *mode)
 	return ret;
 }
 
-- (size_t)writeNBytesWithoutCache: (size_t)size
-		       fromBuffer: (const char*)buf
+- (size_t)_writeNBytes: (size_t)size
+	    fromBuffer: (const char*)buf
 {
 	size_t ret;
 
@@ -272,6 +264,14 @@ static int parse_mode(const char *mode)
 	fd = -1;
 
 	return self;
+}
+
+- (void)dealloc
+{
+	if (closable && fd != -1)
+		close(fd);
+
+	[super dealloc];
 }
 @end
 

@@ -28,13 +28,13 @@ static OFString *module = @"OFStream";
 @end
 
 @implementation StreamTester
-- (BOOL)atEndOfStreamWithoutCache
+- (BOOL)_atEndOfStream
 {
 	return (state > 1 ? YES : NO);
 }
 
-- (size_t)readNBytesWithoutCache: (size_t)size
-		      intoBuffer: (char*)buf
+- (size_t)_readNBytes: (size_t)size
+	   intoBuffer: (char*)buf
 {
 	switch (state) {
 	case 0:

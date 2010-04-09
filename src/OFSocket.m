@@ -45,13 +45,13 @@
 	return [[[self alloc] init] autorelease];
 }
 
-- (BOOL)atEndOfStreamWithoutCache
+- (BOOL)_atEndOfStream
 {
 	return eos;
 }
 
-- (size_t)readNBytesWithoutCache: (size_t)size
-		      intoBuffer: (char*)buf
+- (size_t)_readNBytes: (size_t)size
+	   intoBuffer: (char*)buf
 {
 	ssize_t ret;
 
@@ -67,8 +67,8 @@
 	return ret;
 }
 
-- (size_t)writeNBytesWithoutCache: (size_t)size
-		       fromBuffer: (const char*)buf
+- (size_t)_writeNBytes: (size_t)size
+	    fromBuffer: (const char*)buf
 {
 	ssize_t ret;
 

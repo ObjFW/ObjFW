@@ -16,6 +16,12 @@
 
 /**
  * \brief A base class for different types of streams.
+ *
+ * IMPORTANT: If you want to subclass this, override _readNBytes:intoBuffer:,
+ * _writeNBytes:fromBuffer: and _atEndOfStream, but nothing else. Those are not
+ * defined in the headers, but do the actual work. OFStream uses those and does
+ * all the caching and other stuff. If you override these methods without the
+ * _ prefix, you *WILL* break caching and get broken results!
  */
 @interface OFStream: OFObject
 {
@@ -27,31 +33,12 @@
 /**
  * Returns a boolean whether the end of the stream has been reached.
  *
- * IMPORTANT: Do *NOT* override this in subclasses! Override
- * atEndOfStreamWithoutCache instead, as otherwise, you *WILL* break caching and
- * thus get broken results!
- *
  * \return A boolean whether the end of the stream has been reached
  */
 - (BOOL)atEndOfStream;
 
 /**
- * Returns a boolean whether the end of the stream has been reached without
- * looking at the cache.
- *
- * IMPORTANT: Do *NOT* use this! Use atEndOfCache instead, as this is *ONLY*
- * for being overriden in subclasses!
- *
- * \return A boolean whether the end of the stream has been reached
- */
-- (BOOL)atEndOfStreamWithoutCache;
-
-/**
  * Reads at most size bytes from the stream into a buffer.
- *
- * IMPORTANT: Do *NOT* override this in subclasses! Override
- * readNBytesWithoutCache:intoBuffer: instead, as otherwise, you *WILL* break
- * caching and thus get broken results!
  *
  * \param buf The buffer into which the data is read
  * \param size The size of the data that should be read at most.
@@ -60,20 +47,6 @@
  */
 - (size_t)readNBytes: (size_t)size
 	  intoBuffer: (char*)buf;
-
-/**
- * Reads from the stream into a buffer without looking at the cache.
- *
- * IMPORTANT: Do *NOT* use this! Use readNBytes:intoBuffer: instead, as this is
- * *ONLY* for being overriden in subclasses!
- *
- * \param buf The buffer into which the data is read
- * \param size The size of the data that should be read at most.
- *	       The buffer MUST be at least size big!
- * \return The number of bytes read
- */
-- (size_t)readNBytesWithoutCache: (size_t)size
-		      intoBuffer: (char*)buf;
 
 /**
  * Reads exactly size bytes from the stream into a buffer. Unlike
@@ -184,29 +157,12 @@
 /**
  * Writes from a buffer into the stream.
  *
- * IMPORTANT: Do *NOT* override this in subclasses! Override
- * writeNBytesWithoutCache:fromBuffer: instead, as otherwise, you *WILL* break
- * caching and thus get broken results!
- *
  * \param buf The buffer from which the data is written to the stream
  * \param size The size of the data that should be written
  * \return The number of bytes written
  */
 - (size_t)writeNBytes: (size_t)size
 	   fromBuffer: (const char*)buf;
-
-/**
- * Directly writes from a buffer into the stream without caching the data first.
- *
- * IMPORTANT: Do *NOT* use this! Use writeNBytes:fromBuffer: instead, as this is
- * *ONLY* for being overriden in subclasses!
- *
- * \param buf The buffer from which the data is written to the stream
- * \param size The size of the data that should be written
- * \return The number of bytes written
- */
-- (size_t)writeNBytesWithoutCache: (size_t)size
-		       fromBuffer: (const char*)buf;
 
 /**
  * Writes an uint8_t into the stream.
