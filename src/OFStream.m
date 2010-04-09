@@ -37,7 +37,7 @@
 						      selector: _cmd];
 
 	cache = NULL;
-	wcache = NULL;
+	wbuffer = NULL;
 
 	return self;
 }
@@ -497,25 +497,25 @@
 	assert(0);
 }
 
-- cacheWrites
+- bufferWrites
 {
-	use_wcache = YES;
+	use_wbuffer = YES;
 
 	return self;
 }
 
-- flushWriteCache
+- flushWriteBuffer
 {
-	if (wcache == NULL)
+	if (wbuffer == NULL)
 		return self;
 
-	[self _writeNBytes: wcache_len
-		fromBuffer: wcache];
+	[self _writeNBytes: wbuffer_len
+		fromBuffer: wbuffer];
 
-	[self freeMemory: wcache];
-	wcache = NULL;
-	wcache_len = 0;
-	use_wcache = NO;
+	[self freeMemory: wbuffer];
+	wbuffer = NULL;
+	wbuffer_len = 0;
+	use_wbuffer = NO;
 
 	return self;
 }
@@ -523,14 +523,14 @@
 - (size_t)writeNBytes: (size_t)size
 	   fromBuffer: (const char*)buf
 {
-	if (!use_wcache)
+	if (!use_wbuffer)
 		return [self _writeNBytes: size
 			       fromBuffer: buf];
 	else {
-		wcache = [self resizeMemory: wcache
-				     toSize: wcache_len + size];
-		memcpy(wcache + wcache_len, buf, size);
-		wcache_len += size;
+		wbuffer = [self resizeMemory: wbuffer
+				      toSize: wbuffer_len + size];
+		memcpy(wbuffer + wbuffer_len, buf, size);
+		wbuffer_len += size;
 
 		return size;
 	}

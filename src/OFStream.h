@@ -25,9 +25,9 @@
  */
 @interface OFStream: OFObject
 {
-	char   *cache, *wcache;
-	size_t cache_len, wcache_len;
-	BOOL   use_wcache;
+	char   *cache, *wbuffer;
+	size_t cache_len, wbuffer_len;
+	BOOL   use_wbuffer;
 }
 
 /**
@@ -166,14 +166,14 @@
 		  withEncoding: (enum of_string_encoding)encoding;
 
 /**
- * Caches all writes until flushWriteCache is called.
+ * Buffer all writes until flushWriteBuffer is called.
  */
-- cacheWrites;
+- bufferWrites;
 
 /**
  * Writes everything in the write cache to the stream.
  */
-- flushWriteCache;
+- flushWriteBuffer;
 
 /**
  * Writes from a buffer into the stream.
