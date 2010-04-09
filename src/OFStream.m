@@ -37,6 +37,7 @@
 						      selector: _cmd];
 
 	cache = NULL;
+	wcache = NULL;
 
 	return self;
 }
@@ -459,8 +460,44 @@
 	assert(0);
 }
 
+- cacheWrites
+{
+	use_wcache = YES;
+
+	return self;
+}
+
+- flushWriteCache
+{
+	[self writeNBytesWithoutCache: wcache_len
+			   fromBuffer: wcache];
+
+	[self freeMemory: wcache];
+	wcache = NULL;
+	wcache_len = 0;
+	use_wcache = NO;
+
+	return self;
+}
+
 - (size_t)writeNBytes: (size_t)size
 	   fromBuffer: (const char*)buf
+{
+	if (!use_wcache)
+		return [self writeNBytesWithoutCache: size
+					  fromBuffer: buf];
+	else {
+		wcache = [self resizeMemory: wcache
+				     toSize: wcache_len + size];
+		memcpy(wcache + wcache_len, buf, size);
+		wcache_len += size;
+
+		return size;
+	}
+}
+
+- (size_t)writeNBytesWithoutCache: (size_t)size
+		       fromBuffer: (const char*)buf
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
@@ -510,23 +547,10 @@
 
 - (size_t)writeLine: (OFString*)str
 {
-	size_t len = [str cStringLength];
-	char *tmp;
+	size_t ret = [self writeString: str];
+	[self writeInt8: '\n'];
 
-	tmp = [self allocMemoryWithSize: len + 2];
-	memcpy(tmp, [str cString], len);
-	tmp[len] = '\n';
-	tmp[len + 1] = '\0';
-
-	@try {
-		return [self writeNBytes: len + 1
-			      fromBuffer: tmp];
-	} @finally {
-		[self freeMemory: tmp];
-	}
-
-	/* Get rid of a warning, never reached anyway */
-	assert(0);
+	return ret + 1;
 }
 
 - (size_t)writeFormat: (OFString*)fmt, ...

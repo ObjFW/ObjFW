@@ -19,8 +19,9 @@
  */
 @interface OFStream: OFObject
 {
-	char   *cache;
-	size_t cache_len;
+	char   *cache, *wcache;
+	size_t cache_len, wcache_len;
+	BOOL   use_wcache;
 }
 
 /**
@@ -171,7 +172,21 @@
 		  withEncoding: (enum of_string_encoding)encoding;
 
 /**
+ * Caches all writes until flushWriteCache is called.
+ */
+- cacheWrites;
+
+/**
+ * Writes everything in the write cache to the stream.
+ */
+- flushWriteCache;
+
+/**
  * Writes from a buffer into the stream.
+ *
+ * IMPORTANT: Do *NOT* override this in subclasses! Override
+ * writeNBytesWithoutCache:fromBuffer: instead, as otherwise, you *WILL* break
+ * caching and thus get broken results!
  *
  * \param buf The buffer from which the data is written to the stream
  * \param size The size of the data that should be written
@@ -179,6 +194,19 @@
  */
 - (size_t)writeNBytes: (size_t)size
 	   fromBuffer: (const char*)buf;
+
+/**
+ * Directly writes from a buffer into the stream without caching the data first.
+ *
+ * IMPORTANT: Do *NOT* use this! Use writeNBytes:fromBuffer: instead, as this is
+ * *ONLY* for being overriden in subclasses!
+ *
+ * \param buf The buffer from which the data is written to the stream
+ * \param size The size of the data that should be written
+ * \return The number of bytes written
+ */
+- (size_t)writeNBytesWithoutCache: (size_t)size
+		       fromBuffer: (const char*)buf;
 
 /**
  * Writes an uint8_t into the stream.

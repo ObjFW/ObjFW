@@ -67,8 +67,8 @@
 	return ret;
 }
 
-- (size_t)writeNBytes: (size_t)size
-	   fromBuffer: (const char*)buf
+- (size_t)writeNBytesWithoutCache: (size_t)size
+		       fromBuffer: (const char*)buf
 {
 	ssize_t ret;
 
