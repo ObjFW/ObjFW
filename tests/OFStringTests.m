@@ -141,6 +141,16 @@ static OFString* whitespace[] = {
 	    [(s[0] = [OFMutableString stringWithFormat: @"%s: %d", "test", 123])
 	    isEqual: @"test: 123"])
 
+	TEST(@"+[stringWithPath:]",
+	    (s[1] = [OFString stringWithPath: @"foo", @"bar", @"baz", nil]) &&
+#ifndef _WIN32
+	    [s[1] isEqual: @"foo/bar/baz"] &&
+#else
+	    [s[1] isEqual: @"foo/bar/baz"] &&
+#endif
+	    (s[1] = [OFString stringWithPath: @"foo", nil]) &&
+	    [s[1] isEqual: @"foo"])
+
 	TEST(@"-[appendFormat:]",
 	    [([s[0] appendFormat: @"%02X", 15]) isEqual: @"test: 1230F"])
 

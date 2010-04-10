@@ -32,6 +32,12 @@
 #import "asprintf.h"
 #import "unicode.h"
 
+#ifndef _WIN32
+# define PATH_DELIM '/'
+#else
+# define PATH_DELIM '\\'
+#endif
+
 extern const uint16_t of_iso_8859_15[256];
 extern const uint16_t of_windows_1252[256];
 
@@ -254,6 +260,19 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return ret;
 }
 
++ stringWithPath: (OFString*)first, ...
+{
+	id ret;
+	va_list args;
+
+	va_start(args, first);
+	ret = [[[self alloc] initWithPath: first
+				arguments: args] autorelease];
+	va_end(args);
+
+	return ret;
+}
+
 + stringWithString: (OFString*)str
 {
 	return [[[self alloc] initWithString: str] autorelease];
@@ -287,7 +306,6 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	 encoding: (enum of_string_encoding)encoding
 	   length: (size_t)len
 {
-	Class c;
 	size_t i, j;
 
 	self = [super init];
@@ -312,13 +330,13 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		case 1:
 			is_utf8 = YES;
 			break;
-		case -1:
+		case -1:;
 			/*
 			 * We can't use [super dealloc] on OS X here.
 			 * Compiler bug? Anyway, [self dealloc] will do here as
 			 * we don't reimplement dealloc.
 			 */
-			c = isa;
+			Class c = isa;
 			[self dealloc];
 			@throw [OFInvalidEncodingException newWithClass: c];
 		}
@@ -348,14 +366,14 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 				case OF_STRING_ENCODING_WINDOWS_1252:
 					chr = of_windows_1252[(uint8_t)str[i]];
 					break;
-				default:
+				default:;
 					/*
 					 * We can't use [super dealloc] on OS X
 					 * here. Compiler bug? Anyway,
 					 * [self dealloc] will do here as we
 					 * don't reimplement dealloc.
 					 */
-					c = isa;
+					Class c = isa;
 					[self dealloc];
 					@throw [OFInvalidEncodingException
 					    newWithClass: c];
@@ -368,7 +386,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 					 * [self dealloc] will do here as we
 					 * don't reimplement dealloc.
 					 */
-					c = isa;
+					Class c = isa;
 					[self dealloc];
 					@throw [OFInvalidEncodingException
 					    newWithClass: c];
@@ -384,7 +402,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 					 * [self dealloc] will do here as we
 					 * don't reimplement dealloc.
 					 */
-					c = isa;
+					Class c = isa;
 					[self dealloc];
 					@throw [OFInvalidEncodingException
 					    newWithClass: c];
@@ -414,13 +432,13 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		string[length] = 0;
 
 		break;
-	default:
+	default:;
 		/*
 		 * We can't use [super dealloc] on OS X here.
 		 * Compiler bug? Anyway, [self dealloc] will do here as we
 		 * don't reimplement dealloc.
 		 */
-		c = isa;
+		Class c = isa;
 		[self dealloc];
 		@throw [OFInvalidEncodingException newWithClass: c];
 	}
@@ -453,19 +471,18 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
        arguments: (va_list)args
 {
 	int t;
-	Class c;
 
 	self = [super init];
 
 	if (fmt == nil) {
-		c = isa;
+		Class c = isa;
 		[super dealloc];
 		@throw [OFInvalidArgumentException newWithClass: c
 						       selector: _cmd];
 	}
 
 	if ((t = vasprintf(&string, [fmt cString], args)) == -1) {
-		c = isa;
+		Class c = isa;
 		[super dealloc];
 
 		/*
@@ -477,14 +494,14 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	length = t;
 
 	switch (of_string_check_utf8(string, length)) {
-		case 1:
-			is_utf8 = YES;
-			break;
-		case -1:
-			free(string);
-			c = isa;
-			[super dealloc];
-			@throw [OFInvalidEncodingException newWithClass: c];
+	case 1:
+		is_utf8 = YES;
+		break;
+	case -1:;
+		Class c = isa;
+		free(string);
+		[super dealloc];
+		@throw [OFInvalidEncodingException newWithClass: c];
 	}
 
 	@try {
@@ -497,16 +514,47 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return self;
 }
 
-- initWithString: (OFString*)str
+- initWithPath: (OFString*)first, ...
 {
+	id ret;
+	va_list args;
+
+	va_start(args, first);
+	ret = [self initWithPath: first
+		       arguments: args];
+	va_end(args);
+
+	return ret;
+}
+
+- initWithPath: (OFString*)first
+     arguments: (va_list)args
+{
+	OFString *component;
+	size_t len, i;
+	va_list args2;
 	Class c;
 
 	self = [super init];
 
-	string = (char*)[str cString];
-	length = [str cStringLength];
+	len = [first cStringLength];
+	switch (of_string_check_utf8([first cString], len)) {
+	case 1:
+		is_utf8 = YES;
+		break;
+	case -1:
+		c = isa;
+		[self dealloc];
+		@throw [OFInvalidEncodingException newWithClass: c];
+	}
+	length += len;
 
-	switch (of_string_check_utf8(string, length)) {
+	va_copy(args2, args);
+	while ((component = va_arg(args2, OFString*)) != nil) {
+		len = [component cStringLength];
+		length += 1 + len;
+
+		switch (of_string_check_utf8([component cString], len)) {
 		case 1:
 			is_utf8 = YES;
 			break;
@@ -514,10 +562,51 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 			c = isa;
 			[self dealloc];
 			@throw [OFInvalidEncodingException newWithClass: c];
+		}
+	}
+
+	@try {
+		string = [self allocMemoryWithSize: length + 1];
+	} @catch (OFException *e) {
+		[self dealloc];
+		@throw e;
+	}
+
+	len = [first cStringLength];
+	memcpy(string, [first cString], len);
+	i = len;
+
+	while ((component = va_arg(args, OFString*)) != nil) {
+		len = [component length];
+		string[i] = PATH_DELIM;
+		memcpy(string + i + 1, [component cString], len);
+		i += len + 1;
+	}
+
+	string[i] = '\0';
+
+	return self;
+}
+
+- initWithString: (OFString*)str
+{
+	self = [super init];
+
+	string = (char*)[str cString];
+	length = [str cStringLength];
+
+	switch (of_string_check_utf8(string, length)) {
+	case 1:
+		is_utf8 = YES;
+		break;
+	case -1:;
+		Class c = isa;
+		[self dealloc];
+		@throw [OFInvalidEncodingException newWithClass: c];
 	}
 
 	if ((string = strdup(string)) == NULL) {
-		c = isa;
+		Class c = isa;
 		[self dealloc];
 		@throw [OFOutOfMemoryException newWithClass: c
 						       size: length + 1];

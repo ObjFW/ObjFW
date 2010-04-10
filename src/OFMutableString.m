@@ -227,10 +227,7 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 
 - appendString: (OFString*)str
 {
-	[self appendCStringWithoutUTF8Checking: [str cString]];
-
-	if (str->is_utf8)
-		is_utf8 = YES;
+	[self appendCString: [str cString]];
 
 	return self;
 }

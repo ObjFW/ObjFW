@@ -101,6 +101,14 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 + stringWithFormat: (OFString*)fmt, ...;
 
 /**
+ * Creates a new OFString containing the constructed specified path.
+ *
+ * \param first The first component of the path
+ * \return A new autoreleased OFString
+ */
++ stringWithPath: (OFString*)first, ...;
+
+/**
  * Creates a new OFString from another string.
  *
  * \param str A string to initialize the OFString with
@@ -177,6 +185,26 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  */
 - initWithFormat: (OFString*)fmt
        arguments: (va_list)args;
+
+/**
+ * Initializes an already allocated OFString with the constructed specified
+ * path.
+ *
+ * \param first The first component of the path
+ * \return A new autoreleased OFString
+ */
+- initWithPath: (OFString*)first, ...;
+
+/**
+ * Initializes an already allocated OFString with the constructed specified
+ * path.
+ *
+ * \param first The first component of the path
+ * \param args A va_list with the other components of the path
+ * \return A new autoreleased OFString
+ */
+- initWithPath: (OFString*)first
+     arguments: (va_list)args;
 
 /**
  * Initializes an already allocated OFString with another string.
