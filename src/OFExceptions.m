@@ -440,7 +440,7 @@
 
 	req_size = size;
 
-	if ([class__ isSubclassOfClass: [OFTCPSocket class]])
+	if ([class__ isSubclassOfClass: [OFSocket class]])
 		err = GET_SOCK_ERR;
 	else
 		err = GET_ERR;

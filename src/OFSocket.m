@@ -13,6 +13,7 @@
 
 #include <string.h>
 #include <fcntl.h>
+#include <errno.h>
 
 #ifndef _WIN32
 # include <sys/types.h>
@@ -55,11 +56,15 @@
 {
 	ssize_t ret;
 
-	if (sock == INVALID_SOCKET || eos)
+	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithClass: isa];
 
-	if ((ret = recv(sock, buf, size, 0)) < 0)
-		@throw [OFReadFailedException newWithClass: isa];
+	if (eos)
+		errno = ENOTCONN;
+
+	if (eos || (ret = recv(sock, buf, size, 0)) < 0)
+		@throw [OFReadFailedException newWithClass: isa
+						      size: size];
 
 	if (ret == 0)
 		eos = YES;
@@ -75,7 +80,10 @@
 	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithClass: isa];
 
-	if ((ret = send(sock, buf, size, 0)) == -1)
+	if (eos)
+		errno = ENOTCONN;
+
+	if (eos || (ret = send(sock, buf, size, 0)) == -1)
 		@throw [OFWriteFailedException newWithClass: isa
 						       size: size];
 
