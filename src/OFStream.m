@@ -613,14 +613,26 @@
 - (size_t)writeFormat: (OFString*)fmt, ...
 {
 	va_list args;
-	char *t;
+	size_t ret;
+
+	va_start(args, fmt);
+	ret = [self writeFormat: fmt
+		  withArguments: args];
+	va_end(args);
+
+	return ret;
+}
+
+- (size_t)writeFormat: (OFString*)fmt
+	withArguments: (va_list)args
+{
 	size_t len;
+	char *t;
 
 	if (fmt == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	va_start(args, fmt);
 	if ((len = vasprintf(&t, [fmt cString], args)) == -1) {
 		/*
 		 * This is only the most likely error to happen. Unfortunately,
@@ -628,7 +640,6 @@
 		 */
 		@throw [OFOutOfMemoryException newWithClass: isa];
 	}
-	va_end(args);
 
 	@try {
 		return [self writeNBytes: len

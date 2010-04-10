@@ -9,6 +9,8 @@
  * the packaging of this file.
  */
 
+#include <stdarg.h>
+
 #import "OFObject.h"
 
 @class OFString;
@@ -265,6 +267,16 @@
  * \return The number of bytes written
  */
 - (size_t)writeFormat: (OFString*)fmt, ...;
+
+/**
+ * Writes a formatted string into the stream.
+ *
+ * \param fmt A string used as format
+ * \param args The arguments used in the format string
+ * \return The number of bytes written
+ */
+- (size_t)writeFormat: (OFString*)fmt
+	withArguments: (va_list)args;
 
 /**
  * Closes the stream.
