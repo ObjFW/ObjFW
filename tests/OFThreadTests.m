@@ -24,7 +24,7 @@ static OFString *module = @"OFThread";
 @end
 
 @implementation TestThread
-- (id)run
+- (id)main
 {
 	if ([object isEqual: @"foo"])
 		return @"success";

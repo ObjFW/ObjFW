@@ -131,17 +131,17 @@
 - initWithObject: (OFObject <OFCopying>*)obj;
 
 /**
- * The run routine of the thread. You need to reimplement this!
+ * The main routine of the thread. You need to reimplement this!
  *
  * It can access the object passed to the threadWithObject or initWithObject
  * method using the instance variable named object.
  *
  * \return The object the join method should return when called for this thread
  */
-- (id)run;
+- (id)main;
 
 /**
- * This routine is exectued when the thread's run method has finished executing
+ * This routine is exectued when the thread's main method has finished executing
  * or terminate has been called.
  */
 - (void)handleTermination;

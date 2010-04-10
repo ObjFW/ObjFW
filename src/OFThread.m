@@ -29,7 +29,7 @@ static OFList *tlskeys;
 static of_tlskey_t thread_self;
 
 static id
-call_run(id obj)
+call_main(id obj)
 {
 	if (!of_tlskey_set(thread_self, obj))
 		@throw [OFInitializationFailedException
@@ -39,7 +39,7 @@ call_run(id obj)
 	 * Nasty workaround for thread implementations which can't return a
 	 * value on join.
 	 */
-	((OFThread*)obj)->retval = [[obj run] retain];
+	((OFThread*)obj)->retval = [[obj main] retain];
 
 	[obj handleTermination];
 
@@ -150,7 +150,7 @@ call_run(id obj)
 	return self;
 }
 
-- (id)run
+- (id)main
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
@@ -166,7 +166,7 @@ call_run(id obj)
 {
 	[self retain];
 
-	if (!of_thread_new(&thread, call_run, self)) {
+	if (!of_thread_new(&thread, call_main, self)) {
 		[self release];
 		@throw [OFThreadStartFailedException newWithClass: isa];
 	}
