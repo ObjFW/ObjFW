@@ -78,18 +78,13 @@ of_thread_join(of_thread_t thread)
 #endif
 }
 
-static OF_INLINE BOOL
-of_thread_cancel(of_thread_t thread)
+static OF_INLINE void
+of_thread_exit()
 {
 #if defined(OF_HAVE_PTHREADS)
-	return (pthread_cancel(thread) ? NO : YES);
+	pthread_exit(NULL);
 #elif defined(_WIN32)
-	if (thread != INVALID_HANDLE_VALUE) {
-		TerminateThread(thread, 1);
-		CloseHandle(thread);
-	}
-
-	return YES;
+	ExitThread(0);
 #endif
 }
 

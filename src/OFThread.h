@@ -61,8 +61,12 @@
 {
 	id object;
 	of_thread_t thread;
-	BOOL running;
 @public
+	enum {
+		OF_THREAD_NOT_RUNNING,
+		OF_THREAD_RUNNING,
+		OF_THREAD_WAITING_FOR_JOIN
+	} running;
 	id retval;
 }
 
@@ -93,27 +97,55 @@
 + (id)objectForTLSKey: (OFTLSKey*)key;
 
 /**
+ * \return The current thread or nil if we are in the main thread
+ */
++ (OFThread*)currentThread;
+
+/**
+ * Terminates the current thread, letting it return nil.
+ */
++ (void)terminate;
+
+/**
+ * Terminates the current thread, letting it return the specified object.
+ *
+ * \param The object which the terminated thread will return
+ */
++ (void)terminateWithObject: (id)obj;
+
+/**
  * \param obj An object that is passed to the main method as a copy or nil
  * \return An initialized OFThread.
  */
 - initWithObject: (OFObject <OFCopying>*)obj;
 
 /**
- * The main routine of the thread. You need to reimplement this!
+ * The run routine of the thread. You need to reimplement this!
  *
  * It can access the object passed to the threadWithObject or initWithObject
  * method using the instance variable named object.
  *
  * \return The object the join method should return when called for this thread
  */
-- (id)main;
+- (id)run;
+
+/**
+ * This routine is exectued when the thread's run method has finished executing
+ * or terminate has been called.
+ */
+- (void)handleTermination;
+
+/**
+ * Starts the thread.
+ */
+- start;
 
 /**
  * Joins a thread.
  *
  * \return The object returned by the main method of the thread.
  */
-- join;
+- (id)join;
 @end
 
 /**

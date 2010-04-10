@@ -19,23 +19,43 @@
 #import "threading.h"
 
 static OFList *tlskeys;
+static of_tlskey_t thread_self;
 
 static id
-call_main(id obj)
+call_run(id obj)
 {
+	if (!of_tlskey_set(thread_self, obj))
+		@throw [OFInitializationFailedException
+		    newWithClass: [obj class]];
+
 	/*
 	 * Nasty workaround for thread implementations which can't return a
 	 * value on join.
 	 */
-	((OFThread*)obj)->retval = [obj main];
+	((OFThread*)obj)->retval = [[obj run] retain];
+
+	[obj handleTermination];
+
+	((OFThread*)obj)->running = OF_THREAD_WAITING_FOR_JOIN;
 
 	[OFTLSKey callAllDestructors];
 	[OFAutoreleasePool releaseAll];
+
+	[obj release];
 
 	return 0;
 }
 
 @implementation OFThread
++ (void)initialize
+{
+	if (self != [OFThread class])
+		return;
+
+	if (!of_tlskey_new(&thread_self))
+		@throw [OFInitializationFailedException newWithClass: self];
+}
+
 + threadWithObject: (OFObject <OFCopying>*)obj
 {
 	return [[[self alloc] initWithObject: obj] autorelease];
@@ -60,6 +80,36 @@ call_main(id obj)
 	return [[of_tlskey_get(key->key) retain] autorelease];
 }
 
++ (OFThread*)currentThread
+{
+	return of_tlskey_get(thread_self);
+}
+
++ (void)terminate
+{
+	[self terminateWithObject: nil];
+}
+
++ (void)terminateWithObject: (id)obj
+{
+	OFThread *thread = of_tlskey_get(thread_self);
+
+	if (thread != nil) {
+		thread->retval = [obj retain];
+
+		[thread handleTermination];
+
+		thread->running = OF_THREAD_WAITING_FOR_JOIN;
+	}
+
+	[OFTLSKey callAllDestructors];
+	[OFAutoreleasePool releaseAll];
+
+	[thread release];
+
+	of_thread_exit();
+}
+
 - init
 {
 	@throw [OFNotImplementedException newWithClass: isa
@@ -69,44 +119,53 @@ call_main(id obj)
 - initWithObject: (OFObject <OFCopying>*)obj
 {
 	self = [super init];
+
 	object = [obj retain];
-
-	if (!of_thread_new(&thread, call_main, self)) {
-		Class c = isa;
-		[object release];
-		[super dealloc];
-		@throw [OFInitializationFailedException newWithClass: c];
-	}
-
-	running = YES;
 
 	return self;
 }
 
-- main
+- (id)run
 {
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+
 	return nil;
 }
 
-- join
+- (void)handleTermination
 {
-	of_thread_join(thread);
-	running = NO;
+}
+
+- start
+{
+	if (!of_thread_new(&thread, call_run, self))
+		@throw [OFThreadStartFailedException newWithClass: isa];
+
+	running = OF_THREAD_RUNNING;
+	[self retain];
+
+	return self;
+}
+
+- (id)join
+{
+	if (running != OF_THREAD_WAITING_FOR_JOIN || !of_thread_join(thread))
+		@throw [OFThreadJoinFailedException newWithClass: isa];
+
+	running = OF_THREAD_NOT_RUNNING;
 
 	return retval;
 }
 
 - (void)dealloc
 {
-	/*
-	 * No need to handle errors - if canceling the thread fails, we can't
-	 * do anything anyway. Most likely, it finished already or was already
-	 * canceled.
-	 */
-	if (running)
-		of_thread_cancel(thread);
+	if (running == OF_THREAD_RUNNING)
+		@throw [OFThreadStillRunningException newWithClass: isa];
 
 	[object release];
+	[retval release];
+
 	[super dealloc];
 }
 @end

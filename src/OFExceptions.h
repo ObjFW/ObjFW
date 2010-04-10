@@ -869,9 +869,21 @@
 @end
 
 /**
+ * \brief An exception indicating that starting a thread failed.
+ */
+@interface OFThreadStartFailedException: OFException {}
+@end
+
+/**
  * \brief An exception indicating that joining a thread failed.
  */
 @interface OFThreadJoinFailedException: OFException {}
+@end
+
+/**
+ * \brief An exception indicating that a thread is still running.
+ */
+@interface OFThreadStillRunningException: OFException {}
 @end
 
 /**

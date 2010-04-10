@@ -1234,6 +1234,19 @@
 }
 @end
 
+@implementation OFThreadStartFailedException
+- (OFString*)string
+{
+	if (string != nil)
+		return string;
+
+	string = [[OFString alloc] initWithFormat:
+	    @"Starting a thread of class %s failed!", [class_ className]];
+
+	return string;
+}
+@end
+
 @implementation OFThreadJoinFailedException
 - (OFString*)string
 {
@@ -1243,6 +1256,20 @@
 	string = [[OFString alloc] initWithFormat:
 	    @"Joining a thread of class %s failed! Most likely, another thread "
 	    @"already waits for the thread to join.", [class_ className]];
+
+	return string;
+}
+@end
+
+@implementation OFThreadStillRunningException
+- (OFString*)string
+{
+	if (string != nil)
+		return string;
+
+	string = [[OFString alloc] initWithFormat:
+	    @"Deallocation of a thread of type %s was tried, even though it "
+	    @"was still running", [class_ className]];
 
 	return string;
 }

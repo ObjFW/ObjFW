@@ -24,7 +24,7 @@ static OFString *module = @"OFThread";
 @end
 
 @implementation TestThread
-- main
+- (id)run
 {
 	if ([object isEqual: @"foo"])
 		return @"success";
@@ -42,6 +42,8 @@ static OFString *module = @"OFThread";
 
 	TEST(@"+[threadWithObject:]",
 	    (t = [TestThread threadWithObject: @"foo"]))
+
+	TEST(@"-[run]", [t start])
 
 	TEST(@"-[join]", [[t join] isEqual: @"success"])
 
