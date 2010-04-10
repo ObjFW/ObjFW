@@ -150,7 +150,7 @@ call_run(id obj)
 
 - (id)join
 {
-	if (running != OF_THREAD_WAITING_FOR_JOIN || !of_thread_join(thread))
+	if (running == OF_THREAD_NOT_RUNNING || !of_thread_join(thread))
 		@throw [OFThreadJoinFailedException newWithClass: isa];
 
 	running = OF_THREAD_NOT_RUNNING;

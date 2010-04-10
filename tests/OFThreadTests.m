@@ -43,7 +43,7 @@ static OFString *module = @"OFThread";
 	TEST(@"+[threadWithObject:]",
 	    (t = [TestThread threadWithObject: @"foo"]))
 
-	TEST(@"-[run]", [t start])
+	TEST(@"-[start]", [t start])
 
 	TEST(@"-[join]", [[t join] isEqual: @"success"])
 
