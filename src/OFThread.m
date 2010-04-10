@@ -139,11 +139,14 @@ call_run(id obj)
 
 - start
 {
-	if (!of_thread_new(&thread, call_run, self))
+	[self retain];
+
+	if (!of_thread_new(&thread, call_run, self)) {
+		[self release];
 		@throw [OFThreadStartFailedException newWithClass: isa];
+	}
 
 	running = OF_THREAD_RUNNING;
-	[self retain];
 
 	return self;
 }
