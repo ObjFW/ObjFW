@@ -102,6 +102,11 @@
 + (OFThread*)currentThread;
 
 /**
+ * Suspends execution of the current thread for N milliseconds.
+ */
++ (void)sleepForNMilliseconds: (unsigned int)msecs;
+
+/**
  * Terminates the current thread, letting it return nil.
  */
 + (void)terminate;

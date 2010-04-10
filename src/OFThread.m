@@ -11,6 +11,12 @@
 
 #include "config.h"
 
+#ifndef _WIN32
+# include <unistd.h>
+#else
+# include <windows.h>
+#endif
+
 #import "OFThread.h"
 #import "OFList.h"
 #import "OFAutoreleasePool.h"
@@ -83,6 +89,15 @@ call_run(id obj)
 + (OFThread*)currentThread
 {
 	return of_tlskey_get(thread_self);
+}
+
++ (void)sleepForNMilliseconds: (unsigned int)msecs;
+{
+#ifndef _WIN32
+	usleep(msecs * 1000);
+#else
+	Sleep(msecs);
+#endif
 }
 
 + (void)terminate
