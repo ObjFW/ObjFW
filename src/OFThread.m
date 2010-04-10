@@ -164,6 +164,9 @@ call_main(id obj)
 
 - start
 {
+	if (running == OF_THREAD_RUNNING)
+		@throw [OFThreadStillRunningException newWithClass: isa];
+
 	[self retain];
 
 	if (!of_thread_new(&thread, call_main, self)) {
