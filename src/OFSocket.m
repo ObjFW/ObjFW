@@ -59,8 +59,11 @@
 	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithClass: isa];
 
+#ifndef _WIN32
+	/* FIXME: We want a sane error message on Win32 as well */
 	if (eos)
 		errno = ENOTCONN;
+#endif
 
 	if (eos || (ret = recv(sock, buf, size, 0)) < 0)
 		@throw [OFReadFailedException newWithClass: isa
@@ -80,8 +83,11 @@
 	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithClass: isa];
 
+#ifndef _WIN32
+	/* FIXME: We want a sane error message on Win32 as well */
 	if (eos)
 		errno = ENOTCONN;
+#endif
 
 	if (eos || (ret = send(sock, buf, size, 0)) == -1)
 		@throw [OFWriteFailedException newWithClass: isa
