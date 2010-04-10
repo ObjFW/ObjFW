@@ -31,6 +31,13 @@
 # define O_BINARY 0
 #endif
 
+#ifndef S_IRGRP
+# define S_IRGRP 0
+#endif
+#ifndef S_IROTH
+# define S_IROTH 0
+#endif
+
 #define DEFAULT_MODE S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 
 OFFile *of_stdin = nil;
