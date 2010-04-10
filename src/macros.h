@@ -166,8 +166,9 @@ OF_BSWAP32_V(uint32_t *buf, size_t len)
 # define OF_BSWAP32_V_IF_BE(buf, len)
 #endif
 
-#define OF_ROL(val, bits) \
-	(((val) << (bits)) | ((val) >> (32 - (bits))))
+#define OF_ROL(val, bits)						\
+	(((val) << ((bits) % (sizeof(val) * 8))) |			\
+	(val) >> (sizeof(val) * 8 - ((bits) % (sizeof(val) * 8))))
 
 #define OF_HASH_INIT(hash) hash = 0
 #define OF_HASH_ADD(hash, byte)		\
