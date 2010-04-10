@@ -47,23 +47,34 @@
 # endif
 #endif
 
-#define OF_BSWAP16_CONST(i)					\
-	(((uint16_t)(i) & UINT16_C(0xFF00)) >> 8 |		\
-	 ((uint16_t)(i) & UINT16_C(0x00FF)) << 8)
-#define OF_BSWAP32_CONST(i)					\
-	(((uint32_t)(i) & UINT32_C(0xFF000000)) >> 24 |		\
-	 ((uint32_t)(i) & UINT32_C(0x00FF0000)) >>  8 |		\
-	 ((uint32_t)(i) & UINT32_C(0x0000FF00)) <<  8 |		\
-	 ((uint32_t)(i) & UINT32_C(0x000000FF)) << 24)
-#define OF_BSWAP64_CONST(i)					\
-	(((uint64_t)(i) & UINT64_C(0xFF00000000000000)) >> 56 |	\
-	 ((uint64_t)(i) & UINT64_C(0x00FF000000000000)) >> 40 |	\
-	 ((uint64_t)(i) & UINT64_C(0x0000FF0000000000)) >> 24 |	\
-	 ((uint64_t)(i) & UINT64_C(0x000000FF00000000)) >>  8 |	\
-	 ((uint64_t)(i) & UINT64_C(0x00000000FF000000)) <<  8 |	\
-	 ((uint64_t)(i) & UINT64_C(0x0000000000FF0000)) << 24 |	\
-	 ((uint64_t)(i) & UINT64_C(0x000000000000FF00)) << 40 |	\
-	 ((uint64_t)(i) & UINT64_C(0x00000000000000FF)) << 56)
+static OF_INLINE uint16_t
+OF_BSWAP16_CONST(uint16_t i)
+{
+	return (i & UINT16_C(0xFF00)) >> 8 |
+	    (i & UINT16_C(0x00FF)) << 8;
+}
+
+static OF_INLINE uint32_t
+OF_BSWAP32_CONST(uint32_t i)
+{
+	return (i & UINT32_C(0xFF000000)) >> 24 |
+	    (i & UINT32_C(0x00FF0000)) >>  8 |
+	    (i & UINT32_C(0x0000FF00)) <<  8 |
+	    (i & UINT32_C(0x000000FF)) << 24;
+}
+
+static OF_INLINE uint64_t
+OF_BSWAP64_CONST(uint64_t i)
+{
+	return (i & UINT64_C(0xFF00000000000000)) >> 56 |
+	    (i & UINT64_C(0x00FF000000000000)) >> 40 |
+	    (i & UINT64_C(0x0000FF0000000000)) >> 24 |
+	    (i & UINT64_C(0x000000FF00000000)) >>  8 |
+	    (i & UINT64_C(0x00000000FF000000)) <<  8 |
+	    (i & UINT64_C(0x0000000000FF0000)) << 24 |
+	    (i & UINT64_C(0x000000000000FF00)) << 40 |
+	    (i & UINT64_C(0x00000000000000FF)) << 56;
+}
 
 static OF_INLINE uint16_t
 OF_BSWAP16_NONCONST(uint16_t i)
