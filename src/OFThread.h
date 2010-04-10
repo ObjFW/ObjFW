@@ -107,6 +107,12 @@
 + (void)sleepForNMilliseconds: (unsigned int)msecs;
 
 /**
+ * Yields a processor voluntarily and moves the thread at the end of the queue
+ * for its priority.
+ */
++ (void)yield;
+
+/**
  * Terminates the current thread, letting it return nil.
  */
 + (void)terminate;

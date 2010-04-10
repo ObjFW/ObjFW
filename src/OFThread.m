@@ -13,6 +13,7 @@
 
 #ifndef _WIN32
 # include <unistd.h>
+# include <sched.h>
 #else
 # include <windows.h>
 #endif
@@ -97,6 +98,15 @@ call_run(id obj)
 	usleep(msecs * 1000);
 #else
 	Sleep(msecs);
+#endif
+}
+
++ (void)yield
+{
+#ifndef _WIN32
+	sched_yield();
+#else
+	Sleep(0);
 #endif
 }
 
