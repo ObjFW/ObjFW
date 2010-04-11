@@ -151,7 +151,7 @@ static OFString* whitespace[] = {
 #ifndef _WIN32
 	    [s[1] isEqual: @"foo/bar/baz"] &&
 #else
-	    [s[1] isEqual: @"foo/bar/baz"] &&
+	    [s[1] isEqual: @"foo\\bar\\baz"] &&
 #endif
 	    (s[1] = [OFString stringWithPath: @"foo", nil]) &&
 	    [s[1] isEqual: @"foo"])
