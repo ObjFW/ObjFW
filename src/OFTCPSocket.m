@@ -55,14 +55,6 @@ static OFMutex *mutex = nil;
 	return self;
 }
 
-- (void)dealloc
-{
-	if (sock != INVALID_SOCKET)
-		close(sock);
-
-	[super dealloc];
-}
-
 - connectToService: (OFString*)service
 	    onNode: (OFString*)node
 {
@@ -383,11 +375,21 @@ static OFMutex *mutex = nil;
 	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithClass: isa];
 
-	[self freeMemory: saddr];
+	close(sock);
 	sock = INVALID_SOCKET;
+
+	[self freeMemory: saddr];
 	saddr = NULL;
 	saddr_len = 0;
 
 	return self;
+}
+
+- (void)dealloc
+{
+	if (sock != INVALID_SOCKET)
+		[self close];
+
+	[super dealloc];
 }
 @end
