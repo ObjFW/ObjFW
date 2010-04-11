@@ -59,7 +59,7 @@ run-on-iphone: all
 	echo "Uploading files to iPhone ${IPHONE_HOST} at ${IPHONE_TMP}..."
 	ssh ${IPHONE_USER}@${IPHONE_HOST} \
 		'rm -fr ${IPHONE_TMP} && mkdir -p ${IPHONE_TMP}/plugin'
-	scp -q ../src/libobjfw.dylib tests testfile \
+	scp -q ../src/libobjfw.dylib tests testfile.bin testfile.txt \
 		${IPHONE_USER}@${IPHONE_HOST}:${IPHONE_TMP}/
 	scp -q plugin/TestPlugin.impl \
 		${IPHONE_USER}@${IPHONE_HOST}:${IPHONE_TMP}/plugin/

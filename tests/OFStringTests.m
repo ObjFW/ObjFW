@@ -104,6 +104,11 @@ static OFString* whitespace[] = {
 					      length: 3]) &&
 	    [s[0] isEqual: @"foo"])
 
+	TEST(@"+[stringWithContentsOfFile:encoding]", (s[1] = [OFString
+	    stringWithContentsOfFile: @"testfile.txt"
+			    encoding: OF_STRING_ENCODING_ISO_8859_1]) &&
+	    [s[1] isEqual: @"testäöü"])
+
 	TEST(@"-[appendCStringWithLength:]",
 	    [[s[0] appendCString: "foobarqux" + 3
 		      withLength: 3] isEqual: @"foobar"])

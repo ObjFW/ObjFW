@@ -117,6 +117,25 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 + stringWithString: (OFString*)str;
 
 /**
+ * Creates a new OFString with the contents of the specified file.
+ *
+ * \param path The path to the file
+ * \return A new autoreleased OFString
+ */
++ stringWithContentsOfFile: (OFString*)path;
+
+/**
+ * Creates a new OFString with the contents of the specified file in the
+ * specified encoding.
+ *
+ * \param path The path to the file
+ * \param encoding The encoding of the file
+ * \return A new autoreleased OFString
+ */
++ stringWithContentsOfFile: (OFString*)path
+		  encoding: (enum of_string_encoding)encoding;
+
+/**
  * Initializes an already allocated OFString.
  *
  * \return An initialized OFString
@@ -213,6 +232,26 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  * \return An initialized OFString
  */
 - initWithString: (OFString*)str;
+
+/**
+ * Initializes an already allocated OFString with the contents of the specified
+ * file in the specified encoding.
+ *
+ * \param path The path to the file
+ * \return An initialized OFString
+ */
+- initWithContentsOfFile: (OFString*)path;
+
+/**
+ * Initializes an already allocated OFString with the contents of the specified
+ * file in the specified encoding.
+ *
+ * \param path The path to the file
+ * \param encoding The encoding of the file
+ * \return An initialized OFString
+ */
+- initWithContentsOfFile: (OFString*)path
+		encoding: (enum of_string_encoding)encoding;
 
 /**
  * \return The OFString as a UTF-8 encoded C string

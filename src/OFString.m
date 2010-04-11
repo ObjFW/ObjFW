@@ -17,14 +17,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <sys/stat.h>
 #ifdef HAVE_MADVISE
-#include <sys/mman.h>
+# include <sys/mman.h>
 #else
-#define madvise(addr, len, advise)
+# define madvise(addr, len, advise)
 #endif
 
 #import "OFString.h"
 #import "OFArray.h"
+#import "OFFile.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 #import "macros.h"
@@ -276,6 +278,18 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 + stringWithString: (OFString*)str
 {
 	return [[[self alloc] initWithString: str] autorelease];
+}
+
++ stringWithContentsOfFile: (OFString*)path
+{
+	return [[[self alloc] initWithContentsOfFile: path] autorelease];
+}
+
++ stringWithContentsOfFile: (OFString*)path
+		  encoding: (enum of_string_encoding)encoding
+{
+	return [[[self alloc] initWithContentsOfFile: path
+					    encoding: encoding] autorelease];
 }
 
 - init
@@ -623,6 +637,56 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		free(string);
 		[self dealloc];
 		@throw e;
+	}
+
+	return self;
+}
+
+- initWithContentsOfFile: (OFString*)path
+{
+	return [self initWithContentsOfFile: path
+				   encoding: OF_STRING_ENCODING_UTF_8];
+}
+
+- initWithContentsOfFile: (OFString*)path
+		encoding: (enum of_string_encoding)encoding
+{
+	OFFile *file = nil;
+	char *tmp;
+	struct stat s;
+
+	if (stat([path cString], &s) == -1) {
+		Class c = isa;
+		[super dealloc];
+		@throw [OFInitializationFailedException newWithClass: c];
+	}
+
+	if ((tmp = malloc(s.st_size)) == NULL) {
+		Class c = isa;
+		[super dealloc];
+		@throw [OFOutOfMemoryException newWithClass: c
+						       size: s.st_size];
+	}
+
+	@try {
+		file = [[OFFile alloc] initWithPath: path
+					       mode: @"rb"];
+		[file readExactlyNBytes: s.st_size
+			     intoBuffer: tmp];
+	} @catch (OFException *e) {
+		free(tmp);
+		[super dealloc];
+		@throw e;
+	} @finally {
+		[file release];
+	}
+
+	@try {
+		self = [self initWithCString: tmp
+				    encoding: encoding
+				      length: s.st_size];
+	} @finally {
+		free(tmp);
 	}
 
 	return self;

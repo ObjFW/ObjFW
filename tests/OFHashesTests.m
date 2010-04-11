@@ -35,7 +35,7 @@ const uint8_t testfile_sha1[OF_SHA1_DIGEST_SIZE] =
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFMD5Hash *md5;
 	OFSHA1Hash *sha1;
-	OFFile *f = [OFFile fileWithPath: @"testfile"
+	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
 				    mode: @"rb"];
 
 	TEST(@"+[md5Hash]", (md5 = [OFMD5Hash md5Hash]))
