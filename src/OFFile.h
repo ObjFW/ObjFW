@@ -79,15 +79,15 @@
  * \param from The file to rename
  * \param to The new name
  */
-+ (void)rename: (OFString*)from
-	    to: (OFString*)to;
++ (void)renameFileWithPath: (OFString*)from
+		    toPath: (OFString*)to;
 
 /**
  * Deletes a file.
  *
  * \param path The path to the file of which should be deleted as a string
  */
-+ (void)delete: (OFString*)path;
++ (void)deleteFileWithPath: (OFString*)path;
 
 #ifndef _WIN32
 /**
@@ -98,8 +98,8 @@
  * \param src The path to the file of which should be linked as a string
  * \param dest The path to where the file should be linked as a string
  */
-+ (void)link: (OFString*)src
-	  to: (OFString*)dest;
++ (void)linkFileWithPath: (OFString*)src
+		  toPath: (OFString*)dest;
 
 /**
  * Symlinks a file.
@@ -109,8 +109,8 @@
  * \param src The path to the file of which should be symlinked as a string
  * \param dest The path to where the file should be symlinked as a string
  */
-+ (void)symlink: (OFString*)src
-	     to: (OFString*)dest;
++ (void)symlinkFileWithPath: (OFString*)src
+		     toPath: (OFString*)dest;
 #endif
 
 /**

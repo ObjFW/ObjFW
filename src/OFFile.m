@@ -156,8 +156,8 @@ static int parse_mode(const char *mode)
 }
 #endif
 
-+ (void)rename: (OFString*)from
-	    to: (OFString*)to
++ (void)renameFileWithPath: (OFString*)from
+		    toPath: (OFString*)to
 {
 #ifndef _WIN32
 	if (rename([from cString], [to cString]))
@@ -169,7 +169,7 @@ static int parse_mode(const char *mode)
 							      to: to];
 }
 
-+ (void)delete: (OFString*)path
++ (void)deleteFileWithPath: (OFString*)path
 {
 #ifndef _WIN32
 	if (unlink([path cString]))
@@ -181,8 +181,8 @@ static int parse_mode(const char *mode)
 }
 
 #ifndef _WIN32
-+ (void)link: (OFString*)src
-	  to: (OFString*)dest
++ (void)linkFileWithPath: (OFString*)src
+		  toPath: (OFString*)dest
 {
 	if (link([src cString], [dest cString]) != 0)
 		@throw [OFLinkFailedException newWithClass: self
@@ -190,8 +190,8 @@ static int parse_mode(const char *mode)
 					       destination: dest];
 }
 
-+ (void)symlink: (OFString*)src
-	     to: (OFString*)dest
++ (void)symlinkFileWithPath: (OFString*)src
+		     toPath: (OFString*)dest
 {
 	if (symlink([src cString], [dest cString]) != 0)
 		@throw [OFSymlinkFailedException newWithClass: self
