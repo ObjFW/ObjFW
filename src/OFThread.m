@@ -63,7 +63,7 @@ call_main(id obj)
 		@throw [OFInitializationFailedException newWithClass: self];
 }
 
-+ threadWithObject: (OFObject <OFCopying>*)obj
++ threadWithObject: (id)obj
 {
 	return [[[self alloc] initWithObject: obj] autorelease];
 }
@@ -141,7 +141,7 @@ call_main(id obj)
 					      selector: _cmd];
 }
 
-- initWithObject: (OFObject <OFCopying>*)obj
+- initWithObject: (id)obj
 {
 	self = [super init];
 

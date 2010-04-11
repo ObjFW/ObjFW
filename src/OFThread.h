@@ -74,7 +74,7 @@
  * \param obj An object that is passed to the main method as a copy or nil
  * \return A new autoreleased thread
  */
-+ threadWithObject: (OFObject <OFCopying>*)obj;
++ threadWithObject: (id)obj;
 
 /**
  * Sets the Thread Local Storage for the specified key.
@@ -128,7 +128,7 @@
  * \param obj An object that is passed to the main method as a copy or nil
  * \return An initialized OFThread.
  */
-- initWithObject: (OFObject <OFCopying>*)obj;
+- initWithObject: (id)obj;
 
 /**
  * The main routine of the thread. You need to reimplement this!
