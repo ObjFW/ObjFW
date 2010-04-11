@@ -102,6 +102,19 @@ static int parse_mode(const char *mode)
 	return [[[self alloc] initWithFileDescriptor: fd_] autorelease];
 }
 
++ (BOOL)fileExistsAtPath: (OFString*)path
+{
+	struct stat s;
+
+	if (stat([path cString], &s) == -1)
+		return NO;
+
+	if (S_ISREG(s.st_mode))
+		return YES;
+
+	return NO;
+}
+
 + (void)changeModeOfFile: (OFString*)path
 		  toMode: (mode_t)mode
 {

@@ -41,6 +41,11 @@
 + fileWithFileDescriptor: (int)fd;
 
 /**
+ * \return A boolean whether there is a file at the specified path
+ */
++ (BOOL)fileExistsAtPath: (OFString*)path;
+
+/**
  * Changes the mode of a file.
  *
  * Only changes read-only flag on Windows.
