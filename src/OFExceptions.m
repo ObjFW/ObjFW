@@ -33,7 +33,7 @@
 #ifndef _WIN32
 # include <errno.h>
 # define GET_ERR	errno
-# ifndef HAVE_GETADDRINFO
+# ifndef HAVE_THREADSAFE_GETADDRINFO
 #  define GET_AT_ERR	h_errno
 # else
 #  define GET_AT_ERR	errno
@@ -41,7 +41,7 @@
 # define GET_SOCK_ERR	errno
 # define ERRFMT		"Error string was: %s"
 # define ERRPARAM	strerror(err)
-# ifndef HAVE_GETADDRINFO
+# ifndef HAVE_THREADSAFE_GETADDRINFO
 #  define AT_ERRPARAM	hstrerror(err)
 # else
 #  define AT_ERRPARAM	strerror(err)
@@ -960,8 +960,11 @@
 
 - initWithClass: (Class)class__
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	self = [super initWithClass: class__];
+
+	err = GET_AT_ERR;
+
+	return self;
 }
 
 - initWithClass: (Class)class__
@@ -990,13 +993,19 @@
 	if (string != nil)
 		return string;
 
-	string = [[OFString alloc] initWithFormat:
-	    @"The service %s on %s could not be translated to an address in "
-	    @"class %s. This means that either the node was not found, there "
-	    @"is no such service on the node, there was a problem with the "
-	    @"name server, there was a problem with your network connection "
-	    @"or you specified an invalid node or service. " ERRFMT,
-	    [service cString], [node cString], [class_ className], AT_ERRPARAM];
+	if (node != nil && service != nil)
+		string = [[OFString alloc] initWithFormat:
+		    @"The service %s on %s could not be translated to an "
+		    @"address in class %s. This means that either the node was "
+		    @"not found, there is no such service on the node, there "
+		    @"was a problem with the name server, there was a problem "
+		    @"with your network connection or you specified an invalid "
+		    @"node or service. " ERRFMT, [service cString],
+		    [node cString], [class_ className], AT_ERRPARAM];
+	else
+		string = [[OFString alloc] initWithFormat:
+		    @"An address translation failed in class %s! " ERRFMT,
+		    [class_ className], AT_ERRPARAM];
 
 	return string;
 }
