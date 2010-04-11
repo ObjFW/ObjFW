@@ -74,4 +74,11 @@
  * Enable or disable keep alives for the connection.
  */
 - enableKeepAlives: (BOOL)enable;
+
+/**
+ * Returns the remote address of the socket. Only works with accepted sockets!
+ *
+ * \return The remote address as a string.
+ */
+- (OFString*)remoteAddress;
 @end

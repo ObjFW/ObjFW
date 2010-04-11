@@ -16,8 +16,11 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <assert.h>
+
 #if !defined(HAVE_THREADSAFE_GETADDRINFO) && !defined(_WIN32)
 # include <netinet/in.h>
+# include <arpa/inet.h>
 #endif
 
 #import "OFTCPSocket.h"
@@ -96,18 +99,18 @@ static OFMutex *mutex = nil;
 	struct sockaddr_in addr;
 	uint16_t port;
 	char **ip;
-#ifdef OF_THREADS
+# ifdef OF_THREADS
 	OFDataArray *addrlist;
 
 	addrlist = [[OFDataArray alloc] initWithItemSize: sizeof(char**)];
 	[mutex lock];
-#endif
+# endif
 
 	if ((he = gethostbyname([node cString])) == NULL) {
-#ifdef OF_THREADS
+# ifdef OF_THREADS
 		[addrlist release];
 		[mutex unlock];
-#endif
+# endif
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
 			    node: node
@@ -118,10 +121,10 @@ static OFMutex *mutex = nil;
 		port = se->s_port;
 	else if ((port = OF_BSWAP16_IF_LE(strtol([service cString], NULL,
 	    10))) == 0) {
-#ifdef OF_THREADS
+# ifdef OF_THREADS
 		[addrlist release];
 		[mutex unlock];
-#endif
+# endif
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
 			    node: node
@@ -134,17 +137,17 @@ static OFMutex *mutex = nil;
 
 	if (he->h_addrtype != AF_INET ||
 	    (sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
-#ifdef OF_THREADS
+# ifdef OF_THREADS
 		[addrlist release];
 		[mutex unlock];
-#endif
+# endif
 		@throw [OFConnectionFailedException
 		    newWithClass: isa
 			    node: node
 			 service: service];
 	}
 
-#ifdef OF_THREADS
+# ifdef OF_THREADS
 	@try {
 		for (ip = he->h_addr_list; *ip != NULL; ip++)
 			[addrlist addItem: ip];
@@ -159,9 +162,9 @@ static OFMutex *mutex = nil;
 	}
 
 	for (ip = [addrlist cArray]; *ip != NULL; ip++) {
-#else
+# else
 	for (ip = he->h_addr_list; *ip != NULL; ip++) {
-#endif
+# endif
 		memcpy(&addr.sin_addr.s_addr, *ip, he->h_length);
 
 		if (connect(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1)
@@ -171,9 +174,9 @@ static OFMutex *mutex = nil;
 		break;
 	}
 
-#ifdef OF_THREADS
+# ifdef OF_THREADS
 	[addrlist release];
-#endif
+# endif
 
 	if (!connected) {
 		close(sock);
@@ -243,14 +246,14 @@ static OFMutex *mutex = nil;
 	struct sockaddr_in addr;
 	uint16_t port;
 
-#ifdef OF_THREADS
+# ifdef OF_THREADS
 	[mutex lock];
-#endif
+# endif
 
 	if ((he = gethostbyname([node cString])) == NULL) {
-#ifdef OF_THREADS
+# ifdef OF_THREADS
 		[mutex unlock];
-#endif
+# endif
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
 			    node: node
@@ -261,9 +264,9 @@ static OFMutex *mutex = nil;
 		port = se->s_port;
 	else if ((port = OF_BSWAP16_IF_LE(strtol([service cString], NULL,
 	    10))) == 0) {
-#ifdef OF_THREADS
+# ifdef OF_THREADS
 		[mutex unlock];
-#endif
+# endif
 		close(sock);
 		sock = INVALID_SOCKET;
 		@throw [OFAddressTranslationFailedException
@@ -277,9 +280,9 @@ static OFMutex *mutex = nil;
 	addr.sin_port = port;
 
 	if (he->h_addrtype != AF_INET || he->h_addr_list[0] == NULL) {
-#ifdef OF_THREADS
+# ifdef OF_THREADS
 		[mutex unlock];
-#endif
+# endif
 		close(sock);
 		sock = INVALID_SOCKET;
 		@throw [OFAddressTranslationFailedException
@@ -290,9 +293,9 @@ static OFMutex *mutex = nil;
 
 	memcpy(&addr.sin_addr.s_addr, he->h_addr_list[0], he->h_length);
 
-#ifdef OF_THREADS
+# ifdef OF_THREADS
 	[mutex unlock];
-#endif
+# endif
 
 	if (bind(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
 		close(sock);
@@ -368,6 +371,54 @@ static OFMutex *mutex = nil;
 		@throw [OFSetOptionFailedException newWithClass: isa];
 
 	return self;
+}
+
+- (OFString*)remoteAddress
+{
+	if (saddr == NULL || saddr_len == 0)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
+#ifdef HAVE_THREADSAFE_GETADDRINFO
+	char *node = [self allocMemoryWithSize: NI_MAXHOST];
+
+	@try {
+		if (getnameinfo(saddr, saddr_len, node, NI_MAXHOST, NULL, 0,
+		    NI_NUMERICHOST))
+			@throw [OFAddressTranslationFailedException
+			    newWithClass: isa];
+
+		return [OFString stringWithCString: node];
+	} @finally {
+		[self freeMemory: node];
+	}
+
+	/* Get rid of a warning, never reached anyway */
+	assert(0);
+#else
+	char *node;
+
+# ifdef OF_THREADS
+	[mutex lock];
+
+	@try {
+# endif
+		node = inet_ntoa(((struct sockaddr_in*)saddr)->sin_addr);
+
+		if (node == NULL)
+			@throw [OFAddressTranslationFailedException
+			    newWithClass: isa];
+
+		return [OFString stringWithCString: node];
+# ifdef OF_THREADS
+	} @finally {
+		[mutex unlock];
+	}
+
+	/* Get rid of a warning, never reached anyway */
+	assert(0);
+# endif
+#endif
 }
 
 - close

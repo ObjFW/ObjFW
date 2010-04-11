@@ -57,6 +57,9 @@ static OFString *module = @"OFTCPSocket";
 
 	TEST(@"-[accept]", (accepted = [server accept]))
 
+	TEST(@"-[remoteAddress]",
+	    [[accepted remoteAddress] isEqual: @"127.0.0.1"])
+
 	TEST(@"-[writeString:]", [client writeString: @"Hello!"])
 
 	TEST(@"-[readNBytes:intoBuffer:]", [accepted readNBytes: 6
