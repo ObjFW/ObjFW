@@ -54,6 +54,13 @@
 + (BOOL)directoryExistsAtPath: (OFString*)path;
 
 /**
+ * Creates a directory at the specified path.
+ *
+ * \param path The path of the directory
+ */
++ (void)createDirectoryAtPath: (OFString*)path;
+
+/**
  * \param path The path of the directory
  * \return An array of OFStrings with the files at the specified path
  */

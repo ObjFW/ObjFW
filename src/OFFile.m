@@ -42,6 +42,7 @@
 #endif
 
 #define DEFAULT_MODE S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
+#define DIR_MODE DEFAULT_MODE | S_IXUSR | S_IXGRP | S_IXOTH
 
 OFFile *of_stdin = nil;
 OFFile *of_stdout = nil;
@@ -129,6 +130,13 @@ static int parse_mode(const char *mode)
 		return YES;
 
 	return NO;
+}
+
++ (void)createDirectoryAtPath: (OFString*)path
+{
+	if (mkdir([path cString], DIR_MODE))
+		@throw [OFCreateDirectoryFailedException newWithClass: self
+								 path: path];
 }
 
 + (OFArray*)filesInDirectoryAtPath: (OFString*)path
