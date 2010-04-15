@@ -246,13 +246,13 @@
 {
 	OFString *path;
 	OFString *mode;
-	int  err;
+	int err;
 }
 
 /**
  * \param class_ The class of the object which caused the exception
- * \param path A string of the path to the file tried to open
- * \param mode A string of the mode in which the file should have been opened
+ * \param path A string with the path of the file tried to open
+ * \param mode A string with the mode in which the file should have been opened
  * \return A new open file failed exception
  */
 + newWithClass: (Class)class_
@@ -263,8 +263,8 @@
  * Initializes an already allocated open file failed exception.
  *
  * \param class_ The class of the object which caused the exception
- * \param path A string of the path to the file which couldn't be opened
- * \param mode A string of the mode in which the file should have been opened
+ * \param path A string with the path of the file which couldn't be opened
+ * \param mode A string with the mode in which the file should have been opened
  * \return An initialized open file failed exception
  */
 - initWithClass: (Class)class_
@@ -277,12 +277,12 @@
 - (int)errNo;
 
 /**
- * \return A string of the path to the file which couldn't be opened
+ * \return A string with the path of the file which couldn't be opened
  */
 - (OFString*)path;
 
 /**
- * \return A string of the mode in which the file should have been opened
+ * \return A string with the mode in which the file should have been opened
  */
 - (OFString*)mode;
 @end
@@ -349,6 +349,44 @@
  * \return The errno from when the exception was created
  */
 - (int)errNo;
+@end
+
+/**
+ * \brief An exception indicating a directory couldn't be created.
+ */
+@interface OFCreateDirectoryFailedException: OFException
+{
+	OFString *path;
+	int err;
+}
+
+/**
+ * \param class_ The class of the object which caused the exception
+ * \param path A string with the path of the directory which couldn't be created
+ * \return A new create directory failed exception
+ */
++ newWithClass: (Class)class_
+	  path: (OFString*)path;
+
+/**
+ * Initializes an already allocated create directory failed exception.
+ *
+ * \param class_ The class of the object which caused the exception
+ * \param path A string with the path of the directory which couldn't be created
+ * \return An initialized create directory failed exception
+ */
+- initWithClass: (Class)class_
+	   path: (OFString*)path;
+
+/**
+ * \return The errno from when the exception was created
+ */
+- (int)errNo;
+
+/**
+ * \return A string with the path of the file which couldn't be opened
+ */
+- (OFString*)path;
 @end
 
 /**
@@ -584,12 +622,12 @@
 - (int)errNo;
 
 /**
- * \return A string of the source for the link
+ * \return A string with the source for the link
  */
 - (OFString*)source;
 
 /**
- * \return A string of the destination for the link
+ * \return A string with the destination for the link
  */
 - (OFString*)destination;
 @end
@@ -632,12 +670,12 @@
 - (int)errNo;
 
 /**
- * \return A string of the source for the symlink
+ * \return A string with the source for the symlink
  */
 - (OFString*)source;
 
 /**
- * \return A string of the destination for the symlink
+ * \return A string with the destination for the symlink
  */
 - (OFString*)destination;
 @end

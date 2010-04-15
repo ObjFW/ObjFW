@@ -515,6 +515,61 @@
 }
 @end
 
+@implementation OFCreateDirectoryFailedException
++ newWithClass: (Class)class__
+	  path: (OFString*)path_
+{
+	return [[self alloc] initWithClass: class__
+				      path: path_];
+}
+
+- initWithClass: (Class)class__
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class__
+	   path: (OFString*)path_
+{
+	self = [super initWithClass: class__];
+
+	path = [path_ copy];
+	err  = GET_ERR;
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[path release];
+
+	[super dealloc];
+}
+
+- (OFString*)string
+{
+	if (string != nil)
+		return string;
+
+	string = [[OFString alloc] initWithFormat:
+	    @"Failed to create directory %s in class %s! " ERRFMT,
+	    [path cString], [class_ className], ERRPARAM];
+
+	return string;
+}
+
+- (int)errNo
+{
+	return err;
+}
+
+- (OFString*)path
+{
+	return path;
+}
+@end
+
 @implementation OFChangeFileModeFailedException
 + newWithClass: (Class)class__
 	  path: (OFString*)path_
