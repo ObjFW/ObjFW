@@ -18,9 +18,12 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <dirent.h>
 
 #import "OFFile.h"
 #import "OFString.h"
+#import "OFArray.h"
+#import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 
 #ifdef _WIN32
@@ -113,6 +116,57 @@ static int parse_mode(const char *mode)
 		return YES;
 
 	return NO;
+}
+
++ (BOOL)directoryExistsAtPath: (OFString*)path
+{
+	struct stat s;
+
+	if (stat([path cString], &s) == -1)
+		return NO;
+
+	if (S_ISDIR(s.st_mode))
+		return YES;
+
+	return NO;
+}
+
++ (OFArray*)filesInDirectoryAtPath: (OFString*)path
+{
+	OFAutoreleasePool *pool;
+	OFMutableArray *files;
+	DIR *dir;
+	struct dirent *dirent;
+
+	files = [OFMutableArray array];
+
+	if ((dir = opendir([path cString])) == NULL)
+		@throw [OFOpenFileFailedException newWithClass: self
+							  path: path
+							  mode: @"r"];
+
+	@try {
+		pool = [[OFAutoreleasePool alloc] init];
+
+		while ((dirent = readdir(dir)) != NULL) {
+			OFString *file;
+
+			if (!strcmp(dirent->d_name, ".") ||
+			    !strcmp(dirent->d_name, ".."))
+				continue;
+
+			file = [OFString stringWithCString: dirent->d_name];
+			[files addObject: file];
+
+			[pool releaseObjects];
+		}
+
+		[pool release];
+	} @finally {
+		closedir(dir);
+	}
+
+	return files;
 }
 
 + (void)changeModeOfFile: (OFString*)path

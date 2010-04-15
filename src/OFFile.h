@@ -14,6 +14,7 @@
 #import "OFSeekableStream.h"
 
 @class OFString;
+@class OFArray;
 
 /**
  * \brief A class which provides functions to read, write and manipulate files.
@@ -41,9 +42,22 @@
 + fileWithFileDescriptor: (int)fd;
 
 /**
+ * \param path The path to check
  * \return A boolean whether there is a file at the specified path
  */
 + (BOOL)fileExistsAtPath: (OFString*)path;
+
+/**
+ * \param path The path to check
+ * \return A boolean whether there is a directory at the specified path
+ */
++ (BOOL)directoryExistsAtPath: (OFString*)path;
+
+/**
+ * \param path The path of the directory
+ * \return An array of OFStrings with the files at the specified path
+ */
++ (OFArray*)filesInDirectoryAtPath: (OFString*)path;
 
 /**
  * Changes the mode of a file.
