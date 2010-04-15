@@ -134,7 +134,11 @@ static int parse_mode(const char *mode)
 
 + (void)createDirectoryAtPath: (OFString*)path
 {
+#ifndef _WIN32
 	if (mkdir([path cString], DIR_MODE))
+#else
+	if (mkdir([path cString]))
+#endif
 		@throw [OFCreateDirectoryFailedException newWithClass: self
 								 path: path];
 }
@@ -142,11 +146,11 @@ static int parse_mode(const char *mode)
 + (OFArray*)filesInDirectoryAtPath: (OFString*)path
 {
 	OFAutoreleasePool *pool;
-	OFMutableArray *files;
+	OFMutableArray *files = [OFMutableArray array];
+
+#ifndef _WIN32
 	DIR *dir;
 	struct dirent *dirent;
-
-	files = [OFMutableArray array];
 
 	if ((dir = opendir([path cString])) == NULL)
 		@throw [OFOpenFileFailedException newWithClass: self
@@ -173,6 +177,39 @@ static int parse_mode(const char *mode)
 	} @finally {
 		closedir(dir);
 	}
+#else
+	HANDLE handle;
+	WIN32_FIND_DATA fd;
+
+	path = [path stringByAppendingString: @"\\*"];
+
+	if ((handle = FindFirstFile([path cString], &fd)) ==
+	    INVALID_HANDLE_VALUE)
+		@throw [OFOpenFileFailedException newWithClass: self
+							  path: path
+							  mode: @"r"];
+
+	@try {
+		pool = [[OFAutoreleasePool alloc] init];
+
+		do {
+			OFString *file;
+
+			if (!strcmp(fd.cFileName, ".") ||
+			    !strcmp(fd.cFileName, ".."))
+				continue;
+
+			file = [OFString stringWithCString: fd.cFileName];
+			[files addObject: file];
+
+			[pool releaseObjects];
+		} while (FindNextFile(handle, &fd));
+
+		[pool release];
+	} @finally {
+		FindClose(handle);
+	}
+#endif
 
 	return files;
 }
