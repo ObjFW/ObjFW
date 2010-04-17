@@ -5,6 +5,7 @@ libdir="@libdir@"
 CFLAGS=""
 CPPFLAGS="-I@includedir@"
 CXXFLAGS=""
+OBJC="@OBJC@"
 OBJCFLAGS="@GNU_RUNTIME@ -fexceptions -fobjc-exceptions"
 OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstString"
 OBJCFLAGS="$OBJCFLAGS @NO_CONST_CFSTRINGS@ @NO_WARN_UNUSED@ @ATOMIC_OBJCFLAGS@"
@@ -20,6 +21,7 @@ show_help() {
 	echo "	--cflags	Outputs the required CFLAGS"
 	echo "	--cppflags	Outputs the required CPPFLAGS"
 	echo "	--cxxflags	Outputs the required CXXFLAGS"
+	echo "  --objc		Outputs the OBJC used to compile ObjFW"
 	echo "	--objcflags	Outputs the required OBJCFLAGS"
 	echo "	--ldflags	Outputs the required LDFLAGS"
 	echo "	--rpath		Outputs LDFLAGS for using rpath"
@@ -50,6 +52,9 @@ while test ! -z "$1"; do
 			;;
 		--cxxflags)
 			echo "$CXXFLAGS"
+			;;
+		--objc)
+			echo "$OBJC"
 			;;
 		--objcflags)
 			echo "$OBJCFLAGS"
