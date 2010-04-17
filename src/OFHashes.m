@@ -20,6 +20,21 @@
 
 int _OFHashing_reference;
 
+@implementation OFHash
+- (void)updateWithBuffer: (const char*)buffer
+		  ofSize: (size_t)size
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- (uint8_t*)digest
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+@end
+
 /*
  * MD5
  */

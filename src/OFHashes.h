@@ -18,70 +18,60 @@
 extern int _OFHashing_reference;
 
 /**
+ * \brief A base class for classes providing hash functions.
+ */
+@interface OFHash: OFObject
+{
+	BOOL	 calculated;
+}
+
+/**
+ * Adds a buffer to the hash to be calculated.
+ *
+ * \param buf The buffer which should be included into the calculation.
+ * \param size The size of the buffer
+ */
+- (void)updateWithBuffer: (const char*)buf
+		  ofSize: (size_t)size;
+
+/**
+ * \return A buffer containing the hash. The size of the buffer is depending
+ *	   on the hash used. The buffer is part of object's memory pool.
+ */
+- (uint8_t*)digest;
+@end
+
+/**
  * \brief A class which provides functions to create an MD5 hash.
  */
-@interface OFMD5Hash: OFObject
+@interface OFMD5Hash: OFHash
 {
 	uint32_t buf[4];
 	uint32_t bits[2];
 	uint8_t	 in[64];
-
-	BOOL	 calculated;
 }
 
 /**
  * \return A new autoreleased MD5 Hash
  */
 + md5Hash;
-
-/**
- * Adds a buffer to the hash to be calculated.
- *
- * \param buf The buffer which should be included into calculation.
- * \param size The size of the buffer
- */
-- (void)updateWithBuffer: (const char*)buf
-		  ofSize: (size_t)size;
-
-/**
- * \return A buffer containing the hash (OF_MD5_DIGEST_SIZE = 16 bytes).
- *	   The buffer is part of object's memory pool.
- */
-- (uint8_t*)digest;
 @end
 
 /**
  * \brief A class which provides functions to create an SHA1 hash.
  */
-@interface OFSHA1Hash: OFObject
+@interface OFSHA1Hash: OFHash
 {
 	uint32_t state[5];
 	uint64_t count;
 	char	 buffer[64];
 	uint8_t	 digest[OF_SHA1_DIGEST_SIZE];
-
-	BOOL	 calculated;
 }
 
 /**
  * \return A new autoreleased SHA1 Hash
  */
 + sha1Hash;
-
-/**
- * Adds a buffer to the hash to be calculated.
- *
- * \param buf The buffer which should be included into calculation.
- * \param size The size of the buffer
- */
-- (void)updateWithBuffer: (const char*)buf
-		  ofSize: (size_t)size;
-
-/**
- * \return A buffer containing the hash (OF_SHA1_DIGEST_SIZE = 20 bytes).
- *	   The buffer is part of object's memory pool.
- */
-- (uint8_t*)digest;
 @end
 
 /**
