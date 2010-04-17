@@ -28,7 +28,7 @@
 	struct of_dictionary_bucket *newdata;
 	uint32_t i;
 
-	if (newcount > SIZE_MAX / 4)
+	if (newcount > UINT32_MAX)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	if (fill >= 3)
@@ -200,7 +200,7 @@
 			   objects: (id*)objects
 			     count: (int)count_
 {
-	size_t i;
+	int i;
 
 	for (i = 0; i < count_; i++) {
 		for (; state->state < size && (data[state->state].key == nil ||

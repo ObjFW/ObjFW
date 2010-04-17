@@ -87,7 +87,7 @@ const int of_dictionary_deleted_bucket = 0;
 
 - initWithDictionary: (OFDictionary*)dict
 {
-	size_t i;
+	uint32_t i;
 
 	self = [super init];
 
@@ -206,10 +206,13 @@ const int of_dictionary_deleted_bucket = 0;
 		objs_carray = [objs cArray];
 		count = [keys count];
 
-		if (count > SIZE_MAX / 8)
+		if (count > UINT32_MAX)
 			@throw [OFOutOfRangeException newWithClass: isa];
 
 		for (size = 1; size < count; size <<= 1);
+
+		if (size == 0)
+			@throw [OFOutOfRangeException newWithClass: isa];
 
 		data = [self allocMemoryForNItems: size
 					 withSize: BUCKET_SIZE];
@@ -339,13 +342,19 @@ const int of_dictionary_deleted_bucket = 0;
 	for (va_copy(args2, args); va_arg(args2, OFObject*) != nil; count++);
 	count >>= 1;
 
-	if (count > SIZE_MAX / 8) {
+	if (count > UINT32_MAX) {
 		Class c = isa;
 		[self dealloc];
 		@throw [OFOutOfRangeException newWithClass: c];
 	}
 
 	for (size = 1; size < count; size <<= 1);
+
+	if (size == 0) {
+		Class c = isa;
+		[self dealloc];
+		@throw [OFOutOfRangeException newWithClass: c];
+	}
 
 	@try {
 		data = [self allocMemoryForNItems: size
@@ -395,7 +404,7 @@ const int of_dictionary_deleted_bucket = 0;
 	data[j].hash = hash;
 
 	for (i = 1; i < count; i++) {
-		size_t last;
+		uint32_t last;
 
 		key = va_arg(args, OFObject <OFCopying>*);
 		obj = va_arg(args, OFObject*);
@@ -541,7 +550,7 @@ const int of_dictionary_deleted_bucket = 0;
 
 - (BOOL)isEqual: (OFDictionary*)dict
 {
-	size_t i;
+	uint32_t i;
 
 	if ([dict count] != count)
 		return NO;
@@ -558,7 +567,7 @@ const int of_dictionary_deleted_bucket = 0;
 			   objects: (id*)objects
 			     count: (int)count_
 {
-	size_t i;
+	int i;
 
 	for (i = 0; i < count_; i++) {
 		for (; state->state < size && (data[state->state].key == nil ||
@@ -595,7 +604,7 @@ const int of_dictionary_deleted_bucket = 0;
 
 - (void)dealloc
 {
-	size_t i;
+	uint32_t i;
 
 	for (i = 0; i < size; i++) {
 		if (data[i].key != nil && data[i].key != DELETED) {
@@ -609,7 +618,7 @@ const int of_dictionary_deleted_bucket = 0;
 
 - (uint32_t)hash
 {
-	size_t i;
+	uint32_t i;
 	uint32_t hash;
 
 	OF_HASH_INIT(hash);
@@ -639,7 +648,7 @@ const int of_dictionary_deleted_bucket = 0;
 /// \cond internal
 @implementation OFDictionaryEnumerator
 -     initWithData: (struct of_dictionary_bucket*)data_
-	      size: (size_t)size_
+	      size: (uint32_t)size_
   mutationsPointer: (unsigned long*)mutations_ptr_
 {
 	self = [super init];

@@ -20,8 +20,8 @@
 struct of_dictionary_bucket
 {
 	OFObject <OFCopying> *key;
-	OFObject	     *object;
-	uint32_t	     hash;
+	OFObject *object;
+	uint32_t hash;
 };
 /// \endcond
 
@@ -32,8 +32,8 @@ struct of_dictionary_bucket
     OFFastEnumeration>
 {
 	struct of_dictionary_bucket *data;
-	size_t			    size;
-	size_t			    count;
+	uint32_t size;
+	size_t count;
 }
 
 /**
@@ -163,14 +163,14 @@ struct of_dictionary_bucket
 @interface OFDictionaryEnumerator: OFEnumerator
 {
 	struct of_dictionary_bucket *data;
-	size_t			    size;
-	unsigned long		    mutations;
-	unsigned long		    *mutations_ptr;
-	size_t			    pos;
+	uint32_t size;
+	unsigned long mutations;
+	unsigned long *mutations_ptr;
+	uint32_t pos;
 }
 
 -     initWithData: (struct of_dictionary_bucket*)data
-	      size: (size_t)size
+	      size: (uint32_t)size
   mutationsPointer: (unsigned long*)mutations_ptr;
 @end
 
