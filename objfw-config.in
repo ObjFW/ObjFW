@@ -1,9 +1,4 @@
 #!/bin/sh
-ENV_CPPFLAGS="$CPPFLAGS"
-ENV_OBJCFLAGS="$OBJCFLAGS"
-ENV_LIBS="$LIBS"
-ENV_LDFLAGS="$LDFLAGS"
-
 prefix="@prefix@"
 exec_prefix="@exec_prefix@"
 libdir="@libdir@"
@@ -21,11 +16,10 @@ VERSION="0.3-dev"
 
 show_help() {
 	cat <<__EOF__
-$0: Available arguments are:
+objfw-config: Available arguments are:
 
 	--all		Outputs all flags + libs
 	--cflags	Outputs the required CFLAGS
-	--compile out	Compiles and links the specified files if they changed
 	--cppflags	Outputs the required CPPFLAGS
 	--cxxflags	Outputs the required CXXFLAGS
 	--objc		Outputs the OBJC used to compile ObjFW
@@ -35,64 +29,6 @@ $0: Available arguments are:
 	--libs		Outputs the required LIBS
 	--version	Outputs the installed version
 __EOF__
-	exit 0
-}
-
-compile() {
-	out="$1"
-	objs=""
-	link="no"
-	shift
-
-	case "$out" in
-		*.c | *.C | *.cpp | *.cxx | *.C | *.h | *.m | *.mm | *.M)
-			echo "The first paramter must be the output name!" 1>&2
-			exit 1
-			;;
-	esac
-
-	while test x"$1" != "x"; do
-		case "$1" in
-			*.m)
-				obj="${1%.m}.o"
-				objs="$objs $obj"
-				build="no"
-				deps=$($OBJC -E -M $CPPFLAGS $ENV_CPPFLAGS $1 |\
-				       sed 's/.*: //' | sed 's/\\//g')
-
-				if test -f "$obj"; then
-					for dep in $deps; do
-						test "$dep" -nt $obj && \
-							build="yes"
-					done
-				else
-					build="yes"
-				fi
-
-				if test x"$build" = x"yes"; then
-					link="yes"
-					echo "Compiling $1..."
-					$OBJC $CPPFLAGS $OBJCFLAGS \
-						$ENV_CPPFLAGS $ENV_OBJCFLAGS \
-						-c -o $obj $1 || exit $?
-				fi
-				;;
-			*)
-				echo "Only .m files can be compiled!" 1>&2
-				exit 1
-				;;
-		esac
-
-		shift
-	done
-
-	if test ! -f "$out" -o x"$link" = x"yes"; then
-		echo "Linking $out..."
-		$OBJC -o $out $objs $LIBS $ENV_LIBS $LDFLAGS $ENV_LDFLAGS
-		exit $?
-	fi
-
-	echo "Nothing to do for $out..."
 	exit 0
 }
 
@@ -111,10 +47,6 @@ while test ! -z "$1"; do
 			;;
 		--cflags)
 			echo "$CFLAGS"
-			;;
-		--compile)
-			shift
-			compile $@
 			;;
 		--cppflags)
 			echo "$CPPFLAGS"

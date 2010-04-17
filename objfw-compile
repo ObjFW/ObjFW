@@ -1,0 +1,69 @@
+#!/bin/sh
+if ! which objfw-config 2>&1 >/dev/null; then
+	echo "You need to have ObjFW and objfw-config installed!"
+	exit 1
+fi
+
+CPPFLAGS="$CPPFLAGS $(objfw-config --cppflags)"
+OBJC="$(objfw-config --objc)"
+OBJCFLAGS="$OBJCFLAGS $(objfw-config --objcflags)"
+LIBS="$LIBS $(objfw-config --libs)"
+LDFLAGS="$LDFLAGS $(objfw-config --ldflags)"
+
+if test x"$1" = "x" -o x"$2" = "x"; then
+	echo "Syntax: objfw-compile outname source1.m source2.m ..."
+	exit 1
+fi
+
+out="$1"
+objs=""
+link="no"
+shift
+
+case "$out" in
+	*.c | *.C | *.cpp | *.cxx | *.C | *.h | *.m | *.mm | *.M)
+		echo "The first paramter must be the output name!" 1>&2
+		exit 1
+		;;
+esac
+
+while test x"$1" != "x"; do
+	case "$1" in
+		*.m)
+			obj="${1%.m}.o"
+			objs="$objs $obj"
+			build="no"
+			deps=$($OBJC -E -M $CPPFLAGS $ENV_CPPFLAGS $1 | \
+			       sed 's/.*: //' | sed 's/\\//g')
+
+			if test -f "$obj"; then
+				for dep in $deps; do
+					test "$dep" -nt $obj && build="yes"
+				done
+			else
+				build="yes"
+			fi
+
+			if test x"$build" = x"yes"; then
+				link="yes"
+				echo "Compiling $1..."
+				$OBJC $CPPFLAGS $OBJCFLAGS -c -o $obj $1 || \
+					exit $?
+			fi
+			;;
+		*)
+			echo "Only .m files can be compiled!" 1>&2
+			exit 1
+			;;
+	esac
+
+	shift
+done
+
+if test ! -f "$out" -o x"$link" = x"yes"; then
+	echo "Linking $out..."
+	$OBJC -o $out $objs $LIBS $ENV_LIBS $LDFLAGS $ENV_LDFLAGS
+	exit $?
+fi
+
+echo "Nothing to do for $out..."
