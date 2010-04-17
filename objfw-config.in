@@ -74,7 +74,7 @@ compile() {
 		shift
 	done
 
-	if test x"$link" = x"yes"; then
+	if test ! -f "$out" -o x"$link" = x"yes"; then
 		echo "Linking $out..."
 		$OBJC -o $out $objs $LIBS $ENV_LIBS $LDFLAGS $ENV_LDFLAGS
 		exit $?
