@@ -15,19 +15,66 @@ LIBS="-L${libdir} -lobjfw @LIBS@"
 VERSION="0.3-dev"
 
 show_help() {
-	echo "$0: Available arguments are:"
-	echo
-	echo "	--all		Outputs all flags + libs"
-	echo "	--cflags	Outputs the required CFLAGS"
-	echo "	--cppflags	Outputs the required CPPFLAGS"
-	echo "	--cxxflags	Outputs the required CXXFLAGS"
-	echo "  --objc		Outputs the OBJC used to compile ObjFW"
-	echo "	--objcflags	Outputs the required OBJCFLAGS"
-	echo "	--ldflags	Outputs the required LDFLAGS"
-	echo "	--rpath		Outputs LDFLAGS for using rpath"
-	echo "	--libs		Outputs the required LIBS"
-	echo "	--version	Outputs the installed version"
-	echo
+	cat <<__EOF__
+$0: Available arguments are:
+
+	--all		Outputs all flags + libs
+	--cflags	Outputs the required CFLAGS
+	--compile out	Compiles and links the specified files if they changed
+	--cppflags	Outputs the required CPPFLAGS
+	--cxxflags	Outputs the required CXXFLAGS
+	--objc		Outputs the OBJC used to compile ObjFW
+	--objcflags	Outputs the required OBJCFLAGS
+	--ldflags	Outputs the required LDFLAGS
+	--rpath		Outputs LDFLAGS for using rpath
+	--libs		Outputs the required LIBS
+	--version	Outputs the installed version
+__EOF__
+	exit 0
+}
+
+compile() {
+	out="$1"
+	objs=""
+	link="no"
+	shift
+
+	case "$out" in
+		*.c | *.C | *.cpp | *.cxx | *.C | *.h | *.m | *.mm | *.M)
+			echo "The first paramter must be the output name!" 1>&2
+			exit 1
+			;;
+	esac
+
+	while test x"$1" != "x"; do
+		case "$1" in
+			*.m)
+				obj="${1%.m}.o"
+				objs="$objs $obj"
+
+				if test ! -f "$obj" -o "$1" -nt "$obj"; then
+					link="yes"
+					echo "Compiling $1..."
+					$OBJC $CPPFLAGS $OBJCFLAGS \
+						-c -o $obj $1 || exit $?
+				fi
+				;;
+			*)
+				echo "Only .m files can be compiled!" 1>&2
+				exit 1
+				;;
+		esac
+
+		shift
+	done
+
+	if test x"$link" = x"yes"; then
+		echo "Linking $out..."
+		$OBJC -o $out $objs $LIBS $LDFLAGS
+		exit $?
+	fi
+
+	echo "Nothing to do..."
 	exit 0
 }
 
@@ -46,6 +93,10 @@ while test ! -z "$1"; do
 			;;
 		--cflags)
 			echo "$CFLAGS"
+			;;
+		--compile)
+			shift
+			compile $@
 			;;
 		--cppflags)
 			echo "$CPPFLAGS"
@@ -72,7 +123,7 @@ while test ! -z "$1"; do
 			echo "$VERSION"
 			;;
 		*)
-			echo "Invalid option: $1" >/dev/stderr
+			echo "Invalid option: $1" 1>&2
 			exit 1
 			;;
 	esac
