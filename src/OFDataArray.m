@@ -186,7 +186,7 @@
 	}
 }
 
-- (id)copy
+- copy
 {
 	OFDataArray *new = [[OFDataArray alloc] initWithItemSize: itemsize];
 	[new addNItems: count
@@ -356,7 +356,7 @@
 	size = nsize;
 }
 
-- (id)copy
+- copy
 {
 	OFDataArray *new = [[OFBigDataArray alloc] initWithItemSize: itemsize];
 

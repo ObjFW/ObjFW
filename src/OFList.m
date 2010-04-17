@@ -194,7 +194,7 @@
 	return YES;
 }
 
-- (id)copy
+- copy
 {
 	OFList *new = [[OFList alloc] init];
 	of_list_object_t *iter, *o, *prev;

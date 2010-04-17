@@ -18,7 +18,7 @@
 #import "OFExceptions.h"
 
 @implementation OFMutableArray
-- (id)copy
+- copy
 {
 	OFArray *new = [[OFArray alloc] init];
 	OFObject **objs;

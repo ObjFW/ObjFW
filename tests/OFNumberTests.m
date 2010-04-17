@@ -35,17 +35,21 @@ static OFString *module = @"OFNumber";
 
 	TEST(@"-[asDouble]", [num asDouble] == 123456789.L)
 
-	TEST(@"-[decrease]",
-	    [[num decrease] isEqual: [OFNumber numberWithInt32: 123456788]])
+	TEST(@"-[numberByDecreasing]",
+	    [[num numberByDecreasing]
+	    isEqual: [OFNumber numberWithInt32: 123456788]])
 
-	TEST(@"-[divideBy:]",
-	    [[num divideBy: [OFNumber numberWithInt: 2]] asInt] == 61728394)
+	TEST(@"-[numberByDividingBy:]",
+	    [[num numberByDividingBy: [OFNumber numberWithInt: 2]] asInt] ==
+	    61728394)
 
-	TEST(@"-[xor:]",
-	    [[num xor: [OFNumber numberWithInt: 123456831]] asInt] == 42)
+	TEST(@"-[numberByXORing:]",
+	    [[num numberByXORing: [OFNumber numberWithInt: 123456831]] asInt] ==
+	    42)
 
-	TEST(@"-[shiftRight:]",
-	    [[num shiftRight: [OFNumber numberWithInt: 8]] asInt] == 482253)
+	TEST(@"-[numberByShiftingRightBy:]",
+	    [[num numberByShiftingRightBy: [OFNumber numberWithInt: 8]]
+	    asInt] == 482253)
 
 	[pool drain];
 }

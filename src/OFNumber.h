@@ -561,25 +561,25 @@ enum of_number_type {
  * \param num The OFNumber to add
  * \return A new autoreleased OFNumber added with the specified OFNumber
  */
-- (OFNumber*)add: (OFNumber*)num;
+- (OFNumber*)numberByAdding: (OFNumber*)num;
 
 /**
  * \param num The OFNumber to substract
  * \return A new autoreleased OFNumber subtracted by the specified OFNumber
  */
-- (OFNumber*)subtract: (OFNumber*)num;
+- (OFNumber*)numberBySubtracting: (OFNumber*)num;
 
 /**
  * \param num The OFNumber to multiply with
  * \return A new autoreleased OFNumber multiplied with the specified OFNumber
  */
-- (OFNumber*)multiplyWith: (OFNumber*)num;
+- (OFNumber*)numberByMultiplyingWith: (OFNumber*)num;
 
 /**
  * \param num The OFNumber to divide by
  * \return A new autoreleased OFNumber devided by the specified OFNumber
  */
-- (OFNumber*)divideBy: (OFNumber*)num;
+- (OFNumber*)numberByDividingBy: (OFNumber*)num;
 
 /**
  * ANDs two OFNumbers, returning a new one.
@@ -589,7 +589,7 @@ enum of_number_type {
  * \param num The number to AND with.
  * \return A new autoreleased OFNumber ANDed with the specified OFNumber
  */
-- (OFNumber*)and: (OFNumber*)num;
+- (OFNumber*)numberByANDing: (OFNumber*)num;
 
 /**
  * ORs two OFNumbers, returning a new one.
@@ -599,7 +599,7 @@ enum of_number_type {
  * \param num The number to OR with.
  * \return A new autoreleased OFNumber ORed with the specified OFNumber
  */
-- (OFNumber*)or: (OFNumber*)num;
+- (OFNumber*)numberByORing: (OFNumber*)num;
 
 /**
  * XORs two OFNumbers, returning a new one.
@@ -609,7 +609,7 @@ enum of_number_type {
  * \param num The number to XOR with.
  * \return A new autoreleased OFNumber XORed with the specified OFNumber
  */
-- (OFNumber*)xor: (OFNumber*)num;
+- (OFNumber*)numberByXORing: (OFNumber*)num;
 
 /**
  * Bitshifts the OFNumber to the left by the specified OFNumber, returning a new
@@ -621,7 +621,7 @@ enum of_number_type {
  * \return A new autoreleased OFNumber bitshifted to the left with the
  *	   specified OFNumber
  */
-- (OFNumber*)shiftLeft: (OFNumber*)num;
+- (OFNumber*)numberByShiftingLeftBy: (OFNumber*)num;
 
 /**
  * Bitshifts the OFNumber to the right by the specified OFNumber, returning a
@@ -633,15 +633,15 @@ enum of_number_type {
  * \return A new autoreleased OFNumber bitshifted to the right with the
  *	   specified OFNumber
  */
-- (OFNumber*)shiftRight: (OFNumber*)num;
+- (OFNumber*)numberByShiftingRightBy: (OFNumber*)num;
 
 /**
  * \return A new autoreleased OFNumber with the value increased by one.
  */
-- (OFNumber*)increase;
+- (OFNumber*)numberByIncreasing;
 
 /**
  * \return A new autoreleased OFNumber with the value decreased by one.
  */
-- (OFNumber*)decrease;
+- (OFNumber*)numberByDecreasing;
 @end

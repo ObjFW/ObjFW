@@ -864,57 +864,57 @@
 	}
 }
 
-- (OFNumber*)add: (OFNumber*)num
+- (OFNumber*)numberByAdding: (OFNumber*)num
 {
 	CALCULATE(+, num)
 }
 
-- (OFNumber*)subtract: (OFNumber*)num
+- (OFNumber*)numberBySubtracting: (OFNumber*)num
 {
 	CALCULATE(-, num)
 }
 
-- (OFNumber*)multiplyWith: (OFNumber*)num
+- (OFNumber*)numberByMultiplyingWith: (OFNumber*)num
 {
 	CALCULATE(*, num)
 }
 
-- (OFNumber*)divideBy: (OFNumber*)num
+- (OFNumber*)numberByDividingBy: (OFNumber*)num
 {
 	CALCULATE(/, num)
 }
 
-- (OFNumber*)and: (OFNumber*)num
+- (OFNumber*)numberByANDing: (OFNumber*)num
 {
 	CALCULATE2(&, num)
 }
 
-- (OFNumber*)or: (OFNumber*)num
+- (OFNumber*)numberByORing: (OFNumber*)num
 {
 	CALCULATE2(|, num)
 }
 
-- (OFNumber*)xor: (OFNumber*)num
+- (OFNumber*)numberByXORing: (OFNumber*)num
 {
 	CALCULATE2(^, num)
 }
 
-- (OFNumber*)shiftLeft: (OFNumber*)num
+- (OFNumber*)numberByShiftingLeftBy: (OFNumber*)num
 {
 	CALCULATE2(<<, num)
 }
 
-- (OFNumber*)shiftRight: (OFNumber*)num
+- (OFNumber*)numberByShiftingRightBy: (OFNumber*)num
 {
 	CALCULATE2(>>, num)
 }
 
-- (OFNumber*)increase
+- (OFNumber*)numberByIncreasing
 {
 	CALCULATE3(+ 1)
 }
 
-- (OFNumber*)decrease
+- (OFNumber*)numberByDecreasing
 {
 	CALCULATE3(- 1)
 }

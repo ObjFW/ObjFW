@@ -622,7 +622,7 @@ objc_enumerationMutation(id obj)
 }
 
 /* Required to use properties with the Apple runtime */
-- (id)copyWithZone: (void*)zone
+- copyWithZone: (void*)zone
 {
 	if (zone != NULL)
 		@throw [OFNotImplementedException newWithClass: isa
@@ -631,7 +631,7 @@ objc_enumerationMutation(id obj)
 	return [(id)self copy];
 }
 
-- (id)mutableCopyWithZone: (void*)zone
+- mutableCopyWithZone: (void*)zone
 {
 	if (zone != NULL)
 		@throw [OFNotImplementedException newWithClass: isa
@@ -709,13 +709,13 @@ objc_enumerationMutation(id obj)
 					      selector: _cmd];
 }
 
-+ (id)copyWithZone: (void*)zone
++ copyWithZone: (void*)zone
 {
 	@throw [OFNotImplementedException newWithClass: self
 					      selector: _cmd];
 }
 
-+ (id)mutableCopyWithZone: (void*)zone
++ mutableCopyWithZone: (void*)zone
 {
 	@throw [OFNotImplementedException newWithClass: self
 					      selector: _cmd];

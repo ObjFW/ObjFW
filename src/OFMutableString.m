@@ -520,7 +520,7 @@
 	}
 }
 
-- (id)copy
+- copy
 {
 	return [[OFString alloc] initWithString: self];
 }

@@ -719,12 +719,12 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return YES;
 }
 
-- (id)copy
+- copy
 {
 	return [self retain];
 }
 
-- (id)mutableCopy
+- mutableCopy
 {
 	return [[OFMutableString alloc] initWithString: self];
 }

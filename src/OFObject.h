@@ -334,7 +334,7 @@ typedef struct __of_range {
 /**
  * \return A copy of the object
  */
-- (id)copy;
+- copy;
 @end
 
 /**
@@ -347,7 +347,7 @@ typedef struct __of_range {
 /**
  * \return A copy of the object
  */
-- (id)mutableCopy;
+- mutableCopy;
 @end
 
 extern size_t of_pagesize;

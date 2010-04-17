@@ -572,12 +572,12 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	return count;
 }
 
-- (id)copy
+- copy
 {
 	return [self retain];
 }
 
-- (id)mutableCopy
+- mutableCopy
 {
 	return [[OFMutableDictionary alloc] initWithDictionary: self];
 }

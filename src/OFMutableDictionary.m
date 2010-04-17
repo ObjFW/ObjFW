@@ -227,7 +227,7 @@
 	return nil;
 }
 
-- (id)copy
+- copy
 {
 	return [[OFDictionary alloc] initWithDictionary: self];
 }

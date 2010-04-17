@@ -186,12 +186,12 @@
 	return [array cArray];
 }
 
-- (id)copy
+- copy
 {
 	return [self retain];
 }
 
-- (id)mutableCopy
+- mutableCopy
 {
 	OFArray *new = [[OFMutableArray alloc] init];
 	OFObject **objs;
