@@ -31,9 +31,9 @@
 #import "asprintf.h"
 #import "unicode.h"
 
-static void
-apply_table(id self, Class isa, char **string, unsigned int *length,
-    BOOL is_utf8, const of_unichar_t* const table[], const size_t table_size)
+@implementation OFMutableString
+- (void)_applyTable: (const of_unichar_t* const[])table
+	   withSize: (size_t)table_size
 {
 	of_unichar_t c;
 	of_unichar_t *ustr;
@@ -44,10 +44,10 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 	if (!is_utf8) {
 		assert(table_size >= 1);
 
-		uint8_t *p = (uint8_t*)*string + *length;
+		uint8_t *p = (uint8_t*)string + length;
 		uint8_t t;
 
-		while (--p >= (uint8_t*)*string)
+		while (--p >= (uint8_t*)string)
 			if ((t = table[0][*p]) != 0)
 				*p = t;
 
@@ -62,8 +62,8 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 	j = 0;
 	nlen = 0;
 
-	while (i < *length) {
-		clen = of_string_utf8_to_unicode(*string + i, *length - i, &c);
+	while (i < length) {
+		clen = of_string_utf8_to_unicode(string + i, length - i, &c);
 
 		if (clen == 0 || c > 0x10FFFF) {
 			[self freeMemory: ustr];
@@ -116,12 +116,11 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 	nstr[j] = 0;
 	[self freeMemory: ustr];
 
-	[self freeMemory: *string];
-	*string = nstr;
-	*length = nlen;
+	[self freeMemory: string];
+	string = nstr;
+	length = nlen;
 }
 
-@implementation OFMutableString
 - (void)setToCString: (const char*)str
 {
 	size_t len;
@@ -345,14 +344,14 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 
 - (void)upper
 {
-	apply_table(self, isa, &string, &length, is_utf8,
-	    of_unicode_upper_table, OF_UNICODE_UPPER_TABLE_SIZE);
+	[self _applyTable: of_unicode_upper_table
+		 withSize: OF_UNICODE_UPPER_TABLE_SIZE];
 }
 
 - (void)lower
 {
-	apply_table(self, isa, &string, &length, is_utf8,
-	    of_unicode_lower_table, OF_UNICODE_LOWER_TABLE_SIZE);
+	[self _applyTable: of_unicode_lower_table
+		 withSize: OF_UNICODE_LOWER_TABLE_SIZE];
 }
 
 - (void)removeCharactersFromIndex: (size_t)start
