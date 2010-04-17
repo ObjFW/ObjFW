@@ -17,15 +17,15 @@
 #import "OFExceptions.h"
 #import "macros.h"
 
-#define BUCKET_SIZE sizeof(struct of_dictionary_bucket)
-#define DELETED (id)&of_dictionary_deleted_bucket
+#define BUCKET struct of_dictionary_bucket
+#define DELETED &of_dictionary_deleted_bucket
 
 @implementation OFMutableDictionary
 - (void)_resizeForCount: (size_t)newcount
 {
 	size_t fill = newcount * 4 / size;
 	size_t newsize;
-	struct of_dictionary_bucket *newdata;
+	struct of_dictionary_bucket **newdata;
 	uint32_t i;
 
 	if (newcount > UINT32_MAX)
@@ -42,35 +42,35 @@
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	newdata = [self allocMemoryForNItems: newsize
-				    withSize: BUCKET_SIZE];
-	memset(newdata, 0, newsize * BUCKET_SIZE);
+				    withSize: sizeof(BUCKET*)];
+
+	for (i = 0; i < newsize; i++)
+		newdata[i] = NULL;
 
 	for (i = 0; i < size; i++) {
-		if (data[i].key != nil && data[i].key != DELETED) {
+		if (data[i] != NULL && data[i] != DELETED) {
 			uint32_t j, last;
 
 			last = newsize;
 
-			j = data[i].hash & (newsize - 1);
-			for (; j < last && newdata[j].key != nil; j++);
+			j = data[i]->hash & (newsize - 1);
+			for (; j < last && newdata[j] != NULL; j++);
 
 			/* In case the last bucket is already used */
 			if (j >= last) {
-				last = data[i].hash & (newsize - 1);
+				last = data[i]->hash & (newsize - 1);
 
 				for (j = 0; j < last &&
-				    newdata[j].key != nil; i++);
+				    newdata[j] != NULL; i++);
 			}
 
 			if (j >= last) {
 				[self freeMemory: newdata];
 				@throw [OFOutOfRangeException
-				    newWithClass: [self class]];
+				    newWithClass: isa];
 			}
 
-			newdata[j].key = data[i].key;
-			newdata[j].object = data[i].object;
-			newdata[j].hash = data[i].hash;
+			newdata[j] = data[i];
 		}
 	}
 
@@ -91,11 +91,11 @@
 	hash = [key hash];
 	last = size;
 
-	for (i = hash & (size - 1); i < last && data[i].key != nil; i++) {
-		if (data[i].key == DELETED)
+	for (i = hash & (size - 1); i < last && data[i] != NULL; i++) {
+		if (data[i] == DELETED)
 			continue;
 
-		if ([data[i].key isEqual: key])
+		if ([data[i]->key isEqual: key])
 			break;
 	}
 
@@ -103,56 +103,67 @@
 	if (i >= last) {
 		last = hash & (size - 1);
 
-		for (i = 0; i < last && data[i].key != nil; i++) {
-			if (data[i].key == DELETED)
+		for (i = 0; i < last && data[i] != NULL; i++) {
+			if (data[i] == DELETED)
 				continue;
 
-			if ([data[i].key isEqual: key])
+			if ([data[i]->key isEqual: key])
 				break;
 		}
 	}
 
 	/* Key not in dictionary */
-	if (i >= last || data[i].key == nil || data[i].key == DELETED ||
-	    ![data[i].key isEqual: key]) {
+	if (i >= last || data[i] == NULL || data[i] == DELETED ||
+	    ![data[i]->key isEqual: key]) {
+		BUCKET *b;
+
 		[self _resizeForCount: count + 1];
 
 		mutations++;
 		last = size;
 
-		for (i = hash & (size - 1); i < last && data[i].key != nil &&
-		    data[i].key != DELETED; i++);
+		for (i = hash & (size - 1); i < last && data[i] != NULL &&
+		    data[i] != DELETED; i++);
 
 		/* In case the last bucket is already used */
 		if (i >= last) {
 			last = hash & (size - 1);
 
-			for (i = 0; i < last && data[i].key != nil &&
-			    data[i].key != DELETED; i++);
+			for (i = 0; i < last && data[i] != NULL &&
+			    data[i] != DELETED; i++);
 		}
 
 		if (i >= last)
 			@throw [OFOutOfRangeException newWithClass: isa];
 
-		key = [key copy];
+		b = [self allocMemoryWithSize: sizeof(BUCKET)];
+
+		@try {
+			key = [key copy];
+		} @catch (OFException *e) {
+			[self freeMemory: b];
+		}
+
 		@try {
 			[obj retain];
 		} @catch (OFException *e) {
+			[self freeMemory: b];
 			[key release];
 			@throw e;
 		}
 
-		data[i].key = key;
-		data[i].object = obj;
-		data[i].hash = hash;
+		b->key = key;
+		b->object = obj;
+		b->hash = hash;
+		data[i] = b;
 		count++;
 
 		return self;
 	}
 
 	[obj retain];
-	[data[i].object release];
-	data[i].object = obj;
+	[data[i]->object release];
+	data[i]->object = obj;
 
 	return self;
 }
@@ -168,14 +179,15 @@
 	hash = [key hash];
 	last = size;
 
-	for (i = hash & (size - 1); i < last && data[i].key != nil; i++) {
-		if (data[i].key == DELETED)
+	for (i = hash & (size - 1); i < last && data[i] != NULL; i++) {
+		if (data[i] == DELETED)
 			continue;
 
-		if ([data[i].key isEqual: key]) {
-			[data[i].key release];
-			[data[i].object release];
-			data[i].key = DELETED;
+		if ([data[i]->key isEqual: key]) {
+			[data[i]->key release];
+			[data[i]->object release];
+			[self freeMemory: data[i]];
+			data[i] = DELETED;
 
 			count--;
 			mutations++;
@@ -191,14 +203,15 @@
 	/* In case the last bucket is already used */
 	last = hash & (size - 1);
 
-	for (i = 0; i < last && data[i].key != nil; i++) {
-		if (data[i].key == DELETED)
+	for (i = 0; i < last && data[i] != NULL; i++) {
+		if (data[i] == DELETED)
 			continue;
 
-		if ([data[i].key isEqual: key]) {
-			[data[i].key release];
-			[data[i].object release];
-			data[i].key = DELETED;
+		if ([data[i]->key isEqual: key]) {
+			[data[i]->key release];
+			[data[i]->object release];
+			[self freeMemory: data[i]];
+			data[i] = DELETED;
 
 			count--;
 			mutations++;
@@ -223,11 +236,11 @@
 	int i;
 
 	for (i = 0; i < count_; i++) {
-		for (; state->state < size && (data[state->state].key == nil ||
-		    data[state->state].key == DELETED); state->state++);
+		for (; state->state < size && (data[state->state] == NULL ||
+		    data[state->state] == DELETED); state->state++);
 
 		if (state->state < size) {
-			objects[i] = data[state->state].key;
+			objects[i] = data[state->state]->key;
 			state->state++;
 		} else
 			break;

@@ -20,10 +20,10 @@
 #import "OFExceptions.h"
 #import "macros.h"
 
-const int of_dictionary_deleted_bucket = 0;
+struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 
-#define BUCKET_SIZE sizeof(struct of_dictionary_bucket)
-#define DELETED (id)&of_dictionary_deleted_bucket
+#define BUCKET struct of_dictionary_bucket
+#define DELETED &of_dictionary_deleted_bucket
 
 @implementation OFDictionary
 + dictionary;
@@ -70,7 +70,7 @@ const int of_dictionary_deleted_bucket = 0;
 	size = 1;
 
 	@try {
-		data = [self allocMemoryWithSize: BUCKET_SIZE];
+		data = [self allocMemoryWithSize: sizeof(BUCKET*)];
 	} @catch (OFException *e) {
 		/*
 		 * We can't use [super dealloc] on OS X here. Compiler bug?
@@ -80,7 +80,7 @@ const int of_dictionary_deleted_bucket = 0;
 		[self dealloc];
 		@throw e;
 	}
-	data[0].key = nil;
+	data[0] = NULL;
 
 	return self;
 }
@@ -101,7 +101,10 @@ const int of_dictionary_deleted_bucket = 0;
 
 	@try {
 		data = [self allocMemoryForNItems: dict->size
-					 withSize: BUCKET_SIZE];
+					 withSize: sizeof(BUCKET*)];
+
+		for (i = 0; i < dict->size; i++)
+			data[i] = NULL;
 	} @catch (OFException *e) {
 		/*
 		 * We can't use [super dealloc] on OS X here. Compiler bug?
@@ -117,30 +120,31 @@ const int of_dictionary_deleted_bucket = 0;
 
 	for (i = 0; i < size; i++) {
 		OFObject <OFCopying> *key;
+		BUCKET *b;
 
-		if (dict->data[i].key == nil || dict->data[i].key == DELETED) {
-			data[i].key = nil;
+		if (dict->data[i] == NULL || dict->data[i] == DELETED)
 			continue;
-		}
 
 		@try {
-			key = [dict->data[i].key copy];
+			b = [self allocMemoryWithSize: sizeof(BUCKET)];
+			key = [dict->data[i]->key copy];
 		} @catch (OFException *e) {
 			[self dealloc];
 			@throw e;
 		}
 
 		@try {
-			[dict->data[i].object retain];
+			[dict->data[i]->object retain];
 		} @catch (OFException *e) {
 			[key release];
 			[self dealloc];
 			@throw e;
 		}
 
-		data[i].key = key;
-		data[i].object = dict->data[i].object;
-		data[i].hash = dict->data[i].hash;
+		b->key = key;
+		b->object = dict->data[i]->object;
+		b->hash = dict->data[i]->hash;
+		data[i] = b;
 	}
 
 	return self;
@@ -150,12 +154,17 @@ const int of_dictionary_deleted_bucket = 0;
 	  forKey: (OFObject <OFCopying>*)key
 {
 	uint32_t i;
+	BUCKET *b;
 
 	self = [self init];
 
 	@try {
 		data = [self allocMemoryForNItems: 2
-					 withSize: BUCKET_SIZE];
+					 withSize: sizeof(BUCKET*)];
+
+		size = 2;
+		for (i = 0; i < size; i++)
+			data[i] = NULL;
 	} @catch (OFException *e) {
 		/*
 		 * We can't use [super dealloc] on OS X here. Compiler bug?
@@ -165,12 +174,11 @@ const int of_dictionary_deleted_bucket = 0;
 		[self dealloc];
 		@throw e;
 	}
-	memset(data, 0, 2 * BUCKET_SIZE);
-	size = 2;
 
 	i = [key hash] & 1;
 
 	@try {
+		b = [self allocMemoryWithSize: sizeof(BUCKET)];
 		key = [key copy];
 	} @catch (OFException *e) {
 		[self dealloc];
@@ -185,9 +193,10 @@ const int of_dictionary_deleted_bucket = 0;
 		@throw e;
 	}
 
-	data[i].key = key;
-	data[i].object = obj;
-	data[i].hash = [key hash];
+	b->key = key;
+	b->object = obj;
+	b->hash = [key hash];
+	data[i] = b;
 	count = 1;
 
 	return self;
@@ -202,6 +211,8 @@ const int of_dictionary_deleted_bucket = 0;
 	self = [super init];
 
 	@try {
+		uint32_t j;
+
 		keys_carray = [keys cArray];
 		objs_carray = [objs cArray];
 		count = [keys count];
@@ -215,7 +226,10 @@ const int of_dictionary_deleted_bucket = 0;
 			@throw [OFOutOfRangeException newWithClass: isa];
 
 		data = [self allocMemoryForNItems: size
-					 withSize: BUCKET_SIZE];
+					 withSize: sizeof(BUCKET*)];
+
+		for (j = 0; j < size; j++)
+			data[j] = NULL;
 	} @catch (OFException *e) {
 		/*
 		 * We can't use [super dealloc] on OS X here. Compiler bug?
@@ -225,7 +239,6 @@ const int of_dictionary_deleted_bucket = 0;
 		[self dealloc];
 		@throw e;
 	}
-	memset(data, 0, size * BUCKET_SIZE);
 
 	for (i = 0; i < count; i++) {
 		uint32_t j, hash, last;
@@ -233,32 +246,35 @@ const int of_dictionary_deleted_bucket = 0;
 		hash = [keys_carray[i] hash];
 		last = size;
 
-		for (j = hash & (size - 1); j < last && data[j].key != nil &&
-		    ![data[j].key isEqual: keys_carray[i]]; j++);
+		for (j = hash & (size - 1); j < last && data[j] != NULL; j++)
+			if ([data[j]->key isEqual: keys_carray[i]])
+				break;
 
 		/* In case the last bucket is already used */
 		if (j >= last) {
 			last = hash & (size - 1);
 
-			for (j = 0; j < last && data[j].key != nil &&
-			    ![data[j].key isEqual: keys_carray[i]]; j++);
+			for (j = 0; j < last && data[j] != NULL; j++)
+				if ([data[j]->key isEqual: keys_carray[i]])
+					break;
 		}
 
 		/* Key not in dictionary */
-		if (j >= last || ![data[j].key isEqual: keys_carray[i]]) {
+		if (j >= last || data[j] == NULL ||
+		    ![data[j]->key isEqual: keys_carray[i]]) {
+			BUCKET *b;
 			OFObject <OFCopying> *key;
 
 			last = size;
 
 			j = hash & (size - 1);
-			for (; j < last && data[j].key != nil; j++);
+			for (; j < last && data[j] != NULL; j++);
 
 			/* In case the last bucket is already used */
 			if (j >= last) {
 				last = hash & (size - 1);
 
-				for (j = 0; j < last && data[j].key != nil;
-				    j++);
+				for (j = 0; j < last && data[j] != NULL; j++);
 			}
 
 			if (j >= last) {
@@ -268,6 +284,7 @@ const int of_dictionary_deleted_bucket = 0;
 			}
 
 			@try {
+				b = [self allocMemoryWithSize: sizeof(BUCKET)];
 				key = [keys_carray[i] copy];
 			} @catch (OFException *e) {
 				[self dealloc];
@@ -282,9 +299,10 @@ const int of_dictionary_deleted_bucket = 0;
 				@throw e;
 			}
 
-			data[j].key = key;
-			data[j].object = objs_carray[i];
-			data[j].hash = hash;
+			b->key = key;
+			b->object = objs_carray[i];
+			b->hash = hash;
+			data[j] = b;
 
 			continue;
 		}
@@ -302,14 +320,14 @@ const int of_dictionary_deleted_bucket = 0;
 		}
 
 		@try {
-			[data[j].object release];
+			[data[j]->object release];
 		} @catch (OFException *e) {
 			[objs_carray[i] release];
 			[self dealloc];
 			@throw e;
 		}
 
-		data[j].object = objs_carray[i];
+		data[j]->object = objs_carray[i];
 	}
 
 	return self;
@@ -331,6 +349,7 @@ const int of_dictionary_deleted_bucket = 0;
 - initWithKey: (OFObject <OFCopying>*)key
       argList: (va_list)args
 {
+	BUCKET *b;
 	OFObject *obj;
 	size_t i;
 	uint32_t j, hash;
@@ -358,7 +377,10 @@ const int of_dictionary_deleted_bucket = 0;
 
 	@try {
 		data = [self allocMemoryForNItems: size
-					 withSize: BUCKET_SIZE];
+					 withSize: sizeof(BUCKET*)];
+
+		for (j = 0; j < size; j++)
+			data[j] = NULL;
 	} @catch (OFException *e) {
 		/*
 		 * We can't use [super dealloc] on OS X here. Compiler bug?
@@ -368,10 +390,14 @@ const int of_dictionary_deleted_bucket = 0;
 		[self dealloc];
 		@throw e;
 	}
-	memset(data, 0, size * BUCKET_SIZE);
 
-	if (key == nil)
-		return self;
+	if (key == nil) {
+		Class c = isa;
+		size = 0;
+		[self dealloc];
+		@throw [OFInvalidArgumentException newWithClass: c
+						       selector: _cmd];
+	}
 
 	if ((obj = va_arg(args, OFObject*)) == nil) {
 		Class c = isa;
@@ -385,6 +411,7 @@ const int of_dictionary_deleted_bucket = 0;
 	j = hash & (size - 1);
 
 	@try {
+		b = [self allocMemoryWithSize: sizeof(BUCKET)];
 		key = [key copy];
 	} @catch (OFException *e) {
 		[self dealloc];
@@ -399,9 +426,10 @@ const int of_dictionary_deleted_bucket = 0;
 		@throw e;
 	}
 
-	data[j].key = key;
-	data[j].object = obj;
-	data[j].hash = hash;
+	b->key = key;
+	b->object = obj;
+	b->hash = hash;
+	data[j] = b;
 
 	for (i = 1; i < count; i++) {
 		uint32_t last;
@@ -419,30 +447,32 @@ const int of_dictionary_deleted_bucket = 0;
 		hash = [key hash];
 		last = size;
 
-		for (j = hash & (size - 1); j < last && data[j].key != nil &&
-		    ![data[j].key isEqual: key]; j++);
+		for (j = hash & (size - 1); j < last && data[j] != NULL; j++)
+			if ([data[j]->key isEqual: key])
+				break;
 
 		/* In case the last bucket is already used */
 		if (j >= last) {
 			last = hash & (size - 1);
 
-			for (j = 0; j < last && data[j].key != nil &&
-			    ![data[j].key isEqual: key]; j++);
+			for (j = 0; j < last && data[j] != NULL; j++)
+				if ([data[j]->key isEqual: key])
+					break;
 		}
 
 		/* Key not in dictionary */
-		if (j >= last || ![data[j].key isEqual: key]) {
+		if (j >= last || data[j] == NULL ||
+		    ![data[j]->key isEqual: key]) {
 			last = size;
 
 			j = hash & (size - 1);
-			for (; j < last && data[j].key != nil; j++);
+			for (; j < last && data[j] != NULL; j++);
 
 			/* In case the last bucket is already used */
 			if (j >= last) {
 				last = hash & (size - 1);
 
-				for (j = 0; j < last && data[j].key != nil;
-				    j++);
+				for (j = 0; j < last && data[j] != NULL; j++);
 			}
 
 			if (j >= last) {
@@ -452,6 +482,7 @@ const int of_dictionary_deleted_bucket = 0;
 			}
 
 			@try {
+				b = [self allocMemoryWithSize: sizeof(BUCKET)];
 				key = [key copy];
 			} @catch (OFException *e) {
 				[self dealloc];
@@ -466,9 +497,10 @@ const int of_dictionary_deleted_bucket = 0;
 				@throw e;
 			}
 
-			data[j].key = key;
-			data[j].object = obj;
-			data[j].hash = hash;
+			b->key = key;
+			b->object = obj;
+			b->hash = hash;
+			data[j] = b;
 
 			continue;
 		}
@@ -486,14 +518,14 @@ const int of_dictionary_deleted_bucket = 0;
 		}
 
 		@try {
-			[data[j].object release];
+			[data[j]->object release];
 		} @catch (OFException *e) {
 			[obj release];
 			[self dealloc];
 			@throw e;
 		}
 
-		data[j].object = obj;
+		data[j]->object = obj;
 	}
 
 	return self;
@@ -510,12 +542,12 @@ const int of_dictionary_deleted_bucket = 0;
 	hash = [key hash];
 	last = size;
 
-	for (i = hash & (size - 1); i < last && data[i].key != nil; i++) {
-		if (data[i].key == DELETED)
+	for (i = hash & (size - 1); i < last && data[i] != NULL; i++) {
+		if (data[i] == DELETED)
 			continue;
 
-		if ([data[i].key isEqual: key])
-			return [[data[i].object retain] autorelease];
+		if ([data[i]->key isEqual: key])
+			return [[data[i]->object retain] autorelease];
 	}
 
 	if (i < last)
@@ -524,12 +556,12 @@ const int of_dictionary_deleted_bucket = 0;
 	/* In case the last bucket is already used */
 	last = hash & (size - 1);
 
-	for (i = 0; i < last && data[i].key != nil; i++) {
-		if (data[i].key == DELETED)
+	for (i = 0; i < last && data[i] != NULL; i++) {
+		if (data[i] == DELETED)
 			continue;
 
-		if ([data[i].key isEqual: key])
-			return [[data[i].object retain] autorelease];
+		if ([data[i]->key isEqual: key])
+			return [[data[i]->object retain] autorelease];
 	}
 
 	return nil;
@@ -558,8 +590,9 @@ const int of_dictionary_deleted_bucket = 0;
 		return NO;
 
 	for (i = 0; i < size; i++)
-		if (data[i].key != nil && data[i].key != DELETED &&
-		    ![[dict objectForKey: data[i].key] isEqual: data[i].object])
+		if (data[i] != NULL && data[i]!= DELETED &&
+		    ![[dict objectForKey: data[i]->key]
+		    isEqual: data[i]->object])
 			return NO;
 
 	return YES;
@@ -572,11 +605,11 @@ const int of_dictionary_deleted_bucket = 0;
 	int i;
 
 	for (i = 0; i < count_; i++) {
-		for (; state->state < size && (data[state->state].key == nil ||
-		    data[state->state].key == DELETED); state->state++);
+		for (; state->state < size && (data[state->state] == NULL ||
+		    data[state->state] == DELETED); state->state++);
 
 		if (state->state < size) {
-			objects[i] = data[state->state].key;
+			objects[i] = data[state->state]->key;
 			state->state++;
 		} else
 			break;
@@ -609,9 +642,9 @@ const int of_dictionary_deleted_bucket = 0;
 	uint32_t i;
 
 	for (i = 0; i < size; i++) {
-		if (data[i].key != nil && data[i].key != DELETED) {
-			[data[i].key release];
-			[data[i].object release];
+		if (data[i] != NULL && data[i] != DELETED) {
+			[data[i]->key release];
+			[data[i]->object release];
 		}
 	}
 
@@ -626,18 +659,18 @@ const int of_dictionary_deleted_bucket = 0;
 	OF_HASH_INIT(hash);
 
 	for (i = 0; i < size; i++) {
-		if (data[i].key != nil && data[i].key != DELETED) {
-			uint32_t kh = [data[i].key hash];
+		if (data[i] != NULL && data[i] != DELETED) {
+			uint32_t h = [data[i]->object hash];
 
-			OF_HASH_ADD(hash, kh >> 24);
-			OF_HASH_ADD(hash, (kh >> 16) & 0xFF);
-			OF_HASH_ADD(hash, (kh >> 8) & 0xFF);
-			OF_HASH_ADD(hash, kh & 0xFF);
+			OF_HASH_ADD(hash, data[i]->hash >> 24);
+			OF_HASH_ADD(hash, (data[i]->hash >> 16) & 0xFF);
+			OF_HASH_ADD(hash, (data[i]->hash >> 8) & 0xFF);
+			OF_HASH_ADD(hash, data[i]->hash & 0xFF);
 
-			OF_HASH_ADD(hash, data[i].hash >> 24);
-			OF_HASH_ADD(hash, (data[i].hash >> 16) & 0xFF);
-			OF_HASH_ADD(hash, (data[i].hash >> 8) & 0xFF);
-			OF_HASH_ADD(hash, data[i].hash & 0xFF);
+			OF_HASH_ADD(hash, h >> 24);
+			OF_HASH_ADD(hash, (h >> 16) & 0xFF);
+			OF_HASH_ADD(hash, (h >> 8) & 0xFF);
+			OF_HASH_ADD(hash, h & 0xFF);
 		}
 	}
 
@@ -649,7 +682,7 @@ const int of_dictionary_deleted_bucket = 0;
 
 /// \cond internal
 @implementation OFDictionaryEnumerator
--     initWithData: (struct of_dictionary_bucket*)data_
+-     initWithData: (struct of_dictionary_bucket**)data_
 	      size: (uint32_t)size_
   mutationsPointer: (unsigned long*)mutations_ptr_
 {
@@ -680,11 +713,11 @@ const int of_dictionary_deleted_bucket = 0;
 	if (mutations_ptr != NULL && *mutations_ptr != mutations)
 		@throw [OFEnumerationMutationException newWithClass: isa];
 
-	for (; pos < size && (data[pos].key == nil ||
-	    data[pos].key == DELETED); pos++);
+	for (; pos < size && (data[pos] == NULL ||
+	    data[pos] == DELETED); pos++);
 
 	if (pos < size)
-		return data[pos++].object;
+		return data[pos++]->object;
 	else
 		return nil;
 }
@@ -696,11 +729,11 @@ const int of_dictionary_deleted_bucket = 0;
 	if (mutations_ptr != NULL && *mutations_ptr != mutations)
 		@throw [OFEnumerationMutationException newWithClass: isa];
 
-	for (; pos < size && (data[pos].key == nil ||
-	    data[pos].key == DELETED); pos++);
+	for (; pos < size && (data[pos] == NULL ||
+	    data[pos] == DELETED); pos++);
 
 	if (pos < size)
-		return data[pos++].key;
+		return data[pos++]->key;
 	else
 		return nil;
 }

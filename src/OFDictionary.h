@@ -31,7 +31,7 @@ struct of_dictionary_bucket
 @interface OFDictionary: OFObject <OFCopying, OFMutableCopying,
     OFFastEnumeration>
 {
-	struct of_dictionary_bucket *data;
+	struct of_dictionary_bucket **data;
 	uint32_t size;
 	size_t count;
 }
@@ -162,14 +162,14 @@ struct of_dictionary_bucket
 /// \cond internal
 @interface OFDictionaryEnumerator: OFEnumerator
 {
-	struct of_dictionary_bucket *data;
+	struct of_dictionary_bucket **data;
 	uint32_t size;
 	unsigned long mutations;
 	unsigned long *mutations_ptr;
 	uint32_t pos;
 }
 
--     initWithData: (struct of_dictionary_bucket*)data
+-     initWithData: (struct of_dictionary_bucket**)data
 	      size: (uint32_t)size
   mutationsPointer: (unsigned long*)mutations_ptr;
 @end
@@ -183,4 +183,4 @@ struct of_dictionary_bucket
 
 #import "OFMutableDictionary.h"
 
-extern const int of_dictionary_deleted_bucket;
+extern struct of_dictionary_bucket of_dictionary_deleted_bucket;
