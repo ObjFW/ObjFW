@@ -33,6 +33,11 @@ int _OFHashing_reference;
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
+
+- (BOOL)calculated
+{
+	return calculated;
+}
 @end
 
 /*

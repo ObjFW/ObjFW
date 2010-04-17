@@ -36,6 +36,12 @@ typedef struct __of_list_object {
 	size_t		 count;
 }
 
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly) of_list_object_t *first;
+@property (readonly) of_list_object_t *last;
+@property (readonly) size_t count;
+#endif
+
 /**
  * \return A new autoreleased OFList
  */

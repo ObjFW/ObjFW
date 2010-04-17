@@ -20,9 +20,14 @@
 @interface OFDataArray: OFObject <OFCopying>
 {
 	char   *data;
-	size_t itemSize;
 	size_t count;
+	size_t itemSize;
 }
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly) size_t count;
+@property (readonly) size_t itemSize;
+#endif
 
 /**
  * Creates a new OFDataArray whose items all have the same size.

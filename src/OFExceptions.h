@@ -55,6 +55,10 @@
 	OFString *string;
 }
 
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) Class inClass;
+#endif
+
 /**
  * Creates a new exception.
  *
@@ -89,6 +93,10 @@
 {
 	size_t requestedSize;
 }
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly) size_t requestedSize;
+#endif
 
 /**
  * \param class_ The class of the object which caused the exception
@@ -129,6 +137,10 @@
 	void *pointer;
 }
 
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly) void *pointer;
+#endif
+
 /**
  * \param class_ The class of the object which caused the exception
  * \param ptr A pointer to the memory that is not part of the object
@@ -162,6 +174,10 @@
 	SEL selector;
 }
 
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly) SEL selector;
+#endif
+
 /**
  * \param class_ The class of the object which caused the exception
  * \param selector The selector which is not or not fully implemented
@@ -179,6 +195,11 @@
  */
 - initWithClass: (Class)class_
        selector: (SEL)selector;
+
+/**
+ * \return The selector which is not or not fully implemented
+ */
+- (SEL)selector;
 @end
 
 /**
@@ -194,6 +215,10 @@
 {
 	SEL selector;
 }
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly) SEL selector;
+#endif
 
 /**
  * \param class_ The class of the object which caused the exception
@@ -212,6 +237,11 @@
  */
 - initWithClass: (Class)class_
        selector: (SEL)selector;
+
+/**
+ * \return The selector to which an invalid argument was passed
+ */
+- (SEL)selector;
 @end
 
 /**
@@ -248,6 +278,12 @@
 	OFString *mode;
 	int errNo;
 }
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFString *path;
+@property (readonly, nonatomic) OFString *mode;
+@property (readonly) int errNo;
+#endif
 
 /**
  * \param class_ The class of the object which caused the exception
@@ -295,6 +331,11 @@
 	size_t requestedSize;
 	int    errNo;
 }
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly) size_t requestedSize;
+@property (readonly) int errNo;
+#endif
 
 /**
  * \param class_ The class of the object which caused the exception
@@ -345,6 +386,10 @@
 	int errNo;
 }
 
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly) int errNo;
+#endif
+
 /**
  * \return The errno from when the exception was created
  */
@@ -359,6 +404,11 @@
 	OFString *path;
 	int errNo;
 }
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFString *path;
+@property (readonly) int errNo;
+#endif
 
 /**
  * \param class_ The class of the object which caused the exception
@@ -398,6 +448,12 @@
 	mode_t mode;
 	int errNo;
 }
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFString *path;
+@property (readonly) mode_t mode;
+@property (readonly) int errNo;
+#endif
 
 /**
  * \param class_ The class of the object which caused the exception
@@ -448,6 +504,13 @@
 	gid_t group;
 	int errNo;
 }
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFString *path;
+@property (readonly) uid_t owner;
+@property (readonly) gid_t group;
+@property (readonly) int errNo;
+#endif
 
 /**
  * \param class_ The class of the object which caused the exception
@@ -507,6 +570,12 @@
 	int errNo;
 }
 
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFString *sourcePath;
+@property (readonly, nonatomic) OFString *destinationPath;
+@property (readonly) int errNo;
+#endif
+
 /**
  * \param class_ The class of the object which caused the exception
  * \param src The original path
@@ -554,6 +623,11 @@
 	int errNo;
 }
 
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFString *path;
+@property (readonly) int errNo;
+#endif
+
 /**
  * \param class_ The class of the object which caused the exception
  * \param path The path of the file
@@ -593,6 +667,12 @@
 	OFString *destinationPath;
 	int errNo;
 }
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFString *sourcePath;
+@property (readonly, nonatomic) OFString *destinationPath;
+@property (readonly) int errNo;
+#endif
 
 /**
  * \param class_ The class of the object which caused the exception
@@ -641,6 +721,12 @@
 	OFString *destinationPath;
 	int errNo;
 }
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFString *sourcePath;
+@property (readonly, nonatomic) OFString *destinationPath;
+@property (readonly) int errNo;
+#endif
 
 /**
  * \param class_ The class of the object which caused the exception
@@ -710,6 +796,12 @@
 	int	 errNo;
 }
 
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFString *node;
+@property (readonly, nonatomic) OFString *service;
+@property (readonly) int errNo;
+#endif
+
 /**
  * \param class_ The class of the object which caused the exception
  * \param node The node for which translation was requested
@@ -757,6 +849,12 @@
 	OFString *service;
 	int	 errNo;
 }
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFString *node;
+@property (readonly, nonatomic) OFString *service;
+@property (readonly) int errNo;
+#endif
 
 /**
  * \param class_ The class of the object which caused the exception
@@ -806,6 +904,13 @@
 	int	 family;
 	int	 errNo;
 }
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFString *node;
+@property (readonly, nonatomic) OFString *service;
+@property (readonly) int family;
+@property (readonly) int errNo;
+#endif
 
 /**
  * \param class_ The class of the object which caused the exception
@@ -863,6 +968,11 @@
 	int errNo;
 }
 
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly) int backLog;
+@property (readonly) int errNo;
+#endif
+
 /**
  * \param class_ The class of the object which caused the exception
  * \param backlog The requested size of the back log
@@ -899,6 +1009,10 @@
 {
 	int errNo;
 }
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly) int errNo;
+#endif
 
 /**
  * \return The errno from when the exception was created

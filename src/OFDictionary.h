@@ -36,6 +36,10 @@ struct of_dictionary_bucket
 	size_t count;
 }
 
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly) size_t count;
+#endif
+
 /**
  * Creates a new OFDictionary.
  *

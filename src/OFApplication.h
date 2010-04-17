@@ -48,6 +48,12 @@
 	id delegate;
 }
 
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, retain) OFString *programName;
+@property (readonly, retain) OFArray *arguments;
+@property (retain) id delegate;
+#endif
+
 /**
  * \return The only OFApplication instance in the application
  */

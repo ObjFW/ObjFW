@@ -249,6 +249,11 @@
 
 	return string;
 }
+
+- (SEL)selector
+{
+	return selector;
+}
 @end
 
 @implementation OFOutOfRangeException
@@ -298,6 +303,11 @@
 	    sel_getName(selector), [inClass className]];
 
 	return string;
+}
+
+- (SEL)selector
+{
+	return selector;
 }
 @end
 

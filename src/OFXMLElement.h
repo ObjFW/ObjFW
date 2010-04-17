@@ -28,6 +28,13 @@ extern int _OFXMLElement_reference;
 	OFString *stringValue;
 }
 
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, retain) OFString *prefix;
+@property (readonly, retain) OFString *name;
+@property (readonly, retain) OFString *namespace;
+@property (readonly, retain) OFString *stringValue;
+#endif
+
 /**
  * \param name The name of the attribute
  * \param prefix The prefix of the attribute

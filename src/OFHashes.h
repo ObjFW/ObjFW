@@ -25,6 +25,10 @@ extern int _OFHashing_reference;
 	BOOL	 calculated;
 }
 
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly) BOOL calculated;
+#endif
+
 /**
  * Adds a buffer to the hash to be calculated.
  *
@@ -39,6 +43,11 @@ extern int _OFHashing_reference;
  *	   on the hash used. The buffer is part of object's memory pool.
  */
 - (uint8_t*)digest;
+
+/**
+ * \return A boolean whether the hash has already been calculated
+ */
+- (BOOL)calculated;
 @end
 
 /**
