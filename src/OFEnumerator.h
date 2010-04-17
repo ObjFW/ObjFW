@@ -24,7 +24,7 @@
  * Resets the enumerator, so the next call to nextObject returns the first
  * object again.
  */
-- reset;
+- (void)reset;
 @end
 
 /*

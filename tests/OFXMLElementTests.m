@@ -38,15 +38,15 @@ static OFString *module = @"OFXMLElement";
 	    [[elem[1] string] isEqual: @"<foo>b&amp;ar</foo>"])
 
 	TEST(@"-[addAttributeWithName:stringValue:]",
-	    [elem[0] addAttributeWithName: @"foo"
-			      stringValue: @"b&ar"] &&
+	    R([elem[0] addAttributeWithName: @"foo"
+				stringValue: @"b&ar"]) &&
 	    [[elem[0] string] isEqual: @"<foo foo='b&amp;ar'/>"] &&
-	    [elem[1] addAttributeWithName: @"foo"
-			      stringValue: @"b&ar"] &&
+	    R([elem[1] addAttributeWithName: @"foo"
+				stringValue: @"b&ar"]) &&
 	    [[elem[1] string] isEqual: @"<foo foo='b&amp;ar'>b&amp;ar</foo>"])
 
 	TEST(@"-[addChild:]",
-	    [elem[0] addChild: [OFXMLElement elementWithName: @"bar"]] &&
+	    R([elem[0] addChild: [OFXMLElement elementWithName: @"bar"]]) &&
 	    [[elem[0] string] isEqual: @"<foo foo='b&amp;ar'><bar/></foo>"])
 
 	[pool drain];

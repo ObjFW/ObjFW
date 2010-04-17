@@ -128,11 +128,11 @@ static OFString *values[] = {
 	    [dict count] == [dict2 count] &&
 	    [[dict objectForKey: keys[0]] isEqual: values[0]] &&
 	    [[dict objectForKey: keys[1]] isEqual: values[1]] &&
-	    [dict setObject: @"value3"
-		     forKey: @"key3"] &&
+	    R([dict setObject: @"value3"
+		       forKey: @"key3"]) &&
 	    [[dict objectForKey: @"key3"] isEqual: @"value3"] &&
-	    [dict setObject: @"foo"
-		     forKey: keys[0]] &&
+	    [[dict setObject: @"foo"
+		      forKey: keys[0]] isEqual: values[0]] &&
 	    [[dict objectForKey: keys[0]] isEqual: @"foo"])
 
 	TEST(@"-[removeObjectForKey:]",

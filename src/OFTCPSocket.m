@@ -58,8 +58,8 @@ static OFMutex *mutex = nil;
 	return self;
 }
 
-- connectToService: (OFString*)service
-	    onNode: (OFString*)node
+- (void)connectToService: (OFString*)service
+		  onNode: (OFString*)node
 {
 	if (sock != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException newWithClass: isa];
@@ -188,13 +188,11 @@ static OFMutex *mutex = nil;
 		@throw [OFConnectionFailedException newWithClass: isa
 							    node: node
 							 service: service];
-
-	return self;
 }
 
-- bindService: (OFString*)service
-       onNode: (OFString*)node
-   withFamily: (int)family
+- (void)bindService: (OFString*)service
+	     onNode: (OFString*)node
+	 withFamily: (int)family
 {
 	if (sock != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException newWithClass: isa];
@@ -306,11 +304,9 @@ static OFMutex *mutex = nil;
 						    family: family];
 	}
 #endif
-
-	return self;
 }
 
-- listenWithBackLog: (int)backlog
+- (void)listenWithBackLog: (int)backlog
 {
 	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithClass: isa];
@@ -318,11 +314,9 @@ static OFMutex *mutex = nil;
 	if (listen(sock, backlog) == -1)
 		@throw [OFListenFailedException newWithClass: isa
 						     backLog: backlog];
-
-	return self;
 }
 
-- listen
+- (void)listen
 {
 	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithClass: isa];
@@ -330,8 +324,6 @@ static OFMutex *mutex = nil;
 	if (listen(sock, 5) == -1)
 		@throw [OFListenFailedException newWithClass: isa
 						     backLog: 5];
-
-	return self;
 }
 
 - (OFTCPSocket*)accept
@@ -363,14 +355,12 @@ static OFMutex *mutex = nil;
 	return newsock;
 }
 
-- enableKeepAlives: (BOOL)enable
+- (void)setKeepAlivesEnabled: (BOOL)enable
 {
 	int v = enable;
 
 	if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char*)&v, sizeof(v)))
 		@throw [OFSetOptionFailedException newWithClass: isa];
-
-	return self;
 }
 
 - (OFString*)remoteAddress
@@ -392,9 +382,6 @@ static OFMutex *mutex = nil;
 	} @finally {
 		[self freeMemory: node];
 	}
-
-	/* Get rid of a warning, never reached anyway */
-	assert(0);
 #else
 	char *node;
 
@@ -414,14 +401,14 @@ static OFMutex *mutex = nil;
 	} @finally {
 		[mutex unlock];
 	}
+# endif
+#endif
 
 	/* Get rid of a warning, never reached anyway */
 	assert(0);
-# endif
-#endif
 }
 
-- close
+- (void)close
 {
 	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithClass: isa];
@@ -432,8 +419,6 @@ static OFMutex *mutex = nil;
 	[self freeMemory: saddr];
 	saddr = NULL;
 	saddr_len = 0;
-
-	return self;
 }
 
 - (void)dealloc

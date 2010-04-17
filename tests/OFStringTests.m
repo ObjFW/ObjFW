@@ -74,8 +74,8 @@ static OFString* whitespace[] = {
 	    [s[0] hash] == [s[2] hash])
 
 	TEST(@"-[appendString:] and -[appendCString:]",
-	    [s[1] appendCString: "1𝄞"] && [s[1] appendString: @"3"] &&
-	    [[s[0] appendString: s[1]] isEqual: @"täs€1𝄞3"])
+	    R([s[1] appendCString: "1𝄞"]) && R([s[1] appendString: @"3"]) &&
+	    R([s[0] appendString: s[1]]) && [s[0] isEqual: @"täs€1𝄞3"])
 
 	TEST(@"-[length]", [s[0] length] == 7)
 	TEST(@"-[cStringLength]", [s[0] cStringLength] == 13)
@@ -89,15 +89,15 @@ static OFString* whitespace[] = {
 	EXPECT_EXCEPTION(@"Detect out of range in -[characterAtIndex:]",
 	    OFOutOfRangeException, [s[0] characterAtIndex: 7])
 
-	TEST(@"-[reverse]", [[s[0] reverse] isEqual: @"3𝄞1€sät"])
+	TEST(@"-[reverse]", R([s[0] reverse]) && [s[0] isEqual: @"3𝄞1€sät"])
 
 	s[1] = [OFMutableString stringWithString: @"abc"];
 
-	TEST(@"-[upper]", [[s[0] upper] isEqual: @"3𝄞1€SÄT"] &&
-	    [[s[1] upper] isEqual: @"ABC"])
+	TEST(@"-[upper]", R([s[0] upper]) && [s[0] isEqual: @"3𝄞1€SÄT"] &&
+	    R([s[1] upper]) && [s[1] isEqual: @"ABC"])
 
-	TEST(@"-[lower]", [[s[0] lower] isEqual: @"3𝄞1€sät"] &&
-	    [[s[1] lower] isEqual: @"abc"])
+	TEST(@"-[lower]", R([s[0] lower]) && [s[0] isEqual: @"3𝄞1€sät"] &&
+	    R([s[1] lower]) && [s[1] isEqual: @"abc"])
 
 	TEST(@"+[stringWithCString:length:]",
 	    (s[0] = [OFMutableString stringWithCString: "foobar"
@@ -110,8 +110,8 @@ static OFString* whitespace[] = {
 	    [s[1] isEqual: @"testäöü"])
 
 	TEST(@"-[appendCStringWithLength:]",
-	    [[s[0] appendCString: "foobarqux" + 3
-		      withLength: 3] isEqual: @"foobar"])
+	    R([s[0] appendCString: "foobarqux" + 3
+		       withLength: 3]) && [s[0] isEqual: @"foobar"])
 
 	EXPECT_EXCEPTION(@"Detection of invalid UTF-8 encoding #1",
 	    OFInvalidEncodingException,
@@ -121,8 +121,8 @@ static OFString* whitespace[] = {
 	    [OFString stringWithCString: "\xF0\x80\x80\xC0"])
 
 	TEST(@"-[reverse] on UTF-8 strings",
-	    (s[0] = [[OFMutableString stringWithCString: "äöü€𝄞"] reverse]) &&
-	    [s[0] isEqual: @"𝄞€üöä"])
+	    (s[0] = [OFMutableString stringWithCString: "äöü€𝄞"]) &&
+	    R([s[0] reverse]) && [s[0] isEqual: @"𝄞€üöä"])
 
 	TEST(@"Conversion of ISO 8859-1 to UTF-8",
 	    [[OFString stringWithCString: "\xE4\xF6\xFC"
@@ -146,18 +146,19 @@ static OFString* whitespace[] = {
 	    [(s[0] = [OFMutableString stringWithFormat: @"%s: %d", "test", 123])
 	    isEqual: @"test: 123"])
 
-	TEST(@"+[stringWithPath:]",
-	    (s[1] = [OFString stringWithPath: @"foo", @"bar", @"baz", nil]) &&
-#ifndef _WIN32
-	    [s[1] isEqual: @"foo/bar/baz"] &&
-#else
-	    [s[1] isEqual: @"foo\\bar\\baz"] &&
-#endif
-	    (s[1] = [OFString stringWithPath: @"foo", nil]) &&
-	    [s[1] isEqual: @"foo"])
-
 	TEST(@"-[appendFormat:]",
-	    [([s[0] appendFormat: @"%02X", 15]) isEqual: @"test: 1230F"])
+	    R(([s[0] appendFormat: @"%02X", 15])) &&
+	    [s[0] isEqual: @"test: 1230F"])
+
+	TEST(@"+[stringWithPath:]",
+	    (s[0] = [OFString stringWithPath: @"foo", @"bar", @"baz", nil]) &&
+#ifndef _WIN32
+	    [s[0] isEqual: @"foo/bar/baz"] &&
+#else
+	    [s[0] isEqual: @"foo\\bar\\baz"] &&
+#endif
+	    (s[0] = [OFString stringWithPath: @"foo", nil]) &&
+	    [s[0] isEqual: @"foo"])
 
 	TEST(@"-[indexOfFirstOccurrenceOfString:]",
 	    [@"𝄞öö" indexOfFirstOccurrenceOfString: @"öö"] == 1 &&
@@ -271,11 +272,11 @@ static OFString* whitespace[] = {
 
 	TEST(@"-[removeCharactersFromIndex:toIndex:]",
 	    (s[0] = [OFMutableString stringWithString: @"𝄞öööbä€"]) &&
-	    [s[0] removeCharactersFromIndex: 1
-				    toIndex: 4] &&
+	    R([s[0] removeCharactersFromIndex: 1
+				      toIndex: 4]) &&
 	    [s[0] isEqual: @"𝄞bä€"] &&
-	    [s[0] removeCharactersFromIndex: 0
-				    toIndex: 4] &&
+	    R([s[0] removeCharactersFromIndex: 0
+				      toIndex: 4]) &&
 	    [s[0] isEqual: @""])
 
 	EXPECT_EXCEPTION(@"Detect OoR in "
@@ -298,35 +299,40 @@ static OFString* whitespace[] = {
 			     toIndex: 0])
 
 	TEST(@"-[replaceOccurrencesOfString:withString:]",
-	    [[[OFMutableString stringWithString: @"asd fo asd fofo asd"]
-	    replaceOccurrencesOfString: @"fo"
-			    withString: @"foo"]
-	    isEqual: @"asd foo asd foofoo asd"] &&
-	    [[[OFMutableString stringWithString: @"XX"]
-	    replaceOccurrencesOfString: @"X"
-			    withString: @"XX"]
-	    isEqual: @"XXXX"])
+	    (s[0] = [OFMutableString stringWithString:
+	    @"asd fo asd fofo asd"]) &&
+	    R([s[0] replaceOccurrencesOfString: @"fo"
+				    withString: @"foo"]) &&
+	    [s[0] isEqual: @"asd foo asd foofoo asd"] &&
+	    (s[0] = [OFMutableString stringWithString: @"XX"]) &&
+	    R([s[0] replaceOccurrencesOfString: @"X"
+				    withString: @"XX"]) &&
+	    [s[0] isEqual: @"XXXX"])
 
 	TEST(@"-[removeLeadingWhitespaces]",
 	    (s[0] = [OFMutableString stringWithString: whitespace[0]]) &&
-	    [[s[0] removeLeadingWhitespaces] isEqual: @"asd  \t \t\t\r\n"] &&
+	    R([s[0] removeLeadingWhitespaces]) &&
+	    [s[0] isEqual: @"asd  \t \t\t\r\n"] &&
 	    (s[0] = [OFMutableString stringWithString: whitespace[1]]) &&
-	    [[s[0] removeLeadingWhitespaces] isEqual: @""])
+	    R([s[0] removeLeadingWhitespaces]) && [s[0] isEqual: @""])
 
 	TEST(@"-[removeTrailingWhitespaces]",
 	    (s[0] = [OFMutableString stringWithString: whitespace[0]]) &&
-	    [[s[0] removeTrailingWhitespaces] isEqual: @" \r \t\n\t \tasd"] &&
+	    R([s[0] removeTrailingWhitespaces]) &&
+	    [s[0] isEqual: @" \r \t\n\t \tasd"] &&
 	    (s[0] = [OFMutableString stringWithString: whitespace[1]]) &&
-	    [[s[0] removeTrailingWhitespaces] isEqual: @""])
+	    R([s[0] removeTrailingWhitespaces]) && [s[0] isEqual: @""])
 
 	TEST(@"-[removeLeadingAndTrailingWhitespaces]",
 	    (s[0] = [OFMutableString stringWithString: whitespace[0]]) &&
-	    [[s[0] removeLeadingAndTrailingWhitespaces] isEqual: @"asd"] &&
+	    R([s[0] removeLeadingAndTrailingWhitespaces]) &&
+	    [s[0] isEqual: @"asd"] &&
 	    (s[0] = [OFMutableString stringWithString: whitespace[1]]) &&
-	    [[s[0] removeLeadingAndTrailingWhitespaces] isEqual: @""])
+	    R([s[0] removeLeadingAndTrailingWhitespaces]) &&
+	    [s[0] isEqual: @""])
 
 	TEST(@"-[stringByXMLEscaping]",
-	    (s[0] = [@"<hello> &world'\"!&" stringByXMLEscaping]) &&
+	    (s[0] = (id)[@"<hello> &world'\"!&" stringByXMLEscaping]) &&
 	    [s[0] isEqual: @"&lt;hello&gt; &amp;world&apos;&quot;!&amp;"])
 
 	TEST(@"-[stringByXMLUnescaping]",
@@ -351,8 +357,8 @@ static OFString* whitespace[] = {
 
 	TEST(@"-[stringByXMLUnescapingWithHandler:]",
 	    (h = [[[EntityHandler alloc] init] autorelease]) &&
-	    (s[0] = [@"x&foo;y" stringByXMLUnescapingWithHandler: h]) &&
-	    [s[0] isEqual: @"xbary"])
+	    [[@"x&foo;y" stringByXMLUnescapingWithHandler: h]
+	    isEqual: @"xbary"])
 
 	[pool drain];
 }

@@ -45,9 +45,9 @@ static OFString *strings[] = {
 
 	TEST(@"-[last]->prev", [[list last]->prev->object isEqual: strings[1]])
 
-	TEST(@"-[remove:]", [list remove: [list last]] &&
+	TEST(@"-[remove:]", R([list remove: [list last]]) &&
 	    [[list last]->object isEqual: strings[1]] &&
-	    [list remove: [list first]] &&
+	    R([list remove: [list first]]) &&
 	    [[list first]->object isEqual: [list last]->object])
 
 	TEST(@"-[insert:before:]", [list insert: strings[0]

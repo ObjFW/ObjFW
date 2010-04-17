@@ -87,7 +87,7 @@
  *
  * \param item A pointer to an arbitrary item
  */
-- addItem: (void*)item;
+- (void)addItem: (void*)item;
 
 /**
  * Adds an item to the OFDataArray at the specified index.
@@ -95,8 +95,8 @@
  * \param item A pointer to an arbitrary item
  * \param index The index where the item should be added
  */
-- addItem: (void*)item
-  atIndex: (size_t)index;
+- (void)addItem: (void*)item
+	atIndex: (size_t)index;
 
 /**
  * Adds items from a C array to the OFDataArray.
@@ -104,8 +104,8 @@
  * \param nitems The number of items to add
  * \param carray A C array containing the items to add
  */
--  addNItems: (size_t)nitems
-  fromCArray: (void*)carray;
+- (void)addNItems: (size_t)nitems
+       fromCArray: (void*)carray;
 
 /**
  * Adds items from a C array to the OFDataArray at the specified index.
@@ -114,23 +114,23 @@
  * \param carray A C array containing the items to add
  * \param index The index where the items should be added
  */
--  addNItems: (size_t)nitems
-  fromCArray: (void*)carray
-     atIndex: (size_t)index;
+- (void)addNItems: (size_t)nitems
+       fromCArray: (void*)carray
+	  atIndex: (size_t)index;
 
 /**
  * Removes the item at the specified index.
  *
  * \param index The index of the item to remove
  */
-- removeItemAtIndex: (size_t)index;
+- (void)removeItemAtIndex: (size_t)index;
 
 /**
  * Removes the specified amount of items from the end of the OFDataArray.
  *
  * \param nitems The number of items to remove
  */
-- removeNItems: (size_t)nitems;
+- (void)removeNItems: (size_t)nitems;
 
 /**
  * Removes the specified amount of items at the specified index.
@@ -138,8 +138,8 @@
  * \param nitems The number of items to remove
  * \param index The index at which the items are removed
  */
-- removeNItems: (size_t)nitems
-       atIndex: (size_t)index;
+- (void)removeNItems: (size_t)nitems
+	     atIndex: (size_t)index;
 @end
 
 /**

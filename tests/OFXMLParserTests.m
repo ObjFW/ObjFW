@@ -194,7 +194,7 @@ enum event_type {
 
 	TEST(@"+[xmlParser]", (parser = [OFXMLParser xmlParser]))
 
-	TEST(@"-[setDelegate:]", [parser setDelegate: self])
+	TEST(@"-[setDelegate:]", R([parser setDelegate: self]))
 
 	/* Simulate a stream where we only get chunks */
 	len = strlen(str);

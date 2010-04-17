@@ -32,7 +32,7 @@ static OFString *module = @"OFObject";
 	TEST(@"Allocating 4096 bytes",
 	    (p = [obj allocMemoryWithSize: 4096]) != NULL)
 
-	TEST(@"Freeing memory", [obj freeMemory: p])
+	TEST(@"Freeing memory", R([obj freeMemory: p]))
 
 	EXPECT_EXCEPTION(@"Detect freeing of memory twice",
 	    OFMemoryNotPartOfObjectException, [obj freeMemory: p])
@@ -41,7 +41,8 @@ static OFString *module = @"OFObject";
 	    (p = [obj allocMemoryWithSize: 4096]) != NULL &&
 	    (q = [obj allocMemoryWithSize: 4096]) != NULL &&
 	    (r = [obj allocMemoryWithSize: 4096]) != NULL &&
-	    [obj freeMemory: p] && [obj freeMemory: q] && [obj freeMemory: r])
+	    R([obj freeMemory: p]) && R([obj freeMemory: q]) &&
+	    R([obj freeMemory: r]))
 
 	EXPECT_EXCEPTION(@"Detect out of memory on alloc",
 	    OFOutOfMemoryException, [obj allocMemoryWithSize: SIZE_MAX])

@@ -29,7 +29,7 @@
  *
  * \param offset The offset in bytes
  */
-- seekToOffset: (off_t)offset;
+- (void)seekToOffset: (off_t)offset;
 
 /**
  * Seeks to the specified offset, relative to the current location.

@@ -48,6 +48,7 @@
 			fails++;			\
 		}					\
 	}
+#define R(x) (x, 1)
 
 @class OFString;
 

@@ -391,14 +391,12 @@
 	return nil;
 }
 
-- reset
+- (void)reset
 {
 	if (mutations_ptr != NULL && *mutations_ptr != mutations)
 		@throw [OFEnumerationMutationException newWithClass: isa];
 
 	pos = 0;
-
-	return self;
 }
 @end
 /// \endcond

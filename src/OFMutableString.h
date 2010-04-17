@@ -23,14 +23,14 @@
  *
  * \param str A UTF-8 encoded C string to set the OFString to.
  */
-- setToCString: (const char*)str;
+- (void)setToCString: (const char*)str;
 
 /**
  * Appends a UTF-8 encoded C string to the OFString.
  *
  * \param str A UTF-8 encoded C string to append
  */
-- appendCString: (const char*)str;
+- (void)appendCString: (const char*)str;
 
 /**
  * Appends a UTF-8 encoded C string with the specified length to the OFString.
@@ -38,8 +38,8 @@
  * \param str A UTF-8 encoded C string to append
  * \param len The length of the UTF-8 encoded C string
  */
-- appendCString: (const char*)str
-     withLength: (size_t)len;
+- (void)appendCString: (const char*)str
+	   withLength: (size_t)len;
 
 /**
  * Appends a UTF-8 encoded C string to the OFString without checking whether it
@@ -50,7 +50,7 @@
  *
  * \param str A UTF-8 encoded C string to append
  */
-- appendCStringWithoutUTF8Checking: (const char*)str;
+- (void)appendCStringWithoutUTF8Checking: (const char*)str;
 
 /**
  * Appends a UTF-8 encoded C string with the specified length to the OFString
@@ -62,15 +62,15 @@
  * \param str A UTF-8 encoded C string to append
  * \param len The length of the UTF-8 encoded C string
  */
-- appendCStringWithoutUTF8Checking: (const char*)str
-			    length: (size_t)len;
+- (void)appendCStringWithoutUTF8Checking: (const char*)str
+				  length: (size_t)len;
 
 /**
  * Appends another OFString to the OFString.
  *
  * \param str An OFString to append
  */
-- appendString: (OFString*)str;
+- (void)appendString: (OFString*)str;
 
 /**
  * Appends a formatted UTF-8 encoded C string to the OFString.
@@ -78,7 +78,7 @@
  *
  * \param fmt A format string which generates the string to append
  */
-- appendFormat: (OFString*)fmt, ...;
+- (void)appendFormat: (OFString*)fmt, ...;
 
 /**
  * Appends a formatted UTF-8 encoded C string to the OFString.
@@ -87,23 +87,23 @@
  * \param fmt A format string which generates the string to append
  * \param args The arguments used in the format string
  */
--  appendFormat: (OFString*)fmt
-  withArguments: (va_list)args;
+- (void)appendFormat: (OFString*)fmt
+       withArguments: (va_list)args;
 
 /**
  * Reverse the OFString.
  */
-- reverse;
+- (void)reverse;
 
 /**
  * Upper the OFString.
  */
-- upper;
+- (void)upper;
 
 /**
  * Lower the OFString.
  */
-- lower;
+- (void)lower;
 
 /**
  * Removes the characters at the specified range.
@@ -112,15 +112,15 @@
  * \param end The index until which the characters should be deleted.
  *	      This points BEHIND the last character!
  */
-- removeCharactersFromIndex: (size_t)start
-		    toIndex: (size_t)end;
+- (void)removeCharactersFromIndex: (size_t)start
+			  toIndex: (size_t)end;
 
 /**
  * Removes the characters at the specified range.
  *
  * \param range The range of the characters which should be removed
  */
-- removeCharactersInRange: (of_range_t)range;
+- (void)removeCharactersInRange: (of_range_t)range;
 
 /**
  * Replaces all occurrences of a string with another string.
@@ -128,21 +128,21 @@
  * \param str The string to replace
  * \param repl The string with which it should be replaced
  */
-- replaceOccurrencesOfString: (OFString*)str
-		  withString: (OFString*)repl;
+- (void)replaceOccurrencesOfString: (OFString*)str
+			withString: (OFString*)repl;
 
 /**
  * Removes all whitespaces at the beginning of a string.
  */
-- removeLeadingWhitespaces;
+- (void)removeLeadingWhitespaces;
 
 /**
  * Removes all whitespaces at the end of a string.
  */
-- removeTrailingWhitespaces;
+- (void)removeTrailingWhitespaces;
 
 /**
  * Removes all whitespaces at the beginning and the end of a string.
  */
-- removeLeadingAndTrailingWhitespaces;
+- (void)removeLeadingAndTrailingWhitespaces;
 @end

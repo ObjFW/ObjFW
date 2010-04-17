@@ -150,7 +150,7 @@ extern int _OFXMLParser_reference;
  *
  * \param delegate The delegate to use
  */
-- setDelegate: (OFObject <OFXMLParserDelegate>*)delegate;
+- (void)setDelegate: (OFObject <OFXMLParserDelegate>*)delegate;
 
 /**
  * Parses a buffer with the specified size.
@@ -158,8 +158,8 @@ extern int _OFXMLParser_reference;
  * \param buf The buffer to parse
  * \param size The size of the buffer
  */
-- parseBuffer: (const char*)buf
-     withSize: (size_t)size;
+- (void)parseBuffer: (const char*)buf
+	   withSize: (size_t)size;
 @end
 
 /**
@@ -169,7 +169,7 @@ extern int _OFXMLParser_reference;
 /**
  * Unescapes XML in the string.
  */
-- stringByXMLUnescaping;
+- (OFString*)stringByXMLUnescaping;
 
 /**
  * Unescapes XML in the string and uses the specified handler for unknown
@@ -177,7 +177,8 @@ extern int _OFXMLParser_reference;
  *
  * \param h An OFXMLUnescapingDelegate as a handler for unknown entities
  */
-- stringByXMLUnescapingWithHandler: (OFObject <OFXMLUnescapingDelegate>*)h;
+- (OFString*)stringByXMLUnescapingWithHandler:
+    (OFObject <OFXMLUnescapingDelegate>*)h;
 @end
 
 @interface OFObject (OFXMLParserDelegate) <OFXMLParserDelegate>

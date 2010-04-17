@@ -136,13 +136,13 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	return self;
 }
 
-- updateWithBuffer: (const char*)buffer
-	    ofSize: (size_t)size
+- (void)updateWithBuffer: (const char*)buffer
+		  ofSize: (size_t)size
 {
 	uint32_t t;
 
 	if (size == 0)
-		return self;
+		return;
 
 	if (calculated)
 		@throw [OFHashAlreadyCalculatedException newWithClass: isa];
@@ -165,7 +165,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 
 		if (size < t) {
 			memcpy(p, buffer, size);
-			return self;
+			return;
 		}
 
 		memcpy(p, buffer, t);
@@ -188,8 +188,6 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 
 	/* Handle any remaining bytes of data. */
 	memcpy(in, buffer, size);
-
-	return self;
 }
 
 - (uint8_t*)digest
@@ -378,18 +376,16 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 	return self;
 }
 
-- updateWithBuffer: (const char*)buf
-	    ofSize: (size_t)size
+- (void)updateWithBuffer: (const char*)buf
+		  ofSize: (size_t)size
 {
 	if (size == 0)
-		return self;
+		return;
 
 	if (calculated)
 		@throw [OFHashAlreadyCalculatedException newWithClass: isa];
 
 	sha1_update(state, &count, buffer, buf, size);
-
-	return self;
 }
 
 - (uint8_t*)digest

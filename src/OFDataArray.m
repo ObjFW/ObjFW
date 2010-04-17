@@ -89,7 +89,7 @@
 	return data + (count - 1) * itemsize;
 }
 
-- addItem: (void*)item
+- (void)addItem: (void*)item
 {
 	if (SIZE_MAX - count < 1)
 		@throw [OFOutOfRangeException newWithClass: isa];
@@ -101,20 +101,18 @@
 	memcpy(data + count * itemsize, item, itemsize);
 
 	count++;
-
-	return self;
 }
 
-- addItem: (void*)item
-  atIndex: (size_t)index
+- (void)addItem: (void*)item
+	atIndex: (size_t)index
 {
-	return [self addNItems: 1
-		    fromCArray: item
-		       atIndex: index];
+	[self addNItems: 1
+	     fromCArray: item
+		atIndex: index];
 }
 
--  addNItems: (size_t)nitems
-  fromCArray: (void*)carray
+- (void)addNItems: (size_t)nitems
+       fromCArray: (void*)carray
 {
 	if (nitems > SIZE_MAX - count)
 		@throw [OFOutOfRangeException newWithClass: isa];
@@ -125,13 +123,11 @@
 
 	memcpy(data + count * itemsize, carray, nitems * itemsize);
 	count += nitems;
-
-	return self;
 }
 
-- addNItems: (size_t)nitems
- fromCArray: (void*)carray
-    atIndex: (size_t)index
+- (void)addNItems: (size_t)nitems
+       fromCArray: (void*)carray
+	  atIndex: (size_t)index
 {
 	if (nitems > SIZE_MAX - count)
 		@throw [OFOutOfRangeException newWithClass: isa];
@@ -145,17 +141,15 @@
 	memcpy(data + index * itemsize, carray, nitems * itemsize);
 
 	count += nitems;
-
-	return self;
 }
 
-- removeItemAtIndex: (size_t)index
+- (void)removeItemAtIndex: (size_t)index
 {
-	return [self removeNItems: 1
-			  atIndex: index];
+	[self removeNItems: 1
+		   atIndex: index];
 }
 
-- removeNItems: (size_t)nitems
+- (void)removeNItems: (size_t)nitems
 {
 	if (nitems > count)
 		@throw [OFOutOfRangeException newWithClass: isa];
@@ -170,12 +164,10 @@
 		/* We don't really care, as we only made it smaller */
 		[e dealloc];
 	}
-
-	return self;
 }
 
-- removeNItems: (size_t)nitems
-       atIndex: (size_t)index
+- (void)removeNItems: (size_t)nitems
+	     atIndex: (size_t)index
 {
 	if (nitems > count)
 		@throw [OFOutOfRangeException newWithClass: isa];
@@ -192,8 +184,6 @@
 		/* We don't really care, as we only made it smaller */
 		[e dealloc];
 	}
-
-	return self;
 }
 
 - (id)copy
@@ -262,7 +252,7 @@
 @end
 
 @implementation OFBigDataArray
-- addItem: (void*)item
+- (void)addItem: (void*)item
 {
 	size_t nsize, lastpagebyte;
 
@@ -280,12 +270,10 @@
 
 	count++;
 	size = nsize;
-
-	return self;
 }
 
--  addNItems: (size_t)nitems
-  fromCArray: (void*)carray
+- (void)addNItems: (size_t)nitems
+       fromCArray: (void*)carray
 {
 	size_t nsize, lastpagebyte;
 
@@ -303,13 +291,11 @@
 
 	count += nitems;
 	size = nsize;
-
-	return self;
 }
 
-- addNItems: (size_t)nitems
- fromCArray: (void*)carray
-    atIndex: (size_t)index
+- (void)addNItems: (size_t)nitems
+       fromCArray: (void*)carray
+	  atIndex: (size_t)index
 {
 	size_t nsize, lastpagebyte;
 
@@ -330,11 +316,9 @@
 
 	count += nitems;
 	size = nsize;
-
-	return self;
 }
 
-- removeNItems: (size_t)nitems
+- (void)removeNItems: (size_t)nitems
 {
 	size_t nsize, lastpagebyte;
 
@@ -349,12 +333,10 @@
 		data = [self resizeMemory: data
 				   toSize: nsize];
 	size = nsize;
-
-	return self;
 }
 
-- removeNItems: (size_t)nitems
-       atIndex: (size_t)index
+- (void)removeNItems: (size_t)nitems
+	     atIndex: (size_t)index
 {
 	size_t nsize, lastpagebyte;
 
@@ -372,8 +354,6 @@
 		data = [self resizeMemory: data
 				   toSize: nsize];
 	size = nsize;
-
-	return self;
 }
 
 - (id)copy

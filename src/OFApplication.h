@@ -83,8 +83,8 @@
  * \param argc The number of arguments
  * \param argv The argument values
  */
--  setArgumentCount: (int)argc
-  andArgumentValues: (char**)argv;
+- (void)setArgumentCount: (int)argc
+       andArgumentValues: (char**)argv;
 
 /**
  * \return The name of the program (argv[0])
@@ -106,12 +106,12 @@
  *
  * \param delegate The delegate for the application
  */
-- setDelegate: (id)delegate;
+- (void)setDelegate: (id)delegate;
 
 /**
  * Starts the application after everything has been initialized.
  */
-- run;
+- (void)run;
 
 /**
  * Terminates the application.

@@ -122,7 +122,7 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 }
 
 @implementation OFMutableString
-- setToCString: (const char*)str
+- (void)setToCString: (const char*)str
 {
 	size_t len;
 
@@ -148,11 +148,9 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 	length = len;
 	string = [self allocMemoryWithSize: length + 1];
 	memcpy(string, str, length + 1);
-
-	return self;
 }
 
-- appendCString: (const char*)str
+- (void)appendCString: (const char*)str
 {
 	size_t strlength;
 
@@ -170,12 +168,10 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 			     toSize: length + strlength + 1];
 	memcpy(string + length, str, strlength + 1);
 	length += strlength;
-
-	return self;
 }
 
-- appendCString: (const char*)str
-     withLength: (size_t)len
+- (void)appendCString: (const char*)str
+	   withLength: (size_t)len
 {
 	if (len > strlen(str))
 		@throw [OFOutOfRangeException newWithClass: isa];
@@ -193,11 +189,9 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 	memcpy(string + length, str, len);
 	length += len;
 	string[length] = 0;
-
-	return self;
 }
 
-- appendCStringWithoutUTF8Checking: (const char*)str
+- (void)appendCStringWithoutUTF8Checking: (const char*)str
 {
 	size_t strlength;
 
@@ -206,12 +200,10 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 			     toSize: length + strlength + 1];
 	memcpy(string + length, str, strlength + 1);
 	length += strlength;
-
-	return self;
 }
 
-- appendCStringWithoutUTF8Checking: (const char*)str
-			    length: (size_t)len
+- (void)appendCStringWithoutUTF8Checking: (const char*)str
+				  length: (size_t)len
 {
 	if (len > strlen(str))
 		@throw [OFOutOfRangeException newWithClass: isa];
@@ -221,32 +213,25 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 	memcpy(string + length, str, len);
 	length += len;
 	string[length] = 0;
-
-	return self;
 }
 
-- appendString: (OFString*)str
+- (void)appendString: (OFString*)str
 {
 	[self appendCString: [str cString]];
-
-	return self;
 }
 
-- appendFormat: (OFString*)fmt, ...
+- (void)appendFormat: (OFString*)fmt, ...
 {
-	id ret;
 	va_list args;
 
 	va_start(args, fmt);
-	ret = [self appendFormat: fmt
-		   withArguments: args];
+	[self appendFormat: fmt
+	     withArguments: args];
 	va_end(args);
-
-	return ret;
 }
 
--  appendFormat: (OFString*)fmt
-  withArguments: (va_list)args
+- (void)appendFormat: (OFString*)fmt
+       withArguments: (va_list)args
 {
 	char *t;
 
@@ -267,11 +252,9 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 	} @finally {
 		free(t);
 	}
-
-	return self;
 }
 
-- reverse
+- (void)reverse
 {
 	size_t i, j, len = length / 2;
 
@@ -286,7 +269,7 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 
 	if (!is_utf8) {
 		madvise(string, len, MADV_NORMAL);
-		return self;
+		return;
 	}
 
 	for (i = 0; i < length; i++) {
@@ -358,28 +341,22 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 	}
 
 	madvise(string, len, MADV_NORMAL);
-
-	return self;
 }
 
-- upper
+- (void)upper
 {
 	apply_table(self, isa, &string, &length, is_utf8,
 	    of_unicode_upper_table, OF_UNICODE_UPPER_TABLE_SIZE);
-
-	return self;
 }
 
-- lower
+- (void)lower
 {
 	apply_table(self, isa, &string, &length, is_utf8,
 	    of_unicode_lower_table, OF_UNICODE_LOWER_TABLE_SIZE);
-
-	return self;
 }
 
-- removeCharactersFromIndex: (size_t)start
-		    toIndex: (size_t)end
+- (void)removeCharactersFromIndex: (size_t)start
+			  toIndex: (size_t)end
 {
 	if (is_utf8) {
 		start = of_string_index_to_position(string, start, length);
@@ -404,18 +381,16 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 		/* We don't really care, as we only made it smaller */
 		[e dealloc];
 	}
-
-	return self;
 }
 
-- removeCharactersInRange: (of_range_t)range
+- (void)removeCharactersInRange: (of_range_t)range
 {
-	return [self removeCharactersFromIndex: range.start
-				       toIndex: range.start + range.length];
+	[self removeCharactersFromIndex: range.start
+				toIndex: range.start + range.length];
 }
 
-- replaceOccurrencesOfString: (OFString*)str
-		  withString: (OFString*)repl
+- (void)replaceOccurrencesOfString: (OFString*)str
+			withString: (OFString*)repl
 {
 	const char *str_c = [str cString];
 	const char *repl_c = [repl cString];
@@ -425,7 +400,7 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 	char *tmp;
 
 	if (str_len > length)
-		return self;
+		return;
 
 	tmp = NULL;
 	tmp_len = 0;
@@ -463,11 +438,9 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 	[self freeMemory: string];
 	string = tmp;
 	length = tmp_len;
-
-	return self;
 }
 
-- removeLeadingWhitespaces
+- (void)removeLeadingWhitespaces
 {
 	size_t i;
 
@@ -487,11 +460,9 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 		/* We don't really care, as we only made it smaller */
 		[e dealloc];
 	}
-
-	return self;
 }
 
-- removeTrailingWhitespaces
+- (void)removeTrailingWhitespaces
 {
 	size_t d;
 	char *p;
@@ -514,11 +485,9 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 		/* We don't really care, as we only made it smaller */
 		[e dealloc];
 	}
-
-	return self;
 }
 
-- removeLeadingAndTrailingWhitespaces
+- (void)removeLeadingAndTrailingWhitespaces
 {
 	size_t d, i;
 	char *p;
@@ -550,8 +519,6 @@ apply_table(id self, Class isa, char **string, unsigned int *length,
 		/* We don't really care, as we only made it smaller */
 		[e dealloc];
 	}
-
-	return self;
 }
 
 - (id)copy

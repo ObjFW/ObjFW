@@ -68,8 +68,8 @@ call_main(id obj)
 	return [[[self alloc] initWithObject: obj] autorelease];
 }
 
-+ setObject: (OFObject*)obj
-  forTLSKey: (OFTLSKey*)key
++ (id)setObject: (OFObject*)obj
+      forTLSKey: (OFTLSKey*)key
 {
 	id old = of_tlskey_get(key->key);
 
@@ -77,9 +77,7 @@ call_main(id obj)
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 
-	[old release];
-
-	return self;
+	return [old autorelease];
 }
 
 + (id)objectForTLSKey: (OFTLSKey*)key
@@ -162,7 +160,7 @@ call_main(id obj)
 {
 }
 
-- start
+- (void)start
 {
 	if (running == OF_THREAD_RUNNING)
 		@throw [OFThreadStillRunningException newWithClass: isa];
@@ -175,8 +173,6 @@ call_main(id obj)
 	}
 
 	running = OF_THREAD_RUNNING;
-
-	return self;
 }
 
 - (id)join
@@ -303,12 +299,10 @@ call_main(id obj)
 	return self;
 }
 
-- lock
+- (void)lock
 {
 	if (!of_mutex_lock(&mutex))
 		@throw [OFMutexLockFailedException newWithClass: isa];
-
-	return self;
 }
 
 - (BOOL)tryLock
@@ -316,12 +310,10 @@ call_main(id obj)
 	return of_mutex_trylock(&mutex);
 }
 
-- unlock
+- (void)unlock
 {
 	if (!of_mutex_unlock(&mutex))
 		@throw [OFMutexUnlockFailedException newWithClass: isa];
-
-	return self;
 }
 
 - (void)dealloc

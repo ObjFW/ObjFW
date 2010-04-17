@@ -38,8 +38,8 @@ const char *str = "Hello!";
 	memset(data[0], 0xFF, 4096);
 	memset(data[1], 0x42, 4096);
 
-	TEST(@"-[addItem:]", [array[0] addItem: data[0]] &&
-	    [array[0] addItem: data[1]])
+	TEST(@"-[addItem:]", R([array[0] addItem: data[0]]) &&
+	    R([array[0] addItem: data[1]]))
 
 	TEST(@"-[itemAtIndex:]",
 	    !memcmp([array[0] itemAtIndex: 0], data[0], 4096) &&
@@ -53,10 +53,10 @@ const char *str = "Hello!";
 	    ? [OFBigDataArray class]
 	    : [OFDataArray class]);
 	TEST(@"-[isEqual:]", (array[1] = [other dataArrayWithItemSize: 4096]) &&
-	    [array[1] addNItems: [array[0] count]
-		     fromCArray: [array[0] cArray]] &&
+	    R([array[1] addNItems: [array[0] count]
+		       fromCArray: [array[0] cArray]]) &&
 	    [array[1] isEqual: array[0]] &&
-	    [array[1] removeNItems: 1] && ![array[0] isEqual: array[1]])
+	    R([array[1] removeNItems: 1]) && ![array[0] isEqual: array[1]])
 
 	TEST(@"-[copy]", (array[1] = [[array[0] copy] autorelease]) &&
 	    [array[0] isEqual: array[1]])
@@ -67,7 +67,7 @@ const char *str = "Hello!";
 	[array[2] addItem: "a"];
 	[array[3] addItem: "z"];
 	TEST(@"-[compare]", [array[0] compare: array[1]] == 0 &&
-	    [array[1] removeNItems: 1] &&
+	    R([array[1] removeNItems: 1]) &&
 	    [array[0] compare: array[1]] == OF_ORDERED_DESCENDING &&
 	    [array[1] compare: array[0]] == OF_ORDERED_ASCENDING &&
 	    [array[2] compare: array[3]] == OF_ORDERED_ASCENDING)
@@ -78,25 +78,25 @@ const char *str = "Hello!";
 	[array[0] addNItems: 6
 		 fromCArray: "abcdef"];
 
-	TEST(@"-[removeNItems:]", [array[0] removeNItems: 1] &&
+	TEST(@"-[removeNItems:]", R([array[0] removeNItems: 1]) &&
 	    [array[0] count] == 5 &&
 	    !memcmp([array[0] cArray], "abcde", 5))
 
 	TEST(@"-[removeNItems:atIndex:]",
-	    [array[0] removeNItems: 2
-			   atIndex: 1] && [array[0] count] == 3 &&
+	    R([array[0] removeNItems: 2
+			     atIndex: 1]) && [array[0] count] == 3 &&
 	    !memcmp([array[0] cArray], "ade", 3))
 
 	TEST(@"-[addNItems:atIndex:]",
-	    [array[0] addNItems: 2
-		     fromCArray: "bc"
-			atIndex: 1] && [array[0] count] == 5 &&
+	    R([array[0] addNItems: 2
+		       fromCArray: "bc"
+			  atIndex: 1]) && [array[0] count] == 5 &&
 	    !memcmp([array[0] cArray], "abcde", 5))
 
 	TEST(@"Building strings",
 	    (array[0] = [class dataArrayWithItemSize: 1]) &&
-	    [array[0] addNItems: 6
-		     fromCArray: (void*)str] && [array[0] addItem: ""] &&
+	    R([array[0] addNItems: 6
+		       fromCArray: (void*)str]) && R([array[0] addItem: ""]) &&
 	    !strcmp([array[0] cArray], str))
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[itemAtIndex:]",

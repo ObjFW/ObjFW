@@ -85,9 +85,10 @@
  *
  * \param key The Thread Local Storage key
  * \param obj The object the Thread Local Storage key will be set to
+ * \return The old object, autoreleased
  */
-+ setObject: (OFObject*)obj
-  forTLSKey: (OFTLSKey*)key;
++ (id)setObject: (OFObject*)obj
+      forTLSKey: (OFTLSKey*)key;
 
 /**
  * Returns the object for the specified Thread Local Storage key.
@@ -149,7 +150,7 @@
 /**
  * Starts the thread.
  */
-- start;
+- (void)start;
 
 /**
  * Joins a thread.
@@ -175,7 +176,7 @@
 /**
  * Locks the mutex.
  */
-- lock;
+- (void)lock;
 
 /**
  * Tries to lock the mutex and returns a boolean whether the mutex could be
@@ -188,5 +189,5 @@
 /**
  * Unlocks the mutex.
  */
-- unlock;
+- (void)unlock;
 @end

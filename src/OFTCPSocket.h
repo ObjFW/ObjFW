@@ -38,8 +38,8 @@
  * \param service The service on the node to connect to
  * \param node The node to connect to
  */
-- connectToService: (OFString*)service
-	    onNode: (OFString*)node;
+- (void)connectToService: (OFString*)service
+		  onNode: (OFString*)node;
 
 /**
  * Bind socket on the specified node and service.
@@ -48,21 +48,21 @@
  * \param node The node to bind to
  * \param family The family to use (AF_INET for IPv4 or AF_INET6 for IPv6)
  */
-- bindService: (OFString*)service
-       onNode: (OFString*)node
-   withFamily: (int)family;
+- (void)bindService: (OFString*)service
+	     onNode: (OFString*)node
+	 withFamily: (int)family;
 
 /**
  * Listen on the socket.
  *
  * \param backlog Maximum length for the queue of pending connections.
  */
-- listenWithBackLog: (int)backlog;
+- (void)listenWithBackLog: (int)backlog;
 
 /**
  * Listen on the socket.
  */
-- listen;
+- (void)listen;
 
 /**
  * Accept an incoming connection.
@@ -73,7 +73,7 @@
 /**
  * Enable or disable keep alives for the connection.
  */
-- enableKeepAlives: (BOOL)enable;
+- (void)setKeepAlivesEnabled: (BOOL)enable;
 
 /**
  * Returns the remote address of the socket. Only works with accepted sockets!

@@ -88,8 +88,8 @@ of_application_main(int argc, char *argv[], Class cls)
 	return self;
 }
 
--  setArgumentCount: (int)argc
-  andArgumentValues: (char**)argv
+- (void)setArgumentCount: (int)argc
+       andArgumentValues: (char**)argv
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	int i;
@@ -104,8 +104,6 @@ of_application_main(int argc, char *argv[], Class cls)
 		[arguments addObject: [OFString stringWithCString: argv[i]]];
 
 	[pool release];
-
-	return self;
 }
 
 - (OFString*)programName
@@ -123,20 +121,16 @@ of_application_main(int argc, char *argv[], Class cls)
 	return [[delegate retain] autorelease];
 }
 
-- setDelegate: (id)delegate_
+- (void)setDelegate: (id)delegate_
 {
 	id old = delegate;
 	delegate = [delegate_ retain];
 	[old release];
-
-	return self;
 }
 
-- run
+- (void)run
 {
 	[delegate applicationDidFinishLaunching];
-
-	return self;
 }
 
 - (void)terminate

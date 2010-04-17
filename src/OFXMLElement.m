@@ -219,7 +219,7 @@ int _OFXMLElement_reference;
 	return ret;
 }
 
-- addAttribute: (OFXMLAttribute*)attr
+- (void)addAttribute: (OFXMLAttribute*)attr
 {
 	if (attrs == nil)
 		attrs = [[OFMutableArray alloc] init];
@@ -227,12 +227,10 @@ int _OFXMLElement_reference;
 	/* FIXME: Prevent having it twice! */
 
 	[attrs addObject: attr];
-
-	return self;
 }
 
-- addAttributeWithName: (OFString*)name_
-	   stringValue: (OFString*)value
+- (void)addAttributeWithName: (OFString*)name_
+		 stringValue: (OFString*)value
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	[self addAttribute: [OFXMLAttribute attributeWithName: name_
@@ -240,14 +238,12 @@ int _OFXMLElement_reference;
 						    namespace: nil
 						  stringValue: value]];
 	[pool release];
-
-	return self;
 }
 
 /* TODO: Replace attribute */
 /* TODO: Remove attribute */
 
-- addChild: (OFXMLElement*)child
+- (void)addChild: (OFXMLElement*)child
 {
 	if (stringval != nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
@@ -257,8 +253,6 @@ int _OFXMLElement_reference;
 		children = [[OFMutableArray alloc] init];
 
 	[children addObject: child];
-
-	return self;
 }
 
 - (void)dealloc
@@ -273,7 +267,7 @@ int _OFXMLElement_reference;
 @end
 
 @implementation OFString (OFXMLEscaping)
-- stringByXMLEscaping
+- (OFString*)stringByXMLEscaping
 {
 	char *str_c, *append, *tmp;
 	size_t len, append_len;

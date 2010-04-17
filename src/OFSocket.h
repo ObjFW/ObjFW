@@ -37,5 +37,5 @@
 /**
  * Enables/disables non-blocking I/O.
  */
-- setBlocking: (BOOL)enable;
+- (void)setBlocking: (BOOL)enable;
 @end

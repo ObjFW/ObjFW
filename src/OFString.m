@@ -906,7 +906,12 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 - (OFString*)stringByAppendingString: (OFString*)str
 {
-	return [[OFMutableString stringWithString: self] appendString: str];
+	OFMutableString *new;
+
+	new = [OFMutableString stringWithString: self];
+	[new appendString: str];
+
+	return new;
 }
 
 - (BOOL)hasPrefix: (OFString*)prefix

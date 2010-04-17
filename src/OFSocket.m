@@ -97,7 +97,7 @@
 	return ret;
 }
 
-- setBlocking: (BOOL)enable
+- (void)setBlocking: (BOOL)enable
 {
 #ifndef _WIN32
 	int flags;
@@ -118,7 +118,5 @@
 	if (ioctlsocket(sock, FIONBIO, &v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException newWithClass: isa];
 #endif
-
-	return self;
 }
 @end

@@ -170,12 +170,12 @@
 /**
  * Buffer all writes until flushWriteBuffer is called.
  */
-- bufferWrites;
+- (void)bufferWrites;
 
 /**
  * Writes everything in the write cache to the stream.
  */
-- flushWriteBuffer;
+- (void)flushWriteBuffer;
 
 /**
  * Writes from a buffer into the stream.
@@ -281,5 +281,5 @@
 /**
  * Closes the stream.
  */
-- close;
+- (void)close;
 @end

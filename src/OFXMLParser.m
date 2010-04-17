@@ -123,17 +123,15 @@ parse_numeric_entity(const char *entity, size_t length)
 	return [[delegate retain] autorelease];
 }
 
-- setDelegate: (OFObject <OFXMLParserDelegate>*)delegate_
+- (void)setDelegate: (OFObject <OFXMLParserDelegate>*)delegate_
 {
 	[delegate_ retain];
 	[delegate release];
 	delegate = delegate_;
-
-	return self;
 }
 
-- parseBuffer: (const char*)buf
-     withSize: (size_t)size
+- (void)parseBuffer: (const char*)buf
+	   withSize: (size_t)size
 {
 	OFAutoreleasePool *pool;
 	size_t i, last, len;
@@ -489,8 +487,6 @@ parse_numeric_entity(const char *entity, size_t length)
 	if (len > 0 && state != OF_XMLPARSER_IN_TAG)
 		[cache appendCString: buf + last
 			  withLength: len];
-
-	return self;
 }
 
 - (OFString*)foundUnknownEntityNamed: (OFString*)entity
@@ -501,12 +497,13 @@ parse_numeric_entity(const char *entity, size_t length)
 @end
 
 @implementation OFString (OFXMLUnescaping)
-- stringByXMLUnescaping
+- (OFString*)stringByXMLUnescaping
 {
 	return [self stringByXMLUnescapingWithHandler: nil];
 }
 
-- stringByXMLUnescapingWithHandler: (OFObject <OFXMLUnescapingDelegate>*)h
+- (OFString*)stringByXMLUnescapingWithHandler:
+    (OFObject <OFXMLUnescapingDelegate>*)h
 {
 	size_t i, last;
 	BOOL in_entity;

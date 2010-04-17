@@ -149,7 +149,7 @@
 	return o;
 }
 
-- remove: (of_list_object_t*)listobj
+- (void)remove: (of_list_object_t*)listobj
 {
 	if (listobj->prev != NULL)
 		listobj->prev->next = listobj->next;
@@ -166,8 +166,6 @@
 	[listobj->object release];
 
 	[self freeMemory: listobj];
-
-	return self;
 }
 
 - (size_t)count

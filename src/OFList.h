@@ -100,7 +100,7 @@ typedef struct __of_list_object {
  *
  * \param listobj The list object returned by append / prepend
  */
-- remove: (of_list_object_t*)listobj;
+- (void)remove: (of_list_object_t*)listobj;
 
 /**
  * \return The number of items in the list.

@@ -864,57 +864,57 @@
 	}
 }
 
-- add: (OFNumber*)num
+- (OFNumber*)add: (OFNumber*)num
 {
 	CALCULATE(+, num)
 }
 
-- subtract: (OFNumber*)num
+- (OFNumber*)subtract: (OFNumber*)num
 {
 	CALCULATE(-, num)
 }
 
-- multiplyWith: (OFNumber*)num
+- (OFNumber*)multiplyWith: (OFNumber*)num
 {
 	CALCULATE(*, num)
 }
 
-- divideBy: (OFNumber*)num
+- (OFNumber*)divideBy: (OFNumber*)num
 {
 	CALCULATE(/, num)
 }
 
-- and: (OFNumber*)num
+- (OFNumber*)and: (OFNumber*)num
 {
 	CALCULATE2(&, num)
 }
 
-- or: (OFNumber*)num
+- (OFNumber*)or: (OFNumber*)num
 {
 	CALCULATE2(|, num)
 }
 
-- xor: (OFNumber*)num
+- (OFNumber*)xor: (OFNumber*)num
 {
 	CALCULATE2(^, num)
 }
 
-- shiftLeft: (OFNumber*)num
+- (OFNumber*)shiftLeft: (OFNumber*)num
 {
 	CALCULATE2(<<, num)
 }
 
-- shiftRight: (OFNumber*)num
+- (OFNumber*)shiftRight: (OFNumber*)num
 {
 	CALCULATE2(>>, num)
 }
 
-- increase
+- (OFNumber*)increase
 {
 	CALCULATE3(+ 1)
 }
 
-- decrease
+- (OFNumber*)decrease
 {
 	CALCULATE3(- 1)
 }

@@ -42,7 +42,7 @@
  *
  * \param obj The object to add to the autorelease pool
  */
-- addObject: (OFObject*)obj;
+- (void)addObject: (OFObject*)obj;
 
 /**
  * Releases all objects in the autorelease pool.
@@ -52,7 +52,7 @@
  * have been added to the pool that should be released before the next iteration
  * of a loop, which adds objects again. Thus, it is usually a clean up call.
  */
-- releaseObjects;
+- (void)releaseObjects;
 
 /**
  * Releases all objects in the autorelease pool and deallocates the pool.

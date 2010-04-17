@@ -36,30 +36,26 @@
 	return new;
 }
 
-- addObject: (OFObject*)obj
+- (void)addObject: (OFObject*)obj
 {
 	[array addItem: &obj];
 	[obj retain];
 
 	mutations++;
-
-	return self;
 }
 
-- addObject: (OFObject*)obj
-    atIndex: (size_t)index
+- (void)addObject: (OFObject*)obj
+	  atIndex: (size_t)index
 {
 	[array addItem: &obj
 	       atIndex: index];
 	[obj retain];
 
 	mutations++;
-
-	return self;
 }
 
-- replaceObject: (OFObject*)old
-     withObject: (OFObject*)new
+- (void)replaceObject: (OFObject*)old
+	   withObject: (OFObject*)new
 {
 	OFObject **objs = [array cArray];
 	size_t i, count = [array count];
@@ -71,27 +67,25 @@
 			objs[i] = new;
 		}
 	}
-
-	return self;
 }
 
-- replaceObjectAtIndex: (size_t)index
-	    withObject: (OFObject*)obj
+- (id)replaceObjectAtIndex: (size_t)index
+		withObject: (OFObject*)obj
 {
 	OFObject **objs = [array cArray];
+	id old;
 
 	if (index >= [array count])
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	[obj retain];
-	[objs[index] release];
-	objs[index] = obj;
+	old = objs[index];
+	objs[index] = [obj retain];
 
-	return self;
+	return [old autorelease];
 }
 
-- replaceObjectIdenticalTo: (OFObject*)old
-		withObject: (OFObject*)new
+- (void)replaceObjectIdenticalTo: (OFObject*)old
+		      withObject: (OFObject*)new
 {
 	OFObject **objs = [array cArray];
 	size_t i, count = [array count];
@@ -103,11 +97,9 @@
 			objs[i] = new;
 		}
 	}
-
-	return self;
 }
 
-- removeObject: (OFObject*)obj
+- (void)removeObject: (OFObject*)obj
 {
 	OFObject **objs = [array cArray];
 	size_t i, count = [array count];
@@ -134,11 +126,9 @@
 			i--;
 		}
 	}
-
-	return self;
 }
 
-- removeObjectIdenticalTo: (OFObject*)obj
+- (void)removeObjectIdenticalTo: (OFObject*)obj
 {
 	OFObject **objs = [array cArray];
 	size_t i, count = [array count];
@@ -163,17 +153,19 @@
 			i--;
 		}
 	}
-
-	return self;
 }
 
-- removeObjectAtIndex: (size_t)index
+- (id)removeObjectAtIndex: (size_t)index
 {
-	return [self removeNObjects: 1
-			    atIndex: index];
+	id old = [self objectAtIndex: index];
+
+	[self removeNObjects: 1
+		     atIndex: index];
+
+	return old;
 }
 
-- removeNObjects: (size_t)nobjects
+- (void)removeNObjects: (size_t)nobjects
 {
 	OFObject **objs = [array cArray], **copy;
 	size_t i, count = [array count];
@@ -194,12 +186,10 @@
 	} @finally {
 		[self freeMemory: copy];
 	}
-
-	return self;
 }
 
-- removeNObjects: (size_t)nobjects
-	 atIndex: (size_t)index
+- (void)removeNObjects: (size_t)nobjects
+	       atIndex: (size_t)index
 {
 	OFObject **objs = [array cArray], **copy;
 	size_t i, count = [array count];
@@ -221,8 +211,6 @@
 	} @finally {
 		[self freeMemory: copy];
 	}
-
-	return self;
 }
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state

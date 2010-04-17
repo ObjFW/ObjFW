@@ -399,7 +399,7 @@ objc_enumerationMutation(id obj)
 	return (uint32_t)(uintptr_t)self;
 }
 
-- addMemoryToPool: (void*)ptr
+- (void)addMemoryToPool: (void*)ptr
 {
 	void **memchunks;
 	size_t memchunks_size;
@@ -418,8 +418,6 @@ objc_enumerationMutation(id obj)
 	PRE_IVAR->memchunks = memchunks;
 	PRE_IVAR->memchunks[PRE_IVAR->memchunks_size] = ptr;
 	PRE_IVAR->memchunks_size = memchunks_size;
-
-	return self;
 }
 
 - (void*)allocMemoryWithSize: (size_t)size
@@ -517,13 +515,13 @@ objc_enumerationMutation(id obj)
 			   toSize: nitems * size];
 }
 
-- freeMemory: (void*)ptr;
+- (void)freeMemory: (void*)ptr;
 {
 	void **iter, *last, **memchunks;
 	size_t i, memchunks_size;
 
 	if (ptr == NULL)
-		return self;
+		return;
 
 	iter = PRE_IVAR->memchunks + PRE_IVAR->memchunks_size;
 	i = PRE_IVAR->memchunks_size;
@@ -545,7 +543,7 @@ objc_enumerationMutation(id obj)
 				PRE_IVAR->memchunks = NULL;
 				PRE_IVAR->memchunks_size = 0;
 
-				return self;
+				return;
 			}
 
 			free(ptr);
@@ -555,11 +553,11 @@ objc_enumerationMutation(id obj)
 			if (OF_UNLIKELY((memchunks = realloc(
 			    PRE_IVAR->memchunks, memchunks_size *
 			    sizeof(void*))) == NULL))
-				return self;
+				return;
 
 			PRE_IVAR->memchunks = memchunks;
 
-			return self;
+			return;
 		}
 	}
 
@@ -646,7 +644,7 @@ objc_enumerationMutation(id obj)
  * Those are needed as the root class is the superclass of the root class's
  * metaclass and thus instance methods can be sent to class objects as well.
  */
-+ addMemoryToPool: (void*)ptr
++ (void)addMemoryToPool: (void*)ptr
 {
 	@throw [OFNotImplementedException newWithClass: self
 					      selector: _cmd];
@@ -680,7 +678,7 @@ objc_enumerationMutation(id obj)
 					      selector: _cmd];
 }
 
-+ freeMemory: (void*)ptr
++ (void)freeMemory: (void*)ptr
 {
 	@throw [OFNotImplementedException newWithClass: self
 					      selector: _cmd];

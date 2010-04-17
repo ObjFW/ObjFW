@@ -30,7 +30,7 @@
 					      selector: _cmd];
 }
 
-- reset
+- (void)reset
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];

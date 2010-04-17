@@ -40,8 +40,8 @@ extern int _OFHashing_reference;
  * \param buf The buffer which should be included into calculation.
  * \param size The size of the buffer
  */
-- updateWithBuffer: (const char*)buf
-	    ofSize: (size_t)size;
+- (void)updateWithBuffer: (const char*)buf
+		  ofSize: (size_t)size;
 
 /**
  * \return A buffer containing the hash (OF_MD5_DIGEST_SIZE = 16 bytes).
@@ -74,8 +74,8 @@ extern int _OFHashing_reference;
  * \param buf The buffer which should be included into calculation.
  * \param size The size of the buffer
  */
-- updateWithBuffer: (const char*)buf
-	    ofSize: (size_t)size;
+- (void)updateWithBuffer: (const char*)buf
+		  ofSize: (size_t)size;
 
 /**
  * \return A buffer containing the hash (OF_SHA1_DIGEST_SIZE = 20 bytes).

@@ -497,17 +497,15 @@
 	assert(0);
 }
 
-- bufferWrites
+- (void)bufferWrites
 {
 	use_wbuffer = YES;
-
-	return self;
 }
 
-- flushWriteBuffer
+- (void)flushWriteBuffer
 {
 	if (wbuffer == NULL)
-		return self;
+		return;
 
 	[self _writeNBytes: wbuffer_len
 		fromBuffer: wbuffer];
@@ -516,8 +514,6 @@
 	wbuffer = NULL;
 	wbuffer_len = 0;
 	use_wbuffer = NO;
-
-	return self;
 }
 
 - (size_t)writeNBytes: (size_t)size
@@ -652,7 +648,7 @@
 	assert(0);
 }
 
-- close
+- (void)close
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];

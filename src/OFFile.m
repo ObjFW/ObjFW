@@ -376,12 +376,10 @@ static int parse_mode(const char *mode)
 	return ret;
 }
 
-- _seekToOffset: (off_t)offset
+- (void)_seekToOffset: (off_t)offset
 {
 	if (lseek(fd, offset, SEEK_SET) == -1)
 		@throw [OFSeekFailedException newWithClass: isa];
-
-	return self;
 }
 
 - (size_t)_seekForwardWithOffset: (off_t)offset
@@ -404,13 +402,11 @@ static int parse_mode(const char *mode)
 	return ret;
 }
 
-- close
+- (void)close
 {
 	if (fd != -1)
 		close(fd);
 	fd = -1;
-
-	return self;
 }
 
 - (void)dealloc

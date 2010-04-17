@@ -238,7 +238,7 @@ typedef struct __of_range {
  *
  * \param ptr A pointer to add to the memory pool
  */
-- addMemoryToPool: (void*)ptr;
+- (void)addMemoryToPool: (void*)ptr;
 
 /**
  * Allocates memory and stores it in the object's memory pool so it can be
@@ -290,7 +290,7 @@ typedef struct __of_range {
  *
  * \param ptr A pointer to the allocated memory
  */
-- freeMemory: (void*)ptr;
+- (void)freeMemory: (void*)ptr;
 
 /**
  * Increases the retain count.

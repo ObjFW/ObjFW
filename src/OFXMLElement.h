@@ -135,7 +135,7 @@ extern int _OFXMLElement_reference;
  *
  * \param attr The attribute to add
  */
-- addAttribute: (OFXMLAttribute*)attr;
+- (void)addAttribute: (OFXMLAttribute*)attr;
 
 /**
  * Adds the specified attribute with the specified value.
@@ -143,15 +143,15 @@ extern int _OFXMLElement_reference;
  * \param name The name of the attribute
  * \param value The value of the attribute
  */
-- addAttributeWithName: (OFString*)name
-	   stringValue: (OFString*)value;
+- (void)addAttributeWithName: (OFString*)name
+		 stringValue: (OFString*)value;
 
 /**
  * Adds a child to the OFXMLElement.
  *
  * \param child Another OFXMLElement which is added as a child
  */
-- addChild: (OFXMLElement*)child;
+- (void)addChild: (OFXMLElement*)child;
 @end
 
 /**
@@ -163,5 +163,5 @@ extern int _OFXMLElement_reference;
  *
  * \return A new autoreleased string
  */
-- stringByXMLEscaping;
+- (OFString*)stringByXMLEscaping;
 @end

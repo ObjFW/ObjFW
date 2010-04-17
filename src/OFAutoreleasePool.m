@@ -18,7 +18,7 @@
 #import "OFExceptions.h"
 
 #ifdef OF_THREADS
-#import "threading.h"
+# import "threading.h"
 
 static of_tlskey_t first_key, last_key;
 #else
@@ -122,6 +122,32 @@ static OFAutoreleasePool *first = nil, *last = nil;
 	return self;
 }
 
+- (void)addObject: (OFObject*)obj
+{
+	if (objects == nil)
+		objects = [[OFMutableArray alloc] init];
+
+	[objects addObject: obj];
+	[obj release];
+}
+
+- (void)releaseObjects
+{
+	[next releaseObjects];
+	[objects release];
+	objects = nil;
+}
+
+- (void)release
+{
+	[self dealloc];
+}
+
+- (void)drain
+{
+	[self dealloc];
+}
+
 - (void)dealloc
 {
 	[next dealloc];
@@ -159,40 +185,6 @@ static OFAutoreleasePool *first = nil, *last = nil;
 #endif
 
 	[super dealloc];
-}
-
-- addObject: (OFObject*)obj
-{
-	if (objects == nil)
-		objects = [[OFMutableArray alloc] init];
-
-	[objects addObject: obj];
-	[obj release];
-
-	return self;
-}
-
-- releaseObjects
-{
-	[next releaseObjects];
-
-	if (objects == nil)
-		return self;
-
-	[objects release];
-	objects = nil;
-
-	return self;
-}
-
-- (void)release
-{
-	[self dealloc];
-}
-
-- (void)drain
-{
-	[self dealloc];
 }
 
 - retain

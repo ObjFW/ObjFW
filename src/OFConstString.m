@@ -88,7 +88,7 @@ void *_OFConstStringClassReference;
 					      selector: _cmd];
 }
 
-- addMemoryToPool: (void*)ptr
+- (void)addMemoryToPool: (void*)ptr
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
@@ -122,7 +122,7 @@ void *_OFConstStringClassReference;
 					      selector: _cmd];
 }
 
-- freeMemory: (void*)ptr
+- (void)freeMemory: (void*)ptr
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];

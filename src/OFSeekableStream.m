@@ -13,7 +13,7 @@
 #import "OFExceptions.h"
 
 @implementation OFSeekableStream
-- _seekToOffset: (off_t)offset
+- (void)_seekToOffset: (off_t)offset
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
@@ -31,7 +31,7 @@
 					      selector: _cmd];
 }
 
-- seekToOffset: (off_t)offset
+- (void)seekToOffset: (off_t)offset
 {
 	[self flushWriteBuffer];
 	[self _seekToOffset: offset];
@@ -39,8 +39,6 @@
 	[self freeMemory: cache];
 	cache = NULL;
 	cache_len = 0;
-
-	return self;
 }
 
 - (off_t)seekForwardWithOffset: (off_t)offset

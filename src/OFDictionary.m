@@ -696,14 +696,12 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	return self;
 }
 
-- reset
+- (void)reset
 {
 	if (mutations_ptr != NULL && *mutations_ptr != mutations)
 		@throw [OFEnumerationMutationException newWithClass: isa];
 
 	pos = 0;
-
-	return self;
 }
 @end
 
