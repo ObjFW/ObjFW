@@ -17,7 +17,7 @@ SRCS = OFArrayTests.m		\
        ${OFTHREADTESTS_M}	\
        OFXMLElementTests.m	\
        OFXMLParserTests.m	\
-       ${PROPERTIES_TESTS_M}	\
+       ${PROPERTIESTESTS_M}	\
        TestsAppDelegate.m
 
 IPHONE_USER = mobile
