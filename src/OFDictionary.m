@@ -510,27 +510,29 @@ const int of_dictionary_deleted_bucket = 0;
 	hash = [key hash];
 	last = size;
 
-	for (i = hash & (size - 1); i < last && data[i].key != nil &&
-	    (data[i].key == DELETED || ![data[i].key isEqual: key]); i++);
+	for (i = hash & (size - 1); i < last && data[i].key != nil; i++) {
+		if (data[i].key == DELETED)
+			continue;
 
-	if (i < last && (data[i].key == nil || data[i].key == DELETED))
+		if ([data[i].key isEqual: key])
+			return [[data[i].object retain] autorelease];
+	}
+
+	if (i < last)
 		return nil;
 
 	/* In case the last bucket is already used */
-	if (i >= last) {
-		last = hash & (size - 1);
+	last = hash & (size - 1);
 
-		for (i = 0; i < last && data[i].key != nil &&
-		    (data[i].key == DELETED || ![data[i].key isEqual: key]);
-		    i++);
+	for (i = 0; i < last && data[i].key != nil; i++) {
+		if (data[i].key == DELETED)
+			continue;
+
+		if ([data[i].key isEqual: key])
+			return [[data[i].object retain] autorelease];
 	}
 
-	/* Key not in dictionary */
-	if (i >= last || data[i].key == nil || data[i].key == DELETED ||
-	    ![data[i].key isEqual: key])
-		return nil;
-
-	return [[data[i].object retain] autorelease];
+	return nil;
 }
 
 - (size_t)count

@@ -91,16 +91,25 @@
 	hash = [key hash];
 	last = size;
 
-	for (i = hash & (size - 1); i < last && data[i].key != nil &&
-	    (data[i].key == DELETED || ![data[i].key isEqual: key]); i++);
+	for (i = hash & (size - 1); i < last && data[i].key != nil; i++) {
+		if (data[i].key == DELETED)
+			continue;
+
+		if ([data[i].key isEqual: key])
+			break;
+	}
 
 	/* In case the last bucket is already used */
 	if (i >= last) {
 		last = hash & (size - 1);
 
-		for (i = 0; i < last && data[i].key != nil &&
-		    (data[i].key == DELETED || ![data[i].key isEqual: key]);
-		    i++);
+		for (i = 0; i < last && data[i].key != nil; i++) {
+			if (data[i].key == DELETED)
+				continue;
+
+			if ([data[i].key isEqual: key])
+				break;
+		}
 	}
 
 	/* Key not in dictionary */
@@ -159,34 +168,45 @@
 	hash = [key hash];
 	last = size;
 
-	for (i = hash & (size - 1); i < last && data[i].key != nil &&
-	    (data[i].key == DELETED || ![data[i].key isEqual: key]); i++);
+	for (i = hash & (size - 1); i < last && data[i].key != nil; i++) {
+		if (data[i].key == DELETED)
+			continue;
 
-	if (i < last && (data[i].key == nil || data[i].key == DELETED ||
-	    ![data[i].key isEqual: key]))
+		if ([data[i].key isEqual: key]) {
+			[data[i].key release];
+			[data[i].object release];
+			data[i].key = DELETED;
+
+			count--;
+			mutations++;
+			[self _resizeForCount: count];
+
+			return self;
+		}
+	}
+
+	if (i < last)
 		return self;
 
 	/* In case the last bucket is already used */
-	if (i >= last) {
-		last = hash & (size - 1);
+	last = hash & (size - 1);
 
-		for (i = 0; i < last && data[i].key != nil &&
-		    (data[i].key == DELETED || ![data[i].key isEqual: key]);
-		    i++);
+	for (i = 0; i < last && data[i].key != nil; i++) {
+		if (data[i].key == DELETED)
+			continue;
+
+		if ([data[i].key isEqual: key]) {
+			[data[i].key release];
+			[data[i].object release];
+			data[i].key = DELETED;
+
+			count--;
+			mutations++;
+			[self _resizeForCount: count];
+
+			return self;
+		}
 	}
-
-	/* Key not in dictionary */
-	if (i >= last || data[i].key == nil || data[i].key == DELETED ||
-	    ![data[i].key isEqual: key])
-		return self;
-
-	[data[i].key release];
-	[data[i].object release];
-	data[i].key = DELETED;
-
-	count--;
-	mutations++;
-	[self _resizeForCount: count];
 
 	return self;
 }
