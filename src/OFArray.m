@@ -127,15 +127,24 @@
 - initWithCArray: (OFObject**)objs
 {
 	id *obj;
+	size_t count;
 
 	self = [self init];
+	
+	count = 0;
+
+	for (obj = objs; *obj != nil; obj++) {
+		[*obj retain];
+		count++;
+	}
 
 	@try {
-		for (obj = objs; *obj != nil; obj++) {
-			[array addItem: obj];
-			[*obj retain];
-		}
+		[array addNItems: count
+		      fromCArray: objs];
 	} @catch (OFException *e) {
+		for (obj = objs; *obj != nil; obj++)
+			[*obj release];
+
 		[self dealloc];
 		@throw e;
 	}
@@ -146,16 +155,20 @@
 - initWithCArray: (OFObject**)objs
 	  length: (size_t)len
 {
+	size_t i;
+
 	self = [self init];
 
-	@try {
-		size_t i;
+	for (i = 0; i < len; i++)
+		[objs[i] retain];
 
-		for (i = 0; i < len; i++) {
-			[array addItem: objs + i];
-			[objs[i] retain];
-		}
+	@try {
+		[array addNItems: len
+		      fromCArray: objs];
 	} @catch (OFException *e) {
+		for (i = 0; i < len; i++)
+			[objs[i] release];
+
 		[self dealloc];
 		@throw e;
 	}
