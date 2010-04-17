@@ -74,7 +74,7 @@ compile() {
 		exit $?
 	fi
 
-	echo "Nothing to do..."
+	echo "Nothing to do for $out..."
 	exit 0
 }
 
