@@ -1,4 +1,9 @@
 #!/bin/sh
+ENV_CPPFLAGS="$CPPFLAGS"
+ENV_OBJCFLAGS="$OBJCFLAGS"
+ENV_LIBS="$LIBS"
+ENV_LDFLAGS="$LDFLAGS"
+
 prefix="@prefix@"
 exec_prefix="@exec_prefix@"
 libdir="@libdir@"
@@ -56,6 +61,7 @@ compile() {
 					link="yes"
 					echo "Compiling $1..."
 					$OBJC $CPPFLAGS $OBJCFLAGS \
+						$ENV_CPPFLAGS $ENV_OBJCFLAGS \
 						-c -o $obj $1 || exit $?
 				fi
 				;;
@@ -70,7 +76,7 @@ compile() {
 
 	if test x"$link" = x"yes"; then
 		echo "Linking $out..."
-		$OBJC -o $out $objs $LIBS $LDFLAGS
+		$OBJC -o $out $objs $LIBS $ENV_LIBS $LDFLAGS $ENV_LDFLAGS
 		exit $?
 	fi
 
