@@ -711,13 +711,13 @@
 #endif
 
 @implementation OFRenameFileFailedException
-+ newWithClass: (Class)class__
-	  from: (OFString*)from_
-	    to: (OFString*)to_
++    newWithClass: (Class)class__
+       sourcePath: (OFString*)src_
+  destinationPath: (OFString*)dst_
 {
 	return [[self alloc] initWithClass: class__
-				      from: from_
-					to: to_];
+				sourcePath: src_
+			   destinationPath: dst_];
 }
 
 - initWithClass: (Class)class__
@@ -726,23 +726,23 @@
 					      selector: _cmd];
 }
 
-- initWithClass: (Class)class__
-	   from: (OFString*)from_
-	     to: (OFString*)to_
+-   initWithClass: (Class)class__
+       sourcePath: (OFString*)src_
+  destinationPath: (OFString*)dst_
 {
 	self = [super initWithClass: class__];
 
-	from = [from_ copy];
-	to   = [to_ copy];
-	err  = GET_ERR;
+	src = [src_ copy];
+	dst = [dst_ copy];
+	err = GET_ERR;
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[from release];
-	[to release];
+	[src release];
+	[dst release];
 
 	[super dealloc];
 }
@@ -754,7 +754,7 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"Failed to rename file %s to %s in class %s! " ERRFMT,
-	    [from cString], [to cString], [class_ className], ERRPARAM];
+	    [src cString], [dst cString], [class_ className], ERRPARAM];
 
 	return string;
 }
@@ -764,14 +764,14 @@
 	return err;
 }
 
-- (OFString*)from
+- (OFString*)sourcePath
 {
-	return from;
+	return src;
 }
 
-- (OFString*)to
+- (OFString*)destinationPath;
 {
-	return to;
+	return dst;
 }
 @end
 
@@ -832,13 +832,13 @@
 
 #ifndef _WIN32
 @implementation OFLinkFailedException
-+ newWithClass: (Class)class__
-	source: (OFString*)src_
-   destination: (OFString*)dest_
++    newWithClass: (Class)class__
+       sourcePath: (OFString*)src_
+  destinationPath: (OFString*)dest_
 {
 	return [[self alloc] initWithClass: class__
-				    source: src_
-			       destination: dest_];
+				sourcePath: src_
+			   destinationPath: dest_];
 }
 
 - initWithClass: (Class)class__
@@ -847,9 +847,9 @@
 					      selector: _cmd];
 }
 
-- initWithClass: (Class)class__
-	 source: (OFString*)src_
-    destination: (OFString*)dest_
+-   initWithClass: (Class)class__
+       sourcePath: (OFString*)src_
+  destinationPath: (OFString*)dest_
 {
 	self = [super initWithClass: class__];
 
@@ -885,25 +885,25 @@
 	return err;
 }
 
-- (OFString*)source
+- (OFString*)sourcePath
 {
 	return src;
 }
 
-- (OFString*)destination
+- (OFString*)destinationPath
 {
 	return dest;
 }
 @end
 
 @implementation OFSymlinkFailedException
-+ newWithClass: (Class)class__
-	source: (OFString*)src_
-   destination: (OFString*)dest_
++    newWithClass: (Class)class__
+       sourcePath: (OFString*)src_
+  destinationPath: (OFString*)dest_
 {
 	return [[self alloc] initWithClass: class__
-				    source: src_
-			       destination: dest_];
+				sourcePath: src_
+			   destinationPath: dest_];
 }
 
 - initWithClass: (Class)class__
@@ -912,9 +912,9 @@
 					      selector: _cmd];
 }
 
-- initWithClass: (Class)class__
-	 source: (OFString*)src_
-    destination: (OFString*)dest_
+-   initWithClass: (Class)class__
+       sourcePath: (OFString*)src_
+  destinationPath: (OFString*)dest_
 {
 	self = [super initWithClass: class__];
 
@@ -950,12 +950,12 @@
 	return err;
 }
 
-- (OFString*)source
+- (OFString*)sourcePath
 {
 	return src;
 }
 
-- (OFString*)destination
+- (OFString*)destinationPath
 {
 	return dest;
 }

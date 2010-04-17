@@ -502,32 +502,32 @@
  */
 @interface OFRenameFileFailedException: OFException
 {
-	OFString *from;
-	OFString *to;
+	OFString *src;
+	OFString *dst;
 	int err;
 }
 
 /**
  * \param class_ The class of the object which caused the exception
- * \param from The original path
- * \param to The new path
+ * \param src The original path
+ * \param dst The new path
  * \return A new rename file failed exception
  */
-+ newWithClass: (Class)class_
-	  from: (OFString*)from
-	    to: (OFString*)to;
++    newWithClass: (Class)class_
+       sourcePath: (OFString*)src
+  destinationPath: (OFString*)dst;
 
 /**
  * Initializes an already allocated rename failed exception.
  *
  * \param class_ The class of the object which caused the exception
- * \param from The original path
- * \param to The new path
+ * \param src The original path
+ * \param dst The new path
  * \return An initialized rename file failed exception
  */
-- initWithClass: (Class)class_
-	   from: (OFString*)from
-	     to: (OFString*)to;
+-   initWithClass: (Class)class_
+       sourcePath: (OFString*)src
+  destinationPath: (OFString*)dst;
 
 /**
  * \return The errno from when the exception was created
@@ -537,12 +537,12 @@
 /**
  * \return The original path
  */
-- (OFString*)from;
+- (OFString*)sourcePath;
 
 /**
  * \return The new path
  */
-- (OFString*)to;
+- (OFString*)destinationPath;
 @end
 
 /**
@@ -600,9 +600,9 @@
  * \param dest The destination for the link
  * \return A new link failed exception
  */
-+ newWithClass: (Class)class_
-	source: (OFString*)src
-   destination: (OFString*)dest;
++    newWithClass: (Class)class_
+       sourcePath: (OFString*)src
+  destinationPath: (OFString*)dest;
 
 /**
  * Initializes an already allocated link failed exception.
@@ -612,9 +612,9 @@
  * \param dest The destination for the link
  * \return An initialized link failed exception
  */
-- initWithClass: (Class)class_
-	 source: (OFString*)src
-    destination: (OFString*)dest;
+-   initWithClass: (Class)class_
+       sourcePath: (OFString*)src
+  destinationPath: (OFString*)dest;
 
 /**
  * \return The errno from when the exception was created
@@ -624,12 +624,12 @@
 /**
  * \return A string with the source for the link
  */
-- (OFString*)source;
+- (OFString*)sourcePath;
 
 /**
  * \return A string with the destination for the link
  */
-- (OFString*)destination;
+- (OFString*)destinationPath;
 @end
 
 /**
@@ -648,9 +648,9 @@
  * \param dest The destination for the symlink
  * \return A new symlink failed exception
  */
-+ newWithClass: (Class)class_
-	source: (OFString*)src
-   destination: (OFString*)dest;
++   newWithClass: (Class)class_
+      sourcePath: (OFString*)src
+ destinationPath: (OFString*)dest;
 
 /**
  * Initializes an already allocated symlink failed exception.
@@ -660,9 +660,9 @@
  * \param dest The destination for the symlink
  * \return An initialized symlink failed exception
  */
-- initWithClass: (Class)class_
-	 source: (OFString*)src
-    destination: (OFString*)dest;
+-   initWithClass: (Class)class_
+       sourcePath: (OFString*)src
+  destinationPath: (OFString*)dest;
 
 /**
  * \return The errno from when the exception was created
@@ -672,12 +672,12 @@
 /**
  * \return A string with the source for the symlink
  */
-- (OFString*)source;
+- (OFString*)sourcePath;
 
 /**
  * \return A string with the destination for the symlink
  */
-- (OFString*)destination;
+- (OFString*)destinationPath;
 @end
 #endif
 

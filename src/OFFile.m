@@ -264,8 +264,8 @@ static int parse_mode(const char *mode)
 	if (!MoveFile([from cString], [to cString]))
 #endif
 		@throw [OFRenameFileFailedException newWithClass: self
-							    from: from
-							      to: to];
+						      sourcePath: from
+						 destinationPath: to];
 }
 
 + (void)deleteFileAtPath: (OFString*)path
@@ -285,8 +285,8 @@ static int parse_mode(const char *mode)
 {
 	if (link([src cString], [dest cString]) != 0)
 		@throw [OFLinkFailedException newWithClass: self
-						    source: src
-					       destination: dest];
+						sourcePath: src
+					   destinationPath: dest];
 }
 
 + (void)symlinkFileAtPath: (OFString*)src
@@ -294,8 +294,8 @@ static int parse_mode(const char *mode)
 {
 	if (symlink([src cString], [dest cString]) != 0)
 		@throw [OFSymlinkFailedException newWithClass: self
-						       source: src
-						  destination: dest];
+						   sourcePath: src
+					      destinationPath: dest];
 }
 #endif
 
