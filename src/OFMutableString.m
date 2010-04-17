@@ -41,7 +41,7 @@
 	size_t i, j, d;
 	char *nstr;
 
-	if (!is_utf8) {
+	if (!isUTF8) {
 		assert(table_size >= 1);
 
 		uint8_t *p = (uint8_t*)string + length;
@@ -131,15 +131,15 @@
 
 	switch (of_string_check_utf8(str, len)) {
 	case 0:
-		is_utf8 = NO;
+		isUTF8 = NO;
 		break;
 	case 1:
-		is_utf8 = YES;
+		isUTF8 = YES;
 		break;
 	case -1:
 		string = NULL;
 		length = 0;
-		is_utf8 = NO;
+		isUTF8 = NO;
 
 		@throw [OFInvalidEncodingException newWithClass: isa];
 	}
@@ -157,7 +157,7 @@
 
 	switch (of_string_check_utf8(str, strlength)) {
 	case 1:
-		is_utf8 = YES;
+		isUTF8 = YES;
 		break;
 	case -1:
 		@throw [OFInvalidEncodingException newWithClass: isa];
@@ -177,7 +177,7 @@
 
 	switch (of_string_check_utf8(str, len)) {
 	case 1:
-		is_utf8 = YES;
+		isUTF8 = YES;
 		break;
 	case -1:
 		@throw [OFInvalidEncodingException newWithClass: isa];
@@ -266,7 +266,7 @@
 		string[i] ^= string[j];
 	}
 
-	if (!is_utf8) {
+	if (!isUTF8) {
 		madvise(string, len, MADV_NORMAL);
 		return;
 	}
@@ -357,7 +357,7 @@
 - (void)removeCharactersFromIndex: (size_t)start
 			  toIndex: (size_t)end
 {
-	if (is_utf8) {
+	if (isUTF8) {
 		start = of_string_index_to_position(string, start, length);
 		end = of_string_index_to_position(string, end, length);
 	}

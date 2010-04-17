@@ -37,7 +37,7 @@
 						      selector: _cmd];
 
 	cache = NULL;
-	wbuffer = NULL;
+	wBuffer = NULL;
 
 	return self;
 }
@@ -77,24 +77,24 @@
 		return [self _readNBytes: size
 			      intoBuffer: buf];
 
-	if (size >= cache_len) {
-		size_t ret = cache_len;
-		memcpy(buf, cache, cache_len);
+	if (size >= cacheLen) {
+		size_t ret = cacheLen;
+		memcpy(buf, cache, cacheLen);
 
 		[self freeMemory: cache];
 		cache = NULL;
-		cache_len = 0;
+		cacheLen = 0;
 
 		return ret;
 	} else {
-		char *tmp = [self allocMemoryWithSize: cache_len - size];
-		memcpy(tmp, cache + size, cache_len - size);
+		char *tmp = [self allocMemoryWithSize: cacheLen - size];
+		memcpy(tmp, cache + size, cacheLen - size);
 
 		memcpy(buf, cache, size);
 
 		[self freeMemory: cache];
 		cache = tmp;
-		cache_len -= size;
+		cacheLen -= size;
 
 		return size;
 	}
@@ -240,7 +240,7 @@
 
 	/* Look if there's a line or \0 in our cache */
 	if (cache != NULL) {
-		for (i = 0; i < cache_len; i++) {
+		for (i = 0; i < cacheLen; i++) {
 			if (OF_UNLIKELY(cache[i] == '\n' ||
 			    cache[i] == '\0')) {
 				ret_len = i;
@@ -252,15 +252,15 @@
 							 encoding: encoding
 							   length: ret_len];
 
-				tmp = [self allocMemoryWithSize: cache_len -
+				tmp = [self allocMemoryWithSize: cacheLen -
 								 i - 1];
 				if (tmp != NULL)
 					memcpy(tmp, cache + i + 1,
-					    cache_len - i - 1);
+					    cacheLen - i - 1);
 
 				[self freeMemory: cache];
 				cache = tmp;
-				cache_len -= i + 1;
+				cacheLen -= i + 1;
 
 				return ret;
 			}
@@ -276,7 +276,7 @@
 				if (cache == NULL)
 					return nil;
 
-				ret_len = cache_len;
+				ret_len = cacheLen;
 
 				if (ret_len > 0 && cache[ret_len - 1] == '\r')
 					ret_len--;
@@ -287,7 +287,7 @@
 
 				[self freeMemory: cache];
 				cache = NULL;
-				cache_len = 0;
+				cacheLen = 0;
 
 				return ret;
 			}
@@ -299,13 +299,13 @@
 			for (i = 0; i < len; i++) {
 				if (OF_UNLIKELY(tmp[i] == '\n' ||
 				    tmp[i] == '\0')) {
-					ret_len = cache_len + i;
+					ret_len = cacheLen + i;
 					ret_c = [self
 					    allocMemoryWithSize: ret_len];
 
 					if (cache != NULL)
-						memcpy(ret_c, cache, cache_len);
-					memcpy(ret_c + cache_len, tmp, i);
+						memcpy(ret_c, cache, cacheLen);
+					memcpy(ret_c + cacheLen, tmp, i);
 
 					if (ret_len > 0 &&
 					    ret_c[ret_len - 1] == '\r')
@@ -328,7 +328,7 @@
 
 					[self freeMemory: cache];
 					cache = tmp2;
-					cache_len = len - i - 1;
+					cacheLen = len - i - 1;
 
 					return ret;
 				}
@@ -336,16 +336,16 @@
 
 			/* There was no newline or \0 */
 			cache = [self resizeMemory: cache
-					    toSize: cache_len + len];
+					    toSize: cacheLen + len];
 
 			/*
-			 * It's possible that cache_len + len is 0 and thus
+			 * It's possible that cacheLen + len is 0 and thus
 			 * cache was set to NULL by resizeMemory:toSize:.
 			 */
 			if (cache != NULL)
-				memcpy(cache + cache_len, tmp, len);
+				memcpy(cache + cacheLen, tmp, len);
 
-			cache_len += len;
+			cacheLen += len;
 		}
 	} @finally {
 		[self freeMemory: tmp];
@@ -380,7 +380,7 @@
 
 	/* Look if there's something in our cache */
 	if (cache != NULL) {
-		for (i = 0; i < cache_len; i++) {
+		for (i = 0; i < cacheLen; i++) {
 			if (cache[i] != delim[j++])
 				j = 0;
 
@@ -393,15 +393,15 @@
 							   length: i + 1 -
 								   delim_len];
 
-				tmp = [self allocMemoryWithSize: cache_len - i -
+				tmp = [self allocMemoryWithSize: cacheLen - i -
 								 1];
 				if (tmp != NULL)
 					memcpy(tmp, cache + i + 1,
-					    cache_len - i - 1);
+					    cacheLen - i - 1);
 
 				[self freeMemory: cache];
 				cache = tmp;
-				cache_len -= i + 1;
+				cacheLen -= i + 1;
 
 				return ret;
 			}
@@ -419,11 +419,11 @@
 
 				ret = [OFString stringWithCString: cache
 							 encoding: encoding
-							   length: cache_len];
+							   length: cacheLen];
 
 				[self freeMemory: cache];
 				cache = NULL;
-				cache_len = 0;
+				cacheLen = 0;
 
 				return ret;
 			}
@@ -440,17 +440,17 @@
 					if (tmp[i] == '\0')
 						delim_len = 1;
 
-					ret_len = cache_len + i + 1 - delim_len;
+					ret_len = cacheLen + i + 1 - delim_len;
 					ret_c = [self
 					    allocMemoryWithSize: ret_len];
 
 					if (cache != NULL &&
-					    cache_len <= ret_len)
-						memcpy(ret_c, cache, cache_len);
+					    cacheLen <= ret_len)
+						memcpy(ret_c, cache, cacheLen);
 					else if (cache != NULL)
 						memcpy(ret_c, cache, ret_len);
 					if (i >= delim_len)
-						memcpy(ret_c + cache_len, tmp,
+						memcpy(ret_c + cacheLen, tmp,
 					    	    i + 1 - delim_len);
 
 					@try {
@@ -470,7 +470,7 @@
 
 					[self freeMemory: cache];
 					cache = tmp2;
-					cache_len = len - i - 1;
+					cacheLen = len - i - 1;
 
 					return ret;
 				}
@@ -478,16 +478,16 @@
 
 			/* Neither the delimiter nor \0 was found */
 			cache = [self resizeMemory: cache
-					    toSize: cache_len + len];
+					    toSize: cacheLen + len];
 
 			/*
-			 * It's possible that cache_len + len is 0 and thus
+			 * It's possible that cacheLen + len is 0 and thus
 			 * cache was set to NULL by resizeMemory:toSize:.
 			 */
 			if (cache != NULL)
-				memcpy(cache + cache_len, tmp, len);
+				memcpy(cache + cacheLen, tmp, len);
 
-			cache_len += len;
+			cacheLen += len;
 		}
 	} @finally {
 		[self freeMemory: tmp];
@@ -499,34 +499,34 @@
 
 - (void)bufferWrites
 {
-	use_wbuffer = YES;
+	useWBuffer = YES;
 }
 
 - (void)flushWriteBuffer
 {
-	if (wbuffer == NULL)
+	if (wBuffer == NULL)
 		return;
 
-	[self _writeNBytes: wbuffer_len
-		fromBuffer: wbuffer];
+	[self _writeNBytes: wBufferLen
+		fromBuffer: wBuffer];
 
-	[self freeMemory: wbuffer];
-	wbuffer = NULL;
-	wbuffer_len = 0;
-	use_wbuffer = NO;
+	[self freeMemory: wBuffer];
+	wBuffer = NULL;
+	wBufferLen = 0;
+	useWBuffer = NO;
 }
 
 - (size_t)writeNBytes: (size_t)size
 	   fromBuffer: (const char*)buf
 {
-	if (!use_wbuffer)
+	if (!useWBuffer)
 		return [self _writeNBytes: size
 			       fromBuffer: buf];
 	else {
-		wbuffer = [self resizeMemory: wbuffer
-				      toSize: wbuffer_len + size];
-		memcpy(wbuffer + wbuffer_len, buf, size);
-		wbuffer_len += size;
+		wBuffer = [self resizeMemory: wBuffer
+				      toSize: wBufferLen + size];
+		memcpy(wBuffer + wBufferLen, buf, size);
+		wBufferLen += size;
 
 		return size;
 	}

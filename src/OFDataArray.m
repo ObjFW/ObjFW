@@ -45,7 +45,7 @@
 	}
 
 	data = NULL;
-	itemsize = is;
+	itemSize = is;
 
 	return self;
 }
@@ -57,7 +57,7 @@
 
 - (size_t)itemSize
 {
-	return itemsize;
+	return itemSize;
 }
 
 - (void*)cArray
@@ -70,7 +70,7 @@
 	if (index >= count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	return data + index * itemsize;
+	return data + index * itemSize;
 }
 
 - (void*)firstItem
@@ -86,7 +86,7 @@
 	if (data == NULL || count == 0)
 		return NULL;
 
-	return data + (count - 1) * itemsize;
+	return data + (count - 1) * itemSize;
 }
 
 - (void)addItem: (void*)item
@@ -96,9 +96,9 @@
 
 	data = [self resizeMemory: data
 			 toNItems: count + 1
-			 withSize: itemsize];
+			 withSize: itemSize];
 
-	memcpy(data + count * itemsize, item, itemsize);
+	memcpy(data + count * itemSize, item, itemSize);
 
 	count++;
 }
@@ -119,9 +119,9 @@
 
 	data = [self resizeMemory: data
 			 toNItems: count + nitems
-			 withSize: itemsize];
+			 withSize: itemSize];
 
-	memcpy(data + count * itemsize, carray, nitems * itemsize);
+	memcpy(data + count * itemSize, carray, nitems * itemSize);
 	count += nitems;
 }
 
@@ -134,11 +134,11 @@
 
 	data = [self resizeMemory: data
 			 toNItems: count + nitems
-			 withSize: itemsize];
+			 withSize: itemSize];
 
-	memmove(data + (index + nitems) * itemsize, data + index * itemsize,
-	    (count - index) * itemsize);
-	memcpy(data + index * itemsize, carray, nitems * itemsize);
+	memmove(data + (index + nitems) * itemSize, data + index * itemSize,
+	    (count - index) * itemSize);
+	memcpy(data + index * itemSize, carray, nitems * itemSize);
 
 	count += nitems;
 }
@@ -159,7 +159,7 @@
 	@try {
 		data = [self resizeMemory: data
 				 toNItems: count
-				 withSize: itemsize];
+				 withSize: itemSize];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 		[e dealloc];
@@ -172,14 +172,14 @@
 	if (nitems > count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	memmove(data + index * itemsize, data + (index + nitems) * itemsize,
-	    (count - index - nitems) * itemsize);
+	memmove(data + index * itemSize, data + (index + nitems) * itemSize,
+	    (count - index - nitems) * itemSize);
 
 	count -= nitems;
 	@try {
 		data = [self resizeMemory: data
 				 toNItems: count
-				 withSize: itemsize];
+				 withSize: itemSize];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 		[e dealloc];
@@ -188,7 +188,7 @@
 
 - copy
 {
-	OFDataArray *new = [[OFDataArray alloc] initWithItemSize: itemsize];
+	OFDataArray *new = [[OFDataArray alloc] initWithItemSize: itemSize];
 	[new addNItems: count
 	    fromCArray: data];
 
@@ -200,9 +200,9 @@
 	if (![obj isKindOfClass: [OFDataArray class]])
 		return NO;
 	if ([(OFDataArray*)obj count] != count ||
-	    [(OFDataArray*)obj itemSize] != itemsize)
+	    [(OFDataArray*)obj itemSize] != itemSize)
 		return NO;
-	if (memcmp([(OFDataArray*)obj cArray], data, count * itemsize))
+	if (memcmp([(OFDataArray*)obj cArray], data, count * itemSize))
 		return NO;
 
 	return YES;
@@ -216,14 +216,14 @@
 	if (![ary isKindOfClass: [OFDataArray class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
-	if ([ary itemSize] != itemsize)
+	if ([ary itemSize] != itemSize)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
 	ary_count = [ary count];
 	min_count = (count > ary_count ? ary_count : count);
 
-	if ((cmp = memcmp(data, [ary cArray], min_count * itemsize)) == 0) {
+	if ((cmp = memcmp(data, [ary cArray], min_count * itemSize)) == 0) {
 		if (count > ary_count)
 			return OF_ORDERED_DESCENDING;
 		if (count < ary_count)
@@ -243,7 +243,7 @@
 	size_t i;
 
 	OF_HASH_INIT(hash);
-	for (i = 0; i < count * itemsize; i++)
+	for (i = 0; i < count * itemSize; i++)
 		OF_HASH_ADD(hash, ((char*)data)[i]);
 	OF_HASH_FINALIZE(hash);
 
@@ -256,17 +256,17 @@
 {
 	size_t nsize, lastpagebyte;
 
-	if (SIZE_MAX - count < 1 || count + 1 > SIZE_MAX / itemsize)
+	if (SIZE_MAX - count < 1 || count + 1 > SIZE_MAX / itemSize)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	lastpagebyte = of_pagesize - 1;
-	nsize = ((count + 1) * itemsize + lastpagebyte) & ~lastpagebyte;
+	nsize = ((count + 1) * itemSize + lastpagebyte) & ~lastpagebyte;
 
 	if (size != nsize)
 		data = [self resizeMemory: data
 				   toSize: nsize];
 
-	memcpy(data + count * itemsize, item, itemsize);
+	memcpy(data + count * itemSize, item, itemSize);
 
 	count++;
 	size = nsize;
@@ -277,17 +277,17 @@
 {
 	size_t nsize, lastpagebyte;
 
-	if (nitems > SIZE_MAX - count || count + nitems > SIZE_MAX / itemsize)
+	if (nitems > SIZE_MAX - count || count + nitems > SIZE_MAX / itemSize)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	lastpagebyte = of_pagesize - 1;
-	nsize = ((count + nitems) * itemsize + lastpagebyte) & ~lastpagebyte;
+	nsize = ((count + nitems) * itemSize + lastpagebyte) & ~lastpagebyte;
 
 	if (size != nsize)
 		data = [self resizeMemory: data
 				   toSize: nsize];
 
-	memcpy(data + count * itemsize, carray, nitems * itemsize);
+	memcpy(data + count * itemSize, carray, nitems * itemSize);
 
 	count += nitems;
 	size = nsize;
@@ -299,20 +299,20 @@
 {
 	size_t nsize, lastpagebyte;
 
-	if (nitems > SIZE_MAX - count || count + nitems > SIZE_MAX / itemsize)
+	if (nitems > SIZE_MAX - count || count + nitems > SIZE_MAX / itemSize)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	lastpagebyte = of_pagesize - 1;
-	nsize = ((count + nitems) * itemsize + lastpagebyte) & ~lastpagebyte;
+	nsize = ((count + nitems) * itemSize + lastpagebyte) & ~lastpagebyte;
 
 	if (size != nsize)
 		data = [self resizeMemory: data
 				 toNItems: nsize
-				 withSize: itemsize];
+				 withSize: itemSize];
 
-	memmove(data + (index + nitems) * itemsize, data + index * itemsize,
-	    (count - index) * itemsize);
-	memcpy(data + index * itemsize, carray, nitems * itemsize);
+	memmove(data + (index + nitems) * itemSize, data + index * itemSize,
+	    (count - index) * itemSize);
+	memcpy(data + index * itemSize, carray, nitems * itemSize);
 
 	count += nitems;
 	size = nsize;
@@ -327,7 +327,7 @@
 
 	count -= nitems;
 	lastpagebyte = of_pagesize - 1;
-	nsize = (count * itemsize + lastpagebyte) & ~lastpagebyte;
+	nsize = (count * itemSize + lastpagebyte) & ~lastpagebyte;
 
 	if (size != nsize)
 		data = [self resizeMemory: data
@@ -343,12 +343,12 @@
 	if (nitems > count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	memmove(data + index * itemsize, data + (index + nitems) * itemsize,
-	    (count - index - nitems) * itemsize);
+	memmove(data + index * itemSize, data + (index + nitems) * itemSize,
+	    (count - index - nitems) * itemSize);
 
 	count -= nitems;
 	lastpagebyte = of_pagesize - 1;
-	nsize = (count * itemsize + lastpagebyte) & ~lastpagebyte;
+	nsize = (count * itemSize + lastpagebyte) & ~lastpagebyte;
 
 	if (size != nsize)
 		data = [self resizeMemory: data
@@ -358,7 +358,7 @@
 
 - copy
 {
-	OFDataArray *new = [[OFBigDataArray alloc] initWithItemSize: itemsize];
+	OFDataArray *new = [[OFBigDataArray alloc] initWithItemSize: itemSize];
 
 	[new addNItems: count
 	    fromCArray: data];

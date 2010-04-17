@@ -342,7 +342,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	case OF_STRING_ENCODING_UTF_8:
 		switch (of_string_check_utf8(str, length)) {
 		case 1:
-			is_utf8 = YES;
+			isUTF8 = YES;
 			break;
 		case -1:;
 			/*
@@ -406,7 +406,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 					    newWithClass: c];
 				}
 
-				is_utf8 = YES;
+				isUTF8 = YES;
 				chr_bytes = of_string_unicode_to_utf8(chr, buf);
 
 				if (chr_bytes == 0) {
@@ -509,7 +509,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 	switch (of_string_check_utf8(string, length)) {
 	case 1:
-		is_utf8 = YES;
+		isUTF8 = YES;
 		break;
 	case -1:;
 		Class c = isa;
@@ -554,7 +554,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	len = [first cStringLength];
 	switch (of_string_check_utf8([first cString], len)) {
 	case 1:
-		is_utf8 = YES;
+		isUTF8 = YES;
 		break;
 	case -1:
 		c = isa;
@@ -570,7 +570,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 		switch (of_string_check_utf8([component cString], len)) {
 		case 1:
-			is_utf8 = YES;
+			isUTF8 = YES;
 			break;
 		case -1:
 			c = isa;
@@ -611,7 +611,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 	switch (of_string_check_utf8(string, length)) {
 	case 1:
-		is_utf8 = YES;
+		isUTF8 = YES;
 		break;
 	case -1:;
 		Class c = isa;

@@ -43,7 +43,7 @@
  */
 @interface OFApplication: OFObject
 {
-	OFString *progname;
+	OFString *programName;
 	OFMutableArray *arguments;
 	id delegate;
 }

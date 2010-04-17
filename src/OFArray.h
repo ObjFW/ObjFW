@@ -177,7 +177,7 @@
 	OFDataArray   *array;
 	size_t	      count;
 	unsigned long mutations;
-	unsigned long *mutations_ptr;
+	unsigned long *mutationsPtr;
 	size_t	      pos;
 }
 

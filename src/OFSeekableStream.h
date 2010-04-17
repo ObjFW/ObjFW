@@ -23,7 +23,7 @@
  * OFStream. If you override these methods without the _ prefix, you *WILL*
  * break caching, get broken results and seek to the wrong position!
  */
-@interface OFSeekableStream: OFStream
+@interface OFSeekableStream: OFStream {}
 /**
  * Seeks to the specified absolute offset.
  *

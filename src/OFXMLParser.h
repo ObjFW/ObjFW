@@ -129,8 +129,8 @@ extern int _OFXMLParser_reference;
 	OFString *prefix;
 	OFString *ns;
 	OFMutableArray *attrs;
-	OFString *attr_name;
-	OFString *attr_prefix;
+	OFString *attrName;
+	OFString *attrPrefix;
 	char delim;
 	OFMutableArray *previous;
 }

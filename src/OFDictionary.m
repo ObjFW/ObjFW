@@ -684,21 +684,21 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 @implementation OFDictionaryEnumerator
 -     initWithData: (struct of_dictionary_bucket**)data_
 	      size: (uint32_t)size_
-  mutationsPointer: (unsigned long*)mutations_ptr_
+  mutationsPointer: (unsigned long*)mutationsPtr_
 {
 	self = [super init];
 
 	data = data_;
 	size = size_;
-	mutations = *mutations_ptr_;
-	mutations_ptr = mutations_ptr_;
+	mutations = *mutationsPtr_;
+	mutationsPtr = mutationsPtr_;
 
 	return self;
 }
 
 - (void)reset
 {
-	if (mutations_ptr != NULL && *mutations_ptr != mutations)
+	if (mutationsPtr != NULL && *mutationsPtr != mutations)
 		@throw [OFEnumerationMutationException newWithClass: isa];
 
 	pos = 0;
@@ -708,7 +708,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 @implementation OFDictionaryObjectEnumerator
 - (id)nextObject
 {
-	if (mutations_ptr != NULL && *mutations_ptr != mutations)
+	if (mutationsPtr != NULL && *mutationsPtr != mutations)
 		@throw [OFEnumerationMutationException newWithClass: isa];
 
 	for (; pos < size && (data[pos] == NULL ||
@@ -724,7 +724,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 @implementation OFDictionaryKeyEnumerator
 - (id)nextObject
 {
-	if (mutations_ptr != NULL && *mutations_ptr != mutations)
+	if (mutationsPtr != NULL && *mutationsPtr != mutations)
 		@throw [OFEnumerationMutationException newWithClass: isa];
 
 	for (; pos < size && (data[pos] == NULL ||

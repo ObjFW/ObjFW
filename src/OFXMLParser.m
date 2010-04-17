@@ -111,8 +111,8 @@ parse_numeric_entity(const char *entity, size_t length)
 	[prefix release];
 	[ns release];
 	[attrs release];
-	[attr_name release];
-	[attr_prefix release];
+	[attrName release];
+	[attrPrefix release];
 	[previous release];
 
 	[super dealloc];
@@ -359,16 +359,16 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				if ((tmp = memchr(cache_c, ':',
 				    cache_len)) != NULL ) {
-					attr_name = [[OFString alloc]
+					attrName = [[OFString alloc]
 					    initWithCString: tmp + 1
 						     length: cache_len - (tmp -
 							     cache_c) - 1];
-					attr_prefix = [[OFString alloc]
+					attrPrefix = [[OFString alloc]
 					    initWithCString: cache_c
 						     length: tmp - cache_c];
 				} else {
-					attr_name = [cache copy];
-					attr_prefix = nil;
+					attrName = [cache copy];
+					attrPrefix = nil;
 				}
 
 				[cache setToCString: ""];
@@ -406,16 +406,16 @@ parse_numeric_entity(const char *entity, size_t length)
 				attr_val = [cache
 				    stringByXMLUnescapingWithHandler: self];
 				[attrs addObject: [OFXMLAttribute
-				    attributeWithName: attr_name
-					       prefix: attr_prefix
+				    attributeWithName: attrName
+					       prefix: attrPrefix
 					    namespace: nil
 					  stringValue: attr_val]];
 				[pool release];
 
 				[cache setToCString: ""];
-				[attr_name release];
-				[attr_prefix release];
-				attr_name = attr_prefix = nil;
+				[attrName release];
+				[attrPrefix release];
+				attrName = attrPrefix = nil;
 
 				last = i + 1;
 				state = OF_XMLPARSER_IN_TAG;
@@ -512,7 +512,7 @@ parse_numeric_entity(const char *entity, size_t length)
 	last = 0;
 	in_entity = NO;
 	ret = [OFMutableString string];
-	((OFString*)ret)->is_utf8 = is_utf8;
+	((OFString*)ret)->isUTF8 = isUTF8;
 
 	for (i = 0; i < length; i++) {
 		if (!in_entity && string[i] == '&') {

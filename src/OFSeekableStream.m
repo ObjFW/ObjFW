@@ -38,7 +38,7 @@
 
 	[self freeMemory: cache];
 	cache = NULL;
-	cache_len = 0;
+	cacheLen = 0;
 }
 
 - (off_t)seekForwardWithOffset: (off_t)offset
@@ -46,11 +46,11 @@
 	off_t ret;
 
 	[self flushWriteBuffer];
-	ret = [self _seekForwardWithOffset: offset - cache_len];
+	ret = [self _seekForwardWithOffset: offset - cacheLen];
 
 	[self freeMemory: cache];
 	cache = NULL;
-	cache_len = 0;
+	cacheLen = 0;
 
 	return ret;
 }
@@ -64,7 +64,7 @@
 
 	[self freeMemory: cache];
 	cache = NULL;
-	cache_len = 0;
+	cacheLen = 0;
 
 	return ret;
 }

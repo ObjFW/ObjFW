@@ -24,8 +24,8 @@ extern int _OFXMLElement_reference;
 {
 	OFString *prefix;
 	OFString *name;
-	OFString *ns;
-	OFString *value;
+	OFString *namespace;
+	OFString *stringValue;
 }
 
 /**
@@ -84,8 +84,8 @@ extern int _OFXMLElement_reference;
 @interface OFXMLElement: OFObject
 {
 	OFString *name;
-	OFMutableArray *attrs;
-	OFString *stringval;
+	OFMutableArray *attributes;
+	OFString *stringValue;
 	OFMutableArray *children;
 }
 

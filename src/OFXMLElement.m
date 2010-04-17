@@ -24,28 +24,28 @@
 int _OFXMLElement_reference;
 
 @implementation OFXMLAttribute
-+ attributeWithName: (OFString*)name_
-	     prefix: (OFString*)prefix_
-	  namespace: (OFString*)ns_
-	stringValue: (OFString*)value_
++ attributeWithName: (OFString*)name
+	     prefix: (OFString*)prefix
+	  namespace: (OFString*)ns
+	stringValue: (OFString*)value
 {
-	return [[[self alloc] initWithName: name_
-				    prefix: prefix_
-				 namespace: ns_
-			       stringValue: value_] autorelease];
+	return [[[self alloc] initWithName: name
+				    prefix: prefix
+				 namespace: ns
+			       stringValue: value] autorelease];
 }
 
 - initWithName: (OFString*)name_
 	prefix: (OFString*)prefix_
-     namespace: (OFString*)ns_
-   stringValue: (OFString*)value_
+     namespace: (OFString*)ns
+   stringValue: (OFString*)value
 {
 	self = [super init];
 
 	name = [name_ copy];
 	prefix = [prefix_ copy];
-	ns = [ns_ copy];
-	value = [value_ copy];
+	namespace = [ns copy];
+	stringValue = [value copy];
 
 	return self;
 }
@@ -54,8 +54,8 @@ int _OFXMLElement_reference;
 {
 	[name release];
 	[prefix release];
-	[ns release];
-	[value release];
+	[namespace release];
+	[stringValue release];
 
 	[super dealloc];
 }
@@ -72,12 +72,12 @@ int _OFXMLElement_reference;
 
 - (OFString*)namespace
 {
-	return [[ns copy] autorelease];
+	return [[namespace copy] autorelease];
 }
 
 - (OFString*)stringValue
 {
-	return [[value copy] autorelease];
+	return [[stringValue copy] autorelease];
 }
 @end
 
@@ -87,11 +87,11 @@ int _OFXMLElement_reference;
 	return [[[self alloc] initWithName: name_] autorelease];
 }
 
-+ elementWithName: (OFString*)name_
-      stringValue: (OFString*)stringval_
++ elementWithName: (OFString*)name
+      stringValue: (OFString*)stringval
 {
-	return [[[self alloc] initWithName: name_
-			       stringValue: stringval_] autorelease];
+	return [[[self alloc] initWithName: name
+			       stringValue: stringval] autorelease];
 }
 
 - init
@@ -110,12 +110,12 @@ int _OFXMLElement_reference;
 }
 
 - initWithName: (OFString*)name_
-   stringValue: (OFString*)stringval_
+   stringValue: (OFString*)stringval
 {
 	self = [super init];
 
 	name = [name_ copy];
-	stringval = [stringval_ copy];
+	stringValue = [stringval copy];
 
 	return self;
 }
@@ -137,8 +137,8 @@ int _OFXMLElement_reference;
 	i = [name cStringLength] + 1;
 
 	/* Attributes */
-	attrs_carray = [attrs cArray];
-	attrs_count = [attrs count];
+	attrs_carray = [attributes cArray];
+	attrs_count = [attributes count];
 
 	for (j = 0; j < attrs_count; j++) {
 		/* FIXME: Add namespace support */
@@ -168,9 +168,9 @@ int _OFXMLElement_reference;
 	}
 
 	/* Childen */
-	if (stringval != nil || children != nil) {
-		if (stringval != nil)
-			tmp = [stringval stringByXMLEscaping];
+	if (stringValue != nil || children != nil) {
+		if (stringValue != nil)
+			tmp = [stringValue stringByXMLEscaping];
 		else if (children != nil) {
 			OFXMLElement **children_carray = [children cArray];
 			size_t children_count = [children count];
@@ -221,12 +221,12 @@ int _OFXMLElement_reference;
 
 - (void)addAttribute: (OFXMLAttribute*)attr
 {
-	if (attrs == nil)
-		attrs = [[OFMutableArray alloc] init];
+	if (attributes == nil)
+		attributes = [[OFMutableArray alloc] init];
 
 	/* FIXME: Prevent having it twice! */
 
-	[attrs addObject: attr];
+	[attributes addObject: attr];
 }
 
 - (void)addAttributeWithName: (OFString*)name_
@@ -245,7 +245,7 @@ int _OFXMLElement_reference;
 
 - (void)addChild: (OFXMLElement*)child
 {
-	if (stringval != nil)
+	if (stringValue != nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
@@ -258,8 +258,8 @@ int _OFXMLElement_reference;
 - (void)dealloc
 {
 	[name release];
-	[attrs release];
-	[stringval release];
+	[attributes release];
+	[stringValue release];
 	[children release];
 
 	[super dealloc];

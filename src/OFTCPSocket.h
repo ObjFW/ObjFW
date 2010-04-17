@@ -28,8 +28,8 @@
  */
 @interface OFTCPSocket: OFSocket
 {
-	struct sockaddr	*saddr;
-	socklen_t	saddr_len;
+	struct sockaddr	*sockAddr;
+	socklen_t	sockAddrLen;
 }
 
 /**

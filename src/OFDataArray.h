@@ -20,7 +20,7 @@
 @interface OFDataArray: OFObject <OFCopying>
 {
 	char   *data;
-	size_t itemsize;
+	size_t itemSize;
 	size_t count;
 }
 

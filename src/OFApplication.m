@@ -94,10 +94,10 @@ of_application_main(int argc, char *argv[], Class cls)
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	int i;
 
-	[progname release];
+	[programName release];
 	[arguments release];
 
-	progname = [[OFString alloc] initWithCString: argv[0]];
+	programName = [[OFString alloc] initWithCString: argv[0]];
 	arguments = [[OFMutableArray alloc] init];
 
 	for (i = 1; i < argc; i++)
@@ -108,7 +108,7 @@ of_application_main(int argc, char *argv[], Class cls)
 
 - (OFString*)programName
 {
-	return [[progname retain] autorelease];
+	return [[programName retain] autorelease];
 }
 
 - (OFArray*)arguments

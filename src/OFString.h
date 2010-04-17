@@ -41,7 +41,7 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 #if defined(OF_APPLE_RUNTIME) && __LP64__
 	int	     _unused;
 #endif
-	BOOL	     is_utf8;
+	BOOL	     isUTF8;
 }
 
 /**

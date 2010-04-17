@@ -368,21 +368,21 @@
 /// \cond internal
 @implementation OFArrayEnumerator
 - initWithDataArray: (OFDataArray*)array_
-   mutationsPointer: (unsigned long*)mutations_ptr_;
+   mutationsPointer: (unsigned long*)mutationsPtr_;
 {
 	self = [super init];
 
 	array = array_;
 	count = [array_ count];
-	mutations = *mutations_ptr_;
-	mutations_ptr = mutations_ptr_;
+	mutations = *mutationsPtr_;
+	mutationsPtr = mutationsPtr_;
 
 	return self;
 }
 
 - (id)nextObject
 {
-	if (mutations_ptr != NULL && *mutations_ptr != mutations)
+	if (mutationsPtr != NULL && *mutationsPtr != mutations)
 		@throw [OFEnumerationMutationException newWithClass: isa];
 
 	if (pos < count)
@@ -393,7 +393,7 @@
 
 - (void)reset
 {
-	if (mutations_ptr != NULL && *mutations_ptr != mutations)
+	if (mutationsPtr != NULL && *mutationsPtr != mutations)
 		@throw [OFEnumerationMutationException newWithClass: isa];
 
 	pos = 0;

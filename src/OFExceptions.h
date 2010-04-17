@@ -51,7 +51,7 @@
  */
 @interface OFException: OFObject
 {
-	Class	 class_;
+	Class inClass;
 	OFString *string;
 }
 
@@ -87,7 +87,7 @@
  */
 @interface OFOutOfMemoryException: OFException
 {
-	size_t req_size;
+	size_t requestedSize;
 }
 
 /**
@@ -246,7 +246,7 @@
 {
 	OFString *path;
 	OFString *mode;
-	int err;
+	int errNo;
 }
 
 /**
@@ -292,8 +292,8 @@
  */
 @interface OFReadOrWriteFailedException: OFException
 {
-	size_t req_size;
-	int    err;
+	size_t requestedSize;
+	int    errNo;
 }
 
 /**
@@ -342,7 +342,7 @@
  */
 @interface OFSeekFailedException: OFException
 {
-	int err;
+	int errNo;
 }
 
 /**
@@ -357,7 +357,7 @@
 @interface OFCreateDirectoryFailedException: OFException
 {
 	OFString *path;
-	int err;
+	int errNo;
 }
 
 /**
@@ -396,7 +396,7 @@
 {
 	OFString *path;
 	mode_t mode;
-	int err;
+	int errNo;
 }
 
 /**
@@ -446,7 +446,7 @@
 	OFString *path;
 	uid_t owner;
 	gid_t group;
-	int err;
+	int errNo;
 }
 
 /**
@@ -502,9 +502,9 @@
  */
 @interface OFRenameFileFailedException: OFException
 {
-	OFString *src;
-	OFString *dst;
-	int err;
+	OFString *sourcePath;
+	OFString *destinationPath;
+	int errNo;
 }
 
 /**
@@ -551,7 +551,7 @@
 @interface OFDeleteFileFailedException: OFException
 {
 	OFString *path;
-	int err;
+	int errNo;
 }
 
 /**
@@ -589,9 +589,9 @@
  */
 @interface OFLinkFailedException: OFException
 {
-	OFString *src;
-	OFString *dest;
-	int err;
+	OFString *sourcePath;
+	OFString *destinationPath;
+	int errNo;
 }
 
 /**
@@ -637,9 +637,9 @@
  */
 @interface OFSymlinkFailedException: OFException
 {
-	OFString *src;
-	OFString *dest;
-	int err;
+	OFString *sourcePath;
+	OFString *destinationPath;
+	int errNo;
 }
 
 /**
@@ -707,7 +707,7 @@
 {
 	OFString *node;
 	OFString *service;
-	int	 err;
+	int	 errNo;
 }
 
 /**
@@ -755,7 +755,7 @@
 {
 	OFString *node;
 	OFString *service;
-	int	 err;
+	int	 errNo;
 }
 
 /**
@@ -804,7 +804,7 @@
 	OFString *node;
 	OFString *service;
 	int	 family;
-	int	 err;
+	int	 errNo;
 }
 
 /**
@@ -859,8 +859,8 @@
  */
 @interface OFListenFailedException: OFException
 {
-	int backlog;
-	int err;
+	int backLog;
+	int errNo;
 }
 
 /**
@@ -897,7 +897,7 @@
  */
 @interface OFAcceptFailedException: OFException
 {
-	int err;
+	int errNo;
 }
 
 /**

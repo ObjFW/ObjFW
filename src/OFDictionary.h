@@ -165,7 +165,7 @@ struct of_dictionary_bucket
 	struct of_dictionary_bucket **data;
 	uint32_t size;
 	unsigned long mutations;
-	unsigned long *mutations_ptr;
+	unsigned long *mutationsPtr;
 	uint32_t pos;
 }
 

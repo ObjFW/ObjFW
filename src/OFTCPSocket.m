@@ -53,7 +53,7 @@ static OFMutex *mutex = nil;
 	self = [super init];
 
 	sock = INVALID_SOCKET;
-	saddr = NULL;
+	sockAddr = NULL;
 
 	return self;
 }
@@ -349,8 +349,8 @@ static OFMutex *mutex = nil;
 	}
 
 	newsock->sock = s;
-	newsock->saddr = addr;
-	newsock->saddr_len = addrlen;
+	newsock->sockAddr = addr;
+	newsock->sockAddrLen = addrlen;
 
 	return newsock;
 }
@@ -365,7 +365,7 @@ static OFMutex *mutex = nil;
 
 - (OFString*)remoteAddress
 {
-	if (saddr == NULL || saddr_len == 0)
+	if (sockAddr == NULL || sockAddrLen == 0)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
@@ -373,8 +373,8 @@ static OFMutex *mutex = nil;
 	char *node = [self allocMemoryWithSize: NI_MAXHOST];
 
 	@try {
-		if (getnameinfo(saddr, saddr_len, node, NI_MAXHOST, NULL, 0,
-		    NI_NUMERICHOST))
+		if (getnameinfo(sockAddr, sockAddrLen, node, NI_MAXHOST, NULL,
+		    0, NI_NUMERICHOST))
 			@throw [OFAddressTranslationFailedException
 			    newWithClass: isa];
 
@@ -390,7 +390,7 @@ static OFMutex *mutex = nil;
 
 	@try {
 # endif
-		node = inet_ntoa(((struct sockaddr_in*)saddr)->sin_addr);
+		node = inet_ntoa(((struct sockaddr_in*)sockAddr)->sin_addr);
 
 		if (node == NULL)
 			@throw [OFAddressTranslationFailedException
@@ -416,9 +416,9 @@ static OFMutex *mutex = nil;
 	close(sock);
 	sock = INVALID_SOCKET;
 
-	[self freeMemory: saddr];
-	saddr = NULL;
-	saddr_len = 0;
+	[self freeMemory: sockAddr];
+	sockAddr = NULL;
+	sockAddrLen = 0;
 }
 
 - (void)dealloc

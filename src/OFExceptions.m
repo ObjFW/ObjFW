@@ -32,28 +32,28 @@
 
 #ifndef _WIN32
 # include <errno.h>
-# define GET_ERR	errno
+# define GET_ERRNO	errno
 # ifndef HAVE_THREADSAFE_GETADDRINFO
-#  define GET_AT_ERR	h_errno
+#  define GET_AT_ERRNO	h_errno
 # else
-#  define GET_AT_ERR	errno
+#  define GET_AT_ERRNO	errno
 # endif
-# define GET_SOCK_ERR	errno
+# define GET_SOCK_ERRNO	errno
 # define ERRFMT		"Error string was: %s"
-# define ERRPARAM	strerror(err)
+# define ERRPARAM	strerror(errNo)
 # ifndef HAVE_THREADSAFE_GETADDRINFO
-#  define AT_ERRPARAM	hstrerror(err)
+#  define AT_ERRPARAM	hstrerror(errNo)
 # else
-#  define AT_ERRPARAM	strerror(err)
+#  define AT_ERRPARAM	strerror(errNo)
 # endif
 #else
 # include <windows.h>
-# define GET_ERR	GetLastError()
-# define GET_AT_ERR	WSAGetLastError()
-# define GET_SOCK_ERR	WSAGetLastError()
+# define GET_ERRNO	GetLastError()
+# define GET_AT_ERRNO	WSAGetLastError()
+# define GET_SOCK_ERRNO	WSAGetLastError()
 # define ERRFMT		"Error code was: %d"
-# define ERRPARAM	err
-# define AT_ERRPARAM	err
+# define ERRPARAM	errNo
+# define AT_ERRPARAM	errNo
 #endif
 
 #import "asprintf.h"
@@ -71,9 +71,9 @@
 @end
 
 @implementation OFException
-+ newWithClass: (Class)class__
++ newWithClass: (Class)class_
 {
-	return [[self alloc] initWithClass: class__];
+	return [[self alloc] initWithClass: class_];
 }
 
 - init
@@ -82,11 +82,11 @@
 					      selector: _cmd];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 {
 	self = [super init];
 
-	class_ = class__;
+	class_ = class_;
 
 	return self;
 }
@@ -100,7 +100,7 @@
 
 - (Class)inClass
 {
-	return class_;
+	return inClass;
 }
 
 - (OFString*)string
@@ -116,19 +116,19 @@
 @end
 
 @implementation OFOutOfMemoryException
-+ newWithClass: (Class)class__
++ newWithClass: (Class)class_
 	  size: (size_t)size
 {
-	return [[self alloc] initWithClass: class__
+	return [[self alloc] initWithClass: class_
 				      size: size];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 	   size: (size_t)size
 {
-	self = [super initWithClass: class__];
+	self = [super initWithClass: class_];
 
-	req_size = size;
+	requestedSize = size;
 
 	return self;
 }
@@ -138,21 +138,21 @@
 	if (string != nil)
 		return string;
 
-	if (req_size)
+	if (requestedSize)
 		string = [[OFString alloc] initWithFormat:
-		    @"Could not allocate %zu bytes in class %s!", req_size,
-		    [class_ className]];
+		    @"Could not allocate %zu bytes in class %s!", requestedSize,
+		    [inClass className]];
 	else
 		string = [[OFString alloc] initWithFormat:
 		    @"Could not allocate enough memory in class %s!",
-		    [class_ className]];
+		    [inClass className]];
 
 	return string;
 }
 
 - (size_t)requestedSize
 {
-	return req_size;
+	return requestedSize;
 }
 @end
 
@@ -164,30 +164,30 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"Object of class %s was mutated during enumeration!",
-	    [class_ className]];
+	    [inClass className]];
 
 	return string;
 }
 @end
 
 @implementation OFMemoryNotPartOfObjectException
-+ newWithClass: (Class)class__
++ newWithClass: (Class)class_
        pointer: (void*)ptr
 {
-	return [[self alloc] initWithClass: class__
+	return [[self alloc] initWithClass: class_
 				   pointer: ptr];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 	pointer: (void*)ptr
 {
-	self = [super initWithClass: class__];
+	self = [super initWithClass: class_];
 
 	pointer = ptr;
 
@@ -203,7 +203,7 @@
 	    @"Memory at %p was not allocated as part of object of class %s, "
 	    @"thus the memory allocation was not changed! It is also possible "
 	    @"that there was an attempt to free the same memory twice.",
-	    pointer, [class_ className]];
+	    pointer, [inClass className]];
 
 	return string;
 }
@@ -215,23 +215,23 @@
 @end
 
 @implementation OFNotImplementedException
-+ newWithClass: (Class)class__
-      selector: (SEL)selector_
++ newWithClass: (Class)class_
+      selector: (SEL)selector
 {
-	return [[self alloc] initWithClass: class__
-				  selector: selector_];
+	return [[self alloc] initWithClass: class_
+				  selector: selector];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
        selector: (SEL)selector_
 {
-	self = [super initWithClass: class__];
+	self = [super initWithClass: class_];
 
 	selector = selector_;
 
@@ -245,7 +245,7 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"The method %s of class %s is not or not fully implemented!",
-	    sel_getName(selector), [class_ className]];
+	    sel_getName(selector), [inClass className]];
 
 	return string;
 }
@@ -258,30 +258,30 @@
 		return string;
 
 	string = [[OFString alloc] initWithFormat:
-	    @"Value out of range in class %s!", [class_ className]];
+	    @"Value out of range in class %s!", [inClass className]];
 
 	return string;
 }
 @end
 
 @implementation OFInvalidArgumentException
-+ newWithClass: (Class)class__
++ newWithClass: (Class)class_
       selector: (SEL)selector_
 {
-	return [[self alloc] initWithClass: class__
+	return [[self alloc] initWithClass: class_
 				  selector: selector_];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
        selector: (SEL)selector_
 {
-	self = [super initWithClass: class__];
+	self = [super initWithClass: class_];
 
 	selector = selector_;
 
@@ -295,7 +295,7 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"The argument for method %s of class %s is invalid!",
-	    sel_getName(selector), [class_ className]];
+	    sel_getName(selector), [inClass className]];
 
 	return string;
 }
@@ -308,7 +308,7 @@
 		return string;
 
 	string = [[OFString alloc] initWithFormat:
-	    @"The encoding is invalid for class %s!", [class_ className]];
+	    @"The encoding is invalid for class %s!", [inClass className]];
 
 	return string;
 }
@@ -321,7 +321,7 @@
 		return string;
 
 	string = [[OFString alloc] initWithFormat:
-	    @"The format is invalid for class %s!", [class_ className]];
+	    @"The format is invalid for class %s!", [inClass className]];
 
 	return string;
 }
@@ -335,7 +335,7 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"The parser in class %s encountered malformed or invalid XML!",
-	    [class_ className]];
+	    [inClass className]];
 
 	return string;
 }
@@ -348,37 +348,37 @@
 		return string;
 
 	string = [[OFString alloc] initWithFormat:
-	    @"Initialization failed for class %s!", [class_ className]];
+	    @"Initialization failed for class %s!", [inClass className]];
 
 	return string;
 }
 @end
 
 @implementation OFOpenFileFailedException
-+ newWithClass: (Class)class__
-	  path: (OFString*)path_
-	  mode: (OFString*)mode_
++ newWithClass: (Class)class_
+	  path: (OFString*)path
+	  mode: (OFString*)mode
 {
-	return [(OFOpenFileFailedException*)[self alloc] initWithClass: class__
-								  path: path_
-								  mode: mode_];
+	return [(OFOpenFileFailedException*)[self alloc] initWithClass: class_
+								  path: path
+								  mode: mode];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 	   path: (OFString*)path_
 	   mode: (OFString*)mode_
 {
-	self = [super initWithClass: class__];
+	self = [super initWithClass: class_];
 
-	path = [path_ copy];
-	mode = [mode_ copy];
-	err  = GET_ERR;
+	path  = [path_ copy];
+	mode  = [mode_ copy];
+	errNo = GET_ERRNO;
 
 	return self;
 }
@@ -398,14 +398,14 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"Failed to open file %s with mode %s in class %s! " ERRFMT,
-	    [path cString], [mode cString], [class_ className], ERRPARAM];
+	    [path cString], [mode cString], [inClass className], ERRPARAM];
 
 	return string;
 }
 
 - (int)errNo
 {
-	return err;
+	return errNo;
 }
 
 - (OFString*)path
@@ -420,42 +420,42 @@
 @end
 
 @implementation OFReadOrWriteFailedException
-+ newWithClass: (Class)class__
++ newWithClass: (Class)class_
 	  size: (size_t)size
 {
-	return [[self alloc] initWithClass: class__
+	return [[self alloc] initWithClass: class_
 				      size: size];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 	   size: (size_t)size
 {
-	self = [super initWithClass: class__];
+	self = [super initWithClass: class_];
 
-	req_size = size;
+	requestedSize = size;
 
-	if ([class__ isSubclassOfClass: [OFSocket class]])
-		err = GET_SOCK_ERR;
+	if ([class_ isSubclassOfClass: [OFSocket class]])
+		errNo = GET_SOCK_ERRNO;
 	else
-		err = GET_ERR;
+		errNo = GET_ERRNO;
 
 	return self;
 }
 
 - (int)errNo
 {
-	return err;
+	return errNo;
 }
 
 - (size_t)requestedSize
 {
-	return req_size;
+	return requestedSize;
 }
 @end
 
@@ -466,8 +466,8 @@
 		return string;;
 
 	string = [[OFString alloc] initWithFormat:
-	    @"Failed to read %zu bytes in class %s! " ERRFMT, req_size,
-	    [class_ className], ERRPARAM];
+	    @"Failed to read %zu bytes in class %s! " ERRFMT, requestedSize,
+	    [inClass className], ERRPARAM];
 
 	return string;
 }
@@ -480,19 +480,19 @@
 		return string;
 
 	string = [[OFString alloc] initWithFormat:
-	    @"Failed to write %zu bytes in class %s! " ERRFMT, req_size,
-	    [class_ className], ERRPARAM];
+	    @"Failed to write %zu bytes in class %s! " ERRFMT, requestedSize,
+	    [inClass className], ERRPARAM];
 
 	return string;
 }
 @end
 
 @implementation OFSeekFailedException
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 {
-	self = [super initWithClass: class__];
+	self = [super initWithClass: class_];
 
-	err = GET_ERR;
+	errNo = GET_ERRNO;
 
 	return self;
 }
@@ -503,7 +503,7 @@
 		return string;
 
 	string = [[OFString alloc] initWithFormat:
-	    @"Seeking failed in class %s! " ERRFMT, [class_ className],
+	    @"Seeking failed in class %s! " ERRFMT, [inClass className],
 	    ERRPARAM];
 
 	return string;
@@ -511,31 +511,31 @@
 
 - (int)errNo
 {
-	return err;
+	return errNo;
 }
 @end
 
 @implementation OFCreateDirectoryFailedException
-+ newWithClass: (Class)class__
++ newWithClass: (Class)class_
 	  path: (OFString*)path_
 {
-	return [[self alloc] initWithClass: class__
+	return [[self alloc] initWithClass: class_
 				      path: path_];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 	   path: (OFString*)path_
 {
-	self = [super initWithClass: class__];
+	self = [super initWithClass: class_];
 
-	path = [path_ copy];
-	err  = GET_ERR;
+	path  = [path_ copy];
+	errNo = GET_ERRNO;
 
 	return self;
 }
@@ -554,14 +554,14 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"Failed to create directory %s in class %s! " ERRFMT,
-	    [path cString], [class_ className], ERRPARAM];
+	    [path cString], [inClass className], ERRPARAM];
 
 	return string;
 }
 
 - (int)errNo
 {
-	return err;
+	return errNo;
 }
 
 - (OFString*)path
@@ -571,31 +571,31 @@
 @end
 
 @implementation OFChangeFileModeFailedException
-+ newWithClass: (Class)class__
-	  path: (OFString*)path_
-	  mode: (mode_t)mode_
++ newWithClass: (Class)class_
+	  path: (OFString*)path
+	  mode: (mode_t)mode
 {
 	return [(OFChangeFileModeFailedException*)[self alloc]
-	    initWithClass: class__
-		     path: path_
-		     mode: mode_];
+	    initWithClass: class_
+		     path: path
+		     mode: mode];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 	   path: (OFString*)path_
 	   mode: (mode_t)mode_
 {
-	self = [super initWithClass: class__];
+	self = [super initWithClass: class_];
 
-	path = [path_ copy];
-	mode = mode_;
-	err  = GET_ERR;
+	path  = [path_ copy];
+	mode  = mode_;
+	errNo = GET_ERRNO;
 
 	return self;
 }
@@ -614,14 +614,14 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"Failed to change mode for file %s to %d in class %s! " ERRFMT,
-	    [path cString], mode, [class_ className], ERRPARAM];
+	    [path cString], mode, [inClass className], ERRPARAM];
 
 	return string;
 }
 
 - (int)errNo
 {
-	return err;
+	return errNo;
 }
 
 - (OFString*)path
@@ -637,34 +637,34 @@
 
 #ifndef _WIN32
 @implementation OFChangeFileOwnerFailedException
-+ newWithClass: (Class)class__
-	  path: (OFString*)path_
-	 owner: (uid_t)owner_
-	 group: (gid_t)group_
++ newWithClass: (Class)class_
+	  path: (OFString*)path
+	 owner: (uid_t)owner
+	 group: (gid_t)group
 {
-	return [[self alloc] initWithClass: class__
-				      path: path_
-				     owner: owner_
-				     group: group_];
+	return [[self alloc] initWithClass: class_
+				      path: path
+				     owner: owner
+				     group: group];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 	   path: (OFString*)path_
 	  owner: (uid_t)owner_
 	  group: (gid_t)group_
 {
-	self = [super initWithClass: class__];
+	self = [super initWithClass: class_];
 
 	path  = [path_ copy];
 	owner = owner_;
 	group = group_;
-	err   = GET_ERR;
+	errNo = GET_ERRNO;
 
 	return self;
 }
@@ -683,14 +683,14 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"Failed to change owner for file %s to %d:%d in class %s! " ERRFMT,
-	    [path cString], owner, group, [class_ className], ERRPARAM];
+	    [path cString], owner, group, [inClass className], ERRPARAM];
 
 	return string;
 }
 
 - (int)errNo
 {
-	return err;
+	return errNo;
 }
 
 - (OFString*)path
@@ -711,38 +711,38 @@
 #endif
 
 @implementation OFRenameFileFailedException
-+    newWithClass: (Class)class__
-       sourcePath: (OFString*)src_
-  destinationPath: (OFString*)dst_
++    newWithClass: (Class)class_
+       sourcePath: (OFString*)src
+  destinationPath: (OFString*)dst
 {
-	return [[self alloc] initWithClass: class__
-				sourcePath: src_
-			   destinationPath: dst_];
+	return [[self alloc] initWithClass: class_
+				sourcePath: src
+			   destinationPath: dst];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
--   initWithClass: (Class)class__
-       sourcePath: (OFString*)src_
-  destinationPath: (OFString*)dst_
+-   initWithClass: (Class)class_
+       sourcePath: (OFString*)src
+  destinationPath: (OFString*)dst
 {
-	self = [super initWithClass: class__];
+	self = [super initWithClass: class_];
 
-	src = [src_ copy];
-	dst = [dst_ copy];
-	err = GET_ERR;
+	sourcePath = [src copy];
+	destinationPath = [dst copy];
+	errNo = GET_ERRNO;
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[src release];
-	[dst release];
+	[sourcePath release];
+	[destinationPath release];
 
 	[super dealloc];
 }
@@ -754,48 +754,49 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"Failed to rename file %s to %s in class %s! " ERRFMT,
-	    [src cString], [dst cString], [class_ className], ERRPARAM];
+	    [sourcePath cString], [destinationPath cString],
+	    [inClass className], ERRPARAM];
 
 	return string;
 }
 
 - (int)errNo
 {
-	return err;
+	return errNo;
 }
 
 - (OFString*)sourcePath
 {
-	return src;
+	return sourcePath;
 }
 
 - (OFString*)destinationPath;
 {
-	return dst;
+	return destinationPath;
 }
 @end
 
 @implementation OFDeleteFileFailedException
-+ newWithClass: (Class)class__
++ newWithClass: (Class)class_
 	  path: (OFString*)path_
 {
-	return [[self alloc] initWithClass: class__
+	return [[self alloc] initWithClass: class_
 				      path: path_];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 	   path: (OFString*)path_
 {
-	self = [super initWithClass: class__];
+	self = [super initWithClass: class_];
 
-	path = [path_ copy];
-	err  = GET_ERR;
+	path  = [path_ copy];
+	errNo = GET_ERRNO;
 
 	return self;
 }
@@ -814,14 +815,14 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"Failed to delete file %s in class %s! " ERRFMT, [path cString],
-	    [class_ className], ERRPARAM];
+	    [inClass className], ERRPARAM];
 
 	return string;
 }
 
 - (int)errNo
 {
-	return err;
+	return errNo;
 }
 
 - (OFString*)path
@@ -832,38 +833,38 @@
 
 #ifndef _WIN32
 @implementation OFLinkFailedException
-+    newWithClass: (Class)class__
-       sourcePath: (OFString*)src_
-  destinationPath: (OFString*)dest_
++    newWithClass: (Class)class_
+       sourcePath: (OFString*)src
+  destinationPath: (OFString*)dest
 {
-	return [[self alloc] initWithClass: class__
-				sourcePath: src_
-			   destinationPath: dest_];
+	return [[self alloc] initWithClass: class_
+				sourcePath: src
+			   destinationPath: dest];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
--   initWithClass: (Class)class__
-       sourcePath: (OFString*)src_
-  destinationPath: (OFString*)dest_
+-   initWithClass: (Class)class_
+       sourcePath: (OFString*)src
+  destinationPath: (OFString*)dest
 {
-	self = [super initWithClass: class__];
+	self = [super initWithClass: class_];
 
-	src  = [src_ copy];
-	dest = [dest_ copy];
-	err  = GET_ERR;
+	sourcePath = [src copy];
+	destinationPath = [dest copy];
+	errNo = GET_ERRNO;
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[src release];
-	[dest release];
+	[sourcePath release];
+	[destinationPath release];
 
 	[super dealloc];
 }
@@ -875,60 +876,61 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"Failed to link file %s to %s in class %s! " ERRFMT,
-	    [src cString], [dest cString], [class_ className], ERRPARAM];
+	    [sourcePath cString], [destinationPath cString],
+	    [inClass className], ERRPARAM];
 
 	return string;
 }
 
 - (int)errNo
 {
-	return err;
+	return errNo;
 }
 
 - (OFString*)sourcePath
 {
-	return src;
+	return sourcePath;
 }
 
 - (OFString*)destinationPath
 {
-	return dest;
+	return destinationPath;
 }
 @end
 
 @implementation OFSymlinkFailedException
-+    newWithClass: (Class)class__
-       sourcePath: (OFString*)src_
-  destinationPath: (OFString*)dest_
++    newWithClass: (Class)class_
+       sourcePath: (OFString*)src
+  destinationPath: (OFString*)dest
 {
-	return [[self alloc] initWithClass: class__
-				sourcePath: src_
-			   destinationPath: dest_];
+	return [[self alloc] initWithClass: class_
+				sourcePath: src
+			   destinationPath: dest];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
--   initWithClass: (Class)class__
-       sourcePath: (OFString*)src_
-  destinationPath: (OFString*)dest_
+-   initWithClass: (Class)class_
+       sourcePath: (OFString*)src
+  destinationPath: (OFString*)dest
 {
-	self = [super initWithClass: class__];
+	self = [super initWithClass: class_];
 
-	src  = [src_ copy];
-	dest = [dest_ copy];
-	err  = GET_ERR;
+	sourcePath = [src copy];
+	destinationPath = [dest copy];
+	errNo = GET_ERRNO;
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[src release];
-	[dest release];
+	[sourcePath release];
+	[destinationPath release];
 
 	[super dealloc];
 }
@@ -940,24 +942,25 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"Failed to symlink file %s to %s in class %s! " ERRFMT,
-	    [src cString], [dest cString], [class_ className], ERRPARAM];
+	    [sourcePath cString], [destinationPath cString],
+	    [inClass className], ERRPARAM];
 
 	return string;
 }
 
 - (int)errNo
 {
-	return err;
+	return errNo;
 }
 
 - (OFString*)sourcePath
 {
-	return src;
+	return sourcePath;
 }
 
 - (OFString*)destinationPath
 {
-	return dest;
+	return destinationPath;
 }
 @end
 #endif
@@ -969,7 +972,7 @@
 		return string;
 
 	string = [[OFString alloc] initWithFormat:
-	    @"Setting an option in class %s failed!", [class_ className]];
+	    @"Setting an option in class %s failed!", [inClass className]];
 
 	return string;
 }
@@ -983,7 +986,7 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"The socket of type %s is not connected or bound!",
-	    [class_ className]];
+	    [inClass className]];
 
 	return string;
 }
@@ -997,40 +1000,40 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"The socket of type %s is already connected or bound and thus "
-	    @"can't be connected or bound again!", [class_ className]];
+	    @"can't be connected or bound again!", [inClass className]];
 
 	return string;
 }
 @end
 
 @implementation OFAddressTranslationFailedException
-+ newWithClass: (Class)class__
-	  node: (OFString*)node_
-       service: (OFString*)service_
++ newWithClass: (Class)class_
+	  node: (OFString*)node
+       service: (OFString*)service
 {
-	return [[self alloc] initWithClass: class__
-				      node: node_
-				   service: service_];
+	return [[self alloc] initWithClass: class_
+				      node: node
+				   service: service];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 {
-	self = [super initWithClass: class__];
+	self = [super initWithClass: class_];
 
-	err = GET_AT_ERR;
+	errNo = GET_AT_ERRNO;
 
 	return self;
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 	   node: (OFString*)node_
 	service: (OFString*)service_
 {
-	self = [super initWithClass: class__];
+	self = [super initWithClass: class_];
 
 	node	= [node_ copy];
 	service = [service_ copy];
-	err	= GET_AT_ERR;
+	errNo	= GET_AT_ERRNO;
 
 	return self;
 }
@@ -1056,18 +1059,18 @@
 		    @"was a problem with the name server, there was a problem "
 		    @"with your network connection or you specified an invalid "
 		    @"node or service. " ERRFMT, [service cString],
-		    [node cString], [class_ className], AT_ERRPARAM];
+		    [node cString], [inClass className], AT_ERRPARAM];
 	else
 		string = [[OFString alloc] initWithFormat:
 		    @"An address translation failed in class %s! " ERRFMT,
-		    [class_ className], AT_ERRPARAM];
+		    [inClass className], AT_ERRPARAM];
 
 	return string;
 }
 
 - (int)errNo
 {
-	return err;
+	return errNo;
 }
 
 - (OFString*)node
@@ -1082,30 +1085,30 @@
 @end
 
 @implementation OFConnectionFailedException
-+ newWithClass: (Class)class__
-	  node: (OFString*)node_
-       service: (OFString*)service_
++ newWithClass: (Class)class_
+	  node: (OFString*)node
+       service: (OFString*)service
 {
-	return [[self alloc] initWithClass: class__
-				      node: node_
-				   service: service_];
+	return [[self alloc] initWithClass: class_
+				      node: node
+				   service: service];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 	   node: (OFString*)node_
 	service: (OFString*)service_
 {
-	self = [super initWithClass: class__];
+	self = [super initWithClass: class_];
 
 	node	= [node_ copy];
 	service	= [service_ copy];
-	err	= GET_SOCK_ERR;
+	errNo	= GET_SOCK_ERRNO;
 
 	return self;
 }
@@ -1126,14 +1129,14 @@
 	string = [[OFString alloc] initWithFormat:
 	    @"A connection to service %s on node %s could not be established "
 	    @"in class %s! " ERRFMT, [node cString], [service cString],
-	    [class_ className], ERRPARAM];
+	    [inClass className], ERRPARAM];
 
 	return string;
 }
 
 - (int)errNo
 {
-	return err;
+	return errNo;
 }
 
 - (OFString*)node
@@ -1148,34 +1151,34 @@
 @end
 
 @implementation OFBindFailedException
-+ newWithClass: (Class)class__
-	  node: (OFString*)node_
-       service: (OFString*)service_
-	family: (int)family_
++ newWithClass: (Class)class_
+	  node: (OFString*)node
+       service: (OFString*)service
+	family: (int)family
 {
-	return [[self alloc] initWithClass: class__
-				      node: node_
-				   service: service_
-				    family: family_];
+	return [[self alloc] initWithClass: class_
+				      node: node
+				   service: service
+				    family: family];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 	   node: (OFString*)node_
 	service: (OFString*)service_
 	 family: (int)family_
 {
-	self = [super initWithClass: class__];
+	self = [super initWithClass: class_];
 
 	node	= [node_ copy];
 	service	= [service_ copy];
 	family	= family_;
-	err	= GET_SOCK_ERR;
+	errNo	= GET_SOCK_ERRNO;
 
 	return self;
 }
@@ -1196,14 +1199,14 @@
 	string = [[OFString alloc] initWithFormat:
 	    @"Binding service %s on node %s using family %d failed in class "
 	    @"%s! " ERRFMT, [service cString], [node cString], family,
-	    [class_ className], ERRPARAM];
+	    [inClass className], ERRPARAM];
 
 	return string;
 }
 
 - (int)errNo
 {
-	return err;
+	return errNo;
 }
 
 - (OFString*)node
@@ -1223,26 +1226,26 @@
 @end
 
 @implementation OFListenFailedException
-+ newWithClass: (Class)class__
-       backLog: (int)backlog_
++ newWithClass: (Class)class_
+       backLog: (int)backlog
 {
-	return [[self alloc] initWithClass: class__
-				   backLog: backlog_];
+	return [[self alloc] initWithClass: class_
+				   backLog: backlog];
 }
 
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
-- initWithClass: (Class)class__
-	backLog: (int)backlog_
+- initWithClass: (Class)class_
+	backLog: (int)backlog
 {
-	self = [super initWithClass: class__];
+	self = [super initWithClass: class_];
 
-	backlog = backlog_;
-	err = GET_SOCK_ERR;
+	backLog = backlog;
+	errNo = GET_SOCK_ERRNO;
 
 	return self;
 }
@@ -1254,28 +1257,28 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"Failed to listen in socket of type %s with a back log of %d! "
-	    ERRFMT, [class_ className], backlog, ERRPARAM];
+	    ERRFMT, [inClass className], backLog, ERRPARAM];
 
 	return string;
 }
 
 - (int)errNo
 {
-	return err;
+	return errNo;
 }
 
 - (int)backLog
 {
-	return backlog;
+	return backLog;
 }
 @end
 
 @implementation OFAcceptFailedException
-- initWithClass: (Class)class__
+- initWithClass: (Class)class_
 {
-	self = [super initWithClass: class__];
+	self = [super initWithClass: class_];
 
-	err = GET_SOCK_ERR;
+	errNo = GET_SOCK_ERRNO;
 
 	return self;
 }
@@ -1287,14 +1290,14 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"Failed to accept connection in socket of type %s! " ERRFMT,
-	    [class_ className], ERRPARAM];
+	    [inClass className], ERRPARAM];
 
 	return string;
 }
 
 - (int)errNo
 {
-	return err;
+	return errNo;
 }
 @end
 
@@ -1305,7 +1308,7 @@
 		return string;
 
 	string = [[OFString alloc] initWithFormat:
-	    @"Starting a thread of class %s failed!", [class_ className]];
+	    @"Starting a thread of class %s failed!", [inClass className]];
 
 	return string;
 }
@@ -1319,7 +1322,7 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"Joining a thread of class %s failed! Most likely, another thread "
-	    @"already waits for the thread to join.", [class_ className]];
+	    @"already waits for the thread to join.", [inClass className]];
 
 	return string;
 }
@@ -1333,7 +1336,7 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"Deallocation of a thread of type %s was tried, even though it "
-	    @"was still running", [class_ className]];
+	    @"was still running", [inClass className]];
 
 	return string;
 }
@@ -1346,7 +1349,7 @@
 		return string;
 
 	string = [[OFString alloc] initWithFormat:
-	    @"A mutex could not be locked in class %s", [class_ className]];
+	    @"A mutex could not be locked in class %s", [inClass className]];
 
 	return string;
 }
@@ -1359,7 +1362,7 @@
 		return string;
 
 	string = [[OFString alloc] initWithFormat:
-	    @"A mutex could not be unlocked in class %s", [class_ className]];
+	    @"A mutex could not be unlocked in class %s", [inClass className]];
 
 	return string;
 }
@@ -1373,7 +1376,7 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"The hash has already been calculated in class %s and thus no new "
-	    @"data can be added", [class_ className]];
+	    @"data can be added", [inClass className]];
 
 	return string;
 }
