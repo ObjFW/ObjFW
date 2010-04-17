@@ -20,22 +20,21 @@
 #define BUCKET_SIZE sizeof(struct of_dictionary_bucket)
 #define DELETED (id)&of_dictionary_deleted_bucket
 
-static OF_INLINE void
-resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
-    size_t *size)
+@implementation OFMutableDictionary
+- (void)_resizeForCount: (size_t)newcount
 {
-	size_t fill = count * 4 / *size;
+	size_t fill = newcount * 4 / size;
 	size_t newsize;
 	struct of_dictionary_bucket *newdata;
 	uint32_t i;
 
-	if (count > SIZE_MAX / 4)
+	if (newcount > SIZE_MAX / 4)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	if (fill >= 3)
-		newsize = *size << 1;
+		newsize = size << 1;
 	else if (fill <= 1)
-		newsize = *size >> 1;
+		newsize = size >> 1;
 	else
 		return;
 
@@ -46,39 +45,40 @@ resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
 				    withSize: BUCKET_SIZE];
 	memset(newdata, 0, newsize * BUCKET_SIZE);
 
-	for (i = 0; i < *size; i++) {
-		if ((*data)[i].key != nil && (*data)[i].key != DELETED) {
+	for (i = 0; i < size; i++) {
+		if (data[i].key != nil && data[i].key != DELETED) {
 			uint32_t j, last;
 
 			last = newsize;
 
-			j = (*data)[i].hash & (newsize - 1);
+			j = data[i].hash & (newsize - 1);
 			for (; j < last && newdata[j].key != nil; j++);
 
 			/* In case the last bucket is already used */
 			if (j >= last) {
-				last = (*data)[i].hash & (newsize - 1);
+				last = data[i].hash & (newsize - 1);
 
 				for (j = 0; j < last &&
 				    newdata[j].key != nil; i++);
 			}
 
-			if (j >= last)
+			if (j >= last) {
+				[self freeMemory: newdata];
 				@throw [OFOutOfRangeException
 				    newWithClass: [self class]];
+			}
 
-			newdata[j].key = (*data)[i].key;
-			newdata[j].object = (*data)[i].object;
-			newdata[j].hash = (*data)[i].hash;
+			newdata[j].key = data[i].key;
+			newdata[j].object = data[i].object;
+			newdata[j].hash = data[i].hash;
 		}
 	}
 
-	[self freeMemory: *data];
-	*data = newdata;
-	*size = newsize;
+	[self freeMemory: data];
+	data = newdata;
+	size = newsize;
 }
 
-@implementation OFMutableDictionary
 - setObject: (OFObject*)obj
      forKey: (OFObject <OFCopying>*)key
 {
@@ -106,7 +106,7 @@ resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
 	/* Key not in dictionary */
 	if (i >= last || data[i].key == nil || data[i].key == DELETED ||
 	    ![data[i].key isEqual: key]) {
-		resize(self, isa, count + 1, &data, &size);
+		[self _resizeForCount: count + 1];
 
 		mutations++;
 		last = size;
@@ -186,7 +186,7 @@ resize(id self, Class isa, size_t count, struct of_dictionary_bucket **data,
 
 	count--;
 	mutations++;
-	resize(self, isa, count, &data, &size);
+	[self _resizeForCount: count];
 
 	return self;
 }
