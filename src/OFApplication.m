@@ -17,6 +17,7 @@
 #import "OFArray.h"
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
+#import "OFExceptions.h"
 
 OFApplication *app = nil;
 
@@ -155,6 +156,8 @@ of_application_main(int argc, char *argv[], Class cls)
 @implementation OFObject (OFApplicationDelegate)
 - (void)applicationDidFinishLaunching
 {
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 
 - (void)applicationWillTerminate
