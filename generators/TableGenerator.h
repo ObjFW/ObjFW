@@ -13,19 +13,19 @@
 
 @interface TableGenerator: OFObject
 {
-	of_unichar_t upper[0x110000];
-	of_unichar_t lower[0x110000];
-	of_unichar_t casefolding[0x110000];
-	BOOL upper_table_used[0x1100];
-	BOOL lower_table_used[0x1100];
-	char casefolding_table_used[0x1100];
-	size_t upper_size;
-	size_t lower_size;
-	size_t casefolding_size;
+	of_unichar_t upperTable[0x110000];
+	of_unichar_t lowerTable[0x110000];
+	of_unichar_t casefoldingTable[0x110000];
+	BOOL upperTableUsed[0x1100];
+	BOOL lowerTableUsed[0x1100];
+	char casefoldingTableUsed[0x1100];
+	size_t upperTableSize;
+	size_t lowerTableSize;
+	size_t casefoldingTableSize;
 }
 
-- (void)readUnicodeDataFile: (OFString*)path;
-- (void)readCaseFoldingFile: (OFString*)path;
-- (void)writeTablesToFile: (OFString*)file;
-- (void)writeHeaderToFile: (OFString*)file;
+- (void)readUnicodeDataFileAtPath: (OFString*)path;
+- (void)readCaseFoldingFileAtPath: (OFString*)path;
+- (void)writeTablesToFileAtPath: (OFString*)file;
+- (void)writeHeaderToFileAtPath: (OFString*)file;
 @end
