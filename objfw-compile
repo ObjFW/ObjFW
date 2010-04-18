@@ -15,6 +15,31 @@ if test x"$1" = "x" -o x"$2" = "x"; then
 	exit 1
 fi
 
+status_compiling() {
+	printf "\033[K\033[0;33mCompiling \033[1;33m$1\033[0;33m...\033[0m\r"
+}
+status_compiled() {
+	printf "\033[K\033[0;32mSuccessfully compiled \033[1;32m$1\033[0;32m."
+	printf "\033[0m\n"
+}
+status_compile_failed() {
+	printf "\033[K\033[0;31mFailed to compile \033[1;31m$1\033[0;31m!"
+	printf "\033[0m\n"
+	exit $2
+}
+status_linking() {
+	printf "\033[K\033[0;33mLinking \033[1;33m$1\033[0;33m...\033[0m\r"
+}
+status_linked() {
+	printf "\033[K\033[0;32mSuccessfully linked \033[1;32m$1\033[0;32m."
+	printf "\033[0m\n"
+}
+status_link_failed() {
+	printf "\033[K\033[0;31mFailed to link \033[1;31m$1\033[0;31m!"
+	printf "\033[0m\n"
+	exit $2
+}
+
 out="$1"
 objs=""
 link="no"
@@ -46,9 +71,10 @@ while test x"$1" != "x"; do
 
 			if test x"$build" = x"yes"; then
 				link="yes"
-				echo "Compiling $1..."
+				status_compiling $1
 				$OBJC $CPPFLAGS $OBJCFLAGS -c -o $obj $1 || \
-					exit $?
+					status_compile_failed $1 $?
+				status_compiled $1
 			fi
 			;;
 		*)
@@ -61,9 +87,8 @@ while test x"$1" != "x"; do
 done
 
 if test ! -f "$out" -o x"$link" = x"yes"; then
-	echo "Linking $out..."
-	$OBJC -o $out $objs $LIBS $ENV_LIBS $LDFLAGS $ENV_LDFLAGS
-	exit $?
+	status_linking $out
+	$OBJC -o $out $objs $LIBS $ENV_LIBS $LDFLAGS $ENV_LDFLAGS || \
+		status_link_failed $out $?
+	status_linked $out
 fi
-
-echo "Nothing to do for $out..."
