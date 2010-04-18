@@ -77,8 +77,9 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 - (void)applicationDidFinishLaunching
 {
 	[self objectTests];
-	[self hashesTests];
 	[self stringTests];
+	[self fileTests];
+	[self hashesTests];
 	[self dataArrayTests];
 	[self arrayTests];
 	[self dictionaryTests];

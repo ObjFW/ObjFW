@@ -44,6 +44,12 @@
 #define DEFAULT_MODE S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 #define DIR_MODE DEFAULT_MODE | S_IXUSR | S_IXGRP | S_IXOTH
 
+#ifndef _WIN32
+# define PATH_DELIM '/'
+#else
+# define PATH_DELIM '\\'
+#endif
+
 OFFile *of_stdin = nil;
 OFFile *of_stdout = nil;
 OFFile *of_stderr = nil;
@@ -104,6 +110,36 @@ static int parse_mode(const char *mode)
 + fileWithFileDescriptor: (int)fd_
 {
 	return [[[self alloc] initWithFileDescriptor: fd_] autorelease];
+}
+
++ (OFString*)lastComponentOfPath: (OFString*)path
+{
+	const char *path_c = [path cString];
+	size_t path_len = [path cStringLength];
+	ssize_t i;
+
+	if (path_len == 0)
+		return @"";
+
+	if (path_c[path_len - 1] == PATH_DELIM)
+		path_len--;
+
+	for (i = path_len - 1; i >= 0; i--) {
+		if (path_c[i] == PATH_DELIM) {
+			i++;
+			break;
+		}
+	}
+
+	/*
+	 * Only one component, but the trailing delimiter might have been
+	 * removed, so return a new string anyway.
+	 */
+	if (i < 0)
+		i++;
+
+	return [OFString stringWithCString: path_c + i
+				    length: path_len - i];
 }
 
 + (BOOL)fileExistsAtPath: (OFString*)path

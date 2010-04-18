@@ -42,6 +42,12 @@
 + fileWithFileDescriptor: (int)fd;
 
 /**
+ * \param path The path for which the last component should be returned
+ * \return The last component of the path
+ */
++ (OFString*)lastComponentOfPath: (OFString*)path;
+
+/**
  * \param path The path to check
  * \return A boolean whether there is a file at the specified path
  */
