@@ -101,6 +101,15 @@
 #endif
 
 /**
+ * Copies a file.
+ *
+ * \param from The file to copy
+ * \param to The destination path
+ */
++ (void)copyFileAtPath: (OFString*)from
+		toPath: (OFString*)to;
+
+/**
  * Renames a file.
  *
  * \param from The file to rename
@@ -115,6 +124,13 @@
  * \param path The path to the file of which should be deleted as a string
  */
 + (void)deleteFileAtPath: (OFString*)path;
+
+/**
+ * Deletes an empty directory.
+ *
+ * \param path The path to the directory which should be deleted as a string
+ */
++ (void)deleteDirectoryAtPath: (OFString*)path;
 
 #ifndef _WIN32
 /**

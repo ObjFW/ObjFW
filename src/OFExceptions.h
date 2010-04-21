@@ -561,6 +561,60 @@
 #endif
 
 /**
+ * \brief An exception indicating that copying a file failed.
+ */
+@interface OFCopyFileFailedException: OFException
+{
+	OFString *sourcePath;
+	OFString *destinationPath;
+	int errNo;
+}
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFString *sourcePath;
+@property (readonly, nonatomic) OFString *destinationPath;
+@property (readonly) int errNo;
+#endif
+
+/**
+ * \param class_ The class of the object which caused the exception
+ * \param src The original path
+ * \param dst The new path
+ * \return A new copy file failed exception
+ */
++    newWithClass: (Class)class_
+       sourcePath: (OFString*)src
+  destinationPath: (OFString*)dst;
+
+/**
+ * Initializes an already allocated copy file failed exception.
+ *
+ * \param class_ The class of the object which caused the exception
+ * \param src The original path
+ * \param dst The new path
+ * \return An initialized copy file failed exception
+ */
+-   initWithClass: (Class)class_
+       sourcePath: (OFString*)src
+  destinationPath: (OFString*)dst;
+
+/**
+ * \return The errno from when the exception was created
+ */
+- (int)errNo;
+
+/**
+ * \return The path of the source file
+ */
+- (OFString*)sourcePath;
+
+/**
+ * \return The destination path
+ */
+- (OFString*)destinationPath;
+@end
+
+/**
  * \brief An exception indicating that renaming a file failed.
  */
 @interface OFRenameFileFailedException: OFException
@@ -653,6 +707,49 @@
 
 /**
  * \return The path of the file
+ */
+- (OFString*)path;
+@end
+
+/**
+ * \brief An exception indicating that deleting a directory failed.
+ */
+@interface OFDeleteDirectoryFailedException: OFException
+{
+	OFString *path;
+	int errNo;
+}
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFString *path;
+@property (readonly) int errNo;
+#endif
+
+/**
+ * \param class_ The class of the object which caused the exception
+ * \param path The path of the directory
+ * \return A new delete directory failed exception
+ */
++ newWithClass: (Class)class_
+	  path: (OFString*)path;
+
+/**
+ * Initializes an already allocated delete directory failed exception.
+ *
+ * \param class_ The class of the object which caused the exception
+ * \param path The path of the directory
+ * \return An initialized delete directory failed exception
+ */
+- initWithClass: (Class)class_
+	   path: (OFString*)path;
+
+/**
+ * \return The errno from when the exception was created
+ */
+- (int)errNo;
+
+/**
+ * \return The path of the directory
  */
 - (OFString*)path;
 @end

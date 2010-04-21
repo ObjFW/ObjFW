@@ -41,7 +41,7 @@
 # define S_IROTH 0
 #endif
 
-#define DEFAULT_MODE S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
+#define DEFAULT_MODE S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH
 #define DIR_MODE DEFAULT_MODE | S_IXUSR | S_IXGRP | S_IXOTH
 
 #ifndef _WIN32
@@ -136,7 +136,7 @@ static int parse_mode(const char *mode)
 	 * removed, so return a new string anyway.
 	 */
 	if (i < 0)
-		i++;
+		i = 0;
 
 	return [OFString stringWithCString: path_c + i
 				    length: path_len - i];
@@ -291,6 +291,52 @@ static int parse_mode(const char *mode)
 }
 #endif
 
++ (void)copyFileAtPath: (OFString*)from
+		toPath: (OFString*)to
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	BOOL override;
+	OFFile *src;
+	OFFile *dest;
+	char buf[4096];
+
+	if ([self directoryExistsAtPath: to]) {
+		OFString *filename = [self lastComponentOfPath: from];
+		to = [OFString stringWithPath: to, filename, nil];
+	}
+
+	override = [self fileExistsAtPath: to];
+
+	src = nil;
+	dest = nil;
+
+	@try {
+		src = [OFFile fileWithPath: from
+				      mode: @"rb"];
+		dest = [OFFile fileWithPath: to
+				       mode: @"wb"];
+
+		while (![src atEndOfStream]) {
+			size_t len = [src readNBytes: 4096
+					  intoBuffer: buf];
+			[dest writeNBytes: len
+			       fromBuffer: buf];
+		}
+
+		if (!override) {
+			struct stat s;
+
+			if (fstat(src->fd, &s) == 0)
+				fchmod(dest->fd, s.st_mode);
+		}
+	} @finally {
+		[src close];
+		[dest close];
+	}
+
+	[pool release];
+}
+
 + (void)renameFileAtPath: (OFString*)from
 		  toPath: (OFString*)to
 {
@@ -313,6 +359,13 @@ static int parse_mode(const char *mode)
 #endif
 		@throw [OFDeleteFileFailedException newWithClass: self
 							    path: path];
+}
+
++ (void)deleteDirectoryAtPath: (OFString*)path
+{
+	if (rmdir([path cString]))
+		@throw [OFDeleteDirectoryFailedException newWithClass: self
+								 path: path];
 }
 
 #ifndef _WIN32

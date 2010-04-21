@@ -720,6 +720,72 @@
 @end
 #endif
 
+@implementation OFCopyFileFailedException
++    newWithClass: (Class)class_
+       sourcePath: (OFString*)src
+  destinationPath: (OFString*)dst
+{
+	return [[self alloc] initWithClass: class_
+				sourcePath: src
+			   destinationPath: dst];
+}
+
+- initWithClass: (Class)class_
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+-   initWithClass: (Class)class_
+       sourcePath: (OFString*)src
+  destinationPath: (OFString*)dst
+{
+	self = [super initWithClass: class_];
+
+	sourcePath = [src copy];
+	destinationPath = [dst copy];
+	errNo = GET_ERRNO;
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[sourcePath release];
+	[destinationPath release];
+
+	[super dealloc];
+}
+
+- (OFString*)string
+{
+	if (string != nil)
+		return string;
+
+	string = [[OFString alloc] initWithFormat:
+	    @"Failed to copy file %s to %s in class %s! " ERRFMT,
+	    [sourcePath cString], [destinationPath cString],
+	    [inClass className], ERRPARAM];
+
+	return string;
+}
+
+- (int)errNo
+{
+	return errNo;
+}
+
+- (OFString*)sourcePath
+{
+	return sourcePath;
+}
+
+- (OFString*)destinationPath;
+{
+	return destinationPath;
+}
+@end
+
 @implementation OFRenameFileFailedException
 +    newWithClass: (Class)class_
        sourcePath: (OFString*)src
@@ -826,6 +892,61 @@
 	string = [[OFString alloc] initWithFormat:
 	    @"Failed to delete file %s in class %s! " ERRFMT, [path cString],
 	    [inClass className], ERRPARAM];
+
+	return string;
+}
+
+- (int)errNo
+{
+	return errNo;
+}
+
+- (OFString*)path
+{
+	return path;
+}
+@end
+
+@implementation OFDeleteDirectoryFailedException
++ newWithClass: (Class)class_
+	  path: (OFString*)path_
+{
+	return [[self alloc] initWithClass: class_
+				      path: path_];
+}
+
+- initWithClass: (Class)class_
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class_
+	   path: (OFString*)path_
+{
+	self = [super initWithClass: class_];
+
+	path  = [path_ copy];
+	errNo = GET_ERRNO;
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[path release];
+
+	[super dealloc];
+}
+
+- (OFString*)string
+{
+	if (string != nil)
+		return string;
+
+	string = [[OFString alloc] initWithFormat:
+	    @"Failed to delete directory %s in class %s! " ERRFMT,
+	    [path cString], [inClass className], ERRPARAM];
 
 	return string;
 }
