@@ -47,6 +47,12 @@
 # endif
 #endif
 
+#ifndef _WIN32
+# define OF_PATH_DELIM '/'
+#else
+# define OF_PATH_DELIM '\\'
+#endif
+
 static OF_INLINE uint16_t
 OF_BSWAP16_CONST(uint16_t i)
 {

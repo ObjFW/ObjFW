@@ -25,6 +25,7 @@
 #import "OFArray.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
+#import "macros.h"
 
 #ifdef _WIN32
 # import <windows.h>
@@ -43,12 +44,6 @@
 
 #define DEFAULT_MODE S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH
 #define DIR_MODE DEFAULT_MODE | S_IXUSR | S_IXGRP | S_IXOTH
-
-#ifndef _WIN32
-# define PATH_DELIM '/'
-#else
-# define PATH_DELIM '\\'
-#endif
 
 OFFile *of_stdin = nil;
 OFFile *of_stdout = nil;
@@ -121,11 +116,11 @@ static int parse_mode(const char *mode)
 	if (path_len == 0)
 		return @"";
 
-	if (path_c[path_len - 1] == PATH_DELIM)
+	if (path_c[path_len - 1] == OF_PATH_DELIM)
 		path_len--;
 
 	for (i = path_len - 1; i >= 0; i--) {
-		if (path_c[i] == PATH_DELIM) {
+		if (path_c[i] == OF_PATH_DELIM) {
 			i++;
 			break;
 		}

@@ -34,12 +34,6 @@
 #import "asprintf.h"
 #import "unicode.h"
 
-#ifndef _WIN32
-# define PATH_DELIM '/'
-#else
-# define PATH_DELIM '\\'
-#endif
-
 extern const uint16_t of_iso_8859_15[256];
 extern const uint16_t of_windows_1252[256];
 
@@ -592,7 +586,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 	while ((component = va_arg(args, OFString*)) != nil) {
 		len = [component length];
-		string[i] = PATH_DELIM;
+		string[i] = OF_PATH_DELIM;
 		memcpy(string + i + 1, [component cString], len);
 		i += len + 1;
 	}
