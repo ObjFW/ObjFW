@@ -33,23 +33,23 @@ static OFString *module = @"OFNumber";
 
 	TEST(@"-[hash]", [num hash] == 123456789)
 
-	TEST(@"-[asDouble]", [num asDouble] == 123456789.L)
+	TEST(@"-[asDouble]", [num doubleValue] == 123456789.L)
 
 	TEST(@"-[numberByDecreasing]",
 	    [[num numberByDecreasing]
 	    isEqual: [OFNumber numberWithInt32: 123456788]])
 
 	TEST(@"-[numberByDividingBy:]",
-	    [[num numberByDividingBy: [OFNumber numberWithInt: 2]] asInt] ==
+	    [[num numberByDividingBy: [OFNumber numberWithInt: 2]] intValue] ==
 	    61728394)
 
 	TEST(@"-[numberByXORing:]",
-	    [[num numberByXORing: [OFNumber numberWithInt: 123456831]] asInt] ==
-	    42)
+	    [[num numberByXORing: [OFNumber numberWithInt: 123456831]]
+	    intValue] == 42)
 
 	TEST(@"-[numberByShiftingRightBy:]",
 	    [[num numberByShiftingRightBy: [OFNumber numberWithInt: 8]]
-	    asInt] == 482253)
+	    intValue] == 482253)
 
 	[pool drain];
 }

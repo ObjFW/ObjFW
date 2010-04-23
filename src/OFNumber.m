@@ -74,79 +74,79 @@
 	switch (type) { 						\
 	case OF_NUMBER_CHAR:						\
 		return [OFNumber numberWithChar:			\
-		    value.char_ o [n asChar]];				\
+		    value.char_ o [n charValue]];			\
 	case OF_NUMBER_SHORT:						\
 		return [OFNumber numberWithShort:			\
-		    value.short_ o [n asShort]];			\
+		    value.short_ o [n shortValue]];			\
 	case OF_NUMBER_INT:						\
 		return [OFNumber numberWithInt:				\
-		    value.int_ o [n asInt]];				\
+		    value.int_ o [n intValue]];				\
 	case OF_NUMBER_LONG:						\
 		return [OFNumber numberWithLong:			\
-		    value.long_ o [n asLong]];				\
+		    value.long_ o [n longValue]];			\
 	case OF_NUMBER_UCHAR:						\
-		return [OFNumber numberWithUChar:			\
-		    value.uchar o [n asUChar]];				\
+		return [OFNumber numberWithUnsignedChar:		\
+		    value.uchar o [n unsignedCharValue]];		\
 	case OF_NUMBER_USHORT:						\
-		return [OFNumber numberWithUShort:			\
-		    value.ushort o [n asUShort]];			\
+		return [OFNumber numberWithUnsignedShort:		\
+		    value.ushort o [n unsignedShortValue]];		\
 	case OF_NUMBER_UINT:						\
-		return [OFNumber numberWithUInt:			\
-		    value.uint o [n asUInt]];				\
+		return [OFNumber numberWithUnsignedInt:			\
+		    value.uint o [n unsignedIntValue]];			\
 	case OF_NUMBER_ULONG:						\
-		return [OFNumber numberWithULong:			\
-		    value.ulong o [n asULong]];				\
+		return [OFNumber numberWithUnsignedLong:		\
+		    value.ulong o [n unsignedLongValue]];		\
 	case OF_NUMBER_INT8:						\
 		return [OFNumber numberWithInt8:			\
-		    value.int8 o [n asInt8]];				\
+		    value.int8 o [n int8Value]];			\
 	case OF_NUMBER_INT16:						\
 		return [OFNumber numberWithInt16:			\
-		    value.int16 o [n asInt16]];				\
+		    value.int16 o [n int16Value]];			\
 	case OF_NUMBER_INT32:						\
 		return [OFNumber numberWithInt32:			\
-		    value.int32 o [n asInt32]];				\
+		    value.int32 o [n int32Value]];			\
 	case OF_NUMBER_INT64:						\
 		return [OFNumber numberWithInt64:			\
-		    value.int64 o [n asInt64]];				\
+		    value.int64 o [n int64Value]];			\
 	case OF_NUMBER_UINT8:						\
 		return [OFNumber numberWithUInt8:			\
-		    value.uint8 o [n asUInt8]];				\
+		    value.uint8 o [n uInt8Value]];			\
 	case OF_NUMBER_UINT16:						\
 		return [OFNumber numberWithUInt16:			\
-		    value.uint16 o [n asUInt16]];			\
+		    value.uint16 o [n uInt16Value]];			\
 	case OF_NUMBER_UINT32:						\
 		return [OFNumber numberWithUInt32:			\
-		    value.uint32 o [n asUInt32]];			\
+		    value.uint32 o [n uInt32Value]];			\
 	case OF_NUMBER_UINT64:						\
 		return [OFNumber numberWithUInt64:			\
-		    value.uint64 o [n asUInt64]];			\
+		    value.uint64 o [n uInt64Value]];			\
 	case OF_NUMBER_SIZE:						\
 		return [OFNumber numberWithSize:			\
-		    value.size o [n asSize]];				\
+		    value.size o [n sizeValue]];			\
 	case OF_NUMBER_SSIZE:						\
 		return [OFNumber numberWithSSize:			\
-		    value.ssize o [n asSSize]];				\
+		    value.ssize o [n sSizeValue]];			\
 	case OF_NUMBER_INTMAX:						\
 		return [OFNumber numberWithIntMax:			\
-		    value.intmax o [n asIntMax]];			\
+		    value.intmax o [n intMaxValue]];			\
 	case OF_NUMBER_UINTMAX:						\
 		return [OFNumber numberWithUIntMax:			\
-		    value.uintmax o [n asUIntMax]];			\
+		    value.uintmax o [n uIntMaxValue]];			\
 	case OF_NUMBER_PTRDIFF:						\
 		return [OFNumber numberWithPtrDiff:			\
-		    value.ptrdiff o [n asPtrDiff]];			\
+		    value.ptrdiff o [n ptrDiffValue]];			\
 	case OF_NUMBER_INTPTR:						\
 		return [OFNumber numberWithIntPtr:			\
-		    value.intptr o [n asIntPtr]];			\
+		    value.intptr o [n intPtrValue]];			\
 	case OF_NUMBER_UINTPTR:						\
 		return [OFNumber numberWithUIntPtr:			\
-		    value.uintptr o [n asUIntPtr]];			\
+		    value.uintptr o [n uIntPtrValue]];			\
 	case OF_NUMBER_FLOAT:						\
 		return [OFNumber numberWithFloat:			\
-		    value.float_ o [n asFloat]];			\
+		    value.float_ o [n floatValue]];			\
 	case OF_NUMBER_DOUBLE:						\
 		return [OFNumber numberWithDouble:			\
-		    value.double_ o [n asDouble]];			\
+		    value.double_ o [n doubleValue]];			\
 	default:							\
 		@throw [OFInvalidFormatException newWithClass: isa];	\
 	}
@@ -154,73 +154,73 @@
 	switch (type) { 						\
 	case OF_NUMBER_CHAR:						\
 		return [OFNumber numberWithChar:			\
-		    value.char_ o [n asChar]];				\
+		    value.char_ o [n charValue]];			\
 	case OF_NUMBER_SHORT:						\
 		return [OFNumber numberWithShort:			\
-		    value.short_ o [n asShort]];			\
+		    value.short_ o [n shortValue]];			\
 	case OF_NUMBER_INT:						\
 		return [OFNumber numberWithInt:				\
-		    value.int_ o [n asInt]];				\
+		    value.int_ o [n intValue]];				\
 	case OF_NUMBER_LONG:						\
 		return [OFNumber numberWithLong:			\
-		    value.long_ o [n asLong]];				\
+		    value.long_ o [n longValue]];			\
 	case OF_NUMBER_UCHAR:						\
-		return [OFNumber numberWithUChar:			\
-		    value.uchar o [n asUChar]];				\
+		return [OFNumber numberWithUnsignedChar:		\
+		    value.uchar o [n unsignedCharValue]];		\
 	case OF_NUMBER_USHORT:						\
-		return [OFNumber numberWithUShort:			\
-		    value.ushort o [n asUShort]];			\
+		return [OFNumber numberWithUnsignedShort:		\
+		    value.ushort o [n unsignedShortValue]];		\
 	case OF_NUMBER_UINT:						\
-		return [OFNumber numberWithUInt:			\
-		    value.uint o [n asUInt]];				\
+		return [OFNumber numberWithUnsignedInt:			\
+		    value.uint o [n unsignedIntValue]];			\
 	case OF_NUMBER_ULONG:						\
-		return [OFNumber numberWithULong:			\
-		    value.ulong o [n asULong]];				\
+		return [OFNumber numberWithUnsignedLong:		\
+		    value.ulong o [n unsignedLongValue]];		\
 	case OF_NUMBER_INT8:						\
 		return [OFNumber numberWithInt8:			\
-		    value.int8 o [n asInt8]];				\
+		    value.int8 o [n int8Value]];			\
 	case OF_NUMBER_INT16:						\
 		return [OFNumber numberWithInt16:			\
-		    value.int16 o [n asInt16]];				\
+		    value.int16 o [n int16Value]];			\
 	case OF_NUMBER_INT32:						\
 		return [OFNumber numberWithInt32:			\
-		    value.int32 o [n asInt32]];				\
+		    value.int32 o [n int32Value]];			\
 	case OF_NUMBER_INT64:						\
 		return [OFNumber numberWithInt64:			\
-		    value.int64 o [n asInt64]];				\
+		    value.int64 o [n int64Value]];			\
 	case OF_NUMBER_UINT8:						\
 		return [OFNumber numberWithUInt8:			\
-		    value.uint8 o [n asUInt8]];				\
+		    value.uint8 o [n uInt8Value]];			\
 	case OF_NUMBER_UINT16:						\
 		return [OFNumber numberWithUInt16:			\
-		    value.uint16 o [n asUInt16]];			\
+		    value.uint16 o [n uInt16Value]];			\
 	case OF_NUMBER_UINT32:						\
 		return [OFNumber numberWithUInt32:			\
-		    value.uint32 o [n asUInt32]];			\
+		    value.uint32 o [n uInt32Value]];			\
 	case OF_NUMBER_UINT64:						\
 		return [OFNumber numberWithUInt64:			\
-		    value.uint64 o [n asUInt64]];			\
+		    value.uint64 o [n uInt64Value]];			\
 	case OF_NUMBER_SIZE:						\
 		return [OFNumber numberWithSize:			\
-		    value.size o [n asSize]];				\
+		    value.size o [n sizeValue]];			\
 	case OF_NUMBER_SSIZE:						\
 		return [OFNumber numberWithSSize:			\
-		    value.ssize o [n asSSize]];				\
+		    value.ssize o [n sSizeValue]];			\
 	case OF_NUMBER_INTMAX:						\
 		return [OFNumber numberWithIntMax:			\
-		    value.intmax o [n asIntMax]];			\
+		    value.intmax o [n intMaxValue]];			\
 	case OF_NUMBER_UINTMAX:						\
 		return [OFNumber numberWithUIntMax:			\
-		    value.uintmax o [n asUIntMax]];			\
+		    value.uintmax o [n uIntMaxValue]];			\
 	case OF_NUMBER_PTRDIFF:						\
 		return [OFNumber numberWithPtrDiff:			\
-		    value.ptrdiff o [n asPtrDiff]];			\
+		    value.ptrdiff o [n ptrDiffValue]];			\
 	case OF_NUMBER_INTPTR:						\
 		return [OFNumber numberWithIntPtr:			\
-		    value.intptr o [n asIntPtr]];			\
+		    value.intptr o [n intPtrValue]];			\
 	case OF_NUMBER_UINTPTR:						\
 		return [OFNumber numberWithUIntPtr:			\
-		    value.uintptr o [n asUIntPtr]];			\
+		    value.uintptr o [n uIntPtrValue]];			\
 	case OF_NUMBER_FLOAT:						\
 	case OF_NUMBER_DOUBLE:						\
 		@throw [OFNotImplementedException newWithClass: isa	\
@@ -239,13 +239,16 @@
 	case OF_NUMBER_LONG:						\
 		return [OFNumber numberWithLong: value.long_ o];	\
 	case OF_NUMBER_UCHAR:						\
-		return [OFNumber numberWithUChar: value.uchar o];	\
+		return [OFNumber numberWithUnsignedChar:		\
+		    value.uchar o];					\
 	case OF_NUMBER_USHORT:						\
-		return [OFNumber numberWithUShort: value.ushort o];	\
+		return [OFNumber numberWithUnsignedShort:		\
+		    value.ushort o];					\
 	case OF_NUMBER_UINT:						\
-		return [OFNumber numberWithUInt: value.uint o];		\
+		return [OFNumber numberWithUnsignedInt: value.uint o];	\
 	case OF_NUMBER_ULONG:						\
-		return [OFNumber numberWithULong: value.ulong o];	\
+		return [OFNumber numberWithUnsignedLong:		\
+		    value.ulong o];	\
 	case OF_NUMBER_INT8:						\
 		return [OFNumber numberWithInt8: value.int8 o];		\
 	case OF_NUMBER_INT16:						\
@@ -305,24 +308,24 @@
 	return [[[self alloc] initWithLong: long_] autorelease];
 }
 
-+ numberWithUChar: (unsigned char)uchar
++ numberWithUnsignedChar: (unsigned char)uchar
 {
-	return [[[self alloc] initWithUChar: uchar] autorelease];
+	return [[[self alloc] initWithUnsignedChar: uchar] autorelease];
 }
 
-+ numberWithUShort: (unsigned short)ushort
++ numberWithUnsignedShort: (unsigned short)ushort
 {
-	return [[[self alloc] initWithUShort: ushort] autorelease];
+	return [[[self alloc] initWithUnsignedShort: ushort] autorelease];
 }
 
-+ numberWithUInt: (unsigned int)uint
++ numberWithUnsignedInt: (unsigned int)uint
 {
-	return [[[self alloc] initWithUInt: uint] autorelease];
+	return [[[self alloc] initWithUnsignedInt: uint] autorelease];
 }
 
-+ numberWithULong: (unsigned long)ulong
++ numberWithUnsignedLong: (unsigned long)ulong
 {
-	return [[[self alloc] initWithULong: ulong] autorelease];
+	return [[[self alloc] initWithUnsignedLong: ulong] autorelease];
 }
 
 + numberWithInt8: (int8_t)int8
@@ -456,7 +459,7 @@
 	return self;
 }
 
-- initWithUChar: (unsigned char)uchar
+- initWithUnsignedChar: (unsigned char)uchar
 {
 	self = [super init];
 
@@ -466,7 +469,7 @@
 	return self;
 }
 
-- initWithUShort: (unsigned short)ushort
+- initWithUnsignedShort: (unsigned short)ushort
 {
 	self = [super init];
 
@@ -476,7 +479,7 @@
 	return self;
 }
 
-- initWithUInt: (unsigned int)uint
+- initWithUnsignedInt: (unsigned int)uint
 {
 	self = [super init];
 
@@ -486,7 +489,7 @@
 	return self;
 }
 
-- initWithULong: (unsigned long)ulong
+- initWithUnsignedLong: (unsigned long)ulong
 {
 	self = [super init];
 
@@ -671,127 +674,127 @@
 	return type;
 }
 
-- (char)asChar
+- (char)charValue
 {
 	RETURN_AS(char)
 }
 
-- (short)asShort
+- (short)shortValue
 {
 	RETURN_AS(short)
 }
 
-- (int)asInt
+- (int)intValue
 {
 	RETURN_AS(int)
 }
 
-- (long)asLong
+- (long)longValue
 {
 	RETURN_AS(long)
 }
 
-- (unsigned char)asUChar
+- (unsigned char)unsignedCharValue
 {
 	RETURN_AS(unsigned char)
 }
 
-- (unsigned short)asUShort
+- (unsigned short)unsignedShortValue
 {
 	RETURN_AS(unsigned short)
 }
 
-- (unsigned int)asUInt
+- (unsigned int)unsignedIntValue
 {
 	RETURN_AS(unsigned int)
 }
 
-- (unsigned long)asULong
+- (unsigned long)unsignedLongValue
 {
 	RETURN_AS(unsigned long)
 }
 
-- (int8_t)asInt8
+- (int8_t)int8Value
 {
 	RETURN_AS(int8_t)
 }
 
-- (int16_t)asInt16
+- (int16_t)int16Value
 {
 	RETURN_AS(int16_t)
 }
 
-- (int32_t)asInt32
+- (int32_t)int32Value
 {
 	RETURN_AS(int32_t)
 }
 
-- (int64_t)asInt64
+- (int64_t)int64Value
 {
 	RETURN_AS(int64_t)
 }
 
-- (uint8_t)asUInt8
+- (uint8_t)uInt8Value
 {
 	RETURN_AS(uint8_t)
 }
 
-- (uint16_t)asUInt16
+- (uint16_t)uInt16Value
 {
 	RETURN_AS(uint16_t)
 }
 
-- (uint32_t)asUInt32
+- (uint32_t)uInt32Value
 {
 	RETURN_AS(uint32_t)
 }
 
-- (uint64_t)asUInt64
+- (uint64_t)uInt64Value
 {
 	RETURN_AS(uint64_t)
 }
 
-- (size_t)asSize
+- (size_t)sizeValue
 {
 	RETURN_AS(size_t)
 }
 
-- (ssize_t)asSSize
+- (ssize_t)sSizeValue
 {
 	RETURN_AS(ssize_t)
 }
 
-- (intmax_t)asIntMax
+- (intmax_t)intMaxValue
 {
 	RETURN_AS(intmax_t)
 }
 
-- (uintmax_t)asUIntMax
+- (uintmax_t)uIntMaxValue
 {
 	RETURN_AS(uintmax_t)
 }
 
-- (ptrdiff_t)asPtrDiff
+- (ptrdiff_t)ptrDiffValue
 {
 	RETURN_AS(ptrdiff_t)
 }
 
-- (intptr_t)asIntPtr
+- (intptr_t)intPtrValue
 {
 	RETURN_AS(intptr_t)
 }
 
-- (uintptr_t)asUIntPtr
+- (uintptr_t)uIntPtrValue
 {
 	RETURN_AS(uintptr_t)
 }
 
-- (float)asFloat
+- (float)floatValue
 {
 	RETURN_AS(float)
 }
 
-- (double)asDouble
+- (double)doubleValue
 {
 	RETURN_AS(double)
 }
@@ -812,7 +815,7 @@
 	case OF_NUMBER_INT64:
 	case OF_NUMBER_INTMAX:
 	case OF_NUMBER_PTRDIFF:
-		return ([(OFNumber*)obj asIntMax] == [self asIntMax]
+		return ([(OFNumber*)obj intMaxValue] == [self intMaxValue]
 		    ? YES : NO);
 	case OF_NUMBER_SSIZE:
 	case OF_NUMBER_UCHAR:
@@ -827,11 +830,11 @@
 	case OF_NUMBER_UINTMAX:
 	case OF_NUMBER_INTPTR:
 	case OF_NUMBER_UINTPTR:
-		return ([(OFNumber*)obj asUIntMax] == [self asUIntMax]
+		return ([(OFNumber*)obj uIntMaxValue] == [self uIntMaxValue]
 		    ? YES : NO);
 	case OF_NUMBER_FLOAT:
 	case OF_NUMBER_DOUBLE:
-		return ([(OFNumber*)obj asDouble] == [self asDouble]
+		return ([(OFNumber*)obj doubleValue] == [self doubleValue]
 		    ? YES : NO);
 	default:
 		@throw [OFInvalidArgumentException newWithClass: isa
@@ -860,7 +863,7 @@
 
 		return hash;
 	default:
-		return [self asUInt32];
+		return [self uInt32Value];
 	}
 }
 

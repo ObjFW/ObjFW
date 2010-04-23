@@ -104,25 +104,25 @@ enum of_number_type {
  * \param uchar An unsigned char which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithUChar: (unsigned char)uchar;
++ numberWithUnsignedChar: (unsigned char)uchar;
 
 /**
  * \param ushort An unsigned short which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithUShort: (unsigned short)ushort;
++ numberWithUnsignedShort: (unsigned short)ushort;
 
 /**
  * \param uint An unsigned int which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithUInt: (unsigned int)uint;
++ numberWithUnsignedInt: (unsigned int)uint;
 
 /**
  * \param ulong An unsigned long which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithULong: (unsigned long)ulong;
++ numberWithUnsignedLong: (unsigned long)ulong;
 
 /**
  * \param int8 An int8_t which the OFNumber should contain
@@ -264,7 +264,7 @@ enum of_number_type {
  * \param uchar An unsigned char which the OFNumber should contain
  * \return An initialized OFNumber
  */
-- initWithUChar: (unsigned char)uchar;
+- initWithUnsignedChar: (unsigned char)uchar;
 
 /**
  * Initializes an already allocated OFNumber with the specified unsigned short.
@@ -272,7 +272,7 @@ enum of_number_type {
  * \param ushort An unsigned short which the OFNumber should contain
  * \return An initialized OFNumber
  */
-- initWithUShort: (unsigned short)ushort;
+- initWithUnsignedShort: (unsigned short)ushort;
 
 /**
  * Initializes an already allocated OFNumber with the specified unsigned int .
@@ -280,7 +280,7 @@ enum of_number_type {
  * \param uint An unsigned int which the OFNumber should contain
  * \return An initialized OFNumber
  */
-- initWithUInt: (unsigned int)uint;
+- initWithUnsignedInt: (unsigned int)uint;
 
 /**
  * Initializes an already allocated OFNumber with the specified unsigned long.
@@ -288,7 +288,7 @@ enum of_number_type {
  * \param ulong An unsigned long which the OFNumber should contain
  * \return An initialized OFNumber
  */
-- initWithULong: (unsigned long)ulong;
+- initWithUnsignedLong: (unsigned long)ulong;
 
 /**
  * Initializes an already allocated OFNumber with the specified int8_t.
@@ -435,127 +435,127 @@ enum of_number_type {
 /**
  * \return The OFNumber as a char
  */
-- (char)asChar;
+- (char)charValue;
 
 /**
  * \return The OFNumber as a short
  */
-- (short)asShort;
+- (short)shortValue;
 
 /**
  * \return The OFNumber as an int
  */
-- (int)asInt;
+- (int)intValue;
 
 /**
  * \return The OFNumber as a long
  */
-- (long)asLong;
+- (long)longValue;
 
 /**
  * \return The OFNumber as an unsigned char
  */
-- (unsigned char)asUChar;
+- (unsigned char)unsignedCharValue;
 
 /**
  * \return The OFNumber as an unsigned short
  */
-- (unsigned short)asUShort;
+- (unsigned short)unsignedShortValue;
 
 /**
  * \return The OFNumber as an unsigned int
  */
-- (unsigned int)asUInt;
+- (unsigned int)unsignedIntValue;
 
 /**
  * \return The OFNumber as an unsigned long
  */
-- (unsigned long)asULong;
+- (unsigned long)unsignedLongValue;
 
 /**
  * \return The OFNumber as an int8_t
  */
-- (int8_t)asInt8;
+- (int8_t)int8Value;
 
 /**
  * \return The OFNumber as an int16_t
  */
-- (int16_t)asInt16;
+- (int16_t)int16Value;
 
 /**
  * \return The OFNumber as an int32_t
  */
-- (int32_t)asInt32;
+- (int32_t)int32Value;
 
 /**
  * \return The OFNumber as an int64_t
  */
-- (int64_t)asInt64;
+- (int64_t)int64Value;
 
 /**
  * \return The OFNumber as an uint8_t
  */
-- (uint8_t)asUInt8;
+- (uint8_t)uInt8Value;
 
 /**
  * \return The OFNumber as an uint16_t
  */
-- (uint16_t)asUInt16;
+- (uint16_t)uInt16Value;
 
 /**
  * \return The OFNumber as an uint32_t
  */
-- (uint32_t)asUInt32;
+- (uint32_t)uInt32Value;
 
 /**
  * \return The OFNumber as an uint64_t
  */
-- (uint64_t)asUInt64;
+- (uint64_t)uInt64Value;
 
 /**
  * \return The OFNumber as a size_t
  */
-- (size_t)asSize;
+- (size_t)sizeValue;
 
 /**
  * \return The OFNumber as an ssize_t
  */
-- (ssize_t)asSSize;
+- (ssize_t)sSizeValue;
 
 /**
  * \return The OFNumber as an intmax_t
  */
-- (intmax_t)asIntMax;
+- (intmax_t)intMaxValue;
 
 /**
  * \return The OFNumber as an uintmax_t
  */
-- (uintmax_t)asUIntMax;
+- (uintmax_t)uIntMaxValue;
 
 /**
  * \return The OFNumber as a ptrdiff_t
  */
-- (ptrdiff_t)asPtrDiff;
+- (ptrdiff_t)ptrDiffValue;
 
 /**
  * \return The OFNumber as an intptr_t
  */
-- (intptr_t)asIntPtr;
+- (intptr_t)intPtrValue;
 
 /**
  * \return The OFNumber as an uintptr_t
  */
-- (uintptr_t)asUIntPtr;
+- (uintptr_t)uIntPtrValue;
 
 /**
  * \return The OFNumber as a float
  */
-- (float)asFloat;
+- (float)floatValue;
 
 /**
  * \return The OFNumber as a double
  */
-- (double)asDouble;
+- (double)doubleValue;
 
 /**
  * \param num The OFNumber to add
