@@ -219,7 +219,8 @@ call_main(id obj)
 	of_list_object_t *iter;
 
 	@synchronized (tlskeys) {
-		for (iter = [tlskeys first]; iter != NULL; iter = iter->next)
+		for (iter = [tlskeys firstListObject]; iter != NULL;
+		    iter = iter->next)
 			((OFTLSKey*)iter->object)->destructor(iter->object);
 	}
 }
@@ -238,7 +239,7 @@ call_main(id obj)
 
 	@synchronized (tlskeys) {
 		@try {
-			listobj = [tlskeys append: self];
+			listobj = [tlskeys appendObject: self];
 		} @catch (OFException *e) {
 			/*
 			 * We can't use [super dealloc] on OS X here.
@@ -273,7 +274,7 @@ call_main(id obj)
 	@synchronized (tlskeys) {
 		/* In case we called [self dealloc] in init */
 		if (listobj != NULL)
-			[tlskeys remove: listobj];
+			[tlskeys removeListObject: listobj];
 	}
 
 	[super dealloc];

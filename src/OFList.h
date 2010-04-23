@@ -31,14 +31,14 @@ typedef struct __of_list_object {
  */
 @interface OFList: OFObject <OFCopying>
 {
-	of_list_object_t *first;
-	of_list_object_t *last;
+	of_list_object_t *firstListObject;
+	of_list_object_t *lastListObject;
 	size_t		 count;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly) of_list_object_t *first;
-@property (readonly) of_list_object_t *last;
+@property (readonly) of_list_object_t *firstListObject;
+@property (readonly) of_list_object_t *lastListObject;
 @property (readonly) size_t count;
 #endif
 
@@ -50,12 +50,12 @@ typedef struct __of_list_object {
 /**
  * \return The first list object in the list
  */
-- (of_list_object_t*)first;
+- (of_list_object_t*)firstListObject;
 
 /**
  * \return The last list object in the list
  */
-- (of_list_object_t*)last;
+- (of_list_object_t*)lastListObject;
 
 /**
  * Appends an object to the list.
@@ -65,7 +65,7 @@ typedef struct __of_list_object {
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)append: (OFObject*)obj;
+- (of_list_object_t*)appendObject: (OFObject*)obj;
 
 /**
  * Prepends an object to the list.
@@ -75,7 +75,7 @@ typedef struct __of_list_object {
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)prepend: (OFObject*)obj;
+- (of_list_object_t*)prependObject: (OFObject*)obj;
 
 /**
  * Inserts an object before another object.
@@ -86,8 +86,8 @@ typedef struct __of_list_object {
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)insert: (OFObject*)obj
-		     before: (of_list_object_t*)listobj;
+- (of_list_object_t*)insertObject: (OFObject*)obj
+		 beforeListObject: (of_list_object_t*)listobj;
 
 /**
  * Inserts an object after another object.
@@ -98,15 +98,15 @@ typedef struct __of_list_object {
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)insert: (OFObject*)obj
-		      after: (of_list_object_t*)listobj;
+- (of_list_object_t*)insertObject: (OFObject*)obj
+		  afterListObject: (of_list_object_t*)listobj;
 
 /**
  * Removes the object with the specified list object from the list.
  *
  * \param listobj The list object returned by append / prepend
  */
-- (void)remove: (of_list_object_t*)listobj;
+- (void)removeListObject: (of_list_object_t*)listobj;
 
 /**
  * \return The number of items in the list.

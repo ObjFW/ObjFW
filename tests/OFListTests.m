@@ -33,38 +33,45 @@ static OFString *strings[] = {
 
 	TEST(@"+[list]", (list = [OFList list]))
 
-	TEST(@"-[append:]", [list append: strings[0]] &&
-	    [list append: strings[1]] && [list append: strings[2]])
+	TEST(@"-[appendObject:]", [list appendObject: strings[0]] &&
+	    [list appendObject: strings[1]] && [list appendObject: strings[2]])
 
-	TEST(@"-[first]", [[list first]->object isEqual: strings[0]])
+	TEST(@"-[firstListObject]",
+	    [[list firstListObject]->object isEqual: strings[0]])
 
-	TEST(@"-[first]->next",
-	    [[list first]->next->object isEqual: strings[1]])
+	TEST(@"-[firstListObject]->next",
+	    [[list firstListObject]->next->object isEqual: strings[1]])
 
-	TEST(@"-[last]", [[list last]->object isEqual: strings[2]])
+	TEST(@"-[lastListObject]",
+	    [[list lastListObject]->object isEqual: strings[2]])
 
-	TEST(@"-[last]->prev", [[list last]->prev->object isEqual: strings[1]])
+	TEST(@"-[lastListObject]->prev",
+	    [[list lastListObject]->prev->object isEqual: strings[1]])
 
-	TEST(@"-[remove:]", R([list remove: [list last]]) &&
-	    [[list last]->object isEqual: strings[1]] &&
-	    R([list remove: [list first]]) &&
-	    [[list first]->object isEqual: [list last]->object])
+	TEST(@"-[removeListObject:]",
+	    R([list removeListObject: [list lastListObject]]) &&
+	    [[list lastListObject]->object isEqual: strings[1]] &&
+	    R([list removeListObject: [list firstListObject]]) &&
+	    [[list firstListObject]->object isEqual:
+	    [list lastListObject]->object])
 
-	TEST(@"-[insert:before:]", [list insert: strings[0]
-					 before: [list last]] &&
-	    [[list last]->prev->object isEqual: strings[0]])
+	TEST(@"-[insertObject:beforeListObject:]",
+	    [list insertObject: strings[0]
+	      beforeListObject: [list lastListObject]] &&
+	    [[list lastListObject]->prev->object isEqual: strings[0]])
 
 
-	TEST(@"-[insert:after:]", [list insert: strings[2]
-					 after: [list first]->next] &&
-	    [[list last]->object isEqual: strings[2]])
+	TEST(@"-[insertObject:afterListObject:]",
+	    [list insertObject: strings[2]
+	       afterListObject: [list firstListObject]->next] &&
+	    [[list lastListObject]->object isEqual: strings[2]])
 
 	TEST(@"-[count]", [list count] == 3)
 
 	TEST(@"-[copy]", (list = [[list copy] autorelease]) &&
-	    [[list first]->object isEqual: strings[0]] &&
-	    [[list first]->next->object isEqual: strings[1]] &&
-	    [[list last]->object isEqual: strings[2]])
+	    [[list firstListObject]->object isEqual: strings[0]] &&
+	    [[list firstListObject]->next->object isEqual: strings[1]] &&
+	    [[list lastListObject]->object isEqual: strings[2]])
 
 	TEST(@"-[isEqual:]", [list isEqual: [[list copy] autorelease]])
 

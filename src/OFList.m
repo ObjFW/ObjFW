@@ -27,8 +27,8 @@
 {
 	self = [super init];
 
-	first = NULL;
-	last = NULL;
+	firstListObject = NULL;
+	lastListObject = NULL;
 
 	return self;
 }
@@ -37,37 +37,37 @@
 {
 	of_list_object_t *iter;
 
-	for (iter = first; iter != NULL; iter = iter->next)
+	for (iter = firstListObject; iter != NULL; iter = iter->next)
 		[iter->object release];
 
 	[super dealloc];
 }
 
-- (of_list_object_t*)first
+- (of_list_object_t*)firstListObject;
 {
-	return first;
+	return firstListObject;
 }
 
-- (of_list_object_t*)last
+- (of_list_object_t*)lastListObject;
 {
-	return last;
+	return lastListObject;
 }
 
-- (of_list_object_t*)append: (OFObject*)obj
+- (of_list_object_t*)appendObject: (OFObject*)obj
 {
 	of_list_object_t *o;
 
 	o = [self allocMemoryWithSize: sizeof(of_list_object_t)];
 	o->object = [obj retain];
 	o->next = NULL;
-	o->prev = last;
+	o->prev = lastListObject;
 
-	if (last != NULL)
-		last->next = o;
+	if (lastListObject != NULL)
+		lastListObject->next = o;
 
-	last = o;
-	if (first == NULL)
-		first = o;
+	lastListObject = o;
+	if (firstListObject == NULL)
+		firstListObject = o;
 
 	count++;
 
@@ -76,21 +76,21 @@
 	return o;
 }
 
-- (of_list_object_t*)prepend: (OFObject*)obj
+- (of_list_object_t*)prependObject: (OFObject*)obj
 {
 	of_list_object_t *o;
 
 	o = [self allocMemoryWithSize: sizeof(of_list_object_t)];
 	o->object = [obj retain];
-	o->next = first;
+	o->next = firstListObject;
 	o->prev = NULL;
 
-	if (first != NULL)
-		first->prev = o;
+	if (firstListObject != NULL)
+		firstListObject->prev = o;
 
-	first = o;
-	if (last == NULL)
-		last = o;
+	firstListObject = o;
+	if (lastListObject == NULL)
+		lastListObject = o;
 
 	count++;
 
@@ -99,8 +99,8 @@
 	return o;
 }
 
-- (of_list_object_t*)insert: (OFObject*)obj
-		     before: (of_list_object_t*)listobj
+- (of_list_object_t*)insertObject: (OFObject*)obj
+		 beforeListObject: (of_list_object_t*)listobj
 {
 	of_list_object_t *o;
 
@@ -114,8 +114,8 @@
 
 	listobj->prev = o;
 
-	if (listobj == first)
-		first = o;
+	if (listobj == firstListObject)
+		firstListObject = o;
 
 	count++;
 
@@ -124,8 +124,8 @@
 	return o;
 }
 
-- (of_list_object_t*)insert: (OFObject*)obj
-		      after: (of_list_object_t*)listobj
+- (of_list_object_t*)insertObject: (OFObject*)obj
+		  afterListObject: (of_list_object_t*)listobj
 {
 	of_list_object_t *o;
 
@@ -139,8 +139,8 @@
 
 	listobj->next = o;
 
-	if (listobj == last)
-		last = o;
+	if (listobj == lastListObject)
+		lastListObject = o;
 
 	count++;
 
@@ -149,17 +149,17 @@
 	return o;
 }
 
-- (void)remove: (of_list_object_t*)listobj
+- (void)removeListObject: (of_list_object_t*)listobj
 {
 	if (listobj->prev != NULL)
 		listobj->prev->next = listobj->next;
 	if (listobj->next != NULL)
 		listobj->next->prev = listobj->prev;
 
-	if (first == listobj)
-		first = listobj->next;
-	if (last == listobj)
-		last = listobj->prev;
+	if (firstListObject == listobj)
+		firstListObject = listobj->next;
+	if (lastListObject == listobj)
+		lastListObject = listobj->prev;
 
 	count--;
 
@@ -183,8 +183,9 @@
 	if ([(OFList*)obj count] != count)
 		return NO;
 
-	for (iter = first, iter2 = [(OFList*)obj first]; iter != NULL &&
-	    iter2 != NULL; iter = iter->next, iter2 = iter2->next)
+	for (iter = firstListObject, iter2 = [(OFList*)obj firstListObject];
+	    iter != NULL && iter2 != NULL;
+	    iter = iter->next, iter2 = iter2->next)
 		if (![iter->object isEqual: iter2->object])
 			return NO;
 
@@ -203,14 +204,14 @@
 	prev = NULL;
 
 	@try {
-		for (iter = first; iter != NULL; iter = iter->next) {
+		for (iter = firstListObject; iter != NULL; iter = iter->next) {
 			o = [new allocMemoryWithSize: sizeof(of_list_object_t)];
 			o->object = [iter->object retain];
 			o->next = NULL;
 			o->prev = prev;
 
-			if (new->first == NULL)
-				new->first = o;
+			if (new->firstListObject == NULL)
+				new->firstListObject = o;
 			if (prev != NULL)
 				prev->next = o;
 
@@ -225,7 +226,7 @@
 		@throw e;
 	}
 
-	new->last = o;
+	new->lastListObject = o;
 
 	return new;
 }
@@ -237,7 +238,7 @@
 
 	OF_HASH_INIT(hash);
 
-	for (iter = first; iter != NULL; iter = iter->next) {
+	for (iter = firstListObject; iter != NULL; iter = iter->next) {
 		uint32_t h = [iter->object hash];
 
 		OF_HASH_ADD(hash, h >> 24);
