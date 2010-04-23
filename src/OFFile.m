@@ -335,6 +335,11 @@ static int parse_mode(const char *mode)
 + (void)renameFileAtPath: (OFString*)from
 		  toPath: (OFString*)to
 {
+	if ([self directoryExistsAtPath: to]) {
+		OFString *filename = [self lastComponentOfPath: from];
+		to = [OFString stringWithPath: to, filename, nil];
+	}
+
 #ifndef _WIN32
 	if (rename([from cString], [to cString]))
 #else
@@ -367,6 +372,11 @@ static int parse_mode(const char *mode)
 + (void)linkFileAtPath: (OFString*)src
 		toPath: (OFString*)dest
 {
+	if ([self directoryExistsAtPath: dest]) {
+		OFString *filename = [self lastComponentOfPath: src];
+		dest = [OFString stringWithPath: dest, filename, nil];
+	}
+
 	if (link([src cString], [dest cString]) != 0)
 		@throw [OFLinkFailedException newWithClass: self
 						sourcePath: src
@@ -376,6 +386,11 @@ static int parse_mode(const char *mode)
 + (void)symlinkFileAtPath: (OFString*)src
 		   toPath: (OFString*)dest
 {
+	if ([self directoryExistsAtPath: dest]) {
+		OFString *filename = [self lastComponentOfPath: src];
+		dest = [OFString stringWithPath: dest, filename, nil];
+	}
+
 	if (symlink([src cString], [dest cString]) != 0)
 		@throw [OFSymlinkFailedException newWithClass: self
 						   sourcePath: src
