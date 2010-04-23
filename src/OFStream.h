@@ -56,6 +56,9 @@
  * specified size has been read - instead, it waits until it got exactly size
  * bytes.
  *
+ * WARNING: Only call this when you know that specified amount of data is
+ *	    available! Otherwise you will get an exception!
+ *
  * \param buf The buffer into which the data is read
  * \param size The size of the data that should be read.
  *	       The buffer MUST be EXACTLY this big!
@@ -66,12 +69,18 @@
 /**
  * Reads an uint8_t from the stream.
  *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
  * \return An uint8_t from the stream
  */
 - (uint8_t)readInt8;
 
 /**
  * Reads an uint16_t from the stream which is encoded in big endian.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
  *
  * \return An uint16_t from the stream in native endianess
  */
@@ -80,12 +89,18 @@
 /**
  * Reads an uint32_t from the stream which is encoded in big endian.
  *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
  * \return An uint32_t from the stream in the native endianess
  */
 - (uint32_t)readBigEndianInt32;
 
 /**
  * Reads an uint64_t from the stream which is encoded in big endian.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
  *
  * \return An uint64_t from the stream in the native endianess
  */
@@ -94,12 +109,18 @@
 /**
  * Reads an uint16_t from the stream which is encoded in little endian.
  *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
  * \return An uint16_t from the stream in native endianess
  */
 - (uint16_t)readLittleEndianInt16;
 
 /**
  * Reads an uint32_t from the stream which is encoded in little endian.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
  *
  * \return An uint32_t from the stream in the native endianess
  */
@@ -108,6 +129,9 @@
 /**
  * Reads an uint64_t from the stream which is encoded in little endian.
  *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
  * \return An uint64_t from the stream in the native endianess
  */
 - (uint64_t)readLittleEndianInt64;
@@ -115,6 +139,9 @@
 /**
  * Reads nitems items with the specified item size from the stream and returns
  * them in an OFDataArray.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
  *
  * \param itemsize The size of each item
  * \param nitems The number of iteams to read
