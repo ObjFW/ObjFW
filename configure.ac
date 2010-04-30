@@ -408,10 +408,3 @@ AC_SUBST(PACKAGE, ObjFW)
 AC_CONFIG_FILES([buildsys.mk extra.mk utils/objfw-config])
 AC_CONFIG_HEADERS([config.h src/objfw-defs.h])
 AC_OUTPUT
-
-if test x"$objc_runtime" = x"GNU"; then
-	echo
-	echo "Warning: You are using GNU libobjc! Support for GNU libobjc will "
-	echo "be dropped in the next version! You should upgrade to ObjFW-RT"
-	echo "(the ObjFW runtime) instead!"
-fi
