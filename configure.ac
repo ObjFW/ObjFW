@@ -1,4 +1,4 @@
-AC_INIT(ObjFW, 0.3-dev, js@webkeks.org)
+AC_INIT(ObjFW, 0.3, js@webkeks.org)
 AC_CONFIG_SRCDIR(src)
 
 AC_CANONICAL_HOST

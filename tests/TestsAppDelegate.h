@@ -122,11 +122,3 @@
 @interface TestsAppDelegate (OFThreadTests)
 - (void)threadTests;
 @end
-
-@interface TestsAppDelegate (OFXMLElementTests)
-- (void)XMLElementTests;
-@end
-
-@interface TestsAppDelegate (OFXMLParserTests)
-- (void)XMLParserTests;
-@end

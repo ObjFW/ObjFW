@@ -90,8 +90,6 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 #ifdef OF_THREADS
 	[self threadTests];
 #endif
-	[self XMLElementTests];
-	[self XMLParserTests];
 #ifdef OF_PLUGINS
 	[self pluginTests];
 #endif

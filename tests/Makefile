@@ -16,8 +16,6 @@ SRCS = OFArrayTests.m		\
        OFStringTests.m		\
        OFTCPSocketTests.m	\
        ${OFTHREADTESTS_M}	\
-       OFXMLElementTests.m	\
-       OFXMLParserTests.m	\
        ${PROPERTIESTESTS_M}	\
        TestsAppDelegate.m
 
