@@ -7,13 +7,13 @@ DISTCLEAN = aclocal.m4		\
 	    config.h		\
 	    config.log		\
 	    config.status	\
-	    extra.mk		\
-	    objfw-config
+	    extra.mk
 
 include buildsys.mk
 
 tarball:
-	V=$$(fgrep VERSION= objfw-config.in | sed 's/VERSION="\(.*\)"/\1/'); \
+	V=$$(fgrep VERSION= utils/objfw-config.in | \
+	      sed 's/VERSION="\(.*\)"/\1/'); \
 	V2=$$(fgrep AC_INIT configure.ac | \
 	      sed 's/AC_INIT([^,]*,\([^,]*\),.*/\1/' | sed 's/ //'); \
 	V3=$$(fgrep -A1 CFBundleVersion Info.plist | tail -1 | \

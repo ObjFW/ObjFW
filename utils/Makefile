@@ -1,5 +1,7 @@
 include ../buildsys.mk
 
+DISTCLEAN = objfw-config
+
 install-extra:
 	for i in objfw-config objfw-compile; do \
 		${INSTALL_STATUS}; \
