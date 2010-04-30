@@ -40,15 +40,15 @@ static OFString *module = @"OFNumber";
 	    isEqual: [OFNumber numberWithInt32: 123456788]])
 
 	TEST(@"-[numberByDividingBy:]",
-	    [[num numberByDividingBy: [OFNumber numberWithInt: 2]] intValue] ==
-	    61728394)
+	    [[num numberByDividingWithNumber: [OFNumber numberWithInt: 2]]
+	    intValue] == 61728394)
 
 	TEST(@"-[numberByXORing:]",
-	    [[num numberByXORing: [OFNumber numberWithInt: 123456831]]
+	    [[num numberByXORingWithNumber: [OFNumber numberWithInt: 123456831]]
 	    intValue] == 42)
 
 	TEST(@"-[numberByShiftingRightBy:]",
-	    [[num numberByShiftingRightBy: [OFNumber numberWithInt: 8]]
+	    [[num numberByShiftingRightWithNumber: [OFNumber numberWithInt: 8]]
 	    intValue] == 482253)
 
 	[pool drain];
