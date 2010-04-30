@@ -67,72 +67,72 @@
 	       intoBuffer: (char*)buf;
 
 /**
- * Reads an uint8_t from the stream.
+ * Reads a uint8_t from the stream.
  *
  * WARNING: Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * \return An uint8_t from the stream
+ * \return A uint8_t from the stream
  */
 - (uint8_t)readInt8;
 
 /**
- * Reads an uint16_t from the stream which is encoded in big endian.
+ * Reads a uint16_t from the stream which is encoded in big endian.
  *
  * WARNING: Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * \return An uint16_t from the stream in native endianess
+ * \return A uint16_t from the stream in native endianess
  */
 - (uint16_t)readBigEndianInt16;
 
 /**
- * Reads an uint32_t from the stream which is encoded in big endian.
+ * Reads a uint32_t from the stream which is encoded in big endian.
  *
  * WARNING: Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * \return An uint32_t from the stream in the native endianess
+ * \return A uint32_t from the stream in the native endianess
  */
 - (uint32_t)readBigEndianInt32;
 
 /**
- * Reads an uint64_t from the stream which is encoded in big endian.
+ * Reads a uint64_t from the stream which is encoded in big endian.
  *
  * WARNING: Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * \return An uint64_t from the stream in the native endianess
+ * \return A uint64_t from the stream in the native endianess
  */
 - (uint64_t)readBigEndianInt64;
 
 /**
- * Reads an uint16_t from the stream which is encoded in little endian.
+ * Reads a uint16_t from the stream which is encoded in little endian.
  *
  * WARNING: Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * \return An uint16_t from the stream in native endianess
+ * \return A uint16_t from the stream in native endianess
  */
 - (uint16_t)readLittleEndianInt16;
 
 /**
- * Reads an uint32_t from the stream which is encoded in little endian.
+ * Reads a uint32_t from the stream which is encoded in little endian.
  *
  * WARNING: Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * \return An uint32_t from the stream in the native endianess
+ * \return A uint32_t from the stream in the native endianess
  */
 - (uint32_t)readLittleEndianInt32;
 
 /**
- * Reads an uint64_t from the stream which is encoded in little endian.
+ * Reads a uint64_t from the stream which is encoded in little endian.
  *
  * WARNING: Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * \return An uint64_t from the stream in the native endianess
+ * \return A uint64_t from the stream in the native endianess
  */
 - (uint64_t)readLittleEndianInt64;
 
@@ -215,51 +215,51 @@
 	   fromBuffer: (const char*)buf;
 
 /**
- * Writes an uint8_t into the stream.
+ * Writes a uint8_t into the stream.
  *
- * \param int8 An uint8_t
+ * \param int8 A uint8_t
  */
 - (void)writeInt8: (uint8_t)int8;
 
 /**
- * Writes an uint16_t into the stream, encoded in big endian.
+ * Writes a uint16_t into the stream, encoded in big endian.
  *
- * \param int16 An uint16_t
+ * \param int16 A uint16_t
  */
 - (void)writeBigEndianInt16: (uint16_t)int16;
 
 /**
- * Writes an uint32_t into the stream, encoded in big endian.
+ * Writes a uint32_t into the stream, encoded in big endian.
  *
- * \param int32 An uint32_t
+ * \param int32 A uint32_t
  */
 - (void)writeBigEndianInt32: (uint32_t)int32;
 
 /**
- * Writes an uint64_t into the stream, encoded in big endian.
+ * Writes a uint64_t into the stream, encoded in big endian.
  *
- * \param int64 An uint64_t
+ * \param int64 A uint64_t
  */
 - (void)writeBigEndianInt64: (uint64_t)int64;
 
 /**
- * Writes an uint16_t into the stream, encoded in little endian.
+ * Writes a uint16_t into the stream, encoded in little endian.
  *
- * \param int16 An uint16_t
+ * \param int16 A uint16_t
  */
 - (void)writeLittleEndianInt16: (uint16_t)int16;
 
 /**
- * Writes an uint32_t into the stream, encoded in little endian.
+ * Writes a uint32_t into the stream, encoded in little endian.
  *
- * \param int32 An uint32_t
+ * \param int32 A uint32_t
  */
 - (void)writeLittleEndianInt32: (uint32_t)int32;
 
 /**
- * Writes an uint64_t into the stream, encoded in little endian.
+ * Writes a uint64_t into the stream, encoded in little endian.
  *
- * \param int64 An uint64_t
+ * \param int64 A uint64_t
  */
 - (void)writeLittleEndianInt64: (uint64_t)int64;
 

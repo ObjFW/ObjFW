@@ -149,25 +149,25 @@ enum of_number_type {
 + numberWithInt64: (int64_t)int64;
 
 /**
- * \param uint8 An uint8_t which the OFNumber should contain
+ * \param uint8 A uint8_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
 + numberWithUInt8: (uint8_t)uint8;
 
 /**
- * \param uint16 An uint16_t which the OFNumber should contain
+ * \param uint16 A uint16_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
 + numberWithUInt16: (uint16_t)uint16;
 
 /**
- * \param uint32 An uint32_t which the OFNumber should contain
+ * \param uint32 A uint32_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
 + numberWithUInt32: (uint32_t)uint32;
 
 /**
- * \param uint64 An uint64_t which the OFNumber should contain
+ * \param uint64 A uint64_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
 + numberWithUInt64: (uint64_t)uint64;
@@ -191,7 +191,7 @@ enum of_number_type {
 + numberWithIntMax: (intmax_t)intmax;
 
 /**
- * \param uintmax An uintmax_t which the OFNumber should contain
+ * \param uintmax A uintmax_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
 + numberWithUIntMax: (uintmax_t)uintmax;
@@ -209,7 +209,7 @@ enum of_number_type {
 + numberWithIntPtr: (intptr_t)intptr;
 
 /**
- * \param uintptr An uintptr_t which the OFNumber should contain
+ * \param uintptr A uintptr_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
 + numberWithUIntPtr: (uintptr_t)uintptr;
@@ -325,7 +325,7 @@ enum of_number_type {
 /**
  * Initializes an already allocated OFNumber with the specified uint8_t.
  *
- * \param uint8 An uint8_t which the OFNumber should contain
+ * \param uint8 A uint8_t which the OFNumber should contain
  * \return An initialized OFNumber
  */
 - initWithUInt8: (uint8_t)uint8;
@@ -333,7 +333,7 @@ enum of_number_type {
 /**
  * Initializes an already allocated OFNumber with the specified uint16_t.
  *
- * \param uint16 An uint16_t which the OFNumber should contain
+ * \param uint16 A uint16_t which the OFNumber should contain
  * \return An initialized OFNumber
  */
 - initWithUInt16: (uint16_t)uint16;
@@ -341,7 +341,7 @@ enum of_number_type {
 /**
  * Initializes an already allocated OFNumber with the specified uint32_t.
  *
- * \param uint32 An uint32_t which the OFNumber should contain
+ * \param uint32 A uint32_t which the OFNumber should contain
  * \return An initialized OFNumber
  */
 - initWithUInt32: (uint32_t)uint32;
@@ -349,7 +349,7 @@ enum of_number_type {
 /**
  * Initializes an already allocated OFNumber with the specified uint64_t.
  *
- * \param uint64 An uint64_t which the OFNumber should contain
+ * \param uint64 A uint64_t which the OFNumber should contain
  * \return An initialized OFNumber
  */
 - initWithUInt64: (uint64_t)uint64;
@@ -381,7 +381,7 @@ enum of_number_type {
 /**
  * Initializes an already allocated OFNumber with the specified uintmax_t.
  *
- * \param uintmax An uintmax_t which the OFNumber should contain
+ * \param uintmax A uintmax_t which the OFNumber should contain
  * \return An initialized OFNumber
  */
 - initWithUIntMax: (uintmax_t)uintmax;
@@ -405,7 +405,7 @@ enum of_number_type {
 /**
  * Initializes an already allocated OFNumber with the specified uintptr_t.
  *
- * \param uintptr An uintptr_t which the OFNumber should contain
+ * \param uintptr A uintptr_t which the OFNumber should contain
  * \return An initialized OFNumber
  */
 - initWithUIntPtr: (uintptr_t)uintptr;
@@ -493,22 +493,22 @@ enum of_number_type {
 - (int64_t)int64Value;
 
 /**
- * \return The OFNumber as an uint8_t
+ * \return The OFNumber as a uint8_t
  */
 - (uint8_t)uInt8Value;
 
 /**
- * \return The OFNumber as an uint16_t
+ * \return The OFNumber as a uint16_t
  */
 - (uint16_t)uInt16Value;
 
 /**
- * \return The OFNumber as an uint32_t
+ * \return The OFNumber as a uint32_t
  */
 - (uint32_t)uInt32Value;
 
 /**
- * \return The OFNumber as an uint64_t
+ * \return The OFNumber as a uint64_t
  */
 - (uint64_t)uInt64Value;
 
@@ -528,7 +528,7 @@ enum of_number_type {
 - (intmax_t)intMaxValue;
 
 /**
- * \return The OFNumber as an uintmax_t
+ * \return The OFNumber as a uintmax_t
  */
 - (uintmax_t)uIntMaxValue;
 
@@ -543,7 +543,7 @@ enum of_number_type {
 - (intptr_t)intPtrValue;
 
 /**
- * \return The OFNumber as an uintptr_t
+ * \return The OFNumber as a uintptr_t
  */
 - (uintptr_t)uIntPtrValue;
 
