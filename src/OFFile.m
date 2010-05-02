@@ -41,6 +41,12 @@
 #ifndef S_IROTH
 # define S_IROTH 0
 #endif
+#ifndef S_IWGRP
+# define S_IWGRP 0
+#endif
+#ifndef S_IWOTH
+# define S_IWOTH 0
+#endif
 
 #define DEFAULT_MODE S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH
 #define DIR_MODE DEFAULT_MODE | S_IXUSR | S_IXGRP | S_IXOTH
@@ -116,11 +122,19 @@ static int parse_mode(const char *mode)
 	if (path_len == 0)
 		return @"";
 
+#ifndef _WIN32
 	if (path_c[path_len - 1] == OF_PATH_DELIM)
+#else
+	if (path_c[path_len - 1] == '/' || path_c[path_len - 1] == '\\')
+#endif
 		path_len--;
 
 	for (i = path_len - 1; i >= 0; i--) {
+#ifndef _WIN32
 		if (path_c[i] == OF_PATH_DELIM) {
+#else
+		if (path_c[i] == '/' || path_c[i] == '\\') {
+#endif
 			i++;
 			break;
 		}
@@ -318,12 +332,14 @@ static int parse_mode(const char *mode)
 			       fromBuffer: buf];
 		}
 
+#ifndef _WIN32
 		if (!override) {
 			struct stat s;
 
 			if (fstat(src->fd, &s) == 0)
 				fchmod(dest->fd, s.st_mode);
 		}
+#endif
 	} @finally {
 		[src close];
 		[dest close];
