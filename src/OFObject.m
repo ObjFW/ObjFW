@@ -262,8 +262,8 @@ objc_enumerationMutation(id obj)
 #endif
 }
 
-+  (IMP)replaceClassMethod: (SEL)selector
-  withClassMethodFromClass: (Class)class;
++ (IMP)replaceClassMethod: (SEL)selector
+      withMethodFromClass: (Class)class;
 {
 	IMP newimp;
 
@@ -318,8 +318,8 @@ objc_enumerationMutation(id obj)
 #endif
 }
 
-+  (IMP)replaceInstanceMethod: (SEL)selector
-  withInstanceMethodFromClass: (Class)class;
++ (IMP)replaceInstanceMethod: (SEL)selector
+	 withMethodFromClass: (Class)class;
 {
 	IMP newimp;
 
