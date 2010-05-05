@@ -140,8 +140,8 @@ typedef struct __of_range {
  * \param class_ The class from which the new class method should be taken
  * \return The old implementation
  */
-+  (IMP)replaceClassMethod: (SEL)selector
-  withClassMethodFromClass: (Class)class_;
++ (IMP)replaceClassMethod: (SEL)selector
+      withMethodFromClass: (Class)class_;
 
 /**
  * Replaces an instance method implementation with another implementation.
@@ -160,8 +160,8 @@ typedef struct __of_range {
  * \param class_ The class from which the new instance method should be taken
  * \return The old implementation
  */
-+  (IMP)replaceInstanceMethod: (SEL)selector
-  withInstanceMethodFromClass: (Class)class_;
++ (IMP)replaceInstanceMethod: (SEL)selector
+	 withMethodFromClass: (Class)class_;
 
 /**
  * Initializes an already allocated object.

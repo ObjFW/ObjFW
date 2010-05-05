@@ -29,9 +29,9 @@ static OFString *module = @"OFFile";
 	    [[OFFile lastComponentOfPath: @"/tmp"] isEqual: @"tmp"] &&
 	    [[OFFile lastComponentOfPath: @"/tmp/"] isEqual: @"tmp"] &&
 	    [[OFFile lastComponentOfPath: @"/"] isEqual: @""] &&
-	    [[OFFile lastComponentOfPath: @"foo"] isEqual: @"foo"] /* &&
+	    [[OFFile lastComponentOfPath: @"foo"] isEqual: @"foo"] &&
 	    [[OFFile lastComponentOfPath: @"foo/bar"] isEqual: @"bar"] &&
-	    [[OFFile lastComponentOfPath: @"foo/bar/baz/"] isEqual: @"baz"]*/)
+	    [[OFFile lastComponentOfPath: @"foo/bar/baz/"] isEqual: @"baz"])
 
 	[pool drain];
 }

@@ -262,10 +262,14 @@ objc_enumerationMutation(id obj)
 #endif
 }
 
-+  (IMP)replaceClassMethod: (SEL)selector
-  withClassMethodFromClass: (Class)class;
++ (IMP)replaceClassMethod: (SEL)selector
+      withMethodFromClass: (Class)class;
 {
 	IMP newimp;
+
+	if (![class isSubclassOfClass: self])
+		@throw [OFInvalidArgumentException newWithClass: self
+						       selector: _cmd];
 
 #if defined(OF_OBJFW_RUNTIME)
 	newimp = objc_get_class_method(class, selector);
@@ -314,10 +318,14 @@ objc_enumerationMutation(id obj)
 #endif
 }
 
-+  (IMP)replaceInstanceMethod: (SEL)selector
-  withInstanceMethodFromClass: (Class)class;
++ (IMP)replaceInstanceMethod: (SEL)selector
+	 withMethodFromClass: (Class)class;
 {
 	IMP newimp;
+
+	if (![class isSubclassOfClass: self])
+		@throw [OFInvalidArgumentException newWithClass: self
+						       selector: _cmd];
 
 #if defined(OF_OBJFW_RUNTIME)
 	newimp = objc_get_instance_method(class, selector);
