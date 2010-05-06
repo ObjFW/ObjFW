@@ -6,21 +6,19 @@
 	<string>English</string>
 	<key>CFBundleExecutable</key>
 	<string>ObjFW</string>
-	<key>CFBundleGetInfoString</key>
-	<string>https://webkeks.org/objfw</string>
-	<key>CFBundleIdentifier</key>
+	<key>CFBundleName</key>
 	<string>ObjFW</string>
+	<key>CFBundleIdentifier</key>
+	<string>org.webkeks.objfw</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>objfw</string>
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
-	<key>CFBundleShortVersionString</key>
-	<string>0.4-dev</string>
 	<key>CFBundleSignature</key>
-	<string>OBJF</string>
+	<string>OBJFW</string>
 	<key>CFBundleVersion</key>
+	<string>0.4-dev</string>
+	<key>CFBundleShortVersionString</key>
 	<string>0.4-dev</string>
 </dict>
 </plist>
