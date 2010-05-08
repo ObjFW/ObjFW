@@ -57,7 +57,7 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 			AC_MSG_RESULT(Darwin)
 			LIB_CPPFLAGS='-DPIC'
 			LIB_CFLAGS='-fPIC'
-			LIB_LDFLAGS='-dynamiclib -flat_namespace'
+			LIB_LDFLAGS='-dynamiclib -flat_namespace -current_version ${LIB_MAJOR}.${LIB_MINOR} -compatibility_version ${LIB_MAJOR}'
 			LIB_PREFIX='lib'
 			LIB_SUFFIX='.dylib'
 			LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
