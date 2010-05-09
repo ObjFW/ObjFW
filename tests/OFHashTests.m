@@ -13,7 +13,7 @@
 
 #include <string.h>
 
-#import "OFHashes.h"
+#import "OFHash.h"
 #import "OFFile.h"
 #import "OFAutoreleasePool.h"
 #import "OFString.h"
@@ -21,7 +21,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFHashes";
+static OFString *module = @"OFHash";
 
 const uint8_t testfile_md5[OF_MD5_DIGEST_SIZE] =
 	"\x00\x8B\x9D\x1B\x58\xDF\xF8\xFE\xEE\xF3\xAE\x8D\xBB\x68\x2D\x38";
@@ -29,8 +29,8 @@ const uint8_t testfile_sha1[OF_SHA1_DIGEST_SIZE] =
 	"\xC9\x9A\xB8\x7E\x1E\xC8\xEC\x65\xD5\xEB\xE4\x2E\x0D\xA6\x80\x96\xF5"
 	"\x94\xE7\x17";
 
-@implementation TestsAppDelegate (OFHashesTests)
-- (void)hashesTests
+@implementation TestsAppDelegate (OFHashTests)
+- (void)hashTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFMD5Hash *md5;
