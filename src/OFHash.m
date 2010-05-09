@@ -13,7 +13,7 @@
 
 #include <string.h>
 
-#import "OFHashes.h"
+#import "OFHash.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 #import "macros.h"

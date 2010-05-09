@@ -34,7 +34,7 @@
 #import "OFSocket.h"
 #import "OFTCPSocket.h"
 
-#import "OFHashes.h"
+#import "OFHash.h"
 #import "OFXMLElement.h"
 
 #import "OFApplication.h"

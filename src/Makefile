@@ -12,7 +12,7 @@ SRCS = OFApplication.m		\
        OFDictionary.m		\
        OFExceptions.m		\
        OFFile.m			\
-       OFHashes.m		\
+       OFHash.m			\
        OFEnumerator.m		\
        OFList.m			\
        OFMutableArray.m		\

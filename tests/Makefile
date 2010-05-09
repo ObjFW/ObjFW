@@ -7,7 +7,7 @@ SRCS = OFArrayTests.m		\
        OFDataArrayTests.m	\
        OFDictionaryTests.m	\
        OFFileTests.m		\
-       OFHashesTests.m		\
+       OFHashTests.m		\
        OFListTests.m		\
        OFNumberTests.m		\
        OFObjectTests.m		\

@@ -83,8 +83,8 @@
 - (void)fileTests;
 @end
 
-@interface TestsAppDelegate (OFHashesTests)
-- (void)hashesTests;
+@interface TestsAppDelegate (OFHashTests)
+- (void)hashTests;
 @end
 
 @interface TestsAppDelegate (OFListTests)

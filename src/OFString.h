@@ -370,7 +370,7 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 
 #import "OFConstString.h"
 #import "OFMutableString.h"
-#import "OFHashes.h"
+#import "OFHash.h"
 #import "OFURLEncoding.h"
 #import "OFXMLElement.h"
 #import "OFXMLParser.h"

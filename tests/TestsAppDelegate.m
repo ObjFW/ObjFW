@@ -79,7 +79,7 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 	[self objectTests];
 	[self stringTests];
 	[self fileTests];
-	[self hashesTests];
+	[self hashTests];
 	[self dataArrayTests];
 	[self arrayTests];
 	[self dictionaryTests];
