@@ -51,3 +51,4 @@ include ../buildsys.mk
 CPPFLAGS += -I.. ${LIB_CPPFLAGS}
 OBJCFLAGS += ${LIB_CFLAGS}
 LD = ${OBJC}
+LDFLAGS += ${REEXPORT_LIBOBJC}
