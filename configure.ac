@@ -124,6 +124,13 @@ if test x"$PLUGIN_SUFFIX" != "x"; then
 	AC_SUBST(OFPLUGINS_DEF, "-DOF_PLUGINS")
 fi
 
+case "$host_os" in
+	darwin*)
+		AC_SUBST(REEXPORT_LIBOBJC, [-Wl,-reexport-lobjc])
+		AC_SUBST(LDFLAGS_REEXPORT, [-Wl,-reexport-lobjfw])
+		;;
+esac
+
 AC_C_BIGENDIAN([
 	AC_DEFINE(OF_BIG_ENDIAN, 1, [Whether we are big endian])
 	AC_SUBST(ENDIANESS_DEF, "-DOF_BIG_ENDIAN")])

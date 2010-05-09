@@ -86,7 +86,7 @@
 {
 	self = [super init];
 
-	class_ = class_;
+	inClass = class_;
 
 	return self;
 }
@@ -1259,7 +1259,7 @@
 
 	string = [[OFString alloc] initWithFormat:
 	    @"A connection to service %s on node %s could not be established "
-	    @"in class %s! " ERRFMT, [node cString], [service cString],
+	    @"in class %s! " ERRFMT, [service cString], [node cString],
 	    [inClass className], ERRPARAM];
 
 	return string;
