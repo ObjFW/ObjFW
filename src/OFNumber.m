@@ -11,6 +11,8 @@
 
 #include "config.h"
 
+#include <math.h>
+
 #import "OFNumber.h"
 #import "OFExceptions.h"
 #import "macros.h"
@@ -920,5 +922,86 @@
 - (OFNumber*)numberByDecreasing
 {
 	CALCULATE3(- 1)
+}
+
+- (OFNumber*)remainderOfDivisionWithNumber: (OFNumber*)num
+{
+	switch (type) {
+	case OF_NUMBER_CHAR:
+		return [OFNumber numberWithChar: value.char_ % [num charValue]];
+	case OF_NUMBER_SHORT:
+		return [OFNumber numberWithShort:
+		    value.short_ % [num shortValue]];
+	case OF_NUMBER_INT:
+		return [OFNumber numberWithInt: value.int_ % [num intValue]];
+	case OF_NUMBER_LONG:
+		return [OFNumber numberWithLong:
+		    value.long_ % [num longValue]];
+	case OF_NUMBER_UCHAR:
+		return [OFNumber numberWithUnsignedChar:
+		    value.uchar % [num unsignedCharValue]];
+	case OF_NUMBER_USHORT:
+		return [OFNumber numberWithUnsignedShort:
+		    value.ushort % [num unsignedShortValue]];
+	case OF_NUMBER_UINT:
+		return [OFNumber numberWithUnsignedInt:
+		    value.uint % [num unsignedIntValue]];
+	case OF_NUMBER_ULONG:
+		return [OFNumber numberWithUnsignedLong:
+		    value.ulong % [num unsignedLongValue]];
+	case OF_NUMBER_INT8:
+		return [OFNumber numberWithInt8:
+		    value.int8 % [num int8Value]];
+	case OF_NUMBER_INT16:
+		return [OFNumber numberWithInt16:
+		    value.int16 % [num int16Value]];
+	case OF_NUMBER_INT32:
+		return [OFNumber numberWithInt32:
+		    value.int32 % [num int32Value]];
+	case OF_NUMBER_INT64:
+		return [OFNumber numberWithInt64:
+		    value.int64 % [num int64Value]];
+	case OF_NUMBER_UINT8:
+		return [OFNumber numberWithUInt8:
+		    value.uint8 % [num uInt8Value]];
+	case OF_NUMBER_UINT16:
+		return [OFNumber numberWithUInt16:
+		    value.uint16 % [num uInt16Value]];
+	case OF_NUMBER_UINT32:
+		return [OFNumber numberWithUInt32:
+		    value.uint32 % [num uInt32Value]];
+	case OF_NUMBER_UINT64:
+		return [OFNumber numberWithUInt64:
+		    value.uint64 % [num uInt64Value]];
+	case OF_NUMBER_SIZE:
+		return [OFNumber numberWithSize:
+		    value.size % [num sizeValue]];
+	case OF_NUMBER_SSIZE:
+		return [OFNumber numberWithSSize:
+		    value.ssize % [num sSizeValue]];
+	case OF_NUMBER_INTMAX:
+		return [OFNumber numberWithIntMax:
+		    value.intmax % [num intMaxValue]];
+	case OF_NUMBER_UINTMAX:
+		return [OFNumber numberWithUIntMax:
+		    value.uintmax % [num uIntMaxValue]];
+	case OF_NUMBER_PTRDIFF:
+		return [OFNumber numberWithPtrDiff:
+		    value.ptrdiff % [num ptrDiffValue]];
+	case OF_NUMBER_INTPTR:
+		return [OFNumber numberWithIntPtr:
+		    value.intptr % [num intPtrValue]];
+	case OF_NUMBER_UINTPTR:
+		return [OFNumber numberWithUIntPtr:
+		    value.uintptr % [num uIntPtrValue]];
+	case OF_NUMBER_FLOAT:
+		return [OFNumber
+		    numberWithFloat: fmodf(value.float_, [num floatValue])];
+	case OF_NUMBER_DOUBLE:
+		return [OFNumber
+		    numberWithDouble: fmod(value.double_, [num doubleValue])];
+	default:
+		@throw [OFInvalidFormatException newWithClass: isa];
+	}
 }
 @end

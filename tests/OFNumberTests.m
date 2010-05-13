@@ -51,6 +51,10 @@ static OFString *module = @"OFNumber";
 	    [[num numberByShiftingRightWithNumber: [OFNumber numberWithInt: 8]]
 	    intValue] == 482253)
 
+	TEST(@"-[remainderOfDivisionWithNumber:]",
+	    [[num remainderOfDivisionWithNumber: [OFNumber numberWithInt: 11]]
+	    intValue] == 5)
+
 	[pool drain];
 }
 @end

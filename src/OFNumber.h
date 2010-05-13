@@ -644,4 +644,10 @@ enum of_number_type {
  * \return A new autoreleased OFNumber with the value decreased by one.
  */
 - (OFNumber*)numberByDecreasing;
+
+/**
+ * \param num The number to divide by
+ * \return The remainder of a division by the specified number
+ */
+- (OFNumber*)remainderOfDivisionWithNumber: (OFNumber*)num;
 @end
