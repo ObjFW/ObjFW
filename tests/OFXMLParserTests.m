@@ -113,7 +113,7 @@ enum event_type {
 		    [prefix isEqual: @"foo"] && ns == nil)
 		break;
 	case 11:
-		TEST(msg, et == COMMENT && [comment isEqual: @"foo bär-baz"])
+		TEST(msg, et == COMMENT && [comment isEqual: @"foobär baz"])
 		break;
 	default:
 		TEST(msg, NO)
@@ -187,9 +187,9 @@ enum event_type {
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFXMLParser *parser;
-	const char *str = "bar<foo:bar  bar='b&amp;az'  qux:qux=\" quux \">\r\n"
-	    "foo&lt;bar<qux  >bar <baz name='' test='&foo;'/>  quxbar\r\n</qux>"
-	    "</foo:bar><!-- foo bär-baz -->";
+	const char *str = "bar<foo:bar\r\n  bar='b&amp;az'\r  "
+	    "qux:qux=\" quux \">\r\nfoo&lt;bar<qux \n>bar <baz name='' "
+	    "test='&foo;'/>  quxbar\r\n</qux></foo:bar><!-- foobär baz -->";
 	size_t j, len;
 
 	TEST(@"+[xmlParser]", (parser = [OFXMLParser xmlParser]))

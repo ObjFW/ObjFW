@@ -182,7 +182,8 @@ parse_numeric_entity(const char *entity, size_t length)
 
 		/* Inside a tag, no name yet */
 		case OF_XMLPARSER_IN_TAG_NAME:
-			if (buf[i] == ' ' || buf[i] == '>' || buf[i] == '/') {
+			if (buf[i] == ' ' || buf[i] == '\n' || buf[i] == '\r' ||
+			    buf[i] == '>' || buf[i] == '/') {
 				const char *cache_c, *tmp;
 				size_t cache_len;
 
@@ -245,7 +246,8 @@ parse_numeric_entity(const char *entity, size_t length)
 
 		/* Inside a close tag, no name yet */
 		case OF_XMLPARSER_IN_CLOSE_TAG_NAME:
-			if (buf[i] == ' ' || buf[i] == '>') {
+			if (buf[i] == ' ' || buf[i] == '\n' || buf[i] == '\r' ||
+			    buf[i] == '>') {
 				const char *cache_c, *tmp;
 				size_t cache_len;
 
@@ -292,7 +294,8 @@ parse_numeric_entity(const char *entity, size_t length)
 				name = prefix = ns = nil;
 
 				last = i + 1;
-				state = (buf[i] == ' '
+				state = (buf[i] == ' ' || buf[i] == '\n' ||
+				    buf[i] == '\r'
 				    ? OF_XMLPARSER_EXPECT_SPACE_OR_CLOSE
 				    : OF_XMLPARSER_OUTSIDE_TAG);
 			}
@@ -336,7 +339,8 @@ parse_numeric_entity(const char *entity, size_t length)
 				state = (buf[i] == '/'
 				    ? OF_XMLPARSER_EXPECT_CLOSE
 				    : OF_XMLPARSER_OUTSIDE_TAG);
-			} else if (buf[i] != ' ') {
+			} else if (buf[i] != ' ' && buf[i] != '\n' &&
+			    buf[i] != '\r') {
 				last = i;
 				state = OF_XMLPARSER_IN_ATTR_NAME;
 				i--;
@@ -437,7 +441,8 @@ parse_numeric_entity(const char *entity, size_t length)
 			if (buf[i] == '>') {
 				last = i + 1;
 				state = OF_XMLPARSER_OUTSIDE_TAG;
-			} else if (buf[i] != ' ')
+			} else if (buf[i] != ' ' && buf[i] != '\n' &&
+			    buf[i] != '\r')
 				@throw [OFMalformedXMLException
 				    newWithClass: isa];
 			break;
