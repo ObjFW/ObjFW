@@ -46,6 +46,9 @@ main()
 	MyThread *t1 = [MyThread threadWithObject: @"A"];
 	MyThread *t2 = [MyThread threadWithObject: @"B"];
 
+	[t1 start];
+	[t2 start];
+
 	[t1 join];
 	[t2 join];
 
