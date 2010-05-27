@@ -14,12 +14,21 @@
 #include <stdlib.h>
 
 #import "OFApplication.h"
-#import "OFArray.h"
 #import "OFString.h"
+#import "OFArray.h"
+#import "OFDictionary.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 
-OFApplication *app = nil;
+#include <string.h>
+
+#ifdef __MACH__
+# include <crt_externs.h>
+#else
+ extern char **environ;
+#endif
+
+static OFApplication *app = nil;
 
 static void
 atexit_handler()
@@ -70,6 +79,11 @@ of_application_main(int argc, char *argv[], Class cls)
 	return [app arguments];
 }
 
++ (OFDictionary*)environment
+{
+	return [app environment];
+}
+
 + (void)terminate
 {
 	exit(0);
@@ -82,9 +96,41 @@ of_application_main(int argc, char *argv[], Class cls)
 
 - init
 {
+	OFAutoreleasePool *pool;
+	char **env;
+
 	self = [super init];
 
+	environment = [[OFMutableDictionary alloc] init];
+
 	atexit(atexit_handler);
+#ifdef __MACH__
+	env = *_NSGetEnviron();
+#else
+	env = environ;
+#endif
+
+	pool = [[OFAutoreleasePool alloc] init];
+	for (; *env != NULL; env++) {
+		OFString *key;
+		OFString *value;
+		char *sep;
+
+		if ((sep = strchr(*env, '=')) == NULL) {
+			fprintf(stderr, "Warning: Invalid environment "
+			    "variable: %s\n", *env);
+			continue;
+		}
+
+		key = [OFString stringWithCString: *env
+					   length: sep - *env];
+		value = [OFString stringWithCString: sep + 1];
+		[environment setObject: value
+				forKey: key];
+
+		[pool releaseObjects];
+	}
+	[pool release];
 
 	return self;
 }
@@ -117,6 +163,11 @@ of_application_main(int argc, char *argv[], Class cls)
 	return [[arguments retain] autorelease];
 }
 
+- (OFDictionary*)environment
+{
+	return [[environment retain] autorelease];
+}
+
 - (id)delegate
 {
 	return [[delegate retain] autorelease];
@@ -147,6 +198,7 @@ of_application_main(int argc, char *argv[], Class cls)
 - (void)dealloc
 {
 	[arguments release];
+	[environment release];
 	[delegate release];
 
 	[super dealloc];

@@ -13,7 +13,9 @@
 
 @class OFString;
 @class OFArray;
+@class OFDictionary;
 @class OFMutableArray;
+@class OFMutableDictionary;
 
 #define OF_APPLICATION_DELEGATE(cls)					\
 	int								\
@@ -45,12 +47,14 @@
 {
 	OFString *programName;
 	OFMutableArray *arguments;
+	OFMutableDictionary *environment;
 	id delegate;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, retain) OFString *programName;
 @property (readonly, retain) OFArray *arguments;
+@property (readonly, retain) OFDictionary *environment;
 @property (retain) id delegate;
 #endif
 
@@ -68,6 +72,11 @@
  * \return The arguments passed to the application
  */
 + (OFArray*)arguments;
+
+/**
+ * \return The environment of the application
+ */
++ (OFDictionary*)environment;
 
 /**
  * Terminates the application.
@@ -101,6 +110,11 @@
  * \return The arguments passed to the application
  */
 - (OFArray*)arguments;
+
+/**
+ * \return The environment of the application
+ */
+- (OFDictionary*)environment;
 
 /**
  * \return The delegate of the application
