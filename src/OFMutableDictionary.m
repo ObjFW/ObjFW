@@ -61,7 +61,7 @@
 				last = data[i]->hash & (newsize - 1);
 
 				for (j = 0; j < last &&
-				    newdata[j] != NULL; i++);
+				    newdata[j] != NULL; j++);
 			}
 
 			if (j >= last) {
