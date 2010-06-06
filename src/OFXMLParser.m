@@ -150,7 +150,7 @@ parse_numeric_entity(const char *entity, size_t length)
 	[super dealloc];
 }
 
-- (id)delegate
+- (OFObject <OFXMLParserDelegate>*)delegate
 {
 	return [[delegate retain] autorelease];
 }

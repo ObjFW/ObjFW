@@ -147,7 +147,7 @@ extern int _OFXMLParser_reference;
 /**
  * \return The delegate that is used by the XML parser
  */
-- (id)delegate;
+- (OFObject <OFXMLParserDelegate>*)delegate;
 
 /**
  * Sets the delegate the OFXMLParser should use.
