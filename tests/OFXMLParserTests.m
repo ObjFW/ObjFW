@@ -284,7 +284,7 @@ enum event_type {
 	    " <qux xmlns:foo='urn:objfw:test:foo'>\n"
 	    "  <foo:bla foo:bla='&#x62;&#x6c;&#x61;' blafoo='foo'>\n"
 	    "   <blup foo:qux='asd' quxqux='test'/>\n"
-	    "   <bla:bla\rxmlns:bla=\"urn:objfw:test:bla\" qux='qux'\r\n"
+	    "   <bla:bla\r\rxmlns:bla=\"urn:objfw:test:bla\" qux='qux'\r\n"
 	    "    bla:foo='blafoo'/>\n"
 	    "   <abc xmlns='urn:objfw:test:abc' abc='abc' foo:abc='abc'/>\n"
 	    "  </foo:bla>\n"

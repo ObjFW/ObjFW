@@ -178,8 +178,9 @@ parse_numeric_entity(const char *entity, size_t length)
 				len = i - last;
 
 				if (len > 0)
-					[cache appendCString: buf + last
-						  withLength: len];
+					[cache appendCStringWithoutUTF8Checking:
+					    buf + last
+					    length: len];
 
 				if ([cache cStringLength] > 0) {
 					OFString *str;
@@ -221,8 +222,9 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				len = i - last;
 				if (len > 0)
-					[cache appendCString: buf + last
-						  withLength: len];
+					[cache appendCStringWithoutUTF8Checking:
+					    buf + last
+					    length: len];
 				cache_c = [cache cString];
 				cache_len = [cache cStringLength];
 
@@ -302,8 +304,9 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				len = i - last;
 				if (len > 0)
-					[cache appendCString: buf + last
-						  withLength: len];
+					[cache appendCStringWithoutUTF8Checking:
+					    buf + last
+					    length: len];
 				cache_c = [cache cString];
 				cache_len = [cache cStringLength];
 
@@ -417,8 +420,9 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				len = i - last;
 				if (len > 0)
-					[cache appendCString: buf + last
-						  withLength: len];
+					[cache appendCStringWithoutUTF8Checking:
+					    buf + last
+					    length: len];
 
 				cache_c = [cache cString];
 				cache_len = [cache cStringLength];
@@ -463,8 +467,9 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				len = i - last;
 				if (len > 0)
-					[cache appendCString: buf + last
-						  withLength: len];
+					[cache appendCStringWithoutUTF8Checking:
+					    buf + last
+					    length: len];
 
 				pool = [[OFAutoreleasePool alloc] init];
 				attr_ns = namespace_for_prefix(
@@ -540,18 +545,23 @@ parse_numeric_entity(const char *entity, size_t length)
 			break;
 		case OF_XMLPARSER_IN_COMMENT_4:
 			if (buf[i] == '-') {
-				size_t cache_len;
-
-				[cache appendCString: buf + last
-					  withLength: i - last];
-				cache_len = [cache length];
+				OFMutableString *comment;
+				size_t len;
 
 				pool = [[OFAutoreleasePool alloc] init];
-				[cache removeCharactersFromIndex: cache_len - 1
-							 toIndex: cache_len];
-				[cache removeLeadingAndTrailingWhitespaces];
+
+				[cache
+				    appendCStringWithoutUTF8Checking: buf + last
+							      length: i - last];
+
+				comment = [[cache mutableCopy] autorelease];
+				len = [comment length];
+
+				[comment removeCharactersFromIndex: len - 1
+							   toIndex: len];
+				[comment removeLeadingAndTrailingWhitespaces];
 				[delegate xmlParser: self
-				       foundComment: cache];
+				       foundComment: comment];
 				[pool release];
 
 				[cache setToCString: ""];
@@ -568,8 +578,8 @@ parse_numeric_entity(const char *entity, size_t length)
 	len = size - last;
 	/* In OF_XMLPARSER_IN_TAG, there can be only spaces */
 	if (len > 0 && state != OF_XMLPARSER_IN_TAG)
-		[cache appendCString: buf + last
-			  withLength: len];
+		[cache appendCStringWithoutUTF8Checking: buf + last
+						 length: len];
 }
 
 - (OFString*)foundUnknownEntityNamed: (OFString*)entity
