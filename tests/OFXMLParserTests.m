@@ -42,81 +42,183 @@ enum event_type {
 			       comment: (OFString*)comment
 {
 	OFString *msg;
-	id *carray;
-	size_t count;
 
 	i++;
 	msg = [OFString stringWithFormat: @"Parsing part #%d", i];
 
 	switch (i) {
 	case 1:
-	case 5:
-		TEST(msg, et == STRING && [string isEqual: @"bar"])
+		TEST(msg, et == STRING && [string isEqual: @"foo"])
 		break;
 	case 2:
-		/* FIXME: Namespace */
-		carray = [attrs cArray];
-		count = [attrs count];
-
 		TEST(msg, et == TAG_START && [name isEqual: @"bar"] &&
-		    [prefix isEqual: @"foo"] && ns == nil &&
-		    attrs != nil && count == 2 &&
-		    /* Attribute 1 */
-		    [[carray[0] name] isEqual: @"bar"] &&
-		    [carray[0] prefix] == nil &&
-		    [[carray[0] stringValue] isEqual: @"b&az"] &&
-		    [carray[0] namespace] == nil &&
-		    /* Attribute 2 */
-		    [[carray[1] name] isEqual: @"qux"] &&
-		    [[carray[1] prefix] isEqual: @"qux"] &&
-		    [[carray[1] stringValue] isEqual: @" quux "] &&
-		    [carray[1] namespace] == nil)
+		    prefix == nil && ns == nil && attrs == nil)
 		break;
 	case 3:
-		TEST(msg, et == STRING && [string isEqual: @"foo<bar"])
+		TEST(msg, et == TAG_END && [name isEqual: @"bar"] &&
+		    prefix == nil && ns == nil && attrs == nil)
 		break;
 	case 4:
-		TEST(msg, et == TAG_START && [name isEqual: @"qux"] &&
-		    prefix == nil && ns == nil)
+		/* FIXME: -[removeLeadingAndTrailingWhitespaces removes this */
+		TEST(msg, et == STRING && [string isEqual: @""])
+		break;
+	case 5:
+		TEST(msg, et == TAG_START && [name isEqual: @"foobar"] &&
+		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"] &&
+		    [attrs count] == 1 &&
+		    /* xmlns attr */
+		    [[[attrs objectAtIndex: 0] name] isEqual: @"xmlns"] &&
+		    [[attrs objectAtIndex: 0] namespace] == nil &&
+		    [[[attrs objectAtIndex: 0] stringValue] isEqual:
+		    @"urn:objfw:test:foobar"])
 		break;
 	case 6:
-		carray = [attrs cArray];
-		count = [attrs count];
-
-		TEST(msg, et == TAG_START && [name isEqual: @"baz"] &&
-		    prefix == nil && ns == nil && attrs != nil && count == 2 &&
-		    /* Attribute 1 */
-		    [[carray[0] name] isEqual: @"name"] &&
-		    [carray[0] prefix] == nil &&
-		    [[carray[0] stringValue] isEqual: @""] &&
-		    [carray[0] namespace] == nil &&
-		    /* Attribute 2 */
-		    [[carray[1] name] isEqual: @"test"] &&
-		    [carray[1] prefix] == nil &&
-		    [[carray[1] stringValue] isEqual: @"foobar"] &&
-		    [carray[1] namespace] == nil)
+		/* FIXME: -[removeLeadingAndTrailingWhitespaces removes this */
+		TEST(msg, et == STRING && [string isEqual: @""])
 		break;
 	case 7:
-		TEST(msg, et == TAG_END && [name isEqual: @"baz"] &&
-		    prefix == nil && ns == nil)
+		TEST(msg, et == TAG_START && [name isEqual: @"qux"] &&
+		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"] &&
+		    [attrs count] == 1 &&
+		    /* xmlns:foo attr */
+		    [[[attrs objectAtIndex: 0] name] isEqual: @"foo"] &&
+		    [[[attrs objectAtIndex: 0] namespace] isEqual:
+		    @"http://www.w3.org/2000/xmlns/"] &&
+		    [[[attrs objectAtIndex: 0] stringValue] isEqual:
+		    @"urn:objfw:test:foo"])
 		break;
 	case 8:
-		TEST(msg, et == STRING && [string isEqual: @"quxbar"])
+		/* FIXME: -[removeLeadingAndTrailingWhitespaces removes this */
+		TEST(msg, et == STRING && [string isEqual: @""])
 		break;
 	case 9:
-		TEST(msg, et == TAG_END && [name isEqual: @"qux"] &&
-		    prefix == nil && ns == nil)
+		TEST(msg, et == TAG_START && [name isEqual: @"bla"] &&
+		    [prefix isEqual: @"foo"] &&
+		    [ns isEqual: @"urn:objfw:test:foo"] &&
+		    [attrs count] == 2 &&
+		    /* foo:bla attr */
+		    [[[attrs objectAtIndex: 0] name] isEqual: @"bla"] &&
+		    [[[attrs objectAtIndex: 0] namespace] isEqual:
+		    @"urn:objfw:test:foo"] &&
+		    [[[attrs objectAtIndex: 0] stringValue] isEqual: @"bla"] &&
+		    /* blafoo attr */
+		    [[[attrs objectAtIndex: 1] name] isEqual: @"blafoo"] &&
+		    [[[attrs objectAtIndex: 1] namespace] isEqual:
+		    @"urn:objfw:test:foo"] &&
+		    [[[attrs objectAtIndex: 1] stringValue] isEqual: @"foo"])
 		break;
 	case 10:
-		/* FIXME: Namespace */
-		TEST(msg, et == TAG_END && [name isEqual: @"bar"] &&
-		    [prefix isEqual: @"foo"] && ns == nil)
+		/* FIXME: -[removeLeadingAndTrailingWhitespaces removes this */
+		TEST(msg, et == STRING && [string isEqual: @""])
 		break;
 	case 11:
-		TEST(msg, et == COMMENT && [comment isEqual: @"foobär baz"])
+		TEST(msg, et == TAG_START && [name isEqual: @"blup"] &&
+		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"] &&
+		    [attrs count] == 2 &&
+		    /* foo:qux attr */
+		    [[[attrs objectAtIndex: 0] name] isEqual: @"qux"] &&
+		    [[[attrs objectAtIndex: 0] namespace] isEqual:
+		    @"urn:objfw:test:foo"] &&
+		    [[[attrs objectAtIndex: 0] stringValue] isEqual: @"asd"] &&
+		    /* quxqux attr */
+		    [[[attrs objectAtIndex: 1] name] isEqual: @"quxqux"] &&
+		    [[[attrs objectAtIndex: 1] namespace] isEqual:
+		    @"urn:objfw:test:foobar"] &&
+		    [[[attrs objectAtIndex: 1] stringValue] isEqual: @"test"])
 		break;
-	default:
-		TEST(msg, NO)
+	case 12:
+		TEST(msg, et == TAG_END && [name isEqual: @"blup"] &&
+		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"])
+		break;
+	case 13:
+		/* FIXME: -[removeLeadingAndTrailingWhitespaces removes this */
+		TEST(msg, et == STRING && [string isEqual: @""])
+		break;
+	case 14:
+		TEST(msg, et == TAG_START && [name isEqual: @"bla"] &&
+		    [prefix isEqual: @"bla"] &&
+		    [ns isEqual: @"urn:objfw:test:bla"] && [attrs count] == 3 &&
+		    /* xmlns:bla attr */
+		    [[[attrs objectAtIndex: 0] name] isEqual: @"bla"] &&
+		    [[[attrs objectAtIndex: 0] namespace] isEqual:
+		    @"http://www.w3.org/2000/xmlns/"] &&
+		    [[[attrs objectAtIndex: 0] stringValue] isEqual:
+		    @"urn:objfw:test:bla"] &&
+		    /* qux attr */
+		    [[[attrs objectAtIndex: 1] name] isEqual: @"qux"] &&
+		    [[[attrs objectAtIndex: 1] namespace] isEqual:
+		    @"urn:objfw:test:bla"] &&
+		    [[[attrs objectAtIndex: 1] stringValue] isEqual: @"qux"] &&
+		    /* bla:foo attr */
+		    [[[attrs objectAtIndex: 2] name] isEqual: @"foo"] &&
+		    [[[attrs objectAtIndex: 2] namespace] isEqual:
+		    @"urn:objfw:test:bla"] &&
+		    [[[attrs objectAtIndex: 2] stringValue] isEqual: @"blafoo"])
+		break;
+	case 15:
+		TEST(msg, et == TAG_END && [name isEqual: @"bla"] &&
+		    [prefix isEqual: @"bla"] &&
+		    [ns isEqual: @"urn:objfw:test:bla"])
+		break;
+	case 16:
+		/* FIXME: -[removeLeadingAndTrailingWhitespaces removes this */
+		TEST(msg, et == STRING && [string isEqual: @""])
+		break;
+	case 17:
+		TEST(msg, et == TAG_START && [name isEqual: @"abc"] &&
+		    prefix == nil && [ns isEqual: @"urn:objfw:test:abc"] &&
+		    [attrs count] == 3 &&
+		    /* xmlns attr */
+		    [[[attrs objectAtIndex: 0] name] isEqual: @"xmlns"] &&
+		    [[attrs objectAtIndex: 0] namespace] == nil &&
+		    [[[attrs objectAtIndex: 0] stringValue] isEqual:
+		    @"urn:objfw:test:abc"] &&
+		    /* abc attr */
+		    [[[attrs objectAtIndex: 1] name] isEqual: @"abc"] &&
+		    [[[attrs objectAtIndex: 1] namespace] isEqual:
+		    @"urn:objfw:test:abc"] &&
+		    [[[attrs objectAtIndex: 1] stringValue] isEqual: @"abc"] &&
+		    /* foo:abc attr */
+		    [[[attrs objectAtIndex: 2] name] isEqual: @"abc"] &&
+		    [[[attrs objectAtIndex: 2] namespace] isEqual:
+		    @"urn:objfw:test:foo"] &&
+		    [[[attrs objectAtIndex: 2] stringValue] isEqual: @"abc"])
+		break;
+	case 18:
+		TEST(msg, et == TAG_END && [name isEqual: @"abc"] &&
+		    prefix == nil && [ns isEqual: @"urn:objfw:test:abc"])
+		break;
+	case 19:
+		/* FIXME: -[removeLeadingAndTrailingWhitespaces removes this */
+		TEST(msg, et == STRING && [string isEqual: @""])
+		break;
+	case 20:
+		TEST(msg, et == TAG_END && [name isEqual: @"bla"] &&
+		    [prefix isEqual: @"foo"] &&
+		    [ns isEqual: @"urn:objfw:test:foo"])
+		break;
+	case 21:
+		/* FIXME: -[removeLeadingAndTrailingWhitespaces removes this */
+		TEST(msg, et == STRING && [string isEqual: @""])
+		break;
+	case 22:
+		TEST(msg, et == COMMENT && [comment isEqual: @"commänt"])
+		break;
+	case 23:
+		/* FIXME: -[removeLeadingAndTrailingWhitespaces removes this */
+		TEST(msg, et == STRING && [string isEqual: @""])
+		break;
+	case 24:
+		TEST(msg, et == TAG_END && [name isEqual: @"qux"] &&
+		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"])
+		break;
+	case 25:
+		/* FIXME: -[removeLeadingAndTrailingWhitespaces removes this */
+		TEST(msg, et == STRING && [string isEqual: @""])
+		break;
+	case 26:
+		TEST(msg, et == TAG_END && [name isEqual: @"foobar"] &&
+		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"])
 		break;
 	}
 }
@@ -187,9 +289,18 @@ enum event_type {
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFXMLParser *parser;
-	const char *str = "bar<foo:bar\r\n  bar='b&amp;az'\r  "
-	    "qux:qux=\" quux \">\r\nfoo&lt;bar<qux \n>bar <baz name='' "
-	    "test='&foo;'/>  quxbar\r\n</qux></foo:bar><!-- foobär baz -->";
+	const char *str = "foo<bar/>\n"
+	    "<foobar xmlns='urn:objfw:test:foobar'>\n"
+	    " <qux xmlns:foo='urn:objfw:test:foo'>\n"
+	    "  <foo:bla foo:bla='&#x62;&#x6c;&#x61;' blafoo='foo'>\n"
+	    "   <blup foo:qux='asd' quxqux='test'/>\n"
+	    "   <bla:bla\rxmlns:bla=\"urn:objfw:test:bla\" qux='qux'\r\n"
+	    "    bla:foo='blafoo'/>\n"
+	    "   <abc xmlns='urn:objfw:test:abc' abc='abc' foo:abc='abc'/>\n"
+	    "  </foo:bla>\n"
+	    "  <!-- commänt -->\n"
+	    " </qux>\n"
+	    "</foobar>";
 	size_t j, len;
 
 	TEST(@"+[xmlParser]", (parser = [OFXMLParser xmlParser]))
@@ -208,7 +319,7 @@ enum event_type {
 				   withSize: 2];
 	}
 
-	TEST(@"Checking if everything was parsed", i == 11)
+	TEST(@"Checking if everything was parsed", i == 26)
 
 	[pool drain];
 }

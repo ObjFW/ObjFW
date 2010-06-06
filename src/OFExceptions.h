@@ -1152,3 +1152,64 @@
  */
 @interface OFHashAlreadyCalculatedException: OFException {}
 @end
+
+/**
+ * \brief An exception indicating an attempt to use an unbound namespace.
+ */
+@interface OFUnboundNamespaceException: OFException
+{
+	OFString *namespace;
+	OFString *prefix;
+}
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFString *namespace;
+@property (readonly, nonatomic) OFString *prefix;
+#endif
+
+/**
+ * \param class_ The class of the object which caused the exception
+ * \param namespace The namespace which is unbound
+ * \return A new unbound namespace exception
+ */
++ newWithClass: (Class)class_
+     namespace: (OFString*)namespace;
+
+/**
+ * \param class_ The class of the object which caused the exception
+ * \param prefix The prefix which is unbound
+ * \return A new unbound namespace exception
+ */
++ newWithClass: (Class)class_
+	prefix: (OFString*)prefix;
+
+/**
+ * Initializes an already allocated unbound namespace failed exception
+ *
+ * \param class_ The class of the object which caused the exception
+ * \param namespace The namespace which is unbound
+ * \return An initialized unbound namespace exception
+ */
+- initWithClass: (Class)class_
+      namespace: (OFString*)namespace;
+
+/**
+ * Initializes an already allocated unbound namespace failed exception
+ *
+ * \param class_ The class of the object which caused the exception
+ * \param prefix The prefix which is unbound
+ * \return An initialized unbound namespace exception
+ */
+- initWithClass: (Class)class_
+	 prefix: (OFString*)prefix;
+
+/**
+ * \return The unbound namespace
+ */
+- (OFString*)namespace;
+
+/**
+ * \return The unbound prefix
+ */
+- (OFString*)prefix;
+@end

@@ -127,13 +127,17 @@ extern int _OFXMLParser_reference;
 	OFMutableString *cache;
 	OFString *name;
 	OFString *prefix;
-	OFString *ns;
+	OFMutableArray *namespaces;
 	OFMutableArray *attrs;
 	OFString *attrName;
 	OFString *attrPrefix;
 	char delim;
 	OFMutableArray *previous;
 }
+
+#ifdef OF_HAVE_PROPERTIES
+@property (retain) OFObject <OFXMLParserDelegate> *delegate;
+#endif
 
 /**
  * \return A new, autoreleased OFXMLParser

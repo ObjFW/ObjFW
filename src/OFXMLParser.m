@@ -12,10 +12,12 @@
 #include "config.h"
 
 #include <string.h>
+#include <unistd.h>
 
 #import "OFXMLParser.h"
 #import "OFString.h"
 #import "OFArray.h"
+#import "OFDictionary.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 #import "macros.h"
@@ -30,6 +32,25 @@ transform_string(OFMutableString *cache,
 
 	[cache removeLeadingAndTrailingWhitespaces];
 	return [cache stringByXMLUnescapingWithHandler: handler];
+}
+
+static OF_INLINE OFString*
+namespace_for_prefix(OFString *prefix, OFArray *namespaces)
+{
+	OFDictionary **carray = [namespaces cArray];
+	ssize_t i;
+
+	if (prefix == nil)
+		prefix = @"";
+
+	for (i = [namespaces count] - 1; i >= 0; i--) {
+		OFString *tmp;
+
+		if ((tmp = [carray[i] objectForKey: prefix]) != nil)
+			return tmp;
+	}
+
+	return nil;
 }
 
 static OF_INLINE OFString*
@@ -91,10 +112,20 @@ parse_numeric_entity(const char *entity, size_t length)
 	self = [super init];
 
 	@try {
+		OFAutoreleasePool *pool;
+		OFMutableDictionary *dict;
+
 		cache = [[OFMutableString alloc] init];
 		previous = [[OFMutableArray alloc] init];
+		namespaces = [[OFMutableArray alloc] init];
+
+		pool = [[OFAutoreleasePool alloc] init];
+		dict = [OFMutableDictionary dictionaryWithKeysAndObjects:
+		    @"xml", @"http://www.w3.org/XML/1998/namespace",
+		    @"xmlns", @"http://www.w3.org/2000/xmlns/", nil];
+		[namespaces addObject: dict];
+		[pool release];
 	} @catch (OFException *e) {
-		/* We can't use [super dealloc] on OS X here. Compiler bug? */
 		[self dealloc];
 		@throw e;
 	}
@@ -109,7 +140,7 @@ parse_numeric_entity(const char *entity, size_t length)
 	[cache release];
 	[name release];
 	[prefix release];
-	[ns release];
+	[namespaces release];
 	[attrs release];
 	[attrName release];
 	[attrPrefix release];
@@ -209,7 +240,17 @@ parse_numeric_entity(const char *entity, size_t length)
 				}
 
 				if (buf[i] == '>' || buf[i] == '/') {
+					OFString *ns;
+
 					pool = [[OFAutoreleasePool alloc] init];
+					ns = namespace_for_prefix(prefix,
+					    namespaces);
+
+					if (prefix != nil && ns == nil)
+						@throw
+						    [OFUnboundNamespaceException
+						    newWithClass: isa
+							  prefix: prefix];
 
 					[delegate xmlParser: self
 					didStartTagWithName: name
@@ -230,14 +271,20 @@ parse_numeric_entity(const char *entity, size_t length)
 
 					[name release];
 					[prefix release];
-					[ns release];
-					name = prefix = ns = nil;
+					name = prefix = nil;
 
 					state = (buf[i] == '/'
 					    ? OF_XMLPARSER_EXPECT_CLOSE
 					    : OF_XMLPARSER_OUTSIDE_TAG);
 				} else
 					state = OF_XMLPARSER_IN_TAG;
+
+				if (buf[i] != '/') {
+					pool = [[OFAutoreleasePool alloc] init];
+					[namespaces addObject:
+					    [OFMutableDictionary dictionary]];
+					[pool release];
+				}
 
 				[cache setToCString: ""];
 				last = i + 1;
@@ -250,6 +297,7 @@ parse_numeric_entity(const char *entity, size_t length)
 			    buf[i] == '>') {
 				const char *cache_c, *tmp;
 				size_t cache_len;
+				OFString *ns;
 
 				len = i - last;
 				if (len > 0)
@@ -281,6 +329,13 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				pool = [[OFAutoreleasePool alloc] init];
 
+				ns = namespace_for_prefix(prefix, namespaces);
+				if (prefix != nil && ns == nil)
+					@throw [OFUnboundNamespaceException
+					    newWithClass: isa
+						  prefix: prefix];
+				[namespaces removeNObjects: 1];
+
 				[delegate xmlParser: self
 				  didEndTagWithName: name
 					     prefix: prefix
@@ -290,21 +345,27 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				[name release];
 				[prefix release];
-				[ns release];
-				name = prefix = ns = nil;
+				name = prefix = nil;
 
 				last = i + 1;
-				state = (buf[i] == ' ' || buf[i] == '\n' ||
-				    buf[i] == '\r'
-				    ? OF_XMLPARSER_EXPECT_SPACE_OR_CLOSE
-				    : OF_XMLPARSER_OUTSIDE_TAG);
+				state = (buf[i] == '>'
+				    ? OF_XMLPARSER_OUTSIDE_TAG
+				    : OF_XMLPARSER_EXPECT_SPACE_OR_CLOSE);
 			}
 			break;
 
 		/* Inside a tag, name found */
 		case OF_XMLPARSER_IN_TAG:
 			if (buf[i] == '>' || buf[i] == '/') {
+				OFString *ns;
+
 				pool = [[OFAutoreleasePool alloc] init];
+				ns = namespace_for_prefix(prefix, namespaces);
+
+				if (prefix != nil && ns == nil)
+					@throw [OFUnboundNamespaceException
+					    newWithClass: isa
+						  prefix: prefix];
 
 				[delegate xmlParser: self
 				didStartTagWithName: name
@@ -312,12 +373,13 @@ parse_numeric_entity(const char *entity, size_t length)
 					  namespace: ns
 					 attributes: attrs];
 
-				if (buf[i] == '/')
+				if (buf[i] == '/') {
 					[delegate xmlParser: self
 					  didEndTagWithName: name
 						     prefix: prefix
 						  namespace: ns];
-				else if (prefix != nil) {
+					[namespaces removeNObjects: 1];
+				} else if (prefix != nil) {
 					OFString *str = [OFString
 					    stringWithFormat: @"%s:%s",
 							      [prefix cString],
@@ -330,9 +392,8 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				[name release];
 				[prefix release];
-				[ns release];
 				[attrs release];
-				name = prefix = ns = nil;
+				name = prefix = nil;
 				attrs = nil;
 
 				last = i + 1;
@@ -396,6 +457,7 @@ parse_numeric_entity(const char *entity, size_t length)
 		/* Looking for attribute value */
 		case OF_XMLPARSER_IN_ATTR_VALUE:
 			if (buf[i] == delim) {
+				OFString *attr_ns;
 				OFString *attr_val;
 
 				len = i - last;
@@ -403,17 +465,33 @@ parse_numeric_entity(const char *entity, size_t length)
 					[cache appendCString: buf + last
 						  withLength: len];
 
+				pool = [[OFAutoreleasePool alloc] init];
+				attr_ns = namespace_for_prefix(
+				    (attrPrefix != nil ? attrPrefix : prefix),
+				    namespaces);
+				attr_val = [cache
+				    stringByXMLUnescapingWithHandler: self];
+
+				if (attrPrefix == nil &&
+				    [attrName isEqual: @"xmlns"]) {
+					[[namespaces lastObject]
+					    setObject: attr_val
+					       forKey: @""];
+					attr_ns = nil;
+				}
+				if ([attrPrefix isEqual: @"xmlns"])
+					[[namespaces lastObject]
+					    setObject: attr_val
+					       forKey: attrName];
+
 				if (attrs == nil)
 					attrs = [[OFMutableArray alloc] init];
 
-				pool = [[OFAutoreleasePool alloc] init];
-				attr_val = [cache
-				    stringByXMLUnescapingWithHandler: self];
 				[attrs addObject: [OFXMLAttribute
 				    attributeWithName: attrName
-					       prefix: attrPrefix
-					    namespace: nil
+					    namespace: attr_ns
 					  stringValue: attr_val]];
+
 				[pool release];
 
 				[cache setToCString: ""];

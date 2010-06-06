@@ -1512,3 +1512,80 @@
 	return string;
 }
 @end
+
+@implementation OFUnboundNamespaceException
++ newWithClass: (Class)class_
+     namespace: (OFString*)namespace
+{
+	return [[self alloc] initWithClass: class_
+				 namespace: namespace];
+}
+
++ newWithClass: (Class)class_
+	prefix: (OFString*)prefix
+{
+	return [[self alloc] initWithClass: class_
+				    prefix: prefix];
+}
+
+- initWithClass: (Class)class_
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class_
+      namespace: (OFString*)namespace_
+{
+	self = [super initWithClass: class_];
+
+	namespace = [namespace_ copy];
+
+	return self;
+}
+
+- initWithClass: (Class)class_
+	 prefix: (OFString*)prefix_
+{
+	self = [super initWithClass: class_];
+
+	prefix = [prefix_ copy];
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[namespace release];
+	[prefix release];
+
+	[super dealloc];
+}
+
+- (OFString*)string
+{
+	if (string != nil)
+		return string;
+
+	if (namespace != nil)
+		string = [[OFString alloc] initWithFormat:
+		    @"The namespace %s is not bound in class %s",
+		    [inClass className]];
+	else if (prefix != nil)
+		string = [[OFString alloc] initWithFormat:
+		    @"The prefix %s is not bound to any namespace in %s",
+		    [inClass className]];
+
+	return string;
+}
+
+- (OFString*)namespace
+{
+	return namespace;
+}
+
+- (OFString*)prefix
+{
+	return prefix;
+}
+@end

@@ -12,8 +12,8 @@
 #import "OFObject.h"
 #import "OFString.h"
 
-@class OFDictionary;
 @class OFMutableArray;
+@class OFMutableDictionary;
 
 extern int _OFXMLElement_reference;
 
@@ -22,14 +22,12 @@ extern int _OFXMLElement_reference;
  */
 @interface OFXMLAttribute: OFObject
 {
-	OFString *prefix;
 	OFString *name;
 	OFString *namespace;
 	OFString *stringValue;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain) OFString *prefix;
 @property (readonly, retain) OFString *name;
 @property (readonly, retain) OFString *namespace;
 @property (readonly, retain) OFString *stringValue;
@@ -37,13 +35,11 @@ extern int _OFXMLElement_reference;
 
 /**
  * \param name The name of the attribute
- * \param prefix The prefix of the attribute
  * \param ns The namespace of the attribute
  * \param value The string value of the attribute
  * \return A new autoreleased OFXMLAttribute with the specified parameters
  */
 + attributeWithName: (OFString*)name
-	     prefix: (OFString*)prefix
 	  namespace: (OFString*)ns
 	stringValue: (OFString*)value;
 
@@ -51,13 +47,11 @@ extern int _OFXMLElement_reference;
  * Initializes an already allocated OFXMLAttribute.
  *
  * \param name The name of the attribute
- * \param prefix The prefix of the attribute
  * \param ns The namespace of the attribute
  * \param value The string value of the attribute
  * \return An initialized OFXMLAttribute with the specified parameters
  */
 - initWithName: (OFString*)name
-	prefix: (OFString*)prefix
      namespace: (OFString*)ns
    stringValue: (OFString*)value;
 
@@ -65,11 +59,6 @@ extern int _OFXMLElement_reference;
  * \return The name of the attribute as an autoreleased OFString
  */
 - (OFString*)name;
-
-/**
- * \return The prefix of the attribute as an autoreleased OFString
- */
-- (OFString*)prefix;
 
 /**
  * \return The namespace of the attribute as an autoreleased OFString
@@ -91,28 +80,52 @@ extern int _OFXMLElement_reference;
 @interface OFXMLElement: OFObject
 {
 	OFString *name;
+	OFString *namespace;
+	OFString *defaultNamespace;
 	OFMutableArray *attributes;
 	OFString *stringValue;
+	OFMutableDictionary *namespaces;
 	OFMutableArray *children;
 }
 
 /**
  * \param name The name for the element
- * \return A new autorelease OFXMLElement with the specified element name
+ * \return A new autoreleased OFXMLElement with the specified element name
  */
 + elementWithName: (OFString*)name;
 
 /**
  * \param name The name for the element
  * \param stringval The value for the element
- * \return A new autorelease OFXMLElement with the specified element name and
+ * \return A new autoreleased OFXMLElement with the specified element name and
  *	   value
  */
 + elementWithName: (OFString*)name
       stringValue: (OFString*)stringval;
 
 /**
- * Initializes an already allocated OFXMLElement with the specified name.
+ * \param name The name for the element
+ * \param ns The namespace for the element
+ * \return A new autoreleased OFXMLElement with the specified element name and
+ *	   namespace
+ */
++ elementWithName: (OFString*)name
+	namespace: (OFString*)ns;
+
+/**
+ * \param name The name for the element
+ * \param ns The namespace for the element
+ * \param stringval The value for the element
+ * \return A new autoreleased OFXMLElement with the specified element name,
+ *	   namespace and value
+ */
++ elementWithName: (OFString*)name
+	namespace: (OFString*)ns
+      stringValue: (OFString*)stringval;
+
+/**
+ * Initializes an already allocated OFXMLElement with the specified element
+ * name.
  *
  * \param name The name for the element
  * \return An initialized OFXMLElement with the specified element name
@@ -120,8 +133,8 @@ extern int _OFXMLElement_reference;
 - initWithName: (OFString*)name;
 
 /**
- * Initializes an already allocated OFXMLElement with the specified name and
- * value.
+ * Initializes an already allocated OFXMLElement with the specified element
+ * name and value.
  *
  * \param name The name for the element
  * \param stringval The value for the element
@@ -129,6 +142,32 @@ extern int _OFXMLElement_reference;
  *	   value
  */
 - initWithName: (OFString*)name
+   stringValue: (OFString*)stringval;
+
+/**
+ * Initializes an already allocated OFXMLElement with the specified element
+ * name and namespace.
+ *
+ * \param name The name for the element
+ * \param ns The namespace for the element
+ * \return An initialized OFXMLElement with the specified element name and
+ *	   namespace
+ */
+- initWithName: (OFString*)name
+     namespace: (OFString*)ns;
+
+/**
+ * Initializes an already allocated OFXMLElement with the specified element
+ * name, namespace and value.
+ *
+ * \param name The name for the element
+ * \param ns The namespace for the element
+ * \param stringval The value for the element
+ * \return An initialized OFXMLElement with the specified element name,
+ *	   namespace and value
+ */
+- initWithName: (OFString*)name
+     namespace: (OFString*)ns
    stringValue: (OFString*)stringval;
 
 /**
@@ -152,6 +191,33 @@ extern int _OFXMLElement_reference;
  */
 - (void)addAttributeWithName: (OFString*)name
 		 stringValue: (OFString*)value;
+
+/**
+ * Adds the specified attribute with the specified namespace and value.
+ *
+ * \param name The name of the attribute
+ * \param ns The namespace of the attribute
+ * \param value The value of the attribute
+ */
+- (void)addAttributeWithName: (OFString*)name
+		   namespace: (OFString*)ns
+		 stringValue: (OFString*)value;
+
+/**
+ * Sets a prefix for a namespace.
+ *
+ * \param prefix The prefix for the namespace
+ * \param ns The namespace for which the prefix is set
+ */
+- (void)setPrefix: (OFString*)prefix
+     forNamespace: (OFString*)ns;
+
+/**
+ * Sets the default namespace for the element.
+ *
+ * \param ns The default namespace for the element
+ */
+- (void)setDefaultNamespace: (OFString*)ns;
 
 /**
  * Adds a child to the OFXMLElement.

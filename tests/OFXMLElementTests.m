@@ -26,7 +26,7 @@ static OFString *module = @"OFXMLElement";
 - (void)XMLElementTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFXMLElement *elem[2];
+	OFXMLElement *elem[4];
 
 	TEST(@"+[elementWithName:]",
 	    (elem[0] = [OFXMLElement elementWithName: @"foo"]) &&
@@ -37,6 +37,24 @@ static OFString *module = @"OFXMLElement";
 					 stringValue: @"b&ar"]) &&
 	    [[elem[1] string] isEqual: @"<foo>b&amp;ar</foo>"])
 
+	TEST(@"+[elementWithName:namespace:]",
+	    (elem[2] = [OFXMLElement elementWithName: @"foo"
+					   namespace: @"urn:objfw:test"]) &&
+	    R([elem[2] addAttributeWithName: @"test"
+				  namespace: @"urn:objfw:test"
+				stringValue: @"test"]) &&
+	    R([elem[2] setPrefix: @"objfw-test"
+		    forNamespace: @"urn:objfw:test"]) &&
+	    [[elem[2] string] isEqual: @"<objfw-test:foo test='test'/>"])
+
+	TEST(@"+[elementWithName:namespace:stringValue:]",
+	    (elem[3] = [OFXMLElement elementWithName: @"foo"
+					   namespace: @"urn:objfw:test"
+					 stringValue: @"x"]) &&
+	    R([elem[3] setPrefix: @"objfw-test"
+		    forNamespace: @"urn:objfw:test"]) &&
+	    [[elem[3] string] isEqual: @"<objfw-test:foo>x</objfw-test:foo>"])
+
 	TEST(@"-[addAttributeWithName:stringValue:]",
 	    R([elem[0] addAttributeWithName: @"foo"
 				stringValue: @"b&ar"]) &&
@@ -45,9 +63,25 @@ static OFString *module = @"OFXMLElement";
 				stringValue: @"b&ar"]) &&
 	    [[elem[1] string] isEqual: @"<foo foo='b&amp;ar'>b&amp;ar</foo>"])
 
+	TEST(@"-[setPrefix:forNamespace:]",
+	    R([elem[1] setPrefix: @"objfw-test"
+		    forNamespace: @"urn:objfw:test"]))
+
+	TEST(@"-[addAttributeWithName:namespace:stringValue:]",
+	    R([elem[1] addAttributeWithName: @"foo"
+				  namespace: @"urn:objfw:test"
+				stringValue: @"bar"]) &&
+	    [[elem[1] string] isEqual:
+	    @"<foo foo='b&amp;ar' objfw-test:foo='bar'>b&amp;ar</foo>"])
+
 	TEST(@"-[addChild:]",
 	    R([elem[0] addChild: [OFXMLElement elementWithName: @"bar"]]) &&
-	    [[elem[0] string] isEqual: @"<foo foo='b&amp;ar'><bar/></foo>"])
+	    [[elem[0] string] isEqual: @"<foo foo='b&amp;ar'><bar/></foo>"] &&
+	    R([elem[2] addChild:
+	    [OFXMLElement elementWithName: @"bar"
+				namespace: @"urn:objfw:test"]]) &&
+	    [[elem[2] string] isEqual:
+	    @"<objfw-test:foo test='test'><objfw-test:bar/></objfw-test:foo>"])
 
 	[pool drain];
 }
