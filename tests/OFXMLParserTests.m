@@ -59,8 +59,7 @@ enum event_type {
 		    prefix == nil && ns == nil && attrs == nil)
 		break;
 	case 4:
-		/* FIXME: -[removeLeadingAndTrailingWhitespaces removes this */
-		TEST(msg, et == STRING && [string isEqual: @""])
+		TEST(msg, et == STRING && [string isEqual: @"\n"])
 		break;
 	case 5:
 		TEST(msg, et == TAG_START && [name isEqual: @"foobar"] &&
@@ -73,8 +72,7 @@ enum event_type {
 		    @"urn:objfw:test:foobar"])
 		break;
 	case 6:
-		/* FIXME: -[removeLeadingAndTrailingWhitespaces removes this */
-		TEST(msg, et == STRING && [string isEqual: @""])
+		TEST(msg, et == STRING && [string isEqual: @"\n "])
 		break;
 	case 7:
 		TEST(msg, et == TAG_START && [name isEqual: @"qux"] &&
@@ -88,8 +86,7 @@ enum event_type {
 		    @"urn:objfw:test:foo"])
 		break;
 	case 8:
-		/* FIXME: -[removeLeadingAndTrailingWhitespaces removes this */
-		TEST(msg, et == STRING && [string isEqual: @""])
+		TEST(msg, et == STRING && [string isEqual: @"\n  "])
 		break;
 	case 9:
 		TEST(msg, et == TAG_START && [name isEqual: @"bla"] &&
@@ -108,8 +105,7 @@ enum event_type {
 		    [[[attrs objectAtIndex: 1] stringValue] isEqual: @"foo"])
 		break;
 	case 10:
-		/* FIXME: -[removeLeadingAndTrailingWhitespaces removes this */
-		TEST(msg, et == STRING && [string isEqual: @""])
+		TEST(msg, et == STRING && [string isEqual: @"\n   "])
 		break;
 	case 11:
 		TEST(msg, et == TAG_START && [name isEqual: @"blup"] &&
@@ -131,8 +127,7 @@ enum event_type {
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"])
 		break;
 	case 13:
-		/* FIXME: -[removeLeadingAndTrailingWhitespaces removes this */
-		TEST(msg, et == STRING && [string isEqual: @""])
+		TEST(msg, et == STRING && [string isEqual: @"\n   "])
 		break;
 	case 14:
 		TEST(msg, et == TAG_START && [name isEqual: @"bla"] &&
@@ -161,8 +156,7 @@ enum event_type {
 		    [ns isEqual: @"urn:objfw:test:bla"])
 		break;
 	case 16:
-		/* FIXME: -[removeLeadingAndTrailingWhitespaces removes this */
-		TEST(msg, et == STRING && [string isEqual: @""])
+		TEST(msg, et == STRING && [string isEqual: @"\n   "])
 		break;
 	case 17:
 		TEST(msg, et == TAG_START && [name isEqual: @"abc"] &&
@@ -189,8 +183,7 @@ enum event_type {
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:abc"])
 		break;
 	case 19:
-		/* FIXME: -[removeLeadingAndTrailingWhitespaces removes this */
-		TEST(msg, et == STRING && [string isEqual: @""])
+		TEST(msg, et == STRING && [string isEqual: @"\n  "])
 		break;
 	case 20:
 		TEST(msg, et == TAG_END && [name isEqual: @"bla"] &&
@@ -198,23 +191,20 @@ enum event_type {
 		    [ns isEqual: @"urn:objfw:test:foo"])
 		break;
 	case 21:
-		/* FIXME: -[removeLeadingAndTrailingWhitespaces removes this */
-		TEST(msg, et == STRING && [string isEqual: @""])
+		TEST(msg, et == STRING && [string isEqual: @"\n  "])
 		break;
 	case 22:
 		TEST(msg, et == COMMENT && [comment isEqual: @"commänt"])
 		break;
 	case 23:
-		/* FIXME: -[removeLeadingAndTrailingWhitespaces removes this */
-		TEST(msg, et == STRING && [string isEqual: @""])
+		TEST(msg, et == STRING && [string isEqual: @"\n "])
 		break;
 	case 24:
 		TEST(msg, et == TAG_END && [name isEqual: @"qux"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"])
 		break;
 	case 25:
-		/* FIXME: -[removeLeadingAndTrailingWhitespaces removes this */
-		TEST(msg, et == STRING && [string isEqual: @""])
+		TEST(msg, et == STRING && [string isEqual: @"\n"])
 		break;
 	case 26:
 		TEST(msg, et == TAG_END && [name isEqual: @"foobar"] &&

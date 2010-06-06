@@ -28,9 +28,10 @@ static OF_INLINE OFString*
 transform_string(OFMutableString *cache,
     OFObject <OFXMLUnescapingDelegate> *handler)
 {
-	/* TODO: Support for xml:space */
-
-	[cache removeLeadingAndTrailingWhitespaces];
+	[cache replaceOccurrencesOfString: @"\r\n"
+			       withString: @"\n"];
+	[cache replaceOccurrencesOfString: @"\r"
+			       withString: @"\n"];
 	return [cache stringByXMLUnescapingWithHandler: handler];
 }
 
@@ -469,8 +470,7 @@ parse_numeric_entity(const char *entity, size_t length)
 				attr_ns = namespace_for_prefix(
 				    (attrPrefix != nil ? attrPrefix : prefix),
 				    namespaces);
-				attr_val = [cache
-				    stringByXMLUnescapingWithHandler: self];
+				attr_val = transform_string(cache, self);
 
 				if (attrPrefix == nil &&
 				    [attrName isEqual: @"xmlns"]) {
