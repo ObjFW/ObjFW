@@ -79,7 +79,8 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 	[self objectTests];
 	[self stringTests];
 	[self fileTests];
-	[self hashTests];
+	[self MD5HashTests];
+	[self SHA1HashTests];
 	[self dataArrayTests];
 	[self arrayTests];
 	[self dictionaryTests];

@@ -40,10 +40,10 @@ extern const uint16_t of_windows_1252[256];
 /* References for static linking */
 void _references_to_categories_of_OFString()
 {
-	_OFHashing_reference = 1;
-	_OFURLEncoding_reference = 1;
-	_OFXMLElement_reference = 1;
-	_OFXMLParser_reference = 1;
+	_OFString_Hashing_reference = 1;
+	_OFString_URLEncoding_reference = 1;
+	_OFString_XMLEscaping_reference = 1;
+	_OFString_XMLUnescaping_reference = 1;
 };
 
 int

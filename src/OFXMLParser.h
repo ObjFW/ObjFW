@@ -11,8 +11,7 @@
 
 #import "OFObject.h"
 #import "OFString.h"
-
-extern int _OFXMLParser_reference;
+#import "OFXMLAttribute.h"
 
 @class OFXMLParser;
 @class OFArray;
@@ -86,29 +85,12 @@ extern int _OFXMLParser_reference;
 @end
 
 /**
- * \brief A protocol that needs to be implemented by delegates for
- *	  -[stringByXMLUnescapingWithHandler:].
- */
-@protocol OFXMLUnescapingDelegate
-/**
- * This callback is called when an unknown entity was found while trying to
- * unescape XML. The callback is supposed to return a substitution for the
- * entity or nil if it is unknown to the callback as well, in which case an
- * exception will be thrown.
- *
- * \param entity The name of the entity that is unknown
- * \return A substitution for the entity or nil
- */
-- (OFString*)didFindUnknownEntityNamed: (OFString*)entity;
-@end
-
-/**
  * \brief An event-based XML parser.
  *
  * OFXMLParser is an event-based XML parser which calls the delegate's callbacks
  * as soon asit finds something, thus suitable for streams as well.
  */
-@interface OFXMLParser: OFObject <OFXMLUnescapingDelegate>
+@interface OFXMLParser: OFObject <OFStringXMLUnescapingDelegate>
 {
 	OFObject <OFXMLParserDelegate> *delegate;
 	enum {
@@ -177,25 +159,6 @@ extern int _OFXMLParser_reference;
  */
 - (void)parseBuffer: (const char*)buf
 	   withSize: (size_t)size;
-@end
-
-/**
- * \brief A category for unescaping XML in strings.
- */
-@interface OFString (OFXMLUnescaping)
-/**
- * Unescapes XML in the string.
- */
-- (OFString*)stringByXMLUnescaping;
-
-/**
- * Unescapes XML in the string and uses the specified handler for unknown
- * entities.
- *
- * \param h An OFXMLUnescapingDelegate as a handler for unknown entities
- */
-- (OFString*)stringByXMLUnescapingWithHandler:
-    (OFObject <OFXMLUnescapingDelegate>*)h;
 @end
 
 @interface OFObject (OFXMLParserDelegate) <OFXMLParserDelegate>

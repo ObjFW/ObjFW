@@ -15,6 +15,7 @@ SRCS = OFApplication.m		\
        OFHash.m			\
        OFEnumerator.m		\
        OFList.m			\
+       OFMD5Hash.m		\
        OFMutableArray.m		\
        OFMutableDictionary.m	\
        OFMutableString.m	\
@@ -22,12 +23,17 @@ SRCS = OFApplication.m		\
        OFObject.m		\
        ${OFPLUGIN_M}		\
        OFSeekableStream.m	\
+       OFSHA1Hash.m		\
        OFSocket.m		\
        OFStream.m		\
        OFString.m		\
+       OFString+Hashing.m	\
+       OFString+URLEncoding.m	\
+       OFString+XMLEscaping.m	\
+       OFString+XMLUnescaping.m	\
        OFTCPSocket.m		\
        ${OFTHREAD_M}		\
-       OFURLEncoding.m		\
+       OFXMLAttribute.m		\
        OFXMLElement.m		\
        OFXMLParser.m		\
        unicode.m

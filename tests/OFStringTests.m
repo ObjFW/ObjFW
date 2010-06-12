@@ -24,7 +24,7 @@ static OFString* whitespace[] = {
 	@" \t\t  \t\t  \t \t"
 };
 
-@interface EntityHandler: OFObject <OFXMLUnescapingDelegate>
+@interface EntityHandler: OFObject <OFStringXMLUnescapingDelegate>
 @end
 
 @implementation EntityHandler

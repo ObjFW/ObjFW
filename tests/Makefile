@@ -7,11 +7,12 @@ SRCS = OFArrayTests.m		\
        OFDataArrayTests.m	\
        OFDictionaryTests.m	\
        OFFileTests.m		\
-       OFHashTests.m		\
        OFListTests.m		\
+       OFMD5HashTests.m		\
        OFNumberTests.m		\
        OFObjectTests.m		\
        ${OFPLUGINTESTS_M}	\
+       OFSHA1HashTests.m	\
        OFStreamTests.m		\
        OFStringTests.m		\
        OFTCPSocketTests.m	\

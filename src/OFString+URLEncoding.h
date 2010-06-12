@@ -11,12 +11,12 @@
 
 #import "OFString.h"
 
-extern int _OFURLEncoding_reference;
+extern int _OFString_URLEncoding_reference;
 
 /**
  * \brief A category which provides URL encoding and decoding.
  */
-@interface OFString (OFURLEncoding)
+@interface OFString (URLEncoding)
 /**
  * Encodes a string for use in a URL.
  *

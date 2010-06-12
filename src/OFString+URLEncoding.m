@@ -15,13 +15,13 @@
 #include <string.h>
 #include <ctype.h>
 
-#import "OFURLEncoding.h"
+#import "OFString+URLEncoding.h"
 #import "OFExceptions.h"
 
 /* Reference for static linking */
-int _OFURLEncoding_reference;
+int _OFString_URLEncoding_reference;
 
-@implementation OFString (OFURLEncoding)
+@implementation OFString (URLEncoding)
 - (OFString*)stringByURLEncoding
 {
 	const char *s;

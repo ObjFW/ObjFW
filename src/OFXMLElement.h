@@ -10,73 +10,12 @@
  */
 
 #import "OFObject.h"
-#import "OFString.h"
 
+@class OFString;
 @class OFMutableArray;
 @class OFMutableDictionary;
+@class OFXMLAttribute;
 
-extern int _OFXMLElement_reference;
-
-/**
- * \brief A representation of an attribute of an XML element as an object.
- */
-@interface OFXMLAttribute: OFObject
-{
-	OFString *name;
-	OFString *namespace;
-	OFString *stringValue;
-}
-
-#ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain) OFString *name;
-@property (readonly, retain) OFString *namespace;
-@property (readonly, retain) OFString *stringValue;
-#endif
-
-/**
- * \param name The name of the attribute
- * \param ns The namespace of the attribute
- * \param value The string value of the attribute
- * \return A new autoreleased OFXMLAttribute with the specified parameters
- */
-+ attributeWithName: (OFString*)name
-	  namespace: (OFString*)ns
-	stringValue: (OFString*)value;
-
-/**
- * Initializes an already allocated OFXMLAttribute.
- *
- * \param name The name of the attribute
- * \param ns The namespace of the attribute
- * \param value The string value of the attribute
- * \return An initialized OFXMLAttribute with the specified parameters
- */
-- initWithName: (OFString*)name
-     namespace: (OFString*)ns
-   stringValue: (OFString*)value;
-
-/**
- * \return The name of the attribute as an autoreleased OFString
- */
-- (OFString*)name;
-
-/**
- * \return The namespace of the attribute as an autoreleased OFString
- */
-- (OFString*)namespace;
-
-/**
- * \return The string value of the attribute as an autoreleased OFString
- */
-- (OFString*)stringValue;
-@end
-
-/**
- * \brief A representation of an XML element as an object.
- *
- * The OFXMLElement represents an XML element as an object which can be
- * modified and converted back to XML again.
- */
 @interface OFXMLElement: OFObject
 {
 	OFString *name;
@@ -225,16 +164,4 @@ extern int _OFXMLElement_reference;
  * \param child Another OFXMLElement which is added as a child
  */
 - (void)addChild: (OFXMLElement*)child;
-@end
-
-/**
- * \brief A category to escape strings for use in an XML document.
- */
-@interface OFString (OFXMLEscaping)
-/**
- * Escapes a string for use in an XML document.
- *
- * \return A new autoreleased string
- */
-- (OFString*)stringByXMLEscaping;
 @end

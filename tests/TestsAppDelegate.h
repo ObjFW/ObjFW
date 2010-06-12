@@ -83,12 +83,12 @@
 - (void)fileTests;
 @end
 
-@interface TestsAppDelegate (OFHashTests)
-- (void)hashTests;
-@end
-
 @interface TestsAppDelegate (OFListTests)
 - (void)listTests;
+@end
+
+@interface TestsAppDelegate (OFMD5HashTests)
+- (void)MD5HashTests;
 @end
 
 @interface TestsAppDelegate (OFNumberTests)
@@ -105,6 +105,10 @@
 
 @interface TestsAppDelegate (PropertiesTests)
 - (void)propertiesTests;
+@end
+
+@interface TestsAppDelegate (OFSHA1HashTests)
+- (void)SHA1HashTests;
 @end
 
 @interface TestsAppDelegate (OFStreamTests)
