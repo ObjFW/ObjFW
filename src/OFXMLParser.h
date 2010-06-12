@@ -53,11 +53,14 @@ extern int _OFXMLParser_reference;
 /**
  * This callback is called when the XML parser found a string.
  *
+ * In case there are comments or CDATA, it is possible that this callback is
+ * called multiple times in a row.
+ *
  * \param parser The parser which found a string
  * \param string The string the XML parser found
  */
 - (void)xmlParser: (OFXMLParser*)parser
-      foundString: (OFString*)string;
+    didFindString: (OFString*)string;
 
 /**
  * This callback is called when the XML parser found a comment.
@@ -66,7 +69,7 @@ extern int _OFXMLParser_reference;
  * \param comment The comment the XML parser found
  */
 - (void)xmlParser: (OFXMLParser*)parser
-     foundComment: (OFString*)comment;
+   didFindComment: (OFString*)comment;
 
 /**
  * This callback is called when the XML parser found an entity it doesn't know.
@@ -78,8 +81,8 @@ extern int _OFXMLParser_reference;
  * \param entity The name of the entity the XML parser didn't know
  * \return A substitution for the entity or nil
  */
--    (OFString*)xmlParser: (OFXMLParser*)parser
-  foundUnknownEntityNamed: (OFString*)entity;
+-      (OFString*)xmlParser: (OFXMLParser*)parser
+  didFindUnknownEntityNamed: (OFString*)entity;
 @end
 
 /**
@@ -96,7 +99,7 @@ extern int _OFXMLParser_reference;
  * \param entity The name of the entity that is unknown
  * \return A substitution for the entity or nil
  */
-- (OFString*)foundUnknownEntityNamed: (OFString*)entity;
+- (OFString*)didFindUnknownEntityNamed: (OFString*)entity;
 @end
 
 /**
@@ -119,10 +122,20 @@ extern int _OFXMLParser_reference;
 		OF_XMLPARSER_IN_ATTR_VALUE,
 		OF_XMLPARSER_EXPECT_CLOSE,
 		OF_XMLPARSER_EXPECT_SPACE_OR_CLOSE,
+		OF_XMLPARSER_IN_CDATA_OR_COMMENT,
+		OF_XMLPARSER_IN_CDATA_OPENING_1,
+		OF_XMLPARSER_IN_CDATA_OPENING_2,
+		OF_XMLPARSER_IN_CDATA_OPENING_3,
+		OF_XMLPARSER_IN_CDATA_OPENING_4,
+		OF_XMLPARSER_IN_CDATA_OPENING_5,
+		OF_XMLPARSER_IN_CDATA_OPENING_6,
+		OF_XMLPARSER_IN_CDATA_1,
+		OF_XMLPARSER_IN_CDATA_2,
+		OF_XMLPARSER_IN_CDATA_3,
+		OF_XMLPARSER_IN_COMMENT_OPENING,
 		OF_XMLPARSER_IN_COMMENT_1,
 		OF_XMLPARSER_IN_COMMENT_2,
-		OF_XMLPARSER_IN_COMMENT_3,
-		OF_XMLPARSER_IN_COMMENT_4
+		OF_XMLPARSER_IN_COMMENT_3
 	} state;
 	OFMutableString *cache;
 	OFString *name;

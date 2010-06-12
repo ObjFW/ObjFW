@@ -188,7 +188,7 @@ parse_numeric_entity(const char *entity, size_t length)
 					pool = [[OFAutoreleasePool alloc] init];
 					str = transform_string(cache, self);
 					[delegate xmlParser: self
-						foundString: str];
+					      didFindString: str];
 					[pool release];
 				}
 
@@ -202,11 +202,11 @@ parse_numeric_entity(const char *entity, size_t length)
 		/* Tag was just opened */
 		case OF_XMLPARSER_TAG_OPENED:
 			if (buf[i] == '/') {
-				last = i + 1;
 				state = OF_XMLPARSER_IN_CLOSE_TAG_NAME;
-			} else if(buf[i] == '!') {
 				last = i + 1;
-				state = OF_XMLPARSER_IN_COMMENT_1;
+			} else if(buf[i] == '!') {
+				state = OF_XMLPARSER_IN_CDATA_OR_COMMENT;
+				last = i + 1;
 			} else {
 				state = OF_XMLPARSER_IN_TAG_NAME;
 				i--;
@@ -530,21 +530,123 @@ parse_numeric_entity(const char *entity, size_t length)
 				    newWithClass: isa];
 			break;
 
+		/* CDATA or comment */
+		case OF_XMLPARSER_IN_CDATA_OR_COMMENT:
+			if (buf[i] == '-')
+				state = OF_XMLPARSER_IN_COMMENT_OPENING;
+			else if (buf[i] == '[')
+				state = OF_XMLPARSER_IN_CDATA_OPENING_1;
+			else
+				@throw [OFMalformedXMLException
+				    newWithClass: isa];
+
+			last = i + 1;
+			break;
+
+		/* CDATA */
+		case OF_XMLPARSER_IN_CDATA_OPENING_1:
+			if (buf[i] == 'C')
+				state = OF_XMLPARSER_IN_CDATA_OPENING_2;
+			else
+				@throw [OFMalformedXMLException
+				    newWithClass: isa];
+			last = i + 1;
+			break;
+		case OF_XMLPARSER_IN_CDATA_OPENING_2:
+			if (buf[i] == 'D')
+				state = OF_XMLPARSER_IN_CDATA_OPENING_3;
+			else
+				@throw [OFMalformedXMLException
+				    newWithClass: isa];
+			last = i + 1;
+			break;
+		case OF_XMLPARSER_IN_CDATA_OPENING_3:
+			if (buf[i] == 'A')
+				state = OF_XMLPARSER_IN_CDATA_OPENING_4;
+			else
+				@throw [OFMalformedXMLException
+				    newWithClass: isa];
+			last = i + 1;
+			break;
+		case OF_XMLPARSER_IN_CDATA_OPENING_4:
+			if (buf[i] == 'T')
+				state = OF_XMLPARSER_IN_CDATA_OPENING_5;
+			else
+				@throw [OFMalformedXMLException
+				    newWithClass: isa];
+			last = i + 1;
+			break;
+		case OF_XMLPARSER_IN_CDATA_OPENING_5:
+			if (buf[i] == 'A')
+				state = OF_XMLPARSER_IN_CDATA_OPENING_6;
+			else
+				@throw [OFMalformedXMLException
+				    newWithClass: isa];
+			last = i + 1;
+			break;
+		case OF_XMLPARSER_IN_CDATA_OPENING_6:
+			if (buf[i] == '[')
+				state = OF_XMLPARSER_IN_CDATA_1;
+			else
+				@throw [OFMalformedXMLException
+				    newWithClass: isa];
+			last = i + 1;
+			break;
+		case OF_XMLPARSER_IN_CDATA_1:
+			if (buf[i] == ']')
+				state = OF_XMLPARSER_IN_CDATA_2;
+			break;
+		case OF_XMLPARSER_IN_CDATA_2:
+			if (buf[i] == ']')
+				state = OF_XMLPARSER_IN_CDATA_3;
+			else
+				state = OF_XMLPARSER_IN_CDATA_1;
+			break;
+		case OF_XMLPARSER_IN_CDATA_3:
+			if (buf[i] == '>') {
+				OFMutableString *cdata;
+				size_t len;
+
+				pool = [[OFAutoreleasePool alloc] init];
+
+				[cache
+				    appendCStringWithoutUTF8Checking: buf + last
+							      length: i - last];
+				cdata = [[cache mutableCopy] autorelease];
+				len = [cdata length];
+
+				[cdata removeCharactersFromIndex: len - 2
+							 toIndex: len];
+				[delegate xmlParser: self
+				      didFindString: cdata];
+				[pool release];
+
+				[cache setToCString: ""];
+
+				last = i + 1;
+				state = OF_XMLPARSER_OUTSIDE_TAG;
+			} else if (buf[i] != ']')
+				state = OF_XMLPARSER_IN_CDATA_1;
+			break;
+
 		/* Comment */
-		case OF_XMLPARSER_IN_COMMENT_1:
-		case OF_XMLPARSER_IN_COMMENT_2:
+		case OF_XMLPARSER_IN_COMMENT_OPENING:
 			if (buf[i] != '-')
 				@throw [OFMalformedXMLException
 				    newWithClass: isa];
 			last = i + 1;
-			state++;
+			state = OF_XMLPARSER_IN_COMMENT_1;
+			break;
+		case OF_XMLPARSER_IN_COMMENT_1:
+			if (buf[i] == '-')
+				state = OF_XMLPARSER_IN_COMMENT_2;
+			break;
+		case OF_XMLPARSER_IN_COMMENT_2:
+			state = (buf[i] == '-' ? OF_XMLPARSER_IN_COMMENT_3 :
+			    OF_XMLPARSER_IN_COMMENT_1);
 			break;
 		case OF_XMLPARSER_IN_COMMENT_3:
-			if (buf[i] == '-')
-				state = OF_XMLPARSER_IN_COMMENT_4;
-			break;
-		case OF_XMLPARSER_IN_COMMENT_4:
-			if (buf[i] == '-') {
+			if (buf[i] == '>') {
 				OFMutableString *comment;
 				size_t len;
 
@@ -553,23 +655,22 @@ parse_numeric_entity(const char *entity, size_t length)
 				[cache
 				    appendCStringWithoutUTF8Checking: buf + last
 							      length: i - last];
-
 				comment = [[cache mutableCopy] autorelease];
 				len = [comment length];
 
-				[comment removeCharactersFromIndex: len - 1
+				[comment removeCharactersFromIndex: len - 2
 							   toIndex: len];
-				[comment removeLeadingAndTrailingWhitespaces];
 				[delegate xmlParser: self
-				       foundComment: comment];
+				     didFindComment: comment];
 				[pool release];
 
 				[cache setToCString: ""];
 
 				last = i + 1;
-				state = OF_XMLPARSER_EXPECT_CLOSE;
+				state = OF_XMLPARSER_OUTSIDE_TAG;
 			} else
-				state = OF_XMLPARSER_IN_COMMENT_3;
+				@throw [OFMalformedXMLException
+				    newWithClass: isa];
 
 			break;
 		}
@@ -582,10 +683,10 @@ parse_numeric_entity(const char *entity, size_t length)
 						 length: len];
 }
 
-- (OFString*)foundUnknownEntityNamed: (OFString*)entity
+- (OFString*)didFindUnknownEntityNamed: (OFString*)entity
 {
 	return [delegate xmlParser: self
-	   foundUnknownEntityNamed: entity];
+	 didFindUnknownEntityNamed: entity];
 }
 @end
 
@@ -661,7 +762,7 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				n = [OFString stringWithCString: entity
 							 length: len];
-				tmp = [h foundUnknownEntityNamed: n];
+				tmp = [h didFindUnknownEntityNamed: n];
 
 				if (tmp == nil)
 					@throw [OFInvalidEncodingException
@@ -705,17 +806,17 @@ parse_numeric_entity(const char *entity, size_t length)
 }
 
 - (void)xmlParser: (OFXMLParser*)parser
-      foundString: (OFString*)string
+    didFindString: (OFString*)string
 {
 }
 
 - (void)xmlParser: (OFXMLParser*)parser
-     foundComment: (OFString*)comment
+   didFindComment: (OFString*)comment
 {
 }
 
--    (OFString*)xmlParser: (OFXMLParser*)parser
-  foundUnknownEntityNamed: (OFString*)entity
+-      (OFString*)xmlParser: (OFXMLParser*)parser
+  didFindUnknownEntityNamed: (OFString*)entity
 {
 	return nil;
 }

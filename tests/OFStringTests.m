@@ -28,7 +28,7 @@ static OFString* whitespace[] = {
 @end
 
 @implementation EntityHandler
-- (OFString*)foundUnknownEntityNamed: (OFString*)entity
+- (OFString*)didFindUnknownEntityNamed: (OFString*)entity
 {
 	if ([entity isEqual: @"foo"])
 		return @"bar";
