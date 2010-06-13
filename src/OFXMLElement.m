@@ -191,7 +191,7 @@
 	    (namespace != nil && def_ns == nil) ||
 	    (namespace != nil && ![namespace isEqual: def_ns])) {
 		if ((prefix = [all_namespaces objectForKey:
-		    (namespace != nil ? namespace : @"")]) == nil)
+		    (namespace != nil ? namespace : (OFString*)@"")]) == nil)
 			@throw [OFUnboundNamespaceException
 			    newWithClass: isa
 			       namespace: namespace];

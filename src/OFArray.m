@@ -130,7 +130,7 @@
 	size_t count;
 
 	self = [self init];
-	
+
 	count = 0;
 
 	for (obj = objs; *obj != nil; obj++) {
