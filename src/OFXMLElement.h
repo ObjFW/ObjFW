@@ -12,6 +12,7 @@
 #import "OFObject.h"
 
 @class OFString;
+@class OFMutableString;
 @class OFMutableArray;
 @class OFMutableDictionary;
 @class OFXMLAttribute;
@@ -22,9 +23,10 @@
 	OFString *namespace;
 	OFString *defaultNamespace;
 	OFMutableArray *attributes;
-	OFString *stringValue;
 	OFMutableDictionary *namespaces;
 	OFMutableArray *children;
+	OFString *text;
+	OFMutableString *comment;
 }
 
 /**
@@ -61,6 +63,22 @@
 + elementWithName: (OFString*)name
 	namespace: (OFString*)ns
       stringValue: (OFString*)stringval;
+
+/**
+ * Creates a new element, only consisting of the specified text.
+ *
+ * \param text The text the element represents
+ * \return A new autoreleased OFXMLElement consisting of the specified text
+ */
++ elementWithText: (OFString*)text;
+
+/**
+ * Creates a new element, only consisting of the specified comment.
+ *
+ * \param comment The comment the element represents
+ * \return A new autoreleased OFXMLElement consisting of the specified comment
+ */
++ elementWithComment: (OFString*)text;
 
 /**
  * Initializes an already allocated OFXMLElement with the specified element
@@ -108,6 +126,24 @@
 - initWithName: (OFString*)name
      namespace: (OFString*)ns
    stringValue: (OFString*)stringval;
+
+/**
+ * Initializes an already allocated OFXMLElement so that it only consists of the
+ * specified text.
+ *
+ * \param text The text the element represents
+ * \return An initialized OFXMLElement consisting of the specified text
+ */
+- initWithText: (OFString*)text;
+
+/**
+ * Initializes an already allocated OFXMLElement so that it only consists of the
+ * specified comment.
+ *
+ * \param comment The comment the element represents
+ * \return An initialized OFXMLElement consisting of the specified comment
+ */
+- initWithComment: (OFString*)text;
 
 /**
  * \return A new autoreleased OFString representing the OFXMLElement as an

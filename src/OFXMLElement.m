@@ -51,6 +51,16 @@
 			       stringValue: stringval] autorelease];
 }
 
++ elementWithText: (OFString*)text
+{
+	return [[[self alloc] initWithText: text] autorelease];
+}
+
++ elementWithComment: (OFString*)comment
+{
+	return [[[self alloc] initWithComment: comment] autorelease];
+}
+
 - init
 {
 	@throw [OFNotImplementedException newWithClass: isa
@@ -88,7 +98,12 @@
 
 	name = [name_ copy];
 	namespace = [ns copy];
-	stringValue = [stringval copy];
+
+	if (stringval != nil) {
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];;
+		[self addChild: [OFXMLElement elementWithText: stringval]];
+		[pool release];
+	}
 
 	namespaces = [[OFMutableDictionary alloc] initWithKeysAndObjects:
 	    @"http://www.w3.org/XML/1998/namespace", @"xml",
@@ -97,10 +112,42 @@
 	return self;
 }
 
+- initWithText: (OFString*)text_
+{
+	self = [super init];
+
+	@try {
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		text = [[text_ stringByXMLEscaping] retain];
+		[pool release];
+	} @catch (OFException *e) {
+		[self dealloc];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithComment: (OFString*)comment_
+{
+	self = [super init];
+
+	@try {
+		comment = [[OFMutableString alloc] initWithString: @"<!--"];
+		[comment appendString: comment_];
+		[comment appendString: @"-->"];
+	} @catch (OFException *e) {
+		[self dealloc];
+		@throw e;
+	}
+
+	return self;
+}
+
 - (OFString*)_stringWithParentNamespaces: (OFDictionary*)parent_namespaces
 		  parentDefaultNamespace: (OFString*)parent_default_ns
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init], *pool2;
+	OFAutoreleasePool *pool, *pool2;
 	char *str_c;
 	size_t len, i, j, attrs_count;
 	OFString *prefix = nil;
@@ -109,6 +156,13 @@
 	OFMutableDictionary *all_namespaces;
 	OFString *def_ns;
 
+	if (text != nil)
+		return [[text retain] autorelease];
+
+	if (comment != nil)
+		return [[comment retain] autorelease];
+
+	pool = [[OFAutoreleasePool alloc] init];
 	def_ns = (defaultNamespace != nil
 	    ? defaultNamespace : parent_default_ns);
 
@@ -212,27 +266,21 @@
 	}
 
 	/* Childen */
-	if (stringValue != nil || children != nil) {
-		if (stringValue != nil)
-			tmp = [stringValue stringByXMLEscaping];
-		else if (children != nil) {
-			OFXMLElement **children_carray = [children cArray];
-			size_t children_count = [children count];
-			IMP append;
+	if (children != nil) {
+		OFXMLElement **children_carray = [children cArray];
+		size_t children_count = [children count];
+		IMP append;
 
-			tmp = [OFMutableString string];
-			append = [tmp methodForSelector:
-			    @selector(appendCStringWithoutUTF8Checking:)];
+		tmp = [OFMutableString string];
+		append = [tmp methodForSelector:
+		    @selector(appendCStringWithoutUTF8Checking:)];
 
-			for (j = 0; j < children_count; j++)
-				append(tmp, @selector(
-				    appendCStringWithoutUTF8Checking:),
-				    [[children_carray[j]
-				    _stringWithParentNamespaces:
-				    all_namespaces
-				    parentDefaultNamespace: defaultNamespace]
-				    cString]);
-		}
+		for (j = 0; j < children_count; j++)
+			append(tmp, @selector(
+			    appendCStringWithoutUTF8Checking:),
+			    [[children_carray[j]
+			    _stringWithParentNamespaces: all_namespaces
+			    parentDefaultNamespace: defaultNamespace] cString]);
 
 		len += [tmp cStringLength] + [name cStringLength] + 2;
 		@try {
@@ -290,6 +338,10 @@
 
 - (void)addAttribute: (OFXMLAttribute*)attr
 {
+	if (name == nil)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
 	if (attributes == nil)
 		attributes = [[OFMutableArray alloc] init];
 
@@ -301,7 +353,13 @@
 - (void)addAttributeWithName: (OFString*)name_
 		 stringValue: (OFString*)value
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFAutoreleasePool *pool;
+
+	if (name == nil)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
+	pool = [[OFAutoreleasePool alloc] init];
 	[self addAttribute: [OFXMLAttribute attributeWithName: name_
 						    namespace: nil
 						  stringValue: value]];
@@ -312,7 +370,13 @@
 		   namespace: (OFString*)ns
 		 stringValue: (OFString*)value
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFAutoreleasePool *pool;
+
+	if (name == nil)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
+	pool = [[OFAutoreleasePool alloc] init];
 	[self addAttribute: [OFXMLAttribute attributeWithName: name_
 						    namespace: ns
 						  stringValue: value]];
@@ -325,7 +389,7 @@
 - (void)setPrefix: (OFString*)prefix
      forNamespace: (OFString*)ns
 {
-	if (prefix == nil || [prefix isEqual: @""])
+	if (name == nil || prefix == nil || [prefix isEqual: @""])
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 	if (ns == nil)
@@ -337,11 +401,19 @@
 
 - (OFString*)defaultNamespace
 {
+	if (name == nil)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
 	return [[defaultNamespace retain] autorelease];
 }
 
 - (void)setDefaultNamespace: (OFString*)ns
 {
+	if (name == nil)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
 	OFString *old = defaultNamespace;
 	defaultNamespace = [ns copy];
 	[old release];
@@ -349,7 +421,7 @@
 
 - (void)addChild: (OFXMLElement*)child
 {
-	if (stringValue != nil)
+	if (name == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
@@ -364,9 +436,10 @@
 	[name release];
 	[namespace release];
 	[attributes release];
-	[stringValue release];
 	[namespaces release];
 	[children release];
+	[text release];
+	[comment release];
 
 	[super dealloc];
 }
