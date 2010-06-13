@@ -39,6 +39,10 @@
 static OFMutex *mutex = nil;
 #endif
 
+#ifdef _WIN32
+# define close(sock) closesocket(sock)
+#endif
+
 @implementation OFTCPSocket
 #if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
 + (void)initialize

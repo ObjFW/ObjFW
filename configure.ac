@@ -275,6 +275,11 @@ AC_MSG_RESULT($atomic_ops)
 AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
 AC_CHECK_LIB(ws2_32, main, LIBS="$LIBS -lws2_32")
 
+dnl AC_CHECK_HEADER(poll.h,
+dnl	[AC_DEFINE(OF_HAVE_POLL, 1, [Whether poll is supported])])
+AC_CHECK_HEADERS(sys/select.h,
+	[AC_DEFINE(OF_HAVE_SYS_SELECT_H, 1, [Whether we have sys/select.h])])
+
 AC_MSG_CHECKING(for getaddrinfo)
 AC_TRY_COMPILE([
 	#include <stddef.h>

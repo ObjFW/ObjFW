@@ -11,7 +11,9 @@
 
 #include "config.h"
 
-#include <poll.h>
+#ifdef OF_HAVE_POLL
+# include <poll.h>
+#endif
 
 #import "OFSocketObserver.h"
 #import "OFDataArray.h"
@@ -20,6 +22,7 @@
 #import "OFTCPSocket.h"
 #import "OFNumber.h"
 #import "OFAutoreleasePool.h"
+#import "OFExceptions.h"
 
 @implementation OFSocketObserver
 + socketObserver
@@ -31,7 +34,12 @@
 {
 	self = [super init];
 
+#ifdef OF_HAVE_POLL
 	fds = [[OFDataArray alloc] initWithItemSize: sizeof(struct pollfd)];
+#else
+	FD_ZERO(&readfds);
+	FD_ZERO(&writefds);
+#endif
 	fdToSocket = [[OFMutableDictionary alloc] init];
 
 	return self;
@@ -40,7 +48,9 @@
 - (void)dealloc
 {
 	[delegate release];
+#ifdef OF_HAVE_POLL
 	[fds release];
+#endif
 	[fdToSocket release];
 
 	[super dealloc];
@@ -58,6 +68,7 @@
 	delegate = delegate_;
 }
 
+#ifdef OF_HAVE_POLL
 - (void)_addSocket: (OFSocket*)sock
 	withEvents: (short)events
 {
@@ -107,57 +118,126 @@
 		}
 	}
 }
+#else
+- (void)_addSocket: (OFSocket*)sock
+	 withFDSet: (fd_set*)fdset
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+
+	if (sock->sock >= FD_SETSIZE)
+		@throw [OFOutOfRangeException newWithClass: isa];
+
+	FD_SET(sock->sock, fdset);
+
+	if (sock->sock >= nfds)
+		nfds = sock->sock + 1;
+
+	[fdToSocket setObject: sock
+		       forKey: [OFNumber numberWithInt: sock->sock]];
+
+	[pool release];
+}
+
+- (void)_removeSocket: (OFSocket*)sock
+	    withFDSet: (fd_set*)fdset
+{
+	if (sock->sock >= FD_SETSIZE)
+		@throw [OFOutOfRangeException newWithClass: isa];
+
+	FD_CLR(sock->sock, fdset);
+
+	if (!FD_ISSET(sock->sock, &readfds) &&
+	    !FD_ISSET(sock->sock, &writefds)) {
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+
+		[fdToSocket removeObjectForKey:
+		    [OFNumber numberWithInt: sock->sock]];
+
+		[pool release];
+	}
+}
+#endif
 
 - (void)addSocketToObserveForIncomingConnections: (OFTCPSocket*)sock
 {
+#ifdef OF_HAVE_POLL
 	[self _addSocket: sock
 	      withEvents: POLLIN];
+#else
+	[self _addSocket: sock
+	       withFDSet: &readfds];
+#endif
 }
 
 - (void)addSocketToObserveForReading: (OFSocket*)sock
 {
+#ifdef OF_HAVE_POLL
 	[self _addSocket: sock
 	      withEvents: POLLIN];
+#else
+	[self _addSocket: sock
+	       withFDSet: &readfds];
+#endif
 }
 
 - (void)addSocketToObserveForWriting: (OFSocket*)sock
 {
+#ifdef OF_HAVE_POLL
 	[self _addSocket: sock
 	      withEvents: POLLOUT];
+#else
+	[self _addSocket: sock
+	       withFDSet: &writefds];
+#endif
 }
 
 - (void)removeSocketToObserveForIncomingConnections: (OFTCPSocket*)sock
 {
+#ifdef OF_HAVE_POLL
 	[self _removeSocket: sock
 		 withEvents: POLLIN];
+#else
+	[self _removeSocket: sock
+		  withFDSet: &readfds];
+#endif
 }
 
 - (void)removeSocketToObserveForReading: (OFSocket*)sock
 {
+#ifdef OF_HAVE_POLL
 	[self _removeSocket: sock
 		 withEvents: POLLIN];
+#else
+	[self _removeSocket: sock
+		  withFDSet: &readfds];
+#endif
 }
 
 - (void)removeSocketToObserveForWriting: (OFSocket*)sock
 {
+#ifdef OF_HAVE_POLL
 	[self _removeSocket: sock
 		 withEvents: POLLOUT];
+#else
+	[self _removeSocket: sock
+		  withFDSet: &writefds];
+#endif
 }
 
-- (int)observe
+- (void)observe
 {
-	return [self observeWithTimeout: -1];
+	[self observeWithTimeout: -1];
 }
 
-- (int)observeWithTimeout: (int)timeout
+- (BOOL)observeWithTimeout: (int)timeout
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+#ifdef OF_HAVE_POLL
 	struct pollfd *fds_c = [fds cArray];
 	size_t i, nfds = [fds count];
-	int ret = poll(fds_c, nfds, timeout);
 
-	if (ret <= 0)
-		return ret;
+	if (poll(fds_c, nfds, timeout) < 1)
+		return NO;
 
 	for (i = 0; i < nfds; i++) {
 		OFNumber *num;
@@ -182,10 +262,40 @@
 
 		fds_c[i].revents = 0;
 	}
+#else
+	fd_set readfds_;
+	fd_set writefds_;
+	fd_set exceptfds_;
+	struct timeval tv;
+	OFEnumerator *enumerator;
+	OFSocket *sock;
 
+	readfds_ = readfds;
+	writefds_ = writefds;
+	FD_ZERO(&exceptfds_);
+
+	if (select(nfds, &readfds_, &writefds_, &exceptfds_,
+	    (timeout != -1 ? &tv : NULL)) < 1)
+		return NO;
+
+	enumerator = [[[fdToSocket copy] autorelease] objectEnumerator];
+
+	while ((sock = [enumerator nextObject]) != nil) {
+		if (FD_ISSET(sock->sock, &readfds_)) {
+			if (sock->listening)
+				[delegate socketDidReceiveIncomingConnection:
+				    (OFTCPSocket*)sock];
+			else
+				[delegate socketDidBecomeReadyForReading: sock];
+		}
+
+		if (FD_ISSET(sock->sock, &writefds_))
+			[delegate socketDidBecomeReadyForWriting: sock];
+	}
+#endif
 	[pool release];
 
-	return ret;
+	return YES;
 }
 @end
 

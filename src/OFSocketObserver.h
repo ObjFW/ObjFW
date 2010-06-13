@@ -9,11 +9,22 @@
  * the packaging of this file.
  */
 
+#if !defined(OF_HAVE_POLL) && defined(OF_HAVE_SYS_SELECT_H)
+# include <sys/select.h>
+#endif
+
 #import "OFObject.h"
+
+#ifdef _WIN32
+# define _WIN32_WINNT 0x0501
+# include <windows.h>
+#endif
 
 @class OFSocket;
 @class OFTCPSocket;
+#ifdef OF_HAVE_POLL
 @class OFDataArray;
+#endif
 @class OFMutableDictionary;
 
 /**
@@ -50,7 +61,13 @@
 @interface OFSocketObserver: OFObject
 {
 	OFObject <OFSocketObserverDelegate> *delegate;
+#ifdef OF_HAVE_POLL
 	OFDataArray *fds;
+#else
+	fd_set readfds;
+	fd_set writefds;
+	int nfds;
+#endif
 	OFMutableDictionary *fdToSocket;
 }
 
@@ -119,18 +136,17 @@
 
 /**
  * Observes all sockets and blocks until an event happens on a socket.
- *
- * \return The number of sockets that have pending events
  */
-- (int)observe;
+- (void)observe;
 
 /**
  * Observes all sockets until an event happens on a socket or the timeout is
  * reached.
  *
- * \return The number of sockets that have pending events
+ * \param timeout The time to wait for an event, in milliseconds
+ * \return A boolean whether events occurred during the timeinterval
  */
-- (int)observeWithTimeout: (int)timeout;
+- (BOOL)observeWithTimeout: (int)timeout;
 @end
 
 @interface OFObject (OFSocketObserverDelegate) <OFSocketObserverDelegate>
