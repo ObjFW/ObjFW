@@ -116,14 +116,7 @@
 {
 	self = [super init];
 
-	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-		text = [[text_ stringByXMLEscaping] retain];
-		[pool release];
-	} @catch (OFException *e) {
-		[self dealloc];
-		@throw e;
-	}
+	text = [text_ copy];
 
 	return self;
 }
@@ -132,14 +125,7 @@
 {
 	self = [super init];
 
-	@try {
-		comment = [[OFMutableString alloc] initWithString: @"<!--"];
-		[comment appendString: comment_];
-		[comment appendString: @"-->"];
-	} @catch (OFException *e) {
-		[self dealloc];
-		@throw e;
-	}
+	comment = [comment_ copy];
 
 	return self;
 }
@@ -157,10 +143,17 @@
 	OFString *def_ns;
 
 	if (text != nil)
-		return [[text retain] autorelease];
+		return [text stringByXMLEscaping];
 
-	if (comment != nil)
-		return [[comment retain] autorelease];
+	if (comment != nil) {
+		OFMutableString *str;
+
+		str = [OFMutableString stringWithString: @"<!--"];
+		[str appendString: comment];
+		[str appendString: @"-->"];
+
+		return str;
+	}
 
 	pool = [[OFAutoreleasePool alloc] init];
 	def_ns = (defaultNamespace != nil
