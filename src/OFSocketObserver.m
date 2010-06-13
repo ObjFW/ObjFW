@@ -17,6 +17,7 @@
 #import "OFDataArray.h"
 #import "OFDictionary.h"
 #import "OFSocket.h"
+#import "OFTCPSocket.h"
 #import "OFNumber.h"
 #import "OFAutoreleasePool.h"
 
@@ -57,7 +58,8 @@
 	delegate = delegate_;
 }
 
-- (void)addSocketToObserveForReading: (OFSocket*)sock
+- (void)_addSocket: (OFSocket*)sock
+	withEvents: (short)events
 {
 	struct pollfd *fds_c = [fds cArray];
 	size_t i, count = [fds count];
@@ -65,92 +67,81 @@
 
 	for (i = 0; i < count; i++) {
 		if (fds_c[i].fd == sock->sock) {
-			fds_c[i].events |= POLLIN;
+			fds_c[i].events |= events;
 			found = YES;
 		}
 	}
 
 	if (!found) {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-		struct pollfd p = { sock->sock, POLLIN, 0 };
+		struct pollfd p = { sock->sock, events, 0 };
 		[fds addItem: &p];
 		[fdToSocket setObject: sock
 			       forKey: [OFNumber numberWithInt: sock->sock]];
 		[pool release];
 	}
+}
+
+- (void)_removeSocket: (OFSocket*)sock
+	   withEvents: (short)events
+{
+	struct pollfd *fds_c = [fds cArray];
+	size_t i, nfds = [fds count];
+
+	for (i = 0; i < nfds; i++) {
+		if (fds_c[i].fd == sock->sock) {
+			OFAutoreleasePool *pool;
+
+			fds_c[i].events &= ~events;
+
+			if (fds_c[i].events != 0)
+				return;
+
+			pool = [[OFAutoreleasePool alloc] init];
+
+			[fds removeItemAtIndex: i];
+			[fdToSocket removeObjectForKey:
+			    [OFNumber numberWithInt: sock->sock]];
+
+			[pool release];
+		}
+	}
+}
+
+- (void)addSocketToObserveForIncomingConnections: (OFTCPSocket*)sock
+{
+	[self _addSocket: sock
+	      withEvents: POLLIN];
+}
+
+- (void)addSocketToObserveForReading: (OFSocket*)sock
+{
+	[self _addSocket: sock
+	      withEvents: POLLIN];
 }
 
 - (void)addSocketToObserveForWriting: (OFSocket*)sock
 {
-	struct pollfd *fds_c = [fds cArray];
-	size_t i, nfds = [fds count];
-	BOOL found = NO;
+	[self _addSocket: sock
+	      withEvents: POLLOUT];
+}
 
-	for (i = 0; i < nfds; i++) {
-		if (fds_c[i].fd == sock->sock) {
-			fds_c[i].events |= POLLOUT;
-			found = YES;
-		}
-	}
-
-	if (!found) {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-		struct pollfd p = { sock->sock, POLLOUT, 0 };
-		[fds addItem: &p];
-		[fdToSocket setObject: sock
-			       forKey: [OFNumber numberWithInt: sock->sock]];
-		[pool release];
-	}
+- (void)removeSocketToObserveForIncomingConnections: (OFTCPSocket*)sock
+{
+	[self _removeSocket: sock
+		 withEvents: POLLIN];
 }
 
 - (void)removeSocketToObserveForReading: (OFSocket*)sock
 {
-	struct pollfd *fds_c = [fds cArray];
-	size_t i, nfds = [fds count];
-
-	for (i = 0; i < nfds; i++) {
-		if (fds_c[i].fd == sock->sock) {
-			OFAutoreleasePool *pool;
-
-			fds_c[i].events &= ~POLLIN;
-
-			if (fds_c[i].events != 0)
-				return;
-
-			pool = [[OFAutoreleasePool alloc] init];
-
-			[fds removeItemAtIndex: i];
-			[fdToSocket removeObjectForKey:
-			    [OFNumber numberWithInt: sock->sock]];
-
-			[pool release];
-		}
-	}
+	[self _removeSocket: sock
+		 withEvents: POLLIN];
 }
 
 - (void)removeSocketToObserveForWriting: (OFSocket*)sock
 {
-	struct pollfd *fds_c = [fds cArray];
-	size_t i, nfds = [fds count];
-
-	for (i = 0; i < nfds; i++) {
-		if (fds_c[i].fd == sock->sock) {
-			OFAutoreleasePool *pool;
-
-			fds_c[i].events &= ~POLLOUT;
-
-			if (fds_c[i].events != 0)
-				return;
-
-			pool = [[OFAutoreleasePool alloc] init];
-
-			[fds removeItemAtIndex: i];
-			[fdToSocket removeObjectForKey:
-			    [OFNumber numberWithInt: sock->sock]];
-
-			[pool release];
-		}
-	}
+	[self _removeSocket: sock
+		 withEvents: POLLOUT];
 }
 
 - (int)observe
@@ -175,13 +166,18 @@
 		if (fds_c[i].revents & POLLIN) {
 			num = [OFNumber numberWithInt: fds_c[i].fd];
 			sock = [fdToSocket objectForKey: num];
-			[delegate socketDidGetReadyForReading: sock];
+
+			if (sock->listening)
+				[delegate socketDidReceiveIncomingConnection:
+				    (OFTCPSocket*)sock];
+			else
+				[delegate socketDidBecomeReadyForReading: sock];
 		}
 
 		if (fds_c[i].revents & POLLOUT) {
 			num = [OFNumber numberWithInt: fds_c[i].fd];
 			sock = [fdToSocket objectForKey: num];
-			[delegate socketDidGetReadyForReading: sock];
+			[delegate socketDidBecomeReadyForReading: sock];
 		}
 
 		fds_c[i].revents = 0;
@@ -194,11 +190,15 @@
 @end
 
 @implementation OFObject (OFSocketObserverDelegate)
-- (void)socketDidGetReadyForReading: (OFSocket*)sock
+- (void)socketDidReceiveIncomingConnection: (OFTCPSocket*)sock
 {
 }
 
-- (void)socketDidGetReadyForWriting: (OFSocket*)sock
+- (void)socketDidBecomeReadyForReading: (OFSocket*)sock
+{
+}
+
+- (void)socketDidBecomeReadyForWriting: (OFSocket*)sock
 {
 }
 @end

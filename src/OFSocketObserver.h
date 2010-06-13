@@ -12,6 +12,7 @@
 #import "OFObject.h"
 
 @class OFSocket;
+@class OFTCPSocket;
 @class OFDataArray;
 @class OFMutableDictionary;
 
@@ -20,22 +21,27 @@
  *	  OFSocketObserver.
  */
 @protocol OFSocketObserverDelegate
+/*
+ * This callback is called when a listening socket got a new incoming
+ * connection.
+ *
+ * \param sock The socket which did receive an incoming connection
+ */
+- (void)socketDidReceiveIncomingConnection: (OFTCPSocket*)sock;
+
 /**
  * This callback is called when a socket did get ready for reading.
  *
- * This callback is also called when a listening socket got a new incoming
- * connection.
- *
- * \param sock The socket which did get ready for reading
+ * \param sock The socket which did become ready for reading
  */
-- (void)socketDidGetReadyForReading: (OFSocket*)sock;
+- (void)socketDidBecomeReadyForReading: (OFSocket*)sock;
 
 /**
  * This callback is called when a socket did get ready for writing.
  *
- * \param sock The socket which did get ready for writing
+ * \param sock The socket which did become ready for writing
  */
-- (void)socketDidGetReadyForWriting: (OFSocket*)sock;
+- (void)socketDidBecomeReadyForWriting: (OFSocket*)sock;
 @end
 
 /**
@@ -70,6 +76,13 @@
 - (void)setDelegate: (OFObject <OFSocketObserverDelegate>*)delegate;
 
 /**
+ * Adds a socket to observe for incoming connections.
+ *
+ * \param sock The socket to observe for incoming connections
+ */
+- (void)addSocketToObserveForIncomingConnections: (OFTCPSocket*)sock;
+
+/**
  * Adds a socket to observe for reading.
  *
  * \param sock The socket to observe for reading
@@ -82,6 +95,13 @@
  * \param sock The socket to observe for writing
  */
 - (void)addSocketToObserveForWriting: (OFSocket*)sock;
+
+/**
+ * Removes a socket to observe for incoming connections.
+ *
+ * \param sock The socket to remove from observing for incoming connections
+ */
+- (void)removeSocketToObserveForIncomingConnections: (OFTCPSocket*)sock;
 
 /**
  * Removes a socket to observe for reading.

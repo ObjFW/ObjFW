@@ -314,6 +314,8 @@ static OFMutex *mutex = nil;
 	if (listen(sock, backlog) == -1)
 		@throw [OFListenFailedException newWithClass: isa
 						     backLog: backlog];
+
+	listening = YES;
 }
 
 - (void)listen
@@ -324,6 +326,8 @@ static OFMutex *mutex = nil;
 	if (listen(sock, 5) == -1)
 		@throw [OFListenFailedException newWithClass: isa
 						     backLog: 5];
+
+	listening = YES;
 }
 
 - (OFTCPSocket*)accept
@@ -415,6 +419,8 @@ static OFMutex *mutex = nil;
 
 	close(sock);
 	sock = INVALID_SOCKET;
+	listening = NO;
+	eos = NO;
 
 	[self freeMemory: sockAddr];
 	sockAddr = NULL;

@@ -23,11 +23,13 @@
 {
 @public
 #ifndef _WIN32
-	int		sock;
+	int    sock;
 #else
-	SOCKET		sock;
+	SOCKET sock;
 #endif
-	BOOL		eos;
+	BOOL   listening;
+@protected
+	BOOL   eos;
 }
 
 /**
