@@ -21,6 +21,7 @@
  */
 @interface OFSocket: OFStream
 {
+@public
 #ifndef _WIN32
 	int		sock;
 #else

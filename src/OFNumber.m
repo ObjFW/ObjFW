@@ -1004,4 +1004,9 @@
 		@throw [OFInvalidFormatException newWithClass: isa];
 	}
 }
+
+- copy
+{
+	return [self retain];
+}
 @end

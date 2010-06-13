@@ -44,7 +44,7 @@ enum of_number_type {
 /**
  * \brief Provides a way to store a number in an object.
  */
-@interface OFNumber: OFObject
+@interface OFNumber: OFObject <OFCopying>
 {
 	union {
 		char	       char_;

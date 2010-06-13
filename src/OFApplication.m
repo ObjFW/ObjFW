@@ -175,9 +175,9 @@ of_application_main(int argc, char *argv[], Class cls)
 
 - (void)setDelegate: (OFObject <OFApplicationDelegate>*)delegate_
 {
-	id old = delegate;
-	delegate = [delegate_ retain];
-	[old release];
+	[delegate_ retain];
+	[delegate release];
+	delegate = delegate_;
 }
 
 - (void)run
