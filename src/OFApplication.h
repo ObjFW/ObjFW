@@ -48,14 +48,14 @@
 	OFString *programName;
 	OFMutableArray *arguments;
 	OFMutableDictionary *environment;
-	id delegate;
+	OFObject <OFApplicationDelegate> *delegate;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, retain) OFString *programName;
 @property (readonly, retain) OFArray *arguments;
 @property (readonly, retain) OFDictionary *environment;
-@property (retain) id delegate;
+@property (retain) OFObject <OFApplicationDelegate> *delegate;
 #endif
 
 /**
@@ -119,14 +119,14 @@
 /**
  * \return The delegate of the application
  */
-- (id)delegate;
+- (OFObject <OFApplicationDelegate>*)delegate;
 
 /**
  * Sets the delegate of the application.
  *
  * \param delegate The delegate for the application
  */
-- (void)setDelegate: (id)delegate;
+- (void)setDelegate: (OFObject <OFApplicationDelegate>*)delegate;
 
 /**
  * Starts the application after everything has been initialized.

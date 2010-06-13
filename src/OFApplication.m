@@ -42,7 +42,7 @@ int
 of_application_main(int argc, char *argv[], Class cls)
 {
 	OFApplication *app;
-	id delegate = nil;
+	OFObject <OFApplicationDelegate> *delegate = nil;
 
 	if (cls != Nil)
 		delegate = [[cls alloc] init];
@@ -168,12 +168,12 @@ of_application_main(int argc, char *argv[], Class cls)
 	return [[environment retain] autorelease];
 }
 
-- (id)delegate
+- (OFObject <OFApplicationDelegate>*)delegate
 {
 	return [[delegate retain] autorelease];
 }
 
-- (void)setDelegate: (id)delegate_
+- (void)setDelegate: (OFObject <OFApplicationDelegate>*)delegate_
 {
 	id old = delegate;
 	delegate = [delegate_ retain];
