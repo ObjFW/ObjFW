@@ -25,13 +25,13 @@
 
 static OF_INLINE OFString*
 transform_string(OFMutableString *cache,
-    OFObject <OFStringXMLUnescapingDelegate> *handler)
+    OFObject <OFStringXMLUnescapingDelegate> *delegate)
 {
 	[cache replaceOccurrencesOfString: @"\r\n"
 			       withString: @"\n"];
 	[cache replaceOccurrencesOfString: @"\r"
 			       withString: @"\n"];
-	return [cache stringByXMLUnescapingWithHandler: handler];
+	return [cache stringByXMLUnescapingWithDelegate: delegate];
 }
 
 static OF_INLINE OFString*
@@ -138,8 +138,8 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 
 					pool = [[OFAutoreleasePool alloc] init];
 					str = transform_string(cache, self);
-					[delegate xmlParser: self
-					      didFindString: str];
+					[delegate parser: self
+					 foundCharacters: str];
 					[pool release];
 				}
 
@@ -206,17 +206,17 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 						    newWithClass: isa
 							  prefix: prefix];
 
-					[delegate xmlParser: self
-					didStartTagWithName: name
-						     prefix: prefix
-						  namespace: ns
-						 attributes: nil];
+					[delegate parser: self
+					 didStartElement: name
+					      withPrefix: prefix
+					       namespace: ns
+					      attributes: nil];
 
 					if (buf[i] == '/')
-						[delegate xmlParser: self
-						  didEndTagWithName: name
-							     prefix: prefix
-							  namespace: ns];
+						[delegate parser: self
+						   didEndElement: name
+						      withPrefix: prefix
+						       namespace: ns];
 					else
 						[previous addObject:
 						    [[cache copy] autorelease]];
@@ -291,10 +291,10 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 						  prefix: prefix];
 				[namespaces removeNObjects: 1];
 
-				[delegate xmlParser: self
-				  didEndTagWithName: name
-					     prefix: prefix
-					  namespace: ns];
+				[delegate parser: self
+				   didEndElement: name
+				      withPrefix: prefix
+				       namespace: ns];
 
 				[pool release];
 
@@ -322,17 +322,17 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 					    newWithClass: isa
 						  prefix: prefix];
 
-				[delegate xmlParser: self
-				didStartTagWithName: name
-					     prefix: prefix
-					  namespace: ns
-					 attributes: attrs];
+				[delegate parser: self
+				 didStartElement: name
+				      withPrefix: prefix
+				       namespace: ns
+				      attributes: attrs];
 
 				if (buf[i] == '/') {
-					[delegate xmlParser: self
-					  didEndTagWithName: name
-						     prefix: prefix
-						  namespace: ns];
+					[delegate parser: self
+					   didEndElement: name
+					      withPrefix: prefix
+					       namespace: ns];
 					[namespaces removeNObjects: 1];
 				} else if (prefix != nil) {
 					OFString *str = [OFString
@@ -568,8 +568,8 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 
 				[cdata removeCharactersFromIndex: len - 2
 							 toIndex: len];
-				[delegate xmlParser: self
-				      didFindString: cdata];
+				[delegate parser: self
+				      foundCDATA: cdata];
 				[pool release];
 
 				[cache setToCString: ""];
@@ -611,8 +611,8 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 
 				[comment removeCharactersFromIndex: len - 2
 							   toIndex: len];
-				[delegate xmlParser: self
-				     didFindComment: comment];
+				[delegate parser: self
+				    foundComment: comment];
 				[pool release];
 
 				[cache setToCString: ""];
@@ -634,41 +634,47 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 						 length: len];
 }
 
-- (OFString*)didFindUnknownEntityNamed: (OFString*)entity
+-	   (OFString*)string: (OFString*)string
+  containsUnknownEntityNamed: (OFString*)entity
 {
-	return [delegate xmlParser: self
-	 didFindUnknownEntityNamed: entity];
+	return [delegate parser: self
+	foundUnknownEntityNamed: entity];
 }
 @end
 
 @implementation OFObject (OFXMLParserDelegate)
--     (void)xmlParser: (OFXMLParser*)parser
-  didStartTagWithName: (OFString*)name
-	       prefix: (OFString*)prefix
-	    namespace: (OFString*)ns
-	   attributes: (OFArray*)attrs
+-    (void)parser: (OFXMLParser*)parser
+  didStartElement: (OFString*)name
+       withPrefix: (OFString*)prefix
+	namespace: (OFString*)ns
+       attributes: (OFArray*)attrs
 {
 }
 
--   (void)xmlParser: (OFXMLParser*)parser
-  didEndTagWithName: (OFString*)name
-	     prefix: (OFString*)prefix
-	  namespace: (OFString*)ns
+-  (void)parser: (OFXMLParser*)parser
+  didEndElement: (OFString*)name
+     withPrefix: (OFString*)prefix
+      namespace: (OFString*)ns
 {
 }
 
-- (void)xmlParser: (OFXMLParser*)parser
-    didFindString: (OFString*)string
+-    (void)parser: (OFXMLParser*)parser
+  foundCharacters: (OFString*)string
 {
 }
 
-- (void)xmlParser: (OFXMLParser*)parser
-   didFindComment: (OFString*)comment
+- (void)parser: (OFXMLParser*)parser
+    foundCDATA: (OFString*)cdata
 {
 }
 
--      (OFString*)xmlParser: (OFXMLParser*)parser
-  didFindUnknownEntityNamed: (OFString*)entity
+- (void)parser: (OFXMLParser*)parser
+  foundComment: (OFString*)comment
+{
+}
+
+-	(OFString*)parser: (OFXMLParser*)parser
+  foundUnknownEntityNamed: (OFString*)entity
 {
 	return nil;
 }

@@ -29,17 +29,18 @@ enum event_type {
 	TAG_START,
 	TAG_END,
 	STRING,
+	CDATA,
 	COMMENT
 };
 
 @implementation TestsAppDelegate (OFXMLParser)
-- (void)xmlParserCallbackWithEventType: (enum event_type)et
-				  name: (OFString*)name
-				prefix: (OFString*)prefix
-			     namespace: (OFString*)ns
-			    attributes: (OFArray*)attrs
-				string: (OFString*)string
-			       comment: (OFString*)comment
+- (void)parserCallbackWithEventType: (enum event_type)et
+			       name: (OFString*)name
+			     prefix: (OFString*)prefix
+			  namespace: (OFString*)ns
+			 attributes: (OFArray*)attrs
+			     string: (OFString*)string
+			    comment: (OFString*)comment
 {
 	OFString *msg;
 
@@ -55,7 +56,7 @@ enum event_type {
 		TEST(msg, et == STRING && [string isEqual: @"\n "])
 		break;
 	case 3:
-		TEST(msg, et == STRING && [string isEqual: @"f<oo"])
+		TEST(msg, et == CDATA && [string isEqual: @"f<oo"])
 		break;
 	case 4:
 		TEST(msg, et == TAG_START && [name isEqual: @"bar"] &&
@@ -227,61 +228,73 @@ enum event_type {
 	}
 }
 
--     (void)xmlParser: (OFXMLParser*)parser
-  didStartTagWithName: (OFString*)name
-	       prefix: (OFString*)prefix
-	    namespace: (OFString*)ns
-	   attributes: (OFArray*)attrs
+-    (void)parser: (OFXMLParser*)parser
+  didStartElement: (OFString*)name
+       withPrefix: (OFString*)prefix
+	namespace: (OFString*)ns
+       attributes: (OFArray*)attrs
 {
-	[self xmlParserCallbackWithEventType: TAG_START
-					name: name
-				      prefix: prefix
-				   namespace: ns
-				  attributes: attrs
-				      string: nil
-				     comment: nil];
+	[self parserCallbackWithEventType: TAG_START
+				     name: name
+				   prefix: prefix
+				namespace: ns
+			       attributes: attrs
+				   string: nil
+				  comment: nil];
 }
 
--   (void)xmlParser: (OFXMLParser*)parser
-  didEndTagWithName: (OFString*)name
-	     prefix: (OFString*)prefix
-	  namespace: (OFString*)ns
+-  (void)parser: (OFXMLParser*)parser
+  didEndElement: (OFString*)name
+     withPrefix: (OFString*)prefix
+      namespace: (OFString*)ns
 {
-	[self xmlParserCallbackWithEventType: TAG_END
-					name: name
-				      prefix: prefix
-				   namespace: ns
-				  attributes: nil
-				      string: nil
-				     comment: nil];
+	[self parserCallbackWithEventType: TAG_END
+				     name: name
+				   prefix: prefix
+				namespace: ns
+			       attributes: nil
+				   string: nil
+				  comment: nil];
 }
 
-- (void)xmlParser: (OFXMLParser*)parser
-    didFindString: (OFString*)string
+-    (void)parser: (OFXMLParser*)parser
+  foundCharacters: (OFString*)string
 {
-	[self xmlParserCallbackWithEventType: STRING
-					name: nil
-				      prefix: nil
-				   namespace: nil
-				  attributes: nil
-				      string: string
-				     comment: nil];
+	[self parserCallbackWithEventType: STRING
+				     name: nil
+				   prefix: nil
+				namespace: nil
+			       attributes: nil
+				   string: string
+				  comment: nil];
 }
 
-- (void)xmlParser: (OFXMLParser*)parser
-   didFindComment: (OFString*)comment
+- (void)parser: (OFXMLParser*)parser
+    foundCDATA: (OFString*)cdata
 {
-	[self xmlParserCallbackWithEventType: COMMENT
-					name: nil
-				      prefix: nil
-				   namespace: nil
-				  attributes: nil
-				      string: nil
-				     comment: comment];
+	[self parserCallbackWithEventType: CDATA
+				     name: nil
+				   prefix: nil
+				namespace: nil
+			       attributes: nil
+				   string: cdata
+				  comment: nil];
 }
 
--      (OFString*)xmlParser: (OFXMLParser*)parser
-  didFindUnknownEntityNamed: (OFString*)entity
+- (void)parser: (OFXMLParser*)parser
+  foundComment: (OFString*)comment
+{
+	[self parserCallbackWithEventType: COMMENT
+				     name: nil
+				   prefix: nil
+				namespace: nil
+			       attributes: nil
+				   string: nil
+				  comment: comment];
+}
+
+-	(OFString*)parser: (OFXMLParser*)parser
+  foundUnknownEntityNamed: (OFString*)entity
 {
 	if ([entity isEqual: @"foo"])
 		return @"foobar";

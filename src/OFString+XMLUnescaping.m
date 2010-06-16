@@ -71,11 +71,11 @@ parse_numeric_entity(const char *entity, size_t length)
 @implementation OFString (XMLUnescaping)
 - (OFString*)stringByXMLUnescaping
 {
-	return [self stringByXMLUnescapingWithHandler: nil];
+	return [self stringByXMLUnescapingWithDelegate: nil];
 }
 
-- (OFString*)stringByXMLUnescapingWithHandler:
-    (OFObject <OFStringXMLUnescapingDelegate>*)h
+- (OFString*)stringByXMLUnescapingWithDelegate:
+    (OFObject <OFStringXMLUnescapingDelegate>*)delegate
 {
 	size_t i, last;
 	BOOL in_entity;
@@ -132,7 +132,7 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				[ret appendString: tmp];
 				[pool release];
-			} else if (h != nil) {
+			} else if (delegate != nil) {
 				OFAutoreleasePool *pool;
 				OFString *n, *tmp;
 
@@ -140,7 +140,8 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				n = [OFString stringWithCString: entity
 							 length: len];
-				tmp = [h didFindUnknownEntityNamed: n];
+				tmp =	  [delegate string: self
+				containsUnknownEntityNamed: n];
 
 				if (tmp == nil)
 					@throw [OFInvalidEncodingException

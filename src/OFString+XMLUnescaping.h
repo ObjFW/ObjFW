@@ -27,7 +27,8 @@ extern int _OFString_XMLUnescaping_reference;
  * \param entity The name of the entity that is unknown
  * \return A substitution for the entity or nil
  */
-- (OFString*)didFindUnknownEntityNamed: (OFString*)entity;
+-	   (OFString*)string: (OFString*)str
+  containsUnknownEntityNamed: (OFString*)entity;
 @end
 
 /**
@@ -45,6 +46,6 @@ extern int _OFString_XMLUnescaping_reference;
  *
  * \param h An OFXMLUnescapingDelegate as a handler for unknown entities
  */
-- (OFString*)stringByXMLUnescapingWithHandler:
-    (OFObject <OFStringXMLUnescapingDelegate>*)h;
+- (OFString*)stringByXMLUnescapingWithDelegate:
+    (OFObject <OFStringXMLUnescapingDelegate>*)delegate;
 @end

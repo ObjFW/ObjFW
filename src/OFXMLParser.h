@@ -30,11 +30,11 @@
  * \param ns The namespace of the tag which just started or nil
  * \param attrs The attributes included in the tag which just started or nil
  */
--     (void)xmlParser: (OFXMLParser*)parser
-  didStartTagWithName: (OFString*)name
-	       prefix: (OFString*)prefix
-	    namespace: (OFString*)ns
-	   attributes: (OFArray*)attrs;
+-    (void)parser: (OFXMLParser*)parser
+  didStartElement: (OFString*)name
+       withPrefix: (OFString*)prefix
+	namespace: (OFString*)ns
+       attributes: (OFArray*)attrs;
 
 /**
  * This callback is called when the XML parser found the end of a tag.
@@ -44,13 +44,13 @@
  * \param prefix The prefix of the tag which just ended or nil
  * \param ns The namespace of the tag which just ended or nil
  */
--   (void)xmlParser: (OFXMLParser*)parser
-  didEndTagWithName: (OFString*)name
-	     prefix: (OFString*)prefix
-	  namespace: (OFString*)ns;
+-  (void)parser: (OFXMLParser*)parser
+  didEndElement: (OFString*)name
+     withPrefix: (OFString*)prefix
+      namespace: (OFString*)ns;
 
 /**
- * This callback is called when the XML parser found a string.
+ * This callback is called when the XML parser found characters.
  *
  * In case there are comments or CDATA, it is possible that this callback is
  * called multiple times in a row.
@@ -58,8 +58,17 @@
  * \param parser The parser which found a string
  * \param string The string the XML parser found
  */
-- (void)xmlParser: (OFXMLParser*)parser
-    didFindString: (OFString*)string;
+-    (void)parser: (OFXMLParser*)parser
+  foundCharacters: (OFString*)string;
+
+/**
+ * This callback is called when the XML parser found CDATA.
+ *
+ * \param parser The parser which found a string
+ * \param string The string the XML parser found
+ */
+- (void)parser: (OFXMLParser*)parser
+    foundCDATA: (OFString*)cdata;
 
 /**
  * This callback is called when the XML parser found a comment.
@@ -67,8 +76,8 @@
  * \param parser The parser which found a comment
  * \param comment The comment the XML parser found
  */
-- (void)xmlParser: (OFXMLParser*)parser
-   didFindComment: (OFString*)comment;
+- (void)parser: (OFXMLParser*)parser
+  foundComment: (OFString*)comment;
 
 /**
  * This callback is called when the XML parser found an entity it doesn't know.
@@ -80,8 +89,8 @@
  * \param entity The name of the entity the XML parser didn't know
  * \return A substitution for the entity or nil
  */
--      (OFString*)xmlParser: (OFXMLParser*)parser
-  didFindUnknownEntityNamed: (OFString*)entity;
+-	(OFString*)parser: (OFXMLParser*)parser
+  foundUnknownEntityNamed: (OFString*)entity;
 @end
 
 /**

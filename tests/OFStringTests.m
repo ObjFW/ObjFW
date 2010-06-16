@@ -28,7 +28,8 @@ static OFString* whitespace[] = {
 @end
 
 @implementation EntityHandler
-- (OFString*)didFindUnknownEntityNamed: (OFString*)entity
+-	   (OFString*)string: (OFString*)string
+  containsUnknownEntityNamed: (OFString*)entity
 {
 	if ([entity isEqual: @"foo"])
 		return @"bar";
@@ -357,7 +358,7 @@ static OFString* whitespace[] = {
 
 	TEST(@"-[stringByXMLUnescapingWithHandler:]",
 	    (h = [[[EntityHandler alloc] init] autorelease]) &&
-	    [[@"x&foo;y" stringByXMLUnescapingWithHandler: h]
+	    [[@"x&foo;y" stringByXMLUnescapingWithDelegate: h]
 	    isEqual: @"xbary"])
 
 	[pool drain];
