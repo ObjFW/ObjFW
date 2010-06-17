@@ -690,7 +690,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 
 	data = data_;
 	size = size_;
-	mutations = *mutationsPtr_;
+	mutations = (mutationsPtr_ != NULL ? *mutationsPtr_ : 0);
 	mutationsPtr = mutationsPtr_;
 
 	return self;

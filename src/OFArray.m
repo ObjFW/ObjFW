@@ -374,7 +374,7 @@
 
 	array = array_;
 	count = [array_ count];
-	mutations = *mutationsPtr_;
+	mutations = (mutationsPtr_ != NULL ? *mutationsPtr_ : 0);
 	mutationsPtr = mutationsPtr_;
 
 	return self;
