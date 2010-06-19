@@ -2,6 +2,15 @@ Legend:
  * Changes of existing features or bugfixes.
  + New features.
 
+ObjFW 0.3 -> 0.3.1, 19.06.2010
+ * Fix a typo in OFMutableDictionary that prevented termination in case
+   the last bucket is already used when the dictionary is resized.
+ * The mutations pointer is now correctly initialized in enumerators for
+   immutable collections.
+ * The objc_sync test was still using the old threads API and was
+   updated to use the new one now.
+ * PLATFORMS has been updated to be more specific.
+
 ObjFW 0.2.1 -> 0.3, 09.05.2010
  + Many new methods were added to different classes.
  + A huge amount of methods was added to OFStream, allowing easy binary
