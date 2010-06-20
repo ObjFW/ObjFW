@@ -11,6 +11,8 @@
 
 #include "config.h"
 
+#include <string.h>
+
 #ifdef OF_HAVE_POLL
 # include <poll.h>
 #endif
