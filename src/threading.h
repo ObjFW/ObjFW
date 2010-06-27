@@ -33,7 +33,7 @@ typedef int32_t of_spinlock_t;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 typedef pthread_spinlock_t of_spinlock_t;
 #else
-typedef pthread_mutex_t of_spinlock_t;
+typedef of_mutex_t of_spinlock_t;
 #endif
 
 #if defined(OF_HAVE_PTHREADS)
