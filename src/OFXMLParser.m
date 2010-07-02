@@ -54,7 +54,7 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 }
 
 @implementation OFXMLParser
-+ xmlParser
++ parser
 {
 	return [[[self alloc] init] autorelease];
 }

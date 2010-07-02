@@ -146,7 +146,7 @@
 /**
  * \return A new, autoreleased OFXMLParser
  */
-+ xmlParser;
++ parser;
 
 /**
  * \return The delegate that is used by the XML parser

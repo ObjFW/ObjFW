@@ -322,7 +322,7 @@ enum event_type {
 	    "</root>";
 	size_t j, len;
 
-	TEST(@"+[xmlParser]", (parser = [OFXMLParser xmlParser]))
+	TEST(@"+[xmlParser]", (parser = [OFXMLParser parser]))
 
 	TEST(@"-[setDelegate:]", R([parser setDelegate: self]))
 
