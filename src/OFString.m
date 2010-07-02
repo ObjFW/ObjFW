@@ -1026,4 +1026,16 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 	return num;
 }
+
+- (void)writeToFile: (OFString*)path
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFFile *file;
+
+	file = [OFFile fileWithPath: path
+			       mode: @"wb"];
+	[file writeString: self];
+
+	[pool release];
+}
 @end

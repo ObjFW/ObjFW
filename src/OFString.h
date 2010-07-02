@@ -117,7 +117,7 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 + stringWithString: (OFString*)str;
 
 /**
- * Creates a new OFString with the contents of the specified file.
+ * Creates a new OFString with the contents of the specified UTF-8 encoded file.
  *
  * \param path The path to the file
  * \return A new autoreleased OFString
@@ -366,6 +366,13 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  * \return An OFNumber
  */
 - (uintmax_t)hexadecimalValueAsInteger;
+
+/**
+ * Writes the string into the specified file using UTF-8 encoding.
+ *
+ * \param path The path of the file to write to
+ */
+- (void)writeToFile: (OFString*)path;
 @end
 
 #import "OFConstString.h"
