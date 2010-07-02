@@ -3,23 +3,24 @@ include ../extra.mk
 SUBDIRS = ${TESTPLUGIN}
 
 PROG_NOINST = tests${PROG_SUFFIX}
-SRCS = OFArrayTests.m		\
-       OFDataArrayTests.m	\
-       OFDictionaryTests.m	\
-       OFFileTests.m		\
-       OFListTests.m		\
-       OFMD5HashTests.m		\
-       OFNumberTests.m		\
-       OFObjectTests.m		\
-       ${OFPLUGINTESTS_M}	\
-       OFSHA1HashTests.m	\
-       OFStreamTests.m		\
-       OFStringTests.m		\
-       OFTCPSocketTests.m	\
-       ${OFTHREADTESTS_M}	\
-       OFXMLElementTests.m	\
-       OFXMLParserTests.m	\
-       ${PROPERTIESTESTS_M}	\
+SRCS = OFArrayTests.m			\
+       OFDataArrayTests.m		\
+       OFDictionaryTests.m		\
+       OFFileTests.m			\
+       OFListTests.m			\
+       OFMD5HashTests.m			\
+       OFNumberTests.m			\
+       OFObjectTests.m			\
+       ${OFPLUGINTESTS_M}		\
+       OFSHA1HashTests.m		\
+       OFStreamTests.m			\
+       OFStringTests.m			\
+       OFTCPSocketTests.m		\
+       ${OFTHREADTESTS_M}		\
+       OFXMLElementTests.m		\
+       OFXMLElementBuilderTests.m	\
+       OFXMLParserTests.m		\
+       ${PROPERTIESTESTS_M}		\
        TestsAppDelegate.m
 
 IPHONE_USER = mobile

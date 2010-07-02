@@ -93,6 +93,7 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 #endif
 	[self XMLElementTests];
 	[self XMLParserTests];
+	[self XMLElementBuilderTests];
 #ifdef OF_PLUGINS
 	[self pluginTests];
 #endif

@@ -10,6 +10,7 @@
  */
 
 #import "OFApplication.h"
+#import "OFXMLElementBuilder.h"
 
 #define TEST(test, cond)				\
 	{						\
@@ -131,6 +132,10 @@
 - (void)XMLElementTests;
 @end
 
-@interface TestsAppDelegate (OFXMLParserTests)
+@interface TestsAppDelegate (OFXMLElementBuilderTests)
+- (void)XMLElementBuilderTests;
+@end
+
+@interface TestsAppDelegate (OFXMLParserTests) <OFXMLElementBuilderDelegate>
 - (void)XMLParserTests;
 @end

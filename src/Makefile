@@ -36,6 +36,7 @@ SRCS = OFApplication.m		\
        ${OFTHREAD_M}		\
        OFXMLAttribute.m		\
        OFXMLElement.m		\
+       OFXMLElementBuilder.m	\
        OFXMLParser.m		\
        unicode.m
 
