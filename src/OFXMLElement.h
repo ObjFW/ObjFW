@@ -26,6 +26,7 @@
 	OFMutableDictionary *namespaces;
 	OFMutableArray *children;
 	OFString *characters;
+	OFString *cdata;
 	OFMutableString *comment;
 }
 
@@ -72,6 +73,14 @@
  *	   characters
  */
 + elementWithCharacters: (OFString*)chars;
+
+/**
+ * Creates a new element, only consisting of the specified CDATA.
+ *
+ * \param cdata The CDATA the element represents
+ * \return A new autoreleased OFXMLElement consisting of the specified CDATA
+ */
++ elementWithCDATA: (OFString*)cdata;
 
 /**
  * Creates a new element, only consisting of the specified comment.
@@ -136,6 +145,15 @@
  * \return An initialized OFXMLElement consisting of the specified characters
  */
 - initWithCharacters: (OFString*)chars;
+
+/**
+ * Initializes an already allocated OFXMLElement so that it only consists of the
+ * specified CDATA.
+ *
+ * \param cdata The CDATA the element represents
+ * \return An initialized OFXMLElement consisting of the specified CDATA
+ */
+- initWithCDATA: (OFString*)cdata;
 
 /**
  * Initializes an already allocated OFXMLElement so that it only consists of the

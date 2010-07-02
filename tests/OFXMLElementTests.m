@@ -59,6 +59,10 @@ static OFString *module = @"OFXMLElement";
 	    (elem[3] = [OFXMLElement elementWithCharacters: @"<foo>"]) &&
 	    [[elem[3] string] isEqual: @"&lt;foo&gt;"])
 
+	TEST(@"+[elementWithCDATA:]",
+	    (elem[3] = [OFXMLElement elementWithCDATA: @"<foo>"]) &&
+	    [[elem[3] string] isEqual: @"<![CDATA[<foo>]]>"]);
+
 	TEST(@"+[elementWithComment:]",
 	    (elem[3] = [OFXMLElement elementWithComment: @" comment "]) &&
 	    [[elem[3] string] isEqual: @"<!-- comment -->"])

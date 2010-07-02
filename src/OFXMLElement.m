@@ -56,6 +56,11 @@
 	return [[[self alloc] initWithCharacters: chars] autorelease];
 }
 
++ elementWithCDATA: (OFString*)cdata
+{
+	return [[[self alloc] initWithCDATA: cdata] autorelease];
+}
+
 + elementWithComment: (OFString*)comment
 {
 	return [[[self alloc] initWithComment: comment] autorelease];
@@ -122,6 +127,15 @@
 	return self;
 }
 
+- initWithCDATA: (OFString*)cdata_
+{
+	self = [super init];
+
+	cdata = [cdata_ copy];
+
+	return self;
+}
+
 - initWithComment: (OFString*)comment_
 {
 	self = [super init];
@@ -145,6 +159,10 @@
 
 	if (characters != nil)
 		return [characters stringByXMLEscaping];
+
+	if (cdata != nil)
+		return [OFString stringWithFormat: @"<![CDATA[%s]]>",
+						   [cdata cString]];
 
 	if (comment != nil) {
 		OFMutableString *str;
@@ -433,6 +451,7 @@
 	[namespaces release];
 	[children release];
 	[characters release];
+	[cdata release];
 	[comment release];
 
 	[super dealloc];
