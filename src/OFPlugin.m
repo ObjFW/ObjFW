@@ -24,9 +24,9 @@
 #import "OFExceptions.h"
 
 #ifdef _WIN32
-#define dlopen(file, mode) LoadLibrary(file)
-#define dlsym(handle, symbol) GetProcAddress(handle, symbol)
-#define dlclose(handle) FreeLibrary(handle)
+# define dlopen(file, mode) LoadLibrary(file)
+# define dlsym(handle, symbol) GetProcAddress(handle, symbol)
+# define dlclose(handle) FreeLibrary(handle)
 #endif
 
 @implementation OFPlugin

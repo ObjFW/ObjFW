@@ -51,9 +51,9 @@
 			       stringValue: stringval] autorelease];
 }
 
-+ elementWithText: (OFString*)text
++ elementWithCharacters: (OFString*)chars
 {
-	return [[[self alloc] initWithText: text] autorelease];
+	return [[[self alloc] initWithCharacters: chars] autorelease];
 }
 
 + elementWithComment: (OFString*)comment
@@ -101,7 +101,8 @@
 
 	if (stringval != nil) {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];;
-		[self addChild: [OFXMLElement elementWithText: stringval]];
+		[self addChild:
+		    [OFXMLElement elementWithCharacters: stringval]];
 		[pool release];
 	}
 
@@ -112,11 +113,11 @@
 	return self;
 }
 
-- initWithText: (OFString*)text_
+- initWithCharacters: (OFString*)chars
 {
 	self = [super init];
 
-	text = [text_ copy];
+	characters = [chars copy];
 
 	return self;
 }
@@ -142,8 +143,8 @@
 	OFMutableDictionary *all_namespaces;
 	OFString *def_ns;
 
-	if (text != nil)
-		return [text stringByXMLEscaping];
+	if (characters != nil)
+		return [characters stringByXMLEscaping];
 
 	if (comment != nil) {
 		OFMutableString *str;
@@ -431,7 +432,7 @@
 	[attributes release];
 	[namespaces release];
 	[children release];
-	[text release];
+	[characters release];
 	[comment release];
 
 	[super dealloc];

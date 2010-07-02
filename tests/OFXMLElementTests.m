@@ -55,8 +55,8 @@ static OFString *module = @"OFXMLElement";
 		    forNamespace: @"urn:objfw:test"]) &&
 	    [[elem[3] string] isEqual: @"<objfw-test:foo>x</objfw-test:foo>"])
 
-	TEST(@"+[elementWithText:]",
-	    (elem[3] = [OFXMLElement elementWithText: @"<foo>"]) &&
+	TEST(@"+[elementWithCharacters:]",
+	    (elem[3] = [OFXMLElement elementWithCharacters: @"<foo>"]) &&
 	    [[elem[3] string] isEqual: @"&lt;foo&gt;"])
 
 	TEST(@"+[elementWithComment:]",

@@ -25,7 +25,7 @@
 	OFMutableArray *attributes;
 	OFMutableDictionary *namespaces;
 	OFMutableArray *children;
-	OFString *text;
+	OFString *characters;
 	OFMutableString *comment;
 }
 
@@ -65,12 +65,13 @@
       stringValue: (OFString*)stringval;
 
 /**
- * Creates a new element, only consisting of the specified text.
+ * Creates a new element, only consisting of the specified characters.
  *
- * \param text The text the element represents
- * \return A new autoreleased OFXMLElement consisting of the specified text
+ * \param chars The characters the element represents
+ * \return A new autoreleased OFXMLElement consisting of the specified
+ *	   characters
  */
-+ elementWithText: (OFString*)text;
++ elementWithCharacters: (OFString*)chars;
 
 /**
  * Creates a new element, only consisting of the specified comment.
@@ -78,7 +79,7 @@
  * \param comment The comment the element represents
  * \return A new autoreleased OFXMLElement consisting of the specified comment
  */
-+ elementWithComment: (OFString*)text;
++ elementWithComment: (OFString*)comment;
 
 /**
  * Initializes an already allocated OFXMLElement with the specified element
@@ -129,12 +130,12 @@
 
 /**
  * Initializes an already allocated OFXMLElement so that it only consists of the
- * specified text.
+ * specified characters.
  *
- * \param text The text the element represents
- * \return An initialized OFXMLElement consisting of the specified text
+ * \param chars The characters the element represents
+ * \return An initialized OFXMLElement consisting of the specified characters
  */
-- initWithText: (OFString*)text;
+- initWithCharacters: (OFString*)chars;
 
 /**
  * Initializes an already allocated OFXMLElement so that it only consists of the
@@ -143,7 +144,7 @@
  * \param comment The comment the element represents
  * \return An initialized OFXMLElement consisting of the specified comment
  */
-- initWithComment: (OFString*)text;
+- initWithComment: (OFString*)comment;
 
 /**
  * \return A new autoreleased OFString representing the OFXMLElement as an
