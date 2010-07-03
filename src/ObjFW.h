@@ -42,6 +42,7 @@
 #import "OFXMLAttribute.h"
 #import "OFXMLElement.h"
 #import "OFXMLParser.h"
+#import "OFXMLElementBuilder.h"
 
 #import "OFApplication.h"
 
