@@ -152,16 +152,31 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 
 		/* Tag was just opened */
 		case OF_XMLPARSER_TAG_OPENED:
-			if (buf[i] == '/') {
+			switch (buf[i]) {
+			case '?':
+				last = i + 1;
+				state = OF_XMLPARSER_IN_PROLOG;
+				break;
+			case '/':
+				last = i + 1;
 				state = OF_XMLPARSER_IN_CLOSE_TAG_NAME;
+				break;
+			case '!':
 				last = i + 1;
-			} else if(buf[i] == '!') {
 				state = OF_XMLPARSER_IN_CDATA_OR_COMMENT;
-				last = i + 1;
-			} else {
+				break;
+			default:
 				state = OF_XMLPARSER_IN_TAG_NAME;
 				i--;
+				break;
 			}
+			break;
+
+		/* Inside prolog */
+		case OF_XMLPARSER_IN_PROLOG:
+			last = i + 1;
+			if (buf[i] == '?')
+				state = OF_XMLPARSER_EXPECT_CLOSE;
 			break;
 
 		/* Inside a tag, no name yet */
