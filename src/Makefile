@@ -25,8 +25,8 @@ SRCS = OFApplication.m		\
        OFSeekableStream.m	\
        OFSHA1Hash.m		\
        OFSocket.m		\
-       OFSocketObserver.m	\
        OFStream.m		\
+       OFStreamObserver.m	\
        OFString.m		\
        OFString+Hashing.m	\
        OFString+URLEncoding.m	\

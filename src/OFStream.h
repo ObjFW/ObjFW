@@ -306,6 +306,11 @@
 	withArguments: (va_list)args;
 
 /**
+ * \return The file descriptor for the stream.
+ */
+- (int)fileDescriptor;
+
+/**
  * Closes the stream.
  */
 - (void)close;

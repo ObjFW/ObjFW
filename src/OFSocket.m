@@ -119,4 +119,9 @@
 		@throw [OFSetOptionFailedException newWithClass: isa];
 #endif
 }
+
+- (int)fileDescriptor
+{
+	return sock;
+}
 @end

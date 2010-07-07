@@ -21,7 +21,7 @@
  */
 @interface OFFile: OFSeekableStream
 {
-	int fd;
+	int  fd;
 	BOOL closable;
 	BOOL eos;
 }

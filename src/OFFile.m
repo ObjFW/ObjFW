@@ -517,6 +517,11 @@ static int parse_mode(const char *mode)
 	return ret;
 }
 
+- (int)fileDescriptor
+{
+	return fd;
+}
+
 - (void)close
 {
 	if (fd != -1)

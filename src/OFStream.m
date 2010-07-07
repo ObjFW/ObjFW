@@ -648,6 +648,12 @@
 	assert(0);
 }
 
+- (int)fileDescriptor
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
 - (void)close
 {
 	@throw [OFNotImplementedException newWithClass: isa
