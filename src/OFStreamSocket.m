@@ -12,6 +12,7 @@
 #include "config.h"
 
 #include <string.h>
+#include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 
@@ -25,6 +26,10 @@
 
 #ifndef INVALID_SOCKET
 # define INVALID_SOCKET -1
+#endif
+
+#ifdef _WIN32
+# define close(sock) closesocket(sock)
 #endif
 
 @implementation OFStreamSocket
@@ -123,5 +128,17 @@
 - (int)fileDescriptor
 {
 	return sock;
+}
+
+- (void)close
+{
+	if (sock == INVALID_SOCKET)
+		@throw [OFNotConnectedException newWithClass: isa];
+
+	close(sock);
+
+	sock = INVALID_SOCKET;
+	eos = NO;
+	listening = NO;
 }
 @end

@@ -418,13 +418,7 @@ static OFMutex *mutex = nil;
 
 - (void)close
 {
-	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: isa];
-
-	close(sock);
-	sock = INVALID_SOCKET;
-	listening = NO;
-	eos = NO;
+	[super close];
 
 	[self freeMemory: sockAddr];
 	sockAddr = NULL;
