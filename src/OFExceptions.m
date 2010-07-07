@@ -450,7 +450,7 @@
 
 	requestedSize = size;
 
-	if ([class_ isSubclassOfClass: [OFSocket class]])
+	if ([class_ isSubclassOfClass: [OFStreamSocket class]])
 		errNo = GET_SOCK_ERRNO;
 	else
 		errNo = GET_ERRNO;

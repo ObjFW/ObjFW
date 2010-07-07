@@ -20,20 +20,20 @@
 # include <sys/socket.h>
 #endif
 
-#import "OFSocket.h"
+#import "OFStreamSocket.h"
 #import "OFExceptions.h"
 
 #ifndef INVALID_SOCKET
 # define INVALID_SOCKET -1
 #endif
 
-@implementation OFSocket
+@implementation OFStreamSocket
 #ifdef _WIN32
 + (void)initialize
 {
 	WSADATA wsa;
 
-	if (self != [OFSocket class])
+	if (self != [OFStreamSocket class])
 		return;
 
 	if (WSAStartup(MAKEWORD(2, 0), &wsa))

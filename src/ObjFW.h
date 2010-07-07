@@ -28,12 +28,12 @@
 #import "OFNumber.h"
 
 #import "OFStream.h"
+#import "OFStreamObserver.h"
 
 #import "OFFile.h"
 
-#import "OFSocket.h"
+#import "OFStreamSocket.h"
 #import "OFTCPSocket.h"
-#import "OFSocketObserver.h"
 
 #import "OFHash.h"
 #import "OFMD5Hash.h"

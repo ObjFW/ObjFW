@@ -15,7 +15,7 @@
 # include <netdb.h>
 #endif
 
-#import "OFSocket.h"
+#import "OFStreamSocket.h"
 
 #ifdef _WIN32
 # include <ws2tcpip.h>
@@ -26,7 +26,7 @@
 /**
  * \brief A class which provides functions to create and use TCP sockets.
  */
-@interface OFTCPSocket: OFSocket
+@interface OFTCPSocket: OFStreamSocket
 {
 	struct sockaddr	*sockAddr;
 	socklen_t	sockAddrLen;

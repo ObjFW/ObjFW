@@ -17,9 +17,9 @@
 #endif
 
 /**
- * \brief A class which provides functions to create and use sockets.
+ * \brief A class which provides functions to create and use stream sockets.
  */
-@interface OFSocket: OFStream
+@interface OFStreamSocket: OFStream
 {
 @public
 #ifndef _WIN32
