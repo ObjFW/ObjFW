@@ -17,17 +17,16 @@
 # include <poll.h>
 #endif
 
-#import "OFSocketObserver.h"
+#import "OFStreamObserver.h"
 #import "OFDataArray.h"
 #import "OFDictionary.h"
-#import "OFSocket.h"
-#import "OFTCPSocket.h"
+#import "OFStream.h"
 #import "OFNumber.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 
-@implementation OFSocketObserver
-+ socketObserver
+@implementation OFStreamObserver
++ streamObserver
 {
 	return [[[self alloc] init] autorelease];
 }
@@ -42,7 +41,7 @@
 	FD_ZERO(&readfds);
 	FD_ZERO(&writefds);
 #endif
-	fdToSocket = [[OFMutableDictionary alloc] init];
+	fdToStream = [[OFMutableDictionary alloc] init];
 
 	return self;
 }
@@ -53,17 +52,17 @@
 #ifdef OF_HAVE_POLL
 	[fds release];
 #endif
-	[fdToSocket release];
+	[fdToStream release];
 
 	[super dealloc];
 }
 
-- (OFObject <OFSocketObserverDelegate>*)delegate
+- (OFObject <OFStreamObserverDelegate>*)delegate
 {
 	return [[delegate retain] autorelease];
 }
 
-- (void)setDelegate: (OFObject <OFSocketObserverDelegate>*)delegate_
+- (void)setDelegate: (OFObject <OFStreamObserverDelegate>*)delegate_
 {
 	[delegate_ retain];
 	[delegate release];
@@ -71,15 +70,16 @@
 }
 
 #ifdef OF_HAVE_POLL
-- (void)_addSocket: (OFSocket*)sock
+- (void)_addStream: (OFStream*)stream
 	withEvents: (short)events
 {
 	struct pollfd *fds_c = [fds cArray];
 	size_t i, count = [fds count];
+	int fd = [stream fileDescriptor];
 	BOOL found = NO;
 
 	for (i = 0; i < count; i++) {
-		if (fds_c[i].fd == sock->sock) {
+		if (fds_c[i].fd == fd) {
 			fds_c[i].events |= events;
 			found = YES;
 		}
@@ -87,22 +87,23 @@
 
 	if (!found) {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-		struct pollfd p = { sock->sock, events, 0 };
+		struct pollfd p = { fd, events, 0 };
 		[fds addItem: &p];
-		[fdToSocket setObject: sock
-			       forKey: [OFNumber numberWithInt: sock->sock]];
+		[fdToStream setObject: stream
+			       forKey: [OFNumber numberWithInt: fd]];
 		[pool release];
 	}
 }
 
-- (void)_removeSocket: (OFSocket*)sock
+- (void)_removeStream: (OFStream*)stream
 	   withEvents: (short)events
 {
 	struct pollfd *fds_c = [fds cArray];
 	size_t i, nfds = [fds count];
+	int fd = [stream fileDescriptor];
 
 	for (i = 0; i < nfds; i++) {
-		if (fds_c[i].fd == sock->sock) {
+		if (fds_c[i].fd == fd) {
 			OFAutoreleasePool *pool;
 
 			fds_c[i].events &= ~events;
@@ -113,115 +114,94 @@
 			pool = [[OFAutoreleasePool alloc] init];
 
 			[fds removeItemAtIndex: i];
-			[fdToSocket removeObjectForKey:
-			    [OFNumber numberWithInt: sock->sock]];
+			[fdToStream removeObjectForKey:
+			    [OFNumber numberWithInt: fd]];
 
 			[pool release];
 		}
 	}
 }
 #else
-- (void)_addSocket: (OFSocket*)sock
+- (void)_addStream: (OFStream*)stream
 	 withFDSet: (fd_set*)fdset
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	int fd = [stream fileDescriptor];
 
-	if (sock->sock >= FD_SETSIZE)
+	if (fd >= FD_SETSIZE)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	FD_SET(sock->sock, fdset);
+	FD_SET(fd, fdset);
 
-	if (sock->sock >= nfds)
-		nfds = sock->sock + 1;
+	if (fd >= nfds)
+		nfds = fd + 1;
 
-	[fdToSocket setObject: sock
-		       forKey: [OFNumber numberWithInt: sock->sock]];
+	[fdToStream setObject: stream
+		       forKey: [OFNumber numberWithInt: fd]];
 
 	[pool release];
 }
 
-- (void)_removeSocket: (OFSocket*)sock
+- (void)_removeStream: (OFStream*)stream
 	    withFDSet: (fd_set*)fdset
 {
-	if (sock->sock >= FD_SETSIZE)
+	int fd = [stream fileDescriptor];
+
+	if (fd >= FD_SETSIZE)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	FD_CLR(sock->sock, fdset);
+	FD_CLR(fd, fdset);
 
-	if (!FD_ISSET(sock->sock, &readfds) &&
-	    !FD_ISSET(sock->sock, &writefds)) {
+	if (!FD_ISSET(fd, &readfds) && !FD_ISSET(fd, &writefds)) {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 
-		[fdToSocket removeObjectForKey:
-		    [OFNumber numberWithInt: sock->sock]];
+		[fdToStream removeObjectForKey: [OFNumber numberWithInt: fd]];
 
 		[pool release];
 	}
 }
 #endif
 
-- (void)addSocketToObserveForIncomingConnections: (OFTCPSocket*)sock
+- (void)addStreamToObserveForReading: (OFStream*)stream
 {
 #ifdef OF_HAVE_POLL
-	[self _addSocket: sock
+	[self _addStream: stream
 	      withEvents: POLLIN];
 #else
-	[self _addSocket: sock
+	[self _addStream: stream
 	       withFDSet: &readfds];
 #endif
 }
 
-- (void)addSocketToObserveForReading: (OFSocket*)sock
+- (void)addStreamToObserveForWriting: (OFStream*)stream
 {
 #ifdef OF_HAVE_POLL
-	[self _addSocket: sock
-	      withEvents: POLLIN];
-#else
-	[self _addSocket: sock
-	       withFDSet: &readfds];
-#endif
-}
-
-- (void)addSocketToObserveForWriting: (OFSocket*)sock
-{
-#ifdef OF_HAVE_POLL
-	[self _addSocket: sock
+	[self _addStream: stream
 	      withEvents: POLLOUT];
 #else
-	[self _addSocket: sock
+	[self _addStream: stream
 	       withFDSet: &writefds];
 #endif
 }
 
-- (void)removeSocketToObserveForIncomingConnections: (OFTCPSocket*)sock
+- (void)removeStreamToObserveForReading: (OFStream*)stream
 {
 #ifdef OF_HAVE_POLL
-	[self _removeSocket: sock
+	[self _removeStream: stream
 		 withEvents: POLLIN];
 #else
-	[self _removeSocket: sock
+	[self _removeStream: stream
 		  withFDSet: &readfds];
 #endif
 }
 
-- (void)removeSocketToObserveForReading: (OFSocket*)sock
+- (void)removeStreamToObserveForWriting: (OFStream*)stream
 {
 #ifdef OF_HAVE_POLL
-	[self _removeSocket: sock
-		 withEvents: POLLIN];
-#else
-	[self _removeSocket: sock
-		  withFDSet: &readfds];
-#endif
-}
-
-- (void)removeSocketToObserveForWriting: (OFSocket*)sock
-{
-#ifdef OF_HAVE_POLL
-	[self _removeSocket: sock
+	[self _removeStream: stream
 		 withEvents: POLLOUT];
 #else
-	[self _removeSocket: sock
+	[self _removeStream: stream
 		  withFDSet: &writefds];
 #endif
 }
@@ -243,23 +223,18 @@
 
 	for (i = 0; i < nfds; i++) {
 		OFNumber *num;
-		OFSocket *sock;
+		OFStream *stream;
 
 		if (fds_c[i].revents & POLLIN) {
 			num = [OFNumber numberWithInt: fds_c[i].fd];
-			sock = [fdToSocket objectForKey: num];
-
-			if (sock->listening)
-				[delegate socketDidReceiveIncomingConnection:
-				    (OFTCPSocket*)sock];
-			else
-				[delegate socketDidBecomeReadyForReading: sock];
+			stream = [fdToStream objectForKey: num];
+			[delegate streamDidBecomeReadyForReading: stream];
 		}
 
 		if (fds_c[i].revents & POLLOUT) {
 			num = [OFNumber numberWithInt: fds_c[i].fd];
-			sock = [fdToSocket objectForKey: num];
-			[delegate socketDidBecomeReadyForReading: sock];
+			stream = [fdToStream objectForKey: num];
+			[delegate streamDidBecomeReadyForReading: stream];
 		}
 
 		fds_c[i].revents = 0;
@@ -270,7 +245,7 @@
 	fd_set exceptfds_;
 	struct timeval tv;
 	OFEnumerator *enumerator;
-	OFSocket *sock;
+	OFStream *stream;
 
 	readfds_ = readfds;
 	writefds_ = writefds;
@@ -280,19 +255,16 @@
 	    (timeout != -1 ? &tv : NULL)) < 1)
 		return NO;
 
-	enumerator = [[[fdToSocket copy] autorelease] objectEnumerator];
+	enumerator = [[[fdToStream copy] autorelease] objectEnumerator];
 
-	while ((sock = [enumerator nextObject]) != nil) {
-		if (FD_ISSET(sock->sock, &readfds_)) {
-			if (sock->listening)
-				[delegate socketDidReceiveIncomingConnection:
-				    (OFTCPSocket*)sock];
-			else
-				[delegate socketDidBecomeReadyForReading: sock];
-		}
+	while ((stream = [enumerator nextObject]) != nil) {
+		int fd = [stream fileDescriptor];
 
-		if (FD_ISSET(sock->sock, &writefds_))
-			[delegate socketDidBecomeReadyForWriting: sock];
+		if (FD_ISSET(fd, &readfds_))
+			[delegate streamDidBecomeReadyForReading: stream];
+
+		if (FD_ISSET(fd, &writefds_))
+			[delegate streamDidBecomeReadyForWriting: stream];
 	}
 #endif
 	[pool release];
@@ -301,16 +273,12 @@
 }
 @end
 
-@implementation OFObject (OFSocketObserverDelegate)
-- (void)socketDidReceiveIncomingConnection: (OFTCPSocket*)sock
+@implementation OFObject (OFStreamObserverDelegate)
+- (void)streamDidBecomeReadyForReading: (OFStream*)stream
 {
 }
 
-- (void)socketDidBecomeReadyForReading: (OFSocket*)sock
-{
-}
-
-- (void)socketDidBecomeReadyForWriting: (OFSocket*)sock
+- (void)streamDidBecomeReadyForWriting: (OFStream*)stream
 {
 }
 @end
