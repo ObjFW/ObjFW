@@ -18,6 +18,7 @@
  */
 @interface OFXMLAttribute: OFObject
 {
+@public
 	OFString *name;
 	OFString *namespace;
 	OFString *stringValue;

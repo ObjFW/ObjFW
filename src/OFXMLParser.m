@@ -53,6 +53,31 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 	return nil;
 }
 
+static OF_INLINE void
+resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
+    OFArray *namespaces, Class isa)
+{
+	OFString *attr_ns;
+	OFString *attr_prefix = attr->namespace;
+
+	if ([[attr name] isEqual: @"xmlns"] && attr_prefix == nil) {
+		[attr->namespace release];
+		attr->namespace = nil;
+		return;
+	}
+
+	attr_ns = namespace_for_prefix(
+	    (attr_prefix != nil ? attr_prefix : prefix), namespaces);
+
+	if ((attr_prefix != nil && attr_ns == nil) ||
+	    (ns != nil && attr_ns == nil))
+		@throw [OFUnboundNamespaceException newWithClass: isa
+							  prefix: attr_prefix];
+
+	[attr->namespace release];
+	attr->namespace = [attr_ns retain];
+}
+
 @implementation OFXMLParser
 + parser
 {
@@ -329,6 +354,8 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 		case OF_XMLPARSER_IN_TAG:
 			if (buf[i] == '>' || buf[i] == '/') {
 				OFString *ns;
+				OFXMLAttribute **attrs_c = [attrs cArray];
+				size_t j, attrs_cnt = [attrs count];
 
 				ns = namespace_for_prefix(prefix, namespaces);
 
@@ -336,6 +363,10 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 					@throw [OFUnboundNamespaceException
 					    newWithClass: isa
 						  prefix: prefix];
+
+				for (j = 0; j < attrs_cnt; j++)
+					resolve_attr_namespace(attrs_c[j],
+					    prefix, ns, namespaces, isa);
 
 				pool = [[OFAutoreleasePool alloc] init];
 
@@ -430,7 +461,6 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 		/* Looking for attribute value */
 		case OF_XMLPARSER_IN_ATTR_VALUE:
 			if (buf[i] == delim) {
-				OFString *attr_ns;
 				OFString *attr_val;
 
 				len = i - last;
@@ -440,18 +470,13 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 					    length: len];
 
 				pool = [[OFAutoreleasePool alloc] init];
-				attr_ns = namespace_for_prefix(
-				    (attrPrefix != nil ? attrPrefix : prefix),
-				    namespaces);
 				attr_val = transform_string(cache, self);
 
 				if (attrPrefix == nil &&
-				    [attrName isEqual: @"xmlns"]) {
+				    [attrName isEqual: @"xmlns"])
 					[[namespaces lastObject]
 					    setObject: attr_val
 					       forKey: @""];
-					attr_ns = nil;
-				}
 				if ([attrPrefix isEqual: @"xmlns"])
 					[[namespaces lastObject]
 					    setObject: attr_val
@@ -462,7 +487,7 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 
 				[attrs addObject: [OFXMLAttribute
 				    attributeWithName: attrName
-					    namespace: attr_ns
+					    namespace: attrPrefix
 					  stringValue: attr_val]];
 
 				[pool release];
