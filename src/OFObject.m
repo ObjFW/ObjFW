@@ -234,10 +234,21 @@ objc_enumerationMutation(id obj)
 	  forClassMethod: (SEL)selector
 {
 #if defined(OF_OBJFW_RUNTIME)
+	if (newimp == (IMP)0 || !class_respondsToSelector(self->isa, selector))
+		@throw [OFInvalidArgumentException newWithClass: self
+						       selector: _cmd];
+
 	return objc_replace_class_method(self, selector, newimp);
 #elif defined(OF_APPLE_RUNTIME)
+	Method method;
+
+	if (newimp == (IMP)0 ||
+	    (method = class_getClassMethod(self, selector)) == NULL)
+		@throw [OFInvalidArgumentException newWithClass: self
+						       selector: _cmd];
+
 	return class_replaceMethod(self->isa, selector, newimp,
-	    method_getTypeEncoding(class_getClassMethod(self, selector)));
+	    method_getTypeEncoding(method));
 #else
 	Method_t method;
 	IMP oldimp;
@@ -273,16 +284,7 @@ objc_enumerationMutation(id obj)
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 
-#if defined(OF_OBJFW_RUNTIME)
-	newimp = objc_get_class_method(class, selector);
-#elif defined(OF_APPLE_RUNTIME)
-	newimp = method_getImplementation(class_getClassMethod(class,
-	    selector));
-#else
-	/* The class method is the instance method of the meta class */
-	newimp = method_get_imp(class_get_instance_method(class->class_pointer,
-	    selector));
-#endif
+	newimp = [class methodForSelector: selector];
 
 	return [self setImplementation: newimp
 			forClassMethod: selector];
@@ -292,10 +294,21 @@ objc_enumerationMutation(id obj)
        forInstanceMethod: (SEL)selector
 {
 #if defined(OF_OBJFW_RUNTIME)
+	if (newimp == (IMP)0 || !class_respondsToSelector(self, selector))
+		@throw [OFInvalidArgumentException newWithClass: self
+						       selector: _cmd];
+
 	return objc_replace_instance_method(self, selector, newimp);
 #elif defined(OF_APPLE_RUNTIME)
+	Method method;
+
+	if (newimp == (IMP)0 ||
+	    (method = class_getInstanceMethod(self, selector)) == NULL)
+		@throw [OFInvalidArgumentException newWithClass: self
+						       selector: _cmd];
+
 	return class_replaceMethod(self, selector, newimp,
-	    method_getTypeEncoding(class_getInstanceMethod(self, selector)));
+	    method_getTypeEncoding(method));
 #else
 	Method_t method = class_get_instance_method(self, selector);
 	IMP oldimp;
@@ -329,13 +342,7 @@ objc_enumerationMutation(id obj)
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 
-#if defined(OF_OBJFW_RUNTIME)
-	newimp = objc_get_instance_method(class, selector);
-#elif defined(OF_APPLE_RUNTIME)
-	newimp = class_getMethodImplementation(class, selector);
-#else
-	newimp = method_get_imp(class_get_instance_method(class, selector));
-#endif
+	newimp = [class instanceMethodForSelector: selector];
 
 	return [self setImplementation: newimp
 		     forInstanceMethod: selector];
