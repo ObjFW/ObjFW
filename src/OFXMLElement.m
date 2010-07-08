@@ -412,6 +412,16 @@
 		       forKey: ns];
 }
 
+- (void)bindPrefix: (OFString*)prefix
+      forNamespace: (OFString*)ns
+{
+	[self setPrefix: prefix
+	   forNamespace: ns];
+	[self addAttributeWithName: prefix
+			 namespace: @"http://www.w3.org/2000/xmlns/"
+		       stringValue: ns];
+}
+
 - (OFString*)defaultNamespace
 {
 	if (name == nil)
@@ -430,6 +440,13 @@
 	OFString *old = defaultNamespace;
 	defaultNamespace = [ns copy];
 	[old release];
+}
+
+- (void)bindDefaultNamespace: (OFString*)ns
+{
+	[self setDefaultNamespace: ns];
+	[self addAttributeWithName: @"xmlns"
+		       stringValue: ns];
 }
 
 - (void)addChild: (OFXMLElement*)child

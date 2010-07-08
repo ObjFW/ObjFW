@@ -207,11 +207,27 @@
      forNamespace: (OFString*)ns;
 
 /**
+ * Binds a prefix for a namespace.
+ *
+ * \param prefix The prefix for the namespace
+ * \param ns The namespace for which the prefix is bound
+ */
+- (void)bindPrefix: (OFString*)prefix
+      forNamespace: (OFString*)ns;
+
+/**
  * Sets the default namespace for the element.
  *
  * \param ns The default namespace for the element
  */
 - (void)setDefaultNamespace: (OFString*)ns;
+
+/**
+ * Binds the default namespace for the element.
+ *
+ * \param ns The default namespace for the element
+ */
+- (void)bindDefaultNamespace: (OFString*)ns;
 
 /**
  * Adds a child to the OFXMLElement.
