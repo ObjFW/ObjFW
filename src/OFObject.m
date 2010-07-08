@@ -68,6 +68,7 @@ struct pre_ivar {
 static struct {
 	Class isa;
 } alloc_failed_exception;
+static Class autoreleasepool = Nil;
 
 size_t of_pagesize;
 
@@ -127,6 +128,7 @@ objc_enumerationMutation(id obj)
 
 + (void)initialize
 {
+	autoreleasepool = [OFAutoreleasePool class];
 }
 
 + alloc
@@ -611,7 +613,7 @@ objc_enumerationMutation(id obj)
 
 - autorelease
 {
-	[OFAutoreleasePool addObjectToTopmostPool: self];
+	[autoreleasepool addObjectToTopmostPool: self];
 
 	return self;
 }
