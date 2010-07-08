@@ -211,7 +211,7 @@
 
 - (id)objectAtIndex: (size_t)index
 {
-	return [[*((OFObject**)[array itemAtIndex: index]) retain] autorelease];
+	return *((OFObject**)[array itemAtIndex: index]);
 }
 
 - (size_t)indexOfObject: (OFObject*)obj
@@ -248,14 +248,14 @@
 {
 	id *first = [array firstItem];
 
-	return (first != NULL ? [[*first retain] autorelease] : nil);
+	return (first != NULL ? *first : nil);
 }
 
 - (id)lastObject
 {
 	id *last = [array lastItem];
 
-	return (last != NULL ? [[*last retain] autorelease] : nil);
+	return (last != NULL ? *last : nil);
 }
 
 - (OFString*)componentsJoinedByString: (OFString*)separator

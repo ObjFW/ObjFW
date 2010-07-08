@@ -211,7 +211,6 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 				if (buf[i] == '>' || buf[i] == '/') {
 					OFString *ns;
 
-					pool = [[OFAutoreleasePool alloc] init];
 					ns = namespace_for_prefix(prefix,
 					    namespaces);
 
@@ -220,6 +219,8 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 						    [OFUnboundNamespaceException
 						    newWithClass: isa
 							  prefix: prefix];
+
+					pool = [[OFAutoreleasePool alloc] init];
 
 					[delegate parser: self
 					 didStartElement: name
@@ -297,14 +298,13 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 
 				[cache setToCString: ""];
 
-				pool = [[OFAutoreleasePool alloc] init];
-
 				ns = namespace_for_prefix(prefix, namespaces);
 				if (prefix != nil && ns == nil)
 					@throw [OFUnboundNamespaceException
 					    newWithClass: isa
 						  prefix: prefix];
-				[namespaces removeNObjects: 1];
+
+				pool = [[OFAutoreleasePool alloc] init];
 
 				[delegate parser: self
 				   didEndElement: name
@@ -313,6 +313,7 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 
 				[pool release];
 
+				[namespaces removeNObjects: 1];
 				[name release];
 				[prefix release];
 				name = prefix = nil;
@@ -329,13 +330,14 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 			if (buf[i] == '>' || buf[i] == '/') {
 				OFString *ns;
 
-				pool = [[OFAutoreleasePool alloc] init];
 				ns = namespace_for_prefix(prefix, namespaces);
 
 				if (prefix != nil && ns == nil)
 					@throw [OFUnboundNamespaceException
 					    newWithClass: isa
 						  prefix: prefix];
+
+				pool = [[OFAutoreleasePool alloc] init];
 
 				[delegate parser: self
 				 didStartElement: name

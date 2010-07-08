@@ -547,7 +547,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 			continue;
 
 		if ([data[i]->key isEqual: key])
-			return [[data[i]->object retain] autorelease];
+			return data[i]->object;
 	}
 
 	if (i < last)
@@ -561,7 +561,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 			continue;
 
 		if ([data[i]->key isEqual: key])
-			return [[data[i]->object retain] autorelease];
+			return data[i]->object;
 	}
 
 	return nil;
