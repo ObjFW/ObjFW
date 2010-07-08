@@ -11,8 +11,6 @@
 
 #import "OFObject.h"
 
-@class OFMutableArray;
-
 /**
  * \brief A pool that keeps track of objects to release.
  *
@@ -23,8 +21,9 @@
  */
 @interface OFAutoreleasePool: OFObject
 {
-	OFMutableArray *objects;
 	OFAutoreleasePool *next, *prev;
+	id *objects;
+	size_t count, size;
 }
 
 /**
@@ -46,6 +45,13 @@
 
 /**
  * Releases all objects in the autorelease pool.
+ *
+ * This does not free the memory allocated to store pointers to the objects in
+ * the pool, so reusing the pool does not allocate any memory until the previous
+ * number of objects is exceeded. It behaves this way to optimize loops that
+ * always work with the same or similar number of objects and call relaseObjects
+ * at the end of the loop, which is propably the most common case for
+ * releaseObjects.
  *
  * If a garbage collector is added in the future, it will tell the GC that now
  * is a good time to clean up, as this is often used after a lot of objects

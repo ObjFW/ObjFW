@@ -20,6 +20,8 @@
 #ifdef OF_THREADS
 # import "threading.h"
 
+#define GROW_SIZE 16
+
 static of_tlskey_t first_key, last_key;
 #else
 static OFAutoreleasePool *first = nil, *last = nil;
@@ -119,23 +121,41 @@ static OFAutoreleasePool *first = nil, *last = nil;
 	if (prev != nil)
 		prev->next = self;
 
+	size = GROW_SIZE;
+	@try {
+		objects = [self allocMemoryForNItems: GROW_SIZE
+					    withSize: sizeof(id)];
+	} @catch (OFException *e) {
+		[self dealloc];
+		@throw e;
+	}
+
 	return self;
 }
 
 - (void)addObject: (OFObject*)obj
 {
-	if (objects == nil)
-		objects = [[OFMutableArray alloc] init];
+	if (count + 1 > size) {
+		objects = [self resizeMemory: objects
+				    toNItems: size + GROW_SIZE
+				    withSize: sizeof(id)];
+		size += GROW_SIZE;
+	}
 
-	[objects addObject: obj];
-	[obj release];
+	objects[count] = obj;
+	count++;
 }
 
 - (void)releaseObjects
 {
+	size_t i;
+
 	[next releaseObjects];
-	[objects release];
-	objects = nil;
+
+	for (i = 0; i < count; i++)
+		[objects[i] release];
+
+	count = 0;
 }
 
 - (void)release
@@ -150,8 +170,12 @@ static OFAutoreleasePool *first = nil, *last = nil;
 
 - (void)dealloc
 {
+	size_t i;
+
 	[next dealloc];
-	[objects release];
+
+	for (i = 0; i < count; i++)
+		[objects[i] release];
 
 	/*
 	 * If of_tlskey_set fails, this is a real problem. The best we can do
