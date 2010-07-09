@@ -145,6 +145,26 @@
 	return self;
 }
 
+- (OFString*)name
+{
+	return [[name copy] autorelease];
+}
+
+- (OFString*)namespace
+{
+	return [[namespace copy] autorelease];
+}
+
+- (OFArray*)attributes
+{
+	return [[attributes copy] autorelease];
+}
+
+- (OFArray*)children
+{
+	return [[children copy] autorelease];
+}
+
 - (OFString*)_stringWithParentNamespaces: (OFDictionary*)parent_namespaces
 		  parentDefaultNamespace: (OFString*)parent_default_ns
 {

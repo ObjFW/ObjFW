@@ -12,6 +12,7 @@
 #import "OFObject.h"
 
 @class OFString;
+@class OFArray;
 @class OFMutableString;
 @class OFMutableArray;
 @class OFMutableDictionary;
@@ -29,6 +30,14 @@
 	OFString *cdata;
 	OFMutableString *comment;
 }
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, copy) OFString *name;
+@property (readonly, copy) OFString *namespace;
+@property (copy) OFString *defaultNamespace;
+@property (readonly, copy) OFArray *attributes;
+@property (readonly, copy) OFArray *children;
+#endif
 
 /**
  * \param name The name for the element
@@ -163,6 +172,26 @@
  * \return An initialized OFXMLElement consisting of the specified comment
  */
 - initWithComment: (OFString*)comment;
+
+/**
+ * \return The name of the element
+ */
+- (OFString*)name;
+
+/**
+ * \return The namespace of the element
+ */
+- (OFString*)namespace;
+
+/**
+ * \return An OFArray with the attributes of the element
+ */
+- (OFArray*)attributes;
+
+/**
+ * \return An array with all children of the element
+ */
+- (OFArray*)children;
 
 /**
  * \return A new autoreleased OFString representing the OFXMLElement as an
