@@ -4,7 +4,6 @@ SRCS = TestPlugin.m
 include ../../buildsys.mk
 include ../../extra.mk
 
-CPPFLAGS += ${PLUGIN_CPPFLAGS} -I../.. -I../../src
-OBJCFLAGS += ${PLUGIN_CFLAGS}
+CPPFLAGS += -I../.. -I../../src
 LIBS := -L../../src -lobjfw ${LIBS}
 LD = ${OBJC}

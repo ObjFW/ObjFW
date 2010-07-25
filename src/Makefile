@@ -1,8 +1,9 @@
 include ../extra.mk
 
-LIB = ${LIB_PREFIX}objfw${LIB_SUFFIX}
+LIB = ${OBJFW_SHARED_LIB}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
+STATIC_LIB = ${OBJFW_STATIC_LIB}
 
 SRCS = OFApplication.m		\
        OFArray.m		\
@@ -56,7 +57,6 @@ SRCS += ${ASPRINTF_M} 		\
 
 include ../buildsys.mk
 
-CPPFLAGS += -I.. ${LIB_CPPFLAGS}
-OBJCFLAGS += ${LIB_CFLAGS}
+CPPFLAGS += -I..
 LD = ${OBJC}
 LDFLAGS += ${REEXPORT_LIBOBJC}
