@@ -108,8 +108,7 @@ enum event_type {
 		    [[[attrs objectAtIndex: 0] stringValue] isEqual: @"bla"] &&
 		    /* blafoo attr */
 		    [[[attrs objectAtIndex: 1] name] isEqual: @"blafoo"] &&
-		    [[[attrs objectAtIndex: 1] namespace] isEqual:
-		    @"urn:objfw:test:foo"] &&
+		    [[attrs objectAtIndex: 1] namespace] == nil &&
 		    [[[attrs objectAtIndex: 1] stringValue] isEqual: @"foo"])
 		break;
 	case 12:
@@ -126,8 +125,7 @@ enum event_type {
 		    [[[attrs objectAtIndex: 0] stringValue] isEqual: @"asd"] &&
 		    /* quxqux attr */
 		    [[[attrs objectAtIndex: 1] name] isEqual: @"quxqux"] &&
-		    [[[attrs objectAtIndex: 1] namespace] isEqual:
-		    @"urn:objfw:test:foobar"] &&
+		    [[attrs objectAtIndex: 1] namespace] == nil &&
 		    [[[attrs objectAtIndex: 1] stringValue] isEqual: @"test"])
 		break;
 	case 14:
@@ -149,8 +147,7 @@ enum event_type {
 		    @"urn:objfw:test:bla"] &&
 		    /* qux attr */
 		    [[[attrs objectAtIndex: 1] name] isEqual: @"qux"] &&
-		    [[[attrs objectAtIndex: 1] namespace] isEqual:
-		    @"urn:objfw:test:bla"] &&
+		    [[attrs objectAtIndex: 1] namespace] == nil &&
 		    [[[attrs objectAtIndex: 1] stringValue] isEqual: @"qux"] &&
 		    /* bla:foo attr */
 		    [[[attrs objectAtIndex: 2] name] isEqual: @"foo"] &&
@@ -177,8 +174,7 @@ enum event_type {
 		    @"urn:objfw:test:abc"] &&
 		    /* abc attr */
 		    [[[attrs objectAtIndex: 1] name] isEqual: @"abc"] &&
-		    [[[attrs objectAtIndex: 1] namespace] isEqual:
-		    @"urn:objfw:test:abc"] &&
+		    [[attrs objectAtIndex: 1] namespace] == nil &&
 		    [[[attrs objectAtIndex: 1] stringValue] isEqual: @"abc"] &&
 		    /* foo:abc attr */
 		    [[[attrs objectAtIndex: 2] name] isEqual: @"abc"] &&

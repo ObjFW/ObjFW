@@ -60,17 +60,12 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	OFString *attr_ns;
 	OFString *attr_prefix = attr->namespace;
 
-	if ([[attr name] isEqual: @"xmlns"] && attr_prefix == nil) {
-		[attr->namespace release];
-		attr->namespace = nil;
+	if (attr_prefix == nil)
 		return;
-	}
 
-	attr_ns = namespace_for_prefix(
-	    (attr_prefix != nil ? attr_prefix : prefix), namespaces);
+	attr_ns = namespace_for_prefix(attr_prefix, namespaces);
 
-	if ((attr_prefix != nil && attr_ns == nil) ||
-	    (ns != nil && attr_ns == nil))
+	if ((attr_prefix != nil && attr_ns == nil))
 		@throw [OFUnboundNamespaceException newWithClass: isa
 							  prefix: attr_prefix];
 

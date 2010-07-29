@@ -41,7 +41,6 @@ static OFString *module = @"OFXMLElement";
 	    (elem[2] = [OFXMLElement elementWithName: @"foo"
 					   namespace: @"urn:objfw:test"]) &&
 	    R([elem[2] addAttributeWithName: @"test"
-				  namespace: @"urn:objfw:test"
 				stringValue: @"test"]) &&
 	    R([elem[2] setPrefix: @"objfw-test"
 		    forNamespace: @"urn:objfw:test"]) &&

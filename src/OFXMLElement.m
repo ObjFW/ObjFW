@@ -256,16 +256,12 @@
 		OFString *attr_prefix = nil;
 		tmp = [[attrs_carray[j] stringValue] stringByXMLEscaping];
 
-		if (([attrs_carray[j] namespace] == nil && namespace != nil &&
-		    ![[attrs_carray[j] name] isEqual: @"xmlns"]) ||
-		    ([attrs_carray[j] namespace] != nil && namespace == nil) ||
-		    ([attrs_carray[j] namespace] != nil &&
-		    ![[attrs_carray[j] namespace] isEqual: namespace]))
-			if ((attr_prefix = [all_namespaces
-			    objectForKey: [attrs_carray[j] namespace]]) == nil)
-				@throw [OFUnboundNamespaceException
-				    newWithClass: isa
-				       namespace: [attrs_carray[j] namespace]];
+		if ([attrs_carray[j] namespace] != nil &&
+		    (attr_prefix = [all_namespaces objectForKey:
+		    [attrs_carray[j] namespace]]) == nil)
+			@throw [OFUnboundNamespaceException
+			    newWithClass: isa
+			       namespace: [attrs_carray[j] namespace]];
 
 		len += [attr_name cStringLength] +
 		    (attr_prefix != nil ? [attr_prefix cStringLength] + 1 : 0) +
