@@ -295,12 +295,12 @@ AC_MSG_CHECKING(for getaddrinfo)
 AC_TRY_COMPILE([
 	#include <stddef.h>
 	#ifndef _WIN32
-	#include <sys/types.h>
-	#include <sys/socket.h>
-	#include <netdb.h>
+	# include <sys/types.h>
+	# include <sys/socket.h>
+	# include <netdb.h>
 	#else
-	#define _WIN32_WINNT 0x0501
-	#include <ws2tcpip.h>
+	# define _WIN32_WINNT 0x0501
+	# include <ws2tcpip.h>
 	#endif
 	], [
 	struct addrinfo ai;
@@ -421,6 +421,7 @@ else
 	AC_SUBST(TESTS, "tests")
 fi
 
+BUILDSYS_INIT
 BUILDSYS_TOUCH_DEPS
 
 dnl We don't call AC_PROG_CPP, but only AC_PROG_OBJCPP and set CPP to OBJCPP
