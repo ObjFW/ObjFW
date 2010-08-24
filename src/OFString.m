@@ -585,7 +585,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	i = len;
 
 	while ((component = va_arg(args, OFString*)) != nil) {
-		len = [component length];
+		len = [component cStringLength];
 		string[i] = OF_PATH_DELIM;
 		memcpy(string + i + 1, [component cString], len);
 		i += len + 1;
