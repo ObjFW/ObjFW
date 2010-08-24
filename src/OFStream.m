@@ -316,6 +316,24 @@
 						    stringWithCString: ret_c
 							     encoding: encoding
 							       length: ret_len];
+					} @catch (OFException *e) {
+						/*
+						 * Append data to cache to
+						 * prevent loss of data due to
+						 * wrong encoding.
+						 */
+						cache = [self
+						    resizeMemory: cache
+							  toSize: cacheLen +
+								  len];
+
+						if (cache != NULL)
+							memcpy(cache + cacheLen,
+							    tmp, len);
+
+						cacheLen += len;
+
+						@throw e;
 					} @finally {
 						[self freeMemory: ret_c];
 					}
