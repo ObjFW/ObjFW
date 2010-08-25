@@ -236,34 +236,31 @@ if test x"$enable_threads" != x"no"; then
 
 	atomic_ops="none"
 
-	AC_MSG_CHECKING(whether __sync_* works)
-	AC_TRY_LINK([#include <stdint.h>], [
-		int32_t i, j;
-		if (__sync_add_and_fetch(&i, 1))
-			j = __sync_sub_and_fetch(&i, 1);
-		while (!__sync_bool_compare_and_swap(&i, 0, 1));
+	AC_MSG_CHECKING(whether we have an atomic ops assembly implementation)
+	AC_EGREP_CPP(yes, [
+		#if defined(__GNUC__) && (defined(__i386__) || \
+		    defined(__amd64__) || defined(__x86_64__))
+		yes
+		#endif
 		], [
 		AC_MSG_RESULT(yes)
-		atomic_ops="gcc builtins"
-		AC_DEFINE(OF_HAVE_GCC_ATOMIC_OPS, 1,
-			[Whether gcc atomic operations are available])
-		], [
-		old_OBJCFLAGS="$OBJCFLAGS"
-		OBJCFLAGS="$OBJCFLAGS -march=i486"
+		atomic_ops="assembly implementation"
+		], [AC_MSG_RESULT(no)])
+
+	if test x"$atomic_ops" = x"none"; then
+		AC_MSG_CHECKING(whether __sync_* works)
 		AC_TRY_LINK([#include <stdint.h>], [
 			int32_t i, j;
 			if (__sync_add_and_fetch(&i, 1))
 				j = __sync_sub_and_fetch(&i, 1);
 			while (!__sync_bool_compare_and_swap(&i, 0, 1));
 			], [
-			AC_MSG_RESULT([yes, with -march=i486])
-			atomic_ops="gcc builtins (with -march=i486)"
+			AC_MSG_RESULT(yes)
+			atomic_ops="gcc builtins"
 			AC_DEFINE(OF_HAVE_GCC_ATOMIC_OPS, 1,
 				[Whether gcc atomic operations are available])
-			AC_SUBST(ATOMIC_OBJCFLAGS, "-march=i486")
-			], [
-			AC_MSG_RESULT(no)
-			OBJCFLAGS="$old_OBJCFLAGS"])])
+			], [AC_MSG_RESULT(no)])
+	fi
 
 	if test x"$atomic_ops" = x"none"; then
 		AC_CHECK_HEADER(libkern/OSAtomic.h, [
