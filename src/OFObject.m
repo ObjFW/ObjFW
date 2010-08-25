@@ -128,7 +128,6 @@ objc_enumerationMutation(id obj)
 
 + (void)initialize
 {
-	autoreleasepool = [OFAutoreleasePool class];
 }
 
 + alloc
@@ -620,6 +619,13 @@ objc_enumerationMutation(id obj)
 
 - autorelease
 {
+	/*
+	 * Cache OFAutoreleasePool since class lookups are expensive with the
+	 * GNU runtime.
+	 */
+	if (autoreleasepool == Nil)
+		autoreleasepool = [OFAutoreleasePool class];
+
 	[autoreleasepool addObjectToTopmostPool: self];
 
 	return self;
