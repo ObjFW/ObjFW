@@ -131,21 +131,22 @@ static OFString *values[] = {
 	    R([dict setObject: @"value3"
 		       forKey: @"key3"]) &&
 	    [[dict objectForKey: @"key3"] isEqual: @"value3"] &&
-	    [[dict setObject: @"foo"
-		      forKey: keys[0]] isEqual: values[0]] &&
+	    [[dict objectForKey: keys[0]] isEqual: values[0]] &&
+	    R([dict setObject: @"foo"
+		       forKey: keys[0]]) &&
 	    [[dict objectForKey: keys[0]] isEqual: @"foo"])
 
 	TEST(@"-[removeObjectForKey:]",
-	    [dict removeObjectForKey: keys[0]] &&
+	    R([dict removeObjectForKey: keys[0]]) &&
 	    [dict objectForKey: keys[0]] == nil)
 
 	[dict setObject: @"foo"
 		 forKey: keys[0]];
 	TEST(@"-[isEqual:]", ![dict isEqual: dict2] &&
-	    [dict removeObjectForKey: @"key3"] &&
+	    R([dict removeObjectForKey: @"key3"]) &&
 	    ![dict isEqual: dict2] &&
-	    [dict setObject: values[0]
-		     forKey: keys[0]] &&
+	    R([dict setObject: values[0]
+		       forKey: keys[0]]) &&
 	    [dict isEqual: dict2])
 
 	[pool drain];

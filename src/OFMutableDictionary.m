@@ -79,8 +79,8 @@
 	size = newsize;
 }
 
-- (id)setObject: (OFObject*)obj
-	 forKey: (OFObject <OFCopying>*)key
+- (void)setObject: (OFObject*)obj
+	   forKey: (OFObject <OFCopying>*)key
 {
 	uint32_t i, hash, last;
 	id old;
@@ -159,19 +159,17 @@
 		data[i] = b;
 		count++;
 
-		return nil;
+		return;
 	}
 
 	old = data[i]->object;
 	data[i]->object = [obj retain];
-
-	return [old autorelease];
+	[old release];
 }
 
-- (id)removeObjectForKey: (OFObject*)key
+- (void)removeObjectForKey: (OFObject*)key
 {
 	uint32_t i, hash, last;
-	id old;
 
 	if (key == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
@@ -185,9 +183,8 @@
 			continue;
 
 		if ([data[i]->key isEqual: key]) {
-			old = data[i]->object;
-
 			[data[i]->key release];
+			[data[i]->object release];
 			[self freeMemory: data[i]];
 			data[i] = DELETED;
 
@@ -195,12 +192,12 @@
 			mutations++;
 			[self _resizeForCount: count];
 
-			return [old autorelease];
+			return;
 		}
 	}
 
 	if (i < last)
-		return nil;
+		return;
 
 	/* In case the last bucket is already used */
 	last = hash & (size - 1);
@@ -210,9 +207,8 @@
 			continue;
 
 		if ([data[i]->key isEqual: key]) {
-			old = data[i]->object;
-
 			[data[i]->key release];
+			[data[i]->object release];
 			[self freeMemory: data[i]];
 			data[i] = DELETED;
 
@@ -220,11 +216,9 @@
 			mutations++;
 			[self _resizeForCount: count];
 
-			return [old autorelease];
+			return;
 		}
 	}
-
-	return nil;
 }
 
 - copy

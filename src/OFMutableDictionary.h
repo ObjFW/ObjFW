@@ -20,20 +20,19 @@
 }
 
 /**
- * Sets a key to an object. A key can be any object.
+ * Sets an object for a key.
+ * A key can be any object.
  *
  * \param key The key to set
  * \param obj The object to set the key to
- * \return The old object, autoreleased
  */
-- (id)setObject: (OFObject*)obj
-	 forKey: (OFObject <OFCopying>*)key;
+- (void)setObject: (OFObject*)obj
+	   forKey: (OFObject <OFCopying>*)key;
 
 /**
  * Remove the object with the given key from the dictionary.
  *
  * \param key The key whose object should be removed
- * \return The object that was stored for the key, autoreleased
  */
-- (id)removeObjectForKey: (OFObject*)key;
+- (void)removeObjectForKey: (OFObject*)key;
 @end
