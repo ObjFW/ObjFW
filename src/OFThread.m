@@ -82,7 +82,7 @@ call_main(id obj)
 
 + (id)objectForTLSKey: (OFTLSKey*)key
 {
-	return [[of_tlskey_get(key->key) retain] autorelease];
+	return of_tlskey_get(key->key);
 }
 
 + (OFThread*)currentThread

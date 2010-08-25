@@ -142,6 +142,11 @@ struct of_dictionary_bucket
       argList: (va_list)args;
 
 /**
+ * Returns the object for the given key or nil if the key was not found.
+ *
+ * The returned object is <i>not</i> retained and autoreleased for performance
+ * reasons!
+ *
  * \param key The key whose object should be returned
  * \return The object for the given key or nil if the key was not found
  */

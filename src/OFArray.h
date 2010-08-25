@@ -123,6 +123,9 @@
 /**
  * Returns a specific object of the array.
  *
+ * The returned object is <i>not</i> retained and autoreleased for performance
+ * reasons!
+ *
  * \param index The number of the object to return
  * \return The specified object of the OFArray
  */
@@ -148,11 +151,21 @@
 - (size_t)indexOfObjectIdenticalTo: (OFObject*)obj;
 
 /**
+ * Returns the first object of the array or nil.
+ *
+ * The returned object is <i>not</i> retained and autoreleased for performance
+ * reasons!
+ *
  * \return The first object of the array or nil
  */
 - (id)firstObject;
 
 /**
+ * Returns the last object of the array or nil.
+ *
+ * The returned object is <i>not</i> retained and autoreleased for performance
+ * reasons!
+ *
  * \return The last object of the array or nil
  */
 - (id)lastObject;

@@ -93,6 +93,9 @@
 /**
  * Returns the object for the specified Thread Local Storage key.
  *
+ * The returned object is <i>not</i> retained and autoreleased for performance
+ * reasons!
+ *
  * \param key The Thread Local Storage key
  */
 + (id)objectForTLSKey: (OFTLSKey*)key;
