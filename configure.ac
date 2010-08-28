@@ -38,8 +38,7 @@ AC_TRY_COMPILE([
 	AC_DEFINE(OF_HAVE_FAST_ENUMERATION, 1,
 		[Compiler support for Fast Enumeration])
 	AC_MSG_RESULT(yes)
-	], [
-	AC_MSG_RESULT(no)])
+	], [AC_MSG_RESULT(no)])
 
 AC_MSG_CHECKING(whether Objective C compiler supports properties)
 AC_TRY_COMPILE([
@@ -60,8 +59,21 @@ AC_TRY_COMPILE([
 	AC_DEFINE(OF_HAVE_PROPERTIES, 1, [Compiler support for properties])
 	AC_SUBST(PROPERTIESTESTS_M, "PropertiesTests.m")
 	AC_MSG_RESULT(yes)
+	], [AC_MSG_RESULT(no)])
+
+AC_MSG_CHECKING(whether Objective C compiler supports blocks)
+old_OBJCFLAGS="$OBJCFLAGS"
+OBJCFLAGS="$OBJCFLAGS -fblocks"
+AC_TRY_COMPILE([], [
+	int (^foo)(int bar);
+	foo = ^(int bar) { return 0; }
 	], [
-	AC_MSG_RESULT(no)])
+	AC_DEFINE(OF_HAVE_BLOCKS, 1, [Compiler support for blocks])
+	AC_MSG_RESULT(yes)
+	], [
+	AC_MSG_RESULT(no)
+	OBJCFLAGS="$old_OBJCFLAGS"
+	])
 
 AC_CHECK_HEADERS([objfw-rt.h objc/objc.h])
 

@@ -264,4 +264,23 @@
 			size: size
 	    mutationsPointer: &mutations] autorelease];
 }
+
+#ifdef OF_HAVE_BLOCKS
+- (void)enumerateKeysAndObjectsUsingBlock:
+    (of_dictionary_enumeration_block_t)block
+{
+	size_t i;
+	BOOL stop = NO;
+	unsigned long mutations2 = mutations;
+
+	for (i = 0; i < size && !stop; i++) {
+		if (mutations != mutations2)
+			@throw [OFEnumerationMutationException
+			    newWithClass: isa];
+
+		if (data[i] != NULL && data[i] != DELETED)
+			block(data[i]->key, data[i]->object, &stop);
+	}
+}
+#endif
 @end

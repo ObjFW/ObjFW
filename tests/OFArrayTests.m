@@ -187,6 +187,43 @@ static OFString *c_ary[] = {
 	[m[0] removeNObjects: 1];
 #endif
 
+#ifdef OF_HAVE_BLOCKS
+	{
+		__block BOOL ok = YES;
+		__block size_t count = 0;
+		OFArray *cmp = a[0];
+		OFMutableArray *a2;
+
+		m[0] = [[a[0] mutableCopy] autorelease];
+		[m[0] enumerateObjectsUsingBlock:
+		    ^ (id obj, size_t idx, BOOL *stop) {
+			    count++;
+			    if (![obj isEqual: [cmp objectAtIndex: idx]])
+				    ok = NO;
+		}];
+
+		if (count != [cmp count])
+			ok = NO;
+
+		TEST(@"Enumeration using blocks", ok)
+
+		ok = NO;
+		a2 = m[0];
+		@try {
+			[a2 enumerateObjectsUsingBlock:
+			    ^ (id obj, size_t idx, BOOL *stop) {
+				[a2 removeObjectAtIndex: idx];
+			}];
+		} @catch (OFEnumerationMutationException *e) {
+			ok = YES;
+			[e dealloc];
+		}
+
+		TEST(@"Detection of mutation during enumeration using blocks",
+		    ok)
+	}
+#endif
+
 	[pool drain];
 }
 @end

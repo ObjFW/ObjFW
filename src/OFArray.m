@@ -211,7 +211,7 @@
 
 - (id)objectAtIndex: (size_t)index
 {
-	return *((OFObject**)[array itemAtIndex: index]);
+	return *((id*)[array itemAtIndex: index]);
 }
 
 - (size_t)indexOfObject: (OFObject*)obj
@@ -350,6 +350,18 @@
 	    initWithDataArray: array
 	     mutationsPointer: NULL] autorelease];
 }
+
+#ifdef OF_HAVE_BLOCKS
+- (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
+{
+	OFObject **objs = [array cArray];
+	size_t i, count = [array count];
+	BOOL stop = NO;
+
+	for (i = 0; i < count && !stop; i++)
+		block(objs[i], i, &stop);
+}
+#endif
 
 - (void)dealloc
 {

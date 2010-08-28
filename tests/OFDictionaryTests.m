@@ -95,6 +95,41 @@ static OFString *values[] = {
 	[dict removeObjectForKey: @""];
 #endif
 
+#ifdef OF_HAVE_BLOCKS
+	{
+		__block size_t i = 0;
+		__block BOOL ok = YES;
+
+		[dict enumerateKeysAndObjectsUsingBlock:
+		    ^ (id key, id obj, BOOL *stop) {
+			if (![key isEqual: keys[i]])
+				ok = NO;
+			[dict setObject: [dict objectForKey: key]
+				 forKey: key];
+			i++;
+		}];
+
+		TEST(@"Enumeration using blocks", ok)
+
+		ok = NO;
+		@try {
+			[dict enumerateKeysAndObjectsUsingBlock:
+			    ^ (id key, id obj, BOOL *stop) {
+				[dict setObject: @""
+					 forKey: @""];
+			}];
+		} @catch (OFEnumerationMutationException *e) {
+			ok = YES;
+			[e dealloc];
+		}
+
+		TEST(@"Detection of mutation during enumeration using blocks",
+		    ok)
+
+		[dict removeObjectForKey: @""];
+	}
+#endif
+
 	TEST(@"-[count]", [dict count] == 2)
 
 	TEST(@"+[dictionaryWithKeysAndObjects:]",

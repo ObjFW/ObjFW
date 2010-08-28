@@ -16,6 +16,10 @@
 
 @class OFArray;
 
+#ifdef OF_HAVE_BLOCKS
+typedef void (^of_dictionary_enumeration_block_t)(id key, id obj, BOOL *stop);
+#endif
+
 /// \cond internal
 struct of_dictionary_bucket
 {
@@ -166,6 +170,16 @@ struct of_dictionary_bucket
  * \return An OFEnumerator to enumerate through the dictionary's keys
  */
 - (OFEnumerator*)keyEnumerator;
+
+#ifdef OF_HAVE_BLOCKS
+/**
+ * Executes a block for each key / object pair.
+ *
+ * \param block The block to execute for each key / object pair.
+ */
+- (void)enumerateKeysAndObjectsUsingBlock:
+    (of_dictionary_enumeration_block_t)block;
+#endif
 @end
 
 /// \cond internal

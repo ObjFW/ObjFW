@@ -637,6 +637,19 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	    mutationsPointer: NULL] autorelease];
 }
 
+#ifdef OF_HAVE_BLOCKS
+- (void)enumerateKeysAndObjectsUsingBlock:
+    (of_dictionary_enumeration_block_t)block
+{
+	size_t i;
+	BOOL stop = NO;
+
+	for (i = 0; i < size && !stop; i++)
+		if (data[i] != NULL && data[i] != DELETED)
+			block(data[i]->key, data[i]->object, &stop);
+}
+#endif
+
 - (void)dealloc
 {
 	uint32_t i;

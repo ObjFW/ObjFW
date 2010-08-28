@@ -17,6 +17,10 @@
 @class OFDataArray;
 @class OFString;
 
+#ifdef OF_HAVE_BLOCKS
+typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
+#endif
+
 /**
  * \brief A class for storing objects in an array.
  */
@@ -182,6 +186,15 @@
  * \return An OFEnumerator to enumarate through the array's objects
  */
 - (OFEnumerator*)enumerator;
+
+#ifdef OF_HAVE_BLOCKS
+/**
+ * Executes a block for each object.
+ *
+ * \param block The block to execute for each object
+ */
+- (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block;
+#endif
 @end
 
 /// \cond internal

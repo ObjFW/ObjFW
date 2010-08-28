@@ -235,4 +235,22 @@
 	    initWithDataArray: array
 	     mutationsPointer: &mutations] autorelease];
 }
+
+#ifdef OF_HAVE_BLOCKS
+- (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
+{
+	OFObject **objs = [array cArray];
+	size_t i, count = [array count];
+	BOOL stop = NO;
+	unsigned long mutations2 = mutations;
+
+	for (i = 0; i < count && !stop; i++) {
+		if (mutations != mutations2)
+			@throw [OFEnumerationMutationException
+			    newWithClass: isa];
+
+		block(objs[i], i, &stop);
+	}
+}
+#endif
 @end
