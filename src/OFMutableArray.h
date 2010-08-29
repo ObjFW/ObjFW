@@ -11,6 +11,10 @@
 
 #import "OFArray.h"
 
+#ifdef OF_HAVE_BLOCKS
+typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
+#endif
+
 /**
  * \brief A class for storing, adding and removing objects in an array.
  */
@@ -102,4 +106,13 @@
  */
 - (void)removeNObjects: (size_t)nobjects
 	       atIndex: (size_t)index;
+
+#ifdef OF_HAVE_BLOCKS
+/**
+ * Replaces each object with the object returned by the block.
+ *
+ * \param block The block which returns a new object for each object
+ */
+- (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block;
+#endif
 @end

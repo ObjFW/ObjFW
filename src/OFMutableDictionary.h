@@ -11,6 +11,10 @@
 
 #import "OFDictionary.h"
 
+#ifdef OF_HAVE_BLOCKS
+typedef id (^of_dictionary_replace_block_t)(id key, id obj, BOOL *stop);
+#endif
+
 /**
  * \brief A class for using mutable hash tables.
  */
@@ -35,4 +39,13 @@
  * \param key The key whose object should be removed
  */
 - (void)removeObjectForKey: (OFObject*)key;
+
+#ifdef OF_HAVE_BLOCKS
+/**
+ * Replaces each object with the object returned by the block.
+ *
+ * \param block The block which returns a new object for each object
+ */
+- (void)replaceObjectsUsingBlock: (of_dictionary_replace_block_t)block;
+#endif
 @end

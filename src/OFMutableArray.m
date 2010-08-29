@@ -252,5 +252,29 @@
 		block(objs[i], i, &stop);
 	}
 }
+
+- (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block
+{
+	OFObject **objs = [array cArray];
+	size_t i, count = [array count];
+	BOOL stop = NO;
+	unsigned long mutations2 = mutations;
+
+	for (i = 0; i < count && !stop; i++) {
+		if (mutations != mutations2)
+			@throw [OFEnumerationMutationException
+			    newWithClass: isa];
+
+		id new = block(objs[i], i, &stop);
+
+		if (new == nil)
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
+		[new retain];
+		[objs[i] release];
+		objs[i] = new;
+	}
+}
 #endif
 @end

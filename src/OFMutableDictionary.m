@@ -282,5 +282,31 @@
 			block(data[i]->key, data[i]->object, &stop);
 	}
 }
+
+- (void)replaceObjectsUsingBlock: (of_dictionary_replace_block_t)block
+{
+	size_t i;
+	BOOL stop = NO;
+	unsigned long mutations2 = mutations;
+
+	for (i = 0; i < size && !stop; i++) {
+		if (mutations != mutations2)
+			@throw [OFEnumerationMutationException
+			    newWithClass: isa];
+
+		if (data[i] != NULL && data[i] != DELETED) {
+			id new = block(data[i]->key, data[i]->object, &stop);
+
+			if (new == nil)
+				@throw [OFInvalidArgumentException
+				    newWithClass: isa
+					selector: _cmd];
+
+			[new retain];
+			[data[i]->object release];
+			data[i]->object = new;
+		}
+	}
+}
 #endif
 @end

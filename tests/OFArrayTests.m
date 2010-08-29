@@ -222,6 +222,20 @@ static OFString *c_ary[] = {
 		TEST(@"Detection of mutation during enumeration using blocks",
 		    ok)
 	}
+
+	TEST(@"-[replaceObjectsUsingBlock:]",
+	    R([m[0] replaceObjectsUsingBlock:
+	    ^ id (id obj, size_t idx, BOOL *stop) {
+		switch (idx) {
+		case 0:
+			return @"foo";
+		case 1:
+			return @"bar";
+		}
+
+		return nil;
+	    }]) && [[m[0] objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[m[0] objectAtIndex: 1] isEqual: @"bar"])
 #endif
 
 	[pool drain];
