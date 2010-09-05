@@ -25,8 +25,9 @@ many others as well:
  | OpenSolaris 2009.06      | x86          |                      | GNU     |
  | OpenSolaris 2009.06      | x86_64       |                      | GNU     |
  +--------------------------+--------------+----------------------+---------+
- | Windows XP - 7 / cygwin  | x86          |                      | GNU     |
- | Windows XP - 7 / mingw32 | x86          |                      | GNU     |
+ | Windows XP - 7 / Cygwin  | x86          |                      | GNU     |
+ | Windows XP - 7 / MinGW32 | x86          |                      | GNU     |
+ | Windows 7 / MinGW64      | x86_64       |                      | GNU     |
  +--------------------------+--------------+----------------------+---------+
 
 Basically, it should run on any POSIX system to which gcc4 or a recent
