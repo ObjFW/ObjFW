@@ -12,6 +12,7 @@
 #include <stdarg.h>
 
 #import "OFObject.h"
+#import "OFCollection.h"
 #import "OFEnumerator.h"
 
 @class OFDataArray;
@@ -24,7 +25,8 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
 /**
  * \brief A class for storing objects in an array.
  */
-@interface OFArray: OFObject <OFCopying, OFMutableCopying, OFFastEnumeration>
+@interface OFArray: OFObject <OFCopying, OFMutableCopying, OFCollection,
+    OFFastEnumeration>
 {
 	OFDataArray *array;
 }
@@ -115,11 +117,6 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
 	  length: (size_t)len;
 
 /**
- * \return The number of objects in the array
- */
-- (size_t)count;
-
-/**
  * \return The objects of the array as a C array
  */
 - (id*)cArray;
@@ -181,11 +178,6 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
  * \return A string containing all objects joined by the separator
  */
 - (OFString*)componentsJoinedByString: (OFString*)separator;
-
-/**
- * \return An OFEnumerator to enumarate through the array's objects
- */
-- (OFEnumerator*)objectEnumerator;
 
 #ifdef OF_HAVE_BLOCKS
 /**

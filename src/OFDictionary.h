@@ -12,6 +12,7 @@
 #include <stdarg.h>
 
 #import "OFObject.h"
+#import "OFCollection.h"
 #import "OFEnumerator.h"
 
 @class OFArray;
@@ -32,17 +33,13 @@ struct of_dictionary_bucket
 /**
  * \brief A class for storing objects in a hash table.
  */
-@interface OFDictionary: OFObject <OFCopying, OFMutableCopying,
+@interface OFDictionary: OFObject <OFCopying, OFMutableCopying, OFCollection,
     OFFastEnumeration>
 {
 	struct of_dictionary_bucket **data;
 	uint32_t size;
 	size_t count;
 }
-
-#ifdef OF_HAVE_PROPERTIES
-@property (readonly) size_t count;
-#endif
 
 /**
  * Creates a new OFDictionary.
@@ -155,16 +152,6 @@ struct of_dictionary_bucket
  * \return The object for the given key or nil if the key was not found
  */
 - (id)objectForKey: (id)key;
-
-/**
- * \return The number of objects in the dictionary
- */
-- (size_t)count;
-
-/**
- * \returns An OFEnumerator to enumerate through the dictionary's objects
- */
-- (OFEnumerator*)objectEnumerator;
 
 /**
  * \return An OFEnumerator to enumerate through the dictionary's keys

@@ -42,6 +42,7 @@ SRCS = OFApplication.m		\
        unicode.m
 
 INCLUDES := ${SRCS:.m=.h}	\
+	    OFCollection.h	\
 	    ObjFW.h		\
 	    asprintf.h		\
 	    ${ATOMIC_H}		\
