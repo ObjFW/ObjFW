@@ -106,8 +106,6 @@
 		4B6799781099E7C50041064A /* OFObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFObject.m; path = src/OFObject.m; sourceTree = "<group>"; };
 		4B6799791099E7C50041064A /* OFPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFPlugin.h; path = src/OFPlugin.h; sourceTree = "<group>"; };
 		4B67997A1099E7C50041064A /* OFPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFPlugin.m; path = src/OFPlugin.m; sourceTree = "<group>"; };
-		4B67997B1099E7C50041064A /* OFSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSocket.h; path = src/OFSocket.h; sourceTree = "<group>"; };
-		4B67997C1099E7C50041064A /* OFSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSocket.m; path = src/OFSocket.m; sourceTree = "<group>"; };
 		4B67997D1099E7C50041064A /* OFStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStream.h; path = src/OFStream.h; sourceTree = "<group>"; };
 		4B67997E1099E7C50041064A /* OFStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStream.m; path = src/OFStream.m; sourceTree = "<group>"; };
 		4B67997F1099E7C50041064A /* OFString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFString.h; path = src/OFString.h; sourceTree = "<group>"; };
@@ -128,6 +126,11 @@
 		4B6AF97310A8D4450003FB0A /* ObjFW.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ObjFW.h; path = src/ObjFW.h; sourceTree = "<group>"; };
 		4B981CDE116F71DD00294DB7 /* OFSeekableStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSeekableStream.h; path = src/OFSeekableStream.h; sourceTree = SOURCE_ROOT; };
 		4B981CDF116F71DD00294DB7 /* OFSeekableStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSeekableStream.m; path = src/OFSeekableStream.m; sourceTree = SOURCE_ROOT; };
+		4BAF5F46123460C900F4E111 /* OFCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCollection.h; path = src/OFCollection.h; sourceTree = SOURCE_ROOT; };
+		4BAF5F47123460C900F4E111 /* OFStreamObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamObserver.h; path = src/OFStreamObserver.h; sourceTree = SOURCE_ROOT; };
+		4BAF5F48123460C900F4E111 /* OFStreamObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamObserver.m; path = src/OFStreamObserver.m; sourceTree = SOURCE_ROOT; };
+		4BAF5F49123460C900F4E111 /* OFStreamSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamSocket.h; path = src/OFStreamSocket.h; sourceTree = SOURCE_ROOT; };
+		4BAF5F4A123460C900F4E111 /* OFStreamSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamSocket.m; path = src/OFStreamSocket.m; sourceTree = SOURCE_ROOT; };
 		4BBA36C411406AB700CBA3AC /* atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic.h; path = src/atomic.h; sourceTree = SOURCE_ROOT; };
 		4BBA36C511406AB700CBA3AC /* macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = macros.h; path = src/macros.h; sourceTree = SOURCE_ROOT; };
 		4BF1BCBF11C9663F0025511F /* objfw-defs.h.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "objfw-defs.h.in"; path = "src/objfw-defs.h.in"; sourceTree = SOURCE_ROOT; };
@@ -147,8 +150,6 @@
 		4BF1BCCD11C9663F0025511F /* OFString+XMLUnescaping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFString+XMLUnescaping.m"; path = "src/OFString+XMLUnescaping.m"; sourceTree = SOURCE_ROOT; };
 		4BF1BCCE11C9663F0025511F /* OFXMLAttribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFXMLAttribute.h; path = src/OFXMLAttribute.h; sourceTree = SOURCE_ROOT; };
 		4BF1BCCF11C9663F0025511F /* OFXMLAttribute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLAttribute.m; path = src/OFXMLAttribute.m; sourceTree = SOURCE_ROOT; };
-		4BF1BCD811C966950025511F /* OFSocketObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSocketObserver.h; path = src/OFSocketObserver.h; sourceTree = SOURCE_ROOT; };
-		4BF1BCD911C966950025511F /* OFSocketObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSocketObserver.m; path = src/OFSocketObserver.m; sourceTree = SOURCE_ROOT; };
 		4BFBDD1610A0724800051AFB /* unicode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = unicode.m; path = src/unicode.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -162,6 +163,7 @@
 				4B67995B1099E7C50041064A /* OFArray.m */,
 				4B67995C1099E7C50041064A /* OFAutoreleasePool.h */,
 				4B67995D1099E7C50041064A /* OFAutoreleasePool.m */,
+				4BAF5F46123460C900F4E111 /* OFCollection.h */,
 				4B67995E1099E7C50041064A /* OFConstString.h */,
 				4B67995F1099E7C50041064A /* OFConstString.m */,
 				4B6799601099E7C50041064A /* OFDataArray.h */,
@@ -196,12 +198,12 @@
 				4B981CDF116F71DD00294DB7 /* OFSeekableStream.m */,
 				4BF1BCC411C9663F0025511F /* OFSHA1Hash.h */,
 				4BF1BCC511C9663F0025511F /* OFSHA1Hash.m */,
-				4B67997B1099E7C50041064A /* OFSocket.h */,
-				4B67997C1099E7C50041064A /* OFSocket.m */,
 				4B67997D1099E7C50041064A /* OFStream.h */,
 				4B67997E1099E7C50041064A /* OFStream.m */,
-				4BF1BCD811C966950025511F /* OFSocketObserver.h */,
-				4BF1BCD911C966950025511F /* OFSocketObserver.m */,
+				4BAF5F47123460C900F4E111 /* OFStreamObserver.h */,
+				4BAF5F48123460C900F4E111 /* OFStreamObserver.m */,
+				4BAF5F49123460C900F4E111 /* OFStreamSocket.h */,
+				4BAF5F4A123460C900F4E111 /* OFStreamSocket.m */,
 				4B67997F1099E7C50041064A /* OFString.h */,
 				4B6799801099E7C50041064A /* OFString.m */,
 				4BF1BCC611C9663F0025511F /* OFString+Hashing.h */,
