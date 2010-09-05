@@ -48,7 +48,7 @@
 
 - (void)dealloc
 {
-	[delegate release];
+	[(id)delegate release];
 #ifdef OF_HAVE_POLL
 	[fds release];
 #endif
@@ -57,15 +57,15 @@
 	[super dealloc];
 }
 
-- (OFObject <OFStreamObserverDelegate>*)delegate
+- (id <OFStreamObserverDelegate>)delegate
 {
-	return [[delegate retain] autorelease];
+	return [[(id)delegate retain] autorelease];
 }
 
-- (void)setDelegate: (OFObject <OFStreamObserverDelegate>*)delegate_
+- (void)setDelegate: (id <OFStreamObserverDelegate>)delegate_
 {
-	[delegate_ retain];
-	[delegate release];
+	[(id)delegate_ retain];
+	[(id)delegate release];
 	delegate = delegate_;
 }
 

@@ -87,7 +87,7 @@
  * \param obj The object the Thread Local Storage key will be set to
  * \return The old object, autoreleased
  */
-+ (id)setObject: (OFObject*)obj
++ (id)setObject: (id)obj
       forTLSKey: (OFTLSKey*)key;
 
 /**

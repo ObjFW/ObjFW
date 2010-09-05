@@ -403,7 +403,7 @@ objc_enumerationMutation(id obj)
 #endif
 }
 
-- (BOOL)isEqual: (OFObject*)obj
+- (BOOL)isEqual: (id)obj
 {
 	/* Classes containing data should reimplement this! */
 	return (self == obj ? YES : NO);

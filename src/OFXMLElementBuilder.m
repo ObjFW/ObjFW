@@ -35,20 +35,20 @@
 - (void)dealloc
 {
 	[stack release];
-	[delegate release];
+	[(id)delegate release];
 
 	[super dealloc];
 }
 
-- (OFObject <OFXMLElementBuilderDelegate>*)delegate
+- (id <OFXMLElementBuilderDelegate>)delegate
 {
-	return [[delegate retain] autorelease];
+	return [[(id)delegate retain] autorelease];
 }
 
-- (void)setDelegate: (OFObject <OFXMLElementBuilderDelegate>*)delegate_
+- (void)setDelegate: (id <OFXMLElementBuilderDelegate>)delegate_
 {
-	[delegate_ retain];
-	[delegate release];
+	[(id)delegate_ retain];
+	[(id)delegate release];
 	delegate = delegate_;
 }
 

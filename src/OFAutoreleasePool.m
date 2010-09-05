@@ -39,7 +39,7 @@ static OFAutoreleasePool *first = nil, *last = nil;
 }
 #endif
 
-+ (void)addObjectToTopmostPool: (OFObject*)obj
++ (void)addObjectToTopmostPool: (id)obj
 {
 #ifdef OF_THREADS
 	id last = of_tlskey_get(last_key);
@@ -133,7 +133,7 @@ static OFAutoreleasePool *first = nil, *last = nil;
 	return self;
 }
 
-- (void)addObject: (OFObject*)obj
+- (void)addObject: (id)obj
 {
 	if (count + 1 > size) {
 		objects = [self resizeMemory: objects

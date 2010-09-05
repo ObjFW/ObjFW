@@ -45,11 +45,11 @@
 @interface OFXMLElementBuilder: OFObject
 {
 	OFMutableArray *stack;
-	OFObject <OFXMLElementBuilderDelegate> *delegate;
+	id <OFXMLElementBuilderDelegate> delegate;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (retain) OFObject <OFXMLElementBuilderDelegate> *delegate;
+@property (retain) id <OFXMLElementBuilderDelegate> delegate;
 #endif
 
 /**
@@ -60,12 +60,12 @@
 /**
  * \return The delegate for the OFXMLElementBuilder
  */
-- (OFObject <OFXMLElementBuilderDelegate>*)delegate;
+- (id <OFXMLElementBuilderDelegate>)delegate;
 
 /**
  * Sets the delegate for the OFXMLElementBuilder.
  *
  * \param delegate The delegate for the OFXMLElementBuilder
  */
-- (void)setDelegate: (OFObject <OFXMLElementBuilderDelegate>*)delegate;
+- (void)setDelegate: (id <OFXMLElementBuilderDelegate>)delegate;
 @end

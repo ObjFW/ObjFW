@@ -47,5 +47,5 @@ extern int _OFString_XMLUnescaping_reference;
  * \param h An OFXMLUnescapingDelegate as a handler for unknown entities
  */
 - (OFString*)stringByXMLUnescapingWithDelegate:
-    (OFObject <OFStringXMLUnescapingDelegate>*)delegate;
+    (id <OFStringXMLUnescapingDelegate>)delegate;
 @end

@@ -53,7 +53,7 @@
 	return lastListObject;
 }
 
-- (of_list_object_t*)appendObject: (OFObject*)obj
+- (of_list_object_t*)appendObject: (id)obj
 {
 	of_list_object_t *o;
 
@@ -76,7 +76,7 @@
 	return o;
 }
 
-- (of_list_object_t*)prependObject: (OFObject*)obj
+- (of_list_object_t*)prependObject: (id)obj
 {
 	of_list_object_t *o;
 
@@ -99,7 +99,7 @@
 	return o;
 }
 
-- (of_list_object_t*)insertObject: (OFObject*)obj
+- (of_list_object_t*)insertObject: (id)obj
 		 beforeListObject: (of_list_object_t*)listobj
 {
 	of_list_object_t *o;
@@ -124,7 +124,7 @@
 	return o;
 }
 
-- (of_list_object_t*)insertObject: (OFObject*)obj
+- (of_list_object_t*)insertObject: (id)obj
 		  afterListObject: (of_list_object_t*)listobj
 {
 	of_list_object_t *o;
@@ -173,7 +173,7 @@
 	return count;
 }
 
-- (BOOL)isEqual: (OFObject*)obj
+- (BOOL)isEqual: (id)obj
 {
 	of_list_object_t *iter, *iter2;
 

@@ -75,7 +75,7 @@ parse_numeric_entity(const char *entity, size_t length)
 }
 
 - (OFString*)stringByXMLUnescapingWithDelegate:
-    (OFObject <OFStringXMLUnescapingDelegate>*)delegate
+    (id <OFStringXMLUnescapingDelegate>)delegate
 {
 	size_t i, last;
 	BOOL in_entity;

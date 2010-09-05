@@ -25,12 +25,12 @@
 	return [[[self alloc] init] autorelease];
 }
 
-+ arrayWithObject: (OFObject*)obj
++ arrayWithObject: (id)obj
 {
 	return [[[self alloc] initWithObject: obj] autorelease];
 }
 
-+ arrayWithObjects: (OFObject*)first, ...
++ arrayWithObjects: (id)first, ...
 {
 	id ret;
 	va_list args;
@@ -43,12 +43,12 @@
 	return ret;
 }
 
-+ arrayWithCArray: (OFObject**)objs
++ arrayWithCArray: (id*)objs
 {
 	return [[[self alloc] initWithCArray: objs] autorelease];
 }
 
-+ arrayWithCArray: (OFObject**)objs
++ arrayWithCArray: (id*)objs
 	   length: (size_t)len
 {
 	return [[[self alloc] initWithCArray: objs
@@ -60,8 +60,7 @@
 	self = [super init];
 
 	@try {
-		array = [[OFDataArray alloc]
-		    initWithItemSize: sizeof(OFObject*)];
+		array = [[OFDataArray alloc] initWithItemSize: sizeof(id)];
 	} @catch (OFException *e) {
 		/*
 		 * We can't use [super dealloc] on OS X here. Compiler bug?
@@ -74,7 +73,7 @@
 	return self;
 }
 
-- initWithObject: (OFObject*)obj
+- initWithObject: (id)obj
 {
 	self = [self init];
 
@@ -90,7 +89,7 @@
 	return self;
 }
 
-- initWithObjects: (OFObject*)first, ...
+- initWithObjects: (id)first, ...
 {
 	id ret;
 	va_list args;
@@ -103,7 +102,7 @@
 	return ret;
 }
 
-- initWithObject: (OFObject*)first
+- initWithObject: (id)first
 	 argList: (va_list)args
 {
 	id obj;
@@ -124,7 +123,7 @@
 	return self;
 }
 
-- initWithCArray: (OFObject**)objs
+- initWithCArray: (id*)objs
 {
 	id *obj;
 	size_t count;
@@ -152,7 +151,7 @@
 	return self;
 }
 
-- initWithCArray: (OFObject**)objs
+- initWithCArray: (id*)objs
 	  length: (size_t)len
 {
 	size_t i;
@@ -194,7 +193,7 @@
 - mutableCopy
 {
 	OFArray *new = [[OFMutableArray alloc] init];
-	OFObject **objs;
+	id *objs;
 	size_t count, i;
 
 	objs = [array cArray];
@@ -214,7 +213,7 @@
 	return *((id*)[array itemAtIndex: index]);
 }
 
-- (size_t)indexOfObject: (OFObject*)obj
+- (size_t)indexOfObject: (id)obj
 {
 	id *objs = [array cArray];
 	size_t i, count = [array count];
@@ -229,7 +228,7 @@
 	return SIZE_MAX;
 }
 
-- (size_t)indexOfObjectIdenticalTo: (OFObject*)obj
+- (size_t)indexOfObjectIdenticalTo: (id)obj
 {
 	id *objs = [array cArray];
 	size_t i, count = [array count];
@@ -263,6 +262,7 @@
 	OFString *str;
 	OFString **objs = [array cArray];
 	size_t i, count = [array count];
+	Class cls;
 	IMP append;
 
 	if (count == 0)
@@ -271,9 +271,14 @@
 		return [objs[0] retain];
 
 	str = [OFMutableString string];
+	cls = [OFString class];
 	append = [str methodForSelector: @selector(appendString:)];
 
 	for (i = 0; i < count - 1; i++) {
+		if (![objs[i] isKindOfClass: cls])
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
 		append(str, @selector(appendString:), objs[i]);
 		append(str, @selector(appendString:), separator);
 	}
@@ -282,9 +287,9 @@
 	return str;
 }
 
-- (BOOL)isEqual: (OFObject*)obj
+- (BOOL)isEqual: (id)obj
 {
-	OFObject **objs, **objs2;
+	id *objs, *objs2;
 	size_t i, count, count2;
 
 	if (![obj isKindOfClass: [OFArray class]])
@@ -308,7 +313,7 @@
 
 - (uint32_t)hash
 {
-	OFObject **objs = [array cArray];
+	id *objs = [array cArray];
 	size_t i, count = [array count];
 	uint32_t hash;
 
@@ -354,7 +359,7 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
-	OFObject **objs = [array cArray];
+	id *objs = [array cArray];
 	size_t i, count = [array count];
 	BOOL stop = NO;
 
@@ -365,7 +370,7 @@
 
 - (void)dealloc
 {
-	OFObject **objs = [array cArray];
+	id *objs = [array cArray];
 	size_t i, count = [array count];
 
 	for (i = 0; i < count; i++)
@@ -398,7 +403,7 @@
 		@throw [OFEnumerationMutationException newWithClass: isa];
 
 	if (pos < count)
-		return *(OFObject**)[array itemAtIndex: pos++];
+		return *(id*)[array itemAtIndex: pos++];
 
 	return nil;
 }

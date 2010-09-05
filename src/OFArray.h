@@ -40,7 +40,7 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
  * \param obj An object
  * \return A new autoreleased OFArray
  */
-+ arrayWithObject: (OFObject*)obj;
++ arrayWithObject: (id)obj;
 
 /**
  * Creates a new OFArray with the specified objects, terminated by nil.
@@ -48,7 +48,7 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
  * \param first The first object in the array
  * \return A new autoreleased OFArray
  */
-+ arrayWithObjects: (OFObject*)first, ...;
++ arrayWithObjects: (id)first, ...;
 
 /**
  * Creates a new OFArray with the objects from the specified C array.
@@ -56,7 +56,7 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
  * \param objs A C array of objects, terminated with nil
  * \return A new autoreleased OFArray
  */
-+ arrayWithCArray: (OFObject**)objs;
++ arrayWithCArray: (id*)objs;
 
 /**
  * Creates a new OFArray with the objects from the specified C array of the
@@ -66,7 +66,7 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
  * \param len The length of the C array
  * \return A new autoreleased OFArray
  */
-+ arrayWithCArray: (OFObject**)objs
++ arrayWithCArray: (id*)objs
 	   length: (size_t)length;
 
 /**
@@ -75,7 +75,7 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
  * \param obj An object
  * \return An initialized OFArray
  */
-- initWithObject: (OFObject*)obj;
+- initWithObject: (id)obj;
 
 /**
  * Initializes an OFArray with the specified objects.
@@ -83,7 +83,7 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
  * \param first The first object
  * \return An initialized OFArray
  */
-- initWithObjects: (OFObject*)first, ...;
+- initWithObjects: (id)first, ...;
 
 /**
  * Initializes an OFArray with the specified object and a va_list.
@@ -92,7 +92,7 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
  * \param args A va_list
  * \return An initialized OFArray
  */
-- initWithObject: (OFObject*)first
+- initWithObject: (id)first
 	 argList: (va_list)args;
 
 /**
@@ -101,7 +101,7 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
  * \param objs A C array of objects, terminated with nil
  * \return An initialized OFArray
  */
-- initWithCArray: (OFObject**)objs;
+- initWithCArray: (id*)objs;
 
 /**
  * Initializes an OFArray with the objects from the specified C array of the
@@ -111,7 +111,7 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
  * \param len The length of the C array
  * \return An initialized OFArray
  */
-- initWithCArray: (OFObject**)objs
+- initWithCArray: (id*)objs
 	  length: (size_t)len;
 
 /**
@@ -142,7 +142,7 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
  * \param obj The object whose index is returned
  * \return The index of the first object equivalent to the specified object
  */
-- (size_t)indexOfObject: (OFObject*)obj;
+- (size_t)indexOfObject: (id)obj;
 
 /**
  * Returns the index of the first object that has the same address as the
@@ -152,7 +152,7 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
  * \return The index of the first object that has the same aaddress as
  *	   the specified object
  */
-- (size_t)indexOfObjectIdenticalTo: (OFObject*)obj;
+- (size_t)indexOfObjectIdenticalTo: (id)obj;
 
 /**
  * Returns the first object of the array or nil.

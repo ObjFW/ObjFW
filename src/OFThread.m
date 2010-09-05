@@ -68,7 +68,7 @@ call_main(id obj)
 	return [[[self alloc] initWithObject: obj] autorelease];
 }
 
-+ (id)setObject: (OFObject*)obj
++ (id)setObject: (id)obj
       forTLSKey: (OFTLSKey*)key
 {
 	id old = of_tlskey_get(key->key);

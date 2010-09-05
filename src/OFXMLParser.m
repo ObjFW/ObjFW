@@ -107,7 +107,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 - (void)dealloc
 {
-	[delegate release];
+	[(id)delegate release];
 
 	[cache release];
 	[name release];
@@ -121,15 +121,15 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	[super dealloc];
 }
 
-- (OFObject <OFXMLParserDelegate>*)delegate
+- (id <OFXMLParserDelegate>)delegate
 {
-	return [[delegate retain] autorelease];
+	return [[(id)delegate retain] autorelease];
 }
 
-- (void)setDelegate: (OFObject <OFXMLParserDelegate>*)delegate_
+- (void)setDelegate: (id <OFXMLParserDelegate>)delegate_
 {
-	[delegate_ retain];
-	[delegate release];
+	[(id)delegate_ retain];
+	[(id)delegate release];
 	delegate = delegate_;
 }
 

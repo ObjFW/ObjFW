@@ -36,8 +36,8 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	return [[[self alloc] initWithDictionary: dict] autorelease];
 }
 
-+ dictionaryWithObject: (OFObject*)obj
-		forKey: (OFObject <OFCopying>*)key
++ dictionaryWithObject: (id)obj
+		forKey: (id <OFCopying>)key
 {
 	return [[[self alloc] initWithObject: obj
 				      forKey: key] autorelease];
@@ -50,7 +50,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 				      forKeys: keys] autorelease];
 }
 
-+ dictionaryWithKeysAndObjects: (OFObject <OFCopying>*)first, ...
++ dictionaryWithKeysAndObjects: (id <OFCopying>)first, ...
 {
 	id ret;
 	va_list args;
@@ -119,7 +119,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	count = dict->count;
 
 	for (i = 0; i < size; i++) {
-		OFObject <OFCopying> *key;
+		id <OFCopying> key;
 		BUCKET *b;
 
 		if (dict->data[i] == NULL || dict->data[i] == DELETED)
@@ -136,7 +136,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 		@try {
 			[dict->data[i]->object retain];
 		} @catch (OFException *e) {
-			[key release];
+			[(id)key release];
 			[self dealloc];
 			@throw e;
 		}
@@ -150,8 +150,8 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	return self;
 }
 
-- initWithObject: (OFObject*)obj
-	  forKey: (OFObject <OFCopying>*)key
+- initWithObject: (id)obj
+	  forKey: (id <OFCopying>)key
 {
 	uint32_t i;
 	BUCKET *b;
@@ -175,7 +175,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 		@throw e;
 	}
 
-	i = [key hash] & 1;
+	i = [(id)key hash] & 1;
 
 	@try {
 		b = [self allocMemoryWithSize: sizeof(BUCKET)];
@@ -188,14 +188,14 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	@try {
 		[obj retain];
 	} @catch (OFException *e) {
-		[key release];
+		[(id)key release];
 		[self dealloc];
 		@throw e;
 	}
 
 	b->key = key;
 	b->object = obj;
-	b->hash = [key hash];
+	b->hash = [(id)key hash];
 	data[i] = b;
 	count = 1;
 
@@ -247,7 +247,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 		last = size;
 
 		for (j = hash & (size - 1); j < last && data[j] != NULL; j++)
-			if ([data[j]->key isEqual: keys_carray[i]])
+			if ([(id)data[j]->key isEqual: keys_carray[i]])
 				break;
 
 		/* In case the last bucket is already used */
@@ -255,15 +255,15 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 			last = hash & (size - 1);
 
 			for (j = 0; j < last && data[j] != NULL; j++)
-				if ([data[j]->key isEqual: keys_carray[i]])
+				if ([(id)data[j]->key isEqual: keys_carray[i]])
 					break;
 		}
 
 		/* Key not in dictionary */
 		if (j >= last || data[j] == NULL ||
-		    ![data[j]->key isEqual: keys_carray[i]]) {
+		    ![(id)data[j]->key isEqual: keys_carray[i]]) {
 			BUCKET *b;
-			OFObject <OFCopying> *key;
+			id <OFCopying> key;
 
 			last = size;
 
@@ -294,7 +294,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 			@try {
 				[objs_carray[i] retain];
 			} @catch (OFException *e) {
-				[key release];
+				[(id)key release];
 				[self dealloc];
 				@throw e;
 			}
@@ -333,7 +333,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	return self;
 }
 
-- initWithKeysAndObjects: (OFObject <OFCopying>*)first, ...
+- initWithKeysAndObjects: (id <OFCopying>)first, ...
 {
 	id ret;
 	va_list args;
@@ -346,11 +346,11 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	return ret;
 }
 
-- initWithKey: (OFObject <OFCopying>*)key
+- initWithKey: (id <OFCopying>)key
       argList: (va_list)args
 {
 	BUCKET *b;
-	OFObject *obj;
+	id obj;
 	size_t i;
 	uint32_t j, hash;
 	va_list args2;
@@ -358,7 +358,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	self = [super init];
 
 	count = 1;
-	for (va_copy(args2, args); va_arg(args2, OFObject*) != nil; count++);
+	for (va_copy(args2, args); va_arg(args2, id) != nil; count++);
 	count >>= 1;
 
 	if (count > UINT32_MAX) {
@@ -399,7 +399,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 						       selector: _cmd];
 	}
 
-	if ((obj = va_arg(args, OFObject*)) == nil) {
+	if ((obj = va_arg(args, id)) == nil) {
 		Class c = isa;
 		[self dealloc];
 		@throw [OFInvalidArgumentException newWithClass: c
@@ -407,7 +407,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	}
 
 	/* Add first key / object pair */
-	hash = [key hash];
+	hash = [(id)key hash];
 	j = hash & (size - 1);
 
 	@try {
@@ -421,7 +421,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	@try {
 		[obj retain];
 	} @catch (OFException *e) {
-		[key release];
+		[(id)key release];
 		[self dealloc];
 		@throw e;
 	}
@@ -434,8 +434,8 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	for (i = 1; i < count; i++) {
 		uint32_t last;
 
-		key = va_arg(args, OFObject <OFCopying>*);
-		obj = va_arg(args, OFObject*);
+		key = va_arg(args, id <OFCopying>);
+		obj = va_arg(args, id);
 
 		if (key == nil || obj == nil) {
 			Class c = isa;
@@ -444,11 +444,11 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 							       selector: _cmd];
 		}
 
-		hash = [key hash];
+		hash = [(id)key hash];
 		last = size;
 
 		for (j = hash & (size - 1); j < last && data[j] != NULL; j++)
-			if ([data[j]->key isEqual: key])
+			if ([(id)data[j]->key isEqual: key])
 				break;
 
 		/* In case the last bucket is already used */
@@ -456,13 +456,13 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 			last = hash & (size - 1);
 
 			for (j = 0; j < last && data[j] != NULL; j++)
-				if ([data[j]->key isEqual: key])
+				if ([(id)data[j]->key isEqual: key])
 					break;
 		}
 
 		/* Key not in dictionary */
 		if (j >= last || data[j] == NULL ||
-		    ![data[j]->key isEqual: key]) {
+		    ![(id)data[j]->key isEqual: key]) {
 			last = size;
 
 			j = hash & (size - 1);
@@ -492,7 +492,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 			@try {
 				[obj retain];
 			} @catch (OFException *e) {
-				[key release];
+				[(id)key release];
 				[self dealloc];
 				@throw e;
 			}
@@ -531,7 +531,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	return self;
 }
 
-- (id)objectForKey: (OFObject <OFCopying>*)key
+- (id)objectForKey: (id)key
 {
 	uint32_t i, hash, last;
 
@@ -546,7 +546,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 		if (data[i] == DELETED)
 			continue;
 
-		if ([data[i]->key isEqual: key])
+		if ([(id)data[i]->key isEqual: key])
 			return data[i]->object;
 	}
 
@@ -560,7 +560,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 		if (data[i] == DELETED)
 			continue;
 
-		if ([data[i]->key isEqual: key])
+		if ([(id)data[i]->key isEqual: key])
 			return data[i]->object;
 	}
 
@@ -656,7 +656,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 
 	for (i = 0; i < size; i++) {
 		if (data[i] != NULL && data[i] != DELETED) {
-			[data[i]->key release];
+			[(id)data[i]->key release];
 			[data[i]->object release];
 		}
 	}

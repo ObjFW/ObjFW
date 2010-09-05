@@ -28,7 +28,7 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
  *
  * \param obj An object to add
  */
-- (void)addObject: (OFObject*)obj;
+- (void)addObject: (id)obj;
 
 /**
  * Adds an object to the OFArray at the specified index.
@@ -36,7 +36,7 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
  * \param obj An object to add
  * \param index The index where the object should be added
  */
-- (void)addObject: (OFObject*)obj
+- (void)addObject: (id)obj
 	  atIndex: (size_t)index;
 
 /**
@@ -46,8 +46,8 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
  * \param old The object to replace
  * \param new The replacement object
  */
-- (void)replaceObject: (OFObject*)old
-	   withObject: (OFObject*)new;
+- (void)replaceObject: (id)old
+	   withObject: (id)new;
 
 /**
  * Replaces the object at the specified index with the specified object.
@@ -57,7 +57,7 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
  * \return The old object, autoreleased
  */
 - (id)replaceObjectAtIndex: (size_t)index
-		withObject: (OFObject*)obj;
+		withObject: (id)obj;
 
 /**
  * Replaces all objects that have the same address as the first specified object
@@ -66,22 +66,22 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
  * \param old The object to replace
  * \param new The replacement object
  */
-- (void)replaceObjectIdenticalTo: (OFObject*)old
-		      withObject: (OFObject*)new;
+- (void)replaceObjectIdenticalTo: (id)old
+		      withObject: (id)new;
 
 /**
  * Removes all objects equivalent to the specified object.
  *
  * \param obj The object to remove
  */
-- (void)removeObject: (OFObject*)obj;
+- (void)removeObject: (id)obj;
 
 /**
  * Removes all objects that have the same address as the specified object.
  *
  * \param obj The object to remove
  */
-- (void)removeObjectIdenticalTo: (OFObject*)obj;
+- (void)removeObjectIdenticalTo: (id)obj;
 
 /**
  * Removes the object at the specified index.

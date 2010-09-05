@@ -21,7 +21,7 @@
 - copy
 {
 	OFArray *new = [[OFArray alloc] init];
-	OFObject **objs;
+	id *objs;
 	size_t count, i;
 
 	objs = [array cArray];
@@ -36,7 +36,7 @@
 	return new;
 }
 
-- (void)addObject: (OFObject*)obj
+- (void)addObject: (id)obj
 {
 	[array addItem: &obj];
 	[obj retain];
@@ -44,7 +44,7 @@
 	mutations++;
 }
 
-- (void)addObject: (OFObject*)obj
+- (void)addObject: (id)obj
 	  atIndex: (size_t)index
 {
 	[array addItem: &obj
@@ -54,10 +54,10 @@
 	mutations++;
 }
 
-- (void)replaceObject: (OFObject*)old
-	   withObject: (OFObject*)new
+- (void)replaceObject: (id)old
+	   withObject: (id)new
 {
-	OFObject **objs = [array cArray];
+	id *objs = [array cArray];
 	size_t i, count = [array count];
 
 	for (i = 0; i < count; i++) {
@@ -70,9 +70,9 @@
 }
 
 - (id)replaceObjectAtIndex: (size_t)index
-		withObject: (OFObject*)obj
+		withObject: (id)obj
 {
-	OFObject **objs = [array cArray];
+	id *objs = [array cArray];
 	id old;
 
 	if (index >= [array count])
@@ -84,10 +84,10 @@
 	return [old autorelease];
 }
 
-- (void)replaceObjectIdenticalTo: (OFObject*)old
-		      withObject: (OFObject*)new
+- (void)replaceObjectIdenticalTo: (id)old
+		      withObject: (id)new
 {
-	OFObject **objs = [array cArray];
+	id *objs = [array cArray];
 	size_t i, count = [array count];
 
 	for (i = 0; i < count; i++) {
@@ -99,14 +99,14 @@
 	}
 }
 
-- (void)removeObject: (OFObject*)obj
+- (void)removeObject: (id)obj
 {
-	OFObject **objs = [array cArray];
+	id *objs = [array cArray];
 	size_t i, count = [array count];
 
 	for (i = 0; i < count; i++) {
 		if ([objs[i] isEqual: obj]) {
-			OFObject *obj = objs[i];
+			id obj = objs[i];
 
 			[array removeItemAtIndex: i];
 			mutations++;
@@ -128,9 +128,9 @@
 	}
 }
 
-- (void)removeObjectIdenticalTo: (OFObject*)obj
+- (void)removeObjectIdenticalTo: (id)obj
 {
-	OFObject **objs = [array cArray];
+	id *objs = [array cArray];
 	size_t i, count = [array count];
 
 	for (i = 0; i < count; i++) {
@@ -167,15 +167,15 @@
 
 - (void)removeNObjects: (size_t)nobjects
 {
-	OFObject **objs = [array cArray], **copy;
+	id *objs = [array cArray], *copy;
 	size_t i, count = [array count];
 
 	if (nobjects > count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	copy = [self allocMemoryForNItems: nobjects
-				 withSize: sizeof(OFObject*)];
-	memcpy(copy, objs + (count - nobjects), nobjects * sizeof(OFObject*));
+				 withSize: sizeof(id)];
+	memcpy(copy, objs + (count - nobjects), nobjects * sizeof(id));
 
 	@try {
 		[array removeNItems: nobjects];
@@ -191,15 +191,15 @@
 - (void)removeNObjects: (size_t)nobjects
 	       atIndex: (size_t)index
 {
-	OFObject **objs = [array cArray], **copy;
+	id *objs = [array cArray], *copy;
 	size_t i, count = [array count];
 
 	if (nobjects > count - index)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	copy = [self allocMemoryForNItems: nobjects
-				 withSize: sizeof(OFObject*)];
-	memcpy(copy, objs + index, nobjects * sizeof(OFObject*));
+				 withSize: sizeof(id)];
+	memcpy(copy, objs + index, nobjects * sizeof(id));
 
 	@try {
 		[array removeNItems: nobjects
@@ -239,7 +239,7 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
-	OFObject **objs = [array cArray];
+	id *objs = [array cArray];
 	size_t i, count = [array count];
 	BOOL stop = NO;
 	unsigned long mutations2 = mutations;
@@ -255,7 +255,7 @@
 
 - (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block
 {
-	OFObject **objs = [array cArray];
+	id *objs = [array cArray];
 	size_t i, count = [array count];
 	BOOL stop = NO;
 	unsigned long mutations2 = mutations;

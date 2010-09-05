@@ -32,7 +32,7 @@
  *
  * \param obj The object to add to the autorelease pool
  */
-+ (void)addObjectToTopmostPool: (OFObject*)obj;
++ (void)addObjectToTopmostPool: (id)obj;
 
 + (void)releaseAll;
 
@@ -41,7 +41,7 @@
  *
  * \param obj The object to add to the autorelease pool
  */
-- (void)addObject: (OFObject*)obj;
+- (void)addObject: (id)obj;
 
 /**
  * Releases all objects in the autorelease pool.

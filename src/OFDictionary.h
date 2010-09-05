@@ -23,8 +23,8 @@ typedef void (^of_dictionary_enumeration_block_t)(id key, id obj, BOOL *stop);
 /// \cond internal
 struct of_dictionary_bucket
 {
-	OFObject <OFCopying> *key;
-	OFObject *object;
+	id <OFCopying> key;
+	id object;
 	uint32_t hash;
 };
 /// \endcond
@@ -66,8 +66,8 @@ struct of_dictionary_bucket
  * \param obj The object
  * \return A new autoreleased OFDictionary
  */
-+ dictionaryWithObject: (OFObject*)obj
-		forKey: (OFObject <OFCopying>*)key;
++ dictionaryWithObject: (id)obj
+		forKey: (id <OFCopying>)key;
 
 /**
  * Creates a new OFDictionary with the specified keys and objects.
@@ -85,7 +85,7 @@ struct of_dictionary_bucket
  * \param key The first key
  * \return A new autoreleased OFDictionary
  */
-+ dictionaryWithKeysAndObjects: (OFObject <OFCopying>*)key, ...;
++ dictionaryWithKeysAndObjects: (id <OFCopying>)key, ...;
 
 /**
  * Initializes an already allocated OFDictionary.
@@ -111,8 +111,8 @@ struct of_dictionary_bucket
  * \param obj The object
  * \return A new initialized OFDictionary
  */
-- initWithObject: (OFObject*)obj
-	  forKey: (OFObject <OFCopying>*)key;
+- initWithObject: (id)obj
+	  forKey: (id <OFCopying>)key;
 
 /**
  * Initializes an already allocated OFDictionary with the specified keys and
@@ -132,7 +132,7 @@ struct of_dictionary_bucket
  * \param first The first key
  * \return A new initialized OFDictionary
  */
-- initWithKeysAndObjects: (OFObject <OFCopying>*)first, ...;
+- initWithKeysAndObjects: (id <OFCopying>)first, ...;
 
 /**
  * Initializes an already allocated OFDictionary with the specified key and
@@ -142,7 +142,7 @@ struct of_dictionary_bucket
  * \param args A va_list of the other arguments
  * \return A new initialized OFDictionary
  */
-- initWithKey: (OFObject <OFCopying>*)first
+- initWithKey: (id <OFCopying>)first
       argList: (va_list)args;
 
 /**
@@ -154,7 +154,7 @@ struct of_dictionary_bucket
  * \param key The key whose object should be returned
  * \return The object for the given key or nil if the key was not found
  */
-- (id)objectForKey: (OFObject <OFCopying>*)key;
+- (id)objectForKey: (id)key;
 
 /**
  * \return The number of objects in the dictionary

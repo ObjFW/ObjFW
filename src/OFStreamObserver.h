@@ -54,7 +54,7 @@
  */
 @interface OFStreamObserver: OFObject
 {
-	OFObject <OFStreamObserverDelegate> *delegate;
+	id <OFStreamObserverDelegate> delegate;
 #ifdef OF_HAVE_POLL
 	OFDataArray *fds;
 #else
@@ -66,7 +66,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (retain) OFObject <OFStreamObserverDelegate> *delegate;
+@property (retain) id <OFStreamObserverDelegate> delegate;
 #endif
 
 /**
@@ -77,14 +77,14 @@
 /**
  * \return The delegate for the OFStreamObserver
  */
-- (OFObject <OFStreamObserverDelegate>*)delegate;
+- (id <OFStreamObserverDelegate>)delegate;
 
 /**
  * Sets the delegate for the OFStreamObserver.
  *
  * \param delegate The delegate for the OFStreamObserver
  */
-- (void)setDelegate: (OFObject <OFStreamObserverDelegate>*)delegate;
+- (void)setDelegate: (id <OFStreamObserverDelegate>)delegate;
 
 /**
  * Adds a stream to observe for reading.

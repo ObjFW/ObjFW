@@ -79,8 +79,8 @@
 	size = newsize;
 }
 
-- (void)setObject: (OFObject*)obj
-	   forKey: (OFObject <OFCopying>*)key
+- (void)setObject: (id)obj
+	   forKey: (id <OFCopying>)key
 {
 	uint32_t i, hash, last;
 	id old;
@@ -89,14 +89,14 @@
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	hash = [key hash];
+	hash = [(id)key hash];
 	last = size;
 
 	for (i = hash & (size - 1); i < last && data[i] != NULL; i++) {
 		if (data[i] == DELETED)
 			continue;
 
-		if ([data[i]->key isEqual: key])
+		if ([(id)data[i]->key isEqual: key])
 			break;
 	}
 
@@ -108,14 +108,14 @@
 			if (data[i] == DELETED)
 				continue;
 
-			if ([data[i]->key isEqual: key])
+			if ([(id)data[i]->key isEqual: key])
 				break;
 		}
 	}
 
 	/* Key not in dictionary */
 	if (i >= last || data[i] == NULL || data[i] == DELETED ||
-	    ![data[i]->key isEqual: key]) {
+	    ![(id)data[i]->key isEqual: key]) {
 		BUCKET *b;
 
 		[self _resizeForCount: count + 1];
@@ -149,7 +149,7 @@
 			[obj retain];
 		} @catch (OFException *e) {
 			[self freeMemory: b];
-			[key release];
+			[(id)key release];
 			@throw e;
 		}
 
@@ -167,7 +167,7 @@
 	[old release];
 }
 
-- (void)removeObjectForKey: (OFObject*)key
+- (void)removeObjectForKey: (id)key
 {
 	uint32_t i, hash, last;
 
@@ -182,8 +182,8 @@
 		if (data[i] == DELETED)
 			continue;
 
-		if ([data[i]->key isEqual: key]) {
-			[data[i]->key release];
+		if ([(id)data[i]->key isEqual: key]) {
+			[(id)data[i]->key release];
 			[data[i]->object release];
 			[self freeMemory: data[i]];
 			data[i] = DELETED;
@@ -206,8 +206,8 @@
 		if (data[i] == DELETED)
 			continue;
 
-		if ([data[i]->key isEqual: key]) {
-			[data[i]->key release];
+		if ([(id)data[i]->key isEqual: key]) {
+			[(id)data[i]->key release];
 			[data[i]->object release];
 			[self freeMemory: data[i]];
 			data[i] = DELETED;

@@ -101,7 +101,7 @@
  */
 @interface OFXMLParser: OFObject <OFStringXMLUnescapingDelegate>
 {
-	OFObject <OFXMLParserDelegate> *delegate;
+	id <OFXMLParserDelegate> delegate;
 	enum {
 		OF_XMLPARSER_OUTSIDE_TAG,
 		OF_XMLPARSER_TAG_OPENED,
@@ -141,7 +141,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (retain) OFObject <OFXMLParserDelegate> *delegate;
+@property (retain) id <OFXMLParserDelegate> delegate;
 #endif
 
 /**
@@ -152,14 +152,14 @@
 /**
  * \return The delegate that is used by the XML parser
  */
-- (OFObject <OFXMLParserDelegate>*)delegate;
+- (id <OFXMLParserDelegate>)delegate;
 
 /**
  * Sets the delegate the OFXMLParser should use.
  *
  * \param delegate The delegate to use
  */
-- (void)setDelegate: (OFObject <OFXMLParserDelegate>*)delegate;
+- (void)setDelegate: (id <OFXMLParserDelegate>)delegate;
 
 /**
  * Parses a buffer with the specified size.

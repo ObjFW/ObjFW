@@ -218,7 +218,7 @@ typedef struct __of_range {
  * \param obj The object which should be tested for equality
  * \return A boolean whether the object is equal to the specified object
  */
-- (BOOL)isEqual: (OFObject*)obj;
+- (BOOL)isEqual: (id)obj;
 
 /**
  * Calculates a hash for the object.

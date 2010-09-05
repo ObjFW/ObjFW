@@ -33,7 +33,7 @@ static OFApplication *app = nil;
 static void
 atexit_handler()
 {
-	id delegate = [app delegate];
+	id <OFApplicationDelegate> delegate = [app delegate];
 
 	[delegate applicationWillTerminate];
 }
@@ -42,7 +42,7 @@ int
 of_application_main(int argc, char *argv[], Class cls)
 {
 	OFApplication *app;
-	OFObject <OFApplicationDelegate> *delegate = nil;
+	id <OFApplicationDelegate> delegate = nil;
 
 	if (cls != Nil)
 		delegate = [[cls alloc] init];
@@ -53,7 +53,7 @@ of_application_main(int argc, char *argv[], Class cls)
 	    andArgumentValues: argv];
 
 	[app setDelegate: delegate];
-	[delegate release];
+	[(id)delegate release];
 
 	[app run];
 
@@ -168,15 +168,15 @@ of_application_main(int argc, char *argv[], Class cls)
 	return [[environment retain] autorelease];
 }
 
-- (OFObject <OFApplicationDelegate>*)delegate
+- (id <OFApplicationDelegate>)delegate
 {
-	return [[delegate retain] autorelease];
+	return [[(id)delegate retain] autorelease];
 }
 
-- (void)setDelegate: (OFObject <OFApplicationDelegate>*)delegate_
+- (void)setDelegate: (id <OFApplicationDelegate>)delegate_
 {
-	[delegate_ retain];
-	[delegate release];
+	[(id)delegate_ retain];
+	[(id)delegate release];
 	delegate = delegate_;
 }
 
@@ -199,7 +199,7 @@ of_application_main(int argc, char *argv[], Class cls)
 {
 	[arguments release];
 	[environment release];
-	[delegate release];
+	[(id)delegate release];
 
 	[super dealloc];
 }
