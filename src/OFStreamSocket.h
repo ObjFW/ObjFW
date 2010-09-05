@@ -12,7 +12,9 @@
 #import "OFStream.h"
 
 #ifdef _WIN32
-# define _WIN32_WINNT 0x0501
+# ifndef _WIN32_WINNT
+#  define _WIN32_WINNT 0x0501
+# endif
 # include <winsock2.h>
 #endif
 

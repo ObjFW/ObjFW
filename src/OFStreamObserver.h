@@ -16,7 +16,9 @@
 #import "OFObject.h"
 
 #ifdef _WIN32
-# define _WIN32_WINNT 0x0501
+# ifndef _WIN32_WINNT
+#  define _WIN32_WINNT 0x0501
+# endif
 # include <windows.h>
 #endif
 
