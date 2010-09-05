@@ -133,7 +133,7 @@ static OFString *c_ary[] = {
 	ok = YES;
 	i = 0;
 
-	TEST(@"-[enumerator]", (enumerator = [m[0] enumerator]))
+	TEST(@"-[objectEnumerator]", (enumerator = [m[0] objectEnumerator]))
 
 	while ((obj = [enumerator nextObject]) != nil) {
 		if (![obj isEqual: c_ary[i]])

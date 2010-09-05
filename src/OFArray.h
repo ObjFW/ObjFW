@@ -185,7 +185,7 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
 /**
  * \return An OFEnumerator to enumarate through the array's objects
  */
-- (OFEnumerator*)enumerator;
+- (OFEnumerator*)objectEnumerator;
 
 #ifdef OF_HAVE_BLOCKS
 /**

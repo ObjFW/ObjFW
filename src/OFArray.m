@@ -349,7 +349,7 @@
 	return count;
 }
 
-- (OFEnumerator*)enumerator
+- (OFEnumerator*)objectEnumerator
 {
 	return [[[OFArrayEnumerator alloc]
 	    initWithDataArray: array
