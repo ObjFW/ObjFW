@@ -70,6 +70,7 @@
 		firstListObject = o;
 
 	count++;
+	mutations++;
 
 	[obj retain];
 
@@ -93,6 +94,7 @@
 		lastListObject = o;
 
 	count++;
+	mutations++;
 
 	[obj retain];
 
@@ -118,6 +120,7 @@
 		firstListObject = o;
 
 	count++;
+	mutations++;
 
 	[obj retain];
 
@@ -143,6 +146,7 @@
 		lastListObject = o;
 
 	count++;
+	mutations++;
 
 	[obj retain];
 
@@ -162,6 +166,7 @@
 		lastListObject = listobj->prev;
 
 	count--;
+	mutations++;
 
 	[listobj->object release];
 
@@ -251,4 +256,74 @@
 
 	return hash;
 }
+
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
+			   objects: (id*)objects
+			     count: (int)count_
+{
+	of_list_object_t **list_obj = (of_list_object_t**)state->extra;
+
+	state->itemsPtr = objects;
+	state->mutationsPtr = &mutations;
+
+	if (state->state == 0) {
+		*list_obj = firstListObject;
+		state->state = 1;
+	}
+
+	if (*list_obj == NULL)
+		return 0;
+
+	objects[0] = (*list_obj)->object;
+	*list_obj = (*list_obj)->next;
+	return 1;
+}
+
+- (OFEnumerator*)objectEnumerator
+{
+	return [[[OFListEnumerator alloc]
+	    initWithFirstListObject: firstListObject
+		   mutationsPointer: &mutations] autorelease];
+}
 @end
+
+/// \cond internal
+@implementation OFListEnumerator
+- initWithFirstListObject: (of_list_object_t*)first_
+	 mutationsPointer: (unsigned long*)mutationsPtr_;
+{
+	self = [super init];
+
+	first = first_;
+	current = first_;
+	mutations = *mutationsPtr_;
+	mutationsPtr = mutationsPtr_;
+
+	return self;
+}
+
+- (id)nextObject
+{
+	id ret;
+
+	if (*mutationsPtr != mutations)
+		@throw [OFEnumerationMutationException newWithClass: isa];
+
+	if (current == NULL)
+		return nil;
+
+	ret = current->object;
+	current = current->next;
+
+	return ret;
+}
+
+- (void)reset
+{
+	if (*mutationsPtr != mutations)
+		@throw [OFEnumerationMutationException newWithClass: isa];
+
+	current = first;
+}
+@end
+/// \endcond

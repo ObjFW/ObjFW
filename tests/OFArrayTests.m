@@ -143,6 +143,9 @@ static OFString *c_ary[] = {
 		i++;
 	}
 
+	if ([m[0] count] != i)
+		ok = NO;
+
 	TEST(@"OFEnumerator's -[nextObject]", ok)
 
 	[enumerator reset];
@@ -163,6 +166,9 @@ static OFString *c_ary[] = {
 				withObject: @""];
 		i++;
 	}
+
+	if ([m[0] count] != i)
+		ok = NO;
 
 	TEST(@"Fast Enumeration", ok)
 

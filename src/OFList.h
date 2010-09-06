@@ -10,6 +10,8 @@
  */
 
 #import "OFObject.h"
+#import "OFCollection.h"
+#import "OFEnumerator.h"
 
 /**
  * \brief A list object.
@@ -29,17 +31,17 @@ typedef struct __of_list_object {
 /**
  * \brief A class which provides easy to use double-linked lists.
  */
-@interface OFList: OFObject <OFCopying>
+@interface OFList: OFObject <OFCopying, OFCollection, OFFastEnumeration>
 {
 	of_list_object_t *firstListObject;
 	of_list_object_t *lastListObject;
 	size_t		 count;
+	unsigned long	 mutations;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly) of_list_object_t *firstListObject;
 @property (readonly) of_list_object_t *lastListObject;
-@property (readonly) size_t count;
 #endif
 
 /**
@@ -107,9 +109,18 @@ typedef struct __of_list_object {
  * \param listobj The list object returned by append / prepend
  */
 - (void)removeListObject: (of_list_object_t*)listobj;
-
-/**
- * \return The number of items in the list.
- */
-- (size_t)count;
 @end
+
+/// \cond internal
+@interface OFListEnumerator: OFEnumerator
+{
+	of_list_object_t *first;
+	of_list_object_t *current;
+	unsigned long	 mutations;
+	unsigned long	 *mutationsPtr;
+}
+
+- initWithFirstListObject: (of_list_object_t*)first
+	 mutationsPointer: (unsigned long*)mutations_ptr;
+@end
+/// \endcond
