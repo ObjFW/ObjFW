@@ -74,6 +74,7 @@ AC_TRY_COMPILE([], [
 	AC_MSG_RESULT(no)
 	OBJCFLAGS="$old_OBJCFLAGS"
 	])
+AC_CHECK_FUNC(_Block_copy,, AC_SUBST(BLOCK_M, "block.m"))
 
 AC_CHECK_HEADERS([objfw-rt.h objc/objc.h])
 

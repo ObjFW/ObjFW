@@ -54,7 +54,8 @@ SRCS += ${ASPRINTF_M} 		\
 	iso_8859_15.m		\
 	windows_1252.m		\
 	${OBJC_PROPERTIES_M}	\
-	${OBJC_SYNC_M}
+	${OBJC_SYNC_M}		\
+	${BLOCK_M}
 
 include ../buildsys.mk
 

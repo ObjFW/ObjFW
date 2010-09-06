@@ -15,7 +15,7 @@
 #import "OFExceptions.h"
 
 #ifdef OF_APPLE_RUNTIME
-#import <objc/runtime.h>
+# import <objc/runtime.h>
 
 void *_OFConstStringClassReference;
 #endif

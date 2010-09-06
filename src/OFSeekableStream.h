@@ -9,6 +9,9 @@
  * the packaging of this file.
  */
 
+/* Required to prevent a name conflict in glibc when using -fblocks */
+#undef __USE_XOPEN
+
 #include <unistd.h>
 
 #import "OFStream.h"
