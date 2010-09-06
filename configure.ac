@@ -69,6 +69,7 @@ AC_TRY_COMPILE([], [
 	foo = ^(int bar) { return 0; }
 	], [
 	AC_DEFINE(OF_HAVE_BLOCKS, 1, [Compiler support for blocks])
+	AC_SUBST(BLOCKS_FLAGS, "-fblocks")
 	AC_MSG_RESULT(yes)
 	], [
 	AC_MSG_RESULT(no)
