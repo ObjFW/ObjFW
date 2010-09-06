@@ -65,3 +65,6 @@ enum {
 - (void)release;
 - autorelease;
 @end
+
+extern of_block_literal_t* Block_copy(of_block_literal_t*);
+extern void Block_release(of_block_literal_t*);
