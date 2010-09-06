@@ -9,6 +9,7 @@ SRCS = OFApplication.m		\
        OFArray.m		\
        OFAutoreleasePool.m	\
        OFConstString.m		\
+       ${OFBLOCK_M}		\
        OFDataArray.m		\
        OFDictionary.m		\
        OFExceptions.m		\
@@ -54,8 +55,7 @@ SRCS += ${ASPRINTF_M} 		\
 	iso_8859_15.m		\
 	windows_1252.m		\
 	${OBJC_PROPERTIES_M}	\
-	${OBJC_SYNC_M}		\
-	${BLOCK_M}
+	${OBJC_SYNC_M}
 
 include ../buildsys.mk
 

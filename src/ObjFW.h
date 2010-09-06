@@ -12,6 +12,7 @@
 #import "objfw-defs.h"
 
 #import "OFObject.h"
+#import "OFBlock.h"
 #import "OFExceptions.h"
 
 #import "OFAutoreleasePool.h"
