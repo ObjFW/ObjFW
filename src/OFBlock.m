@@ -217,7 +217,7 @@ static Class autoreleasepool = Nil;
 	if (autoreleasepool == Nil)
 		autoreleasepool = [OFAutoreleasePool class];
 
-	[autoreleasepool addObjectToTopmostPool: self];
+	[autoreleasepool addObject: self];
 
 	return self;
 }

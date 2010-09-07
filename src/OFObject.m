@@ -626,7 +626,7 @@ objc_enumerationMutation(id obj)
 	if (autoreleasepool == Nil)
 		autoreleasepool = [OFAutoreleasePool class];
 
-	[autoreleasepool addObjectToTopmostPool: self];
+	[autoreleasepool addObject: self];
 
 	return self;
 }

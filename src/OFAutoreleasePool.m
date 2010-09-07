@@ -39,7 +39,7 @@ static OFAutoreleasePool *first = nil, *last = nil;
 }
 #endif
 
-+ (void)addObjectToTopmostPool: (id)obj
++ (void)addObject: (id)obj
 {
 #ifdef OF_THREADS
 	id last = of_tlskey_get(last_key);
