@@ -9,7 +9,6 @@ SRCS = OFApplication.m		\
        OFArray.m		\
        OFAutoreleasePool.m	\
        OFConstString.m		\
-       ${OFBLOCK_M}		\
        OFDataArray.m		\
        OFDictionary.m		\
        OFExceptions.m		\
@@ -43,6 +42,7 @@ SRCS = OFApplication.m		\
        unicode.m
 
 INCLUDES := ${SRCS:.m=.h}	\
+	    OFBlock.h		\
 	    OFCollection.h	\
 	    ObjFW.h		\
 	    asprintf.h		\
@@ -51,7 +51,8 @@ INCLUDES := ${SRCS:.m=.h}	\
 	    objfw-defs.h	\
 	    ${THREADING_H}
 
-SRCS += ${ASPRINTF_M} 		\
+SRCS += ${OFBLOCK_M}		\
+	${ASPRINTF_M} 		\
 	iso_8859_15.m		\
 	windows_1252.m		\
 	${OBJC_PROPERTIES_M}	\

@@ -90,7 +90,7 @@ __objc_gnu_init()
 /* Emd of ObjC module */
 
 of_block_literal_t*
-Block_copy(of_block_literal_t *block)
+_Block_copy(of_block_literal_t *block)
 {
 	if (block->isa == (Class)&_NSConcreteStackBlock) {
 		of_block_literal_t *copy;
@@ -117,7 +117,7 @@ Block_copy(of_block_literal_t *block)
 }
 
 void
-Block_release(of_block_literal_t *block)
+_Block_release(of_block_literal_t *block)
 {
 	if (block->isa != (Class)&_NSConcreteMallocBlock)
 		return;
@@ -138,7 +138,7 @@ _Block_object_assign(void *dst, void *src, int flags)
 
 	switch (flags) {
 	case OF_BLOCK_FIELD_IS_BLOCK:
-		*(of_block_literal_t**)dst = Block_copy(src);
+		*(of_block_literal_t**)dst = _Block_copy(src);
 		break;
 	case OF_BLOCK_FIELD_IS_OBJECT:
 		*(id*)dst = [(id)src retain];
@@ -177,7 +177,7 @@ _Block_object_dispose(void *obj, int flags)
 
 	switch (flags) {
 	case OF_BLOCK_FIELD_IS_BLOCK:
-		Block_release(obj);
+		_Block_release(obj);
 		break;
 	case OF_BLOCK_FIELD_IS_OBJECT:
 		[(id)obj release];
@@ -200,12 +200,12 @@ static Class autoreleasepool = Nil;
 @implementation OFBlock
 - copy
 {
-	return (id)Block_copy((of_block_literal_t*)self);
+	return Block_copy(self);
 }
 
 - (void)release
 {
-	Block_release((of_block_literal_t*)self);
+	Block_release(self);
 }
 
 - autorelease

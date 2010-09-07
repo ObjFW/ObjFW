@@ -66,5 +66,12 @@ enum {
 - autorelease;
 @end
 
-extern of_block_literal_t* Block_copy(of_block_literal_t*);
-extern void Block_release(of_block_literal_t*);
+extern void* _Block_copy(const void*);
+extern void _Block_release(const void*);
+
+#ifndef Block_copy
+# define Block_copy(x) ((__typeof__(x))_Block_copy((const void*)(x)))
+#endif
+#ifndef Block_release
+# define Block_release(x) _Block_release((const void*)(x))
+#endif
