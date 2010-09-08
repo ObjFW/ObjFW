@@ -93,18 +93,6 @@ static OFString *values[] = {
 	TEST(@"Detection of mutation during Fast Enumeration", ok)
 
 	[dict removeObjectForKey: @""];
-
-	TEST(@"-[replaceObjectsUsingBlock:]",
-	    R([dict replaceObjectsUsingBlock:
-	    ^ id (id key, id obj, BOOL *stop) {
-		if ([key isEqual: keys[0]])
-			return @"value_1";
-		if ([key isEqual: keys[1]])
-			return @"value_2";
-
-		return nil;
-	    }]) && [[dict objectForKey: keys[0]] isEqual: @"value_1"] &&
-	    [[dict objectForKey: keys[1]] isEqual: @"value_2"])
 #endif
 
 #ifdef OF_HAVE_BLOCKS
@@ -140,6 +128,18 @@ static OFString *values[] = {
 
 		[dict removeObjectForKey: @""];
 	}
+
+	TEST(@"-[replaceObjectsUsingBlock:]",
+	    R([dict replaceObjectsUsingBlock:
+	    ^ id (id key, id obj, BOOL *stop) {
+		if ([key isEqual: keys[0]])
+			return @"value_1";
+		if ([key isEqual: keys[1]])
+			return @"value_2";
+
+		return nil;
+	    }]) && [[dict objectForKey: keys[0]] isEqual: @"value_1"] &&
+	    [[dict objectForKey: keys[1]] isEqual: @"value_2"])
 #endif
 
 	TEST(@"-[count]", [dict count] == 2)
