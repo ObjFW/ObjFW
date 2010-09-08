@@ -58,7 +58,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
     OFArray *namespaces, Class isa)
 {
 	OFString *attr_ns;
-	OFString *attr_prefix = attr->namespace;
+	OFString *attr_prefix = attr->ns;
 
 	if (attr_prefix == nil)
 		return;
@@ -69,8 +69,8 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		@throw [OFUnboundNamespaceException newWithClass: isa
 							  prefix: attr_prefix];
 
-	[attr->namespace release];
-	attr->namespace = [attr_ns retain];
+	[attr->ns release];
+	attr->ns = [attr_ns retain];
 }
 
 @implementation OFXMLParser

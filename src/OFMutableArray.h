@@ -47,7 +47,7 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
  * \param new The replacement object
  */
 - (void)replaceObject: (id)old
-	   withObject: (id)new;
+	   withObject: (id)new_;
 
 /**
  * Replaces the object at the specified index with the specified object.
@@ -67,7 +67,7 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
  * \param new The replacement object
  */
 - (void)replaceObjectIdenticalTo: (id)old
-		      withObject: (id)new;
+		      withObject: (id)new_;
 
 /**
  * Removes all objects equivalent to the specified object.

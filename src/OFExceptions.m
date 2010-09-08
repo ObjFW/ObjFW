@@ -1515,10 +1515,10 @@
 
 @implementation OFUnboundNamespaceException
 + newWithClass: (Class)class_
-     namespace: (OFString*)namespace
+     namespace: (OFString*)ns
 {
 	return [[self alloc] initWithClass: class_
-				 namespace: namespace];
+				 namespace: ns];
 }
 
 + newWithClass: (Class)class_
@@ -1535,11 +1535,11 @@
 }
 
 - initWithClass: (Class)class_
-      namespace: (OFString*)namespace_
+      namespace: (OFString*)ns_
 {
 	self = [super initWithClass: class_];
 
-	namespace = [namespace_ copy];
+	ns = [ns_ copy];
 
 	return self;
 }
@@ -1556,7 +1556,7 @@
 
 - (void)dealloc
 {
-	[namespace release];
+	[ns release];
 	[prefix release];
 
 	[super dealloc];
@@ -1567,7 +1567,7 @@
 	if (string != nil)
 		return string;
 
-	if (namespace != nil)
+	if (ns != nil)
 		string = [[OFString alloc] initWithFormat:
 		    @"The namespace %s is not bound in class %s",
 		    [inClass className]];
@@ -1581,7 +1581,7 @@
 
 - (OFString*)namespace
 {
-	return namespace;
+	return ns;
 }
 
 - (OFString*)prefix

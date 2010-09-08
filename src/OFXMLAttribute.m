@@ -26,13 +26,13 @@
 }
 
 - initWithName: (OFString*)name_
-     namespace: (OFString*)ns
+     namespace: (OFString*)ns_
    stringValue: (OFString*)value
 {
 	self = [super init];
 
 	name = [name_ copy];
-	namespace = [ns copy];
+	ns = [ns_ copy];
 	stringValue = [value copy];
 
 	return self;
@@ -41,7 +41,7 @@
 - (void)dealloc
 {
 	[name release];
-	[namespace release];
+	[ns release];
 	[stringValue release];
 
 	[super dealloc];
@@ -54,7 +54,7 @@
 
 - (OFString*)namespace
 {
-	return [[namespace copy] autorelease];
+	return [[ns copy] autorelease];
 }
 
 - (OFString*)stringValue

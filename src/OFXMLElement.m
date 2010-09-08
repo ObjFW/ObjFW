@@ -88,21 +88,21 @@
 }
 
 - initWithName: (OFString*)name_
-     namespace: (OFString*)ns
+     namespace: (OFString*)ns_
 {
 	return [self initWithName: name_
-			namespace: ns
+			namespace: ns_
 		      stringValue: nil];
 }
 
 - initWithName: (OFString*)name_
-     namespace: (OFString*)ns
+     namespace: (OFString*)ns_
    stringValue: (OFString*)stringval
 {
 	self = [super init];
 
 	name = [name_ copy];
-	namespace = [ns copy];
+	ns = [ns_ copy];
 
 	if (stringval != nil) {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];;
@@ -152,7 +152,7 @@
 
 - (OFString*)namespace
 {
-	return [[namespace copy] autorelease];
+	return [[ns copy] autorelease];
 }
 
 - (OFArray*)attributes
@@ -219,15 +219,12 @@
 	/* Start of tag */
 	str_c[i++] = '<';
 
-	if ((namespace == nil && def_ns != nil) ||
-	    (namespace != nil && def_ns == nil) ||
-	    (namespace != nil && ![namespace isEqual: def_ns])) {
+	if ((ns == nil && def_ns != nil) || (ns != nil && def_ns == nil) ||
+	    (ns != nil && ![ns isEqual: def_ns])) {
 		if ((prefix = [all_namespaces objectForKey:
-		    (namespace != nil ? namespace : (OFString*)@"")]) == nil)
-			@throw [OFUnboundNamespaceException
-			    newWithClass: isa
-			       namespace: namespace];
-
+		    (ns != nil ? ns : (OFString*)@"")]) == nil)
+			@throw [OFUnboundNamespaceException newWithClass: isa
+							       namespace: ns];
 		len += [prefix cStringLength] + 1;
 		@try {
 			str_c = [self resizeMemory: str_c
@@ -396,7 +393,7 @@
 }
 
 - (void)addAttributeWithName: (OFString*)name_
-		   namespace: (OFString*)ns
+		   namespace: (OFString*)ns_
 		 stringValue: (OFString*)value
 {
 	OFAutoreleasePool *pool;
@@ -407,7 +404,7 @@
 
 	pool = [[OFAutoreleasePool alloc] init];
 	[self addAttribute: [OFXMLAttribute attributeWithName: name_
-						    namespace: ns
+						    namespace: ns_
 						  stringValue: value]];
 	[pool release];
 }
@@ -416,26 +413,26 @@
 /* TODO: Remove attribute */
 
 - (void)setPrefix: (OFString*)prefix
-     forNamespace: (OFString*)ns
+     forNamespace: (OFString*)ns_
 {
 	if (name == nil || prefix == nil || [prefix isEqual: @""])
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
-	if (ns == nil)
-		ns = @"";
+	if (ns_ == nil)
+		ns_ = @"";
 
 	[namespaces setObject: prefix
-		       forKey: ns];
+		       forKey: ns_];
 }
 
 - (void)bindPrefix: (OFString*)prefix
-      forNamespace: (OFString*)ns
+      forNamespace: (OFString*)ns_
 {
 	[self setPrefix: prefix
-	   forNamespace: ns];
+	   forNamespace: ns_];
 	[self addAttributeWithName: prefix
 			 namespace: @"http://www.w3.org/2000/xmlns/"
-		       stringValue: ns];
+		       stringValue: ns_];
 }
 
 - (OFString*)defaultNamespace
@@ -447,22 +444,22 @@
 	return [[defaultNamespace retain] autorelease];
 }
 
-- (void)setDefaultNamespace: (OFString*)ns
+- (void)setDefaultNamespace: (OFString*)ns_
 {
 	if (name == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
 	OFString *old = defaultNamespace;
-	defaultNamespace = [ns copy];
+	defaultNamespace = [ns_ copy];
 	[old release];
 }
 
-- (void)bindDefaultNamespace: (OFString*)ns
+- (void)bindDefaultNamespace: (OFString*)ns_
 {
-	[self setDefaultNamespace: ns];
+	[self setDefaultNamespace: ns_];
 	[self addAttributeWithName: @"xmlns"
-		       stringValue: ns];
+		       stringValue: ns_];
 }
 
 - (void)addChild: (OFXMLElement*)child
@@ -480,7 +477,7 @@
 - (void)dealloc
 {
 	[name release];
-	[namespace release];
+	[ns release];
 	[attributes release];
 	[namespaces release];
 	[children release];

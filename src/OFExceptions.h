@@ -1158,12 +1158,12 @@
  */
 @interface OFUnboundNamespaceException: OFException
 {
-	OFString *namespace;
+	OFString *ns;
 	OFString *prefix;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, nonatomic) OFString *namespace;
+@property (readonly, nonatomic, getter=namespace) OFString *ns;
 @property (readonly, nonatomic) OFString *prefix;
 #endif
 
@@ -1173,7 +1173,7 @@
  * \return A new unbound namespace exception
  */
 + newWithClass: (Class)class_
-     namespace: (OFString*)namespace;
+     namespace: (OFString*)ns;
 
 /**
  * \param class_ The class of the object which caused the exception
@@ -1191,7 +1191,7 @@
  * \return An initialized unbound namespace exception
  */
 - initWithClass: (Class)class_
-      namespace: (OFString*)namespace;
+      namespace: (OFString*)ns;
 
 /**
  * Initializes an already allocated unbound namespace failed exception
