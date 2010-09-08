@@ -261,27 +261,23 @@ if test x"$enable_threads" != x"no"; then
 		atomic_ops="assembly implementation"
 		], [AC_MSG_RESULT(no)])
 
-	if test x"$atomic_ops" = x"none"; then
-		AC_MSG_CHECKING(whether __sync_* works)
-		AC_TRY_LINK([#include <stdint.h>], [
-			int32_t i, j;
-			if (__sync_add_and_fetch(&i, 1))
-				j = __sync_sub_and_fetch(&i, 1);
-			while (!__sync_bool_compare_and_swap(&i, 0, 1));
-			], [
-			AC_MSG_RESULT(yes)
-			atomic_ops="gcc builtins"
-			AC_DEFINE(OF_HAVE_GCC_ATOMIC_OPS, 1,
-				[Whether gcc atomic operations are available])
-			], [AC_MSG_RESULT(no)])
-	fi
+	AC_MSG_CHECKING(whether __sync_* works)
+	AC_TRY_LINK([#include <stdint.h>], [
+		int32_t i, j;
+		if (__sync_add_and_fetch(&i, 1))
+			j = __sync_sub_and_fetch(&i, 1);
+		while (!__sync_bool_compare_and_swap(&i, 0, 1));
+		], [
+		AC_MSG_RESULT(yes)
+		test x"$atomic_ops" = x"none" && atomic_ops="gcc builtins"
+		AC_DEFINE(OF_HAVE_GCC_ATOMIC_OPS, 1,
+			[Whether gcc atomic operations are available])
+		], [AC_MSG_RESULT(no)])
 
-	if test x"$atomic_ops" = x"none"; then
-		AC_CHECK_HEADER(libkern/OSAtomic.h, [
-			atomic_ops="libkern/OSAtomic.h"
-			AC_DEFINE(OF_HAVE_LIBKERN_OSATOMIC_H, 1,
-				[Whether we have libkern/OSAtomic.h])])
-	fi
+	AC_CHECK_HEADER(libkern/OSAtomic.h, [
+		test x"$atomic_ops" = x"none" && atomic_ops="libkern/OSAtomic.h"
+		AC_DEFINE(OF_HAVE_LIBKERN_OSATOMIC_H, 1,
+			[Whether we have libkern/OSAtomic.h])])
 else
 	dnl We can only have one thread - therefore everything is atomic
 	atomic_ops="not needed"
