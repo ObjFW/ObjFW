@@ -18,6 +18,7 @@
 #import "OFBlock.h"
 #import "OFAutoreleasePool.h"
 
+#if defined(OF_GNU_RUNTIME) || defined(OF_OBJFW_RUNTIME)
 struct objc_abi_class {
 	struct objc_abi_class *metaclass;
 	const char *superclass, *name;
@@ -37,32 +38,32 @@ extern void __objc_exec_class(void*);
 
 /* Begin of ObjC module */
 static struct objc_abi_class _NSConcreteStackBlock_metaclass = {
-	&_NSConcreteStackBlock_metaclass, "OFBlock", "_NSConcreteStackBlock", 8,
+	&_NSConcreteStackBlock_metaclass, "OFBlock", "OFStackBlock", 8,
 	OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_class), NULL, NULL
 };
 
 struct objc_abi_class _NSConcreteStackBlock = {
-	&_NSConcreteStackBlock_metaclass, "OFBlock", "_NSConcreteStackBlock", 8,
+	&_NSConcreteStackBlock_metaclass, "OFBlock", "OFStackBlock", 8,
 	OBJC_CLASS_INFO_CLASS, sizeof(of_block_literal_t), NULL, NULL
 };
 
 static struct objc_abi_class _NSConcreteGlobalBlock_metaclass = {
-	&_NSConcreteGlobalBlock_metaclass, "OFBlock", "_NSConcreteGlobalBlock",
+	&_NSConcreteGlobalBlock_metaclass, "OFBlock", "OFGlobalBlock",
 	8, OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_class), NULL, NULL
 };
 
 struct objc_abi_class _NSConcreteGlobalBlock = {
-	&_NSConcreteGlobalBlock_metaclass, "OFBlock", "_NSConcreteGlobalBlock",
+	&_NSConcreteGlobalBlock_metaclass, "OFBlock", "OFGlobalBlock",
 	8, OBJC_CLASS_INFO_CLASS, sizeof(of_block_literal_t), NULL, NULL
 };
 
 static struct objc_abi_class _NSConcreteMallocBlock_metaclass = {
-	&_NSConcreteMallocBlock_metaclass, "OFBlock", "_NSConcreteMallocBlock",
+	&_NSConcreteMallocBlock_metaclass, "OFBlock", "OFMallocBlock",
 	8, OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_class), NULL, NULL
 };
 
 struct objc_abi_class _NSConcreteMallocBlock = {
-	&_NSConcreteMallocBlock_metaclass, "OFBlock", "_NSConcreteMallocBlock",
+	&_NSConcreteMallocBlock_metaclass, "OFBlock", "OFMallocBlock",
 	8, OBJC_CLASS_INFO_CLASS, sizeof(of_block_literal_t), NULL, NULL
 };
 
@@ -87,11 +88,18 @@ __objc_gnu_init()
 {
 	__objc_exec_class(&module);
 }
-/* Emd of ObjC module */
+/* End of ObjC module */
+#else
+void *_NSConcreteStackBlock;
+void *_NSConcreteGlobalBlock;
+void *_NSConcreteMallocBlock;
+#endif
 
-of_block_literal_t*
-_Block_copy(of_block_literal_t *block)
+void*
+_Block_copy(const void *block_)
 {
+	of_block_literal_t *block = (of_block_literal_t*)block_;
+
 	if (block->isa == (Class)&_NSConcreteStackBlock) {
 		of_block_literal_t *copy;
 
@@ -117,8 +125,10 @@ _Block_copy(of_block_literal_t *block)
 }
 
 void
-_Block_release(of_block_literal_t *block)
+_Block_release(const void *block_)
 {
+	of_block_literal_t *block = (of_block_literal_t*)block_;
+
 	if (block->isa != (Class)&_NSConcreteMallocBlock)
 		return;
 
@@ -131,65 +141,65 @@ _Block_release(of_block_literal_t *block)
 }
 
 void
-_Block_object_assign(void *dst, void *src, int flags)
+_Block_object_assign(void *dst_, void *src_, int flags)
 {
 	flags &= OF_BLOCK_FIELD_IS_BLOCK | OF_BLOCK_FIELD_IS_OBJECT |
 	    OF_BLOCK_FIELD_IS_BYREF;
 
 	switch (flags) {
 	case OF_BLOCK_FIELD_IS_BLOCK:
-		*(of_block_literal_t**)dst = _Block_copy(src);
+		*(of_block_literal_t**)dst_ = _Block_copy(src_);
 		break;
 	case OF_BLOCK_FIELD_IS_OBJECT:
-		*(id*)dst = [(id)src retain];
+		*(id*)dst_ = [(id)src_ retain];
 		break;
 	case OF_BLOCK_FIELD_IS_BYREF:;
-		of_block_byref_t *src_ = src;
-		of_block_byref_t **dst_ = dst;
+		of_block_byref_t *src = src_;
+		of_block_byref_t **dst = dst_;
 
-		if ((src_->flags & ~OF_BLOCK_HAS_COPY_DISPOSE) == 0) {
-			if ((*dst_ = malloc(src_->size)) == NULL) {
+		if ((src->flags & ~OF_BLOCK_HAS_COPY_DISPOSE) == 0) {
+			if ((*dst = malloc(src->size)) == NULL) {
 				fputs("Not enough memory for block "
 				    "variables!\n", stderr);
 				exit(1);
 			}
 
-			if (src_->forwarding == src)
-				src_->forwarding = *dst_;
+			if (src->forwarding == src)
+				src->forwarding = *dst;
 
-			memcpy(*dst_, src_, src_->size);
+			memcpy(*dst, src, src->size);
 
-			if (src_->size >= sizeof(of_block_byref_t))
-				src_->byref_keep(*dst_, src_);
+			if (src->size >= sizeof(of_block_byref_t))
+				src->byref_keep(*dst, src);
 		} else
-			*dst_ = src_;
+			*dst = src;
 
-		(*dst_)->flags++;
+		(*dst)->flags++;
 		break;
 	}
 }
 
 void
-_Block_object_dispose(void *obj, int flags)
+_Block_object_dispose(void *obj_, int flags)
 {
 	flags &= OF_BLOCK_FIELD_IS_BLOCK | OF_BLOCK_FIELD_IS_OBJECT |
 	    OF_BLOCK_FIELD_IS_BYREF;
 
 	switch (flags) {
 	case OF_BLOCK_FIELD_IS_BLOCK:
-		_Block_release(obj);
+		_Block_release(obj_);
 		break;
 	case OF_BLOCK_FIELD_IS_OBJECT:
-		[(id)obj release];
+		[(id)obj_ release];
 		break;
 	case OF_BLOCK_FIELD_IS_BYREF:;
-		of_block_byref_t *obj_ = obj;
+		of_block_byref_t *obj = obj_;
 
-		if ((--obj_->flags & ~OF_BLOCK_HAS_COPY_DISPOSE) == 0) {
-			if (obj_->size >= sizeof(of_block_byref_t))
-				obj_->byref_dispose(obj_);
+		if ((--obj->flags & ~OF_BLOCK_HAS_COPY_DISPOSE) == 0) {
+			if (obj->size >= sizeof(of_block_byref_t))
+				obj->byref_dispose(obj);
 
-			free(obj_);
+			free(obj);
 		}
 		break;
 	}
