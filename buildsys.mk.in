@@ -95,7 +95,7 @@ MO_FILES = ${LOCALES:.po=.mo}
 
 .SILENT:
 .SUFFIXES:
-.SUFFIXES: .beam .c .cc .cxx .d .dep .erl .lib.o .mo .m .mm .o .plugin.o .po .py .pyc .xpm .S
+.SUFFIXES: .beam .c .c.dep .cc .cc.dep .cxx .cxx.dep .d .erl .lib.o .mo .m .m.dep .mm .mm.dep .o .plugin.o .po .py .pyc .xpm .S .S.dep
 .PHONY: all subdirs pre-depend depend install install-extra uninstall uninstall-extra clean distclean locales
 
 all:
@@ -116,29 +116,9 @@ depend: pre-depend ${SRCS}
 	test -f .deps || regen=1; \
 	for i in ${SRCS}; do \
 		case $$i in \
-			*.c) \
+			*.c | *.cc | *.cxx | *.m | *.mm | *.S) \
 				test $$i -nt .deps && regen=1; \
-				deps="$$deps $${i%.c}.dep"; \
-				;; \
-			*.cc) \
-				test $$i -nt .deps && regen=1; \
-				deps="$$deps $${i%.cc}.dep"; \
-				;; \
-			*.cxx) \
-				test $$i -nt .deps && regen=1; \
-				deps="$$deps $${i%.cxx}.dep"; \
-				;; \
-			*.m) \
-				test $$i -nt .deps && regen=1; \
-				deps="$$deps $${i%.m}.dep"; \
-				;; \
-			*.mm) \
-				test $$i -nt .deps && regen=1; \
-				deps="$$deps $${i%.mm}.dep"; \
-				;; \
-			*.S) \
-				test $$i -nt .deps && regen=1; \
-				deps="$$deps $${i%.S}.dep"; \
+				deps="$$deps $$i.dep"; \
 				;; \
 		esac; \
 	done; \
@@ -154,11 +134,8 @@ depend: pre-depend ${SRCS}
 		fi; \
 	fi
 
-.c.dep .cc.dep .cxx.dep .m.dep .mm.dep .S.dep:
+.c.c.dep .cc.cc.dep .cxx.cxx.dep .m.m.dep .mm.mm.dep .S.S.dep:
 	${CPP} ${CPPFLAGS} -M $< >$@ || (rm -f $@; exit 1)
-
-.d.dep:
-.xpm.dep:
 
 pre-depend:
 
