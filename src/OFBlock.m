@@ -84,7 +84,7 @@ static struct {
 } module = { 8, sizeof(module), NULL, &symtab };
 
 static void __attribute__((constructor))
-__objc_gnu_init()
+constructor()
 {
 	__objc_exec_class(&module);
 }
