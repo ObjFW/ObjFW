@@ -375,7 +375,7 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 - (void)writeToFile: (OFString*)path;
 @end
 
-#import "OFConstString.h"
+#import "OFConstantString.h"
 #import "OFMutableString.h"
 #import "OFString+Hashing.h"
 #import "OFString+URLEncoding.h"

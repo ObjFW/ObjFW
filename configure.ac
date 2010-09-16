@@ -13,7 +13,7 @@ AC_PROG_EGREP
 CPP="$OBJCPP"
 CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS"
 OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions -fobjc-exceptions"
-OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstString"
+OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstantString"
 
 AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
 AX_CHECK_COMPILER_FLAGS(-fno-common, [OBJCFLAGS="$OBJCFLAGS -fno-common"])
@@ -375,7 +375,7 @@ if test x"$GOBJC" = x"yes"; then
 	AC_TRY_COMPILE([
 		#import <objc/objc.h>
 
-		@interface OFConstString
+		@interface OFConstantString
 		{
 			Class isa;
 			const char *string;
@@ -383,9 +383,9 @@ if test x"$GOBJC" = x"yes"; then
 		}
 		@end
 
-		void *_OFConstStringClassReference;
+		void *_OFConstantStringClassReference;
 		], [
-		OFConstString *test = @"";
+		OFConstantString *test = @"";
 		test++; /* Get rid of unused variable warning */
 		], [AC_MSG_RESULT(no)], [
 		AC_MSG_RESULT([yes, adding -Wno-unused-variable])

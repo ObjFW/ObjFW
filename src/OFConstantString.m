@@ -11,21 +11,21 @@
 
 #include "config.h"
 
-#import "OFConstString.h"
+#import "OFConstantString.h"
 #import "OFExceptions.h"
 
 #ifdef OF_APPLE_RUNTIME
 # import <objc/runtime.h>
 
-void *_OFConstStringClassReference;
+void *_OFConstantStringClassReference;
 #endif
 
-@implementation OFConstString
+@implementation OFConstantString
 #ifdef OF_APPLE_RUNTIME
 + (void)load
 {
-	objc_setFutureClass((Class)&_OFConstStringClassReference,
-	    "OFConstString");
+	objc_setFutureClass((Class)&_OFConstantStringClassReference,
+	    "OFConstantString");
 }
 #endif
 

@@ -12,11 +12,11 @@
 #import "OFString.h"
 
 #ifdef OF_APPLE_RUNTIME
-extern void *_OFConstStringClassReference;
+extern void *_OFConstantStringClassReference;
 #endif
 
 /**
  * \brief A class for storing constant strings using the \@"" literal.
  */
-@interface OFConstString: OFString {}
+@interface OFConstantString: OFString {}
 @end

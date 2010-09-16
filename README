@@ -34,7 +34,7 @@ USING THE MAC OS X FRAMWORK IN XCODE
   To use the Mac OS X framework in Xcode, you need to add the .framework
   to your project and add the following flags to "Other C Flags":
 
-    -fconstant-string-class=OFConstString -fno-constant-cfstrings
+    -fconstant-string-class=OFConstantString -fno-constant-cfstrings
 
 
 BUGS AND FEATURE REQUESTS

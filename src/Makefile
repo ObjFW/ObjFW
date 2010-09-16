@@ -8,7 +8,7 @@ STATIC_LIB = ${OBJFW_STATIC_LIB}
 SRCS = OFApplication.m		\
        OFArray.m		\
        OFAutoreleasePool.m	\
-       OFConstString.m		\
+       OFConstantString.m	\
        OFDataArray.m		\
        OFDictionary.m		\
        OFExceptions.m		\
