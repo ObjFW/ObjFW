@@ -17,6 +17,7 @@
 # import <objc/objc.h>
 #endif
 
+/// \cond internal
 typedef struct __of_block_literal {
 	Class isa;
 	int flags;
@@ -55,6 +56,7 @@ enum {
 	OF_BLOCK_FIELD_IS_WEAK	 =  16,
 	OF_BLOCK_BYREF_CALLER	 = 128,
 };
+/// \endcond
 
 extern void* _Block_copy(const void*);
 extern void _Block_release(const void*);
@@ -66,6 +68,7 @@ extern void _Block_release(const void*);
 # define Block_release(x) _Block_release((const void*)(x))
 #endif
 
+/// \cond internal
 @interface OFBlock
 {
 	Class isa;
@@ -84,3 +87,4 @@ extern void _Block_release(const void*);
 
 @interface OFMallocBlock: OFBlock
 @end
+/// \endcond

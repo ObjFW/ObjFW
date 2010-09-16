@@ -18,6 +18,9 @@
 @class OFMutableDictionary;
 @class OFXMLAttribute;
 
+/**
+ * \brief A class which stores an XML element.
+ */
 @interface OFXMLElement: OFObject
 {
 	OFString *name;

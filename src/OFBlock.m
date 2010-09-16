@@ -216,6 +216,7 @@ _Block_object_dispose(void *obj_, int flags)
 
 static Class autoreleasepool = Nil;
 
+/// \cond internal
 @implementation OFBlock
 - copy
 {
@@ -241,3 +242,4 @@ static Class autoreleasepool = Nil;
 	return self;
 }
 @end
+/// \endcond
