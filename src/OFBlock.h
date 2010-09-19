@@ -74,6 +74,7 @@ extern void _Block_release(const void*);
 	Class isa;
 }
 
++ (Class)class;
 - copy;
 - (void)release;
 - autorelease;

@@ -218,6 +218,11 @@ static Class autoreleasepool = Nil;
 
 /// \cond internal
 @implementation OFBlock
++ (Class)class
+{
+	return self;
+}
+
 - copy
 {
 	return Block_copy(self);
