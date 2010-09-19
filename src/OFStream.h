@@ -27,7 +27,10 @@
  */
 @interface OFStream: OFObject
 {
-	char   *cache, *wBuffer;
+@public
+	char   *cache;
+@protected
+	char   *wBuffer;
 	size_t cacheLen, wBufferLen;
 	BOOL   useWBuffer;
 }

@@ -26,6 +26,7 @@
 #ifdef OF_HAVE_POLL
 @class OFDataArray;
 #endif
+@class OFMutableArray;
 @class OFMutableDictionary;
 
 /**
@@ -54,15 +55,17 @@
  */
 @interface OFStreamObserver: OFObject
 {
+	OFMutableArray *readStreams;
+	OFMutableArray *writeStreams;
 	id <OFStreamObserverDelegate> delegate;
 #ifdef OF_HAVE_POLL
 	OFDataArray *fds;
+	OFMutableDictionary *fdToStream;
 #else
 	fd_set readfds;
 	fd_set writefds;
 	int nfds;
 #endif
-	OFMutableDictionary *fdToStream;
 }
 
 #ifdef OF_HAVE_PROPERTIES

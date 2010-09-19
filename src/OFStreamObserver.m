@@ -19,6 +19,7 @@
 
 #import "OFStreamObserver.h"
 #import "OFDataArray.h"
+#import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFStream.h"
 #import "OFNumber.h"
@@ -35,13 +36,21 @@
 {
 	self = [super init];
 
+	@try {
+		readStreams = [[OFMutableArray alloc] init];
+		writeStreams = [[OFMutableArray alloc] init];
 #ifdef OF_HAVE_POLL
-	fds = [[OFDataArray alloc] initWithItemSize: sizeof(struct pollfd)];
+		fds = [[OFDataArray alloc] initWithItemSize:
+		    sizeof(struct pollfd)];
+		fdToStream = [[OFMutableDictionary alloc] init];
 #else
-	FD_ZERO(&readfds);
-	FD_ZERO(&writefds);
+		FD_ZERO(&readfds);
+		FD_ZERO(&writefds);
 #endif
-	fdToStream = [[OFMutableDictionary alloc] init];
+	} @catch (OFException *e) {
+		[self dealloc];
+		@throw e;
+	}
 
 	return self;
 }
@@ -49,10 +58,12 @@
 - (void)dealloc
 {
 	[(id)delegate release];
+	[readStreams release];
+	[writeStreams release];
 #ifdef OF_HAVE_POLL
+	[fdToStream release];
 	[fds release];
 #endif
-	[fdToStream release];
 
 	[super dealloc];
 }
@@ -136,9 +147,6 @@
 	if (fd >= nfds)
 		nfds = fd + 1;
 
-	[fdToStream setObject: stream
-		       forKey: [OFNumber numberWithInt: fd]];
-
 	[pool release];
 }
 
@@ -151,19 +159,13 @@
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	FD_CLR(fd, fdset);
-
-	if (!FD_ISSET(fd, &readfds) && !FD_ISSET(fd, &writefds)) {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-
-		[fdToStream removeObjectForKey: [OFNumber numberWithInt: fd]];
-
-		[pool release];
-	}
 }
 #endif
 
 - (void)addStreamToObserveForReading: (OFStream*)stream
 {
+	[readStreams addObject: stream];
+
 #ifdef OF_HAVE_POLL
 	[self _addStream: stream
 	      withEvents: POLLIN];
@@ -175,6 +177,8 @@
 
 - (void)addStreamToObserveForWriting: (OFStream*)stream
 {
+	[writeStreams addObject: stream];
+
 #ifdef OF_HAVE_POLL
 	[self _addStream: stream
 	      withEvents: POLLOUT];
@@ -186,6 +190,8 @@
 
 - (void)removeStreamToObserveForReading: (OFStream*)stream
 {
+	[readStreams removeObjectIdenticalTo: stream];
+
 #ifdef OF_HAVE_POLL
 	[self _removeStream: stream
 		 withEvents: POLLIN];
@@ -197,6 +203,8 @@
 
 - (void)removeStreamToObserveForWriting: (OFStream*)stream
 {
+	[writeStreams removeObjectIdenticalTo: stream];
+
 #ifdef OF_HAVE_POLL
 	[self _removeStream: stream
 		 withEvents: POLLOUT];
@@ -214,10 +222,37 @@
 - (BOOL)observeWithTimeout: (int)timeout
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	BOOL foundInCache = NO;
+	OFStream **cArray;
+	size_t i, count;
 #ifdef OF_HAVE_POLL
 	struct pollfd *fds_c = [fds cArray];
-	size_t i, nfds = [fds count];
+	size_t nfds = [fds count];
+#else
+	fd_set readfds_;
+	fd_set writefds_;
+	fd_set exceptfds_;
+	struct timeval tv;
+#endif
 
+	cArray = [readStreams cArray];
+	count = [readStreams count];
+
+	for (i = 0; i < count; i++) {
+		if (cArray[i]->cache != NULL) {
+			[delegate streamDidBecomeReadyForReading: cArray[i]];
+			foundInCache = YES;
+		}
+	}
+
+	/*
+	 * As long as we have data in the cache for any stream, we don't want
+	 * to block.
+	 */
+	if (foundInCache)
+		return YES;
+
+#ifdef OF_HAVE_POLL
 	if (poll(fds_c, nfds, timeout) < 1)
 		return NO;
 
@@ -240,13 +275,6 @@
 		fds_c[i].revents = 0;
 	}
 #else
-	fd_set readfds_;
-	fd_set writefds_;
-	fd_set exceptfds_;
-	struct timeval tv;
-	OFEnumerator *enumerator;
-	OFStream *stream;
-
 	readfds_ = readfds;
 	writefds_ = writefds;
 	FD_ZERO(&exceptfds_);
@@ -255,18 +283,24 @@
 	    (timeout != -1 ? &tv : NULL)) < 1)
 		return NO;
 
-	enumerator = [[[fdToStream copy] autorelease] objectEnumerator];
-
-	while ((stream = [enumerator nextObject]) != nil) {
-		int fd = [stream fileDescriptor];
+	for (i = 0; i < count; i++) {
+		int fd = [cArray[i] fileDescriptor];
 
 		if (FD_ISSET(fd, &readfds_))
-			[delegate streamDidBecomeReadyForReading: stream];
+			[delegate streamDidBecomeReadyForReading: cArray[i]];
+	}
 
-		if (FD_ISSET(fd, &writefds_))
-			[delegate streamDidBecomeReadyForWriting: stream];
+	cArray = [writeStreams cArray];
+	count = [writeStreams count];
+
+	for (i = 0; i < count; i++) {
+		int fd = [cArray[i] fileDescriptor];
+
+		if (FD_ISSET(fd, &readfds_))
+			[delegate streamDidBecomeReadyForWriting: cArray[i]];
 	}
 #endif
+
 	[pool release];
 
 	return YES;
