@@ -124,6 +124,12 @@ typedef struct __of_range {
 + (IMP)instanceMethodForSelector: (SEL)selector;
 
 /**
+ * \param selector The selector for which the type encoding should be returned
+ * \return The type encoding of the instance method for the specified selector
+ */
++ (const char*)typeEncodingForInstanceSelector: (SEL)selector;
+
+/**
  * Replaces a class method implementation with another implementation.
  *
  * \param newimp The new implementation for the class method
@@ -208,6 +214,13 @@ typedef struct __of_range {
  * \return The implementation for the specified selector
  */
 - (IMP)methodForSelector: (SEL)selector;
+
+/**
+ * \param selector The selector for which the type encoding should be returned
+ *
+ * \return The type encoding for the specified selector
+ */
+- (const char*)typeEncodingForSelector: (SEL)selector;
 
 /**
  * Checks two objects for equality.

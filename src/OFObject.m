@@ -229,6 +229,38 @@ objc_enumerationMutation(id obj)
 #endif
 }
 
++ (const char*)typeEncodingForInstanceSelector: (SEL)selector
+{
+#if defined(OF_APPLE_RUNTIME)
+	Method m;
+	const char *ret;
+
+	if ((m = class_getInstanceMethod(self, selector)) == NULL ||
+	    (ret = method_getTypeEncoding(m)) == NULL)
+		@throw [OFNotImplementedException newWithClass: self
+						      selector: selector];
+
+	return ret;
+#elif defined(OF_GNU_RUNTIME)
+	Method_t m;
+
+	if ((m = class_get_instance_method(self, selector)) == NULL ||
+	    m->method_types == NULL)
+		@throw [OFNotImplementedException newWithClass: self
+						      selector: selector];
+
+	return m->method_types;
+#elif defined(OF_OBJFW_RUNTIME)
+	const char *ret;
+
+	if ((ret = objc_get_type_encoding(self, selector)) == NULL)
+		@throw [OFNotImplementedException newWithClass: self
+						      selector: selector];
+
+	return ret;
+#endif
+}
+
 + (IMP)setImplementation: (IMP)newimp
 	  forClassMethod: (SEL)selector
 {
@@ -400,6 +432,38 @@ objc_enumerationMutation(id obj)
 	return class_getMethodImplementation(isa, selector);
 #else
 	return objc_msg_lookup(self, selector);
+#endif
+}
+
+- (const char*)typeEncodingForSelector: (SEL)selector
+{
+#if defined(OF_APPLE_RUNTIME)
+	Method m;
+	const char *ret;
+
+	if ((m = class_getInstanceMethod(isa, selector)) == NULL ||
+	    (ret = method_getTypeEncoding(m)) == NULL)
+		@throw [OFNotImplementedException newWithClass: isa
+						      selector: selector];
+
+	return ret;
+#elif defined(OF_GNU_RUNTIME)
+	Method_t m;
+
+	if ((m = class_get_instance_method(isa, selector)) == NULL ||
+	    m->method_types == NULL)
+		@throw [OFNotImplementedException newWithClass: isa
+						      selector: selector];
+
+	return m->method_types;
+#elif defined(OF_OBJFW_RUNTIME)
+	const char *ret;
+
+	if ((ret = objc_get_type_encoding(isa, selector)) == NULL)
+		@throw [OFNotImplementedException newWithClass: isa
+						      selector: selector];
+
+	return ret;
 #endif
 }
 
