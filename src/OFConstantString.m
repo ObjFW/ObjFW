@@ -88,6 +88,11 @@ void *_OFConstantStringClassReference;
 					      selector: _cmd];
 }
 
+- (BOOL)isUTF8
+{
+	return YES;
+}
+
 - (void)addMemoryToPool: (void*)ptr
 {
 	@throw [OFNotImplementedException newWithClass: isa

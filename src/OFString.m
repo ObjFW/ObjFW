@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include <sys/stat.h>
 #ifdef HAVE_MADVISE
@@ -36,6 +37,21 @@
 
 extern const uint16_t of_iso_8859_15[256];
 extern const uint16_t of_windows_1252[256];
+
+static inline int
+memcasecmp(const char *s1, const char *s2, size_t len)
+{
+	size_t i;
+
+	for (i = 0; i < len; i++) {
+		if (tolower(s1[i]) > tolower(s2[i]))
+			return OF_ORDERED_DESCENDING;
+		if (tolower(s1[i]) < tolower(s2[i]))
+			return OF_ORDERED_ASCENDING;
+	}
+
+	return OF_ORDERED_SAME;
+}
 
 /* References for static linking */
 void _references_to_categories_of_OFString()
@@ -703,6 +719,11 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return length;
 }
 
+- (BOOL)isUTF8
+{
+	return isUTF8;
+}
+
 - (BOOL)isEqual: (OFObject*)obj
 {
 	if (![obj isKindOfClass: [OFString class]])
@@ -725,8 +746,8 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 - (of_comparison_result_t)compare: (OFString*)str
 {
-	int cmp;
 	size_t str_len, min_len;
+	int cmp;
 
 	if (![str isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
@@ -752,7 +773,8 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 - (of_comparison_result_t)caseInsensitiveCompare: (OFString*)str
 {
 	const char *str_cstr;
-	size_t i, j, str_len;
+	size_t i, j, str_len, min_len;
+	int cmp;
 
 	if (![str isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
@@ -760,6 +782,23 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 	str_cstr = [str cString];
 	str_len = [str cStringLength];
+
+	if (![self isUTF8]) {
+		min_len = (length > str_len ? str_len : length);
+
+		if ((cmp = memcasecmp(string, [str cString], min_len)) == 0) {
+			if (length > str_len)
+				return OF_ORDERED_DESCENDING;
+			if (length < str_len)
+				return OF_ORDERED_ASCENDING;
+			return OF_ORDERED_SAME;
+		}
+
+		if (cmp > 0)
+			return OF_ORDERED_DESCENDING;
+		else
+			return OF_ORDERED_ASCENDING;
+	}
 
 	i = j = 0;
 
@@ -823,6 +862,13 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 {
 	of_unichar_t c;
 
+	if (![self isUTF8]) {
+		if (index >= length)
+			@throw [OFOutOfRangeException newWithClass: isa];
+
+		return string[index];
+	}
+
 	index = of_string_index_to_position(string, index, length);
 
 	if (index >= length)
@@ -878,8 +924,10 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 - (OFString*)substringFromIndex: (size_t)start
 			toIndex: (size_t)end
 {
-	start = of_string_index_to_position(string, start, length);
-	end = of_string_index_to_position(string, end, length);
+	if ([self isUTF8]) {
+		start = of_string_index_to_position(string, start, length);
+		end = of_string_index_to_position(string, end, length);
+	}
 
 	if (start > end)
 		@throw [OFInvalidArgumentException newWithClass: isa

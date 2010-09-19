@@ -268,6 +268,10 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  */
 - (size_t)cStringLength;
 
+/// \cond internal
+- (BOOL)isUTF8;
+/// \endcond
+
 /**
  * Compares the OFString to another OFString.
  *

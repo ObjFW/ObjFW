@@ -74,7 +74,9 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	    [@"я" caseInsensitiveCompare: @"Я"] == OF_ORDERED_SAME &&
 	    [@"€" caseInsensitiveCompare: @"ß"] == OF_ORDERED_DESCENDING &&
 	    [@"ß" caseInsensitiveCompare: @"→"] == OF_ORDERED_ASCENDING &&
-	    [@"AA" caseInsensitiveCompare: @"z"] == OF_ORDERED_ASCENDING)
+	    [@"AA" caseInsensitiveCompare: @"z"] == OF_ORDERED_ASCENDING &&
+	    [[OFString stringWithCString: "ABC"] caseInsensitiveCompare:
+	    [OFString stringWithCString: "AbD"]] == [@"abc" compare: @"abd"])
 
 	TEST(@"-[hash] is the same if -[isEqual:] is YES",
 	    [s[0] hash] == [s[2] hash])
