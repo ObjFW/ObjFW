@@ -135,7 +135,9 @@ depend: pre-depend ${SRCS}
 	fi
 
 .c.c.dep .cc.cc.dep .cxx.cxx.dep .m.m.dep .mm.mm.dep .S.S.dep:
-	${CPP} ${CPPFLAGS} -M $< >$@ || (rm -f $@; exit 1)
+	${CPP} ${CPPFLAGS} -M $< | \
+	sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.plugin.o:/' >$@ || \
+	(rm -f $@; exit 1)
 
 pre-depend:
 
