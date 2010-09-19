@@ -65,12 +65,14 @@
 			[new retain];
 			[objs[i] release];
 			objs[i] = new;
+
+			return;
 		}
 	}
 }
 
-- (id)replaceObjectAtIndex: (size_t)index
-		withObject: (id)obj
+- (void)replaceObjectAtIndex: (size_t)index
+		  withObject: (id)obj
 {
 	id *objs = [array cArray];
 	id old;
@@ -80,8 +82,7 @@
 
 	old = objs[index];
 	objs[index] = [obj retain];
-
-	return [old autorelease];
+	[old release];
 }
 
 - (void)replaceObjectIdenticalTo: (id)old
@@ -95,6 +96,8 @@
 			[new retain];
 			[objs[i] release];
 			objs[i] = new;
+
+			return;
 		}
 	}
 }
@@ -113,17 +116,7 @@
 
 			[obj release];
 
-			/*
-			 * We need to get the C array again as it might have
-			 * been relocated. We also need to adjust the count
-			 * as otherwise we would have an out of bounds access.
-			 * As another object will be at the current index now,
-			 * we also need to handle the same index again, thus we
-			 * decrease it.
-			 */
-			objs = [array cArray];
-			count--;
-			i--;
+			return;
 		}
 	}
 }
@@ -140,29 +133,18 @@
 
 			[obj release];
 
-			/*
-			 * We need to get the C array again as it might have
-			 * been relocated. We also need to adjust the count
-			 * as otherwise we would have an out of bounds access.
-			 * As another object will be at the current index now,
-			 * we also need to handle the same index again, thus we
-			 * decrease it.
-			 */
-			objs = [array cArray];
-			count--;
-			i--;
+			return;
 		}
 	}
 }
 
-- (id)removeObjectAtIndex: (size_t)index
+- (void)removeObjectAtIndex: (size_t)index
 {
 	id old = [self objectAtIndex: index];
+	[array removeItemAtIndex: index];
+	[old release];
 
-	[self removeNObjects: 1
-		     atIndex: index];
-
-	return old;
+	mutations++;
 }
 
 - (void)removeNObjects: (size_t)nobjects

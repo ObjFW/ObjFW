@@ -87,18 +87,18 @@ static OFString *c_ary[] = {
 	    R([m[0] replaceObjectIdenticalTo: c_ary[0]
 				  withObject: c_ary[1]]) &&
 	    [[m[0] objectAtIndex: 0] isEqual: c_ary[1]] &&
-	    [[m[0] objectAtIndex: 1] isEqual: c_ary[1]] &&
+	    [[m[0] objectAtIndex: 1] isEqual: c_ary[0]] &&
 	    [[m[0] objectAtIndex: 2] isEqual: c_ary[2]])
 
 	TEST(@"-[replaceObjectAtIndex:withObject:]",
-	    [m[0] replaceObjectAtIndex: 0
-			    withObject: c_ary[0]] &&
+	    R([m[0] replaceObjectAtIndex: 0
+			      withObject: c_ary[0]]) &&
 	    [[m[0] objectAtIndex: 0] isEqual: c_ary[0]] &&
-	    [[m[0] objectAtIndex: 1] isEqual: c_ary[1]] &&
+	    [[m[0] objectAtIndex: 1] isEqual: c_ary[0]] &&
 	    [[m[0] objectAtIndex: 2] isEqual: c_ary[2]])
 
 	TEST(@"-[removeObject:]",
-	    R([m[0] removeObject: c_ary[1]]) && [m[0] count] == 2)
+	    R([m[0] removeObject: c_ary[0]]) && [m[0] count] == 2)
 
 	TEST(@"-[removeObjectIdenticalTo:]",
 	    R([m[0] removeObjectIdenticalTo: c_ary[2]]) && [m[0] count] == 1)
@@ -109,7 +109,7 @@ static OFString *c_ary[] = {
 	    [m[0] count] == 1 && [[m[0] objectAtIndex: 0] isEqual: c_ary[0]])
 
 	m[1] = [[a[0] mutableCopy] autorelease];
-	TEST(@"-[removeObjectAtIndex:]", [m[1] removeObjectAtIndex: 1] &&
+	TEST(@"-[removeObjectAtIndex:]", R([m[1] removeObjectAtIndex: 1]) &&
 	    [m[1] count] == 2 && [[m[1] objectAtIndex: 1] isEqual: c_ary[2]])
 
 	m[1] = [[a[0] mutableCopy] autorelease];
