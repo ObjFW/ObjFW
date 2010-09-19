@@ -368,6 +368,15 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 - (uintmax_t)hexadecimalValueAsInteger;
 
 /**
+ * Returns the string as an array of of_unichar_t. The result needs to be
+ * free()'d by the caller, as the memory is not marked as belonging to the
+ * object.
+ *
+ * \return The string as an array of Unicode characters
+ */
+- (of_unichar_t*)unicodeString;
+
+/**
  * Writes the string into the specified file using UTF-8 encoding.
  *
  * \param path The path of the file to write to

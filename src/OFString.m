@@ -1027,6 +1027,38 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return num;
 }
 
+- (of_unichar_t*)unicodeString
+{
+	of_unichar_t *ret;
+	size_t i, j, len;
+
+	len = [self length];
+
+	if ((ret = malloc((len + 1) * sizeof(of_unichar_t))) == NULL)
+		@throw [OFOutOfMemoryException newWithClass: isa];
+
+	i = j = 0;
+
+	while (i < length) {
+		of_unichar_t c;
+		size_t clen;
+
+		clen = of_string_utf8_to_unicode(string + i, length - 1, &c);
+
+		if (clen == 0 || c > 0x10FFFF) {
+			free(ret);
+			@throw [OFInvalidEncodingException newWithClass: isa];
+		}
+
+		ret[j++] = c;
+		i += clen;
+	}
+
+	ret[j] = 0;
+
+	return ret;
+}
+
 - (void)writeToFile: (OFString*)path
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];

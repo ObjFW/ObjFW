@@ -11,6 +11,9 @@
 
 #include "config.h"
 
+#include <stdlib.h>
+#include <string.h>
+
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFAutoreleasePool.h"
@@ -23,6 +26,7 @@ static OFString* whitespace[] = {
 	@" \r \t\n\t \tasd  \t \t\t\r\n",
 	@" \t\t  \t\t  \t \t"
 };
+static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 
 @interface EntityHandler: OFObject <OFStringXMLUnescapingDelegate>
 @end
@@ -45,6 +49,7 @@ static OFString* whitespace[] = {
 	OFMutableString *s[3];
 	OFArray *a;
 	int i;
+	of_unichar_t *ua;
 	EntityHandler *h;
 
 	s[0] = [OFMutableString stringWithString: @"täs€"];
@@ -252,6 +257,9 @@ static OFString* whitespace[] = {
 	    [@"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"
 	     @"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"
 	    hexadecimalValueAsInteger])
+
+	TEST(@"-[unicodeString]", (ua = [@"fööbär" unicodeString]) &&
+	    !memcmp(ua, ucstr, 7 * sizeof(of_unichar_t)) && R(free(ua)))
 
 	TEST(@"-[md5Hash]", [[@"asdfoobar" md5Hash]
 	    isEqual: @"184dce2ec49b5422c7cfd8728864db4c"])
