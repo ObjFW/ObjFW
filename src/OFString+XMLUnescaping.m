@@ -84,14 +84,7 @@ parse_numeric_entity(const char *entity, size_t length)
 	last = 0;
 	in_entity = NO;
 	ret = [OFMutableString string];
-
-	switch (of_string_check_utf8(string, length)) {
-	case 1:
-		((OFString*)ret)->isUTF8 = YES;
-		break;
-	case -1:
-		@throw [OFInvalidEncodingException newWithClass: isa];
-	}
+	((OFString*)ret)->isUTF8 = [self isUTF8];
 
 	for (i = 0; i < length; i++) {
 		if (!in_entity && string[i] == '&') {
