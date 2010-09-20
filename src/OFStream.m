@@ -515,9 +515,14 @@
 	assert(0);
 }
 
-- (void)bufferWrites
+- (BOOL)bufferWrites
 {
-	useWBuffer = YES;
+	return bufferWrites;
+}
+
+- (void)setBufferWrites: (BOOL)enable
+{
+	bufferWrites = enable;
 }
 
 - (void)flushWriteBuffer
@@ -531,13 +536,12 @@
 	[self freeMemory: wBuffer];
 	wBuffer = NULL;
 	wBufferLen = 0;
-	useWBuffer = NO;
 }
 
 - (size_t)writeNBytes: (size_t)size
 	   fromBuffer: (const char*)buf
 {
-	if (!useWBuffer)
+	if (!bufferWrites)
 		return [self _writeNBytes: size
 			       fromBuffer: buf];
 	else {

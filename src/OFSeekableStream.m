@@ -33,7 +33,6 @@
 
 - (void)seekToOffset: (off_t)offset
 {
-	[self flushWriteBuffer];
 	[self _seekToOffset: offset];
 
 	[self freeMemory: cache];
@@ -45,7 +44,6 @@
 {
 	off_t ret;
 
-	[self flushWriteBuffer];
 	ret = [self _seekForwardWithOffset: offset - cacheLen];
 
 	[self freeMemory: cache];
@@ -59,7 +57,6 @@
 {
 	off_t ret;
 
-	[self flushWriteBuffer];
 	ret = [self _seekToOffsetRelativeToEnd: offset];
 
 	[self freeMemory: cache];

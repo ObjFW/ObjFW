@@ -32,7 +32,7 @@
 @protected
 	char   *wBuffer;
 	size_t cacheLen, wBufferLen;
-	BOOL   useWBuffer;
+	BOOL   bufferWrites;;
 }
 
 /**
@@ -198,12 +198,19 @@
 		  withEncoding: (enum of_string_encoding)encoding;
 
 /**
- * Buffer all writes until flushWriteBuffer is called.
+ * \return A boolean whether writes are buffered
  */
-- (void)bufferWrites;
+- (BOOL)bufferWrites;
 
 /**
- * Writes everything in the write cache to the stream.
+ * Enables or disables the write buffer.
+ *
+ * \param enable Whether the write buffer should be enabled or disabled
+ */
+- (void)setBufferWrites: (BOOL)enable;
+
+/**
+ * Writes everythig in the write buffer to the stream.
  */
 - (void)flushWriteBuffer;
 
