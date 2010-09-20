@@ -1,14 +1,20 @@
 #!/bin/sh
-if ! which objfw-config 2>&1 >/dev/null; then
-	echo "You need to have ObjFW and objfw-config installed!"
+if test x"$(basename $0)" != x"objfw-compile"; then
+	OBJFW_CONFIG="$(basename $0 | sed 's/-objfw-compile$//')-objfw-config"
+else
+	OBJFW_CONFIG="objfw-config"
+fi
+
+if ! which $OBJFW_CONFIG 2>&1 >/dev/null; then
+	echo "You need to have ObjFW and $OBJFW_CONFIG installed!"
 	exit 1
 fi
 
-CPPFLAGS="$CPPFLAGS $(objfw-config --cppflags)"
-OBJC="$(objfw-config --objc)"
-OBJCFLAGS="$OBJCFLAGS $(objfw-config --objcflags)"
-LIBS="$LIBS $(objfw-config --libs)"
-LDFLAGS="$LDFLAGS $(objfw-config --ldflags)"
+CPPFLAGS="$CPPFLAGS $($OBJFW_CONFIG --cppflags)"
+OBJC="$($OBJFW_CONFIG --objc)"
+OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --objcflags)"
+LIBS="$LIBS $($OBJFW_CONFIG --libs)"
+LDFLAGS="$LDFLAGS $($OBJFW_CONFIG --ldflags)"
 
 if test x"$1" = "x" -o x"$2" = "x"; then
 	echo "Syntax: objfw-compile outname source1.m source2.m ..."

@@ -414,6 +414,8 @@ if test x"$GOBJC" = x"yes"; then
 fi
 
 if test x"$cross_compiling" = x"yes"; then
+	AC_SUBST(BIN_PREFIX, "$host-")
+
 	case "$host" in
 		*-*-mingw*)
 			AC_PATH_PROG(WINE, wine)
