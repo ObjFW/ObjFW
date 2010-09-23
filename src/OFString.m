@@ -44,9 +44,9 @@ memcasecmp(const char *s1, const char *s2, size_t len)
 	size_t i;
 
 	for (i = 0; i < len; i++) {
-		if (tolower(s1[i]) > tolower(s2[i]))
+		if (tolower((int)s1[i]) > tolower((int)s2[i]))
 			return OF_ORDERED_DESCENDING;
-		if (tolower(s1[i]) < tolower(s2[i]))
+		if (tolower((int)s1[i]) < tolower((int)s2[i]))
 			return OF_ORDERED_ASCENDING;
 	}
 
