@@ -257,6 +257,18 @@
 	return (last != NULL ? *last : nil);
 }
 
+- (OFArray*)objectsFromIndex: (size_t)start
+		     toIndex: (size_t)end
+{
+	size_t count = [array count];
+
+	if (end > count || start > end)
+		@throw [OFOutOfRangeException newWithClass: isa];
+
+	return [OFArray arrayWithCArray: (id*)[array cArray] + start
+				 length: end - start];
+}
+
 - (OFString*)componentsJoinedByString: (OFString*)separator
 {
 	OFString *str;

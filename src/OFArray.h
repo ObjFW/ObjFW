@@ -172,6 +172,18 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
 - (id)lastObject;
 
 /**
+ * Returns the objects from the specified index to the specified index as an
+ * OFArray.
+ *
+ * \param start The index where the subarray starts
+ * \param end The index where the subarray ends.
+ *	      This points BEHIND the last object!
+ * \return The subarray as a new autoreleased OFArray
+ */
+- (OFArray*)objectsFromIndex: (size_t)start
+		     toIndex: (size_t)end;
+
+/**
  * Creates a string by joining all objects of the array.
  *
  * \param separator The string with which the objects should be joined

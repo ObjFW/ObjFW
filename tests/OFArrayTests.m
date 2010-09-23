@@ -76,6 +76,11 @@ static OFString *c_ary[] = {
 	TEST(@"-[indexOfObjectIdenticalTo:]",
 	    [a[1] indexOfObjectIdenticalTo: c_ary[1]] == 1)
 
+	TEST(@"-[objectsFromIndex:toIndex",
+	    [[a[0] objectsFromIndex: 1
+			    toIndex: 3] isEqual:
+	    ([OFArray arrayWithObjects: c_ary[1], c_ary[2], nil])])
+
 	TEST(@"-[replaceObject:withObject:]",
 	    R([m[0] replaceObject: c_ary[1]
 		       withObject: c_ary[0]]) &&
