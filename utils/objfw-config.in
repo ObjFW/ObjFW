@@ -39,44 +39,40 @@ test -z "$1" && show_help
 while test ! -z "$1"; do
 	case "$1" in
 		--all)
-			echo "$CFLAGS"
-			echo "$CPPFLAGS"
-			echo "$CXXFLAGS"
-			echo "$OBJCFLAGS"
-			echo "$LDFLAGS"
-			echo "$LDFLAGS_REEXPORT"
-			echo "$LDFLAGS_RPATH"
-			echo "$LIBS"
+			printf "%s %s %s" "$CFLAGS" "$CPPFLAGS" "$CXXFLAGS"
+			printf "%s %s" "$OBJCFLAGS" "$LDFLAGS"
+			printf "%s %s" "$LDFLAGS_REEXPORT" "$LDFLAGS_RPATH"
+			printf "%s" "$LIBS"
 			;;
 		--cflags)
-			echo "$CFLAGS"
+			printf "%s" "$CFLAGS"
 			;;
 		--cppflags)
-			echo "$CPPFLAGS"
+			printf "%s" "$CPPFLAGS"
 			;;
 		--cxxflags)
-			echo "$CXXFLAGS"
+			printf "%s" "$CXXFLAGS"
 			;;
 		--objc)
-			echo "$OBJC"
+			printf "%s" "$OBJC"
 			;;
 		--objcflags)
-			echo "$OBJCFLAGS"
+			printf "%s" "$OBJCFLAGS"
 			;;
 		--libs)
-			echo "$LIBS"
+			printf "%s" "$LIBS"
 			;;
 		--ldflags)
-			echo "$LDFLAGS"
+			printf "%s" "$LDFLAGS"
 			;;
 		--reexport)
-			echo "$LDFLAGS_REEXPORT"
+			printf "%s" "$LDFLAGS_REEXPORT"
 			;;
 		--rpath)
-			echo "$LDFLAGS_RPATH"
+			printf "%s" "$LDFLAGS_RPATH"
 			;;
 		--version)
-			echo "$VERSION"
+			printf "%s" "$VERSION"
 			;;
 		*)
 			echo "Invalid option: $1" 1>&2
@@ -86,3 +82,5 @@ while test ! -z "$1"; do
 
 	shift
 done
+
+echo
