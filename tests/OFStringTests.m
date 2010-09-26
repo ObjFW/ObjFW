@@ -366,10 +366,21 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	EXPECT_EXCEPTION(@"Detect invalid entities in -[stringByXMLUnescaping] "
 	    @"#6", OFInvalidEncodingException, [@"&#xg;" stringByXMLUnescaping])
 
-	TEST(@"-[stringByXMLUnescapingWithHandler:]",
+	TEST(@"-[stringByXMLUnescapingWithDelegate:]",
 	    (h = [[[EntityHandler alloc] init] autorelease]) &&
 	    [[@"x&foo;y" stringByXMLUnescapingWithDelegate: h]
 	    isEqual: @"xbary"])
+
+#ifdef OF_HAVE_BLOCKS
+	TEST(@"-[stringByXMLUnescapingWithBlock:]",
+	    [[@"x&foo;y" stringByXMLUnescapingWithBlock:
+	        ^ OFString* (OFString *str, OFString *entity) {
+		    if ([entity isEqual: @"foo"])
+			    return @"bar";
+
+		    return nil;
+	    }] isEqual: @"xbary"])
+#endif
 
 	[pool drain];
 }

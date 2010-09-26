@@ -159,4 +159,89 @@ parse_numeric_entity(const char *entity, size_t length)
 
 	return ret;
 }
+
+#ifdef OF_HAVE_BLOCKS
+- (OFString*)stringByXMLUnescapingWithBlock:
+    (of_string_xml_unescaping_block_t)block
+{
+	size_t i, last;
+	BOOL in_entity;
+	OFMutableString *ret;
+
+	last = 0;
+	in_entity = NO;
+	ret = [OFMutableString string];
+	((OFString*)ret)->isUTF8 = [self isUTF8];
+
+	for (i = 0; i < length; i++) {
+		if (!in_entity && string[i] == '&') {
+			[ret appendCStringWithoutUTF8Checking: string + last
+						       length: i - last];
+
+			last = i + 1;
+			in_entity = YES;
+		} else if (in_entity && string[i] == ';') {
+			char *entity = string + last;
+			size_t len = i - last;
+
+			if (len == 2 && !memcmp(entity, "lt", 2))
+				[ret appendCStringWithoutUTF8Checking: "<"
+							       length: 1];
+			else if (len == 2 && !memcmp(entity, "gt", 2))
+				[ret appendCStringWithoutUTF8Checking: ">"
+							       length: 1];
+			else if (len == 4 && !memcmp(entity, "quot", 4))
+				[ret appendCStringWithoutUTF8Checking: "\""
+							       length: 1];
+			else if (len == 4 && !memcmp(entity, "apos", 4))
+				[ret appendCStringWithoutUTF8Checking: "'"
+							       length: 1];
+			else if (len == 3 && !memcmp(entity, "amp", 3))
+				[ret appendCStringWithoutUTF8Checking: "&"
+							       length: 1];
+			else if (entity[0] == '#') {
+				OFAutoreleasePool *pool;
+				OFString *tmp;
+
+				pool = [[OFAutoreleasePool alloc] init];
+				tmp = parse_numeric_entity(entity, len);
+
+				if (tmp == nil)
+					@throw [OFInvalidEncodingException
+					    newWithClass: isa];
+
+				[ret appendString: tmp];
+				[pool release];
+			} else {
+				OFAutoreleasePool *pool;
+				OFString *n, *tmp;
+
+				pool = [[OFAutoreleasePool alloc] init];
+
+				n = [OFString stringWithCString: entity
+							 length: len];
+				tmp = block(self, n);
+
+				if (tmp == nil)
+					@throw [OFInvalidEncodingException
+					    newWithClass: isa];
+
+				[ret appendString: tmp];
+				[pool release];
+			}
+
+			last = i + 1;
+			in_entity = NO;
+		}
+	}
+
+	if (in_entity)
+		@throw [OFInvalidEncodingException newWithClass: isa];
+
+	[ret appendCStringWithoutUTF8Checking: string + last
+				       length: i - last];
+
+	return ret;
+}
+#endif
 @end

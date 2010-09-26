@@ -13,6 +13,11 @@
 
 extern int _OFString_XMLUnescaping_reference;
 
+#ifdef OF_HAVE_BLOCKS
+typedef OFString* (^of_string_xml_unescaping_block_t)(OFString *str,
+    OFString *entity);
+#endif
+
 /**
  * \brief A protocol that needs to be implemented by delegates for
  *	  -[stringByXMLUnescapingWithHandler:].
@@ -41,11 +46,20 @@ extern int _OFString_XMLUnescaping_reference;
 - (OFString*)stringByXMLUnescaping;
 
 /**
- * Unescapes XML in the string and uses the specified handler for unknown
+ * Unescapes XML in the string and uses the specified delegate for unknown
  * entities.
  *
  * \param h An OFXMLUnescapingDelegate as a handler for unknown entities
  */
 - (OFString*)stringByXMLUnescapingWithDelegate:
     (id <OFStringXMLUnescapingDelegate>)delegate;
+
+/**
+ * Unescapes XML in the string and uses the specified block for unknown
+ * entities.
+ *
+ * \param h A block as a handler for unknown entities
+ */
+- (OFString*)stringByXMLUnescapingWithBlock:
+    (of_string_xml_unescaping_block_t)block;
 @end
