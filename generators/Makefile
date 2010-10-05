@@ -5,20 +5,22 @@ SRCS = TableGenerator.m
 
 .PHONY: run
 run: all UnicodeData.txt CaseFolding.txt
-	rm -f libobjfw.so.1 libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}
+	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}
+	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}
 	rm -f libobjfw.dll libobjfw.dylib
 	if test -f ../src/libobjfw.so; then \
-		ln -s ../src/libobjfw.so libobjfw.so.${OBJFW_LIB_MAJOR}; \
-		ln -s ../src/libobjfw.so libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}; \
+		${LN_S} ../src/libobjfw.so libobjfw.so.${OBJFW_LIB_MAJOR}; \
+		${LN_S} ../src/libobjfw.so \
+			libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}; \
 	elif test -f ../src/libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}; then \
-		ln -s ../src/libobjfw.so.${OBJFW_LIB_MAJOR_MINOR} \
+		${LN_S} ../src/libobjfw.so.${OBJFW_LIB_MAJOR_MINOR} \
 			libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}; \
 	fi
 	if test -f ../src/libobjfw.dll; then \
-		ln ../src/libobjfw.dll libobjfw.dll; \
+		${LN_S} ../src/libobjfw.dll libobjfw.dll; \
 	fi
 	if test -f ../src/libobjfw.dylib; then \
-		ln -s ../src/libobjfw.dylib libobjfw.dylib; \
+		${LN_S} ../src/libobjfw.dylib libobjfw.dylib; \
 	fi
 	echo "Generating tables..."
 	LD_LIBRARY_PATH=.$${LD_LIBRARY_PATH+:}$$LD_LIBRARY_PATH \
