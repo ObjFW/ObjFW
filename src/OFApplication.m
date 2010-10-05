@@ -41,13 +41,8 @@ atexit_handler()
 int
 of_application_main(int argc, char *argv[], Class cls)
 {
-	OFApplication *app;
-	id <OFApplicationDelegate> delegate = nil;
-
-	if (cls != Nil)
-		delegate = [[cls alloc] init];
-
-	app = [OFApplication sharedApplication];
+	OFApplication *app = [OFApplication sharedApplication];
+	id <OFApplicationDelegate> delegate = [[cls alloc] init];
 
 	[app setArgumentCount: argc
 	    andArgumentValues: argv];
