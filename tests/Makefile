@@ -31,7 +31,8 @@ run: all
 	if [ -z "${DONT_RUN_TESTS}" ]; then ${MAKE} ${MFLAGS} run-tests; fi
 
 run-tests:
-	rm -f libobjfw.so.1 libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}
+	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}
+	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}
 	rm -f libobjfw.dll libobjfw.dylib
 	if test -f ../src/libobjfw.so; then \
 		ln -s ../src/libobjfw.so libobjfw.so.${OBJFW_LIB_MAJOR}; \
