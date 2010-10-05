@@ -26,14 +26,15 @@ of_atomic_add_32(volatile int32_t *p, int32_t i)
 #if !defined(OF_THREADS)
 	return (*p += i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	int32_t r = *p + i;
-	__asm__ volatile (
+	__asm__ (
 	    "lock\n\t"
-	    "addl %0, (%1)"
-	    :
-	    : "r"(i), "r"(p), "m"(*p)
+	    "xaddl	%0, %2\n\t"
+	    "addl	%1, %0"
+	    : "+&r"(i)
+	    : "r"(i), "m"(*p)
 	);
-	return r;
+
+	return i;
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
 	return __sync_add_and_fetch(p, i);
 #elif defined(OF_HAVE_LIBKERN_OSATOMIC_H)
@@ -47,14 +48,16 @@ of_atomic_sub_32(volatile int32_t *p, int32_t i)
 #if !defined(OF_THREADS)
 	return (*p -= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	int32_t r = *p - i;
-	__asm__ volatile (
+	__asm__ (
+	    "negl	%0\n\t"
 	    "lock\n\t"
-	    "subl %0, (%1)"
-	    :
-	    : "r"(i), "r"(p), "m"(*p)
+	    "xaddl	%0, %2\n\t"
+	    "subl	%1, %0"
+	    : "+&r"(i)
+	    : "r"(i), "m"(*p)
 	);
-	return r;
+
+	return i;
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
 	return __sync_sub_and_fetch(p, i);
 #elif defined(OF_HAVE_LIBKERN_OSATOMIC_H)
@@ -68,14 +71,19 @@ of_atomic_inc_32(volatile int32_t *p)
 #if !defined(OF_THREADS)
 	return ++*p;
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	int32_t r = *p + 1;
-	__asm__ volatile (
+	uint32_t i;
+
+	__asm__ (
+	    "xorl	%0, %0\n\t"
+	    "incl	%0\n\t"
 	    "lock\n\t"
-	    "incl (%0)"
-	    :
-	    : "r"(p), "m"(*p)
+	    "xaddl	%0, %1\n\t"
+	    "incl	%0"
+	    : "=&r"(i)
+	    : "m"(*p)
 	);
-	return r;
+
+	return i;
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
 	return __sync_add_and_fetch(p, 1);
 #elif defined(OF_HAVE_LIBKERN_OSATOMIC_H)
@@ -89,14 +97,19 @@ of_atomic_dec_32(volatile int32_t *p)
 #if !defined(OF_THREADS)
 	return --*p;
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	int32_t r = *p - 1;
-	__asm__ volatile (
+	uint32_t i;
+
+	__asm__ (
+	    "xorl	%0, %0\n\t"
+	    "decl	%0\n\t"
 	    "lock\n\t"
-	    "decl (%0)"
-	    :
-	    : "r"(p), "m"(*p)
+	    "xaddl	%0, %1\n\t"
+	    "decl	%0"
+	    : "=&r"(i)
+	    : "m"(*p)
 	);
-	return r;
+
+	return i;
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
 	return __sync_sub_and_fetch(p, 1);
 #elif defined(OF_HAVE_LIBKERN_OSATOMIC_H)
@@ -179,7 +192,7 @@ of_atomic_cmpswap_32(volatile int32_t *p, int32_t o, int32_t n)
 	return NO;
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	uint32_t r;
-	__asm__ volatile (
+	__asm__ (
 	    "lock; cmpxchg %2, (%3)\n\t"
 	    "lahf\n\t"
 	    "andb	$64, %%ah\n\t"
@@ -208,7 +221,7 @@ of_atomic_cmpswap_ptr(void* volatile *p, void *o, void *n)
 	return NO;
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	uint32_t r;
-	__asm__ volatile (
+	__asm__ (
 	    "lock; cmpxchg %2, (%3)\n\t"
 	    "lahf\n\t"
 	    "andb	$64, %%ah\n\t"
