@@ -77,7 +77,6 @@ extern void _Block_release(const void*);
 + (Class)class;
 - copy;
 - (void)release;
-- autorelease;
 @end
 
 @interface OFStackBlock: OFBlock

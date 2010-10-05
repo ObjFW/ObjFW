@@ -214,8 +214,6 @@ _Block_object_dispose(void *obj_, int flags)
 	}
 }
 
-static Class autoreleasepool = Nil;
-
 /// \cond internal
 @implementation OFBlock
 + (Class)class
@@ -231,20 +229,6 @@ static Class autoreleasepool = Nil;
 - (void)release
 {
 	Block_release(self);
-}
-
-- autorelease
-{
-	/*
-	 * Cache OFAutoreleasePool since class lookups are expensive with the
-	 * GNU runtime.
-	 */
-	if (autoreleasepool == Nil)
-		autoreleasepool = [OFAutoreleasePool class];
-
-	[autoreleasepool addObject: self];
-
-	return self;
 }
 @end
 /// \endcond
