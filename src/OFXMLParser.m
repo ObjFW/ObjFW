@@ -117,6 +117,14 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	[attrName release];
 	[attrPrefix release];
 	[previous release];
+#ifdef OF_HAVE_BLOCKS
+	[elementStartHandler release];
+	[elementEndHandler release];
+	[charactersHandler release];
+	[CDATAHandler release];
+	[commentHandler release];
+	[unknownEntityHandler release];
+#endif
 
 	[super dealloc];
 }
@@ -132,6 +140,100 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	[(id)delegate release];
 	delegate = delegate_;
 }
+
+#ifdef OF_HAVE_BLOCKS
+- (of_xml_parser_element_start_block_t)elementStartHandler
+{
+	of_xml_parser_element_start_block_t block = [elementStartHandler copy];
+	[OFAutoreleasePool addObject: block];
+
+	return block;
+}
+
+- (void)setElementStartHandler: (of_xml_parser_element_start_block_t)block
+{
+	block = [block copy];
+	[elementStartHandler release];
+	elementStartHandler = block;
+}
+
+- (of_xml_parser_element_end_block_t)elementEndHandler
+{
+	of_xml_parser_element_end_block_t block = [elementEndHandler copy];
+	[OFAutoreleasePool addObject: block];
+
+	return block;
+}
+
+- (void)setElementEndHandler: (of_xml_parser_element_end_block_t)block
+{
+	block = [block copy];
+	[elementEndHandler release];
+	elementEndHandler = block;
+}
+
+- (of_xml_parser_string_block_t)charactersHandler
+{
+	of_xml_parser_string_block_t block = [charactersHandler copy];
+	[OFAutoreleasePool addObject: block];
+
+	return block;
+}
+
+- (void)setCharactersHandler: (of_xml_parser_string_block_t)block
+{
+	block = [block copy];
+	[charactersHandler release];
+	charactersHandler = block;
+}
+
+- (of_xml_parser_string_block_t)CDATAHandler
+{
+	of_xml_parser_string_block_t block = [CDATAHandler copy];
+	[OFAutoreleasePool addObject: block];
+
+	return block;
+}
+
+- (void)setCDATAHandler: (of_xml_parser_string_block_t)block
+{
+	block = [block copy];
+	[CDATAHandler release];
+	CDATAHandler = block;
+}
+
+- (of_xml_parser_string_block_t)commentHandler
+{
+	of_xml_parser_string_block_t block = [commentHandler copy];
+	[OFAutoreleasePool addObject: block];
+
+	return block;
+}
+
+- (void)setCommentHandler: (of_xml_parser_string_block_t)block
+{
+	block = [block copy];
+	[commentHandler release];
+	commentHandler = block;
+}
+
+- (of_xml_parser_unknown_entity_block_t)unknownEntityHandler
+{
+	of_xml_parser_unknown_entity_block_t block;
+
+	block = [unknownEntityHandler copy];
+	[OFAutoreleasePool addObject: block];
+
+	return block;
+}
+
+- (void)setUnknownEntityHandler: (of_xml_parser_unknown_entity_block_t)block
+{
+	block = [block copy];
+	[unknownEntityHandler release];
+	unknownEntityHandler = block;
+}
+#endif
 
 - (void)parseBuffer: (const char*)buf
 	   withSize: (size_t)size
@@ -158,8 +260,15 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 					pool = [[OFAutoreleasePool alloc] init];
 					str = transform_string(cache, self);
-					[delegate parser: self
-					 foundCharacters: str];
+
+#ifdef OF_HAVE_BLOCKS
+					if (charactersHandler != nil)
+						charactersHandler(self, str);
+					else
+#endif
+						[delegate parser: self
+						 foundCharacters: str];
+
 					[pool release];
 				}
 
@@ -242,18 +351,30 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 					pool = [[OFAutoreleasePool alloc] init];
 
-					[delegate parser: self
-					 didStartElement: name
-					      withPrefix: prefix
-					       namespace: ns
-					      attributes: nil];
-
-					if (buf[i] == '/')
-						[delegate parser: self
-						   didEndElement: name
-						      withPrefix: prefix
-						       namespace: ns];
+#ifdef OF_HAVE_BLOCKS
+					if (elementStartHandler != nil)
+						elementStartHandler(self, name,
+						    prefix, ns, nil);
 					else
+#endif
+						[delegate parser: self
+						 didStartElement: name
+						      withPrefix: prefix
+						       namespace: ns
+						      attributes: nil];
+
+					if (buf[i] == '/') {
+#ifdef OF_HAVE_BLOCKS
+						if (elementEndHandler != nil)
+							elementEndHandler(self,
+							    name, prefix, ns);
+						else
+#endif
+							[delegate parser: self
+							   didEndElement: name
+							      withPrefix: prefix
+							       namespace: ns];
+					} else
 						[previous addObject:
 						    [[cache copy] autorelease]];
 
@@ -326,10 +447,16 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 				pool = [[OFAutoreleasePool alloc] init];
 
-				[delegate parser: self
-				   didEndElement: name
-				      withPrefix: prefix
-				       namespace: ns];
+#ifdef OF_HAVE_BLOCKS
+				if (elementEndHandler != nil)
+					elementEndHandler(self, name, prefix,
+					    ns);
+				else
+#endif
+					[delegate parser: self
+					   didEndElement: name
+					      withPrefix: prefix
+					       namespace: ns];
 
 				[pool release];
 
@@ -365,17 +492,29 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 				pool = [[OFAutoreleasePool alloc] init];
 
-				[delegate parser: self
-				 didStartElement: name
-				      withPrefix: prefix
-				       namespace: ns
-				      attributes: attrs];
+#ifdef OF_HAVE_BLOCKS
+				if (elementStartHandler != nil)
+					elementStartHandler(self, name, prefix,
+					    ns, attrs);
+				else
+#endif
+					[delegate parser: self
+					 didStartElement: name
+					      withPrefix: prefix
+					       namespace: ns
+					      attributes: attrs];
 
 				if (buf[i] == '/') {
-					[delegate parser: self
-					   didEndElement: name
-					      withPrefix: prefix
-					       namespace: ns];
+#ifdef OF_HAVE_BLOCKS
+					if (elementEndHandler != nil)
+						elementEndHandler(self, name,
+						    prefix, ns);
+					else
+#endif
+						[delegate parser: self
+						   didEndElement: name
+						      withPrefix: prefix
+						       namespace: ns];
 					[namespaces removeNObjects: 1];
 				} else if (prefix != nil) {
 					OFString *str = [OFString
@@ -605,8 +744,15 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 				[cdata removeCharactersFromIndex: len - 2
 							 toIndex: len];
-				[delegate parser: self
-				      foundCDATA: cdata];
+
+#ifdef OF_HAVE_BLOCKS
+				if (CDATAHandler != nil)
+					CDATAHandler(self, cdata);
+				else
+#endif
+					[delegate parser: self
+					      foundCDATA: cdata];
+
 				[pool release];
 
 				[cache setToCString: ""];
@@ -648,8 +794,15 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 				[comment removeCharactersFromIndex: len - 2
 							   toIndex: len];
-				[delegate parser: self
-				    foundComment: comment];
+
+#ifdef OF_HAVE_BLOCKS
+				if (commentHandler != nil)
+					commentHandler(self, comment);
+				else
+#endif
+					[delegate parser: self
+					    foundComment: comment];
+
 				[pool release];
 
 				[cache setToCString: ""];
@@ -674,6 +827,11 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 -	   (OFString*)string: (OFString*)string
   containsUnknownEntityNamed: (OFString*)entity
 {
+#ifdef OF_HAVE_BLOCKS
+	if (unknownEntityHandler != nil)
+		return unknownEntityHandler(self, entity);
+#endif
+
 	return [delegate parser: self
 	foundUnknownEntityNamed: entity];
 }

@@ -17,6 +17,17 @@
 @class OFArray;
 @class OFMutableArray;
 
+#ifdef OF_HAVE_BLOCKS
+typedef void (^of_xml_parser_element_start_block_t)(OFXMLParser *parser,
+    OFString *name, OFString *prefix, OFString *namespace, OFArray *attrs);
+typedef void (^of_xml_parser_element_end_block_t)(OFXMLParser *parser,
+    OFString *name, OFString *prefix, OFString *namespace);
+typedef void (^of_xml_parser_string_block_t)(OFXMLParser *parser,
+    OFString *string);
+typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
+    OFString *entity);
+#endif
+
 /**
  * \brief A protocol that needs to be implemented by delegates for OFXMLParser.
  */
@@ -138,10 +149,26 @@
 	OFString *attrPrefix;
 	char delim;
 	OFMutableArray *previous;
+#ifdef OF_HAVE_BLOCKS
+	of_xml_parser_element_start_block_t elementStartHandler;
+	of_xml_parser_element_end_block_t elementEndHandler;
+	of_xml_parser_string_block_t charactersHandler;
+	of_xml_parser_string_block_t CDATAHandler;
+	of_xml_parser_string_block_t commentHandler;
+	of_xml_parser_unknown_entity_block_t unknownEntityHandler;
+#endif
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (retain) id <OFXMLParserDelegate> delegate;
+# ifdef OF_HAVE_BLOCKS
+@property (copy) of_xml_parser_element_start_block_t elementStartHandler;
+@property (copy) of_xml_parser_element_end_block_t elementEndHandler;
+@property (copy) of_xml_parser_string_block_t charactersHandler;
+@property (copy) of_xml_parser_string_block_t CDATAHandler;
+@property (copy) of_xml_parser_string_block_t commentHandler;
+@property (copy) of_xml_parser_unknown_entity_block_t unknownEntityHandler;
+# endif
 #endif
 
 /**
@@ -160,6 +187,80 @@
  * \param delegate The delegate to use
  */
 - (void)setDelegate: (id <OFXMLParserDelegate>)delegate;
+
+#ifdef OF_HAVE_BLOCKS
+/**
+ * \return The element start handler
+ */
+- (of_xml_parser_element_start_block_t)elementStartHandler;
+
+/**
+ * Sets the element start handler.
+ *
+ * \param block An element start handler
+ */
+- (void)setElementStartHandler: (of_xml_parser_element_start_block_t)block;
+
+/**
+ * \return The element end handler
+ */
+- (of_xml_parser_element_end_block_t)elementEndHandler;
+
+/**
+ * Sets the element end handler.
+ *
+ * \param block An element end handler
+ */
+- (void)setElementEndHandler: (of_xml_parser_element_end_block_t)block;
+
+/**
+ * \return The characters handler
+ */
+- (of_xml_parser_string_block_t)charactersHandler;
+
+/**
+ * Sets the characters handler.
+ *
+ * \param block A characters handler
+ */
+- (void)setCharactersHandler: (of_xml_parser_string_block_t)block;
+
+/**
+ * \return The CDATA handler
+ */
+- (of_xml_parser_string_block_t)CDATAHandler;
+
+/**
+ * Sets the CDATA handler.
+ *
+ * \param block A CDATA handler
+ */
+- (void)setCDATAHandler: (of_xml_parser_string_block_t)block;
+
+/**
+ * \return The comment handler
+ */
+- (of_xml_parser_string_block_t)commentHandler;
+
+/**
+ * Sets the comment handler.
+ *
+ * \param block A comment handler
+ */
+- (void)setCommentHandler: (of_xml_parser_string_block_t)block;
+
+/**
+ * \return The unknown entity handler
+ */
+- (of_xml_parser_unknown_entity_block_t)unknownEntityHandler;
+
+/**
+ * Sets the unknown entity handler.
+ *
+ * \param block An unknown entity handler
+ */
+- (void)setUnknownEntityHandler: (of_xml_parser_unknown_entity_block_t)block;
+#endif
 
 /**
  * Parses a buffer with the specified size.
