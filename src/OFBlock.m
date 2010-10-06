@@ -16,7 +16,6 @@
 #include <string.h>
 
 #import "OFBlock.h"
-#import "OFAutoreleasePool.h"
 
 #if defined(OF_GNU_RUNTIME) || defined(OF_OBJFW_RUNTIME)
 struct objc_abi_class {
