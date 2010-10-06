@@ -17,6 +17,11 @@
 
 #import "OFBlock.h"
 
+@protocol RetainRelease
+- retain;
+- (void)release;
+@end
+
 #if defined(OF_GNU_RUNTIME) || defined(OF_OBJFW_RUNTIME)
 struct objc_abi_class {
 	struct objc_abi_metaclass *metaclass;

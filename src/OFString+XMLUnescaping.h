@@ -54,6 +54,7 @@ typedef OFString* (^of_string_xml_unescaping_block_t)(OFString *str,
 - (OFString*)stringByXMLUnescapingWithDelegate:
     (id <OFStringXMLUnescapingDelegate>)delegate;
 
+#ifdef OF_HAVE_BLOCKS
 /**
  * Unescapes XML in the string and uses the specified block for unknown
  * entities.
@@ -62,4 +63,5 @@ typedef OFString* (^of_string_xml_unescaping_block_t)(OFString *str,
  */
 - (OFString*)stringByXMLUnescapingWithBlock:
     (of_string_xml_unescaping_block_t)block;
+#endif
 @end
