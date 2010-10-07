@@ -296,7 +296,7 @@
 	for (i = 0; i < count; i++) {
 		int fd = [cArray[i] fileDescriptor];
 
-		if (FD_ISSET(fd, &readfds_))
+		if (FD_ISSET(fd, &writefds_))
 			[delegate streamDidBecomeReadyForWriting: cArray[i]];
 	}
 #endif
