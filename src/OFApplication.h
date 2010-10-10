@@ -49,6 +49,8 @@
 	OFMutableArray *arguments;
 	OFMutableDictionary *environment;
 	id <OFApplicationDelegate> delegate;
+	int *argc;
+	char ***argv;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -98,8 +100,17 @@
  * \param argc The number of arguments
  * \param argv The argument values
  */
-- (void)setArgumentCount: (int)argc
-       andArgumentValues: (char**)argv;
+- (void)setArgumentCount: (int*)argc
+       andArgumentValues: (char***)argv;
+
+/**
+ * Gets args and argv.o
+ *
+ * \param argc A pointer where a pointer to argc should be stored
+ * \param argv A pointer where a pointer to argv should be stored
+ */
+- (void)getArgumentCount: (int**)argc
+       andArgumentValues: (char****)argv;
 
 /**
  * \return The name of the program (argv[0])

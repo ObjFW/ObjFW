@@ -44,8 +44,8 @@ of_application_main(int argc, char *argv[], Class cls)
 	OFApplication *app = [OFApplication sharedApplication];
 	id <OFApplicationDelegate> delegate = [[cls alloc] init];
 
-	[app setArgumentCount: argc
-	    andArgumentValues: argv];
+	[app setArgumentCount: &argc
+	    andArgumentValues: &argv];
 
 	[app setDelegate: delegate];
 	[(id)delegate release];
@@ -130,8 +130,8 @@ of_application_main(int argc, char *argv[], Class cls)
 	return self;
 }
 
-- (void)setArgumentCount: (int)argc
-       andArgumentValues: (char**)argv
+- (void)setArgumentCount: (int*)argc_
+       andArgumentValues: (char***)argv_
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	int i;
@@ -139,13 +139,23 @@ of_application_main(int argc, char *argv[], Class cls)
 	[programName release];
 	[arguments release];
 
-	programName = [[OFString alloc] initWithCString: argv[0]];
+	argc = argc_;
+	argv = argv_;
+
+	programName = [[OFString alloc] initWithCString: (*argv)[0]];
 	arguments = [[OFMutableArray alloc] init];
 
-	for (i = 1; i < argc; i++)
-		[arguments addObject: [OFString stringWithCString: argv[i]]];
+	for (i = 1; i < *argc; i++)
+		[arguments addObject: [OFString stringWithCString: *(argv)[i]]];
 
 	[pool release];
+}
+
+- (void)getArgumentCount: (int**)argc_
+       andArgumentValues: (char****)argv_
+{
+	*argc_ = argc;
+	*argv_ = argv;
 }
 
 - (OFString*)programName
