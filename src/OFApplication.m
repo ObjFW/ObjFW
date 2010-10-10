@@ -39,13 +39,13 @@ atexit_handler()
 }
 
 int
-of_application_main(int argc, char *argv[], Class cls)
+of_application_main(int *argc, char **argv[], Class cls)
 {
 	OFApplication *app = [OFApplication sharedApplication];
 	id <OFApplicationDelegate> delegate = [[cls alloc] init];
 
-	[app setArgumentCount: &argc
-	    andArgumentValues: &argv];
+	[app setArgumentCount: argc
+	    andArgumentValues: argv];
 
 	[app setDelegate: delegate];
 	[(id)delegate release];
@@ -146,7 +146,7 @@ of_application_main(int argc, char *argv[], Class cls)
 	arguments = [[OFMutableArray alloc] init];
 
 	for (i = 1; i < *argc; i++)
-		[arguments addObject: [OFString stringWithCString: *(argv)[i]]];
+		[arguments addObject: [OFString stringWithCString: (*argv)[i]]];
 
 	[pool release];
 }

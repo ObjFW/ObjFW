@@ -21,7 +21,7 @@
 	int								\
 	main(int argc, char *argv[])					\
 	{								\
-		return of_application_main(argc, argv, [cls class]);	\
+		return of_application_main(&argc, &argv, [cls class]);	\
 	}
 
 /**
@@ -101,7 +101,7 @@
  * \param argv The argument values
  */
 - (void)setArgumentCount: (int*)argc
-       andArgumentValues: (char***)argv;
+       andArgumentValues: (char**[])argv;
 
 /**
  * Gets args and argv.o
@@ -110,7 +110,7 @@
  * \param argv A pointer where a pointer to argv should be stored
  */
 - (void)getArgumentCount: (int**)argc
-       andArgumentValues: (char****)argv;
+       andArgumentValues: (char***[])argv;
 
 /**
  * \return The name of the program (argv[0])
@@ -160,4 +160,4 @@
 @interface OFObject (OFApplicationDelegate) <OFApplicationDelegate>
 @end
 
-extern int of_application_main(int, char*[], Class);
+extern int of_application_main(int*, char**[], Class);
