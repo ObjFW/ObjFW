@@ -19,9 +19,9 @@
 
 #ifdef OF_HAVE_BLOCKS
 typedef void (^of_xml_parser_element_start_block_t)(OFXMLParser *parser,
-    OFString *name, OFString *prefix, OFString *namespace, OFArray *attrs);
+    OFString *name, OFString *prefix, OFString *ns, OFArray *attrs);
 typedef void (^of_xml_parser_element_end_block_t)(OFXMLParser *parser,
-    OFString *name, OFString *prefix, OFString *namespace);
+    OFString *name, OFString *prefix, OFString *ns);
 typedef void (^of_xml_parser_string_block_t)(OFXMLParser *parser,
     OFString *string);
 typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
