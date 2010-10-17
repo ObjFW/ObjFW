@@ -9,6 +9,10 @@ OBJC="@OBJC@"
 OBJCFLAGS="@GNU_RUNTIME@ -fexceptions -fobjc-exceptions"
 OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstantString"
 OBJCFLAGS="$OBJCFLAGS @NO_CONST_CFSTRINGS@ @BLOCKS_FLAGS@ @NO_WARN_UNUSED@"
+LIB_CFLAGS="@LIB_CFLAGS@"
+LIB_LDFLAGS="@LIB_LDFLAGS@"
+LIB_PREFIX="@LIB_PREFIX@"
+LIB_SUFFIX="@LIB_SUFFIX@"
 LDFLAGS=""
 LDFLAGS_REEXPORT="@LDFLAGS_REEXPORT@"
 LDFLAGS_RPATH="@LDFLAGS_RPATH@"
@@ -29,6 +33,10 @@ objfw-config: Available arguments are:
 	--reexport	Outputs LDFLAGS to reexport ObjFW
 	--rpath		Outputs LDFLAGS for using rpath
 	--libs		Outputs the required LIBS
+	--lib-cflags	Outputs CFLAGS for building a library"
+	--lib-ldflags	Outputs LDFLAGS for building a library"
+	--lib-prefix	Outputs the prefix for libraries"
+	--lib-suffix	Outputs the suffix for libraries"
 	--version	Outputs the installed version
 __EOF__
 	exit 0
@@ -61,6 +69,42 @@ while test ! -z "$1"; do
 			;;
 		--libs)
 			printf "%s" "$LIBS"
+			;;
+		--lib-cflags)
+			if test x"$LIB_MAJOR" = x"" -o x"$LIB_MINOR" = x""; then
+				echo "LIB_MAJOR and LIB_MINOR need to be set!" \
+					1>&2
+				exit 1
+			fi
+
+			printf "%s" "$LIB_CFLAGS"
+			;;
+		--lib-ldflags)
+			if test x"$LIB_MAJOR" = x"" -o x"$LIB_MINOR" = x""; then
+				echo "LIB_MAJOR and LIB_MINOR need to be set!" \
+					1>&2
+				exit 1
+			fi
+
+			printf "%s" "$LIB_LDFLAGS"
+			;;
+		--lib-prefix)
+			if test x"$LIB_MAJOR" = x"" -o x"$LIB_MINOR" = x""; then
+				echo "LIB_MAJOR and LIB_MINOR need to be set!" \
+					1>&2
+				exit 1
+			fi
+
+			printf "%s" "$LIB_PREFIX"
+			;;
+		--lib-suffix)
+			if test x"$LIB_MAJOR" = x"" -o x"$LIB_MINOR" = x""; then
+				echo "LIB_MAJOR and LIB_MINOR need to be set!" \
+					1>&2
+				exit 1
+			fi
+
+			printf "%s" "$LIB_SUFFIX"
 			;;
 		--ldflags)
 			printf "%s" "$LDFLAGS"

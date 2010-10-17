@@ -16,8 +16,8 @@ OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --objcflags)"
 LIBS="$LIBS $($OBJFW_CONFIG --libs)"
 LDFLAGS="$LDFLAGS $($OBJFW_CONFIG --ldflags)"
 
-if test x"$1" = "x" -o x"$2" = "x"; then
-	echo "Syntax: objfw-compile outname source1.m source2.m ..."
+if test x"$1" = "x"; then
+	echo "Syntax: objfw-compile -o outname source1.m source2.m ..."
 	exit 1
 fi
 
@@ -46,21 +46,48 @@ status_link_failed() {
 	exit $2
 }
 
-out="$1"
+flags_done="no"
+out=""
 objs=""
 link="no"
-shift
-
-case "$out" in
-	*.c | *.C | *.cpp | *.cxx | *.C | *.h | *.m | *.mm | *.M)
-		echo "The first paramter must be the output name!" 1>&2
-		exit 1
-		;;
-esac
+out_prefix=""
+out_suffix=""
 
 while test x"$1" != "x"; do
 	case "$1" in
+		-o|--out)
+			shift
+			out="$1"
+			;;
+		-l|--lib)
+			if test x"flags_done" = x"yes"; then
+				printf "The --lib flag needs to be specified "
+				printf "before any source file!\n"
+				exit 1
+			fi
+
+			shift
+
+			if ! echo "$1" | grep "^[0-9]\+\.[0-9]\+" >/dev/null
+			then
+				echo "$1 is not a valid library version!"
+				exit 1
+			fi
+
+			export LIB_MAJOR="${1%.*}"
+			export LIB_MINOR="${1#*.}"
+
+			OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --lib-cflags)"
+			LDFLAGS="$LDFLAGS $($OBJFW_CONFIG --lib-ldflags)"
+			out_prefix="$($OBJFW_CONFIG --lib-prefix)"
+			out_suffix="$($OBJFW_CONFIG --lib-suffix)"
+			;;
+		-*)
+			echo "Unknown option: $1"
+			exit 1
+			;;
 		*.m)
+			flags_done="yes"
 			obj="${1%.m}.o"
 			objs="$objs $obj"
 			build="no"
@@ -92,9 +119,14 @@ while test x"$1" != "x"; do
 	shift
 done
 
-if test ! -f "$out" -o x"$link" = x"yes"; then
-	status_linking $out
-	$OBJC -o $out $objs $LIBS $ENV_LIBS $LDFLAGS $ENV_LDFLAGS || \
-		status_link_failed $out $?
-	status_linked $out
+if test x"$out" = x""; then
+	echo "No output name specified! Use -o or --out!"
+	exit 1
+fi
+
+if test ! -f "$out_prefix$out$out_suffix" -o x"$link" = x"yes"; then
+	status_linking $out_prefix$out$out_suffix
+	$OBJC -o $out_prefix$out$out_suffix $objs $LIBS $ENV_LIBS $LDFLAGS \
+		$ENV_LDFLAGS || status_link_failed $out $?
+	status_linked $out_prefix$out$out_suffix
 fi
