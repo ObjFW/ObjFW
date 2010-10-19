@@ -801,7 +801,7 @@
 	RETURN_AS(double)
 }
 
-- (BOOL)isEqual: (OFObject*)obj
+- (BOOL)isEqual: (id)obj
 {
 	if (![obj isKindOfClass: [OFNumber class]])
 		return NO;

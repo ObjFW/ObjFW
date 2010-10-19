@@ -582,7 +582,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	return [[OFMutableDictionary alloc] initWithDictionary: self];
 }
 
-- (BOOL)isEqual: (OFDictionary*)dict
+- (BOOL)isEqual: (id)dict
 {
 	uint32_t i;
 

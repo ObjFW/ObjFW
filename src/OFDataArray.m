@@ -195,7 +195,7 @@
 	return new;
 }
 
-- (BOOL)isEqual: (OFObject*)obj
+- (BOOL)isEqual: (id)obj
 {
 	if (![obj isKindOfClass: [OFDataArray class]])
 		return NO;
