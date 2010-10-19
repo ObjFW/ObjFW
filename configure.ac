@@ -12,7 +12,7 @@ AC_PROG_EGREP
 
 CPP="$OBJCPP"
 CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS"
-OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions -fobjc-exceptions"
+OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions"
 OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstantString"
 
 AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
