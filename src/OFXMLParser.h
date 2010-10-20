@@ -138,7 +138,8 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
 		OF_XMLPARSER_IN_COMMENT_OPENING,
 		OF_XMLPARSER_IN_COMMENT_1,
 		OF_XMLPARSER_IN_COMMENT_2,
-		OF_XMLPARSER_IN_COMMENT_3
+		OF_XMLPARSER_IN_COMMENT_3,
+		OF_XMLPARSER_NUM_STATES
 	} state;
 	OFMutableString *cache;
 	OFString *name;
