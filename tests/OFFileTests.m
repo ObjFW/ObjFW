@@ -25,7 +25,7 @@ static OFString *module = @"OFFile";
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 
-	TEST(@"+[lastComponentOfPath",
+	TEST(@"+[lastComponentOfPath]",
 	    [[OFFile lastComponentOfPath: @"/tmp"] isEqual: @"tmp"] &&
 	    [[OFFile lastComponentOfPath: @"/tmp/"] isEqual: @"tmp"] &&
 	    [[OFFile lastComponentOfPath: @"/"] isEqual: @""] &&
