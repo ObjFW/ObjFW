@@ -211,7 +211,7 @@ OF_BSWAP32_V(uint32_t *buf, size_t len)
 #define OF_HASH_INIT(hash) hash = 0
 #define OF_HASH_ADD(hash, byte)		\
 	{				\
-		hash += byte;		\
+		hash += (uint8_t)byte;	\
 		hash += (hash << 10);	\
 		hash ^= (hash >> 6);	\
 	}

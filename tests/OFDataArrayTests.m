@@ -72,7 +72,7 @@ const char *str = "Hello!";
 	    [array[1] compare: array[0]] == OF_ORDERED_ASCENDING &&
 	    [array[2] compare: array[3]] == OF_ORDERED_ASCENDING)
 
-	TEST(@"-[hash]", [array[0] hash] == 0xC54621B6)
+	TEST(@"-[hash]", [array[0] hash] == 0x634A529F)
 
 	array[0] = [class dataArrayWithItemSize: 1];
 	[array[0] addNItems: 6
