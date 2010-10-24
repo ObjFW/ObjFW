@@ -112,7 +112,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 }
 
 @implementation OFMD5Hash
-+ md5Hash
++ MD5Hash
 {
 	return [[[self alloc] init] autorelease];
 }

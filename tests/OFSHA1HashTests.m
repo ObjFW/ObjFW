@@ -35,7 +35,7 @@ const uint8_t testfile_sha1[OF_SHA1_DIGEST_SIZE] =
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
 				    mode: @"rb"];
 
-	TEST(@"+[sha1Hash]", (sha1 = [OFSHA1Hash sha1Hash]))
+	TEST(@"+[sha1Hash]", (sha1 = [OFSHA1Hash SHA1Hash]))
 
 	while (![f isAtEndOfStream]) {
 		char buf[64];

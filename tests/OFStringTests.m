@@ -263,10 +263,10 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	TEST(@"-[unicodeString]", (ua = [@"fööbär" unicodeString]) &&
 	    !memcmp(ua, ucstr, 7 * sizeof(of_unichar_t)) && R(free(ua)))
 
-	TEST(@"-[md5Hash]", [[@"asdfoobar" md5Hash]
+	TEST(@"-[MD5Hash]", [[@"asdfoobar" MD5Hash]
 	    isEqual: @"184dce2ec49b5422c7cfd8728864db4c"])
 
-	TEST(@"-[sha1Hash]", [[@"asdfoobar" sha1Hash]
+	TEST(@"-[SHA1Hash]", [[@"asdfoobar" SHA1Hash]
 	    isEqual: @"f5f81ac0a8b5cbfdc4585ec1ad32e7b3a12b9b49"])
 
 	TEST(@"-[stringByURLEncoding]",

@@ -126,7 +126,7 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 }
 
 @implementation OFSHA1Hash
-+ sha1Hash
++ SHA1Hash
 {
 	return [[[self alloc] init] autorelease];
 }

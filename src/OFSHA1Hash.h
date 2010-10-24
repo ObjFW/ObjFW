@@ -27,5 +27,5 @@
 /**
  * \return A new autoreleased SHA1 Hash
  */
-+ sha1Hash;
++ SHA1Hash;
 @end

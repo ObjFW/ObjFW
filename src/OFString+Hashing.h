@@ -21,10 +21,10 @@ extern int _OFString_Hashing_reference;
 /**
  * \return The MD5 hash of the string as an autoreleased OFString
  */
-- (OFString*)md5Hash;
+- (OFString*)MD5Hash;
 
 /**
  * \return The SHA1 hash of the string as an autoreleased OFString
  */
-- (OFString*)sha1Hash;
+- (OFString*)SHA1Hash;
 @end

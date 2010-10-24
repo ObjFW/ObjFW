@@ -21,10 +21,10 @@
 int _OFString_Hashing_reference;
 
 @implementation OFString (Hashing)
-- (OFString*)md5Hash
+- (OFString*)MD5Hash
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFMD5Hash *hash = [OFMD5Hash md5Hash];
+	OFMD5Hash *hash = [OFMD5Hash MD5Hash];
 	uint8_t *digest;
 	char ret_c[32];
 	size_t i;
@@ -49,10 +49,10 @@ int _OFString_Hashing_reference;
 				    length: 32];
 }
 
-- (OFString*)sha1Hash
+- (OFString*)SHA1Hash
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFMD5Hash *hash = [OFSHA1Hash sha1Hash];
+	OFMD5Hash *hash = [OFSHA1Hash SHA1Hash];
 	uint8_t *digest;
 	char ret_c[40];
 	size_t i;

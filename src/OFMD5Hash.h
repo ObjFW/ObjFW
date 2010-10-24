@@ -26,5 +26,5 @@
 /**
  * \return A new autoreleased MD5 Hash
  */
-+ md5Hash;
++ MD5Hash;
 @end
