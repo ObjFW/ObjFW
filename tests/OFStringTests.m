@@ -275,6 +275,12 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	TEST(@"-[stringByURLDecoding]",
 	    [[@"foo%20bar%22+%24" stringByURLDecoding] isEqual: @"foo bar\" $"])
 
+	TEST(@"-[insertString:atIndex:]",
+	    (s[0] = [OFMutableString stringWithString: @"𝄞öööbä€"]) &&
+	    R([s[0] insertString: @"äöü"
+			 atIndex: 3]) &&
+	    [s[0] isEqual: @"𝄞ööäöüöbä€"])
+
 	EXPECT_EXCEPTION(@"Detect invalid encoding in -[stringByURLDecoding] "
 	    @"#1", OFInvalidEncodingException, [@"foo%bar" stringByURLDecoding])
 	EXPECT_EXCEPTION(@"Detect invalid encoding in -[stringByURLDecoding] "

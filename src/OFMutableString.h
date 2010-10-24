@@ -106,6 +106,15 @@
 - (void)lower;
 
 /**
+ * Inserts a string at the specified index.
+ *
+ * \param str The string to insert
+ * \param idx The index
+ */
+- (void)insertString: (OFString*)str
+	     atIndex: (size_t)idx;
+
+/**
  * Removes the characters at the specified range.
  *
  * \param start The index where the deletion should be started

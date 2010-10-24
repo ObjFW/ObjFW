@@ -354,6 +354,28 @@
 		 withSize: OF_UNICODE_LOWER_TABLE_SIZE];
 }
 
+- (void)insertString: (OFString*)str
+	     atIndex: (size_t)idx
+{
+	size_t nlen;
+
+	if (isUTF8)
+		idx = of_string_index_to_position(string, idx, length);
+
+	if (idx > length)
+		@throw [OFOutOfRangeException newWithClass: isa];
+
+	nlen = length + [str cStringLength];
+	string = [self resizeMemory: string
+			     toSize: nlen + 1];
+
+	memmove(string + idx + [str cStringLength], string + idx, length - idx);
+	memcpy(string + idx, [str cString], [str cStringLength]);
+	string[nlen] = '\0';
+
+	length = nlen;
+}
+
 - (void)removeCharactersFromIndex: (size_t)start
 			  toIndex: (size_t)end
 {
