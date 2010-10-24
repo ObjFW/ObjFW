@@ -98,7 +98,7 @@
 
 	if (!found) {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-		struct pollfd p = { fd, events, 0 };
+		struct pollfd p = { fd, events | POLLERR, 0 };
 		[fds addItem: &p];
 		[fdToStream setObject: stream
 			       forKey: [OFNumber numberWithInt: fd]];
@@ -119,7 +119,7 @@
 
 			fds_c[i].events &= ~events;
 
-			if (fds_c[i].events != 0)
+			if ((fds_c[i].events & ~POLLERR) != 0)
 				return;
 
 			pool = [[OFAutoreleasePool alloc] init];
@@ -143,6 +143,7 @@
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	FD_SET(fd, fdset);
+	FD_SET(fd, &exceptfds);
 
 	if (fd >= nfds)
 		nfds = fd + 1;
@@ -152,6 +153,7 @@
 
 - (void)_removeStream: (OFStream*)stream
 	    withFDSet: (fd_set*)fdset
+	   otherFDSet: (fd_set*)other_fdset
 {
 	int fd = [stream fileDescriptor];
 
@@ -159,6 +161,9 @@
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	FD_CLR(fd, fdset);
+
+	if (!FD_ISSET(fd, other_fdset))
+		FD_CLR(fd, &exceptfds);
 }
 #endif
 
@@ -197,7 +202,8 @@
 		 withEvents: POLLIN];
 #else
 	[self _removeStream: stream
-		  withFDSet: &readfds];
+		  withFDSet: &readfds
+		 otherFDSet: &writefds];
 #endif
 }
 
@@ -210,7 +216,8 @@
 		 withEvents: POLLOUT];
 #else
 	[self _removeStream: stream
-		  withFDSet: &writefds];
+		  withFDSet: &writefds
+		 otherFDSet: &readfds];
 #endif
 }
 
@@ -275,9 +282,15 @@
 		fds_c[i].revents = 0;
 	}
 #else
+# ifdef FD_COPY
+	FD_COPY(readfds, readfds_);
+	FD_COPY(writefds, writefds_);
+	FD_COPY(exceptfds, exceptfds_);
+# else
 	readfds_ = readfds;
 	writefds_ = writefds;
-	FD_ZERO(&exceptfds_);
+	exceptfds_ = exceptfds;
+# endif
 
 	if (select(nfds, &readfds_, &writefds_, &exceptfds_,
 	    (timeout != -1 ? &tv : NULL)) < 1)
@@ -313,6 +326,10 @@
 }
 
 - (void)streamDidBecomeReadyForWriting: (OFStream*)stream
+{
+}
+
+- (void)streamDidReceiveException: (OFStream*)stream
 {
 }
 @end

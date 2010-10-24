@@ -48,6 +48,13 @@
  * \param stream The stream which did become ready for writing
  */
 - (void)streamDidBecomeReadyForWriting: (OFStream*)stream;
+
+/**
+ * This callback is called when an exception occurred on the stream.
+ *
+ * \param stream The stream on which an exception occurred
+ */
+- (void)streamDidReceiveException: (OFStream*)stream;
 @end
 
 /**
@@ -64,6 +71,7 @@
 #else
 	fd_set readfds;
 	fd_set writefds;
+	fd_set exceptfds;
 	int nfds;
 #endif
 }
