@@ -123,6 +123,27 @@
 - (void)removeCharactersInRange: (of_range_t)range;
 
 /**
+ * Removes the characters at the specified range.
+ *
+ * \param start The index where the replacement should be started
+ * \param end The index until which the characters should be replaced.
+ *	      This points BEHIND the last character!
+ * \param repl The string to the replace the characters with
+ */
+- (void)replaceCharactersFromIndex: (size_t)start
+			   toIndex: (size_t)end
+			withString: (OFString*)repl;
+
+/**
+ * Removes the characters at the specified range.
+ *
+ * \param range The range of the characters which should be replaced
+ * \param repl The string to the replace the characters with
+ */
+- (void)replaceCharactersInRange: (of_range_t)range
+		      withString: (OFString*)repl;
+
+/**
  * Replaces all occurrences of a string with another string.
  *
  * \param str The string to replace

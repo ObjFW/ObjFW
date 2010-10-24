@@ -290,6 +290,17 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 				      toIndex: 4]) &&
 	    [s[0] isEqual: @""])
 
+	TEST(@"-[replaceCharactersFromIndex:toIndex:withString:]",
+	    (s[0] = [OFMutableString stringWithString: @"𝄞öööbä€"]) &&
+		   R([s[0] replaceCharactersFromIndex: 1
+					      toIndex: 4
+					   withString: @"äöü"]) &&
+	    [s[0] isEqual: @"𝄞äöübä€"] &&
+	    R([s[0] replaceCharactersFromIndex: 0
+				       toIndex: 7
+				    withString: @""]) &&
+	    [s[0] isEqual: @""])
+
 	EXPECT_EXCEPTION(@"Detect OoR in "
 	    @"-[removeCharactersFromIndex:toIndex:] #1", OFOutOfRangeException,
 	    {

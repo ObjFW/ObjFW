@@ -388,6 +388,44 @@
 				toIndex: range.start + range.length];
 }
 
+- (void)replaceCharactersFromIndex: (size_t)start
+			   toIndex: (size_t)end
+			withString: (OFString*)repl
+{
+	size_t nlen;
+
+	if (isUTF8) {
+		start = of_string_index_to_position(string, start, length);
+		end = of_string_index_to_position(string, end, length);
+	}
+
+	if (start > end)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
+	if (end > length)
+		@throw [OFOutOfRangeException newWithClass: isa];
+
+	nlen = length - (end - start) + [repl cStringLength];
+	string = [self resizeMemory: string
+			     toSize: nlen + 1];
+
+	memmove(string + end, string + start + [repl cStringLength],
+	    length - end);
+	memcpy(string + start, [repl cString], [repl cStringLength]);
+	string[nlen] = '\0';
+
+	length = nlen;
+}
+
+- (void)replaceCharactersInRange: (of_range_t)range
+		      withString: (OFString*)repl
+{
+	[self replaceCharactersFromIndex: range.start
+				 toIndex: range.start + range.length
+			      withString: repl];
+}
+
 - (void)replaceOccurrencesOfString: (OFString*)str
 			withString: (OFString*)repl
 {
