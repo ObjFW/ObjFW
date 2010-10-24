@@ -36,8 +36,7 @@ const uint8_t testfile_md5[OF_MD5_DIGEST_SIZE] =
 
 	TEST(@"+[md5Hash]", (md5 = [OFMD5Hash md5Hash]))
 
-
-	while (![f atEndOfStream]) {
+	while (![f isAtEndOfStream]) {
 		char buf[64];
 		size_t len = [f readNBytes: 64
 				intoBuffer: buf];

@@ -42,7 +42,7 @@
 	return self;
 }
 
-- (BOOL)_atEndOfStream
+- (BOOL)_isAtEndOfStream
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
@@ -62,12 +62,12 @@
 					      selector: _cmd];
 }
 
-- (BOOL)atEndOfStream
+- (BOOL)isAtEndOfStream
 {
 	if (cache != NULL)
 		return NO;
 
-	return [self _atEndOfStream];
+	return [self _isAtEndOfStream];
 }
 
 - (size_t)readNBytes: (size_t)size
@@ -212,7 +212,7 @@
 	buf = [self allocMemoryWithSize: of_pagesize];
 
 	@try {
-		while (![self atEndOfStream]) {
+		while (![self isAtEndOfStream]) {
 			size_t size;
 
 			size = [self readNBytes: of_pagesize
@@ -272,7 +272,7 @@
 
 	@try {
 		for (;;) {
-			if ([self _atEndOfStream]) {
+			if ([self _isAtEndOfStream]) {
 				if (cache == NULL)
 					return nil;
 
@@ -431,7 +431,7 @@
 
 	@try {
 		for (;;) {
-			if ([self _atEndOfStream]) {
+			if ([self _isAtEndOfStream]) {
 				if (cache == NULL)
 					return nil;
 
@@ -515,14 +515,14 @@
 	assert(0);
 }
 
-- (BOOL)bufferWrites
+- (BOOL)buffersWrites
 {
-	return bufferWrites;
+	return buffersWrites;
 }
 
-- (void)setBufferWrites: (BOOL)enable
+- (void)setBuffersWrites: (BOOL)enable
 {
-	bufferWrites = enable;
+	buffersWrites = enable;
 }
 
 - (void)flushWriteBuffer
@@ -541,7 +541,7 @@
 - (size_t)writeNBytes: (size_t)size
 	   fromBuffer: (const char*)buf
 {
-	if (!bufferWrites)
+	if (!buffersWrites)
 		return [self _writeNBytes: size
 			       fromBuffer: buf];
 	else {

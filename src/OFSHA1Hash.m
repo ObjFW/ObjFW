@@ -150,7 +150,7 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 	if (size == 0)
 		return;
 
-	if (calculated)
+	if (isCalculated)
 		@throw [OFHashAlreadyCalculatedException newWithClass: isa];
 
 	sha1_update(state, &count, buffer, buf, size);
@@ -161,7 +161,7 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 	size_t i;
 	char   finalcount[8];
 
-	if (calculated)
+	if (isCalculated)
 		return digest;
 
 	for (i = 0; i < 8; i++)
@@ -178,7 +178,7 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 		digest[i] = (char)((state[i >> 2] >>
 		    ((3 - (i & 3)) * 8)) & 255);
 
-	calculated = YES;
+	isCalculated = YES;
 
 	return digest;
 }

@@ -325,7 +325,7 @@ static int parse_mode(const char *mode)
 		dest = [OFFile fileWithPath: to
 				       mode: @"wb"];
 
-		while (![src atEndOfStream]) {
+		while (![src isAtEndOfStream]) {
 			size_t len = [src readNBytes: 4096
 					  intoBuffer: buf];
 			[dest writeNBytes: len
@@ -457,7 +457,7 @@ static int parse_mode(const char *mode)
 	return self;
 }
 
-- (BOOL)_atEndOfStream
+- (BOOL)_isAtEndOfStream
 {
 	if (fd == -1)
 		return YES;

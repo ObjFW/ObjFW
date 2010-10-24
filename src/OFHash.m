@@ -28,8 +28,8 @@
 					      selector: _cmd];
 }
 
-- (BOOL)calculated
+- (BOOL)isCalculated
 {
-	return calculated;
+	return isCalculated;
 }
 @end

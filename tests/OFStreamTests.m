@@ -28,7 +28,7 @@ static OFString *module = @"OFStream";
 @end
 
 @implementation StreamTester
-- (BOOL)_atEndOfStream
+- (BOOL)_isAtEndOfStream
 {
 	return (state > 1 ? YES : NO);
 }

@@ -20,10 +20,10 @@
  * \brief A base class for different types of streams.
  *
  * IMPORTANT: If you want to subclass this, override _readNBytes:intoBuffer:,
- * _writeNBytes:fromBuffer: and _atEndOfStream, but nothing else. Those are not
- * defined in the headers, but do the actual work. OFStream uses those and does
- * all the caching and other stuff. If you override these methods without the
- * _ prefix, you *WILL* break caching and get broken results!
+ * _writeNBytes:fromBuffer: and _isAtEndOfStream, but nothing else. Those are
+ * not defined in the headers, but do the actual work. OFStream uses those and
+ * does all the caching and other stuff. If you override these methods without
+ * the _ prefix, you *WILL* break caching and get broken results!
  */
 @interface OFStream: OFObject
 {
@@ -32,7 +32,7 @@
 @protected
 	char   *wBuffer;
 	size_t cacheLen, wBufferLen;
-	BOOL   bufferWrites;;
+	BOOL   buffersWrites;
 }
 
 /**
@@ -40,7 +40,7 @@
  *
  * \return A boolean whether the end of the stream has been reached
  */
-- (BOOL)atEndOfStream;
+- (BOOL)isAtEndOfStream;
 
 /**
  * Reads at most size bytes from the stream into a buffer.
@@ -200,14 +200,14 @@
 /**
  * \return A boolean whether writes are buffered
  */
-- (BOOL)bufferWrites;
+- (BOOL)buffersWrites;
 
 /**
  * Enables or disables the write buffer.
  *
  * \param enable Whether the write buffer should be enabled or disabled
  */
-- (void)setBufferWrites: (BOOL)enable;
+- (void)setBuffersWrites: (BOOL)enable;
 
 /**
  * Writes everythig in the write buffer to the stream.

@@ -137,7 +137,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	if (size == 0)
 		return;
 
-	if (calculated)
+	if (isCalculated)
 		@throw [OFHashAlreadyCalculatedException newWithClass: isa];
 
 	/* Update bitcount */
@@ -188,7 +188,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	uint8_t	*p;
 	size_t	count;
 
-	if (calculated)
+	if (isCalculated)
 		return (uint8_t*)buf;
 
 	/* Compute number of bytes mod 64 */
@@ -226,7 +226,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	md5_transform(buf, (uint32_t*)in);
 	OF_BSWAP32_V_IF_BE(buf, 4);
 
-	calculated = YES;
+	isCalculated = YES;
 
 	return (uint8_t*)buf;
 }

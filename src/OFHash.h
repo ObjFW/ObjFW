@@ -16,11 +16,11 @@
  */
 @interface OFHash: OFObject
 {
-	BOOL	 calculated;
+	BOOL	 isCalculated;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly) BOOL calculated;
+@property (readonly) BOOL isCalculated;
 #endif
 
 /**
@@ -41,5 +41,5 @@
 /**
  * \return A boolean whether the hash has already been calculated
  */
-- (BOOL)calculated;
+- (BOOL)isCalculated;
 @end

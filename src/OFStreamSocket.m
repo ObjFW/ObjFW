@@ -51,7 +51,7 @@
 	return [[[self alloc] init] autorelease];
 }
 
-- (BOOL)_atEndOfStream
+- (BOOL)_isAtEndOfStream
 {
 	return eos;
 }
