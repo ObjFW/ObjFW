@@ -18,10 +18,12 @@
 
 #import "OFBlock.h"
 
+/// \cond internal
 @protocol RetainRelease
 - retain;
 - (void)release;
 @end
+/// \endcond
 
 #if defined(OF_GNU_RUNTIME) || defined(OF_OBJFW_RUNTIME)
 struct objc_abi_class {
