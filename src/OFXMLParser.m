@@ -324,7 +324,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		str = transform_string(cache, self);
 
 #ifdef OF_HAVE_BLOCKS
-		if (charactersHandler != nil)
+		if (charactersHandler != NULL)
 			charactersHandler(self, str);
 		else
 #endif
@@ -421,7 +421,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		pool = [[OFAutoreleasePool alloc] init];
 
 #ifdef OF_HAVE_BLOCKS
-		if (elementStartHandler != nil)
+		if (elementStartHandler != NULL)
 			elementStartHandler(self, name, prefix, ns, nil);
 		else
 #endif
@@ -433,7 +433,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 		if (buf[*i] == '/') {
 #ifdef OF_HAVE_BLOCKS
-			if (elementEndHandler != nil)
+			if (elementEndHandler != NULL)
 				elementEndHandler(self, name, prefix, ns);
 			else
 #endif
@@ -514,7 +514,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	pool = [[OFAutoreleasePool alloc] init];
 
 #ifdef OF_HAVE_BLOCKS
-	if (elementEndHandler != nil)
+	if (elementEndHandler != NULL)
 		elementEndHandler(self, name, prefix, ns);
 	else
 #endif
@@ -572,7 +572,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	pool = [[OFAutoreleasePool alloc] init];
 
 #ifdef OF_HAVE_BLOCKS
-	if (elementStartHandler != nil)
+	if (elementStartHandler != NULL)
 		elementStartHandler(self, name, prefix, ns, attrs);
 	else
 #endif
@@ -584,7 +584,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 	if (buf[*i] == '/') {
 #ifdef OF_HAVE_BLOCKS
-		if (elementEndHandler != nil)
+		if (elementEndHandler != NULL)
 			elementEndHandler(self, name, prefix, ns);
 		else
 #endif
@@ -868,7 +868,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 				 toIndex: len];
 
 #ifdef OF_HAVE_BLOCKS
-	if (CDATAHandler != nil)
+	if (CDATAHandler != NULL)
 		CDATAHandler(self, cdata);
 	else
 #endif
@@ -935,7 +935,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 				   toIndex: len];
 
 #ifdef OF_HAVE_BLOCKS
-	if (commentHandler != nil)
+	if (commentHandler != NULL)
 		commentHandler(self, comment);
 	else
 #endif
@@ -954,7 +954,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
   containsUnknownEntityNamed: (OFString*)entity
 {
 #ifdef OF_HAVE_BLOCKS
-	if (unknownEntityHandler != nil)
+	if (unknownEntityHandler != NULL)
 		return unknownEntityHandler(self, entity);
 #endif
 
