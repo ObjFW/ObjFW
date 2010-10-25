@@ -226,7 +226,7 @@
 
 			prev = o;
 		}
-	} @catch (OFException *e) {
+	} @catch (id e) {
 		[new release];
 		@throw e;
 	}

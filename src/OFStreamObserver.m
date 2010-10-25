@@ -47,8 +47,8 @@
 		FD_ZERO(&readfds);
 		FD_ZERO(&writefds);
 #endif
-	} @catch (OFException *e) {
-		[self dealloc];
+	} @catch (id e) {
+		[self release];
 		@throw e;
 	}
 

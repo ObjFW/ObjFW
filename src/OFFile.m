@@ -416,34 +416,34 @@ static int parse_mode(const char *mode)
 
 - init
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
 - initWithPath: (OFString*)path
 	  mode: (OFString*)mode
 {
-	Class c;
-	int flags;
-
 	self = [super init];
 
-	if ((flags = parse_mode([mode cString])) == -1) {
-		c = isa;
-		[super dealloc];
-		@throw [OFInvalidArgumentException newWithClass: c
-						       selector: _cmd];
-	}
+	@try {
+		int flags;
 
-	if ((fd = open([path cString], flags, DEFAULT_MODE)) == -1) {
-		c = isa;
-		[super dealloc];
-		@throw [OFOpenFileFailedException newWithClass: c
-							  path: path
-							  mode: mode];
-	}
+		if ((flags = parse_mode([mode cString])) == -1)
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
 
-	closable = YES;
+		if ((fd = open([path cString], flags, DEFAULT_MODE)) == -1)
+			@throw [OFOpenFileFailedException newWithClass: isa
+								  path: path
+								  mode: mode];
+
+		closable = YES;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -543,7 +543,9 @@ static int parse_mode(const char *mode)
 - initWithPath: (OFString*)path
 	  mode: (OFString*)mode
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 

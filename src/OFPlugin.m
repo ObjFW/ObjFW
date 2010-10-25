@@ -59,9 +59,12 @@
 
 - init
 {
-	if (isa == [OFPlugin class])
-		@throw [OFNotImplementedException newWithClass: isa
+	if (isa == [OFPlugin class]) {
+		Class c = isa;
+		[self release];
+		@throw [OFNotImplementedException newWithClass: c
 						      selector: _cmd];
+	}
 
 	return [super init];
 }

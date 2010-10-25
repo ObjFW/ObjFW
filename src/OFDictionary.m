@@ -67,84 +67,64 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 {
 	self = [super init];
 
-	size = 1;
-
 	@try {
 		data = [self allocMemoryWithSize: sizeof(BUCKET*)];
-	} @catch (OFException *e) {
-		/*
-		 * We can't use [super dealloc] on OS X here. Compiler bug?
-		 * Anyway, set size to 0 so that [self dealloc] works.
-		 */
-		size = 0;
-		[self dealloc];
+		size = 1;
+		data[0] = NULL;
+	} @catch (id e) {
+		[self release];
 		@throw e;
 	}
-	data[0] = NULL;
 
 	return self;
 }
 
 - initWithDictionary: (OFDictionary*)dict
 {
-	uint32_t i;
-
 	self = [super init];
 
-	if (dict == nil) {
-		Class c = isa;
-		size = 0;
-		[self dealloc];
-		@throw [OFInvalidArgumentException newWithClass: c
-						       selector: _cmd];
-	}
-
 	@try {
+		uint32_t i;
+
+		if (dict == nil)
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
 		data = [self allocMemoryForNItems: dict->size
 					 withSize: sizeof(BUCKET*)];
 
 		for (i = 0; i < dict->size; i++)
 			data[i] = NULL;
-	} @catch (OFException *e) {
-		/*
-		 * We can't use [super dealloc] on OS X here. Compiler bug?
-		 * Anyway, we didn't do anything yet anyway, so [self dealloc]
-		 * works.
-		 */
-		[self dealloc];
-		@throw e;
-	}
 
-	size = dict->size;
-	count = dict->count;
+		size = dict->size;
+		count = dict->count;
 
-	for (i = 0; i < size; i++) {
-		id <OFCopying> key;
-		BUCKET *b;
+		for (i = 0; i < size; i++) {
+			id <OFCopying> key;
+			BUCKET *b;
 
-		if (dict->data[i] == NULL || dict->data[i] == DELETED)
-			continue;
+			if (dict->data[i] == NULL || dict->data[i] == DELETED)
+				continue;
 
-		@try {
 			b = [self allocMemoryWithSize: sizeof(BUCKET)];
 			key = [dict->data[i]->key copy];
-		} @catch (OFException *e) {
-			[self dealloc];
-			@throw e;
-		}
 
-		@try {
-			[dict->data[i]->object retain];
-		} @catch (OFException *e) {
-			[(id)key release];
-			[self dealloc];
-			@throw e;
-		}
+			@try {
+				[dict->data[i]->object retain];
+			} @catch (id e) {
+				[(id)key release];
+				@throw e;
+			}
 
-		b->key = key;
-		b->object = dict->data[i]->object;
-		b->hash = dict->data[i]->hash;
-		data[i] = b;
+			b->key = key;
+			b->object = dict->data[i]->object;
+			b->hash = dict->data[i]->hash;
+
+			data[i] = b;
+		}
+	} @catch (id e) {
+		[self release];
+		@throw e;
 	}
 
 	return self;
@@ -153,51 +133,40 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 - initWithObject: (id)obj
 	  forKey: (id <OFCopying>)key
 {
-	uint32_t i;
-	BUCKET *b;
-
-	self = [self init];
+	self = [super init];
 
 	@try {
+		uint32_t i;
+		BUCKET *b;
+
 		data = [self allocMemoryForNItems: 2
 					 withSize: sizeof(BUCKET*)];
 
 		size = 2;
 		for (i = 0; i < size; i++)
 			data[i] = NULL;
-	} @catch (OFException *e) {
-		/*
-		 * We can't use [super dealloc] on OS X here. Compiler bug?
-		 * Anyway, we didn't do anything yet anyway, so [self dealloc]
-		 * works.
-		 */
-		[self dealloc];
-		@throw e;
-	}
 
-	i = [(id)key hash] & 1;
-
-	@try {
+		i = [(id)key hash] & 1;
 		b = [self allocMemoryWithSize: sizeof(BUCKET)];
 		key = [key copy];
-	} @catch (OFException *e) {
-		[self dealloc];
+
+		@try {
+			[obj retain];
+		} @catch (id e) {
+			[(id)key release];
+			@throw e;
+		}
+
+		b->key = key;
+		b->object = obj;
+		b->hash = [(id)key hash];
+
+		data[i] = b;
+		count = 1;
+	} @catch (id e) {
+		[self release];
 		@throw e;
 	}
-
-	@try {
-		[obj retain];
-	} @catch (OFException *e) {
-		[(id)key release];
-		[self dealloc];
-		@throw e;
-	}
-
-	b->key = key;
-	b->object = obj;
-	b->hash = [(id)key hash];
-	data[i] = b;
-	count = 1;
 
 	return self;
 }
@@ -205,12 +174,11 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 - initWithObjects: (OFArray*)objs
 	  forKeys: (OFArray*)keys
 {
-	id *objs_carray, *keys_carray;
-	size_t i;
-
 	self = [super init];
 
 	@try {
+		id *objs_carray, *keys_carray;
+		size_t i, nsize;
 		uint32_t j;
 
 		keys_carray = [keys cArray];
@@ -220,114 +188,102 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 		if (count > UINT32_MAX)
 			@throw [OFOutOfRangeException newWithClass: isa];
 
-		for (size = 1; size < count; size <<= 1);
+		for (nsize = 1; nsize < count; nsize <<= 1);
 
-		if (size == 0)
+		if (nsize == 0)
 			@throw [OFOutOfRangeException newWithClass: isa];
 
-		data = [self allocMemoryForNItems: size
+		data = [self allocMemoryForNItems: nsize
 					 withSize: sizeof(BUCKET*)];
 
-		for (j = 0; j < size; j++)
+		for (j = 0; j < nsize; j++)
 			data[j] = NULL;
-	} @catch (OFException *e) {
-		/*
-		 * We can't use [super dealloc] on OS X here. Compiler bug?
-		 * Anyway, set size to 0 so that [self dealloc] works.
-		 */
-		size = 0;
-		[self dealloc];
-		@throw e;
-	}
 
-	for (i = 0; i < count; i++) {
-		uint32_t j, hash, last;
+		size = nsize;
 
-		hash = [keys_carray[i] hash];
-		last = size;
+		for (i = 0; i < count; i++) {
+			uint32_t hash, last;
 
-		for (j = hash & (size - 1); j < last && data[j] != NULL; j++)
-			if ([(id)data[j]->key isEqual: keys_carray[i]])
-				break;
-
-		/* In case the last bucket is already used */
-		if (j >= last) {
-			last = hash & (size - 1);
-
-			for (j = 0; j < last && data[j] != NULL; j++)
-				if ([(id)data[j]->key isEqual: keys_carray[i]])
-					break;
-		}
-
-		/* Key not in dictionary */
-		if (j >= last || data[j] == NULL ||
-		    ![(id)data[j]->key isEqual: keys_carray[i]]) {
-			BUCKET *b;
-			id <OFCopying> key;
-
+			hash = [keys_carray[i] hash];
 			last = size;
 
-			j = hash & (size - 1);
-			for (; j < last && data[j] != NULL; j++);
+			for (j = hash & (size - 1); j < last && data[j] != NULL;
+			    j++)
+				if ([(id)data[j]->key isEqual: keys_carray[i]])
+					break;
 
 			/* In case the last bucket is already used */
 			if (j >= last) {
 				last = hash & (size - 1);
 
-				for (j = 0; j < last && data[j] != NULL; j++);
+				for (j = 0; j < last && data[j] != NULL; j++)
+					if ([(id)data[j]->key
+					    isEqual: keys_carray[i]])
+						break;
 			}
 
-			if (j >= last) {
-				Class c = isa;
-				[self dealloc];
-				@throw [OFOutOfRangeException newWithClass: c];
-			}
+			/* Key not in dictionary */
+			if (j >= last || data[j] == NULL ||
+			    ![(id)data[j]->key isEqual: keys_carray[i]]) {
+				BUCKET *b;
+				id <OFCopying> key;
 
-			@try {
+				last = size;
+
+				j = hash & (size - 1);
+				for (; j < last && data[j] != NULL; j++);
+
+				/* In case the last bucket is already used */
+				if (j >= last) {
+					last = hash & (size - 1);
+
+					for (j = 0; j < last && data[j] != NULL;
+					    j++);
+				}
+
+				if (j >= last)
+					@throw [OFOutOfRangeException
+					    newWithClass: isa];
+
 				b = [self allocMemoryWithSize: sizeof(BUCKET)];
 				key = [keys_carray[i] copy];
-			} @catch (OFException *e) {
-				[self dealloc];
-				@throw e;
+
+				@try {
+					[objs_carray[i] retain];
+				} @catch (id e) {
+					[(id)key release];
+					@throw e;
+				}
+
+				b->key = key;
+				b->object = objs_carray[i];
+				b->hash = hash;
+
+				data[j] = b;
+
+				continue;
 			}
+
+			/*
+			 * The key is already in the dictionary. However, we
+			 * just replace it so that the programmer gets the same
+			 * behavior as if he'd call setObject:forKey: for each
+			 * key/object pair.
+			 */
+			[objs_carray[i] retain];
 
 			@try {
-				[objs_carray[i] retain];
-			} @catch (OFException *e) {
-				[(id)key release];
-				[self dealloc];
+				[data[j]->object release];
+			} @catch (id e) {
+				[objs_carray[i] release];
 				@throw e;
 			}
 
-			b->key = key;
-			b->object = objs_carray[i];
-			b->hash = hash;
-			data[j] = b;
-
-			continue;
+			data[j]->object = objs_carray[i];
 		}
-
-		/*
-		 * They key is already in the dictionary. However, we just
-		 * replace it so that the programmer gets the same behavior
-		 * as if he'd call setObject:forKey: for each key/object pair.
-		 */
-		@try {
-			[objs_carray[i] retain];
-		} @catch (OFException *e) {
-			[self dealloc];
-			@throw e;
-		}
-
-		@try {
-			[data[j]->object release];
-		} @catch (OFException *e) {
-			[objs_carray[i] release];
-			[self dealloc];
-			@throw e;
-		}
-
-		data[j]->object = objs_carray[i];
+	} @catch (id e) {
+		[self release];
+		@throw e;
 	}
 
 	return self;
@@ -349,183 +305,152 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 - initWithKey: (id <OFCopying>)key
       argList: (va_list)args
 {
-	BUCKET *b;
-	id obj;
-	size_t i;
-	uint32_t j, hash;
-	va_list args2;
-
 	self = [super init];
 
-	count = 1;
-	for (va_copy(args2, args); va_arg(args2, id) != nil; count++);
-	count >>= 1;
-
-	if (count > UINT32_MAX) {
-		Class c = isa;
-		[self dealloc];
-		@throw [OFOutOfRangeException newWithClass: c];
-	}
-
-	for (size = 1; size < count; size <<= 1);
-
-	if (size == 0) {
-		Class c = isa;
-		[self dealloc];
-		@throw [OFOutOfRangeException newWithClass: c];
-	}
-
 	@try {
-		data = [self allocMemoryForNItems: size
+		id obj;
+		size_t i, nsize;
+		uint32_t j, hash;
+		va_list args2;
+		BUCKET *b;
+
+		va_copy(args2, args);
+
+		if (key == nil)
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
+		if ((obj = va_arg(args, id)) == nil)
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
+		count = 1;
+		for (; va_arg(args2, id) != nil; count++);
+		count >>= 1;
+
+		if (count > UINT32_MAX)
+			@throw [OFOutOfRangeException newWithClass: isa];
+
+		for (nsize = 1; nsize < count; nsize <<= 1);
+
+		if (nsize == 0)
+			@throw [OFOutOfRangeException newWithClass: isa];
+
+		data = [self allocMemoryForNItems: nsize
 					 withSize: sizeof(BUCKET*)];
 
-		for (j = 0; j < size; j++)
+		for (j = 0; j < nsize; j++)
 			data[j] = NULL;
-	} @catch (OFException *e) {
-		/*
-		 * We can't use [super dealloc] on OS X here. Compiler bug?
-		 * Anyway, set size to 0 so that [self dealloc] works.
-		 *                                                    */
-		size = 0;
-		[self dealloc];
-		@throw e;
-	}
 
-	if (key == nil) {
-		Class c = isa;
-		size = 0;
-		[self dealloc];
-		@throw [OFInvalidArgumentException newWithClass: c
-						       selector: _cmd];
-	}
+		size = nsize;
 
-	if ((obj = va_arg(args, id)) == nil) {
-		Class c = isa;
-		[self dealloc];
-		@throw [OFInvalidArgumentException newWithClass: c
-						       selector: _cmd];
-	}
+		/* Add first key / object pair */
+		hash = [(id)key hash];
+		j = hash & (size - 1);
 
-	/* Add first key / object pair */
-	hash = [(id)key hash];
-	j = hash & (size - 1);
-
-	@try {
 		b = [self allocMemoryWithSize: sizeof(BUCKET)];
 		key = [key copy];
-	} @catch (OFException *e) {
-		[self dealloc];
-		@throw e;
-	}
 
-	@try {
-		[obj retain];
-	} @catch (OFException *e) {
-		[(id)key release];
-		[self dealloc];
-		@throw e;
-	}
-
-	b->key = key;
-	b->object = obj;
-	b->hash = hash;
-	data[j] = b;
-
-	for (i = 1; i < count; i++) {
-		uint32_t last;
-
-		key = va_arg(args, id <OFCopying>);
-		obj = va_arg(args, id);
-
-		if (key == nil || obj == nil) {
-			Class c = isa;
-			[self dealloc];
-			@throw [OFInvalidArgumentException newWithClass: c
-							       selector: _cmd];
+		@try {
+			[obj retain];
+		} @catch (id e) {
+			[(id)key release];
+			@throw e;
 		}
 
-		hash = [(id)key hash];
-		last = size;
+		b->key = key;
+		b->object = obj;
+		b->hash = hash;
 
-		for (j = hash & (size - 1); j < last && data[j] != NULL; j++)
-			if ([(id)data[j]->key isEqual: key])
-				break;
+		data[j] = b;
 
-		/* In case the last bucket is already used */
-		if (j >= last) {
-			last = hash & (size - 1);
+		for (i = 1; i < count; i++) {
+			uint32_t last;
 
-			for (j = 0; j < last && data[j] != NULL; j++)
-				if ([(id)data[j]->key isEqual: key])
-					break;
-		}
+			key = va_arg(args, id <OFCopying>);
+			obj = va_arg(args, id);
 
-		/* Key not in dictionary */
-		if (j >= last || data[j] == NULL ||
-		    ![(id)data[j]->key isEqual: key]) {
+			if (key == nil || obj == nil)
+				@throw [OFInvalidArgumentException
+				    newWithClass: isa
+					selector: _cmd];
+
+			hash = [(id)key hash];
 			last = size;
 
-			j = hash & (size - 1);
-			for (; j < last && data[j] != NULL; j++);
+			for (j = hash & (size - 1); j < last && data[j] != NULL;
+			    j++)
+				if ([(id)data[j]->key isEqual: key])
+					break;
 
 			/* In case the last bucket is already used */
 			if (j >= last) {
 				last = hash & (size - 1);
 
-				for (j = 0; j < last && data[j] != NULL; j++);
+				for (j = 0; j < last && data[j] != NULL; j++)
+					if ([(id)data[j]->key isEqual: key])
+						break;
 			}
 
-			if (j >= last) {
-				Class c = isa;
-				[self dealloc];
-				@throw [OFOutOfRangeException newWithClass: c];
-			}
+			/* Key not in dictionary */
+			if (j >= last || data[j] == NULL ||
+			    ![(id)data[j]->key isEqual: key]) {
+				last = size;
 
-			@try {
+				j = hash & (size - 1);
+				for (; j < last && data[j] != NULL; j++);
+
+				/* In case the last bucket is already used */
+				if (j >= last) {
+					last = hash & (size - 1);
+
+					for (j = 0; j < last && data[j] != NULL;
+					    j++);
+				}
+
+				if (j >= last)
+					@throw [OFOutOfRangeException
+					    newWithClass: isa];
+
 				b = [self allocMemoryWithSize: sizeof(BUCKET)];
 				key = [key copy];
-			} @catch (OFException *e) {
-				[self dealloc];
-				@throw e;
+
+				@try {
+					[obj retain];
+				} @catch (id e) {
+					[(id)key release];
+					@throw e;
+				}
+
+				b->key = key;
+				b->object = obj;
+				b->hash = hash;
+
+				data[j] = b;
+
+				continue;
 			}
+
+			/*
+			 * The key is already in the dictionary. However, we
+			 * just replace it so that the programmer gets the same
+			 * behavior as if he'd call setObject:forKey: for each
+			 * key/object pair.
+			 */
+			[obj retain];
 
 			@try {
-				[obj retain];
-			} @catch (OFException *e) {
-				[(id)key release];
-				[self dealloc];
+				[data[j]->object release];
+			} @catch (id e) {
+				[obj release];
 				@throw e;
 			}
 
-			b->key = key;
-			b->object = obj;
-			b->hash = hash;
-			data[j] = b;
-
-			continue;
+			data[j]->object = obj;
 		}
-
-		/*
-		 * They key is already in the dictionary. However, we just
-		 * replace it so that the programmer gets the same behavior
-		 * as if he'd call setObject:forKey: for each key/object pair.
-		 */
-		@try {
-			[obj retain];
-		} @catch (OFException *e) {
-			[self dealloc];
-			@throw e;
-		}
-
-		@try {
-			[data[j]->object release];
-		} @catch (OFException *e) {
-			[obj release];
-			[self dealloc];
-			@throw e;
-		}
-
-		data[j]->object = obj;
+	} @catch (id e) {
+		[self release];
+		@throw e;
 	}
 
 	return self;

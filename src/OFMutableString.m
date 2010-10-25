@@ -96,7 +96,7 @@
 
 	@try {
 		nstr = [self allocMemoryWithSize: nlen + 1];
-	} @catch (OFException *e) {
+	} @catch (id e) {
 		[self freeMemory: ustr];
 		@throw e;
 	}
@@ -472,7 +472,7 @@
 			tmp = [self resizeMemory: tmp
 					  toSize: tmp_len + i - last +
 						  repl_len + 1];
-		} @catch (OFException *e) {
+		} @catch (id e) {
 			[self freeMemory: tmp];
 			@throw e;
 		}
@@ -486,7 +486,7 @@
 	@try {
 		tmp = [self resizeMemory: tmp
 				  toSize: tmp_len + length - last + 1];
-	} @catch (OFException *e) {
+	} @catch (id e) {
 		[self freeMemory: tmp];
 		@throw e;
 	}

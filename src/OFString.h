@@ -136,13 +136,6 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 		  encoding: (enum of_string_encoding)encoding;
 
 /**
- * Initializes an already allocated OFString.
- *
- * \return An initialized OFString
- */
-- init;
-
-/**
  * Initializes an already allocated OFString from a UTF-8 encoded C string.
  *
  * \param str A UTF-8 encoded C string to initialize the OFString with

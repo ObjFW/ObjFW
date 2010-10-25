@@ -91,41 +91,46 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 - init
 {
-	OFAutoreleasePool *pool;
-	char **env;
-
 	self = [super init];
 
-	environment = [[OFMutableDictionary alloc] init];
+	@try {
+		OFAutoreleasePool *pool;
+		char **env;
 
-	atexit(atexit_handler);
+		environment = [[OFMutableDictionary alloc] init];
+
+		atexit(atexit_handler);
 #ifdef __MACH__
-	env = *_NSGetEnviron();
+		env = *_NSGetEnviron();
 #else
-	env = environ;
+		env = environ;
 #endif
 
-	pool = [[OFAutoreleasePool alloc] init];
-	for (; *env != NULL; env++) {
-		OFString *key;
-		OFString *value;
-		char *sep;
+		pool = [[OFAutoreleasePool alloc] init];
+		for (; *env != NULL; env++) {
+			OFString *key;
+			OFString *value;
+			char *sep;
 
-		if ((sep = strchr(*env, '=')) == NULL) {
-			fprintf(stderr, "Warning: Invalid environment "
-			    "variable: %s\n", *env);
-			continue;
+			if ((sep = strchr(*env, '=')) == NULL) {
+				fprintf(stderr, "Warning: Invalid environment "
+					       "variable: %s\n", *env);
+				continue;
+			}
+
+			key = [OFString stringWithCString: *env
+						   length: sep - *env];
+			value = [OFString stringWithCString: sep + 1];
+			[environment setObject: value
+					forKey: key];
+
+			[pool releaseObjects];
 		}
-
-		key = [OFString stringWithCString: *env
-					   length: sep - *env];
-		value = [OFString stringWithCString: sep + 1];
-		[environment setObject: value
-				forKey: key];
-
-		[pool releaseObjects];
+		[pool release];
+	} @catch (id e) {
+		[self release];
+		@throw e;
 	}
-	[pool release];
 
 	return self;
 }

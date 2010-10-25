@@ -151,7 +151,9 @@
 
 - init
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -253,7 +255,9 @@
 
 - initWithClass: (Class)class_
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -297,7 +301,9 @@
 
 - initWithClass: (Class)class_
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -352,7 +358,9 @@
 
 - initWithClass: (Class)class_
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -449,7 +457,9 @@
 
 - initWithClass: (Class)class_
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -459,9 +469,14 @@
 {
 	self = [super initWithClass: class_];
 
-	path  = [path_ copy];
-	mode  = [mode_ copy];
-	errNo = GET_ERRNO;
+	@try {
+		path  = [path_ copy];
+		mode  = [mode_ copy];
+		errNo = GET_ERRNO;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -512,7 +527,9 @@
 
 - initWithClass: (Class)class_
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -608,7 +625,9 @@
 
 - initWithClass: (Class)class_
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -617,8 +636,13 @@
 {
 	self = [super initWithClass: class_];
 
-	path  = [path_ copy];
-	errNo = GET_ERRNO;
+	@try {
+		path  = [path_ copy];
+		errNo = GET_ERRNO;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -666,7 +690,9 @@
 
 - initWithClass: (Class)class_
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -676,9 +702,14 @@
 {
 	self = [super initWithClass: class_];
 
-	path  = [path_ copy];
-	mode  = mode_;
-	errNo = GET_ERRNO;
+	@try {
+		path  = [path_ copy];
+		mode  = mode_;
+		errNo = GET_ERRNO;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -733,7 +764,9 @@
 
 - initWithClass: (Class)class_
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -744,10 +777,15 @@
 {
 	self = [super initWithClass: class_];
 
-	path  = [path_ copy];
-	owner = owner_;
-	group = group_;
-	errNo = GET_ERRNO;
+	@try {
+		path  = [path_ copy];
+		owner = owner_;
+		group = group_;
+		errNo = GET_ERRNO;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -805,7 +843,9 @@
 
 - initWithClass: (Class)class_
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -815,9 +855,14 @@
 {
 	self = [super initWithClass: class_];
 
-	sourcePath = [src copy];
-	destinationPath = [dst copy];
-	errNo = GET_ERRNO;
+	@try {
+		sourcePath = [src copy];
+		destinationPath = [dst copy];
+		errNo = GET_ERRNO;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -871,7 +916,9 @@
 
 - initWithClass: (Class)class_
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -881,9 +928,14 @@
 {
 	self = [super initWithClass: class_];
 
-	sourcePath = [src copy];
-	destinationPath = [dst copy];
-	errNo = GET_ERRNO;
+	@try {
+		sourcePath = [src copy];
+		destinationPath = [dst copy];
+		errNo = GET_ERRNO;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -935,7 +987,9 @@
 
 - initWithClass: (Class)class_
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -944,8 +998,13 @@
 {
 	self = [super initWithClass: class_];
 
-	path  = [path_ copy];
-	errNo = GET_ERRNO;
+	@try {
+		path  = [path_ copy];
+		errNo = GET_ERRNO;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -990,7 +1049,9 @@
 
 - initWithClass: (Class)class_
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -999,8 +1060,13 @@
 {
 	self = [super initWithClass: class_];
 
-	path  = [path_ copy];
-	errNo = GET_ERRNO;
+	@try {
+		path  = [path_ copy];
+		errNo = GET_ERRNO;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -1048,7 +1114,9 @@
 
 - initWithClass: (Class)class_
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -1114,7 +1182,9 @@
 
 - initWithClass: (Class)class_
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -1235,9 +1305,14 @@
 {
 	self = [super initWithClass: class_];
 
-	node	= [node_ copy];
-	service = [service_ copy];
-	errNo	= GET_AT_ERRNO;
+	@try {
+		node	= [node_ copy];
+		service = [service_ copy];
+		errNo	= GET_AT_ERRNO;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -1300,7 +1375,9 @@
 
 - initWithClass: (Class)class_
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -1310,9 +1387,14 @@
 {
 	self = [super initWithClass: class_];
 
-	node	= [node_ copy];
-	service	= [service_ copy];
-	errNo	= GET_SOCK_ERRNO;
+	@try {
+		node	= [node_ copy];
+		service	= [service_ copy];
+		errNo	= GET_SOCK_ERRNO;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -1368,7 +1450,9 @@
 
 - initWithClass: (Class)class_
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -1379,10 +1463,15 @@
 {
 	self = [super initWithClass: class_];
 
-	node	= [node_ copy];
-	service	= [service_ copy];
-	family	= family_;
-	errNo	= GET_SOCK_ERRNO;
+	@try {
+		node	= [node_ copy];
+		service	= [service_ copy];
+		family	= family_;
+		errNo	= GET_SOCK_ERRNO;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -1439,7 +1528,9 @@
 
 - initWithClass: (Class)class_
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -1603,7 +1694,9 @@
 
 - initWithClass: (Class)class_
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -1612,7 +1705,12 @@
 {
 	self = [super initWithClass: class_];
 
-	ns = [ns_ copy];
+	@try {
+		ns = [ns_ copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -1622,7 +1720,12 @@
 {
 	self = [super initWithClass: class_];
 
-	prefix = [prefix_ copy];
+	@try {
+		prefix = [prefix_ copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }

@@ -144,8 +144,8 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		    @"xmlns", @"http://www.w3.org/2000/xmlns/", nil];
 		[namespaces addObject: dict];
 		[pool release];
-	} @catch (OFException *e) {
-		[self dealloc];
+	} @catch (id e) {
+		[self release];
 		@throw e;
 	}
 

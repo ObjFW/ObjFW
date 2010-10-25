@@ -27,7 +27,12 @@
 {
 	self = [super init];
 
-	stack = [[OFMutableArray alloc] init];
+	@try {
+		stack = [[OFMutableArray alloc] init];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }

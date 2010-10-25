@@ -27,25 +27,27 @@
 
 - init
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
 - initWithItemSize: (size_t)is
 {
-	Class c;
-
 	self = [super init];
 
-	if (is == 0) {
-		c = isa;
-		[super dealloc];
-		@throw [OFInvalidArgumentException newWithClass: c
-						       selector: _cmd];
-	}
+	@try {
+		if (is == 0)
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
 
-	data = NULL;
-	itemSize = is;
+		data = NULL;
+		itemSize = is;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }

@@ -31,9 +31,14 @@
 {
 	self = [super init];
 
-	name = [name_ copy];
-	ns = [ns_ copy];
-	stringValue = [value copy];
+	@try {
+		name = [name_ copy];
+		ns = [ns_ copy];
+		stringValue = [value copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }

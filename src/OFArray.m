@@ -61,12 +61,8 @@
 
 	@try {
 		array = [[OFDataArray alloc] initWithItemSize: sizeof(id)];
-	} @catch (OFException *e) {
-		/*
-		 * We can't use [super dealloc] on OS X here. Compiler bug?
-		 * [self dealloc] will do here as we check for nil in dealloc.
-		 */
-		[self dealloc];
+	} @catch (id e) {
+		[self release];
 		@throw e;
 	}
 
@@ -79,12 +75,11 @@
 
 	@try {
 		[array addItem: &obj];
-	} @catch (OFException *e) {
-		[self dealloc];
+		[obj retain];
+	} @catch (id e) {
+		[self release];
 		@throw e;
 	}
-
-	[obj retain];
 
 	return self;
 }
@@ -105,18 +100,18 @@
 - initWithObject: (id)first
 	 argList: (va_list)args
 {
-	id obj;
-
 	self = [self init];
 
 	@try {
+		id obj;
+
 		[array addItem: &first];
 		while ((obj = va_arg(args, id)) != nil) {
 			[array addItem: &obj];
 			[obj retain];
 		}
-	} @catch (OFException *e) {
-		[self dealloc];
+	} @catch (id e) {
+		[self release];
 		@throw e;
 	}
 
@@ -125,26 +120,26 @@
 
 - initWithCArray: (id*)objs
 {
-	id *obj;
-	size_t count;
-
 	self = [self init];
 
-	count = 0;
-
-	for (obj = objs; *obj != nil; obj++) {
-		[*obj retain];
-		count++;
-	}
-
 	@try {
+		id *obj;
+		size_t count = 0;
+
+		for (obj = objs; *obj != nil; obj++) {
+			[*obj retain];
+			count++;
+		}
+
 		[array addNItems: count
 		      fromCArray: objs];
-	} @catch (OFException *e) {
+	} @catch (id e) {
+		id *obj;
+
 		for (obj = objs; *obj != nil; obj++)
 			[*obj release];
 
-		[self dealloc];
+		[self release];
 		@throw e;
 	}
 
@@ -154,21 +149,23 @@
 - initWithCArray: (id*)objs
 	  length: (size_t)len
 {
-	size_t i;
-
 	self = [self init];
 
-	for (i = 0; i < len; i++)
-		[objs[i] retain];
-
 	@try {
+		size_t i;
+
+		for (i = 0; i < len; i++)
+			[objs[i] retain];
+
 		[array addNItems: len
 		      fromCArray: objs];
-	} @catch (OFException *e) {
+	} @catch (id e) {
+		size_t i;
+
 		for (i = 0; i < len; i++)
 			[objs[i] release];
 
-		[self dealloc];
+		[self release];
 		@throw e;
 	}
 

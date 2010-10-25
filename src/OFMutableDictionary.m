@@ -141,13 +141,14 @@
 
 		@try {
 			key = [key copy];
-		} @catch (OFException *e) {
+		} @catch (id e) {
 			[self freeMemory: b];
+			@throw e;
 		}
 
 		@try {
 			[obj retain];
-		} @catch (OFException *e) {
+		} @catch (id e) {
 			[self freeMemory: b];
 			[(id)key release];
 			@throw e;

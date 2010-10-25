@@ -30,11 +30,14 @@
 @implementation OFStream
 - init
 {
-	self = [super init];
-
-	if (isa == [OFStream class])
-		@throw [OFNotImplementedException newWithClass: isa
+	if (isa == [OFStream class]) {
+		Class c = isa;
+		[self release];
+		@throw [OFNotImplementedException newWithClass: c
 						      selector: _cmd];
+	}
+
+	self = [super init];
 
 	cache = NULL;
 	wBuffer = NULL;
@@ -316,7 +319,7 @@
 						    stringWithCString: ret_c
 							     encoding: encoding
 							       length: ret_len];
-					} @catch (OFException *e) {
+					} @catch (id e) {
 						/*
 						 * Append data to cache to
 						 * prevent loss of data due to

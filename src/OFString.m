@@ -302,15 +302,6 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 					    encoding: encoding] autorelease];
 }
 
-- init
-{
-	[super init];
-
-	string = NULL;
-
-	return self;
-}
-
 - initWithCString: (const char*)str
 {
 	return [self initWithCString: str
@@ -330,141 +321,108 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	 encoding: (enum of_string_encoding)encoding
 	   length: (size_t)len
 {
-	size_t i, j;
-
 	self = [super init];
 
-	length = len;
-
 	@try {
-		string = [self allocMemoryWithSize: length + 1];
-	} @catch (OFException *e) {
-		/*
-		 * We can't use [super dealloc] on OS X here.
-		 * Compiler bug? Anyway, [self dealloc] will do here as we
-		 * don't reimplement dealloc.
-		 */
-		[self dealloc];
-		@throw e;
-	}
+		size_t i, j;
+		const uint16_t *table;
 
-	switch (encoding) {
-	case OF_STRING_ENCODING_UTF_8:
-		switch (of_string_check_utf8(str, length)) {
-		case 1:
-			isUTF8 = YES;
-			break;
-		case -1:;
-			/*
-			 * We can't use [super dealloc] on OS X here.
-			 * Compiler bug? Anyway, [self dealloc] will do here as
-			 * we don't reimplement dealloc.
-			 */
-			Class c = isa;
-			[self dealloc];
-			@throw [OFInvalidEncodingException newWithClass: c];
+		string = [self allocMemoryWithSize: len + 1];
+		length = len;
+
+		if (encoding == OF_STRING_ENCODING_UTF_8) {
+			switch (of_string_check_utf8(str, length)) {
+			case 1:
+				isUTF8 = YES;
+				break;
+			case -1:
+				@throw [OFInvalidEncodingException
+				    newWithClass: isa];
+			}
+
+			memcpy(string, str, length);
+			string[length] = 0;
+
+			return self;
 		}
 
-		memcpy(string, str, length);
-		string[length] = 0;
-
-		break;
-	case OF_STRING_ENCODING_ISO_8859_1:
-	case OF_STRING_ENCODING_ISO_8859_15:
-	case OF_STRING_ENCODING_WINDOWS_1252:
-		for (i = j = 0; i < len; i++) {
-			if (!(str[i] & 0x80))
-				string[j++] = str[i];
-			else {
+		if (encoding == OF_STRING_ENCODING_ISO_8859_1) {
+			for (i = j = 0; i < len; i++) {
 				char buf[4];
-				of_unichar_t chr;
-				size_t chr_bytes;
+				size_t bytes;
 
-				switch (encoding) {
-				case OF_STRING_ENCODING_ISO_8859_1:
-					chr = (uint8_t)str[i];
-					break;
-				case OF_STRING_ENCODING_ISO_8859_15:
-					chr = of_iso_8859_15[(uint8_t)str[i]];
-					break;
-				case OF_STRING_ENCODING_WINDOWS_1252:
-					chr = of_windows_1252[(uint8_t)str[i]];
-					break;
-				default:;
-					/*
-					 * We can't use [super dealloc] on OS X
-					 * here. Compiler bug? Anyway,
-					 * [self dealloc] will do here as we
-					 * don't reimplement dealloc.
-					 */
-					Class c = isa;
-					[self dealloc];
-					@throw [OFInvalidEncodingException
-					    newWithClass: c];
-				}
-
-				if (chr == 0xFFFD) {
-					/*
-					 * We can't use [super dealloc] on OS X
-					 * here. Compiler bug? Anyway,
-					 * [self dealloc] will do here as we
-					 * don't reimplement dealloc.
-					 */
-					Class c = isa;
-					[self dealloc];
-					@throw [OFInvalidEncodingException
-					    newWithClass: c];
+				if (!(str[i] & 0x80)) {
+					string[j++] = str[i];
+					continue;
 				}
 
 				isUTF8 = YES;
-				chr_bytes = of_string_unicode_to_utf8(chr, buf);
+				bytes = of_string_unicode_to_utf8(
+				    (uint8_t)str[i], buf);
 
-				if (chr_bytes == 0) {
-					/*
-					 * We can't use [super dealloc] on OS X
-					 * here. Compiler bug? Anyway,
-					 * [self dealloc] will do here as we
-					 * don't reimplement dealloc.
-					 */
-					Class c = isa;
-					[self dealloc];
+				if (bytes == 0)
 					@throw [OFInvalidEncodingException
-					    newWithClass: c];
-				}
+					    newWithClass: isa];
 
-				length += chr_bytes - 1;
-				@try {
-					string = [self resizeMemory: string
-							     toSize: length +
-								     1];
-				} @catch (OFException *e) {
-					/*
-					 * We can't use [super dealloc] on OS X
-					 * here. Compiler bug? Anyway,
-					 * [self dealloc] will do here as we
-					 * don't reimplement dealloc.
-					 */
-					[self dealloc];
-					@throw e;
-				}
+				length += bytes - 1;
+				string = [self resizeMemory: string
+						     toSize: length + 1];
 
-				memcpy(string + j, buf, chr_bytes);
-				j += chr_bytes;
+				memcpy(string + j, buf, bytes);
+				j += bytes;
 			}
+
+			string[length] = 0;
+
+			return self;
+		}
+
+		switch (encoding) {
+		case OF_STRING_ENCODING_ISO_8859_15:
+			table = of_iso_8859_15;
+			break;
+		case OF_STRING_ENCODING_WINDOWS_1252:
+			table = of_windows_1252;
+			break;
+		default:
+			@throw [OFInvalidEncodingException newWithClass: isa];
+		}
+
+		for (i = j = 0; i < len; i++) {
+			char buf[4];
+			of_unichar_t chr;
+			size_t chr_bytes;
+
+			if (!(str[i] & 0x80)) {
+				string[j++] = str[i];
+				continue;
+			}
+
+			chr = table[(uint8_t)str[i]];
+
+			if (chr == 0xFFFD)
+				@throw [OFInvalidEncodingException
+				    newWithClass: isa];
+
+			isUTF8 = YES;
+			chr_bytes = of_string_unicode_to_utf8(chr, buf);
+
+			if (chr_bytes == 0)
+				@throw [OFInvalidEncodingException
+				    newWithClass: isa];
+
+			length += chr_bytes - 1;
+			string = [self resizeMemory: string
+					     toSize: length + 1];
+
+			memcpy(string + j, buf, chr_bytes);
+			j += chr_bytes;
 		}
 
 		string[length] = 0;
-
-		break;
-	default:;
-		/*
-		 * We can't use [super dealloc] on OS X here.
-		 * Compiler bug? Anyway, [self dealloc] will do here as we
-		 * don't reimplement dealloc.
-		 */
-		Class c = isa;
-		[self dealloc];
-		@throw [OFInvalidEncodingException newWithClass: c];
+	} @catch (id e) {
+		[self release];
+		@throw e;
 	}
 
 	return self;
@@ -494,44 +452,41 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 - initWithFormat: (OFString*)fmt
        arguments: (va_list)args
 {
-	int t;
-
 	self = [super init];
 
-	if (fmt == nil) {
-		Class c = isa;
-		[super dealloc];
-		@throw [OFInvalidArgumentException newWithClass: c
-						       selector: _cmd];
-	}
-
-	if ((t = vasprintf(&string, [fmt cString], args)) == -1) {
-		Class c = isa;
-		[super dealloc];
-
-		/*
-		 * This is only the most likely error to happen. Unfortunately,
-		 * there is no good way to check what really happened.
-		 */
-		@throw [OFOutOfMemoryException newWithClass: c];
-	}
-	length = t;
-
-	switch (of_string_check_utf8(string, length)) {
-	case 1:
-		isUTF8 = YES;
-		break;
-	case -1:;
-		Class c = isa;
-		free(string);
-		[super dealloc];
-		@throw [OFInvalidEncodingException newWithClass: c];
-	}
-
 	@try {
-		[self addMemoryToPool: string];
-	} @catch (OFException *e) {
-		free(string);
+		int t;
+
+		if (fmt == nil)
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
+		if ((t = vasprintf(&string, [fmt cString], args)) == -1)
+			/*
+			 * This is only the most likely error to happen.
+			 * Unfortunately, there is no good way to check what
+			 * really happened.
+			 */
+			@throw [OFOutOfMemoryException newWithClass: isa];
+
+		@try {
+			length = t;
+
+			switch (of_string_check_utf8(string, length)) {
+			case 1:
+				isUTF8 = YES;
+				break;
+			case -1:
+				@throw [OFInvalidEncodingException
+				    newWithClass: isa];
+			}
+
+			[self addMemoryToPool: string];
+		} @catch (id e) {
+			free(string);
+		}
+	} @catch (id e) {
+		[self release];
 		@throw e;
 	}
 
@@ -554,60 +509,58 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 - initWithPath: (OFString*)first
      arguments: (va_list)args
 {
-	OFString *component;
-	size_t len, i;
-	va_list args2;
-	Class c;
-
 	self = [super init];
 
-	len = [first cStringLength];
-	switch (of_string_check_utf8([first cString], len)) {
-	case 1:
-		isUTF8 = YES;
-		break;
-	case -1:
-		c = isa;
-		[self dealloc];
-		@throw [OFInvalidEncodingException newWithClass: c];
-	}
-	length += len;
+	@try {
+		OFString *component;
+		size_t len, i;
+		va_list args2;
 
-	va_copy(args2, args);
-	while ((component = va_arg(args2, OFString*)) != nil) {
-		len = [component cStringLength];
-		length += 1 + len;
+		length = [first cStringLength];
 
-		switch (of_string_check_utf8([component cString], len)) {
+		switch (of_string_check_utf8([first cString], length)) {
 		case 1:
 			isUTF8 = YES;
 			break;
 		case -1:
-			c = isa;
-			[self dealloc];
-			@throw [OFInvalidEncodingException newWithClass: c];
+			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
-	}
 
-	@try {
+		/* Calculate length */
+		va_copy(args2, args);
+		while ((component = va_arg(args2, OFString*)) != nil) {
+			len = [component cStringLength];
+			length += 1 + len;
+
+			switch (of_string_check_utf8([component cString],
+			    len)) {
+			case 1:
+				isUTF8 = YES;
+				break;
+			case -1:
+				@throw [OFInvalidEncodingException
+				    newWithClass: isa];
+			}
+		}
+
 		string = [self allocMemoryWithSize: length + 1];
-	} @catch (OFException *e) {
-		[self dealloc];
+
+		len = [first cStringLength];
+		memcpy(string, [first cString], len);
+		i = len;
+
+		while ((component = va_arg(args, OFString*)) != nil) {
+			len = [component cStringLength];
+			string[i] = OF_PATH_DELIM;
+			memcpy(string + i + 1, [component cString], len);
+			i += len + 1;
+		}
+
+		string[i] = '\0';
+	} @catch (id e) {
+		[self release];
 		@throw e;
 	}
-
-	len = [first cStringLength];
-	memcpy(string, [first cString], len);
-	i = len;
-
-	while ((component = va_arg(args, OFString*)) != nil) {
-		len = [component cStringLength];
-		string[i] = OF_PATH_DELIM;
-		memcpy(string + i + 1, [component cString], len);
-		i += len + 1;
-	}
-
-	string[i] = '\0';
 
 	return self;
 }
@@ -616,36 +569,32 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 {
 	self = [super init];
 
-	string = (char*)[str cString];
-	length = [str cStringLength];
-
-	switch (of_string_check_utf8(string, length)) {
-	case 1:
-		isUTF8 = YES;
-		break;
-	case -1:;
-		Class c = isa;
-		[self dealloc];
-		@throw [OFInvalidEncodingException newWithClass: c];
-	}
-
-	if ((string = strdup(string)) == NULL) {
-		Class c = isa;
-		[self dealloc];
-		@throw [OFOutOfMemoryException newWithClass: c
-						       size: length + 1];
-	}
-
 	@try {
-		[self addMemoryToPool: string];
-	} @catch (OFException *e) {
-		/*
-		 * We can't use [super dealloc] on OS X here.
-		 * Compiler bug? Anyway, [self dealloc] will do here as we
-		 * don't reimplement dealloc.
-		 */
-		free(string);
-		[self dealloc];
+		/* We have no -[dealloc], so this is ok */
+		string = (char*)[str cString];
+		length = [str cStringLength];
+
+		switch (of_string_check_utf8(string, length)) {
+		case 1:
+			isUTF8 = YES;
+			break;
+		case -1:;
+			@throw [OFInvalidEncodingException newWithClass: isa];
+		}
+
+		if ((string = strdup(string)) == NULL)
+			@throw [OFOutOfMemoryException newWithClass: isa
+							       size: length +
+								     1];
+
+		@try {
+			[self addMemoryToPool: string];
+		} @catch (id e) {
+			free(string);
+			@throw e;
+		}
+	} @catch (id e) {
+		[self release];
 		@throw e;
 	}
 
@@ -661,42 +610,34 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 - initWithContentsOfFile: (OFString*)path
 		encoding: (enum of_string_encoding)encoding
 {
-	OFFile *file = nil;
-	char *tmp;
-	struct stat s;
-
-	if (stat([path cString], &s) == -1) {
-		Class c = isa;
-		[super dealloc];
-		@throw [OFInitializationFailedException newWithClass: c];
-	}
-
-	if ((tmp = malloc(s.st_size)) == NULL) {
-		Class c = isa;
-		[super dealloc];
-		@throw [OFOutOfMemoryException newWithClass: c
-						       size: s.st_size];
-	}
+	self = [super init];
 
 	@try {
-		file = [[OFFile alloc] initWithPath: path
-					       mode: @"rb"];
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		OFFile *file;
+		char *tmp;
+		struct stat s;
+
+		if (stat([path cString], &s) == -1)
+			@throw [OFInitializationFailedException
+			    newWithClass: isa];
+
+		tmp = [self allocMemoryWithSize: s.st_size];
+		file = [OFFile fileWithPath: path
+				       mode: @"rb"];
 		[file readExactlyNBytes: s.st_size
 			     intoBuffer: tmp];
-	} @catch (OFException *e) {
-		free(tmp);
-		[super dealloc];
-		@throw e;
-	} @finally {
-		[file release];
-	}
 
-	@try {
 		self = [self initWithCString: tmp
 				    encoding: encoding
 				      length: s.st_size];
-	} @finally {
-		free(tmp);
+
+		[self freeMemory: tmp];
+
+		[pool release];
+	} @catch (id e) {
+		[self release];
+		@throw e;
 	}
 
 	return self;

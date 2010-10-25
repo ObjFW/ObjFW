@@ -68,7 +68,9 @@
 
 - init
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -101,19 +103,27 @@
 {
 	self = [super init];
 
-	name = [name_ copy];
-	ns = [ns_ copy];
+	@try {
+		name = [name_ copy];
+		ns = [ns_ copy];
 
-	if (stringval != nil) {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];;
-		[self addChild:
-		    [OFXMLElement elementWithCharacters: stringval]];
-		[pool release];
+		if (stringval != nil) {
+			OFAutoreleasePool *pool;
+
+			pool = [[OFAutoreleasePool alloc] init];;
+			[self addChild:
+			    [OFXMLElement elementWithCharacters: stringval]];
+			[pool release];
+		}
+
+		namespaces = [[OFMutableDictionary alloc]
+		    initWithKeysAndObjects:
+		    @"http://www.w3.org/XML/1998/namespace", @"xml",
+		    @"http://www.w3.org/2000/xmlns/", @"xmlns", nil];
+	} @catch (id e) {
+		[self release];
+		@throw e;
 	}
-
-	namespaces = [[OFMutableDictionary alloc] initWithKeysAndObjects:
-	    @"http://www.w3.org/XML/1998/namespace", @"xml",
-	    @"http://www.w3.org/2000/xmlns/", @"xmlns", nil];
 
 	return self;
 }
@@ -122,7 +132,12 @@
 {
 	self = [super init];
 
-	characters = [chars copy];
+	@try {
+		characters = [chars copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -131,7 +146,12 @@
 {
 	self = [super init];
 
-	cdata = [cdata_ copy];
+	@try {
+		cdata = [cdata_ copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -140,7 +160,12 @@
 {
 	self = [super init];
 
-	comment = [comment_ copy];
+	@try {
+		comment = [comment_ copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -229,7 +254,7 @@
 		@try {
 			str_c = [self resizeMemory: str_c
 					    toSize: len];
-		} @catch (OFException *e) {
+		} @catch (id e) {
 			[self freeMemory: str_c];
 			@throw e;
 		}
@@ -267,7 +292,7 @@
 		@try {
 			str_c = [self resizeMemory: str_c
 					    toSize: len];
-		} @catch (OFException *e) {
+		} @catch (id e) {
 			[self freeMemory: str_c];
 			@throw e;
 		}
@@ -312,7 +337,7 @@
 		@try {
 			str_c = [self resizeMemory: str_c
 					    toSize: len];
-		} @catch (OFException *e) {
+		} @catch (id e) {
 			[self freeMemory: str_c];
 			@throw e;
 		}
@@ -327,7 +352,7 @@
 			@try {
 				str_c = [self resizeMemory: str_c
 						    toSize: len];
-			} @catch (OFException *e) {
+			} @catch (id e) {
 				[self freeMemory: str_c];
 				@throw e;
 			}

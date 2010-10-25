@@ -158,7 +158,7 @@ static OFMutex *mutex = nil;
 
 		/* Add the terminating NULL */
 		[addrlist addItem: ip];
-	} @catch (OFException *e) {
+	} @catch (id e) {
 		[addrlist release];
 		@throw e;
 	} @finally {
@@ -346,7 +346,7 @@ static OFMutex *mutex = nil;
 
 	@try {
 		addr = [newsock allocMemoryWithSize: sizeof(struct sockaddr)];
-	} @catch (OFException *e) {
+	} @catch (id e) {
 		[newsock dealloc];
 		@throw e;
 	}

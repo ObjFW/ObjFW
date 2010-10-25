@@ -135,7 +135,9 @@ call_main(id obj)
 
 - init
 {
-	@throw [OFNotImplementedException newWithClass: isa
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
 					      selector: _cmd];
 }
 
@@ -143,7 +145,12 @@ call_main(id obj)
 {
 	self = [super init];
 
-	object = [obj retain];
+	@try {
+		object = [obj retain];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -229,27 +236,19 @@ call_main(id obj)
 {
 	self = [super init];
 
-	if (!of_tlskey_new(&key)) {
-		Class c = isa;
-		[super dealloc];
-		@throw [OFInitializationFailedException newWithClass: c];
-	}
+	@try {
+		if (!of_tlskey_new(&key))
+			@throw [OFInitializationFailedException
+			    newWithClass: isa];
 
-	destructor = NULL;
+		destructor = NULL;
 
-	@synchronized (tlskeys) {
-		@try {
+		@synchronized (tlskeys) {
 			listobj = [tlskeys appendObject: self];
-		} @catch (OFException *e) {
-			/*
-			 * We can't use [super dealloc] on OS X here.
-			 * Compiler bug? Anyway, [self dealloc] will do here
-			 * as we check listobj != NULL in dealloc.
-			 */
-			listobj = NULL;
-			[self dealloc];
-			@throw e;
 		}
+	} @catch (id e) {
+		[self release];
+		@throw e;
 	}
 
 	return self;
@@ -271,10 +270,11 @@ call_main(id obj)
 
 	of_tlskey_free(key);
 
-	@synchronized (tlskeys) {
-		/* In case we called [self dealloc] in init */
-		if (listobj != NULL)
+	/* In case we called [self release] in init */
+	if (listobj != NULL) {
+		@synchronized (tlskeys) {
 			[tlskeys removeListObject: listobj];
+		}
 	}
 
 	[super dealloc];
@@ -293,7 +293,7 @@ call_main(id obj)
 
 	if (!of_mutex_new(&mutex)) {
 		Class c = isa;
-		[self dealloc];
+		[self release];
 		@throw [OFInitializationFailedException newWithClass: c];
 	}
 

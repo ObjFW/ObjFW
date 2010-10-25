@@ -17,9 +17,12 @@
 @implementation OFEnumerator
 - init
 {
-	if (isa == [OFEnumerator class])
-		@throw [OFNotImplementedException newWithClass: isa
+	if (isa == [OFEnumerator class]) {
+		Class c = isa;
+		[self release];
+		@throw [OFNotImplementedException newWithClass: c
 						      selector: _cmd];
+	}
 
 	return [super init];
 }

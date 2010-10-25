@@ -48,7 +48,7 @@ static OFAutoreleasePool *first = nil, *last = nil;
 	if (last == nil) {
 		@try {
 			[[self alloc] init];
-		} @catch (OFException *e) {
+		} @catch (id e) {
 			[obj release];
 			@throw e;
 		}
@@ -65,7 +65,7 @@ static OFAutoreleasePool *first = nil, *last = nil;
 
 	@try {
 		[last addObject: obj];
-	} @catch (OFException *e) {
+	} @catch (id e) {
 		[obj release];
 		@throw e;
 	}
@@ -82,51 +82,41 @@ static OFAutoreleasePool *first = nil, *last = nil;
 
 - init
 {
-#ifdef OF_THREADS
-	id first;
-#endif
-
 	self = [super init];
 
-#ifdef OF_THREADS
-	first = of_tlskey_get(first_key);
-	prev = of_tlskey_get(last_key);
-
-	if (!of_tlskey_set(last_key, self)) {
-		Class c = isa;
-		[super dealloc];
-		@throw [OFInitializationFailedException newWithClass: c];
-	}
-#else
-	prev = last;
-	last = self;
-#endif
-
-	if (first == nil) {
-#ifdef OF_THREADS
-		if (!of_tlskey_set(first_key, self)) {
-			Class c = isa;
-
-			of_tlskey_set(last_key, prev);
-
-			[super dealloc];
-			@throw [OFInitializationFailedException
-			    newWithClass: c];
-		}
-#else
-		first = self;
-#endif
-	}
-
-	if (prev != nil)
-		prev->next = self;
-
-	size = GROW_SIZE;
 	@try {
+#ifdef OF_THREADS
+		id first = of_tlskey_get(first_key);
+		prev = of_tlskey_get(last_key);
+
+		if (!of_tlskey_set(last_key, self))
+			@throw [OFInitializationFailedException
+			    newWithClass: isa];
+#else
+		prev = last;
+		last = self;
+#endif
+
+		if (first == nil) {
+#ifdef OF_THREADS
+			if (!of_tlskey_set(first_key, self)) {
+				of_tlskey_set(last_key, prev);
+				@throw [OFInitializationFailedException
+				    newWithClass: isa];
+			}
+#else
+			first = self;
+#endif
+		}
+
+		if (prev != nil)
+			prev->next = self;
+
+		size = GROW_SIZE;
 		objects = [self allocMemoryForNItems: GROW_SIZE
 					    withSize: sizeof(id)];
-	} @catch (OFException *e) {
-		[self dealloc];
+	} @catch (id e) {
+		[self release];
 		@throw e;
 	}
 
