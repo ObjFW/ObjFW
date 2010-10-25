@@ -27,13 +27,7 @@
  * handled like other exceptions, as the exception handling code is not
  * allowed to allocate ANY memory.
  */
-@interface OFAllocFailedException
-{
-	Class isa;
-}
-
-+ (Class)class;
-
+@interface OFAllocFailedException: OFObject
 /**
  * \return An error message for the exception as a string
  */
