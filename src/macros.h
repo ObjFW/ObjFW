@@ -11,6 +11,10 @@
 
 #import "objfw-defs.h"
 
+#ifndef __STDC_LIMIT_MACROS
+# define __STDC_LIMIT_MACROS
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
