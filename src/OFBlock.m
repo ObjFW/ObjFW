@@ -135,7 +135,7 @@ _Block_copy(const void *block_)
 	}
 
 	if (block->isa == (Class)&_NSConcreteMallocBlock)
-		block->reserved++;
+		of_atomic_inc_int(&block->reserved);
 
 	return block;
 }
@@ -148,7 +148,7 @@ _Block_release(const void *block_)
 	if (block->isa != (Class)&_NSConcreteMallocBlock)
 		return;
 
-	if (--block->reserved == 0) {
+	if (of_atomic_dec_int(&block->reserved) == 0) {
 		if (block->flags & OF_BLOCK_HAS_COPY_DISPOSE)
 			block->descriptor->dispose_helper(block);
 
