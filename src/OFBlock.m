@@ -17,6 +17,7 @@
 #include <string.h>
 
 #import "OFBlock.h"
+#import "atomic.h"
 
 /// \cond internal
 @protocol RetainRelease
