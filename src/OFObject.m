@@ -54,7 +54,7 @@
 struct pre_ivar {
 	void	      **memchunks;
 	size_t	      memchunks_size;
-	int32_t	      retain_count; /* int32_t because atomic ops use int32_t */
+	int32_t	      retain_count;
 #ifndef OF_ATOMIC_OPS
 	of_spinlock_t retain_spinlock;
 #endif
