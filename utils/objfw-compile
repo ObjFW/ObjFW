@@ -50,6 +50,7 @@ flags_done="no"
 out=""
 objs=""
 link="no"
+lib="no"
 out_prefix=""
 out_suffix=""
 
@@ -77,6 +78,7 @@ while test x"$1" != "x"; do
 			export LIB_MAJOR="${1%.*}"
 			export LIB_MINOR="${1#*.}"
 
+			lib="yes"
 			OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --lib-cflags)"
 			LDFLAGS="$LDFLAGS $($OBJFW_CONFIG --lib-ldflags)"
 			out_prefix="$($OBJFW_CONFIG --lib-prefix)"
@@ -123,6 +125,8 @@ if test x"$out" = x""; then
 	echo "No output name specified! Use -o or --out!"
 	exit 1
 fi
+
+test x"$lib" = x"no" && out_suffix="$($OBJFW_CONFIG --prog-suffix)"
 
 if test ! -f "$out_prefix$out$out_suffix" -o x"$link" = x"yes"; then
 	status_linking $out_prefix$out$out_suffix

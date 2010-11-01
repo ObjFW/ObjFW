@@ -16,6 +16,7 @@ LDFLAGS=""
 LDFLAGS_REEXPORT="@LDFLAGS_REEXPORT@"
 LDFLAGS_RPATH="@LDFLAGS_RPATH@"
 LIBS="-L${libdir} -lobjfw @LIBS@"
+PROG_SUFFIX="@EXEEXT@"
 VERSION="0.4-dev"
 
 show_help() {
@@ -36,6 +37,7 @@ objfw-config: Available arguments are:
 	--lib-ldflags	Outputs LDFLAGS for building a library"
 	--lib-prefix	Outputs the prefix for libraries"
 	--lib-suffix	Outputs the suffix for libraries"
+	--prog-suffix	Outputs the suffix for binaries"
 	--version	Outputs the installed version
 __EOF__
 	exit 0
@@ -113,6 +115,9 @@ while test ! -z "$1"; do
 			;;
 		--rpath)
 			printf "%s" "$LDFLAGS_RPATH"
+			;;
+		--prog-suffix)
+			printf "%s" "$PROG_SUFFIX"
 			;;
 		--version)
 			printf "%s" "$VERSION"
