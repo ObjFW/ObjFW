@@ -158,10 +158,10 @@ _Block_release(const void *block_)
 }
 
 void
-_Block_object_assign(void *dst_, void *src_, int flags)
+_Block_object_assign(void *dst_, const void *src_, const int flags_)
 {
-	flags &= OF_BLOCK_FIELD_IS_BLOCK | OF_BLOCK_FIELD_IS_OBJECT |
-	    OF_BLOCK_FIELD_IS_BYREF;
+	int flags = flags_ & (OF_BLOCK_FIELD_IS_BLOCK |
+	    OF_BLOCK_FIELD_IS_OBJECT | OF_BLOCK_FIELD_IS_BYREF);
 
 	switch (flags) {
 	case OF_BLOCK_FIELD_IS_BLOCK:
@@ -171,8 +171,8 @@ _Block_object_assign(void *dst_, void *src_, int flags)
 		*(id*)dst_ = [(id)src_ retain];
 		break;
 	case OF_BLOCK_FIELD_IS_BYREF:;
-		of_block_byref_t *src = src_;
-		of_block_byref_t **dst = dst_;
+		of_block_byref_t *src = (of_block_byref_t*)src_;
+		of_block_byref_t **dst = (of_block_byref_t**)dst_;
 
 		if ((src->flags & ~OF_BLOCK_HAS_COPY_DISPOSE) == 0) {
 			if ((*dst = malloc(src->size)) == NULL) {
@@ -197,10 +197,10 @@ _Block_object_assign(void *dst_, void *src_, int flags)
 }
 
 void
-_Block_object_dispose(void *obj_, int flags)
+_Block_object_dispose(const void *obj_, const int flags_)
 {
-	flags &= OF_BLOCK_FIELD_IS_BLOCK | OF_BLOCK_FIELD_IS_OBJECT |
-	    OF_BLOCK_FIELD_IS_BYREF;
+	const int flags = flags_ & (OF_BLOCK_FIELD_IS_BLOCK |
+	    OF_BLOCK_FIELD_IS_OBJECT | OF_BLOCK_FIELD_IS_BYREF);
 
 	switch (flags) {
 	case OF_BLOCK_FIELD_IS_BLOCK:
@@ -210,7 +210,7 @@ _Block_object_dispose(void *obj_, int flags)
 		[(id)obj_ release];
 		break;
 	case OF_BLOCK_FIELD_IS_BYREF:;
-		of_block_byref_t *obj = obj_;
+		of_block_byref_t *obj = (of_block_byref_t*)obj_;
 
 		if ((--obj->flags & ~OF_BLOCK_HAS_COPY_DISPOSE) == 0) {
 			if (obj->size >= sizeof(of_block_byref_t))
