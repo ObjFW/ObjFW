@@ -59,6 +59,8 @@
 
 /**
  * \brief A class that can observe multiple streams at once.
+ *
+ * Note: Currently, it can only observe sockets on Win32.
  */
 @interface OFStreamObserver: OFObject
 {

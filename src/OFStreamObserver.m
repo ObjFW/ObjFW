@@ -279,6 +279,12 @@
 			[delegate streamDidBecomeReadyForReading: stream];
 		}
 
+		if (fds_c[i].revents & POLLERR) {
+			num = [OFNumber numberWithInt: fds_c[i].fd];
+			stream = [fdToStream objectForKey: num];
+			[delegate streamDidReceiveException: stream];
+		}
+
 		fds_c[i].revents = 0;
 	}
 #else
@@ -301,6 +307,16 @@
 
 		if (FD_ISSET(fd, &readfds_))
 			[delegate streamDidBecomeReadyForReading: cArray[i]];
+
+		if (FD_ISSET(fd, &exceptfds_)) {
+			[delegate streamDidReceiveException: cArray[i]];
+
+			/*
+			 * Prevent calling it twice in case the fd is in both
+			 * sets.
+			 */
+			FD_CLR(fd, &exceptfds_);
+		}
 	}
 
 	cArray = [writeStreams cArray];
@@ -311,6 +327,9 @@
 
 		if (FD_ISSET(fd, &writefds_))
 			[delegate streamDidBecomeReadyForWriting: cArray[i]];
+
+		if (FD_ISSET(fd, &exceptfds_))
+			[delegate streamDidReceiveException: cArray[i]];
 	}
 #endif
 
