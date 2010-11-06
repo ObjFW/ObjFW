@@ -241,7 +241,7 @@ call_main(id obj)
 			@throw [OFInitializationFailedException
 			    newWithClass: isa];
 
-		destructor = NULL;
+		initialized = YES;
 
 		@synchronized (tlskeys) {
 			listobj = [tlskeys appendObject: self];
@@ -268,7 +268,8 @@ call_main(id obj)
 	if (destructor != NULL)
 		destructor(self);
 
-	of_tlskey_free(key);
+	if (initialized)
+		of_tlskey_free(key);
 
 	/* In case we called [self release] in init */
 	if (listobj != NULL) {
@@ -297,6 +298,8 @@ call_main(id obj)
 		@throw [OFInitializationFailedException newWithClass: c];
 	}
 
+	initialized = YES;
+
 	return self;
 }
 
@@ -319,7 +322,8 @@ call_main(id obj)
 
 - (void)dealloc
 {
-	of_mutex_free(&mutex);
+	if (initialized)
+		of_mutex_free(&mutex);
 
 	[super dealloc];
 }

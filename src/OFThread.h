@@ -24,6 +24,7 @@
 @protected
 	void (*destructor)(id);
 	of_list_object_t *listobj;
+	BOOL initialized;
 }
 
 /**
@@ -169,6 +170,7 @@
 @interface OFMutex: OFObject
 {
 	of_mutex_t mutex;
+	BOOL initialized;
 }
 
 /**
