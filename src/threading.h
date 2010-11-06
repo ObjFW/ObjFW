@@ -29,7 +29,8 @@ typedef DWORD of_tlskey_t;
 
 #if defined(OF_ATOMIC_OPS)
 # import "atomic.h"
-typedef int32_t of_spinlock_t;
+typedef volatile int of_spinlock_t;
+# define OF_SPINCOUNT 10
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 typedef pthread_spinlock_t of_spinlock_t;
 #else
@@ -207,7 +208,7 @@ static OF_INLINE BOOL
 of_spinlock_trylock(of_spinlock_t *s)
 {
 #if defined(OF_ATOMIC_OPS)
-	return (of_atomic_cmpswap_32(s, 0, 1) ? YES : NO);
+	return (of_atomic_cmpswap_int(s, 0, 1) ? YES : NO);
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return (pthread_spin_trylock(s) ? NO : YES);
 #else
@@ -219,11 +220,18 @@ static OF_INLINE BOOL
 of_spinlock_lock(of_spinlock_t *s)
 {
 #if defined(OF_ATOMIC_OPS)
-	while (!of_spinlock_trylock(s)) {
 # ifdef OF_HAVE_SCHED_YIELD
+	int i;
+
+	for (i = 0; i < OF_SPINCOUNT; i++)
+		if (of_spinlock_trylock(s))
+			return YES;
+
+	while (!of_spinlock_trylock(s))
 		sched_yield();
+# else
+	while (!of_spinlock_trylock(s));
 # endif
-	}
 
 	return YES;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
@@ -237,7 +245,7 @@ static OF_INLINE BOOL
 of_spinlock_unlock(of_spinlock_t *s)
 {
 #if defined(OF_ATOMIC_OPS)
-	of_atomic_and_32((uint32_t*)s, 0);
+	*s = 0;
 	return YES;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return (pthread_spin_unlock(s) ? NO : YES);
