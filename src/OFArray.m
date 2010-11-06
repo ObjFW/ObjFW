@@ -266,6 +266,12 @@
 				 length: end - start];
 }
 
+- (OFArray*)objectsInRange: (of_range_t)range
+{
+	return [self objectsFromIndex: range.start
+			      toIndex: range.start + range.length];
+}
+
 - (OFString*)componentsJoinedByString: (OFString*)separator
 {
 	OFString *str;

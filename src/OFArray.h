@@ -172,7 +172,7 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
 - (id)lastObject;
 
 /**
- * Returns the objects from the specified index to the specified index as an
+ * Returns the objects from the specified index to the specified index as a new
  * OFArray.
  *
  * \param start The index where the subarray starts
@@ -182,6 +182,13 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
  */
 - (OFArray*)objectsFromIndex: (size_t)start
 		     toIndex: (size_t)end;
+
+/**
+ * Returns the objects in the specified range as a new OFArray.
+ * \param range The range for the subarray
+ * \return The subarray as a new autoreleased OFArray
+ */
+- (OFArray*)objectsInRange: (of_range_t)range;
 
 /**
  * Creates a string by joining all objects of the array.
