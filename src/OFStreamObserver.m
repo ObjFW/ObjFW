@@ -289,9 +289,9 @@
 	}
 #else
 # ifdef FD_COPY
-	FD_COPY(readfds, readfds_);
-	FD_COPY(writefds, writefds_);
-	FD_COPY(exceptfds, exceptfds_);
+	FD_COPY(&readfds, &readfds_);
+	FD_COPY(&writefds, &writefds_);
+	FD_COPY(&exceptfds, &exceptfds_);
 # else
 	readfds_ = readfds;
 	writefds_ = writefds;
