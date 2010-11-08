@@ -74,7 +74,7 @@ of_atomic_add_32(volatile int32_t *p, int32_t i)
 }
 
 static OF_INLINE void*
-of_atomic_add_ptr(volatile void **p, intptr_t i)
+of_atomic_add_ptr(void* volatile *p, intptr_t i)
 {
 #if !defined(OF_THREADS)
 	return (*p += i);
@@ -156,7 +156,7 @@ of_atomic_sub_32(volatile int32_t *p, int32_t i)
 }
 
 static OF_INLINE void*
-of_atomic_sub_ptr(volatile void **p, intptr_t i)
+of_atomic_sub_ptr(void* volatile *p, intptr_t i)
 {
 #if !defined(OF_THREADS)
 	return (*p -= i);
