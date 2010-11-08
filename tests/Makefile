@@ -23,10 +23,10 @@ SRCS = OFArrayTests.m			\
        ${PROPERTIESTESTS_M}		\
        TestsAppDelegate.m
 
-IPHONE_USER = mobile
-IPHONE_TMP = /tmp/objfw-test
+IOS_USER ?= mobile
+IOS_TMP ?= /tmp/objfw-test
 
-.PHONY: run run-tests run-on-iphone
+.PHONY: run run-tests run-on-ios
 run: all
 	if [ -z "${DONT_RUN_TESTS}" ]; then ${MAKE} ${MFLAGS} run-tests; fi
 
@@ -56,21 +56,19 @@ run-tests:
 	rm -f libobjfw.dylib; \
 	exit $$EXIT
 
-run-on-iphone: all
-	if [ -z "${IPHONE_HOST}" ]; then \
-		echo "Please set IPHONE_HOST to the hostname of your iPhone!"; \
+run-on-ios: all
+	if [ -z "${IOS_HOST}" ]; then \
+		echo "Please set IOS_HOST to the hostname of your iOS host!"; \
 		exit 1; \
 	fi
-	echo "Uploading files to iPhone ${IPHONE_HOST} at ${IPHONE_TMP}..."
-	ssh ${IPHONE_USER}@${IPHONE_HOST} \
-		'rm -fr ${IPHONE_TMP} && mkdir -p ${IPHONE_TMP}/plugin'
+	echo "Uploading files to iOS device ${IOS_HOST} at ${IOS_TMP}..."
+	ssh ${IOS_USER}@${IOS_HOST} \
+		'rm -fr ${IOS_TMP} && mkdir -p ${IOS_TMP}/plugin'
 	scp -q ../src/libobjfw.dylib tests testfile.bin testfile.txt \
-		${IPHONE_USER}@${IPHONE_HOST}:${IPHONE_TMP}/
-	scp -q plugin/TestPlugin.impl \
-		${IPHONE_USER}@${IPHONE_HOST}:${IPHONE_TMP}/plugin/
-	echo "Signing and running tests binary on iPhone ${IPHONE_HOST}..."
-	ssh ${IPHONE_USER}@${IPHONE_HOST} \
-		'cd ${IPHONE_TMP} && ldid -S tests && ./tests'
+		${IOS_USER}@${IOS_HOST}:${IOS_TMP}/
+	scp -q plugin/TestPlugin.impl ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/plugin/
+	echo "Signing and running tests binary on iOS device ${IOS_HOST}..."
+	ssh ${IOS_USER}@${IOS_HOST} 'cd ${IOS_TMP} && ldid -S tests && ./tests'
 
 include ../buildsys.mk
 
