@@ -327,6 +327,12 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		size_t i, j;
 		const uint16_t *table;
 
+		if (encoding == OF_STRING_ENCODING_UTF_8 &&
+		    len >= 3 && !memcmp(str, "\xEF\xBB\xBF", 3)) {
+			str += 3;
+			len -= 3;
+		}
+
 		string = [self allocMemoryWithSize: len + 1];
 		length = len;
 

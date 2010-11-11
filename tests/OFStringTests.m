@@ -108,8 +108,8 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	    R([s[1] lower]) && [s[1] isEqual: @"abc"])
 
 	TEST(@"+[stringWithCString:length:]",
-	    (s[0] = [OFMutableString stringWithCString: "foobar"
-					      length: 3]) &&
+	    (s[0] = [OFMutableString stringWithCString: "\xEF\xBB\xBF" "foobar"
+					      length: 6]) &&
 	    [s[0] isEqual: @"foo"])
 
 	TEST(@"+[stringWithContentsOfFile:encoding]", (s[1] = [OFString
