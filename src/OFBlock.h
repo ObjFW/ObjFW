@@ -9,13 +9,7 @@
  * the packaging of this file.
  */
 
-#import "objfw-defs.h"
-
-#ifdef OF_OBJFW_RUNTIME
-# import <objfw-rt.h>
-#else
-# import <objc/objc.h>
-#endif
+#import "OFObject.h"
 
 /// \cond internal
 typedef struct __of_block_literal {
@@ -69,14 +63,7 @@ extern void _Block_release(const void*);
 #endif
 
 /// \cond internal
-@interface OFBlock
-{
-	Class isa;
-}
-
-+ (Class)class;
-- copy;
-- (void)release;
+@interface OFBlock: OFObject
 @end
 
 @interface OFStackBlock: OFBlock
