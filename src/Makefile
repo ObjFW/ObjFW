@@ -8,6 +8,7 @@ STATIC_LIB = ${OBJFW_STATIC_LIB}
 SRCS = OFApplication.m		\
        OFArray.m		\
        OFAutoreleasePool.m	\
+       OFBlock.m		\
        OFConstantString.m	\
        OFDataArray.m		\
        OFDictionary.m		\
@@ -42,7 +43,6 @@ SRCS = OFApplication.m		\
        unicode.m
 
 INCLUDES := ${SRCS:.m=.h}	\
-	    OFBlock.h		\
 	    OFCollection.h	\
 	    ObjFW.h		\
 	    asprintf.h		\
@@ -51,8 +51,7 @@ INCLUDES := ${SRCS:.m=.h}	\
 	    objfw-defs.h	\
 	    ${THREADING_H}
 
-SRCS += ${OFBLOCK_M}		\
-	${ASPRINTF_M} 		\
+SRCS += ${ASPRINTF_M} 		\
 	iso_8859_15.m		\
 	windows_1252.m		\
 	${OBJC_PROPERTIES_M}	\
@@ -62,4 +61,4 @@ include ../buildsys.mk
 
 CPPFLAGS += -I..
 LD = ${OBJC}
-LDFLAGS += ${REEXPORT_LIBOBJC}
+LDFLAGS += ${REEXPORT_LIBOBJC} ${MACH_ALIAS_LIST}

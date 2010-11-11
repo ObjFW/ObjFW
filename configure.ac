@@ -75,7 +75,8 @@ AC_TRY_COMPILE([], [
 	AC_MSG_RESULT(no)
 	OBJCFLAGS="$old_OBJCFLAGS"
 	])
-AC_CHECK_FUNC(_Block_copy,, AC_SUBST(OFBLOCK_M, "OFBlock.m"))
+AC_CHECK_FUNC(_Block_copy,,
+	AC_DEFINE(HAVE_BLOCK_COPY, 1, [Whether we have _Block_copy]))
 
 AC_CHECK_HEADERS([objfw-rt.h objc/objc.h])
 
@@ -153,6 +154,7 @@ case "$host_os" in
 	darwin*)
 		AC_SUBST(REEXPORT_LIBOBJC, [-Wl,-reexport-lobjc])
 		AC_SUBST(LDFLAGS_REEXPORT, [-Wl,-reexport-lobjfw])
+		AC_SUBST(MACH_ALIAS_LIST, [-Wl,-alias_list,mach_alias_list])
 		;;
 esac
 

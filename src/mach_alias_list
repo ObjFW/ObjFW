@@ -1,0 +1,4 @@
+# List of aliases for Mach-O
+_OBJC_CLASS_$_OFStackBlock __NSConcreteStackBlock
+_OBJC_CLASS_$_OFGlobalBlock __NSConcreteGlobalBlock
+_OBJC_CLASS_$_OFMallocBlock __NSConcreteMallocBlock

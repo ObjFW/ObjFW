@@ -12,11 +12,11 @@
 #include "config.h"
 
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #import "OFBlock.h"
+#import "OFExceptions.h"
 #import "atomic.h"
 
 /// \cond internal
@@ -107,10 +107,15 @@ constructor()
 }
 /* End of ObjC module */
 #else
-void *_NSConcreteStackBlock;
-void *_NSConcreteGlobalBlock;
-void *_NSConcreteMallocBlock;
+extern void *_NSConcreteStackBlock;
+extern void *_NSConcreteGlobalBlock;
+extern void *_NSConcreteMallocBlock;
 #endif
+
+#ifndef HAVE_BLOCK_COPY
+static struct {
+	Class isa;
+} alloc_failed_exception;
 
 void*
 _Block_copy(const void *block_)
@@ -121,8 +126,9 @@ _Block_copy(const void *block_)
 		of_block_literal_t *copy;
 
 		if ((copy = malloc(block->descriptor->size)) == NULL) {
-			fputs("Not enough memory to copy block!\n", stderr);
-			exit(1);
+			alloc_failed_exception.isa =
+			    [OFAllocFailedException class];
+			@throw (OFAllocFailedException*)&alloc_failed_exception;
 		}
 		memcpy(copy, block, block->descriptor->size);
 
@@ -176,9 +182,10 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 
 		if ((src->flags & ~OF_BLOCK_HAS_COPY_DISPOSE) == 0) {
 			if ((*dst = malloc(src->size)) == NULL) {
-				fputs("Not enough memory for block "
-				    "variables!\n", stderr);
-				exit(1);
+				alloc_failed_exception.isa =
+				    [OFAllocFailedException class];
+				@throw (OFAllocFailedException*)
+				    &alloc_failed_exception;
 			}
 
 			if (src->forwarding == src)
@@ -221,9 +228,14 @@ _Block_object_dispose(const void *obj_, const int flags_)
 		break;
 	}
 }
+#endif
 
 /// \cond internal
 @implementation OFBlock
++ (void)initialize
+{
+}
+
 + (Class)class
 {
 	return self;
@@ -239,4 +251,15 @@ _Block_object_dispose(const void *obj_, const int flags_)
 	Block_release(self);
 }
 @end
+
+#if !defined(OF_GNU_RUNTIME) && !defined(OF_OBJFW_RUNTIME)
+@implementation OFStackBlock
+@end
+
+@implementation OFGlobalBlock
+@end
+
+@implementation OFMallocBlock
+@end
+#endif
 /// \endcond
