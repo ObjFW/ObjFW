@@ -378,12 +378,36 @@ _Block_object_dispose(const void *obj_, const int flags_)
 
 #if defined(OF_APPLE_RUNTIME) && defined(__OBJC2__)
 @implementation OFStackBlock
++ (void)load
+{
+	/*
+	 * Send a message to the class to ensure it's initialized. Otherwise it
+	 * it might not get initialized as blocks are preallocated.
+	 */
+	[self class];
+}
 @end
 
 @implementation OFGlobalBlock
++ (void)load
+{
+	/*
+	 * Send a message to the class to ensure it's initialized. Otherwise it
+	 * it might not get initialized as blocks are preallocated.
+	 */
+	[self class];
+}
 @end
 
 @implementation OFMallocBlock
++ (void)load
+{
+	/*
+	 * Send a message to the class to ensure it's initialized. Otherwise it
+	 * it might not get initialized as blocks are preallocated.
+	 */
+	[self class];
+}
 @end
 #endif
 /// \endcond
