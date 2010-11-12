@@ -15,6 +15,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
+# import <objc/runtime.h>
+#endif
+
 #import "OFBlock.h"
 #import "OFExceptions.h"
 #import "atomic.h"
@@ -106,6 +110,22 @@ constructor()
 	__objc_exec_class(&module);
 }
 /* End of ObjC module */
+#elif defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
+struct class {
+	struct class *isa, *super_class;
+	const char *name;
+	long version, info, instance_size;
+	struct ivar_list *ivars;
+	struct method_list **methodLists;
+	struct cache *cache;
+	struct protocol_list *protocols;
+	const char *ivar_layout;
+	struct class_ext *ext;
+};
+
+struct class _NSConcreteStackBlock;
+struct class _NSConcreteGlobalBlock;
+struct class _NSConcreteMallocBlock;
 #else
 extern void *_NSConcreteStackBlock;
 extern void *_NSConcreteGlobalBlock;
@@ -232,6 +252,37 @@ _Block_object_dispose(const void *obj_, const int flags_)
 
 /// \cond internal
 @implementation OFBlock
+#if defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
++ (void)load
+{
+	Class tmp;
+
+	/*
+	 * There is no objc_initializeClassPair in 10.5.
+	 * However, objc_allocateClassPair does not register the new class with
+	 * the subclass in the ObjC1 runtime like the ObjC2 runtime does, so
+	 * this workaround should be fine.
+	 */
+	if ((tmp = objc_allocateClassPair(self, "OFStackBlock", 0)) == NULL)
+		@throw [OFInitializationFailedException newWithClass: self];
+	memcpy(&_NSConcreteStackBlock, tmp, sizeof(_NSConcreteStackBlock));
+	free(tmp);
+	objc_registerClassPair((Class)&_NSConcreteStackBlock);
+
+	if ((tmp = objc_allocateClassPair(self, "OFGlobalBlock", 0)) == NULL)
+		@throw [OFInitializationFailedException newWithClass: self];
+	memcpy(&_NSConcreteGlobalBlock, tmp, sizeof(_NSConcreteGlobalBlock));
+	free(tmp);
+	objc_registerClassPair((Class)&_NSConcreteGlobalBlock);
+
+	if ((tmp = objc_allocateClassPair(self, "OFMallocBlock", 0)) == NULL)
+		@throw [OFInitializationFailedException newWithClass: self];
+	memcpy(&_NSConcreteMallocBlock, tmp, sizeof(_NSConcreteMallocBlock));
+	free(tmp);
+	objc_registerClassPair((Class)&_NSConcreteMallocBlock);
+}
+#endif
+
 + alloc
 {
 	@throw [OFNotImplementedException newWithClass: self
@@ -327,7 +378,7 @@ _Block_object_dispose(const void *obj_, const int flags_)
 }
 @end
 
-#if !defined(OF_GNU_RUNTIME) && !defined(OF_OBJFW_RUNTIME)
+#if defined(OF_APPLE_RUNTIME) && defined(__OBJC2__)
 @implementation OFStackBlock
 @end
 
