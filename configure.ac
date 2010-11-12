@@ -75,8 +75,6 @@ AC_TRY_COMPILE([], [
 	AC_MSG_RESULT(no)
 	OBJCFLAGS="$old_OBJCFLAGS"
 	])
-AC_CHECK_FUNC(_Block_copy,
-	AC_DEFINE(HAVE_BLOCK_COPY, 1, [Whether we have _Block_copy]))
 
 AC_CHECK_HEADERS([objfw-rt.h objc/objc.h])
 

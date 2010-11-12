@@ -132,7 +132,6 @@ extern void *_NSConcreteGlobalBlock;
 extern void *_NSConcreteMallocBlock;
 #endif
 
-#ifndef HAVE_BLOCK_COPY
 static struct {
 	Class isa;
 } alloc_failed_exception;
@@ -248,7 +247,6 @@ _Block_object_dispose(const void *obj_, const int flags_)
 		break;
 	}
 }
-#endif
 
 /// \cond internal
 @implementation OFBlock
