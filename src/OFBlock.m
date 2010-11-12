@@ -133,7 +133,7 @@ _Block_copy(const void *block_)
 		memcpy(copy, block, block->descriptor->size);
 
 		copy->isa = (Class)&_NSConcreteMallocBlock;
-		copy->reserved++;
+		copy->flags++;
 
 		if (block->flags & OF_BLOCK_HAS_COPY_DISPOSE)
 			block->descriptor->copy_helper(copy, block);
@@ -142,7 +142,7 @@ _Block_copy(const void *block_)
 	}
 
 	if (block->isa == (Class)&_NSConcreteMallocBlock)
-		of_atomic_inc_int(&block->reserved);
+		of_atomic_inc_int(&block->flags);
 
 	return block;
 }
@@ -155,7 +155,7 @@ _Block_release(const void *block_)
 	if (block->isa != (Class)&_NSConcreteMallocBlock)
 		return;
 
-	if (of_atomic_dec_int(&block->reserved) == 0) {
+	if ((of_atomic_dec_int(&block->flags) & OF_BLOCK_REFCOUNT_MASK) == 0) {
 		if (block->flags & OF_BLOCK_HAS_COPY_DISPOSE)
 			block->descriptor->dispose_helper(block);
 
@@ -308,7 +308,8 @@ _Block_object_dispose(const void *obj_, const int flags_)
 - (size_t)retainCount
 {
 	if (isa == (Class)&_NSConcreteMallocBlock)
-		return ((of_block_literal_t*)self)->reserved;
+		return ((of_block_literal_t*)self)->flags &
+		    OF_BLOCK_REFCOUNT_MASK;
 
 	return SIZE_MAX;
 }
