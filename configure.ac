@@ -70,6 +70,7 @@ AC_TRY_COMPILE([], [
 	], [
 	AC_DEFINE(OF_HAVE_BLOCKS, 1, [Compiler support for blocks])
 	AC_SUBST(BLOCKS_FLAGS, "-fblocks")
+	AC_SUBST(OFBLOCKTESTS_M, "OFBlockTests.m")
 	AC_MSG_RESULT(yes)
 	], [
 	AC_MSG_RESULT(no)

@@ -77,6 +77,9 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 - (void)applicationDidFinishLaunching
 {
 	[self objectTests];
+#ifdef OF_HAVE_BLOCKS
+	[self blockTests];
+#endif
 	[self stringTests];
 	[self fileTests];
 	[self MD5HashTests];

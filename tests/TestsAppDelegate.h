@@ -72,6 +72,10 @@
 - (void)arrayTests;
 @end
 
+@interface TestsAppDelegate (OFBlockTests)
+- (void)blockTests;
+@end
+
 @interface TestsAppDelegate (OFDataArrayTests)
 - (void)dataArrayTests;
 @end
