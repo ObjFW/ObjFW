@@ -191,10 +191,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 #ifdef OF_HAVE_BLOCKS
 - (of_xml_parser_element_start_block_t)elementStartHandler
 {
-	of_xml_parser_element_start_block_t block = [elementStartHandler copy];
-	[OFAutoreleasePool addObject: block];
-
-	return block;
+	return [[elementStartHandler copy] autorelease];
 }
 
 - (void)setElementStartHandler: (of_xml_parser_element_start_block_t)block
@@ -206,10 +203,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 - (of_xml_parser_element_end_block_t)elementEndHandler
 {
-	of_xml_parser_element_end_block_t block = [elementEndHandler copy];
-	[OFAutoreleasePool addObject: block];
-
-	return block;
+	return [[elementEndHandler copy] autorelease];
 }
 
 - (void)setElementEndHandler: (of_xml_parser_element_end_block_t)block
@@ -221,10 +215,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 - (of_xml_parser_string_block_t)charactersHandler
 {
-	of_xml_parser_string_block_t block = [charactersHandler copy];
-	[OFAutoreleasePool addObject: block];
-
-	return block;
+	return [[charactersHandler copy] autorelease];
 }
 
 - (void)setCharactersHandler: (of_xml_parser_string_block_t)block
@@ -236,10 +227,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 - (of_xml_parser_string_block_t)CDATAHandler
 {
-	of_xml_parser_string_block_t block = [CDATAHandler copy];
-	[OFAutoreleasePool addObject: block];
-
-	return block;
+	return [[CDATAHandler copy] autorelease];
 }
 
 - (void)setCDATAHandler: (of_xml_parser_string_block_t)block
@@ -251,10 +239,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 - (of_xml_parser_string_block_t)commentHandler
 {
-	of_xml_parser_string_block_t block = [commentHandler copy];
-	[OFAutoreleasePool addObject: block];
-
-	return block;
+	return [[commentHandler copy] autorelease];
 }
 
 - (void)setCommentHandler: (of_xml_parser_string_block_t)block
@@ -266,12 +251,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 - (of_xml_parser_unknown_entity_block_t)unknownEntityHandler
 {
-	of_xml_parser_unknown_entity_block_t block;
-
-	block = [unknownEntityHandler copy];
-	[OFAutoreleasePool addObject: block];
-
-	return block;
+	return [[unknownEntityHandler copy] autorelease];
 }
 
 - (void)setUnknownEntityHandler: (of_xml_parser_unknown_entity_block_t)block

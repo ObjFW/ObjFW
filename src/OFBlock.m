@@ -297,6 +297,14 @@ _Block_object_dispose(const void *obj_, const int flags_)
 	return Block_copy(self);
 }
 
+- autorelease
+{
+	if (isa == (Class)&_NSConcreteMallocBlock)
+		return [super autorelease];
+
+	return self;
+}
+
 - (size_t)retainCount
 {
 	if (isa == (Class)&_NSConcreteMallocBlock)
