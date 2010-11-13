@@ -11,6 +11,8 @@
 
 #import "OFObject.h"
 
+@class OFString;
+
 /**
  * \brief A class for storing arbitrary data in an array.
  *
@@ -38,6 +40,15 @@
 + dataArrayWithItemSize: (size_t)is;
 
 /**
+ * Creates a new OFDataArary with an item size of 1, containing the data of the
+ * specified file.
+ *
+ * \param path The path of the file
+ * \return A new autoreleased OFDataArray
+ */
++ dataArrayWithContentsOfFile: (OFString*)path;
+
+/**
  * Initializes an already allocated OFDataArray whose items all have the same
  * size.
  *
@@ -45,6 +56,15 @@
  * \return An initialized OFDataArray
  */
 - initWithItemSize: (size_t)is;
+
+/**
+ * Initializes an already allocated OFDataArray with an item size of 1,
+ * containing the data of the specified file.
+ *
+ * \param path The path of the file
+ * \return An initialized OFDataArray
+ */
+- initWithContentsOfFile: (OFString*)path;
 
 /**
  * \return The number of items in the OFDataArray

@@ -16,6 +16,8 @@
 #include <limits.h>
 
 #import "OFDataArray.h"
+#import "OFString.h"
+#import "OFFile.h"
 #import "OFExceptions.h"
 #import "macros.h"
 
@@ -23,6 +25,11 @@
 + dataArrayWithItemSize: (size_t)is
 {
 	return [[[self alloc] initWithItemSize: is] autorelease];
+}
+
++ dataArrayWithContentsOfFile: (OFString*)path
+{
+	return [[[self alloc] initWithContentsOfFile: path] autorelease];
 }
 
 - init
@@ -44,6 +51,39 @@
 
 		data = NULL;
 		itemSize = is;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithContentsOfFile: (OFString*)path
+{
+	self = [super init];
+
+	@try {
+		OFFile *file = [[OFFile alloc] initWithPath: path
+						       mode: @"rb"];
+		itemSize = 1;
+
+		@try {
+			char *buf = [self allocMemoryWithSize: of_pagesize];
+
+			while (![file isAtEndOfStream]) {
+				size_t size;
+
+				size = [file readNBytes: of_pagesize
+					     intoBuffer: buf];
+				[self addNItems: size
+				     fromCArray: buf];
+			}
+
+			[self freeMemory: buf];
+		} @finally {
+			[file release];
+		}
 	} @catch (id e) {
 		[self release];
 		@throw e;
