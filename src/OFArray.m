@@ -16,6 +16,7 @@
 #import "OFArray.h"
 #import "OFDataArray.h"
 #import "OFString.h"
+#import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 #import "macros.h"
 
@@ -274,6 +275,7 @@
 
 - (OFString*)componentsJoinedByString: (OFString*)separator
 {
+	OFAutoreleasePool *pool;
 	OFString *str;
 	OFString **objs = [array cArray];
 	size_t i, count = [array count];
@@ -289,15 +291,21 @@
 	cls = [OFString class];
 	append = [str methodForSelector: @selector(appendString:)];
 
+	pool = [[OFAutoreleasePool alloc] init];
+
 	for (i = 0; i < count - 1; i++) {
 		if (![objs[i] isKindOfClass: cls])
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
-		append(str, @selector(appendString:), objs[i]);
+		append(str, @selector(appendString:), [objs[i] description]);
 		append(str, @selector(appendString:), separator);
+
+		[pool releaseObjects];
 	}
 	append(str, @selector(appendString:), objs[i]);
+
+	[pool release];
 
 	return str;
 }
@@ -346,6 +354,17 @@
 	OF_HASH_FINALIZE(hash);
 
 	return hash;
+}
+
+- (OFString*)description
+{
+	OFMutableString *ret;
+
+	ret = (OFMutableString*)[self componentsJoinedByString: @", "];
+	[ret prependString: @"("];
+	[ret appendString: @")"];
+
+	return ret;
 }
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state

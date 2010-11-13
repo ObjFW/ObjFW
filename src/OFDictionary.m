@@ -16,6 +16,7 @@
 #import "OFDictionary.h"
 #import "OFEnumerator.h"
 #import "OFArray.h"
+#import "OFString.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 #import "macros.h"
@@ -615,6 +616,34 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	OF_HASH_FINALIZE(hash);
 
 	return hash;
+}
+
+- (OFString*)description
+{
+	OFMutableString *ret = [OFMutableString stringWithString: @"{"];
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init], *pool2;
+	OFEnumerator *enumerator = [self keyEnumerator];
+	id key;
+	size_t i;
+
+	i = 0;
+	pool2 = [[OFAutoreleasePool alloc] init];
+
+	while ((key = [enumerator nextObject]) != nil) {
+		[ret appendString: [key description]];
+		[ret appendString: @" = "];
+		[ret appendString: [[self objectForKey: key] description]];
+
+		if (++i < count)
+			[ret appendString: @"; "];
+
+		[pool2 releaseObjects];
+	}
+	[ret appendString: @"}"];
+
+	[pool release];
+
+	return ret;
 }
 @end
 

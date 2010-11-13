@@ -19,12 +19,20 @@
 
 static OFString *module = @"OFObject";
 
+@interface MyObj: OFObject
+@end
+
+@implementation MyObj
+@end
+
 @implementation TestsAppDelegate (OFObjectTests)
 - (void)objectTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFObject *obj = [[[OFObject alloc] init] autorelease];
 	void *p, *q, *r;
+	OFObject *o;
+	MyObj *m;
 
 	EXPECT_EXCEPTION(@"Detect freeing of memory not allocated by object",
 	    OFMemoryNotPartOfObjectException, [obj freeMemory: (void*)1])
@@ -64,6 +72,19 @@ static OFString *module = @"OFObject";
 	EXPECT_EXCEPTION(@"Detect resizing of memory not allocated by object",
 	    OFMemoryNotPartOfObjectException, [obj resizeMemory: (void*)1
 							 toSize: 1024])
+
+	TEST(@"+[description]",
+	    [[OFObject description] isEqual: @"OFObject"] &&
+	    [[MyObj description] isEqual: @"MyObj"])
+
+	o = [[[OFObject alloc] init] autorelease];
+	m = [[[MyObj alloc] init] autorelease];
+
+	TEST(@"-[description]",
+	    [[o description] isEqual:
+	    ([OFString stringWithFormat: @"<OFObject: %p>", o])] &&
+	    [[m description] isEqual:
+	    ([OFString stringWithFormat: @"<MyObj: %p>", m])])
 
 	[pool drain];
 }

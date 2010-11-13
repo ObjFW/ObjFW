@@ -49,6 +49,9 @@ static OFString *c_ary[] = {
 				      length: 3]) &&
 	    [a[2] isEqual: a[1]])
 
+	TEST(@"-[description]",
+	    [[a[0] description ]isEqual: @"(Foo, Bar, Baz)"])
+
 	TEST(@"-[addObject:]", R([m[0] addObject: c_ary[0]]) &&
 	    R([m[0] addObject: c_ary[2]]))
 

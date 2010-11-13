@@ -37,6 +37,8 @@
 # include <windows.h>
 #endif
 
+#import "OFString.h"
+
 #ifdef OF_ATOMIC_OPS
 # import "atomic.h"
 #else
@@ -261,6 +263,11 @@ objc_enumerationMutation(id obj)
 #endif
 }
 
++ (OFString*)description
+{
+	return [OFString stringWithCString: [self className]];
+}
+
 + (IMP)setImplementation: (IMP)newimp
 	  forClassMethod: (SEL)selector
 {
@@ -477,6 +484,12 @@ objc_enumerationMutation(id obj)
 {
 	/* Classes containing data should reimplement this! */
 	return (uint32_t)(uintptr_t)self;
+}
+
+- (OFString*)description
+{
+	/* Classes containing data should reimplement this! */
+	return [OFString stringWithFormat: @"<%s: %p>", [self className], self];
 }
 
 - (void)addMemoryToPool: (void*)ptr

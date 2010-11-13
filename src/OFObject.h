@@ -40,6 +40,8 @@ typedef struct __of_range {
 	size_t length;
 } of_range_t;
 
+@class OFString;
+
 /**
  * \brief The root class for all other classes inside ObjFW.
  */
@@ -128,6 +130,13 @@ typedef struct __of_range {
  * \return The type encoding of the instance method for the specified selector
  */
 + (const char*)typeEncodingForInstanceSelector: (SEL)selector;
+
+/**
+ * Returns a description for the class, which is usually the class name.
+ *
+ * This is mostly for debugging purposes.
+ */
++ (OFString*)description;
 
 /**
  * Replaces a class method implementation with another implementation.
@@ -242,6 +251,13 @@ typedef struct __of_range {
  * \return A 32 bit hash for the object
  */
 - (uint32_t)hash;
+
+/**
+ * Returns a description for the object.
+ *
+ * This is mostly for debugging purposes.
+ */
+- (OFString*)description;
 
 /**
  * Adds a pointer to the object's memory pool.

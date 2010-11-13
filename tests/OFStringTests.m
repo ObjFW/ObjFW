@@ -81,6 +81,8 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	TEST(@"-[hash] is the same if -[isEqual:] is YES",
 	    [s[0] hash] == [s[2] hash])
 
+	TEST(@"-[description]", [[s[0] description] isEqual: s[0]])
+
 	TEST(@"-[appendString:] and -[appendCString:]",
 	    R([s[1] appendCString: "1𝄞"]) && R([s[1] appendString: @"3"]) &&
 	    R([s[0] appendString: s[1]]) && [s[0] isEqual: @"täs€1𝄞3"])

@@ -805,6 +805,11 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return hash;
 }
 
+- (OFString*)description
+{
+	return [[self copy] autorelease];
+}
+
 - (of_unichar_t)characterAtIndex: (size_t)index
 {
 	of_unichar_t c;

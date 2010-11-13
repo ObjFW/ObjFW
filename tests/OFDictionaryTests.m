@@ -47,6 +47,9 @@ static OFString *values[] = {
 	    [[dict objectForKey: keys[1]] isEqual: values[1]] &&
 	    [dict objectForKey: @"key3"] == nil)
 
+	TEST(@"-[description]",
+	    [[dict description] isEqual: @"{key1 = value1; key2 = value2}"])
+
 	TEST(@"-[keyEnumerator]", (key_enum = [dict keyEnumerator]))
 	TEST(@"-[objectEnumerator]", (obj_enum = [dict objectEnumerator]))
 
