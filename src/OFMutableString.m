@@ -253,6 +253,12 @@
 	}
 }
 
+- (void)prependString: (OFString*)str
+{
+	return [self insertString: str
+			  atIndex: 0];
+}
+
 - (void)reverse
 {
 	size_t i, j, len = length / 2;

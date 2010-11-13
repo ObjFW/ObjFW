@@ -91,6 +91,13 @@
        withArguments: (va_list)args;
 
 /**
+ * Prepends another OFString to the OFString.
+ *
+ * \param str An OFString to prepend
+ */
+- (void)prependString: (OFString*)str;
+
+/**
  * Reverse the OFString.
  */
 - (void)reverse;
