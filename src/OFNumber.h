@@ -14,6 +14,7 @@
 #import "OFObject.h"
 
 enum of_number_type {
+	OF_NUMBER_BOOL,
 	OF_NUMBER_CHAR,
 	OF_NUMBER_SHORT,
 	OF_NUMBER_INT,
@@ -47,6 +48,7 @@ enum of_number_type {
 @interface OFNumber: OFObject <OFCopying>
 {
 	union {
+		BOOL	       bool_;
 		char	       char_;
 		short	       short_;
 		int	       int_;
@@ -75,6 +77,12 @@ enum of_number_type {
 	} value;
 	enum of_number_type type;
 }
+
+/**
+ * \param bool_ A BOOL which the OFNumber should contain
+ * \return A new autoreleased OFNumber
+ */
++ numberWithBool: (BOOL)bool_;
 
 /**
  * \param char_ A char which the OFNumber should contain
@@ -225,6 +233,14 @@ enum of_number_type {
  * \return A new autoreleased OFNumber
  */
 + numberWithDouble: (double)double_;
+
+/**
+ * Initializes an already allocated OFNumber with the specified BOOL.
+ *
+ * \param bool_ A BOOL which the OFNumber should contain
+ * \return An initialized OFNumber
+ */
+- initWithBool: (BOOL)bool_;
 
 /**
  * Initializes an already allocated OFNumber with the specified char.
@@ -431,6 +447,11 @@ enum of_number_type {
  *	   number of the OFNumber
  */
 - (enum of_number_type)type;
+
+/**
+ * \return The OFNumber as a BOOL
+ */
+- (BOOL)boolValue;
 
 /**
  * \return The OFNumber as a char

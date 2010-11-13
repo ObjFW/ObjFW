@@ -19,6 +19,8 @@
 
 #define RETURN_AS(t)							\
 	switch (type) {							\
+	case OF_NUMBER_BOOL:						\
+		return (t)value.bool_;					\
 	case OF_NUMBER_CHAR:						\
 		return (t)value.char_;					\
 	case OF_NUMBER_SHORT:						\
@@ -74,6 +76,9 @@
 	}
 #define CALCULATE(o, n)							\
 	switch (type) { 						\
+	case OF_NUMBER_BOOL:						\
+		return [OFNumber numberWithBool:			\
+		    value.bool_ o [n boolValue]];			\
 	case OF_NUMBER_CHAR:						\
 		return [OFNumber numberWithChar:			\
 		    value.char_ o [n charValue]];			\
@@ -154,6 +159,9 @@
 	}
 #define CALCULATE2(o, n)						\
 	switch (type) { 						\
+	case OF_NUMBER_BOOL:						\
+		return [OFNumber numberWithBool:			\
+		    value.bool_ o [n boolValue]];			\
 	case OF_NUMBER_CHAR:						\
 		return [OFNumber numberWithChar:			\
 		    value.char_ o [n charValue]];			\
@@ -232,6 +240,8 @@
 	}
 #define CALCULATE3(o)							\
 	switch (type) {							\
+	case OF_NUMBER_BOOL:						\
+		return [OFNumber numberWithBool: value.bool_ o];	\
 	case OF_NUMBER_CHAR:						\
 		return [OFNumber numberWithChar: value.char_ o];	\
 	case OF_NUMBER_SHORT:						\
@@ -290,6 +300,11 @@
 	}
 
 @implementation OFNumber
++ numberWithBool: (BOOL)bool_
+{
+	return [[[self alloc] initWithBool: bool_] autorelease];
+}
+
 + numberWithChar: (char)char_
 {
 	return [[[self alloc] initWithChar: char_] autorelease];
@@ -419,6 +434,16 @@
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
+}
+
+- initWithBool: (BOOL)bool_
+{
+	self = [super init];
+
+	value.bool_ = bool_;
+	type = OF_NUMBER_BOOL;
+
+	return self;
 }
 
 - initWithChar: (char)char_
@@ -674,6 +699,11 @@
 - (enum of_number_type)type
 {
 	return type;
+}
+
+- (BOOL)boolValue
+{
+	RETURN_AS(BOOL)
 }
 
 - (char)charValue
