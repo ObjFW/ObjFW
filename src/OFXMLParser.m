@@ -94,7 +94,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		@selector(_parseInAttributeValueWithBuffer:i:last:),
 		@selector(_parseExpectCloseWithBuffer:i:last:),
 		@selector(_parseExpectSpaceOrCloseWithBuffer:i:last:),
-		@selector(_parseInCDATAOrCommentWithBuffer:i:last:),
+		@selector(_parseInExclamationMarkWithBuffer:i:last:),
 		@selector(_parseInCDATAOpening1WithBuffer:i:last:),
 		@selector(_parseInCDATAOpening2WithBuffer:i:last:),
 		@selector(_parseInCDATAOpening3WithBuffer:i:last:),
@@ -107,7 +107,8 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		@selector(_parseInCommentOpeningWithBuffer:i:last:),
 		@selector(_parseInComment1WithBuffer:i:last:),
 		@selector(_parseInComment2WithBuffer:i:last:),
-		@selector(_parseInComment3WithBuffer:i:last:)
+		@selector(_parseInComment3WithBuffer:i:last:),
+		@selector(_parseInDoctypeWithBuffer:i:last:),
 	};
 	memcpy(selectors, sels, sizeof(sels));
 
@@ -336,7 +337,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 			break;
 		case '!':
 			*last = *i + 1;
-			state = OF_XMLPARSER_IN_CDATA_OR_COMMENT;
+			state = OF_XMLPARSER_IN_EXCLAMATIONMARK;
 			break;
 		default:
 			state = OF_XMLPARSER_IN_TAG_NAME;
@@ -715,16 +716,19 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		@throw [OFMalformedXMLException newWithClass: isa];
 }
 
-/* CDATA or comment */
-- (void)_parseInCDATAOrCommentWithBuffer: (const char*)buf
-				       i: (size_t*)i
-				    last: (size_t*)last
+/* In <! */
+- (void)_parseInExclamationMarkWithBuffer: (const char*)buf
+					i: (size_t*)i
+				     last: (size_t*)last
 {
 	if (buf[*i] == '-')
 		state = OF_XMLPARSER_IN_COMMENT_OPENING;
 	else if (buf[*i] == '[')
 		state = OF_XMLPARSER_IN_CDATA_OPENING_1;
-	else
+	else if (buf[*i] == 'D') {
+		state = OF_XMLPARSER_IN_DOCTYPE;
+		level = 0;
+	} else
 		@throw [OFMalformedXMLException newWithClass: isa];
 
 	*last = *i + 1;
@@ -928,6 +932,29 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 	*last = *i + 1;
 	state = OF_XMLPARSER_OUTSIDE_TAG;
+}
+
+/* In <!DOCTYPE ...> */
+- (void)_parseInDoctypeWithBuffer: (const char*)buf
+				i: (size_t*)i
+			     last: (size_t*)last
+{
+	if ((level < 6 && buf[*i] != "OCTYPE"[level]) ||
+	    (level == 6 && buf[*i] != ' ' && buf[*i] != '\t' &&
+	    buf[*i] != '\n' && buf[*i] != '\r'))
+		@throw [OFMalformedXMLException newWithClass: isa];
+
+	if (level < 7 || buf[*i] == '<')
+		level++;
+
+	if (buf[*i] == '>') {
+		if (level == 7)
+			state = OF_XMLPARSER_OUTSIDE_TAG;
+		else
+			level--;
+	}
+
+	*last = *i + 1;
 }
 
 -	   (OFString*)string: (OFString*)string

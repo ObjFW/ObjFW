@@ -302,7 +302,7 @@ enum event_type {
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFXMLParser *parser;
-	const char *str = "<?xml version='1.0'?><root>\n"
+	const char *str = "<?xml version='1.0'?><!DOCTYPE <<><<>>>><root>\n"
 	    " <![CDATA[f<oo]]><bar/>\n"
 	    " <foobar xmlns='urn:objfw:test:foobar'>\n"
 	    "  <qux xmlns:foo='urn:objfw:test:foo'>\n"

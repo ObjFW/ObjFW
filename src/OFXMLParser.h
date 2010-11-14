@@ -125,7 +125,7 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
 		OF_XMLPARSER_IN_ATTR_VALUE,
 		OF_XMLPARSER_EXPECT_CLOSE,
 		OF_XMLPARSER_EXPECT_SPACE_OR_CLOSE,
-		OF_XMLPARSER_IN_CDATA_OR_COMMENT,
+		OF_XMLPARSER_IN_EXCLAMATIONMARK,
 		OF_XMLPARSER_IN_CDATA_OPENING_1,
 		OF_XMLPARSER_IN_CDATA_OPENING_2,
 		OF_XMLPARSER_IN_CDATA_OPENING_3,
@@ -139,6 +139,7 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
 		OF_XMLPARSER_IN_COMMENT_1,
 		OF_XMLPARSER_IN_COMMENT_2,
 		OF_XMLPARSER_IN_COMMENT_3,
+		OF_XMLPARSER_IN_DOCTYPE,
 		OF_XMLPARSER_NUM_STATES
 	} state;
 	OFMutableString *cache;
@@ -158,6 +159,7 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
 	of_xml_parser_string_block_t commentHandler;
 	of_xml_parser_unknown_entity_block_t unknownEntityHandler;
 #endif
+	size_t level;
 }
 
 #ifdef OF_HAVE_PROPERTIES
