@@ -303,7 +303,7 @@
 
 		[pool releaseObjects];
 	}
-	append(str, @selector(appendString:), objs[i]);
+	append(str, @selector(appendString:), [objs[i] description]);
 
 	[pool release];
 
