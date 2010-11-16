@@ -398,11 +398,7 @@ objc_enumerationMutation(id obj)
 
 - (OFString*)className
 {
-#ifdef OF_GNU_RUNTIME
-	return [OFString stringWithCString: object_get_class_name(self)];
-#else
 	return [OFString stringWithCString: class_getName(isa)];
-#endif
 }
 
 - (BOOL)isKindOfClass: (Class)class
