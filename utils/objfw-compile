@@ -14,7 +14,7 @@ CPPFLAGS="$CPPFLAGS $($OBJFW_CONFIG --cppflags)"
 OBJC="$($OBJFW_CONFIG --objc)"
 OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --objcflags)"
 LIBS="$LIBS $($OBJFW_CONFIG --libs)"
-LDFLAGS="$LDFLAGS $($OBJFW_CONFIG --ldflags)"
+LDFLAGS="$LDFLAGS $($OBJFW_CONFIG --ldflags --rpath)"
 
 if test x"$1" = "x"; then
 	echo "Syntax: objfw-compile -o outname source1.m source2.m ..."
