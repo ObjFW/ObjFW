@@ -87,7 +87,7 @@ typedef struct __of_range {
 /**
  * \return The name of the class as a C string
  */
-+ (const char*)className;
++ (OFString*)className;
 
 /**
  * \param class_ The class which is checked for being a superclass
@@ -195,9 +195,9 @@ typedef struct __of_range {
 - (Class)class;
 
 /**
- * \return The name of the object's class as a C string
+ * \return The name of the object's class.
  */
-- (const char*)className;
+- (OFString*)className;
 
 /**
  * \param class_ The class whose kind is checked

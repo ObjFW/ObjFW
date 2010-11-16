@@ -165,9 +165,9 @@ objc_enumerationMutation(id obj)
 	return self;
 }
 
-+ (const char*)className
++ (OFString*)className
 {
-	return class_getName(self);
+	return [OFString stringWithCString: class_getName(self)];
 }
 
 + (BOOL)isSubclassOfClass: (Class)class
@@ -265,7 +265,7 @@ objc_enumerationMutation(id obj)
 
 + (OFString*)description
 {
-	return [OFString stringWithCString: [self className]];
+	return [self className];
 }
 
 + (IMP)setImplementation: (IMP)newimp
@@ -396,12 +396,12 @@ objc_enumerationMutation(id obj)
 	return isa;
 }
 
-- (const char*)className
+- (OFString*)className
 {
 #ifdef OF_GNU_RUNTIME
-	return object_get_class_name(self);
+	return [OFString stringWithCString: object_get_class_name(self)];
 #else
-	return class_getName(isa);
+	return [OFString stringWithCString: class_getName(isa)];
 #endif
 }
 
@@ -489,7 +489,8 @@ objc_enumerationMutation(id obj)
 - (OFString*)description
 {
 	/* Classes containing data should reimplement this! */
-	return [OFString stringWithFormat: @"<%s: %p>", [self className], self];
+	return [OFString stringWithFormat: @"<%s: %p>",
+					   [[self className] cString], self];
 }
 
 - (void)addMemoryToPool: (void*)ptr
