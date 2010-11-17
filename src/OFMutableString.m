@@ -204,9 +204,6 @@
 - (void)appendCStringWithoutUTF8Checking: (const char*)str
 				  length: (size_t)len
 {
-	if (len > strlen(str))
-		@throw [OFOutOfRangeException newWithClass: isa];
-
 	string = [self resizeMemory: string
 			     toSize: length + len + 1];
 	memcpy(string + length, str, len);
