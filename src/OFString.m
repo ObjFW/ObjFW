@@ -619,7 +619,6 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	self = [super init];
 
 	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 		OFFile *file;
 		char *tmp;
 		struct stat s;
@@ -628,19 +627,23 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 			@throw [OFInitializationFailedException
 			    newWithClass: isa];
 
-		tmp = [self allocMemoryWithSize: s.st_size];
-		file = [OFFile fileWithPath: path
-				       mode: @"rb"];
-		[file readExactlyNBytes: s.st_size
-			     intoBuffer: tmp];
+		file = [[OFFile alloc] initWithPath: path
+					       mode: @"rb"];
 
-		self = [self initWithCString: tmp
-				    encoding: encoding
-				      length: s.st_size];
+		@try {
+			tmp = [self allocMemoryWithSize: s.st_size];
 
-		[self freeMemory: tmp];
+			[file readExactlyNBytes: s.st_size
+				     intoBuffer: tmp];
 
-		[pool release];
+			self = [self initWithCString: tmp
+					    encoding: encoding
+					      length: s.st_size];
+
+			[self freeMemory: tmp];
+		} @finally {
+			[file release];
+		}
 	} @catch (id e) {
 		[self release];
 		@throw e;
