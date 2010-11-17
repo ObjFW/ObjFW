@@ -266,6 +266,20 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
  */
 - (void)parseBuffer: (const char*)buf
 	   withSize: (size_t)size;
+
+/**
+ * Parses the specified string.
+ *
+ * \param str The string to parse
+ */
+- (void)parseString: (OFString*)str;
+
+/**
+ * Parses the specified file.
+ *
+ * \param path The path to the file to parse
+*/
+- (void)parseFile: (OFString*)path;
 @end
 
 @interface OFObject (OFXMLParserDelegate) <OFXMLParserDelegate>

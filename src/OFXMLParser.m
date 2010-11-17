@@ -19,6 +19,7 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFXMLAttribute.h"
+#import "OFFile.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 #import "macros.h"
@@ -268,6 +269,37 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	if (size - last > 0 && state != OF_XMLPARSER_IN_TAG)
 		[cache appendCStringWithoutUTF8Checking: buf + last
 						 length: size - last];
+}
+
+- (void)parseString: (OFString*)str
+{
+	[self parseBuffer: [str cString]
+		 withSize: [str cStringLength]];
+}
+
+- (void)parseFile: (OFString*)path
+{
+	OFFile *file = [[OFFile alloc] initWithPath: path
+					       mode: @"rb"];
+
+	@try {
+		char *buf = [self allocMemoryWithSize: of_pagesize];
+
+		@try {
+			while (![file isAtEndOfStream]) {
+				size_t size;
+
+				size = [file readNBytes: of_pagesize
+					     intoBuffer: buf];
+				[self parseBuffer: buf
+					 withSize: size];
+			}
+		} @finally {
+			[self freeMemory: buf];
+		}
+	} @finally {
+		[file release];
+	}
 }
 
 /*
