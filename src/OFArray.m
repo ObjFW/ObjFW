@@ -285,7 +285,7 @@
 	if (count == 0)
 		return @"";
 	if (count == 1)
-		return [objs[0] retain];
+		return [objs[0] description];
 
 	str = [OFMutableString string];
 	cls = [OFString class];
