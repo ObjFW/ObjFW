@@ -358,13 +358,21 @@
 
 - (OFString*)description
 {
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFMutableString *ret;
 
-	ret = (OFMutableString*)[self componentsJoinedByString: @", "];
-	[ret prependString: @"("];
-	[ret appendString: @")"];
+	ret = [[self componentsJoinedByString: @", "] mutableCopy];
 
-	return ret;
+	@try {
+		[ret prependString: @"("];
+		[ret appendString: @")"];
+	} @catch (id e) {
+		[ret release];
+	}
+
+	[pool release];
+
+	return [ret autorelease];
 }
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
