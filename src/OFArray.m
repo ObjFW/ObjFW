@@ -277,7 +277,7 @@
 {
 	OFAutoreleasePool *pool;
 	OFString *str;
-	OFString **objs = [array cArray];
+	OFObject **objs = [array cArray];
 	size_t i, count = [array count];
 	Class cls;
 	IMP append;
