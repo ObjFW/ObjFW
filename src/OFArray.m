@@ -279,7 +279,6 @@
 	OFString *str;
 	OFObject **objs = [array cArray];
 	size_t i, count = [array count];
-	Class cls;
 	IMP append;
 
 	if (count == 0)
@@ -288,16 +287,11 @@
 		return [objs[0] description];
 
 	str = [OFMutableString string];
-	cls = [OFString class];
 	append = [str methodForSelector: @selector(appendString:)];
 
 	pool = [[OFAutoreleasePool alloc] init];
 
 	for (i = 0; i < count - 1; i++) {
-		if (![objs[i] isKindOfClass: cls])
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
-
 		append(str, @selector(appendString:), [objs[i] description]);
 		append(str, @selector(appendString:), separator);
 
