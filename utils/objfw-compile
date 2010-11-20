@@ -60,7 +60,7 @@ while test x"$1" != "x"; do
 			shift
 			out="$1"
 			;;
-		-l|--lib)
+		--lib)
 			if test x"flags_done" = x"yes"; then
 				printf "The --lib flag needs to be specified "
 				printf "before any source file!\n"
@@ -83,6 +83,34 @@ while test x"$1" != "x"; do
 			LDFLAGS="$LDFLAGS $($OBJFW_CONFIG --lib-ldflags)"
 			out_prefix="$($OBJFW_CONFIG --lib-prefix)"
 			out_suffix="$($OBJFW_CONFIG --lib-suffix)"
+			;;
+		-D)
+			shift
+			CPPFLAGS="$CPPFLAGS -D$1"
+			;;
+		-D*)
+			CPPFLAGS="$CPPFLAGS $1"
+			;;
+		-I)
+			shift
+			CPPFLAGS="$CPPFLAGS -I$1"
+			;;
+		-I*)
+			CPPFLAGS="$CPPFLAGS $1"
+			;;
+		-l)
+			shift
+			LIBS="$LIBS -l$1"
+			;;
+		-l*)
+			LIBS="$LIBS $1"
+			;;
+		-L)
+			shift
+			LIBS="$LIBS -L$1"
+			;;
+		-L*)
+			LIBS="$LIBS $1"
 			;;
 		-*)
 			echo "Unknown option: $1"
