@@ -91,6 +91,9 @@ while test x"$1" != "x"; do
 		-D*)
 			CPPFLAGS="$CPPFLAGS $1"
 			;;
+		-g*)
+			OBJCFLAGS="$OBJCFLAGS $1"
+			;;
 		-I)
 			shift
 			CPPFLAGS="$CPPFLAGS -I$1"
@@ -111,6 +114,9 @@ while test x"$1" != "x"; do
 			;;
 		-L*)
 			LIBS="$LIBS $1"
+			;;
+		-O*)
+			OBJCFLAGS="$OBJCFLAGS $1"
 			;;
 		-W*)
 			OBJCFLAGS="$OBJCFLAGS $1"
