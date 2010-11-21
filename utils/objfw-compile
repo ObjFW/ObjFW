@@ -61,6 +61,11 @@ while test x"$1" != "x"; do
 			out="$1"
 			;;
 		--lib)
+			if test x"$plugin" = x"yes"; then
+				echo "You can't use --lib and --plugin!"
+				exit 1
+			fi
+
 			shift
 
 			if ! echo "$1" | grep "^[0-9]\+\.[0-9]\+" >/dev/null
@@ -112,6 +117,17 @@ while test x"$1" != "x"; do
 		-O*)
 			OBJCFLAGS="$OBJCFLAGS $1"
 			;;
+		--plugin)
+			if test x"$lib" = x"yes"; then
+				echo "You can't use --lib and --plugin!"
+				exit 1
+			fi
+
+			plugin="yes"
+			OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --plugin-cflags)"
+			LDFLAGS="$LDFLAGS $($OBJFW_CONFIG --plugin-ldflags)"
+			out_suffix="$($OBJFW_CONFIG --plugin-suffix)"
+			;;
 		-W*)
 			OBJCFLAGS="$OBJCFLAGS $1"
 			;;
@@ -137,7 +153,13 @@ if test x"$out" = x""; then
 fi
 
 for i in $srcs; do
-	obj="${i%.m}.o"
+	if test x"$lib" = x"yes"; then
+		obj="${i%.m}.lib.o"
+	elif test x"$plugin" = x"yes"; then
+		obj="${i%.m}.plugin.o"
+	else
+		obj="${i%.m}.o"
+	fi
 	objs="$objs $obj"
 	build="no"
 	deps=$($OBJC -E -M $CPPFLAGS $ENV_CPPFLAGS $i | \
@@ -160,7 +182,8 @@ for i in $srcs; do
 	fi
 done
 
-test x"$lib" = x"no" && out_suffix="$($OBJFW_CONFIG --prog-suffix)"
+test x"$lib" = x"no" -a x"$plugin" = x"no" && \
+	out_suffix="$($OBJFW_CONFIG --prog-suffix)"
 
 if test ! -f "$out_prefix$out$out_suffix" -o x"$link" = x"yes"; then
 	status_linking $out_prefix$out$out_suffix

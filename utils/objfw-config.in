@@ -16,6 +16,9 @@ LDFLAGS=""
 LDFLAGS_REEXPORT="@LDFLAGS_REEXPORT@"
 LDFLAGS_RPATH="@LDFLAGS_RPATH@"
 LIBS="-L${libdir} -lobjfw @LIBS@"
+PLUGIN_CFLAGS="@PLUGIN_CFLAGS@"
+PLUGIN_LDFLAGS="@PLUGIN_LDFLAGS@"
+PLUGIN_SUFFIX="@PLUGIN_SUFFIX@"
 PROG_SUFFIX="@EXEEXT@"
 VERSION="0.4-dev"
 
@@ -115,6 +118,15 @@ while test ! -z "$1"; do
 			;;
 		--rpath)
 			printf "%s" "$LDFLAGS_RPATH"
+			;;
+		--plugin-cflags)
+			printf "%s" "$PLUGIN_CFLAGS"
+			;;
+		--plugin-ldflags)
+			printf "%s" "$PLUGIN_LDFLAGS"
+			;;
+		--plugin-suffix)
+			printf "%s" "$PLUGIN_SUFFIX"
 			;;
 		--prog-suffix)
 			printf "%s" "$PROG_SUFFIX"
