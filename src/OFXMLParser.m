@@ -79,6 +79,11 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 }
 
 @implementation OFXMLParser
+#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
+@synthesize elementStartHandler, elementEndHandler, charactersHandler;
+@synthesize CDATAHandler, commentHandler, unknownEntityHandler;
+#endif
+
 + (void)initialize
 {
 	size_t i;
@@ -159,7 +164,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	[attrName release];
 	[attrPrefix release];
 	[previous release];
-#ifdef OF_HAVE_BLOCKS
+#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 	[elementStartHandler release];
 	[elementEndHandler release];
 	[charactersHandler release];
@@ -182,80 +187,6 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	[(id)delegate release];
 	delegate = delegate_;
 }
-
-#ifdef OF_HAVE_BLOCKS
-- (of_xml_parser_element_start_block_t)elementStartHandler
-{
-	return [[elementStartHandler copy] autorelease];
-}
-
-- (void)setElementStartHandler: (of_xml_parser_element_start_block_t)block
-{
-	block = [block copy];
-	[elementStartHandler release];
-	elementStartHandler = block;
-}
-
-- (of_xml_parser_element_end_block_t)elementEndHandler
-{
-	return [[elementEndHandler copy] autorelease];
-}
-
-- (void)setElementEndHandler: (of_xml_parser_element_end_block_t)block
-{
-	block = [block copy];
-	[elementEndHandler release];
-	elementEndHandler = block;
-}
-
-- (of_xml_parser_string_block_t)charactersHandler
-{
-	return [[charactersHandler copy] autorelease];
-}
-
-- (void)setCharactersHandler: (of_xml_parser_string_block_t)block
-{
-	block = [block copy];
-	[charactersHandler release];
-	charactersHandler = block;
-}
-
-- (of_xml_parser_string_block_t)CDATAHandler
-{
-	return [[CDATAHandler copy] autorelease];
-}
-
-- (void)setCDATAHandler: (of_xml_parser_string_block_t)block
-{
-	block = [block copy];
-	[CDATAHandler release];
-	CDATAHandler = block;
-}
-
-- (of_xml_parser_string_block_t)commentHandler
-{
-	return [[commentHandler copy] autorelease];
-}
-
-- (void)setCommentHandler: (of_xml_parser_string_block_t)block
-{
-	block = [block copy];
-	[commentHandler release];
-	commentHandler = block;
-}
-
-- (of_xml_parser_unknown_entity_block_t)unknownEntityHandler
-{
-	return [[unknownEntityHandler copy] autorelease];
-}
-
-- (void)setUnknownEntityHandler: (of_xml_parser_unknown_entity_block_t)block
-{
-	block = [block copy];
-	[unknownEntityHandler release];
-	unknownEntityHandler = block;
-}
-#endif
 
 - (void)parseBuffer: (const char*)buf
 	   withSize: (size_t)size
@@ -329,7 +260,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		pool = [[OFAutoreleasePool alloc] init];
 		str = transform_string(cache, self);
 
-#ifdef OF_HAVE_BLOCKS
+#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 		if (charactersHandler != NULL)
 			charactersHandler(self, str);
 		else
@@ -425,7 +356,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 		pool = [[OFAutoreleasePool alloc] init];
 
-#ifdef OF_HAVE_BLOCKS
+#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 		if (elementStartHandler != NULL)
 			elementStartHandler(self, name, prefix, ns, nil);
 		else
@@ -437,7 +368,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 			      attributes: nil];
 
 		if (buf[*i] == '/') {
-#ifdef OF_HAVE_BLOCKS
+#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 			if (elementEndHandler != NULL)
 				elementEndHandler(self, name, prefix, ns);
 			else
@@ -518,7 +449,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 	pool = [[OFAutoreleasePool alloc] init];
 
-#ifdef OF_HAVE_BLOCKS
+#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 	if (elementEndHandler != NULL)
 		elementEndHandler(self, name, prefix, ns);
 	else
@@ -576,7 +507,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 	pool = [[OFAutoreleasePool alloc] init];
 
-#ifdef OF_HAVE_BLOCKS
+#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 	if (elementStartHandler != NULL)
 		elementStartHandler(self, name, prefix, ns, attrs);
 	else
@@ -588,7 +519,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		      attributes: attrs];
 
 	if (buf[*i] == '/') {
-#ifdef OF_HAVE_BLOCKS
+#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 		if (elementEndHandler != NULL)
 			elementEndHandler(self, name, prefix, ns);
 		else
@@ -812,7 +743,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	[cdata removeCharactersFromIndex: len - 2
 				 toIndex: len];
 
-#ifdef OF_HAVE_BLOCKS
+#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 	if (CDATAHandler != NULL)
 		CDATAHandler(self, cdata);
 	else
@@ -875,7 +806,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	[comment removeCharactersFromIndex: len - 2
 				   toIndex: len];
 
-#ifdef OF_HAVE_BLOCKS
+#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 	if (commentHandler != NULL)
 		commentHandler(self, comment);
 	else
@@ -917,7 +848,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 -	   (OFString*)string: (OFString*)string
   containsUnknownEntityNamed: (OFString*)entity
 {
-#ifdef OF_HAVE_BLOCKS
+#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 	if (unknownEntityHandler != NULL)
 		return unknownEntityHandler(self, entity);
 #endif

@@ -17,7 +17,7 @@
 @class OFArray;
 @class OFMutableArray;
 
-#ifdef OF_HAVE_BLOCKS
+#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 typedef void (^of_xml_parser_element_start_block_t)(OFXMLParser *parser,
     OFString *name, OFString *prefix, OFString *ns, OFArray *attrs);
 typedef void (^of_xml_parser_element_end_block_t)(OFXMLParser *parser,
@@ -144,7 +144,7 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
 	OFString *attrPrefix;
 	char delim;
 	OFMutableArray *previous;
-#ifdef OF_HAVE_BLOCKS
+#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 	of_xml_parser_element_start_block_t elementStartHandler;
 	of_xml_parser_element_end_block_t elementEndHandler;
 	of_xml_parser_string_block_t charactersHandler;
@@ -184,7 +184,7 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
  */
 - (void)setDelegate: (id <OFXMLParserDelegate>)delegate;
 
-#ifdef OF_HAVE_BLOCKS
+#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 /**
  * \return The element start handler
  */
