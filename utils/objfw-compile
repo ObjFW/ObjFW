@@ -46,7 +46,7 @@ status_link_failed() {
 	exit $2
 }
 
-flags_done="no"
+srcs=""
 out=""
 objs=""
 link="no"
@@ -61,12 +61,6 @@ while test x"$1" != "x"; do
 			out="$1"
 			;;
 		--lib)
-			if test x"flags_done" = x"yes"; then
-				printf "The --lib flag needs to be specified "
-				printf "before any source file!\n"
-				exit 1
-			fi
-
 			shift
 
 			if ! echo "$1" | grep "^[0-9]\+\.[0-9]\+" >/dev/null
@@ -126,28 +120,7 @@ while test x"$1" != "x"; do
 			exit 1
 			;;
 		*.m)
-			flags_done="yes"
-			obj="${1%.m}.o"
-			objs="$objs $obj"
-			build="no"
-			deps=$($OBJC -E -M $CPPFLAGS $ENV_CPPFLAGS $1 | \
-			       sed 's/.*: //' | sed 's/\\//g')
-
-			if test -f "$obj"; then
-				for dep in $deps; do
-					test "$dep" -nt $obj && build="yes"
-				done
-			else
-				build="yes"
-			fi
-
-			if test x"$build" = x"yes"; then
-				link="yes"
-				status_compiling $1
-				$OBJC $CPPFLAGS $OBJCFLAGS -c -o $obj $1 || \
-					status_compile_failed $1 $?
-				status_compiled $1
-			fi
+			srcs="$srcs $1"
 			;;
 		*)
 			echo "Only .m files can be compiled!" 1>&2
@@ -162,6 +135,30 @@ if test x"$out" = x""; then
 	echo "No output name specified! Use -o or --out!"
 	exit 1
 fi
+
+for i in $srcs; do
+	obj="${i%.m}.o"
+	objs="$objs $obj"
+	build="no"
+	deps=$($OBJC -E -M $CPPFLAGS $ENV_CPPFLAGS $i | \
+	       sed 's/.*: //' | sed 's/\\//g')
+
+	if test -f "$obj"; then
+		for dep in $deps; do
+			test "$dep" -nt $obj && build="yes"
+		done
+	else
+		build="yes"
+	fi
+
+	if test x"$build" = x"yes"; then
+		link="yes"
+		status_compiling $i
+		$OBJC $CPPFLAGS $OBJCFLAGS -c -o $obj $i || \
+			status_compile_failed $i $?
+		status_compiled $i
+	fi
+done
 
 test x"$lib" = x"no" && out_suffix="$($OBJFW_CONFIG --prog-suffix)"
 
