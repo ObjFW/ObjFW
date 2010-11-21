@@ -591,10 +591,11 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		[cache appendCStringWithoutUTF8Checking: buf + *last
 						 length: len];
 
+	[cache removeLeadingAndTrailingWhitespaces];
 	cache_c = [cache cString];
 	cache_len = [cache cStringLength];
 
-	if ((tmp = memchr(cache_c, ':', cache_len)) != NULL ) {
+	if ((tmp = memchr(cache_c, ':', cache_len)) != NULL) {
 		attrName = [[OFString alloc] initWithCString: tmp + 1
 						      length: cache_len -
 							      (tmp - cache_c) -
@@ -617,11 +618,16 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 				      i: (size_t*)i
 				   last: (size_t*)last
 {
+	*last = *i + 1;
+
+	if (buf[*i] == ' ' || buf[*i] == '\t' || buf[*i] == '\n' ||
+	    buf[*i] == '\r')
+		return;
+
 	if (buf[*i] != '\'' && buf[*i] != '"')
 		@throw [OFMalformedXMLException newWithClass: isa];
 
 	delim = buf[*i];
-	*last = *i + 1;
 	state = OF_XMLPARSER_IN_ATTR_VALUE;
 }
 
