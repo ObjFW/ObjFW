@@ -80,8 +80,9 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 @implementation OFXMLParser
 #if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
-@synthesize elementStartHandler, elementEndHandler, charactersHandler;
-@synthesize CDATAHandler, commentHandler, unknownEntityHandler;
+@synthesize processingInstructionsHandler, elementStartHandler;
+@synthesize elementEndHandler, charactersHandler, CDATAHandler, commentHandler;
+@synthesize unknownEntityHandler;
 #endif
 
 + (void)initialize
@@ -91,7 +92,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	const SEL sels[] = {
 		@selector(_parseOutsideTagWithBuffer:i:last:),
 		@selector(_parseTagOpenedWithBuffer:i:last:),
-		@selector(_parseInPrologWithBuffer:i:last:),
+		@selector(_parseInProcessingInstructionsWithBuffer:i:last:),
 		@selector(_parseInTagNameWithBuffer:i:last:),
 		@selector(_parseInCloseTagNameWithBuffer:i:last:),
 		@selector(_parseInTagWithBuffer:i:last:),
@@ -285,7 +286,8 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	switch (buf[*i]) {
 		case '?':
 			*last = *i + 1;
-			state = OF_XMLPARSER_IN_PROLOG;
+			state = OF_XMLPARSER_IN_PROCESSING_INSTRUCTIONS;
+			level = 0;
 			break;
 		case '/':
 			*last = *i + 1;
@@ -303,14 +305,36 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 }
 
 /* Inside prolog */
-- (void)_parseInPrologWithBuffer: (const char*)buf
-			       i: (size_t*)i
-			    last: (size_t*)last
+- (void)_parseInProcessingInstructionsWithBuffer: (const char*)buf
+					       i: (size_t*)i
+					    last: (size_t*)last
 {
-	*last = *i + 1;
-
 	if (buf[*i] == '?')
-		state = OF_XMLPARSER_EXPECT_CLOSE;
+		level = 1;
+	else if (level == 1 && buf[*i] == '>') {
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		OFMutableString *pi;
+		size_t len;
+
+		[cache appendCStringWithoutUTF8Checking: buf + *last
+						 length: *i - *last];
+		pi = [[cache mutableCopy] autorelease];
+		len = [pi length];
+
+		[pi removeCharactersFromIndex: len - 1
+				      toIndex: len];
+
+		[delegate parser: self
+		    foundProcessingInstructions: pi];
+
+		[pool release];
+
+		[cache setToCString: ""];
+
+		*last = *i + 1;
+		state = OF_XMLPARSER_OUTSIDE_TAG;
+	} else
+		level = 0;
 }
 
 /* Inside a tag, no name yet */
@@ -859,6 +883,11 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 @end
 
 @implementation OFObject (OFXMLParserDelegate)
+-		 (void)parser: (OFXMLParser*)parser
+  foundProcessingInstructions: (OFString*)pi
+{
+}
+
 -    (void)parser: (OFXMLParser*)parser
   didStartElement: (OFString*)name
        withPrefix: (OFString*)prefix

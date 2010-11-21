@@ -26,6 +26,7 @@ static OFString *module = @"OFXMLParser";
 static int i = 0;
 
 enum event_type {
+	PROCESSING_INSTRUCTIONS,
 	TAG_START,
 	TAG_END,
 	STRING,
@@ -40,7 +41,6 @@ enum event_type {
 			  namespace: (OFString*)ns
 			 attributes: (OFArray*)attrs
 			     string: (OFString*)string
-			    comment: (OFString*)comment
 {
 	OFString *msg;
 
@@ -49,27 +49,35 @@ enum event_type {
 
 	switch (i) {
 	case 1:
+		TEST(msg, et == PROCESSING_INSTRUCTIONS &&
+		    [string isEqual: @"xml version='1.0'"])
+		break;
+	case 2:
+		TEST(msg, et == PROCESSING_INSTRUCTIONS &&
+		    [string isEqual: @"p?i"])
+		break;
+	case 3:
 		TEST(msg, et == TAG_START && [name isEqual: @"root"] &&
 		    prefix == nil && ns == nil && [attrs count] == 0)
 		break;
-	case 2:
+	case 4:
 		TEST(msg, et == STRING && [string isEqual: @"\n "])
 		break;
-	case 3:
+	case 5:
 		TEST(msg, et == CDATA && [string isEqual: @"f<]]]oo"])
 		break;
-	case 4:
+	case 6:
 		TEST(msg, et == TAG_START && [name isEqual: @"bar"] &&
 		    prefix == nil && ns == nil && attrs == nil)
 		break;
-	case 5:
+	case 7:
 		TEST(msg, et == TAG_END && [name isEqual: @"bar"] &&
 		    prefix == nil && ns == nil && attrs == nil)
 		break;
-	case 6:
+	case 8:
 		TEST(msg, et == STRING && [string isEqual: @"\n "])
 		break;
-	case 7:
+	case 9:
 		TEST(msg, et == TAG_START && [name isEqual: @"foobar"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"] &&
 		    [attrs count] == 1 &&
@@ -79,10 +87,10 @@ enum event_type {
 		    [[[attrs objectAtIndex: 0] stringValue] isEqual:
 		    @"urn:objfw:test:foobar"])
 		break;
-	case 8:
+	case 10:
 		TEST(msg, et == STRING && [string isEqual: @"\n  "])
 		break;
-	case 9:
+	case 11:
 		TEST(msg, et == TAG_START && [name isEqual: @"qux"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"] &&
 		    [attrs count] == 1 &&
@@ -93,10 +101,10 @@ enum event_type {
 		    [[[attrs objectAtIndex: 0] stringValue] isEqual:
 		    @"urn:objfw:test:foo"])
 		break;
-	case 10:
+	case 12:
 		TEST(msg, et == STRING && [string isEqual: @"\n   "])
 		break;
-	case 11:
+	case 13:
 		TEST(msg, et == TAG_START && [name isEqual: @"bla"] &&
 		    [prefix isEqual: @"foo"] &&
 		    [ns isEqual: @"urn:objfw:test:foo"] &&
@@ -111,10 +119,10 @@ enum event_type {
 		    [[attrs objectAtIndex: 1] namespace] == nil &&
 		    [[[attrs objectAtIndex: 1] stringValue] isEqual: @"foo"])
 		break;
-	case 12:
+	case 14:
 		TEST(msg, et == STRING && [string isEqual: @"\n    "])
 		break;
-	case 13:
+	case 15:
 		TEST(msg, et == TAG_START && [name isEqual: @"blup"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"] &&
 		    [attrs count] == 2 &&
@@ -128,14 +136,14 @@ enum event_type {
 		    [[attrs objectAtIndex: 1] namespace] == nil &&
 		    [[[attrs objectAtIndex: 1] stringValue] isEqual: @"test"])
 		break;
-	case 14:
+	case 16:
 		TEST(msg, et == TAG_END && [name isEqual: @"blup"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"])
 		break;
-	case 15:
+	case 17:
 		TEST(msg, et == STRING && [string isEqual: @"\n    "])
 		break;
-	case 16:
+	case 18:
 		TEST(msg, et == TAG_START && [name isEqual: @"bla"] &&
 		    [prefix isEqual: @"bla"] &&
 		    [ns isEqual: @"urn:objfw:test:bla"] && [attrs count] == 3 &&
@@ -155,15 +163,15 @@ enum event_type {
 		    @"urn:objfw:test:bla"] &&
 		    [[[attrs objectAtIndex: 2] stringValue] isEqual: @"blafoo"])
 		break;
-	case 17:
+	case 19:
 		TEST(msg, et == TAG_END && [name isEqual: @"bla"] &&
 		    [prefix isEqual: @"bla"] &&
 		    [ns isEqual: @"urn:objfw:test:bla"])
 		break;
-	case 18:
+	case 20:
 		TEST(msg, et == STRING && [string isEqual: @"\n    "])
 		break;
-	case 19:
+	case 21:
 		TEST(msg, et == TAG_START && [name isEqual: @"abc"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:abc"] &&
 		    [attrs count] == 3 &&
@@ -182,46 +190,57 @@ enum event_type {
 		    @"urn:objfw:test:foo"] &&
 		    [[[attrs objectAtIndex: 2] stringValue] isEqual: @"abc"])
 		break;
-	case 20:
+	case 22:
 		TEST(msg, et == TAG_END && [name isEqual: @"abc"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:abc"])
-		break;
-	case 21:
-		TEST(msg, et == STRING && [string isEqual: @"\n   "])
-		break;
-	case 22:
-		TEST(msg, et == TAG_END && [name isEqual: @"bla"] &&
-		    [prefix isEqual: @"foo"] &&
-		    [ns isEqual: @"urn:objfw:test:foo"])
 		break;
 	case 23:
 		TEST(msg, et == STRING && [string isEqual: @"\n   "])
 		break;
 	case 24:
-		TEST(msg, et == COMMENT && [comment isEqual: @" commänt "])
+		TEST(msg, et == TAG_END && [name isEqual: @"bla"] &&
+		    [prefix isEqual: @"foo"] &&
+		    [ns isEqual: @"urn:objfw:test:foo"])
 		break;
 	case 25:
-		TEST(msg, et == STRING && [string isEqual: @"\n  "])
+		TEST(msg, et == STRING && [string isEqual: @"\n   "])
 		break;
 	case 26:
+		TEST(msg, et == COMMENT && [string isEqual: @" commänt "])
+		break;
+	case 27:
+		TEST(msg, et == STRING && [string isEqual: @"\n  "])
+		break;
+	case 28:
 		TEST(msg, et == TAG_END && [name isEqual: @"qux"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"])
 		break;
-	case 27:
+	case 29:
 		TEST(msg, et == STRING && [string isEqual: @"\n "])
 		break;
-	case 28:
+	case 30:
 		TEST(msg, et == TAG_END && [name isEqual: @"foobar"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"])
 		break;
-	case 29:
+	case 31:
 		TEST(msg, et == STRING && [string isEqual: @"\n"])
 		break;
-	case 30:
+	case 32:
 		TEST(msg, et == TAG_END && [name isEqual: @"root"] &&
 		    prefix == nil && ns == nil);
 		break;
 	}
+}
+
+-		 (void)parser: (OFXMLParser*)parser
+  foundProcessingInstructions: (OFString*)pi
+{
+	[self parserCallbackWithEventType: PROCESSING_INSTRUCTIONS
+				     name: nil
+				   prefix: nil
+				namespace: nil
+			       attributes: nil
+				   string: pi];
 }
 
 -    (void)parser: (OFXMLParser*)parser
@@ -235,8 +254,7 @@ enum event_type {
 				   prefix: prefix
 				namespace: ns
 			       attributes: attrs
-				   string: nil
-				  comment: nil];
+				   string: nil];
 }
 
 -  (void)parser: (OFXMLParser*)parser
@@ -249,8 +267,7 @@ enum event_type {
 				   prefix: prefix
 				namespace: ns
 			       attributes: nil
-				   string: nil
-				  comment: nil];
+				   string: nil];
 }
 
 -    (void)parser: (OFXMLParser*)parser
@@ -261,8 +278,7 @@ enum event_type {
 				   prefix: nil
 				namespace: nil
 			       attributes: nil
-				   string: string
-				  comment: nil];
+				   string: string];
 }
 
 - (void)parser: (OFXMLParser*)parser
@@ -273,8 +289,7 @@ enum event_type {
 				   prefix: nil
 				namespace: nil
 			       attributes: nil
-				   string: cdata
-				  comment: nil];
+				   string: cdata];
 }
 
 - (void)parser: (OFXMLParser*)parser
@@ -285,8 +300,7 @@ enum event_type {
 				   prefix: nil
 				namespace: nil
 			       attributes: nil
-				   string: nil
-				  comment: comment];
+				   string: comment];
 }
 
 -	(OFString*)parser: (OFXMLParser*)parser
@@ -302,7 +316,8 @@ enum event_type {
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFXMLParser *parser;
-	const char *str = "<?xml version='1.0'?><!DOCTYPE <<><<>>>><root>\n"
+	const char *str = "<?xml version='1.0'?><?p?i?>"
+	    "<!DOCTYPE <<><<>>>><root>\n"
 	    " <![CDATA[f<]]]oo]]><bar/>\n"
 	    " <foobar xmlns='urn:objfw:test:foobar'>\n"
 	    "  <qux xmlns:foo='urn:objfw:test:foo'>\n"
@@ -334,7 +349,7 @@ enum event_type {
 				   withSize: 2];
 	}
 
-	TEST(@"Checking if everything was parsed", i == 30)
+	TEST(@"Checking if everything was parsed", i == 32)
 
 	[pool drain];
 }

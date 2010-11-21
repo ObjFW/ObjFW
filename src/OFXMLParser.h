@@ -18,6 +18,8 @@
 @class OFMutableArray;
 
 #if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
+typedef void (^of_xml_parser_processing_instructions_block_t)(
+    OFXMLParser *parser, OFString *pi);
 typedef void (^of_xml_parser_element_start_block_t)(OFXMLParser *parser,
     OFString *name, OFString *prefix, OFString *ns, OFArray *attrs);
 typedef void (^of_xml_parser_element_end_block_t)(OFXMLParser *parser,
@@ -32,6 +34,15 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
  * \brief A protocol that needs to be implemented by delegates for OFXMLParser.
  */
 @protocol OFXMLParserDelegate
+/**
+ * This callback is called when the XML parser found processing instructions.
+ *
+ * \param parser The parser which found processing instructions
+ * \param pi The processing instructions
+ */
+-		 (void)parser: (OFXMLParser*)parser
+  foundProcessingInstructions: (OFString*)pi;
+
 /**
  * This callback is called when the XML parser found the start of a new tag.
  *
@@ -116,7 +127,7 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
 	enum {
 		OF_XMLPARSER_OUTSIDE_TAG,
 		OF_XMLPARSER_TAG_OPENED,
-		OF_XMLPARSER_IN_PROLOG,
+		OF_XMLPARSER_IN_PROCESSING_INSTRUCTIONS,
 		OF_XMLPARSER_IN_TAG_NAME,
 		OF_XMLPARSER_IN_CLOSE_TAG_NAME,
 		OF_XMLPARSER_IN_TAG,
@@ -145,6 +156,8 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
 	char delim;
 	OFMutableArray *previous;
 #if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
+	of_xml_parser_processing_instructions_block_t
+	    processingInstructionsHandler;
 	of_xml_parser_element_start_block_t elementStartHandler;
 	of_xml_parser_element_end_block_t elementEndHandler;
 	of_xml_parser_string_block_t charactersHandler;
@@ -158,6 +171,8 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
 #ifdef OF_HAVE_PROPERTIES
 @property (retain) id <OFXMLParserDelegate> delegate;
 # ifdef OF_HAVE_BLOCKS
+@property (copy) of_xml_parser_processing_instructions_block_t
+    processingInstructionsHandler;
 @property (copy) of_xml_parser_element_start_block_t elementStartHandler;
 @property (copy) of_xml_parser_element_end_block_t elementEndHandler;
 @property (copy) of_xml_parser_string_block_t charactersHandler;
@@ -185,6 +200,19 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
 - (void)setDelegate: (id <OFXMLParserDelegate>)delegate;
 
 #if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
+/**
+ * \return The processing instructions handler
+ */
+- (of_xml_parser_processing_instructions_block_t)processingInstructionsHandler;
+
+/**
+ * Sets the processing instructions handler.
+ *
+ * \param block A processing instructions handler
+ */
+- (void)setProcessingInstructionsHandler:
+    (of_xml_parser_processing_instructions_block_t)block;
+
 /**
  * \return The element start handler
  */
