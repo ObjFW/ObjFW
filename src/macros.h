@@ -22,10 +22,12 @@
 # define OF_INLINE inline __attribute__((always_inline))
 # define OF_LIKELY(cond) __builtin_expect(!!(cond), 1)
 # define OF_UNLIKELY(cond) __builtin_expect(!!(cond), 0)
+# define OF_CONST_FUNC __attribute__((const))
 #else
 # define OF_INLINE inline
 # define OF_LIKELY(cond) cond
 # define OF_UNLIKELY(cond) cond
+# define OF_CONST_FUNC
 #endif
 
 /* Required to build universal binaries on OS X */
@@ -57,14 +59,14 @@
 # define OF_PATH_DELIM '\\'
 #endif
 
-static OF_INLINE uint16_t
+static OF_INLINE uint16_t OF_CONST_FUNC
 OF_BSWAP16_CONST(uint16_t i)
 {
 	return (i & UINT16_C(0xFF00)) >> 8 |
 	    (i & UINT16_C(0x00FF)) << 8;
 }
 
-static OF_INLINE uint32_t
+static OF_INLINE uint32_t OF_CONST_FUNC
 OF_BSWAP32_CONST(uint32_t i)
 {
 	return (i & UINT32_C(0xFF000000)) >> 24 |
@@ -73,7 +75,7 @@ OF_BSWAP32_CONST(uint32_t i)
 	    (i & UINT32_C(0x000000FF)) << 24;
 }
 
-static OF_INLINE uint64_t
+static OF_INLINE uint64_t OF_CONST_FUNC
 OF_BSWAP64_CONST(uint64_t i)
 {
 	return (i & UINT64_C(0xFF00000000000000)) >> 56 |
@@ -86,7 +88,7 @@ OF_BSWAP64_CONST(uint64_t i)
 	    (i & UINT64_C(0x00000000000000FF)) << 56;
 }
 
-static OF_INLINE uint16_t
+static OF_INLINE uint16_t OF_CONST_FUNC
 OF_BSWAP16_NONCONST(uint16_t i)
 {
 #if defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
@@ -114,7 +116,7 @@ OF_BSWAP16_NONCONST(uint16_t i)
 	return i;
 }
 
-static OF_INLINE uint32_t
+static OF_INLINE uint32_t OF_CONST_FUNC
 OF_BSWAP32_NONCONST(uint32_t i)
 {
 #if defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
@@ -144,7 +146,7 @@ OF_BSWAP32_NONCONST(uint32_t i)
 	return i;
 }
 
-static OF_INLINE uint64_t
+static OF_INLINE uint64_t OF_CONST_FUNC
 OF_BSWAP64_NONCONST(uint64_t i)
 {
 #if defined(OF_AMD64_ASM)
