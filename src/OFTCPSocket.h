@@ -25,6 +25,9 @@
 
 /**
  * \brief A class which provides functions to create and use TCP sockets.
+ *
+ * To connect to a server, create a socket and connect it.
+ * To create a server, create a socket, bind it and listen on it.
  */
 @interface OFTCPSocket: OFStreamSocket
 {
@@ -45,7 +48,8 @@
  * Bind socket on the specified node and service.
  *
  * \param service The service to bind
- * \param node The node to bind to
+ * \param node The node to bind to. Use @"0.0.0.0" for IPv4 or @"::" for IPv6
+ *	       to bind to all.
  * \param family The family to use (AF_INET for IPv4 or AF_INET6 for IPv6)
  */
 - (void)bindService: (OFString*)service

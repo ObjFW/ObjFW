@@ -60,7 +60,7 @@
 /**
  * \brief A class that can observe multiple streams at once.
  *
- * Note: Currently, it can only observe sockets on Win32.
+ * Note: Currently, Win32 can only observe sockets and not files!
  */
 @interface OFStreamObserver: OFObject
 {
@@ -102,12 +102,16 @@
 /**
  * Adds a stream to observe for reading.
  *
+ * It is recommended that the stream you add it set to non-blocking mode.
+ *
  * \param stream The stream to observe for reading
  */
 - (void)addStreamToObserveForReading: (OFStream*)stream;
 
 /**
  * Adds a stream to observe for writing.
+ *
+ * It is recommended that the stream you add it set to non-blocking mode.
  *
  * \param stream The stream to observe for writing
  */
