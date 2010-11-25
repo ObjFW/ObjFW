@@ -79,6 +79,9 @@ static OFString *strings[] = {
 
 	TEST(@"-[isEqual:]", [list isEqual: [[list copy] autorelease]])
 
+	TEST(@"-[description]",
+	    [[list description] isEqual: @"[Foo, Bar, Baz]"])
+
 	TEST(@"-[objectEnumerator]", (enumerator = [list objectEnumerator]))
 
 	loe = [list firstListObject];

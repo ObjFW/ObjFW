@@ -14,6 +14,8 @@
 #include "assert.h"
 
 #import "OFList.h"
+#import "OFString.h"
+#import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 #import "macros.h"
 
@@ -255,6 +257,30 @@
 	OF_HASH_FINALIZE(hash);
 
 	return hash;
+}
+
+- (OFString*)description
+{
+	OFMutableString *ret = [OFMutableString stringWithString: @"["];
+	OFAutoreleasePool *pool;
+	of_list_object_t *iter;
+
+	pool = [[OFAutoreleasePool alloc] init];
+
+	for (iter = firstListObject; iter != NULL; iter = iter->next) {
+		[ret appendString: [iter->object description]];
+
+		if (iter->next != NULL)
+			[ret appendString: @", "];
+
+		[pool releaseObjects];
+	}
+
+	[ret appendString: @"]"];
+
+	[pool release];
+
+	return ret;
 }
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
