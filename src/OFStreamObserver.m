@@ -27,7 +27,7 @@
 #import "OFExceptions.h"
 
 @implementation OFStreamObserver
-+ streamObserver
++ observer
 {
 	return [[[self alloc] init] autorelease];
 }

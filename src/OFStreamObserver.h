@@ -85,7 +85,7 @@
 /**
  * \return A new, autoreleased OFStreamObserver
  */
-+ streamObserver;
++ observer;
 
 /**
  * \return The delegate for the OFStreamObserver
@@ -101,6 +101,9 @@
 
 /**
  * Adds a stream to observe for reading.
+ * 
+ * This is also used to observe a listening socket for incoming connections,
+ * which then triggers a read event for the observed stream.
  *
  * It is recommended that the stream you add it set to non-blocking mode.
  *
