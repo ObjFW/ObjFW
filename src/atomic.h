@@ -499,13 +499,13 @@ of_atomic_cmpswap_int(volatile int *p, int o, int n)
 	int r;
 
 	__asm__ (
+	    "xorl	%0, %0\n\t"
 	    "lock\n\t"
 	    "cmpxchg	%2, %3\n\t"
-	    "lahf\n\t"
-	    "andb	$64, %%ah\n\t"
-	    "shrb	$6, %%ah\n\t"
-	    "movzx	%%ah, %0\n\t"
-	    : "=a"(r)
+	    "jne	.1\n\t"
+	    "incl	%0\n"
+	    ".1:"
+	    : "=&r"(r)
 	    : "a"(o), "r"(n), "m"(*p)
 	);
 
@@ -528,16 +528,16 @@ of_atomic_cmpswap_32(volatile int32_t *p, int32_t o, int32_t n)
 
 	return NO;
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	uint32_t r;
+	int r;
 
 	__asm__ (
+	    "xorl	%0, %0\n\t"
 	    "lock\n\t"
 	    "cmpxchg	%2, %3\n\t"
-	    "lahf\n\t"
-	    "andb	$64, %%ah\n\t"
-	    "shrb	$6, %%ah\n\t"
-	    "movzx	%%ah, %0\n\t"
-	    : "=a"(r)
+	    "jne	.1\n\t"
+	    "incl	%0\n"
+	    ".1:"
+	    : "=&r"(r)
 	    : "a"(o), "r"(n), "m"(*p)
 	);
 
@@ -560,17 +560,17 @@ of_atomic_cmpswap_ptr(void* volatile *p, void *o, void *n)
 
 	return NO;
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	uint32_t r;
+	int r;
 
 	__asm__ (
+	    "xorl	%0, %0\n\t"
 	    "lock\n\t"
 	    "cmpxchg	%2, %3\n\t"
-	    "lahf\n\t"
-	    "andb	$64, %%ah\n\t"
-	    "shrb	$6, %%ah\n\t"
-	    "movzx	%%ah, %0\n\t"
-	    : "=a"(r)
-	    : "a"(o), "q"(n), "m"(*p)
+	    "jne	.1\n\t"
+	    "incl	%0\n"
+	    ".1:"
+	    : "=&r"(r)
+	    : "a"(o), "r"(n), "m"(*p)
 	);
 
 	return r;
