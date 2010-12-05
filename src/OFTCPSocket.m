@@ -341,7 +341,7 @@ static OFMutex *mutex = nil;
 	socklen_t addrlen;
 	int s;
 
-	newsock = [OFTCPSocket socket];
+	newsock = [[[isa alloc] init] autorelease];
 	addrlen = sizeof(struct sockaddr);
 
 	@try {
