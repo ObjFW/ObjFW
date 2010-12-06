@@ -38,6 +38,15 @@
 extern const uint16_t of_iso_8859_15[256];
 extern const uint16_t of_windows_1252[256];
 
+/* References for static linking */
+void _references_to_categories_of_OFString()
+{
+	_OFString_Hashing_reference = 1;
+	_OFString_URLEncoding_reference = 1;
+	_OFString_XMLEscaping_reference = 1;
+	_OFString_XMLUnescaping_reference = 1;
+};
+
 static inline int
 memcasecmp(const char *s1, const char *s2, size_t len)
 {
@@ -52,15 +61,6 @@ memcasecmp(const char *s1, const char *s2, size_t len)
 
 	return OF_ORDERED_SAME;
 }
-
-/* References for static linking */
-void _references_to_categories_of_OFString()
-{
-	_OFString_Hashing_reference = 1;
-	_OFString_URLEncoding_reference = 1;
-	_OFString_XMLEscaping_reference = 1;
-	_OFString_XMLUnescaping_reference = 1;
-};
 
 int
 of_string_check_utf8(const char *str, size_t len)

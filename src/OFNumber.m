@@ -14,6 +14,7 @@
 #include <math.h>
 
 #import "OFNumber.h"
+#import "OFString.h"
 #import "OFExceptions.h"
 #import "macros.h"
 
@@ -402,7 +403,7 @@
 
 + numberWithUIntMax: (uintmax_t)uintmax
 {
-	return [[[self alloc] initWithIntMax: uintmax] autorelease];
+	return [[[self alloc] initWithUIntMax: uintmax] autorelease];
 }
 
 + numberWithPtrDiff: (ptrdiff_t)ptrdiff
@@ -957,6 +958,8 @@
 - (OFNumber*)remainderOfDivisionWithNumber: (OFNumber*)num
 {
 	switch (type) {
+	case OF_NUMBER_BOOL:
+		return [OFNumber numberWithBool: value.bool_ % [num boolValue]];
 	case OF_NUMBER_CHAR:
 		return [OFNumber numberWithChar: value.char_ % [num charValue]];
 	case OF_NUMBER_SHORT:
@@ -1038,5 +1041,44 @@
 - copy
 {
 	return [self retain];
+}
+
+- (OFString*)description
+{
+	switch (type) {
+	case OF_NUMBER_BOOL:
+		return (value.bool_ ? @"YES" : @"NO");
+	case OF_NUMBER_UCHAR:
+	case OF_NUMBER_USHORT:
+	case OF_NUMBER_UINT:
+	case OF_NUMBER_ULONG:
+	case OF_NUMBER_UINT8:
+	case OF_NUMBER_UINT16:
+	case OF_NUMBER_UINT32:
+	case OF_NUMBER_UINT64:
+	case OF_NUMBER_SIZE:
+	case OF_NUMBER_UINTMAX:
+	case OF_NUMBER_UINTPTR:
+		return [OFString stringWithFormat: @"%ju", [self uIntMaxValue]];
+	case OF_NUMBER_CHAR:
+	case OF_NUMBER_SHORT:
+	case OF_NUMBER_INT:
+	case OF_NUMBER_LONG:
+	case OF_NUMBER_INT8:
+	case OF_NUMBER_INT16:
+	case OF_NUMBER_INT32:
+	case OF_NUMBER_INT64:
+	case OF_NUMBER_SSIZE:
+	case OF_NUMBER_INTMAX:
+	case OF_NUMBER_PTRDIFF:
+	case OF_NUMBER_INTPTR:
+		return [OFString stringWithFormat: @"%jd", [self intMaxValue]];
+	case OF_NUMBER_FLOAT:
+		return [OFString stringWithFormat: @"%f", [self floatValue]];
+	case OF_NUMBER_DOUBLE:
+		return [OFString stringWithFormat: @"%lf", [self doubleValue]];
+	default:
+		@throw [OFInvalidFormatException newWithClass: isa];
+	}
 }
 @end
