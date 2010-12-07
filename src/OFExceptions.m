@@ -137,7 +137,7 @@
 	[super dealloc];	/* Get rid of a stupid warning */
 }
 
-- (OFString*)string
+- (OFString*)description
 {
 	return @"Allocating an object failed!";
 }
@@ -168,7 +168,7 @@
 
 - (void)dealloc
 {
-	[string release];
+	[description release];
 
 	[super dealloc];
 }
@@ -178,9 +178,9 @@
 	return inClass;
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	return string;
+	return @"An exception occurred";
 }
 
 - autorelease
@@ -208,21 +208,21 @@
 	return self;
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
 	if (requestedSize)
-		string = [[OFString alloc] initWithFormat:
+		description = [[OFString alloc] initWithFormat:
 		    @"Could not allocate %zu bytes in class %s!", requestedSize,
 		    [inClass className]];
 	else
-		string = [[OFString alloc] initWithFormat:
+		description = [[OFString alloc] initWithFormat:
 		    @"Could not allocate enough memory in class %s!",
 		    [inClass className]];
 
-	return string;
+	return description;
 }
 
 - (size_t)requestedSize
@@ -232,16 +232,16 @@
 @end
 
 @implementation OFEnumerationMutationException
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Object of class %s was mutated during enumeration!",
 	    [inClass className]];
 
-	return string;
+	return description;
 }
 @end
 
@@ -271,18 +271,18 @@
 	return self;
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Memory at %p was not allocated as part of object of class %s, "
 	    @"thus the memory allocation was not changed! It is also possible "
 	    @"that there was an attempt to free the same memory twice.",
 	    pointer, [inClass className]];
 
-	return string;
+	return description;
 }
 
 - (void*)pointer
@@ -317,16 +317,16 @@
 	return self;
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"The method %s of class %s is not or not fully implemented!",
 	    sel_getName(selector), [inClass className]];
 
-	return string;
+	return description;
 }
 
 - (SEL)selector
@@ -336,15 +336,15 @@
 @end
 
 @implementation OFOutOfRangeException
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Value out of range in class %s!", [inClass className]];
 
-	return string;
+	return description;
 }
 @end
 
@@ -374,16 +374,16 @@
 	return self;
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"The argument for method %s of class %s is invalid!",
 	    sel_getName(selector), [inClass className]];
 
-	return string;
+	return description;
 }
 
 - (SEL)selector
@@ -393,55 +393,55 @@
 @end
 
 @implementation OFInvalidEncodingException
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"The encoding is invalid for class %s!", [inClass className]];
 
-	return string;
+	return description;
 }
 @end
 
 @implementation OFInvalidFormatException
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"The format is invalid for class %s!", [inClass className]];
 
-	return string;
+	return description;
 }
 @end
 
 @implementation OFMalformedXMLException
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"The parser in class %s encountered malformed or invalid XML!",
 	    [inClass className]];
 
-	return string;
+	return description;
 }
 @end
 
 @implementation OFInitializationFailedException
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Initialization failed for class %s!", [inClass className]];
 
-	return string;
+	return description;
 }
 @end
 
@@ -489,16 +489,16 @@
 	[super dealloc];
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Failed to open file %s with mode %s in class %s! " ERRFMT,
 	    [path cString], [mode cString], [inClass className], ERRPARAM];
 
-	return string;
+	return description;
 }
 
 - (int)errNo
@@ -560,30 +560,30 @@
 @end
 
 @implementation OFReadFailedException
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Failed to read %zu bytes in class %s! " ERRFMT, requestedSize,
 	    [inClass className], ERRPARAM];
 
-	return string;
+	return description;
 }
 @end
 
 @implementation OFWriteFailedException
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Failed to write %zu bytes in class %s! " ERRFMT, requestedSize,
 	    [inClass className], ERRPARAM];
 
-	return string;
+	return description;
 }
 @end
 
@@ -597,16 +597,16 @@
 	return self;
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Seeking failed in class %s! " ERRFMT, [inClass className],
 	    ERRPARAM];
 
-	return string;
+	return description;
 }
 
 - (int)errNo
@@ -654,16 +654,16 @@
 	[super dealloc];
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Failed to create directory %s in class %s! " ERRFMT,
 	    [path cString], [inClass className], ERRPARAM];
 
-	return string;
+	return description;
 }
 
 - (int)errNo
@@ -721,16 +721,16 @@
 	[super dealloc];
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Failed to change mode for file %s to %d in class %s! " ERRFMT,
 	    [path cString], mode, [inClass className], ERRPARAM];
 
-	return string;
+	return description;
 }
 
 - (int)errNo
@@ -797,16 +797,16 @@
 	[super dealloc];
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Failed to change owner for file %s to %d:%d in class %s! " ERRFMT,
 	    [path cString], owner, group, [inClass className], ERRPARAM];
 
-	return string;
+	return description;
 }
 
 - (int)errNo
@@ -875,17 +875,17 @@
 	[super dealloc];
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Failed to copy file %s to %s in class %s! " ERRFMT,
 	    [sourcePath cString], [destinationPath cString],
 	    [inClass className], ERRPARAM];
 
-	return string;
+	return description;
 }
 
 - (int)errNo
@@ -948,17 +948,17 @@
 	[super dealloc];
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Failed to rename file %s to %s in class %s! " ERRFMT,
 	    [sourcePath cString], [destinationPath cString],
 	    [inClass className], ERRPARAM];
 
-	return string;
+	return description;
 }
 
 - (int)errNo
@@ -1016,16 +1016,16 @@
 	[super dealloc];
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Failed to delete file %s in class %s! " ERRFMT, [path cString],
 	    [inClass className], ERRPARAM];
 
-	return string;
+	return description;
 }
 
 - (int)errNo
@@ -1078,16 +1078,16 @@
 	[super dealloc];
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Failed to delete directory %s in class %s! " ERRFMT,
 	    [path cString], [inClass className], ERRPARAM];
 
-	return string;
+	return description;
 }
 
 - (int)errNo
@@ -1141,17 +1141,17 @@
 	[super dealloc];
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Failed to link file %s to %s in class %s! " ERRFMT,
 	    [sourcePath cString], [destinationPath cString],
 	    [inClass className], ERRPARAM];
 
-	return string;
+	return description;
 }
 
 - (int)errNo
@@ -1209,17 +1209,17 @@
 	[super dealloc];
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Failed to symlink file %s to %s in class %s! " ERRFMT,
 	    [sourcePath cString], [destinationPath cString],
 	    [inClass className], ERRPARAM];
 
-	return string;
+	return description;
 }
 
 - (int)errNo
@@ -1240,43 +1240,43 @@
 #endif
 
 @implementation OFSetOptionFailedException
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Setting an option in class %s failed!", [inClass className]];
 
-	return string;
+	return description;
 }
 @end
 
 @implementation OFNotConnectedException
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"The socket of type %s is not connected or bound!",
 	    [inClass className]];
 
-	return string;
+	return description;
 }
 @end
 
 @implementation OFAlreadyConnectedException
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"The socket of type %s is already connected or bound and thus "
 	    @"can't be connected or bound again!", [inClass className]];
 
-	return string;
+	return description;
 }
 @end
 
@@ -1325,13 +1325,13 @@
 	[super dealloc];
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
 	if (node != nil && service != nil)
-		string = [[OFString alloc] initWithFormat:
+		description = [[OFString alloc] initWithFormat:
 		    @"The service %s on %s could not be translated to an "
 		    @"address in class %s. This means that either the node was "
 		    @"not found, there is no such service on the node, there "
@@ -1340,11 +1340,11 @@
 		    @"node or service. " ERRFMT, [service cString],
 		    [node cString], [inClass className], AT_ERRPARAM];
 	else
-		string = [[OFString alloc] initWithFormat:
+		description = [[OFString alloc] initWithFormat:
 		    @"An address translation failed in class %s! " ERRFMT,
 		    [inClass className], AT_ERRPARAM];
 
-	return string;
+	return description;
 }
 
 - (int)errNo
@@ -1407,17 +1407,17 @@
 	[super dealloc];
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"A connection to service %s on node %s could not be established "
 	    @"in class %s! " ERRFMT, [service cString], [node cString],
 	    [inClass className], ERRPARAM];
 
-	return string;
+	return description;
 }
 
 - (int)errNo
@@ -1484,17 +1484,17 @@
 	[super dealloc];
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Binding service %s on node %s using family %d failed in class "
 	    @"%s! " ERRFMT, [service cString], [node cString], family,
 	    [inClass className], ERRPARAM];
 
-	return string;
+	return description;
 }
 
 - (int)errNo
@@ -1545,16 +1545,16 @@
 	return self;
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Failed to listen in socket of type %s with a back log of %d! "
 	    ERRFMT, [inClass className], backLog, ERRPARAM];
 
-	return string;
+	return description;
 }
 
 - (int)errNo
@@ -1578,16 +1578,16 @@
 	return self;
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Failed to accept connection in socket of type %s! " ERRFMT,
 	    [inClass className], ERRPARAM];
 
-	return string;
+	return description;
 }
 
 - (int)errNo
@@ -1597,83 +1597,83 @@
 @end
 
 @implementation OFThreadStartFailedException
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Starting a thread of class %s failed!", [inClass className]];
 
-	return string;
+	return description;
 }
 @end
 
 @implementation OFThreadJoinFailedException
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Joining a thread of class %s failed! Most likely, another thread "
 	    @"already waits for the thread to join.", [inClass className]];
 
-	return string;
+	return description;
 }
 @end
 
 @implementation OFThreadStillRunningException
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"Deallocation of a thread of type %s was tried, even though it "
 	    @"was still running", [inClass className]];
 
-	return string;
+	return description;
 }
 @end
 
 @implementation OFMutexLockFailedException
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"A mutex could not be locked in class %s", [inClass className]];
 
-	return string;
+	return description;
 }
 @end
 
 @implementation OFMutexUnlockFailedException
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"A mutex could not be unlocked in class %s", [inClass className]];
 
-	return string;
+	return description;
 }
 @end
 
 @implementation OFHashAlreadyCalculatedException
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
-	string = [[OFString alloc] initWithFormat:
+	description = [[OFString alloc] initWithFormat:
 	    @"The hash has already been calculated in class %s and thus no new "
 	    @"data can be added", [inClass className]];
 
-	return string;
+	return description;
 }
 @end
 
@@ -1738,21 +1738,21 @@
 	[super dealloc];
 }
 
-- (OFString*)string
+- (OFString*)description
 {
-	if (string != nil)
-		return string;
+	if (description != nil)
+		return description;
 
 	if (ns != nil)
-		string = [[OFString alloc] initWithFormat:
+		description = [[OFString alloc] initWithFormat:
 		    @"The namespace %s is not bound in class %s",
 		    [inClass className]];
 	else if (prefix != nil)
-		string = [[OFString alloc] initWithFormat:
+		description = [[OFString alloc] initWithFormat:
 		    @"The prefix %s is not bound to any namespace in %s",
 		    [inClass className]];
 
-	return string;
+	return description;
 }
 
 - (OFString*)namespace

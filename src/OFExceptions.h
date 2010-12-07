@@ -29,9 +29,9 @@
  */
 @interface OFAllocFailedException: OFObject
 /**
- * \return An error message for the exception as a string
+ * \return A description of the exception
  */
-- (OFString*)string;
+- (OFString*)description;
 @end
 
 /**
@@ -46,7 +46,7 @@
 @interface OFException: OFObject
 {
 	Class inClass;
-	OFString *string;
+	OFString *description;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -75,9 +75,9 @@
 - (Class)inClass;
 
 /**
- * \return An error message for the exception as a string
+ * \return A description of the exception
  */
-- (OFString*)string;
+- (OFString*)description;
 @end
 
 /**
