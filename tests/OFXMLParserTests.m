@@ -11,6 +11,7 @@
 
 #include "config.h"
 
+#include <stdlib.h>
 #include <string.h>
 
 #import "OFXMLParser.h"
@@ -341,6 +342,9 @@ enum event_type {
 	len = strlen(str);
 
 	for (j = 0; j < len; j+= 2) {
+		if ([parser finishedParsing])
+			abort();
+
 		if (j + 2 > len)
 			[parser parseBuffer: str + j
 				   withSize: 1];
@@ -350,6 +354,14 @@ enum event_type {
 	}
 
 	TEST(@"Checking if everything was parsed", i == 32)
+
+	TEST(@"-[finishedParsing]", [parser finishedParsing])
+
+	TEST(@"Parsing whitespaces after the document",
+	    R([parser parseString: @" \t\r\n "]))
+
+	EXPECT_EXCEPTION(@"Detection of junk after the document",
+	    OFMalformedXMLException, [parser parseString: @"a"])
 
 	[pool drain];
 }

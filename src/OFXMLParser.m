@@ -195,6 +195,16 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 {
 	size_t i, last = 0;
 
+	if (finishedParsing) {
+		for (i = 0; i < size; i++)
+			if (buf[i] != ' ' && buf[i] != '\t' &&
+			    buf[i] != '\n' && buf[i] != '\r')
+				@throw [OFMalformedXMLException
+				    newWithClass: isa];
+
+		return;
+	}
+
 	for (i = 0; i < size; i++)
 		lookup_table[state](self, selectors[state], buf, &i, &last);
 
@@ -499,6 +509,9 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	state = (buf[*i] == '>'
 	    ? OF_XMLPARSER_OUTSIDE_TAG
 	    : OF_XMLPARSER_EXPECT_SPACE_OR_CLOSE);
+
+	if ([previous count] == 0)
+		finishedParsing = YES;
 }
 
 /* Inside a tag, name found */
@@ -878,6 +891,11 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	}
 
 	*last = *i + 1;
+}
+
+- (BOOL)finishedParsing
+{
+	return finishedParsing;
 }
 
 -	   (OFString*)string: (OFString*)string

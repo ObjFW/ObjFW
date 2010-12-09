@@ -167,6 +167,7 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
 	of_xml_parser_unknown_entity_block_t unknownEntityHandler;
 #endif
 	size_t level;
+	BOOL finishedParsing;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -316,6 +317,11 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
  * \param path The path to the file to parse
 */
 - (void)parseFile: (OFString*)path;
+
+/**
+ * \return Whether the XML parser has finished parsing
+ */
+- (BOOL)finishedParsing;
 @end
 
 @interface OFObject (OFXMLParserDelegate) <OFXMLParserDelegate>
