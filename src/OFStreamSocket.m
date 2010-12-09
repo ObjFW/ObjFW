@@ -13,7 +13,6 @@
 
 #include <string.h>
 #include <unistd.h>
-#include <fcntl.h>
 #include <errno.h>
 
 #ifndef _WIN32
@@ -102,28 +101,16 @@
 	return ret;
 }
 
+#ifdef _WIN32
 - (void)setBlocking: (BOOL)enable
 {
-#ifndef _WIN32
-	int flags;
-
-	if ((flags = fcntl(sock, F_GETFL)) == -1)
-		@throw [OFSetOptionFailedException newWithClass: isa];
-
-	if (enable)
-		flags &= ~O_NONBLOCK;
-	else
-		flags |= O_NONBLOCK;
-
-	if (fcntl(sock, F_SETFL, flags) == -1)
-		@throw [OFSetOptionFailedException newWithClass: isa];
-#else
 	u_long v = enable;
+	isBlocking = enable;
 
 	if (ioctlsocket(sock, FIONBIO, &v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException newWithClass: isa];
-#endif
 }
+#endif
 
 - (int)fileDescriptor
 {

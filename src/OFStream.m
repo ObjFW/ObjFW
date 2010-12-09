@@ -18,6 +18,7 @@
 #include <string.h>
 
 #include <assert.h>
+#include <fcntl.h>
 
 #import "OFStream.h"
 #import "OFString.h"
@@ -41,6 +42,7 @@
 
 	cache = NULL;
 	wBuffer = NULL;
+	isBlocking = YES;
 
 	return self;
 }
@@ -671,6 +673,34 @@
 
 	/* Get rid of a warning, never reached anyway */
 	assert(0);
+}
+
+- (BOOL)isBlocking
+{
+	return isBlocking;
+}
+
+- (void)setBlocking: (BOOL)enable
+{
+#ifndef _WIN32
+	int flags;
+
+	isBlocking = enable;
+
+	if ((flags = fcntl([self fileDescriptor], F_GETFL)) == -1)
+		@throw [OFSetOptionFailedException newWithClass: isa];
+
+	if (enable)
+		flags &= ~O_NONBLOCK;
+	else
+		flags |= O_NONBLOCK;
+
+	if (fcntl([self fileDescriptor], F_SETFL, flags) == -1)
+		@throw [OFSetOptionFailedException newWithClass: isa];
+#else
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+#endif
 }
 
 - (int)fileDescriptor

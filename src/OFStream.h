@@ -33,7 +33,12 @@
 	char   *wBuffer;
 	size_t cacheLen, wBufferLen;
 	BOOL   buffersWrites;
+	BOOL   isBlocking;
 }
+
+#ifdef OF_HAVE_PROPERTIES
+@property (assign, setter=setBlocking) BOOL isBlocking;
+#endif
 
 /**
  * Returns a boolean whether the end of the stream has been reached.
@@ -314,6 +319,21 @@
  */
 - (size_t)writeFormat: (OFString*)fmt
 	withArguments: (va_list)args;
+
+/**
+ * \return Whether the stream is in blocking mode
+ */
+- (BOOL)isBlocking;
+
+/**
+ * Enables or disables non-blocking I/O.
+ *
+ * By default, a stream is in blocking mode.
+ * On Win32, this currently only works for sockets!
+ *
+ * \param enable Whether the stream should be blocking
+ */
+- (void)setBlocking: (BOOL)enable;
 
 /**
  * \return The file descriptor for the stream.
