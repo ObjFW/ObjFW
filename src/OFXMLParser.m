@@ -19,6 +19,7 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFXMLAttribute.h"
+#import "OFStream.h"
 #import "OFFile.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
@@ -209,26 +210,30 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		 withSize: [str cStringLength]];
 }
 
+- (void)parseStream: (OFStream*)stream
+{
+	char *buf = [self allocMemoryWithSize: of_pagesize];
+
+	@try {
+		while (![stream isAtEndOfStream]) {
+			size_t len = [stream readNBytes: of_pagesize
+					     intoBuffer: buf];
+
+			[self parseBuffer: buf
+				 withSize: len];
+		}
+	} @finally {
+		[self freeMemory: buf];
+	}
+}
+
 - (void)parseFile: (OFString*)path
 {
 	OFFile *file = [[OFFile alloc] initWithPath: path
 					       mode: @"rb"];
 
 	@try {
-		char *buf = [self allocMemoryWithSize: of_pagesize];
-
-		@try {
-			while (![file isAtEndOfStream]) {
-				size_t size;
-
-				size = [file readNBytes: of_pagesize
-					     intoBuffer: buf];
-				[self parseBuffer: buf
-					 withSize: size];
-			}
-		} @finally {
-			[self freeMemory: buf];
-		}
+		[self parseStream: file];
 	} @finally {
 		[file release];
 	}

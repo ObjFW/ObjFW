@@ -16,6 +16,7 @@
 @class OFXMLParser;
 @class OFArray;
 @class OFMutableArray;
+@class OFStream;
 
 #if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 typedef void (^of_xml_parser_processing_instructions_block_t)(
@@ -301,6 +302,13 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
  * \param str The string to parse
  */
 - (void)parseString: (OFString*)str;
+
+/**
+ * Parses the specified stream.
+ *
+ * \param stream The stream to parse
+ */
+- (void)parseStream: (OFStream*)stream;
 
 /**
  * Parses the specified file.
