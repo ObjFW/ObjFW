@@ -167,6 +167,8 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
 	of_xml_parser_unknown_entity_block_t unknownEntityHandler;
 #endif
 	size_t level;
+	size_t lineNumber;
+	BOOL lastCarriageReturn;
 	BOOL finishedParsing;
 }
 
@@ -317,6 +319,11 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
  * \param path The path to the file to parse
 */
 - (void)parseFile: (OFString*)path;
+
+/**
+ * \return The current line number
+ */
+- (size_t)lineNumber;
 
 /**
  * \return Whether the XML parser has finished parsing

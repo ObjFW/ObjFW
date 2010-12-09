@@ -24,6 +24,7 @@
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFXMLParser";
+static OFXMLParser *parser;
 static int i = 0;
 
 enum event_type {
@@ -62,10 +63,11 @@ enum event_type {
 		    prefix == nil && ns == nil && [attrs count] == 0)
 		break;
 	case 4:
-		TEST(msg, et == STRING && [string isEqual: @"\n "])
+		TEST(msg, et == STRING && [string isEqual: @"\n\n "])
 		break;
 	case 5:
-		TEST(msg, et == CDATA && [string isEqual: @"f<]]]oo"])
+		TEST(msg, et == CDATA && [string isEqual: @"f<]]]oo"] &&
+		    [parser lineNumber] == 3)
 		break;
 	case 6:
 		TEST(msg, et == TAG_START && [name isEqual: @"bar"] &&
@@ -316,11 +318,10 @@ enum event_type {
 - (void)XMLParserTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFXMLParser *parser;
 	const char *str = "<?xml version='1.0'?><?p?i?>"
-	    "<!DOCTYPE <<><<>>>><root>\n"
+	    "<!DOCTYPE <<><<>>>><root>\r\r"
 	    " <![CDATA[f<]]]oo]]><bar/>\n"
-	    " <foobar xmlns='urn:objfw:test:foobar'>\n"
+	    " <foobar xmlns='urn:objfw:test:foobar'>\r\n"
 	    "  <qux xmlns:foo='urn:objfw:test:foo'>\n"
 	    "   <foo:bla foo:bla = '&#x62;&#x6c;&#x61;' blafoo='foo'>\n"
 	    "    <blup foo:qux='asd' quxqux='test'/>\n"
@@ -353,7 +354,8 @@ enum event_type {
 				   withSize: 2];
 	}
 
-	TEST(@"Checking if everything was parsed", i == 32)
+	TEST(@"Checking if everything was parsed",
+	    i == 32 && [parser lineNumber] == 18)
 
 	TEST(@"-[finishedParsing]", [parser finishedParsing])
 

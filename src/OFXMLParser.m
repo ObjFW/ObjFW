@@ -145,6 +145,9 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		    @"xml", @"http://www.w3.org/XML/1998/namespace",
 		    @"xmlns", @"http://www.w3.org/2000/xmlns/", nil];
 		[namespaces addObject: dict];
+
+		lineNumber = 1;
+
 		[pool release];
 	} @catch (id e) {
 		[self release];
@@ -205,8 +208,20 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		return;
 	}
 
-	for (i = 0; i < size; i++)
+	for (i = 0; i < size; i++) {
+		size_t j = i;
+
 		lookup_table[state](self, selectors[state], buf, &i, &last);
+
+		/* Ensure we don't count this character twice */
+		if (i != j)
+			continue;
+
+		if (buf[i] == '\r' || (buf[i] == '\n' && !lastCarriageReturn))
+			lineNumber++;
+
+		lastCarriageReturn = (buf[i] == '\r' ? YES : NO);
+	}
 
 	/* In OF_XMLPARSER_IN_TAG, there can be only spaces */
 	if (size - last > 0 && state != OF_XMLPARSER_IN_TAG)
@@ -891,6 +906,11 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	}
 
 	*last = *i + 1;
+}
+
+- (size_t)lineNumber
+{
+	return lineNumber;
 }
 
 - (BOOL)finishedParsing
