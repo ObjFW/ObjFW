@@ -21,14 +21,12 @@
 typedef void (^of_dictionary_enumeration_block_t)(id key, id obj, BOOL *stop);
 #endif
 
-/// \cond internal
 struct of_dictionary_bucket
 {
 	id <OFCopying> key;
 	id object;
 	uint32_t hash;
 };
-/// \endcond
 
 /**
  * \brief A class for storing objects in a hash table.
@@ -169,7 +167,6 @@ struct of_dictionary_bucket
 #endif
 @end
 
-/// \cond internal
 @interface OFDictionaryEnumerator: OFEnumerator
 {
 	struct of_dictionary_bucket **data;
@@ -189,7 +186,6 @@ struct of_dictionary_bucket
 
 @interface OFDictionaryKeyEnumerator: OFDictionaryEnumerator
 @end
-/// \endcond
 
 #import "OFMutableDictionary.h"
 

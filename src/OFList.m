@@ -313,7 +313,6 @@
 }
 @end
 
-/// \cond internal
 @implementation OFListEnumerator
 - initWithFirstListObject: (of_list_object_t*)first_
 	 mutationsPointer: (unsigned long*)mutationsPtr_;
@@ -352,4 +351,3 @@
 	current = first;
 }
 @end
-/// \endcond

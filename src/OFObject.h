@@ -23,7 +23,7 @@
 /**
  * \brief A result of a comparison.
  */
-typedef enum __of_comparison_result {
+typedef enum of_comparison_result_t {
 	/// The left object is smaller than the right
 	OF_ORDERED_ASCENDING = -1,
 	/// Both objects are equal
@@ -35,8 +35,10 @@ typedef enum __of_comparison_result {
 /**
  * \brief A range.
  */
-typedef struct __of_range {
+typedef struct of_range_t {
+	/// The start of the range
 	size_t start;
+	/// The length of the range
 	size_t length;
 } of_range_t;
 

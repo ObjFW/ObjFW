@@ -29,6 +29,7 @@ typedef OFString* (^of_string_xml_unescaping_block_t)(OFString *str,
  * entity or nil if it is unknown to the callback as well, in which case an
  * exception will be thrown.
  *
+ * \param str The string which contains the unknown entity
  * \param entity The name of the entity that is unknown
  * \return A substitution for the entity or nil
  */
@@ -49,7 +50,7 @@ typedef OFString* (^of_string_xml_unescaping_block_t)(OFString *str,
  * Unescapes XML in the string and uses the specified delegate for unknown
  * entities.
  *
- * \param h An OFXMLUnescapingDelegate as a handler for unknown entities
+ * \param delegate An OFXMLUnescapingDelegate as a handler for unknown entities
  */
 - (OFString*)stringByXMLUnescapingWithDelegate:
     (id <OFStringXMLUnescapingDelegate>)delegate;
@@ -59,7 +60,7 @@ typedef OFString* (^of_string_xml_unescaping_block_t)(OFString *str,
  * Unescapes XML in the string and uses the specified block for unknown
  * entities.
  *
- * \param h A block as a handler for unknown entities
+ * \param block A block which handles unknown entities
  */
 - (OFString*)stringByXMLUnescapingWithBlock:
     (of_string_xml_unescaping_block_t)block;

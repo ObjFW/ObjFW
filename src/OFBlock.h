@@ -11,13 +11,12 @@
 
 #import "OFObject.h"
 
-/// \cond internal
-typedef struct __of_block_literal {
+typedef struct of_block_literal_t {
 	Class isa;
 	int flags;
 	int reserved;
 	void (*invoke)(void *, ...);
-	struct __of_block_descriptor {
+	struct of_block_descriptor_t {
 		unsigned long reserved;
 		unsigned long size;
 		void (*copy_helper)(void *dest, void *src);
@@ -26,14 +25,15 @@ typedef struct __of_block_literal {
 	} *descriptor;
 } of_block_literal_t;
 
-typedef struct __of_block_byref {
+typedef struct of_block_byref_t of_block_byref_t;
+struct of_block_byref_t {
 	Class isa;
-	struct __of_block_byref *forwarding;
+	of_block_byref_t *forwarding;
 	int flags;
 	int size;
 	void (*byref_keep)(void *dest, void *src);
 	void (*byref_dispose)(void*);
-} of_block_byref_t;
+};
 
 enum {
 	OF_BLOCK_HAS_COPY_DISPOSE = (1 << 25),
@@ -53,7 +53,6 @@ enum {
 	OF_BLOCK_FIELD_IS_WEAK	 =  16,
 	OF_BLOCK_BYREF_CALLER	 = 128,
 };
-/// \endcond
 
 extern void* _Block_copy(const void*);
 extern void _Block_release(const void*);
@@ -65,7 +64,6 @@ extern void _Block_release(const void*);
 # define Block_release(x) _Block_release((const void*)(x))
 #endif
 
-/// \cond internal
 @interface OFBlock: OFObject
 @end
 
@@ -77,4 +75,3 @@ extern void _Block_release(const void*);
 
 @interface OFMallocBlock: OFBlock
 @end
-/// \endcond

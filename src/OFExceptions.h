@@ -1163,7 +1163,7 @@
 
 /**
  * \param class_ The class of the object which caused the exception
- * \param namespace The namespace which is unbound
+ * \param ns The namespace which is unbound
  * \return A new unbound namespace exception
  */
 + newWithClass: (Class)class_
@@ -1181,7 +1181,7 @@
  * Initializes an already allocated unbound namespace failed exception
  *
  * \param class_ The class of the object which caused the exception
- * \param namespace The namespace which is unbound
+ * \param ns The namespace which is unbound
  * \return An initialized unbound namespace exception
  */
 - initWithClass: (Class)class_

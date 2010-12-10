@@ -69,7 +69,7 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
  * \return A new autoreleased OFArray
  */
 + arrayWithCArray: (id*)objs
-	   length: (size_t)length;
+	   length: (size_t)len;
 
 /**
  * Initializes an OFArray with the specified object.
@@ -208,7 +208,6 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
 #endif
 @end
 
-/// \cond internal
 @interface OFArrayEnumerator: OFEnumerator
 {
 	OFDataArray   *array;
@@ -221,6 +220,5 @@ typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
 - initWithDataArray: (OFDataArray*)data
    mutationsPointer: (unsigned long*)mutations_ptr;
 @end
-/// \endcond
 
 #import "OFMutableArray.h"

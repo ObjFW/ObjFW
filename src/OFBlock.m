@@ -23,12 +23,10 @@
 #import "OFExceptions.h"
 #import "atomic.h"
 
-/// \cond internal
 @protocol RetainRelease
 - retain;
 - (void)release;
 @end
-/// \endcond
 
 #if defined(OF_GNU_RUNTIME) || defined(OF_OBJFW_RUNTIME)
 struct objc_abi_class {
@@ -248,7 +246,6 @@ _Block_object_dispose(const void *obj_, const int flags_)
 	}
 }
 
-/// \cond internal
 @implementation OFBlock
 #if defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
 + (void)load
@@ -410,4 +407,3 @@ _Block_object_dispose(const void *obj_, const int flags_)
 }
 @end
 #endif
-/// \endcond

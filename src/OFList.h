@@ -13,20 +13,21 @@
 #import "OFCollection.h"
 #import "OFEnumerator.h"
 
+typedef struct of_list_object_t of_list_object_t;
 /**
  * \brief A list object.
  *
  * A struct that contains a pointer to the next list object, the previous list
  * object and the object.
  */
-typedef struct __of_list_object {
+struct of_list_object_t {
 	/// A pointer to the next list object in the list
-	struct __of_list_object *next;
+	of_list_object_t *next;
 	/// A pointer to the previous list object in the list
-	struct __of_list_object *prev;
+	of_list_object_t *prev;
 	/// The object for the list object
-	id			object;
-} of_list_object_t;
+	id		 object;
+};
 
 /**
  * \brief A class which provides easy to use double-linked lists.
@@ -111,7 +112,6 @@ typedef struct __of_list_object {
 - (void)removeListObject: (of_list_object_t*)listobj;
 @end
 
-/// \cond internal
 @interface OFListEnumerator: OFEnumerator
 {
 	of_list_object_t *first;
@@ -123,4 +123,3 @@ typedef struct __of_list_object {
 - initWithFirstListObject: (of_list_object_t*)first
 	 mutationsPointer: (unsigned long*)mutations_ptr;
 @end
-/// \endcond

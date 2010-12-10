@@ -38,7 +38,7 @@
 /**
  * \brief State information for fast enumerations.
  */
-typedef struct __of_fast_enumeration_state {
+typedef struct of_fast_enumeration_state_t {
 	/// Arbitrary state information for the enumeration
 	unsigned long state;
 	/// Pointer to a C array of objects to return

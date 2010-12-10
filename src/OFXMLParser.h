@@ -88,7 +88,7 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
  * This callback is called when the XML parser found CDATA.
  *
  * \param parser The parser which found a string
- * \param string The string the XML parser found
+ * \param cdata The CDATA the XML parser found
  */
 - (void)parser: (OFXMLParser*)parser
     foundCDATA: (OFString*)cdata;

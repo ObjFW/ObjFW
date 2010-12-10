@@ -125,7 +125,7 @@
 /**
  * Terminates the current thread, letting it return the specified object.
  *
- * \param The object which the terminated thread will return
+ * \param obj The object which the terminated thread will return
  */
 + (void)terminateWithObject: (id)obj;
 

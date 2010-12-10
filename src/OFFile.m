@@ -85,10 +85,8 @@ static int parse_mode(const char *mode)
 	return -1;
 }
 
-/// \cond internal
 @interface OFFileSingleton: OFFile
 @end
-/// \endcond
 
 @implementation OFFile
 + (void)load
@@ -538,7 +536,6 @@ static int parse_mode(const char *mode)
 }
 @end
 
-/// \cond internal
 @implementation OFFileSingleton
 - initWithPath: (OFString*)path
 	  mode: (OFString*)mode
@@ -575,4 +572,3 @@ static int parse_mode(const char *mode)
 	[super dealloc];	/* Get rid of stupid warning */
 }
 @end
-/// \endcond

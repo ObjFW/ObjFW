@@ -175,9 +175,6 @@
 - initWithFileDescriptor: (int)fd;
 @end
 
-/// An OFFile object for stdin
 extern OFFile *of_stdin;
-/// An OFFile object for stdout
 extern OFFile *of_stdout;
-/// An OFFile object for stderr
 extern OFFile *of_stderr;
