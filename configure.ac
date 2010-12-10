@@ -19,7 +19,8 @@ AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
 AX_CHECK_COMPILER_FLAGS(-fno-common, [OBJCFLAGS="$OBJCFLAGS -fno-common"])
 AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings, [
 	NO_CONST_CFSTRINGS="-fno-constant-cfstrings"
-	OBJCFLAGS="$OBJCFLAGS -fno-constant-cfstrings"])
+	OBJCFLAGS="$OBJCFLAGS -fno-constant-cfstrings"
+])
 AC_SUBST(NO_CONST_CFSTRINGS)
 
 AC_MSG_CHECKING(whether Objective C compiler supports fast enumeration)
@@ -31,14 +32,16 @@ AC_TRY_COMPILE([
 				   objects: (id*)objects
 				     count: (int)count;
 	@end
-	], [
+], [
 	id n = nil;
 	for (id i in n);
-	], [
+], [
 	AC_DEFINE(OF_HAVE_FAST_ENUMERATION, 1,
 		[Compiler support for Fast Enumeration])
 	AC_MSG_RESULT(yes)
-	], [AC_MSG_RESULT(no)])
+], [
+	AC_MSG_RESULT(no)
+])
 
 AC_MSG_CHECKING(whether Objective C compiler supports properties)
 AC_TRY_COMPILE([
@@ -51,15 +54,17 @@ AC_TRY_COMPILE([
 
 	@property (retain, nonatomic) id bar;
 	@end
-	], [
+], [
 	Foo *foo = nil;
 	[foo setBar: nil];
 	[foo bar];
-	], [
+], [
 	AC_DEFINE(OF_HAVE_PROPERTIES, 1, [Compiler support for properties])
 	AC_SUBST(PROPERTIESTESTS_M, "PropertiesTests.m")
 	AC_MSG_RESULT(yes)
-	], [AC_MSG_RESULT(no)])
+], [
+	AC_MSG_RESULT(no)
+])
 
 AC_MSG_CHECKING(whether Objective C compiler supports blocks)
 old_OBJCFLAGS="$OBJCFLAGS"
@@ -67,31 +72,33 @@ OBJCFLAGS="$OBJCFLAGS -fblocks"
 AC_TRY_COMPILE([], [
 	int (^foo)(int bar);
 	foo = ^(int bar) { return 0; }
-	], [
+], [
 	AC_DEFINE(OF_HAVE_BLOCKS, 1, [Compiler support for blocks])
 	AC_SUBST(BLOCKS_FLAGS, "-fblocks")
 	AC_SUBST(OFBLOCKTESTS_M, "OFBlockTests.m")
 	AC_MSG_RESULT(yes)
-	], [
+], [
 	AC_MSG_RESULT(no)
 	OBJCFLAGS="$old_OBJCFLAGS"
-	])
+])
 
 AC_CHECK_HEADERS([objfw-rt.h objc/objc.h])
 
 test x"$ac_cv_header_objfw_rt_h" = x"yes" && objc_runtime="ObjFW-RT"
 
-if test x"$ac_cv_header_objc_objc_h" = x"yes"; then
+AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
 	dnl TODO: This is ugly. Let's think of a better check.
 	AC_EGREP_CPP(gnu, [
 		#import <objc/objc.h>
 		#ifdef __objc_INCLUDE_GNU
 		gnu
 		#endif
-		],
-		[test x"$objc_runtime" = "x" && objc_runtime="GNU"],
-		[objc_runtime="Apple"])
-fi
+	], [
+		test x"$objc_runtime" = "x" && objc_runtime="GNU"
+	], [
+		objc_runtime="Apple"
+	])
+])
 
 AC_MSG_CHECKING(which Objective C runtime we use)
 case $objc_runtime in
@@ -122,32 +129,35 @@ AC_MSG_RESULT($objc_runtime)
 AC_CHECK_FUNC(objc_getProperty,, [
 	AC_DEFINE(NEED_OBJC_PROPERTIES_INIT, 1,
 		[Whether objc_properties_init needs to be called])
-	AC_SUBST(OBJC_PROPERTIES_M, "objc_properties.m")])
+	AC_SUBST(OBJC_PROPERTIES_M, "objc_properties.m")
+])
 
 AC_CHECK_FUNC(objc_enumerationMutation, [
 	AC_DEFINE(HAVE_OBJC_ENUMERATIONMUTATION, 1,
-		[Whether we have objc_enumerationMutation])])
+		[Whether we have objc_enumerationMutation])
+])
 
 AC_ARG_ENABLE(shared,
 	AS_HELP_STRING([--disable-shared], [don't build shared library]))
 AS_IF([test x"$enable_shared" != x"no"], [
 	BUILDSYS_SHARED_LIB
-	AC_SUBST(OBJFW_SHARED_LIB, "${LIB_PREFIX}objfw${LIB_SUFFIX}")])
-AC_ARG_ENABLE(static,
-	AS_HELP_STRING([--enable-static], [build static library]))
+	AC_SUBST(OBJFW_SHARED_LIB, "${LIB_PREFIX}objfw${LIB_SUFFIX}")
+])
+AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
 AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
 	AC_REQUIRE([AC_PROG_RANLIB])
 	AC_PATH_TOOL(AR, ar)
-	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")])
+	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
+])
 
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
-if test x"$PLUGIN_SUFFIX" != "x"; then
+AS_IF([test x"$PLUGIN_SUFFIX" != "x"], [
 	AC_SUBST(OFPLUGIN_M, "OFPlugin.m")
 	AC_SUBST(OFPLUGINTESTS_M, "OFPluginTests.m")
 	AC_SUBST(TESTPLUGIN, "plugin")
 	AC_DEFINE(OF_PLUGINS, 1, [Whether we have plugin support])
 	AC_SUBST(OFPLUGINS_DEF, "-DOF_PLUGINS")
-fi
+])
 
 case "$host_os" in
 	darwin*)
@@ -159,7 +169,8 @@ esac
 
 AC_C_BIGENDIAN([
 	AC_DEFINE(OF_BIG_ENDIAN, 1, [Whether we are big endian])
-	AC_SUBST(ENDIANESS_DEF, "-DOF_BIG_ENDIAN")])
+	AC_SUBST(ENDIANESS_DEF, "-DOF_BIG_ENDIAN")
+])
 
 AC_MSG_CHECKING(for SIZE_MAX)
 AC_EGREP_CPP(yes, [
@@ -169,7 +180,9 @@ AC_EGREP_CPP(yes, [
 	#ifdef SIZE_MAX
 	yes
 	#endif
-	], AC_MSG_RESULT(yes), [
+], [
+	AC_MSG_RESULT(yes)
+], [
 	AC_MSG_RESULT(no)
 	AC_MSG_CHECKING(for SIZE_T_MAX)
 	AC_EGREP_CPP(yes, [
@@ -179,18 +192,20 @@ AC_EGREP_CPP(yes, [
 		#ifdef SIZE_T_MAX
 		yes
 		#endif
-		], [
+	], [
 		AC_MSG_RESULT(yes)
 		size_max="SIZE_T_MAX"], [
 		AC_MSG_RESULT(no)
-		size_max="((size_t)-1)"])
-	AC_DEFINE_UNQUOTED(SIZE_MAX, $size_max, [Maximum value for size_t])])
+		size_max="((size_t)-1)"
+	])
+	AC_DEFINE_UNQUOTED(SIZE_MAX, $size_max, [Maximum value for size_t])
+])
 
 AC_CHECK_FUNC(asprintf, [
 	have_asprintf="yes"
 	AC_DEFINE(OF_HAVE_ASPRINTF, 1, [Whether we have asprintf])
 	AC_SUBST(ASPRINTF_DEF, "-DOF_HAVE_ASPRINTF")
-	], [
+], [
 	have_asprintf="no"
 	AC_SUBST(ASPRINTF_M, "asprintf.m")
 
@@ -203,11 +218,15 @@ AC_CHECK_FUNC(asprintf, [
 			main()
 			{
 				return (snprintf(NULL, 0, "asd") == 3 ? 0 : 1);
-			}],
+			}
+		], [
 			ac_cv_snprintf_useful_ret="yes",
 			ac_cv_snprintf_useful_ret="no",
-			ac_cv_snprintf_useful_ret="no")])
-		AC_MSG_RESULT($ac_cv_snprintf_useful_ret)])
+			ac_cv_snprintf_useful_ret="no"
+		])
+	])
+	AC_MSG_RESULT($ac_cv_snprintf_useful_ret)
+])
 test x"$have_asprintf" != x"yes" -a x"$ac_cv_snprintf_useful_ret" != x"yes" && \
 	AC_MSG_ERROR(No asprintf and no snprintf returning required space!)
 
@@ -216,7 +235,7 @@ AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
 
 AC_ARG_ENABLE(threads,
 	AS_HELP_STRING([--disable-threads], [disable thread support]))
-if test x"$enable_threads" != x"no"; then
+AS_IF([test x"$enable_threads" != x"no"], [
 	case "$host_os" in
 	mingw*)
 		AC_MSG_CHECKING(for threads)
@@ -230,12 +249,15 @@ if test x"$enable_threads" != x"no"; then
 				[Whether we have pthreads])
 			AC_CHECK_FUNC(pthread_spin_lock, [
 				AC_DEFINE(OF_HAVE_PTHREAD_SPINLOCKS, 1,
-					[Whether we have pthread spinlocks])])
+					[Whether we have pthread spinlocks])
+			])
 			AC_CHECK_FUNC(sched_yield, [
 				AC_DEFINE(OF_HAVE_SCHED_YIELD, 1,
-					[Whether we have sched_yield])])
-			], [
-			AC_MSG_ERROR(No supported threads found!)])
+					[Whether we have sched_yield])
+			])
+		], [
+			AC_MSG_ERROR(No supported threads found!)
+		])
 		;;
 	esac
 
@@ -247,7 +269,8 @@ if test x"$enable_threads" != x"no"; then
 	AC_CHECK_FUNC(objc_sync_enter,, [
 		AC_SUBST(OBJC_SYNC_M, "objc_sync.m")
 		AC_DEFINE(NEED_OBJC_SYNC_INIT, 1,
-			[Whether objc_sync_init needs to be called])])
+			[Whether objc_sync_init needs to be called])
+	])
 
 	atomic_ops="none"
 
@@ -257,10 +280,12 @@ if test x"$enable_threads" != x"no"; then
 		    defined(__amd64__) || defined(__x86_64__))
 		yes
 		#endif
-		], [
+	], [
 		AC_MSG_RESULT(yes)
 		atomic_ops="assembly implementation"
-		], [AC_MSG_RESULT(no)])
+	], [
+		AC_MSG_RESULT(no)
+	])
 
 	AC_MSG_CHECKING(whether __sync_* works)
 	AC_TRY_LINK([#include <stdint.h>], [
@@ -268,12 +293,14 @@ if test x"$enable_threads" != x"no"; then
 		if (__sync_add_and_fetch(&i, 1))
 			j = __sync_sub_and_fetch(&i, 1);
 		while (!__sync_bool_compare_and_swap(&i, 0, 1));
-		], [
+	], [
 		AC_MSG_RESULT(yes)
 		test x"$atomic_ops" = x"none" && atomic_ops="gcc builtins"
 		AC_DEFINE(OF_HAVE_GCC_ATOMIC_OPS, 1,
 			[Whether gcc atomic operations are available])
-		], [AC_MSG_RESULT(no)])
+	], [
+		AC_MSG_RESULT(no)
+	])
 
 	AC_CHECK_HEADER(libkern/OSAtomic.h, [
 		test x"$atomic_ops" = x"none" && atomic_ops="libkern/OSAtomic.h"
@@ -281,26 +308,30 @@ if test x"$enable_threads" != x"no"; then
 			[Whether we have libkern/OSAtomic.h])
 		AC_CHECK_FUNC(OSAtomicAdd64Barrier, [
 			AC_DEFINE(OF_HAVE_OSATOMIC_64, 1,
-				[Whether we have OSAtomic*64])])])
-else
+				[Whether we have OSAtomic*64])
+		])
+	])
+], [
 	dnl We can only have one thread - therefore everything is atomic
 	atomic_ops="not needed"
-fi
+])
 
 AC_MSG_CHECKING(for atomic operations)
-if test x"$atomic_ops" != x"none"; then
+AS_IF([test x"$atomic_ops" != x"none"], [
 	AC_DEFINE(OF_ATOMIC_OPS, 1, [Whether we have atomic operations])
 	AC_SUBST(ATOMIC_H, "atomic.h")
-fi
+])
 AC_MSG_RESULT($atomic_ops)
 
 AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
 AC_CHECK_LIB(ws2_32, main, LIBS="$LIBS -lws2_32")
 
-AC_CHECK_HEADER(poll.h,
-	[AC_DEFINE(OF_HAVE_POLL, 1, [Whether poll is supported])])
-AC_CHECK_HEADERS(sys/select.h,
-	[AC_DEFINE(OF_HAVE_SYS_SELECT_H, 1, [Whether we have sys/select.h])])
+AC_CHECK_HEADER(poll.h, [
+	AC_DEFINE(OF_HAVE_POLL, 1, [Whether poll is supported])
+])
+AC_CHECK_HEADERS(sys/select.h, [
+	AC_DEFINE(OF_HAVE_SYS_SELECT_H, 1, [Whether we have sys/select.h])
+])
 
 AC_MSG_CHECKING(for getaddrinfo)
 AC_TRY_COMPILE([
@@ -313,14 +344,14 @@ AC_TRY_COMPILE([
 	# define _WIN32_WINNT 0x0501
 	# include <ws2tcpip.h>
 	#endif
-	], [
+], [
 	struct addrinfo ai;
 	getaddrinfo(NULL, NULL, NULL, NULL);
-	], [
+], [
 	AC_MSG_RESULT(yes)
 	AC_DEFINE(HAVE_GETADDRINFO, 1, [Whether we have getaddrinfo])
 
-	if test x"$enable_threads" != x"no"; then
+	AS_IF([test x"$enable_threads" != x"no"], [
 		AC_MSG_CHECKING(whether getaddrinfo is thread-safe)
 
 		case "$host_os" in
@@ -350,29 +381,35 @@ AC_TRY_COMPILE([
 				;;
 		esac
 
-		if test x"$have_threadsafe_getaddrinfo" = x"unknown"; then
+		AS_IF([test x"$have_threadsafe_getaddrinfo" = x"unknown"], [
 			AC_EGREP_CPP(yes, [
 				#include <netdb.h>
 				#ifdef h_errno
 				yes
 				#end
-				],
-				[have_threadsafe_getaddrinfo="yes"],
-				[have_threadsafe_getaddrinfo="no"])
-		fi
+			], [
+				have_threadsafe_getaddrinfo="yes"
+			], [
+				have_threadsafe_getaddrinfo="no"
+			])
+		])
 
-		test x"$have_threadsafe_getaddrinfo" = x"yes" && \
+		AS_IF([test x"$have_threadsafe_getaddrinfo" = x"yes"], [
 			AC_DEFINE(HAVE_THREADSAFE_GETADDRINFO, 1,
 				[Whether getaddrinfo is thread-safe])
+		])
 
 		AC_MSG_RESULT($have_threadsafe_getaddrinfo)
-	fi
-	], [
-	AC_MSG_RESULT(no)])
+	])
+], [
+	AC_MSG_RESULT(no)
+])
 
-AC_CHECK_FUNC(madvise, [AC_DEFINE(HAVE_MADVISE, 1, [Whether we have madvise])])
+AC_CHECK_FUNC(madvise, [
+	AC_DEFINE(HAVE_MADVISE, 1, [Whether we have madvise])
+])
 
-if test x"$GOBJC" = x"yes"; then
+AS_IF([test x"$GOBJC" = x"yes"], [
 	OBJCFLAGS="$OBJCFLAGS -Werror"
 
 	AC_MSG_CHECKING(whether gcc has bug objc/27438)
@@ -388,13 +425,16 @@ if test x"$GOBJC" = x"yes"; then
 		@end
 
 		void *_OFConstantStringClassReference;
-		], [
+	], [
 		OFConstantString *test = @"";
 		test++; /* Get rid of unused variable warning */
-		], [AC_MSG_RESULT(no)], [
+	], [
+		AC_MSG_RESULT(no)
+	], [
 		AC_MSG_RESULT([yes, adding -Wno-unused-variable])
 		OBJCFLAGS="$OBJCFLAGS -Wno-unused-variable"
-		AC_SUBST(NO_WARN_UNUSED, "-Wno-unused-variable")])
+		AC_SUBST(NO_WARN_UNUSED, "-Wno-unused-variable")
+	])
 
 	AC_MSG_CHECKING(whether we need -Wno-strict-aliasing due to gcc bugs)
 	AC_TRY_COMPILE([
@@ -409,30 +449,33 @@ if test x"$GOBJC" = x"yes"; then
 		static struct {
 			Class isa;
 		} object;
-		], [
+	], [
 		OFObject *test = (OFObject*)&object;
 		test++; /* Get rid of unused variable warning */
-		], [AC_MSG_RESULT(no)], [
+	], [
+		AC_MSG_RESULT(no)
+	], [
 		AC_MSG_RESULT(yes)
-		OBJCFLAGS="$OBJCFLAGS -Wno-strict-aliasing"])
-fi
+		OBJCFLAGS="$OBJCFLAGS -Wno-strict-aliasing"
+	])
+])
 
-if test x"$cross_compiling" = x"yes"; then
+AS_IF([test x"$cross_compiling" = x"yes"], [
 	AC_SUBST(BIN_PREFIX, "$host-")
 
 	case "$host" in
 		*-*-mingw*)
 			AC_PATH_PROG(WINE, wine)
 
-			if test x"$WINE" != "x"; then
+			AS_IF([test x"$WINE" != "x"], [
 				AC_SUBST(TESTS, "tests")
 				AC_SUBST(TEST_LAUNCHER, "$WINE")
-			fi
+			])
 			;;
 	esac
-else
+], [
 	AC_SUBST(TESTS, "tests")
-fi
+])
 
 BUILDSYS_INIT
 BUILDSYS_TOUCH_DEPS
