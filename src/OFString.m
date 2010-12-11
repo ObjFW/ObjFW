@@ -589,9 +589,9 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		}
 
 		if ((string = strdup(string)) == NULL)
-			@throw [OFOutOfMemoryException newWithClass: isa
-							       size: length +
-								     1];
+			@throw [OFOutOfMemoryException
+			     newWithClass: isa
+			    requestedSize: length + 1];
 
 		@try {
 			[self addMemoryToPool: string];

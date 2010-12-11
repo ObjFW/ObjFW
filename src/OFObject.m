@@ -501,7 +501,7 @@ objc_enumerationMutation(id obj)
 	if ((memchunks = realloc(PRE_IVAR->memchunks,
 	    memchunks_size * sizeof(void*))) == NULL)
 		@throw [OFOutOfMemoryException newWithClass: isa
-						       size: memchunks_size];
+					      requestedSize: memchunks_size];
 
 	PRE_IVAR->memchunks = memchunks;
 	PRE_IVAR->memchunks[PRE_IVAR->memchunks_size] = ptr;
@@ -524,13 +524,13 @@ objc_enumerationMutation(id obj)
 
 	if ((ptr = malloc(size)) == NULL)
 		@throw [OFOutOfMemoryException newWithClass: isa
-						       size: size];
+					      requestedSize: size];
 
 	if ((memchunks = realloc(PRE_IVAR->memchunks,
 	    memchunks_size * sizeof(void*))) == NULL) {
 		free(ptr);
 		@throw [OFOutOfMemoryException newWithClass: isa
-						       size: memchunks_size];
+					      requestedSize: memchunks_size];
 	}
 
 	PRE_IVAR->memchunks = memchunks;
@@ -571,8 +571,8 @@ objc_enumerationMutation(id obj)
 		if (OF_UNLIKELY(*iter == ptr)) {
 			if (OF_UNLIKELY((ptr = realloc(ptr, size)) == NULL))
 				@throw [OFOutOfMemoryException
-				    newWithClass: isa
-					    size: size];
+				     newWithClass: isa
+				    requestedSize: size];
 
 			*iter = ptr;
 			return ptr;

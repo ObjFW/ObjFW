@@ -71,7 +71,7 @@
 
 	if (eos || (ret = recv(sock, buf, size, 0)) < 0)
 		@throw [OFReadFailedException newWithClass: isa
-						      size: size];
+					     requestedSize: size];
 
 	if (ret == 0)
 		eos = YES;
@@ -95,7 +95,7 @@
 
 	if (eos || (ret = send(sock, buf, size, 0)) == -1)
 		@throw [OFWriteFailedException newWithClass: isa
-						       size: size];
+					      requestedSize: size];
 
 	/* This is safe, as we already checked for -1 */
 	return ret;

@@ -470,7 +470,7 @@ static int parse_mode(const char *mode)
 
 	if (fd == -1 || eos)
 		@throw [OFReadFailedException newWithClass: isa
-						      size: size];
+					     requestedSize: size];
 	if ((ret = read(fd, buf, size)) == 0)
 		eos = YES;
 
@@ -484,7 +484,7 @@ static int parse_mode(const char *mode)
 
 	if (fd == -1 || eos || (ret = write(fd, buf, size)) < size)
 		@throw [OFWriteFailedException newWithClass: isa
-						       size: size];
+					      requestedSize: size];
 
 	return ret;
 }

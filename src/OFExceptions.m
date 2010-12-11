@@ -191,15 +191,15 @@
 @end
 
 @implementation OFOutOfMemoryException
-+ newWithClass: (Class)class_
-	  size: (size_t)size
++  newWithClass: (Class)class_
+  requestedSize: (size_t)size
 {
 	return [[self alloc] initWithClass: class_
-				      size: size];
+			     requestedSize: size];
 }
 
 - initWithClass: (Class)class_
-	   size: (size_t)size
+  requestedSize: (size_t)size
 {
 	self = [super initWithClass: class_];
 
@@ -518,11 +518,11 @@
 @end
 
 @implementation OFReadOrWriteFailedException
-+ newWithClass: (Class)class_
-	  size: (size_t)size
++  newWithClass: (Class)class_
+  requestedSize: (size_t)size
 {
 	return [[self alloc] initWithClass: class_
-				      size: size];
+			     requestedSize: size];
 }
 
 - initWithClass: (Class)class_
@@ -534,7 +534,7 @@
 }
 
 - initWithClass: (Class)class_
-	   size: (size_t)size
+  requestedSize: (size_t)size
 {
 	self = [super initWithClass: class_];
 

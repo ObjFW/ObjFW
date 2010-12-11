@@ -97,8 +97,8 @@
  * \param size The size of the memory that couldn't be allocated
  * \return A new no memory exception
  */
-+ newWithClass: (Class)class_
-	  size: (size_t)size;
++  newWithClass: (Class)class_
+  requestedSize: (size_t)size;
 
 /**
  * Initializes an already allocated no memory exception.
@@ -108,7 +108,7 @@
  * \return An initialized no memory exception
  */
 - initWithClass: (Class)class_
-	   size: (size_t)size;
+  requestedSize: (size_t)size;
 
 /**
  * \return The size of the memoory that couldn't be allocated
@@ -336,8 +336,8 @@
  * \param size The requested size of the data that couldn't be read / written
  * \return A new open file failed exception
  */
-+ newWithClass: (Class)class_
-	  size: (size_t)size;
++  newWithClass: (Class)class_
+  requestedSize: (size_t)size;
 
 /**
  * Initializes an already allocated read or write failed exception.
@@ -347,7 +347,7 @@
  * \return A new open file failed exception
  */
 - initWithClass: (Class)class_
-	   size: (size_t)size;
+  requestedSize: (size_t)size;
 
 /**
  * \return The errno from when the exception was created

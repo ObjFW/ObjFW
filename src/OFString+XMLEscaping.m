@@ -36,7 +36,7 @@ int _OFString_XMLEscaping_reference;
 	 */
 	if ((str_c = malloc(len)) == NULL)
 		@throw [OFOutOfMemoryException newWithClass: isa
-						       size: len];
+					      requestedSize: len];
 
 	for (i = 0; i < length; i++) {
 		switch (string[i]) {
@@ -69,8 +69,8 @@ int _OFString_XMLEscaping_reference;
 			if ((tmp = realloc(str_c, len + append_len)) == NULL) {
 				free(str_c);
 				@throw [OFOutOfMemoryException
-				    newWithClass: isa
-					    size: len + append_len];
+				     newWithClass: isa
+				    requestedSize: len + append_len];
 			}
 			str_c = tmp;
 			len += append_len - 1;

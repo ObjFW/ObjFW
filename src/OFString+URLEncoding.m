@@ -38,7 +38,7 @@ int _OFString_URLEncoding_reference;
 	 */
 	if ((ret_c = malloc((length * 3) + 1)) == NULL)
 		@throw [OFOutOfMemoryException newWithClass: isa
-						       size: (length * 3) + 1];
+					      requestedSize: (length * 3) + 1];
 
 	for (i = 0; *s != '\0'; s++) {
 		if (isalnum((int)*s) || *s == '-' || *s == '_' || *s == '.' ||
@@ -78,7 +78,7 @@ int _OFString_URLEncoding_reference;
 
 	if ((ret_c = malloc(length + 1)) == NULL)
 		@throw [OFOutOfMemoryException newWithClass: isa
-						       size: length + 1];
+					      requestedSize: length + 1];
 
 	for (st = 0, i = 0, c = 0; *s; s++) {
 		switch (st) {
