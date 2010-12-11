@@ -11,7 +11,6 @@
 
 #include "config.h"
 
-#include <string.h>
 #include <assert.h>
 
 #import "OFXMLElement.h"
@@ -37,7 +36,7 @@ static OFXMLElement *elem = nil;
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFXMLParser *p = [OFXMLParser parser];
 	OFXMLElementBuilder *builder = [OFXMLElementBuilder elementBuilder];
-	const char *str = "<foo>bar<![CDATA[f<oo]]>baz<qux/>"
+	OFString *str = @"<foo>bar<![CDATA[f<oo]]>baz<qux/>"
 	    " <qux xmlns:qux='urn:qux'><qux:bar/><x qux:y='z'/></qux>"
 	    "</foo>";
 
@@ -45,10 +44,8 @@ static OFXMLElement *elem = nil;
 	[builder setDelegate: self];
 
 	TEST(@"Building element from parsed XML",
-	    R([p parseBuffer: str
-		    withSize: strlen(str)]) &&
-    	    elem != nil && !strcmp([[elem string] cString], str))
-
+	    R([p parseString: str]) &&
+	    elem != nil && [[elem stringValue] isEqual: str])
 
 	[elem release];
 	[pool drain];

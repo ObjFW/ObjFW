@@ -11,8 +11,8 @@
 
 #include "config.h"
 
-#include <assert.h>
 #include <string.h>
+#include <assert.h>
 
 #import "OFXMLElement.h"
 #import "OFString.h"
@@ -190,8 +190,8 @@
 	return [[children copy] autorelease];
 }
 
-- (OFString*)_stringWithParentNamespaces: (OFDictionary*)parent_namespaces
-		  parentDefaultNamespace: (OFString*)parent_default_ns
+- (OFString*)_stringValueWithParentNamespaces: (OFDictionary*)parent_namespaces
+		       parentDefaultNamespace: (OFString*)parent_default_ns
 {
 	OFAutoreleasePool *pool, *pool2;
 	char *str_c;
@@ -330,7 +330,7 @@
 			append(tmp, @selector(
 			    appendCStringWithoutUTF8Checking:),
 			    [[children_carray[j]
-			    _stringWithParentNamespaces: all_namespaces
+			    _stringValueWithParentNamespaces: all_namespaces
 			    parentDefaultNamespace: defaultNamespace] cString]);
 
 		len += [tmp cStringLength] + [name cStringLength] + 2;
@@ -381,10 +381,15 @@
 	return ret;
 }
 
-- (OFString*)string
+- (OFString*)stringValue
 {
-	return [self _stringWithParentNamespaces: nil
-			  parentDefaultNamespace: nil];
+	return [self _stringValueWithParentNamespaces: nil
+			       parentDefaultNamespace: nil];
+}
+
+- (OFString*)description
+{
+	return [self stringValue];
 }
 
 - (void)addAttribute: (OFXMLAttribute*)attr

@@ -30,12 +30,12 @@ static OFString *module = @"OFXMLElement";
 
 	TEST(@"+[elementWithName:]",
 	    (elem[0] = [OFXMLElement elementWithName: @"foo"]) &&
-	    [[elem[0] string] isEqual: @"<foo/>"])
+	    [[elem[0] stringValue] isEqual: @"<foo/>"])
 
 	TEST(@"+[elementWithName:stringValue:]",
 	    (elem[1] = [OFXMLElement elementWithName: @"foo"
 					 stringValue: @"b&ar"]) &&
-	    [[elem[1] string] isEqual: @"<foo>b&amp;ar</foo>"])
+	    [[elem[1] stringValue] isEqual: @"<foo>b&amp;ar</foo>"])
 
 	TEST(@"+[elementWithName:namespace:]",
 	    (elem[2] = [OFXMLElement elementWithName: @"foo"
@@ -44,7 +44,7 @@ static OFString *module = @"OFXMLElement";
 				stringValue: @"test"]) &&
 	    R([elem[2] setPrefix: @"objfw-test"
 		    forNamespace: @"urn:objfw:test"]) &&
-	    [[elem[2] string] isEqual: @"<objfw-test:foo test='test'/>"])
+	    [[elem[2] stringValue] isEqual: @"<objfw-test:foo test='test'/>"])
 
 	TEST(@"+[elementWithName:namespace:stringValue:]",
 	    (elem[3] = [OFXMLElement elementWithName: @"foo"
@@ -52,27 +52,29 @@ static OFString *module = @"OFXMLElement";
 					 stringValue: @"x"]) &&
 	    R([elem[3] setPrefix: @"objfw-test"
 		    forNamespace: @"urn:objfw:test"]) &&
-	    [[elem[3] string] isEqual: @"<objfw-test:foo>x</objfw-test:foo>"])
+	    [[elem[3] stringValue] isEqual:
+	    @"<objfw-test:foo>x</objfw-test:foo>"])
 
 	TEST(@"+[elementWithCharacters:]",
 	    (elem[3] = [OFXMLElement elementWithCharacters: @"<foo>"]) &&
-	    [[elem[3] string] isEqual: @"&lt;foo&gt;"])
+	    [[elem[3] stringValue] isEqual: @"&lt;foo&gt;"])
 
 	TEST(@"+[elementWithCDATA:]",
 	    (elem[3] = [OFXMLElement elementWithCDATA: @"<foo>"]) &&
-	    [[elem[3] string] isEqual: @"<![CDATA[<foo>]]>"]);
+	    [[elem[3] stringValue] isEqual: @"<![CDATA[<foo>]]>"]);
 
 	TEST(@"+[elementWithComment:]",
 	    (elem[3] = [OFXMLElement elementWithComment: @" comment "]) &&
-	    [[elem[3] string] isEqual: @"<!-- comment -->"])
+	    [[elem[3] stringValue] isEqual: @"<!-- comment -->"])
 
 	TEST(@"-[addAttributeWithName:stringValue:]",
 	    R([elem[0] addAttributeWithName: @"foo"
 				stringValue: @"b&ar"]) &&
-	    [[elem[0] string] isEqual: @"<foo foo='b&amp;ar'/>"] &&
+	    [[elem[0] stringValue] isEqual: @"<foo foo='b&amp;ar'/>"] &&
 	    R([elem[1] addAttributeWithName: @"foo"
 				stringValue: @"b&ar"]) &&
-	    [[elem[1] string] isEqual: @"<foo foo='b&amp;ar'>b&amp;ar</foo>"])
+	    [[elem[1] stringValue] isEqual:
+	    @"<foo foo='b&amp;ar'>b&amp;ar</foo>"])
 
 	TEST(@"-[setPrefix:forNamespace:]",
 	    R([elem[1] setPrefix: @"objfw-test"
@@ -82,16 +84,16 @@ static OFString *module = @"OFXMLElement";
 	    R([elem[1] addAttributeWithName: @"foo"
 				  namespace: @"urn:objfw:test"
 				stringValue: @"bar"]) &&
-	    [[elem[1] string] isEqual:
+	    [[elem[1] stringValue] isEqual:
 	    @"<foo foo='b&amp;ar' objfw-test:foo='bar'>b&amp;ar</foo>"])
 
 	TEST(@"-[addChild:]",
 	    R([elem[0] addChild: [OFXMLElement elementWithName: @"bar"]]) &&
-	    [[elem[0] string] isEqual: @"<foo foo='b&amp;ar'><bar/></foo>"] &&
-	    R([elem[2] addChild:
-	    [OFXMLElement elementWithName: @"bar"
-				namespace: @"urn:objfw:test"]]) &&
-	    [[elem[2] string] isEqual:
+	    [[elem[0] stringValue] isEqual:
+	    @"<foo foo='b&amp;ar'><bar/></foo>"] &&
+	    R([elem[2] addChild: [OFXMLElement elementWithName: @"bar"
+		      namespace: @"urn:objfw:test"]]) &&
+	    [[elem[2] stringValue] isEqual:
 	    @"<objfw-test:foo test='test'><objfw-test:bar/></objfw-test:foo>"])
 
 	[pool drain];

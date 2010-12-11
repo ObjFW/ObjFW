@@ -174,7 +174,7 @@
  * and is designed to store large hunks of data. Therefore, it allocates
  * memory in pages rather than a chunk of memory for each item.
  */
-@interface OFBigDataArray: OFDataArray <OFCopying>
+@interface OFBigDataArray: OFDataArray
 {
 	size_t size;
 }
