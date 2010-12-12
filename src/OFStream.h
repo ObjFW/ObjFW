@@ -37,7 +37,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (assign, setter=setBlocking) BOOL isBlocking;
+@property (assign, setter=setBlocking:) BOOL isBlocking;
 #endif
 
 /**
