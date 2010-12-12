@@ -144,6 +144,16 @@ static OFString *values[] = {
 	    }]) && [[dict objectForKey: keys[0]] isEqual: @"value_1"] &&
 	    [[dict objectForKey: keys[1]] isEqual: @"value_2"])
 
+	TEST(@"-[mappedDictionaryUsingBlock:]",
+	    [[[dict mappedDictionaryUsingBlock: ^ id (id key, id obj) {
+		if ([key isEqual: keys[0]])
+			return @"val1";
+		if ([key isEqual: keys[1]])
+			return @"val2";
+
+		return nil;
+	    }] description] isEqual: @"{key1 = val1; key2 = val2}"])
+
 	TEST(@"-[filteredDictionaryUsingBlock:]",
 	    [[[dict filteredDictionaryUsingBlock: ^ BOOL (id key, id obj) {
 		return ([key isEqual: keys[0]] ?  YES : NO);

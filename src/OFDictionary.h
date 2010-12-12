@@ -20,6 +20,7 @@
 #ifdef OF_HAVE_BLOCKS
 typedef void (^of_dictionary_enumeration_block_t)(id key, id obj, BOOL *stop);
 typedef BOOL (^of_dictionary_filter_block_t)(id key, id obj);
+typedef id (^of_dictionary_map_block_t)(id key, id obj);
 #endif
 
 struct of_dictionary_bucket
@@ -165,6 +166,14 @@ struct of_dictionary_bucket
  */
 - (void)enumerateKeysAndObjectsUsingBlock:
     (of_dictionary_enumeration_block_t)block;
+
+/**
+ * Returns a new dictionary, mapping each object using the specified block.
+ *
+ * \param block A block which maps an object for each object
+ * \return A new, autorelease OFDictionary
+ */
+- (OFDictionary*)mappedDictionaryUsingBlock: (of_dictionary_map_block_t)block;
 
 /**
  * Returns a new dictionary, only containing the objects for which the block

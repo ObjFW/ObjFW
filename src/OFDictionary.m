@@ -575,6 +575,19 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 			block(data[i]->key, data[i]->object, &stop);
 }
 
+- (OFDictionary*)mappedDictionaryUsingBlock: (of_dictionary_map_block_t)block
+{
+	OFMutableDictionary *dict = [OFMutableDictionary dictionary];
+	size_t i;
+
+	for (i = 0; i < size; i++)
+		if (data[i] != NULL && data[i] != DELETED)
+			[dict setObject: block(data[i]->key, data[i]->object)
+				 forKey: data[i]->key];
+
+	return dict;
+}
+
 - (OFDictionary*)filteredDictionaryUsingBlock:
     (of_dictionary_filter_block_t)block
 {

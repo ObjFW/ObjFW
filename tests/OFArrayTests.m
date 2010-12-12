@@ -250,6 +250,18 @@ static OFString *c_ary[] = {
 		return nil;
 		}]) && [[m[0] description] isEqual: @"(foo, bar)"])
 
+	TEST(@"-[mappedArrayUsingBLock]",
+	    [[[m[0] mappedArrayUsingBlock: ^ id (id obj, size_t idx) {
+    		switch (idx) {
+    		case 0:
+			return @"foobar";
+		case 1:
+			return @"qux";
+		}
+
+		return nil;
+	    }] description] isEqual: @"(foobar, qux)"])
+
 	TEST(@"-[filteredArrayUsingBlock:]",
 	   [[[m[0] filteredArrayUsingBlock: ^ BOOL (id obj, size_t idx) {
 		return ([obj isEqual: @"foo"] ? YES : NO);

@@ -21,6 +21,7 @@
 #ifdef OF_HAVE_BLOCKS
 typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
 typedef BOOL (^of_array_filter_block_t)(id odj, size_t idx);
+typedef id (^of_array_map_block_t)(id obj, size_t idx);
 #endif
 
 /**
@@ -206,6 +207,14 @@ typedef BOOL (^of_array_filter_block_t)(id odj, size_t idx);
  * \param block The block to execute for each object
  */
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block;
+
+/**
+ * Returns a new array, mapping each object using the specified block.
+ *
+ * \param block A block which maps an object for each object
+ * \return A new, autoreleased OFArray
+ */
+- (OFArray*)mappedArrayUsingBlock: (of_array_map_block_t)block;
 
 /**
  * Returns a new array, only containing the objects for which the block returns

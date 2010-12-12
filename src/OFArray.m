@@ -403,6 +403,26 @@
 		block(objs[i], i, &stop);
 }
 
+- (OFArray*)mappedArrayUsingBlock: (of_array_map_block_t)block
+{
+	size_t count = [array count];
+	id *tmp = [self allocMemoryForNItems: count
+				    withSize: sizeof(id)];
+
+	@try {
+		id *objs = [array cArray];
+		size_t i;
+
+		for (i = 0; i < count; i++)
+			tmp[i] = block(objs[i], i);
+
+		return [OFArray arrayWithCArray: tmp
+					 length: count];
+	} @finally {
+		[self freeMemory: tmp];
+	}
+}
+
 - (OFArray*)filteredArrayUsingBlock: (of_array_filter_block_t)block
 {
 	size_t count = [array count];
