@@ -402,6 +402,27 @@
 	for (i = 0; i < count && !stop; i++)
 		block(objs[i], i, &stop);
 }
+
+- (OFArray*)filteredArrayUsingBlock: (of_array_filter_block_t)block
+{
+	size_t count = [array count];
+	id *tmp = [self allocMemoryForNItems: count
+				    withSize: sizeof(id)];
+
+	@try {
+		id *objs = [array cArray];
+		size_t i, j = 0;
+
+		for (i = 0; i < count; i++)
+			if (block(objs[i], i))
+				tmp[j++] = objs[i];
+
+		return [OFArray arrayWithCArray: tmp
+					 length: j];
+	} @finally {
+		[self freeMemory: tmp];
+	}
+}
 #endif
 
 - (void)dealloc

@@ -143,6 +143,11 @@ static OFString *values[] = {
 		return nil;
 	    }]) && [[dict objectForKey: keys[0]] isEqual: @"value_1"] &&
 	    [[dict objectForKey: keys[1]] isEqual: @"value_2"])
+
+	TEST(@"-[filteredDictionaryUsingBlock:]",
+	    [[[dict filteredDictionaryUsingBlock: ^ BOOL (id key, id obj) {
+		return ([key isEqual: keys[0]] ?  YES : NO);
+	    }] description] isEqual: @"{key1 = value_1}"])
 #endif
 
 	TEST(@"-[count]", [dict count] == 2)

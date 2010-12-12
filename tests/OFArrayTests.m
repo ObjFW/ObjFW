@@ -248,8 +248,12 @@ static OFString *c_ary[] = {
 		}
 
 		return nil;
-	    }]) && [[m[0] objectAtIndex: 0] isEqual: @"foo"] &&
-	    [[m[0] objectAtIndex: 1] isEqual: @"bar"])
+		}]) && [[m[0] description] isEqual: @"(foo, bar)"])
+
+	TEST(@"-[filteredArrayUsingBlock:]",
+	   [[[m[0] filteredArrayUsingBlock: ^ BOOL (id obj, size_t idx) {
+		return ([obj isEqual: @"foo"] ? YES : NO);
+	    }] description] isEqual: @"(foo)"])
 #endif
 
 	[pool drain];

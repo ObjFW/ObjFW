@@ -19,6 +19,7 @@
 
 #ifdef OF_HAVE_BLOCKS
 typedef void (^of_dictionary_enumeration_block_t)(id key, id obj, BOOL *stop);
+typedef BOOL (^of_dictionary_filter_block_t)(id key, id obj);
 #endif
 
 struct of_dictionary_bucket
@@ -164,6 +165,17 @@ struct of_dictionary_bucket
  */
 - (void)enumerateKeysAndObjectsUsingBlock:
     (of_dictionary_enumeration_block_t)block;
+
+/**
+ * Returns a new dictionary, only containing the objects for which the block
+ * returns YES.
+ *
+ * \param block A block which determines if the object should be in the new
+ *		dictionary
+ * \return A new, autoreleased OFDictionary
+ */
+- (OFDictionary*)filteredDictionaryUsingBlock:
+    (of_dictionary_filter_block_t)block;
 #endif
 @end
 
