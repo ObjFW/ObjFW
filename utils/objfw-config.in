@@ -84,9 +84,10 @@ while test ! -z "$1"; do
 			printf "%s" "$LIB_CFLAGS"
 			;;
 		--lib-ldflags)
-			if test x"$LIB_MAJOR" = x"" -o x"$LIB_MINOR" = x""; then
-				echo "LIB_MAJOR and LIB_MINOR need to be set!" \
-					1>&2
+			if test x"$LIB" = x"" -o x"$LIB_MAJOR" = x"" \
+			-o x"$LIB_MINOR" = x""; then
+				printf "LIB, LIB_MAJOR and LIB_MINOR need " 2>&1
+				echo "to be set!" 1>&2
 				exit 1
 			fi
 

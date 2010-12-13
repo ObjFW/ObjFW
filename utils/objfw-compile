@@ -79,7 +79,6 @@ while test x"$1" != "x"; do
 
 			lib="yes"
 			OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --lib-cflags)"
-			LDFLAGS="$LDFLAGS $($OBJFW_CONFIG --lib-ldflags)"
 			out_prefix="$($OBJFW_CONFIG --lib-prefix)"
 			out_suffix="$($OBJFW_CONFIG --lib-suffix)"
 			;;
@@ -184,6 +183,11 @@ done
 
 test x"$lib" = x"no" -a x"$plugin" = x"no" && \
 	out_suffix="$($OBJFW_CONFIG --prog-suffix)"
+
+if test x"$lib" = x"yes"; then
+	export LIB="$out_prefix$out$out_suffix"
+	LDFLAGS="$LDFLAGS $($OBJFW_CONFIG --lib-ldflags)"
+fi
 
 if test ! -f "$out_prefix$out$out_suffix" -o x"$link" = x"yes"; then
 	status_linking $out_prefix$out$out_suffix
