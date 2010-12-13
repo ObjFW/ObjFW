@@ -966,7 +966,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return array;
 }
 
-- (intmax_t)decimalValueAsInteger
+- (intmax_t)decimalValue
 {
 	int i = 0;
 	intmax_t num = 0;
@@ -993,7 +993,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return num;
 }
 
-- (uintmax_t)hexadecimalValueAsInteger
+- (uintmax_t)hexadecimalValue
 {
 	int i = 0;
 	uintmax_t num = 0;

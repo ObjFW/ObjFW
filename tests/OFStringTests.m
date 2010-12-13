@@ -221,46 +221,41 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	    [[a objectAtIndex: i++] isEqual: @""] &&
 	    [[a objectAtIndex: i++] isEqual: @""])
 
-	TEST(@"-[decimalValueAsInteger]",
-	    [@"1234" decimalValueAsInteger] == 1234 &&
-	    [@"-500" decimalValueAsInteger] == -500 &&
-	    [@"" decimalValueAsInteger] == 0)
+	TEST(@"-[decimalValue]",
+	    [@"1234" decimalValue] == 1234 &&
+	    [@"-500" decimalValue] == -500 &&
+	    [@"" decimalValue] == 0)
 
-	TEST(@"-[hexadecimalValueAsInteger]",
-	    [@"123f" hexadecimalValueAsInteger] == 0x123f &&
-	    [@"0xABcd" hexadecimalValueAsInteger] == 0xABCD &&
-	    [@"xbCDE" hexadecimalValueAsInteger] == 0xBCDE &&
-	    [@"$CdEf" hexadecimalValueAsInteger] == 0xCDEF &&
-	    [@"" hexadecimalValueAsInteger] == 0)
+	TEST(@"-[hexadecimalValue]",
+	    [@"123f" hexadecimalValue] == 0x123f &&
+	    [@"0xABcd" hexadecimalValue] == 0xABCD &&
+	    [@"xbCDE" hexadecimalValue] == 0xBCDE &&
+	    [@"$CdEf" hexadecimalValue] == 0xCDEF &&
+	    [@"" hexadecimalValue] == 0)
 
-	EXPECT_EXCEPTION(@"Detect invalid characters in "
-	    @"-[decimalValueAsInteger] #1", OFInvalidEncodingException,
-	    [@"abc" decimalValueAsInteger])
-	EXPECT_EXCEPTION(@"Detect invalid characters in "
-	    @"-[decimalValueAsInteger] #2", OFInvalidEncodingException,
-	    [@"0a" decimalValueAsInteger])
+	EXPECT_EXCEPTION(@"Detect invalid characters in -[decimalValue] #1",
+	    OFInvalidEncodingException, [@"abc" decimalValue])
+	EXPECT_EXCEPTION(@"Detect invalid characters in -[decimalValue] #2",
+	    OFInvalidEncodingException, [@"0a" decimalValue])
 
-	EXPECT_EXCEPTION(@"Detect invalid chars in "
-	    @"-[hexadecimalValueAsInteger] #1", OFInvalidEncodingException,
-	    [@"0xABCDEFG" hexadecimalValueAsInteger])
-	EXPECT_EXCEPTION(@"Detect invalid chars in "
-	    @"-[hexadecimalValueAsInteger] #2", OFInvalidEncodingException,
-	    [@"0x" hexadecimalValueAsInteger])
-	EXPECT_EXCEPTION(@"Detect invalid chars in "
-	    @"-[hexadecimalValueAsInteger] #3", OFInvalidEncodingException,
-	    [@"$" hexadecimalValueAsInteger])
+	EXPECT_EXCEPTION(@"Detect invalid chars in -[hexadecimalValue] #1",
+	    OFInvalidEncodingException, [@"0xABCDEFG" hexadecimalValue])
+	EXPECT_EXCEPTION(@"Detect invalid chars in -[hexadecimalValue] #2",
+	    OFInvalidEncodingException, [@"0x" hexadecimalValue])
+	EXPECT_EXCEPTION(@"Detect invalid chars in -[hexadecimalValue] #3",
+	    OFInvalidEncodingException, [@"$" hexadecimalValue])
 
-	EXPECT_EXCEPTION(@"Detect out of range in -[decimalValueAsInteger",
+	EXPECT_EXCEPTION(@"Detect out of range in -[decimalValue]",
 	    OFOutOfRangeException,
 	    [@"12345678901234567890123456789012345678901234567890"
 	     @"12345678901234567890123456789012345678901234567890"
-	    decimalValueAsInteger])
+	    decimalValue])
 
-	EXPECT_EXCEPTION(@"Detect out of range in -[hexadecilamValueAsInteger",
+	EXPECT_EXCEPTION(@"Detect out of range in -[hexadecimalValue]",
 	    OFOutOfRangeException,
 	    [@"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"
 	     @"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"
-	    hexadecimalValueAsInteger])
+	    hexadecimalValue])
 
 	TEST(@"-[unicodeString]", (ua = [@"fööbär" unicodeString]) &&
 	    !memcmp(ua, ucstr, 7 * sizeof(of_unichar_t)) && R(free(ua)))

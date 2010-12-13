@@ -352,17 +352,17 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  * Returns the decimal value of the string as an intmax_t or throws an
  * OFInvalidEncoding exception if the string contains any non-number characters.
  *
- * \return An OFNumber
+ * \return An intmax_t with the value of the string
  */
-- (intmax_t)decimalValueAsInteger;
+- (intmax_t)decimalValue;
 
 /**
  * Returns the hexadecimal value of the string as an intmax_t or throws an
  * OFInvalidEncoding exception if the string contains any non-number characters.
  *
- * \return An OFNumber
+ * \return A uintmax_t with the value of the string
  */
-- (uintmax_t)hexadecimalValueAsInteger;
+- (uintmax_t)hexadecimalValue;
 
 /**
  * Returns the string as an array of of_unichar_t. The result needs to be
