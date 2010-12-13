@@ -753,8 +753,8 @@
 @implementation OFChangeFileOwnerFailedException
 + newWithClass: (Class)class_
 	  path: (OFString*)path
-	 owner: (uid_t)owner
-	 group: (gid_t)group
+	 owner: (OFString*)owner
+	 group: (OFString*)group
 {
 	return [[self alloc] initWithClass: class_
 				      path: path
@@ -772,15 +772,15 @@
 
 - initWithClass: (Class)class_
 	   path: (OFString*)path_
-	  owner: (uid_t)owner_
-	  group: (gid_t)group_
+	  owner: (OFString*)owner_
+	  group: (OFString*)group_
 {
 	self = [super initWithClass: class_];
 
 	@try {
 		path  = [path_ copy];
-		owner = owner_;
-		group = group_;
+		owner = [owner_ copy];
+		group = [group_ copy];
 		errNo = GET_ERRNO;
 	} @catch (id e) {
 		[self release];
@@ -793,6 +793,8 @@
 - (void)dealloc
 {
 	[path release];
+	[owner release];
+	[group release];
 
 	[super dealloc];
 }
@@ -802,9 +804,21 @@
 	if (description != nil)
 		return description;
 
-	description = [[OFString alloc] initWithFormat:
-	    @"Failed to change owner for file %s to %d:%d in class %s! " ERRFMT,
-	    [path cString], owner, group, [inClass className], ERRPARAM];
+	if (group == nil)
+		description = [[OFString alloc] initWithFormat:
+		    @"Failed to change owner for file %s to %s in class %s! "
+		    ERRFMT, [path cString], [owner cString],
+		    [inClass className], ERRPARAM];
+	else if (owner == nil)
+		description = [[OFString alloc] initWithFormat:
+		    @"Failed to change group for file %s to %s in class %s! "
+		    ERRFMT, [path cString], [group cString],
+		    [inClass className], ERRPARAM];
+	else
+		description = [[OFString alloc] initWithFormat:
+		    @"Failed to change owner for file %s to %s:%s in class %s! "
+		    ERRFMT, [path cString], [owner cString], [group cString],
+		    [inClass className], ERRPARAM];
 
 	return description;
 }
@@ -819,12 +833,12 @@
 	return path;
 }
 
-- (uid_t)owner
+- (OFString*)owner
 {
 	return owner;
 }
 
-- (gid_t)group
+- (OFString*)group
 {
 	return group;
 }

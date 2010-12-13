@@ -96,8 +96,8 @@
  * \param group The new group for the file
  */
 + (void)changeOwnerOfFile: (OFString*)path
-		  toOwner: (uid_t)owner
-		    group: (gid_t)group;
+		  toOwner: (OFString*)owner
+		    group: (OFString*)group;
 #endif
 
 /**

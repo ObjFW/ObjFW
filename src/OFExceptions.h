@@ -9,7 +9,7 @@
  * the packaging of this file.
  */
 
-#include <sys/stat.h>
+#include <sys/types.h>
 
 #import "OFObject.h"
 
@@ -494,15 +494,15 @@
 @interface OFChangeFileOwnerFailedException: OFException
 {
 	OFString *path;
-	uid_t owner;
-	gid_t group;
+	OFString *owner;
+	OFString *group;
 	int errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, nonatomic) OFString *path;
-@property (readonly) uid_t owner;
-@property (readonly) gid_t group;
+@property (readonly, nonatomic) OFString *owner;
+@property (readonly, nonatomic) OFString *group;
 @property (readonly) int errNo;
 #endif
 
@@ -515,8 +515,8 @@
  */
 + newWithClass: (Class)class_
 	  path: (OFString*)path
-	 owner: (uid_t)owner
-	 group: (gid_t)group;
+	 owner: (OFString*)owner
+	 group: (OFString*)group;
 
 /**
  * Initializes an already allocated change file owner failed exception.
@@ -529,8 +529,8 @@
  */
 - initWithClass: (Class)class_
 	   path: (OFString*)path
-	  owner: (uid_t)owner
-	  group: (gid_t)group;
+	  owner: (OFString*)owner
+	  group: (OFString*)group;
 
 /**
  * \return The errno from when the exception was created
@@ -545,12 +545,12 @@
 /**
  * \return The new owner for the file
  */
-- (uid_t)owner;
+- (OFString*)owner;
 
 /**
  * \return The new group for the file
  */
-- (gid_t)group;
+- (OFString*)group;
 @end
 #endif
 

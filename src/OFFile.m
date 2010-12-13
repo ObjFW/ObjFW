@@ -20,9 +20,15 @@
 #include <fcntl.h>
 #include <dirent.h>
 
+#ifndef _WIN32
+# include <pwd.h>
+# include <grp.h>
+#endif
+
 #import "OFFile.h"
 #import "OFString.h"
 #import "OFArray.h"
+#import "OFThread.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 #import "macros.h"
@@ -54,6 +60,10 @@
 OFFile *of_stdin = nil;
 OFFile *of_stdout = nil;
 OFFile *of_stderr = nil;
+
+#ifndef _WIN32
+static OFMutex *mutex;
+#endif
 
 static int parse_mode(const char *mode)
 {
@@ -98,6 +108,14 @@ static int parse_mode(const char *mode)
 	of_stdout = [[OFFileSingleton alloc] initWithFileDescriptor: 1];
 	of_stderr = [[OFFileSingleton alloc] initWithFileDescriptor: 2];
 }
+
+#ifndef _WIN32
++ (void)initialize
+{
+	if (self == [OFFile class])
+		mutex = [[OFMutex alloc] init];
+}
+#endif
 
 + fileWithPath: (OFString*)path
 	  mode: (OFString*)mode
@@ -287,10 +305,49 @@ static int parse_mode(const char *mode)
 
 #ifndef _WIN32
 + (void)changeOwnerOfFile: (OFString*)path
-		  toOwner: (uid_t)owner
-		    group: (gid_t)group
+		  toOwner: (OFString*)owner
+		    group: (OFString*)group
 {
-	if (chown([path cString], owner, group))
+	uid_t uid = -1;
+	gid_t gid = -1;
+
+	if (owner == nil && group == nil)
+		@throw [OFInvalidArgumentException newWithClass: self
+						       selector: _cmd];
+
+	[mutex lock];
+
+	@try {
+		if (owner != nil) {
+			struct passwd *pw;
+
+			if ((pw = getpwnam([owner cString])) == NULL)
+				@throw [OFChangeFileOwnerFailedException
+				    newWithClass: self
+					    path: path
+					   owner: owner
+					   group: group];
+
+			uid = pw->pw_uid;
+		}
+
+		if (group != nil) {
+			struct group *gr;
+
+			if ((gr = getgrnam([group cString])) == NULL)
+				@throw [OFChangeFileOwnerFailedException
+				    newWithClass: self
+					    path: path
+					   owner: owner
+					   group: group];
+
+			gid = gr->gr_gid;
+		}
+	} @finally {
+		[mutex unlock];
+	}
+
+	if (chown([path cString], uid, gid))
 		@throw [OFChangeFileOwnerFailedException newWithClass: self
 								 path: path
 								owner: owner
