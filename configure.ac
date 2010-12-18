@@ -12,7 +12,7 @@ AC_PROG_EGREP
 
 CPP="$OBJCPP"
 CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS"
-OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions"
+OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions -fobjc-exceptions"
 OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstantString"
 
 AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
@@ -87,16 +87,25 @@ AC_CHECK_HEADERS([objfw-rt.h objc/objc.h])
 test x"$ac_cv_header_objfw_rt_h" = x"yes" && objc_runtime="ObjFW-RT"
 
 AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
-	dnl TODO: This is ugly. Let's think of a better check.
-	AC_EGREP_CPP(gnu, [
+	AC_EGREP_CPP(yes, [
 		#import <objc/objc.h>
-		#ifdef __objc_INCLUDE_GNU
-		gnu
+		#ifdef __GNU_LIBOBJC__
+		yes
 		#endif
 	], [
 		test x"$objc_runtime" = "x" && objc_runtime="GNU"
 	], [
-		objc_runtime="Apple"
+		dnl TODO: This is ugly. Let's think of a better check.
+		AC_EGREP_CPP(yes, [
+			#import <objc/objc.h>
+			#ifdef __objc_INCLUDE_GNU
+			yes
+			#endif
+		], [
+			test x"$objc_runtime" = "x" && objc_runtime="old GNU"
+		], [
+			objc_runtime="Apple"
+		])
 	])
 ])
 
@@ -117,6 +126,11 @@ case $objc_runtime in
 	GNU)
 		AC_DEFINE(OF_GNU_RUNTIME, 1,
 			[Whether we use the GNU ObjC runtime])
+		LIBS="$LIBS -lobjc"
+		;;
+	"old GNU")
+		AC_DEFINE(OF_OLD_GNU_RUNTIME, 1,
+			[Whether we use the old GNU ObjC runtime])
 		LIBS="$LIBS -lobjc"
 		;;
 	*)

@@ -28,7 +28,8 @@
 - (void)release;
 @end
 
-#if defined(OF_GNU_RUNTIME) || defined(OF_OBJFW_RUNTIME)
+#if defined(OF_OBJFW_RUNTIME) || defined(OF_GNU_RUNTIME) || \
+    defined(OF_OLD_GNU_RUNTIME)
 struct objc_abi_class {
 	struct objc_abi_metaclass *metaclass;
 	const char *superclass, *name;

@@ -18,10 +18,10 @@
 
 #if defined(OF_OBJFW_RUNTIME)
 # include <objfw-rt.h>
-#elif defined(OF_GNU_RUNTIME)
+#elif defined(OF_OLD_GNU_RUNTIME)
 # include <objc/objc-api.h>
 #endif
-#if defined(OF_GNU_RUNTIME) || defined(OF_OBJFW_RUNTIME)
+#if defined(OF_OLD_GNU_RUNTIME) || defined(OF_OBJFW_RUNTIME)
 # define objc_getClass objc_get_class
 #endif
 
