@@ -198,16 +198,6 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 {
 	size_t i, last = 0;
 
-	if (finishedParsing) {
-		for (i = 0; i < size; i++)
-			if (buf[i] != ' ' && buf[i] != '\t' &&
-			    buf[i] != '\n' && buf[i] != '\r')
-				@throw [OFMalformedXMLException
-				    newWithClass: isa];
-
-		return;
-	}
-
 	for (i = 0; i < size; i++) {
 		size_t j = i;
 
@@ -277,6 +267,10 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 {
 	size_t len;
 
+	if (finishedParsing && buf[*i] != ' ' && buf[*i] != '\t' &&
+	    buf[*i] != '\n' && buf[*i] != '\r' && buf[*i] != '<')
+		@throw [OFMalformedXMLException newWithClass: isa];
+
 	if (buf[*i] != '<')
 		return;
 
@@ -313,6 +307,9 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 				i: (size_t*)i
 			     last: (size_t*)last
 {
+	if (finishedParsing && buf[*i] != '!')
+		@throw [OFMalformedXMLException newWithClass: isa];
+
 	switch (buf[*i]) {
 		case '?':
 			*last = *i + 1;
@@ -738,6 +735,9 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 					i: (size_t*)i
 				     last: (size_t*)last
 {
+	if (finishedParsing && buf[*i] != '-')
+		@throw [OFMalformedXMLException newWithClass: isa];
+
 	if (buf[*i] == '-')
 		state = OF_XMLPARSER_IN_COMMENT_OPENING;
 	else if (buf[*i] == '[') {

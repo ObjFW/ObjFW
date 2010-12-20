@@ -362,8 +362,14 @@ enum event_type {
 	TEST(@"Parsing whitespaces after the document",
 	    R([parser parseString: @" \t\r\n "]))
 
-	EXPECT_EXCEPTION(@"Detection of junk after the document",
+	TEST(@"Parsing comments after the document",
+	    R([parser parseString: @" \t<!-- foo -->\r<!--bar-->\n "]))
+
+	EXPECT_EXCEPTION(@"Detection of junk after the document #1",
 	    OFMalformedXMLException, [parser parseString: @"a"])
+
+	EXPECT_EXCEPTION(@"Detection of junk after the document #2",
+	    OFMalformedXMLException, [parser parseString: @"<!["])
 
 	[pool drain];
 }
