@@ -275,6 +275,13 @@ static int parse_mode(const char *mode)
 	return files;
 }
 
++ (void)changeToDirectory: (OFString*)path
+{
+	if (chdir([path cString]))
+		@throw [OFChangeDirectoryFailedException newWithClass: self
+								 path: path];
+}
+
 + (void)changeModeOfFile: (OFString*)path
 		  toMode: (mode_t)mode
 {

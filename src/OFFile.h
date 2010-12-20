@@ -73,6 +73,13 @@
 + (OFArray*)filesInDirectoryAtPath: (OFString*)path;
 
 /**
+ * Changes the current working directory.
+ *
+ * \param path The new directory to change to
+ */
++ (void)changeToDirectory: (OFString*)path;
+
+/**
  * Changes the mode of a file.
  *
  * Only changes read-only flag on Windows.

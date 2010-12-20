@@ -677,6 +677,68 @@
 }
 @end
 
+@implementation OFChangeDirectoryFailedException
++ newWithClass: (Class)class_
+	  path: (OFString*)path_
+{
+	return [[self alloc] initWithClass: class_
+				      path: path_];
+}
+
+- initWithClass: (Class)class_
+{
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class_
+	   path: (OFString*)path_
+{
+	self = [super initWithClass: class_];
+
+	@try {
+		path  = [path_ copy];
+		errNo = GET_ERRNO;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[path release];
+
+	[super dealloc];
+}
+
+- (OFString*)description
+{
+	if (description != nil)
+		return description;
+
+	description = [[OFString alloc] initWithFormat:
+	    @"Failed to change to directory %s in class %s! " ERRFMT,
+	    [path cString], class_getName(inClass), ERRPARAM];
+
+	return description;
+}
+
+- (int)errNo
+{
+	return errNo;
+}
+
+- (OFString*)path
+{
+	return path;
+}
+@end
+
 @implementation OFChangeFileModeFailedException
 + newWithClass: (Class)class_
 	  path: (OFString*)path

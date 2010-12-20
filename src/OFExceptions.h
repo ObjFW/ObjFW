@@ -428,7 +428,52 @@
 - (int)errNo;
 
 /**
- * \return A string with the path of the file which couldn't be opened
+ * \return A string with the path of the directory which couldn't be created
+ */
+- (OFString*)path;
+@end
+
+/**
+ * \brief An exception indicating changing to a directory failed
+ */
+@interface OFChangeDirectoryFailedException: OFException
+{
+	OFString *path;
+	int errNo;
+}
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFString *path;
+@property (readonly) int errNo;
+#endif
+
+/**
+ * \param class_ The class of the object which caused the exception
+ * \param path A string with the path of the directory to which couldn't be
+ *	       changed
+ * \return A new change directory failed exception
+ */
++ newWithClass: (Class)class_
+	  path: (OFString*)path;
+
+/**
+ * Initializes an already allocated change directory failed exception.
+ *
+ * \param class_ The class of the object which caused the exception
+ * \param path A string with the path of the directory to which couldn't be
+ *	       changed
+ * \return An initialized change directory failed exception
+ */
+- initWithClass: (Class)class_
+	   path: (OFString*)path;
+
+/**
+ * \return The errno from when the exception was created
+ */
+- (int)errNo;
+
+/**
+ * \return A string with the path of the directory to which couldn't changed
  */
 - (OFString*)path;
 @end
