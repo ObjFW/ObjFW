@@ -23,6 +23,7 @@
 #ifdef OF_OLD_GNU_RUNTIME
 # import <objc/objc-api.h>
 # define sel_getName(x) sel_get_name(x)
+# define class_getName class_get_class_name
 #endif
 
 #import "OFExceptions.h"
@@ -215,11 +216,11 @@
 	if (requestedSize)
 		description = [[OFString alloc] initWithFormat:
 		    @"Could not allocate %zu bytes in class %s!", requestedSize,
-		    [inClass className]];
+		    class_getName(inClass)];
 	else
 		description = [[OFString alloc] initWithFormat:
 		    @"Could not allocate enough memory in class %s!",
-		    [inClass className]];
+		    class_getName(inClass)];
 
 	return description;
 }
@@ -238,7 +239,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"Object of class %s was mutated during enumeration!",
-	    [inClass className]];
+	    class_getName(inClass)];
 
 	return description;
 }
@@ -279,7 +280,7 @@
 	    @"Memory at %p was not allocated as part of object of class %s, "
 	    @"thus the memory allocation was not changed! It is also possible "
 	    @"that there was an attempt to free the same memory twice.",
-	    pointer, [inClass className]];
+	    pointer, class_getName(inClass)];
 
 	return description;
 }
@@ -323,7 +324,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"The method %s of class %s is not or not fully implemented!",
-	    sel_getName(selector), [inClass className]];
+	    sel_getName(selector), class_getName(inClass)];
 
 	return description;
 }
@@ -341,7 +342,7 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"Value out of range in class %s!", [inClass className]];
+	    @"Value out of range in class %s!", class_getName(inClass)];
 
 	return description;
 }
@@ -380,7 +381,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"The argument for method %s of class %s is invalid!",
-	    sel_getName(selector), [inClass className]];
+	    sel_getName(selector), class_getName(inClass)];
 
 	return description;
 }
@@ -398,7 +399,7 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"The encoding is invalid for class %s!", [inClass className]];
+	    @"The encoding is invalid for class %s!", class_getName(inClass)];
 
 	return description;
 }
@@ -411,7 +412,7 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"The format is invalid for class %s!", [inClass className]];
+	    @"The format is invalid for class %s!", class_getName(inClass)];
 
 	return description;
 }
@@ -425,7 +426,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"The parser in class %s encountered malformed or invalid XML!",
-	    [inClass className]];
+	    class_getName(inClass)];
 
 	return description;
 }
@@ -438,7 +439,7 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"Initialization failed for class %s!", [inClass className]];
+	    @"Initialization failed for class %s!", class_getName(inClass)];
 
 	return description;
 }
@@ -495,7 +496,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"Failed to open file %s with mode %s in class %s! " ERRFMT,
-	    [path cString], [mode cString], [inClass className], ERRPARAM];
+	    [path cString], [mode cString], class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -566,7 +567,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"Failed to read %zu bytes in class %s! " ERRFMT, requestedSize,
-	    [inClass className], ERRPARAM];
+	    class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -580,7 +581,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"Failed to write %zu bytes in class %s! " ERRFMT, requestedSize,
-	    [inClass className], ERRPARAM];
+	    class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -602,7 +603,7 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"Seeking failed in class %s! " ERRFMT, [inClass className],
+	    @"Seeking failed in class %s! " ERRFMT, class_getName(inClass),
 	    ERRPARAM];
 
 	return description;
@@ -660,7 +661,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"Failed to create directory %s in class %s! " ERRFMT,
-	    [path cString], [inClass className], ERRPARAM];
+	    [path cString], class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -727,7 +728,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"Failed to change mode for file %s to %d in class %s! " ERRFMT,
-	    [path cString], mode, [inClass className], ERRPARAM];
+	    [path cString], mode, class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -807,17 +808,17 @@
 		description = [[OFString alloc] initWithFormat:
 		    @"Failed to change owner for file %s to %s in class %s! "
 		    ERRFMT, [path cString], [owner cString],
-		    [inClass className], ERRPARAM];
+		    class_getName(inClass), ERRPARAM];
 	else if (owner == nil)
 		description = [[OFString alloc] initWithFormat:
 		    @"Failed to change group for file %s to %s in class %s! "
 		    ERRFMT, [path cString], [group cString],
-		    [inClass className], ERRPARAM];
+		    class_getName(inClass), ERRPARAM];
 	else
 		description = [[OFString alloc] initWithFormat:
 		    @"Failed to change owner for file %s to %s:%s in class %s! "
 		    ERRFMT, [path cString], [owner cString], [group cString],
-		    [inClass className], ERRPARAM];
+		    class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -896,7 +897,7 @@
 	description = [[OFString alloc] initWithFormat:
 	    @"Failed to copy file %s to %s in class %s! " ERRFMT,
 	    [sourcePath cString], [destinationPath cString],
-	    [inClass className], ERRPARAM];
+	    class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -969,7 +970,7 @@
 	description = [[OFString alloc] initWithFormat:
 	    @"Failed to rename file %s to %s in class %s! " ERRFMT,
 	    [sourcePath cString], [destinationPath cString],
-	    [inClass className], ERRPARAM];
+	    class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -1036,7 +1037,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"Failed to delete file %s in class %s! " ERRFMT, [path cString],
-	    [inClass className], ERRPARAM];
+	    class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -1098,7 +1099,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"Failed to delete directory %s in class %s! " ERRFMT,
-	    [path cString], [inClass className], ERRPARAM];
+	    [path cString], class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -1162,7 +1163,7 @@
 	description = [[OFString alloc] initWithFormat:
 	    @"Failed to link file %s to %s in class %s! " ERRFMT,
 	    [sourcePath cString], [destinationPath cString],
-	    [inClass className], ERRPARAM];
+	    class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -1230,7 +1231,7 @@
 	description = [[OFString alloc] initWithFormat:
 	    @"Failed to symlink file %s to %s in class %s! " ERRFMT,
 	    [sourcePath cString], [destinationPath cString],
-	    [inClass className], ERRPARAM];
+	    class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -1259,7 +1260,7 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"Setting an option in class %s failed!", [inClass className]];
+	    @"Setting an option in class %s failed!", class_getName(inClass)];
 
 	return description;
 }
@@ -1273,7 +1274,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"The socket of type %s is not connected or bound!",
-	    [inClass className]];
+	    class_getName(inClass)];
 
 	return description;
 }
@@ -1287,7 +1288,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"The socket of type %s is already connected or bound and thus "
-	    @"can't be connected or bound again!", [inClass className]];
+	    @"can't be connected or bound again!", class_getName(inClass)];
 
 	return description;
 }
@@ -1351,11 +1352,11 @@
 		    @"was a problem with the name server, there was a problem "
 		    @"with your network connection or you specified an invalid "
 		    @"node or service. " ERRFMT, [service cString],
-		    [node cString], [inClass className], AT_ERRPARAM];
+		    [node cString], class_getName(inClass), AT_ERRPARAM];
 	else
 		description = [[OFString alloc] initWithFormat:
 		    @"An address translation failed in class %s! " ERRFMT,
-		    [inClass className], AT_ERRPARAM];
+		    class_getName(inClass), AT_ERRPARAM];
 
 	return description;
 }
@@ -1428,7 +1429,7 @@
 	description = [[OFString alloc] initWithFormat:
 	    @"A connection to service %s on node %s could not be established "
 	    @"in class %s! " ERRFMT, [service cString], [node cString],
-	    [inClass className], ERRPARAM];
+	    class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -1505,7 +1506,7 @@
 	description = [[OFString alloc] initWithFormat:
 	    @"Binding service %s on node %s using family %d failed in class "
 	    @"%s! " ERRFMT, [service cString], [node cString], family,
-	    [inClass className], ERRPARAM];
+	    class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -1565,7 +1566,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"Failed to listen in socket of type %s with a back log of %d! "
-	    ERRFMT, [inClass className], backLog, ERRPARAM];
+	    ERRFMT, class_getName(inClass), backLog, ERRPARAM];
 
 	return description;
 }
@@ -1598,7 +1599,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"Failed to accept connection in socket of type %s! " ERRFMT,
-	    [inClass className], ERRPARAM];
+	    class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -1616,7 +1617,7 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"Starting a thread of class %s failed!", [inClass className]];
+	    @"Starting a thread of class %s failed!", class_getName(inClass)];
 
 	return description;
 }
@@ -1630,7 +1631,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"Joining a thread of class %s failed! Most likely, another thread "
-	    @"already waits for the thread to join.", [inClass className]];
+	    @"already waits for the thread to join.", class_getName(inClass)];
 
 	return description;
 }
@@ -1644,7 +1645,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"Deallocation of a thread of type %s was tried, even though it "
-	    @"was still running", [inClass className]];
+	    @"was still running", class_getName(inClass)];
 
 	return description;
 }
@@ -1657,7 +1658,7 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"A mutex could not be locked in class %s", [inClass className]];
+	    @"A mutex could not be locked in class %s", class_getName(inClass)];
 
 	return description;
 }
@@ -1670,7 +1671,8 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"A mutex could not be unlocked in class %s", [inClass className]];
+	    @"A mutex could not be unlocked in class %s",
+	    class_getName(inClass)];
 
 	return description;
 }
@@ -1684,7 +1686,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"The hash has already been calculated in class %s and thus no new "
-	    @"data can be added", [inClass className]];
+	    @"data can be added", class_getName(inClass)];
 
 	return description;
 }
@@ -1759,11 +1761,11 @@
 	if (ns != nil)
 		description = [[OFString alloc] initWithFormat:
 		    @"The namespace %s is not bound in class %s",
-		    [inClass className]];
+		    class_getName(inClass)];
 	else if (prefix != nil)
 		description = [[OFString alloc] initWithFormat:
 		    @"The prefix %s is not bound to any namespace in %s",
-		    [inClass className]];
+		    class_getName(inClass)];
 
 	return description;
 }
