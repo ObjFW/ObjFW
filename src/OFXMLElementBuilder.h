@@ -32,6 +32,29 @@
  */
 - (void)elementBuilder: (OFXMLElementBuilder*)builder
        didBuildElement: (OFXMLElement*)elem;
+
+/**
+ * This callback is called when the OFXMLElementBuilder gets a close tag which
+ * does not belong there.
+ *
+ * Most likely, the OFXMLElementBuilder was used to build XML only of a child
+ * of the root element and the root element was closed. Often the delegate is
+ * set to the OFXMLElementBuilder when a certain element is found, this can be
+ * used then to set the delegate back after that certain element has been
+ * closed.
+ *
+ * If this method is not implemented in the delegate, the default is to throw
+ * an OFMalformedXMLException.
+ *
+ * \param builder The builder which did not expect the close tag
+ * \param name The name of the close tag
+ * \param prefix The prefix of the close tag
+ * \param ns The namespace of the close tag
+ */
+- (void)elementBuilder: (OFXMLElementBuilder*)builder
+  didNotExpectCloseTag: (OFString*)name
+	    withPrefix: (OFString*)prefix
+	     namespace: (OFString*)ns;
 @end
 
 /**
@@ -68,4 +91,7 @@
  * \param delegate The delegate for the OFXMLElementBuilder
  */
 - (void)setDelegate: (id <OFXMLElementBuilderDelegate>)delegate;
+@end
+
+@interface OFObject (OFXMLElementBuilderDelegate) <OFXMLElementBuilderDelegate>
 @end

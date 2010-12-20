@@ -16,6 +16,7 @@
 #import "OFXMLParser.h"
 #import "OFMutableArray.h"
 #import "OFAutoreleasePool.h"
+#import "OFExceptions.h"
 
 @implementation OFXMLElementBuilder
 + elementBuilder
@@ -99,6 +100,14 @@
      withPrefix: (OFString*)prefix
       namespace: (OFString*)ns
 {
+	if ([stack count] == 0) {
+		[delegate elementBuilder: self
+		    didNotExpectCloseTag: name
+			      withPrefix: prefix
+			       namespace: ns];
+		return;
+	}
+
 	if ([stack count] == 1)
 		[delegate elementBuilder: self
 			 didBuildElement: [stack firstObject]];
@@ -110,8 +119,14 @@
   foundCharacters: (OFString*)str
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	[[stack lastObject]
-	    addChild: [OFXMLElement elementWithCharacters: str]];
+	OFXMLElement *elem = [OFXMLElement elementWithCharacters: str];
+
+	if ([stack count] == 0)
+		[delegate elementBuilder: self
+			 didBuildElement: elem];
+	else
+		[[stack lastObject] addChild: elem];
+
 	[pool release];
 }
 
@@ -119,7 +134,14 @@
     foundCDATA: (OFString*)cdata
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	[[stack lastObject] addChild: [OFXMLElement elementWithCDATA: cdata]];
+	OFXMLElement *elem = [OFXMLElement elementWithCDATA: cdata];
+
+	if ([stack count] == 0)
+		[delegate elementBuilder: self
+			 didBuildElement: elem];
+	else
+		[[stack lastObject] addChild: elem];
+
 	[pool release];
 }
 
@@ -127,10 +149,29 @@
   foundComment: (OFString*)comment
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFXMLElement *last = [stack lastObject];
+	OFXMLElement *elem = [OFXMLElement elementWithComment: comment];
 
-	[last addChild: [OFXMLElement elementWithComment: comment]];
+	if ([stack count] == 0)
+		[delegate elementBuilder: self
+			 didBuildElement: elem];
+	else
+		[[stack lastObject] addChild: elem];
 
 	[pool release];
+}
+@end
+
+@implementation OFObject (OFXMLElementBuilderDelegate)
+- (void)elementBuilder: (OFXMLElementBuilder*)builder
+       didBuildElement: (OFXMLElement*)elem
+{
+}
+
+- (void)elementBuilder: (OFXMLElementBuilder*)builder
+  didNotExpectCloseTag: (OFString*)name
+	    withPrefix: (OFString*)prefix
+	     namespace: (OFString*)ns
+{
+	@throw [OFMalformedXMLException newWithClass: [builder class]];
 }
 @end

@@ -21,14 +21,15 @@
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFXMLElementBuilder";
-static OFXMLElement *elem = nil;
+static OFXMLElement *elem[2];
+static size_t i = 0;
 
 @implementation TestsAppDelegate (OFXMLElementBuilderTests)
 - (void)elementBuilder: (OFXMLElementBuilder*)builder
        didBuildElement: (OFXMLElement*)elem_
 {
-	assert(elem == nil);
-	elem = [elem_ retain];
+	assert(i < 2);
+	elem[i++] = [elem_ retain];
 }
 
 - (void)XMLElementBuilderTests
@@ -43,11 +44,14 @@ static OFXMLElement *elem = nil;
 	[p setDelegate: builder];
 	[builder setDelegate: self];
 
-	TEST(@"Building element from parsed XML",
+	TEST(@"Building elements from parsed XML",
 	    R([p parseString: str]) &&
-	    elem != nil && [[elem stringValue] isEqual: str])
+	    elem[0] != nil && [[elem[0] stringValue] isEqual: str] &&
+	    R([p parseString: @"<!--foo-->"]) &&
+	    elem[1] != nil && [[elem[1] stringValue] isEqual: @"<!--foo-->"])
 
-	[elem release];
+	[elem[0] release];
+	[elem[1] release];
 	[pool drain];
 }
 @end
