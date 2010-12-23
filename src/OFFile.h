@@ -42,10 +42,22 @@
 + fileWithFileDescriptor: (int)fd;
 
 /**
+ * \param path The path for which the components should be returned
+ * \return The components of the path
+ */
++ (OFArray*)componentsOfPath: (OFString*)path;
+
+/**
  * \param path The path for which the last component should be returned
  * \return The last component of the path
  */
 + (OFString*)lastComponentOfPath: (OFString*)path;
+
+/**
+ * \param path The path for which the directory name should be returned
+ * \return The directory name of the path
+ */
++ (OFString*)directoryNameOfPath: (OFString*)path;
 
 /**
  * \param path The path to check

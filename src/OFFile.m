@@ -129,6 +129,49 @@ static int parse_mode(const char *mode)
 	return [[[self alloc] initWithFileDescriptor: fd_] autorelease];
 }
 
++ (OFArray*)componentsOfPath: (OFString*)path
+{
+	OFMutableArray *ret;
+	OFAutoreleasePool *pool;
+	const char *path_c = [path cString];
+	size_t path_len = [path cStringLength];
+	size_t i, last = 0;
+
+	ret = [OFMutableArray array];
+
+	if (path_len == 0)
+		return ret;
+
+	pool = [[OFAutoreleasePool alloc] init];
+
+#ifndef _WIN32
+	if (path_c[path_len - 1] == OF_PATH_DELIM)
+#else
+	if (path_c[path_len - 1] == '/' || path_c[path_len - 1] == '\\')
+#endif
+		path_len--;
+
+	for (i = 0; i < path_len; i++) {
+#ifndef _WIN32
+		if (path_c[i] == OF_PATH_DELIM) {
+#else
+		if (path_c[i] == '/' || path_c[i] == '\\') {
+#endif
+			[ret addObject:
+			    [OFString stringWithCString: path_c + last
+						 length: i - last]];
+			last = i + 1;
+		}
+	}
+
+	[ret addObject: [OFString stringWithCString: path_c + last
+					     length: i - last]];
+
+	[pool release];
+
+	return ret;
+}
+
 + (OFString*)lastComponentOfPath: (OFString*)path
 {
 	const char *path_c = [path cString];
@@ -165,6 +208,46 @@ static int parse_mode(const char *mode)
 
 	return [OFString stringWithCString: path_c + i
 				    length: path_len - i];
+}
+
++ (OFString*)directoryNameOfPath: (OFString*)path
+{
+	const char *path_c = [path cString];
+	size_t path_len = [path cStringLength];
+	size_t i;
+
+	if (path_len == 0)
+		return @"";
+
+#ifndef _WIN32
+	if (path_c[path_len - 1] == OF_PATH_DELIM)
+#else
+	if (path_c[path_len - 1] == '/' || path_c[path_len - 1] == '\\')
+#endif
+		path_len--;
+
+	if (path_len == 0)
+		return [OFString stringWithCString: path_c
+					    length: 1];
+
+	for (i = path_len - 1; i >= 1; i--)
+#ifndef _WIN32
+		if (path_c[i] == OF_PATH_DELIM)
+#else
+		if (path_c[i] == '/' || path_c[i] == '\\')
+#endif
+			return [OFString stringWithCString: path_c
+						    length: i];
+
+#ifndef _WIN32
+	if (path_c[0] == OF_PATH_DELIM)
+#else
+	if (path_c[i] == '/' || path_c[i] == '\\')
+#endif
+		return [OFString stringWithCString: path_c
+					    length: 1];
+
+	return @".";
 }
 
 + (BOOL)fileExistsAtPath: (OFString*)path
