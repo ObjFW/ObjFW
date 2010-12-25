@@ -694,19 +694,19 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return [[OFMutableString alloc] initWithString: self];
 }
 
-- (of_comparison_result_t)compare: (OFString*)str
+- (of_comparison_result_t)compare: (id)obj
 {
 	size_t str_len, min_len;
 	int cmp;
 
-	if (![str isKindOfClass: [OFString class]])
+	if (![obj isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	str_len = [str cStringLength];
+	str_len = [(OFString*)obj cStringLength];
 	min_len = (length > str_len ? str_len : length);
 
-	if ((cmp = memcmp(string, [str cString], min_len)) == 0) {
+	if ((cmp = memcmp(string, [(OFString*)obj cString], min_len)) == 0) {
 		if (length > str_len)
 			return OF_ORDERED_DESCENDING;
 		if (length < str_len)

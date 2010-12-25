@@ -250,22 +250,23 @@
 	return YES;
 }
 
-- (of_comparison_result_t)compare: (OFDataArray*)ary
+- (of_comparison_result_t)compare: (id)obj
 {
 	int cmp;
 	size_t ary_count, min_count;
 
-	if (![ary isKindOfClass: [OFDataArray class]])
+	if (![obj isKindOfClass: [OFDataArray class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
-	if ([ary itemSize] != itemSize)
+	if ([(OFDataArray*)obj itemSize] != itemSize)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	ary_count = [ary count];
+	ary_count = [(OFDataArray*)obj count];
 	min_count = (count > ary_count ? ary_count : count);
 
-	if ((cmp = memcmp(data, [ary cArray], min_count * itemSize)) == 0) {
+	if ((cmp = memcmp(data, [(OFDataArray*)obj cArray],
+	    min_count * itemSize)) == 0) {
 		if (count > ary_count)
 			return OF_ORDERED_DESCENDING;
 		if (count < ary_count)
