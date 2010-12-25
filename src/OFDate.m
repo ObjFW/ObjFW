@@ -126,7 +126,7 @@ static OFMutex *mutex;
 	if (gmtime_r(&sec, &tm) == NULL)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	strftime(str, 20, "%Y-%m-%d %H:%M:%S", &tm);
+	strftime(str, 20, "%Y-%m-%dT%H:%M:%S", &tm);
 #else
 	struct tm *tm;
 
@@ -138,7 +138,7 @@ static OFMutex *mutex;
 		if ((tm = gmtime(&sec)) == NULL)
 			@throw [OFOutOfRangeException newWithClass: isa];
 
-		strftime(str, 20, "%Y-%m-%d %H:%M:%S", tm);
+		strftime(str, 20, "%Y-%m-%dT%H:%M:%S", tm);
 # ifdef OF_THREADS
 	} @finally {
 		[mutex unlock];

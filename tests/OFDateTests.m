@@ -33,8 +33,8 @@ static OFString *module = @"OFDate";
 					   microseconds: 1]))
 
 	TEST(@"-[description]",
-	    [[d1 description] isEqual: @"1970-01-01 00:00:00Z"] &&
-	    [[d2 description] isEqual: @"1970-01-02 01:00:05.000001Z"])
+	    [[d1 description] isEqual: @"1970-01-01T00:00:00Z"] &&
+	    [[d2 description] isEqual: @"1970-01-02T01:00:05.000001Z"])
 
 	TEST(@"-[isEqual:]",
 	    [d1 isEqual: [OFDate dateWithTimeIntervalSince1970: 0]] &&

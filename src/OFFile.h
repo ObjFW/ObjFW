@@ -15,6 +15,7 @@
 
 @class OFString;
 @class OFArray;
+@class OFDate;
 
 /**
  * \brief A class which provides functions to read, write and manipulate files.
@@ -90,6 +91,11 @@
  * \param path The new directory to change to
  */
 + (void)changeToDirectory: (OFString*)path;
+
+/**
+ * \return The date of the last modification of the file
+ */
++ (OFDate*)modificationDateOfFile: (OFString*)path;
 
 /**
  * Changes the mode of a file.

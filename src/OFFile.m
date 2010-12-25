@@ -29,6 +29,7 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFThread.h"
+#import "OFDate.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 #import "macros.h"
@@ -391,6 +392,20 @@ static int parse_mode(const char *mode)
 								path: path
 								mode: mode];
 #endif
+}
+
++ (OFDate*)modificationDateOfFile: (OFString*)path
+{
+	struct stat s;
+
+	if (stat([path cString], &s) == -1)
+		/* FIXME: Maybe use another exception? */
+		@throw [OFOpenFileFailedException newWithClass: self
+							  path: path
+							  mode: @"r"];
+
+	/* FIXME: We could be more precise on some OSes */
+	return [OFDate dateWithTimeIntervalSince1970: s.st_mtime];
 }
 
 #ifndef _WIN32
