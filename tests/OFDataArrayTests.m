@@ -14,8 +14,8 @@
 #include <string.h>
 
 #import "OFDataArray.h"
-#import "OFAutoreleasePool.h"
 #import "OFString.h"
+#import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 
 #import "TestsAppDelegate.h"

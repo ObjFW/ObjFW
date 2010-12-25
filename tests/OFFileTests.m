@@ -12,8 +12,8 @@
 #include "config.h"
 
 #import "OFFile.h"
-#import "OFAutoreleasePool.h"
 #import "OFString.h"
+#import "OFAutoreleasePool.h"
 #import "OFArray.h"
 #import "OFExceptions.h"
 

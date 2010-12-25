@@ -27,6 +27,7 @@
 #import "OFEnumerator.h"
 
 #import "OFNumber.h"
+#import "OFDate.h"
 
 #import "OFStream.h"
 #import "OFStreamObserver.h"

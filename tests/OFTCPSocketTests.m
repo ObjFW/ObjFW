@@ -16,8 +16,8 @@
 #include <time.h>
 
 #import "OFTCPSocket.h"
-#import "OFAutoreleasePool.h"
 #import "OFString.h"
+#import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 #import "macros.h"
 

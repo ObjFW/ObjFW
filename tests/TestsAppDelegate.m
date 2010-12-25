@@ -88,6 +88,7 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 	[self arrayTests];
 	[self dictionaryTests];
 	[self listTests];
+	[self dateTests];
 	[self numberTests];
 	[self streamTests];
 	[self TCPSocketTests];

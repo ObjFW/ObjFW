@@ -80,6 +80,10 @@
 - (void)dataArrayTests;
 @end
 
+@interface TestsAppDelegate (OFDateTests)
+- (void)dateTests;
+@end
+
 @interface TestsAppDelegate (OFDictionaryTests)
 - (void)dictionaryTests;
 @end

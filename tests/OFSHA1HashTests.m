@@ -14,9 +14,9 @@
 #include <string.h>
 
 #import "OFSHA1Hash.h"
+#import "OFString.h"
 #import "OFFile.h"
 #import "OFAutoreleasePool.h"
-#import "OFString.h"
 #import "OFExceptions.h"
 
 #import "TestsAppDelegate.h"

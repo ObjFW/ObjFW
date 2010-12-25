@@ -13,8 +13,8 @@
 
 #include <string.h>
 
-#import "OFString.h"
 #import "OFStream.h"
+#import "OFString.h"
 #import "OFAutoreleasePool.h"
 
 #import "TestsAppDelegate.h"

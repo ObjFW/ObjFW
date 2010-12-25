@@ -15,7 +15,6 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFAutoreleasePool.h"
-#import "OFString.h"
 #import "OFExceptions.h"
 
 #import "TestsAppDelegate.h"

@@ -6,6 +6,7 @@ PROG_NOINST = tests${PROG_SUFFIX}
 SRCS = OFArrayTests.m			\
        ${OFBLOCKTESTS_M}		\
        OFDataArrayTests.m		\
+       OFDateTests.m			\
        OFDictionaryTests.m		\
        OFFileTests.m			\
        OFListTests.m			\

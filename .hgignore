@@ -20,6 +20,7 @@ configure
 docs
 extra.mk
 generators/gen_tables
+generators/gen_tables.exe
 generators/CaseFolding.txt
 generators/UnicodeData.txt
 objfw-config
@@ -28,3 +29,4 @@ ObjFW.xcodeproj/*.pbxuser
 src/objfw-defs.h
 src/ObjFW
 tests/tests
+tests/tests.exe

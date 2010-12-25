@@ -11,8 +11,8 @@
 
 #include "config.h"
 
-#import "OFString.h"
 #import "OFBlock.h"
+#import "OFString.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 
