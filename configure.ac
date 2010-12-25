@@ -234,8 +234,10 @@ AC_CHECK_FUNC(asprintf, [
 				return (snprintf(NULL, 0, "asd") == 3 ? 0 : 1);
 			}
 		], [
-			ac_cv_snprintf_useful_ret="yes",
-			ac_cv_snprintf_useful_ret="no",
+			ac_cv_snprintf_useful_ret="yes"
+		], [
+			ac_cv_snprintf_useful_ret="no"
+		], [
 			ac_cv_snprintf_useful_ret="no"
 		])
 	])
