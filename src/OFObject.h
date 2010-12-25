@@ -376,9 +376,24 @@ typedef struct of_range_t {
  */
 @protocol OFMutableCopying
 /**
- * \return A copy of the object
+ * \return A mutable copy of the object
  */
 - mutableCopy;
+@end
+
+/**
+ * \brief A protocol for comparing objects.
+ *
+ * This protocol is implemented by objects that can be compared.
+ */
+@protocol OFComparing
+/**
+ * Compares the object with another object.
+ *
+ * \param obj An object to compare the object to
+ * \return The result of the comparison
+ */
+- (of_comparison_result_t)compare: (id)obj;
 @end
 
 extern size_t of_pagesize;

@@ -19,7 +19,7 @@
  * If you plan to store large hunks of data, you should consider using
  * OFBigDataArray, which allocates the memory in pages rather than in bytes.
  */
-@interface OFDataArray: OFObject <OFCopying>
+@interface OFDataArray: OFObject <OFCopying, OFComparing>
 {
 	char   *data;
 	size_t count;
@@ -80,14 +80,6 @@
  * \return All elements of the OFDataArray as a C array
  */
 - (void*)cArray;
-
-/**
- * Compares the OFDataArray to another object.
- *
- * \param ary A data array to compare with
- * \return An of_comparsion_result_t
- */
-- (of_comparison_result_t)compare: (OFDataArray*)ary;
 
 /**
  * Returns a specific item of the OFDataArray.

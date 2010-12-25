@@ -34,7 +34,7 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 /**
  * \brief A class for handling strings.
  */
-@interface OFString: OFObject <OFCopying, OFMutableCopying>
+@interface OFString: OFObject <OFCopying, OFMutableCopying, OFComparing>
 {
 	char	     *string;
 	unsigned int length;
@@ -264,14 +264,6 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 /// \cond internal
 - (BOOL)isUTF8;
 /// \endcond
-
-/**
- * Compares the OFString to another OFString.
- *
- * \param str A string to compare with
- * \return An of_comparison_result_t
- */
-- (of_comparison_result_t)compare: (OFString*)str;
 
 /**
  * Compares the OFString to another OFString without caring about the case.
