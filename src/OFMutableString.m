@@ -172,9 +172,6 @@
 - (void)appendCString: (const char*)str
 	   withLength: (size_t)len
 {
-	if (len > strlen(str))
-		@throw [OFOutOfRangeException newWithClass: isa];
-
 	switch (of_string_check_utf8(str, len)) {
 	case 1:
 		isUTF8 = YES;
