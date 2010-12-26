@@ -24,36 +24,36 @@ AC_DEFUN([BUILDSYS_INIT], [
 	AC_PATH_PROG(TPUT, tput)
 
 	AS_IF([test x"$TPUT" != x""], [
-		if $TPUT el >/dev/null; then
-			AC_SUBST(TERM_EL, "$($TPUT el)")
+		if x=$($TPUT el 2>/dev/null); then
+			AC_SUBST(TERM_EL, "$x")
 		else
-			AC_SUBST(TERM_EL, "$($TPUT ce)")
+			AC_SUBST(TERM_EL, "$($TPUT ce 2>/dev/null)")
 		fi
 
-		if $TPUT sgr0 >/dev/null; then
-			AC_SUBST(TERM_SGR0, "$($TPUT sgr0)")
+		if x=$($TPUT sgr0 2>/dev/null); then
+			AC_SUBST(TERM_SGR0, "$x")
 		else
-			AC_SUBST(TERM_SGR0, "$($TPUT me)")
+			AC_SUBST(TERM_SGR0, "$($TPUT me 2>/dev/null)")
 		fi
 
-		if $TPUT bold >/dev/null; then
-			AC_SUBST(TERM_BOLD, "$($TPUT bold)")
+		if x=$($TPUT bold 2>/dev/null); then
+			AC_SUBST(TERM_BOLD, "$x")
 		else
-			AC_SUBST(TERM_BOLD, "$($TPUT md)")
+			AC_SUBST(TERM_BOLD, "$($TPUT md 2>/dev/null)")
 		fi
 
-		if $TPUT setaf 1 >/dev/null; then
-			AC_SUBST(TERM_SETAF1, "$($TPUT setaf 1)")
-			AC_SUBST(TERM_SETAF2, "$($TPUT setaf 2)")
-			AC_SUBST(TERM_SETAF3, "$($TPUT setaf 3)")
-			AC_SUBST(TERM_SETAF4, "$($TPUT setaf 4)")
-			AC_SUBST(TERM_SETAF6, "$($TPUT setaf 6)")
+		if x=$($TPUT setaf 1 2>/dev/null); then
+			AC_SUBST(TERM_SETAF1, "$x")
+			AC_SUBST(TERM_SETAF2, "$($TPUT setaf 2 2>/dev/null)")
+			AC_SUBST(TERM_SETAF3, "$($TPUT setaf 3 2>/dev/null)")
+			AC_SUBST(TERM_SETAF4, "$($TPUT setaf 4 2>/dev/null)")
+			AC_SUBST(TERM_SETAF6, "$($TPUT setaf 6 2>/dev/null)")
 		else
-			AC_SUBST(TERM_SETAF1, "$($TPUT AF 1)")
-			AC_SUBST(TERM_SETAF2, "$($TPUT AF 2)")
-			AC_SUBST(TERM_SETAF3, "$($TPUT AF 3)")
-			AC_SUBST(TERM_SETAF4, "$($TPUT AF 4)")
-			AC_SUBST(TERM_SETAF6, "$($TPUT AF 6)")
+			AC_SUBST(TERM_SETAF1, "$($TPUT AF 1 2>/dev/null)")
+			AC_SUBST(TERM_SETAF2, "$($TPUT AF 2 2>/dev/null)")
+			AC_SUBST(TERM_SETAF3, "$($TPUT AF 3 2>/dev/null)")
+			AC_SUBST(TERM_SETAF4, "$($TPUT AF 4 2>/dev/null)")
+			AC_SUBST(TERM_SETAF6, "$($TPUT AF 6 2>/dev/null)")
 		fi
 	], [
 		AC_SUBST(TERM_EL, '\033\133K')
