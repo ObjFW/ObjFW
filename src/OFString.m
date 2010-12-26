@@ -976,13 +976,12 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 	for (; i < length; i++) {
 		if (string[i] >= '0' && string[i] <= '9') {
-			intmax_t newnum = (num * 10) + (string[i] - '0');
-
-			if (newnum < num)
+			if (INTMAX_MAX / 10 < num ||
+			    INTMAX_MAX - num * 10 < string[i] - '0')
 				@throw [OFOutOfRangeException
 				    newWithClass: isa];
 
-			num = newnum;
+			num = (num * 10) + (string[i] - '0');
 		} else
 			@throw [OFInvalidEncodingException newWithClass: isa];
 	}
