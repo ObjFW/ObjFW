@@ -66,4 +66,49 @@ typedef long suseconds_t;
  */
 - initWithTimeIntervalSince1970: (time_t)sec
 		   microseconds: (suseconds_t)usec;
+
+/**
+ * \return The seconds of the date
+ */
+- (int)seconds;
+
+/**
+ * \return The microseconds of the date
+ */
+- (suseconds_t)microseconds;
+
+/**
+ * \return The minutes of the date
+ */
+- (int)minutes;
+
+/**
+ * \return The hours of the date
+ */
+- (int)hours;
+
+/**
+ * \return The day of the month of the date
+ */
+- (int)dayOfMonth;
+
+/**
+ * \return The month of the year of the date
+ */
+- (int)monthOfYear;
+
+/**
+ * \return The year of the date
+ */
+- (int)year;
+
+/**
+ * \return The day of the week of the date
+ */
+- (int)dayOfWeek;
+
+/**
+ * \return The day of the year of the date
+ */
+- (int)dayOfYear;
 @end

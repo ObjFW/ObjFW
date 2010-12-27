@@ -25,6 +25,40 @@
 static OFMutex *mutex;
 #endif
 
+#ifdef HAVE_GMTIME_R
+# define GMTIME_RET(field)						  \
+	struct tm tm;							  \
+									  \
+	if (gmtime_r(&sec, &tm) == NULL)				  \
+		@throw [OFOutOfRangeException newWithClass: isa];	  \
+									  \
+	return tm.field;
+#else
+# ifdef OF_THREADS
+#  define GMTIME_RET(field)						  \
+	struct tm *tm;							  \
+									  \
+	[mutex lock];							  \
+									  \
+	@try {								  \
+		if ((tm = gmtime(&sec)) == NULL)			  \
+			@throw [OFOutOfRangeException newWithClass: isa]; \
+									  \
+		return tm->field;					  \
+	} @finally {							  \
+		[mutex unlock];						  \
+	}
+# else
+#  define GMTIME_RET(field)						  \
+	struct tm *tm;							  \
+									  \
+	if ((tm = gmtime(&sec)) == NULL)				  \
+		@throw [OFOutOfRangeException newWithClass: isa];	  \
+									  \
+	return tm->field;
+# endif
+#endif
+
 @implementation OFDate
 #if !defined(HAVE_GMTIME_R) && defined(OF_THREADS)
 + (void)initialize
@@ -150,5 +184,50 @@ static OFMutex *mutex;
 		return [OFString stringWithFormat: @"%sZ", str];
 
 	return [OFString stringWithFormat: @"%s.%06dZ", str, usec];
+}
+
+- (int)seconds
+{
+	GMTIME_RET(tm_sec)
+}
+
+- (suseconds_t)microseconds
+{
+	return usec;
+}
+
+- (int)minutes
+{
+	GMTIME_RET(tm_min)
+}
+
+- (int)hours
+{
+	GMTIME_RET(tm_hour)
+}
+
+- (int)dayOfMonth
+{
+	GMTIME_RET(tm_mday)
+}
+
+- (int)monthOfYear
+{
+	GMTIME_RET(tm_mon + 1)
+}
+
+- (int)year
+{
+	GMTIME_RET(tm_year + 1900)
+}
+
+- (int)dayOfWeek
+{
+	GMTIME_RET(tm_wday)
+}
+
+- (int)dayOfYear
+{
+	GMTIME_RET(tm_yday + 1)
 }
 @end

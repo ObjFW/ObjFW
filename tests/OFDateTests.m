@@ -43,6 +43,25 @@ static OFString *module = @"OFDate";
 
 	TEST(@"-[compare:]", [d1 compare: d2] == OF_ORDERED_ASCENDING)
 
+	TEST(@"-[seconds]", [d1 seconds] == 0 && [d2 seconds] == 5)
+
+	TEST(@"-[microseconds]",
+	    [d1 microseconds] == 0 && [d2 microseconds] == 1)
+
+	TEST(@"-[minutes]", [d1 minutes] == 0 && [d2 minutes] == 0)
+
+	TEST(@"-[hours]", [d1 hours] == 0 && [d2 hours] == 1)
+
+	TEST(@"-[dayOfMonth]", [d1 dayOfMonth] == 1 && [d2 dayOfMonth] == 2)
+
+	TEST(@"-[monthOfYear]", [d1 monthOfYear] == 1 && [d2 monthOfYear] == 1)
+
+	TEST(@"-[year]", [d1 year] == 1970 && [d2 year] == 1970)
+
+	TEST(@"-[dayOfWeek]", [d1 dayOfWeek] == 4 && [d2 dayOfWeek] == 5)
+
+	TEST(@"-[dayOfYear]", [d1 dayOfYear] == 1 && [d2 dayOfYear] == 2)
+
 	[pool drain];
 }
 @end
