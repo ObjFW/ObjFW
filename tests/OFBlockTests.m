@@ -33,13 +33,14 @@ extern void *_NSConcreteStackBlock;
 extern void *_NSConcreteGlobalBlock;
 extern void *_NSConcreteMallocBlock;
 
+static void (^g)() = ^ {};
+
 @implementation TestsAppDelegate (OFBlockTests)
 - (void)blockTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	__block int x;
 	void (^s)() = ^ { x = 0; };
-	void (^g)() = ^ {};
 	void (^m)();
 
 	TEST(@"Class of stack block",
