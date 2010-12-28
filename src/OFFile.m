@@ -28,7 +28,9 @@
 #import "OFFile.h"
 #import "OFString.h"
 #import "OFArray.h"
-#import "OFThread.h"
+#ifdef OF_THREADS
+# import "OFThread.h"
+#endif
 #import "OFDate.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
@@ -62,7 +64,7 @@ OFFile *of_stdin = nil;
 OFFile *of_stdout = nil;
 OFFile *of_stderr = nil;
 
-#ifndef _WIN32
+#if defined(OF_THREADS) && !defined(_WIN32)
 static OFMutex *mutex;
 #endif
 
@@ -110,7 +112,7 @@ static int parse_mode(const char *mode)
 	of_stderr = [[OFFileSingleton alloc] initWithFileDescriptor: 2];
 }
 
-#ifndef _WIN32
+#if defined(OF_THREADS) && !defined(_WIN32)
 + (void)initialize
 {
 	if (self == [OFFile class])
@@ -420,9 +422,11 @@ static int parse_mode(const char *mode)
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 
+# ifdef OF_THREADS
 	[mutex lock];
 
 	@try {
+# endif
 		if (owner != nil) {
 			struct passwd *pw;
 
@@ -448,9 +452,11 @@ static int parse_mode(const char *mode)
 
 			gid = gr->gr_gid;
 		}
+# ifdef OF_THREADS
 	} @finally {
 		[mutex unlock];
 	}
+# endif
 
 	if (chown([path cString], uid, gid))
 		@throw [OFChangeFileOwnerFailedException newWithClass: self

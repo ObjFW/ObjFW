@@ -9,11 +9,13 @@
  * the packaging of this file.
  */
 
-#import "atomic.h"
+#import "objfw-defs.h"
 
 #if !defined(OF_THREADS) || (!defined(OF_HAVE_PTHREADS) && !defined(_WIN32))
 # error No threads available!
 #endif
+
+#import "macros.h"
 
 #if defined(OF_HAVE_PTHREADS)
 # include <pthread.h>

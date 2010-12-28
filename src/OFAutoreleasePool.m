@@ -19,13 +19,12 @@
 
 #ifdef OF_THREADS
 # import "threading.h"
-
-#define GROW_SIZE 16
-
 static of_tlskey_t first_key, last_key;
 #else
 static OFAutoreleasePool *first = nil, *last = nil;
 #endif
+
+#define GROW_SIZE 16
 
 @implementation OFAutoreleasePool
 #ifdef OF_THREADS

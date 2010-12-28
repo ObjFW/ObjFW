@@ -15,13 +15,20 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <assert.h>
+
 #if defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
 # import <objc/runtime.h>
 #endif
 
 #import "OFBlock.h"
 #import "OFExceptions.h"
-#import "atomic.h"
+#ifdef OF_ATOMIC_OPS
+# import "atomic.h"
+#endif
+#ifdef OF_THREADS
+# import "threading.h"
+#endif
 
 @protocol RetainRelease
 - retain;
@@ -135,6 +142,12 @@ static struct {
 	Class isa;
 } alloc_failed_exception;
 
+#if !defined(OF_ATOMIC_OPS) && defined(OF_THREADS)
+# define NUM_SPINLOCKS 8	/* needs to be a power of 2 */
+# define SPINLOCK_HASH(p) ((uintptr_t)p >> 4) & (NUM_SPINLOCKS - 1)
+static of_spinlock_t spinlocks[NUM_SPINLOCKS];
+#endif
+
 void*
 _Block_copy(const void *block_)
 {
@@ -159,8 +172,23 @@ _Block_copy(const void *block_)
 		return copy;
 	}
 
-	if (block->isa == (Class)&_NSConcreteMallocBlock)
+	if (block->isa == (Class)&_NSConcreteMallocBlock) {
+#if defined(OF_ATOMIC_OPS)
 		of_atomic_inc_int(&block->flags);
+#else
+# ifdef OF_THREADS
+		unsigned hash = SPINLOCK_HASH(block);
+
+		assert(of_spinlock_lock(&spinlocks[hash]));
+# endif
+
+		block->flags++;
+
+# ifdef OF_THREADS
+		assert(of_spinlock_unlock(&spinlocks[hash]));
+# endif
+#endif
+	}
 
 	return block;
 }
@@ -173,12 +201,35 @@ _Block_release(const void *block_)
 	if (block->isa != (Class)&_NSConcreteMallocBlock)
 		return;
 
+#ifdef OF_ATOMIC_OPS
 	if ((of_atomic_dec_int(&block->flags) & OF_BLOCK_REFCOUNT_MASK) == 0) {
 		if (block->flags & OF_BLOCK_HAS_COPY_DISPOSE)
 			block->descriptor->dispose_helper(block);
 
 		free(block);
 	}
+#else
+# ifdef OF_THREADS
+	unsigned hash = SPINLOCK_HASH(block);
+
+	assert(of_spinlock_lock(&spinlocks[hash]));
+# endif
+
+	if ((--block->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
+# ifdef OF_THREADS
+		assert(of_spinlock_unlock(&spinlocks[hash]));
+# endif
+
+		if (block->flags & OF_BLOCK_HAS_COPY_DISPOSE)
+			block->descriptor->dispose_helper(block);
+
+		free(block);
+	}
+
+# ifdef OF_THREADS
+	assert(of_spinlock_unlock(&spinlocks[hash]));
+# endif
+#endif
 }
 
 void
@@ -276,6 +327,18 @@ _Block_object_dispose(const void *obj_, const int flags_)
 	memcpy(&_NSConcreteMallocBlock, tmp, sizeof(_NSConcreteMallocBlock));
 	free(tmp);
 	objc_registerClassPair((Class)&_NSConcreteMallocBlock);
+}
+#endif
+
+#if !defined(OF_ATOMIC_OPS) && defined(OF_THREADS)
++ (void)initialize
+{
+	size_t i;
+
+	for (i = 0; i < NUM_SPINLOCKS; i++)
+		if (!of_spinlock_new(&spinlocks[i]))
+			@throw [OFInitializationFailedException
+			    newWithClass: self];
 }
 #endif
 
