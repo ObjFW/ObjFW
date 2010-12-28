@@ -13,6 +13,8 @@
 
 #import "OFObject.h"
 
+@class OFString;
+
 #ifdef __MINGW32__
 /*
  * They think they don't need suseconds_t and can use long instead in
@@ -111,4 +113,14 @@ typedef long suseconds_t;
  * \return The day of the year of the date
  */
 - (int)dayOfYear;
+
+/**
+ * Creates a string of the date with the specified format.
+ *
+ * See the manpage for strftime for information on the format.
+ *
+ * \param fmt The format for the date string
+ * \return A new, autoreleased OFString
+ */
+- (OFString*)stringWithFormat: (OFString*)fmt;
 @end

@@ -17,6 +17,7 @@
 
 #import "OFDate.h"
 #import "OFString.h"
+#import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 
 #if !defined(HAVE_GMTIME_R) && defined(OF_THREADS)
@@ -152,38 +153,21 @@ static OFMutex *mutex;
 
 - (OFString*)description
 {
-	char str[20];	/* YYYY-MM-DD hh:mm:ss */
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFString *tmp, *ret;
 
-#ifdef HAVE_GMTIME_R
-	struct tm tm;
-
-	if (gmtime_r(&sec, &tm) == NULL)
-		@throw [OFOutOfRangeException newWithClass: isa];
-
-	strftime(str, 20, "%Y-%m-%dT%H:%M:%S", &tm);
-#else
-	struct tm *tm;
-
-# ifdef OF_THREADS
-	[mutex lock];
-
-	@try {
-# endif
-		if ((tm = gmtime(&sec)) == NULL)
-			@throw [OFOutOfRangeException newWithClass: isa];
-
-		strftime(str, 20, "%Y-%m-%dT%H:%M:%S", tm);
-# ifdef OF_THREADS
-	} @finally {
-		[mutex unlock];
-	}
-# endif
-#endif
+	tmp = [self stringWithFormat: @"%Y-%m-%dT%H:%M:%S"];
 
 	if (usec == 0)
-		return [OFString stringWithFormat: @"%sZ", str];
+		ret = [OFString stringWithFormat: @"%sZ", [tmp cString]];
+	else
+		ret = [OFString stringWithFormat: @"%s.%06dZ", [tmp cString],
+						  usec];
 
-	return [OFString stringWithFormat: @"%s.%06dZ", str, usec];
+	[ret retain];
+	[pool release];
+
+	return [ret autorelease];
 }
 
 - (int)seconds
@@ -229,5 +213,44 @@ static OFMutex *mutex;
 - (int)dayOfYear
 {
 	GMTIME_RET(tm_yday + 1)
+}
+
+- (OFString*)stringWithFormat: (OFString*)fmt
+{
+	struct tm tm;
+	char *buf;
+
+#ifdef HAVE_GMTIME_R
+	if (gmtime_r(&sec, &tm) == NULL)
+		@throw [OFOutOfRangeException newWithClass: isa];
+#else
+# ifdef OF_THREADS
+	[mutex lock];
+
+	@try {
+# endif
+		struct tm *tmp;
+
+		if ((tmp = gmtime(&sec)) == NULL)
+			@throw [OFOutOfRangeException newWithClass: isa];
+
+		tm = *tmp;
+# ifdef OF_THREADS
+	} @finally {
+		[mutex unlock];
+	}
+# endif
+#endif
+
+	buf = [self allocMemoryWithSize: of_pagesize];
+
+	@try {
+		if (!strftime(buf, of_pagesize, [fmt cString], &tm))
+			@throw [OFOutOfRangeException newWithClass: isa];
+
+		return [OFString stringWithCString: buf];
+	} @finally {
+		[self freeMemory: buf];
+	}
 }
 @end
