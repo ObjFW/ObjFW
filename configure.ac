@@ -345,6 +345,9 @@ AC_CHECK_LIB(ws2_32, main, LIBS="$LIBS -lws2_32")
 AC_CHECK_FUNC(gmtime_r, [
 	AC_DEFINE(HAVE_GMTIME_R, 1, [Whether we have gmtime_r])
 ])
+AC_CHECK_FUNC(localtime_r, [
+	AC_DEFINE(HAVE_LOCALTIME_R, 1, [Whether we have localtime_r])
+])
 
 AC_CHECK_HEADER(poll.h, [
 	AC_DEFINE(OF_HAVE_POLL, 1, [Whether poll is supported])

@@ -20,7 +20,8 @@
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 
-#if !defined(HAVE_GMTIME_R) && defined(OF_THREADS)
+#if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
+    defined(OF_THREADS)
 # import "OFThread.h"
 
 static OFMutex *mutex;
@@ -31,6 +32,13 @@ static OFMutex *mutex;
 	struct tm tm;							  \
 									  \
 	if (gmtime_r(&sec, &tm) == NULL)				  \
+		@throw [OFOutOfRangeException newWithClass: isa];	  \
+									  \
+	return tm.field;
+# define LOCALTIME_RET(field)						  \
+	struct tm tm;							  \
+									  \
+	if (localtime_r(&sec, &tm) == NULL)				  \
 		@throw [OFOutOfRangeException newWithClass: isa];	  \
 									  \
 	return tm.field;
@@ -49,6 +57,19 @@ static OFMutex *mutex;
 	} @finally {							  \
 		[mutex unlock];						  \
 	}
+#  define LOCALTIME_RET(field)						  \
+	struct tm *tm;							  \
+									  \
+	[mutex lock];							  \
+									  \
+	@try {								  \
+		if ((tm = localtime(&sec)) == NULL)			  \
+			@throw [OFOutOfRangeException newWithClass: isa]; \
+									  \
+		return tm->field;					  \
+	} @finally {							  \
+		[mutex unlock];						  \
+	}
 # else
 #  define GMTIME_RET(field)						  \
 	struct tm *tm;							  \
@@ -57,11 +78,19 @@ static OFMutex *mutex;
 		@throw [OFOutOfRangeException newWithClass: isa];	  \
 									  \
 	return tm->field;
+#  define LOCALTIME_RET(field)						  \
+	struct tm *tm;							  \
+									  \
+	if ((tm = localtime(&sec)) == NULL)				  \
+		@throw [OFOutOfRangeException newWithClass: isa];	  \
+									  \
+	return tm->field;
 # endif
 #endif
 
 @implementation OFDate
-#if !defined(HAVE_GMTIME_R) && defined(OF_THREADS)
+#if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
+    defined(OF_THREADS)
 + (void)initialize
 {
 	if (self == [OFDate class])
@@ -156,7 +185,7 @@ static OFMutex *mutex;
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFString *tmp, *ret;
 
-	tmp = [self stringWithFormat: @"%Y-%m-%dT%H:%M:%S"];
+	tmp = [self dateStringWithFormat: @"%Y-%m-%dT%H:%M:%S"];
 
 	if (usec == 0)
 		ret = [OFString stringWithFormat: @"%sZ", [tmp cString]];
@@ -170,24 +199,29 @@ static OFMutex *mutex;
 	return [ret autorelease];
 }
 
-- (int)seconds
-{
-	GMTIME_RET(tm_sec)
-}
-
-- (suseconds_t)microseconds
+- (suseconds_t)microsecond
 {
 	return usec;
 }
 
-- (int)minutes
+- (int)second
+{
+	GMTIME_RET(tm_sec)
+}
+
+- (int)minute
 {
 	GMTIME_RET(tm_min)
 }
 
-- (int)hours
+- (int)hour
 {
 	GMTIME_RET(tm_hour)
+}
+
+- (int)localHour
+{
+	LOCALTIME_RET(tm_hour)
 }
 
 - (int)dayOfMonth
@@ -195,9 +229,19 @@ static OFMutex *mutex;
 	GMTIME_RET(tm_mday)
 }
 
+- (int)localDayOfMonth
+{
+	LOCALTIME_RET(tm_mday)
+}
+
 - (int)monthOfYear
 {
 	GMTIME_RET(tm_mon + 1)
+}
+
+- (int)localMonthOfYear
+{
+	LOCALTIME_RET(tm_mon + 1)
 }
 
 - (int)year
@@ -210,12 +254,22 @@ static OFMutex *mutex;
 	GMTIME_RET(tm_wday)
 }
 
+- (int)localDayOfWeek
+{
+	LOCALTIME_RET(tm_wday)
+}
+
 - (int)dayOfYear
 {
 	GMTIME_RET(tm_yday + 1)
 }
 
-- (OFString*)stringWithFormat: (OFString*)fmt
+- (int)localDayOfYear
+{
+	LOCALTIME_RET(tm_yday + 1)
+}
+
+- (OFString*)dateStringWithFormat: (OFString*)fmt
 {
 	struct tm tm;
 	char *buf;
@@ -232,6 +286,45 @@ static OFMutex *mutex;
 		struct tm *tmp;
 
 		if ((tmp = gmtime(&sec)) == NULL)
+			@throw [OFOutOfRangeException newWithClass: isa];
+
+		tm = *tmp;
+# ifdef OF_THREADS
+	} @finally {
+		[mutex unlock];
+	}
+# endif
+#endif
+
+	buf = [self allocMemoryWithSize: of_pagesize];
+
+	@try {
+		if (!strftime(buf, of_pagesize, [fmt cString], &tm))
+			@throw [OFOutOfRangeException newWithClass: isa];
+
+		return [OFString stringWithCString: buf];
+	} @finally {
+		[self freeMemory: buf];
+	}
+}
+
+- (OFString*)localDateStringWithFormat: (OFString*)fmt
+{
+	struct tm tm;
+	char *buf;
+
+#ifdef HAVE_LOCALTIME_R
+	if (localtime_r(&sec, &tm) == NULL)
+		@throw [OFOutOfRangeException newWithClass: isa];
+#else
+# ifdef OF_THREADS
+	[mutex lock];
+
+	@try {
+# endif
+		struct tm *tmp;
+
+		if ((tmp = localtime(&sec)) == NULL)
 			@throw [OFOutOfRangeException newWithClass: isa];
 
 		tm = *tmp;

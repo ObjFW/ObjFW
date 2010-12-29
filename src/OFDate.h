@@ -70,24 +70,29 @@ typedef long suseconds_t;
 		   microseconds: (suseconds_t)usec;
 
 /**
+ * \return The microsecond of the date
+ */
+- (suseconds_t)microsecond;
+
+/**
  * \return The seconds of the date
  */
-- (int)seconds;
+- (int)second;
 
 /**
- * \return The microseconds of the date
+ * \return The minute of the date
  */
-- (suseconds_t)microseconds;
+- (int)minute;
 
 /**
- * \return The minutes of the date
+ * \return The hour of the date
  */
-- (int)minutes;
+- (int)hour;
 
 /**
- * \return The hours of the date
+ * \return The hour of the date in local time
  */
-- (int)hours;
+- (int)localHour;
 
 /**
  * \return The day of the month of the date
@@ -95,9 +100,19 @@ typedef long suseconds_t;
 - (int)dayOfMonth;
 
 /**
+ * \return The day of the month of the date in local time
+ */
+- (int)localDayOfMonth;
+
+/**
  * \return The month of the year of the date
  */
 - (int)monthOfYear;
+
+/**
+ * \return The month of the year of the date in local time
+ */
+- (int)localMonthOfYear;
 
 /**
  * \return The year of the date
@@ -110,9 +125,19 @@ typedef long suseconds_t;
 - (int)dayOfWeek;
 
 /**
+ * \return The day of the week of the date in local time
+ */
+- (int)localDayOfWeek;
+
+/**
  * \return The day of the year of the date
  */
 - (int)dayOfYear;
+
+/**
+ * \return The day of the year of the date in local time
+ */
+- (int)localDayOfYear;
 
 /**
  * Creates a string of the date with the specified format.
@@ -122,5 +147,15 @@ typedef long suseconds_t;
  * \param fmt The format for the date string
  * \return A new, autoreleased OFString
  */
-- (OFString*)stringWithFormat: (OFString*)fmt;
+- (OFString*)dateStringWithFormat: (OFString*)fmt;
+
+/**
+ * Creates a string of the local date with the specified format.
+ *
+ * See the manpage for strftime for information on the format.
+ *
+ * \param fmt The format for the date string
+ * \return A new, autoreleased OFString
+ */
+- (OFString*)localDateStringWithFormat: (OFString*)fmt;
 @end
