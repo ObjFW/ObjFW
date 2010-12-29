@@ -231,6 +231,7 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	    [@"0xABcd" hexadecimalValue] == 0xABCD &&
 	    [@"xbCDE" hexadecimalValue] == 0xBCDE &&
 	    [@"$CdEf" hexadecimalValue] == 0xCDEF &&
+	    [@"Feh" hexadecimalValue] == 0xFE &&
 	    [@"" hexadecimalValue] == 0)
 
 	EXPECT_EXCEPTION(@"Detect invalid characters in -[decimalValue] #1",

@@ -996,6 +996,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 {
 	int i = 0;
 	uintmax_t num = 0;
+	BOOL suffix = NO;
 
 	if (length == 0)
 		return 0;
@@ -1011,13 +1012,19 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	for (; i < length; i++) {
 		uintmax_t newnum;
 
+		if (suffix)
+			@throw [OFInvalidEncodingException newWithClass: isa];
+
 		if (string[i] >= '0' && string[i] <= '9')
 			newnum = (num << 4) | (string[i] - '0');
 		else if (string[i] >= 'A' && string[i] <= 'F')
 			newnum = (num << 4) | (string[i] - 'A' + 10);
 		else if (string[i] >= 'a' && string[i] <= 'f')
 			newnum = (num << 4) | (string[i] - 'a' + 10);
-		else
+		else if (string[i] == 'h') {
+			suffix = YES;
+			continue;
+		} else
 			@throw [OFInvalidEncodingException newWithClass: isa];
 
 		if (newnum < num)
