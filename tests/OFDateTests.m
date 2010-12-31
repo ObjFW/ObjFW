@@ -62,6 +62,10 @@ static OFString *module = @"OFDate";
 
 	TEST(@"-[dayOfYear]", [d1 dayOfYear] == 1 && [d2 dayOfYear] == 2)
 
+	TEST(@"-[earlierDate:]", [[d1 earlierDate: d2] isEqual: d1])
+
+	TEST(@"-[laterDate:]", [[d1 laterDate: d2] isEqual: d2])
+
 	[pool drain];
 }
 @end

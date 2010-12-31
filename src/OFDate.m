@@ -346,4 +346,20 @@ static OFMutex *mutex;
 		[self freeMemory: buf];
 	}
 }
+
+- (OFDate*)earlierDate: (OFDate*)date
+{
+	if ([self compare: date] == OF_ORDERED_DESCENDING)
+		return [[date retain] autorelease];
+
+	return [[self retain] autorelease];
+}
+
+- (OFDate*)laterDate: (OFDate*)date
+{
+	if ([self compare: date] == OF_ORDERED_ASCENDING)
+		return [[date retain] autorelease];
+
+	return [[self retain] autorelease];
+}
 @end

@@ -158,4 +158,16 @@ typedef long suseconds_t;
  * \return A new, autoreleased OFString
  */
 - (OFString*)localDateStringWithFormat: (OFString*)fmt;
+
+/**
+ * \param date Another date
+ * \return The earlier date of the two dates
+ */
+- (OFDate*)earlierDate: (OFDate*)date;
+
+/**
+ * \param date Another date
+ * \return The later date of the two dates
+ */
+- (OFDate*)laterDate: (OFDate*)date;
 @end
