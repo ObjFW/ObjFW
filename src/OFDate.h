@@ -52,6 +52,16 @@ typedef long suseconds_t;
 		   microseconds: (suseconds_t)usec;
 
 /**
+ * \return A date in the distant future
+ */
++ distantFuture;
+
+/**
+ * \return A date in the distant past
+ */
++ distantPast;
+
+/**
  * Initializes an already allocated OFDate with the specified date and time.
  *
  * \param sec The seconds since 1970-01-01 00:00:00

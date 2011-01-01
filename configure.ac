@@ -210,7 +210,7 @@ AC_EGREP_CPP(yes, [
 		AC_MSG_RESULT(yes)
 		size_max="SIZE_T_MAX"], [
 		AC_MSG_RESULT(no)
-		size_max="((size_t)-1)"
+		size_max="(~(size_t)0)"
 	])
 	AC_DEFINE_UNQUOTED(SIZE_MAX, $size_max, [Maximum value for size_t])
 ])

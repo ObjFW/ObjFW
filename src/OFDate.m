@@ -11,6 +11,8 @@
 
 #include "config.h"
 
+#include <stdint.h>
+#include <limits.h>
 #include <time.h>
 
 #include <sys/time.h>
@@ -113,6 +115,26 @@ static OFMutex *mutex;
 {
 	return [[[self alloc] initWithTimeIntervalSince1970: sec
 					       microseconds: usec] autorelease];
+}
+
++ distantFuture
+{
+	if (sizeof(time_t) == sizeof(int64_t))
+		return [[[self alloc]
+		    initWithTimeIntervalSince1970: INT64_MAX] autorelease];
+	if (sizeof(time_t) == sizeof(int32_t))
+		return [[[self alloc]
+		    initWithTimeIntervalSince1970: INT32_MAX] autorelease];
+
+	/* Neither 64 nor 32 bit. But it's guaranteed to be at least an int */
+	return [[[self alloc]
+	    initWithTimeIntervalSince1970: INT_MAX] autorelease];
+}
+
++ distantPast
+{
+	/* We don't know if time_t is signed or unsigned. Use 0 to be safe */
+	return [[[self alloc] initWithTimeIntervalSince1970: 0] autorelease];
 }
 
 - init
