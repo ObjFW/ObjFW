@@ -182,21 +182,7 @@ static OFMutex *mutex;
 
 - (OFString*)description
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFString *tmp, *ret;
-
-	tmp = [self dateStringWithFormat: @"%Y-%m-%dT%H:%M:%S"];
-
-	if (usec == 0)
-		ret = [OFString stringWithFormat: @"%sZ", [tmp cString]];
-	else
-		ret = [OFString stringWithFormat: @"%s.%06dZ", [tmp cString],
-						  usec];
-
-	[ret retain];
-	[pool release];
-
-	return [ret autorelease];
+	return [self dateStringWithFormat: @"%Y-%m-%dT%H:%M:%SZ"];
 }
 
 - (suseconds_t)microsecond
