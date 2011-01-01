@@ -9,27 +9,17 @@
  * the packaging of this file.
  */
 
-#include <sys/time.h>
-
 #import "OFObject.h"
 
 @class OFString;
-
-#ifdef __MINGW32__
-/*
- * They think they don't need suseconds_t and can use long instead in
- * struct timeval... POSIX demands suseconds_t, of course.
- */
-typedef long suseconds_t;
-#endif
 
 /**
  * \brief A class for storing, accessing and comparing dates.
  */
 @interface OFDate: OFObject <OFCopying, OFComparing>
 {
-	time_t sec;
-	suseconds_t usec;
+	int64_t sec;
+	uint32_t usec;
 }
 
 /**
@@ -41,22 +31,40 @@ typedef long suseconds_t;
  * \param sec The seconds since 1970-01-01 00:00:00
  * \return A new, autoreleased OFDate with the specified date and time
  */
-+ dateWithTimeIntervalSince1970: (time_t)sec;
++ dateWithTimeIntervalSince1970: (int64_t)sec;
 
 /**
  * \param sec The seconds since 1970-01-01 00:00:00
  * \param usec The microsecond part of the time
  * \return A new, autoreleased OFDate with the specified date and time
  */
-+ dateWithTimeIntervalSince1970: (time_t)sec
-		   microseconds: (suseconds_t)usec;
++ dateWithTimeIntervalSince1970: (int64_t)sec
+		   microseconds: (uint32_t)usec;
 
 /**
+ * \param sec The seconds since now
+ * \return A new, autoreleased OFDate with the specified date and time
+ */
++ dateWithTimeIntervalSinceNow: (int64_t)sec;
+
+/**
+ * \param sec The seconds since now
+ * \param usec The microsecond part of the time
+ * \return A new, autoreleased OFDate with the specified date and time
+ */
++ dateWithTimeIntervalSinceNow: (int64_t)sec
+		  microseconds: (uint32_t)usec;
+
+/**
+ * Returns a date in the distant future. The date is system-dependant.
+ *
  * \return A date in the distant future
  */
 + distantFuture;
 
 /**
+ * Returns a date in the distant past. The date is system-dependant.
+ *
  * \return A date in the distant past
  */
 + distantPast;
@@ -67,7 +75,7 @@ typedef long suseconds_t;
  * \param sec The seconds since 1970-01-01 00:00:00
  * \return An initialized OFDate with the specified date and time
  */
-- initWithTimeIntervalSince1970: (time_t)sec;
+- initWithTimeIntervalSince1970: (int64_t)sec;
 
 /**
  * Initializes an already allocated OFDate with the specified date and time.
@@ -76,78 +84,97 @@ typedef long suseconds_t;
  * \param usec The microsecond part of the time
  * \return An initialized OFDate with the specified date and time
  */
-- initWithTimeIntervalSince1970: (time_t)sec
-		   microseconds: (suseconds_t)usec;
+- initWithTimeIntervalSince1970: (int64_t)sec
+		   microseconds: (uint32_t)usec;
+
+/**
+ * Initializes an already allocated OFDate with the specified date and time.
+ *
+ * \param sec The seconds since now
+ * \param usec The microsecond part of the time
+ * \return A new, autoreleased OFDate with the specified date and time
+ */
+- initWithTimeIntervalSinceNow: (int64_t)sec;
+
+/**
+ * Initializes an already allocated OFDate with the specified date and time.
+ *
+ * \param sec The seconds since now
+ * \param usec The microsecond part of the time
+ * \return A new, autoreleased OFDate with the specified date and time
+ */
+- initWithTimeIntervalSinceNow: (int64_t)sec
+		  microseconds: (uint32_t)usec;
 
 /**
  * \return The microsecond of the date
  */
-- (suseconds_t)microsecond;
+- (uint32_t)microsecond;
 
 /**
  * \return The seconds of the date
  */
-- (int)second;
+- (uint8_t)second;
 
 /**
  * \return The minute of the date
  */
-- (int)minute;
+- (uint8_t)minute;
 
 /**
  * \return The hour of the date
  */
-- (int)hour;
+- (uint8_t)hour;
 
 /**
  * \return The hour of the date in local time
  */
-- (int)localHour;
+- (uint8_t)localHour;
 
 /**
  * \return The day of the month of the date
  */
-- (int)dayOfMonth;
+- (uint8_t)dayOfMonth;
 
 /**
  * \return The day of the month of the date in local time
  */
-- (int)localDayOfMonth;
+- (uint8_t)localDayOfMonth;
 
 /**
  * \return The month of the year of the date
  */
-- (int)monthOfYear;
+- (uint8_t)monthOfYear;
 
 /**
  * \return The month of the year of the date in local time
  */
-- (int)localMonthOfYear;
+- (uint8_t)localMonthOfYear;
 
 /**
  * \return The year of the date
  */
-- (int)year;
+- (uint16_t)year;
 
 /**
  * \return The day of the week of the date
  */
-- (int)dayOfWeek;
+- (uint8_t)dayOfWeek;
 
 /**
  * \return The day of the week of the date in local time
  */
-- (int)localDayOfWeek;
+- (uint8_t)localDayOfWeek;
 
 /**
  * \return The day of the year of the date
  */
-- (int)dayOfYear;
+- (uint16_t)dayOfYear;
 
 /**
  * \return The day of the year of the date in local time
  */
-- (int)localDayOfYear;
+- (uint16_t)localDayOfYear;
 
 /**
  * Creates a string of the date with the specified format.
@@ -180,4 +207,22 @@ typedef long suseconds_t;
  * \return The later date of the two dates
  */
 - (OFDate*)laterDate: (OFDate*)date;
+
+/**
+ * Returns a new date with the specified time interval added.
+ *
+ * \param sec The seconds after the date
+ * \return A new, autoreleased OFDate
+ */
+- (OFDate*)dateByAddingTimeInterval: (int64_t)sec;
+
+/**
+ * Returns a new date with the specified time interval added.
+ *
+ * \param sec The seconds after the date
+ * \param usec The microseconds after the date
+ * \return A new, autoreleased OFDate
+ */
+- (OFDate*)dateByAddingTimeInterval: (int64_t)sec
+		   withMicroseconds: (uint32_t)usec;
 @end

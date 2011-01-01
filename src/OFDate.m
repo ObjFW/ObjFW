@@ -31,28 +31,40 @@ static OFMutex *mutex;
 
 #ifdef HAVE_GMTIME_R
 # define GMTIME_RET(field)						  \
+	time_t sec_ = sec;						  \
 	struct tm tm;							  \
 									  \
-	if (gmtime_r(&sec, &tm) == NULL)				  \
+	if (sec != sec_)						  \
+		@throw [OFOutOfRangeException newWithClass: isa];	  \
+									  \
+	if (gmtime_r(&sec_, &tm) == NULL)				  \
 		@throw [OFOutOfRangeException newWithClass: isa];	  \
 									  \
 	return tm.field;
 # define LOCALTIME_RET(field)						  \
+	time_t sec_ = sec;						  \
 	struct tm tm;							  \
 									  \
-	if (localtime_r(&sec, &tm) == NULL)				  \
+	if (sec != sec_)						  \
+		@throw [OFOutOfRangeException newWithClass: isa];	  \
+									  \
+	if (localtime_r(&sec_, &tm) == NULL)				  \
 		@throw [OFOutOfRangeException newWithClass: isa];	  \
 									  \
 	return tm.field;
 #else
 # ifdef OF_THREADS
 #  define GMTIME_RET(field)						  \
+	time_t sec_ = sec;						  \
 	struct tm *tm;							  \
+									  \
+	if (sec != sec_)						  \
+		@throw [OFOutOfRangeException newWithClass: isa];	  \
 									  \
 	[mutex lock];							  \
 									  \
 	@try {								  \
-		if ((tm = gmtime(&sec)) == NULL)			  \
+		if ((tm = gmtime(&sec_)) == NULL)			  \
 			@throw [OFOutOfRangeException newWithClass: isa]; \
 									  \
 		return tm->field;					  \
@@ -60,12 +72,16 @@ static OFMutex *mutex;
 		[mutex unlock];						  \
 	}
 #  define LOCALTIME_RET(field)						  \
+	time_t sec_ = sec;						  \
 	struct tm *tm;							  \
+									  \
+	if (sec != sec_)						  \
+		@throw [OFOutOfRangeException newWithClass: isa];	  \
 									  \
 	[mutex lock];							  \
 									  \
 	@try {								  \
-		if ((tm = localtime(&sec)) == NULL)			  \
+		if ((tm = localtime(&sec_)) == NULL)			  \
 			@throw [OFOutOfRangeException newWithClass: isa]; \
 									  \
 		return tm->field;					  \
@@ -74,16 +90,24 @@ static OFMutex *mutex;
 	}
 # else
 #  define GMTIME_RET(field)						  \
+	time_t sec_ = sec;						  \
 	struct tm *tm;							  \
 									  \
-	if ((tm = gmtime(&sec)) == NULL)				  \
+	if (sec != sec_)						  \
+		@throw [OFOutOfRangeException newWithClass: isa];	  \
+									  \
+	if ((tm = gmtime(&sec_)) == NULL)				  \
 		@throw [OFOutOfRangeException newWithClass: isa];	  \
 									  \
 	return tm->field;
 #  define LOCALTIME_RET(field)						  \
+	time_t sec_ = sec;						  \
 	struct tm *tm;							  \
 									  \
-	if ((tm = localtime(&sec)) == NULL)				  \
+	if (sec != sec_)						  \
+		@throw [OFOutOfRangeException newWithClass: isa];	  \
+									  \
+	if ((tm = localtime(&sec_)) == NULL)				  \
 		@throw [OFOutOfRangeException newWithClass: isa];	  \
 									  \
 	return tm->field;
@@ -105,30 +129,45 @@ static OFMutex *mutex;
 	return [[[self alloc] init] autorelease];
 }
 
-+ dateWithTimeIntervalSince1970: (time_t)sec
++ dateWithTimeIntervalSince1970: (int64_t)sec
 {
 	return [[[self alloc] initWithTimeIntervalSince1970: sec] autorelease];
 }
 
-+ dateWithTimeIntervalSince1970: (time_t)sec
-		   microseconds: (suseconds_t)usec
++ dateWithTimeIntervalSince1970: (int64_t)sec
+		   microseconds: (uint32_t)usec
 {
 	return [[[self alloc] initWithTimeIntervalSince1970: sec
 					       microseconds: usec] autorelease];
+}
+
++ dateWithTimeIntervalSinceNow: (int64_t)sec
+{
+	return [[[self alloc] initWithTimeIntervalSinceNow: sec] autorelease];
+}
+
++ dateWithTimeIntervalSinceNow: (int64_t)sec
+		  microseconds: (uint32_t)usec
+{
+	return [[[self alloc] initWithTimeIntervalSinceNow: sec
+					      microseconds: usec] autorelease];
 }
 
 + distantFuture
 {
 	if (sizeof(time_t) == sizeof(int64_t))
 		return [[[self alloc]
-		    initWithTimeIntervalSince1970: INT64_MAX] autorelease];
+		    initWithTimeIntervalSince1970: INT64_MAX
+				     microseconds: 999999] autorelease];
 	if (sizeof(time_t) == sizeof(int32_t))
 		return [[[self alloc]
-		    initWithTimeIntervalSince1970: INT32_MAX] autorelease];
+		    initWithTimeIntervalSince1970: INT32_MAX
+				     microseconds: 999999] autorelease];
 
 	/* Neither 64 nor 32 bit. But it's guaranteed to be at least an int */
 	return [[[self alloc]
-	    initWithTimeIntervalSince1970: INT_MAX] autorelease];
+	    initWithTimeIntervalSince1970: INT_MAX
+			     microseconds: 999999] autorelease];
 }
 
 + distantPast
@@ -151,19 +190,41 @@ static OFMutex *mutex;
 				      microseconds: t.tv_usec];
 }
 
-- initWithTimeIntervalSince1970: (time_t)sec_
+- initWithTimeIntervalSince1970: (int64_t)sec_
 {
 	return [self initWithTimeIntervalSince1970: sec_
 				      microseconds: 0];
 }
 
-- initWithTimeIntervalSince1970: (time_t)sec_
-		   microseconds: (suseconds_t)usec_
+- initWithTimeIntervalSince1970: (int64_t)sec_
+		   microseconds: (uint32_t)usec_
 {
 	self = [super init];
 
 	sec = sec_;
 	usec = usec_;
+
+	return self;
+}
+
+- initWithTimeIntervalSinceNow: (int64_t)sec_
+{
+	return [self initWithTimeIntervalSinceNow: sec_
+				     microseconds: 0];
+}
+
+- initWithTimeIntervalSinceNow: (int64_t)sec_
+		  microseconds: (uint32_t)usec_
+{
+	self = [self init];
+
+	sec += sec_;
+	usec += usec_;
+
+	while (usec > 999999) {
+		usec -= 999999;
+		sec++;
+	}
 
 	return self;
 }
@@ -207,83 +268,87 @@ static OFMutex *mutex;
 	return [self dateStringWithFormat: @"%Y-%m-%dT%H:%M:%SZ"];
 }
 
-- (suseconds_t)microsecond
+- (uint32_t)microsecond
 {
 	return usec;
 }
 
-- (int)second
+- (uint8_t)second
 {
 	GMTIME_RET(tm_sec)
 }
 
-- (int)minute
+- (uint8_t)minute
 {
 	GMTIME_RET(tm_min)
 }
 
-- (int)hour
+- (uint8_t)hour
 {
 	GMTIME_RET(tm_hour)
 }
 
-- (int)localHour
+- (uint8_t)localHour
 {
 	LOCALTIME_RET(tm_hour)
 }
 
-- (int)dayOfMonth
+- (uint8_t)dayOfMonth
 {
 	GMTIME_RET(tm_mday)
 }
 
-- (int)localDayOfMonth
+- (uint8_t)localDayOfMonth
 {
 	LOCALTIME_RET(tm_mday)
 }
 
-- (int)monthOfYear
+- (uint8_t)monthOfYear
 {
 	GMTIME_RET(tm_mon + 1)
 }
 
-- (int)localMonthOfYear
+- (uint8_t)localMonthOfYear
 {
 	LOCALTIME_RET(tm_mon + 1)
 }
 
-- (int)year
+- (uint16_t)year
 {
 	GMTIME_RET(tm_year + 1900)
 }
 
-- (int)dayOfWeek
+- (uint8_t)dayOfWeek
 {
 	GMTIME_RET(tm_wday)
 }
 
-- (int)localDayOfWeek
+- (uint8_t)localDayOfWeek
 {
 	LOCALTIME_RET(tm_wday)
 }
 
-- (int)dayOfYear
+- (uint16_t)dayOfYear
 {
 	GMTIME_RET(tm_yday + 1)
 }
 
-- (int)localDayOfYear
+- (uint16_t)localDayOfYear
 {
 	LOCALTIME_RET(tm_yday + 1)
 }
 
 - (OFString*)dateStringWithFormat: (OFString*)fmt
 {
+	time_t sec_ = sec;
 	struct tm tm;
 	char *buf;
 
+	if (sec != sec_)
+		@throw [OFOutOfRangeException newWithClass: isa];
+
 #ifdef HAVE_GMTIME_R
-	if (gmtime_r(&sec, &tm) == NULL)
+	if (gmtime_r(&sec_, &tm) == NULL)
 		@throw [OFOutOfRangeException newWithClass: isa];
 #else
 # ifdef OF_THREADS
@@ -318,11 +383,15 @@ static OFMutex *mutex;
 
 - (OFString*)localDateStringWithFormat: (OFString*)fmt
 {
+	time_t sec_ = sec;
 	struct tm tm;
 	char *buf;
 
+	if (sec != sec_)
+		@throw [OFOutOfRangeException newWithClass: isa];
+
 #ifdef HAVE_LOCALTIME_R
-	if (localtime_r(&sec, &tm) == NULL)
+	if (localtime_r(&sec_, &tm) == NULL)
 		@throw [OFOutOfRangeException newWithClass: isa];
 #else
 # ifdef OF_THREADS
@@ -369,5 +438,26 @@ static OFMutex *mutex;
 		return [[date retain] autorelease];
 
 	return [[self retain] autorelease];
+}
+
+- (OFDate*)dateByAddingTimeInterval: (int64_t)sec_
+{
+	return [self dateByAddingTimeInterval: sec_
+			     withMicroseconds: 0];
+}
+
+- (OFDate*)dateByAddingTimeInterval: (int64_t)sec_
+		   withMicroseconds: (uint32_t)usec_
+{
+	sec_ += sec;
+	usec_ += usec;
+
+	while (usec_ > 999999) {
+		usec_ -= 999999;
+		sec_++;
+	}
+
+	return [OFDate dateWithTimeIntervalSince1970: sec_
+					microseconds: usec_];
 }
 @end
