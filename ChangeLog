@@ -2,6 +2,25 @@ Legend:
  * Changes of existing features or bugfixes.
  + New features.
 
+ObjFW 0.3.1 -> 0.4-alpha1, 03.01.2011
+ * ObjFW is now available under the terms of the QPL, GPLv2 and GPLv3.
+ + Support for blocks was added, including a blocks runtime.
+ + Added support for the new GNU runtime, introduced in GCC 4.6.
+ * Objects returned from collections are no longer retained and autoreleased.
+ + Added new classes OFXMLParser, OFXMLElement, OFXMLAttribute and
+   OFXMLElementBuilder.
+ + Added new class OFStreamObserver to observe streams.
+ + Added new class OFDate for storing dates.
+ + Many new methods in almost all classes.
+ * OFAutoreleasePool was optimized.
+ * Handling of ASCII strings was optimized.
+ * OFSocket was renamed to OFStreamSocket.
+ * OFConstString was renamed to OFConstantString.
+ * objfw-compile now has a new syntax.
+ + objfw-compile can now compile libraries and plugins.
+ * Many small changes and new features that would be too much to list here.
+   The diff between 0.3.1 and 0.4-alpha1 has almost 24000 lines!
+
 ObjFW 0.3 -> 0.3.1, 19.06.2010
  * Fix a typo in OFMutableDictionary that prevented termination in case
    the last bucket is already used when the dictionary is resized.
