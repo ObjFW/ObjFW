@@ -33,13 +33,13 @@
 + date;
 
 /**
- * \param sec The seconds since 1970-01-01 00:00:00
+ * \param sec The seconds since 1970-01-01T00:00:00Z
  * \return A new, autoreleased OFDate with the specified date and time
  */
 + dateWithTimeIntervalSince1970: (int64_t)sec;
 
 /**
- * \param sec The seconds since 1970-01-01 00:00:00
+ * \param sec The seconds since 1970-01-01T00:00:00Z
  * \param usec The microsecond part of the time
  * \return A new, autoreleased OFDate with the specified date and time
  */
@@ -77,7 +77,7 @@
 /**
  * Initializes an already allocated OFDate with the specified date and time.
  *
- * \param sec The seconds since 1970-01-01 00:00:00
+ * \param sec The seconds since 1970-01-01T00:00:00Z
  * \return An initialized OFDate with the specified date and time
  */
 - initWithTimeIntervalSince1970: (int64_t)sec;
@@ -85,7 +85,7 @@
 /**
  * Initializes an already allocated OFDate with the specified date and time.
  *
- * \param sec The seconds since 1970-01-01 00:00:00
+ * \param sec The seconds since 1970-01-01T00:00:00Z
  * \param usec The microsecond part of the time
  * \return An initialized OFDate with the specified date and time
  */
@@ -212,6 +212,26 @@
  * \return The later date of the two dates
  */
 - (OFDate*)laterDate: (OFDate*)date;
+
+/**
+ * \return The seconds since 1970-01-01T00:00:00Z
+ */
+- (int64_t)timeIntervalSince1970;
+
+/**
+ * \return The microseconds part of the seconds since 1970-01-01T00:00:00Z
+ */
+- (uint32_t)microsecondsOfTimeIntervalSince1970;
+
+/**
+ * \return The seconds the date is after the receiver
+ */
+- (int64_t)timeIntervalSinceDate: (OFDate*)date;
+
+/**
+ * \return The microseconds part of the seconds the date is after the receiver
+ */
+- (uint32_t)microsecondsOfTimeIntervalSinceDate: (OFDate*)date;
 
 /**
  * Returns a new date with the specified time interval added.

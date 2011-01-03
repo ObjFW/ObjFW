@@ -227,7 +227,7 @@ static OFMutex *mutex;
 	usec += usec_;
 
 	while (usec > 999999) {
-		usec -= 999999;
+		usec -= 10000000;
 		sec++;
 	}
 
@@ -363,7 +363,7 @@ static OFMutex *mutex;
 # endif
 		struct tm *tmp;
 
-		if ((tmp = gmtime(&sec)) == NULL)
+		if ((tmp = gmtime(&sec_)) == NULL)
 			@throw [OFOutOfRangeException newWithClass: isa];
 
 		tm = *tmp;
@@ -406,7 +406,7 @@ static OFMutex *mutex;
 # endif
 		struct tm *tmp;
 
-		if ((tmp = localtime(&sec)) == NULL)
+		if ((tmp = localtime(&sec_)) == NULL)
 			@throw [OFOutOfRangeException newWithClass: isa];
 
 		tm = *tmp;
@@ -445,6 +445,47 @@ static OFMutex *mutex;
 	return [[self retain] autorelease];
 }
 
+- (int64_t)timeIntervalSince1970
+{
+	return sec;
+}
+
+- (uint32_t)microsecondsOfTimeIntervalSince1970
+{
+	return usec;
+}
+
+- (int64_t)timeIntervalSinceDate: (OFDate*)date
+{
+	int64_t sec_ = sec - date->sec;
+	int32_t usec_ = (int32_t)usec - date->usec;
+
+	while (usec_ > 999999) {
+		usec_ -= 1000000;
+		sec_++;
+	}
+
+	while (usec < 0) {
+		usec_ += 1000000;
+		sec_--;
+	}
+
+	return sec_;
+}
+
+- (uint32_t)microsecondsOfTimeIntervalSinceDate: (OFDate*)date
+{
+	int32_t usec_ = (int32_t)usec - date->usec;
+
+	while (usec_ > 999999)
+		usec_ -= 1000000;
+
+	while (usec < 0)
+		usec_ += 1000000;
+
+	return usec_;
+}
+
 - (OFDate*)dateByAddingTimeInterval: (int64_t)sec_
 {
 	return [self dateByAddingTimeInterval: sec_
@@ -458,7 +499,7 @@ static OFMutex *mutex;
 	usec_ += usec;
 
 	while (usec_ > 999999) {
-		usec_ -= 999999;
+		usec_ -= 1000000;
 		sec_++;
 	}
 
