@@ -24,7 +24,7 @@ tarball:
 	    -o x"$$V3" != x"$$V" \
 	    -o x"$$V4" != x"$$V4"; then \
 		echo "Not all files have the same version number!"; \
-		echo "Files: util/objfw-config.h configure.ac Info.plist"; \
+		echo "Files: util/objfw-config.in configure.ac Info.plist"; \
 		exit 1; \
 	fi; \
 	echo "Generating tarball for version $$V..."; \
