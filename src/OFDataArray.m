@@ -209,7 +209,7 @@
 				 withSize: itemSize];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
-		[e dealloc];
+		[e release];
 	}
 }
 
@@ -229,7 +229,7 @@
 				 withSize: itemSize];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
-		[e dealloc];
+		[e release];
 	}
 }
 

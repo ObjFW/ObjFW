@@ -405,7 +405,7 @@
 				     toSize: length + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
-		[e dealloc];
+		[e release];
 	}
 }
 
@@ -522,7 +522,7 @@
 				     toSize: length + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
-		[e dealloc];
+		[e release];
 	}
 }
 
@@ -547,7 +547,7 @@
 				     toSize: length + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
-		[e dealloc];
+		[e release];
 	}
 }
 
@@ -581,7 +581,7 @@
 				     toSize: length + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
-		[e dealloc];
+		[e release];
 	}
 }
 

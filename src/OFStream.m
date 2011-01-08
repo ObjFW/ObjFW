@@ -41,10 +41,8 @@
 #ifndef _WIN32
 + (void)initialize
 {
-	if (self != [OFStream class])
-		return;
-
-	signal(SIGPIPE, SIG_IGN);
+	if (self == [OFStream class])
+		signal(SIGPIPE, SIG_IGN);
 }
 #endif
 
