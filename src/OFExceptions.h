@@ -328,6 +328,7 @@
 @interface OFReadOrWriteFailedException: OFException
 {
 	size_t requestedSize;
+@public
 	int    errNo;
 }
 
