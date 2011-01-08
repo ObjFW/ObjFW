@@ -352,12 +352,12 @@ static OFMutex *mutex = nil;
 	@try {
 		addr = [newsock allocMemoryWithSize: sizeof(struct sockaddr)];
 	} @catch (id e) {
-		[newsock dealloc];
+		[newsock release];
 		@throw e;
 	}
 
 	if ((s = accept(sock, addr, &addrlen)) == INVALID_SOCKET) {
-		[newsock dealloc];
+		[newsock release];
 		@throw [OFAcceptFailedException newWithClass: isa];
 	}
 

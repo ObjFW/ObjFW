@@ -25,6 +25,10 @@
 #include <assert.h>
 #include <fcntl.h>
 
+#ifndef _WIN32
+# include <signal.h>
+#endif
+
 #import "OFStream.h"
 #import "OFString.h"
 #import "OFDataArray.h"
@@ -34,6 +38,16 @@
 #import "asprintf.h"
 
 @implementation OFStream
+#ifndef _WIN32
++ (void)initialize
+{
+	if (self != [OFStream class])
+		return;
+
+	signal(SIGPIPE, SIG_IGN);
+}
+#endif
+
 - init
 {
 	if (isa == [OFStream class]) {
