@@ -93,10 +93,9 @@
  *
  * \param key The Thread Local Storage key
  * \param obj The object the Thread Local Storage key will be set to
- * \return The old object, autoreleased
  */
-+ (id)setObject: (id)obj
-      forTLSKey: (OFTLSKey*)key;
++ (void)setObject: (id)obj
+	forTLSKey: (OFTLSKey*)key;
 
 /**
  * Returns the object for the specified Thread Local Storage key.

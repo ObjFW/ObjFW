@@ -74,8 +74,8 @@ call_main(id obj)
 	return [[[self alloc] initWithObject: obj] autorelease];
 }
 
-+ (id)setObject: (id)obj
-      forTLSKey: (OFTLSKey*)key
++ (void)setObject: (id)obj
+	forTLSKey: (OFTLSKey*)key
 {
 	id old = of_tlskey_get(key->key);
 
@@ -83,17 +83,17 @@ call_main(id obj)
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 
-	return [old autorelease];
+	[old release];
 }
 
 + (id)objectForTLSKey: (OFTLSKey*)key
 {
-	return of_tlskey_get(key->key);
+	return [[of_tlskey_get(key->key) retain] autorelease];
 }
 
 + (OFThread*)currentThread
 {
-	return of_tlskey_get(thread_self);
+	return [[of_tlskey_get(thread_self) retain] autorelease];
 }
 
 + (void)sleepForTimeInterval: (int64_t)sec
