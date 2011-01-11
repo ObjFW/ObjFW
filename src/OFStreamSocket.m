@@ -73,7 +73,11 @@
 
 		e = [OFReadFailedException newWithClass: isa
 					  requestedSize: size];
+#ifndef _WIN32
 		e->errNo = ENOTCONN;
+#else
+		e->errNo = WSAENOTCONN;
+#endif
 
 		@throw e;
 	}
@@ -101,7 +105,11 @@
 
 		e = [OFWriteFailedException newWithClass: isa
 					   requestedSize: size];
+#ifndef _WIN32
 		e->errNo = ENOTCONN;
+#else
+		e->errNo = WSAENOTCONN;
+#endif
 
 		@throw e;
 	}
