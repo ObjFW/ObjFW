@@ -96,13 +96,29 @@ call_main(id obj)
 	return of_tlskey_get(thread_self);
 }
 
-+ (void)sleepForNMilliseconds: (unsigned int)msecs;
++ (void)sleepForTimeInterval: (int64_t)sec
 {
+	if (sec < 0)
+		@throw [OFOutOfRangeException newWithClass: self];
+
 #ifndef _WIN32
-	sleep(msecs / 1000);
-	usleep((msecs % 1000) * 1000);
+	sleep(sec);
 #else
-	Sleep(msecs);
+	Sleep(sec * 1000);
+#endif
+}
+
++ (void)sleepForTimeInterval: (int64_t)sec
+		microseconds: (uint32_t)usec
+{
+	if (sec < 0)
+		@throw [OFOutOfRangeException newWithClass: self];
+
+#ifndef _WIN32
+	sleep(sec);
+	usleep(usec);
+#else
+	Sleep(sec * 1000 + usec / 1000);
 #endif
 }
 

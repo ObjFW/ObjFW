@@ -114,9 +114,20 @@
 + (OFThread*)currentThread;
 
 /**
- * Suspends execution of the current thread for N milliseconds.
+ * Suspends execution of the current thread for the specified time interval.
+ *
+ * \param sec The number of seconds to sleep
  */
-+ (void)sleepForNMilliseconds: (unsigned int)msecs;
++ (void)sleepForTimeInterval: (int64_t)sec;
+
+/**
+ * Suspends execution of the current thread for the specified time interval.
+ *
+ * \param sec The number of seconds to sleep
+ * \param usec The number of microseconds to sleep
+ */
++ (void)sleepForTimeInterval: (int64_t)sec
+		microseconds: (uint32_t)usec;
 
 /**
  * Suspends execution of the current thread until the specified date.
