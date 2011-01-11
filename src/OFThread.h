@@ -37,13 +37,13 @@
 /**
  * \return A new autoreleased Thread Local Storage key
  */
-+ tlsKey;
++ TLSKey;
 
 /**
  * \param destructor A destructor that is called when the thread is terminated
  * \return A new autoreleased Thread Local Storage key
  */
-+ tlsKeyWithDestructor: (void(*)(id))destructor;
++ TLSKeyWithDestructor: (void(*)(id))destructor;
 
 + (void)callAllDestructors;
 

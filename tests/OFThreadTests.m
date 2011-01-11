@@ -52,13 +52,13 @@ static OFString *module = @"OFThread";
 
 	TEST(@"-[join]", [[t join] isEqual: @"success"])
 
-	TEST(@"OFTLSKey's +[tlsKey]", (key = [OFTLSKey tlsKey]))
+	TEST(@"OFTLSKey's +[TLSKey]", (key = [OFTLSKey TLSKey]))
 
 	TEST(@"+[setObject:forTLSKey:]",
 	    R([OFThread setObject: @"setme"
 			forTLSKey: key]) &&
-	    [[OFThread setObject: @"foo"
-		       forTLSKey: key] isEqual: @"setme"])
+	    R([OFThread setObject: @"foo"
+			forTLSKey: key]))
 
 	TEST(@"+[objectForTLSKey:]",
 	    [[OFThread objectForTLSKey: key] isEqual: @"foo"])

@@ -256,12 +256,12 @@ call_main(id obj)
 		tlskeys = [[OFList alloc] init];
 }
 
-+ tlsKey
++ TLSKey
 {
 	return [[[self alloc] init] autorelease];
 }
 
-+ tlsKeyWithDestructor: (void(*)(id))destructor
++ TLSKeyWithDestructor: (void(*)(id))destructor
 {
 	return [[[self alloc] initWithDestructor: destructor] autorelease];
 }
