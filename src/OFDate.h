@@ -224,12 +224,12 @@
 - (uint32_t)microsecondsOfTimeIntervalSince1970;
 
 /**
- * \return The seconds the date is after the receiver
+ * \return The seconds the receiver is after the date.
  */
 - (int64_t)timeIntervalSinceDate: (OFDate*)date;
 
 /**
- * \return The microseconds part of the seconds the date is after the receiver
+ * \return The microseconds part of the seconds the receiver is after the date
  */
 - (uint32_t)microsecondsOfTimeIntervalSinceDate: (OFDate*)date;
 
