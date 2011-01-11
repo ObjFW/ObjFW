@@ -465,7 +465,7 @@ static OFMutex *mutex;
 		sec_++;
 	}
 
-	while (usec < 0) {
+	while (usec_ < 0) {
 		usec_ += 1000000;
 		sec_--;
 	}
@@ -480,7 +480,7 @@ static OFMutex *mutex;
 	while (usec_ > 999999)
 		usec_ -= 1000000;
 
-	while (usec < 0)
+	while (usec_ < 0)
 		usec_ += 1000000;
 
 	return usec_;
