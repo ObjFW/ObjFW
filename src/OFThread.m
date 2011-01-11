@@ -25,6 +25,7 @@
 
 #import "OFThread.h"
 #import "OFList.h"
+#import "OFDate.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 
@@ -101,6 +102,27 @@ call_main(id obj)
 	usleep(msecs * 1000);
 #else
 	Sleep(msecs);
+#endif
+}
+
++ (void)sleepUntilDate: (OFDate*)date
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFDate *now = [OFDate date];
+	int64_t sec;
+	uint32_t usec;
+
+	if ((sec = [date timeIntervalSinceDate: now]) < 0)
+		@throw [OFOutOfRangeException newWithClass: self];
+
+	usec = [date microsecondsOfTimeIntervalSinceDate: now];
+
+	[pool release];
+
+#ifndef _WIN32
+	usleep(sec * 1000000 + usec);
+#else
+	Sleep(sec * 1000 + usec / 1000);
 #endif
 }
 

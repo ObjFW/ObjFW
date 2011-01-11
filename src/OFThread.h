@@ -19,6 +19,8 @@
 
 #import "threading.h"
 
+@class OFDate;
+
 /**
  * \brief A class for Thread Local Storage keys.
  */
@@ -115,6 +117,11 @@
  * Suspends execution of the current thread for N milliseconds.
  */
 + (void)sleepForNMilliseconds: (unsigned int)msecs;
+
+/**
+ * Suspends execution of the current thread until the specified date.
+ */
++ (void)sleepUntilDate: (OFDate*)date;
 
 /**
  * Yields a processor voluntarily and moves the thread at the end of the queue
