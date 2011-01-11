@@ -99,7 +99,8 @@ call_main(id obj)
 + (void)sleepForNMilliseconds: (unsigned int)msecs;
 {
 #ifndef _WIN32
-	usleep(msecs * 1000);
+	sleep(msecs / 1000);
+	usleep((msecs % 1000) * 1000);
 #else
 	Sleep(msecs);
 #endif
@@ -120,7 +121,8 @@ call_main(id obj)
 	[pool release];
 
 #ifndef _WIN32
-	usleep(sec * 1000000 + usec);
+	sleep(sec);
+	usleep(usec);
 #else
 	Sleep(sec * 1000 + usec / 1000);
 #endif
