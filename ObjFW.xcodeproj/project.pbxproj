@@ -90,28 +90,28 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4BD86D4C1237A58400ED9912 /* libobjfw */;
+			remoteGlobalIDString = 4BD86D4C1237A58400ED9912;
 			remoteInfo = libobjfw;
 		};
 		4BD86D731237A66300ED9912 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4BD86D4C1237A58400ED9912 /* libobjfw */;
+			remoteGlobalIDString = 4BD86D4C1237A58400ED9912;
 			remoteInfo = libobjfw;
 		};
 		4BD86D751237A66600ED9912 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4B08AE9E109AE10E00989F6E /* Framework */;
+			remoteGlobalIDString = 4B08AE9E109AE10E00989F6E;
 			remoteInfo = Framework;
 		};
 		4BD86D771237A66D00ED9912 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4BD86D6E1237A65300ED9912 /* Tests */;
+			remoteGlobalIDString = 4BD86D6E1237A65300ED9912;
 			remoteInfo = Tests;
 		};
 /* End PBXContainerItemProxy section */
@@ -130,8 +130,6 @@
 		4B67995B1099E7C50041064A /* OFArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFArray.m; path = src/OFArray.m; sourceTree = "<group>"; };
 		4B67995C1099E7C50041064A /* OFAutoreleasePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFAutoreleasePool.h; path = src/OFAutoreleasePool.h; sourceTree = "<group>"; };
 		4B67995D1099E7C50041064A /* OFAutoreleasePool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFAutoreleasePool.m; path = src/OFAutoreleasePool.m; sourceTree = "<group>"; };
-		4B67995E1099E7C50041064A /* OFConstString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFConstString.h; path = src/OFConstString.h; sourceTree = "<group>"; };
-		4B67995F1099E7C50041064A /* OFConstString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFConstString.m; path = src/OFConstString.m; sourceTree = "<group>"; };
 		4B6799601099E7C50041064A /* OFDataArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFDataArray.h; path = src/OFDataArray.h; sourceTree = "<group>"; };
 		4B6799611099E7C50041064A /* OFDataArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDataArray.m; path = src/OFDataArray.m; sourceTree = "<group>"; };
 		4B6799621099E7C50041064A /* OFDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFDictionary.h; path = src/OFDictionary.h; sourceTree = "<group>"; };
@@ -205,6 +203,12 @@
 		4BBA36C511406AB700CBA3AC /* macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = macros.h; path = src/macros.h; sourceTree = "<group>"; };
 		4BD86D801237A6C600ED9912 /* OFBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFBlock.h; path = src/OFBlock.h; sourceTree = SOURCE_ROOT; };
 		4BD86D811237A6C600ED9912 /* OFBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFBlock.m; path = src/OFBlock.m; sourceTree = SOURCE_ROOT; };
+		4BE5F0D712DF4225005C7A0C /* OFConstantString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFConstantString.h; path = src/OFConstantString.h; sourceTree = SOURCE_ROOT; };
+		4BE5F0D812DF4225005C7A0C /* OFConstantString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFConstantString.m; path = src/OFConstantString.m; sourceTree = SOURCE_ROOT; };
+		4BE5F0D912DF4225005C7A0C /* OFDate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFDate.h; path = src/OFDate.h; sourceTree = SOURCE_ROOT; };
+		4BE5F0DA12DF4225005C7A0C /* OFDate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDate.m; path = src/OFDate.m; sourceTree = SOURCE_ROOT; };
+		4BE5F0E412DF4259005C7A0C /* OFBlockTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFBlockTests.m; path = tests/OFBlockTests.m; sourceTree = SOURCE_ROOT; };
+		4BE5F0E512DF4259005C7A0C /* OFDateTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDateTests.m; path = tests/OFDateTests.m; sourceTree = SOURCE_ROOT; };
 		4BF1BCBF11C9663F0025511F /* objfw-defs.h.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "objfw-defs.h.in"; path = "src/objfw-defs.h.in"; sourceTree = "<group>"; };
 		4BF1BCC011C9663F0025511F /* OFHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFHash.h; path = src/OFHash.h; sourceTree = "<group>"; };
 		4BF1BCC111C9663F0025511F /* OFHash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHash.m; path = src/OFHash.m; sourceTree = "<group>"; };
@@ -247,10 +251,12 @@
 				4BD86D801237A6C600ED9912 /* OFBlock.h */,
 				4BD86D811237A6C600ED9912 /* OFBlock.m */,
 				4BAF5F46123460C900F4E111 /* OFCollection.h */,
-				4B67995E1099E7C50041064A /* OFConstString.h */,
-				4B67995F1099E7C50041064A /* OFConstString.m */,
+				4BE5F0D712DF4225005C7A0C /* OFConstantString.h */,
+				4BE5F0D812DF4225005C7A0C /* OFConstantString.m */,
 				4B6799601099E7C50041064A /* OFDataArray.h */,
 				4B6799611099E7C50041064A /* OFDataArray.m */,
+				4BE5F0D912DF4225005C7A0C /* OFDate.h */,
+				4BE5F0DA12DF4225005C7A0C /* OFDate.m */,
 				4B6799621099E7C50041064A /* OFDictionary.h */,
 				4B6799631099E7C50041064A /* OFDictionary.m */,
 				4B0108C910EB8C9300631877 /* OFEnumerator.h */,
@@ -332,7 +338,9 @@
 				4B6EF6831235359D0076B512 /* Plugin */,
 				4B6EF682123535960076B512 /* objc_sync */,
 				4B6EF66E1235358D0076B512 /* OFArrayTests.m */,
+				4BE5F0E412DF4259005C7A0C /* OFBlockTests.m */,
 				4B6EF66F1235358D0076B512 /* OFDataArrayTests.m */,
+				4BE5F0E512DF4259005C7A0C /* OFDateTests.m */,
 				4B6EF6701235358D0076B512 /* OFDictionaryTests.m */,
 				4B6EF6711235358D0076B512 /* OFFileTests.m */,
 				4B6EF6721235358D0076B512 /* OFListTests.m */,
@@ -426,7 +434,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 1DEB919308733D9F0010E9CD /* Build configuration list for PBXProject "ObjFW" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 08FB7794FE84155DC02AAC07 /* ObjFW */;
 			projectDirPath = "";
 			projectRoot = "";
