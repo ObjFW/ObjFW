@@ -181,17 +181,11 @@ _Block_copy(const void *block_)
 #if defined(OF_ATOMIC_OPS)
 		of_atomic_inc_int(&block->flags);
 #else
-# ifdef OF_THREADS
 		unsigned hash = SPINLOCK_HASH(block);
 
 		assert(of_spinlock_lock(&spinlocks[hash]));
-# endif
-
 		block->flags++;
-
-# ifdef OF_THREADS
 		assert(of_spinlock_unlock(&spinlocks[hash]));
-# endif
 #endif
 	}
 
@@ -214,26 +208,18 @@ _Block_release(const void *block_)
 		free(block);
 	}
 #else
-# ifdef OF_THREADS
 	unsigned hash = SPINLOCK_HASH(block);
 
 	assert(of_spinlock_lock(&spinlocks[hash]));
-# endif
-
 	if ((--block->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
-# ifdef OF_THREADS
 		assert(of_spinlock_unlock(&spinlocks[hash]));
-# endif
 
 		if (block->flags & OF_BLOCK_HAS_COPY_DISPOSE)
 			block->descriptor->dispose_helper(block);
 
 		free(block);
 	}
-
-# ifdef OF_THREADS
 	assert(of_spinlock_unlock(&spinlocks[hash]));
-# endif
 #endif
 }
 
@@ -335,7 +321,7 @@ _Block_object_dispose(const void *obj_, const int flags_)
 }
 #endif
 
-#if !defined(OF_ATOMIC_OPS) && defined(OF_THREADS)
+#if !defined(OF_ATOMIC_OPS)
 + (void)initialize
 {
 	size_t i;
