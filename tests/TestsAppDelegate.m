@@ -102,6 +102,7 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 #ifdef OF_THREADS
 	[self threadTests];
 #endif
+	[self URLTests];
 	[self XMLElementTests];
 	[self XMLParserTests];
 	[self XMLElementBuilderTests];

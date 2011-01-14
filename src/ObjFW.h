@@ -33,6 +33,7 @@
 
 #import "OFNumber.h"
 #import "OFDate.h"
+#import "OFURL.h"
 
 #import "OFStream.h"
 #import "OFStreamObserver.h"

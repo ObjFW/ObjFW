@@ -141,6 +141,10 @@
 - (void)threadTests;
 @end
 
+@interface TestsAppDelegate (OFURLTests)
+- (void)URLTests;
+@end
+
 @interface TestsAppDelegate (OFXMLElementTests)
 - (void)XMLElementTests;
 @end

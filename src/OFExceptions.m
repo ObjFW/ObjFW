@@ -1847,3 +1847,59 @@
 	return prefix;
 }
 @end
+
+@implementation OFUnsupportedProtocolException
++ newWithClass: (Class)class_
+	   URL: (OFURL*)url
+{
+	return [[self alloc] initWithClass: class_
+				       URL: url];
+}
+
+- initWithClass: (Class)class_
+{
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class_
+	    URL: (OFURL*)url
+{
+	self = [super initWithClass: class_];
+
+	@try {
+		URL = [url copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[URL release];
+
+	[super dealloc];
+}
+
+- (OFString*)description
+{
+	if (description != nil)
+		return description;
+
+	description = [[OFString alloc] initWithFormat:
+	    @"The protocol of URL %s is not supported by class %s",
+	    [[URL description] cString], class_getName(inClass)];
+
+	return description;
+}
+
+- (OFURL*)URL
+{
+	return URL;
+}
+@end

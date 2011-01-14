@@ -37,6 +37,7 @@ SRCS = OFApplication.m		\
        OFString+XMLUnescaping.m	\
        OFTCPSocket.m		\
        ${OFTHREAD_M}		\
+       OFURL.m			\
        OFXMLAttribute.m		\
        OFXMLElement.m		\
        OFXMLElementBuilder.m	\

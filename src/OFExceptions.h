@@ -19,6 +19,7 @@
 #import "OFObject.h"
 
 @class OFString;
+@class OFURL;
 
 /**
  * \brief An exception indicating an object could not be allocated.
@@ -1229,7 +1230,7 @@
 	prefix: (OFString*)prefix;
 
 /**
- * Initializes an already allocated unbound namespace failed exception
+ * Initializes an already allocated unbound namespace exception
  *
  * \param class_ The class of the object which caused the exception
  * \param ns The namespace which is unbound
@@ -1239,7 +1240,7 @@
       namespace: (OFString*)ns;
 
 /**
- * Initializes an already allocated unbound namespace failed exception
+ * Initializes an already allocated unbound namespace exception
  *
  * \param class_ The class of the object which caused the exception
  * \param prefix The prefix which is unbound
@@ -1257,4 +1258,41 @@
  * \return The unbound prefix
  */
 - (OFString*)prefix;
+@end
+
+/**
+ * \brief An exception indicating that the protocol specified by the URL is not
+ *	  supported.
+ */
+@interface OFUnsupportedProtocolException: OFException
+{
+	OFURL *URL;
+}
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFURL *URL;
+#endif
+
+/**
+ * \param class_ The class of the object which caused the exception
+ * \param url The URL whose protocol is unsupported
+ * \return A new unsupported protocol exception
+ */
++ newWithClass: (Class)class_
+	   URL: (OFURL*)url;
+
+/**
+ * Initializes an already allocated unsupported protocol exception
+ *
+ * \param class_ The class of the object which caused the exception
+ * \param url The URL whose protocol is unsupported
+ * \return An initialized unsupported protocol exception
+ */
+- initWithClass: (Class)class_
+	    URL: (OFURL*)url;
+
+/**
+ * \return The URL whose protocol is unsupported
+ */
+- (OFURL*)URL;
 @end
