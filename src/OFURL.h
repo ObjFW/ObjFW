@@ -35,15 +35,15 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy) OFString *scheme;
-@property (readonly, copy) OFString *host;
-@property (readonly, assign) uint16_t port;
-@property (readonly, copy) OFString *user;
-@property (readonly, copy) OFString *password;
-@property (readonly, copy) OFString *path;
-@property (readonly, copy) OFString *parameters;
-@property (readonly, copy) OFString *query;
-@property (readonly, copy) OFString *fragment;
+@property (copy) OFString *scheme;
+@property (copy) OFString *host;
+@property (assign) uint16_t port;
+@property (copy) OFString *user;
+@property (copy) OFString *password;
+@property (copy) OFString *path;
+@property (copy) OFString *parameters;
+@property (copy) OFString *query;
+@property (copy) OFString *fragment;
 #endif
 
 /**
@@ -66,9 +66,23 @@
 - (OFString*)scheme;
 
 /**
+ * Set the scheme part of the URL.
+ *
+ * \param scheme The scheme part of the URL to set
+ */
+- (void)setScheme: (OFString*)scheme;
+
+/**
  * \return The host part of the URL
  */
 - (OFString*)host;
+
+/**
+ * Set the host part of the URL.
+ *
+ * \param host The host part of the URL to set
+ */
+- (void)setHost: (OFString*)host;
 
 /**
  * \return The port part of the URL
@@ -76,9 +90,23 @@
 - (uint16_t)port;
 
 /**
+ * Set the port part of the URL.
+ *
+ * \param port The port part of the URL to set
+ */
+- (void)setPort: (uint16_t)port;
+
+/**
  * \return The user part of the URL
  */
 - (OFString*)user;
+
+/**
+ * Set the user part of the URL.
+ *
+ * \param user The user part of the URL to set
+ */
+- (void)setUser: (OFString*)user;
 
 /**
  * \return The password part of the URL
@@ -86,9 +114,23 @@
 - (OFString*)password;
 
 /**
+ * Set the password part of the URL.
+ *
+ * \param password The password part of the URL to set
+ */
+- (void)setPassword: (OFString*)password;
+
+/**
  * \return The path part of the URL
  */
 - (OFString*)path;
+
+/**
+ * Set the path part of the URL.
+ *
+ * \param path The path part of the URL to set
+ */
+- (void)setPath: (OFString*)path;
 
 /**
  * \return The parameters part of the URL
@@ -96,12 +138,33 @@
 - (OFString*)parameters;
 
 /**
+ * Set the parameters part of the URL.
+ *
+ * \param parameters The parameters part of the URL to set
+ */
+- (void)setParameters: (OFString*)parameters;
+
+/**
  * \return The query part of the URL
  */
 - (OFString*)query;
 
 /**
+ * Set the query part of the URL.
+ *
+ * \param query The query part of the URL to set
+ */
+- (void)setQuery: (OFString*)query;
+
+/**
  * \return The fragment part of the URL
  */
 - (OFString*)fragment;
+
+/**
+ * Set the fragment part of the URL.
+ *
+ * \param fragment The fragment part of the URL to set
+ */
+- (void)setFragment: (OFString*)fragment;
 @end

@@ -24,6 +24,14 @@
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
+#import "macros.h"
+
+#define ADD_STR_HASH(str)			\
+	h = [str hash];				\
+	OF_HASH_ADD(hash, h >> 24);		\
+	OF_HASH_ADD(hash, (h >> 16) & 0xFF);	\
+	OF_HASH_ADD(hash, (h >> 8) & 0xFF);	\
+	OF_HASH_ADD(hash, h & 0xFF);
 
 @implementation OFURL
 + URLWithString: (OFString*)str
@@ -192,6 +200,30 @@
 	return YES;
 }
 
+- (uint32_t)hash
+{
+	uint32_t hash, h;
+
+	OF_HASH_INIT(hash);
+
+	ADD_STR_HASH(scheme);
+	ADD_STR_HASH(host);
+
+	OF_HASH_ADD(hash, (port >> 8) & 0xFF);
+	OF_HASH_ADD(hash, port & 0xFF);
+
+	ADD_STR_HASH(user);
+	ADD_STR_HASH(password);
+	ADD_STR_HASH(path);
+	ADD_STR_HASH(parameters);
+	ADD_STR_HASH(query);
+	ADD_STR_HASH(fragment);
+
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
+}
+
 - copy
 {
 	OFURL *new = [[OFURL alloc] init];
@@ -214,9 +246,27 @@
 	return [[scheme copy] autorelease];
 }
 
+- (void)setScheme: (OFString*)scheme_
+{
+	if (![scheme_ isEqual: @"http"] && ![scheme_ isEqual: @"https"])
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
+	OFString *old = scheme;
+	scheme = [scheme_ copy];
+	[old release];
+}
+
 - (OFString*)host
 {
 	return [[host copy] autorelease];
+}
+
+- (void)setHost: (OFString*)host_
+{
+	OFString *old = host;
+	host = [host_ copy];
+	[old release];
 }
 
 - (uint16_t)port
@@ -224,9 +274,21 @@
 	return port;
 }
 
+- (void)setPort: (uint16_t)port_
+{
+	port = port_;
+}
+
 - (OFString*)user
 {
 	return [[user copy] autorelease];
+}
+
+- (void)setUser: (OFString*)user_
+{
+	OFString *old = user;
+	user = [user_ copy];
+	[old release];
 }
 
 - (OFString*)password
@@ -234,9 +296,23 @@
 	return [[password copy] autorelease];
 }
 
+- (void)setPassword: (OFString*)password_
+{
+	OFString *old = password;
+	password = [password_ copy];
+	[old release];
+}
+
 - (OFString*)path
 {
 	return [[path copy] autorelease];
+}
+
+- (void)setPath: (OFString*)path_
+{
+	OFString *old = path;
+	path = [path_ copy];
+	[old release];
 }
 
 - (OFString*)parameters
@@ -244,14 +320,35 @@
 	return [[parameters copy] autorelease];
 }
 
+- (void)setParameters: (OFString*)parameters_
+{
+	OFString *old = parameters;
+	parameters = [parameters_ copy];
+	[old release];
+}
+
 - (OFString*)query
 {
 	return [[query copy] autorelease];
 }
 
+- (void)setQuery: (OFString*)query_
+{
+	OFString *old = query;
+	query = [query_ copy];
+	[old release];
+}
+
 - (OFString*)fragment
 {
 	return [[fragment copy] autorelease];
+}
+
+- (void)setFragment: (OFString*)fragment_
+{
+	OFString *old = fragment;
+	fragment = [fragment_ copy];
+	[old release];
 }
 
 - (OFString*)description
