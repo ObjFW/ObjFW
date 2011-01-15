@@ -17,8 +17,8 @@
 #include <stdarg.h>
 
 #import "OFObject.h"
+#import "OFString.h"
 
-@class OFString;
 @class OFDataArray;
 
 /**
@@ -185,7 +185,7 @@
  * \return The line that was read, autoreleased, or nil if the end of the
  *	   stream has been reached.
  */
-- (OFString*)readLineWithEncoding: (enum of_string_encoding)encoding;
+- (OFString*)readLineWithEncoding: (of_string_encoding_t)encoding;
 
 /**
  * Read until the specified string or \\0 is found or the end of stream occurs.
@@ -205,7 +205,7 @@
  *	   stream has been reached.
  */
 - (OFString*)readTillDelimiter: (OFString*)delimiter
-		  withEncoding: (enum of_string_encoding)encoding;
+		  withEncoding: (of_string_encoding_t)encoding;
 
 /**
  * \return A boolean whether writes are buffered

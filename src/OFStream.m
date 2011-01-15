@@ -254,7 +254,7 @@
 	return [self readLineWithEncoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (OFString*)readLineWithEncoding: (enum of_string_encoding)encoding
+- (OFString*)readLineWithEncoding: (of_string_encoding_t)encoding
 {
 	size_t i, len, ret_len;
 	char *ret_c, *tmp, *tmp2;
@@ -402,7 +402,7 @@
 }
 
 - (OFString*)readTillDelimiter: (OFString*)delimiter
-		  withEncoding: (enum of_string_encoding)encoding
+		  withEncoding: (of_string_encoding_t)encoding
 {
 	const char *delim;
 	size_t i, j, delim_len, len, ret_len;

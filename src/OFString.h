@@ -21,12 +21,15 @@
 
 typedef uint32_t of_unichar_t;
 
-enum of_string_encoding {
+/**
+ * \brief The encoding of a string.
+ */
+typedef enum of_string_encoding_t {
 	OF_STRING_ENCODING_UTF_8,
 	OF_STRING_ENCODING_ISO_8859_1,
 	OF_STRING_ENCODING_ISO_8859_15,
 	OF_STRING_ENCODING_WINDOWS_1252
-};
+} of_string_encoding_t;
 
 extern int of_string_check_utf8(const char*, size_t);
 extern size_t of_string_unicode_to_utf8(of_unichar_t, char*);
@@ -70,7 +73,7 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  * \return A new autoreleased OFString
  */
 + stringWithCString: (const char*)str
-	   encoding: (enum of_string_encoding)encoding;
+	   encoding: (of_string_encoding_t)encoding;
 
 /**
  * Creates a new OFString from a C string with the specified encoding and
@@ -82,7 +85,7 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  * \return A new autoreleased OFString
  */
 + stringWithCString: (const char*)str
-	   encoding: (enum of_string_encoding)encoding
+	   encoding: (of_string_encoding_t)encoding
 	     length: (size_t)len;
 
 /**
@@ -138,7 +141,7 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  * \return A new autoreleased OFString
  */
 + stringWithContentsOfFile: (OFString*)path
-		  encoding: (enum of_string_encoding)encoding;
+		  encoding: (of_string_encoding_t)encoding;
 
 /**
  * Initializes an already allocated OFString from a UTF-8 encoded C string.
@@ -157,7 +160,7 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  * \return An initialized OFString
  */
 - initWithCString: (const char*)str
-	 encoding: (enum of_string_encoding)encoding;
+	 encoding: (of_string_encoding_t)encoding;
 
 /**
  * Initializes an already allocated OFString from a C string with the specified
@@ -169,7 +172,7 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  * \return An initialized OFString
  */
 - initWithCString: (const char*)str
-	 encoding: (enum of_string_encoding)encoding
+	 encoding: (of_string_encoding_t)encoding
 	   length: (size_t)len;
 
 /**
@@ -249,7 +252,7 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  * \return An initialized OFString
  */
 - initWithContentsOfFile: (OFString*)path
-		encoding: (enum of_string_encoding)encoding;
+		encoding: (of_string_encoding_t)encoding;
 
 /**
  * \return The OFString as a UTF-8 encoded C string

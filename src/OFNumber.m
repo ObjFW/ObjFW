@@ -702,7 +702,7 @@
 	return self;
 }
 
-- (enum of_number_type)type
+- (of_number_type_t)type
 {
 	return type;
 }
