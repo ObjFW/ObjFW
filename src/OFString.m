@@ -976,7 +976,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	int i = 0;
 	intmax_t num = 0;
 
-	if (string[0] == '-')
+	if (string[0] == '-' || string[0] == '+')
 		i++;
 
 	for (; i < length; i++) {
