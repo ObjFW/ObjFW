@@ -61,10 +61,13 @@ struct objc_abi_metaclass {
 	void *ivar_offsets, *properties;
 };
 
+#ifndef OF_OBJFW_RUNTIME
+/* ObjFW-RT already defines those */
 enum objc_abi_class_info {
 	OBJC_CLASS_INFO_CLASS	  = 0x01,
 	OBJC_CLASS_INFO_METACLASS = 0x02
 };
+#endif
 
 extern void __objc_exec_class(void*);
 
