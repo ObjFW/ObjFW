@@ -69,6 +69,11 @@ call_main(id obj)
 		@throw [OFInitializationFailedException newWithClass: self];
 }
 
++ thread
+{
+	return [[[self alloc] init] autorelease];
+}
+
 + threadWithObject: (id)obj
 {
 	return [[[self alloc] initWithObject: obj] autorelease];
@@ -176,14 +181,6 @@ call_main(id obj)
 	[thread release];
 
 	of_thread_exit();
-}
-
-- init
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
 }
 
 - initWithObject: (id)obj

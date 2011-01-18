@@ -79,8 +79,13 @@
 }
 
 /**
+ * \return A new, autoreleased thread
+ */
++ thread;
+
+/**
  * \param obj An object that is passed to the main method as a copy or nil
- * \return A new autoreleased thread
+ * \return A new, autoreleased thread
  */
 + threadWithObject: (id)obj;
 
