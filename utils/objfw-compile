@@ -184,8 +184,7 @@ for i in $srcs; do
 	fi
 	objs="$objs $obj"
 	build="no"
-	deps=$($OBJC -E -M $CPPFLAGS $ENV_CPPFLAGS $i | \
-	       sed 's/.*: //' | sed 's/\\//g')
+	deps=$($OBJC -E -M $CPPFLAGS $i | sed 's/.*: //' | sed 's/\\//g')
 
 	if test -f "$obj"; then
 		for dep in $deps; do
@@ -214,7 +213,7 @@ fi
 
 if test ! -f "$out_prefix$out$out_suffix" -o x"$link" = x"yes"; then
 	status_linking $out_prefix$out$out_suffix
-	$OBJC -o $out_prefix$out$out_suffix $objs $LIBS $ENV_LIBS $LDFLAGS \
-		$ENV_LDFLAGS || status_link_failed $out $?
+	$OBJC -o $out_prefix$out$out_suffix $objs $LIBS $LDFLAGS || \
+		status_link_failed $out $?
 	status_linked $out_prefix$out$out_suffix
 fi
