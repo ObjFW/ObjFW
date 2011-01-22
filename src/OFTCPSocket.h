@@ -58,8 +58,7 @@
  * \param family The family to use (AF_INET for IPv4 or AF_INET6 for IPv6)
  */
 - (void)bindService: (OFString*)service
-	     onNode: (OFString*)node
-	 withFamily: (int)family;
+	     onNode: (OFString*)node;
 
 /**
  * Listen on the socket.

@@ -1044,14 +1044,12 @@
 {
 	OFString *node;
 	OFString *service;
-	int	 family;
 	int	 errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, nonatomic) OFString *node;
 @property (readonly, nonatomic) OFString *service;
-@property (readonly) int family;
 @property (readonly) int errNo;
 #endif
 
@@ -1059,13 +1057,11 @@
  * \param class_ The class of the object which caused the exception
  * \param node The node on which binding failed
  * \param service The service on which binding failed
- * \param family The family for which binnding failed
  * \return A new bind failed exception
  */
 + newWithClass: (Class)class_
 	  node: (OFString*)node
-       service: (OFString*)service
-	family: (int)family;
+       service: (OFString*)service;
 
 /**
  * Initializes an already allocated bind failed exception.
@@ -1073,13 +1069,11 @@
  * \param class_ The class of the object which caused the exception
  * \param node The node on which binding failed
  * \param service The service on which binding failed
- * \param family The family for which binnding failed
  * \return An initialized bind failed exception
  */
 - initWithClass: (Class)class_
 	   node: (OFString*)node
-	service: (OFString*)service
-	 family: (int)family;
+	service: (OFString*)service;
 
 /**
  * \return The errno from when the exception was created
@@ -1095,11 +1089,6 @@
  * \return The service on which binding failed
  */
 - (OFString*)service;
-
-/**
- * \return The family for which binding failed
- */
-- (int)family;
 @end
 
 /**

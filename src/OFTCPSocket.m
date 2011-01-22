@@ -201,40 +201,27 @@ static OFMutex *mutex = nil;
 
 - (void)bindService: (OFString*)service
 	     onNode: (OFString*)node
-	 withFamily: (int)family
 {
 	if (sock != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException newWithClass: isa];
-
-#ifndef HAVE_THREADSAFE_GETADDRINFO
-	if (family != AF_INET)
-		@throw [OFBindFailedException newWithClass: isa
-						      node: node
-						   service: service
-						    family: family];
-#endif
-
-	if ((sock = socket(family, SOCK_STREAM, 0)) == INVALID_SOCKET)
-		@throw [OFBindFailedException newWithClass: isa
-						      node: node
-						   service: service
-						    family: family];
 
 #ifdef HAVE_THREADSAFE_GETADDRINFO
 	struct addrinfo hints, *res;
 
 	memset(&hints, 0, sizeof(struct addrinfo));
-	hints.ai_family = family;
+	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 
-	if (getaddrinfo([node cString], [service cString], &hints, &res)) {
-		close(sock);
-		sock = INVALID_SOCKET;
+	if (getaddrinfo([node cString], [service cString], &hints, &res))
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
 			    node: node
 			 service: service];
-	}
+
+	if ((sock = socket(res->ai_family, SOCK_STREAM, 0)) == INVALID_SOCKET)
+		@throw [OFBindFailedException newWithClass: isa
+						      node: node
+						   service: service];
 
 	if (bind(sock, res->ai_addr, res->ai_addrlen) == -1) {
 		freeaddrinfo(res);
@@ -242,8 +229,7 @@ static OFMutex *mutex = nil;
 		sock = INVALID_SOCKET;
 		@throw [OFBindFailedException newWithClass: isa
 						      node: node
-						   service: service
-						    family: family];
+						   service: service];
 	}
 
 	freeaddrinfo(res);
@@ -274,8 +260,6 @@ static OFMutex *mutex = nil;
 # ifdef OF_THREADS
 		[mutex unlock];
 # endif
-		close(sock);
-		sock = INVALID_SOCKET;
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
 			    node: node
@@ -290,8 +274,6 @@ static OFMutex *mutex = nil;
 # ifdef OF_THREADS
 		[mutex unlock];
 # endif
-		close(sock);
-		sock = INVALID_SOCKET;
 		@throw [OFAddressTranslationFailedException
 		    newWithClass: isa
 			    node: node
@@ -303,14 +285,17 @@ static OFMutex *mutex = nil;
 # ifdef OF_THREADS
 	[mutex unlock];
 # endif
+	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
+		@throw [OFBindFailedException newWithClass: isa
+						      node: node
+						   service: service];
 
 	if (bind(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
 		close(sock);
 		sock = INVALID_SOCKET;
 		@throw [OFBindFailedException newWithClass: isa
 						      node: node
-						   service: service
-						    family: family];
+						   service: service];
 	}
 #endif
 }

@@ -49,10 +49,9 @@ static OFString *module = @"OFTCPSocket";
 	    (client = [OFTCPSocket socket]))
 
 	msg = [OFString stringWithFormat:
-	    @"-[bindService:onNode:withFamily:] (port %d)", port];
+	    @"-[bindService:onNode:] (port %d)", port];
 	TEST(msg, R([server bindService: service
-				 onNode: @"127.0.0.1"
-			     withFamily: AF_INET]))
+				 onNode: @"127.0.0.1"]))
 
 	TEST(@"-[listen]", R([server listen]))
 
