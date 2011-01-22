@@ -644,10 +644,20 @@
 
 - (size_t)writeLine: (OFString*)str
 {
-	size_t ret = [self writeString: str];
-	[self writeInt8: '\n'];
+	size_t len = [str cStringLength];
+	char *buf;
 
-	return ret + 1;
+	buf = [self allocMemoryWithSize: len + 1];
+
+	@try {
+		memcpy(buf, [str cString], len);
+		buf[len] = '\n';
+
+		return [self writeNBytes: len + 1
+			      fromBuffer: buf];
+	} @finally {
+		[self freeMemory: buf];
+	}
 }
 
 - (size_t)writeFormat: (OFString*)fmt, ...
