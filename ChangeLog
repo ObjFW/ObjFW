@@ -2,6 +2,33 @@ Legend:
  * Changes of existing features or bugfixes.
  + New features.
 
+ObjFW 0.4-alpha1 -> 0.4-alpha2, XX.XX.2011
+ * Fixed a nasty typo in OFDate that could lead to date differences being wrong
+   about a second.
+ * Possible SIGPIPEs are now ignored when using OFStream.
+ * Documentation fixes.
+ * Replaced -[sleepForNMilliseconds:] with
+   -[sleepForTimeInterval:microseconds:].
+ + Added +[sleepUntilDate] to OFDate.
+ * Some systems don't allow usleep for values > 1000000, so we use sleep and
+   usleep sequentially now to sleep the correct time.
+ + Family is now autodetected in -[bindService:onNode:].
+ * -[writeLine:] does not send two packets anymore.
+ + -framework is now allowed in ObjFW compile.
+ * errNo of socket related exceptions is now correctly set to ENOTCONN on Win32.
+ * Fixed missing retain + autorelease in TLS-object handling.
+ * Renamed +[tlsKey] to +[TLSKey] to conform to the convention.
+ * Added missing files to .xcodeproj.
+ * Got rid of a few useless #ifdefs.
+ * Fixed a missing include (about which for some strange reason only clang
+   complains).
+ + Added + as a prefix in -[OFString decimalValue].
+ * enums are now defined using typedef.
+ * Updated the buildsys, fixes make install when only building a static library.
+ * Made OFBlocks compile with ObjFW-RT.
+ + Added +[thread] to OFThread and allow -[init].
+ * Removed useless variables from objfw-compile.
+
 ObjFW 0.3.1 -> 0.4-alpha1, 03.01.2011
  * ObjFW is now available under the terms of the QPL, GPLv2 and GPLv3.
  + Support for blocks was added, including a blocks runtime.

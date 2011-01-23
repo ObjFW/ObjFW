@@ -25,6 +25,8 @@
 # include <objfw-rt.h>
 #elif defined(OF_OLD_GNU_RUNTIME)
 # include <objc/objc-api.h>
+#elif defined(OF_APPLE_RUNTIME)
+# include <objc/runtime.h>
 #endif
 #if defined(OF_OLD_GNU_RUNTIME) || defined(OF_OBJFW_RUNTIME)
 # define objc_getClass objc_get_class

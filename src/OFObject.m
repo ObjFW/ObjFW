@@ -60,7 +60,7 @@ struct pre_ivar {
 	void	      **memchunks;
 	size_t	      memchunks_size;
 	int32_t	      retain_count;
-#if !defined(OF_ATOMIC_OPS) && defined(OF_THREADS)
+#if !defined(OF_ATOMIC_OPS)
 	of_spinlock_t retain_spinlock;
 #endif
 };
@@ -148,7 +148,7 @@ objc_enumerationMutation(id obj)
 	((struct pre_ivar*)instance)->memchunks_size = 0;
 	((struct pre_ivar*)instance)->retain_count = 1;
 
-#if !defined(OF_ATOMIC_OPS) && defined(OF_THREADS)
+#if !defined(OF_ATOMIC_OPS)
 	if (!of_spinlock_new(&((struct pre_ivar*)instance)->retain_spinlock)) {
 		free(instance);
 		@throw [OFInitializationFailedException newWithClass: self];
@@ -665,12 +665,10 @@ objc_enumerationMutation(id obj)
 {
 #if defined(OF_ATOMIC_OPS)
 	of_atomic_inc_32(&PRE_IVAR->retain_count);
-#elif defined(OF_THREADS)
+#else
 	assert(of_spinlock_lock(&PRE_IVAR->retain_spinlock));
 	PRE_IVAR->retain_count++;
 	assert(of_spinlock_unlock(&PRE_IVAR->retain_spinlock));
-#else
-	PRE_IVAR->retain_count++;
 #endif
 
 	return self;
@@ -687,7 +685,7 @@ objc_enumerationMutation(id obj)
 #if defined(OF_ATOMIC_OPS)
 	if (of_atomic_dec_32(&PRE_IVAR->retain_count) <= 0)
 		[self dealloc];
-#elif defined(OF_THREADS)
+#else
 	size_t c;
 
 	assert(of_spinlock_lock(&PRE_IVAR->retain_spinlock));
@@ -695,9 +693,6 @@ objc_enumerationMutation(id obj)
 	assert(of_spinlock_unlock(&PRE_IVAR->retain_spinlock));
 
 	if (!c)
-		[self dealloc];
-#else
-	if (--PRE_IVAR->retain_count <= 0)
 		[self dealloc];
 #endif
 }

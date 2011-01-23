@@ -25,6 +25,7 @@
 
 #import "OFThread.h"
 #import "OFList.h"
+#import "OFDate.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 
@@ -68,13 +69,18 @@ call_main(id obj)
 		@throw [OFInitializationFailedException newWithClass: self];
 }
 
++ thread
+{
+	return [[[self alloc] init] autorelease];
+}
+
 + threadWithObject: (id)obj
 {
 	return [[[self alloc] initWithObject: obj] autorelease];
 }
 
-+ (id)setObject: (id)obj
-      forTLSKey: (OFTLSKey*)key
++ (void)setObject: (id)obj
+	forTLSKey: (OFTLSKey*)key
 {
 	id old = of_tlskey_get(key->key);
 
@@ -82,25 +88,64 @@ call_main(id obj)
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 
-	return [old autorelease];
+	[old release];
 }
 
 + (id)objectForTLSKey: (OFTLSKey*)key
 {
-	return of_tlskey_get(key->key);
+	return [[of_tlskey_get(key->key) retain] autorelease];
 }
 
 + (OFThread*)currentThread
 {
-	return of_tlskey_get(thread_self);
+	return [[of_tlskey_get(thread_self) retain] autorelease];
 }
 
-+ (void)sleepForNMilliseconds: (unsigned int)msecs;
++ (void)sleepForTimeInterval: (int64_t)sec
 {
+	if (sec < 0)
+		@throw [OFOutOfRangeException newWithClass: self];
+
 #ifndef _WIN32
-	usleep(msecs * 1000);
+	sleep(sec);
 #else
-	Sleep(msecs);
+	Sleep(sec * 1000);
+#endif
+}
+
++ (void)sleepForTimeInterval: (int64_t)sec
+		microseconds: (uint32_t)usec
+{
+	if (sec < 0)
+		@throw [OFOutOfRangeException newWithClass: self];
+
+#ifndef _WIN32
+	sleep(sec);
+	usleep(usec);
+#else
+	Sleep(sec * 1000 + usec / 1000);
+#endif
+}
+
++ (void)sleepUntilDate: (OFDate*)date
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFDate *now = [OFDate date];
+	int64_t sec;
+	uint32_t usec;
+
+	if ((sec = [date timeIntervalSinceDate: now]) < 0)
+		@throw [OFOutOfRangeException newWithClass: self];
+
+	usec = [date microsecondsOfTimeIntervalSinceDate: now];
+
+	[pool release];
+
+#ifndef _WIN32
+	sleep(sec);
+	usleep(usec);
+#else
+	Sleep(sec * 1000 + usec / 1000);
 #endif
 }
 
@@ -136,14 +181,6 @@ call_main(id obj)
 	[thread release];
 
 	of_thread_exit();
-}
-
-- init
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
 }
 
 - initWithObject: (id)obj
@@ -216,12 +253,12 @@ call_main(id obj)
 		tlskeys = [[OFList alloc] init];
 }
 
-+ tlsKey
++ TLSKey
 {
 	return [[[self alloc] init] autorelease];
 }
 
-+ tlsKeyWithDestructor: (void(*)(id))destructor
++ TLSKeyWithDestructor: (void(*)(id))destructor
 {
 	return [[[self alloc] initWithDestructor: destructor] autorelease];
 }

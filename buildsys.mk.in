@@ -137,7 +137,7 @@ depend: pre-depend ${SRCS}
 .c.c.dep .cc.cc.dep .cxx.cxx.dep .m.m.dep .mm.mm.dep .S.S.dep:
 	${CPP} ${CPPFLAGS} -M $< | \
 	sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.plugin.o:/' >$@ || \
-	(rm -f $@; exit 1)
+	{ rm -f $@; false; }
 
 pre-depend:
 
@@ -364,7 +364,7 @@ install: ${LIB} ${STATIC_LIB} ${PLUGIN} ${PROG} install-extra
 
 	for i in ${LIB}; do \
 		${INSTALL_STATUS}; \
-		if ${MKDIR_P} ${DESTDIR}${libdir} && ${INSTALL_LIB}; then \
+		if ${MKDIR_P} ${DESTDIR}${libdir} ${INSTALL_LIB}; then \
 			${INSTALL_OK}; \
 		else \
 			${INSTALL_FAILED}; \
@@ -445,7 +445,7 @@ uninstall: uninstall-extra
 
 	for i in ${LIB}; do \
 		if test -f ${DESTDIR}${libdir}/$$i; then \
-			if ${UNINSTALL_LIB}; then \
+			if : ${UNINSTALL_LIB}; then \
 				${DELETE_OK}; \
 			else \
 				${DELETE_FAILED}; \

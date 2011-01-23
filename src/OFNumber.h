@@ -18,7 +18,10 @@
 
 #import "OFObject.h"
 
-enum of_number_type {
+/**
+ * \brief The type of a number.
+ */
+typedef enum of_number_type_t {
 	OF_NUMBER_BOOL,
 	OF_NUMBER_CHAR,
 	OF_NUMBER_SHORT,
@@ -45,7 +48,7 @@ enum of_number_type {
 	OF_NUMBER_UINTPTR,
 	OF_NUMBER_FLOAT,
 	OF_NUMBER_DOUBLE,
-};
+} of_number_type_t;
 
 /**
  * \brief Provides a way to store a number in an object.
@@ -80,7 +83,7 @@ enum of_number_type {
 		float	       float_;
 		double	       double_;
 	} value;
-	enum of_number_type type;
+	of_number_type_t type;
 }
 
 /**
@@ -448,10 +451,9 @@ enum of_number_type {
 - initWithDouble: (double)double_;
 
 /**
- * \return An enum of type of_number_type indicating the type of contained
- *	   number of the OFNumber
+ * \return An of_number_type_t indicating the type of the number
  */
-- (enum of_number_type)type;
+- (of_number_type_t)type;
 
 /**
  * \return The OFNumber as a BOOL

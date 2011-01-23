@@ -228,6 +228,7 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 
 	TEST(@"-[decimalValue]",
 	    [@"1234" decimalValue] == 1234 &&
+	    [@"+123" decimalValue] == 123 &&
 	    [@"-500" decimalValue] == -500 &&
 	    [@"" decimalValue] == 0)
 

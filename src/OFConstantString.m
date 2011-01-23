@@ -53,14 +53,14 @@ void *_OFConstantStringClassReference;
 }
 
 - initWithCString: (const char*)str
-	 encoding: (enum of_string_encoding)encoding;
+	 encoding: (of_string_encoding_t)encoding;
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
 - initWithCString: (const char*)str
-	 encoding: (enum of_string_encoding)encoding
+	 encoding: (of_string_encoding_t)encoding
 	   length: (size_t)len
 {
 	@throw [OFNotImplementedException newWithClass: isa

@@ -1521,12 +1521,10 @@
 + newWithClass: (Class)class_
 	  node: (OFString*)node
        service: (OFString*)service
-	family: (int)family
 {
 	return [[self alloc] initWithClass: class_
 				      node: node
-				   service: service
-				    family: family];
+				   service: service];
 }
 
 - initWithClass: (Class)class_
@@ -1540,14 +1538,12 @@
 - initWithClass: (Class)class_
 	   node: (OFString*)node_
 	service: (OFString*)service_
-	 family: (int)family_
 {
 	self = [super initWithClass: class_];
 
 	@try {
 		node	= [node_ copy];
 		service	= [service_ copy];
-		family	= family_;
 		errNo	= GET_SOCK_ERRNO;
 	} @catch (id e) {
 		[self release];
@@ -1571,9 +1567,9 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"Binding service %s on node %s using family %d failed in class "
-	    @"%s! " ERRFMT, [service cString], [node cString], family,
-	    class_getName(inClass), ERRPARAM];
+	    @"Binding service %s on node %s failed in class %s! " ERRFMT,
+	    [service cString], [node cString], class_getName(inClass),
+	    ERRPARAM];
 
 	return description;
 }
@@ -1591,11 +1587,6 @@
 - (OFString*)service
 {
 	return service;
-}
-
-- (int)family
-{
-	return family;
 }
 @end
 

@@ -19,6 +19,8 @@
 
 #import "threading.h"
 
+@class OFDate;
+
 /**
  * \brief A class for Thread Local Storage keys.
  */
@@ -35,13 +37,13 @@
 /**
  * \return A new autoreleased Thread Local Storage key
  */
-+ tlsKey;
++ TLSKey;
 
 /**
  * \param destructor A destructor that is called when the thread is terminated
  * \return A new autoreleased Thread Local Storage key
  */
-+ tlsKeyWithDestructor: (void(*)(id))destructor;
++ TLSKeyWithDestructor: (void(*)(id))destructor;
 
 + (void)callAllDestructors;
 
@@ -77,8 +79,13 @@
 }
 
 /**
+ * \return A new, autoreleased thread
+ */
++ thread;
+
+/**
  * \param obj An object that is passed to the main method as a copy or nil
- * \return A new autoreleased thread
+ * \return A new, autoreleased thread
  */
 + threadWithObject: (id)obj;
 
@@ -91,10 +98,9 @@
  *
  * \param key The Thread Local Storage key
  * \param obj The object the Thread Local Storage key will be set to
- * \return The old object, autoreleased
  */
-+ (id)setObject: (id)obj
-      forTLSKey: (OFTLSKey*)key;
++ (void)setObject: (id)obj
+	forTLSKey: (OFTLSKey*)key;
 
 /**
  * Returns the object for the specified Thread Local Storage key.
@@ -112,9 +118,25 @@
 + (OFThread*)currentThread;
 
 /**
- * Suspends execution of the current thread for N milliseconds.
+ * Suspends execution of the current thread for the specified time interval.
+ *
+ * \param sec The number of seconds to sleep
  */
-+ (void)sleepForNMilliseconds: (unsigned int)msecs;
++ (void)sleepForTimeInterval: (int64_t)sec;
+
+/**
+ * Suspends execution of the current thread for the specified time interval.
+ *
+ * \param sec The number of seconds to sleep
+ * \param usec The number of microseconds to sleep
+ */
++ (void)sleepForTimeInterval: (int64_t)sec
+		microseconds: (uint32_t)usec;
+
+/**
+ * Suspends execution of the current thread until the specified date.
+ */
++ (void)sleepUntilDate: (OFDate*)date;
 
 /**
  * Yields a processor voluntarily and moves the thread at the end of the queue

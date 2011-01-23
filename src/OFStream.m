@@ -25,6 +25,10 @@
 #include <assert.h>
 #include <fcntl.h>
 
+#ifndef _WIN32
+# include <signal.h>
+#endif
+
 #import "OFStream.h"
 #import "OFString.h"
 #import "OFDataArray.h"
@@ -34,6 +38,14 @@
 #import "asprintf.h"
 
 @implementation OFStream
+#ifndef _WIN32
++ (void)initialize
+{
+	if (self == [OFStream class])
+		signal(SIGPIPE, SIG_IGN);
+}
+#endif
+
 - init
 {
 	if (isa == [OFStream class]) {
@@ -242,7 +254,7 @@
 	return [self readLineWithEncoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (OFString*)readLineWithEncoding: (enum of_string_encoding)encoding
+- (OFString*)readLineWithEncoding: (of_string_encoding_t)encoding
 {
 	size_t i, len, ret_len;
 	char *ret_c, *tmp, *tmp2;
@@ -390,7 +402,7 @@
 }
 
 - (OFString*)readTillDelimiter: (OFString*)delimiter
-		  withEncoding: (enum of_string_encoding)encoding
+		  withEncoding: (of_string_encoding_t)encoding
 {
 	const char *delim;
 	size_t i, j, delim_len, len, ret_len;
@@ -632,10 +644,20 @@
 
 - (size_t)writeLine: (OFString*)str
 {
-	size_t ret = [self writeString: str];
-	[self writeInt8: '\n'];
+	size_t len = [str cStringLength];
+	char *buf;
 
-	return ret + 1;
+	buf = [self allocMemoryWithSize: len + 1];
+
+	@try {
+		memcpy(buf, [str cString], len);
+		buf[len] = '\n';
+
+		return [self writeNBytes: len + 1
+			      fromBuffer: buf];
+	} @finally {
+		[self freeMemory: buf];
+	}
 }
 
 - (size_t)writeFormat: (OFString*)fmt, ...

@@ -242,14 +242,14 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 }
 
 + stringWithCString: (const char*)str
-	   encoding: (enum of_string_encoding)encoding
+	   encoding: (of_string_encoding_t)encoding
 {
 	return [[[self alloc] initWithCString: str
 				     encoding: encoding] autorelease];
 }
 
 + stringWithCString: (const char*)str
-	   encoding: (enum of_string_encoding)encoding
+	   encoding: (of_string_encoding_t)encoding
 	     length: (size_t)len
 {
 	return [[[self alloc] initWithCString: str
@@ -301,7 +301,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 }
 
 + stringWithContentsOfFile: (OFString*)path
-		  encoding: (enum of_string_encoding)encoding
+		  encoding: (of_string_encoding_t)encoding
 {
 	return [[[self alloc] initWithContentsOfFile: path
 					    encoding: encoding] autorelease];
@@ -315,7 +315,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 }
 
 - initWithCString: (const char*)str
-	 encoding: (enum of_string_encoding)encoding
+	 encoding: (of_string_encoding_t)encoding
 {
 	return [self initWithCString: str
 			    encoding: encoding
@@ -323,7 +323,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 }
 
 - initWithCString: (const char*)str
-	 encoding: (enum of_string_encoding)encoding
+	 encoding: (of_string_encoding_t)encoding
 	   length: (size_t)len
 {
 	self = [super init];
@@ -619,7 +619,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 }
 
 - initWithContentsOfFile: (OFString*)path
-		encoding: (enum of_string_encoding)encoding
+		encoding: (of_string_encoding_t)encoding
 {
 	self = [super init];
 
@@ -976,7 +976,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	int i = 0;
 	intmax_t num = 0;
 
-	if (string[0] == '-')
+	if (string[0] == '-' || string[0] == '+')
 		i++;
 
 	for (; i < length; i++) {

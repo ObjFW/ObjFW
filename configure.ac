@@ -255,7 +255,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 	case "$host_os" in
 	mingw*)
 		AC_MSG_CHECKING(for threads)
-		AC_MSG_RESULT(win32)
+		AC_MSG_RESULT(WinAPI)
 		;;
 	*)
 		ACX_PTHREAD([
