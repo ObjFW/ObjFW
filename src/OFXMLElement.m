@@ -211,8 +211,7 @@
 		return [characters stringByXMLEscaping];
 
 	if (cdata != nil)
-		return [OFString stringWithFormat: @"<![CDATA[%s]]>",
-						   [cdata cString]];
+		return [OFString stringWithFormat: @"<![CDATA[%@]]>", cdata];
 
 	if (comment != nil) {
 		OFMutableString *str;

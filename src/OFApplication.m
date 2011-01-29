@@ -119,7 +119,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 			if ((sep = strchr(*env, '=')) == NULL) {
 				fprintf(stderr, "Warning: Invalid environment "
-					       "variable: %s\n", *env);
+				    "variable: %s\n", *env);
 				continue;
 			}
 

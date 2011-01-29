@@ -491,8 +491,7 @@ objc_enumerationMutation(id obj)
 - (OFString*)description
 {
 	/* Classes containing data should reimplement this! */
-	return [OFString stringWithFormat: @"<%s: %p>",
-					   [[self className] cString], self];
+	return [OFString stringWithFormat: @"<%@: %p>", [self className], self];
 }
 
 - (void)addMemoryToPool: (void*)ptr

@@ -353,15 +353,14 @@
 
 - (OFString*)description
 {
-	OFMutableString *desc = [OFMutableString
-	    stringWithFormat: @"%s://", [scheme cString]];
+	OFMutableString *desc = [OFMutableString stringWithFormat: @"%@://",
+								   scheme];
 	BOOL needPort = YES;
 
 	if (user != nil && password != nil)
-		[desc appendFormat: @"%s:%s@", [user cString],
-				    [password cString]];
+		[desc appendFormat: @"%@:%@@", user, password];
 	else if (user != nil)
-		[desc appendFormat: @"%s@", [user cString]];
+		[desc appendFormat: @"%@@", user];
 
 	[desc appendString: host];
 
@@ -373,16 +372,16 @@
 		[desc appendFormat: @":%d", port];
 
 	if (path != nil)
-		[desc appendFormat: @"/%s", [path cString]];
+		[desc appendFormat: @"/%@", path];
 
 	if (parameters != nil)
-		[desc appendFormat: @";%s", [parameters cString]];
+		[desc appendFormat: @";%@", parameters];
 
 	if (query != nil)
-		[desc appendFormat: @"?%s", [query cString]];
+		[desc appendFormat: @"?%@", query];
 
 	if (fragment != nil)
-		[desc appendFormat: @"#%s", [fragment cString]];
+		[desc appendFormat: @"#%@", fragment];
 
 	return desc;
 }

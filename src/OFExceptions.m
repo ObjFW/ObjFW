@@ -500,8 +500,8 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"Failed to open file %s with mode %s in class %s! " ERRFMT,
-	    [path cString], [mode cString], class_getName(inClass), ERRPARAM];
+	    @"Failed to open file %@ with mode %@ in class %s! " ERRFMT, path,
+	    mode, class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -665,8 +665,8 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"Failed to create directory %s in class %s! " ERRFMT,
-	    [path cString], class_getName(inClass), ERRPARAM];
+	    @"Failed to create directory %@ in class %s! " ERRFMT, path,
+	    class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -727,8 +727,8 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"Failed to change to directory %s in class %s! " ERRFMT,
-	    [path cString], class_getName(inClass), ERRPARAM];
+	    @"Failed to change to directory %@ in class %s! " ERRFMT, path,
+	    class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -794,8 +794,8 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"Failed to change mode for file %s to %d in class %s! " ERRFMT,
-	    [path cString], mode, class_getName(inClass), ERRPARAM];
+	    @"Failed to change mode for file %@ to %d in class %s! " ERRFMT,
+	    path, mode, class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -873,19 +873,17 @@
 
 	if (group == nil)
 		description = [[OFString alloc] initWithFormat:
-		    @"Failed to change owner for file %s to %s in class %s! "
-		    ERRFMT, [path cString], [owner cString],
-		    class_getName(inClass), ERRPARAM];
+		    @"Failed to change owner for file %@ to %@ in class %s! "
+		    ERRFMT, path, owner, class_getName(inClass), ERRPARAM];
 	else if (owner == nil)
 		description = [[OFString alloc] initWithFormat:
-		    @"Failed to change group for file %s to %s in class %s! "
-		    ERRFMT, [path cString], [group cString],
-		    class_getName(inClass), ERRPARAM];
+		    @"Failed to change group for file %@ to %@ in class %s! "
+		    ERRFMT, path, group, class_getName(inClass), ERRPARAM];
 	else
 		description = [[OFString alloc] initWithFormat:
-		    @"Failed to change owner for file %s to %s:%s in class %s! "
-		    ERRFMT, [path cString], [owner cString], [group cString],
-		    class_getName(inClass), ERRPARAM];
+		    @"Failed to change owner for file %@ to %@:%@ in class %s! "
+		    ERRFMT, path, owner, group, class_getName(inClass),
+		    ERRPARAM];
 
 	return description;
 }
@@ -962,9 +960,8 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"Failed to copy file %s to %s in class %s! " ERRFMT,
-	    [sourcePath cString], [destinationPath cString],
-	    class_getName(inClass), ERRPARAM];
+	    @"Failed to copy file %@ to %@ in class %s! " ERRFMT,
+	    sourcePath, destinationPath, class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -1035,9 +1032,8 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"Failed to rename file %s to %s in class %s! " ERRFMT,
-	    [sourcePath cString], [destinationPath cString],
-	    class_getName(inClass), ERRPARAM];
+	    @"Failed to rename file %@ to %@ in class %s! " ERRFMT, sourcePath,
+	    destinationPath, class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -1103,7 +1099,7 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"Failed to delete file %s in class %s! " ERRFMT, [path cString],
+	    @"Failed to delete file %@ in class %@! " ERRFMT, path,
 	    class_getName(inClass), ERRPARAM];
 
 	return description;
@@ -1165,8 +1161,8 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"Failed to delete directory %s in class %s! " ERRFMT,
-	    [path cString], class_getName(inClass), ERRPARAM];
+	    @"Failed to delete directory %@ in class %@! " ERRFMT, path,
+	    class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -1228,9 +1224,8 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"Failed to link file %s to %s in class %s! " ERRFMT,
-	    [sourcePath cString], [destinationPath cString],
-	    class_getName(inClass), ERRPARAM];
+	    @"Failed to link file %@ to %@ in class %s! " ERRFMT, sourcePath,
+	    destinationPath, class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -1296,9 +1291,8 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"Failed to symlink file %s to %s in class %s! " ERRFMT,
-	    [sourcePath cString], [destinationPath cString],
-	    class_getName(inClass), ERRPARAM];
+	    @"Failed to symlink file %@ to %@ in class %s! " ERRFMT, sourcePath,
+	    destinationPath, class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -1413,13 +1407,13 @@
 
 	if (node != nil && service != nil)
 		description = [[OFString alloc] initWithFormat:
-		    @"The service %s on %s could not be translated to an "
+		    @"The service %@ on %@ could not be translated to an "
 		    @"address in class %s. This means that either the node was "
 		    @"not found, there is no such service on the node, there "
 		    @"was a problem with the name server, there was a problem "
 		    @"with your network connection or you specified an invalid "
-		    @"node or service. " ERRFMT, [service cString],
-		    [node cString], class_getName(inClass), AT_ERRPARAM];
+		    @"node or service. " ERRFMT, service, node,
+		    class_getName(inClass), AT_ERRPARAM];
 	else
 		description = [[OFString alloc] initWithFormat:
 		    @"An address translation failed in class %s! " ERRFMT,
@@ -1494,9 +1488,9 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"A connection to service %s on node %s could not be established "
-	    @"in class %s! " ERRFMT, [service cString], [node cString],
-	    class_getName(inClass), ERRPARAM];
+	    @"A connection to service %@ on node %@ could not be established "
+	    @"in class %s! " ERRFMT, service, node, class_getName(inClass),
+	    ERRPARAM];
 
 	return description;
 }
@@ -1567,9 +1561,8 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"Binding service %s on node %s failed in class %s! " ERRFMT,
-	    [service cString], [node cString], class_getName(inClass),
-	    ERRPARAM];
+	    @"Binding service %@ on node %@ failed in class %s! " ERRFMT,
+	    service, node, class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -1818,12 +1811,12 @@
 
 	if (ns != nil)
 		description = [[OFString alloc] initWithFormat:
-		    @"The namespace %s is not bound in class %s",
+		    @"The namespace %@ is not bound in class %s", ns,
 		    class_getName(inClass)];
 	else if (prefix != nil)
 		description = [[OFString alloc] initWithFormat:
-		    @"The prefix %s is not bound to any namespace in %s",
-		    class_getName(inClass)];
+		    @"The prefix %@ is not bound to any namespace in %s",
+		    prefix, class_getName(inClass)];
 
 	return description;
 }
@@ -1883,8 +1876,8 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"The protocol of URL %s is not supported by class %s",
-	    [[URL description] cString], class_getName(inClass)];
+	    @"The protocol of URL %@ is not supported by class %s", URL,
+	    class_getName(inClass)];
 
 	return description;
 }

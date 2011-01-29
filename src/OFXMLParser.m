@@ -590,9 +590,8 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 		[namespaces removeNObjects: 1];
 	} else if (prefix != nil) {
-		OFString *str = [OFString stringWithFormat: @"%s:%s",
-							    [prefix cString],
-							    [name cString]];
+		OFString *str = [OFString stringWithFormat: @"%@:%@",
+							    prefix, name];
 		[previous addObject: str];
 	} else
 		[previous addObject: name];
