@@ -33,7 +33,7 @@
 #import "OFExceptions.h"
 #import "macros.h"
 
-#import "asprintf.h"
+#import "of_asprintf.h"
 #import "unicode.h"
 
 @implementation OFMutableString
@@ -232,21 +232,19 @@
        withArguments: (va_list)args
 {
 	char *t;
+	int len;
 
 	if (fmt == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	if ((vasprintf(&t, [fmt cString], args)) == -1) {
-		/*
-		 * This is only the most likely error to happen. Unfortunately,
-		 * there is no good way to check what really happened.
-		 */
-		@throw [OFOutOfMemoryException newWithClass: isa];
-	}
+	if ((len = of_vasprintf(&t, [fmt cString], args)) == -1)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
 
 	@try {
-		[self appendCString: t];
+		[self appendCString: t
+			 withLength: len];
 	} @finally {
 		free(t);
 	}

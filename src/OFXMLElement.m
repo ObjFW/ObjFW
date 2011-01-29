@@ -115,7 +115,7 @@
 		if (stringval != nil) {
 			OFAutoreleasePool *pool;
 
-			pool = [[OFAutoreleasePool alloc] init];;
+			pool = [[OFAutoreleasePool alloc] init];
 			[self addChild:
 			    [OFXMLElement elementWithCharacters: stringval]];
 			[pool release];

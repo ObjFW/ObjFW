@@ -37,7 +37,7 @@
 #import "OFExceptions.h"
 #import "macros.h"
 
-#import "asprintf.h"
+#import "of_asprintf.h"
 #import "unicode.h"
 
 extern const uint16_t of_iso_8859_15[256];
@@ -466,22 +466,18 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	self = [super init];
 
 	@try {
-		int t;
+		int len;
 
 		if (fmt == nil)
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
-		if ((t = vasprintf(&string, [fmt cString], args)) == -1)
-			/*
-			 * This is only the most likely error to happen.
-			 * Unfortunately, there is no good way to check what
-			 * really happened.
-			 */
-			@throw [OFOutOfMemoryException newWithClass: isa];
+		if ((len = of_vasprintf(&string, [fmt cString], args)) == -1)
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
 
 		@try {
-			length = t;
+			length = len;
 
 			switch (of_string_check_utf8(string, length)) {
 			case 1:

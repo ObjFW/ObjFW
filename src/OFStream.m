@@ -35,7 +35,7 @@
 #import "OFExceptions.h"
 #import "macros.h"
 
-#import "asprintf.h"
+#import "of_asprintf.h"
 
 @implementation OFStream
 #ifndef _WIN32
@@ -676,20 +676,16 @@
 - (size_t)writeFormat: (OFString*)fmt
 	withArguments: (va_list)args
 {
-	size_t len;
 	char *t;
+	int len;
 
 	if (fmt == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	if ((len = vasprintf(&t, [fmt cString], args)) == -1) {
-		/*
-		 * This is only the most likely error to happen. Unfortunately,
-		 * there is no good way to check what really happened.
-		 */
-		@throw [OFOutOfMemoryException newWithClass: isa];
-	}
+	if ((len = of_vasprintf(&t, [fmt cString], args)) == -1)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
 
 	@try {
 		return [self writeNBytes: len
