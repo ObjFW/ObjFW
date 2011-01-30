@@ -252,10 +252,14 @@ state_format_conversion_specifier(struct context *ctx)
 		}
 
 		@try {
-			const char *desc =
-			    [[va_arg(ctx->args, id) description] cString];
+			id obj;
 
-			tmp_len = asprintf(&tmp, ctx->subfmt, desc);
+			if ((obj = va_arg(ctx->args, id)) != nil)
+				tmp_len = asprintf(&tmp, ctx->subfmt,
+				    [[obj description] cString]);
+			else
+				if (!append_str(ctx, "(nil)", 5))
+					return false;
 		} @catch (id e) {
 			[e release];
 			return false;
