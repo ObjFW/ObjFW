@@ -23,5 +23,5 @@ extern void *_OFConstantStringClassReference;
 /**
  * \brief A class for storing constant strings using the \@"" literal.
  */
-@interface OFConstantString: OFString {}
+@interface OFConstantString: OFString
 @end

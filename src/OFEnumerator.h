@@ -19,7 +19,7 @@
 /**
  * \brief A class which provides methods to enumerate through collections.
  */
-@interface OFEnumerator: OFObject {}
+@interface OFEnumerator: OFObject
 /**
  * \return The next object
  */

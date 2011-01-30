@@ -126,7 +126,7 @@
  * \brief An exception indicating that a mutation was detected during
  *        enumeration.
  */
-@interface OFEnumerationMutationException: OFException {}
+@interface OFEnumerationMutationException: OFException
 @end
 
 /**
@@ -205,7 +205,7 @@
 /**
  * \brief An exception indicating the given value is out of range.
  */
-@interface OFOutOfRangeException: OFException {}
+@interface OFOutOfRangeException: OFException
 @end
 
 /**
@@ -247,26 +247,26 @@
 /**
  * \brief An exception indicating that the encoding is invalid for this object.
  */
-@interface OFInvalidEncodingException: OFException {}
+@interface OFInvalidEncodingException: OFException
 @end
 
 /**
  * \brief An exception indicating that the format is invalid.
  */
-@interface OFInvalidFormatException: OFException {}
+@interface OFInvalidFormatException: OFException
 @end
 
 /**
  * \brief An exception indicating that a parser encountered malformed or
  *        invalid XML.
  */
-@interface OFMalformedXMLException: OFException {}
+@interface OFMalformedXMLException: OFException
 @end
 
 /**
  * \brief An exception indicating that initializing something failed.
  */
-@interface OFInitializationFailedException: OFException {}
+@interface OFInitializationFailedException: OFException
 @end
 
 /**
@@ -370,13 +370,13 @@
 /**
  * \brief An exception indicating a read on a stream failed.
  */
-@interface OFReadFailedException: OFReadOrWriteFailedException {}
+@interface OFReadFailedException: OFReadOrWriteFailedException
 @end
 
 /**
  * \brief An exception indicating a write to a stream failed.
  */
-@interface OFWriteFailedException: OFReadOrWriteFailedException {}
+@interface OFWriteFailedException: OFReadOrWriteFailedException
 @end
 
 /**
@@ -913,20 +913,20 @@
 /**
  * \brief An exception indicating that setting an option failed.
  */
-@interface OFSetOptionFailedException: OFException {}
+@interface OFSetOptionFailedException: OFException
 @end
 
 /**
  * \brief An exception indicating a socket is not connected or bound.
  */
-@interface OFNotConnectedException: OFException {}
+@interface OFNotConnectedException: OFException
 @end
 
 /**
  * \brief An exception indicating an attempt to connect or bind an already
  *        connected or bound socket.
  */
-@interface OFAlreadyConnectedException: OFException {}
+@interface OFAlreadyConnectedException: OFException
 @end
 
 /**
@@ -1155,37 +1155,37 @@
 /**
  * \brief An exception indicating that starting a thread failed.
  */
-@interface OFThreadStartFailedException: OFException {}
+@interface OFThreadStartFailedException: OFException
 @end
 
 /**
  * \brief An exception indicating that joining a thread failed.
  */
-@interface OFThreadJoinFailedException: OFException {}
+@interface OFThreadJoinFailedException: OFException
 @end
 
 /**
  * \brief An exception indicating that a thread is still running.
  */
-@interface OFThreadStillRunningException: OFException {}
+@interface OFThreadStillRunningException: OFException
 @end
 
 /**
  * \brief An exception indicating that locking a mutex failed.
  */
-@interface OFMutexLockFailedException: OFException {}
+@interface OFMutexLockFailedException: OFException
 @end
 
 /**
  * \brief An exception indicating that unlocking a mutex failed.
  */
-@interface OFMutexUnlockFailedException: OFException {}
+@interface OFMutexUnlockFailedException: OFException
 @end
 
 /**
  * \brief An exception indicating that the hash has already been calculated.
  */
-@interface OFHashAlreadyCalculatedException: OFException {}
+@interface OFHashAlreadyCalculatedException: OFException
 @end
 
 /**
