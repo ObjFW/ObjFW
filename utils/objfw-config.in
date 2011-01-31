@@ -68,9 +68,9 @@ test -z "$1" && show_help
 while test ! -z "$1"; do
 	case "$1" in
 		--all)
-			printf "%s %s %s" "$CFLAGS" "$CPPFLAGS" "$CXXFLAGS"
-			printf "%s %s" "$OBJCFLAGS" "$LDFLAGS"
-			printf "%s %s" "$LDFLAGS_REEXPORT" "$LDFLAGS_RPATH"
+			printf "%s %s %s " "$CFLAGS" "$CPPFLAGS" "$CXXFLAGS"
+			printf "%s %s " "$OBJCFLAGS" "$LDFLAGS"
+			printf "%s %s " "$LDFLAGS_REEXPORT" "$LDFLAGS_RPATH"
 			printf "%s" "$LIBS"
 			;;
 		--cflags)
