@@ -365,8 +365,13 @@ state_format_conversion_specifier(struct context *ctx)
 			    va_arg(ctx->args, int));
 			break;
 		case LENGTH_MODIFIER_L:
+#if WINT_MAX >= INT_MAX
 			tmp_len = asprintf(&tmp, ctx->subfmt,
 			    va_arg(ctx->args, wint_t));
+#else
+			tmp_len = asprintf(&tmp, ctx->subfmt,
+			    va_arg(ctx->args, int));
+#endif
 			break;
 		default:
 			return false;
