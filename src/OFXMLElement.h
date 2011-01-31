@@ -41,7 +41,7 @@
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy) OFString *name;
-@property (readonly, copy) OFString *namespace;
+@property (readonly, copy, getter=namespace) OFString *ns;
 @property (copy) OFString *defaultNamespace;
 @property (readonly, copy) OFArray *attributes;
 @property (readonly, copy) OFArray *children;

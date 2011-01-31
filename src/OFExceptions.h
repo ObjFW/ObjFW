@@ -1198,7 +1198,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, nonatomic) OFString *namespace;
+@property (readonly, nonatomic, getter=namespace) OFString *ns;
 @property (readonly, nonatomic) OFString *prefix;
 #endif
 
