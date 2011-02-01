@@ -126,18 +126,34 @@ static OFMutex *mutex = nil;
 			 service: service];
 	}
 
-	if ((se = getservbyname([service cString], "TCP")) != NULL)
+	if ((se = getservbyname([service cString], "tcp")) != NULL)
 		port = se->s_port;
-	else if ((port = of_bswap16_if_le(strtol([service cString], NULL,
-	    10))) == 0) {
+	else {
+		@try {
+			intmax_t p = [service decimalValue];
+
+			if (p < 1 || p > 65535)
+				@throw [OFOutOfRangeException
+				    newWithClass: isa];
+
+			port = of_bswap16_if_le(p);
+		} @catch (OFInvalidFormatException *e) {
+			[e release];
 # ifdef OF_THREADS
-		[addrlist release];
-		[mutex unlock];
+			[addrlist release];
+			[mutex unlock];
 # endif
-		@throw [OFAddressTranslationFailedException
-		    newWithClass: isa
-			    node: node
-			 service: service];
+			@throw [OFAddressTranslationFailedException
+			    newWithClass: isa
+				    node: node
+				 service: service];
+		} @catch (id e) {
+# ifdef OF_THREADS
+			[addrlist release];
+			[mutex unlock];
+# endif
+			@throw e;
+		}
 	}
 
 	memset(&addr, 0, sizeof(addr));
@@ -253,17 +269,32 @@ static OFMutex *mutex = nil;
 			 service: service];
 	}
 
-	if ((se = getservbyname([service cString], "TCP")) != NULL)
+	if ((se = getservbyname([service cString], "tcp")) != NULL)
 		port = se->s_port;
-	else if ((port = of_bswap16_if_le(strtol([service cString], NULL,
-	    10))) == 0) {
+	else {
+		@try {
+			intmax_t p = [service decimalValue];
+
+			if (p < 1 || p > 65535)
+				@throw [OFOutOfRangeException
+				    newWithClass: isa];
+
+			port = of_bswap16_if_le(p);
+		} @catch (OFInvalidFormatException *e) {
+			[e release];
 # ifdef OF_THREADS
-		[mutex unlock];
+			[mutex unlock];
 # endif
-		@throw [OFAddressTranslationFailedException
-		    newWithClass: isa
-			    node: node
-			 service: service];
+			@throw [OFAddressTranslationFailedException
+			    newWithClass: isa
+				    node: node
+				 service: service];
+		} @catch (id e) {
+# ifdef OF_THREADS
+			[mutex unlock];
+# endif
+			@throw e;
+		}
 	}
 
 	memset(&addr, 0, sizeof(addr));
