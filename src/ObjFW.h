@@ -36,12 +36,10 @@
 #import "OFURL.h"
 
 #import "OFStream.h"
-#import "OFStreamObserver.h"
-
 #import "OFFile.h"
-
 #import "OFStreamSocket.h"
 #import "OFTCPSocket.h"
+#import "OFStreamObserver.h"
 
 #import "OFHash.h"
 #import "OFMD5Hash.h"
