@@ -109,10 +109,12 @@ void
 of_log(OFConstantString *fmt, ...)
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFString *date, *me, *msg;
+	OFDate *date;
+	OFString *date_str, *me, *msg;
 	va_list args;
 
-	date = [[OFDate date] localDateStringWithFormat: @"%Y-%m-%dT%H:%M:%S"];
+	date = [OFDate date];
+	date_str = [date localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
 	me = [OFFile lastComponentOfPath: [OFApplication programName]];
 
 	va_start(args, fmt);
@@ -120,7 +122,8 @@ of_log(OFConstantString *fmt, ...)
 				      arguments: args] autorelease];
 	va_end(args);
 
-	[of_stderr writeFormat: @"[%@ %@(%d)] %@\n", date, me, getpid(), msg];
+	[of_stderr writeFormat: @"[%@.%03d %@(%d)] %@\n", date_str,
+				[date microsecond] / 1000, me, getpid(), msg];
 
 	[pool release];
 }
