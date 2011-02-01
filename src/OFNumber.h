@@ -55,7 +55,7 @@ typedef enum of_number_type_t {
  */
 @interface OFNumber: OFObject <OFCopying>
 {
-	union {
+	union of_number_value {
 		BOOL	       bool_;
 		char	       char_;
 		short	       short_;
