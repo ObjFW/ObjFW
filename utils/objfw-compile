@@ -68,6 +68,7 @@ objs=""
 link="no"
 link_stdcpp="no"
 lib="no"
+plugin="no"
 out_prefix=""
 out_suffix=""
 
