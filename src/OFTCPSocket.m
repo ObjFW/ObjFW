@@ -128,7 +128,7 @@ static OFMutex *mutex = nil;
 
 	if ((se = getservbyname([service cString], "TCP")) != NULL)
 		port = se->s_port;
-	else if ((port = OF_BSWAP16_IF_LE(strtol([service cString], NULL,
+	else if ((port = of_bswap16_if_le(strtol([service cString], NULL,
 	    10))) == 0) {
 # ifdef OF_THREADS
 		[addrlist release];
@@ -255,7 +255,7 @@ static OFMutex *mutex = nil;
 
 	if ((se = getservbyname([service cString], "TCP")) != NULL)
 		port = se->s_port;
-	else if ((port = OF_BSWAP16_IF_LE(strtol([service cString], NULL,
+	else if ((port = of_bswap16_if_le(strtol([service cString], NULL,
 	    10))) == 0) {
 # ifdef OF_THREADS
 		[mutex unlock];

@@ -149,7 +149,7 @@
 	[self readExactlyNBytes: 2
 		     intoBuffer: (char*)&ret];
 
-	return OF_BSWAP16_IF_LE(ret);
+	return of_bswap16_if_le(ret);
 }
 
 - (uint32_t)readBigEndianInt32
@@ -159,7 +159,7 @@
 	[self readExactlyNBytes: 4
 		     intoBuffer: (char*)&ret];
 
-	return OF_BSWAP32_IF_LE(ret);
+	return of_bswap32_if_le(ret);
 }
 
 - (uint64_t)readBigEndianInt64
@@ -169,7 +169,7 @@
 	[self readExactlyNBytes: 8
 		     intoBuffer: (char*)&ret];
 
-	return OF_BSWAP64_IF_LE(ret);
+	return of_bswap64_if_le(ret);
 }
 
 - (uint16_t)readLittleEndianInt16
@@ -179,7 +179,7 @@
 	[self readExactlyNBytes: 2
 		     intoBuffer: (char*)&ret];
 
-	return OF_BSWAP16_IF_BE(ret);
+	return of_bswap16_if_be(ret);
 }
 
 - (uint32_t)readLittleEndianInt32
@@ -189,7 +189,7 @@
 	[self readExactlyNBytes: 4
 		     intoBuffer: (char*)&ret];
 
-	return OF_BSWAP32_IF_BE(ret);
+	return of_bswap32_if_be(ret);
 }
 
 - (uint64_t)readLittleEndianInt64
@@ -199,7 +199,7 @@
 	[self readExactlyNBytes: 8
 		     intoBuffer: (char*)&ret];
 
-	return OF_BSWAP64_IF_BE(ret);
+	return of_bswap64_if_be(ret);
 }
 
 - (OFDataArray*)readDataArrayWithItemSize: (size_t)itemsize
@@ -584,7 +584,7 @@
 
 - (void)writeBigEndianInt16: (uint16_t)int16
 {
-	int16 = OF_BSWAP16_IF_LE(int16);
+	int16 = of_bswap16_if_le(int16);
 
 	[self writeNBytes: 2
 	       fromBuffer: (char*)&int16];
@@ -592,7 +592,7 @@
 
 - (void)writeBigEndianInt32: (uint32_t)int32
 {
-	int32 = OF_BSWAP32_IF_LE(int32);
+	int32 = of_bswap32_if_le(int32);
 
 	[self writeNBytes: 4
 	       fromBuffer: (char*)&int32];
@@ -600,7 +600,7 @@
 
 - (void)writeBigEndianInt64: (uint64_t)int64
 {
-	int64 = OF_BSWAP64_IF_LE(int64);
+	int64 = of_bswap64_if_le(int64);
 
 	[self writeNBytes: 8
 	       fromBuffer: (char*)&int64];
@@ -608,7 +608,7 @@
 
 - (void)writeLittleEndianInt16: (uint16_t)int16
 {
-	int16 = OF_BSWAP16_IF_BE(int16);
+	int16 = of_bswap16_if_be(int16);
 
 	[self writeNBytes: 2
 	       fromBuffer: (char*)&int16];
@@ -616,7 +616,7 @@
 
 - (void)writeLittleEndianInt32: (uint32_t)int32
 {
-	int32 = OF_BSWAP32_IF_BE(int32);
+	int32 = of_bswap32_if_be(int32);
 
 	[self writeNBytes: 4
 	       fromBuffer: (char*)&int32];
@@ -624,7 +624,7 @@
 
 - (void)writeLittleEndianInt64: (uint64_t)int64
 {
-	int64 = OF_BSWAP64_IF_BE(int64);
+	int64 = of_bswap64_if_be(int64);
 
 	[self writeNBytes: 8
 	       fromBuffer: (char*)&int64];
