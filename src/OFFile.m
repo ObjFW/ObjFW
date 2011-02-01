@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 #include <unistd.h>
 
 #include <sys/types.h>
@@ -37,6 +38,7 @@
 # import "OFThread.h"
 #endif
 #import "OFDate.h"
+#import "OFApplication.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 #import "macros.h"
@@ -101,6 +103,26 @@ static int parse_mode(const char *mode)
 		return O_RDWR | O_CREAT | O_APPEND | O_BINARY;
 
 	return -1;
+}
+
+void
+of_log(OFConstantString *fmt, ...)
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFString *date, *me, *msg;
+	va_list args;
+
+	date = [[OFDate date] localDateStringWithFormat: @"%Y-%m-%dT%H:%M:%S"];
+	me = [OFFile lastComponentOfPath: [OFApplication programName]];
+
+	va_start(args, fmt);
+	msg = [[[OFString alloc] initWithFormat: fmt
+				      arguments: args] autorelease];
+	va_end(args);
+
+	[of_stderr writeFormat: @"[%@ %@(%d)] %@\n", date, me, getpid(), msg];
+
+	[pool release];
 }
 
 @interface OFFileSingleton: OFFile

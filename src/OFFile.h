@@ -18,9 +18,10 @@
 
 #import "OFSeekableStream.h"
 
-@class OFString;
 @class OFArray;
 @class OFDate;
+
+extern void of_log(OFConstantString*, ...);
 
 /**
  * \brief A class which provides functions to read, write and manipulate files.
