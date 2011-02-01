@@ -408,4 +408,10 @@ typedef struct of_range_t {
 - (of_comparison_result_t)compare: (id)obj;
 @end
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern size_t of_pagesize;
+#ifdef __cplusplus
+}
+#endif

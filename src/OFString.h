@@ -31,11 +31,17 @@ typedef enum of_string_encoding_t {
 	OF_STRING_ENCODING_WINDOWS_1252
 } of_string_encoding_t;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern int of_string_check_utf8(const char*, size_t);
 extern size_t of_string_unicode_to_utf8(of_unichar_t, char*);
 extern size_t of_string_utf8_to_unicode(const char*, size_t, of_unichar_t*);
 extern size_t of_string_position_to_index(const char*, size_t);
 extern size_t of_string_index_to_position(const char*, size_t, size_t);
+#ifdef __cplusplus
+}
+#endif
 
 @class OFArray;
 

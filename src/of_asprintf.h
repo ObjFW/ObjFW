@@ -18,5 +18,11 @@
 
 #import "macros.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern int of_asprintf(char**, const char*, ...);
 extern int of_vasprintf(char**, const char*, va_list);
+#ifdef __cplusplus
+}
+#endif

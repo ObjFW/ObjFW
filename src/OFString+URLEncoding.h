@@ -16,7 +16,13 @@
 
 #import "OFString.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern int _OFString_URLEncoding_reference;
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * \brief A category which provides URL encoding and decoding.

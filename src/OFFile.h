@@ -21,7 +21,13 @@
 @class OFArray;
 @class OFDate;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern void of_log(OFConstantString*, ...);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * \brief A class which provides functions to read, write and manipulate files.
@@ -206,6 +212,12 @@ extern void of_log(OFConstantString*, ...);
 - initWithFileDescriptor: (int)fd;
 @end
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern OFFile *of_stdin;
 extern OFFile *of_stdout;
 extern OFFile *of_stderr;
+#ifdef __cplusplus
+}
+#endif

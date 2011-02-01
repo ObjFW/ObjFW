@@ -59,8 +59,14 @@ enum {
 	OF_BLOCK_BYREF_CALLER	 = 128,
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern void* _Block_copy(const void*);
 extern void _Block_release(const void*);
+#ifdef __cplusplus
+}
+#endif
 
 #ifndef Block_copy
 # define Block_copy(x) ((__typeof__(x))_Block_copy((const void*)(x)))

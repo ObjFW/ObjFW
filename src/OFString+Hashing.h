@@ -16,7 +16,13 @@
 
 #import "OFString.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern int _OFString_Hashing_reference;
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * The OFString (OFHashing) category provides methods to calculate hashes for

@@ -17,7 +17,13 @@
 #import "OFString.h"
 
 #ifdef OF_APPLE_RUNTIME
+# ifdef __cplusplus
+extern "C" {
+#endif
 extern void *_OFConstantStringClassReference;
+# ifdef __cplusplus
+}
+#endif
 #endif
 
 /**

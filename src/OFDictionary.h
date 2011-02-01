@@ -215,4 +215,10 @@ struct of_dictionary_bucket
 
 #import "OFMutableDictionary.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern struct of_dictionary_bucket of_dictionary_deleted_bucket;
+#ifdef __cplusplus
+}
+#endif

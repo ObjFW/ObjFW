@@ -16,7 +16,13 @@
 
 #import "OFString.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern int _OFString_XMLEscaping_reference;
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * \brief A category to escape strings for use in an XML document.

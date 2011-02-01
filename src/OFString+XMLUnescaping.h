@@ -16,7 +16,13 @@
 
 #import "OFString.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern int _OFString_XMLUnescaping_reference;
+#ifdef __cplusplus
+}
+#endif
 
 #ifdef OF_HAVE_BLOCKS
 typedef OFString* (^of_string_xml_unescaping_block_t)(OFString *str,

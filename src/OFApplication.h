@@ -165,4 +165,10 @@
 @interface OFObject (OFApplicationDelegate) <OFApplicationDelegate>
 @end
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern int of_application_main(int*, char**[], Class);
+#ifdef __cplusplus
+}
+#endif

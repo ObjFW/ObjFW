@@ -19,6 +19,12 @@
 #ifndef OF_HAVE_ASPRINTF
 # include <stdarg.h>
 
+# ifdef __cplusplus
+extern "C" {
+# endif
 extern int asprintf(char**, const char*, ...);
 extern int vasprintf(char**, const char*, va_list);
+# ifdef __cplusplus
+}
+# endif
 #endif
