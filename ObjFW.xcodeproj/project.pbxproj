@@ -201,6 +201,8 @@
 		4BAF5F48123460C900F4E111 /* OFStreamObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamObserver.m; path = src/OFStreamObserver.m; sourceTree = "<group>"; };
 		4BAF5F49123460C900F4E111 /* OFStreamSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamSocket.h; path = src/OFStreamSocket.h; sourceTree = "<group>"; };
 		4BAF5F4A123460C900F4E111 /* OFStreamSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamSocket.m; path = src/OFStreamSocket.m; sourceTree = "<group>"; };
+		4BB50DCF12F863C700C9393F /* of_asprintf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = of_asprintf.h; path = src/of_asprintf.h; sourceTree = SOURCE_ROOT; };
+		4BB50DD012F863C700C9393F /* of_asprintf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = of_asprintf.m; path = src/of_asprintf.m; sourceTree = SOURCE_ROOT; };
 		4BBA36C411406AB700CBA3AC /* atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic.h; path = src/atomic.h; sourceTree = "<group>"; };
 		4BBA36C511406AB700CBA3AC /* macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = macros.h; path = src/macros.h; sourceTree = "<group>"; };
 		4BD86D801237A6C600ED9912 /* OFBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFBlock.h; path = src/OFBlock.h; sourceTree = SOURCE_ROOT; };
@@ -329,6 +331,8 @@
 				4B4986DF1101F64500A2CFDA /* objc_properties.m */,
 				4B6799581099E7C50041064A /* objc_sync.m */,
 				4BF1BCBF11C9663F0025511F /* objfw-defs.h.in */,
+				4BB50DCF12F863C700C9393F /* of_asprintf.h */,
+				4BB50DD012F863C700C9393F /* of_asprintf.m */,
 				4B67998B1099E7C50041064A /* threading.h */,
 				4B67998C1099E7C50041064A /* unicode.h */,
 				4BFBDD1610A0724800051AFB /* unicode.m */,

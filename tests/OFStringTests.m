@@ -158,12 +158,12 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	    isEqual: @"€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ"])
 
 	TEST(@"+[stringWithFormat:]",
-	    [(s[0] = [OFMutableString stringWithFormat: @"%s: %d", "test", 123])
-	    isEqual: @"test: 123"])
+	    [(s[0] = [OFMutableString stringWithFormat: @"%@:%d", @"test", 123])
+	    isEqual: @"test:123"])
 
 	TEST(@"-[appendFormat:]",
 	    R(([s[0] appendFormat: @"%02X", 15])) &&
-	    [s[0] isEqual: @"test: 1230F"])
+	    [s[0] isEqual: @"test:1230F"])
 
 	TEST(@"+[stringWithPath:]",
 	    (s[0] = [OFString stringWithPath: @"foo", @"bar", @"baz", nil]) &&
