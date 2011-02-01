@@ -984,7 +984,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 			num = (num * 10) + (string[i] - '0');
 		} else
-			@throw [OFInvalidEncodingException newWithClass: isa];
+			@throw [OFInvalidFormatException newWithClass: isa];
 	}
 
 	if (string[0] == '-')
@@ -1008,13 +1008,13 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		i = 1;
 
 	if (i == length)
-		@throw [OFInvalidEncodingException newWithClass: isa];
+		@throw [OFInvalidFormatException newWithClass: isa];
 
 	for (; i < length; i++) {
 		uintmax_t newnum;
 
 		if (suffix)
-			@throw [OFInvalidEncodingException newWithClass: isa];
+			@throw [OFInvalidFormatException newWithClass: isa];
 
 		if (string[i] >= '0' && string[i] <= '9')
 			newnum = (num << 4) | (string[i] - '0');
@@ -1026,7 +1026,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 			suffix = YES;
 			continue;
 		} else
-			@throw [OFInvalidEncodingException newWithClass: isa];
+			@throw [OFInvalidFormatException newWithClass: isa];
 
 		if (newnum < num)
 			@throw [OFOutOfRangeException newWithClass: isa];

@@ -241,16 +241,16 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	    [@"" hexadecimalValue] == 0)
 
 	EXPECT_EXCEPTION(@"Detect invalid characters in -[decimalValue] #1",
-	    OFInvalidEncodingException, [@"abc" decimalValue])
+	    OFInvalidFormatException, [@"abc" decimalValue])
 	EXPECT_EXCEPTION(@"Detect invalid characters in -[decimalValue] #2",
-	    OFInvalidEncodingException, [@"0a" decimalValue])
+	    OFInvalidFormatException, [@"0a" decimalValue])
 
 	EXPECT_EXCEPTION(@"Detect invalid chars in -[hexadecimalValue] #1",
-	    OFInvalidEncodingException, [@"0xABCDEFG" hexadecimalValue])
+	    OFInvalidFormatException, [@"0xABCDEFG" hexadecimalValue])
 	EXPECT_EXCEPTION(@"Detect invalid chars in -[hexadecimalValue] #2",
-	    OFInvalidEncodingException, [@"0x" hexadecimalValue])
+	    OFInvalidFormatException, [@"0x" hexadecimalValue])
 	EXPECT_EXCEPTION(@"Detect invalid chars in -[hexadecimalValue] #3",
-	    OFInvalidEncodingException, [@"$" hexadecimalValue])
+	    OFInvalidFormatException, [@"$" hexadecimalValue])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[decimalValue]",
 	    OFOutOfRangeException,
