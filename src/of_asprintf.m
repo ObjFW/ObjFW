@@ -303,7 +303,10 @@ state_format_conversion_specifier(struct context *ctx)
 		}
 
 		break;
-	case 'o': case 'u': case 'x': case 'X':
+	case 'o':
+	case 'u':
+	case 'x':
+	case 'X':
 		switch (ctx->len_mod) {
 		case LENGTH_MODIFIER_NONE:
 		case LENGTH_MODIFIER_HH:

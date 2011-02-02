@@ -644,7 +644,7 @@
 
 - (size_t)writeLine: (OFString*)str
 {
-	size_t len = [str cStringLength];
+	size_t ret, len = [str cStringLength];
 	char *buf;
 
 	buf = [self allocMemoryWithSize: len + 1];
@@ -653,11 +653,13 @@
 		memcpy(buf, [str cString], len);
 		buf[len] = '\n';
 
-		return [self writeNBytes: len + 1
-			      fromBuffer: buf];
+		ret = [self writeNBytes: len + 1
+			     fromBuffer: buf];
 	} @finally {
 		[self freeMemory: buf];
 	}
+
+	return ret;
 }
 
 - (size_t)writeFormat: (OFString*)fmt, ...

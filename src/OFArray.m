@@ -410,6 +410,7 @@
 
 - (OFArray*)mappedArrayUsingBlock: (of_array_map_block_t)block
 {
+	OFArray *ret;
 	size_t count = [array count];
 	id *tmp = [self allocMemoryForNItems: count
 				    withSize: sizeof(id)];
@@ -421,15 +422,18 @@
 		for (i = 0; i < count; i++)
 			tmp[i] = block(objs[i], i);
 
-		return [OFArray arrayWithCArray: tmp
-					 length: count];
+		ret = [OFArray arrayWithCArray: tmp
+					length: count];
 	} @finally {
 		[self freeMemory: tmp];
 	}
+
+	return ret;
 }
 
 - (OFArray*)filteredArrayUsingBlock: (of_array_filter_block_t)block
 {
+	OFArray *ret;
 	size_t count = [array count];
 	id *tmp = [self allocMemoryForNItems: count
 				    withSize: sizeof(id)];
@@ -442,11 +446,13 @@
 			if (block(objs[i], i))
 				tmp[j++] = objs[i];
 
-		return [OFArray arrayWithCArray: tmp
-					 length: j];
+		ret = [OFArray arrayWithCArray: tmp
+					length: j];
 	} @finally {
 		[self freeMemory: tmp];
 	}
+
+	return ret;
 }
 #endif
 

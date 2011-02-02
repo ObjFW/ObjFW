@@ -345,6 +345,7 @@ static OFMutex *mutex;
 
 - (OFString*)dateStringWithFormat: (OFString*)fmt
 {
+	OFString *ret;
 	time_t sec_ = sec;
 	struct tm tm;
 	char *buf;
@@ -380,14 +381,17 @@ static OFMutex *mutex;
 		if (!strftime(buf, of_pagesize, [fmt cString], &tm))
 			@throw [OFOutOfRangeException newWithClass: isa];
 
-		return [OFString stringWithCString: buf];
+		ret = [OFString stringWithCString: buf];
 	} @finally {
 		[self freeMemory: buf];
 	}
+
+	return ret;
 }
 
 - (OFString*)localDateStringWithFormat: (OFString*)fmt
 {
+	OFString *ret;
 	time_t sec_ = sec;
 	struct tm tm;
 	char *buf;
@@ -423,10 +427,12 @@ static OFMutex *mutex;
 		if (!strftime(buf, of_pagesize, [fmt cString], &tm))
 			@throw [OFOutOfRangeException newWithClass: isa];
 
-		return [OFString stringWithCString: buf];
+		ret = [OFString stringWithCString: buf];
 	} @finally {
 		[self freeMemory: buf];
 	}
+
+	return ret;
 }
 
 - (OFDate*)earlierDate: (OFDate*)date
