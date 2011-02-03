@@ -1,7 +1,7 @@
 ObjFW is a portable, lightweight framework for the Objective C language.
 It enables you to write an application in Objective C that will run on
 any platform supported by ObjFW without having to worry about
-differences between operation systems or various frameworks that you
+differences between operating systems or various frameworks that you
 would otherwise need if you want to be portable.
 
 See https://webkeks.org/objfw for more information.
@@ -35,6 +35,10 @@ USING THE MAC OS X FRAMWORK IN XCODE
   to your project and add the following flags to "Other C Flags":
 
     -fconstant-string-class=OFConstantString -fno-constant-cfstrings
+
+  Optionally, if you want to use blocks, you also need to add:
+
+    -fblocks
 
 
 BUGS AND FEATURE REQUESTS
