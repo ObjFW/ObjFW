@@ -14,28 +14,30 @@
  * file.
  */
 
-#import "OFString.h"
+#import "OFDataArray.h"
+
+@class OFString;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _OFString_Hashing_reference;
+extern int _OFDataArray_Hashing_reference;
 #ifdef __cplusplus
 }
 #endif
 
 /**
- * The OFString (Hashing) category provides methods to calculate hashes for
- * strings.
+ * The OFDataArray (Hashing) category provides methods to calculate hashes for
+ * data arrays.
  */
-@interface OFString (Hashing)
+@interface OFDataArray (Hashing)
 /**
- * \return The MD5 hash of the string as an autoreleased OFString
+ * \return The MD5 hash of the data array as an autoreleased OFString
  */
 - (OFString*)MD5Hash;
 
 /**
- * \return The SHA1 hash of the string as an autoreleased OFString
+ * \return The SHA1 hash of the data array as an autoreleased OFString
  */
 - (OFString*)SHA1Hash;
 @end

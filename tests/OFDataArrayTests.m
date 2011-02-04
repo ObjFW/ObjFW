@@ -98,6 +98,10 @@ const char *str = "Hello!";
 			  atIndex: 1]) && [array[0] count] == 5 &&
 	    !memcmp([array[0] cArray], "abcde", 5))
 
+	TEST(@"-[MD5Hash]", [[array[0] MD5Hash] isEqual: [@"abcde" MD5Hash]])
+
+	TEST(@"-[SHA1Hash]", [[array[0] SHA1Hash] isEqual: [@"abcde" SHA1Hash]])
+
 	TEST(@"Building strings",
 	    (array[0] = [class dataArrayWithItemSize: 1]) &&
 	    R([array[0] addNItems: 6

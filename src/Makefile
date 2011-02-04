@@ -11,6 +11,7 @@ SRCS = OFApplication.m		\
        OFBlock.m		\
        OFConstantString.m	\
        OFDataArray.m		\
+       OFDataArray+Hashing.m	\
        OFDate.m			\
        OFDictionary.m		\
        OFExceptions.m		\

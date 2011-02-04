@@ -176,3 +176,5 @@
 	size_t size;
 }
 @end
+
+#import "OFDataArray+Hashing.h"

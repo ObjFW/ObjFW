@@ -16,14 +16,15 @@
 
 #include "config.h"
 
+#import "OFDataArray.h"
 #import "OFString.h"
 #import "OFMD5Hash.h"
 #import "OFSHA1Hash.h"
 #import "OFAutoreleasePool.h"
 
-int _OFString_Hashing_reference;
+int _OFDataArray_Hashing_reference;
 
-@implementation OFString (Hashing)
+@implementation OFDataArray (Hashing)
 - (OFString*)MD5Hash
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
@@ -32,8 +33,8 @@ int _OFString_Hashing_reference;
 	char ret_c[OF_MD5_DIGEST_SIZE * 2];
 	size_t i;
 
-	[hash updateWithBuffer: string
-			ofSize: length];
+	[hash updateWithBuffer: data
+			ofSize: count * itemSize];
 	digest = [hash digest];
 
 	for (i = 0; i < OF_MD5_DIGEST_SIZE; i++) {
@@ -60,8 +61,8 @@ int _OFString_Hashing_reference;
 	char ret_c[OF_SHA1_DIGEST_SIZE * 2];
 	size_t i;
 
-	[hash updateWithBuffer: string
-			ofSize: length];
+	[hash updateWithBuffer: data
+			ofSize: count * itemSize];
 	digest = [hash digest];
 
 	for (i = 0; i < OF_SHA1_DIGEST_SIZE; i++) {

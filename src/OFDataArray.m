@@ -26,6 +26,12 @@
 #import "OFExceptions.h"
 #import "macros.h"
 
+/* References for static linking */
+void _references_to_categories_of_OFDataArray()
+{
+	_OFDataArray_Hashing_reference = 1;
+};
+
 @implementation OFDataArray
 + dataArrayWithItemSize: (size_t)is
 {
