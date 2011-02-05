@@ -54,6 +54,15 @@
 + dataArrayWithContentsOfFile: (OFString*)path;
 
 /**
+ * Creates a new OFDataArray with an item size of 1, containing the data of the
+ * Base64-encoded string.
+ *
+ * \param str The string with the Base64-encoded data
+ * \return A new autoreleased OFDataArray
+ */
++ dataArrayWithBase64EncodedString: (OFString*)str;
+
+/**
  * Initializes an already allocated OFDataArray whose items all have the same
  * size.
  *
@@ -70,6 +79,15 @@
  * \return An initialized OFDataArray
  */
 - initWithContentsOfFile: (OFString*)path;
+
+/**
+ * Initializes an already allocated OFDataArray with an item size of 1,
+ * containing the data of the Base64-encoded string.
+ *
+ * \param str The string with the Base64-encoded data
+ * \return A initialized OFDataArray
+ */
+- initWithBase64EncodedString: (OFString*)str;
 
 /**
  * \return The number of items in the OFDataArray

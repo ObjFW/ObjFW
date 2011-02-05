@@ -44,6 +44,11 @@ void _references_to_categories_of_OFDataArray()
 	return [[[self alloc] initWithContentsOfFile: path] autorelease];
 }
 
++ dataArrayWithBase64EncodedString: (OFString*)str
+{
+	return [[[self alloc] initWithBase64EncodedString: str] autorelease];
+}
+
 - init
 {
 	Class c = isa;
@@ -61,8 +66,8 @@ void _references_to_categories_of_OFDataArray()
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
-		data = NULL;
 		itemSize = is;
+		data = NULL;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -78,7 +83,9 @@ void _references_to_categories_of_OFDataArray()
 	@try {
 		OFFile *file = [[OFFile alloc] initWithPath: path
 						       mode: @"rb"];
+
 		itemSize = 1;
+		data = NULL;
 
 		@try {
 			char *buf = [self allocMemoryWithSize: of_pagesize];
@@ -99,6 +106,22 @@ void _references_to_categories_of_OFDataArray()
 	} @catch (id e) {
 		[self release];
 		@throw e;
+	}
+
+	return self;
+}
+
+- initWithBase64EncodedString: (OFString*)str
+{
+	self = [super init];
+
+	itemSize = 1;
+	data = NULL;
+
+	if (!of_base64_decode(self, [str cString], [str cStringLength])) {
+		Class c = isa;
+		[self release];
+		@throw [OFInvalidEncodingException newWithClass: c];
 	}
 
 	return self;

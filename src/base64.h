@@ -14,15 +14,23 @@
  * file.
  */
 
-#include <stddef.h>
+#import "objfw-defs.h"
+
+#ifdef OF_OBJFW_RUNTIME
+# import <objfw-rt.h>
+#else
+# import <objc/objc.h>
+#endif
 
 @class OFString;
+@class OFDataArray;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 extern const char of_base64_table[64];
 extern OFString *of_base64_encode(const char *buf, size_t len);
+extern BOOL of_base64_decode(OFDataArray *data, const char *str, size_t len);
 #ifdef __cplusplus
 }
 #endif
