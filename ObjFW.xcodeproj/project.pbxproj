@@ -207,6 +207,9 @@
 		4BBA36C511406AB700CBA3AC /* macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = macros.h; path = src/macros.h; sourceTree = "<group>"; };
 		4BD86D801237A6C600ED9912 /* OFBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFBlock.h; path = src/OFBlock.h; sourceTree = SOURCE_ROOT; };
 		4BD86D811237A6C600ED9912 /* OFBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFBlock.m; path = src/OFBlock.m; sourceTree = SOURCE_ROOT; };
+		4BE17AD812FD744C002CEB0B /* foundation-compat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "foundation-compat.m"; path = "src/foundation-compat.m"; sourceTree = SOURCE_ROOT; };
+		4BE17AD912FD746D002CEB0B /* OFDataArray+Hashing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFDataArray+Hashing.h"; path = "src/OFDataArray+Hashing.h"; sourceTree = SOURCE_ROOT; };
+		4BE17ADA12FD746D002CEB0B /* OFDataArray+Hashing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFDataArray+Hashing.m"; path = "src/OFDataArray+Hashing.m"; sourceTree = SOURCE_ROOT; };
 		4BE5F0D712DF4225005C7A0C /* OFConstantString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFConstantString.h; path = src/OFConstantString.h; sourceTree = SOURCE_ROOT; };
 		4BE5F0D812DF4225005C7A0C /* OFConstantString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFConstantString.m; path = src/OFConstantString.m; sourceTree = SOURCE_ROOT; };
 		4BE5F0D912DF4225005C7A0C /* OFDate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFDate.h; path = src/OFDate.h; sourceTree = SOURCE_ROOT; };
@@ -260,6 +263,8 @@
 				4BE5F0D812DF4225005C7A0C /* OFConstantString.m */,
 				4B6799601099E7C50041064A /* OFDataArray.h */,
 				4B6799611099E7C50041064A /* OFDataArray.m */,
+				4BE17AD912FD746D002CEB0B /* OFDataArray+Hashing.h */,
+				4BE17ADA12FD746D002CEB0B /* OFDataArray+Hashing.m */,
 				4BE5F0D912DF4225005C7A0C /* OFDate.h */,
 				4BE5F0DA12DF4225005C7A0C /* OFDate.m */,
 				4B6799621099E7C50041064A /* OFDictionary.h */,
@@ -327,6 +332,7 @@
 				4B6AF96C10A8D3E40003FB0A /* asprintf.m */,
 				4BBA36C411406AB700CBA3AC /* atomic.h */,
 				4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */,
+				4BE17AD812FD744C002CEB0B /* foundation-compat.m */,
 				4BBA36C511406AB700CBA3AC /* macros.h */,
 				4B4986DF1101F64500A2CFDA /* objc_properties.m */,
 				4B6799581099E7C50041064A /* objc_sync.m */,
