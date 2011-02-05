@@ -162,6 +162,11 @@
  */
 - (void)removeNItems: (size_t)nitems
 	     atIndex: (size_t)index;
+
+/**
+ * \return A string containing the data in Base64 encoding
+ */
+- (OFString*)stringByBase64Encoding;
 @end
 
 /**

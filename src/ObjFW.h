@@ -68,4 +68,5 @@
 #endif
 
 #import "asprintf.h"
+#import "base64.h"
 #import "of_asprintf.h"

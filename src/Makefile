@@ -43,6 +43,7 @@ SRCS = OFApplication.m		\
        OFXMLElement.m		\
        OFXMLElementBuilder.m	\
        OFXMLParser.m		\
+       base64.m			\
        of_asprintf.m		\
        unicode.m
 

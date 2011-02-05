@@ -24,6 +24,7 @@
 #import "OFString.h"
 #import "OFFile.h"
 #import "OFExceptions.h"
+#import "base64.h"
 #import "macros.h"
 
 /* References for static linking */
@@ -302,6 +303,11 @@ void _references_to_categories_of_OFDataArray()
 	OF_HASH_FINALIZE(hash);
 
 	return hash;
+}
+
+- (OFString*)stringByBase64Encoding
+{
+	return of_base64_encode(data, count * itemSize);
 }
 @end
 
