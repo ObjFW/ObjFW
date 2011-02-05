@@ -307,6 +307,15 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 					    encoding: encoding] autorelease];
 }
 
+- init
+{
+	self = [super init];
+
+	string = "";
+
+	return self;
+}
+
 - initWithCString: (const char*)str
 {
 	return [self initWithCString: str
