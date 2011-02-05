@@ -66,16 +66,6 @@ append_str(struct context *ctx, const char *astr, size_t astr_len)
 	if (astr_len == 0)
 		return true;
 
-	if (ctx->buf == NULL) {
-		if ((ctx->buf = malloc(astr_len + 1)) == NULL)
-			return false;
-
-		memcpy(ctx->buf, astr, astr_len);
-		ctx->buf_len = astr_len;
-
-		return true;
-	}
-
 	if ((nbuf = realloc(ctx->buf, ctx->buf_len + astr_len + 1)) == NULL)
 		return false;
 
@@ -487,11 +477,13 @@ of_vasprintf(char **ret, const char *fmt, va_list args)
 	memset(ctx.subfmt, 0, MAX_SUBFMT_LEN + 1);
 	ctx.subfmt_len = 0;
 	va_copy(ctx.args, args);
-	ctx.buf = NULL;
 	ctx.buf_len = 0;
 	ctx.last = 0;
 	ctx.state = STATE_STRING;
 	ctx.len_mod = LENGTH_MODIFIER_NONE;
+
+	if ((ctx.buf = malloc(1)) == NULL)
+		return -1;
 
 	for (ctx.i = 0; ctx.i < ctx.fmt_len; ctx.i++) {
 		if (!states[ctx.state](&ctx)) {
