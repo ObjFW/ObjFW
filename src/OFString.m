@@ -311,7 +311,13 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 {
 	self = [super init];
 
-	string = "";
+	@try {
+		string = [self allocMemoryWithSize: 1];
+		string[0] = '\0';
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
