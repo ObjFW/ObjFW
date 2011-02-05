@@ -11,7 +11,7 @@ many others as well:
  | Linux 2.6.*              | x86          | LLVM/Clang r83252    | old GNU |
  | Linux 2.6.*              | x86_64       | GCC 4.4.1            | old GNU |
  +--------------------------+--------------+----------------------+---------+
- | iPhone OS 2.2.1 - 4.1    | arm          | GCC 4.2              | Apple   |
+ | iPhone OS 2.2.1 - 4.2    | arm          | GCC 4.2              | Apple   |
  | Mac OS X 10.5            | ppc          | GCC 4.0 + 4.2        | Apple   |
  | Mac OS X 10.5            | ppc64        | GCC 4.0 + 4.2        | Apple   |
  | Mac OS X 10.5 - 10.6     | x86          | GCC 4.0 + 4.2        | Apple   |

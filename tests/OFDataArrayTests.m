@@ -102,6 +102,13 @@ const char *str = "Hello!";
 
 	TEST(@"-[SHA1Hash]", [[array[0] SHA1Hash] isEqual: [@"abcde" SHA1Hash]])
 
+	TEST(@"-[stringByBase64Encoding]",
+	    [[array[0] stringByBase64Encoding] isEqual: @"YWJjZGU="])
+
+	TEST(@"+[dataArrayWithBase64EncodedString:]",
+	    !memcmp([[class dataArrayWithBase64EncodedString: @"YWJjZGU="]
+	    cArray], "abcde", 5))
+
 	TEST(@"Building strings",
 	    (array[0] = [class dataArrayWithItemSize: 1]) &&
 	    R([array[0] addNItems: 6
