@@ -207,7 +207,7 @@ of_bswap32_vec(uint32_t *buf, size_t len)
 # define of_bswap16_if_le(i) (i)
 # define of_bswap32_if_le(i) (i)
 # define of_bswap64_if_le(i) (i)
-# define of_bswap32_vec_if_be(buf, len) of_bswap32_Vec(buf, len)
+# define of_bswap32_vec_if_be(buf, len) of_bswap32_vec(buf, len)
 #else
 # define of_bswap16_if_be(i) (i)
 # define of_bswap32_if_be(i) (i)
