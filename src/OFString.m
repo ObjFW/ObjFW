@@ -488,8 +488,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 							       selector: _cmd];
 
 		if ((len = of_vasprintf(&string, [fmt cString], args)) == -1)
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidFormatException newWithClass: isa];
 
 		@try {
 			length = len;

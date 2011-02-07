@@ -253,8 +253,8 @@ state_format_conversion_specifier(struct context *ctx)
 				if (!append_str(ctx, "(nil)", 5))
 					return false;
 		} @catch (id e) {
-			[e release];
-			return false;
+			free(ctx->buf);
+			@throw e;
 		} @finally {
 			[pool release];
 		}
@@ -488,17 +488,13 @@ of_vasprintf(char **ret, const char *fmt, va_list args)
 
 	for (ctx.i = 0; ctx.i < ctx.fmt_len; ctx.i++) {
 		if (!states[ctx.state](&ctx)) {
-			if (ctx.buf != NULL)
-				free(ctx.buf);
-
+			free(ctx.buf);
 			return -1;
 		}
 	}
 
 	if (ctx.state != STATE_STRING) {
-		if (ctx.buf != NULL)
-			free(ctx.buf);
-
+		free(ctx.buf);
 		return -1;
 	}
 

@@ -686,8 +686,7 @@
 						       selector: _cmd];
 
 	if ((len = of_vasprintf(&t, [fmt cString], args)) == -1)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidFormatException newWithClass: isa];
 
 	@try {
 		return [self writeNBytes: len
