@@ -33,4 +33,15 @@
  * \returns An OFEnumerator to enumerate through all objects of the collection
  */
 - (OFEnumerator*)objectEnumerator;
+
+/**
+ * \return A boolean whether the collection contains the specified object.
+ */
+- (BOOL)containsObject: (id)obj;
+
+/**
+ * \return A boolean whether the collection contains an object with the
+ *	   specified address.
+ */
+- (BOOL)containsObjectIdenticalTo: (id)obj;
 @end

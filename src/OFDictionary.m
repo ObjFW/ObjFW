@@ -521,12 +521,42 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 		return NO;
 
 	for (i = 0; i < size; i++)
-		if (data[i] != NULL && data[i]!= DELETED &&
+		if (data[i] != NULL && data[i] != DELETED &&
 		    ![[dict objectForKey: data[i]->key]
 		    isEqual: data[i]->object])
 			return NO;
 
 	return YES;
+}
+
+- (BOOL)containsObject: (id)obj
+{
+	uint32_t i;
+
+	if (count == 0)
+		return NO;
+
+	for (i = 0; i < size; i++)
+		if (data[i] != NULL && data[i] != DELETED &&
+		    [data[i]->object isEqual: obj])
+			return YES;
+
+	return NO;
+}
+
+- (BOOL)containsObjectIdenticalTo: (id)obj
+{
+	uint32_t i;
+
+	if (count == 0)
+		return NO;
+
+	for (i = 0; i < size; i++)
+		if (data[i] != NULL && data[i] != DELETED &&
+		    data[i]->object == obj)
+			return YES;
+
+	return NO;
 }
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state

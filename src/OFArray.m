@@ -246,6 +246,36 @@
 	return SIZE_MAX;
 }
 
+- (BOOL)containsObject: (id)obj
+{
+	id *objs = [array cArray];
+	size_t i, count = [array count];
+
+	if (objs == NULL)
+		return NO;
+
+	for (i = 0; i < count; i++)
+		if ([objs[i] isEqual: obj])
+			return YES;
+
+	return NO;
+}
+
+- (BOOL)containsObjectIdenticalTo: (id)obj
+{
+	id *objs = [array cArray];
+	size_t i, count = [array count];
+
+	if (objs == NULL)
+		return NO;
+
+	for (i = 0; i < count; i++)
+		if (objs[i] == obj)
+			return YES;
+
+	return NO;
+}
+
 - (id)firstObject
 {
 	id *first = [array firstItem];

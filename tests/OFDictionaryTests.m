@@ -52,6 +52,15 @@ static OFString *values[] = {
 	    [[dict objectForKey: keys[1]] isEqual: values[1]] &&
 	    [dict objectForKey: @"key3"] == nil)
 
+	TEST(@"-[containsObject:]",
+	    [dict containsObject: values[0]] == YES &&
+	    [dict containsObject: @"nonexistant"] == NO)
+
+	TEST(@"-[containsObjectIdenticalTo:]",
+	    [dict containsObjectIdenticalTo: values[0]] == YES &&
+	    [dict containsObjectIdenticalTo:
+	    [OFString stringWithString: values[0]]] == NO)
+
 	TEST(@"-[description]",
 	    [[dict description] isEqual: @"{key1 = value1; key2 = value2}"])
 

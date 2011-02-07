@@ -207,6 +207,34 @@
 	return YES;
 }
 
+- (BOOL)containsObject: (id)obj
+{
+	of_list_object_t *iter;
+
+	if (count == 0)
+		return NO;
+
+	for (iter = firstListObject; iter != NULL; iter = iter->next)
+		if ([iter->object isEqual: obj])
+			return YES;
+
+	return NO;
+}
+
+- (BOOL)containsObjectIdenticalTo: (id)obj
+{
+	of_list_object_t *iter;
+
+	if (count == 0)
+		return NO;
+
+	for (iter = firstListObject; iter != NULL; iter = iter->next)
+		if (iter->object == obj)
+			return YES;
+
+	return NO;
+}
+
 - copy
 {
 	OFList *new = [[OFList alloc] init];

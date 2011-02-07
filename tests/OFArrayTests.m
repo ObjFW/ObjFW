@@ -79,6 +79,15 @@ static OFString *c_ary[] = {
 	    [[a[1] objectAtIndex: 1] isEqual: c_ary[1]] &&
 	    [[a[1] objectAtIndex: 2] isEqual: c_ary[2]])
 
+	TEST(@"-[containsObject:]",
+	    [a[0] containsObject: c_ary[1]] == YES &&
+	    [a[0] containsObject: @"nonexistant"] == NO)
+
+	TEST(@"-[containsObject:]",
+	    [a[0] containsObjectIdenticalTo: c_ary[1]] == YES &&
+	    [a[0] containsObjectIdenticalTo:
+	    [OFString stringWithString: c_ary[1]]] == NO)
+
 	TEST(@"-[indexOfObject:]", [a[0] indexOfObject: c_ary[1]] == 1)
 
 	TEST(@"-[indexOfObjectIdenticalTo:]",

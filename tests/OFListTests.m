@@ -77,6 +77,15 @@ static OFString *strings[] = {
 
 	TEST(@"-[count]", [list count] == 3)
 
+	TEST(@"-[containsObject:]",
+	    [list containsObject: strings[1]] == YES &&
+	    [list containsObject: @"nonexistant"] == NO)
+
+	TEST(@"-[containsObjectIdenticalTo:]",
+	    [list containsObjectIdenticalTo: strings[1]] == YES &&
+	    [list containsObjectIdenticalTo:
+	    [OFString stringWithString: strings[1]]] == NO)
+
 	TEST(@"-[copy]", (list = [[list copy] autorelease]) &&
 	    [[list firstListObject]->object isEqual: strings[0]] &&
 	    [[list firstListObject]->next->object isEqual: strings[1]] &&
