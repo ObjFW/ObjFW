@@ -343,13 +343,19 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	    upperTableSize, lowerTableSize, casefoldingTableSize]];
 
 	[f writeString:
+	    @"#ifdef __cplusplus\n"
+	    @"extern \"C\" {\n"
+	    @"#endif\n"
 	    @"extern const of_unichar_t* const\n"
 	    @"    of_unicode_upper_table[OF_UNICODE_UPPER_TABLE_SIZE];\n"
 	    @"extern const of_unichar_t* const\n"
 	    @"    of_unicode_lower_table[OF_UNICODE_LOWER_TABLE_SIZE];\n"
 	    @"extern const of_unichar_t* const\n"
 	    @"    of_unicode_casefolding_table["
-	    @"OF_UNICODE_CASEFOLDING_TABLE_SIZE];\n"];
+	    @"OF_UNICODE_CASEFOLDING_TABLE_SIZE];\n"
+	    @"#ifdef __cplusplus\n"
+	    @"}\n"
+	    @"#endif\n"];
 
 	[pool release];
 }
