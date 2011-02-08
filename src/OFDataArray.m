@@ -166,7 +166,7 @@ void _references_to_categories_of_OFDataArray()
 	return data + (count - 1) * itemSize;
 }
 
-- (void)addItem: (void*)item
+- (void)addItem: (const void*)item
 {
 	if (SIZE_MAX - count < 1)
 		@throw [OFOutOfRangeException newWithClass: isa];
@@ -180,7 +180,7 @@ void _references_to_categories_of_OFDataArray()
 	count++;
 }
 
-- (void)addItem: (void*)item
+- (void)addItem: (const void*)item
 	atIndex: (size_t)index
 {
 	[self addNItems: 1
@@ -189,7 +189,7 @@ void _references_to_categories_of_OFDataArray()
 }
 
 - (void)addNItems: (size_t)nitems
-       fromCArray: (void*)carray
+       fromCArray: (const void*)carray
 {
 	if (nitems > SIZE_MAX - count)
 		@throw [OFOutOfRangeException newWithClass: isa];
@@ -203,7 +203,7 @@ void _references_to_categories_of_OFDataArray()
 }
 
 - (void)addNItems: (size_t)nitems
-       fromCArray: (void*)carray
+       fromCArray: (const void*)carray
 	  atIndex: (size_t)index
 {
 	if (nitems > SIZE_MAX - count)
@@ -335,7 +335,7 @@ void _references_to_categories_of_OFDataArray()
 @end
 
 @implementation OFBigDataArray
-- (void)addItem: (void*)item
+- (void)addItem: (const void*)item
 {
 	size_t nsize, lastpagebyte;
 
@@ -356,7 +356,7 @@ void _references_to_categories_of_OFDataArray()
 }
 
 - (void)addNItems: (size_t)nitems
-       fromCArray: (void*)carray
+       fromCArray: (const void*)carray
 {
 	size_t nsize, lastpagebyte;
 
@@ -377,7 +377,7 @@ void _references_to_categories_of_OFDataArray()
 }
 
 - (void)addNItems: (size_t)nitems
-       fromCArray: (void*)carray
+       fromCArray: (const void*)carray
 	  atIndex: (size_t)index
 {
 	size_t nsize, lastpagebyte;
