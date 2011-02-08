@@ -48,7 +48,13 @@ static OFString *module = @"OFXMLElement";
 				stringValue: @"test"]) &&
 	    R([elem[2] setPrefix: @"objfw-test"
 		    forNamespace: @"urn:objfw:test"]) &&
-	    [[elem[2] stringValue] isEqual: @"<objfw-test:foo test='test'/>"])
+	    [[elem[2] stringValue] isEqual: @"<objfw-test:foo test='test'/>"] &&
+	    (elem[3] = [OFXMLElement elementWithName: @"foo"
+					   namespace: @"urn:objfw:test"]) &&
+	    R([elem[3] addAttributeWithName: @"test"
+				stringValue: @"test"]) &&
+	    [[elem[3] stringValue] isEqual:
+	    @"<foo xmlns='urn:objfw:test' test='test'/>"])
 
 	TEST(@"+[elementWithName:namespace:stringValue:]",
 	    (elem[3] = [OFXMLElement elementWithName: @"foo"

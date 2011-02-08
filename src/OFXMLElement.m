@@ -241,6 +241,8 @@
 	} else
 		all_namespaces = namespaces;
 
+	prefix = [all_namespaces objectForKey: (ns != nil ? ns : @"")];
+
 	i = 0;
 	len = [name cStringLength] + 3;
 	str_c = [self allocMemoryWithSize: len];
@@ -248,12 +250,7 @@
 	/* Start of tag */
 	str_c[i++] = '<';
 
-	if ((ns == nil && def_ns != nil) || (ns != nil && def_ns == nil) ||
-	    (ns != nil && ![ns isEqual: def_ns])) {
-		if ((prefix = [all_namespaces objectForKey:
-		    (ns != nil ? ns : (OFString*)@"")]) == nil)
-			@throw [OFUnboundNamespaceException newWithClass: isa
-							       namespace: ns];
+	if (prefix != nil && ![ns isEqual: def_ns]) {
 		len += [prefix cStringLength] + 1;
 		@try {
 			str_c = [self resizeMemory: str_c
@@ -271,6 +268,27 @@
 
 	memcpy(str_c + i, [name cString], [name cStringLength]);
 	i += [name cStringLength];
+
+	/* xmlns if necessary */
+	if (ns != nil && prefix == nil && ![ns isEqual: def_ns]) {
+		len += [ns cStringLength] + 9;
+
+		@try {
+			str_c = [self resizeMemory: str_c
+					    toSize: len];
+		} @catch (id e) {
+			[self freeMemory: str_c];
+			@throw e;
+		}
+
+		memcpy(str_c + i, " xmlns='", 8);
+		i += 8;
+		memcpy(str_c + i, [ns cString], [ns cStringLength]);
+		i += [ns cStringLength];
+		str_c[i++] = '\'';
+
+		def_ns = ns;
+	}
 
 	/* Attributes */
 	attrs_carray = [attributes cArray];
@@ -335,7 +353,7 @@
 			    appendCStringWithoutUTF8Checking:),
 			    [[children_carray[j]
 			    _stringValueWithParentNamespaces: all_namespaces
-			    parentDefaultNamespace: defaultNamespace] cString]);
+			    parentDefaultNamespace: def_ns] cString]);
 
 		len += [tmp cStringLength] + [name cStringLength] + 2;
 		@try {
