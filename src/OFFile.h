@@ -180,7 +180,9 @@ extern void of_log(OFConstantString*, ...);
  */
 + (void)linkFileAtPath: (OFString*)src
 		toPath: (OFString*)dest;
+#endif
 
+#if !defined(_WIN32) && !defined(_PSP)
 /**
  * Symlinks a file.
  *

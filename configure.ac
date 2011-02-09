@@ -1,6 +1,11 @@
 AC_INIT(ObjFW, 0.4-dev, js@webkeks.org)
 AC_CONFIG_SRCDIR(src)
 
+AS_IF([test x"$host" = x"psp"], [
+	LIBS="$LIBS -lc -lpspkernel -lpspuser"
+	LIBS="$LIBS -lpspnet -lpspnet_inet -lpspnet_resolver"
+])
+
 AC_CANONICAL_HOST
 
 AC_LANG([Objective C])
@@ -116,22 +121,22 @@ case $objc_runtime in
 			[Whether we use the ObjFW runtime])
 		AC_SUBST(GNU_RUNTIME, "-fgnu-runtime")
 		OBJCFLAGS="$OBJCFLAGS -fgnu-runtime"
-		LIBS="$LIBS -lobjfw-rt"
+		LIBS="-lobjfw-rt $LIBS"
 		;;
 	Apple)
 		AC_DEFINE(OF_APPLE_RUNTIME, 1,
 			[Whether we use the Apple ObjC runtime])
-		LIBS="$LIBS -lobjc"
+		LIBS="-lobjc $LIBS"
 		;;
 	GNU)
 		AC_DEFINE(OF_GNU_RUNTIME, 1,
 			[Whether we use the GNU ObjC runtime])
-		LIBS="$LIBS -lobjc"
+		LIBS="-lobjc $LIBS"
 		;;
 	"old GNU")
 		AC_DEFINE(OF_OLD_GNU_RUNTIME, 1,
 			[Whether we use the old GNU ObjC runtime])
-		LIBS="$LIBS -lobjc"
+		LIBS="-lobjc $LIBS"
 		;;
 	*)
 		AC_MSG_RESULT(none)

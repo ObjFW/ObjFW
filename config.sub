@@ -734,6 +734,10 @@ case $basic_machine in
 		basic_machine=m68k-atari
 		os=-mint
 		;;
+	psp)
+		basic_machine=mipsallegrexel-psp
+		os=-elf
+		;;
 	mips3*-*)
 		basic_machine=`echo $basic_machine | sed -e 's/mips3/mips64/'`
 		;;

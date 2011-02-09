@@ -594,7 +594,9 @@ of_log(OFConstantString *fmt, ...)
 						sourcePath: src
 					   destinationPath: dest];
 }
+#endif
 
+#if !defined(_WIN32) && !defined(_PSP)
 + (void)symlinkFileAtPath: (OFString*)src
 		   toPath: (OFString*)dest
 {

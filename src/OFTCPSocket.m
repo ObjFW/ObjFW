@@ -105,7 +105,9 @@ static OFMutex *mutex = nil;
 #else
 	BOOL connected = NO;
 	struct hostent *he;
+# ifndef _PSP
 	struct servent *se;
+# endif
 	struct sockaddr_in addr;
 	uint16_t port;
 	char **ip;
@@ -127,9 +129,11 @@ static OFMutex *mutex = nil;
 			 service: service];
 	}
 
+# ifndef _PSP
 	if ((se = getservbyname([service cString], "tcp")) != NULL)
 		port = se->s_port;
 	else {
+# endif
 		@try {
 			intmax_t p = [service decimalValue];
 
@@ -155,7 +159,9 @@ static OFMutex *mutex = nil;
 # endif
 			@throw e;
 		}
+# ifndef _PSP
 	}
+# endif
 
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
@@ -252,7 +258,9 @@ static OFMutex *mutex = nil;
 	freeaddrinfo(res);
 #else
 	struct hostent *he;
+# ifndef _PSP
 	struct servent *se;
+# endif
 	struct sockaddr_in addr;
 	uint16_t port;
 
@@ -270,9 +278,11 @@ static OFMutex *mutex = nil;
 			 service: service];
 	}
 
+# ifndef _PSP
 	if ((se = getservbyname([service cString], "tcp")) != NULL)
 		port = se->s_port;
 	else {
+# endif
 		@try {
 			intmax_t p = [service decimalValue];
 
@@ -296,7 +306,9 @@ static OFMutex *mutex = nil;
 # endif
 			@throw e;
 		}
+# ifndef _PSP
 	}
+# endif
 
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;

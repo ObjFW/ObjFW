@@ -48,7 +48,7 @@
 # define GET_SOCK_ERRNO	errno
 # define ERRFMT		"Error string was: %s"
 # define ERRPARAM	strerror(errNo)
-# ifndef HAVE_THREADSAFE_GETADDRINFO
+# if !defined(HAVE_THREADSAFE_GETADDRINFO) && !defined(_PSP)
 #  define AT_ERRPARAM	hstrerror(errNo)
 # else
 #  define AT_ERRPARAM	strerror(errNo)

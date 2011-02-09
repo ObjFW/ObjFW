@@ -26,6 +26,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifdef _PSP
+# define INTMAX_MAX LONG_LONG_MAX
+#endif
+
 #ifdef __GNUC__
 # define OF_INLINE inline __attribute__((always_inline))
 # define OF_LIKELY(cond) __builtin_expect(!!(cond), 1)
