@@ -241,7 +241,8 @@
 	} else
 		all_namespaces = namespaces;
 
-	prefix = [all_namespaces objectForKey: (ns != nil ? ns : @"")];
+	prefix = [all_namespaces objectForKey:
+	    (ns != nil ? ns : (OFString*)@"")];
 
 	i = 0;
 	len = [name cStringLength] + 3;
