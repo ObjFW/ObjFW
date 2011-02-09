@@ -308,6 +308,12 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 - (size_t)indexOfLastOccurrenceOfString: (OFString*)str;
 
 /**
+ * \param str The string to search
+ * \return Whether the string contains the specified string
+ */
+- (BOOL)containsString: (OFString*)str;
+
+/**
  * \param start The index where the substring starts
  * \param end The index where the substring ends.
  *	      This points BEHIND the last character!

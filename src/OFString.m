@@ -891,6 +891,25 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	}
 }
 
+- (BOOL)containsString: (OFString*)str
+{
+	const char *str_c = [str cString];
+	size_t str_len = [str cStringLength];
+	size_t i;
+
+	if (str_len == 0)
+		return YES;
+
+	if (str_len > length)
+		return NO;
+
+	for (i = 0; i <= length - str_len; i++)
+		if (!memcmp(string + i, str_c, str_len))
+			return YES;
+
+	return NO;
+}
+
 - (OFString*)substringFromIndex: (size_t)start
 			toIndex: (size_t)end
 {
