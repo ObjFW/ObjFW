@@ -120,13 +120,15 @@ objc_enumerationMutation(id obj)
 	objc_setEnumerationMutationHandler(enumeration_mutation_handler);
 #endif
 
-#ifndef _WIN32
-	if ((of_pagesize = sysconf(_SC_PAGESIZE)) < 1)
-		of_pagesize = 4096;
-#else
+#if defined(_WIN32)
 	SYSTEM_INFO si;
 	GetSystemInfo(&si);
 	of_pagesize = si.dwPageSize;
+#elif defined(_PSP)
+	of_pagesize = 512;
+#else
+	if ((of_pagesize = sysconf(_SC_PAGESIZE)) < 1)
+		of_pagesize = 4096;
 #endif
 }
 

@@ -2,6 +2,7 @@ AC_INIT(ObjFW, 0.4-dev, js@webkeks.org)
 AC_CONFIG_SRCDIR(src)
 
 AS_IF([test x"$host" = x"psp"], [
+	OBJCFLAGS="-G0 $OBJCFLAGS"
 	LIBS="$LIBS -lc -lpspkernel -lpspuser"
 	LIBS="$LIBS -lpspnet -lpspnet_inet -lpspnet_resolver"
 ])

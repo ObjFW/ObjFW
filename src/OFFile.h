@@ -109,6 +109,7 @@ extern void of_log(OFConstantString*, ...);
  */
 + (OFDate*)modificationDateOfFile: (OFString*)path;
 
+#ifndef _PSP
 /**
  * Changes the mode of a file.
  *
@@ -120,8 +121,9 @@ extern void of_log(OFConstantString*, ...);
  */
 + (void)changeModeOfFile: (OFString*)path
 		  toMode: (mode_t)mode;
+#endif
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(_PSP)
 /**
  * Changes the owner of a file.
  *

@@ -398,15 +398,16 @@ of_log(OFConstantString *fmt, ...)
 								 path: path];
 }
 
+#ifndef _PSP
 + (void)changeModeOfFile: (OFString*)path
 		  toMode: (mode_t)mode
 {
-#ifndef _WIN32
+# ifndef _WIN32
 	if (chmod([path cString], mode))
 		@throw [OFChangeFileModeFailedException newWithClass: self
 								path: path
 								mode: mode];
-#else
+# else
 	DWORD attrs = GetFileAttributes([path cString]);
 
 	if (attrs == INVALID_FILE_ATTRIBUTES)
@@ -423,8 +424,9 @@ of_log(OFConstantString *fmt, ...)
 		@throw [OFChangeFileModeFailedException newWithClass: self
 								path: path
 								mode: mode];
-#endif
+# endif
 }
+#endif
 
 + (OFDate*)modificationDateOfFile: (OFString*)path
 {
@@ -440,7 +442,7 @@ of_log(OFConstantString *fmt, ...)
 	return [OFDate dateWithTimeIntervalSince1970: s.st_mtime];
 }
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(_PSP)
 + (void)changeOwnerOfFile: (OFString*)path
 		  toOwner: (OFString*)owner
 		    group: (OFString*)group
@@ -528,7 +530,7 @@ of_log(OFConstantString *fmt, ...)
 			       fromBuffer: buf];
 		}
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(_PSP)
 		if (!override) {
 			struct stat s;
 
