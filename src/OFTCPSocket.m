@@ -26,6 +26,7 @@
 #if !defined(HAVE_THREADSAFE_GETADDRINFO) && !defined(_WIN32)
 # include <netinet/in.h>
 # include <arpa/inet.h>
+# include <netdb.h>
 #endif
 
 #import "OFTCPSocket.h"
