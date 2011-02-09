@@ -215,6 +215,10 @@
 
 - (void)appendString: (OFString*)str
 {
+	if (str == nil)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
 	[self appendCString: [str cString]];
 }
 
