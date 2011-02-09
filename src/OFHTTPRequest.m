@@ -127,7 +127,7 @@
 		OFEnumerator *enumerator;
 		OFString *key;
 		int status;
-		char *t;
+		const char *t;
 
 		if (requestType == OF_HTTP_REQUEST_TYPE_GET)
 			t = "GET";

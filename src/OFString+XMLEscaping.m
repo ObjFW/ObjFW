@@ -28,7 +28,8 @@ int _OFString_XMLEscaping_reference;
 @implementation OFString (XMLEscaping)
 - (OFString*)stringByXMLEscaping
 {
-	char *str_c, *append, *tmp;
+	char *str_c, *tmp;
+	const char *append;
 	size_t len, append_len;
 	size_t i, j;
 	OFString *ret;
