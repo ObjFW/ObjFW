@@ -196,6 +196,8 @@
 		4B6EF685123535C80076B512 /* test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = test.m; path = tests/objc_sync/test.m; sourceTree = SOURCE_ROOT; };
 		4B981CDE116F71DD00294DB7 /* OFSeekableStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSeekableStream.h; path = src/OFSeekableStream.h; sourceTree = "<group>"; };
 		4B981CDF116F71DD00294DB7 /* OFSeekableStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSeekableStream.m; path = src/OFSeekableStream.m; sourceTree = "<group>"; };
+		4B99250F12E0780000215DBE /* OFHTTPRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFHTTPRequest.h; path = src/OFHTTPRequest.h; sourceTree = "<group>"; };
+		4B99251012E0780000215DBE /* OFHTTPRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHTTPRequest.m; path = src/OFHTTPRequest.m; sourceTree = "<group>"; };
 		4BAF5F46123460C900F4E111 /* OFCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCollection.h; path = src/OFCollection.h; sourceTree = "<group>"; };
 		4BAF5F47123460C900F4E111 /* OFStreamObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamObserver.h; path = src/OFStreamObserver.h; sourceTree = "<group>"; };
 		4BAF5F48123460C900F4E111 /* OFStreamObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamObserver.m; path = src/OFStreamObserver.m; sourceTree = "<group>"; };
@@ -277,6 +279,8 @@
 				4B6799671099E7C50041064A /* OFFile.m */,
 				4BF1BCC011C9663F0025511F /* OFHash.h */,
 				4BF1BCC111C9663F0025511F /* OFHash.m */,
+				4B99250F12E0780000215DBE /* OFHTTPRequest.h */,
+				4B99251012E0780000215DBE /* OFHTTPRequest.m */,
 				4B67996C1099E7C50041064A /* OFList.h */,
 				4B67996D1099E7C50041064A /* OFList.m */,
 				4BF1BCC211C9663F0025511F /* OFMD5Hash.h */,

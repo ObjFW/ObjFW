@@ -20,6 +20,7 @@
 
 @class OFString;
 @class OFURL;
+@class OFHTTPRequest;
 
 /**
  * \brief An exception indicating an object could not be allocated.
@@ -1284,4 +1285,57 @@
  * \return The URL whose protocol is unsupported
  */
 - (OFURL*)URL;
+@end
+
+/**
+ * \brief An exception indicating that the server sent an invalid reply.
+ */
+@interface OFInvalidServerReplyException: OFException
+@end
+
+/**
+ * \brief An exception indicating that a HTTP request failed.
+ */
+@interface OFHTTPRequestFailedException: OFException
+{
+	OFHTTPRequest *HTTPRequest;
+	short statusCode;
+}
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFHTTPRequest *HTTPRequest;
+@property (readonly) short statusCode;
+#endif
+
+/**
+ * \param class_ The class of the object which caused the exception
+ * \param request The HTTP request which failed
+ * \param code The status code of the fialed HTTP request
+ * \return A new HTTP request failed exception
+ */
++ newWithClass: (Class)class_
+   HTTPRequest: (OFHTTPRequest*)request
+     statusCode: (short)code;
+
+/**
+ * Initializes an already allocated HTTP request failed exception
+ *
+ * \param class_ The class of the object which caused the exception
+ * \param request The HTTP request which failed
+ * \param code The status code of the fialed HTTP request
+ * \return A new HTTP request failed exception
+ */
+- initWithClass: (Class)class_
+    HTTPRequest: (OFHTTPRequest*)request
+     statusCode: (short)code;
+
+/**
+ * \return The HTTP request which failed
+ */
+- (OFHTTPRequest*)HTTPRequest;
+
+/**
+ * \return The status code of the HTTP request
+ */
+- (short)statusCode;
 @end

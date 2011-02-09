@@ -17,6 +17,7 @@ SRCS = OFApplication.m		\
        OFExceptions.m		\
        OFFile.m			\
        OFHash.m			\
+       OFHTTPRequest.m		\
        OFEnumerator.m		\
        OFList.m			\
        OFMD5Hash.m		\

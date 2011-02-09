@@ -34,6 +34,8 @@
 #import "OFExceptions.h"
 #import "OFString.h"
 #import "OFTCPSocket.h"
+#import "OFHTTPRequest.h"
+#import "OFAutoreleasePool.h"
 
 #ifndef _WIN32
 # include <errno.h>
@@ -1885,5 +1887,103 @@
 - (OFURL*)URL
 {
 	return URL;
+}
+@end
+
+@implementation OFInvalidServerReplyException
+- (OFString*)description
+{
+	if (description != nil)
+		return description;
+
+	description = [[OFString alloc] initWithFormat:
+	    @"Got an invalid reply from the server in class %s",
+	    class_getName(inClass)];
+
+	return description;
+}
+@end
+
+@implementation OFHTTPRequestFailedException
++ newWithClass: (Class)class_
+   HTTPRequest: (OFHTTPRequest*)request
+    statusCode: (short)code
+{
+	return [[self alloc] initWithClass: class_
+			       HTTPRequest: request
+				statusCode: code];
+}
+
+- initWithClass: (Class)class_
+{
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class_
+    HTTPRequest: (OFHTTPRequest*)request
+     statusCode: (short)code
+{
+	self = [super initWithClass: class_];
+
+	@try {
+		HTTPRequest = [request retain];
+		statusCode = code;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[HTTPRequest release];
+
+	[super dealloc];
+}
+
+- (OFString*)description
+{
+	OFAutoreleasePool *pool;
+	const char *type = "(unknown)";
+
+	if (description != nil)
+		return description;
+
+	switch ([HTTPRequest requestType]) {
+	case OF_HTTP_REQUEST_TYPE_GET:
+		type = "GET";
+		break;
+	case OF_HTTP_REQUEST_TYPE_HEAD:
+		type = "HEAD";
+		break;
+	case OF_HTTP_REQUEST_TYPE_POST:
+		type = "POST";
+		break;
+	}
+
+	pool = [[OFAutoreleasePool alloc] init];
+
+	description = [[OFString alloc] initWithFormat:
+	    @"A HTTP %s request of class %s with URL %@ failed with code %d",
+	    type, class_getName(inClass), [HTTPRequest URL], statusCode];
+
+	[pool release];
+
+	return description;
+}
+
+- (OFHTTPRequest*)HTTPRequest
+{
+	return HTTPRequest;
+}
+
+- (short)statusCode
+{
+	return statusCode;
 }
 @end

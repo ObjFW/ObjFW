@@ -41,6 +41,8 @@
 #import "OFTCPSocket.h"
 #import "OFStreamObserver.h"
 
+#import "OFHTTPRequest.h"
+
 #import "OFHash.h"
 #import "OFMD5Hash.h"
 #import "OFSHA1Hash.h"
