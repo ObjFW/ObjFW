@@ -151,10 +151,10 @@ call_main(id obj)
 
 + (void)yield
 {
-#ifndef _WIN32
+#ifdef OF_HAVE_SCHED_YIELD
 	sched_yield();
 #else
-	Sleep(0);
+	[self sleepForTimeInterval: 0];
 #endif
 }
 
