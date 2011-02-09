@@ -37,6 +37,19 @@ static OFString *url_str = @"http://u:p@h:1234/f;p?q#f";
 	    R(u2 = [OFURL URLWithString: @"http://foo:80"]) &&
 	    R(u3 = [OFURL URLWithString: @"http://bar/"]))
 
+	TEST(@"+[URLWithString:relativeToURL:]",
+	    [[[OFURL URLWithString: @"/foo"
+		     relativeToURL: u1] description] isEqual:
+	    @"http://u:p@h:1234/foo"] &&
+	    [[[OFURL URLWithString: @"foo/bar?q"
+		     relativeToURL: [OFURL URLWithString: @"http://h/qux/quux"]]
+	    description] isEqual: @"http://h/qux/foo/bar?q"] &&
+	    [[[OFURL URLWithString: @"foo/bar"
+		     relativeToURL: [OFURL URLWithString: @"http://h/qux/?x"]]
+	    description] isEqual: @"http://h/qux/foo/bar"] &&
+	    [[[OFURL URLWithString: @"http://foo/?q"
+		     relativeToURL: u1] description] isEqual: @"http://foo/?q"])
+
 	TEST(@"-[description]",
 	    [[u1 description] isEqual: url_str] &&
 	    [[u2 description] isEqual: @"http://foo"] &&

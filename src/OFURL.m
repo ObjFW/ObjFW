@@ -22,6 +22,7 @@
 
 #import "OFURL.h"
 #import "OFString.h"
+#import "OFArray.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 #import "macros.h"
@@ -33,10 +34,62 @@
 	OF_HASH_ADD(hash, (h >> 8) & 0xFF);	\
 	OF_HASH_ADD(hash, h & 0xFF);
 
+static OF_INLINE OFString*
+resolve_relative_path(OFString *path)
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFMutableArray *array;
+	OFString *ret;
+	BOOL done = NO;
+
+	array = [[[path componentsSeparatedByString: @"/"] mutableCopy]
+	    autorelease];
+
+	while (!done) {
+		id *array_c = [array cArray];
+		size_t i, array_len = [array count];
+
+		done = YES;
+
+		for (i = 0; i < array_len; i++) {
+			if ([array_c[i] isEqual: @"."]) {
+				[array removeObjectAtIndex: i];
+				done = NO;
+
+				break;
+			}
+
+			if ([array_c[i] isEqual: @".."]) {
+				[array removeObjectAtIndex: i];
+
+				if (i > 0)
+					[array removeObjectAtIndex: i - 1];
+
+				done = NO;
+
+				break;
+			}
+		}
+	}
+
+	ret = [[array componentsJoinedByString: @"/"] retain];
+
+	[pool release];
+
+	return [ret autorelease];
+}
+
 @implementation OFURL
 + URLWithString: (OFString*)str
 {
 	return [[[self alloc] initWithString: str] autorelease];
+}
+
++ URLWithString: (OFString*)str
+  relativeToURL: (OFURL*)url
+{
+	return [[[self alloc] initWithString: str
+			       relativeToURL: url] autorelease];
 }
 
 - initWithString: (OFString*)str
@@ -143,6 +196,80 @@
 			}
 
 			path = [[OFString alloc] initWithCString: str_c];
+		}
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	} @finally {
+		if (str_c2 != NULL)
+			free(str_c2);
+	}
+
+	return self;
+}
+
+- initWithString: (OFString*)str
+   relativeToURL: (OFURL*)url
+{
+	char *str_c, *str_c2 = NULL;
+
+	if ([str containsString: @"://"])
+		return [self initWithString: str];
+
+	self = [super init];
+
+	@try {
+		char *tmp;
+
+		scheme = [url->scheme copy];
+		host = [url->host copy];
+		port = url->port;
+		user = [url->user copy];
+		password = [url->password copy];
+
+		if ((str_c2 = strdup([str cString])) == NULL)
+			@throw [OFOutOfMemoryException
+			     newWithClass: isa
+			    requestedSize: [str cStringLength]];
+
+		str_c = str_c2;
+
+		if ((tmp = strchr(str_c, '#')) != NULL) {
+			*tmp = '\0';
+			fragment = [[OFString alloc] initWithCString: tmp + 1];
+		}
+
+		if ((tmp = strchr(str_c, '?')) != NULL) {
+			*tmp = '\0';
+			query = [[OFString alloc] initWithCString: tmp + 1];
+		}
+
+		if ((tmp = strchr(str_c, ';')) != NULL) {
+			*tmp = '\0';
+			parameters = [[OFString alloc]
+			    initWithCString: tmp + 1];
+		}
+
+		if (*str_c == '/')
+			path = [[OFString alloc] initWithCString: str_c + 1];
+		else {
+			OFAutoreleasePool *pool;
+			OFString *s;
+
+			pool = [[OFAutoreleasePool alloc] init];
+
+			if ([url->path hasSuffix: @"/"])
+				s = [OFString stringWithFormat: @"%@%s",
+								url->path,
+								str_c];
+			else
+				s = [OFString stringWithFormat: @"%@/../%s",
+								url->path,
+								str_c];
+
+			path = [resolve_relative_path(s) copy];
+
+			[pool release];
 		}
 	} @catch (id e) {
 		[self release];

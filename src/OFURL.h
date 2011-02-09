@@ -47,18 +47,36 @@
 #endif
 
 /**
- * \param str A string describing an URL
+ * \param str A string describing a URL
  * \return A new, autoreleased OFURL
  */
 + URLWithString: (OFString*)str;
 
 /**
+ * \param str A string describing a URL
+ * \param url An URL to which the string is relative
+ * \return A new, autoreleased OFURL
+ */
++ URLWithString: (OFString*)str
+  relativeToURL: (OFURL*)url;
+
+/**
  * Initializes an already allocated OFURL.
  *
- * \param str A string describing an URL
+ * \param str A string describing a URL
  * \return An initialized OFURL
  */
 - initWithString: (OFString*)str;
+
+/**
+ * Initializes an already allocated OFURL.
+ *
+ * \param str A string describing a URL
+ * \param url A URL to which the string is relative
+ * \return An initialized OFURL
+ */
+- initWithString: (OFString*)str
+   relativeToURL: (OFURL*)url;
 
 /**
  * \return The scheme part of the URL
