@@ -30,3 +30,5 @@ src/objfw-defs.h
 src/ObjFW
 tests/tests
 tests/tests.exe
+tests/EBOOT.PBP
+tests/PARAM.SFO

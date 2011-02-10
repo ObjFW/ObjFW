@@ -22,6 +22,11 @@
 
 #import "TestsAppDelegate.h"
 
+#ifdef _PSP
+# include <pspmoduleinfo.h>
+PSP_MODULE_INFO("ObjFW Tests", 0, 0, 0);
+#endif
+
 OF_APPLICATION_DELEGATE(TestsAppDelegate)
 
 @implementation TestsAppDelegate
@@ -44,7 +49,7 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 	[of_stdout writeString: str];
 	[of_stdout writeString: @"\033[m"];
 #else
-#error No output method!
+# error No output method!
 #endif
 }
 

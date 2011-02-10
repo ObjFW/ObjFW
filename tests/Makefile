@@ -73,6 +73,12 @@ run-on-ios: all
 	echo "Signing and running tests binary on iOS device ${IOS_HOST}..."
 	ssh ${IOS_USER}@${IOS_HOST} 'cd ${IOS_TMP} && ldid -S tests && ./tests'
 
+EBOOT.PBP: ${PROG_NOINST}
+	psp-fixup-imports ${PROG_NOINST}
+	mksfo "ObjFW Tests" PARAM.SFO
+	psp-strip ${PROG_NOINST}
+	pack-pbp $@ PARAM.SFO NULL NULL NULL NULL NULL ${PROG_NOINST} NULL
+
 include ../buildsys.mk
 
 CPPFLAGS += -I../src -I.. -DSTDOUT
