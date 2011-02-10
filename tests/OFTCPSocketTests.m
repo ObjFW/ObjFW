@@ -48,7 +48,7 @@ static OFString *module = @"OFTCPSocket";
 	    (client = [OFTCPSocket socket]))
 
 	msg = [OFString stringWithFormat:
-	    @"-[bindToPort:onHost:] (port " @PRIu16 @")", port];
+	    @"-[bindToPort:onHost:] (port %" @PRIu16 @")", port];
 	TEST(msg, R([server bindToPort: port
 				onHost: @"127.0.0.1"]))
 
