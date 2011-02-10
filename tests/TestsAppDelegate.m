@@ -24,6 +24,8 @@
 
 #ifdef _PSP
 # include <pspmoduleinfo.h>
+# include <pspkernel.h>
+# include <pspdebug.h>
 PSP_MODULE_INFO("ObjFW Tests", 0, 0, 0);
 #endif
 
@@ -33,7 +35,29 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 - (void)outputString: (OFString*)str
 	   withColor: (int)color
 {
-#ifdef STDOUT
+#if defined(_PSP)
+	char i, space = ' ';
+	int y = pspDebugScreenGetY();
+
+	pspDebugScreenSetXY(0, y);
+	for (i = 0; i < 68; i++)
+		pspDebugScreenPrintData(&space, 1);
+
+	switch (color) {
+	case 0:
+		pspDebugScreenSetTextColor(0x00FFFF);
+		break;
+	case 1:
+		pspDebugScreenSetTextColor(0x00FF00);
+		break;
+	case 2:
+		pspDebugScreenSetTextColor(0x0000FF);
+		break;
+	}
+
+	pspDebugScreenSetXY(0, y);
+	pspDebugScreenPrintData([str cString], [str cStringLength]);
+#elif defined(STDOUT)
 	switch (color) {
 	case 0:
 		[of_stdout writeString: @"\r\033[K\033[1;33m"];
@@ -88,6 +112,10 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 
 - (void)applicationDidFinishLaunching
 {
+#ifdef _PSP
+	pspDebugScreenInit();
+#endif
+
 	[self objectTests];
 #ifdef OF_HAVE_BLOCKS
 	[self blockTests];

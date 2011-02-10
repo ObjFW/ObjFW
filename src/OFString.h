@@ -16,10 +16,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-
-#ifdef HAVE_INTTYPES_H
-# include <inttypes.h>
-#endif
+#include <inttypes.h>
 
 #import "OFObject.h"
 

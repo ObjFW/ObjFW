@@ -223,9 +223,19 @@ AC_EGREP_CPP(yes, [
 ])
 
 AC_CHECK_FUNC(asprintf, [
-	have_asprintf="yes"
-	AC_DEFINE(OF_HAVE_ASPRINTF, 1, [Whether we have asprintf])
-	AC_SUBST(ASPRINTF_DEF, "-DOF_HAVE_ASPRINTF")
+	case "$host" in
+		*-psp-*)
+			dnl asprintf is broken on the PSP, but snprintf works.
+			have_asprintf="no"
+			AC_SUBST(ASPRINTF_M, "asprintf.m")
+			ac_cv_snprintf_useful_ret="yes"
+			;;
+		*)
+			AC_DEFINE(OF_HAVE_ASPRINTF, 1,
+				[Whether we have asprintf])
+			AC_SUBST(ASPRINTF_DEF, "-DOF_HAVE_ASPRINTF")
+		;;
+	esac
 ], [
 	have_asprintf="no"
 	AC_SUBST(ASPRINTF_M, "asprintf.m")

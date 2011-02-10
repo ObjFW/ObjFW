@@ -125,7 +125,7 @@ objc_enumerationMutation(id obj)
 	GetSystemInfo(&si);
 	of_pagesize = si.dwPageSize;
 #elif defined(_PSP)
-	of_pagesize = 512;
+	of_pagesize = 4096;
 #else
 	if ((of_pagesize = sysconf(_SC_PAGESIZE)) < 1)
 		of_pagesize = 4096;
