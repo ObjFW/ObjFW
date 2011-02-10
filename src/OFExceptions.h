@@ -935,38 +935,32 @@
  */
 @interface OFAddressTranslationFailedException: OFException
 {
-	OFString *node;
-	OFString *service;
+	OFString *host;
 	int	 errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, nonatomic) OFString *node;
-@property (readonly, nonatomic) OFString *service;
+@property (readonly, nonatomic) OFString *host;
 @property (readonly) int errNo;
 #endif
 
 /**
  * \param class_ The class of the object which caused the exception
- * \param node The node for which translation was requested
- * \param service The service of the node for which translation was requested
+ * \param host The host for which translation was requested
  * \return A new address translation failed exception
  */
 + newWithClass: (Class)class_
-	  node: (OFString*)node
-       service: (OFString*)service;
+	  host: (OFString*)host;
 
 /**
  * Initializes an already allocated address translation failed exception.
  *
  * \param class_ The class of the object which caused the exception
- * \param node The node for which translation was requested
- * \param service The service of the node for which translation was requested
+ * \param host The host for which translation was requested
  * \return An initialized address translation failed exception
  */
 - initWithClass: (Class)class_
-	   node: (OFString*)node
-	service: (OFString*)service;
+	   host: (OFString*)host;
 
 /**
  * \return The errno from when the exception was created
@@ -974,14 +968,9 @@
 - (int)errNo;
 
 /**
- * /return The node for which translation was requested
+ * /return The host for which translation was requested
  */
-- (OFString*)node;
-
-/**
- * \return The service of the node for which translation was requested
- */
-- (OFString*)service;
+- (OFString*)host;
 @end
 
 /**
@@ -989,38 +978,38 @@
  */
 @interface OFConnectionFailedException: OFException
 {
-	OFString *node;
-	OFString *service;
+	OFString *host;
+	uint16_t port;
 	int	 errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, nonatomic) OFString *node;
-@property (readonly, nonatomic) OFString *service;
+@property (readonly, nonatomic) OFString *host;
+@property (readonly) uint16_t port;
 @property (readonly) int errNo;
 #endif
 
 /**
  * \param class_ The class of the object which caused the exception
- * \param node The node to which the connection failed
- * \param service The service on the node to which the connection failed
+ * \param host The host to which the connection failed
+ * \param port The port on the host to which the connection failed
  * \return A new connection failed exception
  */
 + newWithClass: (Class)class_
-	  node: (OFString*)node
-       service: (OFString*)service;
+	  host: (OFString*)host
+	  port: (uint16_t)port;
 
 /**
  * Initializes an already allocated connection failed exception.
  *
  * \param class_ The class of the object which caused the exception
- * \param node The node to which the connection failed
- * \param service The service on the node to which the connection failed
+ * \param host The host to which the connection failed
+ * \param port The port on the host to which the connection failed
  * \return An initialized connection failed exception
  */
 - initWithClass: (Class)class_
-	   node: (OFString*)node
-	service: (OFString*)service;
+	   host: (OFString*)host
+	   port: (uint16_t)port;
 
 /**
  * \return The errno from when the exception was created
@@ -1028,14 +1017,14 @@
 - (int)errNo;
 
 /**
- * \return The node to which the connection failed
+ * \return The host to which the connection failed
  */
-- (OFString*)node;
+- (OFString*)host;
 
 /**
- * \return The service on the node to which the connection failed
+ * \return The port on the host to which the connection failed
  */
-- (OFString*)service;
+- (uint16_t)port;
 @end
 
 /**
@@ -1043,38 +1032,38 @@
  */
 @interface OFBindFailedException: OFException
 {
-	OFString *node;
-	OFString *service;
+	OFString *host;
+	uint16_t port;
 	int	 errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, nonatomic) OFString *node;
-@property (readonly, nonatomic) OFString *service;
+@property (readonly, nonatomic) OFString *host;
+@property (readonly) uint16_t port;
 @property (readonly) int errNo;
 #endif
 
 /**
  * \param class_ The class of the object which caused the exception
- * \param node The node on which binding failed
- * \param service The service on which binding failed
+ * \param host The host on which binding failed
+ * \param port The port on which binding failed
  * \return A new bind failed exception
  */
 + newWithClass: (Class)class_
-	  node: (OFString*)node
-       service: (OFString*)service;
+	  host: (OFString*)host
+	  port: (uint16_t)port;
 
 /**
  * Initializes an already allocated bind failed exception.
  *
  * \param class_ The class of the object which caused the exception
- * \param node The node on which binding failed
- * \param service The service on which binding failed
+ * \param host The host on which binding failed
+ * \param port The port on which binding failed
  * \return An initialized bind failed exception
  */
 - initWithClass: (Class)class_
-	   node: (OFString*)node
-	service: (OFString*)service;
+	   host: (OFString*)host
+	   port: (uint16_t)port;
 
 /**
  * \return The errno from when the exception was created
@@ -1082,14 +1071,14 @@
 - (int)errNo;
 
 /**
- * \return The node on which binding failed
+ * \return The host on which binding failed
  */
-- (OFString*)node;
+- (OFString*)host;
 
 /**
- * \return The service on which binding failed
+ * \return The port on which binding failed
  */
-- (OFString*)service;
+- (uint16_t)port;
 @end
 
 /**

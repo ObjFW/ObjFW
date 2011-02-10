@@ -68,24 +68,24 @@ static OFMutex *mutex = nil;
 	return self;
 }
 
-- (void)connectToService: (OFString*)service
-		  onNode: (OFString*)node
+- (void)connectToHost: (OFString*)host
+	       onPort: (uint16_t)port
 {
 	if (sock != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException newWithClass: isa];
 
 #ifdef HAVE_THREADSAFE_GETADDRINFO
 	struct addrinfo hints, *res, *res0;
+	char port_s[7];
 
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
+	snprintf(port_s, 7, "%" PRIu16, port);
 
-	if (getaddrinfo([node cString], [service cString], &hints, &res0))
-		@throw [OFAddressTranslationFailedException
-		    newWithClass: isa
-			    node: node
-			 service: service];
+	if (getaddrinfo([host cString], port_s, &hints, &res0))
+		@throw [OFAddressTranslationFailedException newWithClass: isa
+								    host: host];
 
 	for (res = res0; res != NULL; res = res->ai_next) {
 		if ((sock = socket(res->ai_family, res->ai_socktype,
@@ -105,11 +105,7 @@ static OFMutex *mutex = nil;
 #else
 	BOOL connected = NO;
 	struct hostent *he;
-# ifndef _PSP
-	struct servent *se;
-# endif
 	struct sockaddr_in addr;
-	uint16_t port;
 	char **ip;
 # ifdef OF_THREADS
 	OFDataArray *addrlist;
@@ -118,54 +114,18 @@ static OFMutex *mutex = nil;
 	[mutex lock];
 # endif
 
-	if ((he = gethostbyname([node cString])) == NULL) {
+	if ((he = gethostbyname([host cString])) == NULL) {
 # ifdef OF_THREADS
 		[addrlist release];
 		[mutex unlock];
 # endif
-		@throw [OFAddressTranslationFailedException
-		    newWithClass: isa
-			    node: node
-			 service: service];
+		@throw [OFAddressTranslationFailedException newWithClass: isa
+								    host: host];
 	}
-
-# ifndef _PSP
-	if ((se = getservbyname([service cString], "tcp")) != NULL)
-		port = se->s_port;
-	else {
-# endif
-		@try {
-			intmax_t p = [service decimalValue];
-
-			if (p < 1 || p > 65535)
-				@throw [OFOutOfRangeException
-				    newWithClass: isa];
-
-			port = of_bswap16_if_le(p);
-		} @catch (OFInvalidFormatException *e) {
-			[e release];
-# ifdef OF_THREADS
-			[addrlist release];
-			[mutex unlock];
-# endif
-			@throw [OFAddressTranslationFailedException
-			    newWithClass: isa
-				    node: node
-				 service: service];
-		} @catch (id e) {
-# ifdef OF_THREADS
-			[addrlist release];
-			[mutex unlock];
-# endif
-			@throw e;
-		}
-# ifndef _PSP
-	}
-# endif
 
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
-	addr.sin_port = port;
+	addr.sin_port = of_bswap16_if_le(port);
 
 	if (he->h_addrtype != AF_INET ||
 	    (sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
@@ -173,10 +133,9 @@ static OFMutex *mutex = nil;
 		[addrlist release];
 		[mutex unlock];
 # endif
-		@throw [OFConnectionFailedException
-		    newWithClass: isa
-			    node: node
-			 service: service];
+		@throw [OFConnectionFailedException newWithClass: isa
+							    host: host
+							    port: port];
 	}
 
 # ifdef OF_THREADS
@@ -218,110 +177,70 @@ static OFMutex *mutex = nil;
 
 	if (sock == INVALID_SOCKET)
 		@throw [OFConnectionFailedException newWithClass: isa
-							    node: node
-							 service: service];
+							    host: host
+							    port: port];
 }
 
-- (void)bindService: (OFString*)service
-	     onNode: (OFString*)node
+- (void)bindToPort: (uint16_t)port
+	    onHost: (OFString*)host
 {
 	if (sock != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException newWithClass: isa];
 
 #ifdef HAVE_THREADSAFE_GETADDRINFO
 	struct addrinfo hints, *res;
+	char port_s[7];
 
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
+	snprintf(port_s, 7, "%" PRIu16, port);
 
-	if (getaddrinfo([node cString], [service cString], &hints, &res))
-		@throw [OFAddressTranslationFailedException
-		    newWithClass: isa
-			    node: node
-			 service: service];
+	if (getaddrinfo([host cString], port_s, &hints, &res))
+		@throw [OFAddressTranslationFailedException newWithClass: isa
+								    host: host];
 
 	if ((sock = socket(res->ai_family, SOCK_STREAM, 0)) == INVALID_SOCKET)
 		@throw [OFBindFailedException newWithClass: isa
-						      node: node
-						   service: service];
+						      host: host
+						      port: port];
 
 	if (bind(sock, res->ai_addr, res->ai_addrlen) == -1) {
 		freeaddrinfo(res);
 		close(sock);
 		sock = INVALID_SOCKET;
 		@throw [OFBindFailedException newWithClass: isa
-						      node: node
-						   service: service];
+						      host: host
+						      port: port];
 	}
 
 	freeaddrinfo(res);
 #else
 	struct hostent *he;
-# ifndef _PSP
-	struct servent *se;
-# endif
 	struct sockaddr_in addr;
-	uint16_t port;
 
 # ifdef OF_THREADS
 	[mutex lock];
 # endif
 
-	if ((he = gethostbyname([node cString])) == NULL) {
+	if ((he = gethostbyname([host cString])) == NULL) {
 # ifdef OF_THREADS
 		[mutex unlock];
 # endif
-		@throw [OFAddressTranslationFailedException
-		    newWithClass: isa
-			    node: node
-			 service: service];
+		@throw [OFAddressTranslationFailedException newWithClass: isa
+								    host: host];
 	}
-
-# ifndef _PSP
-	if ((se = getservbyname([service cString], "tcp")) != NULL)
-		port = se->s_port;
-	else {
-# endif
-		@try {
-			intmax_t p = [service decimalValue];
-
-			if (p < 1 || p > 65535)
-				@throw [OFOutOfRangeException
-				    newWithClass: isa];
-
-			port = of_bswap16_if_le(p);
-		} @catch (OFInvalidFormatException *e) {
-			[e release];
-# ifdef OF_THREADS
-			[mutex unlock];
-# endif
-			@throw [OFAddressTranslationFailedException
-			    newWithClass: isa
-				    node: node
-				 service: service];
-		} @catch (id e) {
-# ifdef OF_THREADS
-			[mutex unlock];
-# endif
-			@throw e;
-		}
-# ifndef _PSP
-	}
-# endif
 
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
-	addr.sin_port = port;
+	addr.sin_port = of_bswap16_if_le(port);
 
 	if (he->h_addrtype != AF_INET || he->h_addr_list[0] == NULL) {
 # ifdef OF_THREADS
 		[mutex unlock];
 # endif
-		@throw [OFAddressTranslationFailedException
-		    newWithClass: isa
-			    node: node
-			 service: service];
+		@throw [OFAddressTranslationFailedException newWithClass: isa
+								    host: host];
 	}
 
 	memcpy(&addr.sin_addr.s_addr, he->h_addr_list[0], he->h_length);
@@ -331,15 +250,15 @@ static OFMutex *mutex = nil;
 # endif
 	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
 		@throw [OFBindFailedException newWithClass: isa
-						      node: node
-						   service: service];
+						      host: host
+						      port: port];
 
 	if (bind(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
 		close(sock);
 		sock = INVALID_SOCKET;
 		@throw [OFBindFailedException newWithClass: isa
-						      node: node
-						   service: service];
+						      host: host
+						      port: port];
 	}
 #endif
 }
@@ -412,33 +331,33 @@ static OFMutex *mutex = nil;
 						       selector: _cmd];
 
 #ifdef HAVE_THREADSAFE_GETADDRINFO
-	char *node = [self allocMemoryWithSize: NI_MAXHOST];
+	char *host = [self allocMemoryWithSize: NI_MAXHOST];
 
 	@try {
-		if (getnameinfo(sockAddr, sockAddrLen, node, NI_MAXHOST, NULL,
+		if (getnameinfo(sockAddr, sockAddrLen, host, NI_MAXHOST, NULL,
 		    0, NI_NUMERICHOST))
 			@throw [OFAddressTranslationFailedException
 			    newWithClass: isa];
 
-		return [OFString stringWithCString: node];
+		return [OFString stringWithCString: host];
 	} @finally {
-		[self freeMemory: node];
+		[self freeMemory: host];
 	}
 #else
-	char *node;
+	char *host;
 
 # ifdef OF_THREADS
 	[mutex lock];
 
 	@try {
 # endif
-		node = inet_ntoa(((struct sockaddr_in*)sockAddr)->sin_addr);
+		host = inet_ntoa(((struct sockaddr_in*)sockAddr)->sin_addr);
 
-		if (node == NULL)
+		if (host == NULL)
 			@throw [OFAddressTranslationFailedException
 			    newWithClass: isa];
 
-		return [OFString stringWithCString: node];
+		return [OFString stringWithCString: host];
 # ifdef OF_THREADS
 	} @finally {
 		[mutex unlock];

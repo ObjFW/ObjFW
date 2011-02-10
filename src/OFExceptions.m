@@ -1359,12 +1359,10 @@
 
 @implementation OFAddressTranslationFailedException
 + newWithClass: (Class)class_
-	  node: (OFString*)node
-       service: (OFString*)service
+	  host: (OFString*)host
 {
 	return [[self alloc] initWithClass: class_
-				      node: node
-				   service: service];
+				      host: host];
 }
 
 - initWithClass: (Class)class_
@@ -1377,15 +1375,13 @@
 }
 
 - initWithClass: (Class)class_
-	   node: (OFString*)node_
-	service: (OFString*)service_
+	   host: (OFString*)host_
 {
 	self = [super initWithClass: class_];
 
 	@try {
-		node	= [node_ copy];
-		service = [service_ copy];
-		errNo	= GET_AT_ERRNO;
+		host  = [host_ copy];
+		errNo = GET_AT_ERRNO;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -1396,8 +1392,7 @@
 
 - (void)dealloc
 {
-	[node release];
-	[service release];
+	[host release];
 
 	[super dealloc];
 }
@@ -1407,15 +1402,14 @@
 	if (description != nil)
 		return description;
 
-	if (node != nil && service != nil)
+	if (host != nil)
 		description = [[OFString alloc] initWithFormat:
-		    @"The service %@ on %@ could not be translated to an "
-		    @"address in class %s. This means that either the node was "
-		    @"not found, there is no such service on the node, there "
-		    @"was a problem with the name server, there was a problem "
-		    @"with your network connection or you specified an invalid "
-		    @"node or service. " ERRFMT, service, node,
-		    class_getName(inClass), AT_ERRPARAM];
+		    @"The host %@ could not be translated to an address in "
+		    @"class %s. This means that either the host was not found, "
+		    @"there was a problem with the name server, there was a "
+		    @"problem with your network connection or you specified an "
+		    @"invalid host. " ERRFMT, host, class_getName(inClass),
+		    AT_ERRPARAM];
 	else
 		description = [[OFString alloc] initWithFormat:
 		    @"An address translation failed in class %s! " ERRFMT,
@@ -1429,25 +1423,20 @@
 	return errNo;
 }
 
-- (OFString*)node
+- (OFString*)host
 {
-	return node;
-}
-
-- (OFString*)service
-{
-	return service;
+	return host;
 }
 @end
 
 @implementation OFConnectionFailedException
 + newWithClass: (Class)class_
-	  node: (OFString*)node
-       service: (OFString*)service
+	  host: (OFString*)host
+	  port: (uint16_t)port
 {
 	return [[self alloc] initWithClass: class_
-				      node: node
-				   service: service];
+				      host: host
+				      port: port];
 }
 
 - initWithClass: (Class)class_
@@ -1459,15 +1448,15 @@
 }
 
 - initWithClass: (Class)class_
-	   node: (OFString*)node_
-	service: (OFString*)service_
+	   host: (OFString*)host_
+	   port: (uint16_t)port_
 {
 	self = [super initWithClass: class_];
 
 	@try {
-		node	= [node_ copy];
-		service	= [service_ copy];
-		errNo	= GET_SOCK_ERRNO;
+		host  = [host_ copy];
+		port  = port_;
+		errNo = GET_SOCK_ERRNO;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -1478,8 +1467,7 @@
 
 - (void)dealloc
 {
-	[node release];
-	[service release];
+	[host release];
 
 	[super dealloc];
 }
@@ -1490,8 +1478,8 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"A connection to service %@ on node %@ could not be established "
-	    @"in class %s! " ERRFMT, service, node, class_getName(inClass),
+	    @"A connection to %@ on port %" @PRIu16 @"could not be established "
+	    @"in class %s! " ERRFMT, host, port, class_getName(inClass),
 	    ERRPARAM];
 
 	return description;
@@ -1502,25 +1490,25 @@
 	return errNo;
 }
 
-- (OFString*)node
+- (OFString*)host
 {
-	return node;
+	return host;
 }
 
-- (OFString*)service
+- (uint16_t)port
 {
-	return service;
+	return port;
 }
 @end
 
 @implementation OFBindFailedException
 + newWithClass: (Class)class_
-	  node: (OFString*)node
-       service: (OFString*)service
+	  host: (OFString*)host
+	  port: (uint16_t)port
 {
 	return [[self alloc] initWithClass: class_
-				      node: node
-				   service: service];
+				      host: host
+				      port: port];
 }
 
 - initWithClass: (Class)class_
@@ -1532,15 +1520,15 @@
 }
 
 - initWithClass: (Class)class_
-	   node: (OFString*)node_
-	service: (OFString*)service_
+	   host: (OFString*)host_
+	   port: (uint16_t)port_
 {
 	self = [super initWithClass: class_];
 
 	@try {
-		node	= [node_ copy];
-		service	= [service_ copy];
-		errNo	= GET_SOCK_ERRNO;
+		host  = [host_ copy];
+		port  = port_;
+		errNo = GET_SOCK_ERRNO;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -1551,8 +1539,7 @@
 
 - (void)dealloc
 {
-	[node release];
-	[service release];
+	[host release];
 
 	[super dealloc];
 }
@@ -1563,8 +1550,8 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"Binding service %@ on node %@ failed in class %s! " ERRFMT,
-	    service, node, class_getName(inClass), ERRPARAM];
+	    @"Binding to port %" @PRIu16 @" on host %@ failed in class %s! "
+	    ERRFMT, port, host, class_getName(inClass), ERRPARAM];
 
 	return description;
 }
@@ -1574,14 +1561,14 @@
 	return errNo;
 }
 
-- (OFString*)node
+- (OFString*)host
 {
-	return node;
+	return host;
 }
 
-- (OFString*)service
+- (uint16_t)port
 {
-	return service;
+	return port;
 }
 @end
 

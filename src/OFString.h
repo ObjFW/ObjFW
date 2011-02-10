@@ -17,6 +17,10 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+#ifdef HAVE_INTTYPES_H
+# include <inttypes.h>
+#endif
+
 #import "OFObject.h"
 
 typedef uint32_t of_unichar_t;

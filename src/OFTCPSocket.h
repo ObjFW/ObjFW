@@ -43,22 +43,21 @@
 /**
  * Connect the OFTCPSocket to the specified destination.
  *
- * \param service The service on the node to connect to
- * \param node The node to connect to
+ * \param host The host to connect to
+ * \param port The port on the host to connect to
  */
-- (void)connectToService: (OFString*)service
-		  onNode: (OFString*)node;
+- (void)connectToHost: (OFString*)host
+	       onPort: (uint16_t)port;
 
 /**
- * Bind socket on the specified node and service.
+ * Bind the socket on the specified port and host.
  *
- * \param service The service to bind
- * \param node The node to bind to. Use @"0.0.0.0" for IPv4 or @"::" for IPv6
+ * \param port The port to bind to
+ * \param host The host to bind to. Use @"0.0.0.0" for IPv4 or @"::" for IPv6
  *	       to bind to all.
- * \param family The family to use (AF_INET for IPv4 or AF_INET6 for IPv6)
  */
-- (void)bindService: (OFString*)service
-	     onNode: (OFString*)node;
+- (void)bindToPort: (uint16_t)port
+	    onHost: (OFString*)host;
 
 /**
  * Listen on the socket.

@@ -117,8 +117,8 @@
 	pool = [[OFAutoreleasePool alloc] init];
 	sock = [OFTCPSocket socket];
 
-	[sock connectToService: [OFString stringWithFormat: @"%d", [URL port]]
-			onNode: [URL host]];
+	[sock connectToHost: [URL host]
+		     onPort: [URL port]];
 
 	@try {
 		OFString *line;

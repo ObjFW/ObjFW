@@ -35,7 +35,7 @@ static OFString *module = @"OFTCPSocket";
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFTCPSocket *server, *client = nil, *accepted;
-	OFString *service, *msg;
+	OFString *msg;
 	uint16_t port;
 	char buf[6];
 
@@ -43,21 +43,20 @@ static OFString *module = @"OFTCPSocket";
 	port = (uint16_t)rand();
 	if (port < 1024)
 		port += 1024;
-	service = [OFString stringWithFormat: @"%d", port];
 
 	TEST(@"+[socket]", (server = [OFTCPSocket socket]) &&
 	    (client = [OFTCPSocket socket]))
 
 	msg = [OFString stringWithFormat:
-	    @"-[bindService:onNode:] (port %d)", port];
-	TEST(msg, R([server bindService: service
-				 onNode: @"127.0.0.1"]))
+	    @"-[bindToPort:onHost:] (port " @PRIu16 @")", port];
+	TEST(msg, R([server bindToPort: port
+				onHost: @"127.0.0.1"]))
 
 	TEST(@"-[listen]", R([server listen]))
 
-	TEST(@"-[connectToService:onNode:]",
-	    R([client connectToService: service
-				onNode: @"127.0.0.1"]))
+	TEST(@"-[connectToHost:onPort:]",
+	    R([client connectToHost: @"127.0.0.1"
+			     onPort: port]))
 
 	TEST(@"-[accept]", (accepted = [server accept]))
 
