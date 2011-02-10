@@ -231,6 +231,7 @@ AC_CHECK_FUNC(asprintf, [
 			ac_cv_snprintf_useful_ret="yes"
 			;;
 		*)
+			have_asprintf="yes"
 			AC_DEFINE(OF_HAVE_ASPRINTF, 1,
 				[Whether we have asprintf])
 			AC_SUBST(ASPRINTF_DEF, "-DOF_HAVE_ASPRINTF")
