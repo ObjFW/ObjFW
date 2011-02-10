@@ -33,7 +33,7 @@ static OFString *module = @"OFDate";
 	TEST(@"+[dateWithTimeIntervalSince1970:]",
 	    (d1 = [OFDate dateWithTimeIntervalSince1970: 0]))
 
-	TEST(@"+[dateWithTimeIntervalSince1970:microseconds:",
+	TEST(@"+[dateWithTimeIntervalSince1970:microseconds:]",
 	    (d2 = [OFDate dateWithTimeIntervalSince1970: 3600 * 25 + 5
 					   microseconds: 1]))
 
