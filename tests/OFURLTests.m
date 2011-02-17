@@ -35,7 +35,8 @@ static OFString *url_str = @"http://u:p@h:1234/f;p?q#f";
 	TEST(@"+[URLWithString:]",
 	    R(u1 = [OFURL URLWithString: url_str]) &&
 	    R(u2 = [OFURL URLWithString: @"http://foo:80"]) &&
-	    R(u3 = [OFURL URLWithString: @"http://bar/"]))
+	    R(u3 = [OFURL URLWithString: @"http://bar/"]) &&
+	    R(u4 = [OFURL URLWithString: @"file:///etc/passwd"]))
 
 	TEST(@"+[URLWithString:relativeToURL:]",
 	    [[[OFURL URLWithString: @"/foo"
@@ -53,17 +54,23 @@ static OFString *url_str = @"http://u:p@h:1234/f;p?q#f";
 	TEST(@"-[description]",
 	    [[u1 description] isEqual: url_str] &&
 	    [[u2 description] isEqual: @"http://foo"] &&
-	    [[u3 description] isEqual: @"http://bar/"])
+	    [[u3 description] isEqual: @"http://bar/"] &&
+	    [[u4 description] isEqual: @"file:///etc/passwd"])
 
-	TEST(@"-[scheme]", [[u1 scheme] isEqual: @"http"])
-	TEST(@"-[user]", [[u1 user] isEqual: @"u"])
-	TEST(@"-[password]", [[u1 password] isEqual: @"p"])
-	TEST(@"-[host]", [[u1 host] isEqual: @"h"])
+	TEST(@"-[scheme]",
+	    [[u1 scheme] isEqual: @"http"] && [[u4 scheme] isEqual: @"file"])
+	TEST(@"-[user]", [[u1 user] isEqual: @"u"] && [u4 user] == nil)
+	TEST(@"-[password]",
+	    [[u1 password] isEqual: @"p"] && [u4 password] == nil)
+	TEST(@"-[host]", [[u1 host] isEqual: @"h"] && [u4 port] == 0)
 	TEST(@"-[port]", [u1 port] == 1234)
-	TEST(@"-[path]", [[u1 path] isEqual: @"f"])
-	TEST(@"-[parameters]", [[u1 parameters] isEqual: @"p"])
-	TEST(@"-[query]", [[u1 query] isEqual: @"q"])
-	TEST(@"-[fragment]", [[u1 fragment] isEqual: @"f"])
+	TEST(@"-[path]",
+	    [[u1 path] isEqual: @"f"] && [[u4 path] isEqual: @"/etc/passwd"])
+	TEST(@"-[parameters]",
+	    [[u1 parameters] isEqual: @"p"] && [u4 parameters] == nil)
+	TEST(@"-[query]", [[u1 query] isEqual: @"q"] && [u4 query] == nil)
+	TEST(@"-[fragment]",
+	    [[u1 fragment] isEqual: @"f"] && [u4 fragment] == nil)
 
 	TEST(@"-[copy]", R(u4 = [[u1 copy] autorelease]))
 

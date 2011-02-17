@@ -108,7 +108,11 @@ resolve_relative_path(OFString *path)
 
 		str_c = str_c2;
 
-		if (!strncmp(str_c, "http://", 7)) {
+		if (!strncmp(str_c, "file://", 7)) {
+			scheme = @"file";
+			path = [[OFString alloc] initWithCString: str_c + 7];
+			return self;
+		} else if (!strncmp(str_c, "http://", 7)) {
 			scheme = @"http";
 			str_c += 7;
 		} else if (!strncmp(str_c, "https://", 8)) {
@@ -483,6 +487,11 @@ resolve_relative_path(OFString *path)
 	OFMutableString *desc = [OFMutableString stringWithFormat: @"%@://",
 								   scheme];
 	BOOL needPort = YES;
+
+	if ([scheme isEqual: @"file"]) {
+		[desc appendString: path];
+		return desc;
+	}
 
 	if (user != nil && password != nil)
 		[desc appendFormat: @"%@:%@@", user, password];
