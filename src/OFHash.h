@@ -29,6 +29,16 @@
 #endif
 
 /**
+ * \return The digest size of the hash, in byte.
+ */
++ (size_t)digestSize;
+
+/**
+ * \return The block size of the hash, in byte.
+ */
++ (size_t)blockSize;
+
+/**
  * Adds a buffer to the hash to be calculated.
  *
  * \param buf The buffer which should be included into the calculation.

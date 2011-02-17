@@ -122,6 +122,16 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	return [[[self alloc] init] autorelease];
 }
 
++ (size_t)digestSize
+{
+	return 16;
+}
+
++ (size_t)blockSize
+{
+	return 64;
+}
+
 - init
 {
 	self = [super init];

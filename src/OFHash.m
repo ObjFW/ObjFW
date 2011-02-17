@@ -20,6 +20,18 @@
 #import "OFExceptions.h"
 
 @implementation OFHash
++ (size_t)digestSize
+{
+	@throw [OFNotImplementedException newWithClass: self
+					      selector: _cmd];
+}
+
++ (size_t)blockSize
+{
+	@throw [OFNotImplementedException newWithClass: self
+					      selector: _cmd];
+}
+
 - (void)updateWithBuffer: (const char*)buffer
 		  ofSize: (size_t)size
 {

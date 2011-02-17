@@ -134,6 +134,16 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 	return [[[self alloc] init] autorelease];
 }
 
++ (size_t)digestSize
+{
+	return 20;
+}
+
++ (size_t)blockSize
+{
+	return 64;
+}
+
 - init
 {
 	self = [super init];
