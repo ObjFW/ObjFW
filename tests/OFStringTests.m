@@ -21,6 +21,7 @@
 
 #import "OFString.h"
 #import "OFArray.h"
+#import "OFURL.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 
@@ -122,6 +123,12 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	TEST(@"+[stringWithContentsOfFile:encoding]", (s[1] = [OFString
 	    stringWithContentsOfFile: @"testfile.txt"
 			    encoding: OF_STRING_ENCODING_ISO_8859_1]) &&
+	    [s[1] isEqual: @"testäöü"])
+
+	TEST(@"+[stringWithContentsOfURL:encoding]", (s[1] = [OFString
+	    stringWithContentsOfURL: [OFURL URLWithString:
+					 @"file://testfile.txt"]
+			   encoding: OF_STRING_ENCODING_ISO_8859_1]) &&
 	    [s[1] isEqual: @"testäöü"])
 
 	TEST(@"-[appendCStringWithLength:]",

@@ -34,6 +34,8 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFFile.h"
+#import "OFURL.h"
+#import "OFHTTPRequest.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 #import "macros.h"
@@ -306,6 +308,18 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 {
 	return [[[self alloc] initWithContentsOfFile: path
 					    encoding: encoding] autorelease];
+}
+
++ stringWithContentsOfURL: (OFURL*)url
+{
+	return [[[self alloc] initWithContentsOfURL: url] autorelease];
+}
+
++ stringWithContentsOfURL: (OFURL*)url
+		 encoding: (of_string_encoding_t)encoding
+{
+	return [[[self alloc] initWithContentsOfURL: url
+					   encoding: encoding] autorelease];
 }
 
 - init
@@ -632,12 +646,13 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 - initWithContentsOfFile: (OFString*)path
 		encoding: (of_string_encoding_t)encoding
 {
+	char *tmp;
+	struct stat s;
+
 	self = [super init];
 
 	@try {
 		OFFile *file;
-		char *tmp;
-		struct stat s;
 
 		if (stat([path cString], &s) == -1)
 			@throw [OFInitializationFailedException
@@ -651,12 +666,6 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 			[file readExactlyNBytes: s.st_size
 				     intoBuffer: tmp];
-
-			self = [self initWithCString: tmp
-					    encoding: encoding
-					      length: s.st_size];
-
-			[self freeMemory: tmp];
 		} @finally {
 			[file release];
 		}
@@ -665,6 +674,55 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		@throw e;
 	}
 
+	self = [self initWithCString: tmp
+			    encoding: encoding
+			      length: s.st_size];
+	[self freeMemory: tmp];
+
+	return self;
+}
+
+- initWithContentsOfURL: (OFURL*)url
+{
+	return [self initWithContentsOfURL: url
+				  encoding: OF_STRING_ENCODING_UTF_8];
+}
+
+- initWithContentsOfURL: (OFURL*)url
+	       encoding: (of_string_encoding_t)encoding
+{
+	OFAutoreleasePool *pool;
+	OFHTTPRequest *req;
+	OFHTTPRequestResult *res;
+	Class c;
+
+	c = isa;
+	[self release];
+	self = nil;
+
+	pool = [[OFAutoreleasePool alloc] init];
+
+	if ([[url scheme] isEqual: @"file"]) {
+		self = [[c alloc] initWithContentsOfFile: [url path]
+						encoding: encoding];
+		[pool release];
+		return self;
+	}
+
+	req = [OFHTTPRequest request];
+	[req setURL: url];
+	res = [req result];
+
+	if ([res statusCode] != 200)
+		@throw [OFHTTPRequestFailedException
+		    newWithClass: [req class]
+		     HTTPRequest: req
+		      statusCode: [res statusCode]];
+
+	self = [[c alloc] initWithCString: (char*)[[res data] cArray]
+				 encoding: encoding
+				   length: [[res data] count]];
+	[pool release];
 	return self;
 }
 

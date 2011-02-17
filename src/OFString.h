@@ -45,6 +45,7 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 #endif
 
 @class OFArray;
+@class OFURL;
 
 /**
  * \brief A class for handling strings.
@@ -149,6 +150,26 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  */
 + stringWithContentsOfFile: (OFString*)path
 		  encoding: (of_string_encoding_t)encoding;
+
+/**
+ * Creates a new OFString with the contents of the specified URL, assuming
+ * UTF-8 encoding.
+ *
+ * \param url The URL to the contents for the string
+ * \return A new autoreleased OFString
+ */
++ stringWithContentsOfURL: (OFURL*)url;
+
+/**
+ * Creates a new OFString with the contents of the specified URL in the
+ * specified encoding.
+ *
+ * \param url The URL to the contents for the string
+ * \param encoding The encoding to assume
+ * \return A new autoreleased OFString
+ */
++ stringWithContentsOfURL: (OFURL*)url
+		 encoding: (of_string_encoding_t)encoding;
 
 /**
  * Initializes an already allocated OFString from a UTF-8 encoded C string.
@@ -260,6 +281,26 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  */
 - initWithContentsOfFile: (OFString*)path
 		encoding: (of_string_encoding_t)encoding;
+
+/**
+ * Initializes an already allocated OFString with the contents of the specified
+ * URL, assuming UTF-8 encoding.
+ *
+ * \param url The URL to the contents for the string
+ * \return An initialized OFString
+ */
+- initWithContentsOfURL: (OFURL*)url;
+
+/**
+ * Initializes an already allocated OFString with the contents of the specified
+ * URL in the specified encoding.
+ *
+ * \param url The URL to the contents for the string
+ * \param encoding The encoding to assume
+ * \return An initialized OFString
+ */
+- initWithContentsOfURL: (OFURL*)url
+	       encoding: (of_string_encoding_t)encoding;
 
 /**
  * \return The OFString as a UTF-8 encoded C string
