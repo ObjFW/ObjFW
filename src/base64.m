@@ -92,7 +92,7 @@ of_base64_encode(const char *buf, size_t len)
 BOOL
 of_base64_decode(OFDataArray *data, const char *str, size_t len)
 {
-	uint8_t *buf = (uint8_t*)str;
+	const uint8_t *buf = (const uint8_t*)str;
 	size_t i;
 
 	if ((len & 3) != 0)

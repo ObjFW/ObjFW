@@ -77,7 +77,6 @@ typedef enum of_http_request_type_t {
 
 /**
  * Sets the query string for the HTTP request.
- * Only used for GET and HEAD requests!
  *
  * \param qs The query string for the HTTP request
  */
