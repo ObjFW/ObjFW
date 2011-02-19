@@ -250,8 +250,7 @@ state_format_conversion_specifier(struct context *ctx)
 				tmp_len = asprintf(&tmp, ctx->subfmt,
 				    [[obj description] cString]);
 			else
-				if (!append_str(ctx, "(nil)", 5))
-					return false;
+				tmp_len = asprintf(&tmp, ctx->subfmt, "(nil)");
 		} @catch (id e) {
 			free(ctx->buf);
 			@throw e;
