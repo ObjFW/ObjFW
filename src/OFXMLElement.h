@@ -210,12 +210,18 @@
 /**
  * Adds the specified attribute.
  *
+ * If an attribute with the same name and namespace already exists, it is not
+ * added.
+ *
  * \param attr The attribute to add
  */
 - (void)addAttribute: (OFXMLAttribute*)attr;
 
 /**
  * Adds the specified attribute with the specified value.
+ *
+ * If an attribute with the same name and namespace already exists, it is not
+ * added.
  *
  * \param name The name of the attribute
  * \param value The value of the attribute
@@ -226,6 +232,9 @@
 /**
  * Adds the specified attribute with the specified namespace and value.
  *
+ * If an attribute with the same name and namespace already exists, it is not
+ * added.
+ *
  * \param name The name of the attribute
  * \param ns The namespace of the attribute
  * \param value The value of the attribute
@@ -233,6 +242,36 @@
 - (void)addAttributeWithName: (OFString*)name
 		   namespace: (OFString*)ns
 		 stringValue: (OFString*)value;
+
+/**
+ * \param attrname The name of the attribute
+ * \return The attribute with the specified name
+ */
+- (OFXMLAttribute*)attributeForName: (OFString*)attrname;
+
+/**
+ * \param attrname The name of the attribute
+ * \param attrns The namespace of the attribute
+ * \return The attribute with the specified name and namespace
+ */
+- (OFXMLAttribute*)attributeForName: (OFString*)attrname
+			  namespace: (OFString*)attrns;
+
+/**
+ * Removes the attribute with the specified name.
+ *
+ * \param attrname The name of the attribute
+ */
+- (void)removeAttributeForName: (OFString*)attrname;
+
+/**
+ * Removes the attribute with the specified name and namespace.
+ *
+ * \param attrname The name of the attribute
+ * \param attrns The namespace of the attribute
+ */
+- (void)removeAttributeForName: (OFString*)attrname
+		     namespace: (OFString*)attrns;
 
 /**
  * Sets a prefix for a namespace.

@@ -424,25 +424,17 @@
 	if (attributes == nil)
 		attributes = [[OFMutableArray alloc] init];
 
-	/* FIXME: Prevent having it twice! */
-
-	[attributes addObject: attr];
+	if ([self attributeForName: attr->name
+			 namespace: attr->ns] == nil)
+		[attributes addObject: attr];
 }
 
 - (void)addAttributeWithName: (OFString*)name_
 		 stringValue: (OFString*)value
 {
-	OFAutoreleasePool *pool;
-
-	if (name == nil)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
-
-	pool = [[OFAutoreleasePool alloc] init];
-	[self addAttribute: [OFXMLAttribute attributeWithName: name_
-						    namespace: nil
-						  stringValue: value]];
-	[pool release];
+	[self addAttributeWithName: name_
+			 namespace: nil
+		       stringValue: value];
 }
 
 - (void)addAttributeWithName: (OFString*)name_
@@ -462,8 +454,65 @@
 	[pool release];
 }
 
-/* TODO: Replace attribute */
-/* TODO: Remove attribute */
+- (OFXMLAttribute*)attributeForName: (OFString*)attrname
+{
+	return [self attributeForName: attrname
+			    namespace: nil];
+}
+
+- (OFXMLAttribute*)attributeForName: (OFString*)attrname
+			  namespace: (OFString*)attrns
+{
+	OFXMLAttribute **attrs_c = [attributes cArray];
+	size_t i, attrs_count = [attributes count];
+
+	if (attrns != nil) {
+		for (i = 0; i < attrs_count; i++)
+			if ([attrs_c[i]->ns isEqual: attrns] &&
+			    [attrs_c[i]->name isEqual: attrname])
+				return attrs_c[i];
+	} else {
+		for (i = 0; i < attrs_count; i++)
+			if (attrs_c[i]->ns == nil &&
+			    [attrs_c[i]->name isEqual: attrname])
+				return attrs_c[i];
+	}
+
+	return nil;
+}
+
+- (void)removeAttributeForName: (OFString*)attrname
+{
+	[self removeAttributeForName: attrname
+			   namespace: nil];
+}
+
+- (void)removeAttributeForName: (OFString*)attrname
+		     namespace: (OFString*)attrns
+{
+	OFXMLAttribute **attrs_c = [attributes cArray];
+	size_t i, attrs_count = [attributes count];
+
+	if (attrns != nil) {
+		for (i = 0; i < attrs_count; i++) {
+			if ([attrs_c[i]->ns isEqual: attrns] &&
+			    [attrs_c[i]->name isEqual: attrname]) {
+				[attributes removeObjectAtIndex: i];
+
+				return;
+			}
+		}
+	} else {
+		for (i = 0; i < attrs_count; i++) {
+			if (attrs_c[i]->ns == nil &&
+			    [attrs_c[i]->name isEqual: attrname]) {
+				[attributes removeObjectAtIndex: i];
+
+				return;
+			}
+		}
+	}
+}
 
 - (void)setPrefix: (OFString*)prefix
      forNamespace: (OFString*)ns_

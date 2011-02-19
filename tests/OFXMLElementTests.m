@@ -94,8 +94,19 @@ static OFString *module = @"OFXMLElement";
 	    R([elem[1] addAttributeWithName: @"foo"
 				  namespace: @"urn:objfw:test"
 				stringValue: @"bar"]) &&
+	    R([elem[1] addAttributeWithName: @"foo"
+				  namespace: @"urn:objfw:test"
+				stringValue: @"ignored"]) &&
 	    [[elem[1] stringValue] isEqual:
 	    @"<foo foo='b&amp;ar' objfw-test:foo='bar'>b&amp;ar</foo>"])
+
+	TEST(@"-[removeAttributeForName:namespace:]",
+	    R([elem[1] removeAttributeForName: @"foo"]) &&
+	    [[elem[1] stringValue] isEqual:
+	    @"<foo objfw-test:foo='bar'>b&amp;ar</foo>"] &&
+	    R([elem[1] removeAttributeForName: @"foo"
+				    namespace: @"urn:objfw:test"]) &&
+	    [[elem[1] stringValue] isEqual: @"<foo>b&amp;ar</foo>"])
 
 	TEST(@"-[addChild:]",
 	    R([elem[0] addChild: [OFXMLElement elementWithName: @"bar"]]) &&
