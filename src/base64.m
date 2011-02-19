@@ -20,7 +20,7 @@
 #import "OFDataArray.h"
 #import "base64.h"
 
-const char of_base64_encode_table[64] = {
+const uint8_t of_base64_encode_table[64] = {
 	'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
 	'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b',
 	'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
@@ -28,7 +28,7 @@ const char of_base64_encode_table[64] = {
 	'4', '5', '6', '7', '8', '9', '+', '/'
 };
 
-const signed char of_base64_decode_table[128] = {
+const int8_t of_base64_decode_table[128] = {
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63, 52, 53, 54,
@@ -40,9 +40,10 @@ const signed char of_base64_decode_table[128] = {
 };
 
 OFString*
-of_base64_encode(const char *buf, size_t len)
+of_base64_encode(const char *data, size_t len)
 {
 	OFMutableString *ret = [OFMutableString string];
+	uint8_t *buf = (uint8_t*)data;
 	size_t i;
 	uint8_t rest;
 	char tb[4];
