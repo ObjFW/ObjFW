@@ -576,6 +576,34 @@
 	[children addObject: child];
 }
 
+- (OFArray*)elementsForName: (OFString*)elemname
+{
+	return [self elementsForName: elemname
+			   namespace: nil];
+}
+
+- (OFArray*)elementsForName: (OFString*)elemname
+		  namespace: (OFString*)elemns
+{
+	OFMutableArray *ret = [OFMutableArray array];
+	OFXMLElement **children_c = [children cArray];
+	size_t i, children_count = [children count];
+
+	if (elemns != nil) {
+		for (i = 0; i < children_count; i++)
+			if ([children_c[i]->ns isEqual: elemns] &&
+			    [children_c[i]->name isEqual: elemname])
+				[ret addObject: children_c[i]];
+	} else {
+		for (i = 0; i < children_count; i++)
+			if (children_c[i]->ns == nil &&
+			    [children_c[i]->name isEqual: elemname])
+				[ret addObject: children_c[i]];
+	}
+
+	return ret;
+}
+
 - (void)dealloc
 {
 	[name release];

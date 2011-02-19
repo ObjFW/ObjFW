@@ -311,4 +311,18 @@
  * \param child Another OFXMLElement which is added as a child
  */
 - (void)addChild: (OFXMLElement*)child;
+
+/**
+ * \param elemname The name of the elements
+ * \return The child elements with the specified name
+ */
+- (OFArray*)elementsForName: (OFString*)elemname;
+
+/**
+ * \param elemname The name of the elements
+ * \param elemns The namespace of the elements
+ * \return The child elements with the specified name and namespace
+ */
+- (OFArray*)elementsForName: (OFString*)elemname
+		  namespace: (OFString*)elemns;
 @end

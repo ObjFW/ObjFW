@@ -31,6 +31,7 @@ static OFString *module = @"OFXMLElement";
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFXMLElement *elem[4];
+	OFArray *a;
 
 	TEST(@"+[elementWithName:]",
 	    (elem[0] = [OFXMLElement elementWithName: @"foo"]) &&
@@ -116,6 +117,12 @@ static OFString *module = @"OFXMLElement";
 		      namespace: @"urn:objfw:test"]]) &&
 	    [[elem[2] stringValue] isEqual:
 	    @"<objfw-test:foo test='test'><objfw-test:bar/></objfw-test:foo>"])
+
+	TEST(@"-[elementsForName:namespace:]",
+	    (a = [elem[2] elementsForName: @"bar"
+				namespace: @"urn:objfw:test"]) &&
+	    [a count] == 1 && [[[a firstObject] stringValue] isEqual:
+	    @"<bar xmlns='urn:objfw:test'/>"])
 
 	[pool drain];
 }
