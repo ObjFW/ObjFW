@@ -154,3 +154,5 @@ typedef enum of_http_request_type_t {
  */
 - (OFDataArray*)data;
 @end
+
+extern Class of_http_request_tls_socket_class;

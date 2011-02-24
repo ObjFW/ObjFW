@@ -26,6 +26,8 @@
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 
+Class of_http_request_tls_socket_class = Nil;
+
 @implementation OFHTTPRequest
 + request
 {
@@ -107,15 +109,26 @@
 
 - (OFHTTPRequestResult*)resultWithRedirects: (size_t)redirects
 {
-	OFAutoreleasePool *pool;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFString *scheme = [URL scheme];
 	OFTCPSocket *sock;
 	OFHTTPRequestResult *result;
 
-	if (![[URL scheme] isEqual: @"http"])
+	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
 		@throw [OFUnsupportedProtocolException newWithClass: isa
 								URL: URL];
-	pool = [[OFAutoreleasePool alloc] init];
-	sock = [OFTCPSocket socket];
+
+	if ([scheme isEqual: @"http"])
+		sock = [OFTCPSocket socket];
+	else {
+		if (of_http_request_tls_socket_class == Nil)
+			@throw [OFUnsupportedProtocolException
+			    newWithClass: isa
+				     URL: URL];
+
+		sock = [[[of_http_request_tls_socket_class alloc] init]
+		    autorelease];
+	}
 
 	[sock connectToHost: [URL host]
 		     onPort: [URL port]];
