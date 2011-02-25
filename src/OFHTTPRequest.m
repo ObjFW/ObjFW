@@ -130,9 +130,6 @@ Class of_http_request_tls_socket_class = Nil;
 		    autorelease];
 	}
 
-	[sock connectToHost: [URL host]
-		     onPort: [URL port]];
-
 	@try {
 		OFString *line;
 		OFMutableDictionary *s_headers;
@@ -141,6 +138,15 @@ Class of_http_request_tls_socket_class = Nil;
 		OFString *key;
 		int status;
 		const char *t;
+
+		[sock connectToHost: [URL host]
+			     onPort: [URL port]];
+
+		/*
+		 * Work around a bug with packet bisection in lighttpd when
+		 * using HTTPS.
+		 */
+		[sock setBuffersWrites: YES];
 
 		if (requestType == OF_HTTP_REQUEST_TYPE_GET)
 			t = "GET";
@@ -179,6 +185,10 @@ Class of_http_request_tls_socket_class = Nil;
 		}
 
 		[sock writeString: @"\r\n"];
+
+		/* Work around a bug in lighttpd, see above */
+		[sock flushWriteBuffer];
+		[sock setBuffersWrites: NO];
 
 		if (requestType == OF_HTTP_REQUEST_TYPE_POST)
 			[sock writeString: queryString];
