@@ -131,7 +131,7 @@ Class of_http_request_tls_socket_class = Nil;
 	}
 
 	@try {
-		OFString *line;
+		OFString *line, *path;
 		OFMutableDictionary *s_headers;
 		OFDataArray *data;
 		OFEnumerator *enumerator;
@@ -155,12 +155,14 @@ Class of_http_request_tls_socket_class = Nil;
 		if (requestType == OF_HTTP_REQUEST_TYPE_POST)
 			t = "POST";
 
+		if ((path = [URL path]) == nil)
+			path = @"";
+
 		if ([URL query] != nil)
 			[sock writeFormat: @"%s /%@?%@ HTTP/1.0\r\n",
-					   t, [URL path], [URL query]];
+					   t, path, [URL query]];
 		else
-			[sock writeFormat: @"%s /%@ HTTP/1.0\r\n",
-					   t, [URL path]];
+			[sock writeFormat: @"%s /%@ HTTP/1.0\r\n", t, path];
 
 		if ([URL port] == 80)
 			[sock writeFormat: @"Host: %@\r\n", [URL host]];
