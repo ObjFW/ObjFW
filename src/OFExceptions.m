@@ -1974,3 +1974,17 @@
 	return statusCode;
 }
 @end
+
+@implementation OFTruncatedDataException
+- (OFString*)description
+{
+	if (description != nil)
+		return description;
+
+	description = [[OFString alloc] initWithFormat:
+	    @"Truncated data was received or produced in class %s while it "
+	    @"should not have been truncated!", class_getName(inClass)];
+
+	return description;
+}
+@end

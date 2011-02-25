@@ -264,6 +264,21 @@ Class of_http_request_tls_socket_class = Nil;
 
 		data = [[sock readDataArrayTillEndOfStream] retain];
 
+		if ([s_headers objectForKey: @"Content-Length"] != nil) {
+			intmax_t cl;
+
+			cl = [[s_headers objectForKey: @"Content-Length"]
+			    decimalValue];
+
+			if (cl > SIZE_MAX)
+				@throw [OFOutOfRangeException
+				    newWithClass: isa];
+
+			if (cl != [data count])
+				@throw [OFTruncatedDataException
+				    newWithClass: isa];
+		}
+
 		result = [[OFHTTPRequestResult alloc]
 		    initWithStatusCode: status
 			       headers: s_headers
