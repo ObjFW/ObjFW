@@ -39,10 +39,10 @@ Class of_http_request_tls_socket_class = Nil;
 	self = [super init];
 
 	requestType = OF_HTTP_REQUEST_TYPE_GET;
-	headers = [OFDictionary
-	    dictionaryWithObject: @"Something using ObjFW "
-				  @"<https://webkeks.org/objfw/>"
-			  forKey: @"User-Agent"];
+	headers = [[OFDictionary alloc]
+	    initWithObject: @"Something using ObjFW "
+			    @"<https://webkeks.org/objfw/>"
+		    forKey: @"User-Agent"];
 
 	return self;
 }
@@ -262,7 +262,7 @@ Class of_http_request_tls_socket_class = Nil;
 				      forKey: key];
 		}
 
-		data = [[sock readDataArrayTillEndOfStream] retain];
+		data = [sock readDataArrayTillEndOfStream];
 
 		if ([s_headers objectForKey: @"Content-Length"] != nil) {
 			intmax_t cl;
