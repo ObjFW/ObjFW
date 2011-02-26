@@ -356,6 +356,13 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		[pi removeCharactersFromIndex: len - 1
 				      toIndex: len];
 
+		/*
+		 * Class swizzle the string to be immutable. We pass it as
+		 * OFString*, so it can't be modified anyway. But not swizzling
+		 * it would create a real copy each time -[copy] is called.
+		 */
+		pi->isa = [OFString class];
+
 		[delegate parser: self
 		    foundProcessingInstructions: pi];
 
@@ -810,6 +817,13 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	[cdata removeCharactersFromIndex: len - 2
 				 toIndex: len];
 
+	/*
+	 * Class swizzle the string to be immutable. We pass it as OFString*, so
+	 * it can't be modified anyway. But not swizzling it would create a
+	 * real copy each time -[copy] is called.
+	 */
+	cdata->isa = [OFString class];
+
 #if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 	if (CDATAHandler != NULL)
 		CDATAHandler(self, cdata);
@@ -872,6 +886,13 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 	[comment removeCharactersFromIndex: len - 2
 				   toIndex: len];
+
+	/*
+	 * Class swizzle the string to be immutable. We pass it as OFString*, so
+	 * it can't be modified anyway. But not swizzling it would create a
+	 * real copy each time -[copy] is called.
+	 */
+	comment->isa = [OFString class];
 
 #if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 	if (commentHandler != NULL)

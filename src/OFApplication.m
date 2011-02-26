@@ -132,6 +132,14 @@ of_application_main(int *argc, char **argv[], Class cls)
 			[pool releaseObjects];
 		}
 		[pool release];
+
+		/*
+		 * Class swizzle the environment to be immutable, as we don't
+		 * need to change it anymore and expose it only as
+		 * OFDictionary*. But not swizzling it would create a real copy
+		 * each time -[copy] is called.
+		 */
+		environment->isa = [OFDictionary class];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -158,6 +166,13 @@ of_application_main(int *argc, char **argv[], Class cls)
 	for (i = 1; i < *argc; i++)
 		[arguments addObject: [OFString stringWithCString: (*argv)[i]]];
 
+	/*
+	 * Class swizzle the arguments to be immutable, as we don't need to
+	 * change them anymore and expose them only as OFArray*. But not
+	 * swizzling it would create a real copy each time -[copy] is called.
+	 */
+	arguments->isa = [OFArray class];
+
 	[pool release];
 }
 
@@ -170,17 +185,17 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 - (OFString*)programName
 {
-	return [[programName retain] autorelease];
+	return [[programName copy] autorelease];
 }
 
 - (OFArray*)arguments
 {
-	return [[arguments retain] autorelease];
+	return [[arguments copy] autorelease];
 }
 
 - (OFDictionary*)environment
 {
-	return [[environment retain] autorelease];
+	return [[environment copy] autorelease];
 }
 
 - (id <OFApplicationDelegate>)delegate

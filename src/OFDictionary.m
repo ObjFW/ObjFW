@@ -620,6 +620,12 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 			[dict setObject: block(data[i]->key, data[i]->object)
 				 forKey: data[i]->key];
 
+	/*
+	 * Class swizzle the dictionary to be immutable. We declared the return
+	 * type to be OFDictionary*, so it can't be modified anyway. But not
+	 * swizzling it would create a real copy each time -[copy] is called.
+	 */
+	dict->isa = [OFDictionary class];
 	return dict;
 }
 
@@ -635,6 +641,12 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 				[dict setObject: data[i]->object
 					 forKey: data[i]->key];
 
+	/*
+	 * Class swizzle the dictionary to be immutable. We declared the return
+	 * type to be OFDictionary*, so it can't be modified anyway. But not
+	 * swizzling it would create a real copy each time -[copy] is called.
+	 */
+	dict->isa = [OFDictionary class];
 	return dict;
 }
 #endif
@@ -706,6 +718,12 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 
 	[pool release];
 
+	/*
+	 * Class swizzle the string to be immutable. We declared the return type
+	 * to be OFString*, so it can't be modified anyway. But not swizzling it
+	 * would create a real copy each time -[copy] is called.
+	 */
+	ret->isa = [OFString class];
 	return ret;
 }
 @end

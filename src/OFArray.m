@@ -336,6 +336,12 @@
 
 	[pool release];
 
+	/*
+	 * Class swizzle the string to be immutable. We declared the return type
+	 * to be OFString*, so it can't be modified anyway. But not swizzling it
+	 * would create a real copy each time -[copy] is called.
+	 */
+	str->isa = [OFString class];
 	return str;
 }
 
@@ -401,7 +407,15 @@
 
 	[pool release];
 
-	return [ret autorelease];
+	[ret autorelease];
+
+	/*
+	 * Class swizzle the string to be immutable. We declared the return type
+	 * to be OFString*, so it can't be modified anyway. But not swizzling it
+	 * would create a real copy each time -[copy] is called.
+	 */
+	ret->isa = [OFString class];
+	return ret;
 }
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state

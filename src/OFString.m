@@ -1001,6 +1001,12 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	new = [OFMutableString stringWithString: self];
 	[new appendString: str];
 
+	/*
+	 * Class swizzle the string to be immutable. We declared the return type
+	 * to be OFString*, so it can't be modified anyway. But not swizzling it
+	 * would create a real copy each time -[copy] is called.
+	 */
+	new->isa = [OFString class];
 	return new;
 }
 
@@ -1056,6 +1062,12 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 	[pool release];
 
+	/*
+	 * Class swizzle the array to be immutable. We declared the return type
+	 * to be OFArray*, so it can't be modified anyway. But not swizzling it
+	 * would create a real copy each time -[copy] is called.
+	 */
+	array->isa = [OFArray class];
 	return array;
 }
 

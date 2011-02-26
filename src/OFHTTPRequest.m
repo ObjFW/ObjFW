@@ -281,6 +281,14 @@ Class of_http_request_tls_socket_class = Nil;
 				    newWithClass: isa];
 		}
 
+		/*
+		 * Class swizzle the dictionary to be immutable. We pass it as
+		 * OFDictionary*, so it can't be modified anyway. But not
+		 * swizzling it would create a real copy each time -[copy] is
+		 * called.
+		 */
+		s_headers->isa = [OFDictionary class];
+
 		result = [[OFHTTPRequestResult alloc]
 		    initWithStatusCode: status
 			       headers: s_headers
