@@ -205,8 +205,7 @@ resolve_relative_path(OFString *path)
 		[self release];
 		@throw e;
 	} @finally {
-		if (str_c2 != NULL)
-			free(str_c2);
+		free(str_c2);
 	}
 
 	return self;
@@ -279,8 +278,7 @@ resolve_relative_path(OFString *path)
 		[self release];
 		@throw e;
 	} @finally {
-		if (str_c2 != NULL)
-			free(str_c2);
+		free(str_c2);
 	}
 
 	return self;

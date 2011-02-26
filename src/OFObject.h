@@ -61,6 +61,7 @@ typedef struct of_range_t {
  */
 @interface OFObject
 {
+@public
 	/// The class of the object
 	Class isa;
 }

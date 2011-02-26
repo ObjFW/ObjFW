@@ -491,7 +491,7 @@
 						memcpy(ret_c, cache, ret_len);
 					if (i >= delim_len)
 						memcpy(ret_c + cacheLen, tmp,
-					    	    i + 1 - delim_len);
+						    i + 1 - delim_len);
 
 					@try {
 						ret = [OFString
