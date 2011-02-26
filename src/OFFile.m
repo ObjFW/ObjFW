@@ -697,7 +697,7 @@ of_log(OFConstantString *fmt, ...)
 		@throw [OFSeekFailedException newWithClass: isa];
 }
 
-- (size_t)_seekForwardWithOffset: (off_t)offset
+- (off_t)_seekForwardWithOffset: (off_t)offset
 {
 	off_t ret;
 
@@ -707,7 +707,7 @@ of_log(OFConstantString *fmt, ...)
 	return ret;
 }
 
-- (size_t)_seekToOffsetRelativeToEnd: (off_t)offset
+- (off_t)_seekToOffsetRelativeToEnd: (off_t)offset
 {
 	off_t ret;
 
@@ -772,5 +772,23 @@ of_log(OFConstantString *fmt, ...)
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 	[super dealloc];	/* Get rid of stupid warning */
+}
+
+- (void)_seekToOffset: (off_t)offset
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- (off_t)_seekForwardWithOffset: (off_t)offset
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- (off_t)_seekToOffsetRelativeToEnd: (off_t)offset
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 @end
