@@ -199,8 +199,9 @@ resolve_relative_path(OFString *path)
 				    initWithCString: tmp + 1];
 			}
 
-			path = [[OFString alloc] initWithCString: str_c];
-		}
+			path = [[OFString alloc] initWithFormat: @"/%s", str_c];
+		} else
+			path = @"";
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -254,7 +255,7 @@ resolve_relative_path(OFString *path)
 		}
 
 		if (*str_c == '/')
-			path = [[OFString alloc] initWithCString: str_c + 1];
+			path = [[OFString alloc] initWithCString: str_c];
 		else {
 			OFAutoreleasePool *pool;
 			OFString *s;
@@ -439,7 +440,14 @@ resolve_relative_path(OFString *path)
 
 - (void)setPath: (OFString*)path_
 {
-	OFString *old = path;
+	OFString *old;
+
+	if (([scheme isEqual: @"http"] || [scheme isEqual: @"https"]) &&
+	    ![path_ hasPrefix: @"/"])
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
+	old = path;
 	path = [path_ copy];
 	[old release];
 }
@@ -505,8 +513,7 @@ resolve_relative_path(OFString *path)
 	if (needPort)
 		[desc appendFormat: @":%d", port];
 
-	if (path != nil)
-		[desc appendFormat: @"/%@", path];
+	[desc appendString: path];
 
 	if (parameters != nil)
 		[desc appendFormat: @";%@", parameters];

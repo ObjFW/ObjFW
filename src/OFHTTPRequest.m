@@ -155,14 +155,14 @@ Class of_http_request_tls_socket_class = Nil;
 		if (requestType == OF_HTTP_REQUEST_TYPE_POST)
 			t = "POST";
 
-		if ((path = [URL path]) == nil)
-			path = @"";
+		if ([(path = [URL path]) isEqual: @""])
+			path = @"/";
 
 		if ([URL query] != nil)
-			[sock writeFormat: @"%s /%@?%@ HTTP/1.0\r\n",
+			[sock writeFormat: @"%s %@?%@ HTTP/1.0\r\n",
 					   t, path, [URL query]];
 		else
-			[sock writeFormat: @"%s /%@ HTTP/1.0\r\n", t, path];
+			[sock writeFormat: @"%s %@ HTTP/1.0\r\n", t, path];
 
 		if ([URL port] == 80)
 			[sock writeFormat: @"Host: %@\r\n", [URL host]];
