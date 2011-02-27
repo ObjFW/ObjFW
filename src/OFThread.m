@@ -269,8 +269,12 @@ call_main(id obj)
 
 	@synchronized (tlskeys) {
 		for (iter = [tlskeys firstListObject]; iter != NULL;
-		    iter = iter->next)
-			((OFTLSKey*)iter->object)->destructor(iter->object);
+		    iter = iter->next) {
+			OFTLSKey *key = (OFTLSKey*)iter->object;
+
+			if (key->destructor != NULL)
+				key->destructor(iter->object);
+		}
 	}
 }
 
