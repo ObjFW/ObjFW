@@ -76,8 +76,10 @@
 
 - (void)dealloc
 {
-	dlclose(handle);
+	of_plugin_handle_t h = handle;
 
 	[super dealloc];
+
+	dlclose(h);
 }
 @end
