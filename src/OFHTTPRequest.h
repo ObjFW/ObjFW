@@ -104,7 +104,7 @@ typedef enum of_http_request_type_t {
  *
  * \return An OFHTTPRequestResult with the result of the HTTP request
  */
-- (OFHTTPRequestResult*)result;
+- (OFHTTPRequestResult*)perform;
 
 /**
  * Performs the HTTP request and returns an OFHTTPRequestResult.
@@ -114,7 +114,7 @@ typedef enum of_http_request_type_t {
  *		    redirect is returned as an OFHTTPRequest
  * \return An OFHTTPRequestResult with the result of the HTTP request
  */
-- (OFHTTPRequestResult*)resultWithRedirects: (size_t)redirects;
+- (OFHTTPRequestResult*)performWithRedirects: (size_t)redirects;
 @end
 
 /**

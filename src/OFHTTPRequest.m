@@ -102,12 +102,12 @@ Class of_http_request_tls_socket_class = Nil;
 	return [[headers copy] autorelease];
 }
 
-- (OFHTTPRequestResult*)result
+- (OFHTTPRequestResult*)perform
 {
-	return [self resultWithRedirects: 10];
+	return [self performWithRedirects: 10];
 }
 
-- (OFHTTPRequestResult*)resultWithRedirects: (size_t)redirects
+- (OFHTTPRequestResult*)performWithRedirects: (size_t)redirects
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFString *scheme = [URL scheme];
@@ -256,7 +256,7 @@ Class of_http_request_tls_socket_class = Nil;
 				[pool release];
 				pool = nil;
 
-				return [self resultWithRedirects:
+				return [self performWithRedirects:
 				    redirects - 1];
 			}
 

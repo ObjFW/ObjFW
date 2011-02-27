@@ -711,7 +711,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 	req = [OFHTTPRequest request];
 	[req setURL: url];
-	res = [req result];
+	res = [req perform];
 
 	if ([res statusCode] != 200)
 		@throw [OFHTTPRequestFailedException
