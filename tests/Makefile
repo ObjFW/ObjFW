@@ -9,6 +9,7 @@ SRCS = OFArrayTests.m			\
        OFDateTests.m			\
        OFDictionaryTests.m		\
        OFFileTests.m			\
+       OFHTTPRequestTests.m		\
        OFListTests.m			\
        OFMD5HashTests.m			\
        OFNumberTests.m			\

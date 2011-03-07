@@ -97,6 +97,10 @@
 - (void)fileTests;
 @end
 
+@interface TestsAppDelegate (OFHTTPRequestTests)
+- (void)HTTPRequestTests;
+@end
+
 @interface TestsAppDelegate (OFListTests)
 - (void)listTests;
 @end
