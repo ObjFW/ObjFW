@@ -1676,7 +1676,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"Deallocation of a thread of type %@ was tried, even though it "
-	    @"was still running", inClass];
+	    @"was still running!", inClass];
 
 	return description;
 }
@@ -1689,7 +1689,7 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"A mutex could not be locked in class %@", inClass];
+	    @"A mutex of class %@ could not be locked!", inClass];
 
 	return description;
 }
@@ -1702,7 +1702,21 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"A mutex could not be unlocked in class %@", inClass];
+	    @"A mutex of class %@ could not be unlocked!", inClass];
+
+	return description;
+}
+@end
+
+@implementation OFMutexLockedException
+- (OFString*)description
+{
+	if (description != nil)
+		return description;
+
+	description = [[OFString alloc] initWithFormat:
+	    @"Deallocation of a mutex of type %@ was tried, even though it "
+	    @"was still locked!", inClass];
 
 	return description;
 }

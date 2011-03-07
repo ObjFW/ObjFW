@@ -1173,6 +1173,12 @@
 @end
 
 /**
+ * \brief An exception indicating that a mutex is still locked.
+ */
+@interface OFMutexLockedException: OFException
+@end
+
+/**
  * \brief An exception indicating that the hash has already been calculated.
  */
 @interface OFHashAlreadyCalculatedException: OFException

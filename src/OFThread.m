@@ -369,7 +369,8 @@ call_main(id obj)
 - (void)dealloc
 {
 	if (initialized)
-		of_mutex_free(&mutex);
+		if (!of_mutex_free(&mutex))
+			@throw [OFMutexLockedException newWithClass: isa];
 
 	[super dealloc];
 }
