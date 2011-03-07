@@ -1722,6 +1722,59 @@
 }
 @end
 
+@implementation OFConditionWaitFailedException
+- (OFString*)description
+{
+	if (description != nil)
+		return description;
+
+	description = [[OFString alloc] initWithFormat:
+	    @"Waiting for a condition of type %@ failed!", inClass];
+
+	return description;
+}
+@end
+
+@implementation OFConditionSignalFailedException
+- (OFString*)description
+{
+	if (description != nil)
+		return description;
+
+	description = [[OFString alloc] initWithFormat:
+	    @"Signaling a condition of type %@ failed!", inClass];
+
+	return description;
+}
+@end
+
+@implementation OFConditionBroadcastFailedException
+- (OFString*)description
+{
+	if (description != nil)
+		return description;
+
+	description = [[OFString alloc] initWithFormat:
+	    @"Broadcasting a condition of type %@ failed!", inClass];
+
+	return description;
+}
+@end
+
+@implementation OFConditionWaitingException
+- (OFString*)description
+{
+	if (description != nil)
+		return description;
+
+	description = [[OFString alloc] initWithFormat:
+	    @"Deallocation of a condition of type %@ was tried, even though a "
+	    @"thread was still waiting for it!", inClass];
+
+	return description;
+}
+@end
+
 @implementation OFHashAlreadyCalculatedException
 - (OFString*)description
 {

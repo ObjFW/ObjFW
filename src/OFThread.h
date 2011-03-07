@@ -223,3 +223,34 @@
  */
 - (void)unlock;
 @end
+
+/**
+ * \brief A class implementing a condition variable for thread synchronization.
+ */
+@interface OFCondition: OFMutex
+{
+	of_condition_t condition;
+	BOOL cond_initialized;
+}
+
+/**
+ * \return A new, autoreleased OFCondition
+ */
++ condition;
+
+/**
+ * Blocks the current thread until another thread calls -[signal] or
+ * -[broadcast].
+ */
+- (void)wait;
+
+/**
+ * Signals the next waiting thread to continue.
+ */
+- (void)signal;
+
+/**
+ * Signals all threads to continue.
+ */
+- (void)broadcast;
+@end

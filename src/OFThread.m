@@ -375,3 +375,52 @@ call_main(id obj)
 	[super dealloc];
 }
 @end
+
+@implementation OFCondition
++ condition
+{
+	return [[[self alloc] init] autorelease];
+}
+
+- init
+{
+	self = [super init];
+
+	if (!of_condition_new(&condition)) {
+		Class c = isa;
+		[self release];
+		@throw [OFInitializationFailedException newWithClass: c];
+	}
+
+	cond_initialized = YES;
+
+	return self;
+}
+
+- (void)wait
+{
+	if (!of_condition_wait(&condition, &mutex))
+		@throw [OFConditionWaitFailedException newWithClass: isa];
+}
+
+- (void)signal
+{
+	if (!of_condition_signal(&condition))
+		@throw [OFConditionSignalFailedException newWithClass: isa];
+}
+
+- (void)broadcast
+{
+	if (!of_condition_broadcast(&condition))
+		@throw [OFConditionBroadcastFailedException newWithClass: isa];
+}
+
+- (void)dealloc
+{
+	if (cond_initialized)
+		if (!of_condition_free(&condition))
+			@throw [OFConditionWaitingException newWithClass: isa];
+
+	[super dealloc];
+}
+@end

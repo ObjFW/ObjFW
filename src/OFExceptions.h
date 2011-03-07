@@ -1179,6 +1179,31 @@
 @end
 
 /**
+ * \brief An exception indicating waiting for a condition failed.
+ */
+@interface OFConditionWaitFailedException: OFException
+@end
+
+/**
+ * \brief An exception indicating signalling a condition failed.
+ */
+@interface OFConditionSignalFailedException: OFException
+@end
+
+/**
+ * \brief An exception indicating broadcasting a condition failed.
+ */
+@interface OFConditionBroadcastFailedException: OFException
+@end
+
+/**
+ * \brief An exception indicating that a thread is still waiting for a
+ *	  condition.
+ */
+@interface OFConditionWaitingException: OFException
+@end
+
+/**
  * \brief An exception indicating that the hash has already been calculated.
  */
 @interface OFHashAlreadyCalculatedException: OFException
