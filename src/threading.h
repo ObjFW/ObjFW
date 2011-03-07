@@ -25,13 +25,14 @@
 #if defined(OF_HAVE_PTHREADS)
 # include <pthread.h>
 typedef pthread_t of_thread_t;
-typedef pthread_mutex_t of_mutex_t;
 typedef pthread_key_t of_tlskey_t;
+typedef pthread_mutex_t of_mutex_t;
+typedef pthread_cond_t of_condition_t;
 #elif defined(_WIN32)
 # include <windows.h>
 typedef HANDLE of_thread_t;
-typedef CRITICAL_SECTION of_mutex_t;
 typedef DWORD of_tlskey_t;
+typedef CRITICAL_SECTION of_mutex_t;
 #endif
 
 #if defined(OF_ATOMIC_OPS)
@@ -147,6 +148,56 @@ of_mutex_unlock(of_mutex_t *mutex)
 #elif defined(_WIN32)
 	LeaveCriticalSection(mutex);
 	return YES;
+#endif
+}
+
+static OF_INLINE BOOL
+of_condition_new(of_condition_t *condition)
+{
+#if defined(OF_HAVE_PTHREADS)
+	return (pthread_cond_init(condition, NULL) ? NO : YES);
+#elif defined(_WIN32)
+	// XXX
+#endif
+}
+
+static OF_INLINE BOOL
+of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
+{
+#if defined(OF_HAVE_PTHREADS)
+	return (pthread_cond_wait(condition, mutex) ? NO : YES);
+#elif defined(_WIN32)
+	// XXX
+#endif
+}
+
+static OF_INLINE BOOL
+of_condition_signal(of_condition_t *condition)
+{
+#if defined(OF_HAVE_PTHREADS)
+	return (pthread_cond_signal(condition) ? NO : YES);
+#elif defined(_WIN32)
+	// XXX
+#endif
+}
+
+static OF_INLINE BOOL
+of_condition_broadcast(of_condition_t *condition)
+{
+#if defined(OF_HAVE_PTHREADS)
+	return (pthread_cond_broadcast(condition) ? NO : YES);
+#elif defined(_WIN32)
+	// XXX
+#endif
+}
+
+static OF_INLINE BOOL
+of_condition_free(of_condition_t *condition)
+{
+#if defined(OF_HAVE_PTHREADS)
+	return (pthread_cond_destroy(condition) ? NO : YES);
+#elif defined(_WIN32)
+	// XXX
 #endif
 }
 
