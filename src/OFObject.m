@@ -54,6 +54,7 @@
 # define class_getInstanceSize class_get_instance_size
 # define class_getName class_get_class_name
 # define class_getSuperclass class_get_super_class
+# define sel_registerName sel_get_uid
 #endif
 
 struct pre_ivar {
@@ -73,6 +74,9 @@ static struct {
 	Class isa;
 } alloc_failed_exception;
 static Class autoreleasepool = Nil;
+
+static SEL cxx_construct = NULL;
+static SEL cxx_destruct = NULL;
 
 size_t of_pagesize;
 
@@ -120,6 +124,15 @@ objc_enumerationMutation(id obj)
 	objc_setEnumerationMutationHandler(enumeration_mutation_handler);
 #endif
 
+	cxx_construct = sel_registerName(".cxx_construct");
+	cxx_destruct = sel_registerName(".cxx_destruct");
+
+	if (cxx_construct == NULL || cxx_destruct == NULL) {
+		fputs("Runtime error: Failed to register selector "
+		    ".cxx_construct and/or .cxx_destruct!\n", stderr);
+		abort();
+	}
+
 #if defined(_WIN32)
 	SYSTEM_INFO si;
 	GetSystemInfo(&si);
@@ -140,6 +153,8 @@ objc_enumerationMutation(id obj)
 {
 	OFObject *instance;
 	size_t isize = class_getInstanceSize(self);
+	Class class;
+	void (*last)(id, SEL) = NULL;
 
 	if ((instance = malloc(isize + PRE_IVAR_ALIGN)) == NULL) {
 		alloc_failed_exception.isa = [OFAllocFailedException class];
@@ -160,6 +175,19 @@ objc_enumerationMutation(id obj)
 	instance = (OFObject*)((char*)instance + PRE_IVAR_ALIGN);
 	memset(instance, 0, isize);
 	instance->isa = self;
+
+	for (class = self; class != Nil; class = class_getSuperclass(class)) {
+		void (*construct)(id, SEL);
+
+		if ([class instancesRespondToSelector: cxx_construct]) {
+			if ((construct = (void(*)(id, SEL))[class
+			    instanceMethodForSelector: cxx_construct]) != last)
+				construct(instance, cxx_construct);
+
+			last = construct;
+		} else
+			break;
+	}
 
 	return instance;
 }
@@ -714,8 +742,24 @@ objc_enumerationMutation(id obj)
 
 - (void)dealloc
 {
-	void **iter = PRE_IVAR->memchunks + PRE_IVAR->memchunks_size;
+	Class class;
+	void (*last)(id, SEL) = NULL;
+	void **iter;
 
+	for (class = isa; class != Nil; class = class_getSuperclass(class)) {
+		void (*destruct)(id, SEL);
+
+		if ([class instancesRespondToSelector: cxx_destruct]) {
+			if ((destruct = (void(*)(id, SEL))[class
+			    instanceMethodForSelector: cxx_destruct]) != last)
+				destruct(self, cxx_destruct);
+
+			last = destruct;
+		} else
+			break;
+	}
+
+	iter = PRE_IVAR->memchunks + PRE_IVAR->memchunks_size;
 	while (iter-- > PRE_IVAR->memchunks)
 		free(*iter);
 
