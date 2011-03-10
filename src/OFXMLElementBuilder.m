@@ -83,15 +83,16 @@
 	add_attr = [elem methodForSelector: @selector(addAttribute:)];
 
 	for (i = 0; i < attrs_cnt; i++) {
-		add_attr(elem, @selector(addAttribute:), attrs_c[i]);
-
 		if ([attrs_c[i] namespace] == nil &&
-		    [[attrs_c[i] name] isEqual: @"xmlns"])
+		    [[attrs_c[i] name] isEqual: @"xmlns"]) {
 			[elem setDefaultNamespace: [attrs_c[i] stringValue]];
-		else if ([[attrs_c[i] namespace]
+			continue;
+		} else if ([[attrs_c[i] namespace]
 		    isEqual: @"http://www.w3.org/2000/xmlns/"])
 			[elem setPrefix: [attrs_c[i] name]
 			   forNamespace: [attrs_c[i] stringValue]];
+
+		add_attr(elem, @selector(addAttribute:), attrs_c[i]);
 	}
 
 	[[stack lastObject] addChild: elem];
