@@ -33,6 +33,10 @@ typedef pthread_cond_t of_condition_t;
 typedef HANDLE of_thread_t;
 typedef DWORD of_tlskey_t;
 typedef CRITICAL_SECTION of_mutex_t;
+typedef struct {
+	HANDLE event;
+	int count;
+} of_condition_t;
 #endif
 
 #if defined(OF_ATOMIC_OPS)
@@ -157,7 +161,12 @@ of_condition_new(of_condition_t *condition)
 #if defined(OF_HAVE_PTHREADS)
 	return (pthread_cond_init(condition, NULL) ? NO : YES);
 #elif defined(_WIN32)
-	// XXX
+	condition->count = 0;
+
+	if ((condition->event = CreateEvent(NULL, FALSE, 0, NULL)) == NULL)
+		return NO;
+
+	return YES;
 #endif
 }
 
@@ -167,7 +176,22 @@ of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 #if defined(OF_HAVE_PTHREADS)
 	return (pthread_cond_wait(condition, mutex) ? NO : YES);
 #elif defined(_WIN32)
-	// XXX
+	if (!of_mutex_unlock(mutex))
+		return NO;
+
+	of_atomic_inc_int(&condition->count);
+
+	if (WaitForSingleObject(condition->event, INFINITE) != WAIT_OBJECT_0) {
+		of_mutex_lock(mutex);
+		return NO;
+	}
+
+	of_atomic_dec_int(&condition->count);
+
+	if (!of_mutex_lock(mutex))
+		return NO;
+
+	return YES;
 #endif
 }
 
@@ -177,7 +201,7 @@ of_condition_signal(of_condition_t *condition)
 #if defined(OF_HAVE_PTHREADS)
 	return (pthread_cond_signal(condition) ? NO : YES);
 #elif defined(_WIN32)
-	// XXX
+	return (SetEvent(condition->event) ? YES : NO);
 #endif
 }
 
@@ -187,7 +211,13 @@ of_condition_broadcast(of_condition_t *condition)
 #if defined(OF_HAVE_PTHREADS)
 	return (pthread_cond_broadcast(condition) ? NO : YES);
 #elif defined(_WIN32)
-	// XXX
+	size_t i;
+
+	for (i = 0; i < condition->count; i++)
+		if (!SetEvent(condition->event))
+			return NO;
+
+	return YES;
 #endif
 }
 
@@ -197,7 +227,10 @@ of_condition_free(of_condition_t *condition)
 #if defined(OF_HAVE_PTHREADS)
 	return (pthread_cond_destroy(condition) ? NO : YES);
 #elif defined(_WIN32)
-	// XXX
+	if (condition->count)
+		return NO;
+
+	return (CloseHandle(condition->event) ? YES : NO);
 #endif
 }
 
