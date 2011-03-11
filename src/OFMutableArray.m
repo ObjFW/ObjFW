@@ -20,6 +20,7 @@
 
 #import "OFMutableArray.h"
 #import "OFDataArray.h"
+#import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
 
 @implementation OFMutableArray
@@ -226,6 +227,7 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	id *objs = [array cArray];
 	size_t i, count = [array count];
 	BOOL stop = NO;
@@ -237,11 +239,15 @@
 			    newWithClass: isa];
 
 		block(objs[i], i, &stop);
+		[pool releaseObjects];
 	}
+
+	[pool release];
 }
 
 - (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block
 {
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	id *objs = [array cArray];
 	size_t i, count = [array count];
 	BOOL stop = NO;
@@ -261,7 +267,11 @@
 		[new retain];
 		[objs[i] release];
 		objs[i] = new;
+
+		[pool releaseObjects];
 	}
+
+	[pool release];
 }
 #endif
 @end

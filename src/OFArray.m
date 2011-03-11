@@ -444,16 +444,22 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	id *objs = [array cArray];
 	size_t i, count = [array count];
 	BOOL stop = NO;
 
-	for (i = 0; i < count && !stop; i++)
+	for (i = 0; i < count && !stop; i++) {
 		block(objs[i], i, &stop);
+		[pool releaseObjects];
+	}
+
+	[pool release];
 }
 
 - (OFArray*)mappedArrayUsingBlock: (of_array_map_block_t)block
 {
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFArray *ret;
 	size_t count = [array count];
 	id *tmp = [self allocMemoryForNItems: count
@@ -466,8 +472,14 @@
 		for (i = 0; i < count; i++)
 			tmp[i] = block(objs[i], i);
 
-		ret = [OFArray arrayWithCArray: tmp
-					length: count];
+		ret = [[OFArray alloc] initWithCArray: tmp
+					       length: count];
+
+		@try {
+			[pool release];
+		} @finally {
+			[ret autorelease];
+		}
 	} @finally {
 		[self freeMemory: tmp];
 	}
@@ -477,6 +489,7 @@
 
 - (OFArray*)filteredArrayUsingBlock: (of_array_filter_block_t)block
 {
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFArray *ret;
 	size_t count = [array count];
 	id *tmp = [self allocMemoryForNItems: count
@@ -486,9 +499,14 @@
 		id *objs = [array cArray];
 		size_t i, j = 0;
 
-		for (i = 0; i < count; i++)
+		for (i = 0; i < count; i++) {
 			if (block(objs[i], i))
 				tmp[j++] = objs[i];
+
+			[pool releaseObjects];
+		}
+
+		[pool release];
 
 		ret = [OFArray arrayWithCArray: tmp
 					length: j];
