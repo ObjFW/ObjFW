@@ -25,15 +25,15 @@
 /* blk0() and blk() perform the initial expand. */
 #ifndef OF_BIG_ENDIAN
 #define blk0(i)							\
-	(block->l[i] = (OF_ROL(block->l[i], 24) & 0xFF00FF00) |	\
-	    (OF_ROL(block->l[i], 8) & 0x00FF00FF))
+	(block.l[i] = (OF_ROL(block.l[i], 24) & 0xFF00FF00) |	\
+	    (OF_ROL(block.l[i], 8) & 0x00FF00FF))
 #else
-#define blk0(i) block->l[i]
+#define blk0(i) block.l[i]
 #endif
 #define blk(i) \
-	(block->l[i & 15] = OF_ROL(block->l[(i + 13) & 15] ^	\
-	    block->l[(i + 8) & 15] ^ block->l[(i + 2) & 15] ^	\
-	    block->l[i & 15], 1))
+	(block.l[i & 15] = OF_ROL(block.l[(i + 13) & 15] ^	\
+	    block.l[(i + 8) & 15] ^ block.l[(i + 2) & 15] ^	\
+	    block.l[i & 15], 1))
 
 /* (R0+R1), R2, R3, R4 are the different operations used in SHA1 */
 #define R0(v, w, x, y, z, i)						\
@@ -61,11 +61,9 @@ static inline void
 sha1_transform(uint32_t state[5], const char buffer[64])
 {
 	uint32_t      a, b, c, d, e;
-	char	      workspace[64];
-	sha1_c64l16_t *block;
+	sha1_c64l16_t block;
 
-	block = (sha1_c64l16_t*)workspace;
-	memcpy(block, buffer, 64);
+	memcpy(block.c, buffer, 64);
 
 	/* Copy state[] to working vars */
 	a = state[0];

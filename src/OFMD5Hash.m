@@ -167,7 +167,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 
 	/* Handle any leading odd-sized chunks */
 	if (t) {
-		uint8_t *p = in + t;
+		uint8_t *p = in.u8 + t;
 
 		t = 64 - t;
 
@@ -177,8 +177,8 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 		}
 
 		memcpy(p, buffer, t);
-		of_bswap32_vec_if_be((uint32_t*)in, 16);
-		md5_transform(buf, (uint32_t*)in);
+		of_bswap32_vec_if_be(in.u32, 16);
+		md5_transform(buf, in.u32);
 
 		buffer += t;
 		size -= t;
@@ -186,16 +186,16 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 
 	/* Process data in 64-byte chunks */
 	while (size >= 64) {
-		memcpy(in, buffer, 64);
-		of_bswap32_vec_if_be((uint32_t*)in, 16);
-		md5_transform(buf, (uint32_t*)in);
+		memcpy(in.u8, buffer, 64);
+		of_bswap32_vec_if_be(in.u32, 16);
+		md5_transform(buf, in.u32);
 
 		buffer += 64;
 		size -= 64;
 	}
 
 	/* Handle any remaining bytes of data. */
-	memcpy(in, buffer, size);
+	memcpy(in.u8, buffer, size);
 }
 
 - (uint8_t*)digest
@@ -213,7 +213,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	 * Set the first char of padding to 0x80. This is safe since there is
 	 * always at least one byte free
 	 */
-	p = in + count;
+	p = in.u8 + count;
 	*p++ = 0x80;
 
 	/* Bytes of padding needed to make 64 bytes */
@@ -223,22 +223,22 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	if (count < 8) {
 		/* Two lots of padding: Pad the first block to 64 bytes */
 		memset(p, 0, count);
-		of_bswap32_vec_if_be((uint32_t*)in, 16);
-		md5_transform(buf, (uint32_t*)in);
+		of_bswap32_vec_if_be(in.u32, 16);
+		md5_transform(buf, in.u32);
 
 		/* Now fill the next block with 56 bytes */
-		memset(in, 0, 56);
+		memset(in.u8, 0, 56);
 	} else {
 		/* Pad block to 56 bytes */
 		memset(p, 0, count - 8);
 	}
-	of_bswap32_vec_if_be((uint32_t*)in, 14);
+	of_bswap32_vec_if_be(in.u32, 14);
 
 	/* Append length in bits and transform */
-	((uint32_t*)in)[14] = bits[0];
-	((uint32_t*)in)[15] = bits[1];
+	in.u32[14] = bits[0];
+	in.u32[15] = bits[1];
 
-	md5_transform(buf, (uint32_t*)in);
+	md5_transform(buf, in.u32);
 	of_bswap32_vec_if_be(buf, 4);
 
 	isCalculated = YES;
