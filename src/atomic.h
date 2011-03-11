@@ -82,7 +82,7 @@ static OF_INLINE void*
 of_atomic_add_ptr(void* volatile *p, intptr_t i)
 {
 #if !defined(OF_THREADS)
-	return (*p += i);
+	return (*(char* volatile*)p += i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	__asm__ (
 	    "lock\n\t"
@@ -164,7 +164,7 @@ static OF_INLINE void*
 of_atomic_sub_ptr(void* volatile *p, intptr_t i)
 {
 #if !defined(OF_THREADS)
-	return (*p -= i);
+	return (*(char* volatile*)p -= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	__asm__ (
 	    "negl	%0\n\t"

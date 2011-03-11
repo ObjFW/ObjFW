@@ -298,6 +298,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 	AC_DEFINE(OF_THREADS, 1, [Whether we have threads])
 	AC_SUBST(OFTHREAD_M, "OFThread.m")
 	AC_SUBST(OFTHREADTESTS_M, "OFThreadTests.m")
+	AC_SUBST(OFHTTPREQUESTTESTS_M, "OFHTTPRequestTests.m")
 	AC_SUBST(THREADING_H, "threading.h")
 
 	AC_CHECK_FUNC(objc_sync_enter,, [
