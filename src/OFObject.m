@@ -68,7 +68,7 @@ struct pre_ivar {
 
 /* Hopefully no arch needs more than 16 bytes padding */
 #define PRE_IVAR_ALIGN ((sizeof(struct pre_ivar) + 15) & ~15)
-#define PRE_IVAR ((struct pre_ivar*)((char*)self - PRE_IVAR_ALIGN))
+#define PRE_IVAR ((struct pre_ivar*)(void*)((char*)self - PRE_IVAR_ALIGN))
 
 static struct {
 	Class isa;
