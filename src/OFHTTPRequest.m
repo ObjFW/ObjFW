@@ -25,6 +25,7 @@
 #import "OFDictionary.h"
 #import "OFAutoreleasePool.h"
 #import "OFExceptions.h"
+#import "macros.h"
 
 Class of_http_request_tls_socket_class = Nil;
 
@@ -58,14 +59,12 @@ Class of_http_request_tls_socket_class = Nil;
 
 - (void)setURL: (OFURL*)url
 {
-	OFURL *old = URL;
-	URL = [url copy];
-	[old release];
+	OF_SETTER(URL, url, YES, YES)
 }
 
 - (OFURL*)URL
 {
-	return [[URL copy] autorelease];
+	OF_GETTER(URL, YES)
 }
 
 - (void)setRequestType: (of_http_request_type_t)type
@@ -80,26 +79,22 @@ Class of_http_request_tls_socket_class = Nil;
 
 - (void)setQueryString: (OFString*)qs
 {
-	OFString *old = queryString;
-	queryString = [qs copy];
-	[old release];
+	OF_SETTER(queryString, qs, YES, YES)
 }
 
 - (OFString*)queryString
 {
-	return [[queryString copy] autorelease];
+	OF_GETTER(queryString, YES)
 }
 
 - (void)setHeaders: (OFDictionary*)headers_
 {
-	OFDictionary *old = headers;
-	headers = [headers_ copy];
-	[old release];
+	OF_SETTER(headers, headers_, YES, YES)
 }
 
 - (OFDictionary*)headers
 {
-	return [[headers copy] autorelease];
+	OF_GETTER(headers, YES)
 }
 
 - (OFHTTPRequestResult*)perform

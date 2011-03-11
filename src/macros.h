@@ -71,6 +71,12 @@
 # define OF_PATH_DELIM '\\'
 #endif
 
+#define OF_IVAR_OFFSET(ivar) ((char*)&ivar - (char*)self)
+#define OF_GETTER(ivar, atomic) \
+	return objc_getProperty(self, _cmd, OF_IVAR_OFFSET(ivar), atomic);
+#define OF_SETTER(ivar, value, atomic, copy) \
+	objc_setProperty(self, _cmd, OF_IVAR_OFFSET(ivar), value, atomic, copy);
+
 static OF_INLINE uint16_t OF_CONST_FUNC
 of_bswap16_const(uint16_t i)
 {

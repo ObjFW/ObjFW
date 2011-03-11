@@ -373,7 +373,7 @@ resolve_relative_path(OFString *path)
 
 - (OFString*)scheme
 {
-	return [[scheme copy] autorelease];
+	OF_GETTER(scheme, YES)
 }
 
 - (void)setScheme: (OFString*)scheme_
@@ -389,14 +389,12 @@ resolve_relative_path(OFString *path)
 
 - (OFString*)host
 {
-	return [[host copy] autorelease];
+	OF_GETTER(host, YES)
 }
 
 - (void)setHost: (OFString*)host_
 {
-	OFString *old = host;
-	host = [host_ copy];
-	[old release];
+	OF_SETTER(host, host_, YES, YES)
 }
 
 - (uint16_t)port
@@ -411,31 +409,27 @@ resolve_relative_path(OFString *path)
 
 - (OFString*)user
 {
-	return [[user copy] autorelease];
+	OF_GETTER(user, YES)
 }
 
 - (void)setUser: (OFString*)user_
 {
-	OFString *old = user;
-	user = [user_ copy];
-	[old release];
+	OF_SETTER(user, user_, YES, YES)
 }
 
 - (OFString*)password
 {
-	return [[password copy] autorelease];
+	OF_GETTER(password, YES)
 }
 
 - (void)setPassword: (OFString*)password_
 {
-	OFString *old = password;
-	password = [password_ copy];
-	[old release];
+	OF_SETTER(password, password_, YES, YES)
 }
 
 - (OFString*)path
 {
-	return [[path copy] autorelease];
+	OF_GETTER(path, YES)
 }
 
 - (void)setPath: (OFString*)path_
@@ -454,38 +448,32 @@ resolve_relative_path(OFString *path)
 
 - (OFString*)parameters
 {
-	return [[parameters copy] autorelease];
+	OF_GETTER(parameters, YES)
 }
 
 - (void)setParameters: (OFString*)parameters_
 {
-	OFString *old = parameters;
-	parameters = [parameters_ copy];
-	[old release];
+	OF_SETTER(parameters, parameters_, YES, YES)
 }
 
 - (OFString*)query
 {
-	return [[query copy] autorelease];
+	OF_GETTER(query, YES)
 }
 
 - (void)setQuery: (OFString*)query_
 {
-	OFString *old = query;
-	query = [query_ copy];
-	[old release];
+	OF_SETTER(query, query_, YES, YES)
 }
 
 - (OFString*)fragment
 {
-	return [[fragment copy] autorelease];
+	OF_GETTER(fragment, YES)
 }
 
 - (void)setFragment: (OFString*)fragment_
 {
-	OFString *old = fragment;
-	fragment = [fragment_ copy];
-	[old release];
+	OF_SETTER(fragment, fragment_, YES, YES)
 }
 
 - (OFString*)description

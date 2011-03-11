@@ -412,6 +412,8 @@ typedef struct of_range_t {
 #ifdef __cplusplus
 extern "C" {
 #endif
+extern id objc_getProperty(id, SEL, ptrdiff_t, BOOL);
+extern void objc_setProperty(id, SEL, ptrdiff_t, id, BOOL, BOOL);
 extern size_t of_pagesize;
 #ifdef __cplusplus
 }
