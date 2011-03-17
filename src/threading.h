@@ -311,7 +311,7 @@ static OF_INLINE BOOL
 of_spinlock_lock(of_spinlock_t *s)
 {
 #if defined(OF_ATOMIC_OPS)
-# ifdef OF_HAVE_SCHED_YIELD
+# if defined(OF_HAVE_SCHED_YIELD) || defined(_WIN32)
 	int i;
 
 	for (i = 0; i < OF_SPINCOUNT; i++)
@@ -319,7 +319,11 @@ of_spinlock_lock(of_spinlock_t *s)
 			return YES;
 
 	while (!of_spinlock_trylock(s))
+#  ifndef _WIN32
 		sched_yield();
+#  else
+		Sleep(0);
+#  endif
 # else
 	while (!of_spinlock_trylock(s));
 # endif
