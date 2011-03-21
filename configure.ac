@@ -69,6 +69,28 @@ AC_TRY_COMPILE([
 	AC_MSG_RESULT(no)
 ])
 
+AC_MSG_CHECKING(whether Objective C compiler supports optional protocols)
+AC_TRY_COMPILE([
+	@protocol Proto
+	@optional
+	+ (void)foo;
+	@end
+
+	@interface Foo <Proto>
+	@end
+
+	@implementation Foo
+	@end
+], [
+	[Foo foo];
+], [
+	AC_DEFINE(OF_HAVE_OPTIONAL_PROTOCOLS, 1,
+		[Compiler support for optional protocols])
+	AC_MSG_RESULT(yes)
+], [
+	AC_MSG_RESULT(no)
+])
+
 AC_MSG_CHECKING(whether Objective C compiler supports blocks)
 old_OBJCFLAGS="$OBJCFLAGS"
 OBJCFLAGS="$OBJCFLAGS -fblocks"
