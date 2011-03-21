@@ -34,12 +34,12 @@ AC_MSG_CHECKING(whether Objective C compiler supports fast enumeration)
 AC_TRY_COMPILE([
 	@protocol OFFastEnumeration
 	- (int)countByEnumeratingWithState: (void*)state
-				   objects: (struct objc_object**)objects
+				   objects: (id*)objects
 				     count: (int)count;
 	@end
 ], [
-	struct objc_object *n = (struct objc_object*)0;
-	for (struct objc_object *i in n);
+	id n = (id)0;
+	for (id i in n);
 ], [
 	AC_DEFINE(OF_HAVE_FAST_ENUMERATION, 1,
 		[Compiler support for Fast Enumeration])
@@ -55,11 +55,11 @@ AC_TRY_COMPILE([
 		id bar;
 	}
 
-	@property (retain, nonatomic) struct objc_object *bar;
+	@property (retain, nonatomic) id bar;
 	@end
 ], [
-	Foo *foo = (struct objc_object*)0;
-	[foo setBar: (struct objc_object*)0];
+	Foo *foo = (id)0;
+	[foo setBar: (id)0];
 	[foo bar];
 ], [
 	AC_DEFINE(OF_HAVE_PROPERTIES, 1, [Compiler support for properties])
