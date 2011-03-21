@@ -32,16 +32,14 @@ AC_SUBST(NO_CONST_CFSTRINGS)
 
 AC_MSG_CHECKING(whether Objective C compiler supports fast enumeration)
 AC_TRY_COMPILE([
-	#import <objc/objc.h>
-
 	@protocol OFFastEnumeration
 	- (int)countByEnumeratingWithState: (void*)state
-				   objects: (id*)objects
+				   objects: (struct objc_object**)objects
 				     count: (int)count;
 	@end
 ], [
-	id n = nil;
-	for (id i in n);
+	struct objc_object *n = (struct objc_object*)0;
+	for (struct objc_object *i in n);
 ], [
 	AC_DEFINE(OF_HAVE_FAST_ENUMERATION, 1,
 		[Compiler support for Fast Enumeration])
@@ -52,18 +50,16 @@ AC_TRY_COMPILE([
 
 AC_MSG_CHECKING(whether Objective C compiler supports properties)
 AC_TRY_COMPILE([
-	#import <objc/objc.h>
-
 	@interface Foo
 	{
 		id bar;
 	}
 
-	@property (retain, nonatomic) id bar;
+	@property (retain, nonatomic) struct objc_object *bar;
 	@end
 ], [
-	Foo *foo = nil;
-	[foo setBar: nil];
+	Foo *foo = (struct objc_object*)0;
+	[foo setBar: (struct objc_object*)0];
 	[foo bar];
 ], [
 	AC_DEFINE(OF_HAVE_PROPERTIES, 1, [Compiler support for properties])
@@ -463,11 +459,9 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 
 	AC_MSG_CHECKING(whether gcc has bug objc/27438)
 	AC_TRY_COMPILE([
-		#import <objc/objc.h>
-
 		@interface OFConstantString
 		{
-			Class isa;
+			struct objc_class *isa;
 			const char *string;
 			unsigned long size;
 		}
@@ -487,8 +481,6 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 
 	AC_MSG_CHECKING(whether we need -Wno-strict-aliasing due to gcc bugs)
 	AC_TRY_COMPILE([
-		#import <objc/objc.h>
-
 		@interface OFObject
 		{
 			Class isa;
@@ -496,7 +488,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		@end
 
 		static struct {
-			Class isa;
+			struct objc_class *isa;
 		} object;
 	], [
 		OFObject *test = (OFObject*)&object;
