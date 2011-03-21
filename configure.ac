@@ -200,9 +200,10 @@ AS_IF([test x"$PLUGIN_SUFFIX" != "x"], [
 
 case "$host_os" in
 	darwin*)
-		AC_SUBST(REEXPORT_LIBOBJC, [-Wl,-reexport-lobjc])
-		AC_SUBST(LDFLAGS_REEXPORT, [-Wl,-reexport-lobjfw])
-		AC_SUBST(MACH_ALIAS_LIST, [-Wl,-alias_list,mach_alias_list])
+		AC_SUBST(REEXPORT_LIBOBJC, ["-Wl,-reexport-lobjc"])
+		AC_SUBST(LDFLAGS_REEXPORT, ["-Wl,-reexport-lobjfw"])
+		AC_SUBST(MACH_ALIAS_LIST,
+			 ["-Xarch_x86_64 -Wl,-alias_list,mach_alias_list"])
 		;;
 esac
 
