@@ -7,18 +7,6 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		4B08AE9E109AE10E00989F6E /* Framework */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = 4B08AEA1109AE12C00989F6E /* Build configuration list for PBXAggregateTarget "Framework" */;
-			buildPhases = (
-				4B08AE9D109AE10E00989F6E /* ShellScript */,
-			);
-			dependencies = (
-				4B08AEA8109AE2D300989F6E /* PBXTargetDependency */,
-			);
-			name = Framework;
-			productName = Framework;
-		};
 		4B5D8DDD1099E1B0000896FF /* autogen.sh */ = {
 			isa = PBXAggregateTarget;
 			buildConfigurationList = 4B5D8DE51099E1C5000896FF /* Build configuration list for PBXAggregateTarget "autogen.sh" */;
@@ -30,91 +18,210 @@
 			name = autogen.sh;
 			productName = autogen.sh;
 		};
-		4B5D8DE91099E1F1000896FF /* configure */ = {
+		4BDF37AD1338047700F9A81A /* configure */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 4B5D8DEE1099E228000896FF /* Build configuration list for PBXAggregateTarget "configure" */;
+			buildConfigurationList = 4BDF37AE1338047700F9A81A /* Build configuration list for PBXAggregateTarget "configure" */;
 			buildPhases = (
-				4B5D8DE81099E1F1000896FF /* ShellScript */,
+				4BDF37B11338047D00F9A81A /* Run Script */,
 			);
 			dependencies = (
-				4B5D8DF01099E26D000896FF /* PBXTargetDependency */,
+				4BDF37B31338049600F9A81A /* PBXTargetDependency */,
 			);
 			name = configure;
 			productName = configure;
 		};
-		4BD86D601237A5B200ED9912 /* All */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = 4BD86D661237A5E100ED9912 /* Build configuration list for PBXAggregateTarget "All" */;
-			buildPhases = (
-			);
-			dependencies = (
-				4BD86D761237A66600ED9912 /* PBXTargetDependency */,
-				4BD86D741237A66300ED9912 /* PBXTargetDependency */,
-				4BD86D781237A66D00ED9912 /* PBXTargetDependency */,
-			);
-			name = All;
-			productName = All;
-		};
 /* End PBXAggregateTarget section */
 
+/* Begin PBXBuildFile section */
+		4B23CA92133811DC0047A1D9 /* TestPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF684123535B60076B512 /* TestPlugin.m */; };
+		4B23CA93133811E20047A1D9 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
+		4B23CA941338121C0047A1D9 /* TestPlugin.impl in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B23CA8A133811610047A1D9 /* TestPlugin.impl */; };
+		4B3D238B1337FC0D00DD29B8 /* OFApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B175C1E116D130B003C99CB /* OFApplication.m */; };
+		4B3D238C1337FC0D00DD29B8 /* OFArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B67995B1099E7C50041064A /* OFArray.m */; };
+		4B3D238D1337FC0D00DD29B8 /* OFAutoreleasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B67995D1099E7C50041064A /* OFAutoreleasePool.m */; };
+		4B3D238E1337FC0D00DD29B8 /* OFBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BD86D811237A6C600ED9912 /* OFBlock.m */; };
+		4B3D238F1337FC0D00DD29B8 /* OFConstantString.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE5F0D812DF4225005C7A0C /* OFConstantString.m */; };
+		4B3D23901337FC0D00DD29B8 /* OFDataArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6799611099E7C50041064A /* OFDataArray.m */; };
+		4B3D23911337FC0D00DD29B8 /* OFDataArray+Hashing.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE17ADA12FD746D002CEB0B /* OFDataArray+Hashing.m */; };
+		4B3D23921337FC0D00DD29B8 /* OFDate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE5F0DA12DF4225005C7A0C /* OFDate.m */; };
+		4B3D23931337FC0D00DD29B8 /* OFDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6799631099E7C50041064A /* OFDictionary.m */; };
+		4B3D23941337FC0D00DD29B8 /* OFEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B0108CA10EB8C9300631877 /* OFEnumerator.m */; };
+		4B3D23951337FC0D00DD29B8 /* OFExceptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6799651099E7C50041064A /* OFExceptions.m */; };
+		4B3D23961337FC0D00DD29B8 /* OFFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6799671099E7C50041064A /* OFFile.m */; };
+		4B3D23971337FC0D00DD29B8 /* OFHash.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF1BCC111C9663F0025511F /* OFHash.m */; };
+		4B3D23981337FC0D00DD29B8 /* OFHTTPRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B99251012E0780000215DBE /* OFHTTPRequest.m */; };
+		4B3D23991337FC0D00DD29B8 /* OFList.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B67996D1099E7C50041064A /* OFList.m */; };
+		4B3D239A1337FC0D00DD29B8 /* OFMD5Hash.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF1BCC311C9663F0025511F /* OFMD5Hash.m */; };
+		4B3D239B1337FC0D00DD29B8 /* OFMutableArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6799701099E7C50041064A /* OFMutableArray.m */; };
+		4B3D239C1337FC0D00DD29B8 /* OFMutableDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6799721099E7C50041064A /* OFMutableDictionary.m */; };
+		4B3D239D1337FC0D00DD29B8 /* OFMutableString.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6799741099E7C50041064A /* OFMutableString.m */; };
+		4B3D239E1337FC0D00DD29B8 /* OFNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6799761099E7C50041064A /* OFNumber.m */; };
+		4B3D239F1337FC0D00DD29B8 /* OFObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6799781099E7C50041064A /* OFObject.m */; };
+		4B3D23A01337FC0D00DD29B8 /* OFPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B67997A1099E7C50041064A /* OFPlugin.m */; };
+		4B3D23A11337FC0D00DD29B8 /* OFSeekableStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B981CDF116F71DD00294DB7 /* OFSeekableStream.m */; };
+		4B3D23A21337FC0D00DD29B8 /* OFSHA1Hash.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF1BCC511C9663F0025511F /* OFSHA1Hash.m */; };
+		4B3D23A31337FC0D00DD29B8 /* OFStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B67997E1099E7C50041064A /* OFStream.m */; };
+		4B3D23A41337FC0D00DD29B8 /* OFStreamObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BAF5F48123460C900F4E111 /* OFStreamObserver.m */; };
+		4B3D23A51337FC0D00DD29B8 /* OFStreamSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BAF5F4A123460C900F4E111 /* OFStreamSocket.m */; };
+		4B3D23A61337FC0D00DD29B8 /* OFString.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6799801099E7C50041064A /* OFString.m */; };
+		4B3D23A71337FC0D00DD29B8 /* OFString+Hashing.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF1BCC711C9663F0025511F /* OFString+Hashing.m */; };
+		4B3D23A81337FC0D00DD29B8 /* OFString+URLEncoding.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF1BCC911C9663F0025511F /* OFString+URLEncoding.m */; };
+		4B3D23A91337FC0D00DD29B8 /* OFString+XMLEscaping.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF1BCCB11C9663F0025511F /* OFString+XMLEscaping.m */; };
+		4B3D23AA1337FC0D00DD29B8 /* OFString+XMLUnescaping.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF1BCCD11C9663F0025511F /* OFString+XMLUnescaping.m */; };
+		4B3D23AB1337FC0D00DD29B8 /* OFTCPSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6799821099E7C50041064A /* OFTCPSocket.m */; };
+		4B3D23AC1337FC0D00DD29B8 /* OFThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6799841099E7C50041064A /* OFThread.m */; };
+		4B3D23AD1337FC0D00DD29B8 /* OFURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B4A61F312DF5EA20048F3F2 /* OFURL.m */; };
+		4B3D23AE1337FC0D00DD29B8 /* OFXMLAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF1BCCF11C9663F0025511F /* OFXMLAttribute.m */; };
+		4B3D23AF1337FC0D00DD29B8 /* OFXMLElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6799881099E7C50041064A /* OFXMLElement.m */; };
+		4B3D23B01337FC0D00DD29B8 /* OFXMLElementBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B0D249511DFAA3D00ED6FFC /* OFXMLElementBuilder.m */; };
+		4B3D23B11337FC0D00DD29B8 /* OFXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B67998A1099E7C50041064A /* OFXMLParser.m */; };
+		4B3D23B31337FC0D00DD29B8 /* base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3D236E1337FB5800DD29B8 /* base64.m */; };
+		4B3D23B41337FC0D00DD29B8 /* iso_8859_15.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */; };
+		4B3D23B51337FC0D00DD29B8 /* foundation-compat.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE17AD812FD744C002CEB0B /* foundation-compat.m */; };
+		4B3D23B91337FC0D00DD29B8 /* unicode.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BFBDD1610A0724800051AFB /* unicode.m */; };
+		4B3D23BA1337FC0D00DD29B8 /* windows_1252.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6AF97210A8D42E0003FB0A /* windows_1252.m */; };
+		4B3D23BC1337FC8300DD29B8 /* OFApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B175C1D116D130B003C99CB /* OFApplication.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23BD1337FC8300DD29B8 /* OFArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67995A1099E7C50041064A /* OFArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23BE1337FC8300DD29B8 /* OFAutoreleasePool.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67995C1099E7C50041064A /* OFAutoreleasePool.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23BF1337FC8300DD29B8 /* OFBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD86D801237A6C600ED9912 /* OFBlock.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23C01337FC8300DD29B8 /* OFCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BAF5F46123460C900F4E111 /* OFCollection.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23C11337FC8300DD29B8 /* OFConstantString.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BE5F0D712DF4225005C7A0C /* OFConstantString.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23C21337FC8300DD29B8 /* OFDataArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6799601099E7C50041064A /* OFDataArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23C31337FC8300DD29B8 /* OFDataArray+Hashing.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BE17AD912FD746D002CEB0B /* OFDataArray+Hashing.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23C41337FC8300DD29B8 /* OFDate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BE5F0D912DF4225005C7A0C /* OFDate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23C51337FCB000DD29B8 /* OFDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6799621099E7C50041064A /* OFDictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23C61337FCB000DD29B8 /* OFEnumerator.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B0108C910EB8C9300631877 /* OFEnumerator.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23C71337FCB000DD29B8 /* OFExceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6799641099E7C50041064A /* OFExceptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23C81337FCB000DD29B8 /* OFFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6799661099E7C50041064A /* OFFile.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23C91337FCB000DD29B8 /* OFHash.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF1BCC011C9663F0025511F /* OFHash.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23CA1337FCB000DD29B8 /* OFHTTPRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B99250F12E0780000215DBE /* OFHTTPRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23CB1337FCB000DD29B8 /* OFList.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67996C1099E7C50041064A /* OFList.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23CC1337FCB000DD29B8 /* OFMD5Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF1BCC211C9663F0025511F /* OFMD5Hash.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23CD1337FCB000DD29B8 /* OFMutableArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67996F1099E7C50041064A /* OFMutableArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23CE1337FCB000DD29B8 /* OFMutableDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6799711099E7C50041064A /* OFMutableDictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23CF1337FCB000DD29B8 /* OFMutableString.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6799731099E7C50041064A /* OFMutableString.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23D01337FCB000DD29B8 /* OFNumber.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6799751099E7C50041064A /* OFNumber.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23D11337FCB000DD29B8 /* OFObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6799771099E7C50041064A /* OFObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23D21337FCB000DD29B8 /* OFPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6799791099E7C50041064A /* OFPlugin.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23D31337FCB000DD29B8 /* OFSeekableStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B981CDE116F71DD00294DB7 /* OFSeekableStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23D41337FCB000DD29B8 /* OFSHA1Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF1BCC411C9663F0025511F /* OFSHA1Hash.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23D51337FCB000DD29B8 /* OFStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67997D1099E7C50041064A /* OFStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23D61337FCB000DD29B8 /* OFStreamObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BAF5F47123460C900F4E111 /* OFStreamObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23D71337FCB000DD29B8 /* OFStreamSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BAF5F49123460C900F4E111 /* OFStreamSocket.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23D81337FCB000DD29B8 /* OFString.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67997F1099E7C50041064A /* OFString.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23D91337FCB000DD29B8 /* OFString+Hashing.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF1BCC611C9663F0025511F /* OFString+Hashing.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23DA1337FCB000DD29B8 /* OFString+URLEncoding.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF1BCC811C9663F0025511F /* OFString+URLEncoding.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23DB1337FCB000DD29B8 /* OFString+XMLEscaping.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF1BCCA11C9663F0025511F /* OFString+XMLEscaping.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23DC1337FCB000DD29B8 /* OFString+XMLUnescaping.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF1BCCC11C9663F0025511F /* OFString+XMLUnescaping.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23DD1337FCB000DD29B8 /* OFTCPSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6799811099E7C50041064A /* OFTCPSocket.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23DE1337FCB000DD29B8 /* OFThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6799831099E7C50041064A /* OFThread.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23DF1337FCB000DD29B8 /* OFURL.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B4A61F212DF5EA20048F3F2 /* OFURL.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23E01337FCB000DD29B8 /* OFXMLAttribute.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF1BCCE11C9663F0025511F /* OFXMLAttribute.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23E11337FCB000DD29B8 /* OFXMLElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6799871099E7C50041064A /* OFXMLElement.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23E21337FCB000DD29B8 /* OFXMLElementBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B0D249411DFAA3D00ED6FFC /* OFXMLElementBuilder.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23E31337FCB000DD29B8 /* OFXMLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6799891099E7C50041064A /* OFXMLParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23E41337FCB000DD29B8 /* ObjFW.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6AF97310A8D4450003FB0A /* ObjFW.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23E51337FCB000DD29B8 /* asprintf.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6799561099E7C50041064A /* asprintf.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23E61337FCB000DD29B8 /* atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BBA36C411406AB700CBA3AC /* atomic.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23E71337FCB000DD29B8 /* base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3D236D1337FB5800DD29B8 /* base64.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23E81337FCB000DD29B8 /* macros.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BBA36C511406AB700CBA3AC /* macros.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23E91337FCB000DD29B8 /* of_asprintf.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB50DCF12F863C700C9393F /* of_asprintf.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23EA1337FCB000DD29B8 /* threading.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67998B1099E7C50041064A /* threading.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23EB1337FCB000DD29B8 /* unicode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67998C1099E7C50041064A /* unicode.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3D23EE1337FFD000DD29B8 /* of_asprintf.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB50DD012F863C700C9393F /* of_asprintf.m */; };
+		4BD98C03133814220048DD5B /* objfw-defs.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD98C011338140B0048DD5B /* objfw-defs.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BDF37B51338055600F9A81A /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BDF37B41338055600F9A81A /* config.h */; };
+		4BF33AFB133807590059CEF7 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
+		4BF33AFC133807A20059CEF7 /* OFArrayTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF66E1235358D0076B512 /* OFArrayTests.m */; };
+		4BF33AFD133807A20059CEF7 /* OFBlockTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE5F0E412DF4259005C7A0C /* OFBlockTests.m */; };
+		4BF33AFE133807A20059CEF7 /* OFDataArrayTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF66F1235358D0076B512 /* OFDataArrayTests.m */; };
+		4BF33AFF133807A20059CEF7 /* OFDateTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE5F0E512DF4259005C7A0C /* OFDateTests.m */; };
+		4BF33B00133807A20059CEF7 /* OFDictionaryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6701235358D0076B512 /* OFDictionaryTests.m */; };
+		4BF33B01133807A20059CEF7 /* OFFileTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6711235358D0076B512 /* OFFileTests.m */; };
+		4BF33B02133807A20059CEF7 /* OFHTTPRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3D23701337FB7500DD29B8 /* OFHTTPRequestTests.m */; };
+		4BF33B03133807A20059CEF7 /* OFListTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6721235358D0076B512 /* OFListTests.m */; };
+		4BF33B04133807A20059CEF7 /* OFMD5HashTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6731235358D0076B512 /* OFMD5HashTests.m */; };
+		4BF33B05133807A20059CEF7 /* OFNumberTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6741235358D0076B512 /* OFNumberTests.m */; };
+		4BF33B06133807A20059CEF7 /* OFObjectTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6751235358D0076B512 /* OFObjectTests.m */; };
+		4BF33B07133807A20059CEF7 /* OFPluginTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6761235358D0076B512 /* OFPluginTests.m */; };
+		4BF33B08133807A20059CEF7 /* OFSHA1HashTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6771235358D0076B512 /* OFSHA1HashTests.m */; };
+		4BF33B09133807A20059CEF7 /* OFStreamTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6781235358D0076B512 /* OFStreamTests.m */; };
+		4BF33B0A133807A20059CEF7 /* OFStringTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6791235358D0076B512 /* OFStringTests.m */; };
+		4BF33B0B133807A20059CEF7 /* OFTCPSocketTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF67A1235358D0076B512 /* OFTCPSocketTests.m */; };
+		4BF33B0C133807A20059CEF7 /* OFThreadTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF67B1235358D0076B512 /* OFThreadTests.m */; };
+		4BF33B0D133807A20059CEF7 /* OFURLTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF0749512DFAFCA00A4ADD1 /* OFURLTests.m */; };
+		4BF33B0E133807A20059CEF7 /* OFXMLElementBuilderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF67C1235358D0076B512 /* OFXMLElementBuilderTests.m */; };
+		4BF33B0F133807A20059CEF7 /* OFXMLElementTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF67D1235358D0076B512 /* OFXMLElementTests.m */; };
+		4BF33B10133807A20059CEF7 /* OFXMLParserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF67E1235358D0076B512 /* OFXMLParserTests.m */; };
+		4BF33B11133807A20059CEF7 /* PropertiesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF67F1235358D0076B512 /* PropertiesTests.m */; };
+		4BF33B12133807A20059CEF7 /* TestsAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6811235358D0076B512 /* TestsAppDelegate.m */; };
+		4BF33B4413380CD40059CEF7 /* testfile.bin in Resources */ = {isa = PBXBuildFile; fileRef = 4BF33B4213380CD40059CEF7 /* testfile.bin */; };
+		4BF33B4513380CD40059CEF7 /* testfile.txt in Resources */ = {isa = PBXBuildFile; fileRef = 4BF33B4313380CD40059CEF7 /* testfile.txt */; };
+		4BF33B4713380CE20059CEF7 /* testfile.txt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BF33B4313380CD40059CEF7 /* testfile.txt */; };
+		4BF33B4813380D2D0059CEF7 /* testfile.bin in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BF33B4213380CD40059CEF7 /* testfile.bin */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
-		4B08AEA7109AE2D300989F6E /* PBXContainerItemProxy */ = {
+		4B23CA8E133811B20047A1D9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4B5D8DF11099E2A7000896FF;
+			remoteGlobalIDString = 4B23CA89133811610047A1D9;
+			remoteInfo = TestPlugin;
+		};
+		4B23CA90133811BA0047A1D9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B3D23751337FBC800DD29B8;
 			remoteInfo = ObjFW;
 		};
-		4B5D8DEF1099E26D000896FF /* PBXContainerItemProxy */ = {
+		4B8BA41B133805A700E65070 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4BDF37AD1338047700F9A81A;
+			remoteInfo = configure;
+		};
+		4BDF37B21338049600F9A81A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 4B5D8DDD1099E1B0000896FF;
 			remoteInfo = autogen.sh;
 		};
-		4B5D8DF41099E2CE000896FF /* PBXContainerItemProxy */ = {
+		4BF33AF91338074A0059CEF7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4B5D8DE91099E1F1000896FF;
-			remoteInfo = configure;
-		};
-		4BD86D4E1237A58400ED9912 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4B5D8DE91099E1F1000896FF;
-			remoteInfo = configure;
-		};
-		4BD86D711237A65E00ED9912 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4BD86D4C1237A58400ED9912;
-			remoteInfo = libobjfw;
-		};
-		4BD86D731237A66300ED9912 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4BD86D4C1237A58400ED9912;
-			remoteInfo = libobjfw;
-		};
-		4BD86D751237A66600ED9912 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4B08AE9E109AE10E00989F6E;
-			remoteInfo = Framework;
-		};
-		4BD86D771237A66D00ED9912 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4BD86D6E1237A65300ED9912;
-			remoteInfo = Tests;
+			remoteGlobalIDString = 4B3D23751337FBC800DD29B8;
+			remoteInfo = ObjFW;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		4BF33AEE133807310059CEF7 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = plugin;
+			dstSubfolderSpec = 16;
+			files = (
+				4B23CA941338121C0047A1D9 /* TestPlugin.impl in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4BF33B4013380CA40059CEF7 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				4BF33B4813380D2D0059CEF7 /* testfile.bin in CopyFiles */,
+				4BF33B4713380CE20059CEF7 /* testfile.txt in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		4B0108C910EB8C9300631877 /* OFEnumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFEnumerator.h; path = src/OFEnumerator.h; sourceTree = "<group>"; };
@@ -123,9 +230,13 @@
 		4B0D249511DFAA3D00ED6FFC /* OFXMLElementBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLElementBuilder.m; path = src/OFXMLElementBuilder.m; sourceTree = "<group>"; };
 		4B175C1D116D130B003C99CB /* OFApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFApplication.h; path = src/OFApplication.h; sourceTree = "<group>"; };
 		4B175C1E116D130B003C99CB /* OFApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFApplication.m; path = src/OFApplication.m; sourceTree = "<group>"; };
+		4B23CA8A133811610047A1D9 /* TestPlugin.impl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = TestPlugin.impl; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B3D236D1337FB5800DD29B8 /* base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = base64.h; path = src/base64.h; sourceTree = "<group>"; };
 		4B3D236E1337FB5800DD29B8 /* base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = base64.m; path = src/base64.m; sourceTree = "<group>"; };
 		4B3D23701337FB7500DD29B8 /* OFHTTPRequestTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHTTPRequestTests.m; path = tests/OFHTTPRequestTests.m; sourceTree = "<group>"; };
+		4B3D23761337FBC800DD29B8 /* ObjFW.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ObjFW.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4B3D23BB1337FC5800DD29B8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
+		4B3D23EF1338008000DD29B8 /* mach_alias_list */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = mach_alias_list; path = src/mach_alias_list; sourceTree = SOURCE_ROOT; };
 		4B4986DF1101F64500A2CFDA /* objc_properties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = objc_properties.m; path = src/objc_properties.m; sourceTree = "<group>"; };
 		4B4A61F212DF5EA20048F3F2 /* OFURL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFURL.h; path = src/OFURL.h; sourceTree = SOURCE_ROOT; };
 		4B4A61F312DF5EA20048F3F2 /* OFURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFURL.m; path = src/OFURL.m; sourceTree = SOURCE_ROOT; };
@@ -212,6 +323,8 @@
 		4BBA36C511406AB700CBA3AC /* macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = macros.h; path = src/macros.h; sourceTree = "<group>"; };
 		4BD86D801237A6C600ED9912 /* OFBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFBlock.h; path = src/OFBlock.h; sourceTree = SOURCE_ROOT; };
 		4BD86D811237A6C600ED9912 /* OFBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFBlock.m; path = src/OFBlock.m; sourceTree = SOURCE_ROOT; };
+		4BD98C011338140B0048DD5B /* objfw-defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "objfw-defs.h"; path = "src/objfw-defs.h"; sourceTree = SOURCE_ROOT; };
+		4BDF37B41338055600F9A81A /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = SOURCE_ROOT; };
 		4BE17AD812FD744C002CEB0B /* foundation-compat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "foundation-compat.m"; path = "src/foundation-compat.m"; sourceTree = SOURCE_ROOT; };
 		4BE17AD912FD746D002CEB0B /* OFDataArray+Hashing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFDataArray+Hashing.h"; path = "src/OFDataArray+Hashing.h"; sourceTree = SOURCE_ROOT; };
 		4BE17ADA12FD746D002CEB0B /* OFDataArray+Hashing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFDataArray+Hashing.m"; path = "src/OFDataArray+Hashing.m"; sourceTree = SOURCE_ROOT; };
@@ -239,8 +352,37 @@
 		4BF1BCCD11C9663F0025511F /* OFString+XMLUnescaping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFString+XMLUnescaping.m"; path = "src/OFString+XMLUnescaping.m"; sourceTree = "<group>"; };
 		4BF1BCCE11C9663F0025511F /* OFXMLAttribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFXMLAttribute.h; path = src/OFXMLAttribute.h; sourceTree = "<group>"; };
 		4BF1BCCF11C9663F0025511F /* OFXMLAttribute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLAttribute.m; path = src/OFXMLAttribute.m; sourceTree = "<group>"; };
+		4BF33AF0133807310059CEF7 /* Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tests; sourceTree = BUILT_PRODUCTS_DIR; };
+		4BF33B4213380CD40059CEF7 /* testfile.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = testfile.bin; path = tests/testfile.bin; sourceTree = "<group>"; };
+		4BF33B4313380CD40059CEF7 /* testfile.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = testfile.txt; path = tests/testfile.txt; sourceTree = "<group>"; };
 		4BFBDD1610A0724800051AFB /* unicode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = unicode.m; path = src/unicode.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4B23CA87133811610047A1D9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B23CA93133811E20047A1D9 /* ObjFW.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4B3D23721337FBC800DD29B8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4BF33AED133807310059CEF7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4BF33AFB133807590059CEF7 /* ObjFW.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		08FB7794FE84155DC02AAC07 /* ObjFW */ = {
@@ -248,13 +390,37 @@
 			children = (
 				4B6EF66C123535340076B512 /* ObjFW */,
 				4B6EF66D123535480076B512 /* Tests */,
+				4BF33B1A13380A800059CEF7 /* Frameworks */,
+				4B3D23771337FBC800DD29B8 /* Products */,
 			);
 			name = ObjFW;
+			sourceTree = "<group>";
+		};
+		4B3D23771337FBC800DD29B8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4BF33AF0133807310059CEF7 /* Tests */,
+				4B23CA8A133811610047A1D9 /* TestPlugin.impl */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4B3D23801337FBC800DD29B8 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				4B3D23BB1337FC5800DD29B8 /* Info.plist */,
+				4BDF37B41338055600F9A81A /* config.h */,
+				4B3D23EF1338008000DD29B8 /* mach_alias_list */,
+				4BD98C011338140B0048DD5B /* objfw-defs.h */,
+			);
+			name = "Supporting Files";
+			path = ObjFW;
 			sourceTree = "<group>";
 		};
 		4B6EF66C123535340076B512 /* ObjFW */ = {
 			isa = PBXGroup;
 			children = (
+				4B3D23801337FBC800DD29B8 /* Supporting Files */,
 				4B175C1D116D130B003C99CB /* OFApplication.h */,
 				4B175C1E116D130B003C99CB /* OFApplication.m */,
 				4B67995A1099E7C50041064A /* OFArray.h */,
@@ -360,6 +526,7 @@
 			isa = PBXGroup;
 			children = (
 				4B6EF6831235359D0076B512 /* Plugin */,
+				4BF33B4113380CB60059CEF7 /* Supporting Files */,
 				4B6EF682123535960076B512 /* objc_sync */,
 				4B6EF66E1235358D0076B512 /* OFArrayTests.m */,
 				4BE5F0E412DF4259005C7A0C /* OFBlockTests.m */,
@@ -405,55 +572,151 @@
 			name = Plugin;
 			sourceTree = "<group>";
 		};
+		4BF33B1A13380A800059CEF7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4B3D23761337FBC800DD29B8 /* ObjFW.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4BF33B4113380CB60059CEF7 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				4BF33B4213380CD40059CEF7 /* testfile.bin */,
+				4BF33B4313380CD40059CEF7 /* testfile.txt */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
-/* Begin PBXLegacyTarget section */
-		4B5D8DF11099E2A7000896FF /* ObjFW */ = {
-			isa = PBXLegacyTarget;
-			buildArgumentsString = "'LIB=ObjFW' 'LD=gcc -install_name /Library/Frameworks/ObjFW.framework/Versions/A/ObjFW' $(ACTION)";
-			buildConfigurationList = 4B5D8DF91099E2ED000896FF /* Build configuration list for PBXLegacyTarget "ObjFW" */;
-			buildPhases = (
+/* Begin PBXHeadersBuildPhase section */
+		4B23CA88133811610047A1D9 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
-			buildToolPath = /usr/bin/make;
-			buildWorkingDirectory = src;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4B3D23731337FBC800DD29B8 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B3D23BC1337FC8300DD29B8 /* OFApplication.h in Headers */,
+				4B3D23BD1337FC8300DD29B8 /* OFArray.h in Headers */,
+				4B3D23BE1337FC8300DD29B8 /* OFAutoreleasePool.h in Headers */,
+				4B3D23BF1337FC8300DD29B8 /* OFBlock.h in Headers */,
+				4B3D23C01337FC8300DD29B8 /* OFCollection.h in Headers */,
+				4B3D23C11337FC8300DD29B8 /* OFConstantString.h in Headers */,
+				4B3D23C21337FC8300DD29B8 /* OFDataArray.h in Headers */,
+				4B3D23C31337FC8300DD29B8 /* OFDataArray+Hashing.h in Headers */,
+				4B3D23C41337FC8300DD29B8 /* OFDate.h in Headers */,
+				4B3D23C51337FCB000DD29B8 /* OFDictionary.h in Headers */,
+				4B3D23C61337FCB000DD29B8 /* OFEnumerator.h in Headers */,
+				4B3D23C71337FCB000DD29B8 /* OFExceptions.h in Headers */,
+				4B3D23C81337FCB000DD29B8 /* OFFile.h in Headers */,
+				4B3D23C91337FCB000DD29B8 /* OFHash.h in Headers */,
+				4B3D23CA1337FCB000DD29B8 /* OFHTTPRequest.h in Headers */,
+				4B3D23CB1337FCB000DD29B8 /* OFList.h in Headers */,
+				4B3D23CC1337FCB000DD29B8 /* OFMD5Hash.h in Headers */,
+				4B3D23CD1337FCB000DD29B8 /* OFMutableArray.h in Headers */,
+				4B3D23CE1337FCB000DD29B8 /* OFMutableDictionary.h in Headers */,
+				4B3D23CF1337FCB000DD29B8 /* OFMutableString.h in Headers */,
+				4B3D23D01337FCB000DD29B8 /* OFNumber.h in Headers */,
+				4B3D23D11337FCB000DD29B8 /* OFObject.h in Headers */,
+				4B3D23D21337FCB000DD29B8 /* OFPlugin.h in Headers */,
+				4B3D23D31337FCB000DD29B8 /* OFSeekableStream.h in Headers */,
+				4B3D23D41337FCB000DD29B8 /* OFSHA1Hash.h in Headers */,
+				4B3D23D51337FCB000DD29B8 /* OFStream.h in Headers */,
+				4B3D23D61337FCB000DD29B8 /* OFStreamObserver.h in Headers */,
+				4B3D23D71337FCB000DD29B8 /* OFStreamSocket.h in Headers */,
+				4B3D23D81337FCB000DD29B8 /* OFString.h in Headers */,
+				4B3D23D91337FCB000DD29B8 /* OFString+Hashing.h in Headers */,
+				4B3D23DA1337FCB000DD29B8 /* OFString+URLEncoding.h in Headers */,
+				4B3D23DB1337FCB000DD29B8 /* OFString+XMLEscaping.h in Headers */,
+				4B3D23DC1337FCB000DD29B8 /* OFString+XMLUnescaping.h in Headers */,
+				4B3D23DD1337FCB000DD29B8 /* OFTCPSocket.h in Headers */,
+				4B3D23DE1337FCB000DD29B8 /* OFThread.h in Headers */,
+				4B3D23DF1337FCB000DD29B8 /* OFURL.h in Headers */,
+				4B3D23E01337FCB000DD29B8 /* OFXMLAttribute.h in Headers */,
+				4B3D23E11337FCB000DD29B8 /* OFXMLElement.h in Headers */,
+				4B3D23E21337FCB000DD29B8 /* OFXMLElementBuilder.h in Headers */,
+				4B3D23E31337FCB000DD29B8 /* OFXMLParser.h in Headers */,
+				4B3D23E41337FCB000DD29B8 /* ObjFW.h in Headers */,
+				4B3D23E51337FCB000DD29B8 /* asprintf.h in Headers */,
+				4B3D23E61337FCB000DD29B8 /* atomic.h in Headers */,
+				4B3D23E71337FCB000DD29B8 /* base64.h in Headers */,
+				4B3D23E81337FCB000DD29B8 /* macros.h in Headers */,
+				4BD98C03133814220048DD5B /* objfw-defs.h in Headers */,
+				4B3D23E91337FCB000DD29B8 /* of_asprintf.h in Headers */,
+				4B3D23EA1337FCB000DD29B8 /* threading.h in Headers */,
+				4B3D23EB1337FCB000DD29B8 /* unicode.h in Headers */,
+				4BDF37B51338055600F9A81A /* config.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		4B23CA89133811610047A1D9 /* TestPlugin */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4B23CA8B133811610047A1D9 /* Build configuration list for PBXNativeTarget "TestPlugin" */;
+			buildPhases = (
+				4B23CA86133811610047A1D9 /* Sources */,
+				4B23CA87133811610047A1D9 /* Frameworks */,
+				4B23CA88133811610047A1D9 /* Headers */,
+			);
+			buildRules = (
+			);
 			dependencies = (
-				4B5D8DF51099E2CE000896FF /* PBXTargetDependency */,
+				4B23CA91133811BA0047A1D9 /* PBXTargetDependency */,
+			);
+			name = TestPlugin;
+			productName = TestPlugin;
+			productReference = 4B23CA8A133811610047A1D9 /* TestPlugin.impl */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		4B3D23751337FBC800DD29B8 /* ObjFW */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4B3D23861337FBC800DD29B8 /* Build configuration list for PBXNativeTarget "ObjFW" */;
+			buildPhases = (
+				4B3D23711337FBC800DD29B8 /* Sources */,
+				4B3D23721337FBC800DD29B8 /* Frameworks */,
+				4B3D23731337FBC800DD29B8 /* Headers */,
+				4B3D23741337FBC800DD29B8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4B8BA41C133805A700E65070 /* PBXTargetDependency */,
 			);
 			name = ObjFW;
-			passBuildSettingsInEnvironment = 1;
 			productName = ObjFW;
+			productReference = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */;
+			productType = "com.apple.product-type.framework";
 		};
-		4BD86D4C1237A58400ED9912 /* libobjfw */ = {
-			isa = PBXLegacyTarget;
-			buildArgumentsString = "$(ACTION)";
-			buildConfigurationList = 4BD86D4F1237A58400ED9912 /* Build configuration list for PBXLegacyTarget "libobjfw" */;
+		4BF33AEF133807310059CEF7 /* Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4BF33AF6133807310059CEF7 /* Build configuration list for PBXNativeTarget "Tests" */;
 			buildPhases = (
+				4BF33AEC133807310059CEF7 /* Sources */,
+				4BF33AED133807310059CEF7 /* Frameworks */,
+				4BF33AEE133807310059CEF7 /* CopyFiles */,
+				4BF33B4013380CA40059CEF7 /* CopyFiles */,
 			);
-			buildToolPath = /usr/bin/make;
-			buildWorkingDirectory = src;
+			buildRules = (
+			);
 			dependencies = (
-				4BD86D4D1237A58400ED9912 /* PBXTargetDependency */,
-			);
-			name = libobjfw;
-			passBuildSettingsInEnvironment = 1;
-			productName = ObjFW;
-		};
-		4BD86D6E1237A65300ED9912 /* Tests */ = {
-			isa = PBXLegacyTarget;
-			buildArgumentsString = "$(ACTION)";
-			buildConfigurationList = 4BD86D7F1237A67100ED9912 /* Build configuration list for PBXLegacyTarget "Tests" */;
-			buildPhases = (
-			);
-			buildToolPath = /usr/bin/make;
-			buildWorkingDirectory = tests;
-			dependencies = (
-				4BD86D721237A65E00ED9912 /* PBXTargetDependency */,
+				4BF33AFA1338074A0059CEF7 /* PBXTargetDependency */,
+				4B23CA8F133811B20047A1D9 /* PBXTargetDependency */,
 			);
 			name = Tests;
-			passBuildSettingsInEnvironment = 1;
 			productName = Tests;
+			productReference = 4BF33AF0133807310059CEF7 /* Tests */;
+			productType = "com.apple.product-type.tool";
 		};
-/* End PBXLegacyTarget section */
+/* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
@@ -467,37 +730,35 @@
 				Japanese,
 				French,
 				German,
+				en,
 			);
 			mainGroup = 08FB7794FE84155DC02AAC07 /* ObjFW */;
+			productRefGroup = 4B3D23771337FBC800DD29B8 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				4BD86D601237A5B200ED9912 /* All */,
+				4BF33AEF133807310059CEF7 /* Tests */,
+				4B23CA89133811610047A1D9 /* TestPlugin */,
+				4B3D23751337FBC800DD29B8 /* ObjFW */,
 				4B5D8DDD1099E1B0000896FF /* autogen.sh */,
-				4B5D8DE91099E1F1000896FF /* configure */,
-				4BD86D4C1237A58400ED9912 /* libobjfw */,
-				4B5D8DF11099E2A7000896FF /* ObjFW */,
-				4B08AE9E109AE10E00989F6E /* Framework */,
-				4BD86D6E1237A65300ED9912 /* Tests */,
+				4BDF37AD1338047700F9A81A /* configure */,
 			);
 		};
 /* End PBXProject section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		4B08AE9D109AE10E00989F6E /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 12;
+/* Begin PBXResourcesBuildPhase section */
+		4B3D23741337FBC800DD29B8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
+				4BF33B4413380CD40059CEF7 /* testfile.bin in Resources */,
+				4BF33B4513380CD40059CEF7 /* testfile.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "rm -fr $TARGET_BUILD_DIR/ObjFW.framework\nmkdir -p $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Headers || exit 1\nmkdir -p $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Resources || exit 1\ninstall -m 755 src/ObjFW $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/ || exit 1\ninstall -m 644 src/*.h $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Headers/ || exit 1\ninstall -m 644 Info.plist $TARGET_BUILD_DIR/ObjFW.framework/Versions/A/Resources/\nln -s A $TARGET_BUILD_DIR/ObjFW.framework/Versions/Current || exit 1\nln -s Versions/Current/Headers $TARGET_BUILD_DIR/ObjFW.framework/Headers || exit 1\nln -s Versions/Current/Resources $TARGET_BUILD_DIR/ObjFW.framework/Resources || exit 1\nln -s Versions/Current/ObjFW $TARGET_BUILD_DIR/ObjFW.framework/ObjFW || exit 1";
-			showEnvVarsInLog = 0;
 		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
 		4B5D8DE11099E1BF000896FF /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -512,62 +773,140 @@
 			shellScript = "if [ \"configure.ac\" -nt \"configure\" ]; then\n\t./autogen.sh || exit 1\nfi";
 			showEnvVarsInLog = 0;
 		};
-		4B5D8DE81099E1F1000896FF /* ShellScript */ = {
+		4BDF37B11338047D00F9A81A /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"configure\" -nt \"buildsys.mk\" -o \"buildsys.mk.in\" -nt \"buildsys.mk\" ]; then\n    for i in $VALID_ARCHS; do\n        export CFLAGS=\"-arch $i $CFLAGS\"\n        export OBJCFLAGS=\"-arch $i $OBJCFLAGS\"\n        export LDFLAGS=\"-arch $i $LDFLAGS\"\n    done\n\t./configure || exit 1\nfi";
-			showEnvVarsInLog = 0;
+			shellScript = "if [ \"configure\" -nt \"buildsys.mk\" -o \"buildsys.mk.in\" -nt \"buildsys.mk\" ]; then\n    for i in $VALID_ARCHS; do\n        export CFLAGS=\"-arch $i $CFLAGS\"\n        export OBJCFLAGS=\"-arch $i $OBJCFLAGS\"\n        export LDFLAGS=\"-arch $i $LDFLAGS\"\n    done\n    ./configure || exit 1\nfi";
 		};
 /* End PBXShellScriptBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		4B08AEA8109AE2D300989F6E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4B5D8DF11099E2A7000896FF /* ObjFW */;
-			targetProxy = 4B08AEA7109AE2D300989F6E /* PBXContainerItemProxy */;
+/* Begin PBXSourcesBuildPhase section */
+		4B23CA86133811610047A1D9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B23CA92133811DC0047A1D9 /* TestPlugin.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4B5D8DF01099E26D000896FF /* PBXTargetDependency */ = {
+		4B3D23711337FBC800DD29B8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B3D238B1337FC0D00DD29B8 /* OFApplication.m in Sources */,
+				4B3D238C1337FC0D00DD29B8 /* OFArray.m in Sources */,
+				4B3D238D1337FC0D00DD29B8 /* OFAutoreleasePool.m in Sources */,
+				4B3D238E1337FC0D00DD29B8 /* OFBlock.m in Sources */,
+				4B3D238F1337FC0D00DD29B8 /* OFConstantString.m in Sources */,
+				4B3D23901337FC0D00DD29B8 /* OFDataArray.m in Sources */,
+				4B3D23911337FC0D00DD29B8 /* OFDataArray+Hashing.m in Sources */,
+				4B3D23921337FC0D00DD29B8 /* OFDate.m in Sources */,
+				4B3D23931337FC0D00DD29B8 /* OFDictionary.m in Sources */,
+				4B3D23941337FC0D00DD29B8 /* OFEnumerator.m in Sources */,
+				4B3D23951337FC0D00DD29B8 /* OFExceptions.m in Sources */,
+				4B3D23961337FC0D00DD29B8 /* OFFile.m in Sources */,
+				4B3D23971337FC0D00DD29B8 /* OFHash.m in Sources */,
+				4B3D23981337FC0D00DD29B8 /* OFHTTPRequest.m in Sources */,
+				4B3D23991337FC0D00DD29B8 /* OFList.m in Sources */,
+				4B3D239A1337FC0D00DD29B8 /* OFMD5Hash.m in Sources */,
+				4B3D239B1337FC0D00DD29B8 /* OFMutableArray.m in Sources */,
+				4B3D239C1337FC0D00DD29B8 /* OFMutableDictionary.m in Sources */,
+				4B3D239D1337FC0D00DD29B8 /* OFMutableString.m in Sources */,
+				4B3D239E1337FC0D00DD29B8 /* OFNumber.m in Sources */,
+				4B3D239F1337FC0D00DD29B8 /* OFObject.m in Sources */,
+				4B3D23A01337FC0D00DD29B8 /* OFPlugin.m in Sources */,
+				4B3D23A11337FC0D00DD29B8 /* OFSeekableStream.m in Sources */,
+				4B3D23A21337FC0D00DD29B8 /* OFSHA1Hash.m in Sources */,
+				4B3D23A31337FC0D00DD29B8 /* OFStream.m in Sources */,
+				4B3D23A41337FC0D00DD29B8 /* OFStreamObserver.m in Sources */,
+				4B3D23A51337FC0D00DD29B8 /* OFStreamSocket.m in Sources */,
+				4B3D23A61337FC0D00DD29B8 /* OFString.m in Sources */,
+				4B3D23A71337FC0D00DD29B8 /* OFString+Hashing.m in Sources */,
+				4B3D23A81337FC0D00DD29B8 /* OFString+URLEncoding.m in Sources */,
+				4B3D23A91337FC0D00DD29B8 /* OFString+XMLEscaping.m in Sources */,
+				4B3D23AA1337FC0D00DD29B8 /* OFString+XMLUnescaping.m in Sources */,
+				4B3D23AB1337FC0D00DD29B8 /* OFTCPSocket.m in Sources */,
+				4B3D23AC1337FC0D00DD29B8 /* OFThread.m in Sources */,
+				4B3D23AD1337FC0D00DD29B8 /* OFURL.m in Sources */,
+				4B3D23AE1337FC0D00DD29B8 /* OFXMLAttribute.m in Sources */,
+				4B3D23AF1337FC0D00DD29B8 /* OFXMLElement.m in Sources */,
+				4B3D23B01337FC0D00DD29B8 /* OFXMLElementBuilder.m in Sources */,
+				4B3D23B11337FC0D00DD29B8 /* OFXMLParser.m in Sources */,
+				4B3D23B31337FC0D00DD29B8 /* base64.m in Sources */,
+				4B3D23B41337FC0D00DD29B8 /* iso_8859_15.m in Sources */,
+				4B3D23B51337FC0D00DD29B8 /* foundation-compat.m in Sources */,
+				4B3D23EE1337FFD000DD29B8 /* of_asprintf.m in Sources */,
+				4B3D23B91337FC0D00DD29B8 /* unicode.m in Sources */,
+				4B3D23BA1337FC0D00DD29B8 /* windows_1252.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4BF33AEC133807310059CEF7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4BF33AFC133807A20059CEF7 /* OFArrayTests.m in Sources */,
+				4BF33AFD133807A20059CEF7 /* OFBlockTests.m in Sources */,
+				4BF33AFE133807A20059CEF7 /* OFDataArrayTests.m in Sources */,
+				4BF33AFF133807A20059CEF7 /* OFDateTests.m in Sources */,
+				4BF33B00133807A20059CEF7 /* OFDictionaryTests.m in Sources */,
+				4BF33B01133807A20059CEF7 /* OFFileTests.m in Sources */,
+				4BF33B02133807A20059CEF7 /* OFHTTPRequestTests.m in Sources */,
+				4BF33B03133807A20059CEF7 /* OFListTests.m in Sources */,
+				4BF33B04133807A20059CEF7 /* OFMD5HashTests.m in Sources */,
+				4BF33B05133807A20059CEF7 /* OFNumberTests.m in Sources */,
+				4BF33B06133807A20059CEF7 /* OFObjectTests.m in Sources */,
+				4BF33B07133807A20059CEF7 /* OFPluginTests.m in Sources */,
+				4BF33B08133807A20059CEF7 /* OFSHA1HashTests.m in Sources */,
+				4BF33B09133807A20059CEF7 /* OFStreamTests.m in Sources */,
+				4BF33B0A133807A20059CEF7 /* OFStringTests.m in Sources */,
+				4BF33B0B133807A20059CEF7 /* OFTCPSocketTests.m in Sources */,
+				4BF33B0C133807A20059CEF7 /* OFThreadTests.m in Sources */,
+				4BF33B0D133807A20059CEF7 /* OFURLTests.m in Sources */,
+				4BF33B0E133807A20059CEF7 /* OFXMLElementBuilderTests.m in Sources */,
+				4BF33B0F133807A20059CEF7 /* OFXMLElementTests.m in Sources */,
+				4BF33B10133807A20059CEF7 /* OFXMLParserTests.m in Sources */,
+				4BF33B11133807A20059CEF7 /* PropertiesTests.m in Sources */,
+				4BF33B12133807A20059CEF7 /* TestsAppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4B23CA8F133811B20047A1D9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4B23CA89133811610047A1D9 /* TestPlugin */;
+			targetProxy = 4B23CA8E133811B20047A1D9 /* PBXContainerItemProxy */;
+		};
+		4B23CA91133811BA0047A1D9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4B3D23751337FBC800DD29B8 /* ObjFW */;
+			targetProxy = 4B23CA90133811BA0047A1D9 /* PBXContainerItemProxy */;
+		};
+		4B8BA41C133805A700E65070 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4BDF37AD1338047700F9A81A /* configure */;
+			targetProxy = 4B8BA41B133805A700E65070 /* PBXContainerItemProxy */;
+		};
+		4BDF37B31338049600F9A81A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4B5D8DDD1099E1B0000896FF /* autogen.sh */;
-			targetProxy = 4B5D8DEF1099E26D000896FF /* PBXContainerItemProxy */;
+			targetProxy = 4BDF37B21338049600F9A81A /* PBXContainerItemProxy */;
 		};
-		4B5D8DF51099E2CE000896FF /* PBXTargetDependency */ = {
+		4BF33AFA1338074A0059CEF7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4B5D8DE91099E1F1000896FF /* configure */;
-			targetProxy = 4B5D8DF41099E2CE000896FF /* PBXContainerItemProxy */;
-		};
-		4BD86D4D1237A58400ED9912 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4B5D8DE91099E1F1000896FF /* configure */;
-			targetProxy = 4BD86D4E1237A58400ED9912 /* PBXContainerItemProxy */;
-		};
-		4BD86D721237A65E00ED9912 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4BD86D4C1237A58400ED9912 /* libobjfw */;
-			targetProxy = 4BD86D711237A65E00ED9912 /* PBXContainerItemProxy */;
-		};
-		4BD86D741237A66300ED9912 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4BD86D4C1237A58400ED9912 /* libobjfw */;
-			targetProxy = 4BD86D731237A66300ED9912 /* PBXContainerItemProxy */;
-		};
-		4BD86D761237A66600ED9912 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4B08AE9E109AE10E00989F6E /* Framework */;
-			targetProxy = 4BD86D751237A66600ED9912 /* PBXContainerItemProxy */;
-		};
-		4BD86D781237A66D00ED9912 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4BD86D6E1237A65300ED9912 /* Tests */;
-			targetProxy = 4BD86D771237A66D00ED9912 /* PBXContainerItemProxy */;
+			target = 4B3D23751337FBC800DD29B8 /* ObjFW */;
+			targetProxy = 4BF33AF91338074A0059CEF7 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -575,159 +914,216 @@
 		1DEB919408733D9F0010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_OPTIMIZATION_LEVEL = 2;
+				GCC_VERSION = 4.2;
+				OTHER_CFLAGS = (
+					"-Wall",
+					"-fexceptions",
+					"-fobjc-exceptions",
+					"-fconstant-string-class=OFConstantString",
+					"-pipe",
+					"-fno-common",
+					"-fno-constant-cfstrings",
+					"-fblocks",
+					"-Wwrite-strings",
+					"-Wcast-align",
+					"-Wpointer-arith",
+					"-Werror",
+				);
 			};
 			name = Debug;
 		};
 		1DEB919508733D9F0010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_OPTIMIZATION_LEVEL = 2;
+				GCC_VERSION = 4.2;
+				OTHER_CFLAGS = (
+					"-Wall",
+					"-fexceptions",
+					"-fobjc-exceptions",
+					"-fconstant-string-class=OFConstantString",
+					"-pipe",
+					"-fno-common",
+					"-fno-constant-cfstrings",
+					"-fblocks",
+					"-Wwrite-strings",
+					"-Wcast-align",
+					"-Wpointer-arith",
+					"-Werror",
+				);
 			};
 			name = Release;
 		};
-		4B08AE9F109AE10E00989F6E /* Debug */ = {
+		4B23CA8C133811610047A1D9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				EXECUTABLE_EXTENSION = impl;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				PRODUCT_NAME = Framework;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACH_O_TYPE = mh_bundle;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
-		4B08AEA0109AE10E00989F6E /* Release */ = {
+		4B23CA8D133811610047A1D9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				PRODUCT_NAME = Framework;
-				ZERO_LINK = NO;
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				EXECUTABLE_EXTENSION = impl;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACH_O_TYPE = mh_bundle;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		4B3D23871337FBC800DD29B8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_FILE = Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-Wl,-reexport-lobjc",
+					"-lobjc",
+					"-lm",
+					"-Xarch_x86_64",
+					"-Wl,-alias_list,${SOURCE_ROOT}/src/mach_alias_list",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Debug;
+		};
+		4B3D23881337FBC800DD29B8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				INFOPLIST_FILE = Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				OTHER_LDFLAGS = (
+					"-Wl,-reexport-lobjc",
+					"-lobjc",
+					"-lm",
+					"-Xarch_x86_64",
+					"-Wl,-alias_list,${SOURCE_ROOT}/src/mach_alias_list",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
 		};
 		4B5D8DDE1099E1B1000896FF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				PRODUCT_NAME = autogen.sh;
+				PRODUCT_NAME = ObjFW;
 			};
 			name = Debug;
 		};
 		4B5D8DDF1099E1B1000896FF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				PRODUCT_NAME = autogen.sh;
-				ZERO_LINK = NO;
+				PRODUCT_NAME = ObjFW;
 			};
 			name = Release;
 		};
-		4B5D8DEA1099E1F2000896FF /* Debug */ = {
+		4BDF37AF1338047700F9A81A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				PRODUCT_NAME = configure;
-			};
-			name = Debug;
-		};
-		4B5D8DEB1099E1F2000896FF /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				PRODUCT_NAME = configure;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
-		4B5D8DF21099E2A7000896FF /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
 				PRODUCT_NAME = ObjFW;
 			};
 			name = Debug;
 		};
-		4B5D8DF31099E2A7000896FF /* Release */ = {
+		4BDF37B01338047700F9A81A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				PRODUCT_NAME = ObjFW;
-				ZERO_LINK = NO;
 			};
 			name = Release;
 		};
-		4BD86D501237A58400ED9912 /* Debug */ = {
+		4BF33AF7133807310059CEF7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				PRODUCT_NAME = ObjFW;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					DEBUG,
+					STDOUT,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
-		4BD86D511237A58400ED9912 /* Release */ = {
+		4BF33AF8133807310059CEF7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				PRODUCT_NAME = ObjFW;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
-		4BD86D611237A5B300ED9912 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				PRODUCT_NAME = All;
-			};
-			name = Debug;
-		};
-		4BD86D621237A5B300ED9912 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				PRODUCT_NAME = All;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
-		4BD86D6F1237A65300ED9912 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				PRODUCT_NAME = Tests;
-			};
-			name = Debug;
-		};
-		4BD86D701237A65300ED9912 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				PRODUCT_NAME = Tests;
-				ZERO_LINK = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = STDOUT;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
@@ -743,11 +1139,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4B08AEA1109AE12C00989F6E /* Build configuration list for PBXAggregateTarget "Framework" */ = {
+		4B23CA8B133811610047A1D9 /* Build configuration list for PBXNativeTarget "TestPlugin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4B08AE9F109AE10E00989F6E /* Debug */,
-				4B08AEA0109AE10E00989F6E /* Release */,
+				4B23CA8C133811610047A1D9 /* Debug */,
+				4B23CA8D133811610047A1D9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4B3D23861337FBC800DD29B8 /* Build configuration list for PBXNativeTarget "ObjFW" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4B3D23871337FBC800DD29B8 /* Debug */,
+				4B3D23881337FBC800DD29B8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -761,47 +1166,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4B5D8DEE1099E228000896FF /* Build configuration list for PBXAggregateTarget "configure" */ = {
+		4BDF37AE1338047700F9A81A /* Build configuration list for PBXAggregateTarget "configure" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4B5D8DEA1099E1F2000896FF /* Debug */,
-				4B5D8DEB1099E1F2000896FF /* Release */,
+				4BDF37AF1338047700F9A81A /* Debug */,
+				4BDF37B01338047700F9A81A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4B5D8DF91099E2ED000896FF /* Build configuration list for PBXLegacyTarget "ObjFW" */ = {
+		4BF33AF6133807310059CEF7 /* Build configuration list for PBXNativeTarget "Tests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4B5D8DF21099E2A7000896FF /* Debug */,
-				4B5D8DF31099E2A7000896FF /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		4BD86D4F1237A58400ED9912 /* Build configuration list for PBXLegacyTarget "libobjfw" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				4BD86D501237A58400ED9912 /* Debug */,
-				4BD86D511237A58400ED9912 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		4BD86D661237A5E100ED9912 /* Build configuration list for PBXAggregateTarget "All" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				4BD86D611237A5B300ED9912 /* Debug */,
-				4BD86D621237A5B300ED9912 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		4BD86D7F1237A67100ED9912 /* Build configuration list for PBXLegacyTarget "Tests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				4BD86D6F1237A65300ED9912 /* Debug */,
-				4BD86D701237A65300ED9912 /* Release */,
+				4BF33AF7133807310059CEF7 /* Debug */,
+				4BF33AF8133807310059CEF7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
