@@ -195,13 +195,12 @@
 	return [[children copy] autorelease];
 }
 
-- (OFString*)_stringValueWithParentNamespaces: (OFDictionary*)parent_namespaces
-		       parentDefaultNamespace: (OFString*)parent_default_ns
+- (OFString*)_stringValueWithParent: (OFXMLElement*)parent
 {
 	OFAutoreleasePool *pool, *pool2;
 	char *str_c;
 	size_t len, i, j, attrs_count;
-	OFString *prefix = nil;
+	OFString *prefix, *parent_prefix;
 	OFXMLAttribute **attrs_carray;
 	OFString *ret, *tmp;
 	OFMutableDictionary *all_namespaces;
@@ -232,14 +231,15 @@
 
 	pool = [[OFAutoreleasePool alloc] init];
 	def_ns = (defaultNamespace != nil
-	    ? defaultNamespace : parent_default_ns);
+	    ? defaultNamespace
+	    : (parent != nil ? parent->defaultNamespace : nil));
 
-	if (parent_namespaces != nil) {
+	if (parent != nil && parent->namespaces != nil) {
 		OFEnumerator *key_enum = [namespaces keyEnumerator];
 		OFEnumerator *obj_enum = [namespaces objectEnumerator];
 		id key, obj;
 
-		all_namespaces = [[parent_namespaces mutableCopy] autorelease];
+		all_namespaces = [[parent->namespaces mutableCopy] autorelease];
 
 		while ((key = [key_enum nextObject]) != nil &&
 		    (obj = [obj_enum nextObject]) != nil)
@@ -248,8 +248,9 @@
 	} else
 		all_namespaces = namespaces;
 
-	prefix = [all_namespaces objectForKey:
-	    (ns != nil ? ns : (OFString*)@"")];
+	prefix = [all_namespaces objectForKey: (ns != nil ? ns : @"")];
+	parent_prefix = [all_namespaces objectForKey:
+		(parent != nil && parent->ns != nil ? parent->ns : @"")];
 
 	i = 0;
 	len = [name cStringLength] + 3;
@@ -258,7 +259,9 @@
 	/* Start of tag */
 	str_c[i++] = '<';
 
-	if (prefix != nil && ![ns isEqual: def_ns]) {
+	if (prefix != nil && ![ns isEqual: def_ns] &&
+	    (![ns isEqual: (parent != nil ? parent->ns : nil)] ||
+	    parent_prefix != nil)) {
 		len += [prefix cStringLength] + 1;
 		@try {
 			str_c = [self resizeMemory: str_c
@@ -278,7 +281,9 @@
 	i += [name cStringLength];
 
 	/* xmlns if necessary */
-	if (ns != nil && prefix == nil && ![ns isEqual: def_ns]) {
+	if (ns != nil && prefix == nil && ![ns isEqual: def_ns] &&
+	     (![ns isEqual: (parent != nil ? parent->ns : nil)] ||
+	     parent_prefix != nil)) {
 		len += [ns cStringLength] + 9;
 
 		@try {
@@ -360,8 +365,7 @@
 			append(tmp, @selector(
 			    appendCStringWithoutUTF8Checking:),
 			    [[children_carray[j]
-			    _stringValueWithParentNamespaces: all_namespaces
-			    parentDefaultNamespace: def_ns] cString]);
+			        _stringValueWithParent: self] cString]);
 
 		len += [tmp cStringLength] + [name cStringLength] + 2;
 		@try {
@@ -413,8 +417,7 @@
 
 - (OFString*)stringValue
 {
-	return [self _stringValueWithParentNamespaces: nil
-			       parentDefaultNamespace: nil];
+	return [self _stringValueWithParent: nil];
 }
 
 - (OFString*)description

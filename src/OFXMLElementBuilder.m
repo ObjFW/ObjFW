@@ -84,10 +84,10 @@
 
 	for (i = 0; i < attrs_cnt; i++) {
 		if ([attrs_c[i] namespace] == nil &&
-		    [[attrs_c[i] name] isEqual: @"xmlns"]) {
-			[elem setDefaultNamespace: [attrs_c[i] stringValue]];
+		    [[attrs_c[i] name] isEqual: @"xmlns"])
 			continue;
-		} else if ([[attrs_c[i] namespace]
+
+		if ([[attrs_c[i] namespace]
 		    isEqual: @"http://www.w3.org/2000/xmlns/"])
 			[elem setPrefix: [attrs_c[i] name]
 			   forNamespace: [attrs_c[i] stringValue]];
