@@ -57,9 +57,79 @@ typedef struct of_range_t {
 @class OFString;
 
 /**
+ * \brief The protocol which all root classes implement.
+ */
+@protocol OFObject
+/**
+ * \return The class of the object
+ */
+- (Class)class;
+
+/**
+ * \param class_ The class whose kind is checked
+ * \return A boolean whether the object is of the specified kind
+ */
+- (BOOL)isKindOfClass: (Class)class_;
+
+/**
+ * \param selector The selector which should be checked for respondance
+ * \return A boolean whether the objects responds to the specified selector
+ */
+- (BOOL)respondsToSelector: (SEL)selector;
+
+/**
+ * Checks two objects for equality.
+ *
+ * Classes containing data (like strings, arrays, lists etc.) should reimplement
+ * this!
+ *
+ * \param obj The object which should be tested for equality
+ * \return A boolean whether the object is equal to the specified object
+ */
+- (BOOL)isEqual: (id)obj;
+
+/**
+ * Calculates a hash for the object.
+ *
+ * Classes containing data (like strings, arrays, lists etc.) should reimplement
+ * this!
+ *
+ * \return A 32 bit hash for the object
+ */
+- (uint32_t)hash;
+
+/**
+ * Increases the retain count.
+ *
+ * Each time an object is released, the retain count gets decreased and the
+ * object deallocated if it reaches 0.
+ */
+- retain;
+
+/**
+ * \return The retain count
+ */
+- (size_t)retainCount;
+
+/**
+ * Decreases the retain count.
+ *
+ * Each time an object is released, the retain count gets decreased and the
+ * object deallocated if it reaches 0.
+ */
+- (void)release;
+
+/**
+ * Adds the object to the topmost OFAutoreleasePool of the thread's release pool
+ * stack.
+ */
+- autorelease;
+@end
+
+/**
  * \brief The root class for all other classes inside ObjFW.
  */
-@interface OFObject
+@interface OFObject <OFObject>
 {
 @public
 	/// The class of the object
@@ -205,26 +275,9 @@ typedef struct of_range_t {
 - init;
 
 /**
- * \return The class of the object
- */
-- (Class)class;
-
-/**
  * \return The name of the object's class.
  */
 - (OFString*)className;
-
-/**
- * \param class_ The class whose kind is checked
- * \return A boolean whether the object is of the specified kind
- */
-- (BOOL)isKindOfClass: (Class)class_;
-
-/**
- * \param selector The selector which should be checked for respondance
- * \return A boolean whether the objects responds to the specified selector
- */
-- (BOOL)respondsToSelector: (SEL)selector;
 
 /**
  * \param protocol The protocol which should be checked for conformance
@@ -245,27 +298,6 @@ typedef struct of_range_t {
  * \return The type encoding for the specified selector
  */
 - (const char*)typeEncodingForSelector: (SEL)selector;
-
-/**
- * Checks two objects for equality.
- *
- * Classes containing data (like strings, arrays, lists etc.) should reimplement
- * this!
- *
- * \param obj The object which should be tested for equality
- * \return A boolean whether the object is equal to the specified object
- */
-- (BOOL)isEqual: (id)obj;
-
-/**
- * Calculates a hash for the object.
- *
- * Classes containing data (like strings, arrays, lists etc.) should reimplement
- * this!
- *
- * \return A 32 bit hash for the object
- */
-- (uint32_t)hash;
 
 /**
  * Returns a description for the object.
@@ -335,33 +367,6 @@ typedef struct of_range_t {
  * \param ptr A pointer to the allocated memory
  */
 - (void)freeMemory: (void*)ptr;
-
-/**
- * Increases the retain count.
- *
- * Each time an object is released, the retain count gets decreased and the
- * object deallocated if it reaches 0.
- */
-- retain;
-
-/**
- * \return The retain count
- */
-- (size_t)retainCount;
-
-/**
- * Decreases the retain count.
- *
- * Each time an object is released, the retain count gets decreased and the
- * object deallocated if it reaches 0.
- */
-- (void)release;
-
-/**
- * Adds the object to the topmost OFAutoreleasePool of the thread's release pool
- * stack.
- */
-- autorelease;
 
 /**
  * Deallocates the object and also frees all memory in its memory pool.
