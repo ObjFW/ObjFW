@@ -404,7 +404,7 @@
 /* Begin PBXLegacyTarget section */
 		4B5D8DF11099E2A7000896FF /* ObjFW */ = {
 			isa = PBXLegacyTarget;
-			buildArgumentsString = "'LIB=ObjFW' 'LDFLAGS=-arch ppc -arch i386 -arch x86_64 -install_name /Library/Frameworks/ObjFW.framework/Versions/A/ObjFW' $(ACTION)";
+			buildArgumentsString = "'LIB=ObjFW' 'LD=gcc -install_name /Library/Frameworks/ObjFW.framework/Versions/A/ObjFW' $(ACTION)";
 			buildConfigurationList = 4B5D8DF91099E2ED000896FF /* Build configuration list for PBXLegacyTarget "ObjFW" */;
 			buildPhases = (
 			);
@@ -517,7 +517,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"configure\" -nt \"buildsys.mk\" -o \"buildsys.mk.in\" -nt \"buildsys.mk\" ]; then\n\tCFLAGS=\"-arch ppc -arch i386 -arch x86_64\" \\\n\tOBJCFLAGS=\"-arch ppc -arch i386 -arch x86_64\" \\\n\tLDFLAGS=\"-arch ppc -arch i386 -arch x86_64\" \\\n\t./configure || exit 1\nfi";
+			shellScript = "if [ \"configure\" -nt \"buildsys.mk\" -o \"buildsys.mk.in\" -nt \"buildsys.mk\" ]; then\n    for i in $VALID_ARCHS; do\n        export CFLAGS=\"-arch $i $CFLAGS\"\n        export OBJCFLAGS=\"-arch $i $OBJCFLAGS\"\n        export LDFLAGS=\"-arch $i $LDFLAGS\"\n    done\n\t./configure || exit 1\nfi";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
