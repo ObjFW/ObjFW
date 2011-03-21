@@ -38,6 +38,9 @@
 - (void)elementBuilder: (OFXMLElementBuilder*)builder
        didBuildElement: (OFXMLElement*)elem;
 
+#ifdef OF_HAVE_OPTIONAL_PROTOCOLS
+@optional
+#endif
 /**
  * This callback is called when the OFXMLElementBuilder gets a close tag which
  * does not belong there.

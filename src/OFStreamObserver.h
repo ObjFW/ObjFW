@@ -39,7 +39,9 @@
  *	  OFStreamObserver.
  */
 @protocol OFStreamObserverDelegate
-
+#ifdef OF_HAVE_OPTIONAL_PROTOCOLS
+@optional
+#endif
 /**
  * This callback is called when a stream did get ready for reading.
  *

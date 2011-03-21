@@ -39,6 +39,9 @@
  */
 - (void)applicationDidFinishLaunching;
 
+#ifdef OF_HAVE_OPTIONAL_PROTOCOLS
+@optional
+#endif
 /**
  * This method is called when the application will terminate.
  */
