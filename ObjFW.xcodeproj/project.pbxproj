@@ -137,7 +137,6 @@
 		4BF33AFE133807A20059CEF7 /* OFDataArrayTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF66F1235358D0076B512 /* OFDataArrayTests.m */; };
 		4BF33AFF133807A20059CEF7 /* OFDateTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE5F0E512DF4259005C7A0C /* OFDateTests.m */; };
 		4BF33B00133807A20059CEF7 /* OFDictionaryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6701235358D0076B512 /* OFDictionaryTests.m */; };
-		4BF33B01133807A20059CEF7 /* OFFileTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6711235358D0076B512 /* OFFileTests.m */; };
 		4BF33B02133807A20059CEF7 /* OFHTTPRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3D23701337FB7500DD29B8 /* OFHTTPRequestTests.m */; };
 		4BF33B03133807A20059CEF7 /* OFListTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6721235358D0076B512 /* OFListTests.m */; };
 		4BF33B04133807A20059CEF7 /* OFMD5HashTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6731235358D0076B512 /* OFMD5HashTests.m */; };
@@ -230,6 +229,8 @@
 		4B0D249511DFAA3D00ED6FFC /* OFXMLElementBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLElementBuilder.m; path = src/OFXMLElementBuilder.m; sourceTree = "<group>"; };
 		4B175C1D116D130B003C99CB /* OFApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFApplication.h; path = src/OFApplication.h; sourceTree = "<group>"; };
 		4B175C1E116D130B003C99CB /* OFApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFApplication.m; path = src/OFApplication.m; sourceTree = "<group>"; };
+		4B19023A1338D6A2000374C9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = src/Makefile; sourceTree = SOURCE_ROOT; };
+		4B19023D1338D6D5000374C9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = tests/Makefile; sourceTree = "<group>"; };
 		4B23CA8A133811610047A1D9 /* TestPlugin.impl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = TestPlugin.impl; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B3D236D1337FB5800DD29B8 /* base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = base64.h; path = src/base64.h; sourceTree = "<group>"; };
 		4B3D236E1337FB5800DD29B8 /* base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = base64.m; path = src/base64.m; sourceTree = "<group>"; };
@@ -289,7 +290,6 @@
 		4B6EF66E1235358D0076B512 /* OFArrayTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFArrayTests.m; path = tests/OFArrayTests.m; sourceTree = SOURCE_ROOT; };
 		4B6EF66F1235358D0076B512 /* OFDataArrayTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDataArrayTests.m; path = tests/OFDataArrayTests.m; sourceTree = SOURCE_ROOT; };
 		4B6EF6701235358D0076B512 /* OFDictionaryTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDictionaryTests.m; path = tests/OFDictionaryTests.m; sourceTree = SOURCE_ROOT; };
-		4B6EF6711235358D0076B512 /* OFFileTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFFileTests.m; path = tests/OFFileTests.m; sourceTree = SOURCE_ROOT; };
 		4B6EF6721235358D0076B512 /* OFListTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFListTests.m; path = tests/OFListTests.m; sourceTree = SOURCE_ROOT; };
 		4B6EF6731235358D0076B512 /* OFMD5HashTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMD5HashTests.m; path = tests/OFMD5HashTests.m; sourceTree = SOURCE_ROOT; };
 		4B6EF6741235358D0076B512 /* OFNumberTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFNumberTests.m; path = tests/OFNumberTests.m; sourceTree = SOURCE_ROOT; };
@@ -409,6 +409,7 @@
 			isa = PBXGroup;
 			children = (
 				4B3D23BB1337FC5800DD29B8 /* Info.plist */,
+				4B19023A1338D6A2000374C9 /* Makefile */,
 				4BDF37B41338055600F9A81A /* config.h */,
 				4B3D23EF1338008000DD29B8 /* mach_alias_list */,
 				4BD98C011338140B0048DD5B /* objfw-defs.h */,
@@ -533,7 +534,6 @@
 				4B6EF66F1235358D0076B512 /* OFDataArrayTests.m */,
 				4BE5F0E512DF4259005C7A0C /* OFDateTests.m */,
 				4B6EF6701235358D0076B512 /* OFDictionaryTests.m */,
-				4B6EF6711235358D0076B512 /* OFFileTests.m */,
 				4B3D23701337FB7500DD29B8 /* OFHTTPRequestTests.m */,
 				4B6EF6721235358D0076B512 /* OFListTests.m */,
 				4B6EF6731235358D0076B512 /* OFMD5HashTests.m */,
@@ -583,6 +583,7 @@
 		4BF33B4113380CB60059CEF7 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				4B19023D1338D6D5000374C9 /* Makefile */,
 				4BF33B4213380CD40059CEF7 /* testfile.bin */,
 				4BF33B4313380CD40059CEF7 /* testfile.txt */,
 			);
@@ -859,7 +860,6 @@
 				4BF33AFE133807A20059CEF7 /* OFDataArrayTests.m in Sources */,
 				4BF33AFF133807A20059CEF7 /* OFDateTests.m in Sources */,
 				4BF33B00133807A20059CEF7 /* OFDictionaryTests.m in Sources */,
-				4BF33B01133807A20059CEF7 /* OFFileTests.m in Sources */,
 				4BF33B02133807A20059CEF7 /* OFHTTPRequestTests.m in Sources */,
 				4BF33B03133807A20059CEF7 /* OFListTests.m in Sources */,
 				4BF33B04133807A20059CEF7 /* OFMD5HashTests.m in Sources */,

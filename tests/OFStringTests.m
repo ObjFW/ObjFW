@@ -172,16 +172,6 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	    R(([s[0] appendFormat: @"%02X", 15])) &&
 	    [s[0] isEqual: @"test:1230F"])
 
-	TEST(@"+[stringWithPath:]",
-	    (s[0] = [OFString stringWithPath: @"foo", @"bar", @"baz", nil]) &&
-#ifndef _WIN32
-	    [s[0] isEqual: @"foo/bar/baz"] &&
-#else
-	    [s[0] isEqual: @"foo\\bar\\baz"] &&
-#endif
-	    (s[0] = [OFString stringWithPath: @"foo", nil]) &&
-	    [s[0] isEqual: @"foo"])
-
 	TEST(@"-[indexOfFirstOccurrenceOfString:]",
 	    [@"𝄞öö" indexOfFirstOccurrenceOfString: @"öö"] == 1 &&
 	    [@"𝄞öö" indexOfFirstOccurrenceOfString: @"ö"] == 1 &&
@@ -232,6 +222,60 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	    [[a objectAtIndex: i++] isEqual: @"baz"] &&
 	    [[a objectAtIndex: i++] isEqual: @""] &&
 	    [[a objectAtIndex: i++] isEqual: @""])
+
+	TEST(@"+[stringWithPath:]",
+	    (s[0] = [OFString stringWithPath: @"foo", @"bar", @"baz", nil]) &&
+#ifndef _WIN32
+	    [s[0] isEqual: @"foo/bar/baz"] &&
+#else
+	    [s[0] isEqual: @"foo\\bar\\baz"] &&
+#endif
+	    (s[0] = [OFString stringWithPath: @"foo", nil]) &&
+	    [s[0] isEqual: @"foo"])
+
+	TEST(@"-[pathComponents]",
+	    /* /tmp */
+	    (a = [@"/tmp" pathComponents]) && [a count] == 2 &&
+	    [[a objectAtIndex: 0] isEqual: @""] &&
+	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
+	    /* /tmp/ */
+	    (a = [@"/tmp/" pathComponents]) && [a count] == 2 &&
+	    [[a objectAtIndex: 0] isEqual: @""] &&
+	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
+	    /* / */
+	    (a = [@"/" pathComponents]) && [a count] == 1 &&
+	    [[a objectAtIndex: 0] isEqual: @""] &&
+	    /* foo/bar */
+	    (a = [@"foo/bar" pathComponents]) && [a count] == 2 &&
+	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
+	    /* foo/bar/baz/ */
+	    (a = [@"foo/bar/baz" pathComponents]) && [a count] == 3 &&
+	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
+	    [[a objectAtIndex: 2] isEqual: @"baz"] &&
+	    /* foo// */
+	    (a = [@"foo//" pathComponents]) && [a count] == 2 &&
+	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[a objectAtIndex: 1] isEqual: @""] &&
+	    [[@"" pathComponents] count] == 0)
+
+	TEST(@"-[lastPathComponent]",
+	    [[@"/tmp" lastPathComponent] isEqual: @"tmp"] &&
+	    [[@"/tmp/" lastPathComponent] isEqual: @"tmp"] &&
+	    [[@"/" lastPathComponent] isEqual: @""] &&
+	    [[@"foo" lastPathComponent] isEqual: @"foo"] &&
+	    [[@"foo/bar" lastPathComponent] isEqual: @"bar"] &&
+	    [[@"foo/bar/baz/" lastPathComponent] isEqual: @"baz"])
+
+	TEST(@"-[stringByDeletingLastPathComponent]",
+	    [[@"/tmp" stringByDeletingLastPathComponent] isEqual: @"/"] &&
+	    [[@"/tmp/" stringByDeletingLastPathComponent] isEqual: @"/"] &&
+	    [[@"/tmp/foo/" stringByDeletingLastPathComponent]
+	    isEqual: @"/tmp"] &&
+	    [[@"foo/bar" stringByDeletingLastPathComponent] isEqual: @"foo"] &&
+	    [[@"/" stringByDeletingLastPathComponent] isEqual: @"/"] &&
+	    [[@"foo" stringByDeletingLastPathComponent] isEqual: @"."])
 
 	TEST(@"-[decimalValue]",
 	    [@"1234" decimalValue] == 1234 &&

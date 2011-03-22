@@ -121,7 +121,6 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 	[self blockTests];
 #endif
 	[self stringTests];
-	[self fileTests];
 	[self MD5HashTests];
 	[self SHA1HashTests];
 	[self dataArrayTests];

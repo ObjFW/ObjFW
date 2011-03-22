@@ -93,10 +93,6 @@
 - (void)dictionaryTests;
 @end
 
-@interface TestsAppDelegate (OFFileTests)
-- (void)fileTests;
-@end
-
 @interface TestsAppDelegate (OFHTTPRequestTests)
 - (void)HTTPRequestTests;
 @end

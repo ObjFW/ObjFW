@@ -400,6 +400,21 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter;
 
 /**
+ * \return The components of the path
+ */
+- (OFArray*)pathComponents;
+
+/**
+ * \return The last component of the path
+ */
+- (OFString*)lastPathComponent;
+
+/**
+ * \return The directory name of the path
+ */
+- (OFString*)stringByDeletingLastPathComponent;
+
+/**
  * Returns the decimal value of the string as an intmax_t or throws an
  * OFInvalidEncoding exception if the string contains any non-number characters.
  *

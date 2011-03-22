@@ -1071,6 +1071,128 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return array;
 }
 
+- (OFArray*)pathComponents
+{
+	OFMutableArray *ret;
+	OFAutoreleasePool *pool;
+	size_t i, last = 0, path_len = length;
+
+	ret = [OFMutableArray array];
+
+	if (path_len == 0)
+		return ret;
+
+	pool = [[OFAutoreleasePool alloc] init];
+
+#ifndef _WIN32
+	if (string[path_len - 1] == OF_PATH_DELIM)
+#else
+	if (string[path_len - 1] == '/' || string[path_len - 1] == '\\')
+#endif
+		path_len--;
+
+	for (i = 0; i < path_len; i++) {
+#ifndef _WIN32
+		if (string[i] == OF_PATH_DELIM) {
+#else
+		if (string[i] == '/' || string[i] == '\\') {
+#endif
+			[ret addObject:
+			    [OFString stringWithCString: string + last
+						 length: i - last]];
+			last = i + 1;
+		}
+	}
+
+	[ret addObject: [OFString stringWithCString: string + last
+					     length: i - last]];
+
+	[pool release];
+
+	/*
+	 * Class swizzle the array to be immutable. We declared the return type
+	 * to be OFArray*, so it can't be modified anyway. But not swizzling it
+	 * would create a real copy each time -[copy] is called.
+	 */
+	ret->isa = [OFArray class];
+	return ret;
+}
+
+- (OFString*)lastPathComponent
+{
+	size_t path_len = length;
+	ssize_t i;
+
+	if (path_len == 0)
+		return @"";
+
+#ifndef _WIN32
+	if (string[path_len - 1] == OF_PATH_DELIM)
+#else
+	if (string[path_len - 1] == '/' || string[path_len - 1] == '\\')
+#endif
+		path_len--;
+
+	for (i = path_len - 1; i >= 0; i--) {
+#ifndef _WIN32
+		if (string[i] == OF_PATH_DELIM) {
+#else
+		if (string[i] == '/' || string[i] == '\\') {
+#endif
+			i++;
+			break;
+		}
+	}
+
+	/*
+	 * Only one component, but the trailing delimiter might have been
+	 * removed, so return a new string anyway.
+	 */
+	if (i < 0)
+		i = 0;
+
+	return [OFString stringWithCString: string + i
+				    length: path_len - i];
+}
+
+- (OFString*)stringByDeletingLastPathComponent;
+{
+	size_t i, path_len = length;
+
+	if (path_len == 0)
+		return @"";
+
+#ifndef _WIN32
+	if (string[path_len - 1] == OF_PATH_DELIM)
+#else
+	if (string[path_len - 1] == '/' || string[path_len - 1] == '\\')
+#endif
+		path_len--;
+
+	if (path_len == 0)
+		return [OFString stringWithCString: string
+					    length: 1];
+
+	for (i = path_len - 1; i >= 1; i--)
+#ifndef _WIN32
+		if (string[i] == OF_PATH_DELIM)
+#else
+		if (string[i] == '/' || string[i] == '\\')
+#endif
+			return [OFString stringWithCString: string
+						    length: i];
+
+#ifndef _WIN32
+	if (string[0] == OF_PATH_DELIM)
+#else
+	if (path_c[i] == '/' || path_c[i] == '\\')
+#endif
+		return [OFString stringWithCString: string
+					    length: 1];
+
+	return @".";
+}
+
 - (intmax_t)decimalValue
 {
 	int i = 0;

@@ -115,7 +115,7 @@ of_log(OFConstantString *fmt, ...)
 
 	date = [OFDate date];
 	date_str = [date localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
-	me = [OFFile lastComponentOfPath: [OFApplication programName]];
+	me = [[OFApplication programName] lastPathComponent];
 
 	va_start(args, fmt);
 	msg = [[[OFString alloc] initWithFormat: fmt
@@ -134,9 +134,6 @@ of_log(OFConstantString *fmt, ...)
 @implementation OFFile
 + (void)load
 {
-	if (self != [OFFile class])
-		return;
-
 	of_stdin = [[OFFileSingleton alloc] initWithFileDescriptor: 0];
 	of_stdout = [[OFFileSingleton alloc] initWithFileDescriptor: 1];
 	of_stderr = [[OFFileSingleton alloc] initWithFileDescriptor: 2];
@@ -160,133 +157,6 @@ of_log(OFConstantString *fmt, ...)
 + fileWithFileDescriptor: (int)fd_
 {
 	return [[[self alloc] initWithFileDescriptor: fd_] autorelease];
-}
-
-+ (OFArray*)componentsOfPath: (OFString*)path
-{
-	OFMutableArray *ret;
-	OFAutoreleasePool *pool;
-	const char *path_c = [path cString];
-	size_t path_len = [path cStringLength];
-	size_t i, last = 0;
-
-	ret = [OFMutableArray array];
-
-	if (path_len == 0)
-		return ret;
-
-	pool = [[OFAutoreleasePool alloc] init];
-
-#ifndef _WIN32
-	if (path_c[path_len - 1] == OF_PATH_DELIM)
-#else
-	if (path_c[path_len - 1] == '/' || path_c[path_len - 1] == '\\')
-#endif
-		path_len--;
-
-	for (i = 0; i < path_len; i++) {
-#ifndef _WIN32
-		if (path_c[i] == OF_PATH_DELIM) {
-#else
-		if (path_c[i] == '/' || path_c[i] == '\\') {
-#endif
-			[ret addObject:
-			    [OFString stringWithCString: path_c + last
-						 length: i - last]];
-			last = i + 1;
-		}
-	}
-
-	[ret addObject: [OFString stringWithCString: path_c + last
-					     length: i - last]];
-
-	[pool release];
-
-	/*
-	 * Class swizzle the array to be immutable. We declared the return type
-	 * to be OFArray*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	ret->isa = [OFArray class];
-	return ret;
-}
-
-+ (OFString*)lastComponentOfPath: (OFString*)path
-{
-	const char *path_c = [path cString];
-	size_t path_len = [path cStringLength];
-	ssize_t i;
-
-	if (path_len == 0)
-		return @"";
-
-#ifndef _WIN32
-	if (path_c[path_len - 1] == OF_PATH_DELIM)
-#else
-	if (path_c[path_len - 1] == '/' || path_c[path_len - 1] == '\\')
-#endif
-		path_len--;
-
-	for (i = path_len - 1; i >= 0; i--) {
-#ifndef _WIN32
-		if (path_c[i] == OF_PATH_DELIM) {
-#else
-		if (path_c[i] == '/' || path_c[i] == '\\') {
-#endif
-			i++;
-			break;
-		}
-	}
-
-	/*
-	 * Only one component, but the trailing delimiter might have been
-	 * removed, so return a new string anyway.
-	 */
-	if (i < 0)
-		i = 0;
-
-	return [OFString stringWithCString: path_c + i
-				    length: path_len - i];
-}
-
-+ (OFString*)directoryNameOfPath: (OFString*)path
-{
-	const char *path_c = [path cString];
-	size_t path_len = [path cStringLength];
-	size_t i;
-
-	if (path_len == 0)
-		return @"";
-
-#ifndef _WIN32
-	if (path_c[path_len - 1] == OF_PATH_DELIM)
-#else
-	if (path_c[path_len - 1] == '/' || path_c[path_len - 1] == '\\')
-#endif
-		path_len--;
-
-	if (path_len == 0)
-		return [OFString stringWithCString: path_c
-					    length: 1];
-
-	for (i = path_len - 1; i >= 1; i--)
-#ifndef _WIN32
-		if (path_c[i] == OF_PATH_DELIM)
-#else
-		if (path_c[i] == '/' || path_c[i] == '\\')
-#endif
-			return [OFString stringWithCString: path_c
-						    length: i];
-
-#ifndef _WIN32
-	if (path_c[0] == OF_PATH_DELIM)
-#else
-	if (path_c[i] == '/' || path_c[i] == '\\')
-#endif
-		return [OFString stringWithCString: path_c
-					    length: 1];
-
-	return @".";
 }
 
 + (BOOL)fileExistsAtPath: (OFString*)path
@@ -520,7 +390,7 @@ of_log(OFConstantString *fmt, ...)
 	char buf[4096];
 
 	if ([self directoryExistsAtPath: to]) {
-		OFString *filename = [self lastComponentOfPath: from];
+		OFString *filename = [from lastPathComponent];
 		to = [OFString stringWithPath: to, filename, nil];
 	}
 
@@ -562,7 +432,7 @@ of_log(OFConstantString *fmt, ...)
 		  toPath: (OFString*)to
 {
 	if ([self directoryExistsAtPath: to]) {
-		OFString *filename = [self lastComponentOfPath: from];
+		OFString *filename = [from lastPathComponent];
 		to = [OFString stringWithPath: to, filename, nil];
 	}
 
@@ -599,7 +469,7 @@ of_log(OFConstantString *fmt, ...)
 		toPath: (OFString*)dest
 {
 	if ([self directoryExistsAtPath: dest]) {
-		OFString *filename = [self lastComponentOfPath: src];
+		OFString *filename = [src lastPathComponent];
 		dest = [OFString stringWithPath: dest, filename, nil];
 	}
 
@@ -615,7 +485,7 @@ of_log(OFConstantString *fmt, ...)
 		   toPath: (OFString*)dest
 {
 	if ([self directoryExistsAtPath: dest]) {
-		OFString *filename = [self lastComponentOfPath: src];
+		OFString *filename = [src lastPathComponent];
 		dest = [OFString stringWithPath: dest, filename, nil];
 	}
 
