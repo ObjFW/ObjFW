@@ -52,12 +52,9 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  */
 @interface OFString: OFObject <OFCopying, OFMutableCopying, OFComparing>
 {
-	char	     *string;
-	unsigned int length;
-#if defined(OF_APPLE_RUNTIME) && __LP64__
-	int	     _unused;
-#endif
-	BOOL	     isUTF8;
+	char   *string;
+	size_t length;
+	BOOL   isUTF8;
 }
 
 /**

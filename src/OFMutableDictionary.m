@@ -30,9 +30,8 @@
 - (void)_resizeForCount: (size_t)newcount
 {
 	size_t fill = newcount * 4 / size;
-	size_t newsize;
 	struct of_dictionary_bucket **newdata;
-	uint32_t i;
+	uint32_t i, newsize;
 
 	if (newcount > UINT32_MAX)
 		@throw [OFOutOfRangeException newWithClass: isa];

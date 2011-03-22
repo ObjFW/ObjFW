@@ -160,7 +160,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	if ((bits[0] = t + ((uint32_t)size << 3)) < t)
 		/* Carry from low to high */
 		bits[1]++;
-	bits[1] += size >> 29;
+	bits[1] += (uint32_t)size >> 29;
 
 	/* Bytes already in shsInfo->data */
 	t = (t >> 3) & 0x3F;

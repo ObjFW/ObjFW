@@ -200,8 +200,8 @@ Class of_http_request_tls_socket_class = Nil;
 			@throw [OFInvalidServerReplyException
 			    newWithClass: isa];
 
-		status = [[line substringFromIndex: 9
-					   toIndex: 12] decimalValue];
+		status = (int)[[line substringFromIndex: 9
+						toIndex: 12] decimalValue];
 
 		if (status != 200 && status != 301 && status != 302 &&
 		    status != 303)

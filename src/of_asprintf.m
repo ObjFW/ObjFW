@@ -21,7 +21,6 @@
 #include <string.h>
 #include <stdarg.h>
 #include <stdbool.h>
-#include <limits.h>
 #include <wchar.h>
 
 #import "OFString.h"
@@ -397,28 +396,31 @@ state_format_conversion_specifier(struct context *ctx)
 	case 'n':
 		switch (ctx->len_mod) {
 		case LENGTH_MODIFIER_NONE:
-			*va_arg(ctx->args, int*) = ctx->buf_len;
+			*va_arg(ctx->args, int*) = (int)ctx->buf_len;
 			break;
 		case LENGTH_MODIFIER_HH:
-			*va_arg(ctx->args, signed char*) = ctx->buf_len;
+			*va_arg(ctx->args, signed char*) =
+			    (signed char)ctx->buf_len;
 			break;
 		case LENGTH_MODIFIER_H:
-			*va_arg(ctx->args, short*) = ctx->buf_len;
+			*va_arg(ctx->args, short*) = (short)ctx->buf_len;
 			break;
 		case LENGTH_MODIFIER_L:
-			*va_arg(ctx->args, long*) = ctx->buf_len;
+			*va_arg(ctx->args, long*) = (long)ctx->buf_len;
 			break;
 		case LENGTH_MODIFIER_LL:
-			*va_arg(ctx->args, long long*) = ctx->buf_len;
+			*va_arg(ctx->args, long long*) =
+			    (long long)ctx->buf_len;
 			break;
 		case LENGTH_MODIFIER_J:
-			*va_arg(ctx->args, intmax_t*) = ctx->buf_len;
+			*va_arg(ctx->args, intmax_t*) = (intmax_t)ctx->buf_len;
 			break;
 		case LENGTH_MODIFIER_Z:
 			*va_arg(ctx->args, size_t*) = ctx->buf_len;
 			break;
 		case LENGTH_MODIFIER_T:
-			*va_arg(ctx->args, ptrdiff_t*) = ctx->buf_len;
+			*va_arg(ctx->args, ptrdiff_t*) =
+			    (ptrdiff_t)ctx->buf_len;
 			break;
 		default:
 			return false;
@@ -505,7 +507,7 @@ of_vasprintf(char **ret, const char *fmt, va_list args)
 	ctx.buf[ctx.buf_len] = 0;
 
 	*ret = ctx.buf;
-	return ctx.buf_len;
+	return (ctx.buf_len <= INT_MAX ? (int)ctx.buf_len : INT_MAX);
 }
 
 int

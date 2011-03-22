@@ -477,8 +477,8 @@ AS_IF([test x"$objc_runtime" = x"Apple"], [
 ])
 
 AS_IF([test x"$GOBJC" = x"yes"], [
-	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wcast-align -Wpointer-arith"
-	OBJCFLAGS="$OBJCFLAGS -Werror"
+	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wshorten-64-to-32 -Wcast-align"
+       	OBJCFLAGS="$OBJCFLAGS -Wpointer-arith -Werror"
 
 	AC_MSG_CHECKING(whether gcc has bug objc/27438)
 	AC_TRY_COMPILE([

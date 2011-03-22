@@ -184,8 +184,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 
 	@try {
 		id *objs_carray, *keys_carray;
-		size_t i, nsize;
-		uint32_t j;
+		uint32_t i, j, nsize;
 
 		keys_carray = [keys cArray];
 		objs_carray = [objs cArray];
@@ -315,8 +314,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 
 	@try {
 		id obj;
-		size_t i, nsize;
-		uint32_t j, hash;
+		uint32_t i, j, hash, nsize;
 		va_list args2;
 		BUCKET *b;
 

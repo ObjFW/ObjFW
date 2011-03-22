@@ -81,7 +81,7 @@
 	fd_set readfds;
 	fd_set writefds;
 	fd_set exceptfds;
-	int nfds;
+	nfds_t nfds;
 #endif
 }
 

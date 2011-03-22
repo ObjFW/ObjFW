@@ -239,7 +239,11 @@
 	size_t i, count;
 #ifdef OF_HAVE_POLL
 	struct pollfd *fds_c = [fds cArray];
-	size_t nfds = [fds count];
+	/*
+	 * There is no way to find out the maximum number of fds, so we just
+	 * cast.
+	 */
+	nfds_t nfds = (nfds_t)[fds count];
 #else
 	fd_set readfds_;
 	fd_set writefds_;

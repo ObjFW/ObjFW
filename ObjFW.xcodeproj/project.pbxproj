@@ -917,18 +917,21 @@
 				GCC_OPTIMIZATION_LEVEL = 2;
 				GCC_VERSION = 4.2;
 				OTHER_CFLAGS = (
-					"-Wall",
 					"-fexceptions",
 					"-fobjc-exceptions",
 					"-fconstant-string-class=OFConstantString",
-					"-pipe",
-					"-fno-common",
 					"-fno-constant-cfstrings",
+					"-fno-common",
 					"-fblocks",
+					"-pipe",
+				);
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Werror",
+					"-Wshorten-64-to-32",
 					"-Wwrite-strings",
 					"-Wcast-align",
 					"-Wpointer-arith",
-					"-Werror",
 				);
 			};
 			name = Debug;
@@ -939,18 +942,21 @@
 				GCC_OPTIMIZATION_LEVEL = 2;
 				GCC_VERSION = 4.2;
 				OTHER_CFLAGS = (
-					"-Wall",
 					"-fexceptions",
 					"-fobjc-exceptions",
 					"-fconstant-string-class=OFConstantString",
-					"-pipe",
-					"-fno-common",
 					"-fno-constant-cfstrings",
+					"-fno-common",
 					"-fblocks",
+					"-pipe",
+				);
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Werror",
+					"-Wshorten-64-to-32",
 					"-Wwrite-strings",
 					"-Wcast-align",
 					"-Wpointer-arith",
-					"-Werror",
 				);
 			};
 			name = Release;

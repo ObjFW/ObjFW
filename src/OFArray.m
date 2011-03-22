@@ -424,6 +424,9 @@
 {
 	size_t count = [array count];
 
+	if (count > INT_MAX)
+		@throw [OFOutOfRangeException newWithClass: isa];
+
 	if (state->state >= count)
 		return 0;
 
@@ -431,7 +434,7 @@
 	state->itemsPtr = [array cArray];
 	state->mutationsPtr = (unsigned long*)self;
 
-	return count;
+	return (int)count;
 }
 
 - (OFEnumerator*)objectEnumerator

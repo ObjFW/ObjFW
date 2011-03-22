@@ -107,9 +107,15 @@ call_main(id obj)
 		@throw [OFOutOfRangeException newWithClass: self];
 
 #ifndef _WIN32
-	sleep(sec);
+	if (sec > UINT_MAX)
+		@throw [OFOutOfRangeException newWithClass: self];
+
+	sleep((unsigned int)sec);
 #else
-	Sleep(sec * 1000);
+	if (sec * 1000 > UINT_MAX)
+		@throw [OFOutOfRangeException newWithClass: self];
+
+	Sleep((unsigned int)sec * 1000);
 #endif
 }
 
@@ -120,10 +126,13 @@ call_main(id obj)
 		@throw [OFOutOfRangeException newWithClass: self];
 
 #ifndef _WIN32
-	sleep(sec);
+	sleep((unsigned int)sec);
 	usleep(usec);
 #else
-	Sleep(sec * 1000 + usec / 1000);
+	if (sec * 1000 + usec / 1000 > UINT_MAX)
+		@throw [OFOutOfRangeException newWithClass: self];
+
+	Sleep((unsigned int)sec * 1000 + usec / 1000);
 #endif
 }
 
@@ -142,9 +151,15 @@ call_main(id obj)
 	[pool release];
 
 #ifndef _WIN32
-	sleep(sec);
+	if (sec > UINT_MAX)
+		@throw [OFOutOfRangeException newWithClass: self];
+
+	sleep((unsigned int)sec);
 	usleep(usec);
 #else
+	if (sec * 1000 + usec / 1000 > UINT_MAX)
+		@throw [OFOutOfRangeException newWithClass: self];
+
 	Sleep(sec * 1000 + usec / 1000);
 #endif
 }

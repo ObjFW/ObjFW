@@ -25,6 +25,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <limits.h>
 
 #ifdef OF_OBJFW_RUNTIME
 # import <objfw-rt.h>

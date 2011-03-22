@@ -39,7 +39,7 @@ static OFString *module = @"OFTCPSocket";
 	uint16_t port;
 	char buf[6];
 
-	srand(time(NULL));
+	srand((unsigned)time(NULL));
 	port = (uint16_t)rand();
 	if (port < 1024)
 		port += 1024;
