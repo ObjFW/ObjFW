@@ -38,7 +38,7 @@ struct locks_s {
 
 static of_mutex_t mutex;
 static struct locks_s *locks = NULL;
-static size_t num_locks = 0;
+static ssize_t num_locks = 0;
 
 #define SYNC_ERR(f)							\
 	{								\
@@ -57,7 +57,7 @@ objc_sync_init()
 int
 objc_sync_enter(id obj)
 {
-	int i;
+	ssize_t i;
 
 	if (obj == nil)
 		return 0;
@@ -142,7 +142,7 @@ objc_sync_enter(id obj)
 int
 objc_sync_exit(id obj)
 {
-	int i;
+	ssize_t i;
 
 	if (obj == nil)
 		return 0;

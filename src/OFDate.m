@@ -36,7 +36,7 @@ static OFMutex *mutex;
 
 #ifdef HAVE_GMTIME_R
 # define GMTIME_RET(field)						  \
-	time_t sec_ = sec;						  \
+	time_t sec_ = (time_t)sec;					  \
 	struct tm tm;							  \
 									  \
 	if (sec != sec_)						  \
@@ -47,7 +47,7 @@ static OFMutex *mutex;
 									  \
 	return tm.field;
 # define LOCALTIME_RET(field)						  \
-	time_t sec_ = sec;						  \
+	time_t sec_ = (time_t)sec;					  \
 	struct tm tm;							  \
 									  \
 	if (sec != sec_)						  \
@@ -60,7 +60,7 @@ static OFMutex *mutex;
 #else
 # ifdef OF_THREADS
 #  define GMTIME_RET(field)						  \
-	time_t sec_ = sec;						  \
+	time_t sec_ = (time_t)sec;					  \
 	struct tm *tm;							  \
 									  \
 	if (sec != sec_)						  \
@@ -77,7 +77,7 @@ static OFMutex *mutex;
 		[mutex unlock];						  \
 	}
 #  define LOCALTIME_RET(field)						  \
-	time_t sec_ = sec;						  \
+	time_t sec_ = (time_t)sec;					  \
 	struct tm *tm;							  \
 									  \
 	if (sec != sec_)						  \
@@ -95,7 +95,7 @@ static OFMutex *mutex;
 	}
 # else
 #  define GMTIME_RET(field)						  \
-	time_t sec_ = sec;						  \
+	time_t sec_ = (time_t)sec;					  \
 	struct tm *tm;							  \
 									  \
 	if (sec != sec_)						  \
@@ -106,7 +106,7 @@ static OFMutex *mutex;
 									  \
 	return tm->field;
 #  define LOCALTIME_RET(field)						  \
-	time_t sec_ = sec;						  \
+	time_t sec_ = (time_t)sec;					  \
 	struct tm *tm;							  \
 									  \
 	if (sec != sec_)						  \
@@ -192,7 +192,7 @@ static OFMutex *mutex;
 	}
 
 	return [self initWithTimeIntervalSince1970: t.tv_sec
-				      microseconds: t.tv_usec];
+				      microseconds: (uint32_t)t.tv_usec];
 }
 
 - initWithTimeIntervalSince1970: (int64_t)sec_
@@ -346,7 +346,7 @@ static OFMutex *mutex;
 - (OFString*)dateStringWithFormat: (OFString*)fmt
 {
 	OFString *ret;
-	time_t sec_ = sec;
+	time_t sec_ = (time_t)sec;
 	struct tm tm;
 	char *buf;
 
@@ -392,7 +392,7 @@ static OFMutex *mutex;
 - (OFString*)localDateStringWithFormat: (OFString*)fmt
 {
 	OFString *ret;
-	time_t sec_ = sec;
+	time_t sec_ = (time_t)sec;
 	struct tm tm;
 	char *buf;
 
