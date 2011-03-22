@@ -342,12 +342,12 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	    @"#2", OFInvalidEncodingException,
 	    [@"foo%FFbar" stringByURLDecoding])
 
-	TEST(@"-[removeCharactersFromIndex:toIndex:]",
+	TEST(@"-[deleteCharactersFromIndex:toIndex:]",
 	    (s[0] = [OFMutableString stringWithString: @"𝄞öööbä€"]) &&
-	    R([s[0] removeCharactersFromIndex: 1
-				      toIndex: 4]) &&
+	    R([s[0] deleteCharactersFromIndex: 1
+				       toIndex: 4]) &&
 	    [s[0] isEqual: @"𝄞bä€"] &&
-	    R([s[0] removeCharactersFromIndex: 0
+	    R([s[0] deleteCharactersFromIndex: 0
 				      toIndex: 4]) &&
 	    [s[0] isEqual: @""])
 
@@ -363,7 +363,7 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	    [s[0] isEqual: @""])
 
 	EXPECT_EXCEPTION(@"Detect OoR in "
-	    @"-[removeCharactersFromIndex:toIndex:] #1", OFOutOfRangeException,
+	    @"-[deleteCharactersFromIndex:toIndex:] #1", OFOutOfRangeException,
 	    {
 		s[0] = [OFMutableString stringWithString: @"𝄞öö"];
 		[s[0] substringFromIndex: 2
@@ -371,12 +371,12 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	    })
 
 	EXPECT_EXCEPTION(@"Detect OoR in "
-	    @"-[removeCharactersFromIndex:toIndex:] #2", OFOutOfRangeException,
+	    @"-[deleteCharactersFromIndex:toIndex:] #2", OFOutOfRangeException,
 	    [s[0] substringFromIndex: 4
 			     toIndex: 4])
 
 	EXPECT_EXCEPTION(@"Detect s > e in "
-	    @"-[removeCharactersFromIndex:toIndex:]",
+	    @"-[deleteCharactersFromIndex:toIndex:]",
 	    OFInvalidArgumentException,
 	    [s[0] substringFromIndex: 2
 			     toIndex: 0])
@@ -392,26 +392,26 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 				    withString: @"XX"]) &&
 	    [s[0] isEqual: @"XXXX"])
 
-	TEST(@"-[removeLeadingWhitespaces]",
+	TEST(@"-[deleteLeadingWhitespaces]",
 	    (s[0] = [OFMutableString stringWithString: whitespace[0]]) &&
-	    R([s[0] removeLeadingWhitespaces]) &&
+	    R([s[0] deleteLeadingWhitespaces]) &&
 	    [s[0] isEqual: @"asd  \t \t\t\r\n"] &&
 	    (s[0] = [OFMutableString stringWithString: whitespace[1]]) &&
-	    R([s[0] removeLeadingWhitespaces]) && [s[0] isEqual: @""])
+	    R([s[0] deleteLeadingWhitespaces]) && [s[0] isEqual: @""])
 
-	TEST(@"-[removeTrailingWhitespaces]",
+	TEST(@"-[deleteTrailingWhitespaces]",
 	    (s[0] = [OFMutableString stringWithString: whitespace[0]]) &&
-	    R([s[0] removeTrailingWhitespaces]) &&
+	    R([s[0] deleteTrailingWhitespaces]) &&
 	    [s[0] isEqual: @" \r \t\n\t \tasd"] &&
 	    (s[0] = [OFMutableString stringWithString: whitespace[1]]) &&
-	    R([s[0] removeTrailingWhitespaces]) && [s[0] isEqual: @""])
+	    R([s[0] deleteTrailingWhitespaces]) && [s[0] isEqual: @""])
 
-	TEST(@"-[removeLeadingAndTrailingWhitespaces]",
+	TEST(@"-[deleteLeadingAndTrailingWhitespaces]",
 	    (s[0] = [OFMutableString stringWithString: whitespace[0]]) &&
-	    R([s[0] removeLeadingAndTrailingWhitespaces]) &&
+	    R([s[0] deleteLeadingAndTrailingWhitespaces]) &&
 	    [s[0] isEqual: @"asd"] &&
 	    (s[0] = [OFMutableString stringWithString: whitespace[1]]) &&
-	    R([s[0] removeLeadingAndTrailingWhitespaces]) &&
+	    R([s[0] deleteLeadingAndTrailingWhitespaces]) &&
 	    [s[0] isEqual: @""])
 
 	TEST(@"-[stringByXMLEscaping]",

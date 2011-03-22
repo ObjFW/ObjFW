@@ -127,24 +127,24 @@
 	     atIndex: (size_t)idx;
 
 /**
- * Removes the characters at the specified range.
+ * Deletes the characters at the specified range.
  *
  * \param start The index where the deletion should be started
  * \param end The index until which the characters should be deleted.
  *	      This points BEHIND the last character!
  */
-- (void)removeCharactersFromIndex: (size_t)start
+- (void)deleteCharactersFromIndex: (size_t)start
 			  toIndex: (size_t)end;
 
 /**
- * Removes the characters at the specified range.
+ * Deletes the characters at the specified range.
  *
  * \param range The range of the characters which should be removed
  */
-- (void)removeCharactersInRange: (of_range_t)range;
+- (void)deleteCharactersInRange: (of_range_t)range;
 
 /**
- * Removes the characters at the specified range.
+ * Replaces the characters at the specified range.
  *
  * \param start The index where the replacement should be started
  * \param end The index until which the characters should be replaced.
@@ -156,7 +156,7 @@
 			withString: (OFString*)repl;
 
 /**
- * Removes the characters at the specified range.
+ * Deletes the characters at the specified range.
  *
  * \param range The range of the characters which should be replaced
  * \param repl The string to the replace the characters with
@@ -165,7 +165,7 @@
 		      withString: (OFString*)repl;
 
 /**
- * Replaces all occurrences of a string with another string.
+ * Deletes all occurrences of a string with another string.
  *
  * \param str The string to replace
  * \param repl The string with which it should be replaced
@@ -174,17 +174,17 @@
 			withString: (OFString*)repl;
 
 /**
- * Removes all whitespaces at the beginning of a string.
+ * Deletes all whitespaces at the beginning of a string.
  */
-- (void)removeLeadingWhitespaces;
+- (void)deleteLeadingWhitespaces;
 
 /**
- * Removes all whitespaces at the end of a string.
+ * Deletes all whitespaces at the end of a string.
  */
-- (void)removeTrailingWhitespaces;
+- (void)deleteTrailingWhitespaces;
 
 /**
- * Removes all whitespaces at the beginning and the end of a string.
+ * Deletes all whitespaces at the beginning and the end of a string.
  */
-- (void)removeLeadingAndTrailingWhitespaces;
+- (void)deleteLeadingAndTrailingWhitespaces;
 @end

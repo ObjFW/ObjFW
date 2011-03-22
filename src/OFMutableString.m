@@ -382,7 +382,7 @@
 	length = nlen;
 }
 
-- (void)removeCharactersFromIndex: (size_t)start
+- (void)deleteCharactersFromIndex: (size_t)start
 			  toIndex: (size_t)end
 {
 	if (isUTF8) {
@@ -410,9 +410,9 @@
 	}
 }
 
-- (void)removeCharactersInRange: (of_range_t)range
+- (void)deleteCharactersInRange: (of_range_t)range
 {
-	[self removeCharactersFromIndex: range.start
+	[self deleteCharactersFromIndex: range.start
 				toIndex: range.start + range.length];
 }
 
@@ -505,7 +505,7 @@
 	length = tmp_len;
 }
 
-- (void)removeLeadingWhitespaces
+- (void)deleteLeadingWhitespaces
 {
 	size_t i;
 
@@ -527,7 +527,7 @@
 	}
 }
 
-- (void)removeTrailingWhitespaces
+- (void)deleteTrailingWhitespaces
 {
 	size_t d;
 	char *p;
@@ -552,7 +552,7 @@
 	}
 }
 
-- (void)removeLeadingAndTrailingWhitespaces
+- (void)deleteLeadingAndTrailingWhitespaces
 {
 	size_t d, i;
 	char *p;

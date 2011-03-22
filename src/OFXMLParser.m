@@ -353,7 +353,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		pi = [[cache mutableCopy] autorelease];
 		len = [pi length];
 
-		[pi removeCharactersFromIndex: len - 1
+		[pi deleteCharactersFromIndex: len - 1
 				      toIndex: len];
 
 		/*
@@ -632,7 +632,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		[cache appendCStringWithoutUTF8Checking: buf + *last
 						 length: len];
 
-	[cache removeLeadingAndTrailingWhitespaces];
+	[cache deleteLeadingAndTrailingWhitespaces];
 	cache_c = [cache cString];
 	cache_len = [cache cStringLength];
 
@@ -814,7 +814,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	cdata = [[cache mutableCopy] autorelease];
 	len = [cdata length];
 
-	[cdata removeCharactersFromIndex: len - 2
+	[cdata deleteCharactersFromIndex: len - 2
 				 toIndex: len];
 
 	/*
@@ -884,7 +884,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	comment = [[cache mutableCopy] autorelease];
 	len = [comment length];
 
-	[comment removeCharactersFromIndex: len - 2
+	[comment deleteCharactersFromIndex: len - 2
 				   toIndex: len];
 
 	/*
