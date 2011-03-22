@@ -72,9 +72,11 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		}
 		splitted_carray = [splitted cArray];
 
-		codep = [splitted_carray[0] hexadecimalValue];
-		upperTable[codep] = [splitted_carray[12] hexadecimalValue];
-		lowerTable[codep] = [splitted_carray[13] hexadecimalValue];
+		codep = (of_unichar_t)[splitted_carray[0] hexadecimalValue];
+		upperTable[codep] =
+		    (of_unichar_t)[splitted_carray[12] hexadecimalValue];
+		lowerTable[codep] =
+		    (of_unichar_t)[splitted_carray[13] hexadecimalValue];
 
 		[pool2 releaseObjects];
 	}
@@ -110,8 +112,9 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		    ![splitted_carray[1] isEqual: @"C"])
 			continue;
 
-		codep = [splitted_carray[0] hexadecimalValue];
-		casefoldingTable[codep] = [splitted_carray[2] hexadecimalValue];
+		codep = (of_unichar_t)[splitted_carray[0] hexadecimalValue];
+		casefoldingTable[codep] =
+		    (of_unichar_t)[splitted_carray[2] hexadecimalValue];
 
 		[pool2 releaseObjects];
 	}
