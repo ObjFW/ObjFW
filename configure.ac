@@ -28,6 +28,7 @@ AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings, [
 	NO_CONST_CFSTRINGS="-fno-constant-cfstrings"
 	OBJCFLAGS="$OBJCFLAGS -fno-constant-cfstrings"
 ])
+AX_CHECK_COMPILER_FLAGS(-Wshorten-64-to-32, [OBJCFLAGS="$OBJCFLAGS -pipe"])
 AC_SUBST(NO_CONST_CFSTRINGS)
 
 AC_MSG_CHECKING(whether Objective C compiler supports fast enumeration)
@@ -477,8 +478,8 @@ AS_IF([test x"$objc_runtime" = x"Apple"], [
 ])
 
 AS_IF([test x"$GOBJC" = x"yes"], [
-	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wshorten-64-to-32 -Wcast-align"
-       	OBJCFLAGS="$OBJCFLAGS -Wpointer-arith -Werror"
+	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wcast-align -Wpointer-arith"
+       	OBJCFLAGS="$OBJCFLAGS -Werror"
 
 	AC_MSG_CHECKING(whether gcc has bug objc/27438)
 	AC_TRY_COMPILE([
