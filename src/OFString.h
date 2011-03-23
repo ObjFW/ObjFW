@@ -376,6 +376,28 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 - (OFString*)stringByAppendingString: (OFString*)str;
 
 /**
+ * Creates a new string by deleting leading whitespaces.
+ *
+ * \return A new autoreleased OFString with leading whitespaces deleted
+ */
+- (OFString*)stringByDeletingLeadingWhitespaces;
+
+/**
+ * Creates a new string by deleting trailing whitespaces.
+ *
+ * \return A new autoreleased OFString with trailing whitespaces deleted
+ */
+- (OFString*)stringByDeletingTrailingWhitespaces;
+
+/**
+ * Creates a new string by deleting leading and trailing whitespaces.
+ *
+ * \return A new autoreleased OFString with leading and trailing whitespaces
+ *	   deleted
+ */
+- (OFString*)stringByDeletingLeadingAndTrailingWhitespaces;
+
+/**
  * Checks whether the string has the specified prefix.
  *
  * \param prefix The prefix to check for
