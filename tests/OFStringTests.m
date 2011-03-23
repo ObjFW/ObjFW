@@ -176,13 +176,13 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	    [@"𝄞öö" indexOfFirstOccurrenceOfString: @"öö"] == 1 &&
 	    [@"𝄞öö" indexOfFirstOccurrenceOfString: @"ö"] == 1 &&
 	    [@"𝄞öö" indexOfFirstOccurrenceOfString: @"𝄞"] == 0 &&
-	    [@"𝄞öö" indexOfFirstOccurrenceOfString: @"x"] == SIZE_MAX)
+	    [@"𝄞öö" indexOfFirstOccurrenceOfString: @"x"] == OF_INVALID_INDEX)
 
 	TEST(@"-[indexOfLastOccurrenceOfString:]",
 	    [@"𝄞öö" indexOfLastOccurrenceOfString: @"öö"] == 1 &&
 	    [@"𝄞öö" indexOfLastOccurrenceOfString: @"ö"] == 2 &&
 	    [@"𝄞öö" indexOfLastOccurrenceOfString: @"𝄞"] == 0 &&
-	    [@"𝄞öö" indexOfLastOccurrenceOfString: @"x"] == SIZE_MAX)
+	    [@"𝄞öö" indexOfLastOccurrenceOfString: @"x"] == OF_INVALID_INDEX)
 
 	TEST(@"-[substringFromIndexToIndex:]",
 	    [[@"𝄞öö" substringFromIndex: 1

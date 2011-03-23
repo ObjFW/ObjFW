@@ -334,15 +334,15 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 
 /**
  * \param str The string to search
- * \return The index of the first occurrence of the string or SIZE_MAX if it
- *	   was not found
+ * \return The index of the first occurrence of the string or OF_INVALID_INDEX
+ *	   if it was not found
  */
 - (size_t)indexOfFirstOccurrenceOfString: (OFString*)str;
 
 /**
  * \param str The string to search
- * \return The index of the last occurrence of the string or SIZE_MAX if it
- *	   was not found
+ * \return The index of the last occurrence of the string or OF_INVALID_INDEX if
+ *	   it was not found
  */
 - (size_t)indexOfLastOccurrenceOfString: (OFString*)str;
 

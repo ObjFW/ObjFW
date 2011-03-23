@@ -228,7 +228,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	for (i = 0; i <= idx; i++)
 		if (OF_UNLIKELY((str[i] & 0xC0) == 0x80))
 			if (++idx > len)
-				return SIZE_MAX;
+				return OF_INVALID_INDEX;
 
 	return idx;
 }
@@ -919,13 +919,13 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		return 0;
 
 	if (str_len > length)
-		return SIZE_MAX;
+		return OF_INVALID_INDEX;
 
 	for (i = 0; i <= length - str_len; i++)
 		if (!memcmp(string + i, str_c, str_len))
 			return of_string_position_to_index(string, i);
 
-	return SIZE_MAX;
+	return OF_INVALID_INDEX;
 }
 
 - (size_t)indexOfLastOccurrenceOfString: (OFString*)str
@@ -938,7 +938,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		return of_string_position_to_index(string, length);
 
 	if (str_len > length)
-		return SIZE_MAX;
+		return OF_INVALID_INDEX;
 
 	for (i = length - str_len;; i--) {
 		if (!memcmp(string + i, str_c, str_len))
@@ -946,7 +946,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 		/* Did not match and we're at the last char */
 		if (i == 0)
-			return SIZE_MAX;
+			return OF_INVALID_INDEX;
 	}
 }
 

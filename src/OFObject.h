@@ -34,6 +34,7 @@
 #endif
 
 #define OF_RETAIN_COUNT_MAX UINT_MAX
+#define OF_INVALID_INDEX SIZE_MAX
 
 /**
  * \brief A result of a comparison.

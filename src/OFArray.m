@@ -222,13 +222,13 @@
 	size_t i, count = [array count];
 
 	if (objs == NULL)
-		return SIZE_MAX;
+		return OF_INVALID_INDEX;
 
 	for (i = 0; i < count; i++)
 		if ([objs[i] isEqual: obj])
 			return i;
 
-	return SIZE_MAX;
+	return OF_INVALID_INDEX;
 }
 
 - (size_t)indexOfObjectIdenticalTo: (id)obj
@@ -237,13 +237,13 @@
 	size_t i, count = [array count];
 
 	if (objs == NULL)
-		return SIZE_MAX;
+		return OF_INVALID_INDEX;
 
 	for (i = 0; i < count; i++)
 		if (objs[i] == obj)
 			return i;
 
-	return SIZE_MAX;
+	return OF_INVALID_INDEX;
 }
 
 - (BOOL)containsObject: (id)obj

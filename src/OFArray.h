@@ -141,21 +141,21 @@ typedef id (^of_array_map_block_t)(id obj, size_t idx);
 
 /**
  * Returns the index of the first object that is equivalent to the specified
- * object or SIZE_MAX if it was not found.
+ * object or OF_INVALID_INDEX if it was not found.
  *
  * \param obj The object whose index is returned
  * \return The index of the first object equivalent to the specified object
- * 	   or SIZE_MAX if it was not found
+ * 	   or OF_INVALID_INDEX if it was not found
  */
 - (size_t)indexOfObject: (id)obj;
 
 /**
  * Returns the index of the first object that has the same address as the
- * specified object or SIZE_MAX if it was not found.
+ * specified object or OF_INVALID_INDEX if it was not found.
  *
  * \param obj The object whose index is returned
  * \return The index of the first object that has the same aaddress as
- *	   the specified object or SIZE_MAX if it was not found
+ *	   the specified object or OF_INVALID_INDEX if it was not found
  */
 - (size_t)indexOfObjectIdenticalTo: (id)obj;
 
