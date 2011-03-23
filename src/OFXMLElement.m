@@ -232,7 +232,7 @@
 	pool = [[OFAutoreleasePool alloc] init];
 	def_ns = (defaultNamespace != nil
 	    ? defaultNamespace
-	    : (parent != nil ? parent->defaultNamespace : nil));
+	    : (parent != nil ? parent->defaultNamespace : (OFString*)nil));
 
 	if (parent != nil && parent->namespaces != nil) {
 		OFEnumerator *key_enum = [namespaces keyEnumerator];
@@ -248,9 +248,10 @@
 	} else
 		all_namespaces = namespaces;
 
-	prefix = [all_namespaces objectForKey: (ns != nil ? ns : @"")];
+	prefix = [all_namespaces objectForKey:
+	    (ns != nil ? ns : (OFString*)@"")];
 	parent_prefix = [all_namespaces objectForKey:
-		(parent != nil && parent->ns != nil ? parent->ns : @"")];
+	    (parent != nil && parent->ns != nil ? parent->ns : (OFString*)@"")];
 
 	i = 0;
 	len = [name cStringLength] + 3;
@@ -260,7 +261,7 @@
 	str_c[i++] = '<';
 
 	if (prefix != nil && ![ns isEqual: def_ns] &&
-	    (![ns isEqual: (parent != nil ? parent->ns : nil)] ||
+	    (![ns isEqual: (parent != nil ? parent->ns : (OFString*)nil)] ||
 	    parent_prefix != nil)) {
 		len += [prefix cStringLength] + 1;
 		@try {
@@ -282,7 +283,7 @@
 
 	/* xmlns if necessary */
 	if (ns != nil && prefix == nil && ![ns isEqual: def_ns] &&
-	     (![ns isEqual: (parent != nil ? parent->ns : nil)] ||
+	     (![ns isEqual: (parent != nil ? parent->ns : (OFString*)nil)] ||
 	     parent_prefix != nil)) {
 		len += [ns cStringLength] + 9;
 
