@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#define OF_STREAM_OBSERVER_M
+
 #include <string.h>
 
 #ifdef OF_HAVE_POLL

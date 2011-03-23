@@ -33,7 +33,7 @@ typedef OFString* (^of_string_xml_unescaping_block_t)(OFString *str,
  * \brief A protocol that needs to be implemented by delegates for
  *	  -[stringByXMLUnescapingWithHandler:].
  */
-@protocol OFStringXMLUnescapingDelegate
+@protocol OFStringXMLUnescapingDelegate <OFObject>
 /**
  * This callback is called when an unknown entity was found while trying to
  * unescape XML. The callback is supposed to return a substitution for the

@@ -39,7 +39,11 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
 /**
  * \brief A protocol that needs to be implemented by delegates for OFXMLParser.
  */
+#ifndef OF_XML_PARSER_M
+@protocol OFXMLParserDelegate <OFObject>
+#else
 @protocol OFXMLParserDelegate
+#endif
 #ifdef OF_HAVE_OPTIONAL_PROTOCOLS
 @optional
 #endif

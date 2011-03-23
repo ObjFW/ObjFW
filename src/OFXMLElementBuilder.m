@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#define OF_XML_ELEMENT_BUILDER_M
+
 #import "OFXMLElementBuilder.h"
 #import "OFXMLElement.h"
 #import "OFXMLParser.h"

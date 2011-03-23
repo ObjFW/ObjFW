@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#define OF_APPLICATION_M
+
 #include <stdlib.h>
 
 #import "OFApplication.h"

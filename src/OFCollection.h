@@ -19,7 +19,7 @@
 /**
  * \brief A protocol with methods common for all collections.
  */
-@protocol OFCollection
+@protocol OFCollection <OFObject>
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly) size_t count;
 #endif

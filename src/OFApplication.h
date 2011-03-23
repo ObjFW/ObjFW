@@ -32,7 +32,11 @@
 /**
  * \brief A protocol for delegates of OFApplication.
  */
+#ifndef OF_APPLICATION_M
+@protocol OFApplicationDelegate <OFObject>
+#else
 @protocol OFApplicationDelegate
+#endif
 /**
  * This method is called when the application was initialized and is running
  * now.
