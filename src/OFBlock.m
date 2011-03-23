@@ -409,13 +409,13 @@ _Block_object_dispose(const void *obj_, const int flags_)
 	return self;
 }
 
-- (size_t)retainCount
+- (unsigned int)retainCount
 {
 	if (isa == (Class)&_NSConcreteMallocBlock)
 		return ((of_block_literal_t*)self)->flags &
 		    OF_BLOCK_REFCOUNT_MASK;
 
-	return SIZE_MAX;
+	return OF_RETAIN_COUNT_MAX;
 }
 
 - (void)release

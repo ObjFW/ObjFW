@@ -33,6 +33,8 @@
 # import <objc/objc.h>
 #endif
 
+#define OF_RETAIN_COUNT_MAX UINT_MAX
+
 /**
  * \brief A result of a comparison.
  */
@@ -110,7 +112,7 @@ typedef struct of_range_t {
 /**
  * \return The retain count
  */
-- (size_t)retainCount;
+- (unsigned int)retainCount;
 
 /**
  * Decreases the retain count.

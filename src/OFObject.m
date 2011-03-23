@@ -702,10 +702,10 @@ objc_enumerationMutation(id obj)
 	return self;
 }
 
-- (size_t)retainCount
+- (unsigned int)retainCount
 {
 	assert(PRE_IVAR->retain_count >= 0);
-	return (size_t)PRE_IVAR->retain_count;
+	return PRE_IVAR->retain_count;
 }
 
 - (void)release
@@ -841,9 +841,9 @@ objc_enumerationMutation(id obj)
 	return self;
 }
 
-+ (size_t)retainCount
++ (unsigned int)retainCount
 {
-	return SIZE_MAX;
+	return OF_RETAIN_COUNT_MAX;
 }
 
 + (void)release

@@ -644,9 +644,9 @@ of_log(OFConstantString *fmt, ...)
 {
 }
 
-- (size_t)retainCount
+- (unsigned int)retainCount
 {
-	return SIZE_MAX;
+	return OF_RETAIN_COUNT_MAX;
 }
 
 - (void)dealloc
