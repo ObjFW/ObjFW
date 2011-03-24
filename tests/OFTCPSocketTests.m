@@ -23,7 +23,7 @@
 #import "OFTCPSocket.h"
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
 #import "macros.h"
 
 #import "TestsAppDelegate.h"

@@ -19,7 +19,6 @@
 #import "OFBlock.h"
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
 
 #if defined(OF_OBJFW_RUNTIME)
 # include <objfw-rt.h>

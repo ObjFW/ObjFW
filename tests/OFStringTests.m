@@ -23,7 +23,11 @@
 #import "OFArray.h"
 #import "OFURL.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFInvalidArgumentException.h"
+#import "OFInvalidEncodingException.h"
+#import "OFInvalidFormatException.h"
+#import "OFOutOfRangeException.h"
 
 #import "TestsAppDelegate.h"
 

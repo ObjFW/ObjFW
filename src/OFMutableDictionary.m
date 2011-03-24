@@ -20,7 +20,11 @@
 
 #import "OFMutableDictionary.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFEnumerationMutationException.h"
+#import "OFInvalidArgumentException.h"
+#import "OFOutOfRangeException.h"
+
 #import "macros.h"
 
 #define BUCKET struct of_dictionary_bucket

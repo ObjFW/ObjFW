@@ -19,7 +19,9 @@
 #import "OFArray.h"
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFEnumerationMutationException.h"
+#import "OFOutOfRangeException.h"
 
 #import "TestsAppDelegate.h"
 

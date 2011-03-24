@@ -27,7 +27,21 @@
 #import "OFList.h"
 #import "OFDate.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFConditionBroadcastFailedException.h"
+#import "OFConditionSignalFailedException.h"
+#import "OFConditionWaitFailedException.h"
+#import "OFConditionWaitingException.h"
+#import "OFInitializationFailedException.h"
+#import "OFInvalidArgumentException.h"
+#import "OFMutexLockedException.h"
+#import "OFMutexLockFailedException.h"
+#import "OFMutexUnlockFailedException.h"
+#import "OFNotImplementedException.h"
+#import "OFOutOfRangeException.h"
+#import "OFThreadJoinFailedException.h"
+#import "OFThreadStartFailedException.h"
+#import "OFThreadStillRunningException.h"
 
 #import "threading.h"
 

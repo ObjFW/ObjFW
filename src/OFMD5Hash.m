@@ -19,7 +19,9 @@
 #include <string.h>
 
 #import "OFMD5Hash.h"
-#import "OFExceptions.h"
+
+#import "OFHashAlreadyCalculatedException.h"
+
 #import "macros.h"
 
 /* The four MD5 core functions - F1 is optimized somewhat */

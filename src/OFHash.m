@@ -17,7 +17,8 @@
 #include "config.h"
 
 #import "OFHash.h"
-#import "OFExceptions.h"
+
+#import "OFNotImplementedException.h"
 
 @implementation OFHash
 + (size_t)digestSize

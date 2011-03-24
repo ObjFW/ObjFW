@@ -20,7 +20,9 @@
 
 #import "OFAutoreleasePool.h"
 #import "OFArray.h"
-#import "OFExceptions.h"
+
+#import "OFInitializationFailedException.h"
+#import "OFNotImplementedException.h"
 
 #ifdef OF_THREADS
 # import "threading.h"

@@ -25,12 +25,16 @@
 #import "OFDate.h"
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+#ifdef OF_THREADS
+# import "OFThread.h"
+#endif
+
+#import "OFInitializationFailedException.h"
+#import "OFInvalidArgumentException.h"
+#import "OFOutOfRangeException.h"
 
 #if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
     defined(OF_THREADS)
-# import "OFThread.h"
-
 static OFMutex *mutex;
 #endif
 

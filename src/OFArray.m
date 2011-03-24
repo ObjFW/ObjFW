@@ -22,7 +22,10 @@
 #import "OFDataArray.h"
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFEnumerationMutationException.h"
+#import "OFOutOfRangeException.h"
+
 #import "macros.h"
 
 @implementation OFArray

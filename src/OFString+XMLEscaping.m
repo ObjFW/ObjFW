@@ -21,7 +21,8 @@
 #include <string.h>
 
 #import "OFString.h"
-#import "OFExceptions.h"
+
+#import "OFOutOfMemoryException.h"
 
 int _OFString_XMLEscaping_reference;
 

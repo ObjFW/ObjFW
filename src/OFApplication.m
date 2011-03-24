@@ -25,7 +25,8 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFNotImplementedException.h"
 
 #include <string.h>
 

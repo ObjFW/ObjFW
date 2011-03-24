@@ -31,7 +31,17 @@
 
 #import "OFTCPSocket.h"
 #import "OFString.h"
-#import "OFExceptions.h"
+
+#import "OFAcceptFailedException.h"
+#import "OFAlreadyConnectedException.h"
+#import "OFAddressTranslationFailedException.h"
+#import "OFBindFailedException.h"
+#import "OFConnectionFailedException.h"
+#import "OFInvalidArgumentException.h"
+#import "OFListenFailedException.h"
+#import "OFNotConnectedException.h"
+#import "OFSetOptionFailedException.h"
+
 #import "macros.h"
 
 #ifndef INVALID_SOCKET

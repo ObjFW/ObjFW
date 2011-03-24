@@ -20,7 +20,10 @@
 
 #import "OFNumber.h"
 #import "OFString.h"
-#import "OFExceptions.h"
+
+#import "OFInvalidFormatException.h"
+#import "OFNotImplementedException.h"
+
 #import "macros.h"
 
 #define RETURN_AS(t)							\
@@ -875,8 +878,7 @@
 		return ([(OFNumber*)obj doubleValue] == [self doubleValue]
 		    ? YES : NO);
 	default:
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		return NO;
 	}
 }
 

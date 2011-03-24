@@ -16,8 +16,10 @@
 
 #include "config.h"
 
-#import "OFExceptions.h"
+#import "OFChangeFileModeFailedException.h"
 #import "OFString.h"
+
+#import "OFNotImplementedException.h"
 
 #import "common.h"
 

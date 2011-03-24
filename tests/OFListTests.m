@@ -19,7 +19,8 @@
 #import "OFList.h"
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFEnumerationMutationException.h"
 
 #import "TestsAppDelegate.h"
 

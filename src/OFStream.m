@@ -32,9 +32,13 @@
 #import "OFStream.h"
 #import "OFString.h"
 #import "OFDataArray.h"
-#import "OFExceptions.h"
-#import "macros.h"
 
+#import "OFInvalidArgumentException.h"
+#import "OFInvalidFormatException.h"
+#import "OFNotImplementedException.h"
+#import "OFSetOptionFailedException.h"
+
+#import "macros.h"
 #import "of_asprintf.h"
 
 @implementation OFStream

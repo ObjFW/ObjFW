@@ -23,7 +23,11 @@
 #import "OFArray.h"
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFEnumerationMutationException.h"
+#import "OFInvalidArgumentException.h"
+#import "OFOutOfRangeException.h"
+
 #import "macros.h"
 
 struct of_dictionary_bucket of_dictionary_deleted_bucket = {};

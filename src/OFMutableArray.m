@@ -21,7 +21,10 @@
 #import "OFMutableArray.h"
 #import "OFDataArray.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFEnumerationMutationException.h"
+#import "OFInvalidArgumentException.h"
+#import "OFOutOfRangeException.h"
 
 @implementation OFMutableArray
 - copy

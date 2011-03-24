@@ -20,7 +20,9 @@
 
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFInvalidEncodingException.h"
+
 #import "macros.h"
 
 int _OFString_XMLUnescaping_reference;

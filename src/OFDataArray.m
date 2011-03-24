@@ -23,7 +23,13 @@
 #import "OFDataArray.h"
 #import "OFString.h"
 #import "OFFile.h"
-#import "OFExceptions.h"
+
+#import "OFInvalidArgumentException.h"
+#import "OFInvalidEncodingException.h"
+#import "OFNotImplementedException.h"
+#import "OFOutOfMemoryException.h"
+#import "OFOutOfRangeException.h"
+
 #import "base64.h"
 #import "macros.h"
 

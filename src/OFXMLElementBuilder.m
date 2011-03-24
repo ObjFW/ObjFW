@@ -23,7 +23,8 @@
 #import "OFXMLParser.h"
 #import "OFMutableArray.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFMalformedXMLException.h"
 
 @implementation OFXMLElementBuilder
 + elementBuilder

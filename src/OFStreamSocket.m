@@ -26,7 +26,10 @@
 #endif
 
 #import "OFStreamSocket.h"
-#import "OFExceptions.h"
+
+#import "OFNotConnectedException.h"
+#import "OFReadFailedException.h"
+#import "OFWriteFailedException.h"
 
 #ifndef INVALID_SOCKET
 # define INVALID_SOCKET -1

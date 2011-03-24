@@ -37,9 +37,16 @@
 #import "OFURL.h"
 #import "OFHTTPRequest.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
-#import "macros.h"
 
+#import "OFHTTPRequestFailedException.h"
+#import "OFInitializationFailedException.h"
+#import "OFInvalidArgumentException.h"
+#import "OFInvalidEncodingException.h"
+#import "OFInvalidFormatException.h"
+#import "OFOutOfMemoryException.h"
+#import "OFOutOfRangeException.h"
+
+#import "macros.h"
 #import "of_asprintf.h"
 #import "unicode.h"
 

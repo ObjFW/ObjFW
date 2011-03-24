@@ -25,7 +25,10 @@
 #import "OFDictionary.h"
 #import "OFXMLAttribute.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFInvalidArgumentException.h"
+#import "OFNotImplementedException.h"
+#import "OFUnboundNamespaceException.h"
 
 @implementation OFXMLElement
 + elementWithName: (OFString*)name_

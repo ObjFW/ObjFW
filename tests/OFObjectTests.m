@@ -18,7 +18,9 @@
 
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFMemoryNotPartOfObjectException.h"
+#import "OFOutOfMemoryException.h"
 
 #import "TestsAppDelegate.h"
 

@@ -31,7 +31,8 @@
 #import "OFStream.h"
 #import "OFNumber.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFOutOfRangeException.h"
 
 @implementation OFStreamObserver
 + observer

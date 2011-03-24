@@ -30,7 +30,13 @@
 #endif
 
 #import "OFString.h"
-#import "OFExceptions.h"
+
+#import "OFInvalidArgumentException.h"
+#import "OFInvalidEncodingException.h"
+#import "OFInvalidFormatException.h"
+#import "OFOutOfMemoryException.h"
+#import "OFOutOfRangeException.h"
+
 #import "macros.h"
 
 #import "of_asprintf.h"

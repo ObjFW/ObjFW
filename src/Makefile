@@ -51,7 +51,6 @@ SRCS = OFApplication.m		\
 
 INCLUDES := ${SRCS:.m=.h}	\
 	    OFCollection.h	\
-	    OFExceptions.h	\
 	    ObjFW.h		\
 	    asprintf.h		\
 	    ${ATOMIC_H}		\

@@ -17,7 +17,8 @@
 #include "config.h"
 
 #import "OFConstantString.h"
-#import "OFExceptions.h"
+
+#import "OFNotImplementedException.h"
 
 #ifdef OF_APPLE_RUNTIME
 # import <objc/runtime.h>

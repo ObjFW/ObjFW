@@ -19,7 +19,9 @@
 #include <string.h>
 
 #import "OFSHA1Hash.h"
-#import "OFExceptions.h"
+
+#import "OFHashAlreadyCalculatedException.h"
+
 #import "macros.h"
 
 /* blk0() and blk() perform the initial expand. */

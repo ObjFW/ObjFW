@@ -24,7 +24,16 @@
 
 #import "OFObject.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFAllocFailedException.h"
+#import "OFEnumerationMutationException.h"
+#import "OFInitializationFailedException.h"
+#import "OFInvalidArgumentException.h"
+#import "OFMemoryNotPartOfObjectException.h"
+#import "OFNotImplementedException.h"
+#import "OFOutOfMemoryException.h"
+#import "OFOutOfRangeException.h"
+
 #import "macros.h"
 
 #if defined(OF_OBJFW_RUNTIME)

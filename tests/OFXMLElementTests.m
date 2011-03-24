@@ -20,7 +20,6 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
 
 #import "TestsAppDelegate.h"
 

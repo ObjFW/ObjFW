@@ -24,7 +24,13 @@
 #import "OFTCPSocket.h"
 #import "OFDictionary.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFHTTPRequestFailedException.h"
+#import "OFInvalidServerReplyException.h"
+#import "OFOutOfRangeException.h"
+#import "OFTruncatedDataException.h"
+#import "OFUnsupportedProtocolException.h"
+
 #import "macros.h"
 
 Class of_http_request_tls_socket_class = Nil;

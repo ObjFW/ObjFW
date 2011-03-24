@@ -23,7 +23,8 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFMalformedXMLException.h"
 
 #import "TestsAppDelegate.h"
 

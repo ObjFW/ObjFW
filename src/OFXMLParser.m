@@ -29,7 +29,11 @@
 #import "OFStream.h"
 #import "OFFile.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFInitializationFailedException.h"
+#import "OFMalformedXMLException.h"
+#import "OFUnboundNamespaceException.h"
+
 #import "macros.h"
 
 typedef void (*state_function)(id, SEL, const char*, size_t*, size_t*);

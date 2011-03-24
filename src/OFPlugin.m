@@ -26,7 +26,9 @@
 #import "OFPlugin.h"
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFInitializationFailedException.h"
+#import "OFNotImplementedException.h"
 
 #ifdef _WIN32
 # define dlopen(file, mode) LoadLibrary(file)

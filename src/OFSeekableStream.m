@@ -15,7 +15,8 @@
  */
 
 #import "OFSeekableStream.h"
-#import "OFExceptions.h"
+
+#import "OFNotImplementedException.h"
 
 @implementation OFSeekableStream
 - (void)_seekToOffset: (off_t)offset

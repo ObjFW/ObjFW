@@ -17,7 +17,8 @@
 #include "config.h"
 
 #import "OFEnumerator.h"
-#import "OFExceptions.h"
+
+#import "OFNotImplementedException.h"
 
 @implementation OFEnumerator
 - init

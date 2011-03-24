@@ -40,7 +40,23 @@
 #import "OFDate.h"
 #import "OFApplication.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFChangeDirectoryFailedException.h"
+#import "OFChangeFileModeFailedException.h"
+#import "OFChangeFileOwnerFailedException.h"
+#import "OFCreateDirectoryFailedException.h"
+#import "OFDeleteDirectoryFailedException.h"
+#import "OFDeleteFileFailedException.h"
+#import "OFInvalidArgumentException.h"
+#import "OFLinkFailedException.h"
+#import "OFNotImplementedException.h"
+#import "OFOpenFileFailedException.h"
+#import "OFReadFailedException.h"
+#import "OFRenameFileFailedException.h"
+#import "OFSeekFailedException.h"
+#import "OFSymlinkFailedException.h"
+#import "OFWriteFailedException.h"
+
 #import "macros.h"
 
 #ifdef _WIN32

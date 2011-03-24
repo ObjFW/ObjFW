@@ -21,7 +21,9 @@
 #include <ctype.h>
 
 #import "OFString+URLEncoding.h"
-#import "OFExceptions.h"
+
+#import "OFInvalidEncodingException.h"
+#import "OFOutOfMemoryException.h"
 
 /* Reference for static linking */
 int _OFString_URLEncoding_reference;

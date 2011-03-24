@@ -22,7 +22,8 @@
 #import "OFString.h"
 #import "OFFile.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFHashAlreadyCalculatedException.h"
 
 #import "TestsAppDelegate.h"
 

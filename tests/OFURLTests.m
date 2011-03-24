@@ -19,7 +19,8 @@
 #import "OFURL.h"
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFInvalidFormatException.h"
 
 #import "TestsAppDelegate.h"
 

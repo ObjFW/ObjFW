@@ -21,7 +21,9 @@
 #import "OFList.h"
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
-#import "OFExceptions.h"
+
+#import "OFEnumerationMutationException.h"
+
 #import "macros.h"
 
 @implementation OFList
