@@ -16,17 +16,44 @@
 
 #import "OFException.h"
 
+@class OFTCPSocket;
+
 /**
  * \brief An exception indicating that accepting a connection failed.
  */
 @interface OFAcceptFailedException: OFException
 {
+	OFTCPSocket *socket;
 	int errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFTCPSocket *socket;
 @property (readonly) int errNo;
 #endif
+
+/**
+ * \param class_ The class of the object which caused the exception
+ * \param socket The socket which could not accept a connection
+ * \return A new accept failed exception
+ */
++ newWithClass: (Class)class_
+	socket: (OFTCPSocket*)socket;
+
+/**
+ * Initializes an already allocated accept failed exception.
+ *
+ * \param class_ The class of the object which caused the exception
+ * \param socket The socket which could not accept a connection
+ * \return An initialized accept failed exception
+ */
+- initWithClass: (Class)class_
+	 socket: (OFTCPSocket*)socket;
+
+/**
+ * \return The socket which could not accept a connection
+ */
+- (OFTCPSocket*)socket;
 
 /**
  * \return The errno from when the exception was created

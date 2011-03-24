@@ -16,8 +16,40 @@
 
 #import "OFException.h"
 
+@class OFStreamSocket;
+
 /**
  * \brief An exception indicating a socket is not connected or bound.
  */
 @interface OFNotConnectedException: OFException
+{
+	OFStreamSocket *socket;
+}
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFStreamSocket *socket;
+#endif
+
+/**
+ * \param class_ The class of the object which caused the exception
+ * \param socket The socket which is not connected
+ * \return A new not connected exception
+ */
++ newWithClass: (Class)class_
+	socket: (OFStreamSocket*)socket;
+
+/**
+ * Initializes an already allocated not connected exception.
+ *
+ * \param class_ The class of the object which caused the exception
+ * \param socket The socket which is not connected
+ * \return An initialized not connected exception
+ */
+- initWithClass: (Class)class_
+	 socket: (OFStreamSocket*)socket;
+
+/**
+ * \return The socket which is not connected
+ */
+- (OFStreamSocket*)socket;
 @end

@@ -25,10 +25,12 @@
 
 @implementation OFBindFailedException
 + newWithClass: (Class)class_
+	socket: (OFTCPSocket*)socket
 	  host: (OFString*)host
 	  port: (uint16_t)port
 {
 	return [[self alloc] initWithClass: class_
+				    socket: socket
 				      host: host
 				      port: port];
 }
@@ -42,15 +44,17 @@
 }
 
 - initWithClass: (Class)class_
+	 socket: (OFTCPSocket*)socket_
 	   host: (OFString*)host_
 	   port: (uint16_t)port_
 {
 	self = [super initWithClass: class_];
 
 	@try {
-		host  = [host_ copy];
-		port  = port_;
-		errNo = GET_SOCK_ERRNO;
+		socket = [socket_ retain];
+		host   = [host_ copy];
+		port   = port_;
+		errNo  = GET_SOCK_ERRNO;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -61,6 +65,7 @@
 
 - (void)dealloc
 {
+	[socket release];
 	[host release];
 
 	[super dealloc];
@@ -78,9 +83,9 @@
 	return description;
 }
 
-- (int)errNo
+- (OFTCPSocket*)socket
 {
-	return errNo;
+	return socket;
 }
 
 - (OFString*)host
@@ -91,5 +96,10 @@
 - (uint16_t)port
 {
 	return port;
+}
+
+- (int)errNo
+{
+	return errNo;
 }
 @end

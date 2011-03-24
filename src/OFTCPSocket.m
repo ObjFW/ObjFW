@@ -82,7 +82,8 @@ static OFMutex *mutex = nil;
 	       onPort: (uint16_t)port
 {
 	if (sock != INVALID_SOCKET)
-		@throw [OFAlreadyConnectedException newWithClass: isa];
+		@throw [OFAlreadyConnectedException newWithClass: isa
+							  socket: self];
 
 #ifdef HAVE_THREADSAFE_GETADDRINFO
 	struct addrinfo hints, *res, *res0;
@@ -95,6 +96,7 @@ static OFMutex *mutex = nil;
 
 	if (getaddrinfo([host cString], port_s, &hints, &res0))
 		@throw [OFAddressTranslationFailedException newWithClass: isa
+								  socket: self
 								    host: host];
 
 	for (res = res0; res != NULL; res = res->ai_next) {
@@ -144,6 +146,7 @@ static OFMutex *mutex = nil;
 		[mutex unlock];
 # endif
 		@throw [OFConnectionFailedException newWithClass: isa
+							  socket: self
 							    host: host
 							    port: port];
 	}
@@ -187,6 +190,7 @@ static OFMutex *mutex = nil;
 
 	if (sock == INVALID_SOCKET)
 		@throw [OFConnectionFailedException newWithClass: isa
+							  socket: self
 							    host: host
 							    port: port];
 }
@@ -195,7 +199,8 @@ static OFMutex *mutex = nil;
 	    onHost: (OFString*)host
 {
 	if (sock != INVALID_SOCKET)
-		@throw [OFAlreadyConnectedException newWithClass: isa];
+		@throw [OFAlreadyConnectedException newWithClass: isa
+							  socket: self];
 
 #ifdef HAVE_THREADSAFE_GETADDRINFO
 	struct addrinfo hints, *res;
@@ -208,10 +213,12 @@ static OFMutex *mutex = nil;
 
 	if (getaddrinfo([host cString], port_s, &hints, &res))
 		@throw [OFAddressTranslationFailedException newWithClass: isa
+								  socket: self
 								    host: host];
 
 	if ((sock = socket(res->ai_family, SOCK_STREAM, 0)) == INVALID_SOCKET)
 		@throw [OFBindFailedException newWithClass: isa
+						    socket: self
 						      host: host
 						      port: port];
 
@@ -220,6 +227,7 @@ static OFMutex *mutex = nil;
 		close(sock);
 		sock = INVALID_SOCKET;
 		@throw [OFBindFailedException newWithClass: isa
+						    socket: self
 						      host: host
 						      port: port];
 	}
@@ -276,10 +284,12 @@ static OFMutex *mutex = nil;
 - (void)listenWithBackLog: (int)backlog
 {
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: isa];
+		@throw [OFNotConnectedException newWithClass: isa
+						      socket: self];
 
 	if (listen(sock, backlog) == -1)
 		@throw [OFListenFailedException newWithClass: isa
+						      socket: self
 						     backLog: backlog];
 
 	listening = YES;
@@ -288,10 +298,12 @@ static OFMutex *mutex = nil;
 - (void)listen
 {
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: isa];
+		@throw [OFNotConnectedException newWithClass: isa
+						      socket: self];
 
 	if (listen(sock, 5) == -1)
 		@throw [OFListenFailedException newWithClass: isa
+						      socket: self
 						     backLog: 5];
 
 	listening = YES;
@@ -316,7 +328,8 @@ static OFMutex *mutex = nil;
 
 	if ((s = accept(sock, addr, &addrlen)) == INVALID_SOCKET) {
 		[newsock release];
-		@throw [OFAcceptFailedException newWithClass: isa];
+		@throw [OFAcceptFailedException newWithClass: isa
+						      socket: self];
 	}
 
 	newsock->sock = s;
@@ -386,13 +399,5 @@ static OFMutex *mutex = nil;
 	[self freeMemory: sockAddr];
 	sockAddr = NULL;
 	sockAddrLen = 0;
-}
-
-- (void)dealloc
-{
-	if (sock != INVALID_SOCKET)
-		[self close];
-
-	[super dealloc];
 }
 @end

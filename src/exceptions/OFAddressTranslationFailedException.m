@@ -23,9 +23,11 @@
 
 @implementation OFAddressTranslationFailedException
 + newWithClass: (Class)class_
+	socket: (OFTCPSocket*)socket
 	  host: (OFString*)host
 {
 	return [[self alloc] initWithClass: class_
+				    socket: socket
 				      host: host];
 }
 
@@ -39,13 +41,15 @@
 }
 
 - initWithClass: (Class)class_
+	 socket: (OFTCPSocket*)socket_
 	   host: (OFString*)host_
 {
 	self = [super initWithClass: class_];
 
 	@try {
-		host  = [host_ copy];
-		errNo = GET_AT_ERRNO;
+		socket = [socket_ retain];
+		host   = [host_ copy];
+		errNo  = GET_AT_ERRNO;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -56,6 +60,7 @@
 
 - (void)dealloc
 {
+	[socket release];
 	[host release];
 
 	[super dealloc];
@@ -81,13 +86,18 @@
 	return description;
 }
 
-- (int)errNo
+- (OFTCPSocket*)socket
 {
-	return errNo;
+	return socket;
 }
 
 - (OFString*)host
 {
 	return host;
+}
+
+- (int)errNo
+{
+	return errNo;
 }
 @end

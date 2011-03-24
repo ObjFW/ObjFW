@@ -69,7 +69,8 @@
 	ssize_t ret;
 
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: isa];
+		@throw [OFNotConnectedException newWithClass: isa
+						      socket: self];
 
 	if (eos) {
 		OFReadFailedException *e;
@@ -101,7 +102,8 @@
 	ssize_t ret;
 
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: isa];
+		@throw [OFNotConnectedException newWithClass: isa
+						      socket: self];
 
 	if (eos) {
 		OFWriteFailedException *e;
@@ -144,12 +146,21 @@
 - (void)close
 {
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: isa];
+		@throw [OFNotConnectedException newWithClass: isa
+						      socket: self];
 
 	close(sock);
 
 	sock = INVALID_SOCKET;
 	eos = NO;
 	listening = NO;
+}
+
+- (void)dealloc
+{
+	if (sock != INVALID_SOCKET)
+		[self close];
+
+	[super dealloc];
 }
 @end

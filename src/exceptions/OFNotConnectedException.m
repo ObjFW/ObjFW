@@ -20,6 +20,35 @@
 #import "OFString.h"
 
 @implementation OFNotConnectedException
++ newWithClass: (Class)class_
+	socket: (OFStreamSocket*)socket
+{
+	return [[self alloc] initWithClass: class_
+				    socket: socket];
+}
+
+- initWithClass: (Class)class_
+	 socket: (OFStreamSocket*)socket_
+{
+	self = [super initWithClass: class_];
+
+	@try {
+		socket = [socket_ retain];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[socket release];
+
+	[super dealloc];
+}
+
 - (OFString*)description
 {
 	if (description != nil)
@@ -29,5 +58,10 @@
 	    @"The socket of type %@ is not connected or bound!", inClass];
 
 	return description;
+}
+
+- (OFStreamSocket*)socket
+{
+	return socket;
 }
 @end

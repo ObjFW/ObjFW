@@ -16,45 +16,58 @@
 
 #import "OFException.h"
 
+@class OFTCPSocket;
+
 /**
  * \brief An exception indicating the translation of an address failed.
  */
 @interface OFAddressTranslationFailedException: OFException
 {
-	OFString *host;
-	int	 errNo;
+	OFTCPSocket *socket;
+	OFString    *host;
+	int	    errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFTCPSocket *socket;
 @property (readonly, nonatomic) OFString *host;
 @property (readonly) int errNo;
 #endif
 
 /**
  * \param class_ The class of the object which caused the exception
+ * \param socket The socket which could not translate the address
  * \param host The host for which translation was requested
  * \return A new address translation failed exception
  */
 + newWithClass: (Class)class_
+	socket: (OFTCPSocket*)socket
 	  host: (OFString*)host;
 
 /**
  * Initializes an already allocated address translation failed exception.
  *
  * \param class_ The class of the object which caused the exception
+ * \param socket The socket which could not translate the address
  * \param host The host for which translation was requested
  * \return An initialized address translation failed exception
  */
 - initWithClass: (Class)class_
+	 socket: (OFTCPSocket*)socket
 	   host: (OFString*)host;
 
 /**
- * \return The errno from when the exception was created
+ * \return The socket which could not translate the address
  */
-- (int)errNo;
+- (OFTCPSocket*)socket;
 
 /**
  * /return The host for which translation was requested
  */
 - (OFString*)host;
+
+/**
+ * \return The errno from when the exception was created
+ */
+- (int)errNo;
 @end

@@ -16,9 +16,41 @@
 
 #import "OFException.h"
 
+@class OFTCPSocket;
+
 /**
  * \brief An exception indicating an attempt to connect or bind an already
  *        connected or bound socket.
  */
 @interface OFAlreadyConnectedException: OFException
+{
+	OFTCPSocket *socket;
+}
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFTCPSocket *socket;
+#endif
+
+/**
+ * \param class_ The class of the object which caused the exception
+ * \param socket The socket which is already connected
+ * \return A new already connected exception
+ */
++ newWithClass: (Class)class_
+	socket: (OFTCPSocket*)socket;
+
+/**
+ * Initializes an already allocated already connected exception.
+ *
+ * \param class_ The class of the object which caused the exception
+ * \param socket The socket which is already connected
+ * \return An initialized already connected exception
+ */
+- initWithClass: (Class)class_
+	 socket: (OFTCPSocket*)socket;
+
+/**
+ * \return The socket which is already connected
+ */
+- (OFTCPSocket*)socket;
 @end

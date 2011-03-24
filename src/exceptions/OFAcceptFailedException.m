@@ -22,13 +22,34 @@
 #import "common.h"
 
 @implementation OFAcceptFailedException
++ newWithClass: (Class)class_
+	socket: (OFTCPSocket*)socket
+{
+	return [[self alloc] initWithClass: class_
+				    socket: socket];
+}
+
 - initWithClass: (Class)class_
+	 socket: (OFTCPSocket*)socket_
 {
 	self = [super initWithClass: class_];
 
-	errNo = GET_SOCK_ERRNO;
+	@try {
+		socket = [socket_ retain];
+		errNo = GET_SOCK_ERRNO;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
+}
+
+- (void)dealloc
+{
+	[socket release];
+
+	[super dealloc];
 }
 
 - (OFString*)description
@@ -41,6 +62,11 @@
 	    inClass, ERRPARAM];
 
 	return description;
+}
+
+- (OFTCPSocket*)socket
+{
+	return socket;
 }
 
 - (int)errNo

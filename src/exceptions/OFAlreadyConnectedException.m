@@ -20,6 +20,35 @@
 #import "OFString.h"
 
 @implementation OFAlreadyConnectedException
++ newWithClass: (Class)class_
+	socket: (OFTCPSocket*)socket
+{
+	return [[self alloc] initWithClass: class_
+				    socket: socket];
+}
+
+- initWithClass: (Class)class_
+	 socket: (OFTCPSocket*)socket_
+{
+	self = [super initWithClass: class_];
+
+	@try {
+		socket = [socket_ retain];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[socket release];
+
+	[super dealloc];
+}
+
 - (OFString*)description
 {
 	if (description != nil)
@@ -30,5 +59,10 @@
 	    @"can't be connected or bound again!", inClass];
 
 	return description;
+}
+
+- (OFTCPSocket*)socket
+{
+	return socket;
 }
 @end

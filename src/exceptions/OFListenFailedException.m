@@ -25,9 +25,11 @@
 
 @implementation OFListenFailedException
 + newWithClass: (Class)class_
+	socket: (OFTCPSocket*)socket
        backLog: (int)backlog
 {
 	return [[self alloc] initWithClass: class_
+				    socket: socket
 				   backLog: backlog];
 }
 
@@ -40,14 +42,28 @@
 }
 
 - initWithClass: (Class)class_
+	 socket: (OFTCPSocket*)socket_
 	backLog: (int)backlog
 {
 	self = [super initWithClass: class_];
 
-	backLog = backlog;
-	errNo = GET_SOCK_ERRNO;
+	@try {
+		socket = [socket_ retain];
+		backLog = backlog;
+		errNo = GET_SOCK_ERRNO;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
+}
+
+- (void)dealloc
+{
+	[socket release];
+
+	[super dealloc];
 }
 
 - (OFString*)description
@@ -62,13 +78,18 @@
 	return description;
 }
 
-- (int)errNo
+- (OFTCPSocket*)socket
 {
-	return errNo;
+	return socket;
 }
 
 - (int)backLog
 {
 	return backLog;
+}
+
+- (int)errNo
+{
+	return errNo;
 }
 @end
