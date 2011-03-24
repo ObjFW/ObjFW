@@ -1,5 +1,7 @@
 include ../extra.mk
 
+SUBDIRS = exceptions
+
 LIB = ${OBJFW_SHARED_LIB}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
@@ -14,7 +16,6 @@ SRCS = OFApplication.m		\
        OFDataArray+Hashing.m	\
        OFDate.m			\
        OFDictionary.m		\
-       OFExceptions.m		\
        OFFile.m			\
        OFHash.m			\
        OFHTTPRequest.m		\
@@ -50,6 +51,7 @@ SRCS = OFApplication.m		\
 
 INCLUDES := ${SRCS:.m=.h}	\
 	    OFCollection.h	\
+	    OFExceptions.h	\
 	    ObjFW.h		\
 	    asprintf.h		\
 	    ${ATOMIC_H}		\
@@ -66,6 +68,9 @@ SRCS += ${ASPRINTF_M} 		\
 
 include ../buildsys.mk
 
-CPPFLAGS += -I..
+CPPFLAGS += -I. -I.. -Iexceptions
 LD = ${OBJC}
 LDFLAGS += ${REEXPORT_LIBOBJC} ${MACH_ALIAS_LIST}
+
+LIB_OBJS += ${EXCEPTIONS_EXCEPTIONS_LIB_A}
+OBJS += ${EXCEPTIONS_EXCEPTIONS_A}

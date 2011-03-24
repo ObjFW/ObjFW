@@ -177,17 +177,21 @@ AC_CHECK_FUNC(objc_enumerationMutation, [
 		[Whether we have objc_enumerationMutation])
 ])
 
+AC_PATH_TOOL(AR, ar)
+AC_PROG_RANLIB
 AC_ARG_ENABLE(shared,
 	AS_HELP_STRING([--disable-shared], [don't build shared library]))
 AS_IF([test x"$enable_shared" != x"no"], [
 	BUILDSYS_SHARED_LIB
 	AC_SUBST(OBJFW_SHARED_LIB, "${LIB_PREFIX}objfw${LIB_SUFFIX}")
+	AC_SUBST(EXCEPTIONS_LIB_A, "exceptions.lib.a")
+	AC_SUBST(EXCEPTIONS_EXCEPTIONS_LIB_A, "exceptions/exceptions.lib.a")
 ])
 AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
 AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
-	AC_REQUIRE([AC_PROG_RANLIB])
-	AC_PATH_TOOL(AR, ar)
 	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
+	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
+	AC_SUBST(EXCEPTIONS_EXCEPTIONS_A, "exceptions/exceptions.a")
 ])
 
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
