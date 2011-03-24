@@ -181,6 +181,7 @@
 	    withPrefix: (OFString*)prefix
 	     namespace: (OFString*)ns
 {
-	@throw [OFMalformedXMLException newWithClass: [builder class]];
+	@throw [OFMalformedXMLException newWithClass: [builder class]
+					      parser: nil];
 }
 @end

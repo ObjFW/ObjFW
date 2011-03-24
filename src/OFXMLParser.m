@@ -280,7 +280,8 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 	if (finishedParsing && buf[*i] != ' ' && buf[*i] != '\t' &&
 	    buf[*i] != '\n' && buf[*i] != '\r' && buf[*i] != '<')
-		@throw [OFMalformedXMLException newWithClass: isa];
+		@throw [OFMalformedXMLException newWithClass: isa
+						      parser: self];
 
 	if (buf[*i] != '<')
 		return;
@@ -319,7 +320,8 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 			     last: (size_t*)last
 {
 	if (finishedParsing && buf[*i] != '!')
-		@throw [OFMalformedXMLException newWithClass: isa];
+		@throw [OFMalformedXMLException newWithClass: isa
+						      parser: self];
 
 	switch (buf[*i]) {
 		case '?':
@@ -505,7 +507,8 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	}
 
 	if (![[previous lastObject] isEqual: cache])
-		@throw [OFMalformedXMLException newWithClass: isa];
+		@throw [OFMalformedXMLException newWithClass: isa
+						      parser: self];
 
 	[previous removeNObjects: 1];
 
@@ -672,7 +675,8 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		return;
 
 	if (buf[*i] != '\'' && buf[*i] != '"')
-		@throw [OFMalformedXMLException newWithClass: isa];
+		@throw [OFMalformedXMLException newWithClass: isa
+						      parser: self];
 
 	delim = buf[*i];
 	state = OF_XMLPARSER_IN_ATTR_VALUE;
@@ -731,7 +735,8 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		*last = *i + 1;
 		state = OF_XMLPARSER_OUTSIDE_TAG;
 	} else
-		@throw [OFMalformedXMLException newWithClass: isa];
+		@throw [OFMalformedXMLException newWithClass: isa
+						      parser: self];
 }
 
 /* Expecting closing '>' or space */
@@ -744,7 +749,8 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		state = OF_XMLPARSER_OUTSIDE_TAG;
 	} else if (buf[*i] != ' ' && buf[*i] != '\t' && buf[*i] != '\n' &&
 	    buf[*i] != '\r')
-		@throw [OFMalformedXMLException newWithClass: isa];
+		@throw [OFMalformedXMLException newWithClass: isa
+						      parser: self];
 }
 
 /* In <! */
@@ -753,7 +759,8 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 				     last: (size_t*)last
 {
 	if (finishedParsing && buf[*i] != '-')
-		@throw [OFMalformedXMLException newWithClass: isa];
+		@throw [OFMalformedXMLException newWithClass: isa
+						      parser: self];
 
 	if (buf[*i] == '-')
 		state = OF_XMLPARSER_IN_COMMENT_OPENING;
@@ -764,7 +771,8 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		state = OF_XMLPARSER_IN_DOCTYPE;
 		level = 0;
 	} else
-		@throw [OFMalformedXMLException newWithClass: isa];
+		@throw [OFMalformedXMLException newWithClass: isa
+						      parser: self];
 
 	*last = *i + 1;
 }
@@ -775,7 +783,8 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 				  last: (size_t*)last
 {
 	if (buf[*i] != "CDATA["[level])
-		@throw [OFMalformedXMLException newWithClass: isa];
+		@throw [OFMalformedXMLException newWithClass: isa
+						      parser: self];
 
 	if (++level == 6) {
 		state = OF_XMLPARSER_IN_CDATA_1;
@@ -852,7 +861,8 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 				    last: (size_t*)last
 {
 	if (buf[*i] != '-')
-		@throw [OFMalformedXMLException newWithClass: isa];
+		@throw [OFMalformedXMLException newWithClass: isa
+						      parser: self];
 
 	*last = *i + 1;
 	state = OF_XMLPARSER_IN_COMMENT_1;
@@ -881,7 +891,8 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	size_t len;
 
 	if (buf[*i] != '>')
-		@throw [OFMalformedXMLException newWithClass: isa];
+		@throw [OFMalformedXMLException newWithClass: isa
+						      parser: self];
 
 	pool = [[OFAutoreleasePool alloc] init];
 
@@ -924,7 +935,8 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 	if ((level < 6 && buf[*i] != "OCTYPE"[level]) ||
 	    (level == 6 && buf[*i] != ' ' && buf[*i] != '\t' &&
 	    buf[*i] != '\n' && buf[*i] != '\r'))
-		@throw [OFMalformedXMLException newWithClass: isa];
+		@throw [OFMalformedXMLException newWithClass: isa
+						      parser: self];
 
 	if (level < 7 || buf[*i] == '<')
 		level++;

@@ -19,7 +19,46 @@
 #import "OFMalformedXMLException.h"
 #import "OFString.h"
 
+#import "OFNotImplementedException.h"
+
 @implementation OFMalformedXMLException
++ newWithClass: (Class)class_
+	parser: (OFXMLParser*)parser
+{
+	return [[self alloc] initWithClass: class_
+				    parser: parser];
+}
+
+- initWithClass: (Class)class_
+{
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class_
+	 parser: (OFXMLParser*)parser_
+{
+	self = [super initWithClass: class_];
+
+	@try {
+		parser = [parser_ retain];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[parser release];
+
+	[super dealloc];
+}
+
 - (OFString*)description
 {
 	if (description != nil)
@@ -29,5 +68,10 @@
 	    @"The parser in class %@ encountered malformed XML!", inClass];
 
 	return description;
+}
+
+- (OFXMLParser*)parser
+{
+	return parser;
 }
 @end
