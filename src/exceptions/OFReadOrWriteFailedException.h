@@ -16,46 +16,59 @@
 
 #import "OFException.h"
 
+@class OFStream;
+
 /**
  * \brief An exception indicating a read or write to a stream failed.
  */
 @interface OFReadOrWriteFailedException: OFException
 {
-	size_t requestedSize;
+	OFStream *stream;
+	size_t	 requestedSize;
 @public
-	int    errNo;
+	int	 errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFStream *stream;
 @property (readonly) size_t requestedSize;
 @property (readonly) int errNo;
 #endif
 
 /**
  * \param class_ The class of the object which caused the exception
+ * \param stream The stream which caused the read or write failed exception
  * \param size The requested size of the data that couldn't be read / written
  * \return A new open file failed exception
  */
 +  newWithClass: (Class)class_
+	 stream: (OFStream*)stream
   requestedSize: (size_t)size;
 
 /**
  * Initializes an already allocated read or write failed exception.
  *
  * \param class_ The class of the object which caused the exception
+ * \param stream The stream which caused the read or write failed exception
  * \param size The requested size of the data that couldn't be read / written
  * \return A new open file failed exception
  */
 - initWithClass: (Class)class_
+	 stream: (OFStream*)stream
   requestedSize: (size_t)size;
 
 /**
- * \return The errno from when the exception was created
+ * \return The stream which caused the read or write failed exception
  */
-- (int)errNo;
+- (OFStream*)stream;
 
 /**
  * \return The requested size of the data that couldn't be read / written
  */
 - (size_t)requestedSize;
+
+/**
+ * \return The errno from when the exception was created
+ */
+- (int)errNo;
 @end

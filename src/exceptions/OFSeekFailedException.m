@@ -19,16 +19,47 @@
 #import "OFSeekFailedException.h"
 #import "OFString.h"
 
+#import "OFNotImplementedException.h"
+
 #import "common.h"
 
 @implementation OFSeekFailedException
++ newWithClass: (Class)class_
+	stream: (OFSeekableStream*)stream
+{
+	return [[self alloc] initWithClass: class_
+				    stream: stream];
+}
+
 - initWithClass: (Class)class_
+{
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class_
+	 stream: (OFSeekableStream*)stream_
 {
 	self = [super initWithClass: class_];
 
-	errNo = GET_ERRNO;
+	@try {
+		stream = [stream_ retain];
+		errNo = GET_ERRNO;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
+}
+
+- (void)dealloc
+{
+	[stream	release];
+
+	[super dealloc];
 }
 
 - (OFString*)description
@@ -40,6 +71,11 @@
 	    @"Seeking failed in class %@! " ERRFMT, inClass, ERRPARAM];
 
 	return description;
+}
+
+- (OFSeekableStream*)stream
+{
+	return stream;
 }
 
 - (int)errNo

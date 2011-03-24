@@ -76,6 +76,7 @@
 		OFReadFailedException *e;
 
 		e = [OFReadFailedException newWithClass: isa
+						 stream: self
 					  requestedSize: size];
 #ifndef _WIN32
 		e->errNo = ENOTCONN;
@@ -88,6 +89,7 @@
 
 	if ((ret = recv(sock, buf, size, 0)) < 0)
 		@throw [OFReadFailedException newWithClass: isa
+						    stream: self
 					     requestedSize: size];
 
 	if (ret == 0)
@@ -109,6 +111,7 @@
 		OFWriteFailedException *e;
 
 		e = [OFWriteFailedException newWithClass: isa
+						  stream: self
 					   requestedSize: size];
 #ifndef _WIN32
 		e->errNo = ENOTCONN;
@@ -121,6 +124,7 @@
 
 	if ((ret = send(sock, buf, size, 0)) == -1)
 		@throw [OFWriteFailedException newWithClass: isa
+						     stream: self
 					      requestedSize: size];
 
 	/* This is safe, as we already checked for -1 */
@@ -134,7 +138,8 @@
 	isBlocking = enable;
 
 	if (ioctlsocket(sock, FIONBIO, &v) == SOCKET_ERROR)
-		@throw [OFSetOptionFailedException newWithClass: isa];
+		@throw [OFSetOptionFailedException newWithClass: isa
+							 stream: stream];
 }
 #endif
 

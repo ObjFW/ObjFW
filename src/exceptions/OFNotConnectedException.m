@@ -19,12 +19,22 @@
 #import "OFNotConnectedException.h"
 #import "OFString.h"
 
+#import "OFNotImplementedException.h"
+
 @implementation OFNotConnectedException
 + newWithClass: (Class)class_
 	socket: (OFStreamSocket*)socket
 {
 	return [[self alloc] initWithClass: class_
 				    socket: socket];
+}
+
+- initWithClass: (Class)class_
+{
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
 }
 
 - initWithClass: (Class)class_

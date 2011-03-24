@@ -716,7 +716,8 @@
 	isBlocking = enable;
 
 	if ((flags = fcntl([self fileDescriptor], F_GETFL)) == -1)
-		@throw [OFSetOptionFailedException newWithClass: isa];
+		@throw [OFSetOptionFailedException newWithClass: isa
+							 stream: self];
 
 	if (enable)
 		flags &= ~O_NONBLOCK;
@@ -724,7 +725,8 @@
 		flags |= O_NONBLOCK;
 
 	if (fcntl([self fileDescriptor], F_SETFL, flags) == -1)
-		@throw [OFSetOptionFailedException newWithClass: isa];
+		@throw [OFSetOptionFailedException newWithClass: isa
+							 stream: self];
 #else
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];

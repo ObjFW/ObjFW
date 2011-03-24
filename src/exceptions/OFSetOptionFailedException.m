@@ -19,7 +19,46 @@
 #import "OFSetOptionFailedException.h"
 #import "OFString.h"
 
+#import "OFNotImplementedException.h"
+
 @implementation OFSetOptionFailedException
++ newWithClass: (Class)class_
+	stream: (OFStream*)stream
+{
+	return [[self alloc] initWithClass: class_
+				    stream: stream];
+}
+
+- initWithClass: (Class)class_
+{
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class_
+	 stream: (OFStream*)stream_
+{
+	self = [super initWithClass: class_];
+
+	@try {
+		stream = [stream_ retain];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[stream release];
+
+	[super dealloc];
+}
+
 - (OFString*)description
 {
 	if (description != nil)
@@ -29,5 +68,10 @@
 	    @"Setting an option in class %@ failed!", inClass];
 
 	return description;
+}
+
+- (OFStream*)stream
+{
+	return stream;
 }
 @end

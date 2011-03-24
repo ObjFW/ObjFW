@@ -26,9 +26,11 @@
 
 @implementation OFReadOrWriteFailedException
 +  newWithClass: (Class)class_
+	 stream: (OFStream*)stream
   requestedSize: (size_t)size
 {
 	return [[self alloc] initWithClass: class_
+				    stream: stream
 			     requestedSize: size];
 }
 
@@ -41,27 +43,45 @@
 }
 
 - initWithClass: (Class)class_
+	 stream: (OFStream*)stream_
   requestedSize: (size_t)size
 {
 	self = [super initWithClass: class_];
 
-	requestedSize = size;
+	@try {
+		stream = [stream_ retain];
+		requestedSize = size;
 
-	if ([class_ isSubclassOfClass: [OFStreamSocket class]])
-		errNo = GET_SOCK_ERRNO;
-	else
-		errNo = GET_ERRNO;
+		if ([class_ isSubclassOfClass: [OFStreamSocket class]])
+			errNo = GET_SOCK_ERRNO;
+		else
+			errNo = GET_ERRNO;
+	} @catch (id e) {
+		return e;
+	}
 
 	return self;
 }
 
-- (int)errNo
+- (void)dealloc
 {
-	return errNo;
+	[stream release];
+
+	[super dealloc];
+}
+
+- (OFStream*)stream
+{
+	return stream;
 }
 
 - (size_t)requestedSize
 {
 	return requestedSize;
+}
+
+- (int)errNo
+{
+	return errNo;
 }
 @end

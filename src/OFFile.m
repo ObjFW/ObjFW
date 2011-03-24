@@ -570,6 +570,7 @@ of_log(OFConstantString *fmt, ...)
 
 	if (fd == -1 || eos)
 		@throw [OFReadFailedException newWithClass: isa
+						    stream: self
 					     requestedSize: size];
 	if ((ret = read(fd, buf, size)) == 0)
 		eos = YES;
@@ -584,6 +585,7 @@ of_log(OFConstantString *fmt, ...)
 
 	if (fd == -1 || eos || (ret = write(fd, buf, size)) < size)
 		@throw [OFWriteFailedException newWithClass: isa
+						     stream: self
 					      requestedSize: size];
 
 	return ret;
@@ -592,7 +594,8 @@ of_log(OFConstantString *fmt, ...)
 - (void)_seekToOffset: (off_t)offset
 {
 	if (lseek(fd, offset, SEEK_SET) == -1)
-		@throw [OFSeekFailedException newWithClass: isa];
+		@throw [OFSeekFailedException newWithClass: isa
+						    stream: self];
 }
 
 - (off_t)_seekForwardWithOffset: (off_t)offset
@@ -600,7 +603,8 @@ of_log(OFConstantString *fmt, ...)
 	off_t ret;
 
 	if ((ret = lseek(fd, offset, SEEK_CUR)) == -1)
-		@throw [OFSeekFailedException newWithClass: isa];
+		@throw [OFSeekFailedException newWithClass: isa
+						    stream: self];
 
 	return ret;
 }
@@ -610,7 +614,8 @@ of_log(OFConstantString *fmt, ...)
 	off_t ret;
 
 	if ((ret = lseek(fd, offset, SEEK_END)) == -1)
-		@throw [OFSeekFailedException newWithClass: isa];
+		@throw [OFSeekFailedException newWithClass: isa
+						    stream: self];
 
 	return ret;
 }

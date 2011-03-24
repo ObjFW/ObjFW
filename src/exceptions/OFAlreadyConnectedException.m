@@ -19,12 +19,22 @@
 #import "OFAlreadyConnectedException.h"
 #import "OFString.h"
 
+#import "OFNotImplementedException.h"
+
 @implementation OFAlreadyConnectedException
 + newWithClass: (Class)class_
 	socket: (OFTCPSocket*)socket
 {
 	return [[self alloc] initWithClass: class_
 				    socket: socket];
+}
+
+- initWithClass: (Class)class_
+{
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
 }
 
 - initWithClass: (Class)class_

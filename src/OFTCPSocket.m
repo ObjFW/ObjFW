@@ -344,7 +344,8 @@ static OFMutex *mutex = nil;
 	int v = enable;
 
 	if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char*)&v, sizeof(v)))
-		@throw [OFSetOptionFailedException newWithClass: isa];
+		@throw [OFSetOptionFailedException newWithClass: isa
+							 stream: self];
 }
 
 - (OFString*)remoteAddress

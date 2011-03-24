@@ -16,8 +16,38 @@
 
 #import "OFException.h"
 
+@class OFStream;
+
 /**
- * \brief An exception indicating that setting an option failed.
+ * \brief An exception indicating that setting an option for a stream failed.
  */
 @interface OFSetOptionFailedException: OFException
+{
+	OFStream *stream;
+}
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFStream *stream;
+#endif
+
+/**
+ * \param stream The stream for which the option could not be set
+ * \return A new set option failed exception
+ */
++ newWithClass: (Class)class_
+	stream: (OFStream*)stream;
+
+/**
+ * Initializes an already allocated set option failed exception.
+ *
+ * \param stream The stream for which the option could not be set
+ * \return An initialized set option failed exception
+ */
+- initWithClass: (Class)class_
+	 stream: (OFStream*)stream;
+
+/**
+ * \return The stream for which the option could not be set
+ */
+- (OFStream*)stream;
 @end

@@ -16,17 +16,42 @@
 
 #import "OFException.h"
 
+@class OFSeekableStream;
+
 /**
  * \brief An exception indicating that seeking in a stream failed.
  */
 @interface OFSeekFailedException: OFException
 {
-	int errNo;
+	OFSeekableStream *stream;
+	int		 errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFSeekableStream *stream;
 @property (readonly) int errNo;
 #endif
+
+/**
+ * \param stream The stream for which seeking failed
+ * \return A new seek failed exception
+ */
++ newWithClass: (Class)class_
+	stream: (OFSeekableStream*)stream;
+
+/**
+ * Initializes an already allocated seek failed exception.
+ *
+ * \param stream The stream for which seeking failed
+ * \return An initialized seek failed exception
+ */
+- initWithClass: (Class)class_
+	 stream: (OFSeekableStream*)stream;
+
+/**
+ * \return The stream for which seeking failed
+ */
+- (OFSeekableStream*)stream;
 
 /**
  * \return The errno from when the exception was created
