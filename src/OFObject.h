@@ -82,6 +82,38 @@ typedef struct of_range_t {
 - (BOOL)respondsToSelector: (SEL)selector;
 
 /**
+ * Performs the specified selector.
+ *
+ * \param selector The selector to perform
+ * \return The object returned by the method specified by the selector
+ */
+- (id)performSelector: (SEL)selector;
+
+/**
+ * Performs the specified selector with the specified object.
+ *
+ * \param selector The selector to perform
+ * \param obj The object that is passed to the method specified by the selector
+ * \return The object returned by the method specified by the selector
+ */
+- (id)performSelector: (SEL)selector
+	   withObject: (id)obj;
+
+/**
+ * Performs the specified selector with the specified objects.
+ *
+ * \param selector The selector to perform
+ * \param obj1 The first object that is passed to the method specified by the
+ *             selector
+ * \param obj2 The second object that is passed to the method specified by the
+ *             selector
+ * \return The object returned by the method specified by the selector
+ */
+- (id)performSelector: (SEL)selector
+	   withObject: (id)obj1
+	   withObject: (id)obj2;
+
+/**
  * Checks two objects for equality.
  *
  * Classes containing data (like strings, arrays, lists etc.) should reimplement
