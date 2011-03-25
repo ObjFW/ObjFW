@@ -16,8 +16,40 @@
 
 #import "OFException.h"
 
+@class OFThread;
+
 /**
  * \brief An exception indicating that a thread is still running.
  */
 @interface OFThreadStillRunningException: OFException
+{
+	OFThread *thread;
+}
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFThread *thread;
+#endif
+
+/**
+ * \param class_ The class of the object which caused the exception
+ * \param thread The thread which is still running
+ * \return A new thread still running exception
+ */
++ newWithClass: (Class)class_
+	thread: (OFThread*)thread;
+
+/**
+ * Initializes an already allocated thread still running exception.
+ *
+ * \param class_ The class of the object which caused the exception
+ * \param thread The thread which is still running
+ * \return An initialized thread still running exception
+ */
+- initWithClass: (Class)class_
+	 thread: (OFThread*)thread;
+
+/**
+ * \return The thread which is still running
+ */
+- (OFThread*)thread;
 @end

@@ -19,7 +19,46 @@
 #import "OFThreadStillRunningException.h"
 #import "OFString.h"
 
+#import "OFNotImplementedException.h"
+
 @implementation OFThreadStillRunningException
++ newWithClass: (Class)class_
+	thread: (OFThread*)thread
+{
+	return [[self alloc] initWithClass: class_
+				    thread: thread];
+}
+
+- initWithClass: (Class)class_
+{
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class_
+	 thread: (OFThread*)thread_
+{
+	self = [super initWithClass: class_];
+
+	@try {
+		thread = [thread_ retain];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[thread release];
+
+	[super dealloc];
+}
+
 - (OFString*)description
 {
 	if (description != nil)
@@ -30,5 +69,10 @@
 	    @"was still running!", inClass];
 
 	return description;
+}
+
+- (OFThread*)thread
+{
+	return thread;
 }
 @end

@@ -241,13 +241,15 @@ call_main(id obj)
 - (void)start
 {
 	if (running == OF_THREAD_RUNNING)
-		@throw [OFThreadStillRunningException newWithClass: isa];
+		@throw [OFThreadStillRunningException newWithClass: isa
+							    thread: self];
 
 	[self retain];
 
 	if (!of_thread_new(&thread, call_main, self)) {
 		[self release];
-		@throw [OFThreadStartFailedException newWithClass: isa];
+		@throw [OFThreadStartFailedException newWithClass: isa
+							   thread: self];
 	}
 
 	running = OF_THREAD_RUNNING;
@@ -256,7 +258,8 @@ call_main(id obj)
 - (id)join
 {
 	if (running == OF_THREAD_NOT_RUNNING || !of_thread_join(thread))
-		@throw [OFThreadJoinFailedException newWithClass: isa];
+		@throw [OFThreadJoinFailedException newWithClass: isa
+							  thread: self];
 
 	running = OF_THREAD_NOT_RUNNING;
 
@@ -266,7 +269,8 @@ call_main(id obj)
 - (void)dealloc
 {
 	if (running == OF_THREAD_RUNNING)
-		@throw [OFThreadStillRunningException newWithClass: isa];
+		@throw [OFThreadStillRunningException newWithClass: isa
+							    thread: self];
 
 	[object release];
 	[retval release];

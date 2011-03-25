@@ -31,6 +31,7 @@
 #endif
 
 /**
+ * \param class_ The class of the object which caused the exception
  * \param hash The hash which has already been calculated
  * \return A new hash already calculated exception
  */
@@ -40,6 +41,7 @@
 /**
  * Initializes an already allocated hash already calculated exception.
  *
+ * \param class_ The class of the object which caused the exception
  * \param hash The hash which has already been calculated
  * \return An initialized hash already calculated exception
  */
