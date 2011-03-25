@@ -23,7 +23,6 @@
 #import "OFFile.h"
 #import "OFAutoreleasePool.h"
 #import "OFApplication.h"
-#import "OFExceptions.h"
 
 #import "TableGenerator.h"
 #import "copyright.h"
