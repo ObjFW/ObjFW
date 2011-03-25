@@ -16,8 +16,40 @@
 
 #import "OFException.h"
 
+@class OFMutex;
+
 /**
  * \brief An exception indicating that locking a mutex failed.
  */
 @interface OFMutexLockFailedException: OFException
+{
+	OFMutex *mutex;
+}
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFMutex *mutex;
+#endif
+
+/**
+ * \param class_ The class of the object which caused the exception
+ * \param mutex The mutex which is could not be locked
+ * \return A new mutex lock failed exception
+ */
++ newWithClass: (Class)class_
+	 mutex: (OFMutex*)mutex;
+
+/**
+ * Initializes an already allocated mutex lock failed exception.
+ *
+ * \param class_ The class of the object which caused the exception
+ * \param mutex The mutex which is could not be locked
+ * \return An initialized mutex lock failed exception
+ */
+- initWithClass: (Class)class_
+	  mutex: (OFMutex*)mutex;
+
+/**
+ * \param The mutex which is could not be locked
+ */
+- (OFMutex*)mutex;
 @end

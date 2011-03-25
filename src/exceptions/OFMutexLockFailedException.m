@@ -19,7 +19,46 @@
 #import "OFMutexLockFailedException.h"
 #import "OFString.h"
 
+#import "OFNotImplementedException.h"
+
 @implementation OFMutexLockFailedException
++ newWithClass: (Class)class_
+	 mutex: (OFMutex*)mutex
+{
+	return [[self alloc] initWithClass: class_
+				     mutex: mutex];
+}
+
+- initWithClass: (Class)class_
+{
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class_
+	  mutex: (OFMutex*)mutex_
+{
+	self = [super initWithClass: class_];
+
+	@try {
+		mutex = [mutex_ retain];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[mutex release];
+
+	[super dealloc];
+}
+
 - (OFString*)description
 {
 	if (description != nil)
@@ -29,5 +68,10 @@
 	    @"A mutex of class %@ could not be locked!", inClass];
 
 	return description;
+}
+
+- (OFMutex*)mutex
+{
+	return mutex;
 }
 @end

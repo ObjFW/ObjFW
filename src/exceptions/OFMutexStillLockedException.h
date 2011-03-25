@@ -19,9 +19,9 @@
 @class OFMutex;
 
 /**
- * \brief An exception indicating that unlocking a mutex failed.
+ * \brief An exception indicating that a mutex is still locked.
  */
-@interface OFMutexUnlockFailedException: OFException
+@interface OFMutexStillLockedException: OFException
 {
 	OFMutex *mutex;
 }
@@ -32,24 +32,24 @@
 
 /**
  * \param class_ The class of the object which caused the exception
- * \param mutex The mutex which could not be unlocked
- * \return A new mutex unlock failed exception
+ * \param mutex The mutex which is still locked
+ * \return A new mutex still locked exception
  */
 + newWithClass: (Class)class_
 	 mutex: (OFMutex*)mutex;
 
 /**
- * Initializes an already allocated mutex unlock failed exception.
+ * Initializes an already allocated mutex still locked exception.
  *
  * \param class_ The class of the object which caused the exception
- * \param mutex The mutex which could not be unlocked
- * \return An initialized mutex unlock failed exception
+ * \param mutex The mutex which is still locked
+ * \return An initialized mutex still locked exception
  */
 - initWithClass: (Class)class_
 	  mutex: (OFMutex*)mutex;
 
 /**
- * \return The mutex which could not be unlocked
+ * \return The mutex which is still locked
  */
 - (OFMutex*)mutex;
 @end

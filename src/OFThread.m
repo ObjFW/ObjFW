@@ -34,8 +34,8 @@
 #import "OFConditionWaitingException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
-#import "OFMutexLockedException.h"
 #import "OFMutexLockFailedException.h"
+#import "OFMutexStillLockedException.h"
 #import "OFMutexUnlockFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
@@ -385,7 +385,8 @@ call_main(id obj)
 - (void)lock
 {
 	if (!of_mutex_lock(&mutex))
-		@throw [OFMutexLockFailedException newWithClass: isa];
+		@throw [OFMutexLockFailedException newWithClass: isa
+							  mutex: self];
 }
 
 - (BOOL)tryLock
@@ -396,14 +397,16 @@ call_main(id obj)
 - (void)unlock
 {
 	if (!of_mutex_unlock(&mutex))
-		@throw [OFMutexUnlockFailedException newWithClass: isa];
+		@throw [OFMutexUnlockFailedException newWithClass: isa
+							    mutex: self];
 }
 
 - (void)dealloc
 {
 	if (initialized)
 		if (!of_mutex_free(&mutex))
-			@throw [OFMutexLockedException newWithClass: isa];
+			@throw [OFMutexStillLockedException newWithClass: isa
+								   mutex: self];
 
 	[super dealloc];
 }

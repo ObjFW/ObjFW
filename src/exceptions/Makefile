@@ -34,7 +34,7 @@ SRCS = OFAcceptFailedException.m		\
        OFMalformedXMLException.m		\
        OFMemoryNotPartOfObjectException.m	\
        OFMutexLockFailedException.m		\
-       OFMutexLockedException.m			\
+       OFMutexStillLockedException.m		\
        OFMutexUnlockFailedException.m		\
        OFNotConnectedException.m		\
        OFNotImplementedException.m		\
