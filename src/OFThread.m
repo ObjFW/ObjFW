@@ -30,8 +30,8 @@
 
 #import "OFConditionBroadcastFailedException.h"
 #import "OFConditionSignalFailedException.h"
+#import "OFConditionStillWaitingException.h"
 #import "OFConditionWaitFailedException.h"
-#import "OFConditionWaitingException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFMutexLockFailedException.h"
@@ -436,26 +436,31 @@ call_main(id obj)
 - (void)wait
 {
 	if (!of_condition_wait(&condition, &mutex))
-		@throw [OFConditionWaitFailedException newWithClass: isa];
+		@throw [OFConditionWaitFailedException newWithClass: isa
+							  condition: self];
 }
 
 - (void)signal
 {
 	if (!of_condition_signal(&condition))
-		@throw [OFConditionSignalFailedException newWithClass: isa];
+		@throw [OFConditionSignalFailedException newWithClass: isa
+							    condition: self];
 }
 
 - (void)broadcast
 {
 	if (!of_condition_broadcast(&condition))
-		@throw [OFConditionBroadcastFailedException newWithClass: isa];
+		@throw [OFConditionBroadcastFailedException newWithClass: isa
+							       condition: self];
 }
 
 - (void)dealloc
 {
 	if (cond_initialized)
 		if (!of_condition_free(&condition))
-			@throw [OFConditionWaitingException newWithClass: isa];
+			@throw [OFConditionStillWaitingException
+			    newWithClass: isa
+			       condition: self];
 
 	[super dealloc];
 }

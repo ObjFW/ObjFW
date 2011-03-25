@@ -16,8 +16,40 @@
 
 #import "OFException.h"
 
+@class OFCondition;
+
 /**
  * \brief An exception indicating broadcasting a condition failed.
  */
 @interface OFConditionBroadcastFailedException: OFException
+{
+	OFCondition *condition;
+}
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFCondition *condition;
+#endif
+
+/**
+ * \param class_ The class of the object which caused the exception
+ * \param condition The condition which could not be broadcasted
+ * \return A new condition broadcast failed exception
+ */
++ newWithClass: (Class)class_
+     condition: (OFCondition*)condition;
+
+/**
+ * Initializes an already allocated condition broadcast failed exception.
+ *
+ * \param class_ The class of the object which caused the exception
+ * \param condition The condition which could not be broadcasted
+ * \return An initialized condition broadcast failed exception
+ */
+- initWithClass: (Class)class_
+      condition: (OFCondition*)condition;
+
+/**
+ * \return The condition which could not be broadcasted
+ */
+- (OFCondition*)condition;
 @end

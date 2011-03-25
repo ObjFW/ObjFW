@@ -13,8 +13,8 @@ SRCS = OFAcceptFailedException.m		\
        OFChangeFileOwnerFailedException.m	\
        OFConditionBroadcastFailedException.m	\
        OFConditionSignalFailedException.m	\
+       OFConditionStillWaitingException.m	\
        OFConditionWaitFailedException.m		\
-       OFConditionWaitingException.m		\
        OFConnectionFailedException.m		\
        OFCopyFileFailedException.m		\
        OFCreateDirectoryFailedException.m	\

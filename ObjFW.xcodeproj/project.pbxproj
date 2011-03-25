@@ -90,7 +90,6 @@
 		4B29BC58133AC8540004B236 /* OFConditionBroadcastFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8B1701133A3B8E007CD8B3 /* OFConditionBroadcastFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B29BC59133AC8540004B236 /* OFConditionSignalFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8B1703133A3B8E007CD8B3 /* OFConditionSignalFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B29BC5A133AC8540004B236 /* OFConditionWaitFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8B1705133A3B8E007CD8B3 /* OFConditionWaitFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B29BC5B133AC8540004B236 /* OFConditionWaitingException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8B1707133A3B8E007CD8B3 /* OFConditionWaitingException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B29BC5C133AC8540004B236 /* OFRenameFileFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B29BC54133AC81B0004B236 /* OFRenameFileFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B29BC61133AC9CB0004B236 /* OFLinkFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B29BC5D133AC9C40004B236 /* OFLinkFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B29BC62133AC9CB0004B236 /* OFLinkFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B29BC5E133AC9C40004B236 /* OFLinkFailedException.m */; };
@@ -204,12 +203,13 @@
 		4B55A117133AC24600B58A93 /* OFWriteFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B55A111133AC24600B58A93 /* OFWriteFailedException.m */; };
 		4B7FF3B0133CE6DE00000324 /* OFMutexStillLockedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7FF3AE133CE6DE00000324 /* OFMutexStillLockedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7FF3B1133CE6DE00000324 /* OFMutexStillLockedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7FF3AF133CE6DE00000324 /* OFMutexStillLockedException.m */; };
+		4B7FF3B4133CED6200000324 /* OFConditionStillWaitingException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7FF3B2133CED6100000324 /* OFConditionStillWaitingException.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B7FF3B5133CED6200000324 /* OFConditionStillWaitingException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7FF3B3133CED6100000324 /* OFConditionStillWaitingException.m */; };
 		4B8B16FE133A3B84007CD8B3 /* OFHashAlreadyCalculatedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8B16FC133A3B84007CD8B3 /* OFHashAlreadyCalculatedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B8B16FF133A3B84007CD8B3 /* OFHashAlreadyCalculatedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8B16FD133A3B84007CD8B3 /* OFHashAlreadyCalculatedException.m */; };
 		4B8B170D133A3C11007CD8B3 /* OFConditionBroadcastFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8B1702133A3B8E007CD8B3 /* OFConditionBroadcastFailedException.m */; };
 		4B8B170E133A3C11007CD8B3 /* OFConditionSignalFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8B1704133A3B8E007CD8B3 /* OFConditionSignalFailedException.m */; };
 		4B8B170F133A3C11007CD8B3 /* OFConditionWaitFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8B1706133A3B8E007CD8B3 /* OFConditionWaitFailedException.m */; };
-		4B8B1710133A3C11007CD8B3 /* OFConditionWaitingException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8B1708133A3B8E007CD8B3 /* OFConditionWaitingException.m */; };
 		4B8B1719133A3D04007CD8B3 /* OFMutexLockFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8B1713133A3D04007CD8B3 /* OFMutexLockFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B8B171A133A3D04007CD8B3 /* OFMutexLockFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8B1714133A3D04007CD8B3 /* OFMutexLockFailedException.m */; };
 		4B8B171B133A3D04007CD8B3 /* OFMutexUnlockFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8B1715133A3D04007CD8B3 /* OFMutexUnlockFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -481,6 +481,8 @@
 		4B6EF685123535C80076B512 /* test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = test.m; path = tests/objc_sync/test.m; sourceTree = SOURCE_ROOT; };
 		4B7FF3AE133CE6DE00000324 /* OFMutexStillLockedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMutexStillLockedException.h; path = src/exceptions/OFMutexStillLockedException.h; sourceTree = "<group>"; };
 		4B7FF3AF133CE6DE00000324 /* OFMutexStillLockedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMutexStillLockedException.m; path = src/exceptions/OFMutexStillLockedException.m; sourceTree = "<group>"; };
+		4B7FF3B2133CED6100000324 /* OFConditionStillWaitingException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFConditionStillWaitingException.h; path = src/exceptions/OFConditionStillWaitingException.h; sourceTree = "<group>"; };
+		4B7FF3B3133CED6100000324 /* OFConditionStillWaitingException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFConditionStillWaitingException.m; path = src/exceptions/OFConditionStillWaitingException.m; sourceTree = "<group>"; };
 		4B8B16FC133A3B84007CD8B3 /* OFHashAlreadyCalculatedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFHashAlreadyCalculatedException.h; path = src/exceptions/OFHashAlreadyCalculatedException.h; sourceTree = "<group>"; };
 		4B8B16FD133A3B84007CD8B3 /* OFHashAlreadyCalculatedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHashAlreadyCalculatedException.m; path = src/exceptions/OFHashAlreadyCalculatedException.m; sourceTree = "<group>"; };
 		4B8B1701133A3B8E007CD8B3 /* OFConditionBroadcastFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFConditionBroadcastFailedException.h; path = src/exceptions/OFConditionBroadcastFailedException.h; sourceTree = "<group>"; };
@@ -489,8 +491,6 @@
 		4B8B1704133A3B8E007CD8B3 /* OFConditionSignalFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFConditionSignalFailedException.m; path = src/exceptions/OFConditionSignalFailedException.m; sourceTree = "<group>"; };
 		4B8B1705133A3B8E007CD8B3 /* OFConditionWaitFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFConditionWaitFailedException.h; path = src/exceptions/OFConditionWaitFailedException.h; sourceTree = "<group>"; };
 		4B8B1706133A3B8E007CD8B3 /* OFConditionWaitFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFConditionWaitFailedException.m; path = src/exceptions/OFConditionWaitFailedException.m; sourceTree = "<group>"; };
-		4B8B1707133A3B8E007CD8B3 /* OFConditionWaitingException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFConditionWaitingException.h; path = src/exceptions/OFConditionWaitingException.h; sourceTree = "<group>"; };
-		4B8B1708133A3B8E007CD8B3 /* OFConditionWaitingException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFConditionWaitingException.m; path = src/exceptions/OFConditionWaitingException.m; sourceTree = "<group>"; };
 		4B8B1713133A3D04007CD8B3 /* OFMutexLockFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMutexLockFailedException.h; path = src/exceptions/OFMutexLockFailedException.h; sourceTree = "<group>"; };
 		4B8B1714133A3D04007CD8B3 /* OFMutexLockFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMutexLockFailedException.m; path = src/exceptions/OFMutexLockFailedException.m; sourceTree = "<group>"; };
 		4B8B1715133A3D04007CD8B3 /* OFMutexUnlockFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMutexUnlockFailedException.h; path = src/exceptions/OFMutexUnlockFailedException.h; sourceTree = "<group>"; };
@@ -623,10 +623,10 @@
 				4B8B1702133A3B8E007CD8B3 /* OFConditionBroadcastFailedException.m */,
 				4B8B1703133A3B8E007CD8B3 /* OFConditionSignalFailedException.h */,
 				4B8B1704133A3B8E007CD8B3 /* OFConditionSignalFailedException.m */,
+				4B7FF3B2133CED6100000324 /* OFConditionStillWaitingException.h */,
+				4B7FF3B3133CED6100000324 /* OFConditionStillWaitingException.m */,
 				4B8B1705133A3B8E007CD8B3 /* OFConditionWaitFailedException.h */,
 				4B8B1706133A3B8E007CD8B3 /* OFConditionWaitFailedException.m */,
-				4B8B1707133A3B8E007CD8B3 /* OFConditionWaitingException.h */,
-				4B8B1708133A3B8E007CD8B3 /* OFConditionWaitingException.m */,
 				4B90B79A133AD87D00BD33CB /* OFConnectionFailedException.h */,
 				4B90B79B133AD87D00BD33CB /* OFConnectionFailedException.m */,
 				4B29BC46133AC7DB0004B236 /* OFCopyFileFailedException.h */,
@@ -984,8 +984,8 @@
 				4B29BC4C133AC7DD0004B236 /* OFChangeFileOwnerFailedException.h in Headers */,
 				4B29BC58133AC8540004B236 /* OFConditionBroadcastFailedException.h in Headers */,
 				4B29BC59133AC8540004B236 /* OFConditionSignalFailedException.h in Headers */,
+				4B7FF3B4133CED6200000324 /* OFConditionStillWaitingException.h in Headers */,
 				4B29BC5A133AC8540004B236 /* OFConditionWaitFailedException.h in Headers */,
-				4B29BC5B133AC8540004B236 /* OFConditionWaitingException.h in Headers */,
 				4B90B7A4133AD87D00BD33CB /* OFConnectionFailedException.h in Headers */,
 				4B29BC4E133AC7DD0004B236 /* OFCopyFileFailedException.h in Headers */,
 				4B29BC3F133AC4E80004B236 /* OFCreateDirectoryFailedException.h in Headers */,
@@ -1229,8 +1229,8 @@
 				4B29BC4D133AC7DD0004B236 /* OFChangeFileOwnerFailedException.m in Sources */,
 				4B8B170D133A3C11007CD8B3 /* OFConditionBroadcastFailedException.m in Sources */,
 				4B8B170E133A3C11007CD8B3 /* OFConditionSignalFailedException.m in Sources */,
+				4B7FF3B5133CED6200000324 /* OFConditionStillWaitingException.m in Sources */,
 				4B8B170F133A3C11007CD8B3 /* OFConditionWaitFailedException.m in Sources */,
-				4B8B1710133A3C11007CD8B3 /* OFConditionWaitingException.m in Sources */,
 				4B90B7A5133AD87D00BD33CB /* OFConnectionFailedException.m in Sources */,
 				4B29BC4F133AC7DD0004B236 /* OFCopyFileFailedException.m in Sources */,
 				4B29BC40133AC4E80004B236 /* OFCreateDirectoryFailedException.m in Sources */,

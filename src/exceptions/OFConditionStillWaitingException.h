@@ -19,9 +19,10 @@
 @class OFCondition;
 
 /**
- * \brief An exception indicating waiting for a condition failed.
+ * \brief An exception indicating that a thread is still waiting for a
+ *	  condition.
  */
-@interface OFConditionWaitFailedException: OFException
+@interface OFConditionStillWaitingException: OFException
 {
 	OFCondition *condition;
 }
@@ -32,24 +33,24 @@
 
 /**
  * \param class_ The class of the object which caused the exception
- * \param condition The condition for which could not be waited
- * \return A new condition wait failed exception
+ * \param condition The condition for which is still being waited
+ * \return A new condition still waiting exception
  */
 + newWithClass: (Class)class_
      condition: (OFCondition*)condition;
 
 /**
- * Initializes an already allocated condition wait failed exception.
+ * Initializes an already allocated condition still waiting exception.
  *
  * \param class_ The class of the object which caused the exception
- * \param condition The condition for which could not be waited
- * \return An initialized condition wait failed exception
+ * \param condition The condition for which is still being waited
+ * \return An initialized condition still waiting exception
  */
 - initWithClass: (Class)class_
       condition: (OFCondition*)condition;
 
 /**
- * \return The condition for which could not be waited
+ * \return The condition for which is still being waited
  */
 - (OFCondition*)condition;
 @end

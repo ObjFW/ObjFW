@@ -19,7 +19,46 @@
 #import "OFConditionSignalFailedException.h"
 #import "OFString.h"
 
+#import "OFNotImplementedException.h"
+
 @implementation OFConditionSignalFailedException
++ newWithClass: (Class)class_
+     condition: (OFCondition*)condition
+{
+	return [[self alloc] initWithClass: class_
+				 condition: condition];
+}
+
+- initWithClass: (Class)class_
+{
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class_
+      condition: (OFCondition*)condition_
+{
+	self = [super initWithClass: class_];
+
+	@try {
+		condition = [condition_ retain];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[condition release];
+
+	[super dealloc];
+}
+
 - (OFString*)description
 {
 	if (description != nil)
@@ -29,5 +68,10 @@
 	    @"Signaling a condition of type %@ failed!", inClass];
 
 	return description;
+}
+
+- (OFCondition*)condition
+{
+	return condition;
 }
 @end
