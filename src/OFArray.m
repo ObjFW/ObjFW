@@ -421,6 +421,25 @@
 	return ret;
 }
 
+- (void)makeObjectsPerformSelector: (SEL)selector
+{
+	id *objs = [array cArray];
+	size_t i, count = [array count];
+
+	for (i = 0; i < count; i++)
+		((void(*)())[objs[i] methodForSelector: selector])();
+}
+
+- (void)makeObjectsPerformSelector: (SEL)selector
+			withObject: (id)obj
+{
+	id *objs = [array cArray];
+	size_t i, count = [array count];
+
+	for (i = 0; i < count; i++)
+		((void(*)(id))[objs[i] methodForSelector: selector])(obj);
+}
+
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
 			   objects: (id*)objects
 			     count: (int)count_

@@ -206,6 +206,24 @@ typedef id (^of_array_map_block_t)(id obj, size_t idx);
  */
 - (OFString*)componentsJoinedByString: (OFString*)separator;
 
+/**
+ * Performs the specified selector on all objects in the array.
+ *
+ * \param selector The selector to perform on all objects in the array
+ */
+- (void)makeObjectsPerformSelector: (SEL)selector;
+
+/**
+ * Performs the specified selector on all objects in the array with the
+ * specified object.
+ *
+ * \param selector The selector to perform on all objects in the array
+ * \param obj The object to perform the selector with on all objects in the
+ *	      array
+ */
+- (void)makeObjectsPerformSelector: (SEL)selector
+			withObject: (id)obj;
+
 #ifdef OF_HAVE_BLOCKS
 /**
  * Executes a block for each object.
