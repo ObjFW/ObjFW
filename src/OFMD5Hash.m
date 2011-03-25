@@ -155,7 +155,8 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 		return;
 
 	if (isCalculated)
-		@throw [OFHashAlreadyCalculatedException newWithClass: isa];
+		@throw [OFHashAlreadyCalculatedException newWithClass: isa
+								 hash: self];
 
 	/* Update bitcount */
 	t = bits[0];

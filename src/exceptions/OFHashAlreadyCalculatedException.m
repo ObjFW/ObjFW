@@ -19,7 +19,46 @@
 #import "OFHashAlreadyCalculatedException.h"
 #import "OFString.h"
 
+#import "OFNotImplementedException.h"
+
 @implementation OFHashAlreadyCalculatedException
++ newWithClass: (Class)class_
+	  hash: (OFHash*)hash
+{
+	return [[self alloc] initWithClass: class_
+				      hash: hash];
+}
+
+- initWithClass: (Class)class_
+{
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
+}
+
+- initWithClass: (Class)class_
+	   hash: (OFHash*)hash_
+{
+	self = [super initWithClass: class_];
+
+	@try {
+		hash = [hash_ retain];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[hash release];
+
+	[super dealloc];
+}
+
 - (OFString*)description
 {
 	if (description != nil)
@@ -30,5 +69,10 @@
 	    @"data can be added", inClass];
 
 	return description;
+}
+
+- (OFHash*)hash
+{
+	return hash;
 }
 @end

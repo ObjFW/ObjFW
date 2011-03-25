@@ -16,8 +16,38 @@
 
 #import "OFException.h"
 
+@class OFHash;
+
 /**
  * \brief An exception indicating that the hash has already been calculated.
  */
 @interface OFHashAlreadyCalculatedException: OFException
+{
+	OFHash *hash;
+}
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, nonatomic) OFHash *hash;
+#endif
+
+/**
+ * \param hash The hash which has already been calculated
+ * \return A new hash already calculated exception
+ */
++ newWithClass: (Class)class_
+	  hash: (OFHash*)hash;
+
+/**
+ * Initializes an already allocated hash already calculated exception.
+ *
+ * \param hash The hash which has already been calculated
+ * \return An initialized hash already calculated exception
+ */
+- initWithClass: (Class)class_
+	   hash: (OFHash*)hash;
+
+/**
+ * \return The hash which has already been calculated
+ */
+- (OFHash*)hash;
 @end
