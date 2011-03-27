@@ -26,9 +26,13 @@
 @implementation OFSeekFailedException
 + newWithClass: (Class)class_
 	stream: (OFSeekableStream*)stream
+	offset: (off_t)offset
+	whence: (int)whence
 {
 	return [[self alloc] initWithClass: class_
-				    stream: stream];
+				    stream: stream
+				    offset: offset
+				    whence: whence];
 }
 
 - initWithClass: (Class)class_
@@ -41,11 +45,15 @@
 
 - initWithClass: (Class)class_
 	 stream: (OFSeekableStream*)stream_
+	 offset: (off_t)offset_
+	 whence: (int)whence_
 {
 	self = [super initWithClass: class_];
 
 	@try {
 		stream = [stream_ retain];
+		offset = offset_;
+		whence = whence_;
 		errNo = GET_ERRNO;
 	} @catch (id e) {
 		[self release];
@@ -76,6 +84,16 @@
 - (OFSeekableStream*)stream
 {
 	return stream;
+}
+
+- (off_t)offset
+{
+	return offset;
+}
+
+- (int)whence
+{
+	return whence;
 }
 
 - (int)errNo

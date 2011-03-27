@@ -595,7 +595,9 @@ of_log(OFConstantString *fmt, ...)
 {
 	if (lseek(fd, offset, SEEK_SET) == -1)
 		@throw [OFSeekFailedException newWithClass: isa
-						    stream: self];
+						    stream: self
+						    offset: offset
+						    whence: SEEK_SET];
 }
 
 - (off_t)_seekForwardWithOffset: (off_t)offset
@@ -604,7 +606,9 @@ of_log(OFConstantString *fmt, ...)
 
 	if ((ret = lseek(fd, offset, SEEK_CUR)) == -1)
 		@throw [OFSeekFailedException newWithClass: isa
-						    stream: self];
+						    stream: self
+						    offset: offset
+						    whence: SEEK_CUR];
 
 	return ret;
 }
@@ -615,7 +619,9 @@ of_log(OFConstantString *fmt, ...)
 
 	if ((ret = lseek(fd, offset, SEEK_END)) == -1)
 		@throw [OFSeekFailedException newWithClass: isa
-						    stream: self];
+						    stream: self
+						    offset: offset
+						    whence: SEEK_END];
 
 	return ret;
 }

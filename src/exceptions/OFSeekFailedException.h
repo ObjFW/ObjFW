@@ -14,6 +14,8 @@
  * file.
  */
 
+#include <unistd.h>
+
 #import "OFException.h"
 
 @class OFSeekableStream;
@@ -24,34 +26,56 @@
 @interface OFSeekFailedException: OFException
 {
 	OFSeekableStream *stream;
+	off_t		 offset;
+	int		 whence;
 	int		 errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, nonatomic) OFSeekableStream *stream;
+@property (readonly) off_t offset;
+@property (readonly) int whence;
 @property (readonly) int errNo;
 #endif
 
 /**
  * \param stream The stream for which seeking failed
+ * \param offset The offset to which seeking failed
+ * \param whence To what the offset is relative
  * \return A new seek failed exception
  */
 + newWithClass: (Class)class_
-	stream: (OFSeekableStream*)stream;
+	stream: (OFSeekableStream*)stream
+	offset: (off_t)offset
+	whence: (int)whence;
 
 /**
  * Initializes an already allocated seek failed exception.
  *
  * \param stream The stream for which seeking failed
+ * \param offset The offset to which seeking failed
+ * \param whence To what the offset is relative
  * \return An initialized seek failed exception
  */
 - initWithClass: (Class)class_
-	 stream: (OFSeekableStream*)stream;
+	 stream: (OFSeekableStream*)stream
+	 offset: (off_t)offset
+	 whence: (int)whence;
 
 /**
  * \return The stream for which seeking failed
  */
 - (OFSeekableStream*)stream;
+
+/**
+ * \return The offset to which seeking failed
+ */
+- (off_t)offset;
+
+/**
+ * \return To what the offset is relative
+ */
+- (int)whence;
 
 /**
  * \return The errno from when the exception was created
