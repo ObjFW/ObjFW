@@ -55,6 +55,11 @@ extern void of_log(OFConstantString*, ...);
 + fileWithFileDescriptor: (int)fd;
 
 /**
+ * \return The path of the current working directory
+ */
++ (OFString*)currentDirectoryPath;
+
+/**
  * \param path The path to check
  * \return A boolean whether there is a file at the specified path
  */

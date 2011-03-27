@@ -175,6 +175,17 @@ of_log(OFConstantString *fmt, ...)
 	return [[[self alloc] initWithFileDescriptor: fd_] autorelease];
 }
 
++ (OFString*)currentDirectoryPath
+{
+	char *buf = getcwd(NULL, 0);
+
+	@try {
+		return [OFString stringWithCString: buf];
+	} @finally {
+		free(buf);
+	}
+}
+
 + (BOOL)fileExistsAtPath: (OFString*)path
 {
 	struct stat s;
