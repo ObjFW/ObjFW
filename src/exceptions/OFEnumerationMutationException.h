@@ -21,4 +21,30 @@
  *        enumeration.
  */
 @interface OFEnumerationMutationException: OFException
+{
+	id object;
+}
+
+/**
+ * \param class_ The class of the object which caused the exception
+ * \param object The object which was mutated during enumeration
+ * \return A new enumeration mutation exception
+ */
++ newWithClass: (Class)class_
+	object: (id)object;
+
+/**
+ * Initializes an already allocated enumeration mutation exception.
+ *
+ * \param class_ The class of the object which caused the exception
+ * \param object The object which was mutated during enumeration
+ * \return An initialized enumeration mutation exception
+ */
+- initWithClass: (Class)class_
+	 object: (id)object;
+
+/**
+ * \return The object which was mutated during enumeration
+ */
+- (id)object;
 @end

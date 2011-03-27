@@ -349,23 +349,30 @@
 - (OFEnumerator*)objectEnumerator
 {
 	return [[[OFListEnumerator alloc]
-	    initWithFirstListObject: firstListObject
-		   mutationsPointer: &mutations] autorelease];
+	        initWithList: self
+	    mutationsPointer: &mutations] autorelease];
 }
 @end
 
 @implementation OFListEnumerator
-- initWithFirstListObject: (of_list_object_t*)first_
-	 mutationsPointer: (unsigned long*)mutationsPtr_;
+-     initWithList: (OFList*)list_
+  mutationsPointer: (unsigned long*)mutationsPtr_;
 {
 	self = [super init];
 
-	first = first_;
-	current = first_;
+	list = [list_ retain];
+	current = [list firstListObject];
 	mutations = *mutationsPtr_;
 	mutationsPtr = mutationsPtr_;
 
 	return self;
+}
+
+- (void)dealloc
+{
+	[list release];
+
+	[super dealloc];
 }
 
 - (id)nextObject
@@ -373,7 +380,8 @@
 	id ret;
 
 	if (*mutationsPtr != mutations)
-		@throw [OFEnumerationMutationException newWithClass: isa];
+		@throw [OFEnumerationMutationException newWithClass: isa
+							     object: list];
 
 	if (current == NULL)
 		return nil;
@@ -389,6 +397,6 @@
 	if (*mutationsPtr != mutations)
 		@throw [OFEnumerationMutationException newWithClass: isa];
 
-	current = first;
+	current = [list firstListObject];
 }
 @end

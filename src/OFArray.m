@@ -461,9 +461,9 @@
 
 - (OFEnumerator*)objectEnumerator
 {
-	return [[[OFArrayEnumerator alloc]
-	    initWithDataArray: array
-	     mutationsPointer: NULL] autorelease];
+	return [[[OFArrayEnumerator alloc] initWithArray: self
+					       dataArray: array
+					mutationsPointer: NULL] autorelease];
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -558,26 +558,37 @@
 @end
 
 @implementation OFArrayEnumerator
-- initWithDataArray: (OFDataArray*)array_
-   mutationsPointer: (unsigned long*)mutationsPtr_;
+-    initWithArray: (OFArray*)array_
+	 dataArray: (OFDataArray*)dataArray_
+  mutationsPointer: (unsigned long*)mutationsPtr_;
 {
 	self = [super init];
 
-	array = array_;
-	count = [array_ count];
+	array = [array_ retain];
+	dataArray = [dataArray_ retain];
+	count = [dataArray count];
 	mutations = (mutationsPtr_ != NULL ? *mutationsPtr_ : 0);
 	mutationsPtr = mutationsPtr_;
 
 	return self;
 }
 
+- (void)dealloc
+{
+	[array release];
+	[dataArray release];
+
+	[super dealloc];
+}
+
 - (id)nextObject
 {
 	if (mutationsPtr != NULL && *mutationsPtr != mutations)
-		@throw [OFEnumerationMutationException newWithClass: isa];
+		@throw [OFEnumerationMutationException newWithClass: isa
+							     object: array];
 
 	if (pos < count)
-		return *(id*)[array itemAtIndex: pos++];
+		return *(id*)[dataArray itemAtIndex: pos++];
 
 	return nil;
 }
@@ -585,7 +596,8 @@
 - (void)reset
 {
 	if (mutationsPtr != NULL && *mutationsPtr != mutations)
-		@throw [OFEnumerationMutationException newWithClass: isa];
+		@throw [OFEnumerationMutationException newWithClass: isa
+							     object: array];
 
 	pos = 0;
 }

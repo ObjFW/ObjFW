@@ -99,7 +99,8 @@ extern BOOL objc_properties_init();
 static void
 enumeration_mutation_handler(id obj)
 {
-	@throw [OFEnumerationMutationException newWithClass: [obj class]];
+	@throw [OFEnumerationMutationException newWithClass: [obj class]
+						     object: obj];
 }
 
 #ifndef HAVE_OBJC_ENUMERATIONMUTATION

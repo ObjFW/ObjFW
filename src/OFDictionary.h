@@ -195,6 +195,7 @@ struct of_dictionary_bucket
 
 @interface OFDictionaryEnumerator: OFEnumerator
 {
+	OFDictionary *dictionary;
 	struct of_dictionary_bucket **data;
 	uint32_t size;
 	unsigned long mutations;
@@ -202,9 +203,10 @@ struct of_dictionary_bucket
 	uint32_t pos;
 }
 
--     initWithData: (struct of_dictionary_bucket**)data
-	      size: (uint32_t)size
-  mutationsPointer: (unsigned long*)mutations_ptr;
+- initWithDictionary: (OFDictionary*)dictionary
+		data: (struct of_dictionary_bucket**)data
+		size: (uint32_t)size
+    mutationsPointer: (unsigned long*)mutationsPtr;
 @end
 
 @interface OFDictionaryObjectEnumerator: OFDictionaryEnumerator

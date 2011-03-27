@@ -254,15 +254,17 @@ typedef id (^of_array_map_block_t)(id obj, size_t idx);
 
 @interface OFArrayEnumerator: OFEnumerator
 {
-	OFDataArray   *array;
+	OFArray	      *array;
+	OFDataArray   *dataArray;
 	size_t	      count;
 	unsigned long mutations;
 	unsigned long *mutationsPtr;
 	size_t	      pos;
 }
 
-- initWithDataArray: (OFDataArray*)data
-   mutationsPointer: (unsigned long*)mutations_ptr;
+-    initWithArray: (OFArray*)data
+	 dataArray: (OFDataArray*)dataArray
+  mutationsPointer: (unsigned long*)mutationsPtr;
 @end
 
 #import "OFMutableArray.h"

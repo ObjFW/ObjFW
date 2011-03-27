@@ -119,12 +119,12 @@ struct of_list_object_t {
 
 @interface OFListEnumerator: OFEnumerator
 {
-	of_list_object_t *first;
+	OFList		 *list;
 	of_list_object_t *current;
 	unsigned long	 mutations;
 	unsigned long	 *mutationsPtr;
 }
 
-- initWithFirstListObject: (of_list_object_t*)first
-	 mutationsPointer: (unsigned long*)mutations_ptr;
+-     initWithList: (OFList*)list
+  mutationsPointer: (unsigned long*)mutationsPtr;
 @end

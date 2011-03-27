@@ -262,17 +262,19 @@
 - (OFEnumerator*)objectEnumerator
 {
 	return [[[OFDictionaryObjectEnumerator alloc]
-		initWithData: data
-			size: size
-	    mutationsPointer: &mutations] autorelease];
+	    initWithDictionary: self
+			 data: data
+			 size: size
+	     mutationsPointer: &mutations] autorelease];
 }
 
 - (OFEnumerator*)keyEnumerator
 {
 	return [[[OFDictionaryKeyEnumerator alloc]
-		initWithData: data
-			size: size
-	    mutationsPointer: &mutations] autorelease];
+	    initWithDictionary: self
+			 data: data
+			 size: size
+	     mutationsPointer: &mutations] autorelease];
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -287,7 +289,8 @@
 	for (i = 0; i < size && !stop; i++) {
 		if (mutations != mutations2)
 			@throw [OFEnumerationMutationException
-			    newWithClass: isa];
+			    newWithClass: isa
+				  object: self];
 
 		if (data[i] != NULL && data[i] != DELETED) {
 			block(data[i]->key, data[i]->object, &stop);
@@ -308,7 +311,8 @@
 	for (i = 0; i < size && !stop; i++) {
 		if (mutations != mutations2)
 			@throw [OFEnumerationMutationException
-			    newWithClass: isa];
+			    newWithClass: isa
+				  object: self];
 
 		if (data[i] != NULL && data[i] != DELETED) {
 			id new = block(data[i]->key, data[i]->object, &stop);

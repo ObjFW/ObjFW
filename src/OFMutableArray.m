@@ -226,8 +226,9 @@
 - (OFEnumerator*)objectEnumerator
 {
 	return [[[OFArrayEnumerator alloc]
-	    initWithDataArray: array
-	     mutationsPointer: &mutations] autorelease];
+	       initWithArray: self
+		   dataArray: array
+	    mutationsPointer: &mutations] autorelease];
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -242,7 +243,8 @@
 	for (i = 0; i < count && !stop; i++) {
 		if (mutations != mutations2)
 			@throw [OFEnumerationMutationException
-			    newWithClass: isa];
+			    newWithClass: isa
+				  object: self];
 
 		block(objs[i], i, &stop);
 		[pool releaseObjects];
@@ -262,7 +264,8 @@
 	for (i = 0; i < count && !stop; i++) {
 		if (mutations != mutations2)
 			@throw [OFEnumerationMutationException
-			    newWithClass: isa];
+			    newWithClass: isa
+				  object: self];
 
 		id new = block(objs[i], i, &stop);
 

@@ -587,17 +587,19 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 - (OFEnumerator*)objectEnumerator
 {
 	return [[[OFDictionaryObjectEnumerator alloc]
-		initWithData: data
-			size: size
-	    mutationsPointer: NULL] autorelease];
+	    initWithDictionary: self
+			  data: data
+			  size: size
+	      mutationsPointer: NULL] autorelease];
 }
 
 - (OFEnumerator*)keyEnumerator
 {
 	return [[[OFDictionaryKeyEnumerator alloc]
-		initWithData: data
-			size: size
-	    mutationsPointer: NULL] autorelease];
+	    initWithDictionary: self
+			  data: data
+			  size: size
+	      mutationsPointer: NULL] autorelease];
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -737,12 +739,14 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 @end
 
 @implementation OFDictionaryEnumerator
--     initWithData: (struct of_dictionary_bucket**)data_
-	      size: (uint32_t)size_
-  mutationsPointer: (unsigned long*)mutationsPtr_
+- initWithDictionary: (OFDictionary*)dictionary_
+		data: (struct of_dictionary_bucket**)data_
+		size: (uint32_t)size_
+    mutationsPointer: (unsigned long*)mutationsPtr_
 {
 	self = [super init];
 
+	dictionary = [dictionary_ retain];
 	data = data_;
 	size = size_;
 	mutations = (mutationsPtr_ != NULL ? *mutationsPtr_ : 0);
@@ -751,10 +755,19 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	return self;
 }
 
+- (void)dealloc
+{
+	[dictionary release];
+
+	[super dealloc];
+}
+
 - (void)reset
 {
 	if (mutationsPtr != NULL && *mutationsPtr != mutations)
-		@throw [OFEnumerationMutationException newWithClass: isa];
+		@throw [OFEnumerationMutationException
+		    newWithClass: isa
+			  object: dictionary];
 
 	pos = 0;
 }
@@ -764,7 +777,9 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 - (id)nextObject
 {
 	if (mutationsPtr != NULL && *mutationsPtr != mutations)
-		@throw [OFEnumerationMutationException newWithClass: isa];
+		@throw [OFEnumerationMutationException
+		    newWithClass: isa
+			  object: dictionary];
 
 	for (; pos < size && (data[pos] == NULL ||
 	    data[pos] == DELETED); pos++);
@@ -780,7 +795,9 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 - (id)nextObject
 {
 	if (mutationsPtr != NULL && *mutationsPtr != mutations)
-		@throw [OFEnumerationMutationException newWithClass: isa];
+		@throw [OFEnumerationMutationException
+		    newWithClass: isa
+			  object: dictionary];
 
 	for (; pos < size && (data[pos] == NULL ||
 	    data[pos] == DELETED); pos++);
