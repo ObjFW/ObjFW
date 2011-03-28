@@ -127,7 +127,6 @@
 						     stream: self
 					      requestedSize: size];
 
-	/* This is safe, as we already checked for -1 */
 	return ret;
 }
 
