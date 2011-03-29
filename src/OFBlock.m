@@ -29,6 +29,7 @@
 #import "OFBlock.h"
 
 #import "OFAllocFailedException.h"
+#import "OFInitializationFailedException.h"
 #import "OFNotImplementedException.h"
 
 #ifdef OF_ATOMIC_OPS
