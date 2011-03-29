@@ -41,6 +41,11 @@ Class of_http_request_tls_socket_class = Nil;
 	return [[[self alloc] init] autorelease];
 }
 
++ requestWithURL: (OFURL*)url
+{
+	return [[[self alloc] initWithURL: url] autorelease];
+}
+
 - init
 {
 	self = [super init];
@@ -50,6 +55,20 @@ Class of_http_request_tls_socket_class = Nil;
 	    initWithObject: @"Something using ObjFW "
 			    @"<https://webkeks.org/objfw/>"
 		    forKey: @"User-Agent"];
+
+	return self;
+}
+
+- initWithURL: (OFURL*)url
+{
+	self = [self init];
+
+	@try {
+		[self setURL: url];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }

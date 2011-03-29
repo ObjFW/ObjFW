@@ -105,8 +105,7 @@ static OFCondition *cond;
 	    [OFString stringWithFormat: @"http://127.0.0.1:%" @PRIu16 "/foo",
 					server->port]];
 
-	TEST(@"+[request]", (req = [OFHTTPRequest request]))
-	TEST(@"-[setURL:]", R([req setURL: url]))
+	TEST(@"+[requestWithURL]", (req = [OFHTTPRequest requestWithURL: url]))
 
 	[cond wait];
 	[cond unlock];

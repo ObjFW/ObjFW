@@ -52,6 +52,20 @@ typedef enum of_http_request_type_t {
 + request;
 
 /**
+ * \param url The URL for the request
+ * \return A new, autoreleased OFHTTPRequest
+ */
++ requestWithURL: (OFURL*)url;
+
+/**
+ * Initializes an already allocated OFHTTPRequest with the specified URL.
+ *
+ * \param url The URL for the request
+ * \return An initialized OFHTTPRequest
+ */
+- initWithURL: (OFURL*)url;
+
+/**
  * Sets the URL for the HTTP request.
  *
  * \param URL The URL for the HTTP request
