@@ -16,9 +16,7 @@
 
 #include "config.h"
 
-#include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 #import "OFTCPSocket.h"
 #import "OFString.h"
@@ -35,21 +33,14 @@ static OFString *module = @"OFTCPSocket";
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFTCPSocket *server, *client = nil, *accepted;
-	OFString *msg;
 	uint16_t port;
 	char buf[6];
-
-	srand((unsigned)time(NULL));
-	port = (uint16_t)rand();
-	if (port < 1024)
-		port += 1024;
 
 	TEST(@"+[socket]", (server = [OFTCPSocket socket]) &&
 	    (client = [OFTCPSocket socket]))
 
-	msg = [OFString stringWithFormat:
-	    @"-[bindToPort:onHost:] (port %" @PRIu16 @")", port];
-	TEST(msg, R([server bindToPort: port
+	TEST(@"-[bindToPort:onHost:]",
+	    (port = [server bindToPort: 0
 				onHost: @"127.0.0.1"]))
 
 	TEST(@"-[listen]", R([server listen]))

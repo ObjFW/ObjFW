@@ -52,12 +52,14 @@
 /**
  * Bind the socket on the specified port and host.
  *
- * \param port The port to bind to
+ * \param port The port to bind to. If the port is 0, an unused port will be
+ *	       chosen, which can be obtained using the return value.
  * \param host The host to bind to. Use @"0.0.0.0" for IPv4 or @"::" for IPv6
  *	       to bind to all.
+ * \return The port the socket was bound to
  */
-- (void)bindToPort: (uint16_t)port
-	    onHost: (OFString*)host;
+- (uint16_t)bindToPort: (uint16_t)port
+		onHost: (OFString*)host;
 
 /**
  * Listen on the socket.

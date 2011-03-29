@@ -195,9 +195,12 @@ static OFMutex *mutex = nil;
 							    port: port];
 }
 
-- (void)bindToPort: (uint16_t)port
-	    onHost: (OFString*)host
+- (uint16_t)bindToPort: (uint16_t)port
+		onHost: (OFString*)host
 {
+	struct sockaddr_storage addr;
+	socklen_t addrLen;
+
 	if (sock != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException newWithClass: isa
 							  socket: self];
@@ -235,7 +238,6 @@ static OFMutex *mutex = nil;
 	freeaddrinfo(res);
 #else
 	struct hostent *he;
-	struct sockaddr_in addr;
 
 # ifdef OF_THREADS
 	[mutex lock];
@@ -246,28 +248,32 @@ static OFMutex *mutex = nil;
 		[mutex unlock];
 # endif
 		@throw [OFAddressTranslationFailedException newWithClass: isa
+								  socket: self
 								    host: host];
 	}
 
 	memset(&addr, 0, sizeof(addr));
-	addr.sin_family = AF_INET;
-	addr.sin_port = of_bswap16_if_le(port);
+	((struct sockaddr_in*)&addr)->sin_family = AF_INET;
+	((struct sockaddr_in*)&addr)->sin_port = of_bswap16_if_le(port);
 
 	if (he->h_addrtype != AF_INET || he->h_addr_list[0] == NULL) {
 # ifdef OF_THREADS
 		[mutex unlock];
 # endif
 		@throw [OFAddressTranslationFailedException newWithClass: isa
+								  socket: self
 								    host: host];
 	}
 
-	memcpy(&addr.sin_addr.s_addr, he->h_addr_list[0], he->h_length);
+	memcpy(&((struct sockaddr_in*)&addr)->sin_addr.s_addr,
+	    he->h_addr_list[0], he->h_length);
 
 # ifdef OF_THREADS
 	[mutex unlock];
 # endif
 	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
 		@throw [OFBindFailedException newWithClass: isa
+						    socket: self
 						      host: host
 						      port: port];
 
@@ -275,10 +281,37 @@ static OFMutex *mutex = nil;
 		close(sock);
 		sock = INVALID_SOCKET;
 		@throw [OFBindFailedException newWithClass: isa
+						    socket: self
 						      host: host
 						      port: port];
 	}
 #endif
+
+	if (port > 0)
+		return port;
+
+	addrLen = sizeof(addr);
+	if (getsockname(sock, (struct sockaddr*)&addr, &addrLen)) {
+		close(sock);
+		sock = INVALID_SOCKET;
+		@throw [OFBindFailedException newWithClass: isa
+						    socket: self
+						      host: host
+						      port: port];
+	}
+
+	if (addr.ss_family == AF_INET)
+		return of_bswap16_if_le(((struct sockaddr_in*)&addr)->sin_port);
+	if (addr.ss_family == AF_INET6)
+		return of_bswap16_if_le(
+		    ((struct sockaddr_in6*)&addr)->sin6_port);
+
+	close(sock);
+	sock = INVALID_SOCKET;
+	@throw [OFBindFailedException newWithClass: isa
+					    socket: self
+					      host: host
+					      port: port];
 }
 
 - (void)listenWithBackLog: (int)backlog

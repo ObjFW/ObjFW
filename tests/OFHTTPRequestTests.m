@@ -49,8 +49,8 @@ static OFCondition *cond;
 	[cond lock];
 
 	listener = [OFTCPSocket socket];
-	[listener bindToPort: port
-		      onHost: @"127.0.0.1"];
+	port = [listener bindToPort: 0
+			     onHost: @"127.0.0.1"];
 	[listener listen];
 
 	[cond signal];
@@ -95,20 +95,16 @@ static OFCondition *cond;
 	[cond lock];
 
 	server = [[[OFHTTPRequestTestsServer alloc] init] autorelease];
-	/* srand(time(NULL)) was already called by OFTCPSocket */
-	server->port = (uint16_t)rand();
-	if (server->port < 1024)
-		server->port += 1024;
 	[server start];
+
+	[cond wait];
+	[cond unlock];
 
 	url = [OFURL URLWithString:
 	    [OFString stringWithFormat: @"http://127.0.0.1:%" @PRIu16 "/foo",
 					server->port]];
 
 	TEST(@"+[requestWithURL]", (req = [OFHTTPRequest requestWithURL: url]))
-
-	[cond wait];
-	[cond unlock];
 
 	TEST(@"-[perform]", (res = [req perform]))
 
