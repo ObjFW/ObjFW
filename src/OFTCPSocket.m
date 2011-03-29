@@ -198,7 +198,11 @@ static OFMutex *mutex = nil;
 - (uint16_t)bindToPort: (uint16_t)port
 		onHost: (OFString*)host
 {
-	struct sockaddr_storage addr;
+	union {
+		struct sockaddr_storage storage;
+		struct sockaddr_in in;
+		struct sockaddr_in6 in6;
+	} addr;
 	socklen_t addrLen;
 
 	if (sock != INVALID_SOCKET)
@@ -253,8 +257,8 @@ static OFMutex *mutex = nil;
 	}
 
 	memset(&addr, 0, sizeof(addr));
-	((struct sockaddr_in*)&addr)->sin_family = AF_INET;
-	((struct sockaddr_in*)&addr)->sin_port = of_bswap16_if_le(port);
+	addr.in.sin_family = AF_INET;
+	addr.in.sin_port = of_bswap16_if_le(port);
 
 	if (he->h_addrtype != AF_INET || he->h_addr_list[0] == NULL) {
 # ifdef OF_THREADS
@@ -265,8 +269,7 @@ static OFMutex *mutex = nil;
 								    host: host];
 	}
 
-	memcpy(&((struct sockaddr_in*)&addr)->sin_addr.s_addr,
-	    he->h_addr_list[0], he->h_length);
+	memcpy(addr.in.sin_addr.s_addr, he->h_addr_list[0], he->h_length);
 
 # ifdef OF_THREADS
 	[mutex unlock];
@@ -277,7 +280,7 @@ static OFMutex *mutex = nil;
 						      host: host
 						      port: port];
 
-	if (bind(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
+	if (bind(sock, (struct sockaddr*)&addr.in, sizeof(addr.in)) == -1) {
 		close(sock);
 		sock = INVALID_SOCKET;
 		@throw [OFBindFailedException newWithClass: isa
@@ -290,7 +293,7 @@ static OFMutex *mutex = nil;
 	if (port > 0)
 		return port;
 
-	addrLen = sizeof(addr);
+	addrLen = sizeof(addr.storage);
 	if (getsockname(sock, (struct sockaddr*)&addr, &addrLen)) {
 		close(sock);
 		sock = INVALID_SOCKET;
@@ -300,11 +303,10 @@ static OFMutex *mutex = nil;
 						      port: port];
 	}
 
-	if (addr.ss_family == AF_INET)
-		return of_bswap16_if_le(((struct sockaddr_in*)&addr)->sin_port);
-	if (addr.ss_family == AF_INET6)
-		return of_bswap16_if_le(
-		    ((struct sockaddr_in6*)&addr)->sin6_port);
+	if (addr.storage.ss_family == AF_INET)
+		return of_bswap16_if_le(addr.in.sin_port);
+	if (addr.storage.ss_family == AF_INET6)
+		return of_bswap16_if_le(addr.in6.sin6_port);
 
 	close(sock);
 	sock = INVALID_SOCKET;
