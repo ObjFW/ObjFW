@@ -306,8 +306,8 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	    isnan([@"   NAN\t\t" floatValue]))
 
 	TEST(@"-[doubleValue]",
-	    [@"\t-0.000000059604644775390625 " doubleValue] ==
-	    -0.000000059604644775390625L &&
+	    [@"\t-0x1.FFFFFFFFFFFFFP-1020 " doubleValue] ==
+	    -0x1.FFFFFFFFFFFFFP-1020 &&
 	    [@"\r-INFINITY\n" doubleValue] == -INFINITY &&
 	    isnan([@"   NAN\t\t" doubleValue]))
 
