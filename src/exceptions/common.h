@@ -26,6 +26,9 @@
 #endif
 
 #ifndef _WIN32
+#if !defined(HAVE_THREADSAFE_GETADDRINFO) && !defined(_PSP)
+# include <netdb.h>
+#endif
 # include <errno.h>
 # define GET_ERRNO	errno
 # ifndef HAVE_THREADSAFE_GETADDRINFO

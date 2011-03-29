@@ -132,6 +132,7 @@ static OFMutex *mutex = nil;
 		[mutex unlock];
 # endif
 		@throw [OFAddressTranslationFailedException newWithClass: isa
+								  socket: self
 								    host: host];
 	}
 
@@ -269,7 +270,7 @@ static OFMutex *mutex = nil;
 								    host: host];
 	}
 
-	memcpy(addr.in.sin_addr.s_addr, he->h_addr_list[0], he->h_length);
+	memcpy(&addr.in.sin_addr.s_addr, he->h_addr_list[0], he->h_length);
 
 # ifdef OF_THREADS
 	[mutex unlock];
