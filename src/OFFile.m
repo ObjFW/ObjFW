@@ -177,13 +177,16 @@ of_log(OFConstantString *fmt, ...)
 
 + (OFString*)currentDirectoryPath
 {
+	OFString *ret;
 	char *buf = getcwd(NULL, 0);
 
 	@try {
-		return [OFString stringWithCString: buf];
+		ret = [OFString stringWithCString: buf];
 	} @finally {
 		free(buf);
 	}
+
+	return ret;
 }
 
 + (BOOL)fileExistsAtPath: (OFString*)path
