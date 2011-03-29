@@ -438,15 +438,23 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 
 /**
  * Returns the decimal value of the string as an intmax_t or throws an
- * OFInvalidEncoding exception if the string contains any non-number characters.
+ * OFInvalidEncodingException if the string contains any non-number characters.
+ * Leading and trailing whitespaces are ignored.
+ *
+ * If the number is too big to fit into an intmax_t, an OFOutOfRangeException
+ * is thrown.
  *
  * \return An intmax_t with the value of the string
  */
 - (intmax_t)decimalValue;
 
 /**
- * Returns the hexadecimal value of the string as an intmax_t or throws an
- * OFInvalidEncoding exception if the string contains any non-number characters.
+ * Returns the hexadecimal value of the string as an uintmax_t or throws an
+ * OFInvalidEncodingException if the string contains any non-number characters.
+ * Leading and trailing whitespaces are ignored.
+ *
+ * If the number is too big to fit into an uintmax_t, an OFOutOfRangeException
+ * is thrown.
  *
  * \return A uintmax_t with the value of the string
  */

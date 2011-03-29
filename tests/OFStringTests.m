@@ -283,22 +283,24 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 
 	TEST(@"-[decimalValue]",
 	    [@"1234" decimalValue] == 1234 &&
-	    [@"+123" decimalValue] == 123 &&
-	    [@"-500" decimalValue] == -500 &&
-	    [@"" decimalValue] == 0)
+	    [@"\r\n+123  " decimalValue] == 123 &&
+	    [@"-500\t" decimalValue] == -500 &&
+	    [@"\t\t\r\n" decimalValue] == 0)
 
 	TEST(@"-[hexadecimalValue]",
 	    [@"123f" hexadecimalValue] == 0x123f &&
-	    [@"0xABcd" hexadecimalValue] == 0xABCD &&
-	    [@"xbCDE" hexadecimalValue] == 0xBCDE &&
+	    [@"\t\n0xABcd\r" hexadecimalValue] == 0xABCD &&
+	    [@"  xbCDE" hexadecimalValue] == 0xBCDE &&
 	    [@"$CdEf" hexadecimalValue] == 0xCDEF &&
-	    [@"Feh" hexadecimalValue] == 0xFE &&
-	    [@"" hexadecimalValue] == 0)
+	    [@"\rFeh " hexadecimalValue] == 0xFE &&
+	    [@"\r\t" hexadecimalValue] == 0)
 
 	EXPECT_EXCEPTION(@"Detect invalid characters in -[decimalValue] #1",
 	    OFInvalidFormatException, [@"abc" decimalValue])
 	EXPECT_EXCEPTION(@"Detect invalid characters in -[decimalValue] #2",
 	    OFInvalidFormatException, [@"0a" decimalValue])
+	EXPECT_EXCEPTION(@"Detect invalid characters in -[decimalValue] #3",
+			 OFInvalidFormatException, [@"0 1" decimalValue])
 
 	EXPECT_EXCEPTION(@"Detect invalid chars in -[hexadecimalValue] #1",
 	    OFInvalidFormatException, [@"0xABCDEFG" hexadecimalValue])
@@ -306,6 +308,8 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	    OFInvalidFormatException, [@"0x" hexadecimalValue])
 	EXPECT_EXCEPTION(@"Detect invalid chars in -[hexadecimalValue] #3",
 	    OFInvalidFormatException, [@"$" hexadecimalValue])
+	EXPECT_EXCEPTION(@"Detect invalid chars in -[hexadecimalValue] #4",
+	    OFInvalidFormatException, [@"$ " hexadecimalValue])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[decimalValue]",
 	    OFOutOfRangeException,

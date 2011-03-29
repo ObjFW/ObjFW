@@ -1250,25 +1250,44 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 - (intmax_t)decimalValue
 {
+	const char *str = string;
+	size_t len = length;
 	int i = 0;
 	intmax_t num = 0;
+	BOOL expectWhitespace = NO;
 
-	if (string[0] == '-' || string[0] == '+')
+	while (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r') {
+		str++;
+		len--;
+	}
+
+	if (str[0] == '-' || str[0] == '+')
 		i++;
 
-	for (; i < length; i++) {
-		if (string[i] >= '0' && string[i] <= '9') {
+	for (; i < len; i++) {
+		if (expectWhitespace) {
+			if (str[i] != ' ' && str[i] != '\t' &&
+			    str[i] != '\n' && str[i] != '\r')
+				@throw [OFInvalidFormatException
+				    newWithClass: isa];
+			continue;
+		}
+
+		if (str[i] >= '0' && str[i] <= '9') {
 			if (INTMAX_MAX / 10 < num ||
-			    INTMAX_MAX - num * 10 < string[i] - '0')
+			    INTMAX_MAX - num * 10 < str[i] - '0')
 				@throw [OFOutOfRangeException
 				    newWithClass: isa];
 
-			num = (num * 10) + (string[i] - '0');
-		} else
+			num = (num * 10) + (str[i] - '0');
+		} else if (str[i] == ' ' || str[i] == '\t' ||
+		    str[i] == '\n' || str[i] == '\r')
+			expectWhitespace = YES;
+		else
 			@throw [OFInvalidFormatException newWithClass: isa];
 	}
 
-	if (string[0] == '-')
+	if (str[0] == '-')
 		num *= -1;
 
 	return num;
@@ -1276,35 +1295,48 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 - (uintmax_t)hexadecimalValue
 {
+	const char *str = string;
+	size_t len = length;
 	int i = 0;
 	uintmax_t num = 0;
-	BOOL suffix = NO;
+	BOOL expectWhitespace = NO, gotNumber = NO;
 
-	if (length == 0)
+	while (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r') {
+		str++;
+		len--;
+	}
+
+	if (len == 0)
 		return 0;
 
-	if (length >= 2 && string[0] == '0' && string[1] == 'x')
+	if (len >= 2 && str[0] == '0' && str[1] == 'x')
 		i = 2;
-	else if (length >= 1 && (string[0] == 'x' || string[0] == '$'))
+	else if (len >= 1 && (str[0] == 'x' || str[0] == '$'))
 		i = 1;
 
-	if (i == length)
-		@throw [OFInvalidFormatException newWithClass: isa];
-
-	for (; i < length; i++) {
+	for (; i < len; i++) {
 		uintmax_t newnum;
 
-		if (suffix)
-			@throw [OFInvalidFormatException newWithClass: isa];
+		if (expectWhitespace) {
+			if (str[i] != ' ' && str[i] != '\t' &&
+			    str[i] != '\n' && str[i] != '\r')
+				@throw [OFInvalidFormatException
+				    newWithClass: isa];
+			continue;
+		}
 
-		if (string[i] >= '0' && string[i] <= '9')
-			newnum = (num << 4) | (string[i] - '0');
-		else if (string[i] >= 'A' && string[i] <= 'F')
-			newnum = (num << 4) | (string[i] - 'A' + 10);
-		else if (string[i] >= 'a' && string[i] <= 'f')
-			newnum = (num << 4) | (string[i] - 'a' + 10);
-		else if (string[i] == 'h') {
-			suffix = YES;
+		if (str[i] >= '0' && str[i] <= '9') {
+			newnum = (num << 4) | (str[i] - '0');
+			gotNumber = YES;
+		} else if (str[i] >= 'A' && str[i] <= 'F') {
+			newnum = (num << 4) | (str[i] - 'A' + 10);
+			gotNumber = YES;
+		} else if (str[i] >= 'a' && str[i] <= 'f') {
+			newnum = (num << 4) | (str[i] - 'a' + 10);
+			gotNumber = YES;
+		} else if (str[i] == 'h' || str[i] == ' ' || str[i] == '\t' ||
+		    str[i] == '\n' || str[i] == '\r') {
+			expectWhitespace = YES;
 			continue;
 		} else
 			@throw [OFInvalidFormatException newWithClass: isa];
@@ -1314,6 +1346,9 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 		num = newnum;
 	}
+
+	if (!gotNumber)
+		@throw [OFInvalidFormatException newWithClass: isa];
 
 	return num;
 }
