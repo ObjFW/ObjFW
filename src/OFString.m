@@ -1353,6 +1353,54 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return num;
 }
 
+- (float)floatValue
+{
+	const char *str = string;
+	char *endptr;
+	float value;
+
+	/* Don't depend on isspace and thus the used locale */
+	while (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r')
+		str++;
+
+	value = strtof(str, &endptr);
+
+	/* Check if there are any invalid chars left */
+	if (endptr != NULL) {
+		for (; *endptr != '\0'; endptr++)
+			if (*endptr != ' ' && *endptr != '\t' &&
+			    *endptr != '\n' && *endptr != '\r')
+				@throw [OFInvalidFormatException
+				    newWithClass: isa];
+	}
+
+	return value;
+}
+
+- (double)doubleValue
+{
+	const char *str = string;
+	char *endptr;
+	double value;
+
+	/* Don't depend on isspace and thus the used locale */
+	while (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r')
+		str++;
+
+	value = strtod(str, &endptr);
+
+	/* Check if there are any invalid chars left */
+	if (endptr != NULL) {
+		for (; *endptr != '\0'; endptr++)
+			if (*endptr != ' ' && *endptr != '\t' &&
+			    *endptr != '\n' && *endptr != '\r')
+				@throw [OFInvalidFormatException
+				    newWithClass: isa];
+	}
+
+	return value;
+}
+
 - (of_unichar_t*)unicodeString
 {
 	of_unichar_t *ret;

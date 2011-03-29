@@ -461,6 +461,22 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 - (uintmax_t)hexadecimalValue;
 
 /**
+ * Returns the float value of the string as a float or throws an
+ * OFInvalidEncodingException if the string contains any non-number characters.
+ *
+ * \return A float with the value of the string
+ */
+- (float)floatValue;
+
+/**
+ * Returns the double value of the string as a float or throws an
+ * OFInvalidEncodingException if the string contains any non-number characters.
+ *
+ * \return A double with the value of the string
+ */
+- (double)doubleValue;
+
+/**
  * Returns the string as an array of of_unichar_t. The result needs to be
  * free()'d by the caller, as the memory is not marked as belonging to the
  * object.

@@ -18,6 +18,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #import "OFString.h"
 #import "OFArray.h"
@@ -295,6 +296,21 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	    [@"\rFeh " hexadecimalValue] == 0xFE &&
 	    [@"\r\t" hexadecimalValue] == 0)
 
+	/*
+	 * These test numbers can be generated without rounding if we have IEEE
+	 * floating point numbers, thus we can use == on then.
+	 */
+	TEST(@"-[floatValue]",
+	    [@"\t-0.25 " floatValue] == -0.25 &&
+	    [@"\r-INFINITY\n" floatValue] == -INFINITY &&
+	    isnan([@"   NAN\t\t" floatValue]))
+
+	TEST(@"-[doubleValue]",
+	    [@"\t-0.000000059604644775390625 " doubleValue] ==
+	    -0.000000059604644775390625L &&
+	    [@"\r-INFINITY\n" doubleValue] == -INFINITY &&
+	    isnan([@"   NAN\t\t" doubleValue]))
+
 	EXPECT_EXCEPTION(@"Detect invalid characters in -[decimalValue] #1",
 	    OFInvalidFormatException, [@"abc" decimalValue])
 	EXPECT_EXCEPTION(@"Detect invalid characters in -[decimalValue] #2",
@@ -310,6 +326,20 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	    OFInvalidFormatException, [@"$" hexadecimalValue])
 	EXPECT_EXCEPTION(@"Detect invalid chars in -[hexadecimalValue] #4",
 	    OFInvalidFormatException, [@"$ " hexadecimalValue])
+
+	EXPECT_EXCEPTION(@"Detect invalid chars in -[floatValue] #1",
+	    OFInvalidFormatException, [@"0,0" floatValue])
+	EXPECT_EXCEPTION(@"Detect invalid chars in -[floatValue] #2",
+	    OFInvalidFormatException, [@"0.0a" floatValue])
+	EXPECT_EXCEPTION(@"Detect invalid chars in -[floatValue] #3",
+	    OFInvalidFormatException, [@"0 0" floatValue])
+
+	EXPECT_EXCEPTION(@"Detect invalid chars in -[doubleValue] #1",
+	    OFInvalidFormatException, [@"0,0" floatValue])
+	EXPECT_EXCEPTION(@"Detect invalid chars in -[doubleValue] #2",
+	    OFInvalidFormatException, [@"0.0a" floatValue])
+	EXPECT_EXCEPTION(@"Detect invalid chars in -[doubleValue] #3",
+	    OFInvalidFormatException, [@"0 0" floatValue])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[decimalValue]",
 	    OFOutOfRangeException,
