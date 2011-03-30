@@ -409,6 +409,7 @@ AC_TRY_COMPILE([
 	# include <netdb.h>
 	#else
 	# define _WIN32_WINNT 0x0501
+	# include <windows.h>
 	# include <ws2tcpip.h>
 	#endif
 ], [
