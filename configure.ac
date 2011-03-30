@@ -119,7 +119,7 @@ AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
 		yes
 		#endif
 	], [
-		test x"$objc_runtime" = "x" && objc_runtime="GNU"
+		test x"$objc_runtime" = x"" && objc_runtime="GNU"
 	], [
 		dnl TODO: This is ugly. Let's think of a better check.
 		AC_EGREP_CPP(yes, [
@@ -128,7 +128,7 @@ AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
 			yes
 			#endif
 		], [
-			test x"$objc_runtime" = "x" && objc_runtime="old GNU"
+			test x"$objc_runtime" = x"" && objc_runtime="old GNU"
 		], [
 			objc_runtime="Apple"
 		])
@@ -177,10 +177,10 @@ AC_CHECK_FUNC(objc_enumerationMutation, [
 		[Whether we have objc_enumerationMutation])
 ])
 
-AC_PATH_TOOL(AR, ar)
+AC_CHECK_TOOL(AR, ar)
 AC_PROG_RANLIB
 AC_ARG_ENABLE(shared,
-	AS_HELP_STRING([--disable-shared], [don't build shared library]))
+	AS_HELP_STRING([--disable-shared], [do not build shared library]))
 AS_IF([test x"$enable_shared" != x"no"], [
 	BUILDSYS_SHARED_LIB
 	AC_SUBST(OBJFW_SHARED_LIB, "${LIB_PREFIX}objfw${LIB_SUFFIX}")
@@ -195,7 +195,7 @@ AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
 ])
 
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
-AS_IF([test x"$PLUGIN_SUFFIX" != "x"], [
+AS_IF([test x"$PLUGIN_SUFFIX" != x""], [
 	AC_SUBST(OFPLUGIN_M, "OFPlugin.m")
 	AC_SUBST(OFPLUGINTESTS_M, "OFPluginTests.m")
 	AC_SUBST(TESTPLUGIN, "plugin")
@@ -535,9 +535,9 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 
 	case "$host" in
 		*-*-mingw*)
-			AC_PATH_PROG(WINE, wine)
+			AC_CHECK_PROG(WINE, wine)
 
-			AS_IF([test x"$WINE" != "x"], [
+			AS_IF([test x"$WINE" != x""], [
 				AC_SUBST(TESTS, "tests")
 				AC_SUBST(TEST_LAUNCHER, "$WINE")
 			])
@@ -551,7 +551,7 @@ BUILDSYS_INIT
 BUILDSYS_TOUCH_DEPS
 
 dnl We don't call AC_PROG_CPP, but only AC_PROG_OBJCPP and set CPP to OBJCPP
-dnl and add OBJCPPFLAGS to CPPFLAGS, thus we need to AC_SUBST these ourself
+dnl and add OBJCPPFLAGS to CPPFLAGS, thus we need to AC_SUBST these ourself.
 AC_SUBST(CPP)
 AC_SUBST(CPPFLAGS)
 
