@@ -122,6 +122,16 @@ Class of_http_request_tls_socket_class = Nil;
 	OF_GETTER(headers, YES)
 }
 
+- (void)setRedirectsFromHTTPSToHTTPAllowed: (BOOL)allowed
+{
+	redirectsFromHTTPSToHTTPAllowed = allowed;
+}
+
+- (BOOL)redirectsFromHTTPSToHTTPAllowed
+{
+	return redirectsFromHTTPSToHTTPAllowed;
+}
+
 - (OFHTTPRequestResult*)perform
 {
 	return [self performWithRedirects: 10];
@@ -257,9 +267,12 @@ Class of_http_request_tls_socket_class = Nil;
 
 			value = [OFString stringWithCString: tmp];
 
-			if (redirects > 0 && (status == 301 || status == 302 ||
+			if ((redirects > 0 && (status == 301 || status == 302 ||
 			    status == 303) && [key caseInsensitiveCompare:
-			    @"Location"] == OF_ORDERED_SAME) {
+			    @"Location"] == OF_ORDERED_SAME) &&
+			    (redirectsFromHTTPSToHTTPAllowed ||
+			    [scheme isEqual: @"http"] ||
+			    ![value hasPrefix: @"http://"])) {
 				OFURL *new;
 
 				new = [[OFURL alloc] initWithString: value

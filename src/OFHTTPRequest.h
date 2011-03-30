@@ -37,6 +37,7 @@ typedef enum of_http_request_type_t {
 	of_http_request_type_t requestType;
 	OFString *queryString;
 	OFDictionary *headers;
+	BOOL redirectsFromHTTPSToHTTPAllowed;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -44,6 +45,7 @@ typedef enum of_http_request_type_t {
 @property (assign) of_http_request_type_t requestType;
 @property (copy) OFString *queryString;
 @property (copy) OFDictionary *headers;
+@property (assign) BOOL redirectsFromHTTPSToHTTPAllowed;
 #endif
 
 /**
@@ -112,6 +114,18 @@ typedef enum of_http_request_type_t {
  * \return A dictionary with headers for the HTTP request.
  */
 - (OFDictionary*)headers;
+
+/**
+ * Sets whether redirects from HTTPS to HTTP are allowed.
+ *
+ * \param allowed Whether redirects from HTTPS to HTTP are allowed
+ */
+- (void)setRedirectsFromHTTPSToHTTPAllowed: (BOOL)allowed;
+
+/**
+ * \return Whether redirects from HTTPS to HTTP are allowed
+ */
+- (BOOL)redirectsFromHTTPSToHTTPAllowed;
 
 /**
  * Performs the HTTP request and returns an OFHTTPRequestResult.

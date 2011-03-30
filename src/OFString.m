@@ -716,8 +716,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		return self;
 	}
 
-	req = [OFHTTPRequest request];
-	[req setURL: url];
+	req = [OFHTTPRequest requestWithURL: url];
 	res = [req perform];
 
 	if ([res statusCode] != 200)
