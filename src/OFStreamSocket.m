@@ -27,8 +27,10 @@
 
 #import "OFStreamSocket.h"
 
+#import "OFInitializationFailedException.h"
 #import "OFNotConnectedException.h"
 #import "OFReadFailedException.h"
+#import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
 
 #ifndef INVALID_SOCKET
@@ -138,7 +140,7 @@
 
 	if (ioctlsocket(sock, FIONBIO, &v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException newWithClass: isa
-							 stream: stream];
+							 stream: self];
 }
 #endif
 

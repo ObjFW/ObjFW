@@ -1240,7 +1240,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 #ifndef _WIN32
 	if (string[0] == OF_PATH_DELIM)
 #else
-	if (path_c[i] == '/' || path_c[i] == '\\')
+	if (string[i] == '/' || string[i] == '\\')
 #endif
 		return [OFString stringWithCString: string
 					    length: 1];

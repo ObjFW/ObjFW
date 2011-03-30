@@ -384,7 +384,7 @@ AC_MSG_RESULT($atomic_ops)
 
 AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
 AC_CHECK_LIB(network, socket, LIBS="$LIBS -lnetwork")
-AC_CHECK_LIB(ws2_32, socket, LIBS="$LIBS -lws2_32")
+AC_CHECK_LIB(ws2_32, main, LIBS="$LIBS -lws2_32")
 
 AC_CHECK_FUNC(gmtime_r, [
 	AC_DEFINE(HAVE_GMTIME_R, 1, [Whether we have gmtime_r])

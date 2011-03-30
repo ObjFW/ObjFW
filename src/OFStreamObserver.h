@@ -85,7 +85,11 @@
 	fd_set readfds;
 	fd_set writefds;
 	fd_set exceptfds;
+# ifndef _WIN32
 	nfds_t nfds;
+# else
+	int nfds;
+# endif
 #endif
 }
 
