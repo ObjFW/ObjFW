@@ -213,9 +213,23 @@
 - (OFArray*)attributes;
 
 /**
+ * Removes all children and adds the children from the specified array.
+ *
+ * \param children The new children to add
+ */
+- (void)setChildren: (OFArray*)children;
+
+/**
  * \return An array with all children of the element
  */
 - (OFArray*)children;
+
+/**
+ * Removes all children and sets the string value to the specified string.
+ *
+ * \param value The new string value for the element
+ */
+- (void)setStringValue: (OFString*)value;
 
 /**
  * \return A string with the string value of all children concatenated

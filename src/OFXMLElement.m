@@ -260,9 +260,33 @@
 	return [[attributes copy] autorelease];
 }
 
+- (void)setChildren: (OFArray*)children_
+{
+	OFMutableArray *new = [children_ mutableCopy];
+
+	@try {
+		[children release];
+	} @catch (id e) {
+		[new release];
+		@throw e;
+	}
+
+	children = new;
+}
+
 - (OFArray*)children
 {
 	return [[children copy] autorelease];
+}
+
+- (void)setStringValue: (OFString*)value
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+
+	[self setChildren: [OFArray arrayWithObject:
+	    [OFXMLElement elementWithCharacters: value]]];
+
+	[pool release];
 }
 
 - (OFString*)stringValue
