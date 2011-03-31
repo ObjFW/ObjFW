@@ -24,11 +24,35 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFXMLAttribute.h"
+#import "OFXMLParser.h"
+#import "OFXMLElementBuilder.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
 #import "OFUnboundNamespaceException.h"
+
+@interface OFXMLElement_OFXMLElementBuilderDelegate: OFObject
+{
+@public
+	OFXMLElement *element;
+}
+@end
+
+@implementation OFXMLElement_OFXMLElementBuilderDelegate
+- (void)elementBuilder: (OFXMLElementBuilder*)builder
+       didBuildElement: (OFXMLElement*)elem
+{
+	element = [elem retain];
+}
+
+- (void)dealloc
+{
+	[element release];
+
+	[super dealloc];
+}
+@end
 
 @implementation OFXMLElement
 + elementWithName: (OFString*)name_
@@ -72,6 +96,11 @@
 + elementWithComment: (OFString*)comment
 {
 	return [[[self alloc] initWithComment: comment] autorelease];
+}
+
++ elementWithString: (OFString*)str
+{
+	return [[[self alloc] initWithString: str] autorelease];
 }
 
 - init
@@ -170,6 +199,39 @@
 
 	@try {
 		comment = [comment_ copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithString: (OFString*)str
+{
+	OFAutoreleasePool *pool;
+	OFXMLParser *parser;
+	OFXMLElementBuilder *builder;
+	OFXMLElement_OFXMLElementBuilderDelegate *delegate;
+
+	[self release];
+
+	pool = [[OFAutoreleasePool alloc] init];
+
+	parser = [OFXMLParser parser];
+	builder = [OFXMLElementBuilder elementBuilder];
+	delegate = [[[OFXMLElement_OFXMLElementBuilderDelegate alloc] init]
+	    autorelease];
+
+	[parser setDelegate: builder];
+	[builder setDelegate: delegate];
+
+	[parser parseString: str];
+
+	self = [delegate->element retain];
+
+	@try {
+		[pool release];
 	} @catch (id e) {
 		[self release];
 		@throw e;

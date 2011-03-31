@@ -108,6 +108,14 @@
 + elementWithComment: (OFString*)comment;
 
 /**
+ * Parses the string and returns an OFXMLElement for it.
+ *
+ * \param str The string to parse
+ * \return A new autoreleased OFXMLElement with the contents of the string
+ */
++ elementWithString: (OFString*)str;
+
+/**
  * Initializes an already allocated OFXMLElement with the specified element
  * name.
  *
@@ -180,6 +188,14 @@
  * \return An initialized OFXMLElement consisting of the specified comment
  */
 - initWithComment: (OFString*)comment;
+
+/**
+ * Parses the string and initializes an already allocated OFXMLElement with it.
+ *
+ * \param str The string to parse
+ * \return An initialized OFXMLElement with the contents of the string
+ */
+- initWithString: (OFString*)str;
 
 /**
  * \return The name of the element
