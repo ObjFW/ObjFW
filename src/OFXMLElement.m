@@ -265,7 +265,7 @@
 	return [[children copy] autorelease];
 }
 
-- (OFString*)_stringValueWithParent: (OFXMLElement*)parent
+- (OFString*)_XMLStringWithParent: (OFXMLElement*)parent
 {
 	OFAutoreleasePool *pool, *pool2;
 	char *str_c;
@@ -436,7 +436,7 @@
 			append(tmp, @selector(
 			    appendCStringWithoutUTF8Checking:),
 			    [[children_carray[j]
-			        _stringValueWithParent: self] cString]);
+			    _XMLStringWithParent: self] cString]);
 
 		len += [tmp cStringLength] + [name cStringLength] + 2;
 		@try {
@@ -486,14 +486,14 @@
 	return ret;
 }
 
-- (OFString*)stringValue
+- (OFString*)XMLString
 {
-	return [self _stringValueWithParent: nil];
+	return [self _XMLStringWithParent: nil];
 }
 
 - (OFString*)description
 {
-	return [self stringValue];
+	return [self XMLString];
 }
 
 - (void)addAttribute: (OFXMLAttribute*)attr

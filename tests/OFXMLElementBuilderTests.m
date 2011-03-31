@@ -51,9 +51,9 @@ static size_t i = 0;
 
 	TEST(@"Building elements from parsed XML",
 	    R([p parseString: str]) &&
-	    elem[0] != nil && [[elem[0] stringValue] isEqual: str] &&
+	    elem[0] != nil && [[elem[0] XMLString] isEqual: str] &&
 	    R([p parseString: @"<!--foo-->"]) &&
-	    elem[1] != nil && [[elem[1] stringValue] isEqual: @"<!--foo-->"])
+	    elem[1] != nil && [[elem[1] XMLString] isEqual: @"<!--foo-->"])
 
 	[elem[0] release];
 	[elem[1] release];

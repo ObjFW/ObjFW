@@ -221,7 +221,7 @@
  * \return A new autoreleased OFString representing the OFXMLElement as an
  * XML string
  */
-- (OFString*)stringValue;
+- (OFString*)XMLString;
 
 /**
  * Adds the specified attribute.
