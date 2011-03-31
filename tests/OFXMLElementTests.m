@@ -117,6 +117,11 @@ static OFString *module = @"OFXMLElement";
 	    [[elem[2] XMLString] isEqual:
 	    @"<objfw-test:foo test='test'><objfw-test:bar/></objfw-test:foo>"])
 
+	TEST(@"+[elementWithXMLString:] and -[stringValue]",
+	    [[[OFXMLElement elementWithXMLString:
+	    @"<x>foo<![CDATA[bar]]><y>baz</y>qux</x>"] stringValue] isEqual:
+	    @"foobarbazqux"])
+
 	TEST(@"-[elementsForName:namespace:]",
 	    (a = [elem[2] elementsForName: @"bar"
 				namespace: @"urn:objfw:test"]) &&

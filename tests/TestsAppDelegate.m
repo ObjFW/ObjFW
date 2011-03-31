@@ -138,8 +138,8 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 #ifdef OF_THREADS
 	[self HTTPRequestTests];
 #endif
-	[self XMLElementTests];
 	[self XMLParserTests];
+	[self XMLElementTests];
 	[self XMLElementBuilderTests];
 #ifdef OF_PLUGINS
 	[self pluginTests];

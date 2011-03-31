@@ -265,6 +265,42 @@
 	return [[children copy] autorelease];
 }
 
+- (OFString*)stringValue
+{
+	OFAutoreleasePool *pool;
+	OFMutableString *ret;
+	OFXMLElement **children_c;
+	size_t i, count = [children count];
+
+	if (count == 0)
+		return @"";
+
+	ret = [OFMutableString string];
+	children_c = [children cArray];
+	pool = [[OFAutoreleasePool alloc] init];
+
+	for (i = 0; i < count; i++) {
+		if (children_c[i]->characters != nil)
+			[ret appendString: children_c[i]->characters];
+		else if (children_c[i]->cdata != nil)
+			[ret appendString: children_c[i]->cdata];
+		else if (children_c[i]->comment == nil) {
+			[ret appendString: [children_c[i] stringValue]];
+			[pool releaseObjects];
+		}
+	}
+
+	[pool release];
+
+	/*
+	 * Class swizzle the string to be immutable. We declared the return type
+	 * to be OFString*, so it can't be modified anyway. But not swizzling it
+	 * would create a real copy each time -[copy] is called.
+	 */
+	ret->isa = [OFString class];
+	return ret;
+}
+
 - (OFString*)_XMLStringWithParent: (OFXMLElement*)parent
 {
 	OFAutoreleasePool *pool, *pool2;

@@ -218,6 +218,11 @@
 - (OFArray*)children;
 
 /**
+ * \return A string with the string value of all children concatenated
+ */
+- (OFString*)stringValue;
+
+/**
  * \return A new autoreleased OFString representing the OFXMLElement as an
  * XML string
  */
