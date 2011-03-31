@@ -113,7 +113,7 @@
  * \param str The string to parse
  * \return A new autoreleased OFXMLElement with the contents of the string
  */
-+ elementWithString: (OFString*)str;
++ elementWithXMLString: (OFString*)str;
 
 /**
  * Initializes an already allocated OFXMLElement with the specified element
@@ -195,7 +195,7 @@
  * \param str The string to parse
  * \return An initialized OFXMLElement with the contents of the string
  */
-- initWithString: (OFString*)str;
+- initWithXMLString: (OFString*)str;
 
 /**
  * \return The name of the element

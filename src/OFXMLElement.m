@@ -99,9 +99,9 @@
 	return [[[self alloc] initWithComment: comment] autorelease];
 }
 
-+ elementWithString: (OFString*)str
++ elementWithXMLString: (OFString*)str
 {
-	return [[[self alloc] initWithString: str] autorelease];
+	return [[[self alloc] initWithXMLString: str] autorelease];
 }
 
 - init
@@ -208,7 +208,7 @@
 	return self;
 }
 
-- initWithString: (OFString*)str
+- initWithXMLString: (OFString*)str
 {
 	OFAutoreleasePool *pool;
 	OFXMLParser *parser;
