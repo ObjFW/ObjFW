@@ -29,6 +29,7 @@
 #import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"
+#import "OFMalformedXMLException.h"
 #import "OFNotImplementedException.h"
 #import "OFUnboundNamespaceException.h"
 
@@ -227,6 +228,10 @@
 	[builder setDelegate: delegate];
 
 	[parser parseString: str];
+
+	if (![parser finishedParsing])
+		@throw [OFMalformedXMLException newWithClass: isa
+						      parser: parser];
 
 	self = [delegate->element retain];
 
