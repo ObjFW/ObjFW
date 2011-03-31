@@ -315,13 +315,6 @@
 - (void)setDefaultNamespace: (OFString*)ns;
 
 /**
- * Binds the default namespace for the element.
- *
- * \param ns The default namespace for the element
- */
-- (void)bindDefaultNamespace: (OFString*)ns;
-
-/**
  * Adds a child to the OFXMLElement.
  *
  * \param child Another OFXMLElement which is added as a child

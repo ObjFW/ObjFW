@@ -638,13 +638,6 @@
 	[old release];
 }
 
-- (void)bindDefaultNamespace: (OFString*)ns_
-{
-	[self setDefaultNamespace: ns_];
-	[self addAttributeWithName: @"xmlns"
-		       stringValue: ns_];
-}
-
 - (void)addChild: (OFXMLElement*)child
 {
 	if (name == nil)
