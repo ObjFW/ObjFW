@@ -652,10 +652,23 @@
 	[children addObject: child];
 }
 
+- (OFXMLElement*)elementForName: (OFString*)elemname
+{
+	return [self elementForName: elemname
+			  namespace: nil];
+}
+
 - (OFArray*)elementsForName: (OFString*)elemname
 {
 	return [self elementsForName: elemname
 			   namespace: nil];
+}
+
+- (OFXMLElement*)elementForName: (OFString*)elemname
+		      namespace: (OFString*)elemns
+{
+	return [[self elementsForName: elemname
+			    namespace: elemns] firstObject];
 }
 
 - (OFArray*)elementsForName: (OFString*)elemname

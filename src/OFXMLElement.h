@@ -329,10 +329,24 @@
 - (void)addChild: (OFXMLElement*)child;
 
 /**
+ * \param elemname The name of the element
+ * \return The first child element with the specified name
+ */
+- (OFXMLElement*)elementForName: (OFString*)elemname;
+
+/**
  * \param elemname The name of the elements
  * \return The child elements with the specified name
  */
 - (OFArray*)elementsForName: (OFString*)elemname;
+
+/**
+ * \param elemname The name of the element
+ * \param elemns The namespace of the element
+ * \return The first child element with the specified name and namespace
+ */
+- (OFXMLElement*)elementForName: (OFString*)elemname
+		      namespace: (OFString*)elemns;
 
 /**
  * \param elemname The name of the elements
