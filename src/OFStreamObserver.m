@@ -333,6 +333,7 @@ enum {
 		if (cArray[i]->cache != NULL) {
 			[delegate streamDidBecomeReadyForReading: cArray[i]];
 			foundInCache = YES;
+			[pool releaseObjects];
 		}
 	}
 
@@ -361,18 +362,21 @@ enum {
 			num = [OFNumber numberWithInt: fds_c[i].fd];
 			stream = [fdToStream objectForKey: num];
 			[delegate streamDidBecomeReadyForReading: stream];
+			[pool releaseObjects];
 		}
 
 		if (fds_c[i].revents & POLLOUT) {
 			num = [OFNumber numberWithInt: fds_c[i].fd];
 			stream = [fdToStream objectForKey: num];
 			[delegate streamDidBecomeReadyForReading: stream];
+			[pool releaseObjects];
 		}
 
 		if (fds_c[i].revents & POLLERR) {
 			num = [OFNumber numberWithInt: fds_c[i].fd];
 			stream = [fdToStream objectForKey: num];
 			[delegate streamDidReceiveException: stream];
+			[pool releaseObjects];
 		}
 
 		fds_c[i].revents = 0;
@@ -395,11 +399,14 @@ enum {
 	for (i = 0; i < count; i++) {
 		int fd = [cArray[i] fileDescriptor];
 
-		if (FD_ISSET(fd, &readfds_))
+		if (FD_ISSET(fd, &readfds_)) {
 			[delegate streamDidBecomeReadyForReading: cArray[i]];
+			[pool releaseObjects];
+		}
 
 		if (FD_ISSET(fd, &exceptfds_)) {
 			[delegate streamDidReceiveException: cArray[i]];
+			[pool releaseObjects];
 
 			/*
 			 * Prevent calling it twice in case the fd is in both
@@ -415,11 +422,15 @@ enum {
 	for (i = 0; i < count; i++) {
 		int fd = [cArray[i] fileDescriptor];
 
-		if (FD_ISSET(fd, &writefds_))
+		if (FD_ISSET(fd, &writefds_)) {
 			[delegate streamDidBecomeReadyForWriting: cArray[i]];
+			[pool releaseObjects];
+		}
 
-		if (FD_ISSET(fd, &exceptfds_))
+		if (FD_ISSET(fd, &exceptfds_)) {
 			[delegate streamDidReceiveException: cArray[i]];
+			[pool releaseObjects];
+		}
 	}
 #endif
 
