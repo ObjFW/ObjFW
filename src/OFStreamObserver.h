@@ -77,6 +77,7 @@
 {
 	OFMutableArray *readStreams;
 	OFMutableArray *writeStreams;
+	OFMutableArray *queue, *queueInfo;
 	id <OFStreamObserverDelegate> delegate;
 #ifdef OF_HAVE_POLL
 	OFDataArray *fds;
@@ -85,11 +86,7 @@
 	fd_set readfds;
 	fd_set writefds;
 	fd_set exceptfds;
-# ifndef _WIN32
-	nfds_t nfds;
-# else
 	int nfds;
-# endif
 #endif
 }
 
@@ -120,7 +117,7 @@
  * This is also used to observe a listening socket for incoming connections,
  * which then triggers a read event for the observed stream.
  *
- * It is recommended that the stream you add it set to non-blocking mode.
+ * It is recommended that the stream you add is set to non-blocking mode.
  *
  * \param stream The stream to observe for reading
  */
@@ -129,7 +126,7 @@
 /**
  * Adds a stream to observe for writing.
  *
- * It is recommended that the stream you add it set to non-blocking mode.
+ * It is recommended that the stream you add is set to non-blocking mode.
  *
  * \param stream The stream to observe for writing
  */
