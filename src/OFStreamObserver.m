@@ -241,12 +241,8 @@
 	OFStream **cArray;
 	size_t i, count;
 #ifdef OF_HAVE_POLL
-	struct pollfd *fds_c = [fds cArray];
-	/*
-	 * There is no way to find out the maximum number of fds, so we just
-	 * cast.
-	 */
-	nfds_t nfds = (nfds_t)[fds count];
+	struct pollfd *fds_c;
+	nfds_t nfds;
 #else
 	fd_set readfds_;
 	fd_set writefds_;
@@ -272,7 +268,13 @@
 		return YES;
 
 #ifdef OF_HAVE_POLL
-	if (poll(fds_c, nfds, timeout) < 1)
+	fds_c = [fds cArray];
+	nfds = [fds count];
+
+	if (nfds > OPEN_MAX)
+		@throw [OFOutOfRangeException newWithClass: isa];
+
+	if (poll(fds_c, (nfds_t)nfds, timeout) < 1)
 		return NO;
 
 	for (i = 0; i < nfds; i++) {
