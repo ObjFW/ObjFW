@@ -22,6 +22,8 @@
 
 #include <assert.h>
 
+#include <unistd.h>
+
 #ifdef OF_HAVE_POLL
 # include <poll.h>
 #endif
@@ -34,6 +36,7 @@
 #import "OFNumber.h"
 #import "OFAutoreleasePool.h"
 
+#import "OFInitializationFailedException.h"
 #import "OFOutOfRangeException.h"
 
 enum {
@@ -54,6 +57,8 @@ enum {
 	self = [super init];
 
 	@try {
+		struct pollfd p = { 0, POLLIN, 0 };
+
 		readStreams = [[OFMutableArray alloc] init];
 		writeStreams = [[OFMutableArray alloc] init];
 		queue = [[OFMutableArray alloc] init];
@@ -65,6 +70,18 @@ enum {
 #else
 		FD_ZERO(&readfds);
 		FD_ZERO(&writefds);
+#endif
+
+		if (pipe(cancelFd))
+			@throw [OFInitializationFailedException
+			    newWithClass: isa];
+
+#ifdef OF_HAVE_POLL
+		p.fd = cancelFd[0];
+		[fds addItem: &p];
+#else
+		FD_SET(cancelFd[0], fdset);
+		nfds = cancelFd[0] + 1;
 #endif
 	} @catch (id e) {
 		[self release];
@@ -198,6 +215,8 @@ enum {
 		[queueInfo addObject: qi];
 	}
 
+	write(cancelFd[1], "", 1);
+
 	[pool release];
 }
 
@@ -210,6 +229,8 @@ enum {
 		[queue addObject: stream];
 		[queueInfo addObject: qi];
 	}
+
+	write(cancelFd[1], "", 1);
 
 	[pool release];
 }
@@ -224,6 +245,8 @@ enum {
 		[queueInfo addObject: qi];
 	}
 
+	write(cancelFd[1], "", 1);
+
 	[pool release];
 }
 
@@ -236,6 +259,8 @@ enum {
 		[queue addObject: stream];
 		[queueInfo addObject: qi];
 	}
+
+	write(cancelFd[1], "", 1);
 
 	[pool release];
 }
@@ -358,6 +383,14 @@ enum {
 		OFNumber *num;
 		OFStream *stream;
 
+		if (fds_c[i].fd == cancelFd[0]) {
+			char buf;
+
+			read(cancelFd[0], &buf, 1);
+
+			continue;
+		}
+
 		if (fds_c[i].revents & POLLIN) {
 			num = [OFNumber numberWithInt: fds_c[i].fd];
 			stream = [fdToStream objectForKey: num];
@@ -395,6 +428,11 @@ enum {
 	if (select(nfds, &readfds_, &writefds_, &exceptfds_,
 	    (timeout != -1 ? &tv : NULL)) < 1)
 		return NO;
+
+	if (FD_ISSET(cancelFd[0], &readfds_)) {
+		char buf;
+		read(cancelFd[0], &buf, 1);
+	}
 
 	for (i = 0; i < count; i++) {
 		int fd = [cArray[i] fileDescriptor];

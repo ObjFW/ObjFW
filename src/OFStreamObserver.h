@@ -88,6 +88,7 @@
 	fd_set exceptfds;
 	int nfds;
 #endif
+	int cancelFd[2];
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -113,11 +114,14 @@
 
 /**
  * Adds a stream to observe for reading.
- * 
+ *
  * This is also used to observe a listening socket for incoming connections,
  * which then triggers a read event for the observed stream.
  *
  * It is recommended that the stream you add is set to non-blocking mode.
+ *
+ * If there is an -[observe] call blocking, it will be canceled. The reason for
+ * this is to prevent blocking even though the new added stream is ready.
  *
  * \param stream The stream to observe for reading
  */
@@ -128,6 +132,9 @@
  *
  * It is recommended that the stream you add is set to non-blocking mode.
  *
+ * If there is an -[observe] call blocking, it will be canceled. The reason for
+ * this is to prevent blocking even though the new added stream is ready.
+ *
  * \param stream The stream to observe for writing
  */
 - (void)addStreamToObserveForWriting: (OFStream*)stream;
@@ -135,12 +142,18 @@
 /**
  * Removes a stream to observe for reading.
  *
+ * If there is an -[observe] call blocking, it will be canceled. The reason for
+ * this is to prevent the removed stream from still being observed.
+ *
  * \param stream The stream to remove from observing for reading
  */
 - (void)removeStreamToObserveForReading: (OFStream*)stream;
 
 /**
  * Removes a stream to observe for writing.
+ *
+ * If there is an -[observe] call blocking, it will be canceled. The reason for
+ * this is to prevent the removed stream from still being observed.
  *
  * \param stream The stream to remove from observing for writing
  */
