@@ -57,7 +57,9 @@ enum {
 	self = [super init];
 
 	@try {
+#ifdef OF_HAVE_POLL
 		struct pollfd p = { 0, POLLIN, 0 };
+#endif
 
 		readStreams = [[OFMutableArray alloc] init];
 		writeStreams = [[OFMutableArray alloc] init];
@@ -80,7 +82,7 @@ enum {
 		p.fd = cancelFd[0];
 		[fds addItem: &p];
 #else
-		FD_SET(cancelFd[0], fdset);
+		FD_SET(cancelFd[0], &readfds);
 		nfds = cancelFd[0] + 1;
 #endif
 	} @catch (id e) {
@@ -93,6 +95,9 @@ enum {
 
 - (void)dealloc
 {
+	close(cancelFd[0]);
+	close(cancelFd[1]);
+
 	[(id)delegate release];
 	[readStreams release];
 	[writeStreams release];
@@ -383,15 +388,16 @@ enum {
 		OFNumber *num;
 		OFStream *stream;
 
-		if (fds_c[i].fd == cancelFd[0]) {
-			char buf;
-
-			read(cancelFd[0], &buf, 1);
-
-			continue;
-		}
-
 		if (fds_c[i].revents & POLLIN) {
+			if (fds_c[i].fd == cancelFd[0]) {
+				char buf;
+
+				read(cancelFd[0], &buf, 1);
+				fds_c[i].revents = 0;
+
+				continue;
+			}
+
 			num = [OFNumber numberWithInt: fds_c[i].fd];
 			stream = [fdToStream objectForKey: num];
 			[delegate streamDidBecomeReadyForReading: stream];
