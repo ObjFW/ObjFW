@@ -485,26 +485,28 @@ objc_enumerationMutation(id obj)
 
 - (id)performSelector: (SEL)selector
 {
-	id (*imp)() = (id(*)())[self methodForSelector: selector];
+	id (*imp)(id, SEL) = (id(*)(id, SEL))[self methodForSelector: selector];
 
-	return imp();
+	return imp(self, selector);
 }
 
 - (id)performSelector: (SEL)selector
 	   withObject: (id)obj
 {
-	id (*imp)(id) = (id(*)(id))[self methodForSelector: selector];
+	id (*imp)(id, SEL, id) =
+	    (id(*)(id, SEL, id))[self methodForSelector: selector];
 
-	return imp(obj);
+	return imp(self, selector, obj);
 }
 
 - (id)performSelector: (SEL)selector
 	   withObject: (id)obj1
 	   withObject: (id)obj2
 {
-	id (*imp)(id, id) = (id(*)(id, id))[self methodForSelector: selector];
+	id (*imp)(id, SEL, id, id) =
+	    (id(*)(id, SEL, id, id))[self methodForSelector: selector];
 
-	return imp(obj1, obj2);
+	return imp(self, selector, obj1, obj2);
 }
 
 - (const char*)typeEncodingForSelector: (SEL)selector
