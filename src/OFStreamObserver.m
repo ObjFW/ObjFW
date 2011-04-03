@@ -378,8 +378,10 @@ enum {
 	fds_c = [fds cArray];
 	nfds = [fds count];
 
+# ifdef OPEN_MAX
 	if (nfds > OPEN_MAX)
 		@throw [OFOutOfRangeException newWithClass: isa];
+# endif
 
 	if (poll(fds_c, (nfds_t)nfds, timeout) < 1)
 		return NO;
