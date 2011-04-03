@@ -360,7 +360,7 @@ enum {
 	count = [readStreams count];
 
 	for (i = 0; i < count; i++) {
-		if (cArray[i]->cache != NULL) {
+		if ([cArray[i] pendingBytes] > 0) {
 			[delegate streamDidBecomeReadyForReading: cArray[i]];
 			foundInCache = YES;
 			[pool releaseObjects];

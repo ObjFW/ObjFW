@@ -703,6 +703,11 @@
 	assert(0);
 }
 
+- (size_t)pendingBytes
+{
+	return cacheLen;
+}
+
 - (BOOL)isBlocking
 {
 	return isBlocking;

@@ -330,6 +330,11 @@
 	withArguments: (va_list)args;
 
 /**
+ * \return The number of bytes still present in the internal cache.
+ */
+- (size_t)pendingBytes;
+
+/**
  * \return Whether the stream is in blocking mode
  */
 - (BOOL)isBlocking;
