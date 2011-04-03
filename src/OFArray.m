@@ -427,7 +427,8 @@
 	size_t i, count = [array count];
 
 	for (i = 0; i < count; i++)
-		((void(*)())[objs[i] methodForSelector: selector])();
+		((void(*)(id, SEL))[objs[i]
+		    methodForSelector: selector])(objs[i], selector);
 }
 
 - (void)makeObjectsPerformSelector: (SEL)selector
@@ -437,7 +438,8 @@
 	size_t i, count = [array count];
 
 	for (i = 0; i < count; i++)
-		((void(*)(id))[objs[i] methodForSelector: selector])(obj);
+		((void(*)(id, SEL, id))[objs[i]
+		    methodForSelector: selector])(objs[i], selector, obj);
 }
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
