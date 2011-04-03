@@ -43,6 +43,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
+#import "OFOpenFileFailedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
@@ -662,8 +663,9 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		OFFile *file;
 
 		if (stat([path cString], &s) == -1)
-			@throw [OFInitializationFailedException
-			    newWithClass: isa];
+			@throw [OFOpenFileFailedException newWithClass: isa
+								  path: path
+								  mode: @"rb"];
 
 		file = [[OFFile alloc] initWithPath: path
 					       mode: @"rb"];
