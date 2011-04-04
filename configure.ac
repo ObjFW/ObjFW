@@ -22,6 +22,7 @@ CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS"
 OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions -fobjc-exceptions"
 OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstantString"
 
+AX_CHECK_COMPILER_FLAGS(-std=c99, [OBJCFLAGS="$OBJCFLAGS -std=c99"])
 AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
 AX_CHECK_COMPILER_FLAGS(-fno-common, [OBJCFLAGS="$OBJCFLAGS -fno-common"])
 AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings, [
