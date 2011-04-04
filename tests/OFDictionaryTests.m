@@ -63,7 +63,8 @@ static OFString *values[] = {
 	    [OFString stringWithString: values[0]]] == NO)
 
 	TEST(@"-[description]",
-	    [[dict description] isEqual: @"{key1 = value1; key2 = value2}"])
+	    [[dict description] isEqual:
+	    @"{\n\tkey1 = value1;\n\tkey2 = value2;\n}"])
 
 	TEST(@"-[keyEnumerator]", (key_enum = [dict keyEnumerator]))
 	TEST(@"-[objectEnumerator]", (obj_enum = [dict objectEnumerator]))
@@ -167,12 +168,12 @@ static OFString *values[] = {
 			return @"val2";
 
 		return nil;
-	    }] description] isEqual: @"{key1 = val1; key2 = val2}"])
+	    }] description] isEqual: @"{\n\tkey1 = val1;\n\tkey2 = val2;\n}"])
 
 	TEST(@"-[filteredDictionaryUsingBlock:]",
 	    [[[dict filteredDictionaryUsingBlock: ^ BOOL (id key, id obj) {
 		return ([key isEqual: keys[0]] ?  YES : NO);
-	    }] description] isEqual: @"{key1 = value_1}"])
+	    }] description] isEqual: @"{\n\tkey1 = value_1;\n}"])
 #endif
 
 	TEST(@"-[count]", [dict count] == 2)

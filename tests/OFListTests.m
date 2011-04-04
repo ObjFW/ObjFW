@@ -95,7 +95,7 @@ static OFString *strings[] = {
 	TEST(@"-[isEqual:]", [list isEqual: [[list copy] autorelease]])
 
 	TEST(@"-[description]",
-	    [[list description] isEqual: @"[Foo, Bar, Baz]"])
+	    [[list description] isEqual: @"[\n\tFoo,\n\tBar,\n\tBaz\n]"])
 
 	TEST(@"-[objectEnumerator]", (enumerator = [list objectEnumerator]))
 

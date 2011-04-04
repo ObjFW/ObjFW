@@ -57,7 +57,7 @@ static OFString *c_ary[] = {
 	    [a[2] isEqual: a[1]])
 
 	TEST(@"-[description]",
-	    [[a[0] description ]isEqual: @"(Foo, Bar, Baz)"])
+	    [[a[0] description ]isEqual: @"(\n\tFoo,\n\tBar,\n\tBaz\n)"])
 
 	TEST(@"-[addObject:]", R([m[0] addObject: c_ary[0]]) &&
 	    R([m[0] addObject: c_ary[2]]))
@@ -264,24 +264,24 @@ static OFString *c_ary[] = {
 		}
 
 		return nil;
-		}]) && [[m[0] description] isEqual: @"(foo, bar)"])
+		}]) && [[m[0] description] isEqual: @"(\n\tfoo,\n\tbar\n)"])
 
 	TEST(@"-[mappedArrayUsingBLock]",
 	    [[[m[0] mappedArrayUsingBlock: ^ id (id obj, size_t idx) {
-    		switch (idx) {
-    		case 0:
+		switch (idx) {
+		case 0:
 			return @"foobar";
 		case 1:
 			return @"qux";
 		}
 
 		return nil;
-	    }] description] isEqual: @"(foobar, qux)"])
+	    }] description] isEqual: @"(\n\tfoobar,\n\tqux\n)"])
 
 	TEST(@"-[filteredArrayUsingBlock:]",
 	   [[[m[0] filteredArrayUsingBlock: ^ BOOL (id obj, size_t idx) {
 		return ([obj isEqual: @"foo"] ? YES : NO);
-	    }] description] isEqual: @"(foo)"])
+	    }] description] isEqual: @"(\n\tfoo\n)"])
 #endif
 
 	[pool drain];

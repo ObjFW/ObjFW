@@ -705,7 +705,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 
 - (OFString*)description
 {
-	OFMutableString *ret = [OFMutableString stringWithString: @"{"];
+	OFMutableString *ret = [OFMutableString stringWithString: @"{\n"];
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init], *pool2;
 	OFEnumerator *enumerator = [self keyEnumerator];
 	id key;
@@ -720,11 +720,13 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 		[ret appendString: [[self objectForKey: key] description]];
 
 		if (++i < count)
-			[ret appendString: @"; "];
+			[ret appendString: @";\n"];
 
 		[pool2 releaseObjects];
 	}
-	[ret appendString: @"}"];
+	[ret replaceOccurrencesOfString: @"\n"
+			     withString: @"\n\t"];
+	[ret appendString: @";\n}"];
 
 	[pool release];
 

@@ -296,7 +296,7 @@
 
 - (OFString*)description
 {
-	OFMutableString *ret = [OFMutableString stringWithString: @"["];
+	OFMutableString *ret = [OFMutableString stringWithString: @"[\n"];
 	OFAutoreleasePool *pool;
 	of_list_object_t *iter;
 
@@ -306,12 +306,14 @@
 		[ret appendString: [iter->object description]];
 
 		if (iter->next != NULL)
-			[ret appendString: @", "];
+			[ret appendString: @",\n"];
 
 		[pool releaseObjects];
 	}
 
-	[ret appendString: @"]"];
+	[ret replaceOccurrencesOfString: @"\n"
+			     withString: @"\n\t"];
+	[ret appendString: @"\n]"];
 
 	[pool release];
 

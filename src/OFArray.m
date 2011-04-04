@@ -399,13 +399,16 @@
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFMutableString *ret;
 
-	ret = [[self componentsJoinedByString: @", "] mutableCopy];
+	ret = [[self componentsJoinedByString: @",\n"] mutableCopy];
 
 	@try {
-		[ret prependString: @"("];
-		[ret appendString: @")"];
+		[ret prependString: @"(\n"];
+		[ret replaceOccurrencesOfString: @"\n"
+				     withString: @"\n\t"];
+		[ret appendString: @"\n)"];
 	} @catch (id e) {
 		[ret release];
+		@throw e;
 	}
 
 	[pool release];
