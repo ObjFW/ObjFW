@@ -14,6 +14,10 @@
  * file.
  */
 
+#ifndef _WIN32
+# include <sys/types.h>
+#endif
+
 #include <unistd.h>
 
 #import "OFException.h"
