@@ -220,7 +220,7 @@ enum {
 		[queueInfo addObject: qi];
 	}
 
-	write(cancelFd[1], "", 1);
+	assert(!write(cancelFd[1], "", 1));
 
 	[pool release];
 }
@@ -235,7 +235,7 @@ enum {
 		[queueInfo addObject: qi];
 	}
 
-	write(cancelFd[1], "", 1);
+	assert(!write(cancelFd[1], "", 1));
 
 	[pool release];
 }
@@ -250,7 +250,7 @@ enum {
 		[queueInfo addObject: qi];
 	}
 
-	write(cancelFd[1], "", 1);
+	assert(!write(cancelFd[1], "", 1));
 
 	[pool release];
 }
@@ -265,7 +265,7 @@ enum {
 		[queueInfo addObject: qi];
 	}
 
-	write(cancelFd[1], "", 1);
+	assert(!write(cancelFd[1], "", 1));
 
 	[pool release];
 }
@@ -394,7 +394,7 @@ enum {
 			if (fds_c[i].fd == cancelFd[0]) {
 				char buf;
 
-				read(cancelFd[0], &buf, 1);
+				assert(!read(cancelFd[0], &buf, 1));
 				fds_c[i].revents = 0;
 
 				continue;
@@ -439,7 +439,7 @@ enum {
 
 	if (FD_ISSET(cancelFd[0], &readfds_)) {
 		char buf;
-		read(cancelFd[0], &buf, 1);
+		assert(!read(cancelFd[0], &buf, 1));
 	}
 
 	for (i = 0; i < count; i++) {
