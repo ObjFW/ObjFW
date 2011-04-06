@@ -182,9 +182,6 @@ enum {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	int fd = [stream fileDescriptor];
 
-	if (fd >= FD_SETSIZE)
-		@throw [OFOutOfRangeException newWithClass: isa];
-
 	FD_SET(fd, fdset);
 	FD_SET(fd, &exceptfds);
 
@@ -199,9 +196,6 @@ enum {
 	   otherFDSet: (fd_set*)other_fdset
 {
 	int fd = [stream fileDescriptor];
-
-	if (fd >= FD_SETSIZE)
-		@throw [OFOutOfRangeException newWithClass: isa];
 
 	FD_CLR(fd, fdset);
 
