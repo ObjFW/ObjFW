@@ -159,7 +159,6 @@
 
 	sock = INVALID_SOCKET;
 	eos = NO;
-	listening = NO;
 }
 
 - (void)dealloc

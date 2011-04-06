@@ -28,19 +28,8 @@
  */
 @interface OFStreamSocket: OFStream
 {
-@public
-#ifndef _WIN32
-	int    sock;
-#else
-	SOCKET sock;
-#endif
-	BOOL   listening;
-/* Work around a bug in gcc 4.4.4 (possibly only on Haiku) */
-#if !defined(__GNUC__) || __GNUC__ != 4 || __GNUC_MINOR__ != 4 || \
-    __GNUC_PATCHLEVEL__ != 4
-@protected
-#endif
-	BOOL   eos;
+	int  sock;
+	BOOL eos;
 }
 
 /**

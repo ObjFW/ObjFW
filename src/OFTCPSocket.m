@@ -433,6 +433,7 @@ static OFMutex *mutex = nil;
 {
 	[super close];
 
+	listening = NO;
 	[self freeMemory: sockAddr];
 	sockAddr = NULL;
 	sockAddrLen = 0;
