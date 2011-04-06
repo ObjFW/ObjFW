@@ -34,10 +34,17 @@
 #import "OFDictionary.h"
 #import "OFStream.h"
 #import "OFNumber.h"
+#ifdef _WIN32
+# import "OFTCPSocket.h"
+#endif
 #import "OFAutoreleasePool.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFOutOfRangeException.h"
+
+#ifdef _WIN32
+# define close(sock) closesocket(sock)
+#endif
 
 enum {
 	QUEUE_ADD = 0,
@@ -57,6 +64,10 @@ enum {
 	self = [super init];
 
 	@try {
+#ifdef _WIN32
+		struct sockaddr_in cancelAddr2;
+		socklen_t cancelAddrLen;
+#endif
 #ifdef OF_HAVE_POLL
 		struct pollfd p = { 0, POLLIN, 0 };
 #endif
@@ -74,9 +85,40 @@ enum {
 		FD_ZERO(&writefds);
 #endif
 
+#ifndef _WIN32
 		if (pipe(cancelFd))
 			@throw [OFInitializationFailedException
 			    newWithClass: isa];
+#else
+		/* Make sure WSAStartup has been called */
+		[OFTCPSocket class];
+
+		cancelFd[0] = socket(AF_INET, SOCK_DGRAM, 0);
+		cancelFd[1] = socket(AF_INET, SOCK_DGRAM, 0);
+
+		if (cancelFd[0] == INVALID_SOCKET ||
+		    cancelFd[1] == INVALID_SOCKET)
+			@throw [OFInitializationFailedException
+			    newWithClass: isa];
+
+		cancelAddr.sin_family = AF_INET;
+		cancelAddr.sin_port = 0;
+		cancelAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+		cancelAddr2 = cancelAddr;
+
+		if (bind(cancelFd[0], (struct sockaddr*)&cancelAddr,
+		    sizeof(cancelAddr)) || bind(cancelFd[1],
+		    (struct sockaddr*)&cancelAddr2, sizeof(cancelAddr2)))
+			@throw [OFInitializationFailedException
+			    newWithClass: isa];
+
+		cancelAddrLen = sizeof(cancelAddr);
+
+		if (getsockname(cancelFd[0], (struct sockaddr*)&cancelAddr,
+		    &cancelAddrLen))
+			@throw [OFInitializationFailedException
+			    newWithClass: isa];
+#endif
 
 #ifdef OF_HAVE_POLL
 		p.fd = cancelFd[0];
@@ -214,7 +256,12 @@ enum {
 		[queueInfo addObject: qi];
 	}
 
-	assert(!write(cancelFd[1], "", 1));
+#ifndef _WIN32
+	assert(write(cancelFd[1], "", 1) > 0);
+#else
+	assert(sendto(cancelFd[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
+	    sizeof(cancelAddr)) > 0);
+#endif
 
 	[pool release];
 }
@@ -229,7 +276,12 @@ enum {
 		[queueInfo addObject: qi];
 	}
 
-	assert(!write(cancelFd[1], "", 1));
+#ifndef _WIN32
+	assert(write(cancelFd[1], "", 1) > 0);
+#else
+	assert(sendto(cancelFd[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
+	    sizeof(cancelAddr)) > 0);
+#endif
 
 	[pool release];
 }
@@ -244,7 +296,12 @@ enum {
 		[queueInfo addObject: qi];
 	}
 
-	assert(!write(cancelFd[1], "", 1));
+#ifndef _WIN32
+	assert(write(cancelFd[1], "", 1) > 0);
+#else
+	assert(sendto(cancelFd[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
+	    sizeof(cancelAddr)) > 0);
+#endif
 
 	[pool release];
 }
@@ -259,7 +316,12 @@ enum {
 		[queueInfo addObject: qi];
 	}
 
-	assert(!write(cancelFd[1], "", 1));
+#ifndef _WIN32
+	assert(write(cancelFd[1], "", 1) > 0);
+#else
+	assert(sendto(cancelFd[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
+	    sizeof(cancelAddr)) > 0);
+#endif
 
 	[pool release];
 }
@@ -388,7 +450,7 @@ enum {
 			if (fds_c[i].fd == cancelFd[0]) {
 				char buf;
 
-				assert(!read(cancelFd[0], &buf, 1));
+				assert(read(cancelFd[0], &buf, 1) > 0);
 				fds_c[i].revents = 0;
 
 				continue;
@@ -433,7 +495,11 @@ enum {
 
 	if (FD_ISSET(cancelFd[0], &readfds_)) {
 		char buf;
-		assert(!read(cancelFd[0], &buf, 1));
+#ifndef _WIN32
+		assert(read(cancelFd[0], &buf, 1) > 0);
+#else
+		assert(recvfrom(cancelFd[0], &buf, 1, 0, NULL, NULL) > 0);
+#endif
 	}
 
 	for (i = 0; i < count; i++) {

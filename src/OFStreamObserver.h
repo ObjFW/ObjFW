@@ -25,6 +25,7 @@
 #  define _WIN32_WINNT 0x0501
 # endif
 # include <windows.h>
+# include <ws2tcpip.h>
 #endif
 
 @class OFStream;
@@ -89,6 +90,9 @@
 	int nfds;
 #endif
 	int cancelFd[2];
+#ifdef _WIN32
+	struct sockaddr_in cancelAddr;
+#endif
 }
 
 #ifdef OF_HAVE_PROPERTIES
