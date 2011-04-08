@@ -36,7 +36,7 @@
  */
 @interface OFTCPSocket: OFStreamSocket
 {
-	BOOL		listening;
+	BOOL		isListening;
 	struct sockaddr	*sockAddr;
 	socklen_t	sockAddrLen;
 }
@@ -88,7 +88,12 @@
 /**
  * Returns the remote address of the socket. Only works with accepted sockets!
  *
- * \return The remote address as a string.
+ * \return The remote address as a string
  */
 - (OFString*)remoteAddress;
+
+/**
+ * \return Whether the socket is a listening socket
+ */
+- (BOOL)isListening;
 @end
