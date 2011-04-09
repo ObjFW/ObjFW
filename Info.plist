@@ -17,8 +17,8 @@
 	<key>CFBundleSignature</key>
 	<string>OBJFW</string>
 	<key>CFBundleVersion</key>
-	<string>0.4-dev</string>
+	<string>0.6-dev</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.4-dev</string>
+	<string>0.6-dev</string>
 </dict>
 </plist>

@@ -2,6 +2,26 @@ Legend:
  * Changes of existing features or bugfixes.
  + New features.
 
+ObjFW 0.4-alpha1 -> ObjFW 0.5, 09.04.2011
+ + %@ is now allowed in format strings.
+ + Added of_log for easy logging.
+ * Exceptions have one header per exception now.
+ * Lots of exception improvements.
+ * Huge improvements in XML handling.
+ * Improvements in socket handling, including improved API.
+ * OFStreamObserver is now thread-safe and stops the current observe call when
+   the set of streams to observe is modified.
+ + New class OFURL.
+ + New class OFHTTPRequest.
+ + New class OFCondition.
+ * Improvements in objfw-compile.
+ + Blocks can be used together with Cocoa now.
+ + When linking ObjFW and Cocoa, OFAutoreleasePools are used by both now.
+ + Support for Base64.
+ + Use a real Xcode project instead of just calling make.
+ + Add Haiku to the list of supported platforms.
+ * Lots of small bugfixes and countless small changes. Read the commits!
+
 ObjFW 0.3.1 -> 0.4-alpha1, 03.01.2011
  * ObjFW is now available under the terms of the QPL, GPLv2 and GPLv3.
  + Support for blocks was added, including a blocks runtime.

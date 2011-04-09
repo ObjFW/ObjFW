@@ -376,6 +376,21 @@ enum event_type {
 	EXPECT_EXCEPTION(@"Detection of junk after the document #2",
 	    OFMalformedXMLException, [parser parseString: @"<!["])
 
+	parser = [OFXMLParser parser];
+	EXPECT_EXCEPTION(@"Detection of invalid XML processing instructions #1",
+	    OFMalformedXMLException,
+	    [parser parseString: @"<?xml version='2.0'?>"])
+
+	parser = [OFXMLParser parser];
+	EXPECT_EXCEPTION(@"Detection of invalid XML processing instructions #2",
+	    OFMalformedXMLException,
+	    [parser parseString: @"<?xml encoding='UTF-7'?>"])
+
+	parser = [OFXMLParser parser];
+	EXPECT_EXCEPTION(@"Detection of invalid XML processing instructions #3",
+	    OFMalformedXMLException,
+	    [parser parseString: @"<x><?xml?></x>"])
+
 	[pool drain];
 }
 @end

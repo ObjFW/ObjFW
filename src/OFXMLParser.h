@@ -179,6 +179,7 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
 	of_xml_parser_unknown_entity_block_t unknownEntityHandler;
 #endif
 	size_t level;
+	BOOL acceptProlog;
 	size_t lineNumber;
 	BOOL lastCarriageReturn;
 	BOOL finishedParsing;

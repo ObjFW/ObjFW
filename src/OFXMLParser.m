@@ -51,7 +51,7 @@ transform_string(OFMutableString *cache,
 	return [cache stringByXMLUnescapingWithDelegate: delegate];
 }
 
-static OF_INLINE OFString*
+static OFString*
 namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 {
 	OFDictionary **carray = [namespaces cArray];
@@ -157,6 +157,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		    @"xmlns", @"http://www.w3.org/2000/xmlns/", nil];
 		[namespaces addObject: dict];
 
+		acceptProlog = YES;
 		lineNumber = 1;
 
 		[pool release];
@@ -267,7 +268,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 
 /*
  * The following methods handle the different states of the parser. They are
- * lookup up in +[initialize] and put in a lookup table to speed things up.
+ * looked up in +[initialize] and put in a lookup table to speed things up.
  * One dispatch for every character would be way too slow!
  */
 
@@ -278,8 +279,9 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 {
 	size_t len;
 
-	if (finishedParsing && buf[*i] != ' ' && buf[*i] != '\t' &&
-	    buf[*i] != '\n' && buf[*i] != '\r' && buf[*i] != '<')
+	if ((finishedParsing || [previous count] < 1) && buf[*i] != ' ' &&
+	    buf[*i] != '\t' && buf[*i] != '\n' && buf[*i] != '\r' &&
+	    buf[*i] != '<')
 		@throw [OFMalformedXMLException newWithClass: isa
 						      parser: self];
 
@@ -319,7 +321,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 				i: (size_t*)i
 			     last: (size_t*)last
 {
-	if (finishedParsing && buf[*i] != '!')
+	if (finishedParsing && buf[*i] != '!' && buf[*i] != '?')
 		@throw [OFMalformedXMLException newWithClass: isa
 						      parser: self];
 
@@ -332,19 +334,104 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		case '/':
 			*last = *i + 1;
 			state = OF_XMLPARSER_IN_CLOSE_TAG_NAME;
+			acceptProlog = NO;
 			break;
 		case '!':
 			*last = *i + 1;
 			state = OF_XMLPARSER_IN_EXCLAMATIONMARK;
+			acceptProlog = NO;
 			break;
 		default:
 			state = OF_XMLPARSER_IN_TAG_NAME;
+			acceptProlog = NO;
 			(*i)--;
 			break;
 	}
 }
 
-/* Inside prolog */
+/* <?xml […]?> */
+- (BOOL)_parseXMLProcessingInstructions: (OFString*)pi
+{
+	const char *pi_c;
+	size_t i, last, pi_len;
+	int xstate = 0;
+	OFString *attr = nil;
+	OFString *val = nil;
+	char xdelim = 0;
+
+	if (!acceptProlog)
+		return NO;
+
+	acceptProlog = NO;
+
+	pi = [pi substringFromIndex: 3
+			    toIndex: [pi length]];
+	pi = [pi stringByDeletingLeadingAndTrailingWhitespaces];
+
+	pi_c = [pi cString];
+	pi_len = [pi cStringLength];
+
+	for (i = last = 0; i < pi_len; i++) {
+		switch (xstate) {
+		case 0:
+			if (pi_c[i] == ' ' || pi_c[i] == '\t' ||
+			    pi_c[i] == '\r' || pi_c[i] == '\n')
+				continue;
+
+			last = i;
+			xstate = 1;
+			i--;
+
+			break;
+		case 1:
+			if (pi_c[i] != '=')
+				continue;
+
+			attr = [OFString stringWithCString: pi_c + last
+						    length: i - last];
+			last = i + 1;
+			xstate = 2;
+
+			break;
+		case 2:
+			if (pi_c[i] != '\'' && pi_c[i] != '"')
+				return NO;
+
+			xdelim = pi_c[i];
+			last = i + 1;
+			xstate = 3;
+
+			break;
+		case 3:
+			if (pi_c[i] != xdelim)
+				continue;
+
+			val = [OFString stringWithCString: pi_c + last
+						   length: i - last];
+
+			if ([attr isEqual: @"version"])
+				if (![val hasPrefix: @"1."])
+					return NO;
+
+			if ([attr isEqual: @"encoding"])
+				if ([val caseInsensitiveCompare: @"utf-8"] !=
+				    OF_ORDERED_SAME)
+					return NO;
+
+			last = i + 1;
+			xstate = 0;
+
+			break;
+		}
+	}
+
+	if (xstate != 0)
+		return NO;
+
+	return YES;
+}
+
+/* Inside processing instructions */
 - (void)_parseInProcessingInstructionsWithBuffer: (const char*)buf
 					       i: (size_t*)i
 					    last: (size_t*)last
@@ -370,6 +457,14 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		 * it would create a real copy each time -[copy] is called.
 		 */
 		pi->isa = [OFString class];
+
+		if ([pi isEqual: @"xml"] || [pi hasPrefix: @"xml "] ||
+		    [pi hasPrefix: @"xml\t"] || [pi hasPrefix: @"xml\r"] ||
+		    [pi hasPrefix: @"xml\n"])
+			if (![self _parseXMLProcessingInstructions: pi])
+				@throw [OFMalformedXMLException
+				    newWithClass: isa
+					parser: self];
 
 		[delegate parser: self
 		    foundProcessingInstructions: pi];
