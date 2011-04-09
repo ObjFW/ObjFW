@@ -1,4 +1,4 @@
-AC_INIT(ObjFW, 0.4-dev, js@webkeks.org)
+AC_INIT(ObjFW, 0.6-dev, js@webkeks.org)
 AC_CONFIG_SRCDIR(src)
 
 AS_IF([test x"$host" = x"psp"], [
