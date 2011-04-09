@@ -320,7 +320,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 				i: (size_t*)i
 			     last: (size_t*)last
 {
-	if (finishedParsing && buf[*i] != '!')
+	if (finishedParsing && buf[*i] != '!' && buf[*i] != '?')
 		@throw [OFMalformedXMLException newWithClass: isa
 						      parser: self];
 
