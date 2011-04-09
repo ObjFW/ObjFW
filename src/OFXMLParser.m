@@ -278,8 +278,9 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 {
 	size_t len;
 
-	if (finishedParsing && buf[*i] != ' ' && buf[*i] != '\t' &&
-	    buf[*i] != '\n' && buf[*i] != '\r' && buf[*i] != '<')
+	if ((finishedParsing || [previous count] < 1) && buf[*i] != ' ' &&
+	    buf[*i] != '\t' && buf[*i] != '\n' && buf[*i] != '\r' &&
+	    buf[*i] != '<')
 		@throw [OFMalformedXMLException newWithClass: isa
 						      parser: self];
 
