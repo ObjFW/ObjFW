@@ -167,7 +167,7 @@ Class of_http_request_tls_socket_class = Nil;
 		OFEnumerator *enumerator;
 		OFString *key;
 		int status;
-		const char *t;
+		const char *t = NULL;
 
 		[sock connectToHost: [URL host]
 			     onPort: [URL port]];
