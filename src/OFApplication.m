@@ -19,6 +19,11 @@
 #define OF_APPLICATION_M
 
 #include <stdlib.h>
+#include <string.h>
+
+#ifdef __MACH__
+# include <crt_externs.h>
+#endif
 
 #import "OFApplication.h"
 #import "OFString.h"
@@ -28,12 +33,8 @@
 
 #import "OFNotImplementedException.h"
 
-#include <string.h>
-
-#ifdef __MACH__
-# include <crt_externs.h>
-#else
- extern char **environ;
+#ifndef __MACH__
+extern char **environ;
 #endif
 
 static OFApplication *app = nil;
