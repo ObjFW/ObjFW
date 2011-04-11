@@ -1072,7 +1072,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	if (len > length)
 		return NO;
 
-	return (memcmp(string, [prefix cString], len) ? NO : YES);
+	return !memcmp(string, [prefix cString], len);
 }
 
 - (BOOL)hasSuffix: (OFString*)suffix
@@ -1082,8 +1082,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	if (len > length)
 		return NO;
 
-	return (memcmp(string + (length - len), [suffix cString], len)
-	    ? NO : YES);
+	return !memcmp(string + (length - len), [suffix cString], len);
 }
 
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter

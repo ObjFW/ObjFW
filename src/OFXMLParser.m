@@ -222,7 +222,7 @@ resolve_attr_namespace(OFXMLAttribute *attr, OFString *prefix, OFString *ns,
 		if (buf[i] == '\r' || (buf[i] == '\n' && !lastCarriageReturn))
 			lineNumber++;
 
-		lastCarriageReturn = (buf[i] == '\r' ? YES : NO);
+		lastCarriageReturn = (buf[i] == '\r');
 	}
 
 	/* In OF_XMLPARSER_IN_TAG, there can be only spaces */

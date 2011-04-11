@@ -51,7 +51,7 @@ static ssize_t num_locks = 0;
 BOOL
 objc_sync_init()
 {
-	return (of_mutex_new(&mutex) ? YES : NO);
+	return of_mutex_new(&mutex);
 }
 
 int

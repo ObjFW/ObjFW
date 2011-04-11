@@ -549,7 +549,7 @@ objc_enumerationMutation(id obj)
 - (BOOL)isEqual: (id)obj
 {
 	/* Classes containing data should reimplement this! */
-	return (self == obj ? YES : NO);
+	return (self == obj);
 }
 
 - (uint32_t)hash

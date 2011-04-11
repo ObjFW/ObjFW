@@ -856,8 +856,7 @@
 	case OF_NUMBER_INT64:
 	case OF_NUMBER_INTMAX:
 	case OF_NUMBER_PTRDIFF:
-		return ([(OFNumber*)obj intMaxValue] == [self intMaxValue]
-		    ? YES : NO);
+		return ([(OFNumber*)obj intMaxValue] == [self intMaxValue]);
 	case OF_NUMBER_SSIZE:
 	case OF_NUMBER_UCHAR:
 	case OF_NUMBER_USHORT:
@@ -871,12 +870,10 @@
 	case OF_NUMBER_UINTMAX:
 	case OF_NUMBER_INTPTR:
 	case OF_NUMBER_UINTPTR:
-		return ([(OFNumber*)obj uIntMaxValue] == [self uIntMaxValue]
-		    ? YES : NO);
+		return ([(OFNumber*)obj uIntMaxValue] == [self uIntMaxValue]);
 	case OF_NUMBER_FLOAT:
 	case OF_NUMBER_DOUBLE:
-		return ([(OFNumber*)obj doubleValue] == [self doubleValue]
-		    ? YES : NO);
+		return ([(OFNumber*)obj doubleValue] == [self doubleValue]);
 	default:
 		return NO;
 	}
