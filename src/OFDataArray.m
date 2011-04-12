@@ -34,7 +34,7 @@
 #import "macros.h"
 
 /* References for static linking */
-void _references_to_categories_of_OFDataArray()
+void _references_to_categories_of_OFDataArray(void)
 {
 	_OFDataArray_Hashing_reference = 1;
 };

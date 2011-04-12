@@ -103,7 +103,7 @@ of_thread_detach(of_thread_t thread)
 }
 
 static OF_INLINE void
-of_thread_exit()
+of_thread_exit(void)
 {
 #if defined(OF_HAVE_PTHREADS)
 	pthread_exit(NULL);

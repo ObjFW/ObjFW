@@ -28,7 +28,7 @@ static of_spinlock_t spinlocks[NUM_SPINLOCKS];
 #endif
 
 BOOL
-objc_properties_init()
+objc_properties_init(void)
 {
 #ifdef OF_THREADS
 	size_t i;

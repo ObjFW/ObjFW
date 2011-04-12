@@ -49,7 +49,7 @@ static ssize_t num_locks = 0;
 	}
 
 BOOL
-objc_sync_init()
+objc_sync_init(void)
 {
 	return of_mutex_new(&mutex);
 }

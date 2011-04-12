@@ -40,7 +40,7 @@ extern char **environ;
 static OFApplication *app = nil;
 
 static void
-atexit_handler()
+atexit_handler(void)
 {
 	id <OFApplicationDelegate> delegate = [app delegate];
 
