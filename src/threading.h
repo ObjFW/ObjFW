@@ -91,6 +91,17 @@ of_thread_join(of_thread_t thread)
 #endif
 }
 
+static OF_INLINE BOOL
+of_thread_detach(of_thread_t thread)
+{
+#if defined(OF_HAVE_PTHREADS)
+	return !pthread_detach(thread);
+#elif defined(_WIN32)
+	/* FIXME */
+	return YES;
+#endif
+}
+
 static OF_INLINE void
 of_thread_exit()
 {

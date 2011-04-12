@@ -272,6 +272,13 @@ call_main(id obj)
 		@throw [OFThreadStillRunningException newWithClass: isa
 							    thread: self];
 
+	/*
+	 * We should not be running anymore, but call detach in order to free
+	 * the resources.
+	 */
+	if (running == OF_THREAD_WAITING_FOR_JOIN)
+		of_thread_detach(thread);
+
 	[object release];
 	[retval release];
 
