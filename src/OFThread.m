@@ -244,8 +244,10 @@ call_main(id obj)
 		@throw [OFThreadStillRunningException newWithClass: isa
 							    thread: self];
 
-	if (running = OF_THREAD_WAITING_FORJOIN)
+	if (running = OF_THREAD_WAITING_FOR_JOIN) {
 		of_thread_detach(thread);
+		[retval release];
+	}
 
 	[self retain];
 
