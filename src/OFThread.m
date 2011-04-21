@@ -55,7 +55,7 @@ static of_tlskey_t thread_self;
 static id
 call_main(id obj)
 {
-#ifndef OF_APPLE_RUNTIME
+#if defined(OF_GNU_RUNTIME) || defined(OF_OLD_GNU_RUNTIME)
 	objc_thread_add();
 #endif
 
@@ -78,7 +78,7 @@ call_main(id obj)
 
 	[obj release];
 
-#ifndef OF_APPLE_RUNTIME
+#if defined(OF_GNU_RUNTIME) || defined(OF_OLD_GNU_RUNTIME)
 	objc_thread_remove();
 #endif
 
@@ -221,7 +221,7 @@ call_main(id obj)
 
 	[thread release];
 
-#ifndef OF_APPLE_RUNTIME
+#if defined(OF_GNU_RUNTIME) || defined(OF_OLD_GNU_RUNTIME)
 	objc_thread_remove();
 #endif
 
