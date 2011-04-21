@@ -2,9 +2,13 @@ Legend:
  * Changes of existing features or bugfixes.
  + New features.
 
-ObjFW 0.5 -> ObjFW 0.5.1
+ObjFW 0.5 -> ObjFW 0.5.1, 21.04.2011
  * Work around a wrong warning produced by Apple GCC 4.0.1 which would cause
    the build to fail due to -Werror.
+ * Call objc_thread_{add,remove} when using the GNU runtime to make sure the
+   runtime knows about our thread.
+ * Detach a thread before restarting if it was never joined.
+ * Release the old return value when restarting a thread.
 
 ObjFW 0.4-alpha1 -> 0.5, 09.04.2011
  + %@ is now allowed in format strings.
