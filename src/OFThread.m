@@ -23,6 +23,10 @@
 # include <windows.h>
 #endif
 
+#if defined(OF_GNU_RUNTIME) || defined(OF_OLD_GNU_RUNTIME)
+# import <objc/thr.h>
+#endif
+
 #import "OFThread.h"
 #import "OFList.h"
 #import "OFDate.h"
@@ -51,6 +55,10 @@ static of_tlskey_t thread_self;
 static id
 call_main(id obj)
 {
+#if defined(OF_GNU_RUNTIME) || defined(OF_OLD_GNU_RUNTIME)
+	objc_thread_add();
+#endif
+
 	if (!of_tlskey_set(thread_self, obj))
 		@throw [OFInitializationFailedException
 		    newWithClass: [obj class]];
@@ -69,6 +77,10 @@ call_main(id obj)
 	[OFAutoreleasePool releaseAll];
 
 	[obj release];
+
+#if defined(OF_GNU_RUNTIME) || defined(OF_OLD_GNU_RUNTIME)
+	objc_thread_remove();
+#endif
 
 	return 0;
 }
@@ -209,6 +221,10 @@ call_main(id obj)
 
 	[thread release];
 
+#if defined(OF_GNU_RUNTIME) || defined(OF_OLD_GNU_RUNTIME)
+	objc_thread_remove();
+#endif
+
 	of_thread_exit();
 }
 
@@ -244,6 +260,11 @@ call_main(id obj)
 		@throw [OFThreadStillRunningException newWithClass: isa
 							    thread: self];
 
+	if (running == OF_THREAD_WAITING_FOR_JOIN) {
+		of_thread_detach(thread);
+		[retval release];
+	}
+
 	[self retain];
 
 	if (!of_thread_new(&thread, call_main, self)) {
@@ -271,6 +292,13 @@ call_main(id obj)
 	if (running == OF_THREAD_RUNNING)
 		@throw [OFThreadStillRunningException newWithClass: isa
 							    thread: self];
+
+	/*
+	 * We should not be running anymore, but call detach in order to free
+	 * the resources.
+	 */
+	if (running == OF_THREAD_WAITING_FOR_JOIN)
+		of_thread_detach(thread);
 
 	[object release];
 	[retval release];
