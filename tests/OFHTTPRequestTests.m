@@ -27,6 +27,7 @@
 #import "OFThread.h"
 #import "OFTCPSocket.h"
 #import "OFURL.h"
+#import "OFDictionary.h"
 #import "OFAutoreleasePool.h"
 
 #import "TestsAppDelegate.h"
@@ -72,7 +73,7 @@ static OFCondition *cond;
 		assert(0);
 
 	[client writeString: @"HTTP/1.0 200 OK\r\n"
-			     @"Content-Length: 7\r\n"
+			     @"cONTeNT-lENgTH: 7\r\n"
 			     @"\r\n"
 			     @"foo\n"
 			     @"bar"];
@@ -107,6 +108,9 @@ static OFCondition *cond;
 	TEST(@"+[requestWithURL]", (req = [OFHTTPRequest requestWithURL: url]))
 
 	TEST(@"-[perform]", (res = [req perform]))
+
+	TEST(@"Normalization of server header keys",
+	     ([[res headers] objectForKey: @"Content-Length"] != nil))
 
 	[server join];
 

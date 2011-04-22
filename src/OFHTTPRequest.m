@@ -19,6 +19,7 @@
 #define OF_HTTP_REQUEST_M
 
 #include <string.h>
+#include <ctype.h>
 
 #import "OFHTTPRequest.h"
 #import "OFString.h"
@@ -37,6 +38,26 @@
 #import "macros.h"
 
 Class of_http_request_tls_socket_class = Nil;
+
+static OF_INLINE void
+normalize_key(OFString *key)
+{
+	char *str = (char*)[key cString];
+	BOOL firstLetter = YES;
+
+	while (*str != '\0') {
+		if (!isalnum(*str)) {
+			firstLetter = YES;
+			str++;
+			continue;
+		}
+
+		*str = (firstLetter ? toupper(*str) : tolower(*str));
+
+		firstLetter = NO;
+		str++;
+	}
+}
 
 @implementation OFHTTPRequest
 + request
@@ -186,7 +207,7 @@ Class of_http_request_tls_socket_class = Nil;
 
 	@try {
 		OFString *line, *path;
-		OFMutableDictionary *s_headers;
+		OFMutableDictionary *serverHeaders;
 		OFDataArray *data;
 		OFEnumerator *enumerator;
 		OFString *key;
@@ -194,6 +215,7 @@ Class of_http_request_tls_socket_class = Nil;
 		const char *t = NULL;
 		char *buf;
 		size_t bytesReceived;
+		OFString *contentLengthHeader;
 
 		[sock connectToHost: [URL host]
 			     onPort: [URL port]];
@@ -271,7 +293,7 @@ Class of_http_request_tls_socket_class = Nil;
 			     HTTPRequest: self
 			      statusCode: status];
 
-		s_headers = [OFMutableDictionary dictionary];
+		serverHeaders = [OFMutableDictionary dictionary];
 
 		while ((line = [sock readLine]) != nil) {
 			OFString *key, *value;
@@ -286,6 +308,7 @@ Class of_http_request_tls_socket_class = Nil;
 
 			key = [OFString stringWithCString: line_c
 						   length: tmp - line_c];
+			normalize_key(key);
 
 			do {
 				tmp++;
@@ -294,8 +317,7 @@ Class of_http_request_tls_socket_class = Nil;
 			value = [OFString stringWithCString: tmp];
 
 			if ((redirects > 0 && (status == 301 || status == 302 ||
-			    status == 303) && [key caseInsensitiveCompare:
-			    @"Location"] == OF_ORDERED_SAME) &&
+			    status == 303) && [key isEqual: @"Location"]) &&
 			    (redirectsFromHTTPSToHTTPAllowed ||
 			    [scheme isEqual: @"http"] ||
 			    ![value hasPrefix: @"http://"])) {
@@ -309,8 +331,8 @@ Class of_http_request_tls_socket_class = Nil;
 				      willFollowRedirectTo: new];
 
 				if (!follow && delegate != nil) {
-					[s_headers setObject: value
-						      forKey: key];
+					[serverHeaders setObject: value
+							  forKey: key];
 					continue;
 				}
 
@@ -331,12 +353,12 @@ Class of_http_request_tls_socket_class = Nil;
 				    redirects - 1];
 			}
 
-			[s_headers setObject: value
-				      forKey: key];
+			[serverHeaders setObject: value
+					  forKey: key];
 		}
 
 		[delegate request: self
-		didReceiveHeaders: s_headers
+		didReceiveHeaders: serverHeaders
 		   withStatusCode: status];
 
 		if (storesData)
@@ -363,11 +385,9 @@ Class of_http_request_tls_socket_class = Nil;
 			[self freeMemory: buf];
 		}
 
-		if ([s_headers objectForKey: @"Content-Length"] != nil) {
-			intmax_t cl;
-
-			cl = [[s_headers objectForKey: @"Content-Length"]
-			    decimalValue];
+		if ((contentLengthHeader =
+		    [serverHeaders objectForKey: @"Content-Length"]) != nil) {
+			intmax_t cl = [contentLengthHeader decimalValue];
 
 			if (cl > SIZE_MAX)
 				@throw [OFOutOfRangeException
@@ -384,11 +404,11 @@ Class of_http_request_tls_socket_class = Nil;
 		 * swizzling it would create a real copy each time -[copy] is
 		 * called.
 		 */
-		s_headers->isa = [OFDictionary class];
+		serverHeaders->isa = [OFDictionary class];
 
 		result = [[OFHTTPRequestResult alloc]
 		    initWithStatusCode: status
-			       headers: s_headers
+			       headers: serverHeaders
 				  data: data];
 	} @finally {
 		[pool release];
