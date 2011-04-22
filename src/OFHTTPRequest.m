@@ -58,6 +58,7 @@ Class of_http_request_tls_socket_class = Nil;
 	    initWithObject: @"Something using ObjFW "
 			    @"<https://webkeks.org/objfw/>"
 		    forKey: @"User-Agent"];
+	storesData = YES;
 
 	return self;
 }
@@ -145,6 +146,16 @@ Class of_http_request_tls_socket_class = Nil;
 	OF_GETTER(delegate, YES)
 }
 
+- (void)setStoresData: (BOOL)enabled
+{
+	storesData = enabled;
+}
+
+- (BOOL)storesData
+{
+	return storesData;
+}
+
 - (OFHTTPRequestResult*)perform
 {
 	return [self performWithRedirects: 10];
@@ -182,6 +193,7 @@ Class of_http_request_tls_socket_class = Nil;
 		int status;
 		const char *t = NULL;
 		char *buf;
+		size_t bytesReceived;
 
 		[sock connectToHost: [URL host]
 			     onPort: [URL port]];
@@ -327,18 +339,25 @@ Class of_http_request_tls_socket_class = Nil;
 		didReceiveHeaders: s_headers
 		   withStatusCode: status];
 
-		data = [OFDataArray dataArrayWithItemSize: 1];
+		if (storesData)
+			data = [OFDataArray dataArrayWithItemSize: 1];
+		else
+			data = nil;
+
 		buf = [self allocMemoryWithSize: of_pagesize];
+		bytesReceived = 0;
 		@try {
 			size_t len;
 
 			while ((len = [sock readNBytes: of_pagesize
 					    intoBuffer: buf]) > 0) {
-				[data addNItems: len
-				     fromCArray: buf];
 				[delegate request: self
 				   didReceiveData: buf
 				       withLength: len];
+
+				bytesReceived += len;
+				[data addNItems: len
+				     fromCArray: buf];
 			}
 		} @finally {
 			[self freeMemory: buf];
@@ -354,7 +373,7 @@ Class of_http_request_tls_socket_class = Nil;
 				@throw [OFOutOfRangeException
 				    newWithClass: isa];
 
-			if (cl != [data count])
+			if (cl != bytesReceived)
 				@throw [OFTruncatedDataException
 				    newWithClass: isa];
 		}

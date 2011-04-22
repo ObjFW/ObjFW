@@ -95,6 +95,7 @@ typedef enum of_http_request_type_t {
 	OFDictionary *headers;
 	BOOL redirectsFromHTTPSToHTTPAllowed;
 	id <OFHTTPRequestDelegate> delegate;
+	BOOL storesData;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -104,6 +105,7 @@ typedef enum of_http_request_type_t {
 @property (copy) OFDictionary *headers;
 @property (assign) BOOL redirectsFromHTTPSToHTTPAllowed;
 @property (retain) id <OFHTTPRequestDelegate> delegate;
+@property (assign) BOOL storesData;
 #endif
 
 /**
@@ -196,6 +198,21 @@ typedef enum of_http_request_type_t {
  * \return The delegate for the HTTP request.
  */
 - (id <OFHTTPRequestDelegate>)delegate;
+
+/**
+ * Sets whether an OFDataArray with the data is created.
+ *
+ * Setting this to NO is only useful if you are using the delegate to handle the
+ * data.
+ *
+ * \param enabled Whether to store the data in an OFDataArray
+ */
+- (void)setStoresData: (BOOL)enabled;
+
+/**
+ * \return Whether an OFDataArray with the data is created
+ */
+- (BOOL)storesData;
 
 /**
  * Performs the HTTP request and returns an OFHTTPRequestResult.
