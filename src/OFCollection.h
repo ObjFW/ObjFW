@@ -35,13 +35,15 @@
 - (OFEnumerator*)objectEnumerator;
 
 /**
- * \return A boolean whether the collection contains the specified object.
+ * \param The object which is checked for being in the collection
+ * \return A boolean whether the collection contains the specified object
  */
-- (BOOL)containsObject: (id)obj;
+- (BOOL)containsObject: (id)object;
 
 /**
+ * \param The object which is checked for being in the collection
  * \return A boolean whether the collection contains an object with the
  *	   specified address.
  */
-- (BOOL)containsObjectIdenticalTo: (id)obj;
+- (BOOL)containsObjectIdenticalTo: (id)object;
 @end

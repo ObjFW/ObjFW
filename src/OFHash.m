@@ -34,7 +34,7 @@
 }
 
 - (void)updateWithBuffer: (const char*)buffer
-		  ofSize: (size_t)size
+		  length: (size_t)length
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];

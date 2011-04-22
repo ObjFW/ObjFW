@@ -58,11 +58,11 @@ typedef enum of_http_request_type_t {
  *
  * \param request The OFHTTPRequest which received data
  * \param data The data the OFHTTPRequest received
- * \param len The length of the data received, in bytes
+ * \param length The length of the data received, in bytes
  */
 -  (void)request: (OFHTTPRequest*)request
   didReceiveData: (const char*)data
-      withLength: (size_t)len;
+      withLength: (size_t)length;
 
 /**
  * This callback is called when the OFHTTPRequest will follow a redirect.
@@ -77,11 +77,11 @@ typedef enum of_http_request_type_t {
  * callback will not be called.
  *
  * \param request The OFHTTPRequest which will follow a redirect
- * \param url The URL to which it will follow a redirect
+ * \param URL The URL to which it will follow a redirect
  * \return A boolean whether the OFHTTPRequest should follow the redirect
  */
 -	 (BOOL)request: (OFHTTPRequest*)request
-  willFollowRedirectTo: (OFURL*)url;
+  willFollowRedirectTo: (OFURL*)URL;
 @end
 
 /**
@@ -114,25 +114,25 @@ typedef enum of_http_request_type_t {
 + request;
 
 /**
- * \param url The URL for the request
+ * \param URL The URL for the request
  * \return A new, autoreleased OFHTTPRequest
  */
-+ requestWithURL: (OFURL*)url;
++ requestWithURL: (OFURL*)URL;
 
 /**
  * Initializes an already allocated OFHTTPRequest with the specified URL.
  *
- * \param url The URL for the request
+ * \param URL The URL for the request
  * \return An initialized OFHTTPRequest
  */
-- initWithURL: (OFURL*)url;
+- initWithURL: (OFURL*)URL;
 
 /**
  * Sets the URL for the HTTP request.
  *
  * \param URL The URL for the HTTP request
  */
-- (void)setURL: (OFURL*)url;
+- (void)setURL: (OFURL*)URL;
 
 /**
  * \return The URL for the HTTP request
@@ -142,9 +142,9 @@ typedef enum of_http_request_type_t {
 /**
  * Sets the request type for the HTTP request.
  *
- * \param type The request type for the HTTP request
+ * \param requestType The request type for the HTTP request
  */
-- (void)setRequestType: (of_http_request_type_t)type;
+- (void)setRequestType: (of_http_request_type_t)requestType;
 
 /**
  * \return The request type for the HTTP request
@@ -154,9 +154,9 @@ typedef enum of_http_request_type_t {
 /**
  * Sets the query string for the HTTP request.
  *
- * \param qs The query string for the HTTP request
+ * \param queryString The query string for the HTTP request
  */
-- (void)setQueryString: (OFString*)qs;
+- (void)setQueryString: (OFString*)queryString;
 
 /**
  * \return The query string for the HTTP request
@@ -205,9 +205,9 @@ typedef enum of_http_request_type_t {
  * Setting this to NO is only useful if you are using the delegate to handle the
  * data.
  *
- * \param enabled Whether to store the data in an OFDataArray
+ * \param storesData Whether to store the data in an OFDataArray
  */
-- (void)setStoresData: (BOOL)enabled;
+- (void)setStoresData: (BOOL)storesData;
 
 /**
  * \return Whether an OFDataArray with the data is created

@@ -65,9 +65,9 @@ normalize_key(OFString *key)
 	return [[[self alloc] init] autorelease];
 }
 
-+ requestWithURL: (OFURL*)url
++ requestWithURL: (OFURL*)URL
 {
-	return [[[self alloc] initWithURL: url] autorelease];
+	return [[[self alloc] initWithURL: URL] autorelease];
 }
 
 - init
@@ -84,12 +84,12 @@ normalize_key(OFString *key)
 	return self;
 }
 
-- initWithURL: (OFURL*)url
+- initWithURL: (OFURL*)URL_
 {
 	self = [self init];
 
 	@try {
-		[self setURL: url];
+		[self setURL: URL_];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -108,9 +108,9 @@ normalize_key(OFString *key)
 	[super dealloc];
 }
 
-- (void)setURL: (OFURL*)url
+- (void)setURL: (OFURL*)URL_
 {
-	OF_SETTER(URL, url, YES, YES)
+	OF_SETTER(URL, URL_, YES, YES)
 }
 
 - (OFURL*)URL
@@ -118,9 +118,9 @@ normalize_key(OFString *key)
 	OF_GETTER(URL, YES)
 }
 
-- (void)setRequestType: (of_http_request_type_t)type
+- (void)setRequestType: (of_http_request_type_t)requestType_
 {
-	requestType = type;
+	requestType = requestType_;
 }
 
 - (of_http_request_type_t)requestType
@@ -128,9 +128,9 @@ normalize_key(OFString *key)
 	return requestType;
 }
 
-- (void)setQueryString: (OFString*)qs
+- (void)setQueryString: (OFString*)queryString_
 {
-	OF_SETTER(queryString, qs, YES, YES)
+	OF_SETTER(queryString, queryString_, YES, YES)
 }
 
 - (OFString*)queryString
@@ -168,9 +168,9 @@ normalize_key(OFString *key)
 	OF_GETTER(delegate, YES)
 }
 
-- (void)setStoresData: (BOOL)enabled
+- (void)setStoresData: (BOOL)storesData_
 {
-	storesData = enabled;
+	storesData = storesData_;
 }
 
 - (BOOL)storesData
@@ -213,8 +213,8 @@ normalize_key(OFString *key)
 		OFEnumerator *enumerator;
 		OFString *key;
 		int status;
-		const char *t = NULL;
-		char *buf;
+		const char *type = NULL;
+		char *buffer;
 		size_t bytesReceived;
 		OFString *contentLengthHeader;
 
@@ -228,20 +228,20 @@ normalize_key(OFString *key)
 		[sock setBuffersWrites: YES];
 
 		if (requestType == OF_HTTP_REQUEST_TYPE_GET)
-			t = "GET";
+			type = "GET";
 		if (requestType == OF_HTTP_REQUEST_TYPE_HEAD)
-			t = "HEAD";
+			type = "HEAD";
 		if (requestType == OF_HTTP_REQUEST_TYPE_POST)
-			t = "POST";
+			type = "POST";
 
 		if ([(path = [URL path]) isEqual: @""])
 			path = @"/";
 
 		if ([URL query] != nil)
 			[sock writeFormat: @"%s %@?%@ HTTP/1.0\r\n",
-					   t, path, [URL query]];
+					   type, path, [URL query]];
 		else
-			[sock writeFormat: @"%s %@ HTTP/1.0\r\n", t, path];
+			[sock writeFormat: @"%s %@ HTTP/1.0\r\n", type, path];
 
 		if ([URL port] == 80)
 			[sock writeFormat: @"Host: %@\r\n", [URL host]];
@@ -367,23 +367,23 @@ normalize_key(OFString *key)
 		else
 			data = nil;
 
-		buf = [self allocMemoryWithSize: of_pagesize];
+		buffer = [self allocMemoryWithSize: of_pagesize];
 		bytesReceived = 0;
 		@try {
 			size_t len;
 
 			while ((len = [sock readNBytes: of_pagesize
-					    intoBuffer: buf]) > 0) {
+					    intoBuffer: buffer]) > 0) {
 				[delegate request: self
-				   didReceiveData: buf
+				   didReceiveData: buffer
 				       withLength: len];
 
 				bytesReceived += len;
 				[data addNItems: len
-				     fromCArray: buf];
+				     fromCArray: buffer];
 			}
 		} @finally {
-			[self freeMemory: buf];
+			[self freeMemory: buffer];
 		}
 
 		if ((contentLengthHeader =

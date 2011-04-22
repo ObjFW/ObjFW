@@ -605,30 +605,30 @@ of_log(OFConstantString *format, ...)
 - (size_t)_readNBytes: (size_t)length
 	   intoBuffer: (char*)buffer
 {
-	size_t retLength;
+	size_t ret;
 
 	if (fileDescriptor == -1 || isAtEndOfStream)
 		@throw [OFReadFailedException newWithClass: isa
 						    stream: self
 					   requestedLength: length];
-	if ((retLength = read(fileDescriptor, buffer, length)) == 0)
+	if ((ret = read(fileDescriptor, buffer, length)) == 0)
 		isAtEndOfStream = YES;
 
-	return retLength;
+	return ret;
 }
 
 - (size_t)_writeNBytes: (size_t)length
 	    fromBuffer: (const char*)buffer
 {
-	size_t retLength;
+	size_t ret;
 
 	if (fileDescriptor == -1 || isAtEndOfStream ||
-	    (retLength = write(fileDescriptor, buffer, length)) < length)
+	    (ret = write(fileDescriptor, buffer, length)) < length)
 		@throw [OFWriteFailedException newWithClass: isa
 						     stream: self
 					    requestedLength: length];
 
-	return retLength;
+	return ret;
 }
 
 - (void)_seekToOffset: (off_t)offset
@@ -642,28 +642,28 @@ of_log(OFConstantString *format, ...)
 
 - (off_t)_seekForwardWithOffset: (off_t)offset
 {
-	off_t retOffset;
+	off_t ret;
 
-	if ((retOffset = lseek(fileDescriptor, offset, SEEK_CUR)) == -1)
+	if ((ret = lseek(fileDescriptor, offset, SEEK_CUR)) == -1)
 		@throw [OFSeekFailedException newWithClass: isa
 						    stream: self
 						    offset: offset
 						    whence: SEEK_CUR];
 
-	return retOffset;
+	return ret;
 }
 
 - (off_t)_seekToOffsetRelativeToEnd: (off_t)offset
 {
-	off_t retOffset;
+	off_t ret;
 
-	if ((retOffset = lseek(fileDescriptor, offset, SEEK_END)) == -1)
+	if ((ret = lseek(fileDescriptor, offset, SEEK_END)) == -1)
 		@throw [OFSeekFailedException newWithClass: isa
 						    stream: self
 						    offset: offset
 						    whence: SEEK_END];
 
-	return retOffset;
+	return ret;
 }
 
 - (int)fileDescriptor

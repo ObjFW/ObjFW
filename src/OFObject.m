@@ -66,11 +66,11 @@
 #endif
 
 struct pre_ivar {
-	void	      **memchunks;
-	size_t	      memchunks_size;
-	int32_t	      retain_count;
+	void	      **memoryChunks;
+	size_t	      memoryChunksSize;
+	int32_t	      retainCount;
 #if !defined(OF_ATOMIC_OPS)
-	of_spinlock_t retain_spinlock;
+	of_spinlock_t retainCountSpinlock;
 #endif
 };
 
@@ -102,17 +102,17 @@ extern BOOL objc_properties_init();
 #endif
 
 static void
-enumeration_mutation_handler(id obj)
+enumeration_mutation_handler(id object)
 {
-	@throw [OFEnumerationMutationException newWithClass: [obj class]
-						     object: obj];
+	@throw [OFEnumerationMutationException newWithClass: [object class]
+						     object: object];
 }
 
 #ifndef HAVE_OBJC_ENUMERATIONMUTATION
 void
-objc_enumerationMutation(id obj)
+objc_enumerationMutation(id object)
 {
-	enumeration_mutation_handler(obj);
+	enumeration_mutation_handler(object);
 }
 #endif
 
@@ -166,28 +166,29 @@ objc_enumerationMutation(id obj)
 + alloc
 {
 	OFObject *instance;
-	size_t isize = class_getInstanceSize(self);
+	size_t instanceSize = class_getInstanceSize(self);
 	Class class;
 	void (*last)(id, SEL) = NULL;
 
-	if ((instance = malloc(isize + PRE_IVAR_ALIGN)) == NULL) {
+	if ((instance = malloc(instanceSize + PRE_IVAR_ALIGN)) == NULL) {
 		alloc_failed_exception.isa = [OFAllocFailedException class];
 		@throw (OFAllocFailedException*)&alloc_failed_exception;
 	}
 
-	((struct pre_ivar*)instance)->memchunks = NULL;
-	((struct pre_ivar*)instance)->memchunks_size = 0;
-	((struct pre_ivar*)instance)->retain_count = 1;
+	((struct pre_ivar*)instance)->memoryChunks = NULL;
+	((struct pre_ivar*)instance)->memoryChunksSize = 0;
+	((struct pre_ivar*)instance)->retainCount = 1;
 
 #if !defined(OF_ATOMIC_OPS)
-	if (!of_spinlock_new(&((struct pre_ivar*)instance)->retain_spinlock)) {
+	if (!of_spinlock_new(
+	    &((struct pre_ivar*)instance)->retainCountSpinlock)) {
 		free(instance);
 		@throw [OFInitializationFailedException newWithClass: self];
 	}
 #endif
 
 	instance = (OFObject*)((char*)instance + PRE_IVAR_ALIGN);
-	memset(instance, 0, isize);
+	memset(instance, 0, instanceSize);
 	instance->isa = self;
 
 	for (class = self; class != Nil; class = class_getSuperclass(class)) {
@@ -314,18 +315,18 @@ objc_enumerationMutation(id obj)
 	return [self className];
 }
 
-+ (IMP)setImplementation: (IMP)newimp
++ (IMP)setImplementation: (IMP)newImp
 	  forClassMethod: (SEL)selector
 {
 #if defined(OF_OBJFW_RUNTIME)
-	if (newimp == (IMP)0 || !class_respondsToSelector(self->isa, selector))
+	if (newImp == (IMP)0 || !class_respondsToSelector(self->isa, selector))
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 
-	return objc_replace_class_method(self, selector, newimp);
+	return objc_replace_class_method(self, selector, newImp);
 #elif defined(OF_OLD_GNU_RUNTIME)
 	Method_t method;
-	IMP oldimp;
+	IMP oldImp;
 
 	/* The class method is the instance method of the meta class */
 	if ((method = class_get_instance_method(self->class_pointer,
@@ -333,11 +334,11 @@ objc_enumerationMutation(id obj)
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 
-	if ((oldimp = method_get_imp(method)) == (IMP)0 || newimp == (IMP)0)
+	if ((oldImp = method_get_imp(method)) == (IMP)0 || newImp == (IMP)0)
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 
-	method->method_imp = newimp;
+	method->method_imp = newImp;
 
 	/* Update the dtable if necessary */
 	if (sarray_get_safe(((Class)self->class_pointer)->dtable,
@@ -345,11 +346,11 @@ objc_enumerationMutation(id obj)
 		sarray_at_put_safe(((Class)self->class_pointer)->dtable,
 		    (sidx)method->method_name->sel_id, method->method_imp);
 
-	return oldimp;
+	return oldImp;
 #else
 	Method method;
 
-	if (newimp == (IMP)0 ||
+	if (newImp == (IMP)0 ||
 	    (method = class_getClassMethod(self, selector)) == NULL)
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
@@ -358,7 +359,7 @@ objc_enumerationMutation(id obj)
 	 * Cast needed because it's isa in the Apple runtime, but class_pointer
 	 * in the GNU runtime.
 	 */
-	return class_replaceMethod(((OFObject*)self)->isa, selector, newimp,
+	return class_replaceMethod(((OFObject*)self)->isa, selector, newImp,
 	    method_getTypeEncoding(method));
 #endif
 }
@@ -366,40 +367,40 @@ objc_enumerationMutation(id obj)
 + (IMP)replaceClassMethod: (SEL)selector
       withMethodFromClass: (Class)class;
 {
-	IMP newimp;
+	IMP newImp;
 
 	if (![class isSubclassOfClass: self])
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 
-	newimp = [class methodForSelector: selector];
+	newImp = [class methodForSelector: selector];
 
-	return [self setImplementation: newimp
+	return [self setImplementation: newImp
 			forClassMethod: selector];
 }
 
-+ (IMP)setImplementation: (IMP)newimp
++ (IMP)setImplementation: (IMP)newImp
        forInstanceMethod: (SEL)selector
 {
 #if defined(OF_OBJFW_RUNTIME)
-	if (newimp == (IMP)0 || !class_respondsToSelector(self, selector))
+	if (newImp == (IMP)0 || !class_respondsToSelector(self, selector))
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 
-	return objc_replace_instance_method(self, selector, newimp);
+	return objc_replace_instance_method(self, selector, newImp);
 #elif defined(OF_OLD_GNU_RUNTIME)
 	Method_t method = class_get_instance_method(self, selector);
-	IMP oldimp;
+	IMP oldImp;
 
 	if (method == NULL)
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 
-	if ((oldimp = method_get_imp(method)) == (IMP)0 || newimp == (IMP)0)
+	if ((oldImp = method_get_imp(method)) == (IMP)0 || newImp == (IMP)0)
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 
-	method->method_imp = newimp;
+	method->method_imp = newImp;
 
 	/* Update the dtable if necessary */
 	if (sarray_get_safe(((Class)self)->dtable,
@@ -407,16 +408,16 @@ objc_enumerationMutation(id obj)
 		sarray_at_put_safe(((Class)self)->dtable,
 		    (sidx)method->method_name->sel_id, method->method_imp);
 
-	return oldimp;
+	return oldImp;
 #else
 	Method method;
 
-	if (newimp == (IMP)0 ||
+	if (newImp == (IMP)0 ||
 	    (method = class_getInstanceMethod(self, selector)) == NULL)
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 
-	return class_replaceMethod(self, selector, newimp,
+	return class_replaceMethod(self, selector, newImp,
 	    method_getTypeEncoding(method));
 #endif
 }
@@ -424,15 +425,15 @@ objc_enumerationMutation(id obj)
 + (IMP)replaceInstanceMethod: (SEL)selector
 	 withMethodFromClass: (Class)class;
 {
-	IMP newimp;
+	IMP newImp;
 
 	if (![class isSubclassOfClass: self])
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 
-	newimp = [class instanceMethodForSelector: selector];
+	newImp = [class instanceMethodForSelector: selector];
 
-	return [self setImplementation: newimp
+	return [self setImplementation: newImp
 		     forInstanceMethod: selector];
 }
 
@@ -566,67 +567,67 @@ objc_enumerationMutation(id obj)
 
 - (void)addMemoryToPool: (void*)ptr
 {
-	void **memchunks;
-	size_t memchunks_size;
+	void **memoryChunks;
+	size_t memoryChunksSize;
 
-	memchunks_size = PRE_IVAR->memchunks_size + 1;
+	memoryChunksSize = PRE_IVAR->memoryChunksSize + 1;
 
-	if (SIZE_MAX - PRE_IVAR->memchunks_size < 1 ||
-	    memchunks_size > SIZE_MAX / sizeof(void*))
+	if (SIZE_MAX - PRE_IVAR->memoryChunksSize < 1 ||
+	    memoryChunksSize > SIZE_MAX / sizeof(void*))
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	if ((memchunks = realloc(PRE_IVAR->memchunks,
-	    memchunks_size * sizeof(void*))) == NULL)
+	if ((memoryChunks = realloc(PRE_IVAR->memoryChunks,
+	    memoryChunksSize * sizeof(void*))) == NULL)
 		@throw [OFOutOfMemoryException newWithClass: isa
-					      requestedSize: memchunks_size];
+					      requestedSize: memoryChunksSize];
 
-	PRE_IVAR->memchunks = memchunks;
-	PRE_IVAR->memchunks[PRE_IVAR->memchunks_size] = ptr;
-	PRE_IVAR->memchunks_size = memchunks_size;
+	PRE_IVAR->memoryChunks = memoryChunks;
+	PRE_IVAR->memoryChunks[PRE_IVAR->memoryChunksSize] = ptr;
+	PRE_IVAR->memoryChunksSize = memoryChunksSize;
 }
 
 - (void*)allocMemoryWithSize: (size_t)size
 {
-	void *ptr, **memchunks;
-	size_t memchunks_size;
+	void *ptr, **memoryChunks;
+	size_t memoryChunksSize;
 
 	if (size == 0)
 		return NULL;
 
-	memchunks_size = PRE_IVAR->memchunks_size + 1;
+	memoryChunksSize = PRE_IVAR->memoryChunksSize + 1;
 
-	if (SIZE_MAX - PRE_IVAR->memchunks_size == 0 ||
-	    memchunks_size > SIZE_MAX / sizeof(void*))
+	if (SIZE_MAX - PRE_IVAR->memoryChunksSize == 0 ||
+	    memoryChunksSize > SIZE_MAX / sizeof(void*))
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	if ((ptr = malloc(size)) == NULL)
 		@throw [OFOutOfMemoryException newWithClass: isa
 					      requestedSize: size];
 
-	if ((memchunks = realloc(PRE_IVAR->memchunks,
-	    memchunks_size * sizeof(void*))) == NULL) {
+	if ((memoryChunks = realloc(PRE_IVAR->memoryChunks,
+	    memoryChunksSize * sizeof(void*))) == NULL) {
 		free(ptr);
 		@throw [OFOutOfMemoryException newWithClass: isa
-					      requestedSize: memchunks_size];
+					      requestedSize: memoryChunksSize];
 	}
 
-	PRE_IVAR->memchunks = memchunks;
-	PRE_IVAR->memchunks[PRE_IVAR->memchunks_size] = ptr;
-	PRE_IVAR->memchunks_size = memchunks_size;
+	PRE_IVAR->memoryChunks = memoryChunks;
+	PRE_IVAR->memoryChunks[PRE_IVAR->memoryChunksSize] = ptr;
+	PRE_IVAR->memoryChunksSize = memoryChunksSize;
 
 	return ptr;
 }
 
-- (void*)allocMemoryForNItems: (size_t)nitems
+- (void*)allocMemoryForNItems: (size_t)nItems
 		     withSize: (size_t)size
 {
-	if (nitems == 0 || size == 0)
+	if (nItems == 0 || size == 0)
 		return NULL;
 
-	if (nitems > SIZE_MAX / size)
+	if (nItems > SIZE_MAX / size)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	return [self allocMemoryWithSize: nitems * size];
+	return [self allocMemoryWithSize: nItems * size];
 }
 
 - (void*)resizeMemory: (void*)ptr
@@ -642,9 +643,9 @@ objc_enumerationMutation(id obj)
 		return NULL;
 	}
 
-	iter = PRE_IVAR->memchunks + PRE_IVAR->memchunks_size;
+	iter = PRE_IVAR->memoryChunks + PRE_IVAR->memoryChunksSize;
 
-	while (iter-- > PRE_IVAR->memchunks) {
+	while (iter-- > PRE_IVAR->memoryChunks) {
 		if (OF_UNLIKELY(*iter == ptr)) {
 			if (OF_UNLIKELY((ptr = realloc(ptr, size)) == NULL))
 				@throw [OFOutOfMemoryException
@@ -661,66 +662,66 @@ objc_enumerationMutation(id obj)
 }
 
 - (void*)resizeMemory: (void*)ptr
-	     toNItems: (size_t)nitems
+	     toNItems: (size_t)nItems
 	     withSize: (size_t)size
 {
 	if (ptr == NULL)
-		return [self allocMemoryForNItems: nitems
+		return [self allocMemoryForNItems: nItems
 					 withSize: size];
 
-	if (nitems == 0 || size == 0) {
+	if (nItems == 0 || size == 0) {
 		[self freeMemory: ptr];
 		return NULL;
 	}
 
-	if (nitems > SIZE_MAX / size)
+	if (nItems > SIZE_MAX / size)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	return [self resizeMemory: ptr
-			   toSize: nitems * size];
+			   toSize: nItems * size];
 }
 
 - (void)freeMemory: (void*)ptr;
 {
-	void **iter, *last, **memchunks;
-	size_t i, memchunks_size;
+	void **iter, *last, **memoryChunks;
+	size_t i, memoryChunksSize;
 
 	if (ptr == NULL)
 		return;
 
-	iter = PRE_IVAR->memchunks + PRE_IVAR->memchunks_size;
-	i = PRE_IVAR->memchunks_size;
+	iter = PRE_IVAR->memoryChunks + PRE_IVAR->memoryChunksSize;
+	i = PRE_IVAR->memoryChunksSize;
 
-	while (iter-- > PRE_IVAR->memchunks) {
+	while (iter-- > PRE_IVAR->memoryChunks) {
 		i--;
 
 		if (OF_UNLIKELY(*iter == ptr)) {
-			memchunks_size = PRE_IVAR->memchunks_size - 1;
-			last = PRE_IVAR->memchunks[memchunks_size];
+			memoryChunksSize = PRE_IVAR->memoryChunksSize - 1;
+			last = PRE_IVAR->memoryChunks[memoryChunksSize];
 
-			assert(PRE_IVAR->memchunks_size != 0 &&
-			    memchunks_size <= SIZE_MAX / sizeof(void*));
+			assert(PRE_IVAR->memoryChunksSize != 0 &&
+			    memoryChunksSize <= SIZE_MAX / sizeof(void*));
 
-			if (OF_UNLIKELY(memchunks_size == 0)) {
+			if (OF_UNLIKELY(memoryChunksSize == 0)) {
 				free(ptr);
-				free(PRE_IVAR->memchunks);
+				free(PRE_IVAR->memoryChunks);
 
-				PRE_IVAR->memchunks = NULL;
-				PRE_IVAR->memchunks_size = 0;
+				PRE_IVAR->memoryChunks = NULL;
+				PRE_IVAR->memoryChunksSize = 0;
 
 				return;
 			}
 
 			free(ptr);
-			PRE_IVAR->memchunks[i] = last;
-			PRE_IVAR->memchunks_size = memchunks_size;
+			PRE_IVAR->memoryChunks[i] = last;
+			PRE_IVAR->memoryChunksSize = memoryChunksSize;
 
-			if (OF_UNLIKELY((memchunks = realloc(
-			    PRE_IVAR->memchunks, memchunks_size *
+			if (OF_UNLIKELY((memoryChunks = realloc(
+			    PRE_IVAR->memoryChunks, memoryChunksSize *
 			    sizeof(void*))) == NULL))
 				return;
 
-			PRE_IVAR->memchunks = memchunks;
+			PRE_IVAR->memoryChunks = memoryChunks;
 
 			return;
 		}
@@ -733,11 +734,11 @@ objc_enumerationMutation(id obj)
 - retain
 {
 #if defined(OF_ATOMIC_OPS)
-	of_atomic_inc_32(&PRE_IVAR->retain_count);
+	of_atomic_inc_32(&PRE_IVAR->retainCount);
 #else
-	assert(of_spinlock_lock(&PRE_IVAR->retain_spinlock));
-	PRE_IVAR->retain_count++;
-	assert(of_spinlock_unlock(&PRE_IVAR->retain_spinlock));
+	assert(of_spinlock_lock(&PRE_IVAR->retainCountSpinlock));
+	PRE_IVAR->retainCount++;
+	assert(of_spinlock_unlock(&PRE_IVAR->retainCountSspinlock));
 #endif
 
 	return self;
@@ -745,21 +746,21 @@ objc_enumerationMutation(id obj)
 
 - (unsigned int)retainCount
 {
-	assert(PRE_IVAR->retain_count >= 0);
-	return PRE_IVAR->retain_count;
+	assert(PRE_IVAR->retainCount >= 0);
+	return PRE_IVAR->retainCount;
 }
 
 - (void)release
 {
 #if defined(OF_ATOMIC_OPS)
-	if (of_atomic_dec_32(&PRE_IVAR->retain_count) <= 0)
+	if (of_atomic_dec_32(&PRE_IVAR->retainCount) <= 0)
 		[self dealloc];
 #else
 	size_t c;
 
-	assert(of_spinlock_lock(&PRE_IVAR->retain_spinlock));
-	c = --PRE_IVAR->retain_count;
-	assert(of_spinlock_unlock(&PRE_IVAR->retain_spinlock));
+	assert(of_spinlock_lock(&PRE_IVAR->retainCountSpinlock));
+	c = --PRE_IVAR->retainCount;
+	assert(of_spinlock_unlock(&PRE_IVAR->retainCountSpinlock));
 
 	if (!c)
 		[self dealloc];
@@ -799,12 +800,12 @@ objc_enumerationMutation(id obj)
 			break;
 	}
 
-	iter = PRE_IVAR->memchunks + PRE_IVAR->memchunks_size;
-	while (iter-- > PRE_IVAR->memchunks)
+	iter = PRE_IVAR->memoryChunks + PRE_IVAR->memoryChunksSize;
+	while (iter-- > PRE_IVAR->memoryChunks)
 		free(*iter);
 
-	if (PRE_IVAR->memchunks != NULL)
-		free(PRE_IVAR->memchunks);
+	if (PRE_IVAR->memoryChunks != NULL)
+		free(PRE_IVAR->memoryChunks);
 
 	free((char*)self - PRE_IVAR_ALIGN);
 }
@@ -844,7 +845,7 @@ objc_enumerationMutation(id obj)
 					      selector: _cmd];
 }
 
-+ (void*)allocMemoryForNItems: (size_t)nitems
++ (void*)allocMemoryForNItems: (size_t)nItems
                      withSize: (size_t)size
 {
 	@throw [OFNotImplementedException newWithClass: self
@@ -859,7 +860,7 @@ objc_enumerationMutation(id obj)
 }
 
 + (void*)resizeMemory: (void*)ptr
-	     toNItems: (size_t)nitems
+	     toNItems: (size_t)nItems
 	     withSize: (size_t)size
 {
 	@throw [OFNotImplementedException newWithClass: self

@@ -23,7 +23,7 @@
  */
 @interface OFMD5Hash: OFHash
 {
-	uint32_t buf[4];
+	uint32_t buffer[4];
 	uint32_t bits[2];
 	union {
 		uint8_t	u8[64];

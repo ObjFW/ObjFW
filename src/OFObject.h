@@ -263,11 +263,11 @@ typedef struct of_range_t {
 /**
  * Replaces a class method implementation with another implementation.
  *
- * \param newimp The new implementation for the class method
+ * \param newImp The new implementation for the class method
  * \param selector The selector of the class method to replace
  * \return The old implementation
  */
-+ (IMP)setImplementation: (IMP)newimp
++ (IMP)setImplementation: (IMP)newImp
 	  forClassMethod: (SEL)selector;
 
 /**
@@ -283,11 +283,11 @@ typedef struct of_range_t {
 /**
  * Replaces an instance method implementation with another implementation.
  *
- * \param newimp The new implementation for the instance method
+ * \param newImp The new implementation for the instance method
  * \param selector The selector of the instance method to replace
  * \return The old implementation
  */
-+ (IMP)setImplementation: (IMP)newimp
++ (IMP)setImplementation: (IMP)newImp
        forInstanceMethod: (SEL)selector;
 
 /**
@@ -367,11 +367,11 @@ typedef struct of_range_t {
  * object's memory pool so it can be free'd automatically when the object is
  * deallocated.
  *
- * \param nitems The number of items to allocate
+ * \param nItems The number of items to allocate
  * \param size The size of each item to allocate
  * \return A pointer to the allocated memory
  */
-- (void*)allocMemoryForNItems: (size_t)nitems
+- (void*)allocMemoryForNItems: (size_t)nItems
 		     withSize: (size_t)size;
 
 /**
@@ -389,12 +389,12 @@ typedef struct of_range_t {
  * the specified size.
  *
  * \param ptr A pointer to the already allocated memory
- * \param nitems The number of items to resize to
+ * \param nItems The number of items to resize to
  * \param size The size of each item to resize to
  * \return A pointer to the resized memory chunk
  */
 - (void*)resizeMemory: (void*)ptr
-	     toNItems: (size_t)nitems
+	     toNItems: (size_t)nItems
 	     withSize: (size_t)size;
 
 /**

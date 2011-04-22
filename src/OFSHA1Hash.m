@@ -106,26 +106,26 @@ sha1_transform(uint32_t state[5], const char buffer[64])
 
 static inline void
 sha1_update(uint32_t *state, uint64_t *count, char *buffer,
-    const char *buf, size_t size)
+    const char *buf, size_t length)
 {
 	size_t i, j;
 
 	j = (size_t)((*count >> 3) & 63);
-	*count += (size << 3);
+	*count += (length << 3);
 
-	if ((j + size) > 63) {
+	if ((j + length) > 63) {
 		memcpy(&buffer[j], buf, (i = 64 - j));
 
 		sha1_transform(state, buffer);
 
-		for (; i + 63 < size; i += 64)
+		for (; i + 63 < length; i += 64)
 			sha1_transform(state, &buf[i]);
 
 		j = 0;
 	} else
 		i = 0;
 
-	memcpy(&buffer[j], &buf[i], size - i);
+	memcpy(&buffer[j], &buf[i], length - i);
 }
 
 @implementation OFSHA1Hash
@@ -157,17 +157,17 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 	return self;
 }
 
-- (void)updateWithBuffer: (const char*)buf
-		  ofSize: (size_t)size
+- (void)updateWithBuffer: (const char*)buffer_
+		  length: (size_t)length
 {
-	if (size == 0)
+	if (length == 0)
 		return;
 
 	if (isCalculated)
 		@throw [OFHashAlreadyCalculatedException newWithClass: isa
 								 hash: self];
 
-	sha1_update(state, &count, buffer, buf, size);
+	sha1_update(state, &count, buffer, buffer_, length);
 }
 
 - (uint8_t*)digest

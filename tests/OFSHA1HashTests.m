@@ -48,16 +48,17 @@ const uint8_t testfile_sha1[OF_SHA1_DIGEST_SIZE] =
 		size_t len = [f readNBytes: 64
 				intoBuffer: buf];
 		[sha1 updateWithBuffer: buf
-				ofSize: len];
+				length: len];
 	}
 	[f close];
 
 	TEST(@"-[digest]",
 	    !memcmp([sha1 digest], testfile_sha1, OF_SHA1_DIGEST_SIZE))
 
-	EXPECT_EXCEPTION(@"Detect invalid call of -[updateWithBuffer]",
-	    OFHashAlreadyCalculatedException, [sha1 updateWithBuffer: ""
-							      ofSize: 1])
+	EXPECT_EXCEPTION(@"Detect invalid call of "
+	    @"-[updateWithBuffer:length:]", OFHashAlreadyCalculatedException,
+	    [sha1 updateWithBuffer: ""
+			    length: 1])
 
 	[pool drain];
 }

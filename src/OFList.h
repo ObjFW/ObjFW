@@ -29,7 +29,7 @@ struct of_list_object_t {
 	/// A pointer to the next list object in the list
 	of_list_object_t *next;
 	/// A pointer to the previous list object in the list
-	of_list_object_t *prev;
+	of_list_object_t *previous;
 	/// The object for the list object
 	id		 object;
 };
@@ -68,53 +68,53 @@ struct of_list_object_t {
 /**
  * Appends an object to the list.
  *
- * \param obj The object to append
+ * \param object The object to append
  * \return An of_list_object_t, needed to identify the object inside the list.
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)appendObject: (id)obj;
+- (of_list_object_t*)appendObject: (id)object;
 
 /**
  * Prepends an object to the list.
  *
- * \param obj The object to prepend
+ * \param object The object to prepend
  * \return An of_list_object_t, needed to identify the object inside the list.
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)prependObject: (id)obj;
+- (of_list_object_t*)prependObject: (id)object;
 
 /**
  * Inserts an object before another object.
- * \param obj The object to insert
- * \param listobj The of_list_object_t of the object before which it should be
+ * \param object The object to insert
+ * \param listObject The of_list_object_t of the object before which it should be
  *	  inserted
  * \return An of_list_object_t, needed to identify the object inside the list.
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)insertObject: (id)obj
-		 beforeListObject: (of_list_object_t*)listobj;
+- (of_list_object_t*)insertObject: (id)object
+		 beforeListObject: (of_list_object_t*)listObject;
 
 /**
  * Inserts an object after another object.
- * \param obj The object to insert
- * \param listobj The of_list_object_t of the object after which it should be
+ * \param object The object to insert
+ * \param listObject The of_list_object_t of the object after which it should be
  *	  inserted
  * \return An of_list_object_t, needed to identify the object inside the list.
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)insertObject: (id)obj
-		  afterListObject: (of_list_object_t*)listobj;
+- (of_list_object_t*)insertObject: (id)object
+		  afterListObject: (of_list_object_t*)listObject;
 
 /**
  * Removes the object with the specified list object from the list.
  *
- * \param listobj The list object returned by append / prepend
+ * \param listObject The list object returned by append / prepend
  */
-- (void)removeListObject: (of_list_object_t*)listobj;
+- (void)removeListObject: (of_list_object_t*)listObject;
 @end
 
 @interface OFListEnumerator: OFEnumerator

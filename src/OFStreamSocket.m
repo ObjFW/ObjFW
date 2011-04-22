@@ -68,7 +68,7 @@
 - (size_t)_readNBytes: (size_t)length
 	   intoBuffer: (char*)buffer
 {
-	ssize_t retLength;
+	ssize_t ret;
 
 	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithClass: isa
@@ -89,21 +89,21 @@
 		@throw e;
 	}
 
-	if ((retLength = recv(sock, buffer, length, 0)) < 0)
+	if ((ret = recv(sock, buffer, length, 0)) < 0)
 		@throw [OFReadFailedException newWithClass: isa
 						    stream: self
 					   requestedLength: length];
 
-	if (retLength == 0)
+	if (ret == 0)
 		isAtEndOfStream = YES;
 
-	return retLength;
+	return ret;
 }
 
 - (size_t)_writeNBytes: (size_t)length
 	    fromBuffer: (const char*)buffer
 {
-	ssize_t retLength;
+	ssize_t ret;
 
 	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithClass: isa
@@ -124,12 +124,12 @@
 		@throw e;
 	}
 
-	if ((retLength = send(sock, buffer, length, 0)) == -1)
+	if ((ret = send(sock, buffer, length, 0)) == -1)
 		@throw [OFWriteFailedException newWithClass: isa
 						     stream: self
 					    requestedLength: length];
 
-	return retLength;
+	return ret;
 }
 
 #ifdef _WIN32

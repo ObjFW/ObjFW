@@ -62,116 +62,116 @@
 	return lastListObject;
 }
 
-- (of_list_object_t*)appendObject: (id)obj
+- (of_list_object_t*)appendObject: (id)object
 {
-	of_list_object_t *o;
+	of_list_object_t *listObject;
 
-	o = [self allocMemoryWithSize: sizeof(of_list_object_t)];
-	o->object = [obj retain];
-	o->next = NULL;
-	o->prev = lastListObject;
+	listObject = [self allocMemoryWithSize: sizeof(of_list_object_t)];
+	listObject->object = [object retain];
+	listObject->next = NULL;
+	listObject->previous = lastListObject;
 
 	if (lastListObject != NULL)
-		lastListObject->next = o;
+		lastListObject->next = listObject;
 
-	lastListObject = o;
+	lastListObject = listObject;
 	if (firstListObject == NULL)
-		firstListObject = o;
+		firstListObject = listObject;
 
 	count++;
 	mutations++;
 
-	return o;
+	return listObject;
 }
 
-- (of_list_object_t*)prependObject: (id)obj
+- (of_list_object_t*)prependObject: (id)object
 {
-	of_list_object_t *o;
+	of_list_object_t *listObject;
 
-	o = [self allocMemoryWithSize: sizeof(of_list_object_t)];
-	o->object = [obj retain];
-	o->next = firstListObject;
-	o->prev = NULL;
+	listObject = [self allocMemoryWithSize: sizeof(of_list_object_t)];
+	listObject->object = [object retain];
+	listObject->next = firstListObject;
+	listObject->previous = NULL;
 
 	if (firstListObject != NULL)
-		firstListObject->prev = o;
+		firstListObject->previous = listObject;
 
-	firstListObject = o;
+	firstListObject = listObject;
 	if (lastListObject == NULL)
-		lastListObject = o;
+		lastListObject = listObject;
 
 	count++;
 	mutations++;
 
-	return o;
+	return listObject;
 }
 
-- (of_list_object_t*)insertObject: (id)obj
-		 beforeListObject: (of_list_object_t*)listobj
+- (of_list_object_t*)insertObject: (id)object
+		 beforeListObject: (of_list_object_t*)listObject
 {
-	of_list_object_t *o;
+	of_list_object_t *newListObject;
 
-	o = [self allocMemoryWithSize: sizeof(of_list_object_t)];
-	o->object = [obj retain];
-	o->next = listobj;
-	o->prev = listobj->prev;
+	newListObject = [self allocMemoryWithSize: sizeof(of_list_object_t)];
+	newListObject->object = [object retain];
+	newListObject->next = listObject;
+	newListObject->previous = listObject->previous;
 
-	if (listobj->prev != NULL)
-		listobj->prev->next = o;
+	if (listObject->previous != NULL)
+		listObject->previous->next = newListObject;
 
-	listobj->prev = o;
+	listObject->previous = newListObject;
 
-	if (listobj == firstListObject)
-		firstListObject = o;
+	if (listObject == firstListObject)
+		firstListObject = newListObject;
 
 	count++;
 	mutations++;
 
-	return o;
+	return newListObject;
 }
 
-- (of_list_object_t*)insertObject: (id)obj
-		  afterListObject: (of_list_object_t*)listobj
+- (of_list_object_t*)insertObject: (id)object
+		  afterListObject: (of_list_object_t*)listObject
 {
-	of_list_object_t *o;
+	of_list_object_t *newListObject;
 
-	o = [self allocMemoryWithSize: sizeof(of_list_object_t)];
-	o->object = [obj retain];
-	o->next = listobj->next;
-	o->prev = listobj;
+	newListObject = [self allocMemoryWithSize: sizeof(of_list_object_t)];
+	newListObject->object = [object retain];
+	newListObject->next = listObject->next;
+	newListObject->previous = listObject;
 
-	if (listobj->next != NULL)
-		listobj->next->prev = o;
+	if (listObject->next != NULL)
+		listObject->next->previous = newListObject;
 
-	listobj->next = o;
+	listObject->next = newListObject;
 
-	if (listobj == lastListObject)
-		lastListObject = o;
+	if (listObject == lastListObject)
+		lastListObject = newListObject;
 
 	count++;
 	mutations++;
 
-	return o;
+	return newListObject;
 }
 
-- (void)removeListObject: (of_list_object_t*)listobj
+- (void)removeListObject: (of_list_object_t*)listObject
 {
-	if (listobj->prev != NULL)
-		listobj->prev->next = listobj->next;
-	if (listobj->next != NULL)
-		listobj->next->prev = listobj->prev;
+	if (listObject->previous != NULL)
+		listObject->previous->next = listObject->next;
+	if (listObject->next != NULL)
+		listObject->next->previous = listObject->previous;
 
-	if (firstListObject == listobj)
-		firstListObject = listobj->next;
-	if (lastListObject == listobj)
-		lastListObject = listobj->prev;
+	if (firstListObject == listObject)
+		firstListObject = listObject->next;
+	if (lastListObject == listObject)
+		lastListObject = listObject->previous;
 
 	count--;
 	mutations++;
 
-	[listobj->object release];
+	[listObject->object release];
 
-	[self freeMemory: listobj];
+	[self freeMemory: listObject];
 }
 
 - (size_t)count
@@ -179,17 +179,20 @@
 	return count;
 }
 
-- (BOOL)isEqual: (id)obj
+- (BOOL)isEqual: (id)object
 {
+	OFList *otherList;
 	of_list_object_t *iter, *iter2;
 
-	if (![obj isKindOfClass: [OFList class]])
+	if (![object isKindOfClass: [OFList class]])
 		return NO;
 
-	if ([(OFList*)obj count] != count)
+	otherList = (OFList*)object;
+
+	if ([otherList count] != count)
 		return NO;
 
-	for (iter = firstListObject, iter2 = [(OFList*)obj firstListObject];
+	for (iter = firstListObject, iter2 = [otherList firstListObject];
 	    iter != NULL && iter2 != NULL;
 	    iter = iter->next, iter2 = iter2->next)
 		if (![iter->object isEqual: iter2->object])
@@ -201,7 +204,7 @@
 	return YES;
 }
 
-- (BOOL)containsObject: (id)obj
+- (BOOL)containsObject: (id)object
 {
 	of_list_object_t *iter;
 
@@ -209,13 +212,13 @@
 		return NO;
 
 	for (iter = firstListObject; iter != NULL; iter = iter->next)
-		if ([iter->object isEqual: obj])
+		if ([iter->object isEqual: object])
 			return YES;
 
 	return NO;
 }
 
-- (BOOL)containsObjectIdenticalTo: (id)obj
+- (BOOL)containsObjectIdenticalTo: (id)object
 {
 	of_list_object_t *iter;
 
@@ -223,7 +226,7 @@
 		return NO;
 
 	for (iter = firstListObject; iter != NULL; iter = iter->next)
-		if (iter->object == obj)
+		if (iter->object == object)
 			return YES;
 
 	return NO;
@@ -231,36 +234,37 @@
 
 - copy
 {
-	OFList *new = [[OFList alloc] init];
-	of_list_object_t *iter, *o, *prev;
+	OFList *copy = [[OFList alloc] init];
+	of_list_object_t *iter, *listObject, *previous;
 
-	o = NULL;
-	prev = NULL;
+	listObject = NULL;
+	previous = NULL;
 
 	@try {
 		for (iter = firstListObject; iter != NULL; iter = iter->next) {
-			o = [new allocMemoryWithSize: sizeof(of_list_object_t)];
-			o->object = [iter->object retain];
-			o->next = NULL;
-			o->prev = prev;
+			listObject = [copy allocMemoryWithSize:
+			    sizeof(of_list_object_t)];
+			listObject->object = [iter->object retain];
+			listObject->next = NULL;
+			listObject->previous = previous;
 
-			if (new->firstListObject == NULL)
-				new->firstListObject = o;
-			if (prev != NULL)
-				prev->next = o;
+			if (copy->firstListObject == NULL)
+				copy->firstListObject = listObject;
+			if (previous != NULL)
+				previous->next = listObject;
 
-			new->count++;
+			copy->count++;
 
-			prev = o;
+			previous = listObject;
 		}
 	} @catch (id e) {
-		[new release];
+		[copy release];
 		@throw e;
 	}
 
-	new->lastListObject = o;
+	copy->lastListObject = listObject;
 
-	return new;
+	return copy;
 }
 
 - (uint32_t)hash

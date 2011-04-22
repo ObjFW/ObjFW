@@ -47,16 +47,17 @@ const uint8_t testfile_md5[OF_MD5_DIGEST_SIZE] =
 		size_t len = [f readNBytes: 64
 				intoBuffer: buf];
 		[md5 updateWithBuffer: buf
-			       ofSize: len];
+			       length: len];
 	}
 	[f close];
 
 	TEST(@"-[digest]",
 	    !memcmp([md5 digest], testfile_md5, OF_MD5_DIGEST_SIZE))
 
-	EXPECT_EXCEPTION(@"Detect invalid call of -[updateWithBuffer]",
-	    OFHashAlreadyCalculatedException, [md5 updateWithBuffer: ""
-							     ofSize: 1])
+	EXPECT_EXCEPTION(@"Detect invalid call of "
+	    @"-[updateWithBuffer:length]", OFHashAlreadyCalculatedException,
+	    [md5 updateWithBuffer: ""
+			   length: 1])
 
 	[pool drain];
 }

@@ -48,27 +48,27 @@
 
 - (off_t)seekForwardWithOffset: (off_t)offset
 {
-	off_t retOffset;
+	off_t ret;
 
-	retOffset = [self _seekForwardWithOffset: offset - cacheLength];
+	ret = [self _seekForwardWithOffset: offset - cacheLength];
 
 	[self freeMemory: cache];
 	cache = NULL;
 	cacheLength = 0;
 
-	return retOffset;
+	return ret;
 }
 
 - (off_t)seekToOffsetRelativeToEnd: (off_t)offset
 {
-	off_t retOffset;
+	off_t ret;
 
-	retOffset = [self _seekToOffsetRelativeToEnd: offset];
+	ret = [self _seekToOffsetRelativeToEnd: offset];
 
 	[self freeMemory: cache];
 	cache = NULL;
 	cacheLength = 0;
 
-	return retOffset;
+	return ret;
 }
 @end

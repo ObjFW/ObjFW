@@ -42,10 +42,10 @@
  * Adds a buffer to the hash to be calculated.
  *
  * \param buf The buffer which should be included into the calculation.
- * \param size The size of the buffer
+ * \param length The length of the buffer
  */
 - (void)updateWithBuffer: (const char*)buf
-		  ofSize: (size_t)size;
+		  length: (size_t)length;
 
 /**
  * \return A buffer containing the hash. The size of the buffer is depending

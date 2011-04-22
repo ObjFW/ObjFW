@@ -35,14 +35,14 @@
 	(w += f(x, y, z) + data, w = w << s | w >> (32 - s), w += x)
 
 static void
-md5_transform(uint32_t buf[4], const uint32_t in[16])
+md5_transform(uint32_t buffer[4], const uint32_t in[16])
 {
 	register uint32_t a, b, c, d;
 
-	a = buf[0];
-	b = buf[1];
-	c = buf[2];
-	d = buf[3];
+	a = buffer[0];
+	b = buffer[1];
+	c = buffer[2];
+	d = buffer[3];
 
 	MD5STEP(F1, a, b, c, d, in[0]  + 0xD76AA478, 7);
 	MD5STEP(F1, d, a, b, c, in[1]  + 0xE8C7B756, 12);
@@ -112,10 +112,10 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	MD5STEP(F4, c, d, a, b, in[2]  + 0x2AD7D2BB, 15);
 	MD5STEP(F4, b, c, d, a, in[9]  + 0xEB86D391, 21);
 
-	buf[0] += a;
-	buf[1] += b;
-	buf[2] += c;
-	buf[3] += d;
+	buffer[0] += a;
+	buffer[1] += b;
+	buffer[2] += c;
+	buffer[3] += d;
 }
 
 @implementation OFMD5Hash
@@ -138,20 +138,20 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 {
 	self = [super init];
 
-	buf[0] = 0x67452301;
-	buf[1] = 0xEFCDAB89;
-	buf[2] = 0x98BADCFE;
-	buf[3] = 0x10325476;
+	buffer[0] = 0x67452301;
+	buffer[1] = 0xEFCDAB89;
+	buffer[2] = 0x98BADCFE;
+	buffer[3] = 0x10325476;
 
 	return self;
 }
 
-- (void)updateWithBuffer: (const char*)buffer
-		  ofSize: (size_t)size
+- (void)updateWithBuffer: (const char*)buffer_
+		  length: (size_t)length
 {
 	uint32_t t;
 
-	if (size == 0)
+	if (length == 0)
 		return;
 
 	if (isCalculated)
@@ -160,10 +160,10 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 
 	/* Update bitcount */
 	t = bits[0];
-	if ((bits[0] = t + ((uint32_t)size << 3)) < t)
+	if ((bits[0] = t + ((uint32_t)length << 3)) < t)
 		/* Carry from low to high */
 		bits[1]++;
-	bits[1] += (uint32_t)size >> 29;
+	bits[1] += (uint32_t)length >> 29;
 
 	/* Bytes already in shsInfo->data */
 	t = (t >> 3) & 0x3F;
@@ -174,31 +174,31 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 
 		t = 64 - t;
 
-		if (size < t) {
-			memcpy(p, buffer, size);
+		if (length < t) {
+			memcpy(p, buffer_, length);
 			return;
 		}
 
-		memcpy(p, buffer, t);
+		memcpy(p, buffer_, t);
 		of_bswap32_vec_if_be(in.u32, 16);
-		md5_transform(buf, in.u32);
+		md5_transform(buffer, in.u32);
 
-		buffer += t;
-		size -= t;
+		buffer_ += t;
+		length -= t;
 	}
 
 	/* Process data in 64-byte chunks */
-	while (size >= 64) {
-		memcpy(in.u8, buffer, 64);
+	while (length >= 64) {
+		memcpy(in.u8, buffer_, 64);
 		of_bswap32_vec_if_be(in.u32, 16);
-		md5_transform(buf, in.u32);
+		md5_transform(buffer, in.u32);
 
-		buffer += 64;
-		size -= 64;
+		buffer_ += 64;
+		length -= 64;
 	}
 
 	/* Handle any remaining bytes of data. */
-	memcpy(in.u8, buffer, size);
+	memcpy(in.u8, buffer_, length);
 }
 
 - (uint8_t*)digest
@@ -207,7 +207,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	size_t	count;
 
 	if (isCalculated)
-		return (uint8_t*)buf;
+		return (uint8_t*)buffer;
 
 	/* Compute number of bytes mod 64 */
 	count = (bits[0] >> 3) & 0x3F;
@@ -227,7 +227,7 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 		/* Two lots of padding: Pad the first block to 64 bytes */
 		memset(p, 0, count);
 		of_bswap32_vec_if_be(in.u32, 16);
-		md5_transform(buf, in.u32);
+		md5_transform(buffer, in.u32);
 
 		/* Now fill the next block with 56 bytes */
 		memset(in.u8, 0, 56);
@@ -241,11 +241,11 @@ md5_transform(uint32_t buf[4], const uint32_t in[16])
 	in.u32[14] = bits[0];
 	in.u32[15] = bits[1];
 
-	md5_transform(buf, in.u32);
+	md5_transform(buffer, in.u32);
 	of_bswap32_vec_if_be(buf, 4);
 
 	isCalculated = YES;
 
-	return (uint8_t*)buf;
+	return (uint8_t*)buffer;
 }
 @end
