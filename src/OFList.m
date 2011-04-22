@@ -81,8 +81,6 @@
 	count++;
 	mutations++;
 
-	[obj retain];
-
 	return o;
 }
 
@@ -104,8 +102,6 @@
 
 	count++;
 	mutations++;
-
-	[obj retain];
 
 	return o;
 }
@@ -131,8 +127,6 @@
 	count++;
 	mutations++;
 
-	[obj retain];
-
 	return o;
 }
 
@@ -156,8 +150,6 @@
 
 	count++;
 	mutations++;
-
-	[obj retain];
 
 	return o;
 }
@@ -258,8 +250,6 @@
 				prev->next = o;
 
 			new->count++;
-
-			[o->object retain];
 
 			prev = o;
 		}
