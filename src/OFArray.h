@@ -24,9 +24,10 @@
 @class OFString;
 
 #ifdef OF_HAVE_BLOCKS
-typedef void (^of_array_enumeration_block_t)(id obj, size_t idx, BOOL *stop);
-typedef BOOL (^of_array_filter_block_t)(id odj, size_t idx);
-typedef id (^of_array_map_block_t)(id obj, size_t idx);
+typedef void (^of_array_enumeration_block_t)(id object, size_t index,
+    BOOL *stop);
+typedef BOOL (^of_array_filter_block_t)(id odject, size_t index);
+typedef id (^of_array_map_block_t)(id object, size_t index);
 #endif
 
 /**
@@ -46,82 +47,82 @@ typedef id (^of_array_map_block_t)(id obj, size_t idx);
 /**
  * Creates a new OFArray with the specified object.
  *
- * \param obj An object
+ * \param object An object
  * \return A new autoreleased OFArray
  */
-+ arrayWithObject: (id)obj;
++ arrayWithObject: (id)object;
 
 /**
  * Creates a new OFArray with the specified objects, terminated by nil.
  *
- * \param first The first object in the array
+ * \param firstObject The first object in the array
  * \return A new autoreleased OFArray
  */
-+ arrayWithObjects: (id)first, ...;
++ arrayWithObjects: (id)firstObject, ...;
 
 /**
  * Creates a new OFArray with the objects from the specified C array.
  *
- * \param objs A C array of objects, terminated with nil
+ * \param objects A C array of objects, terminated with nil
  * \return A new autoreleased OFArray
  */
-+ arrayWithCArray: (id*)objs;
++ arrayWithCArray: (id*)objects;
 
 /**
  * Creates a new OFArray with the objects from the specified C array of the
  * specified length.
  *
- * \param objs A C array of objects
- * \param len The length of the C array
+ * \param objects A C array of objects
+ * \param length The length of the C array
  * \return A new autoreleased OFArray
  */
-+ arrayWithCArray: (id*)objs
-	   length: (size_t)len;
++ arrayWithCArray: (id*)objects
+	   length: (size_t)length;
 
 /**
  * Initializes an OFArray with the specified object.
  *
- * \param obj An object
+ * \param object An object
  * \return An initialized OFArray
  */
-- initWithObject: (id)obj;
+- initWithObject: (id)object;
 
 /**
  * Initializes an OFArray with the specified objects.
  *
- * \param first The first object
+ * \param firstObject The first object
  * \return An initialized OFArray
  */
-- initWithObjects: (id)first, ...;
+- initWithObjects: (id)firstObject, ...;
 
 /**
  * Initializes an OFArray with the specified object and a va_list.
  *
- * \param first The first object
- * \param args A va_list
+ * \param firstObject The first object
+ * \param arguments A va_list
  * \return An initialized OFArray
  */
-- initWithObject: (id)first
-	 argList: (va_list)args;
+- initWithObject: (id)firstObject
+    argumentList: (va_list)arguments;
 
 /**
  * Initializes an OFArray with the objects from the specified C array.
  *
- * \param objs A C array of objects, terminated with nil
+ * \param objects A C array of objects, terminated with nil
  * \return An initialized OFArray
  */
-- initWithCArray: (id*)objs;
+- initWithCArray: (id*)objects;
 
 /**
  * Initializes an OFArray with the objects from the specified C array of the
  * specified length.
  *
- * \param objs A C array of objects
- * \param len The length of the C array
+ * \param objects A C array of objects
+ * \param length The length of the C array
  * \return An initialized OFArray
  */
-- initWithCArray: (id*)objs
-	  length: (size_t)len;
+- initWithCArray: (id*)objects
+	  length: (size_t)length;
 
 /**
  * \return The objects of the array as a C array
@@ -143,21 +144,21 @@ typedef id (^of_array_map_block_t)(id obj, size_t idx);
  * Returns the index of the first object that is equivalent to the specified
  * object or OF_INVALID_INDEX if it was not found.
  *
- * \param obj The object whose index is returned
+ * \param object The object whose index is returned
  * \return The index of the first object equivalent to the specified object
  * 	   or OF_INVALID_INDEX if it was not found
  */
-- (size_t)indexOfObject: (id)obj;
+- (size_t)indexOfObject: (id)object;
 
 /**
  * Returns the index of the first object that has the same address as the
  * specified object or OF_INVALID_INDEX if it was not found.
  *
- * \param obj The object whose index is returned
+ * \param object The object whose index is returned
  * \return The index of the first object that has the same aaddress as
  *	   the specified object or OF_INVALID_INDEX if it was not found
  */
-- (size_t)indexOfObjectIdenticalTo: (id)obj;
+- (size_t)indexOfObjectIdenticalTo: (id)object;
 
 /**
  * Returns the first object of the array or nil.
@@ -218,11 +219,11 @@ typedef id (^of_array_map_block_t)(id obj, size_t idx);
  * specified object.
  *
  * \param selector The selector to perform on all objects in the array
- * \param obj The object to perform the selector with on all objects in the
+ * \param object The object to perform the selector with on all objects in the
  *	      array
  */
 - (void)makeObjectsPerformSelector: (SEL)selector
-			withObject: (id)obj;
+			withObject: (id)object;
 
 #ifdef OF_HAVE_BLOCKS
 /**

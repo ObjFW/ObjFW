@@ -40,9 +40,9 @@ void _references_to_categories_of_OFDataArray(void)
 };
 
 @implementation OFDataArray
-+ dataArrayWithItemSize: (size_t)is
++ dataArrayWithItemSize: (size_t)itemSize
 {
-	return [[[self alloc] initWithItemSize: is] autorelease];
+	return [[[self alloc] initWithItemSize: itemSize] autorelease];
 }
 
 + dataArrayWithContentsOfFile: (OFString*)path
@@ -50,9 +50,9 @@ void _references_to_categories_of_OFDataArray(void)
 	return [[[self alloc] initWithContentsOfFile: path] autorelease];
 }
 
-+ dataArrayWithBase64EncodedString: (OFString*)str
++ dataArrayWithBase64EncodedString: (OFString*)string
 {
-	return [[[self alloc] initWithBase64EncodedString: str] autorelease];
+	return [[[self alloc] initWithBase64EncodedString: string] autorelease];
 }
 
 - init
@@ -63,16 +63,16 @@ void _references_to_categories_of_OFDataArray(void)
 					      selector: _cmd];
 }
 
-- initWithItemSize: (size_t)is
+- initWithItemSize: (size_t)itemSize_
 {
 	self = [super init];
 
 	@try {
-		if (is == 0)
+		if (itemSize_ == 0)
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
-		itemSize = is;
+		itemSize = itemSize_;
 		data = NULL;
 	} @catch (id e) {
 		[self release];
@@ -94,18 +94,18 @@ void _references_to_categories_of_OFDataArray(void)
 		data = NULL;
 
 		@try {
-			char *buf = [self allocMemoryWithSize: of_pagesize];
+			char *buffer = [self allocMemoryWithSize: of_pagesize];
 
 			while (![file isAtEndOfStream]) {
-				size_t size;
+				size_t length;
 
-				size = [file readNBytes: of_pagesize
-					     intoBuffer: buf];
-				[self addNItems: size
-				     fromCArray: buf];
+				length = [file readNBytes: of_pagesize
+					       intoBuffer: buffer];
+				[self addNItems: length
+				     fromCArray: buffer];
 			}
 
-			[self freeMemory: buf];
+			[self freeMemory: buffer];
 		} @finally {
 			[file release];
 		}
@@ -117,14 +117,14 @@ void _references_to_categories_of_OFDataArray(void)
 	return self;
 }
 
-- initWithBase64EncodedString: (OFString*)str
+- initWithBase64EncodedString: (OFString*)string
 {
 	self = [super init];
 
 	itemSize = 1;
 	data = NULL;
 
-	if (!of_base64_decode(self, [str cString], [str cStringLength])) {
+	if (!of_base64_decode(self, [string cString], [string cStringLength])) {
 		Class c = isa;
 		[self release];
 		@throw [OFInvalidEncodingException newWithClass: c];
@@ -194,36 +194,36 @@ void _references_to_categories_of_OFDataArray(void)
 		atIndex: index];
 }
 
-- (void)addNItems: (size_t)nitems
-       fromCArray: (const void*)carray
+- (void)addNItems: (size_t)nItems
+       fromCArray: (const void*)cArray
 {
-	if (nitems > SIZE_MAX - count)
+	if (nItems > SIZE_MAX - count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	data = [self resizeMemory: data
-			 toNItems: count + nitems
+			 toNItems: count + nItems
 			 withSize: itemSize];
 
-	memcpy(data + count * itemSize, carray, nitems * itemSize);
-	count += nitems;
+	memcpy(data + count * itemSize, cArray, nItems * itemSize);
+	count += nItems;
 }
 
-- (void)addNItems: (size_t)nitems
-       fromCArray: (const void*)carray
+- (void)addNItems: (size_t)nItems
+       fromCArray: (const void*)cArray
 	  atIndex: (size_t)index
 {
-	if (nitems > SIZE_MAX - count)
+	if (nItems > SIZE_MAX - count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	data = [self resizeMemory: data
-			 toNItems: count + nitems
+			 toNItems: count + nItems
 			 withSize: itemSize];
 
-	memmove(data + (index + nitems) * itemSize, data + index * itemSize,
+	memmove(data + (index + nItems) * itemSize, data + index * itemSize,
 	    (count - index) * itemSize);
-	memcpy(data + index * itemSize, carray, nitems * itemSize);
+	memcpy(data + index * itemSize, cArray, nItems * itemSize);
 
-	count += nitems;
+	count += nItems;
 }
 
 - (void)removeItemAtIndex: (size_t)index
@@ -232,13 +232,13 @@ void _references_to_categories_of_OFDataArray(void)
 		   atIndex: index];
 }
 
-- (void)removeNItems: (size_t)nitems
+- (void)removeNItems: (size_t)nItems
 {
-	if (nitems > count)
+	if (nItems > count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 
-	count -= nitems;
+	count -= nItems;
 	@try {
 		data = [self resizeMemory: data
 				 toNItems: count
@@ -249,16 +249,16 @@ void _references_to_categories_of_OFDataArray(void)
 	}
 }
 
-- (void)removeNItems: (size_t)nitems
+- (void)removeNItems: (size_t)nItems
 	     atIndex: (size_t)index
 {
-	if (nitems > count)
+	if (nItems > count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	memmove(data + index * itemSize, data + (index + nitems) * itemSize,
-	    (count - index - nitems) * itemSize);
+	memmove(data + index * itemSize, data + (index + nItems) * itemSize,
+	    (count - index - nItems) * itemSize);
 
-	count -= nitems;
+	count -= nItems;
 	@try {
 		data = [self resizeMemory: data
 				 toNItems: count
@@ -271,51 +271,60 @@ void _references_to_categories_of_OFDataArray(void)
 
 - copy
 {
-	OFDataArray *new = [[OFDataArray alloc] initWithItemSize: itemSize];
-	[new addNItems: count
-	    fromCArray: data];
+	OFDataArray *copy = [[OFDataArray alloc] initWithItemSize: itemSize];
 
-	return new;
+	[copy addNItems: count
+	     fromCArray: data];
+
+	return copy;
 }
 
-- (BOOL)isEqual: (id)obj
+- (BOOL)isEqual: (id)object
 {
-	if (![obj isKindOfClass: [OFDataArray class]])
+	OFDataArray *otherDataArray;
+
+	if (![object isKindOfClass: [OFDataArray class]])
 		return NO;
-	if ([(OFDataArray*)obj count] != count ||
-	    [(OFDataArray*)obj itemSize] != itemSize)
+
+	otherDataArray = (OFDataArray*)object;
+
+	if ([otherDataArray count] != count ||
+	    [otherDataArray itemSize] != itemSize)
 		return NO;
-	if (memcmp([(OFDataArray*)obj cArray], data, count * itemSize))
+	if (memcmp([otherDataArray cArray], data, count * itemSize))
 		return NO;
 
 	return YES;
 }
 
-- (of_comparison_result_t)compare: (id)obj
+- (of_comparison_result_t)compare: (id)object
 {
-	int cmp;
-	size_t ary_count, min_count;
+	OFDataArray *otherDataArray;
+	int comparison;
+	size_t otherCount, minimumCount;
 
-	if (![obj isKindOfClass: [OFDataArray class]])
+	if (![object isKindOfClass: [OFDataArray class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
-	if ([(OFDataArray*)obj itemSize] != itemSize)
+	otherDataArray = (OFDataArray*)object;
+
+	if ([otherDataArray itemSize] != itemSize)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	ary_count = [(OFDataArray*)obj count];
-	min_count = (count > ary_count ? ary_count : count);
+	otherCount = [otherDataArray count];
+	minimumCount = (count > otherCount ? otherCount : count);
 
-	if ((cmp = memcmp(data, [(OFDataArray*)obj cArray],
-	    min_count * itemSize)) == 0) {
-		if (count > ary_count)
+	if ((comparison = memcmp(data, [otherDataArray cArray],
+	    minimumCount * itemSize)) == 0) {
+		if (count > otherCount)
 			return OF_ORDERED_DESCENDING;
-		if (count < ary_count)
+		if (count < otherCount)
 			return OF_ORDERED_ASCENDING;
 		return OF_ORDERED_SAME;
 	}
 
-	if (cmp > 0)
+	if (comparison > 0)
 		return OF_ORDERED_DESCENDING;
 	else
 		return OF_ORDERED_ASCENDING;
@@ -343,115 +352,115 @@ void _references_to_categories_of_OFDataArray(void)
 @implementation OFBigDataArray
 - (void)addItem: (const void*)item
 {
-	size_t nsize, lastpagebyte;
+	size_t newSize, lastPageByte;
 
 	if (SIZE_MAX - count < 1 || count + 1 > SIZE_MAX / itemSize)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	lastpagebyte = of_pagesize - 1;
-	nsize = ((count + 1) * itemSize + lastpagebyte) & ~lastpagebyte;
+	lastPageByte = of_pagesize - 1;
+	newSize = ((count + 1) * itemSize + lastPageByte) & ~lastPageByte;
 
-	if (size != nsize)
+	if (size != newSize)
 		data = [self resizeMemory: data
-				   toSize: nsize];
+				   toSize: newSize];
 
 	memcpy(data + count * itemSize, item, itemSize);
 
 	count++;
-	size = nsize;
+	size = newSize;
 }
 
-- (void)addNItems: (size_t)nitems
-       fromCArray: (const void*)carray
+- (void)addNItems: (size_t)nItems
+       fromCArray: (const void*)cArray
 {
-	size_t nsize, lastpagebyte;
+	size_t newSize, lastPageByte;
 
-	if (nitems > SIZE_MAX - count || count + nitems > SIZE_MAX / itemSize)
+	if (nItems > SIZE_MAX - count || count + nItems > SIZE_MAX / itemSize)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	lastpagebyte = of_pagesize - 1;
-	nsize = ((count + nitems) * itemSize + lastpagebyte) & ~lastpagebyte;
+	lastPageByte = of_pagesize - 1;
+	newSize = ((count + nItems) * itemSize + lastPageByte) & ~lastPageByte;
 
-	if (size != nsize)
+	if (size != newSize)
 		data = [self resizeMemory: data
-				   toSize: nsize];
+				   toSize: newSize];
 
-	memcpy(data + count * itemSize, carray, nitems * itemSize);
+	memcpy(data + count * itemSize, cArray, nItems * itemSize);
 
-	count += nitems;
-	size = nsize;
+	count += nItems;
+	size = newSize;
 }
 
-- (void)addNItems: (size_t)nitems
-       fromCArray: (const void*)carray
+- (void)addNItems: (size_t)nItems
+       fromCArray: (const void*)cArray
 	  atIndex: (size_t)index
 {
-	size_t nsize, lastpagebyte;
+	size_t newSize, lastPageByte;
 
-	if (nitems > SIZE_MAX - count || count + nitems > SIZE_MAX / itemSize)
+	if (nItems > SIZE_MAX - count || count + nItems > SIZE_MAX / itemSize)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	lastpagebyte = of_pagesize - 1;
-	nsize = ((count + nitems) * itemSize + lastpagebyte) & ~lastpagebyte;
+	lastPageByte = of_pagesize - 1;
+	newSize = ((count + nItems) * itemSize + lastPageByte) & ~lastPageByte;
 
-	if (size != nsize)
+	if (size != newSize)
 		data = [self resizeMemory: data
-				 toNItems: nsize
+				 toNItems: newSize
 				 withSize: itemSize];
 
-	memmove(data + (index + nitems) * itemSize, data + index * itemSize,
+	memmove(data + (index + nItems) * itemSize, data + index * itemSize,
 	    (count - index) * itemSize);
-	memcpy(data + index * itemSize, carray, nitems * itemSize);
+	memcpy(data + index * itemSize, cArray, nItems * itemSize);
 
-	count += nitems;
-	size = nsize;
+	count += nItems;
+	size = newSize;
 }
 
-- (void)removeNItems: (size_t)nitems
+- (void)removeNItems: (size_t)nItems
 {
-	size_t nsize, lastpagebyte;
+	size_t newSize, lastPageByte;
 
-	if (nitems > count)
+	if (nItems > count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	count -= nitems;
-	lastpagebyte = of_pagesize - 1;
-	nsize = (count * itemSize + lastpagebyte) & ~lastpagebyte;
+	count -= nItems;
+	lastPageByte = of_pagesize - 1;
+	newSize = (count * itemSize + lastPageByte) & ~lastPageByte;
 
-	if (size != nsize)
+	if (size != newSize)
 		data = [self resizeMemory: data
-				   toSize: nsize];
-	size = nsize;
+				   toSize: newSize];
+	size = newSize;
 }
 
-- (void)removeNItems: (size_t)nitems
+- (void)removeNItems: (size_t)nItems
 	     atIndex: (size_t)index
 {
-	size_t nsize, lastpagebyte;
+	size_t newSize, lastPageByte;
 
-	if (nitems > count)
+	if (nItems > count)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	memmove(data + index * itemSize, data + (index + nitems) * itemSize,
-	    (count - index - nitems) * itemSize);
+	memmove(data + index * itemSize, data + (index + nItems) * itemSize,
+	    (count - index - nItems) * itemSize);
 
-	count -= nitems;
-	lastpagebyte = of_pagesize - 1;
-	nsize = (count * itemSize + lastpagebyte) & ~lastpagebyte;
+	count -= nItems;
+	lastPageByte = of_pagesize - 1;
+	newSize = (count * itemSize + lastPageByte) & ~lastPageByte;
 
-	if (size != nsize)
+	if (size != newSize)
 		data = [self resizeMemory: data
-				   toSize: nsize];
-	size = nsize;
+				   toSize: newSize];
+	size = newSize;
 }
 
 - copy
 {
-	OFDataArray *new = [[OFBigDataArray alloc] initWithItemSize: itemSize];
+	OFDataArray *copy = [[OFBigDataArray alloc] initWithItemSize: itemSize];
 
-	[new addNItems: count
-	    fromCArray: data];
+	[copy addNItems: count
+	     fromCArray: data];
 
-	return new;
+	return copy;
 }
 @end

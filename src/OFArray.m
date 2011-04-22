@@ -34,34 +34,34 @@
 	return [[[self alloc] init] autorelease];
 }
 
-+ arrayWithObject: (id)obj
++ arrayWithObject: (id)object
 {
-	return [[[self alloc] initWithObject: obj] autorelease];
+	return [[[self alloc] initWithObject: object] autorelease];
 }
 
-+ arrayWithObjects: (id)first, ...
++ arrayWithObjects: (id)firstObject, ...
 {
 	id ret;
-	va_list args;
+	va_list arguments;
 
-	va_start(args, first);
-	ret = [[[self alloc] initWithObject: first
-				    argList: args] autorelease];
-	va_end(args);
+	va_start(arguments, firstObject);
+	ret = [[[self alloc] initWithObject: firstObject
+			       argumentList: arguments] autorelease];
+	va_end(arguments);
 
 	return ret;
 }
 
-+ arrayWithCArray: (id*)objs
++ arrayWithCArray: (id*)objects
 {
-	return [[[self alloc] initWithCArray: objs] autorelease];
+	return [[[self alloc] initWithCArray: objects] autorelease];
 }
 
-+ arrayWithCArray: (id*)objs
-	   length: (size_t)len
++ arrayWithCArray: (id*)objects
+	   length: (size_t)length
 {
-	return [[[self alloc] initWithCArray: objs
-				      length: len] autorelease];
+	return [[[self alloc] initWithCArray: objects
+				      length: length] autorelease];
 }
 
 - init
@@ -78,13 +78,13 @@
 	return self;
 }
 
-- initWithObject: (id)obj
+- initWithObject: (id)object
 {
 	self = [self init];
 
 	@try {
-		[array addItem: &obj];
-		[obj retain];
+		[array addItem: &object];
+		[object retain];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -93,31 +93,31 @@
 	return self;
 }
 
-- initWithObjects: (id)first, ...
+- initWithObjects: (id)firstObject, ...
 {
 	id ret;
-	va_list args;
+	va_list arguments;
 
-	va_start(args, first);
-	ret = [self initWithObject: first
-			   argList: args];
-	va_end(args);
+	va_start(arguments, firstObject);
+	ret = [self initWithObject: firstObject
+		      argumentList: arguments];
+	va_end(arguments);
 
 	return ret;
 }
 
-- initWithObject: (id)first
-	 argList: (va_list)args
+- initWithObject: (id)firstObject
+    argumentList: (va_list)arguments
 {
 	self = [self init];
 
 	@try {
-		id obj;
+		id object;
 
-		[array addItem: &first];
-		while ((obj = va_arg(args, id)) != nil) {
-			[array addItem: &obj];
-			[obj retain];
+		[array addItem: &firstObject];
+		while ((object = va_arg(arguments, id)) != nil) {
+			[array addItem: &object];
+			[object retain];
 		}
 	} @catch (id e) {
 		[self release];
@@ -127,26 +127,26 @@
 	return self;
 }
 
-- initWithCArray: (id*)objs
+- initWithCArray: (id*)objects
 {
 	self = [self init];
 
 	@try {
-		id *obj;
+		id *object;
 		size_t count = 0;
 
-		for (obj = objs; *obj != nil; obj++) {
-			[*obj retain];
+		for (object = objects; *object != nil; object++) {
+			[*object retain];
 			count++;
 		}
 
 		[array addNItems: count
-		      fromCArray: objs];
+		      fromCArray: objects];
 	} @catch (id e) {
-		id *obj;
+		id *object;
 
-		for (obj = objs; *obj != nil; obj++)
-			[*obj release];
+		for (object = objects; *object != nil; object++)
+			[*object release];
 
 		[self release];
 		@throw e;
@@ -155,24 +155,24 @@
 	return self;
 }
 
-- initWithCArray: (id*)objs
-	  length: (size_t)len
+- initWithCArray: (id*)objects
+	  length: (size_t)length
 {
 	self = [self init];
 
 	@try {
 		size_t i;
 
-		for (i = 0; i < len; i++)
-			[objs[i] retain];
+		for (i = 0; i < length; i++)
+			[objects[i] retain];
 
-		[array addNItems: len
-		      fromCArray: objs];
+		[array addNItems: length
+		      fromCArray: objects];
 	} @catch (id e) {
 		size_t i;
 
-		for (i = 0; i < len; i++)
-			[objs[i] release];
+		for (i = 0; i < length; i++)
+			[objects[i] release];
 
 		[self release];
 		@throw e;
@@ -198,20 +198,20 @@
 
 - mutableCopy
 {
-	OFArray *new = [[OFMutableArray alloc] init];
-	id *objs;
+	OFArray *mutableCopy = [[OFMutableArray alloc] init];
+	id *cArray;
 	size_t count, i;
 
-	objs = [array cArray];
+	cArray = [array cArray];
 	count = [array count];
 
-	[new->array addNItems: count
-		   fromCArray: objs];
+	[mutableCopy->array addNItems: count
+			   fromCArray: cArray];
 
 	for (i = 0; i < count; i++)
-		[objs[i] retain];
+		[cArray[i] retain];
 
-	return new;
+	return mutableCopy;
 }
 
 - (id)objectAtIndex: (size_t)index
@@ -219,61 +219,61 @@
 	return *((id*)[array itemAtIndex: index]);
 }
 
-- (size_t)indexOfObject: (id)obj
+- (size_t)indexOfObject: (id)object
 {
-	id *objs = [array cArray];
+	id *cArray = [array cArray];
 	size_t i, count = [array count];
 
-	if (objs == NULL)
+	if (cArray == NULL)
 		return OF_INVALID_INDEX;
 
 	for (i = 0; i < count; i++)
-		if ([objs[i] isEqual: obj])
+		if ([cArray[i] isEqual: object])
 			return i;
 
 	return OF_INVALID_INDEX;
 }
 
-- (size_t)indexOfObjectIdenticalTo: (id)obj
+- (size_t)indexOfObjectIdenticalTo: (id)object
 {
-	id *objs = [array cArray];
+	id *cArray = [array cArray];
 	size_t i, count = [array count];
 
-	if (objs == NULL)
+	if (cArray == NULL)
 		return OF_INVALID_INDEX;
 
 	for (i = 0; i < count; i++)
-		if (objs[i] == obj)
+		if (cArray[i] == object)
 			return i;
 
 	return OF_INVALID_INDEX;
 }
 
-- (BOOL)containsObject: (id)obj
+- (BOOL)containsObject: (id)object
 {
-	id *objs = [array cArray];
+	id *cArray = [array cArray];
 	size_t i, count = [array count];
 
-	if (objs == NULL)
+	if (cArray == NULL)
 		return NO;
 
 	for (i = 0; i < count; i++)
-		if ([objs[i] isEqual: obj])
+		if ([cArray[i] isEqual: object])
 			return YES;
 
 	return NO;
 }
 
-- (BOOL)containsObjectIdenticalTo: (id)obj
+- (BOOL)containsObjectIdenticalTo: (id)object
 {
-	id *objs = [array cArray];
+	id *cArray = [array cArray];
 	size_t i, count = [array count];
 
-	if (objs == NULL)
+	if (cArray == NULL)
 		return NO;
 
 	for (i = 0; i < count; i++)
-		if (objs[i] == obj)
+		if (cArray[i] == object)
 			return YES;
 
 	return NO;
@@ -281,16 +281,16 @@
 
 - (id)firstObject
 {
-	id *first = [array firstItem];
+	id *firstObject = [array firstItem];
 
-	return (first != NULL ? *first : nil);
+	return (firstObject != NULL ? *firstObject : nil);
 }
 
 - (id)lastObject
 {
-	id *last = [array lastItem];
+	id *lastObject = [array lastItem];
 
-	return (last != NULL ? *last : nil);
+	return (lastObject != NULL ? *lastObject : nil);
 }
 
 - (OFArray*)objectsFromIndex: (size_t)start
@@ -314,28 +314,28 @@
 - (OFString*)componentsJoinedByString: (OFString*)separator
 {
 	OFAutoreleasePool *pool;
-	OFString *str;
-	OFObject **objs = [array cArray];
+	OFString *ret;
+	OFObject **cArray = [array cArray];
 	size_t i, count = [array count];
 	IMP append;
 
 	if (count == 0)
 		return @"";
 	if (count == 1)
-		return [objs[0] description];
+		return [cArray[0] description];
 
-	str = [OFMutableString string];
-	append = [str methodForSelector: @selector(appendString:)];
+	ret = [OFMutableString string];
+	append = [ret methodForSelector: @selector(appendString:)];
 
 	pool = [[OFAutoreleasePool alloc] init];
 
 	for (i = 0; i < count - 1; i++) {
-		append(str, @selector(appendString:), [objs[i] description]);
-		append(str, @selector(appendString:), separator);
+		append(ret, @selector(appendString:), [cArray[i] description]);
+		append(ret, @selector(appendString:), separator);
 
 		[pool releaseObjects];
 	}
-	append(str, @selector(appendString:), [objs[i] description]);
+	append(ret, @selector(appendString:), [cArray[i] description]);
 
 	[pool release];
 
@@ -344,29 +344,31 @@
 	 * to be OFString*, so it can't be modified anyway. But not swizzling it
 	 * would create a real copy each time -[copy] is called.
 	 */
-	str->isa = [OFString class];
-	return str;
+	ret->isa = [OFString class];
+	return ret;
 }
 
-- (BOOL)isEqual: (id)obj
+- (BOOL)isEqual: (id)object
 {
-	id *objs, *objs2;
-	size_t i, count, count2;
+	OFArray *otherArray;
+	id *cArray, *otherCArray;
+	size_t i, count;
 
-	if (![obj isKindOfClass: [OFArray class]])
+	if (![object isKindOfClass: [OFArray class]])
 		return NO;
+
+	otherArray = (OFArray*)object;
 
 	count = [array count];
-	count2 = [(OFArray*)obj count];
 
-	if (count != count2)
+	if (count != [otherArray count])
 		return NO;
 
-	objs = [array cArray];
-	objs2 = [(OFArray*)obj cArray];
+	cArray = [array cArray];
+	otherCArray = [otherArray cArray];
 
 	for (i = 0; i < count; i++)
-		if (![objs[i] isEqual: objs2[i]])
+		if (![cArray[i] isEqual: otherCArray[i]])
 			return NO;
 
 	return YES;
@@ -374,14 +376,14 @@
 
 - (uint32_t)hash
 {
-	id *objs = [array cArray];
+	id *cArray = [array cArray];
 	size_t i, count = [array count];
 	uint32_t hash;
 
 	OF_HASH_INIT(hash);
 
 	for (i = 0; i < count; i++) {
-		uint32_t h = [objs[i] hash];
+		uint32_t h = [cArray[i] hash];
 
 		OF_HASH_ADD(hash, h >> 24);
 		OF_HASH_ADD(hash, (h >> 16) & 0xFF);
@@ -426,23 +428,23 @@
 
 - (void)makeObjectsPerformSelector: (SEL)selector
 {
-	id *objs = [array cArray];
+	id *cArray = [array cArray];
 	size_t i, count = [array count];
 
 	for (i = 0; i < count; i++)
-		((void(*)(id, SEL))[objs[i]
-		    methodForSelector: selector])(objs[i], selector);
+		((void(*)(id, SEL))[cArray[i]
+		    methodForSelector: selector])(cArray[i], selector);
 }
 
 - (void)makeObjectsPerformSelector: (SEL)selector
-			withObject: (id)obj
+			withObject: (id)object
 {
-	id *objs = [array cArray];
+	id *cArray = [array cArray];
 	size_t i, count = [array count];
 
 	for (i = 0; i < count; i++)
-		((void(*)(id, SEL, id))[objs[i]
-		    methodForSelector: selector])(objs[i], selector, obj);
+		((void(*)(id, SEL, id))[cArray[i]
+		    methodForSelector: selector])(cArray[i], selector, object);
 }
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
@@ -475,12 +477,12 @@
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	id *objs = [array cArray];
+	id *cArray = [array cArray];
 	size_t i, count = [array count];
 	BOOL stop = NO;
 
 	for (i = 0; i < count && !stop; i++) {
-		block(objs[i], i, &stop);
+		block(cArray[i], i, &stop);
 		[pool releaseObjects];
 	}
 
@@ -496,11 +498,11 @@
 				    withSize: sizeof(id)];
 
 	@try {
-		id *objs = [array cArray];
+		id *cArray = [array cArray];
 		size_t i;
 
 		for (i = 0; i < count; i++)
-			tmp[i] = block(objs[i], i);
+			tmp[i] = block(cArray[i], i);
 
 		ret = [[OFArray alloc] initWithCArray: tmp
 					       length: count];
@@ -526,12 +528,12 @@
 				    withSize: sizeof(id)];
 
 	@try {
-		id *objs = [array cArray];
+		id *cArray = [array cArray];
 		size_t i, j = 0;
 
 		for (i = 0; i < count; i++) {
-			if (block(objs[i], i))
-				tmp[j++] = objs[i];
+			if (block(cArray[i], i))
+				tmp[j++] = cArray[i];
 
 			[pool releaseObjects];
 		}
@@ -550,11 +552,11 @@
 
 - (void)dealloc
 {
-	id *objs = [array cArray];
+	id *cArray = [array cArray];
 	size_t i, count = [array count];
 
 	for (i = 0; i < count; i++)
-		[objs[i] release];
+		[cArray[i] release];
 
 	[array release];
 

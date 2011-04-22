@@ -93,25 +93,26 @@ typedef struct of_range_t {
  * Performs the specified selector with the specified object.
  *
  * \param selector The selector to perform
- * \param obj The object that is passed to the method specified by the selector
+ * \param object The object that is passed to the method specified by the
+ *		 selector
  * \return The object returned by the method specified by the selector
  */
 - (id)performSelector: (SEL)selector
-	   withObject: (id)obj;
+	   withObject: (id)object;
 
 /**
  * Performs the specified selector with the specified objects.
  *
  * \param selector The selector to perform
- * \param obj1 The first object that is passed to the method specified by the
- *             selector
- * \param obj2 The second object that is passed to the method specified by the
- *             selector
+ * \param object The first object that is passed to the method specified by the
+ *		 selector
+ * \param otherObject The second object that is passed to the method specified
+ *		      by the selector
  * \return The object returned by the method specified by the selector
  */
 - (id)performSelector: (SEL)selector
-	   withObject: (id)obj1
-	   withObject: (id)obj2;
+	   withObject: (id)object
+	   withObject: (id)otherObject;
 
 /**
  * Checks two objects for equality.
@@ -119,10 +120,10 @@ typedef struct of_range_t {
  * Classes containing data (like strings, arrays, lists etc.) should reimplement
  * this!
  *
- * \param obj The object which should be tested for equality
+ * \param object The object which should be tested for equality
  * \return A boolean whether the object is equal to the specified object
  */
-- (BOOL)isEqual: (id)obj;
+- (BOOL)isEqual: (id)object;
 
 /**
  * Calculates a hash for the object.
@@ -444,10 +445,10 @@ typedef struct of_range_t {
 /**
  * Compares the object with another object.
  *
- * \param obj An object to compare the object to
+ * \param object An object to compare the object to
  * \return The result of the comparison
  */
-- (of_comparison_result_t)compare: (id)obj;
+- (of_comparison_result_t)compare: (id)object;
 @end
 
 #ifdef __cplusplus

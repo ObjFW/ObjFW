@@ -496,22 +496,22 @@ objc_enumerationMutation(id obj)
 }
 
 - (id)performSelector: (SEL)selector
-	   withObject: (id)obj
+	   withObject: (id)object
 {
 	id (*imp)(id, SEL, id) =
 	    (id(*)(id, SEL, id))[self methodForSelector: selector];
 
-	return imp(self, selector, obj);
+	return imp(self, selector, object);
 }
 
 - (id)performSelector: (SEL)selector
-	   withObject: (id)obj1
-	   withObject: (id)obj2
+	   withObject: (id)object
+	   withObject: (id)otherObject
 {
 	id (*imp)(id, SEL, id, id) =
 	    (id(*)(id, SEL, id, id))[self methodForSelector: selector];
 
-	return imp(self, selector, obj1, obj2);
+	return imp(self, selector, object, otherObject);
 }
 
 - (const char*)typeEncodingForSelector: (SEL)selector
@@ -546,10 +546,10 @@ objc_enumerationMutation(id obj)
 #endif
 }
 
-- (BOOL)isEqual: (id)obj
+- (BOOL)isEqual: (id)object
 {
 	/* Classes containing data should reimplement this! */
-	return (self == obj);
+	return (self == object);
 }
 
 - (uint32_t)hash

@@ -39,10 +39,10 @@
 /**
  * Creates a new OFDataArray whose items all have the same size.
  *
- * \param is The size of each element in the OFDataArray
+ * \param itemSize The size of each element in the OFDataArray
  * \return A new autoreleased OFDataArray
  */
-+ dataArrayWithItemSize: (size_t)is;
++ dataArrayWithItemSize: (size_t)itemSize;
 
 /**
  * Creates a new OFDataArary with an item size of 1, containing the data of the
@@ -57,19 +57,19 @@
  * Creates a new OFDataArray with an item size of 1, containing the data of the
  * Base64-encoded string.
  *
- * \param str The string with the Base64-encoded data
+ * \param string The string with the Base64-encoded data
  * \return A new autoreleased OFDataArray
  */
-+ dataArrayWithBase64EncodedString: (OFString*)str;
++ dataArrayWithBase64EncodedString: (OFString*)string;
 
 /**
  * Initializes an already allocated OFDataArray whose items all have the same
  * size.
  *
- * \param is The size of each element in the OFDataArray
+ * \param itemSize The size of each element in the OFDataArray
  * \return An initialized OFDataArray
  */
-- initWithItemSize: (size_t)is;
+- initWithItemSize: (size_t)itemSize;
 
 /**
  * Initializes an already allocated OFDataArray with an item size of 1,
@@ -84,10 +84,10 @@
  * Initializes an already allocated OFDataArray with an item size of 1,
  * containing the data of the Base64-encoded string.
  *
- * \param str The string with the Base64-encoded data
+ * \param string The string with the Base64-encoded data
  * \return A initialized OFDataArray
  */
-- initWithBase64EncodedString: (OFString*)str;
+- initWithBase64EncodedString: (OFString*)string;
 
 /**
  * \return The number of items in the OFDataArray
@@ -141,21 +141,21 @@
 /**
  * Adds items from a C array to the OFDataArray.
  *
- * \param nitems The number of items to add
- * \param carray A C array containing the items to add
+ * \param nItems The number of items to add
+ * \param cArray A C array containing the items to add
  */
-- (void)addNItems: (size_t)nitems
-       fromCArray: (const void*)carray;
+- (void)addNItems: (size_t)nItems
+       fromCArray: (const void*)cArray;
 
 /**
  * Adds items from a C array to the OFDataArray at the specified index.
  *
- * \param nitems The number of items to add
- * \param carray A C array containing the items to add
+ * \param nItems The number of items to add
+ * \param cArray A C array containing the items to add
  * \param index The index where the items should be added
  */
-- (void)addNItems: (size_t)nitems
-       fromCArray: (const void*)carray
+- (void)addNItems: (size_t)nItems
+       fromCArray: (const void*)cArray
 	  atIndex: (size_t)index;
 
 /**
@@ -168,17 +168,17 @@
 /**
  * Removes the specified amount of items from the end of the OFDataArray.
  *
- * \param nitems The number of items to remove
+ * \param nItems The number of items to remove
  */
-- (void)removeNItems: (size_t)nitems;
+- (void)removeNItems: (size_t)nItems;
 
 /**
  * Removes the specified amount of items at the specified index.
  *
- * \param nitems The number of items to remove
+ * \param nItems The number of items to remove
  * \param index The index at which the items are removed
  */
-- (void)removeNItems: (size_t)nitems
+- (void)removeNItems: (size_t)nItems
 	     atIndex: (size_t)index;
 
 /**
