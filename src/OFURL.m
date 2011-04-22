@@ -362,15 +362,20 @@ resolve_relative_path(OFString *path)
 {
 	OFURL *new = [[OFURL alloc] init];
 
-	new->scheme = [scheme copy];
-	new->host = [host copy];
-	new->port = port;
-	new->user = [user copy];
-	new->password = [password copy];
-	new->path = [path copy];
-	new->parameters = [parameters copy];
-	new->query = [query copy];
-	new->fragment = [fragment copy];
+	@try {
+		new->scheme = [scheme copy];
+		new->host = [host copy];
+		new->port = port;
+		new->user = [user copy];
+		new->password = [password copy];
+		new->path = [path copy];
+		new->parameters = [parameters copy];
+		new->query = [query copy];
+		new->fragment = [fragment copy];
+	} @catch (id e) {
+		[new release];
+		@throw e;
+	}
 
 	return new;
 }
