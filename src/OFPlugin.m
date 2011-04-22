@@ -42,7 +42,7 @@
 	OFAutoreleasePool *pool;
 	OFMutableString *file;
 	of_plugin_handle_t handle;
-	OFPlugin *(*init_plugin)();
+	OFPlugin *(*initPlugin)();
 	OFPlugin *plugin;
 
 	pool = [[OFAutoreleasePool alloc] init];
@@ -54,8 +54,8 @@
 
 	[pool release];
 
-	init_plugin = (OFPlugin*(*)())dlsym(handle, "init_plugin");
-	if (init_plugin == NULL || (plugin = init_plugin()) == nil) {
+	initPlugin = (OFPlugin*(*)())dlsym(handle, "init_plugin");
+	if (initPlugin == NULL || (plugin = initPlugin()) == nil) {
 		dlclose(handle);
 		@throw [OFInitializationFailedException newWithClass: self];
 	}

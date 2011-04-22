@@ -317,16 +317,16 @@ static OFMutex *mutex = nil;
 					      port: port];
 }
 
-- (void)listenWithBackLog: (int)backlog
+- (void)listenWithBackLog: (int)backLog
 {
 	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithClass: isa
 						      socket: self];
 
-	if (listen(sock, backlog) == -1)
+	if (listen(sock, backLog) == -1)
 		@throw [OFListenFailedException newWithClass: isa
 						      socket: self
-						     backLog: backlog];
+						     backLog: backLog];
 
 	isListening = YES;
 }

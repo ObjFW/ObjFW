@@ -77,27 +77,27 @@ enum {
 		queue = [[OFMutableArray alloc] init];
 		queueInfo = [[OFMutableArray alloc] init];
 #ifdef OF_HAVE_POLL
-		fds = [[OFDataArray alloc] initWithItemSize:
+		FDs = [[OFDataArray alloc] initWithItemSize:
 		    sizeof(struct pollfd)];
-		fdToStream = [[OFMutableDictionary alloc] init];
+		FDToStream = [[OFMutableDictionary alloc] init];
 #else
 		FD_ZERO(&readfds);
 		FD_ZERO(&writefds);
 #endif
 
 #ifndef _WIN32
-		if (pipe(cancelFd))
+		if (pipe(cancelFD))
 			@throw [OFInitializationFailedException
 			    newWithClass: isa];
 #else
 		/* Make sure WSAStartup has been called */
 		[OFTCPSocket class];
 
-		cancelFd[0] = socket(AF_INET, SOCK_DGRAM, 0);
-		cancelFd[1] = socket(AF_INET, SOCK_DGRAM, 0);
+		cancelFD[0] = socket(AF_INET, SOCK_DGRAM, 0);
+		cancelFD[1] = socket(AF_INET, SOCK_DGRAM, 0);
 
-		if (cancelFd[0] == INVALID_SOCKET ||
-		    cancelFd[1] == INVALID_SOCKET)
+		if (cancelFD[0] == INVALID_SOCKET ||
+		    cancelFD[1] == INVALID_SOCKET)
 			@throw [OFInitializationFailedException
 			    newWithClass: isa];
 
@@ -106,26 +106,26 @@ enum {
 		cancelAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 		cancelAddr2 = cancelAddr;
 
-		if (bind(cancelFd[0], (struct sockaddr*)&cancelAddr,
-		    sizeof(cancelAddr)) || bind(cancelFd[1],
+		if (bind(cancelFD[0], (struct sockaddr*)&cancelAddr,
+		    sizeof(cancelAddr)) || bind(cancelFD[1],
 		    (struct sockaddr*)&cancelAddr2, sizeof(cancelAddr2)))
 			@throw [OFInitializationFailedException
 			    newWithClass: isa];
 
 		cancelAddrLen = sizeof(cancelAddr);
 
-		if (getsockname(cancelFd[0], (struct sockaddr*)&cancelAddr,
+		if (getsockname(cancelFD[0], (struct sockaddr*)&cancelAddr,
 		    &cancelAddrLen))
 			@throw [OFInitializationFailedException
 			    newWithClass: isa];
 #endif
 
 #ifdef OF_HAVE_POLL
-		p.fd = cancelFd[0];
-		[fds addItem: &p];
+		p.fd = cancelFD[0];
+		[FDs addItem: &p];
 #else
-		FD_SET(cancelFd[0], &readfds);
-		nfds = cancelFd[0] + 1;
+		FD_SET(cancelFD[0], &readFDs);
+		nFDs = cancelFD[0] + 1;
 #endif
 	} @catch (id e) {
 		[self release];
@@ -137,8 +137,8 @@ enum {
 
 - (void)dealloc
 {
-	close(cancelFd[0]);
-	close(cancelFd[1]);
+	close(cancelFD[0]);
+	close(cancelFD[1]);
 
 	[(id)delegate release];
 	[readStreams release];
@@ -146,8 +146,8 @@ enum {
 	[queue release];
 	[queueInfo release];
 #ifdef OF_HAVE_POLL
-	[fdToStream release];
-	[fds release];
+	[FDToStream release];
+	[FDs release];
 #endif
 
 	[super dealloc];
@@ -169,24 +169,25 @@ enum {
 - (void)_addStream: (OFStream*)stream
 	withEvents: (short)events
 {
-	struct pollfd *fds_c = [fds cArray];
-	size_t i, count = [fds count];
-	int fd = [stream fileDescriptor];
+	struct pollfd *FDsCArray = [FDs cArray];
+	size_t i, count = [FDs count];
+	int fileDescriptor = [stream fileDescriptor];
 	BOOL found = NO;
 
 	for (i = 0; i < count; i++) {
-		if (fds_c[i].fd == fd) {
-			fds_c[i].events |= events;
+		if (FDsCArray[i].fd == fileDescriptor) {
+			FDsCArray[i].events |= events;
 			found = YES;
 		}
 	}
 
 	if (!found) {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-		struct pollfd p = { fd, events | POLLERR, 0 };
-		[fds addItem: &p];
-		[fdToStream setObject: stream
-			       forKey: [OFNumber numberWithInt: fd]];
+		struct pollfd p = { fileDescriptor, events | POLLERR, 0 };
+		[FDs addItem: &p];
+		[FDToStream setObject: stream
+			       forKey: [OFNumber numberWithInt:
+				       fileDescriptor]];
 		[pool release];
 	}
 }
@@ -194,24 +195,24 @@ enum {
 - (void)_removeStream: (OFStream*)stream
 	   withEvents: (short)events
 {
-	struct pollfd *fds_c = [fds cArray];
-	size_t i, nfds = [fds count];
-	int fd = [stream fileDescriptor];
+	struct pollfd *FDsCArray = [FDs cArray];
+	size_t i, nFDs = [FDs count];
+	int fileDescriptor = [stream fileDescriptor];
 
-	for (i = 0; i < nfds; i++) {
-		if (fds_c[i].fd == fd) {
+	for (i = 0; i < nFDs; i++) {
+		if (FDsCArray[i].fd == fileDescriptor) {
 			OFAutoreleasePool *pool;
 
-			fds_c[i].events &= ~events;
+			FDsCArray[i].events &= ~events;
 
-			if ((fds_c[i].events & ~POLLERR) != 0)
+			if ((FDsCArray[i].events & ~POLLERR) != 0)
 				return;
 
 			pool = [[OFAutoreleasePool alloc] init];
 
-			[fds removeItemAtIndex: i];
-			[fdToStream removeObjectForKey:
-			    [OFNumber numberWithInt: fd]];
+			[FDs removeItemAtIndex: i];
+			[FDToStream removeObjectForKey:
+			    [OFNumber numberWithInt: fileDescriptor]];
 
 			[pool release];
 		}
@@ -219,13 +220,13 @@ enum {
 }
 #else
 - (void)_addStream: (OFStream*)stream
-	 withFDSet: (fd_set*)fdset
+	 withFDSet: (fd_set*)FDSet
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	int fd = [stream fileDescriptor];
+	int fileDescriptor = [stream fileDescriptor];
 
-	FD_SET(fd, fdset);
-	FD_SET(fd, &exceptfds);
+	FD_SET(fileDescriptor, FDSet);
+	FD_SET(fileDescriptor, &exceptFDs);
 
 	if (fd >= nfds)
 		nfds = fd + 1;
@@ -234,15 +235,15 @@ enum {
 }
 
 - (void)_removeStream: (OFStream*)stream
-	    withFDSet: (fd_set*)fdset
-	   otherFDSet: (fd_set*)other_fdset
+	    withFDSet: (fd_set*)FDSet
+	   otherFDSet: (fd_set*)otherFDSet
 {
-	int fd = [stream fileDescriptor];
+	int fileDescriptor = [stream fileDescriptor];
 
-	FD_CLR(fd, fdset);
+	FD_CLR(fileDescriptor, FDSet);
 
-	if (!FD_ISSET(fd, other_fdset))
-		FD_CLR(fd, &exceptfds);
+	if (!FD_ISSET(fileDescriptor, otherFDSet))
+		FD_CLR(fileDescriptor, &exceptfds);
 }
 #endif
 
@@ -257,9 +258,9 @@ enum {
 	}
 
 #ifndef _WIN32
-	assert(write(cancelFd[1], "", 1) > 0);
+	assert(write(cancelFD[1], "", 1) > 0);
 #else
-	assert(sendto(cancelFd[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
+	assert(sendto(cancelFD[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
 	    sizeof(cancelAddr)) > 0);
 #endif
 
@@ -277,9 +278,9 @@ enum {
 	}
 
 #ifndef _WIN32
-	assert(write(cancelFd[1], "", 1) > 0);
+	assert(write(cancelFD[1], "", 1) > 0);
 #else
-	assert(sendto(cancelFd[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
+	assert(sendto(cancelFD[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
 	    sizeof(cancelAddr)) > 0);
 #endif
 
@@ -297,9 +298,9 @@ enum {
 	}
 
 #ifndef _WIN32
-	assert(write(cancelFd[1], "", 1) > 0);
+	assert(write(cancelFD[1], "", 1) > 0);
 #else
-	assert(sendto(cancelFd[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
+	assert(sendto(cancelFD[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
 	    sizeof(cancelAddr)) > 0);
 #endif
 
@@ -317,9 +318,9 @@ enum {
 	}
 
 #ifndef _WIN32
-	assert(write(cancelFd[1], "", 1) > 0);
+	assert(write(cancelFD[1], "", 1) > 0);
 #else
-	assert(sendto(cancelFd[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
+	assert(sendto(cancelFD[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
 	    sizeof(cancelAddr)) > 0);
 #endif
 
@@ -329,54 +330,54 @@ enum {
 - (void)_processQueue
 {
 	@synchronized (queue) {
-		OFStream **queue_c = [queue cArray];
-		OFNumber **queueInfo_c = [queueInfo cArray];
+		OFStream **queueCArray = [queue cArray];
+		OFNumber **queueInfoCArray = [queueInfo cArray];
 		size_t i, count = [queue count];
 
 		for (i = 0; i < count; i++) {
-			switch ([queueInfo_c[i] intValue]) {
+			switch ([queueInfoCArray[i] intValue]) {
 			case QUEUE_ADD | QUEUE_READ:
-				[readStreams addObject: queue_c[i]];
+				[readStreams addObject: queueCArray[i]];
 #ifdef OF_HAVE_POLL
-				[self _addStream: queue_c[i]
+				[self _addStream: queueCArray[i]
 				      withEvents: POLLIN];
 #else
-				[self _addStream: queue_c[i]
-				       withFDSet: &readfds];
+				[self _addStream: queueCArray[i]
+				       withFDSet: &readFDs];
 #endif
 				break;
 			case QUEUE_ADD | QUEUE_WRITE:
-				[writeStreams addObject: queue_c[i]];
+				[writeStreams addObject: queueCArray[i]];
 #ifdef OF_HAVE_POLL
-				[self _addStream: queue_c[i]
+				[self _addStream: queueCArray[i]
 				      withEvents: POLLOUT];
 #else
-				[self _addStream: queue_c[i]
-				       withFDSet: &writefds];
+				[self _addStream: queueCArray[i]
+				       withFDSet: &writeFDs];
 #endif
 				break;
 			case QUEUE_REMOVE | QUEUE_READ:
 				[readStreams removeObjectIdenticalTo:
-				    queue_c[i]];
+				    queueCArray[i]];
 #ifdef OF_HAVE_POLL
-				[self _removeStream: queue_c[i]
+				[self _removeStream: queueCArray[i]
 					 withEvents: POLLIN];
 #else
-				[self _removeStream: queue_c[i]
-					  withFDSet: &readfds
-					 otherFDSet: &writefds];
+				[self _removeStream: queueCArray[i]
+					  withFDSet: &readFDs
+					 otherFDSet: &writeFDs];
 #endif
 				break;
 			case QUEUE_REMOVE | QUEUE_WRITE:
 				[writeStreams removeObjectIdenticalTo:
-				    queue_c[i]];
+				    queueCArray[i]];
 #ifdef OF_HAVE_POLL
-				[self _removeStream: queue_c[i]
+				[self _removeStream: queueCArray[i]
 					 withEvents: POLLOUT];
 #else
-				[self _removeStream: queue_c[i]
-					  withFDSet: &writefds
-					 otherFDSet: &readfds];
+				[self _removeStream: queueCArray[i]
+					  withFDSet: &writeFDs
+					 otherFDSet: &readFDs];
 #endif
 				break;
 			default:
@@ -401,13 +402,13 @@ enum {
 	OFStream **cArray;
 	size_t i, count;
 #ifdef OF_HAVE_POLL
-	struct pollfd *fds_c;
-	size_t nfds;
+	struct pollfd *FDsCArray;
+	size_t nFDs;
 #else
-	fd_set readfds_;
-	fd_set writefds_;
-	fd_set exceptfds_;
-	struct timeval tv;
+	fd_set readFDs_;
+	fd_set writeFDs_;
+	fd_set exceptFDs_;
+	struct timeval time;
 #endif
 
 	[self _processQueue];
@@ -431,97 +432,97 @@ enum {
 		return YES;
 
 #ifdef OF_HAVE_POLL
-	fds_c = [fds cArray];
-	nfds = [fds count];
+	FDsCArray = [FDs cArray];
+	nFDs = [FDs count];
 
 # ifdef OPEN_MAX
-	if (nfds > OPEN_MAX)
+	if (nFDs > OPEN_MAX)
 		@throw [OFOutOfRangeException newWithClass: isa];
 # endif
 
-	if (poll(fds_c, (nfds_t)nfds, timeout) < 1)
+	if (poll(FDsCArray, (nfds_t)nFDs, timeout) < 1)
 		return NO;
 
-	for (i = 0; i < nfds; i++) {
+	for (i = 0; i < nFDs; i++) {
 		OFNumber *num;
 		OFStream *stream;
 
-		if (fds_c[i].revents & POLLIN) {
-			if (fds_c[i].fd == cancelFd[0]) {
-				char buf;
+		if (FDsCArray[i].revents & POLLIN) {
+			if (FDsCArray[i].fd == cancelFD[0]) {
+				char buffer;
 
-				assert(read(cancelFd[0], &buf, 1) > 0);
-				fds_c[i].revents = 0;
+				assert(read(cancelFD[0], &buffer, 1) > 0);
+				FDsCArray[i].revents = 0;
 
 				continue;
 			}
 
-			num = [OFNumber numberWithInt: fds_c[i].fd];
-			stream = [fdToStream objectForKey: num];
+			num = [OFNumber numberWithInt: FDsCArray[i].fd];
+			stream = [FDToStream objectForKey: num];
 			[delegate streamDidBecomeReadyForReading: stream];
 			[pool releaseObjects];
 		}
 
-		if (fds_c[i].revents & POLLOUT) {
-			num = [OFNumber numberWithInt: fds_c[i].fd];
-			stream = [fdToStream objectForKey: num];
+		if (FDsCArray[i].revents & POLLOUT) {
+			num = [OFNumber numberWithInt: FDsCArray[i].fd];
+			stream = [FDToStream objectForKey: num];
 			[delegate streamDidBecomeReadyForReading: stream];
 			[pool releaseObjects];
 		}
 
-		if (fds_c[i].revents & POLLERR) {
-			num = [OFNumber numberWithInt: fds_c[i].fd];
-			stream = [fdToStream objectForKey: num];
+		if (FDsCArray[i].revents & POLLERR) {
+			num = [OFNumber numberWithInt: FDsCArray[i].fd];
+			stream = [FDToStream objectForKey: num];
 			[delegate streamDidReceiveException: stream];
 			[pool releaseObjects];
 		}
 
-		fds_c[i].revents = 0;
+		FDsCArray[i].revents = 0;
 	}
 #else
 # ifdef FD_COPY
-	FD_COPY(&readfds, &readfds_);
-	FD_COPY(&writefds, &writefds_);
-	FD_COPY(&exceptfds, &exceptfds_);
+	FD_COPY(&readFDs, &readFDs_);
+	FD_COPY(&writeFDs, &writeFDs_);
+	FD_COPY(&exceptFDs, &exceptFDs_);
 # else
-	readfds_ = readfds;
-	writefds_ = writefds;
-	exceptfds_ = exceptfds;
+	readFDs_ = readFDs;
+	writeFDs_ = writeFDs;
+	exceptFDs_ = exceptFDs;
 # endif
 
-	tv.tv_sec = timeout / 1000;
-	tv.tv_usec = (timeout % 1000) * 1000;
+	time.tv_sec = timeout / 1000;
+	time.tv_usec = (timeout % 1000) * 1000;
 
-	if (select(nfds, &readfds_, &writefds_, &exceptfds_,
-	    (timeout != -1 ? &tv : NULL)) < 1)
+	if (select(nFDs, &readFDs_, &writeFDs_, &exceptFDs_,
+	    (timeout != -1 ? &time : NULL)) < 1)
 		return NO;
 
-	if (FD_ISSET(cancelFd[0], &readfds_)) {
-		char buf;
+	if (FD_ISSET(cancelFD[0], &readFDs_)) {
+		char buffer;
 #ifndef _WIN32
-		assert(read(cancelFd[0], &buf, 1) > 0);
+		assert(read(cancelFD[0], &buffer, 1) > 0);
 #else
-		assert(recvfrom(cancelFd[0], &buf, 1, 0, NULL, NULL) > 0);
+		assert(recvfrom(cancelFD[0], &buffer, 1, 0, NULL, NULL) > 0);
 #endif
 	}
 
 	for (i = 0; i < count; i++) {
-		int fd = [cArray[i] fileDescriptor];
+		int fileDescriptor = [cArray[i] fileDescriptor];
 
-		if (FD_ISSET(fd, &readfds_)) {
+		if (FD_ISSET(fileDescriptor, &readFDs_)) {
 			[delegate streamDidBecomeReadyForReading: cArray[i]];
 			[pool releaseObjects];
 		}
 
-		if (FD_ISSET(fd, &exceptfds_)) {
+		if (FD_ISSET(fileDescriptor, &exceptFDs_)) {
 			[delegate streamDidReceiveException: cArray[i]];
 			[pool releaseObjects];
 
 			/*
-			 * Prevent calling it twice in case the fd is in both
+			 * Prevent calling it twice in case the FD is in both
 			 * sets.
 			 */
-			FD_CLR(fd, &exceptfds_);
+			FD_CLR(fileDescriptor, &exceptFDs_);
 		}
 	}
 
@@ -529,14 +530,14 @@ enum {
 	count = [writeStreams count];
 
 	for (i = 0; i < count; i++) {
-		int fd = [cArray[i] fileDescriptor];
+		int fileDescriptor = [cArray[i] fileDescriptor];
 
-		if (FD_ISSET(fd, &writefds_)) {
+		if (FD_ISSET(fileDescriptor, &writeFDs_)) {
 			[delegate streamDidBecomeReadyForWriting: cArray[i]];
 			[pool releaseObjects];
 		}
 
-		if (FD_ISSET(fd, &exceptfds_)) {
+		if (FD_ISSET(fileDescriptor, &exceptFDs_)) {
 			[delegate streamDidReceiveException: cArray[i]];
 			[pool releaseObjects];
 		}

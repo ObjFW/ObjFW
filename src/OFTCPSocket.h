@@ -67,7 +67,7 @@
  *
  * \param backlog Maximum length for the queue of pending connections.
  */
-- (void)listenWithBackLog: (int)backlog;
+- (void)listenWithBackLog: (int)backLog;
 
 /**
  * Listen on the socket.

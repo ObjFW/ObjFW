@@ -31,43 +31,43 @@ int _OFString_URLEncoding_reference;
 @implementation OFString (URLEncoding)
 - (OFString*)stringByURLEncoding
 {
-	const char *s;
-	char *ret_c;
+	const char *string_ = string;
+	char *retCString;
 	size_t i;
 	OFString *ret;
-
-	s = string;
 
 	/*
 	 * Worst case: 3 times longer than before.
 	 * Oh, and we can't use [self allocWithSize:] here as self might be a
 	 * @"" literal.
 	 */
-	if ((ret_c = malloc((length * 3) + 1)) == NULL)
+	if ((retCString = malloc((length * 3) + 1)) == NULL)
 		@throw [OFOutOfMemoryException newWithClass: isa
 					      requestedSize: (length * 3) + 1];
 
-	for (i = 0; *s != '\0'; s++) {
-		if (isalnum((int)*s) || *s == '-' || *s == '_' || *s == '.' ||
-		    *s == '~')
-			ret_c[i++] = *s;
+	for (i = 0; *string_ != '\0'; string_++) {
+		if (isalnum((int)*string_) || *string_ == '-' ||
+		    *string_ == '_' || *string_ == '.' || *string_ == '~')
+			retCString[i++] = *string_;
 		else {
 			uint8_t high, low;
 
-			high = *s >> 4;
-			low = *s & 0x0F;
+			high = *string_ >> 4;
+			low = *string_ & 0x0F;
 
-			ret_c[i++] = '%';
-			ret_c[i++] = (high > 9 ? high - 10 + 'A' : high + '0');
-			ret_c[i++] = (low  > 9 ? low  - 10 + 'A' : low  + '0');
+			retCString[i++] = '%';
+			retCString[i++] =
+			    (high > 9 ? high - 10 + 'A' : high + '0');
+			retCString[i++] =
+			    (low  > 9 ? low  - 10 + 'A' : low  + '0');
 		}
 	}
 
 	@try {
-		ret = [OFString stringWithCString: ret_c
+		ret = [OFString stringWithCString: retCString
 					   length: i];
 	} @finally {
-		free(ret_c);
+		free(retCString);
 	}
 
 	return ret;
@@ -75,62 +75,63 @@ int _OFString_URLEncoding_reference;
 
 - (OFString*)stringByURLDecoding
 {
-	const char *s;
-	char *ret_c, c;
-	size_t i;
-	int st;
 	OFString *ret;
+	const char *string_ = string;
+	char *retCString;
+	char byte = 0;
+	int state = 0;
+	size_t i;
 
-	s = string;
-
-	if ((ret_c = malloc(length + 1)) == NULL)
+	if ((retCString = malloc(length + 1)) == NULL)
 		@throw [OFOutOfMemoryException newWithClass: isa
 					      requestedSize: length + 1];
 
-	for (st = 0, i = 0, c = 0; *s; s++) {
-		switch (st) {
+	for (i = 0; *string_; string_++) {
+		switch (state) {
 		case 0:
-			if (*s == '%')
-				st = 1;
-			else if (*s == '+')
-				ret_c[i++] = ' ';
+			if (*string_ == '%')
+				state = 1;
+			else if (*string_ == '+')
+				retCString[i++] = ' ';
 			else
-				ret_c[i++] = *s;
+				retCString[i++] = *string_;
 			break;
 		case 1:
-		case 2:
-			if (*s >= '0' && *s <= '9')
-				c += (*s - '0') << (st == 1 ? 4 : 0);
-			else if (*s >= 'A' && *s <= 'F')
-				c += (*s - 'A' + 10) << (st == 1 ? 4 : 0);
-			else if (*s >= 'a' && *s <= 'f')
-				c += (*s - 'a' + 10) << (st == 1 ? 4 : 0);
+		case 2:;
+			uint8_t shift = (state == 1 ? 4  : 0);
+
+			if (*string_ >= '0' && *string_ <= '9')
+				byte += (*string_ - '0') << shift;
+			else if (*string_ >= 'A' && *string_ <= 'F')
+				byte += (*string_ - 'A' + 10) << shift;
+			else if (*string_ >= 'a' && *string_ <= 'f')
+				byte += (*string_ - 'a' + 10) << shift;
 			else {
-				free(ret_c);
+				free(retCString);
 				@throw [OFInvalidEncodingException
 				    newWithClass: isa];
 			}
 
-			if (++st == 3) {
-				ret_c[i++] = c;
-				st = 0;
-				c = 0;
+			if (++state == 3) {
+				retCString[i++] = byte;
+				state = 0;
+				byte = 0;
 			}
 
 			break;
 		}
 	}
-	ret_c[i] = '\0';
+	retCString[i] = '\0';
 
-	if (st) {
-		free(ret_c);
+	if (state != 0) {
+		free(retCString);
 		@throw [OFInvalidEncodingException newWithClass: isa];
 	}
 
 	@try {
-		ret = [OFString stringWithCString: ret_c];
+		ret = [OFString stringWithCString: retCString];
 	} @finally {
-		free(ret_c);
+		free(retCString);
 	}
 	return ret;
 }

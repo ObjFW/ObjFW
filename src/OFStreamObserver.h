@@ -81,15 +81,15 @@
 	OFMutableArray *queue, *queueInfo;
 	id <OFStreamObserverDelegate> delegate;
 #ifdef OF_HAVE_POLL
-	OFDataArray *fds;
-	OFMutableDictionary *fdToStream;
+	OFDataArray *FDs;
+	OFMutableDictionary *FDToStream;
 #else
-	fd_set readfds;
-	fd_set writefds;
-	fd_set exceptfds;
-	int nfds;
+	fd_set readFDs;
+	fd_set writeFDs;
+	fd_set exceptFDs;
+	int nFDs;
 #endif
-	int cancelFd[2];
+	int cancelFD[2];
 #ifdef _WIN32
 	struct sockaddr_in cancelAddr;
 #endif

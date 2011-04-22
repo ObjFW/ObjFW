@@ -29,72 +29,75 @@ int _OFString_XMLEscaping_reference;
 @implementation OFString (XMLEscaping)
 - (OFString*)stringByXMLEscaping
 {
-	char *str_c, *tmp;
+	char *retCString;
 	const char *append;
-	size_t len, append_len;
+	size_t retLength, appendLength;
 	size_t i, j;
 	OFString *ret;
 
 	j = 0;
-	len = length;
+	retLength = length;
 
 	/*
 	 * We can't use allocMemoryWithSize: here as it might be a @"" literal
 	 */
-	if ((str_c = malloc(len)) == NULL)
+	if ((retCString = malloc(retLength)) == NULL)
 		@throw [OFOutOfMemoryException newWithClass: isa
-					      requestedSize: len];
+					      requestedSize: retLength];
 
 	for (i = 0; i < length; i++) {
 		switch (string[i]) {
 			case '<':
 				append = "&lt;";
-				append_len = 4;
+				appendLength = 4;
 				break;
 			case '>':
 				append = "&gt;";
-				append_len = 4;
+				appendLength = 4;
 				break;
 			case '"':
 				append = "&quot;";
-				append_len = 6;
+				appendLength = 6;
 				break;
 			case '\'':
 				append = "&apos;";
-				append_len = 6;
+				appendLength = 6;
 				break;
 			case '&':
 				append = "&amp;";
-				append_len = 5;
+				appendLength = 5;
 				break;
 			default:
 				append = NULL;
-				append_len = 0;
+				appendLength = 0;
 		}
 
 		if (append != NULL) {
-			if ((tmp = realloc(str_c, len + append_len)) == NULL) {
-				free(str_c);
+			char *newRetCString;
+
+			if ((newRetCString = realloc(retCString,
+			    retLength + appendLength)) == NULL) {
+				free(retCString);
 				@throw [OFOutOfMemoryException
 				     newWithClass: isa
-				    requestedSize: len + append_len];
+				    requestedSize: retLength + appendLength];
 			}
-			str_c = tmp;
-			len += append_len - 1;
+			retCString = newRetCString;
+			retLength += appendLength - 1;
 
-			memcpy(str_c + j, append, append_len);
-			j += append_len;
+			memcpy(retCString + j, append, appendLength);
+			j += appendLength;
 		} else
-			str_c[j++] = string[i];
+			retCString[j++] = string[i];
 	}
 
-	assert(j == len);
+	assert(j == retLength);
 
 	@try {
-		ret = [OFString stringWithCString: str_c
-					   length: len];
+		ret = [OFString stringWithCString: retCString
+					   length: retLength];
 	} @finally {
-		free(str_c);
+		free(retCString);
 	}
 	return ret;
 }

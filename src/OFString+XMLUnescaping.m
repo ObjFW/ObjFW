@@ -32,7 +32,7 @@ parse_numeric_entity(const char *entity, size_t length)
 {
 	of_unichar_t c;
 	size_t i;
-	char buf[5];
+	char buffer[5];
 
 	if (length == 1 || *entity != '#')
 		return nil;
@@ -67,11 +67,11 @@ parse_numeric_entity(const char *entity, size_t length)
 		}
 	}
 
-	if ((i = of_string_unicode_to_utf8(c, buf)) == 0)
+	if ((i = of_string_unicode_to_utf8(c, buffer)) == 0)
 		return nil;
-	buf[i] = 0;
+	buffer[i] = 0;
 
-	return [OFString stringWithCString: buf
+	return [OFString stringWithCString: buffer
 				    length: i];
 }
 
@@ -85,38 +85,40 @@ parse_numeric_entity(const char *entity, size_t length)
     (id <OFStringXMLUnescapingDelegate>)delegate
 {
 	size_t i, last;
-	BOOL in_entity;
+	BOOL inEntity;
 	OFMutableString *ret;
 
 	last = 0;
-	in_entity = NO;
+	inEntity = NO;
 	ret = [OFMutableString string];
 	((OFString*)ret)->isUTF8 = [self isUTF8];
 
 	for (i = 0; i < length; i++) {
-		if (!in_entity && string[i] == '&') {
+		if (!inEntity && string[i] == '&') {
 			[ret appendCStringWithoutUTF8Checking: string + last
 						       length: i - last];
 
 			last = i + 1;
-			in_entity = YES;
-		} else if (in_entity && string[i] == ';') {
+			inEntity = YES;
+		} else if (inEntity && string[i] == ';') {
 			char *entity = string + last;
-			size_t len = i - last;
+			size_t entityLength = i - last;
 
-			if (len == 2 && !memcmp(entity, "lt", 2))
+			if (entityLength == 2 && !memcmp(entity, "lt", 2))
 				[ret appendCStringWithoutUTF8Checking: "<"
 							       length: 1];
-			else if (len == 2 && !memcmp(entity, "gt", 2))
+			else if (entityLength == 2 && !memcmp(entity, "gt", 2))
 				[ret appendCStringWithoutUTF8Checking: ">"
 							       length: 1];
-			else if (len == 4 && !memcmp(entity, "quot", 4))
+			else if (entityLength == 4 &&
+			    !memcmp(entity, "quot", 4))
 				[ret appendCStringWithoutUTF8Checking: "\""
 							       length: 1];
-			else if (len == 4 && !memcmp(entity, "apos", 4))
+			else if (entityLength == 4 &&
+			    !memcmp(entity, "apos", 4))
 				[ret appendCStringWithoutUTF8Checking: "'"
 							       length: 1];
-			else if (len == 3 && !memcmp(entity, "amp", 3))
+			else if (entityLength == 3 && !memcmp(entity, "amp", 3))
 				[ret appendCStringWithoutUTF8Checking: "&"
 							       length: 1];
 			else if (entity[0] == '#') {
@@ -124,7 +126,8 @@ parse_numeric_entity(const char *entity, size_t length)
 				OFString *tmp;
 
 				pool = [[OFAutoreleasePool alloc] init];
-				tmp = parse_numeric_entity(entity, len);
+				tmp = parse_numeric_entity(entity,
+				    entityLength);
 
 				if (tmp == nil)
 					@throw [OFInvalidEncodingException
@@ -139,7 +142,7 @@ parse_numeric_entity(const char *entity, size_t length)
 				pool = [[OFAutoreleasePool alloc] init];
 
 				n = [OFString stringWithCString: entity
-							 length: len];
+							 length: entityLength];
 				tmp =	  [delegate string: self
 				containsUnknownEntityNamed: n];
 
@@ -154,11 +157,11 @@ parse_numeric_entity(const char *entity, size_t length)
 				    newWithClass: isa];
 
 			last = i + 1;
-			in_entity = NO;
+			inEntity = NO;
 		}
 	}
 
-	if (in_entity)
+	if (inEntity)
 		@throw [OFInvalidEncodingException newWithClass: isa];
 
 	[ret appendCStringWithoutUTF8Checking: string + last
@@ -178,38 +181,40 @@ parse_numeric_entity(const char *entity, size_t length)
     (of_string_xml_unescaping_block_t)block
 {
 	size_t i, last;
-	BOOL in_entity;
+	BOOL inEntity;
 	OFMutableString *ret;
 
 	last = 0;
-	in_entity = NO;
+	inEntity = NO;
 	ret = [OFMutableString string];
 	((OFString*)ret)->isUTF8 = [self isUTF8];
 
 	for (i = 0; i < length; i++) {
-		if (!in_entity && string[i] == '&') {
+		if (!inEntity && string[i] == '&') {
 			[ret appendCStringWithoutUTF8Checking: string + last
 						       length: i - last];
 
 			last = i + 1;
-			in_entity = YES;
-		} else if (in_entity && string[i] == ';') {
+			inEntity = YES;
+		} else if (inEntity && string[i] == ';') {
 			char *entity = string + last;
-			size_t len = i - last;
+			size_t entityLength = i - last;
 
-			if (len == 2 && !memcmp(entity, "lt", 2))
+			if (entityLength == 2 && !memcmp(entity, "lt", 2))
 				[ret appendCStringWithoutUTF8Checking: "<"
 							       length: 1];
-			else if (len == 2 && !memcmp(entity, "gt", 2))
+			else if (entityLength == 2 && !memcmp(entity, "gt", 2))
 				[ret appendCStringWithoutUTF8Checking: ">"
 							       length: 1];
-			else if (len == 4 && !memcmp(entity, "quot", 4))
+			else if (entityLength == 4 &&
+			    !memcmp(entity, "quot", 4))
 				[ret appendCStringWithoutUTF8Checking: "\""
 							       length: 1];
-			else if (len == 4 && !memcmp(entity, "apos", 4))
+			else if (entityLength == 4 &&
+			    !memcmp(entity, "apos", 4))
 				[ret appendCStringWithoutUTF8Checking: "'"
 							       length: 1];
-			else if (len == 3 && !memcmp(entity, "amp", 3))
+			else if (entityLength == 3 && !memcmp(entity, "amp", 3))
 				[ret appendCStringWithoutUTF8Checking: "&"
 							       length: 1];
 			else if (entity[0] == '#') {
@@ -217,7 +222,8 @@ parse_numeric_entity(const char *entity, size_t length)
 				OFString *tmp;
 
 				pool = [[OFAutoreleasePool alloc] init];
-				tmp = parse_numeric_entity(entity, len);
+				tmp = parse_numeric_entity(entity,
+				    entityLength);
 
 				if (tmp == nil)
 					@throw [OFInvalidEncodingException
@@ -227,13 +233,14 @@ parse_numeric_entity(const char *entity, size_t length)
 				[pool release];
 			} else {
 				OFAutoreleasePool *pool;
-				OFString *n, *tmp;
+				OFString *entityString, *tmp;
 
 				pool = [[OFAutoreleasePool alloc] init];
 
-				n = [OFString stringWithCString: entity
-							 length: len];
-				tmp = block(self, n);
+				entityString = [OFString
+				    stringWithCString: entity
+					       length: entityLength];
+				tmp = block(self, entityString);
 
 				if (tmp == nil)
 					@throw [OFInvalidEncodingException
@@ -244,11 +251,11 @@ parse_numeric_entity(const char *entity, size_t length)
 			}
 
 			last = i + 1;
-			in_entity = NO;
+			inEntity = NO;
 		}
 	}
 
-	if (in_entity)
+	if (inEntity)
 		@throw [OFInvalidEncodingException newWithClass: isa];
 
 	[ret appendCStringWithoutUTF8Checking: string + last
