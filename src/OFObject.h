@@ -416,7 +416,7 @@ typedef struct of_range_t {
 /**
  * \brief A protocol for the creation of copies.
  */
-@protocol OFCopying
+@protocol OFCopying <OFObject>
 /**
  * \return A copy of the object
  */
@@ -429,7 +429,7 @@ typedef struct of_range_t {
  * This protocol is implemented by objects that can be mutable and immutable
  * and allows returning a mutable copy.
  */
-@protocol OFMutableCopying
+@protocol OFMutableCopying <OFCopying>
 /**
  * \return A mutable copy of the object
  */
@@ -441,7 +441,7 @@ typedef struct of_range_t {
  *
  * This protocol is implemented by objects that can be compared.
  */
-@protocol OFComparing
+@protocol OFComparing <OFObject>
 /**
  * Compares the object with another object.
  *
