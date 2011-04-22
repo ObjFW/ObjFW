@@ -42,9 +42,9 @@
 
 @implementation OFXMLElement_OFXMLElementBuilderDelegate
 - (void)elementBuilder: (OFXMLElementBuilder*)builder
-       didBuildElement: (OFXMLElement*)elem
+       didBuildElement: (OFXMLElement*)element_
 {
-	element = [elem retain];
+	element = [element_ retain];
 }
 
 - (void)dealloc
@@ -56,16 +56,16 @@
 @end
 
 @implementation OFXMLElement
-+ elementWithName: (OFString*)name_
++ elementWithName: (OFString*)name
 {
-	return [[[self alloc] initWithName: name_] autorelease];
+	return [[[self alloc] initWithName: name] autorelease];
 }
 
 + elementWithName: (OFString*)name
-      stringValue: (OFString*)stringval
+      stringValue: (OFString*)stringValue
 {
 	return [[[self alloc] initWithName: name
-			       stringValue: stringval] autorelease];
+			       stringValue: stringValue] autorelease];
 }
 
 + elementWithName: (OFString*)name
@@ -77,21 +77,21 @@
 
 + elementWithName: (OFString*)name
 	namespace: (OFString*)ns
-      stringValue: (OFString*)stringval
+      stringValue: (OFString*)stringValue
 {
 	return [[[self alloc] initWithName: name
 				 namespace: ns
-			       stringValue: stringval] autorelease];
+			       stringValue: stringValue] autorelease];
 }
 
-+ elementWithCharacters: (OFString*)chars
++ elementWithCharacters: (OFString*)characters
 {
-	return [[[self alloc] initWithCharacters: chars] autorelease];
+	return [[[self alloc] initWithCharacters: characters] autorelease];
 }
 
-+ elementWithCDATA: (OFString*)cdata
++ elementWithCDATA: (OFString*)CDATA
 {
-	return [[[self alloc] initWithCDATA: cdata] autorelease];
+	return [[[self alloc] initWithCDATA: CDATA] autorelease];
 }
 
 + elementWithComment: (OFString*)comment
@@ -99,9 +99,9 @@
 	return [[[self alloc] initWithComment: comment] autorelease];
 }
 
-+ elementWithXMLString: (OFString*)str
++ elementWithXMLString: (OFString*)string
 {
-	return [[[self alloc] initWithXMLString: str] autorelease];
+	return [[[self alloc] initWithXMLString: string] autorelease];
 }
 
 - init
@@ -120,11 +120,11 @@
 }
 
 - initWithName: (OFString*)name_
-   stringValue: (OFString*)stringval
+   stringValue: (OFString*)stringValue
 {
 	return [self initWithName: name_
 			namespace: nil
-		      stringValue: stringval];
+		      stringValue: stringValue];
 }
 
 - initWithName: (OFString*)name_
@@ -137,7 +137,7 @@
 
 - initWithName: (OFString*)name_
      namespace: (OFString*)ns_
-   stringValue: (OFString*)stringval
+   stringValue: (OFString*)stringValue
 {
 	self = [super init];
 
@@ -145,12 +145,12 @@
 		name = [name_ copy];
 		ns = [ns_ copy];
 
-		if (stringval != nil) {
+		if (stringValue != nil) {
 			OFAutoreleasePool *pool;
 
 			pool = [[OFAutoreleasePool alloc] init];
 			[self addChild:
-			    [OFXMLElement elementWithCharacters: stringval]];
+			    [OFXMLElement elementWithCharacters: stringValue]];
 			[pool release];
 		}
 
@@ -166,12 +166,12 @@
 	return self;
 }
 
-- initWithCharacters: (OFString*)chars
+- initWithCharacters: (OFString*)characters_
 {
 	self = [super init];
 
 	@try {
-		characters = [chars copy];
+		characters = [characters_ copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -180,12 +180,12 @@
 	return self;
 }
 
-- initWithCDATA: (OFString*)cdata_
+- initWithCDATA: (OFString*)CDATA_
 {
 	self = [super init];
 
 	@try {
-		cdata = [cdata_ copy];
+		CDATA = [CDATA_ copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -208,7 +208,7 @@
 	return self;
 }
 
-- initWithXMLString: (OFString*)str
+- initWithXMLString: (OFString*)string
 {
 	OFAutoreleasePool *pool;
 	OFXMLParser *parser;
@@ -227,7 +227,7 @@
 	[parser setDelegate: builder];
 	[builder setDelegate: delegate];
 
-	[parser parseString: str];
+	[parser parseString: string];
 
 	if (![parser finishedParsing])
 		@throw [OFMalformedXMLException newWithClass: isa
@@ -279,12 +279,12 @@
 	return [[children copy] autorelease];
 }
 
-- (void)setStringValue: (OFString*)value
+- (void)setStringValue: (OFString*)stringValue
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 
 	[self setChildren: [OFArray arrayWithObject:
-	    [OFXMLElement elementWithCharacters: value]]];
+	    [OFXMLElement elementWithCharacters: stringValue]]];
 
 	[pool release];
 }
@@ -293,23 +293,23 @@
 {
 	OFAutoreleasePool *pool;
 	OFMutableString *ret;
-	OFXMLElement **children_c;
+	OFXMLElement **cArray;
 	size_t i, count = [children count];
 
 	if (count == 0)
 		return @"";
 
 	ret = [OFMutableString string];
-	children_c = [children cArray];
+	cArray = [children cArray];
 	pool = [[OFAutoreleasePool alloc] init];
 
 	for (i = 0; i < count; i++) {
-		if (children_c[i]->characters != nil)
-			[ret appendString: children_c[i]->characters];
-		else if (children_c[i]->cdata != nil)
-			[ret appendString: children_c[i]->cdata];
-		else if (children_c[i]->comment == nil) {
-			[ret appendString: [children_c[i] stringValue]];
+		if (cArray[i]->characters != nil)
+			[ret appendString: cArray[i]->characters];
+		else if (cArray[i]->CDATA != nil)
+			[ret appendString: cArray[i]->CDATA];
+		else if (cArray[i]->comment == nil) {
+			[ret appendString: [cArray[i] stringValue]];
 			[pool releaseObjects];
 		}
 	}
@@ -328,220 +328,204 @@
 - (OFString*)_XMLStringWithParent: (OFXMLElement*)parent
 {
 	OFAutoreleasePool *pool, *pool2;
-	char *str_c;
-	size_t len, i, j, attrs_count;
-	OFString *prefix, *parent_prefix;
-	OFXMLAttribute **attrs_carray;
+	char *cString;
+	size_t length, i, j, attributesCount;
+	OFString *prefix, *parentPrefix;
+	OFXMLAttribute **attributesCArray;
 	OFString *ret, *tmp;
-	OFMutableDictionary *all_namespaces;
-	OFString *def_ns;
+	OFMutableDictionary *allNamespaces;
+	OFString *defaultNS;
 
 	if (characters != nil)
 		return [characters stringByXMLEscaping];
 
-	if (cdata != nil)
-		return [OFString stringWithFormat: @"<![CDATA[%@]]>", cdata];
+	if (CDATA != nil)
+		return [OFString stringWithFormat: @"<![CDATA[%@]]>", CDATA];
 
-	if (comment != nil) {
-		OFMutableString *str;
-
-		str = [OFMutableString stringWithString: @"<!--"];
-		[str appendString: comment];
-		[str appendString: @"-->"];
-
-		/*
-		 * Class swizzle the string to be immutable. We declared the
-		 * return type to be OFString*, so it can't be modified anyway.
-		 * But not swizzling it would create a real copy each time
-		 * -[copy] is called.
-		 */
-		str->isa = [OFString class];
-		return str;
-	}
+	if (comment != nil)
+		return [OFString stringWithFormat: @"<!--%@-->", comment];
 
 	pool = [[OFAutoreleasePool alloc] init];
-	def_ns = (defaultNamespace != nil
+	defaultNS = (defaultNamespace != nil
 	    ? defaultNamespace
 	    : (parent != nil ? parent->defaultNamespace : (OFString*)nil));
 
 	if (parent != nil && parent->namespaces != nil) {
-		OFEnumerator *key_enum = [namespaces keyEnumerator];
-		OFEnumerator *obj_enum = [namespaces objectEnumerator];
-		id key, obj;
+		OFEnumerator *keyEnumerator = [namespaces keyEnumerator];
+		OFEnumerator *objectEnumerator = [namespaces objectEnumerator];
+		id key, object;
 
-		all_namespaces = [[parent->namespaces mutableCopy] autorelease];
+		allNamespaces = [[parent->namespaces mutableCopy] autorelease];
 
-		while ((key = [key_enum nextObject]) != nil &&
-		    (obj = [obj_enum nextObject]) != nil)
-			[all_namespaces setObject: obj
-					   forKey: key];
+		while ((key = [keyEnumerator nextObject]) != nil &&
+		    (object = [objectEnumerator nextObject]) != nil)
+			[allNamespaces setObject: object
+					  forKey: key];
 	} else
-		all_namespaces = namespaces;
+		allNamespaces = namespaces;
 
-	prefix = [all_namespaces objectForKey:
+	prefix = [allNamespaces objectForKey:
 	    (ns != nil ? ns : (OFString*)@"")];
-	parent_prefix = [all_namespaces objectForKey:
+	parentPrefix = [allNamespaces objectForKey:
 	    (parent != nil && parent->ns != nil ? parent->ns : (OFString*)@"")];
 
 	i = 0;
-	len = [name cStringLength] + 3;
-	str_c = [self allocMemoryWithSize: len];
+	length = [name cStringLength] + 3;
+	cString = [self allocMemoryWithSize: length];
 
 	/* Start of tag */
-	str_c[i++] = '<';
+	cString[i++] = '<';
 
-	if (prefix != nil && ![ns isEqual: def_ns] &&
+	if (prefix != nil && ![ns isEqual: defaultNS] &&
 	    (![ns isEqual: (parent != nil ? parent->ns : (OFString*)nil)] ||
-	    parent_prefix != nil)) {
-		len += [prefix cStringLength] + 1;
+	    parentPrefix != nil)) {
+		length += [prefix cStringLength] + 1;
 		@try {
-			str_c = [self resizeMemory: str_c
-					    toSize: len];
+			cString = [self resizeMemory: cString
+					      toSize: length];
 		} @catch (id e) {
-			[self freeMemory: str_c];
+			[self freeMemory: cString];
 			@throw e;
 		}
 
-		memcpy(str_c + i, [prefix cString],
-		    [prefix cStringLength]);
+		memcpy(cString + i, [prefix cString], [prefix cStringLength]);
 		i += [prefix cStringLength];
-		str_c[i++] = ':';
+		cString[i++] = ':';
 	}
 
-	memcpy(str_c + i, [name cString], [name cStringLength]);
+	memcpy(cString + i, [name cString], [name cStringLength]);
 	i += [name cStringLength];
 
 	/* xmlns if necessary */
-	if (ns != nil && prefix == nil && ![ns isEqual: def_ns] &&
+	if (ns != nil && prefix == nil && ![ns isEqual: defaultNS] &&
 	     (![ns isEqual: (parent != nil ? parent->ns : (OFString*)nil)] ||
-	     parent_prefix != nil)) {
-		len += [ns cStringLength] + 9;
-
+	     parentPrefix != nil)) {
+		length += [ns cStringLength] + 9;
 		@try {
-			str_c = [self resizeMemory: str_c
-					    toSize: len];
+			cString = [self resizeMemory: cString
+					      toSize: length];
 		} @catch (id e) {
-			[self freeMemory: str_c];
+			[self freeMemory: cString];
 			@throw e;
 		}
 
-		memcpy(str_c + i, " xmlns='", 8);
+		memcpy(cString + i, " xmlns='", 8);
 		i += 8;
-		memcpy(str_c + i, [ns cString], [ns cStringLength]);
+		memcpy(cString + i, [ns cString], [ns cStringLength]);
 		i += [ns cStringLength];
-		str_c[i++] = '\'';
+		cString[i++] = '\'';
 
-		def_ns = ns;
+		defaultNS = ns;
 	}
 
 	/* Attributes */
-	attrs_carray = [attributes cArray];
-	attrs_count = [attributes count];
+	attributesCArray = [attributes cArray];
+	attributesCount = [attributes count];
 
 	pool2 = [[OFAutoreleasePool alloc] init];
-	for (j = 0; j < attrs_count; j++) {
-		OFString *attr_name = [attrs_carray[j] name];
-		OFString *attr_prefix = nil;
-		tmp = [[attrs_carray[j] stringValue] stringByXMLEscaping];
+	for (j = 0; j < attributesCount; j++) {
+		OFString *attributeName = [attributesCArray[j] name];
+		OFString *attributePrefix = nil;
+		tmp = [[attributesCArray[j] stringValue] stringByXMLEscaping];
 
-		if ([attrs_carray[j] namespace] != nil &&
-		    (attr_prefix = [all_namespaces objectForKey:
-		    [attrs_carray[j] namespace]]) == nil)
+		if ([attributesCArray[j] namespace] != nil &&
+		    (attributePrefix = [allNamespaces objectForKey:
+		    [attributesCArray[j] namespace]]) == nil)
 			@throw [OFUnboundNamespaceException
 			    newWithClass: isa
-			       namespace: [attrs_carray[j] namespace]];
+			       namespace: [attributesCArray[j] namespace]];
 
-		len += [attr_name cStringLength] +
-		    (attr_prefix != nil ? [attr_prefix cStringLength] + 1 : 0) +
+		length += [attributeName cStringLength] +
+		    (attributePrefix != nil ?
+		    [attributePrefix cStringLength] + 1 : 0) +
 		    [tmp cStringLength] + 4;
 
 		@try {
-			str_c = [self resizeMemory: str_c
-					    toSize: len];
+			cString = [self resizeMemory: cString
+					      toSize: length];
 		} @catch (id e) {
-			[self freeMemory: str_c];
+			[self freeMemory: cString];
 			@throw e;
 		}
 
-		str_c[i++] = ' ';
-		if (attr_prefix != nil) {
-			memcpy(str_c + i, [attr_prefix cString],
-			    [attr_prefix cStringLength]);
-			i += [attr_prefix cStringLength];
-			str_c[i++] = ':';
+		cString[i++] = ' ';
+		if (attributePrefix != nil) {
+			memcpy(cString + i, [attributePrefix cString],
+			    [attributePrefix cStringLength]);
+			i += [attributePrefix cStringLength];
+			cString[i++] = ':';
 		}
-		memcpy(str_c + i, [attr_name cString],
-				[attr_name cStringLength]);
-		i += [attr_name cStringLength];
-		str_c[i++] = '=';
-		str_c[i++] = '\'';
-		memcpy(str_c + i, [tmp cString], [tmp cStringLength]);
+		memcpy(cString + i, [attributeName cString],
+		    [attributeName cStringLength]);
+		i += [attributeName cStringLength];
+		cString[i++] = '=';
+		cString[i++] = '\'';
+		memcpy(cString + i, [tmp cString], [tmp cStringLength]);
 		i += [tmp cStringLength];
-		str_c[i++] = '\'';
+		cString[i++] = '\'';
 
 		[pool2 releaseObjects];
 	}
 
 	/* Childen */
 	if (children != nil) {
-		OFXMLElement **children_carray = [children cArray];
-		size_t children_count = [children count];
+		OFXMLElement **childrenCArray = [children cArray];
+		size_t childrenCount = [children count];
 		IMP append;
+		SEL appendSel = @selector(appendCStringWithoutUTF8Checking:);
 
 		tmp = [OFMutableString string];
-		append = [tmp methodForSelector:
-		    @selector(appendCStringWithoutUTF8Checking:)];
+		append = [tmp methodForSelector: appendSel];
 
-		for (j = 0; j < children_count; j++)
-			append(tmp, @selector(
-			    appendCStringWithoutUTF8Checking:),
-			    [[children_carray[j]
-			    _XMLStringWithParent: self] cString]);
+		for (j = 0; j < childrenCount; j++)
+			append(tmp, appendSel,
+			    [[childrenCArray[j] _XMLStringWithParent: self]
+			    cString]);
 
-		len += [tmp cStringLength] + [name cStringLength] + 2;
+		length += [tmp cStringLength] + [name cStringLength] + 2;
 		@try {
-			str_c = [self resizeMemory: str_c
-					    toSize: len];
+			cString = [self resizeMemory: cString
+					      toSize: length];
 		} @catch (id e) {
-			[self freeMemory: str_c];
+			[self freeMemory: cString];
 			@throw e;
 		}
 
-		str_c[i++] = '>';
-		memcpy(str_c + i, [tmp cString], [tmp cStringLength]);
+		cString[i++] = '>';
+		memcpy(cString + i, [tmp cString], [tmp cStringLength]);
 		i += [tmp cStringLength];
-		str_c[i++] = '<';
-		str_c[i++] = '/';
+		cString[i++] = '<';
+		cString[i++] = '/';
 		if (prefix != nil) {
-			len += [prefix cStringLength] + 1;
+			length += [prefix cStringLength] + 1;
 			@try {
-				str_c = [self resizeMemory: str_c
-						    toSize: len];
+				cString = [self resizeMemory: cString
+						      toSize: length];
 			} @catch (id e) {
-				[self freeMemory: str_c];
+				[self freeMemory: cString];
 				@throw e;
 			}
 
-			memcpy(str_c + i, [prefix cString],
+			memcpy(cString + i, [prefix cString],
 			    [prefix cStringLength]);
 			i += [prefix cStringLength];
-			str_c[i++] = ':';
+			cString[i++] = ':';
 		}
-		memcpy(str_c + i, [name cString], [name cStringLength]);
+		memcpy(cString + i, [name cString], [name cStringLength]);
 		i += [name cStringLength];
 	} else
-		str_c[i++] = '/';
+		cString[i++] = '/';
 
-	str_c[i++] = '>';
-	assert(i == len);
+	cString[i++] = '>';
+	assert(i == length);
 
 	[pool release];
 
 	@try {
-		ret = [OFString stringWithCString: str_c
-					   length: len];
+		ret = [OFString stringWithCString: cString
+					   length: length];
 	} @finally {
-		[self freeMemory: str_c];
+		[self freeMemory: cString];
 	}
 	return ret;
 }
@@ -556,7 +540,7 @@
 	return [self XMLString];
 }
 
-- (void)addAttribute: (OFXMLAttribute*)attr
+- (void)addAttribute: (OFXMLAttribute*)attribute
 {
 	if (name == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
@@ -565,22 +549,22 @@
 	if (attributes == nil)
 		attributes = [[OFMutableArray alloc] init];
 
-	if ([self attributeForName: attr->name
-			 namespace: attr->ns] == nil)
-		[attributes addObject: attr];
+	if ([self attributeForName: attribute->name
+			 namespace: attribute->ns] == nil)
+		[attributes addObject: attribute];
 }
 
 - (void)addAttributeWithName: (OFString*)name_
-		 stringValue: (OFString*)value
+		 stringValue: (OFString*)stringValue
 {
 	[self addAttributeWithName: name_
 			 namespace: nil
-		       stringValue: value];
+		       stringValue: stringValue];
 }
 
 - (void)addAttributeWithName: (OFString*)name_
 		   namespace: (OFString*)ns_
-		 stringValue: (OFString*)value
+		 stringValue: (OFString*)stringValue
 {
 	OFAutoreleasePool *pool;
 
@@ -591,66 +575,75 @@
 	pool = [[OFAutoreleasePool alloc] init];
 	[self addAttribute: [OFXMLAttribute attributeWithName: name_
 						    namespace: ns_
-						  stringValue: value]];
+						  stringValue: stringValue]];
 	[pool release];
 }
 
-- (OFXMLAttribute*)attributeForName: (OFString*)attrname
+- (OFXMLAttribute*)attributeForName: (OFString*)attributeName
 {
-	return [self attributeForName: attrname
-			    namespace: nil];
-}
+	OFXMLAttribute **cArray = [attributes cArray];
+	size_t i, count = [attributes count];
 
-- (OFXMLAttribute*)attributeForName: (OFString*)attrname
-			  namespace: (OFString*)attrns
-{
-	OFXMLAttribute **attrs_c = [attributes cArray];
-	size_t i, attrs_count = [attributes count];
-
-	if (attrns != nil) {
-		for (i = 0; i < attrs_count; i++)
-			if ([attrs_c[i]->ns isEqual: attrns] &&
-			    [attrs_c[i]->name isEqual: attrname])
-				return attrs_c[i];
-	} else {
-		for (i = 0; i < attrs_count; i++)
-			if (attrs_c[i]->ns == nil &&
-			    [attrs_c[i]->name isEqual: attrname])
-				return attrs_c[i];
-	}
+	for (i = 0; i < count; i++)
+		if (cArray[i]->ns == nil &&
+		    [cArray[i]->name isEqual: attributeName])
+			return cArray[i];
 
 	return nil;
 }
 
-- (void)removeAttributeForName: (OFString*)attrname
+- (OFXMLAttribute*)attributeForName: (OFString*)attributeName
+			  namespace: (OFString*)attributeNS
 {
-	[self removeAttributeForName: attrname
-			   namespace: nil];
+	OFXMLAttribute **cArray;
+	size_t i, count;
+
+	if (attributeNS == nil)
+		return [self attributeForName: attributeName];
+
+	cArray = [attributes cArray];
+	count = [attributes count];
+
+	for (i = 0; i < count; i++)
+		if ([cArray[i]->ns isEqual: attributeNS] &&
+		    [cArray[i]->name isEqual: attributeName])
+			return cArray[i];
+
+	return nil;
 }
 
-- (void)removeAttributeForName: (OFString*)attrname
-		     namespace: (OFString*)attrns
+- (void)removeAttributeForName: (OFString*)attributeName
 {
-	OFXMLAttribute **attrs_c = [attributes cArray];
-	size_t i, attrs_count = [attributes count];
+	OFXMLAttribute **cArray = [attributes cArray];
+	size_t i, count = [attributes count];
 
-	if (attrns != nil) {
-		for (i = 0; i < attrs_count; i++) {
-			if ([attrs_c[i]->ns isEqual: attrns] &&
-			    [attrs_c[i]->name isEqual: attrname]) {
-				[attributes removeObjectAtIndex: i];
+	for (i = 0; i < count; i++) {
+		if (cArray[i]->ns == nil &&
+		    [cArray[i]->name isEqual: attributeName]) {
+			[attributes removeObjectAtIndex: i];
 
-				return;
-			}
+			return;
 		}
-	} else {
-		for (i = 0; i < attrs_count; i++) {
-			if (attrs_c[i]->ns == nil &&
-			    [attrs_c[i]->name isEqual: attrname]) {
-				[attributes removeObjectAtIndex: i];
+	}
+}
 
+- (void)removeAttributeForName: (OFString*)attributeName
+		     namespace: (OFString*)attributeNS
+{
+	OFXMLAttribute **cArray;
+	size_t i, count;
+
+	if (attributeNS == nil)
+		return [self removeAttributeForName: attributeName];
+
+	cArray = [attributes cArray];
+	count = [attributes count];
+
+	for (i = 0; i < count; i++) {
+		if ([cArray[i]->ns isEqual: attributeNS] &&
+		    [cArray[i]->name isEqual: attributeName]) {
+			[attributes removeObjectAtIndex: i];
 				return;
-			}
 		}
 	}
 }
@@ -710,43 +703,50 @@
 	[children addObject: child];
 }
 
-- (OFXMLElement*)elementForName: (OFString*)elemname
+- (OFXMLElement*)elementForName: (OFString*)elementName
 {
-	return [self elementForName: elemname
-			  namespace: nil];
+	return [[self elementsForName: elementName] firstObject];
 }
 
-- (OFArray*)elementsForName: (OFString*)elemname
+- (OFXMLElement*)elementForName: (OFString*)elementName
+		      namespace: (OFString*)elementNS
 {
-	return [self elementsForName: elemname
-			   namespace: nil];
+	return [[self elementsForName: elementName
+			    namespace: elementNS] firstObject];
 }
 
-- (OFXMLElement*)elementForName: (OFString*)elemname
-		      namespace: (OFString*)elemns
-{
-	return [[self elementsForName: elemname
-			    namespace: elemns] firstObject];
-}
-
-- (OFArray*)elementsForName: (OFString*)elemname
-		  namespace: (OFString*)elemns
+- (OFArray*)elementsForName: (OFString*)elementName
 {
 	OFMutableArray *ret = [OFMutableArray array];
-	OFXMLElement **children_c = [children cArray];
-	size_t i, children_count = [children count];
+	OFXMLElement **cArray = [children cArray];
+	size_t i, count = [children count];
 
-	if (elemns != nil) {
-		for (i = 0; i < children_count; i++)
-			if ([children_c[i]->ns isEqual: elemns] &&
-			    [children_c[i]->name isEqual: elemname])
-				[ret addObject: children_c[i]];
-	} else {
-		for (i = 0; i < children_count; i++)
-			if (children_c[i]->ns == nil &&
-			    [children_c[i]->name isEqual: elemname])
-				[ret addObject: children_c[i]];
-	}
+	for (i = 0; i < count; i++)
+		if (cArray[i]->ns == nil &&
+		    [cArray[i]->name isEqual: elementName])
+			[ret addObject: cArray[i]];
+
+	return ret;
+}
+
+- (OFArray*)elementsForName: (OFString*)elementName
+		  namespace: (OFString*)elementNS
+{
+	OFMutableArray *ret;
+	OFXMLElement **cArray;
+	size_t i, count;
+
+	if (elementNS == nil)
+		return [self elementsForName: elementName];
+
+	ret = [OFMutableArray array];
+	cArray = [children cArray];
+	count = [children count];
+
+	for (i = 0; i < count; i++)
+		if ([cArray[i]->ns isEqual: elementNS] &&
+		    [cArray[i]->name isEqual: elementName])
+			[ret addObject: cArray[i]];
 
 	return ret;
 }
@@ -759,7 +759,7 @@
 	[namespaces release];
 	[children release];
 	[characters release];
-	[cdata release];
+	[CDATA release];
 	[comment release];
 
 	[super dealloc];

@@ -81,8 +81,8 @@ enum {
 		    sizeof(struct pollfd)];
 		FDToStream = [[OFMutableDictionary alloc] init];
 #else
-		FD_ZERO(&readfds);
-		FD_ZERO(&writefds);
+		FD_ZERO(&readFDs);
+		FD_ZERO(&writeFDs);
 #endif
 
 #ifndef _WIN32
@@ -228,8 +228,8 @@ enum {
 	FD_SET(fileDescriptor, FDSet);
 	FD_SET(fileDescriptor, &exceptFDs);
 
-	if (fd >= nfds)
-		nfds = fd + 1;
+	if (fileDescriptor >= nFDs)
+		nFDs = fileDescriptor + 1;
 
 	[pool release];
 }
@@ -243,7 +243,7 @@ enum {
 	FD_CLR(fileDescriptor, FDSet);
 
 	if (!FD_ISSET(fileDescriptor, otherFDSet))
-		FD_CLR(fileDescriptor, &exceptfds);
+		FD_CLR(fileDescriptor, &exceptFDs);
 }
 #endif
 

@@ -35,7 +35,7 @@
 	OFMutableDictionary *namespaces;
 	OFMutableArray *children;
 	OFString *characters;
-	OFString *cdata;
+	OFString *CDATA;
 	OFMutableString *comment;
 }
 
@@ -55,12 +55,12 @@
 
 /**
  * \param name The name for the element
- * \param stringval The value for the element
+ * \param stringValue The value for the element
  * \return A new autoreleased OFXMLElement with the specified element name and
  *	   value
  */
 + elementWithName: (OFString*)name
-      stringValue: (OFString*)stringval;
+      stringValue: (OFString*)stringValue;
 
 /**
  * \param name The name for the element
@@ -74,30 +74,30 @@
 /**
  * \param name The name for the element
  * \param ns The namespace for the element
- * \param stringval The value for the element
+ * \param stringValue The value for the element
  * \return A new autoreleased OFXMLElement with the specified element name,
  *	   namespace and value
  */
 + elementWithName: (OFString*)name
 	namespace: (OFString*)ns
-      stringValue: (OFString*)stringval;
+      stringValue: (OFString*)stringValue;
 
 /**
  * Creates a new element, only consisting of the specified characters.
  *
- * \param chars The characters the element represents
+ * \param characters The characters the element represents
  * \return A new autoreleased OFXMLElement consisting of the specified
  *	   characters
  */
-+ elementWithCharacters: (OFString*)chars;
++ elementWithCharacters: (OFString*)characters;
 
 /**
  * Creates a new element, only consisting of the specified CDATA.
  *
- * \param cdata The CDATA the element represents
+ * \param CDATA The CDATA the element represents
  * \return A new autoreleased OFXMLElement consisting of the specified CDATA
  */
-+ elementWithCDATA: (OFString*)cdata;
++ elementWithCDATA: (OFString*)CDATA;
 
 /**
  * Creates a new element, only consisting of the specified comment.
@@ -110,10 +110,10 @@
 /**
  * Parses the string and returns an OFXMLElement for it.
  *
- * \param str The string to parse
+ * \param string The string to parse
  * \return A new autoreleased OFXMLElement with the contents of the string
  */
-+ elementWithXMLString: (OFString*)str;
++ elementWithXMLString: (OFString*)string;
 
 /**
  * Initializes an already allocated OFXMLElement with the specified element
@@ -129,12 +129,12 @@
  * name and value.
  *
  * \param name The name for the element
- * \param stringval The value for the element
+ * \param stringValue The value for the element
  * \return An initialized OFXMLElement with the specified element name and
  *	   value
  */
 - initWithName: (OFString*)name
-   stringValue: (OFString*)stringval;
+   stringValue: (OFString*)stringValue;
 
 /**
  * Initializes an already allocated OFXMLElement with the specified element
@@ -154,31 +154,31 @@
  *
  * \param name The name for the element
  * \param ns The namespace for the element
- * \param stringval The value for the element
+ * \param stringValue The value for the element
  * \return An initialized OFXMLElement with the specified element name,
  *	   namespace and value
  */
 - initWithName: (OFString*)name
      namespace: (OFString*)ns
-   stringValue: (OFString*)stringval;
+   stringValue: (OFString*)stringValue;
 
 /**
  * Initializes an already allocated OFXMLElement so that it only consists of the
  * specified characters.
  *
- * \param chars The characters the element represents
+ * \param characters The characters the element represents
  * \return An initialized OFXMLElement consisting of the specified characters
  */
-- initWithCharacters: (OFString*)chars;
+- initWithCharacters: (OFString*)characters;
 
 /**
  * Initializes an already allocated OFXMLElement so that it only consists of the
  * specified CDATA.
  *
- * \param cdata The CDATA the element represents
+ * \param CDATA The CDATA the element represents
  * \return An initialized OFXMLElement consisting of the specified CDATA
  */
-- initWithCDATA: (OFString*)cdata;
+- initWithCDATA: (OFString*)CDATA;
 
 /**
  * Initializes an already allocated OFXMLElement so that it only consists of the
@@ -192,10 +192,10 @@
 /**
  * Parses the string and initializes an already allocated OFXMLElement with it.
  *
- * \param str The string to parse
+ * \param string The string to parse
  * \return An initialized OFXMLElement with the contents of the string
  */
-- initWithXMLString: (OFString*)str;
+- initWithXMLString: (OFString*)string;
 
 /**
  * \return The name of the element
@@ -227,9 +227,9 @@
 /**
  * Removes all children and sets the string value to the specified string.
  *
- * \param value The new string value for the element
+ * \param stringValue The new string value for the element
  */
-- (void)setStringValue: (OFString*)value;
+- (void)setStringValue: (OFString*)stringValue;
 
 /**
  * \return A string with the string value of all children concatenated
@@ -248,9 +248,9 @@
  * If an attribute with the same name and namespace already exists, it is not
  * added.
  *
- * \param attr The attribute to add
+ * \param attribute The attribute to add
  */
-- (void)addAttribute: (OFXMLAttribute*)attr;
+- (void)addAttribute: (OFXMLAttribute*)attribute;
 
 /**
  * Adds the specified attribute with the specified value.
@@ -259,10 +259,10 @@
  * added.
  *
  * \param name The name of the attribute
- * \param value The value of the attribute
+ * \param stringValue The value of the attribute
  */
 - (void)addAttributeWithName: (OFString*)name
-		 stringValue: (OFString*)value;
+		 stringValue: (OFString*)stringValue;
 
 /**
  * Adds the specified attribute with the specified namespace and value.
@@ -272,41 +272,41 @@
  *
  * \param name The name of the attribute
  * \param ns The namespace of the attribute
- * \param value The value of the attribute
+ * \param stringValue The value of the attribute
  */
 - (void)addAttributeWithName: (OFString*)name
 		   namespace: (OFString*)ns
-		 stringValue: (OFString*)value;
+		 stringValue: (OFString*)stringValue;
 
 /**
- * \param attrname The name of the attribute
+ * \param attributeName The name of the attribute
  * \return The attribute with the specified name
  */
-- (OFXMLAttribute*)attributeForName: (OFString*)attrname;
+- (OFXMLAttribute*)attributeForName: (OFString*)attributeName;
 
 /**
- * \param attrname The name of the attribute
- * \param attrns The namespace of the attribute
+ * \param attributeName The name of the attribute
+ * \param attributeNS The namespace of the attribute
  * \return The attribute with the specified name and namespace
  */
-- (OFXMLAttribute*)attributeForName: (OFString*)attrname
-			  namespace: (OFString*)attrns;
+- (OFXMLAttribute*)attributeForName: (OFString*)attributeName
+			  namespace: (OFString*)attributeNS;
 
 /**
  * Removes the attribute with the specified name.
  *
- * \param attrname The name of the attribute
+ * \param attribteName The name of the attribute
  */
-- (void)removeAttributeForName: (OFString*)attrname;
+- (void)removeAttributeForName: (OFString*)attributeName;
 
 /**
  * Removes the attribute with the specified name and namespace.
  *
- * \param attrname The name of the attribute
- * \param attrns The namespace of the attribute
+ * \param attributeName The name of the attribute
+ * \param attributeNS The namespace of the attribute
  */
-- (void)removeAttributeForName: (OFString*)attrname
-		     namespace: (OFString*)attrns;
+- (void)removeAttributeForName: (OFString*)attributeName
+		     namespace: (OFString*)attributeNS;
 
 /**
  * Sets a prefix for a namespace.
@@ -341,30 +341,30 @@
 - (void)addChild: (OFXMLElement*)child;
 
 /**
- * \param elemname The name of the element
+ * \param elementName The name of the element
  * \return The first child element with the specified name
  */
-- (OFXMLElement*)elementForName: (OFString*)elemname;
+- (OFXMLElement*)elementForName: (OFString*)elementName;
 
 /**
- * \param elemname The name of the elements
+ * \param elementName The name of the elements
  * \return The child elements with the specified name
  */
-- (OFArray*)elementsForName: (OFString*)elemname;
+- (OFArray*)elementsForName: (OFString*)elementName;
 
 /**
- * \param elemname The name of the element
- * \param elemns The namespace of the element
+ * \param elementName The name of the element
+ * \param elementNS The namespace of the element
  * \return The first child element with the specified name and namespace
  */
-- (OFXMLElement*)elementForName: (OFString*)elemname
-		      namespace: (OFString*)elemns;
+- (OFXMLElement*)elementForName: (OFString*)elementName
+		      namespace: (OFString*)elementNS;
 
 /**
- * \param elemname The name of the elements
- * \param elemns The namespace of the elements
+ * \param elementName The name of the elements
+ * \param elementNS The namespace of the elements
  * \return The child elements with the specified name and namespace
  */
-- (OFArray*)elementsForName: (OFString*)elemname
-		  namespace: (OFString*)elemns;
+- (OFArray*)elementsForName: (OFString*)elementName
+		  namespace: (OFString*)elementNS;
 @end

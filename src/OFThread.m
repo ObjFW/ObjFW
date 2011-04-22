@@ -49,34 +49,34 @@
 
 #import "threading.h"
 
-static OFList *tlskeys;
-static of_tlskey_t thread_self;
+static OFList *TLSKeys;
+static of_tlskey_t threadSelf;
 
 static id
-call_main(id obj)
+call_main(OFThread *thread)
 {
 #if defined(OF_GNU_RUNTIME) || defined(OF_OLD_GNU_RUNTIME)
 	objc_thread_add();
 #endif
 
-	if (!of_tlskey_set(thread_self, obj))
+	if (!of_tlskey_set(threadSelf, thread))
 		@throw [OFInitializationFailedException
-		    newWithClass: [obj class]];
+		    newWithClass: [thread class]];
 
 	/*
 	 * Nasty workaround for thread implementations which can't return a
 	 * value on join.
 	 */
-	((OFThread*)obj)->retval = [[obj main] retain];
+	thread->returnValue = [[thread main] retain];
 
-	[obj handleTermination];
+	[thread handleTermination];
 
-	((OFThread*)obj)->running = OF_THREAD_WAITING_FOR_JOIN;
+	thread->running = OF_THREAD_WAITING_FOR_JOIN;
 
 	[OFTLSKey callAllDestructors];
 	[OFAutoreleasePool releaseAll];
 
-	[obj release];
+	[thread release];
 
 #if defined(OF_GNU_RUNTIME) || defined(OF_OLD_GNU_RUNTIME)
 	objc_thread_remove();
@@ -91,7 +91,7 @@ call_main(id obj)
 	if (self != [OFThread class])
 		return;
 
-	if (!of_tlskey_new(&thread_self))
+	if (!of_tlskey_new(&threadSelf))
 		@throw [OFInitializationFailedException newWithClass: self];
 }
 
@@ -100,21 +100,21 @@ call_main(id obj)
 	return [[[self alloc] init] autorelease];
 }
 
-+ threadWithObject: (id)obj
++ threadWithObject: (id)object
 {
-	return [[[self alloc] initWithObject: obj] autorelease];
+	return [[[self alloc] initWithObject: object] autorelease];
 }
 
-+ (void)setObject: (id)obj
++ (void)setObject: (id)object
 	forTLSKey: (OFTLSKey*)key
 {
-	id old = of_tlskey_get(key->key);
+	id oldObject = of_tlskey_get(key->key);
 
-	if (!of_tlskey_set(key->key, [obj retain]))
+	if (!of_tlskey_set(key->key, [object retain]))
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 
-	[old release];
+	[oldObject release];
 }
 
 + (id)objectForTLSKey: (OFTLSKey*)key
@@ -124,41 +124,41 @@ call_main(id obj)
 
 + (OFThread*)currentThread
 {
-	return [[of_tlskey_get(thread_self) retain] autorelease];
+	return [[of_tlskey_get(threadSelf) retain] autorelease];
 }
 
-+ (void)sleepForTimeInterval: (int64_t)sec
++ (void)sleepForTimeInterval: (int64_t)seconds
 {
-	if (sec < 0)
+	if (seconds < 0)
 		@throw [OFOutOfRangeException newWithClass: self];
 
 #ifndef _WIN32
-	if (sec > UINT_MAX)
+	if (seconds > UINT_MAX)
 		@throw [OFOutOfRangeException newWithClass: self];
 
-	sleep((unsigned int)sec);
+	sleep((unsigned int)seconds);
 #else
-	if (sec * 1000 > UINT_MAX)
+	if (seconds * 1000 > UINT_MAX)
 		@throw [OFOutOfRangeException newWithClass: self];
 
-	Sleep((unsigned int)sec * 1000);
+	Sleep((unsigned int)seconds * 1000);
 #endif
 }
 
-+ (void)sleepForTimeInterval: (int64_t)sec
-		microseconds: (uint32_t)usec
++ (void)sleepForTimeInterval: (int64_t)seconds
+		microseconds: (uint32_t)microseconds
 {
-	if (sec < 0)
+	if (seconds < 0)
 		@throw [OFOutOfRangeException newWithClass: self];
 
 #ifndef _WIN32
-	sleep((unsigned int)sec);
-	usleep(usec);
+	sleep((unsigned int)seconds);
+	usleep(microseconds);
 #else
-	if (sec * 1000 + usec / 1000 > UINT_MAX)
+	if (seconds * 1000 + microseconds / 1000 > UINT_MAX)
 		@throw [OFOutOfRangeException newWithClass: self];
 
-	Sleep((unsigned int)sec * 1000 + usec / 1000);
+	Sleep((unsigned int)seconds * 1000 + microseconds / 1000);
 #endif
 }
 
@@ -166,27 +166,27 @@ call_main(id obj)
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFDate *now = [OFDate date];
-	int64_t sec;
-	uint32_t usec;
+	int64_t seconds;
+	uint32_t microseconds;
 
-	if ((sec = [date timeIntervalSinceDate: now]) < 0)
+	if ((seconds = [date timeIntervalSinceDate: now]) < 0)
 		@throw [OFOutOfRangeException newWithClass: self];
 
-	usec = [date microsecondsOfTimeIntervalSinceDate: now];
+	microseconds = [date microsecondsOfTimeIntervalSinceDate: now];
 
 	[pool release];
 
 #ifndef _WIN32
-	if (sec > UINT_MAX)
+	if (seconds > UINT_MAX)
 		@throw [OFOutOfRangeException newWithClass: self];
 
-	sleep((unsigned int)sec);
-	usleep(usec);
+	sleep((unsigned int)seconds);
+	usleep(microseconds);
 #else
-	if (sec * 1000 + usec / 1000 > UINT_MAX)
+	if (seconds * 1000 + microseconds / 1000 > UINT_MAX)
 		@throw [OFOutOfRangeException newWithClass: self];
 
-	Sleep(sec * 1000 + usec / 1000);
+	Sleep(seconds * 1000 + microseconds / 1000);
 #endif
 }
 
@@ -204,12 +204,12 @@ call_main(id obj)
 	[self terminateWithObject: nil];
 }
 
-+ (void)terminateWithObject: (id)obj
++ (void)terminateWithObject: (id)object
 {
-	OFThread *thread = of_tlskey_get(thread_self);
+	OFThread *thread = of_tlskey_get(threadSelf);
 
 	if (thread != nil) {
-		thread->retval = [obj retain];
+		thread->returnValue = [object retain];
 
 		[thread handleTermination];
 
@@ -228,12 +228,12 @@ call_main(id obj)
 	of_thread_exit();
 }
 
-- initWithObject: (id)obj
+- initWithObject: (id)object_
 {
 	self = [super init];
 
 	@try {
-		object = [obj retain];
+		object = [object_ retain];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -262,7 +262,7 @@ call_main(id obj)
 
 	if (running == OF_THREAD_WAITING_FOR_JOIN) {
 		of_thread_detach(thread);
-		[retval release];
+		[returnValue release];
 	}
 
 	[self retain];
@@ -284,7 +284,7 @@ call_main(id obj)
 
 	running = OF_THREAD_NOT_RUNNING;
 
-	return retval;
+	return returnValue;
 }
 
 - (void)dealloc
@@ -301,7 +301,7 @@ call_main(id obj)
 		of_thread_detach(thread);
 
 	[object release];
-	[retval release];
+	[returnValue release];
 
 	[super dealloc];
 }
@@ -311,7 +311,7 @@ call_main(id obj)
 + (void)initialize
 {
 	if (self == [OFTLSKey class])
-		tlskeys = [[OFList alloc] init];
+		TLSKeys = [[OFList alloc] init];
 }
 
 + TLSKey
@@ -328,8 +328,8 @@ call_main(id obj)
 {
 	of_list_object_t *iter;
 
-	@synchronized (tlskeys) {
-		for (iter = [tlskeys firstListObject]; iter != NULL;
+	@synchronized (TLSKeys) {
+		for (iter = [TLSKeys firstListObject]; iter != NULL;
 		    iter = iter->next) {
 			OFTLSKey *key = (OFTLSKey*)iter->object;
 
@@ -350,8 +350,8 @@ call_main(id obj)
 
 		initialized = YES;
 
-		@synchronized (tlskeys) {
-			listobj = [tlskeys appendObject: self];
+		@synchronized (TLSKeys) {
+			listObject = [TLSKeys appendObject: self];
 		}
 	} @catch (id e) {
 		[self release];
@@ -379,9 +379,9 @@ call_main(id obj)
 		of_tlskey_free(key);
 
 	/* In case we called [self release] in init */
-	if (listobj != NULL) {
-		@synchronized (tlskeys) {
-			[tlskeys removeListObject: listobj];
+	if (listObject != NULL) {
+		@synchronized (TLSKeys) {
+			[TLSKeys removeListObject: listObject];
 		}
 	}
 
@@ -456,7 +456,7 @@ call_main(id obj)
 		@throw [OFInitializationFailedException newWithClass: c];
 	}
 
-	cond_initialized = YES;
+	conditionInitialized = YES;
 
 	return self;
 }
@@ -484,7 +484,7 @@ call_main(id obj)
 
 - (void)dealloc
 {
-	if (cond_initialized)
+	if (conditionInitialized)
 		if (!of_condition_free(&condition))
 			@throw [OFConditionStillWaitingException
 			    newWithClass: isa

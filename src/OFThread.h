@@ -34,7 +34,7 @@
 @protected
 #endif
 	void (*destructor)(id);
-	of_list_object_t *listobj;
+	of_list_object_t *listObject;
 	BOOL initialized;
 }
 
@@ -79,7 +79,7 @@
 		OF_THREAD_RUNNING,
 		OF_THREAD_WAITING_FOR_JOIN
 	} running;
-	id retval;
+	id returnValue;
 }
 
 /**
@@ -91,7 +91,7 @@
  * \param obj An object that is passed to the main method as a copy or nil
  * \return A new, autoreleased thread
  */
-+ threadWithObject: (id)obj;
++ threadWithObject: (id)object;
 
 /**
  * Sets the Thread Local Storage for the specified key.
@@ -103,7 +103,7 @@
  * \param key The Thread Local Storage key
  * \param obj The object the Thread Local Storage key will be set to
  */
-+ (void)setObject: (id)obj
++ (void)setObject: (id)object
 	forTLSKey: (OFTLSKey*)key;
 
 /**
@@ -124,18 +124,18 @@
 /**
  * Suspends execution of the current thread for the specified time interval.
  *
- * \param sec The number of seconds to sleep
+ * \param seconds The number of seconds to sleep
  */
-+ (void)sleepForTimeInterval: (int64_t)sec;
++ (void)sleepForTimeInterval: (int64_t)seconds;
 
 /**
  * Suspends execution of the current thread for the specified time interval.
  *
- * \param sec The number of seconds to sleep
- * \param usec The number of microseconds to sleep
+ * \param seconds The number of seconds to sleep
+ * \param microseconds The number of microseconds to sleep
  */
-+ (void)sleepForTimeInterval: (int64_t)sec
-		microseconds: (uint32_t)usec;
++ (void)sleepForTimeInterval: (int64_t)seconds
+		microseconds: (uint32_t)microseconds;
 
 /**
  * Suspends execution of the current thread until the specified date.
@@ -158,13 +158,13 @@
  *
  * \param obj The object which the terminated thread will return
  */
-+ (void)terminateWithObject: (id)obj;
++ (void)terminateWithObject: (id)object;
 
 /**
  * \param obj An object that is passed to the main method as a copy or nil
  * \return An initialized OFThread.
  */
-- initWithObject: (id)obj;
+- initWithObject: (id)object;
 
 /**
  * The main routine of the thread. You need to reimplement this!
@@ -234,7 +234,7 @@
 @interface OFCondition: OFMutex
 {
 	of_condition_t condition;
-	BOOL cond_initialized;
+	BOOL conditionInitialized;
 }
 
 /**

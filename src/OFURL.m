@@ -32,11 +32,11 @@
 #import "macros.h"
 
 #define ADD_STR_HASH(str)			\
-	h = [str hash];				\
-	OF_HASH_ADD(hash, h >> 24);		\
-	OF_HASH_ADD(hash, (h >> 16) & 0xFF);	\
-	OF_HASH_ADD(hash, (h >> 8) & 0xFF);	\
-	OF_HASH_ADD(hash, h & 0xFF);
+	tmp = [str hash];			\
+	OF_HASH_ADD(hash, tmp >> 24);		\
+	OF_HASH_ADD(hash, (tmp >> 16) & 0xFF);	\
+	OF_HASH_ADD(hash, (tmp >> 8) & 0xFF);	\
+	OF_HASH_ADD(hash, tmp & 0xFF);
 
 static OF_INLINE OFString*
 resolve_relative_path(OFString *path)
@@ -50,20 +50,20 @@ resolve_relative_path(OFString *path)
 	    autorelease];
 
 	while (!done) {
-		id *array_c = [array cArray];
-		size_t i, array_len = [array count];
+		id *cArray = [array cArray];
+		size_t i, length = [array count];
 
 		done = YES;
 
-		for (i = 0; i < array_len; i++) {
-			if ([array_c[i] isEqual: @"."]) {
+		for (i = 0; i < length; i++) {
+			if ([cArray[i] isEqual: @"."]) {
 				[array removeObjectAtIndex: i];
 				done = NO;
 
 				break;
 			}
 
-			if ([array_c[i] isEqual: @".."]) {
+			if ([cArray[i] isEqual: @".."]) {
 				[array removeObjectAtIndex: i];
 
 				if (i > 0)
@@ -84,94 +84,94 @@ resolve_relative_path(OFString *path)
 }
 
 @implementation OFURL
-+ URLWithString: (OFString*)str
++ URLWithString: (OFString*)string
 {
-	return [[[self alloc] initWithString: str] autorelease];
+	return [[[self alloc] initWithString: string] autorelease];
 }
 
-+ URLWithString: (OFString*)str
-  relativeToURL: (OFURL*)url
++ URLWithString: (OFString*)string
+  relativeToURL: (OFURL*)URL
 {
-	return [[[self alloc] initWithString: str
-			       relativeToURL: url] autorelease];
+	return [[[self alloc] initWithString: string
+			       relativeToURL: URL] autorelease];
 }
 
-- initWithString: (OFString*)str
+- initWithString: (OFString*)string
 {
-	char *str_c, *str_c2 = NULL;
+	char *cString, *cString2 = NULL;
 
 	self = [super init];
 
 	@try {
 		char *tmp, *tmp2;
 
-		if ((str_c2 = strdup([str cString])) == NULL)
+		if ((cString2 = strdup([string cString])) == NULL)
 			@throw [OFOutOfMemoryException
 			     newWithClass: isa
-			    requestedSize: [str cStringLength]];
+			    requestedSize: [string cStringLength]];
 
-		str_c = str_c2;
+		cString = cString2;
 
-		if (!strncmp(str_c, "file://", 7)) {
+		if (!strncmp(cString, "file://", 7)) {
 			scheme = @"file";
-			path = [[OFString alloc] initWithCString: str_c + 7];
+			path = [[OFString alloc] initWithCString: cString + 7];
 			return self;
-		} else if (!strncmp(str_c, "http://", 7)) {
+		} else if (!strncmp(cString, "http://", 7)) {
 			scheme = @"http";
-			str_c += 7;
-		} else if (!strncmp(str_c, "https://", 8)) {
+			cString += 7;
+		} else if (!strncmp(cString, "https://", 8)) {
 			scheme = @"https";
-			str_c += 8;
+			cString += 8;
 		} else
 			@throw [OFInvalidFormatException newWithClass: isa];
 
-		if ((tmp = strchr(str_c, '/')) != NULL) {
+		if ((tmp = strchr(cString, '/')) != NULL) {
 			*tmp = '\0';
 			tmp++;
 		}
 
-		if ((tmp2 = strchr(str_c, '@')) != NULL) {
+		if ((tmp2 = strchr(cString, '@')) != NULL) {
 			char *tmp3;
 
 			*tmp2 = '\0';
 			tmp2++;
 
-			if ((tmp3 = strchr(str_c, ':')) != NULL) {
+			if ((tmp3 = strchr(cString, ':')) != NULL) {
 				*tmp3 = '\0';
 				tmp3++;
 
 				user = [[OFString alloc]
-				    initWithCString: str_c];
+				    initWithCString: cString];
 				password = [[OFString alloc]
 				    initWithCString: tmp3];
 			} else
 				user = [[OFString alloc]
-				    initWithCString: str_c];
+				    initWithCString: cString];
 
-			str_c = tmp2;
+			cString = tmp2;
 		}
 
-		if ((tmp2 = strchr(str_c, ':')) != NULL) {
+		if ((tmp2 = strchr(cString, ':')) != NULL) {
 			OFAutoreleasePool *pool;
-			OFString *port_str;
+			OFString *portString;
 
 			*tmp2 = '\0';
 			tmp2++;
 
-			host = [[OFString alloc] initWithCString: str_c];
+			host = [[OFString alloc] initWithCString: cString];
 
 			pool = [[OFAutoreleasePool alloc] init];
-			port_str = [[OFString alloc] initWithCString: tmp2];
+			portString = [[OFString alloc] initWithCString: tmp2];
 
-			if ([port_str decimalValue] > 65535)
+			if ([portString decimalValue] > 65535)
 				@throw [OFInvalidFormatException
 				    newWithClass: isa];
 
-			port = [port_str decimalValue];
+			port = [portString decimalValue];
 
 			[pool release];
 		} else {
-			host = [[OFString alloc] initWithCString: str_c];
+			host = [[OFString alloc] initWithCString: cString];
 
 			if ([scheme isEqual: @"http"])
 				port = 80;
@@ -181,99 +181,100 @@ resolve_relative_path(OFString *path)
 				assert(0);
 		}
 
-		if ((str_c = tmp) != NULL) {
-			if ((tmp = strchr(str_c, '#')) != NULL) {
+		if ((cString = tmp) != NULL) {
+			if ((tmp = strchr(cString, '#')) != NULL) {
 				*tmp = '\0';
 
 				fragment = [[OFString alloc]
 				    initWithCString: tmp + 1];
 			}
 
-			if ((tmp = strchr(str_c, '?')) != NULL) {
+			if ((tmp = strchr(cString, '?')) != NULL) {
 				*tmp = '\0';
 
 				query = [[OFString alloc]
 				    initWithCString: tmp + 1];
 			}
 
-			if ((tmp = strchr(str_c, ';')) != NULL) {
+			if ((tmp = strchr(cString, ';')) != NULL) {
 				*tmp = '\0';
 
 				parameters = [[OFString alloc]
 				    initWithCString: tmp + 1];
 			}
 
-			path = [[OFString alloc] initWithFormat: @"/%s", str_c];
+			path = [[OFString alloc] initWithFormat: @"/%s",
+								 cString];
 		} else
 			path = @"";
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	} @finally {
-		free(str_c2);
+		free(cString2);
 	}
 
 	return self;
 }
 
-- initWithString: (OFString*)str
-   relativeToURL: (OFURL*)url
+- initWithString: (OFString*)string
+   relativeToURL: (OFURL*)URL
 {
-	char *str_c, *str_c2 = NULL;
+	char *cString, *cString2 = NULL;
 
-	if ([str containsString: @"://"])
-		return [self initWithString: str];
+	if ([string containsString: @"://"])
+		return [self initWithString: string];
 
 	self = [super init];
 
 	@try {
 		char *tmp;
 
-		scheme = [url->scheme copy];
-		host = [url->host copy];
-		port = url->port;
-		user = [url->user copy];
-		password = [url->password copy];
+		scheme = [URL->scheme copy];
+		host = [URL->host copy];
+		port = URL->port;
+		user = [URL->user copy];
+		password = [URL->password copy];
 
-		if ((str_c2 = strdup([str cString])) == NULL)
+		if ((cString2 = strdup([string cString])) == NULL)
 			@throw [OFOutOfMemoryException
 			     newWithClass: isa
-			    requestedSize: [str cStringLength]];
+			    requestedSize: [string cStringLength]];
 
-		str_c = str_c2;
+		cString = cString2;
 
-		if ((tmp = strchr(str_c, '#')) != NULL) {
+		if ((tmp = strchr(cString, '#')) != NULL) {
 			*tmp = '\0';
 			fragment = [[OFString alloc] initWithCString: tmp + 1];
 		}
 
-		if ((tmp = strchr(str_c, '?')) != NULL) {
+		if ((tmp = strchr(cString, '?')) != NULL) {
 			*tmp = '\0';
 			query = [[OFString alloc] initWithCString: tmp + 1];
 		}
 
-		if ((tmp = strchr(str_c, ';')) != NULL) {
+		if ((tmp = strchr(cString, ';')) != NULL) {
 			*tmp = '\0';
 			parameters = [[OFString alloc]
 			    initWithCString: tmp + 1];
 		}
 
-		if (*str_c == '/')
-			path = [[OFString alloc] initWithCString: str_c];
+		if (*cString == '/')
+			path = [[OFString alloc] initWithCString: cString];
 		else {
 			OFAutoreleasePool *pool;
 			OFString *s;
 
 			pool = [[OFAutoreleasePool alloc] init];
 
-			if ([url->path hasSuffix: @"/"])
+			if ([URL->path hasSuffix: @"/"])
 				s = [OFString stringWithFormat: @"%@%s",
-								url->path,
-								str_c];
+								URL->path,
+								cString];
 			else
 				s = [OFString stringWithFormat: @"%@/../%s",
-								url->path,
-								str_c];
+								URL->path,
+								cString];
 
 			path = [resolve_relative_path(s) copy];
 
@@ -283,7 +284,7 @@ resolve_relative_path(OFString *path)
 		[self release];
 		@throw e;
 	} @finally {
-		free(str_c2);
+		free(cString2);
 	}
 
 	return self;
@@ -303,32 +304,32 @@ resolve_relative_path(OFString *path)
 	[super dealloc];
 }
 
-- (BOOL)isEqual: (id)obj
+- (BOOL)isEqual: (id)object
 {
-	OFURL *url;
+	OFURL *otherURL;
 
-	if (![obj isKindOfClass: [OFURL class]])
+	if (![object isKindOfClass: [OFURL class]])
 		return NO;
 
-	url = obj;
+	otherURL = (OFURL*)object;
 
-	if (![url->scheme isEqual: scheme])
+	if (![otherURL->scheme isEqual: scheme])
 		return NO;
-	if (![url->host isEqual: host])
+	if (![otherURL->host isEqual: host])
 		return NO;
-	if (url->port != port)
+	if (otherURL->port != port)
 		return NO;
-	if (![url->user isEqual: user])
+	if (![otherURL->user isEqual: user])
 		return NO;
-	if (![url->password isEqual: password])
+	if (![otherURL->password isEqual: password])
 		return NO;
-	if (![url->path isEqual: path])
+	if (![otherURL->path isEqual: path])
 		return NO;
-	if (![url->parameters isEqual: parameters])
+	if (![otherURL->parameters isEqual: parameters])
 		return NO;
-	if (![url->query isEqual: query])
+	if (![otherURL->query isEqual: query])
 		return NO;
-	if (![url->fragment isEqual: fragment])
+	if (![otherURL->fragment isEqual: fragment])
 		return NO;
 
 	return YES;
@@ -336,7 +337,7 @@ resolve_relative_path(OFString *path)
 
 - (uint32_t)hash
 {
-	uint32_t hash, h;
+	uint32_t hash, tmp;
 
 	OF_HASH_INIT(hash);
 
@@ -360,24 +361,24 @@ resolve_relative_path(OFString *path)
 
 - copy
 {
-	OFURL *new = [[OFURL alloc] init];
+	OFURL *copy = [[OFURL alloc] init];
 
 	@try {
-		new->scheme = [scheme copy];
-		new->host = [host copy];
-		new->port = port;
-		new->user = [user copy];
-		new->password = [password copy];
-		new->path = [path copy];
-		new->parameters = [parameters copy];
-		new->query = [query copy];
-		new->fragment = [fragment copy];
+		copy->scheme = [scheme copy];
+		copy->host = [host copy];
+		copy->port = port;
+		copy->user = [user copy];
+		copy->password = [password copy];
+		copy->path = [path copy];
+		copy->parameters = [parameters copy];
+		copy->query = [query copy];
+		copy->fragment = [fragment copy];
 	} @catch (id e) {
-		[new release];
+		[copy release];
 		@throw e;
 	}
 
-	return new;
+	return copy;
 }
 
 - (OFString*)scheme
@@ -391,9 +392,7 @@ resolve_relative_path(OFString *path)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	OFString *old = scheme;
-	scheme = [scheme_ copy];
-	[old release];
+	OF_SETTER(scheme, scheme_, YES, YES)
 }
 
 - (OFString*)host
@@ -443,16 +442,12 @@ resolve_relative_path(OFString *path)
 
 - (void)setPath: (OFString*)path_
 {
-	OFString *old;
-
 	if (([scheme isEqual: @"http"] || [scheme isEqual: @"https"]) &&
 	    ![path_ hasPrefix: @"/"])
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	old = path;
-	path = [path_ copy];
-	[old release];
+	OF_SETTER(path, path_, YES, YES)
 }
 
 - (OFString*)parameters
@@ -487,46 +482,46 @@ resolve_relative_path(OFString *path)
 
 - (OFString*)description
 {
-	OFMutableString *desc = [OFMutableString stringWithFormat: @"%@://",
-								   scheme];
+	OFMutableString *ret = [OFMutableString stringWithFormat: @"%@://",
+								  scheme];
 	BOOL needPort = YES;
 
 	if ([scheme isEqual: @"file"]) {
-		[desc appendString: path];
-		return desc;
+		[ret appendString: path];
+		return ret;
 	}
 
 	if (user != nil && password != nil)
-		[desc appendFormat: @"%@:%@@", user, password];
+		[ret appendFormat: @"%@:%@@", user, password];
 	else if (user != nil)
-		[desc appendFormat: @"%@@", user];
+		[ret appendFormat: @"%@@", user];
 
-	[desc appendString: host];
+	[ret appendString: host];
 
 	if (([scheme isEqual: @"http"] && port == 80) ||
 	    ([scheme isEqual: @"https"] && port == 443))
 		needPort = NO;
 
 	if (needPort)
-		[desc appendFormat: @":%d", port];
+		[ret appendFormat: @":%d", port];
 
-	[desc appendString: path];
+	[ret appendString: path];
 
 	if (parameters != nil)
-		[desc appendFormat: @";%@", parameters];
+		[ret appendFormat: @";%@", parameters];
 
 	if (query != nil)
-		[desc appendFormat: @"?%@", query];
+		[ret appendFormat: @"?%@", query];
 
 	if (fragment != nil)
-		[desc appendFormat: @"#%@", fragment];
+		[ret appendFormat: @"#%@", fragment];
 
 	/*
 	 * Class swizzle the string to be immutable. We declared the return type
 	 * to be OFString*, so it can't be modified anyway. But not swizzling it
 	 * would create a real copy each time -[copy] is called.
 	 */
-	desc->isa = [OFString class];
-	return desc;
+	ret->isa = [OFString class];
+	return ret;
 }
 @end

@@ -58,7 +58,7 @@ INCLUDES := ${SRCS:.m=.h}	\
 	    objfw-defs.h	\
 	    ${THREADING_H}
 
-SRCS += ${ASPRINTF_M} 		\
+SRCS += ${ASPRINTF_M}		\
 	${FOUNDATION_COMPAT_M}	\
 	iso_8859_15.m		\
 	windows_1252.m		\

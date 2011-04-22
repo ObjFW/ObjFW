@@ -87,14 +87,14 @@ static OFMutex *mutex = nil;
 
 #ifdef HAVE_THREADSAFE_GETADDRINFO
 	struct addrinfo hints, *res, *res0;
-	char port_s[7];
+	char portCString[7];
 
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
-	snprintf(port_s, 7, "%" PRIu16, port);
+	snprintf(portCString, 7, "%" PRIu16, port);
 
-	if (getaddrinfo([host cString], port_s, &hints, &res0))
+	if (getaddrinfo([host cString], portCString, &hints, &res0))
 		@throw [OFAddressTranslationFailedException newWithClass: isa
 								  socket: self
 								    host: host];
@@ -212,14 +212,14 @@ static OFMutex *mutex = nil;
 
 #ifdef HAVE_THREADSAFE_GETADDRINFO
 	struct addrinfo hints, *res;
-	char port_s[7];
+	char portCString[7];
 
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
-	snprintf(port_s, 7, "%" PRIu16, port);
+	snprintf(portCString, 7, "%" PRIu16, port);
 
-	if (getaddrinfo([host cString], port_s, &hints, &res))
+	if (getaddrinfo([host cString], portCString, &hints, &res))
 		@throw [OFAddressTranslationFailedException newWithClass: isa
 								  socket: self
 								    host: host];
@@ -347,32 +347,32 @@ static OFMutex *mutex = nil;
 
 - (OFTCPSocket*)accept
 {
-	OFTCPSocket *newsock;
+	OFTCPSocket *newSocket;
 	struct sockaddr *addr;
-	socklen_t addrlen;
-	int s;
+	socklen_t addrLen;
+	int newSock;
 
-	newsock = [[[isa alloc] init] autorelease];
-	addrlen = sizeof(struct sockaddr);
+	newSocket = [[[isa alloc] init] autorelease];
+	addrLen = sizeof(struct sockaddr);
 
 	@try {
-		addr = [newsock allocMemoryWithSize: sizeof(struct sockaddr)];
+		addr = [newSocket allocMemoryWithSize: sizeof(struct sockaddr)];
 	} @catch (id e) {
-		[newsock release];
+		[newSocket release];
 		@throw e;
 	}
 
-	if ((s = accept(sock, addr, &addrlen)) == INVALID_SOCKET) {
-		[newsock release];
+	if ((newSock = accept(sock, addr, &addrLen)) == INVALID_SOCKET) {
+		[newSocket release];
 		@throw [OFAcceptFailedException newWithClass: isa
 						      socket: self];
 	}
 
-	newsock->sock = s;
-	newsock->sockAddr = addr;
-	newsock->sockAddrLen = addrlen;
+	newSocket->sock = newSock;
+	newSocket->sockAddr = addr;
+	newSocket->sockAddrLen = addrLen;
 
-	return newsock;
+	return newSocket;
 }
 
 - (void)setKeepAlivesEnabled: (BOOL)enable
@@ -386,12 +386,14 @@ static OFMutex *mutex = nil;
 
 - (OFString*)remoteAddress
 {
+	char *host;
+
 	if (sockAddr == NULL || sockAddrLen == 0)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
 #ifdef HAVE_THREADSAFE_GETADDRINFO
-	char *host = [self allocMemoryWithSize: NI_MAXHOST];
+	host = [self allocMemoryWithSize: NI_MAXHOST];
 
 	@try {
 		if (getnameinfo(sockAddr, sockAddrLen, host, NI_MAXHOST, NULL,
@@ -404,8 +406,6 @@ static OFMutex *mutex = nil;
 		[self freeMemory: host];
 	}
 #else
-	char *host;
-
 # ifdef OF_THREADS
 	[mutex lock];
 

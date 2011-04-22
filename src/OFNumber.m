@@ -84,7 +84,7 @@
 		@throw [OFInvalidFormatException newWithClass: isa];	\
 	}
 #define CALCULATE(o, n)							\
-	switch (type) { 						\
+	switch (type) {							\
 	case OF_NUMBER_BOOL:						\
 		return [OFNumber numberWithBool:			\
 		    value.bool_ o [n boolValue]];			\
@@ -167,7 +167,7 @@
 		@throw [OFInvalidFormatException newWithClass: isa];	\
 	}
 #define CALCULATE2(o, n)						\
-	switch (type) { 						\
+	switch (type) {							\
 	case OF_NUMBER_BOOL:						\
 		return [OFNumber numberWithBool:			\
 		    value.bool_ o [n boolValue]];			\
