@@ -51,6 +51,7 @@
 #import "OFLinkFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFOpenFileFailedException.h"
+#import "OFOutOfMemoryException.h"
 #import "OFReadFailedException.h"
 #import "OFRenameFileFailedException.h"
 #import "OFSeekFailedException.h"
@@ -122,23 +123,23 @@ static int parse_mode(const char *mode)
 }
 
 void
-of_log(OFConstantString *fmt, ...)
+of_log(OFConstantString *format, ...)
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFDate *date;
-	OFString *date_str, *me, *msg;
-	va_list args;
+	OFString *dateString, *me, *msg;
+	va_list arguments;
 
 	date = [OFDate date];
-	date_str = [date localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
+	dateString = [date localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
 	me = [[OFApplication programName] lastPathComponent];
 
-	va_start(args, fmt);
-	msg = [[[OFString alloc] initWithFormat: fmt
-				      arguments: args] autorelease];
-	va_end(args);
+	va_start(arguments, format);
+	msg = [[[OFString alloc] initWithFormat: format
+				      arguments: arguments] autorelease];
+	va_end(arguments);
 
-	[of_stderr writeFormat: @"[%@.%03d %@(%d)] %@\n", date_str,
+	[of_stderr writeFormat: @"[%@.%03d %@(%d)] %@\n", dateString,
 				[date microsecond] / 1000, me, getpid(), msg];
 
 	[pool release];
@@ -170,20 +171,21 @@ of_log(OFConstantString *fmt, ...)
 				      mode: mode] autorelease];
 }
 
-+ fileWithFileDescriptor: (int)fd_
++ fileWithFileDescriptor: (int)filedescriptor
 {
-	return [[[self alloc] initWithFileDescriptor: fd_] autorelease];
+	return [[[self alloc]
+	    initWithFileDescriptor: filedescriptor] autorelease];
 }
 
 + (OFString*)currentDirectoryPath
 {
 	OFString *ret;
-	char *buf = getcwd(NULL, 0);
+	char *buffer = getcwd(NULL, 0);
 
 	@try {
-		ret = [OFString stringWithCString: buf];
+		ret = [OFString stringWithCString: buffer];
 	} @finally {
-		free(buf);
+		free(buffer);
 	}
 
 	return ret;
@@ -264,6 +266,7 @@ of_log(OFConstantString *fmt, ...)
 	HANDLE handle;
 	WIN32_FIND_DATA fd;
 
+	pool = [[OFAutoreleasePool alloc] init];
 	path = [path stringByAppendingString: @"\\*"];
 
 	if ((handle = FindFirstFile([path cString], &fd)) ==
@@ -273,7 +276,7 @@ of_log(OFConstantString *fmt, ...)
 							  mode: @"r"];
 
 	@try {
-		pool = [[OFAutoreleasePool alloc] init];
+		OFAutoreleasePool pool2 = [[OFAutoreleasePool alloc] init];
 
 		do {
 			OFString *file;
@@ -285,13 +288,15 @@ of_log(OFConstantString *fmt, ...)
 			file = [OFString stringWithCString: fd.cFileName];
 			[files addObject: file];
 
-			[pool releaseObjects];
+			[pool2 releaseObjects];
 		} while (FindNextFile(handle, &fd));
 
-		[pool release];
+		[pool2 release];
 	} @finally {
 		FindClose(handle);
 	}
+
+	[pool release];
 #endif
 
 	/*
@@ -320,19 +325,19 @@ of_log(OFConstantString *fmt, ...)
 								path: path
 								mode: mode];
 # else
-	DWORD attrs = GetFileAttributes([path cString]);
+	DWORD attributes = GetFileAttributes([path cString]);
 
-	if (attrs == INVALID_FILE_ATTRIBUTES)
+	if (attributes == INVALID_FILE_ATTRIBUTES)
 		@throw [OFChangeFileModeFailedException newWithClass: self
 								path: path
 								mode: mode];
 
 	if ((mode / 100) & 2)
-		attrs &= ~FILE_ATTRIBUTE_READONLY;
+		attributes &= ~FILE_ATTRIBUTE_READONLY;
 	else
-		attrs |= FILE_ATTRIBUTE_READONLY;
+		attributes |= FILE_ATTRIBUTE_READONLY;
 
-	if (!SetFileAttributes([path cString], attrs))
+	if (!SetFileAttributes([path cString], attributes))
 		@throw [OFChangeFileModeFailedException newWithClass: self
 								path: path
 								mode: mode];
@@ -372,29 +377,29 @@ of_log(OFConstantString *fmt, ...)
 	@try {
 # endif
 		if (owner != nil) {
-			struct passwd *pw;
+			struct passwd *passwd;
 
-			if ((pw = getpwnam([owner cString])) == NULL)
+			if ((passwd = getpwnam([owner cString])) == NULL)
 				@throw [OFChangeFileOwnerFailedException
 				    newWithClass: self
 					    path: path
 					   owner: owner
 					   group: group];
 
-			uid = pw->pw_uid;
+			uid = passwd->pw_uid;
 		}
 
 		if (group != nil) {
-			struct group *gr;
+			struct group *group_;
 
-			if ((gr = getgrnam([group cString])) == NULL)
+			if ((group_ = getgrnam([group cString])) == NULL)
 				@throw [OFChangeFileOwnerFailedException
 				    newWithClass: self
 					    path: path
 					   owner: owner
 					   group: group];
 
-			gid = gr->gr_gid;
+			gid = group_->gr_gid;
 		}
 # ifdef OF_THREADS
 	} @finally {
@@ -410,70 +415,79 @@ of_log(OFConstantString *fmt, ...)
 }
 #endif
 
-+ (void)copyFileAtPath: (OFString*)from
-		toPath: (OFString*)to
++ (void)copyFileAtPath: (OFString*)source
+		toPath: (OFString*)destination
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	BOOL override;
-	OFFile *src;
-	OFFile *dest;
-	char buf[4096];
+	OFFile *sourceFile = nil;
+	OFFile *destinationFile = nil;
+	char *buffer;
 
-	if ([self directoryExistsAtPath: to]) {
-		OFString *filename = [from lastPathComponent];
-		to = [OFString stringWithPath: to, filename, nil];
+	if ([self directoryExistsAtPath: destination]) {
+		OFString *filename = [source lastPathComponent];
+		destination = [OFString stringWithPath: destination, filename,
+							nil];
 	}
 
-	override = [self fileExistsAtPath: to];
+	override = [self fileExistsAtPath: destination];
 
-	src = nil;
-	dest = nil;
+	if ((buffer = malloc(of_pagesize)) == NULL)
+		@throw [OFOutOfMemoryException newWithClass: self
+					      requestedSize: of_pagesize];
 
 	@try {
-		src = [OFFile fileWithPath: from
-				      mode: @"rb"];
-		dest = [OFFile fileWithPath: to
-				       mode: @"wb"];
+		sourceFile = [OFFile fileWithPath: source
+					     mode: @"rb"];
+		destinationFile = [OFFile fileWithPath: destination
+						  mode: @"wb"];
 
-		while (![src isAtEndOfStream]) {
-			size_t len = [src readNBytes: 4096
-					  intoBuffer: buf];
-			[dest writeNBytes: len
-			       fromBuffer: buf];
+		while (![sourceFile isAtEndOfStream]) {
+			size_t len = [sourceFile readNBytes: of_pagesize
+						 intoBuffer: buffer];
+			[destinationFile writeNBytes: len
+					  fromBuffer: buffer];
 		}
 
 #if !defined(_WIN32) && !defined(_PSP)
 		if (!override) {
 			struct stat s;
 
-			if (fstat(src->fd, &s) == 0)
-				fchmod(dest->fd, s.st_mode);
+			if (fstat(sourceFile->fileDescriptor, &s) == 0)
+				fchmod(destinationFile->fileDescriptor,
+				    s.st_mode);
 		}
 #endif
 	} @finally {
-		[src close];
-		[dest close];
+		[sourceFile close];
+		[destinationFile close];
+		free(buffer);
 	}
 
 	[pool release];
 }
 
-+ (void)renameFileAtPath: (OFString*)from
-		  toPath: (OFString*)to
++ (void)renameFileAtPath: (OFString*)source
+		  toPath: (OFString*)destination
 {
-	if ([self directoryExistsAtPath: to]) {
-		OFString *filename = [from lastPathComponent];
-		to = [OFString stringWithPath: to, filename, nil];
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+
+	if ([self directoryExistsAtPath: destination]) {
+		OFString *filename = [source lastPathComponent];
+		destination = [OFString stringWithPath: destination, filename,
+							nil];
 	}
 
 #ifndef _WIN32
-	if (rename([from cString], [to cString]))
+	if (rename([source cString], [destination cString]))
 #else
-	if (!MoveFile([from cString], [to cString]))
+	if (!MoveFile([source cString], [destination cString]))
 #endif
 		@throw [OFRenameFileFailedException newWithClass: self
-						      sourcePath: from
-						 destinationPath: to];
+						      sourcePath: source
+						 destinationPath: destination];
+
+	[pool release];
 }
 
 + (void)deleteFileAtPath: (OFString*)path
@@ -495,34 +509,44 @@ of_log(OFConstantString *fmt, ...)
 }
 
 #ifndef _WIN32
-+ (void)linkFileAtPath: (OFString*)src
-		toPath: (OFString*)dest
++ (void)linkFileAtPath: (OFString*)source
+		toPath: (OFString*)destination
 {
-	if ([self directoryExistsAtPath: dest]) {
-		OFString *filename = [src lastPathComponent];
-		dest = [OFString stringWithPath: dest, filename, nil];
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+
+	if ([self directoryExistsAtPath: destination]) {
+		OFString *filename = [source lastPathComponent];
+		destination = [OFString stringWithPath: destination, filename,
+							nil];
 	}
 
-	if (link([src cString], [dest cString]) != 0)
+	if (link([source cString], [destination cString]) != 0)
 		@throw [OFLinkFailedException newWithClass: self
-						sourcePath: src
-					   destinationPath: dest];
+						sourcePath: source
+					   destinationPath: destination];
+
+	[pool release];
 }
 #endif
 
 #if !defined(_WIN32) && !defined(_PSP)
-+ (void)symlinkFileAtPath: (OFString*)src
-		   toPath: (OFString*)dest
++ (void)symlinkFileAtPath: (OFString*)source
+		   toPath: (OFString*)destination
 {
-	if ([self directoryExistsAtPath: dest]) {
-		OFString *filename = [src lastPathComponent];
-		dest = [OFString stringWithPath: dest, filename, nil];
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+
+	if ([self directoryExistsAtPath: destination]) {
+		OFString *filename = [source lastPathComponent];
+		destination = [OFString stringWithPath: destination, filename,
+							nil];
 	}
 
-	if (symlink([src cString], [dest cString]) != 0)
+	if (symlink([source cString], [destination cString]) != 0)
 		@throw [OFSymlinkFailedException newWithClass: self
-						   sourcePath: src
-					      destinationPath: dest];
+						   sourcePath: source
+					      destinationPath: destination];
+
+	[pool release];
 }
 #endif
 
@@ -546,7 +570,8 @@ of_log(OFConstantString *fmt, ...)
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
-		if ((fd = open([path cString], flags, DEFAULT_MODE)) == -1)
+		if ((fileDescriptor = open([path cString], flags,
+		    DEFAULT_MODE)) == -1)
 			@throw [OFOpenFileFailedException newWithClass: isa
 								  path: path
 								  mode: mode];
@@ -560,54 +585,55 @@ of_log(OFConstantString *fmt, ...)
 	return self;
 }
 
-- initWithFileDescriptor: (int)fd_
+- initWithFileDescriptor: (int)fileDescriptor_
 {
 	self = [super init];
 
-	fd = fd_;
+	fileDescriptor = fileDescriptor_;
 
 	return self;
 }
 
 - (BOOL)_isAtEndOfStream
 {
-	if (fd == -1)
+	if (fileDescriptor == -1)
 		return YES;
 
-	return eos;
+	return isAtEndOfStream;
 }
 
-- (size_t)_readNBytes: (size_t)size
-	   intoBuffer: (char*)buf
+- (size_t)_readNBytes: (size_t)length
+	   intoBuffer: (char*)buffer
 {
-	size_t ret;
+	size_t retLength;
 
-	if (fd == -1 || eos)
+	if (fileDescriptor == -1 || isAtEndOfStream)
 		@throw [OFReadFailedException newWithClass: isa
 						    stream: self
-					     requestedSize: size];
-	if ((ret = read(fd, buf, size)) == 0)
-		eos = YES;
+					   requestedLength: length];
+	if ((retLength = read(fileDescriptor, buffer, length)) == 0)
+		isAtEndOfStream = YES;
 
-	return ret;
+	return retLength;
 }
 
-- (size_t)_writeNBytes: (size_t)size
-	    fromBuffer: (const char*)buf
+- (size_t)_writeNBytes: (size_t)length
+	    fromBuffer: (const char*)buffer
 {
-	size_t ret;
+	size_t retLength;
 
-	if (fd == -1 || eos || (ret = write(fd, buf, size)) < size)
+	if (fileDescriptor == -1 || isAtEndOfStream ||
+	    (retLength = write(fileDescriptor, buffer, length)) < length)
 		@throw [OFWriteFailedException newWithClass: isa
 						     stream: self
-					      requestedSize: size];
+					    requestedLength: length];
 
-	return ret;
+	return retLength;
 }
 
 - (void)_seekToOffset: (off_t)offset
 {
-	if (lseek(fd, offset, SEEK_SET) == -1)
+	if (lseek(fileDescriptor, offset, SEEK_SET) == -1)
 		@throw [OFSeekFailedException newWithClass: isa
 						    stream: self
 						    offset: offset
@@ -616,46 +642,47 @@ of_log(OFConstantString *fmt, ...)
 
 - (off_t)_seekForwardWithOffset: (off_t)offset
 {
-	off_t ret;
+	off_t retOffset;
 
-	if ((ret = lseek(fd, offset, SEEK_CUR)) == -1)
+	if ((retOffset = lseek(fileDescriptor, offset, SEEK_CUR)) == -1)
 		@throw [OFSeekFailedException newWithClass: isa
 						    stream: self
 						    offset: offset
 						    whence: SEEK_CUR];
 
-	return ret;
+	return retOffset;
 }
 
 - (off_t)_seekToOffsetRelativeToEnd: (off_t)offset
 {
-	off_t ret;
+	off_t retOffset;
 
-	if ((ret = lseek(fd, offset, SEEK_END)) == -1)
+	if ((retOffset = lseek(fileDescriptor, offset, SEEK_END)) == -1)
 		@throw [OFSeekFailedException newWithClass: isa
 						    stream: self
 						    offset: offset
 						    whence: SEEK_END];
 
-	return ret;
+	return retOffset;
 }
 
 - (int)fileDescriptor
 {
-	return fd;
+	return fileDescriptor;
 }
 
 - (void)close
 {
-	if (fd != -1)
-		close(fd);
-	fd = -1;
+	if (fileDescriptor != -1)
+		close(fileDescriptor);
+
+	fileDescriptor = -1;
 }
 
 - (void)dealloc
 {
-	if (closable && fd != -1)
-		close(fd);
+	if (closable && fileDescriptor != -1)
+		close(fileDescriptor);
 
 	[super dealloc];
 }

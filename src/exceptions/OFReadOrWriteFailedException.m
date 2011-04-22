@@ -25,13 +25,13 @@
 #import "common.h"
 
 @implementation OFReadOrWriteFailedException
-+  newWithClass: (Class)class_
-	 stream: (OFStream*)stream
-  requestedSize: (size_t)size
++    newWithClass: (Class)class_
+	   stream: (OFStream*)stream
+  requestedLength: (size_t)length
 {
 	return [[self alloc] initWithClass: class_
 				    stream: stream
-			     requestedSize: size];
+			   requestedLength: length];
 }
 
 - initWithClass: (Class)class_
@@ -42,15 +42,15 @@
 					      selector: _cmd];
 }
 
-- initWithClass: (Class)class_
-	 stream: (OFStream*)stream_
-  requestedSize: (size_t)size
+-   initWithClass: (Class)class_
+	   stream: (OFStream*)stream_
+  requestedLength: (size_t)length
 {
 	self = [super initWithClass: class_];
 
 	@try {
 		stream = [stream_ retain];
-		requestedSize = size;
+		requestedLength = length;
 
 		if ([class_ isSubclassOfClass: [OFStreamSocket class]])
 			errNo = GET_SOCK_ERRNO;
@@ -75,9 +75,9 @@
 	return stream;
 }
 
-- (size_t)requestedSize
+- (size_t)requestedLength
 {
-	return requestedSize;
+	return requestedLength;
 }
 
 - (int)errNo

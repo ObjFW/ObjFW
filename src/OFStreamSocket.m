@@ -62,24 +62,24 @@
 
 - (BOOL)_isAtEndOfStream
 {
-	return eos;
+	return isAtEndOfStream;
 }
 
-- (size_t)_readNBytes: (size_t)size
-	   intoBuffer: (char*)buf
+- (size_t)_readNBytes: (size_t)length
+	   intoBuffer: (char*)buffer
 {
-	ssize_t ret;
+	ssize_t retLength;
 
 	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithClass: isa
 						      socket: self];
 
-	if (eos) {
+	if (isAtEndOfStream) {
 		OFReadFailedException *e;
 
 		e = [OFReadFailedException newWithClass: isa
 						 stream: self
-					  requestedSize: size];
+					requestedLength: length];
 #ifndef _WIN32
 		e->errNo = ENOTCONN;
 #else
@@ -89,32 +89,32 @@
 		@throw e;
 	}
 
-	if ((ret = recv(sock, buf, size, 0)) < 0)
+	if ((retLength = recv(sock, buffer, length, 0)) < 0)
 		@throw [OFReadFailedException newWithClass: isa
 						    stream: self
-					     requestedSize: size];
+					   requestedLength: length];
 
-	if (ret == 0)
-		eos = YES;
+	if (retLength == 0)
+		isAtEndOfStream = YES;
 
-	return ret;
+	return retLength;
 }
 
-- (size_t)_writeNBytes: (size_t)size
-	    fromBuffer: (const char*)buf
+- (size_t)_writeNBytes: (size_t)length
+	    fromBuffer: (const char*)buffer
 {
-	ssize_t ret;
+	ssize_t retLength;
 
 	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithClass: isa
 						      socket: self];
 
-	if (eos) {
+	if (isAtEndOfStream) {
 		OFWriteFailedException *e;
 
 		e = [OFWriteFailedException newWithClass: isa
 						  stream: self
-					   requestedSize: size];
+					 requestedLength: length];
 #ifndef _WIN32
 		e->errNo = ENOTCONN;
 #else
@@ -124,12 +124,12 @@
 		@throw e;
 	}
 
-	if ((ret = send(sock, buf, size, 0)) == -1)
+	if ((retLength = send(sock, buffer, length, 0)) == -1)
 		@throw [OFWriteFailedException newWithClass: isa
 						     stream: self
-					      requestedSize: size];
+					    requestedLength: length];
 
-	return ret;
+	return retLength;
 }
 
 #ifdef _WIN32
@@ -158,7 +158,7 @@
 	close(sock);
 
 	sock = INVALID_SOCKET;
-	eos = NO;
+	isAtEndOfStream = NO;
 }
 
 - (void)dealloc

@@ -34,9 +34,9 @@ extern void of_log(OFConstantString*, ...);
  */
 @interface OFFile: OFSeekableStream
 {
-	int  fd;
+	int  fileDescriptor;
 	BOOL closable;
-	BOOL eos;
+	BOOL isAtEndOfStream;
 }
 
 /**
@@ -48,11 +48,11 @@ extern void of_log(OFConstantString*, ...);
 	  mode: (OFString*)mode;
 
 /**
- * \param fd A file descriptor, returned from for example open().
- *	     It is not closed when the OFFile object is deallocated!
+ * \param fileDescriptor A file descriptor, returned from for example open().
+ *			 It is not closed when the OFFile object is deallocated!
  * \return A new autoreleased OFFile
  */
-+ fileWithFileDescriptor: (int)fd;
++ fileWithFileDescriptor: (int)fileDescriptor;
 
 /**
  * \return The path of the current working directory
@@ -129,20 +129,20 @@ extern void of_log(OFConstantString*, ...);
 /**
  * Copies a file.
  *
- * \param from The file to copy
- * \param to The destination path
+ * \param source The file to copy
+ * \param destination The destination path
  */
-+ (void)copyFileAtPath: (OFString*)from
-		toPath: (OFString*)to;
++ (void)copyFileAtPath: (OFString*)source
+		toPath: (OFString*)destination;
 
 /**
  * Renames a file.
  *
- * \param from The file to rename
- * \param to The new name
+ * \param source The file to rename
+ * \param destination The new name
  */
-+ (void)renameFileAtPath: (OFString*)from
-		  toPath: (OFString*)to;
++ (void)renameFileAtPath: (OFString*)source
+		  toPath: (OFString*)destination;
 
 /**
  * Deletes a file.
@@ -164,11 +164,11 @@ extern void of_log(OFConstantString*, ...);
  *
  * Not available on Windows.
  *
- * \param src The path to the file of which should be linked as a string
- * \param dest The path to where the file should be linked as a string
+ * \param source The path to the file of which should be linked as a string
+ * \param destination The path to where the file should be linked as a string
  */
-+ (void)linkFileAtPath: (OFString*)src
-		toPath: (OFString*)dest;
++ (void)linkFileAtPath: (OFString*)source
+		toPath: (OFString*)destination;
 #endif
 
 #if !defined(_WIN32) && !defined(_PSP)
@@ -177,11 +177,11 @@ extern void of_log(OFConstantString*, ...);
  *
  * Not available on Windows.
  *
- * \param src The path to the file of which should be symlinked as a string
- * \param dest The path to where the file should be symlinked as a string
+ * \param source The path to the file of which should be symlinked as a string
+ * \param destination The path to where the file should be symlinked as a string
  */
-+ (void)symlinkFileAtPath: (OFString*)src
-		   toPath: (OFString*)dest;
++ (void)symlinkFileAtPath: (OFString*)source
+		   toPath: (OFString*)destination;
 #endif
 
 /**
@@ -197,10 +197,10 @@ extern void of_log(OFConstantString*, ...);
 /**
  * Initializes an already allocated OFFile.
  *
- * \param fd A file descriptor, returned from for example open().
- *	     It is not closed when the OFFile object is deallocated!
+ * \param fileDescriptor A file descriptor, returned from for example open().
+ *			 It is not closed when the OFFile object is deallocated!
  */
-- initWithFileDescriptor: (int)fd;
+- initWithFileDescriptor: (int)fileDescriptor;
 @end
 
 #ifdef __cplusplus

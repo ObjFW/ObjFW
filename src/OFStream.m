@@ -61,7 +61,7 @@
 	self = [super init];
 
 	cache = NULL;
-	wBuffer = NULL;
+	writeBuffer = NULL;
 	isBlocking = YES;
 
 	return self;
@@ -73,15 +73,15 @@
 					      selector: _cmd];
 }
 
-- (size_t)_readNBytes: (size_t)size
-	   intoBuffer: (char*)buf
+- (size_t)_readNBytes: (size_t)length
+	   intoBuffer: (char*)buffer
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
-- (size_t)_writeNBytes: (size_t)size
-	    fromBuffer: (const char*)buf
+- (size_t)_writeNBytes: (size_t)length
+	    fromBuffer: (const char*)buffer
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
@@ -95,44 +95,44 @@
 	return [self _isAtEndOfStream];
 }
 
-- (size_t)readNBytes: (size_t)size
-	  intoBuffer: (char*)buf
+- (size_t)readNBytes: (size_t)length
+	  intoBuffer: (char*)buffer
 {
 	if (cache == NULL)
-		return [self _readNBytes: size
-			      intoBuffer: buf];
+		return [self _readNBytes: length
+			      intoBuffer: buffer];
 
-	if (size >= cacheLen) {
-		size_t ret = cacheLen;
-		memcpy(buf, cache, cacheLen);
+	if (length >= cacheLength) {
+		size_t ret = cacheLength;
+		memcpy(buffer, cache, cacheLength);
 
 		[self freeMemory: cache];
 		cache = NULL;
-		cacheLen = 0;
+		cacheLength = 0;
 
 		return ret;
 	} else {
-		char *tmp = [self allocMemoryWithSize: cacheLen - size];
-		memcpy(tmp, cache + size, cacheLen - size);
+		char *tmp = [self allocMemoryWithSize: cacheLength - length];
+		memcpy(tmp, cache + length, cacheLength - length);
 
-		memcpy(buf, cache, size);
+		memcpy(buffer, cache, length);
 
 		[self freeMemory: cache];
 		cache = tmp;
-		cacheLen -= size;
+		cacheLength -= length;
 
-		return size;
+		return length;
 	}
 }
 
-- (void)readExactlyNBytes: (size_t)size
-	       intoBuffer: (char*)buf
+- (void)readExactlyNBytes: (size_t)length
+	       intoBuffer: (char*)buffer
 {
-	size_t len = 0;
+	size_t readLength = 0;
 
-	while (len < size)
-		len += [self readNBytes: size - len
-			     intoBuffer: buf + len];
+	while (readLength < length)
+		readLength += [self readNBytes: length - readLength
+				    intoBuffer: buffer + readLength];
 }
 
 - (uint8_t)readInt8
@@ -205,21 +205,21 @@
 	return of_bswap64_if_be(ret);
 }
 
-- (OFDataArray*)readDataArrayWithItemSize: (size_t)itemsize
-				andNItems: (size_t)nitems
+- (OFDataArray*)readDataArrayWithItemSize: (size_t)itemSize
+				andNItems: (size_t)nItems
 {
 	OFDataArray *da;
 	char *tmp;
 
-	da = [OFDataArray dataArrayWithItemSize: itemsize];
-	tmp = [self allocMemoryForNItems: nitems
-				withSize: itemsize];
+	da = [OFDataArray dataArrayWithItemSize: itemSize];
+	tmp = [self allocMemoryForNItems: nItems
+				withSize: itemSize];
 
 	@try {
-		[self readExactlyNBytes: nitems * itemsize
+		[self readExactlyNBytes: nItems * itemSize
 			     intoBuffer: tmp];
 
-		[da addNItems: nitems
+		[da addNItems: nItems
 		   fromCArray: tmp];
 	} @finally {
 		[self freeMemory: tmp];
@@ -230,26 +230,26 @@
 
 - (OFDataArray*)readDataArrayTillEndOfStream
 {
-	OFDataArray *a;
-	char *buf;
+	OFDataArray *dataArray;
+	char *buffer;
 
-	a = [OFDataArray dataArrayWithItemSize: 1];
-	buf = [self allocMemoryWithSize: of_pagesize];
+	dataArray = [OFDataArray dataArrayWithItemSize: 1];
+	buffer = [self allocMemoryWithSize: of_pagesize];
 
 	@try {
 		while (![self isAtEndOfStream]) {
-			size_t size;
+			size_t length;
 
-			size = [self readNBytes: of_pagesize
-				     intoBuffer: buf];
-			[a addNItems: size
-			  fromCArray: buf];
+			length = [self readNBytes: of_pagesize
+				       intoBuffer: buffer];
+			[dataArray addNItems: length
+				  fromCArray: buffer];
 		}
 	} @finally {
-		[self freeMemory: buf];
+		[self freeMemory: buffer];
 	}
 
-	return a;
+	return dataArray;
 }
 
 - (OFString*)readLine
@@ -259,33 +259,33 @@
 
 - (OFString*)readLineWithEncoding: (of_string_encoding_t)encoding
 {
-	size_t i, len, ret_len;
-	char *ret_c, *tmp, *tmp2;
+	size_t i, bufferLength, retLength;
+	char *retCString, *buffer, *newCache;
 	OFString *ret;
 
 	/* Look if there's a line or \0 in our cache */
 	if (cache != NULL) {
-		for (i = 0; i < cacheLen; i++) {
+		for (i = 0; i < cacheLength; i++) {
 			if (OF_UNLIKELY(cache[i] == '\n' ||
 			    cache[i] == '\0')) {
-				ret_len = i;
+				retLength = i;
 
 				if (i > 0 && cache[i - 1] == '\r')
-					ret_len--;
+					retLength--;
 
 				ret = [OFString stringWithCString: cache
 							 encoding: encoding
-							   length: ret_len];
+							   length: retLength];
 
-				tmp = [self allocMemoryWithSize: cacheLen -
-								 i - 1];
-				if (tmp != NULL)
-					memcpy(tmp, cache + i + 1,
-					    cacheLen - i - 1);
+				newCache = [self
+				    allocMemoryWithSize: cacheLength - i - 1];
+				if (newCache != NULL)
+					memcpy(newCache, cache + i + 1,
+					    cacheLength - i - 1);
 
 				[self freeMemory: cache];
-				cache = tmp;
-				cacheLen -= i + 1;
+				cache = newCache;
+				cacheLength -= i + 1;
 
 				return ret;
 			}
@@ -293,7 +293,7 @@
 	}
 
 	/* Read until we get a newline or \0 */
-	tmp = [self allocMemoryWithSize: of_pagesize];
+	buffer = [self allocMemoryWithSize: of_pagesize];
 
 	@try {
 		for (;;) {
@@ -301,46 +301,52 @@
 				if (cache == NULL)
 					return nil;
 
-				ret_len = cacheLen;
+				retLength = cacheLength;
 
-				if (ret_len > 0 && cache[ret_len - 1] == '\r')
-					ret_len--;
+				if (retLength > 0 &&
+				    cache[retLength - 1] == '\r')
+					retLength--;
 
 				ret = [OFString stringWithCString: cache
 							 encoding: encoding
-							   length: ret_len];
+							   length: retLength];
 
 				[self freeMemory: cache];
 				cache = NULL;
-				cacheLen = 0;
+				cacheLength = 0;
 
 				return ret;
 			}
 
-			len = [self _readNBytes: of_pagesize
-				     intoBuffer: tmp];
+			bufferLength = [self _readNBytes: of_pagesize
+					      intoBuffer: buffer];
 
 			/* Look if there's a newline or \0 */
-			for (i = 0; i < len; i++) {
-				if (OF_UNLIKELY(tmp[i] == '\n' ||
-				    tmp[i] == '\0')) {
-					ret_len = cacheLen + i;
-					ret_c = [self
-					    allocMemoryWithSize: ret_len];
+			for (i = 0; i < bufferLength; i++) {
+				if (OF_UNLIKELY(buffer[i] == '\n' ||
+				    buffer[i] == '\0')) {
+					retLength = cacheLength + i;
+					retCString = [self
+					    allocMemoryWithSize: retLength];
 
 					if (cache != NULL)
-						memcpy(ret_c, cache, cacheLen);
-					memcpy(ret_c + cacheLen, tmp, i);
+						memcpy(retCString, cache,
+						    cacheLength);
+					memcpy(retCString + cacheLength,
+					    buffer, i);
 
-					if (ret_len > 0 &&
-					    ret_c[ret_len - 1] == '\r')
-						ret_len--;
+					if (retLength > 0 &&
+					    retCString[retLength - 1] == '\r')
+						retLength--;
 
 					@try {
+						char *rcs = retCString;
+						size_t rl = retLength;
+
 						ret = [OFString
-						    stringWithCString: ret_c
+						    stringWithCString: rcs
 							     encoding: encoding
-							       length: ret_len];
+							       length: rl];
 					} @catch (id e) {
 						/*
 						 * Append data to cache to
@@ -349,29 +355,30 @@
 						 */
 						cache = [self
 						    resizeMemory: cache
-							  toSize: cacheLen +
-								  len];
+							  toSize: cacheLength +
+								  bufferLength];
 
 						if (cache != NULL)
-							memcpy(cache + cacheLen,
-							    tmp, len);
+							memcpy(cache +
+							    cacheLength, buffer,
+							    bufferLength);
 
-						cacheLen += len;
+						cacheLength += bufferLength;
 
 						@throw e;
 					} @finally {
-						[self freeMemory: ret_c];
+						[self freeMemory: retCString];
 					}
 
-					tmp2 = [self
-					    allocMemoryWithSize: len - i - 1];
-					if (tmp2 != NULL)
-						memcpy(tmp2, tmp + i + 1,
-						    len - i - 1);
+					newCache = [self allocMemoryWithSize:
+					    bufferLength - i - 1];
+					if (newCache != NULL)
+						memcpy(newCache, buffer + i + 1,
+						    bufferLength - i - 1);
 
 					[self freeMemory: cache];
-					cache = tmp2;
-					cacheLen = len - i - 1;
+					cache = newCache;
+					cacheLength = bufferLength - i - 1;
 
 					return ret;
 				}
@@ -379,19 +386,20 @@
 
 			/* There was no newline or \0 */
 			cache = [self resizeMemory: cache
-					    toSize: cacheLen + len];
+					    toSize: cacheLength + bufferLength];
 
 			/*
 			 * It's possible that cacheLen + len is 0 and thus
 			 * cache was set to NULL by resizeMemory:toSize:.
 			 */
 			if (cache != NULL)
-				memcpy(cache + cacheLen, tmp, len);
+				memcpy(cache + cacheLength, buffer,
+				    bufferLength);
 
-			cacheLen += len;
+			cacheLength += bufferLength;
 		}
 	} @finally {
-		[self freeMemory: tmp];
+		[self freeMemory: buffer];
 	}
 
 	/* Get rid of a warning, never reached anyway */
@@ -407,44 +415,44 @@
 - (OFString*)readTillDelimiter: (OFString*)delimiter
 		  withEncoding: (of_string_encoding_t)encoding
 {
-	const char *delim;
-	size_t i, j, delim_len, len, ret_len;
-	char *ret_c, *tmp, *tmp2;
+	const char *delimiterCString;
+	size_t i, j, delimiterLength, bufferLength, retLength;
+	char *retCString, *buffer, *newCache;
 	OFString *ret;
 
 	/* FIXME: Convert delimiter to specified charset */
-	delim = [delimiter cString];
-	delim_len = [delimiter cStringLength];
+	delimiterCString = [delimiter cString];
+	delimiterLength = [delimiter cStringLength];
 	j = 0;
 
-	if (delim_len == 0)
+	if (delimiterLength == 0)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
 	/* Look if there's something in our cache */
 	if (cache != NULL) {
-		for (i = 0; i < cacheLen; i++) {
-			if (cache[i] != delim[j++])
+		for (i = 0; i < cacheLength; i++) {
+			if (cache[i] != delimiterCString[j++])
 				j = 0;
 
-			if (j == delim_len || cache[i] == '\0') {
+			if (j == delimiterLength || cache[i] == '\0') {
 				if (cache[i] == '\0')
-					delim_len = 1;
+					delimiterLength = 1;
 
-				ret = [OFString stringWithCString: cache
-							 encoding: encoding
-							   length: i + 1 -
-								   delim_len];
+				ret = [OFString
+				    stringWithCString: cache
+					     encoding: encoding
+					      length: i + 1 - delimiterLength];
 
-				tmp = [self allocMemoryWithSize: cacheLen - i -
-								 1];
-				if (tmp != NULL)
-					memcpy(tmp, cache + i + 1,
-					    cacheLen - i - 1);
+				newCache = [self allocMemoryWithSize:
+				    cacheLength - i - 1];
+				if (newCache != NULL)
+					memcpy(newCache, cache + i + 1,
+					    cacheLength - i - 1);
 
 				[self freeMemory: cache];
-				cache = tmp;
-				cacheLen -= i + 1;
+				cache = newCache;
+				cacheLength -= i + 1;
 
 				return ret;
 			}
@@ -452,7 +460,7 @@
 	}
 
 	/* Read until we get the delimiter or \0 */
-	tmp = [self allocMemoryWithSize: of_pagesize];
+	buffer = [self allocMemoryWithSize: of_pagesize];
 
 	@try {
 		for (;;) {
@@ -462,58 +470,65 @@
 
 				ret = [OFString stringWithCString: cache
 							 encoding: encoding
-							   length: cacheLen];
+							   length: cacheLength];
 
 				[self freeMemory: cache];
 				cache = NULL;
-				cacheLen = 0;
+				cacheLength = 0;
 
 				return ret;
 			}
 
-			len = [self _readNBytes: of_pagesize
-				     intoBuffer: tmp];
+			bufferLength = [self _readNBytes: of_pagesize
+					      intoBuffer: buffer];
 
 			/* Look if there's the delimiter or \0 */
-			for (i = 0; i < len; i++) {
-				if (tmp[i] != delim[j++])
+			for (i = 0; i < bufferLength; i++) {
+				if (buffer[i] != delimiterCString[j++])
 					j = 0;
 
-				if (j == delim_len || tmp[i] == '\0') {
-					if (tmp[i] == '\0')
-						delim_len = 1;
+				if (j == delimiterLength || buffer[i] == '\0') {
+					if (buffer[i] == '\0')
+						delimiterLength = 1;
 
-					ret_len = cacheLen + i + 1 - delim_len;
-					ret_c = [self
-					    allocMemoryWithSize: ret_len];
+					retLength = cacheLength + i + 1 -
+					    delimiterLength;
+					retCString = [self
+					    allocMemoryWithSize: retLength];
 
 					if (cache != NULL &&
-					    cacheLen <= ret_len)
-						memcpy(ret_c, cache, cacheLen);
+					    cacheLength <= retLength)
+						memcpy(retCString, cache,
+						    cacheLength);
 					else if (cache != NULL)
-						memcpy(ret_c, cache, ret_len);
-					if (i >= delim_len)
-						memcpy(ret_c + cacheLen, tmp,
-						    i + 1 - delim_len);
+						memcpy(retCString, cache,
+						    retLength);
+					if (i >= delimiterLength)
+						memcpy(retCString + cacheLength,
+						    buffer, i + 1 -
+						    delimiterLength);
 
 					@try {
+						char *rcs = retCString;
+						size_t rl = retLength;
+
 						ret = [OFString
-						    stringWithCString: ret_c
+						    stringWithCString: rcs
 							     encoding: encoding
-							       length: ret_len];
+							       length: rl];
 					} @finally {
-						[self freeMemory: ret_c];
+						[self freeMemory: retCString];
 					}
 
-					tmp2 = [self
-					    allocMemoryWithSize: len - i - 1];
-					if (tmp2 != NULL)
-						memcpy(tmp2, tmp + i + 1,
-						    len - i - 1);
+					newCache = [self allocMemoryWithSize:
+					    bufferLength - i - 1];
+					if (newCache != NULL)
+						memcpy(newCache, buffer + i + 1,
+						    bufferLength - i - 1);
 
 					[self freeMemory: cache];
-					cache = tmp2;
-					cacheLen = len - i - 1;
+					cache = newCache;
+					cacheLength = bufferLength - i - 1;
 
 					return ret;
 				}
@@ -521,19 +536,20 @@
 
 			/* Neither the delimiter nor \0 was found */
 			cache = [self resizeMemory: cache
-					    toSize: cacheLen + len];
+					    toSize: cacheLength + bufferLength];
 
 			/*
 			 * It's possible that cacheLen + len is 0 and thus
 			 * cache was set to NULL by resizeMemory:toSize:.
 			 */
 			if (cache != NULL)
-				memcpy(cache + cacheLen, tmp, len);
+				memcpy(cache + cacheLength, buffer,
+				    bufferLength);
 
-			cacheLen += len;
+			cacheLength += bufferLength;
 		}
 	} @finally {
-		[self freeMemory: tmp];
+		[self freeMemory: buffer];
 	}
 
 	/* Get rid of a warning, never reached anyway */
@@ -552,30 +568,30 @@
 
 - (void)flushWriteBuffer
 {
-	if (wBuffer == NULL)
+	if (writeBuffer == NULL)
 		return;
 
-	[self _writeNBytes: wBufferLen
-		fromBuffer: wBuffer];
+	[self _writeNBytes: writeBufferLength
+		fromBuffer: writeBuffer];
 
-	[self freeMemory: wBuffer];
-	wBuffer = NULL;
-	wBufferLen = 0;
+	[self freeMemory: writeBuffer];
+	writeBuffer = NULL;
+	writeBufferLength = 0;
 }
 
-- (size_t)writeNBytes: (size_t)size
-	   fromBuffer: (const char*)buf
+- (size_t)writeNBytes: (size_t)length
+	   fromBuffer: (const char*)buffer
 {
 	if (!buffersWrites)
-		return [self _writeNBytes: size
-			       fromBuffer: buf];
+		return [self _writeNBytes: length
+			       fromBuffer: buffer];
 	else {
-		wBuffer = [self resizeMemory: wBuffer
-				      toSize: wBufferLen + size];
-		memcpy(wBuffer + wBufferLen, buf, size);
-		wBufferLen += size;
+		writeBuffer = [self resizeMemory: writeBuffer
+					  toSize: writeBufferLength + length];
+		memcpy(writeBuffer + writeBufferLength, buffer, length);
+		writeBufferLength += length;
 
-		return size;
+		return length;
 	}
 }
 
@@ -633,69 +649,70 @@
 	       fromBuffer: (char*)&int64];
 }
 
-- (size_t)writeDataArray: (OFDataArray*)dataarray
+- (size_t)writeDataArray: (OFDataArray*)dataArray
 {
-	return [self writeNBytes: [dataarray count] * [dataarray itemSize]
-		      fromBuffer: [dataarray cArray]];
+	return [self writeNBytes: [dataArray count] * [dataArray itemSize]
+		      fromBuffer: [dataArray cArray]];
 }
 
-- (size_t)writeString: (OFString*)str
+- (size_t)writeString: (OFString*)string
 {
-	return [self writeNBytes: [str cStringLength]
-		      fromBuffer: [str cString]];
+	return [self writeNBytes: [string cStringLength]
+		      fromBuffer: [string cString]];
 }
 
-- (size_t)writeLine: (OFString*)str
+- (size_t)writeLine: (OFString*)string
 {
-	size_t ret, len = [str cStringLength];
-	char *buf;
+	size_t retLength, stringLength = [string cStringLength];
+	char *buffer;
 
-	buf = [self allocMemoryWithSize: len + 1];
+	buffer = [self allocMemoryWithSize: stringLength + 1];
 
 	@try {
-		memcpy(buf, [str cString], len);
-		buf[len] = '\n';
+		memcpy(buffer, [string cString], stringLength);
+		buffer[stringLength] = '\n';
 
-		ret = [self writeNBytes: len + 1
-			     fromBuffer: buf];
+		retLength = [self writeNBytes: stringLength + 1
+				   fromBuffer: buffer];
 	} @finally {
-		[self freeMemory: buf];
+		[self freeMemory: buffer];
 	}
 
-	return ret;
+	return retLength;
 }
 
-- (size_t)writeFormat: (OFString*)fmt, ...
+- (size_t)writeFormat: (OFString*)format, ...
 {
-	va_list args;
+	va_list arguments;
 	size_t ret;
 
-	va_start(args, fmt);
-	ret = [self writeFormat: fmt
-		  withArguments: args];
-	va_end(args);
+	va_start(arguments, format);
+	ret = [self writeFormat: format
+		  withArguments: arguments];
+	va_end(arguments);
 
 	return ret;
 }
 
-- (size_t)writeFormat: (OFString*)fmt
-	withArguments: (va_list)args
+- (size_t)writeFormat: (OFString*)format
+	withArguments: (va_list)arguments
 {
-	char *t;
-	int len;
+	char *cString;
+	int length;
 
-	if (fmt == nil)
+	if (format == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	if ((len = of_vasprintf(&t, [fmt cString], args)) == -1)
+	if ((length = of_vasprintf(&cString, [format cString],
+	    arguments)) == -1)
 		@throw [OFInvalidFormatException newWithClass: isa];
 
 	@try {
-		return [self writeNBytes: len
-			      fromBuffer: t];
+		return [self writeNBytes: length
+			      fromBuffer: cString];
 	} @finally {
-		free(t);
+		free(cString);
 	}
 
 	/* Get rid of a warning, never reached anyway */
@@ -704,7 +721,7 @@
 
 - (size_t)pendingBytes
 {
-	return cacheLen;
+	return cacheLength;
 }
 
 - (BOOL)isBlocking

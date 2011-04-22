@@ -28,7 +28,7 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"Failed to read %zu bytes in class %@! " ERRFMT, requestedSize,
+	    @"Failed to read %zu bytes in class %@! " ERRFMT, requestedLength,
 	    inClass, ERRPARAM];
 
 	return description;

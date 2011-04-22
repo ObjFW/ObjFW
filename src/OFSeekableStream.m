@@ -43,32 +43,32 @@
 
 	[self freeMemory: cache];
 	cache = NULL;
-	cacheLen = 0;
+	cacheLength = 0;
 }
 
 - (off_t)seekForwardWithOffset: (off_t)offset
 {
-	off_t ret;
+	off_t retOffset;
 
-	ret = [self _seekForwardWithOffset: offset - cacheLen];
+	retOffset = [self _seekForwardWithOffset: offset - cacheLength];
 
 	[self freeMemory: cache];
 	cache = NULL;
-	cacheLen = 0;
+	cacheLength = 0;
 
-	return ret;
+	return retOffset;
 }
 
 - (off_t)seekToOffsetRelativeToEnd: (off_t)offset
 {
-	off_t ret;
+	off_t retOffset;
 
-	ret = [self _seekToOffsetRelativeToEnd: offset];
+	retOffset = [self _seekToOffsetRelativeToEnd: offset];
 
 	[self freeMemory: cache];
 	cache = NULL;
-	cacheLen = 0;
+	cacheLength = 0;
 
-	return ret;
+	return retOffset;
 }
 @end

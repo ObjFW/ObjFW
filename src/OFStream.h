@@ -33,8 +33,8 @@
 @interface OFStream: OFObject
 {
 	char   *cache;
-	char   *wBuffer;
-	size_t cacheLen, wBufferLen;
+	char   *writeBuffer;
+	size_t cacheLength, writeBufferLength;
 	BOOL   buffersWrites;
 	BOOL   isBlocking;
 }
@@ -53,29 +53,29 @@
 /**
  * Reads at most size bytes from the stream into a buffer.
  *
- * \param buf The buffer into which the data is read
- * \param size The size of the data that should be read at most.
- *	       The buffer MUST be at least size big!
+ * \param buffer The buffer into which the data is read
+ * \param length The length of the data that should be read at most.
+ *		 The buffer MUST be at least this big!
  * \return The number of bytes read
  */
 - (size_t)readNBytes: (size_t)size
-	  intoBuffer: (char*)buf;
+	  intoBuffer: (char*)buffer;
 
 /**
- * Reads exactly size bytes from the stream into a buffer. Unlike
+ * Reads exactly length bytes from the stream into a buffer. Unlike
  * readNBytes:intoBuffer:, this method does not return when less than the
- * specified size has been read - instead, it waits until it got exactly size
+ * specified length has been read - instead, it waits until it got exactly length
  * bytes.
  *
  * WARNING: Only call this when you know that specified amount of data is
  *	    available! Otherwise you will get an exception!
  *
- * \param buf The buffer into which the data is read
- * \param size The size of the data that should be read.
+ * \param buffer The buffer into which the data is read
+ * \param length The length of the data that should be read.
  *	       The buffer MUST be EXACTLY this big!
  */
-- (void)readExactlyNBytes: (size_t)size
-	       intoBuffer: (char*)buf;
+- (void)readExactlyNBytes: (size_t)length
+	       intoBuffer: (char*)buffer;
 
 /**
  * Reads a uint8_t from the stream.
@@ -154,12 +154,12 @@
  * WARNING: Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * \param itemsize The size of each item
- * \param nitems The number of iteams to read
+ * \param itemSize The size of each item
+ * \param nItems The number of iteams to read
  * \return An OFDataArray with at nitems items.
  */
-- (OFDataArray*)readDataArrayWithItemSize: (size_t)itemsize
-				andNItems: (size_t)nitems;
+- (OFDataArray*)readDataArrayWithItemSize: (size_t)itemSize
+				andNItems: (size_t)nItems;
 
 /**
  * \return An OFDataArray with an item size of 1 with all the data of the
@@ -225,12 +225,12 @@
 /**
  * Writes from a buffer into the stream.
  *
- * \param buf The buffer from which the data is written to the stream
- * \param size The size of the data that should be written
+ * \param buffer The buffer from which the data is written to the stream
+ * \param length The length of the data that should be written
  * \return The number of bytes written
  */
-- (size_t)writeNBytes: (size_t)size
-	   fromBuffer: (const char*)buf;
+- (size_t)writeNBytes: (size_t)length
+	   fromBuffer: (const char*)buffer;
 
 /**
  * Writes a uint8_t into the stream.
@@ -284,44 +284,44 @@
 /**
  * Writes from an OFDataArray into the stream.
  *
- * \param dataarray The OFDataArray to write into the stream
+ * \param dataArray The OFDataArray to write into the stream
  * \return The number of bytes written
  */
-- (size_t)writeDataArray: (OFDataArray*)dataarray;
+- (size_t)writeDataArray: (OFDataArray*)dataArray;
 
 /**
  * Writes a string into the stream, without the trailing zero.
  *
- * \param str The string from which the data is written to the stream
+ * \param string The string from which the data is written to the stream
  * \return The number of bytes written
  */
-- (size_t)writeString: (OFString*)str;
+- (size_t)writeString: (OFString*)string;
 
 /**
  * Writes a string into the stream with a trailing newline.
  *
- * \param str The string from which the data is written to the stream
+ * \param string The string from which the data is written to the stream
  * \return The number of bytes written
  */
-- (size_t)writeLine: (OFString*)str;
+- (size_t)writeLine: (OFString*)string;
 
 /**
  * Writes a formatted string into the stream.
  *
- * \param fmt A string used as format
+ * \param format A string used as format
  * \return The number of bytes written
  */
-- (size_t)writeFormat: (OFString*)fmt, ...;
+- (size_t)writeFormat: (OFString*)format, ...;
 
 /**
  * Writes a formatted string into the stream.
  *
- * \param fmt A string used as format
- * \param args The arguments used in the format string
+ * \param format A string used as format
+ * \param arguments The arguments used in the format string
  * \return The number of bytes written
  */
-- (size_t)writeFormat: (OFString*)fmt
-	withArguments: (va_list)args;
+- (size_t)writeFormat: (OFString*)format
+	withArguments: (va_list)arguments;
 
 /**
  * \return The number of bytes still present in the internal cache.

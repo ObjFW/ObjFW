@@ -24,38 +24,40 @@
 @interface OFReadOrWriteFailedException: OFException
 {
 	OFStream *stream;
-	size_t	 requestedSize;
+	size_t	 requestedLength;
 @public
 	int	 errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, nonatomic) OFStream *stream;
-@property (readonly) size_t requestedSize;
+@property (readonly) size_t requestedLength;
 @property (readonly) int errNo;
 #endif
 
 /**
  * \param class_ The class of the object which caused the exception
  * \param stream The stream which caused the read or write failed exception
- * \param size The requested size of the data that couldn't be read / written
+ * \param length The requested length of the data that couldn't be read /
+ *		 written
  * \return A new open file failed exception
  */
-+  newWithClass: (Class)class_
-	 stream: (OFStream*)stream
-  requestedSize: (size_t)size;
++    newWithClass: (Class)class_
+	   stream: (OFStream*)stream
+  requestedLength: (size_t)length;
 
 /**
  * Initializes an already allocated read or write failed exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param stream The stream which caused the read or write failed exception
- * \param size The requested size of the data that couldn't be read / written
+ * \param length The requested length of the data that couldn't be read /
+ *		 written
  * \return A new open file failed exception
  */
-- initWithClass: (Class)class_
-	 stream: (OFStream*)stream
-  requestedSize: (size_t)size;
+-   initWithClass: (Class)class_
+	   stream: (OFStream*)stream
+  requestedLength: (size_t)length;
 
 /**
  * \return The stream which caused the read or write failed exception
@@ -63,9 +65,9 @@
 - (OFStream*)stream;
 
 /**
- * \return The requested size of the data that couldn't be read / written
+ * \return The requested length of the data that couldn't be read / written
  */
-- (size_t)requestedSize;
+- (size_t)requestedLength;
 
 /**
  * \return The errno from when the exception was created
