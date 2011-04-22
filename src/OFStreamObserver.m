@@ -489,6 +489,9 @@ enum {
 	exceptfds_ = exceptfds;
 # endif
 
+	tv.tv_sec = timeout / 1000;
+	tv.tv_usec = (timeout % 1000) * 1000;
+
 	if (select(nfds, &readfds_, &writefds_, &exceptfds_,
 	    (timeout != -1 ? &tv : NULL)) < 1)
 		return NO;
