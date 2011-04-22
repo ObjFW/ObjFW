@@ -103,6 +103,7 @@ normalize_key(OFString *key)
 	[URL release];
 	[queryString release];
 	[headers release];
+	[(id)delegate release];
 
 	[super dealloc];
 }
