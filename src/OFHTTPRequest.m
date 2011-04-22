@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#define OF_HTTP_REQUEST_M
+
 #include <string.h>
 
 #import "OFHTTPRequest.h"
@@ -23,6 +25,7 @@
 #import "OFURL.h"
 #import "OFTCPSocket.h"
 #import "OFDictionary.h"
+#import "OFDataArray.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFHTTPRequestFailedException.h"
@@ -132,6 +135,16 @@ Class of_http_request_tls_socket_class = Nil;
 	return redirectsFromHTTPSToHTTPAllowed;
 }
 
+- (void)setDelegate: (id <OFHTTPRequestDelegate>)delegate_
+{
+	OF_SETTER(delegate, delegate_, YES, NO)
+}
+
+- (id <OFHTTPRequestDelegate>)delegate
+{
+	OF_GETTER(delegate, YES)
+}
+
 - (OFHTTPRequestResult*)perform
 {
 	return [self performWithRedirects: 10];
@@ -168,6 +181,7 @@ Class of_http_request_tls_socket_class = Nil;
 		OFString *key;
 		int status;
 		const char *t = NULL;
+		char *buf;
 
 		[sock connectToHost: [URL host]
 			     onPort: [URL port]];
@@ -274,9 +288,21 @@ Class of_http_request_tls_socket_class = Nil;
 			    [scheme isEqual: @"http"] ||
 			    ![value hasPrefix: @"http://"])) {
 				OFURL *new;
+				BOOL follow;
 
-				new = [[OFURL alloc] initWithString: value
-						      relativeToURL: URL];
+				new = [OFURL URLWithString: value
+					     relativeToURL: URL];
+
+				follow = [delegate request: self
+				      willFollowRedirectTo: new];
+
+				if (!follow && delegate != nil) {
+					[s_headers setObject: value
+						      forKey: key];
+					continue;
+				}
+
+				new = [new retain];
 				[URL release];
 				URL = new;
 
@@ -297,7 +323,26 @@ Class of_http_request_tls_socket_class = Nil;
 				      forKey: key];
 		}
 
-		data = [sock readDataArrayTillEndOfStream];
+		[delegate request: self
+		didReceiveHeaders: s_headers
+		   withStatusCode: status];
+
+		data = [OFDataArray dataArrayWithItemSize: 1];
+		buf = [self allocMemoryWithSize: of_pagesize];
+		@try {
+			size_t len;
+
+			while ((len = [sock readNBytes: of_pagesize
+					    intoBuffer: buf]) > 0) {
+				[data addNItems: len
+				     fromCArray: buf];
+				[delegate request: self
+				   didReceiveData: buf
+				       withLength: len];
+			}
+		} @finally {
+			[self freeMemory: buf];
+		}
 
 		if ([s_headers objectForKey: @"Content-Length"] != nil) {
 			intmax_t cl;
@@ -369,5 +414,25 @@ Class of_http_request_tls_socket_class = Nil;
 - (OFDataArray*)data
 {
 	return [[data retain] autorelease];
+}
+@end
+
+@implementation OFObject (OFHTTPRequestDelegate)
+-     (void)request: (OFHTTPRequest*)request
+  didReceiveHeaders: (OFDictionary*)headers
+     withStatusCode: (int)statusCode
+{
+}
+
+-  (void)request: (OFHTTPRequest*)request
+  didReceiveData: (const char*)data
+      withLength: (size_t)len
+{
+}
+
+-	 (BOOL)request: (OFHTTPRequest*)request
+  willFollowRedirectTo: (OFURL*)url
+{
+	return YES;
 }
 @end

@@ -19,6 +19,7 @@
 @class OFString;
 @class OFDictionary;
 @class OFURL;
+@class OFHTTPRequest;
 @class OFHTTPRequestResult;
 @class OFDataArray;
 
@@ -27,6 +28,61 @@ typedef enum of_http_request_type_t {
 	OF_HTTP_REQUEST_TYPE_POST,
 	OF_HTTP_REQUEST_TYPE_HEAD
 } of_http_request_type_t;
+
+/**
+ * \brief A delegate for OFHTTPRequests.
+ */
+#ifndef OF_HTTP_REQUEST_M
+@protocol OFHTTPRequestDelegate <OFObject>
+#else
+@protocol OFHTTPRequestDelegate
+#endif
+#ifdef OF_HAVE_OPTIONAL_PROTOCOLS
+@optional
+#endif
+/**
+ * This callback is called when the OFHTTPRequest received the headers.
+ *
+ * \param request The OFHTTPRequest which received the headers
+ * \param headers The headers received
+ * \param statusCode The status code received
+ */
+-     (void)request: (OFHTTPRequest*)request
+  didReceiveHeaders: (OFDictionary*)headers
+     withStatusCode: (int)statusCode;
+
+/**
+ * This callback is called when the OFHTTPRequest received data.
+ *
+ * This is useful for example if you want to update a status display.
+ *
+ * \param request The OFHTTPRequest which received data
+ * \param data The data the OFHTTPRequest received
+ * \param len The length of the data received, in bytes
+ */
+-  (void)request: (OFHTTPRequest*)request
+  didReceiveData: (const char*)data
+      withLength: (size_t)len;
+
+/**
+ * This callback is called when the OFHTTPRequest will follow a redirect.
+ *
+ * If you want to get the headers and data for each redirect, set the number of
+ * redirects to 0 and perform a new OFHTTPRequest for each redirect. However,
+ * this callback will not be called then and you have to look at the status code
+ * to detect a redirect.
+ *
+ * This callback will only be called if the OFHTTPRequest will follow a
+ * redirect. If the maximum number of redirects has been reached already, this
+ * callback will not be called.
+ *
+ * \param request The OFHTTPRequest which will follow a redirect
+ * \param url The URL to which it will follow a redirect
+ * \return A boolean whether the OFHTTPRequest should follow the redirect
+ */
+-	 (BOOL)request: (OFHTTPRequest*)request
+  willFollowRedirectTo: (OFURL*)url;
+@end
 
 /**
  * \brief A class for storing and performing HTTP requests.
@@ -38,6 +94,7 @@ typedef enum of_http_request_type_t {
 	OFString *queryString;
 	OFDictionary *headers;
 	BOOL redirectsFromHTTPSToHTTPAllowed;
+	id <OFHTTPRequestDelegate> delegate;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -46,6 +103,7 @@ typedef enum of_http_request_type_t {
 @property (copy) OFString *queryString;
 @property (copy) OFDictionary *headers;
 @property (assign) BOOL redirectsFromHTTPSToHTTPAllowed;
+@property (retain) id <OFHTTPRequestDelegate> delegate;
 #endif
 
 /**
@@ -128,6 +186,18 @@ typedef enum of_http_request_type_t {
 - (BOOL)redirectsFromHTTPSToHTTPAllowed;
 
 /**
+ * Sets the delegate for the HTTP request.
+ *
+ * \param delegate The delegate for the HTTP request
+ */
+- (void)setDelegate: (id <OFHTTPRequestDelegate>)delegate;
+
+/**
+ * \return The delegate for the HTTP request.
+ */
+- (id <OFHTTPRequestDelegate>)delegate;
+
+/**
  * Performs the HTTP request and returns an OFHTTPRequestResult.
  *
  * \return An OFHTTPRequestResult with the result of the HTTP request
@@ -181,6 +251,9 @@ typedef enum of_http_request_type_t {
  * \return The data returned for the HTTP request
  */
 - (OFDataArray*)data;
+@end
+
+@interface OFObject (OFHTTPRequestDelegate) <OFHTTPRequestDelegate>
 @end
 
 extern Class of_http_request_tls_socket_class;
