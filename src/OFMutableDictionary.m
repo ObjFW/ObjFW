@@ -27,85 +27,84 @@
 
 #import "macros.h"
 
-#define BUCKET struct of_dictionary_bucket
 #define DELETED &of_dictionary_deleted_bucket
 
 @implementation OFMutableDictionary
-- (void)_resizeForCount: (size_t)newcount
+- (void)_resizeForCount: (size_t)newCount
 {
-	size_t fill = newcount * 4 / size;
-	struct of_dictionary_bucket **newdata;
-	uint32_t i, newsize;
+	size_t fullness = newCount * 4 / size;
+	struct of_dictionary_bucket **newData;
+	uint32_t i, newSize;
 
-	if (newcount > UINT32_MAX)
+	if (newCount > UINT32_MAX)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	if (fill >= 3)
-		newsize = size << 1;
-	else if (fill <= 1)
-		newsize = size >> 1;
+	if (fullness >= 3)
+		newSize = size << 1;
+	else if (fullness <= 1)
+		newSize = size >> 1;
 	else
 		return;
 
-	if (newsize == 0)
+	if (newSize == 0)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	newdata = [self allocMemoryForNItems: newsize
-				    withSize: sizeof(BUCKET*)];
+	newData = [self allocMemoryForNItems: newSize
+				    withSize: sizeof(*newData)];
 
-	for (i = 0; i < newsize; i++)
-		newdata[i] = NULL;
+	for (i = 0; i < newSize; i++)
+		newData[i] = NULL;
 
 	for (i = 0; i < size; i++) {
 		if (data[i] != NULL && data[i] != DELETED) {
 			uint32_t j, last;
 
-			last = newsize;
+			last = newSize;
 
-			j = data[i]->hash & (newsize - 1);
-			for (; j < last && newdata[j] != NULL; j++);
+			j = data[i]->hash & (newSize - 1);
+			for (; j < last && newData[j] != NULL; j++);
 
 			/* In case the last bucket is already used */
 			if (j >= last) {
-				last = data[i]->hash & (newsize - 1);
+				last = data[i]->hash & (newSize - 1);
 
 				for (j = 0; j < last &&
-				    newdata[j] != NULL; j++);
+				    newData[j] != NULL; j++);
 			}
 
 			if (j >= last) {
-				[self freeMemory: newdata];
+				[self freeMemory: newData];
 				@throw [OFOutOfRangeException
 				    newWithClass: isa];
 			}
 
-			newdata[j] = data[i];
+			newData[j] = data[i];
 		}
 	}
 
 	[self freeMemory: data];
-	data = newdata;
-	size = newsize;
+	data = newData;
+	size = newSize;
 }
 
-- (void)setObject: (id)obj
+- (void)setObject: (id)object
 	   forKey: (id <OFCopying>)key
 {
 	uint32_t i, hash, last;
 	id old;
 
-	if (key == nil || obj == nil)
+	if (key == nil || object == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	hash = [(id)key hash];
+	hash = [key hash];
 	last = size;
 
 	for (i = hash & (size - 1); i < last && data[i] != NULL; i++) {
 		if (data[i] == DELETED)
 			continue;
 
-		if ([(id)data[i]->key isEqual: key])
+		if ([data[i]->key isEqual: key])
 			break;
 	}
 
@@ -117,15 +116,15 @@
 			if (data[i] == DELETED)
 				continue;
 
-			if ([(id)data[i]->key isEqual: key])
+			if ([data[i]->key isEqual: key])
 				break;
 		}
 	}
 
 	/* Key not in dictionary */
 	if (i >= last || data[i] == NULL || data[i] == DELETED ||
-	    ![(id)data[i]->key isEqual: key]) {
-		BUCKET *b;
+	    ![data[i]->key isEqual: key]) {
+		struct of_dictionary_bucket *bucket;
 
 		[self _resizeForCount: count + 1];
 
@@ -146,34 +145,34 @@
 		if (i >= last)
 			@throw [OFOutOfRangeException newWithClass: isa];
 
-		b = [self allocMemoryWithSize: sizeof(BUCKET)];
+		bucket = [self allocMemoryWithSize: sizeof(*bucket)];
 
 		@try {
 			key = [key copy];
 		} @catch (id e) {
-			[self freeMemory: b];
+			[self freeMemory: bucket];
 			@throw e;
 		}
 
 		@try {
-			[obj retain];
+			[object retain];
 		} @catch (id e) {
-			[self freeMemory: b];
-			[(id)key release];
+			[self freeMemory: bucket];
+			[key release];
 			@throw e;
 		}
 
-		b->key = key;
-		b->object = obj;
-		b->hash = hash;
-		data[i] = b;
+		bucket->key = key;
+		bucket->object = object;
+		bucket->hash = hash;
+		data[i] = bucket;
 		count++;
 
 		return;
 	}
 
 	old = data[i]->object;
-	data[i]->object = [obj retain];
+	data[i]->object = [object retain];
 	[old release];
 }
 
@@ -192,8 +191,8 @@
 		if (data[i] == DELETED)
 			continue;
 
-		if ([(id)data[i]->key isEqual: key]) {
-			[(id)data[i]->key release];
+		if ([data[i]->key isEqual: key]) {
+			[data[i]->key release];
 			[data[i]->object release];
 			[self freeMemory: data[i]];
 			data[i] = DELETED;
@@ -216,8 +215,8 @@
 		if (data[i] == DELETED)
 			continue;
 
-		if ([(id)data[i]->key isEqual: key]) {
-			[(id)data[i]->key release];
+		if ([data[i]->key isEqual: key]) {
+			[data[i]->key release];
 			[data[i]->object release];
 			[self freeMemory: data[i]];
 			data[i] = DELETED;

@@ -23,9 +23,10 @@
 @class OFArray;
 
 #ifdef OF_HAVE_BLOCKS
-typedef void (^of_dictionary_enumeration_block_t)(id key, id obj, BOOL *stop);
-typedef BOOL (^of_dictionary_filter_block_t)(id key, id obj);
-typedef id (^of_dictionary_map_block_t)(id key, id obj);
+typedef void (^of_dictionary_enumeration_block_t)(id key, id object,
+     BOOL *stop);
+typedef BOOL (^of_dictionary_filter_block_t)(id key, id object);
+typedef id (^of_dictionary_map_block_t)(id key, id object);
 #endif
 
 struct of_dictionary_bucket
@@ -56,38 +57,38 @@ struct of_dictionary_bucket
 /**
  * Creates a new OFDictionary with the specified dictionary.
  *
- * \param dict An OFDictionary
+ * \param dictionary An OFDictionary
  * \return A new autoreleased OFDictionary
  */
-+ dictionaryWithDictionary: (OFDictionary*)dict;
++ dictionaryWithDictionary: (OFDictionary*)dictionary;
 
 /**
  * Creates a new OFDictionary with the specified key and object.
  *
  * \param key The key
- * \param obj The object
+ * \param object The object
  * \return A new autoreleased OFDictionary
  */
-+ dictionaryWithObject: (id)obj
++ dictionaryWithObject: (id)object
 		forKey: (id <OFCopying>)key;
 
 /**
  * Creates a new OFDictionary with the specified keys and objects.
  *
  * \param keys An array of keys
- * \param objs An array of objects
+ * \param objects An array of objects
  * \return A new autoreleased OFDictionary
  */
-+ dictionaryWithObjects: (OFArray*)objs
++ dictionaryWithObjects: (OFArray*)objects
 		forKeys: (OFArray*)keys;
 
 /**
  * Creates a new OFDictionary with the specified keys objects.
  *
- * \param key The first key
+ * \param firstKey The first key
  * \return A new autoreleased OFDictionary
  */
-+ dictionaryWithKeysAndObjects: (id <OFCopying>)key, ...;
++ dictionaryWithKeysAndObjects: (id <OFCopying>)firstKey, ...;
 
 /**
  * Initializes an already allocated OFDictionary.
@@ -100,20 +101,20 @@ struct of_dictionary_bucket
  * Initializes an already allocated OFDictionary with the specified
  * OFDictionary.
  *
- * \param dict An OFDictionary
+ * \param dictionary An OFDictionary
  * \return An initialized OFDictionary
  */
-- initWithDictionary: (OFDictionary*)dict;
+- initWithDictionary: (OFDictionary*)dictionary;
 
 /**
  * Initializes an already allocated OFDictionary with the specified key and
  * object.
  *
  * \param key The key
- * \param obj The object
+ * \param object The object
  * \return A new initialized OFDictionary
  */
-- initWithObject: (id)obj
+- initWithObject: (id)object
 	  forKey: (id <OFCopying>)key;
 
 /**
@@ -121,31 +122,31 @@ struct of_dictionary_bucket
  * objects.
  *
  * \param keys An array of keys
- * \param objs An array of objects
+ * \param objects An array of objects
  * \return A new initialized OFDictionary
  */
-- initWithObjects: (OFArray*)objs
+- initWithObjects: (OFArray*)objects
 	  forKeys: (OFArray*)keys;
 
 /**
  * Initializes an already allocated OFDictionary with the specified keys and
  * objects.
  *
- * \param first The first key
+ * \param firstKey The first key
  * \return A new initialized OFDictionary
  */
-- initWithKeysAndObjects: (id <OFCopying>)first, ...;
+- initWithKeysAndObjects: (id <OFCopying>)firstKey, ...;
 
 /**
  * Initializes an already allocated OFDictionary with the specified key and
  * va_list.
  *
- * \param first The first key
- * \param args A va_list of the other arguments
+ * \param firstKey The first key
+ * \param arguments A va_list of the other arguments
  * \return A new initialized OFDictionary
  */
-- initWithKey: (id <OFCopying>)first
-      argList: (va_list)args;
+-  initWithKey: (id <OFCopying>)firstKey
+  argumentList: (va_list)arguments;
 
 /**
  * Returns the object for the given key or nil if the key was not found.

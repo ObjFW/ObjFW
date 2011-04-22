@@ -17,7 +17,7 @@
 #import "OFDictionary.h"
 
 #ifdef OF_HAVE_BLOCKS
-typedef id (^of_dictionary_replace_block_t)(id key, id obj, BOOL *stop);
+typedef id (^of_dictionary_replace_block_t)(id key, id object, BOOL *stop);
 #endif
 
 /**
@@ -33,9 +33,9 @@ typedef id (^of_dictionary_replace_block_t)(id key, id obj, BOOL *stop);
  * A key can be any object.
  *
  * \param key The key to set
- * \param obj The object to set the key to
+ * \param object The object to set the key to
  */
-- (void)setObject: (id)obj
+- (void)setObject: (id)object
 	   forKey: (id <OFCopying>)key;
 
 /**
