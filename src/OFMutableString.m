@@ -65,11 +65,10 @@
 	}
 
 	ulen = [self length];
-	ustr = [self allocMemoryForNItems: [self length]
-				 withSize: ulen];
+	ustr = [self allocMemoryForNItems: ulen
+				 withSize: sizeof(of_unichar_t)];
 
-	i = 0;
-	j = 0;
+	i = j = 0;
 	nlen = 0;
 
 	while (i < length) {
