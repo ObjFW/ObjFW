@@ -71,8 +71,8 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 }
 
 static OF_INLINE void
-resolve_attribute_namespace(OFXMLAttribute *attribute, OFString *prefix,
-    OFString *ns, OFArray *namespaces, Class isa)
+resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
+    Class isa)
 {
 	OFString *attributeNS;
 	OFString *attributePrefix = attribute->ns;
@@ -674,8 +674,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFString *prefix,
 							  prefix: prefix];
 
 	for (j = 0; j < attributesCount; j++)
-		resolve_attribute_namespace(attributesCArray[j], prefix, ns,
-		    namespaces, isa);
+		resolve_attribute_namespace(attributesCArray[j], namespaces,
+		    isa);
 
 	pool = [[OFAutoreleasePool alloc] init];
 
