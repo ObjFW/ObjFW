@@ -202,11 +202,11 @@ of_bswap64_nonconst(uint64_t i)
 #endif
 
 static OF_INLINE void
-of_bswap32_vec(uint32_t *buf, size_t len)
+of_bswap32_vec(uint32_t *buffer, size_t length)
 {
-	while (len--) {
-		*buf = of_bswap32(*buf);
-		buf++;
+	while (length--) {
+		*buffer = of_bswap32(*buffer);
+		buffer++;
 	}
 }
 
@@ -228,9 +228,9 @@ of_bswap32_vec(uint32_t *buf, size_t len)
 # define of_bswap32_vec_if_be(buf, len)
 #endif
 
-#define OF_ROL(val, bits)						\
-	(((val) << ((bits) % (sizeof(val) * 8))) |			\
-	(val) >> (sizeof(val) * 8 - ((bits) % (sizeof(val) * 8))))
+#define OF_ROL(value, bits)						\
+	(((value) << ((bits) % (sizeof(value) * 8))) |			\
+	(value) >> (sizeof(value) * 8 - ((bits) % (sizeof(value) * 8))))
 
 #define OF_HASH_INIT(hash) hash = 0
 #define OF_HASH_ADD(hash, byte)		\

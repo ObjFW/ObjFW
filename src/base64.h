@@ -29,8 +29,8 @@
 extern "C" {
 #endif
 extern const char of_base64_table[64];
-extern OFString *of_base64_encode(const char *buf, size_t len);
-extern BOOL of_base64_decode(OFDataArray *data, const char *str, size_t len);
+extern OFString *of_base64_encode(const char*, size_t);
+extern BOOL of_base64_decode(OFDataArray*, const char*, size_t);
 #ifdef __cplusplus
 }
 #endif

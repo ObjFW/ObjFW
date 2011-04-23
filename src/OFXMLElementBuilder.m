@@ -70,36 +70,36 @@
   didStartElement: (OFString*)name
        withPrefix: (OFString*)prefix
 	namespace: (OFString*)ns
-       attributes: (OFArray*)attrs
+       attributes: (OFArray*)attributes
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFXMLElement *elem;
-	OFXMLAttribute **attrs_c;
-	size_t i, attrs_cnt;
-	IMP add_attr;
+	OFXMLElement *element;
+	OFXMLAttribute **cArray;
+	size_t i, count;
+	IMP addAttribute;
 
-	elem = [OFXMLElement elementWithName: name
-				   namespace: ns];
+	element = [OFXMLElement elementWithName: name
+				      namespace: ns];
 
-	attrs_c = [attrs cArray];
-	attrs_cnt = [attrs count];
-	add_attr = [elem methodForSelector: @selector(addAttribute:)];
+	cArray = [attributes cArray];
+	count = [attributes count];
+	addAttribute = [element methodForSelector: @selector(addAttribute:)];
 
-	for (i = 0; i < attrs_cnt; i++) {
-		if ([attrs_c[i] namespace] == nil &&
-		    [[attrs_c[i] name] isEqual: @"xmlns"])
+	for (i = 0; i < count; i++) {
+		if ([cArray[i] namespace] == nil &&
+		    [[cArray[i] name] isEqual: @"xmlns"])
 			continue;
 
-		if ([[attrs_c[i] namespace]
+		if ([[cArray[i] namespace]
 		    isEqual: @"http://www.w3.org/2000/xmlns/"])
-			[elem setPrefix: [attrs_c[i] name]
-			   forNamespace: [attrs_c[i] stringValue]];
+			[element setPrefix: [cArray[i] name]
+			      forNamespace: [cArray[i] stringValue]];
 
-		add_attr(elem, @selector(addAttribute:), attrs_c[i]);
+		addAttribute(element, @selector(addAttribute:), cArray[i]);
 	}
 
-	[[stack lastObject] addChild: elem];
-	[stack addObject: elem];
+	[[stack lastObject] addChild: element];
+	[stack addObject: element];
 
 	[pool release];
 }
@@ -125,31 +125,32 @@
 }
 
 -    (void)parser: (OFXMLParser*)parser
-  foundCharacters: (OFString*)str
+  foundCharacters: (OFString*)characters
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFXMLElement *elem = [OFXMLElement elementWithCharacters: str];
+	OFXMLElement *element =
+	    [OFXMLElement elementWithCharacters: characters];
 
 	if ([stack count] == 0)
 		[delegate elementBuilder: self
-			 didBuildElement: elem];
+			 didBuildElement: element];
 	else
-		[[stack lastObject] addChild: elem];
+		[[stack lastObject] addChild: element];
 
 	[pool release];
 }
 
 - (void)parser: (OFXMLParser*)parser
-    foundCDATA: (OFString*)cdata
+    foundCDATA: (OFString*)CDATA
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFXMLElement *elem = [OFXMLElement elementWithCDATA: cdata];
+	OFXMLElement *element = [OFXMLElement elementWithCDATA: CDATA];
 
 	if ([stack count] == 0)
 		[delegate elementBuilder: self
-			 didBuildElement: elem];
+			 didBuildElement: element];
 	else
-		[[stack lastObject] addChild: elem];
+		[[stack lastObject] addChild: element];
 
 	[pool release];
 }
@@ -158,13 +159,13 @@
   foundComment: (OFString*)comment
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFXMLElement *elem = [OFXMLElement elementWithComment: comment];
+	OFXMLElement *element = [OFXMLElement elementWithComment: comment];
 
 	if ([stack count] == 0)
 		[delegate elementBuilder: self
-			 didBuildElement: elem];
+			 didBuildElement: element];
 	else
-		[[stack lastObject] addChild: elem];
+		[[stack lastObject] addChild: element];
 
 	[pool release];
 }

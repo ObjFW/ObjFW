@@ -286,12 +286,12 @@ of_tlskey_get(of_tlskey_t key)
 static OF_INLINE BOOL
 of_tlskey_set(of_tlskey_t key, id obj)
 {
-	void *p = (obj != nil ? (void*)obj : NULL);
+	void *ptr = (obj != nil ? (void*)obj : NULL);
 
 #if defined(OF_HAVE_PTHREADS)
-	return !pthread_setspecific(key, p);
+	return !pthread_setspecific(key, ptr);
 #elif defined(_WIN32)
-	return TlsSetValue(key, p);
+	return TlsSetValue(key, ptr);
 #endif
 }
 
@@ -306,80 +306,80 @@ of_tlskey_free(of_tlskey_t key)
 }
 
 static OF_INLINE BOOL
-of_spinlock_new(of_spinlock_t *s)
+of_spinlock_new(of_spinlock_t *spinlock)
 {
 #if defined(OF_ATOMIC_OPS)
-	*s = 0;
+	*spinlock = 0;
 	return YES;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
-	return !pthread_spin_init(s, 0);
+	return !pthread_spin_init(spinlock, 0);
 #else
-	return of_mutex_new(s);
+	return of_mutex_new(spinlock);
 #endif
 }
 
 static OF_INLINE BOOL
-of_spinlock_trylock(of_spinlock_t *s)
+of_spinlock_trylock(of_spinlock_t *spinlock)
 {
 #if defined(OF_ATOMIC_OPS)
-	return of_atomic_cmpswap_int(s, 0, 1);
+	return of_atomic_cmpswap_int(spinlock, 0, 1);
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
-	return !pthread_spin_trylock(s);
+	return !pthread_spin_trylock(spinlock);
 #else
-	return of_mutex_trylock(s);
+	return of_mutex_trylock(spinlock);
 #endif
 }
 
 static OF_INLINE BOOL
-of_spinlock_lock(of_spinlock_t *s)
+of_spinlock_lock(of_spinlock_t *spinlock)
 {
 #if defined(OF_ATOMIC_OPS)
 # if defined(OF_HAVE_SCHED_YIELD) || defined(_WIN32)
 	int i;
 
 	for (i = 0; i < OF_SPINCOUNT; i++)
-		if (of_spinlock_trylock(s))
+		if (of_spinlock_trylock(spinlock))
 			return YES;
 
-	while (!of_spinlock_trylock(s))
+	while (!of_spinlock_trylock(spinlock))
 #  ifndef _WIN32
 		sched_yield();
 #  else
 		Sleep(0);
 #  endif
 # else
-	while (!of_spinlock_trylock(s));
+	while (!of_spinlock_trylock(spinlock));
 # endif
 
 	return YES;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
-	return !pthread_spin_lock(s);
+	return !pthread_spin_lock(spinlock);
 #else
-	return of_mutex_lock(s);
+	return of_mutex_lock(spinlock);
 #endif
 }
 
 static OF_INLINE BOOL
-of_spinlock_unlock(of_spinlock_t *s)
+of_spinlock_unlock(of_spinlock_t *spinlock)
 {
 #if defined(OF_ATOMIC_OPS)
-	*s = 0;
+	*spinlock = 0;
 	return YES;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
-	return !pthread_spin_unlock(s);
+	return !pthread_spin_unlock(spinlock);
 #else
-	return of_mutex_unlock(s);
+	return of_mutex_unlock(spinlock);
 #endif
 }
 
 static OF_INLINE BOOL
-of_spinlock_free(of_spinlock_t *s)
+of_spinlock_free(of_spinlock_t *spinlock)
 {
 #if defined(OF_ATOMIC_OPS)
 	return YES;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
-	return !pthread_spin_destroy(s);
+	return !pthread_spin_destroy(spinlock);
 #else
-	return of_mutex_free(s);
+	return of_mutex_free(spinlock);
 #endif
 }

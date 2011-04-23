@@ -353,10 +353,10 @@ enum event_type {
 
 		if (j + 2 > len)
 			[parser parseBuffer: str + j
-				   withSize: 1];
+				 withLength: 1];
 		else
 			[parser parseBuffer: str + j
-				   withSize: 2];
+				 withLength: 2];
 	}
 
 	TEST(@"Checking if everything was parsed",

@@ -40,7 +40,7 @@
  * \param elem The OFXMLElement the OFXMLElementBuilder built
  */
 - (void)elementBuilder: (OFXMLElementBuilder*)builder
-       didBuildElement: (OFXMLElement*)elem;
+       didBuildElement: (OFXMLElement*)element;
 
 #ifdef OF_HAVE_OPTIONAL_PROTOCOLS
 @optional

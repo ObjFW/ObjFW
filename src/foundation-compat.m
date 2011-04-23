@@ -55,28 +55,28 @@ init(void)
 {
 	Class NSAutoreleasePool = objc_getClass("NSAutoreleasePool");
 	Class NSObject = objc_getClass("NSObject");
-	Method alloc_method;
-	Method addObject_method;
-	Method autorelease_method;
+	Method allocMethod;
+	Method addObjectMethod;
+	Method autoreleaseMethod;
 
 	if (NSAutoreleasePool == Nil || NSObject == Nil)
 		return;
 
-	alloc_method = class_getClassMethod(NSAutoreleasePool,
+	allocMethod = class_getClassMethod(NSAutoreleasePool,
 	    @selector(alloc));
-	addObject_method = class_getClassMethod(NSAutoreleasePool,
+	addObjectMethod = class_getClassMethod(NSAutoreleasePool,
 	    @selector(addObject:));
-	autorelease_method = class_getInstanceMethod(NSObject,
+	autoreleaseMethod = class_getInstanceMethod(NSObject,
 	    @selector(autorelease));
 
-	if (alloc_method == NULL || addObject_method == NULL ||
-	    autorelease_method == NULL)
+	if (allocMethod == NULL || addObjectMethod == NULL ||
+	    autoreleaseMethod == NULL)
 		return;
 
 	class_replaceMethod(NSAutoreleasePool->isa, @selector(alloc),
-	    (IMP)alloc, method_getTypeEncoding(alloc_method));
+	    (IMP)alloc, method_getTypeEncoding(allocMethod));
 	class_replaceMethod(NSAutoreleasePool->isa, @selector(addObject:),
-	    (IMP)addObject, method_getTypeEncoding(addObject_method));
+	    (IMP)addObject, method_getTypeEncoding(addObjectMethod));
 	class_replaceMethod(NSObject, @selector(autorelease),
-	    (IMP)autorelease, method_getTypeEncoding(autorelease_method));
+	    (IMP)autorelease, method_getTypeEncoding(autoreleaseMethod));
 }

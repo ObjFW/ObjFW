@@ -21,26 +21,26 @@
 #include <stdarg.h>
 
 int
-vasprintf(char **strp, const char *fmt, va_list args)
+vasprintf(char **cString, const char *format, va_list arguments)
 {
-	int size;
+	int length;
 
-	if ((size = vsnprintf(NULL, 0, fmt, args)) < 0)
-		return size;
-	if ((*strp = malloc((size_t)size + 1)) == NULL)
+	if ((length = vsnprintf(NULL, 0, format, arguments)) < 0)
+		return length;
+	if ((*cString = malloc((size_t)length + 1)) == NULL)
 		return -1;
 
-	return vsnprintf(*strp, (size_t)size + 1, fmt, args);
+	return vsnprintf(*cString, (size_t)length + 1, format, arguments);
 }
 
 int
-asprintf(char **strp, const char *fmt, ...)
+asprintf(char **cString, const char *format, ...)
 {
 	int ret;
-	va_list args;
+	va_list arguments;
 
-	va_start(args, fmt);
-	ret = vasprintf(strp, fmt, args);
+	va_start(arguments, format);
+	ret = vasprintf(cString, format, arguments);
 	va_end(args);
 
 	return ret;

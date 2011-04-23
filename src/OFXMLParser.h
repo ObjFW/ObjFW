@@ -27,7 +27,7 @@
 typedef void (^of_xml_parser_processing_instructions_block_t)(
     OFXMLParser *parser, OFString *pi);
 typedef void (^of_xml_parser_element_start_block_t)(OFXMLParser *parser,
-    OFString *name, OFString *prefix, OFString *ns, OFArray *attrs);
+    OFString *name, OFString *prefix, OFString *ns, OFArray *attributes);
 typedef void (^of_xml_parser_element_end_block_t)(OFXMLParser *parser,
     OFString *name, OFString *prefix, OFString *ns);
 typedef void (^of_xml_parser_string_block_t)(OFXMLParser *parser,
@@ -63,13 +63,14 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
  * \param name The name of the tag which just started
  * \param prefix The prefix of the tag which just started or nil
  * \param ns The namespace of the tag which just started or nil
- * \param attrs The attributes included in the tag which just started or nil
+ * \param attributes The attributes included in the tag which just started or
+ *		     nil
  */
 -    (void)parser: (OFXMLParser*)parser
   didStartElement: (OFString*)name
        withPrefix: (OFString*)prefix
 	namespace: (OFString*)ns
-       attributes: (OFArray*)attrs;
+       attributes: (OFArray*)attributes;
 
 /**
  * This callback is called when the XML parser found the end of a tag.
@@ -91,19 +92,19 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
  * called multiple times in a row.
  *
  * \param parser The parser which found a string
- * \param string The string the XML parser found
+ * \param characters The characters the XML parser found
  */
 -    (void)parser: (OFXMLParser*)parser
-  foundCharacters: (OFString*)string;
+  foundCharacters: (OFString*)characters;
 
 /**
  * This callback is called when the XML parser found CDATA.
  *
  * \param parser The parser which found a string
- * \param cdata The CDATA the XML parser found
+ * \param CDATA The CDATA the XML parser found
  */
 - (void)parser: (OFXMLParser*)parser
-    foundCDATA: (OFString*)cdata;
+    foundCDATA: (OFString*)CDATA;
 
 /**
  * This callback is called when the XML parser found a comment.
@@ -163,10 +164,10 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
 	OFString *name;
 	OFString *prefix;
 	OFMutableArray *namespaces;
-	OFMutableArray *attrs;
-	OFString *attrName;
-	OFString *attrPrefix;
-	char delim;
+	OFMutableArray *attributes;
+	OFString *attributeName;
+	OFString *attributePrefix;
+	char delimiter;
 	OFMutableArray *previous;
 #if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 	of_xml_parser_processing_instructions_block_t
@@ -306,18 +307,18 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
 /**
  * Parses a buffer with the specified size.
  *
- * \param buf The buffer to parse
- * \param size The size of the buffer
+ * \param buffer The buffer to parse
+ * \param length The length of the buffer
  */
-- (void)parseBuffer: (const char*)buf
-	   withSize: (size_t)size;
+- (void)parseBuffer: (const char*)buffer
+	 withLength: (size_t)length;
 
 /**
  * Parses the specified string.
  *
- * \param str The string to parse
+ * \param string The string to parse
  */
-- (void)parseString: (OFString*)str;
+- (void)parseString: (OFString*)string;
 
 /**
  * Parses the specified stream.

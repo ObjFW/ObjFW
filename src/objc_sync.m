@@ -28,8 +28,8 @@
 
 #import "threading.h"
 
-struct locks_s {
-	id		 obj;
+struct lock_s {
+	id		 object;
 	size_t		 count;
 	size_t		 recursion;
 	of_thread_t	 thread;
@@ -37,8 +37,8 @@ struct locks_s {
 };
 
 static of_mutex_t mutex;
-static struct locks_s *locks = NULL;
-static ssize_t num_locks = 0;
+static struct lock_s *locks = NULL;
+static ssize_t numLocks = 0;
 
 #define SYNC_ERR(f)							\
 	{								\
@@ -55,7 +55,7 @@ objc_sync_init(void)
 }
 
 int
-objc_sync_enter(id obj)
+objc_sync_enter(id object)
 {
 	ssize_t i;
 
@@ -65,8 +65,8 @@ objc_sync_enter(id obj)
 	if (!of_mutex_lock(&mutex))
 		SYNC_ERR("of_mutex_lock(&mutex)");
 
-	for (i = num_locks - 1; i >= 0; i--) {
-		if (locks[i].obj == obj) {
+	for (i = numLocks - 1; i >= 0; i--) {
+		if (locks[i].object == object) {
 			if (of_thread_is_current(locks[i].thread))
 				locks[i].recursion++;
 			else {
@@ -100,15 +100,15 @@ objc_sync_enter(id obj)
 	}
 
 	if (locks == NULL) {
-		if ((locks = malloc(sizeof(struct locks_s))) == NULL) {
+		if ((locks = malloc(sizeof(struct lock_s))) == NULL) {
 			of_mutex_unlock(&mutex);
 			SYNC_ERR("malloc(...)");
 		}
 	} else {
-		struct locks_s *new_locks;
+		struct lock_s *new_locks;
 
-		if ((new_locks = realloc(locks, (num_locks + 1) *
-		    sizeof(struct locks_s))) == NULL) {
+		if ((new_locks = realloc(locks, (numLocks + 1) *
+		    sizeof(struct lock_s))) == NULL) {
 			of_mutex_unlock(&mutex);
 			SYNC_ERR("realloc(...)");
 		}
@@ -116,22 +116,22 @@ objc_sync_enter(id obj)
 		locks = new_locks;
 	}
 
-	locks[num_locks].obj = obj;
-	locks[num_locks].count = 1;
-	locks[num_locks].recursion = 0;
-	locks[num_locks].thread = of_thread_current();
+	locks[numLocks].object = object;
+	locks[numLocks].count = 1;
+	locks[numLocks].recursion = 0;
+	locks[numLocks].thread = of_thread_current();
 
-	if (!of_mutex_new(&locks[num_locks].mutex)) {
+	if (!of_mutex_new(&locks[numLocks].mutex)) {
 		of_mutex_unlock(&mutex);
-		SYNC_ERR("of_mutex_new(&locks[num_locks].mutex");
+		SYNC_ERR("of_mutex_new(&locks[numLocks].mutex");
 	}
 
-	if (!of_mutex_lock(&locks[num_locks].mutex)) {
+	if (!of_mutex_lock(&locks[numLocks].mutex)) {
 		of_mutex_unlock(&mutex);
-		SYNC_ERR("of_mutex_lock(&locks[num_locks].mutex");
+		SYNC_ERR("of_mutex_lock(&locks[numLocks].mutex");
 	}
 
-	num_locks++;
+	numLocks++;
 
 	if (!of_mutex_unlock(&mutex))
 		SYNC_ERR("of_mutex_unlock(&mutex)");
@@ -140,18 +140,18 @@ objc_sync_enter(id obj)
 }
 
 int
-objc_sync_exit(id obj)
+objc_sync_exit(id object)
 {
 	ssize_t i;
 
-	if (obj == nil)
+	if (object == nil)
 		return 0;
 
 	if (!of_mutex_lock(&mutex))
 		SYNC_ERR("of_mutex_lock(&mutex)");
 
-	for (i = num_locks - 1; i >= 0; i--) {
-		if (locks[i].obj == obj) {
+	for (i = numLocks - 1; i >= 0; i--) {
+		if (locks[i].object == object) {
 			if (locks[i].recursion > 0 &&
 			    of_thread_is_current(locks[i].thread)) {
 				locks[i].recursion--;
@@ -170,7 +170,7 @@ objc_sync_exit(id obj)
 			locks[i].count--;
 
 			if (locks[i].count == 0) {
-				struct locks_s *new_locks = NULL;
+				struct lock_s *new_locks = NULL;
 
 				if (!of_mutex_free(&locks[i].mutex)) {
 					of_mutex_unlock(&mutex);
@@ -178,14 +178,14 @@ objc_sync_exit(id obj)
 					    "of_mutex_free(&locks[i].mutex");
 				}
 
-				num_locks--;
-				locks[i] = locks[num_locks];
+				numLocks--;
+				locks[i] = locks[numLocks];
 
-				if (num_locks == 0) {
+				if (numLocks == 0) {
 					free(locks);
 					new_locks = NULL;
 				} else if ((new_locks = realloc(locks,
-				    num_locks * sizeof(struct locks_s))) ==
+				    numLocks * sizeof(struct lock_s))) ==
 				    NULL) {
 					of_mutex_unlock(&mutex);
 					SYNC_ERR("realloc(...)");
