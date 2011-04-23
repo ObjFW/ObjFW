@@ -376,6 +376,16 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 - (OFString*)stringByAppendingString: (OFString*)string;
 
 /**
+ * \return The string in uppercase
+ */
+- (OFString*)uppercaseString;
+
+/**
+ * \return The string in lowercase
+ */
+- (OFString*)lowercaseString;
+
+/**
  * Creates a new string by deleting leading whitespaces.
  *
  * \return A new autoreleased OFString with leading whitespaces deleted

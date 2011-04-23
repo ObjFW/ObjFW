@@ -120,6 +120,12 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	TEST(@"-[lower]", R([s[0] lower]) && [s[0] isEqual: @"3𝄞1€sät"] &&
 	    R([s[1] lower]) && [s[1] isEqual: @"abc"])
 
+	TEST(@"-[uppercaseString]",
+	    [[s[0] uppercaseString] isEqual: @"3𝄞1€SÄT"])
+
+	TEST(@"-[lowercaseString]", R([s[0] upper]) &&
+	    [[s[0] lowercaseString] isEqual: @"3𝄞1€sät"])
+
 	TEST(@"+[stringWithCString:length:]",
 	    (s[0] = [OFMutableString stringWithCString: "\xEF\xBB\xBF" "foobar"
 					      length: 6]) &&
