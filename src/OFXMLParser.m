@@ -546,15 +546,15 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		} else
 			[previous addObject: [[cache copy] autorelease]];
 
-			[pool release];
+		[pool release];
 
-			[name release];
-			[prefix release];
-			name = prefix = nil;
+		[name release];
+		[prefix release];
+		name = prefix = nil;
 
-			state = (buffer[*i] == '/'
-			    ? OF_XMLPARSER_EXPECT_CLOSE
-			    : OF_XMLPARSER_OUTSIDE_TAG);
+		state = (buffer[*i] == '/'
+		    ? OF_XMLPARSER_EXPECT_CLOSE
+		    : OF_XMLPARSER_OUTSIDE_TAG);
 	} else
 		state = OF_XMLPARSER_IN_TAG;
 

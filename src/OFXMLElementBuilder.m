@@ -26,6 +26,8 @@
 
 #import "OFMalformedXMLException.h"
 
+#import "macros.h"
+
 @implementation OFXMLElementBuilder
 + elementBuilder
 {
@@ -56,14 +58,12 @@
 
 - (id <OFXMLElementBuilderDelegate>)delegate
 {
-	return [[(id)delegate retain] autorelease];
+	OF_GETTER(delegate, YES)
 }
 
 - (void)setDelegate: (id <OFXMLElementBuilderDelegate>)delegate_
 {
-	[(id)delegate_ retain];
-	[(id)delegate release];
-	delegate = delegate_;
+	OF_SETTER(delegate, delegate_, YES, NO)
 }
 
 -    (void)parser: (OFXMLParser*)parser
