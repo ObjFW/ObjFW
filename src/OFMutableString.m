@@ -267,7 +267,7 @@
 {
 	size_t i, j, len = length / 2;
 
-	madvise(string, len, MADV_SEQUENTIAL);
+	madvise(string, length, MADV_SEQUENTIAL);
 
 	/* We reverse all bytes and restore UTF-8 later, if necessary */
 	for (i = 0, j = length - 1; i < len; i++, j--) {
@@ -277,7 +277,7 @@
 	}
 
 	if (!isUTF8) {
-		madvise(string, len, MADV_NORMAL);
+		madvise(string, length, MADV_NORMAL);
 		return;
 	}
 
@@ -288,13 +288,13 @@
 
 		/* A start byte can't happen first as we reversed everything */
 		if (OF_UNLIKELY(string[i] & 0x40)) {
-			madvise(string, len, MADV_NORMAL);
+			madvise(string, length, MADV_NORMAL);
 			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
 
 		/* Next byte must not be ASCII */
 		if (OF_UNLIKELY(length < i + 1 || !(string[i + 1] & 0x80))) {
-			madvise(string, len, MADV_NORMAL);
+			madvise(string, length, MADV_NORMAL);
 			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
 
@@ -310,7 +310,7 @@
 
 		/* Second next byte must not be ASCII */
 		if (OF_UNLIKELY(length < i + 2 || !(string[i + 2] & 0x80))) {
-			madvise(string, len, MADV_NORMAL);
+			madvise(string, length, MADV_NORMAL);
 			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
 
@@ -326,7 +326,7 @@
 
 		/* Third next byte must not be ASCII */
 		if (OF_UNLIKELY(length < i + 3 || !(string[i + 3] & 0x80))) {
-			madvise(string, len, MADV_NORMAL);
+			madvise(string, length, MADV_NORMAL);
 			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
 
@@ -345,11 +345,11 @@
 		}
 
 		/* UTF-8 does not allow more than 4 bytes per character */
-		madvise(string, len, MADV_NORMAL);
+		madvise(string, length, MADV_NORMAL);
 		@throw [OFInvalidEncodingException newWithClass: isa];
 	}
 
-	madvise(string, len, MADV_NORMAL);
+	madvise(string, length, MADV_NORMAL);
 }
 
 - (void)upper
