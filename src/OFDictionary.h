@@ -145,8 +145,8 @@ struct of_dictionary_bucket
  * \param arguments A va_list of the other arguments
  * \return A new initialized OFDictionary
  */
--  initWithKey: (id <OFCopying>)firstKey
-  argumentList: (va_list)arguments;
+- initWithKey: (id <OFCopying>)firstKey
+    arguments: (va_list)arguments;
 
 /**
  * Returns the object for the given key or nil if the key was not found.

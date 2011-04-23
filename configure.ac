@@ -537,7 +537,7 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 
 	case "$host" in
 		*-*-mingw*)
-			AC_CHECK_PROG(WINE, wine)
+			AC_CHECK_PROG(WINE, wine, wine)
 
 			AS_IF([test x"$WINE" != x""], [
 				AC_SUBST(TESTS, "tests")

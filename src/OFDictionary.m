@@ -66,7 +66,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 
 	va_start(arguments, firstKey);
 	ret = [[[self alloc] initWithKey: firstKey
-			    argumentList: arguments] autorelease];
+			       arguments: arguments] autorelease];
 	va_end(arguments);
 
 	return ret;
@@ -307,28 +307,30 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 
 	va_start(arguments, firstKey);
 	ret = [self initWithKey: firstKey
-		   argumentList: arguments];
+		      arguments: arguments];
 	va_end(arguments);
 
 	return ret;
 }
 
--  initWithKey: (id <OFCopying>)key
-  argumentList: (va_list)arguments
+- initWithKey: (id <OFCopying>)firstKey
+    arguments: (va_list)arguments
 {
 	self = [super init];
 
 	@try {
-		id object;
+		id key, object;
 		uint32_t i, j, hash, newSize;
 		va_list argumentsCopy;
 		struct of_dictionary_bucket *bucket;
 
 		va_copy(argumentsCopy, arguments);
 
-		if (key == nil)
+		if (firstKey == nil)
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
+
+		key = firstKey;
 
 		if ((object = va_arg(arguments, id)) == nil)
 			@throw [OFInvalidArgumentException newWithClass: isa

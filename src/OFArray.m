@@ -46,7 +46,7 @@
 
 	va_start(arguments, firstObject);
 	ret = [[[self alloc] initWithObject: firstObject
-			       argumentList: arguments] autorelease];
+				  arguments: arguments] autorelease];
 	va_end(arguments);
 
 	return ret;
@@ -100,14 +100,14 @@
 
 	va_start(arguments, firstObject);
 	ret = [self initWithObject: firstObject
-		      argumentList: arguments];
+			 arguments: arguments];
 	va_end(arguments);
 
 	return ret;
 }
 
 - initWithObject: (id)firstObject
-    argumentList: (va_list)arguments
+       arguments: (va_list)arguments
 {
 	self = [self init];
 

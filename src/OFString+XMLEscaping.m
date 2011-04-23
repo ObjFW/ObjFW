@@ -31,7 +31,7 @@ int _OFString_XMLEscaping_reference;
 {
 	char *retCString;
 	const char *append;
-	size_t retLength, appendLength;
+	size_t retLength, appendLen;
 	size_t i, j;
 	OFString *ret;
 
@@ -49,44 +49,44 @@ int _OFString_XMLEscaping_reference;
 		switch (string[i]) {
 			case '<':
 				append = "&lt;";
-				appendLength = 4;
+				appendLen = 4;
 				break;
 			case '>':
 				append = "&gt;";
-				appendLength = 4;
+				appendLen = 4;
 				break;
 			case '"':
 				append = "&quot;";
-				appendLength = 6;
+				appendLen = 6;
 				break;
 			case '\'':
 				append = "&apos;";
-				appendLength = 6;
+				appendLen = 6;
 				break;
 			case '&':
 				append = "&amp;";
-				appendLength = 5;
+				appendLen = 5;
 				break;
 			default:
 				append = NULL;
-				appendLength = 0;
+				appendLen = 0;
 		}
 
 		if (append != NULL) {
 			char *newRetCString;
 
 			if ((newRetCString = realloc(retCString,
-			    retLength + appendLength)) == NULL) {
+			    retLength + appendLen)) == NULL) {
 				free(retCString);
 				@throw [OFOutOfMemoryException
 				     newWithClass: isa
-				    requestedSize: retLength + appendLength];
+				    requestedSize: retLength + appendLen];
 			}
 			retCString = newRetCString;
-			retLength += appendLength - 1;
+			retLength += appendLen - 1;
 
-			memcpy(retCString + j, append, appendLength);
-			j += appendLength;
+			memcpy(retCString + j, append, appendLen);
+			j += appendLen;
 		} else
 			retCString[j++] = string[i];
 	}

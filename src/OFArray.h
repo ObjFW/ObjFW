@@ -103,7 +103,7 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
  * \return An initialized OFArray
  */
 - initWithObject: (id)firstObject
-    argumentList: (va_list)arguments;
+       arguments: (va_list)arguments;
 
 /**
  * Initializes an OFArray with the objects from the specified C array.
