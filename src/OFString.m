@@ -63,14 +63,14 @@ void _references_to_categories_of_OFString(void)
 };
 
 static inline int
-memcasecmp(const char *s1, const char *s2, size_t len)
+memcasecmp(const char *first, const char *second, size_t len)
 {
 	size_t i;
 
 	for (i = 0; i < len; i++) {
-		if (tolower((int)s1[i]) > tolower((int)s2[i]))
+		if (tolower((int)first[i]) > tolower((int)second[i]))
 			return OF_ORDERED_DESCENDING;
-		if (tolower((int)s1[i]) < tolower((int)s2[i]))
+		if (tolower((int)first[i]) < tolower((int)second[i]))
 			return OF_ORDERED_ASCENDING;
 	}
 
@@ -246,63 +246,63 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return [[[self alloc] init] autorelease];
 }
 
-+ stringWithCString: (const char*)str
++ stringWithCString: (const char*)string
 {
-	return [[[self alloc] initWithCString: str] autorelease];
+	return [[[self alloc] initWithCString: string] autorelease];
 }
 
-+ stringWithCString: (const char*)str
++ stringWithCString: (const char*)string
 	   encoding: (of_string_encoding_t)encoding
 {
-	return [[[self alloc] initWithCString: str
+	return [[[self alloc] initWithCString: string
 				     encoding: encoding] autorelease];
 }
 
-+ stringWithCString: (const char*)str
++ stringWithCString: (const char*)string
 	   encoding: (of_string_encoding_t)encoding
-	     length: (size_t)len
+	     length: (size_t)length
 {
-	return [[[self alloc] initWithCString: str
+	return [[[self alloc] initWithCString: string
 				     encoding: encoding
-				       length: len] autorelease];
+				       length: length] autorelease];
 }
 
-+ stringWithCString: (const char*)str
-	     length: (size_t)len
++ stringWithCString: (const char*)string
+	     length: (size_t)length
 {
-	return [[[self alloc] initWithCString: str
-				       length: len] autorelease];
+	return [[[self alloc] initWithCString: string
+				       length: length] autorelease];
 }
 
-+ stringWithFormat: (OFString*)fmt, ...
++ stringWithFormat: (OFString*)format, ...
 {
 	id ret;
-	va_list args;
+	va_list arguments;
 
-	va_start(args, fmt);
-	ret = [[[self alloc] initWithFormat: fmt
-				  arguments: args] autorelease];
-	va_end(args);
+	va_start(arguments, format);
+	ret = [[[self alloc] initWithFormat: format
+				  arguments: arguments] autorelease];
+	va_end(arguments);
 
 	return ret;
 }
 
-+ stringWithPath: (OFString*)first, ...
++ stringWithPath: (OFString*)firstComponent, ...
 {
 	id ret;
-	va_list args;
+	va_list arguments;
 
-	va_start(args, first);
-	ret = [[[self alloc] initWithPath: first
-				arguments: args] autorelease];
-	va_end(args);
+	va_start(arguments, firstComponent);
+	ret = [[[self alloc] initWithPath: firstComponent
+				arguments: arguments] autorelease];
+	va_end(arguments);
 
 	return ret;
 }
 
-+ stringWithString: (OFString*)str
++ stringWithString: (OFString*)string
 {
-	return [[[self alloc] initWithString: str] autorelease];
+	return [[[self alloc] initWithString: string] autorelease];
 }
 
 + stringWithContentsOfFile: (OFString*)path
@@ -317,15 +317,15 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 					    encoding: encoding] autorelease];
 }
 
-+ stringWithContentsOfURL: (OFURL*)url
++ stringWithContentsOfURL: (OFURL*)URL
 {
-	return [[[self alloc] initWithContentsOfURL: url] autorelease];
+	return [[[self alloc] initWithContentsOfURL: URL] autorelease];
 }
 
-+ stringWithContentsOfURL: (OFURL*)url
++ stringWithContentsOfURL: (OFURL*)URL
 		 encoding: (of_string_encoding_t)encoding
 {
-	return [[[self alloc] initWithContentsOfURL: url
+	return [[[self alloc] initWithContentsOfURL: URL
 					   encoding: encoding] autorelease];
 }
 
@@ -344,24 +344,24 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return self;
 }
 
-- initWithCString: (const char*)str
+- initWithCString: (const char*)string_
 {
-	return [self initWithCString: str
+	return [self initWithCString: string_
 			    encoding: OF_STRING_ENCODING_UTF_8
-			      length: strlen(str)];
+			      length: strlen(string_)];
 }
 
-- initWithCString: (const char*)str
+- initWithCString: (const char*)string_
 	 encoding: (of_string_encoding_t)encoding
 {
-	return [self initWithCString: str
+	return [self initWithCString: string_
 			    encoding: encoding
-			      length: strlen(str)];
+			      length: strlen(string_)];
 }
 
-- initWithCString: (const char*)str
+- initWithCString: (const char*)string_
 	 encoding: (of_string_encoding_t)encoding
-	   length: (size_t)len
+	   length: (size_t)length_
 {
 	self = [super init];
 
@@ -370,16 +370,16 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		const uint16_t *table;
 
 		if (encoding == OF_STRING_ENCODING_UTF_8 &&
-		    len >= 3 && !memcmp(str, "\xEF\xBB\xBF", 3)) {
-			str += 3;
-			len -= 3;
+		    length_ >= 3 && !memcmp(string_, "\xEF\xBB\xBF", 3)) {
+			string_ += 3;
+			length_ -= 3;
 		}
 
-		string = [self allocMemoryWithSize: len + 1];
-		length = len;
+		string = [self allocMemoryWithSize: length_ + 1];
+		length = length_;
 
 		if (encoding == OF_STRING_ENCODING_UTF_8) {
-			switch (of_string_check_utf8(str, length)) {
+			switch (of_string_check_utf8(string_, length)) {
 			case 1:
 				isUTF8 = YES;
 				break;
@@ -388,25 +388,25 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 				    newWithClass: isa];
 			}
 
-			memcpy(string, str, length);
+			memcpy(string, string_, length);
 			string[length] = 0;
 
 			return self;
 		}
 
 		if (encoding == OF_STRING_ENCODING_ISO_8859_1) {
-			for (i = j = 0; i < len; i++) {
+			for (i = j = 0; i < length_; i++) {
 				char buf[4];
 				size_t bytes;
 
-				if (!(str[i] & 0x80)) {
-					string[j++] = str[i];
+				if (!(string_[i] & 0x80)) {
+					string[j++] = string_[i];
 					continue;
 				}
 
 				isUTF8 = YES;
 				bytes = of_string_unicode_to_utf8(
-				    (uint8_t)str[i], buf);
+				    (uint8_t)string_[i], buf);
 
 				if (bytes == 0)
 					@throw [OFInvalidEncodingException
@@ -436,35 +436,36 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
 
-		for (i = j = 0; i < len; i++) {
+		for (i = j = 0; i < length_; i++) {
 			char buf[4];
-			of_unichar_t chr;
-			size_t chr_bytes;
+			of_unichar_t character;
+			size_t characterBytes;
 
-			if (!(str[i] & 0x80)) {
-				string[j++] = str[i];
+			if (!(string_[i] & 0x80)) {
+				string[j++] = string_[i];
 				continue;
 			}
 
-			chr = table[(uint8_t)str[i]];
+			character = table[(uint8_t)string_[i]];
 
-			if (chr == 0xFFFD)
+			if (character == 0xFFFD)
 				@throw [OFInvalidEncodingException
 				    newWithClass: isa];
 
 			isUTF8 = YES;
-			chr_bytes = of_string_unicode_to_utf8(chr, buf);
+			characterBytes = of_string_unicode_to_utf8(character,
+			    buf);
 
-			if (chr_bytes == 0)
+			if (characterBytes == 0)
 				@throw [OFInvalidEncodingException
 				    newWithClass: isa];
 
-			length += chr_bytes - 1;
+			length += characterBytes - 1;
 			string = [self resizeMemory: string
 					     toSize: length + 1];
 
-			memcpy(string + j, buf, chr_bytes);
-			j += chr_bytes;
+			memcpy(string + j, buf, characterBytes);
+			j += characterBytes;
 		}
 
 		string[length] = 0;
@@ -476,40 +477,41 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return self;
 }
 
-- initWithCString: (const char*)str
-	   length: (size_t)len
+- initWithCString: (const char*)string_
+	   length: (size_t)length_
 {
-	return [self initWithCString: str
+	return [self initWithCString: string_
 			    encoding: OF_STRING_ENCODING_UTF_8
-			      length: len];
+			      length: length_];
 }
 
-- initWithFormat: (OFString*)fmt, ...
+- initWithFormat: (OFString*)format, ...
 {
 	id ret;
-	va_list args;
+	va_list arguments;
 
-	va_start(args, fmt);
-	ret = [self initWithFormat: fmt
-			 arguments: args];
-	va_end(args);
+	va_start(arguments, format);
+	ret = [self initWithFormat: format
+			 arguments: arguments];
+	va_end(arguments);
 
 	return ret;
 }
 
-- initWithFormat: (OFString*)fmt
-       arguments: (va_list)args
+- initWithFormat: (OFString*)format
+       arguments: (va_list)arguments
 {
 	self = [super init];
 
 	@try {
 		int len;
 
-		if (fmt == nil)
+		if (format == nil)
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
-		if ((len = of_vasprintf(&string, [fmt cString], args)) == -1)
+		if ((len = of_vasprintf(&string, [format cString],
+		    arguments)) == -1)
 			@throw [OFInvalidFormatException newWithClass: isa];
 
 		@try {
@@ -536,32 +538,33 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return self;
 }
 
-- initWithPath: (OFString*)first, ...
+- initWithPath: (OFString*)firstComponent, ...
 {
 	id ret;
-	va_list args;
+	va_list arguments;
 
-	va_start(args, first);
-	ret = [self initWithPath: first
-		       arguments: args];
-	va_end(args);
+	va_start(arguments, firstComponent);
+	ret = [self initWithPath: firstComponent
+		       arguments: arguments];
+	va_end(arguments);
 
 	return ret;
 }
 
-- initWithPath: (OFString*)first
-     arguments: (va_list)args
+- initWithPath: (OFString*)firstComponent
+     arguments: (va_list)arguments
 {
 	self = [super init];
 
 	@try {
 		OFString *component;
 		size_t len, i;
-		va_list args2;
+		va_list argumentsCopy;
 
-		length = [first cStringLength];
+		length = [firstComponent cStringLength];
 
-		switch (of_string_check_utf8([first cString], length)) {
+		switch (of_string_check_utf8([firstComponent cString],
+		    length)) {
 		case 1:
 			isUTF8 = YES;
 			break;
@@ -570,8 +573,8 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		}
 
 		/* Calculate length */
-		va_copy(args2, args);
-		while ((component = va_arg(args2, OFString*)) != nil) {
+		va_copy(argumentsCopy, arguments);
+		while ((component = va_arg(argumentsCopy, OFString*)) != nil) {
 			len = [component cStringLength];
 			length += 1 + len;
 
@@ -588,11 +591,11 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 		string = [self allocMemoryWithSize: length + 1];
 
-		len = [first cStringLength];
-		memcpy(string, [first cString], len);
+		len = [firstComponent cStringLength];
+		memcpy(string, [firstComponent cString], len);
 		i = len;
 
-		while ((component = va_arg(args, OFString*)) != nil) {
+		while ((component = va_arg(arguments, OFString*)) != nil) {
 			len = [component cStringLength];
 			string[i] = OF_PATH_DELIM;
 			memcpy(string + i + 1, [component cString], len);
@@ -608,14 +611,14 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return self;
 }
 
-- initWithString: (OFString*)str
+- initWithString: (OFString*)string_
 {
 	self = [super init];
 
 	@try {
 		/* We have no -[dealloc], so this is ok */
-		string = (char*)[str cString];
-		length = [str cStringLength];
+		string = (char*)[string_ cString];
+		length = [string_ cStringLength];
 
 		switch (of_string_check_utf8(string, length)) {
 		case 1:
@@ -690,18 +693,18 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return self;
 }
 
-- initWithContentsOfURL: (OFURL*)url
+- initWithContentsOfURL: (OFURL*)URL
 {
-	return [self initWithContentsOfURL: url
+	return [self initWithContentsOfURL: URL
 				  encoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- initWithContentsOfURL: (OFURL*)url
+- initWithContentsOfURL: (OFURL*)URL
 	       encoding: (of_string_encoding_t)encoding
 {
 	OFAutoreleasePool *pool;
-	OFHTTPRequest *req;
-	OFHTTPRequestResult *res;
+	OFHTTPRequest *request;
+	OFHTTPRequestResult *result;
 	Class c;
 
 	c = isa;
@@ -710,25 +713,25 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 	pool = [[OFAutoreleasePool alloc] init];
 
-	if ([[url scheme] isEqual: @"file"]) {
-		self = [[c alloc] initWithContentsOfFile: [url path]
+	if ([[URL scheme] isEqual: @"file"]) {
+		self = [[c alloc] initWithContentsOfFile: [URL path]
 						encoding: encoding];
 		[pool release];
 		return self;
 	}
 
-	req = [OFHTTPRequest requestWithURL: url];
-	res = [req perform];
+	request = [OFHTTPRequest requestWithURL: URL];
+	result = [request perform];
 
-	if ([res statusCode] != 200)
+	if ([result statusCode] != 200)
 		@throw [OFHTTPRequestFailedException
-		    newWithClass: [req class]
-		     HTTPRequest: req
-		      statusCode: [res statusCode]];
+		    newWithClass: [request class]
+		     HTTPRequest: request
+		      statusCode: [result statusCode]];
 
-	self = [[c alloc] initWithCString: (char*)[[res data] cArray]
+	self = [[c alloc] initWithCString: (char*)[[result data] cArray]
 				 encoding: encoding
-				   length: [[res data] count]];
+				   length: [[result data] count]];
 	[pool release];
 	return self;
 }
@@ -755,11 +758,16 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return isUTF8;
 }
 
-- (BOOL)isEqual: (id)obj
+- (BOOL)isEqual: (id)object
 {
-	if (![obj isKindOfClass: [OFString class]])
+	OFString *otherString;
+
+	if (![object isKindOfClass: [OFString class]])
 		return NO;
-	if (strcmp(string, [(OFString*)obj cString]))
+
+	otherString = (OFString*)object;
+
+	if (strcmp(string, [otherString cString]))
 		return NO;
 
 	return YES;
@@ -775,22 +783,25 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return [[OFMutableString alloc] initWithString: self];
 }
 
-- (of_comparison_result_t)compare: (id)obj
+- (of_comparison_result_t)compare: (id)object
 {
-	size_t str_len, min_len;
+	OFString *otherString;
+	size_t otherLen, minLen;
 	int cmp;
 
-	if (![obj isKindOfClass: [OFString class]])
+	if (![object isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	str_len = [(OFString*)obj cStringLength];
-	min_len = (length > str_len ? str_len : length);
+	otherString = (OFString*)object;
 
-	if ((cmp = memcmp(string, [(OFString*)obj cString], min_len)) == 0) {
-		if (length > str_len)
+	otherLen = [otherString cStringLength];
+	minLen = (length > otherLen ? otherLen : length);
+
+	if ((cmp = memcmp(string, [otherString cString], minLen)) == 0) {
+		if (length > otherLen)
 			return OF_ORDERED_DESCENDING;
-		if (length < str_len)
+		if (length < otherLen)
 			return OF_ORDERED_ASCENDING;
 		return OF_ORDERED_SAME;
 	}
@@ -801,26 +812,26 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		return OF_ORDERED_ASCENDING;
 }
 
-- (of_comparison_result_t)caseInsensitiveCompare: (OFString*)str
+- (of_comparison_result_t)caseInsensitiveCompare: (OFString*)otherString;
 {
-	const char *str_cstr;
-	size_t i, j, str_len, min_len;
+	const char *otherCString;
+	size_t i, j, otherLen, minLen;
 	int cmp;
 
-	if (![str isKindOfClass: [OFString class]])
+	if (![otherString isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	str_cstr = [str cString];
-	str_len = [str cStringLength];
+	otherCString = [otherString cString];
+	otherLen = [otherString cStringLength];
 
 	if (![self isUTF8]) {
-		min_len = (length > str_len ? str_len : length);
+		minLen = (length > otherLen ? otherLen : length);
 
-		if ((cmp = memcasecmp(string, [str cString], min_len)) == 0) {
-			if (length > str_len)
+		if ((cmp = memcasecmp(string, otherCString, minLen)) == 0) {
+			if (length > otherLen)
 				return OF_ORDERED_DESCENDING;
-			if (length < str_len)
+			if (length < otherLen)
 				return OF_ORDERED_ASCENDING;
 			return OF_ORDERED_SAME;
 		}
@@ -833,12 +844,13 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 	i = j = 0;
 
-	while (i < length && j < str_len) {
+	while (i < length && j < otherLen) {
 		of_unichar_t c1, c2;
 		size_t l1, l2;
 
 		l1 = of_string_utf8_to_unicode(string + i, length - i, &c1);
-		l2 = of_string_utf8_to_unicode(str_cstr + j, str_len - j, &c2);
+		l2 = of_string_utf8_to_unicode(otherCString + j, otherLen - j,
+		    &c2);
 
 		if (l1 == 0 || l2 == 0 || c1 > 0x10FFFF || c2 > 0x10FFFF)
 			@throw [OFInvalidEncodingException newWithClass: isa];
@@ -868,9 +880,9 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		j += l2;
 	}
 
-	if (length - i > str_len - j)
+	if (length - i > otherLen - j)
 		return OF_ORDERED_DESCENDING;
-	else if (length - i < str_len - j)
+	else if (length - i < otherLen - j)
 		return OF_ORDERED_ASCENDING;
 
 	return OF_ORDERED_SAME;
@@ -916,39 +928,39 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	return c;
 }
 
-- (size_t)indexOfFirstOccurrenceOfString: (OFString*)str
+- (size_t)indexOfFirstOccurrenceOfString: (OFString*)string_
 {
-	const char *str_c = [str cString];
-	size_t str_len = [str cStringLength];
+	const char *cString = [string_ cString];
+	size_t stringLen = [string_ cStringLength];
 	size_t i;
 
-	if (str_len == 0)
+	if (stringLen == 0)
 		return 0;
 
-	if (str_len > length)
+	if (stringLen > length)
 		return OF_INVALID_INDEX;
 
-	for (i = 0; i <= length - str_len; i++)
-		if (!memcmp(string + i, str_c, str_len))
+	for (i = 0; i <= length - stringLen; i++)
+		if (!memcmp(string + i, cString, stringLen))
 			return of_string_position_to_index(string, i);
 
 	return OF_INVALID_INDEX;
 }
 
-- (size_t)indexOfLastOccurrenceOfString: (OFString*)str
+- (size_t)indexOfLastOccurrenceOfString: (OFString*)string_
 {
-	const char *str_c = [str cString];
-	size_t str_len = [str cStringLength];
+	const char *cString = [string_ cString];
+	size_t stringLen = [string_ cStringLength];
 	size_t i;
 
-	if (str_len == 0)
+	if (stringLen == 0)
 		return of_string_position_to_index(string, length);
 
-	if (str_len > length)
+	if (stringLen > length)
 		return OF_INVALID_INDEX;
 
-	for (i = length - str_len;; i--) {
-		if (!memcmp(string + i, str_c, str_len))
+	for (i = length - stringLen;; i--) {
+		if (!memcmp(string + i, cString, stringLen))
 			return of_string_position_to_index(string, i);
 
 		/* Did not match and we're at the last char */
@@ -957,20 +969,20 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	}
 }
 
-- (BOOL)containsString: (OFString*)str
+- (BOOL)containsString: (OFString*)string_
 {
-	const char *str_c = [str cString];
-	size_t str_len = [str cStringLength];
+	const char *cString = [string_ cString];
+	size_t stringLen = [string_ cStringLength];
 	size_t i;
 
-	if (str_len == 0)
+	if (stringLen == 0)
 		return YES;
 
-	if (str_len > length)
+	if (stringLen > length)
 		return NO;
 
-	for (i = 0; i <= length - str_len; i++)
-		if (!memcmp(string + i, str_c, str_len))
+	for (i = 0; i <= length - stringLen; i++)
+		if (!memcmp(string + i, cString, stringLen))
 			return YES;
 
 	return NO;
@@ -1001,12 +1013,12 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 				toIndex: range.start + range.length];
 }
 
-- (OFString*)stringByAppendingString: (OFString*)str
+- (OFString*)stringByAppendingString: (OFString*)string_
 {
 	OFMutableString *new;
 
 	new = [OFMutableString stringWithString: self];
-	[new appendString: str];
+	[new appendString: string_];
 
 	/*
 	 * Class swizzle the string to be immutable. We declared the return type
@@ -1090,26 +1102,26 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	OFAutoreleasePool *pool;
 	OFMutableArray *array;
 	const char *delim = [delimiter cString];
-	size_t delim_len = [delimiter cStringLength];
+	size_t delimLen = [delimiter cStringLength];
 	size_t i, last;
 
 	array = [OFMutableArray array];
 	pool = [[OFAutoreleasePool alloc] init];
 
-	if (delim_len > length) {
+	if (delimLen > length) {
 		[array addObject: [[self copy] autorelease]];
 		[pool release];
 
 		return array;
 	}
 
-	for (i = 0, last = 0; i <= length - delim_len; i++) {
-		if (memcmp(string + i, delim, delim_len))
+	for (i = 0, last = 0; i <= length - delimLen; i++) {
+		if (memcmp(string + i, delim, delimLen))
 			continue;
 
 		[array addObject: [OFString stringWithCString: string + last
 						       length: i - last]];
-		i += delim_len - 1;
+		i += delimLen - 1;
 		last = i + 1;
 	}
 	[array addObject: [OFString stringWithCString: string + last]];
@@ -1129,23 +1141,23 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 {
 	OFMutableArray *ret;
 	OFAutoreleasePool *pool;
-	size_t i, last = 0, path_len = length;
+	size_t i, last = 0, pathLen = length;
 
 	ret = [OFMutableArray array];
 
-	if (path_len == 0)
+	if (pathLen == 0)
 		return ret;
 
 	pool = [[OFAutoreleasePool alloc] init];
 
 #ifndef _WIN32
-	if (string[path_len - 1] == OF_PATH_DELIM)
+	if (string[pathLen - 1] == OF_PATH_DELIM)
 #else
-	if (string[path_len - 1] == '/' || string[path_len - 1] == '\\')
+	if (string[pathLen - 1] == '/' || string[pathLen - 1] == '\\')
 #endif
-		path_len--;
+		pathLen--;
 
-	for (i = 0; i < path_len; i++) {
+	for (i = 0; i < pathLen; i++) {
 #ifndef _WIN32
 		if (string[i] == OF_PATH_DELIM) {
 #else
@@ -1174,20 +1186,20 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 - (OFString*)lastPathComponent
 {
-	size_t path_len = length;
+	size_t pathLen = length;
 	ssize_t i;
 
-	if (path_len == 0)
+	if (pathLen == 0)
 		return @"";
 
 #ifndef _WIN32
-	if (string[path_len - 1] == OF_PATH_DELIM)
+	if (string[pathLen - 1] == OF_PATH_DELIM)
 #else
-	if (string[path_len - 1] == '/' || string[path_len - 1] == '\\')
+	if (string[pathLen - 1] == '/' || string[pathLen - 1] == '\\')
 #endif
-		path_len--;
+		pathLen--;
 
-	for (i = path_len - 1; i >= 0; i--) {
+	for (i = pathLen - 1; i >= 0; i--) {
 #ifndef _WIN32
 		if (string[i] == OF_PATH_DELIM) {
 #else
@@ -1206,28 +1218,28 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		i = 0;
 
 	return [OFString stringWithCString: string + i
-				    length: path_len - i];
+				    length: pathLen - i];
 }
 
 - (OFString*)stringByDeletingLastPathComponent;
 {
-	size_t i, path_len = length;
+	size_t i, pathLen = length;
 
-	if (path_len == 0)
+	if (pathLen == 0)
 		return @"";
 
 #ifndef _WIN32
-	if (string[path_len - 1] == OF_PATH_DELIM)
+	if (string[pathLen - 1] == OF_PATH_DELIM)
 #else
-	if (string[path_len - 1] == '/' || string[path_len - 1] == '\\')
+	if (string[pathLen - 1] == '/' || string[pathLen - 1] == '\\')
 #endif
-		path_len--;
+		pathLen--;
 
-	if (path_len == 0)
+	if (pathLen == 0)
 		return [OFString stringWithCString: string
 					    length: 1];
 
-	for (i = path_len - 1; i >= 1; i--)
+	for (i = pathLen - 1; i >= 1; i--)
 #ifndef _WIN32
 		if (string[i] == OF_PATH_DELIM)
 #else
@@ -1355,20 +1367,20 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 - (float)floatValue
 {
 	const char *str = string;
-	char *endptr;
+	char *endPtr;
 	float value;
 
 	/* Don't depend on isspace and thus the used locale */
 	while (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r')
 		str++;
 
-	value = strtof(str, &endptr);
+	value = strtof(str, &endPtr);
 
 	/* Check if there are any invalid chars left */
-	if (endptr != NULL) {
-		for (; *endptr != '\0'; endptr++)
-			if (*endptr != ' ' && *endptr != '\t' &&
-			    *endptr != '\n' && *endptr != '\r')
+	if (endPtr != NULL) {
+		for (; *endPtr != '\0'; endPtr++)
+			if (*endPtr != ' ' && *endPtr != '\t' &&
+			    *endPtr != '\n' && *endPtr != '\r')
 				@throw [OFInvalidFormatException
 				    newWithClass: isa];
 	}
@@ -1379,20 +1391,20 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 - (double)doubleValue
 {
 	const char *str = string;
-	char *endptr;
+	char *endPtr;
 	double value;
 
 	/* Don't depend on isspace and thus the used locale */
 	while (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r')
 		str++;
 
-	value = strtod(str, &endptr);
+	value = strtod(str, &endPtr);
 
 	/* Check if there are any invalid chars left */
-	if (endptr != NULL) {
-		for (; *endptr != '\0'; endptr++)
-			if (*endptr != ' ' && *endptr != '\t' &&
-			    *endptr != '\n' && *endptr != '\r')
+	if (endPtr != NULL) {
+		for (; *endPtr != '\0'; endPtr++)
+			if (*endPtr != ' ' && *endPtr != '\t' &&
+			    *endPtr != '\n' && *endPtr != '\r')
 				@throw [OFInvalidFormatException
 				    newWithClass: isa];
 	}
@@ -1414,17 +1426,17 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 	while (i < length) {
 		of_unichar_t c;
-		size_t clen;
+		size_t cLen;
 
-		clen = of_string_utf8_to_unicode(string + i, length - 1, &c);
+		cLen = of_string_utf8_to_unicode(string + i, length - 1, &c);
 
-		if (clen == 0 || c > 0x10FFFF) {
+		if (cLen == 0 || c > 0x10FFFF) {
 			free(ret);
 			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
 
 		ret[j++] = c;
-		i += clen;
+		i += cLen;
 	}
 
 	ret[j] = 0;

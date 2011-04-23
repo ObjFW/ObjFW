@@ -29,7 +29,7 @@ int _OFString_Hashing_reference;
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFMD5Hash *hash = [OFMD5Hash MD5Hash];
 	uint8_t *digest;
-	char cString[OF_MD5_DIGEST_SIZE * 2];
+	char ret[OF_MD5_DIGEST_SIZE * 2];
 	size_t i;
 
 	[hash updateWithBuffer: string
@@ -42,13 +42,13 @@ int _OFString_Hashing_reference;
 		high = digest[i] >> 4;
 		low  = digest[i] & 0x0F;
 
-		cString[i * 2] = (high > 9 ? high - 10 + 'a' : high + '0');
-		cString[i * 2 + 1] = (low > 9 ? low - 10 + 'a' : low + '0');
+		ret[i * 2] = (high > 9 ? high - 10 + 'a' : high + '0');
+		ret[i * 2 + 1] = (low > 9 ? low - 10 + 'a' : low + '0');
 	}
 
 	[pool release];
 
-	return [OFString stringWithCString: cString
+	return [OFString stringWithCString: ret
 				    length: 32];
 }
 
@@ -57,7 +57,7 @@ int _OFString_Hashing_reference;
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFMD5Hash *hash = [OFSHA1Hash SHA1Hash];
 	uint8_t *digest;
-	char cString[OF_SHA1_DIGEST_SIZE * 2];
+	char ret[OF_SHA1_DIGEST_SIZE * 2];
 	size_t i;
 
 	[hash updateWithBuffer: string
@@ -70,13 +70,13 @@ int _OFString_Hashing_reference;
 		high = digest[i] >> 4;
 		low  = digest[i] & 0x0F;
 
-		cString[i * 2] = (high > 9 ? high - 10 + 'a' : high + '0');
-		cString[i * 2 + 1] = (low > 9 ? low - 10 + 'a' : low + '0');
+		ret[i * 2] = (high > 9 ? high - 10 + 'a' : high + '0');
+		ret[i * 2 + 1] = (low > 9 ? low - 10 + 'a' : low + '0');
 	}
 
 	[pool release];
 
-	return [OFString stringWithCString: cString
+	return [OFString stringWithCString: ret
 				    length: 40];
 }
 @end

@@ -40,19 +40,19 @@ const int8_t of_base64_decode_table[128] = {
 };
 
 OFString*
-of_base64_encode(const char *data, size_t length)
+of_base64_encode(const char *data, size_t len)
 {
 	OFMutableString *ret = [OFMutableString string];
-	uint8_t *buffer = (uint8_t*)data;
+	uint8_t *buf = (uint8_t*)data;
 	size_t i;
 	uint8_t rest;
 	char tb[4];
 	uint32_t sb;
 
-	rest = length % 3;
+	rest = len % 3;
 
-	for (i = 0; i < length - rest; i += 3) {
-		sb = (buffer[i] << 16) | (buffer[i + 1] << 8) | buffer[i + 2];
+	for (i = 0; i < len - rest; i += 3) {
+		sb = (buf[i] << 16) | (buf[i + 1] << 8) | buf[i + 2];
 
 		tb[0] = of_base64_encode_table[(sb & 0xFC0000) >> 18];
 		tb[1] = of_base64_encode_table[(sb & 0x03F000) >> 12];
@@ -65,8 +65,8 @@ of_base64_encode(const char *data, size_t length)
 
 	switch (rest) {
 	case 1:
-		tb[0] = of_base64_encode_table[buffer[i] >> 2];
-		tb[1] = of_base64_encode_table[(buffer[i] & 3) << 4];
+		tb[0] = of_base64_encode_table[buf[i] >> 2];
+		tb[1] = of_base64_encode_table[(buf[i] & 3) << 4];
 		tb[2] = tb[3] = '=';
 
 		[ret appendCStringWithoutUTF8Checking: tb
@@ -74,7 +74,7 @@ of_base64_encode(const char *data, size_t length)
 
 		break;
 	case 2:
-		sb = (buffer[i] << 16) | (buffer[i + 1] << 8);
+		sb = (buf[i] << 16) | (buf[i + 1] << 8);
 
 		tb[0] = of_base64_encode_table[(sb & 0xFC0000) >> 18];
 		tb[1] = of_base64_encode_table[(sb & 0x03F000) >> 12];
@@ -97,9 +97,9 @@ of_base64_encode(const char *data, size_t length)
 }
 
 BOOL
-of_base64_decode(OFDataArray *data, const char *cString, size_t len)
+of_base64_decode(OFDataArray *data, const char *str, size_t len)
 {
-	const uint8_t *buffer = (const uint8_t*)cString;
+	const uint8_t *buf = (const uint8_t*)str;
 	size_t i;
 
 	if ((len & 3) != 0)
@@ -111,35 +111,35 @@ of_base64_decode(OFDataArray *data, const char *cString, size_t len)
 		char db[3];
 		char tmp;
 
-		if (buffer[i] > 0x7F || buffer[i + 1] > 0x7F ||
-		    buffer[i + 2] > 0x7F || buffer[i + 3] > 0x7F)
+		if (buf[i] > 0x7F || buf[i + 1] > 0x7F ||
+		    buf[i + 2] > 0x7F || buf[i + 3] > 0x7F)
 			return NO;
 
-		if (buffer[i] == '=' || buffer[i + 1] == '=' ||
-		    (buffer[i + 2] == '=' && buffer[i + 3] != '='))
+		if (buf[i] == '=' || buf[i + 1] == '=' ||
+		    (buf[i + 2] == '=' && buf[i + 3] != '='))
 			return NO;
 
-		if (buffer[i + 2] == '=')
+		if (buf[i + 2] == '=')
 			count--;
-		if (buffer[i + 3] == '=')
+		if (buf[i + 3] == '=')
 			count--;
 
-		if ((tmp = of_base64_decode_table[buffer[i]]) == -1)
+		if ((tmp = of_base64_decode_table[buf[i]]) == -1)
 			return NO;
 
 		sb |= tmp << 18;
 
-		if ((tmp = of_base64_decode_table[buffer[i + 1]]) == -1)
+		if ((tmp = of_base64_decode_table[buf[i + 1]]) == -1)
 			return NO;
 
 		sb |= tmp << 12;
 
-		if ((tmp = of_base64_decode_table[buffer[i + 2]]) == -1)
+		if ((tmp = of_base64_decode_table[buf[i + 2]]) == -1)
 			return NO;
 
 		sb |= tmp << 6;
 
-		if ((tmp = of_base64_decode_table[buffer[i + 3]]) == -1)
+		if ((tmp = of_base64_decode_table[buf[i + 3]]) == -1)
 			return NO;
 
 		sb |= tmp;

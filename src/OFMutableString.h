@@ -26,25 +26,25 @@
 /**
  * Sets the OFString to the specified UTF-8 encoded C string.
  *
- * \param str A UTF-8 encoded C string to set the OFString to.
+ * \param string A UTF-8 encoded C string to set the OFString to.
  */
-- (void)setToCString: (const char*)str;
+- (void)setToCString: (const char*)string;
 
 /**
  * Appends a UTF-8 encoded C string to the OFString.
  *
- * \param str A UTF-8 encoded C string to append
+ * \param string A UTF-8 encoded C string to append
  */
-- (void)appendCString: (const char*)str;
+- (void)appendCString: (const char*)string;
 
 /**
  * Appends a UTF-8 encoded C string with the specified length to the OFString.
  *
- * \param str A UTF-8 encoded C string to append
- * \param len The length of the UTF-8 encoded C string
+ * \param string A UTF-8 encoded C string to append
+ * \param length The length of the UTF-8 encoded C string
  */
-- (void)appendCString: (const char*)str
-	   withLength: (size_t)len;
+- (void)appendCString: (const char*)string
+	   withLength: (size_t)length;
 
 /**
  * Appends a UTF-8 encoded C string to the OFString without checking whether it
@@ -53,9 +53,9 @@
  * Only use this if you are 100% sure the string you append is either ASCII or
  * UTF-8!
  *
- * \param str A UTF-8 encoded C string to append
+ * \param string A UTF-8 encoded C string to append
  */
-- (void)appendCStringWithoutUTF8Checking: (const char*)str;
+- (void)appendCStringWithoutUTF8Checking: (const char*)string;
 
 /**
  * Appends a UTF-8 encoded C string with the specified length to the OFString
@@ -64,43 +64,43 @@
  * Only use this if you are 100% sure the string you append is either ASCII or
  * UTF-8!
  *
- * \param str A UTF-8 encoded C string to append
- * \param len The length of the UTF-8 encoded C string
+ * \param string A UTF-8 encoded C string to append
+ * \param length The length of the UTF-8 encoded C string
  */
-- (void)appendCStringWithoutUTF8Checking: (const char*)str
-				  length: (size_t)len;
+- (void)appendCStringWithoutUTF8Checking: (const char*)string
+				  length: (size_t)length;
 
 /**
  * Appends another OFString to the OFString.
  *
- * \param str An OFString to append
+ * \param string An OFString to append
  */
-- (void)appendString: (OFString*)str;
+- (void)appendString: (OFString*)string;
 
 /**
  * Appends a formatted UTF-8 encoded C string to the OFString.
  * See printf for the format syntax.
  *
- * \param fmt A format string which generates the string to append
+ * \param format A format string which generates the string to append
  */
-- (void)appendFormat: (OFString*)fmt, ...;
+- (void)appendFormat: (OFString*)format, ...;
 
 /**
  * Appends a formatted UTF-8 encoded C string to the OFString.
  * See printf for the format syntax.
  *
- * \param fmt A format string which generates the string to append
- * \param args The arguments used in the format string
+ * \param format A format string which generates the string to append
+ * \param arguments The arguments used in the format string
  */
-- (void)appendFormat: (OFString*)fmt
-       withArguments: (va_list)args;
+- (void)appendFormat: (OFString*)format
+       withArguments: (va_list)arguments;
 
 /**
  * Prepends another OFString to the OFString.
  *
- * \param str An OFString to prepend
+ * \param string An OFString to prepend
  */
-- (void)prependString: (OFString*)str;
+- (void)prependString: (OFString*)string;
 
 /**
  * Reverse the OFString.
@@ -120,11 +120,11 @@
 /**
  * Inserts a string at the specified index.
  *
- * \param str The string to insert
- * \param idx The index
+ * \param string The string to insert
+ * \param index The index
  */
-- (void)insertString: (OFString*)str
-	     atIndex: (size_t)idx;
+- (void)insertString: (OFString*)string
+	     atIndex: (size_t)index;
 
 /**
  * Deletes the characters at the specified range.
@@ -149,29 +149,29 @@
  * \param start The index where the replacement should be started
  * \param end The index until which the characters should be replaced.
  *	      This points BEHIND the last character!
- * \param repl The string to the replace the characters with
+ * \param replacement The string to the replace the characters with
  */
 - (void)replaceCharactersFromIndex: (size_t)start
 			   toIndex: (size_t)end
-			withString: (OFString*)repl;
+			withString: (OFString*)replacement;
 
 /**
  * Deletes the characters at the specified range.
  *
  * \param range The range of the characters which should be replaced
- * \param repl The string to the replace the characters with
+ * \param replacement The string to the replace the characters with
  */
 - (void)replaceCharactersInRange: (of_range_t)range
-		      withString: (OFString*)repl;
+		      withString: (OFString*)replacement;
 
 /**
  * Deletes all occurrences of a string with another string.
  *
- * \param str The string to replace
- * \param repl The string with which it should be replaced
+ * \param string The string to replace
+ * \param replacement The string with which it should be replaced
  */
-- (void)replaceOccurrencesOfString: (OFString*)str
-			withString: (OFString*)repl;
+- (void)replaceOccurrencesOfString: (OFString*)string
+			withString: (OFString*)replacement;
 
 /**
  * Deletes all whitespaces at the beginning of a string.

@@ -65,69 +65,69 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 /**
  * Creates a new OFString from a UTF-8 encoded C string.
  *
- * \param str A UTF-8 encoded C string to initialize the OFString with
+ * \param string A UTF-8 encoded C string to initialize the OFString with
  * \return A new autoreleased OFString
  */
-+ stringWithCString: (const char*)str;
++ stringWithCString: (const char*)string;
 
 /**
  * Creates a new OFString from a C string with the specified encoding.
  *
- * \param str A C string to initialize the OFString with
+ * \param string A C string to initialize the OFString with
  * \param encoding The encoding of the C string
  * \return A new autoreleased OFString
  */
-+ stringWithCString: (const char*)str
++ stringWithCString: (const char*)string
 	   encoding: (of_string_encoding_t)encoding;
 
 /**
  * Creates a new OFString from a C string with the specified encoding and
  * length.
  *
- * \param str A C string to initialize the OFString with
+ * \param string A C string to initialize the OFString with
  * \param encoding The encoding of the C string
- * \param len The length of the C string
+ * \param length The length of the C string
  * \return A new autoreleased OFString
  */
-+ stringWithCString: (const char*)str
++ stringWithCString: (const char*)string
 	   encoding: (of_string_encoding_t)encoding
-	     length: (size_t)len;
+	     length: (size_t)length;
 
 /**
  * Creates a new OFString from a UTF-8 encoded C string with the specified
  * length.
  *
- * \param str A UTF-8 encoded C string to initialize the OFString with
- * \param len The length of the UTF-8 encoded C string
+ * \param string A UTF-8 encoded C string to initialize the OFString with
+ * \param length The length of the UTF-8 encoded C string
  * \return A new autoreleased OFString
  */
-+ stringWithCString: (const char*)str
-	     length: (size_t)len;
++ stringWithCString: (const char*)string
+	     length: (size_t)length;
 
 /**
  * Creates a new OFString from a format string.
  * See printf for the format syntax.
  *
- * \param fmt A string used as format to initialize the OFString
+ * \param format A string used as format to initialize the OFString
  * \return A new autoreleased OFString
  */
-+ stringWithFormat: (OFString*)fmt, ...;
++ stringWithFormat: (OFString*)format, ...;
 
 /**
  * Creates a new OFString containing the constructed specified path.
  *
- * \param first The first component of the path
+ * \param firstComponent The first component of the path
  * \return A new autoreleased OFString
  */
-+ stringWithPath: (OFString*)first, ...;
++ stringWithPath: (OFString*)firstComponent, ...;
 
 /**
  * Creates a new OFString from another string.
  *
- * \param str A string to initialize the OFString with
+ * \param string A string to initialize the OFString with
  * \return A new autoreleased OFString
  */
-+ stringWithString: (OFString*)str;
++ stringWithString: (OFString*)string;
 
 /**
  * Creates a new OFString with the contents of the specified UTF-8 encoded file.
@@ -152,112 +152,112 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  * Creates a new OFString with the contents of the specified URL, assuming
  * UTF-8 encoding.
  *
- * \param url The URL to the contents for the string
+ * \param URL The URL to the contents for the string
  * \return A new autoreleased OFString
  */
-+ stringWithContentsOfURL: (OFURL*)url;
++ stringWithContentsOfURL: (OFURL*)URL;
 
 /**
  * Creates a new OFString with the contents of the specified URL in the
  * specified encoding.
  *
- * \param url The URL to the contents for the string
+ * \param URL The URL to the contents for the string
  * \param encoding The encoding to assume
  * \return A new autoreleased OFString
  */
-+ stringWithContentsOfURL: (OFURL*)url
++ stringWithContentsOfURL: (OFURL*)URL
 		 encoding: (of_string_encoding_t)encoding;
 
 /**
  * Initializes an already allocated OFString from a UTF-8 encoded C string.
  *
- * \param str A UTF-8 encoded C string to initialize the OFString with
+ * \param string A UTF-8 encoded C string to initialize the OFString with
  * \return An initialized OFString
  */
-- initWithCString: (const char*)str;
+- initWithCString: (const char*)string;
 
 /**
  * Initializes an already allocated OFString from a C string with the specified
  * encoding.
  *
- * \param str A C string to initialize the OFString with
+ * \param string A C string to initialize the OFString with
  * \param encoding The encoding of the C string
  * \return An initialized OFString
  */
-- initWithCString: (const char*)str
+- initWithCString: (const char*)string
 	 encoding: (of_string_encoding_t)encoding;
 
 /**
  * Initializes an already allocated OFString from a C string with the specified
  * encoding and length.
  *
- * \param str A C string to initialize the OFString with
+ * \param string A C string to initialize the OFString with
  * \param encoding The encoding of the C string
- * \param len The length of the C string
+ * \param length The length of the C string
  * \return An initialized OFString
  */
-- initWithCString: (const char*)str
+- initWithCString: (const char*)string
 	 encoding: (of_string_encoding_t)encoding
-	   length: (size_t)len;
+	   length: (size_t)length;
 
 /**
  * Initializes an already allocated OFString from a UTF-8 encoded C string with
  * the specified length.
  *
- * \param str A UTF-8 encoded C string to initialize the OFString with
- * \param len The length of the UTF-8 encoded C string
+ * \param string A UTF-8 encoded C string to initialize the OFString with
+ * \param length The length of the UTF-8 encoded C string
  * \return An initialized OFString
  */
-- initWithCString: (const char*)str
-	   length: (size_t)len;
+- initWithCString: (const char*)string
+	   length: (size_t)length;
 
 /**
  * Initializes an already allocated OFString with a format string.
  * See printf for the format syntax.
  *
- * \param fmt A string used as format to initialize the OFString
+ * \param format A string used as format to initialize the OFString
  * \return An initialized OFString
  */
-- initWithFormat: (OFString*)fmt, ...;
+- initWithFormat: (OFString*)format, ...;
 
 /**
  * Initializes an already allocated OFString with a format string.
  * See printf for the format syntax.
  *
- * \param fmt A string used as format to initialize the OFString
- * \param args The arguments used in the format string
+ * \param format A string used as format to initialize the OFString
+ * \param arguments The arguments used in the format string
  * \return An initialized OFString
  */
-- initWithFormat: (OFString*)fmt
-       arguments: (va_list)args;
+- initWithFormat: (OFString*)format
+       arguments: (va_list)arguments;
 
 /**
  * Initializes an already allocated OFString with the constructed specified
  * path.
  *
- * \param first The first component of the path
+ * \param firstComponent The first component of the path
  * \return A new autoreleased OFString
  */
-- initWithPath: (OFString*)first, ...;
+- initWithPath: (OFString*)firstComponent, ...;
 
 /**
  * Initializes an already allocated OFString with the constructed specified
  * path.
  *
- * \param first The first component of the path
- * \param args A va_list with the other components of the path
+ * \param firstComponent The first component of the path
+ * \param arguments A va_list with the other components of the path
  * \return A new autoreleased OFString
  */
-- initWithPath: (OFString*)first
-     arguments: (va_list)args;
+- initWithPath: (OFString*)firstComponent
+     arguments: (va_list)arguments;
 
 /**
  * Initializes an already allocated OFString with another string.
  *
- * \param str A string to initialize the OFString with
+ * \param string A string to initialize the OFString with
  * \return An initialized OFString
  */
-- initWithString: (OFString*)str;
+- initWithString: (OFString*)string;
 
 /**
  * Initializes an already allocated OFString with the contents of the specified
@@ -283,20 +283,20 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  * Initializes an already allocated OFString with the contents of the specified
  * URL, assuming UTF-8 encoding.
  *
- * \param url The URL to the contents for the string
+ * \param URL The URL to the contents for the string
  * \return An initialized OFString
  */
-- initWithContentsOfURL: (OFURL*)url;
+- initWithContentsOfURL: (OFURL*)URL;
 
 /**
  * Initializes an already allocated OFString with the contents of the specified
  * URL in the specified encoding.
  *
- * \param url The URL to the contents for the string
+ * \param URL The URL to the contents for the string
  * \param encoding The encoding to assume
  * \return An initialized OFString
  */
-- initWithContentsOfURL: (OFURL*)url
+- initWithContentsOfURL: (OFURL*)URL
 	       encoding: (of_string_encoding_t)encoding;
 
 /**
@@ -321,10 +321,10 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 /**
  * Compares the OFString to another OFString without caring about the case.
  *
- * \param str A string to compare with
+ * \param otherString A string to compare with
  * \return An of_comparison_result_t
  */
-- (of_comparison_result_t)caseInsensitiveCompare: (OFString*)str;
+- (of_comparison_result_t)caseInsensitiveCompare: (OFString*)otherString;
 
 /**
  * \param index The index of the Unicode character to return
@@ -333,24 +333,24 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 - (of_unichar_t)characterAtIndex: (size_t)index;
 
 /**
- * \param str The string to search
+ * \param string The string to search
  * \return The index of the first occurrence of the string or OF_INVALID_INDEX
  *	   if it was not found
  */
-- (size_t)indexOfFirstOccurrenceOfString: (OFString*)str;
+- (size_t)indexOfFirstOccurrenceOfString: (OFString*)string;
 
 /**
- * \param str The string to search
+ * \param string The string to search
  * \return The index of the last occurrence of the string or OF_INVALID_INDEX if
  *	   it was not found
  */
-- (size_t)indexOfLastOccurrenceOfString: (OFString*)str;
+- (size_t)indexOfLastOccurrenceOfString: (OFString*)string;
 
 /**
- * \param str The string to search
+ * \param string The string to search
  * \return Whether the string contains the specified string
  */
-- (BOOL)containsString: (OFString*)str;
+- (BOOL)containsString: (OFString*)string;
 
 /**
  * \param start The index where the substring starts
@@ -370,10 +370,10 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 /**
  * Creates a new string by appending another string.
  *
- * \param str The string to append
+ * \param string The string to append
  * \return A new autoreleased OFString with the specified string appended
  */
-- (OFString*)stringByAppendingString: (OFString*)str;
+- (OFString*)stringByAppendingString: (OFString*)string;
 
 /**
  * Creates a new string by deleting leading whitespaces.
