@@ -116,6 +116,12 @@ objc_enumerationMutation(id object)
 }
 #endif
 
+const char*
+_NSPrintForDebugger(id object)
+{
+	return [[object description] cString];
+}
+
 @implementation OFObject
 + (void)load
 {
