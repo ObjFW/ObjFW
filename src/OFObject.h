@@ -411,6 +411,12 @@ typedef struct of_range_t {
  * It is also called when the retain count reaches zero.
  */
 - (void)dealloc;
+
+/**
+ * If a garbage collector is added in the future, this method will be called
+ * before it disposes of the object, for example to close files.
+ */
+- (void)finalize;
 @end
 
 /**

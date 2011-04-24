@@ -816,6 +816,33 @@ _NSPrintForDebugger(id object)
 	free((char*)self - PRE_IVAR_ALIGN);
 }
 
+- (void)finalize
+{
+	Class class;
+	void (*last)(id, SEL) = NULL;
+	void **iter;
+
+	for (class = isa; class != Nil; class = class_getSuperclass(class)) {
+		void (*destruct)(id, SEL);
+
+		if ([class instancesRespondToSelector: cxx_destruct]) {
+			if ((destruct = (void(*)(id, SEL))[class
+			    instanceMethodForSelector: cxx_destruct]) != last)
+				destruct(self, cxx_destruct);
+
+			last = destruct;
+		} else
+			break;
+	}
+
+	iter = PRE_IVAR->memoryChunks + PRE_IVAR->memoryChunksSize;
+	while (iter-- > PRE_IVAR->memoryChunks)
+		free(*iter);
+
+	if (PRE_IVAR->memoryChunks != NULL)
+		free(PRE_IVAR->memoryChunks);
+}
+
 /* Required to use properties with the Apple runtime */
 - copyWithZone: (void*)zone
 {

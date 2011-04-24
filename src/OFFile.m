@@ -686,6 +686,14 @@ of_log(OFConstantString *format, ...)
 
 	[super dealloc];
 }
+
+- (void)finalize
+{
+	if (closable && fileDescriptor != -1)
+		close(fileDescriptor);
+
+	[super finalize];
+}
 @end
 
 @implementation OFFileSingleton

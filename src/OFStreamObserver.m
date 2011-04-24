@@ -153,6 +153,14 @@ enum {
 	[super dealloc];
 }
 
+- (void)finalize
+{
+	close(cancelFD[0]);
+	close(cancelFD[1]);
+
+	[super finalize];
+}
+
 - (id <OFStreamObserverDelegate>)delegate
 {
 	return [[(id)delegate retain] autorelease];
