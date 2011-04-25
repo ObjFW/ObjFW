@@ -755,6 +755,7 @@
 {
 	[name release];
 	[ns release];
+	[defaultNamespace release];
 	[attributes release];
 	[namespaces release];
 	[children release];
