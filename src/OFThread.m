@@ -53,8 +53,10 @@ static OFList *TLSKeys;
 static of_tlskey_t threadSelf;
 
 static id
-call_main(OFThread *thread)
+call_main(id object)
 {
+	OFThread *thread = (OFThread*)object;
+
 #if defined(OF_GNU_RUNTIME) || defined(OF_OLD_GNU_RUNTIME)
 	objc_thread_add();
 #endif
