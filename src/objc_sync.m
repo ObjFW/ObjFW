@@ -59,7 +59,7 @@ objc_sync_enter(id object)
 {
 	ssize_t i;
 
-	if (obj == nil)
+	if (object == nil)
 		return 0;
 
 	if (!of_mutex_lock(&mutex))
