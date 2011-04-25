@@ -214,7 +214,9 @@
 	OFXMLParser *parser;
 	OFXMLElementBuilder *builder;
 	OFXMLElement_OFXMLElementBuilderDelegate *delegate;
+	Class c;
 
+	c = isa;
 	[self release];
 
 	pool = [[OFAutoreleasePool alloc] init];
@@ -230,7 +232,7 @@
 	[parser parseString: string];
 
 	if (![parser finishedParsing])
-		@throw [OFMalformedXMLException newWithClass: isa
+		@throw [OFMalformedXMLException newWithClass: c
 						      parser: parser];
 
 	self = [delegate->element retain];
