@@ -29,7 +29,8 @@ typedef enum of_string_encoding_t {
 	OF_STRING_ENCODING_UTF_8,
 	OF_STRING_ENCODING_ISO_8859_1,
 	OF_STRING_ENCODING_ISO_8859_15,
-	OF_STRING_ENCODING_WINDOWS_1252
+	OF_STRING_ENCODING_WINDOWS_1252,
+	OF_STRING_ENCODING_AUTODETECT = 0xFF
 } of_string_encoding_t;
 
 #ifdef __cplusplus
@@ -149,8 +150,13 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 		  encoding: (of_string_encoding_t)encoding;
 
 /**
- * Creates a new OFString with the contents of the specified URL, assuming
- * UTF-8 encoding.
+ * Creates a new OFString with the contents of the specified URL.
+ *
+ * If the URL's scheme is file, it tries UTF-8 encoding.
+ *
+ * If the URL's scheme is http(s), it tries to detect the encoding from the HTTP
+ * headers. If it could not detect the encoding using the HTTP headers, it tries
+ * UTF-8 and falls back to ISO-8859-1 if that fails.
  *
  * \param URL The URL to the contents for the string
  * \return A new autoreleased OFString
@@ -281,7 +287,13 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 
 /**
  * Initializes an already allocated OFString with the contents of the specified
- * URL, assuming UTF-8 encoding.
+ * URL.
+ *
+ * If the URL's scheme is file, it tries UTF-8 encoding.
+ *
+ * If the URL's scheme is http(s), it tries to detect the encoding from the HTTP
+ * headers. If it could not detect the encoding using the HTTP headers, it tries
+ * UTF-8 and falls back to ISO-8859-1 if that fails.
  *
  * \param URL The URL to the contents for the string
  * \return An initialized OFString

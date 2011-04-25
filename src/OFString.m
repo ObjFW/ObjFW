@@ -32,6 +32,7 @@
 
 #import "OFString.h"
 #import "OFArray.h"
+#import "OFDictionary.h"
 #import "OFFile.h"
 #import "OFURL.h"
 #import "OFHTTPRequest.h"
@@ -60,7 +61,7 @@ void _references_to_categories_of_OFString(void)
 	_OFString_URLEncoding_reference = 1;
 	_OFString_XMLEscaping_reference = 1;
 	_OFString_XMLUnescaping_reference = 1;
-};
+}
 
 static inline int
 memcasecmp(const char *first, const char *second, size_t len)
@@ -699,7 +700,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 - initWithContentsOfURL: (OFURL*)URL
 {
 	return [self initWithContentsOfURL: URL
-				  encoding: OF_STRING_ENCODING_UTF_8];
+				  encoding: OF_STRING_ENCODING_AUTODETECT];
 }
 
 - initWithContentsOfURL: (OFURL*)URL
@@ -708,6 +709,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	OFAutoreleasePool *pool;
 	OFHTTPRequest *request;
 	OFHTTPRequestResult *result;
+	OFMutableString *contentType;
 	Class c;
 
 	c = isa;
@@ -716,6 +718,9 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	pool = [[OFAutoreleasePool alloc] init];
 
 	if ([[URL scheme] isEqual: @"file"]) {
+		if (encoding == OF_STRING_ENCODING_AUTODETECT)
+			encoding = OF_STRING_ENCODING_UTF_8;
+
 		self = [[c alloc] initWithContentsOfFile: [URL path]
 						encoding: encoding];
 		[pool release];
@@ -731,9 +736,39 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		     HTTPRequest: request
 		      statusCode: [result statusCode]];
 
-	self = [[c alloc] initWithCString: (char*)[[result data] cArray]
-				 encoding: encoding
-				   length: [[result data] count]];
+	if (encoding == OF_STRING_ENCODING_AUTODETECT &&
+	    (contentType = [[result headers] objectForKey: @"Content-Type"])) {
+		contentType = [[contentType mutableCopy] autorelease];
+		[contentType lower];
+
+		if ([contentType hasSuffix: @"encoding=UTF-8"])
+			encoding = OF_STRING_ENCODING_UTF_8;
+		if ([contentType hasSuffix: @"encoding=iso-8859-1"])
+			encoding = OF_STRING_ENCODING_ISO_8859_1;
+		if ([contentType hasSuffix: @"encoding=iso-8859-15"])
+			encoding = OF_STRING_ENCODING_ISO_8859_15;
+		if ([contentType hasSuffix: @"encoding=windows-1252"])
+			encoding = OF_STRING_ENCODING_WINDOWS_1252;
+	}
+
+	if (encoding == OF_STRING_ENCODING_AUTODETECT) {
+		@try {
+			self = [[c alloc]
+			    initWithCString: (char*)[[result data] cArray]
+				   encoding: OF_STRING_ENCODING_UTF_8
+				     length: [[result data] count]];
+		} @catch (OFInvalidEncodingException *e) {
+			self = [[c alloc]
+			    initWithCString: (char*)[[result data] cArray]
+				   encoding: OF_STRING_ENCODING_ISO_8859_1
+				     length: [[result data] count]];
+		}
+	} else {
+		self = [[c alloc] initWithCString: (char*)[[result data] cArray]
+					 encoding: encoding
+					   length: [[result data] count]];
+	}
+
 	[pool release];
 	return self;
 }
