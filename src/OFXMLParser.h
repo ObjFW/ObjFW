@@ -184,6 +184,7 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
 	size_t lineNumber;
 	BOOL lastCarriageReturn;
 	BOOL finishedParsing;
+	of_string_encoding_t encoding;
 }
 
 #ifdef OF_HAVE_PROPERTIES

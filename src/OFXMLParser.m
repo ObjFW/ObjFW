@@ -40,15 +40,47 @@ typedef void (*state_function)(id, SEL, const char*, size_t*, size_t*);
 static SEL selectors[OF_XMLPARSER_NUM_STATES];
 static state_function lookupTable[OF_XMLPARSER_NUM_STATES];
 
-static OF_INLINE OFString*
-transform_string(OFMutableString *cache,
+static OFString*
+transform_string(OFMutableString *cache, size_t cut, BOOL unescape,
     OFObject <OFStringXMLUnescapingDelegate> *delegate)
 {
 	[cache replaceOccurrencesOfString: @"\r\n"
 			       withString: @"\n"];
 	[cache replaceOccurrencesOfString: @"\r"
 			       withString: @"\n"];
-	return [cache stringByXMLUnescapingWithDelegate: delegate];
+
+	if (cut > 0) {
+		/*
+		 * We need to create a mutable copy in order to detect possible
+		 * UTF-8, as we never checked for UTF-8 when appending to the
+		 * cache for performance reasons.
+		 */
+		OFMutableString *ret = [[cache mutableCopy] autorelease];
+		size_t length;
+
+		length = [ret length];
+		[ret deleteCharactersFromIndex: length - cut
+				       toIndex: length];
+
+		if (unescape)
+			return [ret stringByXMLUnescapingWithDelegate:
+			    delegate];
+
+		/*
+		 * Class swizzle the string to be immutable. We pass it as
+		 * OFString*, so it can't be modified anyway. But not swizzling
+		 * it would create a real copy each time -[copy] is called.
+		 */
+		ret->isa = [OFString class];
+
+		return ret;
+	} else {
+		if (unescape)
+			return [cache stringByXMLUnescapingWithDelegate:
+			    delegate];
+		else
+			return [[cache copy] autorelease];
+	}
 }
 
 static OFString*
@@ -160,6 +192,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 		acceptProlog = YES;
 		lineNumber = 1;
+		encoding = OF_STRING_ENCODING_UTF_8;
 
 		[pool release];
 	} @catch (id e) {
@@ -227,6 +260,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	/* In OF_XMLPARSER_IN_TAG, there can be only spaces */
 	if (length - last > 0 && state != OF_XMLPARSER_IN_TAG)
 		[cache appendCStringWithoutUTF8Checking: buf + last
+					       encoding: encoding
 						 length: length - last];
 }
 
@@ -289,6 +323,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	if ((length = *i - *last) > 0)
 		[cache appendCStringWithoutUTF8Checking: buffer + *last
+					       encoding: encoding
 						 length: length];
 
 	if ([cache cStringLength] > 0) {
@@ -296,7 +331,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		OFAutoreleasePool *pool;
 
 		pool = [[OFAutoreleasePool alloc] init];
-		characters = transform_string(cache, self);
+		characters = transform_string(cache, 0, YES, self);
 
 #if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 		if (charactersHandler != NULL)
@@ -355,7 +390,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	size_t i, last, length;
 	int piState = 0;
 	OFString *attribute = nil;
-	OFString *value = nil;
+	OFMutableString *value = nil;
 	char piDelimiter = 0;
 
 	if (!acceptProlog)
@@ -405,17 +440,31 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 			if (cString[i] != piDelimiter)
 				continue;
 
-			value = [OFString stringWithCString: cString + last
-						     length: i - last];
+			value = [OFMutableString
+			    stringWithCString: cString + last
+				       length: i - last];
 
 			if ([attribute isEqual: @"version"])
 				if (![value hasPrefix: @"1."])
 					return NO;
 
-			if ([attribute isEqual: @"encoding"])
-				if ([value caseInsensitiveCompare: @"utf-8"] !=
-				    OF_ORDERED_SAME)
+			if ([attribute isEqual: @"encoding"]) {
+				[value lower];
+
+				if ([value isEqual: @"utf-8"])
+					encoding = OF_STRING_ENCODING_UTF_8;
+				else if ([value isEqual: @"iso-8859-1"])
+					encoding =
+					    OF_STRING_ENCODING_ISO_8859_1;
+				else if ([value isEqual: @"iso-8859-15"])
+					encoding =
+					    OF_STRING_ENCODING_ISO_8859_15;
+				else if ([value isEqual: @"windows-1252"])
+					encoding =
+					    OF_STRING_ENCODING_WINDOWS_1252;
+				else
 					return NO;
+			}
 
 			last = i + 1;
 			piState = 0;
@@ -439,23 +488,12 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		level = 1;
 	else if (level == 1 && buffer[*i] == '>') {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-		OFMutableString *pi;
-		size_t len;
+		OFString *pi;
 
 		[cache appendCStringWithoutUTF8Checking: buffer + *last
+					       encoding: encoding
 						 length: *i - *last];
-		pi = [[cache mutableCopy] autorelease];
-		len = [pi length];
-
-		[pi deleteCharactersFromIndex: len - 1
-				      toIndex: len];
-
-		/*
-		 * Class swizzle the string to be immutable. We pass it as
-		 * OFString*, so it can't be modified anyway. But not swizzling
-		 * it would create a real copy each time -[copy] is called.
-		 */
-		pi->isa = [OFString class];
+		pi = transform_string(cache, 1, NO, nil);
 
 		if ([pi isEqual: @"xml"] || [pi hasPrefix: @"xml "] ||
 		    [pi hasPrefix: @"xml\t"] || [pi hasPrefix: @"xml\r"] ||
@@ -492,6 +530,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	if ((length = *i - *last) > 0)
 		[cache appendCStringWithoutUTF8Checking: buffer + *last
+					       encoding: encoding
 						 length: length];
 
 	cacheCString = [cache cString];
@@ -586,7 +625,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	if ((length = *i - *last) > 0)
 		[cache appendCStringWithoutUTF8Checking: buffer + *last
+					       encoding: encoding
 						 length: length];
+
 	cacheCString = [cache cString];
 	cacheLength = [cache cStringLength];
 
@@ -736,9 +777,11 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	if ((length = *i - *last) > 0)
 		[cache appendCStringWithoutUTF8Checking: buffer + *last
+					       encoding: encoding
 						 length: length];
 
 	[cache deleteLeadingAndTrailingWhitespaces];
+
 	cacheCString = [cache cString];
 	cacheLength = [cache cStringLength];
 
@@ -793,10 +836,11 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	if ((length = *i - *last) > 0)
 		[cache appendCStringWithoutUTF8Checking: buffer + *last
+					       encoding: encoding
 						 length: length];
 
 	pool = [[OFAutoreleasePool alloc] init];
-	attributeValue = transform_string(cache, self);
+	attributeValue = transform_string(cache, 0, YES, self);
 
 	if (attributePrefix == nil && [attributeName isEqual: @"xmlns"])
 		[[namespaces lastObject] setObject: attributeValue
@@ -910,8 +954,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 			    last: (size_t*)last
 {
 	OFAutoreleasePool *pool;
-	OFMutableString *CDATA;
-	size_t length;
+	OFString *CDATA;
 
 	if (buffer[*i] != '>') {
 		state = OF_XMLPARSER_IN_CDATA_1;
@@ -923,19 +966,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	pool = [[OFAutoreleasePool alloc] init];
 
 	[cache appendCStringWithoutUTF8Checking: buffer + *last
+				       encoding: encoding
 					 length: *i - *last];
-	CDATA = [[cache mutableCopy] autorelease];
-	length = [CDATA length];
-
-	[CDATA deleteCharactersFromIndex: length - 2
-				 toIndex: length];
-
-	/*
-	 * Class swizzle the string to be immutable. We pass it as OFString*, so
-	 * it can't be modified anyway. But not swizzling it would create a
-	 * real copy each time -[copy] is called.
-	 */
-	CDATA->isa = [OFString class];
+	CDATA = transform_string(cache, 2, NO, nil);
 
 #if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 	if (CDATAHandler != NULL)
@@ -985,8 +1018,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 			      last: (size_t*)last
 {
 	OFAutoreleasePool *pool;
-	OFMutableString *comment;
-	size_t length;
+	OFString *comment;
 
 	if (buffer[*i] != '>')
 		@throw [OFMalformedXMLException newWithClass: isa
@@ -995,19 +1027,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	pool = [[OFAutoreleasePool alloc] init];
 
 	[cache appendCStringWithoutUTF8Checking: buffer + *last
+				       encoding: encoding
 					 length: *i - *last];
-	comment = [[cache mutableCopy] autorelease];
-	length = [comment length];
-
-	[comment deleteCharactersFromIndex: length - 2
-				   toIndex: length];
-
-	/*
-	 * Class swizzle the string to be immutable. We pass it as OFString*, so
-	 * it can't be modified anyway. But not swizzling it would create a
-	 * real copy each time -[copy] is called.
-	 */
-	comment->isa = [OFString class];
+	comment = transform_string(cache, 2, NO, nil);
 
 #if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 	if (commentHandler != NULL)

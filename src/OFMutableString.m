@@ -29,6 +29,7 @@
 #endif
 
 #import "OFString.h"
+#import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
@@ -197,6 +198,22 @@
 	string[length] = 0;
 }
 
+- (void)appendCString: (const char*)string_
+	 withEncoding: (of_string_encoding_t)encoding
+	       length: (size_t)length_
+{
+	if (encoding == OF_STRING_ENCODING_UTF_8)
+		[self appendCString: string_
+			 withLength: length_];
+	else {
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		[self appendString: [OFString stringWithCString: string_
+						       encoding: encoding
+							 length: length_]];
+		[pool release];
+	}
+}
+
 - (void)appendCStringWithoutUTF8Checking: (const char*)string_
 {
 	size_t len;
@@ -216,6 +233,22 @@
 	memcpy(string + length, string_, length_);
 	length += length_;
 	string[length] = 0;
+}
+
+- (void)appendCStringWithoutUTF8Checking: (const char*)string_
+				encoding: (of_string_encoding_t)encoding
+				  length: (size_t)length_
+{
+	if (encoding == OF_STRING_ENCODING_UTF_8)
+		[self appendCStringWithoutUTF8Checking: string_
+						length: length_];
+	else {
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		[self appendString: [OFString stringWithCString: string_
+						       encoding: encoding
+							 length: length_]];
+		[pool release];
+	}
 }
 
 - (void)appendString: (OFString*)string_

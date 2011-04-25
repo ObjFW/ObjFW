@@ -24,21 +24,22 @@
  */
 @interface OFMutableString: OFString
 /**
- * Sets the OFString to the specified UTF-8 encoded C string.
+ * Sets the OFMutableString to the specified UTF-8 encoded C string.
  *
- * \param string A UTF-8 encoded C string to set the OFString to.
+ * \param string A UTF-8 encoded C string to set the OFMutableString to.
  */
 - (void)setToCString: (const char*)string;
 
 /**
- * Appends a UTF-8 encoded C string to the OFString.
+ * Appends a UTF-8 encoded C string to the OFMutableString.
  *
  * \param string A UTF-8 encoded C string to append
  */
 - (void)appendCString: (const char*)string;
 
 /**
- * Appends a UTF-8 encoded C string with the specified length to the OFString.
+ * Appends a UTF-8 encoded C string with the specified length to the
+ * OFMutableString.
  *
  * \param string A UTF-8 encoded C string to append
  * \param length The length of the UTF-8 encoded C string
@@ -47,8 +48,20 @@
 	   withLength: (size_t)length;
 
 /**
- * Appends a UTF-8 encoded C string to the OFString without checking whether it
- * is valid UTF-8.
+ * Appends a C string with the specified encoding and length to the
+ * OFMutableString.
+ *
+ * \param string A C string to append
+ * \param encoding The encoding of the C string
+ * \param length The length of the UTF-8 encoded C string
+ */
+- (void)appendCString: (const char*)string
+	 withEncoding: (of_string_encoding_t)encoding
+	       length: (size_t)length;
+
+/**
+ * Appends a UTF-8 encoded C string to the OFMutableString without checking
+ * whether it is valid UTF-8.
  *
  * Only use this if you are 100% sure the string you append is either ASCII or
  * UTF-8!
@@ -58,8 +71,8 @@
 - (void)appendCStringWithoutUTF8Checking: (const char*)string;
 
 /**
- * Appends a UTF-8 encoded C string with the specified length to the OFString
- * without checking whether it is valid UTF-8.
+ * Appends a UTF-8 encoded C string with the specified length to the
+ * OFMutableString without checking whether it is valid UTF-8.
  *
  * Only use this if you are 100% sure the string you append is either ASCII or
  * UTF-8!
@@ -71,14 +84,30 @@
 				  length: (size_t)length;
 
 /**
- * Appends another OFString to the OFString.
+ * Appends a C string with the specified encoding and length length to the
+ * OFString without checking whether it is valid UTF-8 if the specified encoding
+ * is UTF-8.
+ *
+ * Only use this if you are 100% sure the string you append is either ASCII or
+ * UTF-8 if you specified UTF-8 as encoding!
+ *
+ * \param string A C string to append
+ * \param encoding The encoding of the C string
+ * \param length The length of the UTF-8 encoded C string
+ */
+- (void)appendCStringWithoutUTF8Checking: (const char*)string
+				encoding: (of_string_encoding_t)encoding
+				  length: (size_t)length;
+
+/**
+ * Appends another OFString to the OFMutableString.
  *
  * \param string An OFString to append
  */
 - (void)appendString: (OFString*)string;
 
 /**
- * Appends a formatted UTF-8 encoded C string to the OFString.
+ * Appends a formatted UTF-8 encoded C string to the OFMutableString.
  * See printf for the format syntax.
  *
  * \param format A format string which generates the string to append
@@ -86,7 +115,7 @@
 - (void)appendFormat: (OFString*)format, ...;
 
 /**
- * Appends a formatted UTF-8 encoded C string to the OFString.
+ * Appends a formatted UTF-8 encoded C string to the OFMutableString.
  * See printf for the format syntax.
  *
  * \param format A format string which generates the string to append
@@ -96,24 +125,24 @@
        withArguments: (va_list)arguments;
 
 /**
- * Prepends another OFString to the OFString.
+ * Prepends another OFString to the OFMutableString.
  *
  * \param string An OFString to prepend
  */
 - (void)prependString: (OFString*)string;
 
 /**
- * Reverse the OFString.
+ * Reverse the OFMutableString.
  */
 - (void)reverse;
 
 /**
- * Upper the OFString.
+ * Upper the OFMutableString.
  */
 - (void)upper;
 
 /**
- * Lower the OFString.
+ * Lower the OFMutableString.
  */
 - (void)lower;
 

@@ -41,7 +41,7 @@
 void _references_to_categories_of_OFDataArray(void)
 {
 	_OFDataArray_Hashing_reference = 1;
-};
+}
 
 @implementation OFDataArray
 + dataArray
