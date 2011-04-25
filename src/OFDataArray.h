@@ -218,6 +218,13 @@
  * \return A string containing the data in Base64 encoding
  */
 - (OFString*)stringByBase64Encoding;
+
+/**
+ * Writes the OFDataArray into the specified file.
+ *
+ * \param path The path of the file to write to
+ */
+- (void)writeToFile: (OFString*)path;
 @end
 
 /**

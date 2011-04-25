@@ -391,6 +391,19 @@ void _references_to_categories_of_OFDataArray(void)
 {
 	return of_base64_encode(data, count * itemSize);
 }
+
+- (void)writeToFile: (OFString*)path
+{
+	OFFile *file = [[OFFile alloc] initWithPath: path
+					       mode: @"wb"];
+
+	@try {
+		[file writeNBytes: count * itemSize
+		       fromBuffer: data];
+	} @finally {
+		[file release];
+	}
+}
 @end
 
 @implementation OFBigDataArray
