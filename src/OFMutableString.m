@@ -134,13 +134,18 @@
 
 - (void)setToCString: (const char*)string_
 {
-	size_t len;
+	size_t length_;
 
 	[self freeMemory: string];
 
-	len = strlen(string_);
+	length_ = strlen(string_);
 
-	switch (of_string_check_utf8(string_, len)) {
+	if (length_ >= 3 && !memcmp(string_, "\xEF\xBB\xBF", 3)) {
+		string_ += 3;
+		length_ -= 3;
+	}
+
+	switch (of_string_check_utf8(string_, length_)) {
 	case 0:
 		isUTF8 = NO;
 		break;
@@ -155,18 +160,21 @@
 		@throw [OFInvalidEncodingException newWithClass: isa];
 	}
 
-	length = len;
+	length = length_;
 	string = [self allocMemoryWithSize: length + 1];
 	memcpy(string, string_, length + 1);
 }
 
 - (void)appendCString: (const char*)string_
 {
-	size_t len;
+	size_t length_ = strlen(string_);
 
-	len = strlen(string_);
+	if (length_ >= 3 && !memcmp(string_, "\xEF\xBB\xBF", 3)) {
+		string_ += 3;
+		length_ -= 3;
+	}
 
-	switch (of_string_check_utf8(string_, len)) {
+	switch (of_string_check_utf8(string_, length_)) {
 	case 1:
 		isUTF8 = YES;
 		break;
@@ -175,14 +183,19 @@
 	}
 
 	string = [self resizeMemory: string
-			     toSize: length + len + 1];
-	memcpy(string + length, string_, len + 1);
-	length += len;
+			     toSize: length + length_ + 1];
+	memcpy(string + length, string_, length_ + 1);
+	length += length_;
 }
 
 - (void)appendCString: (const char*)string_
 	   withLength: (size_t)length_
 {
+	if (length_ >= 3 && !memcmp(string_, "\xEF\xBB\xBF", 3)) {
+		string_ += 3;
+		length_ -= 3;
+	}
+
 	switch (of_string_check_utf8(string_, length_)) {
 	case 1:
 		isUTF8 = YES;
