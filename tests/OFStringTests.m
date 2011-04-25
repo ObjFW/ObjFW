@@ -137,8 +137,8 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	    [s[1] isEqual: @"testäöü"])
 
 	TEST(@"-[appendCStringWithLength:]",
-	    R([s[0] appendCString: "foobarqux" + 3
-		       withLength: 3]) && [s[0] isEqual: @"foobar"])
+	    R([s[0] appendCString: "foo\xEF\xBB\xBF" "barqux" + 3
+		       withLength: 6]) && [s[0] isEqual: @"foobar"])
 
 	EXPECT_EXCEPTION(@"Detection of invalid UTF-8 encoding #1",
 	    OFInvalidEncodingException,

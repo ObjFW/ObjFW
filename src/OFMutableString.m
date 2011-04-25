@@ -138,6 +138,11 @@
 
 	len = strlen(str);
 
+	if (len >= 3 && !memcmp(str, "\xEF\xBB\xBF", 3)) {
+		str += 3;
+		len -= 3;
+	}
+
 	switch (of_string_check_utf8(str, len)) {
 	case 0:
 		isUTF8 = NO;
@@ -164,6 +169,11 @@
 
 	strlength = strlen(str);
 
+	if (strlength >= 3 && !memcmp(str, "\xEF\xBB\xBF", 3)) {
+		str += 3;
+		strlength -= 3;
+	}
+
 	switch (of_string_check_utf8(str, strlength)) {
 	case 1:
 		isUTF8 = YES;
@@ -181,6 +191,11 @@
 - (void)appendCString: (const char*)str
 	   withLength: (size_t)len
 {
+	if (len >= 3 && !memcmp(str, "\xEF\xBB\xBF", 3)) {
+		str += 3;
+		len -= 3;
+	}
+
 	switch (of_string_check_utf8(str, len)) {
 	case 1:
 		isUTF8 = YES;
