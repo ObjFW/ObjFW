@@ -205,6 +205,12 @@
 	return of_bswap64_if_be(ret);
 }
 
+- (OFDataArray*)readDataArrayWithNItems: (size_t)nItems
+{
+	return [self readDataArrayWithItemSize: 1
+				     andNItems: nItems];
+}
+
 - (OFDataArray*)readDataArrayWithItemSize: (size_t)itemSize
 				andNItems: (size_t)nItems
 {

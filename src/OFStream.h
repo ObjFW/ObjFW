@@ -148,15 +148,27 @@
 - (uint64_t)readLittleEndianInt64;
 
 /**
- * Reads nitems items with the specified item size from the stream and returns
+ * Reads nItems items with an item size of 1 from the stream and returns them
+ * in an OFDataArray.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
+ * \param nItems The number of items to read
+ * \return An OFDataArray with at nItems items.
+ */
+- (OFDataArray*)readDataArrayWithNItems: (size_t)nItems;
+
+/**
+ * Reads nItems items with the specified item size from the stream and returns
  * them in an OFDataArray.
  *
  * WARNING: Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \param itemSize The size of each item
- * \param nItems The number of iteams to read
- * \return An OFDataArray with at nitems items.
+ * \param nItems The number of items to read
+ * \return An OFDataArray with at nItems items.
  */
 - (OFDataArray*)readDataArrayWithItemSize: (size_t)itemSize
 				andNItems: (size_t)nItems;
