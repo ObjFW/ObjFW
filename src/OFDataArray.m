@@ -23,7 +23,11 @@
 #import "OFDataArray.h"
 #import "OFString.h"
 #import "OFFile.h"
+#import "OFURL.h"
+#import "OFHTTPRequest.h"
+#import "OFAutoreleasePool.h"
 
+#import "OFHTTPRequestFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
 #import "OFNotImplementedException.h"
@@ -48,6 +52,11 @@ void _references_to_categories_of_OFDataArray(void)
 + dataArrayWithContentsOfFile: (OFString*)path
 {
 	return [[[self alloc] initWithContentsOfFile: path] autorelease];
+}
+
++ dataArrayWithContentsOfURL: (OFURL*)URL
+{
+	return [[[self alloc] initWithContentsOfURL: URL] autorelease];
 }
 
 + dataArrayWithBase64EncodedString: (OFString*)string
@@ -114,6 +123,38 @@ void _references_to_categories_of_OFDataArray(void)
 		@throw e;
 	}
 
+	return self;
+}
+
+- initWithContentsOfURL: (OFURL*)URL
+{
+	OFAutoreleasePool *pool;
+	OFHTTPRequest *request;
+	OFHTTPRequestResult *result;
+	Class c;
+
+	c = isa;
+	[self release];
+
+	pool = [[OFAutoreleasePool alloc] init];
+
+	if ([[URL scheme] isEqual: @"file"]) {
+		self = [[c alloc] initWithContentsOfFile: [URL path]];
+		[pool release];
+		return self;
+	}
+
+	request = [OFHTTPRequest requestWithURL: URL];
+	result = [request perform];
+
+	if ([result statusCode] != 200)
+		@throw [OFHTTPRequestFailedException
+		    newWithClass: [request class]
+		     HTTPRequest: request
+		      statusCode: [result statusCode]];
+
+	self = [[result data] retain];
+	[pool release];
 	return self;
 }
 

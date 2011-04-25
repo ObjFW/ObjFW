@@ -17,6 +17,7 @@
 #import "OFObject.h"
 
 @class OFString;
+@class OFURL;
 
 /**
  * \brief A class for storing arbitrary data in an array.
@@ -55,6 +56,15 @@
 
 /**
  * Creates a new OFDataArray with an item size of 1, containing the data of the
+ * specified URL.
+ *
+ * \param URL The URL to the contents for the OFDataArray
+ * \return A new autoreleased OFDataArray
+ */
++ dataArrayWithContentsOfURL: (OFURL*)URL;
+
+/**
+ * Creates a new OFDataArray with an item size of 1, containing the data of the
  * Base64-encoded string.
  *
  * \param string The string with the Base64-encoded data
@@ -79,6 +89,15 @@
  * \return An initialized OFDataArray
  */
 - initWithContentsOfFile: (OFString*)path;
+
+/**
+ * Initializes an already allocated OFDataArray with an item size of 1,
+ * containing the data of the specified URL.
+ *
+ * \param URL The URL to the contents for the OFDataArray
+ * \return A new autoreleased OFDataArray
+ */
+- initWithContentsOfURL: (OFURL*)URL;
 
 /**
  * Initializes an already allocated OFDataArray with an item size of 1,

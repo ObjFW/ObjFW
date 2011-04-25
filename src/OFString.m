@@ -709,7 +709,6 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 	c = isa;
 	[self release];
-	self = nil;
 
 	pool = [[OFAutoreleasePool alloc] init];
 
