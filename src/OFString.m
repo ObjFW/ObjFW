@@ -741,13 +741,13 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		contentType = [[contentType mutableCopy] autorelease];
 		[contentType lower];
 
-		if ([contentType hasSuffix: @"encoding=UTF-8"])
+		if ([contentType hasSuffix: @"charset=UTF-8"])
 			encoding = OF_STRING_ENCODING_UTF_8;
-		if ([contentType hasSuffix: @"encoding=iso-8859-1"])
+		if ([contentType hasSuffix: @"charset=iso-8859-1"])
 			encoding = OF_STRING_ENCODING_ISO_8859_1;
-		if ([contentType hasSuffix: @"encoding=iso-8859-15"])
+		if ([contentType hasSuffix: @"charset=iso-8859-15"])
 			encoding = OF_STRING_ENCODING_ISO_8859_15;
-		if ([contentType hasSuffix: @"encoding=windows-1252"])
+		if ([contentType hasSuffix: @"charset=windows-1252"])
 			encoding = OF_STRING_ENCODING_WINDOWS_1252;
 	}
 
