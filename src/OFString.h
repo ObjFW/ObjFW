@@ -156,7 +156,7 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  *
  * If the URL's scheme is http(s), it tries to detect the encoding from the HTTP
  * headers. If it could not detect the encoding using the HTTP headers, it tries
- * UTF-8 and falls back to ISO-8859-1 if that fails.
+ * UTF-8.
  *
  * \param URL The URL to the contents for the string
  * \return A new autoreleased OFString
@@ -293,7 +293,7 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  *
  * If the URL's scheme is http(s), it tries to detect the encoding from the HTTP
  * headers. If it could not detect the encoding using the HTTP headers, it tries
- * UTF-8 and falls back to ISO-8859-1 if that fails.
+ * UTF-8.
  *
  * \param URL The URL to the contents for the string
  * \return An initialized OFString
