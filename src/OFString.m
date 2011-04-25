@@ -666,13 +666,16 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 								  path: path
 								  mode: @"rb"];
 
+		if (s.st_size > SIZE_MAX)
+			@throw [OFOutOfRangeException newWithClass: isa];
+
 		file = [[OFFile alloc] initWithPath: path
 					       mode: @"rb"];
 
 		@try {
-			tmp = [self allocMemoryWithSize: s.st_size];
+			tmp = [self allocMemoryWithSize: (size_t)s.st_size];
 
-			[file readExactlyNBytes: s.st_size
+			[file readExactlyNBytes: (size_t)s.st_size
 				     intoBuffer: tmp];
 		} @finally {
 			[file release];
@@ -684,7 +687,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 
 	self = [self initWithCString: tmp
 			    encoding: encoding
-			      length: s.st_size];
+			      length: (size_t)s.st_size];
 	[self freeMemory: tmp];
 
 	return self;
