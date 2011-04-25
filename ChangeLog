@@ -2,6 +2,15 @@ Legend:
  * Changes of existing features or bugfixes.
  + New features.
 
+ObjFW 0.5.1 -> ObjFW 0.5.2, 25.4.2011
+ * Fix double-retain in OFList.
+ * Don't ignore the timeout in OFStreamObserver when using select().
+ * Do -[OFURL copy] in a try block to prevent a leak when an exception occurs.
+ * Fix too big buffer in -[OFMutableString _applyTable:withSize:].
+ * Call madvise() on the correct length variable so it covers the whole string.
+ * Fix a warning when sizeof(size_t) < sizeof(long long).
+ * Skip possible BOMs when appending strings.
+
 ObjFW 0.5 -> ObjFW 0.5.1, 21.04.2011
  * Work around a wrong warning produced by Apple GCC 4.0.1 which would cause
    the build to fail due to -Werror.
