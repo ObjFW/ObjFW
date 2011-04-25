@@ -67,8 +67,8 @@ const char *str = "Hello!";
 	TEST(@"-[copy]", (array[1] = [[array[0] copy] autorelease]) &&
 	    [array[0] isEqual: array[1]])
 
-	array[2] = [OFDataArray dataArrayWithItemSize: 1];
-	array[3] = [OFDataArray dataArrayWithItemSize: 1];
+	array[2] = [OFDataArray dataArray];
+	array[3] = [OFDataArray dataArray];
 	[array[2] addItem: "a"];
 	[array[2] addItem: "a"];
 	[array[3] addItem: "z"];
@@ -80,7 +80,7 @@ const char *str = "Hello!";
 
 	TEST(@"-[hash]", [array[0] hash] == 0x634A529F)
 
-	array[0] = [class dataArrayWithItemSize: 1];
+	array[0] = [class dataArray];
 	[array[0] addNItems: 6
 		 fromCArray: "abcdef"];
 
@@ -111,7 +111,7 @@ const char *str = "Hello!";
 	    cArray], "abcde", 5))
 
 	TEST(@"Building strings",
-	    (array[0] = [class dataArrayWithItemSize: 1]) &&
+	    (array[0] = [class dataArray]) &&
 	    R([array[0] addNItems: 6
 		       fromCArray: (void*)str]) && R([array[0] addItem: ""]) &&
 	    !strcmp([array[0] cArray], str))

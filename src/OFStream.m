@@ -233,7 +233,7 @@
 	OFDataArray *dataArray;
 	char *buffer;
 
-	dataArray = [OFDataArray dataArrayWithItemSize: 1];
+	dataArray = [OFDataArray dataArray];
 	buffer = [self allocMemoryWithSize: of_pagesize];
 
 	@try {

@@ -38,6 +38,13 @@
 #endif
 
 /**
+ * Creates a new OFDataArray with an item size of 1.
+ *
+ * \return A new autoreleased OFDataArray
+ */
++ dataArray;
+
+/**
  * Creates a new OFDataArray whose items all have the same size.
  *
  * \param itemSize The size of each element in the OFDataArray
@@ -71,6 +78,13 @@
  * \return A new autoreleased OFDataArray
  */
 + dataArrayWithBase64EncodedString: (OFString*)string;
+
+/**
+ * Initializes an already allocated OFDataArray with an item size of 1.
+ *
+ * \return A initialized OFDataArray
+ */
+- init;
 
 /**
  * Initializes an already allocated OFDataArray whose items all have the same

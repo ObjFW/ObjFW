@@ -363,7 +363,7 @@ normalize_key(OFString *key)
 		   withStatusCode: status];
 
 		if (storesData)
-			data = [OFDataArray dataArrayWithItemSize: 1];
+			data = [OFDataArray dataArray];
 		else
 			data = nil;
 

@@ -44,6 +44,11 @@ void _references_to_categories_of_OFDataArray(void)
 };
 
 @implementation OFDataArray
++ dataArray
+{
+	return [[[self alloc] init] autorelease];
+}
+
 + dataArrayWithItemSize: (size_t)itemSize
 {
 	return [[[self alloc] initWithItemSize: itemSize] autorelease];
@@ -66,27 +71,25 @@ void _references_to_categories_of_OFDataArray(void)
 
 - init
 {
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	self = [super init];
+
+	itemSize = 1;
+
+	return self;
 }
 
 - initWithItemSize: (size_t)itemSize_
 {
 	self = [super init];
 
-	@try {
-		if (itemSize_ == 0)
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
-
-		itemSize = itemSize_;
-		data = NULL;
-	} @catch (id e) {
+	if (itemSize_ == 0) {
+		Class c = isa;
 		[self release];
-		@throw e;
+		@throw [OFInvalidArgumentException newWithClass: c
+						       selector: _cmd];
 	}
+
+	itemSize = itemSize_;
 
 	return self;
 }
