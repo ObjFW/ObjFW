@@ -99,6 +99,11 @@
 	return [[[self alloc] initWithComment: comment] autorelease];
 }
 
++ elementWithElement: (OFXMLElement*)element
+{
+	return [[[self alloc] initWithElement: element] autorelease];
+}
+
 + elementWithXMLString: (OFString*)string
 {
 	return [[[self alloc] initWithXMLString: string] autorelease];
@@ -200,6 +205,28 @@
 
 	@try {
 		comment = [comment_ copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithElement: (OFXMLElement*)element
+{
+	self = [super init];
+
+	@try {
+		name = [element->name copy];
+		ns = [element->ns copy];
+		defaultNamespace = [element->defaultNamespace copy];
+		attributes = [element->attributes mutableCopy];
+		namespaces = [element->namespaces mutableCopy];
+		children = [element->children mutableCopy];
+		characters = [element->characters copy];
+		CDATA = [element->CDATA copy];
+		comment = [element->comment copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;

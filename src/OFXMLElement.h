@@ -36,7 +36,7 @@
 	OFMutableArray *children;
 	OFString *characters;
 	OFString *CDATA;
-	OFMutableString *comment;
+	OFString *comment;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -106,6 +106,13 @@
  * \return A new autoreleased OFXMLElement consisting of the specified comment
  */
 + elementWithComment: (OFString*)comment;
+
+/**
+ * \param element An OFXMLElement to initialize the OFXMLElement with
+ * \return A new autoreleased OFXMLElement with the contents of the specified
+ *	   element
+ */
++ elementWithElement: (OFXMLElement*)element;
 
 /**
  * Parses the string and returns an OFXMLElement for it.
@@ -188,6 +195,16 @@
  * \return An initialized OFXMLElement consisting of the specified comment
  */
 - initWithComment: (OFString*)comment;
+
+/**
+ * Initializes an already allocated OFXMLElement with the specified
+ * OFXMLElement.
+ *
+ * \param element An OFXMLElement to initialize the OFXMLElement with
+ * \return A new autoreleased OFXMLElement with the contents of the specified
+ *	   element
+ */
+- initWithElement: (OFXMLElement*)element;
 
 /**
  * Parses the string and initializes an already allocated OFXMLElement with it.
