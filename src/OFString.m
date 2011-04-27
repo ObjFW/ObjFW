@@ -771,6 +771,9 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 {
 	/* FIXME: Maybe cache this in an ivar? */
 
+	if (![self isUTF8])
+		return length;
+
 	return of_string_position_to_index(string, length);
 }
 

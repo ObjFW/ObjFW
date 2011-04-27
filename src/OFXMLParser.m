@@ -50,37 +50,16 @@ transform_string(OFMutableString *cache, size_t cut, BOOL unescape,
 			       withString: @"\n"];
 
 	if (cut > 0) {
-		/*
-		 * We need to create a mutable copy in order to detect possible
-		 * UTF-8, as we never checked for UTF-8 when appending to the
-		 * cache for performance reasons.
-		 */
-		OFMutableString *ret = [[cache mutableCopy] autorelease];
-		size_t length;
+		size_t length = [cache length];
 
-		length = [ret length];
-		[ret deleteCharactersFromIndex: length - cut
-				       toIndex: length];
-
-		if (unescape)
-			return [ret stringByXMLUnescapingWithDelegate:
-			    delegate];
-
-		/*
-		 * Class swizzle the string to be immutable. We pass it as
-		 * OFString*, so it can't be modified anyway. But not swizzling
-		 * it would create a real copy each time -[copy] is called.
-		 */
-		ret->isa = [OFString class];
-
-		return ret;
-	} else {
-		if (unescape)
-			return [cache stringByXMLUnescapingWithDelegate:
-			    delegate];
-		else
-			return [[cache copy] autorelease];
+		[cache deleteCharactersFromIndex: length - cut
+					 toIndex: length];
 	}
+
+	if (unescape)
+		return [cache stringByXMLUnescapingWithDelegate: delegate];
+	else
+		return [[cache copy] autorelease];
 }
 
 static OFString*
