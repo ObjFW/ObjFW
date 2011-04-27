@@ -77,8 +77,8 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"A connection to %@ on port %" @PRIu16 @"could not be established "
-	    @"in class %@! " ERRFMT, host, port, inClass, ERRPARAM];
+	    @"A connection to %@ on port %" @PRIu16 @" could not be "
+	    @"established in class %@! " ERRFMT, host, port, inClass, ERRPARAM];
 
 	return description;
 }
