@@ -210,13 +210,12 @@ normalize_key(OFString *key)
 		OFString *line, *path;
 		OFMutableDictionary *serverHeaders;
 		OFDataArray *data;
-		OFEnumerator *enumerator;
-		OFString *key;
+		OFEnumerator *keyEnumerator, *objectEnumerator;
+		OFString *key, *object, *contentLengthHeader;
 		int status;
 		const char *type = NULL;
 		char *buffer;
 		size_t bytesReceived;
-		OFString *contentLengthHeader;
 
 		[sock connectToHost: [URL host]
 			     onPort: [URL port]];
@@ -249,11 +248,12 @@ normalize_key(OFString *key)
 			[sock writeFormat: @"Host: %@:%d\r\n", [URL host],
 					   [URL port]];
 
-		enumerator = [headers keyEnumerator];
+		keyEnumerator = [headers keyEnumerator];
+		objectEnumerator = [headers objectEnumerator];
 
-		while ((key = [enumerator nextObject]) != nil)
-			[sock writeFormat: @"%@: %@\r\n",
-					   key, [headers objectForKey: key]];
+		while ((key = [keyEnumerator nextObject]) != nil &&
+		    (object = [objectEnumerator nextObject]) != nil)
+			[sock writeFormat: @"%@: %@\r\n", key, object];
 
 		if (requestType == OF_HTTP_REQUEST_TYPE_POST) {
 			if ([headers objectForKey: @"Content-Type"] == nil)
