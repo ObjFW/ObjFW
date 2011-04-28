@@ -149,6 +149,10 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 		uint32_t i;
 		BUCKET *b;
 
+		if (key == nil || object == nil)
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
 		data = [self allocMemoryForNItems: 2
 					 withSize: sizeof(BUCKET*)];
 
@@ -708,17 +712,19 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 {
 	OFMutableString *ret = [OFMutableString stringWithString: @"{\n"];
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init], *pool2;
-	OFEnumerator *enumerator = [self keyEnumerator];
-	id key;
+	OFEnumerator *keyEnumerator = [self keyEnumerator];
+	OFEnumerator *objectEnumerator = [self objectEnumerator];
+	id key, object;
 	size_t i;
 
 	i = 0;
 	pool2 = [[OFAutoreleasePool alloc] init];
 
-	while ((key = [enumerator nextObject]) != nil) {
+	while ((key = [keyEnumerator nextObject]) != nil &&
+	    (object = [objectEnumerator nextObject]) != nil) {
 		[ret appendString: [key description]];
 		[ret appendString: @" = "];
-		[ret appendString: [[self objectForKey: key] description]];
+		[ret appendString: [object description]];
 
 		if (++i < count)
 			[ret appendString: @";\n"];
