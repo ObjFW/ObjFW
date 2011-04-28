@@ -398,9 +398,13 @@
 
 - (OFString*)description
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFAutoreleasePool *pool;
 	OFMutableString *ret;
 
+	if ([array count] == 0)
+		return @"()";
+
+	pool = [[OFAutoreleasePool alloc] init];
 	ret = [[self componentsJoinedByString: @",\n"] mutableCopy];
 
 	@try {

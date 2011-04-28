@@ -714,12 +714,20 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 
 - (OFString*)description
 {
-	OFMutableString *ret = [OFMutableString stringWithString: @"{\n"];
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init], *pool2;
-	OFEnumerator *keyEnumerator = [self keyEnumerator];
-	OFEnumerator *objectEnumerator = [self objectEnumerator];
+	OFMutableString *ret;
+	OFAutoreleasePool *pool, *pool2;
+	OFEnumerator *keyEnumerator;
+	OFEnumerator *objectEnumerator;
 	id key, object;
 	size_t i;
+
+	if (count == 0)
+		return @"{}";
+
+	ret = [OFMutableString stringWithString: @"{\n"];
+	pool = [[OFAutoreleasePool alloc] init];
+	keyEnumerator = [self keyEnumerator];
+	objectEnumerator = [self objectEnumerator];
 
 	i = 0;
 	pool2 = [[OFAutoreleasePool alloc] init];

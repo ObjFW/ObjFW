@@ -290,10 +290,14 @@
 
 - (OFString*)description
 {
-	OFMutableString *ret = [OFMutableString stringWithString: @"[\n"];
+	OFMutableString *ret;
 	OFAutoreleasePool *pool;
 	of_list_object_t *iter;
 
+	if (count == 0)
+		return @"[]";
+
+	ret = [OFMutableString stringWithString: @"[\n"];
 	pool = [[OFAutoreleasePool alloc] init];
 
 	for (iter = firstListObject; iter != NULL; iter = iter->next) {
