@@ -192,7 +192,7 @@
 		4B55A102133ABEA900B58A93 /* OFThreadStartFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B55A0FC133ABEA900B58A93 /* OFThreadStartFailedException.m */; };
 		4B55A103133ABEA900B58A93 /* OFThreadStillRunningException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B55A0FD133ABEA900B58A93 /* OFThreadStillRunningException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B55A104133ABEA900B58A93 /* OFThreadStillRunningException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B55A0FE133ABEA900B58A93 /* OFThreadStillRunningException.m */; };
-		4B55A109133AC05100B58A93 /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B55A106133AC05100B58A93 /* common.h */; };
+		4B55A109133AC05100B58A93 /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B55A106133AC05100B58A93 /* common.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B55A10A133AC05100B58A93 /* OFOpenFileFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B55A107133AC05100B58A93 /* OFOpenFileFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B55A10B133AC05100B58A93 /* OFOpenFileFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B55A108133AC05100B58A93 /* OFOpenFileFailedException.m */; };
 		4B55A112133AC24600B58A93 /* OFReadFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B55A10C133AC24500B58A93 /* OFReadFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -255,8 +255,6 @@
 		4BF33B10133807A20059CEF7 /* OFXMLParserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF67E1235358D0076B512 /* OFXMLParserTests.m */; };
 		4BF33B11133807A20059CEF7 /* PropertiesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF67F1235358D0076B512 /* PropertiesTests.m */; };
 		4BF33B12133807A20059CEF7 /* TestsAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6811235358D0076B512 /* TestsAppDelegate.m */; };
-		4BF33B4413380CD40059CEF7 /* testfile.bin in Resources */ = {isa = PBXBuildFile; fileRef = 4BF33B4213380CD40059CEF7 /* testfile.bin */; };
-		4BF33B4513380CD40059CEF7 /* testfile.txt in Resources */ = {isa = PBXBuildFile; fileRef = 4BF33B4313380CD40059CEF7 /* testfile.txt */; };
 		4BF33B4713380CE20059CEF7 /* testfile.txt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BF33B4313380CD40059CEF7 /* testfile.txt */; };
 		4BF33B4813380D2D0059CEF7 /* testfile.bin in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BF33B4213380CD40059CEF7 /* testfile.bin */; };
 /* End PBXBuildFile section */
@@ -1024,8 +1022,8 @@
 				4B55A101133ABEA900B58A93 /* OFThreadStartFailedException.h in Headers */,
 				4B55A103133ABEA900B58A93 /* OFThreadStillRunningException.h in Headers */,
 				4B55A116133AC24600B58A93 /* OFWriteFailedException.h in Headers */,
-				4BDF37B51338055600F9A81A /* config.h in Headers */,
 				4B55A109133AC05100B58A93 /* common.h in Headers */,
+				4BDF37B51338055600F9A81A /* config.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1124,8 +1122,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4BF33B4413380CD40059CEF7 /* testfile.bin in Resources */,
-				4BF33B4513380CD40059CEF7 /* testfile.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
