@@ -64,11 +64,11 @@ void _references_to_categories_of_OFString(void)
 }
 
 static inline int
-memcasecmp(const char *first, const char *second, size_t len)
+memcasecmp(const char *first, const char *second, size_t length)
 {
 	size_t i;
 
-	for (i = 0; i < len; i++) {
+	for (i = 0; i < length; i++) {
 		if (tolower((int)first[i]) > tolower((int)second[i]))
 			return OF_ORDERED_DESCENDING;
 		if (tolower((int)first[i]) < tolower((int)second[i]))
@@ -79,53 +79,56 @@ memcasecmp(const char *first, const char *second, size_t len)
 }
 
 int
-of_string_check_utf8(const char *str, size_t len)
+of_string_check_utf8(const char *string, size_t length)
 {
 	size_t i;
-	int utf8 = 0;
+	int isUTF8 = 0;
 
-	madvise((void*)str, len, MADV_SEQUENTIAL);
+	madvise((void*)string, length, MADV_SEQUENTIAL);
 
-	for (i = 0; i < len; i++) {
+	for (i = 0; i < length; i++) {
 		/* No sign of UTF-8 here */
-		if (OF_LIKELY(!(str[i] & 0x80)))
+		if (OF_LIKELY(!(string[i] & 0x80)))
 			continue;
 
-		utf8 = 1;
+		isUTF8 = 1;
 
 		/* We're missing a start byte here */
-		if (OF_UNLIKELY(!(str[i] & 0x40))) {
-			madvise((void*)str, len, MADV_NORMAL);
+		if (OF_UNLIKELY(!(string[i] & 0x40))) {
+			madvise((void*)string, length, MADV_NORMAL);
 			return -1;
 		}
 
 		/* We have at minimum a 2 byte character -> check next byte */
-		if (OF_UNLIKELY(len < i + 1 || (str[i + 1] & 0xC0) != 0x80)) {
-			madvise((void*)str, len, MADV_NORMAL);
+		if (OF_UNLIKELY(length < i + 1 ||
+		    (string[i + 1] & 0xC0) != 0x80)) {
+			madvise((void*)string, length, MADV_NORMAL);
 			return -1;
 		}
 
 		/* Check if we have at minimum a 3 byte character */
-		if (OF_LIKELY(!(str[i] & 0x20))) {
+		if (OF_LIKELY(!(string[i] & 0x20))) {
 			i++;
 			continue;
 		}
 
 		/* We have at minimum a 3 byte char -> check second next byte */
-		if (OF_UNLIKELY(len < i + 2 || (str[i + 2] & 0xC0) != 0x80)) {
-			madvise((void*)str, len, MADV_NORMAL);
+		if (OF_UNLIKELY(length < i + 2 ||
+		    (string[i + 2] & 0xC0) != 0x80)) {
+			madvise((void*)string, length, MADV_NORMAL);
 			return -1;
 		}
 
 		/* Check if we have a 4 byte character */
-		if (OF_LIKELY(!(str[i] & 0x10))) {
+		if (OF_LIKELY(!(string[i] & 0x10))) {
 			i += 2;
 			continue;
 		}
 
 		/* We have a 4 byte character -> check third next byte */
-		if (OF_UNLIKELY(len < i + 3 || (str[i + 3] & 0xC0) != 0x80)) {
-			madvise((void*)str, len, MADV_NORMAL);
+		if (OF_UNLIKELY(length < i + 3 ||
+		    (string[i + 3] & 0xC0) != 0x80)) {
+			madvise((void*)string, length, MADV_NORMAL);
 			return -1;
 		}
 
@@ -133,44 +136,44 @@ of_string_check_utf8(const char *str, size_t len)
 		 * Just in case, check if there's a 5th character, which is
 		 * forbidden by UTF-8
 		 */
-		if (OF_UNLIKELY(str[i] & 0x08)) {
-			madvise((void*)str, len, MADV_NORMAL);
+		if (OF_UNLIKELY(string[i] & 0x08)) {
+			madvise((void*)string, length, MADV_NORMAL);
 			return -1;
 		}
 
 		i += 3;
 	}
 
-	madvise((void*)str, len, MADV_NORMAL);
+	madvise((void*)string, length, MADV_NORMAL);
 
-	return utf8;
+	return isUTF8;
 }
 
 size_t
-of_string_unicode_to_utf8(of_unichar_t c, char *buf)
+of_string_unicode_to_utf8(of_unichar_t character, char *buffer)
 {
 	size_t i = 0;
 
-	if (c < 0x80) {
-		buf[i] = c;
+	if (character < 0x80) {
+		buffer[i] = character;
 		return 1;
 	}
-	if (c < 0x800) {
-		buf[i++] = 0xC0 | (c >> 6);
-		buf[i] = 0x80 | (c & 0x3F);
+	if (character < 0x800) {
+		buffer[i++] = 0xC0 | (character >> 6);
+		buffer[i] = 0x80 | (character & 0x3F);
 		return 2;
 	}
-	if (c < 0x10000) {
-		buf[i++] = 0xE0 | (c >> 12);
-		buf[i++] = 0x80 | (c >> 6 & 0x3F);
-		buf[i] = 0x80 | (c & 0x3F);
+	if (character < 0x10000) {
+		buffer[i++] = 0xE0 | (character >> 12);
+		buffer[i++] = 0x80 | (character >> 6 & 0x3F);
+		buffer[i] = 0x80 | (character & 0x3F);
 		return 3;
 	}
-	if (c < 0x110000) {
-		buf[i++] = 0xF0 | (c >> 18);
-		buf[i++] = 0x80 | (c >> 12 & 0x3F);
-		buf[i++] = 0x80 | (c >> 6 & 0x3F);
-		buf[i] = 0x80 | (c & 0x3F);
+	if (character < 0x110000) {
+		buffer[i++] = 0xF0 | (character >> 18);
+		buffer[i++] = 0x80 | (character >> 12 & 0x3F);
+		buffer[i++] = 0x80 | (character >> 6 & 0x3F);
+		buffer[i] = 0x80 | (character & 0x3F);
 		return 4;
 	}
 
@@ -178,38 +181,38 @@ of_string_unicode_to_utf8(of_unichar_t c, char *buf)
 }
 
 size_t
-of_string_utf8_to_unicode(const char *buf_, size_t len, of_unichar_t *ret)
+of_string_utf8_to_unicode(const char *buffer_, size_t length, of_unichar_t *ret)
 {
-	const uint8_t *buf = (const uint8_t*)buf_;
+	const uint8_t *buffer = (const uint8_t*)buffer_;
 
-	if (!(*buf & 0x80)) {
-		*ret = buf[0];
+	if (!(*buffer & 0x80)) {
+		*ret = buffer[0];
 		return 1;
 	}
 
-	if ((*buf & 0xE0) == 0xC0) {
-		if (OF_UNLIKELY(len < 2))
+	if ((*buffer & 0xE0) == 0xC0) {
+		if (OF_UNLIKELY(length < 2))
 			return 0;
 
-		*ret = ((buf[0] & 0x1F) << 6) | (buf[1] & 0x3F);
+		*ret = ((buffer[0] & 0x1F) << 6) | (buffer[1] & 0x3F);
 		return 2;
 	}
 
-	if ((*buf & 0xF0) == 0xE0) {
-		if (OF_UNLIKELY(len < 3))
+	if ((*buffer & 0xF0) == 0xE0) {
+		if (OF_UNLIKELY(length < 3))
 			return 0;
 
-		*ret = ((buf[0] & 0x0F) << 12) | ((buf[1] & 0x3F) << 6) |
-		    (buf[2] & 0x3F);
+		*ret = ((buffer[0] & 0x0F) << 12) | ((buffer[1] & 0x3F) << 6) |
+		    (buffer[2] & 0x3F);
 		return 3;
 	}
 
-	if ((*buf & 0xF8) == 0xF0) {
-		if (OF_UNLIKELY(len < 4))
+	if ((*buffer & 0xF8) == 0xF0) {
+		if (OF_UNLIKELY(length < 4))
 			return 0;
 
-		*ret = ((buf[0] & 0x07) << 18) | ((buf[1] & 0x3F) << 12) |
-		    ((buf[2] & 0x3F) << 6) | (buf[3] & 0x3F);
+		*ret = ((buffer[0] & 0x07) << 18) | ((buffer[1] & 0x3F) << 12) |
+		    ((buffer[2] & 0x3F) << 6) | (buffer[3] & 0x3F);
 		return 4;
 	}
 
@@ -217,28 +220,28 @@ of_string_utf8_to_unicode(const char *buf_, size_t len, of_unichar_t *ret)
 }
 
 size_t
-of_string_position_to_index(const char *str, size_t pos)
+of_string_position_to_index(const char *string, size_t position)
 {
-	size_t i, idx = pos;
+	size_t i, index = position;
 
-	for (i = 0; i < pos; i++)
-		if (OF_UNLIKELY((str[i] & 0xC0) == 0x80))
-			idx--;
+	for (i = 0; i < position; i++)
+		if (OF_UNLIKELY((string[i] & 0xC0) == 0x80))
+			index--;
 
-	return idx;
+	return index;
 }
 
 size_t
-of_string_index_to_position(const char *str, size_t idx, size_t len)
+of_string_index_to_position(const char *string, size_t index, size_t length)
 {
 	size_t i;
 
-	for (i = 0; i <= idx; i++)
-		if (OF_UNLIKELY((str[i] & 0xC0) == 0x80))
-			if (++idx > len)
+	for (i = 0; i <= index; i++)
+		if (OF_UNLIKELY((string[i] & 0xC0) == 0x80))
+			if (++index > length)
 				return OF_INVALID_INDEX;
 
-	return idx;
+	return index;
 }
 
 @implementation OFString
@@ -275,6 +278,11 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 				       length: length] autorelease];
 }
 
++ stringWithString: (OFString*)string
+{
+	return [[[self alloc] initWithString: string] autorelease];
+}
+
 + stringWithFormat: (OFString*)format, ...
 {
 	id ret;
@@ -299,11 +307,6 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 	va_end(arguments);
 
 	return ret;
-}
-
-+ stringWithString: (OFString*)string
-{
-	return [[[self alloc] initWithString: string] autorelease];
 }
 
 + stringWithContentsOfFile: (OFString*)path
@@ -486,6 +489,42 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 			      length: length_];
 }
 
+- initWithString: (OFString*)string_
+{
+	self = [super init];
+
+	@try {
+		/* We have no -[dealloc], so this is ok */
+		string = (char*)[string_ cString];
+		length = [string_ cStringLength];
+
+		switch (of_string_check_utf8(string, length)) {
+		case 1:
+			isUTF8 = YES;
+			break;
+		case -1:;
+			@throw [OFInvalidEncodingException newWithClass: isa];
+		}
+
+		if ((string = strdup(string)) == NULL)
+			@throw [OFOutOfMemoryException
+			     newWithClass: isa
+			    requestedSize: length + 1];
+
+		@try {
+			[self addMemoryToPool: string];
+		} @catch (id e) {
+			free(string);
+			@throw e;
+		}
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
 - initWithFormat: (OFString*)format, ...
 {
 	id ret;
@@ -604,42 +643,6 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		}
 
 		string[i] = '\0';
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- initWithString: (OFString*)string_
-{
-	self = [super init];
-
-	@try {
-		/* We have no -[dealloc], so this is ok */
-		string = (char*)[string_ cString];
-		length = [string_ cStringLength];
-
-		switch (of_string_check_utf8(string, length)) {
-		case 1:
-			isUTF8 = YES;
-			break;
-		case -1:;
-			@throw [OFInvalidEncodingException newWithClass: isa];
-		}
-
-		if ((string = strdup(string)) == NULL)
-			@throw [OFOutOfMemoryException
-			     newWithClass: isa
-			    requestedSize: length + 1];
-
-		@try {
-			[self addMemoryToPool: string];
-		} @catch (id e) {
-			free(string);
-			@throw e;
-		}
 	} @catch (id e) {
 		[self release];
 		@throw e;

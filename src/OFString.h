@@ -106,6 +106,14 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 	     length: (size_t)length;
 
 /**
+ * Creates a new OFString from another string.
+ *
+ * \param string A string to initialize the OFString with
+ * \return A new autoreleased OFString
+ */
++ stringWithString: (OFString*)string;
+
+/**
  * Creates a new OFString from a format string.
  * See printf for the format syntax.
  *
@@ -121,14 +129,6 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  * \return A new autoreleased OFString
  */
 + stringWithPath: (OFString*)firstComponent, ...;
-
-/**
- * Creates a new OFString from another string.
- *
- * \param string A string to initialize the OFString with
- * \return A new autoreleased OFString
- */
-+ stringWithString: (OFString*)string;
 
 /**
  * Creates a new OFString with the contents of the specified UTF-8 encoded file.
@@ -218,6 +218,14 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
 	   length: (size_t)length;
 
 /**
+ * Initializes an already allocated OFString with another string.
+ *
+ * \param string A string to initialize the OFString with
+ * \return An initialized OFString
+ */
+- initWithString: (OFString*)string;
+
+/**
  * Initializes an already allocated OFString with a format string.
  * See printf for the format syntax.
  *
@@ -256,14 +264,6 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  */
 - initWithPath: (OFString*)firstComponent
      arguments: (va_list)arguments;
-
-/**
- * Initializes an already allocated OFString with another string.
- *
- * \param string A string to initialize the OFString with
- * \return An initialized OFString
- */
-- initWithString: (OFString*)string;
 
 /**
  * Initializes an already allocated OFString with the contents of the specified
