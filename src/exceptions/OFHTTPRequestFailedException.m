@@ -26,11 +26,11 @@
 @implementation OFHTTPRequestFailedException
 + newWithClass: (Class)class_
    HTTPRequest: (OFHTTPRequest*)request
-    statusCode: (short)code
+	result: (OFHTTPRequestResult*)result
 {
 	return [[self alloc] initWithClass: class_
 			       HTTPRequest: request
-				statusCode: code];
+				    result: result];
 }
 
 - initWithClass: (Class)class_
@@ -43,13 +43,13 @@
 
 - initWithClass: (Class)class_
     HTTPRequest: (OFHTTPRequest*)request
-     statusCode: (short)code
+	 result: (OFHTTPRequestResult*)result_
 {
 	self = [super initWithClass: class_];
 
 	@try {
 		HTTPRequest = [request retain];
-		statusCode = code;
+		result = [result_ retain];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -61,6 +61,7 @@
 - (void)dealloc
 {
 	[HTTPRequest release];
+	[result release];
 
 	[super dealloc];
 }
@@ -89,7 +90,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"A HTTP %s request in class %@ with URL %@ failed with code %d",
-	    type, inClass, [HTTPRequest URL], statusCode];
+	    type, inClass, [HTTPRequest URL], [result statusCode]];
 
 	[pool release];
 
@@ -101,8 +102,8 @@
 	return HTTPRequest;
 }
 
-- (short)statusCode
+- (OFHTTPRequestResult*)result
 {
-	return statusCode;
+	return result;
 }
 @end

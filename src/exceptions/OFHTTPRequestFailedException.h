@@ -17,6 +17,7 @@
 #import "OFException.h"
 
 @class OFHTTPRequest;
+@class OFHTTPRequestResult;
 
 /**
  * \brief An exception indicating that a HTTP request failed.
@@ -24,35 +25,35 @@
 @interface OFHTTPRequestFailedException: OFException
 {
 	OFHTTPRequest *HTTPRequest;
-	short statusCode;
+	OFHTTPRequestResult *result;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, nonatomic) OFHTTPRequest *HTTPRequest;
-@property (readonly) short statusCode;
+@property (readonly, nonatomic) OFHTTPRequestResult *result;
 #endif
 
 /**
  * \param class_ The class of the object which caused the exception
  * \param request The HTTP request which failed
- * \param code The status code of the fialed HTTP request
+ * \param result The result of the failed HTTP request
  * \return A new HTTP request failed exception
  */
 + newWithClass: (Class)class_
    HTTPRequest: (OFHTTPRequest*)request
-    statusCode: (short)code;
+	result: (OFHTTPRequestResult*)result;
 
 /**
  * Initializes an already allocated HTTP request failed exception
  *
  * \param class_ The class of the object which caused the exception
  * \param request The HTTP request which failed
- * \param code The status code of the fialed HTTP request
+ * \param result The result of the failed HTTP request
  * \return A new HTTP request failed exception
  */
 - initWithClass: (Class)class_
     HTTPRequest: (OFHTTPRequest*)request
-     statusCode: (short)code;
+	 result: (OFHTTPRequestResult*)result;
 
 /**
  * \return The HTTP request which failed
@@ -60,7 +61,7 @@
 - (OFHTTPRequest*)HTTPRequest;
 
 /**
- * \return The status code of the HTTP request
+ * \return The result of the failed HTTP request
  */
-- (short)statusCode;
+- (OFHTTPRequestResult*)result;
 @end

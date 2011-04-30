@@ -734,7 +734,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		@throw [OFHTTPRequestFailedException
 		    newWithClass: [request class]
 		     HTTPRequest: request
-		      statusCode: [result statusCode]];
+			  result: result];
 
 	if (encoding == OF_STRING_ENCODING_AUTODETECT &&
 	    (contentType = [[result headers] objectForKey: @"Content-Type"])) {

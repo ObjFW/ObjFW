@@ -154,7 +154,7 @@ void _references_to_categories_of_OFDataArray(void)
 		@throw [OFHTTPRequestFailedException
 		    newWithClass: [request class]
 		     HTTPRequest: request
-		      statusCode: [result statusCode]];
+			  result: result];
 
 	self = [[result data] retain];
 	[pool release];

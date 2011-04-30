@@ -287,13 +287,6 @@ normalize_key(OFString *key)
 		status = (int)[[line substringFromIndex: 9
 						toIndex: 12] decimalValue];
 
-		if (status != 200 && status != 301 && status != 302 &&
-		    status != 303)
-			@throw [OFHTTPRequestFailedException
-			    newWithClass: isa
-			     HTTPRequest: self
-			      statusCode: status];
-
 		serverHeaders = [OFMutableDictionary dictionary];
 
 		while ((line = [sock readLine]) != nil) {
@@ -394,7 +387,13 @@ normalize_key(OFString *key)
 				@throw [OFOutOfRangeException
 				    newWithClass: isa];
 
-			if (cl != bytesReceived)
+			/*
+			 * We only want to throw on these status codes as we
+			 * will throw an OFHTTPRequestFailedException for all
+			 * other status codes later.
+			 */
+			if (cl != bytesReceived && (status == 200 ||
+			    status == 301 || status == 302 || status == 303))
 				@throw [OFTruncatedDataException
 				    newWithClass: isa];
 		}
@@ -411,6 +410,13 @@ normalize_key(OFString *key)
 		    initWithStatusCode: status
 			       headers: serverHeaders
 				  data: data];
+
+		if (status != 200 && status != 301 && status != 302 &&
+		    status != 303)
+			@throw [OFHTTPRequestFailedException
+			    newWithClass: isa
+			     HTTPRequest: self
+				  result: result];
 	} @finally {
 		[pool release];
 	}
