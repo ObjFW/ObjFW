@@ -39,6 +39,35 @@
 # import "threading.h"
 #endif
 
+typedef struct of_block_byref_t of_block_byref_t;
+struct of_block_byref_t {
+	Class isa;
+	of_block_byref_t *forwarding;
+	int flags;
+	int size;
+	void (*byref_keep)(void *dest, void *src);
+	void (*byref_dispose)(void*);
+};
+
+enum {
+	OF_BLOCK_HAS_COPY_DISPOSE = (1 << 25),
+	OF_BLOCK_HAS_CTOR	  = (1 << 26),
+	OF_BLOCK_IS_GLOBAL	  = (1 << 28),
+	OF_BLOCK_HAS_STRET	  = (1 << 29),
+	OF_BLOCK_HAS_SIGNATURE	  = (1 << 30),
+};
+#define OF_BLOCK_REFCOUNT_MASK \
+	~(OF_BLOCK_HAS_COPY_DISPOSE | OF_BLOCK_HAS_CTOR | OF_BLOCK_IS_GLOBAL | \
+	OF_BLOCK_HAS_STRET | OF_BLOCK_HAS_SIGNATURE)
+
+enum {
+	OF_BLOCK_FIELD_IS_OBJECT =   3,
+	OF_BLOCK_FIELD_IS_BLOCK	 =   7,
+	OF_BLOCK_FIELD_IS_BYREF	 =   8,
+	OF_BLOCK_FIELD_IS_WEAK	 =  16,
+	OF_BLOCK_BYREF_CALLER	 = 128,
+};
+
 @protocol RetainRelease
 - retain;
 - (void)release;
