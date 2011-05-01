@@ -1420,7 +1420,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 		of_unichar_t c;
 		size_t clen;
 
-		clen = of_string_utf8_to_unicode(string + i, length - 1, &c);
+		clen = of_string_utf8_to_unicode(string + i, length - i, &c);
 
 		if (clen == 0 || c > 0x10FFFF) {
 			free(ret);
