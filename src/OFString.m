@@ -576,6 +576,8 @@ of_unicode_string_length(const of_unichar_t *string)
 				string[i++] = buffer[0];
 				break;
 			case 2:
+				isUTF8 = YES;
+
 				length++;
 				string = [self resizeMemory: string
 						     toSize: length + 1];
@@ -585,6 +587,8 @@ of_unicode_string_length(const of_unichar_t *string)
 
 				break;
 			case 3:
+				isUTF8 = YES;
+
 				length += 2;
 				string = [self resizeMemory: string
 						     toSize: length + 1];
@@ -594,6 +598,8 @@ of_unicode_string_length(const of_unichar_t *string)
 
 				break;
 			case 4:
+				isUTF8 = YES;
+
 				length += 3;
 				string = [self resizeMemory: string
 						     toSize: length + 1];
