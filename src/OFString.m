@@ -1592,7 +1592,7 @@ of_unicode_string_length(const of_unichar_t *string)
 		of_unichar_t c;
 		size_t cLen;
 
-		cLen = of_string_utf8_to_unicode(string + i, length - 1, &c);
+		cLen = of_string_utf8_to_unicode(string + i, length - i, &c);
 
 		if (cLen == 0 || c > 0x10FFFF) {
 			free(ret);
