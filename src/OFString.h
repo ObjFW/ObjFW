@@ -41,6 +41,7 @@ extern size_t of_string_unicode_to_utf8(of_unichar_t, char*);
 extern size_t of_string_utf8_to_unicode(const char*, size_t, of_unichar_t*);
 extern size_t of_string_position_to_index(const char*, size_t);
 extern size_t of_string_index_to_position(const char*, size_t, size_t);
+extern size_t of_unicode_string_length(const of_unichar_t*);
 #ifdef __cplusplus
 }
 #endif
@@ -112,6 +113,14 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  * \return A new autoreleased OFString
  */
 + stringWithString: (OFString*)string;
+
+/**
+ * Creates a new OFString from a unicode string.
+ *
+ * \param string The unicode string
+ * \return A new autoreleased OFString
+ */
++ stringWithUnicodeString: (of_unichar_t*)string;
 
 /**
  * Creates a new OFString from a format string.
@@ -224,6 +233,14 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  * \return An initialized OFString
  */
 - initWithString: (OFString*)string;
+
+/**
+ * Initializes an already allocated OFString with a unicode string.
+ *
+ * \param string The unicode string
+ * \return An initialized OFString
+ */
+- initWithUnicodeString: (of_unichar_t*)string;
 
 /**
  * Initializes an already allocated OFString with a format string.

@@ -244,6 +244,17 @@ of_string_index_to_position(const char *string, size_t index, size_t length)
 	return index;
 }
 
+size_t
+of_unicode_string_length(const of_unichar_t *string)
+{
+	const of_unichar_t *string_ = string;
+
+	while (*string_ != '\0')
+		string_++;
+
+	return (uintptr_t)string_ - (uintptr_t)string;
+}
+
 @implementation OFString
 + string
 {
@@ -281,6 +292,11 @@ of_string_index_to_position(const char *string, size_t index, size_t length)
 + stringWithString: (OFString*)string
 {
 	return [[[self alloc] initWithString: string] autorelease];
+}
+
++ stringWithUnicodeString: (of_unichar_t*)string
+{
+	return [[[self alloc] initWithUnicodeString: string] autorelease];
 }
 
 + stringWithFormat: (OFString*)format, ...
@@ -517,6 +533,84 @@ of_string_index_to_position(const char *string, size_t index, size_t length)
 			free(string);
 			@throw e;
 		}
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithUnicodeString: (of_unichar_t*)string_
+{
+	self = [super init];
+
+	@try {
+		char buffer[4];
+		size_t i = 0;
+		BOOL swap = NO;
+
+		if (*string_ == 0xFEFF)
+			string_++;
+
+		if (*string_ == 0xFFFE0000) {
+			swap = YES;
+			string_++;
+		}
+
+		length = of_unicode_string_length(string_);
+		string = [self allocMemoryWithSize: length + 1];
+
+		while (*string_ != '\0') {
+			size_t characterLen;
+
+			if (swap)
+				characterLen = of_string_unicode_to_utf8(
+				    of_bswap32(*string_), buffer);
+			else
+				characterLen = of_string_unicode_to_utf8(
+				    *string_, buffer);
+
+			switch (characterLen) {
+			case 1:
+				string[i++] = buffer[0];
+				break;
+			case 2:
+				length++;
+				string = [self resizeMemory: string
+						     toSize: length + 1];
+
+				memcpy(string + i, buffer, 2);
+				i += 2;
+
+				break;
+			case 3:
+				length += 2;
+				string = [self resizeMemory: string
+						     toSize: length + 1];
+
+				memcpy(string + i, buffer, 3);
+				i += 3;
+
+				break;
+			case 4:
+				length += 3;
+				string = [self resizeMemory: string
+						     toSize: length + 1];
+
+				memcpy(string + i, buffer, 4);
+				i += 4;
+
+				break;
+			default:
+				@throw [OFInvalidEncodingException
+				    newWithClass: isa];
+			}
+
+			string_++;
+		}
+
+		string[i] = '\0';
 	} @catch (id e) {
 		[self release];
 		@throw e;

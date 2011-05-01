@@ -37,7 +37,11 @@ static OFString* whitespace[] = {
 	@" \r \t\n\t \tasd  \t \t\t\r\n",
 	@" \t\t  \t\t  \t \t"
 };
-static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
+static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0x1F03A, 0 };
+static of_unichar_t sucstr[] = {
+	0xFFFE0000, 0x66000000, 0xF6000000, 0xF6000000, 0x62000000, 0xE4000000,
+	0x72000000, 0x3AF00100, 0
+};
 
 @interface EntityHandler: OFObject <OFStringXMLUnescapingDelegate>
 @end
@@ -128,8 +132,14 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 
 	TEST(@"+[stringWithCString:length:]",
 	    (s[0] = [OFMutableString stringWithCString: "\xEF\xBB\xBF" "foobar"
-					      length: 6]) &&
+						length: 6]) &&
 	    [s[0] isEqual: @"foo"])
+
+	TEST(@"+[stringWithUnicodeString:]",
+	    (s[1] = [OFString stringWithUnicodeString: ucstr]) &&
+	    [s[1] isEqual: @"fööbär🀺"] &&
+	    (s[1] = [OFString stringWithUnicodeString: sucstr]) &&
+	    [s[1] isEqual: @"fööbär🀺"])
 
 	TEST(@"+[stringWithContentsOfFile:encoding]", (s[1] = [OFString
 	    stringWithContentsOfFile: @"testfile.txt"
@@ -359,8 +369,8 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	     @"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"
 	    hexadecimalValue])
 
-	TEST(@"-[unicodeString]", (ua = [@"fööbär" unicodeString]) &&
-	    !memcmp(ua, ucstr, 7 * sizeof(of_unichar_t)) && R(free(ua)))
+	TEST(@"-[unicodeString]", (ua = [@"fööbär🀺" unicodeString]) &&
+	    !memcmp(ua, ucstr, 8 * sizeof(of_unichar_t)) && R(free(ua)))
 
 	TEST(@"-[MD5Hash]", [[@"asdfoobar" MD5Hash]
 	    isEqual: @"184dce2ec49b5422c7cfd8728864db4c"])
