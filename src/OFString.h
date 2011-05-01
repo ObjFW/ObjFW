@@ -516,9 +516,11 @@ extern size_t of_unicode_string_length(const of_unichar_t*);
 - (double)doubleValue;
 
 /**
- * Returns the string as an array of of_unichar_t. The result needs to be
- * free()'d by the caller, as the memory is not marked as belonging to the
- * object.
+ * Returns the string as an array of of_unichar_t.
+ *
+ * The result is valid until the autorelease pool is released. If you want to
+ * use the result outside the scope of the current autorelease pool, you have to
+ * copy it.
  *
  * \return The string as an array of Unicode characters
  */

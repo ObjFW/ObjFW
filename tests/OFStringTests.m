@@ -37,7 +37,9 @@ static OFString* whitespace[] = {
 	@" \r \t\n\t \tasd  \t \t\t\r\n",
 	@" \t\t  \t\t  \t \t"
 };
-static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0x1F03A, 0 };
+static of_unichar_t ucstr[] = {
+	0xFEFF, 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0x1F03A, 0
+};
 static of_unichar_t sucstr[] = {
 	0xFFFE0000, 0x66000000, 0xF6000000, 0xF6000000, 0x62000000, 0xE4000000,
 	0x72000000, 0x3AF00100, 0
@@ -370,7 +372,7 @@ static of_unichar_t sucstr[] = {
 	    hexadecimalValue])
 
 	TEST(@"-[unicodeString]", (ua = [@"fööbär🀺" unicodeString]) &&
-	    !memcmp(ua, ucstr, 8 * sizeof(of_unichar_t)) && R(free(ua)))
+	    !memcmp(ua, ucstr, 9 * sizeof(of_unichar_t)))
 
 	TEST(@"-[MD5Hash]", [[@"asdfoobar" MD5Hash]
 	    isEqual: @"184dce2ec49b5422c7cfd8728864db4c"])

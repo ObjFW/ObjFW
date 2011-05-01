@@ -1578,15 +1578,17 @@ of_unicode_string_length(const of_unichar_t *string)
 
 - (of_unichar_t*)unicodeString
 {
+	OFObject *object = [[[OFObject alloc] init] autorelease];
 	of_unichar_t *ret;
-	size_t i, j, len;
+	size_t i, j;
 
-	len = [self length];
+	ret = [object allocMemoryForNItems: [self length] + 2
+				  withSize: sizeof(of_unichar_t)];
 
-	if ((ret = malloc((len + 1) * sizeof(of_unichar_t))) == NULL)
-		@throw [OFOutOfMemoryException newWithClass: isa];
+	i = 0;
+	j = 0;
 
-	i = j = 0;
+	ret[j++] = 0xFEFF;
 
 	while (i < length) {
 		of_unichar_t c;
