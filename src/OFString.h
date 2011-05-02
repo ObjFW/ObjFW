@@ -123,6 +123,16 @@ extern size_t of_unicode_string_length(const of_unichar_t*);
 + stringWithUnicodeString: (of_unichar_t*)string;
 
 /**
+ * Creates a new OFString from a unicode string with the specified length.
+ *
+ * \param string The unicode string
+ * \param length The length of the unicode string
+ * \return A new autoreleased OFString
+ */
++ stringWithUnicodeString: (of_unichar_t*)string
+		   length: (size_t)length;
+
+/**
  * Creates a new OFString from a format string.
  * See printf for the format syntax.
  *
@@ -241,6 +251,17 @@ extern size_t of_unicode_string_length(const of_unichar_t*);
  * \return An initialized OFString
  */
 - initWithUnicodeString: (of_unichar_t*)string;
+
+/**
+ * Initializes an already allocated OFString with a unicode string with the
+ * specified length.
+ *
+ * \param string The unicode string
+ * \param length The length of the unicode string
+ * \return An initialized OFString
+ */
+- initWithUnicodeString: (of_unichar_t*)string
+		 length: (size_t)length;
 
 /**
  * Initializes an already allocated OFString with a format string.

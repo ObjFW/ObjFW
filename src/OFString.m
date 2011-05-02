@@ -299,6 +299,13 @@ of_unicode_string_length(const of_unichar_t *string)
 	return [[[self alloc] initWithUnicodeString: string] autorelease];
 }
 
++ stringWithUnicodeString: (of_unichar_t*)string
+		   length: (size_t)length
+{
+	return [[[self alloc] initWithUnicodeString: string
+					     length: length] autorelease];
+}
+
 + stringWithFormat: (OFString*)format, ...
 {
 	id ret;
@@ -543,6 +550,13 @@ of_unicode_string_length(const of_unichar_t *string)
 
 - initWithUnicodeString: (of_unichar_t*)string_
 {
+	return [self initWithUnicodeString: string_
+				    length: of_unicode_string_length(string_)];
+}
+
+- initWithUnicodeString: (of_unichar_t*)string_
+		 length: (size_t)length_
+{
 	self = [super init];
 
 	@try {
@@ -550,15 +564,18 @@ of_unicode_string_length(const of_unichar_t *string)
 		size_t i = 0;
 		BOOL swap = NO;
 
-		if (*string_ == 0xFEFF)
+		if (*string_ == 0xFEFF) {
 			string_++;
+			length_--;
+		}
 
 		if (*string_ == 0xFFFE0000) {
 			swap = YES;
 			string_++;
+			length_--;
 		}
 
-		length = of_unicode_string_length(string_);
+		length = length_;
 		string = [self allocMemoryWithSize: length + 1];
 
 		while (*string_ != '\0') {
