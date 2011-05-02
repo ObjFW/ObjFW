@@ -1596,10 +1596,8 @@ of_unicode_string_length(const of_unichar_t *string)
 
 		cLen = of_string_utf8_to_unicode(string + i, length - i, &c);
 
-		if (cLen == 0 || c > 0x10FFFF) {
-			free(ret);
+		if (cLen == 0 || c > 0x10FFFF)
 			@throw [OFInvalidEncodingException newWithClass: isa];
-		}
 
 		ret[j++] = c;
 		i += cLen;
