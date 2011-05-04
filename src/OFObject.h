@@ -65,24 +65,31 @@ typedef struct of_range_t {
  */
 @protocol OFObject
 /**
+ * \brief Returns the class of the object.
+ *
  * \return The class of the object
  */
 - (Class)class;
 
 /**
+ * \brief Returns a boolean whether the object of the specified kind.
+ *
  * \param class_ The class whose kind is checked
  * \return A boolean whether the object is of the specified kind
  */
 - (BOOL)isKindOfClass: (Class)class_;
 
 /**
+ * \brief Returns a boolean whether the object responds to the specified
+ *	  selector.
+ *
  * \param selector The selector which should be checked for respondance
  * \return A boolean whether the objects responds to the specified selector
  */
 - (BOOL)respondsToSelector: (SEL)selector;
 
 /**
- * Performs the specified selector.
+ * \brief Performs the specified selector.
  *
  * \param selector The selector to perform
  * \return The object returned by the method specified by the selector
@@ -90,7 +97,7 @@ typedef struct of_range_t {
 - (id)performSelector: (SEL)selector;
 
 /**
- * Performs the specified selector with the specified object.
+ * \brief Performs the specified selector with the specified object.
  *
  * \param selector The selector to perform
  * \param object The object that is passed to the method specified by the
@@ -101,7 +108,7 @@ typedef struct of_range_t {
 	   withObject: (id)object;
 
 /**
- * Performs the specified selector with the specified objects.
+ * \brief Performs the specified selector with the specified objects.
  *
  * \param selector The selector to perform
  * \param object The first object that is passed to the method specified by the
@@ -115,7 +122,7 @@ typedef struct of_range_t {
 	   withObject: (id)otherObject;
 
 /**
- * Checks two objects for equality.
+ * \brief Checks two objects for equality.
  *
  * Classes containing data (like strings, arrays, lists etc.) should reimplement
  * this!
@@ -126,7 +133,7 @@ typedef struct of_range_t {
 - (BOOL)isEqual: (id)object;
 
 /**
- * Calculates a hash for the object.
+ * \brief Calculates a hash for the object.
  *
  * Classes containing data (like strings, arrays, lists etc.) should reimplement
  * this!
@@ -136,7 +143,7 @@ typedef struct of_range_t {
 - (uint32_t)hash;
 
 /**
- * Increases the retain count.
+ * \brief Increases the retain count.
  *
  * Each time an object is released, the retain count gets decreased and the
  * object deallocated if it reaches 0.
@@ -144,12 +151,14 @@ typedef struct of_range_t {
 - retain;
 
 /**
+ * \brief Returns the retain count.
+ *
  * \return The retain count
  */
 - (unsigned int)retainCount;
 
 /**
- * Decreases the retain count.
+ * \brief Decreases the retain count.
  *
  * Each time an object is released, the retain count gets decreased and the
  * object deallocated if it reaches 0.
@@ -157,8 +166,10 @@ typedef struct of_range_t {
 - (void)release;
 
 /**
- * Adds the object to the topmost OFAutoreleasePool of the thread's release pool
- * stack.
+ * \brief Adds the object to the topmost OFAutoreleasePool of the thread's
+ *	  autorelease pool stack.
+ *
+ * \return The object
  */
 - autorelease;
 @end
@@ -174,7 +185,8 @@ typedef struct of_range_t {
 }
 
 /**
- * This code is executed once when the class is loaded into the runtime.
+ * \brief A method which is called once when the class is loaded into the
+ *	  runtime.
  *
  * Derived classes can overide this to execute their own code when the class is
  * loaded.
@@ -182,19 +194,21 @@ typedef struct of_range_t {
 + (void)load;
 
 /**
- * This code is executed once when a method of the class is called for the first
- * time.
+ * \brief A method which is called the moment before the first call to the class
+ *	  is being made.
  *
  * Derived classes can override this to execute their own code on
- * initialization.
+ * initialization. They should make sure to not execute any code if self is not
+ * the class itself, as it might happen that the method was called for a
+ * subclass which did not override this method.
  */
 + (void)initialize;
 
 /**
- * Allocates memory for an instance of the class and sets up the memory pool for
- * the object.
+ * \brief Allocates memory for an instance of the class and sets up the memory
+ *	  pool for the object.
  *
- * alloc will never return nil, instead, it will throw an
+ * This method will never return nil, instead, it will throw an
  * OFAllocFailedException.
  *
  * \return The allocated object.
@@ -202,29 +216,37 @@ typedef struct of_range_t {
 + alloc;
 
 /**
+ * \brief Returns the class.
+ *
  * \return The class
  */
 + (Class)class;
 
 /**
- * \return The name of the class as a C string
+ * \brief Returns the name of the class as a string.
+ *
+ * \return The name of the class as a string
  */
 + (OFString*)className;
 
 /**
+ * \brief Returns a boolean whether the class is a subclass of the specified
+ *	  class.
+ *
  * \param class_ The class which is checked for being a superclass
- * \return A boolean whether the class class is a subclass of the specified
- *	   class
+ * \return A boolean whether the class is a subclass of the specified class
  */
 + (BOOL)isSubclassOfClass: (Class)class_;
 
 /**
+ * \brief Returns the superclass of the class.
+ *
  * \return The superclass of the class
  */
 + (Class)superclass;
 
 /**
- * Checks whether instances of the class respond to a given selector.
+ * \brief Checks whether instances of the class respond to a given selector.
  *
  * \param selector The selector which should be checked for respondance
  * \return A boolean whether instances of the class respond to the specified
@@ -233,7 +255,7 @@ typedef struct of_range_t {
 + (BOOL)instancesRespondToSelector: (SEL)selector;
 
 /**
- * Checks whether the class conforms to a given protocol.
+ * \brief Checks whether the class conforms to a given protocol.
  *
  * \param protocol The protocol which should be checked for conformance
  * \return A boolean whether the class conforms to the specified protocol
@@ -241,6 +263,9 @@ typedef struct of_range_t {
 + (BOOL)conformsToProtocol: (Protocol*)protocol;
 
 /**
+ * \brief Returns the implementation of the instance method for the specified
+ *	  selector.
+ *
  * \param selector The selector for which the method should be returned
  * \return The implementation of the instance method for the specified selector
  *	   or nil if it isn't implemented
@@ -248,20 +273,25 @@ typedef struct of_range_t {
 + (IMP)instanceMethodForSelector: (SEL)selector;
 
 /**
+ * \brief Returns the type encoding of the instance method for the specified
+ *	  selector.
+ *
  * \param selector The selector for which the type encoding should be returned
  * \return The type encoding of the instance method for the specified selector
  */
 + (const char*)typeEncodingForInstanceSelector: (SEL)selector;
 
 /**
- * Returns a description for the class, which is usually the class name.
+ * \brief Returns a description for the class, which is usually the class name.
  *
  * This is mostly for debugging purposes.
+ *
+ * \return A description for the class, which is usually the class name
  */
 + (OFString*)description;
 
 /**
- * Replaces a class method implementation with another implementation.
+ * \brief Replaces a class method implementation with another implementation.
  *
  * \param newImp The new implementation for the class method
  * \param selector The selector of the class method to replace
@@ -271,7 +301,7 @@ typedef struct of_range_t {
 	  forClassMethod: (SEL)selector;
 
 /**
- * Replaces a class method with a class method from another class.
+ * \brief Replaces a class method with a class method from another class.
  *
  * \param selector The selector of the class method to replace
  * \param class_ The class from which the new class method should be taken
@@ -281,7 +311,8 @@ typedef struct of_range_t {
       withMethodFromClass: (Class)class_;
 
 /**
- * Replaces an instance method implementation with another implementation.
+ * \brief Replaces an instance method implementation with another
+ *	  implementation.
  *
  * \param newImp The new implementation for the instance method
  * \param selector The selector of the instance method to replace
@@ -291,7 +322,8 @@ typedef struct of_range_t {
        forInstanceMethod: (SEL)selector;
 
 /**
- * Replaces an instance method with an instance method from another class.
+ * \brief Replaces an instance method with an instance method from another
+ *	  class.
  *
  * \param selector The selector of the instance method to replace
  * \param class_ The class from which the new instance method should be taken
@@ -301,7 +333,7 @@ typedef struct of_range_t {
 	 withMethodFromClass: (Class)class_;
 
 /**
- * Initializes an already allocated object.
+ * \brief Initializes an already allocated object.
  *
  * Derived classes may override this, but need to do self = [super init] before
  * they do any initialization themselves. init may never return nil, instead
@@ -312,50 +344,59 @@ typedef struct of_range_t {
 - init;
 
 /**
- * \return The name of the object's class.
+ * \brief Returns the name of the object's class.
+ *
+ * \return The name of the object's class
  */
 - (OFString*)className;
 
 /**
+ * \brief Checks whether the object conforms to the specified protocol.
+ *
  * \param protocol The protocol which should be checked for conformance
- * \return A boolean whether the objects conforms to the specified protocol
+ * \return A boolean whether the object conforms to the specified protocol
  */
 - (BOOL)conformsToProtocol: (Protocol*)protocol;
 
 /**
- * \param selector The selector for which the method should be returned
+ * \brief Returns the implementation for the specified selector.
  *
+ * \param selector The selector for which the method should be returned
  * \return The implementation for the specified selector
  */
 - (IMP)methodForSelector: (SEL)selector;
 
 /**
- * \param selector The selector for which the type encoding should be returned
+ * \brief Returns the type encoding for the specified selector.
  *
+ * \param selector The selector for which the type encoding should be returned
  * \return The type encoding for the specified selector
  */
 - (const char*)typeEncodingForSelector: (SEL)selector;
 
 /**
- * Returns a description for the object.
+ * \brief Returns a description for the object.
  *
  * This is mostly for debugging purposes.
+ *
+ * \return A description for the object
  */
 - (OFString*)description;
 
 /**
- * Adds a pointer to the object's memory pool.
+ * \brief Adds a pointer to the object's memory pool.
  *
  * This is useful to add memory allocated by functions such as asprintf to the
  * pool so it gets free'd automatically when the object is deallocated.
  *
- * \param ptr A pointer to add to the memory pool
+ * \param pointer A pointer to add to the memory pool
  */
-- (void)addMemoryToPool: (void*)ptr;
+- (void)addMemoryToPool: (void*)pointer;
 
 /**
- * Allocates memory and stores it in the object's memory pool so it can be
- * free'd automatically when the object is deallocated.
+ * \brief Allocates memory and stores it in the object's memory pool.
+ *
+ * It will be free'd automatically when the object is deallocated.
  *
  * \param size The size of the memory to allocate
  * \return A pointer to the allocated memory
@@ -363,9 +404,10 @@ typedef struct of_range_t {
 - (void*)allocMemoryWithSize: (size_t)size;
 
 /**
- * Allocates memory for the specified number of items and stores it in the
- * object's memory pool so it can be free'd automatically when the object is
- * deallocated.
+ * \brief Allocates memory for the specified number of items and stores it in
+ *	  the object's memory pool.
+ *
+ * It will be free'd automatically when the object is deallocated.
  *
  * \param nItems The number of items to allocate
  * \param size The size of each item to allocate
@@ -375,46 +417,62 @@ typedef struct of_range_t {
 		     withSize: (size_t)size;
 
 /**
- * Resizes memory in the object's memory pool to the specified size.
+ * \brief Resizes memory in the object's memory pool to the specified size.
  *
- * \param ptr A pointer to the already allocated memory
+ * If the pointer is NULL, this is equivalent to allocating memory.
+ * If the size is 0, this is equivalent to freeing memory.
+ *
+ * \param pointer A pointer to the already allocated memory
  * \param size The new size for the memory chunk
  * \return A pointer to the resized memory chunk
  */
-- (void*)resizeMemory: (void*)ptr
+- (void*)resizeMemory: (void*)pointer
 	       toSize: (size_t)size;
 
 /**
- * Resizes memory in the object's memory pool to the specific number of items of
- * the specified size.
+ * \brief Resizes memory in the object's memory pool to the specific number of
+ *	  items of the specified size.
  *
- * \param ptr A pointer to the already allocated memory
+ * If the pointer is NULL, this is equivalent to allocating memory.
+ * If the size or number of items is 0, this is equivalent to freeing memory.
+ *
+ * \param pointer A pointer to the already allocated memory
  * \param nItems The number of items to resize to
  * \param size The size of each item to resize to
  * \return A pointer to the resized memory chunk
  */
-- (void*)resizeMemory: (void*)ptr
+- (void*)resizeMemory: (void*)pointer
 	     toNItems: (size_t)nItems
 	     withSize: (size_t)size;
 
 /**
- * Frees allocated memory and removes it from the object's memory pool.
- * Does nothing if ptr is NULL.
+ * \brief Frees allocated memory and removes it from the object's memory pool.
  *
- * \param ptr A pointer to the allocated memory
+ * Does nothing if the pointer is NULL.
+ *
+ * \param pointer A pointer to the allocated memory
  */
-- (void)freeMemory: (void*)ptr;
+- (void)freeMemory: (void*)pointer;
 
 /**
- * Deallocates the object and also frees all memory in its memory pool.
+ * \brief Deallocates the object.
  *
- * It is also called when the retain count reaches zero.
+ * It is automatically called when the retain count reaches zero, but not when
+ * the garbage collector disposes of the object (see finalize).
+ *
+ * This also frees all memory in its memory pool.
  */
 - (void)dealloc;
 
 /**
- * If a garbage collector is added in the future, this method will be called
- * before it disposes of the object, for example to close files.
+ * \brief A method which is called before the garbage collector disposes of the
+ *	  object.
+ *
+ * This is useful for example to close files if they haven't been closed by the
+ * user yet.
+ *
+ * Note: Currently, there is no garbage collector. This method only exists to
+ *	 make it easy to add support for a garbage collector later.
  */
 - (void)finalize;
 @end
@@ -424,6 +482,12 @@ typedef struct of_range_t {
  */
 @protocol OFCopying <OFObject>
 /**
+ * \brief Copies the object.
+ *
+ * For classes which can be immutable or mutable, this returns an immutable
+ * copy. If only a mutable version of the class exists, it creates a mutable
+ * copy.
+ *
  * \return A copy of the object
  */
 - copy;
@@ -437,6 +501,8 @@ typedef struct of_range_t {
  */
 @protocol OFMutableCopying <OFCopying>
 /**
+ * \brief Creates a mutable copy of the object.
+ *
  * \return A mutable copy of the object
  */
 - mutableCopy;
@@ -449,7 +515,7 @@ typedef struct of_range_t {
  */
 @protocol OFComparing <OFObject>
 /**
- * Compares the object with another object.
+ * \brief Compares the object with another object.
  *
  * \param object An object to compare the object to
  * \return The result of the comparison

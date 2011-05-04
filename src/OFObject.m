@@ -571,7 +571,7 @@ _NSPrintForDebugger(id object)
 	return [OFString stringWithFormat: @"<%@: %p>", [self className], self];
 }
 
-- (void)addMemoryToPool: (void*)ptr
+- (void)addMemoryToPool: (void*)pointer
 {
 	void **memoryChunks;
 	size_t memoryChunksSize;
@@ -588,13 +588,13 @@ _NSPrintForDebugger(id object)
 					      requestedSize: memoryChunksSize];
 
 	PRE_IVAR->memoryChunks = memoryChunks;
-	PRE_IVAR->memoryChunks[PRE_IVAR->memoryChunksSize] = ptr;
+	PRE_IVAR->memoryChunks[PRE_IVAR->memoryChunksSize] = pointer;
 	PRE_IVAR->memoryChunksSize = memoryChunksSize;
 }
 
 - (void*)allocMemoryWithSize: (size_t)size
 {
-	void *ptr, **memoryChunks;
+	void *pointer, **memoryChunks;
 	size_t memoryChunksSize;
 
 	if (size == 0)
@@ -606,22 +606,22 @@ _NSPrintForDebugger(id object)
 	    memoryChunksSize > SIZE_MAX / sizeof(void*))
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	if ((ptr = malloc(size)) == NULL)
+	if ((pointer = malloc(size)) == NULL)
 		@throw [OFOutOfMemoryException newWithClass: isa
 					      requestedSize: size];
 
 	if ((memoryChunks = realloc(PRE_IVAR->memoryChunks,
 	    memoryChunksSize * sizeof(void*))) == NULL) {
-		free(ptr);
+		free(pointer);
 		@throw [OFOutOfMemoryException newWithClass: isa
 					      requestedSize: memoryChunksSize];
 	}
 
 	PRE_IVAR->memoryChunks = memoryChunks;
-	PRE_IVAR->memoryChunks[PRE_IVAR->memoryChunksSize] = ptr;
+	PRE_IVAR->memoryChunks[PRE_IVAR->memoryChunksSize] = pointer;
 	PRE_IVAR->memoryChunksSize = memoryChunksSize;
 
-	return ptr;
+	return pointer;
 }
 
 - (void*)allocMemoryForNItems: (size_t)nItems
@@ -636,63 +636,64 @@ _NSPrintForDebugger(id object)
 	return [self allocMemoryWithSize: nItems * size];
 }
 
-- (void*)resizeMemory: (void*)ptr
+- (void*)resizeMemory: (void*)pointer
 	       toSize: (size_t)size
 {
 	void **iter;
 
-	if (ptr == NULL)
+	if (pointer == NULL)
 		return [self allocMemoryWithSize: size];
 
 	if (size == 0) {
-		[self freeMemory: ptr];
+		[self freeMemory: pointer];
 		return NULL;
 	}
 
 	iter = PRE_IVAR->memoryChunks + PRE_IVAR->memoryChunksSize;
 
 	while (iter-- > PRE_IVAR->memoryChunks) {
-		if (OF_UNLIKELY(*iter == ptr)) {
-			if (OF_UNLIKELY((ptr = realloc(ptr, size)) == NULL))
+		if (OF_UNLIKELY(*iter == pointer)) {
+			if (OF_UNLIKELY((pointer = realloc(pointer,
+			    size)) == NULL))
 				@throw [OFOutOfMemoryException
 				     newWithClass: isa
 				    requestedSize: size];
 
-			*iter = ptr;
-			return ptr;
+			*iter = pointer;
+			return pointer;
 		}
 	}
 
 	@throw [OFMemoryNotPartOfObjectException newWithClass: isa
-						      pointer: ptr];
+						      pointer: pointer];
 }
 
-- (void*)resizeMemory: (void*)ptr
+- (void*)resizeMemory: (void*)pointer
 	     toNItems: (size_t)nItems
 	     withSize: (size_t)size
 {
-	if (ptr == NULL)
+	if (pointer == NULL)
 		return [self allocMemoryForNItems: nItems
 					 withSize: size];
 
 	if (nItems == 0 || size == 0) {
-		[self freeMemory: ptr];
+		[self freeMemory: pointer];
 		return NULL;
 	}
 
 	if (nItems > SIZE_MAX / size)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	return [self resizeMemory: ptr
+	return [self resizeMemory: pointer
 			   toSize: nItems * size];
 }
 
-- (void)freeMemory: (void*)ptr;
+- (void)freeMemory: (void*)pointer;
 {
 	void **iter, *last, **memoryChunks;
 	size_t i, memoryChunksSize;
 
-	if (ptr == NULL)
+	if (pointer == NULL)
 		return;
 
 	iter = PRE_IVAR->memoryChunks + PRE_IVAR->memoryChunksSize;
@@ -701,7 +702,7 @@ _NSPrintForDebugger(id object)
 	while (iter-- > PRE_IVAR->memoryChunks) {
 		i--;
 
-		if (OF_UNLIKELY(*iter == ptr)) {
+		if (OF_UNLIKELY(*iter == pointer)) {
 			memoryChunksSize = PRE_IVAR->memoryChunksSize - 1;
 			last = PRE_IVAR->memoryChunks[memoryChunksSize];
 
@@ -709,7 +710,7 @@ _NSPrintForDebugger(id object)
 			    memoryChunksSize <= SIZE_MAX / sizeof(void*));
 
 			if (OF_UNLIKELY(memoryChunksSize == 0)) {
-				free(ptr);
+				free(pointer);
 				free(PRE_IVAR->memoryChunks);
 
 				PRE_IVAR->memoryChunks = NULL;
@@ -718,7 +719,7 @@ _NSPrintForDebugger(id object)
 				return;
 			}
 
-			free(ptr);
+			free(pointer);
 			PRE_IVAR->memoryChunks[i] = last;
 			PRE_IVAR->memoryChunksSize = memoryChunksSize;
 
@@ -734,7 +735,7 @@ _NSPrintForDebugger(id object)
 	}
 
 	@throw [OFMemoryNotPartOfObjectException newWithClass: isa
-						      pointer: ptr];
+						      pointer: pointer];
 }
 
 - retain
@@ -866,7 +867,7 @@ _NSPrintForDebugger(id object)
  * Those are needed as the root class is the superclass of the root class's
  * metaclass and thus instance methods can be sent to class objects as well.
  */
-+ (void)addMemoryToPool: (void*)ptr
++ (void)addMemoryToPool: (void*)pointer
 {
 	@throw [OFNotImplementedException newWithClass: self
 					      selector: _cmd];
@@ -885,14 +886,14 @@ _NSPrintForDebugger(id object)
 					      selector: _cmd];
 }
 
-+ (void*)resizeMemory: (void*)ptr
++ (void*)resizeMemory: (void*)pointer
 	       toSize: (size_t)size
 {
 	@throw [OFNotImplementedException newWithClass: self
 					      selector: _cmd];
 }
 
-+ (void*)resizeMemory: (void*)ptr
++ (void*)resizeMemory: (void*)pointer
 	     toNItems: (size_t)nItems
 	     withSize: (size_t)size
 {
@@ -900,7 +901,7 @@ _NSPrintForDebugger(id object)
 					      selector: _cmd];
 }
 
-+ (void)freeMemory: (void*)ptr
++ (void)freeMemory: (void*)pointer
 {
 	@throw [OFNotImplementedException newWithClass: self
 					      selector: _cmd];
