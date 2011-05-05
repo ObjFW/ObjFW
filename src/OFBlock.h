@@ -46,6 +46,9 @@ extern void _Block_release(const void*);
 # define Block_release(x) _Block_release((const void*)(x))
 #endif
 
+/**
+ * \brief The class for all blocks, since all blocks are also objects.
+ */
 @interface OFBlock: OFObject
 @end
 

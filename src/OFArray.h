@@ -40,12 +40,14 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
 }
 
 /**
+ * \brief Creates a new OFArray.
+ *
  * \return A new autoreleased OFArray
  */
 + array;
 
 /**
- * Creates a new OFArray with the specified object.
+ * \brief Creates a new OFArray with the specified object.
  *
  * \param object An object
  * \return A new autoreleased OFArray
@@ -53,7 +55,7 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
 + arrayWithObject: (id)object;
 
 /**
- * Creates a new OFArray with the specified objects, terminated by nil.
+ * \brief Creates a new OFArray with the specified objects, terminated by nil.
  *
  * \param firstObject The first object in the array
  * \return A new autoreleased OFArray
@@ -61,7 +63,7 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
 + arrayWithObjects: (id)firstObject, ...;
 
 /**
- * Creates a new OFArray with the objects from the specified C array.
+ * \brief Creates a new OFArray with the objects from the specified C array.
  *
  * \param objects A C array of objects, terminated with nil
  * \return A new autoreleased OFArray
@@ -69,8 +71,8 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
 + arrayWithCArray: (id*)objects;
 
 /**
- * Creates a new OFArray with the objects from the specified C array of the
- * specified length.
+ * \brief Creates a new OFArray with the objects from the specified C array of
+ *	  the specified length.
  *
  * \param objects A C array of objects
  * \param length The length of the C array
@@ -80,7 +82,7 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
 	   length: (size_t)length;
 
 /**
- * Initializes an OFArray with the specified object.
+ * \brief Initializes an OFArray with the specified object.
  *
  * \param object An object
  * \return An initialized OFArray
@@ -88,7 +90,7 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
 - initWithObject: (id)object;
 
 /**
- * Initializes an OFArray with the specified objects.
+ * \brief Initializes an OFArray with the specified objects.
  *
  * \param firstObject The first object
  * \return An initialized OFArray
@@ -96,7 +98,7 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
 - initWithObjects: (id)firstObject, ...;
 
 /**
- * Initializes an OFArray with the specified object and a va_list.
+ * \brief Initializes an OFArray with the specified object and a va_list.
  *
  * \param firstObject The first object
  * \param arguments A va_list
@@ -106,7 +108,7 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
        arguments: (va_list)arguments;
 
 /**
- * Initializes an OFArray with the objects from the specified C array.
+ * \brief Initializes an OFArray with the objects from the specified C array.
  *
  * \param objects A C array of objects, terminated with nil
  * \return An initialized OFArray
@@ -114,8 +116,8 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
 - initWithCArray: (id*)objects;
 
 /**
- * Initializes an OFArray with the objects from the specified C array of the
- * specified length.
+ * \brief Initializes an OFArray with the objects from the specified C array of
+ *	  the specified length.
  *
  * \param objects A C array of objects
  * \param length The length of the C array
@@ -125,12 +127,14 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
 	  length: (size_t)length;
 
 /**
+ * \brief Returns the objects of the array as a C array.
+ *
  * \return The objects of the array as a C array
  */
 - (id*)cArray;
 
 /**
- * Returns a specific object of the array.
+ * \brief Returns a specified object of the array.
  *
  * The returned object is <i>not</i> retained and autoreleased for performance
  * reasons!
@@ -141,8 +145,8 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
 - (id)objectAtIndex: (size_t)index;
 
 /**
- * Returns the index of the first object that is equivalent to the specified
- * object or OF_INVALID_INDEX if it was not found.
+ * \brief Returns the index of the first object that is equivalent to the
+ *	  specified object or OF_INVALID_INDEX if it was not found.
  *
  * \param object The object whose index is returned
  * \return The index of the first object equivalent to the specified object
@@ -151,8 +155,8 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
 - (size_t)indexOfObject: (id)object;
 
 /**
- * Returns the index of the first object that has the same address as the
- * specified object or OF_INVALID_INDEX if it was not found.
+ * \brief Returns the index of the first object that has the same address as the
+ *	  specified object or OF_INVALID_INDEX if it was not found.
  *
  * \param object The object whose index is returned
  * \return The index of the first object that has the same aaddress as
@@ -161,7 +165,7 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
 - (size_t)indexOfObjectIdenticalTo: (id)object;
 
 /**
- * Returns the first object of the array or nil.
+ * \brief Returns the first object of the array or nil.
  *
  * The returned object is <i>not</i> retained and autoreleased for performance
  * reasons!
@@ -171,7 +175,7 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
 - (id)firstObject;
 
 /**
- * Returns the last object of the array or nil.
+ * \brief Returns the last object of the array or nil.
  *
  * The returned object is <i>not</i> retained and autoreleased for performance
  * reasons!
@@ -181,8 +185,8 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
 - (id)lastObject;
 
 /**
- * Returns the objects from the specified index to the specified index as a new
- * OFArray.
+ * \brief Returns the objects from the specified index to the specified index as
+ *	  a new OFArray.
  *
  * \param start The index where the subarray starts
  * \param end The index where the subarray ends.
@@ -193,14 +197,15 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
 		     toIndex: (size_t)end;
 
 /**
- * Returns the objects in the specified range as a new OFArray.
+ * \brief Returns the objects in the specified range as a new OFArray.
+ *
  * \param range The range for the subarray
  * \return The subarray as a new autoreleased OFArray
  */
 - (OFArray*)objectsInRange: (of_range_t)range;
 
 /**
- * Creates a string by joining all objects of the array.
+ * \brief Creates a string by joining all objects of the array.
  *
  * \param separator The string with which the objects should be joined
  * \return A string containing all objects joined by the separator
@@ -208,15 +213,15 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
 - (OFString*)componentsJoinedByString: (OFString*)separator;
 
 /**
- * Performs the specified selector on all objects in the array.
+ * \brief Performs the specified selector on all objects in the array.
  *
  * \param selector The selector to perform on all objects in the array
  */
 - (void)makeObjectsPerformSelector: (SEL)selector;
 
 /**
- * Performs the specified selector on all objects in the array with the
- * specified object.
+ * \brief Performs the specified selector on all objects in the array with the
+ *	  specified object.
  *
  * \param selector The selector to perform on all objects in the array
  * \param object The object to perform the selector with on all objects in the
@@ -227,14 +232,14 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
 
 #ifdef OF_HAVE_BLOCKS
 /**
- * Executes a block for each object.
+ * \brief Executes a block for each object.
  *
  * \param block The block to execute for each object
  */
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block;
 
 /**
- * Returns a new array, mapping each object using the specified block.
+ * \brief Returns a new array, mapping each object using the specified block.
  *
  * \param block A block which maps an object for each object
  * \return A new, autoreleased OFArray
@@ -242,8 +247,8 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
 - (OFArray*)mappedArrayUsingBlock: (of_array_map_block_t)block;
 
 /**
- * Returns a new array, only containing the objects for which the block returns
- * YES.
+ * \brief Returns a new array, only containing the objects for which the block
+ *	  returns YES.
  *
  * \param block A block which determines if the object should be in the new
  *		array

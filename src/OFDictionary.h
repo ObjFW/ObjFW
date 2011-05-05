@@ -48,14 +48,14 @@ struct of_dictionary_bucket
 }
 
 /**
- * Creates a new OFDictionary.
+ * \brief Creates a new OFDictionary.
  *
  * \return A new autoreleased OFDictionary
  */
 + dictionary;
 
 /**
- * Creates a new OFDictionary with the specified dictionary.
+ * \brief Creates a new OFDictionary with the specified dictionary.
  *
  * \param dictionary An OFDictionary
  * \return A new autoreleased OFDictionary
@@ -63,7 +63,7 @@ struct of_dictionary_bucket
 + dictionaryWithDictionary: (OFDictionary*)dictionary;
 
 /**
- * Creates a new OFDictionary with the specified key and object.
+ * \brief Creates a new OFDictionary with the specified key and object.
  *
  * \param key The key
  * \param object The object
@@ -73,7 +73,7 @@ struct of_dictionary_bucket
 		forKey: (id <OFCopying>)key;
 
 /**
- * Creates a new OFDictionary with the specified keys and objects.
+ * \brief Creates a new OFDictionary with the specified keys and objects.
  *
  * \param keys An array of keys
  * \param objects An array of objects
@@ -83,7 +83,7 @@ struct of_dictionary_bucket
 		forKeys: (OFArray*)keys;
 
 /**
- * Creates a new OFDictionary with the specified keys objects.
+ * \brief Creates a new OFDictionary with the specified keys objects.
  *
  * \param firstKey The first key
  * \return A new autoreleased OFDictionary
@@ -91,15 +91,15 @@ struct of_dictionary_bucket
 + dictionaryWithKeysAndObjects: (id <OFCopying>)firstKey, ...;
 
 /**
- * Initializes an already allocated OFDictionary.
+ * \brief Initializes an already allocated OFDictionary.
  *
  * \return An initialized OFDictionary
  */
 - init;
 
 /**
- * Initializes an already allocated OFDictionary with the specified
- * OFDictionary.
+ * \brief Initializes an already allocated OFDictionary with the specified
+ *	  OFDictionary.
  *
  * \param dictionary An OFDictionary
  * \return An initialized OFDictionary
@@ -107,8 +107,8 @@ struct of_dictionary_bucket
 - initWithDictionary: (OFDictionary*)dictionary;
 
 /**
- * Initializes an already allocated OFDictionary with the specified key and
- * object.
+ * \brief Initializes an already allocated OFDictionary with the specified key
+ *	  and object.
  *
  * \param key The key
  * \param object The object
@@ -118,8 +118,8 @@ struct of_dictionary_bucket
 	  forKey: (id <OFCopying>)key;
 
 /**
- * Initializes an already allocated OFDictionary with the specified keys and
- * objects.
+ * \brief Initializes an already allocated OFDictionary with the specified keys
+ *	  and objects.
  *
  * \param keys An array of keys
  * \param objects An array of objects
@@ -129,8 +129,8 @@ struct of_dictionary_bucket
 	  forKeys: (OFArray*)keys;
 
 /**
- * Initializes an already allocated OFDictionary with the specified keys and
- * objects.
+ * \brief Initializes an already allocated OFDictionary with the specified keys
+ *	  and objects.
  *
  * \param firstKey The first key
  * \return A new initialized OFDictionary
@@ -138,8 +138,8 @@ struct of_dictionary_bucket
 - initWithKeysAndObjects: (id <OFCopying>)firstKey, ...;
 
 /**
- * Initializes an already allocated OFDictionary with the specified key and
- * va_list.
+ * \brief Initializes an already allocated OFDictionary with the specified key
+ *	  and va_list.
  *
  * \param firstKey The first key
  * \param arguments A va_list of the other arguments
@@ -149,7 +149,7 @@ struct of_dictionary_bucket
     arguments: (va_list)arguments;
 
 /**
- * Returns the object for the given key or nil if the key was not found.
+ * \brief Returns the object for the given key or nil if the key was not found.
  *
  * The returned object is <i>not</i> retained and autoreleased for performance
  * reasons!
@@ -160,13 +160,15 @@ struct of_dictionary_bucket
 - (id)objectForKey: (id)key;
 
 /**
+ * \brief Returns an OFEnumerator to enumerate through the dictionary's keys.
+ *
  * \return An OFEnumerator to enumerate through the dictionary's keys
  */
 - (OFEnumerator*)keyEnumerator;
 
 #ifdef OF_HAVE_BLOCKS
 /**
- * Executes a block for each key / object pair.
+ * \brief Executes a block for each key / object pair.
  *
  * \param block The block to execute for each key / object pair.
  */
@@ -174,7 +176,8 @@ struct of_dictionary_bucket
     (of_dictionary_enumeration_block_t)block;
 
 /**
- * Returns a new dictionary, mapping each object using the specified block.
+ * \brief Returns a new dictionary, mapping each object using the specified
+ *	  block.
  *
  * \param block A block which maps an object for each object
  * \return A new, autorelease OFDictionary
@@ -182,8 +185,8 @@ struct of_dictionary_bucket
 - (OFDictionary*)mappedDictionaryUsingBlock: (of_dictionary_map_block_t)block;
 
 /**
- * Returns a new dictionary, only containing the objects for which the block
- * returns YES.
+ * \brief Returns a new dictionary, only containing the objects for which the
+ *	  block returns YES.
  *
  * \param block A block which determines if the object should be in the new
  *		dictionary

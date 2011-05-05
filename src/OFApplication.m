@@ -33,6 +33,8 @@
 
 #import "OFNotImplementedException.h"
 
+#import "macros.h"
+
 #ifndef __MACH__
 extern char **environ;
 #endif
@@ -189,29 +191,27 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 - (OFString*)programName
 {
-	return [[programName copy] autorelease];
+	OF_GETTER(programName, YES)
 }
 
 - (OFArray*)arguments
 {
-	return [[arguments copy] autorelease];
+	OF_GETTER(arguments, YES)
 }
 
 - (OFDictionary*)environment
 {
-	return [[environment copy] autorelease];
+	OF_GETTER(environment, YES)
 }
 
 - (id <OFApplicationDelegate>)delegate
 {
-	return [[(id)delegate retain] autorelease];
+	OF_GETTER(delegate, YES)
 }
 
 - (void)setDelegate: (id <OFApplicationDelegate>)delegate_
 {
-	[(id)delegate_ retain];
-	[(id)delegate release];
-	delegate = delegate_;
+	OF_SETTER(delegate, delegate_, YES, NO)
 }
 
 - (void)run

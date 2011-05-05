@@ -32,12 +32,16 @@ extern int _OFDataArray_Hashing_reference;
  */
 @interface OFDataArray (Hashing)
 /**
+ * \brief Returns the MD5 hash of the data array as an autoreleased OFString.
+ *
  * \return The MD5 hash of the data array as an autoreleased OFString
  */
 - (OFString*)MD5Hash;
 
 /**
- * \return The SHA1 hash of the data array as an autoreleased OFString
+ * \brief Returns the SHA-1 hash of the data array as an autoreleased OFString.
+ *
+ * \return The SHA-1 hash of the data array as an autoreleased OFString
  */
 - (OFString*)SHA1Hash;
 @end

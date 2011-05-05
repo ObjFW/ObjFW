@@ -38,14 +38,14 @@
 #endif
 
 /**
- * Creates a new OFDataArray with an item size of 1.
+ * \brief Creates a new OFDataArray with an item size of 1.
  *
  * \return A new autoreleased OFDataArray
  */
 + dataArray;
 
 /**
- * Creates a new OFDataArray whose items all have the same size.
+ * \brief Creates a new OFDataArray whose items all have the same size.
  *
  * \param itemSize The size of each element in the OFDataArray
  * \return A new autoreleased OFDataArray
@@ -53,8 +53,8 @@
 + dataArrayWithItemSize: (size_t)itemSize;
 
 /**
- * Creates a new OFDataArary with an item size of 1, containing the data of the
- * specified file.
+ * \brief Creates a new OFDataArary with an item size of 1, containing the data
+ *	  of the specified file.
  *
  * \param path The path of the file
  * \return A new autoreleased OFDataArray
@@ -62,8 +62,8 @@
 + dataArrayWithContentsOfFile: (OFString*)path;
 
 /**
- * Creates a new OFDataArray with an item size of 1, containing the data of the
- * specified URL.
+ * \brief Creates a new OFDataArray with an item size of 1, containing the data
+ *	  of the specified URL.
  *
  * \param URL The URL to the contents for the OFDataArray
  * \return A new autoreleased OFDataArray
@@ -71,8 +71,8 @@
 + dataArrayWithContentsOfURL: (OFURL*)URL;
 
 /**
- * Creates a new OFDataArray with an item size of 1, containing the data of the
- * Base64-encoded string.
+ * \brief Creates a new OFDataArray with an item size of 1, containing the data
+ *	  of the Base64-encoded string.
  *
  * \param string The string with the Base64-encoded data
  * \return A new autoreleased OFDataArray
@@ -80,15 +80,15 @@
 + dataArrayWithBase64EncodedString: (OFString*)string;
 
 /**
- * Initializes an already allocated OFDataArray with an item size of 1.
+ * \brief Initializes an already allocated OFDataArray with an item size of 1.
  *
  * \return A initialized OFDataArray
  */
 - init;
 
 /**
- * Initializes an already allocated OFDataArray whose items all have the same
- * size.
+ * \brief Initializes an already allocated OFDataArray whose items all have the
+ *	  same size.
  *
  * \param itemSize The size of each element in the OFDataArray
  * \return An initialized OFDataArray
@@ -96,8 +96,8 @@
 - initWithItemSize: (size_t)itemSize;
 
 /**
- * Initializes an already allocated OFDataArray with an item size of 1,
- * containing the data of the specified file.
+ * \brief Initializes an already allocated OFDataArray with an item size of 1,
+ *	  containing the data of the specified file.
  *
  * \param path The path of the file
  * \return An initialized OFDataArray
@@ -105,8 +105,8 @@
 - initWithContentsOfFile: (OFString*)path;
 
 /**
- * Initializes an already allocated OFDataArray with an item size of 1,
- * containing the data of the specified URL.
+ * \brief Initializes an already allocated OFDataArray with an item size of 1,
+ *	  containing the data of the specified URL.
  *
  * \param URL The URL to the contents for the OFDataArray
  * \return A new autoreleased OFDataArray
@@ -114,8 +114,8 @@
 - initWithContentsOfURL: (OFURL*)URL;
 
 /**
- * Initializes an already allocated OFDataArray with an item size of 1,
- * containing the data of the Base64-encoded string.
+ * \brief Initializes an already allocated OFDataArray with an item size of 1,
+ *	  containing the data of the Base64-encoded string.
  *
  * \param string The string with the Base64-encoded data
  * \return A initialized OFDataArray
@@ -123,22 +123,28 @@
 - initWithBase64EncodedString: (OFString*)string;
 
 /**
+ * \brief Returns the number of items in the OFDataArray.
+ *
  * \return The number of items in the OFDataArray
  */
 - (size_t)count;
 
 /**
+ * \brief Returns the size of each item in the OFDataArray in bytes.
+ *
  * \return The size of each item in the OFDataArray in bytes
  */
 - (size_t)itemSize;
 
 /**
+ * \brief Returns all elements of the OFDataArray as a C array.
+ *
  * \return All elements of the OFDataArray as a C array
  */
 - (void*)cArray;
 
 /**
- * Returns a specific item of the OFDataArray.
+ * \brief Returns a specific item of the OFDataArray.
  *
  * \param index The number of the item to return
  * \return The specified item of the OFDataArray
@@ -146,24 +152,28 @@
 - (void*)itemAtIndex: (size_t)index;
 
 /**
+ * \brief Returns the first item of the OFDataArray.
+ *
  * \return The first item of the OFDataArray or NULL
  */
 - (void*)firstItem;
 
 /**
+ * \brief Returns the last item of the OFDataArray.
+ *
  * \return The last item of the OFDataArray or NULL
  */
 - (void*)lastItem;
 
 /**
- * Adds an item to the OFDataArray.
+ * \brief Adds an item to the OFDataArray.
  *
  * \param item A pointer to an arbitrary item
  */
 - (void)addItem: (const void*)item;
 
 /**
- * Adds an item to the OFDataArray at the specified index.
+ * \brief Adds an item to the OFDataArray at the specified index.
  *
  * \param item A pointer to an arbitrary item
  * \param index The index where the item should be added
@@ -172,7 +182,7 @@
 	atIndex: (size_t)index;
 
 /**
- * Adds items from a C array to the OFDataArray.
+ * \brief Adds items from a C array to the OFDataArray.
  *
  * \param nItems The number of items to add
  * \param cArray A C array containing the items to add
@@ -181,7 +191,7 @@
        fromCArray: (const void*)cArray;
 
 /**
- * Adds items from a C array to the OFDataArray at the specified index.
+ * \brief Adds items from a C array to the OFDataArray at the specified index.
  *
  * \param nItems The number of items to add
  * \param cArray A C array containing the items to add
@@ -192,21 +202,21 @@
 	  atIndex: (size_t)index;
 
 /**
- * Removes the item at the specified index.
+ * \brief Removes the item at the specified index.
  *
  * \param index The index of the item to remove
  */
 - (void)removeItemAtIndex: (size_t)index;
 
 /**
- * Removes the specified amount of items from the end of the OFDataArray.
+ * \brief Removes the specified amount of items from the end of the OFDataArray.
  *
  * \param nItems The number of items to remove
  */
 - (void)removeNItems: (size_t)nItems;
 
 /**
- * Removes the specified amount of items at the specified index.
+ * \brief Removes the specified amount of items at the specified index.
  *
  * \param nItems The number of items to remove
  * \param index The index at which the items are removed
@@ -215,12 +225,14 @@
 	     atIndex: (size_t)index;
 
 /**
+ * \brief Returns a string containing the data in Base64 encoding.
+ *
  * \return A string containing the data in Base64 encoding
  */
 - (OFString*)stringByBase64Encoding;
 
 /**
- * Writes the OFDataArray into the specified file.
+ * \brief Writes the OFDataArray into the specified file.
  *
  * \param path The path of the file to write to
  */

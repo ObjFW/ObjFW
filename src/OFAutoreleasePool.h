@@ -26,30 +26,32 @@
  */
 @interface OFAutoreleasePool: OFObject
 {
-	OFAutoreleasePool *next, *prev;
+	OFAutoreleasePool *nextPool, *previousPool;
 	id *objects;
 	size_t count, size;
 }
 
 /**
- * Adds an object to the autorelease pool at the top of the thread-specific
- * stack.
+ * \brief Adds an object to the autorelease pool at the top of the
+ *	  thread-specific autorelease pool stack.
  *
- * \param obj The object to add to the autorelease pool
+ * \param object The object to add to the autorelease pool
  */
-+ (void)addObject: (id)obj;
++ (void)addObject: (id)object;
 
+/// \cond internal
 + (void)releaseAll;
+/// \endcond
 
 /**
- * Adds an object to the specific autorelease pool.
+ * \brief Adds an object to the specific autorelease pool.
  *
  * \param obj The object to add to the autorelease pool
  */
-- (void)addObject: (id)obj;
+- (void)addObject: (id)object;
 
 /**
- * Releases all objects in the autorelease pool.
+ * \brief Releases all objects in the autorelease pool.
  *
  * This does not free the memory allocated to store pointers to the objects in
  * the pool, so reusing the pool does not allocate any memory until the previous
@@ -66,15 +68,15 @@
 - (void)releaseObjects;
 
 /**
- * Releases all objects in the autorelease pool and deallocates the pool.
+ * \brief Releases all objects in the autorelease pool and deallocates the pool.
  */
 - (void)release;
 
 /**
- * Calling drain is equivalent to calling release.
+ * \brief Tells the garbage collector that now is a good time to clean up.
  *
- * If a garbage collector is added in the future, it will tell the GC that now
- * is a good time to clean up.
+ * If there is no garbage collector, calling drain is equivalent to calling
+ * release.
  */
 - (void)drain;
 @end

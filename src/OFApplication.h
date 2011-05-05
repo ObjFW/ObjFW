@@ -38,8 +38,8 @@
 @protocol OFApplicationDelegate
 #endif
 /**
- * This method is called when the application was initialized and is running
- * now.
+ * \brief A method which is called when the application was initialized and is
+ *	  running now.
  */
 - (void)applicationDidFinishLaunching;
 
@@ -47,7 +47,7 @@
 @optional
 #endif
 /**
- * This method is called when the application will terminate.
+ * \brief A method which is called when the application will terminate.
  */
 - (void)applicationWillTerminate;
 @end
@@ -73,41 +73,49 @@
 #endif
 
 /**
+ * \brief Returns the only OFApplication instance in the application.
+ *
  * \return The only OFApplication instance in the application
  */
 + sharedApplication;
 
 /**
+ * \brief Returns the name of the program (argv[0]).
+ *
  * \return The name of the program (argv[0])
  */
 + (OFString*)programName;
 
 /**
+ * \brief Returns the arguments passed to the application.
+ *
  * \return The arguments passed to the application
  */
 + (OFArray*)arguments;
 
 /**
+ * \brief Returns the environment of the application.
+ *
  * \return The environment of the application
  */
 + (OFDictionary*)environment;
 
 /**
- * Terminates the application.
+ * \brief Terminates the application.
  */
 + (void)terminate;
 
 /**
- * Terminates the application with the specified status.
+ * \brief Terminates the application with the specified status.
  *
  * \param status The status with which the application will terminate
  */
 + (void)terminateWithStatus: (int)status;
 
 /**
- * Sets argc and argv.
+ * \brief Sets argc and argv.
  *
- * You should not call this directly! Use of_application_main instead!
+ * You should not call this directly, but use OF_APPLICATION_DELEGATE instead!
  *
  * \param argc The number of arguments
  * \param argv The argument values
@@ -116,7 +124,7 @@
        andArgumentValues: (char**[])argv;
 
 /**
- * Gets args and argv.o
+ * \brief Gets args and argv.
  *
  * \param argc A pointer where a pointer to argc should be stored
  * \param argv A pointer where a pointer to argv should be stored
@@ -125,44 +133,54 @@
        andArgumentValues: (char***[])argv;
 
 /**
+ * \brief Returns the name of the program (argv[0]).
+ *
  * \return The name of the program (argv[0])
  */
 - (OFString*)programName;
 
 /**
+ * \brief Returns the arguments passed to the application.
+ *
  * \return The arguments passed to the application
  */
 - (OFArray*)arguments;
 
 /**
+ * \brief Returns the environment of the application.
+ *
  * \return The environment of the application
  */
 - (OFDictionary*)environment;
 
 /**
+ * \brief Returns the delegate of the application.
+ *
  * \return The delegate of the application
  */
 - (id <OFApplicationDelegate>)delegate;
 
 /**
- * Sets the delegate of the application.
+ * \brief Sets the delegate of the application.
  *
  * \param delegate The delegate for the application
  */
 - (void)setDelegate: (id <OFApplicationDelegate>)delegate;
 
 /**
- * Starts the application after everything has been initialized.
+ * \brief Starts the application after everything has been initialized.
+ *
+ * You should not call this directly, but use OF_APPLICATION_DELEGATE instead!
  */
 - (void)run;
 
 /**
- * Terminates the application.
+ * \brief Terminates the application.
  */
 - (void)terminate;
 
 /**
- * Terminates the application with the specified status.
+ * \brief Terminates the application with the specified status.
  *
  * \param status The status with which the application will terminate
  */

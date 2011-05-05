@@ -21,13 +21,15 @@
  */
 @interface OFEnumerator: OFObject
 /**
+ * \brief Returns the next object.
+ *
  * \return The next object
  */
 - (id)nextObject;
 
 /**
- * Resets the enumerator, so the next call to nextObject returns the first
- * object again.
+ * \brief Resets the enumerator, so the next call to nextObject returns the
+ *	  first object again.
  */
 - (void)reset;
 @end

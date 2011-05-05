@@ -25,22 +25,33 @@
 #endif
 
 /**
+ * \brief Returns the number of objects in the collection.
+ *
  * \return The number of objects in the collection
  */
 - (size_t)count;
 
 /**
+ * \brief Returns an OFEnumerator to enumerate through all objects of the
+ *	  collection.
+ *
  * \returns An OFEnumerator to enumerate through all objects of the collection
  */
 - (OFEnumerator*)objectEnumerator;
 
 /**
+ * \brief Checks whether the collection contains an object equal to the
+ *	  specified object.
+ *
  * \param The object which is checked for being in the collection
  * \return A boolean whether the collection contains the specified object
  */
 - (BOOL)containsObject: (id)object;
 
 /**
+ * \brief Checks whether the collection contains an object with the specified
+ *	  address.
+ *
  * \param The object which is checked for being in the collection
  * \return A boolean whether the collection contains an object with the
  *	   specified address.

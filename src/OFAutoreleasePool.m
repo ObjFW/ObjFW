@@ -26,9 +26,9 @@
 
 #ifdef OF_THREADS
 # import "threading.h"
-static of_tlskey_t first_key, last_key;
+static of_tlskey_t firstKey, lastKey;
 #else
-static OFAutoreleasePool *first = nil, *last = nil;
+static OFAutoreleasePool *firstPool = nil, *lastPool = nil;
 #endif
 
 #define GROW_SIZE 16
@@ -40,39 +40,39 @@ static OFAutoreleasePool *first = nil, *last = nil;
 	if (self != [OFAutoreleasePool class])
 		return;
 
-	if (!of_tlskey_new(&first_key) || !of_tlskey_new(&last_key))
+	if (!of_tlskey_new(&firstKey) || !of_tlskey_new(&lastKey))
 		@throw [OFInitializationFailedException newWithClass: self];
 }
 #endif
 
-+ (void)addObject: (id)obj
++ (void)addObject: (id)object
 {
 #ifdef OF_THREADS
-	id last = of_tlskey_get(last_key);
+	id lastPool = of_tlskey_get(lastKey);
 #endif
 
-	if (last == nil) {
+	if (lastPool == nil) {
 		@try {
 			[[self alloc] init];
 		} @catch (id e) {
-			[obj release];
+			[object release];
 			@throw e;
 		}
 
 #ifdef OF_THREADS
-		last = of_tlskey_get(last_key);
+		lastPool = of_tlskey_get(lastKey);
 #endif
 	}
 
-	if (last == nil) {
-		[obj release];
+	if (lastPool == nil) {
+		[object release];
 		@throw [OFInitializationFailedException newWithClass: self];
 	}
 
 	@try {
-		[last addObject: obj];
+		[lastPool addObject: object];
 	} @catch (id e) {
-		[obj release];
+		[object release];
 		@throw e;
 	}
 }
@@ -80,9 +80,9 @@ static OFAutoreleasePool *first = nil, *last = nil;
 + (void)releaseAll
 {
 #ifdef OF_THREADS
-	[of_tlskey_get(first_key) release];
+	[of_tlskey_get(firstKey) release];
 #else
-	[first release];
+	[firstPool release];
 #endif
 }
 
@@ -92,31 +92,31 @@ static OFAutoreleasePool *first = nil, *last = nil;
 
 	@try {
 #ifdef OF_THREADS
-		id first = of_tlskey_get(first_key);
-		prev = of_tlskey_get(last_key);
+		id firstPool = of_tlskey_get(firstKey);
+		previousPool = of_tlskey_get(lastKey);
 
-		if (!of_tlskey_set(last_key, self))
+		if (!of_tlskey_set(lastKey, self))
 			@throw [OFInitializationFailedException
 			    newWithClass: isa];
 #else
-		prev = last;
-		last = self;
+		previousPool = lastPool;
+		lastPool = self;
 #endif
 
-		if (first == nil) {
+		if (firstPool == nil) {
 #ifdef OF_THREADS
-			if (!of_tlskey_set(first_key, self)) {
-				of_tlskey_set(last_key, prev);
+			if (!of_tlskey_set(firstKey, self)) {
+				of_tlskey_set(lastKey, previousPool);
 				@throw [OFInitializationFailedException
 				    newWithClass: isa];
 			}
 #else
-			first = self;
+			firstPool = self;
 #endif
 		}
 
-		if (prev != nil)
-			prev->next = self;
+		if (previousPool != nil)
+			previousPool->nextPool = self;
 
 		size = GROW_SIZE;
 		objects = [self allocMemoryForNItems: GROW_SIZE
@@ -129,7 +129,7 @@ static OFAutoreleasePool *first = nil, *last = nil;
 	return self;
 }
 
-- (void)addObject: (id)obj
+- (void)addObject: (id)object
 {
 	if (count + 1 > size) {
 		objects = [self resizeMemory: objects
@@ -138,7 +138,7 @@ static OFAutoreleasePool *first = nil, *last = nil;
 		size += GROW_SIZE;
 	}
 
-	objects[count] = obj;
+	objects[count] = object;
 	count++;
 }
 
@@ -146,7 +146,7 @@ static OFAutoreleasePool *first = nil, *last = nil;
 {
 	size_t i;
 
-	[next releaseObjects];
+	[nextPool releaseObjects];
 
 	for (i = 0; i < count; i++)
 		[objects[i] release];
@@ -168,7 +168,7 @@ static OFAutoreleasePool *first = nil, *last = nil;
 {
 	size_t i;
 
-	[next dealloc];
+	[nextPool dealloc];
 
 	for (i = 0; i < count; i++)
 		[objects[i] release];
@@ -182,26 +182,26 @@ static OFAutoreleasePool *first = nil, *last = nil;
 	 * of_tlskey_set will work this time.
 	 */
 #ifdef OF_THREADS
-	if (!of_tlskey_set(last_key, prev))
+	if (!of_tlskey_set(lastKey, previousPool))
 		return;
 #else
-	last = prev;
+	lastPool = previousPool;
 #endif
 
-	if (prev != nil)
-		prev->next = nil;
+	if (previousPool != nil)
+		previousPool->nextPool = nil;
 
 	/*
 	 * If of_tlskey_set fails here, this is even worse, as this will
 	 * definitely be a memory leak. But this should never happen anyway.
 	 */
 #ifdef OF_THREADS
-	if (of_tlskey_get(first_key) == self)
-		if (!of_tlskey_set(first_key, nil))
+	if (of_tlskey_get(firstKey) == self)
+		if (!of_tlskey_set(firstKey, nil))
 			return;
 #else
-	if (first == self)
-		first = nil;
+	if (firstPool == self)
+		firstPool = nil;
 #endif
 
 	[super dealloc];
