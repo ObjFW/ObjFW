@@ -51,6 +51,7 @@ SRCS = OFApplication.m		\
 
 INCLUDES := ${SRCS:.m=.h}	\
 	    OFCollection.h	\
+	    OFSerialization.h	\
 	    ObjFW.h		\
 	    asprintf.h		\
 	    ${ATOMIC_H}		\

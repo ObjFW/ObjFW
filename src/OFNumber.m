@@ -1082,9 +1082,94 @@
 	case OF_NUMBER_INTPTR:
 		return [OFString stringWithFormat: @"%jd", [self intMaxValue]];
 	case OF_NUMBER_FLOAT:
-		return [OFString stringWithFormat: @"%f", [self floatValue]];
+		return [OFString stringWithFormat: @"%f", value.float_];
 	case OF_NUMBER_DOUBLE:
-		return [OFString stringWithFormat: @"%lf", [self doubleValue]];
+		return [OFString stringWithFormat: @"%lf", value.double_];
+	default:
+		@throw [OFInvalidFormatException newWithClass: isa];
+	}
+}
+
+- (OFString*)stringBySerializing
+{
+	switch (type) {
+	case OF_NUMBER_BOOL:
+		return (value.bool_ ? @"<BOOL>1" : @"<BOOL>0");
+	case OF_NUMBER_UCHAR:
+		return [OFString stringWithFormat: @"<unsigned char>%hhu",
+						   value.uchar];
+	case OF_NUMBER_USHORT:
+		return [OFString stringWithFormat: @"<unsigned short>%hu",
+						   value.ushort];
+	case OF_NUMBER_UINT:
+		return [OFString stringWithFormat: @"<unsigned int>%u",
+						   value.uint];
+	case OF_NUMBER_ULONG:
+		return [OFString stringWithFormat: @"<unsigned long>%lu",
+						   value.ulong];
+	case OF_NUMBER_UINT8:
+		return [OFString stringWithFormat: @"<uint8_t>%" @PRIu8,
+						   value.uint8];
+	case OF_NUMBER_UINT16:
+		return [OFString stringWithFormat: @"<uint16_t>%" @PRIu16,
+						   value.uint16];
+	case OF_NUMBER_UINT32:
+		return [OFString stringWithFormat: @"<uint32_t>%" @PRIu32,
+						   value.uint32];
+	case OF_NUMBER_UINT64:
+		return [OFString stringWithFormat: @"<uint64_t>%" @PRIu64,
+						   value.uint64];
+	case OF_NUMBER_SIZE:
+		return [OFString stringWithFormat: @"<size_t>%ju",
+						   (uintmax_t)value.size];
+	case OF_NUMBER_UINTMAX:
+		return [OFString stringWithFormat: @"<uintmax_t>%ju",
+						   value.uintmax];
+	case OF_NUMBER_UINTPTR:
+		return [OFString stringWithFormat: @"<uintptr_t>%" @PRIuPTR,
+						   value.uintptr];
+	case OF_NUMBER_CHAR:
+		return [OFString stringWithFormat: @"<char>%hhd",
+						   value.char_];
+	case OF_NUMBER_SHORT:
+		return [OFString stringWithFormat: @"<short>%hd",
+						   value.short_];
+	case OF_NUMBER_INT:
+		return [OFString stringWithFormat: @"<int>%d",
+						   value.int_];
+	case OF_NUMBER_LONG:
+		return [OFString stringWithFormat: @"<long>%ld",
+						   value.long_];
+	case OF_NUMBER_INT8:
+		return [OFString stringWithFormat: @"<int8_t>%" @PRId8,
+						   value.int8];
+	case OF_NUMBER_INT16:
+		return [OFString stringWithFormat: @"<int16_t>%" @PRId16,
+						   value.int16];
+	case OF_NUMBER_INT32:
+		return [OFString stringWithFormat: @"<int32_t>%" @PRId32,
+						   value.int32];
+	case OF_NUMBER_INT64:
+		return [OFString stringWithFormat: @"<int64_t>%" @PRId64,
+						   value.int64];
+	case OF_NUMBER_SSIZE:
+		return [OFString stringWithFormat: @"<ssize_t>%jd",
+						   (intmax_t)value.ssize];
+	case OF_NUMBER_INTMAX:
+		return [OFString stringWithFormat: @"<intmax_t>%jd",
+						   value.intmax];
+	case OF_NUMBER_PTRDIFF:
+		return [OFString stringWithFormat: @"<ptrdiff_t>%td" @PRIdPTR,
+						   value.ptrdiff];
+	case OF_NUMBER_INTPTR:
+		return [OFString stringWithFormat: @"<intptr_t>%" @PRIdPTR,
+						   value.intptr];
+	case OF_NUMBER_FLOAT:
+		return [OFString stringWithFormat: @"<float>%f",
+						   value.float_];
+	case OF_NUMBER_DOUBLE:
+		return [OFString stringWithFormat: @"<double>%lf",
+						   value.double_];
 	default:
 		@throw [OFInvalidFormatException newWithClass: isa];
 	}

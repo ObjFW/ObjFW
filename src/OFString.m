@@ -1055,6 +1055,29 @@ of_unicode_string_length(const of_unichar_t *string)
 	return [[self copy] autorelease];
 }
 
+- (OFString*)stringBySerializing
+{
+	OFMutableString *serialization = [[self mutableCopy] autorelease];
+	[serialization replaceOccurrencesOfString: @"\\"
+				       withString: @"\\\\"];
+	[serialization replaceOccurrencesOfString: @"\""
+				       withString: @"\\\""];
+
+	if ([self isKindOfClass: [OFMutableString class]])
+		[serialization prependString: @"<mutable>\""];
+	else
+		[serialization prependString: @"\""];
+	[serialization appendString: @"\""];
+
+	/*
+	 * Class swizzle the string to be immutable. We declared the return type
+	 * to be OFString*, so it can't be modified anyway. But not swizzling it
+	 * would create a real copy each time -[copy] is called.
+	 */
+	serialization->isa = [OFString class];
+	return serialization;
+}
+
 - (of_unichar_t)characterAtIndex: (size_t)index
 {
 	of_unichar_t c;

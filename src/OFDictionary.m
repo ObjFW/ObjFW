@@ -716,8 +716,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 {
 	OFMutableString *ret;
 	OFAutoreleasePool *pool, *pool2;
-	OFEnumerator *keyEnumerator;
-	OFEnumerator *objectEnumerator;
+	OFEnumerator *keyEnumerator, *objectEnumerator;
 	id key, object;
 	size_t i;
 
@@ -746,6 +745,57 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	[ret replaceOccurrencesOfString: @"\n"
 			     withString: @"\n\t"];
 	[ret appendString: @";\n}"];
+
+	[pool release];
+
+	/*
+	 * Class swizzle the string to be immutable. We declared the return type
+	 * to be OFString*, so it can't be modified anyway. But not swizzling it
+	 * would create a real copy each time -[copy] is called.
+	 */
+	ret->isa = [OFString class];
+	return ret;
+}
+
+- (OFString*)stringBySerializing
+{
+	OFMutableString *ret;
+	OFAutoreleasePool *pool, *pool2;
+	OFEnumerator *keyEnumerator, *objectEnumerator;
+	id key, object;
+	size_t i;
+
+	if (count == 0) {
+		if ([self isKindOfClass: [OFMutableDictionary class]])
+			return @"<mutable,0>{}";
+		else
+			return @"<0>{}";
+	}
+
+	if ([self isKindOfClass: [OFMutableDictionary class]])
+		ret = [OFMutableString stringWithFormat: @"<mutable,%zd>{",
+							 count];
+	else
+		ret = [OFMutableString stringWithFormat: @"<%zd>{", count];
+	pool = [[OFAutoreleasePool alloc] init];
+	keyEnumerator = [self keyEnumerator];
+	objectEnumerator = [self objectEnumerator];
+
+	i = 0;
+	pool2 = [[OFAutoreleasePool alloc] init];
+
+	while ((key = [keyEnumerator nextObject]) != nil &&
+	    (object = [objectEnumerator nextObject]) != nil) {
+		[ret appendString: [key stringBySerializing]];
+		[ret appendString: @" = "];
+		[ret appendString: [object stringBySerializing]];
+
+		if (++i < count)
+			[ret appendString: @"; "];
+
+		[pool2 releaseObjects];
+	}
+	[ret appendString: @"}"];
 
 	[pool release];
 

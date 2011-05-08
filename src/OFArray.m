@@ -430,6 +430,51 @@
 	return ret;
 }
 
+- (OFString*)stringBySerializing
+{
+	OFAutoreleasePool *pool;
+	OFMutableString *ret;
+	OFObject <OFSerialization> **cArray;
+	size_t i, count;
+	IMP append;
+
+	if ([array count] == 0) {
+		if ([self isKindOfClass: [OFMutableArray class]])
+			return @"<mutable,0>()";
+		else
+			return @"<0>()";
+	}
+
+	cArray = [array cArray];
+	count = [array count];
+	if ([self isKindOfClass: [OFMutableArray class]])
+		ret = [OFMutableString stringWithFormat: @"<mutable,%zd>(",
+							 count];
+	else
+		ret = [OFMutableString stringWithFormat: @"<%zd>(", count];
+	pool = [[OFAutoreleasePool alloc] init];
+	append = [ret methodForSelector: @selector(appendString:)];
+
+	for (i = 0; i < count - 1; i++) {
+		append(ret, @selector(appendString:),
+		    [cArray[i] stringBySerializing]);
+		append(ret, @selector(appendString:), @", ");
+
+		[pool releaseObjects];
+	}
+	[ret appendFormat: @"%@)", [cArray[i] stringBySerializing]];
+
+	[pool release];
+
+	/*
+	 * Class swizzle the string to be immutable. We declared the return type
+	 * to be OFString*, so it can't be modified anyway. But not swizzling it
+	 * would create a real copy each time -[copy] is called.
+	 */
+	ret->isa = [OFString class];
+	return ret;
+}
+
 - (void)makeObjectsPerformSelector: (SEL)selector
 {
 	id *cArray = [array cArray];

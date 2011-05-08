@@ -19,6 +19,7 @@
 #include <inttypes.h>
 
 #import "OFObject.h"
+#import "OFSerialization.h"
 
 typedef uint32_t of_unichar_t;
 
@@ -52,7 +53,8 @@ extern size_t of_unicode_string_length(const of_unichar_t*);
 /**
  * \brief A class for handling strings.
  */
-@interface OFString: OFObject <OFCopying, OFMutableCopying, OFComparing>
+@interface OFString: OFObject <OFCopying, OFMutableCopying, OFComparing,
+    OFSerialization>
 {
 	char   *string;
 	size_t length;

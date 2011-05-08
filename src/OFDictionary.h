@@ -19,6 +19,7 @@
 #import "OFObject.h"
 #import "OFCollection.h"
 #import "OFEnumerator.h"
+#import "OFSerialization.h"
 
 @class OFArray;
 
@@ -40,7 +41,7 @@ struct of_dictionary_bucket
  * \brief A class for storing objects in a hash table.
  */
 @interface OFDictionary: OFObject <OFCopying, OFMutableCopying, OFCollection,
-    OFFastEnumeration>
+    OFFastEnumeration, OFSerialization>
 {
 	struct of_dictionary_bucket **data;
 	uint32_t size;

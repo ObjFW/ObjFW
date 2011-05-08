@@ -17,6 +17,7 @@
 #include <unistd.h>
 
 #import "OFObject.h"
+#import "OFSerialization.h"
 
 /**
  * \brief The type of a number.
@@ -53,7 +54,7 @@ typedef enum of_number_type_t {
 /**
  * \brief Provides a way to store a number in an object.
  */
-@interface OFNumber: OFObject <OFCopying>
+@interface OFNumber: OFObject <OFCopying, OFSerialization>
 {
 	union of_number_value {
 		BOOL	       bool_;

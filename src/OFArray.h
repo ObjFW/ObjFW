@@ -19,6 +19,7 @@
 #import "OFObject.h"
 #import "OFCollection.h"
 #import "OFEnumerator.h"
+#import "OFSerialization.h"
 
 @class OFDataArray;
 @class OFString;
@@ -34,7 +35,7 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
  * \brief A class for storing objects in an array.
  */
 @interface OFArray: OFObject <OFCopying, OFMutableCopying, OFCollection,
-    OFFastEnumeration>
+    OFFastEnumeration, OFSerialization>
 {
 	OFDataArray *array;
 }
