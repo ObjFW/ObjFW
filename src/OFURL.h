@@ -15,13 +15,14 @@
  */
 
 #import "OFObject.h"
+#import "OFSerialization.h"
 
 @class OFString;
 
 /**
  * \brief A class for parsing URLs and accessing parts of it.
  */
-@interface OFURL: OFObject <OFCopying>
+@interface OFURL: OFObject <OFCopying, OFSerialization>
 {
 	OFString *scheme;
 	OFString *host;

@@ -569,6 +569,22 @@
 	return [self XMLString];
 }
 
+- (OFString*)stringBySerializing
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFString *ret = [[OFString alloc]
+	    initWithFormat: @"(class=OFXMLElement)<%@>",
+			    [[self XMLString] stringBySerializing]];
+
+	@try {
+		[pool release];
+	} @finally {
+		[ret autorelease];
+	}
+
+	return ret;
+}
+
 - (void)addAttribute: (OFXMLAttribute*)attribute
 {
 	if (name == nil)

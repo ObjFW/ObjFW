@@ -15,6 +15,7 @@
  */
 
 #import "OFObject.h"
+#import "OFSerialization.h"
 
 @class OFString;
 @class OFArray;
@@ -26,7 +27,7 @@
 /**
  * \brief A class which stores an XML element.
  */
-@interface OFXMLElement: OFObject
+@interface OFXMLElement: OFObject <OFSerialization>
 {
 	OFString *name;
 	OFString *ns;
