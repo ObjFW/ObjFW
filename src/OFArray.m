@@ -115,6 +115,8 @@
 		id obj;
 
 		[array addItem: &first];
+		[first retain];
+
 		while ((obj = va_arg(args, id)) != nil) {
 			[array addItem: &obj];
 			[obj retain];
