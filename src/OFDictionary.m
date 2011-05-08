@@ -473,7 +473,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	return self;
 }
 
-- (id)objectForKey: (id)key
+- (id)objectForKey: (id <OFCopying>)key
 {
 	uint32_t i, hash, last;
 

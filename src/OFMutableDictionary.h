@@ -44,7 +44,7 @@ typedef id (^of_dictionary_replace_block_t)(id key, id object, BOOL *stop);
  *
  * \param key The key whose object should be removed
  */
-- (void)removeObjectForKey: (id)key;
+- (void)removeObjectForKey: (id <OFCopying>)key;
 
 #ifdef OF_HAVE_BLOCKS
 /**

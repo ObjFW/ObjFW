@@ -157,7 +157,7 @@ struct of_dictionary_bucket
  * \param key The key whose object should be returned
  * \return The object for the given key or nil if the key was not found
  */
-- (id)objectForKey: (id)key;
+- (id)objectForKey: (id <OFCopying>)key;
 
 /**
  * \brief Returns an OFEnumerator to enumerate through the dictionary's keys.

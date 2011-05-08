@@ -176,7 +176,7 @@
 	[old release];
 }
 
-- (void)removeObjectForKey: (id)key
+- (void)removeObjectForKey: (id <OFCopying>)key
 {
 	uint32_t i, hash, last;
 
