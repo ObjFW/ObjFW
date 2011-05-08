@@ -436,7 +436,6 @@
 	OFMutableString *ret;
 	OFObject <OFSerialization> **cArray;
 	size_t i, count;
-	IMP append;
 
 	if ([array count] == 0) {
 		if ([self isKindOfClass: [OFMutableArray class]])
@@ -453,12 +452,10 @@
 	else
 		ret = [OFMutableString stringWithFormat: @"<%zd>(\n", count];
 	pool = [[OFAutoreleasePool alloc] init];
-	append = [ret methodForSelector: @selector(appendString:)];
 
 	for (i = 0; i < count - 1; i++) {
-		append(ret, @selector(appendString:),
-		    [cArray[i] stringBySerializing]);
-		append(ret, @selector(appendString:), @",\n");
+		[ret appendString: [cArray[i] stringBySerializing]];
+		[ret appendString: @",\n"];
 
 		[pool releaseObjects];
 	}

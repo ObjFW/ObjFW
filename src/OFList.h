@@ -17,6 +17,7 @@
 #import "OFObject.h"
 #import "OFCollection.h"
 #import "OFEnumerator.h"
+#import "OFSerialization.h"
 
 typedef struct of_list_object_t of_list_object_t;
 /**
@@ -37,7 +38,8 @@ struct of_list_object_t {
 /**
  * \brief A class which provides easy to use double-linked lists.
  */
-@interface OFList: OFObject <OFCopying, OFCollection, OFFastEnumeration>
+@interface OFList: OFObject <OFCopying, OFCollection, OFFastEnumeration,
+    OFSerialization>
 {
 	of_list_object_t *firstListObject;
 	of_list_object_t *lastListObject;

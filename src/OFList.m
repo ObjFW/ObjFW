@@ -308,10 +308,44 @@
 
 		[pool releaseObjects];
 	}
-
 	[ret replaceOccurrencesOfString: @"\n"
 			     withString: @"\n\t"];
 	[ret appendString: @"\n]"];
+
+	[pool release];
+
+	/*
+	 * Class swizzle the string to be immutable. We declared the return type
+	 * to be OFString*, so it can't be modified anyway. But not swizzling it
+	 * would create a real copy each time -[copy] is called.
+	 */
+	ret->isa = [OFString class];
+	return ret;
+}
+
+- (OFString*)stringBySerializing
+{
+	OFMutableString *ret;
+	OFAutoreleasePool *pool;
+	of_list_object_t *iter;
+
+	if (count == 0)
+		return @"<list,mutable>()";
+
+	ret = [OFMutableString stringWithString: @"<list,mutable>(\n"];
+	pool = [[OFAutoreleasePool alloc] init];
+
+	for (iter = firstListObject; iter != NULL; iter = iter->next) {
+		[ret appendString: [iter->object stringBySerializing]];
+
+		if (iter->next != NULL)
+			[ret appendString: @",\n"];
+
+		[pool releaseObjects];
+	}
+	[ret replaceOccurrencesOfString: @"\n"
+			     withString: @"\n\t"];
+	[ret appendString: @"\n)"];
 
 	[pool release];
 
