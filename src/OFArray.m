@@ -439,18 +439,18 @@
 
 	if ([array count] == 0) {
 		if ([self isKindOfClass: [OFMutableArray class]])
-			return @"<mutable,0>()";
+			return @"(mutable,0)[]";
 		else
-			return @"<0>()";
+			return @"(0)[]";
 	}
 
 	cArray = [array cArray];
 	count = [array count];
 	if ([self isKindOfClass: [OFMutableArray class]])
-		ret = [OFMutableString stringWithFormat: @"<mutable,%zd>(\n",
+		ret = [OFMutableString stringWithFormat: @"(mutable,%zd)[\n",
 							 count];
 	else
-		ret = [OFMutableString stringWithFormat: @"<%zd>(\n", count];
+		ret = [OFMutableString stringWithFormat: @"(%zd)[\n", count];
 	pool = [[OFAutoreleasePool alloc] init];
 
 	for (i = 0; i < count - 1; i++) {
@@ -461,7 +461,7 @@
 	}
 	[ret replaceOccurrencesOfString: @"\n"
 			     withString: @"\n\t"];
-	[ret appendFormat: @"%@\n)", [cArray[i] stringBySerializing]];
+	[ret appendFormat: @"%@\n]", [cArray[i] stringBySerializing]];
 
 	[pool release];
 

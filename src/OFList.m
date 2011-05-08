@@ -330,9 +330,9 @@
 	of_list_object_t *iter;
 
 	if (count == 0)
-		return @"<list,mutable>()";
+		return @"(list,mutable)[]";
 
-	ret = [OFMutableString stringWithString: @"<list,mutable>(\n"];
+	ret = [OFMutableString stringWithString: @"(list,mutable)[\n"];
 	pool = [[OFAutoreleasePool alloc] init];
 
 	for (iter = firstListObject; iter != NULL; iter = iter->next) {
@@ -345,7 +345,7 @@
 	}
 	[ret replaceOccurrencesOfString: @"\n"
 			     withString: @"\n\t"];
-	[ret appendString: @"\n)"];
+	[ret appendString: @"\n]"];
 
 	[pool release];
 

@@ -767,16 +767,16 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 
 	if (count == 0) {
 		if ([self isKindOfClass: [OFMutableDictionary class]])
-			return @"<mutable,0>{}";
+			return @"(mutable,0){}";
 		else
-			return @"<0>{}";
+			return @"(0){}";
 	}
 
 	if ([self isKindOfClass: [OFMutableDictionary class]])
-		ret = [OFMutableString stringWithFormat: @"<mutable,%zd>{\n",
+		ret = [OFMutableString stringWithFormat: @"(mutable,%zd){\n",
 							 count];
 	else
-		ret = [OFMutableString stringWithFormat: @"<%zd>{\n", count];
+		ret = [OFMutableString stringWithFormat: @"(%zd){\n", count];
 	pool = [[OFAutoreleasePool alloc] init];
 	keyEnumerator = [self keyEnumerator];
 	objectEnumerator = [self objectEnumerator];
@@ -791,13 +791,13 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 		[ret appendString: [object stringBySerializing]];
 
 		if (++i < count)
-			[ret appendString: @";\n"];
+			[ret appendString: @",\n"];
 
 		[pool2 releaseObjects];
 	}
 	[ret replaceOccurrencesOfString: @"\n"
 			     withString: @"\n\t"];
-	[ret appendString: @";\n}"];
+	[ret appendString: @"\n}"];
 
 	[pool release];
 
