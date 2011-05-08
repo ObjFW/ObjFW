@@ -217,7 +217,7 @@ of_bswap32_vec(uint32_t *buffer, size_t length)
 # define of_bswap16_if_le(i) (i)
 # define of_bswap32_if_le(i) (i)
 # define of_bswap64_if_le(i) (i)
-# define of_bswap32_vec_if_be(buf, len) of_bswap32_vec(buf, len)
+# define of_bswap32_vec_if_be(buffer, length) of_bswap32_vec(buffer, length)
 #else
 # define of_bswap16_if_be(i) (i)
 # define of_bswap32_if_be(i) (i)
@@ -225,7 +225,7 @@ of_bswap32_vec(uint32_t *buffer, size_t length)
 # define of_bswap16_if_le(i) of_bswap16(i)
 # define of_bswap32_if_le(i) of_bswap32(i)
 # define of_bswap64_if_le(i) of_bswap64(i)
-# define of_bswap32_vec_if_be(buf, len)
+# define of_bswap32_vec_if_be(buffer, length)
 #endif
 
 #define OF_ROL(value, bits)						\

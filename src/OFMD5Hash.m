@@ -242,7 +242,7 @@ md5_transform(uint32_t buffer[4], const uint32_t in[16])
 	in.u32[15] = bits[1];
 
 	md5_transform(buffer, in.u32);
-	of_bswap32_vec_if_be(buf, 4);
+	of_bswap32_vec_if_be(buffer, 4);
 
 	isCalculated = YES;
 
