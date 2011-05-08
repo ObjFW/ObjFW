@@ -459,9 +459,10 @@
 
 		[pool releaseObjects];
 	}
+	[ret appendString: [cArray[i] stringBySerializing]];
 	[ret replaceOccurrencesOfString: @"\n"
 			     withString: @"\n\t"];
-	[ret appendFormat: @"%@\n]", [cArray[i] stringBySerializing]];
+	[ret appendString: @"\n]"];
 
 	[pool release];
 
