@@ -41,7 +41,7 @@ typedef enum of_http_request_type_t {
 @optional
 #endif
 /**
- * This callback is called when the OFHTTPRequest received the headers.
+ * \brief A callback which is called when an OFHTTPRequest received headers.
  *
  * \param request The OFHTTPRequest which received the headers
  * \param headers The headers received
@@ -52,7 +52,7 @@ typedef enum of_http_request_type_t {
      withStatusCode: (int)statusCode;
 
 /**
- * This callback is called when the OFHTTPRequest received data.
+ * \brief A callback which is called when an OFHTTPRequest received data.
  *
  * This is useful for example if you want to update a status display.
  *
@@ -65,7 +65,8 @@ typedef enum of_http_request_type_t {
       withLength: (size_t)length;
 
 /**
- * This callback is called when the OFHTTPRequest will follow a redirect.
+ * \brief A callback which is called when an OFHTTPRequest will follow a
+ *	  redirect.
  *
  * If you want to get the headers and data for each redirect, set the number of
  * redirects to 0 and perform a new OFHTTPRequest for each redirect. However,
@@ -109,18 +110,22 @@ typedef enum of_http_request_type_t {
 #endif
 
 /**
+ * \brief Creates a new OFHTTPRequest.
+ *
  * \return A new, autoreleased OFHTTPRequest
  */
 + request;
 
 /**
+ * \brief Creates a new OFHTTPRequest with the specified URL.
+ *
  * \param URL The URL for the request
  * \return A new, autoreleased OFHTTPRequest
  */
 + requestWithURL: (OFURL*)URL;
 
 /**
- * Initializes an already allocated OFHTTPRequest with the specified URL.
+ * \brief Initializes an already allocated OFHTTPRequest with the specified URL.
  *
  * \param URL The URL for the request
  * \return An initialized OFHTTPRequest
@@ -128,79 +133,91 @@ typedef enum of_http_request_type_t {
 - initWithURL: (OFURL*)URL;
 
 /**
- * Sets the URL for the HTTP request.
+ * \brief Sets the URL of the HTTP request.
  *
- * \param URL The URL for the HTTP request
+ * \param URL The URL of the HTTP request
  */
 - (void)setURL: (OFURL*)URL;
 
 /**
- * \return The URL for the HTTP request
+ * \brief Returns the URL of the HTTP request.
+ *
+ * \return The URL of the HTTP request
  */
 - (OFURL*)URL;
 
 /**
- * Sets the request type for the HTTP request.
+ * \brief Sets the request type of the HTTP request.
  *
- * \param requestType The request type for the HTTP request
+ * \param requestType The request type of the HTTP request
  */
 - (void)setRequestType: (of_http_request_type_t)requestType;
 
 /**
- * \return The request type for the HTTP request
+ * \brief Returns the request type of the HTTP request.
+ *
+ * \return The request type of the HTTP request
  */
 - (of_http_request_type_t)requestType;
 
 /**
- * Sets the query string for the HTTP request.
+ * \brief Sets the query string of the HTTP request.
  *
- * \param queryString The query string for the HTTP request
+ * \param queryString The query string of the HTTP request
  */
 - (void)setQueryString: (OFString*)queryString;
 
 /**
- * \return The query string for the HTTP request
+ * \brief Returns the query string of the HTTP request.
+ *
+ * \return The query string of the HTTP request
  */
 - (OFString*)queryString;
 
 /**
- * Sets a dictionary with headers for the HTTP request.
+ * \brief Sets a dictionary with headers for the HTTP request.
  *
  * \param headers A dictionary with headers for the HTTP request
  */
 - (void)setHeaders: (OFDictionary*)headers;
 
 /**
+ * \brief Retrusn a dictionary with headers for the HTTP request.
+ *
  * \return A dictionary with headers for the HTTP request.
  */
 - (OFDictionary*)headers;
 
 /**
- * Sets whether redirects from HTTPS to HTTP are allowed.
+ * \brief Sets whether redirects from HTTPS to HTTP are allowed.
  *
  * \param allowed Whether redirects from HTTPS to HTTP are allowed
  */
 - (void)setRedirectsFromHTTPSToHTTPAllowed: (BOOL)allowed;
 
 /**
- * \return Whether redirects from HTTPS to HTTP are allowed
+ * \brief Returns whether redirects from HTTPS to HTTP will be allowed
+ *
+ * \return Whether redirects from HTTPS to HTTP will be allowed
  */
 - (BOOL)redirectsFromHTTPSToHTTPAllowed;
 
 /**
- * Sets the delegate for the HTTP request.
+ * \brief Sets the delegate of the HTTP request.
  *
- * \param delegate The delegate for the HTTP request
+ * \param delegate The delegate of the HTTP request
  */
 - (void)setDelegate: (id <OFHTTPRequestDelegate>)delegate;
 
 /**
- * \return The delegate for the HTTP request.
+ * \brief Returns the delegate of the HTTP reqeust.
+ *
+ * \return The delegate of the HTTP request
  */
 - (id <OFHTTPRequestDelegate>)delegate;
 
 /**
- * Sets whether an OFDataArray with the data is created.
+ * \brief Sets whether an OFDataArray with the data should be created.
  *
  * Setting this to NO is only useful if you are using the delegate to handle the
  * data.
@@ -210,19 +227,21 @@ typedef enum of_http_request_type_t {
 - (void)setStoresData: (BOOL)storesData;
 
 /**
- * \return Whether an OFDataArray with the data is created
+ * \brief Returns whether an OFDataArray with the date should be created.
+ *
+ * \return Whether an OFDataArray with the data should be created
  */
 - (BOOL)storesData;
 
 /**
- * Performs the HTTP request and returns an OFHTTPRequestResult.
+ * \brief Performs the HTTP request and returns an OFHTTPRequestResult.
  *
  * \return An OFHTTPRequestResult with the result of the HTTP request
  */
 - (OFHTTPRequestResult*)perform;
 
 /**
- * Performs the HTTP request and returns an OFHTTPRequestResult.
+ * \brief Performs the HTTP request and returns an OFHTTPRequestResult.
  *
  * \param redirects The maximum number of redirects after which no further
  *		    attempt is done to follow the redirect, but instead the
@@ -255,17 +274,25 @@ typedef enum of_http_request_type_t {
 /// \endcond
 
 /**
+ * \brief Returns the state code of the result of the HTTP request.
+ *
  * \return The status code of the result of the HTTP request
  */
 - (short)statusCode;
 
 /**
- * \return The HTTP headers of the result of the HTTP request
+ * \brief Returns the headers of the result of the HTTP request.
+ *
+ * \return The headers of the result of the HTTP request
  */
 - (OFDictionary*)headers;
 
 /**
- * \return The data returned for the HTTP request
+ * \brief Returns the data received for the HTTP request.
+ *
+ * Returns nil if storesData was set to NO.
+ *
+ * \return The data received for the HTTP request
  */
 - (OFDataArray*)data;
 @end

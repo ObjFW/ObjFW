@@ -40,6 +40,8 @@ extern void of_log(OFConstantString*, ...);
 }
 
 /**
+ * \brief Creates a new OFFile with the specified path and mode.
+ *
  * \param path The path to the file to open as a string
  * \param mode The mode in which the file should be opened as a string
  * \return A new autoreleased OFFile
@@ -48,6 +50,8 @@ extern void of_log(OFConstantString*, ...);
 	  mode: (OFString*)mode;
 
 /**
+ * \brief Creates a new OFFile with the specified file descriptor.
+ *
  * \param fileDescriptor A file descriptor, returned from for example open().
  *			 It is not closed when the OFFile object is deallocated!
  * \return A new autoreleased OFFile
@@ -55,50 +59,60 @@ extern void of_log(OFConstantString*, ...);
 + fileWithFileDescriptor: (int)fileDescriptor;
 
 /**
+ * \brief Returns the path fo the current working directory.
+ *
  * \return The path of the current working directory
  */
 + (OFString*)currentDirectoryPath;
 
 /**
+ * \brief Checks whether a file exists at the specified path.
+ *
  * \param path The path to check
  * \return A boolean whether there is a file at the specified path
  */
 + (BOOL)fileExistsAtPath: (OFString*)path;
 
 /**
+ * \brief Checks whether a directory exists at the specified path.
+ *
  * \param path The path to check
  * \return A boolean whether there is a directory at the specified path
  */
 + (BOOL)directoryExistsAtPath: (OFString*)path;
 
 /**
- * Creates a directory at the specified path.
+ * \brief Creates a directory at the specified path.
  *
  * \param path The path of the directory
  */
 + (void)createDirectoryAtPath: (OFString*)path;
 
 /**
+ * \brief Returns an array with the files in the specified directory.
+ *
  * \param path The path of the directory
  * \return An array of OFStrings with the files at the specified path
  */
 + (OFArray*)filesInDirectoryAtPath: (OFString*)path;
 
 /**
- * Changes the current working directory.
+ * \brief Changes the current working directory.
  *
  * \param path The new directory to change to
  */
 + (void)changeToDirectory: (OFString*)path;
 
 /**
+ * \brief Returns the date of the last modification of the file.
+ *
  * \return The date of the last modification of the file
  */
 + (OFDate*)modificationDateOfFile: (OFString*)path;
 
 #ifndef _PSP
 /**
- * Changes the mode of a file.
+ * \brief Changes the mode of a file.
  *
  * Only changes read-only flag on Windows.
  *
@@ -112,7 +126,7 @@ extern void of_log(OFConstantString*, ...);
 
 #if !defined(_WIN32) && !defined(_PSP)
 /**
- * Changes the owner of a file.
+ * \brief Changes the owner of a file.
  *
  * Not available on Windows.
  *
@@ -127,7 +141,7 @@ extern void of_log(OFConstantString*, ...);
 #endif
 
 /**
- * Copies a file.
+ * \brief Copies a file.
  *
  * \param source The file to copy
  * \param destination The destination path
@@ -136,7 +150,7 @@ extern void of_log(OFConstantString*, ...);
 		toPath: (OFString*)destination;
 
 /**
- * Renames a file.
+ * \brief Renames a file.
  *
  * \param source The file to rename
  * \param destination The new name
@@ -145,14 +159,14 @@ extern void of_log(OFConstantString*, ...);
 		  toPath: (OFString*)destination;
 
 /**
- * Deletes a file.
+ * \brief Deletes a file.
  *
  * \param path The path to the file of which should be deleted as a string
  */
 + (void)deleteFileAtPath: (OFString*)path;
 
 /**
- * Deletes an empty directory.
+ * \brief Deletes an empty directory.
  *
  * \param path The path to the directory which should be deleted as a string
  */
@@ -160,7 +174,7 @@ extern void of_log(OFConstantString*, ...);
 
 #ifndef _WIN32
 /**
- * Hardlinks a file.
+ * \brief Creates a hard link for a file.
  *
  * Not available on Windows.
  *
@@ -173,7 +187,7 @@ extern void of_log(OFConstantString*, ...);
 
 #if !defined(_WIN32) && !defined(_PSP)
 /**
- * Symlinks a file.
+ * \brief Creates a symbolink link for a file.
  *
  * Not available on Windows.
  *
@@ -185,7 +199,7 @@ extern void of_log(OFConstantString*, ...);
 #endif
 
 /**
- * Initializes an already allocated OFFile.
+ * \brief Initializes an already allocated OFFile.
  *
  * \param path The path to the file to open as a string
  * \param mode The mode in which the file should be opened as a string
@@ -195,7 +209,7 @@ extern void of_log(OFConstantString*, ...);
 	  mode: (OFString*)mode;
 
 /**
- * Initializes an already allocated OFFile.
+ * \brief Initializes an already allocated OFFile.
  *
  * \param fileDescriptor A file descriptor, returned from for example open().
  *			 It is not closed when the OFFile object is deallocated!

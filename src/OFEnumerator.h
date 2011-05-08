@@ -64,6 +64,16 @@ typedef struct of_fast_enumeration_state_t {
  * supporting fast enumeration.
  */
 @protocol OFFastEnumeration
+/**
+ * \brief A method which is called by the code produced by the compiler when
+ *	  doing a fast enumeration.
+ *
+ * \param state Context information for the enumeration
+ * \param objects A pointer to an array where to put the objects
+ * \param count The number of objects that can be stored at objects
+ * \return The number of objects returned in objects or 0 when the enumeration
+ *	   finished.
+ */
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
 			   objects: (id*)objects
 			     count: (int)count;

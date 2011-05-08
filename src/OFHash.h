@@ -29,17 +29,21 @@
 #endif
 
 /**
- * \return The digest size of the hash, in byte.
+ * \brief Returns the digest size of the hash, in bytes.
+ *
+ * \return The digest size of the hash, in bytes
  */
 + (size_t)digestSize;
 
 /**
- * \return The block size of the hash, in byte.
+ * \brief Returns the block size of the hash, in bytes.
+ *
+ * \return The block size of the hash, in bytes
  */
 + (size_t)blockSize;
 
 /**
- * Adds a buffer to the hash to be calculated.
+ * \brief Adds a buffer to the hash to be calculated.
  *
  * \param buf The buffer which should be included into the calculation.
  * \param length The length of the buffer
@@ -48,12 +52,18 @@
 		  length: (size_t)length;
 
 /**
- * \return A buffer containing the hash. The size of the buffer is depending
- *	   on the hash used. The buffer is part of object's memory pool.
+ * \brief Returns a buffer containing the hash.
+ *
+ * The size of the buffer depends on the hash used. The buffer is part of the
+ * receiver's memory pool.
+ *
+ * \return A buffer containing the hash
  */
 - (uint8_t*)digest;
 
 /**
+ * \brief Returns a boolean whether the hash has already been calculated.
+ *
  * \return A boolean whether the hash has already been calculated
  */
 - (BOOL)isCalculated;

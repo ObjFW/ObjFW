@@ -29,14 +29,14 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
 }
 
 /**
- * Adds an object to the OFArray.
+ * \brief Adds an object to the OFArray.
  *
  * \param object An object to add
  */
 - (void)addObject: (id)object;
 
 /**
- * Adds an object to the OFArray at the specified index.
+ * \brief Adds an object to the OFArray at the specified index.
  *
  * \param object An object to add
  * \param index The index where the object should be added
@@ -45,8 +45,8 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
 	  atIndex: (size_t)index;
 
 /**
- * Replaces the first object equivalent to the first specified object with the
- * second specified object.
+ * \brief Replaces the first object equivalent to the specified object with the
+ *	  other specified object.
  *
  * \param oldObject The object to replace
  * \param newObject The replacement object
@@ -55,7 +55,7 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
 	   withObject: (id)newObject;
 
 /**
- * Replaces the object at the specified index with the specified object.
+ * \brief Replaces the object at the specified index with the specified object.
  *
  * \param index The index of the object to replace
  * \param object The replacement object
@@ -64,8 +64,8 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
 		  withObject: (id)object;
 
 /**
- * Replaces the first object that has the same address as the first specified
- * object with the second specified object.
+ * \brief Replaces the first object that has the same address as the specified
+ *	  object with the other specified object.
  *
  * \param oldObject The object to replace
  * \param newObject The replacement object
@@ -74,35 +74,36 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
 		      withObject: (id)newObject;
 
 /**
- * Removes the first object equivalent to the specified object.
+ * \brief Removes the first object equivalent to the specified object.
  *
  * \param object The object to remove
  */
 - (void)removeObject: (id)object;
 
 /**
- * Removes the first object that has the same address as the specified object.
+ * \brief Removes the first object that has the same address as the specified
+ *	  object.
  *
  * \param object The object to remove
  */
 - (void)removeObjectIdenticalTo: (id)object;
 
 /**
- * Removes the object at the specified index.
+ * \brief Removes the object at the specified index.
  *
  * \param index The index of the object to remove
  */
 - (void)removeObjectAtIndex: (size_t)index;
 
 /**
- * Removes the specified amount of objects from the end of the OFArray.
+ * \brief Removes the specified amount of objects from the end of the OFArray.
  *
  * \param nObjects The number of objects to remove
  */
 - (void)removeNObjects: (size_t)nObjects;
 
 /**
- * Removes the specified amount of objects at the specified index.
+ * \brief Removes the specified amount of objects at the specified index.
  *
  * \param nobjects The number of objects to remove
  * \param index The index at which the objects are removed
@@ -112,7 +113,7 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
 
 #ifdef OF_HAVE_BLOCKS
 /**
- * Replaces each object with the object returned by the block.
+ * \brief Replaces each object with the object returned by the block.
  *
  * \param block The block which returns a new object for each object
  */

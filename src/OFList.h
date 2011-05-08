@@ -51,22 +51,28 @@ struct of_list_object_t {
 #endif
 
 /**
+ * \brief Creates a new OFList.
+ *
  * \return A new autoreleased OFList
  */
 + list;
 
 /**
- * \return The first list object in the list
+ * \brief Returns the first list object of the list.
+ *
+ * \return The first list object of the list
  */
 - (of_list_object_t*)firstListObject;
 
 /**
- * \return The last list object in the list
+ * \brief Retrusn the last list object of the list.
+ *
+ * \return The last list object of the list
  */
 - (of_list_object_t*)lastListObject;
 
 /**
- * Appends an object to the list.
+ * \brief Appends an object to the list.
  *
  * \param object The object to append
  * \return An of_list_object_t, needed to identify the object inside the list.
@@ -76,7 +82,7 @@ struct of_list_object_t {
 - (of_list_object_t*)appendObject: (id)object;
 
 /**
- * Prepends an object to the list.
+ * \brief Prepends an object to the list.
  *
  * \param object The object to prepend
  * \return An of_list_object_t, needed to identify the object inside the list.
@@ -86,7 +92,8 @@ struct of_list_object_t {
 - (of_list_object_t*)prependObject: (id)object;
 
 /**
- * Inserts an object before another object.
+ * \brief Inserts an object before another list object.
+ *
  * \param object The object to insert
  * \param listObject The of_list_object_t of the object before which it should be
  *	  inserted
@@ -98,7 +105,8 @@ struct of_list_object_t {
 		 beforeListObject: (of_list_object_t*)listObject;
 
 /**
- * Inserts an object after another object.
+ * \brief Inserts an object after another list object.
+ *
  * \param object The object to insert
  * \param listObject The of_list_object_t of the object after which it should be
  *	  inserted
@@ -110,7 +118,7 @@ struct of_list_object_t {
 		  afterListObject: (of_list_object_t*)listObject;
 
 /**
- * Removes the object with the specified list object from the list.
+ * \brief Removes the object with the specified list object from the list.
  *
  * \param listObject The list object returned by append / prepend
  */

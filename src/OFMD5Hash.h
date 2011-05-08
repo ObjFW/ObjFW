@@ -32,7 +32,9 @@
 }
 
 /**
- * \return A new autoreleased MD5 Hash
+ * \brief Creates a new OFMD5Hash.
+ *
+ * \return A new autoreleased OFMD5Hash
  */
 + MD5Hash;
 @end

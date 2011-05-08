@@ -29,8 +29,9 @@ typedef id (^of_dictionary_replace_block_t)(id key, id object, BOOL *stop);
 }
 
 /**
- * Sets an object for a key.
- * A key can be any object.
+ * \brief Sets an object for a key.
+ *
+ * A key can be any object that conforms to the OFCopying protocol.
  *
  * \param key The key to set
  * \param object The object to set the key to
@@ -39,7 +40,7 @@ typedef id (^of_dictionary_replace_block_t)(id key, id object, BOOL *stop);
 	   forKey: (id <OFCopying>)key;
 
 /**
- * Remove the object with the given key from the dictionary.
+ * \brief Removes the object for the specified key from the dictionary.
  *
  * \param key The key whose object should be removed
  */
@@ -47,7 +48,7 @@ typedef id (^of_dictionary_replace_block_t)(id key, id object, BOOL *stop);
 
 #ifdef OF_HAVE_BLOCKS
 /**
- * Replaces each object with the object returned by the block.
+ * \brief Replaces each object with the object returned by the block.
  *
  * \param block The block which returns a new object for each object
  */
