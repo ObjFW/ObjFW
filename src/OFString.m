@@ -1062,6 +1062,12 @@ of_unicode_string_length(const of_unichar_t *string)
 				       withString: @"\\\\"];
 	[serialization replaceOccurrencesOfString: @"\""
 				       withString: @"\\\""];
+	[serialization replaceOccurrencesOfString: @"\n"
+				       withString: @"\\n\"\n    \""];
+	[serialization replaceOccurrencesOfString: @"\r"
+				       withString: @"\\r"];
+	[serialization replaceOccurrencesOfString: @"\t"
+				       withString: @"\\t"];
 
 	if ([self isKindOfClass: [OFMutableString class]])
 		[serialization prependString: @"<mutable>\""];

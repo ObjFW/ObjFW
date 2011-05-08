@@ -448,21 +448,23 @@
 	cArray = [array cArray];
 	count = [array count];
 	if ([self isKindOfClass: [OFMutableArray class]])
-		ret = [OFMutableString stringWithFormat: @"<mutable,%zd>(",
+		ret = [OFMutableString stringWithFormat: @"<mutable,%zd>(\n",
 							 count];
 	else
-		ret = [OFMutableString stringWithFormat: @"<%zd>(", count];
+		ret = [OFMutableString stringWithFormat: @"<%zd>(\n", count];
 	pool = [[OFAutoreleasePool alloc] init];
 	append = [ret methodForSelector: @selector(appendString:)];
 
 	for (i = 0; i < count - 1; i++) {
 		append(ret, @selector(appendString:),
 		    [cArray[i] stringBySerializing]);
-		append(ret, @selector(appendString:), @", ");
+		append(ret, @selector(appendString:), @",\n");
 
 		[pool releaseObjects];
 	}
-	[ret appendFormat: @"%@)", [cArray[i] stringBySerializing]];
+	[ret replaceOccurrencesOfString: @"\n"
+			     withString: @"\n\t"];
+	[ret appendFormat: @"%@\n)", [cArray[i] stringBySerializing]];
 
 	[pool release];
 
