@@ -185,4 +185,11 @@
  * \param fragment The fragment part of the URL to set
  */
 - (void)setFragment: (OFString*)fragment;
+
+/**
+ * \brief Returns the URL as a string.
+ *
+ * \return The URL as a string
+ */
+- (OFString*)string;
 @end

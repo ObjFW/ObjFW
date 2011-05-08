@@ -480,7 +480,7 @@ resolve_relative_path(OFString *path)
 	OF_SETTER(fragment, fragment_, YES, YES)
 }
 
-- (OFString*)description
+- (OFString*)string
 {
 	OFMutableString *ret = [OFMutableString stringWithFormat: @"%@://",
 								  scheme];
@@ -523,5 +523,10 @@ resolve_relative_path(OFString *path)
 	 */
 	ret->isa = [OFString class];
 	return ret;
+}
+
+- (OFString*)description
+{
+	return [self string];
 }
 @end
