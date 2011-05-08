@@ -24,22 +24,22 @@
  */
 @interface OFMutableString: OFString
 /**
- * Sets the OFMutableString to the specified UTF-8 encoded C string.
+ * \brief Sets the OFMutableString to the specified UTF-8 encoded C string.
  *
  * \param string A UTF-8 encoded C string to set the OFMutableString to.
  */
 - (void)setToCString: (const char*)string;
 
 /**
- * Appends a UTF-8 encoded C string to the OFMutableString.
+ * \brief Appends a UTF-8 encoded C string to the OFMutableString.
  *
  * \param string A UTF-8 encoded C string to append
  */
 - (void)appendCString: (const char*)string;
 
 /**
- * Appends a UTF-8 encoded C string with the specified length to the
- * OFMutableString.
+ * \brief Appends a UTF-8 encoded C string with the specified length to the
+ *	  OFMutableString.
  *
  * \param string A UTF-8 encoded C string to append
  * \param length The length of the UTF-8 encoded C string
@@ -48,8 +48,8 @@
 	   withLength: (size_t)length;
 
 /**
- * Appends a C string with the specified encoding and length to the
- * OFMutableString.
+ * \brief Appends a C string with the specified encoding and length to the
+ *	  OFMutableString.
  *
  * \param string A C string to append
  * \param encoding The encoding of the C string
@@ -60,8 +60,8 @@
 	       length: (size_t)length;
 
 /**
- * Appends a UTF-8 encoded C string to the OFMutableString without checking
- * whether it is valid UTF-8.
+ * \brief Appends a UTF-8 encoded C string to the OFMutableString without
+ *	  checking whether it is valid UTF-8.
  *
  * Only use this if you are 100% sure the string you append is either ASCII or
  * UTF-8!
@@ -71,8 +71,8 @@
 - (void)appendCStringWithoutUTF8Checking: (const char*)string;
 
 /**
- * Appends a UTF-8 encoded C string with the specified length to the
- * OFMutableString without checking whether it is valid UTF-8.
+ * \brief Appends a UTF-8 encoded C string with the specified length to the
+ *	  OFMutableString without checking whether it is valid UTF-8.
  *
  * Only use this if you are 100% sure the string you append is either ASCII or
  * UTF-8!
@@ -84,14 +84,15 @@
 				  length: (size_t)length;
 
 /**
- * Appends another OFString to the OFMutableString.
+ * \brief Appends another OFString to the OFMutableString.
  *
  * \param string An OFString to append
  */
 - (void)appendString: (OFString*)string;
 
 /**
- * Appends a formatted UTF-8 encoded C string to the OFMutableString.
+ * \brief Appends a formatted string to the OFMutableString.
+ *
  * See printf for the format syntax.
  *
  * \param format A format string which generates the string to append
@@ -99,7 +100,8 @@
 - (void)appendFormat: (OFString*)format, ...;
 
 /**
- * Appends a formatted UTF-8 encoded C string to the OFMutableString.
+ * \brief Appends a formatted string to the OFMutableString.
+ *
  * See printf for the format syntax.
  *
  * \param format A format string which generates the string to append
@@ -109,29 +111,29 @@
        withArguments: (va_list)arguments;
 
 /**
- * Prepends another OFString to the OFMutableString.
+ * \brief Prepends another OFString to the OFMutableString.
  *
  * \param string An OFString to prepend
  */
 - (void)prependString: (OFString*)string;
 
 /**
- * Reverse the OFMutableString.
+ * \brief Reverses the OFMutableString.
  */
 - (void)reverse;
 
 /**
- * Upper the OFMutableString.
+ * \brief Converts the OFMutableString to uppercase.
  */
 - (void)upper;
 
 /**
- * Lower the OFMutableString.
+ * \brief Converts the OFMutableString to lowercase.
  */
 - (void)lower;
 
 /**
- * Inserts a string at the specified index.
+ * \brief Inserts a string at the specified index.
  *
  * \param string The string to insert
  * \param index The index
@@ -140,7 +142,7 @@
 	     atIndex: (size_t)index;
 
 /**
- * Deletes the characters at the specified range.
+ * \brief Deletes the characters at the specified range.
  *
  * \param start The index where the deletion should be started
  * \param end The index until which the characters should be deleted.
@@ -150,14 +152,14 @@
 			  toIndex: (size_t)end;
 
 /**
- * Deletes the characters at the specified range.
+ * \brief Deletes the characters at the specified range.
  *
  * \param range The range of the characters which should be removed
  */
 - (void)deleteCharactersInRange: (of_range_t)range;
 
 /**
- * Replaces the characters at the specified range.
+ * \brief Replaces the characters at the specified range.
  *
  * \param start The index where the replacement should be started
  * \param end The index until which the characters should be replaced.
@@ -169,7 +171,7 @@
 			withString: (OFString*)replacement;
 
 /**
- * Deletes the characters at the specified range.
+ * \brief Replaces the characters at the specified range.
  *
  * \param range The range of the characters which should be replaced
  * \param replacement The string to the replace the characters with
@@ -178,7 +180,7 @@
 		      withString: (OFString*)replacement;
 
 /**
- * Deletes all occurrences of a string with another string.
+ * \brief Replaces all occurrences of a string with another string.
  *
  * \param string The string to replace
  * \param replacement The string with which it should be replaced
@@ -187,17 +189,17 @@
 			withString: (OFString*)replacement;
 
 /**
- * Deletes all whitespaces at the beginning of a string.
+ * \brief Deletes all whitespaces at the beginning of the string.
  */
 - (void)deleteLeadingWhitespaces;
 
 /**
- * Deletes all whitespaces at the end of a string.
+ * \brief Deletes all whitespaces at the end of the string.
  */
 - (void)deleteTrailingWhitespaces;
 
 /**
- * Deletes all whitespaces at the beginning and the end of a string.
+ * \brief Deletes all whitespaces at the beginning and the end of the string.
  */
 - (void)deleteLeadingAndTrailingWhitespaces;
 @end
