@@ -40,6 +40,22 @@ typedef void (*state_function)(id, SEL, const char*, size_t*, size_t*);
 static SEL selectors[OF_XMLPARSER_NUM_STATES];
 static state_function lookupTable[OF_XMLPARSER_NUM_STATES];
 
+static void
+cache_append(OFMutableString *cache, const char *string,
+    of_string_encoding_t encoding, size_t length)
+{
+	if (OF_LIKELY(encoding == OF_STRING_ENCODING_UTF_8))
+		[cache appendCStringWithoutUTF8Checking: string
+						 length: length];
+	else {
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		[cache appendString: [OFString stringWithCString: string
+							encoding: encoding
+							  length: length]];
+		[pool release];
+	}
+}
+
 static OFString*
 transform_string(OFMutableString *cache, size_t cut, BOOL unescape,
     OFObject <OFStringXMLUnescapingDelegate> *delegate)
@@ -216,7 +232,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	OF_SETTER(delegate, delegate_, YES, NO)
 }
 
-- (void)parseBuffer: (const char*)buf
+- (void)parseBuffer: (const char*)buffer
 	 withLength: (size_t)length
 {
 	size_t i, last = 0;
@@ -224,23 +240,22 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	for (i = 0; i < length; i++) {
 		size_t j = i;
 
-		lookupTable[state](self, selectors[state], buf, &i, &last);
+		lookupTable[state](self, selectors[state], buffer, &i, &last);
 
 		/* Ensure we don't count this character twice */
 		if (i != j)
 			continue;
 
-		if (buf[i] == '\r' || (buf[i] == '\n' && !lastCarriageReturn))
+		if (buffer[i] == '\r' || (buffer[i] == '\n' &&
+		    !lastCarriageReturn))
 			lineNumber++;
 
-		lastCarriageReturn = (buf[i] == '\r');
+		lastCarriageReturn = (buffer[i] == '\r');
 	}
 
 	/* In OF_XMLPARSER_IN_TAG, there can be only spaces */
 	if (length - last > 0 && state != OF_XMLPARSER_IN_TAG)
-		[cache appendCStringWithoutUTF8Checking: buf + last
-					       encoding: encoding
-						 length: length - last];
+		cache_append(cache, buffer + last, encoding, length - last);
 }
 
 - (void)parseString: (OFString*)string
@@ -301,9 +316,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		return;
 
 	if ((length = *i - *last) > 0)
-		[cache appendCStringWithoutUTF8Checking: buffer + *last
-					       encoding: encoding
-						 length: length];
+		cache_append(cache, buffer + *last, encoding, length);
 
 	if ([cache cStringLength] > 0) {
 		OFString *characters;
@@ -469,9 +482,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 		OFString *pi;
 
-		[cache appendCStringWithoutUTF8Checking: buffer + *last
-					       encoding: encoding
-						 length: *i - *last];
+		cache_append(cache, buffer + *last, encoding, *i - *last);
 		pi = transform_string(cache, 1, NO, nil);
 
 		if ([pi isEqual: @"xml"] || [pi hasPrefix: @"xml "] ||
@@ -508,9 +519,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		return;
 
 	if ((length = *i - *last) > 0)
-		[cache appendCStringWithoutUTF8Checking: buffer + *last
-					       encoding: encoding
-						 length: length];
+		cache_append(cache, buffer + *last, encoding, length);
 
 	cacheCString = [cache cString];
 	cacheLength = [cache cStringLength];
@@ -603,9 +612,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		return;
 
 	if ((length = *i - *last) > 0)
-		[cache appendCStringWithoutUTF8Checking: buffer + *last
-					       encoding: encoding
-						 length: length];
+		cache_append(cache, buffer + *last, encoding, length);
 
 	cacheCString = [cache cString];
 	cacheLength = [cache cStringLength];
@@ -755,9 +762,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		return;
 
 	if ((length = *i - *last) > 0)
-		[cache appendCStringWithoutUTF8Checking: buffer + *last
-					       encoding: encoding
-						 length: length];
+		cache_append(cache, buffer + *last, encoding, length);
 
 	[cache deleteLeadingAndTrailingWhitespaces];
 
@@ -814,9 +819,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		return;
 
 	if ((length = *i - *last) > 0)
-		[cache appendCStringWithoutUTF8Checking: buffer + *last
-					       encoding: encoding
-						 length: length];
+		cache_append(cache, buffer + *last, encoding, length);
 
 	pool = [[OFAutoreleasePool alloc] init];
 	attributeValue = transform_string(cache, 0, YES, self);
@@ -944,9 +947,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	pool = [[OFAutoreleasePool alloc] init];
 
-	[cache appendCStringWithoutUTF8Checking: buffer + *last
-				       encoding: encoding
-					 length: *i - *last];
+	cache_append(cache, buffer + *last, encoding, *i - *last);
 	CDATA = transform_string(cache, 2, NO, nil);
 
 #if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
@@ -1005,9 +1006,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	pool = [[OFAutoreleasePool alloc] init];
 
-	[cache appendCStringWithoutUTF8Checking: buffer + *last
-				       encoding: encoding
-					 length: *i - *last];
+	cache_append(cache, buffer + *last, encoding, *i - *last);
 	comment = transform_string(cache, 2, NO, nil);
 
 #if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)

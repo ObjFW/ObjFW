@@ -248,22 +248,6 @@
 	string[length] = 0;
 }
 
-- (void)appendCStringWithoutUTF8Checking: (const char*)string_
-				encoding: (of_string_encoding_t)encoding
-				  length: (size_t)length_
-{
-	if (encoding == OF_STRING_ENCODING_UTF_8)
-		[self appendCStringWithoutUTF8Checking: string_
-						length: length_];
-	else {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-		[self appendString: [OFString stringWithCString: string_
-						       encoding: encoding
-							 length: length_]];
-		[pool release];
-	}
-}
-
 - (void)appendString: (OFString*)string_
 {
 	if (string_ == nil)
