@@ -202,6 +202,13 @@
 - (uint16_t)year;
 
 /**
+ * \brief Returns the year of the date in local time.
+ *
+ * \return The year of the date in local time
+ */
+- (uint16_t)localYear;
+
+/**
  * \brief Returns the day of the week of the date.
  *
  * \return The day of the week of the date

@@ -360,6 +360,11 @@ static OFMutex *mutex;
 	GMTIME_RET(tm_year + 1900)
 }
 
+- (uint16_t)localYear
+{
+	LOCALTIME_RET(tm_year + 1900)
+}
+
 - (uint8_t)dayOfWeek
 {
 	GMTIME_RET(tm_wday)
