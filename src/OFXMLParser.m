@@ -570,6 +570,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				   didEndElement: name
 				      withPrefix: prefix
 				       namespace: ns];
+
+			if ([previous count] == 0)
+				finishedParsing = YES;
 		} else
 			[previous addObject: [[cache copy] autorelease]];
 
