@@ -534,7 +534,7 @@ resolve_relative_path(OFString *path)
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFString *ret = [[OFString alloc]
-	    initWithFormat: @"(class=OFURL)<%@>",
+	    initWithFormat: @"(class=OFURL,version=0)<%@>",
 			    [[self string] stringBySerializing]];
 
 	@try {

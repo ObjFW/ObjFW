@@ -154,9 +154,10 @@ Examples for numbers:
 
 The extension type allows adding new objects to ObjFW serialization. The
 extension type has a parameter class= which specifies the class which should
-handle deserialization. The extension type starts with a [ and ends with a ].
-Inside those brackets can be arbitray basic types, which should be passed 
-unmodified to the class for deserialization.
+handle deserialization and a version= parameter which specifies the version of
+the class serialization as a single integer. The extension type starts with a [
+and ends with a ]. Inside those brackets can be arbitray basic types, which
+should be passed unmodified to the class for deserialization.
 If an implementation can't deserialize an extension type, it is required to
 error out. Other languages are allowed to parse extension types of classes which
 are in ObjFW, like OFXMLElement, but are by no means required to do so. Other

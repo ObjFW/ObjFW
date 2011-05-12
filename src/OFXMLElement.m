@@ -571,9 +571,42 @@
 - (OFString*)stringBySerializing
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFString *ret = [[OFString alloc]
-	    initWithFormat: @"(class=OFXMLElement)<%@>",
-			    [[self XMLString] stringBySerializing]];
+	OFMutableDictionary *dictionary = [OFMutableDictionary dictionary];
+	OFString *ret;
+
+	if (name != nil)
+		[dictionary setObject: name
+			       forKey: @"name"];
+	if (ns != nil)
+		[dictionary setObject: ns
+			       forKey: @"namespace"];
+	if (defaultNamespace != nil)
+		[dictionary setObject: defaultNamespace
+			       forKey: @"defaultNamespace"];
+	if (attributes != nil)
+		[dictionary setObject: attributes
+			       forKey: @"attributes"];
+	if (namespaces != nil)
+		[dictionary setObject: namespaces
+			       forKey: @"namespaces"];
+	if (children != nil)
+		[dictionary setObject: children
+			       forKey: @"children"];
+	if (characters != nil)
+		[dictionary setObject: characters
+			       forKey: @"characters"];
+	if (CDATA != nil)
+		[dictionary setObject: CDATA
+			       forKey: @"CDATA"];
+	if (comment != nil)
+		[dictionary setObject: comment
+			       forKey: @"comment"];
+
+	dictionary->isa = [OFDictionary class];
+
+	ret = [[OFString alloc]
+	    initWithFormat: @"(class=OFXMLElement,version=0)<%@>",
+			    [dictionary stringBySerializing]];
 
 	@try {
 		[pool release];

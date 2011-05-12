@@ -15,13 +15,14 @@
  */
 
 #import "OFObject.h"
+#import "OFSerialization.h"
 
 @class OFString;
 
 /**
  * \brief A class for storing, accessing and comparing dates.
  */
-@interface OFDate: OFObject <OFCopying, OFComparing>
+@interface OFDate: OFObject <OFCopying, OFComparing, OFSerialization>
 {
 	int64_t seconds;
 	uint32_t microseconds;

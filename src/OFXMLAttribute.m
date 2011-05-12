@@ -18,6 +18,7 @@
 
 #import "OFXMLAttribute.h"
 #import "OFString.h"
+#import "OFDictionary.h"
 #import "OFAutoreleasePool.h"
 
 @implementation OFXMLAttribute
@@ -70,5 +71,36 @@
 - (OFString*)stringValue
 {
 	return [[stringValue copy] autorelease];
+}
+
+- (OFString*)stringBySerializing
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFMutableDictionary *dictionary = [OFMutableDictionary dictionary];
+	OFString *ret;
+
+	if (name != nil)
+		[dictionary setObject: name
+			       forKey: @"name"];
+	if (ns != nil)
+		[dictionary setObject: ns
+			       forKey: @"namespace"];
+	if (stringValue != nil)
+		[dictionary setObject: stringValue
+			       forKey: @"stringValue"];
+
+	dictionary->isa = [OFDictionary class];
+
+	ret = [[OFString alloc]
+	    initWithFormat: @"(class=OFXMLElement,version=0)<%@>",
+			    [dictionary stringBySerializing]];
+
+	@try {
+		[pool release];
+	} @finally {
+		[ret autorelease];
+	}
+
+	return ret;
 }
 @end

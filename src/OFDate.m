@@ -24,6 +24,8 @@
 
 #import "OFDate.h"
 #import "OFString.h"
+#import "OFDictionary.h"
+#import "OFNumber.h"
 #import "OFAutoreleasePool.h"
 #ifdef OF_THREADS
 # import "OFThread.h"
@@ -261,15 +263,15 @@ static OFMutex *mutex;
 	return [self retain];
 }
 
-- (of_comparison_result_t)compare: (id)obj
+- (of_comparison_result_t)compare: (id)object
 {
 	OFDate *otherDate;
 
-	if (![obj isKindOfClass: [OFDate class]])
+	if (![object isKindOfClass: [OFDate class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	otherDate = (OFDate*)obj;
+	otherDate = (OFDate*)object;
 
 	if (seconds < otherDate->seconds)
 		return OF_ORDERED_ASCENDING;
@@ -287,6 +289,25 @@ static OFMutex *mutex;
 - (OFString*)description
 {
 	return [self dateStringWithFormat: @"%Y-%m-%dT%H:%M:%SZ"];
+}
+
+- (OFString*)stringBySerializing
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFDictionary *dictionary = [OFDictionary dictionaryWithKeysAndObjects:
+	    @"seconds", [OFNumber numberWithInt64: seconds],
+	    @"microseconds", [OFNumber numberWithUInt32: microseconds], nil];
+	OFString *ret = [[OFString alloc]
+	    initWithFormat: @"(class=OFDate,version=0)<%@>",
+			    [dictionary stringBySerializing]];
+
+	@try {
+		[pool release];
+	} @finally {
+		[ret autorelease];
+	}
+
+	return ret;
 }
 
 - (uint32_t)microsecond

@@ -15,13 +15,14 @@
  */
 
 #import "OFObject.h"
+#import "OFSerialization.h"
 
 @class OFString;
 
 /**
  * \brief A representation of an attribute of an XML element as an object.
  */
-@interface OFXMLAttribute: OFObject
+@interface OFXMLAttribute: OFObject <OFSerialization>
 {
 @public
 	OFString *name;
