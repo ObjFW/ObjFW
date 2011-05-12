@@ -242,14 +242,14 @@ static OFMutex *mutex;
 	return self;
 }
 
-- (BOOL)isEqual: (id)obj
+- (BOOL)isEqual: (id)object
 {
 	OFDate *otherDate;
 
-	if (![obj isKindOfClass: [OFDate class]])
+	if (![object isKindOfClass: [OFDate class]])
 		return NO;
 
-	otherDate = (OFDate*)obj;
+	otherDate = (OFDate*)object;
 
 	if (otherDate->seconds != seconds ||
 	    otherDate->microseconds != microseconds)
@@ -385,12 +385,12 @@ static OFMutex *mutex;
 	LOCALTIME_RET(tm_yday + 1)
 }
 
-- (OFString*)dateStringWithFormat: (OFString*)fmt
+- (OFString*)dateStringWithFormat: (OFString*)format
 {
 	OFString *ret;
 	time_t seconds_ = (time_t)seconds;
 	struct tm tm;
-	char *buf;
+	char *buffer;
 
 	if (seconds != seconds_)
 		@throw [OFOutOfRangeException newWithClass: isa];
@@ -417,26 +417,26 @@ static OFMutex *mutex;
 # endif
 #endif
 
-	buf = [self allocMemoryWithSize: of_pagesize];
+	buffer = [self allocMemoryWithSize: of_pagesize];
 
 	@try {
-		if (!strftime(buf, of_pagesize, [fmt cString], &tm))
+		if (!strftime(buffer, of_pagesize, [format cString], &tm))
 			@throw [OFOutOfRangeException newWithClass: isa];
 
-		ret = [OFString stringWithCString: buf];
+		ret = [OFString stringWithCString: buffer];
 	} @finally {
-		[self freeMemory: buf];
+		[self freeMemory: buffer];
 	}
 
 	return ret;
 }
 
-- (OFString*)localDateStringWithFormat: (OFString*)fmt
+- (OFString*)localDateStringWithFormat: (OFString*)format
 {
 	OFString *ret;
 	time_t seconds_ = (time_t)seconds;
 	struct tm tm;
-	char *buf;
+	char *buffer;
 
 	if (seconds != seconds_)
 		@throw [OFOutOfRangeException newWithClass: isa];
@@ -463,15 +463,15 @@ static OFMutex *mutex;
 # endif
 #endif
 
-	buf = [self allocMemoryWithSize: of_pagesize];
+	buffer = [self allocMemoryWithSize: of_pagesize];
 
 	@try {
-		if (!strftime(buf, of_pagesize, [fmt cString], &tm))
+		if (!strftime(buffer, of_pagesize, [format cString], &tm))
 			@throw [OFOutOfRangeException newWithClass: isa];
 
-		ret = [OFString stringWithCString: buf];
+		ret = [OFString stringWithCString: buffer];
 	} @finally {
-		[self freeMemory: buf];
+		[self freeMemory: buffer];
 	}
 
 	return ret;
