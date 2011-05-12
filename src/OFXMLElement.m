@@ -375,9 +375,6 @@
 		return [OFString stringWithFormat: @"<!--%@-->", comment];
 
 	pool = [[OFAutoreleasePool alloc] init];
-	defaultNS = (defaultNamespace != nil
-	    ? defaultNamespace
-	    : (parent != nil ? parent->defaultNamespace : (OFString*)nil));
 
 	if (parent != nil && parent->namespaces != nil) {
 		OFEnumerator *keyEnumerator = [namespaces keyEnumerator];
@@ -398,6 +395,13 @@
 	parentPrefix = [allNamespaces objectForKey:
 	    (parent != nil && parent->ns != nil ? parent->ns : (OFString*)@"")];
 
+	if (parent != nil && parent->ns != nil && parentPrefix == nil)
+		defaultNS = parent->ns;
+	else if (parent != nil && parent->defaultNamespace != nil)
+		defaultNS = parent->defaultNamespace;
+	else
+		defaultNS = defaultNamespace;
+
 	i = 0;
 	length = [name cStringLength] + 3;
 	cString = [self allocMemoryWithSize: length];
@@ -405,9 +409,7 @@
 	/* Start of tag */
 	cString[i++] = '<';
 
-	if (prefix != nil && ![ns isEqual: defaultNS] &&
-	    (![ns isEqual: (parent != nil ? parent->ns : (OFString*)nil)] ||
-	    parentPrefix != nil)) {
+	if (prefix != nil && ![ns isEqual: defaultNS]) {
 		length += [prefix cStringLength] + 1;
 		@try {
 			cString = [self resizeMemory: cString
@@ -426,9 +428,8 @@
 	i += [name cStringLength];
 
 	/* xmlns if necessary */
-	if (ns != nil && prefix == nil && ![ns isEqual: defaultNS] &&
-	     (![ns isEqual: (parent != nil ? parent->ns : (OFString*)nil)] ||
-	     parentPrefix != nil)) {
+	if (prefix == nil && ((ns != nil && ![ns isEqual: defaultNS]) ||
+	    (ns == nil && defaultNS != nil))) {
 		length += [ns cStringLength] + 9;
 		@try {
 			cString = [self resizeMemory: cString
@@ -443,8 +444,6 @@
 		memcpy(cString + i, [ns cString], [ns cStringLength]);
 		i += [ns cStringLength];
 		cString[i++] = '\'';
-
-		defaultNS = ns;
 	}
 
 	/* Attributes */
