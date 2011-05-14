@@ -101,7 +101,7 @@ of_string_check_utf8(const char *string, size_t length)
 		}
 
 		/* We have at minimum a 2 byte character -> check next byte */
-		if (OF_UNLIKELY(length < i + 1 ||
+		if (OF_UNLIKELY(length <= i + 1 ||
 		    (string[i + 1] & 0xC0) != 0x80)) {
 			madvise((void*)string, length, MADV_NORMAL);
 			return -1;
@@ -114,7 +114,7 @@ of_string_check_utf8(const char *string, size_t length)
 		}
 
 		/* We have at minimum a 3 byte char -> check second next byte */
-		if (OF_UNLIKELY(length < i + 2 ||
+		if (OF_UNLIKELY(length <= i + 2 ||
 		    (string[i + 2] & 0xC0) != 0x80)) {
 			madvise((void*)string, length, MADV_NORMAL);
 			return -1;
@@ -127,7 +127,7 @@ of_string_check_utf8(const char *string, size_t length)
 		}
 
 		/* We have a 4 byte character -> check third next byte */
-		if (OF_UNLIKELY(length < i + 3 ||
+		if (OF_UNLIKELY(length <= i + 3 ||
 		    (string[i + 3] & 0xC0) != 0x80)) {
 			madvise((void*)string, length, MADV_NORMAL);
 			return -1;
@@ -708,7 +708,7 @@ of_unicode_string_length(const of_unichar_t *string)
 
 	@try {
 		OFString *component;
-		size_t len, i;
+		size_t i, length_;
 		va_list argumentsCopy;
 
 		length = [firstComponent cStringLength];
@@ -725,11 +725,11 @@ of_unicode_string_length(const of_unichar_t *string)
 		/* Calculate length */
 		va_copy(argumentsCopy, arguments);
 		while ((component = va_arg(argumentsCopy, OFString*)) != nil) {
-			len = [component cStringLength];
-			length += 1 + len;
+			length_ = [component cStringLength];
+			length += 1 + length_;
 
 			switch (of_string_check_utf8([component cString],
-			    len)) {
+			    length_)) {
 			case 1:
 				isUTF8 = YES;
 				break;
@@ -741,15 +741,15 @@ of_unicode_string_length(const of_unichar_t *string)
 
 		string = [self allocMemoryWithSize: length + 1];
 
-		len = [firstComponent cStringLength];
-		memcpy(string, [firstComponent cString], len);
-		i = len;
+		length_ = [firstComponent cStringLength];
+		memcpy(string, [firstComponent cString], length_);
+		i = length_;
 
 		while ((component = va_arg(arguments, OFString*)) != nil) {
-			len = [component cStringLength];
+			length_ = [component cStringLength];
 			string[i] = OF_PATH_DELIM;
-			memcpy(string + i + 1, [component cString], len);
-			i += len + 1;
+			memcpy(string + i + 1, [component cString], length_);
+			i += 1 + length_;
 		}
 
 		string[i] = '\0';
@@ -1276,22 +1276,22 @@ of_unicode_string_length(const of_unichar_t *string)
 
 - (BOOL)hasPrefix: (OFString*)prefix
 {
-	size_t len = [prefix cStringLength];
+	size_t length_ = [prefix cStringLength];
 
-	if (len > length)
+	if (length_ > length)
 		return NO;
 
-	return !memcmp(string, [prefix cString], len);
+	return !memcmp(string, [prefix cString], length_);
 }
 
 - (BOOL)hasSuffix: (OFString*)suffix
 {
-	size_t len = [suffix cStringLength];
+	size_t length_ = [suffix cStringLength];
 
-	if (len > length)
+	if (length_ > length)
 		return NO;
 
-	return !memcmp(string + (length - len), [suffix cString], len);
+	return !memcmp(string + (length - length_), [suffix cString], length_);
 }
 
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter
@@ -1458,44 +1458,45 @@ of_unicode_string_length(const of_unichar_t *string)
 
 - (intmax_t)decimalValue
 {
-	const char *str = string;
-	size_t len = length;
+	const char *string_ = string;
+	size_t length_ = length;
 	int i = 0;
 	intmax_t num = 0;
 	BOOL expectWhitespace = NO;
 
-	while (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r') {
-		str++;
-		len--;
+	while (*string_ == ' ' || *string_ == '\t' || *string_ == '\n' ||
+	    *string_ == '\r') {
+		string_++;
+		length_--;
 	}
 
-	if (str[0] == '-' || str[0] == '+')
+	if (string_[0] == '-' || string_[0] == '+')
 		i++;
 
-	for (; i < len; i++) {
+	for (; i < length_; i++) {
 		if (expectWhitespace) {
-			if (str[i] != ' ' && str[i] != '\t' &&
-			    str[i] != '\n' && str[i] != '\r')
+			if (string_[i] != ' ' && string_[i] != '\t' &&
+			    string_[i] != '\n' && string_[i] != '\r')
 				@throw [OFInvalidFormatException
 				    newWithClass: isa];
 			continue;
 		}
 
-		if (str[i] >= '0' && str[i] <= '9') {
+		if (string_[i] >= '0' && string_[i] <= '9') {
 			if (INTMAX_MAX / 10 < num ||
-			    INTMAX_MAX - num * 10 < str[i] - '0')
+			    INTMAX_MAX - num * 10 < string_[i] - '0')
 				@throw [OFOutOfRangeException
 				    newWithClass: isa];
 
-			num = (num * 10) + (str[i] - '0');
-		} else if (str[i] == ' ' || str[i] == '\t' ||
-		    str[i] == '\n' || str[i] == '\r')
+			num = (num * 10) + (string_[i] - '0');
+		} else if (string_[i] == ' ' || string_[i] == '\t' ||
+		    string_[i] == '\n' || string_[i] == '\r')
 			expectWhitespace = YES;
 		else
 			@throw [OFInvalidFormatException newWithClass: isa];
 	}
 
-	if (str[0] == '-')
+	if (string_[0] == '-')
 		num *= -1;
 
 	return num;
@@ -1503,56 +1504,58 @@ of_unicode_string_length(const of_unichar_t *string)
 
 - (uintmax_t)hexadecimalValue
 {
-	const char *str = string;
-	size_t len = length;
+	const char *string_ = string;
+	size_t length_ = length;
 	int i = 0;
 	uintmax_t num = 0;
 	BOOL expectWhitespace = NO, gotNumber = NO;
 
-	while (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r') {
-		str++;
-		len--;
+	while (*string_ == ' ' || *string_ == '\t' || *string_ == '\n' ||
+	    *string_ == '\r') {
+		string_++;
+		length_--;
 	}
 
-	if (len == 0)
+	if (length_ == 0)
 		return 0;
 
-	if (len >= 2 && str[0] == '0' && str[1] == 'x')
+	if (length_ >= 2 && string_[0] == '0' && string_[1] == 'x')
 		i = 2;
-	else if (len >= 1 && (str[0] == 'x' || str[0] == '$'))
+	else if (length_ >= 1 && (string_[0] == 'x' || string_[0] == '$'))
 		i = 1;
 
-	for (; i < len; i++) {
-		uintmax_t newnum;
+	for (; i < length_; i++) {
+		uintmax_t newNum;
 
 		if (expectWhitespace) {
-			if (str[i] != ' ' && str[i] != '\t' &&
-			    str[i] != '\n' && str[i] != '\r')
+			if (string_[i] != ' ' && string_[i] != '\t' &&
+			    string_[i] != '\n' && string_[i] != '\r')
 				@throw [OFInvalidFormatException
 				    newWithClass: isa];
 			continue;
 		}
 
-		if (str[i] >= '0' && str[i] <= '9') {
-			newnum = (num << 4) | (str[i] - '0');
+		if (string_[i] >= '0' && string_[i] <= '9') {
+			newNum = (num << 4) | (string_[i] - '0');
 			gotNumber = YES;
-		} else if (str[i] >= 'A' && str[i] <= 'F') {
-			newnum = (num << 4) | (str[i] - 'A' + 10);
+		} else if (string_[i] >= 'A' && string_[i] <= 'F') {
+			newNum = (num << 4) | (string_[i] - 'A' + 10);
 			gotNumber = YES;
-		} else if (str[i] >= 'a' && str[i] <= 'f') {
-			newnum = (num << 4) | (str[i] - 'a' + 10);
+		} else if (string_[i] >= 'a' && string_[i] <= 'f') {
+			newNum = (num << 4) | (string_[i] - 'a' + 10);
 			gotNumber = YES;
-		} else if (str[i] == 'h' || str[i] == ' ' || str[i] == '\t' ||
-		    str[i] == '\n' || str[i] == '\r') {
+		} else if (string_[i] == 'h' || string_[i] == ' ' ||
+		    string_[i] == '\t' || string_[i] == '\n' ||
+		    string_[i] == '\r') {
 			expectWhitespace = YES;
 			continue;
 		} else
 			@throw [OFInvalidFormatException newWithClass: isa];
 
-		if (newnum < num)
+		if (newNum < num)
 			@throw [OFOutOfRangeException newWithClass: isa];
 
-		num = newnum;
+		num = newNum;
 	}
 
 	if (!gotNumber)
@@ -1563,48 +1566,46 @@ of_unicode_string_length(const of_unichar_t *string)
 
 - (float)floatValue
 {
-	const char *str = string;
-	char *endPtr;
+	const char *string_ = string;
+	char *endPointer = NULL;
 	float value;
 
-	/* Don't depend on isspace and thus the used locale */
-	while (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r')
-		str++;
+	while (*string_ == ' ' || *string_ == '\t' || *string_ == '\n' ||
+	    *string_ == '\r')
+		string_++;
 
-	value = strtof(str, &endPtr);
+	value = strtof(string_, &endPointer);
 
 	/* Check if there are any invalid chars left */
-	if (endPtr != NULL) {
-		for (; *endPtr != '\0'; endPtr++)
-			if (*endPtr != ' ' && *endPtr != '\t' &&
-			    *endPtr != '\n' && *endPtr != '\r')
+	if (endPointer != NULL)
+		for (; *endPointer != '\0'; endPointer++)
+			if (*endPointer != ' ' && *endPointer != '\t' &&
+			    *endPointer != '\n' && *endPointer != '\r')
 				@throw [OFInvalidFormatException
 				    newWithClass: isa];
-	}
 
 	return value;
 }
 
 - (double)doubleValue
 {
-	const char *str = string;
-	char *endPtr;
+	const char *string_ = string;
+	char *endPointer = NULL;
 	double value;
 
-	/* Don't depend on isspace and thus the used locale */
-	while (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r')
-		str++;
+	while (*string_ == ' ' || *string_ == '\t' || *string_ == '\n' ||
+	    *string_ == '\r')
+		string_++;
 
-	value = strtod(str, &endPtr);
+	value = strtod(string_, &endPointer);
 
 	/* Check if there are any invalid chars left */
-	if (endPtr != NULL) {
-		for (; *endPtr != '\0'; endPtr++)
-			if (*endPtr != ' ' && *endPtr != '\t' &&
-			    *endPtr != '\n' && *endPtr != '\r')
+	if (endPointer != NULL)
+		for (; *endPointer != '\0'; endPointer++)
+			if (*endPointer != ' ' && *endPointer != '\t' &&
+			    *endPointer != '\n' && *endPointer != '\r')
 				@throw [OFInvalidFormatException
 				    newWithClass: isa];
-	}
 
 	return value;
 }
