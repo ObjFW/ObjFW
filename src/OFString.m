@@ -256,6 +256,17 @@ of_unicode_string_length(const of_unichar_t *string)
 	return (size_t)(string_ - string);
 }
 
+size_t
+of_utf16_string_length(const uint16_t *string)
+{
+	const uint16_t *string_ = string;
+
+	while (*string_ != 0)
+		string_++;
+
+	return (size_t)(string_ - string);
+}
+
 @implementation OFString
 + string
 {
@@ -305,6 +316,18 @@ of_unicode_string_length(const of_unichar_t *string)
 {
 	return [[[self alloc] initWithUnicodeString: string
 					     length: length] autorelease];
+}
+
++ stringWithUTF16String: (uint16_t*)string
+{
+	return [[[self alloc] initWithUTF16String: string] autorelease];
+}
+
++ stringWithUTF16String: (uint16_t*)string
+		 length: (size_t)length
+{
+	return [[[self alloc] initWithUTF16String: string
+					   length: length] autorelease];
 }
 
 + stringWithFormat: (OFString*)format, ...
@@ -583,6 +606,116 @@ of_unicode_string_length(const of_unichar_t *string)
 			size_t characterLen = of_string_unicode_to_utf8(
 			    (swap ? of_bswap32(string_[i]) : string_[i]),
 			    buffer);
+
+			switch (characterLen) {
+			case 1:
+				string[j++] = buffer[0];
+				break;
+			case 2:
+				isUTF8 = YES;
+				length++;
+
+				memcpy(string + j, buffer, 2);
+				j += 2;
+
+				break;
+			case 3:
+				isUTF8 = YES;
+				length += 2;
+
+				memcpy(string + j, buffer, 3);
+				j += 3;
+
+				break;
+			case 4:
+				isUTF8 = YES;
+				length += 3;
+
+				memcpy(string + j, buffer, 4);
+				j += 4;
+
+				break;
+			default:
+				@throw [OFInvalidEncodingException
+				    newWithClass: isa];
+			}
+		}
+
+		string[j] = '\0';
+
+		@try {
+			string = [self resizeMemory: string
+					     toSize: length + 1];
+		} @catch (OFOutOfMemoryException *e) {
+			/* We don't care, as we only tried to make it smaller */
+			[e release];
+		}
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithUTF16String: (uint16_t*)string_
+{
+	return [self initWithUTF16String: string_
+				  length: of_utf16_string_length(string_)];
+}
+
+- initWithUTF16String: (uint16_t*)string_
+	       length: (size_t)length_
+{
+	self = [super init];
+
+	@try {
+		char buffer[4];
+		size_t i, j = 0;
+		BOOL swap = NO;
+
+		if (*string_ == 0xFEFF) {
+			string_++;
+			length_--;
+		}
+
+		if (*string_ == 0xFFFE) {
+			swap = YES;
+			string_++;
+			length_--;
+		}
+
+		length = length_;
+		string = [self allocMemoryWithSize: (length * 4) + 1];
+
+		for (i = 0; i < length_; i++) {
+			of_unichar_t character =
+			    (swap ? of_bswap16(string_[i]) : string_[i]);
+			size_t characterLen;
+
+			/* Missed the high surrogate */
+			if ((character & 0xFC00) == 0xDC00)
+				@throw [OFInvalidEncodingException
+				    newWithClass: isa];
+
+			if ((character & 0xFC00) == 0xD800) {
+				uint16_t nextCharacter;
+
+				if (length <= i + 1)
+					@throw [OFInvalidEncodingException
+						newWithClass: isa];
+
+				nextCharacter = (swap
+				    ? of_bswap16(string_[i + 1])
+				    : string_[i + 1]);
+				character = (((character & 0x3FF) << 10) |
+				    (nextCharacter & 0x3FF)) + 0x10000;
+
+				i++;
+			}
+
+			characterLen = of_string_unicode_to_utf8(
+			    character, buffer);
 
 			switch (characterLen) {
 			case 1:

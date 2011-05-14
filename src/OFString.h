@@ -43,6 +43,7 @@ extern size_t of_string_utf8_to_unicode(const char*, size_t, of_unichar_t*);
 extern size_t of_string_position_to_index(const char*, size_t);
 extern size_t of_string_index_to_position(const char*, size_t, size_t);
 extern size_t of_unicode_string_length(const of_unichar_t*);
+extern size_t of_utf16_string_length(const uint16_t*);
 #ifdef __cplusplus
 }
 #endif
@@ -133,6 +134,25 @@ extern size_t of_unicode_string_length(const of_unichar_t*);
  */
 + stringWithUnicodeString: (of_unichar_t*)string
 		   length: (size_t)length;
+
+/**
+ * Creates a new OFString from a UTF-16 encoded string.
+ *
+ * \param string The UTF-16 string
+ * \return A new autoreleased OFString
+ */
++ stringWithUTF16String: (uint16_t*)string;
+
+/**
+ * Creates a new OFString from a UTF-16 encoded string with the specified
+ * length.
+ *
+ * \param string The UTF-16 string
+ * \param length The length of the unicode string
+ * \return A new autoreleased OFString
+ */
++ stringWithUTF16String: (uint16_t*)string
+		 length: (size_t)length;
 
 /**
  * Creates a new OFString from a format string.
@@ -264,6 +284,25 @@ extern size_t of_unicode_string_length(const of_unichar_t*);
  */
 - initWithUnicodeString: (of_unichar_t*)string
 		 length: (size_t)length;
+
+/**
+ * Initializes an already allocated OFString with a UTF-16 string.
+ *
+ * \param string The UTF-16 string
+ * \return An initialized OFString
+ */
+- initWithUTF16String: (uint16_t*)string;
+
+/**
+ * Initializes an already allocated OFString with a UTF-16 string with the
+ * specified length.
+ *
+ * \param string The UTF-16 string
+ * \param length The length of the UTF-16 string
+ * \return An initialized OFString
+ */
+- initWithUTF16String: (uint16_t*)string
+	       length: (size_t)length;
 
 /**
  * Initializes an already allocated OFString with a format string.

@@ -44,6 +44,13 @@ static of_unichar_t sucstr[] = {
 	0xFFFE0000, 0x66000000, 0xF6000000, 0xF6000000, 0x62000000, 0xE4000000,
 	0x72000000, 0x3AF00100, 0
 };
+static uint16_t utf16str[] = {
+	0xFEFF, 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0xD83C, 0xDC3A, 0
+};
+static uint16_t sutf16str[] = {
+	0xFFFE, 0x6600, 0xF600, 0xF600, 0x6200, 0xE400, 0x7200, 0x3CD8, 0x3ADC,
+	0
+};
 
 @interface EntityHandler: OFObject <OFStringXMLUnescapingDelegate>
 @end
@@ -141,6 +148,12 @@ static of_unichar_t sucstr[] = {
 	    (s[1] = [OFString stringWithUnicodeString: ucstr]) &&
 	    [s[1] isEqual: @"fööbär🀺"] &&
 	    (s[1] = [OFString stringWithUnicodeString: sucstr]) &&
+	    [s[1] isEqual: @"fööbär🀺"])
+
+	TEST(@"+[stringWithUTF16String:]",
+	    (s[1] = [OFString stringWithUTF16String: utf16str]) &&
+	    [s[1] isEqual: @"fööbär🀺"] &&
+	    (s[1] = [OFString stringWithUTF16String: sutf16str]) &&
 	    [s[1] isEqual: @"fööbär🀺"])
 
 	TEST(@"+[stringWithContentsOfFile:encoding]", (s[1] = [OFString
