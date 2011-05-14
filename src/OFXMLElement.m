@@ -369,9 +369,6 @@
 	}
 
 	pool = [[OFAutoreleasePool alloc] init];
-	def_ns = (defaultNamespace != nil
-	    ? defaultNamespace
-	    : (parent != nil ? parent->defaultNamespace : (OFString*)nil));
 
 	if (parent != nil && parent->namespaces != nil) {
 		OFEnumerator *key_enum = [namespaces keyEnumerator];
@@ -392,6 +389,13 @@
 	parent_prefix = [all_namespaces objectForKey:
 	    (parent != nil && parent->ns != nil ? parent->ns : (OFString*)@"")];
 
+	if (parent != nil && parent->ns != nil && parent_prefix == nil)
+		def_ns = parent->ns;
+	else if (parent != nil && parent->defaultNamespace != nil)
+		def_ns = parent->defaultNamespace;
+	else
+		def_ns = defaultNamespace;
+
 	i = 0;
 	len = [name cStringLength] + 3;
 	str_c = [self allocMemoryWithSize: len];
@@ -399,9 +403,7 @@
 	/* Start of tag */
 	str_c[i++] = '<';
 
-	if (prefix != nil && ![ns isEqual: def_ns] &&
-	    (![ns isEqual: (parent != nil ? parent->ns : (OFString*)nil)] ||
-	    parent_prefix != nil)) {
+	if (prefix != nil && ![ns isEqual: def_ns]) {
 		len += [prefix cStringLength] + 1;
 		@try {
 			str_c = [self resizeMemory: str_c
@@ -421,9 +423,8 @@
 	i += [name cStringLength];
 
 	/* xmlns if necessary */
-	if (ns != nil && prefix == nil && ![ns isEqual: def_ns] &&
-	     (![ns isEqual: (parent != nil ? parent->ns : (OFString*)nil)] ||
-	     parent_prefix != nil)) {
+	if (prefix == nil && ((ns != nil && ![ns isEqual: def_ns]) ||
+	    (ns == nil && def_ns != nil))) {
 		len += [ns cStringLength] + 9;
 
 		@try {
@@ -439,8 +440,6 @@
 		memcpy(str_c + i, [ns cString], [ns cStringLength]);
 		i += [ns cStringLength];
 		str_c[i++] = '\'';
-
-		def_ns = ns;
 	}
 
 	/* Attributes */

@@ -327,7 +327,7 @@
       forNamespace: (OFString*)ns;
 
 /**
- * Sets the default namespace for the element.
+ * Sets the default namespace for the element to be used if there is no parent.
  *
  * \param ns The default namespace for the element
  */
