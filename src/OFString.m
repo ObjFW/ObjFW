@@ -250,10 +250,10 @@ of_unicode_string_length(const of_unichar_t *string)
 {
 	const of_unichar_t *string_ = string;
 
-	while (*string_ != '\0')
+	while (*string_ != 0)
 		string_++;
 
-	return (uintptr_t)string_ - (uintptr_t)string;
+	return (size_t)(string_ - string);
 }
 
 @implementation OFString
@@ -562,7 +562,7 @@ of_unicode_string_length(const of_unichar_t *string)
 
 	@try {
 		char buffer[4];
-		size_t i = 0;
+		size_t i, j = 0;
 		BOOL swap = NO;
 
 		if (*string_ == 0xFEFF) {
@@ -577,64 +577,56 @@ of_unicode_string_length(const of_unichar_t *string)
 		}
 
 		length = length_;
-		string = [self allocMemoryWithSize: length + 1];
+		string = [self allocMemoryWithSize: (length * 4) + 1];
 
-		while (*string_ != '\0') {
-			size_t characterLen;
-
-			if (swap)
-				characterLen = of_string_unicode_to_utf8(
-				    of_bswap32(*string_), buffer);
-			else
-				characterLen = of_string_unicode_to_utf8(
-				    *string_, buffer);
+		for (i = 0; i < length_; i++) {
+			size_t characterLen = of_string_unicode_to_utf8(
+			    (swap ? of_bswap32(string_[i]) : string_[i]),
+			    buffer);
 
 			switch (characterLen) {
 			case 1:
-				string[i++] = buffer[0];
+				string[j++] = buffer[0];
 				break;
 			case 2:
 				isUTF8 = YES;
-
 				length++;
-				string = [self resizeMemory: string
-						     toSize: length + 1];
 
-				memcpy(string + i, buffer, 2);
-				i += 2;
+				memcpy(string + j, buffer, 2);
+				j += 2;
 
 				break;
 			case 3:
 				isUTF8 = YES;
-
 				length += 2;
-				string = [self resizeMemory: string
-						     toSize: length + 1];
 
-				memcpy(string + i, buffer, 3);
-				i += 3;
+				memcpy(string + j, buffer, 3);
+				j += 3;
 
 				break;
 			case 4:
 				isUTF8 = YES;
-
 				length += 3;
-				string = [self resizeMemory: string
-						     toSize: length + 1];
 
-				memcpy(string + i, buffer, 4);
-				i += 4;
+				memcpy(string + j, buffer, 4);
+				j += 4;
 
 				break;
 			default:
 				@throw [OFInvalidEncodingException
 				    newWithClass: isa];
 			}
-
-			string_++;
 		}
 
-		string[i] = '\0';
+		string[j] = '\0';
+
+		@try {
+			string = [self resizeMemory: string
+					     toSize: length + 1];
+		} @catch (OFOutOfMemoryException *e) {
+			/* We don't care, as we only tried to make it smaller */
+			[e release];
+		}
 	} @catch (id e) {
 		[self release];
 		@throw e;
