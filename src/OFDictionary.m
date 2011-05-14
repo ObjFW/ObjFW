@@ -22,6 +22,7 @@
 #import "OFEnumerator.h"
 #import "OFArray.h"
 #import "OFString.h"
+#import "OFXMLElement.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFEnumerationMutationException.h"
@@ -757,57 +758,51 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	return ret;
 }
 
-- (OFString*)stringBySerializing
+- (OFXMLElement*)XMLElementBySerializing
 {
-	OFMutableString *ret;
 	OFAutoreleasePool *pool, *pool2;
+	OFXMLElement *element;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
-	id key, object;
-	size_t i;
+	id <OFSerialization> key, object;
 
-	if (count == 0) {
-		if ([self isKindOfClass: [OFMutableDictionary class]])
-			return @"(mutable,0){}";
-		else
-			return @"(0){}";
-	}
+	element = [OFXMLElement elementWithName: @"object"
+				      namespace: OF_SERIALIZATION_NS];
 
-	if ([self isKindOfClass: [OFMutableDictionary class]])
-		ret = [OFMutableString stringWithFormat: @"(mutable,%zd){\n",
-							 count];
-	else
-		ret = [OFMutableString stringWithFormat: @"(%zd){\n", count];
 	pool = [[OFAutoreleasePool alloc] init];
+	[element addAttributeWithName: @"class"
+			  stringValue: [self className]];
+
 	keyEnumerator = [self keyEnumerator];
 	objectEnumerator = [self objectEnumerator];
 
-	i = 0;
 	pool2 = [[OFAutoreleasePool alloc] init];
-
 	while ((key = [keyEnumerator nextObject]) != nil &&
-	    (object = [objectEnumerator nextObject]) != nil) {
-		[ret appendString: [key stringBySerializing]];
-		[ret appendString: @" = "];
-		[ret appendString: [object stringBySerializing]];
+	       (object = [objectEnumerator nextObject]) != nil) {
+		OFXMLElement *pair, *keyElement, *valueElement;
 
-		if (++i < count)
-			[ret appendString: @",\n"];
+		pair = [OFXMLElement elementWithName: @"pair"
+					   namespace: OF_SERIALIZATION_NS];
+
+		keyElement = [OFXMLElement
+		    elementWithName: @"key"
+			  namespace: OF_SERIALIZATION_NS];
+		[keyElement addChild: [key XMLElementBySerializing]];
+		[pair addChild: keyElement];
+
+		valueElement = [OFXMLElement
+		    elementWithName: @"value"
+			  namespace: OF_SERIALIZATION_NS];
+		[valueElement addChild: [object XMLElementBySerializing]];
+		[pair addChild: valueElement];
+
+		[element addChild: pair];
 
 		[pool2 releaseObjects];
 	}
-	[ret replaceOccurrencesOfString: @"\n"
-			     withString: @"\n\t"];
-	[ret appendString: @"\n}"];
 
 	[pool release];
 
-	/*
-	 * Class swizzle the string to be immutable. We declared the return type
-	 * to be OFString*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	ret->isa = [OFString class];
-	return ret;
+	return element;
 }
 @end
 

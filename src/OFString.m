@@ -36,6 +36,7 @@
 #import "OFFile.h"
 #import "OFURL.h"
 #import "OFHTTPRequest.h"
+#import "OFXMLElement.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFHTTPRequestFailedException.h"
@@ -1055,33 +1056,27 @@ of_unicode_string_length(const of_unichar_t *string)
 	return [[self copy] autorelease];
 }
 
-- (OFString*)stringBySerializing
+- (OFXMLElement*)XMLElementBySerializing
 {
-	OFMutableString *serialization = [[self mutableCopy] autorelease];
-	[serialization replaceOccurrencesOfString: @"\\"
-				       withString: @"\\\\"];
-	[serialization replaceOccurrencesOfString: @"\""
-				       withString: @"\\\""];
-	[serialization replaceOccurrencesOfString: @"\n"
-				       withString: @"\\n\"\n    \""];
-	[serialization replaceOccurrencesOfString: @"\r"
-				       withString: @"\\r"];
-	[serialization replaceOccurrencesOfString: @"\t"
-				       withString: @"\\t"];
+	OFAutoreleasePool *pool;
+	OFXMLElement *element;
 
-	if ([self isKindOfClass: [OFMutableString class]])
-		[serialization prependString: @"(mutable)\""];
+	element = [OFXMLElement elementWithName: @"object"
+				      namespace: OF_SERIALIZATION_NS
+				    stringValue: self];
+
+	pool = [[OFAutoreleasePool alloc] init];
+
+	if ([self isKindOfClass: [OFConstantString class]])
+		[element addAttributeWithName: @"class"
+				  stringValue: @"OFString"];
 	else
-		[serialization prependString: @"\""];
-	[serialization appendString: @"\""];
+		[element addAttributeWithName: @"class"
+				  stringValue: [self className]];
 
-	/*
-	 * Class swizzle the string to be immutable. We declared the return type
-	 * to be OFString*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	serialization->isa = [OFString class];
-	return serialization;
+	[pool release];
+
+	return element;
 }
 
 - (of_unichar_t)characterAtIndex: (size_t)index

@@ -20,6 +20,7 @@
 
 #import "OFList.h"
 #import "OFString.h"
+#import "OFXMLElement.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFEnumerationMutationException.h"
@@ -323,60 +324,48 @@
 	return ret;
 }
 
-- (OFString*)stringBySerializing
+- (OFXMLElement*)XMLElementBySerializing
 {
-	OFMutableString *ret;
 	OFAutoreleasePool *pool;
+	OFXMLElement *element;
 	of_list_object_t *iter;
 
-	if (count == 0)
-		return @"(list,mutable)[]";
+	element = [OFXMLElement elementWithName: @"object"
+				      namespace: OF_SERIALIZATION_NS];
 
-	ret = [OFMutableString stringWithString: @"(list,mutable)[\n"];
 	pool = [[OFAutoreleasePool alloc] init];
+	[element addAttributeWithName: @"class"
+			  stringValue: [self className]];
 
 	for (iter = firstListObject; iter != NULL; iter = iter->next) {
-		[ret appendString: [iter->object stringBySerializing]];
-
-		if (iter->next != NULL)
-			[ret appendString: @",\n"];
-
+		[element addChild: [iter->object XMLElementBySerializing]];
 		[pool releaseObjects];
 	}
-	[ret replaceOccurrencesOfString: @"\n"
-			     withString: @"\n\t"];
-	[ret appendString: @"\n]"];
 
 	[pool release];
 
-	/*
-	 * Class swizzle the string to be immutable. We declared the return type
-	 * to be OFString*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	ret->isa = [OFString class];
-	return ret;
+	return element;
 }
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
 			   objects: (id*)objects
 			     count: (int)count_
 {
-	of_list_object_t **list_obj = (of_list_object_t**)state->extra;
+	of_list_object_t **listObject = (of_list_object_t**)state->extra;
 
 	state->itemsPtr = objects;
 	state->mutationsPtr = &mutations;
 
 	if (state->state == 0) {
-		*list_obj = firstListObject;
+		*listObject = firstListObject;
 		state->state = 1;
 	}
 
-	if (*list_obj == NULL)
+	if (*listObject == NULL)
 		return 0;
 
-	objects[0] = (*list_obj)->object;
-	*list_obj = (*list_obj)->next;
+	objects[0] = (*listObject)->object;
+	*listObject = (*listObject)->next;
 	return 1;
 }
 

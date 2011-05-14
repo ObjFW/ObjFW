@@ -19,6 +19,7 @@
 #import "OFXMLAttribute.h"
 #import "OFString.h"
 #import "OFDictionary.h"
+#import "OFXMLElement.h"
 #import "OFAutoreleasePool.h"
 
 @implementation OFXMLAttribute
@@ -73,34 +74,35 @@
 	return [[stringValue copy] autorelease];
 }
 
-- (OFString*)stringBySerializing
+- (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFMutableDictionary *dictionary = [OFMutableDictionary dictionary];
-	OFString *ret;
+	OFAutoreleasePool *pool;
+	OFXMLElement *element;
 
-	if (name != nil)
-		[dictionary setObject: name
-			       forKey: @"name"];
+	element = [OFXMLElement elementWithName: @"object"
+				      namespace: OF_SERIALIZATION_NS];
+
+	pool = [[OFAutoreleasePool alloc] init];
+
+	[element addAttributeWithName: @"class"
+			  stringValue: [self className]];
+
+	[element addChild:
+	    [OFXMLElement elementWithName: @"name"
+				namespace: OF_SERIALIZATION_NS
+			      stringValue: name]];
 	if (ns != nil)
-		[dictionary setObject: ns
-			       forKey: @"namespace"];
-	if (stringValue != nil)
-		[dictionary setObject: stringValue
-			       forKey: @"stringValue"];
+		[element addChild:
+		    [OFXMLElement elementWithName: @"namespace"
+					namespace: OF_SERIALIZATION_NS
+				      stringValue: ns]];
+	[element addChild:
+	    [OFXMLElement elementWithName: @"stringValue"
+				namespace: OF_SERIALIZATION_NS
+			      stringValue: stringValue]];
 
-	dictionary->isa = [OFDictionary class];
+	[pool release];
 
-	ret = [[OFString alloc]
-	    initWithFormat: @"(class=OFXMLElement,version=0)<%@>",
-			    [dictionary stringBySerializing]];
-
-	@try {
-		[pool release];
-	} @finally {
-		[ret autorelease];
-	}
-
-	return ret;
+	return element;
 }
 @end

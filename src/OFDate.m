@@ -25,7 +25,7 @@
 #import "OFDate.h"
 #import "OFString.h"
 #import "OFDictionary.h"
-#import "OFNumber.h"
+#import "OFXMLElement.h"
 #import "OFAutoreleasePool.h"
 #ifdef OF_THREADS
 # import "OFThread.h"
@@ -291,23 +291,32 @@ static OFMutex *mutex;
 	return [self dateStringWithFormat: @"%Y-%m-%dT%H:%M:%SZ"];
 }
 
-- (OFString*)stringBySerializing
+- (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFDictionary *dictionary = [OFDictionary dictionaryWithKeysAndObjects:
-	    @"seconds", [OFNumber numberWithInt64: seconds],
-	    @"microseconds", [OFNumber numberWithUInt32: microseconds], nil];
-	OFString *ret = [[OFString alloc]
-	    initWithFormat: @"(class=OFDate,version=0)<%@>",
-			    [dictionary stringBySerializing]];
+	OFAutoreleasePool *pool;
+	OFXMLElement *element;
 
-	@try {
-		[pool release];
-	} @finally {
-		[ret autorelease];
-	}
+	element = [OFXMLElement elementWithName: @"object"
+				      namespace: OF_SERIALIZATION_NS];
 
-	return ret;
+	pool = [[OFAutoreleasePool alloc] init];
+	[element addAttributeWithName: @"class"
+			  stringValue: [self className]];
+
+	[element addChild:
+	    [OFXMLElement elementWithName: @"seconds"
+				namespace: OF_SERIALIZATION_NS
+			      stringValue: [OFString stringWithFormat:
+					       @"%" PRId64, seconds]]];
+	[element addChild:
+	    [OFXMLElement elementWithName: @"microseconds"
+				namespace: OF_SERIALIZATION_NS
+			      stringValue: [OFString stringWithFormat:
+					       @"%" PRIu32, microseconds]]];
+
+	[pool release];
+
+	return element;
 }
 
 - (uint32_t)microsecond

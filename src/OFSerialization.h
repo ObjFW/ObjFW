@@ -15,13 +15,18 @@
  */
 
 @class OFString;
+@class OFXMLElement;
+
+#define OF_SERIALIZATION_NS @"https://webkeks.org/objfw/serialization"
 
 /**
  * \brief A protocol for serializing objects.
  */
 @protocol OFSerialization <OFObject>
 /**
- * \brief Serializes the object into a string.
+ * \brief Serializes the object into an XML element.
+ *
+ * \return The object serialized into an XML element
  */
-- (OFString*)stringBySerializing;
+- (OFXMLElement*)XMLElementBySerializing;
 @end

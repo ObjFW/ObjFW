@@ -21,6 +21,7 @@
 #import "OFArray.h"
 #import "OFDataArray.h"
 #import "OFString.h"
+#import "OFXMLElement.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFEnumerationMutationException.h"
@@ -432,49 +433,28 @@
 	return ret;
 }
 
-- (OFString*)stringBySerializing
+- (OFXMLElement*)XMLElementBySerializing
 {
 	OFAutoreleasePool *pool;
-	OFMutableString *ret;
-	OFObject <OFSerialization> **cArray;
-	size_t i, count;
+	OFXMLElement *element;
+	id <OFSerialization> *cArray = [array cArray];
+	size_t i, count = [array count];
 
-	if ([array count] == 0) {
-		if ([self isKindOfClass: [OFMutableArray class]])
-			return @"(mutable,0)[]";
-		else
-			return @"(0)[]";
-	}
+	element = [OFXMLElement elementWithName: @"object"
+				      namespace: OF_SERIALIZATION_NS];
 
-	cArray = [array cArray];
-	count = [array count];
-	if ([self isKindOfClass: [OFMutableArray class]])
-		ret = [OFMutableString stringWithFormat: @"(mutable,%zd)[\n",
-							 count];
-	else
-		ret = [OFMutableString stringWithFormat: @"(%zd)[\n", count];
 	pool = [[OFAutoreleasePool alloc] init];
+	[element addAttributeWithName: @"class"
+			  stringValue: [self className]];
 
-	for (i = 0; i < count - 1; i++) {
-		[ret appendString: [cArray[i] stringBySerializing]];
-		[ret appendString: @",\n"];
-
+	for (i = 0; i < count; i++) {
+		[element addChild: [cArray[i] XMLElementBySerializing]];
 		[pool releaseObjects];
 	}
-	[ret appendString: [cArray[i] stringBySerializing]];
-	[ret replaceOccurrencesOfString: @"\n"
-			     withString: @"\n\t"];
-	[ret appendString: @"\n]"];
 
 	[pool release];
 
-	/*
-	 * Class swizzle the string to be immutable. We declared the return type
-	 * to be OFString*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	ret->isa = [OFString class];
-	return ret;
+	return element;
 }
 
 - (void)makeObjectsPerformSelector: (SEL)selector

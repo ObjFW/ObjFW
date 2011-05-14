@@ -568,53 +568,90 @@
 	return [self XMLString];
 }
 
-- (OFString*)stringBySerializing
+- (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFMutableDictionary *dictionary = [OFMutableDictionary dictionary];
-	OFString *ret;
+	OFAutoreleasePool *pool;
+	OFXMLElement *element;
+
+	element = [OFXMLElement elementWithName: @"object"
+				      namespace: OF_SERIALIZATION_NS];
+
+	pool = [[OFAutoreleasePool alloc] init];
+
+	[element addAttributeWithName: @"class"
+			  stringValue: [self className]];
 
 	if (name != nil)
-		[dictionary setObject: name
-			       forKey: @"name"];
+		[element addChild:
+		    [OFXMLElement elementWithName: @"name"
+					namespace: OF_SERIALIZATION_NS
+				      stringValue: name]];
+
 	if (ns != nil)
-		[dictionary setObject: ns
-			       forKey: @"namespace"];
+		[element addChild:
+		    [OFXMLElement elementWithName: @"namespace"
+					namespace: OF_SERIALIZATION_NS
+				      stringValue: ns]];
+
 	if (defaultNamespace != nil)
-		[dictionary setObject: defaultNamespace
-			       forKey: @"defaultNamespace"];
-	if (attributes != nil)
-		[dictionary setObject: attributes
-			       forKey: @"attributes"];
-	if (namespaces != nil)
-		[dictionary setObject: namespaces
-			       forKey: @"namespaces"];
-	if (children != nil)
-		[dictionary setObject: children
-			       forKey: @"children"];
-	if (characters != nil)
-		[dictionary setObject: characters
-			       forKey: @"characters"];
-	if (CDATA != nil)
-		[dictionary setObject: CDATA
-			       forKey: @"CDATA"];
-	if (comment != nil)
-		[dictionary setObject: comment
-			       forKey: @"comment"];
+		[element addChild:
+		    [OFXMLElement elementWithName: @"defaultNamespace"
+					namespace: OF_SERIALIZATION_NS
+				      stringValue: defaultNamespace]];
 
-	dictionary->isa = [OFDictionary class];
+	if (attributes != nil) {
+		OFXMLElement *attributesElement;
 
-	ret = [[OFString alloc]
-	    initWithFormat: @"(class=OFXMLElement,version=0)<%@>",
-			    [dictionary stringBySerializing]];
-
-	@try {
-		[pool release];
-	} @finally {
-		[ret autorelease];
+		attributesElement =
+		    [OFXMLElement elementWithName: @"attributes"
+					namespace: OF_SERIALIZATION_NS];
+		[attributesElement addChild:
+		    [attributes XMLElementBySerializing]];
+		[element addChild: attributesElement];
 	}
 
-	return ret;
+	if (namespaces != nil) {
+		OFXMLElement *namespacesElement;
+
+		namespacesElement =
+		    [OFXMLElement elementWithName: @"namespaces"
+					namespace: OF_SERIALIZATION_NS];
+		[namespacesElement addChild:
+		    [namespaces XMLElementBySerializing]];
+		[element addChild: namespacesElement];
+	}
+
+	if (children != nil) {
+		OFXMLElement *childrenElement;
+
+		childrenElement =
+		    [OFXMLElement elementWithName: @"children"
+					namespace: OF_SERIALIZATION_NS];
+		[childrenElement addChild: [children XMLElementBySerializing]];
+		[element addChild: childrenElement];
+	}
+
+	if (characters != nil)
+		[element addChild:
+		    [OFXMLElement elementWithName: @"characters"
+					namespace: OF_SERIALIZATION_NS
+				      stringValue: characters]];
+
+	if (CDATA != nil)
+		[element addChild:
+		    [OFXMLElement elementWithName: @"CDATA"
+					namespace: OF_SERIALIZATION_NS
+				      stringValue: CDATA]];
+
+	if (comment != nil)
+		[element addChild:
+		    [OFXMLElement elementWithName: @"comment"
+					namespace: OF_SERIALIZATION_NS
+				      stringValue: comment]];
+
+	[pool release];
+
+	return element;
 }
 
 - (void)addAttribute: (OFXMLAttribute*)attribute

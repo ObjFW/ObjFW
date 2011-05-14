@@ -23,6 +23,7 @@
 #import "OFURL.h"
 #import "OFString.h"
 #import "OFArray.h"
+#import "OFXMLElement.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"
@@ -530,19 +531,22 @@ resolve_relative_path(OFString *path)
 	return [self string];
 }
 
-- (OFString*)stringBySerializing
+- (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFString *ret = [[OFString alloc]
-	    initWithFormat: @"(class=OFURL,version=0)<%@>",
-			    [[self string] stringBySerializing]];
+	OFAutoreleasePool *pool;
+	OFXMLElement *element;
 
-	@try {
-		[pool release];
-	} @finally {
-		[ret autorelease];
-	}
+	element = [OFXMLElement elementWithName: @"object"
+				      namespace: OF_SERIALIZATION_NS];
 
-	return ret;
+	pool = [[OFAutoreleasePool alloc] init];
+
+	[element addAttributeWithName: @"class"
+			  stringValue: [self className]];
+	[element setStringValue: [self string]];
+
+	[pool release];
+
+	return element;
 }
 @end
