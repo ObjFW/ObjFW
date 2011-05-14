@@ -119,7 +119,8 @@ static OFString *module = @"OFXMLElement";
 
 	TEST(@"+[elementWithXMLString:] and -[stringValue]",
 	    [[[OFXMLElement elementWithXMLString:
-	    @"<x>foo<![CDATA[bar]]><y>b<!-- fooo -->az</y>qux</x>"] stringValue]
+	    @"<?xml version='1.0' encoding='UTF-8'?>\r\n<x>foo<![CDATA[bar]]>"
+	    @"<y>b<!-- fooo -->az</y>qux</x>"] stringValue]
 	    isEqual: @"foobarbazqux"])
 
 	TEST(@"-[elementsForName:namespace:]",

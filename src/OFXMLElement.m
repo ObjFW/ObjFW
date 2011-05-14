@@ -44,7 +44,14 @@
 - (void)elementBuilder: (OFXMLElementBuilder*)builder
        didBuildElement: (OFXMLElement*)elem
 {
-	element = [elem retain];
+	/*
+	 * Make sure we don't take whitespaces before or after the root element
+	 * into account.
+	 */
+	if ([elem name] != nil) {
+		assert(element == nil);
+		element = [elem retain];
+	}
 }
 
 - (void)dealloc
