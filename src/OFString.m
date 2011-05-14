@@ -99,7 +99,7 @@ of_string_check_utf8(const char *str, size_t len)
 		}
 
 		/* We have at minimum a 2 byte character -> check next byte */
-		if (OF_UNLIKELY(len < i + 1 || (str[i + 1] & 0xC0) != 0x80)) {
+		if (OF_UNLIKELY(len <= i + 1 || (str[i + 1] & 0xC0) != 0x80)) {
 			madvise((void*)str, len, MADV_NORMAL);
 			return -1;
 		}
@@ -111,7 +111,7 @@ of_string_check_utf8(const char *str, size_t len)
 		}
 
 		/* We have at minimum a 3 byte char -> check second next byte */
-		if (OF_UNLIKELY(len < i + 2 || (str[i + 2] & 0xC0) != 0x80)) {
+		if (OF_UNLIKELY(len <= i + 2 || (str[i + 2] & 0xC0) != 0x80)) {
 			madvise((void*)str, len, MADV_NORMAL);
 			return -1;
 		}
@@ -123,7 +123,7 @@ of_string_check_utf8(const char *str, size_t len)
 		}
 
 		/* We have a 4 byte character -> check third next byte */
-		if (OF_UNLIKELY(len < i + 3 || (str[i + 3] & 0xC0) != 0x80)) {
+		if (OF_UNLIKELY(len <= i + 3 || (str[i + 3] & 0xC0) != 0x80)) {
 			madvise((void*)str, len, MADV_NORMAL);
 			return -1;
 		}
