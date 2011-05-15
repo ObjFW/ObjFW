@@ -58,6 +58,14 @@ typedef struct of_range_t {
 	size_t length;
 } of_range_t;
 
+/**
+ * \brief An enum for storing endianess.
+ */
+typedef enum of_endianess_t {
+	OF_ENDIANESS_BIG_ENDIAN,
+	OF_ENDIANESS_LITTLE_ENDIAN
+} of_endianess_t;
+
 @class OFString;
 
 /**

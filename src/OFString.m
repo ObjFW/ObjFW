@@ -312,9 +312,25 @@ of_utf16_string_length(const uint16_t *string)
 }
 
 + stringWithUnicodeString: (of_unichar_t*)string
+		byteOrder: (of_endianess_t)byteOrder
+{
+	return [[[self alloc] initWithUnicodeString: string
+					  byteOrder: byteOrder] autorelease];
+}
+
++ stringWithUnicodeString: (of_unichar_t*)string
 		   length: (size_t)length
 {
 	return [[[self alloc] initWithUnicodeString: string
+					     length: length] autorelease];
+}
+
++ stringWithUnicodeString: (of_unichar_t*)string
+		byteOrder: (of_endianess_t)byteOrder
+		   length: (size_t)length
+{
+	return [[[self alloc] initWithUnicodeString: string
+					  byteOrder: byteOrder
 					     length: length] autorelease];
 }
 
@@ -324,9 +340,25 @@ of_utf16_string_length(const uint16_t *string)
 }
 
 + stringWithUTF16String: (uint16_t*)string
+	      byteOrder: (of_endianess_t)byteOrder
+{
+	return [[[self alloc] initWithUTF16String: string
+					byteOrder: byteOrder] autorelease];
+}
+
++ stringWithUTF16String: (uint16_t*)string
 		 length: (size_t)length
 {
 	return [[[self alloc] initWithUTF16String: string
+					   length: length] autorelease];
+}
+
++ stringWithUTF16String: (uint16_t*)string
+	      byteOrder: (of_endianess_t)byteOrder
+		 length: (size_t)length
+{
+	return [[[self alloc] initWithUTF16String: string
+					byteOrder: byteOrder
 					   length: length] autorelease];
 }
 
@@ -575,10 +607,28 @@ of_utf16_string_length(const uint16_t *string)
 - initWithUnicodeString: (of_unichar_t*)string_
 {
 	return [self initWithUnicodeString: string_
+				 byteOrder: OF_ENDIANESS_NATIVE
 				    length: of_unicode_string_length(string_)];
 }
 
 - initWithUnicodeString: (of_unichar_t*)string_
+	      byteOrder: (of_endianess_t)byteOrder
+{
+	return [self initWithUnicodeString: string_
+				 byteOrder: byteOrder
+				    length: of_unicode_string_length(string_)];
+}
+
+- initWithUnicodeString: (of_unichar_t*)string_
+		 length: (size_t)length_
+{
+	return [self initWithUnicodeString: string_
+				 byteOrder: OF_ENDIANESS_NATIVE
+				    length: length_];
+}
+
+- initWithUnicodeString: (of_unichar_t*)string_
+	      byteOrder: (of_endianess_t)byteOrder
 		 length: (size_t)length_
 {
 	self = [super init];
@@ -588,16 +638,15 @@ of_utf16_string_length(const uint16_t *string)
 		size_t i, j = 0;
 		BOOL swap = NO;
 
-		if (*string_ == 0xFEFF) {
+		if (length_ > 0 && *string_ == 0xFEFF) {
 			string_++;
 			length_--;
-		}
-
-		if (*string_ == 0xFFFE0000) {
+		} else if (length_ > 0 && *string_ == 0xFFFE0000) {
 			swap = YES;
 			string_++;
 			length_--;
-		}
+		} else if (byteOrder != OF_ENDIANESS_NATIVE)
+			swap = YES;
 
 		length = length_;
 		string = [self allocMemoryWithSize: (length * 4) + 1];
@@ -661,10 +710,28 @@ of_utf16_string_length(const uint16_t *string)
 - initWithUTF16String: (uint16_t*)string_
 {
 	return [self initWithUTF16String: string_
+			       byteOrder: OF_ENDIANESS_NATIVE
 				  length: of_utf16_string_length(string_)];
 }
 
 - initWithUTF16String: (uint16_t*)string_
+	    byteOrder: (of_endianess_t)byteOrder
+{
+	return [self initWithUTF16String: string_
+			       byteOrder: byteOrder
+				  length: of_utf16_string_length(string_)];
+}
+
+- initWithUTF16String: (uint16_t*)string_
+	       length: (size_t)length_
+{
+	return [self initWithUTF16String: string_
+			       byteOrder: OF_ENDIANESS_NATIVE
+				  length: length_];
+}
+
+- initWithUTF16String: (uint16_t*)string_
+	    byteOrder: (of_endianess_t)byteOrder
 	       length: (size_t)length_
 {
 	self = [super init];
@@ -674,16 +741,15 @@ of_utf16_string_length(const uint16_t *string)
 		size_t i, j = 0;
 		BOOL swap = NO;
 
-		if (*string_ == 0xFEFF) {
+		if (length_ > 0 && *string_ == 0xFEFF) {
 			string_++;
 			length_--;
-		}
-
-		if (*string_ == 0xFFFE) {
+		} else if (length_ > 0 && *string_ == 0xFFFE) {
 			swap = YES;
 			string_++;
 			length_--;
-		}
+		} else if (byteOrder != OF_ENDIANESS_NATIVE)
+			swap = YES;
 
 		length = length_;
 		string = [self allocMemoryWithSize: (length * 4) + 1];
