@@ -501,7 +501,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		void *_OFConstantStringClassReference;
 	], [
 		OFConstantString *test = @"";
-		test++; /* Get rid of unused variable warning */
+		(void)test; /* Get rid of unused variable warning */
 	], [
 		AC_MSG_RESULT(no)
 	], [
@@ -523,7 +523,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		} object;
 	], [
 		OFObject *test = (OFObject*)&object;
-		test++; /* Get rid of unused variable warning */
+		(void)test; /* Get rid of unused variable warning */
 	], [
 		AC_MSG_RESULT(no)
 	], [
