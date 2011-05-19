@@ -29,17 +29,7 @@
 @implementation OFMutableArray
 - copy
 {
-	OFArray *copy = [[OFArray alloc] init];
-	id *cArray = [array cArray];
-	size_t i, count = [array count];
-
-	[copy->array addNItems: count
-		    fromCArray: cArray];
-
-	for (i = 0; i < count; i++)
-		[cArray[i] retain];
-
-	return copy;
+	return [[OFArray alloc] initWithArray: self];
 }
 
 - (void)addObject: (id)object

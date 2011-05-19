@@ -53,6 +53,11 @@
 	return ret;
 }
 
++ arrayWithArray: (OFArray*)array
+{
+	return [[[self alloc] initWithArray: array] autorelease];
+}
+
 + arrayWithCArray: (id*)objects
 {
 	return [[[self alloc] initWithCArray: objects] autorelease];
@@ -123,6 +128,42 @@
 			[object retain];
 		}
 	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithArray: (OFArray*)array_
+{
+	id *cArray;
+	size_t i, count;
+
+	self = [self init];
+
+	@try {
+		cArray = [array_ cArray];
+		count = [array_ count];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	@try {
+		for (i = 0; i < count; i++)
+			[cArray[i] retain];
+
+		[array addNItems: count
+		      fromCArray: cArray];
+	} @catch (id e) {
+		for (i = 0; i < count; i++)
+			[cArray[i] release];
+
+		/* Prevent double-release of objects */
+		[array release];
+		array = nil;
+
 		[self release];
 		@throw e;
 	}
@@ -201,20 +242,7 @@
 
 - mutableCopy
 {
-	OFArray *mutableCopy = [[OFMutableArray alloc] init];
-	id *cArray;
-	size_t count, i;
-
-	cArray = [array cArray];
-	count = [array count];
-
-	[mutableCopy->array addNItems: count
-			   fromCArray: cArray];
-
-	for (i = 0; i < count; i++)
-		[cArray[i] retain];
-
-	return mutableCopy;
+	return [[OFMutableArray alloc] initWithArray: self];
 }
 
 - (id)objectAtIndex: (size_t)index

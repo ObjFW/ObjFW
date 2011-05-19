@@ -64,6 +64,14 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
 + arrayWithObjects: (id)firstObject, ...;
 
 /**
+ * \brief Creates a new OFArray with the objects from the specified array.
+ *
+ * \param array An array
+ * \return A new autoreleased OFArray
+ */
++ arrayWithArray: (OFArray*)array;
+
+/**
  * \brief Creates a new OFArray with the objects from the specified C array.
  *
  * \param objects A C array of objects, terminated with nil
@@ -107,6 +115,14 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
  */
 - initWithObject: (id)firstObject
        arguments: (va_list)arguments;
+
+/**
+ * \brief Initializes an OFArray with the objects from the specified array.
+ *
+ * \param array An array
+ * \return An initialized OFArray
+ */
+- initWithArray: (OFArray*)array;
 
 /**
  * \brief Initializes an OFArray with the objects from the specified C array.
