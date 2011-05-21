@@ -54,6 +54,12 @@
 # else
 #  define OF_ENDIANESS_NATIVE OF_ENDIANESS_LITTLE_ENDIAN
 # endif
+#else
+# ifdef OF_BIG_ENDIAN
+#  define OF_ENDIANESS_NATIVE OF_ENDIANESS_BIG_ENDIAN
+# else
+#  define OF_ENDIANESS_NATIVE OF_ENDIANESS_LITTLE_ENDIAN
+# endif
 #endif
 
 #ifdef __GNUC__
