@@ -42,7 +42,7 @@ Class of_http_request_tls_socket_class = Nil;
 static OF_INLINE void
 normalize_key(OFString *key)
 {
-	char *str = (char*)[key cString];
+	uint8_t *str = (uint8_t*)[key cString];
 	BOOL firstLetter = YES;
 
 	while (*str != '\0') {
