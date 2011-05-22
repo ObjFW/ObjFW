@@ -175,6 +175,22 @@
 	[self freeMemory: listObject];
 }
 
+- (id)firstObject
+{
+	if (firstListObject != NULL)
+		return firstListObject->object;
+
+	return nil;
+}
+
+- (id)lastObject
+{
+	if (lastListObject != NULL)
+		return lastListObject->object;
+
+	return nil;
+}
+
 - (size_t)count
 {
 	return count;

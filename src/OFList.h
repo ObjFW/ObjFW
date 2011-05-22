@@ -125,6 +125,26 @@ struct of_list_object_t {
  * \param listObject The list object returned by append / prepend
  */
 - (void)removeListObject: (of_list_object_t*)listObject;
+
+/**
+ * \brief Returns the first object of the list or nil.
+ *
+ * The returned object is <i>not</i> retained and autoreleased for performance
+ * reasons!
+ *
+ * \return The first object of the list or nil
+ */
+- (id)firstObject;
+
+/**
+ * \brief Returns the last object of the list or nil.
+ *
+ * The returned object is <i>not</i> retained and autoreleased for performance
+ * reasons!
+ *
+ * \return The last object of the list or nil
+ */
+- (id)lastObject;
 @end
 
 @interface OFListEnumerator: OFEnumerator
