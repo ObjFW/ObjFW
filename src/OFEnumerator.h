@@ -16,6 +16,21 @@
 
 #import "OFObject.h"
 
+@class OFEnumerator;
+
+/**
+ * \brief A protocol for getting an enumerator for the object.
+ */
+@protocol OFEnumerating <OFObject>
+/**
+ * \brief Returns an OFEnumerator to enumerate through all objects of the
+ *	  collection.
+ *
+ * \returns An OFEnumerator to enumerate through all objects of the collection
+ */
+- (OFEnumerator*)objectEnumerator;
+@end
+
 /**
  * \brief A class which provides methods to enumerate through collections.
  */

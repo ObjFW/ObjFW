@@ -19,7 +19,7 @@
 /**
  * \brief A protocol with methods common for all collections.
  */
-@protocol OFCollection <OFObject>
+@protocol OFCollection <OFEnumerating>
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly) size_t count;
 #endif
@@ -30,14 +30,6 @@
  * \return The number of objects in the collection
  */
 - (size_t)count;
-
-/**
- * \brief Returns an OFEnumerator to enumerate through all objects of the
- *	  collection.
- *
- * \returns An OFEnumerator to enumerate through all objects of the collection
- */
-- (OFEnumerator*)objectEnumerator;
 
 /**
  * \brief Checks whether the collection contains an object equal to the
