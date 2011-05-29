@@ -181,11 +181,7 @@ of_condition_new(of_condition_t *condition)
 #endif
 }
 
-#if defined(OF_HAVE_PTHREADS)
 static OF_INLINE BOOL
-#elif defined(_WIN32)
-static BOOL
-#endif
 of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 {
 #if defined(OF_HAVE_PTHREADS)
@@ -220,11 +216,7 @@ of_condition_signal(of_condition_t *condition)
 #endif
 }
 
-#if defined(OF_HAVE_PTHREADS)
 static OF_INLINE BOOL
-#elif defined(_WIN32)
-static BOOL
-#endif
 of_condition_broadcast(of_condition_t *condition)
 {
 #if defined(OF_HAVE_PTHREADS)
@@ -240,11 +232,7 @@ of_condition_broadcast(of_condition_t *condition)
 #endif
 }
 
-#if defined(OF_HAVE_PTHREADS)
 static OF_INLINE BOOL
-#elif defined(_WIN32)
-static BOOL
-#endif
 of_condition_free(of_condition_t *condition)
 {
 #if defined(OF_HAVE_PTHREADS)
