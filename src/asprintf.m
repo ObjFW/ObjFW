@@ -41,7 +41,7 @@ asprintf(char **cString, const char *format, ...)
 
 	va_start(arguments, format);
 	ret = vasprintf(cString, format, arguments);
-	va_end(args);
+	va_end(arguments);
 
 	return ret;
 }

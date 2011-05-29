@@ -92,7 +92,7 @@ static OFMutex *mutex;
 	[mutex lock];							  \
 									  \
 	@try {								  \
-		if ((tm = localtime(&sec_)) == NULL)			  \
+		if ((tm = localtime(&seconds_)) == NULL)		  \
 			@throw [OFOutOfRangeException newWithClass: isa]; \
 									  \
 		return tm->field;					  \

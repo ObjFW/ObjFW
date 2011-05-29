@@ -276,7 +276,7 @@ of_log(OFConstantString *format, ...)
 							  mode: @"r"];
 
 	@try {
-		OFAutoreleasePool pool2 = [[OFAutoreleasePool alloc] init];
+		OFAutoreleasePool *pool2 = [[OFAutoreleasePool alloc] init];
 
 		do {
 			OFString *file;
