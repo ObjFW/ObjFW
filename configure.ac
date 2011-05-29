@@ -473,7 +473,16 @@ AC_TRY_COMPILE([
 
 		AS_IF([test x"$have_threadsafe_getaddrinfo" = x"unknown"], [
 			AC_EGREP_CPP(yes, [
-				#include <netdb.h>
+				#ifndef _WIN32
+				# include <sys/types.h>
+				# include <sys/socket.h>
+				# include <netdb.h>
+				#else
+				# define _WIN32_WINNT 0x0501
+				# include <windows.h>
+				# include <ws2tcpip.h>
+				#endif
+
 				#ifdef h_errno
 				yes
 				#end
