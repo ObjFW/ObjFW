@@ -242,6 +242,44 @@ static OFMutex *mutex;
 	return self;
 }
 
+- initWithSerialization: (OFXMLElement*)element
+{
+	self = [super init];
+
+	@try {
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		OFXMLElement *secondsElement, *microsecondsElement;
+
+		if (![[element name] isEqual: @"object"] ||
+		    ![[element namespace] isEqual: OF_SERIALIZATION_NS] ||
+		    ![[[element attributeForName: @"class"] stringValue]
+		    isEqual: [isa className]])
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
+		secondsElement = [element elementForName: @"seconds"
+					       namespace: OF_SERIALIZATION_NS];
+		microsecondsElement = [element
+		    elementForName: @"microseconds"
+			 namespace: OF_SERIALIZATION_NS];
+
+		if (secondsElement == nil || microsecondsElement == nil)
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
+		seconds = (int64_t)[[secondsElement stringValue] decimalValue];
+		microseconds =
+		    (uint32_t)[[microsecondsElement stringValue] decimalValue];
+
+		[pool release];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
 - (BOOL)isEqual: (id)object
 {
 	OFDate *otherDate;

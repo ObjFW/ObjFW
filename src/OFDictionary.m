@@ -474,6 +474,71 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	return self;
 }
 
+- initWithSerialization: (OFXMLElement*)element
+{
+	@try {
+		OFAutoreleasePool *pool, *pool2;
+		OFMutableDictionary *dictionary;
+		OFArray *pairs;
+		OFEnumerator *enumerator;
+		OFXMLElement *pair;
+
+		pool = [[OFAutoreleasePool alloc] init];
+
+		if (![[element name] isEqual: @"object"] ||
+		    ![[element namespace] isEqual: OF_SERIALIZATION_NS] ||
+		    ![[[element attributeForName: @"class"] stringValue]
+		    isEqual: [isa className]])
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
+		dictionary = [OFMutableDictionary dictionary];
+		pairs = [element elementsForName: @"pair"
+				       namespace: OF_SERIALIZATION_NS];
+
+		enumerator = [pairs objectEnumerator];
+		pool2 = [[OFAutoreleasePool alloc] init];
+		while ((pair = [enumerator nextObject]) != nil) {
+			OFXMLElement *keyElement, *valueElement;
+			id <OFSerialization, OFCopying> key;
+			id <OFSerialization> object;
+
+			keyElement = [pair elementForName: @"key"
+						namespace: OF_SERIALIZATION_NS];
+			valueElement = [pair
+			    elementForName: @"value"
+				 namespace: OF_SERIALIZATION_NS];
+
+			if (keyElement == nil || valueElement == nil)
+				@throw [OFInvalidArgumentException
+				    newWithClass: isa
+					selector: _cmd];
+
+			key = [OFSerialization objectByDeserializingXMLElement:
+			    [keyElement elementForName: @"object"
+					     namespace: OF_SERIALIZATION_NS]];
+			object = [OFSerialization
+			    objectByDeserializingXMLElement:
+			    [valueElement elementForName: @"object"
+					       namespace: OF_SERIALIZATION_NS]];
+
+			[dictionary setObject: object
+				       forKey: key];
+
+			[pool2 releaseObjects];
+		}
+
+		self = [self initWithDictionary: dictionary];
+
+		[pool release];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
 - (id)objectForKey: (id <OFCopying>)key
 {
 	uint32_t i, hash, last;

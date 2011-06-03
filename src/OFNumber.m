@@ -23,6 +23,7 @@
 #import "OFXMLElement.h"
 #import "OFAutoreleasePool.h"
 
+#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
 
@@ -703,6 +704,63 @@
 
 	value.double_ = double_;
 	type = OF_NUMBER_DOUBLE;
+
+	return self;
+}
+
+- initWithSerialization: (OFXMLElement*)element
+{
+	self = [super init];
+
+	@try {
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		OFString *typeString;
+
+		if (![[element name] isEqual: @"object"] ||
+		    ![[element namespace] isEqual: OF_SERIALIZATION_NS] ||
+		    ![[[element attributeForName: @"class"] stringValue]
+		    isEqual: [isa className]])
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
+		typeString = [[element attributeForName: @"type"] stringValue];
+
+		if ([typeString isEqual: @"boolean"]) {
+			type = OF_NUMBER_BOOL;
+
+			if ([[element stringValue] isEqual: @"YES"])
+				value.bool_ = YES;
+			else if ([[element stringValue] isEqual: @"NO"])
+				value.bool_ = NO;
+			else
+				@throw [OFInvalidArgumentException
+				    newWithClass: isa
+					selector: _cmd];
+		} else if ([typeString isEqual: @"unsigned"]) {
+			/*
+			 * FIXME: This will fail if the value is bigger than
+			 *	  INTMAX_MAX!
+			 */
+			type = OF_NUMBER_UINTMAX;
+			value.uintmax = [[element stringValue] decimalValue];
+		} else if ([typeString isEqual: @"signed"]) {
+			type = OF_NUMBER_INTMAX;
+			value.intmax = [[element stringValue] decimalValue];
+		} else if ([typeString isEqual: @"float"]) {
+			type = OF_NUMBER_FLOAT;
+			value.float_ = [[element stringValue] floatValue];
+		} else if ([typeString isEqual: @"double"]) {
+			type = OF_NUMBER_DOUBLE;
+			value.double_ = [[element stringValue] doubleValue];
+		} else
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
+		[pool release];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }

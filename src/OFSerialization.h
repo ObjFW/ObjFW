@@ -14,6 +14,8 @@
  * file.
  */
 
+#import "OFObject.h"
+
 @class OFString;
 @class OFXMLElement;
 
@@ -24,9 +26,47 @@
  */
 @protocol OFSerialization <OFObject>
 /**
+ * \brief Initializes the object with the specified XML element serialization.
+ *
+ * \param element An OFXMLElement with the serialized object
+ * \return An initialized object
+ */
+- initWithSerialization: (OFXMLElement*)element;
+
+/**
  * \brief Serializes the object into an XML element.
  *
  * \return The object serialized into an XML element
  */
 - (OFXMLElement*)XMLElementBySerializing;
+@end
+
+/**
+ * \brief A class that provides class methods for serializing and deserializing
+ *	  objects.
+ */
+@interface OFSerialization: OFObject
+/**
+ * \brief Creates a string by serializing the specified object.
+ *
+ * \param object The object to serialize
+ * \return The object serialized as a string
+ */
++ (OFString*)stringBySerializingObject: (id <OFSerialization>)object;
+
+/**
+ * \brief Deserializes the specified string into an object.
+ *
+ * \param string The string describing the serialized object
+ * \return The deserialized object
+ */
++ (id)objectByDeserializingString: (OFString*)string;
+
+/**
+ * \brief Deserializes the specified XML element into an object.
+ *
+ * \param string The XML element describing the serialized object
+ * \return The deserialized object
+ */
++ (id)objectByDeserializingXMLElement: (OFXMLElement*)element;
 @end

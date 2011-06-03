@@ -29,6 +29,7 @@ SRCS = OFApplication.m		\
        OFObject.m		\
        ${OFPLUGIN_M}		\
        OFSeekableStream.m	\
+       OFSerialization.m	\
        OFSHA1Hash.m		\
        OFStream.m		\
        OFStreamObserver.m	\
@@ -51,7 +52,6 @@ SRCS = OFApplication.m		\
 
 INCLUDES := ${SRCS:.m=.h}	\
 	    OFCollection.h	\
-	    OFSerialization.h	\
 	    ObjFW.h		\
 	    asprintf.h		\
 	    ${ATOMIC_H}		\

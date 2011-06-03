@@ -231,6 +231,7 @@
 		4B90B7A6133AD87D00BD33CB /* OFListenFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B90B79C133AD87D00BD33CB /* OFListenFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B90B7A7133AD87D00BD33CB /* OFListenFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B90B79D133AD87D00BD33CB /* OFListenFailedException.m */; };
 		4B989C2F13771A3700109A30 /* OFSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B989C2E13771A3700109A30 /* OFSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BC5E7D6137F0D0E0076F962 /* OFSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BC5E7D5137F0D0E0076F962 /* OFSerialization.m */; };
 		4BD98C03133814220048DD5B /* objfw-defs.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD98C011338140B0048DD5B /* objfw-defs.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BDF37B51338055600F9A81A /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BDF37B41338055600F9A81A /* config.h */; };
 		4BF33AFB133807590059CEF7 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
@@ -524,6 +525,7 @@
 		4BB50DD012F863C700C9393F /* of_asprintf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = of_asprintf.m; path = src/of_asprintf.m; sourceTree = SOURCE_ROOT; };
 		4BBA36C411406AB700CBA3AC /* atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic.h; path = src/atomic.h; sourceTree = "<group>"; };
 		4BBA36C511406AB700CBA3AC /* macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = macros.h; path = src/macros.h; sourceTree = "<group>"; };
+		4BC5E7D5137F0D0E0076F962 /* OFSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSerialization.m; path = src/OFSerialization.m; sourceTree = "<group>"; };
 		4BD86D801237A6C600ED9912 /* OFBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFBlock.h; path = src/OFBlock.h; sourceTree = SOURCE_ROOT; };
 		4BD86D811237A6C600ED9912 /* OFBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFBlock.m; path = src/OFBlock.m; sourceTree = SOURCE_ROOT; };
 		4BD98C011338140B0048DD5B /* objfw-defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "objfw-defs.h"; path = "src/objfw-defs.h"; sourceTree = SOURCE_ROOT; };
@@ -791,6 +793,7 @@
 				4B981CDE116F71DD00294DB7 /* OFSeekableStream.h */,
 				4B981CDF116F71DD00294DB7 /* OFSeekableStream.m */,
 				4B989C2E13771A3700109A30 /* OFSerialization.h */,
+				4BC5E7D5137F0D0E0076F962 /* OFSerialization.m */,
 				4BF1BCC411C9663F0025511F /* OFSHA1Hash.h */,
 				4BF1BCC511C9663F0025511F /* OFSHA1Hash.m */,
 				4B67997D1099E7C50041064A /* OFStream.h */,
@@ -1270,6 +1273,7 @@
 				4B17FFB6133A375B003E6DCD /* OFUnboundNamespaceException.m in Sources */,
 				4B17FFB2133A3664003E6DCD /* OFUnsupportedProtocolException.m in Sources */,
 				4B55A117133AC24600B58A93 /* OFWriteFailedException.m in Sources */,
+				4BC5E7D6137F0D0E0076F962 /* OFSerialization.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

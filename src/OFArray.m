@@ -25,6 +25,7 @@
 #import "OFAutoreleasePool.h"
 
 #import "OFEnumerationMutationException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
 #import "macros.h"
@@ -218,6 +219,47 @@
 		for (i = 0; i < length; i++)
 			[objects[i] release];
 
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithSerialization: (OFXMLElement*)element
+{
+	self = [self init];
+
+	@try {
+		OFAutoreleasePool *pool, *pool2;
+		OFEnumerator *enumerator;
+		OFXMLElement *child;
+
+		pool = [[OFAutoreleasePool alloc] init];
+
+		if (![[element name] isEqual: @"object"] ||
+		    ![[element namespace] isEqual: OF_SERIALIZATION_NS] ||
+		    ![[[element attributeForName: @"class"] stringValue]
+		    isEqual: [isa className]])
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
+		enumerator = [[element
+		    elementsForName: @"object"
+			  namespace: OF_SERIALIZATION_NS] objectEnumerator];
+		pool2 = [[OFAutoreleasePool alloc] init];
+		while ((child = [enumerator nextObject]) != nil) {
+			id object = [OFSerialization
+			    objectByDeserializingXMLElement: child];
+
+			[array addItem: &object];
+			[object retain];
+
+			[pool2 releaseObjects];
+		}
+
+		[pool release];
+	} @catch (id e) {
 		[self release];
 		@throw e;
 	}

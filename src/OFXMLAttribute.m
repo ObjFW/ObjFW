@@ -22,6 +22,8 @@
 #import "OFXMLElement.h"
 #import "OFAutoreleasePool.h"
 
+#import "OFInvalidArgumentException.h"
+
 @implementation OFXMLAttribute
 + attributeWithName: (OFString*)name
 	  namespace: (OFString*)ns
@@ -42,6 +44,39 @@
 		name = [name_ copy];
 		ns = [ns_ copy];
 		stringValue = [value copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithSerialization: (OFXMLElement*)element
+{
+	self = [super init];
+
+	@try {
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+
+		if (![[element name] isEqual: @"object"] ||
+		    ![[element namespace] isEqual: OF_SERIALIZATION_NS] ||
+		    ![[[element attributeForName: @"class"] stringValue]
+		    isEqual: [isa className]])
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
+		name = [[[element
+		    elementForName: @"name"
+			 namespace: OF_SERIALIZATION_NS] stringValue] retain];
+		ns = [[[element
+		    elementForName: @"namespace"
+			 namespace: OF_SERIALIZATION_NS] stringValue] retain];
+		stringValue = [[[element
+		    elementForName: @"stringValue"
+			 namespace: OF_SERIALIZATION_NS] stringValue] retain];
+
+		[pool release];
 	} @catch (id e) {
 		[self release];
 		@throw e;

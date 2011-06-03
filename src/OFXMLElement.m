@@ -157,19 +157,13 @@
 		name = [name_ copy];
 		ns = [ns_ copy];
 
-		if (stringValue != nil) {
-			OFAutoreleasePool *pool;
-
-			pool = [[OFAutoreleasePool alloc] init];
-			[self addChild:
-			    [OFXMLElement elementWithCharacters: stringValue]];
-			[pool release];
-		}
-
 		namespaces = [[OFMutableDictionary alloc]
 		    initWithKeysAndObjects:
 		    @"http://www.w3.org/XML/1998/namespace", @"xml",
 		    @"http://www.w3.org/2000/xmlns/", @"xmlns", nil];
+
+		if (stringValue != nil)
+			[self setStringValue: stringValue];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -272,6 +266,79 @@
 	self = [delegate->element retain];
 
 	@try {
+		[pool release];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithSerialization: (OFXMLElement*)element
+{
+	self = [super init];
+
+	@try {
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		OFXMLElement *attributesElement, *namespacesElement;
+		OFXMLElement *childrenElement;
+
+		if (![[element name] isEqual: @"object"] ||
+		    ![[element namespace] isEqual: OF_SERIALIZATION_NS] ||
+		    ![[[element attributeForName: @"class"] stringValue]
+		    isEqual: [isa className]])
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
+		name = [[[element
+		    elementForName: @"name"
+			 namespace: OF_SERIALIZATION_NS] stringValue] copy];
+		ns = [[[element
+		    elementForName: @"namespace"
+			namespace: OF_SERIALIZATION_NS] stringValue] copy];
+		defaultNamespace = [[[element
+		    elementForName: @"defaultNamespace"
+			 namespace: OF_SERIALIZATION_NS] stringValue] copy];
+		characters = [[[element
+		    elementForName: @"characters"
+			 namespace: OF_SERIALIZATION_NS] stringValue] copy];
+		CDATA = [[[element
+		    elementForName: @"CDATA"
+			 namespace: OF_SERIALIZATION_NS] stringValue] copy];
+		comment = [[[element
+		    elementForName: @"comment"
+			 namespace: OF_SERIALIZATION_NS] stringValue] copy];
+
+		attributesElement = [element
+		    elementForName: @"attributes"
+			 namespace: OF_SERIALIZATION_NS];
+		namespacesElement = [element
+		    elementForName: @"namespaces"
+			 namespace: OF_SERIALIZATION_NS];
+		childrenElement = [element elementForName: @"children"
+						namespace: OF_SERIALIZATION_NS];
+
+		attributes = [[OFSerialization objectByDeserializingXMLElement:
+		    [attributesElement elementForName: @"object"
+					    namespace: OF_SERIALIZATION_NS]]
+		    retain];
+		namespaces = [[OFSerialization objectByDeserializingXMLElement:
+		    [namespacesElement elementForName: @"object"
+					    namespace: OF_SERIALIZATION_NS]]
+		    retain];
+		children = [[OFSerialization objectByDeserializingXMLElement:
+		    [childrenElement elementForName: @"object"
+					  namespace: OF_SERIALIZATION_NS]]
+		    retain];
+
+		if (!((name != nil || ns != nil || defaultNamespace != nil ||
+		    [attributes count] > 0 || [namespaces count] > 0 ||
+		    [children count] > 0) ^ (characters != nil) ^
+		    (CDATA != nil) ^ (comment != nil)))
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
 		[pool release];
 	} @catch (id e) {
 		[self release];

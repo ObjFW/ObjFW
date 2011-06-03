@@ -759,7 +759,7 @@ of_utf16_string_length(const uint16_t *string)
 			    (swap ? of_bswap16(string_[i]) : string_[i]);
 			size_t characterLen;
 
-			/* Missed the high surrogate */
+			/* Missing high surrogate */
 			if ((character & 0xFC00) == 0xDC00)
 				@throw [OFInvalidEncodingException
 				    newWithClass: isa];
@@ -1071,6 +1071,29 @@ of_utf16_string_length(const uint16_t *string)
 				   length: [[result data] count]];
 
 	[pool release];
+	return self;
+}
+
+- initWithSerialization: (OFXMLElement*)element
+{
+	@try {
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+
+		if (![[element name] isEqual: @"object"] ||
+		    ![[element namespace] isEqual: OF_SERIALIZATION_NS] ||
+		    ![[[element attributeForName: @"class"] stringValue]
+		    isEqual: [isa className]])
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
+		self = [self initWithString: [element stringValue]];
+
+		[pool release];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
 	return self;
 }
 

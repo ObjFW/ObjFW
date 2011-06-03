@@ -291,6 +291,29 @@ resolve_relative_path(OFString *path)
 	return self;
 }
 
+- initWithSerialization: (OFXMLElement*)element
+{
+	@try {
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+
+		if (![[element name] isEqual: @"object"] ||
+		    ![[element namespace] isEqual: OF_SERIALIZATION_NS] ||
+		    ![[[element attributeForName: @"class"] stringValue]
+		    isEqual: [isa className]])
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
+		self = [self initWithString: [element stringValue]];
+
+		[pool release];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
 - (void)dealloc
 {
 	[scheme release];
