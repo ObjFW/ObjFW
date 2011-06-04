@@ -109,6 +109,25 @@
 	return [[stringValue copy] autorelease];
 }
 
+- (BOOL)isEqual: (id)object
+{
+	OFXMLAttribute *otherAttribute;
+
+	if (![object isKindOfClass: [OFXMLAttribute class]])
+		return NO;
+
+	otherAttribute = object;
+
+	if (![otherAttribute->name isEqual: name])
+		return NO;
+	if (otherAttribute->ns != ns && ![otherAttribute->ns isEqual: ns])
+		return NO;
+	if (![otherAttribute->stringValue isEqual: stringValue])
+		return NO;
+
+	return YES;
+}
+
 - (OFXMLElement*)XMLElementBySerializing
 {
 	OFAutoreleasePool *pool;

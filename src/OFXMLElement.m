@@ -939,6 +939,44 @@
 	return ret;
 }
 
+- (BOOL)isEqual: (id)object
+{
+	OFXMLElement *otherElement;
+
+	if (![object isKindOfClass: [OFXMLElement class]])
+		return NO;
+
+	otherElement = object;
+
+	if (otherElement->name != name && ![otherElement->name isEqual: name])
+		return NO;
+	if (otherElement->ns != ns && ![otherElement->ns isEqual: ns])
+		return NO;
+	if (otherElement->defaultNamespace != defaultNamespace &&
+	    ![otherElement->defaultNamespace isEqual: defaultNamespace])
+		return NO;
+	if (otherElement->attributes != attributes &&
+	    ![otherElement->attributes isEqual: attributes])
+		return NO;
+	if (otherElement->namespaces != namespaces &&
+	    ![otherElement->namespaces isEqual: namespaces])
+		return NO;
+	if (otherElement->children != children &&
+	    ![otherElement->children isEqual: children])
+		return NO;
+	if (otherElement->characters != characters &&
+	    ![otherElement->characters isEqual: characters])
+		return NO;
+	if (otherElement->CDATA != CDATA &&
+	    ![otherElement->CDATA isEqual: CDATA])
+		return NO;
+	if (otherElement->comment != comment &&
+	    ![otherElement->comment isEqual: comment])
+		return NO;
+
+	return YES;
+}
+
 - (void)dealloc
 {
 	[name release];
