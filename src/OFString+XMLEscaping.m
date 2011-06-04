@@ -67,6 +67,10 @@ int _OFString_XMLEscaping_reference;
 				append = "&amp;";
 				appendLen = 5;
 				break;
+			case '\r':
+				append = "&#xD;";
+				appendLen = 5;
+				break;
 			default:
 				append = NULL;
 				appendLen = 0;
