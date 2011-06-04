@@ -33,6 +33,8 @@
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
+#import "macros.h"
+
 #if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
     defined(OF_THREADS)
 static OFMutex *mutex;
@@ -246,6 +248,31 @@ static OFMutex *mutex;
 		return NO;
 
 	return YES;
+}
+
+- (uint32_t)hash
+{
+	uint32_t hash;
+
+	OF_HASH_INIT(hash);
+
+	OF_HASH_ADD(hash, (sec >> 56) & 0xFF);
+	OF_HASH_ADD(hash, (sec >> 48) & 0xFF);
+	OF_HASH_ADD(hash, (sec >> 40) & 0xFF);
+	OF_HASH_ADD(hash, (sec >> 32) & 0xFF);
+	OF_HASH_ADD(hash, (sec >> 24) & 0xFF);
+	OF_HASH_ADD(hash, (sec >> 16) & 0xFF);
+	OF_HASH_ADD(hash, (sec >> 8) & 0xFF);
+	OF_HASH_ADD(hash, sec & 0xFF);
+
+	OF_HASH_ADD(hash, (usec >> 24) & 0xFF);
+	OF_HASH_ADD(hash, (usec >> 16) & 0xFF);
+	OF_HASH_ADD(hash, (usec >> 8) & 0xFF);
+	OF_HASH_ADD(hash, usec & 0xFF);
+
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
 }
 
 - copy
