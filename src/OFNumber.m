@@ -1142,9 +1142,9 @@
 	case OF_NUMBER_INTPTR:
 		return [OFString stringWithFormat: @"%jd", [self intMaxValue]];
 	case OF_NUMBER_FLOAT:
-		return [OFString stringWithFormat: @"%f", value.float_];
+		return [OFString stringWithFormat: @"%g", value.float_];
 	case OF_NUMBER_DOUBLE:
-		return [OFString stringWithFormat: @"%lf", value.double_];
+		return [OFString stringWithFormat: @"%lg", value.double_];
 	default:
 		@throw [OFInvalidFormatException newWithClass: isa];
 	}
