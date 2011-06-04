@@ -32,13 +32,6 @@
 
 #import "macros.h"
 
-#define ADD_STR_HASH(str)			\
-	tmp = [str hash];			\
-	OF_HASH_ADD(hash, tmp >> 24);		\
-	OF_HASH_ADD(hash, (tmp >> 16) & 0xFF);	\
-	OF_HASH_ADD(hash, (tmp >> 8) & 0xFF);	\
-	OF_HASH_ADD(hash, tmp & 0xFF);
-
 static OF_INLINE OFString*
 resolve_relative_path(OFString *path)
 {
@@ -365,22 +358,19 @@ resolve_relative_path(OFString *path)
 
 - (uint32_t)hash
 {
-	uint32_t hash, tmp;
+	uint32_t hash;
 
 	OF_HASH_INIT(hash);
 
-	ADD_STR_HASH(scheme);
-	ADD_STR_HASH(host);
-
-	OF_HASH_ADD(hash, (port >> 8) & 0xFF);
-	OF_HASH_ADD(hash, port & 0xFF);
-
-	ADD_STR_HASH(user);
-	ADD_STR_HASH(password);
-	ADD_STR_HASH(path);
-	ADD_STR_HASH(parameters);
-	ADD_STR_HASH(query);
-	ADD_STR_HASH(fragment);
+	OF_HASH_ADD_INT32(hash, [scheme hash]);
+	OF_HASH_ADD_INT32(hash, [host hash]);
+	OF_HASH_ADD_INT16(hash, port);
+	OF_HASH_ADD_INT32(hash, [user hash]);
+	OF_HASH_ADD_INT32(hash, [password hash]);
+	OF_HASH_ADD_INT32(hash, [path hash]);
+	OF_HASH_ADD_INT32(hash, [parameters hash]);
+	OF_HASH_ADD_INT32(hash, [query hash]);
+	OF_HASH_ADD_INT32(hash, [fragment hash]);
 
 	OF_HASH_FINALIZE(hash);
 

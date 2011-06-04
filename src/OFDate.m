@@ -304,19 +304,8 @@ static OFMutex *mutex;
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD(hash, (seconds >> 56) & 0xFF);
-	OF_HASH_ADD(hash, (seconds >> 48) & 0xFF);
-	OF_HASH_ADD(hash, (seconds >> 40) & 0xFF);
-	OF_HASH_ADD(hash, (seconds >> 32) & 0xFF);
-	OF_HASH_ADD(hash, (seconds >> 24) & 0xFF);
-	OF_HASH_ADD(hash, (seconds >> 16) & 0xFF);
-	OF_HASH_ADD(hash, (seconds >> 8) & 0xFF);
-	OF_HASH_ADD(hash, seconds & 0xFF);
-
-	OF_HASH_ADD(hash, (microseconds >> 24) & 0xFF);
-	OF_HASH_ADD(hash, (microseconds >> 16) & 0xFF);
-	OF_HASH_ADD(hash, (microseconds >> 8) & 0xFF);
-	OF_HASH_ADD(hash, microseconds & 0xFF);
+	OF_HASH_ADD_INT64(hash, seconds);
+	OF_HASH_ADD_INT32(hash, microseconds);
 
 	OF_HASH_FINALIZE(hash);
 
