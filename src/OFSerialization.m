@@ -63,15 +63,18 @@
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFXMLElement *root = [OFXMLElement elementWithXMLString: string];
-	OFXMLElement *element;
+	OFArray *elements;
 	id object;
 
-	if ([[root children] count] != 1)
+	elements = [root elementsForName: @"object"
+			       namespace: OF_SERIALIZATION_NS];
+
+	if ([elements count] != 1)
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 
-	element = [[root children] firstObject];
-	object = [[self objectByDeserializingXMLElement: element] retain];
+	object = [[self objectByDeserializingXMLElement: [elements firstObject]]
+	    retain];
 
 	@try {
 		[pool release];
