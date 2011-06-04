@@ -18,6 +18,8 @@
 
 #if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
 # import <objc/runtime.h>
+#elif defined(OF_OLD_GNU_RUNTIME)
+# import <objc/objc-api.h>
 #endif
 
 #import "OFSerialization.h"
