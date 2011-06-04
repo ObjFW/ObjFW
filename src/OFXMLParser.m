@@ -731,6 +731,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 			      withPrefix: prefix
 			       namespace: ns];
 
+		if ([previous count] == 0)
+			finishedParsing = YES;
+
 		[namespaces removeNObjects: 1];
 	} else if (prefix != nil) {
 		OFString *str = [OFString stringWithFormat: @"%@:%@",
