@@ -24,6 +24,8 @@
 
 #import "OFInvalidArgumentException.h"
 
+#import "macros.h"
+
 @implementation OFXMLAttribute
 + attributeWithName: (OFString*)name
 	  namespace: (OFString*)ns
@@ -126,6 +128,21 @@
 		return NO;
 
 	return YES;
+}
+
+- (uint32_t)hash
+{
+	uint32_t hash;
+
+	OF_HASH_INIT(hash);
+
+	OF_HASH_ADD_INT32(hash, [name hash]);
+	OF_HASH_ADD_INT32(hash, [ns hash]);
+	OF_HASH_ADD_INT32(hash, [stringValue hash]);
+
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
 }
 
 - (OFXMLElement*)XMLElementBySerializing

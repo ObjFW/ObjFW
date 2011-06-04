@@ -33,6 +33,8 @@
 #import "OFNotImplementedException.h"
 #import "OFUnboundNamespaceException.h"
 
+#import "macros.h"
+
 @interface OFXMLElement_OFXMLElementBuilderDelegate: OFObject
 {
 @public
@@ -975,6 +977,27 @@
 		return NO;
 
 	return YES;
+}
+
+- (uint32_t)hash
+{
+	uint32_t hash;
+
+	OF_HASH_INIT(hash);
+
+	OF_HASH_ADD_INT32(hash, [name hash]);
+	OF_HASH_ADD_INT32(hash, [ns hash]);
+	OF_HASH_ADD_INT32(hash, [defaultNamespace hash]);
+	OF_HASH_ADD_INT32(hash, [attributes hash]);
+	OF_HASH_ADD_INT32(hash, [namespaces hash]);
+	OF_HASH_ADD_INT32(hash, [children hash]);
+	OF_HASH_ADD_INT32(hash, [characters hash]);
+	OF_HASH_ADD_INT32(hash, [CDATA hash]);
+	OF_HASH_ADD_INT32(hash, [comment hash]);
+
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
 }
 
 - (void)dealloc
