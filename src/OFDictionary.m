@@ -465,6 +465,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 			}
 
 			data[j]->object = object;
+			count--;
 		}
 	} @catch (id e) {
 		[self release];
