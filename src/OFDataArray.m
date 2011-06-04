@@ -330,7 +330,7 @@ void _references_to_categories_of_OFDataArray(void)
 	if (![object isKindOfClass: [OFDataArray class]])
 		return NO;
 
-	otherDataArray = (OFDataArray*)object;
+	otherDataArray = object;
 
 	if ([otherDataArray count] != count ||
 	    [otherDataArray itemSize] != itemSize)
@@ -350,7 +350,7 @@ void _references_to_categories_of_OFDataArray(void)
 	if (![object isKindOfClass: [OFDataArray class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
-	otherDataArray = (OFDataArray*)object;
+	otherDataArray = object;
 
 	if ([otherDataArray itemSize] != itemSize)
 		@throw [OFInvalidArgumentException newWithClass: isa

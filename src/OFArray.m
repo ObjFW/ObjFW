@@ -430,7 +430,7 @@
 	if (![object isKindOfClass: [OFArray class]])
 		return NO;
 
-	otherArray = (OFArray*)object;
+	otherArray = object;
 
 	count = [array count];
 

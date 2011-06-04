@@ -1129,7 +1129,7 @@ of_utf16_string_length(const uint16_t *string)
 	if (![object isKindOfClass: [OFString class]])
 		return NO;
 
-	otherString = (OFString*)object;
+	otherString = object;
 
 	if (strcmp(string, [otherString cString]))
 		return NO;
@@ -1157,8 +1157,7 @@ of_utf16_string_length(const uint16_t *string)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	otherString = (OFString*)object;
-
+	otherString = object;
 	otherLen = [otherString cStringLength];
 	minLen = (length > otherLen ? otherLen : length);
 

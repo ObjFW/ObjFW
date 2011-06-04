@@ -335,7 +335,7 @@ resolve_relative_path(OFString *path)
 	if (![object isKindOfClass: [OFURL class]])
 		return NO;
 
-	otherURL = (OFURL*)object;
+	otherURL = object;
 
 	if (![otherURL->scheme isEqual: scheme])
 		return NO;

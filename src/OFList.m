@@ -229,7 +229,7 @@
 	if (![object isKindOfClass: [OFList class]])
 		return NO;
 
-	otherList = (OFList*)object;
+	otherList = object;
 
 	if ([otherList count] != count)
 		return NO;

@@ -287,7 +287,7 @@ static OFMutex *mutex;
 	if (![object isKindOfClass: [OFDate class]])
 		return NO;
 
-	otherDate = (OFDate*)object;
+	otherDate = object;
 
 	if (otherDate->seconds != seconds ||
 	    otherDate->microseconds != microseconds)
@@ -309,7 +309,7 @@ static OFMutex *mutex;
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	otherDate = (OFDate*)object;
+	otherDate = object;
 
 	if (seconds < otherDate->seconds)
 		return OF_ORDERED_ASCENDING;
