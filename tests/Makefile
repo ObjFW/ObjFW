@@ -14,6 +14,7 @@ SRCS = OFArrayTests.m			\
        OFNumberTests.m			\
        OFObjectTests.m			\
        ${OFPLUGINTESTS_M}		\
+       OFSerializationTests.m		\
        OFSHA1HashTests.m		\
        OFStreamTests.m			\
        OFStringTests.m			\

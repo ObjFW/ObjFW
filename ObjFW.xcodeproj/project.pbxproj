@@ -186,6 +186,7 @@
 		4B3D23EA1337FCB000DD29B8 /* threading.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67998B1099E7C50041064A /* threading.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3D23EB1337FCB000DD29B8 /* unicode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67998C1099E7C50041064A /* unicode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3D23EE1337FFD000DD29B8 /* of_asprintf.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB50DD012F863C700C9393F /* of_asprintf.m */; };
+		4B3D5694139A617D0010A78F /* OFSerializationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3D5693139A617D0010A78F /* OFSerializationTests.m */; };
 		4B55A0FF133ABEA900B58A93 /* OFThreadJoinFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B55A0F9133ABEA900B58A93 /* OFThreadJoinFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B55A100133ABEA900B58A93 /* OFThreadJoinFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B55A0FA133ABEA900B58A93 /* OFThreadJoinFailedException.m */; };
 		4B55A101133ABEA900B58A93 /* OFThreadStartFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B55A0FB133ABEA900B58A93 /* OFThreadStartFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -396,6 +397,7 @@
 		4B3D23761337FBC800DD29B8 /* ObjFW.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ObjFW.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B3D23BB1337FC5800DD29B8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
 		4B3D23EF1338008000DD29B8 /* mach_alias_list */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = mach_alias_list; path = src/mach_alias_list; sourceTree = SOURCE_ROOT; };
+		4B3D5693139A617D0010A78F /* OFSerializationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSerializationTests.m; path = tests/OFSerializationTests.m; sourceTree = "<group>"; };
 		4B4986DF1101F64500A2CFDA /* objc_properties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = objc_properties.m; path = src/objc_properties.m; sourceTree = "<group>"; };
 		4B4A61F212DF5EA20048F3F2 /* OFURL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFURL.h; path = src/OFURL.h; sourceTree = SOURCE_ROOT; };
 		4B4A61F312DF5EA20048F3F2 /* OFURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFURL.m; path = src/OFURL.m; sourceTree = SOURCE_ROOT; };
@@ -865,6 +867,7 @@
 				4B6EF6741235358D0076B512 /* OFNumberTests.m */,
 				4B6EF6751235358D0076B512 /* OFObjectTests.m */,
 				4B6EF6761235358D0076B512 /* OFPluginTests.m */,
+				4B3D5693139A617D0010A78F /* OFSerializationTests.m */,
 				4B6EF6771235358D0076B512 /* OFSHA1HashTests.m */,
 				4B6EF6781235358D0076B512 /* OFStreamTests.m */,
 				4B6EF6791235358D0076B512 /* OFStringTests.m */,
@@ -1303,6 +1306,7 @@
 				4BF33B10133807A20059CEF7 /* OFXMLParserTests.m in Sources */,
 				4BF33B11133807A20059CEF7 /* PropertiesTests.m in Sources */,
 				4BF33B12133807A20059CEF7 /* TestsAppDelegate.m in Sources */,
+				4B3D5694139A617D0010A78F /* OFSerializationTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

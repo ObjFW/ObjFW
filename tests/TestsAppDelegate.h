@@ -121,6 +121,10 @@
 - (void)propertiesTests;
 @end
 
+@interface TestsAppDelegate (SerializationTests)
+- (void)serializationTests;
+@end
+
 @interface TestsAppDelegate (OFSHA1HashTests)
 - (void)SHA1HashTests;
 @end
