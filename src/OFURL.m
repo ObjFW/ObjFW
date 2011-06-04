@@ -343,17 +343,21 @@ resolve_relative_path(OFString *path)
 		return NO;
 	if (otherURL->port != port)
 		return NO;
-	if (![otherURL->user isEqual: user])
+	if (otherURL->user != user && ![otherURL->user isEqual: user])
 		return NO;
-	if (![otherURL->password isEqual: password])
+	if (otherURL->password != password &&
+	    ![otherURL->password isEqual: password])
 		return NO;
 	if (![otherURL->path isEqual: path])
 		return NO;
-	if (![otherURL->parameters isEqual: parameters])
+	if (otherURL->parameters != parameters &&
+	    ![otherURL->parameters isEqual: parameters])
 		return NO;
-	if (![otherURL->query isEqual: query])
+	if (otherURL->query != query &&
+	    ![otherURL->query isEqual: query])
 		return NO;
-	if (![otherURL->fragment isEqual: fragment])
+	if (otherURL->fragment != fragment &&
+	    ![otherURL->fragment isEqual: fragment])
 		return NO;
 
 	return YES;
