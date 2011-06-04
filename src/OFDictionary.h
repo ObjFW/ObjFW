@@ -39,6 +39,9 @@ struct of_dictionary_bucket
 
 /**
  * \brief A class for storing objects in a hash table.
+ *
+ * Note: Fast enumeration on a dictionary enumerates through the keys of the
+ * dictionary.
  */
 @interface OFDictionary: OFObject <OFCopying, OFMutableCopying, OFCollection,
     OFFastEnumeration, OFSerialization>
