@@ -118,6 +118,26 @@
 - (uint64_t)readBigEndianInt64;
 
 /**
+ * Reads a float from the stream which is encoded in big endian.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
+ * \return A float from the stream in the native endianess
+ */
+- (float)readBigEndianFloat;
+
+/**
+ * Reads a double from the stream which is encoded in big endian.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
+ * \return A double from the stream in the native endianess
+ */
+- (double)readBigEndianDouble;
+
+/**
  * Reads a uint16_t from the stream which is encoded in little endian.
  *
  * WARNING: Only call this when you know that enough data is available!
@@ -146,6 +166,26 @@
  * \return A uint64_t from the stream in the native endianess
  */
 - (uint64_t)readLittleEndianInt64;
+
+/**
+ * Reads a float from the stream which is encoded in little endian.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
+ * \return A float from the stream in the native endianess
+ */
+- (float)readLittleEndianFloat;
+
+/**
+ * Reads a double from the stream which is encoded in little endian.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
+ * \return A double from the stream in the native endianess
+ */
+- (double)readLittleEndianDouble;
 
 /**
  * Reads nItems items with an item size of 1 from the stream and returns them
@@ -273,6 +313,20 @@
 - (void)writeBigEndianInt64: (uint64_t)int64;
 
 /**
+ * Writes a float into the stream, encoded in big endian.
+ *
+ * \param float_ A float
+ */
+- (void)writeBigEndianFloat: (float)float_;
+
+/**
+ * Writes a double into the stream, encoded in big endian.
+ *
+ * \param double_ A double
+ */
+- (void)writeBigEndianDouble: (double)double_;
+
+/**
  * Writes a uint16_t into the stream, encoded in little endian.
  *
  * \param int16 A uint16_t
@@ -292,6 +346,20 @@
  * \param int64 A uint64_t
  */
 - (void)writeLittleEndianInt64: (uint64_t)int64;
+
+/**
+ * Writes a float into the stream, encoded in little endian.
+ *
+ * \param float_ A float
+ */
+- (void)writeLittleEndianFloat: (float)float_;
+
+/**
+ * Writes a double into the stream, encoded in little endian.
+ *
+ * \param double_ A double
+ */
+- (void)writeLittleEndianDouble: (double)double_;
 
 /**
  * Writes from an OFDataArray into the stream.

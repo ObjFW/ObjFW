@@ -175,6 +175,26 @@
 	return of_bswap64_if_le(ret);
 }
 
+- (float)readBigEndianFloat
+{
+	float ret;
+
+	[self readExactlyNBytes: 4
+		     intoBuffer: (char*)&ret];
+
+	return of_bswap_float_if_le(ret);
+}
+
+- (double)readBigEndianDouble
+{
+	double ret;
+
+	[self readExactlyNBytes: 8
+		     intoBuffer: (char*)&ret];
+
+	return of_bswap_double_if_le(ret);
+}
+
 - (uint16_t)readLittleEndianInt16
 {
 	uint16_t ret;
@@ -203,6 +223,26 @@
 		     intoBuffer: (char*)&ret];
 
 	return of_bswap64_if_be(ret);
+}
+
+- (float)readLittleEndianFloat
+{
+	float ret;
+
+	[self readExactlyNBytes: 4
+		     intoBuffer: (char*)&ret];
+
+	return of_bswap_float_if_be(ret);
+}
+
+- (double)readLittleEndianDouble
+{
+	double ret;
+
+	[self readExactlyNBytes: 8
+		     intoBuffer: (char*)&ret];
+
+	return of_bswap_double_if_be(ret);
 }
 
 - (OFDataArray*)readDataArrayWithNItems: (size_t)nItems
@@ -631,6 +671,22 @@
 	       fromBuffer: (char*)&int64];
 }
 
+- (void)writeBigEndianFloat: (float)float_
+{
+	float_ = of_bswap_float_if_le(float_);
+
+	[self writeNBytes: 4
+	       fromBuffer: (char*)&float_];
+}
+
+- (void)writeBigEndianDouble: (double)double_
+{
+	double_ = of_bswap_double_if_le(double_);
+
+	[self writeNBytes: 8
+	       fromBuffer: (char*)&double_];
+}
+
 - (void)writeLittleEndianInt16: (uint16_t)int16
 {
 	int16 = of_bswap16_if_be(int16);
@@ -653,6 +709,22 @@
 
 	[self writeNBytes: 8
 	       fromBuffer: (char*)&int64];
+}
+
+- (void)writeLittleEndianFloat: (float)float_
+{
+	float_ = of_bswap_float_if_be(float_);
+
+	[self writeNBytes: 4
+	       fromBuffer: (char*)&float_];
+}
+
+- (void)writeLittleEndianDouble: (double)double_
+{
+	double_ = of_bswap_double_if_be(double_);
+
+	[self writeNBytes: 8
+	       fromBuffer: (char*)&double_];
 }
 
 - (size_t)writeDataArray: (OFDataArray*)dataArray
