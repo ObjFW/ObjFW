@@ -30,36 +30,6 @@
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFSerialization";
-static const OFString *expected = @"<?xml version='1.0' encoding='UTF-8'?>\n"
-    @"<serialization xmlns='https://webkeks.org/objfw/serialization'>"
-    @"<object class='OFMutableDictionary'><pair><key><object class='OFArray'>"
-    @"<object class='OFString'>Qu&quot;xbar\ntest</object>"
-    @"<object class='OFNumber' type='signed'>1234</object>"
-    @"<object class='OFMutableString'>asd</object>"
-    @"<object class='OFDate'><seconds>1234</seconds>"
-    @"<microseconds>5678</microseconds></object></object></key><value>"
-    @"<object class='OFString'>Hello</object></value></pair><pair><key>"
-    @"<object class='OFString'>Blub</object></key><value>"
-    @"<object class='OFString'>B&quot;la</object></value></pair><pair><key>"
-    @"<object class='OFList'><object class='OFString'>Hello</object>"
-    @"<object class='OFString'>Wo&#xD;ld!\nHow are you?</object>"
-    @"<object class='OFURL'>https://webkeks.org/</object>"
-    @"<object class='OFXMLElement'><name>x</name><namespaces>"
-    @"<object class='OFMutableDictionary'><pair><key>"
-    @"<object class='OFString'>http://www.w3.org/2000/xmlns/</object></key>"
-    @"<value><object class='OFString'>xmlns</object></value></pair><pair><key>"
-    @"<object class='OFString'>http://www.w3.org/XML/1998/namespace</object>"
-    @"</key><value><object class='OFString'>xml</object></value></pair>"
-    @"</object></namespaces><children><object class='OFMutableArray'>"
-    @"<object class='OFXMLElement'><name>y</name><namespaces>"
-    @"<object class='OFMutableDictionary'><pair><key><object class='OFString'>"
-    @"http://www.w3.org/2000/xmlns/</object></key><value>"
-    @"<object class='OFString'>xmlns</object></value></pair><pair><key>"
-    @"<object class='OFString'>http://www.w3.org/XML/1998/namespace</object>"
-    @"</key><value><object class='OFString'>xml</object></value></pair>"
-    @"</object></namespaces></object></object></children></object></object>"
-    @"</key><value><object class='OFString'>list</object></value></pair>"
-    @"</object></serialization>";
 
 @implementation TestsAppDelegate (SerializationTests)
 - (void)serializationTests
@@ -90,7 +60,8 @@ static const OFString *expected = @"<?xml version='1.0' encoding='UTF-8'?>\n"
 	      forKey: l];
 
 	TEST(@"-[stringBySerializing]",
-	    (s = [d stringBySerializing]) && [s isEqual: expected])
+	    (s = [d stringBySerializing]) && [s isEqual:
+	    [OFString stringWithContentsOfFile: @"serialization.xml"]])
 
 	TEST(@"-[objectByDeserializing]",
 	    [[s objectByDeserializing] isEqual: d])

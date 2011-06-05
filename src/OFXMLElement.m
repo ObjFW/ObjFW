@@ -437,6 +437,8 @@ void _references_to_categories_of_OFXMLElement(void)
 }
 
 - (OFString*)_XMLStringWithParent: (OFXMLElement*)parent
+		      indentation: (unsigned int)indentation
+			    level: (size_t)level
 {
 	OFAutoreleasePool *pool, *pool2;
 	char *cString;
@@ -446,6 +448,7 @@ void _references_to_categories_of_OFXMLElement(void)
 	OFString *ret, *tmp;
 	OFMutableDictionary *allNamespaces;
 	OFString *defaultNS;
+	BOOL indentAfter = YES;
 
 	if (characters != nil)
 		return [characters stringByXMLEscaping];
@@ -485,8 +488,11 @@ void _references_to_categories_of_OFXMLElement(void)
 		defaultNS = defaultNamespace;
 
 	i = 0;
-	length = [name cStringLength] + 3;
+	length = [name cStringLength] + 3 + (level * indentation);
 	cString = [self allocMemoryWithSize: length];
+
+	for (j = 0; j < level * indentation; j++)
+		cString[i++] = ' ';
 
 	/* Start of tag */
 	cString[i++] = '<';
@@ -587,12 +593,26 @@ void _references_to_categories_of_OFXMLElement(void)
 		tmp = [OFMutableString string];
 		append = [tmp methodForSelector: appendSel];
 
-		for (j = 0; j < childrenCount; j++)
-			append(tmp, appendSel,
-			    [[childrenCArray[j] _XMLStringWithParent: self]
-			    cString]);
+		for (j = 0; j < childrenCount; j++) {
+			if (indentation > 0 && childrenCArray[j]->name != nil)
+				append(tmp, appendSel, "\n");
 
-		length += [tmp cStringLength] + [name cStringLength] + 2;
+			append(tmp, appendSel,
+			    [[childrenCArray[j]
+			    _XMLStringWithParent: self
+				     indentation: indentation
+					   level: level + 1]
+			    cString]);
+		}
+
+		if (indentation > 0 && childrenCount > 0 &&
+		    childrenCArray[j - 1]->name != nil)
+			append(tmp, appendSel, "\n");
+		else
+			indentAfter = NO;
+
+		length += [tmp cStringLength] + [name cStringLength] + 2 +
+		    (indentAfter ? level * indentation : 0);
 		@try {
 			cString = [self resizeMemory: cString
 					      toSize: length];
@@ -602,8 +622,14 @@ void _references_to_categories_of_OFXMLElement(void)
 		}
 
 		cString[i++] = '>';
+
 		memcpy(cString + i, [tmp cString], [tmp cStringLength]);
 		i += [tmp cStringLength];
+
+		if (indentAfter)
+			for (j = 0; j < level * indentation; j++)
+				cString[i++] = ' ';
+
 		cString[i++] = '<';
 		cString[i++] = '/';
 		if (prefix != nil) {
@@ -642,12 +668,21 @@ void _references_to_categories_of_OFXMLElement(void)
 
 - (OFString*)XMLString
 {
-	return [self _XMLStringWithParent: nil];
+	return [self _XMLStringWithParent: nil
+			      indentation: 0
+				    level: 0];
+}
+
+- (OFString*)XMLStringWithIndentation: (unsigned int)indentation
+{
+	return [self _XMLStringWithParent: nil
+			      indentation: indentation
+				    level: 0];
 }
 
 - (OFString*)description
 {
-	return [self XMLString];
+	return [self XMLStringWithIndentation: 2];
 }
 
 - (OFXMLElement*)XMLElementBySerializing

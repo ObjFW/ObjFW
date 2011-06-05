@@ -48,7 +48,7 @@ int _OFObject_Serialization_reference;
 	[root addChild: element];
 
 	ret = [@"<?xml version='1.0' encoding='UTF-8'?>\n"
-	    stringByAppendingString: [root XMLString]];
+	    stringByAppendingString: [root XMLStringWithIndentation: 2]];
 	[ret retain];
 
 	@try {

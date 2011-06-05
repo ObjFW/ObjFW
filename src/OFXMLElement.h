@@ -256,9 +256,16 @@
 
 /**
  * \return A new autoreleased OFString representing the OFXMLElement as an
- * XML string
+ *	   XML string
  */
 - (OFString*)XMLString;
+
+/**
+ * \param indentation The indentation for the XML string
+ * \return A new autoreleased OFString representing the OFXMLElement as an
+ *	   XML string with indentation.
+ */
+- (OFString*)XMLStringWithIndentation: (unsigned int)indentation;
 
 /**
  * Adds the specified attribute.
