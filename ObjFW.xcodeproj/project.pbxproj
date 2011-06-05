@@ -234,7 +234,12 @@
 		4B90B7A6133AD87D00BD33CB /* OFListenFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B90B79C133AD87D00BD33CB /* OFListenFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B90B7A7133AD87D00BD33CB /* OFListenFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B90B79D133AD87D00BD33CB /* OFListenFailedException.m */; };
 		4B989C2F13771A3700109A30 /* OFSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B989C2E13771A3700109A30 /* OFSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4BC5E7D6137F0D0E0076F962 /* OFSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BC5E7D5137F0D0E0076F962 /* OFSerialization.m */; };
+		4BB25E88139C388A00F574EA /* OFObject+Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB25E82139C388A00F574EA /* OFObject+Serialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BB25E89139C388A00F574EA /* OFObject+Serialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB25E83139C388A00F574EA /* OFObject+Serialization.m */; };
+		4BB25E8A139C388A00F574EA /* OFString+Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB25E84139C388A00F574EA /* OFString+Serialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BB25E8B139C388A00F574EA /* OFString+Serialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB25E85139C388A00F574EA /* OFString+Serialization.m */; };
+		4BB25E8C139C388A00F574EA /* OFXMLElement+Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB25E86139C388A00F574EA /* OFXMLElement+Serialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BB25E8D139C388A00F574EA /* OFXMLElement+Serialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB25E87139C388A00F574EA /* OFXMLElement+Serialization.m */; };
 		4BD98C03133814220048DD5B /* objfw-defs.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD98C011338140B0048DD5B /* objfw-defs.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BDF37B51338055600F9A81A /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BDF37B41338055600F9A81A /* config.h */; };
 		4BF33AFB133807590059CEF7 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
@@ -527,11 +532,16 @@
 		4BAF5F48123460C900F4E111 /* OFStreamObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamObserver.m; path = src/OFStreamObserver.m; sourceTree = "<group>"; };
 		4BAF5F49123460C900F4E111 /* OFStreamSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamSocket.h; path = src/OFStreamSocket.h; sourceTree = "<group>"; };
 		4BAF5F4A123460C900F4E111 /* OFStreamSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamSocket.m; path = src/OFStreamSocket.m; sourceTree = "<group>"; };
+		4BB25E82139C388A00F574EA /* OFObject+Serialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFObject+Serialization.h"; path = "src/OFObject+Serialization.h"; sourceTree = "<group>"; };
+		4BB25E83139C388A00F574EA /* OFObject+Serialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFObject+Serialization.m"; path = "src/OFObject+Serialization.m"; sourceTree = "<group>"; };
+		4BB25E84139C388A00F574EA /* OFString+Serialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFString+Serialization.h"; path = "src/OFString+Serialization.h"; sourceTree = "<group>"; };
+		4BB25E85139C388A00F574EA /* OFString+Serialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFString+Serialization.m"; path = "src/OFString+Serialization.m"; sourceTree = "<group>"; };
+		4BB25E86139C388A00F574EA /* OFXMLElement+Serialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFXMLElement+Serialization.h"; path = "src/OFXMLElement+Serialization.h"; sourceTree = "<group>"; };
+		4BB25E87139C388A00F574EA /* OFXMLElement+Serialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFXMLElement+Serialization.m"; path = "src/OFXMLElement+Serialization.m"; sourceTree = "<group>"; };
 		4BB50DCF12F863C700C9393F /* of_asprintf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = of_asprintf.h; path = src/of_asprintf.h; sourceTree = SOURCE_ROOT; };
 		4BB50DD012F863C700C9393F /* of_asprintf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = of_asprintf.m; path = src/of_asprintf.m; sourceTree = SOURCE_ROOT; };
 		4BBA36C411406AB700CBA3AC /* atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic.h; path = src/atomic.h; sourceTree = "<group>"; };
 		4BBA36C511406AB700CBA3AC /* macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = macros.h; path = src/macros.h; sourceTree = "<group>"; };
-		4BC5E7D5137F0D0E0076F962 /* OFSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSerialization.m; path = src/OFSerialization.m; sourceTree = "<group>"; };
 		4BD86D801237A6C600ED9912 /* OFBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFBlock.h; path = src/OFBlock.h; sourceTree = SOURCE_ROOT; };
 		4BD86D811237A6C600ED9912 /* OFBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFBlock.m; path = src/OFBlock.m; sourceTree = SOURCE_ROOT; };
 		4BD98C011338140B0048DD5B /* objfw-defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "objfw-defs.h"; path = "src/objfw-defs.h"; sourceTree = SOURCE_ROOT; };
@@ -796,12 +806,13 @@
 				4B6799761099E7C50041064A /* OFNumber.m */,
 				4B6799771099E7C50041064A /* OFObject.h */,
 				4B6799781099E7C50041064A /* OFObject.m */,
+				4BB25E82139C388A00F574EA /* OFObject+Serialization.h */,
+				4BB25E83139C388A00F574EA /* OFObject+Serialization.m */,
 				4B6799791099E7C50041064A /* OFPlugin.h */,
 				4B67997A1099E7C50041064A /* OFPlugin.m */,
 				4B981CDE116F71DD00294DB7 /* OFSeekableStream.h */,
 				4B981CDF116F71DD00294DB7 /* OFSeekableStream.m */,
 				4B989C2E13771A3700109A30 /* OFSerialization.h */,
-				4BC5E7D5137F0D0E0076F962 /* OFSerialization.m */,
 				4BF1BCC411C9663F0025511F /* OFSHA1Hash.h */,
 				4BF1BCC511C9663F0025511F /* OFSHA1Hash.m */,
 				4B67997D1099E7C50041064A /* OFStream.h */,
@@ -814,6 +825,8 @@
 				4B6799801099E7C50041064A /* OFString.m */,
 				4BF1BCC611C9663F0025511F /* OFString+Hashing.h */,
 				4BF1BCC711C9663F0025511F /* OFString+Hashing.m */,
+				4BB25E84139C388A00F574EA /* OFString+Serialization.h */,
+				4BB25E85139C388A00F574EA /* OFString+Serialization.m */,
 				4BF1BCC811C9663F0025511F /* OFString+URLEncoding.h */,
 				4BF1BCC911C9663F0025511F /* OFString+URLEncoding.m */,
 				4BF1BCCA11C9663F0025511F /* OFString+XMLEscaping.h */,
@@ -830,6 +843,8 @@
 				4BF1BCCF11C9663F0025511F /* OFXMLAttribute.m */,
 				4B6799871099E7C50041064A /* OFXMLElement.h */,
 				4B6799881099E7C50041064A /* OFXMLElement.m */,
+				4BB25E86139C388A00F574EA /* OFXMLElement+Serialization.h */,
+				4BB25E87139C388A00F574EA /* OFXMLElement+Serialization.m */,
 				4B0D249411DFAA3D00ED6FFC /* OFXMLElementBuilder.h */,
 				4B0D249511DFAA3D00ED6FFC /* OFXMLElementBuilder.m */,
 				4B6799891099E7C50041064A /* OFXMLParser.h */,
@@ -961,6 +976,7 @@
 				4B511B7C139C0A34003764A5 /* OFNull.h in Headers */,
 				4B3D23D01337FCB000DD29B8 /* OFNumber.h in Headers */,
 				4B3D23D11337FCB000DD29B8 /* OFObject.h in Headers */,
+				4BB25E88139C388A00F574EA /* OFObject+Serialization.h in Headers */,
 				4B3D23D21337FCB000DD29B8 /* OFPlugin.h in Headers */,
 				4B3D23D31337FCB000DD29B8 /* OFSeekableStream.h in Headers */,
 				4B989C2F13771A3700109A30 /* OFSerialization.h in Headers */,
@@ -970,6 +986,7 @@
 				4B3D23D71337FCB000DD29B8 /* OFStreamSocket.h in Headers */,
 				4B3D23D81337FCB000DD29B8 /* OFString.h in Headers */,
 				4B3D23D91337FCB000DD29B8 /* OFString+Hashing.h in Headers */,
+				4BB25E8A139C388A00F574EA /* OFString+Serialization.h in Headers */,
 				4B3D23DA1337FCB000DD29B8 /* OFString+URLEncoding.h in Headers */,
 				4B3D23DB1337FCB000DD29B8 /* OFString+XMLEscaping.h in Headers */,
 				4B3D23DC1337FCB000DD29B8 /* OFString+XMLUnescaping.h in Headers */,
@@ -978,6 +995,7 @@
 				4B3D23DF1337FCB000DD29B8 /* OFURL.h in Headers */,
 				4B3D23E01337FCB000DD29B8 /* OFXMLAttribute.h in Headers */,
 				4B3D23E11337FCB000DD29B8 /* OFXMLElement.h in Headers */,
+				4BB25E8C139C388A00F574EA /* OFXMLElement+Serialization.h in Headers */,
 				4B3D23E21337FCB000DD29B8 /* OFXMLElementBuilder.h in Headers */,
 				4B3D23E31337FCB000DD29B8 /* OFXMLParser.h in Headers */,
 				4B3D23E41337FCB000DD29B8 /* ObjFW.h in Headers */,
@@ -1206,8 +1224,10 @@
 				4B3D239B1337FC0D00DD29B8 /* OFMutableArray.m in Sources */,
 				4B3D239C1337FC0D00DD29B8 /* OFMutableDictionary.m in Sources */,
 				4B3D239D1337FC0D00DD29B8 /* OFMutableString.m in Sources */,
+				4B511B7D139C0A34003764A5 /* OFNull.m in Sources */,
 				4B3D239E1337FC0D00DD29B8 /* OFNumber.m in Sources */,
 				4B3D239F1337FC0D00DD29B8 /* OFObject.m in Sources */,
+				4BB25E89139C388A00F574EA /* OFObject+Serialization.m in Sources */,
 				4B3D23A01337FC0D00DD29B8 /* OFPlugin.m in Sources */,
 				4B3D23A11337FC0D00DD29B8 /* OFSeekableStream.m in Sources */,
 				4B3D23A21337FC0D00DD29B8 /* OFSHA1Hash.m in Sources */,
@@ -1216,6 +1236,7 @@
 				4B3D23A51337FC0D00DD29B8 /* OFStreamSocket.m in Sources */,
 				4B3D23A61337FC0D00DD29B8 /* OFString.m in Sources */,
 				4B3D23A71337FC0D00DD29B8 /* OFString+Hashing.m in Sources */,
+				4BB25E8B139C388A00F574EA /* OFString+Serialization.m in Sources */,
 				4B3D23A81337FC0D00DD29B8 /* OFString+URLEncoding.m in Sources */,
 				4B3D23A91337FC0D00DD29B8 /* OFString+XMLEscaping.m in Sources */,
 				4B3D23AA1337FC0D00DD29B8 /* OFString+XMLUnescaping.m in Sources */,
@@ -1224,6 +1245,7 @@
 				4B3D23AD1337FC0D00DD29B8 /* OFURL.m in Sources */,
 				4B3D23AE1337FC0D00DD29B8 /* OFXMLAttribute.m in Sources */,
 				4B3D23AF1337FC0D00DD29B8 /* OFXMLElement.m in Sources */,
+				4BB25E8D139C388A00F574EA /* OFXMLElement+Serialization.m in Sources */,
 				4B3D23B01337FC0D00DD29B8 /* OFXMLElementBuilder.m in Sources */,
 				4B3D23B11337FC0D00DD29B8 /* OFXMLParser.m in Sources */,
 				4B3D23B31337FC0D00DD29B8 /* base64.m in Sources */,
@@ -1283,8 +1305,6 @@
 				4B17FFB6133A375B003E6DCD /* OFUnboundNamespaceException.m in Sources */,
 				4B17FFB2133A3664003E6DCD /* OFUnsupportedProtocolException.m in Sources */,
 				4B55A117133AC24600B58A93 /* OFWriteFailedException.m in Sources */,
-				4BC5E7D6137F0D0E0076F962 /* OFSerialization.m in Sources */,
-				4B511B7D139C0A34003764A5 /* OFNull.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -386,3 +386,5 @@
 - (OFArray*)elementsForName: (OFString*)elementName
 		  namespace: (OFString*)elementNS;
 @end
+
+#import "OFXMLElement+Serialization.h"

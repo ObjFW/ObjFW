@@ -531,6 +531,8 @@ typedef enum of_endianess_t {
 - (of_comparison_result_t)compare: (id)object;
 @end
 
+#import "OFObject+Serialization.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

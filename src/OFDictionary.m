@@ -515,13 +515,13 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 				    newWithClass: isa
 					selector: _cmd];
 
-			key = [OFSerialization objectByDeserializingXMLElement:
-			    [keyElement elementForName: @"object"
-					     namespace: OF_SERIALIZATION_NS]];
-			object = [OFSerialization
-			    objectByDeserializingXMLElement:
-			    [valueElement elementForName: @"object"
-					       namespace: OF_SERIALIZATION_NS]];
+			key = [[keyElement elementForName: @"object"
+						namespace: OF_SERIALIZATION_NS]
+			    objectByDeserializing];
+			object = [[valueElement
+			    elementForName: @"object"
+				 namespace: OF_SERIALIZATION_NS]
+			    objectByDeserializing];
 
 			[dictionary setObject: object
 				       forKey: key];

@@ -59,6 +59,7 @@ extern const uint16_t of_windows_1252[256];
 void _references_to_categories_of_OFString(void)
 {
 	_OFString_Hashing_reference = 1;
+	_OFString_Serialization_reference = 1;
 	_OFString_URLEncoding_reference = 1;
 	_OFString_XMLEscaping_reference = 1;
 	_OFString_XMLUnescaping_reference = 1;

@@ -7,52 +7,55 @@ LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 STATIC_LIB = ${OBJFW_STATIC_LIB}
 
-SRCS = OFApplication.m		\
-       OFArray.m		\
-       OFAutoreleasePool.m	\
-       OFBlock.m		\
-       OFConstantString.m	\
-       OFDataArray.m		\
-       OFDataArray+Hashing.m	\
-       OFDate.m			\
-       OFDictionary.m		\
-       OFFile.m			\
-       OFHash.m			\
-       OFHTTPRequest.m		\
-       OFEnumerator.m		\
-       OFList.m			\
-       OFMD5Hash.m		\
-       OFMutableArray.m		\
-       OFMutableDictionary.m	\
-       OFMutableString.m	\
-       OFNull.m			\
-       OFNumber.m		\
-       OFObject.m		\
-       ${OFPLUGIN_M}		\
-       OFSeekableStream.m	\
-       OFSerialization.m	\
-       OFSHA1Hash.m		\
-       OFStream.m		\
-       OFStreamObserver.m	\
-       OFStreamSocket.m		\
-       OFString.m		\
-       OFString+Hashing.m	\
-       OFString+URLEncoding.m	\
-       OFString+XMLEscaping.m	\
-       OFString+XMLUnescaping.m	\
-       OFTCPSocket.m		\
-       ${OFTHREAD_M}		\
-       OFURL.m			\
-       OFXMLAttribute.m		\
-       OFXMLElement.m		\
-       OFXMLElementBuilder.m	\
-       OFXMLParser.m		\
-       base64.m			\
-       of_asprintf.m		\
+SRCS = OFApplication.m			\
+       OFArray.m			\
+       OFAutoreleasePool.m		\
+       OFBlock.m			\
+       OFConstantString.m		\
+       OFDataArray.m			\
+       OFDataArray+Hashing.m		\
+       OFDate.m				\
+       OFDictionary.m			\
+       OFFile.m				\
+       OFHash.m				\
+       OFHTTPRequest.m			\
+       OFEnumerator.m			\
+       OFList.m				\
+       OFMD5Hash.m			\
+       OFMutableArray.m			\
+       OFMutableDictionary.m		\
+       OFMutableString.m		\
+       OFNull.m				\
+       OFNumber.m			\
+       OFObject.m			\
+       OFObject+Serialization.m		\
+       ${OFPLUGIN_M}			\
+       OFSeekableStream.m		\
+       OFSHA1Hash.m			\
+       OFStream.m			\
+       OFStreamObserver.m		\
+       OFStreamSocket.m			\
+       OFString.m			\
+       OFString+Hashing.m		\
+       OFString+Serialization.m		\
+       OFString+URLEncoding.m		\
+       OFString+XMLEscaping.m		\
+       OFString+XMLUnescaping.m		\
+       OFTCPSocket.m			\
+       ${OFTHREAD_M}			\
+       OFURL.m				\
+       OFXMLAttribute.m			\
+       OFXMLElement.m			\
+       OFXMLElement+Serialization.m	\
+       OFXMLElementBuilder.m		\
+       OFXMLParser.m			\
+       base64.m				\
+       of_asprintf.m			\
        unicode.m
 
 INCLUDES := ${SRCS:.m=.h}	\
 	    OFCollection.h	\
+	    OFSerialization.h	\
 	    ObjFW.h		\
 	    asprintf.h		\
 	    ${ATOMIC_H}		\

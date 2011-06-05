@@ -57,8 +57,7 @@
 			  namespace: OF_SERIALIZATION_NS] objectEnumerator];
 		pool2 = [[OFAutoreleasePool alloc] init];
 		while ((child = [enumerator nextObject]) != nil) {
-			id object = [OFSerialization
-			    objectByDeserializingXMLElement: child];
+			id object = [child objectByDeserializing];
 
 			[self appendObject: object];
 

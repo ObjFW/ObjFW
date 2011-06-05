@@ -16,26 +16,24 @@
 
 #import "OFObject.h"
 
-#define OF_SERIALIZATION_NS @"https://webkeks.org/objfw/serialization"
+@class OFString;
 
-@class OFXMLElement;
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern int _OFObject_Serialization_reference;
+#ifdef __cplusplus
+}
+#endif
 
 /**
- * \brief A protocol for serializing objects.
+ * \brief A category that provides methods for serializing objects.
  */
-@protocol OFSerialization <OFObject>
+@interface OFObject (OFSerialization)
 /**
- * \brief Initializes the object with the specified XML element serialization.
+ * \brief Creates a string by serializing the receiver.
  *
- * \param element An OFXMLElement with the serialized object
- * \return An initialized object
+ * \return The object serialized as a string
  */
-- initWithSerialization: (OFXMLElement*)element;
-
-/**
- * \brief Serializes the object into an XML element.
- *
- * \return The object serialized into an XML element
- */
-- (OFXMLElement*)XMLElementBySerializing;
+- (OFString*)stringBySerializing;
 @end

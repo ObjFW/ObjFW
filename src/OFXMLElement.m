@@ -35,6 +35,12 @@
 
 #import "macros.h"
 
+/* References for static linking */
+void _references_to_categories_of_OFXMLElement(void)
+{
+	_OFXMLElement_Serialization_reference = 1;
+}
+
 @interface OFXMLElement_OFXMLElementBuilderDelegate: OFObject
 {
 @public
@@ -321,17 +327,17 @@
 		childrenElement = [element elementForName: @"children"
 						namespace: OF_SERIALIZATION_NS];
 
-		attributes = [[OFSerialization objectByDeserializingXMLElement:
-		    [attributesElement elementForName: @"object"
-					    namespace: OF_SERIALIZATION_NS]]
+		attributes = [[[attributesElement
+		    elementForName: @"object"
+			 namespace: OF_SERIALIZATION_NS] objectByDeserializing]
 		    retain];
-		namespaces = [[OFSerialization objectByDeserializingXMLElement:
-		    [namespacesElement elementForName: @"object"
-					    namespace: OF_SERIALIZATION_NS]]
+		namespaces = [[[namespacesElement
+		    elementForName: @"object"
+			 namespace: OF_SERIALIZATION_NS] objectByDeserializing]
 		    retain];
-		children = [[OFSerialization objectByDeserializingXMLElement:
-		    [childrenElement elementForName: @"object"
-					  namespace: OF_SERIALIZATION_NS]]
+		children = [[[childrenElement
+		    elementForName: @"object"
+			 namespace: OF_SERIALIZATION_NS] objectByDeserializing]
 		    retain];
 
 		if (!((name != nil || ns != nil || defaultNamespace != nil ||

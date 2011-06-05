@@ -89,12 +89,11 @@ static const OFString *expected = @"<?xml version='1.0' encoding='UTF-8'?>\n"
 	[d setObject: @"list"
 	      forKey: l];
 
-	TEST(@"Serialization",
-	    (s = [OFSerialization stringBySerializingObject: d]) &&
-	    [s isEqual: expected])
+	TEST(@"-[stringBySerializing]",
+	    (s = [d stringBySerializing]) && [s isEqual: expected])
 
-	TEST(@"Deserialization",
-	    [[OFSerialization objectByDeserializingString: s] isEqual: d])
+	TEST(@"-[objectByDeserializing]",
+	    [[s objectByDeserializing] isEqual: d])
 
 	[pool drain];
 }

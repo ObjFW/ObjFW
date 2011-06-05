@@ -122,6 +122,12 @@ _NSPrintForDebugger(id object)
 	return [[object description] cString];
 }
 
+/* References for static linking */
+void _references_to_categories_of_OFObject(void)
+{
+	_OFObject_Serialization_reference = 1;
+}
+
 @implementation OFObject
 + (void)load
 {
