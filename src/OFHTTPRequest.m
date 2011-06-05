@@ -218,7 +218,7 @@ normalize_key(OFString *key)
 		size_t bytesReceived;
 
 		[sock connectToHost: [URL host]
-			     onPort: [URL port]];
+			       port: [URL port]];
 
 		/*
 		 * Work around a bug with packet bisection in lighttpd when

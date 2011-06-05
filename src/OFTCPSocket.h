@@ -48,7 +48,7 @@
  * \param port The port on the host to connect to
  */
 - (void)connectToHost: (OFString*)host
-	       onPort: (uint16_t)port;
+		 port: (uint16_t)port;
 
 /**
  * Bind the socket on the specified port and host.

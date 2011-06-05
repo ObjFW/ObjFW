@@ -79,7 +79,7 @@ static OFMutex *mutex = nil;
 }
 
 - (void)connectToHost: (OFString*)host
-	       onPort: (uint16_t)port
+		 port: (uint16_t)port
 {
 	if (sock != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException newWithClass: isa

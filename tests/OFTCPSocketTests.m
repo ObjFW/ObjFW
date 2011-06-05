@@ -45,9 +45,9 @@ static OFString *module = @"OFTCPSocket";
 
 	TEST(@"-[listen]", R([server listen]))
 
-	TEST(@"-[connectToHost:onPort:]",
+	TEST(@"-[connectToHost:port:]",
 	    R([client connectToHost: @"127.0.0.1"
-			     onPort: port]))
+			       port: port]))
 
 	TEST(@"-[accept]", (accepted = [server accept]))
 
