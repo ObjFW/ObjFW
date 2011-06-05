@@ -207,6 +207,20 @@ of_bswap64_nonconst(uint64_t i)
 # define of_bswap64(i) of_bswap64_const(i)
 #endif
 
+static OF_INLINE float OF_CONST_FUNC
+of_bswap_float(float f)
+{
+	uint32_t tmp = of_bswap32(*(uint32_t*)&f);
+	return *(float*)&tmp;
+}
+
+static OF_INLINE double OF_CONST_FUNC
+of_bswap_double(double d)
+{
+	uint64_t tmp = of_bswap64(*(uint64_t*)&d);
+	return *(double*)&tmp;
+}
+
 static OF_INLINE void
 of_bswap32_vec(uint32_t *buffer, size_t length)
 {
@@ -232,6 +246,18 @@ of_bswap32_vec(uint32_t *buffer, size_t length)
 # define of_bswap32_if_le(i) of_bswap32(i)
 # define of_bswap64_if_le(i) of_bswap64(i)
 # define of_bswap32_vec_if_be(buffer, length)
+#endif
+
+#ifdef OF_FLOAT_BIG_ENDIAN
+# define of_bswap_float_if_be(i) of_bswap_float(i)
+# define of_bswap_double_if_be(i) of_bswap_double(i)
+# define of_bswap_float_if_le(i) (i)
+# define of_bswap_double_if_le(i) (i)
+#else
+# define of_bswap_float_if_be(i) (i)
+# define of_bswap_double_if_be(i) (i)
+# define of_bswap_float_if_le(i) of_bswap_float(i)
+# define of_bswap_double_if_le(i) of_bswap_double(i)
 #endif
 
 #define OF_ROL(value, bits)						\
