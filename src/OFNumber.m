@@ -946,20 +946,31 @@
 - (uint32_t)hash
 {
 	uint32_t hash;
-	size_t i;
 
 	switch (type) {
-	case OF_NUMBER_FLOAT:
+	case OF_NUMBER_FLOAT:;
+		union {
+			float f;
+			uint32_t i;
+		} f;
+
+		f.f = of_bswap_float_if_le(value.float_);
+
 		OF_HASH_INIT(hash);
-		for (i = 0; i < sizeof(float); i++)
-			OF_HASH_ADD(hash, ((char*)&value.float_)[i]);
+		OF_HASH_ADD_INT32(hash, f.i);
 		OF_HASH_FINALIZE(hash);
 
 		return hash;
-	case OF_NUMBER_DOUBLE:
+	case OF_NUMBER_DOUBLE:;
+		union {
+			double d;
+			uint64_t i;
+		} d;
+
+		d.d = of_bswap_double_if_le(value.double_);
+
 		OF_HASH_INIT(hash);
-		for (i = 0; i < sizeof(double); i++)
-			OF_HASH_ADD(hash, ((char*)&value.double_)[i]);
+		OF_HASH_ADD_INT64(hash, d.i);
 		OF_HASH_FINALIZE(hash);
 
 		return hash;
