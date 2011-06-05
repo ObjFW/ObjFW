@@ -215,7 +215,27 @@ esac
 
 AC_C_BIGENDIAN([
 	AC_DEFINE(OF_BIG_ENDIAN, 1, [Whether we are big endian])
-	AC_SUBST(ENDIANESS_DEF, "-DOF_BIG_ENDIAN")
+])
+
+AC_MSG_CHECKING(for floating point endianess)
+float_endianess="unknown"
+AC_TRY_COMPILE([
+	double endianess = 184092775106.859375;
+], [
+], [
+	AS_IF([$EGREP BEndian conftest.$ac_objext >/dev/null], [
+		AC_DEFINE(OF_FLOAT_BIG_ENDIAN, 1,
+			[Whether floats are big endian])
+		float_endianess="big endian"
+	], [
+		AS_IF([$EGREP naidnEB conftest.$ac_objext >/dev/null], [
+			float_endianess="little endian"
+		])
+	])
+])
+AC_MSG_RESULT($float_endianess)
+AS_IF([test x"$float_endianess" = x"unknown"], [
+       AC_MSG_ERROR([FP implementation does not conform to IEEE 754!])
 ])
 
 AC_MSG_CHECKING(for SIZE_MAX)
