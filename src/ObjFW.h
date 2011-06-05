@@ -51,6 +51,8 @@
 #import "OFXMLParser.h"
 #import "OFXMLElementBuilder.h"
 
+#import "OFSerialization.h"
+
 #import "OFApplication.h"
 
 #import "OFAllocFailedException.h"
