@@ -748,10 +748,12 @@
 			value.intmax = [[element stringValue] decimalValue];
 		} else if ([typeString isEqual: @"float"]) {
 			type = OF_NUMBER_FLOAT;
-			value.float_ = [[element stringValue] floatValue];
+			*(uint32_t*)&value.float_ =
+			    (uint32_t)[[element stringValue] hexadecimalValue];
 		} else if ([typeString isEqual: @"double"]) {
 			type = OF_NUMBER_DOUBLE;
-			value.double_ = [[element stringValue] doubleValue];
+			*(uint64_t*)&value.double_ =
+			    (uint64_t)[[element stringValue] hexadecimalValue];
 		} else
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
@@ -1205,17 +1207,23 @@
 	case OF_NUMBER_SSIZE:
 	case OF_NUMBER_INTMAX:
 	case OF_NUMBER_PTRDIFF:
-	case OF_NUMBER_INTPTR:
+	case OF_NUMBER_INTPTR:;
 		[element addAttributeWithName: @"type"
 				  stringValue: @"signed"];
 		break;
 	case OF_NUMBER_FLOAT:
 		[element addAttributeWithName: @"type"
 				  stringValue: @"float"];
+		[element setStringValue:
+		    [OFString stringWithFormat: @"%" PRIX32,
+						*(uint32_t*)&value.float_]];
 		break;
 	case OF_NUMBER_DOUBLE:
 		[element addAttributeWithName: @"type"
 				  stringValue: @"double"];
+		[element setStringValue:
+		    [OFString stringWithFormat: @"%" PRIX64,
+						*(uint64_t*)&value.double_]];
 		break;
 	default:
 		@throw [OFInvalidFormatException newWithClass: isa];
