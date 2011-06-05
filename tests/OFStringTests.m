@@ -243,6 +243,9 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[stringByAppendingString:]",
 	    [[@"foo" stringByAppendingString: @"bar"] isEqual: @"foobar"])
 
+	TEST(@"-[stringByPrependingString:]",
+	    [[@"foo" stringByPrependingString: @"bar"] isEqual: @"barfoo"])
+
 	TEST(@"-[hasPrefix:]", [@"foobar" hasPrefix: @"foo"] &&
 	    ![@"foobar" hasPrefix: @"foobar0"])
 

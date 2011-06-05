@@ -563,6 +563,14 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (OFString*)stringByAppendingString: (OFString*)string;
 
 /**
+ * Creates a new string by prepending another string.
+ *
+ * \param string The string to prepend
+ * \return A new autoreleased OFString with the specified string prepended
+ */
+- (OFString*)stringByPrependingString: (OFString*)string;
+
+/**
  * \return The string in uppercase
  */
 - (OFString*)uppercaseString;

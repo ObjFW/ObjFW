@@ -1415,6 +1415,22 @@ of_utf16_string_length(const uint16_t *string)
 	return new;
 }
 
+- (OFString*)stringByPrependingString: (OFString*)string_
+{
+	OFMutableString *new;
+
+	new = [OFMutableString stringWithString: string_];
+	[new appendString: self];
+
+	/*
+	 * Class swizzle the string to be immutable. We declared the return type
+	 * to be OFString*, so it can't be modified anyway. But not swizzling it
+	 * would create a real copy each time -[copy] is called.
+	 */
+	new->isa = [OFString class];
+	return new;
+}
+
 - (OFString*)uppercaseString
 {
 	OFMutableString *new;
