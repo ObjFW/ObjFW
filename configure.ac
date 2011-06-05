@@ -217,6 +217,12 @@ AC_C_BIGENDIAN([
 	AC_DEFINE(OF_BIG_ENDIAN, 1, [Whether we are big endian])
 ])
 
+AC_CHECK_SIZEOF(float)
+AC_CHECK_SIZEOF(double)
+AS_IF([test x"$ac_cv_sizeof_float" != x"4" -o x"$ac_cv_sizeof_double" != x"8"],
+	[AC_MSG_ERROR(
+		[Floating point implementation does not conform to IEEE 754!])])
+
 AC_MSG_CHECKING(for floating point endianess)
 float_endianess="unknown"
 AC_TRY_COMPILE([
@@ -235,8 +241,8 @@ AC_TRY_COMPILE([
 ])
 AC_MSG_RESULT($float_endianess)
 AS_IF([test x"$float_endianess" = x"unknown"], [
-       AC_MSG_ERROR([FP implementation does not conform to IEEE 754!])
-])
+	AC_MSG_ERROR(
+		[Floating point implementation does not conform to IEEE 754!])])
 
 AC_MSG_CHECKING(for SIZE_MAX)
 AC_EGREP_CPP(yes, [
