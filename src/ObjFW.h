@@ -30,6 +30,8 @@
 #import "OFDictionary.h"
 #import "OFEnumerator.h"
 
+#import "OFNull.h"
+
 #import "OFNumber.h"
 #import "OFDate.h"
 #import "OFURL.h"

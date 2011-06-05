@@ -255,7 +255,7 @@ static OFMutex *mutex;
 		if (![[element name] isEqual: @"object"] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS] ||
 		    ![[[element attributeForName: @"class"] stringValue]
-		    isEqual: [isa className]])
+		    isEqual: [self className]])
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 

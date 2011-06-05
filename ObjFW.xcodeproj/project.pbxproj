@@ -187,6 +187,8 @@
 		4B3D23EB1337FCB000DD29B8 /* unicode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67998C1099E7C50041064A /* unicode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3D23EE1337FFD000DD29B8 /* of_asprintf.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB50DD012F863C700C9393F /* of_asprintf.m */; };
 		4B3D5694139A617D0010A78F /* OFSerializationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3D5693139A617D0010A78F /* OFSerializationTests.m */; };
+		4B511B7C139C0A34003764A5 /* OFNull.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B511B7A139C0A34003764A5 /* OFNull.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B511B7D139C0A34003764A5 /* OFNull.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B511B7B139C0A34003764A5 /* OFNull.m */; };
 		4B55A0FF133ABEA900B58A93 /* OFThreadJoinFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B55A0F9133ABEA900B58A93 /* OFThreadJoinFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B55A100133ABEA900B58A93 /* OFThreadJoinFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B55A0FA133ABEA900B58A93 /* OFThreadJoinFailedException.m */; };
 		4B55A101133ABEA900B58A93 /* OFThreadStartFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B55A0FB133ABEA900B58A93 /* OFThreadStartFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -401,6 +403,8 @@
 		4B4986DF1101F64500A2CFDA /* objc_properties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = objc_properties.m; path = src/objc_properties.m; sourceTree = "<group>"; };
 		4B4A61F212DF5EA20048F3F2 /* OFURL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFURL.h; path = src/OFURL.h; sourceTree = SOURCE_ROOT; };
 		4B4A61F312DF5EA20048F3F2 /* OFURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFURL.m; path = src/OFURL.m; sourceTree = SOURCE_ROOT; };
+		4B511B7A139C0A34003764A5 /* OFNull.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFNull.h; path = src/OFNull.h; sourceTree = "<group>"; };
+		4B511B7B139C0A34003764A5 /* OFNull.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFNull.m; path = src/OFNull.m; sourceTree = "<group>"; };
 		4B55A0F9133ABEA900B58A93 /* OFThreadJoinFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFThreadJoinFailedException.h; path = src/exceptions/OFThreadJoinFailedException.h; sourceTree = "<group>"; };
 		4B55A0FA133ABEA900B58A93 /* OFThreadJoinFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFThreadJoinFailedException.m; path = src/exceptions/OFThreadJoinFailedException.m; sourceTree = "<group>"; };
 		4B55A0FB133ABEA900B58A93 /* OFThreadStartFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFThreadStartFailedException.h; path = src/exceptions/OFThreadStartFailedException.h; sourceTree = "<group>"; };
@@ -786,6 +790,8 @@
 				4B6799721099E7C50041064A /* OFMutableDictionary.m */,
 				4B6799731099E7C50041064A /* OFMutableString.h */,
 				4B6799741099E7C50041064A /* OFMutableString.m */,
+				4B511B7A139C0A34003764A5 /* OFNull.h */,
+				4B511B7B139C0A34003764A5 /* OFNull.m */,
 				4B6799751099E7C50041064A /* OFNumber.h */,
 				4B6799761099E7C50041064A /* OFNumber.m */,
 				4B6799771099E7C50041064A /* OFObject.h */,
@@ -952,6 +958,7 @@
 				4B3D23CD1337FCB000DD29B8 /* OFMutableArray.h in Headers */,
 				4B3D23CE1337FCB000DD29B8 /* OFMutableDictionary.h in Headers */,
 				4B3D23CF1337FCB000DD29B8 /* OFMutableString.h in Headers */,
+				4B511B7C139C0A34003764A5 /* OFNull.h in Headers */,
 				4B3D23D01337FCB000DD29B8 /* OFNumber.h in Headers */,
 				4B3D23D11337FCB000DD29B8 /* OFObject.h in Headers */,
 				4B3D23D21337FCB000DD29B8 /* OFPlugin.h in Headers */,
@@ -1277,6 +1284,7 @@
 				4B17FFB2133A3664003E6DCD /* OFUnsupportedProtocolException.m in Sources */,
 				4B55A117133AC24600B58A93 /* OFWriteFailedException.m in Sources */,
 				4BC5E7D6137F0D0E0076F962 /* OFSerialization.m in Sources */,
+				4B511B7D139C0A34003764A5 /* OFNull.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

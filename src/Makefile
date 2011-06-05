@@ -25,6 +25,7 @@ SRCS = OFApplication.m		\
        OFMutableArray.m		\
        OFMutableDictionary.m	\
        OFMutableString.m	\
+       OFNull.m			\
        OFNumber.m		\
        OFObject.m		\
        ${OFPLUGIN_M}		\
