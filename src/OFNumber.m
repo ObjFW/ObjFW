@@ -1211,19 +1211,33 @@
 		[element addAttributeWithName: @"type"
 				  stringValue: @"signed"];
 		break;
-	case OF_NUMBER_FLOAT:
+	case OF_NUMBER_FLOAT:;
+		union {
+			float f;
+			uint32_t i;
+		} f;
+
+		f.f = value.float_;
+
 		[element addAttributeWithName: @"type"
 				  stringValue: @"float"];
 		[element setStringValue:
-		    [OFString stringWithFormat: @"%" PRIX32,
-						*(uint32_t*)&value.float_]];
+		    [OFString stringWithFormat: @"%" PRIX32, f.i]];
+
 		break;
-	case OF_NUMBER_DOUBLE:
+	case OF_NUMBER_DOUBLE:;
+		union {
+			double d;
+			uint64_t i;
+		} d;
+
+		d.d = value.double_;
+
 		[element addAttributeWithName: @"type"
 				  stringValue: @"double"];
 		[element setStringValue:
-		    [OFString stringWithFormat: @"%" PRIX64,
-						*(uint64_t*)&value.double_]];
+		    [OFString stringWithFormat: @"%" PRIX64, d.i]];
+
 		break;
 	default:
 		@throw [OFInvalidFormatException newWithClass: isa];

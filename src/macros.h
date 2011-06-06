@@ -210,15 +210,29 @@ of_bswap64_nonconst(uint64_t i)
 static OF_INLINE float OF_CONST_FUNC
 of_bswap_float(float f)
 {
-	uint32_t tmp = of_bswap32(*(uint32_t*)&f);
-	return *(float*)&tmp;
+	union {
+		float f;
+		uint32_t i;
+	} u;
+
+	u.f = f;
+	u.i = of_bswap32(u.i);
+
+	return u.f;
 }
 
 static OF_INLINE double OF_CONST_FUNC
 of_bswap_double(double d)
 {
-	uint64_t tmp = of_bswap64(*(uint64_t*)&d);
-	return *(double*)&tmp;
+	union {
+		double d;
+		uint64_t i;
+	} u;
+
+	u.d = d;
+	u.i = of_bswap64(u.i);
+
+	return u.d;
 }
 
 static OF_INLINE void
