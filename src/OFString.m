@@ -36,6 +36,7 @@
 #import "OFFile.h"
 #import "OFURL.h"
 #import "OFHTTPRequest.h"
+#import "OFDataArray.h"
 #import "OFXMLElement.h"
 #import "OFAutoreleasePool.h"
 

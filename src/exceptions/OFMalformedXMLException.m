@@ -18,6 +18,7 @@
 
 #import "OFMalformedXMLException.h"
 #import "OFString.h"
+#import "OFXMLParser.h"
 
 #import "OFNotImplementedException.h"
 

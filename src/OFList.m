@@ -21,6 +21,7 @@
 #import "OFList.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
+#import "OFArray.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFEnumerationMutationException.h"

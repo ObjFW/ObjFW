@@ -18,6 +18,7 @@
 
 #import "OFHashAlreadyCalculatedException.h"
 #import "OFString.h"
+#import "OFHash.h"
 
 #import "OFNotImplementedException.h"
 

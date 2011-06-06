@@ -18,6 +18,7 @@
 
 #import "OFNotConnectedException.h"
 #import "OFString.h"
+#import "OFTCPSocket.h"
 
 #import "OFNotImplementedException.h"
 

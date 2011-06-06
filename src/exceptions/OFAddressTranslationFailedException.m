@@ -18,6 +18,7 @@
 
 #import "OFAddressTranslationFailedException.h"
 #import "OFString.h"
+#import "OFTCPSocket.h"
 
 #import "common.h"
 
