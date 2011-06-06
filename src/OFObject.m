@@ -364,7 +364,7 @@ objc_enumerationMutation(id obj)
 }
 
 + (IMP)replaceClassMethod: (SEL)selector
-      withMethodFromClass: (Class)class;
+      withMethodFromClass: (Class)class
 {
 	IMP newimp;
 
@@ -422,7 +422,7 @@ objc_enumerationMutation(id obj)
 }
 
 + (IMP)replaceInstanceMethod: (SEL)selector
-	 withMethodFromClass: (Class)class;
+	 withMethodFromClass: (Class)class
 {
 	IMP newimp;
 
@@ -680,7 +680,7 @@ objc_enumerationMutation(id obj)
 			   toSize: nitems * size];
 }
 
-- (void)freeMemory: (void*)ptr;
+- (void)freeMemory: (void*)ptr
 {
 	void **iter, *last, **memchunks;
 	size_t i, memchunks_size;

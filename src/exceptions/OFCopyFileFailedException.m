@@ -89,7 +89,7 @@
 	return sourcePath;
 }
 
-- (OFString*)destinationPath;
+- (OFString*)destinationPath
 {
 	return destinationPath;
 }

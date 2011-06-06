@@ -1214,7 +1214,7 @@ of_string_index_to_position(const char *str, size_t idx, size_t len)
 				    length: path_len - i];
 }
 
-- (OFString*)stringByDeletingLastPathComponent;
+- (OFString*)stringByDeletingLastPathComponent
 {
 	size_t i, path_len = length;
 

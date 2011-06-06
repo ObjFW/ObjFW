@@ -54,7 +54,7 @@ void *_OFConstantStringClassReference;
 }
 
 - initWithCString: (const char*)str
-	 encoding: (of_string_encoding_t)encoding;
+	 encoding: (of_string_encoding_t)encoding
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
