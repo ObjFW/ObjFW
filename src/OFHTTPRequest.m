@@ -23,6 +23,7 @@
 #import "OFURL.h"
 #import "OFTCPSocket.h"
 #import "OFDictionary.h"
+#import "OFDataArray.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFHTTPRequestFailedException.h"

@@ -18,6 +18,7 @@
 
 #import "OFSetOptionFailedException.h"
 #import "OFString.h"
+#import "OFStream.h"
 
 #import "OFNotImplementedException.h"
 

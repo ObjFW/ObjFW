@@ -18,6 +18,7 @@
 
 #import "OFMutexStillLockedException.h"
 #import "OFString.h"
+#import "OFThread.h"
 
 #import "OFNotImplementedException.h"
 

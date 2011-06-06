@@ -15,13 +15,13 @@
  */
 
 #import "OFObject.h"
+#import "OFXMLAttribute.h"
 
 @class OFString;
 @class OFArray;
 @class OFMutableString;
 @class OFMutableArray;
 @class OFMutableDictionary;
-@class OFXMLAttribute;
 
 /**
  * \brief A class which stores an XML element.

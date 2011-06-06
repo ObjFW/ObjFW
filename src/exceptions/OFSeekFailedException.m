@@ -18,6 +18,7 @@
 
 #import "OFSeekFailedException.h"
 #import "OFString.h"
+#import "OFSeekableStream.h"
 
 #import "OFNotImplementedException.h"
 
