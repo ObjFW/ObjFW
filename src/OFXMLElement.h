@@ -255,6 +255,26 @@
 - (OFString*)stringValue;
 
 /**
+ * \return An integer with the decimal value of all children concatenated
+ */
+- (intmax_t)decimalValue;
+
+/**
+ * \return An integer with the hexadecimal value of all children concatenated
+ */
+- (uintmax_t)hexadecimalValue;
+
+/**
+ * \return A float with the float value of all children concatenated
+ */
+- (float)floatValue;
+
+/**
+ * \return A double with the double value of all children concatenated
+ */
+- (double)doubleValue;
+
+/**
  * \return A new autoreleased OFString representing the OFXMLElement as an
  *	   XML string
  */
