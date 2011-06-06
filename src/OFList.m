@@ -84,12 +84,12 @@
 	[super dealloc];
 }
 
-- (of_list_object_t*)firstListObject;
+- (of_list_object_t*)firstListObject
 {
 	return firstListObject;
 }
 
-- (of_list_object_t*)lastListObject;
+- (of_list_object_t*)lastListObject
 {
 	return lastListObject;
 }
@@ -420,7 +420,7 @@
 
 @implementation OFListEnumerator
 -     initWithList: (OFList*)list_
-  mutationsPointer: (unsigned long*)mutationsPtr_;
+  mutationsPointer: (unsigned long*)mutationsPtr_
 {
 	self = [super init];
 

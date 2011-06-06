@@ -1177,7 +1177,7 @@ of_utf16_string_length(const uint16_t *string)
 		return OF_ORDERED_ASCENDING;
 }
 
-- (of_comparison_result_t)caseInsensitiveCompare: (OFString*)otherString;
+- (of_comparison_result_t)caseInsensitiveCompare: (OFString*)otherString
 {
 	const char *otherCString;
 	size_t i, j, otherLen, minLen;
@@ -1657,7 +1657,7 @@ of_utf16_string_length(const uint16_t *string)
 				    length: pathLen - i];
 }
 
-- (OFString*)stringByDeletingLastPathComponent;
+- (OFString*)stringByDeletingLastPathComponent
 {
 	size_t i, pathLen = length;
 

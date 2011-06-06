@@ -377,7 +377,7 @@ void _references_to_categories_of_OFObject(void)
 }
 
 + (IMP)replaceClassMethod: (SEL)selector
-      withMethodFromClass: (Class)class;
+      withMethodFromClass: (Class)class
 {
 	IMP newImp;
 
@@ -435,7 +435,7 @@ void _references_to_categories_of_OFObject(void)
 }
 
 + (IMP)replaceInstanceMethod: (SEL)selector
-	 withMethodFromClass: (Class)class;
+	 withMethodFromClass: (Class)class
 {
 	IMP newImp;
 
@@ -694,7 +694,7 @@ void _references_to_categories_of_OFObject(void)
 			   toSize: nItems * size];
 }
 
-- (void)freeMemory: (void*)pointer;
+- (void)freeMemory: (void*)pointer
 {
 	void **iter, *last, **memoryChunks;
 	size_t i, memoryChunksSize;

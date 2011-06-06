@@ -667,7 +667,7 @@
 @implementation OFArrayEnumerator
 -    initWithArray: (OFArray*)array_
 	 dataArray: (OFDataArray*)dataArray_
-  mutationsPointer: (unsigned long*)mutationsPtr_;
+  mutationsPointer: (unsigned long*)mutationsPtr_
 {
 	self = [super init];
 

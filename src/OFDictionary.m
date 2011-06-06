@@ -36,7 +36,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 #define DELETED &of_dictionary_deleted_bucket
 
 @implementation OFDictionary
-+ dictionary;
++ dictionary
 {
 	return [[[self alloc] init] autorelease];
 }
