@@ -475,8 +475,28 @@ void _references_to_categories_of_OFXMLElement(void)
 	if (CDATA != nil)
 		return [OFString stringWithFormat: @"<![CDATA[%@]]>", CDATA];
 
-	if (comment != nil)
-		return [OFString stringWithFormat: @"<!--%@-->", comment];
+	if (comment != nil) {
+		OFString *ret;
+
+		if (indentation > 0 && level > 0) {
+			char *whitespaces = [self
+			    allocMemoryWithSize: (level * indentation) + 1];
+			memset(whitespaces, ' ', level * indentation);
+			whitespaces[level * indentation] = 0;
+
+			@try {
+				ret = [OFString
+				    stringWithFormat: @"%s<!--%@-->",
+						      whitespaces, comment];
+			} @finally {
+				[self freeMemory: whitespaces];
+			}
+		} else
+			ret = [OFString stringWithFormat: @"<!--%@-->",
+							  comment];
+
+		return ret;
+	}
 
 	pool = [[OFAutoreleasePool alloc] init];
 
@@ -617,7 +637,8 @@ void _references_to_categories_of_OFXMLElement(void)
 			indent = YES;
 
 			for (j = 0; j < childrenCount; j++) {
-				if (childrenCArray[j]->name == nil) {
+				if (childrenCArray[j]->characters != nil ||
+				    childrenCArray[j]->CDATA != nil) {
 					indent = NO;
 					break;
 				}
