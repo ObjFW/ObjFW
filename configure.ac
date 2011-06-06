@@ -26,12 +26,13 @@ AX_CHECK_COMPILER_FLAGS(-std=gnu99, [OBJCFLAGS="$OBJCFLAGS -std=gnu99"])
 AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
 AX_CHECK_COMPILER_FLAGS(-fno-common, [OBJCFLAGS="$OBJCFLAGS -fno-common"])
 AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings, [
-	NO_CONST_CFSTRINGS="-fno-constant-cfstrings"
 	OBJCFLAGS="$OBJCFLAGS -fno-constant-cfstrings"
+	AC_SUBST(NO_CONST_CFSTRINGS, "-fno-constant-cfstrings")
 ])
 AX_CHECK_COMPILER_FLAGS(-Wshorten-64-to-32,
 	[OBJCFLAGS="$OBJCFLAGS -Wshorten-64-to-32"])
-AC_SUBST(NO_CONST_CFSTRINGS)
+AX_CHECK_COMPILER_FLAGS(-Wsemicolon-before-method-body,
+	[OBJCFLAGS="$OBJCFLAGS -Wsemicolon-before-method-body"])
 
 AC_MSG_CHECKING(whether Objective C compiler supports fast enumeration)
 AC_TRY_COMPILE([
