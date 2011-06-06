@@ -468,7 +468,6 @@ void _references_to_categories_of_OFXMLElement(void)
 	OFString *ret, *tmp;
 	OFMutableDictionary *allNamespaces;
 	OFString *defaultNS;
-	BOOL indentAfter = YES;
 
 	if (characters != nil)
 		return [characters stringByXMLEscaping];
@@ -609,30 +608,40 @@ void _references_to_categories_of_OFXMLElement(void)
 		size_t childrenCount = [children count];
 		IMP append;
 		SEL appendSel = @selector(appendCStringWithoutUTF8Checking:);
+		BOOL indent;
 
 		tmp = [OFMutableString string];
 		append = [tmp methodForSelector: appendSel];
 
+		if (indentation > 0) {
+			indent = YES;
+
+			for (j = 0; j < childrenCount; j++) {
+				if (childrenCArray[j]->name == nil) {
+					indent = NO;
+					break;
+				}
+			}
+		} else
+			indent = NO;
+
 		for (j = 0; j < childrenCount; j++) {
-			if (indentation > 0 && childrenCArray[j]->name != nil)
+			if (indent)
 				append(tmp, appendSel, "\n");
 
 			append(tmp, appendSel,
 			    [[childrenCArray[j]
 			    _XMLStringWithParent: self
-				     indentation: indentation
+				     indentation: (indent ? indentation : 0)
 					   level: level + 1]
 			    cString]);
 		}
 
-		if (indentation > 0 && childrenCount > 0 &&
-		    childrenCArray[j - 1]->name != nil)
+		if (indent)
 			append(tmp, appendSel, "\n");
-		else
-			indentAfter = NO;
 
 		length += [tmp cStringLength] + [name cStringLength] + 2 +
-		    (indentAfter ? level * indentation : 0);
+		    (indent ? level * indentation : 0);
 		@try {
 			cString = [self resizeMemory: cString
 					      toSize: length];
@@ -646,7 +655,7 @@ void _references_to_categories_of_OFXMLElement(void)
 		memcpy(cString + i, [tmp cString], [tmp cStringLength]);
 		i += [tmp cStringLength];
 
-		if (indentAfter)
+		if (indent)
 			for (j = 0; j < level * indentation; j++)
 				cString[i++] = ' ';
 
