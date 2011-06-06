@@ -747,13 +747,25 @@
 			type = OF_NUMBER_INTMAX;
 			value.intmax = [[element stringValue] decimalValue];
 		} else if ([typeString isEqual: @"float"]) {
+			union {
+				float f;
+				uint32_t i;
+			} f;
+
 			type = OF_NUMBER_FLOAT;
-			*(uint32_t*)&value.float_ =
-			    (uint32_t)[[element stringValue] hexadecimalValue];
+			f.i = (uint32_t)[[element stringValue]
+			    hexadecimalValue];
+			value.float_ = f.f;
 		} else if ([typeString isEqual: @"double"]) {
+			union {
+				double d;
+				uint64_t i;
+			} d;
+
 			type = OF_NUMBER_DOUBLE;
-			*(uint64_t*)&value.double_ =
-			    (uint64_t)[[element stringValue] hexadecimalValue];
+			d.i = (uint64_t)[[element stringValue]
+			    hexadecimalValue];
+			value.double_ = d.d;
 		} else
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
