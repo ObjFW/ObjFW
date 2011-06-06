@@ -530,8 +530,8 @@ void _references_to_categories_of_OFXMLElement(void)
 	length = [name cStringLength] + 3 + (level * indentation);
 	cString = [self allocMemoryWithSize: length];
 
-	for (j = 0; j < level * indentation; j++)
-		cString[i++] = ' ';
+	memset(cString + i, ' ', level * indentation);
+	i += level * indentation;
 
 	/* Start of tag */
 	cString[i++] = '<';
@@ -676,9 +676,10 @@ void _references_to_categories_of_OFXMLElement(void)
 		memcpy(cString + i, [tmp cString], [tmp cStringLength]);
 		i += [tmp cStringLength];
 
-		if (indent)
-			for (j = 0; j < level * indentation; j++)
-				cString[i++] = ' ';
+		if (indent) {
+			memset(cString + i, ' ', level * indentation);
+			i += level * indentation;
+		}
 
 		cString[i++] = '<';
 		cString[i++] = '/';

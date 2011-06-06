@@ -136,9 +136,9 @@ static OFString *module = @"OFXMLElement";
 	    [OFXMLElement elementWithXMLString: @"<x><y></y></x>"]])
 
 	TEST(@"-[XMLStringWithIndentation:]",
-	    [[[OFXMLElement elementWithXMLString: @"<x><y><z>a\nb</z></y></x>"]
-	    XMLStringWithIndentation: 2] isEqual:
-	    @"<x>\n  <y>\n    <z>a\nb</z>\n  </y>\n</x>"])
+	    [[[OFXMLElement elementWithXMLString: @"<x><y><z>a\nb</z>"
+	    @"<!-- foo --></y></x>"] XMLStringWithIndentation: 2] isEqual:
+	    @"<x>\n  <y>\n    <z>a\nb</z>\n    <!-- foo -->\n  </y>\n</x>"])
 
 	[pool drain];
 }
