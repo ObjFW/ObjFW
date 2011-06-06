@@ -29,7 +29,8 @@ AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings, [
 	NO_CONST_CFSTRINGS="-fno-constant-cfstrings"
 	OBJCFLAGS="$OBJCFLAGS -fno-constant-cfstrings"
 ])
-AX_CHECK_COMPILER_FLAGS(-Wshorten-64-to-32, [OBJCFLAGS="$OBJCFLAGS -pipe"])
+AX_CHECK_COMPILER_FLAGS(-Wshorten-64-to-32,
+	[OBJCFLAGS="$OBJCFLAGS -Wshorten-64-to-32"])
 AC_SUBST(NO_CONST_CFSTRINGS)
 
 AC_MSG_CHECKING(whether Objective C compiler supports fast enumeration)
