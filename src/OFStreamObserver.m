@@ -42,6 +42,8 @@
 #import "OFInitializationFailedException.h"
 #import "OFOutOfRangeException.h"
 
+#import "macros.h"
+
 #ifdef _WIN32
 # define close(sock) closesocket(sock)
 #endif
@@ -163,14 +165,12 @@ enum {
 
 - (id <OFStreamObserverDelegate>)delegate
 {
-	return [[(id)delegate retain] autorelease];
+	OF_GETTER(delegate, YES)
 }
 
 - (void)setDelegate: (id <OFStreamObserverDelegate>)delegate_
 {
-	[(id)delegate_ retain];
-	[(id)delegate release];
-	delegate = delegate_;
+	OF_SETTER(delegate, delegate_, YES, NO)
 }
 
 #ifdef OF_HAVE_POLL
