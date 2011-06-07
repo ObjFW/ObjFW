@@ -71,7 +71,7 @@
 # define OF_PATH_DELIM '\\'
 #endif
 
-#define OF_IVAR_OFFSET(ivar) ((char*)&ivar - (char*)self)
+#define OF_IVAR_OFFSET(ivar) ((intptr_t)&ivar - (intptr_t)self)
 #define OF_GETTER(ivar, atomic) \
 	return objc_getProperty(self, _cmd, OF_IVAR_OFFSET(ivar), atomic);
 #define OF_SETTER(ivar, value, atomic, copy) \
