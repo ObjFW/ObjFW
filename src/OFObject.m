@@ -67,7 +67,7 @@
 
 struct pre_ivar {
 	void	      **memoryChunks;
-	size_t	      memoryChunksSize;
+	unsigned int  memoryChunksSize;
 	int32_t	      retainCount;
 #if !defined(OF_ATOMIC_OPS)
 	of_spinlock_t retainCountSpinlock;
@@ -580,12 +580,12 @@ void _references_to_categories_of_OFObject(void)
 - (void)addMemoryToPool: (void*)pointer
 {
 	void **memoryChunks;
-	size_t memoryChunksSize;
+	unsigned int memoryChunksSize;
 
 	memoryChunksSize = PRE_IVAR->memoryChunksSize + 1;
 
-	if (SIZE_MAX - PRE_IVAR->memoryChunksSize < 1 ||
-	    memoryChunksSize > SIZE_MAX / sizeof(void*))
+	if (UINT_MAX - PRE_IVAR->memoryChunksSize < 1 ||
+	    memoryChunksSize > UINT_MAX / sizeof(void*))
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	if ((memoryChunks = realloc(PRE_IVAR->memoryChunks,
@@ -601,15 +601,15 @@ void _references_to_categories_of_OFObject(void)
 - (void*)allocMemoryWithSize: (size_t)size
 {
 	void *pointer, **memoryChunks;
-	size_t memoryChunksSize;
+	unsigned int memoryChunksSize;
 
 	if (size == 0)
 		return NULL;
 
 	memoryChunksSize = PRE_IVAR->memoryChunksSize + 1;
 
-	if (SIZE_MAX - PRE_IVAR->memoryChunksSize == 0 ||
-	    memoryChunksSize > SIZE_MAX / sizeof(void*))
+	if (UINT_MAX - PRE_IVAR->memoryChunksSize == 0 ||
+	    memoryChunksSize > UINT_MAX / sizeof(void*))
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	if ((pointer = malloc(size)) == NULL)
@@ -697,7 +697,7 @@ void _references_to_categories_of_OFObject(void)
 - (void)freeMemory: (void*)pointer
 {
 	void **iter, *last, **memoryChunks;
-	size_t i, memoryChunksSize;
+	unsigned int i, memoryChunksSize;
 
 	if (pointer == NULL)
 		return;
