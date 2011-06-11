@@ -16,10 +16,11 @@ SRCS = OFApplication.m			\
        OFDataArray+Hashing.m		\
        OFDate.m				\
        OFDictionary.m			\
+       OFEnumerator.m			\
        OFFile.m				\
+       OFFloatVector.m			\
        OFHash.m				\
        OFHTTPRequest.m			\
-       OFEnumerator.m			\
        OFList.m				\
        OFMD5Hash.m			\
        OFMutableArray.m			\

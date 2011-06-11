@@ -53,6 +53,8 @@
 #import "OFXMLParser.h"
 #import "OFXMLElementBuilder.h"
 
+#import "OFFloatVector.h"
+
 #import "OFSerialization.h"
 
 #import "OFApplication.h"
