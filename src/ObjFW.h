@@ -54,6 +54,7 @@
 #import "OFXMLElementBuilder.h"
 
 #import "OFFloatVector.h"
+#import "OFFloatMatrix.h"
 
 #import "OFSerialization.h"
 

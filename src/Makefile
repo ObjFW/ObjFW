@@ -18,6 +18,7 @@ SRCS = OFApplication.m			\
        OFDictionary.m			\
        OFEnumerator.m			\
        OFFile.m				\
+       OFFloatMatrix.m			\
        OFFloatVector.m			\
        OFHash.m				\
        OFHTTPRequest.m			\

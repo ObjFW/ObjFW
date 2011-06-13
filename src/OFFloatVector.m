@@ -101,7 +101,7 @@
 					 withSize: sizeof(float)];
 
 		for (i = 0; i < dimension; i++)
-			data[i] = va_arg(arguments, double);
+			data[i] = (float)va_arg(arguments, double);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -135,7 +135,6 @@
 - (BOOL)isEqual: (id)object
 {
 	OFFloatVector *otherVector;
-	size_t i;
 
 	if (object->isa != isa)
 		return NO;
@@ -145,9 +144,8 @@
 	if (otherVector->dimension != dimension)
 		return NO;
 
-	for (i = 0; i < dimension; i++)
-		if (otherVector->data[i] != data[i])
-			return NO;
+	if (memcmp(otherVector->data, data, dimension * sizeof(float)))
+		return NO;
 
 	return YES;
 }
@@ -177,11 +175,8 @@
 
 - copy
 {
-	OFFloatVector *copy = [[isa alloc] init];
+	OFFloatVector *copy = [[isa alloc] initWithDimension: dimension];
 
-	copy->dimension = dimension;
-	copy->data = [copy allocMemoryForNItems: dimension
-				       withSize: sizeof(float)];
 	memcpy(copy->data, data, dimension * sizeof(float));
 
 	return copy;
@@ -211,7 +206,7 @@
 	return description;
 }
 
-- (float*)floatArray
+- (float*)cArray
 {
 	return data;
 }
@@ -289,7 +284,7 @@
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	dotProduct = 0.0;
+	dotProduct = 0.0f;
 
 	for (i = 0; i < dimension; i++)
 		dotProduct += data[i] * vector->data[i];
@@ -302,7 +297,7 @@
 	float magnitude;
 	size_t i;
 
-	magnitude = 0.0;
+	magnitude = 0.0f;
 
 	for (i = 0; i < dimension; i++)
 		magnitude += data[i] * data[i];

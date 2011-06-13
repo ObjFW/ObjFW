@@ -204,6 +204,8 @@
 		4B55A115133AC24600B58A93 /* OFReadOrWriteFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B55A10F133AC24500B58A93 /* OFReadOrWriteFailedException.m */; };
 		4B55A116133AC24600B58A93 /* OFWriteFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B55A110133AC24500B58A93 /* OFWriteFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B55A117133AC24600B58A93 /* OFWriteFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B55A111133AC24600B58A93 /* OFWriteFailedException.m */; };
+		4B6965E213A58B1B004F1C3A /* OFFloatMatrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6965E013A58B1B004F1C3A /* OFFloatMatrix.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B6965E313A58B1B004F1C3A /* OFFloatMatrix.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6965E113A58B1B004F1C3A /* OFFloatMatrix.m */; };
 		4B7FF3B0133CE6DE00000324 /* OFMutexStillLockedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7FF3AE133CE6DE00000324 /* OFMutexStillLockedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7FF3B1133CE6DE00000324 /* OFMutexStillLockedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7FF3AF133CE6DE00000324 /* OFMutexStillLockedException.m */; };
 		4B7FF3B4133CED6200000324 /* OFConditionStillWaitingException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7FF3B2133CED6100000324 /* OFConditionStillWaitingException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -469,6 +471,8 @@
 		4B67998A1099E7C50041064A /* OFXMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLParser.m; path = src/OFXMLParser.m; sourceTree = "<group>"; };
 		4B67998B1099E7C50041064A /* threading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = threading.h; path = src/threading.h; sourceTree = "<group>"; };
 		4B67998C1099E7C50041064A /* unicode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unicode.h; path = src/unicode.h; sourceTree = "<group>"; };
+		4B6965E013A58B1B004F1C3A /* OFFloatMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFFloatMatrix.h; path = src/OFFloatMatrix.h; sourceTree = "<group>"; };
+		4B6965E113A58B1B004F1C3A /* OFFloatMatrix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFFloatMatrix.m; path = src/OFFloatMatrix.m; sourceTree = "<group>"; };
 		4B6AF96C10A8D3E40003FB0A /* asprintf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = asprintf.m; path = src/asprintf.m; sourceTree = "<group>"; };
 		4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iso_8859_15.m; path = src/iso_8859_15.m; sourceTree = "<group>"; };
 		4B6AF97210A8D42E0003FB0A /* windows_1252.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = windows_1252.m; path = src/windows_1252.m; sourceTree = "<group>"; };
@@ -793,6 +797,8 @@
 				4B0108CA10EB8C9300631877 /* OFEnumerator.m */,
 				4B6799661099E7C50041064A /* OFFile.h */,
 				4B6799671099E7C50041064A /* OFFile.m */,
+				4B6965E013A58B1B004F1C3A /* OFFloatMatrix.h */,
+				4B6965E113A58B1B004F1C3A /* OFFloatMatrix.m */,
 				4BE920A613A2ECEF00154B94 /* OFFloatVector.h */,
 				4BE920A713A2ECEF00154B94 /* OFFloatVector.m */,
 				4BF1BCC011C9663F0025511F /* OFHash.h */,
@@ -976,6 +982,7 @@
 				4B3D23C61337FCB000DD29B8 /* OFEnumerator.h in Headers */,
 				4B17FF74133A2AAB003E6DCD /* OFException.h in Headers */,
 				4B3D23C81337FCB000DD29B8 /* OFFile.h in Headers */,
+				4B6965E213A58B1B004F1C3A /* OFFloatMatrix.h in Headers */,
 				4BE920A813A2ECEF00154B94 /* OFFloatVector.h in Headers */,
 				4B3D23C91337FCB000DD29B8 /* OFHash.h in Headers */,
 				4B3D23CA1337FCB000DD29B8 /* OFHTTPRequest.h in Headers */,
@@ -1228,6 +1235,7 @@
 				4B3D23931337FC0D00DD29B8 /* OFDictionary.m in Sources */,
 				4B3D23941337FC0D00DD29B8 /* OFEnumerator.m in Sources */,
 				4B3D23961337FC0D00DD29B8 /* OFFile.m in Sources */,
+				4B6965E313A58B1B004F1C3A /* OFFloatMatrix.m in Sources */,
 				4BE920A913A2ECEF00154B94 /* OFFloatVector.m in Sources */,
 				4B3D23971337FC0D00DD29B8 /* OFHash.m in Sources */,
 				4B3D23981337FC0D00DD29B8 /* OFHTTPRequest.m in Sources */,

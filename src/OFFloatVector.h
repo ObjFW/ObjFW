@@ -96,11 +96,11 @@
 /**
  * \brief Returns an array of floats with the contents of the vector.
  *
- * Modifying the returned array is allowed and will change the vector.
+ * Modifying the returned array directly is allowed and will change the vector.
  *
  * \brief An array of floats with the contents of the vector
  */
-- (float*)floatArray;
+- (float*)cArray;
 
 /**
  * \brief Adds the specified vector to the receiver.
