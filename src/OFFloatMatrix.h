@@ -25,6 +25,7 @@
  */
 @interface OFFloatMatrix: OFObject <OFCopying>
 {
+@public
 	size_t rows, columns;
 	float *data;
 }

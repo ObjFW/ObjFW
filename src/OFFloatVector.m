@@ -16,6 +16,7 @@
 
 #include "config.h"
 
+#include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
@@ -25,11 +26,20 @@
 
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
+#import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
 #import "macros.h"
 
+static Class floatMatrix = Nil;
+
 @implementation OFFloatVector
++ (void)initialize
+{
+	if (self == [OFFloatVector class])
+		floatMatrix = [OFFloatMatrix class];
+}
+
 + vectorWithDimension: (size_t)dimension
 {
 	return [[[self alloc] initWithDimension: dimension] autorelease];
@@ -63,8 +73,13 @@
 	@try {
 		dimension = dimension_;
 
-		data = [self allocMemoryForNItems: dimension
-					 withSize: sizeof(float)];
+		if (SIZE_MAX / dimension < sizeof(float))
+			@throw [OFOutOfRangeException newWithClass: isa];
+
+		if ((data = malloc(dimension * sizeof(float))) == NULL)
+			@throw [OFOutOfMemoryException
+			     newWithClass: isa
+			    requestedSize: dimension * sizeof(float)];
 
 		memset(data, 0, dimension * sizeof(float));
 	} @catch (id e) {
@@ -98,8 +113,13 @@
 
 		dimension = dimension_;
 
-		data = [self allocMemoryForNItems: dimension
-					 withSize: sizeof(float)];
+		if (SIZE_MAX / dimension < sizeof(float))
+			@throw [OFOutOfRangeException newWithClass: isa];
+
+		if ((data = malloc(dimension * sizeof(float))) == NULL)
+			@throw [OFOutOfMemoryException
+			     newWithClass: isa
+			    requestedSize: dimension * sizeof(float)];
 
 		for (i = 0; i < dimension; i++)
 			data[i] = (float)va_arg(arguments, double);
@@ -109,6 +129,13 @@
 	}
 
 	return self;
+}
+
+- (void)dealloc
+{
+	free(data);
+
+	[super dealloc];
 }
 
 - (void)setValue: (float)value
@@ -321,35 +348,32 @@
 
 - (void)multiplyWithMatrix: (OFFloatMatrix*)matrix
 {
-	size_t rows, columns;
-	float *cArray, *newData;
+	float *newData;
 	size_t i, j, k;
 
-	columns = [matrix columns];
-
-	if (dimension != columns)
+	if (matrix->isa != floatMatrix || dimension != matrix->columns)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	rows = [matrix rows];
-	cArray = [matrix cArray];
+	if ((newData = malloc(matrix->rows * sizeof(float))) == NULL)
+		@throw [OFOutOfMemoryException
+		     newWithClass: isa
+		    requestedSize: matrix->rows * sizeof(float)];
 
-	newData = [self allocMemoryForNItems: rows
-				    withSize: sizeof(float)];
-	memset(newData, 0, rows * sizeof(float));
+	memset(newData, 0, matrix->rows * sizeof(float));
 
-	for (i = j = k = 0; i < rows * columns; i++) {
-		newData[j] += cArray[i] * data[k];
+	for (i = j = k = 0; i < matrix->rows * matrix->columns; i++) {
+		newData[j] += matrix->data[i] * data[k];
 
-		if (++j == rows) {
+		if (++j == matrix->rows) {
 			k++;
 			j = 0;
 		}
 	}
 
-	[self freeMemory: data];
+	free(data);
 	data = newData;
 
-	dimension = rows;
+	dimension = matrix->rows;
 }
 @end

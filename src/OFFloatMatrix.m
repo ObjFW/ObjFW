@@ -16,6 +16,7 @@
 
 #include "config.h"
 
+#include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
@@ -25,6 +26,7 @@
 
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
+#import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
 #import "macros.h"
@@ -69,12 +71,15 @@
 		rows = rows_;
 		columns = columns_;
 
-		if (SIZE_MAX / rows < columns)
+		if (SIZE_MAX / rows < columns ||
+		    SIZE_MAX / rows * columns < sizeof(float))
 			@throw [OFOutOfRangeException
 			    newWithClass: isa];
 
-		data = [self allocMemoryForNItems: rows * columns
-					 withSize: sizeof(float)];
+		if ((data = malloc(rows * columns * sizeof(float))) == NULL)
+			@throw [OFOutOfMemoryException
+			     newWithClass: isa
+			    requestedSize: rows * columns * sizeof(float)];
 
 		memset(data, 0, rows * columns * sizeof(float));
 
@@ -119,12 +124,14 @@
 		rows = rows_;
 		columns = columns_;
 
-		if (SIZE_MAX / rows < columns)
-			@throw [OFOutOfRangeException
-			    newWithClass: isa];
+		if (SIZE_MAX / rows < columns ||
+		    SIZE_MAX / rows * columns < sizeof(float))
+			@throw [OFOutOfRangeException newWithClass: isa];
 
-		data = [self allocMemoryForNItems: rows * columns
-					 withSize: sizeof(float)];
+		if ((data = malloc(rows * columns * sizeof(float))) == NULL)
+			@throw [OFOutOfMemoryException
+			     newWithClass: isa
+			    requestedSize: rows * columns * sizeof(float)];
 
 		for (i = 0; i < rows; i++) {
 			size_t j;
@@ -138,6 +145,13 @@
 	}
 
 	return self;
+}
+
+- (void)dealloc
+{
+	free(data);
+
+	[super dealloc];
 }
 
 - (void)setValue: (float)value
@@ -314,8 +328,10 @@
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	newData = [self allocMemoryForNItems: matrix->rows * columns
-				    withSize: sizeof(float)];
+	if ((newData = malloc(matrix->rows * columns * sizeof(float))) == NULL)
+		@throw [OFOutOfMemoryException
+		     newWithClass: isa
+		    requestedSize: matrix->rows * columns * sizeof(float)];
 
 	base1 = 0;
 	base2 = 0;
@@ -344,7 +360,7 @@
 		base2 += matrix->rows;
 	}
 
-	[self freeMemory: data];
+	free(data);
 	data = newData;
 
 	rows = matrix->rows;
@@ -352,9 +368,13 @@
 
 - (void)transpose
 {
-	float *newData = [self allocMemoryForNItems: rows * columns
-					   withSize: sizeof(float)];
+	float *newData;
 	size_t i, k;
+
+	if ((newData = malloc(rows * columns * sizeof(float))) == NULL)
+		@throw [OFOutOfMemoryException newWithClass: isa
+					      requestedSize: rows * columns *
+							     sizeof(float)];
 
 	rows ^= columns;
 	columns ^= rows;
@@ -367,7 +387,7 @@
 			newData[j] = data[k++];
 	}
 
-	[self freeMemory: data];
+	free(data);
 	data = newData;
 }
 

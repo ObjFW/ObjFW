@@ -87,7 +87,7 @@ struct pre_ivar {
 static struct {
 	Class isa;
 } alloc_failed_exception;
-static Class autoreleasepool = Nil;
+static Class autoreleasePool = Nil;
 
 static SEL cxx_construct = NULL;
 static SEL cxx_destruct = NULL;
@@ -787,10 +787,10 @@ void _references_to_categories_of_OFObject(void)
 	 * Cache OFAutoreleasePool since class lookups are expensive with the
 	 * GNU runtime.
 	 */
-	if (autoreleasepool == Nil)
-		autoreleasepool = [OFAutoreleasePool class];
+	if (autoreleasePool == Nil)
+		autoreleasePool = [OFAutoreleasePool class];
 
-	[autoreleasepool addObject: self];
+	[autoreleasePool addObject: self];
 
 	return self;
 }
