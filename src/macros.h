@@ -318,6 +318,14 @@ of_bswap32_vec(uint32_t *buffer, size_t length)
 		OF_HASH_ADD(hash, int64Copy & 0xFF);		\
 	}
 
+static OF_INLINE of_range_t
+of_range(size_t start, size_t length)
+{
+	of_range_t range = { start, length };
+
+	return range;
+}
+
 static OF_INLINE of_point_t
 of_point(int x, int y)
 {
