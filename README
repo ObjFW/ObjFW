@@ -29,7 +29,7 @@ BUILDING AS A MAC OS X FRAMEWORK
   resulting ObjFW.framework to /Library/Frameworks and you are done.
 
 
-USING THE MAC OS X FRAMWORK IN XCODE
+USING THE MAC OS X FRAMEWORK IN XCODE
 
   To use the Mac OS X framework in Xcode, you need to add the .framework
   to your project and add the following flags to "Other C Flags":
