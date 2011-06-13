@@ -41,6 +41,7 @@
 #elif defined(OF_OLD_GNU_RUNTIME)
 # import <objc/objc-api.h>
 # import <objc/sarray.h>
+# import <objc/Protocol.h>
 #else
 # import <objc/runtime.h>
 #endif
@@ -264,7 +265,7 @@ void _references_to_categories_of_OFObject(void)
 	for (c = self; c != Nil; c = class_get_super_class(c))
 		for (pl = c->protocols; pl != NULL; pl = pl->next)
 			for (i = 0; i < pl->count; i++)
-				if ([pl->list[i] conformsToProtocol: protocol])
+				if ([pl->list[i] conformsTo: protocol])
 					return YES;
 
 	return NO;
