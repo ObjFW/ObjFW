@@ -139,6 +139,9 @@
 /**
  * \brief Returns all elements of the OFDataArray as a C array.
  *
+ * Modifying the returned array directly is allowed and will change the contents
+ * of the data array.
+ *
  * \return All elements of the OFDataArray as a C array
  */
 - (void*)cArray;
