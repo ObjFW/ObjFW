@@ -18,6 +18,8 @@
 
 #import "OFObject.h"
 
+@class OFFloatVector;
+
 /**
  * \brief A class for storing and manipulating matrices of floats.
  */
@@ -170,4 +172,18 @@
  * \brief Transposes the receiver.
  */
 - (void)transpose;
+
+/**
+ * \brief Translates the nxn matrix of the receiver with an n-1 vector.
+ *
+ * \param vector The vector to translate with
+ */
+- (void)translateWithVector: (OFFloatVector*)vector;
+
+/**
+ * \brief Scales the nxn matrix of the receiver with an n-1 vector.
+ *
+ * \param scale The vector to scale with
+ */
+- (void)scaleWithVector: (OFFloatVector*)vector;
 @end

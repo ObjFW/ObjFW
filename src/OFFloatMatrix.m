@@ -20,6 +20,7 @@
 #include <math.h>
 
 #import "OFFloatMatrix.h"
+#import "OFFloatVector.h"
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
@@ -368,5 +369,52 @@
 
 	[self freeMemory: data];
 	data = newData;
+}
+
+- (void)translateWithVector: (OFFloatVector*)vector
+{
+	OFFloatMatrix *translation;
+	float *cArray;
+
+	if (rows != columns || [vector dimension] != rows - 1)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
+	cArray = [vector cArray];
+	translation = [[OFFloatMatrix alloc] initWithRows: rows
+						  columns: columns];
+
+	memcpy(translation->data + (columns - 1) * rows, cArray,
+	    (rows - 1) * sizeof(float));
+
+	@try {
+		[self multiplyWithMatrix: translation];
+	} @finally {
+		[translation release];
+	}
+}
+
+- (void)scaleWithVector: (OFFloatVector*)vector
+{
+	OFFloatMatrix *scale;
+	float *cArray;
+	size_t i, j;
+
+	if (rows != columns || [vector dimension] != rows - 1)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
+	cArray = [vector cArray];
+	scale = [[OFFloatMatrix alloc] initWithRows: rows
+					    columns: columns];
+
+	for (i = j = 0; i < ((rows - 1) * columns) - 1; i += rows + 1)
+		scale->data[i] = cArray[j++];
+
+	@try {
+		[self multiplyWithMatrix: scale];
+	} @finally {
+		[scale release];
+	}
 }
 @end
