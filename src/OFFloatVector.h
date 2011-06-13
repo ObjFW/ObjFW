@@ -18,6 +18,8 @@
 
 #import "OFObject.h"
 
+@class OFFloatMatrix;
+
 /**
  * \brief A class for storing and manipulating vectors of floats.
  */
@@ -164,4 +166,12 @@
  * \brief Normalizes the vector.
  */
 - (void)normalize;
+
+/**
+ * \brief Multiplies the receiver with the specified matrix on the left side and
+ *	  the receiver on the right side.
+ *
+ * \param matrix The matrix to multiply the receiver with
+ */
+- (void)multiplyWithMatrix: (OFFloatMatrix*)matrix;
 @end

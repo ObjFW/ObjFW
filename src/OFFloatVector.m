@@ -20,6 +20,7 @@
 #include <math.h>
 
 #import "OFFloatVector.h"
+#import "OFFloatMatrix.h"
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
@@ -316,5 +317,39 @@
 
 	for (i = 0; i < dimension; i++)
 		data[i] /= magnitude;
+}
+
+- (void)multiplyWithMatrix: (OFFloatMatrix*)matrix
+{
+	size_t rows, columns;
+	float *cArray, *newData;
+	size_t i, j, k;
+
+	columns = [matrix columns];
+
+	if (dimension != columns)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
+	rows = [matrix rows];
+	cArray = [matrix cArray];
+
+	newData = [self allocMemoryForNItems: rows
+				    withSize: sizeof(float)];
+	memset(newData, 0, rows * sizeof(float));
+
+	for (i = j = k = 0; i < rows * columns; i++) {
+		newData[j] += cArray[i] * data[k];
+
+		if (++j == rows) {
+			k++;
+			j = 0;
+		}
+	}
+
+	[self freeMemory: data];
+	data = newData;
+
+	dimension = rows;
 }
 @end
