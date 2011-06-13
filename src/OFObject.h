@@ -49,6 +49,14 @@ typedef enum of_comparison_result_t {
 } of_comparison_result_t;
 
 /**
+ * \brief An enum for storing endianess.
+ */
+typedef enum of_endianess_t {
+	OF_ENDIANESS_BIG_ENDIAN,
+	OF_ENDIANESS_LITTLE_ENDIAN
+} of_endianess_t;
+
+/**
  * \brief A range.
  */
 typedef struct of_range_t {
@@ -59,12 +67,29 @@ typedef struct of_range_t {
 } of_range_t;
 
 /**
- * \brief An enum for storing endianess.
+ * \brief A point.
  */
-typedef enum of_endianess_t {
-	OF_ENDIANESS_BIG_ENDIAN,
-	OF_ENDIANESS_LITTLE_ENDIAN
-} of_endianess_t;
+typedef struct of_point_t {
+	int x;
+	int y;
+} of_point_t;
+
+/**
+ * \brief A dimension.
+ */
+typedef struct of_dimension_t {
+	int width;
+	int height;
+} of_dimension_t;
+
+/**
+ * \brief A rectangle.
+ */
+typedef struct of_rectangle_t
+{
+	of_point_t origin;
+	of_dimension_t size;
+} of_rectangle_t;
 
 @class OFString;
 
