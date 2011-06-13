@@ -136,7 +136,7 @@
 {
 	OFFloatVector *otherVector;
 
-	if (object->isa != isa)
+	if (![object isKindOfClass: [OFFloatVector class]])
 		return NO;
 
 	otherVector = object;

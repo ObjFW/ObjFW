@@ -172,7 +172,7 @@
 {
 	OFFloatMatrix *otherMatrix;
 
-	if (object->isa != isa)
+	if (![object isKindOfClass: [OFFloatMatrix class]])
 		return NO;
 
 	otherMatrix = object;
