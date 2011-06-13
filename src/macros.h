@@ -317,3 +317,30 @@ of_bswap32_vec(uint32_t *buffer, size_t length)
 		OF_HASH_ADD(hash, (int64Copy >>  8) & 0xFF);	\
 		OF_HASH_ADD(hash, int64Copy & 0xFF);		\
 	}
+
+static OF_INLINE of_point_t
+of_point(int x, int y)
+{
+	of_point_t point = { x, y };
+
+	return point;
+}
+
+static OF_INLINE of_dimension_t
+of_dimension(int width, int height)
+{
+	of_dimension_t dimension = { width, height };
+
+	return dimension;
+}
+
+static OF_INLINE of_rectangle_t
+of_rectangle(int x, int y, int width, int height)
+{
+	of_rectangle_t rectangle = {
+		of_point(x, y),
+		of_dimension(width, height)
+	};
+
+	return rectangle;
+}
