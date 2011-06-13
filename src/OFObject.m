@@ -713,7 +713,7 @@ void _references_to_categories_of_OFObject(void)
 			last = PRE_IVAR->memoryChunks[memoryChunksSize];
 
 			assert(PRE_IVAR->memoryChunksSize != 0 &&
-			    memoryChunksSize <= SIZE_MAX / sizeof(void*));
+			    memoryChunksSize <= UINT_MAX / sizeof(void*));
 
 			if (OF_UNLIKELY(memoryChunksSize == 0)) {
 				free(pointer);
