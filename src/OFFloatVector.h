@@ -100,9 +100,21 @@
  *
  * Modifying the returned array directly is allowed and will change the vector.
  *
- * \brief An array of floats with the contents of the vector
+ * \return An array of floats with the contents of the vector
  */
 - (float*)cArray;
+
+/**
+ * \brief Returns the magnitude or length of the vector.
+ *
+ * \return The magnitude or length of the vector
+ */
+- (float)magnitude;
+
+/**
+ * \brief Normalizes the vector.
+ */
+- (void)normalize;
 
 /**
  * \brief Adds the specified vector to the receiver.
@@ -156,16 +168,13 @@
 - (float)dotProductWithVector: (OFFloatVector*)vector;
 
 /**
- * \brief Returns the magnitude or length of the vector.
+ * \brief Returns the cross product of the receiver and the specified vector.
  *
- * \return The magnitude or length of the vector
+ * This currently only works for 3D vectors.
+ *
+ * \return The cross product of the receiver and the specified vector
  */
-- (float)magnitude;
-
-/**
- * \brief Normalizes the vector.
- */
-- (void)normalize;
+- (OFFloatVector*)crossProductWithVector: (OFFloatVector*)vector;
 
 /**
  * \brief Multiplies the receiver with the specified matrix on the left side and

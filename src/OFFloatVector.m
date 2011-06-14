@@ -239,6 +239,37 @@ static Class floatMatrix = Nil;
 	return data;
 }
 
+- (float)magnitude
+{
+	float magnitude;
+	size_t i;
+
+	magnitude = 0.0f;
+
+	for (i = 0; i < dimension; i++)
+		magnitude += data[i] * data[i];
+
+	magnitude = sqrtf(magnitude);
+
+	return magnitude;
+}
+
+- (void)normalize
+{
+	float magnitude;
+	size_t i;
+
+	magnitude = 0.0f;
+
+	for (i = 0; i < dimension; i++)
+		magnitude += data[i] * data[i];
+
+	magnitude = sqrtf(magnitude);
+
+	for (i = 0; i < dimension; i++)
+		data[i] /= magnitude;
+}
+
 - (void)addVector: (OFFloatVector*)vector
 {
 	size_t i;
@@ -320,30 +351,28 @@ static Class floatMatrix = Nil;
 	return dotProduct;
 }
 
-- (float)magnitude
+- (OFFloatVector*)crossProductWithVector: (OFFloatVector*)vector
 {
-	float magnitude;
-	size_t i;
+	OFFloatVector *crossProduct;
 
-	magnitude = 0.0f;
+	if (dimension != 3)
+		@throw [OFNotImplementedException newWithClass: isa
+						      selector: _cmd];
 
-	for (i = 0; i < dimension; i++)
-		magnitude += data[i] * data[i];
+	if (vector->dimension != dimension)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
 
-	magnitude = sqrtf(magnitude);
+	crossProduct = [OFFloatVector vectorWithDimension: 3];
 
-	return magnitude;
-}
+	crossProduct->data[0] =
+	    data[1] * vector->data[2] - data[2] * vector->data[1];
+	crossProduct->data[1] =
+	    data[2] * vector->data[0] - data[0] * vector->data[2];
+	crossProduct->data[2] =
+	    data[0] * vector->data[1] - data[1] * vector->data[0];
 
-- (void)normalize
-{
-	float magnitude;
-	size_t i;
-
-	magnitude = [self magnitude];
-
-	for (i = 0; i < dimension; i++)
-		data[i] /= magnitude;
+	return crossProduct;
 }
 
 - (void)multiplyWithMatrix: (OFFloatMatrix*)matrix
