@@ -14,7 +14,7 @@
  * file.
  */
 
-#import "objfw-defs.h"
+#import "OFObject.h"
 
 #ifndef __STDC_LIMIT_MACROS
 # define __STDC_LIMIT_MACROS
