@@ -25,6 +25,7 @@
  */
 @interface OFFloatVector: OFObject <OFCopying>
 {
+@public
 	size_t dimension;
 	float *data;
 }

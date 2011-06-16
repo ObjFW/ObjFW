@@ -31,7 +31,15 @@
 
 #import "macros.h"
 
+static Class floatVector = Nil;
+
 @implementation OFFloatMatrix
++ (void)initialize
+{
+	if (self == [OFFloatMatrix class])
+		floatVector = [OFFloatVector class];
+}
+
 + matrixWithRows: (size_t)rows
 	 columns: (size_t)columns
 {
@@ -396,7 +404,8 @@
 	OFFloatMatrix *translation;
 	float *cArray;
 
-	if (rows != columns || [vector dimension] != rows - 1)
+	if (rows != columns || vector->isa != floatVector ||
+	    vector->dimension != rows - 1)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
@@ -414,13 +423,63 @@
 	}
 }
 
+- (void)rotateWithVector: (OFFloatVector*)vector
+		   angle: (float)angle
+{
+	OFFloatMatrix *rotation;
+	float n[3], m, angleCos, angleSin;
+
+	if (rows != 4 || columns != 4 || vector->isa != floatVector ||
+	    vector->dimension != 3)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
+	n[0] = vector->data[0];
+	n[1] = vector->data[1];
+	n[2] = vector->data[2];
+
+	m = sqrtf(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
+
+	if (m != 1.0) {
+		n[0] /= m;
+		n[1] /= m;
+		n[2] /= m;
+	}
+
+	angle = (float)(angle * M_PI / 180.0f);
+	angleCos = cosf(angle);
+	angleSin = sinf(angle);
+
+	rotation = [[OFFloatMatrix alloc] initWithRows: rows
+					       columns: columns];
+
+	rotation->data[0] = angleCos + n[0] * n[0] * (1 - angleCos);
+	rotation->data[1] = n[1] * n[0] * (1 - angleCos) + n[2] * angleSin;
+	rotation->data[2] = n[2] * n[0] * (1 - angleCos) - n[1] * angleSin;
+
+	rotation->data[4] = n[0] * n[1] * (1 - angleCos) - n[2] * angleSin;
+	rotation->data[5] = angleCos + n[1] * n[1] * (1 - angleCos);
+	rotation->data[6] = n[2] * n[1] * (1 - angleCos) + n[0] * angleSin;
+
+	rotation->data[8] = n[0] * n[2] * (1 - angleCos) + n[1] * angleSin;
+	rotation->data[9] = n[1] * n[2] * (1 - angleCos) - n[0] * angleSin;
+	rotation->data[10] = angleCos + n[2] * n[2] * (1 - angleCos);
+
+	@try {
+		[self multiplyWithMatrix: rotation];
+	} @finally {
+		[rotation release];
+	}
+}
+
 - (void)scaleWithVector: (OFFloatVector*)vector
 {
 	OFFloatMatrix *scale;
 	float *cArray;
 	size_t i, j;
 
-	if (rows != columns || [vector dimension] != rows - 1)
+	if (rows != columns || vector->isa != floatVector ||
+	    vector->dimension != rows - 1)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 

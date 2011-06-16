@@ -182,6 +182,15 @@
 - (void)translateWithVector: (OFFloatVector*)vector;
 
 /**
+ * \brief Rotates the 4x4 matrix of the receiver with a 3D vector and an angle.
+ *
+ * \param vector The vector to rotate with
+ * \param angle The angle to rotate with
+ */
+- (void)rotateWithVector: (OFFloatVector*)vector
+		   angle: (float)angle;
+
+/**
  * \brief Scales the nxn matrix of the receiver with an n-1 vector.
  *
  * \param scale The vector to scale with
