@@ -66,7 +66,7 @@
 }
 
 - (size_t)_readNBytes: (size_t)length
-	   intoBuffer: (char*)buffer
+	   intoBuffer: (void*)buffer
 {
 	ssize_t ret;
 
@@ -101,7 +101,7 @@
 }
 
 - (size_t)_writeNBytes: (size_t)length
-	    fromBuffer: (const char*)buffer
+	    fromBuffer: (const void*)buffer
 {
 	ssize_t ret;
 

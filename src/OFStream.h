@@ -59,7 +59,7 @@
  * \return The number of bytes read
  */
 - (size_t)readNBytes: (size_t)size
-	  intoBuffer: (char*)buffer;
+	  intoBuffer: (void*)buffer;
 
 /**
  * Reads exactly length bytes from the stream into a buffer. Unlike
@@ -75,7 +75,7 @@
  *	       The buffer MUST be EXACTLY this big!
  */
 - (void)readExactlyNBytes: (size_t)length
-	       intoBuffer: (char*)buffer;
+	       intoBuffer: (void*)buffer;
 
 /**
  * Reads a uint8_t from the stream.
@@ -282,7 +282,7 @@
  * \return The number of bytes written
  */
 - (size_t)writeNBytes: (size_t)length
-	   fromBuffer: (const char*)buffer;
+	   fromBuffer: (const void*)buffer;
 
 /**
  * Writes a uint8_t into the stream.

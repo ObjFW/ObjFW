@@ -74,14 +74,14 @@
 }
 
 - (size_t)_readNBytes: (size_t)length
-	   intoBuffer: (char*)buffer
+	   intoBuffer: (void*)buffer
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
 - (size_t)_writeNBytes: (size_t)length
-	    fromBuffer: (const char*)buffer
+	    fromBuffer: (const void*)buffer
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
@@ -96,7 +96,7 @@
 }
 
 - (size_t)readNBytes: (size_t)length
-	  intoBuffer: (char*)buffer
+	  intoBuffer: (void*)buffer
 {
 	if (cache == NULL)
 		return [self _readNBytes: length
@@ -126,13 +126,13 @@
 }
 
 - (void)readExactlyNBytes: (size_t)length
-	       intoBuffer: (char*)buffer
+	       intoBuffer: (void*)buffer
 {
 	size_t readLength = 0;
 
 	while (readLength < length)
 		readLength += [self readNBytes: length - readLength
-				    intoBuffer: buffer + readLength];
+				    intoBuffer: (char*)buffer + readLength];
 }
 
 - (uint8_t)readInt8
@@ -626,7 +626,7 @@
 }
 
 - (size_t)writeNBytes: (size_t)length
-	   fromBuffer: (const char*)buffer
+	   fromBuffer: (const void*)buffer
 {
 	if (!buffersWrites)
 		return [self _writeNBytes: length

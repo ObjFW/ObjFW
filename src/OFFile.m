@@ -604,7 +604,7 @@ of_log(OFConstantString *format, ...)
 }
 
 - (size_t)_readNBytes: (size_t)length
-	   intoBuffer: (char*)buffer
+	   intoBuffer: (void*)buffer
 {
 	size_t ret;
 
@@ -612,6 +612,7 @@ of_log(OFConstantString *format, ...)
 		@throw [OFReadFailedException newWithClass: isa
 						    stream: self
 					   requestedLength: length];
+
 	if ((ret = read(fileDescriptor, buffer, length)) == 0)
 		isAtEndOfStream = YES;
 
@@ -619,7 +620,7 @@ of_log(OFConstantString *format, ...)
 }
 
 - (size_t)_writeNBytes: (size_t)length
-	    fromBuffer: (const char*)buffer
+	    fromBuffer: (const void*)buffer
 {
 	size_t ret;
 
