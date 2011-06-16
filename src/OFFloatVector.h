@@ -97,6 +97,16 @@
 - (size_t)dimension;
 
 /**
+ * \brief Changes the dimension of the vector.
+ *
+ * If the new dimension is smaller, elements will be cut off.
+ * If the new dimension is bigger, new elements will be filled with zeros.
+ *
+ * \param dimension The new dimension for the vector
+ */
+- (void)setDimension: (size_t)dimension;
+
+/**
  * \brief Returns an array of floats with the contents of the vector.
  *
  * Modifying the returned array directly is allowed and will change the vector.

@@ -160,6 +160,24 @@ static Class floatMatrix = Nil;
 	return dimension;
 }
 
+- (void)setDimension: (size_t)dimension_
+{
+	float *newData;
+	size_t i;
+
+	if ((newData = realloc(data, dimension_ * sizeof(float))) == NULL)
+		@throw [OFOutOfMemoryException newWithClass: isa
+					      requestedSize: dimension_ *
+							     sizeof(float)];
+
+	data = newData;
+
+	for (i = dimension; i < dimension_; i++)
+		data[i] = 0;
+
+	dimension = dimension_;
+}
+
 - (BOOL)isEqual: (id)object
 {
 	OFFloatVector *otherVector;
