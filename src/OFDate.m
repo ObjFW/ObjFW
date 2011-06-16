@@ -361,12 +361,12 @@ static OFMutex *mutex;
 	    [OFXMLElement elementWithName: @"seconds"
 				namespace: OF_SERIALIZATION_NS
 			      stringValue: [OFString stringWithFormat:
-					       @"%" PRId64, seconds]]];
+					       @"%" @PRId64, seconds]]];
 	[element addChild:
 	    [OFXMLElement elementWithName: @"microseconds"
 				namespace: OF_SERIALIZATION_NS
 			      stringValue: [OFString stringWithFormat:
-					       @"%" PRIu32, microseconds]]];
+					       @"%" @PRIu32, microseconds]]];
 
 	[pool release];
 
