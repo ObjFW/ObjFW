@@ -219,33 +219,6 @@ AC_C_BIGENDIAN([
 	AC_DEFINE(OF_BIG_ENDIAN, 1, [Whether we are big endian])
 ])
 
-AC_CHECK_SIZEOF(float)
-AC_CHECK_SIZEOF(double)
-AS_IF([test x"$ac_cv_sizeof_float" != x"4" -o x"$ac_cv_sizeof_double" != x"8"],
-	[AC_MSG_ERROR(
-		[Floating point implementation does not conform to IEEE 754!])])
-
-AC_MSG_CHECKING(for floating point endianess)
-float_endianess="unknown"
-AC_TRY_COMPILE([
-	double endianess = 184092775106.859375;
-], [
-], [
-	AS_IF([$EGREP BEndian conftest.$ac_objext >/dev/null], [
-		AC_DEFINE(OF_FLOAT_BIG_ENDIAN, 1,
-			[Whether floats are big endian])
-		float_endianess="big endian"
-	], [
-		AS_IF([$EGREP naidnEB conftest.$ac_objext >/dev/null], [
-			float_endianess="little endian"
-		])
-	])
-])
-AC_MSG_RESULT($float_endianess)
-AS_IF([test x"$float_endianess" = x"unknown"], [
-	AC_MSG_ERROR(
-		[Floating point implementation does not conform to IEEE 754!])])
-
 AC_MSG_CHECKING(for SIZE_MAX)
 AC_EGREP_CPP(yes, [
 	#include <stdint.h>
@@ -268,11 +241,55 @@ AC_EGREP_CPP(yes, [
 		#endif
 	], [
 		AC_MSG_RESULT(yes)
-		size_max="SIZE_T_MAX"], [
+		size_max="SIZE_T_MAX"
+	], [
 		AC_MSG_RESULT(no)
 		size_max="(~(size_t)0)"
 	])
 	AC_DEFINE_UNQUOTED(SIZE_MAX, $size_max, [Maximum value for size_t])
+])
+
+AC_CHECK_SIZEOF(float)
+AC_CHECK_SIZEOF(double)
+AS_IF([test x"$ac_cv_sizeof_float" != x"4" -o x"$ac_cv_sizeof_double" != x"8"],
+	[AC_MSG_ERROR(
+		[Floating point implementation does not conform to IEEE 754!])])
+
+AC_MSG_CHECKING(for floating point endianess)
+fp_endianess="unknown"
+AC_TRY_COMPILE([
+	double endianess = 184092775106.859375;
+], [
+], [
+	AS_IF([$EGREP BEndian conftest.$ac_objext >/dev/null], [
+		AC_DEFINE(OF_FLOAT_BIG_ENDIAN, 1,
+			[Whether floats are big endian])
+		fp_endianess="big endian"
+	], [
+		AS_IF([$EGREP naidnEB conftest.$ac_objext >/dev/null], [
+			fp_endianess="little endian"
+		])
+	])
+])
+AC_MSG_RESULT($fp_endianess)
+AS_IF([test x"$fp_endianess" = x"unknown"], [
+	AC_MSG_ERROR(
+		[Floating point implementation does not conform to IEEE 754!])])
+
+AC_CHECK_LIB(m, fmod, LIBS="$LIBS -lm")
+
+AC_MSG_CHECKING(for M_PI)
+AC_EGREP_CPP(yes, [
+	#include <math.h>
+
+	#ifdef M_PI
+	yes
+	#endif
+], [
+	AC_MSG_RESULT(yes)
+], [
+	AC_MSG_RESULT(no)
+	AC_DEFINE(M_PI, 3.141592653589793238462643, [Precalculated Pi])
 ])
 
 AC_CHECK_FUNC(asprintf, [
@@ -317,7 +334,6 @@ AC_CHECK_FUNC(asprintf, [
 test x"$have_asprintf" != x"yes" -a x"$ac_cv_snprintf_useful_ret" != x"yes" && \
 	AC_MSG_ERROR(No asprintf and no snprintf returning required space!)
 
-AC_CHECK_LIB(m, fmod, LIBS="$LIBS -lm")
 AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
 
 AC_ARG_ENABLE(threads,
