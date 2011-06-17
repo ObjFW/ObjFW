@@ -191,6 +191,15 @@
 	}
 }
 
+- (void)removeLastObject
+{
+	id object = [self objectAtIndex: [array count] - 1];
+	[array removeLastItem];
+	[object release];
+
+	mutations++;
+}
+
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
 			   objects: (id*)objects
 			     count: (int)count_

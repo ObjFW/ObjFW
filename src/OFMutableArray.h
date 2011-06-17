@@ -111,6 +111,11 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
 - (void)removeNObjects: (size_t)nObjects
 	       atIndex: (size_t)index;
 
+/**
+ * \brief Removes the last object.
+ */
+- (void)removeLastObject;
+
 #ifdef OF_HAVE_BLOCKS
 /**
  * \brief Replaces each object with the object returned by the block.

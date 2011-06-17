@@ -121,7 +121,7 @@
 		[delegate elementBuilder: self
 			 didBuildElement: [stack firstObject]];
 
-	[stack removeNObjects: 1];
+	[stack removeLastObject];
 }
 
 -    (void)parser: (OFXMLParser*)parser

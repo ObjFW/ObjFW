@@ -636,7 +636,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		@throw [OFMalformedXMLException newWithClass: isa
 						      parser: self];
 
-	[previous removeNObjects: 1];
+	[previous removeLastObject];
 
 	[cache setToCString: ""];
 
@@ -659,7 +659,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	[pool release];
 
-	[namespaces removeNObjects: 1];
+	[namespaces removeLastObject];
 	[name release];
 	[prefix release];
 	name = prefix = nil;
@@ -734,7 +734,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		if ([previous count] == 0)
 			finishedParsing = YES;
 
-		[namespaces removeNObjects: 1];
+		[namespaces removeLastObject];
 	} else if (prefix != nil) {
 		OFString *str = [OFString stringWithFormat: @"%@:%@",
 							    prefix, name];

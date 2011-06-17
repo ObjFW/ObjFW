@@ -313,6 +313,19 @@ void _references_to_categories_of_OFDataArray(void)
 	}
 }
 
+- (void)removeLastItem
+{
+	count--;
+	@try {
+		data = [self resizeMemory: data
+				 toNItems: count
+				 withSize: itemSize];
+	} @catch (OFOutOfMemoryException *e) {
+		/* We don't care, as we only made it smaller */
+		[e release];
+	}
+}
+
 - copy
 {
 	OFDataArray *copy = [[OFDataArray alloc] initWithItemSize: itemSize];

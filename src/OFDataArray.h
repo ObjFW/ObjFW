@@ -228,6 +228,11 @@
 	     atIndex: (size_t)index;
 
 /**
+ * \brief Removes the last item.
+ */
+- (void)removeLastItem;
+
+/**
  * \brief Returns a string containing the data in Base64 encoding.
  *
  * \return A string containing the data in Base64 encoding
