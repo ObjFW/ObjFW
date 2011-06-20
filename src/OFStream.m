@@ -80,8 +80,8 @@
 					      selector: _cmd];
 }
 
-- (size_t)_writeNBytes: (size_t)length
-	    fromBuffer: (const void*)buffer
+- (void)_writeNBytes: (size_t)length
+	  fromBuffer: (const void*)buffer
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
@@ -625,19 +625,17 @@
 	writeBufferLength = 0;
 }
 
-- (size_t)writeNBytes: (size_t)length
-	   fromBuffer: (const void*)buffer
+- (void)writeNBytes: (size_t)length
+	 fromBuffer: (const void*)buffer
 {
 	if (!buffersWrites)
-		return [self _writeNBytes: length
-			       fromBuffer: buffer];
+		[self _writeNBytes: length
+			fromBuffer: buffer];
 	else {
 		writeBuffer = [self resizeMemory: writeBuffer
 					  toSize: writeBufferLength + length];
 		memcpy(writeBuffer + writeBufferLength, buffer, length);
 		writeBufferLength += length;
-
-		return length;
 	}
 }
 
@@ -729,19 +727,27 @@
 
 - (size_t)writeDataArray: (OFDataArray*)dataArray
 {
-	return [self writeNBytes: [dataArray count] * [dataArray itemSize]
-		      fromBuffer: [dataArray cArray]];
+	size_t length = [dataArray count] * [dataArray itemSize];
+
+	[self writeNBytes: length
+	       fromBuffer: [dataArray cArray]];
+
+	return [dataArray count] * [dataArray itemSize];
 }
 
 - (size_t)writeString: (OFString*)string
 {
-	return [self writeNBytes: [string cStringLength]
-		      fromBuffer: [string cString]];
+	size_t length = [string cStringLength];
+
+	[self writeNBytes: length
+	       fromBuffer: [string cString]];
+
+	return length;
 }
 
 - (size_t)writeLine: (OFString*)string
 {
-	size_t retLength, stringLength = [string cStringLength];
+	size_t stringLength = [string cStringLength];
 	char *buffer;
 
 	buffer = [self allocMemoryWithSize: stringLength + 1];
@@ -750,13 +756,13 @@
 		memcpy(buffer, [string cString], stringLength);
 		buffer[stringLength] = '\n';
 
-		retLength = [self writeNBytes: stringLength + 1
-				   fromBuffer: buffer];
+		[self writeNBytes: stringLength + 1
+		       fromBuffer: buffer];
 	} @finally {
 		[self freeMemory: buffer];
 	}
 
-	return retLength;
+	return stringLength + 1;
 }
 
 - (size_t)writeFormat: (OFString*)format, ...
@@ -787,14 +793,13 @@
 		@throw [OFInvalidFormatException newWithClass: isa];
 
 	@try {
-		return [self writeNBytes: length
-			      fromBuffer: cString];
+		[self writeNBytes: length
+		       fromBuffer: cString];
 	} @finally {
 		free(cString);
 	}
 
-	/* Get rid of a warning, never reached anyway */
-	assert(0);
+	return length;
 }
 
 - (size_t)pendingBytes

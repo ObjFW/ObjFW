@@ -619,18 +619,14 @@ of_log(OFConstantString *format, ...)
 	return ret;
 }
 
-- (size_t)_writeNBytes: (size_t)length
-	    fromBuffer: (const void*)buffer
+- (void)_writeNBytes: (size_t)length
+	  fromBuffer: (const void*)buffer
 {
-	size_t ret;
-
 	if (fileDescriptor == -1 || isAtEndOfStream ||
-	    (ret = write(fileDescriptor, buffer, length)) < length)
+	    write(fileDescriptor, buffer, length) < length)
 		@throw [OFWriteFailedException newWithClass: isa
 						     stream: self
 					    requestedLength: length];
-
-	return ret;
 }
 
 - (void)_seekToOffset: (off_t)offset

@@ -100,11 +100,9 @@
 	return ret;
 }
 
-- (size_t)_writeNBytes: (size_t)length
-	    fromBuffer: (const void*)buffer
+- (void)_writeNBytes: (size_t)length
+	  fromBuffer: (const void*)buffer
 {
-	ssize_t ret;
-
 	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException newWithClass: isa
 						      socket: self];
@@ -124,12 +122,10 @@
 		@throw e;
 	}
 
-	if ((ret = send(sock, buffer, length, 0)) == -1)
+	if (send(sock, buffer, length, 0) < length)
 		@throw [OFWriteFailedException newWithClass: isa
 						     stream: self
 					    requestedLength: length];
-
-	return ret;
 }
 
 #ifdef _WIN32

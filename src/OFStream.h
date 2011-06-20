@@ -279,10 +279,9 @@
  *
  * \param buffer The buffer from which the data is written to the stream
  * \param length The length of the data that should be written
- * \return The number of bytes written
  */
-- (size_t)writeNBytes: (size_t)length
-	   fromBuffer: (const void*)buffer;
+- (void)writeNBytes: (size_t)length
+	 fromBuffer: (const void*)buffer;
 
 /**
  * Writes a uint8_t into the stream.
