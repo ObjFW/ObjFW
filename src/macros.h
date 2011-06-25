@@ -188,8 +188,8 @@ of_bswap64_nonconst(uint64_t i)
 	    : "0"(i)
 	);
 #else
-	i = (uint64_t)of_bswap32_nonconst(i & 0xFFFFFFFF) << 32 |
-	    of_bswap32_nonconst(i >> 32);
+	i = (uint64_t)of_bswap32_nonconst((uint32_t)(i & 0xFFFFFFFF)) << 32 |
+	    of_bswap32_nonconst((uint32_t)(i >> 32));
 #endif
 	return i;
 }
