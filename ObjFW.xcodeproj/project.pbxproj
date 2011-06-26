@@ -245,6 +245,10 @@
 		4BB25E8D139C388A00F574EA /* OFXMLElement+Serialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB25E87139C388A00F574EA /* OFXMLElement+Serialization.m */; };
 		4BD98C03133814220048DD5B /* objfw-defs.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD98C011338140B0048DD5B /* objfw-defs.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BDF37B51338055600F9A81A /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BDF37B41338055600F9A81A /* config.h */; };
+		4BE852D213B7671200C00856 /* OFDoubleMatrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BE852CE13B7671200C00856 /* OFDoubleMatrix.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BE852D313B7671200C00856 /* OFDoubleMatrix.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE852CF13B7671200C00856 /* OFDoubleMatrix.m */; };
+		4BE852D413B7671200C00856 /* OFDoubleVector.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BE852D013B7671200C00856 /* OFDoubleVector.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BE852D513B7671200C00856 /* OFDoubleVector.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE852D113B7671200C00856 /* OFDoubleVector.m */; };
 		4BE920A813A2ECEF00154B94 /* OFFloatVector.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BE920A613A2ECEF00154B94 /* OFFloatVector.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BE920A913A2ECEF00154B94 /* OFFloatVector.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE920A713A2ECEF00154B94 /* OFFloatVector.m */; };
 		4BF33AFB133807590059CEF7 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
@@ -564,6 +568,10 @@
 		4BE5F0DA12DF4225005C7A0C /* OFDate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDate.m; path = src/OFDate.m; sourceTree = SOURCE_ROOT; };
 		4BE5F0E412DF4259005C7A0C /* OFBlockTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFBlockTests.m; path = tests/OFBlockTests.m; sourceTree = SOURCE_ROOT; };
 		4BE5F0E512DF4259005C7A0C /* OFDateTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDateTests.m; path = tests/OFDateTests.m; sourceTree = SOURCE_ROOT; };
+		4BE852CE13B7671200C00856 /* OFDoubleMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFDoubleMatrix.h; path = src/OFDoubleMatrix.h; sourceTree = "<group>"; };
+		4BE852CF13B7671200C00856 /* OFDoubleMatrix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDoubleMatrix.m; path = src/OFDoubleMatrix.m; sourceTree = "<group>"; };
+		4BE852D013B7671200C00856 /* OFDoubleVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFDoubleVector.h; path = src/OFDoubleVector.h; sourceTree = "<group>"; };
+		4BE852D113B7671200C00856 /* OFDoubleVector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDoubleVector.m; path = src/OFDoubleVector.m; sourceTree = "<group>"; };
 		4BE920A613A2ECEF00154B94 /* OFFloatVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFFloatVector.h; path = src/OFFloatVector.h; sourceTree = "<group>"; };
 		4BE920A713A2ECEF00154B94 /* OFFloatVector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFFloatVector.m; path = src/OFFloatVector.m; sourceTree = "<group>"; };
 		4BF0749512DFAFCA00A4ADD1 /* OFURLTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFURLTests.m; path = tests/OFURLTests.m; sourceTree = SOURCE_ROOT; };
@@ -793,6 +801,10 @@
 				4BE5F0DA12DF4225005C7A0C /* OFDate.m */,
 				4B6799621099E7C50041064A /* OFDictionary.h */,
 				4B6799631099E7C50041064A /* OFDictionary.m */,
+				4BE852CE13B7671200C00856 /* OFDoubleMatrix.h */,
+				4BE852CF13B7671200C00856 /* OFDoubleMatrix.m */,
+				4BE852D013B7671200C00856 /* OFDoubleVector.h */,
+				4BE852D113B7671200C00856 /* OFDoubleVector.m */,
 				4B0108C910EB8C9300631877 /* OFEnumerator.h */,
 				4B0108CA10EB8C9300631877 /* OFEnumerator.m */,
 				4B6799661099E7C50041064A /* OFFile.h */,
@@ -979,6 +991,8 @@
 				4B3D23C31337FC8300DD29B8 /* OFDataArray+Hashing.h in Headers */,
 				4B3D23C41337FC8300DD29B8 /* OFDate.h in Headers */,
 				4B3D23C51337FCB000DD29B8 /* OFDictionary.h in Headers */,
+				4BE852D213B7671200C00856 /* OFDoubleMatrix.h in Headers */,
+				4BE852D413B7671200C00856 /* OFDoubleVector.h in Headers */,
 				4B3D23C61337FCB000DD29B8 /* OFEnumerator.h in Headers */,
 				4B17FF74133A2AAB003E6DCD /* OFException.h in Headers */,
 				4B3D23C81337FCB000DD29B8 /* OFFile.h in Headers */,
@@ -1233,6 +1247,8 @@
 				4B3D23911337FC0D00DD29B8 /* OFDataArray+Hashing.m in Sources */,
 				4B3D23921337FC0D00DD29B8 /* OFDate.m in Sources */,
 				4B3D23931337FC0D00DD29B8 /* OFDictionary.m in Sources */,
+				4BE852D313B7671200C00856 /* OFDoubleMatrix.m in Sources */,
+				4BE852D513B7671200C00856 /* OFDoubleVector.m in Sources */,
 				4B3D23941337FC0D00DD29B8 /* OFEnumerator.m in Sources */,
 				4B3D23961337FC0D00DD29B8 /* OFFile.m in Sources */,
 				4B6965E313A58B1B004F1C3A /* OFFloatMatrix.m in Sources */,

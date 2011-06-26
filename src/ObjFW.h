@@ -55,6 +55,8 @@
 
 #import "OFFloatVector.h"
 #import "OFFloatMatrix.h"
+#import "OFDoubleVector.h"
+#import "OFDoubleMatrix.h"
 
 #import "OFSerialization.h"
 

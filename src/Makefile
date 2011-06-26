@@ -16,6 +16,8 @@ SRCS = OFApplication.m			\
        OFDataArray+Hashing.m		\
        OFDate.m				\
        OFDictionary.m			\
+       OFDoubleMatrix.m			\
+       OFDoubleVector.m			\
        OFEnumerator.m			\
        OFFile.m				\
        OFFloatMatrix.m			\
