@@ -538,8 +538,7 @@ AS_IF([test x"$objc_runtime" = x"Apple"], [
 ])
 
 AS_IF([test x"$GOBJC" = x"yes"], [
-	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wcast-align -Wpointer-arith"
-       	OBJCFLAGS="$OBJCFLAGS -Werror"
+	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wpointer-arith -Werror"
 
 	AC_MSG_CHECKING(whether gcc has bug objc/27438)
 	AC_TRY_COMPILE([
@@ -565,9 +564,9 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 
 	AC_MSG_CHECKING(whether we need -Wno-strict-aliasing due to gcc bugs)
 	AC_TRY_COMPILE([
-		@interface OFObject
+		@interface Foo
 		{
-			Class isa;
+			struct objc_class *isa;
 		}
 		@end
 
@@ -575,13 +574,38 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 			struct objc_class *isa;
 		} object;
 	], [
-		OFObject *test = (OFObject*)&object;
+		Foo *test = (Foo*)&object;
 		(void)test; /* Get rid of unused variable warning */
 	], [
 		AC_MSG_RESULT(no)
 	], [
 		AC_MSG_RESULT(yes)
 		OBJCFLAGS="$OBJCFLAGS -Wno-strict-aliasing"
+	])
+
+	old_OBJCFLAGS="$OBJCFLAGS"
+	OBJCFLAGS="$OBJCFLAGS -Wcast-align"
+	AC_MSG_CHECKING(whether -Wcast-align is buggy)
+	AC_TRY_COMPILE([
+		@interface Foo
+		{
+			struct objc_class *isa;
+		}
+		@end
+
+		@implementation Foo
+		- (void)foo
+		{
+			struct objc_class *c = isa;
+			(void)c;
+		}
+		@end
+	], [
+	], [
+		AC_MSG_RESULT(no)
+	], [
+		AC_MSG_RESULT(yes)
+		OBJCFLAGS="$old_OBJCFLAGS"
 	])
 ])
 
