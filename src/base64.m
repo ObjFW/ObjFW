@@ -105,6 +105,9 @@ of_base64_decode(OFDataArray *data, const char *str, size_t len)
 	if ((len & 3) != 0)
 		return NO;
 
+	if ([data itemSize] != 1)
+		return NO;
+
 	for (i = 0; i < len; i += 4) {
 		uint32_t sb = 0;
 		uint8_t count = 3;
