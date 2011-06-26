@@ -269,9 +269,8 @@ static OFMutex *mutex;
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
-		seconds = (int64_t)[[secondsElement stringValue] decimalValue];
-		microseconds =
-		    (uint32_t)[[microsecondsElement stringValue] decimalValue];
+		seconds = (int64_t)[secondsElement decimalValue];
+		microseconds = (uint32_t)[microsecondsElement decimalValue];
 
 		[pool release];
 	} @catch (id e) {

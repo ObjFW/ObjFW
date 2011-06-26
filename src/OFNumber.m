@@ -742,10 +742,10 @@
 			 *	  INTMAX_MAX!
 			 */
 			type = OF_NUMBER_UINTMAX;
-			value.uintmax = [[element stringValue] decimalValue];
+			value.uintmax = [element decimalValue];
 		} else if ([typeString isEqual: @"signed"]) {
 			type = OF_NUMBER_INTMAX;
-			value.intmax = [[element stringValue] decimalValue];
+			value.intmax = [element decimalValue];
 		} else if ([typeString isEqual: @"float"]) {
 			union {
 				float f;

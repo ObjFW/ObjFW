@@ -72,4 +72,24 @@
  * \return The string value of the attribute as an autoreleased OFString
  */
 - (OFString*)stringValue;
+
+/**
+ * \return An integer with the decimal value of the attribute
+ */
+- (intmax_t)decimalValue;
+
+/**
+ * \return An integer with the hexadecimal value of the attribute
+ */
+- (uintmax_t)hexadecimalValue;
+
+/**
+ * \return A float with the float value of the attribute
+ */
+- (float)floatValue;
+
+/**
+ * \return A double with the double value of the attribute
+ */
+- (double)doubleValue;
 @end
