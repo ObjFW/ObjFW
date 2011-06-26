@@ -73,7 +73,8 @@ run-on-ios: all
 		${IOS_USER}@${IOS_HOST}:${IOS_TMP}/
 	scp -q plugin/TestPlugin.impl ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/plugin/
 	echo "Signing and running tests binary on iOS device ${IOS_HOST}..."
-	ssh ${IOS_USER}@${IOS_HOST} 'cd ${IOS_TMP} && ldid -S tests && ./tests'
+	ssh ${IOS_USER}@${IOS_HOST} \
+		'cd ${IOS_TMP} && ldid -S tests && ${TEST_LAUNCHER} ./tests'
 
 EBOOT.PBP: ${PROG_NOINST}
 	psp-fixup-imports ${PROG_NOINST}
