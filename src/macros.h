@@ -274,6 +274,14 @@ of_bswap32_vec(uint32_t *buffer, size_t length)
 # define of_bswap_double_if_le(i) of_bswap_double(i)
 #endif
 
+/*
+ * We define it here and not in objfw-defs.h, as it would be theoretically
+ * possible to build a universal binary for Mac OS X and iOS.
+ */
+#if defined(__MACH__) && defined(__arm__)
+# define OF_IOS
+#endif
+
 #define OF_ROL(value, bits)						\
 	(((value) << ((bits) % (sizeof(value) * 8))) |			\
 	(value) >> (sizeof(value) * 8 - ((bits) % (sizeof(value) * 8))))

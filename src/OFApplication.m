@@ -21,10 +21,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef __MACH__
-# include <crt_externs.h>
-#endif
-
 #import "OFApplication.h"
 #import "OFString.h"
 #import "OFArray.h"
@@ -35,7 +31,9 @@
 
 #import "macros.h"
 
-#ifndef __MACH__
+#if defined(__MACH__) && !defined(OF_IOS)
+# include <crt_externs.h>
+#elif !defined(OF_IOS)
 extern char **environ;
 #endif
 
@@ -106,18 +104,20 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 	@try {
 		OFAutoreleasePool *pool;
-		char **env;
+#if defined(__MACH__) && !defined(OF_IOS)
+		char **env = *_NSGetEnviron();
+#elif !defined(OF_IOS)
+		char **env = environ;
+#else
+		char *env;
+#endif
 
 		environment = [[OFMutableDictionary alloc] init];
 
 		atexit(atexit_handler);
-#ifdef __MACH__
-		env = *_NSGetEnviron();
-#else
-		env = environ;
-#endif
 
 		pool = [[OFAutoreleasePool alloc] init];
+#ifndef OF_IOS
 		for (; *env != NULL; env++) {
 			OFString *key;
 			OFString *value;
@@ -137,6 +137,34 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 			[pool releaseObjects];
 		}
+#else
+		/*
+		 * iOS does not provide environ and Apple does not allow using
+		 * _NSGetEnviron on iOS. Therefore, we just get a few common
+		 * variables from the environment which applications might
+		 * expect.
+		 */
+		if ((env = getenv("HOME")) != NULL)
+			[environment
+			    setObject: [OFString stringWithCString: env]
+			       forKey: @"HOME"];
+		if ((env = getenv("PATH")) != NULL)
+			[environment
+			    setObject: [OFString stringWithCString: env]
+			       forKey: @"PATH"];
+		if ((env = getenv("SHELL")) != NULL)
+			[environment
+			    setObject: [OFString stringWithCString: env]
+			       forKey: @"SHELL"];
+		if ((env = getenv("TMPDIR")) != NULL)
+			[environment
+			    setObject: [OFString stringWithCString: env]
+			       forKey: @"TMPDIR"];
+		if ((env = getenv("USER")) != NULL)
+			[environment
+			    setObject: [OFString stringWithCString: env]
+			       forKey: @"USER"];
+#endif
 		[pool release];
 
 		/*
