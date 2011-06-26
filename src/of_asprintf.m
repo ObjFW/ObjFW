@@ -27,6 +27,8 @@
 #import "OFAutoreleasePool.h"
 #import "asprintf.h"
 
+#import "macros.h"
+
 #define MAX_SUBFORMAT_LEN 64
 
 struct context {
@@ -235,6 +237,15 @@ formatLengthModifierState(struct context *ctx)
 			ctx->lengthModifier = LENGTH_MODIFIER_LL;
 		} else
 			ctx->i--;
+
+		break;
+#endif
+#ifdef OF_IOS
+	case 'q': /* iOS uses this for PRI?64 */
+		if (!appendSubformat(ctx, ctx->format + ctx->i, 1))
+			return false;
+
+		ctx->lengthModifier = LENGTH_MODIFIER_LL;
 
 		break;
 #endif
