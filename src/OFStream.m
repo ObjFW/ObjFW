@@ -195,6 +195,96 @@
 	return of_bswap_double_if_le(ret);
 }
 
+- (size_t)readNBigEndianInt16s: (size_t)nInt16s
+		    intoBuffer: (uint16_t*)buffer
+{
+	size_t size = nInt16s * sizeof(uint16_t);
+
+	[self readExactlyNBytes: size
+		     intoBuffer: buffer];
+
+#ifndef OF_BIG_ENDIAN
+	size_t i;
+
+	for (i = 0; i < nInt16s; i++)
+		buffer[i] = of_bswap16(buffer[i]);
+#endif
+
+	return size;
+}
+
+- (size_t)readNBigEndianInt32s: (size_t)nInt32s
+		    intoBuffer: (uint32_t*)buffer
+{
+	size_t size = nInt32s * sizeof(uint32_t);
+
+	[self readExactlyNBytes: size
+		     intoBuffer: buffer];
+
+#ifndef OF_BIG_ENDIAN
+	size_t i;
+
+	for (i = 0; i < nInt32s; i++)
+		buffer[i] = of_bswap32(buffer[i]);
+#endif
+
+	return size;
+}
+
+- (size_t)readNBigEndianInt64s: (size_t)nInt64s
+		    intoBuffer: (uint64_t*)buffer
+{
+	size_t size = nInt64s * sizeof(uint64_t);
+
+	[self readExactlyNBytes: size
+		     intoBuffer: buffer];
+
+#ifndef OF_BIG_ENDIAN
+	size_t i;
+
+	for (i = 0; i < nInt64s; i++)
+		buffer[i] = of_bswap64(buffer[i]);
+#endif
+
+	return size;
+}
+
+- (size_t)readNBigEndianFloats: (size_t)nFloats
+		    intoBuffer: (float*)buffer
+{
+	size_t size = nFloats * sizeof(float);
+
+	[self readExactlyNBytes: size
+		     intoBuffer: buffer];
+
+#ifndef OF_FLOAT_BIG_ENDIAN
+	size_t i;
+
+	for (i = 0; i < nFloats; i++)
+		buffer[i] = of_bswap_float(buffer[i]);
+#endif
+
+	return size;
+}
+
+- (size_t)readNBigEndianDoubles: (size_t)nDoubles
+		     intoBuffer: (double*)buffer
+{
+	size_t size = nDoubles * sizeof(double);
+
+	[self readExactlyNBytes: size
+		     intoBuffer: buffer];
+
+#ifndef OF_FLOAT_BIG_ENDIAN
+	size_t i;
+
+	for (i = 0; i < nDoubles; i++)
+		buffer[i] = of_bswap_double(buffer[i]);
+#endif
+
+	return size;
+}
+
 - (uint16_t)readLittleEndianInt16
 {
 	uint16_t ret;
@@ -243,6 +333,96 @@
 		     intoBuffer: (char*)&ret];
 
 	return of_bswap_double_if_be(ret);
+}
+
+- (size_t)readNLittleEndianInt16s: (size_t)nInt16s
+		       intoBuffer: (uint16_t*)buffer
+{
+	size_t size = nInt16s * sizeof(uint16_t);
+
+	[self readExactlyNBytes: size
+		     intoBuffer: buffer];
+
+#ifdef OF_BIG_ENDIAN
+	size_t i;
+
+	for (i = 0; i < nInt16s; i++)
+		buffer[i] = of_bswap16(buffer[i]);
+#endif
+
+	return size;
+}
+
+- (size_t)readNLittleEndianInt32s: (size_t)nInt32s
+		       intoBuffer: (uint32_t*)buffer
+{
+	size_t size = nInt32s * sizeof(uint32_t);
+
+	[self readExactlyNBytes: size
+		     intoBuffer: buffer];
+
+#ifdef OF_BIG_ENDIAN
+	size_t i;
+
+	for (i = 0; i < nInt32s; i++)
+		buffer[i] = of_bswap32(buffer[i]);
+#endif
+
+	return size;
+}
+
+- (size_t)readNLittleEndianInt64s: (size_t)nInt64s
+		       intoBuffer: (uint64_t*)buffer
+{
+	size_t size = nInt64s * sizeof(uint64_t);
+
+	[self readExactlyNBytes: size
+		     intoBuffer: buffer];
+
+#ifdef OF_BIG_ENDIAN
+	size_t i;
+
+	for (i = 0; i < nInt64s; i++)
+		buffer[i] = of_bswap64(buffer[i]);
+#endif
+
+	return size;
+}
+
+- (size_t)readNLittleEndianFloats: (size_t)nFloats
+		       intoBuffer: (float*)buffer
+{
+	size_t size = nFloats * sizeof(float);
+
+	[self readExactlyNBytes: size
+		     intoBuffer: buffer];
+
+#ifdef OF_FLOAT_BIG_ENDIAN
+	size_t i;
+
+	for (i = 0; i < nFloats; i++)
+		buffer[i] = of_bswap_float(buffer[i]);
+#endif
+
+	return size;
+}
+
+- (size_t)readNLittleEndianDoubles: (size_t)nDoubles
+			intoBuffer: (double*)buffer
+{
+	size_t size = nDoubles * sizeof(double);
+
+	[self readExactlyNBytes: size
+		     intoBuffer: buffer];
+
+#ifdef OF_FLOAT_BIG_ENDIAN
+	size_t i;
+
+	for (i = 0; i < nDoubles; i++)
+		buffer[i] = of_bswap_double(buffer[i]);
+#endif
+
+	return size;
 }
 
 - (OFDataArray*)readDataArrayWithNItems: (size_t)nItems
@@ -685,6 +865,156 @@
 	       fromBuffer: (char*)&double_];
 }
 
+- (size_t)writeNBigEndianInt16s: (size_t)nInt16s
+		     fromBuffer: (const uint16_t*)buffer
+{
+	size_t size = nInt16s * sizeof(uint16_t);
+
+#ifdef OF_BIG_ENDIAN
+	[self writeNBytes: size
+	       fromBuffer: buffer];
+#else
+	uint16_t *tmp;
+
+	tmp = [self allocMemoryForNItems: nInt16s
+				withSize: sizeof(uint16_t)];
+
+	@try {
+		size_t i;
+
+		for (i = 0; i < nInt16s; i++)
+			tmp[i] = of_bswap16(buffer[i]);
+
+		[self writeNBytes: size
+		       fromBuffer: tmp];
+	} @finally {
+		[self freeMemory: tmp];
+	}
+#endif
+
+	return size;
+}
+
+- (size_t)writeNBigEndianInt32s: (size_t)nInt32s
+		     fromBuffer: (const uint32_t*)buffer
+{
+	size_t size = nInt32s * sizeof(uint32_t);
+
+#ifdef OF_BIG_ENDIAN
+	[self writeNBytes: size
+	       fromBuffer: buffer];
+#else
+	uint32_t *tmp;
+
+	tmp = [self allocMemoryForNItems: nInt32s
+				withSize: sizeof(uint32_t)];
+
+	@try {
+		size_t i;
+
+		for (i = 0; i < nInt32s; i++)
+			tmp[i] = of_bswap32(buffer[i]);
+
+		[self writeNBytes: size
+		       fromBuffer: tmp];
+	} @finally {
+		[self freeMemory: tmp];
+	}
+#endif
+
+	return size;
+}
+
+- (size_t)writeNBigEndianInt64s: (size_t)nInt64s
+		     fromBuffer: (const uint64_t*)buffer
+{
+	size_t size = nInt64s * sizeof(uint64_t);
+
+#ifdef OF_BIG_ENDIAN
+	[self writeNBytes: size
+	       fromBuffer: buffer];
+#else
+	uint64_t *tmp;
+
+	tmp = [self allocMemoryForNItems: nInt64s
+				withSize: sizeof(uint64_t)];
+
+	@try {
+		size_t i;
+
+		for (i = 0; i < nInt64s; i++)
+			tmp[i] = of_bswap64(buffer[i]);
+
+		[self writeNBytes: size
+		       fromBuffer: tmp];
+	} @finally {
+		[self freeMemory: tmp];
+	}
+#endif
+
+	return size;
+}
+
+- (size_t)writeNBigEndianFloats: (size_t)nFloats
+		     fromBuffer: (const float*)buffer
+{
+	size_t size = nFloats * sizeof(float);
+
+#ifdef OF_FLOAT_BIG_ENDIAN
+	[self writeNBytes: size
+	       fromBuffer: buffer];
+#else
+	float *tmp;
+
+	tmp = [self allocMemoryForNItems: nFloats
+				withSize: sizeof(float)];
+
+	@try {
+		size_t i;
+
+		for (i = 0; i < nFloats; i++)
+			tmp[i] = of_bswap_float(buffer[i]);
+
+		[self writeNBytes: size
+		       fromBuffer: tmp];
+	} @finally {
+		[self freeMemory: tmp];
+	}
+#endif
+
+	return size;
+}
+
+- (size_t)writeNBigEndianDoubles: (size_t)nDoubles
+		      fromBuffer: (const double*)buffer
+{
+	size_t size = nDoubles * sizeof(double);
+
+#ifdef OF_FLOAT_BIG_ENDIAN
+	[self writeNBytes: size
+	       fromBuffer: buffer];
+#else
+	double *tmp;
+
+	tmp = [self allocMemoryForNItems: nDoubles
+				withSize: sizeof(double)];
+
+	@try {
+		size_t i;
+
+		for (i = 0; i < nDoubles; i++)
+			tmp[i] = of_bswap_double(buffer[i]);
+
+		[self writeNBytes: size
+		       fromBuffer: tmp];
+	} @finally {
+		[self freeMemory: tmp];
+	}
+#endif
+
+	return size;
+}
+
 - (void)writeLittleEndianInt16: (uint16_t)int16
 {
 	int16 = of_bswap16_if_be(int16);
@@ -723,6 +1053,156 @@
 
 	[self writeNBytes: 8
 	       fromBuffer: (char*)&double_];
+}
+
+- (size_t)writeNLittleEndianInt16s: (size_t)nInt16s
+			fromBuffer: (const uint16_t*)buffer
+{
+	size_t size = nInt16s * sizeof(uint16_t);
+
+#ifndef OF_BIG_ENDIAN
+	[self writeNBytes: size
+	       fromBuffer: buffer];
+#else
+	uint16_t *tmp;
+
+	tmp = [self allocMemoryForNItems: nInt16s
+				withSize: sizeof(uint16_t)];
+
+	@try {
+		size_t i;
+
+		for (i = 0; i < nInt16s; i++)
+			tmp[i] = of_bswap16(buffer[i]);
+
+		[self writeNBytes: size
+		       fromBuffer: tmp];
+	} @finally {
+		[self freeMemory: tmp];
+	}
+#endif
+
+	return size;
+}
+
+- (size_t)writeNLittleEndianInt32s: (size_t)nInt32s
+			fromBuffer: (const uint32_t*)buffer
+{
+	size_t size = nInt32s * sizeof(uint32_t);
+
+#ifndef OF_BIG_ENDIAN
+	[self writeNBytes: size
+	       fromBuffer: buffer];
+#else
+	uint32_t *tmp;
+
+	tmp = [self allocMemoryForNItems: nInt32s
+				withSize: sizeof(uint32_t)];
+
+	@try {
+		size_t i;
+
+		for (i = 0; i < nInt32s; i++)
+			tmp[i] = of_bswap32(buffer[i]);
+
+		[self writeNBytes: size
+		       fromBuffer: tmp];
+	} @finally {
+		[self freeMemory: tmp];
+	}
+#endif
+
+	return size;
+}
+
+- (size_t)writeNLittleEndianInt64s: (size_t)nInt64s
+			fromBuffer: (const uint64_t*)buffer
+{
+	size_t size = nInt64s * sizeof(uint64_t);
+
+#ifndef OF_BIG_ENDIAN
+	[self writeNBytes: size
+	       fromBuffer: buffer];
+#else
+	uint64_t *tmp;
+
+	tmp = [self allocMemoryForNItems: nInt64s
+				withSize: sizeof(uint64_t)];
+
+	@try {
+		size_t i;
+
+		for (i = 0; i < nInt64s; i++)
+			tmp[i] = of_bswap64(buffer[i]);
+
+		[self writeNBytes: size
+		       fromBuffer: tmp];
+	} @finally {
+		[self freeMemory: tmp];
+	}
+#endif
+
+	return size;
+}
+
+- (size_t)writeNLittleEndianFloats: (size_t)nFloats
+			fromBuffer: (const float*)buffer
+{
+	size_t size = nFloats * sizeof(float);
+
+#ifndef OF_FLOAT_BIG_ENDIAN
+	[self writeNBytes: size
+	       fromBuffer: buffer];
+#else
+	float *tmp;
+
+	tmp = [self allocMemoryForNItems: nFloats
+				withSize: sizeof(float)];
+
+	@try {
+		size_t i;
+
+		for (i = 0; i < nFloats; i++)
+			tmp[i] = of_bswap_float(buffer[i]);
+
+		[self writeNBytes: size
+		       fromBuffer: tmp];
+	} @finally {
+		[self freeMemory: tmp];
+	}
+#endif
+
+	return size;
+}
+
+- (size_t)writeNLittleEndianDoubles: (size_t)nDoubles
+			 fromBuffer: (const double*)buffer
+{
+	size_t size = nDoubles * sizeof(double);
+
+#ifndef OF_FLOAT_BIG_ENDIAN
+	[self writeNBytes: size
+	       fromBuffer: buffer];
+#else
+	double *tmp;
+
+	tmp = [self allocMemoryForNItems: nDoubles
+				withSize: sizeof(double)];
+
+	@try {
+		size_t i;
+
+		for (i = 0; i < nDoubles; i++)
+			tmp[i] = of_bswap_double(buffer[i]);
+
+		[self writeNBytes: size
+		       fromBuffer: tmp];
+	} @finally {
+		[self freeMemory: tmp];
+	}
+#endif
+
+	return size;
 }
 
 - (size_t)writeDataArray: (OFDataArray*)dataArray

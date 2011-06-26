@@ -138,6 +138,76 @@
 - (double)readBigEndianDouble;
 
 /**
+ * Reads nInt16s uint16_ts from the stream which are encoded in big endian.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
+ * \param nInt16s The number of uint16_ts to read
+ * \param buffer A buffer of sufficient size to store the specified number of
+ *		 uint16_ts
+ * \return The number of bytes read
+ */
+- (size_t)readNBigEndianInt16s: (size_t)nInt16s
+		    intoBuffer: (uint16_t*)buffer;
+
+/**
+ * Reads nInt32s uint32_ts from the stream which are encoded in big endian.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
+ * \param nInt32s The number of uint32_ts to read
+ * \param buffer A buffer of sufficient size to store the specified number of
+ *		 uint32_ts
+ * \return The number of bytes read
+ */
+- (size_t)readNBigEndianInt32s: (size_t)nInt32s
+		    intoBuffer: (uint32_t*)buffer;
+
+/**
+ * Reads nInt64s uint64_ts from the stream which are encoded in big endian.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
+ * \param nInt64s The number of uint64_ts to read
+ * \param buffer A buffer of sufficient size to store the specified number of
+ *		 uint64_ts
+ * \return The number of bytes read
+ */
+- (size_t)readNBigEndianInt64s: (size_t)nInt64s
+		    intoBuffer: (uint64_t*)buffer;
+
+/**
+ * Reads nFloats floats from the stream which are encoded in big endian.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
+ * \param nFloatss The number of floats to read
+ * \param buffer A buffer of sufficient size to store the specified number of
+ *		 floats
+ * \return The number of bytes read
+ */
+- (size_t)readNBigEndianFloats: (size_t)nFloats
+		    intoBuffer: (float*)buffer;
+
+/**
+ * Reads nDoubles doubles from the stream which are encoded in big endian.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
+ * \param nDoubles The number of doubles to read
+ * \param buffer A buffer of sufficient size to store the specified number of
+ *		 doubles
+ * \return The number of bytes read
+ */
+- (size_t)readNBigEndianDoubles: (size_t)nDoubles
+		     intoBuffer: (double*)buffer;
+
+/**
  * Reads a uint16_t from the stream which is encoded in little endian.
  *
  * WARNING: Only call this when you know that enough data is available!
@@ -186,6 +256,76 @@
  * \return A double from the stream in the native endianess
  */
 - (double)readLittleEndianDouble;
+
+/**
+ * Reads nInt16s uint16_ts from the stream which are encoded in little endian.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
+ * \param nInt16s The number of uint16_ts to read
+ * \param buffer A buffer of sufficient size to store the specified number of
+ *		 uint16_ts
+ * \return The number of bytes read
+ */
+- (size_t)readNLittleEndianInt16s: (size_t)nInt16s
+		       intoBuffer: (uint16_t*)buffer;
+
+/**
+ * Reads nInt32s uint32_ts from the stream which are encoded in little endian.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
+ * \param nInt32s The number of uint32_ts to read
+ * \param buffer A buffer of sufficient size to store the specified number of
+ *		 uint32_ts
+ * \return The number of bytes read
+ */
+- (size_t)readNLittleEndianInt32s: (size_t)nInt32s
+		       intoBuffer: (uint32_t*)buffer;
+
+/**
+ * Reads nInt64s uint64_ts from the stream which are encoded in little endian.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
+ * \param nInt64s The number of uint64_ts to read
+ * \param buffer A buffer of sufficient size to store the specified number of
+ *		 uint64_ts
+ * \return The number of bytes read
+ */
+- (size_t)readNLittleEndianInt64s: (size_t)nInt64s
+		       intoBuffer: (uint64_t*)buffer;
+
+/**
+ * Reads nFloats floats from the stream which are encoded in little endian.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
+ * \param nFloats The number of floats to read
+ * \param buffer A buffer of sufficient size to store the specified number of
+ *		 floats
+ * \return The number of bytes read
+ */
+- (size_t)readNLittleEndianFloats: (size_t)nFloats
+		       intoBuffer: (float*)buffer;
+
+/**
+ * Reads nDoubles doubles from the stream which are encoded in little endian.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
+ * \param nDoubles The number of doubles to read
+ * \param buffer A buffer of sufficient size to store the specified number of
+ *		 doubles
+ * \return The number of bytes read
+ */
+- (size_t)readNLittleEndianDoubles: (size_t)nDoubles
+			intoBuffer: (double*)buffer;
 
 /**
  * Reads nItems items with an item size of 1 from the stream and returns them
@@ -326,6 +466,61 @@
 - (void)writeBigEndianDouble: (double)double_;
 
 /**
+ * Writes nInt16s uint16_ts into the stream, encoded in big endian.
+ *
+ * \param nInt16 The number of uint16_ts to write
+ * \param buffer The buffer from which the data is written to the stream after
+ *		 it has been byte swapped if necessary
+ * \return The number of bytes written to the stream
+ */
+- (size_t)writeNBigEndianInt16s: (size_t)nInt16s
+		     fromBuffer: (const uint16_t*)buffer;
+
+/**
+ * Writes nInt32s uint32_ts into the stream, encoded in big endian.
+ *
+ * \param nInt32 The number of uint32_ts to write
+ * \param buffer The buffer from which the data is written to the stream after
+ *		 it has been byte swapped if necessary
+ * \return The number of bytes written to the stream
+ */
+- (size_t)writeNBigEndianInt32s: (size_t)nInt32s
+		     fromBuffer: (const uint32_t*)buffer;
+
+/**
+ * Writes nInt64s uint64_ts into the stream, encoded in big endian.
+ *
+ * \param nInt64 The number of uint64_ts to write
+ * \param buffer The buffer from which the data is written to the stream after
+ *		 it has been byte swapped if necessary
+ * \return The number of bytes written to the stream
+ */
+- (size_t)writeNBigEndianInt64s: (size_t)nInt64s
+		     fromBuffer: (const uint64_t*)buffer;
+
+/**
+ * Writes nFloats floats into the stream, encoded in big endian.
+ *
+ * \param nFloats The number of floats to write
+ * \param buffer The buffer from which the data is written to the stream after
+ *		 it has been byte swapped if necessary
+ * \return The number of bytes written to the stream
+ */
+- (size_t)writeNBigEndianFloats: (size_t)nFloats
+		     fromBuffer: (const float*)buffer;
+
+/**
+ * Writes nDoubles doubles into the stream, encoded in big endian.
+ *
+ * \param nDoubles The number of doubles to write
+ * \param buffer The buffer from which the data is written to the stream after
+ *		 it has been byte swapped if necessary
+ * \return The number of bytes written to the stream
+ */
+- (size_t)writeNBigEndianDoubles: (size_t)nDoubles
+		      fromBuffer: (const double*)buffer;
+
+/**
  * Writes a uint16_t into the stream, encoded in little endian.
  *
  * \param int16 A uint16_t
@@ -359,6 +554,61 @@
  * \param double_ A double
  */
 - (void)writeLittleEndianDouble: (double)double_;
+
+/**
+ * Writes nInt16s uint16_ts into the stream, encoded in little endian.
+ *
+ * \param nInt16 The number of uint16_ts to write
+ * \param buffer The buffer from which the data is written to the stream after
+ *		 it has been byte swapped if necessary
+ * \return The number of bytes written to the stream
+ */
+- (size_t)writeNLittleEndianInt16s: (size_t)nInt16s
+			fromBuffer: (const uint16_t*)buffer;
+
+/**
+ * Writes nInt32s uint32_ts into the stream, encoded in little endian.
+ *
+ * \param nInt32 The number of uint32_ts to write
+ * \param buffer The buffer from which the data is written to the stream after
+ *		 it has been byte swapped if necessary
+ * \return The number of bytes written to the stream
+ */
+- (size_t)writeNLittleEndianInt32s: (size_t)nInt32s
+			fromBuffer: (const uint32_t*)buffer;
+
+/**
+ * Writes nInt64s uint64_ts into the stream, encoded in little endian.
+ *
+ * \param nInt64 The number of uint64_ts to write
+ * \param buffer The buffer from which the data is written to the stream after
+ *		 it has been byte swapped if necessary
+ * \return The number of bytes written to the stream
+ */
+- (size_t)writeNLittleEndianInt64s: (size_t)nInt64s
+			fromBuffer: (const uint64_t*)buffer;
+
+/**
+ * Writes nFloats floats into the stream, encoded in little endian.
+ *
+ * \param nFloats The number of floats to write
+ * \param buffer The buffer from which the data is written to the stream after
+ *		 it has been byte swapped if necessary
+ * \return The number of bytes written to the stream
+ */
+- (size_t)writeNLittleEndianFloats: (size_t)nFloats
+			fromBuffer: (const float*)buffer;
+
+/**
+ * Writes nDoubles doubles into the stream, encoded in little endian.
+ *
+ * \param nDoubles The number of doubles to write
+ * \param buffer The buffer from which the data is written to the stream after
+ *		 it has been byte swapped if necessary
+ * \return The number of bytes written to the stream
+ */
+- (size_t)writeNLittleEndianDoubles: (size_t)nDoubles
+			 fromBuffer: (const double*)buffer;
 
 /**
  * Writes from an OFDataArray into the stream.
