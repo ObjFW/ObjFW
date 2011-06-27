@@ -103,7 +103,6 @@ void _references_to_categories_of_OFDataArray(void)
 						       mode: @"rb"];
 
 		itemSize = 1;
-		data = NULL;
 
 		@try {
 			char *buffer = [self allocMemoryWithSize: of_pagesize];
@@ -166,7 +165,6 @@ void _references_to_categories_of_OFDataArray(void)
 	self = [super init];
 
 	itemSize = 1;
-	data = NULL;
 
 	if (!of_base64_decode(self, [string cString], [string cStringLength])) {
 		Class c = isa;
