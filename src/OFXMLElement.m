@@ -997,6 +997,25 @@ void _references_to_categories_of_OFXMLElement(void)
 			    namespace: elementNS] firstObject];
 }
 
+- (OFArray*)elements
+{
+	OFMutableArray *ret = [OFMutableArray array];
+	OFXMLElement **cArray = [children cArray];
+	size_t i, count = [children count];
+
+	for (i = 0; i < count; i++)
+		if (cArray[i]->name != nil)
+			[ret addObject: cArray[i]];
+
+	/*
+	 * Class swizzle the array to be immutable. We declared the return type
+	 * to be OFArray*, so it can't be modified anyway. But not swizzling it
+	 * would create a real copy each time -[copy] is called.
+	 */
+	ret->isa = [OFArray class];
+	return ret;
+}
+
 - (OFArray*)elementsForName: (OFString*)elementName
 {
 	OFMutableArray *ret = [OFMutableArray array];
@@ -1008,6 +1027,32 @@ void _references_to_categories_of_OFXMLElement(void)
 		    [cArray[i]->name isEqual: elementName])
 			[ret addObject: cArray[i]];
 
+	/*
+	 * Class swizzle the array to be immutable. We declared the return type
+	 * to be OFArray*, so it can't be modified anyway. But not swizzling it
+	 * would create a real copy each time -[copy] is called.
+	 */
+	ret->isa = [OFArray class];
+	return ret;
+}
+
+- (OFArray*)elementsForNamespace: (OFString*)elementNS
+{
+	OFMutableArray *ret = [OFMutableArray array];
+	OFXMLElement **cArray = [children cArray];
+	size_t i, count = [children count];
+
+	for (i = 0; i < count; i++)
+		if (cArray[i]->name != nil &&
+		    [cArray[i]->ns isEqual: elementNS])
+			[ret addObject: cArray[i]];
+
+	/*
+	 * Class swizzle the array to be immutable. We declared the return type
+	 * to be OFArray*, so it can't be modified anyway. But not swizzling it
+	 * would create a real copy each time -[copy] is called.
+	 */
+	ret->isa = [OFArray class];
 	return ret;
 }
 
@@ -1030,6 +1075,12 @@ void _references_to_categories_of_OFXMLElement(void)
 		    [cArray[i]->name isEqual: elementName])
 			[ret addObject: cArray[i]];
 
+	/*
+	 * Class swizzle the array to be immutable. We declared the return type
+	 * to be OFArray*, so it can't be modified anyway. But not swizzling it
+	 * would create a real copy each time -[copy] is called.
+	 */
+	ret->isa = [OFArray class];
 	return ret;
 }
 

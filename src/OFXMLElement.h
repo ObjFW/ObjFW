@@ -386,6 +386,20 @@
 - (void)addChild: (OFXMLElement*)child;
 
 /**
+ * Returns all children that are elements.
+ *
+ * \return All children that are elements
+ */
+- (OFArray*)elements;
+
+/**
+ * Returns all children that have the specified namespace.
+ *
+ * \return All children that have the specified namespace
+ */
+- (OFArray*)elementsForNamespace: (OFString*)elementNS;
+
+/**
  * \param elementName The name of the element
  * \return The first child element with the specified name
  */
