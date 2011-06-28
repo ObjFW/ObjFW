@@ -377,7 +377,7 @@ resolve_relative_path(OFString *path)
 
 - copy
 {
-	OFURL *copy = [[OFURL alloc] init];
+	OFURL *copy = [[isa alloc] init];
 
 	@try {
 		copy->scheme = [scheme copy];

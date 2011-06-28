@@ -273,7 +273,7 @@
 
 - copy
 {
-	OFList *copy = [[OFList alloc] init];
+	OFList *copy = [[isa alloc] init];
 	of_list_object_t *iter, *listObject, *previous;
 
 	listObject = NULL;

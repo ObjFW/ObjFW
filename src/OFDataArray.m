@@ -357,7 +357,7 @@ void _references_to_categories_of_OFDataArray(void)
 
 - copy
 {
-	OFDataArray *copy = [[OFDataArray alloc] initWithItemSize: itemSize];
+	OFDataArray *copy = [[isa alloc] initWithItemSize: itemSize];
 
 	[copy addNItems: count
 	     fromCArray: data];
@@ -576,15 +576,5 @@ void _references_to_categories_of_OFDataArray(void)
 		data = [self resizeMemory: data
 				   toSize: newSize];
 	size = newSize;
-}
-
-- copy
-{
-	OFDataArray *copy = [[OFBigDataArray alloc] initWithItemSize: itemSize];
-
-	[copy addNItems: count
-	     fromCArray: data];
-
-	return copy;
 }
 @end
