@@ -70,16 +70,16 @@ typedef struct of_range_t {
  * \brief A point.
  */
 typedef struct of_point_t {
-	int x;
-	int y;
+	float x;
+	float y;
 } of_point_t;
 
 /**
  * \brief A dimension.
  */
 typedef struct of_dimension_t {
-	int width;
-	int height;
+	float width;
+	float height;
 } of_dimension_t;
 
 /**
