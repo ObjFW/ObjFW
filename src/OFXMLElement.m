@@ -1129,6 +1129,11 @@ void _references_to_categories_of_OFXMLElement(void)
 	return hash;
 }
 
+- copy
+{
+	return [[isa alloc] initWithElement: self];
+}
+
 - (void)dealloc
 {
 	[name release];

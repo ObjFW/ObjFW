@@ -27,7 +27,7 @@
 /**
  * \brief A class which stores an XML element.
  */
-@interface OFXMLElement: OFObject <OFSerialization>
+@interface OFXMLElement: OFObject <OFCopying, OFSerialization>
 {
 	OFString *name;
 	OFString *ns;
