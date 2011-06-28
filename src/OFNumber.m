@@ -716,10 +716,8 @@
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 		OFString *typeString;
 
-		if (![[element name] isEqual: @"object"] ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS] ||
-		    ![[[element attributeForName: @"class"] stringValue]
-		    isEqual: [self className]])
+		if (![[element name] isEqual: [self className]] ||
+		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
@@ -1177,17 +1175,12 @@
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFXMLElement *element;
 
-	element = [OFXMLElement elementWithName: @"object"
-				      namespace: OF_SERIALIZATION_NS];
-
-	pool = [[OFAutoreleasePool alloc] init];
-
-	[element addAttributeWithName: @"class"
-			  stringValue: [self className]];
-	[element setStringValue: [self description]];
+	element = [OFXMLElement elementWithName: [self className]
+				      namespace: OF_SERIALIZATION_NS
+				    stringValue: [self description]];
 
 	switch (type) {
 	case OF_NUMBER_BOOL:
@@ -1255,7 +1248,12 @@
 		@throw [OFInvalidFormatException newWithClass: isa];
 	}
 
-	[pool release];
+	[element retain];
+	@try {
+		[pool release];
+	} @finally {
+		[element autorelease];
+	}
 
 	return element;
 }

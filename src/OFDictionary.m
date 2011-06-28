@@ -27,6 +27,7 @@
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
+#import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
 #import "macros.h"
@@ -478,53 +479,47 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 - initWithSerialization: (OFXMLElement*)element
 {
 	@try {
-		OFAutoreleasePool *pool, *pool2;
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		OFAutoreleasePool *pool2;
 		OFMutableDictionary *dictionary;
-		OFArray *pairs;
-		OFEnumerator *enumerator;
-		OFXMLElement *pair;
+		OFArray *keys, *objects;
+		OFEnumerator *keyEnumerator, *objectEnumerator;
+		OFXMLElement *keyElement, *objectElement;
 
-		pool = [[OFAutoreleasePool alloc] init];
-
-		if (![[element name] isEqual: @"object"] ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS] ||
-		    ![[[element attributeForName: @"class"] stringValue]
-		    isEqual: [self className]])
+		if (![[element name] isEqual: [self className]] ||
+		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
 		dictionary = [OFMutableDictionary dictionary];
-		pairs = [element elementsForName: @"pair"
-				       namespace: OF_SERIALIZATION_NS];
 
-		enumerator = [pairs objectEnumerator];
+		keys = [element elementsForName: @"key"
+				      namespace: OF_SERIALIZATION_NS];
+		objects = [element elementsForName: @"object"
+					 namespace: OF_SERIALIZATION_NS];
+
+		if ([keys count] != [objects count])
+			@throw [OFInvalidFormatException newWithClass: isa];
+
+		keyEnumerator = [keys objectEnumerator];
+		objectEnumerator = [objects objectEnumerator];
 		pool2 = [[OFAutoreleasePool alloc] init];
-		while ((pair = [enumerator nextObject]) != nil) {
-			OFXMLElement *keyElement, *valueElement;
-			id <OFSerialization, OFCopying> key;
-			id <OFSerialization> object;
 
-			keyElement = [pair elementForName: @"key"
-						namespace: OF_SERIALIZATION_NS];
-			valueElement = [pair
-			    elementForName: @"value"
-				 namespace: OF_SERIALIZATION_NS];
+		while ((keyElement = [keyEnumerator nextObject]) != nil &&
+		    (objectElement = [objectEnumerator nextObject]) != nil) {
+			OFXMLElement *key, *object;
 
-			if (keyElement == nil || valueElement == nil)
-				@throw [OFInvalidArgumentException
-				    newWithClass: isa
-					selector: _cmd];
+			key = [[keyElement elementsForNamespace:
+			    OF_SERIALIZATION_NS] firstObject];
+			object = [[objectElement elementsForNamespace:
+			    OF_SERIALIZATION_NS] firstObject];
 
-			key = [[keyElement elementForName: @"object"
-						namespace: OF_SERIALIZATION_NS]
-			    objectByDeserializing];
-			object = [[valueElement
-			    elementForName: @"object"
-				 namespace: OF_SERIALIZATION_NS]
-			    objectByDeserializing];
+			if (key == nil || object == nil)
+				@throw [OFInvalidFormatException
+				    newWithClass: isa];
 
-			[dictionary setObject: object
-				       forKey: key];
+			[dictionary setObject: [object objectByDeserializing]
+				       forKey: [key objectByDeserializing]];
 
 			[pool2 releaseObjects];
 		}
@@ -826,47 +821,45 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool, *pool2;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFAutoreleasePool *pool2;
 	OFXMLElement *element;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	id <OFSerialization> key, object;
 
-	element = [OFXMLElement elementWithName: @"object"
+	element = [OFXMLElement elementWithName: [self className]
 				      namespace: OF_SERIALIZATION_NS];
-
-	pool = [[OFAutoreleasePool alloc] init];
-	[element addAttributeWithName: @"class"
-			  stringValue: [self className]];
 
 	keyEnumerator = [self keyEnumerator];
 	objectEnumerator = [self objectEnumerator];
-
 	pool2 = [[OFAutoreleasePool alloc] init];
+
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	       (object = [objectEnumerator nextObject]) != nil) {
-		OFXMLElement *pair, *keyElement, *valueElement;
-
-		pair = [OFXMLElement elementWithName: @"pair"
-					   namespace: OF_SERIALIZATION_NS];
+		OFXMLElement *keyElement, *objectElement;
 
 		keyElement = [OFXMLElement
 		    elementWithName: @"key"
 			  namespace: OF_SERIALIZATION_NS];
 		[keyElement addChild: [key XMLElementBySerializing]];
-		[pair addChild: keyElement];
 
-		valueElement = [OFXMLElement
-		    elementWithName: @"value"
+		objectElement = [OFXMLElement
+		    elementWithName: @"object"
 			  namespace: OF_SERIALIZATION_NS];
-		[valueElement addChild: [object XMLElementBySerializing]];
-		[pair addChild: valueElement];
+		[objectElement addChild: [object XMLElementBySerializing]];
 
-		[element addChild: pair];
+		[element addChild: keyElement];
+		[element addChild: objectElement];
 
 		[pool2 releaseObjects];
 	}
 
-	[pool release];
+	[element retain];
+	@try {
+		[pool release];
+	} @finally {
+		[element autorelease];
+	}
 
 	return element;
 }

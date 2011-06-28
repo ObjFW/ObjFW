@@ -237,20 +237,21 @@
 
 		pool = [[OFAutoreleasePool alloc] init];
 
-		if (![[element name] isEqual: @"object"] ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS] ||
-		    ![[[element attributeForName: @"class"] stringValue]
-		    isEqual: [self className]])
+		if (![[element name] isEqual: [self className]] ||
+		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
-		enumerator = [[element
-		    elementsForName: @"object"
-			  namespace: OF_SERIALIZATION_NS] objectEnumerator];
+		enumerator = [[element children] objectEnumerator];
 		pool2 = [[OFAutoreleasePool alloc] init];
-		while ((child = [enumerator nextObject]) != nil) {
-			id object = [child objectByDeserializing];
 
+		while ((child = [enumerator nextObject]) != nil) {
+			id object;
+
+			if (![[child namespace] isEqual: OF_SERIALIZATION_NS])
+				continue;
+
+			object = [child objectByDeserializing];
 			[array addItem: &object];
 			[object retain];
 
@@ -504,24 +505,29 @@
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFAutoreleasePool *pool2;
 	OFXMLElement *element;
 	id <OFSerialization> *cArray = [array cArray];
 	size_t i, count = [array count];
 
-	element = [OFXMLElement elementWithName: @"object"
-				      namespace: OF_SERIALIZATION_NS];
+	element = [[OFXMLElement alloc] initWithName: [self className]
+					   namespace: OF_SERIALIZATION_NS];
 
-	pool = [[OFAutoreleasePool alloc] init];
-	[element addAttributeWithName: @"class"
-			  stringValue: [self className]];
+	pool2 = [[OFAutoreleasePool alloc] init];
 
 	for (i = 0; i < count; i++) {
 		[element addChild: [cArray[i] XMLElementBySerializing]];
-		[pool releaseObjects];
+
+		[pool2 releaseObjects];
 	}
 
-	[pool release];
+	[element retain];
+	@try {
+		[pool release];
+	} @finally {
+		[element autorelease];
+	}
 
 	return element;
 }

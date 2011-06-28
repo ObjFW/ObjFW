@@ -1081,10 +1081,8 @@ of_utf16_string_length(const uint16_t *string)
 	@try {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 
-		if (![[element name] isEqual: @"object"] ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS] ||
-		    ![[[element attributeForName: @"class"] stringValue]
-		    isEqual: [self className]])
+		if (![[element name] isEqual: [self className]] ||
+		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
@@ -1273,23 +1271,25 @@ of_utf16_string_length(const uint16_t *string)
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFXMLElement *element;
+	OFString *className;
 
-	element = [OFXMLElement elementWithName: @"object"
+	if ([self isKindOfClass: [OFConstantString class]])
+		className = @"OFString";
+	else
+		className = [self className];
+
+	element = [OFXMLElement elementWithName: className
 				      namespace: OF_SERIALIZATION_NS
 				    stringValue: self];
 
-	pool = [[OFAutoreleasePool alloc] init];
-
-	if ([self isKindOfClass: [OFConstantString class]])
-		[element addAttributeWithName: @"class"
-				  stringValue: @"OFString"];
-	else
-		[element addAttributeWithName: @"class"
-				  stringValue: [self className]];
-
-	[pool release];
+	[element retain];
+	@try {
+		[pool release];
+	} @finally {
+		[element autorelease];
+	}
 
 	return element;
 }

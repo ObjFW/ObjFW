@@ -289,10 +289,8 @@ resolve_relative_path(OFString *path)
 	@try {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 
-		if (![[element name] isEqual: @"object"] ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS] ||
-		    ![[[element attributeForName: @"class"] stringValue]
-		    isEqual: [self className]])
+		if (![[element name] isEqual: [self className]] ||
+		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
@@ -550,19 +548,19 @@ resolve_relative_path(OFString *path)
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFXMLElement *element;
 
-	element = [OFXMLElement elementWithName: @"object"
-				      namespace: OF_SERIALIZATION_NS];
+	element = [OFXMLElement elementWithName: [self className]
+				      namespace: OF_SERIALIZATION_NS
+				    stringValue: [self string]];
 
-	pool = [[OFAutoreleasePool alloc] init];
-
-	[element addAttributeWithName: @"class"
-			  stringValue: [self className]];
-	[element setStringValue: [self string]];
-
-	[pool release];
+	[element retain];
+	@try {
+		[pool release];
+	} @finally {
+		[element autorelease];
+	}
 
 	return element;
 }

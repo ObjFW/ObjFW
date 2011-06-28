@@ -1,93 +1,77 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<serialization xmlns='https://webkeks.org/objfw/serialization'>
-  <object class='OFMutableDictionary'>
-    <pair>
-      <key>
-        <object class='OFArray'>
-          <object class='OFString'>Qu&quot;xbar
-test</object>
-          <object class='OFNumber' type='signed'>1234</object>
-          <object class='OFMutableString'>asd</object>
-          <object class='OFDate'>
-            <seconds>1234</seconds>
-            <microseconds>5678</microseconds>
-          </object>
-        </object>
-      </key>
-      <value>
-        <object class='OFString'>Hello</object>
-      </value>
-    </pair>
-    <pair>
-      <key>
-        <object class='OFString'>Blub</object>
-      </key>
-      <value>
-        <object class='OFString'>B&quot;la</object>
-      </value>
-    </pair>
-    <pair>
-      <key>
-        <object class='OFList'>
-          <object class='OFString'>Hello</object>
-          <object class='OFString'>Wo&#xD;ld!
-How are you?</object>
-          <object class='OFURL'>https://webkeks.org/</object>
-          <object class='OFXMLElement'>
-            <name>x</name>
-            <namespaces>
-              <object class='OFMutableDictionary'>
-                <pair>
-                  <key>
-                    <object class='OFString'>http://www.w3.org/2000/xmlns/</object>
-                  </key>
-                  <value>
-                    <object class='OFString'>xmlns</object>
-                  </value>
-                </pair>
-                <pair>
-                  <key>
-                    <object class='OFString'>http://www.w3.org/XML/1998/namespace</object>
-                  </key>
-                  <value>
-                    <object class='OFString'>xml</object>
-                  </value>
-                </pair>
+<serialization xmlns='https://webkeks.org/objfw/serialization' version='0'>
+  <OFMutableDictionary>
+    <key>
+      <OFArray>
+        <OFString>Qu&quot;xbar
+test</OFString>
+        <OFNumber type='signed'>1234</OFNumber>
+        <OFMutableString>asd</OFMutableString>
+        <OFDate seconds='1234' microseconds='5678'/>
+      </OFArray>
+    </key>
+    <object>
+      <OFString>Hello</OFString>
+    </object>
+    <key>
+      <OFList>
+        <OFString>Hello</OFString>
+        <OFString>Wo&#xD;ld!
+How are you?</OFString>
+        <OFURL>https://webkeks.org/</OFURL>
+        <OFXMLElement name='x'>
+          <namespaces>
+            <OFMutableDictionary>
+              <key>
+                <OFString>http://www.w3.org/2000/xmlns/</OFString>
+              </key>
+              <object>
+                <OFString>xmlns</OFString>
               </object>
-            </namespaces>
-            <children>
-              <object class='OFMutableArray'>
-                <object class='OFXMLElement'>
-                  <name>y</name>
-                  <namespaces>
-                    <object class='OFMutableDictionary'>
-                      <pair>
-                        <key>
-                          <object class='OFString'>http://www.w3.org/2000/xmlns/</object>
-                        </key>
-                        <value>
-                          <object class='OFString'>xmlns</object>
-                        </value>
-                      </pair>
-                      <pair>
-                        <key>
-                          <object class='OFString'>http://www.w3.org/XML/1998/namespace</object>
-                        </key>
-                        <value>
-                          <object class='OFString'>xml</object>
-                        </value>
-                      </pair>
+              <key>
+                <OFString>http://www.w3.org/XML/1998/namespace</OFString>
+              </key>
+              <object>
+                <OFString>xml</OFString>
+              </object>
+            </OFMutableDictionary>
+          </namespaces>
+          <children>
+            <OFMutableArray>
+              <OFXMLElement name='y'>
+                <namespaces>
+                  <OFMutableDictionary>
+                    <key>
+                      <OFString>http://www.w3.org/2000/xmlns/</OFString>
+                    </key>
+                    <object>
+                      <OFString>xmlns</OFString>
                     </object>
-                  </namespaces>
-                </object>
-              </object>
-            </children>
-          </object>
-        </object>
-      </key>
-      <value>
-        <object class='OFString'>list</object>
-      </value>
-    </pair>
-  </object>
+                    <key>
+                      <OFString>http://www.w3.org/XML/1998/namespace</OFString>
+                    </key>
+                    <object>
+                      <OFString>xml</OFString>
+                    </object>
+                  </OFMutableDictionary>
+                </namespaces>
+              </OFXMLElement>
+              <OFXMLElement>
+                <CDATA><![CDATA[<]]></CDATA>
+              </OFXMLElement>
+            </OFMutableArray>
+          </children>
+        </OFXMLElement>
+      </OFList>
+    </key>
+    <object>
+      <OFString>list</OFString>
+    </object>
+    <key>
+      <OFString>Blub</OFString>
+    </key>
+    <object>
+      <OFString>B&quot;la</OFString>
+    </object>
+  </OFMutableDictionary>
 </serialization>

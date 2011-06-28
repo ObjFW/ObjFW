@@ -35,8 +35,7 @@ int _OFString_Serialization_reference;
 	OFArray *elements;
 	id object;
 
-	elements = [root elementsForName: @"object"
-			       namespace: OF_SERIALIZATION_NS];
+	elements = [root elementsForNamespace: OF_SERIALIZATION_NS];
 
 	if ([elements count] != 1)
 		@throw [OFInvalidArgumentException newWithClass: isa

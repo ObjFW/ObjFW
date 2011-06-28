@@ -250,27 +250,23 @@ static OFMutex *mutex;
 
 	@try {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-		OFXMLElement *secondsElement, *microsecondsElement;
+		OFXMLAttribute *secondsAttribute, *microsecondsAttribute;
 
-		if (![[element name] isEqual: @"object"] ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS] ||
-		    ![[[element attributeForName: @"class"] stringValue]
-		    isEqual: [self className]])
+		if (![[element name] isEqual: [self className]] ||
+		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
-		secondsElement = [element elementForName: @"seconds"
-					       namespace: OF_SERIALIZATION_NS];
-		microsecondsElement = [element
-		    elementForName: @"microseconds"
-			 namespace: OF_SERIALIZATION_NS];
+		secondsAttribute = [element attributeForName: @"seconds"];
+		microsecondsAttribute =
+		    [element attributeForName: @"microseconds"];
 
-		if (secondsElement == nil || microsecondsElement == nil)
+		if (secondsAttribute == nil || microsecondsAttribute == nil)
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
-		seconds = (int64_t)[secondsElement decimalValue];
-		microseconds = (uint32_t)[microsecondsElement decimalValue];
+		seconds = (int64_t)[secondsAttribute decimalValue];
+		microseconds = (uint32_t)[microsecondsAttribute decimalValue];
 
 		[pool release];
 	} @catch (id e) {
@@ -346,28 +342,28 @@ static OFMutex *mutex;
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFXMLElement *element;
+	OFString *secondsString, *microsecondsString;
 
-	element = [OFXMLElement elementWithName: @"object"
+	element = [OFXMLElement elementWithName: [self className]
 				      namespace: OF_SERIALIZATION_NS];
 
-	pool = [[OFAutoreleasePool alloc] init];
-	[element addAttributeWithName: @"class"
-			  stringValue: [self className]];
+	secondsString = [OFString stringWithFormat: @"%" @PRId64, seconds];
+	microsecondsString = [OFString stringWithFormat: @"%" @PRId64,
+							 microseconds];
 
-	[element addChild:
-	    [OFXMLElement elementWithName: @"seconds"
-				namespace: OF_SERIALIZATION_NS
-			      stringValue: [OFString stringWithFormat:
-					       @"%" @PRId64, seconds]]];
-	[element addChild:
-	    [OFXMLElement elementWithName: @"microseconds"
-				namespace: OF_SERIALIZATION_NS
-			      stringValue: [OFString stringWithFormat:
-					       @"%" @PRIu32, microseconds]]];
+	[element addAttributeWithName: @"seconds"
+			  stringValue: secondsString];
+	[element addAttributeWithName: @"microseconds"
+			  stringValue: microsecondsString];
 
-	[pool release];
+	[element retain];
+	@try {
+		[pool release];
+	} @finally {
+		[element autorelease];
+	}
 
 	return element;
 }

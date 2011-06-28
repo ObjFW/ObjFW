@@ -61,22 +61,17 @@
 	@try {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 
-		if (![[element name] isEqual: @"object"] ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS] ||
-		    ![[[element attributeForName: @"class"] stringValue]
-		    isEqual: [self className]])
+		if (![[element name] isEqual: [self className]] ||
+		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
-		name = [[[element
-		    elementForName: @"name"
-			 namespace: OF_SERIALIZATION_NS] stringValue] retain];
-		ns = [[[element
-		    elementForName: @"namespace"
-			 namespace: OF_SERIALIZATION_NS] stringValue] retain];
-		stringValue = [[[element
-		    elementForName: @"stringValue"
-			 namespace: OF_SERIALIZATION_NS] stringValue] retain];
+		name = [[[element attributeForName: @"name"] stringValue]
+		    copy];
+		ns = [[[element attributeForName: @"namespace"] stringValue]
+		    copy];
+		stringValue = [[[element attributeForName: @"stringValue"]
+		    stringValue] copy];
 
 		[pool release];
 	} @catch (id e) {
@@ -167,32 +162,28 @@
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFXMLElement *element;
 
-	element = [OFXMLElement elementWithName: @"object"
+	element = [OFXMLElement elementWithName: [self className]
 				      namespace: OF_SERIALIZATION_NS];
 
-	pool = [[OFAutoreleasePool alloc] init];
+	[element addAttributeWithName: @"name"
+			  stringValue: name];
 
-	[element addAttributeWithName: @"class"
-			  stringValue: [self className]];
-
-	[element addChild:
-	    [OFXMLElement elementWithName: @"name"
-				namespace: OF_SERIALIZATION_NS
-			      stringValue: name]];
 	if (ns != nil)
-		[element addChild:
-		    [OFXMLElement elementWithName: @"namespace"
-					namespace: OF_SERIALIZATION_NS
-				      stringValue: ns]];
-	[element addChild:
-	    [OFXMLElement elementWithName: @"stringValue"
-				namespace: OF_SERIALIZATION_NS
-			      stringValue: stringValue]];
+		[element addAttributeWithName: @"namespace"
+				  stringValue: ns];
 
-	[pool release];
+	[element addAttributeWithName: @"stringValue"
+			  stringValue: stringValue];
+
+	[element retain];
+	@try {
+		[pool release];
+	} @finally {
+		[element autorelease];
+	}
 
 	return element;
 }

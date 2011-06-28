@@ -29,6 +29,7 @@
 #import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"
+#import "OFInvalidFormatException.h"
 #import "OFMalformedXMLException.h"
 #import "OFNotImplementedException.h"
 #import "OFUnboundNamespaceException.h"
@@ -292,22 +293,16 @@ void _references_to_categories_of_OFXMLElement(void)
 		OFXMLElement *attributesElement, *namespacesElement;
 		OFXMLElement *childrenElement;
 
-		if (![[element name] isEqual: @"object"] ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS] ||
-		    ![[[element attributeForName: @"class"] stringValue]
-		    isEqual: [self className]])
+		if (![[element name] isEqual: [self className]] ||
+		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
-		name = [[[element
-		    elementForName: @"name"
-			 namespace: OF_SERIALIZATION_NS] stringValue] copy];
-		ns = [[[element
-		    elementForName: @"namespace"
-			namespace: OF_SERIALIZATION_NS] stringValue] copy];
-		defaultNamespace = [[[element
-		    elementForName: @"defaultNamespace"
-			 namespace: OF_SERIALIZATION_NS] stringValue] copy];
+		name = [[[element attributeForName: @"name"] stringValue] copy];
+		ns = [[[element attributeForName: @"namespace"] stringValue]
+		    copy];
+		defaultNamespace = [[[element attributeForName:
+		    @"defaultNamespace"] stringValue] copy];
 		characters = [[[element
 		    elementForName: @"characters"
 			 namespace: OF_SERIALIZATION_NS] stringValue] copy];
@@ -318,27 +313,22 @@ void _references_to_categories_of_OFXMLElement(void)
 		    elementForName: @"comment"
 			 namespace: OF_SERIALIZATION_NS] stringValue] copy];
 
-		attributesElement = [element
+		attributesElement = [[[element
 		    elementForName: @"attributes"
-			 namespace: OF_SERIALIZATION_NS];
-		namespacesElement = [element
+			 namespace: OF_SERIALIZATION_NS] elementsForNamespace:
+		    OF_SERIALIZATION_NS] firstObject];
+		namespacesElement = [[[element
 		    elementForName: @"namespaces"
-			 namespace: OF_SERIALIZATION_NS];
-		childrenElement = [element elementForName: @"children"
-						namespace: OF_SERIALIZATION_NS];
+			 namespace: OF_SERIALIZATION_NS] elementsForNamespace:
+		    OF_SERIALIZATION_NS] firstObject];
+		childrenElement = [[[element
+		    elementForName: @"children"
+			 namespace: OF_SERIALIZATION_NS] elementsForNamespace:
+		    OF_SERIALIZATION_NS] firstObject];
 
-		attributes = [[[attributesElement
-		    elementForName: @"object"
-			 namespace: OF_SERIALIZATION_NS] objectByDeserializing]
-		    retain];
-		namespaces = [[[namespacesElement
-		    elementForName: @"object"
-			 namespace: OF_SERIALIZATION_NS] objectByDeserializing]
-		    retain];
-		children = [[[childrenElement
-		    elementForName: @"object"
-			 namespace: OF_SERIALIZATION_NS] objectByDeserializing]
-		    retain];
+		attributes = [[attributesElement objectByDeserializing] copy];
+		namespaces = [[namespacesElement objectByDeserializing] copy];
+		children = [[childrenElement objectByDeserializing] copy];
 
 		if (!((name != nil || ns != nil || defaultNamespace != nil ||
 		    [attributes count] > 0 || [namespaces count] > 0 ||
@@ -738,34 +728,23 @@ void _references_to_categories_of_OFXMLElement(void)
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFXMLElement *element;
 
-	element = [OFXMLElement elementWithName: @"object"
+	element = [OFXMLElement elementWithName: [self className]
 				      namespace: OF_SERIALIZATION_NS];
 
-	pool = [[OFAutoreleasePool alloc] init];
-
-	[element addAttributeWithName: @"class"
-			  stringValue: [self className]];
-
 	if (name != nil)
-		[element addChild:
-		    [OFXMLElement elementWithName: @"name"
-					namespace: OF_SERIALIZATION_NS
-				      stringValue: name]];
+		[element addAttributeWithName: @"name"
+				  stringValue: name];
 
 	if (ns != nil)
-		[element addChild:
-		    [OFXMLElement elementWithName: @"namespace"
-					namespace: OF_SERIALIZATION_NS
-				      stringValue: ns]];
+		[element addAttributeWithName: @"namespace"
+				  stringValue: ns];
 
 	if (defaultNamespace != nil)
-		[element addChild:
-		    [OFXMLElement elementWithName: @"defaultNamespace"
-					namespace: OF_SERIALIZATION_NS
-				      stringValue: defaultNamespace]];
+		[element addAttributeWithName: @"defaultNamespace"
+				  stringValue: defaultNamespace];
 
 	if (attributes != nil) {
 		OFXMLElement *attributesElement;
@@ -805,11 +784,13 @@ void _references_to_categories_of_OFXMLElement(void)
 					namespace: OF_SERIALIZATION_NS
 				      stringValue: characters]];
 
-	if (CDATA != nil)
-		[element addChild:
+	if (CDATA != nil) {
+		OFXMLElement *CDATAElement =
 		    [OFXMLElement elementWithName: @"CDATA"
-					namespace: OF_SERIALIZATION_NS
-				      stringValue: CDATA]];
+					namespace: OF_SERIALIZATION_NS];
+		[CDATAElement addChild: [OFXMLElement elementWithCDATA: CDATA]];
+		[element addChild: CDATAElement];
+	}
 
 	if (comment != nil)
 		[element addChild:
@@ -817,7 +798,12 @@ void _references_to_categories_of_OFXMLElement(void)
 					namespace: OF_SERIALIZATION_NS
 				      stringValue: comment]];
 
-	[pool release];
+	[element retain];
+	@try {
+		[pool release];
+	} @finally {
+		[element autorelease];
+	}
 
 	return element;
 }

@@ -41,19 +41,12 @@ int _OFXMLElement_Serialization_reference;
 - (id)objectByDeserializing
 {
 	OFAutoreleasePool *pool;
-	OFString *className;
 	Class class;
 	id <OFSerialization> object;
 
 	pool = [[OFAutoreleasePool alloc] init];
-	className = [[self attributeForName: @"class"] stringValue];
-	if (className == nil)
-		@throw [OFNotImplementedException
-		    newWithClass: nil
-			selector: @selector(initWithSerialization:)];
 
-	class = objc_lookUpClass([className cString]);
-	if (class == Nil)
+	if ((class = objc_lookUpClass([name cString])) == Nil)
 		@throw [OFNotImplementedException newWithClass: Nil];
 
 	if (![class conformsToProtocol: @protocol(OFSerialization)])
@@ -65,11 +58,10 @@ int _OFXMLElement_Serialization_reference;
 
 	@try {
 		[pool release];
-	} @catch (id e) {
-		[object release];
-		@throw e;
+	} @finally {
+		[object autorelease];
 	}
 
-	return [object autorelease];
+	return object;
 }
 @end

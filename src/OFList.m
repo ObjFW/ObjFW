@@ -40,27 +40,24 @@
 	self = [self init];
 
 	@try {
-		OFAutoreleasePool *pool, *pool2;
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		OFAutoreleasePool *pool2;
 		OFEnumerator *enumerator;
 		OFXMLElement *child;
 
-		pool = [[OFAutoreleasePool alloc] init];
-
-		if (![[element name] isEqual: @"object"] ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS] ||
-		    ![[[element attributeForName: @"class"] stringValue]
-		    isEqual: [self className]])
+		if (![[element name] isEqual: [self className]] ||
+		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
-		enumerator = [[element
-		    elementsForName: @"object"
-			  namespace: OF_SERIALIZATION_NS] objectEnumerator];
+		enumerator = [[element children] objectEnumerator];
 		pool2 = [[OFAutoreleasePool alloc] init];
-		while ((child = [enumerator nextObject]) != nil) {
-			id object = [child objectByDeserializing];
 
-			[self appendObject: object];
+		while ((child = [enumerator nextObject]) != nil) {
+			if (![[child namespace] isEqual: OF_SERIALIZATION_NS])
+				continue;
+
+			[self appendObject: [child objectByDeserializing]];
 
 			[pool2 releaseObjects];
 		}
@@ -367,23 +364,28 @@
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFAutoreleasePool *pool2;
 	OFXMLElement *element;
 	of_list_object_t *iter;
 
-	element = [OFXMLElement elementWithName: @"object"
+	element = [OFXMLElement elementWithName: [self className]
 				      namespace: OF_SERIALIZATION_NS];
 
-	pool = [[OFAutoreleasePool alloc] init];
-	[element addAttributeWithName: @"class"
-			  stringValue: [self className]];
+	pool2 = [[OFAutoreleasePool alloc] init];
 
 	for (iter = firstListObject; iter != NULL; iter = iter->next) {
 		[element addChild: [iter->object XMLElementBySerializing]];
-		[pool releaseObjects];
+
+		[pool2 releaseObjects];
 	}
 
-	[pool release];
+	[element retain];
+	@try {
+		[pool release];
+	} @finally {
+		[element autorelease];
+	}
 
 	return element;
 }

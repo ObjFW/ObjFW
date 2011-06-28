@@ -45,10 +45,8 @@ static OFNull *null = nil;
 
 	pool = [[OFAutoreleasePool alloc] init];
 
-	if (![[element name] isEqual: @"object"] ||
-	    ![[element namespace] isEqual: OF_SERIALIZATION_NS] ||
-	    ![[[element attributeForName: @"class"] stringValue]
-	    isEqual: [self className]])
+	if (![[element name] isEqual: [self className]] ||
+	    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
@@ -69,12 +67,18 @@ static OFNull *null = nil;
 
 - (OFXMLElement*)XMLElementBySerializing
 {
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFXMLElement *element;
 
-	element = [OFXMLElement elementWithName: @"object"
+	element = [OFXMLElement elementWithName: [self className]
 				      namespace: OF_SERIALIZATION_NS];
-	[element addAttributeWithName: @"class"
-			  stringValue: [self className]];
+
+	[element retain];
+	@try {
+		[pool release];
+	} @finally {
+		[element autorelease];
+	}
 
 	return element;
 }

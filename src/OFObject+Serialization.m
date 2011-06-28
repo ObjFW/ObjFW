@@ -45,18 +45,20 @@ int _OFObject_Serialization_reference;
 
 	root = [OFXMLElement elementWithName: @"serialization"
 				   namespace: OF_SERIALIZATION_NS];
+	[root addAttributeWithName: @"version"
+		       stringValue: @"0"];
 	[root addChild: element];
 
 	ret = [@"<?xml version='1.0' encoding='UTF-8'?>\n"
 	    stringByAppendingString: [root XMLStringWithIndentation: 2]];
-	[ret retain];
 
+	[ret retain];
 	@try {
 		[pool release];
-	} @catch (id e) {
-		[ret release];
+	} @finally {
+		[ret autorelease];
 	}
 
-	return [ret autorelease];
+	return ret;
 }
 @end
