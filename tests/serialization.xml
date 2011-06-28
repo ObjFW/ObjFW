@@ -73,5 +73,11 @@ How are you?</OFString>
     <object>
       <OFString>B&quot;la</OFString>
     </object>
+    <key>
+      <OFDataArray>MDEyMzQ1Njc4OTo7PEFCQ0RFRkdISklLTE1OT1BRUlNUVVZXWFla</OFDataArray>
+    </key>
+    <object>
+      <OFString>data</OFString>
+    </object>
   </OFMutableDictionary>
 </serialization>

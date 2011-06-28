@@ -24,6 +24,7 @@
 #import "OFNumber.h"
 #import "OFDate.h"
 #import "OFURL.h"
+#import "OFDataArray.h"
 #import "OFAutoreleasePool.h"
 #import "OFXMLElement.h"
 
@@ -38,6 +39,7 @@ static OFString *module = @"OFSerialization";
 	OFMutableDictionary *d = [OFMutableDictionary dictionary];
 	OFMutableArray *a = [OFMutableArray array];
 	OFList *l = [OFList list];
+	OFDataArray *da = [OFDataArray dataArray];
 	OFString *s;
 
 	[a addObject: @"Qu\"xbar\ntest"];
@@ -59,6 +61,11 @@ static OFString *module = @"OFSerialization";
 
 	[d setObject: @"list"
 	      forKey: l];
+
+	[da addNItems: 39
+	   fromCArray: "0123456789:;<ABCDEFGHJIKLMNOPQRSTUVWXYZ"];
+	[d setObject: @"data"
+	      forKey: da];
 
 	TEST(@"-[stringBySerializing]",
 	    (s = [d stringBySerializing]) && [s isEqual:

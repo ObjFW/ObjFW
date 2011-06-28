@@ -15,6 +15,7 @@
  */
 
 #import "OFObject.h"
+#import "OFSerialization.h"
 
 @class OFString;
 @class OFURL;
@@ -24,8 +25,11 @@
  *
  * If you plan to store large hunks of data, you should consider using
  * OFBigDataArray, which allocates the memory in pages rather than in bytes.
+ *
+ * For security reasons, serialization and deserialization is only implemented
+ * for OFDataArrays with item size 1.
  */
-@interface OFDataArray: OFObject <OFCopying, OFComparing>
+@interface OFDataArray: OFObject <OFCopying, OFComparing, OFSerialization>
 {
 	char   *data;
 	size_t count;

@@ -25,6 +25,7 @@
 #import "OFFile.h"
 #import "OFURL.h"
 #import "OFHTTPRequest.h"
+#import "OFXMLElement.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFHTTPRequestFailedException.h"
@@ -170,6 +171,36 @@ void _references_to_categories_of_OFDataArray(void)
 		Class c = isa;
 		[self release];
 		@throw [OFInvalidEncodingException newWithClass: c];
+	}
+
+	return self;
+}
+
+- initWithSerialization: (OFXMLElement*)element
+{
+	self = [super init];
+
+	itemSize = 1;
+
+	@try {
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		OFString *stringValue;
+
+		if (![[element name] isEqual: [self className]] ||
+		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
+		stringValue = [element stringValue];
+
+		if (!of_base64_decode(self, [stringValue cString],
+		    [stringValue cStringLength]))
+			@throw [OFInvalidEncodingException newWithClass: isa];
+
+		[pool release];
+	} @catch (id e) {
+		[self release];
+		@throw e;
 	}
 
 	return self;
@@ -414,6 +445,31 @@ void _references_to_categories_of_OFDataArray(void)
 	} @finally {
 		[file release];
 	}
+}
+
+- (OFXMLElement*)XMLElementBySerializing
+{
+	OFAutoreleasePool *pool;
+	OFXMLElement *element;
+
+	if (itemSize != 1)
+		@throw [OFNotImplementedException newWithClass: isa
+						      selector: _cmd];
+
+	pool = [[OFAutoreleasePool alloc] init];
+	element = [OFXMLElement
+	    elementWithName: [self className]
+		  namespace: OF_SERIALIZATION_NS
+		stringValue: of_base64_encode(data, count * itemSize)];
+
+	[element retain];
+	@try {
+		[pool release];
+	} @finally {
+		[element autorelease];
+	}
+
+	return element;
 }
 @end
 
