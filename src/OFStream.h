@@ -360,7 +360,39 @@
 - (OFDataArray*)readDataArrayTillEndOfStream;
 
 /**
- * Read until a newline, \\0 or end of stream occurs.
+ * Reads a string with the specified length from the stream. If a \\0 appears in
+ * the stream, the string will be truncated at the \\0 and the rest of the
+ * bytes of the string will be lost. This way, reading from the stream will not
+ * break because of a \\0 because the specified number of bytes is still being
+ * read and only the string gets truncated.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
+ * \param length The length (in bytes) of the string to read from the stream
+ * \return A string with the specified length
+ */
+- (OFString*)readStringWithLength: (size_t)length;
+
+/**
+ * Reads a string with the specified encoding and length from the stream. If a
+ * \\0 appears in the stream, the string will be truncated at the \\0 and the
+ * rest of the bytes of the string will be lost. This way, reading from the
+ * stream will not break because of a \\0 because the specified number of bytes
+ * is still being read and only the string gets truncated.
+ *
+ * WARNING: Only call this when you know that enough data is available!
+ *	    Otherwise you will get an exception!
+ *
+ * \param encoding The encoding of the string to read from the stream
+ * \param length The length (in bytes) of the string to read from the stream
+ * \return A string with the specified length
+ */
+- (OFString*)readStringWithEncoding: (of_string_encoding_t)encoding
+			     length: (size_t)length;
+
+/**
+ * Reads until a newline, \\0 or end of stream occurs.
  *
  * \return The line that was read, autoreleased, or nil if the end of the
  *	   stream has been reached.
@@ -368,7 +400,7 @@
 - (OFString*)readLine;
 
 /**
- * Read with the specified encoding until a newline, \\0 or end of stream
+ * Reads with the specified encoding until a newline, \\0 or end of stream
  * occurs.
  *
  * \param encoding The encoding used by the stream
@@ -378,7 +410,7 @@
 - (OFString*)readLineWithEncoding: (of_string_encoding_t)encoding;
 
 /**
- * Read until the specified string or \\0 is found or the end of stream occurs.
+ * Reads until the specified string or \\0 is found or the end of stream occurs.
  *
  * \param delimiter The delimiter
  * \return The line that was read, autoreleased, or nil if the end of the
@@ -387,7 +419,7 @@
 - (OFString*)readTillDelimiter: (OFString*)delimiter;
 
 /**
- * Read until the specified string or \\0 is found or the end of stream occurs.
+ * Reads until the specified string or \\0 is found or the end of stream occurs.
  *
  * \param delimiter The delimiter
  * \param encoding The encoding used by the stream

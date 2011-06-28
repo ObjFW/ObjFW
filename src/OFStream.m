@@ -478,6 +478,32 @@
 	return dataArray;
 }
 
+- (OFString*)readStringWithLength: (size_t)length
+{
+	return [self readStringWithEncoding: OF_STRING_ENCODING_UTF_8
+				     length: length];
+}
+
+- (OFString*)readStringWithEncoding: (of_string_encoding_t)encoding
+			     length: (size_t)length
+{
+	OFString *ret;
+	char *buffer = [self allocMemoryWithSize: length + 1];
+	buffer[length] = 0;
+
+	@try {
+		[self readExactlyNBytes: length
+			     intoBuffer: buffer];
+
+		ret = [OFString stringWithCString: buffer
+					 encoding: encoding];
+	} @finally {
+		[self freeMemory: buffer];
+	}
+
+	return ret;
+}
+
 - (OFString*)readLine
 {
 	return [self readLineWithEncoding: OF_STRING_ENCODING_UTF_8];
