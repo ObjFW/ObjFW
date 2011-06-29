@@ -15,6 +15,7 @@
  */
 
 #import "OFObject.h"
+#import "OFXMLParser.h"
 
 @class OFMutableArray;
 @class OFXMLElement;
@@ -67,6 +68,16 @@
   didNotExpectCloseTag: (OFString*)name
 	    withPrefix: (OFString*)prefix
 	     namespace: (OFString*)ns;
+
+/**
+ * This callback is called when the XML parser for the element builder found an
+ * unknown entity.
+ *
+ * \param entity The name of the entity
+ * \return The substitution for the entity
+ */
+- (OFString*)elementBuilder: (OFXMLElementBuilder*)builder
+    foundUnknownEntityNamed: (OFString*)entity;
 @end
 
 /**
@@ -77,7 +88,7 @@
  * first parsing stuff using the OFXMLParser with another delegate and then
  * setting the OFXMLElementBuilder as delegate for the parser.
  */
-@interface OFXMLElementBuilder: OFObject
+@interface OFXMLElementBuilder: OFObject <OFXMLParserDelegate>
 {
 	OFMutableArray *stack;
 	id <OFXMLElementBuilderDelegate> delegate;

@@ -66,6 +66,11 @@
 	OF_SETTER(delegate, delegate_, YES, NO)
 }
 
+-		 (void)parser: (OFXMLParser*)parser
+  foundProcessingInstructions: (OFString*)pi
+{
+}
+
 -    (void)parser: (OFXMLParser*)parser
   didStartElement: (OFString*)name
        withPrefix: (OFString*)prefix
@@ -169,6 +174,13 @@
 
 	[pool release];
 }
+
+-	(OFString*)parser: (OFXMLParser*)parser
+  foundUnknownEntityNamed: (OFString*)entity
+{
+	return [delegate elementBuilder: self
+		foundUnknownEntityNamed: entity];
+}
 @end
 
 @implementation OFObject (OFXMLElementBuilderDelegate)
@@ -184,5 +196,11 @@
 {
 	@throw [OFMalformedXMLException newWithClass: [builder class]
 					      parser: nil];
+}
+
+- (OFString*)elementBuilder: (OFXMLElementBuilder*)builder
+    foundUnknownEntityNamed: (OFString*)entity
+{
+	return nil;
 }
 @end
