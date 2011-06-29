@@ -100,7 +100,7 @@ old_OBJCFLAGS="$OBJCFLAGS"
 OBJCFLAGS="$OBJCFLAGS -fblocks"
 AC_TRY_COMPILE([], [
 	int (^foo)(int bar);
-	foo = ^(int bar) { return 0; }
+	foo = ^ (int bar) { return 0; }
 ], [
 	AC_DEFINE(OF_HAVE_BLOCKS, 1, [Compiler support for blocks])
 	AC_SUBST(BLOCKS_FLAGS, "-fblocks")
@@ -115,6 +115,7 @@ AC_CHECK_HEADERS([objfw-rt.h objc/objc.h])
 
 test x"$ac_cv_header_objfw_rt_h" = x"yes" && objc_runtime="ObjFW-RT"
 
+AC_MSG_CHECKING(which Objective C runtime we use)
 AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
 	AC_EGREP_CPP(yes, [
 		#import <objc/objc.h>
@@ -137,37 +138,56 @@ AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
 		])
 	])
 ])
+AC_MSG_RESULT($objc_runtime)
 
-AC_MSG_CHECKING(which Objective C runtime we use)
 case $objc_runtime in
 	ObjFW-RT)
 		AC_DEFINE(OF_OBJFW_RUNTIME, 1,
 			[Whether we use the ObjFW runtime])
 		AC_SUBST(GNU_RUNTIME, "-fgnu-runtime")
 		OBJCFLAGS="$OBJCFLAGS -fgnu-runtime"
-		LIBS="-lobjfw-rt $LIBS"
+
+		AC_CHECK_LIB(objfw-rt, objc_msg_lookup, [
+			LIBS="-lobjfw-rt $LIBS"
+		], [
+			AC_MSG_ERROR([libobjfw-rt not found!])
+		])
 		;;
 	Apple)
 		AC_DEFINE(OF_APPLE_RUNTIME, 1,
 			[Whether we use the Apple ObjC runtime])
-		LIBS="-lobjc $LIBS"
+
+		AC_CHECK_LIB(objc, objc_msgSend, [
+			LIBS="-lobjc $LIBS"
+		], [
+			AC_MSG_ERROR([libobjc not found!])
+		])
 		;;
 	GNU)
 		AC_DEFINE(OF_GNU_RUNTIME, 1,
 			[Whether we use the GNU ObjC runtime])
-		LIBS="-lobjc $LIBS"
+
+		AC_CHECK_LIB(objc, objc_msg_lookup, [
+			LIBS="-lobjc $LIBS"
+		], [
+			AC_MSG_ERROR([libobjc not found!])
+		])
 		;;
 	"old GNU")
 		AC_DEFINE(OF_OLD_GNU_RUNTIME, 1,
 			[Whether we use the old GNU ObjC runtime])
-		LIBS="-lobjc $LIBS"
+
+		AC_CHECK_LIB(objc, objc_msg_lookup, [
+			LIBS="-lobjc $LIBS"
+		], [
+			AC_MSG_ERROR([libobjc not found!])
+		])
 		;;
 	*)
 		AC_MSG_RESULT(none)
 		AC_MSG_ERROR(No ObjC runtime found! Please install ObjFW-RT!)
 		;;
 esac
-AC_MSG_RESULT($objc_runtime)
 
 AC_CHECK_FUNC(objc_getProperty,, [
 	AC_DEFINE(NEED_OBJC_PROPERTIES_INIT, 1,
