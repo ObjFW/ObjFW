@@ -129,6 +129,12 @@ static OFString *module = @"OFXMLElement";
 	    [a count] == 1 && [[[a firstObject] XMLString] isEqual:
 	    @"<bar xmlns='urn:objfw:test'/>"])
 
+	TEST(@"-[isEqual:]",
+	    [[OFXMLElement elementWithXMLString: @"<foo bar='asd'/>"] isEqual:
+	    [OFXMLElement elementWithXMLString: @"<foo bar='asd'></foo>"]] &&
+	    [[OFXMLElement elementWithXMLString: @"<x><y/></x>"] isEqual:
+	    [OFXMLElement elementWithXMLString: @"<x><y></y></x>"]])
+
 	[pool drain];
 }
 @end

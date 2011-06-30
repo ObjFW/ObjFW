@@ -71,4 +71,23 @@
 {
 	return [[stringValue copy] autorelease];
 }
+
+- (BOOL)isEqual: (id)object
+{
+	OFXMLAttribute *other;
+
+	if (![object isKindOfClass: [OFXMLAttribute class]])
+		return NO;
+
+	other = object;
+
+	if (![other->name isEqual: name])
+		return NO;
+	if (other->ns != ns && ![other->ns isEqual: ns])
+		return NO;
+	if (![other->stringValue isEqual: stringValue])
+		return NO;
+
+	return YES;
+}
 @end
