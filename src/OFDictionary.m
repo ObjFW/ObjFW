@@ -149,7 +149,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 		uint32_t i;
 		BUCKET *b;
 
-		if (key == nil || object == nil)
+		if (key == nil || obj == nil)
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
