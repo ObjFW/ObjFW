@@ -48,10 +48,13 @@
  *
  * \param rows The number of rows for the matrix
  * \param columns The number of colums for the matrix
+ * \param data The first double of the data for the matrix. The data is in the
+ *	       format rows-columns.
  * \return A new autoreleased OFDoubleMatrix
  */
 + matrixWithRows: (size_t)rows
-  columnsAndData: (size_t)columns, ...;
+	 columns: (size_t)columns
+	    data: (double)data, ...;
 
 /**
  * \brief Initializes the matrix with the specified dimension.
@@ -71,21 +74,27 @@
  *
  * \param rows The number of rows for the matrix
  * \param columns The number of colums for the matrix
+ * \param data The first double of the data for the matrix. The data is in the
+ *	       format rows-columns.
  * \return An initialized OFDoubleMatrix
  */
 -   initWithRows: (size_t)rows
-  columnsAndData: (size_t)columns, ...;
+	 columns: (size_t)columns
+	    data: (double)data, ...;
 
 /**
  * \brief Initializes the matrix with the specified dimension and arguments.
  *
  * \param rows The number of rows for the matrix
  * \param columns The number of colums for the matrix
+ * \param data The first double of the data for the matrix. The data is in the
+ *	       format rows-columns.
  * \param arguments A va_list with data for the matrix
  * \return An initialized OFDoubleMatrix
  */
 - initWithRows: (size_t)rows
        columns: (size_t)columns
+	  data: (double)data
      arguments: (va_list)arguments;
 
 /**

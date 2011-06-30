@@ -45,13 +45,15 @@ static Class doubleMatrix = Nil;
 	return [[[self alloc] initWithDimension: dimension] autorelease];
 }
 
-+ vectorWithDimensionAndData: (size_t)dimension, ...
++ vectorWithDimension: (size_t)dimension
+		 data: (double)data, ...
 {
 	id ret;
 	va_list arguments;
 
-	va_start(arguments, dimension);
+	va_start(arguments, data);
 	ret = [[[self alloc] initWithDimension: dimension
+					  data: data
 				     arguments: arguments] autorelease];
 	va_end(arguments);
 
@@ -90,13 +92,15 @@ static Class doubleMatrix = Nil;
 	return self;
 }
 
-- initWithDimensionAndData: (size_t)dimension_, ...
+- initWithDimension: (size_t)dimension_
+	       data: (double)data_, ...
 {
 	id ret;
 	va_list arguments;
 
-	va_start(arguments, dimension_);
+	va_start(arguments, data_);
 	ret = [self initWithDimension: dimension_
+				 data: data_
 			    arguments: arguments];
 	va_end(arguments);
 
@@ -104,6 +108,7 @@ static Class doubleMatrix = Nil;
 }
 
 - initWithDimension: (size_t)dimension_
+	       data: (double)data_
 	  arguments: (va_list)arguments
 {
 	self = [super init];
@@ -121,8 +126,9 @@ static Class doubleMatrix = Nil;
 			     newWithClass: isa
 			    requestedSize: dimension * sizeof(double)];
 
-		for (i = 0; i < dimension; i++)
-			data[i] = (double)va_arg(arguments, double);
+		data[0] = data_;
+		for (i = 1; i < dimension; i++)
+			data[i] = va_arg(arguments, double);
 	} @catch (id e) {
 		[self release];
 		@throw e;

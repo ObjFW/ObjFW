@@ -48,14 +48,16 @@ static Class doubleVector = Nil;
 }
 
 + matrixWithRows: (size_t)rows
-  columnsAndData: (size_t)columns, ...
+	 columns: (size_t)columns
+	    data: (double)data, ...
 {
 	id ret;
 	va_list arguments;
 
-	va_start(arguments, columns);
+	va_start(arguments, data);
 	ret = [[[self alloc] initWithRows: rows
 				  columns: columns
+				     data: data
 				arguments: arguments] autorelease];
 	va_end(arguments);
 
@@ -106,14 +108,16 @@ static Class doubleVector = Nil;
 }
 
 -   initWithRows: (size_t)rows_
-  columnsAndData: (size_t)columns_, ...
+	 columns: (size_t)columns_
+	    data: (double)data_, ...
 {
 	id ret;
 	va_list arguments;
 
-	va_start(arguments, columns_);
+	va_start(arguments, data_);
 	ret = [self initWithRows: rows_
 			 columns: columns_
+			    data: data_
 		       arguments: arguments];
 	va_end(arguments);
 
@@ -122,6 +126,7 @@ static Class doubleVector = Nil;
 
 - initWithRows: (size_t)rows_
        columns: (size_t)columns_
+	  data: (double)data_
      arguments: (va_list)arguments
 {
 	self = [super init];
@@ -145,7 +150,8 @@ static Class doubleVector = Nil;
 			size_t j;
 
 			for (j = i; j < rows * columns; j += rows)
-				data[j] = (double)va_arg(arguments, double);
+				data[j] = (j == 0
+				    ? data_ : va_arg(arguments, double));
 		}
 	} @catch (id e) {
 		[self release];

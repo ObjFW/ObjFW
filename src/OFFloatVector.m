@@ -45,13 +45,15 @@ static Class floatMatrix = Nil;
 	return [[[self alloc] initWithDimension: dimension] autorelease];
 }
 
-+ vectorWithDimensionAndData: (size_t)dimension, ...
++ vectorWithDimension: (size_t)dimension
+		 data: (float)data, ...
 {
 	id ret;
 	va_list arguments;
 
-	va_start(arguments, dimension);
+	va_start(arguments, data);
 	ret = [[[self alloc] initWithDimension: dimension
+					  data: data
 				     arguments: arguments] autorelease];
 	va_end(arguments);
 
@@ -90,13 +92,15 @@ static Class floatMatrix = Nil;
 	return self;
 }
 
-- initWithDimensionAndData: (size_t)dimension_, ...
+- initWithDimension: (size_t)dimension_
+	       data: (float)data_, ...
 {
 	id ret;
 	va_list arguments;
 
-	va_start(arguments, dimension_);
+	va_start(arguments, data_);
 	ret = [self initWithDimension: dimension_
+				 data: data_
 			    arguments: arguments];
 	va_end(arguments);
 
@@ -104,6 +108,7 @@ static Class floatMatrix = Nil;
 }
 
 - initWithDimension: (size_t)dimension_
+	       data: (float)data_
 	  arguments: (va_list)arguments
 {
 	self = [super init];
@@ -121,7 +126,8 @@ static Class floatMatrix = Nil;
 			     newWithClass: isa
 			    requestedSize: dimension * sizeof(float)];
 
-		for (i = 0; i < dimension; i++)
+		data[0] = data_;
+		for (i = 1; i < dimension; i++)
 			data[i] = (float)va_arg(arguments, double);
 	} @catch (id e) {
 		[self release];

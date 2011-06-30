@@ -42,9 +42,11 @@
  * \brief Creates a new vector with the specified dimension and data.
  *
  * \param dimension The dimension for the vector
+ * \param data The first double of the data for the vector
  * \return A new autoreleased OFDoubleVector
  */
-+ vectorWithDimensionAndData: (size_t)dimension, ...;
++ vectorWithDimension: (size_t)dimension
+		 data: (double)data, ...;
 
 /**
  * \brief Initializes the vector with the specified dimension.
@@ -58,19 +60,23 @@
  * \brief Initializes the vector with the specified dimension and data.
  *
  * \param dimension The dimension for the vector
+ * \param data The first double of the data for the vector
  * \return An initialized OFDoubleVector
  */
-- initWithDimensionAndData: (size_t)dimension, ...;
+- initWithDimension: (size_t)dimension
+	       data: (double)data, ...;
 
 /**
- * \brief Initializes the vector with the specified dimension and arguments.
+ * \brief Initializes the vector with the specified dimension and data.
  *
  * \param dimension The dimension for the vector
+ * \param The first double of the data for the vector
  * \param arguments A va_list with data for the vector
  * \return An initialized OFDoubleVector
  */
 - initWithDimension: (size_t)dimension
-	   arguments: (va_list)arguments;
+	       data: (double)data
+	  arguments: (va_list)arguments;
 
 /**
  * \brief Sets the value for the specified index.
