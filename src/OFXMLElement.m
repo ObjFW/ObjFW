@@ -33,6 +33,8 @@
 #import "OFNotImplementedException.h"
 #import "OFUnboundNamespaceException.h"
 
+#import "macros.h"
+
 @interface OFXMLElement_OFXMLElementBuilderDelegate: OFObject
 {
 @public
@@ -792,6 +794,71 @@
 		return NO;
 
 	return YES;
+}
+
+- (uint32_t)hash
+{
+	uint32_t hash, tmp;
+
+	OF_HASH_INIT(hash);
+
+	tmp = [name hash];
+	OF_HASH_ADD(hash, (tmp >> 24) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >> 16) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >>  8) & 0xFF);
+	OF_HASH_ADD(hash, tmp & 0xFF);
+
+	tmp = [ns hash];
+	OF_HASH_ADD(hash, (tmp >> 24) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >> 16) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >>  8) & 0xFF);
+	OF_HASH_ADD(hash, tmp & 0xFF);
+
+	tmp = [defaultNamespace hash];
+	OF_HASH_ADD(hash, (tmp >> 24) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >> 16) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >>  8) & 0xFF);
+	OF_HASH_ADD(hash, tmp & 0xFF);
+
+	tmp = [attributes hash];
+	OF_HASH_ADD(hash, (tmp >> 24) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >> 16) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >>  8) & 0xFF);
+	OF_HASH_ADD(hash, tmp & 0xFF);
+
+	tmp = [namespaces hash];
+	OF_HASH_ADD(hash, (tmp >> 24) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >> 16) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >>  8) & 0xFF);
+	OF_HASH_ADD(hash, tmp & 0xFF);
+
+	tmp = [children hash];
+	OF_HASH_ADD(hash, (tmp >> 24) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >> 16) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >>  8) & 0xFF);
+	OF_HASH_ADD(hash, tmp & 0xFF);
+
+	tmp = [characters hash];
+	OF_HASH_ADD(hash, (tmp >> 24) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >> 16) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >>  8) & 0xFF);
+	OF_HASH_ADD(hash, tmp & 0xFF);
+
+	tmp = [cdata hash];
+	OF_HASH_ADD(hash, (tmp >> 24) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >> 16) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >>  8) & 0xFF);
+	OF_HASH_ADD(hash, tmp & 0xFF);
+
+	tmp = [comment hash];
+	OF_HASH_ADD(hash, (tmp >> 24) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >> 16) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >>  8) & 0xFF);
+	OF_HASH_ADD(hash, tmp & 0xFF);
+
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
 }
 
 - (void)dealloc

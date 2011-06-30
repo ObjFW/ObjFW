@@ -20,6 +20,8 @@
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
 
+#import "macros.h"
+
 @implementation OFXMLAttribute
 + attributeWithName: (OFString*)name
 	  namespace: (OFString*)ns
@@ -89,5 +91,40 @@
 		return NO;
 
 	return YES;
+}
+
+- (uint32_t)hash
+{
+	uint32_t hash, tmp;
+
+	OF_HASH_INIT(hash);
+
+	tmp = [name hash];
+	OF_HASH_ADD(hash, (tmp >> 24) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >> 16) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >>  8) & 0xFF);
+	OF_HASH_ADD(hash, tmp & 0xFF);
+
+	tmp = [name hash];
+	OF_HASH_ADD(hash, (tmp >> 24) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >> 16) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >>  8) & 0xFF);
+	OF_HASH_ADD(hash, tmp & 0xFF);
+
+	tmp = [ns hash];
+	OF_HASH_ADD(hash, (tmp >> 24) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >> 16) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >>  8) & 0xFF);
+	OF_HASH_ADD(hash, tmp & 0xFF);
+
+	tmp = [stringValue hash];
+	OF_HASH_ADD(hash, (tmp >> 24) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >> 16) & 0xFF);
+	OF_HASH_ADD(hash, (tmp >>  8) & 0xFF);
+	OF_HASH_ADD(hash, tmp & 0xFF);
+
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
 }
 @end
