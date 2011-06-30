@@ -169,8 +169,13 @@ state_format_length_modifier(struct context *ctx)
 		break;
 	case 'l': /* and also ll */
 		if (ctx->fmt_len > ctx->i + 1 && ctx->fmt[ctx->i + 1] == 'l') {
+#ifndef _WIN32
 			if (!append_subfmt(ctx, ctx->fmt + ctx->i, 2))
 				return false;
+#else
+			if (!append_subfmt(ctx, "I64", 3))
+				return false;
+#endif
 
 			ctx->i++;
 			ctx->len_mod = LENGTH_MODIFIER_LL;
@@ -183,8 +188,13 @@ state_format_length_modifier(struct context *ctx)
 
 		break;
 	case 'j':
+#ifndef _WIN32
 		if (!append_subfmt(ctx, ctx->fmt + ctx->i, 1))
 			return false;
+#else
+		if (!append_subfmt(ctx, "I64", 3))
+			return false;
+#endif
 
 		ctx->len_mod = LENGTH_MODIFIER_J;
 
@@ -210,6 +220,20 @@ state_format_length_modifier(struct context *ctx)
 		ctx->len_mod = LENGTH_MODIFIER_CAPITAL_L;
 
 		break;
+#ifdef _WIN32
+	case 'I': /* win32 strangeness (I64 instead of ll or j) */
+		if (ctx->fmt_len > ctx->i + 2 && ctx->fmt[ctx->i + 1] == '6' &&
+		    ctx->fmt[ctx->i + 2] == '4') {
+			if (!append_subfmt(ctx, ctx->fmt + ctx->i, 3))
+				return false;
+
+			ctx->i += 2;
+			ctx->len_mod = LENGTH_MODIFIER_LL;
+		} else
+			ctx->i--;
+
+		break;
+#endif
 	default:
 		ctx->i--;
 
