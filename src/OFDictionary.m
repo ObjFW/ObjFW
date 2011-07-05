@@ -157,7 +157,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 							       selector: _cmd];
 
 		data = [self allocMemoryForNItems: 2
-					 withSize: sizeof(*bucket)];
+					 withSize: sizeof(*data)];
 
 		size = 2;
 		for (i = 0; i < size; i++)
