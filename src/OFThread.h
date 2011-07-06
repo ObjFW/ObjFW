@@ -88,7 +88,7 @@
 + thread;
 
 /**
- * \param obj An object that is passed to the main method as a copy or nil
+ * \param object An object which is passed for use in the main method or nil
  * \return A new, autoreleased thread
  */
 + threadWithObject: (id)object;
@@ -101,7 +101,7 @@
  * released and don't want any new object for the TLS key.
  *
  * \param key The Thread Local Storage key
- * \param obj The object the Thread Local Storage key will be set to
+ * \param object The object the Thread Local Storage key will be set to
  */
 + (void)setObject: (id)object
 	forTLSKey: (OFTLSKey*)key;
@@ -156,12 +156,12 @@
 /**
  * Terminates the current thread, letting it return the specified object.
  *
- * \param obj The object which the terminated thread will return
+ * \param object The object which the terminated thread will return
  */
 + (void)terminateWithObject: (id)object;
 
 /**
- * \param obj An object that is passed to the main method as a copy or nil
+ * \param object An object which is passed for use in the main method or nil
  * \return An initialized OFThread.
  */
 - initWithObject: (id)object;
