@@ -97,7 +97,7 @@
  *
  * \param format A format string which generates the string to append
  */
-- (void)appendFormat: (OFString*)format, ...;
+- (void)appendFormat: (OFConstantString*)format, ...;
 
 /**
  * \brief Appends a formatted string to the OFMutableString.
@@ -107,7 +107,7 @@
  * \param format A format string which generates the string to append
  * \param arguments The arguments used in the format string
  */
-- (void)appendFormat: (OFString*)format
+- (void)appendFormat: (OFConstantString*)format
        withArguments: (va_list)arguments;
 
 /**

@@ -21,6 +21,8 @@
 #import "OFObject.h"
 #import "OFSerialization.h"
 
+@class OFConstantString;
+
 typedef uint32_t of_unichar_t;
 
 /**
@@ -209,7 +211,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param format A string used as format to initialize the OFString
  * \return A new autoreleased OFString
  */
-+ stringWithFormat: (OFString*)format, ...;
++ stringWithFormat: (OFConstantString*)format, ...;
 
 /**
  * Creates a new OFString containing the constructed specified path.
@@ -407,7 +409,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param format A string used as format to initialize the OFString
  * \return An initialized OFString
  */
-- initWithFormat: (OFString*)format, ...;
+- initWithFormat: (OFConstantString*)format, ...;
 
 /**
  * Initializes an already allocated OFString with a format string.
@@ -417,7 +419,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param arguments The arguments used in the format string
  * \return An initialized OFString
  */
-- initWithFormat: (OFString*)format
+- initWithFormat: (OFConstantString*)format
        arguments: (va_list)arguments;
 
 /**

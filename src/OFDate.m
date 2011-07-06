@@ -443,7 +443,7 @@ static OFMutex *mutex;
 	LOCALTIME_RET(tm_yday + 1)
 }
 
-- (OFString*)dateStringWithFormat: (OFString*)format
+- (OFString*)dateStringWithFormat: (OFConstantString*)format
 {
 	OFString *ret;
 	time_t seconds_ = (time_t)seconds;
@@ -489,7 +489,7 @@ static OFMutex *mutex;
 	return ret;
 }
 
-- (OFString*)localDateStringWithFormat: (OFString*)format
+- (OFString*)localDateStringWithFormat: (OFConstantString*)format
 {
 	OFString *ret;
 	time_t seconds_ = (time_t)seconds;

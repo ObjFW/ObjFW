@@ -1271,7 +1271,7 @@
 	return stringLength + 1;
 }
 
-- (size_t)writeFormat: (OFString*)format, ...
+- (size_t)writeFormat: (OFConstantString*)format, ...
 {
 	va_list arguments;
 	size_t ret;
@@ -1284,7 +1284,7 @@
 	return ret;
 }
 
-- (size_t)writeFormat: (OFString*)format
+- (size_t)writeFormat: (OFConstantString*)format
 	withArguments: (va_list)arguments
 {
 	char *cString;

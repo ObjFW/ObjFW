@@ -364,7 +364,7 @@ of_utf16_string_length(const uint16_t *string)
 					   length: length] autorelease];
 }
 
-+ stringWithFormat: (OFString*)format, ...
++ stringWithFormat: (OFConstantString*)format, ...
 {
 	id ret;
 	va_list arguments;
@@ -836,7 +836,7 @@ of_utf16_string_length(const uint16_t *string)
 	return self;
 }
 
-- initWithFormat: (OFString*)format, ...
+- initWithFormat: (OFConstantString*)format, ...
 {
 	id ret;
 	va_list arguments;
@@ -849,7 +849,7 @@ of_utf16_string_length(const uint16_t *string)
 	return ret;
 }
 
-- initWithFormat: (OFString*)format
+- initWithFormat: (OFConstantString*)format
        arguments: (va_list)arguments
 {
 	self = [super init];

@@ -18,6 +18,7 @@
 #import "OFSerialization.h"
 
 @class OFString;
+@class OFConstantString;
 
 /**
  * \brief A class for storing, accessing and comparing dates.
@@ -241,20 +242,20 @@
  *
  * See the manpage for strftime for information on the format.
  *
- * \param fmt The format for the date string
+ * \param format The format for the date string
  * \return A new, autoreleased OFString
  */
-- (OFString*)dateStringWithFormat: (OFString*)fmt;
+- (OFString*)dateStringWithFormat: (OFConstantString*)format;
 
 /**
  * \brief Creates a string of the local date with the specified format.
  *
  * See the manpage for strftime for information on the format.
  *
- * \param fmt The format for the date string
+ * \param format The format for the date string
  * \return A new, autoreleased OFString
  */
-- (OFString*)localDateStringWithFormat: (OFString*)fmt;
+- (OFString*)localDateStringWithFormat: (OFConstantString*)format;
 
 /**
  * \brief Returns the earlier of the two dates.

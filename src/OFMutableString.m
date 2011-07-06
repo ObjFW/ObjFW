@@ -257,7 +257,7 @@
 	[self appendCString: [string_ cString]];
 }
 
-- (void)appendFormat: (OFString*)format, ...
+- (void)appendFormat: (OFConstantString*)format, ...
 {
 	va_list arguments;
 
@@ -267,7 +267,7 @@
 	va_end(arguments);
 }
 
-- (void)appendFormat: (OFString*)format
+- (void)appendFormat: (OFConstantString*)format
        withArguments: (va_list)arguments
 {
 	char *t;

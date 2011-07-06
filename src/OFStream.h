@@ -672,7 +672,7 @@
  * \param format A string used as format
  * \return The number of bytes written
  */
-- (size_t)writeFormat: (OFString*)format, ...;
+- (size_t)writeFormat: (OFConstantString*)format, ...;
 
 /**
  * Writes a formatted string into the stream.
@@ -681,7 +681,7 @@
  * \param arguments The arguments used in the format string
  * \return The number of bytes written
  */
-- (size_t)writeFormat: (OFString*)format
+- (size_t)writeFormat: (OFConstantString*)format
 	withArguments: (va_list)arguments;
 
 /**
