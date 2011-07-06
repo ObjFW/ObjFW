@@ -88,7 +88,7 @@
 + thread;
 
 /**
- * \param obj An object that is passed to the main method as a copy or nil
+ * \param obj An object which is passed for use in the main method or nil
  * \return A new, autoreleased thread
  */
 + threadWithObject: (id)obj;
@@ -161,7 +161,7 @@
 + (void)terminateWithObject: (id)obj;
 
 /**
- * \param obj An object that is passed to the main method as a copy or nil
+ * \param obj An object which is passed for use in the main method or nil
  * \return An initialized OFThread.
  */
 - initWithObject: (id)obj;
