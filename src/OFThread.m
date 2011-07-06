@@ -69,7 +69,14 @@ call_main(id object)
 	 * Nasty workaround for thread implementations which can't return a
 	 * value on join.
 	 */
+#ifdef OF_HAVE_BLOCKS
+	if (thread->block != nil)
+		thread->returnValue = [thread->block(thread->object) retain];
+	else
+		thread->returnValue = [[thread main] retain];
+#else
 	thread->returnValue = [[thread main] retain];
+#endif
 
 	[thread handleTermination];
 
@@ -88,6 +95,10 @@ call_main(id object)
 }
 
 @implementation OFThread
+#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
+@synthesize block;
+#endif
+
 + (void)initialize
 {
 	if (self != [OFThread class])
@@ -106,6 +117,20 @@ call_main(id object)
 {
 	return [[[self alloc] initWithObject: object] autorelease];
 }
+
+#ifdef OF_HAVE_BLOCKS
++ threadWithBlock: (of_thread_block_t)block
+{
+	return [[[self alloc] initWithBlock: block] autorelease];
+}
+
++ threadWithBlock: (of_thread_block_t)block
+	   object: (id)object
+{
+	return [[[self alloc] initWithBlock: block
+				     object: object] autorelease];
+}
+#endif
 
 + (void)setObject: (id)object
 	forTLSKey: (OFTLSKey*)key
@@ -243,6 +268,30 @@ call_main(id object)
 
 	return self;
 }
+
+#ifdef OF_HAVE_BLOCKS
+- initWithBlock: (of_thread_block_t)block_
+{
+	return [self initWithBlock: block_
+			    object: nil];
+}
+
+- initWithBlock: (of_thread_block_t)block_
+	 object: (id)object_
+{
+	self = [super init];
+
+	@try {
+		block = [block_ retain];
+		object = [object_ retain];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+#endif
 
 - (id)main
 {

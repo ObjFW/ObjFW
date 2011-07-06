@@ -21,6 +21,10 @@
 
 @class OFDate;
 
+#ifdef OF_HAVE_BLOCKS
+typedef id (^of_thread_block_t)(id object);
+#endif
+
 /**
  * \brief A class for Thread Local Storage keys.
  */
@@ -71,16 +75,23 @@
  */
 @interface OFThread: OFObject
 {
+@public
 	id object;
 	of_thread_t thread;
-@public
 	enum {
 		OF_THREAD_NOT_RUNNING,
 		OF_THREAD_RUNNING,
 		OF_THREAD_WAITING_FOR_JOIN
 	} running;
+#ifdef OF_HAVE_BLOCKS
+	of_thread_block_t block;
+#endif
 	id returnValue;
 }
+
+#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
+@property (retain) of_thread_block_t block;
+#endif
 
 /**
  * \return A new, autoreleased thread
@@ -92,6 +103,22 @@
  * \return A new, autoreleased thread
  */
 + threadWithObject: (id)object;
+
+#ifdef OF_HAVE_BLOCKS
+/**
+ * \param block A block which is executed by the thread
+ * \return A new, autoreleased thread
+ */
++ threadWithBlock: (of_thread_block_t)block;
+
+/**
+ * \param block A block which is executed by the thread
+ * \param object An object which is passed for use in the main method or nil
+ * \return A new, autoreleased thread
+ */
++ threadWithBlock: (of_thread_block_t)block
+	   object: (id)object;
+#endif
 
 /**
  * Sets the Thread Local Storage for the specified key.
@@ -165,6 +192,22 @@
  * \return An initialized OFThread.
  */
 - initWithObject: (id)object;
+
+#ifdef OF_HAVE_BLOCKS
+/**
+ * \param block A block which is executed by the thread
+ * \return An initialized OFThread.
+ */
+- initWithBlock: (of_thread_block_t)block;
+
+/**
+ * \param block A block which is executed by the thread
+ * \param object An object which is passed for use in the main method or nil
+ * \return An initialized OFThread.
+ */
+- initWithBlock: (of_thread_block_t)block
+	 object: (id)object;
+#endif
 
 /**
  * The main routine of the thread. You need to reimplement this!
