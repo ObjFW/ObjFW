@@ -190,14 +190,14 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
 #ifdef OF_HAVE_PROPERTIES
 @property (retain) id <OFXMLParserDelegate> delegate;
 # ifdef OF_HAVE_BLOCKS
-@property (copy) of_xml_parser_processing_instructions_block_t
+@property (retain) of_xml_parser_processing_instructions_block_t
     processingInstructionsHandler;
-@property (copy) of_xml_parser_element_start_block_t elementStartHandler;
-@property (copy) of_xml_parser_element_end_block_t elementEndHandler;
-@property (copy) of_xml_parser_string_block_t charactersHandler;
-@property (copy) of_xml_parser_string_block_t CDATAHandler;
-@property (copy) of_xml_parser_string_block_t commentHandler;
-@property (copy) of_xml_parser_unknown_entity_block_t unknownEntityHandler;
+@property (retain) of_xml_parser_element_start_block_t elementStartHandler;
+@property (retain) of_xml_parser_element_end_block_t elementEndHandler;
+@property (retain) of_xml_parser_string_block_t charactersHandler;
+@property (retain) of_xml_parser_string_block_t CDATAHandler;
+@property (retain) of_xml_parser_string_block_t commentHandler;
+@property (retain) of_xml_parser_unknown_entity_block_t unknownEntityHandler;
 # endif
 #endif
 
