@@ -220,6 +220,11 @@ void _references_to_categories_of_OFObject(void)
 	return instance;
 }
 
++ new
+{
+	return [[self alloc] init];
+}
+
 + (Class)class
 {
 	return self;

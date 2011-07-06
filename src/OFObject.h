@@ -244,9 +244,15 @@ typedef struct of_rectangle_t
  * This method will never return nil, instead, it will throw an
  * OFAllocFailedException.
  *
- * \return The allocated object.
+ * \return The allocated object
  */
 + alloc;
+
+/**
+ * \brief Allocates memory for a new instance and calls -[init] on it.
+ * \return An allocated and initialized object
+ */
++ new;
 
 /**
  * \brief Returns the class.
