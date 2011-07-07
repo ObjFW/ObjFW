@@ -669,6 +669,9 @@
 /**
  * Writes a formatted string into the stream.
  *
+ * See printf for the format syntax. As an addition, %@ is available as format
+ * specifier for objects.
+ *
  * \param format A string used as format
  * \return The number of bytes written
  */
@@ -676,6 +679,9 @@
 
 /**
  * Writes a formatted string into the stream.
+ *
+ * See printf for the format syntax. As an addition, %@ is available as format
+ * specifier for objects.
  *
  * \param format A string used as format
  * \param arguments The arguments used in the format string

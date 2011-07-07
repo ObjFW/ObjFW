@@ -206,7 +206,9 @@ extern size_t of_utf16_string_length(const uint16_t*);
 
 /**
  * Creates a new OFString from a format string.
- * See printf for the format syntax.
+ *
+ * See printf for the format syntax. As an addition, %@ is available as format
+ * specifier for objects.
  *
  * \param format A string used as format to initialize the OFString
  * \return A new autoreleased OFString
@@ -404,7 +406,9 @@ extern size_t of_utf16_string_length(const uint16_t*);
 
 /**
  * Initializes an already allocated OFString with a format string.
- * See printf for the format syntax.
+ *
+ * See printf for the format syntax. As an addition, %@ is available as format
+ * specifier for objects.
  *
  * \param format A string used as format to initialize the OFString
  * \return An initialized OFString
@@ -413,7 +417,9 @@ extern size_t of_utf16_string_length(const uint16_t*);
 
 /**
  * Initializes an already allocated OFString with a format string.
- * See printf for the format syntax.
+ *
+ * See printf for the format syntax. As an addition, %@ is available as format
+ * specifier for objects.
  *
  * \param format A string used as format to initialize the OFString
  * \param arguments The arguments used in the format string

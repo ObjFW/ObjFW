@@ -93,7 +93,8 @@
 /**
  * \brief Appends a formatted string to the OFMutableString.
  *
- * See printf for the format syntax.
+ * See printf for the format syntax. As an addition, %@ is available as format
+ * specifier for objects.
  *
  * \param format A format string which generates the string to append
  */
@@ -102,7 +103,8 @@
 /**
  * \brief Appends a formatted string to the OFMutableString.
  *
- * See printf for the format syntax.
+ * See printf for the format syntax. As an addition, %@ is available as format
+ * specifier for objects.
  *
  * \param format A format string which generates the string to append
  * \param arguments The arguments used in the format string
