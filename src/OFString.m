@@ -769,7 +769,7 @@ of_utf16_string_length(const uint16_t *string)
 			if ((character & 0xFC00) == 0xD800) {
 				uint16_t nextCharacter;
 
-				if (length <= i + 1)
+				if (length_ <= i + 1)
 					@throw [OFInvalidEncodingException
 						newWithClass: isa];
 
