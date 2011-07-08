@@ -275,32 +275,32 @@ of_utf16_string_length(const uint16_t *string)
 	return [[[self alloc] init] autorelease];
 }
 
-+ stringWithCString: (const char*)string
++ stringWithCString: (const char*)cString
 {
-	return [[[self alloc] initWithCString: string] autorelease];
+	return [[[self alloc] initWithCString: cString] autorelease];
 }
 
-+ stringWithCString: (const char*)string
++ stringWithCString: (const char*)cString
 	   encoding: (of_string_encoding_t)encoding
 {
-	return [[[self alloc] initWithCString: string
+	return [[[self alloc] initWithCString: cString
 				     encoding: encoding] autorelease];
 }
 
-+ stringWithCString: (const char*)string
++ stringWithCString: (const char*)cString
 	   encoding: (of_string_encoding_t)encoding
-	     length: (size_t)length
+	     length: (size_t)cStringLength
 {
-	return [[[self alloc] initWithCString: string
+	return [[[self alloc] initWithCString: cString
 				     encoding: encoding
-				       length: length] autorelease];
+				       length: cStringLength] autorelease];
 }
 
-+ stringWithCString: (const char*)string
-	     length: (size_t)length
++ stringWithCString: (const char*)cString
+	     length: (size_t)cStringLength
 {
-	return [[[self alloc] initWithCString: string
-				       length: length] autorelease];
+	return [[[self alloc] initWithCString: cString
+				       length: cStringLength] autorelease];
 }
 
 + stringWithString: (OFString*)string
@@ -422,8 +422,8 @@ of_utf16_string_length(const uint16_t *string)
 		s = [self allocMemoryWithSize: sizeof(*s)];
 		memset(s, 0, sizeof(*s));
 
-		s->string = [self allocMemoryWithSize: 1];
-		s->string[0] = '\0';
+		s->cString = [self allocMemoryWithSize: 1];
+		s->cString[0] = '\0';
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -432,24 +432,24 @@ of_utf16_string_length(const uint16_t *string)
 	return self;
 }
 
-- initWithCString: (const char*)string
+- initWithCString: (const char*)cString
 {
-	return [self initWithCString: string
+	return [self initWithCString: cString
 			    encoding: OF_STRING_ENCODING_UTF_8
-			      length: strlen(string)];
+			      length: strlen(cString)];
 }
 
-- initWithCString: (const char*)string
+- initWithCString: (const char*)cString
 	 encoding: (of_string_encoding_t)encoding
 {
-	return [self initWithCString: string
+	return [self initWithCString: cString
 			    encoding: encoding
-			      length: strlen(string)];
+			      length: strlen(cString)];
 }
 
-- initWithCString: (const char*)string
+- initWithCString: (const char*)cString
 	 encoding: (of_string_encoding_t)encoding
-	   length: (size_t)length
+	   length: (size_t)cStringLength
 {
 	self = [super init];
 
@@ -458,19 +458,19 @@ of_utf16_string_length(const uint16_t *string)
 		const uint16_t *table;
 
 		if (encoding == OF_STRING_ENCODING_UTF_8 &&
-		    length >= 3 && !memcmp(string, "\xEF\xBB\xBF", 3)) {
-			string += 3;
-			length -= 3;
+		    cStringLength >= 3 && !memcmp(cString, "\xEF\xBB\xBF", 3)) {
+			cString += 3;
+			cStringLength -= 3;
 		}
 
 		s = [self allocMemoryWithSize: sizeof(*s)];
 		memset(s, 0, sizeof(*s));
 
-		s->string = [self allocMemoryWithSize: length + 1];
-		s->length = length;
+		s->cString = [self allocMemoryWithSize: cStringLength + 1];
+		s->cStringLength = cStringLength;
 
 		if (encoding == OF_STRING_ENCODING_UTF_8) {
-			switch (of_string_check_utf8(string, length)) {
+			switch (of_string_check_utf8(cString, cStringLength)) {
 			case 1:
 				s->isUTF8 = YES;
 				break;
@@ -479,39 +479,40 @@ of_utf16_string_length(const uint16_t *string)
 				    newWithClass: isa];
 			}
 
-			memcpy(s->string, string, length);
-			s->string[length] = 0;
+			memcpy(s->cString, cString, cStringLength);
+			s->cString[cStringLength] = 0;
 
 			return self;
 		}
 
 		if (encoding == OF_STRING_ENCODING_ISO_8859_1) {
-			for (i = j = 0; i < length; i++) {
+			for (i = j = 0; i < cStringLength; i++) {
 				char buffer[4];
 				size_t bytes;
 
-				if (!(string[i] & 0x80)) {
-					s->string[j++] = string[i];
+				if (!(cString[i] & 0x80)) {
+					s->cString[j++] = cString[i];
 					continue;
 				}
 
 				s->isUTF8 = YES;
 				bytes = of_string_unicode_to_utf8(
-				    (uint8_t)string[i], buffer);
+				    (uint8_t)cString[i], buffer);
 
 				if (bytes == 0)
 					@throw [OFInvalidEncodingException
 					    newWithClass: isa];
 
-				s->length += bytes - 1;
-				s->string = [self resizeMemory: s->string
-							toSize: s->length + 1];
+				s->cStringLength += bytes - 1;
+				s->cString = [self
+				    resizeMemory: s->cString
+					  toSize: s->cStringLength + 1];
 
-				memcpy(s->string + j, buffer, bytes);
+				memcpy(s->cString + j, buffer, bytes);
 				j += bytes;
 			}
 
-			s->string[s->length] = 0;
+			s->cString[s->cStringLength] = 0;
 
 			return self;
 		}
@@ -527,17 +528,17 @@ of_utf16_string_length(const uint16_t *string)
 			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
 
-		for (i = j = 0; i < length; i++) {
+		for (i = j = 0; i < cStringLength; i++) {
 			char buffer[4];
 			of_unichar_t character;
 			size_t characterBytes;
 
-			if (!(string[i] & 0x80)) {
-				s->string[j++] = string[i];
+			if (!(cString[i] & 0x80)) {
+				s->cString[j++] = cString[i];
 				continue;
 			}
 
-			character = table[(uint8_t)string[i]];
+			character = table[(uint8_t)cString[i]];
 
 			if (character == 0xFFFD)
 				@throw [OFInvalidEncodingException
@@ -551,15 +552,15 @@ of_utf16_string_length(const uint16_t *string)
 				@throw [OFInvalidEncodingException
 				    newWithClass: isa];
 
-			s->length += characterBytes - 1;
-			s->string = [self resizeMemory: s->string
-						toSize: s->length + 1];
+			s->cStringLength += characterBytes - 1;
+			s->cString = [self resizeMemory: s->cString
+						 toSize: s->cStringLength + 1];
 
-			memcpy(s->string + j, buffer, characterBytes);
+			memcpy(s->cString + j, buffer, characterBytes);
 			j += characterBytes;
 		}
 
-		s->string[s->length] = 0;
+		s->cString[s->cStringLength] = 0;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -568,12 +569,12 @@ of_utf16_string_length(const uint16_t *string)
 	return self;
 }
 
-- initWithCString: (const char*)string
-	   length: (size_t)length
+- initWithCString: (const char*)cString
+	   length: (size_t)cStringLength
 {
-	return [self initWithCString: string
+	return [self initWithCString: cString
 			    encoding: OF_STRING_ENCODING_UTF_8
-			      length: length];
+			      length: cStringLength];
 }
 
 - initWithString: (OFString*)string
@@ -587,9 +588,9 @@ of_utf16_string_length(const uint16_t *string)
 		memset(s, 0, sizeof(*s));
 
 		cString = [string cString];
-		s->length = [string cStringLength];
+		s->cStringLength = [string cStringLength];
 
-		switch (of_string_check_utf8(cString, s->length)) {
+		switch (of_string_check_utf8(cString, s->cStringLength)) {
 		case 1:
 			s->isUTF8 = YES;
 			break;
@@ -597,15 +598,15 @@ of_utf16_string_length(const uint16_t *string)
 			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
 
-		if ((s->string = strdup(cString)) == NULL)
+		if ((s->cString = strdup(cString)) == NULL)
 			@throw [OFOutOfMemoryException
 			     newWithClass: isa
-			    requestedSize: s->length + 1];
+			    requestedSize: s->cStringLength + 1];
 
 		@try {
-			[self addMemoryToPool: s->string];
+			[self addMemoryToPool: s->cString];
 		} @catch (id e) {
-			free(s->string);
+			free(s->cString);
 			@throw e;
 		}
 	} @catch (id e) {
@@ -662,8 +663,8 @@ of_utf16_string_length(const uint16_t *string)
 		s = [self allocMemoryWithSize: sizeof(*s)];
 		memset(s, 0, sizeof(*s));
 
-		s->length = length;
-		s->string = [self allocMemoryWithSize: (length * 4) + 1];
+		s->cStringLength = length;
+		s->cString = [self allocMemoryWithSize: (length * 4) + 1];
 
 		for (i = 0; i < length; i++) {
 			char buffer[4];
@@ -673,29 +674,29 @@ of_utf16_string_length(const uint16_t *string)
 
 			switch (characterLen) {
 			case 1:
-				s->string[j++] = buffer[0];
+				s->cString[j++] = buffer[0];
 				break;
 			case 2:
 				s->isUTF8 = YES;
-				s->length++;
+				s->cStringLength++;
 
-				memcpy(s->string + j, buffer, 2);
+				memcpy(s->cString + j, buffer, 2);
 				j += 2;
 
 				break;
 			case 3:
 				s->isUTF8 = YES;
-				s->length += 2;
+				s->cStringLength += 2;
 
-				memcpy(s->string + j, buffer, 3);
+				memcpy(s->cString + j, buffer, 3);
 				j += 3;
 
 				break;
 			case 4:
 				s->isUTF8 = YES;
-				s->length += 3;
+				s->cStringLength += 3;
 
-				memcpy(s->string + j, buffer, 4);
+				memcpy(s->cString + j, buffer, 4);
 				j += 4;
 
 				break;
@@ -705,11 +706,11 @@ of_utf16_string_length(const uint16_t *string)
 			}
 		}
 
-		s->string[j] = '\0';
+		s->cString[j] = '\0';
 
 		@try {
-			s->string = [self resizeMemory: s->string
-						toSize: s->length + 1];
+			s->cString = [self resizeMemory: s->cString
+						 toSize: s->cStringLength + 1];
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only tried to make it smaller */
 			[e release];
@@ -768,8 +769,8 @@ of_utf16_string_length(const uint16_t *string)
 		s = [self allocMemoryWithSize: sizeof(*s)];
 		memset(s, 0, sizeof(*s));
 
-		s->length = length;
-		s->string = [self allocMemoryWithSize: (length * 4) + 1];
+		s->cStringLength = length;
+		s->cString = [self allocMemoryWithSize: (length * 4) + 1];
 
 		for (i = 0; i < length; i++) {
 			char buffer[4];
@@ -803,29 +804,29 @@ of_utf16_string_length(const uint16_t *string)
 
 			switch (characterLen) {
 			case 1:
-				s->string[j++] = buffer[0];
+				s->cString[j++] = buffer[0];
 				break;
 			case 2:
 				s->isUTF8 = YES;
-				s->length++;
+				s->cStringLength++;
 
-				memcpy(s->string + j, buffer, 2);
+				memcpy(s->cString + j, buffer, 2);
 				j += 2;
 
 				break;
 			case 3:
 				s->isUTF8 = YES;
-				s->length += 2;
+				s->cStringLength += 2;
 
-				memcpy(s->string + j, buffer, 3);
+				memcpy(s->cString + j, buffer, 3);
 				j += 3;
 
 				break;
 			case 4:
 				s->isUTF8 = YES;
-				s->length += 3;
+				s->cStringLength += 3;
 
-				memcpy(s->string + j, buffer, 4);
+				memcpy(s->cString + j, buffer, 4);
 				j += 4;
 
 				break;
@@ -835,11 +836,11 @@ of_utf16_string_length(const uint16_t *string)
 			}
 		}
 
-		s->string[j] = '\0';
+		s->cString[j] = '\0';
 
 		@try {
-			s->string = [self resizeMemory: s->string
-						toSize: s->length + 1];
+			s->cString = [self resizeMemory: s->cString
+						 toSize: s->cStringLength + 1];
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only tried to make it smaller */
 			[e release];
@@ -871,7 +872,7 @@ of_utf16_string_length(const uint16_t *string)
 	self = [super init];
 
 	@try {
-		int length;
+		int cStringLength;
 
 		if (format == nil)
 			@throw [OFInvalidArgumentException newWithClass: isa
@@ -880,14 +881,15 @@ of_utf16_string_length(const uint16_t *string)
 		s = [self allocMemoryWithSize: sizeof(*s)];
 		memset(s, 0, sizeof(*s));
 
-		if ((length = of_vasprintf(&s->string, [format cString],
+		if ((cStringLength = of_vasprintf(&s->cString, [format cString],
 		    arguments)) == -1)
 			@throw [OFInvalidFormatException newWithClass: isa];
 
-		s->length = length;
+		s->cStringLength = cStringLength;
 
 		@try {
-			switch (of_string_check_utf8(s->string, length)) {
+			switch (of_string_check_utf8(s->cString,
+			    cStringLength)) {
 			case 1:
 				s->isUTF8 = YES;
 				break;
@@ -896,9 +898,9 @@ of_utf16_string_length(const uint16_t *string)
 				    newWithClass: isa];
 			}
 
-			[self addMemoryToPool: s->string];
+			[self addMemoryToPool: s->cString];
 		} @catch (id e) {
-			free(s->string);
+			free(s->cString);
 		}
 	} @catch (id e) {
 		[self release];
@@ -928,16 +930,16 @@ of_utf16_string_length(const uint16_t *string)
 
 	@try {
 		OFString *component;
-		size_t i, length;
+		size_t i, cStringLength;
 		va_list argumentsCopy;
 
 		s = [self allocMemoryWithSize: sizeof(*s)];
 		memset(s, 0, sizeof(*s));
 
-		s->length = [firstComponent cStringLength];
+		s->cStringLength = [firstComponent cStringLength];
 
 		switch (of_string_check_utf8([firstComponent cString],
-		    s->length)) {
+		    s->cStringLength)) {
 		case 1:
 			s->isUTF8 = YES;
 			break;
@@ -948,11 +950,11 @@ of_utf16_string_length(const uint16_t *string)
 		/* Calculate length */
 		va_copy(argumentsCopy, arguments);
 		while ((component = va_arg(argumentsCopy, OFString*)) != nil) {
-			length = [component cStringLength];
-			s->length += 1 + length;
+			cStringLength = [component cStringLength];
+			s->cStringLength += 1 + cStringLength;
 
 			switch (of_string_check_utf8([component cString],
-			    length)) {
+			    cStringLength)) {
 			case 1:
 				s->isUTF8 = YES;
 				break;
@@ -962,20 +964,21 @@ of_utf16_string_length(const uint16_t *string)
 			}
 		}
 
-		s->string = [self allocMemoryWithSize: s->length + 1];
+		s->cString = [self allocMemoryWithSize: s->cStringLength + 1];
 
-		length = [firstComponent cStringLength];
-		memcpy(s->string, [firstComponent cString], length);
-		i = length;
+		cStringLength = [firstComponent cStringLength];
+		memcpy(s->cString, [firstComponent cString], cStringLength);
+		i = cStringLength;
 
 		while ((component = va_arg(arguments, OFString*)) != nil) {
-			length = [component cStringLength];
-			s->string[i] = OF_PATH_DELIM;
-			memcpy(s->string + i + 1, [component cString], length);
-			i += 1 + length;
+			cStringLength = [component cStringLength];
+			s->cString[i] = OF_PATH_DELIM;
+			memcpy(s->cString + i + 1, [component cString],
+			    cStringLength);
+			i += 1 + cStringLength;
 		}
 
-		s->string[i] = '\0';
+		s->cString[i] = '\0';
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -1119,7 +1122,7 @@ of_utf16_string_length(const uint16_t *string)
 
 - (const char*)cString
 {
-	return s->string;
+	return s->cString;
 }
 
 - (size_t)length
@@ -1127,14 +1130,14 @@ of_utf16_string_length(const uint16_t *string)
 	/* FIXME: Maybe cache this in an ivar? */
 
 	if (!s->isUTF8)
-		return s->length;
+		return s->cStringLength;
 
-	return of_string_position_to_index(s->string, s->length);
+	return of_string_position_to_index(s->cString, s->cStringLength);
 }
 
 - (size_t)cStringLength
 {
-	return s->length;
+	return s->cStringLength;
 }
 
 - (BOOL)isEqual: (id)object
@@ -1142,7 +1145,7 @@ of_utf16_string_length(const uint16_t *string)
 	if (![object isKindOfClass: [OFString class]])
 		return NO;
 
-	if (strcmp(s->string, [object cString]))
+	if (strcmp(s->cString, [object cString]))
 		return NO;
 
 	return YES;
@@ -1161,26 +1164,28 @@ of_utf16_string_length(const uint16_t *string)
 - (of_comparison_result_t)compare: (id)object
 {
 	OFString *otherString;
-	size_t otherLen, minLen;
-	int cmp;
+	size_t otherCStringLength, minimumCStringLength;
+	int compare;
 
 	if (![object isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
 	otherString = object;
-	otherLen = [otherString cStringLength];
-	minLen = (s->length > otherLen ? otherLen : s->length);
+	otherCStringLength = [otherString cStringLength];
+	minimumCStringLength = (s->cStringLength > otherCStringLength
+	    ? otherCStringLength : s->cStringLength);
 
-	if ((cmp = memcmp(s->string, [otherString cString], minLen)) == 0) {
-		if (s->length > otherLen)
+	if ((compare = memcmp(s->cString, [otherString cString],
+	    minimumCStringLength)) == 0) {
+		if (s->cStringLength > otherCStringLength)
 			return OF_ORDERED_DESCENDING;
-		if (s->length < otherLen)
+		if (s->cStringLength < otherCStringLength)
 			return OF_ORDERED_ASCENDING;
 		return OF_ORDERED_SAME;
 	}
 
-	if (cmp > 0)
+	if (compare > 0)
 		return OF_ORDERED_DESCENDING;
 	else
 		return OF_ORDERED_ASCENDING;
@@ -1189,28 +1194,30 @@ of_utf16_string_length(const uint16_t *string)
 - (of_comparison_result_t)caseInsensitiveCompare: (OFString*)otherString
 {
 	const char *otherCString;
-	size_t i, j, otherLen, minLen;
-	int cmp;
+	size_t i, j, otherCStringLength, minimumCStringLength;
+	int compare;
 
 	if (![otherString isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
 	otherCString = [otherString cString];
-	otherLen = [otherString cStringLength];
+	otherCStringLength = [otherString cStringLength];
 
 	if (!s->isUTF8) {
-		minLen = (s->length > otherLen ? otherLen : s->length);
+		minimumCStringLength = (s->cStringLength > otherCStringLength
+		    ? otherCStringLength : s->cStringLength);
 
-		if ((cmp = memcasecmp(s->string, otherCString, minLen)) == 0) {
-			if (s->length > otherLen)
+		if ((compare = memcasecmp(s->cString, otherCString,
+		    minimumCStringLength)) == 0) {
+			if (s->cStringLength > otherCStringLength)
 				return OF_ORDERED_DESCENDING;
-			if (s->length < otherLen)
+			if (s->cStringLength < otherCStringLength)
 				return OF_ORDERED_ASCENDING;
 			return OF_ORDERED_SAME;
 		}
 
-		if (cmp > 0)
+		if (compare > 0)
 			return OF_ORDERED_DESCENDING;
 		else
 			return OF_ORDERED_ASCENDING;
@@ -1218,14 +1225,14 @@ of_utf16_string_length(const uint16_t *string)
 
 	i = j = 0;
 
-	while (i < s->length && j < otherLen) {
+	while (i < s->cStringLength && j < otherCStringLength) {
 		of_unichar_t c1, c2;
 		size_t l1, l2;
 
-		l1 = of_string_utf8_to_unicode(s->string + i, s->length - i,
-		    &c1);
-		l2 = of_string_utf8_to_unicode(otherCString + j, otherLen - j,
-		    &c2);
+		l1 = of_string_utf8_to_unicode(s->cString + i,
+		    s->cStringLength - i, &c1);
+		l2 = of_string_utf8_to_unicode(otherCString + j,
+		    otherCStringLength - j, &c2);
 
 		if (l1 == 0 || l2 == 0 || c1 > 0x10FFFF || c2 > 0x10FFFF)
 			@throw [OFInvalidEncodingException newWithClass: isa];
@@ -1255,9 +1262,9 @@ of_utf16_string_length(const uint16_t *string)
 		j += l2;
 	}
 
-	if (s->length - i > otherLen - j)
+	if (s->cStringLength - i > otherCStringLength - j)
 		return OF_ORDERED_DESCENDING;
-	else if (s->length - i < otherLen - j)
+	else if (s->cStringLength - i < otherCStringLength - j)
 		return OF_ORDERED_ASCENDING;
 
 	return OF_ORDERED_SAME;
@@ -1269,8 +1276,8 @@ of_utf16_string_length(const uint16_t *string)
 	size_t i;
 
 	OF_HASH_INIT(hash);
-	for (i = 0; i < s->length; i++)
-		OF_HASH_ADD(hash, s->string[i]);
+	for (i = 0; i < s->cStringLength; i++)
+		OF_HASH_ADD(hash, s->cString[i]);
 	OF_HASH_FINALIZE(hash);
 
 	return hash;
@@ -1308,42 +1315,42 @@ of_utf16_string_length(const uint16_t *string)
 
 - (of_unichar_t)characterAtIndex: (size_t)index
 {
-	of_unichar_t c;
+	of_unichar_t character;
 
 	if (!s->isUTF8) {
-		if (index >= s->length)
+		if (index >= s->cStringLength)
 			@throw [OFOutOfRangeException newWithClass: isa];
 
-		return s->string[index];
+		return s->cString[index];
 	}
 
-	index = of_string_index_to_position(s->string, index, s->length);
+	index = of_string_index_to_position(s->cString, index,
+	    s->cStringLength);
 
-	if (index >= s->length)
+	if (index >= s->cStringLength)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	if (!of_string_utf8_to_unicode(s->string + index, s->length - index,
-	    &c))
+	if (!of_string_utf8_to_unicode(s->cString + index,
+	    s->cStringLength - index, &character))
 		@throw [OFInvalidEncodingException newWithClass: isa];
 
-	return c;
+	return character;
 }
 
 - (size_t)indexOfFirstOccurrenceOfString: (OFString*)string
 {
 	const char *cString = [string cString];
-	size_t stringLen = [string cStringLength];
-	size_t i;
+	size_t i, cStringLength = [string cStringLength];
 
-	if (stringLen == 0)
+	if (cStringLength == 0)
 		return 0;
 
-	if (stringLen > s->length)
+	if (cStringLength > s->cStringLength)
 		return OF_INVALID_INDEX;
 
-	for (i = 0; i <= s->length - stringLen; i++)
-		if (!memcmp(s->string + i, cString, stringLen))
-			return of_string_position_to_index(s->string, i);
+	for (i = 0; i <= s->cStringLength - cStringLength; i++)
+		if (!memcmp(s->cString + i, cString, cStringLength))
+			return of_string_position_to_index(s->cString, i);
 
 	return OF_INVALID_INDEX;
 }
@@ -1351,18 +1358,18 @@ of_utf16_string_length(const uint16_t *string)
 - (size_t)indexOfLastOccurrenceOfString: (OFString*)string
 {
 	const char *cString = [string cString];
-	size_t stringLen = [string cStringLength];
-	size_t i;
+	size_t i, cStringLength = [string cStringLength];
 
-	if (stringLen == 0)
-		return of_string_position_to_index(s->string, s->length);
+	if (cStringLength == 0)
+		return of_string_position_to_index(s->cString,
+		    s->cStringLength);
 
-	if (stringLen > s->length)
+	if (cStringLength > s->cStringLength)
 		return OF_INVALID_INDEX;
 
-	for (i = s->length - stringLen;; i--) {
-		if (!memcmp(s->string + i, cString, stringLen))
-			return of_string_position_to_index(s->string, i);
+	for (i = s->cStringLength - cStringLength;; i--) {
+		if (!memcmp(s->cString + i, cString, cStringLength))
+			return of_string_position_to_index(s->cString, i);
 
 		/* Did not match and we're at the last char */
 		if (i == 0)
@@ -1373,17 +1380,16 @@ of_utf16_string_length(const uint16_t *string)
 - (BOOL)containsString: (OFString*)string
 {
 	const char *cString = [string cString];
-	size_t stringLen = [string cStringLength];
-	size_t i;
+	size_t i, cStringLength = [string cStringLength];
 
-	if (stringLen == 0)
+	if (cStringLength == 0)
 		return YES;
 
-	if (stringLen > s->length)
+	if (cStringLength > s->cStringLength)
 		return NO;
 
-	for (i = 0; i <= s->length - stringLen; i++)
-		if (!memcmp(s->string + i, cString, stringLen))
+	for (i = 0; i <= s->cStringLength - cStringLength; i++)
+		if (!memcmp(s->cString + i, cString, cStringLength))
 			return YES;
 
 	return NO;
@@ -1393,19 +1399,20 @@ of_utf16_string_length(const uint16_t *string)
 			toIndex: (size_t)end
 {
 	if (s->isUTF8) {
-		start = of_string_index_to_position(s->string, start,
-		    s->length);
-		end = of_string_index_to_position(s->string, end, s->length);
+		start = of_string_index_to_position(s->cString, start,
+		    s->cStringLength);
+		end = of_string_index_to_position(s->cString, end,
+		    s->cStringLength);
 	}
 
 	if (start > end)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	if (end > s->length)
+	if (end > s->cStringLength)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	return [OFString stringWithCString: s->string + start
+	return [OFString stringWithCString: s->cString + start
 				    length: end - start];
 }
 
@@ -1433,9 +1440,8 @@ of_utf16_string_length(const uint16_t *string)
 
 - (OFString*)stringByPrependingString: (OFString*)string
 {
-	OFMutableString *new;
+	OFMutableString *new = [[string mutableCopy] autorelease];
 
-	new = [OFMutableString stringWithString: string];
 	[new appendString: self];
 
 	/*
@@ -1449,9 +1455,8 @@ of_utf16_string_length(const uint16_t *string)
 
 - (OFString*)uppercaseString
 {
-	OFMutableString *new;
+	OFMutableString *new = [[self mutableCopy] autorelease];
 
-	new = [OFMutableString stringWithString: self];
 	[new upper];
 
 	/*
@@ -1465,9 +1470,8 @@ of_utf16_string_length(const uint16_t *string)
 
 - (OFString*)lowercaseString
 {
-	OFMutableString *new;
+	OFMutableString *new = [[self mutableCopy] autorelease];
 
-	new = [OFMutableString stringWithString: self];
 	[new lower];
 
 	/*
@@ -1481,9 +1485,8 @@ of_utf16_string_length(const uint16_t *string)
 
 - (OFString*)stringByDeletingLeadingWhitespaces
 {
-	OFMutableString *new;
+	OFMutableString *new = [[self mutableCopy] autorelease];
 
-	new = [OFMutableString stringWithString: self];
 	[new deleteLeadingWhitespaces];
 
 	/*
@@ -1497,9 +1500,8 @@ of_utf16_string_length(const uint16_t *string)
 
 - (OFString*)stringByDeletingTrailingWhitespaces
 {
-	OFMutableString *new;
+	OFMutableString *new = [[self mutableCopy] autorelease];
 
-	new = [OFMutableString stringWithString: self];
 	[new deleteTrailingWhitespaces];
 
 	/*
@@ -1513,9 +1515,8 @@ of_utf16_string_length(const uint16_t *string)
 
 - (OFString*)stringByDeletingLeadingAndTrailingWhitespaces
 {
-	OFMutableString *new;
+	OFMutableString *new = [[self mutableCopy] autorelease];
 
-	new = [OFMutableString stringWithString: self];
 	[new deleteLeadingAndTrailingWhitespaces];
 
 	/*
@@ -1529,53 +1530,53 @@ of_utf16_string_length(const uint16_t *string)
 
 - (BOOL)hasPrefix: (OFString*)prefix
 {
-	size_t length = [prefix cStringLength];
+	size_t cStringLength = [prefix cStringLength];
 
-	if (length > s->length)
+	if (cStringLength > s->cStringLength)
 		return NO;
 
-	return !memcmp(s->string, [prefix cString], length);
+	return !memcmp(s->cString, [prefix cString], cStringLength);
 }
 
 - (BOOL)hasSuffix: (OFString*)suffix
 {
-	size_t length = [suffix cStringLength];
+	size_t cStringLength = [suffix cStringLength];
 
-	if (length > s->length)
+	if (cStringLength > s->cStringLength)
 		return NO;
 
-	return !memcmp(s->string + (s->length - length), [suffix cString],
-	    length);
+	return !memcmp(s->cString + (s->cStringLength - cStringLength),
+	    [suffix cString], cStringLength);
 }
 
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter
 {
 	OFAutoreleasePool *pool;
 	OFMutableArray *array;
-	const char *delim = [delimiter cString];
-	size_t delimLen = [delimiter cStringLength];
+	const char *cString = [delimiter cString];
+	size_t cStringLength = [delimiter cStringLength];
 	size_t i, last;
 
 	array = [OFMutableArray array];
 	pool = [[OFAutoreleasePool alloc] init];
 
-	if (delimLen > s->length) {
+	if (cStringLength > s->cStringLength) {
 		[array addObject: [[self copy] autorelease]];
 		[pool release];
 
 		return array;
 	}
 
-	for (i = 0, last = 0; i <= s->length - delimLen; i++) {
-		if (memcmp(s->string + i, delim, delimLen))
+	for (i = 0, last = 0; i <= s->cStringLength - cStringLength; i++) {
+		if (memcmp(s->cString + i, cString, cStringLength))
 			continue;
 
-		[array addObject: [OFString stringWithCString: s->string + last
+		[array addObject: [OFString stringWithCString: s->cString + last
 						       length: i - last]];
-		i += delimLen - 1;
+		i += cStringLength - 1;
 		last = i + 1;
 	}
-	[array addObject: [OFString stringWithCString: s->string + last]];
+	[array addObject: [OFString stringWithCString: s->cString + last]];
 
 	[pool release];
 
@@ -1592,36 +1593,37 @@ of_utf16_string_length(const uint16_t *string)
 {
 	OFMutableArray *ret;
 	OFAutoreleasePool *pool;
-	size_t i, last = 0, pathLen = s->length;
+	size_t i, last = 0, pathCStringLength = s->cStringLength;
 
 	ret = [OFMutableArray array];
 
-	if (pathLen == 0)
+	if (pathCStringLength == 0)
 		return ret;
 
 	pool = [[OFAutoreleasePool alloc] init];
 
 #ifndef _WIN32
-	if (s->string[pathLen - 1] == OF_PATH_DELIM)
+	if (s->cString[pathCStringLength - 1] == OF_PATH_DELIM)
 #else
-	if (s->string[pathLen - 1] == '/' || s->string[pathLen - 1] == '\\')
+	if (s->cString[pathCStringLength - 1] == '/' ||
+	    s->cString[pathCStringLength - 1] == '\\')
 #endif
-		pathLen--;
+		pathCStringLength--;
 
-	for (i = 0; i < pathLen; i++) {
+	for (i = 0; i < pathCStringLength; i++) {
 #ifndef _WIN32
-		if (s->string[i] == OF_PATH_DELIM) {
+		if (s->cString[i] == OF_PATH_DELIM) {
 #else
-		if (s->string[i] == '/' || s->string[i] == '\\') {
+		if (s->cString[i] == '/' || s->cString[i] == '\\') {
 #endif
 			[ret addObject:
-			    [OFString stringWithCString: s->string + last
+			    [OFString stringWithCString: s->cString + last
 						 length: i - last]];
 			last = i + 1;
 		}
 	}
 
-	[ret addObject: [OFString stringWithCString: s->string + last
+	[ret addObject: [OFString stringWithCString: s->cString + last
 					     length: i - last]];
 
 	[pool release];
@@ -1637,24 +1639,25 @@ of_utf16_string_length(const uint16_t *string)
 
 - (OFString*)lastPathComponent
 {
-	size_t pathLen = s->length;
+	size_t pathCStringLength = s->cStringLength;
 	ssize_t i;
 
-	if (pathLen == 0)
+	if (pathCStringLength == 0)
 		return @"";
 
 #ifndef _WIN32
-	if (s->string[pathLen - 1] == OF_PATH_DELIM)
+	if (s->cString[pathCStringLength - 1] == OF_PATH_DELIM)
 #else
-	if (s->string[pathLen - 1] == '/' || s->string[pathLen - 1] == '\\')
+	if (s->cString[pathCStringLength - 1] == '/' ||
+	    s->cString[pathCStringLength - 1] == '\\')
 #endif
-		pathLen--;
+		pathCStringLength--;
 
-	for (i = pathLen - 1; i >= 0; i--) {
+	for (i = pathCStringLength - 1; i >= 0; i--) {
 #ifndef _WIN32
-		if (s->string[i] == OF_PATH_DELIM) {
+		if (s->cString[i] == OF_PATH_DELIM) {
 #else
-		if (s->string[i] == '/' || s->string[i] == '\\') {
+		if (s->cString[i] == '/' || s->string[i] == '\\') {
 #endif
 			i++;
 			break;
@@ -1668,43 +1671,44 @@ of_utf16_string_length(const uint16_t *string)
 	if (i < 0)
 		i = 0;
 
-	return [OFString stringWithCString: s->string + i
-				    length: pathLen - i];
+	return [OFString stringWithCString: s->cString + i
+				    length: pathCStringLength - i];
 }
 
 - (OFString*)stringByDeletingLastPathComponent
 {
-	size_t i, pathLen = s->length;
+	size_t i, pathCStringLength = s->cStringLength;
 
-	if (pathLen == 0)
+	if (pathCStringLength == 0)
 		return @"";
 
 #ifndef _WIN32
-	if (s->string[pathLen - 1] == OF_PATH_DELIM)
+	if (s->cString[pathCStringLength - 1] == OF_PATH_DELIM)
 #else
-	if (s->string[pathLen - 1] == '/' || s->string[pathLen - 1] == '\\')
+	if (s->cString[pathCStringLength - 1] == '/' ||
+	    s->cString[pathCStringLength - 1] == '\\')
 #endif
-		pathLen--;
+		pathCStringLength--;
 
-	if (pathLen == 0)
-		return [OFString stringWithCString: s->string
+	if (pathCStringLength == 0)
+		return [OFString stringWithCString: s->cString
 					    length: 1];
 
-	for (i = pathLen - 1; i >= 1; i--)
+	for (i = pathCStringLength - 1; i >= 1; i--)
 #ifndef _WIN32
-		if (s->string[i] == OF_PATH_DELIM)
+		if (s->cString[i] == OF_PATH_DELIM)
 #else
-		if (s->string[i] == '/' || s->string[i] == '\\')
+		if (s->cString[i] == '/' || s->cString[i] == '\\')
 #endif
-			return [OFString stringWithCString: s->string
+			return [OFString stringWithCString: s->cString
 						    length: i];
 
 #ifndef _WIN32
-	if (s->string[0] == OF_PATH_DELIM)
+	if (s->cString[0] == OF_PATH_DELIM)
 #else
-	if (s->string[i] == '/' || s->string[i] == '\\')
+	if (s->cString[0] == '/' || s->cString[0] == '\\')
 #endif
-		return [OFString stringWithCString: s->string
+		return [OFString stringWithCString: s->cString
 					    length: 1];
 
 	return @".";
@@ -1712,123 +1716,123 @@ of_utf16_string_length(const uint16_t *string)
 
 - (intmax_t)decimalValue
 {
-	const char *string = s->string;
-	size_t length = s->length;
+	const char *cString = s->cString;
+	size_t cStringLength = s->cStringLength;
 	int i = 0;
-	intmax_t num = 0;
+	intmax_t value = 0;
 	BOOL expectWhitespace = NO;
 
-	while (*string == ' ' || *string == '\t' || *string == '\n' ||
-	    *string == '\r') {
-		string++;
-		length--;
+	while (*cString == ' ' || *cString == '\t' || *cString == '\n' ||
+	    *cString == '\r') {
+		cString++;
+		cStringLength--;
 	}
 
-	if (string[0] == '-' || string[0] == '+')
+	if (cString[0] == '-' || cString[0] == '+')
 		i++;
 
-	for (; i < length; i++) {
+	for (; i < cStringLength; i++) {
 		if (expectWhitespace) {
-			if (string[i] != ' ' && string[i] != '\t' &&
-			    string[i] != '\n' && string[i] != '\r')
+			if (cString[i] != ' ' && cString[i] != '\t' &&
+			    cString[i] != '\n' && cString[i] != '\r')
 				@throw [OFInvalidFormatException
 				    newWithClass: isa];
 			continue;
 		}
 
-		if (string[i] >= '0' && string[i] <= '9') {
-			if (INTMAX_MAX / 10 < num ||
-			    INTMAX_MAX - num * 10 < string[i] - '0')
+		if (cString[i] >= '0' && cString[i] <= '9') {
+			if (INTMAX_MAX / 10 < value ||
+			    INTMAX_MAX - value * 10 < cString[i] - '0')
 				@throw [OFOutOfRangeException
 				    newWithClass: isa];
 
-			num = (num * 10) + (string[i] - '0');
-		} else if (string[i] == ' ' || string[i] == '\t' ||
-		    string[i] == '\n' || string[i] == '\r')
+			value = (value * 10) + (cString[i] - '0');
+		} else if (cString[i] == ' ' || cString[i] == '\t' ||
+		    cString[i] == '\n' || cString[i] == '\r')
 			expectWhitespace = YES;
 		else
 			@throw [OFInvalidFormatException newWithClass: isa];
 	}
 
-	if (string[0] == '-')
-		num *= -1;
+	if (cString[0] == '-')
+		value *= -1;
 
-	return num;
+	return value;
 }
 
 - (uintmax_t)hexadecimalValue
 {
-	const char *string = s->string;
-	size_t length = s->length;
+	const char *cString = s->cString;
+	size_t cStringLength = s->cStringLength;
 	int i = 0;
-	uintmax_t num = 0;
-	BOOL expectWhitespace = NO, gotNumber = NO;
+	uintmax_t value = 0;
+	BOOL expectWhitespace = NO, foundValue = NO;
 
-	while (*string == ' ' || *string == '\t' || *string == '\n' ||
-	    *string == '\r') {
-		string++;
-		length--;
+	while (*cString == ' ' || *cString == '\t' || *cString == '\n' ||
+	    *cString == '\r') {
+		cString++;
+		cStringLength--;
 	}
 
-	if (length == 0)
+	if (cStringLength == 0)
 		return 0;
 
-	if (length >= 2 && string[0] == '0' && string[1] == 'x')
+	if (cStringLength >= 2 && cString[0] == '0' && cString[1] == 'x')
 		i = 2;
-	else if (length >= 1 && (string[0] == 'x' || string[0] == '$'))
+	else if (cStringLength >= 1 && (cString[0] == 'x' || cString[0] == '$'))
 		i = 1;
 
-	for (; i < length; i++) {
-		uintmax_t newNum;
+	for (; i < cStringLength; i++) {
+		uintmax_t newValue;
 
 		if (expectWhitespace) {
-			if (string[i] != ' ' && string[i] != '\t' &&
-			    string[i] != '\n' && string[i] != '\r')
+			if (cString[i] != ' ' && cString[i] != '\t' &&
+			    cString[i] != '\n' && cString[i] != '\r')
 				@throw [OFInvalidFormatException
 				    newWithClass: isa];
 			continue;
 		}
 
-		if (string[i] >= '0' && string[i] <= '9') {
-			newNum = (num << 4) | (string[i] - '0');
-			gotNumber = YES;
-		} else if (string[i] >= 'A' && string[i] <= 'F') {
-			newNum = (num << 4) | (string[i] - 'A' + 10);
-			gotNumber = YES;
-		} else if (string[i] >= 'a' && string[i] <= 'f') {
-			newNum = (num << 4) | (string[i] - 'a' + 10);
-			gotNumber = YES;
-		} else if (string[i] == 'h' || string[i] == ' ' ||
-		    string[i] == '\t' || string[i] == '\n' ||
-		    string[i] == '\r') {
+		if (cString[i] >= '0' && cString[i] <= '9') {
+			newValue = (value << 4) | (cString[i] - '0');
+			foundValue = YES;
+		} else if (cString[i] >= 'A' && cString[i] <= 'F') {
+			newValue = (value << 4) | (cString[i] - 'A' + 10);
+			foundValue = YES;
+		} else if (cString[i] >= 'a' && cString[i] <= 'f') {
+			newValue = (value << 4) | (cString[i] - 'a' + 10);
+			foundValue = YES;
+		} else if (cString[i] == 'h' || cString[i] == ' ' ||
+		    cString[i] == '\t' || cString[i] == '\n' ||
+		    cString[i] == '\r') {
 			expectWhitespace = YES;
 			continue;
 		} else
 			@throw [OFInvalidFormatException newWithClass: isa];
 
-		if (newNum < num)
+		if (newValue < value)
 			@throw [OFOutOfRangeException newWithClass: isa];
 
-		num = newNum;
+		value = newValue;
 	}
 
-	if (!gotNumber)
+	if (!foundValue)
 		@throw [OFInvalidFormatException newWithClass: isa];
 
-	return num;
+	return value;
 }
 
 - (float)floatValue
 {
-	const char *string = s->string;
+	const char *cString = s->cString;
 	char *endPointer = NULL;
 	float value;
 
-	while (*string == ' ' || *string == '\t' || *string == '\n' ||
-	    *string == '\r')
-		string++;
+	while (*cString == ' ' || *cString == '\t' || *cString == '\n' ||
+	    *cString == '\r')
+		cString++;
 
-	value = strtof(string, &endPointer);
+	value = strtof(cString, &endPointer);
 
 	/* Check if there are any invalid chars left */
 	if (endPointer != NULL)
@@ -1843,15 +1847,15 @@ of_utf16_string_length(const uint16_t *string)
 
 - (double)doubleValue
 {
-	const char *string = s->string;
+	const char *cString = s->cString;
 	char *endPointer = NULL;
 	double value;
 
-	while (*string == ' ' || *string == '\t' || *string == '\n' ||
-	    *string == '\r')
-		string++;
+	while (*cString == ' ' || *cString == '\t' || *cString == '\n' ||
+	    *cString == '\r')
+		cString++;
 
-	value = strtod(string, &endPointer);
+	value = strtod(cString, &endPointer);
 
 	/* Check if there are any invalid chars left */
 	if (endPointer != NULL)
@@ -1878,12 +1882,12 @@ of_utf16_string_length(const uint16_t *string)
 
 	ret[j++] = 0xFEFF;
 
-	while (i < s->length) {
+	while (i < s->cStringLength) {
 		of_unichar_t c;
 		size_t cLen;
 
-		cLen = of_string_utf8_to_unicode(s->string + i, s->length - i,
-		    &c);
+		cLen = of_string_utf8_to_unicode(s->cString + i,
+		    s->cStringLength - i, &c);
 
 		if (cLen == 0 || c > 0x10FFFF)
 			@throw [OFInvalidEncodingException newWithClass: isa];

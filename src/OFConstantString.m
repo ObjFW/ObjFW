@@ -52,10 +52,10 @@ void *_OFConstantStringClassReference;
 					      requestedSize: sizeof(*ivars)];
 	memset(ivars, 0, sizeof(*ivars));
 
-	ivars->string = (char*)s;
-	ivars->length = initialized;
+	ivars->cString = (char*)s;
+	ivars->cStringLength = initialized;
 
-	switch (of_string_check_utf8(ivars->string, ivars->length)) {
+	switch (of_string_check_utf8(ivars->cString, ivars->cStringLength)) {
 	case 1:
 		ivars->isUTF8 = YES;
 		break;
@@ -376,15 +376,6 @@ void *_OFConstantStringClassReference;
 		[self completeInitialization];
 
 	return [super compare: object];
-}
-
-/* From protocol OFSerialization */
-- (OFXMLElement*)XMLElementBySerializing
-{
-	if (initialized != SIZE_MAX)
-		[self completeInitialization];
-
-	return [super XMLElementBySerializing];
 }
 
 /* From OFObject, but reimplemented in OFString */

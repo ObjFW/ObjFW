@@ -75,8 +75,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 	 * than those two ivars.
 	 */
 	struct of_string_ivars {
-		char   *string;
-		size_t length;
+		char   *cString;
+		size_t cStringLength;
 		BOOL   isUTF8;
 	} *restrict s;
 	/*
@@ -94,10 +94,10 @@ extern size_t of_utf16_string_length(const uint16_t*);
 /**
  * Creates a new OFString from a UTF-8 encoded C string.
  *
- * \param string A UTF-8 encoded C string to initialize the OFString with
+ * \param cString A UTF-8 encoded C string to initialize the OFString with
  * \return A new autoreleased OFString
  */
-+ stringWithCString: (const char*)string;
++ stringWithCString: (const char*)cString;
 
 /**
  * Creates a new OFString from a C string with the specified encoding.
@@ -106,32 +106,32 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param encoding The encoding of the C string
  * \return A new autoreleased OFString
  */
-+ stringWithCString: (const char*)string
++ stringWithCString: (const char*)cString
 	   encoding: (of_string_encoding_t)encoding;
 
 /**
  * Creates a new OFString from a C string with the specified encoding and
  * length.
  *
- * \param string A C string to initialize the OFString with
+ * \param cString A C string to initialize the OFString with
  * \param encoding The encoding of the C string
- * \param length The length of the C string
+ * \param cStringLength The length of the C string
  * \return A new autoreleased OFString
  */
-+ stringWithCString: (const char*)string
++ stringWithCString: (const char*)cString
 	   encoding: (of_string_encoding_t)encoding
-	     length: (size_t)length;
+	     length: (size_t)cStringLength;
 
 /**
  * Creates a new OFString from a UTF-8 encoded C string with the specified
  * length.
  *
- * \param string A UTF-8 encoded C string to initialize the OFString with
- * \param length The length of the UTF-8 encoded C string
+ * \param cString A UTF-8 encoded C string to initialize the OFString with
+ * \param cStringLength The length of the UTF-8 encoded C string
  * \return A new autoreleased OFString
  */
-+ stringWithCString: (const char*)string
-	     length: (size_t)length;
++ stringWithCString: (const char*)cString
+	     length: (size_t)cStringLength;
 
 /**
  * Creates a new OFString from another string.
@@ -292,45 +292,45 @@ extern size_t of_utf16_string_length(const uint16_t*);
 /**
  * Initializes an already allocated OFString from a UTF-8 encoded C string.
  *
- * \param string A UTF-8 encoded C string to initialize the OFString with
+ * \param cString A UTF-8 encoded C string to initialize the OFString with
  * \return An initialized OFString
  */
-- initWithCString: (const char*)string;
+- initWithCString: (const char*)cString;
 
 /**
  * Initializes an already allocated OFString from a C string with the specified
  * encoding.
  *
- * \param string A C string to initialize the OFString with
+ * \param cString A C string to initialize the OFString with
  * \param encoding The encoding of the C string
  * \return An initialized OFString
  */
-- initWithCString: (const char*)string
+- initWithCString: (const char*)cString
 	 encoding: (of_string_encoding_t)encoding;
 
 /**
  * Initializes an already allocated OFString from a C string with the specified
  * encoding and length.
  *
- * \param string A C string to initialize the OFString with
+ * \param cString A C string to initialize the OFString with
  * \param encoding The encoding of the C string
- * \param length The length of the C string
+ * \param cStringLength The length of the C string
  * \return An initialized OFString
  */
-- initWithCString: (const char*)string
+- initWithCString: (const char*)cString
 	 encoding: (of_string_encoding_t)encoding
-	   length: (size_t)length;
+	   length: (size_t)cStringLength;
 
 /**
  * Initializes an already allocated OFString from a UTF-8 encoded C string with
  * the specified length.
  *
- * \param string A UTF-8 encoded C string to initialize the OFString with
- * \param length The length of the UTF-8 encoded C string
+ * \param cString A UTF-8 encoded C string to initialize the OFString with
+ * \param cStringLength The length of the UTF-8 encoded C string
  * \return An initialized OFString
  */
-- initWithCString: (const char*)string
-	   length: (size_t)length;
+- initWithCString: (const char*)cString
+	   length: (size_t)cStringLength;
 
 /**
  * Initializes an already allocated OFString with another string.
