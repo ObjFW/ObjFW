@@ -1517,11 +1517,11 @@ of_utf16_string_length(const uint16_t *string)
 	return new;
 }
 
-- (OFString*)stringByDeletingLeadingAndTrailingWhitespaces
+- (OFString*)stringByDeletingEnclosingWhitespaces
 {
 	OFMutableString *new = [[self mutableCopy] autorelease];
 
-	[new deleteLeadingAndTrailingWhitespaces];
+	[new deleteEnclosingWhitespaces];
 
 	/*
 	 * Class swizzle the string to be immutable. We declared the return type

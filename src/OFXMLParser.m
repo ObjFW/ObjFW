@@ -392,7 +392,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	pi = [pi substringFromIndex: 3
 			    toIndex: [pi length]];
-	pi = [pi stringByDeletingLeadingAndTrailingWhitespaces];
+	pi = [pi stringByDeletingEnclosingWhitespaces];
 
 	cString = [pi cString];
 	length = [pi cStringLength];
@@ -770,7 +770,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	if ((length = *i - *last) > 0)
 		cache_append(cache, buffer + *last, encoding, length);
 
-	[cache deleteLeadingAndTrailingWhitespaces];
+	[cache deleteEnclosingWhitespaces];
 
 	cacheCString = [cache cString];
 	cacheLength = [cache cStringLength];

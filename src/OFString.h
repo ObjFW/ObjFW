@@ -626,7 +626,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \return A new autoreleased OFString with leading and trailing whitespaces
  *	   deleted
  */
-- (OFString*)stringByDeletingLeadingAndTrailingWhitespaces;
+- (OFString*)stringByDeletingEnclosingWhitespaces;
 
 /**
  * Checks whether the string has the specified prefix.

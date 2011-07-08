@@ -534,12 +534,12 @@ void *_OFConstantStringClassReference;
 	return [super stringByDeletingTrailingWhitespaces];
 }
 
-- (OFString*)stringByDeletingLeadingAndTrailingWhitespaces
+- (OFString*)stringByDeletingEnclosingWhitespaces
 {
 	if (initialized != SIZE_MAX)
 		[self completeInitialization];
 
-	return [super stringByDeletingLeadingAndTrailingWhitespaces];
+	return [super stringByDeletingEnclosingWhitespaces];
 }
 
 - (BOOL)hasPrefix: (OFString*)prefix

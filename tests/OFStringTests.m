@@ -478,13 +478,11 @@ static uint16_t sutf16str[] = {
 	    (s[0] = [OFMutableString stringWithString: whitespace[1]]) &&
 	    R([s[0] deleteTrailingWhitespaces]) && [s[0] isEqual: @""])
 
-	TEST(@"-[deleteLeadingAndTrailingWhitespaces]",
+	TEST(@"-[deleteEnclosingWhitespaces]",
 	    (s[0] = [OFMutableString stringWithString: whitespace[0]]) &&
-	    R([s[0] deleteLeadingAndTrailingWhitespaces]) &&
-	    [s[0] isEqual: @"asd"] &&
+	    R([s[0] deleteEnclosingWhitespaces]) && [s[0] isEqual: @"asd"] &&
 	    (s[0] = [OFMutableString stringWithString: whitespace[1]]) &&
-	    R([s[0] deleteLeadingAndTrailingWhitespaces]) &&
-	    [s[0] isEqual: @""])
+	    R([s[0] deleteEnclosingWhitespaces]) && [s[0] isEqual: @""])
 
 	TEST(@"-[stringByXMLEscaping]",
 	    (s[0] = (id)[@"<hello> &world'\"!&" stringByXMLEscaping]) &&

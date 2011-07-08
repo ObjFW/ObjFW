@@ -602,7 +602,7 @@
 	}
 }
 
-- (void)deleteLeadingAndTrailingWhitespaces
+- (void)deleteEnclosingWhitespaces
 {
 	size_t d, i;
 	char *p;
