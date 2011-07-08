@@ -31,6 +31,6 @@
 
 - (void)readUnicodeDataFileAtPath: (OFString*)path;
 - (void)readCaseFoldingFileAtPath: (OFString*)path;
-- (void)writeTablesToFileAtPath: (OFString*)file;
-- (void)writeHeaderToFileAtPath: (OFString*)file;
+- (void)writeTablesToFileAtPath: (OFString*)path;
+- (void)writeHeaderToFileAtPath: (OFString*)path;
 @end

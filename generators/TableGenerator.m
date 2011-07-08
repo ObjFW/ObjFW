@@ -43,11 +43,11 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 - (void)applicationDidFinishLaunching
 {
-	TableGenerator *tgen = [[[TableGenerator alloc] init] autorelease];
-	[tgen readUnicodeDataFileAtPath: @"UnicodeData.txt"];
-	[tgen readCaseFoldingFileAtPath: @"CaseFolding.txt"];
-	[tgen writeTablesToFileAtPath: @"../src/unicode.m"];
-	[tgen writeHeaderToFileAtPath: @"../src/unicode.h"];
+	TableGenerator *generator = [[[TableGenerator alloc] init] autorelease];
+	[generator readUnicodeDataFileAtPath: @"UnicodeData.txt"];
+	[generator readCaseFoldingFileAtPath: @"CaseFolding.txt"];
+	[generator writeTablesToFileAtPath: @"../src/unicode.m"];
+	[generator writeHeaderToFileAtPath: @"../src/unicode.h"];
 }
 
 - (void)readUnicodeDataFileAtPath: (OFString*)path
@@ -60,22 +60,21 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	pool2 = [[OFAutoreleasePool alloc] init];
 	while ((line = [file readLine])) {
 		OFArray *splitted;
-		OFString **splitted_carray;
+		OFString **splittedCArray;
 		of_unichar_t codep;
 
 		splitted = [line componentsSeparatedByString: @";"];
 		if ([splitted count] != 15) {
-			[of_stderr writeFormat: @"Invalid line: %s\n",
-						[line cString]];
+			of_log(@"Invalid line: %@\n", line);
 			[OFApplication terminateWithStatus: 1];
 		}
-		splitted_carray = [splitted cArray];
+		splittedCArray = [splitted cArray];
 
-		codep = (of_unichar_t)[splitted_carray[0] hexadecimalValue];
+		codep = (of_unichar_t)[splittedCArray[0] hexadecimalValue];
 		upperTable[codep] =
-		    (of_unichar_t)[splitted_carray[12] hexadecimalValue];
+		    (of_unichar_t)[splittedCArray[12] hexadecimalValue];
 		lowerTable[codep] =
-		    (of_unichar_t)[splitted_carray[13] hexadecimalValue];
+		    (of_unichar_t)[splittedCArray[13] hexadecimalValue];
 
 		[pool2 releaseObjects];
 	}
@@ -93,7 +92,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	pool2 = [[OFAutoreleasePool alloc] init];
 	while ((line = [file readLine])) {
 		OFArray *splitted;
-		OFString **splitted_carray;
+		OFString **splittedCArray;
 		of_unichar_t codep;
 
 		if ([line characterAtIndex: 0] == '#')
@@ -101,19 +100,18 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 		splitted = [line componentsSeparatedByString: @"; "];
 		if ([splitted count] != 4) {
-			[of_stderr writeFormat: @"Invalid line: %s\n",
-						[line cString]];
+			of_log(@"Invalid line: %s\n", line);
 			[OFApplication terminateWithStatus: 1];
 		}
-		splitted_carray = [splitted cArray];
+		splittedCArray = [splitted cArray];
 
-		if (![splitted_carray[1] isEqual: @"S"] &&
-		    ![splitted_carray[1] isEqual: @"C"])
+		if (![splittedCArray[1] isEqual: @"S"] &&
+		    ![splittedCArray[1] isEqual: @"C"])
 			continue;
 
-		codep = (of_unichar_t)[splitted_carray[0] hexadecimalValue];
+		codep = (of_unichar_t)[splittedCArray[0] hexadecimalValue];
 		casefoldingTable[codep] =
-		    (of_unichar_t)[splitted_carray[2] hexadecimalValue];
+		    (of_unichar_t)[splittedCArray[2] hexadecimalValue];
 
 		[pool2 releaseObjects];
 	}
@@ -121,15 +119,15 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	[pool release];
 }
 
-- (void)writeTablesToFileAtPath: (OFString*)file
+- (void)writeTablesToFileAtPath: (OFString*)path
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init], *pool2;
 
 	of_unichar_t i, j;
-	OFFile *f = [OFFile fileWithPath: file
-				    mode: @"wb"];
+	OFFile *file = [OFFile fileWithPath: path
+				       mode: @"wb"];
 
-	[f writeString: COPYRIGHT
+	[file writeString: COPYRIGHT
 	    @"#include \"config.h\"\n"
 	    @"\n"
 	    @"#import \"OFString.h\"\n\n"
@@ -139,33 +137,31 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	/* Write upper_page_%u */
 	for (i = 0; i < 0x110000; i += 0x100) {
-		BOOL empty;
-
-		empty = YES;
+		BOOL isEmpty = YES;
 
 		for (j = i; j < i + 0x100; j++) {
 			if (upperTable[j] != 0) {
-				empty = NO;
+				isEmpty = NO;
 				upperTableSize = i >> 8;
 				upperTableUsed[upperTableSize] = YES;
 				break;
 			}
 		}
 
-		if (!empty) {
-			[f writeString: [OFString stringWithFormat:
+		if (!isEmpty) {
+			[file writeString: [OFString stringWithFormat:
 			    @"static const of_unichar_t upper_page_%u[0x100] = "
 			    @"{\n", i >> 8]];
 
 			for (j = i; j < i + 0x100; j += 8)
-				[f writeString: [OFString stringWithFormat:
+				[file writeString: [OFString stringWithFormat:
 				    @"\t%u, %u, %u, %u, %u, %u, %u, %u,\n",
 				    upperTable[j], upperTable[j + 1],
 				    upperTable[j + 2], upperTable[j + 3],
 				    upperTable[j + 4], upperTable[j + 5],
 				    upperTable[j + 6], upperTable[j + 7]]];
 
-			[f writeString: @"};\n\n"];
+			[file writeString: @"};\n\n"];
 
 			[pool2 releaseObjects];
 		}
@@ -173,33 +169,31 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	/* Write lower_page_%u */
 	for (i = 0; i < 0x110000; i += 0x100) {
-		BOOL empty;
-
-		empty = YES;
+		BOOL isEmpty = YES;
 
 		for (j = i; j < i + 0x100; j++) {
 			if (lowerTable[j] != 0) {
-				empty = NO;
+				isEmpty = NO;
 				lowerTableSize = i >> 8;
 				lowerTableUsed[lowerTableSize] = YES;
 				break;
 			}
 		}
 
-		if (!empty) {
-			[f writeString: [OFString stringWithFormat:
+		if (!isEmpty) {
+			[file writeString: [OFString stringWithFormat:
 			    @"static const of_unichar_t lower_page_%u[0x100] = "
 			    @"{\n", i >> 8]];
 
 			for (j = i; j < i + 0x100; j += 8)
-				[f writeString: [OFString stringWithFormat:
+				[file writeString: [OFString stringWithFormat:
 				    @"\t%u, %u, %u, %u, %u, %u, %u, %u,\n",
 				    lowerTable[j], lowerTable[j + 1],
 				    lowerTable[j + 2], lowerTable[j + 3],
 				    lowerTable[j + 4], lowerTable[j + 5],
 				    lowerTable[j + 6], lowerTable[j + 7]]];
 
-			[f writeString: @"};\n\n"];
+			[file writeString: @"};\n\n"];
 
 			[pool2 releaseObjects];
 		}
@@ -207,29 +201,27 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	/* Write cf_page_%u if it does NOT match lower_page_%u */
 	for (i = 0; i < 0x110000; i += 0x100) {
-		BOOL empty;
-
-		empty = YES;
+		BOOL isEmpty = YES;
 
 		for (j = i; j < i + 0x100; j++) {
 			if (casefoldingTable[j] != 0) {
-				empty = (memcmp(lowerTable + i,
+				isEmpty = (memcmp(lowerTable + i,
 				    casefoldingTable + i,
 				    256 * sizeof(of_unichar_t)) ? NO : YES);
 				casefoldingTableSize = i >> 8;
 				casefoldingTableUsed[casefoldingTableSize] =
-				    (empty ? 2 : 1);
+				    (isEmpty ? 2 : 1);
 				break;
 			}
 		}
 
-		if (!empty) {
-			[f writeString: [OFString stringWithFormat:
+		if (!isEmpty) {
+			[file writeString: [OFString stringWithFormat:
 			    @"static const of_unichar_t cf_page_%u[0x100] = {"
 			    @"\n", i >> 8]];
 
 			for (j = i; j < i + 0x100; j += 8)
-				[f writeString: [OFString stringWithFormat:
+				[file writeString: [OFString stringWithFormat:
 				    @"\t%u, %u, %u, %u, %u, %u, %u, %u,\n",
 				    casefoldingTable[j],
 				    casefoldingTable[j + 1],
@@ -240,7 +232,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 				    casefoldingTable[j + 6],
 				    casefoldingTable[j + 7]]];
 
-			[f writeString: @"};\n\n"];
+			[file writeString: @"};\n\n"];
 
 			[pool2 releaseObjects];
 		}
@@ -255,96 +247,96 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	casefoldingTableSize++;
 
 	/* Write of_unicode_upper_table */
-	[f writeString: [OFString stringWithFormat:
+	[file writeString: [OFString stringWithFormat:
 	    @"const of_unichar_t* const of_unicode_upper_table[0x%X] = {\n\t",
 	    upperTableSize]];
 
 	for (i = 0; i < upperTableSize; i++) {
 		if (upperTableUsed[i]) {
-			[f writeString: [OFString stringWithFormat:
+			[file writeString: [OFString stringWithFormat:
 			    @"upper_page_%u", i]];
 			[pool2 releaseObjects];
 		} else
-			[f writeString: @"nop_page"];
+			[file writeString: @"nop_page"];
 
 		if (i + 1 < upperTableSize) {
 			if ((i + 1) % 4 == 0)
-				[f writeString: @",\n\t"];
+				[file writeString: @",\n\t"];
 			else
-				[f writeString: @", "];
+				[file writeString: @", "];
 		}
 	}
 
-	[f writeString: @"\n};\n\n"];
+	[file writeString: @"\n};\n\n"];
 
 	/* Write of_unicode_lower_table */
-	[f writeString: [OFString stringWithFormat:
+	[file writeString: [OFString stringWithFormat:
 	    @"const of_unichar_t* const of_unicode_lower_table[0x%X] = {\n\t",
 	    lowerTableSize]];
 
 	for (i = 0; i < lowerTableSize; i++) {
 		if (lowerTableUsed[i]) {
-			[f writeString: [OFString stringWithFormat:
+			[file writeString: [OFString stringWithFormat:
 			    @"lower_page_%u", i]];
 			[pool2 releaseObjects];
 		} else
-			[f writeString: @"nop_page"];
+			[file writeString: @"nop_page"];
 
 		if (i + 1 < lowerTableSize) {
 			if ((i + 1) % 4 == 0)
-				[f writeString: @",\n\t"];
+				[file writeString: @",\n\t"];
 			else
-				[f writeString: @", "];
+				[file writeString: @", "];
 		}
 	}
 
-	[f writeString: @"\n};\n\n"];
+	[file writeString: @"\n};\n\n"];
 
 	/* Write of_unicode_casefolding_table */
-	[f writeString: [OFString stringWithFormat:
+	[file writeString: [OFString stringWithFormat:
 	    @"const of_unichar_t* const of_unicode_casefolding_table[0x%X] = {"
 	    @"\n\t", casefoldingTableSize]];
 
 	for (i = 0; i < casefoldingTableSize; i++) {
 		if (casefoldingTableUsed[i] == 1) {
-			[f writeString: [OFString stringWithFormat:
+			[file writeString: [OFString stringWithFormat:
 			    @"cf_page_%u", i]];
 			[pool2 releaseObjects];
 		} else if (casefoldingTableUsed[i] == 2) {
-			[f writeString: [OFString stringWithFormat:
+			[file writeString: [OFString stringWithFormat:
 			    @"lower_page_%u", i]];
 		} else
-			[f writeString: @"nop_page"];
+			[file writeString: @"nop_page"];
 
 		if (i + 1 < casefoldingTableSize) {
 			if ((i + 1) % 4 == 0)
-				[f writeString: @",\n\t"];
+				[file writeString: @",\n\t"];
 			else
-				[f writeString: @", "];
+				[file writeString: @", "];
 		}
 	}
 
-	[f writeString: @"\n};\n"];
+	[file writeString: @"\n};\n"];
 
 	[pool release];
 }
 
-- (void)writeHeaderToFileAtPath: (OFString*)file
+- (void)writeHeaderToFileAtPath: (OFString*)path
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFFile *f = [OFFile fileWithPath: file
-				    mode: @"wb"];
+	OFFile *file = [OFFile fileWithPath: path
+				       mode: @"wb"];
 
-	[f writeString: COPYRIGHT
+	[file writeString: COPYRIGHT
 	    @"#import \"OFString.h\"\n\n"];
 
-	[f writeString: [OFString stringWithFormat:
+	[file writeString: [OFString stringWithFormat:
 	    @"#define OF_UNICODE_UPPER_TABLE_SIZE 0x%X\n"
 	    @"#define OF_UNICODE_LOWER_TABLE_SIZE 0x%X\n"
 	    @"#define OF_UNICODE_CASEFOLDING_TABLE_SIZE 0x%X\n\n",
 	    upperTableSize, lowerTableSize, casefoldingTableSize]];
 
-	[f writeString:
+	[file writeString:
 	    @"#ifdef __cplusplus\n"
 	    @"extern \"C\" {\n"
 	    @"#endif\n"
