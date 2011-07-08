@@ -582,33 +582,14 @@ of_utf16_string_length(const uint16_t *string)
 	self = [super init];
 
 	@try {
-		const char *cString;
-
 		s = [self allocMemoryWithSize: sizeof(*s)];
 		memset(s, 0, sizeof(*s));
 
-		cString = [string cString];
 		s->cStringLength = [string cStringLength];
+		s->isUTF8 = string->s->isUTF8;
 
-		switch (of_string_check_utf8(cString, s->cStringLength)) {
-		case 1:
-			s->isUTF8 = YES;
-			break;
-		case -1:;
-			@throw [OFInvalidEncodingException newWithClass: isa];
-		}
-
-		if ((s->cString = strdup(cString)) == NULL)
-			@throw [OFOutOfMemoryException
-			     newWithClass: isa
-			    requestedSize: s->cStringLength + 1];
-
-		@try {
-			[self addMemoryToPool: s->cString];
-		} @catch (id e) {
-			free(s->cString);
-			@throw e;
-		}
+		s->cString = [self allocMemoryWithSize: s->cStringLength + 1];
+		memcpy(s->cString, [string cString], s->cStringLength + 1);
 	} @catch (id e) {
 		[self release];
 		@throw e;

@@ -250,7 +250,11 @@
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	[self appendCString: [string cString]];
+	[self appendCStringWithoutUTF8Checking: [string cString]
+					length: [string cStringLength]];
+
+	if (string->s->isUTF8)
+		s->isUTF8 = YES;
 }
 
 - (void)appendFormat: (OFConstantString*)format, ...
