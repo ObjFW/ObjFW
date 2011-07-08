@@ -135,11 +135,7 @@
 
 - (void)setToCString: (const char*)string
 {
-	size_t length;
-
-	[self freeMemory: s->string];
-
-	length = strlen(string);
+	size_t length = strlen(string);
 
 	if (length >= 3 && !memcmp(string, "\xEF\xBB\xBF", 3)) {
 		string += 3;
@@ -154,12 +150,10 @@
 		s->isUTF8 = YES;
 		break;
 	case -1:
-		s->string = NULL;
-		s->length = 0;
-		s->isUTF8 = NO;
-
 		@throw [OFInvalidEncodingException newWithClass: isa];
 	}
+
+	[self freeMemory: s->string];
 
 	s->length = length;
 	s->string = [self allocMemoryWithSize: length + 1];
