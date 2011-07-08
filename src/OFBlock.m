@@ -394,14 +394,14 @@ _Block_object_dispose(const void *obj_, const int flags_)
 }
 
 - (void*)allocMemoryForNItems: (size_t)nitems
-                     withSize: (size_t)size
+		     withSize: (size_t)size
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
 - (void*)resizeMemory: (void*)ptr
-               toSize: (size_t)size
+	       toSize: (size_t)size
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];

@@ -55,13 +55,35 @@ extern size_t of_utf16_string_length(const uint16_t*);
 
 /**
  * \brief A class for handling strings.
+ *
+ * <b>Warning:</b> If you add methods to OFString using a category, you are not
+ * allowed to access the ivars directly, as these might be still uninitialized
+ * for a constant string and get initialized on the first message! Therefore,
+ * you should use the corresponding methods to get the ivars, which ensures the
+ * constant string is initialized.
  */
 @interface OFString: OFObject <OFCopying, OFMutableCopying, OFComparing,
     OFSerialization>
 {
-	char   *string;
-	size_t length;
-	BOOL   isUTF8;
+	/*
+	 * The ivars have to be like this because OFConstantString bases on
+	 * OFString.
+	 *
+	 * The compiler generates an instance with a const char* and a size_t
+	 * for each constant string. We change the const char* to point to our
+	 * struct on the first call to a constant string so we can have more
+	 * than those two ivars.
+	 */
+	struct of_string_ivars {
+		char   *string;
+		size_t length;
+		BOOL   isUTF8;
+	} *restrict s;
+	/*
+	 * Unused in OFString, however, OFConstantString sets this to SIZE_MAX
+	 * once it allocated and initialized the struct.
+	 */
+	size_t initialized;
 }
 
 /**
@@ -508,10 +530,6 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \return The length of the string which cString would return
  */
 - (size_t)cStringLength;
-
-/// \cond internal
-- (BOOL)isUTF8;
-/// \endcond
 
 /**
  * Compares the OFString to another OFString without caring about the case.

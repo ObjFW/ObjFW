@@ -892,7 +892,7 @@ void _references_to_categories_of_OFObject(void)
 }
 
 + (void*)allocMemoryForNItems: (size_t)nItems
-                     withSize: (size_t)size
+		     withSize: (size_t)size
 {
 	@throw [OFNotImplementedException newWithClass: self
 					      selector: _cmd];

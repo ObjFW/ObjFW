@@ -30,10 +30,13 @@ int _OFString_XMLEscaping_reference;
 - (OFString*)stringByXMLEscaping
 {
 	char *retCString;
-	const char *append;
-	size_t retLength, appendLen;
+	const char *string, *append;
+	size_t length, retLength, appendLen;
 	size_t i, j;
 	OFString *ret;
+
+	string = [self cString];
+	length = [self cStringLength];
 
 	j = 0;
 	retLength = length;

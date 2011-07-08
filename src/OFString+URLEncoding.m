@@ -31,7 +31,7 @@ int _OFString_URLEncoding_reference;
 @implementation OFString (URLEncoding)
 - (OFString*)stringByURLEncoding
 {
-	const char *string_ = string;
+	const char *string = [self cString];
 	char *retCString;
 	size_t i;
 	OFString *ret;
@@ -41,19 +41,20 @@ int _OFString_URLEncoding_reference;
 	 * Oh, and we can't use [self allocWithSize:] here as self might be a
 	 * @"" literal.
 	 */
-	if ((retCString = malloc((length * 3) + 1)) == NULL)
-		@throw [OFOutOfMemoryException newWithClass: isa
-					      requestedSize: (length * 3) + 1];
+	if ((retCString = malloc(([self cStringLength] * 3) + 1)) == NULL)
+		@throw [OFOutOfMemoryException
+		    newWithClass: isa
+		   requestedSize: ([self cStringLength] * 3) + 1];
 
-	for (i = 0; *string_ != '\0'; string_++) {
-		if (isalnum((int)*string_) || *string_ == '-' ||
-		    *string_ == '_' || *string_ == '.' || *string_ == '~')
-			retCString[i++] = *string_;
+	for (i = 0; *string != '\0'; string++) {
+		if (isalnum((int)*string) || *string == '-' || *string == '_' ||
+		    *string == '.' || *string == '~')
+			retCString[i++] = *string;
 		else {
 			uint8_t high, low;
 
-			high = *string_ >> 4;
-			low = *string_ & 0x0F;
+			high = *string >> 4;
+			low = *string & 0x0F;
 
 			retCString[i++] = '%';
 			retCString[i++] =
@@ -76,36 +77,37 @@ int _OFString_URLEncoding_reference;
 - (OFString*)stringByURLDecoding
 {
 	OFString *ret;
-	const char *string_ = string;
+	const char *string = [self cString];
 	char *retCString;
 	char byte = 0;
 	int state = 0;
 	size_t i;
 
-	if ((retCString = malloc(length + 1)) == NULL)
-		@throw [OFOutOfMemoryException newWithClass: isa
-					      requestedSize: length + 1];
+	if ((retCString = malloc([self cStringLength] + 1)) == NULL)
+		@throw [OFOutOfMemoryException
+		    newWithClass: isa
+		   requestedSize: [self cStringLength] + 1];
 
-	for (i = 0; *string_; string_++) {
+	for (i = 0; *string; string++) {
 		switch (state) {
 		case 0:
-			if (*string_ == '%')
+			if (*string == '%')
 				state = 1;
-			else if (*string_ == '+')
+			else if (*string == '+')
 				retCString[i++] = ' ';
 			else
-				retCString[i++] = *string_;
+				retCString[i++] = *string;
 			break;
 		case 1:
 		case 2:;
 			uint8_t shift = (state == 1 ? 4  : 0);
 
-			if (*string_ >= '0' && *string_ <= '9')
-				byte += (*string_ - '0') << shift;
-			else if (*string_ >= 'A' && *string_ <= 'F')
-				byte += (*string_ - 'A' + 10) << shift;
-			else if (*string_ >= 'a' && *string_ <= 'f')
-				byte += (*string_ - 'a' + 10) << shift;
+			if (*string >= '0' && *string <= '9')
+				byte += (*string - '0') << shift;
+			else if (*string >= 'A' && *string <= 'F')
+				byte += (*string - 'A' + 10) << shift;
+			else if (*string >= 'a' && *string <= 'f')
+				byte += (*string - 'a' + 10) << shift;
 			else {
 				free(retCString);
 				@throw [OFInvalidEncodingException

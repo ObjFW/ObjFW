@@ -415,7 +415,7 @@
 - (OFEnumerator*)objectEnumerator
 {
 	return [[[OFListEnumerator alloc]
-	        initWithList: self
+		initWithList: self
 	    mutationsPointer: &mutations] autorelease];
 }
 @end

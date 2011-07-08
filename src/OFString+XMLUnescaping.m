@@ -84,14 +84,25 @@ parse_numeric_entity(const char *entity, size_t length)
 - (OFString*)stringByXMLUnescapingWithDelegate:
     (id <OFStringXMLUnescapingDelegate>)delegate
 {
-	size_t i, last;
+	const char *string;
+	size_t i, last, length;
 	BOOL inEntity;
 	OFMutableString *ret;
 
+	string = [self cString];
+	length = [self cStringLength];
+
+	ret = [OFMutableString string];
+
+	/*
+	 * This is safe as we already called -[cString] on self and thus can be
+	 * sure the string is correctly initialized, even if it is a constant
+	 * string.
+	 */
+	((OFString*)ret)->s->isUTF8 = s->isUTF8;
+
 	last = 0;
 	inEntity = NO;
-	ret = [OFMutableString string];
-	((OFString*)ret)->isUTF8 = [self isUTF8];
 
 	for (i = 0; i < length; i++) {
 		if (!inEntity && string[i] == '&') {
@@ -101,7 +112,7 @@ parse_numeric_entity(const char *entity, size_t length)
 			last = i + 1;
 			inEntity = YES;
 		} else if (inEntity && string[i] == ';') {
-			char *entity = string + last;
+			const char *entity = string + last;
 			size_t entityLength = i - last;
 
 			if (entityLength == 2 && !memcmp(entity, "lt", 2))
@@ -180,14 +191,25 @@ parse_numeric_entity(const char *entity, size_t length)
 - (OFString*)stringByXMLUnescapingWithBlock:
     (of_string_xml_unescaping_block_t)block
 {
-	size_t i, last;
+	const char *string;
+	size_t i, last, length;
 	BOOL inEntity;
 	OFMutableString *ret;
 
+	string = [self cString];
+	length = [self cStringLength];
+
+	ret = [OFMutableString string];
+
+	/*
+	 * This is safe as we already called -[cString] on self and thus can be
+	 * sure the string is correctly initialized, even if it is a constant
+	 * string.
+	 */
+	((OFString*)ret)->s->isUTF8 = s->isUTF8;
+
 	last = 0;
 	inEntity = NO;
-	ret = [OFMutableString string];
-	((OFString*)ret)->isUTF8 = [self isUTF8];
 
 	for (i = 0; i < length; i++) {
 		if (!inEntity && string[i] == '&') {
@@ -197,7 +219,7 @@ parse_numeric_entity(const char *entity, size_t length)
 			last = i + 1;
 			inEntity = YES;
 		} else if (inEntity && string[i] == ';') {
-			char *entity = string + last;
+			const char *entity = string + last;
 			size_t entityLength = i - last;
 
 			if (entityLength == 2 && !memcmp(entity, "lt", 2))

@@ -30,4 +30,11 @@ extern void *_OFConstantStringClassReference;
  * \brief A class for storing constant strings using the \@"" literal.
  */
 @interface OFConstantString: OFString
+/**
+ * \brief Completes initialization of the OFConstantString
+ *
+ * This method completes the initialization, as the constant strings created by
+ * the compiler are not fully initialized.
+ */
+- (void)completeInitialization;
 @end

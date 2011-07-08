@@ -52,13 +52,13 @@
 	size_t i, j, d;
 	char *newString;
 
-	if (!isUTF8) {
+	if (!s->isUTF8) {
 		assert(tableSize >= 1);
 
-		uint8_t *p = (uint8_t*)string + length;
+		uint8_t *p = (uint8_t*)s->string + s->length;
 		uint8_t t;
 
-		while (--p >= (uint8_t*)string)
+		while (--p >= (uint8_t*)s->string)
 			if ((t = table[0][*p]) != 0)
 				*p = t;
 
@@ -72,8 +72,9 @@
 	i = j = 0;
 	newLength = 0;
 
-	while (i < length) {
-		cLen = of_string_utf8_to_unicode(string + i, length - i, &c);
+	while (i < s->length) {
+		cLen = of_string_utf8_to_unicode(s->string + i, s->length - i,
+		    &c);
 
 		if (cLen == 0 || c > 0x10FFFF) {
 			[self freeMemory: unicodeString];
@@ -127,134 +128,134 @@
 	newString[j] = 0;
 	[self freeMemory: unicodeString];
 
-	[self freeMemory: string];
-	string = newString;
-	length = newLength;
+	[self freeMemory: s->string];
+	s->string = newString;
+	s->length = newLength;
 }
 
-- (void)setToCString: (const char*)string_
+- (void)setToCString: (const char*)string
 {
-	size_t length_;
+	size_t length;
 
-	[self freeMemory: string];
+	[self freeMemory: s->string];
 
-	length_ = strlen(string_);
+	length = strlen(string);
 
-	if (length_ >= 3 && !memcmp(string_, "\xEF\xBB\xBF", 3)) {
-		string_ += 3;
-		length_ -= 3;
+	if (length >= 3 && !memcmp(string, "\xEF\xBB\xBF", 3)) {
+		string += 3;
+		length -= 3;
 	}
 
-	switch (of_string_check_utf8(string_, length_)) {
+	switch (of_string_check_utf8(string, length)) {
 	case 0:
-		isUTF8 = NO;
+		s->isUTF8 = NO;
 		break;
 	case 1:
-		isUTF8 = YES;
+		s->isUTF8 = YES;
 		break;
 	case -1:
-		string = NULL;
-		length = 0;
-		isUTF8 = NO;
+		s->string = NULL;
+		s->length = 0;
+		s->isUTF8 = NO;
 
 		@throw [OFInvalidEncodingException newWithClass: isa];
 	}
 
-	length = length_;
-	string = [self allocMemoryWithSize: length + 1];
-	memcpy(string, string_, length + 1);
+	s->length = length;
+	s->string = [self allocMemoryWithSize: length + 1];
+	memcpy(s->string, string, length + 1);
 }
 
-- (void)appendCString: (const char*)string_
+- (void)appendCString: (const char*)string
 {
-	size_t length_ = strlen(string_);
+	size_t length = strlen(string);
 
-	if (length_ >= 3 && !memcmp(string_, "\xEF\xBB\xBF", 3)) {
-		string_ += 3;
-		length_ -= 3;
+	if (length >= 3 && !memcmp(string, "\xEF\xBB\xBF", 3)) {
+		string += 3;
+		length -= 3;
 	}
 
-	switch (of_string_check_utf8(string_, length_)) {
+	switch (of_string_check_utf8(string, length)) {
 	case 1:
-		isUTF8 = YES;
+		s->isUTF8 = YES;
 		break;
 	case -1:
 		@throw [OFInvalidEncodingException newWithClass: isa];
 	}
 
-	string = [self resizeMemory: string
-			     toSize: length + length_ + 1];
-	memcpy(string + length, string_, length_ + 1);
-	length += length_;
+	s->string = [self resizeMemory: s->string
+				toSize: s->length + length + 1];
+	memcpy(s->string + s->length, string, length + 1);
+	s->length += length;
 }
 
-- (void)appendCString: (const char*)string_
-	   withLength: (size_t)length_
+- (void)appendCString: (const char*)string
+	   withLength: (size_t)length
 {
-	if (length_ >= 3 && !memcmp(string_, "\xEF\xBB\xBF", 3)) {
-		string_ += 3;
-		length_ -= 3;
+	if (length >= 3 && !memcmp(string, "\xEF\xBB\xBF", 3)) {
+		string += 3;
+		length -= 3;
 	}
 
-	switch (of_string_check_utf8(string_, length_)) {
+	switch (of_string_check_utf8(string, length)) {
 	case 1:
-		isUTF8 = YES;
+		s->isUTF8 = YES;
 		break;
 	case -1:
 		@throw [OFInvalidEncodingException newWithClass: isa];
 	}
 
-	string = [self resizeMemory: string
-			     toSize: length + length_ + 1];
-	memcpy(string + length, string_, length_);
-	length += length_;
-	string[length] = 0;
+	s->string = [self resizeMemory: s->string
+				toSize: s->length + length + 1];
+	memcpy(s->string + s->length, string, length);
+	s->length += length;
+	s->string[s->length] = 0;
 }
 
-- (void)appendCString: (const char*)string_
+- (void)appendCString: (const char*)string
 	 withEncoding: (of_string_encoding_t)encoding
-	       length: (size_t)length_
+	       length: (size_t)length
 {
 	if (encoding == OF_STRING_ENCODING_UTF_8)
-		[self appendCString: string_
-			 withLength: length_];
+		[self appendCString: string
+			 withLength: length];
 	else {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-		[self appendString: [OFString stringWithCString: string_
+		[self appendString: [OFString stringWithCString: string
 						       encoding: encoding
-							 length: length_]];
+							 length: length]];
 		[pool release];
 	}
 }
 
-- (void)appendCStringWithoutUTF8Checking: (const char*)string_
+- (void)appendCStringWithoutUTF8Checking: (const char*)string
 {
-	size_t len;
+	size_t length;
 
-	len = strlen(string_);
-	string = [self resizeMemory: string
-			     toSize: length + len + 1];
-	memcpy(string + length, string_, len + 1);
-	length += len;
+	length = strlen(string);
+	s->string = [self resizeMemory: s->string
+				toSize: s->length + length + 1];
+	memcpy(s->string + s->length, string, length + 1);
+	s->length += length;
 }
 
-- (void)appendCStringWithoutUTF8Checking: (const char*)string_
-				  length: (size_t)length_
+- (void)appendCStringWithoutUTF8Checking: (const char*)string
+				  length: (size_t)length
 {
-	string = [self resizeMemory: string
-			     toSize: length + length_ + 1];
-	memcpy(string + length, string_, length_);
-	length += length_;
-	string[length] = 0;
+	s->string = [self resizeMemory: s->string
+				toSize: s->length + length + 1];
+	memcpy(s->string + s->length, string, length);
+	s->length += length;
+	s->string[s->length] = 0;
 }
 
-- (void)appendString: (OFString*)string_
+- (void)appendString: (OFString*)string
 {
-	if (string_ == nil)
+	if (string == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	[self appendCString: [string_ cString]];
+	[self appendCString: [string cString]];
 }
 
 - (void)appendFormat: (OFConstantString*)format, ...
@@ -271,116 +272,119 @@
        withArguments: (va_list)arguments
 {
 	char *t;
-	int len;
+	int length;
 
 	if (format == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	if ((len = of_vasprintf(&t, [format cString], arguments)) == -1)
+	if ((length = of_vasprintf(&t, [format cString], arguments)) == -1)
 		@throw [OFInvalidFormatException newWithClass: isa];
 
 	@try {
 		[self appendCString: t
-			 withLength: len];
+			 withLength: length];
 	} @finally {
 		free(t);
 	}
 }
 
-- (void)prependString: (OFString*)string_
+- (void)prependString: (OFString*)string
 {
-	return [self insertString: string_
+	return [self insertString: string
 			  atIndex: 0];
 }
 
 - (void)reverse
 {
-	size_t i, j, len = length / 2;
+	size_t i, j, length = s->length / 2;
 
-	madvise(string, length, MADV_SEQUENTIAL);
+	madvise(s->string, s->length, MADV_SEQUENTIAL);
 
 	/* We reverse all bytes and restore UTF-8 later, if necessary */
-	for (i = 0, j = length - 1; i < len; i++, j--) {
-		string[i] ^= string[j];
-		string[j] ^= string[i];
-		string[i] ^= string[j];
+	for (i = 0, j = s->length - 1; i < length; i++, j--) {
+		s->string[i] ^= s->string[j];
+		s->string[j] ^= s->string[i];
+		s->string[i] ^= s->string[j];
 	}
 
-	if (!isUTF8) {
-		madvise(string, length, MADV_NORMAL);
+	if (!s->isUTF8) {
+		madvise(s->string, s->length, MADV_NORMAL);
 		return;
 	}
 
-	for (i = 0; i < length; i++) {
+	for (i = 0; i < s->length; i++) {
 		/* ASCII */
-		if (OF_LIKELY(!(string[i] & 0x80)))
+		if (OF_LIKELY(!(s->string[i] & 0x80)))
 			continue;
 
 		/* A start byte can't happen first as we reversed everything */
-		if (OF_UNLIKELY(string[i] & 0x40)) {
-			madvise(string, length, MADV_NORMAL);
+		if (OF_UNLIKELY(s->string[i] & 0x40)) {
+			madvise(s->string, s->length, MADV_NORMAL);
 			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
 
 		/* Next byte must not be ASCII */
-		if (OF_UNLIKELY(length < i + 1 || !(string[i + 1] & 0x80))) {
-			madvise(string, length, MADV_NORMAL);
+		if (OF_UNLIKELY(s->length < i + 1 ||
+		    !(s->string[i + 1] & 0x80))) {
+			madvise(s->string, s->length, MADV_NORMAL);
 			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
 
 		/* Next byte is the start byte */
-		if (OF_LIKELY(string[i + 1] & 0x40)) {
-			string[i] ^= string[i + 1];
-			string[i + 1] ^= string[i];
-			string[i] ^= string[i + 1];
+		if (OF_LIKELY(s->string[i + 1] & 0x40)) {
+			s->string[i] ^= s->string[i + 1];
+			s->string[i + 1] ^= s->string[i];
+			s->string[i] ^= s->string[i + 1];
 
 			i++;
 			continue;
 		}
 
 		/* Second next byte must not be ASCII */
-		if (OF_UNLIKELY(length < i + 2 || !(string[i + 2] & 0x80))) {
-			madvise(string, length, MADV_NORMAL);
+		if (OF_UNLIKELY(s->length < i + 2 ||
+		    !(s->string[i + 2] & 0x80))) {
+			madvise(s->string, s->length, MADV_NORMAL);
 			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
 
 		/* Second next byte is the start byte */
-		if (OF_LIKELY(string[i + 2] & 0x40)) {
-			string[i] ^= string[i + 2];
-			string[i + 2] ^= string[i];
-			string[i] ^= string[i + 2];
+		if (OF_LIKELY(s->string[i + 2] & 0x40)) {
+			s->string[i] ^= s->string[i + 2];
+			s->string[i + 2] ^= s->string[i];
+			s->string[i] ^= s->string[i + 2];
 
 			i += 2;
 			continue;
 		}
 
 		/* Third next byte must not be ASCII */
-		if (OF_UNLIKELY(length < i + 3 || !(string[i + 3] & 0x80))) {
-			madvise(string, length, MADV_NORMAL);
+		if (OF_UNLIKELY(s->length < i + 3 ||
+		    !(s->string[i + 3] & 0x80))) {
+			madvise(s->string, s->length, MADV_NORMAL);
 			@throw [OFInvalidEncodingException newWithClass: isa];
 		}
 
 		/* Third next byte is the start byte */
-		if (OF_LIKELY(string[i + 3] & 0x40)) {
-			string[i] ^= string[i + 3];
-			string[i + 3] ^= string[i];
-			string[i] ^= string[i + 3];
+		if (OF_LIKELY(s->string[i + 3] & 0x40)) {
+			s->string[i] ^= s->string[i + 3];
+			s->string[i + 3] ^= s->string[i];
+			s->string[i] ^= s->string[i + 3];
 
-			string[i + 1] ^= string[i + 2];
-			string[i + 2] ^= string[i + 1];
-			string[i + 1] ^= string[i + 2];
+			s->string[i + 1] ^= s->string[i + 2];
+			s->string[i + 2] ^= s->string[i + 1];
+			s->string[i + 1] ^= s->string[i + 2];
 
 			i += 3;
 			continue;
 		}
 
 		/* UTF-8 does not allow more than 4 bytes per character */
-		madvise(string, length, MADV_NORMAL);
+		madvise(s->string, s->length, MADV_NORMAL);
 		@throw [OFInvalidEncodingException newWithClass: isa];
 	}
 
-	madvise(string, length, MADV_NORMAL);
+	madvise(s->string, s->length, MADV_NORMAL);
 }
 
 - (void)upper
@@ -395,51 +399,53 @@
 		 withSize: OF_UNICODE_LOWER_TABLE_SIZE];
 }
 
-- (void)insertString: (OFString*)string_
+- (void)insertString: (OFString*)string
 	     atIndex: (size_t)index
 {
 	size_t newLength;
 
-	if (isUTF8)
-		index = of_string_index_to_position(string, index, length);
+	if (s->isUTF8)
+		index = of_string_index_to_position(s->string, index,
+		    s->length);
 
-	if (index > length)
+	if (index > s->length)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	newLength = length + [string_ cStringLength];
-	string = [self resizeMemory: string
-			     toSize: newLength + 1];
+	newLength = s->length + [string cStringLength];
+	s->string = [self resizeMemory: s->string
+				toSize: newLength + 1];
 
-	memmove(string + index + [string_ cStringLength], string + index,
-	    length - index);
-	memcpy(string + index, [string_ cString], [string_ cStringLength]);
-	string[newLength] = '\0';
+	memmove(s->string + index + [string cStringLength], s->string + index,
+	    s->length - index);
+	memcpy(s->string + index, [string cString], [string cStringLength]);
+	s->string[newLength] = '\0';
 
-	length = newLength;
+	s->length = newLength;
 }
 
 - (void)deleteCharactersFromIndex: (size_t)start
 			  toIndex: (size_t)end
 {
-	if (isUTF8) {
-		start = of_string_index_to_position(string, start, length);
-		end = of_string_index_to_position(string, end, length);
+	if (s->isUTF8) {
+		start = of_string_index_to_position(s->string, start,
+		    s->length);
+		end = of_string_index_to_position(s->string, end, s->length);
 	}
 
 	if (start > end)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	if (end > length)
+	if (end > s->length)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	memmove(string + start, string + end, length - end);
-	length -= end - start;
-	string[length] = 0;
+	memmove(s->string + start, s->string + end, s->length - end);
+	s->length -= end - start;
+	s->string[s->length] = 0;
 
 	@try {
-		string = [self resizeMemory: string
-				     toSize: length + 1];
+		s->string = [self resizeMemory: s->string
+					toSize: s->length + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 		[e release];
@@ -458,29 +464,30 @@
 {
 	size_t newLength;
 
-	if (isUTF8) {
-		start = of_string_index_to_position(string, start, length);
-		end = of_string_index_to_position(string, end, length);
+	if (s->isUTF8) {
+		start = of_string_index_to_position(s->string, start,
+		    s->length);
+		end = of_string_index_to_position(s->string, end, s->length);
 	}
 
 	if (start > end)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	if (end > length)
+	if (end > s->length)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	newLength = length - (end - start) + [replacement cStringLength];
-	string = [self resizeMemory: string
-			     toSize: newLength + 1];
+	newLength = s->length - (end - start) + [replacement cStringLength];
+	s->string = [self resizeMemory: s->string
+				toSize: newLength + 1];
 
-	memmove(string + end, string + start + [replacement cStringLength],
-	    length - end);
-	memcpy(string + start, [replacement cString],
+	memmove(s->string + end, s->string + start +
+	    [replacement cStringLength], s->length - end);
+	memcpy(s->string + start, [replacement cString],
 	    [replacement cStringLength]);
-	string[newLength] = '\0';
+	s->string[newLength] = '\0';
 
-	length = newLength;
+	s->length = newLength;
 }
 
 - (void)replaceCharactersInRange: (of_range_t)range
@@ -491,24 +498,24 @@
 			      withString: replacement];
 }
 
-- (void)replaceOccurrencesOfString: (OFString*)string_
+- (void)replaceOccurrencesOfString: (OFString*)string
 			withString: (OFString*)replacement
 {
-	const char *cString = [string_ cString];
+	const char *cString = [string cString];
 	const char *replacementCString = [replacement cString];
-	size_t stringLen = [string_ cStringLength];
+	size_t stringLen = [string cStringLength];
 	size_t replacementLen = [replacement cStringLength];
 	size_t i, last, newLength;
 	char *newString;
 
-	if (stringLen > length)
+	if (stringLen > s->length)
 		return;
 
 	newString = NULL;
 	newLength = 0;
 
-	for (i = 0, last = 0; i <= length - stringLen; i++) {
-		if (memcmp(string + i, cString, stringLen))
+	for (i = 0, last = 0; i <= s->length - stringLen; i++) {
+		if (memcmp(s->string + i, cString, stringLen))
 			continue;
 
 		@try {
@@ -519,7 +526,7 @@
 			[self freeMemory: newString];
 			@throw e;
 		}
-		memcpy(newString + newLength, string + last, i - last);
+		memcpy(newString + newLength, s->string + last, i - last);
 		memcpy(newString + newLength + i - last, replacementCString,
 		    replacementLen);
 		newLength += i - last + replacementLen;
@@ -529,36 +536,37 @@
 
 	@try {
 		newString = [self resizeMemory: newString
-					toSize: newLength + length - last + 1];
+					toSize: newLength + s->length - last +
+						1];
 	} @catch (id e) {
 		[self freeMemory: newString];
 		@throw e;
 	}
-	memcpy(newString + newLength, string + last, length - last);
-	newLength += length - last;
+	memcpy(newString + newLength, s->string + last, s->length - last);
+	newLength += s->length - last;
 	newString[newLength] = 0;
 
-	[self freeMemory: string];
-	string = newString;
-	length = newLength;
+	[self freeMemory: s->string];
+	s->string = newString;
+	s->length = newLength;
 }
 
 - (void)deleteLeadingWhitespaces
 {
 	size_t i;
 
-	for (i = 0; i < length; i++)
-		if (string[i] != ' '  && string[i] != '\t' &&
-		    string[i] != '\n' && string[i] != '\r')
+	for (i = 0; i < s->length; i++)
+		if (s->string[i] != ' '  && s->string[i] != '\t' &&
+		    s->string[i] != '\n' && s->string[i] != '\r')
 			break;
 
-	length -= i;
-	memmove(string, string + i, length);
-	string[length] = '\0';
+	s->length -= i;
+	memmove(s->string, s->string + i, s->length);
+	s->string[s->length] = '\0';
 
 	@try {
-		string = [self resizeMemory: string
-				     toSize: length + 1];
+		s->string = [self resizeMemory: s->string
+					toSize: s->length + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 		[e release];
@@ -571,7 +579,7 @@
 	char *p;
 
 	d = 0;
-	for (p = string + length - 1; p >= string; p--) {
+	for (p = s->string + s->length - 1; p >= s->string; p--) {
 		if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\r')
 			break;
 
@@ -579,11 +587,11 @@
 		d++;
 	}
 
-	length -= d;
+	s->length -= d;
 
 	@try {
-		string = [self resizeMemory: string
-				     toSize: length + 1];
+		s->string = [self resizeMemory: s->string
+					toSize: s->length + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 		[e release];
@@ -596,7 +604,7 @@
 	char *p;
 
 	d = 0;
-	for (p = string + length - 1; p >= string; p--) {
+	for (p = s->string + s->length - 1; p >= s->string; p--) {
 		if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\r')
 			break;
 
@@ -604,20 +612,20 @@
 		d++;
 	}
 
-	length -= d;
+	s->length -= d;
 
-	for (i = 0; i < length; i++)
-		if (string[i] != ' '  && string[i] != '\t' &&
-		    string[i] != '\n' && string[i] != '\r')
+	for (i = 0; i < s->length; i++)
+		if (s->string[i] != ' '  && s->string[i] != '\t' &&
+		    s->string[i] != '\n' && s->string[i] != '\r')
 			break;
 
-	length -= i;
-	memmove(string, string + i, length);
-	string[length] = '\0';
+	s->length -= i;
+	memmove(s->string, s->string + i, s->length);
+	s->string[s->length] = '\0';
 
 	@try {
-		string = [self resizeMemory: string
-				     toSize: length + 1];
+		s->string = [self resizeMemory: s->string
+					toSize: s->length + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 		[e release];

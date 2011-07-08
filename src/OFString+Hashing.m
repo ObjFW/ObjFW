@@ -32,8 +32,8 @@ int _OFString_Hashing_reference;
 	char ret[OF_MD5_DIGEST_SIZE * 2];
 	size_t i;
 
-	[hash updateWithBuffer: string
-			length: length];
+	[hash updateWithBuffer: [self cString]
+			length: [self cStringLength]];
 	digest = [hash digest];
 
 	for (i = 0; i < OF_MD5_DIGEST_SIZE; i++) {
@@ -60,8 +60,8 @@ int _OFString_Hashing_reference;
 	char ret[OF_SHA1_DIGEST_SIZE * 2];
 	size_t i;
 
-	[hash updateWithBuffer: string
-			length: length];
+	[hash updateWithBuffer: [self cString]
+			length: [self cStringLength]];
 	digest = [hash digest];
 
 	for (i = 0; i < OF_SHA1_DIGEST_SIZE; i++) {
