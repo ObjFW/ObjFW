@@ -788,7 +788,7 @@ of_utf16_string_length(const uint16_t *string)
 
 				if (length <= i + 1)
 					@throw [OFInvalidEncodingException
-						newWithClass: isa];
+					    newWithClass: isa];
 
 				nextCharacter = (swap
 				    ? of_bswap16(string[i + 1])
@@ -797,6 +797,7 @@ of_utf16_string_length(const uint16_t *string)
 				    (nextCharacter & 0x3FF)) + 0x10000;
 
 				i++;
+				s->cStringLength--;
 			}
 
 			characterLen = of_string_unicode_to_utf8(
@@ -1143,6 +1144,9 @@ of_utf16_string_length(const uint16_t *string)
 - (BOOL)isEqual: (id)object
 {
 	if (![object isKindOfClass: [OFString class]])
+		return NO;
+
+	if ([object cStringLength] != s->cStringLength)
 		return NO;
 
 	if (strcmp(s->cString, [object cString]))
