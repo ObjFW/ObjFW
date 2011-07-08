@@ -973,7 +973,7 @@ of_utf16_string_length(const uint16_t *string)
 
 		while ((component = va_arg(arguments, OFString*)) != nil) {
 			cStringLength = [component cStringLength];
-			s->cString[i] = OF_PATH_DELIM;
+			s->cString[i] = OF_PATH_DELIMITER;
 			memcpy(s->cString + i + 1, [component cString],
 			    cStringLength);
 			i += 1 + cStringLength;
@@ -1607,7 +1607,7 @@ of_utf16_string_length(const uint16_t *string)
 	pool = [[OFAutoreleasePool alloc] init];
 
 #ifndef _WIN32
-	if (s->cString[pathCStringLength - 1] == OF_PATH_DELIM)
+	if (s->cString[pathCStringLength - 1] == OF_PATH_DELIMITER)
 #else
 	if (s->cString[pathCStringLength - 1] == '/' ||
 	    s->cString[pathCStringLength - 1] == '\\')
@@ -1616,7 +1616,7 @@ of_utf16_string_length(const uint16_t *string)
 
 	for (i = 0; i < pathCStringLength; i++) {
 #ifndef _WIN32
-		if (s->cString[i] == OF_PATH_DELIM) {
+		if (s->cString[i] == OF_PATH_DELIMITER) {
 #else
 		if (s->cString[i] == '/' || s->cString[i] == '\\') {
 #endif
@@ -1650,7 +1650,7 @@ of_utf16_string_length(const uint16_t *string)
 		return @"";
 
 #ifndef _WIN32
-	if (s->cString[pathCStringLength - 1] == OF_PATH_DELIM)
+	if (s->cString[pathCStringLength - 1] == OF_PATH_DELIMITER)
 #else
 	if (s->cString[pathCStringLength - 1] == '/' ||
 	    s->cString[pathCStringLength - 1] == '\\')
@@ -1659,7 +1659,7 @@ of_utf16_string_length(const uint16_t *string)
 
 	for (i = pathCStringLength - 1; i >= 0; i--) {
 #ifndef _WIN32
-		if (s->cString[i] == OF_PATH_DELIM) {
+		if (s->cString[i] == OF_PATH_DELIMITER) {
 #else
 		if (s->cString[i] == '/' || s->string[i] == '\\') {
 #endif
@@ -1687,7 +1687,7 @@ of_utf16_string_length(const uint16_t *string)
 		return @"";
 
 #ifndef _WIN32
-	if (s->cString[pathCStringLength - 1] == OF_PATH_DELIM)
+	if (s->cString[pathCStringLength - 1] == OF_PATH_DELIMITER)
 #else
 	if (s->cString[pathCStringLength - 1] == '/' ||
 	    s->cString[pathCStringLength - 1] == '\\')
@@ -1700,7 +1700,7 @@ of_utf16_string_length(const uint16_t *string)
 
 	for (i = pathCStringLength - 1; i >= 1; i--)
 #ifndef _WIN32
-		if (s->cString[i] == OF_PATH_DELIM)
+		if (s->cString[i] == OF_PATH_DELIMITER)
 #else
 		if (s->cString[i] == '/' || s->cString[i] == '\\')
 #endif
@@ -1708,7 +1708,7 @@ of_utf16_string_length(const uint16_t *string)
 						    length: i];
 
 #ifndef _WIN32
-	if (s->cString[0] == OF_PATH_DELIM)
+	if (s->cString[0] == OF_PATH_DELIMITER)
 #else
 	if (s->cString[0] == '/' || s->cString[0] == '\\')
 #endif

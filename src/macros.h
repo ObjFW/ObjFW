@@ -72,9 +72,9 @@
 #endif
 
 #ifndef _WIN32
-# define OF_PATH_DELIM '/'
+# define OF_PATH_DELIMITER '/'
 #else
-# define OF_PATH_DELIM '\\'
+# define OF_PATH_DELIMITER '\\'
 #endif
 
 #define OF_IVAR_OFFSET(ivar) ((intptr_t)&ivar - (intptr_t)self)
