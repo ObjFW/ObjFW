@@ -82,62 +82,64 @@ memcasecmp(const char *first, const char *second, size_t length)
 }
 
 int
-of_string_check_utf8(const char *string, size_t length)
+of_string_check_utf8(const char *cString, size_t cStringLength, size_t *length)
 {
-	size_t i;
+	size_t i, tmpLength = cStringLength;
 	int isUTF8 = 0;
 
-	madvise((void*)string, length, MADV_SEQUENTIAL);
+	madvise((void*)cString, cStringLength, MADV_SEQUENTIAL);
 
-	for (i = 0; i < length; i++) {
+	for (i = 0; i < cStringLength; i++) {
 		/* No sign of UTF-8 here */
-		if (OF_LIKELY(!(string[i] & 0x80)))
+		if (OF_LIKELY(!(cString[i] & 0x80)))
 			continue;
 
 		isUTF8 = 1;
 
 		/* We're missing a start byte here */
-		if (OF_UNLIKELY(!(string[i] & 0x40))) {
-			madvise((void*)string, length, MADV_NORMAL);
+		if (OF_UNLIKELY(!(cString[i] & 0x40))) {
+			madvise((void*)cString, cStringLength, MADV_NORMAL);
 			return -1;
 		}
 
 		/* 2 byte sequences for code points 0 - 127 are forbidden */
-		if (OF_UNLIKELY((string[i] & 0x7E) == 0x40)) {
-			madvise((void*)string, length, MADV_NORMAL);
+		if (OF_UNLIKELY((cString[i] & 0x7E) == 0x40)) {
+			madvise((void*)cString, cStringLength, MADV_NORMAL);
 			return -1;
 		}
 
 		/* We have at minimum a 2 byte character -> check next byte */
-		if (OF_UNLIKELY(length <= i + 1 ||
-		    (string[i + 1] & 0xC0) != 0x80)) {
-			madvise((void*)string, length, MADV_NORMAL);
+		if (OF_UNLIKELY(cStringLength <= i + 1 ||
+		    (cString[i + 1] & 0xC0) != 0x80)) {
+			madvise((void*)cString, cStringLength, MADV_NORMAL);
 			return -1;
 		}
 
 		/* Check if we have at minimum a 3 byte character */
-		if (OF_LIKELY(!(string[i] & 0x20))) {
+		if (OF_LIKELY(!(cString[i] & 0x20))) {
 			i++;
+			tmpLength--;
 			continue;
 		}
 
 		/* We have at minimum a 3 byte char -> check second next byte */
-		if (OF_UNLIKELY(length <= i + 2 ||
-		    (string[i + 2] & 0xC0) != 0x80)) {
-			madvise((void*)string, length, MADV_NORMAL);
+		if (OF_UNLIKELY(cStringLength <= i + 2 ||
+		    (cString[i + 2] & 0xC0) != 0x80)) {
+			madvise((void*)cString, cStringLength, MADV_NORMAL);
 			return -1;
 		}
 
 		/* Check if we have a 4 byte character */
-		if (OF_LIKELY(!(string[i] & 0x10))) {
+		if (OF_LIKELY(!(cString[i] & 0x10))) {
 			i += 2;
+			tmpLength -= 2;
 			continue;
 		}
 
 		/* We have a 4 byte character -> check third next byte */
-		if (OF_UNLIKELY(length <= i + 3 ||
-		    (string[i + 3] & 0xC0) != 0x80)) {
-			madvise((void*)string, length, MADV_NORMAL);
+		if (OF_UNLIKELY(cStringLength <= i + 3 ||
+		    (cString[i + 3] & 0xC0) != 0x80)) {
+			madvise((void*)cString, cStringLength, MADV_NORMAL);
 			return -1;
 		}
 
@@ -145,15 +147,19 @@ of_string_check_utf8(const char *string, size_t length)
 		 * Just in case, check if there's a 5th character, which is
 		 * forbidden by UTF-8
 		 */
-		if (OF_UNLIKELY(string[i] & 0x08)) {
-			madvise((void*)string, length, MADV_NORMAL);
+		if (OF_UNLIKELY(cString[i] & 0x08)) {
+			madvise((void*)cString, cStringLength, MADV_NORMAL);
 			return -1;
 		}
 
 		i += 3;
+		tmpLength -= 3;
 	}
 
-	madvise((void*)string, length, MADV_NORMAL);
+	madvise((void*)cString, cStringLength, MADV_NORMAL);
+
+	if (length != NULL)
+		*length = tmpLength;
 
 	return isUTF8;
 }
@@ -476,7 +482,8 @@ of_utf16_string_length(const uint16_t *string)
 		s->cStringLength = cStringLength;
 
 		if (encoding == OF_STRING_ENCODING_UTF_8) {
-			switch (of_string_check_utf8(cString, cStringLength)) {
+			switch (of_string_check_utf8(cString, cStringLength,
+			    &s->length)) {
 			case 1:
 				s->isUTF8 = YES;
 				break;
@@ -490,6 +497,9 @@ of_utf16_string_length(const uint16_t *string)
 
 			return self;
 		}
+
+		/* All other encodings we support are single byte encodings */
+		s->length = cStringLength;
 
 		if (encoding == OF_STRING_ENCODING_ISO_8859_1) {
 			for (i = j = 0; i < cStringLength; i++) {
@@ -591,11 +601,16 @@ of_utf16_string_length(const uint16_t *string)
 		s = [self allocMemoryWithSize: sizeof(*s)];
 		memset(s, 0, sizeof(*s));
 
+		/*
+		 * We need one call to make sure it's initialized (in case it's
+		 * a constant string).
+		 */
 		s->cStringLength = [string cStringLength];
 		s->isUTF8 = string->s->isUTF8;
+		s->length = string->s->length;
 
 		s->cString = [self allocMemoryWithSize: s->cStringLength + 1];
-		memcpy(s->cString, [string cString], s->cStringLength + 1);
+		memcpy(s->cString, string->s->cString, s->cStringLength + 1);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -652,6 +667,7 @@ of_utf16_string_length(const uint16_t *string)
 
 		s->cStringLength = length;
 		s->cString = [self allocMemoryWithSize: (length * 4) + 1];
+		s->length = length;
 
 		for (i = 0; i < length; i++) {
 			char buffer[4];
@@ -758,6 +774,7 @@ of_utf16_string_length(const uint16_t *string)
 
 		s->cStringLength = length;
 		s->cString = [self allocMemoryWithSize: (length * 4) + 1];
+		s->length = length;
 
 		for (i = 0; i < length; i++) {
 			char buffer[4];
@@ -785,6 +802,7 @@ of_utf16_string_length(const uint16_t *string)
 
 				i++;
 				s->cStringLength--;
+				s->length--;
 			}
 
 			characterLen = of_string_unicode_to_utf8(
@@ -877,7 +895,7 @@ of_utf16_string_length(const uint16_t *string)
 
 		@try {
 			switch (of_string_check_utf8(s->cString,
-			    cStringLength)) {
+			    cStringLength, &s->length)) {
 			case 1:
 				s->isUTF8 = YES;
 				break;
@@ -930,13 +948,14 @@ of_utf16_string_length(const uint16_t *string)
 		 */
 		s->cStringLength = [firstComponent cStringLength];
 		s->isUTF8 = firstComponent->s->isUTF8;
+		s->length = firstComponent->s->length;
 
 		/* Calculate length and see if we need UTF-8 */
 		va_copy(argumentsCopy, arguments);
 		while ((component = va_arg(argumentsCopy, OFString*)) != nil) {
 			/* First needs to be a call, see above */
-			cStringLength = [component cStringLength];
-			s->cStringLength += 1 + cStringLength;
+			s->cStringLength += 1 + [component cStringLength];
+			s->length += 1 + component->s->length;
 
 			if (component->s->isUTF8)
 				s->isUTF8 = YES;
@@ -1112,12 +1131,7 @@ of_utf16_string_length(const uint16_t *string)
 
 - (size_t)length
 {
-	/* FIXME: Maybe cache this in an ivar? */
-
-	if (!s->isUTF8)
-		return s->cStringLength;
-
-	return of_string_position_to_index(s->cString, s->cStringLength);
+	return s->length;
 }
 
 - (size_t)cStringLength
@@ -1127,13 +1141,18 @@ of_utf16_string_length(const uint16_t *string)
 
 - (BOOL)isEqual: (id)object
 {
+	OFString *otherString;
+
 	if (![object isKindOfClass: [OFString class]])
 		return NO;
 
-	if ([object cStringLength] != s->cStringLength)
+	otherString = object;
+
+	if ([otherString cStringLength] != s->cStringLength ||
+	    otherString->s->length != s->length)
 		return NO;
 
-	if (strcmp(s->cString, [object cString]))
+	if (strcmp(s->cString, otherString->s->cString))
 		return NO;
 
 	return YES;
@@ -1305,18 +1324,14 @@ of_utf16_string_length(const uint16_t *string)
 {
 	of_unichar_t character;
 
-	if (!s->isUTF8) {
-		if (index >= s->cStringLength)
-			@throw [OFOutOfRangeException newWithClass: isa];
+	if (index >= s->length)
+		@throw [OFOutOfRangeException newWithClass: isa];
 
+	if (!s->isUTF8)
 		return s->cString[index];
-	}
 
 	index = of_string_index_to_position(s->cString, index,
 	    s->cStringLength);
-
-	if (index >= s->cStringLength)
-		@throw [OFOutOfRangeException newWithClass: isa];
 
 	if (!of_string_utf8_to_unicode(s->cString + index,
 	    s->cStringLength - index, &character))
@@ -1368,7 +1383,7 @@ of_utf16_string_length(const uint16_t *string)
 - (BOOL)containsString: (OFString*)string
 {
 	const char *cString = [string cString];
-	size_t i, cStringLength = [string cStringLength];
+	size_t i, cStringLength = string->s->cStringLength;
 
 	if (cStringLength == 0)
 		return YES;
@@ -1386,19 +1401,19 @@ of_utf16_string_length(const uint16_t *string)
 - (OFString*)substringFromIndex: (size_t)start
 			toIndex: (size_t)end
 {
+	if (start > end)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
+	if (end > s->length)
+		@throw [OFOutOfRangeException newWithClass: isa];
+
 	if (s->isUTF8) {
 		start = of_string_index_to_position(s->cString, start,
 		    s->cStringLength);
 		end = of_string_index_to_position(s->cString, end,
 		    s->cStringLength);
 	}
-
-	if (start > end)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
-
-	if (end > s->cStringLength)
-		@throw [OFOutOfRangeException newWithClass: isa];
 
 	return [OFString stringWithCString: s->cString + start
 				    length: end - start];
@@ -1862,7 +1877,7 @@ of_utf16_string_length(const uint16_t *string)
 	of_unichar_t *ret;
 	size_t i, j;
 
-	ret = [object allocMemoryForNItems: [self length] + 2
+	ret = [object allocMemoryForNItems: s->length + 2
 				  withSize: sizeof(of_unichar_t)];
 
 	i = 0;

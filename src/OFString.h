@@ -39,7 +39,7 @@ typedef enum of_string_encoding_t {
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int of_string_check_utf8(const char*, size_t);
+extern int of_string_check_utf8(const char*, size_t, size_t*);
 extern size_t of_string_unicode_to_utf8(of_unichar_t, char*);
 extern size_t of_string_utf8_to_unicode(const char*, size_t, of_unichar_t*);
 extern size_t of_string_position_to_index(const char*, size_t);
@@ -78,6 +78,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 		char   *cString;
 		size_t cStringLength;
 		BOOL   isUTF8;
+		size_t length;
 	} *restrict s;
 	/*
 	 * Unused in OFString, however, OFConstantString sets this to SIZE_MAX

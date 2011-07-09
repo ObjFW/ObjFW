@@ -60,30 +60,6 @@
 	       length: (size_t)cStringLength;
 
 /**
- * \brief Appends a UTF-8 encoded C string to the OFMutableString without
- *	  checking whether it is valid UTF-8.
- *
- * Only use this if you are 100% sure the string you append is either ASCII or
- * UTF-8!
- *
- * \param cString A UTF-8 encoded C string to append
- */
-- (void)appendCStringWithoutUTF8Checking: (const char*)cString;
-
-/**
- * \brief Appends a UTF-8 encoded C string with the specified length to the
- *	  OFMutableString without checking whether it is valid UTF-8.
- *
- * Only use this if you are 100% sure the string you append is either ASCII or
- * UTF-8!
- *
- * \param cString A UTF-8 encoded C string to append
- * \param cStringLength The length of the UTF-8 encoded C string
- */
-- (void)appendCStringWithoutUTF8Checking: (const char*)cString
-				  length: (size_t)cStringLength;
-
-/**
  * \brief Appends another OFString to the OFMutableString.
  *
  * \param string An OFString to append

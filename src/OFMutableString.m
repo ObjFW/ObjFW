@@ -131,18 +131,25 @@
 	[self freeMemory: s->cString];
 	s->cString = newCString;
 	s->cStringLength = newCStringLength;
+
+	/*
+	 * Even though cStringLength can change, length can not, therefore no
+	 * need to change it.
+	 */
 }
 
 - (void)setToCString: (const char*)newCString
 {
 	size_t newCStringLength = strlen(newCString);
+	size_t newLength;
 
 	if (newCStringLength >= 3 && !memcmp(newCString, "\xEF\xBB\xBF", 3)) {
 		newCString += 3;
 		newCStringLength -= 3;
 	}
 
-	switch (of_string_check_utf8(newCString, newCStringLength)) {
+	switch (of_string_check_utf8(newCString, newCStringLength,
+	    &newLength)) {
 	case 0:
 		s->isUTF8 = NO;
 		break;
@@ -156,6 +163,8 @@
 	[self freeMemory: s->cString];
 
 	s->cStringLength = newCStringLength;
+	s->length = newLength;
+
 	s->cString = [self allocMemoryWithSize: newCStringLength + 1];
 	memcpy(s->cString, newCString, newCStringLength + 1);
 }
@@ -163,13 +172,14 @@
 - (void)appendCString: (const char*)cString
 {
 	size_t cStringLength = strlen(cString);
+	size_t length;
 
 	if (cStringLength >= 3 && !memcmp(cString, "\xEF\xBB\xBF", 3)) {
 		cString += 3;
 		cStringLength -= 3;
 	}
 
-	switch (of_string_check_utf8(cString, cStringLength)) {
+	switch (of_string_check_utf8(cString, cStringLength, &length)) {
 	case 1:
 		s->isUTF8 = YES;
 		break;
@@ -180,18 +190,22 @@
 	s->cString = [self resizeMemory: s->cString
 				 toSize: s->cStringLength + cStringLength + 1];
 	memcpy(s->cString + s->cStringLength, cString, cStringLength + 1);
+
 	s->cStringLength += cStringLength;
+	s->length += length;
 }
 
 - (void)appendCString: (const char*)cString
 	   withLength: (size_t)cStringLength
 {
+	size_t length;
+
 	if (cStringLength >= 3 && !memcmp(cString, "\xEF\xBB\xBF", 3)) {
 		cString += 3;
 		cStringLength -= 3;
 	}
 
-	switch (of_string_check_utf8(cString, cStringLength)) {
+	switch (of_string_check_utf8(cString, cStringLength, &length)) {
 	case 1:
 		s->isUTF8 = YES;
 		break;
@@ -202,7 +216,10 @@
 	s->cString = [self resizeMemory: s->cString
 				 toSize: s->cStringLength + cStringLength + 1];
 	memcpy(s->cString + s->cStringLength, cString, cStringLength);
+
 	s->cStringLength += cStringLength;
+	s->length += length;
+
 	s->cString[s->cStringLength] = 0;
 }
 
@@ -223,35 +240,25 @@
 	}
 }
 
-- (void)appendCStringWithoutUTF8Checking: (const char*)cString
+- (void)appendString: (OFString*)string
 {
 	size_t cStringLength;
 
-	cStringLength = strlen(cString);
-	s->cString = [self resizeMemory: s->cString
-				 toSize: s->cStringLength + cStringLength + 1];
-	memcpy(s->cString + s->cStringLength, cString, cStringLength + 1);
-	s->cStringLength += cStringLength;
-}
-
-- (void)appendCStringWithoutUTF8Checking: (const char*)cString
-				  length: (size_t)cStringLength
-{
-	s->cString = [self resizeMemory: s->cString
-				 toSize: s->cStringLength + cStringLength + 1];
-	memcpy(s->cString + s->cStringLength, cString, cStringLength);
-	s->cStringLength += cStringLength;
-	s->cString[s->cStringLength] = 0;
-}
-
-- (void)appendString: (OFString*)string
-{
 	if (string == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	[self appendCStringWithoutUTF8Checking: [string cString]
-					length: [string cStringLength]];
+	cStringLength = [string cStringLength];
+
+	s->cString = [self resizeMemory: s->cString
+				 toSize: s->cStringLength + cStringLength + 1];
+	memcpy(s->cString + s->cStringLength, string->s->cString,
+	    cStringLength);
+
+	s->cStringLength += cStringLength;
+	s->length += string->s->length;
+
+	s->cString[s->cStringLength] = 0;
 
 	if (string->s->isUTF8)
 		s->isUTF8 = YES;
@@ -405,41 +412,45 @@
 {
 	size_t newCStringLength;
 
+	if (index > s->length)
+		@throw [OFOutOfRangeException newWithClass: isa];
+
 	if (s->isUTF8)
 		index = of_string_index_to_position(s->cString, index,
 		    s->cStringLength);
-
-	if (index > s->cStringLength)
-		@throw [OFOutOfRangeException newWithClass: isa];
 
 	newCStringLength = s->cStringLength + [string cStringLength];
 	s->cString = [self resizeMemory: s->cString
 				 toSize: newCStringLength + 1];
 
-	memmove(s->cString + index + [string cStringLength], s->cString + index,
-	    s->cStringLength - index);
-	memcpy(s->cString + index, [string cString], [string cStringLength]);
+	memmove(s->cString + index + string->s->cStringLength,
+	    s->cString + index, s->cStringLength - index);
+	memcpy(s->cString + index, string->s->cString,
+	    string->s->cStringLength);
 	s->cString[newCStringLength] = '\0';
 
 	s->cStringLength = newCStringLength;
+	s->length += string->s->length;
 }
 
 - (void)deleteCharactersFromIndex: (size_t)start
 			  toIndex: (size_t)end
 {
+	if (start > end)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
+	if (end > s->length)
+		@throw [OFOutOfRangeException newWithClass: isa];
+
+	s->length -= end - start;
+
 	if (s->isUTF8) {
 		start = of_string_index_to_position(s->cString, start,
 		    s->cStringLength);
 		end = of_string_index_to_position(s->cString, end,
 		    s->cStringLength);
 	}
-
-	if (start > end)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
-
-	if (end > s->cStringLength)
-		@throw [OFOutOfRangeException newWithClass: isa];
 
 	memmove(s->cString + start, s->cString + end, s->cStringLength - end);
 	s->cStringLength -= end - start;
@@ -464,7 +475,16 @@
 			   toIndex: (size_t)end
 			withString: (OFString*)replacement
 {
-	size_t newCStringLength;
+	size_t newCStringLength, newLength;
+
+	if (start > end)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
+	if (end > s->length)
+		@throw [OFOutOfRangeException newWithClass: isa];
+
+	newLength = s->length - (end - start) + [replacement length];
 
 	if (s->isUTF8) {
 		start = of_string_index_to_position(s->cString, start,
@@ -473,25 +493,19 @@
 		    s->cStringLength);
 	}
 
-	if (start > end)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
-
-	if (end > s->cStringLength)
-		@throw [OFOutOfRangeException newWithClass: isa];
-
 	newCStringLength = s->cStringLength - (end - start) +
-	    [replacement cStringLength];
+	    replacement->s->cStringLength;
 	s->cString = [self resizeMemory: s->cString
 				 toSize: newCStringLength + 1];
 
 	memmove(s->cString + end, s->cString + start +
-	    [replacement cStringLength], s->cStringLength - end);
-	memcpy(s->cString + start, [replacement cString],
-	    [replacement cStringLength]);
+	    replacement->s->cStringLength, s->cStringLength - end);
+	memcpy(s->cString + start, replacement->s->cString,
+	    replacement->s->cStringLength);
 	s->cString[newCStringLength] = '\0';
 
 	s->cStringLength = newCStringLength;
+	s->length = newLength;
 }
 
 - (void)replaceCharactersInRange: (of_range_t)range
@@ -507,9 +521,9 @@
 {
 	const char *cString = [string cString];
 	const char *replacementCString = [replacement cString];
-	size_t cStringLength = [string cStringLength];
-	size_t replacementCStringLength = [replacement cStringLength];
-	size_t i, last, newCStringLength;
+	size_t cStringLength = string->s->cStringLength;
+	size_t replacementCStringLength = replacement->s->cStringLength;
+	size_t i, last, newCStringLength, newLength;
 	char *newCString;
 
 	if (cStringLength > s->cStringLength)
@@ -517,6 +531,7 @@
 
 	newCString = NULL;
 	newCStringLength = 0;
+	newLength = s->length;
 
 	for (i = 0, last = 0; i <= s->cStringLength - cStringLength; i++) {
 		if (memcmp(s->cString + i, cString, cStringLength))
@@ -535,7 +550,11 @@
 		    i - last);
 		memcpy(newCString + newCStringLength + i - last,
 		    replacementCString, replacementCStringLength);
+
 		newCStringLength += i - last + replacementCStringLength;
+		newLength = newLength - string->s->length +
+		    replacement->s->length;
+
 		i += cStringLength - 1;
 		last = i + 1;
 	}
@@ -557,6 +576,7 @@
 	[self freeMemory: s->cString];
 	s->cString = newCString;
 	s->cStringLength = newCStringLength;
+	s->length = newLength;
 }
 
 - (void)deleteLeadingWhitespaces
@@ -569,6 +589,8 @@
 			break;
 
 	s->cStringLength -= i;
+	s->length -= i;
+
 	memmove(s->cString, s->cString + i, s->cStringLength);
 	s->cString[s->cStringLength] = '\0';
 
@@ -596,6 +618,7 @@
 	}
 
 	s->cStringLength -= d;
+	s->length -= d;
 
 	@try {
 		s->cString = [self resizeMemory: s->cString
@@ -621,6 +644,7 @@
 	}
 
 	s->cStringLength -= d;
+	s->length -= d;
 
 	for (i = 0; i < s->cStringLength; i++)
 		if (s->cString[i] != ' '  && s->cString[i] != '\t' &&
@@ -628,6 +652,8 @@
 			break;
 
 	s->cStringLength -= i;
+	s->length -= i;
+
 	memmove(s->cString, s->cString + i, s->cStringLength);
 	s->cString[s->cStringLength] = '\0';
 
