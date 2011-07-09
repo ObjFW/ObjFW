@@ -51,7 +51,11 @@
 - (BOOL)isAtEndOfStream;
 
 /**
- * Reads at most size bytes from the stream into a buffer.
+ * \brief Reads <i>at most</i> size bytes from the stream into a buffer.
+ *
+ * On network streams, this might read less than the specified number of bytes.
+ * If you want to read exactly the specified number of bytes, use
+ * -[readExactlyNBytes:intoBuffer:].
  *
  * \param buffer The buffer into which the data is read
  * \param length The length of the data that should be read at most.
