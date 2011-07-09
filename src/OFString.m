@@ -102,6 +102,12 @@ of_string_check_utf8(const char *string, size_t length)
 			return -1;
 		}
 
+		/* 2 byte sequences for code points 0 - 127 are forbidden */
+		if (OF_UNLIKELY((string[i] & 0x7E) == 0x40)) {
+			madvise((void*)string, length, MADV_NORMAL);
+			return -1;
+		}
+
 		/* We have at minimum a 2 byte character -> check next byte */
 		if (OF_UNLIKELY(length <= i + 1 ||
 		    (string[i + 1] & 0xC0) != 0x80)) {
