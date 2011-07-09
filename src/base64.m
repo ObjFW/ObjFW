@@ -59,8 +59,8 @@ of_base64_encode(const char *data, size_t length)
 		tb[2] = of_base64_encode_table[(sb & 0x000FC0) >> 6];
 		tb[3] = of_base64_encode_table[sb & 0x00003F];
 
-		[ret appendCStringWithoutUTF8Checking: tb
-					       length: 4];
+		[ret appendCString: tb
+			withLength: 4];
 	}
 
 	switch (rest) {
@@ -69,8 +69,8 @@ of_base64_encode(const char *data, size_t length)
 		tb[1] = of_base64_encode_table[(buffer[i] & 3) << 4];
 		tb[2] = tb[3] = '=';
 
-		[ret appendCStringWithoutUTF8Checking: tb
-					       length: 4];
+		[ret appendCString: tb
+			withLength: 4];
 
 		break;
 	case 2:
@@ -81,8 +81,8 @@ of_base64_encode(const char *data, size_t length)
 		tb[2] = of_base64_encode_table[(sb & 0x000FC0) >> 6];
 		tb[3] = '=';
 
-		[ret appendCStringWithoutUTF8Checking: tb
-					       length: 4];
+		[ret appendCString: tb
+			withLength: 4];
 
 		break;
 	}
