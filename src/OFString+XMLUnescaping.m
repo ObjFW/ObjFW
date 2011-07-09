@@ -94,20 +94,13 @@ parse_numeric_entity(const char *entity, size_t length)
 
 	ret = [OFMutableString string];
 
-	/*
-	 * This is safe as we already called -[cString] on self and thus can be
-	 * sure the string is correctly initialized, even if it is a constant
-	 * string.
-	 */
-	((OFString*)ret)->s->isUTF8 = s->isUTF8;
-
 	last = 0;
 	inEntity = NO;
 
 	for (i = 0; i < length; i++) {
 		if (!inEntity && string[i] == '&') {
-			[ret appendCStringWithoutUTF8Checking: string + last
-						       length: i - last];
+			[ret appendCString: string + last
+				withLength: i - last];
 
 			last = i + 1;
 			inEntity = YES;
@@ -116,22 +109,22 @@ parse_numeric_entity(const char *entity, size_t length)
 			size_t entityLength = i - last;
 
 			if (entityLength == 2 && !memcmp(entity, "lt", 2))
-				[ret appendCStringWithoutUTF8Checking: "<"
-							       length: 1];
+				[ret appendCString: "<"
+					withLength: 1];
 			else if (entityLength == 2 && !memcmp(entity, "gt", 2))
-				[ret appendCStringWithoutUTF8Checking: ">"
-							       length: 1];
+				[ret appendCString: ">"
+					withLength: 1];
 			else if (entityLength == 4 &&
 			    !memcmp(entity, "quot", 4))
-				[ret appendCStringWithoutUTF8Checking: "\""
-							       length: 1];
+				[ret appendCString: "\""
+					withLength: 1];
 			else if (entityLength == 4 &&
 			    !memcmp(entity, "apos", 4))
-				[ret appendCStringWithoutUTF8Checking: "'"
-							       length: 1];
+				[ret appendCString: "'"
+					withLength: 1];
 			else if (entityLength == 3 && !memcmp(entity, "amp", 3))
-				[ret appendCStringWithoutUTF8Checking: "&"
-							       length: 1];
+				[ret appendCString: "&"
+					withLength: 1];
 			else if (entity[0] == '#') {
 				OFAutoreleasePool *pool;
 				OFString *tmp;
@@ -175,8 +168,8 @@ parse_numeric_entity(const char *entity, size_t length)
 	if (inEntity)
 		@throw [OFInvalidEncodingException newWithClass: isa];
 
-	[ret appendCStringWithoutUTF8Checking: string + last
-				       length: i - last];
+	[ret appendCString: string + last
+		withLength: i - last];
 
 	/*
 	 * Class swizzle the string to be immutable. We declared the return type
@@ -201,20 +194,13 @@ parse_numeric_entity(const char *entity, size_t length)
 
 	ret = [OFMutableString string];
 
-	/*
-	 * This is safe as we already called -[cString] on self and thus can be
-	 * sure the string is correctly initialized, even if it is a constant
-	 * string.
-	 */
-	((OFString*)ret)->s->isUTF8 = s->isUTF8;
-
 	last = 0;
 	inEntity = NO;
 
 	for (i = 0; i < length; i++) {
 		if (!inEntity && string[i] == '&') {
-			[ret appendCStringWithoutUTF8Checking: string + last
-						       length: i - last];
+			[ret appendCString: string + last
+				withLength: i - last];
 
 			last = i + 1;
 			inEntity = YES;
@@ -223,22 +209,22 @@ parse_numeric_entity(const char *entity, size_t length)
 			size_t entityLength = i - last;
 
 			if (entityLength == 2 && !memcmp(entity, "lt", 2))
-				[ret appendCStringWithoutUTF8Checking: "<"
-							       length: 1];
+				[ret appendCString: "<"
+					withLength: 1];
 			else if (entityLength == 2 && !memcmp(entity, "gt", 2))
-				[ret appendCStringWithoutUTF8Checking: ">"
-							       length: 1];
+				[ret appendCString: ">"
+					withLength: 1];
 			else if (entityLength == 4 &&
 			    !memcmp(entity, "quot", 4))
-				[ret appendCStringWithoutUTF8Checking: "\""
-							       length: 1];
+				[ret appendCString: "\""
+					withLength: 1];
 			else if (entityLength == 4 &&
 			    !memcmp(entity, "apos", 4))
-				[ret appendCStringWithoutUTF8Checking: "'"
-							       length: 1];
+				[ret appendCString: "'"
+					withLength: 1];
 			else if (entityLength == 3 && !memcmp(entity, "amp", 3))
-				[ret appendCStringWithoutUTF8Checking: "&"
-							       length: 1];
+				[ret appendCString: "&"
+					withLength: 1];
 			else if (entity[0] == '#') {
 				OFAutoreleasePool *pool;
 				OFString *tmp;
@@ -280,8 +266,8 @@ parse_numeric_entity(const char *entity, size_t length)
 	if (inEntity)
 		@throw [OFInvalidEncodingException newWithClass: isa];
 
-	[ret appendCStringWithoutUTF8Checking: string + last
-				       length: i - last];
+	[ret appendCString: string + last
+		withLength: i - last];
 
 	/*
 	 * Class swizzle the string to be immutable. We declared the return type
