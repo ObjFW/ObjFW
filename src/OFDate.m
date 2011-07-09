@@ -350,7 +350,7 @@ static OFMutex *mutex;
 				      namespace: OF_SERIALIZATION_NS];
 
 	secondsString = [OFString stringWithFormat: @"%" @PRId64, seconds];
-	microsecondsString = [OFString stringWithFormat: @"%" @PRId64,
+	microsecondsString = [OFString stringWithFormat: @"%" @PRIu32,
 							 microseconds];
 
 	[element addAttributeWithName: @"seconds"
