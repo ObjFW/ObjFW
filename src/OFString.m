@@ -924,32 +924,22 @@ of_utf16_string_length(const uint16_t *string)
 		s = [self allocMemoryWithSize: sizeof(*s)];
 		memset(s, 0, sizeof(*s));
 
+		/*
+		 * First needs to be a call to be sure it is initialized, in
+		 * case it's a constant string.
+		 */
 		s->cStringLength = [firstComponent cStringLength];
+		s->isUTF8 = firstComponent->s->isUTF8;
 
-		switch (of_string_check_utf8([firstComponent cString],
-		    s->cStringLength)) {
-		case 1:
-			s->isUTF8 = YES;
-			break;
-		case -1:
-			@throw [OFInvalidEncodingException newWithClass: isa];
-		}
-
-		/* Calculate length */
+		/* Calculate length and see if we need UTF-8 */
 		va_copy(argumentsCopy, arguments);
 		while ((component = va_arg(argumentsCopy, OFString*)) != nil) {
+			/* First needs to be a call, see above */
 			cStringLength = [component cStringLength];
 			s->cStringLength += 1 + cStringLength;
 
-			switch (of_string_check_utf8([component cString],
-			    cStringLength)) {
-			case 1:
+			if (component->s->isUTF8)
 				s->isUTF8 = YES;
-				break;
-			case -1:
-				@throw [OFInvalidEncodingException
-				    newWithClass: isa];
-			}
 		}
 
 		s->cString = [self allocMemoryWithSize: s->cStringLength + 1];
@@ -959,10 +949,17 @@ of_utf16_string_length(const uint16_t *string)
 		i = cStringLength;
 
 		while ((component = va_arg(arguments, OFString*)) != nil) {
-			cStringLength = [component cStringLength];
+			/*
+			 * We already sent each component a message, so we can
+			 * be sure they are initialized and access them
+			 * directly.
+			 */
+			cStringLength = component->s->cStringLength;
+
 			s->cString[i] = OF_PATH_DELIMITER;
-			memcpy(s->cString + i + 1, [component cString],
+			memcpy(s->cString + i + 1, component->s->cString,
 			    cStringLength);
+
 			i += 1 + cStringLength;
 		}
 
