@@ -21,6 +21,7 @@
 @class OFXMLParser;
 @class OFArray;
 @class OFMutableArray;
+@class OFDataArray;
 @class OFStream;
 
 #if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
@@ -160,7 +161,7 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
 		OF_XMLPARSER_IN_DOCTYPE,
 		OF_XMLPARSER_NUM_STATES
 	} state;
-	OFMutableString *cache;
+	OFDataArray *cache;
 	OFString *name;
 	OFString *prefix;
 	OFMutableArray *namespaces;

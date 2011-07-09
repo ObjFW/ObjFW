@@ -25,6 +25,7 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OFDataArray.h"
 #import "OFXMLAttribute.h"
 #import "OFStream.h"
 #import "OFFile.h"
@@ -40,42 +41,49 @@ typedef void (*state_function)(id, SEL, const char*, size_t*, size_t*);
 static SEL selectors[OF_XMLPARSER_NUM_STATES];
 static state_function lookupTable[OF_XMLPARSER_NUM_STATES];
 
-static void
-cache_append(OFMutableString *cache, const char *string,
+static OF_INLINE void
+cache_append(OFDataArray *cache, const char *string,
     of_string_encoding_t encoding, size_t length)
 {
 	if (OF_LIKELY(encoding == OF_STRING_ENCODING_UTF_8))
-		[cache appendCStringWithoutUTF8Checking: string
-						 length: length];
+		[cache addNItems: length
+		      fromCArray: string];
 	else {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-		[cache appendString: [OFString stringWithCString: string
-							encoding: encoding
-							  length: length]];
+		OFString *tmp = [OFString stringWithCString: string
+						   encoding: encoding
+						     length: length];
+		[cache addNItems: [tmp cStringLength]
+		      fromCArray: [tmp cString]];
 		[pool release];
 	}
 }
 
 static OFString*
-transform_string(OFMutableString *cache, size_t cut, BOOL unescape,
+transform_string(OFDataArray *cache, size_t cut, BOOL unescape,
     OFObject <OFStringXMLUnescapingDelegate> *delegate)
 {
-	[cache replaceOccurrencesOfString: @"\r\n"
-			       withString: @"\n"];
-	[cache replaceOccurrencesOfString: @"\r"
-			       withString: @"\n"];
+	OFMutableString *ret = [OFMutableString
+	    stringWithCString: [cache cArray]
+		       length: [cache count]];
+
+	[ret replaceOccurrencesOfString: @"\r\n"
+			     withString: @"\n"];
+	[ret replaceOccurrencesOfString: @"\r"
+			     withString: @"\n"];
 
 	if (cut > 0) {
-		size_t length = [cache length];
+		size_t length = [ret length];
 
-		[cache deleteCharactersFromIndex: length - cut
-					 toIndex: length];
+		[ret deleteCharactersFromIndex: length - cut
+				       toIndex: length];
 	}
 
 	if (unescape)
-		return [cache stringByXMLUnescapingWithDelegate: delegate];
-	else
-		return [[cache copy] autorelease];
+		return [ret stringByXMLUnescapingWithDelegate: delegate];
+
+	ret->isa = [OFString class];
+	return ret;
 }
 
 static OFString*
@@ -175,7 +183,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		OFAutoreleasePool *pool;
 		OFMutableDictionary *dict;
 
-		cache = [[OFMutableString alloc] init];
+		cache = [[OFBigDataArray alloc] init];
 		previous = [[OFMutableArray alloc] init];
 		namespaces = [[OFMutableArray alloc] init];
 
@@ -318,7 +326,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	if ((length = *i - *last) > 0)
 		cache_append(cache, buffer + *last, encoding, length);
 
-	if ([cache cStringLength] > 0) {
+	if ([cache count] > 0) {
 		OFString *characters;
 		OFAutoreleasePool *pool;
 
@@ -336,7 +344,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		[pool release];
 	}
 
-	[cache setToCString: ""];
+	[cache removeNItems: [cache count]];
 
 	*last = *i + 1;
 	state = OF_XMLPARSER_TAG_OPENED;
@@ -498,7 +506,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 		[pool release];
 
-		[cache setToCString: ""];
+		[cache removeNItems: [cache count]];
 
 		*last = *i + 1;
 		state = OF_XMLPARSER_OUTSIDE_TAG;
@@ -511,8 +519,10 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				i: (size_t*)i
 			     last: (size_t*)last
 {
+	OFAutoreleasePool *pool;
 	const char *cacheCString, *tmp;
 	size_t length, cacheLength;
+	OFString *cacheString;
 
 	if (buffer[*i] != ' ' && buffer[*i] != '\t' && buffer[*i] != '\n' &&
 	    buffer[*i] != '\r' && buffer[*i] != '>' && buffer[*i] != '/')
@@ -521,8 +531,12 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	if ((length = *i - *last) > 0)
 		cache_append(cache, buffer + *last, encoding, length);
 
-	cacheCString = [cache cString];
-	cacheLength = [cache cStringLength];
+	pool = [[OFAutoreleasePool alloc] init];
+
+	cacheCString = [cache cArray];
+	cacheLength = [cache count];
+	cacheString = [OFString stringWithCString: cacheCString
+					   length: cacheLength];
 
 	if ((tmp = memchr(cacheCString, ':', cacheLength)) != NULL) {
 		name = [[OFString alloc] initWithCString: tmp + 1
@@ -532,12 +546,12 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		prefix = [[OFString alloc] initWithCString: cacheCString
 						    length: tmp - cacheCString];
 	} else {
-		name = [cache copy];
+		name = [cacheString copy];
 		prefix = nil;
 	}
 
 	if (buffer[*i] == '>' || buffer[*i] == '/') {
-		OFAutoreleasePool *pool;
+		OFAutoreleasePool *pool2;
 		OFString *ns;
 
 		ns = namespace_for_prefix(prefix, namespaces);
@@ -547,7 +561,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 			    [OFUnboundNamespaceException newWithClass: isa
 							       prefix: prefix];
 
-		pool = [[OFAutoreleasePool alloc] init];
+		pool2 = [[OFAutoreleasePool alloc] init];
 
 #if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 		if (elementStartHandler != NULL)
@@ -574,9 +588,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 			if ([previous count] == 0)
 				finishedParsing = YES;
 		} else
-			[previous addObject: [[cache copy] autorelease]];
+			[previous addObject: cacheString];
 
-		[pool release];
+		[pool2 release];
 
 		[name release];
 		[prefix release];
@@ -588,15 +602,15 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	} else
 		state = OF_XMLPARSER_IN_TAG;
 
-	if (buffer[*i] != '/') {
-		OFAutoreleasePool *pool;
+	[pool release];
 
+	if (buffer[*i] != '/') {
 		pool = [[OFAutoreleasePool alloc] init];
 		[namespaces addObject: [OFMutableDictionary dictionary]];
 		[pool release];
 	}
 
-	[cache setToCString: ""];
+	[cache removeNItems: [cache count]];
 	*last = *i + 1;
 }
 
@@ -608,6 +622,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	OFAutoreleasePool *pool;
 	const char *cacheCString, *tmp;
 	size_t length, cacheLength;
+	OFString *cacheString;
 	OFString *ns;
 
 	if (buffer[*i] != ' ' && buffer[*i] != '\t' && buffer[*i] != '\n' &&
@@ -617,8 +632,12 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	if ((length = *i - *last) > 0)
 		cache_append(cache, buffer + *last, encoding, length);
 
-	cacheCString = [cache cString];
-	cacheLength = [cache cStringLength];
+	pool = [[OFAutoreleasePool alloc] init];
+
+	cacheCString = [cache cArray];
+	cacheLength = [cache count];
+	cacheString = [OFString stringWithCString: cacheCString
+					   length: cacheLength];
 
 	if ((tmp = memchr(cacheCString, ':', cacheLength)) != NULL) {
 		name = [[OFString alloc] initWithCString: tmp + 1
@@ -628,24 +647,22 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		prefix = [[OFString alloc] initWithCString: cacheCString
 						    length: tmp - cacheCString];
 	} else {
-		name = [cache copy];
+		name = [cacheString copy];
 		prefix = nil;
 	}
 
-	if (![[previous lastObject] isEqual: cache])
+	if (![[previous lastObject] isEqual: cacheString])
 		@throw [OFMalformedXMLException newWithClass: isa
 						      parser: self];
 
 	[previous removeLastObject];
 
-	[cache setToCString: ""];
+	[cache removeNItems: [cache count]];
 
 	ns = namespace_for_prefix(prefix, namespaces);
 	if (prefix != nil && ns == nil)
 		@throw [OFUnboundNamespaceException newWithClass: isa
 							  prefix: prefix];
-
-	pool = [[OFAutoreleasePool alloc] init];
 
 #if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 	if (elementEndHandler != NULL)
@@ -761,6 +778,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				      i: (size_t*)i
 				   last: (size_t*)last
 {
+	OFAutoreleasePool *pool;
+	OFMutableString *cacheString;
 	const char *cacheCString, *tmp;
 	size_t length, cacheLength;
 
@@ -770,10 +789,16 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	if ((length = *i - *last) > 0)
 		cache_append(cache, buffer + *last, encoding, length);
 
-	[cache deleteEnclosingWhitespaces];
+	pool = [[OFAutoreleasePool alloc] init];
 
-	cacheCString = [cache cString];
-	cacheLength = [cache cStringLength];
+	cacheString = [OFMutableString stringWithCString: [cache cArray]
+						  length: [cache count]];
+	[cacheString deleteEnclosingWhitespaces];
+	/* Prevent a useless copy later */
+	cacheString->isa = [OFString class];
+
+	cacheCString = [cacheString cString];
+	cacheLength = [cacheString cStringLength];
 
 	if ((tmp = memchr(cacheCString, ':', cacheLength)) != NULL) {
 		attributeName = [[OFString alloc]
@@ -783,11 +808,13 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		    initWithCString: cacheCString
 			     length: tmp - cacheCString];
 	} else {
-		attributeName = [cache copy];
+		attributeName = [cacheString copy];
 		attributePrefix = nil;
 	}
 
-	[cache setToCString: ""];
+	[pool release];
+
+	[cache removeNItems: [cache count]];
 
 	*last = *i + 1;
 	state = OF_XMLPARSER_EXPECT_DELIM;
@@ -847,7 +874,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	[pool release];
 
-	[cache setToCString: ""];
+	[cache removeNItems: [cache count]];
 	[attributeName release];
 	[attributePrefix release];
 	attributeName = attributePrefix = nil;
@@ -966,7 +993,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	[pool release];
 
-	[cache setToCString: ""];
+	[cache removeNItems: [cache count]];
 
 	*last = *i + 1;
 	state = OF_XMLPARSER_OUTSIDE_TAG;
@@ -1025,7 +1052,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	[pool release];
 
-	[cache setToCString: ""];
+	[cache removeNItems: [cache count]];
 
 	*last = *i + 1;
 	state = OF_XMLPARSER_OUTSIDE_TAG;
