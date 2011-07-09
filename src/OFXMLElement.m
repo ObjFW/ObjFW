@@ -23,6 +23,7 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OFDataArray.h"
 #import "OFXMLAttribute.h"
 #import "OFXMLParser.h"
 #import "OFXMLElementBuilder.h"
@@ -455,7 +456,7 @@ void _references_to_categories_of_OFXMLElement(void)
 	size_t length, i, j, attributesCount;
 	OFString *prefix, *parentPrefix;
 	OFXMLAttribute **attributesCArray;
-	OFString *ret, *tmp;
+	OFString *ret;
 	OFMutableDictionary *allNamespaces;
 	OFString *defaultNS;
 
@@ -466,8 +467,6 @@ void _references_to_categories_of_OFXMLElement(void)
 		return [OFString stringWithFormat: @"<![CDATA[%@]]>", CDATA];
 
 	if (comment != nil) {
-		OFString *ret;
-
 		if (indentation > 0 && level > 0) {
 			char *whitespaces = [self
 			    allocMemoryWithSize: (level * indentation) + 1];
@@ -571,7 +570,8 @@ void _references_to_categories_of_OFXMLElement(void)
 	for (j = 0; j < attributesCount; j++) {
 		OFString *attributeName = [attributesCArray[j] name];
 		OFString *attributePrefix = nil;
-		tmp = [[attributesCArray[j] stringValue] stringByXMLEscaping];
+		OFString *tmp =
+		    [[attributesCArray[j] stringValue] stringByXMLEscaping];
 
 		if ([attributesCArray[j] namespace] != nil &&
 		    (attributePrefix = [allNamespaces objectForKey:
@@ -616,12 +616,8 @@ void _references_to_categories_of_OFXMLElement(void)
 	if (children != nil) {
 		OFXMLElement **childrenCArray = [children cArray];
 		size_t childrenCount = [children count];
-		IMP append;
-		SEL appendSel = @selector(appendCStringWithoutUTF8Checking:);
+		OFDataArray *tmp = [OFDataArray dataArray];
 		BOOL indent;
-
-		tmp = [OFMutableString string];
-		append = [tmp methodForSelector: appendSel];
 
 		if (indentation > 0) {
 			indent = YES;
@@ -637,21 +633,24 @@ void _references_to_categories_of_OFXMLElement(void)
 			indent = NO;
 
 		for (j = 0; j < childrenCount; j++) {
-			if (indent)
-				append(tmp, appendSel, "\n");
+			OFString *child;
 
-			append(tmp, appendSel,
-			    [[childrenCArray[j]
+			if (indent)
+				[tmp addItem: "\n"];
+
+			child = [childrenCArray[j]
 			    _XMLStringWithParent: self
 				     indentation: (indent ? indentation : 0)
-					   level: level + 1]
-			    cString]);
+					   level: level + 1];
+
+			[tmp addNItems: [child cStringLength]
+			    fromCArray: [child cString]];
 		}
 
 		if (indent)
-			append(tmp, appendSel, "\n");
+			[tmp addItem: "\n"];
 
-		length += [tmp cStringLength] + [name cStringLength] + 2 +
+		length += [tmp count] + [name cStringLength] + 2 +
 		    (indent ? level * indentation : 0);
 		@try {
 			cString = [self resizeMemory: cString
@@ -663,8 +662,8 @@ void _references_to_categories_of_OFXMLElement(void)
 
 		cString[i++] = '>';
 
-		memcpy(cString + i, [tmp cString], [tmp cStringLength]);
-		i += [tmp cStringLength];
+		memcpy(cString + i, [tmp cArray], [tmp count]);
+		i += [tmp count];
 
 		if (indent) {
 			memset(cString + i, ' ', level * indentation);
