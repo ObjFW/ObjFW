@@ -14,10 +14,7 @@
  * file.
  */
 
-/* Required to prevent a name conflict in glibc when using -fblocks */
-#undef __USE_XOPEN
-
-#include <unistd.h>
+#include <sys/types.h>
 
 #import "OFStream.h"
 
