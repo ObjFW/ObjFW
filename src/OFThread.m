@@ -70,7 +70,7 @@ call_main(id object)
 	 * value on join.
 	 */
 #ifdef OF_HAVE_BLOCKS
-	if (thread->block != nil)
+	if (thread->block != NULL)
 		thread->returnValue = [thread->block(thread->object) retain];
 	else
 		thread->returnValue = [[thread main] retain];
