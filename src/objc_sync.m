@@ -20,6 +20,8 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include <sys/types.h>
+
 #ifdef OF_OBJFW_RUNTIME
 # import <objfw-rt.h>
 #else
