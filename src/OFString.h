@@ -417,7 +417,7 @@ extern size_t of_string_index_to_position(const char*, size_t, size_t);
  * Splits an OFString into an OFArray of OFStrings.
  *
  * \param delimiter The delimiter for splitting
- * \return An autoreleased OFArray with the splitted string
+ * \return An autoreleased OFArray with the split string
  */
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter;
 
