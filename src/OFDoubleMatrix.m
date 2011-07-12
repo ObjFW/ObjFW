@@ -179,7 +179,7 @@ static Class doubleVector = Nil;
 }
 
 - (double)valueForRow: (size_t)row
-	      column: (size_t)column
+	       column: (size_t)column
 {
 	if (row >= rows || column >= columns)
 		@throw [OFOutOfRangeException newWithClass: isa];

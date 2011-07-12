@@ -649,7 +649,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * Splits an OFString into an OFArray of OFStrings.
  *
  * \param delimiter The delimiter for splitting
- * \return An autoreleased OFArray with the splitted string
+ * \return An autoreleased OFArray with the split string
  */
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter;
 
