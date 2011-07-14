@@ -61,13 +61,14 @@ static void (^g)() = ^ {};
 	    (Class)&_NSConcreteMallocBlock == objc_getClass("OFMallocBlock"))
 
 	TEST(@"Copying a stack block",
-	    (m = [s copy]) && [m class] == objc_getClass("OFMallocBlock") &&
+	    (m = [[s copy] autorelease]) &&
+	    [m class] == objc_getClass("OFMallocBlock") &&
 	    [m isKindOfClass: [OFBlock class]])
 
-	TEST(@"Copying a global block", (id)g == [g copy])
+	TEST(@"Copying a global block", (id)g == [[g copy] autorelease])
 
 	TEST(@"Copying a malloc block",
-	    (id)m == [m copy] && [m retainCount] == 2)
+	    (id)m == [[m copy] autorelease] && [m retainCount] == 2)
 
 	TEST(@"Autorelease a stack block", R([s autorelease]))
 
