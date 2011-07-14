@@ -284,7 +284,7 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 		of_block_byref_t *src = (of_block_byref_t*)src_;
 		of_block_byref_t **dst = (of_block_byref_t**)dst_;
 
-		if ((src->flags & ~OF_BLOCK_HAS_COPY_DISPOSE) == 0) {
+		if ((src->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
 			if ((*dst = malloc(src->size)) == NULL) {
 				alloc_failed_exception.isa =
 				    [OFAllocFailedException class];
@@ -296,6 +296,9 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 				src->forwarding = *dst;
 
 			memcpy(*dst, src, src->size);
+
+			/* src->forwarding points to us -> that's a reference */
+			(*dst)->flags++;
 
 			if (src->size >= sizeof(of_block_byref_t))
 				src->byref_keep(*dst, src);
@@ -329,7 +332,7 @@ _Block_object_dispose(const void *obj_, const int flags_)
 	case OF_BLOCK_FIELD_IS_BYREF:;
 		of_block_byref_t *obj = (of_block_byref_t*)obj_;
 
-		if ((--obj->flags & ~OF_BLOCK_HAS_COPY_DISPOSE) == 0) {
+		if ((--obj->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
 			if (obj->size >= sizeof(of_block_byref_t))
 				obj->byref_dispose(obj);
 
