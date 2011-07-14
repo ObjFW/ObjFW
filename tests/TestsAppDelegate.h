@@ -42,7 +42,7 @@
 			code;				\
 		} @catch (exception *e) {		\
 			caught = YES;			\
-			[e dealloc];			\
+			[e release];			\
 		}					\
 							\
 		if (caught)				\
