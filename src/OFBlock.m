@@ -241,6 +241,9 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 	if (src_ == NULL)
 		return;
 
+	if (flags_ & OF_BLOCK_BYREF_CALLER)
+		return;
+
 	switch (flags) {
 	case OF_BLOCK_FIELD_IS_BLOCK:
 		*(of_block_literal_t**)dst_ = _Block_copy(src_);
@@ -282,6 +285,9 @@ _Block_object_dispose(const void *obj_, const int flags_)
 	    OF_BLOCK_FIELD_IS_OBJECT | OF_BLOCK_FIELD_IS_BYREF);
 
 	if (obj_ == NULL)
+		return;
+
+	if (flags_ & OF_BLOCK_BYREF_CALLER)
 		return;
 
 	switch (flags) {
