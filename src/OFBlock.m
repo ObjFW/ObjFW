@@ -225,6 +225,8 @@ _Block_release(const void *block_)
 			block->descriptor->dispose_helper(block);
 
 		free(block);
+
+		return;
 	}
 	assert(of_spinlock_unlock(&spinlocks[hash]));
 #endif
