@@ -511,8 +511,8 @@
 	id <OFSerialization> *cArray = [array cArray];
 	size_t i, count = [array count];
 
-	element = [[OFXMLElement alloc] initWithName: [self className]
-					   namespace: OF_SERIALIZATION_NS];
+	element = [OFXMLElement elementWithName: [self className]
+				      namespace: OF_SERIALIZATION_NS];
 
 	pool2 = [[OFAutoreleasePool alloc] init];
 
