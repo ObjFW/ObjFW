@@ -161,7 +161,7 @@ resolve_relative_path(OFString *path)
 			host = [[OFString alloc] initWithCString: str_c];
 
 			pool = [[OFAutoreleasePool alloc] init];
-			port_str = [[OFString alloc] initWithCString: tmp2];
+			port_str = [OFString stringWithCString: tmp2];
 
 			if ([port_str decimalValue] > 65535)
 				@throw [OFInvalidFormatException
