@@ -21,6 +21,8 @@
 #import "OFObject.h"
 #import "OFSerialization.h"
 
+#import "macros.h"
+
 @class OFConstantString;
 
 typedef uint32_t of_unichar_t;

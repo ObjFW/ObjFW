@@ -42,6 +42,12 @@
 # define OF_CONST_FUNC
 #endif
 
+#if defined(__GNUC__)
+# define restrict __restrict__
+#elif __STDC_VERSION__ < 199901L
+# define restrict
+#endif
+
 /* Required to build universal binaries on OS X */
 #if __BIG_ENDIAN__ || __LITTLE_ENDIAN__
 # if __BIG_ENDIAN__ && __LITTLE_ENDIAN__
