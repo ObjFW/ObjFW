@@ -17,6 +17,7 @@
 #include "config.h"
 
 #define OF_STREAM_OBSERVER_M
+#define __NO_EXT_QNX
 
 #include <string.h>
 

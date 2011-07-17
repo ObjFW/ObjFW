@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#define __NO_EXT_QNX
+
 #ifndef _WIN32
 # include <unistd.h>
 # include <sched.h>

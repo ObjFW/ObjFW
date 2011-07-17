@@ -16,8 +16,12 @@
 
 #include "config.h"
 
+#define __NO_EXT_QNX
+
 #include <string.h>
+
 #include <unistd.h>
+
 #include <errno.h>
 
 #ifndef _WIN32
