@@ -602,7 +602,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	return YES;
 }
 
-- (BOOL)containsObject: (id)obj
+- (BOOL)containsObject: (id)object
 {
 	uint32_t i;
 
@@ -611,13 +611,13 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 
 	for (i = 0; i < size; i++)
 		if (data[i] != NULL && data[i] != DELETED &&
-		    [data[i]->object isEqual: obj])
+		    [data[i]->object isEqual: object])
 			return YES;
 
 	return NO;
 }
 
-- (BOOL)containsObjectIdenticalTo: (id)obj
+- (BOOL)containsObjectIdenticalTo: (id)object
 {
 	uint32_t i;
 
@@ -626,7 +626,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 
 	for (i = 0; i < size; i++)
 		if (data[i] != NULL && data[i] != DELETED &&
-		    data[i]->object == obj)
+		    data[i]->object == object)
 			return YES;
 
 	return NO;

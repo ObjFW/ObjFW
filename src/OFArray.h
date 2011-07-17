@@ -182,6 +182,16 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
 - (size_t)indexOfObjectIdenticalTo: (id)object;
 
 /**
+ * \brief Checks whether the array contains an object with the specified
+ *	  address.
+ *
+ * \param object The object which is checked for being in the array
+ * \return A boolean whether the array contains an object with the specified
+ *	   address.
+ */
+- (BOOL)containsObjectIdenticalTo: (id)object;
+
+/**
  * \brief Returns the first object of the array or nil.
  *
  * The returned object is <i>not</i> retained and autoreleased for performance

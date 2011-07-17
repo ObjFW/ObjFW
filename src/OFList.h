@@ -127,6 +127,15 @@ struct of_list_object_t {
 - (void)removeListObject: (of_list_object_t*)listObject;
 
 /**
+ * \brief Checks whether the list contains an object with the specified address.
+ *
+ * \param object The object which is checked for being in the list
+ * \return A boolean whether the list contains an object with the specified
+ *	   address.
+ */
+- (BOOL)containsObjectIdenticalTo: (id)object;
+
+/**
  * \brief Returns the first object of the list or nil.
  *
  * The returned object is <i>not</i> retained and autoreleased for performance

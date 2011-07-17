@@ -164,6 +164,16 @@ struct of_dictionary_bucket
 - (id)objectForKey: (id <OFCopying>)key;
 
 /**
+ * \brief Checks whether the dictionary contains an object with the specified
+ *	  address.
+ *
+ * \param object The object which is checked for being in the dictionary
+ * \return A boolean whether the dictionary contains an object with the
+ *	   specified address.
+ */
+- (BOOL)containsObjectIdenticalTo: (id)object;
+
+/**
  * \brief Returns an OFEnumerator to enumerate through the dictionary's keys.
  *
  * \return An OFEnumerator to enumerate through the dictionary's keys
