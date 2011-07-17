@@ -18,8 +18,6 @@
 # include <sys/types.h>
 #endif
 
-#include <unistd.h>
-
 #import "OFException.h"
 
 @class OFSeekableStream;

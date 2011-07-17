@@ -14,7 +14,7 @@
  * file.
  */
 
-#include <unistd.h>
+#include <sys/types.h>
 
 #import "OFObject.h"
 #import "OFSerialization.h"
