@@ -36,9 +36,9 @@
  */
 @interface OFTCPSocket: OFStreamSocket
 {
-	BOOL		isListening;
-	struct sockaddr	*sockAddr;
-	socklen_t	sockAddrLen;
+	BOOL			isListening;
+	struct sockaddr_storage	*sockAddr;
+	socklen_t		sockAddrLen;
 }
 
 /**
