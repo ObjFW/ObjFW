@@ -351,7 +351,7 @@ static OFMutex *mutex = nil;
 - (OFTCPSocket*)accept
 {
 	OFTCPSocket *newsock;
-	struct sockaddr *addr;
+	struct sockaddr_storage *addr;
 	socklen_t addrlen;
 	int s;
 
@@ -365,7 +365,8 @@ static OFMutex *mutex = nil;
 		@throw e;
 	}
 
-	if ((s = accept(sock, addr, &addrlen)) == INVALID_SOCKET) {
+	if ((s = accept(sock, (struct sockaddr*)addr,
+	    &addrlen)) == INVALID_SOCKET) {
 		[newsock release];
 		@throw [OFAcceptFailedException newWithClass: isa
 						      socket: self];
@@ -397,8 +398,8 @@ static OFMutex *mutex = nil;
 	char *host = [self allocMemoryWithSize: NI_MAXHOST];
 
 	@try {
-		if (getnameinfo(sockAddr, sockAddrLen, host, NI_MAXHOST, NULL,
-		    0, NI_NUMERICHOST))
+		if (getnameinfo((struct sockaddr*)sockAddr, sockAddrLen, host,
+		    NI_MAXHOST, NULL, 0, NI_NUMERICHOST))
 			@throw [OFAddressTranslationFailedException
 			    newWithClass: isa];
 
