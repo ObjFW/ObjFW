@@ -16,10 +16,13 @@
 
 #include "config.h"
 
+#define __NO_EXT_QNX
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+
 #include <unistd.h>
 
 #include <sys/types.h>

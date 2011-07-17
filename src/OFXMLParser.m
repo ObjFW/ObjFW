@@ -19,7 +19,8 @@
 #define OF_XML_PARSER_M
 
 #include <string.h>
-#include <unistd.h>
+
+#include <sys/types.h>
 
 #import "OFXMLParser.h"
 #import "OFString.h"

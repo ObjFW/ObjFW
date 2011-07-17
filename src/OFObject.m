@@ -16,10 +16,14 @@
 
 #include "config.h"
 
+#define __NO_EXT_QNX
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <unistd.h>
+
 #include <assert.h>
 
 #import "OFObject.h"
