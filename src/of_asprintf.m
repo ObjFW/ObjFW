@@ -23,6 +23,8 @@
 #include <stdbool.h>
 #include <wchar.h>
 
+#include <sys/types.h>
+
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
 #import "asprintf.h"
