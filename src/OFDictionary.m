@@ -91,7 +91,8 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	return self;
 }
 
-- initWithDictionary: (OFDictionary*)dictionary
+- _initWithDictionary: (OFDictionary*)dictionary
+	     copyKeys: (BOOL)copyKeys
 {
 	self = [super init];
 
@@ -112,7 +113,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 		count = dictionary->count;
 
 		for (i = 0; i < size; i++) {
-			id <OFCopying> key;
+			id key;
 			struct of_dictionary_bucket *bucket;
 
 			if (dictionary->data[i] == NULL ||
@@ -120,7 +121,9 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 				continue;
 
 			bucket = [self allocMemoryWithSize: sizeof(*bucket)];
-			key = [dictionary->data[i]->key copy];
+			key = (copyKeys
+			    ? [dictionary->data[i]->key copy]
+			    : [dictionary->data[i]->key retain]);
 
 			@try {
 				[dictionary->data[i]->object retain];
@@ -141,6 +144,12 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	}
 
 	return self;
+}
+
+- initWithDictionary: (OFDictionary*)dictionary
+{
+	return [self _initWithDictionary: dictionary
+				copyKeys: YES];
 }
 
 - initWithObject: (id)object
@@ -783,7 +792,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	size_t i;
 
 	if (count == 0)
-		return @"{}";
+		return @"{()}";
 
 	ret = [OFMutableString stringWithString: @"{\n"];
 	pool = [[OFAutoreleasePool alloc] init];

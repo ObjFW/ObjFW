@@ -87,8 +87,9 @@
 	size = newSize;
 }
 
-- (void)setObject: (id)object
-	   forKey: (id <OFCopying>)key
+- (void)_setObject: (id)object
+	    forKey: (id)key
+	   copyKey: (BOOL)copyKey
 {
 	uint32_t i, hash, last;
 	id old;
@@ -148,7 +149,7 @@
 		bucket = [self allocMemoryWithSize: sizeof(*bucket)];
 
 		@try {
-			key = [key copy];
+			key = (copyKey ? [key copy] : [key retain]);
 		} @catch (id e) {
 			[self freeMemory: bucket];
 			@throw e;
@@ -174,6 +175,14 @@
 	old = data[i]->object;
 	data[i]->object = [object retain];
 	[old release];
+}
+
+- (void)setObject: (id)object
+	   forKey: (id <OFCopying>)key
+{
+	[self _setObject: object
+		  forKey: key
+		 copyKey: YES];
 }
 
 - (void)removeObjectForKey: (id <OFCopying>)key

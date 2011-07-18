@@ -209,6 +209,11 @@ struct of_dictionary_bucket
 - (OFDictionary*)filteredDictionaryUsingBlock:
     (of_dictionary_filter_block_t)block;
 #endif
+
+#ifdef OF_SET_M
+- _initWithDictionary: (OFDictionary*)dictionary
+	     copyKeys: (BOOL)copyKeys;
+#endif
 @end
 
 @interface OFDictionaryEnumerator: OFEnumerator

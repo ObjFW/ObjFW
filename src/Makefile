@@ -28,6 +28,7 @@ SRCS = OFApplication.m			\
        OFMD5Hash.m			\
        OFMutableArray.m			\
        OFMutableDictionary.m		\
+       OFMutableSet.m			\
        OFMutableString.m		\
        OFNull.m				\
        OFNumber.m			\
@@ -35,6 +36,7 @@ SRCS = OFApplication.m			\
        OFObject+Serialization.m		\
        ${OFPLUGIN_M}			\
        OFSeekableStream.m		\
+       OFSet.m				\
        OFSHA1Hash.m			\
        OFStream.m			\
        OFStreamObserver.m		\

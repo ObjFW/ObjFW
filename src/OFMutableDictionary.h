@@ -54,4 +54,10 @@ typedef id (^of_dictionary_replace_block_t)(id key, id object, BOOL *stop);
  */
 - (void)replaceObjectsUsingBlock: (of_dictionary_replace_block_t)block;
 #endif
+
+#if defined(OF_SET_M) || defined(OF_MUTABLE_SET_M)
+- (void)_setObject: (id)object
+	    forKey: (id)key
+	   copyKey: (BOOL)copyKey;
+#endif
 @end

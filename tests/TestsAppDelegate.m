@@ -120,13 +120,14 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 #ifdef OF_HAVE_BLOCKS
 	[self blockTests];
 #endif
-	[self stringTests];
 	[self MD5HashTests];
 	[self SHA1HashTests];
+	[self stringTests];
 	[self dataArrayTests];
 	[self arrayTests];
 	[self dictionaryTests];
 	[self listTests];
+	[self setTests];
 	[self dateTests];
 	[self numberTests];
 	[self streamTests];
