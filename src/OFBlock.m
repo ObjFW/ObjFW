@@ -264,7 +264,7 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 			}
 
 			if (src->forwarding == src)
-				src->forwarding = *dst;
+				(*dst)->forwarding = *dst;
 
 			memcpy(*dst, src, src->size);
 
