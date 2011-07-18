@@ -68,7 +68,7 @@ static void (^g)() = ^ {};
 	TEST(@"Copying a global block", (id)g == [[g copy] autorelease])
 
 	TEST(@"Copying a malloc block",
-	    (id)m == [[m copy] autorelease] && [m retainCount] == 2)
+	    (id)m == [m copy] && [m retainCount] == 2)
 
 	TEST(@"Autorelease a stack block", R([s autorelease]))
 

@@ -268,9 +268,6 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 
 			memcpy(*dst, src, src->size);
 
-			/* src->forwarding points to us -> that's a reference */
-			(*dst)->flags++;
-
 			if (src->size >= sizeof(of_block_byref_t))
 				src->byref_keep(*dst, src);
 		} else
@@ -441,7 +438,8 @@ _Block_object_dispose(const void *obj_, const int flags_)
 
 - (void)release
 {
-	Block_release(self);
+	if (isa == (Class)&_NSConcreteMallocBlock)
+		Block_release(self);
 }
 
 - (void)dealloc
