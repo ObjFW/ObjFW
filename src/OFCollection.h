@@ -19,7 +19,7 @@
 /**
  * \brief A protocol with methods common for all collections.
  */
-@protocol OFCollection <OFEnumerating>
+@protocol OFCollection <OFEnumerating, OFFastEnumeration>
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly) size_t count;
 #endif

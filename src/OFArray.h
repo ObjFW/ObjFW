@@ -35,7 +35,7 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
  * \brief A class for storing objects in an array.
  */
 @interface OFArray: OFObject <OFCopying, OFMutableCopying, OFCollection,
-    OFFastEnumeration, OFSerialization>
+    OFSerialization>
 {
 	OFDataArray *array;
 }

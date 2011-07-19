@@ -44,7 +44,7 @@ struct of_dictionary_bucket
  * dictionary.
  */
 @interface OFDictionary: OFObject <OFCopying, OFMutableCopying, OFCollection,
-    OFFastEnumeration, OFSerialization>
+    OFSerialization>
 {
 	struct of_dictionary_bucket **data;
 	uint32_t size;

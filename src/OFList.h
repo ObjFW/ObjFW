@@ -38,8 +38,7 @@ struct of_list_object_t {
 /**
  * \brief A class which provides easy to use double-linked lists.
  */
-@interface OFList: OFObject <OFCopying, OFCollection, OFFastEnumeration,
-    OFSerialization>
+@interface OFList: OFObject <OFCopying, OFCollection, OFSerialization>
 {
 	of_list_object_t *firstListObject;
 	of_list_object_t *lastListObject;
