@@ -268,4 +268,43 @@
 {
 	return [dictionary keyEnumerator];
 }
+
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
+			   objects: (id*)objects
+			     count: (int)count
+{
+	OFAutoreleasePool *pool = state->extra.pointers[0];
+	OFEnumerator *enumerator = state->extra.pointers[1];
+	int i;
+
+	state->itemsPtr = objects;
+	state->mutationsPtr = (unsigned long*)self;
+
+	if (state->state == -1)
+		return 0;
+
+	if (state->state == 0) {
+		pool = [[OFAutoreleasePool alloc] init];
+		enumerator = [dictionary keyEnumerator];
+
+		state->extra.pointers[0] = pool;
+		state->extra.pointers[1] = enumerator;
+
+		state->state = 1;
+	}
+
+	for (i = 0; i < count; i++) {
+		id object = [enumerator nextObject];
+
+		if (object == nil) {
+			[pool release];
+			state->state = -1;
+			return i;
+		}
+
+		objects[i] = object;
+	}
+
+	return count;
+}
 @end

@@ -25,7 +25,8 @@
 /**
  * \brief An unordered set of unique objects.
  */
-@interface OFSet: OFObject <OFCollection, OFCopying, OFMutableCopying>
+@interface OFSet: OFObject <OFCollection, OFCopying, OFMutableCopying,
+    OFFastEnumeration>
 {
 	OFMutableDictionary *dictionary;
 }

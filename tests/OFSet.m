@@ -30,6 +30,10 @@ static OFString *module = @"OFSet";
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFSet *set1, *set2;
 	OFMutableSet *mutableSet;
+#ifdef OF_HAVE_FAST_ENUMERATION
+	BOOL ok;
+	size_t i;
+#endif
 
 	TEST(@"+[setWithArray:]",
 	    (set1 = [OFSet setWithArray: [OFArray arrayWithObjects: @"foo",
@@ -70,6 +74,39 @@ static OFString *module = @"OFSet";
 	    [(set2 = [OFSet setWithObjects: @"x", nil]) intersectsSet: set1] &&
 	    [set1 intersectsSet: set2] &&
 	    ![([OFSet setWithObjects: @"1", nil]) intersectsSet: set1]);
+
+#ifdef OF_HAVE_FAST_ENUMERATION
+	ok = YES;
+	i = 0;
+
+	for (OFString *s in set1) {
+		switch (i) {
+		case 0:
+			if (![s isEqual: @"bar"])
+				ok = NO;
+			break;
+		case 1:
+			if (![s isEqual: @"baz"])
+				ok = NO;
+			break;
+		case 2:
+			if (![s isEqual: @"foo"])
+				ok = NO;
+			break;
+		case 3:
+			if (![s isEqual: @"x"])
+				ok = NO;
+			break;
+		}
+
+		i++;
+	}
+
+	if (i != 4)
+		ok = NO;
+
+	TEST(@"Fast enumeration", ok)
+#endif
 
 	[pool drain];
 }
