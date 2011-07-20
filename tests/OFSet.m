@@ -17,8 +17,10 @@
 #include "config.h"
 
 #import "OFSet.h"
-#import "OFAutoreleasePool.h"
 #import "OFArray.h"
+#import "OFAutoreleasePool.h"
+
+#import "OFEnumerationMutationException.h"
 
 #import "TestsAppDelegate.h"
 
@@ -106,6 +108,17 @@ static OFString *module = @"OFSet";
 		ok = NO;
 
 	TEST(@"Fast enumeration", ok)
+
+	ok = NO;
+	@try {
+		for (OFString *s in mutableSet)
+			[mutableSet removeObject: s];
+	} @catch (OFEnumerationMutationException *e) {
+		ok = YES;
+		[e dealloc];
+	}
+
+	TEST(@"Detection of mutation during Fast Enumeration", ok);
 #endif
 
 	[pool drain];

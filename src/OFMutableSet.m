@@ -21,6 +21,7 @@
 #import "OFMutableSet.h"
 #import "OFDictionary.h"
 #import "OFNull.h"
+#import "OFAutoreleasePool.h"
 
 @implementation OFMutableSet
 - (void)addObject: (id)object
@@ -28,10 +29,53 @@
 	[dictionary _setObject: [OFNull null]
 			forKey: object
 		       copyKey: NO];
+
+	mutations++;
 }
 
 - (void)removeObject: (id)object
 {
 	[dictionary removeObjectForKey: object];
+
+	mutations++;
+}
+
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
+			   objects: (id*)objects
+			     count: (int)count
+{
+	OFAutoreleasePool *pool = state->extra.pointers[0];
+	OFEnumerator *enumerator = state->extra.pointers[1];
+	int i;
+
+	state->itemsPtr = objects;
+	state->mutationsPtr = &mutations;
+
+	if (state->state == -1)
+		return 0;
+
+	if (state->state == 0) {
+		pool = [[OFAutoreleasePool alloc] init];
+		enumerator = [dictionary keyEnumerator];
+
+		state->extra.pointers[0] = pool;
+		state->extra.pointers[1] = enumerator;
+
+		state->state = 1;
+	}
+
+	for (i = 0; i < count; i++) {
+		id object = [enumerator nextObject];
+
+		if (object == nil) {
+			[pool release];
+			state->state = -1;
+			return i;
+		}
+
+		objects[i] = object;
+	}
+
+	return count;
 }
 @end
