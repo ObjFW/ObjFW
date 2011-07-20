@@ -248,23 +248,13 @@
 			   objects: (id*)objects
 			     count: (int)count_
 {
-	int i;
+	int ret = [super countByEnumeratingWithState: state
+					     objects: objects
+					       count: count_];
 
-	for (i = 0; i < count_; i++) {
-		for (; state->state < size && (data[state->state] == NULL ||
-		    data[state->state] == DELETED); state->state++);
-
-		if (state->state < size) {
-			objects[i] = data[state->state]->key;
-			state->state++;
-		} else
-			break;
-	}
-
-	state->itemsPtr = objects;
 	state->mutationsPtr = &mutations;
 
-	return i;
+	return ret;
 }
 
 - (OFEnumerator*)objectEnumerator

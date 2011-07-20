@@ -204,19 +204,13 @@
 			   objects: (id*)objects
 			     count: (int)count_
 {
-	size_t count = [array count];
+	int ret = [super countByEnumeratingWithState: state
+					     objects: objects
+					       count: count_];
 
-	if (count > INT_MAX)
-		@throw [OFOutOfRangeException newWithClass: isa];
-
-	if (state->state >= count)
-		return 0;
-
-	state->state = count;
-	state->itemsPtr = [array cArray];
 	state->mutationsPtr = &mutations;
 
-	return (int)count;
+	return ret;
 }
 
 - (OFEnumerator*)objectEnumerator
