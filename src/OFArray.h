@@ -29,6 +29,7 @@ typedef void (^of_array_enumeration_block_t)(id object, size_t index,
     BOOL *stop);
 typedef BOOL (^of_array_filter_block_t)(id odject, size_t index);
 typedef id (^of_array_map_block_t)(id object, size_t index);
+typedef id (^of_array_reduce_block_t)(id object1, id object2);
 #endif
 
 /**
@@ -282,6 +283,24 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
  * \return A new, autoreleased OFArray
  */
 - (OFArray*)filteredArrayUsingBlock: (of_array_filter_block_t)block;
+
+/**
+ * \brief Reduces the array to a single object using the specified block.
+ *
+ * If the array is empty, it will return nil.
+ *
+ * If there is only one object in the array, that object will be returned and
+ * the block will not be invoked.
+ *
+ * If there are at least two objects, the block is invoked for each object
+ * except the first, where object1 is always to what the array has already been
+ * reduced and object2 what should be added to object1.
+ *
+ * \param block A block which reduces two objects into one, which is called for
+ *		all objects except the first
+ * \return The array reduced to a single object
+ */
+- (id)reduceUsingBlock: (of_array_reduce_block_t)block;
 #endif
 @end
 

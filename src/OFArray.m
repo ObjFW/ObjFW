@@ -654,6 +654,43 @@
 
 	return ret;
 }
+
+- (id)reduceUsingBlock: (of_array_reduce_block_t)block
+{
+	OFAutoreleasePool *pool;
+	id *cArray;
+	size_t i, count = [array count];
+	id current;
+
+	if (count == 0)
+		return nil;
+	if (count == 1)
+		return [[[self firstObject] retain] autorelease];
+
+	cArray = [array cArray];
+
+	pool = [[OFAutoreleasePool alloc] init];
+	current = cArray[0];
+
+	for (i = 1; i < count; i++) {
+		id old = current;
+		@try {
+			current = [block(current, cArray[i]) retain];
+			[pool releaseObjects];
+		} @finally {
+			[old release];
+		}
+	}
+
+	@try {
+		[pool release];
+	} @catch (id e) {
+		[current release];
+		@throw e;
+	}
+
+	return [current autorelease];
+}
 #endif
 
 - (void)dealloc
