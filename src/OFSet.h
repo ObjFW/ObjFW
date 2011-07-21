@@ -22,6 +22,11 @@
 @class OFMutableDictionary;
 @class OFArray;
 
+#ifdef OF_HAVE_BLOCKS
+typedef void (^of_set_enumeration_block_t)(id object, BOOL *stop);
+typedef BOOL (^of_set_filter_block_t)(id object);
+#endif
+
 /**
  * \brief An unordered set of unique objects.
  */
@@ -111,6 +116,24 @@
  *	   in common
  */
 - (BOOL)intersectsSet: (OFSet*)set;
+
+#ifdef OF_HAVE_BLOCKS
+/**
+ * \brief Executes a block for each object.
+ *
+ * \param block The block to execute for each object
+ */
+- (void)enumerateObjectsUsingBlock: (of_set_enumeration_block_t)block;
+
+/**
+ * \brief Returns a new set, only containing the objects for which the block
+ *	  returns YES.
+ *
+ * \param block A block which determines if the object should be in the new set
+ * \return A new, autoreleased OFSet
+ */
+- (OFSet*)filteredSetUsingBlock: (of_set_filter_block_t)block;
+#endif
 @end
 
 #import "OFMutableSet.h"

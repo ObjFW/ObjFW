@@ -307,4 +307,33 @@
 
 	return count;
 }
+
+#ifdef OF_HAVE_BLOCKS
+- (void)enumerateObjectsUsingBlock: (of_set_enumeration_block_t)block
+{
+	[dictionary enumerateKeysAndObjectsUsingBlock: ^ (id key, id object,
+	    BOOL *stop) {
+		block(key, stop);
+	}];
+}
+
+- (OFSet*)filteredSetUsingBlock: (of_set_filter_block_t)block
+{
+	OFMutableSet *ret = [OFMutableSet set];
+
+	[dictionary enumerateKeysAndObjectsUsingBlock: ^ (id key, id object,
+	    BOOL *stop) {
+		if (block(key))
+			[ret addObject: key];
+	}];
+
+	/*
+	 * Class swizzle the set to be immutable. We declared the return type
+	 * to be OFSet*, so it can't be modified anyway. But not swizzling it
+	 * would create a real copy each time -[copy] is called.
+	 */
+	ret->isa = [OFSet class];
+	return ret;
+}
+#endif
 @end
