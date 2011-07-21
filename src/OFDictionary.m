@@ -18,6 +18,8 @@
 
 #include <string.h>
 
+#include <assert.h>
+
 #import "OFDictionary.h"
 #import "OFEnumerator.h"
 #import "OFArray.h"
@@ -641,6 +643,70 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	return NO;
 }
 
+- (OFArray*)allKeys
+{
+	OFArray *ret;
+	id *cArray = [self allocMemoryForNItems: count
+				       withSize: sizeof(id)];
+	size_t i, j;
+
+	for (i = j = 0; i < size; i++)
+		if (data[i] != NULL && data[i] != DELETED)
+			cArray[j++] = data[i]->key;
+
+	assert(j == count);
+
+	@try {
+		ret = [OFArray arrayWithCArray: cArray
+					length: count];
+	} @finally {
+		[self freeMemory: cArray];
+	}
+
+	return ret;
+}
+
+- (OFArray*)allObjects
+{
+	OFArray *ret;
+	id *cArray = [self allocMemoryForNItems: count
+				       withSize: sizeof(id)];
+	size_t i, j;
+
+	for (i = j = 0; i < size; i++)
+		if (data[i] != NULL && data[i] != DELETED)
+			cArray[j++] = data[i]->object;
+
+	assert(j == count);
+
+	@try {
+		ret = [OFArray arrayWithCArray: cArray
+					length: count];
+	} @finally {
+		[self freeMemory: cArray];
+	}
+
+	return ret;
+}
+
+- (OFEnumerator*)objectEnumerator
+{
+	return [[[OFDictionaryObjectEnumerator alloc]
+	    initWithDictionary: self
+			  data: data
+			  size: size
+	      mutationsPointer: NULL] autorelease];
+}
+
+- (OFEnumerator*)keyEnumerator
+{
+	return [[[OFDictionaryKeyEnumerator alloc]
+	    initWithDictionary: self
+			  data: data
+			  size: size
+	      mutationsPointer: NULL] autorelease];
+}
+
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
 			   objects: (id*)objects
 			     count: (int)count_
@@ -662,24 +728,6 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	state->mutationsPtr = (unsigned long*)self;
 
 	return i;
-}
-
-- (OFEnumerator*)objectEnumerator
-{
-	return [[[OFDictionaryObjectEnumerator alloc]
-	    initWithDictionary: self
-			  data: data
-			  size: size
-	      mutationsPointer: NULL] autorelease];
-}
-
-- (OFEnumerator*)keyEnumerator
-{
-	return [[[OFDictionaryKeyEnumerator alloc]
-	    initWithDictionary: self
-			  data: data
-			  size: size
-	      mutationsPointer: NULL] autorelease];
 }
 
 #ifdef OF_HAVE_BLOCKS

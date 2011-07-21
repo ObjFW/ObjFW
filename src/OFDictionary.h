@@ -174,6 +174,20 @@ struct of_dictionary_bucket
 - (BOOL)containsObjectIdenticalTo: (id)object;
 
 /**
+ * \brief Returns an array of all keys.
+ *
+ * \return An array of all keys
+ */
+- (OFArray*)allKeys;
+
+/**
+ * \brief Returns an array of all objects.
+ *
+ * \return An array of all objects
+ */
+- (OFArray*)allObjects;
+
+/**
  * \brief Returns an OFEnumerator to enumerate through the dictionary's keys.
  *
  * \return An OFEnumerator to enumerate through the dictionary's keys
