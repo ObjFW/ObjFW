@@ -21,6 +21,7 @@
 #import "OFMutableSet.h"
 #import "OFDictionary.h"
 #import "OFNull.h"
+#import "OFArray.h"
 #import "OFAutoreleasePool.h"
 
 @implementation OFMutableSet
@@ -38,6 +39,33 @@
 	[dictionary removeObjectForKey: object];
 
 	mutations++;
+}
+
+- (void)minusSet: (OFSet*)set
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFEnumerator *enumerator = [set objectEnumerator];
+	id object;
+
+	while ((object = [enumerator nextObject]) != nil)
+		[self removeObject: object];
+
+	[pool release];
+}
+
+- (void)intersectSet: (OFSet*)set
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFArray *objects = [dictionary allKeys];
+	id *cArray = [objects cArray];
+	size_t count = [objects count];
+	size_t i;
+
+	for (i = 0; i < count; i++)
+		if (![set containsObject: cArray[i]])
+			[self removeObject: cArray[i]];
+
+	[pool release];
 }
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state

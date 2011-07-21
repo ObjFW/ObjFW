@@ -37,4 +37,19 @@
  * \param object The object to remove from the set
  */
 - (void)removeObject: (id)object;
+
+/**
+ * \brief Removes all objects from the receiver that are in the specified set.
+ *
+ * \param set The set whose objects will be removed from the receiver
+ */
+- (void)minusSet: (OFSet*)set;
+
+/**
+ * \brief Removes all objects from the receiver that are not in the specified
+ *	  set.
+ *
+ * \param set The set to intersect
+ */
+- (void)intersectSet: (OFSet*)set;
 @end

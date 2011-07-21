@@ -77,6 +77,18 @@ static OFString *module = @"OFSet";
 	    [set1 intersectsSet: set2] &&
 	    ![([OFSet setWithObjects: @"1", nil]) intersectsSet: set1]);
 
+	TEST(@"-[minusSet:]",
+	    R([mutableSet minusSet: ([OFSet setWithObjects: @"x", nil])]) &&
+	    [mutableSet isEqual: ([OFSet setWithObjects: @"baz", @"bar", nil])])
+
+	TEST(@"-[intersectSet:]",
+	    R([mutableSet intersectSet: ([OFSet setWithObjects: @"baz",
+	    nil])]) && [mutableSet isEqual: ([OFSet setWithObjects: @"baz",
+	    nil])])
+
+	[mutableSet addObject: @"baz"];
+	[mutableSet addObject: @"x"];
+
 #ifdef OF_HAVE_FAST_ENUMERATION
 	ok = YES;
 	i = 0;
