@@ -68,6 +68,18 @@
 	[pool release];
 }
 
+- (void)unionSet: (OFSet*)set
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFEnumerator *enumerator = [set objectEnumerator];
+	id object;
+
+	while ((object = [enumerator nextObject]) != nil)
+		[self addObject: object];
+
+	[pool release];
+}
+
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
 			   objects: (id*)objects
 			     count: (int)count

@@ -52,4 +52,11 @@
  * \param set The set to intersect
  */
 - (void)intersectSet: (OFSet*)set;
+
+/**
+ * \brief Creates a union of the receiver and the specified set.
+ *
+ * \param set The set to create the union with
+ */
+- (void)unionSet: (OFSet*)set;
 @end

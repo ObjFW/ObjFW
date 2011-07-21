@@ -86,8 +86,10 @@ static OFString *module = @"OFSet";
 	    nil])]) && [mutableSet isEqual: ([OFSet setWithObjects: @"baz",
 	    nil])])
 
-	[mutableSet addObject: @"baz"];
-	[mutableSet addObject: @"x"];
+	TEST(@"-[unionSet:]",
+	    R([mutableSet unionSet: ([OFSet setWithObjects: @"x", @"bar",
+	    nil])]) && [mutableSet isEqual: ([OFSet setWithObjects: @"baz",
+	    @"bar", @"x", nil])])
 
 #ifdef OF_HAVE_FAST_ENUMERATION
 	ok = YES;
