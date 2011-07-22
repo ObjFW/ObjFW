@@ -29,7 +29,7 @@ typedef void (^of_array_enumeration_block_t)(id object, size_t index,
     BOOL *stop);
 typedef BOOL (^of_array_filter_block_t)(id odject, size_t index);
 typedef id (^of_array_map_block_t)(id object, size_t index);
-typedef id (^of_array_reduce_block_t)(id object1, id object2);
+typedef id (^of_array_reduce_block_t)(id left, id right);
 #endif
 
 /**
@@ -293,8 +293,8 @@ typedef id (^of_array_reduce_block_t)(id object1, id object2);
  * the block will not be invoked.
  *
  * If there are at least two objects, the block is invoked for each object
- * except the first, where object1 is always to what the array has already been
- * reduced and object2 what should be added to object1.
+ * except the first, where left is always to what the array has already been
+ * reduced and right what should be added to left.
  *
  * \param block A block which reduces two objects into one, which is called for
  *		all objects except the first
