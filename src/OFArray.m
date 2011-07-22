@@ -642,7 +642,7 @@
 	return ret;
 }
 
-- (id)reduceUsingBlock: (of_array_reduce_block_t)block
+- (id)foldUsingBlock: (of_array_fold_block_t)block
 {
 	size_t count = [array count];
 	__block id current;

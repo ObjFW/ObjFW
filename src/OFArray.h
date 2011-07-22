@@ -29,7 +29,7 @@ typedef void (^of_array_enumeration_block_t)(id object, size_t index,
     BOOL *stop);
 typedef BOOL (^of_array_filter_block_t)(id odject, size_t index);
 typedef id (^of_array_map_block_t)(id object, size_t index);
-typedef id (^of_array_reduce_block_t)(id left, id right);
+typedef id (^of_array_fold_block_t)(id left, id right);
 #endif
 
 /**
@@ -285,7 +285,7 @@ typedef id (^of_array_reduce_block_t)(id left, id right);
 - (OFArray*)filteredArrayUsingBlock: (of_array_filter_block_t)block;
 
 /**
- * \brief Reduces the array to a single object using the specified block.
+ * \brief Folds the array to a single object using the specified block.
  *
  * If the array is empty, it will return nil.
  *
@@ -294,13 +294,13 @@ typedef id (^of_array_reduce_block_t)(id left, id right);
  *
  * If there are at least two objects, the block is invoked for each object
  * except the first, where left is always to what the array has already been
- * reduced and right what should be added to left.
+ * folded and right what should be added to left.
  *
- * \param block A block which reduces two objects into one, which is called for
+ * \param block A block which folds two objects into one, which is called for
  *		all objects except the first
- * \return The array reduced to a single object
+ * \return The array folded to a single object
  */
-- (id)reduceUsingBlock: (of_array_reduce_block_t)block;
+- (id)foldUsingBlock: (of_array_fold_block_t)block;
 #endif
 @end
 
