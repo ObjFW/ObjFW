@@ -751,12 +751,12 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 - (OFDictionary*)mappedDictionaryUsingBlock: (of_dictionary_map_block_t)block
 {
 	OFMutableDictionary *new = [OFMutableDictionary dictionary];
-	size_t i;
 
-	for (i = 0; i < size; i++)
-		if (data[i] != NULL && data[i] != DELETED)
-			[new setObject: block(data[i]->key, data[i]->object)
-				forKey: data[i]->key];
+	[self enumerateKeysAndObjectsUsingBlock: ^ (id key, id object,
+	    BOOL *stop) {
+		[new setObject: block(key, object)
+			forKey: key];
+	}];
 
 	/*
 	 * Class swizzle the dictionary to be immutable. We declared the return
@@ -771,13 +771,13 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
     (of_dictionary_filter_block_t)block
 {
 	OFMutableDictionary *new = [OFMutableDictionary dictionary];
-	size_t i;
 
-	for (i = 0; i < size; i++)
-		if (data[i] != NULL && data[i] != DELETED)
-			if (block(data[i]->key, data[i]->object))
-				[new setObject: data[i]->object
-					forKey: data[i]->key];
+	[self enumerateKeysAndObjectsUsingBlock: ^ (id key, id object,
+	    BOOL *stop) {
+		if (block(key, object))
+			[new setObject: object
+				forKey: key];
+	}];
 
 	/*
 	 * Class swizzle the dictionary to be immutable. We declared the return
