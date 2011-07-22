@@ -597,27 +597,19 @@
 
 - (OFArray*)mappedArrayUsingBlock: (of_array_map_block_t)block
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFArray *ret;
 	size_t count = [array count];
 	id *tmp = [self allocMemoryForNItems: count
 				    withSize: sizeof(id)];
 
 	@try {
-		id *cArray = [array cArray];
-		size_t i;
+		[self enumerateObjectsUsingBlock: ^ (id object, size_t index,
+		    BOOL *stop) {
+			tmp[index] = block(object, index);
+		}];
 
-		for (i = 0; i < count; i++)
-			tmp[i] = block(cArray[i], i);
-
-		ret = [[OFArray alloc] initWithCArray: tmp
-					       length: count];
-
-		@try {
-			[pool release];
-		} @finally {
-			[ret autorelease];
-		}
+		ret = [OFArray arrayWithCArray: tmp
+					length: count];
 	} @finally {
 		[self freeMemory: tmp];
 	}
@@ -627,27 +619,22 @@
 
 - (OFArray*)filteredArrayUsingBlock: (of_array_filter_block_t)block
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFArray *ret;
 	size_t count = [array count];
 	id *tmp = [self allocMemoryForNItems: count
 				    withSize: sizeof(id)];
 
 	@try {
-		id *cArray = [array cArray];
-		size_t i, j = 0;
+		__block size_t i = 0;
 
-		for (i = 0; i < count; i++) {
-			if (block(cArray[i], i))
-				tmp[j++] = cArray[i];
-
-			[pool releaseObjects];
-		}
-
-		[pool release];
+		[self enumerateObjectsUsingBlock: ^ (id object, size_t index,
+		    BOOL *stop) {
+			if (block(object, index))
+				tmp[i++] = object;
+		}];
 
 		ret = [OFArray arrayWithCArray: tmp
-					length: j];
+					length: i];
 	} @finally {
 		[self freeMemory: tmp];
 	}
@@ -657,37 +644,30 @@
 
 - (id)reduceUsingBlock: (of_array_reduce_block_t)block
 {
-	OFAutoreleasePool *pool;
-	id *cArray;
-	size_t i, count = [array count];
-	id current;
+	size_t count = [array count];
+	__block id current;
 
 	if (count == 0)
 		return nil;
 	if (count == 1)
 		return [[[self firstObject] retain] autorelease];
 
-	cArray = [array cArray];
+	[self enumerateObjectsUsingBlock: ^ (id object, size_t index,
+	    BOOL *stop) {
+		id new;
 
-	pool = [[OFAutoreleasePool alloc] init];
-	current = cArray[0];
-
-	for (i = 1; i < count; i++) {
-		id old = current;
-		@try {
-			current = [block(current, cArray[i]) retain];
-			[pool releaseObjects];
-		} @finally {
-			[old release];
+		if (index == 0) {
+			current = [object retain];
+			return;
 		}
-	}
 
-	@try {
-		[pool release];
-	} @catch (id e) {
-		[current release];
-		@throw e;
-	}
+		@try {
+			new = [block(current, object) retain];
+		} @finally {
+			[current release];
+		}
+		current = new;
+	}];
 
 	return [current autorelease];
 }
