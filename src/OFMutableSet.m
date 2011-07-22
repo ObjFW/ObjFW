@@ -79,17 +79,4 @@
 
 	[pool release];
 }
-
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
-			   objects: (id*)objects
-			     count: (int)count
-{
-	int ret = [super countByEnumeratingWithState: state
-					     objects: objects
-					       count: count];
-
-	state->mutationsPtr = &mutations;
-
-	return ret;
-}
 @end
