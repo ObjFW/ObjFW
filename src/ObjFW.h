@@ -28,6 +28,9 @@
 #import "OFList.h"
 
 #import "OFDictionary.h"
+
+#import "OFSet.h"
+
 #import "OFEnumerator.h"
 
 #import "OFNull.h"
