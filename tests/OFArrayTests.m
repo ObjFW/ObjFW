@@ -282,6 +282,13 @@ static OFString *c_ary[] = {
 	   [[[m[0] filteredArrayUsingBlock: ^ BOOL (id obj, size_t idx) {
 		return ([obj isEqual: @"foo"] ? YES : NO);
 	    }] description] isEqual: @"(\n\tfoo\n)"])
+
+	TEST(@"-[foldUsingBlock:]",
+	    [([OFArray arrayWithObjects: [OFMutableString string], @"foo",
+	    @"bar", @"baz", nil]) foldUsingBlock: ^ id (id left, id right) {
+		[left appendString: right];
+		return left;
+	    }])
 #endif
 
 	[pool drain];
