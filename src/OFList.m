@@ -394,28 +394,24 @@
 			   objects: (id*)objects
 			     count: (int)count_
 {
-	of_list_object_t *listObject = state->extra.pointers[0];
+	of_list_object_t **listObject = (of_list_object_t**)&state->extra[0];
 	int i;
 
 	state->itemsPtr = objects;
 	state->mutationsPtr = &mutations;
 
 	if (state->state == 0) {
-		listObject = firstListObject;
+		*listObject = firstListObject;
 		state->state = 1;
 	}
 
 	for (i = 0; i < count_; i++) {
-		if (listObject == NULL) {
-			state->extra.pointers[0] = NULL;
+		if (*listObject == NULL)
 			return i;
-		}
 
-		objects[i] = listObject->object;
-		listObject = listObject->next;
+		objects[i] = (*listObject)->object;
+		*listObject = (*listObject)->next;
 	}
-
-	state->extra.pointers[0] = listObject;
 
 	return count_;
 }

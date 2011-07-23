@@ -68,10 +68,7 @@ typedef struct of_fast_enumeration_state_t {
 	/// Arbitrary state information to detect mutations
 	unsigned long *mutationsPtr;
 	/// Additional arbitrary state information
-	union {
-		unsigned long longs[5];
-		void *pointers[2];
-	} extra;
+	unsigned long extra[5];
 } of_fast_enumeration_state_t;
 #endif
 
