@@ -35,6 +35,8 @@
 
 #import "OFNull.h"
 
+#import "OFIntrospection.h"
+
 #import "OFNumber.h"
 #import "OFDate.h"
 #import "OFURL.h"

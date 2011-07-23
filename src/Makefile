@@ -24,6 +24,7 @@ SRCS = OFApplication.m			\
        OFFloatVector.m			\
        OFHash.m				\
        OFHTTPRequest.m			\
+       OFIntrospection.m		\
        OFList.m				\
        OFMD5Hash.m			\
        OFMutableArray.m			\
