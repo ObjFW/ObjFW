@@ -205,6 +205,13 @@ typedef struct of_rectangle_t
  * \return The object
  */
 - autorelease;
+
+/**
+ * \brief Returns the receiver.
+ *
+ * \return The receiver
+ */
+- self;
 @end
 
 /**

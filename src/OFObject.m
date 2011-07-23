@@ -804,6 +804,11 @@ void _references_to_categories_of_OFObject(void)
 	return self;
 }
 
+- self
+{
+	return self;
+}
+
 - (void)dealloc
 {
 	Class class;
