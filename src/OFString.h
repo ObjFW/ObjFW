@@ -89,6 +89,12 @@ extern size_t of_utf16_string_length(const uint16_t*);
 	size_t initialized;
 }
 
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly) const char *cString;
+@property (readonly) size_t cStringLength;
+@property (readonly) size_t length;
+#endif
+
 /**
  * \return A new autoreleased OFString
  */
