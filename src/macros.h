@@ -26,6 +26,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+# import <objc/runtime.h>
+#elif defined(OF_OLD_GNU_RUNTIME)
+# import <objc/objc-api.h>
+#endif
+
 #ifdef _PSP
 # define INTMAX_MAX LONG_LONG_MAX
 #endif
@@ -75,6 +81,18 @@
 # elif defined(__arm__) || defined(__ARM__)
 #  define OF_ARM_ASM
 # endif
+#endif
+
+#if defined(OF_OLD_GNU_RUNTIME) || defined(OF_OBJFW_RUNTIME)
+# define objc_lookUpClass objc_lookup_class
+#endif
+
+#ifdef OF_OLD_GNU_RUNTIME
+# define class_getInstanceSize class_get_instance_size
+# define class_getName class_get_class_name
+# define class_getSuperclass class_get_super_class
+# define sel_getName sel_get_name
+# define sel_registerName sel_get_uid
 #endif
 
 #ifndef _WIN32

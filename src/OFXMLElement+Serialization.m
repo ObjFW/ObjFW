@@ -16,12 +16,6 @@
 
 #include "config.h"
 
-#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
-# import <objc/runtime.h>
-#elif defined(OF_OLD_GNU_RUNTIME)
-# import <objc/objc-api.h>
-#endif
-
 #import "OFXMLElement.h"
 #import "OFXMLElement+Serialization.h"
 #import "OFSerialization.h"
@@ -31,9 +25,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
 
-#if defined(OF_OBJFW_RUNTIME) || defined(OF_OLD_GNU_RUNTIME)
-# define objc_lookUpClass objc_lookup_class
-#endif
+#import "macros.h"
 
 int _OFXMLElement_Serialization_reference;
 

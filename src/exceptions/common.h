@@ -16,15 +16,6 @@
 
 #include <string.h>
 
-#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
-# import <objc/runtime.h>
-#endif
-
-#ifdef OF_OLD_GNU_RUNTIME
-# import <objc/objc-api.h>
-# define sel_getName(x) sel_get_name(x)
-#endif
-
 #ifndef _WIN32
 #if !defined(HAVE_THREADSAFE_GETADDRINFO) && !defined(_PSP)
 # include <netdb.h>

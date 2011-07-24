@@ -43,11 +43,8 @@
 #if defined(OF_OBJFW_RUNTIME)
 # import <objfw-rt.h>
 #elif defined(OF_OLD_GNU_RUNTIME)
-# import <objc/objc-api.h>
 # import <objc/sarray.h>
 # import <objc/Protocol.h>
-#else
-# import <objc/runtime.h>
 #endif
 
 #ifdef _WIN32
@@ -60,14 +57,6 @@
 # import "atomic.h"
 #elif defined(OF_THREADS)
 # import "threading.h"
-#endif
-
-/* A few macros to reduce #ifdefs */
-#ifdef OF_OLD_GNU_RUNTIME
-# define class_getInstanceSize class_get_instance_size
-# define class_getName class_get_class_name
-# define class_getSuperclass class_get_super_class
-# define sel_registerName sel_get_uid
 #endif
 
 struct pre_ivar {
