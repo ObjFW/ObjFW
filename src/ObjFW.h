@@ -30,6 +30,7 @@
 #import "OFDictionary.h"
 
 #import "OFSet.h"
+#import "OFCountedSet.h"
 
 #import "OFEnumerator.h"
 

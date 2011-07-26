@@ -119,9 +119,9 @@ typedef BOOL (^of_set_filter_block_t)(id object);
 
 #ifdef OF_HAVE_BLOCKS
 /**
- * \brief Executes a block for each object.
+ * \brief Executes a block for each object in the set.
  *
- * \param block The block to execute for each object
+ * \param block The block to execute for each object in the set
  */
 - (void)enumerateObjectsUsingBlock: (of_set_enumeration_block_t)block;
 

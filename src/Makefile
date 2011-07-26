@@ -12,6 +12,7 @@ SRCS = OFApplication.m			\
        OFAutoreleasePool.m		\
        OFBlock.m			\
        OFConstantString.m		\
+       OFCountedSet.m			\
        OFDataArray.m			\
        OFDataArray+Hashing.m		\
        OFDate.m				\

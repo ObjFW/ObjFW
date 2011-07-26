@@ -192,6 +192,8 @@
 		4B3D23EB1337FCB000DD29B8 /* unicode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67998C1099E7C50041064A /* unicode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3D23EE1337FFD000DD29B8 /* of_asprintf.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB50DD012F863C700C9393F /* of_asprintf.m */; };
 		4B3D5694139A617D0010A78F /* OFSerializationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3D5693139A617D0010A78F /* OFSerializationTests.m */; };
+		4B45355313DCFE1E0037AB4D /* OFCountedSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B45355113DCFE1E0037AB4D /* OFCountedSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B45355413DCFE1E0037AB4D /* OFCountedSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B45355213DCFE1E0037AB4D /* OFCountedSet.m */; };
 		4B511B7C139C0A34003764A5 /* OFNull.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B511B7A139C0A34003764A5 /* OFNull.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B511B7D139C0A34003764A5 /* OFNull.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B511B7B139C0A34003764A5 /* OFNull.m */; };
 		4B55A0FF133ABEA900B58A93 /* OFThreadJoinFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B55A0F9133ABEA900B58A93 /* OFThreadJoinFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -427,6 +429,8 @@
 		4B3D23BB1337FC5800DD29B8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
 		4B3D23EF1338008000DD29B8 /* mach_alias_list */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = mach_alias_list; path = src/mach_alias_list; sourceTree = SOURCE_ROOT; };
 		4B3D5693139A617D0010A78F /* OFSerializationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSerializationTests.m; path = tests/OFSerializationTests.m; sourceTree = "<group>"; };
+		4B45355113DCFE1E0037AB4D /* OFCountedSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCountedSet.h; path = src/OFCountedSet.h; sourceTree = "<group>"; };
+		4B45355213DCFE1E0037AB4D /* OFCountedSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCountedSet.m; path = src/OFCountedSet.m; sourceTree = "<group>"; };
 		4B4986DF1101F64500A2CFDA /* objc_properties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = objc_properties.m; path = src/objc_properties.m; sourceTree = "<group>"; };
 		4B4A61F212DF5EA20048F3F2 /* OFURL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFURL.h; path = src/OFURL.h; sourceTree = SOURCE_ROOT; };
 		4B4A61F312DF5EA20048F3F2 /* OFURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFURL.m; path = src/OFURL.m; sourceTree = SOURCE_ROOT; };
@@ -807,6 +811,8 @@
 				4BAF5F46123460C900F4E111 /* OFCollection.h */,
 				4BE5F0D712DF4225005C7A0C /* OFConstantString.h */,
 				4BE5F0D812DF4225005C7A0C /* OFConstantString.m */,
+				4B45355113DCFE1E0037AB4D /* OFCountedSet.h */,
+				4B45355213DCFE1E0037AB4D /* OFCountedSet.m */,
 				4B6799601099E7C50041064A /* OFDataArray.h */,
 				4B6799611099E7C50041064A /* OFDataArray.m */,
 				4BE17AD912FD746D002CEB0B /* OFDataArray+Hashing.h */,
@@ -1008,6 +1014,7 @@
 				4B3D23BF1337FC8300DD29B8 /* OFBlock.h in Headers */,
 				4B3D23C01337FC8300DD29B8 /* OFCollection.h in Headers */,
 				4B3D23C11337FC8300DD29B8 /* OFConstantString.h in Headers */,
+				4B45355313DCFE1E0037AB4D /* OFCountedSet.h in Headers */,
 				4B3D23C21337FC8300DD29B8 /* OFDataArray.h in Headers */,
 				4B3D23C31337FC8300DD29B8 /* OFDataArray+Hashing.h in Headers */,
 				4B3D23C41337FC8300DD29B8 /* OFDate.h in Headers */,
@@ -1267,6 +1274,7 @@
 				4B3D238D1337FC0D00DD29B8 /* OFAutoreleasePool.m in Sources */,
 				4B3D238E1337FC0D00DD29B8 /* OFBlock.m in Sources */,
 				4B3D238F1337FC0D00DD29B8 /* OFConstantString.m in Sources */,
+				4B45355413DCFE1E0037AB4D /* OFCountedSet.m in Sources */,
 				4B3D23901337FC0D00DD29B8 /* OFDataArray.m in Sources */,
 				4B3D23911337FC0D00DD29B8 /* OFDataArray+Hashing.m in Sources */,
 				4B3D23921337FC0D00DD29B8 /* OFDate.m in Sources */,

@@ -224,7 +224,7 @@ struct of_dictionary_bucket
     (of_dictionary_filter_block_t)block;
 #endif
 
-#ifdef OF_SET_M
+#if defined(OF_SET_M) || defined(OF_COUNTED_SET_M)
 - _initWithDictionary: (OFDictionary*)dictionary
 	     copyKeys: (BOOL)copyKeys;
 #endif

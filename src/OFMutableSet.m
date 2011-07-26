@@ -63,7 +63,7 @@
 
 	for (i = 0; i < count; i++)
 		if (![set containsObject: cArray[i]])
-			[self removeObject: cArray[i]];
+			[dictionary removeObjectForKey: cArray[i]];
 
 	[pool release];
 }
