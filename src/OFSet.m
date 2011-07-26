@@ -21,8 +21,8 @@
 #import "OFSet.h"
 #import "OFDictionary.h"
 #import "OFArray.h"
-#import "OFNull.h"
 #import "OFString.h"
+#import "OFNumber.h"
 #import "OFAutoreleasePool.h"
 
 @implementation OFSet
@@ -70,12 +70,24 @@
 
 - initWithSet: (OFSet*)set
 {
-	self = [super init];
+	self = [self init];
 
 	@try {
-		dictionary = [[OFMutableDictionary alloc]
-		    _initWithDictionary: set->dictionary
-			       copyKeys: NO];
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		OFNumber *one = [OFNumber numberWithSize: 1];
+		OFEnumerator *enumerator = [set objectEnumerator];
+		id object;
+
+		/*
+		 * We can't just copy the dictionary as the specified set might
+		 * be a counted set, but we're just a normal set.
+		 */
+		while ((object = [enumerator nextObject]) != nil)
+			[dictionary _setObject: one
+					forKey: object
+				       copyKey: NO];
+
+		[pool release];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -89,14 +101,17 @@
 	self = [self init];
 
 	@try {
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		OFNumber *one = [OFNumber numberWithSize: 1];
 		id *cArray = [array cArray];
 		size_t i, count = [array count];
-		OFNull *null = [OFNull null];
 
 		for (i = 0; i < count; i++)
-			[dictionary _setObject: null
+			[dictionary _setObject: one
 					forKey: cArray[i]
 				       copyKey: NO];
+
+		[pool release];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -124,17 +139,20 @@
 	self = [self init];
 
 	@try {
-		OFNull *null = [OFNull null];
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		OFNumber *one = [OFNumber numberWithSize: 1];
 		id object;
 
-		[dictionary _setObject: null
+		[dictionary _setObject: one
 				forKey: firstObject
 			       copyKey: NO];
 
 		while ((object = va_arg(arguments, id)) != nil)
-			[dictionary _setObject: null
+			[dictionary _setObject: one
 					forKey: object
 				       copyKey: NO];
+
+		[pool release];
 	} @catch (id e) {
 		[self release];
 		@throw e;

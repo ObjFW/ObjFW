@@ -20,14 +20,14 @@
 
 #import "OFMutableSet.h"
 #import "OFDictionary.h"
-#import "OFNull.h"
 #import "OFArray.h"
+#import "OFNumber.h"
 #import "OFAutoreleasePool.h"
 
 @implementation OFMutableSet
 - (void)addObject: (id)object
 {
-	[dictionary _setObject: [OFNull null]
+	[dictionary _setObject: [OFNumber numberWithSize: 1]
 			forKey: object
 		       copyKey: NO];
 
