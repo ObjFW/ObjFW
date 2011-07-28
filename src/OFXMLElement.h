@@ -124,6 +124,15 @@
 + elementWithXMLString: (OFString*)string;
 
 /**
+ * Parses the specified file and returns an OFXMLElement for it.
+ *
+ * \param path The path to the file
+ * \return A new autoreleased OFXMLElement with the contents of the specified
+ *	   file
+ */
++ elementWithFile: (OFString*)path;
+
+/**
  * Initializes an already allocated OFXMLElement with the specified element
  * name.
  *
@@ -214,6 +223,15 @@
  * \return An initialized OFXMLElement with the contents of the string
  */
 - initWithXMLString: (OFString*)string;
+
+/**
+ * Parses the specified file and initializes an already allocated OFXMLElement
+ * with it.
+ *
+ * \param path The path to the file
+ * \return An initialized OFXMLElement with the contents of the specified file
+ */
+- initWithFile: (OFString*)path;
 
 /**
  * \return The name of the element

@@ -126,6 +126,11 @@ void _references_to_categories_of_OFXMLElement(void)
 	return [[[self alloc] initWithXMLString: string] autorelease];
 }
 
++ elementWithFile: (OFString*)path
+{
+	return [[[self alloc] initWithFile: path] autorelease];
+}
+
 - init
 {
 	Class c = isa;
@@ -268,6 +273,45 @@ void _references_to_categories_of_OFXMLElement(void)
 	[builder setDelegate: delegate];
 
 	[parser parseString: string];
+
+	if (![parser finishedParsing])
+		@throw [OFMalformedXMLException newWithClass: c
+						      parser: parser];
+
+	self = [delegate->element retain];
+
+	@try {
+		[pool release];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithFile: (OFString*)path
+{
+	OFAutoreleasePool *pool;
+	OFXMLParser *parser;
+	OFXMLElementBuilder *builder;
+	OFXMLElement_OFXMLElementBuilderDelegate *delegate;
+	Class c;
+
+	c = isa;
+	[self release];
+
+	pool = [[OFAutoreleasePool alloc] init];
+
+	parser = [OFXMLParser parser];
+	builder = [OFXMLElementBuilder elementBuilder];
+	delegate = [[[OFXMLElement_OFXMLElementBuilderDelegate alloc] init]
+	    autorelease];
+
+	[parser setDelegate: builder];
+	[builder setDelegate: delegate];
+
+	[parser parseFile: path];
 
 	if (![parser finishedParsing])
 		@throw [OFMalformedXMLException newWithClass: c
