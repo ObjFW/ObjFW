@@ -734,18 +734,12 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 - (void)enumerateKeysAndObjectsUsingBlock:
     (of_dictionary_enumeration_block_t)block
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	size_t i;
 	BOOL stop = NO;
 
-	for (i = 0; i < size && !stop; i++) {
-		if (data[i] != NULL && data[i] != DELETED) {
+	for (i = 0; i < size && !stop; i++)
+		if (data[i] != NULL && data[i] != DELETED)
 			block(data[i]->key, data[i]->object, &stop);
-			[pool releaseObjects];
-		}
-	}
-
-	[pool release];
 }
 
 - (OFDictionary*)mappedDictionaryUsingBlock: (of_dictionary_map_block_t)block

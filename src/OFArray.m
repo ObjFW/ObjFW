@@ -582,17 +582,12 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	id *cArray = [array cArray];
 	size_t i, count = [array count];
 	BOOL stop = NO;
 
-	for (i = 0; i < count && !stop; i++) {
+	for (i = 0; i < count && !stop; i++)
 		block(cArray[i], i, &stop);
-		[pool releaseObjects];
-	}
-
-	[pool release];
 }
 
 - (OFArray*)mappedArrayUsingBlock: (of_array_map_block_t)block
