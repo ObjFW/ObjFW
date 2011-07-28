@@ -224,7 +224,6 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	id *cArray = [array cArray];
 	size_t i, count = [array count];
 	BOOL stop = NO;
@@ -237,15 +236,11 @@
 				  object: self];
 
 		block(cArray[i], i, &stop);
-		[pool releaseObjects];
 	}
-
-	[pool release];
 }
 
 - (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	id *cArray = [array cArray];
 	size_t i, count = [array count];
 	BOOL stop = NO;
@@ -268,11 +263,7 @@
 		[newObject retain];
 		[cArray[i] release];
 		cArray[i] = newObject;
-
-		[pool releaseObjects];
 	}
-
-	[pool release];
 }
 #endif
 @end

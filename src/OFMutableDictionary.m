@@ -279,7 +279,6 @@
 - (void)enumerateKeysAndObjectsUsingBlock:
     (of_dictionary_enumeration_block_t)block
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	size_t i;
 	BOOL stop = NO;
 	unsigned long mutations2 = mutations;
@@ -290,18 +289,13 @@
 			    newWithClass: isa
 				  object: self];
 
-		if (data[i] != NULL && data[i] != DELETED) {
+		if (data[i] != NULL && data[i] != DELETED)
 			block(data[i]->key, data[i]->object, &stop);
-			[pool releaseObjects];
-		}
 	}
-
-	[pool release];
 }
 
 - (void)replaceObjectsUsingBlock: (of_dictionary_replace_block_t)block
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	size_t i;
 	BOOL stop = NO;
 	unsigned long mutations2 = mutations;
@@ -323,12 +317,8 @@
 			[new retain];
 			[data[i]->object release];
 			data[i]->object = new;
-
-			[pool releaseObjects];
 		}
 	}
-
-	[pool release];
 }
 #endif
 @end
