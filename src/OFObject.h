@@ -379,6 +379,33 @@ typedef struct of_rectangle_t
 	 withMethodFromClass: (Class)class_;
 
 /**
+ * \brief Adds an instance method to the class.
+ *
+ * If the method already exists, nothing is done and NO is returned. If you want
+ * to change the implementation of a method, use
+ * setImplementation:forInstanceMethod:.
+ *
+ * \param selector The selector for the new method
+ * \param typeEncoding The type encoding for the new method
+ * \param implementation The implementation for the new method
+ * \return Whether the method has been added
+ */
++ (BOOL)addInstanceMethod: (SEL)selector
+	 withTypeEncoding: (const char*)typeEncoding
+	   implementation: (IMP)implementation;
+
+/**
+ * \brief Adds all instance methods from the specified class to the class that
+ *	  is the receiver.
+ *
+ * Existing methods will not be overriden, so that it behaves similar to normal
+ * inheritance.
+ *
+ * \param class The class from which the instance methods should be inherited
+ */
++ (void)inheritInstanceMethodsFromClass: (Class)class;
+
+/**
  * \brief Initializes an already allocated object.
  *
  * Derived classes may override this, but need to do self = [super init] before

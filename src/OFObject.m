@@ -27,6 +27,8 @@
 #include <assert.h>
 
 #import "OFObject.h"
+#import "OFArray.h"
+#import "OFIntrospection.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFAllocFailedException.h"
@@ -446,6 +448,44 @@ void _references_to_categories_of_OFObject(void)
 
 	return [self setImplementation: newImp
 		     forInstanceMethod: selector];
+}
+
++ (BOOL)addInstanceMethod: (SEL)selector
+	 withTypeEncoding: (const char*)typeEncoding
+	   implementation: (IMP)implementation
+{
+#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+	return class_addMethod(self, selector, implementation, typeEncoding);
+#elif defined(OF_OLD_GNU_RUNTIME)
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+#endif
+}
+
++ (void)inheritInstanceMethodsFromClass: (Class)class
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFIntrospection *introspection;
+	OFMethod **cArray;
+	size_t i, count;
+
+	introspection = [OFIntrospection introspectionWithClass: class];
+	cArray = [[introspection instanceMethods] cArray];
+	count = [[introspection instanceMethods] count];
+
+	for (i = 0; i < count; i++) {
+		SEL selector;
+		IMP implementation;
+
+		selector = [cArray[i] selector];
+		implementation = [class instanceMethodForSelector: selector];
+
+		[self addInstanceMethod: selector
+		       withTypeEncoding: [cArray[i] typeEncoding]
+			 implementation: implementation];
+	}
+
+	[pool release];
 }
 
 - init
