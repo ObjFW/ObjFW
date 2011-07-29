@@ -39,8 +39,7 @@
 		selector = method_getName(method);
 		name = [[OFString alloc]
 		    initWithCString: sel_getName(selector)];
-		typeEncoding = [[OFString alloc]
-		    initWithCString: method_getTypeEncoding(method)];
+		typeEncoding = method_getTypeEncoding(method);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -57,8 +56,7 @@
 		selector = method->method_name;
 		name = [[OFString alloc]
 		    initWithCString: sel_get_name(selector)];
-		typeEncoding = [[OFString alloc]
-		    initWithCString: method->method_types];
+		typeEncoding = method->method_types;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -71,7 +69,6 @@
 - (void)dealloc
 {
 	[name release];
-	[typeEncoding release];
 
 	[super dealloc];
 }
@@ -86,14 +83,14 @@
 	OF_GETTER(name, YES)
 }
 
-- (OFString*)typeEncoding
+- (const char*)typeEncoding
 {
-	OF_GETTER(typeEncoding, YES)
+	return typeEncoding;
 }
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat: @"<OFMethod: %@ [%@]>",
+	return [OFString stringWithFormat: @"<OFMethod: %@ [%s]>",
 					   name, typeEncoding];
 }
 @end

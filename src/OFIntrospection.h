@@ -27,13 +27,13 @@
 {
 	SEL selector;
 	OFString *name;
-	OFString *typeEncoding;
+	const char *typeEncoding;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly) SEL selector;
 @property (readonly, copy) OFString *name;
-@property (readonly, copy) OFString *typeEncoding;
+@property (readonly) const char *typeEncoding;
 #endif
 
 /**
@@ -55,7 +55,7 @@
  *
  * \return The type encoding for the method
  */
-- (OFString*)typeEncoding;
+- (const char*)typeEncoding;
 @end
 
 /**
