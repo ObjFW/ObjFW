@@ -40,7 +40,7 @@ void *_OFConstantStringClassReference;
 }
 #endif
 
-- (void)completeInitialization
+- (void)finishInitialization
 {
 	struct of_string_ivars *ivars;
 
@@ -356,7 +356,7 @@ void *_OFConstantStringClassReference;
 - copy
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super copy];
 }
@@ -365,7 +365,7 @@ void *_OFConstantStringClassReference;
 - mutableCopy
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super mutableCopy];
 }
@@ -374,7 +374,7 @@ void *_OFConstantStringClassReference;
 - (of_comparison_result_t)compare: (id)object
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super compare: object];
 }
@@ -383,7 +383,7 @@ void *_OFConstantStringClassReference;
 - (BOOL)isEqual: (id)object
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super isEqual: object];
 }
@@ -391,7 +391,7 @@ void *_OFConstantStringClassReference;
 - (uint32_t)hash
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super hash];
 }
@@ -399,7 +399,7 @@ void *_OFConstantStringClassReference;
 - (OFString*)description
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super description];
 }
@@ -408,7 +408,7 @@ void *_OFConstantStringClassReference;
 - (const char*)cString
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super cString];
 }
@@ -416,7 +416,7 @@ void *_OFConstantStringClassReference;
 - (size_t)length
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super length];
 }
@@ -424,7 +424,7 @@ void *_OFConstantStringClassReference;
 - (size_t)cStringLength
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super cStringLength];
 }
@@ -432,7 +432,7 @@ void *_OFConstantStringClassReference;
 - (of_comparison_result_t)caseInsensitiveCompare: (OFString*)otherString
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super caseInsensitiveCompare: otherString];
 }
@@ -440,7 +440,7 @@ void *_OFConstantStringClassReference;
 - (of_unichar_t)characterAtIndex: (size_t)index
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super characterAtIndex: index];
 }
@@ -448,7 +448,7 @@ void *_OFConstantStringClassReference;
 - (size_t)indexOfFirstOccurrenceOfString: (OFString*)string
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super indexOfFirstOccurrenceOfString: string];
 }
@@ -456,7 +456,7 @@ void *_OFConstantStringClassReference;
 - (size_t)indexOfLastOccurrenceOfString: (OFString*)string
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super indexOfLastOccurrenceOfString: string];
 }
@@ -464,7 +464,7 @@ void *_OFConstantStringClassReference;
 - (BOOL)containsString: (OFString*)string
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super containsString: string];
 }
@@ -473,7 +473,7 @@ void *_OFConstantStringClassReference;
 			toIndex: (size_t)end
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super substringFromIndex: start
 				 toIndex: end];
@@ -482,7 +482,7 @@ void *_OFConstantStringClassReference;
 - (OFString*)substringWithRange: (of_range_t)range
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super substringWithRange: range];
 }
@@ -490,7 +490,7 @@ void *_OFConstantStringClassReference;
 - (OFString*)stringByAppendingString: (OFString*)string
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super stringByAppendingString: string];
 }
@@ -498,7 +498,7 @@ void *_OFConstantStringClassReference;
 - (OFString*)stringByPrependingString: (OFString*)string
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super stringByPrependingString: string];
 }
@@ -506,7 +506,7 @@ void *_OFConstantStringClassReference;
 - (OFString*)uppercaseString
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super uppercaseString];
 }
@@ -514,7 +514,7 @@ void *_OFConstantStringClassReference;
 - (OFString*)lowercaseString
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super lowercaseString];
 }
@@ -522,7 +522,7 @@ void *_OFConstantStringClassReference;
 - (OFString*)stringByDeletingLeadingWhitespaces
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super stringByDeletingLeadingWhitespaces];
 }
@@ -530,7 +530,7 @@ void *_OFConstantStringClassReference;
 - (OFString*)stringByDeletingTrailingWhitespaces
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super stringByDeletingTrailingWhitespaces];
 }
@@ -538,7 +538,7 @@ void *_OFConstantStringClassReference;
 - (OFString*)stringByDeletingEnclosingWhitespaces
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super stringByDeletingEnclosingWhitespaces];
 }
@@ -546,7 +546,7 @@ void *_OFConstantStringClassReference;
 - (BOOL)hasPrefix: (OFString*)prefix
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super hasPrefix: prefix];
 }
@@ -554,7 +554,7 @@ void *_OFConstantStringClassReference;
 - (BOOL)hasSuffix: (OFString*)suffix
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super hasSuffix: suffix];
 }
@@ -562,7 +562,7 @@ void *_OFConstantStringClassReference;
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super componentsSeparatedByString: delimiter];
 }
@@ -570,7 +570,7 @@ void *_OFConstantStringClassReference;
 - (OFArray*)pathComponents
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super pathComponents];
 }
@@ -578,7 +578,7 @@ void *_OFConstantStringClassReference;
 - (OFString*)lastPathComponent
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super lastPathComponent];
 }
@@ -586,7 +586,7 @@ void *_OFConstantStringClassReference;
 - (OFString*)stringByDeletingLastPathComponent
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super stringByDeletingLastPathComponent];
 }
@@ -594,7 +594,7 @@ void *_OFConstantStringClassReference;
 - (intmax_t)decimalValue
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super decimalValue];
 }
@@ -602,7 +602,7 @@ void *_OFConstantStringClassReference;
 - (uintmax_t)hexadecimalValue
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super hexadecimalValue];
 }
@@ -610,7 +610,7 @@ void *_OFConstantStringClassReference;
 - (float)floatValue
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super floatValue];
 }
@@ -618,7 +618,7 @@ void *_OFConstantStringClassReference;
 - (double)doubleValue
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super doubleValue];
 }
@@ -626,7 +626,7 @@ void *_OFConstantStringClassReference;
 - (of_unichar_t*)unicodeString
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super unicodeString];
 }
@@ -634,7 +634,7 @@ void *_OFConstantStringClassReference;
 - (void)writeToFile: (OFString*)path
 {
 	if (initialized != SIZE_MAX)
-		[self completeInitialization];
+		[self finishInitialization];
 
 	return [super writeToFile: path];
 }

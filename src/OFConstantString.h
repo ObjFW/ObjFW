@@ -33,8 +33,8 @@ extern void *_OFConstantStringClassReference;
 /**
  * \brief Completes initialization of the OFConstantString
  *
- * This method completes the initialization, as the constant strings created by
+ * This method finishes the initialization, as the constant strings created by
  * the compiler are not fully initialized.
  */
-- (void)completeInitialization;
+- (void)finishInitialization;
 @end
