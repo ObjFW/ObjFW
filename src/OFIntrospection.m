@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#include <stdlib.h>
+
 #if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
 # import <objc/runtime.h>
 #elif defined(OF_OLD_GNU_RUNTIME)
@@ -116,17 +118,27 @@
 
 		methodList = class_copyMethodList(((OFObject*)class)->isa,
 		    &count);
-		for (i = 0; i < count; i++) {
-			[classMethods addObject: [[[OFMethod alloc]
-			    _initWithMethod: methodList[i]] autorelease]];
-			[pool releaseObjects];
+		@try {
+			for (i = 0; i < count; i++) {
+				[classMethods addObject: [[[OFMethod alloc]
+				    _initWithMethod: methodList[i]]
+				    autorelease]];
+				[pool releaseObjects];
+			}
+		} @finally {
+			free(methodList);
 		}
 
 		methodList = class_copyMethodList(class, &count);
-		for (i = 0; i < count; i++) {
-			[instanceMethods addObject: [[[OFMethod alloc]
-			    _initWithMethod: methodList[i]] autorelease]];
-			[pool releaseObjects];
+		@try {
+			for (i = 0; i < count; i++) {
+				[instanceMethods addObject: [[[OFMethod alloc]
+				    _initWithMethod: methodList[i]]
+				    autorelease]];
+				[pool releaseObjects];
+			}
+		} @finally {
+			free(methodList);
 		}
 #elif defined(OF_OLD_GNU_RUNTIME)
 		MethodList_t methodList;
