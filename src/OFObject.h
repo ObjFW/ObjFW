@@ -395,18 +395,23 @@ typedef struct of_rectangle_t
 	   implementation: (IMP)implementation;
 
 /**
- * \brief Adds all instance methods from the specified class to the class that
- *	  is the receiver.
+ * \brief Adds all methods from the specified class to the class that is the
+ *	  receiver.
  *
  * Methods implemented by the receiving class itself will not be overridden,
  * however methods implemented by its superclass will. Therefore it behaves
  * similar as if the specified class is the superclass of the receiver.
  *
+ * All methods from the superclasses of the specified class will also be added.
+ *
+ * If the specified class is a superclass of the receiving class, nothing is
+ * done.
+ *
  * The specified class may not use instance variables and has to use accessors.
  *
  * \param class The class from which the instance methods should be inherited
  */
-+ (void)inheritInstanceMethodsFromClass: (Class)class;
++ (void)inheritMethodsFromClass: (Class)class;
 
 /**
  * \brief Initializes an already allocated object.

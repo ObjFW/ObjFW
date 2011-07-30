@@ -476,22 +476,60 @@ void _references_to_categories_of_OFObject(void)
 #endif
 }
 
-+ (void)inheritInstanceMethodsFromClass: (Class)class
++ (void)inheritMethodsFromClass: (Class)class
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFMutableSet *set = [OFMutableSet set];
+	OFAutoreleasePool *pool;
+	OFMutableSet *classMethods, *instanceMethods;
 	OFIntrospection *introspection;
 	OFMethod **cArray;
 	size_t i, count;
 
+	if ([self isSubclassOfClass: class])
+		return;
+
+	pool = [[OFAutoreleasePool alloc] init];
+
+	classMethods = [OFMutableSet set];
+	instanceMethods = [OFMutableSet set];
+
 	introspection = [OFIntrospection introspectionWithClass: self];
+
+	cArray = [[introspection classMethods] cArray];
+	count = [[introspection classMethods] count];
+
+	for (i = 0; i < count; i++)
+		[classMethods addObject: [cArray[i] name]];
+
 	cArray = [[introspection instanceMethods] cArray];
 	count = [[introspection instanceMethods] count];
 
 	for (i = 0; i < count; i++)
-		[set addObject: [cArray[i] name]];
+		[instanceMethods addObject: [cArray[i] name]];
 
 	introspection = [OFIntrospection introspectionWithClass: class];
+
+	cArray = [[introspection classMethods] cArray];
+	count = [[introspection classMethods] count];
+
+	for (i = 0; i < count; i++) {
+		SEL selector;
+		IMP implementation;
+
+		if ([classMethods containsObject: [cArray[i] name]])
+			continue;
+
+		selector = [cArray[i] selector];
+		implementation = [class methodForSelector: selector];
+
+		if ([self respondsToSelector: selector])
+			[self setImplementation: implementation
+				 forClassMethod: selector];
+		else
+			[self addClassMethod: selector
+			    withTypeEncoding: [cArray[i] typeEncoding]
+			      implementation: implementation];
+	}
+
 	cArray = [[introspection instanceMethods] cArray];
 	count = [[introspection instanceMethods] count];
 
@@ -499,13 +537,13 @@ void _references_to_categories_of_OFObject(void)
 		SEL selector;
 		IMP implementation;
 
-		if ([set containsObject: [cArray[i] name]])
+		if ([instanceMethods containsObject: [cArray[i] name]])
 			continue;
 
 		selector = [cArray[i] selector];
 		implementation = [class instanceMethodForSelector: selector];
 
-		if ([self respondsToSelector: selector])
+		if ([self instancesRespondToSelector: selector])
 			[self setImplementation: implementation
 			      forInstanceMethod: selector];
 		else
@@ -515,6 +553,8 @@ void _references_to_categories_of_OFObject(void)
 	}
 
 	[pool release];
+
+	[self inheritMethodsFromClass: [class superclass]];
 }
 
 - init
