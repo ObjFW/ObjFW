@@ -458,7 +458,7 @@ void _references_to_categories_of_OFObject(void)
 #if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
 	return class_addMethod(self, selector, implementation, typeEncoding);
 #elif defined(OF_OLD_GNU_RUNTIME)
-	@throw [OFNotImplementedException newWithClass: isa
+	@throw [OFNotImplementedException newWithClass: self
 					      selector: _cmd];
 #endif
 }
