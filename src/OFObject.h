@@ -398,8 +398,11 @@ typedef struct of_rectangle_t
  * \brief Adds all instance methods from the specified class to the class that
  *	  is the receiver.
  *
- * Existing methods will not be overriden, so that it behaves similar to normal
- * inheritance.
+ * Methods implemented by the receiving class itself will not be overridden,
+ * however methods implemented by its superclass will. Therefore it behaves
+ * similar as if the specified class is the superclass of the receiver.
+ *
+ * The specified class may not use instance variables and has to use accessors.
  *
  * \param class The class from which the instance methods should be inherited
  */

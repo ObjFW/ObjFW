@@ -28,6 +28,7 @@
 
 #import "OFObject.h"
 #import "OFArray.h"
+#import "OFSet.h"
 #import "OFIntrospection.h"
 #import "OFAutoreleasePool.h"
 
@@ -465,9 +466,17 @@ void _references_to_categories_of_OFObject(void)
 + (void)inheritInstanceMethodsFromClass: (Class)class
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFMutableSet *set = [OFMutableSet set];
 	OFIntrospection *introspection;
 	OFMethod **cArray;
 	size_t i, count;
+
+	introspection = [OFIntrospection introspectionWithClass: self];
+	cArray = [[introspection instanceMethods] cArray];
+	count = [[introspection instanceMethods] count];
+
+	for (i = 0; i < count; i++)
+		[set addObject: [cArray[i] name]];
 
 	introspection = [OFIntrospection introspectionWithClass: class];
 	cArray = [[introspection instanceMethods] cArray];
@@ -477,12 +486,19 @@ void _references_to_categories_of_OFObject(void)
 		SEL selector;
 		IMP implementation;
 
+		if ([set containsObject: [cArray[i] name]])
+			continue;
+
 		selector = [cArray[i] selector];
 		implementation = [class instanceMethodForSelector: selector];
 
-		[self addInstanceMethod: selector
-		       withTypeEncoding: [cArray[i] typeEncoding]
-			 implementation: implementation];
+		if ([self respondsToSelector: selector])
+			[self setImplementation: implementation
+			      forInstanceMethod: selector];
+		else
+			[self addInstanceMethod: selector
+			       withTypeEncoding: [cArray[i] typeEncoding]
+				 implementation: implementation];
 	}
 
 	[pool release];
