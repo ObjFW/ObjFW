@@ -457,7 +457,20 @@ void _references_to_categories_of_OFObject(void)
 {
 #if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
 	return class_addMethod(self, selector, implementation, typeEncoding);
-#elif defined(OF_OLD_GNU_RUNTIME)
+#else
+	@throw [OFNotImplementedException newWithClass: self
+					      selector: _cmd];
+#endif
+}
+
++ (BOOL)addClassMethod: (SEL)selector
+      withTypeEncoding: (const char*)typeEncoding
+	implementation: (IMP)implementation
+{
+#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+	return class_addMethod(((OFObject*)self)->isa, selector, implementation,
+	    typeEncoding);
+#else
 	@throw [OFNotImplementedException newWithClass: self
 					      selector: _cmd];
 #endif
