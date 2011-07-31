@@ -407,7 +407,8 @@ typedef struct of_rectangle_t
  * If the specified class is a superclass of the receiving class, nothing is
  * done.
  *
- * The specified class may not use instance variables and has to use accessors.
+ * The methods which will be added from the specified class are not allowed to
+ * use super or access instance variables, instead they have to use accessors.
  *
  * \param class The class from which the instance methods should be inherited
  */

@@ -457,6 +457,38 @@ void _references_to_categories_of_OFObject(void)
 {
 #if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
 	return class_addMethod(self, selector, implementation, typeEncoding);
+#elif defined(OF_OLD_GNU_RUNTIME)
+	MethodList_t methodList;
+
+	for (methodList = ((Class)self)->methods; methodList != NULL;
+	    methodList = methodList->method_next) {
+		int i;
+
+		for (i = 0; i < methodList->method_count; i++)
+			if (sel_eq(methodList->method_list[i].method_name,
+			    selector))
+				return NO;
+	}
+
+	if ((methodList = malloc(sizeof(*methodList))) == NULL)
+		@throw [OFOutOfMemoryException
+		    newWithClass: self
+		   requestedSize: sizeof(*methodList)];
+
+	methodList->method_next = ((Class)self)->methods;
+	methodList->method_count = 1;
+
+	methodList->method_list[0].method_name = selector;
+	methodList->method_list[0].method_types = typeEncoding;
+	methodList->method_list[0].method_imp = implementation;
+
+	((Class)self)->methods = methodList;
+
+	/* Update the dtable */
+	sarray_at_put_safe(((Class)self)->dtable,
+	    (sidx)selector->sel_id, implementation);
+
+	return YES;
 #else
 	@throw [OFNotImplementedException newWithClass: self
 					      selector: _cmd];
@@ -470,6 +502,38 @@ void _references_to_categories_of_OFObject(void)
 #if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
 	return class_addMethod(((OFObject*)self)->isa, selector, implementation,
 	    typeEncoding);
+#elif defined(OF_OLD_GNU_RUNTIME)
+	MethodList_t methodList;
+
+	for (methodList = ((Class)self->class_pointer)->methods;
+	    methodList != NULL; methodList = methodList->method_next) {
+		int i;
+
+		for (i = 0; i < methodList->method_count; i++)
+			if (sel_eq(methodList->method_list[i].method_name,
+			    selector))
+				return NO;
+	}
+
+	if ((methodList = malloc(sizeof(*methodList))) == NULL)
+		@throw [OFOutOfMemoryException
+		    newWithClass: self
+		   requestedSize: sizeof(*methodList)];
+
+	methodList->method_next = ((Class)self->class_pointer)->methods;
+	methodList->method_count = 1;
+
+	methodList->method_list[0].method_name = selector;
+	methodList->method_list[0].method_types = typeEncoding;
+	methodList->method_list[0].method_imp = implementation;
+
+	((Class)self->class_pointer)->methods = methodList;
+
+	/* Update the dtable */
+	sarray_at_put_safe(((Class)self->class_pointer)->dtable,
+	    (sidx)selector->sel_id, implementation);
+
+	return YES;
 #else
 	@throw [OFNotImplementedException newWithClass: self
 					      selector: _cmd];
