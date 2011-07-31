@@ -379,6 +379,22 @@ typedef struct of_rectangle_t
 	 withMethodFromClass: (Class)class_;
 
 /**
+ * \brief Adds a class method to the class.
+ *
+ * If the method already exists, nothing is done and NO is returned. If you want
+ * to change the implementation of a method, use
+ * setImplementation:forClassMethod:.
+ *
+ * \param selector The selector for the new method
+ * \param typeEncoding The type encoding for the new method
+ * \param implementation The implementation for the new method
+ * \return Whether the method has been added
+ */
++ (BOOL)addClassMethod: (SEL)selector
+      withTypeEncoding: (const char*)typeEncoding
+	implementation: (IMP)implementation;
+
+/**
  * \brief Adds an instance method to the class.
  *
  * If the method already exists, nothing is done and NO is returned. If you want

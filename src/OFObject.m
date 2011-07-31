@@ -340,27 +340,39 @@ void _references_to_categories_of_OFObject(void)
 	return objc_replace_class_method(self, selector, newImp);
 #elif defined(OF_OLD_GNU_RUNTIME)
 	Method_t method;
-	IMP oldImp;
+	MethodList_t iter;
 
-	/* The class method is the instance method of the meta class */
-	if ((method = class_get_instance_method(self->class_pointer,
-	    selector)) == NULL)
+	method = class_get_class_method(self->class_pointer, selector);
+
+	if (newImp == (IMP)0 || method == METHOD_NULL)
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 
-	if ((oldImp = method_get_imp(method)) == (IMP)0 || newImp == (IMP)0)
-		@throw [OFInvalidArgumentException newWithClass: self
-						       selector: _cmd];
+	for (iter = ((Class)self->class_pointer)->methods; iter != NULL;
+	    iter = iter->method_next) {
+		int i;
 
-	method->method_imp = newImp;
+		for (i = 0; i < iter->method_count; i++)
+			if (sel_eq(iter->method_list[i].method_name,
+			    selector)) {
+				IMP oldImp;
 
-	/* Update the dtable if necessary */
-	if (sarray_get_safe(((Class)self->class_pointer)->dtable,
-	    (sidx)method->method_name->sel_id))
-		sarray_at_put_safe(((Class)self->class_pointer)->dtable,
-		    (sidx)method->method_name->sel_id, method->method_imp);
+				oldImp = iter->method_list[i].method_imp;
+				iter->method_list[i].method_imp = newImp;
 
-	return oldImp;
+				sarray_at_put_safe(
+				    ((Class)self->class_pointer)->dtable,
+				    (sidx)selector->sel_id, newImp);
+
+				return oldImp;
+			}
+	}
+
+	assert([self addClassMethod: selector
+		   withTypeEncoding: method->method_types
+		     implementation: newImp]);
+
+	return (IMP)0;
 #else
 	Method method;
 
@@ -403,26 +415,39 @@ void _references_to_categories_of_OFObject(void)
 
 	return objc_replace_instance_method(self, selector, newImp);
 #elif defined(OF_OLD_GNU_RUNTIME)
-	Method_t method = class_get_instance_method(self, selector);
-	IMP oldImp;
+	Method_t method;
+	MethodList_t iter;
 
-	if (method == NULL)
+	method = class_get_instance_method(self, selector);
+
+	if (newImp == (IMP)0 || method == METHOD_NULL)
 		@throw [OFInvalidArgumentException newWithClass: self
 						       selector: _cmd];
 
-	if ((oldImp = method_get_imp(method)) == (IMP)0 || newImp == (IMP)0)
-		@throw [OFInvalidArgumentException newWithClass: self
-						       selector: _cmd];
+	for (iter = ((Class)self)->methods; iter != NULL;
+	    iter = iter->method_next) {
+		int i;
 
-	method->method_imp = newImp;
+		for (i = 0; i < iter->method_count; i++)
+			if (sel_eq(iter->method_list[i].method_name,
+			    selector)) {
+				IMP oldImp;
 
-	/* Update the dtable if necessary */
-	if (sarray_get_safe(((Class)self)->dtable,
-	    (sidx)method->method_name->sel_id))
-		sarray_at_put_safe(((Class)self)->dtable,
-		    (sidx)method->method_name->sel_id, method->method_imp);
+				oldImp = iter->method_list[i].method_imp;
+				iter->method_list[i].method_imp = newImp;
 
-	return oldImp;
+				sarray_at_put_safe(((Class)self)->dtable,
+				    (sidx)selector->sel_id, newImp);
+
+				return oldImp;
+			}
+	}
+
+	assert([self addInstanceMethod: selector
+		      withTypeEncoding: method->method_types
+			implementation: newImp]);
+
+	return (IMP)0;
 #else
 	Method method;
 
