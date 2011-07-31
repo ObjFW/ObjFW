@@ -125,6 +125,33 @@ void _references_to_categories_of_OFObject(void)
 	_OFObject_Serialization_reference = 1;
 }
 
+#ifdef OF_OLD_GNU_RUNTIME
+/*
+ * The old GNU runtime is missing functions for changing methods at runtime. It
+ * does not even offer a function to update the dtable, so we have to do even
+ * that manually. A well designed runtime would not even allow us to touch the
+ * dtable, but the old GNU runtime is that crappy that it even forces us to
+ * touch it...
+ */
+static void
+update_dtable(Class class)
+{
+	MethodList_t iter;
+
+	if (class->super_class != Nil)
+		update_dtable(class->super_class);
+
+	for (iter = class->methods; iter != NULL; iter = iter->method_next) {
+		int i;
+
+		for (i = 0; i < iter->method_count; i++)
+			sarray_at_put_safe(class->dtable,
+			    (sidx)iter->method_list[i].method_name->sel_id,
+			    iter->method_list[i].method_imp);
+	}
+}
+#endif
+
 @implementation OFObject
 + (void)load
 {
@@ -360,9 +387,7 @@ void _references_to_categories_of_OFObject(void)
 				oldImp = iter->method_list[i].method_imp;
 				iter->method_list[i].method_imp = newImp;
 
-				sarray_at_put_safe(
-				    ((Class)self->class_pointer)->dtable,
-				    (sidx)selector->sel_id, newImp);
+				update_dtable((Class)self->class_pointer);
 
 				return oldImp;
 			}
@@ -436,8 +461,7 @@ void _references_to_categories_of_OFObject(void)
 				oldImp = iter->method_list[i].method_imp;
 				iter->method_list[i].method_imp = newImp;
 
-				sarray_at_put_safe(((Class)self)->dtable,
-				    (sidx)selector->sel_id, newImp);
+				update_dtable(self);
 
 				return oldImp;
 			}
@@ -509,9 +533,7 @@ void _references_to_categories_of_OFObject(void)
 
 	((Class)self)->methods = methodList;
 
-	/* Update the dtable */
-	sarray_at_put_safe(((Class)self)->dtable,
-	    (sidx)selector->sel_id, implementation);
+	update_dtable(self);
 
 	return YES;
 #else
@@ -554,9 +576,7 @@ void _references_to_categories_of_OFObject(void)
 
 	((Class)self->class_pointer)->methods = methodList;
 
-	/* Update the dtable */
-	sarray_at_put_safe(((Class)self->class_pointer)->dtable,
-	    (sidx)selector->sel_id, implementation);
+	update_dtable((Class)self->class_pointer);
 
 	return YES;
 #else
