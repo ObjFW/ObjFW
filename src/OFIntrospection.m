@@ -148,7 +148,7 @@
 
 		for (methodList = class->class_pointer->methods;
 		    methodList != NULL; methodList = methodList->method_next) {
-			size_t i;
+			int i;
 
 			for (i = 0; i < methodList->method_count; i++)
 				[classMethods addObject: [[[OFMethod alloc]
@@ -158,7 +158,7 @@
 
 		for (methodList = class->methods; methodList != NULL;
 		    methodList = methodList->method_next) {
-			size_t i;
+			int i;
 
 			for (i = 0; i < methodList->method_count; i++)
 				[instanceMethods addObject: [[[OFMethod alloc]

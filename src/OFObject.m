@@ -27,9 +27,6 @@
 #include <assert.h>
 
 #import "OFObject.h"
-#import "OFArray.h"
-#import "OFSet.h"
-#import "OFIntrospection.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFAllocFailedException.h"
@@ -587,81 +584,143 @@ update_dtable(Class class)
 
 + (void)inheritMethodsFromClass: (Class)class
 {
-	OFAutoreleasePool *pool;
-	OFMutableSet *classMethods, *instanceMethods;
-	OFIntrospection *introspection;
-	OFMethod **cArray;
-	size_t i, count;
+	Class superclass = [self superclass];
 
 	if ([self isSubclassOfClass: class])
 		return;
 
-	pool = [[OFAutoreleasePool alloc] init];
+#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+	Method *methodList;
+	unsigned i, count;
 
-	classMethods = [OFMutableSet set];
-	instanceMethods = [OFMutableSet set];
+	methodList = class_copyMethodList(((OFObject*)class)->isa, &count);
+	@try {
+		for (i = 0; i < count; i++) {
+			SEL selector = method_getName(methodList[i]);
+			IMP implementation;
 
-	introspection = [OFIntrospection introspectionWithClass: self];
+			/*
+			 * Don't replace methods implemented in receiving class.
+			 */
+			if ([self methodForSelector: selector] !=
+			    [superclass methodForSelector: selector])
+				continue;
 
-	cArray = [[introspection classMethods] cArray];
-	count = [[introspection classMethods] count];
+			implementation = [class methodForSelector: selector];
 
-	for (i = 0; i < count; i++)
-		[classMethods addObject: [cArray[i] name]];
-
-	cArray = [[introspection instanceMethods] cArray];
-	count = [[introspection instanceMethods] count];
-
-	for (i = 0; i < count; i++)
-		[instanceMethods addObject: [cArray[i] name]];
-
-	introspection = [OFIntrospection introspectionWithClass: class];
-
-	cArray = [[introspection classMethods] cArray];
-	count = [[introspection classMethods] count];
-
-	for (i = 0; i < count; i++) {
-		SEL selector;
-		IMP implementation;
-
-		if ([classMethods containsObject: [cArray[i] name]])
-			continue;
-
-		selector = [cArray[i] selector];
-		implementation = [class methodForSelector: selector];
-
-		if ([self respondsToSelector: selector])
-			[self setImplementation: implementation
-				 forClassMethod: selector];
-		else
-			[self addClassMethod: selector
-			    withTypeEncoding: [cArray[i] typeEncoding]
-			      implementation: implementation];
+			if ([self respondsToSelector: selector])
+				[self setImplementation: implementation
+					 forClassMethod: selector];
+			else {
+				const char *typeEncoding =
+				    method_getTypeEncoding(methodList[i]);
+				[self addClassMethod: selector
+				    withTypeEncoding: typeEncoding
+				      implementation: implementation];
+			}
+		}
+	} @finally {
+		free(methodList);
 	}
 
-	cArray = [[introspection instanceMethods] cArray];
-	count = [[introspection instanceMethods] count];
+	methodList = class_copyMethodList(class, &count);
+	@try {
+		for (i = 0; i < count; i++) {
+			SEL selector = method_getName(methodList[i]);
+			IMP implementation;
 
-	for (i = 0; i < count; i++) {
-		SEL selector;
-		IMP implementation;
+			/*
+			 * Don't replace methods implemented in receiving class.
+			 */
+			if ([self instanceMethodForSelector: selector] !=
+			    [superclass instanceMethodForSelector: selector])
+				continue;
 
-		if ([instanceMethods containsObject: [cArray[i] name]])
-			continue;
+			implementation =
+			    [class instanceMethodForSelector: selector];
 
-		selector = [cArray[i] selector];
-		implementation = [class instanceMethodForSelector: selector];
+			if ([self instancesRespondToSelector: selector])
+				     [self setImplementation: implementation
+					   forInstanceMethod: selector];
+			else {
+				const char *typeEncoding =
+				    method_getTypeEncoding(methodList[i]);
+				[self addInstanceMethod: selector
+				       withTypeEncoding: typeEncoding
+					 implementation: implementation];
+			}
+		}
+	} @finally {
+		free(methodList);
+	}
+#elif defined(OF_OLD_GNU_RUNTIME)
+	MethodList_t methodList;
 
-		if ([self instancesRespondToSelector: selector])
-			[self setImplementation: implementation
-			      forInstanceMethod: selector];
-		else
-			[self addInstanceMethod: selector
-			       withTypeEncoding: [cArray[i] typeEncoding]
-				 implementation: implementation];
+	for (methodList = class->class_pointer->methods;
+	    methodList != NULL; methodList = methodList->method_next) {
+		int i;
+
+		for (i = 0; i < methodList->method_count; i++) {
+			SEL selector = methodList->method_list[i].method_name;
+			IMP implementation;
+
+			/*
+			 * Don't replace methods implemented in receiving class.
+			 */
+			if ([self instanceMethodForSelector: selector] !=
+			    [superclass instanceMethodForSelector: selector])
+				continue;
+
+			implementation =
+			    [class instanceMethodForSelector: selector];
+
+			if ([self instancesRespondToSelector: selector])
+				     [self setImplementation: implementation
+					      forClassMethod: selector];
+			else {
+				const char *typeEncoding =
+				    methodList->method_list[i].method_types;
+				[self addClassMethod: selector
+				    withTypeEncoding: typeEncoding
+				      implementation: implementation];
+			}
+		}
 	}
 
-	[pool release];
+	for (methodList = class->methods; methodList != NULL;
+	    methodList = methodList->method_next) {
+		int i;
+
+		for (i = 0; i < methodList->method_count; i++) {
+			SEL selector = methodList->method_list[i].method_name;
+			IMP implementation;
+
+			/*
+			 * Don't replace methods implemented in receiving class.
+			 */
+			if ([self instanceMethodForSelector: selector] !=
+			    [superclass instanceMethodForSelector: selector])
+				continue;
+
+			implementation =
+			    [class instanceMethodForSelector: selector];
+
+			if ([self instancesRespondToSelector: selector])
+				     [self setImplementation: implementation
+					   forInstanceMethod: selector];
+			else {
+				const char *typeEncoding =
+				    methodList->method_list[i].method_types;
+				[self addInstanceMethod: selector
+				       withTypeEncoding: typeEncoding
+					 implementation: implementation];
+			}
+		}
+	}
+#else
+	@throw [OFNotImplementedException newWithClass: self
+					      selector: _cmd];
+#endif
 
 	[self inheritMethodsFromClass: [class superclass]];
 }
