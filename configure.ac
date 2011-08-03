@@ -166,8 +166,14 @@ case $objc_runtime in
 		])
 		;;
 	GNU)
-		AC_DEFINE(OF_GNU_RUNTIME, 1,
-			[Whether we use the GNU ObjC runtime])
+		# The new API of the new GNU runtime is currently too broken to
+		# be of any use, thus we even use the old API when the new one
+		# is detected until the new one has been fixed and offers a way
+		# to detect if it is the fixed one.
+		dnl AC_DEFINE(OF_GNU_RUNTIME, 1,
+		dnl	[Whether we use the GNU ObjC runtime])
+		AC_DEFINE(OF_OLD_GNU_RUNTIME, 1,
+			[Whether we use the old GNU ObjC runtime])
 
 		AC_CHECK_LIB(objc, objc_msg_lookup, [
 			LIBS="-lobjc $LIBS"

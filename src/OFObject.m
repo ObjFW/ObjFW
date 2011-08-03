@@ -110,6 +110,10 @@ objc_enumerationMutation(id object)
 }
 #endif
 
+#if defined(HAVE_OBJC_ENUMERATIONMUTATION) && defined(OF_OLD_GNU_RUNTIME)
+extern void objc_setEnumerationMutationHandler(void(*handler)(id));
+#endif
+
 const char*
 _NSPrintForDebugger(id object)
 {
@@ -172,7 +176,7 @@ update_dtable(Class class)
 	}
 #endif
 
-#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+#ifdef HAVE_OBJC_ENUMERATIONMUTATION
 	objc_setEnumerationMutationHandler(enumeration_mutation_handler);
 #endif
 
