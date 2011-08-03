@@ -404,20 +404,39 @@ static of_unichar_t ucstr[] = { 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0 };
 	    @"-[deleteCharactersFromIndex:toIndex:] #1", OFOutOfRangeException,
 	    {
 		s[0] = [OFMutableString stringWithString: @"𝄞öö"];
-		[s[0] substringFromIndex: 2
-				 toIndex: 4];
+		[s[0] deleteCharactersFromIndex: 2
+					toIndex: 4];
 	    })
 
 	EXPECT_EXCEPTION(@"Detect OoR in "
 	    @"-[deleteCharactersFromIndex:toIndex:] #2", OFOutOfRangeException,
-	    [s[0] substringFromIndex: 4
-			     toIndex: 4])
+	    [s[0] deleteCharactersFromIndex: 4
+				    toIndex: 4])
 
 	EXPECT_EXCEPTION(@"Detect s > e in "
 	    @"-[deleteCharactersFromIndex:toIndex:]",
 	    OFInvalidArgumentException,
-	    [s[0] substringFromIndex: 2
-			     toIndex: 0])
+	    [s[0] deleteCharactersFromIndex: 2
+				    toIndex: 0])
+
+	EXPECT_EXCEPTION(@"OoR "
+	    @"-[replaceCharactersFromIndex:toIndex:withString:] #1",
+	    OFOutOfRangeException, [s[0] replaceCharactersFromIndex: 2
+							    toIndex: 4
+							 withString: @""])
+
+	EXPECT_EXCEPTION(@"OoR "
+	    @"-[replaceCharactersFromIndex:toIndex:withString:] #2",
+	    OFOutOfRangeException,
+	    [s[0] replaceCharactersFromIndex: 4
+				     toIndex: 4
+				  withString: @""])
+
+	EXPECT_EXCEPTION(@"s>e in "
+	    @"-[replaceCharactersFromIndex:toIndex:withString:]",
+	    OFInvalidArgumentException, [s[0] replaceCharactersFromIndex: 2
+								 toIndex: 0
+							      withString: @""])
 
 	TEST(@"-[replaceOccurrencesOfString:withString:]",
 	    (s[0] = [OFMutableString stringWithString:
