@@ -134,17 +134,22 @@ static void
 update_dtable(Class class)
 {
 	MethodList_t iter;
+	Class subclass;
 
-	if (class->super_class != Nil)
-		update_dtable(class->super_class);
+	for (subclass = class->subclass_list; subclass != Nil;
+	    subclass = subclass->sibling_class)
+		update_dtable(subclass);
 
 	for (iter = class->methods; iter != NULL; iter = iter->method_next) {
+		Method_t methods = iter->method_list;
 		int i;
 
 		for (i = 0; i < iter->method_count; i++)
-			sarray_at_put_safe(class->dtable,
-			    (sidx)iter->method_list[i].method_name->sel_id,
-			    iter->method_list[i].method_imp);
+			if (sarray_get_safe(class->dtable,
+			    (sidx)methods[i].method_name->sel_id) != NULL)
+				sarray_at_put_safe(class->dtable,
+				    (sidx)methods[i].method_name->sel_id,
+				    methods[i].method_imp);
 	}
 }
 #endif
