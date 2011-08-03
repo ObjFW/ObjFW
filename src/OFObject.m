@@ -667,14 +667,13 @@ update_dtable(Class class)
 			/*
 			 * Don't replace methods implemented in receiving class.
 			 */
-			if ([self instanceMethodForSelector: selector] !=
-			    [superclass instanceMethodForSelector: selector])
+			if ([self methodForSelector: selector] !=
+			    [superclass methodForSelector: selector])
 				continue;
 
-			implementation =
-			    [class instanceMethodForSelector: selector];
+			implementation = [class methodForSelector: selector];
 
-			if ([self instancesRespondToSelector: selector])
+			if ([self respondsToSelector: selector])
 				     [self setImplementation: implementation
 					      forClassMethod: selector];
 			else {
