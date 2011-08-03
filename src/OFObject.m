@@ -43,7 +43,6 @@
 #if defined(OF_OBJFW_RUNTIME)
 # import <objfw-rt.h>
 #elif defined(OF_OLD_GNU_RUNTIME)
-# import <objc/sarray.h>
 # import <objc/Protocol.h>
 #endif
 
@@ -76,6 +75,10 @@ struct pre_ivar {
 #define PRE_IVAR_ALIGN ((sizeof(struct pre_ivar) + \
 	(__BIGGEST_ALIGNMENT__ - 1)) & ~(__BIGGEST_ALIGNMENT__ - 1))
 #define PRE_IVAR ((struct pre_ivar*)(void*)((char*)self - PRE_IVAR_ALIGN))
+
+#ifdef OF_OLD_GNU_RUNTIME
+extern void __objc_update_dispatch_table_for_class(Class);
+#endif
 
 static struct {
 	Class isa;
@@ -125,38 +128,6 @@ void _references_to_categories_of_OFObject(void)
 {
 	_OFObject_Serialization_reference = 1;
 }
-
-#ifdef OF_OLD_GNU_RUNTIME
-/*
- * The old GNU runtime is missing functions for changing methods at runtime. It
- * does not even offer a function to update the dtable, so we have to do even
- * that manually. A well designed runtime would not even allow us to touch the
- * dtable, but the old GNU runtime is that crappy that it even forces us to
- * touch it...
- */
-static void
-update_dtable(Class class)
-{
-	MethodList_t iter;
-	Class subclass;
-
-	for (subclass = class->subclass_list; subclass != Nil;
-	    subclass = subclass->sibling_class)
-		update_dtable(subclass);
-
-	for (iter = class->methods; iter != NULL; iter = iter->method_next) {
-		Method_t methods = iter->method_list;
-		int i;
-
-		for (i = 0; i < iter->method_count; i++)
-			if (sarray_get_safe(class->dtable,
-			    (sidx)methods[i].method_name->sel_id) != NULL)
-				sarray_at_put_safe(class->dtable,
-				    (sidx)methods[i].method_name->sel_id,
-				    methods[i].method_imp);
-	}
-}
-#endif
 
 @implementation OFObject
 + (void)load
@@ -393,7 +364,8 @@ update_dtable(Class class)
 				oldImp = iter->method_list[i].method_imp;
 				iter->method_list[i].method_imp = newImp;
 
-				update_dtable((Class)self->class_pointer);
+				__objc_update_dispatch_table_for_class(
+				    (Class)self->class_pointer);
 
 				return oldImp;
 			}
@@ -467,7 +439,7 @@ update_dtable(Class class)
 				oldImp = iter->method_list[i].method_imp;
 				iter->method_list[i].method_imp = newImp;
 
-				update_dtable(self);
+				__objc_update_dispatch_table_for_class(self);
 
 				return oldImp;
 			}
@@ -539,7 +511,7 @@ update_dtable(Class class)
 
 	((Class)self)->methods = methodList;
 
-	update_dtable(self);
+	__objc_update_dispatch_table_for_class(self);
 
 	return YES;
 #else
@@ -582,7 +554,7 @@ update_dtable(Class class)
 
 	((Class)self->class_pointer)->methods = methodList;
 
-	update_dtable((Class)self->class_pointer);
+	__objc_update_dispatch_table_for_class((Class)self->class_pointer);
 
 	return YES;
 #else
