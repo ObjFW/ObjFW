@@ -1583,13 +1583,7 @@ of_utf16_string_length(const uint16_t *string)
 
 	[pool release];
 
-	/*
-	 * Class swizzle the array to be immutable. We declared the return type
-	 * to be OFArray*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	array->isa = [OFArray class];
-	return array;
+	return [array makeImmutable];
 }
 
 - (OFArray*)pathComponents
@@ -1631,13 +1625,7 @@ of_utf16_string_length(const uint16_t *string)
 
 	[pool release];
 
-	/*
-	 * Class swizzle the array to be immutable. We declared the return type
-	 * to be OFArray*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	ret->isa = [OFArray class];
-	return ret;
+	return [ret makeImmutable];
 }
 
 - (OFString*)lastPathComponent

@@ -167,8 +167,8 @@
 		}
 #endif
 
-		classMethods->isa = [OFArray class];
-		instanceMethods->isa = [OFArray class];
+		[classMethods makeImmutable];
+		[instanceMethods makeImmutable];
 
 		[pool release];
 	} @catch (id e) {

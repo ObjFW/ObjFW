@@ -19,18 +19,112 @@
 #include <stdarg.h>
 
 #import "OFArray.h"
-#import "OFDataArray.h"
+#import "OFCArray.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
+#import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 
 #import "macros.h"
 
+static struct {
+	Class isa;
+} placeholder;
+
+@implementation OFArrayPlaceholder
+- init
+{
+	return (id)[[OFCArray alloc] init];
+}
+
+- initWithObject: (id)object
+{
+	return (id)[[OFCArray alloc] initWithObject: object];
+}
+
+- initWithObjects: (id)firstObject, ...
+{
+	id ret;
+	va_list arguments;
+
+	va_start(arguments, firstObject);
+	ret = [[OFCArray alloc] initWithObject: firstObject
+				     arguments: arguments];
+	va_end(arguments);
+
+	return ret;
+}
+
+- initWithObject: (id)firstObject
+       arguments: (va_list)arguments
+{
+	return (id)[[OFCArray alloc] initWithObject: firstObject
+					  arguments: arguments];
+}
+
+- initWithArray: (OFArray*)array
+{
+	return (id)[[OFCArray alloc] initWithArray: array];
+}
+
+- initWithCArray: (id*)objects
+{
+	return (id)[[OFCArray alloc] initWithCArray: objects];
+}
+
+- initWithCArray: (id*)objects
+	  length: (size_t)length
+{
+	return (id)[[OFCArray alloc] initWithCArray: objects
+					     length: length];
+}
+
+- initWithSerialization: (OFXMLElement*)element
+{
+	return (id)[[OFCArray alloc] initWithSerialization: element];
+}
+
+- retain
+{
+	return self;
+}
+
+- autorelease
+{
+	return self;
+}
+
+- (void)release
+{
+}
+
+- (void)dealloc
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+	[super dealloc];	/* Get rid of a stupid warning */
+}
+@end
+
 @implementation OFArray
++ (void)initialize
+{
+	if (self == [OFArray class])
+		placeholder.isa = [OFArrayPlaceholder class];
+}
+
++ alloc
+{
+	if (self == [OFArray class])
+		return (id)&placeholder;
+
+	return [super alloc];
+}
+
 + array
 {
 	return [[[self alloc] init] autorelease];
@@ -71,33 +165,9 @@
 				      length: length] autorelease];
 }
 
-- init
-{
-	self = [super init];
-
-	@try {
-		array = [[OFDataArray alloc] initWithItemSize: sizeof(id)];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
 - initWithObject: (id)object
 {
-	self = [self init];
-
-	@try {
-		[array addItem: &object];
-		[object retain];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	return [self initWithObjects: object, nil];
 }
 
 - initWithObjects: (id)firstObject, ...
@@ -116,165 +186,75 @@
 - initWithObject: (id)firstObject
        arguments: (va_list)arguments
 {
-	self = [self init];
-
-	@try {
-		id object;
-
-		[array addItem: &firstObject];
-		[firstObject retain];
-
-		while ((object = va_arg(arguments, id)) != nil) {
-			[array addItem: &object];
-			[object retain];
-		}
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
 }
 
-- initWithArray: (OFArray*)array_
+- initWithArray: (OFArray*)array
 {
-	id *cArray;
-	size_t i, count;
-
-	self = [self init];
-
-	@try {
-		cArray = [array_ cArray];
-		count = [array_ count];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	@try {
-		for (i = 0; i < count; i++)
-			[cArray[i] retain];
-
-		[array addNItems: count
-		      fromCArray: cArray];
-	} @catch (id e) {
-		for (i = 0; i < count; i++)
-			[cArray[i] release];
-
-		/* Prevent double-release of objects */
-		[array release];
-		array = nil;
-
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
 }
 
 - initWithCArray: (id*)objects
 {
-	self = [self init];
-
-	@try {
-		id *object;
-		size_t count = 0;
-
-		for (object = objects; *object != nil; object++) {
-			[*object retain];
-			count++;
-		}
-
-		[array addNItems: count
-		      fromCArray: objects];
-	} @catch (id e) {
-		id *object;
-
-		for (object = objects; *object != nil; object++)
-			[*object release];
-
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
 }
 
 - initWithCArray: (id*)objects
 	  length: (size_t)length
 {
-	self = [self init];
-
-	@try {
-		size_t i;
-
-		for (i = 0; i < length; i++)
-			[objects[i] retain];
-
-		[array addNItems: length
-		      fromCArray: objects];
-	} @catch (id e) {
-		size_t i;
-
-		for (i = 0; i < length; i++)
-			[objects[i] release];
-
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
 }
 
 - initWithSerialization: (OFXMLElement*)element
 {
-	self = [self init];
-
-	@try {
-		OFAutoreleasePool *pool, *pool2;
-		OFEnumerator *enumerator;
-		OFXMLElement *child;
-
-		pool = [[OFAutoreleasePool alloc] init];
-
-		if (![[element name] isEqual: [self className]] ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
-
-		enumerator = [[element children] objectEnumerator];
-		pool2 = [[OFAutoreleasePool alloc] init];
-
-		while ((child = [enumerator nextObject]) != nil) {
-			id object;
-
-			if (![[child namespace] isEqual: OF_SERIALIZATION_NS])
-				continue;
-
-			object = [child objectByDeserializing];
-			[array addItem: &object];
-			[object retain];
-
-			[pool2 releaseObjects];
-		}
-
-		[pool release];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
 }
 
 - (size_t)count
 {
-	return [array count];
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
+
+- (void)getObjects: (id*)buffer
+	   inRange: (of_range_t)range
+{
+	size_t i;
+
+	for (i = 0; i < range.length; i++)
+		buffer[i] = [self objectAtIndex: range.start + i];
 }
 
 - (id*)cArray
 {
-	return [array cArray];
+	OFObject *container;
+	size_t count;
+	id *buffer;
+
+	container = [[[OFObject alloc] init] autorelease];
+	count = [self count];
+	buffer = [container allocMemoryForNItems: [self count]
+					withSize: sizeof(*buffer)];
+
+	[self getObjects: buffer
+		 inRange: of_range(0, count)];
+
+	return buffer;
 }
 
 - copy
@@ -289,19 +269,16 @@
 
 - (id)objectAtIndex: (size_t)index
 {
-	return *((id*)[array itemAtIndex: index]);
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 
 - (size_t)indexOfObject: (id)object
 {
-	id *cArray = [array cArray];
-	size_t i, count = [array count];
-
-	if (cArray == NULL)
-		return OF_INVALID_INDEX;
+	size_t i, count = [self count];
 
 	for (i = 0; i < count; i++)
-		if ([cArray[i] isEqual: object])
+		if ([[self objectAtIndex: i] isEqual: object])
 			return i;
 
 	return OF_INVALID_INDEX;
@@ -309,14 +286,10 @@
 
 - (size_t)indexOfObjectIdenticalTo: (id)object
 {
-	id *cArray = [array cArray];
-	size_t i, count = [array count];
-
-	if (cArray == NULL)
-		return OF_INVALID_INDEX;
+	size_t i, count = [self count];
 
 	for (i = 0; i < count; i++)
-		if (cArray[i] == object)
+		if ([self objectAtIndex: i] == object)
 			return i;
 
 	return OF_INVALID_INDEX;
@@ -324,89 +297,77 @@
 
 - (BOOL)containsObject: (id)object
 {
-	id *cArray = [array cArray];
-	size_t i, count = [array count];
-
-	if (cArray == NULL)
-		return NO;
-
-	for (i = 0; i < count; i++)
-		if ([cArray[i] isEqual: object])
-			return YES;
-
-	return NO;
+	return ([self indexOfObject: object] != OF_INVALID_INDEX);
 }
 
 - (BOOL)containsObjectIdenticalTo: (id)object
 {
-	id *cArray = [array cArray];
-	size_t i, count = [array count];
-
-	if (cArray == NULL)
-		return NO;
-
-	for (i = 0; i < count; i++)
-		if (cArray[i] == object)
-			return YES;
-
-	return NO;
+	return ([self indexOfObjectIdenticalTo: object] != OF_INVALID_INDEX);
 }
 
 - (id)firstObject
 {
-	id *firstObject = [array firstItem];
+	if ([self count] > 0)
+		return [self objectAtIndex: 0];
 
-	return (firstObject != NULL ? *firstObject : nil);
+	return nil;
 }
 
 - (id)lastObject
 {
-	id *lastObject = [array lastItem];
+	size_t count = [self count];
 
-	return (lastObject != NULL ? *lastObject : nil);
-}
+	if (count > 0)
+		return [self objectAtIndex: count - 1];
 
-- (OFArray*)objectsFromIndex: (size_t)start
-		     toIndex: (size_t)end
-{
-	size_t count = [array count];
-
-	if (end > count || start > end)
-		@throw [OFOutOfRangeException newWithClass: isa];
-
-	return [OFArray arrayWithCArray: (id*)[array cArray] + start
-				 length: end - start];
+	return nil;
 }
 
 - (OFArray*)objectsInRange: (of_range_t)range
 {
-	return [self objectsFromIndex: range.start
-			      toIndex: range.start + range.length];
+	OFArray *ret;
+	id *buffer = [self allocMemoryForNItems: range.length
+				       withSize: sizeof(*buffer)];
+
+	@try {
+		[self getObjects: buffer
+			 inRange: range];
+
+		ret = [OFArray arrayWithCArray: buffer
+					length: range.length];
+	} @finally {
+		[self freeMemory: buffer];
+	}
+
+	return ret;
 }
 
 - (OFString*)componentsJoinedByString: (OFString*)separator
 {
-	OFAutoreleasePool *pool;
-	OFString *ret;
-	OFObject **cArray = [array cArray];
-	size_t i, count = [array count];
+	OFAutoreleasePool *pool, *pool2;
+	OFMutableString *ret;
+	id *cArray;
+	size_t i, count = [self count];
 	IMP append;
 
 	if (count == 0)
 		return @"";
 	if (count == 1)
-		return [cArray[0] description];
+		return [[self firstObject] description];
 
 	ret = [OFMutableString string];
 	append = [ret methodForSelector: @selector(appendString:)];
 
 	pool = [[OFAutoreleasePool alloc] init];
+	cArray = [self cArray];
+
+	pool2 = [[OFAutoreleasePool alloc] init];
 
 	for (i = 0; i < count - 1; i++) {
 		append(ret, @selector(appendString:), [cArray[i] description]);
 		append(ret, @selector(appendString:), separator);
 
-		[pool releaseObjects];
+		[pool2 releaseObjects];
 	}
 	append(ret, @selector(appendString:), [cArray[i] description]);
 
@@ -423,8 +384,8 @@
 
 - (BOOL)isEqual: (id)object
 {
+	/* FIXME: Optimize (for example, buffer of 16 for each) */
 	OFArray *otherArray;
-	id *cArray, *otherCArray;
 	size_t i, count;
 
 	if (![object isKindOfClass: [OFArray class]])
@@ -432,16 +393,14 @@
 
 	otherArray = object;
 
-	count = [array count];
+	count = [self count];
 
 	if (count != [otherArray count])
 		return NO;
 
-	cArray = [array cArray];
-	otherCArray = [otherArray cArray];
-
 	for (i = 0; i < count; i++)
-		if (![cArray[i] isEqual: otherCArray[i]])
+		if (![[self objectAtIndex: i] isEqual:
+		    [otherArray objectAtIndex: i]])
 			return NO;
 
 	return YES;
@@ -449,8 +408,8 @@
 
 - (uint32_t)hash
 {
-	id *cArray = [array cArray];
-	size_t i, count = [array count];
+	id *cArray = [self cArray];
+	size_t i, count = [self count];
 	uint32_t hash;
 
 	OF_HASH_INIT(hash);
@@ -474,7 +433,7 @@
 	OFAutoreleasePool *pool;
 	OFMutableString *ret;
 
-	if ([array count] == 0)
+	if ([self count] == 0)
 		return @"()";
 
 	pool = [[OFAutoreleasePool alloc] init];
@@ -508,11 +467,15 @@
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFAutoreleasePool *pool2;
 	OFXMLElement *element;
-	id <OFSerialization> *cArray = [array cArray];
-	size_t i, count = [array count];
+	id <OFSerialization> *cArray = [self cArray];
+	size_t i, count = [self count];
 
-	element = [OFXMLElement elementWithName: [self className]
-				      namespace: OF_SERIALIZATION_NS];
+	if ([self isKindOfClass: [OFMutableArray class]])
+		element = [OFXMLElement elementWithName: @"OFMutableArray"
+					      namespace: OF_SERIALIZATION_NS];
+	else
+		element = [OFXMLElement elementWithName: @"OFArray"
+					      namespace: OF_SERIALIZATION_NS];
 
 	pool2 = [[OFAutoreleasePool alloc] init];
 
@@ -534,8 +497,8 @@
 
 - (void)makeObjectsPerformSelector: (SEL)selector
 {
-	id *cArray = [array cArray];
-	size_t i, count = [array count];
+	id *cArray = [self cArray];
+	size_t i, count = [self count];
 
 	for (i = 0; i < count; i++)
 		((void(*)(id, SEL))[cArray[i]
@@ -545,8 +508,8 @@
 - (void)makeObjectsPerformSelector: (SEL)selector
 			withObject: (id)object
 {
-	id *cArray = [array cArray];
-	size_t i, count = [array count];
+	id *cArray = [self cArray];
+	size_t i, count = [self count];
 
 	for (i = 0; i < count; i++)
 		((void(*)(id, SEL, id))[cArray[i]
@@ -557,7 +520,8 @@
 			   objects: (id*)objects
 			     count: (int)count_
 {
-	size_t count = [array count];
+	/* FIXME: Use -[getObjects:inRange:] on the passed objects */
+	size_t count = [self count];
 
 	if (count > INT_MAX)
 		@throw [OFOutOfRangeException newWithClass: isa];
@@ -566,7 +530,7 @@
 		return 0;
 
 	state->state = count;
-	state->itemsPtr = [array cArray];
+	state->itemsPtr = [self cArray];
 	state->mutationsPtr = (unsigned long*)self;
 
 	return (int)count;
@@ -575,25 +539,23 @@
 - (OFEnumerator*)objectEnumerator
 {
 	return [[[OFArrayEnumerator alloc] initWithArray: self
-					       dataArray: array
-					mutationsPointer: NULL] autorelease];
+					    mutationsPtr: NULL] autorelease];
 }
 
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
-	id *cArray = [array cArray];
-	size_t i, count = [array count];
+	size_t i, count = [self count];
 	BOOL stop = NO;
 
 	for (i = 0; i < count && !stop; i++)
-		block(cArray[i], i, &stop);
+		block([self objectAtIndex: i], i, &stop);
 }
 
 - (OFArray*)mappedArrayUsingBlock: (of_array_map_block_t)block
 {
 	OFArray *ret;
-	size_t count = [array count];
+	size_t count = [self count];
 	id *tmp = [self allocMemoryForNItems: count
 				    withSize: sizeof(id)];
 
@@ -615,7 +577,7 @@
 - (OFArray*)filteredArrayUsingBlock: (of_array_filter_block_t)block
 {
 	OFArray *ret;
-	size_t count = [array count];
+	size_t count = [self count];
 	id *tmp = [self allocMemoryForNItems: count
 				    withSize: sizeof(id)];
 
@@ -639,7 +601,7 @@
 
 - (id)foldUsingBlock: (of_array_fold_block_t)block
 {
-	size_t count = [array count];
+	size_t count = [self count];
 	__block id current;
 
 	if (count == 0)
@@ -667,31 +629,16 @@
 	return [current autorelease];
 }
 #endif
-
-- (void)dealloc
-{
-	id *cArray = [array cArray];
-	size_t i, count = [array count];
-
-	for (i = 0; i < count; i++)
-		[cArray[i] release];
-
-	[array release];
-
-	[super dealloc];
-}
 @end
 
 @implementation OFArrayEnumerator
--    initWithArray: (OFArray*)array_
-	 dataArray: (OFDataArray*)dataArray_
-  mutationsPointer: (unsigned long*)mutationsPtr_
+- initWithArray: (OFArray*)array_
+   mutationsPtr: (unsigned long*)mutationsPtr_
 {
 	self = [super init];
 
 	array = [array_ retain];
-	dataArray = [dataArray_ retain];
-	count = [dataArray count];
+	count = [array count];
 	mutations = (mutationsPtr_ != NULL ? *mutationsPtr_ : 0);
 	mutationsPtr = mutationsPtr_;
 
@@ -701,7 +648,6 @@
 - (void)dealloc
 {
 	[array release];
-	[dataArray release];
 
 	[super dealloc];
 }
@@ -712,8 +658,8 @@
 		@throw [OFEnumerationMutationException newWithClass: isa
 							     object: array];
 
-	if (pos < count)
-		return *(id*)[dataArray itemAtIndex: pos++];
+	if (position < count)
+		return [array objectAtIndex: position++];
 
 	return nil;
 }
@@ -724,6 +670,6 @@
 		@throw [OFEnumerationMutationException newWithClass: isa
 							     object: array];
 
-	pos = 0;
+	position = 0;
 }
 @end

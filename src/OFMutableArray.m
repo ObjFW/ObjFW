@@ -19,14 +19,110 @@
 #include <string.h>
 
 #import "OFMutableArray.h"
-#import "OFDataArray.h"
+#import "OFMutableCArray.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
+#import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 
+#import "macros.h"
+
+static struct {
+	Class isa;
+} placeholder;
+
+@implementation OFMutableArrayPlaceholder
+- init
+{
+	return (id)[[OFMutableCArray alloc] init];
+}
+
+- initWithObject: (id)object
+{
+	return (id)[[OFMutableCArray alloc] initWithObject: object];
+}
+
+- initWithObjects: (id)firstObject, ...
+{
+	id ret;
+	va_list arguments;
+
+	va_start(arguments, firstObject);
+	ret = [[OFMutableCArray alloc] initWithObject: firstObject
+					    arguments: arguments];
+	va_end(arguments);
+
+	return ret;
+}
+
+- initWithObject: (id)firstObject
+       arguments: (va_list)arguments
+{
+	return (id)[[OFMutableCArray alloc] initWithObject: firstObject
+						 arguments: arguments];
+}
+
+- initWithArray: (OFArray*)array
+{
+	return (id)[[OFMutableCArray alloc] initWithArray: array];
+}
+
+- initWithCArray: (id*)objects
+{
+	return (id)[[OFMutableCArray alloc] initWithCArray: objects];
+}
+
+- initWithCArray: (id*)objects
+	  length: (size_t)length
+{
+	return (id)[[OFMutableCArray alloc] initWithCArray: objects
+						    length: length];
+}
+
+- initWithSerialization: (OFXMLElement*)element
+{
+	return (id)[[OFMutableCArray alloc] initWithSerialization: element];
+}
+
+- retain
+{
+	return self;
+}
+
+- autorelease
+{
+	return self;
+}
+
+- (void)release
+{
+}
+
+- (void)dealloc
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+	[super dealloc];	/* Get rid of a stupid warning */
+}
+@end
+
 @implementation OFMutableArray
++ (void)initialize
+{
+	if (self == [OFMutableArray class])
+		placeholder.isa = [OFMutableArrayPlaceholder class];
+}
+
++ alloc
+{
+	if (self == [OFMutableArray class])
+		return (id)&placeholder;
+
+	return [super alloc];
+}
+
 - copy
 {
 	return [[OFArray alloc] initWithArray: self];
@@ -34,100 +130,47 @@
 
 - (void)addObject: (id)object
 {
-	[array addItem: &object];
-	[object retain];
-
-	mutations++;
+	[self addObject: object
+		atIndex: [self count]];
 }
 
 - (void)addObject: (id)object
 	  atIndex: (size_t)index
 {
-	[array addItem: &object
-	       atIndex: index];
-	[object retain];
-
-	mutations++;
-}
-
-- (void)replaceObject: (id)oldObject
-	   withObject: (id)newObject
-{
-	id *cArray = [array cArray];
-	size_t i, count = [array count];
-
-	for (i = 0; i < count; i++) {
-		if ([cArray[i] isEqual: oldObject]) {
-			[newObject retain];
-			[cArray[i] release];
-			cArray[i] = newObject;
-
-			return;
-		}
-	}
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 
 - (void)replaceObjectAtIndex: (size_t)index
 		  withObject: (id)object
 {
-	id *cArray = [array cArray];
-	id oldObject;
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+}
 
-	if (index >= [array count])
-		@throw [OFOutOfRangeException newWithClass: isa];
+- (void)replaceObject: (id)oldObject
+	   withObject: (id)newObject
+{
+	size_t i, count = [self count];
 
-	oldObject = cArray[index];
-	cArray[index] = [object retain];
-	[oldObject release];
+	for (i = 0; i < count; i++) {
+		if ([[self objectAtIndex: i] isEqual: oldObject]) {
+			[self replaceObjectAtIndex: i
+					withObject: newObject];
+			return;
+		}
+	}
 }
 
 - (void)replaceObjectIdenticalTo: (id)oldObject
 		      withObject: (id)newObject
 {
-	id *cArray = [array cArray];
-	size_t i, count = [array count];
+	size_t i, count = [self count];
 
 	for (i = 0; i < count; i++) {
-		if (cArray[i] == oldObject) {
-			[newObject retain];
-			[cArray[i] release];
-			cArray[i] = newObject;
-
-			return;
-		}
-	}
-}
-
-- (void)removeObject: (id)object
-{
-	id *cArray = [array cArray];
-	size_t i, count = [array count];
-
-	for (i = 0; i < count; i++) {
-		if ([cArray[i] isEqual: object]) {
-			object = cArray[i];
-
-			[array removeItemAtIndex: i];
-			mutations++;
-
-			[object release];
-
-			return;
-		}
-	}
-}
-
-- (void)removeObjectIdenticalTo: (id)object
-{
-	id *cArray = [array cArray];
-	size_t i, count = [array count];
-
-	for (i = 0; i < count; i++) {
-		if (cArray[i] == object) {
-			[array removeItemAtIndex: i];
-			mutations++;
-
-			[object release];
+		if ([self objectAtIndex: i] == oldObject) {
+			[self replaceObjectAtIndex: i
+					withObject: newObject];
 
 			return;
 		}
@@ -136,134 +179,69 @@
 
 - (void)removeObjectAtIndex: (size_t)index
 {
-	id object = [self objectAtIndex: index];
-	[array removeItemAtIndex: index];
-	[object release];
-
-	mutations++;
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 
-- (void)removeNObjects: (size_t)nObjects
+- (void)removeObject: (id)object
 {
-	id *cArray = [array cArray], *copy;
-	size_t i, count = [array count];
+	size_t i, count = [self count];
 
-	if (nObjects > count)
-		@throw [OFOutOfRangeException newWithClass: isa];
+	for (i = 0; i < count; i++) {
+		if ([[self objectAtIndex: i] isEqual: object]) {
+			[self removeObjectAtIndex: i];
 
-	copy = [self allocMemoryForNItems: nObjects
-				 withSize: sizeof(id)];
-	memcpy(copy, cArray + (count - nObjects), nObjects * sizeof(id));
+			return;
+		}
+	}
+}
 
-	@try {
-		[array removeNItems: nObjects];
-		mutations++;
+- (void)removeObjectIdenticalTo: (id)object
+{
+	size_t i, count = [self count];
 
-		for (i = 0; i < nObjects; i++)
-			[copy[i] release];
-	} @finally {
-		[self freeMemory: copy];
+	for (i = 0; i < count; i++) {
+		if ([self objectAtIndex: i] == object) {
+			[self removeObjectAtIndex: i];
+
+			return;
+		}
 	}
 }
 
 - (void)removeNObjects: (size_t)nObjects
-	       atIndex: (size_t)index
 {
-	id *cArray = [array cArray], *copy;
-	size_t i, count = [array count];
+	size_t count = [self count];
 
-	if (nObjects > count - index)
-		@throw [OFOutOfRangeException newWithClass: isa];
+	[self removeObjectsInRange: of_range(count - nObjects, nObjects)];
+}
 
-	copy = [self allocMemoryForNItems: nObjects
-				 withSize: sizeof(id)];
-	memcpy(copy, cArray + index, nObjects * sizeof(id));
+- (void)removeObjectsInRange: (of_range_t)range
+{
+	size_t i;
 
-	@try {
-		[array removeNItems: nObjects
-			    atIndex: index];
-		mutations++;
-
-		for (i = 0; i < nObjects; i++)
-			[copy[i] release];
-	} @finally {
-		[self freeMemory: copy];
-	}
+	for (i = 0; i < range.length; i++)
+		[self removeObjectAtIndex: range.start];
 }
 
 - (void)removeLastObject
 {
-	id object = [self objectAtIndex: [array count] - 1];
-	[array removeLastItem];
-	[object release];
-
-	mutations++;
-}
-
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
-			   objects: (id*)objects
-			     count: (int)count_
-{
-	int ret = [super countByEnumeratingWithState: state
-					     objects: objects
-					       count: count_];
-
-	state->mutationsPtr = &mutations;
-
-	return ret;
-}
-
-- (OFEnumerator*)objectEnumerator
-{
-	return [[[OFArrayEnumerator alloc]
-	       initWithArray: self
-		   dataArray: array
-	    mutationsPointer: &mutations] autorelease];
+	[self removeNObjects: 1];
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
-{
-	id *cArray = [array cArray];
-	size_t i, count = [array count];
-	BOOL stop = NO;
-	unsigned long mutations2 = mutations;
-
-	for (i = 0; i < count && !stop; i++) {
-		if (mutations != mutations2)
-			@throw [OFEnumerationMutationException
-			    newWithClass: isa
-				  object: self];
-
-		block(cArray[i], i, &stop);
-	}
-}
-
 - (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block
 {
-	id *cArray = [array cArray];
-	size_t i, count = [array count];
-	BOOL stop = NO;
-	unsigned long mutations2 = mutations;
-
-	for (i = 0; i < count && !stop; i++) {
-		id newObject;
-
-		if (mutations != mutations2)
-			@throw [OFEnumerationMutationException
-			    newWithClass: isa
-				  object: self];
-
-		newObject = block(cArray[i], i, &stop);
-
-		if (newObject == nil)
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
-
-		[newObject retain];
-		[cArray[i] release];
-		cArray[i] = newObject;
-	}
+	[self enumerateObjectsUsingBlock: ^ (id object, size_t index,
+	    BOOL *stop) {
+		[self replaceObjectAtIndex: index
+				withObject: block(object, index, stop)];
+	}];
 }
 #endif
+
+- (OFArray*)makeImmutable
+{
+	return self;
+}
 @end

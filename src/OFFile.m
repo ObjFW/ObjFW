@@ -303,13 +303,7 @@ of_log(OFConstantString *format, ...)
 	[pool release];
 #endif
 
-	/*
-	 * Class swizzle the array to be immutable. We declared the return type
-	 * to be OFArray*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	files->isa = [OFArray class];
-	return files;
+	return [files makeImmutable];
 }
 
 + (void)changeToDirectory: (OFString*)path

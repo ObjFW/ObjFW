@@ -200,12 +200,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 	for (i = 1; i < *argc; i++)
 		[arguments addObject: [OFString stringWithCString: (*argv)[i]]];
 
-	/*
-	 * Class swizzle the arguments to be immutable, as we don't need to
-	 * change them anymore and expose them only as OFArray*. But not
-	 * swizzling it would create a real copy each time -[copy] is called.
-	 */
-	arguments->isa = [OFArray class];
+	[arguments makeImmutable];
 
 	[pool release];
 }

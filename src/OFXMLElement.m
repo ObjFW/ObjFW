@@ -1036,13 +1036,7 @@ void _references_to_categories_of_OFXMLElement(void)
 		if (cArray[i]->name != nil)
 			[ret addObject: cArray[i]];
 
-	/*
-	 * Class swizzle the array to be immutable. We declared the return type
-	 * to be OFArray*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	ret->isa = [OFArray class];
-	return ret;
+	return [ret makeImmutable];
 }
 
 - (OFArray*)elementsForName: (OFString*)elementName
@@ -1056,13 +1050,7 @@ void _references_to_categories_of_OFXMLElement(void)
 		    [cArray[i]->name isEqual: elementName])
 			[ret addObject: cArray[i]];
 
-	/*
-	 * Class swizzle the array to be immutable. We declared the return type
-	 * to be OFArray*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	ret->isa = [OFArray class];
-	return ret;
+	return [ret makeImmutable];
 }
 
 - (OFArray*)elementsForNamespace: (OFString*)elementNS
@@ -1076,13 +1064,7 @@ void _references_to_categories_of_OFXMLElement(void)
 		    [cArray[i]->ns isEqual: elementNS])
 			[ret addObject: cArray[i]];
 
-	/*
-	 * Class swizzle the array to be immutable. We declared the return type
-	 * to be OFArray*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	ret->isa = [OFArray class];
-	return ret;
+	return [ret makeImmutable];
 }
 
 - (OFArray*)elementsForName: (OFString*)elementName
@@ -1104,13 +1086,7 @@ void _references_to_categories_of_OFXMLElement(void)
 		    [cArray[i]->name isEqual: elementName])
 			[ret addObject: cArray[i]];
 
-	/*
-	 * Class swizzle the array to be immutable. We declared the return type
-	 * to be OFArray*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	ret->isa = [OFArray class];
-	return ret;
+	return [ret makeImmutable];
 }
 
 - (BOOL)isEqual: (id)object

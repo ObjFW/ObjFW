@@ -24,10 +24,6 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
  * \brief A class for storing, adding and removing objects in an array.
  */
 @interface OFMutableArray: OFArray
-{
-	unsigned long mutations;
-}
-
 /**
  * \brief Adds an object to the OFArray.
  *
@@ -103,13 +99,11 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
 - (void)removeNObjects: (size_t)nObjects;
 
 /**
- * \brief Removes the specified amount of objects at the specified index.
+ * \brief Removes the object in the specified range.
  *
- * \param nobjects The number of objects to remove
- * \param index The index at which the objects are removed
+ * \param range The range of the objects to remove
  */
-- (void)removeNObjects: (size_t)nObjects
-	       atIndex: (size_t)index;
+- (void)removeObjectsInRange: (of_range_t)range;
 
 /**
  * \brief Removes the last object.
@@ -124,4 +118,12 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
  */
 - (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block;
 #endif
+
+/**
+ * \brief Converts the mutable array to an immutable array.
+ */
+- (OFArray*)makeImmutable;
+@end
+
+@interface OFMutableArrayPlaceholder: OFMutableArray
 @end

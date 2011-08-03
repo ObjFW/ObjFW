@@ -85,7 +85,7 @@ static OFString *c_ary[] = {
 	    [a[0] containsObject: c_ary[1]] == YES &&
 	    [a[0] containsObject: @"nonexistant"] == NO)
 
-	TEST(@"-[containsObject:]",
+	TEST(@"-[containsObjectIdenticalTo:]",
 	    [a[0] containsObjectIdenticalTo: c_ary[1]] == YES &&
 	    [a[0] containsObjectIdenticalTo:
 	    [OFString stringWithString: c_ary[1]]] == NO)
@@ -95,9 +95,8 @@ static OFString *c_ary[] = {
 	TEST(@"-[indexOfObjectIdenticalTo:]",
 	    [a[1] indexOfObjectIdenticalTo: c_ary[1]] == 1)
 
-	TEST(@"-[objectsFromIndex:toIndex",
-	    [[a[0] objectsFromIndex: 1
-			    toIndex: 3] isEqual:
+	TEST(@"-[objectsInRange:]",
+	    [[a[0] objectsInRange: of_range(1, 2)] isEqual:
 	    ([OFArray arrayWithObjects: c_ary[1], c_ary[2], nil])])
 
 	TEST(@"-[replaceObject:withObject:]",
@@ -137,14 +136,14 @@ static OFString *c_ary[] = {
 	    [m[1] count] == 2 && [[m[1] objectAtIndex: 1] isEqual: c_ary[2]])
 
 	m[1] = [[a[0] mutableCopy] autorelease];
-	TEST(@"-[removeNObjects:atIndex:]", R([m[1] removeNObjects: 2
-							   atIndex: 0]) &&
+	TEST(@"-[removeObjectsInRange:]",
+	    R([m[1] removeObjectsInRange: of_range(0, 2)]) &&
 	    [m[1] count] == 1 && [[m[1] objectAtIndex: 0] isEqual: c_ary[2]])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[objectAtIndex:]",
 	    OFOutOfRangeException, [a[0] objectAtIndex: [a[0] count]])
 
-	EXPECT_EXCEPTION(@"Detect out of range in -[removeNItems:]",
+	EXPECT_EXCEPTION(@"Detect out of range in -[removeNObjects:]",
 	    OFOutOfRangeException, [m[0] removeNObjects: [m[0] count] + 1])
 
 	TEST(@"-[componentsJoinedByString:]",
@@ -204,12 +203,16 @@ static OFString *c_ary[] = {
 			withObject: c_ary[2]];
 
 	ok = NO;
+	i = 0;
 	@try {
-		for (OFString *s in m[0])
-			[m[0] addObject: @""];
+		for (OFString *s in m[0]) {
+			if (i == 0)
+				[m[0] addObject: @""];
+			i++;
+		}
 	} @catch (OFEnumerationMutationException *e) {
 		ok = YES;
-		[e dealloc];
+		[e release];
 	}
 
 	TEST(@"Detection of mutation during Fast Enumeration", ok)
@@ -246,7 +249,13 @@ static OFString *c_ary[] = {
 			}];
 		} @catch (OFEnumerationMutationException *e) {
 			ok = YES;
-			[e dealloc];
+			[e release];
+		} @catch (OFOutOfRangeException *e) {
+			/*
+			 * Out of bounds access due to enumeration not being
+			 * detected.
+			 */
+			[e release];
 		}
 
 		TEST(@"Detection of mutation during enumeration using blocks",

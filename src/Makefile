@@ -11,6 +11,7 @@ SRCS = OFApplication.m			\
        OFArray.m			\
        OFAutoreleasePool.m		\
        OFBlock.m			\
+       OFCArray.m			\
        OFConstantString.m		\
        OFCountedSet.m			\
        OFDataArray.m			\
@@ -29,6 +30,7 @@ SRCS = OFApplication.m			\
        OFList.m				\
        OFMD5Hash.m			\
        OFMutableArray.m			\
+       OFMutableCArray.m		\
        OFMutableDictionary.m		\
        OFMutableSet.m			\
        OFMutableString.m		\

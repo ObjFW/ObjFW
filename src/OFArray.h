@@ -21,7 +21,6 @@
 #import "OFEnumerator.h"
 #import "OFSerialization.h"
 
-@class OFDataArray;
 @class OFString;
 
 #ifdef OF_HAVE_BLOCKS
@@ -37,10 +36,6 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  */
 @interface OFArray: OFObject <OFCopying, OFMutableCopying, OFCollection,
     OFSerialization>
-{
-	OFDataArray *array;
-}
-
 /**
  * \brief Creates a new OFArray.
  *
@@ -145,13 +140,6 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 	  length: (size_t)length;
 
 /**
- * \brief Returns the objects of the array as a C array.
- *
- * \return The objects of the array as a C array
- */
-- (id*)cArray;
-
-/**
  * \brief Returns a specified object of the array.
  *
  * The returned object is <i>not</i> retained and autoreleased for performance
@@ -161,6 +149,22 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \return The specified object of the OFArray
  */
 - (id)objectAtIndex: (size_t)index;
+
+/**
+ * \brief Copies the objects at the specified range to the specified buffer.
+ *
+ * \param buffer The buffer to copy the objects to
+ * \param range The range to copy
+ */
+- (void)getObjects: (id*)buffer
+	   inRange: (of_range_t)range;
+
+/**
+ * \brief Returns the objects of the array as a C array.
+ *
+ * \return The objects of the array as a C array
+ */
+- (id*)cArray;
 
 /**
  * \brief Returns the index of the first object that is equivalent to the
@@ -211,18 +215,6 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \return The last object of the array or nil
  */
 - (id)lastObject;
-
-/**
- * \brief Returns the objects from the specified index to the specified index as
- *	  a new OFArray.
- *
- * \param start The index where the subarray starts
- * \param end The index where the subarray ends.
- *	      This points BEHIND the last object!
- * \return The subarray as a new autoreleased OFArray
- */
-- (OFArray*)objectsFromIndex: (size_t)start
-		     toIndex: (size_t)end;
 
 /**
  * \brief Returns the objects in the specified range as a new OFArray.
@@ -304,19 +296,20 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 #endif
 @end
 
+@interface OFArrayPlaceholder: OFArray
+@end
+
 @interface OFArrayEnumerator: OFEnumerator
 {
 	OFArray	      *array;
-	OFDataArray   *dataArray;
 	size_t	      count;
 	unsigned long mutations;
 	unsigned long *mutationsPtr;
-	size_t	      pos;
+	size_t	      position;
 }
 
--    initWithArray: (OFArray*)data
-	 dataArray: (OFDataArray*)dataArray
-  mutationsPointer: (unsigned long*)mutationsPtr;
+- initWithArray: (OFArray*)data
+   mutationsPtr: (unsigned long*)mutationsPtr;
 @end
 
 #import "OFMutableArray.h"
