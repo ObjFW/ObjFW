@@ -40,7 +40,7 @@ const uint8_t testfile_md5[OF_MD5_DIGEST_SIZE] =
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
 				    mode: @"rb"];
 
-	TEST(@"+[md5Hash]", (md5 = [OFMD5Hash MD5Hash]))
+	TEST(@"+[MD5Hash]", (md5 = [OFMD5Hash MD5Hash]))
 
 	while (![f isAtEndOfStream]) {
 		char buf[64];
