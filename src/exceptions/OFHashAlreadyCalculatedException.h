@@ -51,5 +51,5 @@
 /**
  * \return The hash which has already been calculated
  */
-- (OFHash*)hash;
+- (OFHash*)hashObject;
 @end

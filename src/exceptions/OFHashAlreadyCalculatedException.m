@@ -72,7 +72,7 @@
 	return description;
 }
 
-- (OFHash*)hash
+- (OFHash*)hashObject
 {
 	return hash;
 }
