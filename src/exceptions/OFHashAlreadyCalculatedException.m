@@ -39,12 +39,12 @@
 }
 
 - initWithClass: (Class)class_
-	   hash: (OFHash*)hash_
+	   hash: (OFHash*)hash
 {
 	self = [super initWithClass: class_];
 
 	@try {
-		hash = [hash_ retain];
+		hashObject = [hash retain];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -55,7 +55,7 @@
 
 - (void)dealloc
 {
-	[hash release];
+	[hashObject release];
 
 	[super dealloc];
 }
@@ -74,6 +74,6 @@
 
 - (OFHash*)hashObject
 {
-	return hash;
+	return hashObject;
 }
 @end

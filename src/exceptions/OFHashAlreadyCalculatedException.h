@@ -23,11 +23,11 @@
  */
 @interface OFHashAlreadyCalculatedException: OFException
 {
-	OFHash *hash;
+	OFHash *hashObject;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, nonatomic) OFHash *hash;
+@property (readonly, nonatomic) OFHash *hashObject;
 #endif
 
 /**
