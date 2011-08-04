@@ -1398,12 +1398,10 @@ of_utf16_string_length(const uint16_t *string)
 	return NO;
 }
 
-- (OFString*)substringFromIndex: (size_t)start
-			toIndex: (size_t)end
+- (OFString*)substringWithRange: (of_range_t)range
 {
-	if (start > end)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+	size_t start = range.start;
+	size_t end = range.start + range.length;
 
 	if (end > s->length)
 		@throw [OFOutOfRangeException newWithClass: isa];
@@ -1417,12 +1415,6 @@ of_utf16_string_length(const uint16_t *string)
 
 	return [OFString stringWithCString: s->cString + start
 				    length: end - start];
-}
-
-- (OFString*)substringWithRange: (of_range_t)range
-{
-	return [self substringFromIndex: range.start
-				toIndex: range.start + range.length];
 }
 
 - (OFString*)stringByAppendingString: (OFString*)string

@@ -284,8 +284,8 @@ normalize_key(OFString *key)
 			@throw [OFInvalidServerReplyException
 			    newWithClass: isa];
 
-		status = (int)[[line substringFromIndex: 9
-						toIndex: 12] decimalValue];
+		status = (int)[[line substringWithRange:
+		    of_range(9, 3)] decimalValue];
 
 		serverHeaders = [OFMutableDictionary dictionary];
 

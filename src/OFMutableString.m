@@ -433,9 +433,11 @@
 	s->length += string->s->length;
 }
 
-- (void)deleteCharactersFromIndex: (size_t)start
-			  toIndex: (size_t)end
+- (void)deleteCharactersInRange: (of_range_t)range
 {
+	size_t start = range.start;
+	size_t end = range.start + range.length;
+
 	if (start > end)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
@@ -465,16 +467,11 @@
 	}
 }
 
-- (void)deleteCharactersInRange: (of_range_t)range
+- (void)replaceCharactersInRange: (of_range_t)range
+		      withString: (OFString*)replacement
 {
-	[self deleteCharactersFromIndex: range.start
-				toIndex: range.start + range.length];
-}
-
-- (void)replaceCharactersFromIndex: (size_t)start
-			   toIndex: (size_t)end
-			withString: (OFString*)replacement
-{
+	size_t start = range.start;
+	size_t end = range.start + range.length;
 	size_t newCStringLength, newLength;
 
 	if (start > end)
@@ -506,14 +503,6 @@
 
 	s->cStringLength = newCStringLength;
 	s->length = newLength;
-}
-
-- (void)replaceCharactersInRange: (of_range_t)range
-		      withString: (OFString*)replacement
-{
-	[self replaceCharactersFromIndex: range.start
-				 toIndex: range.start + range.length
-			      withString: replacement];
 }
 
 - (void)replaceOccurrencesOfString: (OFString*)string

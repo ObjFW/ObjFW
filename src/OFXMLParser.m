@@ -76,8 +76,7 @@ transform_string(OFDataArray *cache, size_t cut, BOOL unescape,
 	if (cut > 0) {
 		size_t length = [ret length];
 
-		[ret deleteCharactersFromIndex: length - cut
-				       toIndex: length];
+		[ret deleteCharactersInRange: of_range(length - cut, cut)];
 	}
 
 	if (unescape)
@@ -399,8 +398,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	acceptProlog = NO;
 
-	pi = [pi substringFromIndex: 3
-			    toIndex: [pi length]];
+	pi = [pi substringWithRange: of_range(3, [pi length] - 3)];
 	pi = [pi stringByDeletingEnclosingWhitespaces];
 
 	cString = [pi cString];

@@ -220,25 +220,14 @@ static uint16_t sutf16str[] = {
 	    [@"𝄞öö" indexOfLastOccurrenceOfString: @"𝄞"] == 0 &&
 	    [@"𝄞öö" indexOfLastOccurrenceOfString: @"x"] == OF_INVALID_INDEX)
 
-	TEST(@"-[substringFromIndexToIndex:]",
-	    [[@"𝄞öö" substringFromIndex: 1
-				toIndex: 2] isEqual: @"ö"] &&
-	    [[@"𝄞öö" substringFromIndex: 3
-				toIndex: 3] isEqual: @""])
+	TEST(@"-[substringWithRange:]",
+	    [[@"𝄞öö" substringWithRange: of_range(1, 1)] isEqual: @"ö"] &&
+	    [[@"𝄞öö" substringWithRange: of_range(3, 0)] isEqual: @""])
 
-	EXPECT_EXCEPTION(@"Detect out of range in "
-	    @"-[substringFromIndex:toIndex:] #1", OFOutOfRangeException,
-	    [@"𝄞öö" substringFromIndex: 2
-			       toIndex: 4])
-	EXPECT_EXCEPTION(@"Detect out of range in "
-	    @"-[substringFromIndex:toIndex:] #2", OFOutOfRangeException,
-	    [@"𝄞öö" substringFromIndex: 4
-			       toIndex: 4])
-
-	EXPECT_EXCEPTION(@"Detect start > end in "
-	    @"-[substringFromIndex:toIndex:]", OFInvalidArgumentException,
-	    [@"𝄞öö" substringFromIndex: 2
-			       toIndex: 0])
+	EXPECT_EXCEPTION(@"Detect out of range in -[substringWithRange:] #1",
+	    OFOutOfRangeException, [@"𝄞öö" substringWithRange: of_range(2, 2)])
+	EXPECT_EXCEPTION(@"Detect out of range in -[substringWithRange:] #2",
+	    OFOutOfRangeException, [@"𝄞öö" substringWithRange: of_range(4, 0)])
 
 	TEST(@"-[stringByAppendingString:]",
 	    [[@"foo" stringByAppendingString: @"bar"] isEqual: @"foobar"])
@@ -414,63 +403,42 @@ static uint16_t sutf16str[] = {
 	    @"#2", OFInvalidEncodingException,
 	    [@"foo%FFbar" stringByURLDecoding])
 
-	TEST(@"-[deleteCharactersFromIndex:toIndex:]",
+	TEST(@"-[deleteCharactersInRange:]",
 	    (s[0] = [OFMutableString stringWithString: @"𝄞öööbä€"]) &&
-	    R([s[0] deleteCharactersFromIndex: 1
-				       toIndex: 4]) &&
+	    R([s[0] deleteCharactersInRange: of_range(1, 3)]) &&
 	    [s[0] isEqual: @"𝄞bä€"] &&
-	    R([s[0] deleteCharactersFromIndex: 0
-				      toIndex: 4]) &&
+	    R([s[0] deleteCharactersInRange: of_range(0, 4)]) &&
 	    [s[0] isEqual: @""])
 
-	TEST(@"-[replaceCharactersFromIndex:toIndex:withString:]",
+	TEST(@"-[replaceCharactersInRange:withString:]",
 	    (s[0] = [OFMutableString stringWithString: @"𝄞öööbä€"]) &&
-		   R([s[0] replaceCharactersFromIndex: 1
-					      toIndex: 4
-					   withString: @"äöü"]) &&
+	    R([s[0] replaceCharactersInRange: of_range(1, 3)
+				  withString: @"äöü"]) &&
 	    [s[0] isEqual: @"𝄞äöübä€"] &&
-	    R([s[0] replaceCharactersFromIndex: 0
-				       toIndex: 7
-				    withString: @""]) &&
+	    R([s[0] replaceCharactersInRange: of_range(0, 7)
+				  withString: @""]) &&
 	    [s[0] isEqual: @""])
 
-	EXPECT_EXCEPTION(@"Detect OoR in "
-	    @"-[deleteCharactersFromIndex:toIndex:] #1", OFOutOfRangeException,
+	EXPECT_EXCEPTION(@"Detect OoR in -[deleteCharactersInRange:] #1",
+	    OFOutOfRangeException,
 	    {
 		s[0] = [OFMutableString stringWithString: @"𝄞öö"];
-		[s[0] deleteCharactersFromIndex: 2
-					toIndex: 4];
+		[s[0] deleteCharactersInRange: of_range(2, 2)];
 	    })
 
-	EXPECT_EXCEPTION(@"Detect OoR in "
-	    @"-[deleteCharactersFromIndex:toIndex:] #2", OFOutOfRangeException,
-	    [s[0] deleteCharactersFromIndex: 4
-				    toIndex: 4])
-
-	EXPECT_EXCEPTION(@"Detect s > e in "
-	    @"-[deleteCharactersFromIndex:toIndex:]",
-	    OFInvalidArgumentException,
-	    [s[0] deleteCharactersFromIndex: 2
-				    toIndex: 0])
-
-	EXPECT_EXCEPTION(@"OoR "
-	    @"-[replaceCharactersFromIndex:toIndex:withString:] #1",
-	    OFOutOfRangeException, [s[0] replaceCharactersFromIndex: 2
-							    toIndex: 4
-							 withString: @""])
-
-	EXPECT_EXCEPTION(@"OoR "
-	    @"-[replaceCharactersFromIndex:toIndex:withString:] #2",
+	EXPECT_EXCEPTION(@"Detect OoR in -[deleteCharactersInRange:] #2",
 	    OFOutOfRangeException,
-	    [s[0] replaceCharactersFromIndex: 4
-				     toIndex: 4
-				  withString: @""])
+	    [s[0] deleteCharactersInRange: of_range(4, 0)])
 
-	EXPECT_EXCEPTION(@"s>e in "
-	    @"-[replaceCharactersFromIndex:toIndex:withString:]",
-	    OFInvalidArgumentException, [s[0] replaceCharactersFromIndex: 2
-								 toIndex: 0
-							      withString: @""])
+	EXPECT_EXCEPTION(@"Detect OoR in -[replaceCharactersInRange:withString:] #1",
+	    OFOutOfRangeException,
+	    [s[0] replaceCharactersInRange: of_range(2, 2)
+				withString: @""])
+
+	EXPECT_EXCEPTION(@"Detect OoR in -[replaceCharactersInRange:withString:] #2",
+	    OFOutOfRangeException,
+	    [s[0] replaceCharactersInRange: of_range(4, 0)
+				withString: @""])
 
 	TEST(@"-[replaceOccurrencesOfString:withString:]",
 	    (s[0] = [OFMutableString stringWithString:

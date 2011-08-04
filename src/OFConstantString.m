@@ -469,16 +469,6 @@ void *_OFConstantStringClassReference;
 	return [super containsString: string];
 }
 
-- (OFString*)substringFromIndex: (size_t)start
-			toIndex: (size_t)end
-{
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
-
-	return [super substringFromIndex: start
-				 toIndex: end];
-}
-
 - (OFString*)substringWithRange: (of_range_t)range
 {
 	if (initialized != SIZE_MAX)

@@ -122,31 +122,9 @@
 /**
  * \brief Deletes the characters at the specified range.
  *
- * \param start The index where the deletion should be started
- * \param end The index until which the characters should be deleted.
- *	      This points BEHIND the last character!
- */
-- (void)deleteCharactersFromIndex: (size_t)start
-			  toIndex: (size_t)end;
-
-/**
- * \brief Deletes the characters at the specified range.
- *
  * \param range The range of the characters which should be removed
  */
 - (void)deleteCharactersInRange: (of_range_t)range;
-
-/**
- * \brief Replaces the characters at the specified range.
- *
- * \param start The index where the replacement should be started
- * \param end The index until which the characters should be replaced.
- *	      This points BEHIND the last character!
- * \param replacement The string to the replace the characters with
- */
-- (void)replaceCharactersFromIndex: (size_t)start
-			   toIndex: (size_t)end
-			withString: (OFString*)replacement;
 
 /**
  * \brief Replaces the characters at the specified range.

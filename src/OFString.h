@@ -575,15 +575,6 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (BOOL)containsString: (OFString*)string;
 
 /**
- * \param start The index where the substring starts
- * \param end The index where the substring ends.
- *	      This points BEHIND the last character!
- * \return The substring as a new autoreleased OFString
- */
-- (OFString*)substringFromIndex: (size_t)start
-			toIndex: (size_t)end;
-
-/**
  * \param range The range of the substring
  * \return The substring as a new autoreleased OFString
  */
