@@ -203,11 +203,16 @@
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
 			   objects: (id*)objects
-			     count: (int)count_
+			     count: (int)count
 {
+	/*
+	 * Super means the implementation from OFArray here, as OFMutableArray
+	 * does not reimplement it. As OFCArray does not reimplement it either,
+	 * this is fine.
+	 */
 	int ret = [super countByEnumeratingWithState: state
 					     objects: objects
-					       count: count_];
+					       count: count];
 
 	state->mutationsPtr = &mutations;
 
