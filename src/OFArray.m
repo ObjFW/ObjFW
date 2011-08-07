@@ -371,14 +371,10 @@ static struct {
 	}
 	append(ret, @selector(appendString:), [cArray[i] description]);
 
+	[ret makeImmutable];
+
 	[pool release];
 
-	/*
-	 * Class swizzle the array to be immutable. We declared the return type
-	 * to be OFArray*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	ret->isa = [OFString class];
 	return ret;
 }
 
@@ -451,14 +447,9 @@ static struct {
 
 	[pool release];
 
+	[ret makeImmutable];
 	[ret autorelease];
 
-	/*
-	 * Class swizzle the array to be immutable. We declared the return type
-	 * to be OFArray*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	ret->isa = [OFString class];
 	return ret;
 }
 

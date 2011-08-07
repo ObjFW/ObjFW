@@ -167,13 +167,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 #endif
 		[pool release];
 
-		/*
-		 * Class swizzle the environment to be immutable, as we don't
-		 * need to change it anymore and expose it only as
-		 * OFDictionary*. But not swizzling it would create a real copy
-		 * each time -[copy] is called.
-		 */
-		environment->isa = [OFDictionary class];
+		[environment makeImmutable];
 	} @catch (id e) {
 		[self release];
 		@throw e;

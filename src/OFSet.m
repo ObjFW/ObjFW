@@ -215,14 +215,10 @@
 			     withString: @"\n\t"];
 	[ret appendString: @"\n)}"];
 
+	[ret makeImmutable];
+
 	[pool release];
 
-	/*
-	 * Class swizzle the string to be immutable. We declared the return type
-	 * to be OFString*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	ret->isa = [OFString class];
 	return ret;
 }
 
@@ -315,12 +311,8 @@
 			[ret addObject: key];
 	}];
 
-	/*
-	 * Class swizzle the set to be immutable. We declared the return type
-	 * to be OFSet*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	ret->isa = [OFSet class];
+	[ret makeImmutable];
+
 	return ret;
 }
 #endif

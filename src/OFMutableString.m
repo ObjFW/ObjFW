@@ -659,4 +659,9 @@
 {
 	return [[OFString alloc] initWithString: self];
 }
+
+- (void)makeImmutable
+{
+	isa = [OFString class];
+}
 @end

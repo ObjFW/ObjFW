@@ -398,13 +398,7 @@ normalize_key(OFString *key)
 				    newWithClass: isa];
 		}
 
-		/*
-		 * Class swizzle the dictionary to be immutable. We pass it as
-		 * OFDictionary*, so it can't be modified anyway. But not
-		 * swizzling it would create a real copy each time -[copy] is
-		 * called.
-		 */
-		serverHeaders->isa = [OFDictionary class];
+		[serverHeaders makeImmutable];
 
 		result = [[OFHTTPRequestResult alloc]
 		    initWithStatusCode: status

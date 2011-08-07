@@ -240,8 +240,7 @@ static struct {
 }
 #endif
 
-- (OFArray*)makeImmutable
+- (void)makeImmutable
 {
-	return self;
 }
 @end

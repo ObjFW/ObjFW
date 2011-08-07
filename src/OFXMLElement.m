@@ -460,14 +460,10 @@ void _references_to_categories_of_OFXMLElement(void)
 		}
 	}
 
+	[ret makeImmutable];
+
 	[pool release];
 
-	/*
-	 * Class swizzle the string to be immutable. We declared the return type
-	 * to be OFString*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	ret->isa = [OFString class];
 	return ret;
 }
 
@@ -1036,7 +1032,9 @@ void _references_to_categories_of_OFXMLElement(void)
 		if (cArray[i]->name != nil)
 			[ret addObject: cArray[i]];
 
-	return [ret makeImmutable];
+	[ret makeImmutable];
+
+	return ret;
 }
 
 - (OFArray*)elementsForName: (OFString*)elementName
@@ -1050,7 +1048,9 @@ void _references_to_categories_of_OFXMLElement(void)
 		    [cArray[i]->name isEqual: elementName])
 			[ret addObject: cArray[i]];
 
-	return [ret makeImmutable];
+	[ret makeImmutable];
+
+	return ret;
 }
 
 - (OFArray*)elementsForNamespace: (OFString*)elementNS
@@ -1064,7 +1064,9 @@ void _references_to_categories_of_OFXMLElement(void)
 		    [cArray[i]->ns isEqual: elementNS])
 			[ret addObject: cArray[i]];
 
-	return [ret makeImmutable];
+	[ret makeImmutable];
+
+	return ret;
 }
 
 - (OFArray*)elementsForName: (OFString*)elementName
@@ -1086,7 +1088,9 @@ void _references_to_categories_of_OFXMLElement(void)
 		    [cArray[i]->name isEqual: elementName])
 			[ret addObject: cArray[i]];
 
-	return [ret makeImmutable];
+	[ret makeImmutable];
+
+	return ret;
 }
 
 - (BOOL)isEqual: (id)object

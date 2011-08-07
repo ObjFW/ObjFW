@@ -272,9 +272,8 @@
 }
 #endif
 
-- (OFArray*)makeImmutable
+- (void)makeImmutable
 {
 	isa = [OFCArray class];
-	return self;
 }
 @end

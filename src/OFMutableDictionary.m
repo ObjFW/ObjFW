@@ -321,4 +321,9 @@
 	}
 }
 #endif
+
+- (void)makeImmutable
+{
+	isa = [OFDictionary class];
+}
 @end

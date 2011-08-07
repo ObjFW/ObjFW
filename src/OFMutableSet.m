@@ -79,4 +79,9 @@
 
 	[pool release];
 }
+
+- (void)makeImmutable
+{
+	isa = [OFSet class];
+}
 @end

@@ -158,4 +158,9 @@
  * \brief Deletes all whitespaces at the beginning and the end of the string.
  */
 - (void)deleteEnclosingWhitespaces;
+
+/**
+ * \brief Converts the mutable string to an immutable string.
+ */
+- (void)makeImmutable;
 @end

@@ -1424,12 +1424,8 @@ of_utf16_string_length(const uint16_t *string)
 	new = [OFMutableString stringWithString: self];
 	[new appendString: string];
 
-	/*
-	 * Class swizzle the string to be immutable. We declared the return type
-	 * to be OFString*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	new->isa = [OFString class];
+	[new makeImmutable];
+
 	return new;
 }
 
@@ -1439,12 +1435,8 @@ of_utf16_string_length(const uint16_t *string)
 
 	[new appendString: self];
 
-	/*
-	 * Class swizzle the string to be immutable. We declared the return type
-	 * to be OFString*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	new->isa = [OFString class];
+	[new makeImmutable];
+
 	return new;
 }
 
@@ -1454,12 +1446,8 @@ of_utf16_string_length(const uint16_t *string)
 
 	[new upper];
 
-	/*
-	 * Class swizzle the string to be immutable. We declared the return type
-	 * to be OFString*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	new->isa = [OFString class];
+	[new makeImmutable];
+
 	return new;
 }
 
@@ -1469,12 +1457,8 @@ of_utf16_string_length(const uint16_t *string)
 
 	[new lower];
 
-	/*
-	 * Class swizzle the string to be immutable. We declared the return type
-	 * to be OFString*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	new->isa = [OFString class];
+	[new makeImmutable];
+
 	return new;
 }
 
@@ -1484,12 +1468,8 @@ of_utf16_string_length(const uint16_t *string)
 
 	[new deleteLeadingWhitespaces];
 
-	/*
-	 * Class swizzle the string to be immutable. We declared the return type
-	 * to be OFString*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	new->isa = [OFString class];
+	[new makeImmutable];
+
 	return new;
 }
 
@@ -1499,12 +1479,8 @@ of_utf16_string_length(const uint16_t *string)
 
 	[new deleteTrailingWhitespaces];
 
-	/*
-	 * Class swizzle the string to be immutable. We declared the return type
-	 * to be OFString*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	new->isa = [OFString class];
+	[new makeImmutable];
+
 	return new;
 }
 
@@ -1514,12 +1490,8 @@ of_utf16_string_length(const uint16_t *string)
 
 	[new deleteEnclosingWhitespaces];
 
-	/*
-	 * Class swizzle the string to be immutable. We declared the return type
-	 * to be OFString*, so it can't be modified anyway. But not swizzling it
-	 * would create a real copy each time -[copy] is called.
-	 */
-	new->isa = [OFString class];
+	[new makeImmutable];
+
 	return new;
 }
 
@@ -1573,9 +1545,11 @@ of_utf16_string_length(const uint16_t *string)
 	}
 	[array addObject: [OFString stringWithCString: s->cString + last]];
 
+	[array makeImmutable];
+
 	[pool release];
 
-	return [array makeImmutable];
+	return array;
 }
 
 - (OFArray*)pathComponents
@@ -1615,9 +1589,11 @@ of_utf16_string_length(const uint16_t *string)
 	[ret addObject: [OFString stringWithCString: s->cString + last
 					     length: i - last]];
 
+	[ret makeImmutable];
+
 	[pool release];
 
-	return [ret makeImmutable];
+	return ret;
 }
 
 - (OFString*)lastPathComponent

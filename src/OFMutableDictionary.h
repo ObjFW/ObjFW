@@ -60,4 +60,9 @@ typedef id (^of_dictionary_replace_block_t)(id key, id object, BOOL *stop);
 	    forKey: (id)key
 	   copyKey: (BOOL)copyKey;
 #endif
+
+/**
+ * \brief Converts the mutable dictionary to an immutable dictionary.
+ */
+- (void)makeImmutable;
 @end

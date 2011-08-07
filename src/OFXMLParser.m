@@ -82,7 +82,8 @@ transform_string(OFDataArray *cache, size_t cut, BOOL unescape,
 	if (unescape)
 		return [ret stringByXMLUnescapingWithDelegate: delegate];
 
-	ret->isa = [OFString class];
+	[ret makeImmutable];
+
 	return ret;
 }
 
@@ -794,7 +795,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 						  length: [cache count]];
 	[cacheString deleteEnclosingWhitespaces];
 	/* Prevent a useless copy later */
-	cacheString->isa = [OFString class];
+	[cacheString makeImmutable];
 
 	cacheCString = [cacheString cString];
 	cacheLength = [cacheString cStringLength];

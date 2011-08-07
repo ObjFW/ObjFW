@@ -59,4 +59,9 @@
  * \param set The set to create the union with
  */
 - (void)unionSet: (OFSet*)set;
+
+/**
+ * \brief Converts the mutable set to an immutable set.
+ */
+- (void)makeImmutable;
 @end

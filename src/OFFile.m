@@ -303,7 +303,9 @@ of_log(OFConstantString *format, ...)
 	[pool release];
 #endif
 
-	return [files makeImmutable];
+	[files makeImmutable];
+
+	return files;
 }
 
 + (void)changeToDirectory: (OFString*)path
