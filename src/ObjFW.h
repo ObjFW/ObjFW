@@ -46,6 +46,7 @@
 #import "OFFile.h"
 #import "OFStreamSocket.h"
 #import "OFTCPSocket.h"
+#import "OFSOCKS5Socket.h"
 #import "OFStreamObserver.h"
 
 #import "OFHTTPRequest.h"
