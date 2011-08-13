@@ -296,7 +296,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 #endif
 @end
 
-@interface OFArrayPlaceholder: OFArray
+@interface OFArray_placeholder: OFArray
 @end
 
 @interface OFArrayEnumerator: OFEnumerator
