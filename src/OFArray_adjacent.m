@@ -18,8 +18,8 @@
 
 #include <stdarg.h>
 
-#import "OFCArray.h"
-#import "OFMutableCArray.h"
+#import "OFArray_adjacent.h"
+#import "OFMutableArray_adjacent.h"
 #import "OFDataArray.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
@@ -31,7 +31,7 @@
 
 #import "macros.h"
 
-@implementation OFCArray
+@implementation OFArray_adjacent
 - init
 {
 	self = [super init];
@@ -286,8 +286,8 @@
 	id *cArray, *otherCArray;
 	size_t i, count;
 
-	if (![object isKindOfClass: [OFCArray class]] &&
-	    ![object isKindOfClass: [OFMutableCArray class]])
+	if ([object class] != [OFArray_adjacent class] &&
+	    [object class] != [OFMutableArray_adjacent class])
 		return [super isEqual: object];
 
 	otherArray = object;

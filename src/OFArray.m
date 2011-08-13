@@ -19,7 +19,7 @@
 #include <stdarg.h>
 
 #import "OFArray.h"
-#import "OFCArray.h"
+#import "OFArray_adjacent.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
 #import "OFAutoreleasePool.h"
@@ -38,12 +38,12 @@ static struct {
 @implementation OFArrayPlaceholder
 - init
 {
-	return (id)[[OFCArray alloc] init];
+	return (id)[[OFArray_adjacent alloc] init];
 }
 
 - initWithObject: (id)object
 {
-	return (id)[[OFCArray alloc] initWithObject: object];
+	return (id)[[OFArray_adjacent alloc] initWithObject: object];
 }
 
 - initWithObjects: (id)firstObject, ...
@@ -52,8 +52,8 @@ static struct {
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [[OFCArray alloc] initWithObject: firstObject
-				     arguments: arguments];
+	ret = [[OFArray_adjacent alloc] initWithObject: firstObject
+					     arguments: arguments];
 	va_end(arguments);
 
 	return ret;
@@ -62,30 +62,30 @@ static struct {
 - initWithObject: (id)firstObject
        arguments: (va_list)arguments
 {
-	return (id)[[OFCArray alloc] initWithObject: firstObject
-					  arguments: arguments];
+	return (id)[[OFArray_adjacent alloc] initWithObject: firstObject
+						  arguments: arguments];
 }
 
 - initWithArray: (OFArray*)array
 {
-	return (id)[[OFCArray alloc] initWithArray: array];
+	return (id)[[OFArray_adjacent alloc] initWithArray: array];
 }
 
 - initWithCArray: (id*)objects
 {
-	return (id)[[OFCArray alloc] initWithCArray: objects];
+	return (id)[[OFArray_adjacent alloc] initWithCArray: objects];
 }
 
 - initWithCArray: (id*)objects
 	  length: (size_t)length
 {
-	return (id)[[OFCArray alloc] initWithCArray: objects
-					     length: length];
+	return (id)[[OFArray_adjacent alloc] initWithCArray: objects
+						     length: length];
 }
 
 - initWithSerialization: (OFXMLElement*)element
 {
-	return (id)[[OFCArray alloc] initWithSerialization: element];
+	return (id)[[OFArray_adjacent alloc] initWithSerialization: element];
 }
 
 - retain

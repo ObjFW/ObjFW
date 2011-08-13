@@ -18,8 +18,8 @@
 
 #include <string.h>
 
-#import "OFMutableCArray.h"
-#import "OFCArray.h"
+#import "OFMutableArray_adjacent.h"
+#import "OFArray_adjacent.h"
 #import "OFDataArray.h"
 #import "OFAutoreleasePool.h"
 
@@ -27,11 +27,11 @@
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
-@implementation OFMutableCArray
+@implementation OFMutableArray_adjacent
 + (void)initialize
 {
-	if (self == [OFMutableCArray class])
-		[self inheritMethodsFromClass: [OFCArray class]];
+	if (self == [OFMutableArray_adjacent class])
+		[self inheritMethodsFromClass: [OFArray_adjacent class]];
 }
 
 - (void)addObject: (id)object
@@ -207,8 +207,8 @@
 {
 	/*
 	 * Super means the implementation from OFArray here, as OFMutableArray
-	 * does not reimplement it. As OFCArray does not reimplement it either,
-	 * this is fine.
+	 * does not reimplement it. As OFArray_adjacent does not reimplement it
+	 * either, this is fine.
 	 */
 	int ret = [super countByEnumeratingWithState: state
 					     objects: objects
@@ -274,6 +274,6 @@
 
 - (void)makeImmutable
 {
-	isa = [OFCArray class];
+	isa = [OFArray_adjacent class];
 }
 @end

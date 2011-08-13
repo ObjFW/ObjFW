@@ -19,10 +19,11 @@
 @class OFDataArray;
 
 /**
- * \brief A class for storing objects in an array.
+ * \brief A class for storing, adding and removing objects in an array.
  */
-@interface OFCArray: OFArray
+@interface OFMutableArray_adjacent: OFMutableArray
 {
-	OFDataArray *array;
+	OFDataArray   *array;
+	unsigned long mutations;
 }
 @end

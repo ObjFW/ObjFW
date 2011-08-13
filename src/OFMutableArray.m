@@ -19,7 +19,7 @@
 #include <string.h>
 
 #import "OFMutableArray.h"
-#import "OFMutableCArray.h"
+#import "OFMutableArray_adjacent.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFEnumerationMutationException.h"
@@ -36,12 +36,12 @@ static struct {
 @implementation OFMutableArrayPlaceholder
 - init
 {
-	return (id)[[OFMutableCArray alloc] init];
+	return (id)[[OFMutableArray_adjacent alloc] init];
 }
 
 - initWithObject: (id)object
 {
-	return (id)[[OFMutableCArray alloc] initWithObject: object];
+	return (id)[[OFMutableArray_adjacent alloc] initWithObject: object];
 }
 
 - initWithObjects: (id)firstObject, ...
@@ -50,8 +50,8 @@ static struct {
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [[OFMutableCArray alloc] initWithObject: firstObject
-					    arguments: arguments];
+	ret = [[OFMutableArray_adjacent alloc] initWithObject: firstObject
+						    arguments: arguments];
 	va_end(arguments);
 
 	return ret;
@@ -60,30 +60,31 @@ static struct {
 - initWithObject: (id)firstObject
        arguments: (va_list)arguments
 {
-	return (id)[[OFMutableCArray alloc] initWithObject: firstObject
-						 arguments: arguments];
+	return (id)[[OFMutableArray_adjacent alloc] initWithObject: firstObject
+							 arguments: arguments];
 }
 
 - initWithArray: (OFArray*)array
 {
-	return (id)[[OFMutableCArray alloc] initWithArray: array];
+	return (id)[[OFMutableArray_adjacent alloc] initWithArray: array];
 }
 
 - initWithCArray: (id*)objects
 {
-	return (id)[[OFMutableCArray alloc] initWithCArray: objects];
+	return (id)[[OFMutableArray_adjacent alloc] initWithCArray: objects];
 }
 
 - initWithCArray: (id*)objects
 	  length: (size_t)length
 {
-	return (id)[[OFMutableCArray alloc] initWithCArray: objects
-						    length: length];
+	return (id)[[OFMutableArray_adjacent alloc] initWithCArray: objects
+							    length: length];
 }
 
 - initWithSerialization: (OFXMLElement*)element
 {
-	return (id)[[OFMutableCArray alloc] initWithSerialization: element];
+	return (id)[[OFMutableArray_adjacent alloc]
+	    initWithSerialization: element];
 }
 
 - retain

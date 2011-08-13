@@ -9,9 +9,9 @@ STATIC_LIB = ${OBJFW_STATIC_LIB}
 
 SRCS = OFApplication.m			\
        OFArray.m			\
+       OFArray_adjacent.m		\
        OFAutoreleasePool.m		\
        OFBlock.m			\
-       OFCArray.m			\
        OFConstantString.m		\
        OFCountedSet.m			\
        OFDataArray.m			\
@@ -30,7 +30,7 @@ SRCS = OFApplication.m			\
        OFList.m				\
        OFMD5Hash.m			\
        OFMutableArray.m			\
-       OFMutableCArray.m		\
+       OFMutableArray_adjacent.m	\
        OFMutableDictionary.m		\
        OFMutableSet.m			\
        OFMutableString.m		\
