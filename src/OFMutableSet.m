@@ -19,7 +19,7 @@
 #define OF_MUTABLE_SET_M
 
 #import "OFMutableSet.h"
-#import "OFDictionary.h"
+#import "OFMutableDictionary_hashtable.h"
 #import "OFArray.h"
 #import "OFNumber.h"
 #import "OFAutoreleasePool.h"

@@ -165,6 +165,19 @@ static struct {
 				      length: length] autorelease];
 }
 
+- init
+{
+	if ([self class] == [OFArray class] ||
+	    [self class] == [OFMutableArray class]) {
+		Class c = isa;
+		[self release];
+		@throw [OFNotImplementedException newWithClass: c
+						      selector: _cmd];
+	}
+
+	return [super init];
+}
+
 - initWithObject: (id)object
 {
 	return [self initWithObjects: object, nil];

@@ -19,7 +19,7 @@
 #define OF_SET_M
 
 #import "OFSet.h"
-#import "OFDictionary.h"
+#import "OFMutableDictionary_hashtable.h"
 #import "OFArray.h"
 #import "OFString.h"
 #import "OFNumber.h"
@@ -59,7 +59,7 @@
 	self = [super init];
 
 	@try {
-		dictionary = [[OFMutableDictionary alloc] init];
+		dictionary = [[OFMutableDictionary_hashtable alloc] init];
 	} @catch (id e) {
 		[self release];
 		@throw e;

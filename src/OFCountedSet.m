@@ -19,7 +19,7 @@
 #define OF_COUNTED_SET_M
 
 #import "OFCountedSet.h"
-#import "OFDictionary.h"
+#import "OFMutableDictionary_hashtable.h"
 #import "OFNumber.h"
 #import "OFArray.h"
 #import "OFString.h"
@@ -33,7 +33,7 @@
 	@try {
 		[dictionary release];
 		dictionary = nil;
-		dictionary = [[OFMutableDictionary alloc]
+		dictionary = [[OFMutableDictionary_hashtable alloc]
 			_initWithDictionary: set->dictionary
 				   copyKeys: NO];
 	} @catch (id e) {

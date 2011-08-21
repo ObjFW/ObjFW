@@ -16,29 +16,112 @@
 
 #include "config.h"
 
-#include <string.h>
-
 #include <assert.h>
 
 #import "OFDictionary.h"
-#import "OFEnumerator.h"
+#import "OFDictionary_hashtable.h"
 #import "OFArray.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
 #import "OFAutoreleasePool.h"
 
-#import "OFEnumerationMutationException.h"
-#import "OFInvalidArgumentException.h"
-#import "OFInvalidFormatException.h"
-#import "OFOutOfRangeException.h"
+#import "OFNotImplementedException.h"
 
 #import "macros.h"
 
-struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
+static struct {
+	Class isa;
+} placeholder;
 
-#define DELETED &of_dictionary_deleted_bucket
+@implementation OFDictionary_placeholder
+- init
+{
+	return (id)[[OFDictionary_hashtable alloc] init];
+}
+
+- initWithDictionary: (OFDictionary*)dictionary
+{
+	return (id)[[OFDictionary_hashtable alloc]
+	    initWithDictionary: dictionary];
+}
+
+- initWithObject: (id)object
+	  forKey: (id <OFCopying>)key
+{
+	return (id)[[OFDictionary_hashtable alloc] initWithObject: object
+							   forKey: key];
+}
+
+- initWithObjects: (OFArray*)objects
+	  forKeys: (OFArray*)keys
+{
+	return (id)[[OFDictionary_hashtable alloc] initWithObjects: objects
+							   forKeys: keys];
+}
+
+- initWithKeysAndObjects: (id <OFCopying>)firstKey, ...
+{
+	id ret;
+	va_list arguments;
+
+	va_start(arguments, firstKey);
+	ret = [[OFDictionary_hashtable alloc] initWithKey: firstKey
+						arguments: arguments];
+	va_end(arguments);
+
+	return ret;
+}
+
+- initWithKey: (id <OFCopying>)firstKey
+    arguments: (va_list)arguments
+{
+	return (id)[[OFDictionary_hashtable alloc] initWithKey: firstKey
+						     arguments: arguments];
+}
+
+- initWithSerialization: (OFXMLElement*)element
+{
+	return (id)[[OFDictionary_hashtable alloc]
+	    initWithSerialization: element];
+}
+
+- retain
+{
+	return self;
+}
+
+- autorelease
+{
+	return self;
+}
+
+- (void)release
+{
+}
+
+- (void)dealloc
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+	[super dealloc];	/* Get rid of a stupid warning */
+}
+@end
 
 @implementation OFDictionary
++ (void)initialize
+{
+	if (self == [OFDictionary class])
+		placeholder.isa = [OFDictionary_placeholder class];
+}
+
++ alloc
+{
+	if (self == [OFDictionary class])
+		return (id)&placeholder;
+
+	return [super alloc];
+}
+
 + dictionary
 {
 	return [[[self alloc] init] autorelease];
@@ -78,243 +161,38 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 
 - init
 {
-	self = [super init];
-
-	@try {
-		data = [self allocMemoryWithSize:
-		    sizeof(struct of_dictionary_bucket)];
-		size = 1;
-		data[0] = NULL;
-	} @catch (id e) {
+	if ([self class] == [OFDictionary class] ||
+	    [self class] == [OFMutableDictionary class]) {
+		Class c = isa;
 		[self release];
-		@throw e;
+		@throw [OFNotImplementedException newWithClass: c
+						      selector: _cmd];
 	}
 
-	return self;
-}
-
-- _initWithDictionary: (OFDictionary*)dictionary
-	     copyKeys: (BOOL)copyKeys
-{
-	self = [super init];
-
-	@try {
-		uint32_t i;
-
-		if (dictionary == nil)
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
-
-		data = [self allocMemoryForNItems: dictionary->size
-					 withSize: sizeof(*data)];
-
-		for (i = 0; i < dictionary->size; i++)
-			data[i] = NULL;
-
-		size = dictionary->size;
-		count = dictionary->count;
-
-		for (i = 0; i < size; i++) {
-			id key;
-			struct of_dictionary_bucket *bucket;
-
-			if (dictionary->data[i] == NULL ||
-			    dictionary->data[i] == DELETED)
-				continue;
-
-			bucket = [self allocMemoryWithSize: sizeof(*bucket)];
-			key = (copyKeys
-			    ? [dictionary->data[i]->key copy]
-			    : [dictionary->data[i]->key retain]);
-
-			@try {
-				[dictionary->data[i]->object retain];
-			} @catch (id e) {
-				[key release];
-				@throw e;
-			}
-
-			bucket->key = key;
-			bucket->object = dictionary->data[i]->object;
-			bucket->hash = dictionary->data[i]->hash;
-
-			data[i] = bucket;
-		}
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	return [super init];
 }
 
 - initWithDictionary: (OFDictionary*)dictionary
 {
-	return [self _initWithDictionary: dictionary
-				copyKeys: YES];
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
 }
 
 - initWithObject: (id)object
 	  forKey: (id <OFCopying>)key
 {
-	self = [super init];
-
-	@try {
-		uint32_t i;
-		struct of_dictionary_bucket *bucket;
-
-		if (key == nil || object == nil)
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
-
-		data = [self allocMemoryForNItems: 2
-					 withSize: sizeof(*data)];
-
-		size = 2;
-		for (i = 0; i < size; i++)
-			data[i] = NULL;
-
-		i = [key hash] & 1;
-		bucket = [self allocMemoryWithSize: sizeof(*bucket)];
-		key = [key copy];
-
-		@try {
-			[object retain];
-		} @catch (id e) {
-			[key release];
-			@throw e;
-		}
-
-		bucket->key = key;
-		bucket->object = object;
-		bucket->hash = [key hash];
-
-		data[i] = bucket;
-		count = 1;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	return [self initWithKeysAndObjects: key, object, nil];
 }
 
 - initWithObjects: (OFArray*)objects
 	  forKeys: (OFArray*)keys
 {
-	self = [super init];
-
-	@try {
-		id *objectsCArray, *keysCArray;
-		uint32_t i, j, newSize;
-
-		keysCArray = [keys cArray];
-		objectsCArray = [objects cArray];
-		count = [keys count];
-
-		if (count > UINT32_MAX)
-			@throw [OFOutOfRangeException newWithClass: isa];
-
-		for (newSize = 1; newSize < count; newSize <<= 1);
-
-		if (newSize == 0)
-			@throw [OFOutOfRangeException newWithClass: isa];
-
-		data = [self allocMemoryForNItems: newSize
-					 withSize: sizeof(*data)];
-
-		for (j = 0; j < newSize; j++)
-			data[j] = NULL;
-
-		size = newSize;
-
-		for (i = 0; i < count; i++) {
-			uint32_t hash, last;
-
-			hash = [keysCArray[i] hash];
-			last = size;
-
-			for (j = hash & (size - 1); j < last && data[j] != NULL;
-			    j++)
-				if ([data[j]->key isEqual: keysCArray[i]])
-					break;
-
-			/* In case the last bucket is already used */
-			if (j >= last) {
-				last = hash & (size - 1);
-
-				for (j = 0; j < last && data[j] != NULL; j++)
-					if ([data[j]->key
-					    isEqual: keysCArray[i]])
-						break;
-			}
-
-			/* Key not in dictionary */
-			if (j >= last || data[j] == NULL ||
-			    ![data[j]->key isEqual: keysCArray[i]]) {
-				struct of_dictionary_bucket *bucket;
-				id <OFCopying> key;
-
-				last = size;
-
-				j = hash & (size - 1);
-				for (; j < last && data[j] != NULL; j++);
-
-				/* In case the last bucket is already used */
-				if (j >= last) {
-					last = hash & (size - 1);
-
-					for (j = 0; j < last && data[j] != NULL;
-					    j++);
-				}
-
-				if (j >= last)
-					@throw [OFOutOfRangeException
-					    newWithClass: isa];
-
-				bucket =
-				    [self allocMemoryWithSize: sizeof(*bucket)];
-				key = [keysCArray[i] copy];
-
-				@try {
-					[objectsCArray[i] retain];
-				} @catch (id e) {
-					[key release];
-					@throw e;
-				}
-
-				bucket->key = key;
-				bucket->object = objectsCArray[i];
-				bucket->hash = hash;
-
-				data[j] = bucket;
-
-				continue;
-			}
-
-			/*
-			 * The key is already in the dictionary. However, we
-			 * just replace it so that the programmer gets the same
-			 * behavior as if he'd call setObject:forKey: for each
-			 * key/object pair.
-			 */
-			[objectsCArray[i] retain];
-
-			@try {
-				[data[j]->object release];
-			} @catch (id e) {
-				[objectsCArray[i] release];
-				@throw e;
-			}
-
-			data[j]->object = objectsCArray[i];
-		}
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
 }
 
 - initWithKeysAndObjects: (id <OFCopying>)firstKey, ...
@@ -333,258 +211,30 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 - initWithKey: (id <OFCopying>)firstKey
     arguments: (va_list)arguments
 {
-	self = [super init];
-
-	@try {
-		id key, object;
-		uint32_t i, j, hash, newSize;
-		va_list argumentsCopy;
-		struct of_dictionary_bucket *bucket;
-
-		va_copy(argumentsCopy, arguments);
-
-		if (firstKey == nil)
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
-
-		key = firstKey;
-
-		if ((object = va_arg(arguments, id)) == nil)
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
-
-		count = 1;
-		for (; va_arg(argumentsCopy, id) != nil; count++);
-		count >>= 1;
-
-		if (count > UINT32_MAX)
-			@throw [OFOutOfRangeException newWithClass: isa];
-
-		for (newSize = 1; newSize < count; newSize <<= 1);
-
-		if (newSize == 0)
-			@throw [OFOutOfRangeException newWithClass: isa];
-
-		data = [self allocMemoryForNItems: newSize
-					 withSize: sizeof(*data)];
-
-		for (j = 0; j < newSize; j++)
-			data[j] = NULL;
-
-		size = newSize;
-
-		/* Add first key / object pair */
-		hash = [key hash];
-		j = hash & (size - 1);
-
-		bucket = [self allocMemoryWithSize: sizeof(*bucket)];
-		key = [key copy];
-
-		@try {
-			[object retain];
-		} @catch (id e) {
-			[key release];
-			@throw e;
-		}
-
-		bucket->key = key;
-		bucket->object = object;
-		bucket->hash = hash;
-
-		data[j] = bucket;
-
-		for (i = 1; i < count; i++) {
-			uint32_t last;
-
-			key = va_arg(arguments, id <OFCopying>);
-			object = va_arg(arguments, id);
-
-			if (key == nil || object == nil)
-				@throw [OFInvalidArgumentException
-				    newWithClass: isa
-					selector: _cmd];
-
-			hash = [key hash];
-			last = size;
-
-			for (j = hash & (size - 1); j < last && data[j] != NULL;
-			    j++)
-				if ([data[j]->key isEqual: key])
-					break;
-
-			/* In case the last bucket is already used */
-			if (j >= last) {
-				last = hash & (size - 1);
-
-				for (j = 0; j < last && data[j] != NULL; j++)
-					if ([data[j]->key isEqual: key])
-						break;
-			}
-
-			/* Key not in dictionary */
-			if (j >= last || data[j] == NULL ||
-			    ![data[j]->key isEqual: key]) {
-				last = size;
-
-				j = hash & (size - 1);
-				for (; j < last && data[j] != NULL; j++);
-
-				/* In case the last bucket is already used */
-				if (j >= last) {
-					last = hash & (size - 1);
-
-					for (j = 0; j < last && data[j] != NULL;
-					    j++);
-				}
-
-				if (j >= last)
-					@throw [OFOutOfRangeException
-					    newWithClass: isa];
-
-				bucket =
-				    [self allocMemoryWithSize: sizeof(*bucket)];
-				key = [key copy];
-
-				@try {
-					[object retain];
-				} @catch (id e) {
-					[key release];
-					@throw e;
-				}
-
-				bucket->key = key;
-				bucket->object = object;
-				bucket->hash = hash;
-
-				data[j] = bucket;
-
-				continue;
-			}
-
-			/*
-			 * The key is already in the dictionary. However, we
-			 * just replace it so that the programmer gets the same
-			 * behavior as if he'd call setObject:forKey: for each
-			 * key/object pair.
-			 */
-			[object retain];
-
-			@try {
-				[data[j]->object release];
-			} @catch (id e) {
-				[object release];
-				@throw e;
-			}
-
-			data[j]->object = object;
-			count--;
-		}
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
 }
 
 - initWithSerialization: (OFXMLElement*)element
 {
-	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-		OFAutoreleasePool *pool2;
-		OFMutableDictionary *dictionary;
-		OFArray *keys, *objects;
-		OFEnumerator *keyEnumerator, *objectEnumerator;
-		OFXMLElement *keyElement, *objectElement;
-
-		if (![[element name] isEqual: [self className]] ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
-
-		dictionary = [OFMutableDictionary dictionary];
-
-		keys = [element elementsForName: @"key"
-				      namespace: OF_SERIALIZATION_NS];
-		objects = [element elementsForName: @"object"
-					 namespace: OF_SERIALIZATION_NS];
-
-		if ([keys count] != [objects count])
-			@throw [OFInvalidFormatException newWithClass: isa];
-
-		keyEnumerator = [keys objectEnumerator];
-		objectEnumerator = [objects objectEnumerator];
-		pool2 = [[OFAutoreleasePool alloc] init];
-
-		while ((keyElement = [keyEnumerator nextObject]) != nil &&
-		    (objectElement = [objectEnumerator nextObject]) != nil) {
-			OFXMLElement *key, *object;
-
-			key = [[keyElement elementsForNamespace:
-			    OF_SERIALIZATION_NS] firstObject];
-			object = [[objectElement elementsForNamespace:
-			    OF_SERIALIZATION_NS] firstObject];
-
-			if (key == nil || object == nil)
-				@throw [OFInvalidFormatException
-				    newWithClass: isa];
-
-			[dictionary setObject: [object objectByDeserializing]
-				       forKey: [key objectByDeserializing]];
-
-			[pool2 releaseObjects];
-		}
-
-		self = [self initWithDictionary: dictionary];
-
-		[pool release];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
 }
 
 - (id)objectForKey: (id <OFCopying>)key
 {
-	uint32_t i, hash, last;
-
-	if (key == nil)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
-
-	hash = [key hash];
-	last = size;
-
-	for (i = hash & (size - 1); i < last && data[i] != NULL; i++) {
-		if (data[i] == DELETED)
-			continue;
-
-		if ([data[i]->key isEqual: key])
-			return data[i]->object;
-	}
-
-	if (i < last)
-		return nil;
-
-	/* In case the last bucket is already used */
-	last = hash & (size - 1);
-
-	for (i = 0; i < last && data[i] != NULL; i++) {
-		if (data[i] == DELETED)
-			continue;
-
-		if ([data[i]->key isEqual: key])
-			return data[i]->object;
-	}
-
-	return nil;
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 
 - (size_t)count
 {
-	return count;
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 
 - copy
@@ -597,68 +247,92 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	return [[OFMutableDictionary alloc] initWithDictionary: self];
 }
 
-- (BOOL)isEqual: (id)dict
+- (BOOL)isEqual: (id)dictionary
 {
-	uint32_t i;
+	OFAutoreleasePool *pool;
+	OFEnumerator *enumerator;
+	id <OFCopying> key;
 
-	if ([dict count] != count)
+	if ([dictionary count] != [self count])
 		return NO;
 
-	for (i = 0; i < size; i++)
-		if (data[i] != NULL && data[i] != DELETED &&
-		    ![[dict objectForKey: data[i]->key]
-		    isEqual: data[i]->object])
+	pool = [[OFAutoreleasePool alloc] init];
+
+	enumerator = [self keyEnumerator];
+	while ((key = [enumerator nextObject]) != nil) {
+		id object = [dictionary objectForKey: key];
+
+		if (object == nil ||
+		    ![object isEqual: [self objectForKey: key]]) {
+			[pool release];
 			return NO;
+		}
+	}
+
+	[pool release];
 
 	return YES;
 }
 
 - (BOOL)containsObject: (id)object
 {
-	uint32_t i;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFEnumerator *enumerator = [self objectEnumerator];
+	id currentObject;
 
-	if (count == 0)
-		return NO;
-
-	for (i = 0; i < size; i++)
-		if (data[i] != NULL && data[i] != DELETED &&
-		    [data[i]->object isEqual: object])
+	while ((currentObject = [enumerator nextObject]) != nil) {
+		if ([currentObject isEqual: object]) {
+			[pool release];
 			return YES;
+		}
+	}
+
+	[pool release];
 
 	return NO;
 }
 
 - (BOOL)containsObjectIdenticalTo: (id)object
 {
-	uint32_t i;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFEnumerator *enumerator = [self objectEnumerator];
+	id currentObject;
 
-	if (count == 0)
-		return NO;
-
-	for (i = 0; i < size; i++)
-		if (data[i] != NULL && data[i] != DELETED &&
-		    data[i]->object == object)
+	while ((currentObject = [enumerator nextObject]) != nil) {
+		if (currentObject == object) {
+			[pool release];
 			return YES;
+		}
+	}
+
+	[pool release];
 
 	return NO;
 }
 
 - (OFArray*)allKeys
 {
-	OFArray *ret;
-	id *cArray = [self allocMemoryForNItems: count
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	id *cArray = [self allocMemoryForNItems: [self count]
 				       withSize: sizeof(id)];
-	size_t i, j;
+	OFEnumerator *enumerator;
+	id <OFCopying> key;
+	OFArray *ret;
+	size_t i = 0;
 
-	for (i = j = 0; i < size; i++)
-		if (data[i] != NULL && data[i] != DELETED)
-			cArray[j++] = data[i]->key;
+	pool = [[OFAutoreleasePool alloc] init];
+	enumerator = [self keyEnumerator];
 
-	assert(j == count);
+	while ((key = [enumerator nextObject]) != nil)
+		cArray[i++] = key;
+
+	assert(i == [self count]);
+
+	[pool release];
 
 	@try {
 		ret = [OFArray arrayWithCArray: cArray
-					length: count];
+					length: [self count]];
 	} @finally {
 		[self freeMemory: cArray];
 	}
@@ -668,20 +342,27 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 
 - (OFArray*)allObjects
 {
-	OFArray *ret;
-	id *cArray = [self allocMemoryForNItems: count
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	id *cArray = [self allocMemoryForNItems: [self count]
 				       withSize: sizeof(id)];
-	size_t i, j;
+	OFEnumerator *enumerator;
+	id object;
+	OFArray *ret;
+	size_t i = 0;
 
-	for (i = j = 0; i < size; i++)
-		if (data[i] != NULL && data[i] != DELETED)
-			cArray[j++] = data[i]->object;
+	pool = [[OFAutoreleasePool alloc] init];
+	enumerator = [self objectEnumerator];
 
-	assert(j == count);
+	while ((object = [enumerator nextObject]) != nil)
+		cArray[i++] = object;
+
+	assert(i == [self count]);
+
+	[pool release];
 
 	@try {
 		ret = [OFArray arrayWithCArray: cArray
-					length: count];
+					length: [self count]];
 	} @finally {
 		[self freeMemory: cArray];
 	}
@@ -691,55 +372,37 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 
 - (OFEnumerator*)objectEnumerator
 {
-	return [[[OFDictionaryObjectEnumerator alloc]
-	    initWithDictionary: self
-			  data: data
-			  size: size
-	      mutationsPointer: NULL] autorelease];
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 
 - (OFEnumerator*)keyEnumerator
 {
-	return [[[OFDictionaryKeyEnumerator alloc]
-	    initWithDictionary: self
-			  data: data
-			  size: size
-	      mutationsPointer: NULL] autorelease];
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
 			   objects: (id*)objects
 			     count: (int)count_
 {
-	int i;
-
-	for (i = 0; i < count_; i++) {
-		for (; state->state < size && (data[state->state] == NULL ||
-		    data[state->state] == DELETED); state->state++);
-
-		if (state->state < size) {
-			objects[i] = data[state->state]->key;
-			state->state++;
-		} else
-			break;
-	}
-
-	state->itemsPtr = objects;
-	state->mutationsPtr = (unsigned long*)self;
-
-	return i;
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateKeysAndObjectsUsingBlock:
     (of_dictionary_enumeration_block_t)block
 {
-	size_t i;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFEnumerator *enumerator = [self keyEnumerator];
+	id <OFCopying> key;
 	BOOL stop = NO;
 
-	for (i = 0; i < size && !stop; i++)
-		if (data[i] != NULL && data[i] != DELETED)
-			block(data[i]->key, data[i]->object, &stop);
+	while (!stop && (key = [enumerator nextObject]) != nil)
+		block(key, [self objectForKey: key], &stop);
+
+	[pool release];
 }
 
 - (OFDictionary*)mappedDictionaryUsingBlock: (of_dictionary_map_block_t)block
@@ -775,44 +438,19 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 }
 #endif
 
-- (void)dealloc
-{
-	uint32_t i;
-
-	for (i = 0; i < size; i++) {
-		if (data[i] != NULL && data[i] != DELETED) {
-			[data[i]->key release];
-			[data[i]->object release];
-		}
-	}
-
-	[super dealloc];
-}
-
 - (uint32_t)hash
 {
-	uint32_t i;
-	uint32_t hash;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFEnumerator *enumerator = [self keyEnumerator];
+	id <OFCopying> key;
+	uint32_t hash = 0;
 
-	OF_HASH_INIT(hash);
-
-	for (i = 0; i < size; i++) {
-		if (data[i] != NULL && data[i] != DELETED) {
-			uint32_t h = [data[i]->object hash];
-
-			OF_HASH_ADD(hash, data[i]->hash >> 24);
-			OF_HASH_ADD(hash, (data[i]->hash >> 16) & 0xFF);
-			OF_HASH_ADD(hash, (data[i]->hash >> 8) & 0xFF);
-			OF_HASH_ADD(hash, data[i]->hash & 0xFF);
-
-			OF_HASH_ADD(hash, h >> 24);
-			OF_HASH_ADD(hash, (h >> 16) & 0xFF);
-			OF_HASH_ADD(hash, (h >> 8) & 0xFF);
-			OF_HASH_ADD(hash, h & 0xFF);
-		}
+	while ((key = [enumerator nextObject]) != nil) {
+		hash += [key hash];
+		hash += [[self objectForKey: key] hash];
 	}
 
-	OF_HASH_FINALIZE(hash);
+	[pool release];
 
 	return hash;
 }
@@ -823,7 +461,7 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	OFAutoreleasePool *pool, *pool2;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	id key, object;
-	size_t i;
+	size_t i, count = [self count];
 
 	if (count == 0)
 		return @"{()}";
@@ -866,8 +504,12 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	id <OFSerialization> key, object;
 
-	element = [OFXMLElement elementWithName: [self className]
-				      namespace: OF_SERIALIZATION_NS];
+	if ([self isKindOfClass: [OFMutableDictionary class]])
+		element = [OFXMLElement elementWithName: @"OFMutableDictionary"
+					      namespace: OF_SERIALIZATION_NS];
+	else
+		element = [OFXMLElement elementWithName: @"OFDictionary"
+					      namespace: OF_SERIALIZATION_NS];
 
 	keyEnumerator = [self keyEnumerator];
 	objectEnumerator = [self objectEnumerator];
@@ -901,76 +543,5 @@ struct of_dictionary_bucket of_dictionary_deleted_bucket = {};
 	}
 
 	return element;
-}
-@end
-
-@implementation OFDictionaryEnumerator
-- initWithDictionary: (OFDictionary*)dictionary_
-		data: (struct of_dictionary_bucket**)data_
-		size: (uint32_t)size_
-    mutationsPointer: (unsigned long*)mutationsPtr_
-{
-	self = [super init];
-
-	dictionary = [dictionary_ retain];
-	data = data_;
-	size = size_;
-	mutations = (mutationsPtr_ != NULL ? *mutationsPtr_ : 0);
-	mutationsPtr = mutationsPtr_;
-
-	return self;
-}
-
-- (void)dealloc
-{
-	[dictionary release];
-
-	[super dealloc];
-}
-
-- (void)reset
-{
-	if (mutationsPtr != NULL && *mutationsPtr != mutations)
-		@throw [OFEnumerationMutationException
-		    newWithClass: isa
-			  object: dictionary];
-
-	pos = 0;
-}
-@end
-
-@implementation OFDictionaryObjectEnumerator
-- (id)nextObject
-{
-	if (mutationsPtr != NULL && *mutationsPtr != mutations)
-		@throw [OFEnumerationMutationException
-		    newWithClass: isa
-			  object: dictionary];
-
-	for (; pos < size && (data[pos] == NULL ||
-	    data[pos] == DELETED); pos++);
-
-	if (pos < size)
-		return data[pos++]->object;
-	else
-		return nil;
-}
-@end
-
-@implementation OFDictionaryKeyEnumerator
-- (id)nextObject
-{
-	if (mutationsPtr != NULL && *mutationsPtr != mutations)
-		@throw [OFEnumerationMutationException
-		    newWithClass: isa
-			  object: dictionary];
-
-	for (; pos < size && (data[pos] == NULL ||
-	    data[pos] == DELETED); pos++);
-
-	if (pos < size)
-		return data[pos++]->key;
-	else
-		return nil;
 }
 @end

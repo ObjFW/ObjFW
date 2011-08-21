@@ -2,18 +2,6 @@
 <serialization xmlns='https://webkeks.org/objfw/serialization' version='0'>
   <OFMutableDictionary>
     <key>
-      <OFArray>
-        <OFString>Qu&quot;xbar
-test</OFString>
-        <OFNumber type='signed'>1234</OFNumber>
-        <OFMutableString>asd</OFMutableString>
-        <OFDate seconds='1234' microseconds='5678'/>
-      </OFArray>
-    </key>
-    <object>
-      <OFString>Hello</OFString>
-    </object>
-    <key>
       <OFList>
         <OFString>Hello</OFString>
         <OFString>Wo&#xD;ld!
@@ -66,6 +54,18 @@ How are you?</OFString>
     </key>
     <object>
       <OFString>list</OFString>
+    </object>
+    <key>
+      <OFArray>
+        <OFString>Qu&quot;xbar
+test</OFString>
+        <OFNumber type='signed'>1234</OFNumber>
+        <OFMutableString>asd</OFMutableString>
+        <OFDate seconds='1234' microseconds='5678'/>
+      </OFArray>
+    </key>
+    <object>
+      <OFString>Hello</OFString>
     </object>
     <key>
       <OFString>Blub</OFString>

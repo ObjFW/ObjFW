@@ -21,13 +21,9 @@ typedef id (^of_dictionary_replace_block_t)(id key, id object, BOOL *stop);
 #endif
 
 /**
- * \brief A class for using mutable hash tables.
+ * \brief An abstract class for using mutable dictionaries.
  */
 @interface OFMutableDictionary: OFDictionary
-{
-	unsigned long mutations;
-}
-
 /**
  * \brief Sets an object for a key.
  *
@@ -55,14 +51,11 @@ typedef id (^of_dictionary_replace_block_t)(id key, id object, BOOL *stop);
 - (void)replaceObjectsUsingBlock: (of_dictionary_replace_block_t)block;
 #endif
 
-#if defined(OF_SET_M) || defined(OF_MUTABLE_SET_M) || defined(OF_COUNTED_SET_M)
-- (void)_setObject: (id)object
-	    forKey: (id)key
-	   copyKey: (BOOL)copyKey;
-#endif
-
 /**
  * \brief Converts the mutable dictionary to an immutable dictionary.
  */
 - (void)makeImmutable;
+@end
+
+@interface OFMutableDictionary_placeholder: OFDictionary
 @end

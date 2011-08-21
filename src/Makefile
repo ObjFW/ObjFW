@@ -18,6 +18,7 @@ SRCS = OFApplication.m			\
        OFDataArray+Hashing.m		\
        OFDate.m				\
        OFDictionary.m			\
+       OFDictionary_hashtable.m		\
        OFDoubleMatrix.m			\
        OFDoubleVector.m			\
        OFEnumerator.m			\
@@ -32,6 +33,7 @@ SRCS = OFApplication.m			\
        OFMutableArray.m			\
        OFMutableArray_adjacent.m	\
        OFMutableDictionary.m		\
+       OFMutableDictionary_hashtable.m	\
        OFMutableSet.m			\
        OFMutableString.m		\
        OFNull.m				\

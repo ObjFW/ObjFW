@@ -19,7 +19,7 @@
 #import "OFObject.h"
 #import "OFCollection.h"
 
-@class OFMutableDictionary;
+@class OFMutableDictionary_hashtable;
 @class OFArray;
 
 #ifdef OF_HAVE_BLOCKS
@@ -32,7 +32,7 @@ typedef BOOL (^of_set_filter_block_t)(id object);
  */
 @interface OFSet: OFObject <OFCollection, OFCopying, OFMutableCopying>
 {
-	OFMutableDictionary *dictionary;
+	OFMutableDictionary_hashtable *dictionary;
 }
 
 /**

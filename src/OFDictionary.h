@@ -30,27 +30,14 @@ typedef BOOL (^of_dictionary_filter_block_t)(id key, id object);
 typedef id (^of_dictionary_map_block_t)(id key, id object);
 #endif
 
-struct of_dictionary_bucket
-{
-	id <OFCopying> key;
-	id object;
-	uint32_t hash;
-};
-
 /**
- * \brief A class for storing objects in a hash table.
+ * \brief An abstract class for storing objects in a dictionary.
  *
  * Note: Fast enumeration on a dictionary enumerates through the keys of the
  * dictionary.
  */
 @interface OFDictionary: OFObject <OFCopying, OFMutableCopying, OFCollection,
     OFSerialization>
-{
-	struct of_dictionary_bucket **data;
-	uint32_t size;
-	size_t count;
-}
-
 /**
  * \brief Creates a new OFDictionary.
  *
@@ -230,34 +217,7 @@ struct of_dictionary_bucket
 #endif
 @end
 
-@interface OFDictionaryEnumerator: OFEnumerator
-{
-	OFDictionary *dictionary;
-	struct of_dictionary_bucket **data;
-	uint32_t size;
-	unsigned long mutations;
-	unsigned long *mutationsPtr;
-	uint32_t pos;
-}
-
-- initWithDictionary: (OFDictionary*)dictionary
-		data: (struct of_dictionary_bucket**)data
-		size: (uint32_t)size
-    mutationsPointer: (unsigned long*)mutationsPtr;
-@end
-
-@interface OFDictionaryObjectEnumerator: OFDictionaryEnumerator
-@end
-
-@interface OFDictionaryKeyEnumerator: OFDictionaryEnumerator
+@interface OFDictionary_placeholder: OFDictionary
 @end
 
 #import "OFMutableDictionary.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern struct of_dictionary_bucket of_dictionary_deleted_bucket;
-#ifdef __cplusplus
-}
-#endif
