@@ -18,9 +18,6 @@
 
 @class OFDataArray;
 
-/**
- * \brief A class for storing, adding and removing objects in an array.
- */
 @interface OFMutableArray_adjacent: OFMutableArray
 {
 	OFDataArray   *array;

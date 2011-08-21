@@ -9,7 +9,6 @@ STATIC_LIB = ${OBJFW_STATIC_LIB}
 
 SRCS = OFApplication.m			\
        OFArray.m			\
-       OFArray_adjacent.m		\
        OFAutoreleasePool.m		\
        OFBlock.m			\
        OFConstantString.m		\
@@ -18,7 +17,6 @@ SRCS = OFApplication.m			\
        OFDataArray+Hashing.m		\
        OFDate.m				\
        OFDictionary.m			\
-       OFDictionary_hashtable.m		\
        OFDoubleMatrix.m			\
        OFDoubleVector.m			\
        OFEnumerator.m			\
@@ -31,9 +29,7 @@ SRCS = OFApplication.m			\
        OFList.m				\
        OFMD5Hash.m			\
        OFMutableArray.m			\
-       OFMutableArray_adjacent.m	\
        OFMutableDictionary.m		\
-       OFMutableDictionary_hashtable.m	\
        OFMutableSet.m			\
        OFMutableString.m		\
        OFNull.m				\
@@ -76,11 +72,15 @@ INCLUDES := ${SRCS:.m=.h}	\
 	    objfw-defs.h	\
 	    ${THREADING_H}
 
-SRCS += ${ASPRINTF_M}		\
-	${FOUNDATION_COMPAT_M}	\
-	iso_8859_15.m		\
-	windows_1252.m		\
-	${OBJC_PROPERTIES_M}	\
+SRCS += OFArray_adjacent.m		\
+	OFDictionary_hashtable.m	\
+	OFMutableArray_adjacent.m	\
+	OFMutableDictionary_hashtable.m	\
+	${ASPRINTF_M}			\
+	${FOUNDATION_COMPAT_M}		\
+	iso_8859_15.m			\
+	windows_1252.m			\
+	${OBJC_PROPERTIES_M}		\
 	${OBJC_SYNC_M}
 
 include ../buildsys.mk

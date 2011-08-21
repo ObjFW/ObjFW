@@ -18,9 +18,6 @@
 
 @class OFDataArray;
 
-/**
- * \brief A class for storing objects in an array.
- */
 @interface OFArray_adjacent: OFArray
 {
 	OFDataArray *array;
