@@ -124,6 +124,11 @@ struct of_dictionary_hashtable_bucket
 
 - initWithDictionary: (OFDictionary*)dictionary
 {
+	if ([dictionary class] == [OFDictionary_hashtable class] ||
+	    [dictionary class] == [OFMutableDictionary_hashtable class])
+		return [self _initWithDictionary: dictionary
+					copyKeys: YES];
+
 	self = [super init];
 
 	@try {
