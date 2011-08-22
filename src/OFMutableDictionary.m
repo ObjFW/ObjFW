@@ -40,7 +40,7 @@ static struct {
 }
 
 - initWithObject: (id)object
-	  forKey: (id <OFCopying>)key
+	  forKey: (id)key
 {
 	return (id)[[OFMutableDictionary_hashtable alloc] initWithObject: object
 								  forKey: key];
@@ -54,7 +54,7 @@ static struct {
 		    forKeys: keys];
 }
 
-- initWithKeysAndObjects: (id <OFCopying>)firstKey, ...
+- initWithKeysAndObjects: (id)firstKey, ...
 {
 	id ret;
 	va_list arguments;

@@ -189,14 +189,14 @@ static Class dictionary = Nil;
 }
 
 - (void)setObject: (id)object
-	   forKey: (id <OFCopying>)key
+	   forKey: (id)key
 {
 	[self _setObject: object
 		  forKey: key
 		 copyKey: YES];
 }
 
-- (void)removeObjectForKey: (id <OFCopying>)key
+- (void)removeObjectForKey: (id)key
 {
 	uint32_t i, hash, last;
 

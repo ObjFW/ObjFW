@@ -21,7 +21,7 @@
 /**
  * \brief A protocol for getting an enumerator for the object.
  */
-@protocol OFEnumerating <OFObject>
+@protocol OFEnumerating
 /**
  * \brief Returns an OFEnumerator to enumerate through all objects of the
  *	  collection.

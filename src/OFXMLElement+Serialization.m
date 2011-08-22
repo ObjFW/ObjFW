@@ -34,7 +34,7 @@ int _OFXMLElement_Serialization_reference;
 {
 	OFAutoreleasePool *pool;
 	Class class;
-	id <OFSerialization> object;
+	id object;
 
 	pool = [[OFAutoreleasePool alloc] init];
 

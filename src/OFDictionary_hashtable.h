@@ -18,8 +18,7 @@
 
 struct of_dictionary_hashtable_bucket
 {
-	id <OFCopying> key;
-	id object;
+	id key, object;
 	uint32_t hash;
 };
 

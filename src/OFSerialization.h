@@ -23,7 +23,7 @@
 /**
  * \brief A protocol for serializing objects.
  */
-@protocol OFSerialization <OFObject>
+@protocol OFSerialization
 /**
  * \brief Initializes the object with the specified XML element serialization.
  *

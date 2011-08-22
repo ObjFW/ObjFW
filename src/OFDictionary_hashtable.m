@@ -129,7 +129,7 @@ struct of_dictionary_hashtable_bucket
 	@try {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 		OFEnumerator *enumerator;
-		id <OFCopying> key;
+		id key;
 		uint32_t i, newSize;
 
 		count = [dictionary count];
@@ -203,7 +203,7 @@ struct of_dictionary_hashtable_bucket
 }
 
 - initWithObject: (id)object
-	  forKey: (id <OFCopying>)key
+	  forKey: (id)key
 {
 	self = [super init];
 
@@ -301,7 +301,7 @@ struct of_dictionary_hashtable_bucket
 			if (j >= last || data[j] == NULL ||
 			    ![data[j]->key isEqual: keysCArray[i]]) {
 				struct of_dictionary_hashtable_bucket *bucket;
-				id <OFCopying> key;
+				id key;
 
 				last = size;
 
@@ -365,7 +365,7 @@ struct of_dictionary_hashtable_bucket
 	return self;
 }
 
-- initWithKey: (id <OFCopying>)firstKey
+- initWithKey: (id)firstKey
     arguments: (va_list)arguments
 {
 	self = [super init];
@@ -431,7 +431,7 @@ struct of_dictionary_hashtable_bucket
 		for (i = 1; i < count; i++) {
 			uint32_t last;
 
-			key = va_arg(arguments, id <OFCopying>);
+			key = va_arg(arguments, id);
 			object = va_arg(arguments, id);
 
 			if (key == nil || object == nil)
@@ -582,7 +582,7 @@ struct of_dictionary_hashtable_bucket
 	return self;
 }
 
-- (id)objectForKey: (id <OFCopying>)key
+- (id)objectForKey: (id)key
 {
 	uint32_t i, hash, last;
 

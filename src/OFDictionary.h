@@ -33,6 +33,8 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
 /**
  * \brief An abstract class for storing objects in a dictionary.
  *
+ * Keys are copied and thus must conform to the OFCopying protocol.
+ *
  * Note: Fast enumeration on a dictionary enumerates through the keys of the
  * dictionary.
  */
@@ -61,7 +63,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * \return A new autoreleased OFDictionary
  */
 + dictionaryWithObject: (id)object
-		forKey: (id <OFCopying>)key;
+		forKey: (id)key;
 
 /**
  * \brief Creates a new OFDictionary with the specified keys and objects.
@@ -79,7 +81,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * \param firstKey The first key
  * \return A new autoreleased OFDictionary
  */
-+ dictionaryWithKeysAndObjects: (id <OFCopying>)firstKey, ...;
++ dictionaryWithKeysAndObjects: (id)firstKey, ...;
 
 /**
  * \brief Initializes an already allocated OFDictionary.
@@ -106,7 +108,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * \return A new initialized OFDictionary
  */
 - initWithObject: (id)object
-	  forKey: (id <OFCopying>)key;
+	  forKey: (id)key;
 
 /**
  * \brief Initializes an already allocated OFDictionary with the specified keys
@@ -126,7 +128,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * \param firstKey The first key
  * \return A new initialized OFDictionary
  */
-- initWithKeysAndObjects: (id <OFCopying>)firstKey, ...;
+- initWithKeysAndObjects: (id)firstKey, ...;
 
 /**
  * \brief Initializes an already allocated OFDictionary with the specified key
@@ -136,7 +138,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * \param arguments A va_list of the other arguments
  * \return A new initialized OFDictionary
  */
-- initWithKey: (id <OFCopying>)firstKey
+- initWithKey: (id)firstKey
     arguments: (va_list)arguments;
 
 /**
@@ -148,7 +150,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * \param key The key whose object should be returned
  * \return The object for the given key or nil if the key was not found
  */
-- (id)objectForKey: (id <OFCopying>)key;
+- (id)objectForKey: (id)key;
 
 /**
  * \brief Checks whether the dictionary contains an object with the specified

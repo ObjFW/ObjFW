@@ -578,7 +578,7 @@ typedef struct of_rectangle_t
 /**
  * \brief A protocol for the creation of copies.
  */
-@protocol OFCopying <OFObject>
+@protocol OFCopying
 /**
  * \brief Copies the object.
  *
@@ -597,7 +597,7 @@ typedef struct of_rectangle_t
  * This protocol is implemented by objects that can be mutable and immutable
  * and allows returning a mutable copy.
  */
-@protocol OFMutableCopying <OFCopying>
+@protocol OFMutableCopying
 /**
  * \brief Creates a mutable copy of the object.
  *

@@ -33,14 +33,14 @@ typedef id (^of_dictionary_replace_block_t)(id key, id object, BOOL *stop);
  * \param object The object to set the key to
  */
 - (void)setObject: (id)object
-	   forKey: (id <OFCopying>)key;
+	   forKey: (id)key;
 
 /**
  * \brief Removes the object for the specified key from the dictionary.
  *
  * \param key The key whose object should be removed
  */
-- (void)removeObjectForKey: (id <OFCopying>)key;
+- (void)removeObjectForKey: (id)key;
 
 #ifdef OF_HAVE_BLOCKS
 /**

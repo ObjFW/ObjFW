@@ -46,7 +46,7 @@ static struct {
 }
 
 - initWithObject: (id)object
-	  forKey: (id <OFCopying>)key
+	  forKey: (id)key
 {
 	return (id)[[OFDictionary_hashtable alloc] initWithObject: object
 							   forKey: key];
@@ -133,7 +133,7 @@ static struct {
 }
 
 + dictionaryWithObject: (id)object
-		forKey: (id <OFCopying>)key
+		forKey: (id)key
 {
 	return [[[self alloc] initWithObject: object
 				      forKey: key] autorelease];
@@ -146,7 +146,7 @@ static struct {
 				      forKeys: keys] autorelease];
 }
 
-+ dictionaryWithKeysAndObjects: (id <OFCopying>)firstKey, ...
++ dictionaryWithKeysAndObjects: (id)firstKey, ...
 {
 	id ret;
 	va_list arguments;
@@ -181,7 +181,7 @@ static struct {
 }
 
 - initWithObject: (id)object
-	  forKey: (id <OFCopying>)key
+	  forKey: (id)key
 {
 	return [self initWithKeysAndObjects: key, object, nil];
 }
@@ -195,7 +195,7 @@ static struct {
 					      selector: _cmd];
 }
 
-- initWithKeysAndObjects: (id <OFCopying>)firstKey, ...
+- initWithKeysAndObjects: (id)firstKey, ...
 {
 	id ret;
 	va_list arguments;
@@ -208,7 +208,7 @@ static struct {
 	return ret;
 }
 
-- initWithKey: (id <OFCopying>)firstKey
+- initWithKey: (id)firstKey
     arguments: (va_list)arguments
 {
 	Class c = isa;
@@ -225,7 +225,7 @@ static struct {
 					      selector: _cmd];
 }
 
-- (id)objectForKey: (id <OFCopying>)key
+- (id)objectForKey: (id)key
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
@@ -251,7 +251,7 @@ static struct {
 {
 	OFAutoreleasePool *pool;
 	OFEnumerator *enumerator;
-	id <OFCopying> key;
+	id key;
 
 	if ([dictionary count] != [self count])
 		return NO;
@@ -315,9 +315,9 @@ static struct {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	id *cArray = [self allocMemoryForNItems: [self count]
 				       withSize: sizeof(id)];
-	OFEnumerator *enumerator;
-	id <OFCopying> key;
 	OFArray *ret;
+	OFEnumerator *enumerator;
+	id key;
 	size_t i = 0;
 
 	pool = [[OFAutoreleasePool alloc] init];
@@ -345,9 +345,9 @@ static struct {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	id *cArray = [self allocMemoryForNItems: [self count]
 				       withSize: sizeof(id)];
+	OFArray *ret;
 	OFEnumerator *enumerator;
 	id object;
-	OFArray *ret;
 	size_t i = 0;
 
 	pool = [[OFAutoreleasePool alloc] init];
@@ -396,7 +396,7 @@ static struct {
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFEnumerator *enumerator = [self keyEnumerator];
-	id <OFCopying> key;
+	id key;
 	BOOL stop = NO;
 
 	while (!stop && (key = [enumerator nextObject]) != nil)
@@ -442,7 +442,7 @@ static struct {
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFEnumerator *enumerator = [self keyEnumerator];
-	id <OFCopying> key;
+	id key;
 	uint32_t hash = 0;
 
 	while ((key = [enumerator nextObject]) != nil) {
@@ -502,7 +502,7 @@ static struct {
 	OFAutoreleasePool *pool2;
 	OFXMLElement *element;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
-	id <OFSerialization> key, object;
+	id key, object;
 
 	if ([self isKindOfClass: [OFMutableDictionary class]])
 		element = [OFXMLElement elementWithName: @"OFMutableDictionary"
