@@ -167,8 +167,7 @@ static struct {
 
 - init
 {
-	if ([self class] == [OFArray class] ||
-	    [self class] == [OFMutableArray class]) {
+	if (isa == [OFArray class]) {
 		Class c = isa;
 		[self release];
 		@throw [OFNotImplementedException newWithClass: c

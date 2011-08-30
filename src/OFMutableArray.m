@@ -124,6 +124,18 @@ static struct {
 	return [super alloc];
 }
 
+- init
+{
+	if (isa == [OFMutableArray class]) {
+		Class c = isa;
+		[self release];
+		@throw [OFNotImplementedException newWithClass: c
+						      selector: _cmd];
+	}
+
+	return [super init];
+}
+
 - copy
 {
 	return [[OFArray alloc] initWithArray: self];

@@ -161,8 +161,7 @@ static struct {
 
 - init
 {
-	if ([self class] == [OFDictionary class] ||
-	    [self class] == [OFMutableDictionary class]) {
+	if (isa == [OFDictionary class]) {
 		Class c = isa;
 		[self release];
 		@throw [OFNotImplementedException newWithClass: c

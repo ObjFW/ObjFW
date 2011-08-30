@@ -119,6 +119,18 @@ static struct {
 	return [super alloc];
 }
 
+- init
+{
+	if (isa == [OFMutableDictionary class]) {
+		Class c = isa;
+		[self release];
+		@throw [OFNotImplementedException newWithClass: c
+						      selector: _cmd];
+	}
+
+	return [super init];
+}
+
 - (void)setObject: (id)object
 	   forKey: (id <OFCopying>)key
 {
