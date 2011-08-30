@@ -2,6 +2,13 @@ Legend:
  * Changes of existing features or bugfixes.
  + New features.
 
+ObjFW 0.5.3 -> ObjFW 0.5.4, 30.08.2011
+ * The blocks runtime is now working correctly.
+ * Documentation fixes.
+ * -framework works with objfw-compile now.
+ + Support for QNX.
+ * Various small fixes.
+
 ObjFW 0.5.2 -> ObjFW 0.5.3, 01.07.2011
  * Lots of bugfixes, see Mercurial log for details. (hg log -b 0.5)
 
