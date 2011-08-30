@@ -33,7 +33,7 @@ static struct {
 	Class isa;
 } placeholder;
 
-@implementation OFMutableArrayPlaceholder
+@implementation OFMutableArray_placeholder
 - init
 {
 	return (id)[[OFMutableArray_adjacent alloc] init];
@@ -113,7 +113,7 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFMutableArray class])
-		placeholder.isa = [OFMutableArrayPlaceholder class];
+		placeholder.isa = [OFMutableArray_placeholder class];
 }
 
 + alloc
