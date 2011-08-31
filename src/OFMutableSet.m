@@ -16,29 +16,113 @@
 
 #include "config.h"
 
-#define OF_MUTABLE_SET_M
+#include <assert.h>
 
 #import "OFMutableSet.h"
-#import "OFMutableDictionary_hashtable.h"
-#import "OFArray.h"
-#import "OFNumber.h"
+#import "OFMutableSet_hashtable.h"
 #import "OFAutoreleasePool.h"
 
+#import "OFNotImplementedException.h"
+
+static struct {
+	Class isa;
+} placeholder;
+
+@implementation OFMutableSet_placeholder
+- init
+{
+	return (id)[[OFMutableSet_hashtable alloc] init];
+}
+
+- initWithSet: (OFSet*)set
+{
+	return (id)[[OFMutableSet_hashtable alloc] initWithSet: set];
+}
+
+- initWithArray: (OFArray*)array
+{
+	return (id)[[OFMutableSet_hashtable alloc] initWithArray: array];
+}
+
+- initWithObjects: (id)firstObject, ...
+{
+	id ret;
+	va_list arguments;
+
+	va_start(arguments, firstObject);
+	ret = [[OFMutableSet_hashtable alloc] initWithObject: firstObject
+						   arguments: arguments];
+	va_end(arguments);
+
+	return ret;
+}
+
+- initWithObject: (id)firstObject
+       arguments: (va_list)arguments
+{
+	return [[OFMutableSet_hashtable alloc] initWithObject: firstObject
+						    arguments: arguments];
+}
+
+- retain
+{
+	return self;
+}
+
+- autorelease
+{
+	return self;
+}
+
+- (void)release
+{
+}
+
+- (void)dealloc
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+	[super dealloc];	/* Get rid of a stupid warning */
+}
+@end
+
 @implementation OFMutableSet
++ (void)initialize
+{
+	if (self == [OFMutableSet class])
+		placeholder.isa = [OFMutableSet_placeholder class];
+}
+
++ alloc
+{
+	if (self == [OFMutableSet class])
+		return (id)&placeholder;
+
+	return [super alloc];
+}
+
+- init
+{
+	if (isa == [OFMutableSet class]) {
+		Class c = isa;
+		[self release];
+		@throw [OFNotImplementedException newWithClass: c
+						      selector: _cmd];
+	}
+
+	return [super init];
+}
+
 - (void)addObject: (id)object
 {
-	[dictionary _setObject: [OFNumber numberWithSize: 1]
-			forKey: object
-		       copyKey: NO];
-
-	mutations++;
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 
 - (void)removeObject: (id)object
 {
-	[dictionary removeObjectForKey: object];
-
-	mutations++;
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 
 - (void)minusSet: (OFSet*)set
@@ -56,14 +140,28 @@
 - (void)intersectSet: (OFSet*)set
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFArray *objects = [dictionary allKeys];
-	id *cArray = [objects cArray];
-	size_t count = [objects count];
-	size_t i;
+	size_t count = [self count];
+	id *cArray;
 
-	for (i = 0; i < count; i++)
-		if (![set containsObject: cArray[i]])
-			[dictionary removeObjectForKey: cArray[i]];
+	cArray = [self allocMemoryForNItems: count
+				   withSize: sizeof(id)];
+
+	@try {
+		OFEnumerator *enumerator = [self objectEnumerator];
+		id object;
+		size_t i = 0;
+
+		while ((object = [enumerator nextObject]) != nil) {
+			assert(i < count);
+			cArray[i++] = object;
+		}
+
+		for (i = 0; i < count; i++)
+			if (![set containsObject: cArray[i]])
+			      [self removeObject: cArray[i]];
+	} @finally {
+		[self freeMemory: cArray];
+	}
 
 	[pool release];
 }
@@ -82,6 +180,5 @@
 
 - (void)makeImmutable
 {
-	isa = [OFSet class];
 }
 @end

@@ -16,96 +16,130 @@
 
 #include "config.h"
 
-#define OF_COUNTED_SET_M
-
 #import "OFCountedSet.h"
-#import "OFMutableDictionary_hashtable.h"
+#import "OFCountedSet_hashtable.h"
 #import "OFNumber.h"
-#import "OFArray.h"
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
 
-@implementation OFCountedSet
+#import "OFNotImplementedException.h"
+
+static struct {
+	Class isa;
+} placeholder;
+
+@implementation OFCountedSet_placeholder
+- init
+{
+	return (id)[[OFCountedSet_hashtable alloc] init];
+}
+
 - initWithSet: (OFSet*)set
 {
-	self = [super init];
-
-	@try {
-		[dictionary release];
-		dictionary = nil;
-		dictionary = [[OFMutableDictionary_hashtable alloc]
-			_initWithDictionary: set->dictionary
-				   copyKeys: NO];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	return (id)[[OFCountedSet_hashtable alloc] initWithSet: set];
 }
 
 - initWithArray: (OFArray*)array
 {
-	self = [super init];
+	return (id)[[OFCountedSet_hashtable alloc] initWithArray: array];
+}
 
-	@try {
-		id *cArray = [array cArray];
-		size_t i, count = [array count];
+- initWithObjects: (id)firstObject, ...
+{
+	id ret;
+	va_list arguments;
 
-		for (i = 0; i < count; i++)
-			[self addObject: cArray[i]];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	va_start(arguments, firstObject);
+	ret = [[OFCountedSet_hashtable alloc] initWithObject: firstObject
+						   arguments: arguments];
+	va_end(arguments);
 
-	return self;
+	return ret;
 }
 
 - initWithObject: (id)firstObject
        arguments: (va_list)arguments
 {
-	self = [super init];
+	return [[OFCountedSet_hashtable alloc] initWithObject: firstObject
+						    arguments: arguments];
+}
 
-	@try {
-		id object;
+- retain
+{
+	return self;
+}
 
-		[self addObject: firstObject];
+- autorelease
+{
+	return self;
+}
 
-		while ((object = va_arg(arguments, id)) != nil)
-			[self addObject: object];
-	} @catch (id e) {
+- (void)release
+{
+}
+
+- (void)dealloc
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
+	[super dealloc];	/* Get rid of a stupid warning */
+}
+@end
+
+@implementation OFCountedSet
++ (void)initialize
+{
+	if (self == [OFCountedSet class])
+		placeholder.isa = [OFCountedSet_placeholder class];
+}
+
++ alloc
+{
+	if (self == [OFCountedSet class])
+		return (id)&placeholder;
+
+	return [super alloc];
+}
+
+- init
+{
+	if (isa == [OFCountedSet class]) {
+		Class c = isa;
 		[self release];
-		@throw e;
+		@throw [OFNotImplementedException newWithClass: c
+						      selector: _cmd];
 	}
 
-	return self;
+	return [super init];
+}
+
+- (size_t)countForObject: (id)object
+{
+	@throw [OFNotImplementedException newWithClass: isa
+					      selector: _cmd];
 }
 
 - (OFString*)description
 {
 	OFMutableString *ret;
 	OFAutoreleasePool *pool, *pool2;
-	OFEnumerator *keyEnumerator, *objectEnumerator;
-	size_t i, count = [dictionary count];
-	id key, object;
+	OFEnumerator *enumerator;
+	size_t i, count = [self count];
+	id object;
 
 	if (count == 0)
 		return @"{()}";
 
 	ret = [OFMutableString stringWithString: @"{(\n"];
 	pool = [[OFAutoreleasePool alloc] init];
-	keyEnumerator = [dictionary keyEnumerator];
-	objectEnumerator = [dictionary objectEnumerator];
+	enumerator = [self objectEnumerator];
 
 	i = 0;
 	pool2 = [[OFAutoreleasePool alloc] init];
 
-	while ((key = [keyEnumerator nextObject]) != nil &&
-	    (object = [objectEnumerator nextObject]) != nil) {
-		[ret appendString: [key description]];
-		[ret appendString: @": "];
-		[ret appendString: [object description]];
+	while ((object = [enumerator nextObject]) != nil) {
+		[ret appendString: object];
+		[ret appendFormat: @": %zu", [self countForObject: object]];
 
 		if (++i < count)
 			[ret appendString: @",\n"];
@@ -133,85 +167,36 @@
 	return [[OFCountedSet alloc] initWithSet: self];
 }
 
-- (size_t)countForObject: (id)object
-{
-	return [[dictionary objectForKey: object] sizeValue];
-}
-
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsAndCountUsingBlock:
     (of_counted_set_enumeration_block_t)block
 {
-	[dictionary enumerateKeysAndObjectsUsingBlock: ^ (id key, id object,
-	    BOOL *stop) {
-		block(key, [object sizeValue], stop);
+	[self enumerateObjectsUsingBlock: ^ (id object, BOOL *stop) {
+		block(object, [self countForObject: object], stop);
 	}];
 }
 #endif
 
-- (void)addObject: (id)object
-{
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFNumber *count;
-
-	count = [[dictionary objectForKey: object] numberByIncreasing];
-
-	if (count == nil)
-		count = [OFNumber numberWithSize: 1];
-
-	[dictionary _setObject: count
-			forKey: object
-		       copyKey: NO];
-
-	mutations++;
-
-	[pool release];
-}
-
-- (void)removeObject: (id)object
-{
-	OFNumber *count = [dictionary objectForKey: object];
-	OFAutoreleasePool *pool;
-
-	if (count == nil)
-		return;
-
-	pool = [[OFAutoreleasePool alloc] init];
-	count = [count numberByDecreasing];
-
-	if ([count sizeValue] > 0)
-		[dictionary _setObject: count
-				forKey: object
-			       copyKey: NO];
-	else
-		[dictionary removeObjectForKey: object];
-
-	mutations++;
-
-	[pool release];
-}
-
 - (void)minusSet: (OFSet*)set
 {
-	OFCountedSet *countedSet;
-	OFAutoreleasePool *pool;
-	OFEnumerator *enumerator;
-	id object;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 
-	if (![set isKindOfClass: [OFCountedSet class]]) {
-		[super minusSet: set];
-		return;
-	}
+	if ([set isKindOfClass: [OFCountedSet class]]) {
+		OFCountedSet *countedSet = (OFCountedSet*)set;
+		OFEnumerator *enumerator = [countedSet objectEnumerator];
+		id object;
 
-	countedSet = (OFCountedSet*)set;
+		while ((object = [enumerator nextObject]) != nil) {
+			size_t i, count = [countedSet countForObject: object];
 
-	pool = [[OFAutoreleasePool alloc] init];
-	enumerator = [countedSet objectEnumerator];
+			for (i = 0; i < count; i++)
+				[self removeObject: object];
+		}
+	} else {
+		OFEnumerator *enumerator = [set objectEnumerator];
+		id object;
 
-	while ((object = [enumerator nextObject]) != nil) {
-		size_t i, count = [countedSet countForObject: object];
-
-		for (i = 0; i < count; i++)
+		while ((object = [enumerator nextObject]) != nil)
 			[self removeObject: object];
 	}
 
@@ -220,32 +205,27 @@
 
 - (void)unionSet: (OFSet*)set
 {
-	OFCountedSet *countedSet;
-	OFAutoreleasePool *pool;
-	OFEnumerator *enumerator;
-	id object;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 
-	if (![set isKindOfClass: [OFCountedSet class]]) {
-		[super unionSet: set];
-		return;
-	}
+	if ([set isKindOfClass: [OFCountedSet class]]) {
+		OFCountedSet *countedSet = (OFCountedSet*)set;
+		OFEnumerator *enumerator = [countedSet objectEnumerator];
+		id object;
 
-	countedSet = (OFCountedSet*)set;
+		while ((object = [enumerator nextObject]) != nil) {
+			size_t i, count = [countedSet countForObject: object];
 
-	pool = [[OFAutoreleasePool alloc] init];
-	enumerator = [countedSet objectEnumerator];
+			for (i = 0; i < count; i++)
+				[self addObject: object];
+		}
+	} else {
+		OFEnumerator *enumerator = [set objectEnumerator];
+		id object;
 
-	while ((object = [enumerator nextObject]) != nil) {
-		size_t i, count = [countedSet countForObject: object];
-
-		for (i = 0; i < count; i++)
+		while ((object = [enumerator nextObject]) != nil)
 			[self addObject: object];
 	}
 
 	[pool release];
-}
-
-- (void)makeImmutable
-{
 }
 @end

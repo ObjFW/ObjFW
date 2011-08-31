@@ -14,25 +14,12 @@
  * file.
  */
 
-#import "OFDictionary.h"
+#import "OFSet.h"
 
-@interface OFMutableDictionary_hashtable: OFMutableDictionary
+@class OFMutableDictionary_hashtable;
+
+@interface OFSet_hashtable: OFSet
 {
-	struct of_dictionary_hashtable_bucket **data;
-	uint32_t size;
-	size_t count;
-	unsigned long mutations;
+	OFMutableDictionary_hashtable *dictionary;
 }
-
-#if defined(OF_SET_HASHTABLE_M) || defined(OF_COUNTED_SET_HASHTABLE_M)
-- _initWithDictionary: (OFDictionary*)dictionary
-	     copyKeys: (BOOL)copyKeys;
-#endif
-
-#if defined(OF_SET_HASHTABLE_M) || defined(OF_MUTABLE_SET_HASHTABLE_M) || \
-    defined(OF_COUNTED_SET_HASHTABLE_M)
-- (void)_setObject: (id)object
-	    forKey: (id)key
-	   copyKey: (BOOL)copyKey;
-#endif
 @end

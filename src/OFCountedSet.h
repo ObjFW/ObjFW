@@ -42,3 +42,6 @@ typedef void (^of_counted_set_enumeration_block_t)(id object, size_t count,
     (of_counted_set_enumeration_block_t)block;
 #endif
 @end
+
+@interface OFCountedSet_placeholder: OFCountedSet
+@end

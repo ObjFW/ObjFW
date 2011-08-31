@@ -19,7 +19,6 @@
 #import "OFObject.h"
 #import "OFCollection.h"
 
-@class OFMutableDictionary_hashtable;
 @class OFArray;
 
 #ifdef OF_HAVE_BLOCKS
@@ -31,10 +30,6 @@ typedef BOOL (^of_set_filter_block_t)(id object);
  * \brief An unordered set of unique objects.
  */
 @interface OFSet: OFObject <OFCollection, OFCopying, OFMutableCopying>
-{
-	OFMutableDictionary_hashtable *dictionary;
-}
-
 /**
  * \brief Returns a new, autoreleased set.
  *
@@ -134,6 +129,9 @@ typedef BOOL (^of_set_filter_block_t)(id object);
  */
 - (OFSet*)filteredSetUsingBlock: (of_set_filter_block_t)block;
 #endif
+@end
+
+@interface OFSet_placeholder: OFSet
 @end
 
 #import "OFMutableSet.h"

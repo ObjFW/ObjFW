@@ -20,10 +20,6 @@
  * \brief An mutable unordered set of unique objects.
  */
 @interface OFMutableSet: OFSet
-{
-	unsigned long mutations;
-}
-
 /**
  * \brief Adds the specified object to the set.
  *
@@ -64,4 +60,7 @@
  * \brief Converts the mutable set to an immutable set.
  */
 - (void)makeImmutable;
+@end
+
+@interface OFMutableSet_placeholder: OFMutableSet
 @end

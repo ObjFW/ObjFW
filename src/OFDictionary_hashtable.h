@@ -29,7 +29,7 @@ struct of_dictionary_hashtable_bucket
 	size_t count;
 }
 
-#if defined(OF_SET_M) || defined(OF_COUNTED_SET_M)
+#if defined(OF_SET_HASHTABLE_M) || defined(OF_COUNTED_SET_HASHTABLE_M)
 - _initWithDictionary: (OFDictionary*)dictionary
 	     copyKeys: (BOOL)copyKeys;
 #endif

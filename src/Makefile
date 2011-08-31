@@ -73,9 +73,12 @@ INCLUDES := ${SRCS:.m=.h}	\
 	    ${THREADING_H}
 
 SRCS += OFArray_adjacent.m		\
+	OFCountedSet_hashtable.m	\
 	OFDictionary_hashtable.m	\
 	OFMutableArray_adjacent.m	\
 	OFMutableDictionary_hashtable.m	\
+	OFMutableSet_hashtable.m	\
+	OFSet_hashtable.m		\
 	${ASPRINTF_M}			\
 	${FOUNDATION_COMPAT_M}		\
 	iso_8859_15.m			\

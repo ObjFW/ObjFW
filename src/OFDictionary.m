@@ -27,8 +27,6 @@
 
 #import "OFNotImplementedException.h"
 
-#import "macros.h"
-
 static struct {
 	Class isa;
 } placeholder;
