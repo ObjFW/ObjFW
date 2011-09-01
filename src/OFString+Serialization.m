@@ -24,6 +24,8 @@
 #import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"
+#import "OFMalformedXMLException.h"
+#import "OFUnboundNamespaceException.h"
 
 int _OFString_Serialization_reference;
 
@@ -31,9 +33,21 @@ int _OFString_Serialization_reference;
 - (id)objectByDeserializing
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFXMLElement *root = [OFXMLElement elementWithXMLString: self];
+	OFXMLElement *root;
 	OFArray *elements;
 	id object;
+
+	@try {
+		root = [OFXMLElement elementWithXMLString: self];
+	} @catch (OFMalformedXMLException *e) {
+		[e release];
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+	} @catch (OFUnboundNamespaceException *e) {
+		[e release];
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+	}
 
 	elements = [root elementsForNamespace: OF_SERIALIZATION_NS];
 

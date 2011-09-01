@@ -55,7 +55,7 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"The argument for method %s of class %@ is invalid!",
+	    @"The argument or receiver for method %s of class %@ is invalid!",
 	    sel_getName(selector), inClass];
 
 	return description;
