@@ -18,6 +18,7 @@
 
 #import "OFObject.h"
 #import "OFCollection.h"
+#import "OFSerialization.h"
 
 @class OFArray;
 
@@ -29,7 +30,8 @@ typedef BOOL (^of_set_filter_block_t)(id object);
 /**
  * \brief An unordered set of unique objects.
  */
-@interface OFSet: OFObject <OFCollection, OFCopying, OFMutableCopying>
+@interface OFSet: OFObject <OFCollection, OFCopying, OFMutableCopying,
+    OFSerialization>
 /**
  * \brief Returns a new, autoreleased set.
  *

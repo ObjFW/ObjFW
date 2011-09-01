@@ -2,6 +2,30 @@
 <serialization xmlns='https://webkeks.org/objfw/serialization' version='0'>
   <OFMutableDictionary>
     <key>
+      <OFDataArray>MDEyMzQ1Njc4OTo7PEFCQ0RFRkdISklLTE1OT1BRUlNUVVZXWFla</OFDataArray>
+    </key>
+    <object>
+      <OFString>data</OFString>
+    </object>
+    <key>
+      <OFArray>
+        <OFString>Qu&quot;xbar
+test</OFString>
+        <OFNumber type='signed'>1234</OFNumber>
+        <OFMutableString>asd</OFMutableString>
+        <OFDate seconds='1234' microseconds='5678'/>
+      </OFArray>
+    </key>
+    <object>
+      <OFString>Hello</OFString>
+    </object>
+    <key>
+      <OFString>Blub</OFString>
+    </key>
+    <object>
+      <OFString>B&quot;la</OFString>
+    </object>
+    <key>
       <OFList>
         <OFString>Hello</OFString>
         <OFString>Wo&#xD;ld!
@@ -50,34 +74,22 @@ How are you?</OFString>
             </OFMutableArray>
           </children>
         </OFXMLElement>
+        <OFSet>
+          <OFString>foo</OFString>
+          <OFString>bar</OFString>
+        </OFSet>
+        <OFCountedSet>
+          <object count='2'>
+            <OFString>foo</OFString>
+          </object>
+          <object count='1'>
+            <OFString>bar</OFString>
+          </object>
+        </OFCountedSet>
       </OFList>
     </key>
     <object>
       <OFString>list</OFString>
-    </object>
-    <key>
-      <OFArray>
-        <OFString>Qu&quot;xbar
-test</OFString>
-        <OFNumber type='signed'>1234</OFNumber>
-        <OFMutableString>asd</OFMutableString>
-        <OFDate seconds='1234' microseconds='5678'/>
-      </OFArray>
-    </key>
-    <object>
-      <OFString>Hello</OFString>
-    </object>
-    <key>
-      <OFString>Blub</OFString>
-    </key>
-    <object>
-      <OFString>B&quot;la</OFString>
-    </object>
-    <key>
-      <OFDataArray>MDEyMzQ1Njc4OTo7PEFCQ0RFRkdISklLTE1OT1BRUlNUVVZXWFla</OFDataArray>
-    </key>
-    <object>
-      <OFString>data</OFString>
     </object>
   </OFMutableDictionary>
 </serialization>

@@ -23,7 +23,10 @@
 #import "OFArray.h"
 #import "OFString.h"
 #import "OFNumber.h"
+#import "OFXMLElement.h"
 #import "OFAutoreleasePool.h"
+
+#import "OFInvalidArgumentException.h"
 
 @implementation OFSet_hashtable
 - init
@@ -110,6 +113,49 @@
 			[dictionary _setObject: one
 					forKey: object
 				       copyKey: NO];
+
+		[pool release];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithSerialization: (OFXMLElement*)element
+{
+	self = [self init];
+
+	@try {
+		OFAutoreleasePool *pool, *pool2;
+		OFNumber *one;
+		OFEnumerator *enumerator;
+		OFXMLElement *child;
+
+		pool = [[OFAutoreleasePool alloc] init];
+
+		if ((![[element name] isEqual: @"OFSet"] &&
+		    ![[element name] isEqual: @"OFMutableSet"]) ||
+		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
+		one = [OFNumber numberWithSize: 1];
+
+		enumerator = [[element children] objectEnumerator];
+		pool2 = [[OFAutoreleasePool alloc] init];
+
+		while ((child = [enumerator nextObject]) != nil) {
+			if (![[child namespace] isEqual: OF_SERIALIZATION_NS])
+				continue;
+
+			[dictionary _setObject: one
+					forKey: [child objectByDeserializing]
+				       copyKey: NO];
+
+			[pool2 releaseObjects];
+		}
 
 		[pool release];
 	} @catch (id e) {

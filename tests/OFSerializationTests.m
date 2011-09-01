@@ -20,6 +20,8 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OFSet.h"
+#import "OFCountedSet.h"
 #import "OFList.h"
 #import "OFNumber.h"
 #import "OFDate.h"
@@ -58,6 +60,9 @@ static OFString *module = @"OFSerialization";
 	[l appendObject: [OFURL URLWithString: @"https://webkeks.org/"]];
 	[l appendObject:
 	    [OFXMLElement elementWithXMLString: @"<x><y/><![CDATA[<]]></x>"]];
+	[l appendObject: [OFSet setWithObjects: @"foo", @"foo", @"bar", nil]];
+	[l appendObject:
+	    [OFCountedSet setWithObjects: @"foo", @"foo", @"bar", nil]];
 
 	[d setObject: @"list"
 	      forKey: l];

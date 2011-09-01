@@ -20,6 +20,7 @@
 #import "OFCountedSet_hashtable.h"
 #import "OFNumber.h"
 #import "OFString.h"
+#import "OFXMLElement.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFNotImplementedException.h"
@@ -62,6 +63,11 @@ static struct {
 {
 	return [[OFCountedSet_hashtable alloc] initWithObject: firstObject
 						    arguments: arguments];
+}
+
+- initWithSerialization: (OFXMLElement*)element
+{
+	return [[OFCountedSet_hashtable alloc] initWithSerialization: element];
 }
 
 - retain
@@ -165,6 +171,49 @@ static struct {
 - mutableCopy
 {
 	return [[OFCountedSet alloc] initWithSet: self];
+}
+
+- (OFXMLElement*)XMLElementBySerializing
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFAutoreleasePool *pool2;
+	OFXMLElement *element;
+	OFEnumerator *enumerator;
+	id <OFSerialization> object;
+
+	element = [OFXMLElement elementWithName: @"OFCountedSet"
+				      namespace: OF_SERIALIZATION_NS];
+
+	enumerator = [self objectEnumerator];
+
+	pool2 = [[OFAutoreleasePool alloc] init];
+	while ((object = [enumerator nextObject]) != nil) {
+		OFXMLElement *objectElement;
+		OFString *count;
+
+		count =
+		    [OFString stringWithFormat: @"%zu",
+						[self countForObject: object]];
+
+		objectElement = [OFXMLElement
+		    elementWithName: @"object"
+			  namespace: OF_SERIALIZATION_NS];
+		[objectElement addAttributeWithName: @"count"
+					stringValue: count];
+		[objectElement addChild: [object XMLElementBySerializing]];
+		[element addChild: objectElement];
+
+		[pool2 releaseObjects];
+	}
+
+	[element retain];
+	@try {
+		[pool release];
+	} @finally {
+		[element autorelease];
+	}
+
+	return element;
 }
 
 #ifdef OF_HAVE_BLOCKS

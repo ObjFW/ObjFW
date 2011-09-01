@@ -21,9 +21,14 @@
 #import "OFMutableSet_hashtable.h"
 #import "OFCountedSet_hashtable.h"
 #import "OFMutableDictionary_hashtable.h"
+#import "OFString.h"
 #import "OFNumber.h"
 #import "OFArray.h"
+#import "OFXMLElement.h"
 #import "OFAutoreleasePool.h"
+
+#import "OFInvalidArgumentException.h"
+#import "OFInvalidFormatException.h"
 
 @implementation OFCountedSet_hashtable
 + (void)initialize
@@ -100,6 +105,60 @@
 
 		while ((object = va_arg(arguments, id)) != nil)
 			[self addObject: object];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithSerialization: (OFXMLElement*)element
+{
+	self = [self init];
+
+	@try {
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		OFAutoreleasePool *pool2;
+		OFArray *objects;
+		OFEnumerator *enumerator;
+		OFXMLElement *objectElement;
+
+		if (![[element name] isEqual: @"OFCountedSet"] ||
+		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
+		objects = [element elementsForName: @"object"
+					 namespace: OF_SERIALIZATION_NS];
+
+		enumerator = [objects objectEnumerator];
+		pool2 = [[OFAutoreleasePool alloc] init];
+
+		while ((objectElement = [enumerator nextObject]) != nil) {
+			OFXMLElement *object;
+			OFXMLAttribute *count;
+			OFNumber *number;
+
+			object = [[objectElement elementsForNamespace:
+			    OF_SERIALIZATION_NS] firstObject];
+			count = [objectElement attributeForName: @"count"];
+
+			if (object == nil || count == nil)
+				@throw [OFInvalidFormatException
+				    newWithClass: isa];
+
+			number = [OFNumber numberWithSize:
+			    (size_t)[[count stringValue] decimalValue]];
+
+			[dictionary _setObject: number
+					forKey: [object objectByDeserializing]
+				       copyKey: NO];
+
+			[pool2 releaseObjects];
+		}
+
+		[pool release];
 	} @catch (id e) {
 		[self release];
 		@throw e;

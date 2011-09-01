@@ -19,6 +19,7 @@
 #import "OFSet.h"
 #import "OFSet_hashtable.h"
 #import "OFString.h"
+#import "OFXMLElement.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFNotImplementedException.h"
@@ -61,6 +62,11 @@ static struct {
 {
 	return [[OFSet_hashtable alloc] initWithObject: firstObject
 					     arguments: arguments];
+}
+
+- initWithSerialization: (OFXMLElement*)element
+{
+	return [[OFSet_hashtable alloc] initWithSerialization: element];
 }
 
 - retain
@@ -171,6 +177,14 @@ static struct {
 
 - initWithObject: (id)firstObject
        arguments: (va_list)arguments
+{
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
+}
+
+- initWithSerialization: (OFXMLElement*)element
 {
 	Class c = isa;
 	[self release];
@@ -315,6 +329,40 @@ static struct {
 	[pool release];
 
 	return NO;
+}
+
+- (OFXMLElement*)XMLElementBySerializing
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFAutoreleasePool *pool2;
+	OFXMLElement *element;
+	OFEnumerator *enumerator;
+	id <OFSerialization> object;
+
+	if ([self isKindOfClass: [OFMutableSet class]])
+		element = [OFXMLElement elementWithName: @"OFMutableSet"
+					      namespace: OF_SERIALIZATION_NS];
+	else
+		element = [OFXMLElement elementWithName: @"OFSet"
+					      namespace: OF_SERIALIZATION_NS];
+
+	enumerator = [self objectEnumerator];
+
+	pool2 = [[OFAutoreleasePool alloc] init];
+	while ((object = [enumerator nextObject]) != nil) {
+		[element addChild: [object XMLElementBySerializing]];
+
+		[pool2 releaseObjects];
+	}
+
+	[element retain];
+	@try {
+		[pool release];
+	} @finally {
+		[element autorelease];
+	}
+
+	return element;
 }
 
 #ifdef OF_HAVE_BLOCKS

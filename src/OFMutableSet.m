@@ -64,6 +64,11 @@ static struct {
 						    arguments: arguments];
 }
 
+- initWithSerialization: (OFXMLElement*)element
+{
+	return [[OFMutableSet_hashtable alloc] initWithSerialization: element];
+}
+
 - retain
 {
 	return self;
