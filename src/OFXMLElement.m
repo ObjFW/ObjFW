@@ -488,6 +488,7 @@ void _references_to_categories_of_OFXMLElement(void)
 }
 
 - (OFString*)_XMLStringWithParent: (OFXMLElement*)parent
+		       namespaces: (OFDictionary*)allNamespaces
 		      indentation: (unsigned int)indentation
 			    level: (size_t)level
 {
@@ -497,7 +498,6 @@ void _references_to_categories_of_OFXMLElement(void)
 	OFString *prefix, *parentPrefix;
 	OFXMLAttribute **attributesCArray;
 	OFString *ret;
-	OFMutableDictionary *allNamespaces;
 	OFString *defaultNS;
 
 	if (characters != nil)
@@ -529,24 +529,29 @@ void _references_to_categories_of_OFXMLElement(void)
 
 	pool = [[OFAutoreleasePool alloc] init];
 
-	if (parent != nil && parent->namespaces != nil) {
+	parentPrefix = [allNamespaces objectForKey:
+	    (parent != nil && parent->ns != nil ? parent->ns : (OFString*)@"")];
+
+	/* Add the namespaces of the current element */
+	if (allNamespaces != nil) {
 		OFEnumerator *keyEnumerator = [namespaces keyEnumerator];
 		OFEnumerator *objectEnumerator = [namespaces objectEnumerator];
+		OFMutableDictionary *tmp;
 		id key, object;
 
-		allNamespaces = [[parent->namespaces mutableCopy] autorelease];
+		tmp = [[allNamespaces mutableCopy] autorelease];
 
 		while ((key = [keyEnumerator nextObject]) != nil &&
 		    (object = [objectEnumerator nextObject]) != nil)
-			[allNamespaces setObject: object
-					  forKey: key];
+			[tmp setObject: object
+				forKey: key];
+
+		allNamespaces = tmp;
 	} else
 		allNamespaces = namespaces;
 
 	prefix = [allNamespaces objectForKey:
 	    (ns != nil ? ns : (OFString*)@"")];
-	parentPrefix = [allNamespaces objectForKey:
-	    (parent != nil && parent->ns != nil ? parent->ns : (OFString*)@"")];
 
 	if (parent != nil && parent->ns != nil && parentPrefix == nil)
 		defaultNS = parent->ns;
@@ -680,6 +685,7 @@ void _references_to_categories_of_OFXMLElement(void)
 
 			child = [childrenCArray[j]
 			    _XMLStringWithParent: self
+				      namespaces: allNamespaces
 				     indentation: (indent ? indentation : 0)
 					   level: level + 1];
 
@@ -749,6 +755,7 @@ void _references_to_categories_of_OFXMLElement(void)
 - (OFString*)XMLString
 {
 	return [self _XMLStringWithParent: nil
+			       namespaces: nil
 			      indentation: 0
 				    level: 0];
 }
@@ -756,6 +763,7 @@ void _references_to_categories_of_OFXMLElement(void)
 - (OFString*)XMLStringWithIndentation: (unsigned int)indentation
 {
 	return [self _XMLStringWithParent: nil
+			       namespaces: nil
 			      indentation: indentation
 				    level: 0];
 }
