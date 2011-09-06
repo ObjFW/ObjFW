@@ -337,6 +337,7 @@
 }
 
 - (OFString*)_XMLStringWithParent: (OFXMLElement*)parent
+		       namespaces: (OFDictionary*)all_namespaces
 {
 	OFAutoreleasePool *pool, *pool2;
 	char *str_c;
@@ -344,7 +345,6 @@
 	OFString *prefix, *parent_prefix;
 	OFXMLAttribute **attrs_carray;
 	OFString *ret, *tmp;
-	OFMutableDictionary *all_namespaces;
 	OFString *def_ns;
 
 	if (characters != nil)
@@ -372,24 +372,28 @@
 
 	pool = [[OFAutoreleasePool alloc] init];
 
-	if (parent != nil && parent->namespaces != nil) {
+	parent_prefix = [all_namespaces objectForKey:
+	    (parent != nil && parent->ns != nil ? parent->ns : (OFString*)@"")];
+
+	if (all_namespaces != nil) {
 		OFEnumerator *key_enum = [namespaces keyEnumerator];
 		OFEnumerator *obj_enum = [namespaces objectEnumerator];
+		OFMutableDictionary *mutable;
 		id key, obj;
 
-		all_namespaces = [[parent->namespaces mutableCopy] autorelease];
+		mutable = [[all_namespaces mutableCopy] autorelease];
 
 		while ((key = [key_enum nextObject]) != nil &&
 		    (obj = [obj_enum nextObject]) != nil)
-			[all_namespaces setObject: obj
-					   forKey: key];
+			[mutable setObject: obj
+				    forKey: key];
+
+		all_namespaces = mutable;
 	} else
 		all_namespaces = namespaces;
 
 	prefix = [all_namespaces objectForKey:
 	    (ns != nil ? ns : (OFString*)@"")];
-	parent_prefix = [all_namespaces objectForKey:
-	    (parent != nil && parent->ns != nil ? parent->ns : (OFString*)@"")];
 
 	if (parent != nil && parent->ns != nil && parent_prefix == nil)
 		def_ns = parent->ns;
@@ -506,7 +510,8 @@
 			append(tmp, @selector(
 			    appendCStringWithoutUTF8Checking:),
 			    [[children_carray[j]
-			    _XMLStringWithParent: self] cString]);
+			    _XMLStringWithParent: self
+				      namespaces: all_namespaces] cString]);
 
 		len += [tmp cStringLength] + [name cStringLength] + 2;
 		@try {
@@ -558,7 +563,8 @@
 
 - (OFString*)XMLString
 {
-	return [self _XMLStringWithParent: nil];
+	return [self _XMLStringWithParent: nil
+			       namespaces: nil];
 }
 
 - (OFString*)description
