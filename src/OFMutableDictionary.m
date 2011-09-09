@@ -66,7 +66,7 @@ static struct {
 	return ret;
 }
 
-- initWithKey: (id <OFCopying>)firstKey
+- initWithKey: (id)firstKey
     arguments: (va_list)arguments
 {
 	return (id)[[OFMutableDictionary_hashtable alloc]
@@ -130,13 +130,13 @@ static struct {
 }
 
 - (void)setObject: (id)object
-	   forKey: (id <OFCopying>)key
+	   forKey: (id)key
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
-- (void)removeObjectForKey: (id <OFCopying>)key
+- (void)removeObjectForKey: (id)key
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
