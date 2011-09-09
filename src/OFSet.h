@@ -28,7 +28,7 @@ typedef BOOL (^of_set_filter_block_t)(id object);
 #endif
 
 /**
- * \brief An unordered set of unique objects.
+ * \brief An abstract class for an unordered set of unique objects.
  */
 @interface OFSet: OFObject <OFCollection, OFCopying, OFMutableCopying,
     OFSerialization>

@@ -21,7 +21,7 @@ typedef id (^of_dictionary_replace_block_t)(id key, id object, BOOL *stop);
 #endif
 
 /**
- * \brief An abstract class for using mutable dictionaries.
+ * \brief An abstract class for storing and changing objects in a dictionary.
  */
 @interface OFMutableDictionary: OFDictionary
 /**

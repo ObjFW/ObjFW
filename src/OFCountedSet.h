@@ -22,7 +22,8 @@ typedef void (^of_counted_set_enumeration_block_t)(id object, size_t count,
 #endif
 
 /**
- * \brief An unordered set of objects, counting how often it contains an object.
+ * \brief An abstract class for a mutable unordered set of objects, counting how
+ *	  often it contains an object.
  */
 @interface OFCountedSet: OFMutableSet
 /**

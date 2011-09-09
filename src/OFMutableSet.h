@@ -17,7 +17,7 @@
 #import "OFSet.h"
 
 /**
- * \brief An mutable unordered set of unique objects.
+ * \brief An abstract class for a mutable unordered set of unique objects.
  */
 @interface OFMutableSet: OFSet
 /**
