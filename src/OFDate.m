@@ -359,11 +359,8 @@ static OFMutex *mutex;
 			  stringValue: microsecondsString];
 
 	[element retain];
-	@try {
-		[pool release];
-	} @finally {
-		[element autorelease];
-	}
+	[pool release];
+	[element autorelease];
 
 	return element;
 }

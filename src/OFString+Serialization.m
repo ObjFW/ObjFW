@@ -55,15 +55,12 @@ int _OFString_Serialization_reference;
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	object = [[[elements firstObject] objectByDeserializing] retain];
+	object = [[elements firstObject] objectByDeserializing];
 
-	@try {
-		[pool release];
-	} @catch (id e) {
-		[object release];
-		@throw e;
-	}
+	[object retain];
+	[pool release];
+	[object autorelease];
 
-	return [object autorelease];
+	return object;
 }
 @end

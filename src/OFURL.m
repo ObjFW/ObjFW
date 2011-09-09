@@ -552,11 +552,8 @@ resolve_relative_path(OFString *path)
 				    stringValue: [self string]];
 
 	[element retain];
-	@try {
-		[pool release];
-	} @finally {
-		[element autorelease];
-	}
+	[pool release];
+	[element autorelease];
 
 	return element;
 }

@@ -53,11 +53,8 @@ int _OFObject_Serialization_reference;
 	    stringByAppendingString: [root XMLStringWithIndentation: 2]];
 
 	[ret retain];
-	@try {
-		[pool release];
-	} @finally {
-		[ret autorelease];
-	}
+	[pool release];
+	[ret autorelease];
 
 	return ret;
 }

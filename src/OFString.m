@@ -1311,11 +1311,8 @@ of_utf16_string_length(const uint16_t *string)
 				    stringValue: self];
 
 	[element retain];
-	@try {
-		[pool release];
-	} @finally {
-		[element autorelease];
-	}
+	[pool release];
+	[element autorelease];
 
 	return element;
 }

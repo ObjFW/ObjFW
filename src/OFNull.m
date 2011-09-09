@@ -74,11 +74,8 @@ static OFNull *null = nil;
 				      namespace: OF_SERIALIZATION_NS];
 
 	[element retain];
-	@try {
-		[pool release];
-	} @finally {
-		[element autorelease];
-	}
+	[pool release];
+	[element autorelease];
 
 	return element;
 }

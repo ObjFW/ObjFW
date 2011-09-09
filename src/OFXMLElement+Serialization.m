@@ -48,12 +48,8 @@ int _OFXMLElement_Serialization_reference;
 
 	object = [[class alloc] initWithSerialization: self];
 
-	@try {
-		[pool release];
-	} @finally {
-		[object autorelease];
-	}
+	[pool release];
 
-	return object;
+	return [object autorelease];
 }
 @end

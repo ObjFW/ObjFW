@@ -207,11 +207,8 @@ static struct {
 	}
 
 	[element retain];
-	@try {
-		[pool release];
-	} @finally {
-		[element autorelease];
-	}
+	[pool release];
+	[element autorelease];
 
 	return element;
 }

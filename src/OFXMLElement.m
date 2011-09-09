@@ -846,11 +846,8 @@ void _references_to_categories_of_OFXMLElement(void)
 				      stringValue: comment]];
 
 	[element retain];
-	@try {
-		[pool release];
-	} @finally {
-		[element autorelease];
-	}
+	[pool release];
+	[element autorelease];
 
 	return element;
 }

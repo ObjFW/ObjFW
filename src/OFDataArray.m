@@ -463,11 +463,8 @@ void _references_to_categories_of_OFDataArray(void)
 		stringValue: of_base64_encode(data, count * itemSize)];
 
 	[element retain];
-	@try {
-		[pool release];
-	} @finally {
-		[element autorelease];
-	}
+	[pool release];
+	[element autorelease];
 
 	return element;
 }
