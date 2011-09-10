@@ -105,6 +105,10 @@
 		4B2B3E84140D430500EC2F7C /* OFMutableDictionary_hashtable.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2B3E7A140D430500EC2F7C /* OFMutableDictionary_hashtable.m */; };
 		4B2B3E85140D430500EC2F7C /* OFSOCKS5Socket.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2B3E7B140D430500EC2F7C /* OFSOCKS5Socket.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B2B3E86140D430500EC2F7C /* OFSOCKS5Socket.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2B3E7C140D430500EC2F7C /* OFSOCKS5Socket.m */; };
+		4B355E6B141BF79500FAAA6F /* OFStreamPollObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B355E67141BF79500FAAA6F /* OFStreamPollObserver.h */; };
+		4B355E6C141BF79500FAAA6F /* OFStreamPollObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B355E68141BF79500FAAA6F /* OFStreamPollObserver.m */; };
+		4B355E6D141BF79500FAAA6F /* OFStreamSelectObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B355E69141BF79500FAAA6F /* OFStreamSelectObserver.h */; };
+		4B355E6E141BF79500FAAA6F /* OFStreamSelectObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B355E6A141BF79500FAAA6F /* OFStreamSelectObserver.m */; };
 		4B39844213D3A24600E6F825 /* OFSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B39844013D3A24600E6F825 /* OFSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B39844313D3A24600E6F825 /* OFSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B39844113D3A24600E6F825 /* OFSet.m */; };
 		4B39844713D3AFB400E6F825 /* OFMutableSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B39844513D3AFB400E6F825 /* OFMutableSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -443,6 +447,10 @@
 		4B2B3E7A140D430500EC2F7C /* OFMutableDictionary_hashtable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMutableDictionary_hashtable.m; path = src/OFMutableDictionary_hashtable.m; sourceTree = "<group>"; };
 		4B2B3E7B140D430500EC2F7C /* OFSOCKS5Socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSOCKS5Socket.h; path = src/OFSOCKS5Socket.h; sourceTree = "<group>"; };
 		4B2B3E7C140D430500EC2F7C /* OFSOCKS5Socket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSOCKS5Socket.m; path = src/OFSOCKS5Socket.m; sourceTree = "<group>"; };
+		4B355E67141BF79500FAAA6F /* OFStreamPollObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamPollObserver.h; path = src/OFStreamPollObserver.h; sourceTree = "<group>"; };
+		4B355E68141BF79500FAAA6F /* OFStreamPollObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamPollObserver.m; path = src/OFStreamPollObserver.m; sourceTree = "<group>"; };
+		4B355E69141BF79500FAAA6F /* OFStreamSelectObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamSelectObserver.h; path = src/OFStreamSelectObserver.h; sourceTree = "<group>"; };
+		4B355E6A141BF79500FAAA6F /* OFStreamSelectObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamSelectObserver.m; path = src/OFStreamSelectObserver.m; sourceTree = "<group>"; };
 		4B39844013D3A24600E6F825 /* OFSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSet.h; path = src/OFSet.h; sourceTree = "<group>"; };
 		4B39844113D3A24600E6F825 /* OFSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSet.m; path = src/OFSet.m; sourceTree = "<group>"; };
 		4B39844513D3AFB400E6F825 /* OFMutableSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMutableSet.h; path = src/OFMutableSet.h; sourceTree = "<group>"; };
@@ -920,6 +928,10 @@
 				4B67997E1099E7C50041064A /* OFStream.m */,
 				4BAF5F47123460C900F4E111 /* OFStreamObserver.h */,
 				4BAF5F48123460C900F4E111 /* OFStreamObserver.m */,
+				4B355E67141BF79500FAAA6F /* OFStreamPollObserver.h */,
+				4B355E68141BF79500FAAA6F /* OFStreamPollObserver.m */,
+				4B355E69141BF79500FAAA6F /* OFStreamSelectObserver.h */,
+				4B355E6A141BF79500FAAA6F /* OFStreamSelectObserver.m */,
 				4BAF5F49123460C900F4E111 /* OFStreamSocket.h */,
 				4BAF5F4A123460C900F4E111 /* OFStreamSocket.m */,
 				4B67997F1099E7C50041064A /* OFString.h */,
@@ -1178,6 +1190,8 @@
 				4B2B3E83140D430500EC2F7C /* OFMutableDictionary_hashtable.h in Headers */,
 				4BA85BCC140ECCE800E91D51 /* OFMutableSet_hashtable.h in Headers */,
 				4BA85BCE140ECCE800E91D51 /* OFSet_hashtable.h in Headers */,
+				4B355E6B141BF79500FAAA6F /* OFStreamPollObserver.h in Headers */,
+				4B355E6D141BF79500FAAA6F /* OFStreamSelectObserver.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1371,6 +1385,8 @@
 				4B2B3E86140D430500EC2F7C /* OFSOCKS5Socket.m in Sources */,
 				4B3D23A31337FC0D00DD29B8 /* OFStream.m in Sources */,
 				4B3D23A41337FC0D00DD29B8 /* OFStreamObserver.m in Sources */,
+				4B355E6C141BF79500FAAA6F /* OFStreamPollObserver.m in Sources */,
+				4B355E6E141BF79500FAAA6F /* OFStreamSelectObserver.m in Sources */,
 				4B3D23A51337FC0D00DD29B8 /* OFStreamSocket.m in Sources */,
 				4B3D23A61337FC0D00DD29B8 /* OFString.m in Sources */,
 				4B3D23A71337FC0D00DD29B8 /* OFString+Hashing.m in Sources */,
