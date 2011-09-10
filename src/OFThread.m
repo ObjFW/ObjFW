@@ -261,12 +261,7 @@ call_main(id object)
 {
 	self = [super init];
 
-	@try {
-		object = [object_ retain];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	object = [object_ retain];
 
 	return self;
 }
@@ -283,13 +278,8 @@ call_main(id object)
 {
 	self = [super init];
 
-	@try {
-		block = [block_ retain];
-		object = [object_ retain];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	block = [block_ retain];
+	object = [object_ retain];
 
 	return self;
 }

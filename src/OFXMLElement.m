@@ -280,12 +280,7 @@ void _references_to_categories_of_OFXMLElement(void)
 
 	self = [delegate->element retain];
 
-	@try {
-		[pool release];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	[pool release];
 
 	return self;
 }
@@ -319,12 +314,7 @@ void _references_to_categories_of_OFXMLElement(void)
 
 	self = [delegate->element retain];
 
-	@try {
-		[pool release];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	[pool release];
 
 	return self;
 }
@@ -427,14 +417,7 @@ void _references_to_categories_of_OFXMLElement(void)
 - (void)setChildren: (OFArray*)children_
 {
 	OFMutableArray *new = [children_ mutableCopy];
-
-	@try {
-		[children release];
-	} @catch (id e) {
-		[new release];
-		@throw e;
-	}
-
+	[children release];
 	children = new;
 }
 

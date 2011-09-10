@@ -43,16 +43,11 @@ enum {
 {
 	self = [super init];
 
-	@try {
-		FD_ZERO(&readFDs);
-		FD_ZERO(&writeFDs);
+	FD_ZERO(&readFDs);
+	FD_ZERO(&writeFDs);
 
-		FD_SET(cancelFD[0], &readFDs);
-		nFDs = cancelFD[0] + 1;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	FD_SET(cancelFD[0], &readFDs);
+	nFDs = cancelFD[0] + 1;
 
 	return self;
 }

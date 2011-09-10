@@ -89,7 +89,6 @@ struct of_dictionary_hashtable_bucket
 		count = hashtable->count;
 
 		for (i = 0; i < size; i++) {
-			id key;
 			struct of_dictionary_hashtable_bucket *bucket;
 
 			if (hashtable->data[i] == NULL ||
@@ -97,19 +96,10 @@ struct of_dictionary_hashtable_bucket
 				continue;
 
 			bucket = [self allocMemoryWithSize: sizeof(*bucket)];
-			key = (copyKeys
+			bucket->key = (copyKeys
 			    ? [hashtable->data[i]->key copy]
 			    : [hashtable->data[i]->key retain]);
-
-			@try {
-				[hashtable->data[i]->object retain];
-			} @catch (id e) {
-				[key release];
-				@throw e;
-			}
-
-			bucket->key = key;
-			bucket->object = hashtable->data[i]->object;
+			bucket->object = [hashtable->data[i]->object retain];
 			bucket->hash = hashtable->data[i]->hash;
 
 			data[i] = bucket;
@@ -181,18 +171,11 @@ struct of_dictionary_hashtable_bucket
 				    newWithClass: isa];
 
 			bucket = [self allocMemoryWithSize: sizeof(*bucket)];
-			key = [key copy];
 
-			@try {
-				object = [dictionary objectForKey: key];
-				[object retain];
-			} @catch (id e) {
-				[key release];
-				@throw e;
-			}
+			object = [dictionary objectForKey: key];
 
-			bucket->key = key;
-			bucket->object = object;
+			bucket->key = [key copy];
+			bucket->object = [object retain];
 			bucket->hash = hash;
 
 			data[i] = bucket;
@@ -228,18 +211,10 @@ struct of_dictionary_hashtable_bucket
 			data[i] = NULL;
 
 		i = [key hash] & 1;
+
 		bucket = [self allocMemoryWithSize: sizeof(*bucket)];
-		key = [key copy];
-
-		@try {
-			[object retain];
-		} @catch (id e) {
-			[key release];
-			@throw e;
-		}
-
-		bucket->key = key;
-		bucket->object = object;
+		bucket->key = [key copy];
+		bucket->object = [object retain];
 		bucket->hash = [key hash];
 
 		data[i] = bucket;
@@ -329,15 +304,8 @@ struct of_dictionary_hashtable_bucket
 				    [self allocMemoryWithSize: sizeof(*bucket)];
 				key = [keysCArray[i] copy];
 
-				@try {
-					[objectsCArray[i] retain];
-				} @catch (id e) {
-					[key release];
-					@throw e;
-				}
-
 				bucket->key = key;
-				bucket->object = objectsCArray[i];
+				bucket->object = [objectsCArray[i] retain];
 				bucket->hash = hash;
 
 				data[j] = bucket;
@@ -352,14 +320,7 @@ struct of_dictionary_hashtable_bucket
 			 * key/object pair.
 			 */
 			[objectsCArray[i] retain];
-
-			@try {
-				[data[j]->object release];
-			} @catch (id e) {
-				[objectsCArray[i] release];
-				@throw e;
-			}
-
+			[data[j]->object release];
 			data[j]->object = objectsCArray[i];
 		}
 	} @catch (id e) {
@@ -418,17 +379,8 @@ struct of_dictionary_hashtable_bucket
 		j = hash & (size - 1);
 
 		bucket = [self allocMemoryWithSize: sizeof(*bucket)];
-		key = [key copy];
-
-		@try {
-			[object retain];
-		} @catch (id e) {
-			[key release];
-			@throw e;
-		}
-
-		bucket->key = key;
-		bucket->object = object;
+		bucket->key = [key copy];
+		bucket->object = [object retain];
 		bucket->hash = hash;
 
 		data[j] = bucket;
@@ -483,17 +435,8 @@ struct of_dictionary_hashtable_bucket
 
 				bucket =
 				    [self allocMemoryWithSize: sizeof(*bucket)];
-				key = [key copy];
-
-				@try {
-					[object retain];
-				} @catch (id e) {
-					[key release];
-					@throw e;
-				}
-
-				bucket->key = key;
-				bucket->object = object;
+				bucket->key = [key copy];
+				bucket->object = [object retain];
 				bucket->hash = hash;
 
 				data[j] = bucket;
@@ -508,14 +451,7 @@ struct of_dictionary_hashtable_bucket
 			 * key/object pair.
 			 */
 			[object retain];
-
-			@try {
-				[data[j]->object release];
-			} @catch (id e) {
-				[object release];
-				@throw e;
-			}
-
+			[data[j]->object release];
 			data[j]->object = object;
 			count--;
 		}

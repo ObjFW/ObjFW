@@ -159,24 +159,19 @@ static Class dictionary = Nil;
 
 		bucket = [self allocMemoryWithSize: sizeof(*bucket)];
 
-		@try {
-			key = (copyKey ? [key copy] : [key retain]);
-		} @catch (id e) {
-			[self freeMemory: bucket];
-			@throw e;
-		}
+		if (copyKey) {
+			@try {
+				bucket->key = [key copy];
+			} @catch (id e) {
+				[self freeMemory: bucket];
+				@throw e;
+			}
+		} else
+			bucket->key = [key retain];
 
-		@try {
-			[object retain];
-		} @catch (id e) {
-			[self freeMemory: bucket];
-			[key release];
-			@throw e;
-		}
-
-		bucket->key = key;
-		bucket->object = object;
+		bucket->object = [object retain];
 		bucket->hash = hash;
+
 		data[i] = bucket;
 		count++;
 
