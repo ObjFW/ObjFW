@@ -220,9 +220,9 @@ extern void of_log(OFConstantString*, ...);
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern OFFile *of_stdin;
-extern OFFile *of_stdout;
-extern OFFile *of_stderr;
+extern OFStream *of_stdin;
+extern OFStream *of_stdout;
+extern OFStream *of_stderr;
 #ifdef __cplusplus
 }
 #endif

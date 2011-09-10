@@ -88,9 +88,9 @@
 #define DEFAULT_MODE S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH
 #define DIR_MODE DEFAULT_MODE | S_IXUSR | S_IXGRP | S_IXOTH
 
-OFFile *of_stdin = nil;
-OFFile *of_stdout = nil;
-OFFile *of_stderr = nil;
+OFStream *of_stdin = nil;
+OFStream *of_stdout = nil;
+OFStream *of_stderr = nil;
 
 #if defined(OF_THREADS) && !defined(_WIN32)
 static OFMutex *mutex;
