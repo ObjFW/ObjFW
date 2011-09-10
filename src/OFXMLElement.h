@@ -418,6 +418,13 @@
 - (void)addChild: (OFXMLElement*)child;
 
 /**
+ * Removes the first child that is equal to the specified OFXMLElement.
+ *
+ * \param child The child to remove from the OFXMLElement
+ */
+- (void)removeChild: (OFXMLElement*)child;
+
+/**
  * Returns all children that are elements.
  *
  * \return All children that are elements

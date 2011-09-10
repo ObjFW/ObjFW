@@ -1033,6 +1033,15 @@ void _references_to_categories_of_OFXMLElement(void)
 	[children addObject: child];
 }
 
+- (void)removeChild: (OFXMLElement*)child
+{
+	if (name == nil)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
+	[children removeObject: child];
+}
+
 - (OFXMLElement*)elementForName: (OFString*)elementName
 {
 	return [[self elementsForName: elementName] firstObject];
