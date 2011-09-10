@@ -597,6 +597,17 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (OFString*)stringByPrependingString: (OFString*)string;
 
 /**
+ * Creates a new string by replacing the occurrences of the specified string
+ * with the specified replacement.
+ *
+ * \param string The string to replace
+ * \param replacement The string with which it should be replaced
+ * \return A new string with the occurrences of the specified string replaced
+ */
+- (OFString*)stringByReplacingOccurrencesOfString: (OFString*)string
+				       withString: (OFString*)replacement;
+
+/**
  * \return The string in uppercase
  */
 - (OFString*)uppercaseString;

@@ -1437,6 +1437,19 @@ of_utf16_string_length(const uint16_t *string)
 	return new;
 }
 
+- (OFString*)stringByReplacingOccurrencesOfString: (OFString*)string
+				       withString: (OFString*)replacement
+{
+	OFMutableString *new = [[self mutableCopy] autorelease];
+
+	[new replaceOccurrencesOfString: string
+			     withString: replacement];
+
+	[new makeImmutable];
+
+	return new;
+}
+
 - (OFString*)uppercaseString
 {
 	OFMutableString *new = [[self mutableCopy] autorelease];
