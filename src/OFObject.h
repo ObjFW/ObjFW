@@ -555,24 +555,11 @@ typedef struct of_rectangle_t
 /**
  * \brief Deallocates the object.
  *
- * It is automatically called when the retain count reaches zero, but not when
- * the garbage collector disposes of the object (see finalize).
+ * It is automatically called when the retain count reaches zero.
  *
  * This also frees all memory in its memory pool.
  */
 - (void)dealloc;
-
-/**
- * \brief A method which is called before the garbage collector disposes of the
- *	  object.
- *
- * This is useful for example to close files if they haven't been closed by the
- * user yet.
- *
- * Note: Currently, there is no garbage collector. This method only exists to
- *	 make it easy to add support for a garbage collector later.
- */
-- (void)finalize;
 @end
 
 /**

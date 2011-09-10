@@ -156,14 +156,6 @@ enum {
 	[super dealloc];
 }
 
-- (void)finalize
-{
-	close(cancelFD[0]);
-	close(cancelFD[1]);
-
-	[super finalize];
-}
-
 - (id <OFStreamObserverDelegate>)delegate
 {
 	OF_GETTER(delegate, YES)

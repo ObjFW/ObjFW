@@ -168,12 +168,4 @@
 
 	[super dealloc];
 }
-
-- (void)finalize
-{
-	if (sock != INVALID_SOCKET)
-		[self close];
-
-	[super finalize];
-}
 @end

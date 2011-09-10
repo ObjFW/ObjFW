@@ -84,11 +84,4 @@
 
 	dlclose(h);
 }
-
-- (void)finalize
-{
-	dlclose(handle);
-
-	[super finalize];
-}
 @end

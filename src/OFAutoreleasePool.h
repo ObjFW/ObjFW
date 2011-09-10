@@ -73,10 +73,7 @@
 - (void)release;
 
 /**
- * \brief Tells the garbage collector that now is a good time to clean up.
- *
- * If there is no garbage collector, calling drain is equivalent to calling
- * release.
+ * \brief Releases all objects in the autorelease pool and deallocates the pool.
  */
 - (void)drain;
 @end

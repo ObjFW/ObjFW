@@ -358,22 +358,6 @@ call_main(id object)
 
 	[super dealloc];
 }
-
-- (void)finalize
-{
-	if (running == OF_THREAD_RUNNING)
-		@throw [OFThreadStillRunningException newWithClass: isa
-							    thread: self];
-
-	/*
-	 * We should not be running anymore, but call detach in order to free
-	 * the resources.
-	 */
-	if (running == OF_THREAD_WAITING_FOR_JOIN)
-		of_thread_detach(thread);
-
-	[super finalize];
-}
 @end
 
 @implementation OFTLSKey
@@ -456,24 +440,6 @@ call_main(id object)
 
 	[super dealloc];
 }
-
-- (void)finalize
-{
-	if (destructor != NULL)
-		destructor(self);
-
-	if (initialized)
-		of_tlskey_free(key);
-
-	/* In case we called [self release] in init */
-	if (listObject != NULL) {
-		@synchronized (TLSKeys) {
-			[TLSKeys removeListObject: listObject];
-		}
-	}
-
-	[super finalize];
-}
 @end
 
 @implementation OFMutex
@@ -524,16 +490,6 @@ call_main(id object)
 								   mutex: self];
 
 	[super dealloc];
-}
-
-- (void)finalize
-{
-	if (initialized)
-		if (!of_mutex_free(&mutex))
-			@throw [OFMutexStillLockedException newWithClass: isa
-								   mutex: self];
-
-	[super finalize];
 }
 @end
 
@@ -588,16 +544,5 @@ call_main(id object)
 			       condition: self];
 
 	[super dealloc];
-}
-
-- (void)finalize
-{
-	if (conditionInitialized)
-		if (!of_condition_free(&condition))
-			@throw [OFConditionStillWaitingException
-			    newWithClass: isa
-			       condition: self];
-
-	[super finalize];
 }
 @end
