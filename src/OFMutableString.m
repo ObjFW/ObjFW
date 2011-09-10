@@ -133,7 +133,7 @@
 	s->cStringLength = newCStringLength;
 
 	/*
-	 * Even though cStringLength can change, length can not, therefore no
+	 * Even though cStringLength can change, length cannot, therefore no
 	 * need to change it.
 	 */
 }

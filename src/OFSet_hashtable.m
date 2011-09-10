@@ -19,6 +19,8 @@
 #define OF_SET_HASHTABLE_M
 
 #import "OFSet_hashtable.h"
+#import "OFMutableSet_hashtable.h"
+#import "OFCountedSet_hashtable.h"
 #import "OFMutableDictionary_hashtable.h"
 #import "OFArray.h"
 #import "OFString.h"
@@ -187,9 +189,9 @@
 {
 	OFSet_hashtable *otherSet;
 
-	if (![object isKindOfClass: [OFSet_hashtable class]] /*&&
+	if (![object isKindOfClass: [OFSet_hashtable class]] &&
 	    ![object isKindOfClass: [OFMutableSet_hashtable class]] &&
-	    ![object isKindOfClass: [OFCountedSet_hashtable class]]*/)
+	    ![object isKindOfClass: [OFCountedSet_hashtable class]])
 		return [super isEqual: object];
 
 	otherSet = object;
