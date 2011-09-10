@@ -14,10 +14,6 @@
  * file.
  */
 
-#if !defined(OF_HAVE_POLL) && defined(OF_HAVE_SYS_SELECT_H)
-# include <sys/select.h>
-#endif
-
 #import "OFObject.h"
 
 #ifdef _WIN32
@@ -29,9 +25,6 @@
 #endif
 
 @class OFStream;
-#ifdef OF_HAVE_POLL
-@class OFDataArray;
-#endif
 @class OFMutableArray;
 @class OFMutableDictionary;
 
@@ -80,15 +73,6 @@
 	OFMutableArray *writeStreams;
 	OFMutableArray *queue, *queueInfo;
 	id <OFStreamObserverDelegate> delegate;
-#ifdef OF_HAVE_POLL
-	OFDataArray *FDs;
-	OFMutableDictionary *FDToStream;
-#else
-	fd_set readFDs;
-	fd_set writeFDs;
-	fd_set exceptFDs;
-	int nFDs;
-#endif
 	int cancelFD[2];
 #ifdef _WIN32
 	struct sockaddr_in cancelAddr;
@@ -176,6 +160,10 @@
  * \return A boolean whether events occurred during the timeinterval
  */
 - (BOOL)observeWithTimeout: (int)timeout;
+
+/// \cond internal
+- (BOOL)_processCache;
+/// \endcond
 @end
 
 @interface OFObject (OFStreamObserverDelegate) <OFStreamObserverDelegate>

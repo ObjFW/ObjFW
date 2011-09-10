@@ -79,6 +79,8 @@ SRCS += OFArray_adjacent.m		\
 	OFMutableDictionary_hashtable.m	\
 	OFMutableSet_hashtable.m	\
 	OFSet_hashtable.m		\
+	${OFSTREAMPOLLOBSERVER_M}	\
+	${OFSTREAMSELECTOBSERVER_M}	\
 	${ASPRINTF_M}			\
 	${FOUNDATION_COMPAT_M}		\
 	iso_8859_15.m			\
