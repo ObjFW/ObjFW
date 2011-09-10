@@ -574,7 +574,8 @@
 
 	for (i = 0; i < s->cStringLength; i++)
 		if (s->cString[i] != ' '  && s->cString[i] != '\t' &&
-		    s->cString[i] != '\n' && s->cString[i] != '\r')
+		    s->cString[i] != '\n' && s->cString[i] != '\r' &&
+		    s->cString[i] != '\f')
 			break;
 
 	s->cStringLength -= i;
@@ -599,7 +600,8 @@
 
 	d = 0;
 	for (p = s->cString + s->cStringLength - 1; p >= s->cString; p--) {
-		if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\r')
+		if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\r' &&
+		    *p != '\f')
 			break;
 
 		*p = '\0';
@@ -625,7 +627,8 @@
 
 	d = 0;
 	for (p = s->cString + s->cStringLength - 1; p >= s->cString; p--) {
-		if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\r')
+		if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\r' &&
+		    *p != '\f')
 			break;
 
 		*p = '\0';
@@ -637,7 +640,8 @@
 
 	for (i = 0; i < s->cStringLength; i++)
 		if (s->cString[i] != ' '  && s->cString[i] != '\t' &&
-		    s->cString[i] != '\n' && s->cString[i] != '\r')
+		    s->cString[i] != '\n' && s->cString[i] != '\r' &&
+		    s->cString[i] != '\f')
 			break;
 
 	s->cStringLength -= i;

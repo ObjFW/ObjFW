@@ -1692,7 +1692,7 @@ of_utf16_string_length(const uint16_t *string)
 	BOOL expectWhitespace = NO;
 
 	while (*cString == ' ' || *cString == '\t' || *cString == '\n' ||
-	    *cString == '\r') {
+	    *cString == '\r' || *cString == '\f') {
 		cString++;
 		cStringLength--;
 	}
@@ -1703,7 +1703,8 @@ of_utf16_string_length(const uint16_t *string)
 	for (; i < cStringLength; i++) {
 		if (expectWhitespace) {
 			if (cString[i] != ' ' && cString[i] != '\t' &&
-			    cString[i] != '\n' && cString[i] != '\r')
+			    cString[i] != '\n' && cString[i] != '\r' &&
+			    cString[i] != '\f')
 				@throw [OFInvalidFormatException
 				    newWithClass: isa];
 			continue;
@@ -1717,7 +1718,8 @@ of_utf16_string_length(const uint16_t *string)
 
 			value = (value * 10) + (cString[i] - '0');
 		} else if (cString[i] == ' ' || cString[i] == '\t' ||
-		    cString[i] == '\n' || cString[i] == '\r')
+		    cString[i] == '\n' || cString[i] == '\r' ||
+		    cString[i] == '\f')
 			expectWhitespace = YES;
 		else
 			@throw [OFInvalidFormatException newWithClass: isa];
@@ -1738,7 +1740,7 @@ of_utf16_string_length(const uint16_t *string)
 	BOOL expectWhitespace = NO, foundValue = NO;
 
 	while (*cString == ' ' || *cString == '\t' || *cString == '\n' ||
-	    *cString == '\r') {
+	    *cString == '\r' || *cString == '\f') {
 		cString++;
 		cStringLength--;
 	}
@@ -1756,7 +1758,8 @@ of_utf16_string_length(const uint16_t *string)
 
 		if (expectWhitespace) {
 			if (cString[i] != ' ' && cString[i] != '\t' &&
-			    cString[i] != '\n' && cString[i] != '\r')
+			    cString[i] != '\n' && cString[i] != '\r' &&
+			    cString[i] != '\f')
 				@throw [OFInvalidFormatException
 				    newWithClass: isa];
 			continue;
@@ -1773,7 +1776,7 @@ of_utf16_string_length(const uint16_t *string)
 			foundValue = YES;
 		} else if (cString[i] == 'h' || cString[i] == ' ' ||
 		    cString[i] == '\t' || cString[i] == '\n' ||
-		    cString[i] == '\r') {
+		    cString[i] == '\r' || cString[i] == '\f') {
 			expectWhitespace = YES;
 			continue;
 		} else
@@ -1798,7 +1801,7 @@ of_utf16_string_length(const uint16_t *string)
 	float value;
 
 	while (*cString == ' ' || *cString == '\t' || *cString == '\n' ||
-	    *cString == '\r')
+	    *cString == '\r' || *cString == '\f')
 		cString++;
 
 	value = strtof(cString, &endPointer);
@@ -1807,7 +1810,8 @@ of_utf16_string_length(const uint16_t *string)
 	if (endPointer != NULL)
 		for (; *endPointer != '\0'; endPointer++)
 			if (*endPointer != ' ' && *endPointer != '\t' &&
-			    *endPointer != '\n' && *endPointer != '\r')
+			    *endPointer != '\n' && *endPointer != '\r' &&
+			    *endPointer != '\f')
 				@throw [OFInvalidFormatException
 				    newWithClass: isa];
 
@@ -1821,7 +1825,7 @@ of_utf16_string_length(const uint16_t *string)
 	double value;
 
 	while (*cString == ' ' || *cString == '\t' || *cString == '\n' ||
-	    *cString == '\r')
+	    *cString == '\r' || *cString == '\f')
 		cString++;
 
 	value = strtod(cString, &endPointer);
@@ -1830,7 +1834,8 @@ of_utf16_string_length(const uint16_t *string)
 	if (endPointer != NULL)
 		for (; *endPointer != '\0'; endPointer++)
 			if (*endPointer != ' ' && *endPointer != '\t' &&
-			    *endPointer != '\n' && *endPointer != '\r')
+			    *endPointer != '\n' && *endPointer != '\r' &&
+			    *endPointer != '\f')
 				@throw [OFInvalidFormatException
 				    newWithClass: isa];
 
