@@ -471,7 +471,7 @@ AC_CHECK_HEADER(poll.h, [
 	AC_SUBST(OFSTREAMPOLLOBSERVER_M, "OFStreamPollObserver.m")
 ])
 AC_CHECK_HEADERS(sys/select.h, [
-	AC_DEFINE(HAVE_SYS_SELECT_H, 1, [Whether we have sys/select.h])
+	AC_DEFINE(OF_HAVE_SYS_SELECT_H, 1, [Whether we have sys/select.h])
 	AC_SUBST(OFSTREAMSELECTOBSERVER_M, "OFStreamSelectObserver.m")
 ])
 
