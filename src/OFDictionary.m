@@ -387,21 +387,22 @@ static struct {
 					      selector: _cmd];
 }
 
-#ifdef OF_HAVE_BLOCKS
+#if defined(OF_HAVE_BLOCKS) && defined(OF_HAVE_FAST_ENUMERATION)
 - (void)enumerateKeysAndObjectsUsingBlock:
     (of_dictionary_enumeration_block_t)block
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFEnumerator *enumerator = [self keyEnumerator];
-	id key;
 	BOOL stop = NO;
 
-	while (!stop && (key = [enumerator nextObject]) != nil)
+	for (id key in self) {
 		block(key, [self objectForKey: key], &stop);
 
-	[pool release];
+		if (stop)
+			break;
+	}
 }
+#endif
 
+#ifdef OF_HAVE_BLOCKS
 - (OFDictionary*)mappedDictionaryUsingBlock: (of_dictionary_map_block_t)block
 {
 	OFMutableDictionary *new = [OFMutableDictionary dictionary];

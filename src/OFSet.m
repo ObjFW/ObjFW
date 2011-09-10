@@ -362,20 +362,21 @@ static struct {
 	return element;
 }
 
-#ifdef OF_HAVE_BLOCKS
+#if defined(OF_HAVE_BLOCKS) && defined(OF_HAVE_FAST_ENUMERATION)
 - (void)enumerateObjectsUsingBlock: (of_set_enumeration_block_t)block
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFEnumerator *enumerator = [self objectEnumerator];
-	id object;
 	BOOL stop = NO;
 
-	while (!stop && (object = [enumerator nextObject]) != nil)
+	for (id object in self) {
 		block(object, &stop);
 
-	[pool release];
+		if (stop)
+			break;
+	}
 }
+#endif
 
+#ifdef OF_HAVE_BLOCKS
 - (OFSet*)filteredSetUsingBlock: (of_set_filter_block_t)block
 {
 	OFMutableSet *ret = [OFMutableSet set];

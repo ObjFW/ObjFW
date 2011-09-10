@@ -542,16 +542,22 @@ static struct {
 					    mutationsPtr: NULL] autorelease];
 }
 
-#ifdef OF_HAVE_BLOCKS
+#if defined(OF_HAVE_BLOCKS) && defined(OF_HAVE_FAST_ENUMERATION)
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
-	size_t i, count = [self count];
+	size_t i = 0;
 	BOOL stop = NO;
 
-	for (i = 0; i < count && !stop; i++)
-		block([self objectAtIndex: i], i, &stop);
-}
+	for (id object in self) {
+		block(object, i++, &stop);
 
+		if (stop)
+			break;
+	}
+}
+#endif
+
+#ifdef OF_HAVE_BLOCKS
 - (OFArray*)mappedArrayUsingBlock: (of_array_map_block_t)block
 {
 	OFArray *ret;
