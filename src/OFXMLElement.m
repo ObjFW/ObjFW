@@ -391,9 +391,27 @@ void _references_to_categories_of_OFXMLElement(void)
 	return self;
 }
 
+- (void)setName: (OFString*)name_
+{
+	if (name == nil)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
+	OF_SETTER(name, name_, YES, YES)
+}
+
 - (OFString*)name
 {
 	return [[name copy] autorelease];
+}
+
+- (void)setNamespace: (OFString*)ns_
+{
+	if (name == nil)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
+
+	OF_SETTER(ns, ns_, YES, YES)
 }
 
 - (OFString*)namespace

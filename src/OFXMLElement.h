@@ -41,8 +41,8 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy) OFString *name;
-@property (readonly, copy, getter=namespace) OFString *ns;
+@property (copy) OFString *name;
+@property (copy, getter=namespace, setter=setNamespace) OFString *ns;
 @property (copy) OFString *defaultNamespace;
 @property (readonly, copy) OFArray *attributes;
 @property (readonly, copy) OFArray *children;
@@ -234,9 +234,23 @@
 - initWithFile: (OFString*)path;
 
 /**
+ * Sets the name of the element.
+ *
+ * \param name The new name
+ */
+- (void)setName: (OFString*)name;
+
+/**
  * \return The name of the element
  */
 - (OFString*)name;
+
+/**
+ * Sets the namespace of the element.
+ *
+ * \param ns The new namespace
+ */
+- (void)setNamespace: (OFString*)ns;
 
 /**
  * \return The namespace of the element
