@@ -34,8 +34,8 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 {
 	self = [super init];
 
-	upperTableSize = SIZE_MAX;
-	lowerTableSize = SIZE_MAX;
+	upperTableSize	     = SIZE_MAX;
+	lowerTableSize	     = SIZE_MAX;
 	casefoldingTableSize = SIZE_MAX;
 
 	return self;
@@ -44,8 +44,10 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 - (void)applicationDidFinishLaunching
 {
 	TableGenerator *generator = [[[TableGenerator alloc] init] autorelease];
+
 	[generator readUnicodeDataFileAtPath: @"UnicodeData.txt"];
 	[generator readCaseFoldingFileAtPath: @"CaseFolding.txt"];
+
 	[generator writeTablesToFileAtPath: @"../src/unicode.m"];
 	[generator writeHeaderToFileAtPath: @"../src/unicode.h"];
 }
@@ -59,22 +61,22 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	pool2 = [[OFAutoreleasePool alloc] init];
 	while ((line = [file readLine])) {
-		OFArray *splitted;
-		OFString **splittedCArray;
+		OFArray *split;
+		OFString **splitCArray;
 		of_unichar_t codep;
 
-		splitted = [line componentsSeparatedByString: @";"];
-		if ([splitted count] != 15) {
+		split = [line componentsSeparatedByString: @";"];
+		if ([split count] != 15) {
 			of_log(@"Invalid line: %@\n", line);
 			[OFApplication terminateWithStatus: 1];
 		}
-		splittedCArray = [splitted cArray];
+		splitCArray = [split cArray];
 
-		codep = (of_unichar_t)[splittedCArray[0] hexadecimalValue];
+		codep = (of_unichar_t)[splitCArray[0] hexadecimalValue];
 		upperTable[codep] =
-		    (of_unichar_t)[splittedCArray[12] hexadecimalValue];
+		    (of_unichar_t)[splitCArray[12] hexadecimalValue];
 		lowerTable[codep] =
-		    (of_unichar_t)[splittedCArray[13] hexadecimalValue];
+		    (of_unichar_t)[splitCArray[13] hexadecimalValue];
 
 		[pool2 releaseObjects];
 	}
@@ -91,27 +93,27 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	pool2 = [[OFAutoreleasePool alloc] init];
 	while ((line = [file readLine])) {
-		OFArray *splitted;
-		OFString **splittedCArray;
+		OFArray *split;
+		OFString **splitCArray;
 		of_unichar_t codep;
 
 		if ([line characterAtIndex: 0] == '#')
 			continue;
 
-		splitted = [line componentsSeparatedByString: @"; "];
-		if ([splitted count] != 4) {
+		split = [line componentsSeparatedByString: @"; "];
+		if ([split count] != 4) {
 			of_log(@"Invalid line: %s\n", line);
 			[OFApplication terminateWithStatus: 1];
 		}
-		splittedCArray = [splitted cArray];
+		splitCArray = [split cArray];
 
-		if (![splittedCArray[1] isEqual: @"S"] &&
-		    ![splittedCArray[1] isEqual: @"C"])
+		if (![splitCArray[1] isEqual: @"S"] &&
+		    ![splitCArray[1] isEqual: @"C"])
 			continue;
 
-		codep = (of_unichar_t)[splittedCArray[0] hexadecimalValue];
+		codep = (of_unichar_t)[splitCArray[0] hexadecimalValue];
 		casefoldingTable[codep] =
-		    (of_unichar_t)[splittedCArray[2] hexadecimalValue];
+		    (of_unichar_t)[splitCArray[2] hexadecimalValue];
 
 		[pool2 releaseObjects];
 	}
