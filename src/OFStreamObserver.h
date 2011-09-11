@@ -41,21 +41,21 @@
 @optional
 #endif
 /**
- * This callback is called when a stream did get ready for reading.
+ * \brief This callback is called when a stream did get ready for reading.
  *
  * \param stream The stream which did become ready for reading
  */
 - (void)streamDidBecomeReadyForReading: (OFStream*)stream;
 
 /**
- * This callback is called when a stream did get ready for writing.
+ * \brief This callback is called when a stream did get ready for writing.
  *
  * \param stream The stream which did become ready for writing
  */
 - (void)streamDidBecomeReadyForWriting: (OFStream*)stream;
 
 /**
- * This callback is called when an exception occurred on the stream.
+ * \brief This callback is called when an exception occurred on the stream.
  *
  * \param stream The stream on which an exception occurred
  */
@@ -84,24 +84,28 @@
 #endif
 
 /**
+ * \brief Creates a new OFStreamObserver.
+ *
  * \return A new, autoreleased OFStreamObserver
  */
 + observer;
 
 /**
+ * \brief Returns the delegate for the OFStreamObserver.
+ *
  * \return The delegate for the OFStreamObserver
  */
 - (id <OFStreamObserverDelegate>)delegate;
 
 /**
- * Sets the delegate for the OFStreamObserver.
+ * \brief Sets the delegate for the OFStreamObserver.
  *
  * \param delegate The delegate for the OFStreamObserver
  */
 - (void)setDelegate: (id <OFStreamObserverDelegate>)delegate;
 
 /**
- * Adds a stream to observe for reading.
+ * \brief Adds a stream to observe for reading.
  *
  * This is also used to observe a listening socket for incoming connections,
  * which then triggers a read event for the observed stream.
@@ -116,7 +120,7 @@
 - (void)addStreamToObserveForReading: (OFStream*)stream;
 
 /**
- * Adds a stream to observe for writing.
+ * \brief Adds a stream to observe for writing.
  *
  * It is recommended that the stream you add is set to non-blocking mode.
  *
@@ -128,7 +132,7 @@
 - (void)addStreamToObserveForWriting: (OFStream*)stream;
 
 /**
- * Removes a stream to observe for reading.
+ * \brief Removes a stream to observe for reading.
  *
  * If there is an -[observe] call blocking, it will be canceled. The reason for
  * this is to prevent the removed stream from still being observed.
@@ -138,7 +142,7 @@
 - (void)removeStreamToObserveForReading: (OFStream*)stream;
 
 /**
- * Removes a stream to observe for writing.
+ * \brief Removes a stream to observe for writing.
  *
  * If there is an -[observe] call blocking, it will be canceled. The reason for
  * this is to prevent the removed stream from still being observed.
@@ -148,13 +152,13 @@
 - (void)removeStreamToObserveForWriting: (OFStream*)stream;
 
 /**
- * Observes all streams and blocks until an event happens on a stream.
+ * \brief Observes all streams and blocks until an event happens on a stream.
  */
 - (void)observe;
 
 /**
- * Observes all streams until an event happens on a stream or the timeout is
- * reached.
+ * \brief Observes all streams until an event happens on a stream or the
+ *	  timeout is reached.
  *
  * \param timeout The time to wait for an event, in milliseconds
  * \return A boolean whether events occurred during the timeinterval

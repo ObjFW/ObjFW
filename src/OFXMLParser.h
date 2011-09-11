@@ -36,7 +36,8 @@
 @optional
 #endif
 /**
- * This callback is called when the XML parser found processing instructions.
+ * \brief This callback is called when the XML parser found processing
+ *	  instructions.
  *
  * \param parser The parser which found processing instructions
  * \param pi The processing instructions
@@ -45,7 +46,8 @@
   foundProcessingInstructions: (OFString*)pi;
 
 /**
- * This callback is called when the XML parser found the start of a new tag.
+ * \brief This callback is called when the XML parser found the start of a new
+ *	  tag.
  *
  * \param parser The parser which found a new tag
  * \param name The name of the tag which just started
@@ -61,7 +63,7 @@
        attributes: (OFArray*)attributes;
 
 /**
- * This callback is called when the XML parser found the end of a tag.
+ * \brief This callback is called when the XML parser found the end of a tag.
  *
  * \param parser The parser which found the end of a tag
  * \param name The name of the tag which just ended
@@ -74,7 +76,7 @@
       namespace: (OFString*)ns;
 
 /**
- * This callback is called when the XML parser found characters.
+ * \brief This callback is called when the XML parser found characters.
  *
  * In case there are comments or CDATA, it is possible that this callback is
  * called multiple times in a row.
@@ -86,7 +88,7 @@
   foundCharacters: (OFString*)characters;
 
 /**
- * This callback is called when the XML parser found CDATA.
+ * \brief This callback is called when the XML parser found CDATA.
  *
  * \param parser The parser which found a string
  * \param CDATA The CDATA the XML parser found
@@ -95,7 +97,7 @@
     foundCDATA: (OFString*)CDATA;
 
 /**
- * This callback is called when the XML parser found a comment.
+ * \brief This callback is called when the XML parser found a comment.
  *
  * \param parser The parser which found a comment
  * \param comment The comment the XML parser found
@@ -104,7 +106,9 @@
   foundComment: (OFString*)comment;
 
 /**
- * This callback is called when the XML parser found an entity it doesn't know.
+ * \brief This callback is called when the XML parser found an entity it
+ *	  doesn't know.
+ *
  * The callback is supposed to return a substitution for the entity or nil if
  * it is not known to the callback as well, in which case an exception will be
  * risen.
@@ -170,24 +174,28 @@
 #endif
 
 /**
+ * \brief Creates a new XML parser.
+ *
  * \return A new, autoreleased OFXMLParser
  */
 + parser;
 
 /**
+ * \brief Returns the delegate that is used by the XML parser.
+ *
  * \return The delegate that is used by the XML parser
  */
 - (id <OFXMLParserDelegate>)delegate;
 
 /**
- * Sets the delegate the OFXMLParser should use.
+ * \brief Sets the delegate the OFXMLParser should use.
  *
  * \param delegate The delegate to use
  */
 - (void)setDelegate: (id <OFXMLParserDelegate>)delegate;
 
 /**
- * Parses a buffer with the specified size.
+ * \brief Parses the specified buffer with the specified size.
  *
  * \param buffer The buffer to parse
  * \param length The length of the buffer
@@ -196,32 +204,36 @@
 	 withLength: (size_t)length;
 
 /**
- * Parses the specified string.
+ * \brief Parses the specified string.
  *
  * \param string The string to parse
  */
 - (void)parseString: (OFString*)string;
 
 /**
- * Parses the specified stream.
+ * \brief Parses the specified stream.
  *
  * \param stream The stream to parse
  */
 - (void)parseStream: (OFStream*)stream;
 
 /**
- * Parses the specified file.
+ * \brief Parses the specified file.
  *
  * \param path The path to the file to parse
 */
 - (void)parseFile: (OFString*)path;
 
 /**
+ * \brief Returns the current line number.
+ *
  * \return The current line number
  */
 - (size_t)lineNumber;
 
 /**
+ * \brief Returns whether the XML parser has finished parsing.
+ *
  * \return Whether the XML parser has finished parsing
  */
 - (BOOL)finishedParsing;

@@ -29,7 +29,7 @@ extern int _OFString_XMLEscaping_reference;
  */
 @interface OFString (XMLEscaping)
 /**
- * Escapes a string for use in an XML document.
+ * \brief Escapes a string for use in an XML document.
  *
  * \return A new autoreleased string
  */

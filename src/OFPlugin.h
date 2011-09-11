@@ -34,7 +34,7 @@ typedef HMODULE of_plugin_handle_t;
 }
 
 /**
- * Loads an OFPlugin from a file.
+ * \brief Loads an OFPlugin from a file.
  *
  * \param path Path to the OFPlugin file. The suffix is appended automatically.
  * \return The loaded OFPlugin

@@ -43,11 +43,15 @@ typedef id (^of_thread_block_t)(id object);
 }
 
 /**
- * \return A new autoreleased Thread Local Storage key
+ * \brief Creates a new Thread Local Storage key
+ *
+ * \return A new, autoreleased Thread Local Storage key
  */
 + TLSKey;
 
 /**
+ * \brief Creates a new Thread Local Storage key with the specified destructor.
+ *
  * \param destructor A destructor that is called when the thread is terminated
  * \return A new autoreleased Thread Local Storage key
  */
@@ -56,11 +60,9 @@ typedef id (^of_thread_block_t)(id object);
 + (void)callAllDestructors;
 
 /**
- * \return An initialized Thread Local Storage key
- */
-- init;
-
-/**
+ * \brief Initializes an already allocated Thread Local Storage Key with the
+ *	  specified destructor.
+ *
  * \param destructor A destructor that is called when the thread is terminated
  * \return An initialized Thread Local Storage key
  */
@@ -94,11 +96,15 @@ typedef id (^of_thread_block_t)(id object);
 #endif
 
 /**
+ * \brief Creates a new thread.
+ *
  * \return A new, autoreleased thread
  */
 + thread;
 
 /**
+ * \brief Creates a new thread with the specified object.
+ *
  * \param object An object which is passed for use in the main method or nil
  * \return A new, autoreleased thread
  */
@@ -106,12 +112,16 @@ typedef id (^of_thread_block_t)(id object);
 
 #ifdef OF_HAVE_BLOCKS
 /**
+ * \brief Creates a new thread with the specified block.
+ *
  * \param block A block which is executed by the thread
  * \return A new, autoreleased thread
  */
 + threadWithBlock: (of_thread_block_t)block;
 
 /**
+ * \brief Creates a new thread with the specified block and object.
+ *
  * \param block A block which is executed by the thread
  * \param object An object which is passed for use in the main method or nil
  * \return A new, autoreleased thread
@@ -121,7 +131,7 @@ typedef id (^of_thread_block_t)(id object);
 #endif
 
 /**
- * Sets the Thread Local Storage for the specified key.
+ * \brief Sets the Thread Local Storage for the specified key.
  *
  * The specified object is first retained and then the object stored before is
  * released. You can specify nil as object if you want the old object to be
@@ -134,7 +144,7 @@ typedef id (^of_thread_block_t)(id object);
 	forTLSKey: (OFTLSKey*)key;
 
 /**
- * Returns the object for the specified Thread Local Storage key.
+ * \brief Returns the object for the specified Thread Local Storage key.
  *
  * The returned object is <i>not</i> retained and autoreleased for performance
  * reasons!
@@ -144,19 +154,23 @@ typedef id (^of_thread_block_t)(id object);
 + (id)objectForTLSKey: (OFTLSKey*)key;
 
 /**
+ * \brief Returns the current thread.
+ *
  * \return The current thread or nil if we are in the main thread
  */
 + (OFThread*)currentThread;
 
 /**
- * Suspends execution of the current thread for the specified time interval.
+ * \brief Suspends execution of the current thread for the specified time
+ *	  interval.
  *
  * \param seconds The number of seconds to sleep
  */
 + (void)sleepForTimeInterval: (int64_t)seconds;
 
 /**
- * Suspends execution of the current thread for the specified time interval.
+ * \brief Suspends execution of the current thread for the specified time
+ *	  interval.
  *
  * \param seconds The number of seconds to sleep
  * \param microseconds The number of microseconds to sleep
@@ -165,29 +179,33 @@ typedef id (^of_thread_block_t)(id object);
 		microseconds: (uint32_t)microseconds;
 
 /**
- * Suspends execution of the current thread until the specified date.
+ * \brief Suspends execution of the current thread until the specified date.
+ *
+ * \param date The date to wait for
  */
 + (void)sleepUntilDate: (OFDate*)date;
 
 /**
- * Yields a processor voluntarily and moves the thread at the end of the queue
- * for its priority.
+ * \brief Yields a processor voluntarily and moves the thread at the end of the
+ *	  queue for its priority.
  */
 + (void)yield;
 
 /**
- * Terminates the current thread, letting it return nil.
+ * \brief Terminates the current thread, letting it return nil.
  */
 + (void)terminate;
 
 /**
- * Terminates the current thread, letting it return the specified object.
+ * \brief Terminates the current thread, letting it return the specified object.
  *
  * \param object The object which the terminated thread will return
  */
 + (void)terminateWithObject: (id)object;
 
 /**
+ * \brief Initializes an already allocated thread with the specified object.
+ *
  * \param object An object which is passed for use in the main method or nil
  * \return An initialized OFThread.
  */
@@ -195,12 +213,17 @@ typedef id (^of_thread_block_t)(id object);
 
 #ifdef OF_HAVE_BLOCKS
 /**
+ * \brief Initializes an already allocated thread with the specified block.
+ *
  * \param block A block which is executed by the thread
  * \return An initialized OFThread.
  */
 - initWithBlock: (of_thread_block_t)block;
 
 /**
+ * \brief Initializes an already allocated thread with the specified block and
+ *	  object.
+ *
  * \param block A block which is executed by the thread
  * \param object An object which is passed for use in the main method or nil
  * \return An initialized OFThread.
@@ -210,7 +233,7 @@ typedef id (^of_thread_block_t)(id object);
 #endif
 
 /**
- * The main routine of the thread. You need to reimplement this!
+ * \brief The main routine of the thread. You need to reimplement this!
  *
  * It can access the object passed to the threadWithObject or initWithObject
  * method using the instance variable named object.
@@ -220,18 +243,18 @@ typedef id (^of_thread_block_t)(id object);
 - (id)main;
 
 /**
- * This routine is exectued when the thread's main method has finished executing
- * or terminate has been called.
+ * \brief This routine is exectued when the thread's main method has finished
+ *	  executing or terminate has been called.
  */
 - (void)handleTermination;
 
 /**
- * Starts the thread.
+ * \brief Starts the thread.
  */
 - (void)start;
 
 /**
- * Joins a thread.
+ * \brief Joins a thread.
  *
  * \return The object returned by the main method of the thread.
  */
@@ -248,25 +271,26 @@ typedef id (^of_thread_block_t)(id object);
 }
 
 /**
+ * \brief Creates a new mutex.
+ *
  * \return A new autoreleased mutex.
  */
 + mutex;
 
 /**
- * Locks the mutex.
+ * \brief Locks the mutex.
  */
 - (void)lock;
 
 /**
- * Tries to lock the mutex and returns a boolean whether the mutex could be
- * acquired.
+ * \brief Tries to lock the mutex.
  *
  * \return A boolean whether the mutex could be acquired
  */
 - (BOOL)tryLock;
 
 /**
- * Unlocks the mutex.
+ * \brief Unlocks the mutex.
  */
 - (void)unlock;
 @end
@@ -281,23 +305,25 @@ typedef id (^of_thread_block_t)(id object);
 }
 
 /**
+ * \brief Creates a new condition.
+ *
  * \return A new, autoreleased OFCondition
  */
 + condition;
 
 /**
- * Blocks the current thread until another thread calls -[signal] or
- * -[broadcast].
+ * \brief Blocks the current thread until another thread calls -[signal] or
+ *	  -[broadcast].
  */
 - (void)wait;
 
 /**
- * Signals the next waiting thread to continue.
+ * \brief Signals the next waiting thread to continue.
  */
 - (void)signal;
 
 /**
- * Signals all threads to continue.
+ * \brief Signals all threads to continue.
  */
 - (void)broadcast;
 @end

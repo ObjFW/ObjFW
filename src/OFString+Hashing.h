@@ -25,16 +25,20 @@ extern int _OFString_Hashing_reference;
 #endif
 
 /**
- * The OFString (Hashing) category provides methods to calculate hashes for
- * strings.
+ * \brief The OFString (Hashing) category provides methods to calculate hashes
+ *	  for strings.
  */
 @interface OFString (Hashing)
 /**
+ * \brief Returns the MD5 hash of the string as an autoreleased OFString.
+ *
  * \return The MD5 hash of the string as an autoreleased OFString
  */
 - (OFString*)MD5Hash;
 
 /**
+ * \brief Returns the SHA1 hash of the string as an autoreleased OFString.
+ *
  * \return The SHA1 hash of the string as an autoreleased OFString
  */
 - (OFString*)SHA1Hash;

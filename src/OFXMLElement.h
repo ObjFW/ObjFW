@@ -49,12 +49,16 @@
 #endif
 
 /**
+ * \brief Creates a new XML element with the specified name.
+ *
  * \param name The name for the element
  * \return A new autoreleased OFXMLElement with the specified element name
  */
 + elementWithName: (OFString*)name;
 
 /**
+ * \brief Creates a new XML element with the specified name and string value.
+ *
  * \param name The name for the element
  * \param stringValue The value for the element
  * \return A new autoreleased OFXMLElement with the specified element name and
@@ -64,6 +68,8 @@
       stringValue: (OFString*)stringValue;
 
 /**
+ * \brief Creates a new XML element with the specified name and namespace.
+ *
  * \param name The name for the element
  * \param ns The namespace for the element
  * \return A new autoreleased OFXMLElement with the specified element name and
@@ -73,6 +79,9 @@
 	namespace: (OFString*)ns;
 
 /**
+ * \brief Creates a new XML element with the specified name, namespace and
+ * 	  string value.
+ *
  * \param name The name for the element
  * \param ns The namespace for the element
  * \param stringValue The value for the element
@@ -84,7 +93,7 @@
       stringValue: (OFString*)stringValue;
 
 /**
- * Creates a new element, only consisting of the specified characters.
+ * \brief Creates a new element with the specified characters.
  *
  * \param characters The characters the element represents
  * \return A new autoreleased OFXMLElement consisting of the specified
@@ -93,7 +102,7 @@
 + elementWithCharacters: (OFString*)characters;
 
 /**
- * Creates a new element, only consisting of the specified CDATA.
+ * \brief Creates a new element with the specified CDATA.
  *
  * \param CDATA The CDATA the element represents
  * \return A new autoreleased OFXMLElement consisting of the specified CDATA
@@ -101,7 +110,7 @@
 + elementWithCDATA: (OFString*)CDATA;
 
 /**
- * Creates a new element, only consisting of the specified comment.
+ * \brief Creates a new element with the specified comment.
  *
  * \param comment The comment the element represents
  * \return A new autoreleased OFXMLElement consisting of the specified comment
@@ -109,6 +118,8 @@
 + elementWithComment: (OFString*)comment;
 
 /**
+ * \brief Creates a new element with the specified element.
+ *
  * \param element An OFXMLElement to initialize the OFXMLElement with
  * \return A new autoreleased OFXMLElement with the contents of the specified
  *	   element
@@ -116,7 +127,7 @@
 + elementWithElement: (OFXMLElement*)element;
 
 /**
- * Parses the string and returns an OFXMLElement for it.
+ * \brief Parses the string and returns an OFXMLElement for it.
  *
  * \param string The string to parse
  * \return A new autoreleased OFXMLElement with the contents of the string
@@ -124,7 +135,7 @@
 + elementWithXMLString: (OFString*)string;
 
 /**
- * Parses the specified file and returns an OFXMLElement for it.
+ * \brief Parses the specified file and returns an OFXMLElement for it.
  *
  * \param path The path to the file
  * \return A new autoreleased OFXMLElement with the contents of the specified
@@ -133,8 +144,7 @@
 + elementWithFile: (OFString*)path;
 
 /**
- * Initializes an already allocated OFXMLElement with the specified element
- * name.
+ * \brief Initializes an already allocated OFXMLElement with the specified name.
  *
  * \param name The name for the element
  * \return An initialized OFXMLElement with the specified element name
@@ -142,8 +152,8 @@
 - initWithName: (OFString*)name;
 
 /**
- * Initializes an already allocated OFXMLElement with the specified element
- * name and value.
+ * \brief Initializes an already allocated OFXMLElement with the specified name
+ *	  and string value.
  *
  * \param name The name for the element
  * \param stringValue The value for the element
@@ -154,8 +164,8 @@
    stringValue: (OFString*)stringValue;
 
 /**
- * Initializes an already allocated OFXMLElement with the specified element
- * name and namespace.
+ * \brief Initializes an already allocated OFXMLElement with the specified name
+ *	  and namespace.
  *
  * \param name The name for the element
  * \param ns The namespace for the element
@@ -166,8 +176,8 @@
      namespace: (OFString*)ns;
 
 /**
- * Initializes an already allocated OFXMLElement with the specified element
- * name, namespace and value.
+ * \brief Initializes an already allocated OFXMLElement with the specified name,
+ *	  namespace and value.
  *
  * \param name The name for the element
  * \param ns The namespace for the element
@@ -180,8 +190,8 @@
    stringValue: (OFString*)stringValue;
 
 /**
- * Initializes an already allocated OFXMLElement so that it only consists of the
- * specified characters.
+ * \brief Initializes an already allocated OFXMLElement with the specified
+ *	  characters.
  *
  * \param characters The characters the element represents
  * \return An initialized OFXMLElement consisting of the specified characters
@@ -189,8 +199,8 @@
 - initWithCharacters: (OFString*)characters;
 
 /**
- * Initializes an already allocated OFXMLElement so that it only consists of the
- * specified CDATA.
+ * \brief Initializes an already allocated OFXMLElement with the specified
+ *	  CDATA.
  *
  * \param CDATA The CDATA the element represents
  * \return An initialized OFXMLElement consisting of the specified CDATA
@@ -198,8 +208,8 @@
 - initWithCDATA: (OFString*)CDATA;
 
 /**
- * Initializes an already allocated OFXMLElement so that it only consists of the
- * specified comment.
+ * \brief Initializes an already allocated OFXMLElement with the specified
+ *	  comment.
  *
  * \param comment The comment the element represents
  * \return An initialized OFXMLElement consisting of the specified comment
@@ -207,8 +217,8 @@
 - initWithComment: (OFString*)comment;
 
 /**
- * Initializes an already allocated OFXMLElement with the specified
- * OFXMLElement.
+ * \brief Initializes an already allocated OFXMLElement with the specified
+ *	  element.
  *
  * \param element An OFXMLElement to initialize the OFXMLElement with
  * \return A new autoreleased OFXMLElement with the contents of the specified
@@ -217,7 +227,8 @@
 - initWithElement: (OFXMLElement*)element;
 
 /**
- * Parses the string and initializes an already allocated OFXMLElement with it.
+ * \brief Parses the string and initializes an already allocated OFXMLElement
+ *	  with it.
  *
  * \param string The string to parse
  * \return An initialized OFXMLElement with the contents of the string
@@ -225,8 +236,8 @@
 - initWithXMLString: (OFString*)string;
 
 /**
- * Parses the specified file and initializes an already allocated OFXMLElement
- * with it.
+ * \brief Parses the specified file and initializes an already allocated
+ *	  OFXMLElement with it.
  *
  * \param path The path to the file
  * \return An initialized OFXMLElement with the contents of the specified file
@@ -234,93 +245,118 @@
 - initWithFile: (OFString*)path;
 
 /**
- * Sets the name of the element.
+ * \brief Sets the name of the element.
  *
  * \param name The new name
  */
 - (void)setName: (OFString*)name;
 
 /**
+ * \brief Returns the name of the element.
+ *
  * \return The name of the element
  */
 - (OFString*)name;
 
 /**
- * Sets the namespace of the element.
+ * \brief Sets the namespace of the element.
  *
  * \param ns The new namespace
  */
 - (void)setNamespace: (OFString*)ns;
 
 /**
+ * \brief Returns the namespace of the element.
+ *
  * \return The namespace of the element
  */
 - (OFString*)namespace;
 
 /**
+ * \brief Returns an OFArray with the attributes of the element.
+ *
  * \return An OFArray with the attributes of the element
  */
 - (OFArray*)attributes;
 
 /**
- * Removes all children and adds the children from the specified array.
+ * \brief Removes all children and adds the children from the specified array.
  *
  * \param children The new children to add
  */
 - (void)setChildren: (OFArray*)children;
 
 /**
+ * \brief Returns an array with all children of the element.
+ *
  * \return An array with all children of the element
  */
 - (OFArray*)children;
 
 /**
- * Removes all children and sets the string value to the specified string.
+ * \brief Removes all children and sets the string value to the specified
+ *	  string.
  *
  * \param stringValue The new string value for the element
  */
 - (void)setStringValue: (OFString*)stringValue;
 
 /**
+ * \brief Returns a string with the string value of all children concatenated.
+ *
  * \return A string with the string value of all children concatenated
  */
 - (OFString*)stringValue;
 
 /**
+ * \brief Returns an integer with the decimal value of all children
+ *	  concatenated.
+ *
  * \return An integer with the decimal value of all children concatenated
  */
 - (intmax_t)decimalValue;
 
 /**
+ * \brief Returns an integer with the hexadecimal value of all children
+ *	  concatenated.
+ *
  * \return An integer with the hexadecimal value of all children concatenated
  */
 - (uintmax_t)hexadecimalValue;
 
 /**
+ * \brief Returns a float with the float value of all children concatenated.
+ *
  * \return A float with the float value of all children concatenated
  */
 - (float)floatValue;
 
 /**
+ * \brief Returns a double with the double value of all children concatenated.
+ *
  * \return A double with the double value of all children concatenated
  */
 - (double)doubleValue;
 
 /**
- * \return A new autoreleased OFString representing the OFXMLElement as an
- *	   XML string
+ * \brief Returns an OFString representing the OFXMLElement as an XML string.
+ *
+ * \return An OFString representing the OFXMLElement as an XML string
  */
 - (OFString*)XMLString;
 
 /**
+ * \brief Returns an OFString representing the OFXMLElement as an XML string
+ *	  with indentation.
+ *
  * \param indentation The indentation for the XML string
- * \return A new autoreleased OFString representing the OFXMLElement as an
- *	   XML string with indentation.
+ * \return An OFString representing the OFXMLElement as an XML string with
+ *	   indentation
  */
 - (OFString*)XMLStringWithIndentation: (unsigned int)indentation;
 
 /**
- * Adds the specified attribute.
+ * \brief Adds the specified attribute.
  *
  * If an attribute with the same name and namespace already exists, it is not
  * added.
@@ -330,7 +366,7 @@
 - (void)addAttribute: (OFXMLAttribute*)attribute;
 
 /**
- * Adds the specified attribute with the specified value.
+ * \brief Adds the specified attribute with the specified string value.
  *
  * If an attribute with the same name and namespace already exists, it is not
  * added.
@@ -342,7 +378,8 @@
 		 stringValue: (OFString*)stringValue;
 
 /**
- * Adds the specified attribute with the specified namespace and value.
+ * \brief Adds the specified attribute with the specified namespace and string
+ *	  value.
  *
  * If an attribute with the same name and namespace already exists, it is not
  * added.
@@ -356,12 +393,16 @@
 		 stringValue: (OFString*)stringValue;
 
 /**
+ * \brief Returns the attribute with the specified name.
+ *
  * \param attributeName The name of the attribute
  * \return The attribute with the specified name
  */
 - (OFXMLAttribute*)attributeForName: (OFString*)attributeName;
 
 /**
+ * \brief Returns the attribute with the specified name and namespace.
+ *
  * \param attributeName The name of the attribute
  * \param attributeNS The namespace of the attribute
  * \return The attribute with the specified name and namespace
@@ -370,14 +411,14 @@
 			  namespace: (OFString*)attributeNS;
 
 /**
- * Removes the attribute with the specified name.
+ * \brief Removes the attribute with the specified name.
  *
  * \param attribteName The name of the attribute
  */
 - (void)removeAttributeForName: (OFString*)attributeName;
 
 /**
- * Removes the attribute with the specified name and namespace.
+ * \brief Removes the attribute with the specified name and namespace.
  *
  * \param attributeName The name of the attribute
  * \param attributeNS The namespace of the attribute
@@ -386,7 +427,7 @@
 		     namespace: (OFString*)attributeNS;
 
 /**
- * Sets a prefix for a namespace.
+ * \brief Sets a prefix for a namespace.
  *
  * \param prefix The prefix for the namespace
  * \param ns The namespace for which the prefix is set
@@ -395,7 +436,7 @@
      forNamespace: (OFString*)ns;
 
 /**
- * Binds a prefix for a namespace.
+ * \brief Binds a prefix for a namespace.
  *
  * \param prefix The prefix for the namespace
  * \param ns The namespace for which the prefix is bound
@@ -404,53 +445,60 @@
       forNamespace: (OFString*)ns;
 
 /**
- * Sets the default namespace for the element to be used if there is no parent.
+ * \brief Sets the default namespace for the element to be used if there is no
+ *	  parent.
  *
  * \param ns The default namespace for the element
  */
 - (void)setDefaultNamespace: (OFString*)ns;
 
 /**
- * Adds a child to the OFXMLElement.
+ * \brief Adds a child to the OFXMLElement.
  *
  * \param child Another OFXMLElement which is added as a child
  */
 - (void)addChild: (OFXMLElement*)child;
 
 /**
- * Removes the first child that is equal to the specified OFXMLElement.
+ * \brief Removes the first child that is equal to the specified OFXMLElement.
  *
  * \param child The child to remove from the OFXMLElement
  */
 - (void)removeChild: (OFXMLElement*)child;
 
 /**
- * Returns all children that are elements.
+ * \brief Returns all children that are elements.
  *
  * \return All children that are elements
  */
 - (OFArray*)elements;
 
 /**
- * Returns all children that have the specified namespace.
+ * \brief Returns all children that have the specified namespace.
  *
  * \return All children that have the specified namespace
  */
 - (OFArray*)elementsForNamespace: (OFString*)elementNS;
 
 /**
+ * \brief Returns the first child element with the specified name.
+ *
  * \param elementName The name of the element
  * \return The first child element with the specified name
  */
 - (OFXMLElement*)elementForName: (OFString*)elementName;
 
 /**
+ * \brief Returns the child elements with the specified name.
+ *
  * \param elementName The name of the elements
  * \return The child elements with the specified name
  */
 - (OFArray*)elementsForName: (OFString*)elementName;
 
 /**
+ * \brief Returns the first child element with the specified name and namespace.
+ *
  * \param elementName The name of the element
  * \param elementNS The namespace of the element
  * \return The first child element with the specified name and namespace
@@ -459,6 +507,8 @@
 		      namespace: (OFString*)elementNS;
 
 /**
+ * \brief Returns the child elements with the specified name and namespace.
+ *
  * \param elementName The name of the elements
  * \param elementNS The namespace of the elements
  * \return The child elements with the specified name and namespace

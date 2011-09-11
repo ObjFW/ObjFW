@@ -29,14 +29,14 @@ extern int _OFString_URLEncoding_reference;
  */
 @interface OFString (URLEncoding)
 /**
- * Encodes a string for use in a URL.
+ * \brief Encodes a string for use in a URL.
  *
  * \return A new autoreleased string
  */
 - (OFString*)stringByURLEncoding;
 
 /**
- * Decodes a string used in a URL.
+ * \brief Decodes a string used in a URL.
  *
  * \return A new autoreleased string
  */

@@ -27,8 +27,7 @@
 }
 
 /**
- * \brief Creates a new, autoreleased OFSOCKS5Socket which uses the specified
- *	  SOCKS5 proxy.
+ * \brief Creates a new OFSOCKS5Socket which uses the specified SOCKS5 proxy.
  *
  * \param proxyHost The host of the SOCKS5 proxy
  * \param proxyPort The port of the SOCKS5 proxy

@@ -37,6 +37,8 @@
 #endif
 
 /**
+ * \brief Creates a new XML attribute.
+ *
  * \param name The name of the attribute
  * \param ns The namespace of the attribute
  * \param value The string value of the attribute
@@ -47,7 +49,7 @@
 	stringValue: (OFString*)value;
 
 /**
- * Initializes an already allocated OFXMLAttribute.
+ * \brief Initializes an already allocated OFXMLAttribute.
  *
  * \param name The name of the attribute
  * \param ns The namespace of the attribute
@@ -59,36 +61,50 @@
    stringValue: (OFString*)value;
 
 /**
+ * \brief Returns the name of the attribute as an autoreleased OFString.
+ *
  * \return The name of the attribute as an autoreleased OFString
  */
 - (OFString*)name;
 
 /**
+ * \brief Returns the namespace of the attribute as an autoreleased OFString.
+ *
  * \return The namespace of the attribute as an autoreleased OFString
  */
 - (OFString*)namespace;
 
 /**
+ * \brief Returns the string value of the attribute as an autoreleased OFString.
+ *
  * \return The string value of the attribute as an autoreleased OFString
  */
 - (OFString*)stringValue;
 
 /**
+ * \brief Returns an integer with the decimal value of the attribute.
+ *
  * \return An integer with the decimal value of the attribute
  */
 - (intmax_t)decimalValue;
 
 /**
+ * \brief Returns an integer with the hexadecimal value of the attribute.
+ *
  * \return An integer with the hexadecimal value of the attribute
  */
 - (uintmax_t)hexadecimalValue;
 
 /**
+ * \brief Returns a float with the float value of the attribute.
+ *
  * \return A float with the float value of the attribute
  */
 - (float)floatValue;
 
 /**
+ * \brief Returns a double with the double value of the attribute.
+ *
  * \return A double with the double value of the attribute
  */
 - (double)doubleValue;

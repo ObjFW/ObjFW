@@ -30,14 +30,14 @@
  */
 @interface OFSeekableStream: OFStream
 /**
- * Seeks to the specified absolute offset.
+ * \brief Seeks to the specified absolute offset.
  *
  * \param offset The offset in bytes
  */
 - (void)seekToOffset: (off_t)offset;
 
 /**
- * Seeks to the specified offset, relative to the current location.
+ * \brief Seeks to the specified offset, relative to the current location.
  *
  * \param offset The offset relative to the current location
  * \return The absolute offset
@@ -45,7 +45,7 @@
 - (off_t)seekForwardWithOffset: (off_t)offset;
 
 /**
- * Seeks to the specified offset, relative to the end of the stream.
+ * \brief Seeks to the specified offset, relative to the end of the stream.
  *
  * \param offset The offset relative to the end of the stream
  * \return The absolute offset

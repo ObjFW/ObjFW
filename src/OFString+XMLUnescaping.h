@@ -35,10 +35,12 @@ typedef OFString* (^of_string_xml_unescaping_block_t)(OFString *str,
  */
 @protocol OFStringXMLUnescapingDelegate <OFObject>
 /**
- * This callback is called when an unknown entity was found while trying to
- * unescape XML. The callback is supposed to return a substitution for the
- * entity or nil if it is unknown to the callback as well, in which case an
- * exception will be thrown.
+ * \brief This callback is called when an unknown entity was found while trying
+ *	  to unescape XML.
+ *
+ * The callback is supposed to return a substitution for the entity or nil if
+ * it is unknown to the callback as well, in which case an exception will be
+ * thrown.
  *
  * \param str The string which contains the unknown entity
  * \param entity The name of the entity that is unknown
@@ -53,13 +55,13 @@ typedef OFString* (^of_string_xml_unescaping_block_t)(OFString *str,
  */
 @interface OFString (XMLUnescaping)
 /**
- * Unescapes XML in the string.
+ * \brief Unescapes XML in the string.
  */
 - (OFString*)stringByXMLUnescaping;
 
 /**
- * Unescapes XML in the string and uses the specified delegate for unknown
- * entities.
+ * \brief Unescapes XML in the string and uses the specified delegate for
+ *	  unknown entities.
  *
  * \param delegate An OFXMLUnescapingDelegate as a handler for unknown entities
  */
@@ -68,8 +70,8 @@ typedef OFString* (^of_string_xml_unescaping_block_t)(OFString *str,
 
 #ifdef OF_HAVE_BLOCKS
 /**
- * Unescapes XML in the string and uses the specified block for unknown
- * entities.
+ * \brief Unescapes XML in the string and uses the specified block for unknown
+ *	  entities.
  *
  * \param block A block which handles unknown entities
  */

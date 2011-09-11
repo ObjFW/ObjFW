@@ -259,7 +259,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block;
 
 /**
- * \brief Returns a new array, mapping each object using the specified block.
+ * \brief Creates a new array, mapping each object using the specified block.
  *
  * \param block A block which maps an object for each object
  * \return A new, autoreleased OFArray
@@ -267,7 +267,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 - (OFArray*)mappedArrayUsingBlock: (of_array_map_block_t)block;
 
 /**
- * \brief Returns a new array, only containing the objects for which the block
+ * \brief Creates a new array, only containing the objects for which the block
  *	  returns YES.
  *
  * \param block A block which determines if the object should be in the new

@@ -193,7 +193,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
     (of_dictionary_enumeration_block_t)block;
 
 /**
- * \brief Returns a new dictionary, mapping each object using the specified
+ * \brief Creates a new dictionary, mapping each object using the specified
  *	  block.
  *
  * \param block A block which maps an object for each object
@@ -202,7 +202,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
 - (OFDictionary*)mappedDictionaryUsingBlock: (of_dictionary_map_block_t)block;
 
 /**
- * \brief Returns a new dictionary, only containing the objects for which the
+ * \brief Creates a new dictionary, only containing the objects for which the
  *	  block returns YES.
  *
  * \param block A block which determines if the object should be in the new

@@ -96,12 +96,14 @@ extern size_t of_utf16_string_length(const uint16_t*);
 #endif
 
 /**
- * \return A new autoreleased OFString
+ * \brief Creates a new OFString.
+ *
+ * \return A new, autoreleased OFString
  */
 + string;
 
 /**
- * Creates a new OFString from a UTF-8 encoded C string.
+ * \brief Creates a new OFString from a UTF-8 encoded C string.
  *
  * \param cString A UTF-8 encoded C string to initialize the OFString with
  * \return A new autoreleased OFString
@@ -109,7 +111,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 + stringWithCString: (const char*)cString;
 
 /**
- * Creates a new OFString from a C string with the specified encoding.
+ * \brief Creates a new OFString from a C string with the specified encoding.
  *
  * \param string A C string to initialize the OFString with
  * \param encoding The encoding of the C string
@@ -119,8 +121,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 	   encoding: (of_string_encoding_t)encoding;
 
 /**
- * Creates a new OFString from a C string with the specified encoding and
- * length.
+ * \brief Creates a new OFString from a C string with the specified encoding
+ *	  and length.
  *
  * \param cString A C string to initialize the OFString with
  * \param encoding The encoding of the C string
@@ -132,8 +134,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 	     length: (size_t)cStringLength;
 
 /**
- * Creates a new OFString from a UTF-8 encoded C string with the specified
- * length.
+ * \brief Creates a new OFString from a UTF-8 encoded C string with the
+ *	  specified length.
  *
  * \param cString A UTF-8 encoded C string to initialize the OFString with
  * \param cStringLength The length of the UTF-8 encoded C string
@@ -143,7 +145,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 	     length: (size_t)cStringLength;
 
 /**
- * Creates a new OFString from another string.
+ * \brief Creates a new OFString from another string.
  *
  * \param string A string to initialize the OFString with
  * \return A new autoreleased OFString
@@ -151,7 +153,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 + stringWithString: (OFString*)string;
 
 /**
- * Creates a new OFString from a unicode string.
+ * \brief Creates a new OFString from a unicode string.
  *
  * \param string The unicode string
  * \return A new autoreleased OFString
@@ -159,8 +161,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 + stringWithUnicodeString: (of_unichar_t*)string;
 
 /**
- * Creates a new OFString from a unicode string, assuming the specified byte
- * order if no BOM is found.
+ * \brief Creates a new OFString from a unicode string, assuming the specified
+ *	  byte order if no BOM is found.
  *
  * \param string The unicode string
  * \param byteOrder The byte order to assume if there is no BOM
@@ -170,7 +172,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 		byteOrder: (of_endianess_t)byteOrder;
 
 /**
- * Creates a new OFString from a unicode string with the specified length.
+ * \brief Creates a new OFString from a unicode string with the specified
+ *	  length.
  *
  * \param string The unicode string
  * \param length The length of the unicode string
@@ -180,8 +183,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 		   length: (size_t)length;
 
 /**
- * Creates a new OFString from a unicode string with the specified length,
- * assuming the specified byte order if no BOM is found.
+ * \brief Creates a new OFString from a unicode string with the specified
+ *	  length, assuming the specified byte order if no BOM is found.
  *
  * \param string The unicode string
  * \param byteOrder The byte order to assume if there is no BOM
@@ -193,7 +196,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 		   length: (size_t)length;
 
 /**
- * Creates a new OFString from a UTF-16 encoded string.
+ * \brief Creates a new OFString from a UTF-16 encoded string.
  *
  * \param string The UTF-16 string
  * \return A new autoreleased OFString
@@ -201,8 +204,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 + stringWithUTF16String: (uint16_t*)string;
 
 /**
- * Creates a new OFString from a UTF-16 encoded string, assuming the specified
- * byte order if no BOM is found.
+ * \brief Creates a new OFString from a UTF-16 encoded string, assuming the
+ *	  specified byte order if no BOM is found.
  *
  * \param string The UTF-16 string
  * \param byteOrder The byte order to assume if there is no BOM
@@ -212,8 +215,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 	      byteOrder: (of_endianess_t)byteOrder;
 
 /**
- * Creates a new OFString from a UTF-16 encoded string with the specified
- * length.
+ * \brief Creates a new OFString from a UTF-16 encoded string with the specified
+ *	  length.
  *
  * \param string The UTF-16 string
  * \param length The length of the unicode string
@@ -223,8 +226,9 @@ extern size_t of_utf16_string_length(const uint16_t*);
 		 length: (size_t)length;
 
 /**
- * Creates a new OFString from a UTF-16 encoded string with the specified
- * length, assuming the specified byte order if no BOM is found.
+ * \brief Creates a new OFString from a UTF-16 encoded string with the
+ *	  specified length, assuming the specified byte order if no BOM is
+ *	  found.
  *
  * \param string The UTF-16 string
  * \param byteOrder The byte order to assume if there is no BOM
@@ -236,7 +240,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 		 length: (size_t)length;
 
 /**
- * Creates a new OFString from a format string.
+ * \brief Creates a new OFString from a format string.
  *
  * See printf for the format syntax. As an addition, %@ is available as format
  * specifier for objects.
@@ -247,7 +251,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 + stringWithFormat: (OFConstantString*)format, ...;
 
 /**
- * Creates a new OFString containing the constructed specified path.
+ * \brief Creates a new OFString containing the constructed specified path.
  *
  * \param firstComponent The first component of the path
  * \return A new autoreleased OFString
@@ -255,7 +259,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 + stringWithPath: (OFString*)firstComponent, ...;
 
 /**
- * Creates a new OFString with the contents of the specified UTF-8 encoded file.
+ * \brief Creates a new OFString with the contents of the specified UTF-8
+ *	  encoded file.
  *
  * \param path The path to the file
  * \return A new autoreleased OFString
@@ -263,8 +268,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 + stringWithContentsOfFile: (OFString*)path;
 
 /**
- * Creates a new OFString with the contents of the specified file in the
- * specified encoding.
+ * \brief Creates a new OFString with the contents of the specified file in the
+ *	  specified encoding.
  *
  * \param path The path to the file
  * \param encoding The encoding of the file
@@ -274,7 +279,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 		  encoding: (of_string_encoding_t)encoding;
 
 /**
- * Creates a new OFString with the contents of the specified URL.
+ * \brief Creates a new OFString with the contents of the specified URL.
  *
  * If the URL's scheme is file, it tries UTF-8 encoding.
  *
@@ -288,8 +293,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 + stringWithContentsOfURL: (OFURL*)URL;
 
 /**
- * Creates a new OFString with the contents of the specified URL in the
- * specified encoding.
+ * \brief Creates a new OFString with the contents of the specified URL in the
+ *	  specified encoding.
  *
  * \param URL The URL to the contents for the string
  * \param encoding The encoding to assume
@@ -299,7 +304,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 		 encoding: (of_string_encoding_t)encoding;
 
 /**
- * Initializes an already allocated OFString from a UTF-8 encoded C string.
+ * \brief Initializes an already allocated OFString from a UTF-8 encoded C
+ *	  string.
  *
  * \param cString A UTF-8 encoded C string to initialize the OFString with
  * \return An initialized OFString
@@ -307,8 +313,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - initWithCString: (const char*)cString;
 
 /**
- * Initializes an already allocated OFString from a C string with the specified
- * encoding.
+ * \brief Initializes an already allocated OFString from a C string with the
+ *	  specified encoding.
  *
  * \param cString A C string to initialize the OFString with
  * \param encoding The encoding of the C string
@@ -318,8 +324,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 	 encoding: (of_string_encoding_t)encoding;
 
 /**
- * Initializes an already allocated OFString from a C string with the specified
- * encoding and length.
+ * \brief Initializes an already allocated OFString from a C string with the
+ *	  specified encoding and length.
  *
  * \param cString A C string to initialize the OFString with
  * \param encoding The encoding of the C string
@@ -331,8 +337,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 	   length: (size_t)cStringLength;
 
 /**
- * Initializes an already allocated OFString from a UTF-8 encoded C string with
- * the specified length.
+ * \brief Initializes an already allocated OFString from a UTF-8 encoded C
+ *	  string with the specified length.
  *
  * \param cString A UTF-8 encoded C string to initialize the OFString with
  * \param cStringLength The length of the UTF-8 encoded C string
@@ -342,7 +348,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 	   length: (size_t)cStringLength;
 
 /**
- * Initializes an already allocated OFString with another string.
+ * \brief Initializes an already allocated OFString with another string.
  *
  * \param string A string to initialize the OFString with
  * \return An initialized OFString
@@ -350,7 +356,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - initWithString: (OFString*)string;
 
 /**
- * Initializes an already allocated OFString with a unicode string.
+ * \brief Initializes an already allocated OFString with a unicode string.
  *
  * \param string The unicode string
  * \return An initialized OFString
@@ -358,8 +364,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - initWithUnicodeString: (of_unichar_t*)string;
 
 /**
- * Initializes an already allocated OFString with a unicode string, assuming the
- * specified byte order if no BOM is found.
+ * \brief Initializes an already allocated OFString with a unicode string,
+ *	  assuming the specified byte order if no BOM is found.
  *
  * \param string The unicode string
  * \param byteOrder The byte order to assume if there is no BOM
@@ -369,8 +375,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 	      byteOrder: (of_endianess_t)byteOrder;
 
 /**
- * Initializes an already allocated OFString with a unicode string with the
- * specified length.
+ * \brief Initializes an already allocated OFString with a unicode string with
+ *	  the specified length.
  *
  * \param string The unicode string
  * \param length The length of the unicode string
@@ -380,8 +386,9 @@ extern size_t of_utf16_string_length(const uint16_t*);
 		 length: (size_t)length;
 
 /**
- * Initializes an already allocated OFString with a unicode string with the
- * specified length, assuming the specified byte order if no BOM is found.
+ * \brief Initializes an already allocated OFString with a unicode string with
+ *	  the specified length, assuming the specified byte order if no BOM is
+ *	  found.
  *
  * \param string The unicode string
  * \param byteOrder The byte order to assume if there is no BOM
@@ -393,7 +400,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 		 length: (size_t)length;
 
 /**
- * Initializes an already allocated OFString with a UTF-16 string.
+ * \brief Initializes an already allocated OFString with a UTF-16 string.
  *
  * \param string The UTF-16 string
  * \return An initialized OFString
@@ -401,8 +408,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - initWithUTF16String: (uint16_t*)string;
 
 /**
- * Initializes an already allocated OFString with a UTF-16 string, assuming the
- * specified byte order if no BOM is found.
+ * \brief Initializes an already allocated OFString with a UTF-16 string,
+ *	  assuming the specified byte order if no BOM is found.
  *
  * \param string The UTF-16 string
  * \param byteOrder The byte order to assume if there is no BOM
@@ -412,8 +419,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 	    byteOrder: (of_endianess_t)byteOrder;
 
 /**
- * Initializes an already allocated OFString with a UTF-16 string with the
- * specified length.
+ * \brief Initializes an already allocated OFString with a UTF-16 string with
+ *	  the specified length.
  *
  * \param string The UTF-16 string
  * \param length The length of the UTF-16 string
@@ -423,8 +430,9 @@ extern size_t of_utf16_string_length(const uint16_t*);
 	       length: (size_t)length;
 
 /**
- * Initializes an already allocated OFString with a UTF-16 string with the
- * specified length, assuming the specified byte order if no BOM is found.
+ * \brief Initializes an already allocated OFString with a UTF-16 string with
+ *	  the specified length, assuming the specified byte order if no BOM is
+ *	  found.
  *
  * \param string The UTF-16 string
  * \param byteOrder The byte order to assume if there is no BOM
@@ -436,7 +444,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 	       length: (size_t)length;
 
 /**
- * Initializes an already allocated OFString with a format string.
+ * \brief Initializes an already allocated OFString with a format string.
  *
  * See printf for the format syntax. As an addition, %@ is available as format
  * specifier for objects.
@@ -447,7 +455,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - initWithFormat: (OFConstantString*)format, ...;
 
 /**
- * Initializes an already allocated OFString with a format string.
+ * \brief Initializes an already allocated OFString with a format string.
  *
  * See printf for the format syntax. As an addition, %@ is available as format
  * specifier for objects.
@@ -460,8 +468,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
        arguments: (va_list)arguments;
 
 /**
- * Initializes an already allocated OFString with the constructed specified
- * path.
+ * \brief Initializes an already allocated OFString with the constructed
+ *	  specified path.
  *
  * \param firstComponent The first component of the path
  * \return A new autoreleased OFString
@@ -469,8 +477,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - initWithPath: (OFString*)firstComponent, ...;
 
 /**
- * Initializes an already allocated OFString with the constructed specified
- * path.
+ * \brief Initializes an already allocated OFString with the constructed
+ *	  specified path.
  *
  * \param firstComponent The first component of the path
  * \param arguments A va_list with the other components of the path
@@ -480,8 +488,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
      arguments: (va_list)arguments;
 
 /**
- * Initializes an already allocated OFString with the contents of the specified
- * file in the specified encoding.
+ * \brief Initializes an already allocated OFString with the contents of the
+ *	  specified file in the specified encoding.
  *
  * \param path The path to the file
  * \return An initialized OFString
@@ -489,8 +497,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - initWithContentsOfFile: (OFString*)path;
 
 /**
- * Initializes an already allocated OFString with the contents of the specified
- * file in the specified encoding.
+ * \brief Initializes an already allocated OFString with the contents of the
+ *	  specified file in the specified encoding.
  *
  * \param path The path to the file
  * \param encoding The encoding of the file
@@ -500,8 +508,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 		encoding: (of_string_encoding_t)encoding;
 
 /**
- * Initializes an already allocated OFString with the contents of the specified
- * URL.
+ * \brief Initializes an already allocated OFString with the contents of the
+ *	  specified URL.
  *
  * If the URL's scheme is file, it tries UTF-8 encoding.
  *
@@ -515,8 +523,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - initWithContentsOfURL: (OFURL*)URL;
 
 /**
- * Initializes an already allocated OFString with the contents of the specified
- * URL in the specified encoding.
+ * \brief Initializes an already allocated OFString with the contents of the
+ *	  specified URL in the specified encoding.
  *
  * \param URL The URL to the contents for the string
  * \param encoding The encoding to assume
@@ -526,22 +534,29 @@ extern size_t of_utf16_string_length(const uint16_t*);
 	       encoding: (of_string_encoding_t)encoding;
 
 /**
+ * \brief Returns the OFString as a UTF-8 encoded C string.
+ *
  * \return The OFString as a UTF-8 encoded C string
  */
 - (const char*)cString;
 
 /**
+ * \brief Returns the length of the string in Unicode characters.
+ *
  * \return The length of the string in Unicode characters
  */
 - (size_t)length;
 
 /**
+ * \brief Returns the length of the string which cString would return.
+ *
  * \return The length of the string which cString would return
  */
 - (size_t)cStringLength;
 
 /**
- * Compares the OFString to another OFString without caring about the case.
+ * \brief Compares the OFString to another OFString without caring about the
+ *	  case.
  *
  * \param otherString A string to compare with
  * \return An of_comparison_result_t
@@ -549,12 +564,16 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (of_comparison_result_t)caseInsensitiveCompare: (OFString*)otherString;
 
 /**
+ * \brief Returns the Unicode character at the specified index.
+ *
  * \param index The index of the Unicode character to return
  * \return The Unicode character at the specified index
  */
 - (of_unichar_t)characterAtIndex: (size_t)index;
 
 /**
+ * \brief Returns the index of the first occurrence of the string.
+ *
  * \param string The string to search
  * \return The index of the first occurrence of the string or OF_INVALID_INDEX
  *	   if it was not found
@@ -562,6 +581,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (size_t)indexOfFirstOccurrenceOfString: (OFString*)string;
 
 /**
+ * \brief Returns the index of the last occurrence of the string.
+ *
  * \param string The string to search
  * \return The index of the last occurrence of the string or OF_INVALID_INDEX if
  *	   it was not found
@@ -569,19 +590,23 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (size_t)indexOfLastOccurrenceOfString: (OFString*)string;
 
 /**
+ * \brief Returns whether the string contains the specified string.
+ *
  * \param string The string to search
  * \return Whether the string contains the specified string
  */
 - (BOOL)containsString: (OFString*)string;
 
 /**
+ * \brief Creates a substring with the specified range.
+ *
  * \param range The range of the substring
  * \return The substring as a new autoreleased OFString
  */
 - (OFString*)substringWithRange: (of_range_t)range;
 
 /**
- * Creates a new string by appending another string.
+ * \brief Creates a new string by appending another string.
  *
  * \param string The string to append
  * \return A new autoreleased OFString with the specified string appended
@@ -589,7 +614,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (OFString*)stringByAppendingString: (OFString*)string;
 
 /**
- * Creates a new string by prepending another string.
+ * \brief Creates a new string by prepending another string.
  *
  * \param string The string to prepend
  * \return A new autoreleased OFString with the specified string prepended
@@ -597,8 +622,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (OFString*)stringByPrependingString: (OFString*)string;
 
 /**
- * Creates a new string by replacing the occurrences of the specified string
- * with the specified replacement.
+ * \brief Creates a new string by replacing the occurrences of the specified
+ *	  string with the specified replacement.
  *
  * \param string The string to replace
  * \param replacement The string with which it should be replaced
@@ -608,31 +633,35 @@ extern size_t of_utf16_string_length(const uint16_t*);
 				       withString: (OFString*)replacement;
 
 /**
+ * \brief Returns the string in uppercase.
+ *
  * \return The string in uppercase
  */
 - (OFString*)uppercaseString;
 
 /**
+ * \brief Returns the string in lowercase.
+ *
  * \return The string in lowercase
  */
 - (OFString*)lowercaseString;
 
 /**
- * Creates a new string by deleting leading whitespaces.
+ * \brief Creates a new string by deleting leading whitespaces.
  *
  * \return A new autoreleased OFString with leading whitespaces deleted
  */
 - (OFString*)stringByDeletingLeadingWhitespaces;
 
 /**
- * Creates a new string by deleting trailing whitespaces.
+ * \brief Creates a new string by deleting trailing whitespaces.
  *
  * \return A new autoreleased OFString with trailing whitespaces deleted
  */
 - (OFString*)stringByDeletingTrailingWhitespaces;
 
 /**
- * Creates a new string by deleting leading and trailing whitespaces.
+ * \brief Creates a new string by deleting leading and trailing whitespaces.
  *
  * \return A new autoreleased OFString with leading and trailing whitespaces
  *	   deleted
@@ -640,7 +669,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (OFString*)stringByDeletingEnclosingWhitespaces;
 
 /**
- * Checks whether the string has the specified prefix.
+ * \brief Checks whether the string has the specified prefix.
  *
  * \param prefix The prefix to check for
  * \return A boolean whether the string has the specified prefix
@@ -648,7 +677,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (BOOL)hasPrefix: (OFString*)prefix;
 
 /**
- * Checks whether the string has the specified suffix.
+ * \brief Checks whether the string has the specified suffix.
  *
  * \param suffix The suffix to check for
  * \return A boolean whether the string has the specified suffix
@@ -656,7 +685,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (BOOL)hasSuffix: (OFString*)suffix;
 
 /**
- * Splits an OFString into an OFArray of OFStrings.
+ * \brief Splits an OFString into an OFArray of OFStrings.
  *
  * \param delimiter The delimiter for splitting
  * \return An autoreleased OFArray with the split string
@@ -664,24 +693,33 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter;
 
 /**
+ * \brief Returns the components of the path.
+ *
  * \return The components of the path
  */
 - (OFArray*)pathComponents;
 
 /**
+ * \brief Returns the last component of the path.
+ *
  * \return The last component of the path
  */
 - (OFString*)lastPathComponent;
 
 /**
+ * \brief Returns the directory name of the path.
+ *
  * \return The directory name of the path
  */
 - (OFString*)stringByDeletingLastPathComponent;
 
 /**
- * Returns the decimal value of the string as an intmax_t or throws an
- * OFInvalidEncodingException if the string contains any non-number characters.
+ * \brief Returns the decimal value of the string as an intmax_t.
+ *
  * Leading and trailing whitespaces are ignored.
+ *
+ * If the string contains any non-number characters, an
+ * OFInvalidEncodingException is thrown.
  *
  * If the number is too big to fit into an intmax_t, an OFOutOfRangeException
  * is thrown.
@@ -691,9 +729,12 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (intmax_t)decimalValue;
 
 /**
- * Returns the hexadecimal value of the string as an uintmax_t or throws an
- * OFInvalidEncodingException if the string contains any non-number characters.
+ * \brief Returns the hexadecimal value of the string as an uintmax_t.
+ *
  * Leading and trailing whitespaces are ignored.
+ *
+ * If the string contains any non-number characters, an
+ * OFInvalidEncodingException is thrown.
  *
  * If the number is too big to fit into an uintmax_t, an OFOutOfRangeException
  * is thrown.
@@ -703,23 +744,27 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (uintmax_t)hexadecimalValue;
 
 /**
- * Returns the float value of the string as a float or throws an
- * OFInvalidEncodingException if the string contains any non-number characters.
+ * \brief Returns the float value of the string as a float.
+ *
+ * If the string contains any non-number characters, an
+ * OFInvalidEncodingException is thrown.
  *
  * \return A float with the value of the string
  */
 - (float)floatValue;
 
 /**
- * Returns the double value of the string as a float or throws an
- * OFInvalidEncodingException if the string contains any non-number characters.
+ * \brief Returns the double value of the string as a double.
+ *
+ * If the string contains any non-number characters, an
+ * OFInvalidEncodingException is thrown.
  *
  * \return A double with the value of the string
  */
 - (double)doubleValue;
 
 /**
- * Returns the string as an array of of_unichar_t.
+ * \brief Returns the string as an array of of_unichar_ts.
  *
  * The result is valid until the autorelease pool is released. If you want to
  * use the result outside the scope of the current autorelease pool, you have to
@@ -730,7 +775,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (of_unichar_t*)unicodeString;
 
 /**
- * Writes the string into the specified file using UTF-8 encoding.
+ * \brief Writes the string into the specified file using UTF-8 encoding.
  *
  * \param path The path of the file to write to
  */

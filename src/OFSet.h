@@ -33,14 +33,14 @@ typedef BOOL (^of_set_filter_block_t)(id object);
 @interface OFSet: OFObject <OFCollection, OFCopying, OFMutableCopying,
     OFSerialization>
 /**
- * \brief Returns a new, autoreleased set.
+ * \brief Creates a new set.
  *
  * \return A new, autoreleased set
  */
 + set;
 
 /**
- * \brief Returns a new, autoreleased set with the specified set.
+ * \brief Creates a new set with the specified set.
  *
  * \param set The set to initialize the set with
  * \return A new, autoreleased set with the specified set
@@ -48,7 +48,7 @@ typedef BOOL (^of_set_filter_block_t)(id object);
 + setWithSet: (OFSet*)set;
 
 /**
- * \brief Returns a new, autoreleased set with the specified array.
+ * \brief Creates a new set with the specified array.
  *
  * \param array The array to initialize the set with
  * \return A new, autoreleased set with the specified array
@@ -56,7 +56,7 @@ typedef BOOL (^of_set_filter_block_t)(id object);
 + setWithArray: (OFArray*)array;
 
 /**
- * \brief Returns a new, autoreleased set with the specified objects.
+ * \brief Creates a new set with the specified objects.
  *
  * \param firstObject The first object for the set
  * \return A new, autoreleased set with the specified objects
@@ -123,7 +123,7 @@ typedef BOOL (^of_set_filter_block_t)(id object);
 - (void)enumerateObjectsUsingBlock: (of_set_enumeration_block_t)block;
 
 /**
- * \brief Returns a new set, only containing the objects for which the block
+ * \brief Creates a new set, only containing the objects for which the block
  *	  returns YES.
  *
  * \param block A block which determines if the object should be in the new set

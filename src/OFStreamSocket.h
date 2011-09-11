@@ -33,7 +33,9 @@
 }
 
 /**
- * \return A new autoreleased OFTCPSocket
+ * \brief Returns a new, autoreleased OFTCPSocket.
+ *
+ * \return A new, autoreleased OFTCPSocket
  */
 + socket;
 @end

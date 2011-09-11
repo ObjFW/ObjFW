@@ -48,12 +48,16 @@
 #endif
 
 /**
+ * Creates a new URL with the specified string.
+ *
  * \param string A string describing a URL
  * \return A new, autoreleased OFURL
  */
 + URLWithString: (OFString*)string;
 
 /**
+ * Creates a new URL with the specified string relative to the specified URL.
+ *
  * \param string A string describing a URL
  * \param URL An URL to which the string is relative
  * \return A new, autoreleased OFURL
@@ -62,7 +66,7 @@
   relativeToURL: (OFURL*)URL;
 
 /**
- * Initializes an already allocated OFURL.
+ * \brief Initializes an already allocated OFURL with the specified string.
  *
  * \param string A string describing a URL
  * \return An initialized OFURL
@@ -70,7 +74,8 @@
 - initWithString: (OFString*)string;
 
 /**
- * Initializes an already allocated OFURL.
+ * \brief Initializes an already allocated OFURL with the specified string and
+ *	  relative URL.
  *
  * \param string A string describing a URL
  * \param URL A URL to which the string is relative
@@ -80,108 +85,126 @@
    relativeToURL: (OFURL*)url;
 
 /**
+ * \brief Returns the scheme part of the URL.
+ *
  * \return The scheme part of the URL
  */
 - (OFString*)scheme;
 
 /**
- * Set the scheme part of the URL.
+ * \brief Set the scheme part of the URL.
  *
  * \param scheme The scheme part of the URL to set
  */
 - (void)setScheme: (OFString*)scheme;
 
 /**
+ * \brief Returns the host part of the URL.
+ *
  * \return The host part of the URL
  */
 - (OFString*)host;
 
 /**
- * Set the host part of the URL.
+ * \brief Set the host part of the URL.
  *
  * \param host The host part of the URL to set
  */
 - (void)setHost: (OFString*)host;
 
 /**
+ * \brief Returns the port part of the URL.
+ *
  * \return The port part of the URL
  */
 - (uint16_t)port;
 
 /**
- * Set the port part of the URL.
+ * \brief Set the port part of the URL.
  *
  * \param port The port part of the URL to set
  */
 - (void)setPort: (uint16_t)port;
 
 /**
+ * \brief Returns the user part of the URL.
+ *
  * \return The user part of the URL
  */
 - (OFString*)user;
 
 /**
- * Set the user part of the URL.
+ * \brief Set the user part of the URL.
  *
  * \param user The user part of the URL to set
  */
 - (void)setUser: (OFString*)user;
 
 /**
+ * \brief Returns the password part of the URL.
+ *
  * \return The password part of the URL
  */
 - (OFString*)password;
 
 /**
- * Set the password part of the URL.
+ * \brief Set the password part of the URL.
  *
  * \param password The password part of the URL to set
  */
 - (void)setPassword: (OFString*)password;
 
 /**
+ * \brief Returns the path part of the URL.
+ *
  * \return The path part of the URL
  */
 - (OFString*)path;
 
 /**
- * Set the path part of the URL.
+ * \brief Set the path part of the URL.
  *
  * \param path The path part of the URL to set
  */
 - (void)setPath: (OFString*)path;
 
 /**
+ * \brief Returns the parameters part of the URL.
+ *
  * \return The parameters part of the URL
  */
 - (OFString*)parameters;
 
 /**
- * Set the parameters part of the URL.
+ * \brief Set the parameters part of the URL.
  *
  * \param parameters The parameters part of the URL to set
  */
 - (void)setParameters: (OFString*)parameters;
 
 /**
+ * \brief Returns the query part of the URL.
+ *
  * \return The query part of the URL
  */
 - (OFString*)query;
 
 /**
- * Set the query part of the URL.
+ * \brief Set the query part of the URL.
  *
  * \param query The query part of the URL to set
  */
 - (void)setQuery: (OFString*)query;
 
 /**
+ * \brief Returns the fragment part of the URL.
+ *
  * \return The fragment part of the URL
  */
 - (OFString*)fragment;
 
 /**
- * Set the fragment part of the URL.
+ * \brief Set the fragment part of the URL.
  *
  * \param fragment The fragment part of the URL to set
  */

@@ -31,7 +31,7 @@
 @protocol OFXMLElementBuilderDelegate
 #endif
 /**
- * This callback is called when the OFXMLElementBuilder built an element.
+ * \brief This callback is called when the OFXMLElementBuilder built an element.
  *
  * If the OFXMLElementBuilder was used as a delegate for the OFXMLParser since
  * parsing started, this will return the complete document as an OFXMLElement
@@ -47,8 +47,8 @@
 @optional
 #endif
 /**
- * This callback is called when the OFXMLElementBuilder gets a close tag which
- * does not belong there.
+ * \brief This callback is called when the OFXMLElementBuilder gets a close tag
+ *	  which does not belong there.
  *
  * Most likely, the OFXMLElementBuilder was used to build XML only of a child
  * of the root element and the root element was closed. Often the delegate is
@@ -70,8 +70,8 @@
 	     namespace: (OFString*)ns;
 
 /**
- * This callback is called when the XML parser for the element builder found an
- * unknown entity.
+ * \brief This callback is called when the XML parser for the element builder
+ *	  found an unknown entity.
  *
  * \param entity The name of the entity
  * \return The substitution for the entity
@@ -99,17 +99,21 @@
 #endif
 
 /**
+ * \brief Creates a new element builder.
+ *
  * \return A new, autoreleased OFXMLElementBuilder
  */
 + elementBuilder;
 
 /**
+ * \brief Returns the delegate for the OFXMLElementBuilder.
+ *
  * \return The delegate for the OFXMLElementBuilder
  */
 - (id <OFXMLElementBuilderDelegate>)delegate;
 
 /**
- * Sets the delegate for the OFXMLElementBuilder.
+ * \brief Sets the delegate for the OFXMLElementBuilder.
  *
  * \param delegate The delegate for the OFXMLElementBuilder
  */

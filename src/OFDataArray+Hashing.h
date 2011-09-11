@@ -27,8 +27,7 @@ extern int _OFDataArray_Hashing_reference;
 #endif
 
 /**
- * The OFDataArray (Hashing) category provides methods to calculate hashes for
- * data arrays.
+ * \brief A category which provides methods to calculate hashes for data arrays.
  */
 @interface OFDataArray (Hashing)
 /**

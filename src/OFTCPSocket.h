@@ -42,7 +42,7 @@
 }
 
 /**
- * Connect the OFTCPSocket to the specified destination.
+ * \brief Connect the OFTCPSocket to the specified destination.
  *
  * \param host The host to connect to
  * \param port The port on the host to connect to
@@ -51,7 +51,7 @@
 		 port: (uint16_t)port;
 
 /**
- * Bind the socket on the specified port and host.
+ * \brief Bind the socket on the specified port and host.
  *
  * \param port The port to bind to. If the port is 0, an unused port will be
  *	       chosen, which can be obtained using the return value.
@@ -63,36 +63,43 @@
 		onHost: (OFString*)host;
 
 /**
- * Listen on the socket.
+ * \brief Listen on the socket.
  *
  * \param backlog Maximum length for the queue of pending connections.
  */
 - (void)listenWithBackLog: (int)backLog;
 
 /**
- * Listen on the socket.
+ * \brief Listen on the socket.
  */
 - (void)listen;
 
 /**
- * Accept an incoming connection.
+ * \brief Accept an incoming connection.
+ *
  * \return An autoreleased OFTCPSocket for the accepted connection.
  */
 - (OFTCPSocket*)accept;
 
 /**
- * Enable or disable keep alives for the connection.
+ * \brief Enable or disable keep alives for the connection.
+ *
+ * \param enable Whether to enable or disable keep alives for the connection
  */
 - (void)setKeepAlivesEnabled: (BOOL)enable;
 
 /**
- * Returns the remote address of the socket. Only works with accepted sockets!
+ * \brief Returns the remote address of the socket.
+ *
+ * Only works with accepted sockets!
  *
  * \return The remote address as a string
  */
 - (OFString*)remoteAddress;
 
 /**
+ * \brief Returns whether the socket is a listening socket.
+ *
  * \return Whether the socket is a listening socket
  */
 - (BOOL)isListening;

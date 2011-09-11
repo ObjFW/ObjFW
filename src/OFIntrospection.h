@@ -73,7 +73,7 @@
 #endif
 
 /**
- * \brief Creates a new, autoreleased introspection for the specified class.
+ * \brief Creates a new introspection for the specified class.
  *
  * \return A new, autoreleased introspection for the specified class
  */
@@ -101,5 +101,5 @@
  */
 - (OFArray*)instanceMethods;
 
-/* TODO: Ivars, properties */
+/* TODO: ivars, properties */
 @end

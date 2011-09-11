@@ -304,7 +304,7 @@
 - (uint32_t)microsecondsOfTimeIntervalSinceDate: (OFDate*)otherDate;
 
 /**
- * \brief Returns a new date with the specified time interval added.
+ * \brief Creates a new date with the specified time interval added.
  *
  * \param seconds The seconds after the date
  * \return A new, autoreleased OFDate
@@ -312,7 +312,7 @@
 - (OFDate*)dateByAddingTimeInterval: (int64_t)seconds;
 
 /**
- * \brief Returns a new date with the specified time interval added.
+ * \brief Creates a new date with the specified time interval added.
  *
  * \param seconds The seconds after the date
  * \param microseconds The microseconds after the date
