@@ -79,20 +79,30 @@
 
 - (size_t)indexOfObject: (id)object
 {
-	size_t index = [array indexOfObject: object] + range.start;
+	size_t index = [array indexOfObject: object];
 
-	if (index > range.length)
-		index = OF_INVALID_INDEX;
+	if (index < range.start)
+		return OF_INVALID_INDEX;
+
+	index -= range.start;
+
+	if (index >= range.length)
+		return OF_INVALID_INDEX;
 
 	return index;
 }
 
 - (size_t)indexOfObjectIdenticalTo: (id)object
 {
-	size_t index = [array indexOfObjectIdenticalTo: object] + range.start;
+	size_t index = [array indexOfObjectIdenticalTo: object];
 
-	if (index > range.length)
-		index = OF_INVALID_INDEX;
+	if (index < range.start)
+		return OF_INVALID_INDEX;
+
+	index -= range.start;
+
+	if (index >= range.length)
+		return OF_INVALID_INDEX;
 
 	return index;
 }
