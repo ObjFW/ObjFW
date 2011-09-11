@@ -24,19 +24,6 @@
 @class OFDataArray;
 @class OFStream;
 
-#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
-typedef void (^of_xml_parser_processing_instructions_block_t)(
-    OFXMLParser *parser, OFString *pi);
-typedef void (^of_xml_parser_element_start_block_t)(OFXMLParser *parser,
-    OFString *name, OFString *prefix, OFString *ns, OFArray *attributes);
-typedef void (^of_xml_parser_element_end_block_t)(OFXMLParser *parser,
-    OFString *name, OFString *prefix, OFString *ns);
-typedef void (^of_xml_parser_string_block_t)(OFXMLParser *parser,
-    OFString *string);
-typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
-    OFString *entity);
-#endif
-
 /**
  * \brief A protocol that needs to be implemented by delegates for OFXMLParser.
  */
@@ -170,16 +157,6 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
 	OFString *attributePrefix;
 	char delimiter;
 	OFMutableArray *previous;
-#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
-	of_xml_parser_processing_instructions_block_t
-	    processingInstructionsHandler;
-	of_xml_parser_element_start_block_t elementStartHandler;
-	of_xml_parser_element_end_block_t elementEndHandler;
-	of_xml_parser_string_block_t charactersHandler;
-	of_xml_parser_string_block_t CDATAHandler;
-	of_xml_parser_string_block_t commentHandler;
-	of_xml_parser_unknown_entity_block_t unknownEntityHandler;
-#endif
 	size_t level;
 	BOOL acceptProlog;
 	size_t lineNumber;
@@ -190,16 +167,6 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
 
 #ifdef OF_HAVE_PROPERTIES
 @property (retain) id <OFXMLParserDelegate> delegate;
-# ifdef OF_HAVE_BLOCKS
-@property (retain) of_xml_parser_processing_instructions_block_t
-    processingInstructionsHandler;
-@property (retain) of_xml_parser_element_start_block_t elementStartHandler;
-@property (retain) of_xml_parser_element_end_block_t elementEndHandler;
-@property (retain) of_xml_parser_string_block_t charactersHandler;
-@property (retain) of_xml_parser_string_block_t CDATAHandler;
-@property (retain) of_xml_parser_string_block_t commentHandler;
-@property (retain) of_xml_parser_unknown_entity_block_t unknownEntityHandler;
-# endif
 #endif
 
 /**
@@ -218,93 +185,6 @@ typedef OFString* (^of_xml_parser_unknown_entity_block_t)(OFXMLParser *parser,
  * \param delegate The delegate to use
  */
 - (void)setDelegate: (id <OFXMLParserDelegate>)delegate;
-
-#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
-/**
- * \return The processing instructions handler
- */
-- (of_xml_parser_processing_instructions_block_t)processingInstructionsHandler;
-
-/**
- * Sets the processing instructions handler.
- *
- * \param block A processing instructions handler
- */
-- (void)setProcessingInstructionsHandler:
-    (of_xml_parser_processing_instructions_block_t)block;
-
-/**
- * \return The element start handler
- */
-- (of_xml_parser_element_start_block_t)elementStartHandler;
-
-/**
- * Sets the element start handler.
- *
- * \param block An element start handler
- */
-- (void)setElementStartHandler: (of_xml_parser_element_start_block_t)block;
-
-/**
- * \return The element end handler
- */
-- (of_xml_parser_element_end_block_t)elementEndHandler;
-
-/**
- * Sets the element end handler.
- *
- * \param block An element end handler
- */
-- (void)setElementEndHandler: (of_xml_parser_element_end_block_t)block;
-
-/**
- * \return The characters handler
- */
-- (of_xml_parser_string_block_t)charactersHandler;
-
-/**
- * Sets the characters handler.
- *
- * \param block A characters handler
- */
-- (void)setCharactersHandler: (of_xml_parser_string_block_t)block;
-
-/**
- * \return The CDATA handler
- */
-- (of_xml_parser_string_block_t)CDATAHandler;
-
-/**
- * Sets the CDATA handler.
- *
- * \param block A CDATA handler
- */
-- (void)setCDATAHandler: (of_xml_parser_string_block_t)block;
-
-/**
- * \return The comment handler
- */
-- (of_xml_parser_string_block_t)commentHandler;
-
-/**
- * Sets the comment handler.
- *
- * \param block A comment handler
- */
-- (void)setCommentHandler: (of_xml_parser_string_block_t)block;
-
-/**
- * \return The unknown entity handler
- */
-- (of_xml_parser_unknown_entity_block_t)unknownEntityHandler;
-
-/**
- * Sets the unknown entity handler.
- *
- * \param block An unknown entity handler
- */
-- (void)setUnknownEntityHandler: (of_xml_parser_unknown_entity_block_t)block;
-#endif
 
 /**
  * Parses a buffer with the specified size.

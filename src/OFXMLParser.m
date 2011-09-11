@@ -128,12 +128,6 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 @implementation OFXMLParser
-#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
-@synthesize processingInstructionsHandler, elementStartHandler;
-@synthesize elementEndHandler, charactersHandler, CDATAHandler, commentHandler;
-@synthesize unknownEntityHandler;
-#endif
-
 + (void)initialize
 {
 	size_t i;
@@ -219,14 +213,6 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	[attributeName release];
 	[attributePrefix release];
 	[previous release];
-#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
-	[elementStartHandler release];
-	[elementEndHandler release];
-	[charactersHandler release];
-	[CDATAHandler release];
-	[commentHandler release];
-	[unknownEntityHandler release];
-#endif
 
 	[super dealloc];
 }
@@ -334,13 +320,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		pool = [[OFAutoreleasePool alloc] init];
 		characters = transform_string(cache, 0, YES, self);
 
-#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
-		if (charactersHandler != NULL)
-			charactersHandler(self, characters);
-		else
-#endif
-			[delegate parser: self
-			 foundCharacters: characters];
+		[delegate parser: self
+		 foundCharacters: characters];
 
 		[pool release];
 	}
@@ -565,27 +546,17 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 		pool2 = [[OFAutoreleasePool alloc] init];
 
-#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
-		if (elementStartHandler != NULL)
-			elementStartHandler(self, name, prefix, ns, nil);
-		else
-#endif
-			[delegate parser: self
-			 didStartElement: name
-			      withPrefix: prefix
-			       namespace: ns
-			      attributes: nil];
+		[delegate parser: self
+		 didStartElement: name
+		      withPrefix: prefix
+		       namespace: ns
+		      attributes: nil];
 
 		if (buffer[*i] == '/') {
-#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
-			if (elementEndHandler != NULL)
-				elementEndHandler(self, name, prefix, ns);
-			else
-#endif
-				[delegate parser: self
-				   didEndElement: name
-				      withPrefix: prefix
-				       namespace: ns];
+			[delegate parser: self
+			   didEndElement: name
+			      withPrefix: prefix
+			       namespace: ns];
 
 			if ([previous count] == 0)
 				finishedParsing = YES;
@@ -666,15 +637,10 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		@throw [OFUnboundNamespaceException newWithClass: isa
 							  prefix: prefix];
 
-#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
-	if (elementEndHandler != NULL)
-		elementEndHandler(self, name, prefix, ns);
-	else
-#endif
-		[delegate parser: self
-		   didEndElement: name
-		      withPrefix: prefix
-		       namespace: ns];
+	[delegate parser: self
+	   didEndElement: name
+	      withPrefix: prefix
+	       namespace: ns];
 
 	[pool release];
 
@@ -729,27 +695,17 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	pool = [[OFAutoreleasePool alloc] init];
 
-#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
-	if (elementStartHandler != NULL)
-		elementStartHandler(self, name, prefix, ns, attributes);
-	else
-#endif
-		[delegate parser: self
-		 didStartElement: name
-		      withPrefix: prefix
-		       namespace: ns
-		      attributes: attributes];
+	[delegate parser: self
+	 didStartElement: name
+	      withPrefix: prefix
+	       namespace: ns
+	      attributes: attributes];
 
 	if (buffer[*i] == '/') {
-#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
-		if (elementEndHandler != NULL)
-			elementEndHandler(self, name, prefix, ns);
-		else
-#endif
-			[delegate parser: self
-			   didEndElement: name
-			      withPrefix: prefix
-			       namespace: ns];
+		[delegate parser: self
+		   didEndElement: name
+		      withPrefix: prefix
+		       namespace: ns];
 
 		if ([previous count] == 0)
 			finishedParsing = YES;
@@ -986,13 +942,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	cache_append(cache, buffer + *last, encoding, *i - *last);
 	CDATA = transform_string(cache, 2, NO, nil);
 
-#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
-	if (CDATAHandler != NULL)
-		CDATAHandler(self, CDATA);
-	else
-#endif
-		[delegate parser: self
-		      foundCDATA: CDATA];
+	[delegate parser: self
+	      foundCDATA: CDATA];
 
 	[pool release];
 
@@ -1045,13 +996,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	cache_append(cache, buffer + *last, encoding, *i - *last);
 	comment = transform_string(cache, 2, NO, nil);
 
-#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
-	if (commentHandler != NULL)
-		commentHandler(self, comment);
-	else
-#endif
-		[delegate parser: self
-		    foundComment: comment];
+	[delegate parser: self
+	    foundComment: comment];
 
 	[pool release];
 
@@ -1098,11 +1044,6 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 -	   (OFString*)string: (OFString*)string
   containsUnknownEntityNamed: (OFString*)entity
 {
-#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
-	if (unknownEntityHandler != NULL)
-		return unknownEntityHandler(self, entity);
-#endif
-
 	return [delegate parser: self
 	foundUnknownEntityNamed: entity];
 }
