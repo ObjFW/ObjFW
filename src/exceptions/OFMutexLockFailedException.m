@@ -43,12 +43,7 @@
 {
 	self = [super initWithClass: class_];
 
-	@try {
-		mutex = [mutex_ retain];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	mutex = [mutex_ retain];
 
 	return self;
 }

@@ -51,15 +51,10 @@
 {
 	self = [super initWithClass: class_];
 
-	@try {
-		stream = [stream_ retain];
-		offset = offset_;
-		whence = whence_;
-		errNo = GET_ERRNO;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	stream = [stream_ retain];
+	offset = offset_;
+	whence = whence_;
+	errNo = GET_ERRNO;
 
 	return self;
 }

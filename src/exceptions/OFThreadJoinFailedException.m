@@ -43,12 +43,7 @@
 {
 	self = [super initWithClass: class_];
 
-	@try {
-		thread = [thread_ retain];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	thread = [thread_ retain];
 
 	return self;
 }

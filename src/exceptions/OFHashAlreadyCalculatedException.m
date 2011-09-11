@@ -43,12 +43,7 @@
 {
 	self = [super initWithClass: class_];
 
-	@try {
-		hashObject = [hash retain];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	hashObject = [hash retain];
 
 	return self;
 }

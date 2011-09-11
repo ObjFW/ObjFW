@@ -43,12 +43,7 @@
 {
 	self = [super initWithClass: class_];
 
-	@try {
-		socket = [socket_ retain];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	socket = [socket_ retain];
 
 	return self;
 }

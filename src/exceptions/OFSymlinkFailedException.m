@@ -48,9 +48,14 @@
 {
 	self = [super initWithClass: class_];
 
-	sourcePath = [src copy];
-	destinationPath = [dest copy];
-	errNo = GET_ERRNO;
+	@try {
+		sourcePath = [src copy];
+		destinationPath = [dest copy];
+		errNo = GET_ERRNO;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }

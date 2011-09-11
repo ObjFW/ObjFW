@@ -43,12 +43,7 @@
 {
 	self = [super initWithClass: class_];
 
-	@try {
-		parser = [parser_ retain];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	parser = [parser_ retain];
 
 	return self;
 }

@@ -43,12 +43,7 @@
 {
 	self = [super initWithClass: class_];
 
-	@try {
-		condition = [condition_ retain];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	condition = [condition_ retain];
 
 	return self;
 }

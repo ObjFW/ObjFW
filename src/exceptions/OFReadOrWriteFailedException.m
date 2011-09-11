@@ -48,17 +48,13 @@
 {
 	self = [super initWithClass: class_];
 
-	@try {
-		stream = [stream_ retain];
-		requestedLength = length;
+	stream = [stream_ retain];
+	requestedLength = length;
 
-		if ([class_ isSubclassOfClass: [OFStreamSocket class]])
-			errNo = GET_SOCK_ERRNO;
-		else
-			errNo = GET_ERRNO;
-	} @catch (id e) {
-		return e;
-	}
+	if ([class_ isSubclassOfClass: [OFStreamSocket class]])
+		errNo = GET_SOCK_ERRNO;
+	else
+		errNo = GET_ERRNO;
 
 	return self;
 }

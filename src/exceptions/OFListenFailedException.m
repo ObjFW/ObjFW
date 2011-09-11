@@ -48,14 +48,9 @@
 {
 	self = [super initWithClass: class_];
 
-	@try {
-		socket = [socket_ retain];
-		backLog = backlog;
-		errNo = GET_SOCK_ERRNO;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	socket = [socket_ retain];
+	backLog = backlog;
+	errNo = GET_SOCK_ERRNO;
 
 	return self;
 }

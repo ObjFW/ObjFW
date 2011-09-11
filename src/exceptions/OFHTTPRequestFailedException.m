@@ -47,13 +47,8 @@
 {
 	self = [super initWithClass: class_];
 
-	@try {
-		HTTPRequest = [request retain];
-		result = [result_ retain];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	HTTPRequest = [request retain];
+	result = [result_ retain];
 
 	return self;
 }

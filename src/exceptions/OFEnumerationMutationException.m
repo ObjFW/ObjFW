@@ -42,12 +42,7 @@
 {
 	self = [super initWithClass: class_];
 
-	@try {
-		object = [object_ retain];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	object = [object_ retain];
 
 	return self;
 }
