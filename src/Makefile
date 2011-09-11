@@ -73,6 +73,8 @@ INCLUDES := ${SRCS:.m=.h}	\
 	    ${THREADING_H}
 
 SRCS += OFArray_adjacent.m		\
+	OFArray_adjacentSubarray.m	\
+	OFArray_subarray.m		\
 	OFCountedSet_hashtable.m	\
 	OFDictionary_hashtable.m	\
 	OFMutableArray_adjacent.m	\

@@ -19,6 +19,7 @@
 #include <stdarg.h>
 
 #import "OFArray.h"
+#import "OFArray_subarray.h"
 #import "OFArray_adjacent.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
@@ -338,7 +339,13 @@ static struct {
 - (OFArray*)objectsInRange: (of_range_t)range
 {
 	OFArray *ret;
-	id *buffer = [self allocMemoryForNItems: range.length
+	id *buffer;
+
+	if (![self isKindOfClass: [OFMutableArray class]])
+		return [OFArray_subarray arrayWithArray: self
+						  range: range];
+
+	buffer = [self allocMemoryForNItems: range.length
 				       withSize: sizeof(*buffer)];
 
 	@try {

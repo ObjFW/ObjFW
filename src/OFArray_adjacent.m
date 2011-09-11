@@ -20,6 +20,7 @@
 
 #import "OFArray_adjacent.h"
 #import "OFMutableArray_adjacent.h"
+#import "OFArray_adjacentSubarray.h"
 #import "OFDataArray.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
@@ -271,7 +272,13 @@
 
 - (OFArray*)objectsInRange: (of_range_t)range
 {
-	size_t count = [array count];
+	size_t count;
+
+	if (![self isKindOfClass: [OFMutableArray class]])
+		return [OFArray_adjacentSubarray arrayWithArray: self
+							  range: range];
+
+	count = [array count];
 
 	if (range.start + range.length > count)
 		@throw [OFOutOfRangeException newWithClass: isa];
@@ -287,7 +294,8 @@
 	size_t i, count;
 
 	if ([object class] != [OFArray_adjacent class] &&
-	    [object class] != [OFMutableArray_adjacent class])
+	    [object class] != [OFMutableArray_adjacent class] &&
+	    [object class] != [OFArray_adjacentSubarray class])
 		return [super isEqual: object];
 
 	otherArray = object;
