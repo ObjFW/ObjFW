@@ -428,7 +428,7 @@ typedef struct of_rectangle_t
  *
  * \param class The class from which the instance methods should be inherited
  */
-+ (void)inheritMethodsFromClass: (Class)class;
++ (void)inheritMethodsFromClass: (Class)class_;
 
 /**
  * \brief Initializes an already allocated object.
