@@ -42,7 +42,7 @@
 
 #ifdef OF_HAVE_PROPERTIES
 @property (copy) OFString *name;
-@property (copy, getter=namespace, setter=setNamespace) OFString *ns;
+@property (copy, getter=namespace, setter=setNamespace:) OFString *ns;
 @property (copy) OFString *defaultNamespace;
 @property (readonly, copy) OFArray *attributes;
 @property (readonly, copy) OFArray *children;
