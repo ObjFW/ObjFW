@@ -481,10 +481,15 @@ of_utf16_string_length(const uint16_t *string)
 		s->cString = [self allocMemoryWithSize: cStringLength + 1];
 		s->cStringLength = cStringLength;
 
-		if (encoding == OF_STRING_ENCODING_UTF_8) {
+		if (encoding == OF_STRING_ENCODING_UTF_8 ||
+		    encoding == OF_STRING_ENCODING_ASCII) {
 			switch (of_string_check_utf8(cString, cStringLength,
 			    &s->length)) {
 			case 1:
+				if (encoding == OF_STRING_ENCODING_ASCII)
+					@throw [OFInvalidEncodingException
+					    newWithClass: isa];
+
 				s->isUTF8 = YES;
 				break;
 			case -1:
