@@ -39,6 +39,9 @@ typedef enum of_string_encoding_t {
 	OF_STRING_ENCODING_AUTODETECT = 0xFF
 } of_string_encoding_t;
 
+/* FIXME */
+#define OF_STRING_ENCODING_NATIVE OF_STRING_ENCODING_UTF_8
+
 #ifdef __cplusplus
 extern "C" {
 #endif
