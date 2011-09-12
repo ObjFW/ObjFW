@@ -24,13 +24,6 @@
  */
 @interface OFMutableString: OFString
 /**
- * \brief Sets the OFMutableString to the specified UTF-8 encoded C string.
- *
- * \param newCString A UTF-8 encoded C string to set the OFMutableString to.
- */
-- (void)setToCString: (const char*)newCString;
-
-/**
  * \brief Appends a UTF-8 encoded C string to the OFMutableString.
  *
  * \param cString A UTF-8 encoded C string to append

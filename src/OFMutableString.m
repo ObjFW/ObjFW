@@ -138,37 +138,6 @@
 	 */
 }
 
-- (void)setToCString: (const char*)newCString
-{
-	size_t newCStringLength = strlen(newCString);
-	size_t newLength;
-
-	if (newCStringLength >= 3 && !memcmp(newCString, "\xEF\xBB\xBF", 3)) {
-		newCString += 3;
-		newCStringLength -= 3;
-	}
-
-	switch (of_string_check_utf8(newCString, newCStringLength,
-	    &newLength)) {
-	case 0:
-		s->isUTF8 = NO;
-		break;
-	case 1:
-		s->isUTF8 = YES;
-		break;
-	case -1:
-		@throw [OFInvalidEncodingException newWithClass: isa];
-	}
-
-	[self freeMemory: s->cString];
-
-	s->cStringLength = newCStringLength;
-	s->length = newLength;
-
-	s->cString = [self allocMemoryWithSize: newCStringLength + 1];
-	memcpy(s->cString, newCString, newCStringLength + 1);
-}
-
 - (void)appendCString: (const char*)cString
 {
 	size_t cStringLength = strlen(cString);
