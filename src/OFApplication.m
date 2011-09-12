@@ -129,9 +129,13 @@ of_application_main(int *argc, char **argv[], Class cls)
 				continue;
 			}
 
-			key = [OFString stringWithCString: *env
-						   length: sep - *env];
-			value = [OFString stringWithCString: sep + 1];
+			key = [OFString
+			    stringWithCString: *env
+				     encoding: OF_STRING_ENCODING_NATIVE
+				       length: sep - *env];
+			value = [OFString
+			    stringWithCString: sep + 1
+				     encoding: OF_STRING_ENCODING_NATIVE];
 			[environment setObject: value
 					forKey: key];
 
@@ -188,11 +192,15 @@ of_application_main(int *argc, char **argv[], Class cls)
 	argc = argc_;
 	argv = argv_;
 
-	programName = [[OFString alloc] initWithCString: (*argv)[0]];
+	programName = [[OFString alloc]
+	    initWithCString: (*argv)[0]
+		   encoding: OF_STRING_ENCODING_NATIVE];
 	arguments = [[OFMutableArray alloc] init];
 
 	for (i = 1; i < *argc; i++)
-		[arguments addObject: [OFString stringWithCString: (*argv)[i]]];
+		[arguments addObject:
+		    [OFString stringWithCString: (*argv)[i]
+				       encoding: OF_STRING_ENCODING_NATIVE]];
 
 	[arguments makeImmutable];
 

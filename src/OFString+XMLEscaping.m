@@ -35,8 +35,8 @@ int _OFString_XMLEscaping_reference;
 	size_t i, j;
 	OFString *ret;
 
-	string = [self cString];
-	length = [self cStringLength];
+	string = [self UTF8String];
+	length = [self UTF8StringLength];
 
 	j = 0;
 	retLength = length;
@@ -101,8 +101,8 @@ int _OFString_XMLEscaping_reference;
 	assert(j == retLength);
 
 	@try {
-		ret = [OFString stringWithCString: retCString
-					   length: retLength];
+		ret = [OFString stringWithUTF8String: retCString
+					      length: retLength];
 	} @finally {
 		free(retCString);
 	}

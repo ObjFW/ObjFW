@@ -91,8 +91,12 @@
 	/* CONNECT request */
 	[self writeNBytes: 4
 	       fromBuffer: request];
-	[self writeInt8: [host cStringLength]];
-	[self writeString: host];
+	[self writeInt8:
+	    [host cStringLengthWithEncoding: OF_STRING_ENCODING_NATIVE]];
+	[self writeNBytes: [host cStringLengthWithEncoding:
+			       OF_STRING_ENCODING_NATIVE]
+	       fromBuffer: [host cStringWithEncoding:
+			       OF_STRING_ENCODING_NATIVE]];
 	[self writeBigEndianInt16: port];
 
 	[self flushWriteBuffer];

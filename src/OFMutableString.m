@@ -138,17 +138,17 @@
 	 */
 }
 
-- (void)appendCString: (const char*)cString
+- (void)appendUTF8String: (const char*)UTF8String
 {
-	size_t cStringLength = strlen(cString);
+	size_t UTF8StringLength = strlen(UTF8String);
 	size_t length;
 
-	if (cStringLength >= 3 && !memcmp(cString, "\xEF\xBB\xBF", 3)) {
-		cString += 3;
-		cStringLength -= 3;
+	if (UTF8StringLength >= 3 && !memcmp(UTF8String, "\xEF\xBB\xBF", 3)) {
+		UTF8String += 3;
+		UTF8StringLength -= 3;
 	}
 
-	switch (of_string_check_utf8(cString, cStringLength, &length)) {
+	switch (of_string_check_utf8(UTF8String, UTF8StringLength, &length)) {
 	case 1:
 		s->isUTF8 = YES;
 		break;
@@ -157,24 +157,25 @@
 	}
 
 	s->cString = [self resizeMemory: s->cString
-				 toSize: s->cStringLength + cStringLength + 1];
-	memcpy(s->cString + s->cStringLength, cString, cStringLength + 1);
+				 toSize: s->cStringLength +
+					 UTF8StringLength + 1];
+	memcpy(s->cString + s->cStringLength, UTF8String, UTF8StringLength + 1);
 
-	s->cStringLength += cStringLength;
+	s->cStringLength += UTF8StringLength;
 	s->length += length;
 }
 
-- (void)appendCString: (const char*)cString
-	   withLength: (size_t)cStringLength
+- (void)appendUTF8String: (const char*)UTF8String
+	      withLength: (size_t)UTF8StringLength
 {
 	size_t length;
 
-	if (cStringLength >= 3 && !memcmp(cString, "\xEF\xBB\xBF", 3)) {
-		cString += 3;
-		cStringLength -= 3;
+	if (UTF8StringLength >= 3 && !memcmp(UTF8String, "\xEF\xBB\xBF", 3)) {
+		UTF8String += 3;
+		UTF8StringLength -= 3;
 	}
 
-	switch (of_string_check_utf8(cString, cStringLength, &length)) {
+	switch (of_string_check_utf8(UTF8String, UTF8StringLength, &length)) {
 	case 1:
 		s->isUTF8 = YES;
 		break;
@@ -183,10 +184,11 @@
 	}
 
 	s->cString = [self resizeMemory: s->cString
-				 toSize: s->cStringLength + cStringLength + 1];
-	memcpy(s->cString + s->cStringLength, cString, cStringLength);
+				 toSize: s->cStringLength +
+					 UTF8StringLength + 1];
+	memcpy(s->cString + s->cStringLength, UTF8String, UTF8StringLength);
 
-	s->cStringLength += cStringLength;
+	s->cStringLength += UTF8StringLength;
 	s->length += length;
 
 	s->cString[s->cStringLength] = 0;
@@ -194,11 +196,19 @@
 
 - (void)appendCString: (const char*)cString
 	 withEncoding: (of_string_encoding_t)encoding
+{
+	return [self appendCString: cString
+		      withEncoding: encoding
+			    length: strlen(cString)];
+}
+
+- (void)appendCString: (const char*)cString
+	 withEncoding: (of_string_encoding_t)encoding
 	       length: (size_t)cStringLength
 {
 	if (encoding == OF_STRING_ENCODING_UTF_8)
-		[self appendCString: cString
-			 withLength: cStringLength];
+		[self appendUTF8String: cString
+			    withLength: cStringLength];
 	else {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 		[self appendString:
@@ -211,20 +221,21 @@
 
 - (void)appendString: (OFString*)string
 {
-	size_t cStringLength;
+	size_t UTF8StringLength;
 
 	if (string == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	cStringLength = [string cStringLength];
+	UTF8StringLength = [string UTF8StringLength];
 
 	s->cString = [self resizeMemory: s->cString
-				 toSize: s->cStringLength + cStringLength + 1];
+				 toSize: s->cStringLength +
+					 UTF8StringLength + 1];
 	memcpy(s->cString + s->cStringLength, string->s->cString,
-	    cStringLength);
+	    UTF8StringLength);
 
-	s->cStringLength += cStringLength;
+	s->cStringLength += UTF8StringLength;
 	s->length += string->s->length;
 
 	s->cString[s->cStringLength] = 0;
@@ -246,22 +257,22 @@
 - (void)appendFormat: (OFConstantString*)format
        withArguments: (va_list)arguments
 {
-	char *cString;
-	int cStringLength;
+	char *UTF8String;
+	int UTF8StringLength;
 
 	if (format == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	if ((cStringLength = of_vasprintf(&cString, [format cString],
+	if ((UTF8StringLength = of_vasprintf(&UTF8String, [format UTF8String],
 	    arguments)) == -1)
 		@throw [OFInvalidFormatException newWithClass: isa];
 
 	@try {
-		[self appendCString: cString
-			 withLength: cStringLength];
+		[self appendUTF8String: UTF8String
+			    withLength: UTF8StringLength];
 	} @finally {
-		free(cString);
+		free(UTF8String);
 	}
 }
 
@@ -388,7 +399,7 @@
 		index = of_string_index_to_position(s->cString, index,
 		    s->cStringLength);
 
-	newCStringLength = s->cStringLength + [string cStringLength];
+	newCStringLength = s->cStringLength + [string UTF8StringLength];
 	s->cString = [self resizeMemory: s->cString
 				 toSize: newCStringLength + 1];
 
@@ -477,29 +488,29 @@
 - (void)replaceOccurrencesOfString: (OFString*)string
 			withString: (OFString*)replacement
 {
-	const char *cString = [string cString];
-	const char *replacementCString = [replacement cString];
-	size_t cStringLength = string->s->cStringLength;
-	size_t replacementCStringLength = replacement->s->cStringLength;
+	const char *UTF8String = [string UTF8String];
+	const char *replacementUTF8String = [replacement UTF8String];
+	size_t UTF8StringLength = string->s->cStringLength;
+	size_t replacementUTF8StringLength = replacement->s->cStringLength;
 	size_t i, last, newCStringLength, newLength;
 	char *newCString;
 
-	if (cStringLength > s->cStringLength)
+	if (UTF8StringLength > s->cStringLength)
 		return;
 
 	newCString = NULL;
 	newCStringLength = 0;
 	newLength = s->length;
 
-	for (i = 0, last = 0; i <= s->cStringLength - cStringLength; i++) {
-		if (memcmp(s->cString + i, cString, cStringLength))
+	for (i = 0, last = 0; i <= s->cStringLength - UTF8StringLength; i++) {
+		if (memcmp(s->cString + i, UTF8String, UTF8StringLength))
 			continue;
 
 		@try {
 			newCString = [self
 			    resizeMemory: newCString
 				  toSize: newCStringLength + i - last +
-					  replacementCStringLength + 1];
+					  replacementUTF8StringLength + 1];
 		} @catch (id e) {
 			[self freeMemory: newCString];
 			@throw e;
@@ -507,13 +518,13 @@
 		memcpy(newCString + newCStringLength, s->cString + last,
 		    i - last);
 		memcpy(newCString + newCStringLength + i - last,
-		    replacementCString, replacementCStringLength);
+		    replacementUTF8String, replacementUTF8StringLength);
 
-		newCStringLength += i - last + replacementCStringLength;
+		newCStringLength += i - last + replacementUTF8StringLength;
 		newLength = newLength - string->s->length +
 		    replacement->s->length;
 
-		i += cStringLength - 1;
+		i += UTF8StringLength - 1;
 		last = i + 1;
 	}
 

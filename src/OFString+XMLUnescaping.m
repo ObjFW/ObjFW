@@ -71,8 +71,8 @@ parse_numeric_entity(const char *entity, size_t length)
 		return nil;
 	buffer[i] = 0;
 
-	return [OFString stringWithCString: buffer
-				    length: i];
+	return [OFString stringWithUTF8String: buffer
+				       length: i];
 }
 
 @implementation OFString (XMLUnescaping)
@@ -89,8 +89,8 @@ parse_numeric_entity(const char *entity, size_t length)
 	BOOL inEntity;
 	OFMutableString *ret;
 
-	string = [self cString];
-	length = [self cStringLength];
+	string = [self UTF8String];
+	length = [self UTF8StringLength];
 
 	ret = [OFMutableString string];
 
@@ -99,8 +99,8 @@ parse_numeric_entity(const char *entity, size_t length)
 
 	for (i = 0; i < length; i++) {
 		if (!inEntity && string[i] == '&') {
-			[ret appendCString: string + last
-				withLength: i - last];
+			[ret appendUTF8String: string + last
+				   withLength: i - last];
 
 			last = i + 1;
 			inEntity = YES;
@@ -110,21 +110,26 @@ parse_numeric_entity(const char *entity, size_t length)
 
 			if (entityLength == 2 && !memcmp(entity, "lt", 2))
 				[ret appendCString: "<"
-					withLength: 1];
+				      withEncoding: OF_STRING_ENCODING_ASCII
+					    length: 1];
 			else if (entityLength == 2 && !memcmp(entity, "gt", 2))
 				[ret appendCString: ">"
-					withLength: 1];
+				      withEncoding: OF_STRING_ENCODING_ASCII
+					    length: 1];
 			else if (entityLength == 4 &&
 			    !memcmp(entity, "quot", 4))
 				[ret appendCString: "\""
-					withLength: 1];
+				      withEncoding: OF_STRING_ENCODING_ASCII
+					    length: 1];
 			else if (entityLength == 4 &&
 			    !memcmp(entity, "apos", 4))
 				[ret appendCString: "'"
-					withLength: 1];
+				      withEncoding: OF_STRING_ENCODING_ASCII
+					    length: 1];
 			else if (entityLength == 3 && !memcmp(entity, "amp", 3))
 				[ret appendCString: "&"
-					withLength: 1];
+				      withEncoding: OF_STRING_ENCODING_ASCII
+					    length: 1];
 			else if (entity[0] == '#') {
 				OFAutoreleasePool *pool;
 				OFString *tmp;
@@ -145,8 +150,9 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				pool = [[OFAutoreleasePool alloc] init];
 
-				n = [OFString stringWithCString: entity
-							 length: entityLength];
+				n = [OFString
+				    stringWithUTF8String: entity
+						  length: entityLength];
 				tmp =	  [delegate string: self
 				containsUnknownEntityNamed: n];
 
@@ -168,8 +174,8 @@ parse_numeric_entity(const char *entity, size_t length)
 	if (inEntity)
 		@throw [OFInvalidEncodingException newWithClass: isa];
 
-	[ret appendCString: string + last
-		withLength: i - last];
+	[ret appendUTF8String: string + last
+		   withLength: i - last];
 
 	[ret makeImmutable];
 
@@ -185,8 +191,8 @@ parse_numeric_entity(const char *entity, size_t length)
 	BOOL inEntity;
 	OFMutableString *ret;
 
-	string = [self cString];
-	length = [self cStringLength];
+	string = [self UTF8String];
+	length = [self UTF8StringLength];
 
 	ret = [OFMutableString string];
 
@@ -195,8 +201,8 @@ parse_numeric_entity(const char *entity, size_t length)
 
 	for (i = 0; i < length; i++) {
 		if (!inEntity && string[i] == '&') {
-			[ret appendCString: string + last
-				withLength: i - last];
+			[ret appendUTF8String: string + last
+				   withLength: i - last];
 
 			last = i + 1;
 			inEntity = YES;
@@ -206,21 +212,26 @@ parse_numeric_entity(const char *entity, size_t length)
 
 			if (entityLength == 2 && !memcmp(entity, "lt", 2))
 				[ret appendCString: "<"
-					withLength: 1];
+				      withEncoding: OF_STRING_ENCODING_ASCII
+					    length: 1];
 			else if (entityLength == 2 && !memcmp(entity, "gt", 2))
 				[ret appendCString: ">"
-					withLength: 1];
+				      withEncoding: OF_STRING_ENCODING_ASCII
+					    length: 1];
 			else if (entityLength == 4 &&
 			    !memcmp(entity, "quot", 4))
 				[ret appendCString: "\""
-					withLength: 1];
+				      withEncoding: OF_STRING_ENCODING_ASCII
+					    length: 1];
 			else if (entityLength == 4 &&
 			    !memcmp(entity, "apos", 4))
 				[ret appendCString: "'"
-					withLength: 1];
+				      withEncoding: OF_STRING_ENCODING_ASCII
+					    length: 1];
 			else if (entityLength == 3 && !memcmp(entity, "amp", 3))
 				[ret appendCString: "&"
-					withLength: 1];
+				      withEncoding: OF_STRING_ENCODING_ASCII
+					    length: 1];
 			else if (entity[0] == '#') {
 				OFAutoreleasePool *pool;
 				OFString *tmp;
@@ -242,8 +253,8 @@ parse_numeric_entity(const char *entity, size_t length)
 				pool = [[OFAutoreleasePool alloc] init];
 
 				entityString = [OFString
-				    stringWithCString: entity
-					       length: entityLength];
+				    stringWithUTF8String: entity
+						  length: entityLength];
 				tmp = block(self, entityString);
 
 				if (tmp == nil)
@@ -262,8 +273,8 @@ parse_numeric_entity(const char *entity, size_t length)
 	if (inEntity)
 		@throw [OFInvalidEncodingException newWithClass: isa];
 
-	[ret appendCString: string + last
-		withLength: i - last];
+	[ret appendUTF8String: string + last
+		   withLength: i - last];
 
 	[ret makeImmutable];
 

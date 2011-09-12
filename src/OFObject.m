@@ -120,7 +120,8 @@ extern void objc_setEnumerationMutationHandler(void(*handler)(id));
 const char*
 _NSPrintForDebugger(id object)
 {
-	return [[object description] cString];
+	return [[object description]
+	    cStringWithEncoding: OF_STRING_ENCODING_NATIVE];
 }
 
 /* References for static linking */
@@ -232,7 +233,8 @@ void _references_to_categories_of_OFObject(void)
 
 + (OFString*)className
 {
-	return [OFString stringWithCString: class_getName(self)];
+	return [OFString stringWithCString: class_getName(self)
+				  encoding: OF_STRING_ENCODING_ASCII];
 }
 
 + (BOOL)isSubclassOfClass: (Class)class
@@ -717,7 +719,8 @@ void _references_to_categories_of_OFObject(void)
 
 - (OFString*)className
 {
-	return [OFString stringWithCString: class_getName(isa)];
+	return [OFString stringWithCString: class_getName(isa)
+				  encoding: OF_STRING_ENCODING_ASCII];
 }
 
 - (BOOL)isKindOfClass: (Class)class

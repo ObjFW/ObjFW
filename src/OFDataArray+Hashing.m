@@ -50,6 +50,7 @@ int _OFDataArray_Hashing_reference;
 	[pool release];
 
 	return [OFString stringWithCString: cString
+				  encoding: OF_STRING_ENCODING_ASCII
 				    length: 32];
 }
 
@@ -78,6 +79,7 @@ int _OFDataArray_Hashing_reference;
 	[pool release];
 
 	return [OFString stringWithCString: cString
+				  encoding: OF_STRING_ENCODING_ASCII
 				    length: 40];
 }
 @end

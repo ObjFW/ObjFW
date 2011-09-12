@@ -32,8 +32,8 @@ int _OFString_Hashing_reference;
 	char ret[OF_MD5_DIGEST_SIZE * 2];
 	size_t i;
 
-	[hash updateWithBuffer: [self cString]
-			length: [self cStringLength]];
+	[hash updateWithBuffer: [self UTF8String]
+			length: [self UTF8StringLength]];
 	digest = [hash digest];
 
 	for (i = 0; i < OF_MD5_DIGEST_SIZE; i++) {
@@ -49,6 +49,7 @@ int _OFString_Hashing_reference;
 	[pool release];
 
 	return [OFString stringWithCString: ret
+				  encoding: OF_STRING_ENCODING_ASCII
 				    length: 32];
 }
 
@@ -60,8 +61,8 @@ int _OFString_Hashing_reference;
 	char ret[OF_SHA1_DIGEST_SIZE * 2];
 	size_t i;
 
-	[hash updateWithBuffer: [self cString]
-			length: [self cStringLength]];
+	[hash updateWithBuffer: [self UTF8String]
+			length: [self UTF8StringLength]];
 	digest = [hash digest];
 
 	for (i = 0; i < OF_SHA1_DIGEST_SIZE; i++) {
@@ -77,6 +78,7 @@ int _OFString_Hashing_reference;
 	[pool release];
 
 	return [OFString stringWithCString: ret
+				  encoding: OF_STRING_ENCODING_ASCII
 				    length: 40];
 }
 @end

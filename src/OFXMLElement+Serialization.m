@@ -38,7 +38,8 @@ int _OFXMLElement_Serialization_reference;
 
 	pool = [[OFAutoreleasePool alloc] init];
 
-	if ((class = objc_lookUpClass([name cString])) == Nil)
+	if ((class = objc_lookUpClass([name cStringWithEncoding:
+	    OF_STRING_ENCODING_ASCII])) == Nil)
 		@throw [OFNotImplementedException newWithClass: Nil];
 
 	if (![class conformsToProtocol: @protocol(OFSerialization)])

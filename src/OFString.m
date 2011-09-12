@@ -288,9 +288,17 @@ of_utf16_string_length(const uint16_t *string)
 	return [[[self alloc] init] autorelease];
 }
 
-+ stringWithCString: (const char*)cString
++ stringWithUTF8String: (const char*)UTF8String
 {
-	return [[[self alloc] initWithCString: cString] autorelease];
+	return [[[self alloc] initWithUTF8String: UTF8String] autorelease];
+}
+
++ stringWithUTF8String: (const char*)UTF8String
+		length: (size_t)UTF8StringLength
+{
+	return [[[self alloc]
+	    initWithUTF8String: UTF8String
+			length: UTF8StringLength] autorelease];
 }
 
 + stringWithCString: (const char*)cString
@@ -306,13 +314,6 @@ of_utf16_string_length(const uint16_t *string)
 {
 	return [[[self alloc] initWithCString: cString
 				     encoding: encoding
-				       length: cStringLength] autorelease];
-}
-
-+ stringWithCString: (const char*)cString
-	     length: (size_t)cStringLength
-{
-	return [[[self alloc] initWithCString: cString
 				       length: cStringLength] autorelease];
 }
 
@@ -445,11 +446,19 @@ of_utf16_string_length(const uint16_t *string)
 	return self;
 }
 
-- initWithCString: (const char*)cString
+- initWithUTF8String: (const char*)UTF8String
 {
-	return [self initWithCString: cString
+	return [self initWithCString: UTF8String
 			    encoding: OF_STRING_ENCODING_UTF_8
-			      length: strlen(cString)];
+			      length: strlen(UTF8String)];
+}
+
+- initWithUTF8String: (const char*)UTF8String
+	      length: (size_t)UTF8StringLength
+{
+	return [self initWithCString: UTF8String
+			    encoding: OF_STRING_ENCODING_UTF_8
+			      length: UTF8StringLength];
 }
 
 - initWithCString: (const char*)cString
@@ -591,14 +600,6 @@ of_utf16_string_length(const uint16_t *string)
 	return self;
 }
 
-- initWithCString: (const char*)cString
-	   length: (size_t)cStringLength
-{
-	return [self initWithCString: cString
-			    encoding: OF_STRING_ENCODING_UTF_8
-			      length: cStringLength];
-}
-
 - initWithString: (OFString*)string
 {
 	self = [super init];
@@ -611,7 +612,7 @@ of_utf16_string_length(const uint16_t *string)
 		 * We need one call to make sure it's initialized (in case it's
 		 * a constant string).
 		 */
-		s->cStringLength = [string cStringLength];
+		s->cStringLength = [string UTF8StringLength];
 		s->isUTF8 = string->s->isUTF8;
 		s->length = string->s->length;
 
@@ -893,8 +894,8 @@ of_utf16_string_length(const uint16_t *string)
 		s = [self allocMemoryWithSize: sizeof(*s)];
 		memset(s, 0, sizeof(*s));
 
-		if ((cStringLength = of_vasprintf(&s->cString, [format cString],
-		    arguments)) == -1)
+		if ((cStringLength = of_vasprintf(&s->cString,
+		    [format UTF8String], arguments)) == -1)
 			@throw [OFInvalidFormatException newWithClass: isa];
 
 		s->cStringLength = cStringLength;
@@ -952,7 +953,7 @@ of_utf16_string_length(const uint16_t *string)
 		 * First needs to be a call to be sure it is initialized, in
 		 * case it's a constant string.
 		 */
-		s->cStringLength = [firstComponent cStringLength];
+		s->cStringLength = [firstComponent UTF8StringLength];
 		s->isUTF8 = firstComponent->s->isUTF8;
 		s->length = firstComponent->s->length;
 
@@ -960,7 +961,7 @@ of_utf16_string_length(const uint16_t *string)
 		va_copy(argumentsCopy, arguments);
 		while ((component = va_arg(argumentsCopy, OFString*)) != nil) {
 			/* First needs to be a call, see above */
-			s->cStringLength += 1 + [component cStringLength];
+			s->cStringLength += 1 + [component UTF8StringLength];
 			s->length += 1 + component->s->length;
 
 			if (component->s->isUTF8)
@@ -969,8 +970,8 @@ of_utf16_string_length(const uint16_t *string)
 
 		s->cString = [self allocMemoryWithSize: s->cStringLength + 1];
 
-		cStringLength = [firstComponent cStringLength];
-		memcpy(s->cString, [firstComponent cString], cStringLength);
+		cStringLength = [firstComponent UTF8StringLength];
+		memcpy(s->cString, [firstComponent UTF8String], cStringLength);
 		i = cStringLength;
 
 		while ((component = va_arg(arguments, OFString*)) != nil) {
@@ -1012,7 +1013,8 @@ of_utf16_string_length(const uint16_t *string)
 	@try {
 		OFFile *file;
 
-		if (stat([path cString], &st) == -1)
+		if (stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+		    &st) == -1)
 			@throw [OFOpenFileFailedException newWithClass: isa
 								  path: path
 								  mode: @"rb"];
@@ -1130,7 +1132,7 @@ of_utf16_string_length(const uint16_t *string)
 	return self;
 }
 
-- (const char*)cString
+- (const char*)UTF8String
 {
 	return s->cString;
 }
@@ -1156,7 +1158,7 @@ of_utf16_string_length(const uint16_t *string)
 	return s->length;
 }
 
-- (size_t)cStringLength
+- (size_t)UTF8StringLength
 {
 	return s->cStringLength;
 }
@@ -1186,7 +1188,7 @@ of_utf16_string_length(const uint16_t *string)
 
 	otherString = object;
 
-	if ([otherString cStringLength] != s->cStringLength ||
+	if ([otherString UTF8StringLength] != s->cStringLength ||
 	    otherString->s->length != s->length)
 		return NO;
 
@@ -1217,11 +1219,11 @@ of_utf16_string_length(const uint16_t *string)
 						       selector: _cmd];
 
 	otherString = object;
-	otherCStringLength = [otherString cStringLength];
+	otherCStringLength = [otherString UTF8StringLength];
 	minimumCStringLength = (s->cStringLength > otherCStringLength
 	    ? otherCStringLength : s->cStringLength);
 
-	if ((compare = memcmp(s->cString, [otherString cString],
+	if ((compare = memcmp(s->cString, [otherString UTF8String],
 	    minimumCStringLength)) == 0) {
 		if (s->cStringLength > otherCStringLength)
 			return OF_ORDERED_DESCENDING;
@@ -1246,8 +1248,8 @@ of_utf16_string_length(const uint16_t *string)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	otherCString = [otherString cString];
-	otherCStringLength = [otherString cStringLength];
+	otherCString = [otherString UTF8String];
+	otherCStringLength = [otherString UTF8StringLength];
 
 	if (!s->isUTF8) {
 		minimumCStringLength = (s->cStringLength > otherCStringLength
@@ -1377,8 +1379,8 @@ of_utf16_string_length(const uint16_t *string)
 
 - (size_t)indexOfFirstOccurrenceOfString: (OFString*)string
 {
-	const char *cString = [string cString];
-	size_t i, cStringLength = [string cStringLength];
+	const char *cString = [string UTF8String];
+	size_t i, cStringLength = [string UTF8StringLength];
 
 	if (cStringLength == 0)
 		return 0;
@@ -1395,8 +1397,8 @@ of_utf16_string_length(const uint16_t *string)
 
 - (size_t)indexOfLastOccurrenceOfString: (OFString*)string
 {
-	const char *cString = [string cString];
-	size_t i, cStringLength = [string cStringLength];
+	const char *cString = [string UTF8String];
+	size_t i, cStringLength = [string UTF8StringLength];
 
 	if (cStringLength == 0)
 		return of_string_position_to_index(s->cString,
@@ -1417,7 +1419,7 @@ of_utf16_string_length(const uint16_t *string)
 
 - (BOOL)containsString: (OFString*)string
 {
-	const char *cString = [string cString];
+	const char *cString = [string UTF8String];
 	size_t i, cStringLength = string->s->cStringLength;
 
 	if (cStringLength == 0)
@@ -1448,8 +1450,8 @@ of_utf16_string_length(const uint16_t *string)
 		    s->cStringLength);
 	}
 
-	return [OFString stringWithCString: s->cString + start
-				    length: end - start];
+	return [OFString stringWithUTF8String: s->cString + start
+				       length: end - start];
 }
 
 - (OFString*)stringByAppendingString: (OFString*)string
@@ -1545,31 +1547,31 @@ of_utf16_string_length(const uint16_t *string)
 
 - (BOOL)hasPrefix: (OFString*)prefix
 {
-	size_t cStringLength = [prefix cStringLength];
+	size_t cStringLength = [prefix UTF8StringLength];
 
 	if (cStringLength > s->cStringLength)
 		return NO;
 
-	return !memcmp(s->cString, [prefix cString], cStringLength);
+	return !memcmp(s->cString, [prefix UTF8String], cStringLength);
 }
 
 - (BOOL)hasSuffix: (OFString*)suffix
 {
-	size_t cStringLength = [suffix cStringLength];
+	size_t cStringLength = [suffix UTF8StringLength];
 
 	if (cStringLength > s->cStringLength)
 		return NO;
 
 	return !memcmp(s->cString + (s->cStringLength - cStringLength),
-	    [suffix cString], cStringLength);
+	    [suffix UTF8String], cStringLength);
 }
 
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter
 {
 	OFAutoreleasePool *pool;
 	OFMutableArray *array;
-	const char *cString = [delimiter cString];
-	size_t cStringLength = [delimiter cStringLength];
+	const char *cString = [delimiter UTF8String];
+	size_t cStringLength = [delimiter UTF8StringLength];
 	size_t i, last;
 
 	array = [OFMutableArray array];
@@ -1586,12 +1588,13 @@ of_utf16_string_length(const uint16_t *string)
 		if (memcmp(s->cString + i, cString, cStringLength))
 			continue;
 
-		[array addObject: [OFString stringWithCString: s->cString + last
-						       length: i - last]];
+		[array addObject:
+		    [OFString stringWithUTF8String: s->cString + last
+					    length: i - last]];
 		i += cStringLength - 1;
 		last = i + 1;
 	}
-	[array addObject: [OFString stringWithCString: s->cString + last]];
+	[array addObject: [OFString stringWithUTF8String: s->cString + last]];
 
 	[array makeImmutable];
 
@@ -1628,14 +1631,14 @@ of_utf16_string_length(const uint16_t *string)
 		if (s->cString[i] == '/' || s->cString[i] == '\\') {
 #endif
 			[ret addObject:
-			    [OFString stringWithCString: s->cString + last
-						 length: i - last]];
+			    [OFString stringWithUTF8String: s->cString + last
+						    length: i - last]];
 			last = i + 1;
 		}
 	}
 
-	[ret addObject: [OFString stringWithCString: s->cString + last
-					     length: i - last]];
+	[ret addObject: [OFString stringWithUTF8String: s->cString + last
+						length: i - last]];
 
 	[ret makeImmutable];
 
@@ -1678,8 +1681,8 @@ of_utf16_string_length(const uint16_t *string)
 	if (i < 0)
 		i = 0;
 
-	return [OFString stringWithCString: s->cString + i
-				    length: pathCStringLength - i];
+	return [OFString stringWithUTF8String: s->cString + i
+				       length: pathCStringLength - i];
 }
 
 - (OFString*)stringByDeletingLastPathComponent
@@ -1698,8 +1701,8 @@ of_utf16_string_length(const uint16_t *string)
 		pathCStringLength--;
 
 	if (pathCStringLength == 0)
-		return [OFString stringWithCString: s->cString
-					    length: 1];
+		return [OFString stringWithUTF8String: s->cString
+					       length: 1];
 
 	for (i = pathCStringLength - 1; i >= 1; i--)
 #ifndef _WIN32
@@ -1707,16 +1710,16 @@ of_utf16_string_length(const uint16_t *string)
 #else
 		if (s->cString[i] == '/' || s->cString[i] == '\\')
 #endif
-			return [OFString stringWithCString: s->cString
-						    length: i];
+			return [OFString stringWithUTF8String: s->cString
+						       length: i];
 
 #ifndef _WIN32
 	if (s->cString[0] == OF_PATH_DELIMITER)
 #else
 	if (s->cString[0] == '/' || s->cString[0] == '\\')
 #endif
-		return [OFString stringWithCString: s->cString
-					    length: 1];
+		return [OFString stringWithUTF8String: s->cString
+					       length: 1];
 
 	return @".";
 }

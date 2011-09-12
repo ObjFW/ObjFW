@@ -26,19 +26,28 @@
 /**
  * \brief Appends a UTF-8 encoded C string to the OFMutableString.
  *
- * \param cString A UTF-8 encoded C string to append
+ * \param UTF8String A UTF-8 encoded C string to append
  */
-- (void)appendCString: (const char*)cString;
+- (void)appendUTF8String: (const char*)UTF8String;
 
 /**
  * \brief Appends a UTF-8 encoded C string with the specified length to the
  *	  OFMutableString.
  *
- * \param cString A UTF-8 encoded C string to append
- * \param cStringLength The length of the UTF-8 encoded C string
+ * \param UTF8String A UTF-8 encoded C string to append
+ * \param UTF8StringLength The length of the UTF-8 encoded C string
+ */
+- (void)appendUTF8String: (const char*)UTF8String
+	      withLength: (size_t)UTF8StringLength;
+
+/**
+ * \brief Appends a C string with the specified encoding to the OFMutableString.
+ *
+ * \param cString A C string to append
+ * \param encoding The encoding of the C string
  */
 - (void)appendCString: (const char*)cString
-	   withLength: (size_t)cStringLength;
+	 withEncoding: (of_string_encoding_t)encoding;
 
 /**
  * \brief Appends a C string with the specified encoding and length to the

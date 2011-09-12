@@ -167,7 +167,9 @@ void _references_to_categories_of_OFDataArray(void)
 
 	itemSize = 1;
 
-	if (!of_base64_decode(self, [string cString], [string cStringLength])) {
+	if (!of_base64_decode(self,
+	    [string cStringWithEncoding: OF_STRING_ENCODING_ASCII],
+	    [string cStringLengthWithEncoding: OF_STRING_ENCODING_ASCII])) {
 		Class c = isa;
 		[self release];
 		@throw [OFInvalidEncodingException newWithClass: c];
@@ -193,8 +195,10 @@ void _references_to_categories_of_OFDataArray(void)
 
 		stringValue = [element stringValue];
 
-		if (!of_base64_decode(self, [stringValue cString],
-		    [stringValue cStringLength]))
+		if (!of_base64_decode(self,
+		    [stringValue cStringWithEncoding: OF_STRING_ENCODING_ASCII],
+		    [stringValue cStringLengthWithEncoding:
+		    OF_STRING_ENCODING_ASCII]))
 			@throw [OFInvalidEncodingException newWithClass: isa];
 
 		[pool release];

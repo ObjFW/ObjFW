@@ -99,20 +99,20 @@ static uint16_t sutf16str[] = {
 	    [@"€" caseInsensitiveCompare: @"ß"] == OF_ORDERED_DESCENDING &&
 	    [@"ß" caseInsensitiveCompare: @"→"] == OF_ORDERED_ASCENDING &&
 	    [@"AA" caseInsensitiveCompare: @"z"] == OF_ORDERED_ASCENDING &&
-	    [[OFString stringWithCString: "ABC"] caseInsensitiveCompare:
-	    [OFString stringWithCString: "AbD"]] == [@"abc" compare: @"abd"])
+	    [[OFString stringWithUTF8String: "ABC"] caseInsensitiveCompare:
+	    [OFString stringWithUTF8String: "AbD"]] == [@"abc" compare: @"abd"])
 
 	TEST(@"-[hash] is the same if -[isEqual:] is YES",
 	    [s[0] hash] == [s[2] hash])
 
 	TEST(@"-[description]", [[s[0] description] isEqual: s[0]])
 
-	TEST(@"-[appendString:] and -[appendCString:]",
-	    R([s[1] appendCString: "1𝄞"]) && R([s[1] appendString: @"3"]) &&
+	TEST(@"-[appendString:] and -[appendUTF8String:]",
+	    R([s[1] appendUTF8String: "1𝄞"]) && R([s[1] appendString: @"3"]) &&
 	    R([s[0] appendString: s[1]]) && [s[0] isEqual: @"täs€1𝄞3"])
 
 	TEST(@"-[length]", [s[0] length] == 7)
-	TEST(@"-[cStringLength]", [s[0] cStringLength] == 13)
+	TEST(@"-[UTF8StringLength]", [s[0] UTF8StringLength] == 13)
 	TEST(@"-[hash]", [s[0] hash] == 0xD576830E)
 
 	TEST(@"-[characterAtIndex:]", [s[0] characterAtIndex: 0] == 't' &&
@@ -139,9 +139,10 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[lowercaseString]", R([s[0] upper]) &&
 	    [[s[0] lowercaseString] isEqual: @"3𝄞1€sät"])
 
-	TEST(@"+[stringWithCString:length:]",
-	    (s[0] = [OFMutableString stringWithCString: "\xEF\xBB\xBF" "foobar"
-						length: 6]) &&
+	TEST(@"+[stringWithUTF8String:length:]",
+	    (s[0] = [OFMutableString stringWithUTF8String: "\xEF\xBB\xBF"
+							   "foobar"
+						   length: 6]) &&
 	    [s[0] isEqual: @"foo"])
 
 	TEST(@"+[stringWithUnicodeString:]",
@@ -167,19 +168,19 @@ static uint16_t sutf16str[] = {
 			   encoding: OF_STRING_ENCODING_ISO_8859_1]) &&
 	    [s[1] isEqual: @"testäöü"])
 
-	TEST(@"-[appendCStringWithLength:]",
-	    R([s[0] appendCString: "foo\xEF\xBB\xBF" "barqux" + 3
-		       withLength: 6]) && [s[0] isEqual: @"foobar"])
+	TEST(@"-[appendUTFString:withLength:]",
+	    R([s[0] appendUTF8String: "foo\xEF\xBB\xBF" "barqux" + 3
+			  withLength: 6]) && [s[0] isEqual: @"foobar"])
 
 	EXPECT_EXCEPTION(@"Detection of invalid UTF-8 encoding #1",
 	    OFInvalidEncodingException,
-	    [OFString stringWithCString: "\xE0\x80"])
+	    [OFString stringWithUTF8String: "\xE0\x80"])
 	EXPECT_EXCEPTION(@"Detection of invalid UTF-8 encoding #2",
 	    OFInvalidEncodingException,
-	    [OFString stringWithCString: "\xF0\x80\x80\xC0"])
+	    [OFString stringWithUTF8String: "\xF0\x80\x80\xC0"])
 
 	TEST(@"-[reverse] on UTF-8 strings",
-	    (s[0] = [OFMutableString stringWithCString: "äöü€𝄞"]) &&
+	    (s[0] = [OFMutableString stringWithUTF8String: "äöü€𝄞"]) &&
 	    R([s[0] reverse]) && [s[0] isEqual: @"𝄞€üöä"])
 
 	TEST(@"Conversion of ISO 8859-1 to UTF-8",

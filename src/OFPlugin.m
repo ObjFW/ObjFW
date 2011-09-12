@@ -47,9 +47,10 @@
 
 	pool = [[OFAutoreleasePool alloc] init];
 	file = [OFMutableString stringWithString: path];
-	[file appendCString: PLUGIN_SUFFIX];
+	[file appendString: @PLUGIN_SUFFIX];
 
-	if ((handle = dlopen([file cString], RTLD_LAZY)) == NULL)
+	if ((handle = dlopen([file cStringWithEncoding:
+	    OF_STRING_ENCODING_NATIVE], RTLD_LAZY)) == NULL)
 		@throw [OFInitializationFailedException newWithClass: self];
 
 	[pool release];

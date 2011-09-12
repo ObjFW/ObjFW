@@ -288,7 +288,7 @@ formatConversionSpecifierState(struct context *ctx)
 
 			if ((object = va_arg(ctx->arguments, id)) != nil)
 				tmpLen = asprintf(&tmp, ctx->subformat,
-				    [[object description] cString]);
+				    [[object description] UTF8String]);
 			else
 				tmpLen = asprintf(&tmp, ctx->subformat,
 				    "(nil)");
@@ -514,7 +514,7 @@ static bool (*states[])(struct context*) = {
 };
 
 int
-of_vasprintf(char **cString, const char *format, va_list arguments)
+of_vasprintf(char **UTF8String, const char *format, va_list arguments)
 {
 	struct context ctx;
 
@@ -551,18 +551,18 @@ of_vasprintf(char **cString, const char *format, va_list arguments)
 
 	ctx.buffer[ctx.bufferLen] = 0;
 
-	*cString = ctx.buffer;
+	*UTF8String = ctx.buffer;
 	return (ctx.bufferLen <= INT_MAX ? (int)ctx.bufferLen : -1);
 }
 
 int
-of_asprintf(char **cString, const char *format, ...)
+of_asprintf(char **UTF8String, const char *format, ...)
 {
 	va_list arguments;
 	int ret;
 
 	va_start(arguments, format);
-	ret = of_vasprintf(cString, format, arguments);
+	ret = of_vasprintf(UTF8String, format, arguments);
 	va_end(arguments);
 
 	return ret;

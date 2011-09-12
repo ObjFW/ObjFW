@@ -92,70 +92,72 @@ resolve_relative_path(OFString *path)
 
 - initWithString: (OFString*)string
 {
-	char *cString, *cString2 = NULL;
+	char *UTF8String, *UTF8String2 = NULL;
 
 	self = [super init];
 
 	@try {
 		char *tmp, *tmp2;
 
-		if ((cString2 = strdup([string cString])) == NULL)
+		if ((UTF8String2 = strdup([string UTF8String])) == NULL)
 			@throw [OFOutOfMemoryException
 			     newWithClass: isa
-			    requestedSize: [string cStringLength]];
+			    requestedSize: [string UTF8StringLength]];
 
-		cString = cString2;
+		UTF8String = UTF8String2;
 
-		if (!strncmp(cString, "file://", 7)) {
+		if (!strncmp(UTF8String, "file://", 7)) {
 			scheme = @"file";
-			path = [[OFString alloc] initWithCString: cString + 7];
+			path = [[OFString alloc]
+			    initWithUTF8String: UTF8String + 7];
 			return self;
-		} else if (!strncmp(cString, "http://", 7)) {
+		} else if (!strncmp(UTF8String, "http://", 7)) {
 			scheme = @"http";
-			cString += 7;
-		} else if (!strncmp(cString, "https://", 8)) {
+			UTF8String += 7;
+		} else if (!strncmp(UTF8String, "https://", 8)) {
 			scheme = @"https";
-			cString += 8;
+			UTF8String += 8;
 		} else
 			@throw [OFInvalidFormatException newWithClass: isa];
 
-		if ((tmp = strchr(cString, '/')) != NULL) {
+		if ((tmp = strchr(UTF8String, '/')) != NULL) {
 			*tmp = '\0';
 			tmp++;
 		}
 
-		if ((tmp2 = strchr(cString, '@')) != NULL) {
+		if ((tmp2 = strchr(UTF8String, '@')) != NULL) {
 			char *tmp3;
 
 			*tmp2 = '\0';
 			tmp2++;
 
-			if ((tmp3 = strchr(cString, ':')) != NULL) {
+			if ((tmp3 = strchr(UTF8String, ':')) != NULL) {
 				*tmp3 = '\0';
 				tmp3++;
 
 				user = [[OFString alloc]
-				    initWithCString: cString];
+				    initWithUTF8String: UTF8String];
 				password = [[OFString alloc]
-				    initWithCString: tmp3];
+				    initWithUTF8String: tmp3];
 			} else
 				user = [[OFString alloc]
-				    initWithCString: cString];
+				    initWithUTF8String: UTF8String];
 
-			cString = tmp2;
+			UTF8String = tmp2;
 		}
 
-		if ((tmp2 = strchr(cString, ':')) != NULL) {
+		if ((tmp2 = strchr(UTF8String, ':')) != NULL) {
 			OFAutoreleasePool *pool;
 			OFString *portString;
 
 			*tmp2 = '\0';
 			tmp2++;
 
-			host = [[OFString alloc] initWithCString: cString];
+			host = [[OFString alloc]
+			    initWithUTF8String: UTF8String];
 
 			pool = [[OFAutoreleasePool alloc] init];
-			portString = [OFString stringWithCString: tmp2];
+			portString = [OFString stringWithUTF8String: tmp2];
 
 			if ([portString decimalValue] > 65535)
 				@throw [OFInvalidFormatException
@@ -165,7 +167,8 @@ resolve_relative_path(OFString *path)
 
 			[pool release];
 		} else {
-			host = [[OFString alloc] initWithCString: cString];
+			host = [[OFString alloc]
+			    initWithUTF8String: UTF8String];
 
 			if ([scheme isEqual: @"http"])
 				port = 80;
@@ -175,37 +178,37 @@ resolve_relative_path(OFString *path)
 				assert(0);
 		}
 
-		if ((cString = tmp) != NULL) {
-			if ((tmp = strchr(cString, '#')) != NULL) {
+		if ((UTF8String = tmp) != NULL) {
+			if ((tmp = strchr(UTF8String, '#')) != NULL) {
 				*tmp = '\0';
 
 				fragment = [[OFString alloc]
-				    initWithCString: tmp + 1];
+				    initWithUTF8String: tmp + 1];
 			}
 
-			if ((tmp = strchr(cString, '?')) != NULL) {
+			if ((tmp = strchr(UTF8String, '?')) != NULL) {
 				*tmp = '\0';
 
 				query = [[OFString alloc]
-				    initWithCString: tmp + 1];
+				    initWithUTF8String: tmp + 1];
 			}
 
-			if ((tmp = strchr(cString, ';')) != NULL) {
+			if ((tmp = strchr(UTF8String, ';')) != NULL) {
 				*tmp = '\0';
 
 				parameters = [[OFString alloc]
-				    initWithCString: tmp + 1];
+				    initWithUTF8String: tmp + 1];
 			}
 
 			path = [[OFString alloc] initWithFormat: @"/%s",
-								 cString];
+								 UTF8String];
 		} else
 			path = @"";
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	} @finally {
-		free(cString2);
+		free(UTF8String2);
 	}
 
 	return self;
@@ -214,7 +217,7 @@ resolve_relative_path(OFString *path)
 - initWithString: (OFString*)string
    relativeToURL: (OFURL*)URL
 {
-	char *cString, *cString2 = NULL;
+	char *UTF8String, *UTF8String2 = NULL;
 
 	if ([string containsString: @"://"])
 		return [self initWithString: string];
@@ -230,31 +233,33 @@ resolve_relative_path(OFString *path)
 		user = [URL->user copy];
 		password = [URL->password copy];
 
-		if ((cString2 = strdup([string cString])) == NULL)
+		if ((UTF8String2 = strdup([string UTF8String])) == NULL)
 			@throw [OFOutOfMemoryException
 			     newWithClass: isa
-			    requestedSize: [string cStringLength]];
+			    requestedSize: [string UTF8StringLength]];
 
-		cString = cString2;
+		UTF8String = UTF8String2;
 
-		if ((tmp = strchr(cString, '#')) != NULL) {
+		if ((tmp = strchr(UTF8String, '#')) != NULL) {
 			*tmp = '\0';
-			fragment = [[OFString alloc] initWithCString: tmp + 1];
+			fragment = [[OFString alloc]
+			    initWithUTF8String: tmp + 1];
 		}
 
-		if ((tmp = strchr(cString, '?')) != NULL) {
+		if ((tmp = strchr(UTF8String, '?')) != NULL) {
 			*tmp = '\0';
-			query = [[OFString alloc] initWithCString: tmp + 1];
+			query = [[OFString alloc] initWithUTF8String: tmp + 1];
 		}
 
-		if ((tmp = strchr(cString, ';')) != NULL) {
+		if ((tmp = strchr(UTF8String, ';')) != NULL) {
 			*tmp = '\0';
 			parameters = [[OFString alloc]
-			    initWithCString: tmp + 1];
+			    initWithUTF8String: tmp + 1];
 		}
 
-		if (*cString == '/')
-			path = [[OFString alloc] initWithCString: cString];
+		if (*UTF8String == '/')
+			path = [[OFString alloc]
+			    initWithUTF8String: UTF8String];
 		else {
 			OFAutoreleasePool *pool;
 			OFString *s;
@@ -264,11 +269,11 @@ resolve_relative_path(OFString *path)
 			if ([URL->path hasSuffix: @"/"])
 				s = [OFString stringWithFormat: @"%@%s",
 								URL->path,
-								cString];
+								UTF8String];
 			else
 				s = [OFString stringWithFormat: @"%@/../%s",
 								URL->path,
-								cString];
+								UTF8String];
 
 			path = [resolve_relative_path(s) copy];
 
@@ -278,7 +283,7 @@ resolve_relative_path(OFString *path)
 		[self release];
 		@throw e;
 	} @finally {
-		free(cString2);
+		free(UTF8String2);
 	}
 
 	return self;

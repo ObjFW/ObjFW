@@ -87,7 +87,7 @@ void *_OFConstantStringClassReference;
 					      selector: _cmd];
 }
 
-- initWithCString: (const char*)str
+- initWithUTF8String: (const char*)UTF8String
 {
 	Class c = isa;
 	[self release];
@@ -95,7 +95,16 @@ void *_OFConstantStringClassReference;
 					      selector: _cmd];
 }
 
-- initWithCString: (const char*)str
+- initWithUTF8String: (const char*)UTF8String
+	      length: (size_t)UTF8StringLength
+{
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException newWithClass: c
+					      selector: _cmd];
+}
+
+- initWithCString: (const char*)cString
 	 encoding: (of_string_encoding_t)encoding
 {
 	Class c = isa;
@@ -104,18 +113,9 @@ void *_OFConstantStringClassReference;
 					      selector: _cmd];
 }
 
-- initWithCString: (const char*)str
+- initWithCString: (const char*)cString
 	 encoding: (of_string_encoding_t)encoding
-	   length: (size_t)len
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
-}
-
-- initWithCString: (const char*)str
-	   length: (size_t)len
+	   length: (size_t)cStringLength
 {
 	Class c = isa;
 	[self release];
@@ -405,12 +405,20 @@ void *_OFConstantStringClassReference;
 }
 
 /* From OFString */
-- (const char*)cString
+- (const char*)UTF8String
 {
 	if (initialized != SIZE_MAX)
 		[self finishInitialization];
 
-	return [super cString];
+	return [super UTF8String];
+}
+
+- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
+{
+	if (initialized != SIZE_MAX)
+		[self finishInitialization];
+
+	return [super cStringWithEncoding: encoding];
 }
 
 - (size_t)length
@@ -421,12 +429,20 @@ void *_OFConstantStringClassReference;
 	return [super length];
 }
 
-- (size_t)cStringLength
+- (size_t)UTF8StringLength
 {
 	if (initialized != SIZE_MAX)
 		[self finishInitialization];
 
-	return [super cStringLength];
+	return [super UTF8StringLength];
+}
+
+- (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding
+{
+	if (initialized != SIZE_MAX)
+		[self finishInitialization];
+
+	return [super cStringLengthWithEncoding: encoding];
 }
 
 - (of_comparison_result_t)caseInsensitiveCompare: (OFString*)otherString

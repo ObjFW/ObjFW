@@ -97,7 +97,8 @@ static OFMutex *mutex = nil;
 	hints.ai_socktype = SOCK_STREAM;
 	snprintf(portCString, 7, "%" PRIu16, port);
 
-	if (getaddrinfo([host cString], portCString, &hints, &res0))
+	if (getaddrinfo([host cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	    portCString, &hints, &res0))
 		@throw [OFAddressTranslationFailedException newWithClass: isa
 								  socket: self
 								    host: host];
@@ -129,7 +130,8 @@ static OFMutex *mutex = nil;
 	[mutex lock];
 # endif
 
-	if ((he = gethostbyname([host cString])) == NULL) {
+	if ((he = gethostbyname([host cStringWithEncoding:
+	    OF_STRING_ENCODING_NATIVE])) == NULL) {
 # ifdef OF_THREADS
 		[addrlist release];
 		[mutex unlock];
@@ -222,7 +224,8 @@ static OFMutex *mutex = nil;
 	hints.ai_socktype = SOCK_STREAM;
 	snprintf(portCString, 7, "%" PRIu16, port);
 
-	if (getaddrinfo([host cString], portCString, &hints, &res))
+	if (getaddrinfo([host cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	    portCString, &hints, &res))
 		@throw [OFAddressTranslationFailedException newWithClass: isa
 								  socket: self
 								    host: host];
@@ -251,7 +254,8 @@ static OFMutex *mutex = nil;
 	[mutex lock];
 # endif
 
-	if ((he = gethostbyname([host cString])) == NULL) {
+	if ((he = gethostbyname([host cStringWithEncoding:
+	    OF_STRING_ENCODING_NATIVE])) == NULL) {
 # ifdef OF_THREADS
 		[mutex unlock];
 # endif
@@ -405,7 +409,8 @@ static OFMutex *mutex = nil;
 			@throw [OFAddressTranslationFailedException
 			    newWithClass: isa];
 
-		return [OFString stringWithCString: host];
+		return [OFString stringWithCString: host
+					  encoding: OF_STRING_ENCODING_NATIVE];
 	} @finally {
 		[self freeMemory: host];
 	}
@@ -421,7 +426,8 @@ static OFMutex *mutex = nil;
 			@throw [OFAddressTranslationFailedException
 			    newWithClass: isa];
 
-		return [OFString stringWithCString: host];
+		return [OFString stringWithCString: host
+					  encoding: OF_STRING_ENCODING_NATIVE];
 # ifdef OF_THREADS
 	} @finally {
 		[mutex unlock];

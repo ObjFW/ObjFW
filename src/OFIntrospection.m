@@ -40,7 +40,8 @@
 	@try {
 		selector = method_getName(method);
 		name = [[OFString alloc]
-		    initWithCString: sel_getName(selector)];
+		    initWithCString: sel_getName(selector)
+			   encoding: OF_STRING_ENCODING_ASCII];
 		typeEncoding = method_getTypeEncoding(method);
 	} @catch (id e) {
 		[self release];

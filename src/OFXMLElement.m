@@ -562,7 +562,7 @@ void _references_to_categories_of_OFXMLElement(void)
 		defaultNS = defaultNamespace;
 
 	i = 0;
-	length = [name cStringLength] + 3 + (level * indentation);
+	length = [name UTF8StringLength] + 3 + (level * indentation);
 	cString = [self allocMemoryWithSize: length];
 
 	memset(cString + i, ' ', level * indentation);
@@ -572,7 +572,7 @@ void _references_to_categories_of_OFXMLElement(void)
 	cString[i++] = '<';
 
 	if (prefix != nil && ![ns isEqual: defaultNS]) {
-		length += [prefix cStringLength] + 1;
+		length += [prefix UTF8StringLength] + 1;
 		@try {
 			cString = [self resizeMemory: cString
 					      toSize: length];
@@ -581,18 +581,19 @@ void _references_to_categories_of_OFXMLElement(void)
 			@throw e;
 		}
 
-		memcpy(cString + i, [prefix cString], [prefix cStringLength]);
-		i += [prefix cStringLength];
+		memcpy(cString + i, [prefix UTF8String],
+		    [prefix UTF8StringLength]);
+		i += [prefix UTF8StringLength];
 		cString[i++] = ':';
 	}
 
-	memcpy(cString + i, [name cString], [name cStringLength]);
-	i += [name cStringLength];
+	memcpy(cString + i, [name UTF8String], [name UTF8StringLength]);
+	i += [name UTF8StringLength];
 
 	/* xmlns if necessary */
 	if (prefix == nil && ((ns != nil && ![ns isEqual: defaultNS]) ||
 	    (ns == nil && defaultNS != nil))) {
-		length += [ns cStringLength] + 9;
+		length += [ns UTF8StringLength] + 9;
 		@try {
 			cString = [self resizeMemory: cString
 					      toSize: length];
@@ -603,8 +604,8 @@ void _references_to_categories_of_OFXMLElement(void)
 
 		memcpy(cString + i, " xmlns='", 8);
 		i += 8;
-		memcpy(cString + i, [ns cString], [ns cStringLength]);
-		i += [ns cStringLength];
+		memcpy(cString + i, [ns UTF8String], [ns UTF8StringLength]);
+		i += [ns UTF8StringLength];
 		cString[i++] = '\'';
 	}
 
@@ -626,10 +627,10 @@ void _references_to_categories_of_OFXMLElement(void)
 			    newWithClass: isa
 			       namespace: [attributesCArray[j] namespace]];
 
-		length += [attributeName cStringLength] +
+		length += [attributeName UTF8StringLength] +
 		    (attributePrefix != nil ?
-		    [attributePrefix cStringLength] + 1 : 0) +
-		    [tmp cStringLength] + 4;
+		    [attributePrefix UTF8StringLength] + 1 : 0) +
+		    [tmp UTF8StringLength] + 4;
 
 		@try {
 			cString = [self resizeMemory: cString
@@ -641,18 +642,18 @@ void _references_to_categories_of_OFXMLElement(void)
 
 		cString[i++] = ' ';
 		if (attributePrefix != nil) {
-			memcpy(cString + i, [attributePrefix cString],
-			    [attributePrefix cStringLength]);
-			i += [attributePrefix cStringLength];
+			memcpy(cString + i, [attributePrefix UTF8String],
+			    [attributePrefix UTF8StringLength]);
+			i += [attributePrefix UTF8StringLength];
 			cString[i++] = ':';
 		}
-		memcpy(cString + i, [attributeName cString],
-		    [attributeName cStringLength]);
-		i += [attributeName cStringLength];
+		memcpy(cString + i, [attributeName UTF8String],
+		    [attributeName UTF8StringLength]);
+		i += [attributeName UTF8StringLength];
 		cString[i++] = '=';
 		cString[i++] = '\'';
-		memcpy(cString + i, [tmp cString], [tmp cStringLength]);
-		i += [tmp cStringLength];
+		memcpy(cString + i, [tmp UTF8String], [tmp UTF8StringLength]);
+		i += [tmp UTF8StringLength];
 		cString[i++] = '\'';
 
 		[pool2 releaseObjects];
@@ -690,14 +691,14 @@ void _references_to_categories_of_OFXMLElement(void)
 				     indentation: (indent ? indentation : 0)
 					   level: level + 1];
 
-			[tmp addNItems: [child cStringLength]
-			    fromCArray: [child cString]];
+			[tmp addNItems: [child UTF8StringLength]
+			    fromCArray: [child UTF8String]];
 		}
 
 		if (indent)
 			[tmp addItem: "\n"];
 
-		length += [tmp count] + [name cStringLength] + 2 +
+		length += [tmp count] + [name UTF8StringLength] + 2 +
 		    (indent ? level * indentation : 0);
 		@try {
 			cString = [self resizeMemory: cString
@@ -720,7 +721,7 @@ void _references_to_categories_of_OFXMLElement(void)
 		cString[i++] = '<';
 		cString[i++] = '/';
 		if (prefix != nil) {
-			length += [prefix cStringLength] + 1;
+			length += [prefix UTF8StringLength] + 1;
 			@try {
 				cString = [self resizeMemory: cString
 						      toSize: length];
@@ -729,13 +730,13 @@ void _references_to_categories_of_OFXMLElement(void)
 				@throw e;
 			}
 
-			memcpy(cString + i, [prefix cString],
-			    [prefix cStringLength]);
-			i += [prefix cStringLength];
+			memcpy(cString + i, [prefix UTF8String],
+			    [prefix UTF8StringLength]);
+			i += [prefix UTF8StringLength];
 			cString[i++] = ':';
 		}
-		memcpy(cString + i, [name cString], [name cStringLength]);
-		i += [name cStringLength];
+		memcpy(cString + i, [name UTF8String], [name UTF8StringLength]);
+		i += [name UTF8StringLength];
 	} else
 		cString[i++] = '/';
 
@@ -745,8 +746,8 @@ void _references_to_categories_of_OFXMLElement(void)
 	[pool release];
 
 	@try {
-		ret = [OFString stringWithCString: cString
-					   length: length];
+		ret = [OFString stringWithUTF8String: cString
+					      length: length];
 	} @finally {
 		[self freeMemory: cString];
 	}

@@ -475,10 +475,10 @@ static OFMutex *mutex;
 	buffer = [self allocMemoryWithSize: of_pagesize];
 
 	@try {
-		if (!strftime(buffer, of_pagesize, [format cString], &tm))
+		if (!strftime(buffer, of_pagesize, [format UTF8String], &tm))
 			@throw [OFOutOfRangeException newWithClass: isa];
 
-		ret = [OFString stringWithCString: buffer];
+		ret = [OFString stringWithUTF8String: buffer];
 	} @finally {
 		[self freeMemory: buffer];
 	}
@@ -521,10 +521,10 @@ static OFMutex *mutex;
 	buffer = [self allocMemoryWithSize: of_pagesize];
 
 	@try {
-		if (!strftime(buffer, of_pagesize, [format cString], &tm))
+		if (!strftime(buffer, of_pagesize, [format UTF8String], &tm))
 			@throw [OFOutOfRangeException newWithClass: isa];
 
-		ret = [OFString stringWithCString: buffer];
+		ret = [OFString stringWithUTF8String: buffer];
 	} @finally {
 		[self freeMemory: buffer];
 	}

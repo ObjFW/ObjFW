@@ -42,7 +42,7 @@ Class of_http_request_tls_socket_class = Nil;
 static OF_INLINE void
 normalize_key(OFString *key)
 {
-	uint8_t *str = (uint8_t*)[key cString];
+	uint8_t *str = (uint8_t*)[key UTF8String];
 	BOOL firstLetter = YES;
 
 	while (*str != '\0') {
@@ -262,7 +262,7 @@ normalize_key(OFString *key)
 
 			if ([headers objectForKey: @"Content-Length"] == nil)
 				[sock writeFormat: @"Content-Length: %d\r\n",
-				    [queryString cStringLength]];
+				    [queryString UTF8StringLength]];
 		}
 
 		[sock writeString: @"\r\n"];
@@ -291,7 +291,7 @@ normalize_key(OFString *key)
 
 		while ((line = [sock readLine]) != nil) {
 			OFString *key, *value;
-			const char *line_c = [line cString], *tmp;
+			const char *line_c = [line UTF8String], *tmp;
 
 			if ([line isEqual: @""])
 				break;
@@ -300,15 +300,15 @@ normalize_key(OFString *key)
 				@throw [OFInvalidServerReplyException
 				    newWithClass: isa];
 
-			key = [OFString stringWithCString: line_c
-						   length: tmp - line_c];
+			key = [OFString stringWithUTF8String: line_c
+						      length: tmp - line_c];
 			normalize_key(key);
 
 			do {
 				tmp++;
 			} while (*tmp == ' ');
 
-			value = [OFString stringWithCString: tmp];
+			value = [OFString stringWithUTF8String: tmp];
 
 			if ((redirects > 0 && (status == 301 || status == 302 ||
 			    status == 303) && [key isEqual: @"Location"]) &&

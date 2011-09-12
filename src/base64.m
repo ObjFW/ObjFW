@@ -60,7 +60,8 @@ of_base64_encode(const char *data, size_t length)
 		tb[3] = of_base64_encode_table[sb & 0x00003F];
 
 		[ret appendCString: tb
-			withLength: 4];
+		      withEncoding: OF_STRING_ENCODING_ASCII
+			    length: 4];
 	}
 
 	switch (rest) {
@@ -70,7 +71,8 @@ of_base64_encode(const char *data, size_t length)
 		tb[2] = tb[3] = '=';
 
 		[ret appendCString: tb
-			withLength: 4];
+		      withEncoding: OF_STRING_ENCODING_ASCII
+			    length: 4];
 
 		break;
 	case 2:
@@ -82,7 +84,8 @@ of_base64_encode(const char *data, size_t length)
 		tb[3] = '=';
 
 		[ret appendCString: tb
-			withLength: 4];
+		      withEncoding: OF_STRING_ENCODING_ASCII
+			    length: 4];
 
 		break;
 	}

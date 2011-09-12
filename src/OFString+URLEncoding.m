@@ -31,7 +31,7 @@ int _OFString_URLEncoding_reference;
 @implementation OFString (URLEncoding)
 - (OFString*)stringByURLEncoding
 {
-	const char *string = [self cString];
+	const char *string = [self UTF8String];
 	char *retCString;
 	size_t i;
 	OFString *ret;
@@ -41,10 +41,10 @@ int _OFString_URLEncoding_reference;
 	 * Oh, and we can't use [self allocWithSize:] here as self might be a
 	 * @"" literal.
 	 */
-	if ((retCString = malloc(([self cStringLength] * 3) + 1)) == NULL)
+	if ((retCString = malloc(([self UTF8StringLength] * 3) + 1)) == NULL)
 		@throw [OFOutOfMemoryException
 		    newWithClass: isa
-		   requestedSize: ([self cStringLength] * 3) + 1];
+		   requestedSize: ([self UTF8StringLength] * 3) + 1];
 
 	for (i = 0; *string != '\0'; string++) {
 		if (isalnum((int)*string) || *string == '-' || *string == '_' ||
@@ -65,8 +65,8 @@ int _OFString_URLEncoding_reference;
 	}
 
 	@try {
-		ret = [OFString stringWithCString: retCString
-					   length: i];
+		ret = [OFString stringWithUTF8String: retCString
+					      length: i];
 	} @finally {
 		free(retCString);
 	}
@@ -77,16 +77,16 @@ int _OFString_URLEncoding_reference;
 - (OFString*)stringByURLDecoding
 {
 	OFString *ret;
-	const char *string = [self cString];
+	const char *string = [self UTF8String];
 	char *retCString;
 	char byte = 0;
 	int state = 0;
 	size_t i;
 
-	if ((retCString = malloc([self cStringLength] + 1)) == NULL)
+	if ((retCString = malloc([self UTF8StringLength] + 1)) == NULL)
 		@throw [OFOutOfMemoryException
 		    newWithClass: isa
-		   requestedSize: [self cStringLength] + 1];
+		   requestedSize: [self UTF8StringLength] + 1];
 
 	for (i = 0; *string; string++) {
 		switch (state) {
@@ -131,7 +131,8 @@ int _OFString_URLEncoding_reference;
 	}
 
 	@try {
-		ret = [OFString stringWithCString: retCString];
+		ret = [OFString stringWithUTF8String: retCString
+					      length: i];
 	} @finally {
 		free(retCString);
 	}

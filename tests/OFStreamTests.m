@@ -79,7 +79,7 @@ static OFString *module = @"OFStream";
 
 	TEST(@"-[readLine]", [[t readLine] isEqual: @"foo"] &&
 	    [(str = [t readLine]) length] == of_pagesize - 3 &&
-	    !strcmp([str cString], cstr))
+	    !strcmp([str UTF8String], cstr))
 
 	[pool drain];
 }

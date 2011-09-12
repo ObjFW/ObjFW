@@ -56,7 +56,7 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 	}
 
 	pspDebugScreenSetXY(0, y);
-	pspDebugScreenPrintData([str cString], [str cStringLength]);
+	pspDebugScreenPrintData([str UTF8String], [str UTF8StringLength]);
 #elif defined(STDOUT)
 	switch (color) {
 	case 0:
@@ -81,9 +81,8 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 	     inModule: (OFString*)module
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	[self outputString: [OFString stringWithFormat: @"[%s] %s: testing...",
-							[module cString],
-							[test cString]]
+	[self outputString: [OFString stringWithFormat: @"[%@] %@: testing...",
+							module, test]
 		 withColor: 0];
 	[pool release];
 }
@@ -92,9 +91,8 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 	     inModule: (OFString*)module
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	[self outputString: [OFString stringWithFormat: @"[%s] %s: ok\n",
-							[module cString],
-							[test cString]]
+	[self outputString: [OFString stringWithFormat: @"[%@] %@: ok\n",
+							module, test]
 		 withColor: 1];
 	[pool release];
 }
@@ -103,9 +101,8 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 	     inModule: (OFString*)module
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	[self outputString: [OFString stringWithFormat: @"[%s] %s: failed\n",
-							[module cString],
-							[test cString]]
+	[self outputString: [OFString stringWithFormat: @"[%@] %@: failed\n",
+							module, test]
 		 withColor: 2];
 	[pool release];
 }

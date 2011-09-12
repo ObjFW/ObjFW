@@ -54,8 +54,8 @@ cache_append(OFDataArray *cache, const char *string,
 		OFString *tmp = [OFString stringWithCString: string
 						   encoding: encoding
 						     length: length];
-		[cache addNItems: [tmp cStringLength]
-		      fromCArray: [tmp cString]];
+		[cache addNItems: [tmp UTF8StringLength]
+		      fromCArray: [tmp UTF8String]];
 		[pool release];
 	}
 }
@@ -65,8 +65,8 @@ transform_string(OFDataArray *cache, size_t cut, BOOL unescape,
     OFObject <OFStringXMLUnescapingDelegate> *delegate)
 {
 	OFMutableString *ret = [OFMutableString
-	    stringWithCString: [cache cArray]
-		       length: [cache count]];
+	    stringWithUTF8String: [cache cArray]
+			  length: [cache count]];
 
 	[ret replaceOccurrencesOfString: @"\r\n"
 			     withString: @"\n"];
@@ -255,8 +255,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 - (void)parseString: (OFString*)string
 {
-	[self parseBuffer: [string cString]
-	       withLength: [string cStringLength]];
+	[self parseBuffer: [string UTF8String]
+	       withLength: [string UTF8StringLength]];
 }
 
 - (void)parseStream: (OFStream*)stream
@@ -383,8 +383,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	pi = [pi substringWithRange: of_range(3, [pi length] - 3)];
 	pi = [pi stringByDeletingEnclosingWhitespaces];
 
-	cString = [pi cString];
-	length = [pi cStringLength];
+	cString = [pi UTF8String];
+	length = [pi UTF8StringLength];
 
 	for (i = last = 0; i < length; i++) {
 		switch (piState) {
@@ -403,8 +403,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 			if (cString[i] != '=')
 				continue;
 
-			attribute = [OFString stringWithCString: cString + last
-							 length: i - last];
+			attribute = [OFString
+			    stringWithUTF8String: cString + last
+					  length: i - last];
 			last = i + 1;
 			piState = 2;
 
@@ -423,8 +424,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				continue;
 
 			value = [OFMutableString
-			    stringWithCString: cString + last
-				       length: i - last];
+			    stringWithUTF8String: cString + last
+					  length: i - last];
 
 			if ([attribute isEqual: @"version"])
 				if (![value hasPrefix: @"1."])
@@ -518,16 +519,16 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	cacheCString = [cache cArray];
 	cacheLength = [cache count];
-	cacheString = [OFString stringWithCString: cacheCString
-					   length: cacheLength];
+	cacheString = [OFString stringWithUTF8String: cacheCString
+					      length: cacheLength];
 
 	if ((tmp = memchr(cacheCString, ':', cacheLength)) != NULL) {
-		name = [[OFString alloc] initWithCString: tmp + 1
-						  length: cacheLength -
-							  (tmp - cacheCString) -
-							  1];
-		prefix = [[OFString alloc] initWithCString: cacheCString
-						    length: tmp - cacheCString];
+		name = [[OFString alloc]
+		    initWithUTF8String: tmp + 1
+				length: cacheLength - (tmp - cacheCString) - 1];
+		prefix = [[OFString alloc]
+		    initWithUTF8String: cacheCString
+				length: tmp - cacheCString];
 	} else {
 		name = [cacheString copy];
 		prefix = nil;
@@ -609,16 +610,16 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	cacheCString = [cache cArray];
 	cacheLength = [cache count];
-	cacheString = [OFString stringWithCString: cacheCString
-					   length: cacheLength];
+	cacheString = [OFString stringWithUTF8String: cacheCString
+					      length: cacheLength];
 
 	if ((tmp = memchr(cacheCString, ':', cacheLength)) != NULL) {
-		name = [[OFString alloc] initWithCString: tmp + 1
-						  length: cacheLength -
-							  (tmp - cacheCString) -
-							  1];
-		prefix = [[OFString alloc] initWithCString: cacheCString
-						    length: tmp - cacheCString];
+		name = [[OFString alloc]
+		    initWithUTF8String: tmp + 1
+				length: cacheLength - (tmp - cacheCString) - 1];
+		prefix = [[OFString alloc]
+		    initWithUTF8String: cacheCString
+				length: tmp - cacheCString];
 	} else {
 		name = [cacheString copy];
 		prefix = nil;
@@ -750,22 +751,22 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	pool = [[OFAutoreleasePool alloc] init];
 
-	cacheString = [OFMutableString stringWithCString: [cache cArray]
-						  length: [cache count]];
+	cacheString = [OFMutableString stringWithUTF8String: [cache cArray]
+						     length: [cache count]];
 	[cacheString deleteEnclosingWhitespaces];
 	/* Prevent a useless copy later */
 	[cacheString makeImmutable];
 
-	cacheCString = [cacheString cString];
-	cacheLength = [cacheString cStringLength];
+	cacheCString = [cacheString UTF8String];
+	cacheLength = [cacheString UTF8StringLength];
 
 	if ((tmp = memchr(cacheCString, ':', cacheLength)) != NULL) {
 		attributeName = [[OFString alloc]
-		    initWithCString: tmp + 1
-			     length: cacheLength - (tmp - cacheCString) - 1];
+		    initWithUTF8String: tmp + 1
+				length: cacheLength - (tmp - cacheCString) - 1];
 		attributePrefix = [[OFString alloc]
-		    initWithCString: cacheCString
-			     length: tmp - cacheCString];
+		    initWithUTF8String: cacheCString
+				length: tmp - cacheCString];
 	} else {
 		attributeName = [cacheString copy];
 		attributePrefix = nil;

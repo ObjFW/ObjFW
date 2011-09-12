@@ -670,14 +670,14 @@
 - (OFString*)readTillDelimiter: (OFString*)delimiter
 		  withEncoding: (of_string_encoding_t)encoding
 {
-	const char *delimiterCString;
+	const char *delimiterUTF8String;
 	size_t i, j, delimiterLength, bufferLength, retLength;
 	char *retCString, *buffer, *newCache;
 	OFString *ret;
 
 	/* FIXME: Convert delimiter to specified charset */
-	delimiterCString = [delimiter cString];
-	delimiterLength = [delimiter cStringLength];
+	delimiterUTF8String = [delimiter UTF8String];
+	delimiterLength = [delimiter UTF8StringLength];
 	j = 0;
 
 	if (delimiterLength == 0)
@@ -687,7 +687,7 @@
 	/* Look if there's something in our cache */
 	if (cache != NULL) {
 		for (i = 0; i < cacheLength; i++) {
-			if (cache[i] != delimiterCString[j++])
+			if (cache[i] != delimiterUTF8String[j++])
 				j = 0;
 
 			if (j == delimiterLength || cache[i] == '\0') {
@@ -739,7 +739,7 @@
 
 			/* Look if there's the delimiter or \0 */
 			for (i = 0; i < bufferLength; i++) {
-				if (buffer[i] != delimiterCString[j++])
+				if (buffer[i] != delimiterUTF8String[j++])
 					j = 0;
 
 				if (j == delimiterLength || buffer[i] == '\0') {
@@ -1246,23 +1246,23 @@
 
 - (size_t)writeString: (OFString*)string
 {
-	size_t length = [string cStringLength];
+	size_t length = [string UTF8StringLength];
 
 	[self writeNBytes: length
-	       fromBuffer: [string cString]];
+	       fromBuffer: [string UTF8String]];
 
 	return length;
 }
 
 - (size_t)writeLine: (OFString*)string
 {
-	size_t stringLength = [string cStringLength];
+	size_t stringLength = [string UTF8StringLength];
 	char *buffer;
 
 	buffer = [self allocMemoryWithSize: stringLength + 1];
 
 	@try {
-		memcpy(buffer, [string cString], stringLength);
+		memcpy(buffer, [string UTF8String], stringLength);
 		buffer[stringLength] = '\n';
 
 		[self writeNBytes: stringLength + 1
@@ -1290,22 +1290,22 @@
 - (size_t)writeFormat: (OFConstantString*)format
 	withArguments: (va_list)arguments
 {
-	char *cString;
+	char *UTF8String;
 	int length;
 
 	if (format == nil)
 		@throw [OFInvalidArgumentException newWithClass: isa
 						       selector: _cmd];
 
-	if ((length = of_vasprintf(&cString, [format cString],
+	if ((length = of_vasprintf(&UTF8String, [format UTF8String],
 	    arguments)) == -1)
 		@throw [OFInvalidFormatException newWithClass: isa];
 
 	@try {
 		[self writeNBytes: length
-		       fromBuffer: cString];
+		       fromBuffer: UTF8String];
 	} @finally {
-		free(cString);
+		free(UTF8String);
 	}
 
 	return length;

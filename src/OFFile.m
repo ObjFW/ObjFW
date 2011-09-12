@@ -187,7 +187,8 @@ of_log(OFConstantString *format, ...)
 	char *buffer = getcwd(NULL, 0);
 
 	@try {
-		ret = [OFString stringWithCString: buffer];
+		ret = [OFString stringWithCString: buffer
+					 encoding: OF_STRING_ENCODING_NATIVE];
 	} @finally {
 		free(buffer);
 	}
@@ -199,7 +200,8 @@ of_log(OFConstantString *format, ...)
 {
 	struct stat s;
 
-	if (stat([path cString], &s) == -1)
+	if (stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	    &s) == -1)
 		return NO;
 
 	if (S_ISREG(s.st_mode))
@@ -212,7 +214,8 @@ of_log(OFConstantString *format, ...)
 {
 	struct stat s;
 
-	if (stat([path cString], &s) == -1)
+	if (stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	    &s) == -1)
 		return NO;
 
 	if (S_ISDIR(s.st_mode))
@@ -224,9 +227,10 @@ of_log(OFConstantString *format, ...)
 + (void)createDirectoryAtPath: (OFString*)path
 {
 #ifndef _WIN32
-	if (mkdir([path cString], DIR_MODE))
+	if (mkdir([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	    DIR_MODE))
 #else
-	if (mkdir([path cString]))
+	if (mkdir([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
 #endif
 		@throw [OFCreateDirectoryFailedException newWithClass: self
 								 path: path];
@@ -241,7 +245,8 @@ of_log(OFConstantString *format, ...)
 	DIR *dir;
 	struct dirent *dirent;
 
-	if ((dir = opendir([path cString])) == NULL)
+	if ((dir = opendir([path cStringWithEncoding:
+	    OF_STRING_ENCODING_NATIVE])) == NULL)
 		@throw [OFOpenFileFailedException newWithClass: self
 							  path: path
 							  mode: @"r"];
@@ -256,7 +261,9 @@ of_log(OFConstantString *format, ...)
 			    !strcmp(dirent->d_name, ".."))
 				continue;
 
-			file = [OFString stringWithCString: dirent->d_name];
+			file = [OFString
+			    stringWithCString: dirent->d_name
+				     encoding: OF_STRING_ENCODING_NATIVE];
 			[files addObject: file];
 
 			[pool releaseObjects];
@@ -310,7 +317,7 @@ of_log(OFConstantString *format, ...)
 
 + (void)changeToDirectory: (OFString*)path
 {
-	if (chdir([path cString]))
+	if (chdir([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
 		@throw [OFChangeDirectoryFailedException newWithClass: self
 								 path: path];
 }
@@ -320,7 +327,7 @@ of_log(OFConstantString *format, ...)
 		  toMode: (mode_t)mode
 {
 # ifndef _WIN32
-	if (chmod([path cString], mode))
+	if (chmod([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE], mode))
 		@throw [OFChangeFileModeFailedException newWithClass: self
 								path: path
 								mode: mode];
@@ -349,7 +356,8 @@ of_log(OFConstantString *format, ...)
 {
 	struct stat s;
 
-	if (stat([path cString], &s) == -1)
+	if (stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	    &s) == -1)
 		/* FIXME: Maybe use another exception? */
 		@throw [OFOpenFileFailedException newWithClass: self
 							  path: path
@@ -379,7 +387,8 @@ of_log(OFConstantString *format, ...)
 		if (owner != nil) {
 			struct passwd *passwd;
 
-			if ((passwd = getpwnam([owner cString])) == NULL)
+			if ((passwd = getpwnam([owner cStringWithEncoding:
+			    OF_STRING_ENCODING_NATIVE])) == NULL)
 				@throw [OFChangeFileOwnerFailedException
 				    newWithClass: self
 					    path: path
@@ -392,7 +401,8 @@ of_log(OFConstantString *format, ...)
 		if (group != nil) {
 			struct group *group_;
 
-			if ((group_ = getgrnam([group cString])) == NULL)
+			if ((group_ = getgrnam([group cStringWithEncoding:
+			    OF_STRING_ENCODING_NATIVE])) == NULL)
 				@throw [OFChangeFileOwnerFailedException
 				    newWithClass: self
 					    path: path
@@ -407,7 +417,8 @@ of_log(OFConstantString *format, ...)
 	}
 # endif
 
-	if (chown([path cString], uid, gid))
+	if (chown([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	    uid, gid))
 		@throw [OFChangeFileOwnerFailedException newWithClass: self
 								 path: path
 								owner: owner
@@ -479,9 +490,11 @@ of_log(OFConstantString *format, ...)
 	}
 
 #ifndef _WIN32
-	if (rename([source cString], [destination cString]))
+	if (rename([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	    [destination cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
 #else
-	if (!MoveFile([source cString], [destination cString]))
+	if (!MoveFile([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	    [destination cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
 #endif
 		@throw [OFRenameFileFailedException newWithClass: self
 						      sourcePath: source
@@ -493,9 +506,9 @@ of_log(OFConstantString *format, ...)
 + (void)deleteFileAtPath: (OFString*)path
 {
 #ifndef _WIN32
-	if (unlink([path cString]))
+	if (unlink([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
 #else
-	if (!DeleteFile([path cString]))
+	if (!DeleteFile([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
 #endif
 		@throw [OFDeleteFileFailedException newWithClass: self
 							    path: path];
@@ -503,7 +516,7 @@ of_log(OFConstantString *format, ...)
 
 + (void)deleteDirectoryAtPath: (OFString*)path
 {
-	if (rmdir([path cString]))
+	if (rmdir([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
 		@throw [OFDeleteDirectoryFailedException newWithClass: self
 								 path: path];
 }
@@ -520,7 +533,8 @@ of_log(OFConstantString *format, ...)
 							nil];
 	}
 
-	if (link([source cString], [destination cString]) != 0)
+	if (link([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	    [destination cStringWithEncoding: OF_STRING_ENCODING_NATIVE]) != 0)
 		@throw [OFLinkFailedException newWithClass: self
 						sourcePath: source
 					   destinationPath: destination];
@@ -541,7 +555,8 @@ of_log(OFConstantString *format, ...)
 							nil];
 	}
 
-	if (symlink([source cString], [destination cString]) != 0)
+	if (symlink([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	    [destination cStringWithEncoding: OF_STRING_ENCODING_NATIVE]) != 0)
 		@throw [OFSymlinkFailedException newWithClass: self
 						   sourcePath: source
 					      destinationPath: destination];
@@ -566,12 +581,13 @@ of_log(OFConstantString *format, ...)
 	@try {
 		int flags;
 
-		if ((flags = parse_mode([mode cString])) == -1)
+		if ((flags = parse_mode([mode cStringWithEncoding:
+		    OF_STRING_ENCODING_NATIVE])) == -1)
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
-		if ((fileDescriptor = open([path cString], flags,
-		    DEFAULT_MODE)) == -1)
+		if ((fileDescriptor = open([path cStringWithEncoding:
+		    OF_STRING_ENCODING_NATIVE], flags, DEFAULT_MODE)) == -1)
 			@throw [OFOpenFileFailedException newWithClass: isa
 								  path: path
 								  mode: mode];

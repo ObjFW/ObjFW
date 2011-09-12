@@ -94,8 +94,6 @@ extern size_t of_utf16_string_length(const uint16_t*);
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly) const char *cString;
-@property (readonly) size_t cStringLength;
 @property (readonly) size_t length;
 #endif
 
@@ -109,10 +107,21 @@ extern size_t of_utf16_string_length(const uint16_t*);
 /**
  * \brief Creates a new OFString from a UTF-8 encoded C string.
  *
- * \param cString A UTF-8 encoded C string to initialize the OFString with
+ * \param UTF8String A UTF-8 encoded C string to initialize the OFString with
  * \return A new autoreleased OFString
  */
-+ stringWithCString: (const char*)cString;
++ stringWithUTF8String: (const char*)UTF8String;
+
+/**
+ * \brief Creates a new OFString from a UTF-8 encoded C string with the
+ *	  specified length.
+ *
+ * \param UTF8String A UTF-8 encoded C string to initialize the OFString with
+ * \param UTF8StringLength The length of the UTF-8 encoded C string
+ * \return A new autoreleased OFString
+ */
++ stringWithUTF8String: (const char*)UTF8String
+		length: (size_t)UTF8StringLength;
 
 /**
  * \brief Creates a new OFString from a C string with the specified encoding.
@@ -135,17 +144,6 @@ extern size_t of_utf16_string_length(const uint16_t*);
  */
 + stringWithCString: (const char*)cString
 	   encoding: (of_string_encoding_t)encoding
-	     length: (size_t)cStringLength;
-
-/**
- * \brief Creates a new OFString from a UTF-8 encoded C string with the
- *	  specified length.
- *
- * \param cString A UTF-8 encoded C string to initialize the OFString with
- * \param cStringLength The length of the UTF-8 encoded C string
- * \return A new autoreleased OFString
- */
-+ stringWithCString: (const char*)cString
 	     length: (size_t)cStringLength;
 
 /**
@@ -311,10 +309,21 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \brief Initializes an already allocated OFString from a UTF-8 encoded C
  *	  string.
  *
- * \param cString A UTF-8 encoded C string to initialize the OFString with
+ * \param UTF8String A UTF-8 encoded C string to initialize the OFString with
  * \return An initialized OFString
  */
-- initWithCString: (const char*)cString;
+- initWithUTF8String: (const char*)UTF8String;
+
+/**
+ * \brief Initializes an already allocated OFString from a UTF-8 encoded C
+ *	  string with the specified length.
+ *
+ * \param UTF8String A UTF-8 encoded C string to initialize the OFString with
+ * \param UTF8StringLength The length of the UTF-8 encoded C string
+ * \return An initialized OFString
+ */
+- initWithUTF8String: (const char*)UTF8String
+	      length: (size_t)UTF8StringLength;
 
 /**
  * \brief Initializes an already allocated OFString from a C string with the
@@ -338,17 +347,6 @@ extern size_t of_utf16_string_length(const uint16_t*);
  */
 - initWithCString: (const char*)cString
 	 encoding: (of_string_encoding_t)encoding
-	   length: (size_t)cStringLength;
-
-/**
- * \brief Initializes an already allocated OFString from a UTF-8 encoded C
- *	  string with the specified length.
- *
- * \param cString A UTF-8 encoded C string to initialize the OFString with
- * \param cStringLength The length of the UTF-8 encoded C string
- * \return An initialized OFString
- */
-- initWithCString: (const char*)cString
 	   length: (size_t)cStringLength;
 
 /**
@@ -542,7 +540,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  *
  * \return The OFString as a UTF-8 encoded C string
  */
-- (const char*)cString;
+- (const char*)UTF8String;
 
 /**
  * \brief Returns the OFString as a C string in the specified encoding.
@@ -560,11 +558,11 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (size_t)length;
 
 /**
- * \brief Returns the length of the string which cString would return.
+ * \brief Returns the number of bytes the string needs in UTF-8 encoding.
  *
- * \return The length of the string which cString would return
+ * \return The number of bytes the string needs in UTF-8 encoding.
  */
-- (size_t)cStringLength;
+- (size_t)UTF8StringLength;
 
 /**
  * \brief Returns the number of bytes the string needs in the specified
