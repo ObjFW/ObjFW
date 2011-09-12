@@ -545,6 +545,14 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (const char*)cString;
 
 /**
+ * \brief Returns the OFString as a C string in the specified encoding.
+ *
+ * \param encoding The encoding for the C string
+ * \return The OFString as a C string in the specified encoding
+ */
+- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding;;
+
+/**
  * \brief Returns the length of the string in Unicode characters.
  *
  * \return The length of the string in Unicode characters
@@ -557,6 +565,15 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \return The length of the string which cString would return
  */
 - (size_t)cStringLength;
+
+/**
+ * \brief Returns the number of bytes the string needs in the specified
+ *	  encoding.
+ *
+ * \param encoding The encoding for the string
+ * \return The number of bytes the string needs in the specified encoding.
+ */
+- (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding;
 
 /**
  * \brief Compares the OFString to another OFString without caring about the

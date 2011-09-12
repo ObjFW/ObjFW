@@ -45,6 +45,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
+#import "OFNotImplementedException.h"
 #import "OFOpenFileFailedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
@@ -1134,6 +1135,22 @@ of_utf16_string_length(const uint16_t *string)
 	return s->cString;
 }
 
+- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
+{
+	switch (encoding) {
+	case OF_STRING_ENCODING_UTF_8:
+		return s->cString;
+	case OF_STRING_ENCODING_ASCII:
+		if (s->isUTF8)
+			@throw [OFInvalidEncodingException newWithClass: isa];
+
+		return s->cString;
+	default:
+		@throw [OFNotImplementedException newWithClass: isa
+						      selector: _cmd];
+	}
+}
+
 - (size_t)length
 {
 	return s->length;
@@ -1142,6 +1159,22 @@ of_utf16_string_length(const uint16_t *string)
 - (size_t)cStringLength
 {
 	return s->cStringLength;
+}
+
+- (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding
+{
+	switch (encoding) {
+	case OF_STRING_ENCODING_UTF_8:
+		return s->cStringLength;
+	case OF_STRING_ENCODING_ASCII:
+		if (s->isUTF8)
+			@throw [OFInvalidEncodingException newWithClass: isa];
+
+		return s->cStringLength;
+	default:
+		@throw [OFNotImplementedException newWithClass: isa
+						      selector: _cmd];
+	}
 }
 
 - (BOOL)isEqual: (id)object
