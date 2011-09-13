@@ -61,13 +61,14 @@ static struct {
 - initWithObject: (id)firstObject
        arguments: (va_list)arguments
 {
-	return [[OFCountedSet_hashtable alloc] initWithObject: firstObject
-						    arguments: arguments];
+	return (id)[[OFCountedSet_hashtable alloc] initWithObject: firstObject
+							arguments: arguments];
 }
 
 - initWithSerialization: (OFXMLElement*)element
 {
-	return [[OFCountedSet_hashtable alloc] initWithSerialization: element];
+	return (id)[[OFCountedSet_hashtable alloc]
+	    initWithSerialization: element];
 }
 
 - retain
