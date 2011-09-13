@@ -2,10 +2,10 @@ include ../extra.mk
 
 SUBDIRS = exceptions
 
-LIB = ${OBJFW_SHARED_LIB}
+SHARED_LIB = ${OBJFW_SHARED_LIB}
+STATIC_LIB = ${OBJFW_STATIC_LIB}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
-STATIC_LIB = ${OBJFW_STATIC_LIB}
 
 SRCS = OFApplication.m			\
        OFArray.m			\
