@@ -33,6 +33,7 @@
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
+#import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
 #import "macros.h"
@@ -170,6 +171,20 @@ static OFMutex *mutex;
 			    microseconds: microseconds] autorelease];
 }
 
++ dateWithDateString: (OFString*)string
+	      format: (OFString*)format
+{
+	return [[[self alloc] initWithDateString: string
+					  format: format] autorelease];
+}
+
++ dateWithLocalDateString: (OFString*)string
+		   format: (OFString*)format
+{
+	return [[[self alloc] initWithLocalDateString: string
+					       format: format] autorelease];
+}
+
 + distantFuture
 {
 	if (sizeof(time_t) == sizeof(int64_t))
@@ -240,6 +255,59 @@ static OFMutex *mutex;
 
 	seconds += microseconds / 1000000;
 	microseconds %= 1000000;
+
+	return self;
+}
+
+- initWithDateString: (OFString*)string
+	      format: (OFString*)format
+{
+	self = [super init];
+
+	@try {
+		struct tm tm = {};
+
+		tm.tm_isdst = -1;
+
+		if (strptime([string UTF8String], [format UTF8String],
+		    &tm) == NULL)
+			@throw [OFInvalidFormatException newWithClass: isa];
+
+		if (tm.tm_gmtoff)
+			@throw [OFInvalidFormatException newWithClass: isa];
+
+		if ((seconds = mktime(&tm)) == -1)
+			@throw [OFInvalidFormatException newWithClass: isa];
+
+		seconds += tm.tm_gmtoff;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithLocalDateString: (OFString*)string
+		   format: (OFString*)format
+{
+	self = [super init];
+
+	@try {
+		struct tm tm = {};
+
+		tm.tm_isdst = -1;
+
+		if (strptime([string UTF8String], [format UTF8String],
+		    &tm) == NULL)
+			@throw [OFInvalidFormatException newWithClass: isa];
+
+		if ((seconds = mktime(&tm)) == -1)
+			@throw [OFInvalidFormatException newWithClass: isa];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }

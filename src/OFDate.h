@@ -75,6 +75,38 @@
 		  microseconds: (uint32_t)microseconds;
 
 /**
+ * \brief Creates a new OFDate with the specified string in the specified
+ *	  format.
+ *
+ * The time zone used is UTC. If a time zone is specified anyway, an
+ * OFInvalidFormatException is thrown. See +[dateWithLocalDateString:format:]
+ * if you want to specify a time zone.
+ *
+ * See the manpage for strptime for information on the format.
+ *
+ * \param string The string describing the date
+ * \param format The format of the string describing the date
+ * \return A new, autoreleased OFDate with the specified date and time
+ */
++ dateWithDateString: (OFString*)string
+	      format: (OFString*)format;
+
+/**
+ * \brief Creates a new OFDate with the specified string in the specified
+ *	  format.
+ *
+ * If no time zone is specified, local time is assumed.
+ *
+ * See the manpage for strptime for information on the format.
+ *
+ * \param string The string describing the date
+ * \param format The format of the string describing the date
+ * \return A new, autoreleased OFDate with the specified date and time
+ */
++ dateWithLocalDateString: (OFString*)string
+		   format: (OFString*)format;
+
+/**
  * \brief Returns a date in the distant future.
  *
  * The date is system-dependant.
@@ -117,7 +149,7 @@
  *	  time since now.
  *
  * \param seconds The seconds since now
- * \return A new, autoreleased OFDate with the specified date and time
+ * \return An initialized OFDate with the specified date and time
  */
 - initWithTimeIntervalSinceNow: (int64_t)seconds;
 
@@ -127,10 +159,42 @@
  *
  * \param seconds The seconds since now
  * \param microseconds The microsecond part of the time
- * \return A new, autoreleased OFDate with the specified date and time
+ * \return An initialized OFDate with the specified date and time
  */
 - initWithTimeIntervalSinceNow: (int64_t)seconds
 		  microseconds: (uint32_t)microseconds;
+
+/**
+ * \brief Initializes an already allocated OFDate with the specified string in
+ *	  the specified format.
+ *
+ * The time zone used is UTC. If a time zone is specified anyway, an
+ * OFInvalidFormatException is thrown. See -[initWithLocalDateString:format:]
+ * if you want to specify a time zone.
+ *
+ * See the manpage for strptime for information on the format.
+ *
+ * \param string The string describing the date
+ * \param format The format of the string describing the date
+ * \return An initialized OFDate with the specified date and time
+ */
+- initWithDateString: (OFString*)string
+	      format: (OFString*)format;
+
+/**
+ * \brief Initializes an already allocated OFDate with the specified string in
+ *	  the specified format.
+ *
+ * If no time zone is specified, local time is assumed.
+ *
+ * See the manpage for strptime for information on the format.
+ *
+ * \param string The string describing the date
+ * \param format The format of the string describing the date
+ * \return An initialized OFDate with the specified date and time
+ */
+- initWithLocalDateString: (OFString*)string
+		   format: (OFString*)format;
 
 /**
  * \brief Returns the microsecond of the date.
