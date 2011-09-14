@@ -430,6 +430,26 @@
 - (OFString*)readLineWithEncoding: (of_string_encoding_t)encoding;
 
 /**
+ * \brief Tries to read a line from the stream (see readLine) and returns nil if
+ *	  no complete line has been received yet.
+ *
+ * \return The line that was read, autoreleased, or nil if the line is not
+ *	   complete yet
+ */
+- (OFString*)tryReadLine;
+
+/**
+ * \brief Tries to read a line from the stream with the specified encoding (see
+ *	  readLineWithEncoding:) and returns nil if no complete line has been
+ *	  received yet.
+ *
+ * \param encoding The encoding used by the stream
+ * \return The line that was read, autoreleased, or nil if the line is not
+ *	   complete yet
+ */
+- (OFString*)tryReadLineWithEncoding: (of_string_encoding_t)encoding;
+
+/**
  * \brief Reads until the specified string or \\0 is found or the end of stream
  *	  occurs.
  *

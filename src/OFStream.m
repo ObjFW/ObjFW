@@ -514,6 +514,22 @@
 
 - (OFString*)readLineWithEncoding: (of_string_encoding_t)encoding
 {
+	OFString *line = nil;
+
+	while ((line = [self tryReadLineWithEncoding: encoding]) == nil)
+		if ([self isAtEndOfStream])
+			return nil;
+
+	return line;
+}
+
+- (OFString*)tryReadLine
+{
+	return [self tryReadLineWithEncoding: OF_STRING_ENCODING_UTF_8];
+}
+
+- (OFString*)tryReadLineWithEncoding: (of_string_encoding_t)encoding
+{
 	size_t i, bufferLength, retLength;
 	char *retCString, *buffer, *newCache;
 	OFString *ret;
@@ -551,114 +567,105 @@
 	buffer = [self allocMemoryWithSize: of_pagesize];
 
 	@try {
-		for (;;) {
-			if ([self _isAtEndOfStream]) {
-				if (cache == NULL)
-					return nil;
+		if ([self _isAtEndOfStream]) {
+			if (cache == NULL)
+				return nil;
 
-				retLength = cacheLength;
+			retLength = cacheLength;
+
+			if (retLength > 0 && cache[retLength - 1] == '\r')
+				retLength--;
+
+			ret = [OFString stringWithCString: cache
+						 encoding: encoding
+						   length: retLength];
+
+			[self freeMemory: cache];
+			cache = NULL;
+			cacheLength = 0;
+
+			return ret;
+		}
+
+		bufferLength = [self _readNBytes: of_pagesize
+				      intoBuffer: buffer];
+
+		/* Look if there's a newline or \0 */
+		for (i = 0; i < bufferLength; i++) {
+			if (OF_UNLIKELY(buffer[i] == '\n' ||
+			    buffer[i] == '\0')) {
+				retLength = cacheLength + i;
+				retCString = [self
+				    allocMemoryWithSize: retLength];
+
+				if (cache != NULL)
+					memcpy(retCString, cache, cacheLength);
+				memcpy(retCString + cacheLength, buffer, i);
 
 				if (retLength > 0 &&
-				    cache[retLength - 1] == '\r')
+				    retCString[retLength - 1] == '\r')
 					retLength--;
 
-				ret = [OFString stringWithCString: cache
-							 encoding: encoding
-							   length: retLength];
+				@try {
+					char *rcs = retCString;
+					size_t rl = retLength;
+
+					ret = [OFString
+					    stringWithCString: rcs
+						     encoding: encoding
+						       length: rl];
+				} @catch (id e) {
+					/*
+					 * Append data to cache to prevent loss
+					 * of data due to wrong encoding.
+					 */
+					cache = [self
+					    resizeMemory: cache
+						  toSize: cacheLength +
+							  bufferLength];
+
+					if (cache != NULL)
+						memcpy(cache + cacheLength,
+						    buffer, bufferLength);
+
+					cacheLength += bufferLength;
+
+					@throw e;
+				} @finally {
+					[self freeMemory: retCString];
+				}
+
+				newCache = [self allocMemoryWithSize:
+				    bufferLength - i - 1];
+				if (newCache != NULL)
+					memcpy(newCache, buffer + i + 1,
+					    bufferLength - i - 1);
 
 				[self freeMemory: cache];
-				cache = NULL;
-				cacheLength = 0;
+				cache = newCache;
+				cacheLength = bufferLength - i - 1;
 
 				return ret;
 			}
-
-			bufferLength = [self _readNBytes: of_pagesize
-					      intoBuffer: buffer];
-
-			/* Look if there's a newline or \0 */
-			for (i = 0; i < bufferLength; i++) {
-				if (OF_UNLIKELY(buffer[i] == '\n' ||
-				    buffer[i] == '\0')) {
-					retLength = cacheLength + i;
-					retCString = [self
-					    allocMemoryWithSize: retLength];
-
-					if (cache != NULL)
-						memcpy(retCString, cache,
-						    cacheLength);
-					memcpy(retCString + cacheLength,
-					    buffer, i);
-
-					if (retLength > 0 &&
-					    retCString[retLength - 1] == '\r')
-						retLength--;
-
-					@try {
-						char *rcs = retCString;
-						size_t rl = retLength;
-
-						ret = [OFString
-						    stringWithCString: rcs
-							     encoding: encoding
-							       length: rl];
-					} @catch (id e) {
-						/*
-						 * Append data to cache to
-						 * prevent loss of data due to
-						 * wrong encoding.
-						 */
-						cache = [self
-						    resizeMemory: cache
-							  toSize: cacheLength +
-								  bufferLength];
-
-						if (cache != NULL)
-							memcpy(cache +
-							    cacheLength, buffer,
-							    bufferLength);
-
-						cacheLength += bufferLength;
-
-						@throw e;
-					} @finally {
-						[self freeMemory: retCString];
-					}
-
-					newCache = [self allocMemoryWithSize:
-					    bufferLength - i - 1];
-					if (newCache != NULL)
-						memcpy(newCache, buffer + i + 1,
-						    bufferLength - i - 1);
-
-					[self freeMemory: cache];
-					cache = newCache;
-					cacheLength = bufferLength - i - 1;
-
-					return ret;
-				}
-			}
-
-			/* There was no newline or \0 */
-			cache = [self resizeMemory: cache
-					    toSize: cacheLength + bufferLength];
-
-			/*
-			 * It's possible that cacheLen + len is 0 and thus
-			 * cache was set to NULL by resizeMemory:toSize:.
-			 */
-			if (cache != NULL)
-				memcpy(cache + cacheLength, buffer,
-				    bufferLength);
-
-			cacheLength += bufferLength;
 		}
+
+		/* There was no newline or \0 */
+		cache = [self resizeMemory: cache
+				    toSize: cacheLength + bufferLength];
+
+		/*
+		 * It's possible that cacheLen + len is 0 and thus cache was
+		 * set to NULL by resizeMemory:toSize:.
+		 */
+		if (cache != NULL)
+			memcpy(cache + cacheLength, buffer, bufferLength);
+
+		cacheLength += bufferLength;
 	} @finally {
 		[self freeMemory: buffer];
 	}
 
-	/* Get rid of a warning, never reached anyway */
-	assert(0);
+	return nil;
 }
 
 - (OFString*)readTillDelimiter: (OFString*)delimiter
