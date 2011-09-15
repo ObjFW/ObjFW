@@ -472,6 +472,30 @@
 		  withEncoding: (of_string_encoding_t)encoding;
 
 /**
+ * \brief Tries to reads until the specified string or \\0 is found or the end
+ *	  of stream (see readTillDelimiter:) and returns nil if not enough data
+ *	  has been received yet.
+ *
+ * \param delimiter The delimiter
+ * \return The line that was read, autoreleased, or nil if the end of the
+ *	   stream has been reached.
+ */
+- (OFString*)tryReadTillDelimiter: (OFString*)delimiter;
+
+/**
+ * \brief Tries to read until the specified string or \\0 is found or the end
+ *	  of stream occurs (see readTIllDelimiterWithEncoding:) and returns nil
+ *	  if not enough data has been received yet.
+ *
+ * \param delimiter The delimiter
+ * \param encoding The encoding used by the stream
+ * \return The line that was read, autoreleased, or nil if the end of the
+ *	   stream has been reached.
+ */
+- (OFString*)tryReadTillDelimiter: (OFString*)delimiter
+		     withEncoding: (of_string_encoding_t)encoding;
+
+/**
  * \brief Returns a boolen whether writes are buffered.
  *
  * \return A boolean whether writes are buffered

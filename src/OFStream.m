@@ -563,7 +563,7 @@
 		}
 	}
 
-	/* Read until we get a newline or \0 */
+	/* Read and see if we get a newline or \0 */
 	buffer = [self allocMemoryWithSize: of_pagesize];
 
 	@try {
@@ -677,6 +677,25 @@
 - (OFString*)readTillDelimiter: (OFString*)delimiter
 		  withEncoding: (of_string_encoding_t)encoding
 {
+	OFString *ret = nil;
+
+	while ((ret = [self tryReadTillDelimiter: delimiter
+				    withEncoding: encoding]) == nil)
+		if ([self isAtEndOfStream])
+			return nil;
+
+	return ret;
+}
+
+- (OFString*)tryReadTillDelimiter: (OFString*)delimiter
+{
+	return [self tryReadTillDelimiter: delimiter
+			     withEncoding: OF_STRING_ENCODING_UTF_8];
+}
+
+- (OFString*)tryReadTillDelimiter: (OFString*)delimiter
+		     withEncoding: (of_string_encoding_t)encoding
+{
 	const char *delimiterUTF8String;
 	size_t i, j, delimiterLength, bufferLength, retLength;
 	char *retCString, *buffer, *newCache;
@@ -721,101 +740,94 @@
 		}
 	}
 
-	/* Read until we get the delimiter or \0 */
+	/* Read and see if we get a delimiter or \0 */
 	buffer = [self allocMemoryWithSize: of_pagesize];
 
 	@try {
-		for (;;) {
-			if ([self _isAtEndOfStream]) {
-				if (cache == NULL)
-					return nil;
+		if ([self _isAtEndOfStream]) {
+			if (cache == NULL)
+				return nil;
 
-				ret = [OFString stringWithCString: cache
-							 encoding: encoding
-							   length: cacheLength];
+			ret = [OFString stringWithCString: cache
+						 encoding: encoding
+						   length: cacheLength];
+
+			[self freeMemory: cache];
+			cache = NULL;
+			cacheLength = 0;
+
+			return ret;
+		}
+
+		bufferLength = [self _readNBytes: of_pagesize
+				      intoBuffer: buffer];
+
+		/* Look if there's a delimiter or \0 */
+		for (i = 0; i < bufferLength; i++) {
+			if (buffer[i] != delimiterUTF8String[j++])
+				j = 0;
+
+			if (j == delimiterLength || buffer[i] == '\0') {
+				if (buffer[i] == '\0')
+					delimiterLength = 1;
+
+				retLength = cacheLength + i + 1 -
+				    delimiterLength;
+				retCString = [self
+				    allocMemoryWithSize: retLength];
+
+				if (cache != NULL && cacheLength <= retLength)
+					memcpy(retCString, cache, cacheLength);
+				else if (cache != NULL)
+					memcpy(retCString, cache, retLength);
+				if (i >= delimiterLength)
+					memcpy(retCString + cacheLength,
+					    buffer, i + 1 - delimiterLength);
+
+				@try {
+					char *rcs = retCString;
+					size_t rl = retLength;
+
+					ret = [OFString
+					    stringWithCString: rcs
+						     encoding: encoding
+						       length: rl];
+				} @finally {
+					[self freeMemory: retCString];
+				}
+
+				newCache = [self allocMemoryWithSize:
+				    bufferLength - i - 1];
+				if (newCache != NULL)
+					memcpy(newCache, buffer + i + 1,
+					    bufferLength - i - 1);
 
 				[self freeMemory: cache];
-				cache = NULL;
-				cacheLength = 0;
+				cache = newCache;
+				cacheLength = bufferLength - i - 1;
 
 				return ret;
 			}
-
-			bufferLength = [self _readNBytes: of_pagesize
-					      intoBuffer: buffer];
-
-			/* Look if there's the delimiter or \0 */
-			for (i = 0; i < bufferLength; i++) {
-				if (buffer[i] != delimiterUTF8String[j++])
-					j = 0;
-
-				if (j == delimiterLength || buffer[i] == '\0') {
-					if (buffer[i] == '\0')
-						delimiterLength = 1;
-
-					retLength = cacheLength + i + 1 -
-					    delimiterLength;
-					retCString = [self
-					    allocMemoryWithSize: retLength];
-
-					if (cache != NULL &&
-					    cacheLength <= retLength)
-						memcpy(retCString, cache,
-						    cacheLength);
-					else if (cache != NULL)
-						memcpy(retCString, cache,
-						    retLength);
-					if (i >= delimiterLength)
-						memcpy(retCString + cacheLength,
-						    buffer, i + 1 -
-						    delimiterLength);
-
-					@try {
-						char *rcs = retCString;
-						size_t rl = retLength;
-
-						ret = [OFString
-						    stringWithCString: rcs
-							     encoding: encoding
-							       length: rl];
-					} @finally {
-						[self freeMemory: retCString];
-					}
-
-					newCache = [self allocMemoryWithSize:
-					    bufferLength - i - 1];
-					if (newCache != NULL)
-						memcpy(newCache, buffer + i + 1,
-						    bufferLength - i - 1);
-
-					[self freeMemory: cache];
-					cache = newCache;
-					cacheLength = bufferLength - i - 1;
-
-					return ret;
-				}
-			}
-
-			/* Neither the delimiter nor \0 was found */
-			cache = [self resizeMemory: cache
-					    toSize: cacheLength + bufferLength];
-
-			/*
-			 * It's possible that cacheLen + len is 0 and thus
-			 * cache was set to NULL by resizeMemory:toSize:.
-			 */
-			if (cache != NULL)
-				memcpy(cache + cacheLength, buffer,
-				    bufferLength);
-
-			cacheLength += bufferLength;
 		}
+
+		/* Neither the delimiter nor \0 was found */
+		cache = [self resizeMemory: cache
+				    toSize: cacheLength + bufferLength];
+
+		/*
+		 * It's possible that cacheLen + len is 0 and thus cache was
+		 * set to NULL by resizeMemory:toSize:.
+		 */
+		if (cache != NULL)
+			memcpy(cache + cacheLength, buffer,
+			    bufferLength);
+
+		cacheLength += bufferLength;
 	} @finally {
 		[self freeMemory: buffer];
 	}
 
-	/* Get rid of a warning, never reached anyway */
-	assert(0);
+	return nil;
 }
 
 - (BOOL)buffersWrites
