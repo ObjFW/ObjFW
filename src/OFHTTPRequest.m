@@ -258,7 +258,8 @@ normalize_key(OFString *key)
 		if (requestType == OF_HTTP_REQUEST_TYPE_POST) {
 			if ([headers objectForKey: @"Content-Type"] == nil)
 				[sock writeString: @"Content-Type: "
-				   @"application/x-www-form-urlencoded\r\n"];
+				    @"application/x-www-form-urlencoded; "
+				    @"charset=UTF-8\r\n"];
 
 			if ([headers objectForKey: @"Content-Length"] == nil)
 				[sock writeFormat: @"Content-Length: %d\r\n",
