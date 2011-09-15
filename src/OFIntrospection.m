@@ -58,7 +58,8 @@
 	@try {
 		selector = method->method_name;
 		name = [[OFString alloc]
-		    initWithCString: sel_get_name(selector)];
+		    initWithCString: sel_get_name(selector)
+			   encoding: OF_STRING_ENCODING_ASCII];
 		typeEncoding = method->method_types;
 	} @catch (id e) {
 		[self release];
