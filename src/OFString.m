@@ -1927,4 +1927,43 @@ of_utf16_string_length(const uint16_t *string)
 
 	[pool release];
 }
+
+#ifdef OF_HAVE_BLOCKS
+- (void)enumerateLinesUsingBlock: (of_string_line_enumeration_block_t)block
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	const char *cString = s->cString;
+	const char *last = cString;
+	BOOL stop = NO, lastCarriageReturn = NO;
+
+	while (!stop && *cString != 0) {
+		if (lastCarriageReturn && *cString == '\n') {
+			lastCarriageReturn = NO;
+
+			cString++;
+			last++;
+
+			continue;
+		}
+
+		if (*cString == '\n' || *cString == '\r') {
+			block([OFString
+			    stringWithUTF8String: last
+					  length: cString - last], &stop);
+			last = cString + 1;
+
+			[pool releaseObjects];
+		}
+
+		lastCarriageReturn = (*cString == '\r');
+		cString++;
+	}
+
+	if (!stop)
+		block([OFString stringWithUTF8String: last
+					      length: cString - last], &stop);
+
+	[pool release];
+}
+#endif
 @end

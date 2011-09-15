@@ -42,6 +42,10 @@ typedef enum of_string_encoding_t {
 /* FIXME */
 #define OF_STRING_ENCODING_NATIVE OF_STRING_ENCODING_UTF_8
 
+#ifdef OF_HAVE_BLOCKS
+typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -799,6 +803,15 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param path The path of the file to write to
  */
 - (void)writeToFile: (OFString*)path;
+
+#ifdef OF_HAVE_BLOCKS
+/**
+ * Enumerates all lines in the receiver using the specified block.
+ *
+ * \brief block The block to call for each line
+ */
+- (void)enumerateLinesUsingBlock: (of_string_line_enumeration_block_t)block;
+#endif
 @end
 
 #import "OFConstantString.h"

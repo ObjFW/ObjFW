@@ -644,4 +644,14 @@ void *_OFConstantStringClassReference;
 
 	return [super writeToFile: path];
 }
+
+#ifdef OF_HAVE_BLOCKS
+- (void)enumerateLinesUsingBlock: (of_string_line_enumeration_block_t)block
+{
+	if (initialized != SIZE_MAX)
+		[self finishInitialization];
+
+	return [super enumerateLinesUsingBlock: block];
+}
+#endif
 @end
