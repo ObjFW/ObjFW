@@ -507,35 +507,15 @@
 	return ret;
 }
 
-- (OFString*)readLine
-{
-	return [self readLineWithEncoding: OF_STRING_ENCODING_UTF_8];
-}
-
-- (OFString*)readLineWithEncoding: (of_string_encoding_t)encoding
-{
-	OFString *line = nil;
-
-	while ((line = [self tryReadLineWithEncoding: encoding]) == nil)
-		if ([self isAtEndOfStream])
-			return nil;
-
-	return line;
-}
-
-- (OFString*)tryReadLine
-{
-	return [self tryReadLineWithEncoding: OF_STRING_ENCODING_UTF_8];
-}
-
-- (OFString*)tryReadLineWithEncoding: (of_string_encoding_t)encoding
+- (OFString*)_tryReadLineWithEncoding: (of_string_encoding_t)encoding
+			   checkCache: (BOOL)checkCache
 {
 	size_t i, bufferLength, retLength;
 	char *retCString, *buffer, *newCache;
 	OFString *ret;
 
 	/* Look if there's a line or \0 in our cache */
-	if (cache != NULL) {
+	if (checkCache && cache != NULL) {
 		for (i = 0; i < cacheLength; i++) {
 			if (OF_UNLIKELY(cache[i] == '\n' ||
 			    cache[i] == '\0')) {
@@ -668,33 +648,41 @@
 	return nil;
 }
 
-- (OFString*)readTillDelimiter: (OFString*)delimiter
+- (OFString*)readLine
 {
-	return [self readTillDelimiter: delimiter
-			  withEncoding: OF_STRING_ENCODING_UTF_8];
+	return [self readLineWithEncoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (OFString*)readTillDelimiter: (OFString*)delimiter
-		  withEncoding: (of_string_encoding_t)encoding
+- (OFString*)readLineWithEncoding: (of_string_encoding_t)encoding
 {
-	OFString *ret = nil;
+	OFString *line = nil;
 
-	while ((ret = [self tryReadTillDelimiter: delimiter
-				    withEncoding: encoding]) == nil)
+	if ((line = [self _tryReadLineWithEncoding: encoding
+					checkCache: YES]) != nil)
+		return line;
+
+	while ((line = [self _tryReadLineWithEncoding: encoding
+					   checkCache: NO]) == nil)
 		if ([self isAtEndOfStream])
 			return nil;
 
-	return ret;
+	return line;
 }
 
-- (OFString*)tryReadTillDelimiter: (OFString*)delimiter
+- (OFString*)tryReadLine
 {
-	return [self tryReadTillDelimiter: delimiter
-			     withEncoding: OF_STRING_ENCODING_UTF_8];
+	return [self tryReadLineWithEncoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (OFString*)tryReadTillDelimiter: (OFString*)delimiter
-		     withEncoding: (of_string_encoding_t)encoding
+- (OFString*)tryReadLineWithEncoding: (of_string_encoding_t)encoding
+{
+	return [self _tryReadLineWithEncoding: encoding
+				   checkCache: YES];
+}
+
+- (OFString*)_tryReadTillDelimiter: (OFString*)delimiter
+		      withEncoding: (of_string_encoding_t)encoding
+			checkCache: (BOOL)checkCache
 {
 	const char *delimiterUTF8String;
 	size_t i, j, delimiterLength, bufferLength, retLength;
@@ -711,7 +699,7 @@
 						       selector: _cmd];
 
 	/* Look if there's something in our cache */
-	if (cache != NULL) {
+	if (checkCache && cache != NULL) {
 		for (i = 0; i < cacheLength; i++) {
 			if (cache[i] != delimiterUTF8String[j++])
 				j = 0;
@@ -828,6 +816,46 @@
 	}
 
 	return nil;
+}
+
+
+- (OFString*)readTillDelimiter: (OFString*)delimiter
+{
+	return [self readTillDelimiter: delimiter
+			  withEncoding: OF_STRING_ENCODING_UTF_8];
+}
+
+- (OFString*)readTillDelimiter: (OFString*)delimiter
+		  withEncoding: (of_string_encoding_t)encoding
+{
+	OFString *ret = nil;
+
+	if ((ret = [self _tryReadTillDelimiter: delimiter
+				  withEncoding: encoding
+				    checkCache: YES]) != nil)
+		return ret;
+
+	while ((ret = [self _tryReadTillDelimiter: delimiter
+				     withEncoding: encoding
+				       checkCache: NO]) == nil)
+		if ([self isAtEndOfStream])
+			return nil;
+
+	return ret;
+}
+
+- (OFString*)tryReadTillDelimiter: (OFString*)delimiter
+{
+	return [self tryReadTillDelimiter: delimiter
+			     withEncoding: OF_STRING_ENCODING_UTF_8];
+}
+
+- (OFString*)tryReadTillDelimiter: (OFString*)delimiter
+		     withEncoding: (of_string_encoding_t)encoding
+{
+	return [self _tryReadTillDelimiter: delimiter
+			      withEncoding: encoding
+				checkCache: YES];
 }
 
 - (BOOL)buffersWrites
