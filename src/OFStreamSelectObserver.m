@@ -16,11 +16,12 @@
 
 #include "config.h"
 
+#define __NO_EXT_QNX
+
 #include <string.h>
 #include <assert.h>
 #include <unistd.h>
 
-#define __NO_EXT_QNX
 #import "OFStreamSelectObserver.h"
 #import "OFStream.h"
 #import "OFArray.h"
