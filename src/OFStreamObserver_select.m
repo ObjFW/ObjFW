@@ -22,7 +22,7 @@
 #include <assert.h>
 #include <unistd.h>
 
-#import "OFStreamSelectObserver.h"
+#import "OFStreamObserver_select.h"
 #import "OFStream.h"
 #import "OFArray.h"
 #import "OFNumber.h"
@@ -39,7 +39,7 @@ enum {
 	QUEUE_WRITE = 2
 };
 
-@implementation OFStreamSelectObserver
+@implementation OFStreamObserver_select
 - init
 {
 	self = [super init];

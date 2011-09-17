@@ -18,7 +18,7 @@
 
 @class OFDataArray;
 
-@interface OFStreamPollObserver: OFStreamObserver
+@interface OFStreamObserver_poll: OFStreamObserver
 {
 	OFDataArray *FDs;
 	OFMutableDictionary *FDToStream;

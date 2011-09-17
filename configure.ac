@@ -468,11 +468,11 @@ AC_CHECK_FUNC(localtime_r, [
 
 AC_CHECK_HEADER(poll.h, [
 	AC_DEFINE(HAVE_POLL_H, 1, [Whether we have poll.h])
-	AC_SUBST(OFSTREAMPOLLOBSERVER_M, "OFStreamPollObserver.m")
+	AC_SUBST(OFSTREAMOBSERVER_POLL_M, "OFStreamObserver_poll.m")
 ])
 AC_CHECK_HEADERS(sys/select.h, [
 	AC_DEFINE(OF_HAVE_SYS_SELECT_H, 1, [Whether we have sys/select.h])
-	AC_SUBST(OFSTREAMSELECTOBSERVER_M, "OFStreamSelectObserver.m")
+	AC_SUBST(OFSTREAMOBSERVER_SELECT_M, "OFStreamObserver_select.m")
 ])
 
 AC_MSG_CHECKING(for getaddrinfo)

@@ -22,7 +22,7 @@
 #include <unistd.h>
 #include <poll.h>
 
-#import "OFStreamPollObserver.h"
+#import "OFStreamObserver_poll.h"
 #import "OFStream.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
@@ -39,8 +39,7 @@ enum {
 	QUEUE_WRITE = 2
 };
 
-@implementation OFStreamPollObserver
-
+@implementation OFStreamObserver_poll
 - init
 {
 	self = [super init];

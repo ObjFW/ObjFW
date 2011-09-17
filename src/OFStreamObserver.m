@@ -33,10 +33,10 @@
 #import "OFAutoreleasePool.h"
 
 #ifdef HAVE_POLL_H
-# import "OFStreamPollObserver.h"
+# import "OFStreamObserver_poll.h"
 #endif
 #if defined(HAVE_SYS_SELECT_H) || defined(_WIN32)
-# import "OFStreamSelectObserver.h"
+# import "OFStreamObserver_select.h"
 #endif
 
 #import "OFInitializationFailedException.h"
@@ -62,7 +62,7 @@ enum {
 + alloc
 {
 	if (self == [OFStreamObserver class])
-		return [OFStreamPollObserver alloc];
+		return [OFStreamObserver_poll alloc];
 
 	return [super alloc];
 }
@@ -70,7 +70,7 @@ enum {
 + alloc
 {
 	if (self == [OFStreamObserver class])
-		return [OFStreamSelectObserver alloc];
+		return [OFStreamObserver_select alloc];
 
 	return [super alloc];
 }

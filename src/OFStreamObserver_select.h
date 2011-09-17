@@ -20,7 +20,7 @@
 
 #import "OFStreamObserver.h"
 
-@interface OFStreamSelectObserver: OFStreamObserver
+@interface OFStreamObserver_select: OFStreamObserver
 {
 	fd_set readFDs;
 	fd_set writeFDs;
