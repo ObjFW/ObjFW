@@ -158,7 +158,7 @@ call_main(id object)
 	return [[of_tlskey_get(threadSelf) retain] autorelease];
 }
 
-+ (void)sleepForTimeInterval: (int64_t)seconds
++ (void)sleepForTimeInterval: (double)seconds
 {
 	if (seconds < 0)
 		@throw [OFOutOfRangeException newWithClass: self];
@@ -168,28 +168,12 @@ call_main(id object)
 		@throw [OFOutOfRangeException newWithClass: self];
 
 	sleep((unsigned int)seconds);
+	usleep((uint32_t)nearbyint(remainder(seconds, 1) * 1000000));
 #else
 	if (seconds * 1000 > UINT_MAX)
 		@throw [OFOutOfRangeException newWithClass: self];
 
-	Sleep((unsigned int)seconds * 1000);
-#endif
-}
-
-+ (void)sleepForTimeInterval: (int64_t)seconds
-		microseconds: (uint32_t)microseconds
-{
-	if (seconds < 0)
-		@throw [OFOutOfRangeException newWithClass: self];
-
-#ifndef _WIN32
-	sleep((unsigned int)seconds);
-	usleep(microseconds);
-#else
-	if (seconds * 1000 + microseconds / 1000 > UINT_MAX)
-		@throw [OFOutOfRangeException newWithClass: self];
-
-	Sleep((unsigned int)seconds * 1000 + microseconds / 1000);
+	Sleep((unsigned int)(seconds * 1000));
 #endif
 }
 
@@ -202,12 +186,12 @@ call_main(id object)
 		@throw [OFOutOfRangeException newWithClass: self];
 
 	sleep((unsigned int)seconds);
-	usleep(nearbyint(remainder(seconds, 1) * 1000000));
+	usleep((uint32_t)nearbyint(remainder(seconds, 1) * 1000000));
 #else
 	if (seconds * 1000 > UINT_MAX)
 		@throw [OFOutOfRangeException newWithClass: self];
 
-	Sleep(seconds * 1000);
+	Sleep((unsigned int)(seconds * 1000));
 #endif
 }
 

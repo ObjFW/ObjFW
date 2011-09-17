@@ -166,17 +166,7 @@ typedef id (^of_thread_block_t)(id object);
  *
  * \param seconds The number of seconds to sleep
  */
-+ (void)sleepForTimeInterval: (int64_t)seconds;
-
-/**
- * \brief Suspends execution of the current thread for the specified time
- *	  interval.
- *
- * \param seconds The number of seconds to sleep
- * \param microseconds The number of microseconds to sleep
- */
-+ (void)sleepForTimeInterval: (int64_t)seconds
-		microseconds: (uint32_t)microseconds;
++ (void)sleepForTimeInterval: (double)seconds;
 
 /**
  * \brief Suspends execution of the current thread until the specified date.
