@@ -151,9 +151,9 @@
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_INT32(hash, [name hash]);
-	OF_HASH_ADD_INT32(hash, [ns hash]);
-	OF_HASH_ADD_INT32(hash, [stringValue hash]);
+	OF_HASH_ADD_HASH(hash, [name hash]);
+	OF_HASH_ADD_HASH(hash, [ns hash]);
+	OF_HASH_ADD_HASH(hash, [stringValue hash]);
 
 	OF_HASH_FINALIZE(hash);
 

@@ -365,15 +365,16 @@ resolve_relative_path(OFString *path)
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_INT32(hash, [scheme hash]);
-	OF_HASH_ADD_INT32(hash, [host hash]);
-	OF_HASH_ADD_INT16(hash, port);
-	OF_HASH_ADD_INT32(hash, [user hash]);
-	OF_HASH_ADD_INT32(hash, [password hash]);
-	OF_HASH_ADD_INT32(hash, [path hash]);
-	OF_HASH_ADD_INT32(hash, [parameters hash]);
-	OF_HASH_ADD_INT32(hash, [query hash]);
-	OF_HASH_ADD_INT32(hash, [fragment hash]);
+	OF_HASH_ADD_HASH(hash, [scheme hash]);
+	OF_HASH_ADD_HASH(hash, [host hash]);
+	OF_HASH_ADD(hash, (port & 0xFF00) >> 8);
+	OF_HASH_ADD(hash, port & 0xFF);
+	OF_HASH_ADD_HASH(hash, [user hash]);
+	OF_HASH_ADD_HASH(hash, [password hash]);
+	OF_HASH_ADD_HASH(hash, [path hash]);
+	OF_HASH_ADD_HASH(hash, [parameters hash]);
+	OF_HASH_ADD_HASH(hash, [query hash]);
+	OF_HASH_ADD_HASH(hash, [fragment hash]);
 
 	OF_HASH_FINALIZE(hash);
 

@@ -225,12 +225,14 @@ static Class floatVector = Nil;
 	for (i = 0; i < rows * columns; i++) {
 		union {
 			float f;
-			uint32_t i;
+			uint8_t b[sizeof(float)];
 		} u;
+		uint8_t j;
 
-		u.f = data[i];
+		u.f = of_bswap_float_if_be(data[i]);
 
-		OF_HASH_ADD_INT32(hash, u.i);
+		for (j = 0; j < sizeof(float); j++)
+			OF_HASH_ADD(hash, u.b[j]);
 	}
 
 	OF_HASH_FINALIZE(hash);

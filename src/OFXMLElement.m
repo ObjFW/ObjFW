@@ -1153,15 +1153,15 @@ void _references_to_categories_of_OFXMLElement(void)
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_INT32(hash, [name hash]);
-	OF_HASH_ADD_INT32(hash, [ns hash]);
-	OF_HASH_ADD_INT32(hash, [defaultNamespace hash]);
-	OF_HASH_ADD_INT32(hash, [attributes hash]);
-	OF_HASH_ADD_INT32(hash, [namespaces hash]);
-	OF_HASH_ADD_INT32(hash, [children hash]);
-	OF_HASH_ADD_INT32(hash, [characters hash]);
-	OF_HASH_ADD_INT32(hash, [CDATA hash]);
-	OF_HASH_ADD_INT32(hash, [comment hash]);
+	OF_HASH_ADD_HASH(hash, [name hash]);
+	OF_HASH_ADD_HASH(hash, [ns hash]);
+	OF_HASH_ADD_HASH(hash, [defaultNamespace hash]);
+	OF_HASH_ADD_HASH(hash, [attributes hash]);
+	OF_HASH_ADD_HASH(hash, [namespaces hash]);
+	OF_HASH_ADD_HASH(hash, [children hash]);
+	OF_HASH_ADD_HASH(hash, [characters hash]);
+	OF_HASH_ADD_HASH(hash, [CDATA hash]);
+	OF_HASH_ADD_HASH(hash, [comment hash]);
 
 	OF_HASH_FINALIZE(hash);
 

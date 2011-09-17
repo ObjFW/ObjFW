@@ -323,31 +323,13 @@ of_bswap32_vec(uint32_t *buffer, size_t length)
 		hash ^= (hash >> 11);	\
 		hash += (hash << 15);	\
 	}
-#define OF_HASH_ADD_INT16(hash, int16)			\
-	{						\
-		uint16_t int16Copy = int16;		\
-		OF_HASH_ADD(hash, int16Copy >> 8);	\
-		OF_HASH_ADD(hash, int16Copy & 0xFF);	\
-	}
-#define OF_HASH_ADD_INT32(hash, int32)				\
+#define OF_HASH_ADD_HASH(hash, other)				\
 	{							\
-		uint32_t int32Copy = int32;			\
-		OF_HASH_ADD(hash, (int32Copy >> 24) & 0xFF);	\
-		OF_HASH_ADD(hash, (int32Copy >> 16) & 0xFF);	\
-		OF_HASH_ADD(hash, (int32Copy >>  8) & 0xFF);	\
-		OF_HASH_ADD(hash, int32Copy & 0xFF);		\
-	}
-#define OF_HASH_ADD_INT64(hash, int64)				\
-	{							\
-		uint64_t int64Copy = int64;			\
-		OF_HASH_ADD(hash, (int64Copy >> 56) & 0xFF);	\
-		OF_HASH_ADD(hash, (int64Copy >> 48) & 0xFF);	\
-		OF_HASH_ADD(hash, (int64Copy >> 40) & 0xFF);	\
-		OF_HASH_ADD(hash, (int64Copy >> 32) & 0xFF);	\
-		OF_HASH_ADD(hash, (int64Copy >> 24) & 0xFF);	\
-		OF_HASH_ADD(hash, (int64Copy >> 16) & 0xFF);	\
-		OF_HASH_ADD(hash, (int64Copy >>  8) & 0xFF);	\
-		OF_HASH_ADD(hash, int64Copy & 0xFF);		\
+		uint32_t otherCopy = other;			\
+		OF_HASH_ADD(hash, (otherCopy >> 24) & 0xFF);	\
+		OF_HASH_ADD(hash, (otherCopy >> 16) & 0xFF);	\
+		OF_HASH_ADD(hash, (otherCopy >>  8) & 0xFF);	\
+		OF_HASH_ADD(hash, otherCopy & 0xFF);		\
 	}
 
 static OF_INLINE of_range_t

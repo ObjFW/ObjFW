@@ -224,13 +224,15 @@ static Class doubleVector = Nil;
 
 	for (i = 0; i < rows * columns; i++) {
 		union {
-			double f;
-			uint64_t i;
+			double d;
+			uint8_t b[sizeof(double)];
 		} u;
+		uint8_t j;
 
-		u.f = data[i];
+		u.d = of_bswap_double_if_be(data[i]);
 
-		OF_HASH_ADD_INT64(hash, u.i);
+		for (j = 0; j < sizeof(double); j++)
+			OF_HASH_ADD(hash, u.b[j]);
 	}
 
 	OF_HASH_FINALIZE(hash);
