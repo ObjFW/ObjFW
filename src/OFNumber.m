@@ -745,25 +745,11 @@
 			type = OF_NUMBER_INTMAX;
 			value.intmax = [element decimalValue];
 		} else if ([typeString isEqual: @"float"]) {
-			union {
-				float f;
-				uint32_t i;
-			} f;
-
 			type = OF_NUMBER_FLOAT;
-			f.i = (uint32_t)[[element stringValue]
-			    hexadecimalValue];
-			value.float_ = f.f;
+			value.float_ = [element floatValue];
 		} else if ([typeString isEqual: @"double"]) {
-			union {
-				double d;
-				uint64_t i;
-			} d;
-
 			type = OF_NUMBER_DOUBLE;
-			d.i = (uint64_t)[[element stringValue]
-			    hexadecimalValue];
-			value.double_ = d.d;
+			value.double_ = [element doubleValue];
 		} else
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
@@ -958,31 +944,38 @@
 - (uint32_t)hash
 {
 	uint32_t hash;
+	uint8_t i;
 
 	switch (type) {
 	case OF_NUMBER_FLOAT:;
 		union {
 			float f;
-			uint32_t i;
+			uint8_t b[sizeof(float)];
 		} f;
 
 		f.f = of_bswap_float_if_le(value.float_);
 
 		OF_HASH_INIT(hash);
-		OF_HASH_ADD_INT32(hash, f.i);
+
+		for (i = 0; i < sizeof(float); i++)
+			OF_HASH_ADD(hash, f.b[i]);
+
 		OF_HASH_FINALIZE(hash);
 
 		return hash;
 	case OF_NUMBER_DOUBLE:;
 		union {
 			double d;
-			uint64_t i;
+			uint8_t b[sizeof(double)];
 		} d;
 
 		d.d = of_bswap_double_if_le(value.double_);
 
 		OF_HASH_INIT(hash);
-		OF_HASH_ADD_INT64(hash, d.i);
+
+		for (i = 0; i < sizeof(double); i++)
+			OF_HASH_ADD(hash, d.b[i]);
+
 		OF_HASH_FINALIZE(hash);
 
 		return hash;
@@ -1217,31 +1210,17 @@
 				  stringValue: @"signed"];
 		break;
 	case OF_NUMBER_FLOAT:;
-		union {
-			float f;
-			uint32_t i;
-		} f;
-
-		f.f = value.float_;
-
 		[element addAttributeWithName: @"type"
 				  stringValue: @"float"];
 		[element setStringValue:
-		    [OFString stringWithFormat: @"%" PRIX32, f.i]];
+		    [OFString stringWithFormat: @"%a", value.float_]];
 
 		break;
 	case OF_NUMBER_DOUBLE:;
-		union {
-			double d;
-			uint64_t i;
-		} d;
-
-		d.d = value.double_;
-
 		[element addAttributeWithName: @"type"
 				  stringValue: @"double"];
 		[element setStringValue:
-		    [OFString stringWithFormat: @"%" PRIX64, d.i]];
+		    [OFString stringWithFormat: @"%la", value.double_]];
 
 		break;
 	default:
