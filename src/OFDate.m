@@ -20,6 +20,9 @@
 #include <stdint.h>
 #include <limits.h>
 #include <time.h>
+#include <math.h>
+#include <float.h>
+#include <assert.h>
 
 #include <sys/time.h>
 
@@ -49,7 +52,7 @@ static OFMutex *mutex;
 	time_t seconds_ = (time_t)seconds;				  \
 	struct tm tm;							  \
 									  \
-	if (seconds != seconds_)					  \
+	if (seconds_ != floor(seconds))					  \
 		@throw [OFOutOfRangeException newWithClass: isa];	  \
 									  \
 	if (gmtime_r(&seconds_, &tm) == NULL)				  \
@@ -60,7 +63,7 @@ static OFMutex *mutex;
 	time_t seconds_ = (time_t)seconds;				  \
 	struct tm tm;							  \
 									  \
-	if (seconds != seconds_)					  \
+	if (seconds_ != floor(seconds))					  \
 		@throw [OFOutOfRangeException newWithClass: isa];	  \
 									  \
 	if (localtime_r(&seconds_, &tm) == NULL)			  \
@@ -73,7 +76,7 @@ static OFMutex *mutex;
 	time_t seconds_ = (time_t)seconds;				  \
 	struct tm *tm;							  \
 									  \
-	if (seconds != seconds_)					  \
+	if (seconds_ != floor(seconds))					  \
 		@throw [OFOutOfRangeException newWithClass: isa];	  \
 									  \
 	[mutex lock];							  \
@@ -90,7 +93,7 @@ static OFMutex *mutex;
 	time_t seconds_ = (time_t)seconds;				  \
 	struct tm *tm;							  \
 									  \
-	if (seconds != seconds_)					  \
+	if (seconds_ != floor(seconds))					  \
 		@throw [OFOutOfRangeException newWithClass: isa];	  \
 									  \
 	[mutex lock];							  \
@@ -108,7 +111,7 @@ static OFMutex *mutex;
 	time_t seconds_ = (time_t)seconds;				  \
 	struct tm *tm;							  \
 									  \
-	if (seconds != seconds_)					  \
+	if (seconds_ != floor(seconds))					  \
 		@throw [OFOutOfRangeException newWithClass: isa];	  \
 									  \
 	if ((tm = gmtime(&seconds_)) == NULL)				  \
@@ -119,7 +122,7 @@ static OFMutex *mutex;
 	time_t seconds_ = (time_t)seconds;				  \
 	struct tm *tm;							  \
 									  \
-	if (seconds != seconds_)					  \
+	if (seconds_ != floor(seconds))					  \
 		@throw [OFOutOfRangeException newWithClass: isa];	  \
 									  \
 	if ((tm = localtime(&seconds_)) == NULL)			  \
@@ -144,32 +147,16 @@ static OFMutex *mutex;
 	return [[[self alloc] init] autorelease];
 }
 
-+ dateWithTimeIntervalSince1970: (int64_t)seconds
++ dateWithTimeIntervalSince1970: (double)seconds
 {
 	return [[[self alloc]
 	    initWithTimeIntervalSince1970: seconds] autorelease];
 }
 
-+ dateWithTimeIntervalSince1970: (int64_t)seconds
-		   microseconds: (uint32_t)microseconds
-{
-	return [[[self alloc]
-	    initWithTimeIntervalSince1970: seconds
-			     microseconds: microseconds] autorelease];
-}
-
-+ dateWithTimeIntervalSinceNow: (int64_t)seconds
++ dateWithTimeIntervalSinceNow: (double)seconds
 {
 	return [[[self alloc]
 	    initWithTimeIntervalSinceNow: seconds] autorelease];
-}
-
-+ dateWithTimeIntervalSinceNow: (int64_t)seconds
-		  microseconds: (uint32_t)microseconds
-{
-	return [[[self alloc]
-	    initWithTimeIntervalSinceNow: seconds
-			    microseconds: microseconds] autorelease];
 }
 
 + dateWithDateString: (OFString*)string
@@ -188,74 +175,44 @@ static OFMutex *mutex;
 
 + distantFuture
 {
-	if (sizeof(time_t) == sizeof(int64_t))
-		return [[[self alloc]
-		    initWithTimeIntervalSince1970: INT64_MAX
-				     microseconds: 999999] autorelease];
-	if (sizeof(time_t) == sizeof(int32_t))
-		return [[[self alloc]
-		    initWithTimeIntervalSince1970: INT32_MAX
-				     microseconds: 999999] autorelease];
-
-	/* Neither 64 nor 32 bit. But it's guaranteed to be at least an int */
 	return [[[self alloc]
-	    initWithTimeIntervalSince1970: INT_MAX
-			     microseconds: 999999] autorelease];
+	    initWithTimeIntervalSince1970: DBL_MAX] autorelease];
 }
 
 + distantPast
 {
-	/* We don't know if time_t is signed or unsigned. Use 0 to be safe */
-	return [[[self alloc] initWithTimeIntervalSince1970: 0] autorelease];
+	return [[[self alloc]
+	    initWithTimeIntervalSince1970: DBL_MIN] autorelease];
 }
 
 - init
 {
 	struct timeval t;
 
-	if (gettimeofday(&t, NULL)) {
-		Class c = isa;
-		[self release];
-		@throw [OFInitializationFailedException newWithClass: c];
-	}
-
-	return [self initWithTimeIntervalSince1970: t.tv_sec
-				      microseconds: (uint32_t)t.tv_usec];
-}
-
-- initWithTimeIntervalSince1970: (int64_t)seconds_
-{
-	return [self initWithTimeIntervalSince1970: seconds_
-				      microseconds: 0];
-}
-
-- initWithTimeIntervalSince1970: (int64_t)seconds_
-		   microseconds: (uint32_t)microseconds_
-{
 	self = [super init];
 
-	seconds = seconds_;
-	microseconds = microseconds_;
+	assert(!gettimeofday(&t, NULL));
+
+	seconds = t.tv_sec;
+	seconds += (double)t.tv_usec / 1000000;
 
 	return self;
 }
 
-- initWithTimeIntervalSinceNow: (int64_t)seconds_
+- initWithTimeIntervalSince1970: (double)seconds_
 {
-	return [self initWithTimeIntervalSinceNow: seconds_
-				     microseconds: 0];
+	self = [super init];
+
+	seconds = seconds_;
+
+	return self;
 }
 
-- initWithTimeIntervalSinceNow: (int64_t)seconds_
-		  microseconds: (uint32_t)microseconds_
+- initWithTimeIntervalSinceNow: (double)seconds_
 {
 	self = [self init];
 
 	seconds += seconds_;
-	microseconds += microseconds_;
-
-	seconds += microseconds / 1000000;
-	microseconds %= 1000000;
 
 	return self;
 }
@@ -319,23 +276,13 @@ static OFMutex *mutex;
 
 	@try {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-		OFXMLAttribute *secondsAttribute, *microsecondsAttribute;
 
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
-		secondsAttribute = [element attributeForName: @"seconds"];
-		microsecondsAttribute =
-		    [element attributeForName: @"microseconds"];
-
-		if (secondsAttribute == nil || microsecondsAttribute == nil)
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
-
-		seconds = (int64_t)[secondsAttribute decimalValue];
-		microseconds = (uint32_t)[microsecondsAttribute decimalValue];
+		seconds = [element doubleValue];
 
 		[pool release];
 	} @catch (id e) {
@@ -355,8 +302,7 @@ static OFMutex *mutex;
 
 	otherDate = object;
 
-	if (otherDate->seconds != seconds ||
-	    otherDate->microseconds != microseconds)
+	if (otherDate->seconds != seconds)
 		return NO;
 
 	return YES;
@@ -365,11 +311,18 @@ static OFMutex *mutex;
 - (uint32_t)hash
 {
 	uint32_t hash;
+	union {
+		double d;
+		uint8_t b[sizeof(double)];
+	} d;
+	uint8_t i;
+
+	d.d = of_bswap_double_if_le(seconds);
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_INT64(hash, seconds);
-	OF_HASH_ADD_INT32(hash, microseconds);
+	for (i = 0; i < sizeof(double); i++)
+		OF_HASH_ADD(hash, d.b[i]);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -396,11 +349,6 @@ static OFMutex *mutex;
 	if (seconds > otherDate->seconds)
 		return OF_ORDERED_DESCENDING;
 
-	if (microseconds < otherDate->microseconds)
-		return OF_ORDERED_ASCENDING;
-	if (microseconds > otherDate->microseconds)
-		return OF_ORDERED_DESCENDING;
-
 	return OF_ORDERED_SAME;
 }
 
@@ -413,19 +361,10 @@ static OFMutex *mutex;
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFXMLElement *element;
-	OFString *secondsString, *microsecondsString;
 
 	element = [OFXMLElement elementWithName: [self className]
 				      namespace: OF_SERIALIZATION_NS];
-
-	secondsString = [OFString stringWithFormat: @"%" @PRId64, seconds];
-	microsecondsString = [OFString stringWithFormat: @"%" @PRIu32,
-							 microseconds];
-
-	[element addAttributeWithName: @"seconds"
-			  stringValue: secondsString];
-	[element addAttributeWithName: @"microseconds"
-			  stringValue: microsecondsString];
+	[element setStringValue: [OFString stringWithFormat: @"%la", seconds]];
 
 	[element retain];
 	[pool release];
@@ -436,7 +375,7 @@ static OFMutex *mutex;
 
 - (uint32_t)microsecond
 {
-	return microseconds;
+	return nearbyint(remainder(seconds, 1) * 1000000);
 }
 
 - (uint8_t)second
@@ -516,7 +455,7 @@ static OFMutex *mutex;
 	struct tm tm;
 	char *buffer;
 
-	if (seconds != seconds_)
+	if (seconds_ != floor(seconds))
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 #ifdef HAVE_GMTIME_R
@@ -562,7 +501,7 @@ static OFMutex *mutex;
 	struct tm tm;
 	char *buffer;
 
-	if (seconds != seconds_)
+	if (seconds_ != floor(seconds))
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 #ifdef HAVE_LOCALTIME_R
@@ -617,60 +556,31 @@ static OFMutex *mutex;
 	return [[self retain] autorelease];
 }
 
-- (int64_t)timeIntervalSince1970
+- (double)timeIntervalSince1970
 {
 	return seconds;
 }
 
-- (uint32_t)microsecondsOfTimeIntervalSince1970
+- (double)timeIntervalSinceDate: (OFDate*)otherDate
 {
-	return microseconds;
+	return seconds - otherDate->seconds;
 }
 
-- (int64_t)timeIntervalSinceDate: (OFDate*)otherDate
+- (double)timeIntervalSinceNow
 {
-	int64_t seconds_ = seconds - otherDate->seconds;
-	int32_t microseconds_ = (int32_t)microseconds - otherDate->microseconds;
+	struct timeval t;
+	double seconds_;
 
-	seconds_ += microseconds_ / 1000000;
-	microseconds_ %= 1000000;
+	assert(!gettimeofday(&t, NULL));
 
-	while (microseconds_ < 0) {
-		microseconds_ += 1000000;
-		seconds_--;
-	}
+	seconds_ = t.tv_sec;
+	seconds_ += (double)t.tv_usec / 1000000;
 
-	return seconds_;
+	return seconds - seconds_;
 }
 
-- (uint32_t)microsecondsOfTimeIntervalSinceDate: (OFDate*)otherDate
+- (OFDate*)dateByAddingTimeInterval: (double)seconds_
 {
-	int32_t microseconds_ = (int32_t)microseconds - otherDate->microseconds;
-
-	microseconds_ %= 1000000;
-
-	while (microseconds_ < 0)
-		microseconds_ += 1000000;
-
-	return microseconds_;
-}
-
-- (OFDate*)dateByAddingTimeInterval: (int64_t)sec_
-{
-	return [self dateByAddingTimeInterval: sec_
-			     withMicroseconds: 0];
-}
-
-- (OFDate*)dateByAddingTimeInterval: (int64_t)seconds_
-		   withMicroseconds: (uint32_t)microseconds_
-{
-	seconds_ += seconds;
-	microseconds_ += microseconds;
-
-	seconds_ += microseconds_ / 1000000;
-	microseconds_ %= 1000000;
-
-	return [OFDate dateWithTimeIntervalSince1970: seconds_
-					microseconds: microseconds_];
+	return [OFDate dateWithTimeIntervalSince1970: seconds + seconds_];
 }
 @end

@@ -33,9 +33,8 @@ static OFString *module = @"OFDate";
 	TEST(@"+[dateWithTimeIntervalSince1970:]",
 	    (d1 = [OFDate dateWithTimeIntervalSince1970: 0]))
 
-	TEST(@"+[dateWithTimeIntervalSince1970:microseconds:]",
-	    (d2 = [d1 dateByAddingTimeInterval: 3600 * 25 + 5
-			      withMicroseconds: 1]))
+	TEST(@"-[dateByADdingTimeInterval:]",
+	    (d2 = [d1 dateByAddingTimeInterval: 3600 * 25 + 5.000001]))
 
 	TEST(@"-[description]",
 	    [[d1 description] isEqual: @"1970-01-01T00:00:00Z"] &&
@@ -43,8 +42,7 @@ static OFString *module = @"OFDate";
 
 	TEST(@"-[isEqual:]",
 	    [d1 isEqual: [OFDate dateWithTimeIntervalSince1970: 0]] &&
-	    ![d1 isEqual: [OFDate dateWithTimeIntervalSince1970: 0
-						   microseconds: 1]])
+	    ![d1 isEqual: [OFDate dateWithTimeIntervalSince1970: 0.0000001]])
 
 	TEST(@"-[compare:]", [d1 compare: d2] == OF_ORDERED_ASCENDING)
 

@@ -18,6 +18,8 @@
 
 #define __NO_EXT_QNX
 
+#include <math.h>
+
 #ifndef _WIN32
 # include <unistd.h>
 # include <sched.h>
@@ -193,29 +195,19 @@ call_main(id object)
 
 + (void)sleepUntilDate: (OFDate*)date
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFDate *now = [OFDate date];
-	int64_t seconds;
-	uint32_t microseconds;
-
-	if ((seconds = [date timeIntervalSinceDate: now]) < 0)
-		@throw [OFOutOfRangeException newWithClass: self];
-
-	microseconds = [date microsecondsOfTimeIntervalSinceDate: now];
-
-	[pool release];
+	double seconds = [date timeIntervalSinceNow];
 
 #ifndef _WIN32
 	if (seconds > UINT_MAX)
 		@throw [OFOutOfRangeException newWithClass: self];
 
 	sleep((unsigned int)seconds);
-	usleep(microseconds);
+	usleep(nearbyint(remainder(seconds, 1) * 1000000));
 #else
-	if (seconds * 1000 + microseconds / 1000 > UINT_MAX)
+	if (seconds * 1000 > UINT_MAX)
 		@throw [OFOutOfRangeException newWithClass: self];
 
-	Sleep(seconds * 1000 + microseconds / 1000);
+	Sleep(seconds * 1000);
 #endif
 }
 

@@ -25,8 +25,7 @@
  */
 @interface OFDate: OFObject <OFCopying, OFComparing, OFSerialization>
 {
-	int64_t seconds;
-	uint32_t microseconds;
+	double seconds;
 }
 
 /**
@@ -43,18 +42,7 @@
  * \param seconds The seconds since 1970-01-01T00:00:00Z
  * \return A new, autoreleased OFDate with the specified date and time
  */
-+ dateWithTimeIntervalSince1970: (int64_t)seconds;
-
-/**
- * \brief Creates a new OFDate with the specified date and time since
- *	  1970-01-01T00:00:00Z.
- *
- * \param seconds The seconds since 1970-01-01T00:00:00Z
- * \param microseconds The microsecond part of the time
- * \return A new, autoreleased OFDate with the specified date and time
- */
-+ dateWithTimeIntervalSince1970: (int64_t)seconds
-		   microseconds: (uint32_t)microseconds;
++ dateWithTimeIntervalSince1970: (double)seconds;
 
 /**
  * \brief Creates a new OFDate with the specified date and time since now.
@@ -62,17 +50,7 @@
  * \param seconds The seconds since now
  * \return A new, autoreleased OFDate with the specified date and time
  */
-+ dateWithTimeIntervalSinceNow: (int64_t)seconds;
-
-/**
- * \brief Creates a new OFDate with the specified date and time since now.
- *
- * \param seconds The seconds since now
- * \param microseconds The microsecond part of the time
- * \return A new, autoreleased OFDate with the specified date and time
- */
-+ dateWithTimeIntervalSinceNow: (int64_t)seconds
-		  microseconds: (uint32_t)microseconds;
++ dateWithTimeIntervalSinceNow: (double)seconds;
 
 /**
  * \brief Creates a new OFDate with the specified string in the specified
@@ -131,18 +109,7 @@
  * \param seconds The seconds since 1970-01-01T00:00:00Z
  * \return An initialized OFDate with the specified date and time
  */
-- initWithTimeIntervalSince1970: (int64_t)seconds;
-
-/**
- * \brief Initializes an already allocated OFDate with the specified date and
- *	  time since 1970-01-01T00:00:00Z.
- *
- * \param seconds The seconds since 1970-01-01T00:00:00Z
- * \param microseconds The microsecond part of the time
- * \return An initialized OFDate with the specified date and time
- */
-- initWithTimeIntervalSince1970: (int64_t)seconds
-		   microseconds: (uint32_t)microseconds;
+- initWithTimeIntervalSince1970: (double)seconds;
 
 /**
  * \brief Initializes an already allocated OFDate with the specified date and
@@ -151,18 +118,7 @@
  * \param seconds The seconds since now
  * \return An initialized OFDate with the specified date and time
  */
-- initWithTimeIntervalSinceNow: (int64_t)seconds;
-
-/**
- * \brief Initializes an already allocated OFDate with the specified date and
- *	  time since now.
- *
- * \param seconds The seconds since now
- * \param microseconds The microsecond part of the time
- * \return An initialized OFDate with the specified date and time
- */
-- initWithTimeIntervalSinceNow: (int64_t)seconds
-		  microseconds: (uint32_t)microseconds;
+- initWithTimeIntervalSinceNow: (double)seconds;
 
 /**
  * \brief Initializes an already allocated OFDate with the specified string in
@@ -342,30 +298,22 @@
  *
  * \return The seconds since 1970-01-01T00:00:00Z
  */
-- (int64_t)timeIntervalSince1970;
-
-/**
- * \brief Returns the microseconds part of the seconds since
- *	  1970-01-01T00:00:00Z.
- *
- * \return The microseconds part of the seconds since 1970-01-01T00:00:00Z
- */
-- (uint32_t)microsecondsOfTimeIntervalSince1970;
+- (double)timeIntervalSince1970;
 
 /**
  * \brief Returns the seconds the receiver is after the date.
  *
+ * \param date Date date to generate the difference with receiver
  * \return The seconds the receiver is after the date.
  */
-- (int64_t)timeIntervalSinceDate: (OFDate*)otherDate;
+- (double)timeIntervalSinceDate: (OFDate*)otherDate;
 
 /**
- * \brief Returns the microseconds part of the seconds the receiver is after the
- *	  date.
+ * \brief Returns the seconds the receiver is in the future.
  *
- * \return The microseconds part of the seconds the receiver is after the date
+ * \return The seconds the receiver is in the future
  */
-- (uint32_t)microsecondsOfTimeIntervalSinceDate: (OFDate*)otherDate;
+- (double)timeIntervalSinceNow;
 
 /**
  * \brief Creates a new date with the specified time interval added.
@@ -373,15 +321,5 @@
  * \param seconds The seconds after the date
  * \return A new, autoreleased OFDate
  */
-- (OFDate*)dateByAddingTimeInterval: (int64_t)seconds;
-
-/**
- * \brief Creates a new date with the specified time interval added.
- *
- * \param seconds The seconds after the date
- * \param microseconds The microseconds after the date
- * \return A new, autoreleased OFDate
- */
-- (OFDate*)dateByAddingTimeInterval: (int64_t)seconds
-		   withMicroseconds: (uint32_t)microseconds;
+- (OFDate*)dateByAddingTimeInterval: (double)seconds;
 @end

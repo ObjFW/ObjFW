@@ -47,8 +47,7 @@ static OFString *module = @"OFSerialization";
 	[a addObject: @"Qu\"xbar\ntest"];
 	[a addObject: [OFNumber numberWithInt: 1234]];
 	[a addObject: [OFMutableString stringWithString: @"asd"]];
-	[a addObject: [OFDate dateWithTimeIntervalSince1970: 1234
-					       microseconds: 5678]];
+	[a addObject: [OFDate dateWithTimeIntervalSince1970: 1234.5678]];
 
 	[d setObject: @"Hello"
 	      forKey: a];
