@@ -214,7 +214,7 @@ void _references_to_categories_of_OFXMLElement(void)
 	self = [super init];
 
 	@try {
-		if (CDATA_)
+		if (CDATA_ == nil)
 			@throw [OFInvalidArgumentException newWithClass: isa
 							       selector: _cmd];
 
