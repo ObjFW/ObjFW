@@ -169,6 +169,10 @@ void _references_to_categories_of_OFXMLElement(void)
 	self = [super init];
 
 	@try {
+		if (name_ == nil)
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
 		name = [name_ copy];
 		ns = [ns_ copy];
 
@@ -192,6 +196,10 @@ void _references_to_categories_of_OFXMLElement(void)
 	self = [super init];
 
 	@try {
+		if (characters_ == nil)
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
 		characters = [characters_ copy];
 	} @catch (id e) {
 		[self release];
@@ -206,6 +214,10 @@ void _references_to_categories_of_OFXMLElement(void)
 	self = [super init];
 
 	@try {
+		if (CDATA_)
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
 		CDATA = [CDATA_ copy];
 	} @catch (id e) {
 		[self release];
@@ -220,6 +232,10 @@ void _references_to_categories_of_OFXMLElement(void)
 	self = [super init];
 
 	@try {
+		if (comment_ == nil)
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
 		comment = [comment_ copy];
 	} @catch (id e) {
 		[self release];
@@ -234,6 +250,10 @@ void _references_to_categories_of_OFXMLElement(void)
 	self = [super init];
 
 	@try {
+		if (element == nil)
+			@throw [OFInvalidArgumentException newWithClass: isa
+							       selector: _cmd];
+
 		name = [element->name copy];
 		ns = [element->ns copy];
 		defaultNamespace = [element->defaultNamespace copy];
@@ -261,6 +281,10 @@ void _references_to_categories_of_OFXMLElement(void)
 
 	c = isa;
 	[self release];
+
+	if (string == nil)
+		@throw [OFInvalidArgumentException newWithClass: isa
+						       selector: _cmd];
 
 	pool = [[OFAutoreleasePool alloc] init];
 
