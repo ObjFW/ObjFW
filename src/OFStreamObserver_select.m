@@ -41,7 +41,7 @@
 	return self;
 }
 
-- (void)_addStreamToObserveForReading: (OFStream*)stream
+- (void)_addStreamForReading: (OFStream*)stream
 {
 	int fd = [stream fileDescriptor];
 
@@ -49,7 +49,7 @@
 	FD_SET(fd, &exceptFDs);
 }
 
-- (void)_addStreamToObserveForWriting: (OFStream*)stream
+- (void)_addStreamForWriting: (OFStream*)stream
 {
 	int fd = [stream fileDescriptor];
 
@@ -57,7 +57,7 @@
 	FD_SET(fd, &exceptFDs);
 }
 
-- (void)_removeStreamToObserveForReading: (OFStream*)stream
+- (void)_removeStreamForReading: (OFStream*)stream
 {
 	int fd = [stream fileDescriptor];
 
@@ -67,7 +67,7 @@
 		FD_CLR(fd, &exceptFDs);
 }
 
-- (void)_removeStreamToObserveForWriting: (OFStream*)stream
+- (void)_removeStreamForWriting: (OFStream*)stream
 {
 	int fd = [stream fileDescriptor];
 
@@ -125,7 +125,7 @@
 		int fileDescriptor = [cArray[i] fileDescriptor];
 
 		if (FD_ISSET(fileDescriptor, &readFDs_)) {
-			[delegate streamDidBecomeReadyForReading: cArray[i]];
+			[delegate streamIsReadyForReading: cArray[i]];
 			[pool releaseObjects];
 		}
 
@@ -148,7 +148,7 @@
 		int fileDescriptor = [cArray[i] fileDescriptor];
 
 		if (FD_ISSET(fileDescriptor, &writeFDs_)) {
-			[delegate streamDidBecomeReadyForWriting: cArray[i]];
+			[delegate streamIsReadyForWriting: cArray[i]];
 			[pool releaseObjects];
 		}
 

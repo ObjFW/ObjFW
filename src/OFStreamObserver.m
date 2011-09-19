@@ -163,7 +163,7 @@ enum {
 	OF_SETTER(delegate, delegate_, YES, NO)
 }
 
-- (void)addStreamToObserveForReading: (OFStream*)stream
+- (void)addStreamForReading: (OFStream*)stream
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFNumber *qi = [OFNumber numberWithInt: QUEUE_ADD | QUEUE_READ];
@@ -183,7 +183,7 @@ enum {
 	[pool release];
 }
 
-- (void)addStreamToObserveForWriting: (OFStream*)stream
+- (void)addStreamForWriting: (OFStream*)stream
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFNumber *qi = [OFNumber numberWithInt: QUEUE_ADD | QUEUE_WRITE];
@@ -203,7 +203,7 @@ enum {
 	[pool release];
 }
 
-- (void)removeStreamToObserveForReading: (OFStream*)stream
+- (void)removeStreamForReading: (OFStream*)stream
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFNumber *qi = [OFNumber numberWithInt: QUEUE_REMOVE | QUEUE_READ];
@@ -223,7 +223,7 @@ enum {
 	[pool release];
 }
 
-- (void)removeStreamToObserveForWriting: (OFStream*)stream
+- (void)removeStreamForWriting: (OFStream*)stream
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFNumber *qi = [OFNumber numberWithInt: QUEUE_REMOVE | QUEUE_WRITE];
@@ -243,25 +243,25 @@ enum {
 	[pool release];
 }
 
-- (void)_addStreamToObserveForReading: (OFStream*)strea;
+- (void)_addStreamForReading: (OFStream*)strea;
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
-- (void)_addStreamToObserveForWriting: (OFStream*)stream
+- (void)_addStreamForWriting: (OFStream*)stream
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
-- (void)_removeStreamToObserveForReading: (OFStream*)stream
+- (void)_removeStreamForReading: (OFStream*)stream
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
 }
 
-- (void)_removeStreamToObserveForWriting: (OFStream*)stream
+- (void)_removeStreamForWriting: (OFStream*)stream
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
@@ -302,31 +302,27 @@ enum {
 			case QUEUE_ADD | QUEUE_READ:
 				[readStreams addObject: queueCArray[i]];
 
-				[self _addStreamToObserveForReading:
-				    queueCArray[i]];
+				[self _addStreamForReading: queueCArray[i]];
 
 				break;
 			case QUEUE_ADD | QUEUE_WRITE:
 				[writeStreams addObject: queueCArray[i]];
 
-				[self _addStreamToObserveForWriting:
-				    queueCArray[i]];
+				[self _addStreamForWriting: queueCArray[i]];
 
 				break;
 			case QUEUE_REMOVE | QUEUE_READ:
 				[readStreams removeObjectIdenticalTo:
 				    queueCArray[i]];
 
-				[self _removeStreamToObserveForReading:
-				    queueCArray[i]];
+				[self _removeStreamForReading: queueCArray[i]];
 
 				break;
 			case QUEUE_REMOVE | QUEUE_WRITE:
 				[writeStreams removeObjectIdenticalTo:
 				    queueCArray[i]];
 
-				[self _removeStreamToObserveForWriting:
-				    queueCArray[i]];
+				[self _removeStreamForWriting: queueCArray[i]];
 
 				break;
 			default:
@@ -361,7 +357,7 @@ enum {
 
 	for (i = 0; i < count; i++) {
 		if ([cArray[i] pendingBytes] > 0) {
-			[delegate streamDidBecomeReadyForReading: cArray[i]];
+			[delegate streamIsReadyForReading: cArray[i]];
 			foundInCache = YES;
 			[pool releaseObjects];
 		}
@@ -381,11 +377,11 @@ enum {
 @end
 
 @implementation OFObject (OFStreamObserverDelegate)
-- (void)streamDidBecomeReadyForReading: (OFStream*)stream
+- (void)streamIsReadyForReading: (OFStream*)stream
 {
 }
 
-- (void)streamDidBecomeReadyForWriting: (OFStream*)stream
+- (void)streamIsReadyForWriting: (OFStream*)stream
 {
 }
 

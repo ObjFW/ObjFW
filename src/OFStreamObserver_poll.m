@@ -101,25 +101,25 @@
 	}
 }
 
-- (void)_addStreamToObserveForReading: (OFStream*)stream
+- (void)_addStreamForReading: (OFStream*)stream
 {
 	[self _addStream: stream
 	      withEvents: POLLIN];
 }
 
-- (void)_addStreamToObserveForWriting: (OFStream*)stream
+- (void)_addStreamForWriting: (OFStream*)stream
 {
 	[self _addStream: stream
 	      withEvents: POLLOUT];
 }
 
-- (void)_removeStreamToObserveForReading: (OFStream*)stream
+- (void)_removeStreamForReading: (OFStream*)stream
 {
 	[self _removeStream: stream
 		 withEvents: POLLIN];
 }
 
-- (void)_removeStreamToObserveForWriting: (OFStream*)stream
+- (void)_removeStreamForWriting: (OFStream*)stream
 {
 	[self _removeStream: stream
 		 withEvents: POLLOUT];
@@ -158,13 +158,13 @@
 				continue;
 			}
 
-			[delegate streamDidBecomeReadyForReading:
+			[delegate streamIsReadyForReading:
 			    FDToStream[FDsCArray[i].fd]];
 			[pool releaseObjects];
 		}
 
 		if (FDsCArray[i].revents & POLLOUT) {
-			[delegate streamDidBecomeReadyForReading:
+			[delegate streamIsReadyForReading:
 			    FDToStream[FDsCArray[i].fd]];
 			[pool releaseObjects];
 		}

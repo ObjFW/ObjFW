@@ -45,14 +45,14 @@
  *
  * \param stream The stream which did become ready for reading
  */
-- (void)streamDidBecomeReadyForReading: (OFStream*)stream;
+- (void)streamIsReadyForReading: (OFStream*)stream;
 
 /**
  * \brief This callback is called when a stream did get ready for writing.
  *
  * \param stream The stream which did become ready for writing
  */
-- (void)streamDidBecomeReadyForWriting: (OFStream*)stream;
+- (void)streamIsReadyForWriting: (OFStream*)stream;
 
 /**
  * \brief This callback is called when an exception occurred on the stream.
@@ -119,7 +119,7 @@
  *
  * \param stream The stream to observe for reading
  */
-- (void)addStreamToObserveForReading: (OFStream*)stream;
+- (void)addStreamForReading: (OFStream*)stream;
 
 /**
  * \brief Adds a stream to observe for writing.
@@ -131,7 +131,7 @@
  *
  * \param stream The stream to observe for writing
  */
-- (void)addStreamToObserveForWriting: (OFStream*)stream;
+- (void)addStreamForWriting: (OFStream*)stream;
 
 /**
  * \brief Removes a stream to observe for reading.
@@ -141,7 +141,7 @@
  *
  * \param stream The stream to remove from observing for reading
  */
-- (void)removeStreamToObserveForReading: (OFStream*)stream;
+- (void)removeStreamForReading: (OFStream*)stream;
 
 /**
  * \brief Removes a stream to observe for writing.
@@ -151,7 +151,7 @@
  *
  * \param stream The stream to remove from observing for writing
  */
-- (void)removeStreamToObserveForWriting: (OFStream*)stream;
+- (void)removeStreamForWriting: (OFStream*)stream;
 
 /**
  * \brief Observes all streams and blocks until an event happens on a stream.
