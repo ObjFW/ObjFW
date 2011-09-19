@@ -168,7 +168,7 @@ call_main(id object)
 		@throw [OFOutOfRangeException newWithClass: self];
 
 	sleep((unsigned int)seconds);
-	usleep((uint32_t)nearbyint(remainder(seconds, 1) * 1000000));
+	usleep((useconds_t)fmod(seconds * 1000000, 1000000));
 #else
 	if (seconds * 1000 > UINT_MAX)
 		@throw [OFOutOfRangeException newWithClass: self];
@@ -186,7 +186,7 @@ call_main(id object)
 		@throw [OFOutOfRangeException newWithClass: self];
 
 	sleep((unsigned int)seconds);
-	usleep((uint32_t)nearbyint(remainder(seconds, 1) * 1000000));
+	usleep((useconds_t)fmod(seconds * 1000000, 1000000));
 #else
 	if (seconds * 1000 > UINT_MAX)
 		@throw [OFOutOfRangeException newWithClass: self];
