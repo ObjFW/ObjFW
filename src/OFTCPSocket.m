@@ -201,8 +201,8 @@ static OFMutex *mutex = nil;
 							    port: port];
 }
 
-- (uint16_t)bindToPort: (uint16_t)port
-		onHost: (OFString*)host
+- (uint16_t)bindToHost: (OFString*)host
+		  port: (uint16_t)port
 {
 	union {
 		struct sockaddr_storage storage;

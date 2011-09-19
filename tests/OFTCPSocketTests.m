@@ -39,9 +39,9 @@ static OFString *module = @"OFTCPSocket";
 	TEST(@"+[socket]", (server = [OFTCPSocket socket]) &&
 	    (client = [OFTCPSocket socket]))
 
-	TEST(@"-[bindToPort:onHost:]",
-	    (port = [server bindToPort: 0
-				onHost: @"127.0.0.1"]))
+	TEST(@"-[bindToHost:port:]",
+	    (port = [server bindToHost: @"127.0.0.1"
+				  port: 0]))
 
 	TEST(@"-[listen]", R([server listen]))
 

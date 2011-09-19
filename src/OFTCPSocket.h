@@ -57,14 +57,14 @@
 /**
  * \brief Bind the socket on the specified port and host.
  *
- * \param port The port to bind to. If the port is 0, an unused port will be
- *	       chosen, which can be obtained using the return value.
  * \param host The host to bind to. Use @"0.0.0.0" for IPv4 or @"::" for IPv6
  *	       to bind to all.
+ * \param port The port to bind to. If the port is 0, an unused port will be
+ *	       chosen, which can be obtained using the return value.
  * \return The port the socket was bound to
  */
-- (uint16_t)bindToPort: (uint16_t)port
-		onHost: (OFString*)host;
+- (uint16_t)bindToHost: (OFString*)host
+		  port: (uint16_t)port;
 
 /**
  * \brief Listen on the socket.

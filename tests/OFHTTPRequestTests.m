@@ -50,8 +50,8 @@ static OFCondition *cond;
 	[cond lock];
 
 	listener = [OFTCPSocket socket];
-	port = [listener bindToPort: 0
-			     onHost: @"127.0.0.1"];
+	port = [listener bindToHost: @"127.0.0.1"
+			       port: 0];
 	[listener listen];
 
 	[cond signal];
