@@ -32,13 +32,6 @@
 
 #import "OFOutOfRangeException.h"
 
-enum {
-	QUEUE_ADD = 0,
-	QUEUE_REMOVE = 1,
-	QUEUE_READ = 0,
-	QUEUE_WRITE = 2
-};
-
 @implementation OFStreamObserver_poll
 - init
 {
@@ -49,7 +42,6 @@ enum {
 
 		FDs = [[OFDataArray alloc] initWithItemSize:
 		    sizeof(struct pollfd)];
-		FDToStream = [[OFMutableDictionary alloc] init];
 
 		p.fd = cancelFD[0];
 		[FDs addItem: &p];
@@ -63,36 +55,30 @@ enum {
 
 - (void)dealloc
 {
-	[FDToStream release];
 	[FDs release];
 
 	[super dealloc];
 }
-
 
 - (void)_addStream: (OFStream*)stream
 	withEvents: (short)events
 {
 	struct pollfd *FDsCArray = [FDs cArray];
 	size_t i, count = [FDs count];
-	int fileDescriptor = [stream fileDescriptor];
+	int fd = [stream fileDescriptor];
 	BOOL found = NO;
 
 	for (i = 0; i < count; i++) {
-		if (FDsCArray[i].fd == fileDescriptor) {
+		if (FDsCArray[i].fd == fd) {
 			FDsCArray[i].events |= events;
 			found = YES;
+			break;
 		}
 	}
 
 	if (!found) {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-		struct pollfd p = { fileDescriptor, events | POLLERR, 0 };
+		struct pollfd p = { fd, events | POLLERR, 0 };
 		[FDs addItem: &p];
-		[FDToStream setObject: stream
-			       forKey: [OFNumber numberWithInt:
-				       fileDescriptor]];
-		[pool release];
 	}
 }
 
@@ -105,71 +91,38 @@ enum {
 
 	for (i = 0; i < nFDs; i++) {
 		if (FDsCArray[i].fd == fileDescriptor) {
-			OFAutoreleasePool *pool;
-
 			FDsCArray[i].events &= ~events;
 
-			if ((FDsCArray[i].events & ~POLLERR) != 0)
-				return;
+			if ((FDsCArray[i].events & ~POLLERR) == 0)
+				[FDs removeItemAtIndex: i];
 
-			pool = [[OFAutoreleasePool alloc] init];
-
-			[FDs removeItemAtIndex: i];
-			[FDToStream removeObjectForKey:
-			    [OFNumber numberWithInt: fileDescriptor]];
-
-			[pool release];
+			break;
 		}
 	}
 }
 
-- (void)_processQueue
+- (void)_addStreamToObserveForReading: (OFStream*)stream
 {
-	@synchronized (queue) {
-		OFStream **queueCArray = [queue cArray];
-		OFNumber **queueInfoCArray = [queueInfo cArray];
-		size_t i, count = [queue count];
+	[self _addStream: stream
+	      withEvents: POLLIN];
+}
 
-		for (i = 0; i < count; i++) {
-			switch ([queueInfoCArray[i] intValue]) {
-			case QUEUE_ADD | QUEUE_READ:
-				[readStreams addObject: queueCArray[i]];
+- (void)_addStreamToObserveForWriting: (OFStream*)stream
+{
+	[self _addStream: stream
+	      withEvents: POLLOUT];
+}
 
-				[self _addStream: queueCArray[i]
-				      withEvents: POLLIN];
+- (void)_removeStreamToObserveForReading: (OFStream*)stream
+{
+	[self _removeStream: stream
+		 withEvents: POLLIN];
+}
 
-				break;
-			case QUEUE_ADD | QUEUE_WRITE:
-				[writeStreams addObject: queueCArray[i]];
-
-				[self _addStream: queueCArray[i]
-				      withEvents: POLLOUT];
-
-				break;
-			case QUEUE_REMOVE | QUEUE_READ:
-				[readStreams removeObjectIdenticalTo:
-				    queueCArray[i]];
-
-				[self _removeStream: queueCArray[i]
-					 withEvents: POLLIN];
-
-				break;
-			case QUEUE_REMOVE | QUEUE_WRITE:
-				[writeStreams removeObjectIdenticalTo:
-				    queueCArray[i]];
-
-				[self _removeStream: queueCArray[i]
-					 withEvents: POLLOUT];
-
-				break;
-			default:
-				assert(0);
-			}
-		}
-
-		[queue removeNObjects: count];
-		[queueInfo removeNObjects: count];
-	}
+- (void)_removeStreamToObserveForWriting: (OFStream*)stream
+{
+	[self _removeStream: stream
+		 withEvents: POLLOUT];
 }
 
 - (BOOL)observeWithTimeout: (int)timeout
@@ -195,9 +148,6 @@ enum {
 		return NO;
 
 	for (i = 0; i < nFDs; i++) {
-		OFNumber *num;
-		OFStream *stream;
-
 		if (FDsCArray[i].revents & POLLIN) {
 			if (FDsCArray[i].fd == cancelFD[0]) {
 				char buffer;
@@ -208,23 +158,20 @@ enum {
 				continue;
 			}
 
-			num = [OFNumber numberWithInt: FDsCArray[i].fd];
-			stream = [FDToStream objectForKey: num];
-			[delegate streamDidBecomeReadyForReading: stream];
+			[delegate streamDidBecomeReadyForReading:
+			    FDToStream[FDsCArray[i].fd]];
 			[pool releaseObjects];
 		}
 
 		if (FDsCArray[i].revents & POLLOUT) {
-			num = [OFNumber numberWithInt: FDsCArray[i].fd];
-			stream = [FDToStream objectForKey: num];
-			[delegate streamDidBecomeReadyForReading: stream];
+			[delegate streamDidBecomeReadyForReading:
+			    FDToStream[FDsCArray[i].fd]];
 			[pool releaseObjects];
 		}
 
 		if (FDsCArray[i].revents & POLLERR) {
-			num = [OFNumber numberWithInt: FDsCArray[i].fd];
-			stream = [FDToStream objectForKey: num];
-			[delegate streamDidReceiveException: stream];
+			[delegate streamDidReceiveException:
+			    FDToStream[FDsCArray[i].fd]];
 			[pool releaseObjects];
 		}
 

@@ -25,6 +25,5 @@
 	fd_set readFDs;
 	fd_set writeFDs;
 	fd_set exceptFDs;
-	int nFDs;
 }
 @end

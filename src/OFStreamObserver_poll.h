@@ -21,6 +21,5 @@
 @interface OFStreamObserver_poll: OFStreamObserver
 {
 	OFDataArray *FDs;
-	OFMutableDictionary *FDToStream;
 }
 @end

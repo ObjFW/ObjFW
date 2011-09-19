@@ -71,6 +71,8 @@
 {
 	OFMutableArray *readStreams;
 	OFMutableArray *writeStreams;
+	OFStream **FDToStream;
+	size_t maxFD;
 	OFMutableArray *queue, *queueInfo;
 	id <OFStreamObserverDelegate> delegate;
 	int cancelFD[2];
@@ -166,6 +168,7 @@
 - (BOOL)observeWithTimeout: (int)timeout;
 
 /// \cond internal
+- (void)_processQueue;
 - (BOOL)_processCache;
 /// \endcond
 @end

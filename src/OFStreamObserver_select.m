@@ -28,17 +28,6 @@
 #import "OFNumber.h"
 #import "OFAutoreleasePool.h"
 
-#ifdef _WIN32
-# define close(sock) closesocket(sock)
-#endif
-
-enum {
-	QUEUE_ADD = 0,
-	QUEUE_REMOVE = 1,
-	QUEUE_READ = 0,
-	QUEUE_WRITE = 2
-};
-
 @implementation OFStreamObserver_select
 - init
 {
@@ -48,87 +37,44 @@ enum {
 	FD_ZERO(&writeFDs);
 
 	FD_SET(cancelFD[0], &readFDs);
-	nFDs = cancelFD[0] + 1;
 
 	return self;
 }
 
-- (void)_addStream: (OFStream*)stream
-	 withFDSet: (fd_set*)FDSet
+- (void)_addStreamToObserveForReading: (OFStream*)stream
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	int fileDescriptor = [stream fileDescriptor];
+	int fd = [stream fileDescriptor];
 
-	FD_SET(fileDescriptor, FDSet);
-	FD_SET(fileDescriptor, &exceptFDs);
-
-	if (fileDescriptor >= nFDs)
-		nFDs = fileDescriptor + 1;
-
-	[pool release];
+	FD_SET(fd, &readFDs);
+	FD_SET(fd, &exceptFDs);
 }
 
-- (void)_removeStream: (OFStream*)stream
-	    withFDSet: (fd_set*)FDSet
-	   otherFDSet: (fd_set*)otherFDSet
+- (void)_addStreamToObserveForWriting: (OFStream*)stream
 {
-	int fileDescriptor = [stream fileDescriptor];
+	int fd = [stream fileDescriptor];
 
-	FD_CLR(fileDescriptor, FDSet);
-
-	if (!FD_ISSET(fileDescriptor, otherFDSet))
-		FD_CLR(fileDescriptor, &exceptFDs);
+	FD_SET(fd, &writeFDs);
+	FD_SET(fd, &exceptFDs);
 }
 
-- (void)_processQueue
+- (void)_removeStreamToObserveForReading: (OFStream*)stream
 {
-	@synchronized (queue) {
-		OFStream **queueCArray = [queue cArray];
-		OFNumber **queueInfoCArray = [queueInfo cArray];
-		size_t i, count = [queue count];
+	int fd = [stream fileDescriptor];
 
-		for (i = 0; i < count; i++) {
-			switch ([queueInfoCArray[i] intValue]) {
-			case QUEUE_ADD | QUEUE_READ:
-				[readStreams addObject: queueCArray[i]];
+	FD_CLR(fd, &readFDs);
 
-				[self _addStream: queueCArray[i]
-				       withFDSet: &readFDs];
+	if (!FD_ISSET(fd, &writeFDs))
+		FD_CLR(fd, &exceptFDs);
+}
 
-				break;
-			case QUEUE_ADD | QUEUE_WRITE:
-				[writeStreams addObject: queueCArray[i]];
+- (void)_removeStreamToObserveForWriting: (OFStream*)stream
+{
+	int fd = [stream fileDescriptor];
 
-				[self _addStream: queueCArray[i]
-				       withFDSet: &writeFDs];
+	FD_CLR(fd, &writeFDs);
 
-				break;
-			case QUEUE_REMOVE | QUEUE_READ:
-				[readStreams removeObjectIdenticalTo:
-				    queueCArray[i]];
-
-				[self _removeStream: queueCArray[i]
-					  withFDSet: &readFDs
-					 otherFDSet: &writeFDs];
-
-				break;
-			case QUEUE_REMOVE | QUEUE_WRITE:
-				[writeStreams removeObjectIdenticalTo:
-				    queueCArray[i]];
-
-				[self _removeStream: queueCArray[i]
-					  withFDSet: &writeFDs
-					 otherFDSet: &readFDs];
-
-				break;
-			default:
-				assert(0);
-			}
-		}
-
-		[queue removeNObjects: count];
-		[queueInfo removeNObjects: count];
-	}
+	if (!FD_ISSET(fd, &readFDs))
+		FD_CLR(fd, &exceptFDs);
 }
 
 - (BOOL)observeWithTimeout: (int)timeout
@@ -159,7 +105,7 @@ enum {
 	time.tv_sec = timeout / 1000;
 	time.tv_usec = (timeout % 1000) * 1000;
 
-	if (select(nFDs, &readFDs_, &writeFDs_, &exceptFDs_,
+	if (select((int)maxFD + 1, &readFDs_, &writeFDs_, &exceptFDs_,
 	    (timeout != -1 ? &time : NULL)) < 1)
 		return NO;
 
