@@ -24,13 +24,19 @@
 /**
  * \brief A base class for different types of streams.
  *
+ * WARNING: Even though the OFCopying protocol is implemented, it does
+ * <i>not</i> return an independant copy of the stream but instead retains it.
+ * This is so that the stream can be used as a key for a dictionary so context
+ * can be associated with a stream. Using a stream in more than one thread at
+ * the same time is not thread-safe, even if copy was called!
+ *
  * IMPORTANT: If you want to subclass this, override _readNBytes:intoBuffer:,
  * _writeNBytes:fromBuffer: and _isAtEndOfStream, but nothing else. Those are
  * not defined in the headers, but do the actual work. OFStream uses those and
  * does all the caching and other stuff. If you override these methods without
  * the _ prefix, you *WILL* break caching and get broken results!
  */
-@interface OFStream: OFObject
+@interface OFStream: OFObject <OFCopying>
 {
 	char   *cache;
 	char   *writeBuffer;

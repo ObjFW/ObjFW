@@ -90,6 +90,11 @@
 					      selector: _cmd];
 }
 
+- copy
+{
+	return [self retain];
+}
+
 - (BOOL)isAtEndOfStream
 {
 	if (cache != NULL)
