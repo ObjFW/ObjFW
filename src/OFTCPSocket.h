@@ -36,10 +36,14 @@
  */
 @interface OFTCPSocket: OFStreamSocket
 {
-	BOOL			isListening;
+	BOOL			listening;
 	struct sockaddr_storage	*sockAddr;
 	socklen_t		sockAddrLen;
 }
+
+#ifdef OF_HAVE_PROPERTIES
+@property (assign, readonly, getter=isBlocking) BOOL *listening;
+#endif
 
 /**
  * \brief Connect the OFTCPSocket to the specified destination.

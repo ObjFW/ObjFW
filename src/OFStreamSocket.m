@@ -66,7 +66,7 @@
 
 - (BOOL)_isAtEndOfStream
 {
-	return isAtEndOfStream;
+	return atEndOfStream;
 }
 
 - (size_t)_readNBytes: (size_t)length
@@ -78,7 +78,7 @@
 		@throw [OFNotConnectedException newWithClass: isa
 						      socket: self];
 
-	if (isAtEndOfStream) {
+	if (atEndOfStream) {
 		OFReadFailedException *e;
 
 		e = [OFReadFailedException newWithClass: isa
@@ -99,7 +99,7 @@
 					   requestedLength: length];
 
 	if (ret == 0)
-		isAtEndOfStream = YES;
+		atEndOfStream = YES;
 
 	return ret;
 }
@@ -111,7 +111,7 @@
 		@throw [OFNotConnectedException newWithClass: isa
 						      socket: self];
 
-	if (isAtEndOfStream) {
+	if (atEndOfStream) {
 		OFWriteFailedException *e;
 
 		e = [OFWriteFailedException newWithClass: isa
@@ -136,7 +136,7 @@
 - (void)setBlocking: (BOOL)enable
 {
 	u_long v = enable;
-	isBlocking = enable;
+	blocking = enable;
 
 	if (ioctlsocket(sock, FIONBIO, &v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException newWithClass: isa
@@ -158,7 +158,7 @@
 	close(sock);
 
 	sock = INVALID_SOCKET;
-	isAtEndOfStream = NO;
+	atEndOfStream = NO;
 }
 
 - (void)dealloc

@@ -36,7 +36,7 @@ extern void of_log(OFConstantString*, ...);
 {
 	int  fileDescriptor;
 	BOOL closable;
-	BOOL isAtEndOfStream;
+	BOOL atEndOfStream;
 }
 
 /**

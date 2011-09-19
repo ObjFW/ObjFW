@@ -335,7 +335,7 @@ static OFMutex *mutex = nil;
 						      socket: self
 						     backLog: backLog];
 
-	isListening = YES;
+	listening = YES;
 }
 
 - (void)listen
@@ -349,7 +349,7 @@ static OFMutex *mutex = nil;
 						      socket: self
 						     backLog: 5];
 
-	isListening = YES;
+	listening = YES;
 }
 
 - (OFTCPSocket*)accept
@@ -441,14 +441,14 @@ static OFMutex *mutex = nil;
 
 - (BOOL)isListening
 {
-	return isListening;
+	return listening;
 }
 
 - (void)close
 {
 	[super close];
 
-	isListening = NO;
+	listening = NO;
 	[self freeMemory: sockAddr];
 	sockAddr = NULL;
 	sockAddrLen = 0;

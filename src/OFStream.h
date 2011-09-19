@@ -36,11 +36,11 @@
 	char   *writeBuffer;
 	size_t cacheLength, writeBufferLength;
 	BOOL   buffersWrites;
-	BOOL   isBlocking;
+	BOOL   blocking;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (assign, setter=setBlocking:) BOOL isBlocking;
+@property (assign, getter=isBlocking) BOOL blocking;
 #endif
 
 /**

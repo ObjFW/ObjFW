@@ -21,11 +21,11 @@
  */
 @interface OFHash: OFObject
 {
-	BOOL	 isCalculated;
+	BOOL calculated;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly) BOOL isCalculated;
+@property (readonly, getter=isCalculated) BOOL calculated;
 #endif
 
 /**

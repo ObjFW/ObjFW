@@ -58,7 +58,7 @@ void *_OFConstantStringClassReference;
 	switch (of_string_check_utf8(ivars->cString, ivars->cStringLength,
 	    &ivars->length)) {
 	case 1:
-		ivars->isUTF8 = YES;
+		ivars->UTF8 = YES;
 		break;
 	case -1:
 		free(ivars);

@@ -52,7 +52,7 @@
 	size_t i, j, d;
 	char *newCString;
 
-	if (!s->isUTF8) {
+	if (!s->UTF8) {
 		assert(tableSize >= 1);
 
 		uint8_t *p = (uint8_t*)s->cString + s->cStringLength;
@@ -150,7 +150,7 @@
 
 	switch (of_string_check_utf8(UTF8String, UTF8StringLength, &length)) {
 	case 1:
-		s->isUTF8 = YES;
+		s->UTF8 = YES;
 		break;
 	case -1:
 		@throw [OFInvalidEncodingException newWithClass: isa];
@@ -177,7 +177,7 @@
 
 	switch (of_string_check_utf8(UTF8String, UTF8StringLength, &length)) {
 	case 1:
-		s->isUTF8 = YES;
+		s->UTF8 = YES;
 		break;
 	case -1:
 		@throw [OFInvalidEncodingException newWithClass: isa];
@@ -240,8 +240,8 @@
 
 	s->cString[s->cStringLength] = 0;
 
-	if (string->s->isUTF8)
-		s->isUTF8 = YES;
+	if (string->s->UTF8)
+		s->UTF8 = YES;
 }
 
 - (void)appendFormat: (OFConstantString*)format, ...
@@ -296,7 +296,7 @@
 		s->cString[i] ^= s->cString[j];
 	}
 
-	if (!s->isUTF8) {
+	if (!s->UTF8) {
 		madvise(s->cString, s->cStringLength, MADV_NORMAL);
 		return;
 	}
@@ -395,7 +395,7 @@
 	if (index > s->length)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	if (s->isUTF8)
+	if (s->UTF8)
 		index = of_string_index_to_position(s->cString, index,
 		    s->cStringLength);
 
@@ -427,7 +427,7 @@
 
 	s->length -= end - start;
 
-	if (s->isUTF8) {
+	if (s->UTF8) {
 		start = of_string_index_to_position(s->cString, start,
 		    s->cStringLength);
 		end = of_string_index_to_position(s->cString, end,
@@ -463,7 +463,7 @@
 
 	newLength = s->length - (end - start) + [replacement length];
 
-	if (s->isUTF8) {
+	if (s->UTF8) {
 		start = of_string_index_to_position(s->cString, start,
 		    s->cStringLength);
 		end = of_string_index_to_position(s->cString, end,

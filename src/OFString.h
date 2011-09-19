@@ -87,7 +87,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 	struct of_string_ivars {
 		char   *cString;
 		size_t cStringLength;
-		BOOL   isUTF8;
+		BOOL   UTF8;
 		size_t length;
 	} *restrict s;
 	/*

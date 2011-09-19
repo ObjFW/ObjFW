@@ -615,7 +615,7 @@ of_log(OFConstantString *format, ...)
 	if (fileDescriptor == -1)
 		return YES;
 
-	return isAtEndOfStream;
+	return atEndOfStream;
 }
 
 - (size_t)_readNBytes: (size_t)length
@@ -623,13 +623,13 @@ of_log(OFConstantString *format, ...)
 {
 	size_t ret;
 
-	if (fileDescriptor == -1 || isAtEndOfStream)
+	if (fileDescriptor == -1 || atEndOfStream)
 		@throw [OFReadFailedException newWithClass: isa
 						    stream: self
 					   requestedLength: length];
 
 	if ((ret = read(fileDescriptor, buffer, length)) == 0)
-		isAtEndOfStream = YES;
+		atEndOfStream = YES;
 
 	return ret;
 }
@@ -637,7 +637,7 @@ of_log(OFConstantString *format, ...)
 - (void)_writeNBytes: (size_t)length
 	  fromBuffer: (const void*)buffer
 {
-	if (fileDescriptor == -1 || isAtEndOfStream ||
+	if (fileDescriptor == -1 || atEndOfStream ||
 	    write(fileDescriptor, buffer, length) < length)
 		@throw [OFWriteFailedException newWithClass: isa
 						     stream: self

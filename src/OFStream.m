@@ -65,7 +65,7 @@
 
 	cache = NULL;
 	writeBuffer = NULL;
-	isBlocking = YES;
+	blocking = YES;
 
 	return self;
 }
@@ -1365,7 +1365,7 @@
 
 - (BOOL)isBlocking
 {
-	return isBlocking;
+	return blocking;
 }
 
 - (void)setBlocking: (BOOL)enable
@@ -1373,7 +1373,7 @@
 #ifndef _WIN32
 	int flags;
 
-	isBlocking = enable;
+	blocking = enable;
 
 	if ((flags = fcntl([self fileDescriptor], F_GETFL)) == -1)
 		@throw [OFSetOptionFailedException newWithClass: isa

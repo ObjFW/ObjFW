@@ -86,7 +86,7 @@ int
 of_string_check_utf8(const char *cString, size_t cStringLength, size_t *length)
 {
 	size_t i, tmpLength = cStringLength;
-	int isUTF8 = 0;
+	int UTF8 = 0;
 
 	madvise((void*)cString, cStringLength, MADV_SEQUENTIAL);
 
@@ -95,7 +95,7 @@ of_string_check_utf8(const char *cString, size_t cStringLength, size_t *length)
 		if (OF_LIKELY(!(cString[i] & 0x80)))
 			continue;
 
-		isUTF8 = 1;
+		UTF8 = 1;
 
 		/* We're missing a start byte here */
 		if (OF_UNLIKELY(!(cString[i] & 0x40))) {
@@ -162,7 +162,7 @@ of_string_check_utf8(const char *cString, size_t cStringLength, size_t *length)
 	if (length != NULL)
 		*length = tmpLength;
 
-	return isUTF8;
+	return UTF8;
 }
 
 size_t
@@ -500,7 +500,7 @@ of_utf16_string_length(const uint16_t *string)
 					@throw [OFInvalidEncodingException
 					    newWithClass: isa];
 
-				s->isUTF8 = YES;
+				s->UTF8 = YES;
 				break;
 			case -1:
 				@throw [OFInvalidEncodingException
@@ -526,7 +526,7 @@ of_utf16_string_length(const uint16_t *string)
 					continue;
 				}
 
-				s->isUTF8 = YES;
+				s->UTF8 = YES;
 				bytes = of_string_unicode_to_utf8(
 				    (uint8_t)cString[i], buffer);
 
@@ -575,7 +575,7 @@ of_utf16_string_length(const uint16_t *string)
 				@throw [OFInvalidEncodingException
 				    newWithClass: isa];
 
-			s->isUTF8 = YES;
+			s->UTF8 = YES;
 			characterBytes = of_string_unicode_to_utf8(character,
 			    buffer);
 
@@ -613,7 +613,7 @@ of_utf16_string_length(const uint16_t *string)
 		 * a constant string).
 		 */
 		s->cStringLength = [string UTF8StringLength];
-		s->isUTF8 = string->s->isUTF8;
+		s->UTF8 = string->s->UTF8;
 		s->length = string->s->length;
 
 		s->cString = [self allocMemoryWithSize: s->cStringLength + 1];
@@ -687,7 +687,7 @@ of_utf16_string_length(const uint16_t *string)
 				s->cString[j++] = buffer[0];
 				break;
 			case 2:
-				s->isUTF8 = YES;
+				s->UTF8 = YES;
 				s->cStringLength++;
 
 				memcpy(s->cString + j, buffer, 2);
@@ -695,7 +695,7 @@ of_utf16_string_length(const uint16_t *string)
 
 				break;
 			case 3:
-				s->isUTF8 = YES;
+				s->UTF8 = YES;
 				s->cStringLength += 2;
 
 				memcpy(s->cString + j, buffer, 3);
@@ -703,7 +703,7 @@ of_utf16_string_length(const uint16_t *string)
 
 				break;
 			case 4:
-				s->isUTF8 = YES;
+				s->UTF8 = YES;
 				s->cStringLength += 3;
 
 				memcpy(s->cString + j, buffer, 4);
@@ -820,7 +820,7 @@ of_utf16_string_length(const uint16_t *string)
 				s->cString[j++] = buffer[0];
 				break;
 			case 2:
-				s->isUTF8 = YES;
+				s->UTF8 = YES;
 				s->cStringLength++;
 
 				memcpy(s->cString + j, buffer, 2);
@@ -828,7 +828,7 @@ of_utf16_string_length(const uint16_t *string)
 
 				break;
 			case 3:
-				s->isUTF8 = YES;
+				s->UTF8 = YES;
 				s->cStringLength += 2;
 
 				memcpy(s->cString + j, buffer, 3);
@@ -836,7 +836,7 @@ of_utf16_string_length(const uint16_t *string)
 
 				break;
 			case 4:
-				s->isUTF8 = YES;
+				s->UTF8 = YES;
 				s->cStringLength += 3;
 
 				memcpy(s->cString + j, buffer, 4);
@@ -904,7 +904,7 @@ of_utf16_string_length(const uint16_t *string)
 			switch (of_string_check_utf8(s->cString,
 			    cStringLength, &s->length)) {
 			case 1:
-				s->isUTF8 = YES;
+				s->UTF8 = YES;
 				break;
 			case -1:
 				@throw [OFInvalidEncodingException
@@ -954,7 +954,7 @@ of_utf16_string_length(const uint16_t *string)
 		 * case it's a constant string.
 		 */
 		s->cStringLength = [firstComponent UTF8StringLength];
-		s->isUTF8 = firstComponent->s->isUTF8;
+		s->UTF8 = firstComponent->s->UTF8;
 		s->length = firstComponent->s->length;
 
 		/* Calculate length and see if we need UTF-8 */
@@ -964,8 +964,8 @@ of_utf16_string_length(const uint16_t *string)
 			s->cStringLength += 1 + [component UTF8StringLength];
 			s->length += 1 + component->s->length;
 
-			if (component->s->isUTF8)
-				s->isUTF8 = YES;
+			if (component->s->UTF8)
+				s->UTF8 = YES;
 		}
 
 		s->cString = [self allocMemoryWithSize: s->cStringLength + 1];
@@ -1143,7 +1143,7 @@ of_utf16_string_length(const uint16_t *string)
 	case OF_STRING_ENCODING_UTF_8:
 		return s->cString;
 	case OF_STRING_ENCODING_ASCII:
-		if (s->isUTF8)
+		if (s->UTF8)
 			@throw [OFInvalidEncodingException newWithClass: isa];
 
 		return s->cString;
@@ -1169,7 +1169,7 @@ of_utf16_string_length(const uint16_t *string)
 	case OF_STRING_ENCODING_UTF_8:
 		return s->cStringLength;
 	case OF_STRING_ENCODING_ASCII:
-		if (s->isUTF8)
+		if (s->UTF8)
 			@throw [OFInvalidEncodingException newWithClass: isa];
 
 		return s->cStringLength;
@@ -1251,7 +1251,7 @@ of_utf16_string_length(const uint16_t *string)
 	otherCString = [otherString UTF8String];
 	otherCStringLength = [otherString UTF8StringLength];
 
-	if (!s->isUTF8) {
+	if (!s->UTF8) {
 		minimumCStringLength = (s->cStringLength > otherCStringLength
 		    ? otherCStringLength : s->cStringLength);
 
@@ -1364,7 +1364,7 @@ of_utf16_string_length(const uint16_t *string)
 	if (index >= s->length)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	if (!s->isUTF8)
+	if (!s->UTF8)
 		return s->cString[index];
 
 	index = of_string_index_to_position(s->cString, index,
@@ -1443,7 +1443,7 @@ of_utf16_string_length(const uint16_t *string)
 	if (end > s->length)
 		@throw [OFOutOfRangeException newWithClass: isa];
 
-	if (s->isUTF8) {
+	if (s->UTF8) {
 		start = of_string_index_to_position(s->cString, start,
 		    s->cStringLength);
 		end = of_string_index_to_position(s->cString, end,
