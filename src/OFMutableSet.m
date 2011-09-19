@@ -150,7 +150,7 @@ static struct {
 	id *cArray;
 
 	cArray = [self allocMemoryForNItems: count
-				   withSize: sizeof(id)];
+				     ofSize: sizeof(id)];
 
 	@try {
 		OFEnumerator *enumerator = [self objectEnumerator];

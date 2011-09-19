@@ -262,7 +262,7 @@ static struct {
 	container = [[[OFObject alloc] init] autorelease];
 	count = [self count];
 	buffer = [container allocMemoryForNItems: [self count]
-					withSize: sizeof(*buffer)];
+					  ofSize: sizeof(*buffer)];
 
 	[self getObjects: buffer
 		 inRange: of_range(0, count)];
@@ -346,7 +346,7 @@ static struct {
 						  range: range];
 
 	buffer = [self allocMemoryForNItems: range.length
-				       withSize: sizeof(*buffer)];
+				     ofSize: sizeof(*buffer)];
 
 	@try {
 		[self getObjects: buffer
@@ -570,7 +570,7 @@ static struct {
 	OFArray *ret;
 	size_t count = [self count];
 	id *tmp = [self allocMemoryForNItems: count
-				    withSize: sizeof(id)];
+				      ofSize: sizeof(id)];
 
 	@try {
 		[self enumerateObjectsUsingBlock: ^ (id object, size_t index,
@@ -592,7 +592,7 @@ static struct {
 	OFArray *ret;
 	size_t count = [self count];
 	id *tmp = [self allocMemoryForNItems: count
-				    withSize: sizeof(id)];
+				      ofSize: sizeof(id)];
 
 	@try {
 		__block size_t i = 0;

@@ -80,7 +80,7 @@ struct of_dictionary_hashtable_bucket
 		hashtable = (OFDictionary_hashtable*)dictionary;
 
 		data = [self allocMemoryForNItems: hashtable->size
-					 withSize: sizeof(*data)];
+					   ofSize: sizeof(*data)];
 
 		for (i = 0; i < hashtable->size; i++)
 			data[i] = NULL;
@@ -138,7 +138,7 @@ struct of_dictionary_hashtable_bucket
 			@throw [OFOutOfRangeException newWithClass: isa];
 
 		data = [self allocMemoryForNItems: newSize
-					 withSize: sizeof(*data)];
+					   ofSize: sizeof(*data)];
 
 		for (i = 0; i < newSize; i++)
 			data[i] = NULL;
@@ -204,7 +204,7 @@ struct of_dictionary_hashtable_bucket
 							       selector: _cmd];
 
 		data = [self allocMemoryForNItems: 2
-					 withSize: sizeof(*data)];
+					   ofSize: sizeof(*data)];
 
 		size = 2;
 		for (i = 0; i < size; i++)
@@ -249,7 +249,7 @@ struct of_dictionary_hashtable_bucket
 			@throw [OFOutOfRangeException newWithClass: isa];
 
 		data = [self allocMemoryForNItems: newSize
-					 withSize: sizeof(*data)];
+					   ofSize: sizeof(*data)];
 
 		for (j = 0; j < newSize; j++)
 			data[j] = NULL;
@@ -367,7 +367,7 @@ struct of_dictionary_hashtable_bucket
 			@throw [OFOutOfRangeException newWithClass: isa];
 
 		data = [self allocMemoryForNItems: newSize
-					 withSize: sizeof(*data)];
+					   ofSize: sizeof(*data)];
 
 		for (j = 0; j < newSize; j++)
 			data[j] = NULL;
@@ -618,7 +618,7 @@ struct of_dictionary_hashtable_bucket
 {
 	OFArray *ret;
 	id *cArray = [self allocMemoryForNItems: count
-				       withSize: sizeof(id)];
+					 ofSize: sizeof(id)];
 	size_t i, j;
 
 	for (i = j = 0; i < size; i++)
@@ -641,7 +641,7 @@ struct of_dictionary_hashtable_bucket
 {
 	OFArray *ret;
 	id *cArray = [self allocMemoryForNItems: count
-				       withSize: sizeof(id)];
+					 ofSize: sizeof(id)];
 	size_t i, j;
 
 	for (i = j = 0; i < size; i++)

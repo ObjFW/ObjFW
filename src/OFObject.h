@@ -512,7 +512,7 @@ typedef struct of_rectangle_t
  * \return A pointer to the allocated memory
  */
 - (void*)allocMemoryForNItems: (size_t)nItems
-		     withSize: (size_t)size;
+		       ofSize: (size_t)size;
 
 /**
  * \brief Resizes memory in the object's memory pool to the specified size.
@@ -541,7 +541,7 @@ typedef struct of_rectangle_t
  */
 - (void*)resizeMemory: (void*)pointer
 	     toNItems: (size_t)nItems
-	     withSize: (size_t)size;
+	       ofSize: (size_t)size;
 
 /**
  * \brief Frees allocated memory and removes it from the object's memory pool.

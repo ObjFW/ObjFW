@@ -129,7 +129,7 @@ enum {
 
 		maxFD = cancelFD[0];
 		FDToStream = [self allocMemoryForNItems: maxFD + 1
-					       withSize: sizeof(OFStream*)];
+						 ofSize: sizeof(OFStream*)];
 		FDToStream[cancelFD[0]] = nil;
 	} @catch (id e) {
 		[self release];
@@ -285,7 +285,7 @@ enum {
 					FDToStream = [self
 					    resizeMemory: FDToStream
 						toNItems: maxFD + 1
-						withSize: sizeof(OFStream*)];
+						  ofSize: sizeof(OFStream*)];
 				}
 
 				FDToStream[fd] = queueCArray[i];

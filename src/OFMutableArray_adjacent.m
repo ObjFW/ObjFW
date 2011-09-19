@@ -154,7 +154,7 @@
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	copy = [self allocMemoryForNItems: nObjects
-				 withSize: sizeof(id)];
+				   ofSize: sizeof(id)];
 	memcpy(copy, cArray + (count - nObjects), nObjects * sizeof(id));
 
 	@try {
@@ -177,7 +177,7 @@
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	copy = [self allocMemoryForNItems: range.length
-				 withSize: sizeof(id)];
+				   ofSize: sizeof(id)];
 	memcpy(copy, cArray + range.start, range.length * sizeof(id));
 
 	@try {

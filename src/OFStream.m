@@ -442,7 +442,7 @@
 
 	da = [OFDataArray dataArrayWithItemSize: itemSize];
 	tmp = [self allocMemoryForNItems: nItems
-				withSize: itemSize];
+				  ofSize: itemSize];
 
 	@try {
 		[self readExactlyNBytes: nItems * itemSize
@@ -939,7 +939,7 @@
 	uint16_t *tmp;
 
 	tmp = [self allocMemoryForNItems: nInt16s
-				withSize: sizeof(uint16_t)];
+				  ofSize: sizeof(uint16_t)];
 
 	@try {
 		size_t i;
@@ -969,7 +969,7 @@
 	uint32_t *tmp;
 
 	tmp = [self allocMemoryForNItems: nInt32s
-				withSize: sizeof(uint32_t)];
+				  ofSize: sizeof(uint32_t)];
 
 	@try {
 		size_t i;
@@ -999,7 +999,7 @@
 	uint64_t *tmp;
 
 	tmp = [self allocMemoryForNItems: nInt64s
-				withSize: sizeof(uint64_t)];
+				  ofSize: sizeof(uint64_t)];
 
 	@try {
 		size_t i;
@@ -1029,7 +1029,7 @@
 	float *tmp;
 
 	tmp = [self allocMemoryForNItems: nFloats
-				withSize: sizeof(float)];
+				  ofSize: sizeof(float)];
 
 	@try {
 		size_t i;
@@ -1059,7 +1059,7 @@
 	double *tmp;
 
 	tmp = [self allocMemoryForNItems: nDoubles
-				withSize: sizeof(double)];
+				  ofSize: sizeof(double)];
 
 	@try {
 		size_t i;
@@ -1129,7 +1129,7 @@
 	uint16_t *tmp;
 
 	tmp = [self allocMemoryForNItems: nInt16s
-				withSize: sizeof(uint16_t)];
+				  ofSize: sizeof(uint16_t)];
 
 	@try {
 		size_t i;
@@ -1159,7 +1159,7 @@
 	uint32_t *tmp;
 
 	tmp = [self allocMemoryForNItems: nInt32s
-				withSize: sizeof(uint32_t)];
+				  ofSize: sizeof(uint32_t)];
 
 	@try {
 		size_t i;
@@ -1189,7 +1189,7 @@
 	uint64_t *tmp;
 
 	tmp = [self allocMemoryForNItems: nInt64s
-				withSize: sizeof(uint64_t)];
+				  ofSize: sizeof(uint64_t)];
 
 	@try {
 		size_t i;
@@ -1219,7 +1219,7 @@
 	float *tmp;
 
 	tmp = [self allocMemoryForNItems: nFloats
-				withSize: sizeof(float)];
+				  ofSize: sizeof(float)];
 
 	@try {
 		size_t i;
@@ -1249,7 +1249,7 @@
 	double *tmp;
 
 	tmp = [self allocMemoryForNItems: nDoubles
-				withSize: sizeof(double)];
+				  ofSize: sizeof(double)];
 
 	@try {
 		size_t i;

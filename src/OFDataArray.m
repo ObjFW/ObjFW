@@ -256,7 +256,7 @@ void _references_to_categories_of_OFDataArray(void)
 
 	data = [self resizeMemory: data
 			 toNItems: count + 1
-			 withSize: itemSize];
+			   ofSize: itemSize];
 
 	memcpy(data + count * itemSize, item, itemSize);
 
@@ -279,7 +279,7 @@ void _references_to_categories_of_OFDataArray(void)
 
 	data = [self resizeMemory: data
 			 toNItems: count + nItems
-			 withSize: itemSize];
+			   ofSize: itemSize];
 
 	memcpy(data + count * itemSize, cArray, nItems * itemSize);
 	count += nItems;
@@ -294,7 +294,7 @@ void _references_to_categories_of_OFDataArray(void)
 
 	data = [self resizeMemory: data
 			 toNItems: count + nItems
-			 withSize: itemSize];
+			   ofSize: itemSize];
 
 	memmove(data + (index + nItems) * itemSize, data + index * itemSize,
 	    (count - index) * itemSize);
@@ -319,7 +319,7 @@ void _references_to_categories_of_OFDataArray(void)
 	@try {
 		data = [self resizeMemory: data
 				 toNItems: count
-				 withSize: itemSize];
+				   ofSize: itemSize];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 		[e release];
@@ -339,7 +339,7 @@ void _references_to_categories_of_OFDataArray(void)
 	@try {
 		data = [self resizeMemory: data
 				 toNItems: count
-				 withSize: itemSize];
+				   ofSize: itemSize];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 		[e release];
@@ -352,7 +352,7 @@ void _references_to_categories_of_OFDataArray(void)
 	@try {
 		data = [self resizeMemory: data
 				 toNItems: count
-				 withSize: itemSize];
+				   ofSize: itemSize];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only made it smaller */
 		[e release];
@@ -531,7 +531,7 @@ void _references_to_categories_of_OFDataArray(void)
 	if (size != newSize)
 		data = [self resizeMemory: data
 				 toNItems: newSize
-				 withSize: itemSize];
+				   ofSize: itemSize];
 
 	memmove(data + (index + nItems) * itemSize, data + index * itemSize,
 	    (count - index) * itemSize);

@@ -890,7 +890,7 @@ void _references_to_categories_of_OFObject(void)
 }
 
 - (void*)allocMemoryForNItems: (size_t)nItems
-		     withSize: (size_t)size
+		       ofSize: (size_t)size
 {
 	if (nItems == 0 || size == 0)
 		return NULL;
@@ -935,11 +935,11 @@ void _references_to_categories_of_OFObject(void)
 
 - (void*)resizeMemory: (void*)pointer
 	     toNItems: (size_t)nItems
-	     withSize: (size_t)size
+	       ofSize: (size_t)size
 {
 	if (pointer == NULL)
 		return [self allocMemoryForNItems: nItems
-					 withSize: size];
+					   ofSize: size];
 
 	if (nItems == 0 || size == 0) {
 		[self freeMemory: pointer];
@@ -1123,7 +1123,7 @@ void _references_to_categories_of_OFObject(void)
 }
 
 + (void*)allocMemoryForNItems: (size_t)nItems
-		     withSize: (size_t)size
+		       ofSize: (size_t)size
 {
 	@throw [OFNotImplementedException newWithClass: self
 					      selector: _cmd];
@@ -1138,7 +1138,7 @@ void _references_to_categories_of_OFObject(void)
 
 + (void*)resizeMemory: (void*)pointer
 	     toNItems: (size_t)nItems
-	     withSize: (size_t)size
+	      ofSize: (size_t)size
 {
 	@throw [OFNotImplementedException newWithClass: self
 					      selector: _cmd];

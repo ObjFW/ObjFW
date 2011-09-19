@@ -61,7 +61,7 @@ static Class dictionary = Nil;
 		@throw [OFOutOfRangeException newWithClass: isa];
 
 	newData = [self allocMemoryForNItems: newSize
-				    withSize: sizeof(*newData)];
+				      ofSize: sizeof(*newData)];
 
 	for (i = 0; i < newSize; i++)
 		newData[i] = NULL;

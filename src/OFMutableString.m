@@ -67,7 +67,7 @@
 
 	unicodeLen = [self length];
 	unicodeString = [self allocMemoryForNItems: unicodeLen
-					  withSize: sizeof(of_unichar_t)];
+					    ofSize: sizeof(of_unichar_t)];
 
 	i = j = 0;
 	newCStringLength = 0;
