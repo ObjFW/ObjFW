@@ -356,7 +356,8 @@ enum {
 	pool = [[OFAutoreleasePool alloc] init];
 
 	for (i = 0; i < count; i++) {
-		if ([cArray[i] pendingBytes] > 0) {
+		if ([cArray[i] pendingBytes] > 0 &&
+		    ![cArray[i] _isWaitingForDelimiter]) {
 			[delegate streamIsReadyForReading: cArray[i]];
 			foundInCache = YES;
 			[pool releaseObjects];

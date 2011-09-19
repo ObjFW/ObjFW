@@ -37,6 +37,7 @@
 	size_t cacheLength, writeBufferLength;
 	BOOL   buffersWrites;
 	BOOL   blocking;
+	BOOL   waitingForDelimiter;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -803,4 +804,8 @@
  * \brief Closes the stream.
  */
 - (void)close;
+
+/// \cond internal
+- (BOOL)_isWaitingForDelimiter;
+/// \endcond
 @end

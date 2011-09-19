@@ -507,15 +507,14 @@
 	return ret;
 }
 
-- (OFString*)_tryReadLineWithEncoding: (of_string_encoding_t)encoding
-			   checkCache: (BOOL)checkCache
+- (OFString*)tryReadLineWithEncoding: (of_string_encoding_t)encoding
 {
 	size_t i, bufferLength, retLength;
 	char *retCString, *buffer, *newCache;
 	OFString *ret;
 
 	/* Look if there's a line or \0 in our cache */
-	if (checkCache && cache != NULL) {
+	if (!waitingForDelimiter && cache != NULL) {
 		for (i = 0; i < cacheLength; i++) {
 			if (OF_UNLIKELY(cache[i] == '\n' ||
 			    cache[i] == '\0')) {
@@ -538,6 +537,7 @@
 				cache = newCache;
 				cacheLength -= i + 1;
 
+				waitingForDelimiter = NO;
 				return ret;
 			}
 		}
@@ -548,8 +548,10 @@
 
 	@try {
 		if ([self _isAtEndOfStream]) {
-			if (cache == NULL)
+			if (cache == NULL) {
+				waitingForDelimiter = NO;
 				return nil;
+			}
 
 			retLength = cacheLength;
 
@@ -564,6 +566,7 @@
 			cache = NULL;
 			cacheLength = 0;
 
+			waitingForDelimiter = NO;
 			return ret;
 		}
 
@@ -625,6 +628,7 @@
 				cache = newCache;
 				cacheLength = bufferLength - i - 1;
 
+				waitingForDelimiter = NO;
 				return ret;
 			}
 		}
@@ -645,6 +649,7 @@
 		[self freeMemory: buffer];
 	}
 
+	waitingForDelimiter = YES;
 	return nil;
 }
 
@@ -657,12 +662,7 @@
 {
 	OFString *line = nil;
 
-	if ((line = [self _tryReadLineWithEncoding: encoding
-					checkCache: YES]) != nil)
-		return line;
-
-	while ((line = [self _tryReadLineWithEncoding: encoding
-					   checkCache: NO]) == nil)
+	while ((line = [self tryReadLineWithEncoding: encoding]) == nil)
 		if ([self isAtEndOfStream])
 			return nil;
 
@@ -674,15 +674,8 @@
 	return [self tryReadLineWithEncoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (OFString*)tryReadLineWithEncoding: (of_string_encoding_t)encoding
-{
-	return [self _tryReadLineWithEncoding: encoding
-				   checkCache: YES];
-}
-
-- (OFString*)_tryReadTillDelimiter: (OFString*)delimiter
-		      withEncoding: (of_string_encoding_t)encoding
-			checkCache: (BOOL)checkCache
+- (OFString*)tryReadTillDelimiter: (OFString*)delimiter
+		     withEncoding: (of_string_encoding_t)encoding
 {
 	const char *delimiterUTF8String;
 	size_t i, j, delimiterLength, bufferLength, retLength;
@@ -699,7 +692,7 @@
 						       selector: _cmd];
 
 	/* Look if there's something in our cache */
-	if (checkCache && cache != NULL) {
+	if (!waitingForDelimiter && cache != NULL) {
 		for (i = 0; i < cacheLength; i++) {
 			if (cache[i] != delimiterUTF8String[j++])
 				j = 0;
@@ -723,6 +716,7 @@
 				cache = newCache;
 				cacheLength -= i + 1;
 
+				waitingForDelimiter = NO;
 				return ret;
 			}
 		}
@@ -733,8 +727,10 @@
 
 	@try {
 		if ([self _isAtEndOfStream]) {
-			if (cache == NULL)
+			if (cache == NULL) {
+				waitingForDelimiter = NO;
 				return nil;
+			}
 
 			ret = [OFString stringWithCString: cache
 						 encoding: encoding
@@ -744,6 +740,7 @@
 			cache = NULL;
 			cacheLength = 0;
 
+			waitingForDelimiter = NO;
 			return ret;
 		}
 
@@ -794,6 +791,7 @@
 				cache = newCache;
 				cacheLength = bufferLength - i - 1;
 
+				waitingForDelimiter = NO;
 				return ret;
 			}
 		}
@@ -815,6 +813,7 @@
 		[self freeMemory: buffer];
 	}
 
+	waitingForDelimiter = YES;
 	return nil;
 }
 
@@ -830,14 +829,9 @@
 {
 	OFString *ret = nil;
 
-	if ((ret = [self _tryReadTillDelimiter: delimiter
-				  withEncoding: encoding
-				    checkCache: YES]) != nil)
-		return ret;
 
-	while ((ret = [self _tryReadTillDelimiter: delimiter
-				     withEncoding: encoding
-				       checkCache: NO]) == nil)
+	while ((ret = [self tryReadTillDelimiter: delimiter
+				    withEncoding: encoding]) == nil)
 		if ([self isAtEndOfStream])
 			return nil;
 
@@ -848,14 +842,6 @@
 {
 	return [self tryReadTillDelimiter: delimiter
 			     withEncoding: OF_STRING_ENCODING_UTF_8];
-}
-
-- (OFString*)tryReadTillDelimiter: (OFString*)delimiter
-		     withEncoding: (of_string_encoding_t)encoding
-{
-	return [self _tryReadTillDelimiter: delimiter
-			      withEncoding: encoding
-				checkCache: YES];
 }
 
 - (BOOL)buffersWrites
@@ -1403,5 +1389,10 @@
 {
 	@throw [OFNotImplementedException newWithClass: isa
 					      selector: _cmd];
+}
+
+- (BOOL)_isWaitingForDelimiter
+{
+	return waitingForDelimiter;
 }
 @end
