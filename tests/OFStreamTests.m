@@ -39,14 +39,14 @@ static OFString *module = @"OFStream";
 }
 
 - (size_t)_readNBytes: (size_t)size
-	   intoBuffer: (char*)buf
+	   intoBuffer: (void*)buffer
 {
 	switch (state) {
 	case 0:
 		if (size < 1)
 			return 0;
 
-		memcpy(buf, "f", 1);
+		memcpy(buffer, "f", 1);
 
 		state++;
 		return 1;
@@ -54,8 +54,8 @@ static OFString *module = @"OFStream";
 		if (size < of_pagesize)
 			return 0;
 
-		memcpy(buf, "oo\n", 3);
-		memset(buf + 3, 'X', of_pagesize - 3);
+		memcpy(buffer, "oo\n", 3);
+		memset((char*)buffer + 3, 'X', of_pagesize - 3);
 
 		state++;
 		return of_pagesize;
