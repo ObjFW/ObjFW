@@ -25,7 +25,6 @@
 #import "OFStreamObserver_select.h"
 #import "OFStream.h"
 #import "OFArray.h"
-#import "OFNumber.h"
 #import "OFAutoreleasePool.h"
 
 @implementation OFStreamObserver_select

@@ -23,11 +23,7 @@
 #include <poll.h>
 
 #import "OFStreamObserver_poll.h"
-#import "OFStream.h"
-#import "OFArray.h"
-#import "OFDictionary.h"
 #import "OFDataArray.h"
-#import "OFNumber.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFOutOfRangeException.h"
