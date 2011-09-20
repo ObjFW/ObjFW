@@ -41,36 +41,28 @@
 	return self;
 }
 
-- (void)_addStreamForReading: (OFStream*)stream
+- (void)_addFileDescriptorForReading: (int)fd
 {
-	int fd = [stream fileDescriptor];
-
 	FD_SET(fd, &readFDs);
 	FD_SET(fd, &exceptFDs);
 }
 
-- (void)_addStreamForWriting: (OFStream*)stream
+- (void)_addFileDescriptorForWriting: (int)fd
 {
-	int fd = [stream fileDescriptor];
-
 	FD_SET(fd, &writeFDs);
 	FD_SET(fd, &exceptFDs);
 }
 
-- (void)_removeStreamForReading: (OFStream*)stream
+- (void)_removeFileDescriptorForReading: (int)fd
 {
-	int fd = [stream fileDescriptor];
-
 	FD_CLR(fd, &readFDs);
 
 	if (!FD_ISSET(fd, &writeFDs))
 		FD_CLR(fd, &exceptFDs);
 }
 
-- (void)_removeStreamForWriting: (OFStream*)stream
+- (void)_removeFileDescriptorForWriting: (int)fd
 {
-	int fd = [stream fileDescriptor];
-
 	FD_CLR(fd, &writeFDs);
 
 	if (!FD_ISSET(fd, &readFDs))

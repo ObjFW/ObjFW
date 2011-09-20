@@ -27,6 +27,8 @@
 @class OFStream;
 @class OFMutableArray;
 @class OFMutableDictionary;
+@class OFDataArray;
+@class OFMutex;
 
 /**
  * \brief A protocol that needs to be implemented by delegates for
@@ -80,12 +82,14 @@
 	OFMutableArray *writeStreams;
 	OFStream **FDToStream;
 	size_t maxFD;
-	OFMutableArray *queue, *queueInfo;
+	OFMutableArray *queue;
+	OFDataArray *queueInfo, *queueFDs;
 	id <OFStreamObserverDelegate> delegate;
 	int cancelFD[2];
 #ifdef _WIN32
 	struct sockaddr_in cancelAddr;
 #endif
+	OFMutex *mutex;
 }
 
 #ifdef OF_HAVE_PROPERTIES

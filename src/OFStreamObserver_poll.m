@@ -60,12 +60,11 @@
 	[super dealloc];
 }
 
-- (void)_addStream: (OFStream*)stream
-	withEvents: (short)events
+- (void)_addFileDescriptor: (int)fd
+		withEvents: (short)events
 {
 	struct pollfd *FDsCArray = [FDs cArray];
 	size_t i, count = [FDs count];
-	int fd = [stream fileDescriptor];
 	BOOL found = NO;
 
 	for (i = 0; i < count; i++) {
@@ -82,15 +81,14 @@
 	}
 }
 
-- (void)_removeStream: (OFStream*)stream
-	   withEvents: (short)events
+- (void)_removeFileDescriptor: (int)fd
+		   withEvents: (short)events
 {
 	struct pollfd *FDsCArray = [FDs cArray];
 	size_t i, nFDs = [FDs count];
-	int fileDescriptor = [stream fileDescriptor];
 
 	for (i = 0; i < nFDs; i++) {
-		if (FDsCArray[i].fd == fileDescriptor) {
+		if (FDsCArray[i].fd == fd) {
 			FDsCArray[i].events &= ~events;
 
 			if ((FDsCArray[i].events & ~POLLERR) == 0)
@@ -101,28 +99,28 @@
 	}
 }
 
-- (void)_addStreamForReading: (OFStream*)stream
+- (void)_addFileDescriptorForReading: (int)fd
 {
-	[self _addStream: stream
-	      withEvents: POLLIN];
+	[self _addFileDescriptor: fd
+		      withEvents: POLLIN];
 }
 
-- (void)_addStreamForWriting: (OFStream*)stream
+- (void)_addFileDescriptorForWriting: (int)fd
 {
-	[self _addStream: stream
-	      withEvents: POLLOUT];
+	[self _addFileDescriptor: fd
+		      withEvents: POLLOUT];
 }
 
-- (void)_removeStreamForReading: (OFStream*)stream
+- (void)_removeFileDescriptorForReading: (int)fd
 {
-	[self _removeStream: stream
-		 withEvents: POLLIN];
+	[self _removeFileDescriptor: fd
+			 withEvents: POLLIN];
 }
 
-- (void)_removeStreamForWriting: (OFStream*)stream
+- (void)_removeFileDescriptorForWriting: (int)fd
 {
-	[self _removeStream: stream
-		 withEvents: POLLOUT];
+	[self _removeFileDescriptor: fd
+			 withEvents: POLLOUT];
 }
 
 - (BOOL)observeWithTimeout: (int)timeout
