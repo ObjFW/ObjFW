@@ -23,19 +23,19 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFMutexLockFailedException
-+ newWithClass: (Class)class_
-	 mutex: (OFMutex*)mutex
++ exceptionWithClass: (Class)class_
+	       mutex: (OFMutex*)mutex
 {
-	return [[self alloc] initWithClass: class_
-				     mutex: mutex];
+	return [[[self alloc] initWithClass: class_
+				      mutex: mutex] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithClass: (Class)class_

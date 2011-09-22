@@ -24,21 +24,21 @@
 #import "common.h"
 
 @implementation OFOpenFileFailedException
-+ newWithClass: (Class)class_
-	  path: (OFString*)path
++ exceptionWithClass: (Class)class_
+		path: (OFString*)path
 	  mode: (OFString*)mode
 {
-	return [[self alloc] initWithClass: class_
-				      path: path
-				      mode: mode];
+	return [[[self alloc] initWithClass: class_
+				       path: path
+				       mode: mode] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithClass: (Class)class_

@@ -101,8 +101,9 @@ extern BOOL objc_properties_init();
 static void
 enumeration_mutation_handler(id object)
 {
-	@throw [OFEnumerationMutationException newWithClass: [object class]
-						     object: object];
+	@throw [OFEnumerationMutationException
+	    exceptionWithClass: [object class]
+			object: object];
 }
 
 #ifndef HAVE_OBJC_ENUMERATIONMUTATION
@@ -197,7 +198,8 @@ void _references_to_categories_of_OFObject(void)
 	if (!of_spinlock_new(
 	    &((struct pre_ivar*)instance)->retainCountSpinlock)) {
 		free(instance);
-		@throw [OFInitializationFailedException newWithClass: self];
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
 	}
 #endif
 
@@ -304,8 +306,8 @@ void _references_to_categories_of_OFObject(void)
 	const char *ret;
 
 	if ((ret = objc_get_type_encoding(self, selector)) == NULL)
-		@throw [OFNotImplementedException newWithClass: self
-						      selector: selector];
+		@throw [OFNotImplementedException exceptionWithClass: self
+							    selector: selector];
 
 	return ret;
 #elif defined(OF_OLD_GNU_RUNTIME)
@@ -313,8 +315,8 @@ void _references_to_categories_of_OFObject(void)
 
 	if ((m = class_get_instance_method(self, selector)) == NULL ||
 	    m->method_types == NULL)
-		@throw [OFNotImplementedException newWithClass: self
-						      selector: selector];
+		@throw [OFNotImplementedException exceptionWithClass: self
+							    selector: selector];
 
 	return m->method_types;
 #else
@@ -323,8 +325,8 @@ void _references_to_categories_of_OFObject(void)
 
 	if ((m = class_getInstanceMethod(self, selector)) == NULL ||
 	    (ret = method_getTypeEncoding(m)) == NULL)
-		@throw [OFNotImplementedException newWithClass: self
-						      selector: selector];
+		@throw [OFNotImplementedException exceptionWithClass: self
+							    selector: selector];
 
 	return ret;
 #endif
@@ -340,8 +342,8 @@ void _references_to_categories_of_OFObject(void)
 {
 #if defined(OF_OBJFW_RUNTIME)
 	if (newImp == (IMP)0 || !class_respondsToSelector(self->isa, selector))
-		@throw [OFInvalidArgumentException newWithClass: self
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: self
+							     selector: _cmd];
 
 	return objc_replace_class_method(self, selector, newImp);
 #elif defined(OF_OLD_GNU_RUNTIME)
@@ -351,8 +353,8 @@ void _references_to_categories_of_OFObject(void)
 	method = class_get_class_method(self->class_pointer, selector);
 
 	if (newImp == (IMP)0 || method == METHOD_NULL)
-		@throw [OFInvalidArgumentException newWithClass: self
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: self
+							     selector: _cmd];
 
 	for (iter = ((Class)self->class_pointer)->methods; iter != NULL;
 	    iter = iter->method_next) {
@@ -383,8 +385,8 @@ void _references_to_categories_of_OFObject(void)
 
 	if (newImp == (IMP)0 ||
 	    (method = class_getClassMethod(self, selector)) == NULL)
-		@throw [OFInvalidArgumentException newWithClass: self
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: self
+							     selector: _cmd];
 
 	/*
 	 * Cast needed because it's isa in the Apple runtime, but class_pointer
@@ -401,8 +403,8 @@ void _references_to_categories_of_OFObject(void)
 	IMP newImp;
 
 	if (![class isSubclassOfClass: self])
-		@throw [OFInvalidArgumentException newWithClass: self
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: self
+							     selector: _cmd];
 
 	newImp = [class methodForSelector: selector];
 
@@ -415,8 +417,8 @@ void _references_to_categories_of_OFObject(void)
 {
 #if defined(OF_OBJFW_RUNTIME)
 	if (newImp == (IMP)0 || !class_respondsToSelector(self, selector))
-		@throw [OFInvalidArgumentException newWithClass: self
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: self
+							     selector: _cmd];
 
 	return objc_replace_instance_method(self, selector, newImp);
 #elif defined(OF_OLD_GNU_RUNTIME)
@@ -426,8 +428,8 @@ void _references_to_categories_of_OFObject(void)
 	method = class_get_instance_method(self, selector);
 
 	if (newImp == (IMP)0 || method == METHOD_NULL)
-		@throw [OFInvalidArgumentException newWithClass: self
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: self
+							     selector: _cmd];
 
 	for (iter = ((Class)self)->methods; iter != NULL;
 	    iter = iter->method_next) {
@@ -457,8 +459,8 @@ void _references_to_categories_of_OFObject(void)
 
 	if (newImp == (IMP)0 ||
 	    (method = class_getInstanceMethod(self, selector)) == NULL)
-		@throw [OFInvalidArgumentException newWithClass: self
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: self
+							     selector: _cmd];
 
 	return class_replaceMethod(self, selector, newImp,
 	    method_getTypeEncoding(method));
@@ -471,8 +473,8 @@ void _references_to_categories_of_OFObject(void)
 	IMP newImp;
 
 	if (![class isSubclassOfClass: self])
-		@throw [OFInvalidArgumentException newWithClass: self
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: self
+							     selector: _cmd];
 
 	newImp = [class instanceMethodForSelector: selector];
 
@@ -501,8 +503,8 @@ void _references_to_categories_of_OFObject(void)
 
 	if ((methodList = malloc(sizeof(*methodList))) == NULL)
 		@throw [OFOutOfMemoryException
-		    newWithClass: self
-		   requestedSize: sizeof(*methodList)];
+		    exceptionWithClass: self
+			 requestedSize: sizeof(*methodList)];
 
 	methodList->method_next = ((Class)self)->methods;
 	methodList->method_count = 1;
@@ -517,8 +519,8 @@ void _references_to_categories_of_OFObject(void)
 
 	return YES;
 #else
-	@throw [OFNotImplementedException newWithClass: self
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: self
+						    selector: _cmd];
 #endif
 }
 
@@ -544,8 +546,8 @@ void _references_to_categories_of_OFObject(void)
 
 	if ((methodList = malloc(sizeof(*methodList))) == NULL)
 		@throw [OFOutOfMemoryException
-		    newWithClass: self
-		   requestedSize: sizeof(*methodList)];
+		    exceptionWithClass: self
+			 requestedSize: sizeof(*methodList)];
 
 	methodList->method_next = ((Class)self->class_pointer)->methods;
 	methodList->method_count = 1;
@@ -560,8 +562,8 @@ void _references_to_categories_of_OFObject(void)
 
 	return YES;
 #else
-	@throw [OFNotImplementedException newWithClass: self
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: self
+						    selector: _cmd];
 #endif
 }
 
@@ -700,8 +702,8 @@ void _references_to_categories_of_OFObject(void)
 		}
 	}
 #else
-	@throw [OFNotImplementedException newWithClass: self
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: self
+						    selector: _cmd];
 #endif
 
 	[self inheritMethodsFromClass: [class superclass]];
@@ -792,8 +794,8 @@ void _references_to_categories_of_OFObject(void)
 	const char *ret;
 
 	if ((ret = objc_get_type_encoding(isa, selector)) == NULL)
-		@throw [OFNotImplementedException newWithClass: isa
-						      selector: selector];
+		@throw [OFNotImplementedException exceptionWithClass: isa
+							    selector: selector];
 
 	return ret;
 #elif defined(OF_OLD_GNU_RUNTIME)
@@ -801,8 +803,8 @@ void _references_to_categories_of_OFObject(void)
 
 	if ((m = class_get_instance_method(isa, selector)) == NULL ||
 	    m->method_types == NULL)
-		@throw [OFNotImplementedException newWithClass: isa
-						      selector: selector];
+		@throw [OFNotImplementedException exceptionWithClass: isa
+							    selector: selector];
 
 	return m->method_types;
 #else
@@ -811,8 +813,8 @@ void _references_to_categories_of_OFObject(void)
 
 	if ((m = class_getInstanceMethod(isa, selector)) == NULL ||
 	    (ret = method_getTypeEncoding(m)) == NULL)
-		@throw [OFNotImplementedException newWithClass: isa
-						      selector: selector];
+		@throw [OFNotImplementedException exceptionWithClass: isa
+							    selector: selector];
 
 	return ret;
 #endif
@@ -845,12 +847,13 @@ void _references_to_categories_of_OFObject(void)
 
 	if (UINT_MAX - PRE_IVAR->memoryChunksSize < 1 ||
 	    memoryChunksSize > UINT_MAX / sizeof(void*))
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	if ((memoryChunks = realloc(PRE_IVAR->memoryChunks,
 	    memoryChunksSize * sizeof(void*))) == NULL)
-		@throw [OFOutOfMemoryException newWithClass: isa
-					      requestedSize: memoryChunksSize];
+		@throw [OFOutOfMemoryException
+		    exceptionWithClass: isa
+			 requestedSize: memoryChunksSize];
 
 	PRE_IVAR->memoryChunks = memoryChunks;
 	PRE_IVAR->memoryChunks[PRE_IVAR->memoryChunksSize] = pointer;
@@ -869,17 +872,18 @@ void _references_to_categories_of_OFObject(void)
 
 	if (UINT_MAX - PRE_IVAR->memoryChunksSize == 0 ||
 	    memoryChunksSize > UINT_MAX / sizeof(void*))
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	if ((pointer = malloc(size)) == NULL)
-		@throw [OFOutOfMemoryException newWithClass: isa
-					      requestedSize: size];
+		@throw [OFOutOfMemoryException exceptionWithClass: isa
+						    requestedSize: size];
 
 	if ((memoryChunks = realloc(PRE_IVAR->memoryChunks,
 	    memoryChunksSize * sizeof(void*))) == NULL) {
 		free(pointer);
-		@throw [OFOutOfMemoryException newWithClass: isa
-					      requestedSize: memoryChunksSize];
+		@throw [OFOutOfMemoryException
+		    exceptionWithClass: isa
+			 requestedSize: memoryChunksSize];
 	}
 
 	PRE_IVAR->memoryChunks = memoryChunks;
@@ -896,7 +900,7 @@ void _references_to_categories_of_OFObject(void)
 		return NULL;
 
 	if (nItems > SIZE_MAX / size)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	return [self allocMemoryWithSize: nItems * size];
 }
@@ -921,16 +925,16 @@ void _references_to_categories_of_OFObject(void)
 			if (OF_UNLIKELY((pointer = realloc(pointer,
 			    size)) == NULL))
 				@throw [OFOutOfMemoryException
-				     newWithClass: isa
-				    requestedSize: size];
+				     exceptionWithClass: isa
+					  requestedSize: size];
 
 			*iter = pointer;
 			return pointer;
 		}
 	}
 
-	@throw [OFMemoryNotPartOfObjectException newWithClass: isa
-						      pointer: pointer];
+	@throw [OFMemoryNotPartOfObjectException exceptionWithClass: isa
+							    pointer: pointer];
 }
 
 - (void*)resizeMemory: (void*)pointer
@@ -947,7 +951,7 @@ void _references_to_categories_of_OFObject(void)
 	}
 
 	if (nItems > SIZE_MAX / size)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	return [self resizeMemory: pointer
 			   toSize: nItems * size];
@@ -999,8 +1003,8 @@ void _references_to_categories_of_OFObject(void)
 		}
 	}
 
-	@throw [OFMemoryNotPartOfObjectException newWithClass: isa
-						      pointer: pointer];
+	@throw [OFMemoryNotPartOfObjectException exceptionWithClass: isa
+							    pointer: pointer];
 }
 
 - retain
@@ -1091,8 +1095,8 @@ void _references_to_categories_of_OFObject(void)
 - copyWithZone: (void*)zone
 {
 	if (zone != NULL)
-		@throw [OFNotImplementedException newWithClass: isa
-						      selector: _cmd];
+		@throw [OFNotImplementedException exceptionWithClass: isa
+							    selector: _cmd];
 
 	return [(id)self copy];
 }
@@ -1100,8 +1104,8 @@ void _references_to_categories_of_OFObject(void)
 - mutableCopyWithZone: (void*)zone
 {
 	if (zone != NULL)
-		@throw [OFNotImplementedException newWithClass: isa
-						      selector: _cmd];
+		@throw [OFNotImplementedException exceptionWithClass: isa
+							    selector: _cmd];
 
 	return [(id)self mutableCopy];
 }
@@ -1112,42 +1116,42 @@ void _references_to_categories_of_OFObject(void)
  */
 + (void)addMemoryToPool: (void*)pointer
 {
-	@throw [OFNotImplementedException newWithClass: self
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: self
+						    selector: _cmd];
 }
 
 + (void*)allocMemoryWithSize: (size_t)size
 {
-	@throw [OFNotImplementedException newWithClass: self
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: self
+						    selector: _cmd];
 }
 
 + (void*)allocMemoryForNItems: (size_t)nItems
 		       ofSize: (size_t)size
 {
-	@throw [OFNotImplementedException newWithClass: self
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: self
+						    selector: _cmd];
 }
 
 + (void*)resizeMemory: (void*)pointer
 	       toSize: (size_t)size
 {
-	@throw [OFNotImplementedException newWithClass: self
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: self
+						    selector: _cmd];
 }
 
 + (void*)resizeMemory: (void*)pointer
 	     toNItems: (size_t)nItems
 	      ofSize: (size_t)size
 {
-	@throw [OFNotImplementedException newWithClass: self
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: self
+						    selector: _cmd];
 }
 
 + (void)freeMemory: (void*)pointer
 {
-	@throw [OFNotImplementedException newWithClass: self
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: self
+						    selector: _cmd];
 }
 
 + retain
@@ -1171,19 +1175,19 @@ void _references_to_categories_of_OFObject(void)
 
 + (void)dealloc
 {
-	@throw [OFNotImplementedException newWithClass: self
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: self
+						    selector: _cmd];
 }
 
 + copyWithZone: (void*)zone
 {
-	@throw [OFNotImplementedException newWithClass: self
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: self
+						    selector: _cmd];
 }
 
 + mutableCopyWithZone: (void*)zone
 {
-	@throw [OFNotImplementedException newWithClass: self
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: self
+						    selector: _cmd];
 }
 @end

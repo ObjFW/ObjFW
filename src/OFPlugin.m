@@ -51,14 +51,16 @@
 
 	if ((handle = dlopen([file cStringWithEncoding:
 	    OF_STRING_ENCODING_NATIVE], RTLD_LAZY)) == NULL)
-		@throw [OFInitializationFailedException newWithClass: self];
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
 
 	[pool release];
 
 	initPlugin = (OFPlugin*(*)())dlsym(handle, "init_plugin");
 	if (initPlugin == NULL || (plugin = initPlugin()) == nil) {
 		dlclose(handle);
-		@throw [OFInitializationFailedException newWithClass: self];
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
 	}
 
 	plugin->handle = handle;
@@ -70,8 +72,8 @@
 	if (isa == [OFPlugin class]) {
 		Class c = isa;
 		[self release];
-		@throw [OFNotImplementedException newWithClass: c
-						      selector: _cmd];
+		@throw [OFNotImplementedException exceptionWithClass: c
+							    selector: _cmd];
 	}
 
 	return [super init];

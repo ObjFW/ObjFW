@@ -23,19 +23,19 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFThreadStillRunningException
-+ newWithClass: (Class)class_
-	thread: (OFThread*)thread
++ exceptionWithClass: (Class)class_
+	      thread: (OFThread*)thread
 {
-	return [[self alloc] initWithClass: class_
-				    thread: thread];
+	return [[[self alloc] initWithClass: class_
+				     thread: thread] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithClass: (Class)class_

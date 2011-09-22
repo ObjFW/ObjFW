@@ -48,7 +48,7 @@ static Class dictionary = Nil;
 	uint32_t i, newSize;
 
 	if (newCount > UINT32_MAX)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	if (fullness >= 3)
 		newSize = size << 1;
@@ -58,7 +58,7 @@ static Class dictionary = Nil;
 		return;
 
 	if (newSize == 0)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	newData = [self allocMemoryForNItems: newSize
 				      ofSize: sizeof(*newData)];
@@ -86,7 +86,7 @@ static Class dictionary = Nil;
 			if (j >= last) {
 				[self freeMemory: newData];
 				@throw [OFOutOfRangeException
-				    newWithClass: isa];
+				    exceptionWithClass: isa];
 			}
 
 			newData[j] = data[i];
@@ -106,8 +106,8 @@ static Class dictionary = Nil;
 	id old;
 
 	if (key == nil || object == nil)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	hash = [key hash];
 	last = size;
@@ -155,7 +155,7 @@ static Class dictionary = Nil;
 		}
 
 		if (i >= last)
-			@throw [OFOutOfRangeException newWithClass: isa];
+			@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 		bucket = [self allocMemoryWithSize: sizeof(*bucket)];
 
@@ -196,8 +196,8 @@ static Class dictionary = Nil;
 	uint32_t i, hash, last;
 
 	if (key == nil)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	hash = [key hash];
 	last = size;
@@ -291,8 +291,8 @@ static Class dictionary = Nil;
 	for (i = 0; i < size && !stop; i++) {
 		if (mutations != mutations2)
 			@throw [OFEnumerationMutationException
-			    newWithClass: isa
-				  object: self];
+			    exceptionWithClass: isa
+					object: self];
 
 		if (data[i] != NULL && data[i] != DELETED)
 			block(data[i]->key, data[i]->object, &stop);
@@ -308,16 +308,16 @@ static Class dictionary = Nil;
 	for (i = 0; i < size && !stop; i++) {
 		if (mutations != mutations2)
 			@throw [OFEnumerationMutationException
-			    newWithClass: isa
-				  object: self];
+			    exceptionWithClass: isa
+					object: self];
 
 		if (data[i] != NULL && data[i] != DELETED) {
 			id new = block(data[i]->key, data[i]->object, &stop);
 
 			if (new == nil)
 				@throw [OFInvalidArgumentException
-				    newWithClass: isa
-					selector: _cmd];
+				    exceptionWithClass: isa
+					      selector: _cmd];
 
 			[new retain];
 			[data[i]->object release];

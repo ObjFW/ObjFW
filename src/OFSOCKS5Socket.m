@@ -33,8 +33,8 @@
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithProxyHost: (OFString*)host
@@ -79,10 +79,11 @@
 
 	if (reply[0] != 5 || reply[1] != 0) {
 		[self close];
-		@throw [OFConnectionFailedException newWithClass: isa
-							  socket: self
-							    host: proxyHost
-							    port: proxyPort];
+		@throw [OFConnectionFailedException
+		    exceptionWithClass: isa
+				socket: self
+				  host: proxyHost
+				  port: proxyPort];
 	}
 
 	oldBuffersWrites = [self buffersWrites];
@@ -107,10 +108,10 @@
 
 	if (reply[0] != 5 || reply[1] != 0 || reply[2] != 0) {
 		[self close];
-		@throw [OFConnectionFailedException newWithClass: isa
-							  socket: self
-							    host: host
-							    port: port];
+		@throw [OFConnectionFailedException exceptionWithClass: isa
+								socket: self
+								  host: host
+								  port: port];
 	}
 
 	/* Skip the rest of the reply */
@@ -129,10 +130,10 @@
 		break;
 	default:
 		[self close];
-		@throw [OFConnectionFailedException newWithClass: isa
-							  socket: self
-							    host: host
-							    port: port];
+		@throw [OFConnectionFailedException exceptionWithClass: isa
+								socket: self
+								  host: host
+								  port: port];
 	}
 
 	[self readBigEndianInt16];

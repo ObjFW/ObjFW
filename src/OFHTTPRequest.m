@@ -191,16 +191,16 @@ normalize_key(OFString *key)
 	OFHTTPRequestResult *result;
 
 	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
-		@throw [OFUnsupportedProtocolException newWithClass: isa
-								URL: URL];
+		@throw [OFUnsupportedProtocolException exceptionWithClass: isa
+								      URL: URL];
 
 	if ([scheme isEqual: @"http"])
 		sock = [OFTCPSocket socket];
 	else {
 		if (of_http_request_tls_socket_class == Nil)
 			@throw [OFUnsupportedProtocolException
-			    newWithClass: isa
-				     URL: URL];
+			    exceptionWithClass: isa
+					   URL: URL];
 
 		sock = [[[of_http_request_tls_socket_class alloc] init]
 		    autorelease];
@@ -283,7 +283,7 @@ normalize_key(OFString *key)
 		if (![line hasPrefix: @"HTTP/1.0 "] &&
 		    ![line hasPrefix: @"HTTP/1.1 "])
 			@throw [OFInvalidServerReplyException
-			    newWithClass: isa];
+			    exceptionWithClass: isa];
 
 		status = (int)[[line substringWithRange:
 		    of_range(9, 3)] decimalValue];
@@ -299,7 +299,7 @@ normalize_key(OFString *key)
 
 			if ((tmp = strchr(line_c, ':')) == NULL)
 				@throw [OFInvalidServerReplyException
-				    newWithClass: isa];
+				    exceptionWithClass: isa];
 
 			key = [OFString stringWithUTF8String: line_c
 						      length: tmp - line_c];
@@ -386,7 +386,7 @@ normalize_key(OFString *key)
 
 			if (cl > SIZE_MAX)
 				@throw [OFOutOfRangeException
-				    newWithClass: isa];
+				    exceptionWithClass: isa];
 
 			/*
 			 * We only want to throw on these status codes as we
@@ -396,7 +396,7 @@ normalize_key(OFString *key)
 			if (cl != bytesReceived && (status == 200 ||
 			    status == 301 || status == 302 || status == 303))
 				@throw [OFTruncatedDataException
-				    newWithClass: isa];
+				    exceptionWithClass: isa];
 		}
 
 		[serverHeaders makeImmutable];
@@ -409,9 +409,9 @@ normalize_key(OFString *key)
 		if (status != 200 && status != 301 && status != 302 &&
 		    status != 303)
 			@throw [OFHTTPRequestFailedException
-			    newWithClass: isa
-			     HTTPRequest: self
-				  result: result];
+			    exceptionWithClass: isa
+				   HTTPRequest: self
+					result: result];
 	} @finally {
 		[pool release];
 	}

@@ -164,8 +164,9 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 		return;
 
 	if (calculated)
-		@throw [OFHashAlreadyCalculatedException newWithClass: isa
-								 hash: self];
+		@throw [OFHashAlreadyCalculatedException
+		    exceptionWithClass: isa
+				  hash: self];
 
 	sha1_update(state, &count, buffer, buffer_, length);
 }

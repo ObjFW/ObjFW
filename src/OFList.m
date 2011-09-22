@@ -47,8 +47,9 @@
 
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
 
 		enumerator = [[element children] objectEnumerator];
 		pool2 = [[OFAutoreleasePool alloc] init];
@@ -443,8 +444,9 @@
 	id ret;
 
 	if (*mutationsPtr != mutations)
-		@throw [OFEnumerationMutationException newWithClass: isa
-							     object: list];
+		@throw [OFEnumerationMutationException
+		    exceptionWithClass: isa
+				object: list];
 
 	if (current == NULL)
 		return nil;
@@ -458,7 +460,9 @@
 - (void)reset
 {
 	if (*mutationsPtr != mutations)
-		@throw [OFEnumerationMutationException newWithClass: isa];
+		@throw [OFEnumerationMutationException
+		    exceptionWithClass: isa
+				object: list];
 
 	current = [list firstListObject];
 }

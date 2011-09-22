@@ -23,27 +23,27 @@
 @implementation OFHash
 + (size_t)digestSize
 {
-	@throw [OFNotImplementedException newWithClass: self
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: self
+						    selector: _cmd];
 }
 
 + (size_t)blockSize
 {
-	@throw [OFNotImplementedException newWithClass: self
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: self
+						    selector: _cmd];
 }
 
 - (void)updateWithBuffer: (const char*)buffer
 		  length: (size_t)length
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (uint8_t*)digest
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (BOOL)isCalculated

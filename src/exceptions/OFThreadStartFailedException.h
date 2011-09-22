@@ -35,8 +35,8 @@
  * \param thread The thread which could not be started
  * \return An initialized thread start failed exception
  */
-+ newWithClass: (Class)class_
-	thread: (OFThread*)thread;
++ exceptionWithClass: (Class)class_
+	      thread: (OFThread*)thread;
 
 /**
  * Initializes an already allocated thread start failed exception.

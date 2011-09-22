@@ -147,7 +147,6 @@ static OFString *strings[] = {
 			[list removeListObject: [list lastListObject]];
 	} @catch (OFEnumerationMutationException *e) {
 		ok = YES;
-		[e dealloc];
 	}
 
 	TEST(@"Detection of mutation during Fast Enumeration", ok)

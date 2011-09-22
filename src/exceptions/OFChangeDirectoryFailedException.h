@@ -36,8 +36,8 @@
  *	       changed
  * \return A new change directory failed exception
  */
-+ newWithClass: (Class)class_
-	  path: (OFString*)path;
++ exceptionWithClass: (Class)class_
+		path: (OFString*)path;
 
 /**
  * Initializes an already allocated change directory failed exception.

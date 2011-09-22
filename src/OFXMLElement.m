@@ -135,8 +135,8 @@ void _references_to_categories_of_OFXMLElement(void)
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithName: (OFString*)name_
@@ -170,8 +170,9 @@ void _references_to_categories_of_OFXMLElement(void)
 
 	@try {
 		if (name_ == nil)
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
 
 		name = [name_ copy];
 		ns = [ns_ copy];
@@ -197,8 +198,9 @@ void _references_to_categories_of_OFXMLElement(void)
 
 	@try {
 		if (characters_ == nil)
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
 
 		characters = [characters_ copy];
 	} @catch (id e) {
@@ -215,8 +217,9 @@ void _references_to_categories_of_OFXMLElement(void)
 
 	@try {
 		if (CDATA_ == nil)
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
 
 		CDATA = [CDATA_ copy];
 	} @catch (id e) {
@@ -233,8 +236,9 @@ void _references_to_categories_of_OFXMLElement(void)
 
 	@try {
 		if (comment_ == nil)
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
 
 		comment = [comment_ copy];
 	} @catch (id e) {
@@ -251,8 +255,9 @@ void _references_to_categories_of_OFXMLElement(void)
 
 	@try {
 		if (element == nil)
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
 
 		name = [element->name copy];
 		ns = [element->ns copy];
@@ -283,8 +288,8 @@ void _references_to_categories_of_OFXMLElement(void)
 	[self release];
 
 	if (string == nil)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	pool = [[OFAutoreleasePool alloc] init];
 
@@ -299,8 +304,8 @@ void _references_to_categories_of_OFXMLElement(void)
 	[parser parseString: string];
 
 	if (![parser finishedParsing])
-		@throw [OFMalformedXMLException newWithClass: c
-						      parser: parser];
+		@throw [OFMalformedXMLException exceptionWithClass: c
+							    parser: parser];
 
 	self = [delegate->element retain];
 
@@ -333,8 +338,8 @@ void _references_to_categories_of_OFXMLElement(void)
 	[parser parseFile: path];
 
 	if (![parser finishedParsing])
-		@throw [OFMalformedXMLException newWithClass: c
-						      parser: parser];
+		@throw [OFMalformedXMLException exceptionWithClass: c
+							    parser: parser];
 
 	self = [delegate->element retain];
 
@@ -354,8 +359,9 @@ void _references_to_categories_of_OFXMLElement(void)
 
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
 
 		name = [[[element attributeForName: @"name"] stringValue] copy];
 		ns = [[[element attributeForName: @"namespace"] stringValue]
@@ -393,8 +399,9 @@ void _references_to_categories_of_OFXMLElement(void)
 		    [attributes count] > 0 || [namespaces count] > 0 ||
 		    [children count] > 0) ^ (characters != nil) ^
 		    (CDATA != nil) ^ (comment != nil)))
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
 
 		[pool release];
 	} @catch (id e) {
@@ -408,8 +415,8 @@ void _references_to_categories_of_OFXMLElement(void)
 - (void)setName: (OFString*)name_
 {
 	if (name == nil)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	OF_SETTER(name, name_, YES, YES)
 }
@@ -422,8 +429,8 @@ void _references_to_categories_of_OFXMLElement(void)
 - (void)setNamespace: (OFString*)ns_
 {
 	if (name == nil)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	OF_SETTER(ns, ns_, YES, YES)
 }
@@ -648,8 +655,9 @@ void _references_to_categories_of_OFXMLElement(void)
 		    (attributePrefix = [allNamespaces objectForKey:
 		    [attributesCArray[j] namespace]]) == nil)
 			@throw [OFUnboundNamespaceException
-			    newWithClass: isa
-			       namespace: [attributesCArray[j] namespace]];
+			    exceptionWithClass: isa
+				     namespace: [attributesCArray[j]
+						    namespace]];
 
 		length += [attributeName UTF8StringLength] +
 		    (attributePrefix != nil ?
@@ -881,8 +889,8 @@ void _references_to_categories_of_OFXMLElement(void)
 - (void)addAttribute: (OFXMLAttribute*)attribute
 {
 	if (name == nil)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	if (attributes == nil)
 		attributes = [[OFMutableArray alloc] init];
@@ -907,8 +915,8 @@ void _references_to_categories_of_OFXMLElement(void)
 	OFAutoreleasePool *pool;
 
 	if (name == nil)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	pool = [[OFAutoreleasePool alloc] init];
 	[self addAttribute: [OFXMLAttribute attributeWithName: name_
@@ -990,8 +998,8 @@ void _references_to_categories_of_OFXMLElement(void)
      forNamespace: (OFString*)ns_
 {
 	if (name == nil || prefix == nil || [prefix isEqual: @""])
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 	if (ns_ == nil)
 		ns_ = @"";
 
@@ -1012,8 +1020,8 @@ void _references_to_categories_of_OFXMLElement(void)
 - (OFString*)defaultNamespace
 {
 	if (name == nil)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	return [[defaultNamespace retain] autorelease];
 }
@@ -1021,8 +1029,8 @@ void _references_to_categories_of_OFXMLElement(void)
 - (void)setDefaultNamespace: (OFString*)ns_
 {
 	if (name == nil)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	OFString *old = defaultNamespace;
 	defaultNamespace = [ns_ copy];
@@ -1032,8 +1040,8 @@ void _references_to_categories_of_OFXMLElement(void)
 - (void)addChild: (OFXMLElement*)child
 {
 	if (name == nil)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	if (children == nil)
 		children = [[OFMutableArray alloc] init];
@@ -1044,8 +1052,8 @@ void _references_to_categories_of_OFXMLElement(void)
 - (void)removeChild: (OFXMLElement*)child
 {
 	if (name == nil)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	[children removeObject: child];
 }

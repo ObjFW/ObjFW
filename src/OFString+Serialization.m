@@ -40,20 +40,18 @@ int _OFString_Serialization_reference;
 	@try {
 		root = [OFXMLElement elementWithXMLString: self];
 	} @catch (OFMalformedXMLException *e) {
-		[e release];
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 	} @catch (OFUnboundNamespaceException *e) {
-		[e release];
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 	}
 
 	elements = [root elementsForNamespace: OF_SERIALIZATION_NS];
 
 	if ([elements count] != 1)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	object = [[elements firstObject] objectByDeserializing];
 

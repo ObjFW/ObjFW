@@ -24,21 +24,21 @@
 #import "common.h"
 
 @implementation OFCopyFileFailedException
-+    newWithClass: (Class)class_
-       sourcePath: (OFString*)src
-  destinationPath: (OFString*)dst
++ exceptionWithClass: (Class)class_
+	  sourcePath: (OFString*)src
+     destinationPath: (OFString*)dst
 {
-	return [[self alloc] initWithClass: class_
-				sourcePath: src
-			   destinationPath: dst];
+	return [[[self alloc] initWithClass: class_
+				 sourcePath: src
+			    destinationPath: dst] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 -   initWithClass: (Class)class_

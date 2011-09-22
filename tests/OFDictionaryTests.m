@@ -114,7 +114,6 @@ static OFString *values[] = {
 				 forKey: @""];
 	} @catch (OFEnumerationMutationException *e) {
 		ok = YES;
-		[e dealloc];
 	}
 
 	TEST(@"Detection of mutation during Fast Enumeration", ok)
@@ -147,7 +146,6 @@ static OFString *values[] = {
 			}];
 		} @catch (OFEnumerationMutationException *e) {
 			ok = YES;
-			[e dealloc];
 		}
 
 		TEST(@"Detection of mutation during enumeration using blocks",

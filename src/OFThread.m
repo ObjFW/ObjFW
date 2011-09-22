@@ -67,7 +67,7 @@ call_main(id object)
 
 	if (!of_tlskey_set(threadSelf, thread))
 		@throw [OFInitializationFailedException
-		    newWithClass: [thread class]];
+		    exceptionWithClass: [thread class]];
 
 	/*
 	 * Nasty workaround for thread implementations which can't return a
@@ -109,7 +109,8 @@ call_main(id object)
 		return;
 
 	if (!of_tlskey_new(&threadSelf))
-		@throw [OFInitializationFailedException newWithClass: self];
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
 }
 
 + thread
@@ -142,8 +143,8 @@ call_main(id object)
 	id oldObject = of_tlskey_get(key->key);
 
 	if (!of_tlskey_set(key->key, [object retain]))
-		@throw [OFInvalidArgumentException newWithClass: self
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: self
+							     selector: _cmd];
 
 	[oldObject release];
 }
@@ -161,17 +162,17 @@ call_main(id object)
 + (void)sleepForTimeInterval: (double)seconds
 {
 	if (seconds < 0)
-		@throw [OFOutOfRangeException newWithClass: self];
+		@throw [OFOutOfRangeException exceptionWithClass: self];
 
 #ifndef _WIN32
 	if (seconds > UINT_MAX)
-		@throw [OFOutOfRangeException newWithClass: self];
+		@throw [OFOutOfRangeException exceptionWithClass: self];
 
 	sleep((unsigned int)seconds);
 	usleep((useconds_t)rint((seconds - floor(seconds)) * 1000000));
 #else
 	if (seconds * 1000 > UINT_MAX)
-		@throw [OFOutOfRangeException newWithClass: self];
+		@throw [OFOutOfRangeException exceptionWithClass: self];
 
 	Sleep((unsigned int)(seconds * 1000));
 #endif
@@ -183,13 +184,13 @@ call_main(id object)
 
 #ifndef _WIN32
 	if (seconds > UINT_MAX)
-		@throw [OFOutOfRangeException newWithClass: self];
+		@throw [OFOutOfRangeException exceptionWithClass: self];
 
 	sleep((unsigned int)seconds);
 	usleep((useconds_t)rint((seconds - floor(seconds)) * 1000000));
 #else
 	if (seconds * 1000 > UINT_MAX)
-		@throw [OFOutOfRangeException newWithClass: self];
+		@throw [OFOutOfRangeException exceptionWithClass: self];
 
 	Sleep((unsigned int)(seconds * 1000));
 #endif
@@ -263,8 +264,8 @@ call_main(id object)
 
 - (id)main
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 
 	return nil;
 }
@@ -276,8 +277,8 @@ call_main(id object)
 - (void)start
 {
 	if (running == OF_THREAD_RUNNING)
-		@throw [OFThreadStillRunningException newWithClass: isa
-							    thread: self];
+		@throw [OFThreadStillRunningException exceptionWithClass: isa
+								  thread: self];
 
 	if (running == OF_THREAD_WAITING_FOR_JOIN) {
 		of_thread_detach(thread);
@@ -288,8 +289,8 @@ call_main(id object)
 
 	if (!of_thread_new(&thread, call_main, self)) {
 		[self release];
-		@throw [OFThreadStartFailedException newWithClass: isa
-							   thread: self];
+		@throw [OFThreadStartFailedException exceptionWithClass: isa
+								 thread: self];
 	}
 
 	running = OF_THREAD_RUNNING;
@@ -298,8 +299,8 @@ call_main(id object)
 - (id)join
 {
 	if (running == OF_THREAD_NOT_RUNNING || !of_thread_join(thread))
-		@throw [OFThreadJoinFailedException newWithClass: isa
-							  thread: self];
+		@throw [OFThreadJoinFailedException exceptionWithClass: isa
+								thread: self];
 
 	running = OF_THREAD_NOT_RUNNING;
 
@@ -309,8 +310,8 @@ call_main(id object)
 - (void)dealloc
 {
 	if (running == OF_THREAD_RUNNING)
-		@throw [OFThreadStillRunningException newWithClass: isa
-							    thread: self];
+		@throw [OFThreadStillRunningException exceptionWithClass: isa
+								  thread: self];
 
 	/*
 	 * We should not be running anymore, but call detach in order to free
@@ -365,7 +366,7 @@ call_main(id object)
 	@try {
 		if (!of_tlskey_new(&key))
 			@throw [OFInitializationFailedException
-			    newWithClass: isa];
+			    exceptionWithClass: isa];
 
 		initialized = YES;
 
@@ -421,7 +422,7 @@ call_main(id object)
 	if (!of_mutex_new(&mutex)) {
 		Class c = isa;
 		[self release];
-		@throw [OFInitializationFailedException newWithClass: c];
+		@throw [OFInitializationFailedException exceptionWithClass: c];
 	}
 
 	initialized = YES;
@@ -432,8 +433,8 @@ call_main(id object)
 - (void)lock
 {
 	if (!of_mutex_lock(&mutex))
-		@throw [OFMutexLockFailedException newWithClass: isa
-							  mutex: self];
+		@throw [OFMutexLockFailedException exceptionWithClass: isa
+								mutex: self];
 }
 
 - (BOOL)tryLock
@@ -444,16 +445,17 @@ call_main(id object)
 - (void)unlock
 {
 	if (!of_mutex_unlock(&mutex))
-		@throw [OFMutexUnlockFailedException newWithClass: isa
-							    mutex: self];
+		@throw [OFMutexUnlockFailedException exceptionWithClass: isa
+								  mutex: self];
 }
 
 - (void)dealloc
 {
 	if (initialized)
 		if (!of_mutex_free(&mutex))
-			@throw [OFMutexStillLockedException newWithClass: isa
-								   mutex: self];
+			@throw [OFMutexStillLockedException
+			    exceptionWithClass: isa
+					 mutex: self];
 
 	[super dealloc];
 }
@@ -472,7 +474,7 @@ call_main(id object)
 	if (!of_condition_new(&condition)) {
 		Class c = isa;
 		[self release];
-		@throw [OFInitializationFailedException newWithClass: c];
+		@throw [OFInitializationFailedException exceptionWithClass: c];
 	}
 
 	conditionInitialized = YES;
@@ -483,22 +485,25 @@ call_main(id object)
 - (void)wait
 {
 	if (!of_condition_wait(&condition, &mutex))
-		@throw [OFConditionWaitFailedException newWithClass: isa
-							  condition: self];
+		@throw [OFConditionWaitFailedException
+		    exceptionWithClass: isa
+			     condition: self];
 }
 
 - (void)signal
 {
 	if (!of_condition_signal(&condition))
-		@throw [OFConditionSignalFailedException newWithClass: isa
-							    condition: self];
+		@throw [OFConditionSignalFailedException
+		    exceptionWithClass: isa
+			     condition: self];
 }
 
 - (void)broadcast
 {
 	if (!of_condition_broadcast(&condition))
-		@throw [OFConditionBroadcastFailedException newWithClass: isa
-							       condition: self];
+		@throw [OFConditionBroadcastFailedException
+		    exceptionWithClass: isa
+			     condition: self];
 }
 
 - (void)dealloc
@@ -506,8 +511,8 @@ call_main(id object)
 	if (conditionInitialized)
 		if (!of_condition_free(&condition))
 			@throw [OFConditionStillWaitingException
-			    newWithClass: isa
-			       condition: self];
+			    exceptionWithClass: isa
+				     condition: self];
 
 	[super dealloc];
 }

@@ -37,8 +37,8 @@
  * \param socket The socket which could not accept a connection
  * \return A new accept failed exception
  */
-+ newWithClass: (Class)class_
-	socket: (OFTCPSocket*)socket;
++ exceptionWithClass: (Class)class_
+	      socket: (OFTCPSocket*)socket;
 
 /**
  * Initializes an already allocated accept failed exception.

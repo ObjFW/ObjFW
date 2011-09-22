@@ -63,8 +63,9 @@
 
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
 
 		name = [[[element attributeForName: @"name"] stringValue]
 		    copy];

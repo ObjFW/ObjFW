@@ -86,8 +86,8 @@ void _references_to_categories_of_OFDataArray(void)
 	if (itemSize_ == 0) {
 		Class c = isa;
 		[self release];
-		@throw [OFInvalidArgumentException newWithClass: c
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: c
+							     selector: _cmd];
 	}
 
 	itemSize = itemSize_;
@@ -152,9 +152,9 @@ void _references_to_categories_of_OFDataArray(void)
 
 	if ([result statusCode] != 200)
 		@throw [OFHTTPRequestFailedException
-		    newWithClass: [request class]
-		     HTTPRequest: request
-			  result: result];
+		    exceptionWithClass: [request class]
+			   HTTPRequest: request
+				result: result];
 
 	self = [[result data] retain];
 	[pool release];
@@ -172,7 +172,7 @@ void _references_to_categories_of_OFDataArray(void)
 	    [string cStringLengthWithEncoding: OF_STRING_ENCODING_ASCII])) {
 		Class c = isa;
 		[self release];
-		@throw [OFInvalidEncodingException newWithClass: c];
+		@throw [OFInvalidEncodingException exceptionWithClass: c];
 	}
 
 	return self;
@@ -190,8 +190,9 @@ void _references_to_categories_of_OFDataArray(void)
 
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
 
 		stringValue = [element stringValue];
 
@@ -199,7 +200,8 @@ void _references_to_categories_of_OFDataArray(void)
 		    [stringValue cStringWithEncoding: OF_STRING_ENCODING_ASCII],
 		    [stringValue cStringLengthWithEncoding:
 		    OF_STRING_ENCODING_ASCII]))
-			@throw [OFInvalidEncodingException newWithClass: isa];
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: isa];
 
 		[pool release];
 	} @catch (id e) {
@@ -228,7 +230,7 @@ void _references_to_categories_of_OFDataArray(void)
 - (void*)itemAtIndex: (size_t)index
 {
 	if (index >= count)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	return data + index * itemSize;
 }
@@ -252,7 +254,7 @@ void _references_to_categories_of_OFDataArray(void)
 - (void)addItem: (const void*)item
 {
 	if (SIZE_MAX - count < 1)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	data = [self resizeMemory: data
 			 toNItems: count + 1
@@ -275,7 +277,7 @@ void _references_to_categories_of_OFDataArray(void)
        fromCArray: (const void*)cArray
 {
 	if (nItems > SIZE_MAX - count)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	data = [self resizeMemory: data
 			 toNItems: count + nItems
@@ -290,7 +292,7 @@ void _references_to_categories_of_OFDataArray(void)
 	  atIndex: (size_t)index
 {
 	if (nItems > SIZE_MAX - count)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	data = [self resizeMemory: data
 			 toNItems: count + nItems
@@ -312,7 +314,7 @@ void _references_to_categories_of_OFDataArray(void)
 - (void)removeNItems: (size_t)nItems
 {
 	if (nItems > count)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 
 	count -= nItems;
@@ -322,7 +324,6 @@ void _references_to_categories_of_OFDataArray(void)
 				   ofSize: itemSize];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
-		[e release];
 	}
 }
 
@@ -330,7 +331,7 @@ void _references_to_categories_of_OFDataArray(void)
 	     atIndex: (size_t)index
 {
 	if (nItems > count)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	memmove(data + index * itemSize, data + (index + nItems) * itemSize,
 	    (count - index - nItems) * itemSize);
@@ -342,7 +343,6 @@ void _references_to_categories_of_OFDataArray(void)
 				   ofSize: itemSize];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
-		[e release];
 	}
 }
 
@@ -355,7 +355,6 @@ void _references_to_categories_of_OFDataArray(void)
 				   ofSize: itemSize];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only made it smaller */
-		[e release];
 	}
 }
 
@@ -394,13 +393,13 @@ void _references_to_categories_of_OFDataArray(void)
 	size_t otherCount, minimumCount;
 
 	if (![object isKindOfClass: [OFDataArray class]])
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 	otherDataArray = object;
 
 	if ([otherDataArray itemSize] != itemSize)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	otherCount = [otherDataArray count];
 	minimumCount = (count > otherCount ? otherCount : count);
@@ -457,8 +456,8 @@ void _references_to_categories_of_OFDataArray(void)
 	OFXMLElement *element;
 
 	if (itemSize != 1)
-		@throw [OFNotImplementedException newWithClass: isa
-						      selector: _cmd];
+		@throw [OFNotImplementedException exceptionWithClass: isa
+							    selector: _cmd];
 
 	pool = [[OFAutoreleasePool alloc] init];
 	element = [OFXMLElement
@@ -480,7 +479,7 @@ void _references_to_categories_of_OFDataArray(void)
 	size_t newSize, lastPageByte;
 
 	if (SIZE_MAX - count < 1 || count + 1 > SIZE_MAX / itemSize)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	lastPageByte = of_pagesize - 1;
 	newSize = ((count + 1) * itemSize + lastPageByte) & ~lastPageByte;
@@ -501,7 +500,7 @@ void _references_to_categories_of_OFDataArray(void)
 	size_t newSize, lastPageByte;
 
 	if (nItems > SIZE_MAX - count || count + nItems > SIZE_MAX / itemSize)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	lastPageByte = of_pagesize - 1;
 	newSize = ((count + nItems) * itemSize + lastPageByte) & ~lastPageByte;
@@ -523,7 +522,7 @@ void _references_to_categories_of_OFDataArray(void)
 	size_t newSize, lastPageByte;
 
 	if (nItems > SIZE_MAX - count || count + nItems > SIZE_MAX / itemSize)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	lastPageByte = of_pagesize - 1;
 	newSize = ((count + nItems) * itemSize + lastPageByte) & ~lastPageByte;
@@ -546,7 +545,7 @@ void _references_to_categories_of_OFDataArray(void)
 	size_t newSize, lastPageByte;
 
 	if (nItems > count)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	count -= nItems;
 	lastPageByte = of_pagesize - 1;
@@ -564,7 +563,7 @@ void _references_to_categories_of_OFDataArray(void)
 	size_t newSize, lastPageByte;
 
 	if (nItems > count)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	memmove(data + index * itemSize, data + (index + nItems) * itemSize,
 	    (count - index - nItems) * itemSize);

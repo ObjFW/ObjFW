@@ -84,7 +84,8 @@
 	case OF_NUMBER_DOUBLE:						\
 		return (t)value.double_;				\
 	default:							\
-		@throw [OFInvalidFormatException newWithClass: isa];	\
+		@throw [OFInvalidFormatException			\
+		    exceptionWithClass: isa];				\
 	}
 #define CALCULATE(o, n)							\
 	switch (type) {							\
@@ -167,7 +168,8 @@
 		return [OFNumber numberWithDouble:			\
 		    value.double_ o [n doubleValue]];			\
 	default:							\
-		@throw [OFInvalidFormatException newWithClass: isa];	\
+		@throw [OFInvalidFormatException			\
+		    exceptionWithClass: isa];				\
 	}
 #define CALCULATE2(o, n)						\
 	switch (type) {							\
@@ -245,10 +247,12 @@
 		    value.uintptr o [n uIntPtrValue]];			\
 	case OF_NUMBER_FLOAT:						\
 	case OF_NUMBER_DOUBLE:						\
-		@throw [OFNotImplementedException newWithClass: isa	\
-						      selector: _cmd];	\
+		@throw [OFNotImplementedException			\
+		    exceptionWithClass: isa				\
+			      selector: _cmd];				\
 	default:							\
-		@throw [OFInvalidFormatException newWithClass: isa];	\
+		@throw [OFInvalidFormatException			\
+		    exceptionWithClass: isa];				\
 	}
 #define CALCULATE3(o)							\
 	switch (type) {							\
@@ -308,7 +312,8 @@
 	case OF_NUMBER_DOUBLE:						\
 		return [OFNumber numberWithDouble: value.double_ o];	\
 	default:							\
-		@throw [OFInvalidFormatException newWithClass: isa];	\
+		@throw [OFInvalidFormatException			\
+		    exceptionWithClass: isa];				\
 	}
 
 @implementation OFNumber
@@ -444,8 +449,8 @@
 
 - init
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - initWithBool: (BOOL)bool_
@@ -718,8 +723,9 @@
 
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
 
 		typeString = [[element attributeForName: @"type"] stringValue];
 
@@ -732,8 +738,8 @@
 				value.bool_ = NO;
 			else
 				@throw [OFInvalidArgumentException
-				    newWithClass: isa
-					selector: _cmd];
+				    exceptionWithClass: isa
+					      selector: _cmd];
 		} else if ([typeString isEqual: @"unsigned"]) {
 			/*
 			 * FIXME: This will fail if the value is bigger than
@@ -751,8 +757,9 @@
 			type = OF_NUMBER_DOUBLE;
 			value.double_ = [element doubleValue];
 		} else
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
 
 		[pool release];
 	} @catch (id e) {
@@ -1118,7 +1125,7 @@
 		return [OFNumber numberWithDouble:
 		    fmod(value.double_, [number doubleValue])];
 	default:
-		@throw [OFInvalidFormatException newWithClass: isa];
+		@throw [OFInvalidFormatException exceptionWithClass: isa];
 	}
 }
 
@@ -1162,7 +1169,7 @@
 	case OF_NUMBER_DOUBLE:
 		return [OFString stringWithFormat: @"%lg", value.double_];
 	default:
-		@throw [OFInvalidFormatException newWithClass: isa];
+		@throw [OFInvalidFormatException exceptionWithClass: isa];
 	}
 }
 
@@ -1224,7 +1231,7 @@
 
 		break;
 	default:
-		@throw [OFInvalidFormatException newWithClass: isa];
+		@throw [OFInvalidFormatException exceptionWithClass: isa];
 	}
 
 	[element retain];

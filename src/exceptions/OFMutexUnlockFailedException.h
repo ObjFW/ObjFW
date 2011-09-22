@@ -35,8 +35,8 @@
  * \param mutex The mutex which could not be unlocked
  * \return A new mutex unlock failed exception
  */
-+ newWithClass: (Class)class_
-	 mutex: (OFMutex*)mutex;
++ exceptionWithClass: (Class)class_
+	       mutex: (OFMutex*)mutex;
 
 /**
  * Initializes an already allocated mutex unlock failed exception.

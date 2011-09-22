@@ -25,21 +25,21 @@
 #import "common.h"
 
 @implementation OFListenFailedException
-+ newWithClass: (Class)class_
-	socket: (OFTCPSocket*)socket
-       backLog: (int)backlog
++ exceptionWithClass: (Class)class_
+	      socket: (OFTCPSocket*)socket
+	     backLog: (int)backlog
 {
-	return [[self alloc] initWithClass: class_
-				    socket: socket
-				   backLog: backlog];
+	return [[[self alloc] initWithClass: class_
+				     socket: socket
+				    backLog: backlog] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithClass: (Class)class_

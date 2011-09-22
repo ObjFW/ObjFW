@@ -48,86 +48,88 @@ static OFMutex *mutex;
 #endif
 
 #ifdef HAVE_GMTIME_R
-# define GMTIME_RET(field)						  \
-	time_t seconds_ = (time_t)seconds;				  \
-	struct tm tm;							  \
-									  \
-	if (seconds_ != floor(seconds))					  \
-		@throw [OFOutOfRangeException newWithClass: isa];	  \
-									  \
-	if (gmtime_r(&seconds_, &tm) == NULL)				  \
-		@throw [OFOutOfRangeException newWithClass: isa];	  \
-									  \
+# define GMTIME_RET(field)						\
+	time_t seconds_ = (time_t)seconds;				\
+	struct tm tm;							\
+									\
+	if (seconds_ != floor(seconds))					\
+		@throw [OFOutOfRangeException exceptionWithClass: isa];	\
+									\
+	if (gmtime_r(&seconds_, &tm) == NULL)				\
+		@throw [OFOutOfRangeException exceptionWithClass: isa];	\
+									\
 	return tm.field;
-# define LOCALTIME_RET(field)						  \
-	time_t seconds_ = (time_t)seconds;				  \
-	struct tm tm;							  \
-									  \
-	if (seconds_ != floor(seconds))					  \
-		@throw [OFOutOfRangeException newWithClass: isa];	  \
-									  \
-	if (localtime_r(&seconds_, &tm) == NULL)			  \
-		@throw [OFOutOfRangeException newWithClass: isa];	  \
-									  \
+# define LOCALTIME_RET(field)						\
+	time_t seconds_ = (time_t)seconds;				\
+	struct tm tm;							\
+									\
+	if (seconds_ != floor(seconds))					\
+		@throw [OFOutOfRangeException exceptionWithClass: isa];	\
+									\
+	if (localtime_r(&seconds_, &tm) == NULL)			\
+		@throw [OFOutOfRangeException exceptionWithClass: isa];	\
+									\
 	return tm.field;
 #else
 # ifdef OF_THREADS
-#  define GMTIME_RET(field)						  \
-	time_t seconds_ = (time_t)seconds;				  \
-	struct tm *tm;							  \
-									  \
-	if (seconds_ != floor(seconds))					  \
-		@throw [OFOutOfRangeException newWithClass: isa];	  \
-									  \
-	[mutex lock];							  \
-									  \
-	@try {								  \
-		if ((tm = gmtime(&seconds_)) == NULL)			  \
-			@throw [OFOutOfRangeException newWithClass: isa]; \
-									  \
-		return tm->field;					  \
-	} @finally {							  \
-		[mutex unlock];						  \
+#  define GMTIME_RET(field)						\
+	time_t seconds_ = (time_t)seconds;				\
+	struct tm *tm;							\
+									\
+	if (seconds_ != floor(seconds))					\
+		@throw [OFOutOfRangeException exceptionWithClass: isa];	\
+									\
+	[mutex lock];							\
+									\
+	@try {								\
+		if ((tm = gmtime(&seconds_)) == NULL)			\
+			@throw [OFOutOfRangeException			\
+			    exceptionWithClass: isa];			\
+									\
+		return tm->field;					\
+	} @finally {							\
+		[mutex unlock];						\
 	}
-#  define LOCALTIME_RET(field)						  \
-	time_t seconds_ = (time_t)seconds;				  \
-	struct tm *tm;							  \
-									  \
-	if (seconds_ != floor(seconds))					  \
-		@throw [OFOutOfRangeException newWithClass: isa];	  \
-									  \
-	[mutex lock];							  \
-									  \
-	@try {								  \
-		if ((tm = localtime(&seconds_)) == NULL)		  \
-			@throw [OFOutOfRangeException newWithClass: isa]; \
-									  \
-		return tm->field;					  \
-	} @finally {							  \
-		[mutex unlock];						  \
+#  define LOCALTIME_RET(field)						\
+	time_t seconds_ = (time_t)seconds;				\
+	struct tm *tm;							\
+									\
+	if (seconds_ != floor(seconds))					\
+		@throw [OFOutOfRangeException exceptionWithClass: isa];	\
+									\
+	[mutex lock];							\
+									\
+	@try {								\
+		if ((tm = localtime(&seconds_)) == NULL)		\
+			@throw [OFOutOfRangeException			\
+			    exceptionWithClass: isa];			\
+									\
+		return tm->field;					\
+	} @finally {							\
+		[mutex unlock];						\
 	}
 # else
-#  define GMTIME_RET(field)						  \
-	time_t seconds_ = (time_t)seconds;				  \
-	struct tm *tm;							  \
-									  \
-	if (seconds_ != floor(seconds))					  \
-		@throw [OFOutOfRangeException newWithClass: isa];	  \
-									  \
-	if ((tm = gmtime(&seconds_)) == NULL)				  \
-		@throw [OFOutOfRangeException newWithClass: isa];	  \
-									  \
+#  define GMTIME_RET(field)						\
+	time_t seconds_ = (time_t)seconds;				\
+	struct tm *tm;							\
+									\
+	if (seconds_ != floor(seconds))					\
+		@throw [OFOutOfRangeException exceptionWithClass: isa];	\
+									\
+	if ((tm = gmtime(&seconds_)) == NULL)				\
+		@throw [OFOutOfRangeException exceptionWithClass: isa];	\
+									\
 	return tm->field;
-#  define LOCALTIME_RET(field)						  \
-	time_t seconds_ = (time_t)seconds;				  \
-	struct tm *tm;							  \
-									  \
-	if (seconds_ != floor(seconds))					  \
-		@throw [OFOutOfRangeException newWithClass: isa];	  \
-									  \
-	if ((tm = localtime(&seconds_)) == NULL)			  \
-		@throw [OFOutOfRangeException newWithClass: isa];	  \
-									  \
+#  define LOCALTIME_RET(field)						\
+	time_t seconds_ = (time_t)seconds;				\
+	struct tm *tm;							\
+									\
+	if (seconds_ != floor(seconds))					\
+		@throw [OFOutOfRangeException exceptionWithClass: isa];	\
+									\
+	if ((tm = localtime(&seconds_)) == NULL)			\
+		@throw [OFOutOfRangeException exceptionWithClass: isa];	\
+									\
 	return tm->field;
 # endif
 #endif
@@ -229,13 +231,16 @@ static OFMutex *mutex;
 
 		if (strptime([string UTF8String], [format UTF8String],
 		    &tm) == NULL)
-			@throw [OFInvalidFormatException newWithClass: isa];
+			@throw [OFInvalidFormatException
+			    exceptionWithClass: isa];
 
 		if (tm.tm_gmtoff)
-			@throw [OFInvalidFormatException newWithClass: isa];
+			@throw [OFInvalidFormatException
+			    exceptionWithClass: isa];
 
 		if ((seconds = mktime(&tm)) == -1)
-			@throw [OFInvalidFormatException newWithClass: isa];
+			@throw [OFInvalidFormatException
+			    exceptionWithClass: isa];
 
 		seconds += tm.tm_gmtoff;
 	} @catch (id e) {
@@ -258,10 +263,12 @@ static OFMutex *mutex;
 
 		if (strptime([string UTF8String], [format UTF8String],
 		    &tm) == NULL)
-			@throw [OFInvalidFormatException newWithClass: isa];
+			@throw [OFInvalidFormatException
+			    exceptionWithClass: isa];
 
 		if ((seconds = mktime(&tm)) == -1)
-			@throw [OFInvalidFormatException newWithClass: isa];
+			@throw [OFInvalidFormatException
+			    exceptionWithClass: isa];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -279,8 +286,9 @@ static OFMutex *mutex;
 
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
 
 		seconds = [element doubleValue];
 
@@ -339,8 +347,8 @@ static OFMutex *mutex;
 	OFDate *otherDate;
 
 	if (![object isKindOfClass: [OFDate class]])
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	otherDate = object;
 
@@ -456,11 +464,11 @@ static OFMutex *mutex;
 	char *buffer;
 
 	if (seconds_ != floor(seconds))
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 #ifdef HAVE_GMTIME_R
 	if (gmtime_r(&seconds_, &tm) == NULL)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 #else
 # ifdef OF_THREADS
 	[mutex lock];
@@ -470,7 +478,7 @@ static OFMutex *mutex;
 		struct tm *tmp;
 
 		if ((tmp = gmtime(&seconds_)) == NULL)
-			@throw [OFOutOfRangeException newWithClass: isa];
+			@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 		tm = *tmp;
 # ifdef OF_THREADS
@@ -484,7 +492,7 @@ static OFMutex *mutex;
 
 	@try {
 		if (!strftime(buffer, of_pagesize, [format UTF8String], &tm))
-			@throw [OFOutOfRangeException newWithClass: isa];
+			@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 		ret = [OFString stringWithUTF8String: buffer];
 	} @finally {
@@ -502,11 +510,11 @@ static OFMutex *mutex;
 	char *buffer;
 
 	if (seconds_ != floor(seconds))
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 #ifdef HAVE_LOCALTIME_R
 	if (localtime_r(&seconds_, &tm) == NULL)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 #else
 # ifdef OF_THREADS
 	[mutex lock];
@@ -516,7 +524,7 @@ static OFMutex *mutex;
 		struct tm *tmp;
 
 		if ((tmp = localtime(&seconds_)) == NULL)
-			@throw [OFOutOfRangeException newWithClass: isa];
+			@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 		tm = *tmp;
 # ifdef OF_THREADS
@@ -530,7 +538,7 @@ static OFMutex *mutex;
 
 	@try {
 		if (!strftime(buffer, of_pagesize, [format UTF8String], &tm))
-			@throw [OFOutOfRangeException newWithClass: isa];
+			@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 		ret = [OFString stringWithUTF8String: buffer];
 	} @finally {

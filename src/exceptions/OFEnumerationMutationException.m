@@ -22,19 +22,19 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFEnumerationMutationException
-+ newWithClass: (Class)class_
-	object: (id)object
++ exceptionWithClass: (Class)class_
+	      object: (id)object
 {
-	return [[self alloc] initWithClass: class_
-				    object: object];
+	return [[[self alloc] initWithClass: class_
+				     object: object] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithClass: (Class)class_

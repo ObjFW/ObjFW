@@ -40,12 +40,12 @@ int _OFXMLElement_Serialization_reference;
 
 	if ((class = objc_lookUpClass([name cStringWithEncoding:
 	    OF_STRING_ENCODING_ASCII])) == Nil)
-		@throw [OFNotImplementedException newWithClass: Nil];
+		@throw [OFNotImplementedException exceptionWithClass: Nil];
 
 	if (![class conformsToProtocol: @protocol(OFSerialization)])
 		@throw [OFNotImplementedException
-		    newWithClass: class
-			selector: @selector(initWithSerialization:)];
+		    exceptionWithClass: class
+			      selector: @selector(initWithSerialization:)];
 
 	object = [[class alloc] initWithSerialization: self];
 

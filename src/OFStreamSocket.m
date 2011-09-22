@@ -55,7 +55,8 @@
 		return;
 
 	if (WSAStartup(MAKEWORD(2, 0), &wsa))
-		@throw [OFInitializationFailedException newWithClass: self];
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
 }
 #endif
 
@@ -75,15 +76,15 @@
 	ssize_t ret;
 
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: isa
-						      socket: self];
+		@throw [OFNotConnectedException exceptionWithClass: isa
+							    socket: self];
 
 	if (atEndOfStream) {
 		OFReadFailedException *e;
 
-		e = [OFReadFailedException newWithClass: isa
-						 stream: self
-					requestedLength: length];
+		e = [OFReadFailedException exceptionWithClass: isa
+						       stream: self
+					      requestedLength: length];
 #ifndef _WIN32
 		e->errNo = ENOTCONN;
 #else
@@ -94,9 +95,9 @@
 	}
 
 	if ((ret = recv(sock, buffer, length, 0)) < 0)
-		@throw [OFReadFailedException newWithClass: isa
-						    stream: self
-					   requestedLength: length];
+		@throw [OFReadFailedException exceptionWithClass: isa
+							  stream: self
+						 requestedLength: length];
 
 	if (ret == 0)
 		atEndOfStream = YES;
@@ -108,15 +109,15 @@
 	  fromBuffer: (const void*)buffer
 {
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: isa
-						      socket: self];
+		@throw [OFNotConnectedException exceptionWithClass: isa
+							    socket: self];
 
 	if (atEndOfStream) {
 		OFWriteFailedException *e;
 
-		e = [OFWriteFailedException newWithClass: isa
-						  stream: self
-					 requestedLength: length];
+		e = [OFWriteFailedException exceptionWithClass: isa
+							stream: self
+					       requestedLength: length];
 #ifndef _WIN32
 		e->errNo = ENOTCONN;
 #else
@@ -127,9 +128,9 @@
 	}
 
 	if (send(sock, buffer, length, 0) < length)
-		@throw [OFWriteFailedException newWithClass: isa
-						     stream: self
-					    requestedLength: length];
+		@throw [OFWriteFailedException exceptionWithClass: isa
+							   stream: self
+						  requestedLength: length];
 }
 
 #ifdef _WIN32
@@ -139,8 +140,8 @@
 	blocking = enable;
 
 	if (ioctlsocket(sock, FIONBIO, &v) == SOCKET_ERROR)
-		@throw [OFSetOptionFailedException newWithClass: isa
-							 stream: self];
+		@throw [OFSetOptionFailedException exceptionWithClass: isa
+							       stream: self];
 }
 #endif
 
@@ -152,8 +153,8 @@
 - (void)close
 {
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: isa
-						      socket: self];
+		@throw [OFNotConnectedException exceptionWithClass: isa
+							    socket: self];
 
 	close(sock);
 

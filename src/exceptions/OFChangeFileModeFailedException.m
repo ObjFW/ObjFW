@@ -24,22 +24,22 @@
 #import "common.h"
 
 @implementation OFChangeFileModeFailedException
-+ newWithClass: (Class)class_
-	  path: (OFString*)path
-	  mode: (mode_t)mode
++ exceptionWithClass: (Class)class_
+		path: (OFString*)path
+		mode: (mode_t)mode
 {
-	return [(OFChangeFileModeFailedException*)[self alloc]
+	return [(OFChangeFileModeFailedException*)[[self alloc]
 	    initWithClass: class_
 		     path: path
-		     mode: mode];
+		     mode: mode] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithClass: (Class)class_

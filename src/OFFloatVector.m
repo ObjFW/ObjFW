@@ -64,8 +64,8 @@ static Class floatMatrix = Nil;
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithDimension: (size_t)dimension_
@@ -76,12 +76,12 @@ static Class floatMatrix = Nil;
 		dimension = dimension_;
 
 		if (SIZE_MAX / dimension < sizeof(float))
-			@throw [OFOutOfRangeException newWithClass: isa];
+			@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 		if ((data = malloc(dimension * sizeof(float))) == NULL)
 			@throw [OFOutOfMemoryException
-			     newWithClass: isa
-			    requestedSize: dimension * sizeof(float)];
+			     exceptionWithClass: isa
+				  requestedSize: dimension * sizeof(float)];
 
 		memset(data, 0, dimension * sizeof(float));
 	} @catch (id e) {
@@ -119,12 +119,12 @@ static Class floatMatrix = Nil;
 		dimension = dimension_;
 
 		if (SIZE_MAX / dimension < sizeof(float))
-			@throw [OFOutOfRangeException newWithClass: isa];
+			@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 		if ((data = malloc(dimension * sizeof(float))) == NULL)
 			@throw [OFOutOfMemoryException
-			     newWithClass: isa
-			    requestedSize: dimension * sizeof(float)];
+			     exceptionWithClass: isa
+				  requestedSize: dimension * sizeof(float)];
 
 		data[0] = data_;
 		for (i = 1; i < dimension; i++)
@@ -148,7 +148,7 @@ static Class floatMatrix = Nil;
 	 atIndex: (size_t)index
 {
 	if (index >= dimension)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	data[index] = value;
 }
@@ -156,7 +156,7 @@ static Class floatMatrix = Nil;
 - (float)valueAtIndex: (size_t)index
 {
 	if (index >= dimension)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	return data[index];
 }
@@ -172,9 +172,9 @@ static Class floatMatrix = Nil;
 	size_t i;
 
 	if ((newData = realloc(data, dimension_ * sizeof(float))) == NULL)
-		@throw [OFOutOfMemoryException newWithClass: isa
-					      requestedSize: dimension_ *
-							     sizeof(float)];
+		@throw [OFOutOfMemoryException
+		    exceptionWithClass: isa
+			 requestedSize: dimension_ * sizeof(float)];
 
 	data = newData;
 
@@ -297,8 +297,8 @@ static Class floatMatrix = Nil;
 	size_t i;
 
 	if (vector->isa != isa || vector->dimension != dimension)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	for (i = 0; i < dimension; i++)
 		data[i] += vector->data[i];
@@ -309,8 +309,8 @@ static Class floatMatrix = Nil;
 	size_t i;
 
 	if (vector->isa != isa || vector->dimension != dimension)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	for (i = 0; i < dimension; i++)
 		data[i] -= vector->data[i];
@@ -337,8 +337,8 @@ static Class floatMatrix = Nil;
 	size_t i;
 
 	if (vector->isa != isa || vector->dimension != dimension)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	for (i = 0; i < dimension; i++)
 		data[i] *= vector->data[i];
@@ -349,8 +349,8 @@ static Class floatMatrix = Nil;
 	size_t i;
 
 	if (vector->isa != isa || vector->dimension != dimension)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	for (i = 0; i < dimension; i++)
 		data[i] /= vector->data[i];
@@ -362,8 +362,8 @@ static Class floatMatrix = Nil;
 	size_t i;
 
 	if (vector->isa != isa || vector->dimension != dimension)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	dotProduct = 0.0f;
 
@@ -378,12 +378,12 @@ static Class floatMatrix = Nil;
 	OFFloatVector *crossProduct;
 
 	if (dimension != 3)
-		@throw [OFNotImplementedException newWithClass: isa
-						      selector: _cmd];
+		@throw [OFNotImplementedException exceptionWithClass: isa
+							    selector: _cmd];
 
 	if (vector->dimension != dimension)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	crossProduct = [OFFloatVector vectorWithDimension: 3];
 
@@ -403,13 +403,13 @@ static Class floatMatrix = Nil;
 	size_t i, j, k;
 
 	if (matrix->isa != floatMatrix || dimension != matrix->columns)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	if ((newData = malloc(matrix->rows * sizeof(float))) == NULL)
 		@throw [OFOutOfMemoryException
-		     newWithClass: isa
-		    requestedSize: matrix->rows * sizeof(float)];
+		     exceptionWithClass: isa
+			  requestedSize: matrix->rows * sizeof(float)];
 
 	memset(newData, 0, matrix->rows * sizeof(float));
 

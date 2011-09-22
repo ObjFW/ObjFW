@@ -22,26 +22,26 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFUnboundNamespaceException
-+ newWithClass: (Class)class_
-     namespace: (OFString*)ns
++ exceptionWithClass: (Class)class_
+	   namespace: (OFString*)ns
 {
-	return [[self alloc] initWithClass: class_
-				 namespace: ns];
+	return [[[self alloc] initWithClass: class_
+				  namespace: ns] autorelease];
 }
 
-+ newWithClass: (Class)class_
-	prefix: (OFString*)prefix
++ exceptionWithClass: (Class)class_
+	      prefix: (OFString*)prefix
 {
-	return [[self alloc] initWithClass: class_
-				    prefix: prefix];
+	return [[[self alloc] initWithClass: class_
+				     prefix: prefix] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithClass: (Class)class_

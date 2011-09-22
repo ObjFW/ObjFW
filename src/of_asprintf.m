@@ -279,7 +279,6 @@ formatConversionSpecifierState(struct context *ctx)
 		@try {
 			pool = [[OFAutoreleasePool alloc] init];
 		} @catch (id e) {
-			[e release];
 			return false;
 		}
 

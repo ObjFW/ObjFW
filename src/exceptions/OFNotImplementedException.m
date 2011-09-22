@@ -22,19 +22,19 @@
 #import "common.h"
 
 @implementation OFNotImplementedException
-+ newWithClass: (Class)class_
-      selector: (SEL)selector
++ exceptionWithClass: (Class)class_
+	    selector: (SEL)selector
 {
-	return [[self alloc] initWithClass: class_
-				  selector: selector];
+	return [[[self alloc] initWithClass: class_
+				   selector: selector] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithClass: (Class)class_

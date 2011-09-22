@@ -26,8 +26,8 @@
 	if (isa == [OFEnumerator class]) {
 		Class c = isa;
 		[self release];
-		@throw [OFNotImplementedException newWithClass: c
-						      selector: _cmd];
+		@throw [OFNotImplementedException exceptionWithClass: c
+							    selector: _cmd];
 	}
 
 	return [super init];
@@ -35,13 +35,13 @@
 
 - (id)nextObject
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (void)reset
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 @end

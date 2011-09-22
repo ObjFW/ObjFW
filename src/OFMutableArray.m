@@ -103,8 +103,8 @@ static struct {
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 	[super dealloc];	/* Get rid of a stupid warning */
 }
 @end
@@ -129,8 +129,8 @@ static struct {
 	if (isa == [OFMutableArray class]) {
 		Class c = isa;
 		[self release];
-		@throw [OFNotImplementedException newWithClass: c
-						      selector: _cmd];
+		@throw [OFNotImplementedException exceptionWithClass: c
+							    selector: _cmd];
 	}
 
 	return [super init];
@@ -150,15 +150,15 @@ static struct {
 - (void)addObject: (id)object
 	  atIndex: (size_t)index
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (void)replaceObjectAtIndex: (size_t)index
 		  withObject: (id)object
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (void)replaceObject: (id)oldObject
@@ -192,8 +192,8 @@ static struct {
 
 - (void)removeObjectAtIndex: (size_t)index
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (void)removeObject: (id)object

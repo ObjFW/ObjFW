@@ -35,16 +35,16 @@
  * \param ns The namespace which is unbound
  * \return A new unbound namespace exception
  */
-+ newWithClass: (Class)class_
-     namespace: (OFString*)ns;
++ exceptionWithClass: (Class)class_
+	   namespace: (OFString*)ns;
 
 /**
  * \param class_ The class of the object which caused the exception
  * \param prefix The prefix which is unbound
  * \return A new unbound namespace exception
  */
-+ newWithClass: (Class)class_
-	prefix: (OFString*)prefix;
++ exceptionWithClass: (Class)class_
+	      prefix: (OFString*)prefix;
 
 /**
  * Initializes an already allocated unbound namespace exception

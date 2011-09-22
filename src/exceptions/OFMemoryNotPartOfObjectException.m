@@ -22,19 +22,19 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFMemoryNotPartOfObjectException
-+ newWithClass: (Class)class_
-       pointer: (void*)ptr
++ exceptionWithClass: (Class)class_
+	     pointer: (void*)ptr
 {
-	return [[self alloc] initWithClass: class_
-				   pointer: ptr];
+	return [[[self alloc] initWithClass: class_
+				    pointer: ptr] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithClass: (Class)class_

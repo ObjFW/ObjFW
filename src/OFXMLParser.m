@@ -120,8 +120,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	if ((attributePrefix != nil && attributeNS == nil))
 		@throw [OFUnboundNamespaceException
-		    newWithClass: isa
-			  prefix: attributePrefix];
+		    exceptionWithClass: isa
+				prefix: attributePrefix];
 
 	[attribute->ns release];
 	attribute->ns = [attributeNS retain];
@@ -158,7 +158,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	for (i = 0; i < OF_XMLPARSER_NUM_STATES; i++) {
 		if (![self instancesRespondToSelector: selectors[i]])
 			@throw [OFInitializationFailedException
-			    newWithClass: self];
+			    exceptionWithClass: self];
 
 		lookupTable[i] = (state_function)
 		    [self instanceMethodForSelector: selectors[i]];
@@ -304,8 +304,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	if ((finishedParsing || [previous count] < 1) && buffer[*i] != ' ' &&
 	    buffer[*i] != '\t' && buffer[*i] != '\n' && buffer[*i] != '\r' &&
 	    buffer[*i] != '\f' && buffer[*i] != '<')
-		@throw [OFMalformedXMLException newWithClass: isa
-						      parser: self];
+		@throw [OFMalformedXMLException exceptionWithClass: isa
+							    parser: self];
 
 	if (buffer[*i] != '<')
 		return;
@@ -338,8 +338,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 			     last: (size_t*)last
 {
 	if (finishedParsing && buffer[*i] != '!' && buffer[*i] != '?')
-		@throw [OFMalformedXMLException newWithClass: isa
-						      parser: self];
+		@throw [OFMalformedXMLException exceptionWithClass: isa
+							    parser: self];
 
 	switch (buffer[*i]) {
 		case '?':
@@ -481,8 +481,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		    [pi hasPrefix: @"xml\n"])
 			if (![self _parseXMLProcessingInstructions: pi])
 				@throw [OFMalformedXMLException
-				    newWithClass: isa
-					parser: self];
+				    exceptionWithClass: isa
+						parser: self];
 
 		[delegate parser: self
 		    foundProcessingInstructions: pi];
@@ -541,9 +541,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		ns = namespace_for_prefix(prefix, namespaces);
 
 		if (prefix != nil && ns == nil)
-			@throw
-			    [OFUnboundNamespaceException newWithClass: isa
-							       prefix: prefix];
+			@throw [OFUnboundNamespaceException
+			    exceptionWithClass: isa
+					prefix: prefix];
 
 		pool2 = [[OFAutoreleasePool alloc] init];
 
@@ -626,8 +626,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	}
 
 	if (![[previous lastObject] isEqual: cacheString])
-		@throw [OFMalformedXMLException newWithClass: isa
-						      parser: self];
+		@throw [OFMalformedXMLException exceptionWithClass: isa
+							    parser: self];
 
 	[previous removeLastObject];
 
@@ -635,8 +635,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	ns = namespace_for_prefix(prefix, namespaces);
 	if (prefix != nil && ns == nil)
-		@throw [OFUnboundNamespaceException newWithClass: isa
-							  prefix: prefix];
+		@throw [OFUnboundNamespaceException exceptionWithClass: isa
+								prefix: prefix];
 
 	[delegate parser: self
 	   didEndElement: name
@@ -687,8 +687,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	ns = namespace_for_prefix(prefix, namespaces);
 
 	if (prefix != nil && ns == nil)
-		@throw [OFUnboundNamespaceException newWithClass: isa
-							  prefix: prefix];
+		@throw [OFUnboundNamespaceException exceptionWithClass: isa
+								prefix: prefix];
 
 	for (j = 0; j < attributesCount; j++)
 		resolve_attribute_namespace(attributesCArray[j], namespaces,
@@ -792,8 +792,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		return;
 
 	if (buffer[*i] != '\'' && buffer[*i] != '"')
-		@throw [OFMalformedXMLException newWithClass: isa
-						      parser: self];
+		@throw [OFMalformedXMLException exceptionWithClass: isa
+							    parser: self];
 
 	delimiter = buffer[*i];
 	state = OF_XMLPARSER_IN_ATTR_VALUE;
@@ -852,8 +852,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		*last = *i + 1;
 		state = OF_XMLPARSER_OUTSIDE_TAG;
 	} else
-		@throw [OFMalformedXMLException newWithClass: isa
-						      parser: self];
+		@throw [OFMalformedXMLException exceptionWithClass: isa
+							    parser: self];
 }
 
 /* Expecting closing '>' or space */
@@ -866,8 +866,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		state = OF_XMLPARSER_OUTSIDE_TAG;
 	} else if (buffer[*i] != ' ' && buffer[*i] != '\t' &&
 	    buffer[*i] != '\n' && buffer[*i] != '\r' && buffer[*i] != '\f')
-		@throw [OFMalformedXMLException newWithClass: isa
-						      parser: self];
+		@throw [OFMalformedXMLException exceptionWithClass: isa
+							    parser: self];
 }
 
 /* In <! */
@@ -876,8 +876,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				     last: (size_t*)last
 {
 	if (finishedParsing && buffer[*i] != '-')
-		@throw [OFMalformedXMLException newWithClass: isa
-						      parser: self];
+		@throw [OFMalformedXMLException exceptionWithClass: isa
+							    parser: self];
 
 	if (buffer[*i] == '-')
 		state = OF_XMLPARSER_IN_COMMENT_OPENING;
@@ -888,8 +888,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		state = OF_XMLPARSER_IN_DOCTYPE;
 		level = 0;
 	} else
-		@throw [OFMalformedXMLException newWithClass: isa
-						      parser: self];
+		@throw [OFMalformedXMLException exceptionWithClass: isa
+							    parser: self];
 
 	*last = *i + 1;
 }
@@ -900,8 +900,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				  last: (size_t*)last
 {
 	if (buffer[*i] != "CDATA["[level])
-		@throw [OFMalformedXMLException newWithClass: isa
-						      parser: self];
+		@throw [OFMalformedXMLException exceptionWithClass: isa
+							    parser: self];
 
 	if (++level == 6) {
 		state = OF_XMLPARSER_IN_CDATA_1;
@@ -960,8 +960,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				    last: (size_t*)last
 {
 	if (buffer[*i] != '-')
-		@throw [OFMalformedXMLException newWithClass: isa
-						      parser: self];
+		@throw [OFMalformedXMLException exceptionWithClass: isa
+							    parser: self];
 
 	*last = *i + 1;
 	state = OF_XMLPARSER_IN_COMMENT_1;
@@ -989,8 +989,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	OFString *comment;
 
 	if (buffer[*i] != '>')
-		@throw [OFMalformedXMLException newWithClass: isa
-						      parser: self];
+		@throw [OFMalformedXMLException exceptionWithClass: isa
+							    parser: self];
 
 	pool = [[OFAutoreleasePool alloc] init];
 
@@ -1016,8 +1016,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	if ((level < 6 && buffer[*i] != "OCTYPE"[level]) ||
 	    (level == 6 && buffer[*i] != ' ' && buffer[*i] != '\t' &&
 	    buffer[*i] != '\n' && buffer[*i] != '\r' && buffer[*i] != '\f'))
-		@throw [OFMalformedXMLException newWithClass: isa
-						      parser: self];
+		@throw [OFMalformedXMLException exceptionWithClass: isa
+							    parser: self];
 
 	if (level < 7 || buffer[*i] == '<')
 		level++;

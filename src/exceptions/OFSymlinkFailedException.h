@@ -39,9 +39,9 @@
  * \param dest The destination for the symlink
  * \return A new symlink failed exception
  */
-+   newWithClass: (Class)class_
-      sourcePath: (OFString*)src
- destinationPath: (OFString*)dest;
++ exceptionWithClass: (Class)class_
+	  sourcePath: (OFString*)src
+     destinationPath: (OFString*)dest;
 
 /**
  * Initializes an already allocated symlink failed exception.

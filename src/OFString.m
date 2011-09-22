@@ -498,13 +498,13 @@ of_utf16_string_length(const uint16_t *string)
 			case 1:
 				if (encoding == OF_STRING_ENCODING_ASCII)
 					@throw [OFInvalidEncodingException
-					    newWithClass: isa];
+					    exceptionWithClass: isa];
 
 				s->UTF8 = YES;
 				break;
 			case -1:
 				@throw [OFInvalidEncodingException
-				    newWithClass: isa];
+				    exceptionWithClass: isa];
 			}
 
 			memcpy(s->cString, cString, cStringLength);
@@ -532,7 +532,7 @@ of_utf16_string_length(const uint16_t *string)
 
 				if (bytes == 0)
 					@throw [OFInvalidEncodingException
-					    newWithClass: isa];
+					    exceptionWithClass: isa];
 
 				s->cStringLength += bytes - 1;
 				s->cString = [self
@@ -556,7 +556,8 @@ of_utf16_string_length(const uint16_t *string)
 			table = of_windows_1252;
 			break;
 		default:
-			@throw [OFInvalidEncodingException newWithClass: isa];
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: isa];
 		}
 
 		for (i = j = 0; i < cStringLength; i++) {
@@ -573,7 +574,7 @@ of_utf16_string_length(const uint16_t *string)
 
 			if (character == 0xFFFD)
 				@throw [OFInvalidEncodingException
-				    newWithClass: isa];
+				    exceptionWithClass: isa];
 
 			s->UTF8 = YES;
 			characterBytes = of_string_unicode_to_utf8(character,
@@ -581,7 +582,7 @@ of_utf16_string_length(const uint16_t *string)
 
 			if (characterBytes == 0)
 				@throw [OFInvalidEncodingException
-				    newWithClass: isa];
+				    exceptionWithClass: isa];
 
 			s->cStringLength += characterBytes - 1;
 			s->cString = [self resizeMemory: s->cString
@@ -712,7 +713,7 @@ of_utf16_string_length(const uint16_t *string)
 				break;
 			default:
 				@throw [OFInvalidEncodingException
-				    newWithClass: isa];
+				    exceptionWithClass: isa];
 			}
 		}
 
@@ -723,7 +724,6 @@ of_utf16_string_length(const uint16_t *string)
 						 toSize: s->cStringLength + 1];
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only tried to make it smaller */
-			[e release];
 		}
 	} @catch (id e) {
 		[self release];
@@ -792,14 +792,14 @@ of_utf16_string_length(const uint16_t *string)
 			/* Missing high surrogate */
 			if ((character & 0xFC00) == 0xDC00)
 				@throw [OFInvalidEncodingException
-				    newWithClass: isa];
+				    exceptionWithClass: isa];
 
 			if ((character & 0xFC00) == 0xD800) {
 				uint16_t nextCharacter;
 
 				if (length <= i + 1)
 					@throw [OFInvalidEncodingException
-					    newWithClass: isa];
+					    exceptionWithClass: isa];
 
 				nextCharacter = (swap
 				    ? of_bswap16(string[i + 1])
@@ -845,7 +845,7 @@ of_utf16_string_length(const uint16_t *string)
 				break;
 			default:
 				@throw [OFInvalidEncodingException
-				    newWithClass: isa];
+				    exceptionWithClass: isa];
 			}
 		}
 
@@ -856,7 +856,6 @@ of_utf16_string_length(const uint16_t *string)
 						 toSize: s->cStringLength + 1];
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only tried to make it smaller */
-			[e release];
 		}
 	} @catch (id e) {
 		[self release];
@@ -888,15 +887,17 @@ of_utf16_string_length(const uint16_t *string)
 		int cStringLength;
 
 		if (format == nil)
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
 
 		s = [self allocMemoryWithSize: sizeof(*s)];
 		memset(s, 0, sizeof(*s));
 
 		if ((cStringLength = of_vasprintf(&s->cString,
 		    [format UTF8String], arguments)) == -1)
-			@throw [OFInvalidFormatException newWithClass: isa];
+			@throw [OFInvalidFormatException
+			    exceptionWithClass: isa];
 
 		s->cStringLength = cStringLength;
 
@@ -908,12 +909,13 @@ of_utf16_string_length(const uint16_t *string)
 				break;
 			case -1:
 				@throw [OFInvalidEncodingException
-				    newWithClass: isa];
+				    exceptionWithClass: isa];
 			}
 
 			[self addMemoryToPool: s->cString];
 		} @catch (id e) {
 			free(s->cString);
+			@throw e;
 		}
 	} @catch (id e) {
 		[self release];
@@ -1015,12 +1017,13 @@ of_utf16_string_length(const uint16_t *string)
 
 		if (stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 		    &st) == -1)
-			@throw [OFOpenFileFailedException newWithClass: isa
-								  path: path
-								  mode: @"rb"];
+			@throw [OFOpenFileFailedException
+			    exceptionWithClass: isa
+					  path: path
+					  mode: @"rb"];
 
 		if (st.st_size > SIZE_MAX)
-			@throw [OFOutOfRangeException newWithClass: isa];
+			@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 		file = [[OFFile alloc] initWithPath: path
 					       mode: @"rb"];
@@ -1081,9 +1084,9 @@ of_utf16_string_length(const uint16_t *string)
 
 	if ([result statusCode] != 200)
 		@throw [OFHTTPRequestFailedException
-		    newWithClass: [request class]
-		     HTTPRequest: request
-			  result: result];
+		    exceptionWithClass: [request class]
+			   HTTPRequest: request
+				result: result];
 
 	if (encoding == OF_STRING_ENCODING_AUTODETECT &&
 	    (contentType = [[result headers] objectForKey: @"Content-Type"])) {
@@ -1118,8 +1121,9 @@ of_utf16_string_length(const uint16_t *string)
 
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
 
 		self = [self initWithString: [element stringValue]];
 
@@ -1144,12 +1148,13 @@ of_utf16_string_length(const uint16_t *string)
 		return s->cString;
 	case OF_STRING_ENCODING_ASCII:
 		if (s->UTF8)
-			@throw [OFInvalidEncodingException newWithClass: isa];
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: isa];
 
 		return s->cString;
 	default:
-		@throw [OFNotImplementedException newWithClass: isa
-						      selector: _cmd];
+		@throw [OFNotImplementedException exceptionWithClass: isa
+							    selector: _cmd];
 	}
 }
 
@@ -1170,12 +1175,13 @@ of_utf16_string_length(const uint16_t *string)
 		return s->cStringLength;
 	case OF_STRING_ENCODING_ASCII:
 		if (s->UTF8)
-			@throw [OFInvalidEncodingException newWithClass: isa];
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: isa];
 
 		return s->cStringLength;
 	default:
-		@throw [OFNotImplementedException newWithClass: isa
-						      selector: _cmd];
+		@throw [OFNotImplementedException exceptionWithClass: isa
+							    selector: _cmd];
 	}
 }
 
@@ -1215,8 +1221,8 @@ of_utf16_string_length(const uint16_t *string)
 	int compare;
 
 	if (![object isKindOfClass: [OFString class]])
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	otherString = object;
 	otherCStringLength = [otherString UTF8StringLength];
@@ -1245,8 +1251,8 @@ of_utf16_string_length(const uint16_t *string)
 	int compare;
 
 	if (![otherString isKindOfClass: [OFString class]])
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	otherCString = [otherString UTF8String];
 	otherCStringLength = [otherString UTF8StringLength];
@@ -1282,7 +1288,8 @@ of_utf16_string_length(const uint16_t *string)
 		    otherCStringLength - j, &c2);
 
 		if (l1 == 0 || l2 == 0 || c1 > 0x10FFFF || c2 > 0x10FFFF)
-			@throw [OFInvalidEncodingException newWithClass: isa];
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: isa];
 
 		if (c1 >> 8 < OF_UNICODE_CASEFOLDING_TABLE_SIZE) {
 			of_unichar_t tc =
@@ -1362,7 +1369,7 @@ of_utf16_string_length(const uint16_t *string)
 	of_unichar_t character;
 
 	if (index >= s->length)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	if (!s->UTF8)
 		return s->cString[index];
@@ -1372,7 +1379,7 @@ of_utf16_string_length(const uint16_t *string)
 
 	if (!of_string_utf8_to_unicode(s->cString + index,
 	    s->cStringLength - index, &character))
-		@throw [OFInvalidEncodingException newWithClass: isa];
+		@throw [OFInvalidEncodingException exceptionWithClass: isa];
 
 	return character;
 }
@@ -1441,7 +1448,7 @@ of_utf16_string_length(const uint16_t *string)
 	size_t end = range.start + range.length;
 
 	if (end > s->length)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	if (s->UTF8) {
 		start = of_string_index_to_position(s->cString, start,
@@ -1747,7 +1754,7 @@ of_utf16_string_length(const uint16_t *string)
 			    cString[i] != '\n' && cString[i] != '\r' &&
 			    cString[i] != '\f')
 				@throw [OFInvalidFormatException
-				    newWithClass: isa];
+				    exceptionWithClass: isa];
 			continue;
 		}
 
@@ -1755,7 +1762,7 @@ of_utf16_string_length(const uint16_t *string)
 			if (INTMAX_MAX / 10 < value ||
 			    INTMAX_MAX - value * 10 < cString[i] - '0')
 				@throw [OFOutOfRangeException
-				    newWithClass: isa];
+				    exceptionWithClass: isa];
 
 			value = (value * 10) + (cString[i] - '0');
 		} else if (cString[i] == ' ' || cString[i] == '\t' ||
@@ -1763,7 +1770,8 @@ of_utf16_string_length(const uint16_t *string)
 		    cString[i] == '\f')
 			expectWhitespace = YES;
 		else
-			@throw [OFInvalidFormatException newWithClass: isa];
+			@throw [OFInvalidFormatException
+			    exceptionWithClass: isa];
 	}
 
 	if (cString[0] == '-')
@@ -1802,7 +1810,7 @@ of_utf16_string_length(const uint16_t *string)
 			    cString[i] != '\n' && cString[i] != '\r' &&
 			    cString[i] != '\f')
 				@throw [OFInvalidFormatException
-				    newWithClass: isa];
+				    exceptionWithClass: isa];
 			continue;
 		}
 
@@ -1821,16 +1829,17 @@ of_utf16_string_length(const uint16_t *string)
 			expectWhitespace = YES;
 			continue;
 		} else
-			@throw [OFInvalidFormatException newWithClass: isa];
+			@throw [OFInvalidFormatException
+			    exceptionWithClass: isa];
 
 		if (newValue < value)
-			@throw [OFOutOfRangeException newWithClass: isa];
+			@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 		value = newValue;
 	}
 
 	if (!foundValue)
-		@throw [OFInvalidFormatException newWithClass: isa];
+		@throw [OFInvalidFormatException exceptionWithClass: isa];
 
 	return value;
 }
@@ -1854,7 +1863,7 @@ of_utf16_string_length(const uint16_t *string)
 			    *endPointer != '\n' && *endPointer != '\r' &&
 			    *endPointer != '\f')
 				@throw [OFInvalidFormatException
-				    newWithClass: isa];
+				    exceptionWithClass: isa];
 
 	return value;
 }
@@ -1878,7 +1887,7 @@ of_utf16_string_length(const uint16_t *string)
 			    *endPointer != '\n' && *endPointer != '\r' &&
 			    *endPointer != '\f')
 				@throw [OFInvalidFormatException
-				    newWithClass: isa];
+				    exceptionWithClass: isa];
 
 	return value;
 }
@@ -1905,7 +1914,8 @@ of_utf16_string_length(const uint16_t *string)
 		    s->cStringLength - i, &c);
 
 		if (cLen == 0 || c > 0x10FFFF)
-			@throw [OFInvalidEncodingException newWithClass: isa];
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: isa];
 
 		ret[j++] = c;
 		i += cLen;

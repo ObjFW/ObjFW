@@ -38,9 +38,9 @@
  * \param mode A string with the mode in which the file should have been opened
  * \return A new open file failed exception
  */
-+ newWithClass: (Class)class_
-	  path: (OFString*)path
-	  mode: (OFString*)mode;
++ exceptionWithClass: (Class)class_
+		path: (OFString*)path
+		mode: (OFString*)mode;
 
 /**
  * Initializes an already allocated open file failed exception.

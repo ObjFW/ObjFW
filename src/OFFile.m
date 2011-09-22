@@ -232,8 +232,9 @@ of_log(OFConstantString *format, ...)
 #else
 	if (mkdir([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
 #endif
-		@throw [OFCreateDirectoryFailedException newWithClass: self
-								 path: path];
+		@throw [OFCreateDirectoryFailedException
+		    exceptionWithClass: self
+				  path: path];
 }
 
 + (OFArray*)filesInDirectoryAtPath: (OFString*)path
@@ -247,8 +248,8 @@ of_log(OFConstantString *format, ...)
 
 	if ((dir = opendir([path cStringWithEncoding:
 	    OF_STRING_ENCODING_NATIVE])) == NULL)
-		@throw [OFOpenFileFailedException newWithClass: self
-							  path: path
+		@throw [OFOpenFileFailedException exceptionWithClass: self
+								path: path
 							  mode: @"r"];
 
 	@try {
@@ -282,9 +283,9 @@ of_log(OFConstantString *format, ...)
 
 	if ((handle = FindFirstFile([path cString], &fd)) ==
 	    INVALID_HANDLE_VALUE)
-		@throw [OFOpenFileFailedException newWithClass: self
-							  path: path
-							  mode: @"r"];
+		@throw [OFOpenFileFailedException exceptionWithClass: self
+								path: path
+								mode: @"r"];
 
 	@try {
 		OFAutoreleasePool *pool2 = [[OFAutoreleasePool alloc] init];
@@ -318,8 +319,9 @@ of_log(OFConstantString *format, ...)
 + (void)changeToDirectory: (OFString*)path
 {
 	if (chdir([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
-		@throw [OFChangeDirectoryFailedException newWithClass: self
-								 path: path];
+		@throw [OFChangeDirectoryFailedException
+		    exceptionWithClass: self
+				  path: path];
 }
 
 #ifndef _PSP
@@ -328,16 +330,18 @@ of_log(OFConstantString *format, ...)
 {
 # ifndef _WIN32
 	if (chmod([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE], mode))
-		@throw [OFChangeFileModeFailedException newWithClass: self
-								path: path
-								mode: mode];
+		@throw [OFChangeFileModeFailedException
+		    exceptionWithClass: self
+				  path: path
+				  mode: mode];
 # else
 	DWORD attributes = GetFileAttributes([path cString]);
 
 	if (attributes == INVALID_FILE_ATTRIBUTES)
-		@throw [OFChangeFileModeFailedException newWithClass: self
-								path: path
-								mode: mode];
+		@throw [OFChangeFileModeFailedException
+		    exceptionWithClass: self
+				  path: path
+				  mode: mode];
 
 	if ((mode / 100) & 2)
 		attributes &= ~FILE_ATTRIBUTE_READONLY;
@@ -345,9 +349,10 @@ of_log(OFConstantString *format, ...)
 		attributes |= FILE_ATTRIBUTE_READONLY;
 
 	if (!SetFileAttributes([path cString], attributes))
-		@throw [OFChangeFileModeFailedException newWithClass: self
-								path: path
-								mode: mode];
+		@throw [OFChangeFileModeFailedException
+		    exceptionWithClass: self
+				  path: path
+				  mode: mode];
 # endif
 }
 #endif
@@ -359,9 +364,9 @@ of_log(OFConstantString *format, ...)
 	if (stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    &s) == -1)
 		/* FIXME: Maybe use another exception? */
-		@throw [OFOpenFileFailedException newWithClass: self
-							  path: path
-							  mode: @"r"];
+		@throw [OFOpenFileFailedException exceptionWithClass: self
+								path: path
+								mode: @"r"];
 
 	/* FIXME: We could be more precise on some OSes */
 	return [OFDate dateWithTimeIntervalSince1970: s.st_mtime];
@@ -376,8 +381,8 @@ of_log(OFConstantString *format, ...)
 	gid_t gid = -1;
 
 	if (owner == nil && group == nil)
-		@throw [OFInvalidArgumentException newWithClass: self
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: self
+							     selector: _cmd];
 
 # ifdef OF_THREADS
 	[mutex lock];
@@ -390,10 +395,10 @@ of_log(OFConstantString *format, ...)
 			if ((passwd = getpwnam([owner cStringWithEncoding:
 			    OF_STRING_ENCODING_NATIVE])) == NULL)
 				@throw [OFChangeFileOwnerFailedException
-				    newWithClass: self
-					    path: path
-					   owner: owner
-					   group: group];
+				    exceptionWithClass: self
+						  path: path
+						 owner: owner
+						 group: group];
 
 			uid = passwd->pw_uid;
 		}
@@ -404,10 +409,10 @@ of_log(OFConstantString *format, ...)
 			if ((group_ = getgrnam([group cStringWithEncoding:
 			    OF_STRING_ENCODING_NATIVE])) == NULL)
 				@throw [OFChangeFileOwnerFailedException
-				    newWithClass: self
-					    path: path
-					   owner: owner
-					   group: group];
+				    exceptionWithClass: self
+						  path: path
+						 owner: owner
+						 group: group];
 
 			gid = group_->gr_gid;
 		}
@@ -419,10 +424,11 @@ of_log(OFConstantString *format, ...)
 
 	if (chown([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    uid, gid))
-		@throw [OFChangeFileOwnerFailedException newWithClass: self
-								 path: path
-								owner: owner
-								group: group];
+		@throw [OFChangeFileOwnerFailedException
+		    exceptionWithClass: self
+				  path: path
+				 owner: owner
+				 group: group];
 }
 #endif
 
@@ -444,8 +450,8 @@ of_log(OFConstantString *format, ...)
 	override = [self fileExistsAtPath: destination];
 
 	if ((buffer = malloc(of_pagesize)) == NULL)
-		@throw [OFOutOfMemoryException newWithClass: self
-					      requestedSize: of_pagesize];
+		@throw [OFOutOfMemoryException exceptionWithClass: self
+						    requestedSize: of_pagesize];
 
 	@try {
 		sourceFile = [OFFile fileWithPath: source
@@ -496,9 +502,10 @@ of_log(OFConstantString *format, ...)
 	if (!MoveFile([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    [destination cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
 #endif
-		@throw [OFRenameFileFailedException newWithClass: self
-						      sourcePath: source
-						 destinationPath: destination];
+		@throw [OFRenameFileFailedException
+		    exceptionWithClass: self
+			    sourcePath: source
+		       destinationPath: destination];
 
 	[pool release];
 }
@@ -510,15 +517,16 @@ of_log(OFConstantString *format, ...)
 #else
 	if (!DeleteFile([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
 #endif
-		@throw [OFDeleteFileFailedException newWithClass: self
-							    path: path];
+		@throw [OFDeleteFileFailedException exceptionWithClass: self
+								  path: path];
 }
 
 + (void)deleteDirectoryAtPath: (OFString*)path
 {
 	if (rmdir([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
-		@throw [OFDeleteDirectoryFailedException newWithClass: self
-								 path: path];
+		@throw [OFDeleteDirectoryFailedException
+		    exceptionWithClass: self
+				  path: path];
 }
 
 #ifndef _WIN32
@@ -535,9 +543,9 @@ of_log(OFConstantString *format, ...)
 
 	if (link([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    [destination cStringWithEncoding: OF_STRING_ENCODING_NATIVE]) != 0)
-		@throw [OFLinkFailedException newWithClass: self
-						sourcePath: source
-					   destinationPath: destination];
+		@throw [OFLinkFailedException exceptionWithClass: self
+						      sourcePath: source
+						 destinationPath: destination];
 
 	[pool release];
 }
@@ -557,9 +565,10 @@ of_log(OFConstantString *format, ...)
 
 	if (symlink([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    [destination cStringWithEncoding: OF_STRING_ENCODING_NATIVE]) != 0)
-		@throw [OFSymlinkFailedException newWithClass: self
-						   sourcePath: source
-					      destinationPath: destination];
+		@throw [OFSymlinkFailedException
+		    exceptionWithClass: self
+			    sourcePath: source
+		       destinationPath: destination];
 
 	[pool release];
 }
@@ -569,8 +578,8 @@ of_log(OFConstantString *format, ...)
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithPath: (OFString*)path
@@ -583,14 +592,16 @@ of_log(OFConstantString *format, ...)
 
 		if ((flags = parse_mode([mode cStringWithEncoding:
 		    OF_STRING_ENCODING_NATIVE])) == -1)
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
 
 		if ((fileDescriptor = open([path cStringWithEncoding:
 		    OF_STRING_ENCODING_NATIVE], flags, DEFAULT_MODE)) == -1)
-			@throw [OFOpenFileFailedException newWithClass: isa
-								  path: path
-								  mode: mode];
+			@throw [OFOpenFileFailedException
+			    exceptionWithClass: isa
+					  path: path
+					  mode: mode];
 
 		closable = YES;
 	} @catch (id e) {
@@ -624,9 +635,9 @@ of_log(OFConstantString *format, ...)
 	size_t ret;
 
 	if (fileDescriptor == -1 || atEndOfStream)
-		@throw [OFReadFailedException newWithClass: isa
-						    stream: self
-					   requestedLength: length];
+		@throw [OFReadFailedException exceptionWithClass: isa
+							  stream: self
+						 requestedLength: length];
 
 	if ((ret = read(fileDescriptor, buffer, length)) == 0)
 		atEndOfStream = YES;
@@ -639,18 +650,18 @@ of_log(OFConstantString *format, ...)
 {
 	if (fileDescriptor == -1 || atEndOfStream ||
 	    write(fileDescriptor, buffer, length) < length)
-		@throw [OFWriteFailedException newWithClass: isa
-						     stream: self
-					    requestedLength: length];
+		@throw [OFWriteFailedException exceptionWithClass: isa
+							   stream: self
+						  requestedLength: length];
 }
 
 - (void)_seekToOffset: (off_t)offset
 {
 	if (lseek(fileDescriptor, offset, SEEK_SET) == -1)
-		@throw [OFSeekFailedException newWithClass: isa
-						    stream: self
-						    offset: offset
-						    whence: SEEK_SET];
+		@throw [OFSeekFailedException exceptionWithClass: isa
+							  stream: self
+							  offset: offset
+							  whence: SEEK_SET];
 }
 
 - (off_t)_seekForwardWithOffset: (off_t)offset
@@ -658,10 +669,10 @@ of_log(OFConstantString *format, ...)
 	off_t ret;
 
 	if ((ret = lseek(fileDescriptor, offset, SEEK_CUR)) == -1)
-		@throw [OFSeekFailedException newWithClass: isa
-						    stream: self
-						    offset: offset
-						    whence: SEEK_CUR];
+		@throw [OFSeekFailedException exceptionWithClass: isa
+							  stream: self
+							  offset: offset
+							  whence: SEEK_CUR];
 
 	return ret;
 }
@@ -671,10 +682,10 @@ of_log(OFConstantString *format, ...)
 	off_t ret;
 
 	if ((ret = lseek(fileDescriptor, offset, SEEK_END)) == -1)
-		@throw [OFSeekFailedException newWithClass: isa
-						    stream: self
-						    offset: offset
-						    whence: SEEK_END];
+		@throw [OFSeekFailedException exceptionWithClass: isa
+							  stream: self
+							  offset: offset
+							  whence: SEEK_END];
 
 	return ret;
 }
@@ -707,8 +718,8 @@ of_log(OFConstantString *format, ...)
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - autorelease
@@ -732,26 +743,26 @@ of_log(OFConstantString *format, ...)
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 	[super dealloc];	/* Get rid of stupid warning */
 }
 
 - (void)_seekToOffset: (off_t)offset
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (off_t)_seekForwardWithOffset: (off_t)offset
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (off_t)_seekToOffsetRelativeToEnd: (off_t)offset
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 @end

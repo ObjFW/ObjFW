@@ -23,19 +23,19 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFMalformedXMLException
-+ newWithClass: (Class)class_
-	parser: (OFXMLParser*)parser
++ exceptionWithClass: (Class)class_
+	      parser: (OFXMLParser*)parser
 {
-	return [[self alloc] initWithClass: class_
-				    parser: parser];
+	return [[[self alloc] initWithClass: class_
+				     parser: parser] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithClass: (Class)class_

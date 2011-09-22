@@ -25,21 +25,21 @@
 #import "common.h"
 
 @implementation OFReadOrWriteFailedException
-+    newWithClass: (Class)class_
-	   stream: (OFStream*)stream
-  requestedLength: (size_t)length
++ exceptionWithClass: (Class)class_
+	      stream: (OFStream*)stream
+     requestedLength: (size_t)length
 {
-	return [[self alloc] initWithClass: class_
-				    stream: stream
-			   requestedLength: length];
+	return [[[self alloc] initWithClass: class_
+				     stream: stream
+			    requestedLength: length] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 -   initWithClass: (Class)class_

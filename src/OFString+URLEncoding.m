@@ -43,8 +43,8 @@ int _OFString_URLEncoding_reference;
 	 */
 	if ((retCString = malloc(([self UTF8StringLength] * 3) + 1)) == NULL)
 		@throw [OFOutOfMemoryException
-		    newWithClass: isa
-		   requestedSize: ([self UTF8StringLength] * 3) + 1];
+		    exceptionWithClass: isa
+			 requestedSize: ([self UTF8StringLength] * 3) + 1];
 
 	for (i = 0; *string != '\0'; string++) {
 		if (isalnum((int)*string) || *string == '-' || *string == '_' ||
@@ -85,8 +85,8 @@ int _OFString_URLEncoding_reference;
 
 	if ((retCString = malloc([self UTF8StringLength] + 1)) == NULL)
 		@throw [OFOutOfMemoryException
-		    newWithClass: isa
-		   requestedSize: [self UTF8StringLength] + 1];
+		    exceptionWithClass: isa
+			 requestedSize: [self UTF8StringLength] + 1];
 
 	for (i = 0; *string; string++) {
 		switch (state) {
@@ -111,7 +111,7 @@ int _OFString_URLEncoding_reference;
 			else {
 				free(retCString);
 				@throw [OFInvalidEncodingException
-				    newWithClass: isa];
+				    exceptionWithClass: isa];
 			}
 
 			if (++state == 3) {
@@ -127,7 +127,7 @@ int _OFString_URLEncoding_reference;
 
 	if (state != 0) {
 		free(retCString);
-		@throw [OFInvalidEncodingException newWithClass: isa];
+		@throw [OFInvalidEncodingException exceptionWithClass: isa];
 	}
 
 	@try {

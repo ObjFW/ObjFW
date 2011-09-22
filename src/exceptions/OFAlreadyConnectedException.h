@@ -36,8 +36,8 @@
  * \param socket The socket which is already connected
  * \return A new already connected exception
  */
-+ newWithClass: (Class)class_
-	socket: (OFTCPSocket*)socket;
++ exceptionWithClass: (Class)class_
+	      socket: (OFTCPSocket*)socket;
 
 /**
  * Initializes an already allocated already connected exception.

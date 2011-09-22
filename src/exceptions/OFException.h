@@ -23,9 +23,6 @@
  *
  * The OFException class is the base class for all exceptions in ObjFW, except
  * the OFAllocFailedException.
- *
- * IMPORTANT: Exceptions do NOT use OFAutoreleasePools and can't be autoreleased
- * either! You have to make sure to dealloc the exception in your \@catch block!
  */
 @interface OFException: OFObject
 {
@@ -43,7 +40,7 @@
  * \param class_ The class of the object which caused the exception
  * \return A new exception
  */
-+ newWithClass: (Class)class_;
++ exceptionWithClass: (Class)class_;
 
 /**
  * Initializes an already allocated OFException.

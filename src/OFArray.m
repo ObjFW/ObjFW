@@ -105,8 +105,8 @@ static struct {
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 	[super dealloc];	/* Get rid of a stupid warning */
 }
 @end
@@ -171,8 +171,8 @@ static struct {
 	if (isa == [OFArray class]) {
 		Class c = isa;
 		[self release];
-		@throw [OFNotImplementedException newWithClass: c
-						      selector: _cmd];
+		@throw [OFNotImplementedException exceptionWithClass: c
+							    selector: _cmd];
 	}
 
 	return [super init];
@@ -201,24 +201,24 @@ static struct {
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithArray: (OFArray*)array
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithCArray: (id*)objects
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithCArray: (id*)objects
@@ -226,22 +226,22 @@ static struct {
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithSerialization: (OFXMLElement*)element
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - (size_t)count
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (void)getObjects: (id*)buffer
@@ -282,8 +282,8 @@ static struct {
 
 - (id)objectAtIndex: (size_t)index
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (size_t)indexOfObject: (id)object
@@ -531,7 +531,7 @@ static struct {
 	size_t count = [self count];
 
 	if (count > INT_MAX)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	if (state->state >= count)
 		return 0;
@@ -668,8 +668,9 @@ static struct {
 - (id)nextObject
 {
 	if (mutationsPtr != NULL && *mutationsPtr != mutations)
-		@throw [OFEnumerationMutationException newWithClass: isa
-							     object: array];
+		@throw [OFEnumerationMutationException
+		    exceptionWithClass: isa
+				object: array];
 
 	if (position < count)
 		return [array objectAtIndex: position++];
@@ -680,8 +681,9 @@ static struct {
 - (void)reset
 {
 	if (mutationsPtr != NULL && *mutationsPtr != mutations)
-		@throw [OFEnumerationMutationException newWithClass: isa
-							     object: array];
+		@throw [OFEnumerationMutationException
+		    exceptionWithClass: isa
+				object: array];
 
 	position = 0;
 }

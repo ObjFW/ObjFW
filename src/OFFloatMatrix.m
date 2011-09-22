@@ -68,8 +68,8 @@ static Class floatVector = Nil;
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithRows: (size_t)rows_
@@ -83,13 +83,13 @@ static Class floatVector = Nil;
 
 		if (SIZE_MAX / rows < columns ||
 		    SIZE_MAX / rows * columns < sizeof(float))
-			@throw [OFOutOfRangeException
-			    newWithClass: isa];
+			@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 		if ((data = malloc(rows * columns * sizeof(float))) == NULL)
 			@throw [OFOutOfMemoryException
-			     newWithClass: isa
-			    requestedSize: rows * columns * sizeof(float)];
+			     exceptionWithClass: isa
+				  requestedSize: rows * columns *
+						 sizeof(float)];
 
 		memset(data, 0, rows * columns * sizeof(float));
 
@@ -139,12 +139,13 @@ static Class floatVector = Nil;
 
 		if (SIZE_MAX / rows < columns ||
 		    SIZE_MAX / rows * columns < sizeof(float))
-			@throw [OFOutOfRangeException newWithClass: isa];
+			@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 		if ((data = malloc(rows * columns * sizeof(float))) == NULL)
 			@throw [OFOutOfMemoryException
-			     newWithClass: isa
-			    requestedSize: rows * columns * sizeof(float)];
+			     exceptionWithClass: isa
+				  requestedSize: rows * columns *
+						 sizeof(float)];
 
 		for (i = 0; i < rows; i++) {
 			size_t j;
@@ -173,7 +174,7 @@ static Class floatVector = Nil;
 	  column: (size_t)column
 {
 	if (row >= rows || column >= columns)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	data[row * columns + column] = value;
 }
@@ -182,7 +183,7 @@ static Class floatVector = Nil;
 	      column: (size_t)column
 {
 	if (row >= rows || column >= columns)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	return data[row * columns + column];
 }
@@ -294,8 +295,8 @@ static Class floatVector = Nil;
 
 	if (matrix->isa != isa || matrix->rows != rows ||
 	    matrix->columns != columns)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	for (i = 0; i < rows * columns; i++)
 		data[i] += matrix->data[i];
@@ -307,8 +308,8 @@ static Class floatVector = Nil;
 
 	if (matrix->isa != isa || matrix->rows != rows ||
 	    matrix->columns != columns)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	for (i = 0; i < rows * columns; i++)
 		data[i] -= matrix->data[i];
@@ -337,13 +338,14 @@ static Class floatVector = Nil;
 	size_t i, base1, base2;
 
 	if (rows != matrix->columns)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	if ((newData = malloc(matrix->rows * columns * sizeof(float))) == NULL)
 		@throw [OFOutOfMemoryException
-		     newWithClass: isa
-		    requestedSize: matrix->rows * columns * sizeof(float)];
+		     exceptionWithClass: isa
+			  requestedSize: matrix->rows * columns *
+					 sizeof(float)];
 
 	base1 = 0;
 	base2 = 0;
@@ -384,9 +386,9 @@ static Class floatVector = Nil;
 	size_t i, k;
 
 	if ((newData = malloc(rows * columns * sizeof(float))) == NULL)
-		@throw [OFOutOfMemoryException newWithClass: isa
-					      requestedSize: rows * columns *
-							     sizeof(float)];
+		@throw [OFOutOfMemoryException
+		    exceptionWithClass: isa
+			 requestedSize: rows * columns * sizeof(float)];
 
 	rows ^= columns;
 	columns ^= rows;
@@ -410,8 +412,8 @@ static Class floatVector = Nil;
 
 	if (rows != columns || vector->isa != floatVector ||
 	    vector->dimension != rows - 1)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	cArray = [vector cArray];
 	translation = [[OFFloatMatrix alloc] initWithRows: rows
@@ -435,8 +437,8 @@ static Class floatVector = Nil;
 
 	if (rows != 4 || columns != 4 || vector->isa != floatVector ||
 	    vector->dimension != 3)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	n[0] = vector->data[0];
 	n[1] = vector->data[1];
@@ -484,8 +486,8 @@ static Class floatVector = Nil;
 
 	if (rows != columns || vector->isa != floatVector ||
 	    vector->dimension != rows - 1)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	cArray = [vector cArray];
 	scale = [[OFFloatMatrix alloc] initWithRows: rows

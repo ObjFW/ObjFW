@@ -35,8 +35,8 @@
  * \param hash The hash which has already been calculated
  * \return A new hash already calculated exception
  */
-+ newWithClass: (Class)class_
-	  hash: (OFHash*)hash;
++ exceptionWithClass: (Class)class_
+		hash: (OFHash*)hash;
 
 /**
  * Initializes an already allocated hash already calculated exception.

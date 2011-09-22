@@ -35,8 +35,8 @@
  * \param path The path of the file
  * \return A new delete file failed exception
  */
-+ newWithClass: (Class)class_
-	  path: (OFString*)path;
++ exceptionWithClass: (Class)class_
+		path: (OFString*)path;
 
 /**
  * Initializes an already allocated delete file failed exception.

@@ -76,7 +76,7 @@
 	id oldObject;
 
 	if (index >= [array count])
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	oldObject = cArray[index];
 	cArray[index] = [object retain];
@@ -151,7 +151,7 @@
 	size_t i, count = [array count];
 
 	if (nObjects > count)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	copy = [self allocMemoryForNItems: nObjects
 				   ofSize: sizeof(id)];
@@ -174,7 +174,7 @@
 	size_t i, count = [array count];
 
 	if (range.length > count - range.start)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	copy = [self allocMemoryForNItems: range.length
 				   ofSize: sizeof(id)];
@@ -237,8 +237,8 @@
 	for (i = 0; i < count && !stop; i++) {
 		if (mutations != mutations2)
 			@throw [OFEnumerationMutationException
-			    newWithClass: isa
-				  object: self];
+			    exceptionWithClass: isa
+					object: self];
 
 		block(cArray[i], i, &stop);
 	}
@@ -256,14 +256,15 @@
 
 		if (mutations != mutations2)
 			@throw [OFEnumerationMutationException
-			    newWithClass: isa
-				  object: self];
+			    exceptionWithClass: isa
+					object: self];
 
 		newObject = block(cArray[i], i, &stop);
 
 		if (newObject == nil)
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
 
 		[newObject retain];
 		[cArray[i] release];

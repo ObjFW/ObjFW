@@ -23,19 +23,19 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFSetOptionFailedException
-+ newWithClass: (Class)class_
-	stream: (OFStream*)stream
++ exceptionWithClass: (Class)class_
+	      stream: (OFStream*)stream
 {
-	return [[self alloc] initWithClass: class_
-				    stream: stream];
+	return [[[self alloc] initWithClass: class_
+				     stream: stream] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithClass: (Class)class_

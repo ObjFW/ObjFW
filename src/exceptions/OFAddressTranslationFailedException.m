@@ -23,13 +23,13 @@
 #import "common.h"
 
 @implementation OFAddressTranslationFailedException
-+ newWithClass: (Class)class_
-	socket: (OFTCPSocket*)socket
-	  host: (OFString*)host
++ exceptionWithClass: (Class)class_
+	      socket: (OFTCPSocket*)socket
+		host: (OFString*)host
 {
-	return [[self alloc] initWithClass: class_
-				    socket: socket
-				      host: host];
+	return [[[self alloc] initWithClass: class_
+				     socket: socket
+				       host: host] autorelease];
 }
 
 - initWithClass: (Class)class_

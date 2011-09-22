@@ -48,8 +48,9 @@ void *_OFConstantStringClassReference;
 		return;
 
 	if ((ivars = malloc(sizeof(*ivars))) == NULL)
-		@throw [OFOutOfMemoryException newWithClass: isa
-					      requestedSize: sizeof(*ivars)];
+		@throw [OFOutOfMemoryException
+		    exceptionWithClass: isa
+			 requestedSize: sizeof(*ivars)];
 	memset(ivars, 0, sizeof(*ivars));
 
 	ivars->cString = (char*)s;
@@ -62,7 +63,7 @@ void *_OFConstantStringClassReference;
 		break;
 	case -1:
 		free(ivars);
-		@throw [OFInvalidEncodingException newWithClass: isa];
+		@throw [OFInvalidEncodingException exceptionWithClass: isa];
 	}
 
 	s = ivars;
@@ -75,24 +76,24 @@ void *_OFConstantStringClassReference;
  */
 + alloc
 {
-	@throw [OFNotImplementedException newWithClass: self
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: self
+						    selector: _cmd];
 }
 
 - init
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithUTF8String: (const char*)UTF8String
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithUTF8String: (const char*)UTF8String
@@ -100,8 +101,8 @@ void *_OFConstantStringClassReference;
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithCString: (const char*)cString
@@ -109,8 +110,8 @@ void *_OFConstantStringClassReference;
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithCString: (const char*)cString
@@ -119,24 +120,24 @@ void *_OFConstantStringClassReference;
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithString: (OFString*)string
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithUnicodeString: (of_unichar_t*)string
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithUnicodeString: (of_unichar_t*)string
@@ -144,8 +145,8 @@ void *_OFConstantStringClassReference;
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithUnicodeString: (of_unichar_t*)string
@@ -153,8 +154,8 @@ void *_OFConstantStringClassReference;
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithUnicodeString: (of_unichar_t*)string
@@ -163,8 +164,8 @@ void *_OFConstantStringClassReference;
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithUTF16String: (uint16_t*)string
@@ -172,8 +173,8 @@ void *_OFConstantStringClassReference;
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithUTF16String: (uint16_t*)string
@@ -181,8 +182,8 @@ void *_OFConstantStringClassReference;
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithUTF16String: (uint16_t*)string
@@ -191,16 +192,16 @@ void *_OFConstantStringClassReference;
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithFormat: (OFConstantString*)format, ...
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithFormat: (OFConstantString*)format
@@ -208,16 +209,16 @@ void *_OFConstantStringClassReference;
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithPath: (OFString*)firstComponent, ...
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithPath: (OFString*)firstComponent
@@ -225,16 +226,16 @@ void *_OFConstantStringClassReference;
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithContentsOfFile: (OFString*)path
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithContentsOfFile: (OFString*)path
@@ -242,16 +243,16 @@ void *_OFConstantStringClassReference;
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithContentsOfURL: (OFURL*)URL
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithContentsOfURL: (OFURL*)URL
@@ -259,8 +260,8 @@ void *_OFConstantStringClassReference;
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 /* From protocol OFSerializing */
@@ -268,8 +269,8 @@ void *_OFConstantStringClassReference;
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 /*
@@ -278,42 +279,42 @@ void *_OFConstantStringClassReference;
  */
 - (void)addMemoryToPool: (void*)ptr
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (void*)allocMemoryWithSize: (size_t)size
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (void*)allocMemoryForNItems: (size_t)nitems
 		     withSize: (size_t)size
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (void*)resizeMemory: (void*)ptr
 	       toSize: (size_t)size
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (void*)resizeMemory: (void*)ptr
 	     toNItems: (size_t)nitems
 	     withSize: (size_t)size
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (void)freeMemory: (void*)ptr
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 /*
@@ -341,8 +342,8 @@ void *_OFConstantStringClassReference;
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 	[super dealloc];	/* Get rid of a stupid warning */
 }
 

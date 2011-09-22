@@ -24,19 +24,19 @@
 #import "common.h"
 
 @implementation OFInvalidArgumentException
-+ newWithClass: (Class)class_
-      selector: (SEL)selector_
++ exceptionWithClass: (Class)class_
+	    selector: (SEL)selector_
 {
-	return [[self alloc] initWithClass: class_
-				  selector: selector_];
+	return [[[self alloc] initWithClass: class_
+				   selector: selector_] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithClass: (Class)class_

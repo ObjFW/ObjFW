@@ -24,21 +24,21 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFHTTPRequestFailedException
-+ newWithClass: (Class)class_
-   HTTPRequest: (OFHTTPRequest*)request
-	result: (OFHTTPRequestResult*)result
++ exceptionWithClass: (Class)class_
+	 HTTPRequest: (OFHTTPRequest*)request
+	      result: (OFHTTPRequestResult*)result
 {
-	return [[self alloc] initWithClass: class_
-			       HTTPRequest: request
-				    result: result];
+	return [[[self alloc] initWithClass: class_
+				HTTPRequest: request
+				     result: result] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithClass: (Class)class_

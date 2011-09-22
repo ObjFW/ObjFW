@@ -33,8 +33,8 @@
  * \param selector The selector which doesn't accept the argument
  * \return A new invalid argument exception
  */
-+ newWithClass: (Class)class_
-      selector: (SEL)selector;
++ exceptionWithClass: (Class)class_
+	    selector: (SEL)selector;
 
 /**
  * Initializes an already allocated invalid argument exception

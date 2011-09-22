@@ -85,8 +85,8 @@ static OFMutex *mutex = nil;
 		 port: (uint16_t)port
 {
 	if (sock != INVALID_SOCKET)
-		@throw [OFAlreadyConnectedException newWithClass: isa
-							  socket: self];
+		@throw [OFAlreadyConnectedException exceptionWithClass: isa
+								socket: self];
 
 #ifdef HAVE_THREADSAFE_GETADDRINFO
 	struct addrinfo hints, *res, *res0;
@@ -99,9 +99,10 @@ static OFMutex *mutex = nil;
 
 	if (getaddrinfo([host cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    portCString, &hints, &res0))
-		@throw [OFAddressTranslationFailedException newWithClass: isa
-								  socket: self
-								    host: host];
+		@throw [OFAddressTranslationFailedException
+		    exceptionWithClass: isa
+				socket: self
+				  host: host];
 
 	for (res = res0; res != NULL; res = res->ai_next) {
 		if ((sock = socket(res->ai_family, res->ai_socktype,
@@ -136,9 +137,10 @@ static OFMutex *mutex = nil;
 		[addrlist release];
 		[mutex unlock];
 # endif
-		@throw [OFAddressTranslationFailedException newWithClass: isa
-								  socket: self
-								    host: host];
+		@throw [OFAddressTranslationFailedException
+		    exceptionWithClass: isa
+				socket: self
+				  host: host];
 	}
 
 	memset(&addr, 0, sizeof(addr));
@@ -151,10 +153,10 @@ static OFMutex *mutex = nil;
 		[addrlist release];
 		[mutex unlock];
 # endif
-		@throw [OFConnectionFailedException newWithClass: isa
-							  socket: self
-							    host: host
-							    port: port];
+		@throw [OFConnectionFailedException exceptionWithClass: isa
+								socket: self
+								  host: host
+								  port: port];
 	}
 
 # ifdef OF_THREADS
@@ -195,10 +197,10 @@ static OFMutex *mutex = nil;
 #endif
 
 	if (sock == INVALID_SOCKET)
-		@throw [OFConnectionFailedException newWithClass: isa
-							  socket: self
-							    host: host
-							    port: port];
+		@throw [OFConnectionFailedException exceptionWithClass: isa
+								socket: self
+								  host: host
+								  port: port];
 }
 
 - (uint16_t)bindToHost: (OFString*)host
@@ -212,8 +214,8 @@ static OFMutex *mutex = nil;
 	socklen_t addrLen;
 
 	if (sock != INVALID_SOCKET)
-		@throw [OFAlreadyConnectedException newWithClass: isa
-							  socket: self];
+		@throw [OFAlreadyConnectedException exceptionWithClass: isa
+								socket: self];
 
 #ifdef HAVE_THREADSAFE_GETADDRINFO
 	struct addrinfo hints, *res;
@@ -226,24 +228,25 @@ static OFMutex *mutex = nil;
 
 	if (getaddrinfo([host cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    portCString, &hints, &res))
-		@throw [OFAddressTranslationFailedException newWithClass: isa
-								  socket: self
-								    host: host];
+		@throw [OFAddressTranslationFailedException
+		    exceptionWithClass: isa
+				socket: self
+				  host: host];
 
 	if ((sock = socket(res->ai_family, SOCK_STREAM, 0)) == INVALID_SOCKET)
-		@throw [OFBindFailedException newWithClass: isa
-						    socket: self
-						      host: host
-						      port: port];
+		@throw [OFBindFailedException exceptionWithClass: isa
+							  socket: self
+							    host: host
+							    port: port];
 
 	if (bind(sock, res->ai_addr, res->ai_addrlen) == -1) {
 		freeaddrinfo(res);
 		close(sock);
 		sock = INVALID_SOCKET;
-		@throw [OFBindFailedException newWithClass: isa
-						    socket: self
-						      host: host
-						      port: port];
+		@throw [OFBindFailedException exceptionWithClass: isa
+							  socket: self
+							    host: host
+							    port: port];
 	}
 
 	freeaddrinfo(res);
@@ -259,9 +262,10 @@ static OFMutex *mutex = nil;
 # ifdef OF_THREADS
 		[mutex unlock];
 # endif
-		@throw [OFAddressTranslationFailedException newWithClass: isa
-								  socket: self
-								    host: host];
+		@throw [OFAddressTranslationFailedException
+		    exceptionWithClass: isa
+				socket: self
+				  host: host];
 	}
 
 	memset(&addr, 0, sizeof(addr));
@@ -272,9 +276,10 @@ static OFMutex *mutex = nil;
 # ifdef OF_THREADS
 		[mutex unlock];
 # endif
-		@throw [OFAddressTranslationFailedException newWithClass: isa
-								  socket: self
-								    host: host];
+		@throw [OFAddressTranslationFailedException
+		    exceptionWithClass: isa
+				socket: self
+				  host: host];
 	}
 
 	memcpy(&addr.in.sin_addr.s_addr, he->h_addr_list[0], he->h_length);
@@ -283,18 +288,18 @@ static OFMutex *mutex = nil;
 	[mutex unlock];
 # endif
 	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
-		@throw [OFBindFailedException newWithClass: isa
-						    socket: self
-						      host: host
-						      port: port];
+		@throw [OFBindFailedException exceptionWithClass: isa
+							  socket: self
+							    host: host
+							    port: port];
 
 	if (bind(sock, (struct sockaddr*)&addr.in, sizeof(addr.in)) == -1) {
 		close(sock);
 		sock = INVALID_SOCKET;
-		@throw [OFBindFailedException newWithClass: isa
-						    socket: self
-						      host: host
-						      port: port];
+		@throw [OFBindFailedException exceptionWithClass: isa
+							  socket: self
+							    host: host
+							    port: port];
 	}
 #endif
 
@@ -305,10 +310,10 @@ static OFMutex *mutex = nil;
 	if (getsockname(sock, (struct sockaddr*)&addr, &addrLen)) {
 		close(sock);
 		sock = INVALID_SOCKET;
-		@throw [OFBindFailedException newWithClass: isa
-						    socket: self
-						      host: host
-						      port: port];
+		@throw [OFBindFailedException exceptionWithClass: isa
+							  socket: self
+							    host: host
+							    port: port];
 	}
 
 	if (addr.storage.ss_family == AF_INET)
@@ -318,22 +323,22 @@ static OFMutex *mutex = nil;
 
 	close(sock);
 	sock = INVALID_SOCKET;
-	@throw [OFBindFailedException newWithClass: isa
-					    socket: self
-					      host: host
-					      port: port];
+	@throw [OFBindFailedException exceptionWithClass: isa
+						  socket: self
+						    host: host
+						    port: port];
 }
 
 - (void)listenWithBackLog: (int)backLog
 {
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: isa
-						      socket: self];
+		@throw [OFNotConnectedException exceptionWithClass: isa
+							    socket: self];
 
 	if (listen(sock, backLog) == -1)
-		@throw [OFListenFailedException newWithClass: isa
-						      socket: self
-						     backLog: backLog];
+		@throw [OFListenFailedException exceptionWithClass: isa
+							    socket: self
+							   backLog: backLog];
 
 	listening = YES;
 }
@@ -341,13 +346,13 @@ static OFMutex *mutex = nil;
 - (void)listen
 {
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException newWithClass: isa
-						      socket: self];
+		@throw [OFNotConnectedException exceptionWithClass: isa
+							    socket: self];
 
 	if (listen(sock, 5) == -1)
-		@throw [OFListenFailedException newWithClass: isa
-						      socket: self
-						     backLog: 5];
+		@throw [OFListenFailedException exceptionWithClass: isa
+							    socket: self
+							   backLog: 5];
 
 	listening = YES;
 }
@@ -372,8 +377,8 @@ static OFMutex *mutex = nil;
 	if ((newSock = accept(sock, (struct sockaddr*)addr,
 	    &addrLen)) == INVALID_SOCKET) {
 		[newSocket release];
-		@throw [OFAcceptFailedException newWithClass: isa
-						      socket: self];
+		@throw [OFAcceptFailedException exceptionWithClass: isa
+							    socket: self];
 	}
 
 	newSocket->sock = newSock;
@@ -388,8 +393,8 @@ static OFMutex *mutex = nil;
 	int v = enable;
 
 	if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char*)&v, sizeof(v)))
-		@throw [OFSetOptionFailedException newWithClass: isa
-							 stream: self];
+		@throw [OFSetOptionFailedException exceptionWithClass: isa
+							       stream: self];
 }
 
 - (OFString*)remoteAddress
@@ -397,8 +402,8 @@ static OFMutex *mutex = nil;
 	char *host;
 
 	if (sockAddr == NULL || sockAddrLen == 0)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 #ifdef HAVE_THREADSAFE_GETADDRINFO
 	host = [self allocMemoryWithSize: NI_MAXHOST];
@@ -407,7 +412,7 @@ static OFMutex *mutex = nil;
 		if (getnameinfo((struct sockaddr*)sockAddr, sockAddrLen, host,
 		    NI_MAXHOST, NULL, 0, NI_NUMERICHOST))
 			@throw [OFAddressTranslationFailedException
-			    newWithClass: isa];
+			    exceptionWithClass: isa];
 
 		return [OFString stringWithCString: host
 					  encoding: OF_STRING_ENCODING_NATIVE];
@@ -424,7 +429,7 @@ static OFMutex *mutex = nil;
 
 		if (host == NULL)
 			@throw [OFAddressTranslationFailedException
-			    newWithClass: isa];
+			    exceptionWithClass: isa];
 
 		return [OFString stringWithCString: host
 					  encoding: OF_STRING_ENCODING_NATIVE];

@@ -25,23 +25,23 @@
 #import "common.h"
 
 @implementation OFSeekFailedException
-+ newWithClass: (Class)class_
-	stream: (OFSeekableStream*)stream
-	offset: (off_t)offset
-	whence: (int)whence
++ exceptionWithClass: (Class)class_
+	      stream: (OFSeekableStream*)stream
+	      offset: (off_t)offset
+	      whence: (int)whence
 {
-	return [[self alloc] initWithClass: class_
-				    stream: stream
-				    offset: offset
-				    whence: whence];
+	return [[[self alloc] initWithClass: class_
+				     stream: stream
+				     offset: offset
+				     whence: whence] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithClass: (Class)class_

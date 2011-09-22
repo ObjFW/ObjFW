@@ -23,19 +23,19 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFConditionSignalFailedException
-+ newWithClass: (Class)class_
-     condition: (OFCondition*)condition
++ exceptionWithClass: (Class)class_
+	   condition: (OFCondition*)condition
 {
-	return [[self alloc] initWithClass: class_
-				 condition: condition];
+	return [[[self alloc] initWithClass: class_
+				  condition: condition] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithClass: (Class)class_

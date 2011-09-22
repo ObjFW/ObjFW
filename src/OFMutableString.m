@@ -78,7 +78,8 @@
 
 		if (cLen == 0 || c > 0x10FFFF) {
 			[self freeMemory: unicodeString];
-			@throw [OFInvalidEncodingException newWithClass: isa];
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: isa];
 		}
 
 		if (c >> 8 < tableSize) {
@@ -99,7 +100,8 @@
 			newCStringLength += 4;
 		else {
 			[self freeMemory: unicodeString];
-			@throw [OFInvalidEncodingException newWithClass: isa];
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: isa];
 		}
 
 		i += cLen;
@@ -119,7 +121,8 @@
 		    newCString + j)) == 0) {
 			[self freeMemory: unicodeString];
 			[self freeMemory: newCString];
-			@throw [OFInvalidEncodingException newWithClass: isa];
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: isa];
 		}
 		j += d;
 	}
@@ -153,7 +156,7 @@
 		s->UTF8 = YES;
 		break;
 	case -1:
-		@throw [OFInvalidEncodingException newWithClass: isa];
+		@throw [OFInvalidEncodingException exceptionWithClass: isa];
 	}
 
 	s->cString = [self resizeMemory: s->cString
@@ -180,7 +183,7 @@
 		s->UTF8 = YES;
 		break;
 	case -1:
-		@throw [OFInvalidEncodingException newWithClass: isa];
+		@throw [OFInvalidEncodingException exceptionWithClass: isa];
 	}
 
 	s->cString = [self resizeMemory: s->cString
@@ -224,8 +227,8 @@
 	size_t UTF8StringLength;
 
 	if (string == nil)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	UTF8StringLength = [string UTF8StringLength];
 
@@ -261,12 +264,12 @@
 	int UTF8StringLength;
 
 	if (format == nil)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	if ((UTF8StringLength = of_vasprintf(&UTF8String, [format UTF8String],
 	    arguments)) == -1)
-		@throw [OFInvalidFormatException newWithClass: isa];
+		@throw [OFInvalidFormatException exceptionWithClass: isa];
 
 	@try {
 		[self appendUTF8String: UTF8String
@@ -309,14 +312,16 @@
 		/* A start byte can't happen first as we reversed everything */
 		if (OF_UNLIKELY(s->cString[i] & 0x40)) {
 			madvise(s->cString, s->cStringLength, MADV_NORMAL);
-			@throw [OFInvalidEncodingException newWithClass: isa];
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: isa];
 		}
 
 		/* Next byte must not be ASCII */
 		if (OF_UNLIKELY(s->cStringLength < i + 1 ||
 		    !(s->cString[i + 1] & 0x80))) {
 			madvise(s->cString, s->cStringLength, MADV_NORMAL);
-			@throw [OFInvalidEncodingException newWithClass: isa];
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: isa];
 		}
 
 		/* Next byte is the start byte */
@@ -333,7 +338,8 @@
 		if (OF_UNLIKELY(s->cStringLength < i + 2 ||
 		    !(s->cString[i + 2] & 0x80))) {
 			madvise(s->cString, s->cStringLength, MADV_NORMAL);
-			@throw [OFInvalidEncodingException newWithClass: isa];
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: isa];
 		}
 
 		/* Second next byte is the start byte */
@@ -350,7 +356,8 @@
 		if (OF_UNLIKELY(s->cStringLength < i + 3 ||
 		    !(s->cString[i + 3] & 0x80))) {
 			madvise(s->cString, s->cStringLength, MADV_NORMAL);
-			@throw [OFInvalidEncodingException newWithClass: isa];
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: isa];
 		}
 
 		/* Third next byte is the start byte */
@@ -369,7 +376,7 @@
 
 		/* UTF-8 does not allow more than 4 bytes per character */
 		madvise(s->cString, s->cStringLength, MADV_NORMAL);
-		@throw [OFInvalidEncodingException newWithClass: isa];
+		@throw [OFInvalidEncodingException exceptionWithClass: isa];
 	}
 
 	madvise(s->cString, s->cStringLength, MADV_NORMAL);
@@ -393,7 +400,7 @@
 	size_t newCStringLength;
 
 	if (index > s->length)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	if (s->UTF8)
 		index = of_string_index_to_position(s->cString, index,
@@ -419,11 +426,11 @@
 	size_t end = range.start + range.length;
 
 	if (start > end)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	if (end > s->length)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	s->length -= end - start;
 
@@ -443,7 +450,6 @@
 					 toSize: s->cStringLength + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
-		[e release];
 	}
 }
 
@@ -455,11 +461,11 @@
 	size_t newCStringLength, newLength;
 
 	if (start > end)
-		@throw [OFInvalidArgumentException newWithClass: isa
-						       selector: _cmd];
+		@throw [OFInvalidArgumentException exceptionWithClass: isa
+							     selector: _cmd];
 
 	if (end > s->length)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	newLength = s->length - (end - start) + [replacement length];
 
@@ -569,7 +575,6 @@
 					 toSize: s->cStringLength + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
-		[e release];
 	}
 }
 
@@ -596,7 +601,6 @@
 					 toSize: s->cStringLength + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
-		[e release];
 	}
 }
 
@@ -635,7 +639,6 @@
 					 toSize: s->cStringLength + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
-		[e release];
 	}
 }
 

@@ -352,19 +352,22 @@ _Block_object_dispose(const void *obj_, const int flags_)
 	 * this workaround should be fine.
 	 */
 	if ((tmp = objc_allocateClassPair(self, "OFStackBlock", 0)) == NULL)
-		@throw [OFInitializationFailedException newWithClass: self];
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
 	memcpy(&_NSConcreteStackBlock, tmp, sizeof(_NSConcreteStackBlock));
 	free(tmp);
 	objc_registerClassPair((Class)&_NSConcreteStackBlock);
 
 	if ((tmp = objc_allocateClassPair(self, "OFGlobalBlock", 0)) == NULL)
-		@throw [OFInitializationFailedException newWithClass: self];
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
 	memcpy(&_NSConcreteGlobalBlock, tmp, sizeof(_NSConcreteGlobalBlock));
 	free(tmp);
 	objc_registerClassPair((Class)&_NSConcreteGlobalBlock);
 
 	if ((tmp = objc_allocateClassPair(self, "OFMallocBlock", 0)) == NULL)
-		@throw [OFInitializationFailedException newWithClass: self];
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
 	memcpy(&_NSConcreteMallocBlock, tmp, sizeof(_NSConcreteMallocBlock));
 	free(tmp);
 	objc_registerClassPair((Class)&_NSConcreteMallocBlock);
@@ -379,60 +382,60 @@ _Block_object_dispose(const void *obj_, const int flags_)
 	for (i = 0; i < NUM_SPINLOCKS; i++)
 		if (!of_spinlock_new(&spinlocks[i]))
 			@throw [OFInitializationFailedException
-			    newWithClass: self];
+			    exceptionWithClass: self];
 }
 #endif
 
 + alloc
 {
-	@throw [OFNotImplementedException newWithClass: self
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: self
+						    selector: _cmd];
 }
 
 - init
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (void)addMemoryToPool: (void*)ptr
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (void*)allocMemoryWithSize: (size_t)size
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (void*)allocMemoryForNItems: (size_t)nitems
 		     withSize: (size_t)size
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (void*)resizeMemory: (void*)ptr
 	       toSize: (size_t)size
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (void*)resizeMemory: (void*)ptr
 	     toNItems: (size_t)nitems
 	     withSize: (size_t)size
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (void)freeMemory: (void*)ptr
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - retain
@@ -473,8 +476,8 @@ _Block_object_dispose(const void *obj_, const int flags_)
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 	[super dealloc];	/* Get rid of a stupid warning */
 }
 @end

@@ -37,8 +37,8 @@ int _OFObject_Serialization_reference;
 
 	if (![self conformsToProtocol: @protocol(OFSerialization)])
 		@throw [OFNotImplementedException
-		    newWithClass: isa
-			selector: @selector(stringBySerializing)];
+		    exceptionWithClass: isa
+			      selector: @selector(stringBySerializing)];
 
 	pool = [[OFAutoreleasePool alloc] init];
 	element = [(id)self XMLElementBySerializing];

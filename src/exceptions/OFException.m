@@ -22,17 +22,17 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFException
-+ newWithClass: (Class)class_
++ exceptionWithClass: (Class)class_
 {
-	return [[self alloc] initWithClass: class_];
+	return [[[self alloc] initWithClass: class_] autorelease];
 }
 
 - init
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithClass: (Class)class_
@@ -59,11 +59,5 @@
 - (OFString*)description
 {
 	return @"An exception occurred";
-}
-
-- autorelease
-{
-	@throw [OFNotImplementedException newWithClass: isa
-					      selector: _cmd];
 }
 @end

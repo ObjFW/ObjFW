@@ -189,8 +189,9 @@
 		if ((![[element name] isEqual: @"OFArray"] &&
 		    ![[element name] isEqual: @"OFMutableArray"]) ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
 
 		enumerator = [[element children] objectEnumerator];
 		pool2 = [[OFAutoreleasePool alloc] init];
@@ -239,7 +240,7 @@
 	size_t i, count = [array count];
 
 	if (range.start + range.length > count)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	for (i = 0; i < range.length; i++)
 		buffer[i] = cArray[range.start + i];
@@ -281,7 +282,7 @@
 	count = [array count];
 
 	if (range.start + range.length > count)
-		@throw [OFOutOfRangeException newWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	return [OFArray arrayWithCArray: (id*)[array cArray] + range.start
 				 length: range.length];

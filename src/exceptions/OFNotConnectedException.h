@@ -35,8 +35,8 @@
  * \param socket The socket which is not connected
  * \return A new not connected exception
  */
-+ newWithClass: (Class)class_
-	socket: (OFStreamSocket*)socket;
++ exceptionWithClass: (Class)class_
+	      socket: (OFStreamSocket*)socket;
 
 /**
  * Initializes an already allocated not connected exception.

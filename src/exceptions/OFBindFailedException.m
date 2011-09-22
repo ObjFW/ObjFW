@@ -25,23 +25,23 @@
 #import "common.h"
 
 @implementation OFBindFailedException
-+ newWithClass: (Class)class_
-	socket: (OFTCPSocket*)socket
-	  host: (OFString*)host
-	  port: (uint16_t)port
++ exceptionWithClass: (Class)class_
+	      socket: (OFTCPSocket*)socket
+		host: (OFString*)host
+		port: (uint16_t)port
 {
-	return [[self alloc] initWithClass: class_
-				    socket: socket
-				      host: host
-				      port: port];
+	return [[[self alloc] initWithClass: class_
+				     socket: socket
+				       host: host
+				       port: port] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithClass: (Class)class_

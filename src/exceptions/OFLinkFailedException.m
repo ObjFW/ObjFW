@@ -25,21 +25,21 @@
 
 #ifndef _WIN32
 @implementation OFLinkFailedException
-+    newWithClass: (Class)class_
-       sourcePath: (OFString*)src
-  destinationPath: (OFString*)dest
++ exceptionWithClass: (Class)class_
+	  sourcePath: (OFString*)src
+     destinationPath: (OFString*)dest
 {
-	return [[self alloc] initWithClass: class_
-				sourcePath: src
-			   destinationPath: dest];
+	return [[[self alloc] initWithClass: class_
+				 sourcePath: src
+			    destinationPath: dest] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 -   initWithClass: (Class)class_

@@ -212,7 +212,6 @@ static OFString *c_ary[] = {
 		}
 	} @catch (OFEnumerationMutationException *e) {
 		ok = YES;
-		[e release];
 	}
 
 	TEST(@"Detection of mutation during Fast Enumeration", ok)
@@ -249,13 +248,11 @@ static OFString *c_ary[] = {
 			}];
 		} @catch (OFEnumerationMutationException *e) {
 			ok = YES;
-			[e release];
 		} @catch (OFOutOfRangeException *e) {
 			/*
 			 * Out of bounds access due to enumeration not being
 			 * detected.
 			 */
-			[e release];
 		}
 
 		TEST(@"Detection of mutation during enumeration using blocks",

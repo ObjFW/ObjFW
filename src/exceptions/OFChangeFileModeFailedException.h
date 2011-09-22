@@ -40,9 +40,9 @@
  * \param mode The new mode for the file
  * \return An initialized change file mode failed exception
  */
-+ newWithClass: (Class)class_
-	  path: (OFString*)path
-	  mode: (mode_t)mode;
++ exceptionWithClass: (Class)class_
+		path: (OFString*)path
+		mode: (mode_t)mode;
 
 /**
  * Initializes an already allocated change file mode failed exception.

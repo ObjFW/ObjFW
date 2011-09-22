@@ -35,8 +35,8 @@
  * \param path The path of the directory
  * \return A new delete directory failed exception
  */
-+ newWithClass: (Class)class_
-	  path: (OFString*)path;
++ exceptionWithClass: (Class)class_
+		path: (OFString*)path;
 
 /**
  * Initializes an already allocated delete directory failed exception.

@@ -24,19 +24,19 @@
 #import "common.h"
 
 @implementation OFCreateDirectoryFailedException
-+ newWithClass: (Class)class_
-	  path: (OFString*)path_
++ exceptionWithClass: (Class)class_
+		path: (OFString*)path_
 {
-	return [[self alloc] initWithClass: class_
-				      path: path_];
+	return [[[self alloc] initWithClass: class_
+				       path: path_] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithClass: (Class)class_

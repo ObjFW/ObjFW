@@ -126,8 +126,9 @@
 
 		if (![[element name] isEqual: @"OFCountedSet"] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
 
 		objects = [element elementsForName: @"object"
 					 namespace: OF_SERIALIZATION_NS];
@@ -146,7 +147,7 @@
 
 			if (object == nil || count == nil)
 				@throw [OFInvalidFormatException
-				    newWithClass: isa];
+				    exceptionWithClass: isa];
 
 			number = [OFNumber numberWithSize:
 			    (size_t)[[count stringValue] decimalValue]];

@@ -140,8 +140,9 @@
 		if ((![[element name] isEqual: @"OFSet"] &&
 		    ![[element name] isEqual: @"OFMutableSet"]) ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException newWithClass: isa
-							       selector: _cmd];
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
 
 		one = [OFNumber numberWithSize: 1];
 

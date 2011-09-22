@@ -129,7 +129,6 @@ static OFString *module = @"OFSet";
 			[mutableSet removeObject: s];
 	} @catch (OFEnumerationMutationException *e) {
 		ok = YES;
-		[e dealloc];
 	}
 
 	TEST(@"Detection of mutation during Fast Enumeration", ok);

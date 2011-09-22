@@ -25,19 +25,19 @@
 #import "common.h"
 
 @implementation OFAcceptFailedException
-+ newWithClass: (Class)class_
-	socket: (OFTCPSocket*)socket
++ exceptionWithClass: (Class)class_
+	      socket: (OFTCPSocket*)socket
 {
-	return [[self alloc] initWithClass: class_
-				    socket: socket];
+	return [[[self alloc] initWithClass: class_
+				     socket: socket] autorelease];
 }
 
 - initWithClass: (Class)class_
 {
 	Class c = isa;
 	[self release];
-	@throw [OFNotImplementedException newWithClass: c
-					      selector: _cmd];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithClass: (Class)class_

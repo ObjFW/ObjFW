@@ -33,8 +33,8 @@
  * \param ptr A pointer to the memory that is not part of the object
  * \return A new memory not part of object exception
  */
-+ newWithClass: (Class)class_
-       pointer: (void*)ptr;
++ exceptionWithClass: (Class)class_
+	     pointer: (void*)ptr;
 
 /**
  * Initializes an already allocated memory not part of object exception.
