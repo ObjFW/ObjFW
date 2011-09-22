@@ -81,6 +81,7 @@ SRCS += OFArray_adjacent.m		\
 	OFMutableDictionary_hashtable.m	\
 	OFMutableSet_hashtable.m	\
 	OFSet_hashtable.m		\
+	${OFSTREAMOBSERVER_KQUEUE_M}	\
 	${OFSTREAMOBSERVER_POLL_M}	\
 	${OFSTREAMOBSERVER_SELECT_M}	\
 	${ASPRINTF_M}			\

@@ -33,6 +33,9 @@
 #import "OFThread.h"
 #import "OFAutoreleasePool.h"
 
+#ifdef HAVE_KQUEUE
+# import "OFStreamObserver_kqueue.h"
+#endif
 #ifdef HAVE_POLL_H
 # import "OFStreamObserver_poll.h"
 #endif
@@ -60,7 +63,15 @@ enum {
 	return [[[self alloc] init] autorelease];
 }
 
-#if defined(HAVE_POLL_H)
+#if defined(HAVE_KQUEUE)
++ alloc
+{
+	if (self == [OFStreamObserver class])
+		return [OFStreamObserver_kqueue alloc];
+
+	return [super alloc];
+}
+#elif defined(HAVE_POLL_H)
 + alloc
 {
 	if (self == [OFStreamObserver class])

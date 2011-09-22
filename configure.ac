@@ -466,6 +466,10 @@ AC_CHECK_FUNC(localtime_r, [
 	AC_DEFINE(HAVE_LOCALTIME_R, 1, [Whether we have localtime_r])
 ])
 
+AC_CHECK_FUNC(kqueue, [
+	AC_DEFINE(HAVE_KQUEUE, 1, [Whether we have kqueue])
+	AC_SUBST(OFSTREAMOBSERVER_KQUEUE_M, "OFStreamObserver_kqueue.m")
+])
 AC_CHECK_HEADER(poll.h, [
 	AC_DEFINE(HAVE_POLL_H, 1, [Whether we have poll.h])
 	AC_SUBST(OFSTREAMOBSERVER_POLL_M, "OFStreamObserver_poll.m")
