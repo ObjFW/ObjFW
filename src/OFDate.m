@@ -375,7 +375,7 @@ static OFMutex *mutex;
 
 - (uint32_t)microsecond
 {
-	return (uint32_t)nearbyint((seconds - floor(seconds)) * 1000000);
+	return (uint32_t)rint((seconds - floor(seconds)) * 1000000);
 }
 
 - (uint8_t)second
