@@ -17,6 +17,7 @@
 #include "config.h"
 
 #include <unistd.h>
+#include <errno.h>
 
 #include <assert.h>
 
@@ -30,10 +31,7 @@
 #import "OFInitializationFailedException.h"
 #import "OFOutOfMemoryException.h"
 
-@interface OFStreamObserver_kqueue (addEventForFileDescriptor)
-- (void)_addEventForFileDescriptor: (int)fd
-			    filter: (int16_t)filter;
-@end
+#define EVENTLIST_SIZE 64
 
 @implementation OFStreamObserver_kqueue
 - init
@@ -45,8 +43,10 @@
 			@throw [OFInitializationFailedException
 			    newWithClass: isa];
 
-		[self _addEventForFileDescriptor: cancelFD[0]
-					  filter: EVFILT_READ];
+		changeList = [[OFDataArray alloc] initWithItemSize:
+		    sizeof(struct kevent)];
+
+		[self _addFileDescriptorForReading: cancelFD[0]];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -58,79 +58,47 @@
 - (void)dealloc
 {
 	close(kernelQueue);
+	[changeList release];
 
 	[super dealloc];
 }
 
-- (void)_addEventForFileDescriptor: (int)fd
-			    filter: (int16_t)filter
-{
-	struct kevent event, result;
-
-	eventList = [self resizeMemory: eventList
-			      toNItems: FDs + 1
-				ofSize: sizeof(struct kevent)];
-
-	EV_SET(&event, fd, filter, EV_ADD | EV_RECEIPT, 0, 0, 0);
-
-	if (kevent(kernelQueue, &event, 1, &result, 1, NULL) != 1 ||
-	    result.data != 0)
-		/* FIXME: Find a better exception */
-		@throw [OFInitializationFailedException newWithClass: isa];
-
-	FDs++;
-}
-
-- (void)_removeEventForFileDescriptor: (int)fd
-			       filter: (int16_t)filter
-{
-	struct kevent event, result;
-
-	EV_SET(&event, fd, filter, EV_DELETE | EV_RECEIPT, 0, 0, 0);
-
-	if (kevent(kernelQueue, &event, 1, &result, 1, NULL) != 1)
-		/* FIXME: Find a better exception */
-		@throw [OFInitializationFailedException newWithClass: isa];
-
-	@try {
-		eventList = [self resizeMemory: eventList
-				      toNItems: FDs - 1
-					ofSize: sizeof(struct kevent)];
-	} @catch (OFOutOfMemoryException *e) {
-		/* We don't care, as we only made it smaller */
-		[e release];
-	}
-
-	FDs--;
-}
-
 - (void)_addFileDescriptorForReading: (int)fd
 {
-	[self _addEventForFileDescriptor: fd
-				  filter: EVFILT_READ];
+	struct kevent event;
+
+	EV_SET(&event, fd, EVFILT_READ, EV_ADD, 0, 0, 0);
+	[changeList addItem: &event];
 }
 
 - (void)_addFileDescriptorForWriting: (int)fd
 {
-	[self _addEventForFileDescriptor: fd
-				  filter: EVFILT_WRITE];
+	struct kevent event;
+
+	EV_SET(&event, fd, EVFILT_WRITE, EV_ADD, 0, 0, 0);
+	[changeList addItem: &event];
 }
 
 - (void)_removeFileDescriptorForReading: (int)fd
 {
-	[self _removeEventForFileDescriptor: fd
-				     filter: EVFILT_READ];
+	struct kevent event;
+
+	EV_SET(&event, fd, EVFILT_READ, EV_DELETE, 0, 0, 0);
+	[changeList addItem: &event];
 }
 
 - (void)_removeFileDescriptorForWriting: (int)fd
 {
-	[self _removeEventForFileDescriptor: fd
-				     filter: EVFILT_WRITE];
+	struct kevent event;
+
+	EV_SET(&event, fd, EVFILT_WRITE, EV_DELETE, 0, 0, 0);
+	[changeList addItem: &event];
 }
 
 - (BOOL)observeWithTimeout: (int)timeout
 {
 	struct timespec timespec = { timeout, 0 };
+	struct kevent eventList[EVENTLIST_SIZE];
 	int i, events;
 
 	[self _processQueue];
@@ -138,11 +106,23 @@
 	if ([self _processCache])
 		return YES;
 
-	events = kevent(kernelQueue, NULL, 0, eventList, FDs,
+	events = kevent(kernelQueue, [changeList cArray],
+	    (int)[changeList count], eventList, EVENTLIST_SIZE,
 	    (timeout == -1 ? NULL : &timespec));
 
-	if (events == -1)
-		/* FIXME: Throw something */;
+	if (events == -1) {
+		switch (errno) {
+		case EINTR:
+			return NO;
+		case ENOMEM:
+			@throw [OFOutOfMemoryException newWithClass: isa];
+		default:
+			assert(0);
+		}
+	}
+
+	[changeList removeNItems: [changeList count]];
+
 	if (events == 0)
 		return NO;
 

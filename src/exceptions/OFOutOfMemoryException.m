@@ -42,7 +42,7 @@
 	if (description != nil)
 		return description;
 
-	if (requestedSize)
+	if (requestedSize != 0)
 		description = [[OFString alloc] initWithFormat:
 		    @"Could not allocate %zu bytes in class %@!", requestedSize,
 		    inClass];

@@ -16,10 +16,11 @@
 
 #import "OFStreamObserver.h"
 
+@class OFDataArray;
+
 @interface OFStreamObserver_kqueue: OFStreamObserver
 {
 	int kernelQueue;
-	int FDs;
-	struct kevent *eventList;
+	OFDataArray *changeList;
 }
 @end
