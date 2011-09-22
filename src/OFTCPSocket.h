@@ -42,7 +42,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (assign, readonly, getter=isBlocking) BOOL *listening;
+@property (assign, readonly, getter=isListening) BOOL listening;
 #endif
 
 /**
