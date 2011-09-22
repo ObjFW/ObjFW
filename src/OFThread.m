@@ -87,7 +87,7 @@ call_main(id object)
 	thread->running = OF_THREAD_WAITING_FOR_JOIN;
 
 	[OFTLSKey callAllDestructors];
-	[OFAutoreleasePool releaseAll];
+	[OFAutoreleasePool _releaseAll];
 
 	[thread release];
 
@@ -222,7 +222,7 @@ call_main(id object)
 	}
 
 	[OFTLSKey callAllDestructors];
-	[OFAutoreleasePool releaseAll];
+	[OFAutoreleasePool _releaseAll];
 
 	[thread release];
 

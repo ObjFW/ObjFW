@@ -40,15 +40,9 @@
 + (void)addObject: (id)object;
 
 /// \cond internal
-+ (void)releaseAll;
++ (void)_releaseAll;
+- (void)_addObject: (id)object;
 /// \endcond
-
-/**
- * \brief Adds an object to the specific autorelease pool.
- *
- * \param obj The object to add to the autorelease pool
- */
-- (void)addObject: (id)object;
 
 /**
  * \brief Releases all objects in the autorelease pool.

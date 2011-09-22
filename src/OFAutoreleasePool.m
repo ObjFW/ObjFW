@@ -70,14 +70,14 @@ static OFAutoreleasePool *firstPool = nil, *lastPool = nil;
 	}
 
 	@try {
-		[lastPool addObject: object];
+		[lastPool _addObject: object];
 	} @catch (id e) {
 		[object release];
 		@throw e;
 	}
 }
 
-+ (void)releaseAll
++ (void)_releaseAll
 {
 #ifdef OF_THREADS
 	[of_tlskey_get(firstKey) release];
@@ -129,7 +129,7 @@ static OFAutoreleasePool *firstPool = nil, *lastPool = nil;
 	return self;
 }
 
-- (void)addObject: (id)object
+- (void)_addObject: (id)object
 {
 	if (count + 1 > size) {
 		objects = [self resizeMemory: objects
