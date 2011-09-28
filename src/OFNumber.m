@@ -21,6 +21,7 @@
 #import "OFNumber.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
+#import "OFXMLAttribute.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"

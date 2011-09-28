@@ -16,11 +16,11 @@
 
 #import "OFCountedSet.h"
 
-@class OFDictionary_hashtable;
+@class OFMutableDictionary_hashtable;
 
 @interface OFCountedSet_hashtable: OFCountedSet
 {
-	OFDictionary_hashtable *dictionary;
+	OFMutableDictionary_hashtable *dictionary;
 	unsigned long mutations;
 }
 @end

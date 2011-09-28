@@ -1674,7 +1674,7 @@ of_utf16_string_length(const uint16_t *string)
 #ifndef _WIN32
 		if (s->cString[i] == OF_PATH_DELIMITER) {
 #else
-		if (s->cString[i] == '/' || s->string[i] == '\\') {
+		if (s->cString[i] == '/' || s->cString[i] == '\\') {
 #endif
 			i++;
 			break;

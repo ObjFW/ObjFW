@@ -281,8 +281,8 @@ of_log(OFConstantString *format, ...)
 	pool = [[OFAutoreleasePool alloc] init];
 	path = [path stringByAppendingString: @"\\*"];
 
-	if ((handle = FindFirstFile([path cString], &fd)) ==
-	    INVALID_HANDLE_VALUE)
+	if ((handle = FindFirstFile([path cStringWithEncoding:
+	    OF_STRING_ENCODING_NATIVE], &fd)) == INVALID_HANDLE_VALUE)
 		@throw [OFOpenFileFailedException exceptionWithClass: self
 								path: path
 								mode: @"r"];
@@ -297,7 +297,9 @@ of_log(OFConstantString *format, ...)
 			    !strcmp(fd.cFileName, ".."))
 				continue;
 
-			file = [OFString stringWithCString: fd.cFileName];
+			file = [OFString
+			    stringWithCString: fd.cFileName
+				     encoding: OF_STRING_ENCODING_NATIVE];
 			[files addObject: file];
 
 			[pool2 releaseObjects];
@@ -335,7 +337,8 @@ of_log(OFConstantString *format, ...)
 				  path: path
 				  mode: mode];
 # else
-	DWORD attributes = GetFileAttributes([path cString]);
+	DWORD attributes = GetFileAttributes(
+	    [path cStringWithEncoding: OF_STRING_ENCODING_NATIVE]);
 
 	if (attributes == INVALID_FILE_ATTRIBUTES)
 		@throw [OFChangeFileModeFailedException
@@ -348,7 +351,8 @@ of_log(OFConstantString *format, ...)
 	else
 		attributes |= FILE_ATTRIBUTE_READONLY;
 
-	if (!SetFileAttributes([path cString], attributes))
+	if (!SetFileAttributes([path cStringWithEncoding:
+	    OF_STRING_ENCODING_NATIVE], attributes))
 		@throw [OFChangeFileModeFailedException
 		    exceptionWithClass: self
 				  path: path
@@ -474,6 +478,8 @@ of_log(OFConstantString *format, ...)
 				fchmod(destinationFile->fileDescriptor,
 				    s.st_mode);
 		}
+#else
+		(void)override;
 #endif
 	} @finally {
 		[sourceFile close];

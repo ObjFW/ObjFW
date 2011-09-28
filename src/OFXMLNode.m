@@ -17,6 +17,7 @@
 #include "config.h"
 
 #import "OFXMLNode.h"
+#import "OFString.h"
 
 #import "OFNotImplementedException.h"
 

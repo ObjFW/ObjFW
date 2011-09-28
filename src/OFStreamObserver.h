@@ -20,8 +20,8 @@
 # ifndef _WIN32_WINNT
 #  define _WIN32_WINNT 0x0501
 # endif
-# include <windows.h>
 # include <ws2tcpip.h>
+# include <windows.h>
 #endif
 
 @class OFStream;
