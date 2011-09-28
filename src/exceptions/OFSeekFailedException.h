@@ -14,9 +14,7 @@
  * file.
  */
 
-#ifndef _WIN32
-# include <sys/types.h>
-#endif
+#include <sys/types.h>
 
 #import "OFException.h"
 
