@@ -57,6 +57,7 @@ SRCS = OFApplication.m			\
        OFXMLElement.m			\
        OFXMLElement+Serialization.m	\
        OFXMLElementBuilder.m		\
+       OFXMLNode.m			\
        OFXMLParser.m			\
        base64.m				\
        of_asprintf.m			\

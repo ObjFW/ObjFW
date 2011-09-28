@@ -14,15 +14,14 @@
  * file.
  */
 
-#import "OFObject.h"
-#import "OFSerialization.h"
+#import "OFXMLNode.h"
 
 @class OFString;
 
 /**
  * \brief A representation of an attribute of an XML element as an object.
  */
-@interface OFXMLAttribute: OFObject <OFSerialization>
+@interface OFXMLAttribute: OFXMLNode
 {
 @public
 	OFString *name;
@@ -73,39 +72,4 @@
  * \return The namespace of the attribute as an autoreleased OFString
  */
 - (OFString*)namespace;
-
-/**
- * \brief Returns the string value of the attribute as an autoreleased OFString.
- *
- * \return The string value of the attribute as an autoreleased OFString
- */
-- (OFString*)stringValue;
-
-/**
- * \brief Returns an integer with the decimal value of the attribute.
- *
- * \return An integer with the decimal value of the attribute
- */
-- (intmax_t)decimalValue;
-
-/**
- * \brief Returns an integer with the hexadecimal value of the attribute.
- *
- * \return An integer with the hexadecimal value of the attribute
- */
-- (uintmax_t)hexadecimalValue;
-
-/**
- * \brief Returns a float with the float value of the attribute.
- *
- * \return A float with the float value of the attribute
- */
-- (float)floatValue;
-
-/**
- * \brief Returns a double with the double value of the attribute.
- *
- * \return A double with the double value of the attribute
- */
-- (double)doubleValue;
 @end

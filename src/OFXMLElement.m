@@ -499,26 +499,6 @@ void _references_to_categories_of_OFXMLElement(void)
 	return ret;
 }
 
-- (intmax_t)decimalValue
-{
-	return [[self stringValue] decimalValue];
-}
-
-- (uintmax_t)hexadecimalValue
-{
-	return [[self stringValue] hexadecimalValue];
-}
-
-- (float)floatValue
-{
-	return [[self stringValue] floatValue];
-}
-
-- (double)doubleValue
-{
-	return [[self stringValue] doubleValue];
-}
-
 - (OFString*)_XMLStringWithParent: (OFXMLElement*)parent
 		       namespaces: (OFDictionary*)allNamespaces
 		      indentation: (unsigned int)indentation
@@ -800,11 +780,6 @@ void _references_to_categories_of_OFXMLElement(void)
 			       namespaces: nil
 			      indentation: indentation
 				    level: 0];
-}
-
-- (OFString*)description
-{
-	return [self XMLStringWithIndentation: 2];
 }
 
 - (OFXMLElement*)XMLElementBySerializing

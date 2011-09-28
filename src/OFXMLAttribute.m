@@ -107,26 +107,6 @@
 	return [[stringValue copy] autorelease];
 }
 
-- (intmax_t)decimalValue
-{
-	return [stringValue decimalValue];
-}
-
-- (uintmax_t)hexadecimalValue
-{
-	return [stringValue hexadecimalValue];
-}
-
-- (float)floatValue
-{
-	return [stringValue floatValue];
-}
-
-- (double)doubleValue
-{
-	return [stringValue doubleValue];
-}
-
 - (BOOL)isEqual: (id)object
 {
 	OFXMLAttribute *otherAttribute;

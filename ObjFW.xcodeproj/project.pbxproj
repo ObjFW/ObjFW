@@ -33,6 +33,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		4B11005C14329B9A003A45D8 /* OFXMLNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B11005A14329B9A003A45D8 /* OFXMLNode.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B11005D14329B9A003A45D8 /* OFXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B11005B14329B9A003A45D8 /* OFXMLNode.m */; };
 		4B17FF73133A2A76003E6DCD /* OFException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B17FF71133A28FC003E6DCD /* OFException.m */; };
 		4B17FF74133A2AAB003E6DCD /* OFException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B17FF70133A28FC003E6DCD /* OFException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B17FF77133A2B18003E6DCD /* OFNotImplementedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B17FF75133A2B18003E6DCD /* OFNotImplementedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -381,6 +383,8 @@
 		4B0108CA10EB8C9300631877 /* OFEnumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFEnumerator.m; path = src/OFEnumerator.m; sourceTree = "<group>"; };
 		4B0D249411DFAA3D00ED6FFC /* OFXMLElementBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFXMLElementBuilder.h; path = src/OFXMLElementBuilder.h; sourceTree = "<group>"; };
 		4B0D249511DFAA3D00ED6FFC /* OFXMLElementBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLElementBuilder.m; path = src/OFXMLElementBuilder.m; sourceTree = "<group>"; };
+		4B11005A14329B9A003A45D8 /* OFXMLNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFXMLNode.h; path = src/OFXMLNode.h; sourceTree = "<group>"; };
+		4B11005B14329B9A003A45D8 /* OFXMLNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLNode.m; path = src/OFXMLNode.m; sourceTree = "<group>"; };
 		4B175C1D116D130B003C99CB /* OFApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFApplication.h; path = src/OFApplication.h; sourceTree = "<group>"; };
 		4B175C1E116D130B003C99CB /* OFApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFApplication.m; path = src/OFApplication.m; sourceTree = "<group>"; };
 		4B17FF70133A28FC003E6DCD /* OFException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFException.h; path = src/exceptions/OFException.h; sourceTree = "<group>"; };
@@ -978,6 +982,8 @@
 				4BB25E87139C388A00F574EA /* OFXMLElement+Serialization.m */,
 				4B0D249411DFAA3D00ED6FFC /* OFXMLElementBuilder.h */,
 				4B0D249511DFAA3D00ED6FFC /* OFXMLElementBuilder.m */,
+				4B11005A14329B9A003A45D8 /* OFXMLNode.h */,
+				4B11005B14329B9A003A45D8 /* OFXMLNode.m */,
 				4B6799891099E7C50041064A /* OFXMLParser.h */,
 				4B67998A1099E7C50041064A /* OFXMLParser.m */,
 				4B6AF97310A8D4450003FB0A /* ObjFW.h */,
@@ -1139,6 +1145,7 @@
 				4B3D23E11337FCB000DD29B8 /* OFXMLElement.h in Headers */,
 				4BB25E8C139C388A00F574EA /* OFXMLElement+Serialization.h in Headers */,
 				4B3D23E21337FCB000DD29B8 /* OFXMLElementBuilder.h in Headers */,
+				4B11005C14329B9A003A45D8 /* OFXMLNode.h in Headers */,
 				4B3D23E31337FCB000DD29B8 /* OFXMLParser.h in Headers */,
 				4B3D23E41337FCB000DD29B8 /* ObjFW.h in Headers */,
 				4B3D23E51337FCB000DD29B8 /* asprintf.h in Headers */,
@@ -1425,6 +1432,7 @@
 				4B3D23AF1337FC0D00DD29B8 /* OFXMLElement.m in Sources */,
 				4BB25E8D139C388A00F574EA /* OFXMLElement+Serialization.m in Sources */,
 				4B3D23B01337FC0D00DD29B8 /* OFXMLElementBuilder.m in Sources */,
+				4B11005D14329B9A003A45D8 /* OFXMLNode.m in Sources */,
 				4B3D23B11337FC0D00DD29B8 /* OFXMLParser.m in Sources */,
 				4B3D23B31337FC0D00DD29B8 /* base64.m in Sources */,
 				4B3D23B41337FC0D00DD29B8 /* iso_8859_15.m in Sources */,

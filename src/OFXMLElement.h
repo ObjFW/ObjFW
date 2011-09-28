@@ -14,20 +14,19 @@
  * file.
  */
 
-#import "OFObject.h"
-#import "OFSerialization.h"
-#import "OFXMLAttribute.h"
+#import "OFXMLNode.h"
 
 @class OFString;
 @class OFArray;
 @class OFMutableString;
 @class OFMutableArray;
 @class OFMutableDictionary;
+@class OFXMLAttribute;
 
 /**
  * \brief A class which stores an XML element.
  */
-@interface OFXMLElement: OFObject <OFCopying, OFSerialization>
+@interface OFXMLElement: OFXMLNode
 {
 	OFString *name;
 	OFString *ns;
@@ -300,60 +299,6 @@
  * \param stringValue The new string value for the element
  */
 - (void)setStringValue: (OFString*)stringValue;
-
-/**
- * \brief Returns a string with the string value of all children concatenated.
- *
- * \return A string with the string value of all children concatenated
- */
-- (OFString*)stringValue;
-
-/**
- * \brief Returns an integer with the decimal value of all children
- *	  concatenated.
- *
- * \return An integer with the decimal value of all children concatenated
- */
-- (intmax_t)decimalValue;
-
-/**
- * \brief Returns an integer with the hexadecimal value of all children
- *	  concatenated.
- *
- * \return An integer with the hexadecimal value of all children concatenated
- */
-- (uintmax_t)hexadecimalValue;
-
-/**
- * \brief Returns a float with the float value of all children concatenated.
- *
- * \return A float with the float value of all children concatenated
- */
-- (float)floatValue;
-
-/**
- * \brief Returns a double with the double value of all children concatenated.
- *
- * \return A double with the double value of all children concatenated
- */
-- (double)doubleValue;
-
-/**
- * \brief Returns an OFString representing the OFXMLElement as an XML string.
- *
- * \return An OFString representing the OFXMLElement as an XML string
- */
-- (OFString*)XMLString;
-
-/**
- * \brief Returns an OFString representing the OFXMLElement as an XML string
- *	  with indentation.
- *
- * \param indentation The indentation for the XML string
- * \return An OFString representing the OFXMLElement as an XML string with
- *	   indentation
- */
-- (OFString*)XMLStringWithIndentation: (unsigned int)indentation;
 
 /**
  * \brief Adds the specified attribute.
