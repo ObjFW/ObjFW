@@ -107,7 +107,7 @@ extern void __objc_exec_class(void*);
 /* Begin of ObjC module */
 static struct objc_abi_metaclass _NSConcreteStackBlock_metaclass = {
 	"OFBlock", "OFBlock", "OFStackBlock", 8, OBJC_CLASS_INFO_METACLASS,
-	sizeof(struct objc_class), NULL, NULL
+	sizeof(struct objc_abi_class), NULL, NULL
 };
 
 struct objc_abi_class _NSConcreteStackBlock = {
@@ -117,7 +117,7 @@ struct objc_abi_class _NSConcreteStackBlock = {
 
 static struct objc_abi_metaclass _NSConcreteGlobalBlock_metaclass = {
 	"OFBlock", "OFBlock", "OFGlobalBlock", 8, OBJC_CLASS_INFO_METACLASS,
-	sizeof(struct objc_class), NULL, NULL
+	sizeof(struct objc_abi_class), NULL, NULL
 };
 
 struct objc_abi_class _NSConcreteGlobalBlock = {
@@ -127,7 +127,7 @@ struct objc_abi_class _NSConcreteGlobalBlock = {
 
 static struct objc_abi_metaclass _NSConcreteMallocBlock_metaclass = {
 	"OFBlock", "OFBlock", "OFMallocBlock", 8, OBJC_CLASS_INFO_METACLASS,
-	sizeof(struct objc_class), NULL, NULL
+	sizeof(struct objc_abi_class), NULL, NULL
 };
 
 struct objc_abi_class _NSConcreteMallocBlock = {
