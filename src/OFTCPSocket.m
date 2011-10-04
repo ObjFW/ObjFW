@@ -33,6 +33,7 @@
 #endif
 
 #import "OFTCPSocket.h"
+#import "OFTCPSocket+SOCKS5.h"
 #import "OFString.h"
 
 #import "OFAcceptFailedException.h"
@@ -43,6 +44,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFListenFailedException.h"
 #import "OFNotConnectedException.h"
+#import "OFNotImplementedException.h"
 #import "OFSetOptionFailedException.h"
 
 #import "macros.h"
@@ -62,6 +64,12 @@ static OFMutex *mutex = nil;
 # define close(sock) closesocket(sock)
 #endif
 
+/* References for static linking */
+void _references_to_categories_of_OFTCPSocket(void)
+{
+	_OFTCPSocket_SOCKS5_reference = 1;
+}
+
 @implementation OFTCPSocket
 #if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
 + (void)initialize
@@ -77,16 +85,46 @@ static OFMutex *mutex = nil;
 
 	sock = INVALID_SOCKET;
 	sockAddr = NULL;
+	SOCKS5Port = 1080;
 
 	return self;
+}
+
+- (void)setSOCKS5Host: (OFString*)host
+{
+	OF_SETTER(SOCKS5Host, host, YES, YES)
+}
+
+- (OFString*)SOCKS5Host
+{
+	OF_GETTER(SOCKS5Host, YES)
+}
+
+- (void)setSOCKS5Port: (uint16_t)port
+{
+	SOCKS5Port = port;
+}
+
+- (uint16_t)SOCKS5Port
+{
+	return SOCKS5Port;
 }
 
 - (void)connectToHost: (OFString*)host
 		 port: (uint16_t)port
 {
+	OFString *destinationHost = host;
+	uint16_t destinationPort = port;
+
 	if (sock != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException exceptionWithClass: isa
 								socket: self];
+
+	if (SOCKS5Host != nil) {
+		/* Connect to the SOCKS5 proxy instead */
+		host = SOCKS5Host;
+		port = SOCKS5Port;
+	}
 
 #ifdef HAVE_THREADSAFE_GETADDRINFO
 	struct addrinfo hints, *res, *res0;
@@ -201,6 +239,10 @@ static OFMutex *mutex = nil;
 								socket: self
 								  host: host
 								  port: port];
+
+	if (SOCKS5Host != nil)
+		[self _SOCKS5ConnectToHost: destinationHost
+				      port: destinationPort];
 }
 
 - (uint16_t)bindToHost: (OFString*)host
@@ -216,6 +258,10 @@ static OFMutex *mutex = nil;
 	if (sock != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException exceptionWithClass: isa
 								socket: self];
+
+	if (SOCKS5Host != nil)
+		@throw [OFNotImplementedException exceptionWithClass: isa
+							    selector: _cmd];
 
 #ifdef HAVE_THREADSAFE_GETADDRINFO
 	struct addrinfo hints, *res;

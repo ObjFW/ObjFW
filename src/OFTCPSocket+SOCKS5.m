@@ -16,59 +16,20 @@
 
 #include "config.h"
 
-#import "OFSOCKS5Socket.h"
+#import "OFTCPSocket+SOCKS5.h"
 
 #import "OFConnectionFailedException.h"
-#import "OFNotImplementedException.h"
 
-@implementation OFSOCKS5Socket
-+ socketWithProxyHost: (OFString*)host
-		 port: (uint16_t)port
-{
-	return [[[self alloc] initWithProxyHost: host
-					   port: port] autorelease];
-}
+/* Reference for static linking */
+int _OFTCPSocket_SOCKS5_reference;
 
-- init
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithProxyHost: (OFString*)host
-	       port: (uint16_t)port
-{
-	self = [super init];
-
-	@try {
-		proxyHost = [host copy];
-		proxyPort = port;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (void)dealloc
-{
-	[proxyHost release];
-
-	[super dealloc];
-}
-
-- (void)connectToHost: (OFString*)host
-		 port: (uint16_t)port
+@implementation OFTCPSocket (SOCKS5)
+- (void)_SOCKS5ConnectToHost: (OFString*)host
+			port: (uint16_t)port
 {
 	const char request[] = { 5, 1, 0, 3 };
 	char reply[256];
 	BOOL oldBuffersWrites;
-
-	[super connectToHost: proxyHost
-			port: proxyPort];
 
 	/* 5 1 0 -> no authentication */
 	[self writeNBytes: 3
@@ -82,8 +43,8 @@
 		@throw [OFConnectionFailedException
 		    exceptionWithClass: isa
 				socket: self
-				  host: proxyHost
-				  port: proxyPort];
+				  host: host
+				  port: port];
 	}
 
 	oldBuffersWrites = [self buffersWrites];

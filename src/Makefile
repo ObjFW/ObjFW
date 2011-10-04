@@ -40,7 +40,6 @@ SRCS = OFApplication.m			\
        OFSeekableStream.m		\
        OFSet.m				\
        OFSHA1Hash.m			\
-       OFSOCKS5Socket.m			\
        OFStream.m			\
        OFStreamObserver.m		\
        OFStreamSocket.m			\
@@ -88,6 +87,7 @@ SRCS += OFArray_adjacent.m		\
 	${OFSTREAMOBSERVER_KQUEUE_M}	\
 	${OFSTREAMOBSERVER_POLL_M}	\
 	${OFSTREAMOBSERVER_SELECT_M}	\
+	OFTCPSocket+SOCKS5.m		\
 	${ASPRINTF_M}			\
 	${FOUNDATION_COMPAT_M}		\
 	iso_8859_15.m			\

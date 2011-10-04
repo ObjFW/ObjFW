@@ -39,11 +39,45 @@
 	BOOL			listening;
 	struct sockaddr_storage	*sockAddr;
 	socklen_t		sockAddrLen;
+	OFString		*SOCKS5Host;
+	uint16_t		SOCKS5Port;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (assign, readonly, getter=isListening) BOOL listening;
+@property (copy) OFString *SOCKS5Host;
+@property (assign) uint16_t SOCKS5Port;
 #endif
+
+/**
+ * \brief Sets the host to use as a SOCKS5 proxy.
+ *
+ * \param host The host to use as a SOCKS5 proxy
+ */
+- (void)setSOCKS5Host: (OFString*)host;
+
+/**
+ * \brief Returns the host to use as a SOCKS5 proxy.
+ *
+ * \return The host to use as a SOCKS5 proxy
+ */
+- (OFString*)SOCKS5Host;
+
+/**
+ * \brief Sets the port to use on the SOCKS5 proxy.
+ *
+ * The default port is 1080.
+ *
+ * \param port The port to use on the SOCKS5 proxy
+ */
+- (void)setSOCKS5Port: (uint16_t)port;
+
+/**
+ * \brief Returns the port to use on the SOCKS5 proxy.
+ *
+ * \return The port to use on the SOCKS5 proxy
+ */
+- (uint16_t)SOCKS5Port;
 
 /**
  * \brief Connect the OFTCPSocket to the specified destination.
