@@ -58,10 +58,18 @@
 
 - (OFString*)XMLString
 {
-	return [self XMLStringWithIndentation: 0];
+	return [self XMLStringWithIndentation: 0
+					level: 0];
 }
 
 - (OFString*)XMLStringWithIndentation: (unsigned int)indentation
+{
+	return [self XMLStringWithIndentation: 0
+					level: 0];
+}
+
+- (OFString*)XMLStringWithIndentation: (unsigned int)indentation
+				level: (unsigned int)level
 {
 	@throw [OFNotImplementedException exceptionWithClass: isa
 						    selector: _cmd];
@@ -80,7 +88,6 @@
 
 - copy
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
-						    selector: _cmd];
+	return [self retain];
 }
 @end

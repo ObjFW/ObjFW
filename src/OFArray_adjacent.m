@@ -193,16 +193,12 @@
 			    exceptionWithClass: isa
 				      selector: _cmd];
 
-		enumerator = [[element children] objectEnumerator];
+		enumerator = [[element elementsForNamespace:
+		    OF_SERIALIZATION_NS] objectEnumerator];
 		pool2 = [[OFAutoreleasePool alloc] init];
 
 		while ((child = [enumerator nextObject]) != nil) {
-			id object;
-
-			if (![[child namespace] isEqual: OF_SERIALIZATION_NS])
-				continue;
-
-			object = [child objectByDeserializing];
+			id object = [child objectByDeserializing];
 			[array addItem: &object];
 			[object retain];
 

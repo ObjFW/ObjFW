@@ -34,9 +34,6 @@
 	OFMutableArray *attributes;
 	OFMutableDictionary *namespaces;
 	OFMutableArray *children;
-	OFString *characters;
-	OFString *CDATA;
-	OFString *comment;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -90,31 +87,6 @@
 + elementWithName: (OFString*)name
 	namespace: (OFString*)ns
       stringValue: (OFString*)stringValue;
-
-/**
- * \brief Creates a new element with the specified characters.
- *
- * \param characters The characters the element represents
- * \return A new autoreleased OFXMLElement consisting of the specified
- *	   characters
- */
-+ elementWithCharacters: (OFString*)characters;
-
-/**
- * \brief Creates a new element with the specified CDATA.
- *
- * \param CDATA The CDATA the element represents
- * \return A new autoreleased OFXMLElement consisting of the specified CDATA
- */
-+ elementWithCDATA: (OFString*)CDATA;
-
-/**
- * \brief Creates a new element with the specified comment.
- *
- * \param comment The comment the element represents
- * \return A new autoreleased OFXMLElement consisting of the specified comment
- */
-+ elementWithComment: (OFString*)comment;
 
 /**
  * \brief Creates a new element with the specified element.
@@ -187,33 +159,6 @@
 - initWithName: (OFString*)name
      namespace: (OFString*)ns
    stringValue: (OFString*)stringValue;
-
-/**
- * \brief Initializes an already allocated OFXMLElement with the specified
- *	  characters.
- *
- * \param characters The characters the element represents
- * \return An initialized OFXMLElement consisting of the specified characters
- */
-- initWithCharacters: (OFString*)characters;
-
-/**
- * \brief Initializes an already allocated OFXMLElement with the specified
- *	  CDATA.
- *
- * \param CDATA The CDATA the element represents
- * \return An initialized OFXMLElement consisting of the specified CDATA
- */
-- initWithCDATA: (OFString*)CDATA;
-
-/**
- * \brief Initializes an already allocated OFXMLElement with the specified
- *	  comment.
- *
- * \param comment The comment the element represents
- * \return An initialized OFXMLElement consisting of the specified comment
- */
-- initWithComment: (OFString*)comment;
 
 /**
  * \brief Initializes an already allocated OFXMLElement with the specified
@@ -400,16 +345,16 @@
 /**
  * \brief Adds a child to the OFXMLElement.
  *
- * \param child Another OFXMLElement which is added as a child
+ * \param child An OFXMLNode which is added as a child
  */
-- (void)addChild: (OFXMLElement*)child;
+- (void)addChild: (OFXMLNode*)child;
 
 /**
  * \brief Removes the first child that is equal to the specified OFXMLElement.
  *
  * \param child The child to remove from the OFXMLElement
  */
-- (void)removeChild: (OFXMLElement*)child;
+- (void)removeChild: (OFXMLNode*)child;
 
 /**
  * \brief Returns all children that are elements.

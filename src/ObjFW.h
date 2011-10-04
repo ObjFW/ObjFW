@@ -57,6 +57,10 @@
 
 #import "OFXMLAttribute.h"
 #import "OFXMLElement.h"
+#import "OFXMLAttribute.h"
+#import "OFXMLCharacters.h"
+#import "OFXMLCDATA.h"
+#import "OFXMLComment.h"
 #import "OFXMLParser.h"
 #import "OFXMLElementBuilder.h"
 

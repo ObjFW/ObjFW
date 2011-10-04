@@ -72,4 +72,16 @@
  *	   indentation
  */
 - (OFString*)XMLStringWithIndentation: (unsigned int)indentation;
+
+/**
+ * \brief Returns an OFString representing the OFXMLNode as an XML string with
+ *	  indentation for the specified level.
+ *
+ * \param indentation The indentation for the XML string
+ * \param level The level of indentation
+ * \return An OFString representing the OFXMLNode as an XML string with
+ *	   indentation
+ */
+- (OFString*)XMLStringWithIndentation: (unsigned int)indentation
+				level: (unsigned int)level;
 @end

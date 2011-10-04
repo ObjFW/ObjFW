@@ -51,13 +51,11 @@
 			    exceptionWithClass: isa
 				      selector: _cmd];
 
-		enumerator = [[element children] objectEnumerator];
+		enumerator = [[element elementsForNamespace:
+		    OF_SERIALIZATION_NS] objectEnumerator];
 		pool2 = [[OFAutoreleasePool alloc] init];
 
 		while ((child = [enumerator nextObject]) != nil) {
-			if (![[child namespace] isEqual: OF_SERIALIZATION_NS])
-				continue;
-
 			[self appendObject: [child objectByDeserializing]];
 
 			[pool2 releaseObjects];

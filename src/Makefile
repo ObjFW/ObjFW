@@ -54,6 +54,9 @@ SRCS = OFApplication.m			\
        ${OFTHREAD_M}			\
        OFURL.m				\
        OFXMLAttribute.m			\
+       OFXMLCDATA.m			\
+       OFXMLCharacters.m		\
+       OFXMLComment.m			\
        OFXMLElement.m			\
        OFXMLElement+Serialization.m	\
        OFXMLElementBuilder.m		\

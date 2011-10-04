@@ -25,6 +25,8 @@
 #import "OFDictionary.h"
 #import "OFDataArray.h"
 #import "OFXMLAttribute.h"
+#import "OFXMLCharacters.h"
+#import "OFXMLCDATA.h"
 #import "OFXMLParser.h"
 #import "OFXMLElementBuilder.h"
 #import "OFAutoreleasePool.h"
@@ -43,6 +45,9 @@ void _references_to_categories_of_OFXMLElement(void)
 	_OFXMLElement_Serialization_reference = 1;
 }
 
+static Class charactersClass = Nil;
+static Class CDATAClass = Nil;
+
 @interface OFXMLElement_OFXMLElementBuilderDelegate: OFObject
 {
 @public
@@ -54,14 +59,8 @@ void _references_to_categories_of_OFXMLElement(void)
 - (void)elementBuilder: (OFXMLElementBuilder*)builder
        didBuildElement: (OFXMLElement*)element_
 {
-	/*
-	 * Make sure we don't take whitespaces before or after the root element
-	 * into account.
-	 */
-	if ([element_ name] != nil) {
-		assert(element == nil);
+	if (element == nil)
 		element = [element_ retain];
-	}
 }
 
 - (void)dealloc
@@ -73,6 +72,14 @@ void _references_to_categories_of_OFXMLElement(void)
 @end
 
 @implementation OFXMLElement
++ (void)initialize
+{
+	if (self == [OFXMLElement class]) {
+		charactersClass = [OFXMLCharacters class];
+		CDATAClass = [OFXMLCDATA class];
+	}
+}
+
 + elementWithName: (OFString*)name
 {
 	return [[[self alloc] initWithName: name] autorelease];
@@ -99,21 +106,6 @@ void _references_to_categories_of_OFXMLElement(void)
 	return [[[self alloc] initWithName: name
 				 namespace: ns
 			       stringValue: stringValue] autorelease];
-}
-
-+ elementWithCharacters: (OFString*)characters
-{
-	return [[[self alloc] initWithCharacters: characters] autorelease];
-}
-
-+ elementWithCDATA: (OFString*)CDATA
-{
-	return [[[self alloc] initWithCDATA: CDATA] autorelease];
-}
-
-+ elementWithComment: (OFString*)comment
-{
-	return [[[self alloc] initWithComment: comment] autorelease];
 }
 
 + elementWithElement: (OFXMLElement*)element
@@ -192,63 +184,6 @@ void _references_to_categories_of_OFXMLElement(void)
 	return self;
 }
 
-- initWithCharacters: (OFString*)characters_
-{
-	self = [super init];
-
-	@try {
-		if (characters_ == nil)
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
-				      selector: _cmd];
-
-		characters = [characters_ copy];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- initWithCDATA: (OFString*)CDATA_
-{
-	self = [super init];
-
-	@try {
-		if (CDATA_ == nil)
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
-				      selector: _cmd];
-
-		CDATA = [CDATA_ copy];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- initWithComment: (OFString*)comment_
-{
-	self = [super init];
-
-	@try {
-		if (comment_ == nil)
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
-				      selector: _cmd];
-
-		comment = [comment_ copy];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
 - initWithElement: (OFXMLElement*)element
 {
 	self = [super init];
@@ -265,9 +200,6 @@ void _references_to_categories_of_OFXMLElement(void)
 		attributes = [element->attributes mutableCopy];
 		namespaces = [element->namespaces mutableCopy];
 		children = [element->children mutableCopy];
-		characters = [element->characters copy];
-		CDATA = [element->CDATA copy];
-		comment = [element->comment copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -368,15 +300,6 @@ void _references_to_categories_of_OFXMLElement(void)
 		    copy];
 		defaultNamespace = [[[element attributeForName:
 		    @"defaultNamespace"] stringValue] copy];
-		characters = [[[element
-		    elementForName: @"characters"
-			 namespace: OF_SERIALIZATION_NS] stringValue] copy];
-		CDATA = [[[element
-		    elementForName: @"CDATA"
-			 namespace: OF_SERIALIZATION_NS] stringValue] copy];
-		comment = [[[element
-		    elementForName: @"comment"
-			 namespace: OF_SERIALIZATION_NS] stringValue] copy];
 
 		attributesElement = [[[element
 		    elementForName: @"attributes"
@@ -395,10 +318,7 @@ void _references_to_categories_of_OFXMLElement(void)
 		namespaces = [[namespacesElement objectByDeserializing] copy];
 		children = [[childrenElement objectByDeserializing] copy];
 
-		if (!((name != nil || ns != nil || defaultNamespace != nil ||
-		    [attributes count] > 0 || [namespaces count] > 0 ||
-		    [children count] > 0) ^ (characters != nil) ^
-		    (CDATA != nil) ^ (comment != nil)))
+		if (name == nil)
 			@throw [OFInvalidArgumentException
 			    exceptionWithClass: isa
 				      selector: _cmd];
@@ -414,7 +334,7 @@ void _references_to_categories_of_OFXMLElement(void)
 
 - (void)setName: (OFString*)name_
 {
-	if (name == nil)
+	if (name_ == nil)
 		@throw [OFInvalidArgumentException exceptionWithClass: isa
 							     selector: _cmd];
 
@@ -428,10 +348,6 @@ void _references_to_categories_of_OFXMLElement(void)
 
 - (void)setNamespace: (OFString*)ns_
 {
-	if (name == nil)
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
-
 	OF_SETTER(ns, ns_, YES, YES)
 }
 
@@ -462,7 +378,7 @@ void _references_to_categories_of_OFXMLElement(void)
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 
 	[self setChildren: [OFArray arrayWithObject:
-	    [OFXMLElement elementWithCharacters: stringValue]]];
+	    [OFXMLCharacters charactersWithString: stringValue]]];
 
 	[pool release];
 }
@@ -482,14 +398,8 @@ void _references_to_categories_of_OFXMLElement(void)
 	pool = [[OFAutoreleasePool alloc] init];
 
 	for (i = 0; i < count; i++) {
-		if (cArray[i]->characters != nil)
-			[ret appendString: cArray[i]->characters];
-		else if (cArray[i]->CDATA != nil)
-			[ret appendString: cArray[i]->CDATA];
-		else if (cArray[i]->comment == nil) {
-			[ret appendString: [cArray[i] stringValue]];
-			[pool releaseObjects];
-		}
+		[ret appendString: [cArray[i] stringValue]];
+		[pool releaseObjects];
 	}
 
 	[ret makeImmutable];
@@ -502,7 +412,7 @@ void _references_to_categories_of_OFXMLElement(void)
 - (OFString*)_XMLStringWithParent: (OFXMLElement*)parent
 		       namespaces: (OFDictionary*)allNamespaces
 		      indentation: (unsigned int)indentation
-			    level: (size_t)level
+			    level: (unsigned int)level
 {
 	OFAutoreleasePool *pool, *pool2;
 	char *cString;
@@ -511,33 +421,6 @@ void _references_to_categories_of_OFXMLElement(void)
 	OFXMLAttribute **attributesCArray;
 	OFString *ret;
 	OFString *defaultNS;
-
-	if (characters != nil)
-		return [characters stringByXMLEscaping];
-
-	if (CDATA != nil)
-		return [OFString stringWithFormat: @"<![CDATA[%@]]>", CDATA];
-
-	if (comment != nil) {
-		if (indentation > 0 && level > 0) {
-			char *whitespaces = [self
-			    allocMemoryWithSize: (level * indentation) + 1];
-			memset(whitespaces, ' ', level * indentation);
-			whitespaces[level * indentation] = 0;
-
-			@try {
-				ret = [OFString
-				    stringWithFormat: @"%s<!--%@-->",
-						      whitespaces, comment];
-			} @finally {
-				[self freeMemory: whitespaces];
-			}
-		} else
-			ret = [OFString stringWithFormat: @"<!--%@-->",
-							  comment];
-
-		return ret;
-	}
 
 	pool = [[OFAutoreleasePool alloc] init];
 
@@ -682,8 +565,8 @@ void _references_to_categories_of_OFXMLElement(void)
 			indent = YES;
 
 			for (j = 0; j < childrenCount; j++) {
-				if (childrenCArray[j]->characters != nil ||
-				    childrenCArray[j]->CDATA != nil) {
+				if (childrenCArray[j]->isa == charactersClass ||
+				    childrenCArray[j]->isa == CDATAClass) {
 					indent = NO;
 					break;
 				}
@@ -693,15 +576,22 @@ void _references_to_categories_of_OFXMLElement(void)
 
 		for (j = 0; j < childrenCount; j++) {
 			OFString *child;
+			unsigned int ind = (indent ? indentation : 0);
 
-			if (indent)
+			if (ind)
 				[tmp addItem: "\n"];
 
-			child = [childrenCArray[j]
-			    _XMLStringWithParent: self
-				      namespaces: allNamespaces
-				     indentation: (indent ? indentation : 0)
-					   level: level + 1];
+			if ([childrenCArray[j] isKindOfClass:
+			    [OFXMLElement class]])
+				child = [childrenCArray[j]
+				    _XMLStringWithParent: self
+					      namespaces: allNamespaces
+					     indentation: ind
+						   level: level + 1];
+			else
+				child = [childrenCArray[j]
+				    XMLStringWithIndentation: ind
+						       level: level + 1];
 
 			[tmp addNItems: [child UTF8StringLength]
 			    fromCArray: [child UTF8String]];
@@ -782,6 +672,15 @@ void _references_to_categories_of_OFXMLElement(void)
 				    level: 0];
 }
 
+- (OFString*)XMLStringWithIndentation: (unsigned int)indentation
+				level: (unsigned int)level
+{
+	return [self _XMLStringWithParent: nil
+			       namespaces: nil
+			      indentation: indentation
+				    level: level];
+}
+
 - (OFXMLElement*)XMLElementBySerializing
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
@@ -834,26 +733,6 @@ void _references_to_categories_of_OFXMLElement(void)
 		[element addChild: childrenElement];
 	}
 
-	if (characters != nil)
-		[element addChild:
-		    [OFXMLElement elementWithName: @"characters"
-					namespace: OF_SERIALIZATION_NS
-				      stringValue: characters]];
-
-	if (CDATA != nil) {
-		OFXMLElement *CDATAElement =
-		    [OFXMLElement elementWithName: @"CDATA"
-					namespace: OF_SERIALIZATION_NS];
-		[CDATAElement addChild: [OFXMLElement elementWithCDATA: CDATA]];
-		[element addChild: CDATAElement];
-	}
-
-	if (comment != nil)
-		[element addChild:
-		    [OFXMLElement elementWithName: @"comment"
-					namespace: OF_SERIALIZATION_NS
-				      stringValue: comment]];
-
 	[element retain];
 	[pool release];
 	[element autorelease];
@@ -863,10 +742,6 @@ void _references_to_categories_of_OFXMLElement(void)
 
 - (void)addAttribute: (OFXMLAttribute*)attribute
 {
-	if (name == nil)
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
-
 	if (attributes == nil)
 		attributes = [[OFMutableArray alloc] init];
 
@@ -887,16 +762,12 @@ void _references_to_categories_of_OFXMLElement(void)
 		   namespace: (OFString*)ns_
 		 stringValue: (OFString*)stringValue
 {
-	OFAutoreleasePool *pool;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 
-	if (name == nil)
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
-
-	pool = [[OFAutoreleasePool alloc] init];
 	[self addAttribute: [OFXMLAttribute attributeWithName: name_
 						    namespace: ns_
 						  stringValue: stringValue]];
+
 	[pool release];
 }
 
@@ -972,7 +843,7 @@ void _references_to_categories_of_OFXMLElement(void)
 - (void)setPrefix: (OFString*)prefix
      forNamespace: (OFString*)ns_
 {
-	if (name == nil || prefix == nil || [prefix isEqual: @""])
+	if (prefix == nil || [prefix isEqual: @""])
 		@throw [OFInvalidArgumentException exceptionWithClass: isa
 							     selector: _cmd];
 	if (ns_ == nil)
@@ -994,27 +865,17 @@ void _references_to_categories_of_OFXMLElement(void)
 
 - (OFString*)defaultNamespace
 {
-	if (name == nil)
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
-
-	return [[defaultNamespace retain] autorelease];
+	OF_GETTER(defaultNamespace, YES)
 }
 
 - (void)setDefaultNamespace: (OFString*)ns_
 {
-	if (name == nil)
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
-
-	OFString *old = defaultNamespace;
-	defaultNamespace = [ns_ copy];
-	[old release];
+	OF_SETTER(defaultNamespace, ns_, YES, YES)
 }
 
-- (void)addChild: (OFXMLElement*)child
+- (void)addChild: (OFXMLNode*)child
 {
-	if (name == nil)
+	if ([child isKindOfClass: [OFXMLAttribute class]])
 		@throw [OFInvalidArgumentException exceptionWithClass: isa
 							     selector: _cmd];
 
@@ -1024,9 +885,9 @@ void _references_to_categories_of_OFXMLElement(void)
 	[children addObject: child];
 }
 
-- (void)removeChild: (OFXMLElement*)child
+- (void)removeChild: (OFXMLNode*)child
 {
-	if (name == nil)
+	if ([child isKindOfClass: [OFXMLAttribute class]])
 		@throw [OFInvalidArgumentException exceptionWithClass: isa
 							     selector: _cmd];
 
@@ -1052,7 +913,7 @@ void _references_to_categories_of_OFXMLElement(void)
 	size_t i, count = [children count];
 
 	for (i = 0; i < count; i++)
-		if (cArray[i]->name != nil)
+		if ([cArray[i] isKindOfClass: [OFXMLElement class]])
 			[ret addObject: cArray[i]];
 
 	[ret makeImmutable];
@@ -1067,7 +928,8 @@ void _references_to_categories_of_OFXMLElement(void)
 	size_t i, count = [children count];
 
 	for (i = 0; i < count; i++)
-		if (cArray[i]->ns == nil &&
+		if ([cArray[i] isKindOfClass: [OFXMLElement class]] &&
+		    cArray[i]->ns == nil &&
 		    [cArray[i]->name isEqual: elementName])
 			[ret addObject: cArray[i]];
 
@@ -1083,7 +945,8 @@ void _references_to_categories_of_OFXMLElement(void)
 	size_t i, count = [children count];
 
 	for (i = 0; i < count; i++)
-		if (cArray[i]->name != nil &&
+		if ([cArray[i] isKindOfClass: [OFXMLElement class]] &&
+		    cArray[i]->name != nil &&
 		    [cArray[i]->ns isEqual: elementNS])
 			[ret addObject: cArray[i]];
 
@@ -1107,7 +970,8 @@ void _references_to_categories_of_OFXMLElement(void)
 	count = [children count];
 
 	for (i = 0; i < count; i++)
-		if ([cArray[i]->ns isEqual: elementNS] &&
+		if ([cArray[i] isKindOfClass: [OFXMLElement class]] &&
+		    [cArray[i]->ns isEqual: elementNS] &&
 		    [cArray[i]->name isEqual: elementName])
 			[ret addObject: cArray[i]];
 
@@ -1141,15 +1005,6 @@ void _references_to_categories_of_OFXMLElement(void)
 	if (otherElement->children != children &&
 	    ![otherElement->children isEqual: children])
 		return NO;
-	if (otherElement->characters != characters &&
-	    ![otherElement->characters isEqual: characters])
-		return NO;
-	if (otherElement->CDATA != CDATA &&
-	    ![otherElement->CDATA isEqual: CDATA])
-		return NO;
-	if (otherElement->comment != comment &&
-	    ![otherElement->comment isEqual: comment])
-		return NO;
 
 	return YES;
 }
@@ -1166,9 +1021,6 @@ void _references_to_categories_of_OFXMLElement(void)
 	OF_HASH_ADD_HASH(hash, [attributes hash]);
 	OF_HASH_ADD_HASH(hash, [namespaces hash]);
 	OF_HASH_ADD_HASH(hash, [children hash]);
-	OF_HASH_ADD_HASH(hash, [characters hash]);
-	OF_HASH_ADD_HASH(hash, [CDATA hash]);
-	OF_HASH_ADD_HASH(hash, [comment hash]);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -1188,9 +1040,6 @@ void _references_to_categories_of_OFXMLElement(void)
 	[attributes release];
 	[namespaces release];
 	[children release];
-	[characters release];
-	[CDATA release];
-	[comment release];
 
 	[super dealloc];
 }

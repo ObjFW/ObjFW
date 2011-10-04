@@ -146,13 +146,11 @@
 
 		one = [OFNumber numberWithSize: 1];
 
-		enumerator = [[element children] objectEnumerator];
+		enumerator = [[element elementsForNamespace:
+		    OF_SERIALIZATION_NS] objectEnumerator];
 		pool2 = [[OFAutoreleasePool alloc] init];
 
 		while ((child = [enumerator nextObject]) != nil) {
-			if (![[child namespace] isEqual: OF_SERIALIZATION_NS])
-				continue;
-
 			[dictionary _setObject: one
 					forKey: [child objectByDeserializing]
 				       copyKey: NO];

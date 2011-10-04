@@ -46,6 +46,20 @@
 #ifdef OF_HAVE_OPTIONAL_PROTOCOLS
 @optional
 #endif
+
+/**
+ * \brief This callback is called when the OFXMLElementBuilder built an
+ *	  OFXMLNode which is not inside an element.
+ *
+ * This is usually called for comments or whitespace character data before the
+ * root element.
+ *
+ * \param builder The builder which built the OFXMLNode without parent
+ * \param node The OFXMLNode the OFXMLElementBuilder built
+ */
+-   (void)elementBuilder: (OFXMLElementBuilder*)builder
+  didBuildParentlessNode: (OFXMLNode*)node;
+
 /**
  * \brief This callback is called when the OFXMLElementBuilder gets a close tag
  *	  which does not belong there.

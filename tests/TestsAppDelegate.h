@@ -152,12 +152,12 @@
 - (void)URLTests;
 @end
 
-@interface TestsAppDelegate (OFXMLElementTests)
-- (void)XMLElementTests;
-@end
-
 @interface TestsAppDelegate (OFXMLElementBuilderTests)
 - (void)XMLElementBuilderTests;
+@end
+
+@interface TestsAppDelegate (OFXMLNodeTests)
+- (void)XMLNodeTests;
 @end
 
 @interface TestsAppDelegate (OFXMLParserTests) <OFXMLElementBuilderDelegate>

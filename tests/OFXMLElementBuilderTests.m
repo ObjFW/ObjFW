@@ -26,15 +26,22 @@
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFXMLElementBuilder";
-static OFXMLElement *elem[2];
+static OFXMLNode *nodes[2];
 static size_t i = 0;
 
 @implementation TestsAppDelegate (OFXMLElementBuilderTests)
 - (void)elementBuilder: (OFXMLElementBuilder*)builder
-       didBuildElement: (OFXMLElement*)elem_
+       didBuildElement: (OFXMLElement*)element
 {
-	assert(i < 2);
-	elem[i++] = [elem_ retain];
+	assert(i == 0);
+	nodes[i++] = [element retain];
+}
+
+-   (void)elementBuilder: (OFXMLElementBuilder*)builder
+  didBuildParentlessNode: (OFXMLNode*)node
+{
+	assert(i == 1);
+	nodes[i++] = [node retain];
 }
 
 - (void)XMLElementBuilderTests
@@ -51,12 +58,13 @@ static size_t i = 0;
 
 	TEST(@"Building elements from parsed XML",
 	    R([p parseString: str]) &&
-	    elem[0] != nil && [[elem[0] XMLString] isEqual: str] &&
+	    nodes[0] != nil && [[nodes[0] XMLString] isEqual: str] &&
 	    R([p parseString: @"<!--foo-->"]) &&
-	    elem[1] != nil && [[elem[1] XMLString] isEqual: @"<!--foo-->"])
+	    nodes[1] != nil && [[nodes[1] XMLString] isEqual: @"<!--foo-->"] &&
+	    i == 2)
 
-	[elem[0] release];
-	[elem[1] release];
+	[nodes[0] release];
+	[nodes[1] release];
 	[pool drain];
 }
 @end

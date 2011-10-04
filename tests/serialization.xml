@@ -2,12 +2,6 @@
 <serialization xmlns='https://webkeks.org/objfw/serialization' version='0'>
   <OFMutableDictionary>
     <key>
-      <OFDataArray>MDEyMzQ1Njc4OTo7PEFCQ0RFRkdISklLTE1OT1BRUlNUVVZXWFla</OFDataArray>
-    </key>
-    <object>
-      <OFString>data</OFString>
-    </object>
-    <key>
       <OFArray>
         <OFString>Qu&quot;xbar
 test</OFString>
@@ -19,12 +13,6 @@ test</OFString>
     </key>
     <object>
       <OFString>Hello</OFString>
-    </object>
-    <key>
-      <OFString>Blub</OFString>
-    </key>
-    <object>
-      <OFString>B&quot;la</OFString>
     </object>
     <key>
       <OFList>
@@ -69,9 +57,7 @@ How are you?</OFString>
                   </OFMutableDictionary>
                 </namespaces>
               </OFXMLElement>
-              <OFXMLElement>
-                <CDATA><![CDATA[<]]></CDATA>
-              </OFXMLElement>
+              <OFXMLCDATA><![CDATA[<]]></OFXMLCDATA>
             </OFMutableArray>
           </children>
         </OFXMLElement>
@@ -91,6 +77,18 @@ How are you?</OFString>
     </key>
     <object>
       <OFString>list</OFString>
+    </object>
+    <key>
+      <OFString>Blub</OFString>
+    </key>
+    <object>
+      <OFString>B&quot;la</OFString>
+    </object>
+    <key>
+      <OFDataArray>MDEyMzQ1Njc4OTo7PEFCQ0RFRkdISklLTE1OT1BRUlNUVVZXWFla</OFDataArray>
+    </key>
+    <object>
+      <OFString>data</OFString>
     </object>
   </OFMutableDictionary>
 </serialization>

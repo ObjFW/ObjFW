@@ -20,9 +20,12 @@
 
 #import "OFXMLElementBuilder.h"
 #import "OFXMLElement.h"
+#import "OFXMLAttribute.h"
+#import "OFXMLCharacters.h"
+#import "OFXMLCDATA.h"
+#import "OFXMLComment.h"
 #import "OFXMLParser.h"
 #import "OFMutableArray.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFMalformedXMLException.h"
 
@@ -77,18 +80,15 @@
 	namespace: (OFString*)ns
        attributes: (OFArray*)attributes
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFXMLElement *element;
 	OFXMLAttribute **cArray;
 	size_t i, count;
-	IMP addAttribute;
 
 	element = [OFXMLElement elementWithName: name
 				      namespace: ns];
 
 	cArray = [attributes cArray];
 	count = [attributes count];
-	addAttribute = [element methodForSelector: @selector(addAttribute:)];
 
 	for (i = 0; i < count; i++) {
 		if ([cArray[i] namespace] == nil &&
@@ -100,13 +100,11 @@
 			[element setPrefix: [cArray[i] name]
 			      forNamespace: [cArray[i] stringValue]];
 
-		addAttribute(element, @selector(addAttribute:), cArray[i]);
+		[element addAttribute: cArray[i]];
 	}
 
 	[[stack lastObject] addChild: element];
 	[stack addObject: element];
-
-	[pool release];
 }
 
 -  (void)parser: (OFXMLParser*)parser
@@ -114,17 +112,18 @@
      withPrefix: (OFString*)prefix
       namespace: (OFString*)ns
 {
-	if ([stack count] == 0) {
+	switch ([stack count]) {
+	case 0:
 		[delegate elementBuilder: self
 		    didNotExpectCloseTag: name
 			      withPrefix: prefix
 			       namespace: ns];
 		return;
-	}
-
-	if ([stack count] == 1)
+	case 1:
 		[delegate elementBuilder: self
 			 didBuildElement: [stack firstObject]];
+		break;
+	}
 
 	[stack removeLastObject];
 }
@@ -132,47 +131,43 @@
 -    (void)parser: (OFXMLParser*)parser
   foundCharacters: (OFString*)characters
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFXMLElement *element =
-	    [OFXMLElement elementWithCharacters: characters];
+	OFXMLCharacters *node;
+	OFXMLElement *parent;
 
-	if ([stack count] == 0)
-		[delegate elementBuilder: self
-			 didBuildElement: element];
+	node = [OFXMLCharacters charactersWithString: characters];
+	parent = [stack lastObject];
+
+	if (parent != nil)
+		[parent addChild: node];
 	else
-		[[stack lastObject] addChild: element];
-
-	[pool release];
+		[delegate   elementBuilder: self
+		    didBuildParentlessNode: node];
 }
 
 - (void)parser: (OFXMLParser*)parser
     foundCDATA: (OFString*)CDATA
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFXMLElement *element = [OFXMLElement elementWithCDATA: CDATA];
+	OFXMLCDATA *node = [OFXMLCDATA CDATAWithString: CDATA];
+	OFXMLElement *parent = [stack lastObject];
 
-	if ([stack count] == 0)
-		[delegate elementBuilder: self
-			 didBuildElement: element];
+	if (parent != nil)
+		[parent addChild: node];
 	else
-		[[stack lastObject] addChild: element];
-
-	[pool release];
+		[delegate   elementBuilder: self
+		    didBuildParentlessNode: node];
 }
 
 - (void)parser: (OFXMLParser*)parser
   foundComment: (OFString*)comment
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFXMLElement *element = [OFXMLElement elementWithComment: comment];
+	OFXMLComment *node = [OFXMLComment commentWithString: comment];
+	OFXMLElement *parent = [stack lastObject];
 
-	if ([stack count] == 0)
-		[delegate elementBuilder: self
-			 didBuildElement: element];
+	if (parent != nil)
+		[parent addChild: node];
 	else
-		[[stack lastObject] addChild: element];
-
-	[pool release];
+		[delegate   elementBuilder: self
+		    didBuildParentlessNode: node];
 }
 
 -	(OFString*)parser: (OFXMLParser*)parser
@@ -186,6 +181,11 @@
 @implementation OFObject (OFXMLElementBuilderDelegate)
 - (void)elementBuilder: (OFXMLElementBuilder*)builder
        didBuildElement: (OFXMLElement*)elem
+{
+}
+
+-   (void)elementBuilder: (OFXMLElementBuilder*)builder
+  didBuildParentlessNode: (OFXMLNode*)node
 {
 }
 

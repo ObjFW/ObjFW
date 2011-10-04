@@ -165,4 +165,11 @@
 
 	return element;
 }
+
+- (OFString*)description
+{
+	return [OFString stringWithFormat: @"<OFXMLAttribute, name=%@, "
+					   @"namespace=%@, stringValue=%@>",
+					   name, ns, stringValue];
+}
 @end

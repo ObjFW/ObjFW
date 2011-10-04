@@ -137,7 +137,7 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 	[self HTTPRequestTests];
 #endif
 	[self XMLParserTests];
-	[self XMLElementTests];
+	[self XMLNodeTests];
 	[self XMLElementBuilderTests];
 	[self serializationTests];
 #ifdef OF_PLUGINS

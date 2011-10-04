@@ -206,6 +206,13 @@
 		4B3D5694139A617D0010A78F /* OFSerializationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3D5693139A617D0010A78F /* OFSerializationTests.m */; };
 		4B45355313DCFE1E0037AB4D /* OFCountedSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B45355113DCFE1E0037AB4D /* OFCountedSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B45355413DCFE1E0037AB4D /* OFCountedSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B45355213DCFE1E0037AB4D /* OFCountedSet.m */; };
+		4B49EA66143B39CE0005BBC6 /* OFXMLNodeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B49EA65143B39CE0005BBC6 /* OFXMLNodeTests.m */; };
+		4B49EA6D143B3A090005BBC6 /* OFXMLCDATA.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B49EA67143B3A090005BBC6 /* OFXMLCDATA.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B49EA6E143B3A090005BBC6 /* OFXMLCDATA.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B49EA68143B3A090005BBC6 /* OFXMLCDATA.m */; };
+		4B49EA6F143B3A090005BBC6 /* OFXMLCharacters.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B49EA69143B3A090005BBC6 /* OFXMLCharacters.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B49EA70143B3A090005BBC6 /* OFXMLCharacters.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B49EA6A143B3A090005BBC6 /* OFXMLCharacters.m */; };
+		4B49EA71143B3A090005BBC6 /* OFXMLComment.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B49EA6B143B3A090005BBC6 /* OFXMLComment.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B49EA72143B3A090005BBC6 /* OFXMLComment.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B49EA6C143B3A090005BBC6 /* OFXMLComment.m */; };
 		4B511B7C139C0A34003764A5 /* OFNull.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B511B7A139C0A34003764A5 /* OFNull.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B511B7D139C0A34003764A5 /* OFNull.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B511B7B139C0A34003764A5 /* OFNull.m */; };
 		4B55A0FF133ABEA900B58A93 /* OFThreadJoinFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B55A0F9133ABEA900B58A93 /* OFThreadJoinFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -307,7 +314,6 @@
 		4BF33B0C133807A20059CEF7 /* OFThreadTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF67B1235358D0076B512 /* OFThreadTests.m */; };
 		4BF33B0D133807A20059CEF7 /* OFURLTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF0749512DFAFCA00A4ADD1 /* OFURLTests.m */; };
 		4BF33B0E133807A20059CEF7 /* OFXMLElementBuilderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF67C1235358D0076B512 /* OFXMLElementBuilderTests.m */; };
-		4BF33B0F133807A20059CEF7 /* OFXMLElementTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF67D1235358D0076B512 /* OFXMLElementTests.m */; };
 		4BF33B10133807A20059CEF7 /* OFXMLParserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF67E1235358D0076B512 /* OFXMLParserTests.m */; };
 		4BF33B11133807A20059CEF7 /* PropertiesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF67F1235358D0076B512 /* PropertiesTests.m */; };
 		4BF33B12133807A20059CEF7 /* TestsAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6811235358D0076B512 /* TestsAppDelegate.m */; };
@@ -472,6 +478,13 @@
 		4B45355113DCFE1E0037AB4D /* OFCountedSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCountedSet.h; path = src/OFCountedSet.h; sourceTree = "<group>"; };
 		4B45355213DCFE1E0037AB4D /* OFCountedSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCountedSet.m; path = src/OFCountedSet.m; sourceTree = "<group>"; };
 		4B4986DF1101F64500A2CFDA /* objc_properties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = objc_properties.m; path = src/objc_properties.m; sourceTree = "<group>"; };
+		4B49EA65143B39CE0005BBC6 /* OFXMLNodeTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLNodeTests.m; path = tests/OFXMLNodeTests.m; sourceTree = "<group>"; };
+		4B49EA67143B3A090005BBC6 /* OFXMLCDATA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFXMLCDATA.h; path = src/OFXMLCDATA.h; sourceTree = "<group>"; };
+		4B49EA68143B3A090005BBC6 /* OFXMLCDATA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLCDATA.m; path = src/OFXMLCDATA.m; sourceTree = "<group>"; };
+		4B49EA69143B3A090005BBC6 /* OFXMLCharacters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFXMLCharacters.h; path = src/OFXMLCharacters.h; sourceTree = "<group>"; };
+		4B49EA6A143B3A090005BBC6 /* OFXMLCharacters.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLCharacters.m; path = src/OFXMLCharacters.m; sourceTree = "<group>"; };
+		4B49EA6B143B3A090005BBC6 /* OFXMLComment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFXMLComment.h; path = src/OFXMLComment.h; sourceTree = "<group>"; };
+		4B49EA6C143B3A090005BBC6 /* OFXMLComment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLComment.m; path = src/OFXMLComment.m; sourceTree = "<group>"; };
 		4B4A61F212DF5EA20048F3F2 /* OFURL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFURL.h; path = src/OFURL.h; sourceTree = SOURCE_ROOT; };
 		4B4A61F312DF5EA20048F3F2 /* OFURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFURL.m; path = src/OFURL.m; sourceTree = SOURCE_ROOT; };
 		4B511B7A139C0A34003764A5 /* OFNull.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFNull.h; path = src/OFNull.h; sourceTree = "<group>"; };
@@ -555,7 +568,6 @@
 		4B6EF67A1235358D0076B512 /* OFTCPSocketTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFTCPSocketTests.m; path = tests/OFTCPSocketTests.m; sourceTree = SOURCE_ROOT; };
 		4B6EF67B1235358D0076B512 /* OFThreadTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFThreadTests.m; path = tests/OFThreadTests.m; sourceTree = SOURCE_ROOT; };
 		4B6EF67C1235358D0076B512 /* OFXMLElementBuilderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLElementBuilderTests.m; path = tests/OFXMLElementBuilderTests.m; sourceTree = SOURCE_ROOT; };
-		4B6EF67D1235358D0076B512 /* OFXMLElementTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLElementTests.m; path = tests/OFXMLElementTests.m; sourceTree = SOURCE_ROOT; };
 		4B6EF67E1235358D0076B512 /* OFXMLParserTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLParserTests.m; path = tests/OFXMLParserTests.m; sourceTree = SOURCE_ROOT; };
 		4B6EF67F1235358D0076B512 /* PropertiesTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PropertiesTests.m; path = tests/PropertiesTests.m; sourceTree = SOURCE_ROOT; };
 		4B6EF6801235358D0076B512 /* TestsAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestsAppDelegate.h; path = tests/TestsAppDelegate.h; sourceTree = SOURCE_ROOT; };
@@ -976,6 +988,12 @@
 				4B4A61F312DF5EA20048F3F2 /* OFURL.m */,
 				4BF1BCCE11C9663F0025511F /* OFXMLAttribute.h */,
 				4BF1BCCF11C9663F0025511F /* OFXMLAttribute.m */,
+				4B49EA67143B3A090005BBC6 /* OFXMLCDATA.h */,
+				4B49EA68143B3A090005BBC6 /* OFXMLCDATA.m */,
+				4B49EA69143B3A090005BBC6 /* OFXMLCharacters.h */,
+				4B49EA6A143B3A090005BBC6 /* OFXMLCharacters.m */,
+				4B49EA6B143B3A090005BBC6 /* OFXMLComment.h */,
+				4B49EA6C143B3A090005BBC6 /* OFXMLComment.m */,
 				4B6799871099E7C50041064A /* OFXMLElement.h */,
 				4B6799881099E7C50041064A /* OFXMLElement.m */,
 				4BB25E86139C388A00F574EA /* OFXMLElement+Serialization.h */,
@@ -1034,7 +1052,7 @@
 				4B6EF67B1235358D0076B512 /* OFThreadTests.m */,
 				4BF0749512DFAFCA00A4ADD1 /* OFURLTests.m */,
 				4B6EF67C1235358D0076B512 /* OFXMLElementBuilderTests.m */,
-				4B6EF67D1235358D0076B512 /* OFXMLElementTests.m */,
+				4B49EA65143B39CE0005BBC6 /* OFXMLNodeTests.m */,
 				4B6EF67E1235358D0076B512 /* OFXMLParserTests.m */,
 				4B6EF67F1235358D0076B512 /* PropertiesTests.m */,
 				4B6EF6801235358D0076B512 /* TestsAppDelegate.h */,
@@ -1142,6 +1160,9 @@
 				4B3D23DE1337FCB000DD29B8 /* OFThread.h in Headers */,
 				4B3D23DF1337FCB000DD29B8 /* OFURL.h in Headers */,
 				4B3D23E01337FCB000DD29B8 /* OFXMLAttribute.h in Headers */,
+				4B49EA6D143B3A090005BBC6 /* OFXMLCDATA.h in Headers */,
+				4B49EA6F143B3A090005BBC6 /* OFXMLCharacters.h in Headers */,
+				4B49EA71143B3A090005BBC6 /* OFXMLComment.h in Headers */,
 				4B3D23E11337FCB000DD29B8 /* OFXMLElement.h in Headers */,
 				4BB25E8C139C388A00F574EA /* OFXMLElement+Serialization.h in Headers */,
 				4B3D23E21337FCB000DD29B8 /* OFXMLElementBuilder.h in Headers */,
@@ -1429,6 +1450,9 @@
 				4B3D23AC1337FC0D00DD29B8 /* OFThread.m in Sources */,
 				4B3D23AD1337FC0D00DD29B8 /* OFURL.m in Sources */,
 				4B3D23AE1337FC0D00DD29B8 /* OFXMLAttribute.m in Sources */,
+				4B49EA6E143B3A090005BBC6 /* OFXMLCDATA.m in Sources */,
+				4B49EA70143B3A090005BBC6 /* OFXMLCharacters.m in Sources */,
+				4B49EA72143B3A090005BBC6 /* OFXMLComment.m in Sources */,
 				4B3D23AF1337FC0D00DD29B8 /* OFXMLElement.m in Sources */,
 				4BB25E8D139C388A00F574EA /* OFXMLElement+Serialization.m in Sources */,
 				4B3D23B01337FC0D00DD29B8 /* OFXMLElementBuilder.m in Sources */,
@@ -1518,7 +1542,7 @@
 				4BF33B0C133807A20059CEF7 /* OFThreadTests.m in Sources */,
 				4BF33B0D133807A20059CEF7 /* OFURLTests.m in Sources */,
 				4BF33B0E133807A20059CEF7 /* OFXMLElementBuilderTests.m in Sources */,
-				4BF33B0F133807A20059CEF7 /* OFXMLElementTests.m in Sources */,
+				4B49EA66143B39CE0005BBC6 /* OFXMLNodeTests.m in Sources */,
 				4BF33B10133807A20059CEF7 /* OFXMLParserTests.m in Sources */,
 				4BF33B11133807A20059CEF7 /* PropertiesTests.m in Sources */,
 				4BF33B12133807A20059CEF7 /* TestsAppDelegate.m in Sources */,
