@@ -37,6 +37,7 @@ SRCS = OFApplication.m			\
        OFObject.m			\
        OFObject+Serialization.m		\
        ${OFPLUGIN_M}			\
+       OFProcess.m			\
        OFSeekableStream.m		\
        OFSet.m				\
        OFSHA1Hash.m			\

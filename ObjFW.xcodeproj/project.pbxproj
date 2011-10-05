@@ -285,6 +285,8 @@
 		4BB25E8B139C388A00F574EA /* OFString+Serialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB25E85139C388A00F574EA /* OFString+Serialization.m */; };
 		4BB25E8C139C388A00F574EA /* OFXMLElement+Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB25E86139C388A00F574EA /* OFXMLElement+Serialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BB25E8D139C388A00F574EA /* OFXMLElement+Serialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB25E87139C388A00F574EA /* OFXMLElement+Serialization.m */; };
+		4BB524C1143D1E4E0085FBCC /* OFProcess.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB524BF143D1E4E0085FBCC /* OFProcess.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BB524C2143D1E4E0085FBCC /* OFProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB524C0143D1E4E0085FBCC /* OFProcess.m */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BD653C5143B8489006182F0 /* OFTCPSocket+SOCKS5.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD653C3143B8489006182F0 /* OFTCPSocket+SOCKS5.h */; };
 		4BD653C6143B8489006182F0 /* OFTCPSocket+SOCKS5.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BD653C4143B8489006182F0 /* OFTCPSocket+SOCKS5.m */; };
 		4BD98C03133814220048DD5B /* objfw-defs.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD98C011338140B0048DD5B /* objfw-defs.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -637,6 +639,8 @@
 		4BB25E87139C388A00F574EA /* OFXMLElement+Serialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFXMLElement+Serialization.m"; path = "src/OFXMLElement+Serialization.m"; sourceTree = "<group>"; };
 		4BB50DCF12F863C700C9393F /* of_asprintf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = of_asprintf.h; path = src/of_asprintf.h; sourceTree = SOURCE_ROOT; };
 		4BB50DD012F863C700C9393F /* of_asprintf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = of_asprintf.m; path = src/of_asprintf.m; sourceTree = SOURCE_ROOT; };
+		4BB524BF143D1E4E0085FBCC /* OFProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFProcess.h; path = src/OFProcess.h; sourceTree = "<group>"; };
+		4BB524C0143D1E4E0085FBCC /* OFProcess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFProcess.m; path = src/OFProcess.m; sourceTree = "<group>"; };
 		4BBA36C411406AB700CBA3AC /* atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic.h; path = src/atomic.h; sourceTree = "<group>"; };
 		4BBA36C511406AB700CBA3AC /* macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = macros.h; path = src/macros.h; sourceTree = "<group>"; };
 		4BD653C3143B8489006182F0 /* OFTCPSocket+SOCKS5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFTCPSocket+SOCKS5.h"; path = "src/OFTCPSocket+SOCKS5.h"; sourceTree = "<group>"; };
@@ -945,6 +949,8 @@
 				4BB25E83139C388A00F574EA /* OFObject+Serialization.m */,
 				4B6799791099E7C50041064A /* OFPlugin.h */,
 				4B67997A1099E7C50041064A /* OFPlugin.m */,
+				4BB524BF143D1E4E0085FBCC /* OFProcess.h */,
+				4BB524C0143D1E4E0085FBCC /* OFProcess.m */,
 				4B981CDE116F71DD00294DB7 /* OFSeekableStream.h */,
 				4B981CDF116F71DD00294DB7 /* OFSeekableStream.m */,
 				4B989C2E13771A3700109A30 /* OFSerialization.h */,
@@ -1142,6 +1148,7 @@
 				4B3D23D11337FCB000DD29B8 /* OFObject.h in Headers */,
 				4BB25E88139C388A00F574EA /* OFObject+Serialization.h in Headers */,
 				4B3D23D21337FCB000DD29B8 /* OFPlugin.h in Headers */,
+				4BB524C1143D1E4E0085FBCC /* OFProcess.h in Headers */,
 				4B3D23D31337FCB000DD29B8 /* OFSeekableStream.h in Headers */,
 				4B989C2F13771A3700109A30 /* OFSerialization.h in Headers */,
 				4B39844213D3A24600E6F825 /* OFSet.h in Headers */,
@@ -1429,6 +1436,7 @@
 				4B3D239F1337FC0D00DD29B8 /* OFObject.m in Sources */,
 				4BB25E89139C388A00F574EA /* OFObject+Serialization.m in Sources */,
 				4B3D23A01337FC0D00DD29B8 /* OFPlugin.m in Sources */,
+				4BB524C2143D1E4E0085FBCC /* OFProcess.m in Sources */,
 				4B3D23A11337FC0D00DD29B8 /* OFSeekableStream.m in Sources */,
 				4B39844313D3A24600E6F825 /* OFSet.m in Sources */,
 				4BA85BCF140ECCE800E91D51 /* OFSet_hashtable.m in Sources */,
