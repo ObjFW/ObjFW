@@ -638,14 +638,15 @@ of_log(OFConstantString *format, ...)
 - (size_t)_readNBytes: (size_t)length
 	   intoBuffer: (void*)buffer
 {
-	size_t ret;
+	ssize_t ret;
 
-	if (fileDescriptor == -1 || atEndOfStream)
+	if (fileDescriptor == -1 || atEndOfStream ||
+	    (ret = read(fileDescriptor, buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithClass: isa
 							  stream: self
 						 requestedLength: length];
 
-	if ((ret = read(fileDescriptor, buffer, length)) == 0)
+	if (ret == 0)
 		atEndOfStream = YES;
 
 	return ret;
