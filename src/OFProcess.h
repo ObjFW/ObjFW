@@ -1,3 +1,5 @@
+#include <sys/types.h>
+
 #import "OFStream.h"
 
 /**
@@ -5,7 +7,9 @@
  */
 @interface OFProcess: OFStream
 {
+	pid_t pid;
 	int readPipe[2], writePipe[2];
+	int status;
 	BOOL atEndOfStream;
 }
 

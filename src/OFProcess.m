@@ -3,6 +3,8 @@
 #include <alloca.h>
 #include <unistd.h>
 
+#include <sys/wait.h>
+
 #import "OFProcess.h"
 #import "OFString.h"
 #import "OFArray.h"
@@ -32,7 +34,7 @@
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: isa];
 
-		switch (fork()) {
+		switch ((pid = fork())) {
 		case 0:;
 			OFString **cArray = [arguments cArray];
 			size_t i, count = [arguments count];
@@ -110,10 +112,7 @@
 
 - (void)dealloc
 {
-	if (readPipe[0] != -1)
-		close(readPipe[0]);
-	if (writePipe[1] != -1)
-		close(writePipe[1]);
+	[self close];
 
 	[super dealloc];
 }
@@ -131,6 +130,10 @@
 	if (writePipe[1] != -1)
 		close(writePipe[1]);
 
+	if (pid != -1)
+		waitpid(pid, &status, WNOHANG);
+
+	pid = -1;
 	readPipe[0] = -1;
 	writePipe[1] = -1;
 }
