@@ -7,6 +7,9 @@ STATIC_LIB = ${OBJFW_STATIC_LIB}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 
+# OFThread needs to be before OFFile, as OFFile requires OFMutex in +[load].
+# Some new ld versions are very picky about this, while it always worked with
+# older versions.
 SRCS = OFApplication.m			\
        OFArray.m			\
        OFAutoreleasePool.m		\
@@ -20,6 +23,7 @@ SRCS = OFApplication.m			\
        OFDoubleMatrix.m			\
        OFDoubleVector.m			\
        OFEnumerator.m			\
+       ${OFTHREAD_M}			\
        OFFile.m				\
        OFFloatMatrix.m			\
        OFFloatVector.m			\
@@ -51,7 +55,6 @@ SRCS = OFApplication.m			\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
        OFTCPSocket.m			\
-       ${OFTHREAD_M}			\
        OFURL.m				\
        OFXMLAttribute.m			\
        OFXMLCDATA.m			\
