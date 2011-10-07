@@ -39,7 +39,7 @@
 #import "OFString.h"
 #import "OFArray.h"
 #ifdef OF_THREADS
-# import "OFThread.h"
+# import "threading.h"
 #endif
 #import "OFDate.h"
 #import "OFApplication.h"
@@ -51,8 +51,11 @@
 #import "OFCreateDirectoryFailedException.h"
 #import "OFDeleteDirectoryFailedException.h"
 #import "OFDeleteFileFailedException.h"
+#import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFLinkFailedException.h"
+#import "OFMutexLockFailedException.h"
+#import "OFMutexUnlockFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFOpenFileFailedException.h"
 #import "OFOutOfMemoryException.h"
@@ -93,7 +96,7 @@ OFStream *of_stdout = nil;
 OFStream *of_stderr = nil;
 
 #if defined(OF_THREADS) && !defined(_WIN32)
-static OFMutex *mutex;
+static of_mutex_t mutex;
 #endif
 
 static int parse_mode(const char *mode)
@@ -163,8 +166,12 @@ of_log(OFConstantString *format, ...)
 #if defined(OF_THREADS) && !defined(_WIN32)
 + (void)initialize
 {
-	if (self == [OFFile class])
-		mutex = [[OFMutex alloc] init];
+	if (self != [OFFile class])
+		return;
+
+	if (!of_mutex_new(&mutex))
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
 }
 #endif
 
@@ -389,7 +396,9 @@ of_log(OFConstantString *format, ...)
 							     selector: _cmd];
 
 # ifdef OF_THREADS
-	[mutex lock];
+	if (!of_mutex_lock(&mutex))
+		@throw [OFMutexLockFailedException exceptionWithClass: self
+								mutex: nil];
 
 	@try {
 # endif
@@ -422,7 +431,10 @@ of_log(OFConstantString *format, ...)
 		}
 # ifdef OF_THREADS
 	} @finally {
-		[mutex unlock];
+		if (!of_mutex_unlock(&mutex))
+			@throw [OFMutexUnlockFailedException
+			    exceptionWithClass: self
+					 mutex: nil];
 	}
 # endif
 
