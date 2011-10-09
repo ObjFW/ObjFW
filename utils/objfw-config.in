@@ -101,10 +101,10 @@ while test ! -z "$1"; do
 			printf "%s" "$LIB_CFLAGS"
 			;;
 		--lib-ldflags)
-			if test x"$LIB" = x"" -o x"$LIB_MAJOR" = x"" \
+			if test x"$SHARED_LIB" = x"" -o x"$LIB_MAJOR" = x"" \
 			-o x"$LIB_MINOR" = x""; then
-				printf "LIB, LIB_MAJOR and LIB_MINOR need " 2>&1
-				echo "to be set!" 1>&2
+				printf "SHARED_LIB, LIB_MAJOR and " 2>&1
+				echo "and LIB_MINOR to be set!" 1>&2
 				exit 1
 			fi
 

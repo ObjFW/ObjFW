@@ -231,7 +231,7 @@ test x"$lib" = x"no" -a x"$plugin" = x"no" && \
 test x"$link_stdcpp" = x"yes" && LIBS="$LIBS -lstdc++"
 
 if test x"$lib" = x"yes"; then
-	export LIB="$out_prefix$out$out_suffix"
+	export SHARED_LIB="$out_prefix$out$out_suffix"
 	LDFLAGS="$LDFLAGS $($OBJFW_CONFIG --lib-ldflags)"
 fi
 
