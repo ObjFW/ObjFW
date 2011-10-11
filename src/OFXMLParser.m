@@ -64,16 +64,32 @@ static OFString*
 transform_string(OFDataArray *cache, size_t cut, BOOL unescape,
     OFObject <OFStringXMLUnescapingDelegate> *delegate)
 {
-	OFMutableString *ret = [OFMutableString
-	    stringWithUTF8String: [cache cArray]
-			  length: [cache count] - cut];
+	char *cArray;
+	size_t i, length;
+	BOOL hasEntities = NO;
+	OFMutableString *ret;
 
-	[ret replaceOccurrencesOfString: @"\r\n"
-			     withString: @"\n"];
-	[ret replaceOccurrencesOfString: @"\r"
-			     withString: @"\n"];
+	cArray = [cache cArray];
+	length = [cache count] - cut;
 
-	if (unescape)
+	for (i = 0; i < length; i++) {
+		if (cArray[i] == '\r') {
+			if (i + 1 < length && cArray[i + 1] == '\n') {
+				[cache removeItemAtIndex: i];
+				cArray = [cache cArray];
+
+				i--;
+				length--;
+			} else
+				cArray[i] = '\n';
+		} else if (cArray[i] == '&')
+			hasEntities = YES;
+	}
+
+	ret = [OFMutableString stringWithUTF8String: cArray
+					     length: length];
+
+	if (unescape && hasEntities)
 		return [ret stringByXMLUnescapingWithDelegate: delegate];
 
 	[ret makeImmutable];
