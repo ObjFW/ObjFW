@@ -58,4 +58,13 @@
 - initWithProgram: (OFString*)program
       programName: (OFString*)programName
 	arguments: (OFArray*)arguments;
+
+/**
+ * \brief Closes the write direction of the process.
+ *
+ * This method needs to be called for some programs before data can be read,
+ * since some programs don't start processing before the write direction is
+ * closed.
+ */
+- (void)closeForWriting;
 @end

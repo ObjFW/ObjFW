@@ -139,6 +139,14 @@
  *	  FD for reading and one for writing.
  */
 
+- (void)closeForWriting
+{
+	if (writePipe[1] != -1)
+		close(writePipe[1]);
+
+	writePipe[1] = -1;
+}
+
 - (void)close
 {
 	if (readPipe[0] != -1)
