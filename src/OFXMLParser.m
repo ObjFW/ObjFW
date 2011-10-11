@@ -66,18 +66,12 @@ transform_string(OFDataArray *cache, size_t cut, BOOL unescape,
 {
 	OFMutableString *ret = [OFMutableString
 	    stringWithUTF8String: [cache cArray]
-			  length: [cache count]];
+			  length: [cache count] - cut];
 
 	[ret replaceOccurrencesOfString: @"\r\n"
 			     withString: @"\n"];
 	[ret replaceOccurrencesOfString: @"\r"
 			     withString: @"\n"];
-
-	if (cut > 0) {
-		size_t length = [ret length];
-
-		[ret deleteCharactersInRange: of_range(length - cut, cut)];
-	}
 
 	if (unescape)
 		return [ret stringByXMLUnescapingWithDelegate: delegate];
