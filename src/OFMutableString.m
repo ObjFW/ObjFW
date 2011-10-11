@@ -22,12 +22,6 @@
 #include <string.h>
 #include <assert.h>
 
-#ifdef HAVE_MADVISE
-# include <sys/mman.h>
-#else
-# define madvise(addr, len, advise)
-#endif
-
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
 
@@ -289,8 +283,6 @@
 {
 	size_t i, j;
 
-	madvise(s->cString, s->cStringLength, MADV_SEQUENTIAL);
-
 	/* We reverse all bytes and restore UTF-8 later, if necessary */
 	for (i = 0, j = s->cStringLength - 1; i < s->cStringLength / 2;
 	    i++, j--) {
@@ -299,10 +291,8 @@
 		s->cString[i] ^= s->cString[j];
 	}
 
-	if (!s->UTF8) {
-		madvise(s->cString, s->cStringLength, MADV_NORMAL);
+	if (!s->UTF8)
 		return;
-	}
 
 	for (i = 0; i < s->cStringLength; i++) {
 		/* ASCII */
@@ -310,19 +300,15 @@
 			continue;
 
 		/* A start byte can't happen first as we reversed everything */
-		if (OF_UNLIKELY(s->cString[i] & 0x40)) {
-			madvise(s->cString, s->cStringLength, MADV_NORMAL);
+		if (OF_UNLIKELY(s->cString[i] & 0x40))
 			@throw [OFInvalidEncodingException
 			    exceptionWithClass: isa];
-		}
 
 		/* Next byte must not be ASCII */
 		if (OF_UNLIKELY(s->cStringLength < i + 1 ||
-		    !(s->cString[i + 1] & 0x80))) {
-			madvise(s->cString, s->cStringLength, MADV_NORMAL);
+		    !(s->cString[i + 1] & 0x80)))
 			@throw [OFInvalidEncodingException
 			    exceptionWithClass: isa];
-		}
 
 		/* Next byte is the start byte */
 		if (OF_LIKELY(s->cString[i + 1] & 0x40)) {
@@ -336,11 +322,9 @@
 
 		/* Second next byte must not be ASCII */
 		if (OF_UNLIKELY(s->cStringLength < i + 2 ||
-		    !(s->cString[i + 2] & 0x80))) {
-			madvise(s->cString, s->cStringLength, MADV_NORMAL);
+		    !(s->cString[i + 2] & 0x80)))
 			@throw [OFInvalidEncodingException
 			    exceptionWithClass: isa];
-		}
 
 		/* Second next byte is the start byte */
 		if (OF_LIKELY(s->cString[i + 2] & 0x40)) {
@@ -354,11 +338,9 @@
 
 		/* Third next byte must not be ASCII */
 		if (OF_UNLIKELY(s->cStringLength < i + 3 ||
-		    !(s->cString[i + 3] & 0x80))) {
-			madvise(s->cString, s->cStringLength, MADV_NORMAL);
+		    !(s->cString[i + 3] & 0x80)))
 			@throw [OFInvalidEncodingException
 			    exceptionWithClass: isa];
-		}
 
 		/* Third next byte is the start byte */
 		if (OF_LIKELY(s->cString[i + 3] & 0x40)) {
@@ -375,11 +357,8 @@
 		}
 
 		/* UTF-8 does not allow more than 4 bytes per character */
-		madvise(s->cString, s->cStringLength, MADV_NORMAL);
 		@throw [OFInvalidEncodingException exceptionWithClass: isa];
 	}
-
-	madvise(s->cString, s->cStringLength, MADV_NORMAL);
 }
 
 - (void)upper

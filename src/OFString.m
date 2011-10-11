@@ -24,11 +24,6 @@
 #include <ctype.h>
 
 #include <sys/stat.h>
-#ifdef HAVE_MADVISE
-# include <sys/mman.h>
-#else
-# define madvise(addr, len, advise)
-#endif
 
 #import "OFString.h"
 #import "OFArray.h"
@@ -88,8 +83,6 @@ of_string_check_utf8(const char *cString, size_t cStringLength, size_t *length)
 	size_t i, tmpLength = cStringLength;
 	int UTF8 = 0;
 
-	madvise((void*)cString, cStringLength, MADV_SEQUENTIAL);
-
 	for (i = 0; i < cStringLength; i++) {
 		/* No sign of UTF-8 here */
 		if (OF_LIKELY(!(cString[i] & 0x80)))
@@ -98,23 +91,17 @@ of_string_check_utf8(const char *cString, size_t cStringLength, size_t *length)
 		UTF8 = 1;
 
 		/* We're missing a start byte here */
-		if (OF_UNLIKELY(!(cString[i] & 0x40))) {
-			madvise((void*)cString, cStringLength, MADV_NORMAL);
+		if (OF_UNLIKELY(!(cString[i] & 0x40)))
 			return -1;
-		}
 
 		/* 2 byte sequences for code points 0 - 127 are forbidden */
-		if (OF_UNLIKELY((cString[i] & 0x7E) == 0x40)) {
-			madvise((void*)cString, cStringLength, MADV_NORMAL);
+		if (OF_UNLIKELY((cString[i] & 0x7E) == 0x40))
 			return -1;
-		}
 
 		/* We have at minimum a 2 byte character -> check next byte */
 		if (OF_UNLIKELY(cStringLength <= i + 1 ||
-		    (cString[i + 1] & 0xC0) != 0x80)) {
-			madvise((void*)cString, cStringLength, MADV_NORMAL);
+		    (cString[i + 1] & 0xC0) != 0x80))
 			return -1;
-		}
 
 		/* Check if we have at minimum a 3 byte character */
 		if (OF_LIKELY(!(cString[i] & 0x20))) {
@@ -125,10 +112,8 @@ of_string_check_utf8(const char *cString, size_t cStringLength, size_t *length)
 
 		/* We have at minimum a 3 byte char -> check second next byte */
 		if (OF_UNLIKELY(cStringLength <= i + 2 ||
-		    (cString[i + 2] & 0xC0) != 0x80)) {
-			madvise((void*)cString, cStringLength, MADV_NORMAL);
+		    (cString[i + 2] & 0xC0) != 0x80))
 			return -1;
-		}
 
 		/* Check if we have a 4 byte character */
 		if (OF_LIKELY(!(cString[i] & 0x10))) {
@@ -139,25 +124,19 @@ of_string_check_utf8(const char *cString, size_t cStringLength, size_t *length)
 
 		/* We have a 4 byte character -> check third next byte */
 		if (OF_UNLIKELY(cStringLength <= i + 3 ||
-		    (cString[i + 3] & 0xC0) != 0x80)) {
-			madvise((void*)cString, cStringLength, MADV_NORMAL);
+		    (cString[i + 3] & 0xC0) != 0x80))
 			return -1;
-		}
 
 		/*
 		 * Just in case, check if there's a 5th character, which is
 		 * forbidden by UTF-8
 		 */
-		if (OF_UNLIKELY(cString[i] & 0x08)) {
-			madvise((void*)cString, cStringLength, MADV_NORMAL);
+		if (OF_UNLIKELY(cString[i] & 0x08))
 			return -1;
-		}
 
 		i += 3;
 		tmpLength -= 3;
 	}
-
-	madvise((void*)cString, cStringLength, MADV_NORMAL);
 
 	if (length != NULL)
 		*length = tmpLength;

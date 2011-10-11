@@ -561,10 +561,6 @@ AC_TRY_COMPILE([
 	AC_MSG_RESULT(no)
 ])
 
-AC_CHECK_FUNC(madvise, [
-	AC_DEFINE(HAVE_MADVISE, 1, [Whether we have madvise])
-])
-
 AS_IF([test x"$objc_runtime" = x"Apple"], [
 	AC_CHECK_HEADER(Foundation/NSObject.h, [
 		AC_SUBST(FOUNDATION_COMPAT_M, "foundation-compat.m")
