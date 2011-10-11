@@ -31,12 +31,39 @@
 
 @implementation OFProcess
 + processWithProgram: (OFString*)program
+{
+	return [[[self alloc] initWithProgram: program] autorelease];
+}
+
++ processWithProgram: (OFString*)program
+	   arguments: (OFArray*)arguments
+{
+	return [[[self alloc] initWithProgram: program
+				    arguments: arguments] autorelease];
+}
+
++ processWithProgram: (OFString*)program
 	 programName: (OFString*)programName
 	   arguments: (OFArray*)arguments
 {
 	return [[[self alloc] initWithProgram: program
 				  programName: programName
 				    arguments: arguments] autorelease];
+}
+
+- initWithProgram: (OFString*)program
+{
+	return [self initWithProgram: program
+			 programName: program
+			   arguments: nil];
+}
+
+- initWithProgram: (OFString*)program
+	arguments: (OFArray*)arguments
+{
+	return [self initWithProgram: program
+			 programName: program
+			   arguments: arguments];
 }
 
 - initWithProgram: (OFString*)program
