@@ -208,7 +208,7 @@ ${STATIC_LIB} ${STATIC_LIB_NOINST}: ${EXT_DEPS} ${OBJS}
 		rm -fr $$dir; \
 		mkdir -p $$dir; \
 		cd $$dir; \
-		ar x ../$$i; \
+		${AR} x ../$$i; \
 		for j in *.o; do \
 			objs="$$objs $$dir/$$j"; \
 		done; \
