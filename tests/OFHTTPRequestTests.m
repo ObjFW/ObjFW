@@ -24,8 +24,8 @@
 
 #import "OFHTTPRequest.h"
 #import "OFString.h"
-#import "OFThread.h"
 #import "OFTCPSocket.h"
+#import "OFThread.h"
 #import "OFURL.h"
 #import "OFDictionary.h"
 #import "OFAutoreleasePool.h"
