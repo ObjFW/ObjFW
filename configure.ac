@@ -119,9 +119,11 @@ test x"$ac_cv_header_objfw_rt_h" = x"yes" && objc_runtime="ObjFW-RT"
 
 AC_MSG_CHECKING(which Objective C runtime we use)
 AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
+	dnl Only accept it if it's from gcc >= 4.7, as the one in 4.6 is buggy
+	dnl when using the new API.
 	AC_EGREP_CPP(yes, [
 		#import <objc/objc.h>
-		#ifdef __GNU_LIBOBJC__
+		#ifdef __GNU_LIBOBJC__ >= 20110608
 		yes
 		#endif
 	], [
@@ -166,14 +168,8 @@ case $objc_runtime in
 		])
 		;;
 	GNU)
-		# The new API of the new GNU runtime is currently too broken to
-		# be of any use, thus we even use the old API when the new one
-		# is detected until the new one has been fixed and offers a way
-		# to detect if it is the fixed one.
-		dnl AC_DEFINE(OF_GNU_RUNTIME, 1,
-		dnl	[Whether we use the GNU ObjC runtime])
-		AC_DEFINE(OF_OLD_GNU_RUNTIME, 1,
-			[Whether we use the old GNU ObjC runtime])
+		AC_DEFINE(OF_GNU_RUNTIME, 1,
+			[Whether we use the GNU ObjC runtime])
 
 		AC_CHECK_LIB(objc, objc_msg_lookup, [
 			LIBS="-lobjc $LIBS"
