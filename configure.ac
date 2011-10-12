@@ -640,6 +640,8 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 
 	case "$host" in
 		*-*-mingw*)
+			AC_SUBST(OFSTREAMOBSERVER_SELECT_M,
+				"OFStreamObserver_select.m")
 			AC_CHECK_PROG(WINE, wine, wine)
 
 			AS_IF([test x"$WINE" != x""], [
