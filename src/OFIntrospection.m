@@ -99,6 +99,57 @@
 }
 @end
 
+@implementation OFInstanceVariable
+#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+- _initWithIvar: (Ivar)ivar
+{
+	self = [super init];
+
+	@try {
+		name = [[OFString alloc]
+		    initWithCString: ivar_getName(ivar)
+			   encoding: OF_STRING_ENCODING_ASCII];
+		offset = ivar_getOffset(ivar);
+		typeEncoding = ivar_getTypeEncoding(ivar);
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+#endif
+
+- (void)dealloc
+{
+	[name release];
+
+	[super dealloc];
+}
+
+- (OFString*)name
+{
+	OF_GETTER(name, YES);
+}
+
+- (ptrdiff_t)offset
+{
+	return offset;
+}
+
+- (const char*)typeEncoding
+{
+	return typeEncoding;
+}
+
+- (OFString*)description
+{
+	return [OFString stringWithFormat:
+	    @"<OFInstanceVariable: %@ [%s] @ 0x%tx>",
+	    name, typeEncoding, offset];
+}
+@end
+
 @implementation OFIntrospection
 + introspectionWithClass: (Class)class
 {
@@ -113,11 +164,17 @@
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 #if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
 		Method *methodList;
+		Ivar *ivarList;
 		unsigned i, count;
+#elif defined(OF_OLD_GNU_RUNTIME)
+		MethodList_t methodList;
+#endif
 
 		classMethods = [[OFMutableArray alloc] init];
 		instanceMethods = [[OFMutableArray alloc] init];
+		instanceVariables = [[OFMutableArray alloc] init];
 
+#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
 		methodList = class_copyMethodList(((OFObject*)class)->isa,
 		    &count);
 		@try {
@@ -142,12 +199,19 @@
 		} @finally {
 			free(methodList);
 		}
+
+		ivarList = class_copyIvarList(class, &count);
+		@try {
+			for (i = 0; i < count; i++) {
+				[instanceVariables addObject:
+				    [[[OFInstanceVariable alloc]
+				    _initWithIvar: ivarList[i]] autorelease]];
+				[pool releaseObjects];
+			}
+		} @finally {
+			free(ivarList);
+		}
 #elif defined(OF_OLD_GNU_RUNTIME)
-		MethodList_t methodList;
-
-		classMethods = [[OFMutableArray alloc] init];
-		instanceMethods = [[OFMutableArray alloc] init];
-
 		for (methodList = class->class_pointer->methods;
 		    methodList != NULL; methodList = methodList->method_next) {
 			int i;
@@ -171,6 +235,7 @@
 
 		[classMethods makeImmutable];
 		[instanceMethods makeImmutable];
+		[instanceVariables makeImmutable];
 
 		[pool release];
 	} @catch (id e) {
@@ -185,6 +250,7 @@
 {
 	[classMethods release];
 	[instanceMethods release];
+	[instanceVariables release];
 
 	[super dealloc];
 }
@@ -197,5 +263,10 @@
 - (OFArray*)instanceMethods
 {
 	OF_GETTER(instanceMethods, YES)
+}
+
+- (OFArray*)instanceVariables
+{
+	OF_GETTER(instanceVariables, YES)
 }
 @end

@@ -59,17 +59,57 @@
 @end
 
 /**
+ * \brief A class for describing an instance variable.
+ */
+@interface OFInstanceVariable: OFObject
+{
+	OFString *name;
+	ptrdiff_t offset;
+	const char *typeEncoding;
+}
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, copy) OFString *name;
+@property (readonly) ptrdiff_t offset;
+@property (readonly) const char *typeEncoding;
+#endif
+
+/**
+ * \brief Returns the name of the instance variable.
+ *
+ * \return The name of the instance variable
+ */
+- (OFString*)name;
+
+/**
+ * \brief Returns the offset of the instance variable.
+ *
+ * \return The offset of the instance variable
+ */
+- (ptrdiff_t)offset;
+
+/**
+ * \brief Returns the type encoding for the instance variable.
+ *
+ * \return The type encoding for the instance variable
+ */
+- (const char*)typeEncoding;
+@end
+
+/**
  * \brief A class for introspecting classes.
  */
 @interface OFIntrospection: OFObject
 {
 	OFMutableArray *classMethods;
 	OFMutableArray *instanceMethods;
+	OFMutableArray *instanceVariables;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy) OFArray *classMethods;
 @property (readonly, copy) OFArray *instanceMethods;
+@property (readonly, copy) OFArray *instanceVariables;
 #endif
 
 /**
@@ -90,16 +130,23 @@
 /**
  * \brief Returns the class methods of the class.
  *
- * \return The class methods of the class
+ * \return An array of OFMethods
  */
 - (OFArray*)classMethods;
 
 /**
  * \brief Returns the instance methods of the class.
  *
- * \return The instance methods of the class
+ * \return An array of OFMethods
  */
 - (OFArray*)instanceMethods;
 
-/* TODO: ivars, properties */
+/**
+ * \brief Returns the instance variables of the class.
+ *
+ * \return An array of OFInstanceVariables
+ */
+- (OFArray*)instanceVariables;
+
+/* TODO: properties, protocols */
 @end
