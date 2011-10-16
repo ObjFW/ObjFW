@@ -168,7 +168,49 @@
 }
 @end
 
+#ifdef OF_HAVE_PROPERTIES
+@implementation OFProperty
+@synthesize name, attributes;
+
+#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+- _initWithProperty: (objc_property_t)property
+{
+	self = [super init];
+
+	@try {
+		name = [[OFString alloc]
+		    initWithCString: property_getName(property)
+			   encoding: OF_STRING_ENCODING_ASCII];
+		attributes = property_getAttributes(property);
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+#endif
+
+- (void)dealloc
+{
+	[name release];
+
+	[super dealloc];
+}
+
+- (OFString*)description
+{
+	return [OFString stringWithFormat: @"<OFProperty %@ [%s]>",
+					   name, attributes];
+}
+@end
+#endif
+
 @implementation OFIntrospection
+#ifdef OF_HAVE_PROPERTIES
+@synthesize properties;
+#endif
+
 + introspectionWithClass: (Class)class
 {
 	return [[[self alloc] initWithClass: class] autorelease];
@@ -183,6 +225,9 @@
 #if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
 		Method *methodList;
 		Ivar *ivarList;
+# ifdef OF_HAVE_PROPERTIES
+		objc_property_t *propertyList;
+# endif
 		unsigned i, count;
 #elif defined(OF_OLD_GNU_RUNTIME)
 		MethodList_t methodList;
@@ -191,6 +236,9 @@
 		classMethods = [[OFMutableArray alloc] init];
 		instanceMethods = [[OFMutableArray alloc] init];
 		instanceVariables = [[OFMutableArray alloc] init];
+#ifdef OF_HAVE_PROPERTIES
+		properties = [[OFMutableArray alloc] init];
+#endif
 
 #if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
 		methodList = class_copyMethodList(((OFObject*)class)->isa,
@@ -229,41 +277,63 @@
 		} @finally {
 			free(ivarList);
 		}
+
+		propertyList = class_copyPropertyList(class, &count);
+		@try {
+			for (i = 0; i < count; i++) {
+				[properties addObject:
+				    [[[OFProperty alloc]
+				    _initWithProperty: propertyList[i]]
+				    autorelease]];
+				[pool releaseObjects];
+			}
+		} @finally {
+			free(propertyList);
+		}
 #elif defined(OF_OLD_GNU_RUNTIME)
 		for (methodList = class->class_pointer->methods;
 		    methodList != NULL; methodList = methodList->method_next) {
 			int i;
 
-			for (i = 0; i < methodList->method_count; i++)
+			for (i = 0; i < methodList->method_count; i++) {
 				[classMethods addObject: [[[OFMethod alloc]
 				    _initWithMethod:
 				    &methodList->method_list[i]] autorelease]];
+				[pool releaseObjects];
+			}
 		}
 
 		for (methodList = class->methods; methodList != NULL;
 		    methodList = methodList->method_next) {
 			int i;
 
-			for (i = 0; i < methodList->method_count; i++)
+			for (i = 0; i < methodList->method_count; i++) {
 				[instanceMethods addObject: [[[OFMethod alloc]
 				    _initWithMethod:
 				    &methodList->method_list[i]] autorelease]];
+				[pool releaseObjects];
+			}
 		}
 
 		if (class->ivars != NULL) {
 			int i;
 
-			for (i = 0; i < class->ivars->ivar_count; i++)
+			for (i = 0; i < class->ivars->ivar_count; i++) {
 				[instanceVariables addObject:
 				    [[[OFInstanceVariable alloc]
 				    _initWithIvar: class->ivars->ivar_list + i]
 				    autorelease]];
+				[pool releaseObjects];
+			}
 		}
 #endif
 
 		[classMethods makeImmutable];
 		[instanceMethods makeImmutable];
 		[instanceVariables makeImmutable];
+#ifdef OF_HAVE_PROPERTIES
+		[properties makeImmutable];
+#endif
 
 		[pool release];
 	} @catch (id e) {
@@ -279,6 +349,9 @@
 	[classMethods release];
 	[instanceMethods release];
 	[instanceVariables release];
+#ifdef OF_HAVE_PROPERTIES
+	[properties release];
+#endif
 
 	[super dealloc];
 }
