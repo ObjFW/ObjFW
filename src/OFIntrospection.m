@@ -118,6 +118,24 @@
 
 	return self;
 }
+#elif defined(OF_OLD_GNU_RUNTIME)
+- _initWithIvar: (Ivar_t)ivar
+{
+	self = [super init];
+
+	@try {
+		name = [[OFString alloc]
+		    initWithCString: ivar->ivar_name
+			   encoding: OF_STRING_ENCODING_ASCII];
+		offset = ivar->ivar_offset;
+		typeEncoding = ivar->ivar_type;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
 #endif
 
 - (void)dealloc
@@ -230,6 +248,16 @@
 				[instanceMethods addObject: [[[OFMethod alloc]
 				    _initWithMethod:
 				    &methodList->method_list[i]] autorelease]];
+		}
+
+		if (class->ivars != NULL) {
+			int i;
+
+			for (i = 0; i < class->ivars->ivar_count; i++)
+				[instanceVariables addObject:
+				    [[[OFInstanceVariable alloc]
+				    _initWithIvar: class->ivars->ivar_list + i]
+				    autorelease]];
 		}
 #endif
 
