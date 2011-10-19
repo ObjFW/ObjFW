@@ -231,9 +231,9 @@
 - (void)setChildren: (OFArray*)children;
 
 /**
- * \brief Returns an array with all children of the element.
+ * \brief Returns an array of OFXMLNodes with all children of the element.
  *
- * \return An array with all children of the element
+ * \return An array of OFXMLNodes with all children of the element
  */
 - (OFArray*)children;
 
