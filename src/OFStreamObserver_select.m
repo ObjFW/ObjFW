@@ -83,15 +83,15 @@
 	if ([self _processCache])
 		return YES;
 
-# ifdef FD_COPY
+#ifdef FD_COPY
 	FD_COPY(&readFDs, &readFDs_);
 	FD_COPY(&writeFDs, &writeFDs_);
 	FD_COPY(&exceptFDs, &exceptFDs_);
-# else
+#else
 	readFDs_ = readFDs;
 	writeFDs_ = writeFDs;
 	exceptFDs_ = exceptFDs;
-# endif
+#endif
 
 	time.tv_sec = timeout / 1000;
 	time.tv_usec = (timeout % 1000) * 1000;
