@@ -123,7 +123,7 @@ AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
 	dnl when using the new API.
 	AC_EGREP_CPP(yes, [
 		#import <objc/objc.h>
-		#ifdef __GNU_LIBOBJC__ >= 20110608
+		#if defined(__GNU_LIBOBJC__) && __GNU_LIBOBJC__ >= 20110608
 		yes
 		#endif
 	], [
