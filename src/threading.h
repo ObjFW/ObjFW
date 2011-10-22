@@ -51,10 +51,10 @@ typedef of_mutex_t of_spinlock_t;
 
 #if defined(OF_HAVE_PTHREADS)
 # define of_thread_is_current(t) pthread_equal(t, pthread_self())
-# define of_thread_current() pthread_self()
+# define of_thread_current pthread_self
 #elif defined(_WIN32)
 # define of_thread_is_current(t) (t == GetCurrentThread())
-# define of_thread_current() GetCurrentThread()
+# define of_thread_current GetCurrentThread
 #endif
 
 static OF_INLINE BOOL
