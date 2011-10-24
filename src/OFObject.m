@@ -62,7 +62,7 @@ struct pre_ivar {
 	void	      **memoryChunks;
 	unsigned int  memoryChunksSize;
 	int32_t	      retainCount;
-#if !defined(OF_ATOMIC_OPS)
+#if !defined(OF_ATOMIC_OPS) && defined(OF_THREADS)
 	of_spinlock_t retainCountSpinlock;
 #endif
 };
@@ -194,7 +194,7 @@ void _references_to_categories_of_OFObject(void)
 	((struct pre_ivar*)instance)->memoryChunksSize = 0;
 	((struct pre_ivar*)instance)->retainCount = 1;
 
-#if !defined(OF_ATOMIC_OPS)
+#if !defined(OF_ATOMIC_OPS) && defined(OF_THREADS)
 	if (!of_spinlock_new(
 	    &((struct pre_ivar*)instance)->retainCountSpinlock)) {
 		free(instance);
@@ -1011,10 +1011,12 @@ void _references_to_categories_of_OFObject(void)
 {
 #if defined(OF_ATOMIC_OPS)
 	of_atomic_inc_32(&PRE_IVAR->retainCount);
-#else
+#elif defined(OF_THREADS)
 	assert(of_spinlock_lock(&PRE_IVAR->retainCountSpinlock));
 	PRE_IVAR->retainCount++;
 	assert(of_spinlock_unlock(&PRE_IVAR->retainCountSspinlock));
+#else
+	PRE_IVAR->retainCount++;
 #endif
 
 	return self;
@@ -1031,14 +1033,17 @@ void _references_to_categories_of_OFObject(void)
 #if defined(OF_ATOMIC_OPS)
 	if (of_atomic_dec_32(&PRE_IVAR->retainCount) <= 0)
 		[self dealloc];
-#else
+#elif defined(OF_THREADS)
 	size_t c;
 
 	assert(of_spinlock_lock(&PRE_IVAR->retainCountSpinlock));
 	c = --PRE_IVAR->retainCount;
 	assert(of_spinlock_unlock(&PRE_IVAR->retainCountSpinlock));
 
-	if (!c)
+	if (c == 0)
+		[self dealloc];
+#else
+	if (--PRE_IVAR->retainCount == 0)
 		[self dealloc];
 #endif
 }
