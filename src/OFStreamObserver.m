@@ -47,8 +47,6 @@
 #import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 
-#import "macros.h"
-
 enum {
 	QUEUE_ADD = 0,
 	QUEUE_REMOVE = 1,
@@ -161,7 +159,6 @@ enum {
 	close(cancelFD[0]);
 	close(cancelFD[1]);
 
-	[(id)delegate release];
 	[readStreams release];
 	[writeStreams release];
 	[queue release];
@@ -176,12 +173,12 @@ enum {
 
 - (id <OFStreamObserverDelegate>)delegate
 {
-	OF_GETTER(delegate, YES)
+	return delegate;
 }
 
 - (void)setDelegate: (id <OFStreamObserverDelegate>)delegate_
 {
-	OF_SETTER(delegate, delegate_, YES, NO)
+	delegate = delegate_;
 }
 
 - (void)addStreamForReading: (OFStream*)stream

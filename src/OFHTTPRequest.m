@@ -103,7 +103,6 @@ normalize_key(OFString *key)
 	[URL release];
 	[queryString release];
 	[headers release];
-	[(id)delegate release];
 
 	[super dealloc];
 }
@@ -160,12 +159,12 @@ normalize_key(OFString *key)
 
 - (void)setDelegate: (id <OFHTTPRequestDelegate>)delegate_
 {
-	OF_SETTER(delegate, delegate_, YES, NO)
+	delegate = delegate_;
 }
 
 - (id <OFHTTPRequestDelegate>)delegate
 {
-	OF_GETTER(delegate, YES)
+	return delegate;
 }
 
 - (void)setStoresData: (BOOL)storesData_

@@ -69,7 +69,7 @@
 @property (readonly, copy) OFString *programName;
 @property (readonly, copy) OFArray *arguments;
 @property (readonly, copy) OFDictionary *environment;
-@property (retain) id <OFApplicationDelegate> delegate;
+@property (assign) id <OFApplicationDelegate> delegate;
 #endif
 
 /**

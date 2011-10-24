@@ -93,7 +93,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (retain) id <OFStreamObserverDelegate> delegate;
+@property (assign) id <OFStreamObserverDelegate> delegate;
 #endif
 
 /**

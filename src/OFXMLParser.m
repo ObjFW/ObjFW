@@ -36,8 +36,6 @@
 #import "OFMalformedXMLException.h"
 #import "OFUnboundNamespaceException.h"
 
-#import "macros.h"
-
 typedef void (*state_function)(id, SEL, const char*, size_t*, size_t*);
 static SEL selectors[OF_XMLPARSER_NUM_STATES];
 static state_function lookupTable[OF_XMLPARSER_NUM_STATES];
@@ -213,8 +211,6 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 - (void)dealloc
 {
-	[(id)delegate release];
-
 	[cache release];
 	[name release];
 	[prefix release];
@@ -229,12 +225,12 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 - (id <OFXMLParserDelegate>)delegate
 {
-	OF_GETTER(delegate, YES)
+	return delegate;
 }
 
 - (void)setDelegate: (id <OFXMLParserDelegate>)delegate_
 {
-	OF_SETTER(delegate, delegate_, YES, NO)
+	delegate = delegate_;
 }
 
 - (void)parseBuffer: (const char*)buffer

@@ -105,7 +105,7 @@ typedef enum of_http_request_type_t {
 @property (copy) OFString *queryString;
 @property (copy) OFDictionary *headers;
 @property (assign) BOOL redirectsFromHTTPSToHTTPAllowed;
-@property (retain) id <OFHTTPRequestDelegate> delegate;
+@property (assign) id <OFHTTPRequestDelegate> delegate;
 @property (assign) BOOL storesData;
 #endif
 

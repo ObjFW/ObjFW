@@ -54,19 +54,18 @@
 - (void)dealloc
 {
 	[stack release];
-	[(id)delegate release];
 
 	[super dealloc];
 }
 
 - (id <OFXMLElementBuilderDelegate>)delegate
 {
-	OF_GETTER(delegate, YES)
+	return delegate;
 }
 
 - (void)setDelegate: (id <OFXMLElementBuilderDelegate>)delegate_
 {
-	OF_SETTER(delegate, delegate_, YES, NO)
+	delegate = delegate_;
 }
 
 -		 (void)parser: (OFXMLParser*)parser

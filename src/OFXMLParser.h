@@ -170,7 +170,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (retain) id <OFXMLParserDelegate> delegate;
+@property (assign) id <OFXMLParserDelegate> delegate;
 #endif
 
 /**

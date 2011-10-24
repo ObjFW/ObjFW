@@ -109,7 +109,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (retain) id <OFXMLElementBuilderDelegate> delegate;
+@property (assign) id <OFXMLElementBuilderDelegate> delegate;
 #endif
 
 /**
