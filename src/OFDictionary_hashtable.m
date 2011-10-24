@@ -135,6 +135,8 @@ struct of_dictionary_hashtable_bucket
 			@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 		for (newSize = 1; newSize < count; newSize <<= 1);
+		if (count * 4 / newSize >= 3)
+			newSize <<= 1;
 
 		if (newSize == 0)
 			@throw [OFOutOfRangeException exceptionWithClass: isa];
@@ -247,6 +249,8 @@ struct of_dictionary_hashtable_bucket
 			@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 		for (newSize = 1; newSize < count; newSize <<= 1);
+		if (count * 4 / newSize >= 3)
+			newSize <<= 1;
 
 		if (newSize == 0)
 			@throw [OFOutOfRangeException exceptionWithClass: isa];
@@ -367,6 +371,8 @@ struct of_dictionary_hashtable_bucket
 			@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 		for (newSize = 1; newSize < count; newSize <<= 1);
+		if (count * 4 / newSize >= 3)
+			newSize <<= 1;
 
 		if (newSize == 0)
 			@throw [OFOutOfRangeException exceptionWithClass: isa];
