@@ -97,14 +97,17 @@
 
 - (BOOL)observeWithTimeout: (int)timeout
 {
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	struct timespec timespec = { timeout, 0 };
 	struct kevent eventList[EVENTLIST_SIZE];
 	int i, events;
 
 	[self _processQueue];
 
-	if ([self _processCache])
+	if ([self _processCache]) {
+		[pool release];
 		return YES;
+	}
 
 	events = kevent(kernelQueue, [changeList cArray],
 	    (int)[changeList count], eventList, EVENTLIST_SIZE,
@@ -113,8 +116,10 @@
 	if (events == -1) {
 		switch (errno) {
 		case EINTR:
+			[pool release];
 			return NO;
 		case ENOMEM:
+			[pool release];
 			@throw [OFOutOfMemoryException exceptionWithClass: isa];
 		default:
 			assert(0);
@@ -123,8 +128,10 @@
 
 	[changeList removeNItems: [changeList count]];
 
-	if (events == 0)
+	if (events == 0) {
+		[pool release];
 		return NO;
+	}
 
 	for (i = 0; i < events; i++) {
 		if (eventList[i].ident == cancelFD[0]) {
@@ -138,6 +145,7 @@
 		if (eventList[i].flags & EV_ERROR) {
 			[delegate streamDidReceiveException:
 			    FDToStream[eventList[i].ident]];
+			[pool releaseObjects];
 			continue;
 		}
 
@@ -145,14 +153,20 @@
 		case EVFILT_READ:
 			[delegate streamIsReadyForReading:
 			    FDToStream[eventList[i].ident]];
+			[pool releaseObjects];
 			break;
 		case EVFILT_WRITE:
 			[delegate streamIsReadyForWriting:
 			    FDToStream[eventList[i].ident]];
+			[pool releaseObjects];
+			break;
 		default:
 			assert(0);
 		}
+
 	}
+
+	[pool release];
 
 	return YES;
 }

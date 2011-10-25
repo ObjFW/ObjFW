@@ -127,8 +127,10 @@
 
 	[self _processQueue];
 
-	if ([self _processCache])
+	if ([self _processCache]) {
+		[pool release];
 		return YES;
+	}
 
 	FDsCArray = [FDs cArray];
 	nFDs = [FDs count];
@@ -138,8 +140,10 @@
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 #endif
 
-	if (poll(FDsCArray, (nfds_t)nFDs, timeout) < 1)
+	if (poll(FDsCArray, (nfds_t)nFDs, timeout) < 1) {
+		[pool release];
 		return NO;
+	}
 
 	for (i = 0; i < nFDs; i++) {
 		if (FDsCArray[i].revents & POLLIN) {

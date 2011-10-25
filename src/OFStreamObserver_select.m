@@ -80,8 +80,10 @@
 
 	[self _processQueue];
 
-	if ([self _processCache])
+	if ([self _processCache]) {
+		[pool release];
 		return YES;
+	}
 
 #ifdef FD_COPY
 	FD_COPY(&readFDs, &readFDs_);
@@ -97,8 +99,10 @@
 	time.tv_usec = (timeout % 1000) * 1000;
 
 	if (select((int)maxFD + 1, &readFDs_, &writeFDs_, &exceptFDs_,
-	    (timeout != -1 ? &time : NULL)) < 1)
+	    (timeout != -1 ? &time : NULL)) < 1) {
+		[pool release];
 		return NO;
+	}
 
 	if (FD_ISSET(cancelFD[0], &readFDs_)) {
 		char buffer;
