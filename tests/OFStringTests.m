@@ -75,6 +75,9 @@ static uint16_t sutf16str[] = {
 	int i;
 	of_unichar_t *ua;
 	EntityHandler *h;
+#ifdef OF_HAVE_BLOCKS
+	__block BOOL ok;
+#endif
 
 	s[0] = [OFMutableString stringWithString: @"täs€"];
 	s[1] = [OFMutableString string];
@@ -510,6 +513,32 @@ static uint16_t sutf16str[] = {
 
 		    return nil;
 	    }] isEqual: @"xbary"])
+
+	ok = YES;
+	[@"foo\nbar\nbaz" enumerateLinesUsingBlock:
+	    ^ (OFString *line, BOOL *stop) {
+		static int i = 0;
+
+		switch (i) {
+		case 0:
+			if (![line isEqual: @"foo"])
+				ok = NO;
+			break;
+		case 1:
+			if (![line isEqual: @"bar"])
+				ok = NO;
+			break;
+		case 2:
+			if (![line isEqual: @"baz"])
+				ok = NO;
+			break;
+		default:
+			ok = NO;
+		}
+
+		i++;
+	}];
+	TEST(@"-[enumerateLinesUsingBlock:]", ok)
 #endif
 
 	[pool drain];
