@@ -27,6 +27,7 @@
 
 #import "OFStreamObserver_kqueue.h"
 #import "OFDataArray.h"
+#import "OFAutoreleasePool.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFOutOfMemoryException.h"
