@@ -134,6 +134,21 @@ static OFMutex *mutex;
 # endif
 #endif
 
+static int month_to_day_of_year[12] = {
+	31,
+	31 + 28,
+	31 + 28 + 31,
+	31 + 28 + 31 + 30,
+	31 + 28 + 31 + 30 + 31,
+	31 + 28 + 31 + 30 + 31 + 30,
+	31 + 28 + 31 + 30 + 31 + 30 + 31,
+	31 + 28 + 31 + 30 + 31 + 30 + 31 + 31,
+	31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30,
+	31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31,
+	31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30,
+	31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30 + 31
+};
+
 @implementation OFDate
 #if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
     defined(OF_THREADS)
@@ -234,15 +249,29 @@ static OFMutex *mutex;
 			@throw [OFInvalidFormatException
 			    exceptionWithClass: isa];
 
-		if (tm.tm_gmtoff)
+#ifdef STRUCT_TM_HAS_TM_GMTOFF
+		if (tm.tm_gmtoff != 0)
 			@throw [OFInvalidFormatException
 			    exceptionWithClass: isa];
+#endif
 
-		if ((seconds = mktime(&tm)) == -1)
+		/* Years */
+		seconds = (tm.tm_year - 70) * 31536000;
+		/* Leap years */
+		seconds += ((tm.tm_year / 4) - 17) * 86400;
+		/* Months */
+		if (tm.tm_mon < 0 || tm.tm_mon > 12)
 			@throw [OFInvalidFormatException
 			    exceptionWithClass: isa];
-
-		seconds += tm.tm_gmtoff;
+		seconds += month_to_day_of_year[tm.tm_mon - 1] * 86400;
+		/* Days */
+		seconds += (tm.tm_mday - 1) * 86400;
+		/* Hours */
+		seconds += tm.tm_hour * 3600;
+		/* Minutes */
+		seconds += tm.tm_min * 60;
+		/* Seconds */
+		seconds += tm.tm_sec;
 	} @catch (id e) {
 		[self release];
 		@throw e;

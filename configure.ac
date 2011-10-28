@@ -462,6 +462,20 @@ AC_CHECK_FUNC(localtime_r, [
 	AC_DEFINE(HAVE_LOCALTIME_R, 1, [Whether we have localtime_r])
 ])
 
+AC_MSG_CHECKING(for tm_gmtoff in struct tm)
+AC_TRY_COMPILE([
+	#define _GNU_SOURCE
+	#include <time.h>
+], [
+	struct tm tm;
+	tm.tm_gmtoff = 0;
+], [
+	AC_DEFINE(STRUCT_TM_HAS_TM_GMTOFF, 1, [Whether struct tm has tm_gmtoff])
+	AC_MSG_RESULT(yes)
+], [
+	AC_MSG_RESULT(no)
+])
+
 AC_CHECK_FUNC(kqueue, [
 	AC_DEFINE(HAVE_KQUEUE, 1, [Whether we have kqueue])
 	AC_SUBST(OFSTREAMOBSERVER_KQUEUE_M, "OFStreamObserver_kqueue.m")
