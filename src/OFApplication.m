@@ -42,7 +42,11 @@ static OFApplication *app = nil;
 static void
 atexit_handler(void)
 {
-	[[app delegate] applicationWillTerminate];
+	id <OFApplicationDelegate> delegate = [app delegate];
+
+	[delegate applicationWillTerminate];
+
+	[(id)delegate release];
 }
 
 int
@@ -57,8 +61,6 @@ of_application_main(int *argc, char **argv[], Class cls)
 	[app setDelegate: delegate];
 
 	[app run];
-
-	[(id)delegate release];
 
 	return 0;
 }
