@@ -256,9 +256,11 @@ static int month_to_day_of_year[12] = {
 #endif
 
 		/* Years */
-		seconds = (tm.tm_year - 70) * 31536000;
+		seconds = (time_t)(tm.tm_year - 70) * 31536000;
 		/* Leap years */
-		seconds += ((tm.tm_year / 4) - 17) * 86400;
+		seconds += (((tm.tm_year + 1900) / 4) - 492) * 86400;
+		seconds -= (((tm.tm_year + 1900) / 100) - 19) * 86400;
+		seconds += (((tm.tm_year + 1900) / 400) - 4) * 86400;
 		/* Months */
 		if (tm.tm_mon < 0 || tm.tm_mon > 12)
 			@throw [OFInvalidFormatException
