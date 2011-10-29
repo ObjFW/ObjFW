@@ -1871,7 +1871,7 @@ of_utf16_string_length(const uint16_t *string)
 	return value;
 }
 
-- (of_unichar_t*)unicodeString
+- (const of_unichar_t*)unicodeString
 {
 	OFObject *object = [[[OFObject alloc] init] autorelease];
 	of_unichar_t *ret;

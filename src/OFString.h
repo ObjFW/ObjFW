@@ -795,7 +795,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  *
  * \return The string as an array of Unicode characters
  */
-- (of_unichar_t*)unicodeString;
+- (const of_unichar_t*)unicodeString;
 
 /**
  * \brief Writes the string into the specified file using UTF-8 encoding.

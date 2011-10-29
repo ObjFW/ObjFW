@@ -630,7 +630,7 @@ void *_OFConstantStringClassReference;
 	return [super doubleValue];
 }
 
-- (of_unichar_t*)unicodeString
+- (const of_unichar_t*)unicodeString
 {
 	if (initialized != SIZE_MAX)
 		[self finishInitialization];
