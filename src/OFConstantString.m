@@ -132,7 +132,7 @@ void *_OFConstantStringClassReference;
 						    selector: _cmd];
 }
 
-- initWithUnicodeString: (of_unichar_t*)string
+- initWithUnicodeString: (const of_unichar_t*)string
 {
 	Class c = isa;
 	[self release];
@@ -140,7 +140,7 @@ void *_OFConstantStringClassReference;
 						    selector: _cmd];
 }
 
-- initWithUnicodeString: (of_unichar_t*)string
+- initWithUnicodeString: (const of_unichar_t*)string
 	      byteOrder: (of_endianess_t)byteOrder
 {
 	Class c = isa;
@@ -149,7 +149,7 @@ void *_OFConstantStringClassReference;
 						    selector: _cmd];
 }
 
-- initWithUnicodeString: (of_unichar_t*)string
+- initWithUnicodeString: (const of_unichar_t*)string
 		 length: (size_t)length
 {
 	Class c = isa;
@@ -158,7 +158,7 @@ void *_OFConstantStringClassReference;
 						    selector: _cmd];
 }
 
-- initWithUnicodeString: (of_unichar_t*)string
+- initWithUnicodeString: (const of_unichar_t*)string
 	      byteOrder: (of_endianess_t)byteOrder
 		 length: (size_t)length
 {
@@ -168,7 +168,7 @@ void *_OFConstantStringClassReference;
 						    selector: _cmd];
 }
 
-- initWithUTF16String: (uint16_t*)string
+- initWithUTF16String: (const uint16_t*)string
 	    byteOrder: (of_endianess_t)byteOrder
 {
 	Class c = isa;
@@ -177,7 +177,7 @@ void *_OFConstantStringClassReference;
 						    selector: _cmd];
 }
 
-- initWithUTF16String: (uint16_t*)string
+- initWithUTF16String: (const uint16_t*)string
 	       length: (size_t)length
 {
 	Class c = isa;
@@ -186,7 +186,7 @@ void *_OFConstantStringClassReference;
 						    selector: _cmd];
 }
 
-- initWithUTF16String: (uint16_t*)string
+- initWithUTF16String: (const uint16_t*)string
 	    byteOrder: (of_endianess_t)byteOrder
 	       length: (size_t)length
 {

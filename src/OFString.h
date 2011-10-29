@@ -164,7 +164,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param string The unicode string
  * \return A new autoreleased OFString
  */
-+ stringWithUnicodeString: (of_unichar_t*)string;
++ stringWithUnicodeString: (const of_unichar_t*)string;
 
 /**
  * \brief Creates a new OFString from a unicode string, assuming the specified
@@ -174,7 +174,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param byteOrder The byte order to assume if there is no BOM
  * \return A new autoreleased OFString
  */
-+ stringWithUnicodeString: (of_unichar_t*)string
++ stringWithUnicodeString: (const of_unichar_t*)string
 		byteOrder: (of_endianess_t)byteOrder;
 
 /**
@@ -185,7 +185,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param length The length of the unicode string
  * \return A new autoreleased OFString
  */
-+ stringWithUnicodeString: (of_unichar_t*)string
++ stringWithUnicodeString: (const of_unichar_t*)string
 		   length: (size_t)length;
 
 /**
@@ -197,7 +197,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param length The length of the unicode string
  * \return A new autoreleased OFString
  */
-+ stringWithUnicodeString: (of_unichar_t*)string
++ stringWithUnicodeString: (const of_unichar_t*)string
 		byteOrder: (of_endianess_t)byteOrder
 		   length: (size_t)length;
 
@@ -207,7 +207,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param string The UTF-16 string
  * \return A new autoreleased OFString
  */
-+ stringWithUTF16String: (uint16_t*)string;
++ stringWithUTF16String: (const uint16_t*)string;
 
 /**
  * \brief Creates a new OFString from a UTF-16 encoded string, assuming the
@@ -217,7 +217,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param byteOrder The byte order to assume if there is no BOM
  * \return A new autoreleased OFString
  */
-+ stringWithUTF16String: (uint16_t*)string
++ stringWithUTF16String: (const uint16_t*)string
 	      byteOrder: (of_endianess_t)byteOrder;
 
 /**
@@ -228,7 +228,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param length The length of the unicode string
  * \return A new autoreleased OFString
  */
-+ stringWithUTF16String: (uint16_t*)string
++ stringWithUTF16String: (const uint16_t*)string
 		 length: (size_t)length;
 
 /**
@@ -241,7 +241,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param length The length of the unicode string
  * \return A new autoreleased OFString
  */
-+ stringWithUTF16String: (uint16_t*)string
++ stringWithUTF16String: (const uint16_t*)string
 	      byteOrder: (of_endianess_t)byteOrder
 		 length: (size_t)length;
 
@@ -367,7 +367,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param string The unicode string
  * \return An initialized OFString
  */
-- initWithUnicodeString: (of_unichar_t*)string;
+- initWithUnicodeString: (const of_unichar_t*)string;
 
 /**
  * \brief Initializes an already allocated OFString with a unicode string,
@@ -377,7 +377,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param byteOrder The byte order to assume if there is no BOM
  * \return An initialized OFString
  */
-- initWithUnicodeString: (of_unichar_t*)string
+- initWithUnicodeString: (const of_unichar_t*)string
 	      byteOrder: (of_endianess_t)byteOrder;
 
 /**
@@ -388,7 +388,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param length The length of the unicode string
  * \return An initialized OFString
  */
-- initWithUnicodeString: (of_unichar_t*)string
+- initWithUnicodeString: (const of_unichar_t*)string
 		 length: (size_t)length;
 
 /**
@@ -401,7 +401,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param length The length of the unicode string
  * \return An initialized OFString
  */
-- initWithUnicodeString: (of_unichar_t*)string
+- initWithUnicodeString: (const of_unichar_t*)string
 	      byteOrder: (of_endianess_t)byteOrder
 		 length: (size_t)length;
 
@@ -411,7 +411,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param string The UTF-16 string
  * \return An initialized OFString
  */
-- initWithUTF16String: (uint16_t*)string;
+- initWithUTF16String: (const uint16_t*)string;
 
 /**
  * \brief Initializes an already allocated OFString with a UTF-16 string,
@@ -421,7 +421,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param byteOrder The byte order to assume if there is no BOM
  * \return An initialized OFString
  */
-- initWithUTF16String: (uint16_t*)string
+- initWithUTF16String: (const uint16_t*)string
 	    byteOrder: (of_endianess_t)byteOrder;
 
 /**
@@ -432,7 +432,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param length The length of the UTF-16 string
  * \return An initialized OFString
  */
-- initWithUTF16String: (uint16_t*)string
+- initWithUTF16String: (const uint16_t*)string
 	       length: (size_t)length;
 
 /**
@@ -445,7 +445,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param length The length of the UTF-16 string
  * \return An initialized OFString
  */
-- initWithUTF16String: (uint16_t*)string
+- initWithUTF16String: (const uint16_t*)string
 	    byteOrder: (of_endianess_t)byteOrder
 	       length: (size_t)length;
 

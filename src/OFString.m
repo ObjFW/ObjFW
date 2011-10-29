@@ -301,26 +301,26 @@ of_utf16_string_length(const uint16_t *string)
 	return [[[self alloc] initWithString: string] autorelease];
 }
 
-+ stringWithUnicodeString: (of_unichar_t*)string
++ stringWithUnicodeString: (const of_unichar_t*)string
 {
 	return [[[self alloc] initWithUnicodeString: string] autorelease];
 }
 
-+ stringWithUnicodeString: (of_unichar_t*)string
++ stringWithUnicodeString: (const of_unichar_t*)string
 		byteOrder: (of_endianess_t)byteOrder
 {
 	return [[[self alloc] initWithUnicodeString: string
 					  byteOrder: byteOrder] autorelease];
 }
 
-+ stringWithUnicodeString: (of_unichar_t*)string
++ stringWithUnicodeString: (const of_unichar_t*)string
 		   length: (size_t)length
 {
 	return [[[self alloc] initWithUnicodeString: string
 					     length: length] autorelease];
 }
 
-+ stringWithUnicodeString: (of_unichar_t*)string
++ stringWithUnicodeString: (const of_unichar_t*)string
 		byteOrder: (of_endianess_t)byteOrder
 		   length: (size_t)length
 {
@@ -329,26 +329,26 @@ of_utf16_string_length(const uint16_t *string)
 					     length: length] autorelease];
 }
 
-+ stringWithUTF16String: (uint16_t*)string
++ stringWithUTF16String: (const uint16_t*)string
 {
 	return [[[self alloc] initWithUTF16String: string] autorelease];
 }
 
-+ stringWithUTF16String: (uint16_t*)string
++ stringWithUTF16String: (const uint16_t*)string
 	      byteOrder: (of_endianess_t)byteOrder
 {
 	return [[[self alloc] initWithUTF16String: string
 					byteOrder: byteOrder] autorelease];
 }
 
-+ stringWithUTF16String: (uint16_t*)string
++ stringWithUTF16String: (const uint16_t*)string
 		 length: (size_t)length
 {
 	return [[[self alloc] initWithUTF16String: string
 					   length: length] autorelease];
 }
 
-+ stringWithUTF16String: (uint16_t*)string
++ stringWithUTF16String: (const uint16_t*)string
 	      byteOrder: (of_endianess_t)byteOrder
 		 length: (size_t)length
 {
@@ -606,14 +606,14 @@ of_utf16_string_length(const uint16_t *string)
 	return self;
 }
 
-- initWithUnicodeString: (of_unichar_t*)string
+- initWithUnicodeString: (const of_unichar_t*)string
 {
 	return [self initWithUnicodeString: string
 				 byteOrder: OF_ENDIANESS_NATIVE
 				    length: of_unicode_string_length(string)];
 }
 
-- initWithUnicodeString: (of_unichar_t*)string
+- initWithUnicodeString: (const of_unichar_t*)string
 	      byteOrder: (of_endianess_t)byteOrder
 {
 	return [self initWithUnicodeString: string
@@ -621,7 +621,7 @@ of_utf16_string_length(const uint16_t *string)
 				    length: of_unicode_string_length(string)];
 }
 
-- initWithUnicodeString: (of_unichar_t*)string
+- initWithUnicodeString: (const of_unichar_t*)string
 		 length: (size_t)length
 {
 	return [self initWithUnicodeString: string
@@ -629,7 +629,7 @@ of_utf16_string_length(const uint16_t *string)
 				    length: length];
 }
 
-- initWithUnicodeString: (of_unichar_t*)string
+- initWithUnicodeString: (const of_unichar_t*)string
 	      byteOrder: (of_endianess_t)byteOrder
 		 length: (size_t)length
 {
@@ -712,14 +712,14 @@ of_utf16_string_length(const uint16_t *string)
 	return self;
 }
 
-- initWithUTF16String: (uint16_t*)string
+- initWithUTF16String: (const uint16_t*)string
 {
 	return [self initWithUTF16String: string
 			       byteOrder: OF_ENDIANESS_NATIVE
 				  length: of_utf16_string_length(string)];
 }
 
-- initWithUTF16String: (uint16_t*)string
+- initWithUTF16String: (const uint16_t*)string
 	    byteOrder: (of_endianess_t)byteOrder
 {
 	return [self initWithUTF16String: string
@@ -727,7 +727,7 @@ of_utf16_string_length(const uint16_t *string)
 				  length: of_utf16_string_length(string)];
 }
 
-- initWithUTF16String: (uint16_t*)string
+- initWithUTF16String: (const uint16_t*)string
 	       length: (size_t)length
 {
 	return [self initWithUTF16String: string
@@ -735,7 +735,7 @@ of_utf16_string_length(const uint16_t *string)
 				  length: length];
 }
 
-- initWithUTF16String: (uint16_t*)string
+- initWithUTF16String: (const uint16_t*)string
 	    byteOrder: (of_endianess_t)byteOrder
 	       length: (size_t)length
 {
