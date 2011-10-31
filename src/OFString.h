@@ -798,6 +798,17 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (const of_unichar_t*)unicodeString;
 
 /**
+ * \brief Returns the string in big endian UTF-16 encoding.
+ *
+ * The result is valid until the autorelease pool is released. If you want to
+ * use the result outside the scope of the current autorelease pool, you have to
+ * copy it.
+ *
+ * \return The string in big endian UTF-16 encoding
+ */
+- (const uint16_t*)UTF16String;
+
+/**
  * \brief Writes the string into the specified file using UTF-8 encoding.
  *
  * \param path The path of the file to write to

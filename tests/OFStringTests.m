@@ -74,6 +74,7 @@ static uint16_t sutf16str[] = {
 	OFArray *a;
 	int i;
 	const of_unichar_t *ua;
+	const uint16_t *u16a;
 	EntityHandler *h;
 #ifdef OF_HAVE_BLOCKS
 	__block BOOL ok;
@@ -382,6 +383,13 @@ static uint16_t sutf16str[] = {
 
 	TEST(@"-[unicodeString]", (ua = [@"fööbär🀺" unicodeString]) &&
 	    !memcmp(ua, ucstr + 1, sizeof(ucstr) - sizeof(of_unichar_t)))
+
+	TEST(@"-[UTF16String]", (u16a = [@"fööbär🀺" UTF16String]) &&
+#ifdef OF_BIG_ENDIAN
+	    !memcmp(u16a, utf16str + 1, sizeof(utf16str) - sizeof(uint16_t)))
+#else
+	    !memcmp(u16a, sutf16str + 1, sizeof(sutf16str) - sizeof(uint16_t)))
+#endif
 
 	TEST(@"-[MD5Hash]", [[@"asdfoobar" MD5Hash]
 	    isEqual: @"184dce2ec49b5422c7cfd8728864db4c"])

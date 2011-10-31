@@ -638,6 +638,14 @@ void *_OFConstantStringClassReference;
 	return [super unicodeString];
 }
 
+- (const uint16_t*)UTF16String
+{
+	if (initialized != SIZE_MAX)
+		[self finishInitialization];
+
+	return [super UTF16String];
+}
+
 - (void)writeToFile: (OFString*)path
 {
 	if (initialized != SIZE_MAX)

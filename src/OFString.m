@@ -1903,6 +1903,53 @@ of_utf16_string_length(const uint16_t *string)
 	return ret;
 }
 
+- (const uint16_t*)UTF16String
+{
+	OFObject *object = [[[OFObject alloc] init] autorelease];
+	uint16_t *ret;
+	size_t i, j;
+
+	/* Allocate memory for the worst case */
+	ret = [object allocMemoryForNItems: s->length * 2 + 1
+				    ofSize: sizeof(uint16_t)];
+
+	i = 0;
+	j = 0;
+
+	while (i < s->cStringLength) {
+		of_unichar_t c;
+		size_t cLen;
+
+		cLen = of_string_utf8_to_unicode(s->cString + i,
+		    s->cStringLength - i, &c);
+
+		if (cLen == 0 || c > 0x10FFFF)
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: isa];
+
+		if (c > 0xFFFF) {
+			c -= 0x10000;
+			ret[j++] = of_bswap16_if_le(0xD800 | (c >> 10));
+			ret[j++] = of_bswap16_if_le(0xDC00 | (c & 0x3FF));
+		} else
+			ret[j++] = of_bswap16_if_le(c);
+
+		i += cLen;
+	}
+
+	ret[j] = 0;
+
+	@try {
+		ret = [object resizeMemory: ret
+				  toNItems: j + 1
+				    ofSize: sizeof(uint16_t)];
+	} @catch (OFOutOfMemoryException *e) {
+		/* We don't care, as we only tried to make it smaller */
+	}
+
+	return ret;
+}
+
 - (void)writeToFile: (OFString*)path
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
