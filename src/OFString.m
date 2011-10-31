@@ -715,7 +715,7 @@ of_utf16_string_length(const uint16_t *string)
 - initWithUTF16String: (const uint16_t*)string
 {
 	return [self initWithUTF16String: string
-			       byteOrder: OF_ENDIANESS_NATIVE
+			       byteOrder: OF_ENDIANESS_BIG_ENDIAN
 				  length: of_utf16_string_length(string)];
 }
 
@@ -731,7 +731,7 @@ of_utf16_string_length(const uint16_t *string)
 	       length: (size_t)length
 {
 	return [self initWithUTF16String: string
-			       byteOrder: OF_ENDIANESS_NATIVE
+			       byteOrder: OF_ENDIANESS_BIG_ENDIAN
 				  length: length];
 }
 

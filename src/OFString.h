@@ -787,7 +787,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (double)doubleValue;
 
 /**
- * \brief Returns the string as an array of of_unichar_ts.
+ * \brief Returns the string as an array of Unicode characters.
  *
  * The result is valid until the autorelease pool is released. If you want to
  * use the result outside the scope of the current autorelease pool, you have to
