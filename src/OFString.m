@@ -1877,13 +1877,11 @@ of_utf16_string_length(const uint16_t *string)
 	of_unichar_t *ret;
 	size_t i, j;
 
-	ret = [object allocMemoryForNItems: s->length + 2
+	ret = [object allocMemoryForNItems: s->length + 1
 				    ofSize: sizeof(of_unichar_t)];
 
 	i = 0;
 	j = 0;
-
-	ret[j++] = 0xFEFF;
 
 	while (i < s->cStringLength) {
 		of_unichar_t c;

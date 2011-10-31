@@ -381,7 +381,7 @@ static uint16_t sutf16str[] = {
 	    hexadecimalValue])
 
 	TEST(@"-[unicodeString]", (ua = [@"fööbär🀺" unicodeString]) &&
-	    !memcmp(ua, ucstr, 9 * sizeof(of_unichar_t)))
+	    !memcmp(ua, ucstr + 1, sizeof(ucstr) - sizeof(of_unichar_t)))
 
 	TEST(@"-[MD5Hash]", [[@"asdfoobar" MD5Hash]
 	    isEqual: @"184dce2ec49b5422c7cfd8728864db4c"])
