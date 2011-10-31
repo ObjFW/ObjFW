@@ -73,7 +73,7 @@ static uint16_t sutf16str[] = {
 	OFMutableString *s[3];
 	OFArray *a;
 	int i;
-	of_unichar_t *ua;
+	const of_unichar_t *ua;
 	EntityHandler *h;
 #ifdef OF_HAVE_BLOCKS
 	__block BOOL ok;
