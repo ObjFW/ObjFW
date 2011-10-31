@@ -125,6 +125,3 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
  */
 - (void)makeImmutable;
 @end
-
-@interface OFMutableArray_placeholder: OFMutableArray
-@end

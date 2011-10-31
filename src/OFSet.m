@@ -28,6 +28,9 @@ static struct {
 	Class isa;
 } placeholder;
 
+@interface OFSet_placeholder: OFSet
+@end
+
 @implementation OFSet_placeholder
 - init
 {

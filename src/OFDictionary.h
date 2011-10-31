@@ -219,7 +219,4 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
 #endif
 @end
 
-@interface OFDictionary_placeholder: OFDictionary
-@end
-
 #import "OFMutableDictionary.h"

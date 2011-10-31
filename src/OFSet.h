@@ -133,7 +133,4 @@ typedef BOOL (^of_set_filter_block_t)(id object);
 #endif
 @end
 
-@interface OFSet_placeholder: OFSet
-@end
-
 #import "OFMutableSet.h"

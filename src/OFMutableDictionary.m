@@ -25,6 +25,9 @@ static struct {
 	Class isa;
 } placeholder;
 
+@interface OFMutableDictionary_placeholder: OFDictionary
+@end
+
 @implementation OFMutableDictionary_placeholder
 - init
 {

@@ -29,6 +29,9 @@ static struct {
 	Class isa;
 } placeholder;
 
+@interface OFCountedSet_placeholder: OFCountedSet
+@end
+
 @implementation OFCountedSet_placeholder
 - init
 {

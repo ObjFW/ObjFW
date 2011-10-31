@@ -28,6 +28,9 @@ static struct {
 	Class isa;
 } placeholder;
 
+@interface OFMutableSet_placeholder: OFMutableSet
+@end
+
 @implementation OFMutableSet_placeholder
 - init
 {

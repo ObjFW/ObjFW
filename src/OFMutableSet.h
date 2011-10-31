@@ -61,6 +61,3 @@
  */
 - (void)makeImmutable;
 @end
-
-@interface OFMutableSet_placeholder: OFMutableSet
-@end

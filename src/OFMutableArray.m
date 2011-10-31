@@ -33,6 +33,9 @@ static struct {
 	Class isa;
 } placeholder;
 
+@interface OFMutableArray_placeholder: OFMutableArray
+@end
+
 @implementation OFMutableArray_placeholder
 - init
 {

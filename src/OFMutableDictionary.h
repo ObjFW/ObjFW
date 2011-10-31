@@ -56,6 +56,3 @@ typedef id (^of_dictionary_replace_block_t)(id key, id object, BOOL *stop);
  */
 - (void)makeImmutable;
 @end
-
-@interface OFMutableDictionary_placeholder: OFDictionary
-@end
