@@ -135,6 +135,7 @@ static OFMutex *mutex;
 #endif
 
 static int month_to_day_of_year[12] = {
+	0,
 	31,
 	31 + 28,
 	31 + 28 + 31,
@@ -146,7 +147,6 @@ static int month_to_day_of_year[12] = {
 	31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30,
 	31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31,
 	31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30,
-	31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30 + 31
 };
 
 @implementation OFDate
@@ -256,16 +256,21 @@ static int month_to_day_of_year[12] = {
 #endif
 
 		/* Years */
-		seconds = (time_t)(tm.tm_year - 70) * 31536000;
-		/* Leap years */
-		seconds += (((tm.tm_year + 1900) / 4) - 492) * 86400;
-		seconds -= (((tm.tm_year + 1900) / 100) - 19) * 86400;
-		seconds += (((tm.tm_year + 1900) / 400) - 4) * 86400;
+		seconds = (int64_t)(tm.tm_year - 70) * 31536000;
+		/* Days of leap years, excluding the year to look at */
+		seconds += (((tm.tm_year + 1899) / 4) - 492) * 86400;
+		seconds -= (((tm.tm_year + 1899) / 100) - 19) * 86400;
+		seconds += (((tm.tm_year + 1899) / 400) - 4) * 86400;
+		/* Leap day */
+		if (tm.tm_mon >= 2 && (((tm.tm_year + 1900) % 4 == 0 &&
+		    (tm.tm_year + 1900) % 100 != 0) ||
+		    (tm.tm_year + 1900) % 400 == 0))
+			seconds += 86400;
 		/* Months */
 		if (tm.tm_mon < 0 || tm.tm_mon > 12)
 			@throw [OFInvalidFormatException
 			    exceptionWithClass: isa];
-		seconds += month_to_day_of_year[tm.tm_mon - 1] * 86400;
+		seconds += month_to_day_of_year[tm.tm_mon] * 86400;
 		/* Days */
 		seconds += (tm.tm_mday - 1) * 86400;
 		/* Hours */
