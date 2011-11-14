@@ -37,6 +37,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
+@property (readonly, getter=cArray) void *data;
 @property (readonly) size_t count;
 @property (readonly) size_t itemSize;
 #endif
@@ -142,6 +143,8 @@
 
 /**
  * \brief Returns all elements of the OFDataArray as a C array.
+ *
+ * WARNING: The pointer is only valid until the OFDataArray is changed!
  *
  * Modifying the returned array directly is allowed and will change the contents
  * of the data array.
