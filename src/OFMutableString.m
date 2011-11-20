@@ -419,7 +419,7 @@ static struct {
 	size_t length = [self length];
 	size_t searchLength = [string length];
 	size_t replacementLength = [replacement length];
-	size_t i, last;
+	size_t i;
 
 	if (searchLength > length) {
 		[pool release];
@@ -429,7 +429,7 @@ static struct {
 	pool2 = [[OFAutoreleasePool alloc] init];
 	unicodeString = [self unicodeString];
 
-	for (i = 0, last = 0; i <= length - searchLength; i++) {
+	for (i = 0; i <= length - searchLength; i++) {
 		if (memcmp(unicodeString + i, searchString,
 		    searchLength * sizeof(of_unichar_t)))
 			continue;
@@ -441,7 +441,6 @@ static struct {
 		length += replacementLength;
 
 		i += replacementLength - 1;
-		last = i + 1;
 
 		[pool2 releaseObjects];
 
