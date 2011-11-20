@@ -117,7 +117,7 @@ static uint16_t sutf16str[] = {
 
 	TEST(@"-[length]", [s[0] length] == 7)
 	TEST(@"-[UTF8StringLength]", [s[0] UTF8StringLength] == 13)
-	TEST(@"-[hash]", [s[0] hash] == 0xD576830E)
+	TEST(@"-[hash]", [s[0] hash] == 0x324B6743)
 
 	TEST(@"-[characterAtIndex:]", [s[0] characterAtIndex: 0] == 't' &&
 	    [s[0] characterAtIndex: 1] == 0xE4 &&
@@ -414,6 +414,21 @@ static uint16_t sutf16str[] = {
 	EXPECT_EXCEPTION(@"Detect invalid encoding in -[stringByURLDecoding] "
 	    @"#2", OFInvalidEncodingException,
 	    [@"foo%FFbar" stringByURLDecoding])
+
+	TEST(@"-[setCharacter:atIndex:]",
+	    (s[0] = [OFMutableString stringWithString: @"abäde"]) &&
+	    R([s[0] setCharacter: 0xF6
+			 atIndex: 2]) &&
+	    [s[0] isEqual: @"aböde"] &&
+	    R([s[0] setCharacter: 'c'
+			 atIndex: 2]) &&
+	    [s[0] isEqual: @"abcde"] &&
+	    R([s[0] setCharacter: 0x20AC
+			 atIndex: 3]) &&
+	    [s[0] isEqual: @"abc€e"] &&
+	    R([s[0] setCharacter: 'x'
+			 atIndex: 1]) &&
+	    [s[0] isEqual: @"axc€e"])
 
 	TEST(@"-[deleteCharactersInRange:]",
 	    (s[0] = [OFMutableString stringWithString: @"𝄞öööbä€"]) &&

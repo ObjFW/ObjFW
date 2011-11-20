@@ -2,19 +2,6 @@
 <serialization xmlns='https://webkeks.org/objfw/serialization' version='0'>
   <OFMutableDictionary>
     <key>
-      <OFArray>
-        <OFString>Qu&quot;xbar
-test</OFString>
-        <OFNumber type='signed'>1234</OFNumber>
-        <OFNumber type='double'>0x1.34a456d5cfaadp+10</OFNumber>
-        <OFMutableString>asd</OFMutableString>
-        <OFDate>0x1.34a456d5cfaadp+10</OFDate>
-      </OFArray>
-    </key>
-    <object>
-      <OFString>Hello</OFString>
-    </object>
-    <key>
       <OFList>
         <OFString>Hello</OFString>
         <OFString>Wo&#xD;ld!
@@ -62,15 +49,15 @@ How are you?</OFString>
           </children>
         </OFXMLElement>
         <OFSet>
-          <OFString>foo</OFString>
           <OFString>bar</OFString>
+          <OFString>foo</OFString>
         </OFSet>
         <OFCountedSet>
-          <object count='2'>
-            <OFString>foo</OFString>
-          </object>
           <object count='1'>
             <OFString>bar</OFString>
+          </object>
+          <object count='2'>
+            <OFString>foo</OFString>
           </object>
         </OFCountedSet>
       </OFList>
@@ -79,16 +66,29 @@ How are you?</OFString>
       <OFString>list</OFString>
     </object>
     <key>
-      <OFString>Blub</OFString>
+      <OFArray>
+        <OFString>Qu&quot;xbar
+test</OFString>
+        <OFNumber type='signed'>1234</OFNumber>
+        <OFNumber type='double'>0x1.34a456d5cfaadp+10</OFNumber>
+        <OFMutableString>asd</OFMutableString>
+        <OFDate>0x1.34a456d5cfaadp+10</OFDate>
+      </OFArray>
     </key>
     <object>
-      <OFString>B&quot;la</OFString>
+      <OFString>Hello</OFString>
     </object>
     <key>
       <OFDataArray>MDEyMzQ1Njc4OTo7PEFCQ0RFRkdISklLTE1OT1BRUlNUVVZXWFla</OFDataArray>
     </key>
     <object>
       <OFString>data</OFString>
+    </object>
+    <key>
+      <OFString>Blub</OFString>
+    </key>
+    <object>
+      <OFString>B&quot;la</OFString>
     </object>
   </OFMutableDictionary>
 </serialization>

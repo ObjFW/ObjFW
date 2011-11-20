@@ -24,6 +24,15 @@
  */
 @interface OFMutableString: OFString
 /**
+ * \brief Sets the character at the specified index.
+ *
+ * \param character The character to set
+ * \param index The index where to set the character
+ */
+- (void)setCharacter: (of_unichar_t)character
+	     atIndex: (size_t)index;
+
+/**
  * \brief Appends a UTF-8 encoded C string to the OFMutableString.
  *
  * \param UTF8String A UTF-8 encoded C string to append

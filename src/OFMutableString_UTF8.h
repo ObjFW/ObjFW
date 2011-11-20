@@ -14,24 +14,11 @@
  * file.
  */
 
-#import "OFString.h"
+#import "OFMutableString.h"
 
-#ifdef OF_APPLE_RUNTIME
-# ifdef __cplusplus
-extern "C" {
-#endif
-extern void *_OFConstantStringClassReference;
-# ifdef __cplusplus
-}
-#endif
-#endif
-
-/**
- * \brief A class for storing constant strings using the \@"" literal.
- */
-@interface OFConstantString: OFString
+@interface OFMutableString_UTF8: OFMutableString
 {
-	char *cString;
-	size_t cStringLength;
+@public
+	struct of_string_utf8_ivars *restrict s;
 }
 @end

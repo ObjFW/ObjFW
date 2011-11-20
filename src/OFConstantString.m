@@ -20,6 +20,7 @@
 #include <string.h>
 
 #import "OFConstantString.h"
+#import "OFString_UTF8.h"
 
 #import "OFInvalidEncodingException.h"
 #import "OFNotImplementedException.h"
@@ -31,252 +32,16 @@
 void *_OFConstantStringClassReference;
 #endif
 
-@implementation OFConstantString
-#ifdef OF_APPLE_RUNTIME
-+ (void)load
-{
-	objc_setFutureClass((Class)&_OFConstantStringClassReference,
-	    "OFConstantString");
-}
-#endif
+@interface OFString_const: OFString_UTF8
+@end
 
-- (void)finishInitialization
-{
-	struct of_string_ivars *ivars;
-
-	if (initialized == SIZE_MAX)
-		return;
-
-	if ((ivars = malloc(sizeof(*ivars))) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithClass: isa
-			 requestedSize: sizeof(*ivars)];
-	memset(ivars, 0, sizeof(*ivars));
-
-	ivars->cString = (char*)s;
-	ivars->cStringLength = initialized;
-
-	switch (of_string_check_utf8(ivars->cString, ivars->cStringLength,
-	    &ivars->length)) {
-	case 1:
-		ivars->UTF8 = YES;
-		break;
-	case -1:
-		free(ivars);
-		@throw [OFInvalidEncodingException exceptionWithClass: isa];
-	}
-
-	s = ivars;
-	initialized = SIZE_MAX;
-}
-
-/*
- * The following methods are not available since it's a constant string, which
- * can't be allocated or initialized at runtime.
- */
+@implementation OFString_const
 + alloc
 {
 	@throw [OFNotImplementedException exceptionWithClass: self
 						    selector: _cmd];
 }
 
-- init
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithUTF8String: (const char*)UTF8String
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithUTF8String: (const char*)UTF8String
-	      length: (size_t)UTF8StringLength
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithCString: (const char*)cString
-	 encoding: (of_string_encoding_t)encoding
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithCString: (const char*)cString
-	 encoding: (of_string_encoding_t)encoding
-	   length: (size_t)cStringLength
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithString: (OFString*)string
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithUnicodeString: (const of_unichar_t*)string
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithUnicodeString: (const of_unichar_t*)string
-	      byteOrder: (of_endianess_t)byteOrder
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithUnicodeString: (const of_unichar_t*)string
-		 length: (size_t)length
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithUnicodeString: (const of_unichar_t*)string
-	      byteOrder: (of_endianess_t)byteOrder
-		 length: (size_t)length
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithUTF16String: (const uint16_t*)string
-	    byteOrder: (of_endianess_t)byteOrder
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithUTF16String: (const uint16_t*)string
-	       length: (size_t)length
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithUTF16String: (const uint16_t*)string
-	    byteOrder: (of_endianess_t)byteOrder
-	       length: (size_t)length
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithFormat: (OFConstantString*)format, ...
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithFormat: (OFConstantString*)format
-       arguments: (va_list)args
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithPath: (OFString*)firstComponent, ...
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithPath: (OFString*)firstComponent
-     arguments: (va_list)arguments
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithContentsOfFile: (OFString*)path
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithContentsOfFile: (OFString*)path
-		encoding: (of_string_encoding_t)encoding
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithContentsOfURL: (OFURL*)URL
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithContentsOfURL: (OFURL*)URL
-	       encoding: (of_string_encoding_t)encoding
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-/* From protocol OFSerializing */
-- initWithSerialization: (OFXMLElement*)element
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-/*
- * The following methods are not available because constant strings are
- * preallocated by the compiler and thus don't have a memory pool.
- */
 - (void)addMemoryToPool: (void*)ptr
 {
 	@throw [OFNotImplementedException exceptionWithClass: isa
@@ -317,10 +82,118 @@ void *_OFConstantStringClassReference;
 						    selector: _cmd];
 }
 
-/*
- * The following methods are unnecessary because constant strings are
- * singletons.
- */
+- retain
+{
+	return self;
+}
+
+- autorelease
+{
+	return self;
+}
+
+- (unsigned int)retainCount
+{
+	return OF_RETAIN_COUNT_MAX;
+}
+
+- (void)release
+{
+}
+
+- (void)dealloc
+{
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
+	[super dealloc];	/* Get rid of a stupid warning */
+}
+@end
+
+@implementation OFConstantString
++ (void)load
+{
+#ifdef OF_APPLE_RUNTIME
+	objc_setFutureClass((Class)&_OFConstantStringClassReference,
+	    "OFConstantString");
+#endif
+
+	if (self == [OFConstantString class])
+		[self inheritMethodsFromClass: [OFString_UTF8 class]];
+}
+
+- (void)finishInitialization
+{
+	struct of_string_utf8_ivars *ivars;
+
+	if ((ivars = malloc(sizeof(*ivars))) == NULL)
+		@throw [OFOutOfMemoryException
+		    exceptionWithClass: isa
+			 requestedSize: sizeof(*ivars)];
+	memset(ivars, 0, sizeof(*ivars));
+
+	ivars->cString = cString;
+	ivars->cStringLength = cStringLength;
+
+	switch (of_string_check_utf8(ivars->cString, ivars->cStringLength,
+	    &ivars->length)) {
+	case 1:
+		ivars->UTF8 = YES;
+		break;
+	case -1:
+		free(ivars);
+		@throw [OFInvalidEncodingException exceptionWithClass: isa];
+	}
+
+	cString = (char*)ivars;
+	isa = [OFString_const class];
+}
+
++ alloc
+{
+	@throw [OFNotImplementedException exceptionWithClass: self
+						    selector: _cmd];
+}
+
+- (void)addMemoryToPool: (void*)ptr
+{
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
+}
+
+- (void*)allocMemoryWithSize: (size_t)size
+{
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
+}
+
+- (void*)allocMemoryForNItems: (size_t)nitems
+		     withSize: (size_t)size
+{
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
+}
+
+- (void*)resizeMemory: (void*)ptr
+	       toSize: (size_t)size
+{
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
+}
+
+- (void*)resizeMemory: (void*)ptr
+	     toNItems: (size_t)nitems
+	     withSize: (size_t)size
+{
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
+}
+
+- (void)freeMemory: (void*)ptr
+{
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
+}
+
 - retain
 {
 	return self;
@@ -348,319 +221,289 @@ void *_OFConstantStringClassReference;
 }
 
 /*
- * In all following methods, it is checked whether the constant string has been
- * initialized. If not, it will be initialized. Finally, the implementation of
- * the superclass will be called.
+ * In all following methods, the constant string is converted to an
+ * OFString_UTF8 and the message sent again.
  */
 
 /* From protocol OFCopying */
 - copy
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super copy];
+	return [self copy];
 }
 
 /* From protocol OFMutableCopying */
 - mutableCopy
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super mutableCopy];
+	return [self mutableCopy];
 }
 
 /* From protocol OFComparing */
 - (of_comparison_result_t)compare: (id)object
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super compare: object];
+	return [self compare: object];
 }
 
 /* From OFObject, but reimplemented in OFString */
 - (BOOL)isEqual: (id)object
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super isEqual: object];
+	return [self isEqual: object];
 }
 
 - (uint32_t)hash
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super hash];
+	return [self hash];
 }
 
 - (OFString*)description
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super description];
+	return [self description];
 }
 
 /* From OFString */
 - (const char*)UTF8String
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super UTF8String];
+	return [self UTF8String];
 }
 
 - (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super cStringWithEncoding: encoding];
+	return [self cStringWithEncoding: encoding];
 }
 
 - (size_t)length
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super length];
+	return [self length];
 }
 
 - (size_t)UTF8StringLength
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super UTF8StringLength];
+	return [self UTF8StringLength];
 }
 
 - (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super cStringLengthWithEncoding: encoding];
+	return [self cStringLengthWithEncoding: encoding];
 }
 
 - (of_comparison_result_t)caseInsensitiveCompare: (OFString*)otherString
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super caseInsensitiveCompare: otherString];
+	return [self caseInsensitiveCompare: otherString];
 }
 
 - (of_unichar_t)characterAtIndex: (size_t)index
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super characterAtIndex: index];
+	return [self characterAtIndex: index];
+}
+
+- (void)getCharacters: (of_unichar_t*)buffer
+	      inRange: (of_range_t)range
+{
+	[self finishInitialization];
+
+	return [self getCharacters: buffer
+			   inRange: range];
 }
 
 - (size_t)indexOfFirstOccurrenceOfString: (OFString*)string
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super indexOfFirstOccurrenceOfString: string];
+	return [self indexOfFirstOccurrenceOfString: string];
 }
 
 - (size_t)indexOfLastOccurrenceOfString: (OFString*)string
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super indexOfLastOccurrenceOfString: string];
+	return [self indexOfLastOccurrenceOfString: string];
 }
 
 - (BOOL)containsString: (OFString*)string
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super containsString: string];
+	return [self containsString: string];
 }
 
 - (OFString*)substringWithRange: (of_range_t)range
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super substringWithRange: range];
+	return [self substringWithRange: range];
 }
 
 - (OFString*)stringByAppendingString: (OFString*)string
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super stringByAppendingString: string];
+	return [self stringByAppendingString: string];
 }
 
 - (OFString*)stringByPrependingString: (OFString*)string
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super stringByPrependingString: string];
+	return [self stringByPrependingString: string];
 }
 
 - (OFString*)uppercaseString
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super uppercaseString];
+	return [self uppercaseString];
 }
 
 - (OFString*)lowercaseString
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super lowercaseString];
+	return [self lowercaseString];
 }
 
 - (OFString*)stringByDeletingLeadingWhitespaces
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super stringByDeletingLeadingWhitespaces];
+	return [self stringByDeletingLeadingWhitespaces];
 }
 
 - (OFString*)stringByDeletingTrailingWhitespaces
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super stringByDeletingTrailingWhitespaces];
+	return [self stringByDeletingTrailingWhitespaces];
 }
 
 - (OFString*)stringByDeletingEnclosingWhitespaces
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super stringByDeletingEnclosingWhitespaces];
+	return [self stringByDeletingEnclosingWhitespaces];
 }
 
 - (BOOL)hasPrefix: (OFString*)prefix
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super hasPrefix: prefix];
+	return [self hasPrefix: prefix];
 }
 
 - (BOOL)hasSuffix: (OFString*)suffix
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super hasSuffix: suffix];
+	return [self hasSuffix: suffix];
 }
 
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super componentsSeparatedByString: delimiter];
+	return [self componentsSeparatedByString: delimiter];
 }
 
 - (OFArray*)pathComponents
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super pathComponents];
+	return [self pathComponents];
 }
 
 - (OFString*)lastPathComponent
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super lastPathComponent];
+	return [self lastPathComponent];
 }
 
 - (OFString*)stringByDeletingLastPathComponent
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super stringByDeletingLastPathComponent];
+	return [self stringByDeletingLastPathComponent];
 }
 
 - (intmax_t)decimalValue
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super decimalValue];
+	return [self decimalValue];
 }
 
 - (uintmax_t)hexadecimalValue
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super hexadecimalValue];
+	return [self hexadecimalValue];
 }
 
 - (float)floatValue
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super floatValue];
+	return [self floatValue];
 }
 
 - (double)doubleValue
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super doubleValue];
+	return [self doubleValue];
 }
 
 - (const of_unichar_t*)unicodeString
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super unicodeString];
+	return [self unicodeString];
 }
 
 - (const uint16_t*)UTF16String
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super UTF16String];
+	return [self UTF16String];
 }
 
 - (void)writeToFile: (OFString*)path
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super writeToFile: path];
+	return [self writeToFile: path];
 }
 
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateLinesUsingBlock: (of_string_line_enumeration_block_t)block
 {
-	if (initialized != SIZE_MAX)
-		[self finishInitialization];
+	[self finishInitialization];
 
-	return [super enumerateLinesUsingBlock: block];
+	return [self enumerateLinesUsingBlock: block];
 }
 #endif
 @end

@@ -50,6 +50,7 @@ SRCS = OFApplication.m			\
        OFString+URLEncoding.m		\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
+       OFString_UTF8.m			\
        OFTCPSocket.m			\
        ${OFTHREAD_M}			\
        OFURL.m				\
@@ -84,6 +85,7 @@ SRCS += OFArray_adjacent.m		\
 	OFMutableArray_adjacent.m	\
 	OFMutableDictionary_hashtable.m	\
 	OFMutableSet_hashtable.m	\
+	OFMutableString_UTF8.m		\
 	OFSet_hashtable.m		\
 	${OFSTREAMOBSERVER_KQUEUE_M}	\
 	${OFSTREAMOBSERVER_POLL_M}	\

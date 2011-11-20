@@ -17,228 +17,313 @@
 #include "config.h"
 
 #include <stdarg.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 
 #import "OFString.h"
+#import "OFMutableString_UTF8.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"
-#import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
-#import "OFOutOfMemoryException.h"
-#import "OFOutOfRangeException.h"
+#import "OFNotImplementedException.h"
 
 #import "macros.h"
 
 #import "of_asprintf.h"
 #import "unicode.h"
 
+static struct {
+	Class isa;
+} placeholder;
+
+@interface OFMutableString_placeholder: OFMutableString
+@end
+
+@implementation OFMutableString_placeholder
+- init
+{
+	return (id)[[OFMutableString_UTF8 alloc] init];
+}
+
+- initWithUTF8String: (const char*)UTF8String
+{
+	return (id)[[OFMutableString_UTF8 alloc]
+	    initWithUTF8String: UTF8String];
+}
+
+- initWithUTF8String: (const char*)UTF8String
+	      length: (size_t)UTF8StringLength
+{
+	return (id)[[OFMutableString_UTF8 alloc]
+	    initWithUTF8String: UTF8String
+			length: UTF8StringLength];
+}
+
+- initWithCString: (const char*)cString
+	 encoding: (of_string_encoding_t)encoding
+{
+	return (id)[[OFMutableString_UTF8 alloc] initWithCString: cString
+							encoding: encoding];
+}
+
+- initWithCString: (const char*)cString
+	 encoding: (of_string_encoding_t)encoding
+	   length: (size_t)cStringLength
+{
+	return (id)[[OFMutableString_UTF8 alloc]
+	    initWithCString: cString
+		   encoding: encoding
+		     length: cStringLength];
+}
+
+- initWithString: (OFString*)string
+{
+	return (id)[[OFMutableString_UTF8 alloc] initWithString: string];
+}
+
+- initWithUnicodeString: (const of_unichar_t*)string
+{
+	return (id)[[OFMutableString_UTF8 alloc] initWithUnicodeString: string];
+}
+
+- initWithUnicodeString: (const of_unichar_t*)string
+	      byteOrder: (of_endianess_t)byteOrder
+{
+	return (id)[[OFMutableString_UTF8 alloc]
+	    initWithUnicodeString: string
+			byteOrder: byteOrder];
+}
+
+- initWithUnicodeString: (const of_unichar_t*)string
+		 length: (size_t)length
+{
+	return (id)[[OFMutableString_UTF8 alloc] initWithUnicodeString: string
+								length: length];
+}
+
+- initWithUnicodeString: (const of_unichar_t*)string
+	      byteOrder: (of_endianess_t)byteOrder
+		 length: (size_t)length
+{
+	return (id)[[OFMutableString_UTF8 alloc]
+	    initWithUnicodeString: string
+			byteOrder: byteOrder
+			   length: length];
+}
+
+- initWithUTF16String: (const uint16_t*)string
+{
+	return (id)[[OFMutableString_UTF8 alloc] initWithUTF16String: string];
+}
+
+- initWithUTF16String: (const uint16_t*)string
+	    byteOrder: (of_endianess_t)byteOrder
+{
+	return (id)[[OFMutableString_UTF8 alloc]
+	    initWithUTF16String: string
+		      byteOrder: byteOrder];
+}
+
+- initWithUTF16String: (const uint16_t*)string
+	       length: (size_t)length
+{
+	return (id)[[OFMutableString_UTF8 alloc] initWithUTF16String: string
+							      length: length];
+}
+
+- initWithUTF16String: (const uint16_t*)string
+	    byteOrder: (of_endianess_t)byteOrder
+	       length: (size_t)length
+{
+	return (id)[[OFMutableString_UTF8 alloc]
+	    initWithUTF16String: string
+		      byteOrder: byteOrder
+			 length: length];
+}
+
+- initWithFormat: (OFConstantString*)format, ...
+{
+	id ret;
+	va_list arguments;
+
+	va_start(arguments, format);
+	ret = [[OFMutableString_UTF8 alloc] initWithFormat: format
+						 arguments: arguments];
+	va_end(arguments);
+
+	return ret;
+}
+
+- initWithFormat: (OFConstantString*)format
+       arguments: (va_list)arguments
+{
+	return (id)[[OFMutableString_UTF8 alloc] initWithFormat: format
+						      arguments: arguments];
+}
+
+- initWithPath: (OFString*)firstComponent, ...
+{
+	id ret;
+	va_list arguments;
+
+	va_start(arguments, firstComponent);
+	ret = [[OFMutableString_UTF8 alloc] initWithPath: firstComponent
+					       arguments: arguments];
+	va_end(arguments);
+
+	return ret;
+}
+
+- initWithPath: (OFString*)firstComponent
+     arguments: (va_list)arguments
+{
+	return (id)[[OFMutableString_UTF8 alloc] initWithPath: firstComponent
+						    arguments: arguments];
+}
+
+- initWithContentsOfFile: (OFString*)path
+{
+	return (id)[[OFMutableString_UTF8 alloc] initWithContentsOfFile: path];
+}
+
+- initWithContentsOfFile: (OFString*)path
+		encoding: (of_string_encoding_t)encoding
+{
+	return (id)[[OFMutableString_UTF8 alloc]
+	    initWithContentsOfFile: path
+			  encoding: encoding];
+}
+
+- initWithContentsOfURL: (OFURL*)URL
+{
+	return (id)[[OFMutableString_UTF8 alloc] initWithContentsOfURL: URL];
+}
+
+- initWithContentsOfURL: (OFURL*)URL
+	       encoding: (of_string_encoding_t)encoding
+{
+	return (id)[[OFMutableString_UTF8 alloc]
+	    initWithContentsOfURL: URL
+			 encoding: encoding];
+}
+
+- initWithSerialization: (OFXMLElement*)element
+{
+	return (id)[[OFMutableString_UTF8 alloc]
+	    initWithSerialization: element];
+}
+
+- retain
+{
+	return self;
+}
+
+- autorelease
+{
+	return self;
+}
+
+- (void)release
+{
+}
+
+- (void)dealloc
+{
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
+	[super dealloc];	/* Get rid of a stupid warning */
+}
+@end
+
 @implementation OFMutableString
++ (void)initialize
+{
+	if (self == [OFMutableString class])
+		placeholder.isa = [OFMutableString_placeholder class];
+}
+
++ alloc
+{
+	if (self == [OFMutableString class])
+		return (id)&placeholder;
+
+	return [super alloc];
+}
+
 - (void)_applyTable: (const of_unichar_t* const[])table
 	   withSize: (size_t)tableSize
 {
-	of_unichar_t c;
-	of_unichar_t *unicodeString;
-	size_t unicodeLen, newCStringLength, cLen;
-	size_t i, j, d;
-	char *newCString;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	const of_unichar_t *string = [self unicodeString];
+	size_t i, length = [self length];
 
-	if (!s->UTF8) {
-		assert(tableSize >= 1);
+	for (i = 0; i < length; i++) {
+		of_unichar_t c = string[i];
 
-		uint8_t *p = (uint8_t*)s->cString + s->cStringLength;
-		uint8_t t;
-
-		while (--p >= (uint8_t*)s->cString)
-			if ((t = table[0][*p]) != 0)
-				*p = t;
-
-		return;
+		if (c >> 8 < tableSize && table[c >> 8][c & 0xFF])
+			[self setCharacter: table[c >> 8][c & 0xFF]
+				   atIndex: i];
 	}
 
-	unicodeLen = [self length];
-	unicodeString = [self allocMemoryForNItems: unicodeLen
-					    ofSize: sizeof(of_unichar_t)];
+	[pool release];
+}
 
-	i = j = 0;
-	newCStringLength = 0;
-
-	while (i < s->cStringLength) {
-		cLen = of_string_utf8_to_unicode(s->cString + i,
-		    s->cStringLength - i, &c);
-
-		if (cLen == 0 || c > 0x10FFFF) {
-			[self freeMemory: unicodeString];
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: isa];
-		}
-
-		if (c >> 8 < tableSize) {
-			of_unichar_t tc = table[c >> 8][c & 0xFF];
-
-			if (tc)
-				c = tc;
-		}
-		unicodeString[j++] = c;
-
-		if (c < 0x80)
-			newCStringLength++;
-		else if (c < 0x800)
-			newCStringLength += 2;
-		else if (c < 0x10000)
-			newCStringLength += 3;
-		else if (c < 0x110000)
-			newCStringLength += 4;
-		else {
-			[self freeMemory: unicodeString];
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: isa];
-		}
-
-		i += cLen;
-	}
-
-	@try {
-		newCString = [self allocMemoryWithSize: newCStringLength + 1];
-	} @catch (id e) {
-		[self freeMemory: unicodeString];
-		@throw e;
-	}
-
-	j = 0;
-
-	for (i = 0; i < unicodeLen; i++) {
-		if ((d = of_string_unicode_to_utf8(unicodeString[i],
-		    newCString + j)) == 0) {
-			[self freeMemory: unicodeString];
-			[self freeMemory: newCString];
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: isa];
-		}
-		j += d;
-	}
-
-	assert(j == newCStringLength);
-	newCString[j] = 0;
-	[self freeMemory: unicodeString];
-
-	[self freeMemory: s->cString];
-	s->cString = newCString;
-	s->cStringLength = newCStringLength;
-
-	/*
-	 * Even though cStringLength can change, length cannot, therefore no
-	 * need to change it.
-	 */
+- (void)setCharacter: (of_unichar_t)character
+	     atIndex: (size_t)index
+{
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (void)appendUTF8String: (const char*)UTF8String
 {
-	size_t UTF8StringLength = strlen(UTF8String);
-	size_t length;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 
-	if (UTF8StringLength >= 3 && !memcmp(UTF8String, "\xEF\xBB\xBF", 3)) {
-		UTF8String += 3;
-		UTF8StringLength -= 3;
-	}
+	[self appendString: [OFString stringWithUTF8String: UTF8String]];
 
-	switch (of_string_check_utf8(UTF8String, UTF8StringLength, &length)) {
-	case 1:
-		s->UTF8 = YES;
-		break;
-	case -1:
-		@throw [OFInvalidEncodingException exceptionWithClass: isa];
-	}
-
-	s->cString = [self resizeMemory: s->cString
-				 toSize: s->cStringLength +
-					 UTF8StringLength + 1];
-	memcpy(s->cString + s->cStringLength, UTF8String, UTF8StringLength + 1);
-
-	s->cStringLength += UTF8StringLength;
-	s->length += length;
+	[pool release];
 }
 
 - (void)appendUTF8String: (const char*)UTF8String
 	      withLength: (size_t)UTF8StringLength
 {
-	size_t length;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 
-	if (UTF8StringLength >= 3 && !memcmp(UTF8String, "\xEF\xBB\xBF", 3)) {
-		UTF8String += 3;
-		UTF8StringLength -= 3;
-	}
+	[self appendString: [OFString stringWithUTF8String: UTF8String
+						    length: UTF8StringLength]];
 
-	switch (of_string_check_utf8(UTF8String, UTF8StringLength, &length)) {
-	case 1:
-		s->UTF8 = YES;
-		break;
-	case -1:
-		@throw [OFInvalidEncodingException exceptionWithClass: isa];
-	}
-
-	s->cString = [self resizeMemory: s->cString
-				 toSize: s->cStringLength +
-					 UTF8StringLength + 1];
-	memcpy(s->cString + s->cStringLength, UTF8String, UTF8StringLength);
-
-	s->cStringLength += UTF8StringLength;
-	s->length += length;
-
-	s->cString[s->cStringLength] = 0;
+	[pool release];
 }
 
 - (void)appendCString: (const char*)cString
 	 withEncoding: (of_string_encoding_t)encoding
 {
-	return [self appendCString: cString
-		      withEncoding: encoding
-			    length: strlen(cString)];
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+
+	[self appendString: [OFString stringWithCString: cString
+					       encoding: encoding]];
+
+	[pool release];
 }
 
 - (void)appendCString: (const char*)cString
 	 withEncoding: (of_string_encoding_t)encoding
 	       length: (size_t)cStringLength
 {
-	if (encoding == OF_STRING_ENCODING_UTF_8)
-		[self appendUTF8String: cString
-			    withLength: cStringLength];
-	else {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-		[self appendString:
-		    [OFString stringWithCString: cString
-				       encoding: encoding
-					 length: cStringLength]];
-		[pool release];
-	}
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+
+	[self appendString: [OFString stringWithCString: cString
+					       encoding: encoding
+						 length: cStringLength]];
+
+	[pool release];
 }
 
 - (void)appendString: (OFString*)string
 {
-	size_t UTF8StringLength;
-
-	if (string == nil)
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
-
-	UTF8StringLength = [string UTF8StringLength];
-
-	s->cString = [self resizeMemory: s->cString
-				 toSize: s->cStringLength +
-					 UTF8StringLength + 1];
-	memcpy(s->cString + s->cStringLength, string->s->cString,
-	    UTF8StringLength);
-
-	s->cStringLength += UTF8StringLength;
-	s->length += string->s->length;
-
-	s->cString[s->cStringLength] = 0;
-
-	if (string->s->UTF8)
-		s->UTF8 = YES;
+	return [self insertString: string
+			  atIndex: [self length]];
 }
 
 - (void)appendFormat: (OFConstantString*)format, ...
@@ -281,83 +366,14 @@
 
 - (void)reverse
 {
-	size_t i, j;
+	size_t i, j, length = [self length];
 
-	/* We reverse all bytes and restore UTF-8 later, if necessary */
-	for (i = 0, j = s->cStringLength - 1; i < s->cStringLength / 2;
-	    i++, j--) {
-		s->cString[i] ^= s->cString[j];
-		s->cString[j] ^= s->cString[i];
-		s->cString[i] ^= s->cString[j];
-	}
-
-	if (!s->UTF8)
-		return;
-
-	for (i = 0; i < s->cStringLength; i++) {
-		/* ASCII */
-		if (OF_LIKELY(!(s->cString[i] & 0x80)))
-			continue;
-
-		/* A start byte can't happen first as we reversed everything */
-		if (OF_UNLIKELY(s->cString[i] & 0x40))
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: isa];
-
-		/* Next byte must not be ASCII */
-		if (OF_UNLIKELY(s->cStringLength < i + 1 ||
-		    !(s->cString[i + 1] & 0x80)))
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: isa];
-
-		/* Next byte is the start byte */
-		if (OF_LIKELY(s->cString[i + 1] & 0x40)) {
-			s->cString[i] ^= s->cString[i + 1];
-			s->cString[i + 1] ^= s->cString[i];
-			s->cString[i] ^= s->cString[i + 1];
-
-			i++;
-			continue;
-		}
-
-		/* Second next byte must not be ASCII */
-		if (OF_UNLIKELY(s->cStringLength < i + 2 ||
-		    !(s->cString[i + 2] & 0x80)))
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: isa];
-
-		/* Second next byte is the start byte */
-		if (OF_LIKELY(s->cString[i + 2] & 0x40)) {
-			s->cString[i] ^= s->cString[i + 2];
-			s->cString[i + 2] ^= s->cString[i];
-			s->cString[i] ^= s->cString[i + 2];
-
-			i += 2;
-			continue;
-		}
-
-		/* Third next byte must not be ASCII */
-		if (OF_UNLIKELY(s->cStringLength < i + 3 ||
-		    !(s->cString[i + 3] & 0x80)))
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: isa];
-
-		/* Third next byte is the start byte */
-		if (OF_LIKELY(s->cString[i + 3] & 0x40)) {
-			s->cString[i] ^= s->cString[i + 3];
-			s->cString[i + 3] ^= s->cString[i];
-			s->cString[i] ^= s->cString[i + 3];
-
-			s->cString[i + 1] ^= s->cString[i + 2];
-			s->cString[i + 2] ^= s->cString[i + 1];
-			s->cString[i + 1] ^= s->cString[i + 2];
-
-			i += 3;
-			continue;
-		}
-
-		/* UTF-8 does not allow more than 4 bytes per character */
-		@throw [OFInvalidEncodingException exceptionWithClass: isa];
+	for (i = 0, j = length - 1; i < length / 2; i++, j--) {
+		of_unichar_t tmp = [self characterAtIndex: j];
+		[self setCharacter: [self characterAtIndex: i]
+			   atIndex: j];
+		[self setCharacter: tmp
+			   atIndex: i];
 	}
 }
 
@@ -376,249 +392,100 @@
 - (void)insertString: (OFString*)string
 	     atIndex: (size_t)index
 {
-	size_t newCStringLength;
-
-	if (index > s->length)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
-
-	if (s->UTF8)
-		index = of_string_index_to_position(s->cString, index,
-		    s->cStringLength);
-
-	newCStringLength = s->cStringLength + [string UTF8StringLength];
-	s->cString = [self resizeMemory: s->cString
-				 toSize: newCStringLength + 1];
-
-	memmove(s->cString + index + string->s->cStringLength,
-	    s->cString + index, s->cStringLength - index);
-	memcpy(s->cString + index, string->s->cString,
-	    string->s->cStringLength);
-	s->cString[newCStringLength] = '\0';
-
-	s->cStringLength = newCStringLength;
-	s->length += string->s->length;
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (void)deleteCharactersInRange: (of_range_t)range
 {
-	size_t start = range.start;
-	size_t end = range.start + range.length;
-
-	if (start > end)
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
-
-	if (end > s->length)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
-
-	s->length -= end - start;
-
-	if (s->UTF8) {
-		start = of_string_index_to_position(s->cString, start,
-		    s->cStringLength);
-		end = of_string_index_to_position(s->cString, end,
-		    s->cStringLength);
-	}
-
-	memmove(s->cString + start, s->cString + end, s->cStringLength - end);
-	s->cStringLength -= end - start;
-	s->cString[s->cStringLength] = 0;
-
-	@try {
-		s->cString = [self resizeMemory: s->cString
-					 toSize: s->cStringLength + 1];
-	} @catch (OFOutOfMemoryException *e) {
-		/* We don't really care, as we only made it smaller */
-	}
+	@throw [OFNotImplementedException exceptionWithClass: isa
+						    selector: _cmd];
 }
 
 - (void)replaceCharactersInRange: (of_range_t)range
 		      withString: (OFString*)replacement
 {
-	size_t start = range.start;
-	size_t end = range.start + range.length;
-	size_t newCStringLength, newLength;
-
-	if (start > end)
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
-
-	if (end > s->length)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
-
-	newLength = s->length - (end - start) + [replacement length];
-
-	if (s->UTF8) {
-		start = of_string_index_to_position(s->cString, start,
-		    s->cStringLength);
-		end = of_string_index_to_position(s->cString, end,
-		    s->cStringLength);
-	}
-
-	newCStringLength = s->cStringLength - (end - start) +
-	    replacement->s->cStringLength;
-	s->cString = [self resizeMemory: s->cString
-				 toSize: newCStringLength + 1];
-
-	memmove(s->cString + end, s->cString + start +
-	    replacement->s->cStringLength, s->cStringLength - end);
-	memcpy(s->cString + start, replacement->s->cString,
-	    replacement->s->cStringLength);
-	s->cString[newCStringLength] = '\0';
-
-	s->cStringLength = newCStringLength;
-	s->length = newLength;
+	[self deleteCharactersInRange: range];
+	[self insertString: replacement
+		   atIndex: range.start];
 }
 
 - (void)replaceOccurrencesOfString: (OFString*)string
 			withString: (OFString*)replacement
 {
-	const char *UTF8String = [string UTF8String];
-	const char *replacementUTF8String = [replacement UTF8String];
-	size_t UTF8StringLength = string->s->cStringLength;
-	size_t replacementUTF8StringLength = replacement->s->cStringLength;
-	size_t i, last, newCStringLength, newLength;
-	char *newCString;
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init], *pool2;
+	const of_unichar_t *unicodeString;
+	const of_unichar_t *searchString = [string unicodeString];
+	size_t length = [self length];
+	size_t searchLength = [string length];
+	size_t replacementLength = [replacement length];
+	size_t i, last;
 
-	if (UTF8StringLength > s->cStringLength)
+	if (searchLength > length) {
+		[pool release];
 		return;
+	}
 
-	newCString = NULL;
-	newCStringLength = 0;
-	newLength = s->length;
+	pool2 = [[OFAutoreleasePool alloc] init];
+	unicodeString = [self unicodeString];
 
-	for (i = 0, last = 0; i <= s->cStringLength - UTF8StringLength; i++) {
-		if (memcmp(s->cString + i, UTF8String, UTF8StringLength))
+	for (i = 0, last = 0; i <= length - searchLength; i++) {
+		if (memcmp(unicodeString + i, searchString,
+		    searchLength * sizeof(of_unichar_t)))
 			continue;
 
-		@try {
-			newCString = [self
-			    resizeMemory: newCString
-				  toSize: newCStringLength + i - last +
-					  replacementUTF8StringLength + 1];
-		} @catch (id e) {
-			[self freeMemory: newCString];
-			@throw e;
-		}
-		memcpy(newCString + newCStringLength, s->cString + last,
-		    i - last);
-		memcpy(newCString + newCStringLength + i - last,
-		    replacementUTF8String, replacementUTF8StringLength);
+		[self replaceCharactersInRange: of_range(i, searchLength)
+				    withString: replacement];
 
-		newCStringLength += i - last + replacementUTF8StringLength;
-		newLength = newLength - string->s->length +
-		    replacement->s->length;
+		length -= searchLength;
+		length += replacementLength;
 
-		i += UTF8StringLength - 1;
+		i += replacementLength - 1;
 		last = i + 1;
+
+		[pool2 releaseObjects];
+
+		unicodeString = [self unicodeString];
 	}
 
-	@try {
-		newCString = [self
-		    resizeMemory: newCString
-			  toSize: newCStringLength +
-				  s->cStringLength - last + 1];
-	} @catch (id e) {
-		[self freeMemory: newCString];
-		@throw e;
-	}
-	memcpy(newCString + newCStringLength, s->cString + last,
-	    s->cStringLength - last);
-	newCStringLength += s->cStringLength - last;
-	newCString[newCStringLength] = 0;
-
-	[self freeMemory: s->cString];
-	s->cString = newCString;
-	s->cStringLength = newCStringLength;
-	s->length = newLength;
+	[pool release];
 }
 
 - (void)deleteLeadingWhitespaces
 {
-	size_t i;
+	size_t i, length = [self length];
 
-	for (i = 0; i < s->cStringLength; i++)
-		if (s->cString[i] != ' '  && s->cString[i] != '\t' &&
-		    s->cString[i] != '\n' && s->cString[i] != '\r' &&
-		    s->cString[i] != '\f')
+	for (i = 0; i < length; i++) {
+		of_unichar_t c = [self characterAtIndex: i];
+
+		if (c != ' '  && c != '\t' && c != '\n' && c != '\r' &&
+		    c != '\f')
 			break;
-
-	s->cStringLength -= i;
-	s->length -= i;
-
-	memmove(s->cString, s->cString + i, s->cStringLength);
-	s->cString[s->cStringLength] = '\0';
-
-	@try {
-		s->cString = [self resizeMemory: s->cString
-					 toSize: s->cStringLength + 1];
-	} @catch (OFOutOfMemoryException *e) {
-		/* We don't really care, as we only made it smaller */
 	}
+
+	[self deleteCharactersInRange: of_range(0, i)];
 }
 
 - (void)deleteTrailingWhitespaces
 {
-	size_t d;
-	char *p;
+	size_t length = [self length];
+	ssize_t i;
 
-	d = 0;
-	for (p = s->cString + s->cStringLength - 1; p >= s->cString; p--) {
-		if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\r' &&
-		    *p != '\f')
+	for (i = length - 1; i >= 0; i--) {
+		of_unichar_t c = [self characterAtIndex: i];
+
+		if (c != ' '  && c != '\t' && c != '\n' && c != '\r' &&
+		    c != '\f')
 			break;
-
-		*p = '\0';
-		d++;
 	}
 
-	s->cStringLength -= d;
-	s->length -= d;
-
-	@try {
-		s->cString = [self resizeMemory: s->cString
-					 toSize: s->cStringLength + 1];
-	} @catch (OFOutOfMemoryException *e) {
-		/* We don't really care, as we only made it smaller */
-	}
+	[self deleteCharactersInRange: of_range(i + 1, length - i - 1)];
 }
 
 - (void)deleteEnclosingWhitespaces
 {
-	size_t d, i;
-	char *p;
-
-	d = 0;
-	for (p = s->cString + s->cStringLength - 1; p >= s->cString; p--) {
-		if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\r' &&
-		    *p != '\f')
-			break;
-
-		*p = '\0';
-		d++;
-	}
-
-	s->cStringLength -= d;
-	s->length -= d;
-
-	for (i = 0; i < s->cStringLength; i++)
-		if (s->cString[i] != ' '  && s->cString[i] != '\t' &&
-		    s->cString[i] != '\n' && s->cString[i] != '\r' &&
-		    s->cString[i] != '\f')
-			break;
-
-	s->cStringLength -= i;
-	s->length -= i;
-
-	memmove(s->cString, s->cString + i, s->cStringLength);
-	s->cString[s->cStringLength] = '\0';
-
-	@try {
-		s->cString = [self resizeMemory: s->cString
-					 toSize: s->cStringLength + 1];
-	} @catch (OFOutOfMemoryException *e) {
-		/* We don't really care, as we only made it smaller */
-	}
+	[self deleteLeadingWhitespaces];
+	[self deleteTrailingWhitespaces];
 }
 
 - copy
@@ -628,6 +495,5 @@
 
 - (void)makeImmutable
 {
-	isa = [OFString class];
 }
 @end

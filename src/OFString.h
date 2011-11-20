@@ -74,29 +74,6 @@ extern size_t of_utf16_string_length(const uint16_t*);
  */
 @interface OFString: OFObject <OFCopying, OFMutableCopying, OFComparing,
     OFSerialization>
-{
-	/*
-	 * The ivars have to be like this because OFConstantString bases on
-	 * OFString.
-	 *
-	 * The compiler generates an instance with a const char* and a size_t
-	 * for each constant string. We change the const char* to point to our
-	 * struct on the first call to a constant string so we can have more
-	 * than those two ivars.
-	 */
-	struct of_string_ivars {
-		char   *cString;
-		size_t cStringLength;
-		BOOL   UTF8;
-		size_t length;
-	} *restrict s;
-	/*
-	 * Unused in OFString, however, OFConstantString sets this to SIZE_MAX
-	 * once it allocated and initialized the struct.
-	 */
-	size_t initialized;
-}
-
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly) size_t length;
 #endif
@@ -593,6 +570,16 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \return The Unicode character at the specified index
  */
 - (of_unichar_t)characterAtIndex: (size_t)index;
+
+/**
+ * \brief Copies the Unicode characters in the specified range to the specified
+ *	  buffer.
+ *
+ * \param buffer The buffer to store the Unicode characters
+ * \param range The range of the Unicode characters to copy
+ */
+- (void)getCharacters: (of_unichar_t*)buffer
+	      inRange: (of_range_t)range;
 
 /**
  * \brief Returns the index of the first occurrence of the string.
