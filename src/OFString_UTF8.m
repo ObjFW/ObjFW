@@ -715,12 +715,33 @@ memcasecmp(const char *first, const char *second, size_t length)
 	return OF_ORDERED_SAME;
 }
 
-/* TODO
 - (uint32_t)hash
 {
-	IMPLEMENT
+	size_t i;
+	uint32_t hash;
+
+	OF_HASH_INIT(hash);
+
+	for (i = 0; i < s->cStringLength; i++) {
+		of_unichar_t c;
+		size_t length;
+
+		if ((length = of_string_utf8_to_unicode(s->cString + i,
+		    s->cStringLength - i, &c)) == 0)
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: isa];
+
+		OF_HASH_ADD(hash, (c & 0xFF0000) >> 16);
+		OF_HASH_ADD(hash, (c & 0x00FF00) >>  8);
+		OF_HASH_ADD(hash,  c & 0x0000FF);
+
+		i += length - 1;
+	}
+
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
 }
-*/
 
 - (of_unichar_t)characterAtIndex: (size_t)index
 {
