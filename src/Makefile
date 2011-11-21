@@ -9,6 +9,7 @@ LIB_MINOR = ${OBJFW_LIB_MINOR}
 
 SRCS = OFApplication.m			\
        OFArray.m			\
+       OFArray_subarray.m		\
        OFAutoreleasePool.m		\
        OFBlock.m			\
        OFConstantString.m		\
@@ -50,7 +51,6 @@ SRCS = OFApplication.m			\
        OFString+URLEncoding.m		\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
-       OFString_UTF8.m			\
        OFTCPSocket.m			\
        ${OFTHREAD_M}			\
        OFURL.m				\
@@ -79,7 +79,6 @@ INCLUDES := ${SRCS:.m=.h}	\
 
 SRCS += OFArray_adjacent.m		\
 	OFArray_adjacentSubarray.m	\
-	OFArray_subarray.m		\
 	OFCountedSet_hashtable.m	\
 	OFDictionary_hashtable.m	\
 	OFMutableArray_adjacent.m	\
@@ -90,6 +89,7 @@ SRCS += OFArray_adjacent.m		\
 	${OFSTREAMOBSERVER_KQUEUE_M}	\
 	${OFSTREAMOBSERVER_POLL_M}	\
 	${OFSTREAMOBSERVER_SELECT_M}	\
+	OFString_UTF8.m			\
 	OFTCPSocket+SOCKS5.m		\
 	${ASPRINTF_M}			\
 	${FOUNDATION_COMPAT_M}		\
