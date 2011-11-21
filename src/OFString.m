@@ -1101,10 +1101,9 @@ static struct {
 	for (i = 0; i < length; i++) {
 		const of_unichar_t c = unicodeString[i];
 
-		OF_HASH_ADD(hash, (c & 0xFF000000) >> 24);
-		OF_HASH_ADD(hash, (c & 0x00FF0000) >> 16);
-		OF_HASH_ADD(hash, (c & 0x00FF0000) >>  8);
-		OF_HASH_ADD(hash, c & 0xFF);
+		OF_HASH_ADD(hash, (c & 0xFF0000) >> 16);
+		OF_HASH_ADD(hash, (c & 0x00FF00) >>  8);
+		OF_HASH_ADD(hash,  c & 0x0000FF);
 	}
 
 	OF_HASH_FINALIZE(hash);

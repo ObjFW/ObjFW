@@ -51,7 +51,7 @@ static OFString *module = @"OFSet";
 
 	TEST(@"-[description]",
 	    [[set1 description]
-	    isEqual: @"{(\n\tbaz,\n\tbar,\n\tx,\n\tfoo\n)}"] &&
+	    isEqual: @"{(\n\tfoo,\n\tbaz,\n\tx,\n\tbar\n)}"] &&
 	    [[set1 description] isEqual: [set2 description]])
 
 	TEST(@"-[copy]", [set1 isEqual: [[set1 copy] autorelease]])
@@ -98,11 +98,11 @@ static OFString *module = @"OFSet";
 	for (OFString *s in set1) {
 		switch (i) {
 		case 0:
-			if (![s isEqual: @"baz"])
+			if (![s isEqual: @"foo"])
 				ok = NO;
 			break;
 		case 1:
-			if (![s isEqual: @"bar"])
+			if (![s isEqual: @"baz"])
 				ok = NO;
 			break;
 		case 2:
@@ -110,7 +110,7 @@ static OFString *module = @"OFSet";
 				ok = NO;
 			break;
 		case 3:
-			if (![s isEqual: @"foo"])
+			if (![s isEqual: @"bar"])
 				ok = NO;
 			break;
 		}
