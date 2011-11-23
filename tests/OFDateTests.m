@@ -33,12 +33,17 @@ static OFString *module = @"OFDate";
 	TEST(@"+[dateWithTimeIntervalSince1970:]",
 	    (d1 = [OFDate dateWithTimeIntervalSince1970: 0]))
 
-	TEST(@"-[dateByADdingTimeInterval:]",
+	TEST(@"-[dateByAddingTimeInterval:]",
 	    (d2 = [d1 dateByAddingTimeInterval: 3600 * 25 + 5.000001]))
 
 	TEST(@"-[description]",
 	    [[d1 description] isEqual: @"1970-01-01T00:00:00Z"] &&
 	    [[d2 description] isEqual: @"1970-01-02T01:00:05Z"])
+
+	TEST(@"+[dateWithDateString:format:]",
+	    [[[OFDate dateWithDateString: @"2000-06-20T12:34:56Z"
+				  format: @"%Y-%m-%dT%H:%M:%SZ"] description]
+	    isEqual: @"2000-06-20T12:34:56Z"]);
 
 	TEST(@"-[isEqual:]",
 	    [d1 isEqual: [OFDate dateWithTimeIntervalSince1970: 0]] &&

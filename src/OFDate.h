@@ -60,7 +60,10 @@
  * OFInvalidFormatException is thrown. See +[dateWithLocalDateString:format:]
  * if you want to specify a time zone.
  *
- * See the manpage for strptime for information on the format.
+ * See the manpage for strftime for information on the format.
+ *
+ * WARNING: The format is currently limited to the following format specifiers:
+ * %d, %e, %H, %m, %M, %S, %y, %Y, %%, %n and %t.
  *
  * \param string The string describing the date
  * \param format The format of the string describing the date
@@ -75,7 +78,10 @@
  *
  * If no time zone is specified, local time is assumed.
  *
- * See the manpage for strptime for information on the format.
+ * See the manpage for strftime for information on the format.
+ *
+ * WARNING: The format is currently limited to the following format specifiers:
+ * %d, %e, %H, %m, %M, %S, %y, %Y, %%, %n and %t.
  *
  * \param string The string describing the date
  * \param format The format of the string describing the date
@@ -128,7 +134,10 @@
  * OFInvalidFormatException is thrown. See -[initWithLocalDateString:format:]
  * if you want to specify a time zone.
  *
- * See the manpage for strptime for information on the format.
+ * See the manpage for strftime for information on the format.
+ *
+ * WARNING: The format is currently limited to the following format specifiers:
+ * %d, %e, %H, %m, %M, %S, %y, %Y, %%, %n and %t.
  *
  * \param string The string describing the date
  * \param format The format of the string describing the date
@@ -143,7 +152,10 @@
  *
  * If no time zone is specified, local time is assumed.
  *
- * See the manpage for strptime for information on the format.
+ * See the manpage for strftime for information on the format.
+ *
+ * WARNING: The format is currently limited to the following format specifiers:
+ * %d, %e, %H, %m, %M, %S, %y, %Y, %%, %n and %t.
  *
  * \param string The string describing the date
  * \param format The format of the string describing the date

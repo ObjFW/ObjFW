@@ -41,6 +41,7 @@
 #import "OFOutOfRangeException.h"
 
 #import "macros.h"
+#import "of_strptime.h"
 
 #if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
     defined(OF_THREADS)
@@ -244,7 +245,7 @@ static int month_to_day_of_year[12] = {
 
 		tm.tm_isdst = -1;
 
-		if (strptime([string UTF8String], [format UTF8String],
+		if (of_strptime([string UTF8String], [format UTF8String],
 		    &tm) == NULL)
 			@throw [OFInvalidFormatException
 			    exceptionWithClass: isa];
@@ -297,7 +298,7 @@ static int month_to_day_of_year[12] = {
 
 		tm.tm_isdst = -1;
 
-		if (strptime([string UTF8String], [format UTF8String],
+		if (of_strptime([string UTF8String], [format UTF8String],
 		    &tm) == NULL)
 			@throw [OFInvalidFormatException
 			    exceptionWithClass: isa];

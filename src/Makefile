@@ -65,6 +65,7 @@ SRCS = OFApplication.m			\
        OFXMLParser.m			\
        base64.m				\
        of_asprintf.m			\
+       of_strptime.m			\
        unicode.m
 
 INCLUDES := ${SRCS:.m=.h}	\
