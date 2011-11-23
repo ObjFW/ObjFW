@@ -144,7 +144,7 @@
 /**
  * \brief Returns all elements of the OFDataArray as a C array.
  *
- * WARNING: The pointer is only valid until the OFDataArray is changed!
+ * \warning The pointer is only valid until the OFDataArray is changed!
  *
  * Modifying the returned array directly is allowed and will change the contents
  * of the data array.

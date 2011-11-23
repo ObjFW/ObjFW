@@ -24,17 +24,19 @@
 /**
  * \brief A base class for different types of streams.
  *
- * WARNING: Even though the OFCopying protocol is implemented, it does
- * <i>not</i> return an independant copy of the stream but instead retains it.
- * This is so that the stream can be used as a key for a dictionary so context
- * can be associated with a stream. Using a stream in more than one thread at
- * the same time is not thread-safe, even if copy was called!
+ * \warning Even though the OFCopying protocol is implemented, it does
+ *	    <i>not</i> return an independant copy of the stream but instead
+ *	    retains it.  This is so that the stream can be used as a key for a
+ *	    dictionary so context can be associated with a stream. Using a
+ *	    stream in more than one thread at the same time is not thread-safe,
+ *	    even if copy was called!
  *
- * IMPORTANT: If you want to subclass this, override _readNBytes:intoBuffer:,
- * _writeNBytes:fromBuffer: and _isAtEndOfStream, but nothing else. Those are
- * not defined in the headers, but do the actual work. OFStream uses those and
- * does all the caching and other stuff. If you override these methods without
- * the _ prefix, you *WILL* break caching and get broken results!
+ * \warning If you want to subclass this, override _readNBytes:intoBuffer:,
+ *	    _writeNBytes:fromBuffer: and _isAtEndOfStream, but nothing else.
+ *	    Those are not defined in the headers, but do the actual work.
+ *	    OFStream uses those and does all the caching and other stuff. If
+ *	    you override these methods without the _ prefix, you *WILL* break
+ *	    caching and get broken results!
  */
 @interface OFStream: OFObject <OFCopying>
 {
@@ -80,7 +82,7 @@
  * specified length has been read - instead, it waits until it got exactly the
  * specified length.
  *
- * WARNING: Only call this when you know that specified amount of data is
+ * \warning Only call this when you know that specified amount of data is
  *	    available! Otherwise you will get an exception!
  *
  * \param buffer The buffer into which the data is read
@@ -93,7 +95,7 @@
 /**
  * \brief Reads a uint8_t from the stream.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \return A uint8_t from the stream
@@ -103,7 +105,7 @@
 /**
  * \brief Reads a uint16_t from the stream which is encoded in big endian.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \return A uint16_t from the stream in native endianess
@@ -113,7 +115,7 @@
 /**
  * \brief Reads a uint32_t from the stream which is encoded in big endian.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \return A uint32_t from the stream in the native endianess
@@ -123,7 +125,7 @@
 /**
  * \brief Reads a uint64_t from the stream which is encoded in big endian.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \return A uint64_t from the stream in the native endianess
@@ -133,7 +135,7 @@
 /**
  * \brief Reads a float from the stream which is encoded in big endian.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \return A float from the stream in the native endianess
@@ -143,7 +145,7 @@
 /**
  * \brief Reads a double from the stream which is encoded in big endian.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \return A double from the stream in the native endianess
@@ -154,7 +156,7 @@
  * \brief Reads the specified number of uint16_ts from the stream which are
  *	  encoded in big endian.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \param nInt16s The number of uint16_ts to read
@@ -169,7 +171,7 @@
  * \brief Reads the specified number of uint32_ts from the stream which are
  *	  encoded in big endian.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \param nInt32s The number of uint32_ts to read
@@ -184,7 +186,7 @@
  * \brief Reads the specified number of uint64_ts from the stream which are
  *	  encoded in big endian.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \param nInt64s The number of uint64_ts to read
@@ -199,7 +201,7 @@
  * \brief Reads the specified number of floats from the stream which are encoded
  *	  in big endian.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \param nFloatss The number of floats to read
@@ -214,7 +216,7 @@
  * \brief Reads the specified number of doubles from the stream which are
  *	  encoded in big endian.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \param nDoubles The number of doubles to read
@@ -228,7 +230,7 @@
 /**
  * \brief Reads a uint16_t from the stream which is encoded in little endian.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \return A uint16_t from the stream in native endianess
@@ -238,7 +240,7 @@
 /**
  * \brief Reads a uint32_t from the stream which is encoded in little endian.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \return A uint32_t from the stream in the native endianess
@@ -248,7 +250,7 @@
 /**
  * \brief Reads a uint64_t from the stream which is encoded in little endian.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \return A uint64_t from the stream in the native endianess
@@ -258,7 +260,7 @@
 /**
  * \brief Reads a float from the stream which is encoded in little endian.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \return A float from the stream in the native endianess
@@ -268,7 +270,7 @@
 /**
  * \brief Reads a double from the stream which is encoded in little endian.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \return A double from the stream in the native endianess
@@ -279,7 +281,7 @@
  * \brief Reads the specified number of uint16_ts from the stream which are
  *	  encoded in little endian.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \param nInt16s The number of uint16_ts to read
@@ -294,7 +296,7 @@
  * \brief Reads the specified number of uint32_ts from the stream which are
  *	  encoded in little endian.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \param nInt32s The number of uint32_ts to read
@@ -309,7 +311,7 @@
  * \brief Reads the specified number of uint64_ts from the stream which are
  *	  encoded in little endian.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \param nInt64s The number of uint64_ts to read
@@ -324,7 +326,7 @@
  * \brief Reads the specified number of floats from the stream which are
  *	  encoded in little endian.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \param nFloats The number of floats to read
@@ -339,7 +341,7 @@
  * \brief Reads the specified number of doubles from the stream which are
  *	  encoded in little endian.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \param nDoubles The number of doubles to read
@@ -354,7 +356,7 @@
  * \brief Reads the specified number of items with an item size of 1 from the
  *	  stream and returns them in an OFDataArray.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \param nItems The number of items to read
@@ -366,7 +368,7 @@
  * \brief Reads the specified number of items with the specified item size from
  *	  the stream and returns them in an OFDataArray.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \param itemSize The size of each item
@@ -392,7 +394,7 @@
  * stream will not break because of a \\0 because the specified number of bytes
  * is still being read and only the string gets truncated.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \param length The length (in bytes) of the string to read from the stream
@@ -408,7 +410,7 @@
  * stream will not break because of a \\0 because the specified number of bytes
  * is still being read and only the string gets truncated.
  *
- * WARNING: Only call this when you know that enough data is available!
+ * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * \param encoding The encoding of the string to read from the stream
