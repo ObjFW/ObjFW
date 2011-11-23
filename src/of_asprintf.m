@@ -207,15 +207,25 @@ formatLengthModifierState(struct context *ctx)
 
 		break;
 	case 'z':
+#ifndef _WIN32
 		if (!appendSubformat(ctx, ctx->format + ctx->i, 1))
 			return false;
+#else
+		if (!appendSubformat(ctx, "I", 1))
+			return false;
+#endif
 
 		ctx->lengthModifier = LENGTH_MODIFIER_Z;
 
 		break;
 	case 't':
+#ifndef _WIN32
 		if (!appendSubformat(ctx, ctx->format + ctx->i, 1))
 			return false;
+#else
+		if (!appendSubformat(ctx, "I", 1))
+			return false;
+#endif
 
 		ctx->lengthModifier = LENGTH_MODIFIER_T;
 
