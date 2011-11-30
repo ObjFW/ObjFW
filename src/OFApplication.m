@@ -29,8 +29,6 @@
 
 #import "OFNotImplementedException.h"
 
-#import "macros.h"
-
 #if defined(__MACH__) && !defined(OF_IOS)
 # include <crt_externs.h>
 #elif !defined(OF_IOS)
@@ -217,17 +215,17 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 - (OFString*)programName
 {
-	OF_GETTER(programName, YES)
+	return programName;
 }
 
 - (OFArray*)arguments
 {
-	OF_GETTER(arguments, YES)
+	return arguments;
 }
 
 - (OFDictionary*)environment
 {
-	OF_GETTER(environment, YES)
+	return environment;
 }
 
 - (id <OFApplicationDelegate>)delegate

@@ -66,9 +66,9 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy) OFString *programName;
-@property (readonly, copy) OFArray *arguments;
-@property (readonly, copy) OFDictionary *environment;
+@property (readonly, assign) OFString *programName;
+@property (readonly, assign) OFArray *arguments;
+@property (readonly, assign) OFDictionary *environment;
 @property (assign) id <OFApplicationDelegate> delegate;
 #endif
 
