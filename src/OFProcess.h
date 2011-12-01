@@ -14,17 +14,27 @@
  * file.
  */
 
-#include <sys/types.h>
+#ifndef _WIN32
+# include <sys/types.h>
+#endif
 
 #import "OFStream.h"
+
+#ifdef _WIN32
+# include <windows.h>
+#endif
 
 /**
  * \brief A class for stream-like communication with a newly created process.
  */
 @interface OFProcess: OFStream
 {
+#ifndef _WIN32
 	pid_t pid;
 	int readPipe[2], writePipe[2];
+#else
+	HANDLE readPipe[2], writePipe[2];
+#endif
 	int status;
 	BOOL atEndOfStream;
 }

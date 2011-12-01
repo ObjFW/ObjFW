@@ -17,17 +17,24 @@
 #include "config.h"
 
 #include <stdlib.h>
-#include <unistd.h>
 
-#include <sys/wait.h>
+#ifndef _WIN32
+# include <unistd.h>
+# include <sys/wait.h>
+#endif
 
 #import "OFProcess.h"
 #import "OFString.h"
 #import "OFArray.h"
+#import "OFAutoreleasePool.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
+
+#ifdef _WIN32
+# include <windows.h>
+#endif
 
 @implementation OFProcess
 + processWithProgram: (OFString*)program
@@ -73,6 +80,7 @@
 	self = [super init];
 
 	@try {
+#ifndef _WIN32
 		if (pipe(readPipe) != 0 || pipe(writePipe) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: isa];
@@ -110,6 +118,101 @@
 			close(writePipe[0]);
 			break;
 		}
+#else
+		SECURITY_ATTRIBUTES sa;
+		PROCESS_INFORMATION pi;
+		STARTUPINFO si;
+		OFAutoreleasePool *pool;
+		OFMutableString *argumentsString;
+		OFEnumerator *enumerator;
+		OFString *argument;
+		char *argumentsCString;
+
+		sa.nLength = sizeof(sa);
+		sa.bInheritHandle = TRUE;
+		sa.lpSecurityDescriptor = NULL;
+
+		if (!CreatePipe(&readPipe[0], &readPipe[1], &sa, 0))
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: isa];
+
+		if (!SetHandleInformation(readPipe[0], HANDLE_FLAG_INHERIT, 0))
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: isa];
+
+		if (!CreatePipe(&writePipe[0], &writePipe[1], &sa, 0))
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: isa];
+
+		if (!SetHandleInformation(writePipe[1], HANDLE_FLAG_INHERIT, 0))
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: isa];
+
+		memset(&pi, 0, sizeof(pi));
+		memset(&si, 0, sizeof(si));
+
+		si.cb = sizeof(si);
+		si.hStdInput = writePipe[0];
+		si.hStdOutput = readPipe[1];
+		si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+		si.dwFlags |= STARTF_USESTDHANDLES;
+
+		pool = [[OFAutoreleasePool alloc] init];
+
+		argumentsString =
+		    [OFMutableString stringWithString: programName];
+		[argumentsString replaceOccurrencesOfString: @"\\\""
+						 withString: @"\\\\\""];
+		[argumentsString replaceOccurrencesOfString: @"\""
+						 withString: @"\\\""];
+
+		if ([argumentsString containsString: @" "]) {
+			[argumentsString prependString: @"\""];
+			[argumentsString appendString: @"\""];
+		}
+
+		enumerator = [arguments objectEnumerator];
+		while ((argument = [enumerator nextObject]) != nil) {
+			OFMutableString *tmp =
+			    [[argument mutableCopy] autorelease];
+			BOOL containsSpaces = [tmp containsString: @" "];
+
+			[argumentsString appendString: @" "];
+
+			if (containsSpaces)
+				[argumentsString appendString: @"\""];
+
+			[tmp replaceOccurrencesOfString: @"\\\""
+					     withString: @"\\\\\""];
+			[tmp replaceOccurrencesOfString: @"\""
+					     withString: @"\\\""];;
+
+			[argumentsString appendString: tmp];
+
+			if (containsSpaces)
+				[argumentsString appendString: @"\""];
+		}
+
+		argumentsCString = strdup([argumentsString
+		    cStringWithEncoding: OF_STRING_ENCODING_NATIVE]);
+		@try {
+			if (!CreateProcess([program cStringWithEncoding:
+			    OF_STRING_ENCODING_NATIVE], argumentsCString, NULL,
+			    NULL, TRUE, 0, NULL, NULL, &si, &pi))
+				@throw [OFInitializationFailedException
+				    exceptionWithClass: isa];
+		} @finally {
+			free(argumentsString);
+		}
+
+		[pool release];
+
+		CloseHandle(pi.hProcess);
+		CloseHandle(pi.hThread);
+
+		CloseHandle(readPipe[1]);
+		CloseHandle(writePipe[0]);
+#endif
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -120,7 +223,11 @@
 
 - (BOOL)_isAtEndOfStream
 {
+#ifndef _WIN32
 	if (readPipe[0] == -1)
+#else
+	if (readPipe[0] == NULL)
+#endif
 		return YES;
 
 	return atEndOfStream;
@@ -129,13 +236,28 @@
 - (size_t)_readNBytes: (size_t)length
 	   intoBuffer: (void*)buffer
 {
+#ifndef _WIN32
 	ssize_t ret;
+#else
+	DWORD ret;
+#endif
 
+#ifndef _WIN32
 	if (readPipe[0] == -1 || atEndOfStream ||
-	    (ret = read(readPipe[0], buffer, length)) < 0)
+	    (ret = read(readPipe[0], buffer, length)) < 0) {
+#else
+	if (readPipe[0] == NULL || atEndOfStream ||
+	    !ReadFile(readPipe[0], buffer, length, &ret, NULL)) {
+		if (GetLastError() == ERROR_BROKEN_PIPE) {
+			atEndOfStream = YES;
+			return 0;
+		}
+
+#endif
 		@throw [OFReadFailedException exceptionWithClass: isa
 							  stream: self
 						 requestedLength: length];
+	}
 
 	if (ret == 0)
 		atEndOfStream = YES;
@@ -146,8 +268,16 @@
 - (void)_writeNBytes: (size_t)length
 	  fromBuffer: (const void*)buffer
 {
+#ifndef _WIN32
 	if (writePipe[1] == -1 || atEndOfStream ||
 	    write(writePipe[1], buffer, length) < length)
+#else
+	DWORD ret;
+
+	if (writePipe[1] == NULL || atEndOfStream ||
+	    !WriteFile(writePipe[1], buffer, length, &ret, NULL) ||
+	    ret < length)
+#endif
 		@throw [OFWriteFailedException exceptionWithClass: isa
 							   stream: self
 						  requestedLength: length];
@@ -168,14 +298,22 @@
 
 - (void)closeForWriting
 {
+#ifndef _WIN32
 	if (writePipe[1] != -1)
 		close(writePipe[1]);
 
 	writePipe[1] = -1;
+#else
+	if (writePipe[1] != NULL)
+		CloseHandle(writePipe[1]);
+
+	writePipe[1] = NULL;
+#endif
 }
 
 - (void)close
 {
+#ifndef _WIN32
 	if (readPipe[0] != -1)
 		close(readPipe[0]);
 	if (writePipe[1] != -1)
@@ -187,5 +325,14 @@
 	pid = -1;
 	readPipe[0] = -1;
 	writePipe[1] = -1;
+#else
+	if (readPipe[0] != NULL)
+		CloseHandle(readPipe[0]);
+	if (writePipe[1] != NULL)
+		CloseHandle(writePipe[1]);
+
+	readPipe[0] = NULL;
+	writePipe[1] = NULL;
+#endif
 }
 @end
