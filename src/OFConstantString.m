@@ -116,9 +116,6 @@ void *_OFConstantStringClassReference;
 	objc_setFutureClass((Class)&_OFConstantStringClassReference,
 	    "OFConstantString");
 #endif
-
-	if (self == [OFConstantString class])
-		[self inheritMethodsFromClass: [OFString_UTF8 class]];
 }
 
 - (void)finishInitialization
