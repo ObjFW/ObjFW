@@ -70,6 +70,9 @@ void _references_to_categories_of_OFTCPSocket(void)
 	_OFTCPSocket_SOCKS5_reference = 1;
 }
 
+static OFString *defaultSOCKS5Host = nil;
+static uint16_t defaultSOCKS5Port = 1080;
+
 @implementation OFTCPSocket
 #if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
 + (void)initialize
@@ -79,15 +82,50 @@ void _references_to_categories_of_OFTCPSocket(void)
 }
 #endif
 
++ (void)setSOCKS5Host: (OFString*)host
+{
+	id old = defaultSOCKS5Host;
+	defaultSOCKS5Host = [host copy];
+	[old release];
+}
+
++ (OFString*)SOCKS5Host
+{
+	return [[defaultSOCKS5Host copy] autorelease];
+}
+
++ (void)setSOCKS5Port: (uint16_t)port
+{
+	defaultSOCKS5Port = port;
+}
+
++ (uint16_t)SOCKS5Port
+{
+	return defaultSOCKS5Port;
+}
+
 - init
 {
 	self = [super init];
 
-	sock = INVALID_SOCKET;
-	sockAddr = NULL;
-	SOCKS5Port = 1080;
+	@try {
+		sock = INVALID_SOCKET;
+		sockAddr = NULL;
+		SOCKS5Host = [defaultSOCKS5Host copy];
+		SOCKS5Port = defaultSOCKS5Port;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
+}
+
+- (void)dealloc
+{
+	[SOCKS5Host release];
+
+	[super dealloc];
 }
 
 - (void)setSOCKS5Host: (OFString*)host

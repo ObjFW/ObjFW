@@ -50,6 +50,34 @@
 #endif
 
 /**
+ * \brief Sets the global SOCKS5 proxy host to use when creating a new socket
+ *
+ * \param host The host to use as a SOCKS5 proxy when creating a new socket
+ */
++ (void)setSOCKS5Host: (OFString*)host;
+
+/**
+ * \brief Returns the host to use as a SOCKS5 proxy when creating a new socket
+ *
+ * \return The host to use as a SOCKS5 proxy when creating a new socket
+ */
++ (OFString*)SOCKS5Host;
+
+/**
+ * \brief Sets the global SOCKS5 proxy port to use when creating a new socket
+ *
+ * \param port The port to use as a SOCKS5 proxy when creating a new socket
+ */
++ (void)setSOCKS5Port: (uint16_t)port;
+
+/**
+ * \brief Returns the port to use as a SOCKS5 proxy when creating a new socket
+ *
+ * \return The port to use as a SOCKS5 proxy when creating a new socket
+ */
++ (uint16_t)SOCKS5Port;
+
+/**
  * \brief Sets the host to use as a SOCKS5 proxy.
  *
  * \param host The host to use as a SOCKS5 proxy
