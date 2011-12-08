@@ -50,6 +50,7 @@
 
 #ifdef OF_HAVE_PROPERTIES
 @property (assign, getter=isBlocking) BOOL blocking;
+@property (readonly, getter=isAtEndOfStream) BOOL atEndOfStream;
 #endif
 
 /**
