@@ -23,7 +23,7 @@ OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions -fobjc-exceptions"
 OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstantString"
 
 AX_CHECK_COMPILER_FLAGS(-std=gnu99, [OBJCFLAGS="$OBJCFLAGS -std=gnu99"])
-AX_CHECK_COMPILER_FLAGS([-fgnu89-inline],
+AX_CHECK_COMPILER_FLAGS([-fgnu89-inline -Werror],
 	[OBJCFLAGS="$OBJCFLAGS -fgnu89-inline"])
 AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
 AX_CHECK_COMPILER_FLAGS(-fno-common, [OBJCFLAGS="$OBJCFLAGS -fno-common"])
