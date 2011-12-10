@@ -465,7 +465,7 @@ static struct {
 	size_t i, count = [self count];
 
 	if (count == 0)
-		return @"{()}";
+		return @"{}";
 
 	ret = [OFMutableString stringWithString: @"{\n"];
 	pool = [[OFAutoreleasePool alloc] init];
