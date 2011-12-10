@@ -20,6 +20,7 @@
 
 #import "OFObject.h"
 #import "OFSerialization.h"
+#import "OFJSON.h"
 
 #import "macros.h"
 
@@ -73,7 +74,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * constant string is initialized.
  */
 @interface OFString: OFObject <OFCopying, OFMutableCopying, OFComparing,
-    OFSerialization>
+    OFSerialization, OFJSON>
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly) size_t length;
 #endif

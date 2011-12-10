@@ -80,6 +80,11 @@ static OFNull *null = nil;
 	return element;
 }
 
+- (OFString*)JSONRepresentation
+{
+	return @"null";
+}
+
 - autorelease
 {
 	return self;

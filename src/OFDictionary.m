@@ -542,4 +542,36 @@ static struct {
 
 	return element;
 }
+
+- (OFString*)JSONRepresentation
+{
+	OFMutableString *JSON = [OFMutableString stringWithString: @"{"];
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init], *pool2;
+	OFEnumerator *keyEnumerator = [self keyEnumerator];
+	OFEnumerator *objectEnumerator = [self objectEnumerator];
+	size_t i = 0, count = [self count];
+	OFString *key;
+	OFString *object;
+
+	pool2 = [[OFAutoreleasePool alloc] init];
+
+	while ((key = [keyEnumerator nextObject]) != nil &&
+	    (object = [objectEnumerator nextObject]) != nil) {
+		[JSON appendString: [key JSONRepresentation]];
+		[JSON appendString: @":"];
+		[JSON appendString: [object JSONRepresentation]];
+
+		if (++i < count)
+			[JSON appendString: @","];
+
+		[pool2 releaseObjects];
+	}
+
+	[pool release];
+
+	[JSON appendString: @"}"];
+	[JSON makeImmutable];
+
+	return JSON;
+}
 @end

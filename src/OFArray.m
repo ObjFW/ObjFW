@@ -366,6 +366,13 @@ static struct {
 
 - (OFString*)componentsJoinedByString: (OFString*)separator
 {
+	return [self componentsJoinedByString: separator
+				usingSelector: @selector(description)];
+}
+
+- (OFString*)componentsJoinedByString: (OFString*)separator
+			usingSelector: (SEL)selector
+{
 	OFAutoreleasePool *pool, *pool2;
 	OFMutableString *ret;
 	id *cArray;
@@ -375,7 +382,7 @@ static struct {
 	if (count == 0)
 		return @"";
 	if (count == 1)
-		return [[self firstObject] description];
+		return [[self firstObject] performSelector: selector];
 
 	ret = [OFMutableString string];
 	append = [ret methodForSelector: @selector(appendString:)];
@@ -386,12 +393,14 @@ static struct {
 	pool2 = [[OFAutoreleasePool alloc] init];
 
 	for (i = 0; i < count - 1; i++) {
-		append(ret, @selector(appendString:), [cArray[i] description]);
+		append(ret, @selector(appendString:),
+		    [cArray[i] performSelector: selector]);
 		append(ret, @selector(appendString:), separator);
 
 		[pool2 releaseObjects];
 	}
-	append(ret, @selector(appendString:), [cArray[i] description]);
+	append(ret, @selector(appendString:),
+	    [cArray[i] performSelector: selector]);
 
 	[ret makeImmutable];
 
@@ -503,6 +512,25 @@ static struct {
 	[element autorelease];
 
 	return element;
+}
+
+- (OFString*)JSONRepresentation
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFMutableString *JSON;
+
+	JSON = [[self componentsJoinedByString: @","
+				 usingSelector: @selector(JSONRepresentation)]
+	    mutableCopy];
+	[pool release];
+	[JSON autorelease];
+
+	[JSON prependString: @"["];
+	[JSON appendString: @"]"];
+
+	[JSON makeImmutable];
+
+	return JSON;
 }
 
 - (void)makeObjectsPerformSelector: (SEL)selector

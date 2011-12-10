@@ -1138,6 +1138,34 @@ static struct {
 	return element;
 }
 
+- (OFString*)JSONRepresentation
+{
+	OFMutableString *JSON = [[self mutableCopy] autorelease];
+
+	/* FIXME: This is slow! Write it in pure C! */
+	[JSON replaceOccurrencesOfString: @"\\"
+			      withString: @"\\\\"];
+	[JSON replaceOccurrencesOfString: @"\""
+			      withString: @"\\\""];
+	[JSON replaceOccurrencesOfString: @"\b"
+			      withString: @"\\b"];
+	[JSON replaceOccurrencesOfString: @"\f"
+			      withString: @"\\f"];
+	[JSON replaceOccurrencesOfString: @"\n"
+			      withString: @"\\n"];
+	[JSON replaceOccurrencesOfString: @"\r"
+			      withString: @"\\r"];
+	[JSON replaceOccurrencesOfString: @"\t"
+			      withString: @"\\t"];
+
+	[JSON prependString: @"\""];
+	[JSON appendString: @"\""];
+
+	[JSON makeImmutable];
+
+	return JSON;
+}
+
 - (size_t)indexOfFirstOccurrenceOfString: (OFString*)string
 {
 	OFAutoreleasePool *pool;

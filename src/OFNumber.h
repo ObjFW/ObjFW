@@ -18,6 +18,7 @@
 
 #import "OFObject.h"
 #import "OFSerialization.h"
+#import "OFJSON.h"
 
 /**
  * \brief The type of a number.
@@ -54,7 +55,7 @@ typedef enum of_number_type_t {
 /**
  * \brief Provides a way to store a number in an object.
  */
-@interface OFNumber: OFObject <OFCopying, OFSerialization>
+@interface OFNumber: OFObject <OFCopying, OFSerialization, OFJSON>
 {
 	union of_number_value {
 		BOOL	       bool_;

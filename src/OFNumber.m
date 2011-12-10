@@ -1241,4 +1241,12 @@
 
 	return element;
 }
+
+- (OFString*)JSONRepresentation
+{
+	if (type == OF_NUMBER_BOOL)
+		return (value.bool_ ? @"true" : @"false");
+
+	return [self description];
+}
 @end

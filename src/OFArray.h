@@ -20,6 +20,7 @@
 #import "OFCollection.h"
 #import "OFEnumerator.h"
 #import "OFSerialization.h"
+#import "OFJSON.h"
 
 @class OFString;
 
@@ -35,7 +36,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \brief An abstract class for storing objects in an array.
  */
 @interface OFArray: OFObject <OFCopying, OFMutableCopying, OFCollection,
-    OFSerialization>
+    OFSerialization, OFJSON>
 /**
  * \brief Creates a new OFArray.
  *
@@ -231,6 +232,17 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \return A string containing all objects joined by the separator
  */
 - (OFString*)componentsJoinedByString: (OFString*)separator;
+
+/**
+ * \brief Creates a string by calling the selector on all objects of the array
+ *	  and joining the strings returned by calling the selector.
+ *
+ * \param separator The string with which the objects should be joined
+ * \param selector The selector to perform on the objects
+ * \return A string containing all objects joined by the separator
+ */
+- (OFString*)componentsJoinedByString: (OFString*)separator
+			usingSelector: (SEL)selector;
 
 /**
  * \brief Performs the specified selector on all objects in the array.

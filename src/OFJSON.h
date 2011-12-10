@@ -14,18 +14,16 @@
  * file.
  */
 
-#import "OFObject.h"
-#import "OFSerialization.h"
-#import "OFJSON.h"
+@class OFString;
 
 /**
- * \brief A class for representing null values in collections.
+ * \brief A category implemented by classes that support a JSON representation.
  */
-@interface OFNull: OFObject <OFCopying, OFSerialization, OFJSON>
+@protocol OFJSON
 /**
- * \brief Returns an OFNull singleton.
+ * \brief Returns the JSON representation of the object as a string.
  *
- * \return An OFNull singleton
+ * \return The JSON representation of the object as a string.
  */
-+ null;
+- (OFString*)JSONRepresentation;
 @end
