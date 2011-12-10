@@ -43,6 +43,7 @@ SRCS = OFApplication.m			\
        OFStreamSocket.m			\
        OFString.m			\
        OFString+Hashing.m		\
+       OFString+JSONValue.m		\
        OFString+Serialization.m		\
        OFString+URLEncoding.m		\
        OFString+XMLEscaping.m		\

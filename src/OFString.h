@@ -816,6 +816,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 #import "OFConstantString.h"
 #import "OFMutableString.h"
 #import "OFString+Hashing.h"
+#import "OFString+JSONValue.h"
 #import "OFString+Serialization.h"
 #import "OFString+URLEncoding.h"
 #import "OFString+XMLEscaping.h"
