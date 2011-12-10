@@ -232,6 +232,9 @@
 		4B55A115133AC24600B58A93 /* OFReadOrWriteFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B55A10F133AC24500B58A93 /* OFReadOrWriteFailedException.m */; };
 		4B55A116133AC24600B58A93 /* OFWriteFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B55A110133AC24500B58A93 /* OFWriteFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B55A117133AC24600B58A93 /* OFWriteFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B55A111133AC24600B58A93 /* OFWriteFailedException.m */; };
+		4B5CF8F814940BD2007AA324 /* OFJSONEncoding.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B5CF8F514940BD2007AA324 /* OFJSONEncoding.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B5CF8F914940BD2007AA324 /* OFString+JSONValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B5CF8F614940BD2007AA324 /* OFString+JSONValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B5CF8FA14940BD2007AA324 /* OFString+JSONValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5CF8F714940BD2007AA324 /* OFString+JSONValue.m */; };
 		4B64D6EF1425381E007BDFB1 /* OFStreamObserver_poll.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B64D6EB1425381E007BDFB1 /* OFStreamObserver_poll.h */; };
 		4B64D6F01425381E007BDFB1 /* OFStreamObserver_poll.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B64D6EC1425381E007BDFB1 /* OFStreamObserver_poll.m */; };
 		4B64D6F11425381E007BDFB1 /* OFStreamObserver_select.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B64D6ED1425381E007BDFB1 /* OFStreamObserver_select.h */; };
@@ -510,6 +513,9 @@
 		4B55A10F133AC24500B58A93 /* OFReadOrWriteFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFReadOrWriteFailedException.m; path = src/exceptions/OFReadOrWriteFailedException.m; sourceTree = "<group>"; };
 		4B55A110133AC24500B58A93 /* OFWriteFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFWriteFailedException.h; path = src/exceptions/OFWriteFailedException.h; sourceTree = "<group>"; };
 		4B55A111133AC24600B58A93 /* OFWriteFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFWriteFailedException.m; path = src/exceptions/OFWriteFailedException.m; sourceTree = "<group>"; };
+		4B5CF8F514940BD2007AA324 /* OFJSONEncoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFJSONEncoding.h; path = src/OFJSONEncoding.h; sourceTree = "<group>"; };
+		4B5CF8F614940BD2007AA324 /* OFString+JSONValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFString+JSONValue.h"; path = "src/OFString+JSONValue.h"; sourceTree = "<group>"; };
+		4B5CF8F714940BD2007AA324 /* OFString+JSONValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFString+JSONValue.m"; path = "src/OFString+JSONValue.m"; sourceTree = "<group>"; };
 		4B64D6EB1425381E007BDFB1 /* OFStreamObserver_poll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamObserver_poll.h; path = src/OFStreamObserver_poll.h; sourceTree = "<group>"; };
 		4B64D6EC1425381E007BDFB1 /* OFStreamObserver_poll.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamObserver_poll.m; path = src/OFStreamObserver_poll.m; sourceTree = "<group>"; };
 		4B64D6ED1425381E007BDFB1 /* OFStreamObserver_select.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamObserver_select.h; path = src/OFStreamObserver_select.h; sourceTree = "<group>"; };
@@ -921,6 +927,7 @@
 				4B99251012E0780000215DBE /* OFHTTPRequest.m */,
 				4BA49D8E13DB113B00381CDB /* OFIntrospection.h */,
 				4BA49D8F13DB113B00381CDB /* OFIntrospection.m */,
+				4B5CF8F514940BD2007AA324 /* OFJSONEncoding.h */,
 				4B67996C1099E7C50041064A /* OFList.h */,
 				4B67996D1099E7C50041064A /* OFList.m */,
 				4BF1BCC211C9663F0025511F /* OFMD5Hash.h */,
@@ -978,6 +985,8 @@
 				4B6799801099E7C50041064A /* OFString.m */,
 				4BF1BCC611C9663F0025511F /* OFString+Hashing.h */,
 				4BF1BCC711C9663F0025511F /* OFString+Hashing.m */,
+				4B5CF8F614940BD2007AA324 /* OFString+JSONValue.h */,
+				4B5CF8F714940BD2007AA324 /* OFString+JSONValue.m */,
 				4BB25E84139C388A00F574EA /* OFString+Serialization.h */,
 				4BB25E85139C388A00F574EA /* OFString+Serialization.m */,
 				4BF1BCC811C9663F0025511F /* OFString+URLEncoding.h */,
@@ -1144,6 +1153,7 @@
 				4B3D23C91337FCB000DD29B8 /* OFHash.h in Headers */,
 				4B3D23CA1337FCB000DD29B8 /* OFHTTPRequest.h in Headers */,
 				4BA49D9013DB113B00381CDB /* OFIntrospection.h in Headers */,
+				4B5CF8F814940BD2007AA324 /* OFJSONEncoding.h in Headers */,
 				4B3D23CB1337FCB000DD29B8 /* OFList.h in Headers */,
 				4B3D23CC1337FCB000DD29B8 /* OFMD5Hash.h in Headers */,
 				4B3D23CD1337FCB000DD29B8 /* OFMutableArray.h in Headers */,
@@ -1165,6 +1175,7 @@
 				4B3D23D71337FCB000DD29B8 /* OFStreamSocket.h in Headers */,
 				4B3D23D81337FCB000DD29B8 /* OFString.h in Headers */,
 				4B3D23D91337FCB000DD29B8 /* OFString+Hashing.h in Headers */,
+				4B5CF8F914940BD2007AA324 /* OFString+JSONValue.h in Headers */,
 				4BB25E8A139C388A00F574EA /* OFString+Serialization.h in Headers */,
 				4B3D23DA1337FCB000DD29B8 /* OFString+URLEncoding.h in Headers */,
 				4B3D23DB1337FCB000DD29B8 /* OFString+XMLEscaping.h in Headers */,
@@ -1455,6 +1466,7 @@
 				4B3D23A51337FC0D00DD29B8 /* OFStreamSocket.m in Sources */,
 				4B3D23A61337FC0D00DD29B8 /* OFString.m in Sources */,
 				4B3D23A71337FC0D00DD29B8 /* OFString+Hashing.m in Sources */,
+				4B5CF8FA14940BD2007AA324 /* OFString+JSONValue.m in Sources */,
 				4BB25E8B139C388A00F574EA /* OFString+Serialization.m in Sources */,
 				4B3D23A81337FC0D00DD29B8 /* OFString+URLEncoding.m in Sources */,
 				4B3D23A91337FC0D00DD29B8 /* OFString+XMLEscaping.m in Sources */,
@@ -1477,6 +1489,7 @@
 				4B3D23B41337FC0D00DD29B8 /* iso_8859_15.m in Sources */,
 				4B3D23B51337FC0D00DD29B8 /* foundation-compat.m in Sources */,
 				4B3D23EE1337FFD000DD29B8 /* of_asprintf.m in Sources */,
+				4BA355BA14879BDD00442EF4 /* of_strptime.m in Sources */,
 				4B3D23B91337FC0D00DD29B8 /* unicode.m in Sources */,
 				4B3D23BA1337FC0D00DD29B8 /* windows_1252.m in Sources */,
 				4B90B79F133AD87D00BD33CB /* OFAcceptFailedException.m in Sources */,
@@ -1530,7 +1543,6 @@
 				4B17FFB6133A375B003E6DCD /* OFUnboundNamespaceException.m in Sources */,
 				4B17FFB2133A3664003E6DCD /* OFUnsupportedProtocolException.m in Sources */,
 				4B55A117133AC24600B58A93 /* OFWriteFailedException.m in Sources */,
-				4BA355BA14879BDD00442EF4 /* of_strptime.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
