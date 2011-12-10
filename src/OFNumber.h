@@ -18,7 +18,7 @@
 
 #import "OFObject.h"
 #import "OFSerialization.h"
-#import "OFJSON.h"
+#import "OFJSONEncoding.h"
 
 /**
  * \brief The type of a number.

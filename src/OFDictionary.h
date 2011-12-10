@@ -20,7 +20,7 @@
 #import "OFCollection.h"
 #import "OFEnumerator.h"
 #import "OFSerialization.h"
-#import "OFJSON.h"
+#import "OFJSONEncoding.h"
 
 @class OFArray;
 

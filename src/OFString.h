@@ -20,7 +20,7 @@
 
 #import "OFObject.h"
 #import "OFSerialization.h"
-#import "OFJSON.h"
+#import "OFJSONEncoding.h"
 
 #import "macros.h"
 

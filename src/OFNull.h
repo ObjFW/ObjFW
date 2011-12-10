@@ -16,7 +16,7 @@
 
 #import "OFObject.h"
 #import "OFSerialization.h"
-#import "OFJSON.h"
+#import "OFJSONEncoding.h"
 
 /**
  * \brief A class for representing null values in collections.
