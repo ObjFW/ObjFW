@@ -43,6 +43,59 @@ skipWhitespaces(const char *restrict *pointer, const char *stop)
 		(*pointer)++;
 }
 
+static void
+skipComment(const char *restrict *pointer, const char *stop)
+{
+	if (**pointer != '/')
+		return;
+
+	if (*pointer + 1 >= stop)
+		return;
+
+	(*pointer)++;
+
+	if (**pointer == '*') {
+		BOOL lastIsAsterisk = NO;
+
+		(*pointer)++;
+
+		while (*pointer < stop) {
+			if (lastIsAsterisk && **pointer == '/') {
+				(*pointer)++;
+				return;
+			}
+
+			lastIsAsterisk = (**pointer == '*');
+
+			(*pointer)++;
+		}
+	} else {
+		(*pointer)++;
+
+		while (*pointer < stop) {
+			if (**pointer == '\r' || **pointer == '\n') {
+				(*pointer)++;
+				return;
+			}
+
+			(*pointer)++;
+		}
+	}
+}
+
+static void
+skipWhitespacesAndComments(const char *restrict *pointer, const char *stop)
+{
+	const char *old = NULL;
+
+	while (old != *pointer) {
+		old = *pointer;
+
+		skipWhitespaces(pointer, stop);
+		skipComment(pointer, stop);
+	}
+}
+
 static OF_INLINE uint16_t
 parseUnicodeEscape(const char *pointer, const char *stop)
 {
@@ -217,7 +270,7 @@ parseArray(const char *restrict *pointer, const char *stop)
 	while (**pointer != ']') {
 		id object;
 
-		skipWhitespaces(pointer, stop);
+		skipWhitespacesAndComments(pointer, stop);
 		if (*pointer >= stop)
 			return nil;
 
@@ -229,13 +282,13 @@ parseArray(const char *restrict *pointer, const char *stop)
 
 		[array addObject: object];
 
-		skipWhitespaces(pointer, stop);
+		skipWhitespacesAndComments(pointer, stop);
 		if (*pointer >= stop)
 			return nil;
 
 		if (**pointer == ',') {
 			(*pointer)++;
-			skipWhitespaces(pointer, stop);
+			skipWhitespacesAndComments(pointer, stop);
 
 			if (*pointer >= stop)
 				return nil;
@@ -261,7 +314,7 @@ parseDictionary(const char *restrict *pointer, const char *stop)
 	while (**pointer != '}') {
 		id key, object;
 
-		skipWhitespaces(pointer, stop);
+		skipWhitespacesAndComments(pointer, stop);
 		if (*pointer >= stop)
 			return nil;
 
@@ -271,7 +324,7 @@ parseDictionary(const char *restrict *pointer, const char *stop)
 		if ((key = nextObject(pointer, stop)) == nil)
 			return nil;
 
-		skipWhitespaces(pointer, stop);
+		skipWhitespacesAndComments(pointer, stop);
 		if (*pointer + 1 >= stop || **pointer != ':')
 			return nil;
 
@@ -283,13 +336,13 @@ parseDictionary(const char *restrict *pointer, const char *stop)
 		[dictionary setObject: object
 			       forKey: key];
 
-		skipWhitespaces(pointer, stop);
+		skipWhitespacesAndComments(pointer, stop);
 		if (*pointer >= stop)
 			return nil;
 
 		if (**pointer == ',') {
 			(*pointer)++;
-			skipWhitespaces(pointer, stop);
+			skipWhitespacesAndComments(pointer, stop);
 
 			if (*pointer >= stop)
 				return nil;
@@ -344,7 +397,7 @@ parseNumber(const char *restrict *pointer, const char *stop)
 static id
 nextObject(const char *restrict *pointer, const char *stop)
 {
-	skipWhitespaces(pointer, stop);
+	skipWhitespacesAndComments(pointer, stop);
 
 	if (*pointer >= stop)
 		return nil;
@@ -411,7 +464,7 @@ nextObject(const char *restrict *pointer, const char *stop)
 	id object;
 
 	object = nextObject(&pointer, stop);
-	skipWhitespaces(&pointer, stop);
+	skipWhitespacesAndComments(&pointer, stop);
 
 	if (pointer < stop || object == nil)
 		@throw [OFInvalidEncodingException exceptionWithClass: isa];
