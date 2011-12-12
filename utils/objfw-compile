@@ -152,6 +152,10 @@ while test x"$1" != "x"; do
 			LDFLAGS="$LDFLAGS $($OBJFW_CONFIG --plugin-ldflags)"
 			out_suffix="$($OBJFW_CONFIG --plugin-suffix)"
 			;;
+		-pthread)
+			OBJCFLAGS="$OBJCFLAGS $1"
+			LDFLAGS="$LDFLAGS $1"
+			;;
 		-Wl,*)
 			LDFLAGS="$LDFLAGS $1"
 			;;
