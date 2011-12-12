@@ -64,11 +64,6 @@
 #import "OFXMLParser.h"
 #import "OFXMLElementBuilder.h"
 
-#import "OFFloatVector.h"
-#import "OFFloatMatrix.h"
-#import "OFDoubleVector.h"
-#import "OFDoubleMatrix.h"
-
 #import "OFSerialization.h"
 
 #import "OFApplication.h"
