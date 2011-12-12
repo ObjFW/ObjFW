@@ -318,6 +318,14 @@ static Class CDATAClass = Nil;
 		namespaces = [[namespacesElement objectByDeserializing] copy];
 		children = [[childrenElement objectByDeserializing] copy];
 
+		if (namespaces == nil)
+			namespaces = [[OFMutableDictionary alloc] init];
+
+		[namespaces setObject: @"xml"
+			       forKey: @"http://www.w3.org/XML/1998/namespace"];
+		[namespaces setObject: @"xmlns"
+			       forKey: @"http://www.w3.org/2000/xmlns/"];
+
 		if (name == nil)
 			@throw [OFInvalidArgumentException
 			    exceptionWithClass: isa
@@ -714,13 +722,22 @@ static Class CDATAClass = Nil;
 
 	if (namespaces != nil) {
 		OFXMLElement *namespacesElement;
+		OFMutableDictionary *namespacesCopy =
+		    [[namespaces mutableCopy] autorelease];
 
-		namespacesElement =
-		    [OFXMLElement elementWithName: @"namespaces"
-					namespace: OF_SERIALIZATION_NS];
-		[namespacesElement addChild:
-		    [namespaces XMLElementBySerializing]];
-		[element addChild: namespacesElement];
+		[namespacesCopy removeObjectForKey:
+		    @"http://www.w3.org/XML/1998/namespace"];
+		[namespacesCopy removeObjectForKey:
+		    @"http://www.w3.org/2000/xmlns/"];
+
+		if ([namespacesCopy count] > 0) {
+			namespacesElement =
+			    [OFXMLElement elementWithName: @"namespaces"
+						namespace: OF_SERIALIZATION_NS];
+			[namespacesElement addChild:
+			    [namespacesCopy XMLElementBySerializing]];
+			[element addChild: namespacesElement];
+		}
 	}
 
 	if (children != nil) {

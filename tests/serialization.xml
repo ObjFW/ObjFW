@@ -33,42 +33,9 @@ test</OFString>
 How are you?</OFString>
         <OFURL>https://webkeks.org/</OFURL>
         <OFXMLElement name='x'>
-          <namespaces>
-            <OFMutableDictionary>
-              <key>
-                <OFString>http://www.w3.org/2000/xmlns/</OFString>
-              </key>
-              <object>
-                <OFString>xmlns</OFString>
-              </object>
-              <key>
-                <OFString>http://www.w3.org/XML/1998/namespace</OFString>
-              </key>
-              <object>
-                <OFString>xml</OFString>
-              </object>
-            </OFMutableDictionary>
-          </namespaces>
           <children>
             <OFMutableArray>
-              <OFXMLElement name='y'>
-                <namespaces>
-                  <OFMutableDictionary>
-                    <key>
-                      <OFString>http://www.w3.org/2000/xmlns/</OFString>
-                    </key>
-                    <object>
-                      <OFString>xmlns</OFString>
-                    </object>
-                    <key>
-                      <OFString>http://www.w3.org/XML/1998/namespace</OFString>
-                    </key>
-                    <object>
-                      <OFString>xml</OFString>
-                    </object>
-                  </OFMutableDictionary>
-                </namespaces>
-              </OFXMLElement>
+              <OFXMLElement name='y'/>
               <OFXMLCDATA><![CDATA[<]]></OFXMLCDATA>
             </OFMutableArray>
           </children>
