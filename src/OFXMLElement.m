@@ -288,6 +288,8 @@ static Class CDATAClass = Nil;
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 		OFXMLElement *attributesElement, *namespacesElement;
 		OFXMLElement *childrenElement;
+		OFEnumerator *keyEnumerator, *objectEnumerator;
+		id key, object;
 
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
@@ -314,9 +316,47 @@ static Class CDATAClass = Nil;
 			 namespace: OF_SERIALIZATION_NS] elementsForNamespace:
 		    OF_SERIALIZATION_NS] firstObject];
 
-		attributes = [[attributesElement objectByDeserializing] copy];
-		namespaces = [[namespacesElement objectByDeserializing] copy];
-		children = [[childrenElement objectByDeserializing] copy];
+		attributes = [[attributesElement objectByDeserializing]
+		    mutableCopy];
+		namespaces = [[namespacesElement objectByDeserializing]
+		    mutableCopy];
+		children = [[childrenElement objectByDeserializing]
+		    mutableCopy];
+
+		/* Sanity checks */
+		if ((attributes != nil &&
+		    ![attributes isKindOfClass: [OFMutableArray class]]) ||
+		    (namespaces != nil &&
+		    ![namespaces isKindOfClass: [OFMutableDictionary class]]) ||
+		    (children != nil &&
+		    ![children isKindOfClass: [OFMutableArray class]]))
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa
+				      selector: _cmd];
+
+		objectEnumerator = [attributes objectEnumerator];
+		while ((object = [objectEnumerator nextObject]) != nil)
+			if (![object isKindOfClass: [OFXMLAttribute class]])
+				@throw [OFInvalidArgumentException
+				    exceptionWithClass: isa
+					      selector: _cmd];
+
+		keyEnumerator = [namespaces keyEnumerator];
+		objectEnumerator = [namespaces objectEnumerator];
+		while ((key = [keyEnumerator nextObject]) != nil &&
+		    (object = [objectEnumerator nextObject]) != nil)
+			if (![key isKindOfClass: [OFString class]] ||
+			    ![object isKindOfClass: [OFString class]])
+				@throw [OFInvalidArgumentException
+				    exceptionWithClass: isa
+					      selector: _cmd];
+
+		objectEnumerator = [children objectEnumerator];
+		while ((object = [objectEnumerator nextObject]) != nil)
+			if (![object isKindOfClass: [OFXMLNode class]])
+				@throw [OFInvalidArgumentException
+				    exceptionWithClass: isa
+					      selector: _cmd];
 
 		if (namespaces == nil)
 			namespaces = [[OFMutableDictionary alloc] init];
