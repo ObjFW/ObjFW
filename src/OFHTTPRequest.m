@@ -205,6 +205,9 @@ normalize_key(OFString *key)
 		    autorelease];
 	}
 
+	[delegate request: self
+	  didCreateSocket: sock];
+
 	@try {
 		OFString *line, *path;
 		OFMutableDictionary *serverHeaders;
@@ -458,6 +461,11 @@ normalize_key(OFString *key)
 @end
 
 @implementation OFObject (OFHTTPRequestDelegate)
+-   (void)request: (OFHTTPRequest*)request
+  didCreateSocket: (OFTCPSocket*)socket
+{
+}
+
 -     (void)request: (OFHTTPRequest*)request
   didReceiveHeaders: (OFDictionary*)headers
      withStatusCode: (int)statusCode

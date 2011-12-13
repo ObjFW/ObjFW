@@ -21,6 +21,7 @@
 @class OFURL;
 @class OFHTTPRequest;
 @class OFHTTPRequestResult;
+@class OFTCPSocket;
 @class OFDataArray;
 
 typedef enum of_http_request_type_t {
@@ -40,6 +41,20 @@ typedef enum of_http_request_type_t {
 #ifdef OF_HAVE_OPTIONAL_PROTOCOLS
 @optional
 #endif
+/**
+ * \brief A callback which is called when an OFHTTPRequest creates a socket.
+ *
+ * This is useful if the connection is using HTTPS and the server requires a
+ * client certificate. This callback can then be used to tell the TLS socket
+ * about the certificate. Another use case is to tell the socket about a SOCKS5
+ * proxy it should use for this connection.
+ *
+ * \param request The OFHTTPRequest that created a socket
+ * \param socket The socket created by the OFHTTPRequest
+ */
+-   (void)request: (OFHTTPRequest*)request
+  didCreateSocket: (OFTCPSocket*)socket;
+
 /**
  * \brief A callback which is called when an OFHTTPRequest received headers.
  *
