@@ -125,6 +125,36 @@ _NSPrintForDebugger(id object)
 	    cStringWithEncoding: OF_STRING_ENCODING_NATIVE];
 }
 
+#ifdef OF_OLD_GNU_RUNTIME
+static BOOL
+protocol_conformsToProtocol(Protocol *a, Protocol *b)
+{
+	/*
+	 * This function is an ugly workaround for a bug that only happens with
+	 * Clang 2.9 together with the libobjc from GCC 4.6.
+	 * Since the instance variables of Protocol are @private, we have to
+	 * cast them to a struct here in order to access them.
+	 */
+	struct objc_protocol {
+		Class isa;
+		const char *protocol_name;
+		struct objc_protocol_list *protocol_list;
+	} *pa = (struct objc_protocol*)a, *pb = (struct objc_protocol*)b;
+	struct objc_protocol_list *pl;
+	size_t i;
+
+	if (!strcmp(pa->protocol_name, pb->protocol_name))
+		return YES;
+
+	for (pl = pa->protocol_list; pl != NULL; pl = pl->next)
+		for (i = 0; i < pl->count; i++)
+			if (protocol_conformsToProtocol(pl->list[i], b))
+				return YES;
+
+	return NO;
+}
+#endif
+
 /* References for static linking */
 void _references_to_categories_of_OFObject(void)
 {
@@ -274,7 +304,8 @@ void _references_to_categories_of_OFObject(void)
 	for (c = self; c != Nil; c = class_get_super_class(c))
 		for (pl = c->protocols; pl != NULL; pl = pl->next)
 			for (i = 0; i < pl->count; i++)
-				if ([pl->list[i] conformsTo: protocol])
+				if (protocol_conformsToProtocol(pl->list[i],
+				    protocol))
 					return YES;
 
 	return NO;
