@@ -18,6 +18,11 @@
 
 #define __NO_EXT_QNX
 
+/* Work around a bug with Clang + glibc */
+#ifdef __clang__
+# define _HAVE_STRING_ARCH_strcmp
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
