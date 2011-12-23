@@ -40,7 +40,9 @@
 
 #import "macros.h"
 
-#if defined(OF_OBJFW_RUNTIME)
+#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+# import <objc/objc-exception.h>
+#elif defined(OF_OBJFW_RUNTIME)
 # import <objfw-rt.h>
 #elif defined(OF_OLD_GNU_RUNTIME)
 # import <objc/Protocol.h>
@@ -96,6 +98,15 @@ extern BOOL objc_sync_init();
 
 #ifdef NEED_OBJC_PROPERTIES_INIT
 extern BOOL objc_properties_init();
+#endif
+
+#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+static void
+uncaught_exception_handler(id exception)
+{
+	fprintf(stderr, "Unhandled exception:\n%s\n",
+	    [[exception description] UTF8String]);
+}
 #endif
 
 static void
@@ -177,6 +188,10 @@ void _references_to_categories_of_OFObject(void)
 		    stderr);
 		abort();
 	}
+#endif
+
+#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+	objc_setUncaughtExceptionHandler(uncaught_exception_handler);
 #endif
 
 #ifdef HAVE_OBJC_ENUMERATIONMUTATION
