@@ -907,13 +907,68 @@ static struct {
 
 - (const char*)UTF8String
 {
-	/* TODO: Implement! */
-	@throw [OFNotImplementedException exceptionWithClass: isa
-						    selector: _cmd];
+	const of_unichar_t *unicodeString = [self unicodeString];
+	char *UTF8String;
+	size_t i, j = 0, length = [self length];
+	size_t UTF8StringLength = length;
+	OFObject *object;
+
+	object = [[[OFObject alloc] init] autorelease];
+	UTF8String = [object allocMemoryWithSize: (length * 4) + 1];
+
+	for (i = 0; i < length; i++) {
+		char buffer[4];
+		size_t characterLen = of_string_unicode_to_utf8(
+		    unicodeString[i], buffer);
+
+		switch (characterLen) {
+		case 1:
+			UTF8String[j++] = buffer[0];
+			break;
+		case 2:
+			UTF8StringLength++;
+
+			memcpy(UTF8String + j, buffer, 2);
+			j += 2;
+
+			break;
+		case 3:
+			UTF8StringLength += 2;
+
+			memcpy(UTF8String + j, buffer, 3);
+			j += 3;
+
+			break;
+		case 4:
+			UTF8StringLength += 3;
+
+			memcpy(UTF8String + j, buffer, 4);
+			j += 4;
+
+			break;
+		default:
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: isa];
+		}
+	}
+
+	UTF8String[j] = '\0';
+
+	@try {
+		UTF8String = [object resizeMemory: UTF8String
+					   toSize: UTF8StringLength + 1];
+	} @catch (OFOutOfMemoryException *e) {
+		/* We don't care, as we only tried to make it smaller */
+	}
+
+	return UTF8String;
 }
 
 - (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
 {
+	if (encoding == OF_STRING_ENCODING_UTF_8)
+		return [self UTF8String];
+
 	/* TODO: Implement! */
 	@throw [OFNotImplementedException exceptionWithClass: isa
 						    selector: _cmd];
@@ -927,13 +982,30 @@ static struct {
 
 - (size_t)UTF8StringLength
 {
-	/* TODO: Implement! */
-	@throw [OFNotImplementedException exceptionWithClass: isa
-						    selector: _cmd];
+	const of_unichar_t *unicodeString = [self unicodeString];
+	size_t length = [self length];
+	size_t i, UTF8StringLength = 0;
+
+	for (i = 0; i < length; i++) {
+		char buffer[4];
+		size_t characterLen = of_string_unicode_to_utf8(
+		    unicodeString[i], buffer);
+
+		if (characterLen == 0)
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: isa];
+
+		UTF8StringLength += characterLen;
+	}
+
+	return UTF8StringLength;
 }
 
 - (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding
 {
+	if (encoding == OF_STRING_ENCODING_UTF_8)
+		return [self UTF8StringLength];
+
 	/* TODO: Implement! */
 	@throw [OFNotImplementedException exceptionWithClass: isa
 						    selector: _cmd];
