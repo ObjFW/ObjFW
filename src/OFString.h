@@ -520,12 +520,20 @@ extern size_t of_utf16_string_length(const uint16_t*);
 /**
  * \brief Returns the OFString as a UTF-8 encoded C string.
  *
+ * The result is valid until the autorelease pool is released. If you want to
+ * use the result outside the scope of the current autorelease pool, you have to
+ * copy it.
+ *
  * \return The OFString as a UTF-8 encoded C string
  */
 - (const char*)UTF8String;
 
 /**
  * \brief Returns the OFString as a C string in the specified encoding.
+ *
+ * The result is valid until the autorelease pool is released. If you want to
+ * use the result outside the scope of the current autorelease pool, you have to
+ * copy it.
  *
  * \param encoding The encoding for the C string
  * \return The OFString as a C string in the specified encoding
