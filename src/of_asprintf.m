@@ -281,31 +281,25 @@ formatConversionSpecifierState(struct context *ctx)
 		return false;
 
 	switch (ctx->format[ctx->i]) {
-	case '@':;
-		OFAutoreleasePool *pool;
-
+	case '@':
 		ctx->subformat[ctx->subformatLen - 1] = 's';
-
-		@try {
-			pool = [[OFAutoreleasePool alloc] init];
-		} @catch (id e) {
-			return false;
-		}
 
 		@try {
 			id object;
 
-			if ((object = va_arg(ctx->arguments, id)) != nil)
+			if ((object = va_arg(ctx->arguments, id)) != nil) {
+				OFAutoreleasePool *pool;
+
+				pool = [[OFAutoreleasePool alloc] init];
 				tmpLen = asprintf(&tmp, ctx->subformat,
 				    [[object description] UTF8String]);
-			else
+				[pool release];
+			} else
 				tmpLen = asprintf(&tmp, ctx->subformat,
 				    "(nil)");
 		} @catch (id e) {
 			free(ctx->buffer);
 			@throw e;
-		} @finally {
-			[pool release];
 		}
 
 		break;
