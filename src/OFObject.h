@@ -122,6 +122,30 @@ typedef struct of_rectangle_t
 - (BOOL)respondsToSelector: (SEL)selector;
 
 /**
+ * \brief Checks whether the object conforms to the specified protocol.
+ *
+ * \param protocol The protocol which should be checked for conformance
+ * \return A boolean whether the object conforms to the specified protocol
+ */
+- (BOOL)conformsToProtocol: (Protocol*)protocol;
+
+/**
+ * \brief Returns the implementation for the specified selector.
+ *
+ * \param selector The selector for which the method should be returned
+ * \return The implementation for the specified selector
+ */
+- (IMP)methodForSelector: (SEL)selector;
+
+/**
+ * \brief Returns the type encoding for the specified selector.
+ *
+ * \param selector The selector for which the type encoding should be returned
+ * \return The type encoding for the specified selector
+ */
+- (const char*)typeEncodingForSelector: (SEL)selector;
+
+/**
  * \brief Performs the specified selector.
  *
  * \param selector The selector to perform
@@ -447,30 +471,6 @@ typedef struct of_rectangle_t
  * \return The name of the object's class
  */
 - (OFString*)className;
-
-/**
- * \brief Checks whether the object conforms to the specified protocol.
- *
- * \param protocol The protocol which should be checked for conformance
- * \return A boolean whether the object conforms to the specified protocol
- */
-- (BOOL)conformsToProtocol: (Protocol*)protocol;
-
-/**
- * \brief Returns the implementation for the specified selector.
- *
- * \param selector The selector for which the method should be returned
- * \return The implementation for the specified selector
- */
-- (IMP)methodForSelector: (SEL)selector;
-
-/**
- * \brief Returns the type encoding for the specified selector.
- *
- * \param selector The selector for which the type encoding should be returned
- * \return The type encoding for the specified selector
- */
-- (const char*)typeEncodingForSelector: (SEL)selector;
 
 /**
  * \brief Returns a description for the object.
