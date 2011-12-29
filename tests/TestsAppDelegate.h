@@ -96,6 +96,10 @@
 - (void)HTTPRequestTests;
 @end
 
+@interface TestsAppDelegate (OFJSONTests)
+- (void)JSONTests;
+@end
+
 @interface TestsAppDelegate (OFListTests)
 - (void)listTests;
 @end

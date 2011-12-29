@@ -140,6 +140,7 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 	[self XMLNodeTests];
 	[self XMLElementBuilderTests];
 	[self serializationTests];
+	[self JSONTests];
 #ifdef OF_PLUGINS
 	[self pluginTests];
 #endif
