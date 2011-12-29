@@ -23,6 +23,8 @@
 #import "OFNull.h"
 #import "OFAutoreleasePool.h"
 
+#import "OFInvalidEncodingException.h"
+
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFJSON";
@@ -31,7 +33,8 @@ static OFString *module = @"OFJSON";
 - (void)JSONTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFString *s = @"{\"foo\"\t:\"bar\", \"x\": [7.5\r,null,\"foo\",false]}";
+	OFString *s = @"{\"foo\"\t:\"bar\", \"x\":/*fooo*/ [7.5\r,null//bar\n"
+	    @",\"foo\",false]}";
 	OFDictionary *d = [OFDictionary dictionaryWithKeysAndObjects:
 	    @"foo", @"bar",
 	    @"x", [OFArray arrayWithObjects:
@@ -42,10 +45,19 @@ static OFString *module = @"OFJSON";
 		nil],
 	    nil];
 
-	TEST(@"-[JSONValue]", [[s JSONValue] isEqual: d])
+	TEST(@"-[JSONValue #1]", [[s JSONValue] isEqual: d])
 
 	TEST(@"-[JSONRepresentation]", [[d JSONRepresentation] isEqual:
 	    @"{\"foo\":\"bar\",\"x\":[7.5,null,\"foo\",false]}"])
+
+	EXPECT_EXCEPTION(@"-[JSONValue #2]", OFInvalidEncodingException,
+	    [@"{" JSONValue])
+	EXPECT_EXCEPTION(@"-[JSONValue #3]", OFInvalidEncodingException,
+	    [@"]" JSONValue])
+	EXPECT_EXCEPTION(@"-[JSONValue #4]", OFInvalidEncodingException,
+	    [@"bar" JSONValue])
+	EXPECT_EXCEPTION(@"-[JSONValue #5]", OFInvalidEncodingException,
+	    [@"[\"a\" \"b\"]" JSONValue])
 
 	[pool drain];
 }
