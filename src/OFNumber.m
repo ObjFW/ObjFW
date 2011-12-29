@@ -458,7 +458,7 @@
 {
 	self = [super init];
 
-	value.bool_ = bool_;
+	value.bool_ = (bool_ ? YES : NO);
 	type = OF_NUMBER_BOOL;
 
 	return self;
@@ -916,6 +916,7 @@
 	number = object;
 
 	switch (type) {
+	case OF_NUMBER_BOOL:
 	case OF_NUMBER_CHAR:
 	case OF_NUMBER_SHORT:
 	case OF_NUMBER_INT:
@@ -1051,9 +1052,11 @@
 {
 	switch (type) {
 	case OF_NUMBER_BOOL:
-		return [OFNumber numberWithBool: value.bool_ % [number boolValue]];
+		return [OFNumber numberWithBool:
+		    value.bool_ % [number boolValue]];
 	case OF_NUMBER_CHAR:
-		return [OFNumber numberWithChar: value.char_ % [number charValue]];
+		return [OFNumber numberWithChar:
+		    value.char_ % [number charValue]];
 	case OF_NUMBER_SHORT:
 		return [OFNumber numberWithShort:
 		    value.short_ % [number shortValue]];
