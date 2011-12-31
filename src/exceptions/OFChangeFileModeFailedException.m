@@ -28,10 +28,9 @@
 		path: (OFString*)path
 		mode: (mode_t)mode
 {
-	return [(OFChangeFileModeFailedException*)[[self alloc]
-	    initWithClass: class_
-		     path: path
-		     mode: mode] autorelease];
+	return [[[self alloc] initWithClass: class_
+				       path: path
+				       mode: mode] autorelease];
 }
 
 - initWithClass: (Class)class_
