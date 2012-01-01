@@ -61,9 +61,9 @@
 #endif
 
 struct pre_ivar {
+	int32_t	      retainCount;
 	void	      **memoryChunks;
 	unsigned int  memoryChunksSize;
-	int32_t	      retainCount;
 #if !defined(OF_ATOMIC_OPS) && defined(OF_THREADS)
 	of_spinlock_t retainCountSpinlock;
 #endif

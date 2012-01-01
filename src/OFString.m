@@ -22,6 +22,10 @@
 
 #include <sys/stat.h>
 
+#ifdef _WIN32
+# include <malloc.h>
+#endif
+
 #import "OFString.h"
 #import "OFString_UTF8.h"
 #import "OFArray.h"
