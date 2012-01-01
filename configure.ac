@@ -503,6 +503,12 @@ AC_CHECK_HEADERS(sys/select.h, [
 	AC_DEFINE(OF_HAVE_SYS_SELECT_H, 1, [Whether we have sys/select.h])
 	AC_SUBST(OFSTREAMOBSERVER_SELECT_M, "OFStreamObserver_select.m")
 ])
+case "$host_os" in
+	mingw*)
+		AC_SUBST(OFSTREAMOBSERVER_SELECT_M,
+			"OFStreamObserver_select.m")
+		;;
+esac
 
 AC_MSG_CHECKING(for getaddrinfo)
 AC_TRY_COMPILE([
@@ -669,8 +675,6 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 
 	case "$host" in
 		*-*-mingw*)
-			AC_SUBST(OFSTREAMOBSERVER_SELECT_M,
-				"OFStreamObserver_select.m")
 			AC_CHECK_PROG(WINE, wine, wine)
 
 			AS_IF([test x"$WINE" != x""], [
