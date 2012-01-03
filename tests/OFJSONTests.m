@@ -38,7 +38,7 @@ static OFString *module = @"OFJSON";
 	OFDictionary *d = [OFDictionary dictionaryWithKeysAndObjects:
 	    @"foo", @"bar",
 	    @"x", [OFArray arrayWithObjects:
-		[OFNumber numberWithFloat: 7.5],
+		[OFNumber numberWithFloat: 7.5f],
 		[OFNull null],
 		@"foo",
 		[OFNumber numberWithBool: NO],
