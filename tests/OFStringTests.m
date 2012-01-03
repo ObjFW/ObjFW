@@ -326,7 +326,7 @@ static uint16_t sutf16str[] = {
 
 	/*
 	 * These test numbers can be generated without rounding if we have IEEE
-	 * floating point numbers, thus we can use == on then.
+	 * floating point numbers, thus we can use == on them.
 	 */
 	TEST(@"-[floatValue]",
 	    [@"\t-0.25 " floatValue] == -0.25 &&

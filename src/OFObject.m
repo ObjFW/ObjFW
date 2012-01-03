@@ -40,7 +40,7 @@
 
 #import "macros.h"
 
-#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+#if (defined(OF_APPLE_RUNTIME) && __OBJC2__) || defined(OF_GNU_RUNTIME)
 # import <objc/objc-exception.h>
 #elif defined(OF_OBJFW_RUNTIME)
 # import <objfw-rt.h>
@@ -100,11 +100,11 @@ extern BOOL objc_sync_init();
 extern BOOL objc_properties_init();
 #endif
 
-#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+#if (defined(OF_APPLE_RUNTIME) && __OBJC2__) || defined(OF_GNU_RUNTIME)
 static void
 uncaught_exception_handler(id exception)
 {
-	fprintf(stderr, "Unhandled exception:\n%s\n",
+	fprintf(stderr, "\nUnhandled exception:\n%s\n",
 	    [[exception description] UTF8String]);
 }
 #endif
@@ -190,7 +190,7 @@ void _references_to_categories_of_OFObject(void)
 	}
 #endif
 
-#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+#if (defined(OF_APPLE_RUNTIME) && __OBJC2__) || defined(OF_GNU_RUNTIME)
 	objc_setUncaughtExceptionHandler(uncaught_exception_handler);
 #endif
 
