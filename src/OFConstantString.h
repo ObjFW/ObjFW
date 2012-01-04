@@ -16,14 +16,15 @@
 
 #import "OFString.h"
 
-#ifdef OF_APPLE_RUNTIME
+#if !defined(OF_CONSTANT_STRING_M) && \
+    defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
 # ifdef __cplusplus
 extern "C" {
-#endif
+# endif
 extern void *_OFConstantStringClassReference;
 # ifdef __cplusplus
 }
-#endif
+# endif
 #endif
 
 /**

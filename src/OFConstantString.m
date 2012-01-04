@@ -16,20 +16,33 @@
 
 #include "config.h"
 
+#define OF_CONSTANT_STRING_M
+
 #include <stdlib.h>
 #include <string.h>
 
 #import "OFConstantString.h"
 #import "OFString_UTF8.h"
 
+#import "OFInitializationFailedException.h"
 #import "OFInvalidEncodingException.h"
 #import "OFNotImplementedException.h"
 #import "OFOutOfMemoryException.h"
 
-#ifdef OF_APPLE_RUNTIME
+#if defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
 # import <objc/runtime.h>
 
-void *_OFConstantStringClassReference;
+struct {
+	struct class *isa, *super_class;
+	const char *name;
+	long version, info, instance_size;
+	struct ivar_list *ivars;
+	struct method_list **methodLists;
+	struct cache *cache;
+	struct protocol_list *protocols;
+	const char *ivar_layout;
+	struct class_ext *ext;
+} _OFConstantStringClassReference;
 #endif
 
 @interface OFString_const: OFString_UTF8
@@ -110,13 +123,30 @@ void *_OFConstantStringClassReference;
 @end
 
 @implementation OFConstantString
+#if defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
 + (void)load
 {
-#ifdef OF_APPLE_RUNTIME
-	objc_setFutureClass((Class)&_OFConstantStringClassReference,
-	    "OFConstantString");
-#endif
+	/*
+	 * objc_setFutureClass suddenly stopped working as OFConstantString
+	 * became more complex. So the only solution is to make
+	 * _OFConstantStringClassRerence the actual class, but there is no
+	 * objc_initializeClassPair in 10.5.  However, objc_allocateClassPair
+	 * does not register the new class with the subclass in the ObjC1
+	 * runtime like the ObjC2 runtime does, so this workaround should be
+	 * fine.
+	 */
+	Class class;
+
+	if ((class = objc_allocateClassPair(self, "OFConstantString_hack",
+	    0)) == NULL)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+	memcpy(&_OFConstantStringClassReference, class,
+	    sizeof(_OFConstantStringClassReference));
+	free(class);
+	objc_registerClassPair((Class)&_OFConstantStringClassReference);
 }
+#endif
 
 - (void)finishInitialization
 {
