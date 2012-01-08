@@ -121,6 +121,20 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
 #endif
 
 /**
+ * \brief Swaps the objects at the specified indices.
+ *
+ * \param index1 The index of the first object to swap
+ * \param index2 The index of the second object to swap
+ */
+- (void)swapObjectAtIndex: (size_t)index1
+	withObjectAtIndex: (size_t)index2;
+
+/**
+ * \brief Reverts the order of the objects in the array.
+ */
+- (void)reverse;
+
+/**
  * \brief Converts the mutable array to an immutable array.
  */
 - (void)makeImmutable;

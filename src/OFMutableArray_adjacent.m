@@ -201,6 +201,36 @@
 	mutations++;
 }
 
+- (void)swapObjectAtIndex: (size_t)index1
+	withObjectAtIndex: (size_t)index2
+{
+	id *cArray = [array cArray];
+	size_t count = [array count];
+	id tmp;
+
+	if (index1 >= count || index2 >= count)
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
+
+	tmp = cArray[index1];
+	cArray[index1] = cArray[index2];
+	cArray[index2] = tmp;
+}
+
+- (void)reverse
+{
+	id *cArray = [array cArray];
+	size_t i, j, count = [array count];
+
+	if (count == 0 || count == 1)
+		return;
+
+	for (i = 0, j = count - 1; i < j; i++, j--) {
+		id tmp = cArray[i];
+		cArray[i] = cArray[j];
+		cArray[j] = tmp;
+	}
+}
+
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
 			   objects: (id*)objects
 			     count: (int)count

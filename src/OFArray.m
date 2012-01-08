@@ -554,6 +554,17 @@ static struct {
 		    methodForSelector: selector])(cArray[i], selector, object);
 }
 
+- (OFArray*)reversedArray
+{
+	OFMutableArray *new = [[self mutableCopy] autorelease];
+
+	[new reverse];
+
+	[new makeImmutable];
+
+	return new;
+}
+
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
 			   objects: (id*)objects
 			     count: (int)count_

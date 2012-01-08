@@ -140,6 +140,20 @@ static OFString *c_ary[] = {
 	    R([m[1] removeObjectsInRange: of_range(0, 2)]) &&
 	    [m[1] count] == 1 && [[m[1] objectAtIndex: 0] isEqual: c_ary[2]])
 
+	m[1] = [[a[0] mutableCopy] autorelease];
+	[m[1] addObject: @"qux"];
+	[m[1] addObject: @"last"];
+	TEST(@"-[reverse]",
+	    R([m[1] reverse]) && [m[1] isEqual: ([OFArray arrayWithObjects:
+	    @"last", @"qux", @"Baz", @"Bar", @"Foo", nil])])
+
+	m[1] = [[a[0] mutableCopy] autorelease];
+	[m[1] addObject: @"qux"];
+	[m[1] addObject: @"last"];
+	TEST(@"-[reversedArray]",
+	    [[m[1] reversedArray] isEqual: ([OFArray arrayWithObjects:
+	    @"last", @"qux", @"Baz", @"Bar", @"Foo", nil])])
+
 	EXPECT_EXCEPTION(@"Detect out of range in -[objectAtIndex:]",
 	    OFOutOfRangeException, [a[0] objectAtIndex: [a[0] count]])
 

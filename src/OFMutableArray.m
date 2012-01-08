@@ -256,6 +256,35 @@ static struct {
 }
 #endif
 
+- (void)swapObjectAtIndex: (size_t)index1
+	withObjectAtIndex: (size_t)index2
+{
+	id object1 = [self objectAtIndex: index1];
+	id object2 = [self objectAtIndex: index2];
+
+	[object1 retain];
+	@try {
+		[self replaceObjectAtIndex: index1
+				withObject: object2];
+		[self replaceObjectAtIndex: index2
+				withObject: object1];
+	} @finally {
+		[object1 release];
+	}
+}
+
+- (void)reverse
+{
+	size_t i, j, count = [self count];
+
+	if (count == 0 || count == 1)
+		return;
+
+	for (i = 0, j = count - 1; i < j; i++, j--)
+		[self swapObjectAtIndex: i
+		      withObjectAtIndex: j];
+}
+
 - (void)makeImmutable
 {
 }

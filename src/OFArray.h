@@ -262,6 +262,13 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 - (void)makeObjectsPerformSelector: (SEL)selector
 			withObject: (id)object;
 
+/**
+ * \brief Returns a copy of the array with the order reversed.
+ *
+ * \return A copy of the array with the order reversed
+ */
+- (OFArray*)reversedArray;
+
 #ifdef OF_HAVE_BLOCKS
 /**
  * \brief Executes a block for each object.
