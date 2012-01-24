@@ -1037,6 +1037,9 @@ static struct {
 	const of_unichar_t *unicodeString, *otherUnicodeString;
 	size_t length;
 
+	if (object == self)
+		return YES;
+
 	if (![object isKindOfClass: [OFString class]])
 		return NO;
 
@@ -1079,6 +1082,9 @@ static struct {
 	const of_unichar_t *unicodeString, *otherUnicodeString;
 	size_t i, minimumLength;
 
+	if (object == self)
+		return OF_ORDERED_SAME;
+
 	if (![object isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException exceptionWithClass: isa
 							     selector: _cmd];
@@ -1119,6 +1125,9 @@ static struct {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	const of_unichar_t *string, *otherUnicodeString;
 	size_t i, length, otherLength, minimumLength;
+
+	if (otherString == self)
+		return OF_ORDERED_SAME;
 
 	string = [self unicodeString];
 	otherUnicodeString = [otherString unicodeString];

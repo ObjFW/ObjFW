@@ -590,6 +590,9 @@ memcasecmp(const char *first, const char *second, size_t length)
 {
 	OFString_UTF8 *otherString;
 
+	if (object == self)
+		return YES;
+
 	if (![object isKindOfClass: [OFString class]])
 		return NO;
 
@@ -610,6 +613,9 @@ memcasecmp(const char *first, const char *second, size_t length)
 	OFString *otherString;
 	size_t otherCStringLength, minimumCStringLength;
 	int compare;
+
+	if (object == self)
+		return OF_ORDERED_SAME;
 
 	if (![object isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException exceptionWithClass: isa
@@ -640,6 +646,9 @@ memcasecmp(const char *first, const char *second, size_t length)
 	const char *otherCString;
 	size_t i, j, otherCStringLength, minimumCStringLength;
 	int compare;
+
+	if (otherString == self)
+		return OF_ORDERED_SAME;
 
 	if (![otherString isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException exceptionWithClass: isa
