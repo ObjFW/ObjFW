@@ -729,6 +729,9 @@ memcasecmp(const char *first, const char *second, size_t length)
 	size_t i;
 	uint32_t hash;
 
+	if (s->hashed)
+		return s->hash;
+
 	OF_HASH_INIT(hash);
 
 	for (i = 0; i < s->cStringLength; i++) {
@@ -748,6 +751,9 @@ memcasecmp(const char *first, const char *second, size_t length)
 	}
 
 	OF_HASH_FINALIZE(hash);
+
+	s->hash = hash;
+	s->hashed = YES;
 
 	return hash;
 }

@@ -20,10 +20,12 @@
 {
 @public
 	struct of_string_utf8_ivars {
-		char   *cString;
-		size_t cStringLength;
-		BOOL   UTF8;
-		size_t length;
+		char	 *cString;
+		size_t	 cStringLength;
+		BOOL	 UTF8;
+		size_t	 length;
+		BOOL	 hashed;
+		uint32_t hash;
 	} *restrict s;
 }
 @end

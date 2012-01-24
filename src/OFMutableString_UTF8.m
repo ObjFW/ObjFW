@@ -59,6 +59,8 @@
 		uint8_t *p = (uint8_t*)s->cString + s->cStringLength;
 		uint8_t t;
 
+		s->hashed = NO;
+
 		while (--p >= (uint8_t*)s->cString)
 			if ((t = table[0][*p]) != 0)
 				*p = t;
@@ -133,6 +135,7 @@
 	[self freeMemory: unicodeString];
 
 	[self freeMemory: s->cString];
+	s->hashed = NO;
 	s->cString = newCString;
 	s->cStringLength = newCStringLength;
 
@@ -154,6 +157,7 @@
 		    s->cStringLength);
 
 	if (!(character & 0x80) && !(s->cString[index] & 0x80)) {
+		s->hashed = NO;
 		s->cString[index] = character;
 		return;
 	}
@@ -164,6 +168,8 @@
 	if ((oldLength = of_string_utf8_to_unicode(s->cString + index,
 	    s->cStringLength - index, &c)) == 0)
 		@throw [OFInvalidEncodingException exceptionWithClass: isa];
+
+	s->hashed = NO;
 
 	if (length == oldLength) {
 		memcpy(s->cString + index, buffer, length);
@@ -231,6 +237,7 @@
 		@throw [OFInvalidEncodingException exceptionWithClass: isa];
 	}
 
+	s->hashed = NO;
 	s->cString = [self resizeMemory: s->cString
 				 toSize: s->cStringLength +
 					 UTF8StringLength + 1];
@@ -258,6 +265,7 @@
 		@throw [OFInvalidEncodingException exceptionWithClass: isa];
 	}
 
+	s->hashed = NO;
 	s->cString = [self resizeMemory: s->cString
 				 toSize: s->cStringLength +
 					 UTF8StringLength + 1];
@@ -304,6 +312,7 @@
 
 	UTF8StringLength = [string UTF8StringLength];
 
+	s->hashed = NO;
 	s->cString = [self resizeMemory: s->cString
 				 toSize: s->cStringLength +
 					 UTF8StringLength + 1];
@@ -348,6 +357,8 @@
 - (void)reverse
 {
 	size_t i, j;
+
+	s->hashed = NO;
 
 	/* We reverse all bytes and restore UTF-8 later, if necessary */
 	for (i = 0, j = s->cStringLength - 1; i < s->cStringLength / 2;
@@ -440,6 +451,7 @@
 		    s->cStringLength);
 
 	newCStringLength = s->cStringLength + [string UTF8StringLength];
+	s->hashed = NO;
 	s->cString = [self resizeMemory: s->cString
 				 toSize: newCStringLength + 1];
 
@@ -472,6 +484,7 @@
 	if (end > s->length)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
+	s->hashed = NO;
 	s->length -= end - start;
 
 	if (s->UTF8) {
@@ -518,6 +531,7 @@
 
 	newCStringLength = s->cStringLength - (end - start) +
 	    [replacement UTF8StringLength];
+	s->hashed = NO;
 	s->cString = [self resizeMemory: s->cString
 				 toSize: newCStringLength + 1];
 
@@ -588,6 +602,7 @@
 	newCString[newCStringLength] = 0;
 
 	[self freeMemory: s->cString];
+	s->hashed = NO;
 	s->cString = newCString;
 	s->cStringLength = newCStringLength;
 	s->length = newLength;
@@ -603,6 +618,7 @@
 		    s->cString[i] != '\f')
 			break;
 
+	s->hashed = NO;
 	s->cStringLength -= i;
 	s->length -= i;
 
@@ -621,6 +637,8 @@
 {
 	size_t d;
 	char *p;
+
+	s->hashed = NO;
 
 	d = 0;
 	for (p = s->cString + s->cStringLength - 1; p >= s->cString; p--) {
@@ -647,6 +665,8 @@
 {
 	size_t d, i;
 	char *p;
+
+	s->hashed = NO;
 
 	d = 0;
 	for (p = s->cString + s->cStringLength - 1; p >= s->cString; p--) {
