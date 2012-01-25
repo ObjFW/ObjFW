@@ -309,7 +309,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	if ((finishedParsing || [previous count] < 1) && buffer[*i] != ' ' &&
 	    buffer[*i] != '\t' && buffer[*i] != '\n' && buffer[*i] != '\r' &&
-	    buffer[*i] != '\f' && buffer[*i] != '<')
+	    buffer[*i] != '<')
 		@throw [OFMalformedXMLException exceptionWithClass: isa
 							    parser: self];
 
@@ -348,26 +348,26 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 							    parser: self];
 
 	switch (buffer[*i]) {
-		case '?':
-			*last = *i + 1;
-			state = OF_XMLPARSER_IN_PROCESSING_INSTRUCTIONS;
-			level = 0;
-			break;
-		case '/':
-			*last = *i + 1;
-			state = OF_XMLPARSER_IN_CLOSE_TAG_NAME;
-			acceptProlog = NO;
-			break;
-		case '!':
-			*last = *i + 1;
-			state = OF_XMLPARSER_IN_EXCLAMATIONMARK;
-			acceptProlog = NO;
-			break;
-		default:
-			state = OF_XMLPARSER_IN_TAG_NAME;
-			acceptProlog = NO;
-			(*i)--;
-			break;
+	case '?':
+		*last = *i + 1;
+		state = OF_XMLPARSER_IN_PROCESSING_INSTRUCTIONS;
+		level = 0;
+		break;
+	case '/':
+		*last = *i + 1;
+		state = OF_XMLPARSER_IN_CLOSE_TAG_NAME;
+		acceptProlog = NO;
+		break;
+	case '!':
+		*last = *i + 1;
+		state = OF_XMLPARSER_IN_EXCLAMATIONMARK;
+		acceptProlog = NO;
+		break;
+	default:
+		state = OF_XMLPARSER_IN_TAG_NAME;
+		acceptProlog = NO;
+		(*i)--;
+		break;
 	}
 }
 
@@ -396,8 +396,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		switch (piState) {
 		case 0:
 			if (cString[i] == ' ' || cString[i] == '\t' ||
-			    cString[i] == '\r' || cString[i] == '\n' ||
-			    cString[i] == '\f')
+			    cString[i] == '\r' || cString[i] == '\n')
 				continue;
 
 			last = i;
@@ -514,8 +513,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	OFString *cacheString;
 
 	if (buffer[*i] != ' ' && buffer[*i] != '\t' && buffer[*i] != '\n' &&
-	    buffer[*i] != '\r' && buffer[*i] != '\f' && buffer[*i] != '>' &&
-	    buffer[*i] != '/')
+	    buffer[*i] != '\r' && buffer[*i] != '>' && buffer[*i] != '/')
 		return;
 
 	if ((length = *i - *last) > 0)
@@ -606,7 +604,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	OFString *ns;
 
 	if (buffer[*i] != ' ' && buffer[*i] != '\t' && buffer[*i] != '\n' &&
-	    buffer[*i] != '\r' && buffer[*i] != '\f' && buffer[*i] != '>')
+	    buffer[*i] != '\r' && buffer[*i] != '>')
 		return;
 
 	if ((length = *i - *last) > 0)
@@ -677,8 +675,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	if (buffer[*i] != '>' && buffer[*i] != '/') {
 		if (buffer[*i] != ' ' && buffer[*i] != '\t' &&
-		    buffer[*i] != '\n' && buffer[*i] != '\r' &&
-		    buffer[*i] != '\f') {
+		    buffer[*i] != '\n' && buffer[*i] != '\r') {
 			*last = *i;
 			state = OF_XMLPARSER_IN_ATTR_NAME;
 			(*i)--;
@@ -794,7 +791,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	*last = *i + 1;
 
 	if (buffer[*i] == ' ' || buffer[*i] == '\t' || buffer[*i] == '\n' ||
-	    buffer[*i] == '\r' || buffer[*i] == '\f')
+	    buffer[*i] == '\r')
 		return;
 
 	if (buffer[*i] != '\'' && buffer[*i] != '"')
@@ -871,7 +868,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		*last = *i + 1;
 		state = OF_XMLPARSER_OUTSIDE_TAG;
 	} else if (buffer[*i] != ' ' && buffer[*i] != '\t' &&
-	    buffer[*i] != '\n' && buffer[*i] != '\r' && buffer[*i] != '\f')
+	    buffer[*i] != '\n' && buffer[*i] != '\r')
 		@throw [OFMalformedXMLException exceptionWithClass: isa
 							    parser: self];
 }
@@ -1021,7 +1018,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 {
 	if ((level < 6 && buffer[*i] != "OCTYPE"[level]) ||
 	    (level == 6 && buffer[*i] != ' ' && buffer[*i] != '\t' &&
-	    buffer[*i] != '\n' && buffer[*i] != '\r' && buffer[*i] != '\f'))
+	    buffer[*i] != '\n' && buffer[*i] != '\r'))
 		@throw [OFMalformedXMLException exceptionWithClass: isa
 							    parser: self];
 
