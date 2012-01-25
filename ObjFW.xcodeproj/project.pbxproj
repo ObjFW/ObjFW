@@ -239,7 +239,6 @@
 		4B64D6F01425381E007BDFB1 /* OFStreamObserver_poll.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B64D6EC1425381E007BDFB1 /* OFStreamObserver_poll.m */; };
 		4B64D6F11425381E007BDFB1 /* OFStreamObserver_select.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B64D6ED1425381E007BDFB1 /* OFStreamObserver_select.h */; };
 		4B64D6F21425381E007BDFB1 /* OFStreamObserver_select.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B64D6EE1425381E007BDFB1 /* OFStreamObserver_select.m */; };
-		4B6965E213A58B1B004F1C3A /* OFFloatMatrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6965E013A58B1B004F1C3A /* OFFloatMatrix.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7FF3B0133CE6DE00000324 /* OFMutexStillLockedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7FF3AE133CE6DE00000324 /* OFMutexStillLockedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7FF3B1133CE6DE00000324 /* OFMutexStillLockedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7FF3AF133CE6DE00000324 /* OFMutexStillLockedException.m */; };
 		4B7FF3B4133CED6200000324 /* OFConditionStillWaitingException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7FF3B2133CED6100000324 /* OFConditionStillWaitingException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -286,6 +285,7 @@
 		4BA85BCD140ECCE800E91D51 /* OFMutableSet_hashtable.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA85BC7140ECCE800E91D51 /* OFMutableSet_hashtable.m */; };
 		4BA85BCE140ECCE800E91D51 /* OFSet_hashtable.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA85BC8140ECCE800E91D51 /* OFSet_hashtable.h */; };
 		4BA85BCF140ECCE800E91D51 /* OFSet_hashtable.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA85BC9140ECCE800E91D51 /* OFSet_hashtable.m */; };
+		4BAA60C814D09699006F068D /* OFJSONTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BAA60C714D09699006F068D /* OFJSONTests.m */; };
 		4BAE7354139C508E00F682ED /* serialization.xml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BAE7353139C507F00F682ED /* serialization.xml */; };
 		4BB25E88139C388A00F574EA /* OFObject+Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB25E82139C388A00F574EA /* OFObject+Serialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BB25E89139C388A00F574EA /* OFObject+Serialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB25E83139C388A00F574EA /* OFObject+Serialization.m */; };
@@ -299,9 +299,6 @@
 		4BD653C6143B8489006182F0 /* OFTCPSocket+SOCKS5.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BD653C4143B8489006182F0 /* OFTCPSocket+SOCKS5.m */; };
 		4BD98C03133814220048DD5B /* objfw-defs.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD98C011338140B0048DD5B /* objfw-defs.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BDF37B51338055600F9A81A /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BDF37B41338055600F9A81A /* config.h */; };
-		4BE852D213B7671200C00856 /* OFDoubleMatrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BE852CE13B7671200C00856 /* OFDoubleMatrix.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4BE852D413B7671200C00856 /* OFDoubleVector.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BE852D013B7671200C00856 /* OFDoubleVector.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4BE920A813A2ECEF00154B94 /* OFFloatVector.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BE920A613A2ECEF00154B94 /* OFFloatVector.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BF33AFB133807590059CEF7 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
 		4BF33AFC133807A20059CEF7 /* OFArrayTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF66E1235358D0076B512 /* OFArrayTests.m */; };
 		4BF33AFD133807A20059CEF7 /* OFBlockTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE5F0E412DF4259005C7A0C /* OFBlockTests.m */; };
@@ -560,7 +557,6 @@
 		4B67998A1099E7C50041064A /* OFXMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLParser.m; path = src/OFXMLParser.m; sourceTree = "<group>"; };
 		4B67998B1099E7C50041064A /* threading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = threading.h; path = src/threading.h; sourceTree = "<group>"; };
 		4B67998C1099E7C50041064A /* unicode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unicode.h; path = src/unicode.h; sourceTree = "<group>"; };
-		4B6965E013A58B1B004F1C3A /* OFFloatMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFFloatMatrix.h; path = src/OFFloatMatrix.h; sourceTree = "<group>"; };
 		4B6AF96C10A8D3E40003FB0A /* asprintf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = asprintf.m; path = src/asprintf.m; sourceTree = "<group>"; };
 		4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iso_8859_15.m; path = src/iso_8859_15.m; sourceTree = "<group>"; };
 		4B6AF97210A8D42E0003FB0A /* windows_1252.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = windows_1252.m; path = src/windows_1252.m; sourceTree = "<group>"; };
@@ -638,6 +634,7 @@
 		4BA85BC7140ECCE800E91D51 /* OFMutableSet_hashtable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMutableSet_hashtable.m; path = src/OFMutableSet_hashtable.m; sourceTree = "<group>"; };
 		4BA85BC8140ECCE800E91D51 /* OFSet_hashtable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSet_hashtable.h; path = src/OFSet_hashtable.h; sourceTree = "<group>"; };
 		4BA85BC9140ECCE800E91D51 /* OFSet_hashtable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSet_hashtable.m; path = src/OFSet_hashtable.m; sourceTree = "<group>"; };
+		4BAA60C714D09699006F068D /* OFJSONTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFJSONTests.m; path = tests/OFJSONTests.m; sourceTree = "<group>"; };
 		4BAE7353139C507F00F682ED /* serialization.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = serialization.xml; path = tests/serialization.xml; sourceTree = "<group>"; };
 		4BAF5F46123460C900F4E111 /* OFCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCollection.h; path = src/OFCollection.h; sourceTree = "<group>"; };
 		4BAF5F47123460C900F4E111 /* OFStreamObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamObserver.h; path = src/OFStreamObserver.h; sourceTree = "<group>"; };
@@ -671,9 +668,6 @@
 		4BE5F0DA12DF4225005C7A0C /* OFDate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDate.m; path = src/OFDate.m; sourceTree = SOURCE_ROOT; };
 		4BE5F0E412DF4259005C7A0C /* OFBlockTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFBlockTests.m; path = tests/OFBlockTests.m; sourceTree = SOURCE_ROOT; };
 		4BE5F0E512DF4259005C7A0C /* OFDateTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDateTests.m; path = tests/OFDateTests.m; sourceTree = SOURCE_ROOT; };
-		4BE852CE13B7671200C00856 /* OFDoubleMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFDoubleMatrix.h; path = src/OFDoubleMatrix.h; sourceTree = "<group>"; };
-		4BE852D013B7671200C00856 /* OFDoubleVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFDoubleVector.h; path = src/OFDoubleVector.h; sourceTree = "<group>"; };
-		4BE920A613A2ECEF00154B94 /* OFFloatVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFFloatVector.h; path = src/OFFloatVector.h; sourceTree = "<group>"; };
 		4BF0749512DFAFCA00A4ADD1 /* OFURLTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFURLTests.m; path = tests/OFURLTests.m; sourceTree = SOURCE_ROOT; };
 		4BF1BCBF11C9663F0025511F /* objfw-defs.h.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "objfw-defs.h.in"; path = "src/objfw-defs.h.in"; sourceTree = "<group>"; };
 		4BF1BCC011C9663F0025511F /* OFHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFHash.h; path = src/OFHash.h; sourceTree = "<group>"; };
@@ -913,14 +907,10 @@
 				4B6799631099E7C50041064A /* OFDictionary.m */,
 				4B2B3E75140D430500EC2F7C /* OFDictionary_hashtable.h */,
 				4B2B3E76140D430500EC2F7C /* OFDictionary_hashtable.m */,
-				4BE852CE13B7671200C00856 /* OFDoubleMatrix.h */,
-				4BE852D013B7671200C00856 /* OFDoubleVector.h */,
 				4B0108C910EB8C9300631877 /* OFEnumerator.h */,
 				4B0108CA10EB8C9300631877 /* OFEnumerator.m */,
 				4B6799661099E7C50041064A /* OFFile.h */,
 				4B6799671099E7C50041064A /* OFFile.m */,
-				4B6965E013A58B1B004F1C3A /* OFFloatMatrix.h */,
-				4BE920A613A2ECEF00154B94 /* OFFloatVector.h */,
 				4BF1BCC011C9663F0025511F /* OFHash.h */,
 				4BF1BCC111C9663F0025511F /* OFHash.m */,
 				4B99250F12E0780000215DBE /* OFHTTPRequest.h */,
@@ -1059,6 +1049,7 @@
 				4BE5F0E512DF4259005C7A0C /* OFDateTests.m */,
 				4B6EF6701235358D0076B512 /* OFDictionaryTests.m */,
 				4B3D23701337FB7500DD29B8 /* OFHTTPRequestTests.m */,
+				4BAA60C714D09699006F068D /* OFJSONTests.m */,
 				4B6EF6721235358D0076B512 /* OFListTests.m */,
 				4B6EF6731235358D0076B512 /* OFMD5HashTests.m */,
 				4B6EF6741235358D0076B512 /* OFNumberTests.m */,
@@ -1143,13 +1134,9 @@
 				4B3D23C31337FC8300DD29B8 /* OFDataArray+Hashing.h in Headers */,
 				4B3D23C41337FC8300DD29B8 /* OFDate.h in Headers */,
 				4B3D23C51337FCB000DD29B8 /* OFDictionary.h in Headers */,
-				4BE852D213B7671200C00856 /* OFDoubleMatrix.h in Headers */,
-				4BE852D413B7671200C00856 /* OFDoubleVector.h in Headers */,
 				4B3D23C61337FCB000DD29B8 /* OFEnumerator.h in Headers */,
 				4B17FF74133A2AAB003E6DCD /* OFException.h in Headers */,
 				4B3D23C81337FCB000DD29B8 /* OFFile.h in Headers */,
-				4B6965E213A58B1B004F1C3A /* OFFloatMatrix.h in Headers */,
-				4BE920A813A2ECEF00154B94 /* OFFloatVector.h in Headers */,
 				4B3D23C91337FCB000DD29B8 /* OFHash.h in Headers */,
 				4B3D23CA1337FCB000DD29B8 /* OFHTTPRequest.h in Headers */,
 				4BA49D9013DB113B00381CDB /* OFIntrospection.h in Headers */,
@@ -1574,6 +1561,7 @@
 				4BF33B10133807A20059CEF7 /* OFXMLParserTests.m in Sources */,
 				4BF33B11133807A20059CEF7 /* PropertiesTests.m in Sources */,
 				4BF33B12133807A20059CEF7 /* TestsAppDelegate.m in Sources */,
+				4BAA60C814D09699006F068D /* OFJSONTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
