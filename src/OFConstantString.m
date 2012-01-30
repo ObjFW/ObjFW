@@ -123,9 +123,9 @@ struct {
 @end
 
 @implementation OFConstantString
-#if defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
 + (void)load
 {
+#if defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
 	/*
 	 * objc_setFutureClass suddenly stopped working as OFConstantString
 	 * became more complex. So the only solution is to make
@@ -145,8 +145,8 @@ struct {
 	    sizeof(_OFConstantStringClassReference));
 	free(class);
 	objc_registerClassPair((Class)&_OFConstantStringClassReference);
-}
 #endif
+}
 
 - (void)finishInitialization
 {
