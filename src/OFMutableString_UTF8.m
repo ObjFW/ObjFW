@@ -539,30 +539,41 @@
 
 - (void)replaceOccurrencesOfString: (OFString*)string
 			withString: (OFString*)replacement
+			   inRange: (of_range_t)range
 {
-	const char *UTF8String = [string UTF8String];
-	const char *replacementUTF8String = [replacement UTF8String];
-	size_t UTF8StringLength = [string UTF8StringLength];
-	size_t replacementUTF8StringLength = [replacement UTF8StringLength];
+	const char *searchString = [string UTF8String];
+	const char *replacementString = [replacement UTF8String];
+	size_t searchLength = [string UTF8StringLength];
+	size_t replacementLength = [replacement UTF8StringLength];
 	size_t i, last, newCStringLength, newLength;
 	char *newCString;
 
-	if (UTF8StringLength > s->cStringLength)
+	if (s->UTF8) {
+		range.start = of_string_index_to_position(s->cString,
+		    range.start, s->cStringLength);
+		range.length = of_string_index_to_position(s->cString,
+		    range.start + range.length, s->cStringLength) - range.start;
+	}
+
+	if (range.start + range.length > [self UTF8StringLength])
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
+
+	if ([string UTF8StringLength] > range.length)
 		return;
 
 	newCString = NULL;
 	newCStringLength = 0;
 	newLength = s->length;
 
-	for (i = 0, last = 0; i <= s->cStringLength - UTF8StringLength; i++) {
-		if (memcmp(s->cString + i, UTF8String, UTF8StringLength))
+	for (i = range.start, last = 0; i <= range.length - searchLength; i++) {
+		if (memcmp(s->cString + i, searchString, searchLength))
 			continue;
 
 		@try {
 			newCString = [self
 			    resizeMemory: newCString
 				  toSize: newCStringLength + i - last +
-					  replacementUTF8StringLength + 1];
+					  replacementLength + 1];
 		} @catch (id e) {
 			[self freeMemory: newCString];
 			@throw e;
@@ -570,12 +581,12 @@
 		memcpy(newCString + newCStringLength, s->cString + last,
 		    i - last);
 		memcpy(newCString + newCStringLength + i - last,
-		    replacementUTF8String, replacementUTF8StringLength);
+		    replacementString, replacementLength);
 
-		newCStringLength += i - last + replacementUTF8StringLength;
+		newCStringLength += i - last + replacementLength;
 		newLength = newLength - [string length] + [replacement length];
 
-		i += UTF8StringLength - 1;
+		i += searchLength - 1;
 		last = i + 1;
 	}
 

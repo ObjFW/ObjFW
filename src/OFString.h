@@ -652,6 +652,19 @@ extern size_t of_utf16_string_length(const uint16_t*);
 				       withString: (OFString*)replacement;
 
 /**
+ * \brief Creates a new string by replacing the occurrences of the specified
+ *	  string in the specified range with the specified replacement.
+ *
+ * \param string The string to replace
+ * \param replacement The string with which it should be replaced
+ * \param range The range in which to replace the string
+ * \return A new string with the occurrences of the specified string replaced
+ */
+- (OFString*)stringByReplacingOccurrencesOfString: (OFString*)string
+				       withString: (OFString*)replacement
+					  inRange: (of_range_t)range;
+
+/**
  * \brief Returns the string in uppercase.
  *
  * \return The string in uppercase

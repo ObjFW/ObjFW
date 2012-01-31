@@ -156,6 +156,18 @@
 			withString: (OFString*)replacement;
 
 /**
+ * \brief Replaces all occurrences of a string in the specified range with
+ *	  another string.
+ *
+ * \param string The string to replace
+ * \param replacement The string with which it should be replaced
+ * \param range The range in which the string should be replaced
+ */
+- (void)replaceOccurrencesOfString: (OFString*)string
+			withString: (OFString*)replacement
+			   inRange: (of_range_t)range;
+
+/**
  * \brief Deletes all whitespaces at the beginning of the string.
  */
 - (void)deleteLeadingWhitespaces;

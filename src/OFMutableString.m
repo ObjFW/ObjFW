@@ -27,6 +27,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
+#import "OFOutOfRangeException.h"
 
 #import "macros.h"
 
@@ -413,15 +414,26 @@ static struct {
 - (void)replaceOccurrencesOfString: (OFString*)string
 			withString: (OFString*)replacement
 {
+	[self replaceOccurrencesOfString: string
+			      withString: replacement
+				 inRange: of_range(0, [self length])];
+}
+
+- (void)replaceOccurrencesOfString: (OFString*)string
+			withString: (OFString*)replacement
+			   inRange: (of_range_t)range
+{
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init], *pool2;
 	const of_unichar_t *unicodeString;
 	const of_unichar_t *searchString = [string unicodeString];
-	size_t length = [self length];
 	size_t searchLength = [string length];
 	size_t replacementLength = [replacement length];
 	size_t i;
 
-	if (searchLength > length) {
+	if (range.start + range.length > [self length])
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
+
+	if (searchLength > range.length) {
 		[pool release];
 		return;
 	}
@@ -429,7 +441,7 @@ static struct {
 	pool2 = [[OFAutoreleasePool alloc] init];
 	unicodeString = [self unicodeString];
 
-	for (i = 0; i <= length - searchLength; i++) {
+	for (i = range.start; i <= range.length - searchLength; i++) {
 		if (memcmp(unicodeString + i, searchString,
 		    searchLength * sizeof(of_unichar_t)))
 			continue;
@@ -437,8 +449,8 @@ static struct {
 		[self replaceCharactersInRange: of_range(i, searchLength)
 				    withString: replacement];
 
-		length -= searchLength;
-		length += replacementLength;
+		range.length -= searchLength;
+		range.length += replacementLength;
 
 		i += replacementLength - 1;
 

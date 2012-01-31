@@ -480,6 +480,14 @@ static uint16_t sutf16str[] = {
 				    withString: @"XX"]) &&
 	    [s[0] isEqual: @"XXXX"])
 
+	TEST(@"-[replaceOccurrencesOfString:withString:inRange:]",
+	    (s[0] = [OFMutableString stringWithString:
+	    @"foofoobarfoobarfoo"]) &&
+	    R([s[0] replaceOccurrencesOfString: @"oo"
+				    withString: @"óò"
+				       inRange: of_range(2, 15)]) &&
+	    [s[0] isEqual: @"foofóòbarfóòbarfoo"])
+
 	TEST(@"-[deleteLeadingWhitespaces]",
 	    (s[0] = [OFMutableString stringWithString: whitespace[0]]) &&
 	    R([s[0] deleteLeadingWhitespaces]) &&

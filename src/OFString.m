@@ -1399,6 +1399,21 @@ static struct {
 	return new;
 }
 
+- (OFString*)stringByReplacingOccurrencesOfString: (OFString*)string
+				       withString: (OFString*)replacement
+					  inRange: (of_range_t)range
+{
+	OFMutableString *new = [[self mutableCopy] autorelease];
+
+	[new replaceOccurrencesOfString: string
+			     withString: replacement
+				inRange: range];
+
+	[new makeImmutable];
+
+	return new;
+}
+
 - (OFString*)uppercaseString
 {
 	OFMutableString *new = [[self mutableCopy] autorelease];
