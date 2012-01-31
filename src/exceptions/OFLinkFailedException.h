@@ -35,25 +35,25 @@
 
 /**
  * \param class_ The class of the object which caused the exception
- * \param src The source for the link
- * \param dest The destination for the link
+ * \param source The source for the link
+ * \param destination The destination for the link
  * \return A new link failed exception
  */
 + exceptionWithClass: (Class)class_
-	  sourcePath: (OFString*)src
-     destinationPath: (OFString*)dest;
+	  sourcePath: (OFString*)source
+     destinationPath: (OFString*)destination;
 
 /**
  * Initializes an already allocated link failed exception.
  *
  * \param class_ The class of the object which caused the exception
- * \param src The source for the link
- * \param dest The destination for the link
+ * \param source The source for the link
+ * \param destination The destination for the link
  * \return An initialized link failed exception
  */
 -   initWithClass: (Class)class_
-       sourcePath: (OFString*)src
-  destinationPath: (OFString*)dest;
+       sourcePath: (OFString*)source
+  destinationPath: (OFString*)destination;
 
 /**
  * \return The errno from when the exception was created

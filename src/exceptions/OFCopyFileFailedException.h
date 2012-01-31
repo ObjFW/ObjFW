@@ -34,25 +34,25 @@
 
 /**
  * \param class_ The class of the object which caused the exception
- * \param src The original path
- * \param dst The new path
+ * \param source The original path
+ * \param destination The new path
  * \return A new copy file failed exception
  */
 + exceptionWithClass: (Class)class_
-	  sourcePath: (OFString*)src
-     destinationPath: (OFString*)dst;
+	  sourcePath: (OFString*)source
+     destinationPath: (OFString*)destination;
 
 /**
  * Initializes an already allocated copy file failed exception.
  *
  * \param class_ The class of the object which caused the exception
- * \param src The original path
- * \param dst The new path
+ * \param source The original path
+ * \param destination The new path
  * \return An initialized copy file failed exception
  */
 -   initWithClass: (Class)class_
-       sourcePath: (OFString*)src
-  destinationPath: (OFString*)dst;
+       sourcePath: (OFString*)source
+  destinationPath: (OFString*)destination;
 
 /**
  * \return The errno from when the exception was created

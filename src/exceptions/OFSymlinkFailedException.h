@@ -35,25 +35,25 @@
 
 /**
  * \param class_ The class of the object which caused the exception
- * \param src The source for the symlink
- * \param dest The destination for the symlink
+ * \param source The source for the symlink
+ * \param destination The destination for the symlink
  * \return A new symlink failed exception
  */
 + exceptionWithClass: (Class)class_
-	  sourcePath: (OFString*)src
-     destinationPath: (OFString*)dest;
+	  sourcePath: (OFString*)source
+     destinationPath: (OFString*)destination;
 
 /**
  * Initializes an already allocated symlink failed exception.
  *
  * \param class_ The class of the object which caused the exception
- * \param src The source for the symlink
- * \param dest The destination for the symlink
+ * \param source The source for the symlink
+ * \param destination The destination for the symlink
  * \return An initialized symlink failed exception
  */
 -   initWithClass: (Class)class_
-       sourcePath: (OFString*)src
-  destinationPath: (OFString*)dest;
+       sourcePath: (OFString*)source
+  destinationPath: (OFString*)destination;
 
 /**
  * \return The errno from when the exception was created

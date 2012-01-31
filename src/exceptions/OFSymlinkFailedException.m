@@ -26,12 +26,12 @@
 #ifndef _WIN32
 @implementation OFSymlinkFailedException
 + exceptionWithClass: (Class)class_
-	  sourcePath: (OFString*)src
-     destinationPath: (OFString*)dest
+	  sourcePath: (OFString*)source
+     destinationPath: (OFString*)destination
 {
 	return [[[self alloc] initWithClass: class_
-				 sourcePath: src
-			    destinationPath: dest] autorelease];
+				 sourcePath: source
+			    destinationPath: destination] autorelease];
 }
 
 - initWithClass: (Class)class_
@@ -43,14 +43,14 @@
 }
 
 -   initWithClass: (Class)class_
-       sourcePath: (OFString*)src
-  destinationPath: (OFString*)dest
+       sourcePath: (OFString*)source
+  destinationPath: (OFString*)destination
 {
 	self = [super initWithClass: class_];
 
 	@try {
-		sourcePath = [src copy];
-		destinationPath = [dest copy];
+		sourcePath = [source copy];
+		destinationPath = [destination copy];
 		errNo = GET_ERRNO;
 	} @catch (id e) {
 		[self release];
