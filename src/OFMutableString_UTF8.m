@@ -535,8 +535,8 @@
 	s->cString = [self resizeMemory: s->cString
 				 toSize: newCStringLength + 1];
 
-	memmove(s->cString + end, s->cString + start +
-	    [replacement UTF8StringLength], s->cStringLength - end);
+	memmove(s->cString + start + [replacement UTF8StringLength],
+	    s->cString + end, s->cStringLength - end);
 	memcpy(s->cString + start, [replacement UTF8String],
 	    [replacement UTF8StringLength]);
 	s->cString[newCStringLength] = '\0';
