@@ -17,6 +17,7 @@ config.h.in
 config.log
 config.status
 configure
+DerivedData
 docs
 extra.mk
 generators/gen_tables
