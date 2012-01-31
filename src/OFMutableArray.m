@@ -281,6 +281,11 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 	[self removeNObjects: 1];
 }
 
+- (void)removeAllObjects
+{
+	[self removeNObjects: [self count]];
+}
+
 #ifdef OF_HAVE_BLOCKS
 - (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block
 {

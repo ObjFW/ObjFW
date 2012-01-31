@@ -361,6 +361,14 @@ void _references_to_categories_of_OFDataArray(void)
 	}
 }
 
+- (void)removeAllItems
+{
+	[self freeMemory: data];
+
+	data = NULL;
+	count = 0;
+}
+
 - copy
 {
 	OFDataArray *copy = [[isa alloc] initWithItemSize: itemSize];
@@ -603,5 +611,14 @@ void _references_to_categories_of_OFDataArray(void)
 
 		size = newSize;
 	}
+}
+
+- (void)removeAllItems
+{
+	[self freeMemory: data];
+
+	data = NULL;
+	count = 0;
+	size = 0;
 }
 @end

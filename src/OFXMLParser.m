@@ -332,7 +332,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		[pool release];
 	}
 
-	[cache removeNItems: [cache count]];
+	[cache removeAllItems];
 
 	*last = *i + 1;
 	state = OF_XMLPARSER_TAG_OPENED;
@@ -494,7 +494,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 		[pool release];
 
-		[cache removeNItems: [cache count]];
+		[cache removeAllItems];
 
 		*last = *i + 1;
 		state = OF_XMLPARSER_OUTSIDE_TAG;
@@ -588,7 +588,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		[pool release];
 	}
 
-	[cache removeNItems: [cache count]];
+	[cache removeAllItems];
 	*last = *i + 1;
 }
 
@@ -635,7 +635,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	[previous removeLastObject];
 
-	[cache removeNItems: [cache count]];
+	[cache removeAllItems];
 
 	ns = namespace_for_prefix(prefix, namespaces);
 	if (prefix != nil && ns == nil)
@@ -777,7 +777,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	[pool release];
 
-	[cache removeNItems: [cache count]];
+	[cache removeAllItems];
 
 	*last = *i + 1;
 	state = OF_XMLPARSER_EXPECT_DELIM;
@@ -837,7 +837,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	[pool release];
 
-	[cache removeNItems: [cache count]];
+	[cache removeAllItems];
 	[attributeName release];
 	[attributePrefix release];
 	attributeName = attributePrefix = nil;
@@ -951,7 +951,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	[pool release];
 
-	[cache removeNItems: [cache count]];
+	[cache removeAllItems];
 
 	*last = *i + 1;
 	state = OF_XMLPARSER_OUTSIDE_TAG;
@@ -1005,7 +1005,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	[pool release];
 
-	[cache removeNItems: [cache count]];
+	[cache removeAllItems];
 
 	*last = *i + 1;
 	state = OF_XMLPARSER_OUTSIDE_TAG;

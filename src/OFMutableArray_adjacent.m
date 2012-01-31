@@ -168,6 +168,17 @@
 	}
 }
 
+- (void)removeAllObjects
+{
+	id *cArray = [array cArray];
+	size_t i, count = [array count];
+
+	for (i = 0; i < count; i++)
+		[cArray[i] release];
+
+	[array removeAllItems];
+}
+
 - (void)removeObjectsInRange: (of_range_t)range
 {
 	id *cArray = [array cArray], *copy;

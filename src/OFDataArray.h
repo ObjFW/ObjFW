@@ -240,6 +240,11 @@
 - (void)removeLastItem;
 
 /**
+ * \brief Removes all items.
+ */
+- (void)removeAllItems;
+
+/**
  * \brief Returns a string containing the data in Base64 encoding.
  *
  * \return A string containing the data in Base64 encoding
