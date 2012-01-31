@@ -348,6 +348,9 @@ void _references_to_categories_of_OFDataArray(void)
 
 - (void)removeLastItem
 {
+	if (count < 1)
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
+
 	count--;
 	@try {
 		data = [self resizeMemory: data
@@ -576,5 +579,29 @@ void _references_to_categories_of_OFDataArray(void)
 		data = [self resizeMemory: data
 				   toSize: newSize];
 	size = newSize;
+}
+
+- (void)removeLastItem
+{
+	size_t newSize, lastPageByte;
+
+	if (count < 1)
+		@throw [OFOutOfRangeException exceptionWithClass: isa];
+
+	count--;
+	lastPageByte = of_pagesize - 1;
+	newSize = (count * itemSize + lastPageByte) & ~lastPageByte;
+
+	if (size != newSize) {
+		@try {
+			data = [self resizeMemory: data
+					 toNItems: count
+					   ofSize: newSize];
+		} @catch (OFOutOfMemoryException *e) {
+			/* We don't care, as we only made it smaller */
+		}
+
+		size = newSize;
+	}
 }
 @end
