@@ -160,7 +160,6 @@ static OFString *c_ary[] = {
 	TEST(@"-[sortedArray]",
 	    [[m[1] sortedArray] isEqual: ([OFArray arrayWithObjects:
 	    @"0", @"Bar", @"Baz", @"Foo", @"z", nil])])
-	puts([[[m[1] sortedArray] description] UTF8String]);
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[objectAtIndex:]",
 	    OFOutOfRangeException, [a[0] objectAtIndex: [a[0] count]])
