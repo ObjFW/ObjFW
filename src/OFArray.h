@@ -37,6 +37,10 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  */
 @interface OFArray: OFObject <OFCopying, OFMutableCopying, OFCollection,
     OFSerialization, OFJSON>
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, assign) size_t count;
+#endif
+
 /**
  * \brief Creates a new OFArray.
  *
