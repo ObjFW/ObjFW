@@ -457,12 +457,14 @@ static uint16_t sutf16str[] = {
 	    OFOutOfRangeException,
 	    [s[0] deleteCharactersInRange: of_range(4, 0)])
 
-	EXPECT_EXCEPTION(@"Detect OoR in -[replaceCharactersInRange:withString:] #1",
+	EXPECT_EXCEPTION(@"Detect OoR in "
+	    @"-[replaceCharactersInRange:withString:] #1",
 	    OFOutOfRangeException,
 	    [s[0] replaceCharactersInRange: of_range(2, 2)
 				withString: @""])
 
-	EXPECT_EXCEPTION(@"Detect OoR in -[replaceCharactersInRange:withString:] #2",
+	EXPECT_EXCEPTION(@"Detect OoR in "
+	    @"-[replaceCharactersInRange:withString:] #2",
 	    OFOutOfRangeException,
 	    [s[0] replaceCharactersInRange: of_range(4, 0)
 				withString: @""])

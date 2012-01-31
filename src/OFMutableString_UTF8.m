@@ -477,10 +477,6 @@
 	size_t start = range.start;
 	size_t end = range.start + range.length;
 
-	if (start > end)
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
-
 	if (end > s->length)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
@@ -512,10 +508,6 @@
 	size_t start = range.start;
 	size_t end = range.start + range.length;
 	size_t newCStringLength, newLength;
-
-	if (start > end)
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
 
 	if (end > s->length)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
