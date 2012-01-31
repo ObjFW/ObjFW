@@ -263,6 +263,13 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 			withObject: (id)object;
 
 /**
+ * \brief Returns a sorted copy of the array.
+ *
+ * \return A sorted copy of the array
+ */
+- (OFArray*)sortedArray;
+
+/**
  * \brief Returns a copy of the array with the order reversed.
  *
  * \return A copy of the array with the order reversed

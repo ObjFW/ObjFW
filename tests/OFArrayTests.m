@@ -154,6 +154,14 @@ static OFString *c_ary[] = {
 	    [[m[1] reversedArray] isEqual: ([OFArray arrayWithObjects:
 	    @"last", @"qux", @"Baz", @"Bar", @"Foo", nil])])
 
+	m[1] = [[a[0] mutableCopy] autorelease];
+	[m[1] addObject: @"0"];
+	[m[1] addObject: @"z"];
+	TEST(@"-[sortedArray]",
+	    [[m[1] sortedArray] isEqual: ([OFArray arrayWithObjects:
+	    @"0", @"Bar", @"Baz", @"Foo", @"z", nil])])
+	puts([[[m[1] sortedArray] description] UTF8String]);
+
 	EXPECT_EXCEPTION(@"Detect out of range in -[objectAtIndex:]",
 	    OFOutOfRangeException, [a[0] objectAtIndex: [a[0] count]])
 

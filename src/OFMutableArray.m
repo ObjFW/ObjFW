@@ -36,6 +36,42 @@ static struct {
 @interface OFMutableArray_placeholder: OFMutableArray
 @end
 
+static void
+quicksort(OFMutableArray *array, size_t left, size_t right)
+{
+	size_t i, j;
+	id pivot;
+
+	if (left >= right)
+		return;
+
+	i = left;
+	j = right - 1;
+	pivot = [array objectAtIndex: right];
+
+	do {
+		while ([[array objectAtIndex: i] compare: pivot] !=
+		    OF_ORDERED_DESCENDING && i < right)
+			i++;
+
+		while ([[array objectAtIndex: j] compare: pivot] !=
+		    OF_ORDERED_ASCENDING && j > left)
+			j--;
+
+		if (i < j)
+			[array swapObjectAtIndex: i
+			       withObjectAtIndex: j];
+	} while (i < j);
+
+	if ([[array objectAtIndex: i] compare: pivot] == OF_ORDERED_DESCENDING)
+		[array swapObjectAtIndex: i
+		       withObjectAtIndex: right];
+
+	if (i > 0)
+		quicksort(array, left, i - 1);
+	quicksort(array, i + 1, right);
+}
+
 @implementation OFMutableArray_placeholder
 - init
 {
@@ -271,6 +307,16 @@ static struct {
 	} @finally {
 		[object1 release];
 	}
+}
+
+- (void)sort
+{
+	size_t count = [self count];
+
+	if (count == 0 || count == 1)
+		return;
+
+	quicksort(self, 0, count - 1);
 }
 
 - (void)reverse

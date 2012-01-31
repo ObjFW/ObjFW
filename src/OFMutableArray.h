@@ -130,6 +130,11 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
 	withObjectAtIndex: (size_t)index2;
 
 /**
+ * \brief Sorts the array.
+ */
+- (void)sort;
+
+/**
  * \brief Reverts the order of the objects in the array.
  */
 - (void)reverse;

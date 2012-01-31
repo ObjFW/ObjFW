@@ -554,6 +554,17 @@ static struct {
 		    methodForSelector: selector])(cArray[i], selector, object);
 }
 
+- (OFArray*)sortedArray
+{
+	OFMutableArray *new = [[self mutableCopy] autorelease];
+
+	[new sort];
+
+	[new makeImmutable];
+
+	return new;
+}
+
 - (OFArray*)reversedArray
 {
 	OFMutableArray *new = [[self mutableCopy] autorelease];
