@@ -27,7 +27,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, nonatomic) OFStream *stream;
+@property (readonly, assign) OFStream *stream;
 #endif
 
 /**

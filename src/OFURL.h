@@ -38,7 +38,7 @@
 #ifdef OF_HAVE_PROPERTIES
 @property (copy) OFString *scheme;
 @property (copy) OFString *host;
-@property (assign) uint16_t port;
+@property uint16_t port;
 @property (copy) OFString *user;
 @property (copy) OFString *password;
 @property (copy) OFString *path;

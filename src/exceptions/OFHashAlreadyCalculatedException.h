@@ -27,7 +27,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, nonatomic) OFHash *hashObject;
+@property (readonly, assign) OFHash *hashObject;
 #endif
 
 /**

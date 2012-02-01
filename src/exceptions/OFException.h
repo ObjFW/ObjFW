@@ -31,7 +31,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, nonatomic) Class inClass;
+@property (readonly) Class inClass;
 #endif
 
 /**

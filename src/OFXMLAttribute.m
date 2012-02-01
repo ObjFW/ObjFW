@@ -94,17 +94,17 @@
 
 - (OFString*)name
 {
-	return [[name copy] autorelease];
+	OF_GETTER(name, YES)
 }
 
 - (OFString*)namespace
 {
-	return [[ns copy] autorelease];
+	OF_GETTER(ns, YES)
 }
 
 - (OFString*)stringValue
 {
-	return [[stringValue copy] autorelease];
+	OF_GETTER(stringValue, YES)
 }
 
 - (BOOL)isEqual: (id)object

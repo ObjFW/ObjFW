@@ -116,12 +116,12 @@ typedef enum of_http_request_type_t {
 
 #ifdef OF_HAVE_PROPERTIES
 @property (copy) OFURL *URL;
-@property (assign) of_http_request_type_t requestType;
+@property of_http_request_type_t requestType;
 @property (copy) OFString *queryString;
 @property (copy) OFDictionary *headers;
-@property (assign) BOOL redirectsFromHTTPSToHTTPAllowed;
+@property BOOL redirectsFromHTTPSToHTTPAllowed;
 @property (assign) id <OFHTTPRequestDelegate> delegate;
-@property (assign) BOOL storesData;
+@property BOOL storesData;
 #endif
 
 /**

@@ -29,9 +29,9 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, nonatomic) OFString *path;
-@property (readonly, nonatomic) OFString *owner;
-@property (readonly, nonatomic) OFString *group;
+@property (readonly, assign) OFString *path;
+@property (readonly, assign) OFString *owner;
+@property (readonly, assign) OFString *group;
 @property (readonly) int errNo;
 #endif
 

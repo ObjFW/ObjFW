@@ -30,9 +30,9 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain) OFString *name;
-@property (readonly, retain, getter=namespace) OFString *ns;
-@property (readonly, retain) OFString *stringValue;
+@property (readonly, copy) OFString *name;
+@property (readonly, copy, getter=namespace) OFString *ns;
+@property (readonly, copy) OFString *stringValue;
 #endif
 
 /**

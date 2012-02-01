@@ -28,7 +28,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, nonatomic) OFURL *URL;
+@property (readonly, assign) OFURL *URL;
 #endif
 
 /**

@@ -28,7 +28,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, nonatomic) OFCondition *condition;
+@property (readonly, assign) OFCondition *condition;
 #endif
 
 /**

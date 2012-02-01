@@ -44,9 +44,9 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (assign, readonly, getter=isListening) BOOL listening;
+@property (readonly, getter=isListening) BOOL listening;
 @property (copy) OFString *SOCKS5Host;
-@property (assign) uint16_t SOCKS5Port;
+@property uint16_t SOCKS5Port;
 #endif
 
 /**

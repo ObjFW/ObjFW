@@ -391,7 +391,7 @@ static Class CDATAClass = Nil;
 
 - (OFString*)name
 {
-	return [[name copy] autorelease];
+	OF_GETTER(name, YES)
 }
 
 - (void)setNamespace: (OFString*)ns_
@@ -401,24 +401,23 @@ static Class CDATAClass = Nil;
 
 - (OFString*)namespace
 {
-	return [[ns copy] autorelease];
+	OF_GETTER(ns, YES)
 }
 
 - (OFArray*)attributes
 {
-	return [[attributes copy] autorelease];
+	OF_GETTER(attributes, YES)
 }
 
 - (void)setChildren: (OFArray*)children_
 {
-	OFMutableArray *new = [children_ mutableCopy];
-	[children release];
-	children = new;
+	/* 2 = mutableCopy */
+	OF_SETTER(children, children_, YES, 2)
 }
 
 - (OFArray*)children
 {
-	return [[children copy] autorelease];
+	OF_GETTER(children, YES)
 }
 
 - (void)setStringValue: (OFString*)stringValue
