@@ -50,7 +50,7 @@ static size_t i = 0;
 	OFXMLParser *p = [OFXMLParser parser];
 	OFXMLElementBuilder *builder = [OFXMLElementBuilder elementBuilder];
 	OFString *str = @"<foo>bar<![CDATA[f<oo]]>baz<qux/>"
-	    " <qux xmlns:qux='urn:qux'><qux:bar/><x qux:y='z'/></qux>"
+	    " <qux xmlns:qux='urn:qux'><?asd?><qux:bar/><x qux:y='z'/></qux>"
 	    "</foo>";
 
 	[p setDelegate: builder];

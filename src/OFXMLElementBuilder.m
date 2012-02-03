@@ -24,6 +24,7 @@
 #import "OFXMLCharacters.h"
 #import "OFXMLCDATA.h"
 #import "OFXMLComment.h"
+#import "OFXMLProcessingInstructions.h"
 #import "OFXMLParser.h"
 #import "OFMutableArray.h"
 
@@ -71,6 +72,15 @@
 -		 (void)parser: (OFXMLParser*)parser
   foundProcessingInstructions: (OFString*)pi
 {
+	OFXMLProcessingInstructions *node = [OFXMLProcessingInstructions
+	    processingInstructionsWithString: pi];
+	OFXMLElement *parent = [stack lastObject];
+
+	if (parent != nil)
+		[parent addChild: node];
+	else
+		[delegate   elementBuilder: self
+		    didBuildParentlessNode: node];
 }
 
 -    (void)parser: (OFXMLParser*)parser

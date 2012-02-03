@@ -60,6 +60,7 @@ SRCS = OFApplication.m			\
        OFXMLElementBuilder.m		\
        OFXMLNode.m			\
        OFXMLParser.m			\
+       OFXMLProcessingInstructions.m	\
        base64.m				\
        of_asprintf.m			\
        of_strptime.m			\
