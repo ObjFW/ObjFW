@@ -31,14 +31,6 @@
 }
 
 - initWithClass: (Class)class_
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithClass: (Class)class_
 	 parser: (OFXMLParser*)parser_
 {
 	self = [super initWithClass: class_];
@@ -60,8 +52,12 @@
 	if (description != nil)
 		return description;
 
-	description = [[OFString alloc] initWithFormat:
-	    @"The parser in class %@ encountered malformed XML!", inClass];
+	if (parser != nil)
+		description = [[OFString alloc] initWithFormat:
+		    @"The parser in class %@ encountered malformed XML!",
+		    inClass];
+	else
+		description = @"A parser encountered malformed XML!";
 
 	return description;
 }

@@ -203,8 +203,7 @@
 	    withPrefix: (OFString*)prefix
 	     namespace: (OFString*)ns
 {
-	@throw [OFMalformedXMLException exceptionWithClass: [builder class]
-						    parser: nil];
+	@throw [OFMalformedXMLException exceptionWithClass: [builder class]];
 }
 
 - (OFString*)elementBuilder: (OFXMLElementBuilder*)builder
