@@ -74,9 +74,9 @@ run-on-ios: all
 	scp -q ../src/libobjfw.dylib tests testfile.bin testfile.txt \
 		serialization.xml ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/
 	scp -q plugin/TestPlugin.impl ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/plugin/
-	echo "Signing and running tests binary on iOS device ${IOS_HOST}..."
+	echo "Running tests binary on iOS device ${IOS_HOST}..."
 	ssh ${IOS_USER}@${IOS_HOST} \
-		'cd ${IOS_TMP} && ldid -S tests && ${TEST_LAUNCHER} ./tests'
+		'cd ${IOS_TMP} && ${TEST_LAUNCHER} ./tests'
 
 EBOOT.PBP: ${PROG_NOINST}
 	psp-fixup-imports ${PROG_NOINST}
