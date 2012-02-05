@@ -149,23 +149,23 @@ of_application_main(int *argc, char **argv[], Class cls)
 		 */
 		if ((env = getenv("HOME")) != NULL)
 			[environment
-			    setObject: [OFString stringWithCString: env]
+			    setObject: [OFString stringWithUTF8String: env]
 			       forKey: @"HOME"];
 		if ((env = getenv("PATH")) != NULL)
 			[environment
-			    setObject: [OFString stringWithCString: env]
+			    setObject: [OFString stringWithUTF8String: env]
 			       forKey: @"PATH"];
 		if ((env = getenv("SHELL")) != NULL)
 			[environment
-			    setObject: [OFString stringWithCString: env]
+			    setObject: [OFString stringWithUTF8String: env]
 			       forKey: @"SHELL"];
 		if ((env = getenv("TMPDIR")) != NULL)
 			[environment
-			    setObject: [OFString stringWithCString: env]
+			    setObject: [OFString stringWithUTF8String: env]
 			       forKey: @"TMPDIR"];
 		if ((env = getenv("USER")) != NULL)
 			[environment
-			    setObject: [OFString stringWithCString: env]
+			    setObject: [OFString stringWithUTF8String: env]
 			       forKey: @"USER"];
 #endif
 		[pool release];
