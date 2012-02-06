@@ -259,7 +259,7 @@ parseString(const char *restrict *pointer, const char *stop)
 	return nil;
 }
 
-static OF_INLINE OFArray*
+static OF_INLINE OFMutableArray*
 parseArray(const char *restrict *pointer, const char *stop)
 {
 	OFMutableArray *array = [OFMutableArray array];
@@ -296,14 +296,12 @@ parseArray(const char *restrict *pointer, const char *stop)
 			return nil;
 	}
 
-	[array makeImmutable];
-
 	(*pointer)++;
 
 	return array;
 }
 
-static OF_INLINE OFDictionary*
+static OF_INLINE OFMutableDictionary*
 parseDictionary(const char *restrict *pointer, const char *stop)
 {
 	OFMutableDictionary *dictionary = [OFMutableDictionary dictionary];
@@ -349,8 +347,6 @@ parseDictionary(const char *restrict *pointer, const char *stop)
 		} else if (**pointer != '}')
 			return nil;
 	}
-
-	[dictionary makeImmutable];
 
 	(*pointer)++;
 
