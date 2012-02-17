@@ -226,12 +226,15 @@ AC_ARG_ENABLE(shared,
 AS_IF([test x"$enable_shared" != x"no"], [
 	BUILDSYS_SHARED_LIB
 	AC_SUBST(OBJFW_SHARED_LIB, "${LIB_PREFIX}objfw${LIB_SUFFIX}")
+	AC_SUBST(OBJFW_BRIDGE_SHARED_LIB,
+		"${LIB_PREFIX}objfw-bridge${LIB_SUFFIX}")
 	AC_SUBST(EXCEPTIONS_LIB_A, "exceptions.lib.a")
 	AC_SUBST(EXCEPTIONS_EXCEPTIONS_LIB_A, "exceptions/exceptions.lib.a")
 ])
 AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
 AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
 	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
+	AC_SUBST(OBJFW_BRIDGE_STATIC_LIB, "libobjfw-bridge.a")
 	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
 	AC_SUBST(EXCEPTIONS_EXCEPTIONS_A, "exceptions/exceptions.a")
 ])
@@ -595,6 +598,7 @@ AC_TRY_COMPILE([
 AS_IF([test x"$objc_runtime" = x"Apple"], [
 	AC_CHECK_HEADER(Foundation/NSObject.h, [
 		AC_SUBST(FOUNDATION_COMPAT_M, "foundation-compat.m")
+		AC_SUBST(BRIDGE, "bridge")
 	])
 ])
 
