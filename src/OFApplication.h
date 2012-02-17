@@ -50,6 +50,46 @@
  * \brief A method which is called when the application will terminate.
  */
 - (void)applicationWillTerminate;
+
+/**
+ * \brief A method which is called when the application received a SIGINT.
+ *
+ * \warning You are not allowed to send any messages inside this method, as
+ *	    message dispatching is not signal-safe! You are only allowed to do
+ *	    signal-safe operations like setting a variable or calling a
+ *	    signal-safe function!
+ */
+- (void)applicationDidReceiveSIGINT;
+
+/**
+ * \brief A method which is called when the application received a SIGHUP.
+ *
+ * \warning You are not allowed to send any messages inside this method, as
+ *	    message dispatching is not signal-safe! You are only allowed to do
+ *	    signal-safe operations like setting a variable or calling a
+ *	    signal-safe function!
+ */
+- (void)applicationDidReceiveSIGHUP;
+
+/**
+ * \brief A method which is called when the application received a SIGUSR1.
+ *
+ * \warning You are not allowed to send any messages inside this method, as
+ *	    message dispatching is not signal-safe! You are only allowed to do
+ *	    signal-safe operations like setting a variable or calling a
+ *	    signal-safe function!
+ */
+- (void)applicationDidReceiveSIGUSR1;
+
+/**
+ * \brief A method which is called when the application received a SIGUSR2.
+ *
+ * \warning You are not allowed to send any messages inside this method, as
+ *	    message dispatching is not signal-safe! You are only allowed to do
+ *	    signal-safe operations like setting a variable or calling a
+ *	    signal-safe function!
+ */
+- (void)applicationDidReceiveSIGUSR2;
 @end
 
 /**
@@ -60,9 +100,14 @@
 	OFString *programName;
 	OFMutableArray *arguments;
 	OFMutableDictionary *environment;
-	id <OFApplicationDelegate> delegate;
 	int *argc;
 	char ***argv;
+@public
+	id <OFApplicationDelegate> delegate;
+	void (*SIGINTHandler)(id, SEL);
+	void (*SIGHUPHandler)(id, SEL);
+	void (*SIGUSR1Handler)(id, SEL);
+	void (*SIGUSR2Handler)(id, SEL);
 }
 
 #ifdef OF_HAVE_PROPERTIES

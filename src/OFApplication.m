@@ -47,6 +47,19 @@ atexit_handler(void)
 	[(id)delegate release];
 }
 
+#define SIGNAL_HANDLER(sig)					\
+	static void						\
+	handle##sig(int signal)					\
+	{							\
+		app->sig##Handler(app->delegate,		\
+		    @selector(applicationDidReceive##sig));	\
+	}
+SIGNAL_HANDLER(SIGINT)
+SIGNAL_HANDLER(SIGHUP)
+SIGNAL_HANDLER(SIGUSR1)
+SIGNAL_HANDLER(SIGUSR2)
+#undef SIGNAL_HANDLER
+
 int
 of_application_main(int *argc, char **argv[], Class cls)
 {
@@ -236,6 +249,21 @@ of_application_main(int *argc, char **argv[], Class cls)
 - (void)setDelegate: (id <OFApplicationDelegate>)delegate_
 {
 	delegate = delegate_;
+
+#define REGISTER_SIGNAL(sig)						  \
+	sig##Handler = (void(*)(id, SEL))[(id)delegate methodForSelector: \
+	    @selector(applicationDidReceive##sig)];			  \
+	if (sig##Handler != (void(*)(id, SEL))[OFObject			  \
+	    instanceMethodForSelector:					  \
+	    @selector(applicationDidReceive##sig)])			  \
+		signal(sig, handle##sig);				  \
+	else								  \
+		signal(sig, SIG_DFL);
+	REGISTER_SIGNAL(SIGINT)
+	REGISTER_SIGNAL(SIGHUP)
+	REGISTER_SIGNAL(SIGUSR1)
+	REGISTER_SIGNAL(SIGUSR2)
+#undef REGISTER_SIGNAL
 }
 
 - (void)run
@@ -270,6 +298,22 @@ of_application_main(int *argc, char **argv[], Class cls)
 }
 
 - (void)applicationWillTerminate
+{
+}
+
+- (void)applicationDidReceiveSIGINT
+{
+}
+
+- (void)applicationDidReceiveSIGHUP
+{
+}
+
+- (void)applicationDidReceiveSIGUSR1
+{
+}
+
+- (void)applicationDidReceiveSIGUSR2
 {
 }
 @end
