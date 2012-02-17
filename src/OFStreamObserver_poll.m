@@ -162,7 +162,7 @@
 		}
 
 		if (FDsCArray[i].revents & POLLOUT) {
-			[delegate streamIsReadyForReading:
+			[delegate streamIsReadyForWriting:
 			    FDToStream[FDsCArray[i].fd]];
 			[pool releaseObjects];
 		}
