@@ -21,9 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef _WIN32
-# include <signal.h>
-#endif
+#include <signal.h>
 
 #import "OFApplication.h"
 #import "OFString.h"
@@ -59,9 +57,11 @@ atexit_handler(void)
 		    @selector(applicationDidReceive##sig));	\
 	}
 SIGNAL_HANDLER(SIGINT)
+#ifndef _WIN32
 SIGNAL_HANDLER(SIGHUP)
 SIGNAL_HANDLER(SIGUSR1)
 SIGNAL_HANDLER(SIGUSR2)
+#endif
 #undef SIGNAL_HANDLER
 
 int
@@ -264,9 +264,11 @@ of_application_main(int *argc, char **argv[], Class cls)
 	else								  \
 		signal(sig, SIG_DFL);
 	REGISTER_SIGNAL(SIGINT)
+#ifndef _WIN32
 	REGISTER_SIGNAL(SIGHUP)
 	REGISTER_SIGNAL(SIGUSR1)
 	REGISTER_SIGNAL(SIGUSR2)
+#endif
 #undef REGISTER_SIGNAL
 }
 
