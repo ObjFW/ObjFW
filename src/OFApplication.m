@@ -21,6 +21,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef _WIN32
+# include <signal.h>
+#endif
+
 #import "OFApplication.h"
 #import "OFString.h"
 #import "OFArray.h"
