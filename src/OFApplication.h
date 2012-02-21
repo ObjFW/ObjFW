@@ -61,8 +61,11 @@
  */
 - (void)applicationDidReceiveSIGINT;
 
+#ifndef _WIN32
 /**
  * \brief A method which is called when the application received a SIGHUP.
+ *
+ * This signal is not available on Windows.
  *
  * \warning You are not allowed to send any messages inside this method, as
  *	    message dispatching is not signal-safe! You are only allowed to do
@@ -74,6 +77,8 @@
 /**
  * \brief A method which is called when the application received a SIGUSR1.
  *
+ * This signal is not available on Windows.
+ *
  * \warning You are not allowed to send any messages inside this method, as
  *	    message dispatching is not signal-safe! You are only allowed to do
  *	    signal-safe operations like setting a variable or calling a
@@ -84,12 +89,15 @@
 /**
  * \brief A method which is called when the application received a SIGUSR2.
  *
+ * This signal is not available on Windows.
+ *
  * \warning You are not allowed to send any messages inside this method, as
  *	    message dispatching is not signal-safe! You are only allowed to do
  *	    signal-safe operations like setting a variable or calling a
  *	    signal-safe function!
  */
 - (void)applicationDidReceiveSIGUSR2;
+#endif
 @end
 
 /**
@@ -105,9 +113,11 @@
 @public
 	id <OFApplicationDelegate> delegate;
 	void (*SIGINTHandler)(id, SEL);
+#ifndef _WIN32
 	void (*SIGHUPHandler)(id, SEL);
 	void (*SIGUSR1Handler)(id, SEL);
 	void (*SIGUSR2Handler)(id, SEL);
+#endif
 }
 
 #ifdef OF_HAVE_PROPERTIES
