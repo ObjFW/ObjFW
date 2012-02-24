@@ -96,7 +96,7 @@ skipWhitespacesAndComments(const char *restrict *pointer, const char *stop)
 	}
 }
 
-static OF_INLINE uint16_t
+static inline uint16_t
 parseUnicodeEscape(const char *pointer, const char *stop)
 {
 	uint16_t ret = 0;
@@ -125,7 +125,7 @@ parseUnicodeEscape(const char *pointer, const char *stop)
 	return ret;
 }
 
-static OF_INLINE OFString*
+static inline OFString*
 parseString(const char *restrict *pointer, const char *stop)
 {
 	char *buffer;
@@ -259,7 +259,7 @@ parseString(const char *restrict *pointer, const char *stop)
 	return nil;
 }
 
-static OF_INLINE OFMutableArray*
+static inline OFMutableArray*
 parseArray(const char *restrict *pointer, const char *stop)
 {
 	OFMutableArray *array = [OFMutableArray array];
@@ -301,7 +301,7 @@ parseArray(const char *restrict *pointer, const char *stop)
 	return array;
 }
 
-static OF_INLINE OFMutableDictionary*
+static inline OFMutableDictionary*
 parseDictionary(const char *restrict *pointer, const char *stop)
 {
 	OFMutableDictionary *dictionary = [OFMutableDictionary dictionary];
@@ -353,7 +353,7 @@ parseDictionary(const char *restrict *pointer, const char *stop)
 	return dictionary;
 }
 
-static OF_INLINE OFNumber*
+static inline OFNumber*
 parseNumber(const char *restrict *pointer, const char *stop)
 {
 	BOOL hasDecimal = NO;
