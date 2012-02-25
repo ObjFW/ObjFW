@@ -14,6 +14,13 @@
  * file.
  */
 
+#ifndef __STDC_LIMIT_MACROS
+# define __STDC_LIMIT_MACROS
+#endif
+#ifndef __STDC_CONSTANT_MACROS
+# define __STDC_CONSTANT_MACROS
+#endif
+
 #ifdef OF_HAVE_SYS_SELECT_H
 # include <sys/select.h>
 #endif
