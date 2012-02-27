@@ -18,6 +18,7 @@
 
 #define OF_APPLICATION_M
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
