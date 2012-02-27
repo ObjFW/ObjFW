@@ -21,6 +21,8 @@
 #include <string.h>
 #include <ctype.h>
 
+#include <sys/types.h>
+
 #import "OFString_UTF8.h"
 #import "OFMutableString_UTF8.h"
 #import "OFArray.h"
