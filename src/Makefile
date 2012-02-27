@@ -66,15 +66,15 @@ SRCS = OFApplication.m			\
        of_strptime.m			\
        unicode.m
 
-INCLUDES := ${SRCS:.m=.h}	\
-	    OFCollection.h	\
-	    OFJSONEncoding.h	\
-	    OFSerialization.h	\
-	    ObjFW.h		\
-	    asprintf.h		\
-	    ${ATOMIC_H}		\
-	    macros.h		\
-	    objfw-defs.h	\
+INCLUDES := ${SRCS:.m=.h}		\
+	    OFCollection.h		\
+	    OFJSONRepresentation.h	\
+	    OFSerialization.h		\
+	    ObjFW.h			\
+	    asprintf.h			\
+	    ${ATOMIC_H}			\
+	    macros.h			\
+	    objfw-defs.h		\
 	    ${THREADING_H}
 
 SRCS += OFArray_adjacent.m		\

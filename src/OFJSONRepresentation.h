@@ -17,14 +17,14 @@
 @class OFString;
 
 /**
- * \brief A category implemented by classes that support encoding to a JSON
+ * \brief A protocol implemented by classes that support encoding to a JSON
  *	  representation.
  *
  * \warning Although this method can be called directly on classes other than
  *	    OFArray and OFDictionary, this will generate invalid JSON, as JSON
  *	    requires all data to be encapsulated in an array or a dictionary!
  */
-@protocol OFJSON
+@protocol OFJSONRepresentation
 /**
  * \brief Returns the JSON representation of the object as a string.
  *
