@@ -174,19 +174,73 @@ ${JARFILE}: ${EXT_DEPS} ${JAR_MANIFEST} ${OBJS}
 
 ${SHARED_LIB} ${SHARED_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS}
 	${LINK_STATUS}; \
-	if ${LD} -o $@ ${LIB_OBJS} ${LIB_LDFLAGS} ${LDFLAGS} ${LIBS}; then \
+	objs=""; \
+	ars=""; \
+	for i in ${LIB_OBJS}; do \
+		case $$i in \
+			*.a) \
+				ars="$$ars $$i" \
+				;; \
+			*.o) \
+				objs="$$objs $$i" \
+				;; \
+		esac \
+	done; \
+	for i in $$ars; do \
+		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
+		rm -fr $$dir; \
+		mkdir -p $$dir; \
+		cd $$dir; \
+		${AR} x ../$$i; \
+		for j in *.o; do \
+			objs="$$objs $$dir/$$j"; \
+		done; \
+		cd ..; \
+	done; \
+	if ${LD} -o $@ $$objs ${LIB_LDFLAGS} ${LDFLAGS} ${LIBS}; then \
 		${LINK_OK}; \
 	else \
 		${LINK_FAILED}; \
-	fi \
+	fi; \
+	for i in $$ars; do \
+		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
+		rm -fr $$dir; \
+	done
 
 ${PLUGIN} ${PLUGIN_NOINST}: ${EXT_DEPS} ${PLUGIN_OBJS}
 	${LINK_STATUS}
-	if ${LD} -o $@ ${PLUGIN_OBJS} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}; then \
+	objs=""; \
+	ars=""; \
+	for i in ${PLUGIN_OBJS}; do \
+		case $$i in \
+			*.a) \
+				ars="$$ars $$i" \
+				;; \
+			*.o) \
+				objs="$$objs $$i" \
+				;; \
+		esac \
+	done; \
+	for i in $$ars; do \
+		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
+		rm -fr $$dir; \
+		mkdir -p $$dir; \
+		cd $$dir; \
+		${AR} x ../$$i; \
+		for j in *.o; do \
+			objs="$$objs $$dir/$$j"; \
+		done; \
+		cd ..; \
+	done; \
+	if ${LD} -o $@ $$objs ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}; then \
 		${LINK_OK}; \
 	else \
 		${LINK_FAILED}; \
-	fi
+	fi; \
+	for i in $$ars; do \
+		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
+		rm -fr $$dir; \
+	done
 
 ${STATIC_LIB} ${STATIC_LIB_NOINST}: ${EXT_DEPS} ${OBJS}
 	${LINK_STATUS}
@@ -228,12 +282,39 @@ ${STATIC_LIB} ${STATIC_LIB_NOINST}: ${EXT_DEPS} ${OBJS}
 ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS}
 	${LINK_STATUS}
 	rm -f $@
-	if ${AR} cr $@ ${LIB_OBJS} && ${RANLIB} $@; then \
+	objs=""; \
+	ars=""; \
+	for i in ${LIB_OBJS}; do \
+		case $$i in \
+			*.a) \
+				ars="$$ars $$i" \
+				;; \
+			*.o) \
+				objs="$$objs $$i" \
+				;; \
+		esac \
+	done; \
+	for i in $$ars; do \
+		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
+		rm -fr $$dir; \
+		mkdir -p $$dir; \
+		cd $$dir; \
+		${AR} x ../$$i; \
+		for j in *.o; do \
+			objs="$$objs $$dir/$$j"; \
+		done; \
+		cd ..; \
+	done; \
+	if ${AR} cr $@ $$objs && ${RANLIB} $@; then \
 		${LINK_OK}; \
 	else \
 		${LINK_FAILED}; \
 		rm -f $@; \
-	fi
+	fi; \
+	for i in $$ars; do \
+		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
+		rm -fr $$dir; \
+	done
 
 locales: ${MO_FILES}
 
