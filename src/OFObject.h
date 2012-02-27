@@ -113,6 +113,15 @@ typedef struct of_rectangle_t
 - (BOOL)isKindOfClass: (Class)class_;
 
 /**
+ * \brief Returns a boolean whether the object is a member of the specified
+ *	  class.
+ *
+ * \param class_ The class for which the receiver is checked
+ * \return A boolean whether the object is a member of the specified class
+ */
+- (BOOL)isMemberOfClass: (Class)class_;
+
+/**
  * \brief Returns a boolean whether the object responds to the specified
  *	  selector.
  *
@@ -236,6 +245,13 @@ typedef struct of_rectangle_t
  * \return The receiver
  */
 - self;
+
+/**
+ * \brief Returns whether the object is a proxy object.
+ *
+ * \return A boolean whether the object is a proxy object
+ */
+- (BOOL)isProxy;
 @end
 
 /**

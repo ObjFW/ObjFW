@@ -782,6 +782,11 @@ void _references_to_categories_of_OFObject(void)
 	return NO;
 }
 
+- (BOOL)isMemberOfClass: (Class)class
+{
+	return (isa == class);
+}
+
 - (BOOL)respondsToSelector: (SEL)selector
 {
 #ifdef OF_OLD_GNU_RUNTIME
@@ -1111,6 +1116,11 @@ void _references_to_categories_of_OFObject(void)
 - self
 {
 	return self;
+}
+
+- (BOOL)isProxy
+{
+	return NO;
 }
 
 - (void)dealloc
