@@ -86,7 +86,7 @@ while test x"$1" != "x"; do
 
 			shift
 
-			if ! echo "$1" | grep "^[0-9]\+\.[0-9]\+" >/dev/null
+			if ! echo "$1" | grep "^[0-9]\+\.[0-9]\+$" >/dev/null
 			then
 				echo "$1 is not a valid library version!"
 				exit 1
