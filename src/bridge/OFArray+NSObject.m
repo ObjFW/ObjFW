@@ -14,8 +14,13 @@
  * file.
  */
 
-#import "NSArray+OFObject.h"
-#import "NSString+OFObject.h"
+#import "NSArray_OFArray.h"
 
 #import "OFArray+NSObject.h"
-#import "OFString+NSObject.h"
+
+@implementation OFArray (NSObject)
+- (id)NSObject
+{
+	return [[[NSArray_OFArray alloc] initWithOFArray: self] autorelease];
+}
+@end

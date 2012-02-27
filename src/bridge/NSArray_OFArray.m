@@ -14,8 +14,36 @@
  * file.
  */
 
-#import "NSArray+OFObject.h"
-#import "NSString+OFObject.h"
+#import "NSArray_OFArray.h"
+#import "OFArray.h"
+#import "OFBridging.h"
 
-#import "OFArray+NSObject.h"
-#import "OFString+NSObject.h"
+@implementation NSArray_OFArray
+- initWithOFArray: (OFArray*)array_
+{
+	if ((self = [super init]) != nil) {
+		@try {
+			array = [array_ retain];
+		} @catch (id e) {
+			return nil;
+		}
+	}
+
+	return self;
+}
+
+- (id)objectAtIndex: (size_t)index
+{
+	id object = [array objectAtIndex: index];
+
+	if ([object conformsToProtocol: @protocol(OFBridging)])
+		return [object NSObject];
+
+	return object;
+}
+
+- (size_t)count
+{
+	return [array count];
+}
+@end

@@ -5,7 +5,11 @@ STATIC_LIB = ${OBJFW_BRIDGE_STATIC_LIB}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 
-SRCS = OFString+NSObject.m	\
+SRCS = OFArray+NSObject.m	\
+       OFArray_NSArray.m	\
+       OFString+NSObject.m	\
+       NSArray+OFObject.m	\
+       NSArray_OFArray.m	\
        NSString+OFObject.m
 
 INCLUDES = ${SRCS:.m=.h}	\

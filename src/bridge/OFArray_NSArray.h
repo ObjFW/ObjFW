@@ -14,8 +14,14 @@
  * file.
  */
 
-#import "NSArray+OFObject.h"
-#import "NSString+OFObject.h"
+#import "OFArray.h"
 
-#import "OFArray+NSObject.h"
-#import "OFString+NSObject.h"
+@class NSArray;
+
+@interface OFArray_NSArray: OFArray
+{
+	NSArray *array;
+}
+
+- initWithNSArray: (NSArray*)array;
+@end

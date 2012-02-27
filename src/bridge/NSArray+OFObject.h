@@ -14,8 +14,12 @@
  * file.
  */
 
-#import "NSArray+OFObject.h"
-#import "NSString+OFObject.h"
+#import <Foundation/NSArray.h>
 
-#import "OFArray+NSObject.h"
-#import "OFString+NSObject.h"
+#import "NSBridging.h"
+
+/**
+ * \brief Support for bridging NSArrays to OFArrays.
+ */
+@interface NSArray (OFObject) <NSBridging>
+@end
