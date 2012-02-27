@@ -1525,12 +1525,20 @@ static struct {
 
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter
 {
+	return [self componentsSeparatedByString: delimiter
+				       skipEmpty: NO];
+}
+
+- (OFArray*)componentsSeparatedByString: (OFString*)delimiter
+			      skipEmpty: (BOOL)skipEmpty
+{
 	OFAutoreleasePool *pool;
 	OFMutableArray *array = [OFMutableArray array];
 	const of_unichar_t *string, *delimiterString;
 	size_t length = [self length];
 	size_t delimiterLength = [delimiter length];
 	size_t i, last;
+	OFString *component;
 
 	pool = [[OFAutoreleasePool alloc] init];
 
@@ -1551,14 +1559,16 @@ static struct {
 		    delimiterLength * sizeof(of_unichar_t)))
 			continue;
 
-		[array addObject: [self substringWithRange:
-		    of_range(last, i - last)]];
+		component = [self substringWithRange: of_range(last, i - last)];
+		if (!skipEmpty || ![component isEqual: @""])
+			[array addObject: component];
 
 		i += delimiterLength - 1;
 		last = i + 1;
 	}
-	[array addObject:
-	    [self substringWithRange: of_range(last, length - last)]];
+	component = [self substringWithRange: of_range(last, length - last)];
+	if (!skipEmpty || ![component isEqual: @""])
+		[array addObject: component];
 
 	[array makeImmutable];
 

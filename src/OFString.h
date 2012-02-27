@@ -731,6 +731,16 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter;
 
 /**
+ * \brief Splits an OFString into an OFArray of OFStrings.
+ *
+ * \param delimiter The delimiter for splitting
+ * \param skipEmpty Whether empty components should be skipped
+ * \return An autoreleased OFArray with the split string
+ */
+- (OFArray*)componentsSeparatedByString: (OFString*)delimiter
+			      skipEmpty: (BOOL)skipEmpty;
+
+/**
  * \brief Returns the components of the path.
  *
  * \return The components of the path

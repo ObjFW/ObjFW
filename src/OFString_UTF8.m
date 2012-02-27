@@ -890,12 +890,14 @@ memcasecmp(const char *first, const char *second, size_t length)
 }
 
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter
+			      skipEmpty: (BOOL)skipEmpty
 {
 	OFAutoreleasePool *pool;
 	OFMutableArray *array;
 	const char *cString = [delimiter UTF8String];
 	size_t cStringLength = [delimiter UTF8StringLength];
 	size_t i, last;
+	OFString *component;
 
 	array = [OFMutableArray array];
 	pool = [[OFAutoreleasePool alloc] init];
@@ -911,13 +913,17 @@ memcasecmp(const char *first, const char *second, size_t length)
 		if (memcmp(s->cString + i, cString, cStringLength))
 			continue;
 
-		[array addObject:
-		    [OFString stringWithUTF8String: s->cString + last
-					    length: i - last]];
+		component = [OFString stringWithUTF8String: s->cString + last
+						    length: i - last];
+		if (!skipEmpty || ![component isEqual: @""])
+			[array addObject: component];
+
 		i += cStringLength - 1;
 		last = i + 1;
 	}
-	[array addObject: [OFString stringWithUTF8String: s->cString + last]];
+	component = [OFString stringWithUTF8String: s->cString + last];
+	if (!skipEmpty || ![component isEqual: @""])
+		[array addObject: component];
 
 	[array makeImmutable];
 
