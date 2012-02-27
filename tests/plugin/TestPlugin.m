@@ -26,7 +26,7 @@
 @end
 
 id
-init_plugin()
+init_plugin(void)
 {
 	return [[[TestPlugin alloc] init] autorelease];
 }
