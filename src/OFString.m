@@ -22,10 +22,6 @@
 
 #include <sys/stat.h>
 
-#ifdef _WIN32
-# include <malloc.h>
-#endif
-
 #import "OFString.h"
 #import "OFString_UTF8.h"
 #import "OFArray.h"
@@ -1471,7 +1467,6 @@ static struct {
 
 - (BOOL)hasPrefix: (OFString*)prefix
 {
-	OFAutoreleasePool *pool;
 	of_unichar_t *tmp;
 	const of_unichar_t *prefixString;
 	size_t prefixLength;
@@ -1480,24 +1475,30 @@ static struct {
 	if ((prefixLength = [prefix length]) > [self length])
 		return NO;
 
-	tmp = alloca(prefixLength * sizeof(of_unichar_t));
-	[self getCharacters: tmp
-		    inRange: of_range(0, prefixLength)];
+	tmp = [self allocMemoryForNItems: prefixLength
+				  ofSize: sizeof(of_unichar_t)];
+	@try {
+		OFAutoreleasePool *pool;
 
-	pool = [[OFAutoreleasePool alloc] init];
+		[self getCharacters: tmp
+			    inRange: of_range(0, prefixLength)];
 
-	prefixString = [prefix unicodeString];
-	compare = memcmp(tmp, prefixString,
-	    prefixLength * sizeof(of_unichar_t));
+		pool = [[OFAutoreleasePool alloc] init];
 
-	[pool release];
+		prefixString = [prefix unicodeString];
+		compare = memcmp(tmp, prefixString,
+		    prefixLength * sizeof(of_unichar_t));
+
+		[pool release];
+	} @finally {
+		[self freeMemory: tmp];
+	}
 
 	return !compare;
 }
 
 - (BOOL)hasSuffix: (OFString*)suffix
 {
-	OFAutoreleasePool *pool;
 	of_unichar_t *tmp;
 	const of_unichar_t *suffixString;
 	size_t length, suffixLength;
@@ -1508,17 +1509,25 @@ static struct {
 
 	length = [self length];
 
-	tmp = alloca(suffixLength * sizeof(of_unichar_t));
-	[self getCharacters: tmp
-		    inRange: of_range(length - suffixLength, suffixLength)];
+	tmp = [self allocMemoryForNItems: suffixLength
+				  ofSize: sizeof(of_unichar_t)];
+	@try {
+		OFAutoreleasePool *pool;
 
-	pool = [[OFAutoreleasePool alloc] init];
+		[self getCharacters: tmp
+			    inRange: of_range(length - suffixLength,
+					 suffixLength)];
 
-	suffixString = [suffix unicodeString];
-	compare = memcmp(tmp, suffixString,
-	    suffixLength * sizeof(of_unichar_t));
+		pool = [[OFAutoreleasePool alloc] init];
 
-	[pool release];
+		suffixString = [suffix unicodeString];
+		compare = memcmp(tmp, suffixString,
+		    suffixLength * sizeof(of_unichar_t));
+
+		[pool release];
+	} @finally {
+		[self freeMemory: tmp];
+	}
 
 	return !compare;
 }

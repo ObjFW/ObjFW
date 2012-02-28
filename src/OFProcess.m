@@ -89,7 +89,10 @@
 		case 0:;
 			OFString **cArray = [arguments cArray];
 			size_t i, count = [arguments count];
-			char **argv = alloca((count + 2) * sizeof(char*));
+			char **argv;
+
+			argv = [self allocMemoryForNItems: count + 2
+						   ofSize: sizeof(char*)];
 
 			argv[0] = (char*)[programName cStringWithEncoding:
 			    OF_STRING_ENCODING_NATIVE];
