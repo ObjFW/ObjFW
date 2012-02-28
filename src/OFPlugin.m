@@ -37,7 +37,7 @@
 #endif
 
 @implementation OFPlugin
-+ pluginFromFile: (OFString*)path
++ (id)pluginFromFile: (OFString*)path
 {
 	OFAutoreleasePool *pool;
 	OFMutableString *file;
