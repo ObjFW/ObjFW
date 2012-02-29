@@ -282,11 +282,9 @@ typedef enum of_http_request_type_t {
 @property (readonly, retain) OFDataArray *data;
 #endif
 
-/// \cond internal
 - initWithStatusCode: (short)status
 	     headers: (OFDictionary*)headers
 		data: (OFDataArray*)data;
-/// \endcond
 
 /**
  * \brief Returns the state code of the result of the HTTP request.

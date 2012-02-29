@@ -178,14 +178,12 @@
  */
 - (BOOL)observeWithTimeout: (int)timeout;
 
-/// \cond internal
 - (void)_addFileDescriptorForReading: (int)fd;
 - (void)_addFileDescriptorForWriting: (int)fd;
 - (void)_removeFileDescriptorForReading: (int)fd;
 - (void)_removeFileDescriptorForWriting: (int)fd;
 - (void)_processQueue;
 - (BOOL)_processCache;
-/// \endcond
 @end
 
 @interface OFObject (OFStreamObserverDelegate) <OFStreamObserverDelegate>

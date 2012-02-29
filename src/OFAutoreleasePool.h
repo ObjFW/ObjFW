@@ -39,10 +39,8 @@
  */
 + (void)addObject: (id)object;
 
-/// \cond internal
 + (void)_releaseAll;
 - (void)_addObject: (id)object;
-/// \endcond
 
 /**
  * \brief Releases all objects in the autorelease pool.
