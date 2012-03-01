@@ -250,12 +250,6 @@ static int month_to_day_of_year[12] = {
 			@throw [OFInvalidFormatException
 			    exceptionWithClass: isa];
 
-#ifdef STRUCT_TM_HAS_TM_GMTOFF
-		if (tm.tm_gmtoff != 0)
-			@throw [OFInvalidFormatException
-			    exceptionWithClass: isa];
-#endif
-
 		/* Years */
 		seconds = (int64_t)(tm.tm_year - 70) * 31536000;
 		/* Days of leap years, excluding the year to look at */
