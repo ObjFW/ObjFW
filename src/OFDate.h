@@ -56,9 +56,8 @@
  * \brief Creates a new OFDate with the specified string in the specified
  *	  format.
  *
- * The time zone used is UTC. If a time zone is specified anyway, an
- * OFInvalidFormatException is thrown. See +[dateWithLocalDateString:format:]
- * if you want to specify a time zone.
+ * The time zone used is UTC. See +[dateWithLocalDateString:format:] if you
+ * want local time.
  *
  * See the manpage for strftime for information on the format.
  *
@@ -75,8 +74,6 @@
 /**
  * \brief Creates a new OFDate with the specified string in the specified
  *	  format.
- *
- * If no time zone is specified, local time is assumed.
  *
  * See the manpage for strftime for information on the format.
  *
