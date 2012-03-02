@@ -188,6 +188,15 @@ normalize_key(OFString *key)
 	OFString *scheme = [URL scheme];
 	OFTCPSocket *sock;
 	OFHTTPRequestResult *result;
+	OFString *line, *path;
+	OFMutableDictionary *serverHeaders;
+	OFDataArray *data;
+	OFEnumerator *keyEnumerator, *objectEnumerator;
+	OFString *key, *object, *contentLengthHeader;
+	int status;
+	const char *type = NULL;
+	char *buffer;
+	size_t bytesReceived;
 
 	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
 		@throw [OFUnsupportedProtocolException exceptionWithClass: isa
@@ -208,215 +217,190 @@ normalize_key(OFString *key)
 	[delegate request: self
 	  didCreateSocket: sock];
 
-	@try {
-		OFString *line, *path;
-		OFMutableDictionary *serverHeaders;
-		OFDataArray *data;
-		OFEnumerator *keyEnumerator, *objectEnumerator;
-		OFString *key, *object, *contentLengthHeader;
-		int status;
-		const char *type = NULL;
-		char *buffer;
-		size_t bytesReceived;
+	[sock connectToHost: [URL host]
+		       port: [URL port]];
 
-		[sock connectToHost: [URL host]
-			       port: [URL port]];
+	/*
+	 * Work around a bug with packet bisection in lighttpd when using
+	 * HTTPS.
+	 */
+	[sock setBuffersWrites: YES];
 
-		/*
-		 * Work around a bug with packet bisection in lighttpd when
-		 * using HTTPS.
-		 */
-		[sock setBuffersWrites: YES];
+	if (requestType == OF_HTTP_REQUEST_TYPE_GET)
+		type = "GET";
+	if (requestType == OF_HTTP_REQUEST_TYPE_HEAD)
+		type = "HEAD";
+	if (requestType == OF_HTTP_REQUEST_TYPE_POST)
+		type = "POST";
 
-		if (requestType == OF_HTTP_REQUEST_TYPE_GET)
-			type = "GET";
-		if (requestType == OF_HTTP_REQUEST_TYPE_HEAD)
-			type = "HEAD";
-		if (requestType == OF_HTTP_REQUEST_TYPE_POST)
-			type = "POST";
+	if ([(path = [URL path]) isEqual: @""])
+		path = @"/";
 
-		if ([(path = [URL path]) isEqual: @""])
-			path = @"/";
+	if ([URL query] != nil)
+		[sock writeFormat: @"%s %@?%@ HTTP/1.0\r\n",
+		    type, path, [URL query]];
+	else
+		[sock writeFormat: @"%s %@ HTTP/1.0\r\n", type, path];
 
-		if ([URL query] != nil)
-			[sock writeFormat: @"%s %@?%@ HTTP/1.0\r\n",
-					   type, path, [URL query]];
-		else
-			[sock writeFormat: @"%s %@ HTTP/1.0\r\n", type, path];
+	if ([URL port] == 80)
+		[sock writeFormat: @"Host: %@\r\n", [URL host]];
+	else
+		[sock writeFormat: @"Host: %@:%d\r\n", [URL host],
+		    [URL port]];
 
-		if ([URL port] == 80)
-			[sock writeFormat: @"Host: %@\r\n", [URL host]];
-		else
-			[sock writeFormat: @"Host: %@:%d\r\n", [URL host],
-					   [URL port]];
+	keyEnumerator = [headers keyEnumerator];
+	objectEnumerator = [headers objectEnumerator];
 
-		keyEnumerator = [headers keyEnumerator];
-		objectEnumerator = [headers objectEnumerator];
+	while ((key = [keyEnumerator nextObject]) != nil &&
+	    (object = [objectEnumerator nextObject]) != nil)
+		[sock writeFormat: @"%@: %@\r\n", key, object];
 
-		while ((key = [keyEnumerator nextObject]) != nil &&
-		    (object = [objectEnumerator nextObject]) != nil)
-			[sock writeFormat: @"%@: %@\r\n", key, object];
+	if (requestType == OF_HTTP_REQUEST_TYPE_POST) {
+		if ([headers objectForKey: @"Content-Type"] == nil)
+			[sock writeString: @"Content-Type: "
+			    @"application/x-www-form-urlencoded; "
+			    @"charset=UTF-8\r\n"];
 
-		if (requestType == OF_HTTP_REQUEST_TYPE_POST) {
-			if ([headers objectForKey: @"Content-Type"] == nil)
-				[sock writeString: @"Content-Type: "
-				    @"application/x-www-form-urlencoded; "
-				    @"charset=UTF-8\r\n"];
+		if ([headers objectForKey: @"Content-Length"] == nil)
+			[sock writeFormat: @"Content-Length: %d\r\n",
+			    [queryString UTF8StringLength]];
+	}
 
-			if ([headers objectForKey: @"Content-Length"] == nil)
-				[sock writeFormat: @"Content-Length: %d\r\n",
-				    [queryString UTF8StringLength]];
-		}
+	[sock writeString: @"\r\n"];
 
-		[sock writeString: @"\r\n"];
+	/* Work around a bug in lighttpd, see above */
+	[sock flushWriteBuffer];
+	[sock setBuffersWrites: NO];
 
-		/* Work around a bug in lighttpd, see above */
-		[sock flushWriteBuffer];
-		[sock setBuffersWrites: NO];
+	if (requestType == OF_HTTP_REQUEST_TYPE_POST)
+		[sock writeString: queryString];
 
-		if (requestType == OF_HTTP_REQUEST_TYPE_POST)
-			[sock writeString: queryString];
+	/*
+	 * We also need to check for HTTP/1.1 since Apache always declares the
+	 * reply to be HTTP/1.1.
+	 */
+	line = [sock readLine];
+	if (![line hasPrefix: @"HTTP/1.0 "] && ![line hasPrefix: @"HTTP/1.1 "])
+		@throw [OFInvalidServerReplyException exceptionWithClass: isa];
 
-		/*
-		 * We also need to check for HTTP/1.1 since Apache always
-		 * declares the reply to be HTTP/1.1.
-		 */
-		line = [sock readLine];
-		if (![line hasPrefix: @"HTTP/1.0 "] &&
-		    ![line hasPrefix: @"HTTP/1.1 "])
+	status = (int)[[line substringWithRange: of_range(9, 3)] decimalValue];
+
+	serverHeaders = [OFMutableDictionary dictionary];
+
+	while ((line = [sock readLine]) != nil) {
+		OFString *key, *value;
+		const char *line_c = [line UTF8String], *tmp;
+
+		if ([line isEqual: @""])
+			break;
+
+		if ((tmp = strchr(line_c, ':')) == NULL)
 			@throw [OFInvalidServerReplyException
 			    exceptionWithClass: isa];
 
-		status = (int)[[line substringWithRange:
-		    of_range(9, 3)] decimalValue];
+		key = [OFString stringWithUTF8String: line_c
+					      length: tmp - line_c];
+		normalize_key(key);
 
-		serverHeaders = [OFMutableDictionary dictionary];
+		do {
+			tmp++;
+		} while (*tmp == ' ');
 
-		while ((line = [sock readLine]) != nil) {
-			OFString *key, *value;
-			const char *line_c = [line UTF8String], *tmp;
+		value = [OFString stringWithUTF8String: tmp];
 
-			if ([line isEqual: @""])
-				break;
+		if ((redirects > 0 && (status == 301 || status == 302 ||
+		    status == 303) && [key isEqual: @"Location"]) &&
+		    (redirectsFromHTTPSToHTTPAllowed ||
+		    [scheme isEqual: @"http"] ||
+		    ![value hasPrefix: @"http://"])) {
+			OFURL *new;
+			BOOL follow;
 
-			if ((tmp = strchr(line_c, ':')) == NULL)
-				@throw [OFInvalidServerReplyException
-				    exceptionWithClass: isa];
+			new = [OFURL URLWithString: value
+				     relativeToURL: URL];
 
-			key = [OFString stringWithUTF8String: line_c
-						      length: tmp - line_c];
-			normalize_key(key);
+			follow = [delegate request: self
+			      willFollowRedirectTo: new];
 
-			do {
-				tmp++;
-			} while (*tmp == ' ');
-
-			value = [OFString stringWithUTF8String: tmp];
-
-			if ((redirects > 0 && (status == 301 || status == 302 ||
-			    status == 303) && [key isEqual: @"Location"]) &&
-			    (redirectsFromHTTPSToHTTPAllowed ||
-			    [scheme isEqual: @"http"] ||
-			    ![value hasPrefix: @"http://"])) {
-				OFURL *new;
-				BOOL follow;
-
-				new = [OFURL URLWithString: value
-					     relativeToURL: URL];
-
-				follow = [delegate request: self
-				      willFollowRedirectTo: new];
-
-				if (!follow && delegate != nil) {
-					[serverHeaders setObject: value
-							  forKey: key];
-					continue;
-				}
-
-				new = [new retain];
-				[URL release];
-				URL = new;
-
-				if (status == 303) {
-					requestType = OF_HTTP_REQUEST_TYPE_GET;
-					[queryString release];
-					queryString = nil;
-				}
-
-				[pool release];
-				pool = nil;
-
-				return [self performWithRedirects:
-				    redirects - 1];
+			if (!follow && delegate != nil) {
+				[serverHeaders setObject: value
+						  forKey: key];
+				continue;
 			}
 
-			[serverHeaders setObject: value
-					  forKey: key];
-		}
+			new = [new retain];
+			[URL release];
+			URL = new;
 
-		[delegate request: self
-		didReceiveHeaders: serverHeaders
-		   withStatusCode: status];
-
-		if (storesData)
-			data = [OFDataArray dataArray];
-		else
-			data = nil;
-
-		buffer = [self allocMemoryWithSize: of_pagesize];
-		bytesReceived = 0;
-		@try {
-			size_t len;
-
-			while ((len = [sock readNBytes: of_pagesize
-					    intoBuffer: buffer]) > 0) {
-				[delegate request: self
-				   didReceiveData: buffer
-				       withLength: len];
-
-				bytesReceived += len;
-				[data addNItems: len
-				     fromCArray: buffer];
+			if (status == 303) {
+				requestType = OF_HTTP_REQUEST_TYPE_GET;
+				[queryString release];
+				queryString = nil;
 			}
-		} @finally {
-			[self freeMemory: buffer];
+
+			[pool release];
+
+			return [self performWithRedirects: redirects - 1];
 		}
 
-		if ((contentLengthHeader =
-		    [serverHeaders objectForKey: @"Content-Length"]) != nil) {
-			intmax_t cl = [contentLengthHeader decimalValue];
-
-			if (cl > SIZE_MAX)
-				@throw [OFOutOfRangeException
-				    exceptionWithClass: isa];
-
-			/*
-			 * We only want to throw on these status codes as we
-			 * will throw an OFHTTPRequestFailedException for all
-			 * other status codes later.
-			 */
-			if (cl != bytesReceived && (status == 200 ||
-			    status == 301 || status == 302 || status == 303))
-				@throw [OFTruncatedDataException
-				    exceptionWithClass: isa];
-		}
-
-		[serverHeaders makeImmutable];
-
-		result = [[OFHTTPRequestResult alloc]
-		    initWithStatusCode: status
-			       headers: serverHeaders
-				  data: data];
-
-		if (status != 200 && status != 301 && status != 302 &&
-		    status != 303)
-			@throw [OFHTTPRequestFailedException
-			    exceptionWithClass: isa
-				   HTTPRequest: self
-					result: result];
-	} @finally {
-		[pool release];
+		[serverHeaders setObject: value
+				  forKey: key];
 	}
+
+	[delegate request: self
+	didReceiveHeaders: serverHeaders
+	   withStatusCode: status];
+
+	data = (storesData ? [OFDataArray dataArray] : nil);
+
+	buffer = [self allocMemoryWithSize: of_pagesize];
+	bytesReceived = 0;
+	@try {
+		size_t len;
+
+		while ((len = [sock readNBytes: of_pagesize
+				    intoBuffer: buffer]) > 0) {
+			[delegate request: self
+			   didReceiveData: buffer
+			       withLength: len];
+
+			bytesReceived += len;
+			[data addNItems: len
+			     fromCArray: buffer];
+		}
+	} @finally {
+		[self freeMemory: buffer];
+	}
+
+	if ((contentLengthHeader =
+	    [serverHeaders objectForKey: @"Content-Length"]) != nil) {
+		intmax_t cl = [contentLengthHeader decimalValue];
+
+		if (cl > SIZE_MAX)
+			@throw [OFOutOfRangeException exceptionWithClass: isa];
+
+		/*
+		 * We only want to throw on these status codes as we will throw
+		 * an OFHTTPRequestFailedException for all other status codes
+		 * later.
+		 */
+		if (cl != bytesReceived && (status == 200 || status == 301 ||
+		    status == 302 || status == 303))
+			@throw [OFTruncatedDataException
+			    exceptionWithClass: isa];
+	}
+
+	[serverHeaders makeImmutable];
+
+	result = [[OFHTTPRequestResult alloc] initWithStatusCode: status
+							 headers: serverHeaders
+							    data: data];
+
+	if (status != 200 && status != 301 && status != 302 && status != 303)
+		@throw [OFHTTPRequestFailedException
+		    exceptionWithClass: isa
+			   HTTPRequest: self
+				result: result];
 
 	return [result autorelease];
 }
