@@ -70,6 +70,7 @@ INCLUDES := ${SRCS:.m=.h}		\
 	    OFCollection.h		\
 	    OFJSONRepresentation.h	\
 	    OFSerialization.h		\
+	    OFTLSSocket.h		\
 	    ObjFW.h			\
 	    asprintf.h			\
 	    ${ATOMIC_H}			\
