@@ -73,27 +73,6 @@ enum {
 - (void)release;
 @end
 
-#if defined(OF_OBJFW_RUNTIME) || defined(OF_GNU_RUNTIME) || \
-    defined(OF_OLD_GNU_RUNTIME)
-struct objc_abi_class {
-	struct objc_abi_metaclass *metaclass;
-	const char *superclass, *name;
-	unsigned long version, info, instance_size;
-	void *ivars, *methodlist, *dtable, *subclass_list, *sibling_class;
-	void *protocols, *gc_object_type;
-	long abi_version;
-	void *ivar_offsets, *properties;
-};
-
-struct objc_abi_metaclass {
-	const char *metaclass, *superclass, *name;
-	unsigned long version, info, instance_size;
-	void *ivars, *methodlist, *dtable, *subclass_list, *sibling_class;
-	void *protocols, *gc_object_type;
-	long abi_version;
-	void *ivar_offsets, *properties;
-};
-
 #ifndef OF_OBJFW_RUNTIME
 enum objc_abi_class_info {
 	OBJC_CLASS_INFO_CLASS	  = 0x01,
@@ -101,6 +80,7 @@ enum objc_abi_class_info {
 };
 #endif
 
+#if defined(OF_OBJFW_RUNTIME)
 extern void __objc_exec_class(void*);
 
 /* Begin of ObjC module */

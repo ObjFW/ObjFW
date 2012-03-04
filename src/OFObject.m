@@ -40,12 +40,10 @@
 
 #import "macros.h"
 
-#if (defined(OF_APPLE_RUNTIME) && __OBJC2__) || defined(OF_GNU_RUNTIME)
+#if (defined(OF_APPLE_RUNTIME) && __OBJC2__)
 # import <objc/objc-exception.h>
 #elif defined(OF_OBJFW_RUNTIME)
 # import "runtime.h"
-#elif defined(OF_OLD_GNU_RUNTIME)
-# import <objc/Protocol.h>
 #endif
 
 #ifdef _WIN32
@@ -78,10 +76,6 @@ struct pre_ivar {
 	(__BIGGEST_ALIGNMENT__ - 1)) & ~(__BIGGEST_ALIGNMENT__ - 1))
 #define PRE_IVAR ((struct pre_ivar*)(void*)((char*)self - PRE_IVAR_ALIGN))
 
-#ifdef OF_OLD_GNU_RUNTIME
-extern void __objc_update_dispatch_table_for_class(Class);
-#endif
-
 static struct {
 	Class isa;
 } alloc_failed_exception;
@@ -100,7 +94,7 @@ extern BOOL objc_sync_init();
 extern BOOL objc_properties_init();
 #endif
 
-#if (defined(OF_APPLE_RUNTIME) && __OBJC2__) || defined(OF_GNU_RUNTIME)
+#if (defined(OF_APPLE_RUNTIME) && __OBJC2__)
 static void
 uncaught_exception_handler(id exception)
 {
@@ -125,46 +119,12 @@ objc_enumerationMutation(id object)
 }
 #endif
 
-#if defined(HAVE_OBJC_ENUMERATIONMUTATION) && defined(OF_OLD_GNU_RUNTIME)
-extern void objc_setEnumerationMutationHandler(void(*handler)(id));
-#endif
-
 const char*
 _NSPrintForDebugger(id object)
 {
 	return [[object description]
 	    cStringWithEncoding: OF_STRING_ENCODING_NATIVE];
 }
-
-#ifdef OF_OLD_GNU_RUNTIME
-static BOOL
-protocol_conformsToProtocol(Protocol *a, Protocol *b)
-{
-	/*
-	 * This function is an ugly workaround for a bug that only happens with
-	 * Clang 2.9 together with the libobjc from GCC 4.6.
-	 * Since the instance variables of Protocol are @private, we have to
-	 * cast them to a struct here in order to access them.
-	 */
-	struct objc_protocol {
-		Class isa;
-		const char *protocol_name;
-		struct objc_protocol_list *protocol_list;
-	} *pa = (struct objc_protocol*)a, *pb = (struct objc_protocol*)b;
-	struct objc_protocol_list *pl;
-	size_t i;
-
-	if (!strcmp(pa->protocol_name, pb->protocol_name))
-		return YES;
-
-	for (pl = pa->protocol_list; pl != NULL; pl = pl->next)
-		for (i = 0; i < pl->count; i++)
-			if (protocol_conformsToProtocol(pl->list[i], b))
-				return YES;
-
-	return NO;
-}
-#endif
 
 /* References for static linking */
 void _references_to_categories_of_OFObject(void)
@@ -190,7 +150,7 @@ void _references_to_categories_of_OFObject(void)
 	}
 #endif
 
-#if (defined(OF_APPLE_RUNTIME) && __OBJC2__) || defined(OF_GNU_RUNTIME)
+#if (defined(OF_APPLE_RUNTIME) && __OBJC2__)
 	objc_setUncaughtExceptionHandler(uncaught_exception_handler);
 #endif
 
@@ -302,29 +262,11 @@ void _references_to_categories_of_OFObject(void)
 
 + (BOOL)instancesRespondToSelector: (SEL)selector
 {
-#ifdef OF_OLD_GNU_RUNTIME
-	return class_get_instance_method(self, selector) != METHOD_NULL;
-#else
 	return class_respondsToSelector(self, selector);
-#endif
 }
 
 + (BOOL)conformsToProtocol: (Protocol*)protocol
 {
-#ifdef OF_OLD_GNU_RUNTIME
-	Class c;
-	struct objc_protocol_list *pl;
-	size_t i;
-
-	for (c = self; c != Nil; c = class_get_super_class(c))
-		for (pl = c->protocols; pl != NULL; pl = pl->next)
-			for (i = 0; i < pl->count; i++)
-				if (protocol_conformsToProtocol(pl->list[i],
-				    protocol))
-					return YES;
-
-	return NO;
-#else
 	Class c;
 
 	for (c = self; c != Nil; c = class_getSuperclass(c))
@@ -332,15 +274,12 @@ void _references_to_categories_of_OFObject(void)
 			return YES;
 
 	return NO;
-#endif
 }
 
 + (IMP)instanceMethodForSelector: (SEL)selector
 {
 #if defined(OF_OBJFW_RUNTIME)
 	return objc_get_instance_method(self, selector);
-#elif defined(OF_OLD_GNU_RUNTIME)
-	return method_get_imp(class_get_instance_method(self, selector));
 #else
 	return class_getMethodImplementation(self, selector);
 #endif
@@ -356,15 +295,6 @@ void _references_to_categories_of_OFObject(void)
 							    selector: selector];
 
 	return ret;
-#elif defined(OF_OLD_GNU_RUNTIME)
-	Method_t m;
-
-	if ((m = class_get_instance_method(self, selector)) == NULL ||
-	    m->method_types == NULL)
-		@throw [OFNotImplementedException exceptionWithClass: self
-							    selector: selector];
-
-	return m->method_types;
 #else
 	Method m;
 	const char *ret;
@@ -392,40 +322,6 @@ void _references_to_categories_of_OFObject(void)
 							     selector: _cmd];
 
 	return objc_replace_class_method(self, selector, newImp);
-#elif defined(OF_OLD_GNU_RUNTIME)
-	Method_t method;
-	MethodList_t iter;
-
-	method = class_get_class_method(self->class_pointer, selector);
-
-	if (newImp == (IMP)0 || method == METHOD_NULL)
-		@throw [OFInvalidArgumentException exceptionWithClass: self
-							     selector: _cmd];
-
-	for (iter = ((Class)self->class_pointer)->methods; iter != NULL;
-	    iter = iter->method_next) {
-		int i;
-
-		for (i = 0; i < iter->method_count; i++)
-			if (sel_eq(iter->method_list[i].method_name,
-			    selector)) {
-				IMP oldImp;
-
-				oldImp = iter->method_list[i].method_imp;
-				iter->method_list[i].method_imp = newImp;
-
-				__objc_update_dispatch_table_for_class(
-				    (Class)self->class_pointer);
-
-				return oldImp;
-			}
-	}
-
-	assert([self addClassMethod: selector
-		   withTypeEncoding: method->method_types
-		     implementation: newImp]);
-
-	return (IMP)0;
 #else
 	Method method;
 
@@ -467,39 +363,6 @@ void _references_to_categories_of_OFObject(void)
 							     selector: _cmd];
 
 	return objc_replace_instance_method(self, selector, newImp);
-#elif defined(OF_OLD_GNU_RUNTIME)
-	Method_t method;
-	MethodList_t iter;
-
-	method = class_get_instance_method(self, selector);
-
-	if (newImp == (IMP)0 || method == METHOD_NULL)
-		@throw [OFInvalidArgumentException exceptionWithClass: self
-							     selector: _cmd];
-
-	for (iter = ((Class)self)->methods; iter != NULL;
-	    iter = iter->method_next) {
-		int i;
-
-		for (i = 0; i < iter->method_count; i++)
-			if (sel_eq(iter->method_list[i].method_name,
-			    selector)) {
-				IMP oldImp;
-
-				oldImp = iter->method_list[i].method_imp;
-				iter->method_list[i].method_imp = newImp;
-
-				__objc_update_dispatch_table_for_class(self);
-
-				return oldImp;
-			}
-	}
-
-	assert([self addInstanceMethod: selector
-		      withTypeEncoding: method->method_types
-			implementation: newImp]);
-
-	return (IMP)0;
 #else
 	Method method;
 
@@ -532,41 +395,8 @@ void _references_to_categories_of_OFObject(void)
 	 withTypeEncoding: (const char*)typeEncoding
 	   implementation: (IMP)implementation
 {
-#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+#if defined(OF_APPLE_RUNTIME)
 	return class_addMethod(self, selector, implementation, typeEncoding);
-#elif defined(OF_OLD_GNU_RUNTIME)
-	MethodList_t methodList;
-
-	for (methodList = ((Class)self)->methods; methodList != NULL;
-	    methodList = methodList->method_next) {
-		int i;
-
-		for (i = 0; i < methodList->method_count; i++)
-			if (sel_eq(methodList->method_list[i].method_name,
-			    selector))
-				return NO;
-	}
-
-	if ((methodList = malloc(sizeof(*methodList))) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithClass: self
-			 requestedSize: sizeof(*methodList)];
-
-	methodList->method_next = ((Class)self)->methods;
-	methodList->method_count = 1;
-
-	methodList->method_list[0].method_name = selector;
-	methodList->method_list[0].method_types = typeEncoding;
-	methodList->method_list[0].method_imp = implementation;
-
-	((Class)self)->methods = methodList;
-
-	__objc_update_dispatch_table_for_class(self);
-
-	return YES;
-#else
-	@throw [OFNotImplementedException exceptionWithClass: self
-						    selector: _cmd];
 #endif
 }
 
@@ -574,42 +404,9 @@ void _references_to_categories_of_OFObject(void)
       withTypeEncoding: (const char*)typeEncoding
 	implementation: (IMP)implementation
 {
-#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+#if defined(OF_APPLE_RUNTIME)
 	return class_addMethod(((OFObject*)self)->isa, selector, implementation,
 	    typeEncoding);
-#elif defined(OF_OLD_GNU_RUNTIME)
-	MethodList_t methodList;
-
-	for (methodList = ((Class)self->class_pointer)->methods;
-	    methodList != NULL; methodList = methodList->method_next) {
-		int i;
-
-		for (i = 0; i < methodList->method_count; i++)
-			if (sel_eq(methodList->method_list[i].method_name,
-			    selector))
-				return NO;
-	}
-
-	if ((methodList = malloc(sizeof(*methodList))) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithClass: self
-			 requestedSize: sizeof(*methodList)];
-
-	methodList->method_next = ((Class)self->class_pointer)->methods;
-	methodList->method_count = 1;
-
-	methodList->method_list[0].method_name = selector;
-	methodList->method_list[0].method_types = typeEncoding;
-	methodList->method_list[0].method_imp = implementation;
-
-	((Class)self->class_pointer)->methods = methodList;
-
-	__objc_update_dispatch_table_for_class((Class)self->class_pointer);
-
-	return YES;
-#else
-	@throw [OFNotImplementedException exceptionWithClass: self
-						    selector: _cmd];
 #endif
 }
 
@@ -620,7 +417,7 @@ void _references_to_categories_of_OFObject(void)
 	if ([self isSubclassOfClass: class])
 		return;
 
-#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+#if defined(OF_APPLE_RUNTIME)
 	Method *methodList;
 	unsigned i, count;
 
@@ -684,72 +481,8 @@ void _references_to_categories_of_OFObject(void)
 	} @finally {
 		free(methodList);
 	}
-#elif defined(OF_OLD_GNU_RUNTIME)
-	MethodList_t methodList;
-
-	for (methodList = class->class_pointer->methods;
-	    methodList != NULL; methodList = methodList->method_next) {
-		int i;
-
-		for (i = 0; i < methodList->method_count; i++) {
-			SEL selector = methodList->method_list[i].method_name;
-			IMP implementation;
-
-			/*
-			 * Don't replace methods implemented in receiving class.
-			 */
-			if ([self methodForSelector: selector] !=
-			    [superclass methodForSelector: selector])
-				continue;
-
-			implementation = [class methodForSelector: selector];
-
-			if ([self respondsToSelector: selector])
-				     [self setImplementation: implementation
-					      forClassMethod: selector];
-			else {
-				const char *typeEncoding =
-				    methodList->method_list[i].method_types;
-				[self addClassMethod: selector
-				    withTypeEncoding: typeEncoding
-				      implementation: implementation];
-			}
-		}
-	}
-
-	for (methodList = class->methods; methodList != NULL;
-	    methodList = methodList->method_next) {
-		int i;
-
-		for (i = 0; i < methodList->method_count; i++) {
-			SEL selector = methodList->method_list[i].method_name;
-			IMP implementation;
-
-			/*
-			 * Don't replace methods implemented in receiving class.
-			 */
-			if ([self instanceMethodForSelector: selector] !=
-			    [superclass instanceMethodForSelector: selector])
-				continue;
-
-			implementation =
-			    [class instanceMethodForSelector: selector];
-
-			if ([self instancesRespondToSelector: selector])
-				     [self setImplementation: implementation
-					   forInstanceMethod: selector];
-			else {
-				const char *typeEncoding =
-				    methodList->method_list[i].method_types;
-				[self addInstanceMethod: selector
-				       withTypeEncoding: typeEncoding
-					 implementation: implementation];
-			}
-		}
-	}
 #else
-	@throw [OFNotImplementedException exceptionWithClass: self
-						    selector: _cmd];
+	/* FIXME */
 #endif
 
 	[self inheritMethodsFromClass: [class superclass]];
@@ -789,14 +522,7 @@ void _references_to_categories_of_OFObject(void)
 
 - (BOOL)respondsToSelector: (SEL)selector
 {
-#ifdef OF_OLD_GNU_RUNTIME
-	if (object_is_instance(self))
-		return class_get_instance_method(isa, selector) != METHOD_NULL;
-	else
-		return class_get_class_method(isa, selector) != METHOD_NULL;
-#else
 	return class_respondsToSelector(isa, selector);
-#endif
 }
 
 - (BOOL)conformsToProtocol: (Protocol*)protocol
@@ -806,7 +532,7 @@ void _references_to_categories_of_OFObject(void)
 
 - (IMP)methodForSelector: (SEL)selector
 {
-#if defined(OF_OBJFW_RUNTIME) || defined(OF_OLD_GNU_RUNTIME)
+#if defined(OF_OBJFW_RUNTIME)
 	return objc_msg_lookup(self, selector);
 #else
 	return class_getMethodImplementation(isa, selector);
@@ -849,15 +575,6 @@ void _references_to_categories_of_OFObject(void)
 							    selector: selector];
 
 	return ret;
-#elif defined(OF_OLD_GNU_RUNTIME)
-	Method_t m;
-
-	if ((m = class_get_instance_method(isa, selector)) == NULL ||
-	    m->method_types == NULL)
-		@throw [OFNotImplementedException exceptionWithClass: isa
-							    selector: selector];
-
-	return m->method_types;
 #else
 	Method m;
 	const char *ret;
