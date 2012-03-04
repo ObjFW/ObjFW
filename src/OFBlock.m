@@ -95,7 +95,6 @@ struct objc_abi_metaclass {
 };
 
 #ifndef OF_OBJFW_RUNTIME
-/* ObjFW-RT already defines those */
 enum objc_abi_class_info {
 	OBJC_CLASS_INFO_CLASS	  = 0x01,
 	OBJC_CLASS_INFO_METACLASS = 0x02

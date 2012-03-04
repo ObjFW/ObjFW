@@ -43,7 +43,7 @@
 #if (defined(OF_APPLE_RUNTIME) && __OBJC2__) || defined(OF_GNU_RUNTIME)
 # import <objc/objc-exception.h>
 #elif defined(OF_OBJFW_RUNTIME)
-# import <objfw-rt.h>
+# import "runtime.h"
 #elif defined(OF_OLD_GNU_RUNTIME)
 # import <objc/Protocol.h>
 #endif
