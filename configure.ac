@@ -128,51 +128,32 @@ AC_TRY_COMPILE([], [
 	OBJCFLAGS="$old_OBJCFLAGS"
 ])
 
-AC_CHECK_HEADERS([objfw-rt.h objc/objc.h])
-
-test x"$ac_cv_header_objfw_rt_h" = x"yes" && objc_runtime="ObjFW-RT"
-
-AC_MSG_CHECKING(which Objective C runtime we use)
+objc_runtime="ObjFW runtime"
+AC_CHECK_HEADER(objc/objc.h)
+AC_MSG_CHECKING(which Objective C runtime to use)
 AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
-	dnl Only accept it if it's from gcc >= 4.7, as the one in 4.6 is buggy
-	dnl when using the new API.
+	dnl TODO: This is ugly. Let's think of a better check.
 	AC_EGREP_CPP(yes, [
 		#import <objc/objc.h>
-		#if defined(__GNU_LIBOBJC__) && __GNU_LIBOBJC__ >= 20110608
+		#ifdef __objc_INCLUDE_GNU
 		yes
 		#endif
 	], [
-		test x"$objc_runtime" = x"" && objc_runtime="GNU"
+		dnl We don't want the GNU runtime
 	], [
-		dnl TODO: This is ugly. Let's think of a better check.
-		AC_EGREP_CPP(yes, [
-			#import <objc/objc.h>
-			#ifdef __objc_INCLUDE_GNU
-			yes
-			#endif
-		], [
-			test x"$objc_runtime" = x"" && objc_runtime="old GNU"
-		], [
-			objc_runtime="Apple"
-		])
+		objc_runtime="Apple runtime"
 	])
 ])
 AC_MSG_RESULT($objc_runtime)
 
 case $objc_runtime in
-	ObjFW-RT)
+	"ObjFW runtime")
 		AC_DEFINE(OF_OBJFW_RUNTIME, 1,
 			[Whether we use the ObjFW runtime])
 		AC_SUBST(GNU_RUNTIME, "-fgnu-runtime")
 		OBJCFLAGS="$OBJCFLAGS -fgnu-runtime"
-
-		AC_CHECK_LIB(objfw-rt, objc_msg_lookup, [
-			LIBS="-lobjfw-rt $LIBS"
-		], [
-			AC_MSG_ERROR([libobjfw-rt not found!])
-		])
 		;;
-	Apple)
+	"Apple runtime")
 		AC_DEFINE(OF_APPLE_RUNTIME, 1,
 			[Whether we use the Apple ObjC runtime])
 
@@ -181,30 +162,6 @@ case $objc_runtime in
 		], [
 			AC_MSG_ERROR([libobjc not found!])
 		])
-		;;
-	GNU)
-		AC_DEFINE(OF_GNU_RUNTIME, 1,
-			[Whether we use the GNU ObjC runtime])
-
-		AC_CHECK_LIB(objc, objc_msg_lookup, [
-			LIBS="-lobjc $LIBS"
-		], [
-			AC_MSG_ERROR([libobjc not found!])
-		])
-		;;
-	"old GNU")
-		AC_DEFINE(OF_OLD_GNU_RUNTIME, 1,
-			[Whether we use the old GNU ObjC runtime])
-
-		AC_CHECK_LIB(objc, objc_msg_lookup, [
-			LIBS="-lobjc $LIBS"
-		], [
-			AC_MSG_ERROR([libobjc not found!])
-		])
-		;;
-	*)
-		AC_MSG_RESULT(none)
-		AC_MSG_ERROR(No ObjC runtime found! Please install ObjFW-RT!)
 		;;
 esac
 
@@ -582,7 +539,7 @@ AC_TRY_COMPILE([
 	AC_MSG_RESULT(no)
 ])
 
-AS_IF([test x"$objc_runtime" = x"Apple"], [
+AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 	AC_CHECK_HEADER(Foundation/NSObject.h, [
 		AC_SUBST(FOUNDATION_COMPAT_M, "foundation-compat.m")
 	])
