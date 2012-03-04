@@ -24,8 +24,8 @@
 @implementation Protocol
 - (BOOL)_isImplementedByClass: (Class)cls
 {
-	struct objc_abi_protocol_list *pl;
-	struct objc_abi_category **cats;
+	struct objc_protocol_list *pl;
+	struct objc_category **cats;
 	long i, j;
 
 	objc_global_mutex_lock();

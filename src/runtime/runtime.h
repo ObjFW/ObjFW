@@ -47,11 +47,11 @@ struct objc_class {
 	unsigned long info;
 	unsigned long instance_size;
 	void *ivars;
-	struct objc_abi_method_list *methodlist;
+	struct objc_method_list *methodlist;
 	struct objc_sparsearray *dtable;
 	Class *subclass_list;
 	void *sibling_class;
-	struct objc_abi_protocol_list *protocols;
+	struct objc_protocol_list *protocols;
 	void *gc_object_type;
 	unsigned long abi_version;
 	void *ivar_offsets;
@@ -67,10 +67,29 @@ struct objc_selector {
 	const char *types;
 };
 
-enum objc_abi_class_info {
-	OBJC_CLASS_INFO_CLASS	    = 0x01,
-	OBJC_CLASS_INFO_METACLASS   = 0x02,
-	OBJC_CLASS_INFO_INITIALIZED = 0x04
+struct objc_method {
+	struct objc_selector sel;
+	IMP imp;
+};
+
+struct objc_method_list {
+	struct objc_method_list *next;
+	unsigned int count;
+	struct objc_method methods[1];
+};
+
+struct objc_category {
+	const char *category_name;
+	const char *class_name;
+	struct objc_method_list *instance_methods;
+	struct objc_method_list *class_methods;
+	struct objc_protocol_list *protocols;
+};
+
+struct objc_protocol_list {
+	struct objc_protocol_list *next;
+	long count;
+	Protocol *list[1];
 };
 
 #define Nil (Class)0

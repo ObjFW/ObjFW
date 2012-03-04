@@ -105,13 +105,13 @@ objc_register_all_categories(struct objc_abi_symtab *symtab)
 	}
 }
 
-struct objc_abi_category**
+struct objc_category**
 objc_categories_for_class(Class cls)
 {
 	if (categories == NULL)
 		return NULL;
 
-	return (struct objc_abi_category**)objc_hashtable_get(categories,
+	return (struct objc_category**)objc_hashtable_get(categories,
 	    cls->name);
 }
 

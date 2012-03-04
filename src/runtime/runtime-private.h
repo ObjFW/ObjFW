@@ -57,7 +57,7 @@ struct objc_abi_category {
 	const char *class_name;
 	struct objc_abi_method_list *instance_methods;
 	struct objc_abi_method_list *class_methods;
-	struct objc_abi_protocol_list *protocols;
+	struct objc_protocol_list *protocols;
 };
 
 struct objc_abi_super {
@@ -73,12 +73,6 @@ struct objc_abi_method_description {
 struct objc_abi_method_description_list {
 	int count;
 	struct objc_abi_method_description list[1];
-};
-
-struct objc_abi_protocol_list {
-	struct objc_abi_protocol_list *next;
-	long count;
-	Protocol *list[1];
 };
 
 struct objc_abi_static_instances {
@@ -127,6 +121,12 @@ struct objc_sparsearray_level3 {
 	BOOL empty;
 };
 
+enum objc_abi_class_info {
+	OBJC_CLASS_INFO_CLASS	    = 0x01,
+	OBJC_CLASS_INFO_METACLASS   = 0x02,
+	OBJC_CLASS_INFO_INITIALIZED = 0x04
+};
+
 typedef struct {
 	of_mutex_t mutex;
 	of_thread_t owner;
@@ -134,7 +134,7 @@ typedef struct {
 } objc_mutex_t;
 
 extern void objc_register_all_categories(struct objc_abi_symtab*);
-extern struct objc_abi_category** objc_categories_for_class(Class);
+extern struct objc_category** objc_categories_for_class(Class);
 extern void objc_free_all_categories(void);
 extern void objc_update_dtable(Class);
 extern void objc_register_all_classes(struct objc_abi_symtab*);

@@ -70,8 +70,8 @@ has_load(struct objc_abi_class *cls)
 void
 objc_update_dtable(Class cls)
 {
-	struct objc_abi_method_list *ml;
-	struct objc_abi_category **cats;
+	struct objc_method_list *ml;
+	struct objc_category **cats;
 	struct objc_sparsearray *dtable;
 	unsigned int i;
 
@@ -82,8 +82,8 @@ objc_update_dtable(Class cls)
 
 	for (ml = cls->methodlist; ml != NULL; ml = ml->next)
 		for (i = 0; i < ml->count; i++)
-			objc_sparsearray_set(dtable, (uint32_t)
-			    (uintptr_t)ml->methods[i].name, ml->methods[i].imp);
+			objc_sparsearray_set(dtable,
+			    ml->methods[i].sel.uid, ml->methods[i].imp);
 
 	if ((cats = objc_categories_for_class(cls)) != NULL) {
 		for (i = 0; cats[i] != NULL; i++) {
@@ -94,8 +94,8 @@ objc_update_dtable(Class cls)
 
 			for (; ml != NULL; ml = ml->next)
 				for (j = 0; j < ml->count; j++)
-					objc_sparsearray_set(dtable, (uint32_t)
-					    (uintptr_t)ml->methods[j].name,
+					objc_sparsearray_set(dtable,
+					    (uint32_t)ml->methods[j].sel.uid,
 					    ml->methods[j].imp);
 		}
 	}
@@ -293,16 +293,16 @@ objc_get_instance_method(Class cls, SEL sel)
 const char*
 objc_get_type_encoding(Class cls, SEL sel)
 {
-	struct objc_abi_method_list *ml;
-	struct objc_abi_category **cats;
+	struct objc_method_list *ml;
+	struct objc_category **cats;
 	unsigned int i;
 
 	objc_global_mutex_lock();
 
 	for (ml = cls->isa->methodlist; ml != NULL; ml = ml->next) {
 		for (i = 0; i < ml->count; i++) {
-			if ((uintptr_t)ml->methods[i].name == sel->uid) {
-				const char *ret = ml->methods[i].types;
+			if (ml->methods[i].sel.uid == sel->uid) {
+				const char *ret = ml->methods[i].sel.types;
 				objc_global_mutex_unlock();
 				return ret;
 			}
@@ -314,10 +314,10 @@ objc_get_type_encoding(Class cls, SEL sel)
 			for (ml = (*cats)->class_methods; ml != NULL;
 			    ml = ml->next) {
 				for (i = 0; i < ml->count; i++) {
-					if ((uintptr_t)ml->methods[i].name ==
+					if (ml->methods[i].sel.uid ==
 					    sel->uid) {
 						const char *ret =
-						    ml->methods[i].types;
+						    ml->methods[i].sel.types;
 						objc_global_mutex_unlock();
 						return ret;
 					}
@@ -334,8 +334,8 @@ objc_get_type_encoding(Class cls, SEL sel)
 IMP
 objc_replace_class_method(Class cls, SEL sel, IMP newimp)
 {
-	struct objc_abi_method_list *ml;
-	struct objc_abi_category **cats;
+	struct objc_method_list *ml;
+	struct objc_category **cats;
 	unsigned int i;
 	BOOL replaced = NO;
 	IMP oldimp = NULL;
@@ -344,7 +344,7 @@ objc_replace_class_method(Class cls, SEL sel, IMP newimp)
 
 	for (ml = cls->isa->methodlist; ml != NULL; ml = ml->next) {
 		for (i = 0; i < ml->count; i++) {
-			if ((uintptr_t)ml->methods[i].name == sel->uid) {
+			if (ml->methods[i].sel.uid == sel->uid) {
 				oldimp = ml->methods[i].imp;
 				ml->methods[i].imp = newimp;
 				replaced = YES;
@@ -358,7 +358,7 @@ objc_replace_class_method(Class cls, SEL sel, IMP newimp)
 			for (ml = (*cats)->class_methods; ml != NULL;
 			    ml = ml->next) {
 				for (i = 0; i < ml->count; i++) {
-					if ((uintptr_t)ml->methods[i].name ==
+					if (ml->methods[i].sel.uid ==
 					    sel->uid) {
 						oldimp = ml->methods[i].imp;
 						ml->methods[i].imp = newimp;
@@ -372,14 +372,14 @@ objc_replace_class_method(Class cls, SEL sel, IMP newimp)
 
 	if (!replaced) {
 		/* FIXME: We need a way to free this at objc_exit() */
-		if ((ml = malloc(sizeof(struct objc_abi_method_list))) == NULL)
+		if ((ml = malloc(sizeof(struct objc_method_list))) == NULL)
 			ERROR("Not enough memory to replace method!");
 
 		ml->next = cls->isa->methodlist;
 		ml->count = 1;
-		ml->methods[0].name = (const char*)sel->uid;
+		ml->methods[0].sel.uid = sel->uid;
 		/* FIXME: We need to get the type from a superclass */
-		ml->methods[0].types = sel->types;
+		ml->methods[0].sel.types = sel->types;
 		ml->methods[0].imp = newimp;
 
 		cls->isa->methodlist = ml;
@@ -395,8 +395,8 @@ objc_replace_class_method(Class cls, SEL sel, IMP newimp)
 IMP
 objc_replace_instance_method(Class cls, SEL sel, IMP newimp)
 {
-	struct objc_abi_method_list *ml;
-	struct objc_abi_category **cats;
+	struct objc_method_list *ml;
+	struct objc_category **cats;
 	unsigned int i;
 	BOOL replaced = NO;
 	IMP oldimp = NULL;
@@ -405,7 +405,7 @@ objc_replace_instance_method(Class cls, SEL sel, IMP newimp)
 
 	for (ml = cls->methodlist; ml != NULL; ml = ml->next) {
 		for (i = 0; i < ml->count; i++) {
-			if ((uintptr_t)ml->methods[i].name == sel->uid) {
+			if (ml->methods[i].sel.uid == sel->uid) {
 				oldimp = ml->methods[i].imp;
 				ml->methods[i].imp = newimp;
 				replaced = YES;
@@ -419,7 +419,7 @@ objc_replace_instance_method(Class cls, SEL sel, IMP newimp)
 			for (ml = (*cats)->instance_methods; ml != NULL;
 			    ml = ml->next) {
 				for (i = 0; i < ml->count; i++) {
-					if ((uintptr_t)ml->methods[i].name ==
+					if (ml->methods[i].sel.uid ==
 					    sel->uid) {
 						oldimp = ml->methods[i].imp;
 						ml->methods[i].imp = newimp;
@@ -433,14 +433,14 @@ objc_replace_instance_method(Class cls, SEL sel, IMP newimp)
 
 	if (!replaced) {
 		/* FIXME: We need a way to free this at objc_exit() */
-		if ((ml = malloc(sizeof(struct objc_abi_method_list))) == NULL)
+		if ((ml = malloc(sizeof(struct objc_method_list))) == NULL)
 			ERROR("Not enough memory to replace method!");
 
 		ml->next = cls->methodlist;
 		ml->count = 1;
-		ml->methods[0].name = (const char*)sel->uid;
+		ml->methods[0].sel.uid = sel->uid;
 		/* FIXME: We need to get the type from a superclass */
-		ml->methods[0].types = sel->types;
+		ml->methods[0].sel.types = sel->types;
 		ml->methods[0].imp = newimp;
 
 		cls->methodlist = ml;
