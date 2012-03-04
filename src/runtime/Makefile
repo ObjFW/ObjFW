@@ -15,6 +15,7 @@ SRCS = category.m		\
        threading.m		\
        asm/amd64-elf/lookup.S	\
        asm/x86-elf/lookup.S
+INCLUDES = runtime.h
 
 include ../../buildsys.mk
 
