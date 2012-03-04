@@ -24,7 +24,7 @@
 
 #if defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
 # import <objc/runtime.h>
-#elif defined(OBJFW_RUNTIME)
+#elif defined(OF_OBJFW_RUNTIME)
 # import "runtime-private.h"
 #endif
 
@@ -86,9 +86,9 @@ enum objc_abi_class_info {
 extern void __objc_exec_class(void*);
 
 /* Begin of ObjC module */
-static struct objc_abi_metaclass _NSConcreteStackBlock_metaclass = {
-	"OFBlock", "OFBlock", "OFStackBlock", 8, OBJC_CLASS_INFO_METACLASS,
-	sizeof(struct objc_abi_class), NULL, NULL
+static struct objc_abi_class _NSConcreteStackBlock_metaclass = {
+	(struct objc_abi_class*)"OFBlock", "OFBlock", "OFStackBlock", 8,
+	OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_abi_class), NULL, NULL
 };
 
 struct objc_abi_class _NSConcreteStackBlock = {
@@ -96,9 +96,9 @@ struct objc_abi_class _NSConcreteStackBlock = {
 	OBJC_CLASS_INFO_CLASS, sizeof(of_block_literal_t), NULL, NULL
 };
 
-static struct objc_abi_metaclass _NSConcreteGlobalBlock_metaclass = {
-	"OFBlock", "OFBlock", "OFGlobalBlock", 8, OBJC_CLASS_INFO_METACLASS,
-	sizeof(struct objc_abi_class), NULL, NULL
+static struct objc_abi_class _NSConcreteGlobalBlock_metaclass = {
+	(struct objc_abi_class*)"OFBlock", "OFBlock", "OFGlobalBlock", 8,
+	OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_abi_class), NULL, NULL
 };
 
 struct objc_abi_class _NSConcreteGlobalBlock = {
@@ -106,9 +106,9 @@ struct objc_abi_class _NSConcreteGlobalBlock = {
 	8, OBJC_CLASS_INFO_CLASS, sizeof(of_block_literal_t), NULL, NULL
 };
 
-static struct objc_abi_metaclass _NSConcreteMallocBlock_metaclass = {
-	"OFBlock", "OFBlock", "OFMallocBlock", 8, OBJC_CLASS_INFO_METACLASS,
-	sizeof(struct objc_abi_class), NULL, NULL
+static struct objc_abi_class _NSConcreteMallocBlock_metaclass = {
+	(struct objc_abi_class*)"OFBlock", "OFBlock", "OFMallocBlock", 8,
+	OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_abi_class), NULL, NULL
 };
 
 struct objc_abi_class _NSConcreteMallocBlock = {
@@ -121,16 +121,17 @@ static struct {
 	struct objc_abi_selector *sel_refs;
 	uint16_t cls_def_cnt, cat_def_cnt;
 	void *defs[4];
-} symtab = { 0, NULL, 3, 0, {
-	&_NSConcreteStackBlock, &_NSConcreteGlobalBlock,
-	&_NSConcreteMallocBlock, NULL
-}};
+} symtab = {
+	0, NULL, 3, 0,
+	{
+		&_NSConcreteStackBlock, &_NSConcreteGlobalBlock,
+		&_NSConcreteMallocBlock, NULL
+	}
+};
 
-static struct {
-	unsigned long version, size;
-	const char *name;
-	void *symtab;
-} module = { 8, sizeof(module), NULL, &symtab };
+static struct objc_abi_module module = {
+	8, sizeof(module), NULL, (struct objc_abi_symtab*)&symtab
+};
 
 static void __attribute__((constructor))
 constructor(void)
