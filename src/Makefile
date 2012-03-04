@@ -1,6 +1,6 @@
 include ../extra.mk
 
-SUBDIRS = exceptions runtime
+SUBDIRS = exceptions ${RUNTIME}
 
 SHARED_LIB = ${OBJFW_SHARED_LIB}
 STATIC_LIB = ${OBJFW_STATIC_LIB}

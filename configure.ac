@@ -128,6 +128,32 @@ AC_TRY_COMPILE([], [
 	OBJCFLAGS="$old_OBJCFLAGS"
 ])
 
+AC_CHECK_TOOL(AR, ar)
+AC_PROG_RANLIB
+AC_ARG_ENABLE(shared,
+	AS_HELP_STRING([--disable-shared], [do not build shared library]))
+AS_IF([test x"$enable_shared" != x"no"], [
+	BUILDSYS_SHARED_LIB
+	AC_SUBST(OBJFW_SHARED_LIB, "${LIB_PREFIX}objfw${LIB_SUFFIX}")
+	AC_SUBST(EXCEPTIONS_LIB_A, "exceptions.lib.a")
+	AC_SUBST(EXCEPTIONS_EXCEPTIONS_LIB_A, "exceptions/exceptions.lib.a")
+])
+AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
+AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
+	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
+	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
+	AC_SUBST(EXCEPTIONS_EXCEPTIONS_A, "exceptions/exceptions.a")
+])
+
+AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
+AS_IF([test x"$PLUGIN_SUFFIX" != x""], [
+	AC_SUBST(OFPLUGIN_M, "OFPlugin.m")
+	AC_SUBST(OFPLUGINTESTS_M, "OFPluginTests.m")
+	AC_SUBST(TESTPLUGIN, "plugin")
+	AC_DEFINE(OF_PLUGINS, 1, [Whether we have plugin support])
+	AC_SUBST(OFPLUGINS_DEF, "-DOF_PLUGINS")
+])
+
 objc_runtime="ObjFW runtime"
 AC_CHECK_HEADER(objc/objc.h)
 AC_MSG_CHECKING(which Objective C runtime to use)
@@ -152,6 +178,17 @@ case $objc_runtime in
 			[Whether we use the ObjFW runtime])
 		AC_SUBST(GNU_RUNTIME, "-fgnu-runtime")
 		OBJCFLAGS="$OBJCFLAGS -fgnu-runtime"
+
+		AC_SUBST(RUNTIME, "runtime")
+		if test x"$enable_shared" != x"no"; then
+			AC_SUBST(RUNTIME_LIB_A, "runtime.lib.a")
+			AC_SUBST(RUNTIME_RUNTIME_LIB_A, "runtime/runtime.lib.a")
+		fi
+		if test x"$enable_static" = x"yes" \
+		    -o x"$enable_shared" = x"no"; then
+			AC_SUBST(RUNTIME_A, "runtime.a")
+			AC_SUBST(RUNTIME_RUNTIME_A, "runtime/runtime.a")
+		fi
 		;;
 	"Apple runtime")
 		AC_DEFINE(OF_APPLE_RUNTIME, 1,
@@ -174,36 +211,6 @@ AC_CHECK_FUNC(objc_getProperty,, [
 AC_CHECK_FUNC(objc_enumerationMutation, [
 	AC_DEFINE(HAVE_OBJC_ENUMERATIONMUTATION, 1,
 		[Whether we have objc_enumerationMutation])
-])
-
-AC_CHECK_TOOL(AR, ar)
-AC_PROG_RANLIB
-AC_ARG_ENABLE(shared,
-	AS_HELP_STRING([--disable-shared], [do not build shared library]))
-AS_IF([test x"$enable_shared" != x"no"], [
-	BUILDSYS_SHARED_LIB
-	AC_SUBST(OBJFW_SHARED_LIB, "${LIB_PREFIX}objfw${LIB_SUFFIX}")
-	AC_SUBST(EXCEPTIONS_LIB_A, "exceptions.lib.a")
-	AC_SUBST(EXCEPTIONS_EXCEPTIONS_LIB_A, "exceptions/exceptions.lib.a")
-	AC_SUBST(RUNTIME_LIB_A, "runtime.lib.a")
-	AC_SUBST(RUNTIME_RUNTIME_LIB_A, "runtime/runtime.lib.a")
-])
-AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
-AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
-	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
-	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
-	AC_SUBST(EXCEPTIONS_EXCEPTIONS_A, "exceptions/exceptions.a")
-	AC_SUBST(RUNTIME_A, "runtime.a")
-	AC_SUBST(RUNTIME_RUNTIME_A, "runtime/runtime.a.")
-])
-
-AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
-AS_IF([test x"$PLUGIN_SUFFIX" != x""], [
-	AC_SUBST(OFPLUGIN_M, "OFPlugin.m")
-	AC_SUBST(OFPLUGINTESTS_M, "OFPluginTests.m")
-	AC_SUBST(TESTPLUGIN, "plugin")
-	AC_DEFINE(OF_PLUGINS, 1, [Whether we have plugin support])
-	AC_SUBST(OFPLUGINS_DEF, "-DOF_PLUGINS")
 ])
 
 case "$host_os" in
