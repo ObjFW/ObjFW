@@ -228,12 +228,16 @@ AS_IF([test x"$enable_shared" != x"no"], [
 	AC_SUBST(OBJFW_SHARED_LIB, "${LIB_PREFIX}objfw${LIB_SUFFIX}")
 	AC_SUBST(EXCEPTIONS_LIB_A, "exceptions.lib.a")
 	AC_SUBST(EXCEPTIONS_EXCEPTIONS_LIB_A, "exceptions/exceptions.lib.a")
+	AC_SUBST(RUNTIME_LIB_A, "runtime.lib.a")
+	AC_SUBST(RUNTIME_RUNTIME_LIB_A, "runtime/runtime.lib.a")
 ])
 AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
 AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
 	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
 	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
 	AC_SUBST(EXCEPTIONS_EXCEPTIONS_A, "exceptions/exceptions.a")
+	AC_SUBST(RUNTIME_A, "runtime.a")
+	AC_SUBST(RUNTIME_RUNTIME_A, "runtime/runtime.a.")
 ])
 
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])

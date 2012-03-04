@@ -1,6 +1,6 @@
 include ../extra.mk
 
-SUBDIRS = exceptions
+SUBDIRS = exceptions runtime
 
 SHARED_LIB = ${OBJFW_SHARED_LIB}
 STATIC_LIB = ${OBJFW_STATIC_LIB}
@@ -100,9 +100,9 @@ SRCS += OFArray_adjacent.m		\
 
 include ../buildsys.mk
 
-CPPFLAGS += -I. -I.. -Iexceptions
+CPPFLAGS += -I. -I.. -Iexceptions -Iruntime
 LD = ${OBJC}
 LDFLAGS += ${REEXPORT_LIBOBJC} ${MACH_ALIAS_LIST}
 
-LIB_OBJS := ${LIB_OBJS} ${EXCEPTIONS_EXCEPTIONS_LIB_A}
-OBJS += ${EXCEPTIONS_EXCEPTIONS_A}
+LIB_OBJS := ${LIB_OBJS} ${EXCEPTIONS_EXCEPTIONS_LIB_A} ${RUNTIME_RUNTIME_LIB_A}
+OBJS += ${EXCEPTIONS_EXCEPTIONS_A} ${RUNTIME_RUNTIME_A}
