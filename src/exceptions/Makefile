@@ -59,5 +59,5 @@ INCLUDES = ${SRCS:.m=.h}
 
 include ../../buildsys.mk
 
-CPPFLAGS += -I. -I.. -I../..
+CPPFLAGS += -I. -I.. -I../.. -I../runtime
 LD = ${OBJC}
