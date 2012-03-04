@@ -82,8 +82,8 @@ objc_update_dtable(Class cls)
 
 	for (ml = cls->methodlist; ml != NULL; ml = ml->next)
 		for (i = 0; i < ml->count; i++)
-			objc_sparsearray_set(dtable,
-			    (uint32_t)ml->methods[i].name, ml->methods[i].imp);
+			objc_sparsearray_set(dtable, (uint32_t)
+			    (uintptr_t)ml->methods[i].name, ml->methods[i].imp);
 
 	if ((cats = objc_categories_for_class(cls)) != NULL) {
 		for (i = 0; cats[i] != NULL; i++) {
@@ -94,8 +94,8 @@ objc_update_dtable(Class cls)
 
 			for (; ml != NULL; ml = ml->next)
 				for (j = 0; j < ml->count; j++)
-					objc_sparsearray_set(dtable,
-					    (uint32_t)ml->methods[j].name,
+					objc_sparsearray_set(dtable, (uint32_t)
+					    (uintptr_t)ml->methods[j].name,
 					    ml->methods[j].imp);
 		}
 	}
