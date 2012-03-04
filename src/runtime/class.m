@@ -83,7 +83,7 @@ objc_update_dtable(Class cls)
 	for (ml = cls->methodlist; ml != NULL; ml = ml->next)
 		for (i = 0; i < ml->count; i++)
 			objc_sparsearray_set(dtable,
-			    (uintptr_t)ml->methods[i].name, ml->methods[i].imp);
+			    (uint32_t)ml->methods[i].name, ml->methods[i].imp);
 
 	if ((cats = objc_categories_for_class(cls)) != NULL) {
 		for (i = 0; cats[i] != NULL; i++) {
@@ -95,7 +95,7 @@ objc_update_dtable(Class cls)
 			for (; ml != NULL; ml = ml->next)
 				for (j = 0; j < ml->count; j++)
 					objc_sparsearray_set(dtable,
-					    (uintptr_t)ml->methods[j].name,
+					    (uint32_t)ml->methods[j].name,
 					    ml->methods[j].imp);
 		}
 	}
@@ -281,13 +281,13 @@ class_getInstanceSize(Class cls)
 IMP
 objc_get_class_method(Class cls, SEL sel)
 {
-	return objc_sparsearray_get(cls->isa->dtable, sel->uid);
+	return objc_sparsearray_get(cls->isa->dtable, (uint32_t)sel->uid);
 }
 
 IMP
 objc_get_instance_method(Class cls, SEL sel)
 {
-	return objc_sparsearray_get(cls->dtable, sel->uid);
+	return objc_sparsearray_get(cls->dtable, (uint32_t)sel->uid);
 }
 
 const char*
