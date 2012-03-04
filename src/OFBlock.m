@@ -24,6 +24,8 @@
 
 #if defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
 # import <objc/runtime.h>
+#elif defined(OBJFW_RUNTIME)
+# import "runtime-private.h"
 #endif
 
 #import "OFBlock.h"

@@ -1,0 +1,152 @@
+/*
+ * Copyright (c) 2008, 2009, 2010, 2011, 2012
+ *   Jonathan Schleifer <js@webkeks.org>
+ *
+ * All rights reserved.
+ *
+ * This file is part of ObjFW. It may be distributed under the terms of the
+ * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
+ * the packaging of this file.
+ *
+ * Alternatively, it may be distributed under the terms of the GNU General
+ * Public License, either version 2 or 3, which can be found in the file
+ * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
+ * file.
+ */
+
+#include "config.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#import "runtime.h"
+#import "runtime-private.h"
+
+static objc_mutex_t global_mutex;
+static int num_threads = 1;
+static void **free_queue = NULL;
+static size_t free_queue_cnt = 0;
+
+BOOL
+objc_mutex_new(objc_mutex_t *mutex)
+{
+	if (of_mutex_new(&mutex->mutex ))
+		return NO;
+
+	mutex->count = 0;
+
+	return YES;
+}
+
+BOOL
+objc_mutex_lock(objc_mutex_t *mutex)
+{
+	if (mutex->count > 0 && of_thread_is_current(mutex->owner)) {
+		mutex->count++;
+		return YES;
+	}
+
+	if (!of_mutex_lock(&mutex->mutex))
+		return NO;
+
+	mutex->owner = of_thread_current();
+	mutex->count++;
+
+	return YES;
+}
+
+BOOL
+objc_mutex_unlock(objc_mutex_t *mutex)
+{
+	if (--mutex->count == 0)
+		return of_mutex_unlock(&mutex->mutex);
+
+	return YES;
+}
+
+BOOL
+objc_mutex_free(objc_mutex_t *mutex)
+{
+	return of_mutex_free(&mutex->mutex);
+}
+
+static void __attribute__((constructor))
+objc_global_mutex_new(void)
+{
+	if (!objc_mutex_new(&global_mutex))
+		ERROR("Failed to create global mutex!");
+}
+
+void
+objc_global_mutex_lock(void)
+{
+	if (!objc_mutex_lock(&global_mutex))
+		ERROR("Failed to lock global mutex!");
+}
+
+void
+objc_global_mutex_unlock(void)
+{
+	if (!objc_mutex_unlock(&global_mutex))
+		ERROR("Failed to unlock global mutex!");
+}
+
+void
+objc_global_mutex_free(void)
+{
+	if (!objc_mutex_free(&global_mutex))
+		ERROR("Failed to free global mutex!");
+}
+
+void
+objc_thread_add(void)
+{
+	/*
+	 * If some class is being initialized, we want to wait for it, thus
+	 * we use the global lock instead of atomic operations.
+	 */
+	objc_global_mutex_lock();
+	num_threads++;
+	objc_global_mutex_unlock();
+}
+
+void
+objc_thread_remove(void)
+{
+	size_t i;
+
+	objc_global_mutex_lock();
+
+	if (free_queue != NULL) {
+		for (i = 0; i < free_queue_cnt; i++)
+			free(free_queue[i]);
+
+		free(free_queue);
+
+		free_queue = NULL;
+		free_queue_cnt = 0;
+	}
+
+	num_threads--;
+	objc_global_mutex_unlock();
+}
+
+void
+objc_free_when_singlethreaded(void *ptr)
+{
+	if (num_threads == 1) {
+		free(ptr);
+		return;
+	}
+
+	if (free_queue == NULL)
+		free_queue = malloc(sizeof(void*));
+	else
+		free_queue = realloc(free_queue, sizeof(void*) *
+		    (free_queue_cnt + 1));
+
+	if (free_queue == NULL)
+		ERROR("Not enough memory for queue of pointers to free!");
+
+	free_queue[free_queue_cnt++] = ptr;
+}
