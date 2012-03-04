@@ -204,7 +204,7 @@
 		4B3D5694139A617D0010A78F /* OFSerializationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3D5693139A617D0010A78F /* OFSerializationTests.m */; };
 		4B45355313DCFE1E0037AB4D /* OFCountedSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B45355113DCFE1E0037AB4D /* OFCountedSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B45355413DCFE1E0037AB4D /* OFCountedSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B45355213DCFE1E0037AB4D /* OFCountedSet.m */; };
-		4B48B95414DC23B100546D39 /* OFXMLProcessingInstructions.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B48B95214DC23B100546D39 /* OFXMLProcessingInstructions.h */; };
+		4B48B95414DC23B100546D39 /* OFXMLProcessingInstructions.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B48B95214DC23B100546D39 /* OFXMLProcessingInstructions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B48B95514DC23B100546D39 /* OFXMLProcessingInstructions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B48B95314DC23B100546D39 /* OFXMLProcessingInstructions.m */; };
 		4B49EA66143B39CE0005BBC6 /* OFXMLNodeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B49EA65143B39CE0005BBC6 /* OFXMLNodeTests.m */; };
 		4B49EA6D143B3A090005BBC6 /* OFXMLCDATA.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B49EA67143B3A090005BBC6 /* OFXMLCDATA.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1185,6 +1185,7 @@
 				4B3D23E21337FCB000DD29B8 /* OFXMLElementBuilder.h in Headers */,
 				4B11005C14329B9A003A45D8 /* OFXMLNode.h in Headers */,
 				4B3D23E31337FCB000DD29B8 /* OFXMLParser.h in Headers */,
+				4B48B95414DC23B100546D39 /* OFXMLProcessingInstructions.h in Headers */,
 				4B3D23E41337FCB000DD29B8 /* ObjFW.h in Headers */,
 				4B3D23E51337FCB000DD29B8 /* asprintf.h in Headers */,
 				4B3D23E61337FCB000DD29B8 /* atomic.h in Headers */,
@@ -1261,7 +1262,6 @@
 				4B64D6F11425381E007BDFB1 /* OFStreamObserver_select.h in Headers */,
 				4B552554147AA5DB0003BF47 /* OFString_UTF8.h in Headers */,
 				4BD653C5143B8489006182F0 /* OFTCPSocket+SOCKS5.h in Headers */,
-				4B48B95414DC23B100546D39 /* OFXMLProcessingInstructions.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1479,6 +1479,7 @@
 				4B3D23B01337FC0D00DD29B8 /* OFXMLElementBuilder.m in Sources */,
 				4B11005D14329B9A003A45D8 /* OFXMLNode.m in Sources */,
 				4B3D23B11337FC0D00DD29B8 /* OFXMLParser.m in Sources */,
+				4B48B95514DC23B100546D39 /* OFXMLProcessingInstructions.m in Sources */,
 				4B3D23B31337FC0D00DD29B8 /* base64.m in Sources */,
 				4B3D23B41337FC0D00DD29B8 /* iso_8859_15.m in Sources */,
 				4B3D23B51337FC0D00DD29B8 /* foundation-compat.m in Sources */,
@@ -1537,7 +1538,6 @@
 				4B17FFB6133A375B003E6DCD /* OFUnboundNamespaceException.m in Sources */,
 				4B17FFB2133A3664003E6DCD /* OFUnsupportedProtocolException.m in Sources */,
 				4B55A117133AC24600B58A93 /* OFWriteFailedException.m in Sources */,
-				4B48B95514DC23B100546D39 /* OFXMLProcessingInstructions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1551,6 +1551,7 @@
 				4BF33AFF133807A20059CEF7 /* OFDateTests.m in Sources */,
 				4BF33B00133807A20059CEF7 /* OFDictionaryTests.m in Sources */,
 				4BF33B02133807A20059CEF7 /* OFHTTPRequestTests.m in Sources */,
+				4BAA60C814D09699006F068D /* OFJSONTests.m in Sources */,
 				4BF33B03133807A20059CEF7 /* OFListTests.m in Sources */,
 				4BF33B04133807A20059CEF7 /* OFMD5HashTests.m in Sources */,
 				4BF33B05133807A20059CEF7 /* OFNumberTests.m in Sources */,
@@ -1569,7 +1570,6 @@
 				4BF33B10133807A20059CEF7 /* OFXMLParserTests.m in Sources */,
 				4BF33B11133807A20059CEF7 /* PropertiesTests.m in Sources */,
 				4BF33B12133807A20059CEF7 /* TestsAppDelegate.m in Sources */,
-				4BAA60C814D09699006F068D /* OFJSONTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
