@@ -111,6 +111,12 @@ sel_getName(SEL sel)
 	return ret;
 }
 
+BOOL
+sel_isEqual(SEL sel1, SEL sel2)
+{
+	return sel1->uid == sel2->uid;
+}
+
 void
 objc_free_all_selectors(void)
 {

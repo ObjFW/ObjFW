@@ -99,6 +99,7 @@ struct objc_protocol_list {
 
 extern SEL sel_registerName(const char*);
 extern const char* sel_getName(SEL);
+extern BOOL sel_isEqual(SEL, SEL);
 extern Class objc_get_class(const char*);
 extern Class objc_lookup_class(const char*);
 extern const char* class_getName(Class);
