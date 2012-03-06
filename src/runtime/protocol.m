@@ -62,7 +62,7 @@
 @end
 
 BOOL
-class_conformsToProtocl(Class cls, Protocol *p)
+class_conformsToProtocol(Class cls, Protocol *p)
 {
 	return [p _isImplementedByClass: cls];
 }
