@@ -30,7 +30,7 @@ static size_t free_queue_cnt = 0;
 BOOL
 objc_mutex_new(objc_mutex_t *mutex)
 {
-	if (of_mutex_new(&mutex->mutex ))
+	if (!of_mutex_new(&mutex->mutex ))
 		return NO;
 
 	mutex->count = 0;
