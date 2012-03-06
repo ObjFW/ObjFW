@@ -377,16 +377,6 @@ typedef struct of_rectangle_t
 + (OFString*)description;
 
 /**
- * \brief Replaces a class method implementation with another implementation.
- *
- * \param newImp The new implementation for the class method
- * \param selector The selector of the class method to replace
- * \return The old implementation
- */
-+ (IMP)setImplementation: (IMP)newImp
-	  forClassMethod: (SEL)selector;
-
-/**
  * \brief Replaces a class method with a class method from another class.
  *
  * \param selector The selector of the class method to replace
@@ -395,17 +385,6 @@ typedef struct of_rectangle_t
  */
 + (IMP)replaceClassMethod: (SEL)selector
       withMethodFromClass: (Class)class_;
-
-/**
- * \brief Replaces an instance method implementation with another
- *	  implementation.
- *
- * \param newImp The new implementation for the instance method
- * \param selector The selector of the instance method to replace
- * \return The old implementation
- */
-+ (IMP)setImplementation: (IMP)newImp
-       forInstanceMethod: (SEL)selector;
 
 /**
  * \brief Replaces an instance method with an instance method from another
@@ -419,36 +398,36 @@ typedef struct of_rectangle_t
 	 withMethodFromClass: (Class)class_;
 
 /**
- * \brief Adds a class method to the class.
+ * \brief Replaces or adds a class method.
  *
- * If the method already exists, nothing is done and NO is returned. If you want
- * to change the implementation of a method, use
- * setImplementation:forClassMethod:.
+ * If the method already exists, it is replaced and the old implementation
+ * returned. If the method does not exist, it is added with the specified type
+ * encoding.
  *
  * \param selector The selector for the new method
- * \param typeEncoding The type encoding for the new method
  * \param implementation The implementation for the new method
- * \return Whether the method has been added
+ * \param typeEncoding The type encoding for the new method
+ * \return The old implementation or nil if the method was added
  */
-+ (BOOL)addClassMethod: (SEL)selector
-      withTypeEncoding: (const char*)typeEncoding
-	implementation: (IMP)implementation;
++ (IMP)replaceClassMethod: (SEL)selector
+       withImplementation: (IMP)implementation
+	     typeEncoding: (const char*)typeEncoding;
 
 /**
- * \brief Adds an instance method to the class.
+ * \brief Replaces or adds an instance method.
  *
- * If the method already exists, nothing is done and NO is returned. If you want
- * to change the implementation of a method, use
- * setImplementation:forInstanceMethod:.
+ * If the method already exists, it is replaced and the old implementation
+ * returned. If the method does not exist, it is added with the specified type
+ * encoding.
  *
  * \param selector The selector for the new method
- * \param typeEncoding The type encoding for the new method
  * \param implementation The implementation for the new method
- * \return Whether the method has been added
+ * \param typeEncoding The type encoding for the new method
+ * \return The old implementation or nil if the method was added
  */
-+ (BOOL)addInstanceMethod: (SEL)selector
-	 withTypeEncoding: (const char*)typeEncoding
-	   implementation: (IMP)implementation;
++ (IMP)replaceInstanceMethod: (SEL)selector
+	  withImplementation: (IMP)implementation
+		typeEncoding: (const char*)typeEncoding;
 
 /**
  * \brief Adds all methods from the specified class to the class that is the
