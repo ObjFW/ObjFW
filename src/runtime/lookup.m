@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#import  "runtime.h"
+#import "runtime.h"
 #import "runtime-private.h"
 #import "macros.h"
 

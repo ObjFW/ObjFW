@@ -8,13 +8,13 @@ SRCS = category.m		\
        hashtable.m		\
        init.m			\
        lookup.m			\
+       lookup-amd64-elf.S	\
+       lookup-x86-elf.S		\
        protocol.m		\
        selector.m		\
        sparsearray.m		\
        static-instances.m	\
-       threading.m		\
-       asm/amd64-elf/lookup.S	\
-       asm/x86-elf/lookup.S
+       threading.m
 INCLUDES = runtime.h
 
 include ../../buildsys.mk
