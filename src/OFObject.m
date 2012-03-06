@@ -40,7 +40,7 @@
 
 #import "macros.h"
 
-#if (defined(OF_APPLE_RUNTIME) && __OBJC2__)
+#if defined(OF_APPLE_RUNTIME) && __OBJC2__
 # import <objc/objc-exception.h>
 #elif defined(OF_OBJFW_RUNTIME)
 # import "runtime.h"
@@ -94,7 +94,7 @@ extern BOOL objc_sync_init();
 extern BOOL objc_properties_init();
 #endif
 
-#if (defined(OF_APPLE_RUNTIME) && __OBJC2__)
+#if defined(OF_APPLE_RUNTIME) && __OBJC2__
 static void
 uncaught_exception_handler(id exception)
 {
@@ -150,7 +150,7 @@ void _references_to_categories_of_OFObject(void)
 	}
 #endif
 
-#if (defined(OF_APPLE_RUNTIME) && __OBJC2__)
+#if defined(OF_APPLE_RUNTIME) && __OBJC2__
 	objc_setUncaughtExceptionHandler(uncaught_exception_handler);
 #endif
 
@@ -389,8 +389,46 @@ void _references_to_categories_of_OFObject(void)
 	} @finally {
 		free(methodList);
 	}
-#else
-	/* FIXME */
+#elif defined(OF_OBJFW_RUNTIME)
+	struct objc_method_list *methodlist;
+
+	for (methodlist = class->isa->methodlist;
+	    methodlist != NULL; methodlist = methodlist->next) {
+		int i;
+
+		for (i = 0; i < methodlist->count; i++) {
+			SEL selector = &methodlist->methods[i].sel;
+
+			/*
+			 * Don't replace methods implemented in receiving class.
+			 */
+			if ([self methodForSelector: selector] !=
+			    [superclass methodForSelector: selector])
+				continue;
+
+			[self replaceClassMethod: selector
+			     withMethodFromClass: class];
+		}
+	}
+
+	for (methodlist = class->methodlist; methodlist != NULL;
+	    methodlist = methodlist->next) {
+		int i;
+
+		for (i = 0; i < methodlist->count; i++) {
+			SEL selector = &methodlist->methods[i].sel;
+
+			/*
+			 * Don't replace methods implemented in receiving class.
+			 */
+			if ([self instanceMethodForSelector: selector] !=
+			    [superclass instanceMethodForSelector: selector])
+				continue;
+
+			[self replaceInstanceMethod: selector
+				withMethodFromClass: class];
+		}
+	}
 #endif
 
 	[self inheritMethodsFromClass: [class superclass]];
