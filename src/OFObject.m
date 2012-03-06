@@ -187,10 +187,8 @@ void _references_to_categories_of_OFObject(void)
 {
 	OFObject *instance;
 	size_t instanceSize = class_getInstanceSize(self);
-	Class class;
-	void (*last)(id, SEL) = NULL;
 
-	if ((instance = malloc(instanceSize + PRE_IVAR_ALIGN)) == NULL) {
+	if ((instance = calloc(instanceSize + PRE_IVAR_ALIGN, 1)) == NULL) {
 		alloc_failed_exception.isa = [OFAllocFailedException class];
 		@throw (OFAllocFailedException*)&alloc_failed_exception;
 	}
@@ -209,21 +207,7 @@ void _references_to_categories_of_OFObject(void)
 #endif
 
 	instance = (OFObject*)((char*)instance + PRE_IVAR_ALIGN);
-	memset(instance, 0, instanceSize);
 	instance->isa = self;
-
-	for (class = self; class != Nil; class = class_getSuperclass(class)) {
-		void (*construct)(id, SEL);
-
-		if ([class instancesRespondToSelector: cxx_construct]) {
-			if ((construct = (void(*)(id, SEL))[class
-			    instanceMethodForSelector: cxx_construct]) != last)
-				construct(instance, cxx_construct);
-
-			last = construct;
-		} else
-			break;
-	}
 
 	return instance;
 }
@@ -313,101 +297,48 @@ void _references_to_categories_of_OFObject(void)
 	return [self className];
 }
 
-+ (IMP)setImplementation: (IMP)newImp
-	  forClassMethod: (SEL)selector
-{
-#if defined(OF_OBJFW_RUNTIME)
-	if (newImp == (IMP)0 || !class_respondsToSelector(self->isa, selector))
-		@throw [OFInvalidArgumentException exceptionWithClass: self
-							     selector: _cmd];
-
-	return objc_replace_class_method(self, selector, newImp);
-#else
-	Method method;
-
-	if (newImp == (IMP)0 ||
-	    (method = class_getClassMethod(self, selector)) == NULL)
-		@throw [OFInvalidArgumentException exceptionWithClass: self
-							     selector: _cmd];
-
-	/*
-	 * Cast needed because it's isa in the Apple runtime, but class_pointer
-	 * in the GNU runtime.
-	 */
-	return class_replaceMethod(((OFObject*)self)->isa, selector, newImp,
-	    method_getTypeEncoding(method));
-#endif
-}
-
 + (IMP)replaceClassMethod: (SEL)selector
       withMethodFromClass: (Class)class
 {
 	IMP newImp;
-
-	if (![class isSubclassOfClass: self])
-		@throw [OFInvalidArgumentException exceptionWithClass: self
-							     selector: _cmd];
+	const char *typeEncoding;
 
 	newImp = [class methodForSelector: selector];
+	typeEncoding = [class typeEncodingForSelector: selector];
 
-	return [self setImplementation: newImp
-			forClassMethod: selector];
-}
-
-+ (IMP)setImplementation: (IMP)newImp
-       forInstanceMethod: (SEL)selector
-{
-#if defined(OF_OBJFW_RUNTIME)
-	if (newImp == (IMP)0 || !class_respondsToSelector(self, selector))
-		@throw [OFInvalidArgumentException exceptionWithClass: self
-							     selector: _cmd];
-
-	return objc_replace_instance_method(self, selector, newImp);
-#else
-	Method method;
-
-	if (newImp == (IMP)0 ||
-	    (method = class_getInstanceMethod(self, selector)) == NULL)
-		@throw [OFInvalidArgumentException exceptionWithClass: self
-							     selector: _cmd];
-
-	return class_replaceMethod(self, selector, newImp,
-	    method_getTypeEncoding(method));
-#endif
+	return [self replaceClassMethod: selector
+		     withImplementation: newImp
+			   typeEncoding: typeEncoding];
 }
 
 + (IMP)replaceInstanceMethod: (SEL)selector
 	 withMethodFromClass: (Class)class
 {
 	IMP newImp;
-
-	if (![class isSubclassOfClass: self])
-		@throw [OFInvalidArgumentException exceptionWithClass: self
-							     selector: _cmd];
+	const char *typeEncoding;
 
 	newImp = [class instanceMethodForSelector: selector];
+	typeEncoding = [class typeEncodingForInstanceSelector: selector];
 
-	return [self setImplementation: newImp
-		     forInstanceMethod: selector];
+	return [self replaceInstanceMethod: selector
+			withImplementation: newImp
+			      typeEncoding: typeEncoding];
 }
 
-+ (BOOL)addInstanceMethod: (SEL)selector
-	 withTypeEncoding: (const char*)typeEncoding
-	   implementation: (IMP)implementation
++ (IMP)replaceInstanceMethod: (SEL)selector
+	  withImplementation: (IMP)implementation
+		typeEncoding: (const char*)typeEncoding
 {
-#if defined(OF_APPLE_RUNTIME)
-	return class_addMethod(self, selector, implementation, typeEncoding);
-#endif
-}
-
-+ (BOOL)addClassMethod: (SEL)selector
-      withTypeEncoding: (const char*)typeEncoding
-	implementation: (IMP)implementation
-{
-#if defined(OF_APPLE_RUNTIME)
-	return class_addMethod(((OFObject*)self)->isa, selector, implementation,
+	return class_replaceMethod(self, selector, implementation,
 	    typeEncoding);
-#endif
+}
+
++ (IMP)replaceClassMethod: (SEL)selector
+       withImplementation: (IMP)implementation
+	     typeEncoding: (const char*)typeEncoding
+{
+	return class_replaceMethod(((OFObject*)self)->isa, selector,
+	    implementation, typeEncoding);
 }
 
 + (void)inheritMethodsFromClass: (Class)class
@@ -425,7 +356,6 @@ void _references_to_categories_of_OFObject(void)
 	@try {
 		for (i = 0; i < count; i++) {
 			SEL selector = method_getName(methodList[i]);
-			IMP implementation;
 
 			/*
 			 * Don't replace methods implemented in receiving class.
@@ -434,18 +364,8 @@ void _references_to_categories_of_OFObject(void)
 			    [superclass methodForSelector: selector])
 				continue;
 
-			implementation = [class methodForSelector: selector];
-
-			if ([self respondsToSelector: selector])
-				[self setImplementation: implementation
-					 forClassMethod: selector];
-			else {
-				const char *typeEncoding =
-				    method_getTypeEncoding(methodList[i]);
-				[self addClassMethod: selector
-				    withTypeEncoding: typeEncoding
-				      implementation: implementation];
-			}
+			[self replaceClassMethod: selector
+			     withMethodFromClass: class];
 		}
 	} @finally {
 		free(methodList);
@@ -455,7 +375,6 @@ void _references_to_categories_of_OFObject(void)
 	@try {
 		for (i = 0; i < count; i++) {
 			SEL selector = method_getName(methodList[i]);
-			IMP implementation;
 
 			/*
 			 * Don't replace methods implemented in receiving class.
@@ -464,19 +383,8 @@ void _references_to_categories_of_OFObject(void)
 			    [superclass instanceMethodForSelector: selector])
 				continue;
 
-			implementation =
-			    [class instanceMethodForSelector: selector];
-
-			if ([self instancesRespondToSelector: selector])
-				     [self setImplementation: implementation
-					   forInstanceMethod: selector];
-			else {
-				const char *typeEncoding =
-				    method_getTypeEncoding(methodList[i]);
-				[self addInstanceMethod: selector
-				       withTypeEncoding: typeEncoding
-					 implementation: implementation];
-			}
+			[self replaceInstanceMethod: selector
+				withMethodFromClass: class];
 		}
 	} @finally {
 		free(methodList);
@@ -490,6 +398,22 @@ void _references_to_categories_of_OFObject(void)
 
 - init
 {
+	Class class;
+	void (*last)(id, SEL) = NULL;
+
+	for (class = isa; class != Nil; class = class_getSuperclass(class)) {
+		void (*construct)(id, SEL);
+
+		if ([class instancesRespondToSelector: cxx_construct]) {
+			if ((construct = (void(*)(id, SEL))[class
+			    instanceMethodForSelector: cxx_construct]) != last)
+				construct(self, cxx_construct);
+
+			last = construct;
+		} else
+			break;
+	}
+
 	return self;
 }
 
