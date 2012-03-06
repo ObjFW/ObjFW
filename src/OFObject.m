@@ -227,10 +227,8 @@ void _references_to_categories_of_OFObject(void)
 {
 	OFObject *instance;
 	size_t instanceSize = class_getInstanceSize(self);
-	Class class;
-	void (*last)(id, SEL) = NULL;
 
-	if ((instance = malloc(instanceSize + PRE_IVAR_ALIGN)) == NULL) {
+	if ((instance = calloc(instanceSize + PRE_IVAR_ALIGN, 1)) == NULL) {
 		alloc_failed_exception.isa = [OFAllocFailedException class];
 		@throw (OFAllocFailedException*)&alloc_failed_exception;
 	}
@@ -249,21 +247,7 @@ void _references_to_categories_of_OFObject(void)
 #endif
 
 	instance = (OFObject*)((char*)instance + PRE_IVAR_ALIGN);
-	memset(instance, 0, instanceSize);
 	instance->isa = self;
-
-	for (class = self; class != Nil; class = class_getSuperclass(class)) {
-		void (*construct)(id, SEL);
-
-		if ([class instancesRespondToSelector: cxx_construct]) {
-			if ((construct = (void(*)(id, SEL))[class
-			    instanceMethodForSelector: cxx_construct]) != last)
-				construct(instance, cxx_construct);
-
-			last = construct;
-		} else
-			break;
-	}
 
 	return instance;
 }
@@ -757,6 +741,22 @@ void _references_to_categories_of_OFObject(void)
 
 - init
 {
+	Class class;
+	void (*last)(id, SEL) = NULL;
+
+	for (class = isa; class != Nil; class = class_getSuperclass(class)) {
+		void (*construct)(id, SEL);
+
+		if ([class instancesRespondToSelector: cxx_construct]) {
+			if ((construct = (void(*)(id, SEL))[class
+			    instanceMethodForSelector: cxx_construct]) != last)
+				construct(self, cxx_construct);
+
+			last = construct;
+		} else
+			break;
+	}
+
 	return self;
 }
 
