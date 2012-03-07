@@ -40,7 +40,7 @@
 Class of_http_request_tls_socket_class = Nil;
 
 static OF_INLINE void
-normalize_key(OFString *key)
+normalizeKey(OFString *key)
 {
 	uint8_t *str = (uint8_t*)[key UTF8String];
 	BOOL firstLetter = YES;
@@ -195,6 +195,7 @@ normalize_key(OFString *key)
 	OFString *key, *object, *contentLengthHeader;
 	int status;
 	const char *type = NULL;
+	BOOL chunked;
 	char *buffer;
 	size_t bytesReceived;
 
@@ -237,10 +238,10 @@ normalize_key(OFString *key)
 		path = @"/";
 
 	if ([URL query] != nil)
-		[sock writeFormat: @"%s %@?%@ HTTP/1.0\r\n",
+		[sock writeFormat: @"%s %@?%@ HTTP/1.1\r\n",
 		    type, path, [URL query]];
 	else
-		[sock writeFormat: @"%s %@ HTTP/1.0\r\n", type, path];
+		[sock writeFormat: @"%s %@ HTTP/1.1\r\n", type, path];
 
 	if ([URL port] == 80)
 		[sock writeFormat: @"Host: %@\r\n", [URL host]];
@@ -275,10 +276,6 @@ normalize_key(OFString *key)
 	if (requestType == OF_HTTP_REQUEST_TYPE_POST)
 		[sock writeString: queryString];
 
-	/*
-	 * We also need to check for HTTP/1.1 since Apache always declares the
-	 * reply to be HTTP/1.1.
-	 */
 	line = [sock readLine];
 	if (![line hasPrefix: @"HTTP/1.0 "] && ![line hasPrefix: @"HTTP/1.1 "])
 		@throw [OFInvalidServerReplyException exceptionWithClass: isa];
@@ -300,7 +297,7 @@ normalize_key(OFString *key)
 
 		key = [OFString stringWithUTF8String: line_c
 					      length: tmp - line_c];
-		normalize_key(key);
+		normalizeKey(key);
 
 		do {
 			tmp++;
@@ -352,25 +349,76 @@ normalize_key(OFString *key)
 	   withStatusCode: status];
 
 	data = (storesData ? [OFDataArray dataArray] : nil);
+	chunked = [[serverHeaders objectForKey: @"Transfer-Encoding"]
+	    isEqual: @"chunked"];
 
 	buffer = [self allocMemoryWithSize: of_pagesize];
 	bytesReceived = 0;
 	@try {
-		size_t len;
+		OFAutoreleasePool *pool2 = [[OFAutoreleasePool alloc] init];
 
-		while ((len = [sock readNBytes: of_pagesize
-				    intoBuffer: buffer]) > 0) {
-			[delegate request: self
-			   didReceiveData: buffer
-			       withLength: len];
+		if (chunked) {
+			for (;;) {
+				size_t pos, toRead;
 
-			bytesReceived += len;
-			[data addNItems: len
-			     fromCArray: buffer];
+				line = [sock readLine];
+
+				pos = [line
+				    indexOfFirstOccurrenceOfString: @";"];
+				if (pos != OF_INVALID_INDEX)
+					line = [line substringWithRange:
+					    of_range(0, pos)];
+
+				toRead = (size_t)[line hexadecimalValue];
+				if (toRead == 0)
+					break;
+
+				while (toRead > 0) {
+					size_t length = (toRead < of_pagesize
+					    ? toRead : of_pagesize);
+
+					length = [sock readNBytes: length
+						       intoBuffer: buffer];
+
+					[delegate request: self
+					   didReceiveData: buffer
+					       withLength: length];
+
+					bytesReceived += length;
+					[data addNItems: length
+					     fromCArray: buffer];
+
+					toRead -= length;
+				}
+
+				if (![[sock readLine] isEqual: @""])
+					@throw [OFInvalidServerReplyException
+					    exceptionWithClass: isa];
+
+				[pool2 releaseObjects];
+			}
+		} else {
+			size_t length;
+
+			while ((length = [sock readNBytes: of_pagesize
+					       intoBuffer: buffer]) > 0) {
+				[delegate request: self
+				   didReceiveData: buffer
+				       withLength: length];
+				[pool2 releaseObjects];
+
+				bytesReceived += length;
+				[data addNItems: length
+				     fromCArray: buffer];
+			}
 		}
+
+		[pool2 release];
 	} @finally {
 		[self freeMemory: buffer];
 	}
+
+	[sock close];
 
 	if ((contentLengthHeader =
 	    [serverHeaders objectForKey: @"Content-Length"]) != nil) {
