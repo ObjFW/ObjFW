@@ -396,11 +396,15 @@ normalize_key(OFString *key)
 							 headers: serverHeaders
 							    data: data];
 
-	if (status != 200 && status != 301 && status != 302 && status != 303)
+	if (status != 200 && status != 301 && status != 302 && status != 303) {
+		[result release];
 		@throw [OFHTTPRequestFailedException
 		    exceptionWithClass: isa
 			   HTTPRequest: self
 				result: result];
+	}
+
+	[pool release];
 
 	return [result autorelease];
 }
