@@ -373,6 +373,20 @@ of_log(OFConstantString *format, ...)
 }
 #endif
 
++ (off_t)sizeOfFile: (OFString*)path
+{
+	struct stat s;
+
+	if (stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	    &s) == -1)
+		/* FIXME: Maybe use another exception? */
+		@throw [OFOpenFileFailedException exceptionWithClass: self
+								path: path
+								mode: @"r"];
+
+	return s.st_size;
+}
+
 + (OFDate*)modificationDateOfFile: (OFString*)path
 {
 	struct stat s;

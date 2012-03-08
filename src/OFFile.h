@@ -111,6 +111,13 @@ extern void of_log(OFConstantString*, ...);
 + (void)changeToDirectory: (OFString*)path;
 
 /**
+ * \brief Returns the size of the specified file.
+ *
+ * \return The size of the specified file
+ */
++ (off_t)sizeOfFile: (OFString*)path;
+
+/**
  * \brief Returns the date of the last modification of the file.
  *
  * \return The date of the last modification of the file
