@@ -30,6 +30,8 @@
 #import "OFAutoreleasePool.h"
 
 #import "OFHTTPRequestFailedException.h"
+#import "OFInvalidEncodingException.h"
+#import "OFInvalidFormatException.h"
 #import "OFInvalidServerReplyException.h"
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
@@ -276,7 +278,12 @@ normalizeKey(OFString *key)
 	if (requestType == OF_HTTP_REQUEST_TYPE_POST)
 		[sock writeString: queryString];
 
-	line = [sock readLine];
+	@try {
+		line = [sock readLine];
+	} @catch (OFInvalidEncodingException *e) {
+		@throw [OFInvalidServerReplyException exceptionWithClass: isa];
+	}
+
 	if (![line hasPrefix: @"HTTP/1.0 "] && ![line hasPrefix: @"HTTP/1.1 "])
 		@throw [OFInvalidServerReplyException exceptionWithClass: isa];
 
@@ -284,12 +291,25 @@ normalizeKey(OFString *key)
 
 	serverHeaders = [OFMutableDictionary dictionary];
 
-	while ((line = [sock readLine]) != nil) {
+	for (;;) {
 		OFString *key, *value;
-		const char *line_c = [line UTF8String], *tmp;
+		const char *line_c, *tmp;
+
+		@try {
+			line = [sock readLine];
+		} @catch (OFInvalidEncodingException *e) {
+			@throw [OFInvalidServerReplyException
+			    exceptionWithClass: isa];
+		}
+
+		if (line == nil)
+			@throw [OFInvalidServerReplyException
+			    exceptionWithClass: isa];
 
 		if ([line isEqual: @""])
 			break;
+
+		line_c = [line UTF8String];
 
 		if ((tmp = strchr(line_c, ':')) == NULL)
 			@throw [OFInvalidServerReplyException
@@ -362,7 +382,12 @@ normalizeKey(OFString *key)
 			for (;;) {
 				size_t pos, toRead;
 
-				line = [sock readLine];
+				@try {
+					line = [sock readLine];
+				} @catch (OFInvalidEncodingException *e) {
+					@throw [OFInvalidServerReplyException
+					    exceptionWithClass: isa];
+				}
 
 				pos = [line
 				    indexOfFirstOccurrenceOfString: @";"];
@@ -370,7 +395,14 @@ normalizeKey(OFString *key)
 					line = [line substringWithRange:
 					    of_range(0, pos)];
 
-				toRead = (size_t)[line hexadecimalValue];
+				@try {
+					toRead =
+					    (size_t)[line hexadecimalValue];
+				} @catch (OFInvalidFormatException *e) {
+					@throw [OFInvalidServerReplyException
+					    exceptionWithClass: isa];
+				}
+
 				if (toRead == 0)
 					break;
 
@@ -393,7 +425,14 @@ normalizeKey(OFString *key)
 					toRead -= length;
 				}
 
-				if (![[sock readLine] isEqual: @""])
+				@try {
+					line = [sock readLine];
+				} @catch (OFInvalidEncodingException *e) {
+					@throw [OFInvalidServerReplyException
+					    exceptionWithClass: isa];
+				}
+
+				if (![line isEqual: @""])
 					@throw [OFInvalidServerReplyException
 					    exceptionWithClass: isa];
 
