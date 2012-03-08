@@ -306,7 +306,8 @@ normalizeKey(OFString *key)
 		value = [OFString stringWithUTF8String: tmp];
 
 		if ((redirects > 0 && (status == 301 || status == 302 ||
-		    status == 303) && [key isEqual: @"Location"]) &&
+		    status == 303 || status == 307) &&
+		    [key isEqual: @"Location"]) &&
 		    (redirectsFromHTTPSToHTTPAllowed ||
 		    [scheme isEqual: @"http"] ||
 		    ![value hasPrefix: @"http://"])) {
@@ -383,6 +384,7 @@ normalizeKey(OFString *key)
 					[delegate request: self
 					   didReceiveData: buffer
 					       withLength: length];
+					[pool2 releaseObjects];
 
 					bytesReceived += length;
 					[data addNItems: length
@@ -444,7 +446,14 @@ normalizeKey(OFString *key)
 							 headers: serverHeaders
 							    data: data];
 
-	if (status != 200 && status != 301 && status != 302 && status != 303) {
+	switch (status) {
+	case 200:
+	case 301:
+	case 302:
+	case 303:
+	case 307:
+		break;
+	default:
 		[result release];
 		@throw [OFHTTPRequestFailedException
 		    exceptionWithClass: isa
