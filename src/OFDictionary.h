@@ -184,6 +184,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * \return The object for the given key or nil if the key was not found
  */
 - (id)objectForKey: (id)key;
+- (id)objectForKeyedSubscript: (id)key;
 
 /**
  * \brief Checks whether the dictionary contains an object with the specified
@@ -253,3 +254,8 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
 @end
 
 #import "OFMutableDictionary.h"
+
+#ifndef NSINTEGER_DEFINED
+/* Required for dictionary literals to work */
+@compatibility_alias NSDictionary OFDictionary;
+#endif

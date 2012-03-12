@@ -34,6 +34,8 @@ typedef id (^of_dictionary_replace_block_t)(id key, id object, BOOL *stop);
  */
 - (void)setObject: (id)object
 	   forKey: (id)key;
+-   (void)setObject: (id)object
+  forKeyedSubscript: (id)key;
 
 /**
  * \brief Removes the object for the specified key from the dictionary.

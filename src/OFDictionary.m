@@ -259,6 +259,11 @@ static struct {
 						    selector: _cmd];
 }
 
+- (id)objectForKeyedSubscript: (id)key
+{
+	return [self objectForKey: key];
+}
+
 - (size_t)count
 {
 	@throw [OFNotImplementedException exceptionWithClass: isa

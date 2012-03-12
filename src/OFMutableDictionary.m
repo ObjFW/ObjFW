@@ -149,6 +149,13 @@ static struct {
 						    selector: _cmd];
 }
 
+-   (void)setObject: (id)object
+  forKeyedSubscript: (id)key
+{
+	[self setObject: object
+		 forKey: key];
+}
+
 - (void)removeObjectForKey: (id)key
 {
 	@throw [OFNotImplementedException exceptionWithClass: isa
