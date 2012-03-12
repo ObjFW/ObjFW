@@ -235,15 +235,34 @@ struct of_dictionary_hashtable_bucket
 - initWithObjects: (OFArray*)objects
 	  forKeys: (OFArray*)keys
 {
+	id ret;
+
+	@try {
+		if ([objects count] != [keys count])
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: isa];
+
+		ret = [self initWithObjects: [objects objects]
+				    forKeys: [keys objects]
+				      count: [objects count]];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return ret;
+}
+
+- initWithObjects: (id*)objects
+	  forKeys: (id*)keys
+	    count: (size_t)count_
+{
 	self = [super init];
 
 	@try {
-		id *objectsCArray, *keysCArray;
 		uint32_t i, j, newSize;
 
-		keysCArray = [keys objects];
-		objectsCArray = [objects objects];
-		count = [keys count];
+		count = count_;
 
 		if (count > UINT32_MAX)
 			@throw [OFOutOfRangeException exceptionWithClass: isa];
@@ -266,12 +285,12 @@ struct of_dictionary_hashtable_bucket
 		for (i = 0; i < count; i++) {
 			uint32_t hash, last;
 
-			hash = [keysCArray[i] hash];
+			hash = [keys[i] hash];
 			last = size;
 
 			for (j = hash & (size - 1); j < last && data[j] != NULL;
 			    j++)
-				if ([data[j]->key isEqual: keysCArray[i]])
+				if ([data[j]->key isEqual: keys[i]])
 					break;
 
 			/* In case the last bucket is already used */
@@ -279,14 +298,13 @@ struct of_dictionary_hashtable_bucket
 				last = hash & (size - 1);
 
 				for (j = 0; j < last && data[j] != NULL; j++)
-					if ([data[j]->key
-					    isEqual: keysCArray[i]])
+					if ([data[j]->key isEqual: keys[i]])
 						break;
 			}
 
 			/* Key not in dictionary */
 			if (j >= last || data[j] == NULL ||
-			    ![data[j]->key isEqual: keysCArray[i]]) {
+			    ![data[j]->key isEqual: keys[i]]) {
 				struct of_dictionary_hashtable_bucket *bucket;
 				id key;
 
@@ -309,10 +327,10 @@ struct of_dictionary_hashtable_bucket
 
 				bucket =
 				    [self allocMemoryWithSize: sizeof(*bucket)];
-				key = [keysCArray[i] copy];
+				key = [keys[i] copy];
 
 				bucket->key = key;
-				bucket->object = [objectsCArray[i] retain];
+				bucket->object = [objects[i] retain];
 				bucket->hash = hash;
 
 				data[j] = bucket;
@@ -326,9 +344,9 @@ struct of_dictionary_hashtable_bucket
 			 * behavior as if he'd call setObject:forKey: for each
 			 * key/object pair.
 			 */
-			[objectsCArray[i] retain];
+			[objects[i] retain];
 			[data[j]->object release];
-			data[j]->object = objectsCArray[i];
+			data[j]->object = objects[i];
 		}
 	} @catch (id e) {
 		[self release];

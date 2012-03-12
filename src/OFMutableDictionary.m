@@ -55,6 +55,16 @@ static struct {
 		    forKeys: keys];
 }
 
+- initWithObjects: (id*)objects
+	  forKeys: (id*)keys
+	    count: (size_t)count
+{
+	return (id)[[OFMutableDictionary_hashtable alloc]
+	    initWithObjects: objects
+		    forKeys: keys
+		      count: count];
+}
+
 - initWithKeysAndObjects: (id)firstKey, ...
 {
 	id ret;

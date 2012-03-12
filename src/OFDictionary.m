@@ -60,6 +60,15 @@ static struct {
 							   forKeys: keys];
 }
 
+- initWithObjects: (id*)objects
+	  forKeys: (id*)keys
+	    count: (size_t)count
+{
+	return (id)[[OFDictionary_hashtable alloc] initWithObjects: objects
+							   forKeys: keys
+							     count: count];
+}
+
 - initWithKeysAndObjects: (id <OFCopying>)firstKey, ...
 {
 	id ret;
@@ -147,6 +156,15 @@ static struct {
 				      forKeys: keys] autorelease];
 }
 
++ dictionaryWithObjects: (id*)objects
+		forKeys: (id*)keys
+		  count: (size_t)count
+{
+	return [[[self alloc] initWithObjects: objects
+				      forKeys: keys
+					count: count] autorelease];
+}
+
 + dictionaryWithKeysAndObjects: (id)firstKey, ...
 {
 	id ret;
@@ -188,6 +206,16 @@ static struct {
 
 - initWithObjects: (OFArray*)objects
 	  forKeys: (OFArray*)keys
+{
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
+}
+
+- initWithObjects: (id*)objects
+	  forKeys: (id*)keys
+	    count: (size_t)count
 {
 	Class c = isa;
 	[self release];

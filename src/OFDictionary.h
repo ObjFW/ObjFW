@@ -84,6 +84,18 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
 		forKeys: (OFArray*)keys;
 
 /**
+ * \brief Creates a new OFDictionary with the specified keys and objects.
+ *
+ * \param keys An array of keys
+ * \param objects An array of objects
+ * \param count The number of objects in the arrays
+ * \return A new autoreleased OFDictionary
+ */
++ dictionaryWithObjects: (id*)objects
+		forKeys: (id*)keys
+		  count: (size_t)count;
+
+/**
  * \brief Creates a new OFDictionary with the specified keys objects.
  *
  * \param firstKey The first key
@@ -128,6 +140,19 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  */
 - initWithObjects: (OFArray*)objects
 	  forKeys: (OFArray*)keys;
+
+/**
+ * \brief Initializes an already allocated OFDictionary with the specified keys
+ *	  and objects.
+ *
+ * \param keys An array of keys
+ * \param objects An array of objects
+ * \param count The number of objects in the arrays
+ * \return A new initialized OFDictionary
+ */
+- initWithObjects: (id*)objects
+	  forKeys: (id*)keys
+	    count: (size_t)count;
 
 /**
  * \brief Initializes an already allocated OFDictionary with the specified keys
