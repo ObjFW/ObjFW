@@ -80,14 +80,6 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 + arrayWithArray: (OFArray*)array;
 
 /**
- * \brief Creates a new OFArray with the objects from the specified C array.
- *
- * \param objects A C array of objects, terminated with nil
- * \return A new autoreleased OFArray
- */
-+ arrayWithCArray: (id*)objects;
-
-/**
  * \brief Creates a new OFArray with the objects from the specified C array of
  *	  the specified length.
  *
@@ -131,14 +123,6 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \return An initialized OFArray
  */
 - initWithArray: (OFArray*)array;
-
-/**
- * \brief Initializes an OFArray with the objects from the specified C array.
- *
- * \param objects A C array of objects, terminated with nil
- * \return An initialized OFArray
- */
-- initWithCArray: (id*)objects;
 
 /**
  * \brief Initializes an OFArray with the objects from the specified C array of

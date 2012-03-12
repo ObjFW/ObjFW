@@ -76,11 +76,6 @@ static struct {
 }
 
 - initWithCArray: (id*)objects
-{
-	return (id)[[OFArray_adjacent alloc] initWithCArray: objects];
-}
-
-- initWithCArray: (id*)objects
 	  length: (size_t)length
 {
 	return (id)[[OFArray_adjacent alloc] initWithCArray: objects
@@ -158,11 +153,6 @@ static struct {
 }
 
 + arrayWithCArray: (id*)objects
-{
-	return [[[self alloc] initWithCArray: objects] autorelease];
-}
-
-+ arrayWithCArray: (id*)objects
 	   length: (size_t)length
 {
 	return [[[self alloc] initWithCArray: objects
@@ -209,14 +199,6 @@ static struct {
 }
 
 - initWithArray: (OFArray*)array
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithCArray: (id*)objects
 {
 	Class c = isa;
 	[self release];

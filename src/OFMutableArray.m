@@ -109,11 +109,6 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 }
 
 - initWithCArray: (id*)objects
-{
-	return (id)[[OFMutableArray_adjacent alloc] initWithCArray: objects];
-}
-
-- initWithCArray: (id*)objects
 	  length: (size_t)length
 {
 	return (id)[[OFMutableArray_adjacent alloc] initWithCArray: objects

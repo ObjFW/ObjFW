@@ -122,34 +122,6 @@
 }
 
 - initWithCArray: (id*)objects
-{
-	self = [self init];
-
-	@try {
-		id *object;
-		size_t count = 0;
-
-		for (object = objects; *object != nil; object++) {
-			[*object retain];
-			count++;
-		}
-
-		[array addNItems: count
-		      fromCArray: objects];
-	} @catch (id e) {
-		id *object;
-
-		for (object = objects; *object != nil; object++)
-			[*object release];
-
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- initWithCArray: (id*)objects
 	  length: (size_t)length
 {
 	self = [self init];
