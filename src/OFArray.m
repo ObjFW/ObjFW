@@ -271,6 +271,11 @@ static struct {
 						    selector: _cmd];
 }
 
+- (id)objectAtIndexedSubscript: (size_t)index
+{
+	return [self objectAtIndex: index];
+}
+
 - (size_t)indexOfObject: (id)object
 {
 	size_t i, count = [self count];

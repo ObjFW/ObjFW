@@ -195,6 +195,13 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 						    selector: _cmd];
 }
 
+-    (void)setObject: (id)object
+  atIndexedSubscript: (size_t)index
+{
+	[self replaceObjectAtIndex: index
+			withObject: object];
+}
+
 - (void)replaceObject: (id)oldObject
 	   withObject: (id)newObject
 {

@@ -145,6 +145,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \return The specified object of the OFArray
  */
 - (id)objectAtIndex: (size_t)index;
+- (id)objectAtIndexedSubscript: (size_t)index;
 
 /**
  * \brief Copies the objects at the specified range to the specified buffer.
@@ -331,3 +332,8 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 @end
 
 #import "OFMutableArray.h"
+
+#ifndef NSINTEGER_DEFINED
+/* Required for array literals to work */
+@compatibility_alias NSArray OFArray;
+#endif

@@ -201,6 +201,11 @@
 	return *((id*)[array itemAtIndex: index]);
 }
 
+- (id)objectAtIndexedSubscript: (size_t)index
+{
+	return *((id*)[array itemAtIndex: index]);
+}
+
 - (void)getObjects: (id*)buffer
 	   inRange: (of_range_t)range
 {
