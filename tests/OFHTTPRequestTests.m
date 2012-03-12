@@ -66,6 +66,9 @@ static OFCondition *cond;
 	    [OFString stringWithFormat: @"Host: 127.0.0.1:%" @PRIu16, port]])
 		assert(0);
 
+	if (![[client readLine] isEqual: @"Connection: close"])
+		assert(0);
+
 	if (![[client readLine] hasPrefix: @"User-Agent:"])
 		assert(0);
 

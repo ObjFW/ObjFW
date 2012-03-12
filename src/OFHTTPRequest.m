@@ -77,10 +77,10 @@ normalizeKey(OFString *key)
 	self = [super init];
 
 	requestType = OF_HTTP_REQUEST_TYPE_GET;
-	headers = [[OFDictionary alloc]
-	    initWithObject: @"Something using ObjFW "
-			    @"<https://webkeks.org/objfw/>"
-		    forKey: @"User-Agent"];
+	headers = [[OFDictionary alloc] initWithKeysAndObjects:
+	    @"Connection", @"close",
+	    @"User-Agent", @"Something using ObjFW "
+			   @"<https://webkeks.org/objfw/>", nil];
 	storesData = YES;
 
 	return self;
