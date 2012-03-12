@@ -87,8 +87,8 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \param length The length of the C array
  * \return A new autoreleased OFArray
  */
-+ arrayWithCArray: (id*)objects
-	   length: (size_t)length;
++ arrayWithObjects: (id*)objects
+	     count: (size_t)count;
 
 /**
  * \brief Initializes an OFArray with the specified object.
@@ -132,8 +132,8 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \param length The length of the C array
  * \return An initialized OFArray
  */
-- initWithCArray: (id*)objects
-	  length: (size_t)length;
+- initWithObjects: (id*)objects
+	    count: (size_t)count;
 
 /**
  * \brief Returns a specified object of the array.
@@ -160,7 +160,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  *
  * \return The objects of the array as a C array
  */
-- (id*)cArray;
+- (id*)objects;
 
 /**
  * \brief Returns the index of the first object that is equivalent to the

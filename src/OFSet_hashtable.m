@@ -80,12 +80,12 @@
 	@try {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 		OFNumber *one = [OFNumber numberWithSize: 1];
-		id *cArray = [array cArray];
+		id *objects = [array objects];
 		size_t i, count = [array count];
 
 		for (i = 0; i < count; i++)
 			[dictionary _setObject: one
-					forKey: cArray[i]
+					forKey: objects[i]
 				       copyKey: NO];
 
 		[pool release];

@@ -98,7 +98,7 @@ transform_string(OFDataArray *cache, size_t cut, BOOL unescape,
 static OFString*
 namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 {
-	OFDictionary **cArray = [namespaces cArray];
+	OFDictionary **objects = [namespaces objects];
 	ssize_t i;
 
 	if (prefix == nil)
@@ -107,7 +107,7 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 	for (i = [namespaces count] - 1; i >= 0; i--) {
 		OFString *tmp;
 
-		if ((tmp = [cArray[i] objectForKey: prefix]) != nil)
+		if ((tmp = [objects[i] objectForKey: prefix]) != nil)
 			return tmp;
 	}
 
@@ -670,7 +670,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 {
 	OFAutoreleasePool *pool;
 	OFString *ns;
-	OFXMLAttribute **attributesCArray;
+	OFXMLAttribute **attributesObjects;
 	size_t j, attributesCount;
 
 	if (buffer[*i] != '>' && buffer[*i] != '/') {
@@ -684,7 +684,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		return;
 	}
 
-	attributesCArray = [attributes cArray];
+	attributesObjects = [attributes objects];
 	attributesCount = [attributes count];
 
 	ns = namespace_for_prefix(prefix, namespaces);
@@ -694,7 +694,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 								prefix: prefix];
 
 	for (j = 0; j < attributesCount; j++)
-		resolve_attribute_namespace(attributesCArray[j], namespaces,
+		resolve_attribute_namespace(attributesObjects[j], namespaces,
 		    isa);
 
 	pool = [[OFAutoreleasePool alloc] init];

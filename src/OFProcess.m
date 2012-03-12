@@ -87,7 +87,7 @@
 
 		switch ((pid = fork())) {
 		case 0:;
-			OFString **cArray = [arguments cArray];
+			OFString **objects = [arguments objects];
 			size_t i, count = [arguments count];
 			char **argv;
 
@@ -98,7 +98,7 @@
 			    OF_STRING_ENCODING_NATIVE];
 
 			for (i = 0; i < count; i++)
-				argv[i + 1] = (char*)[cArray[i]
+				argv[i + 1] = (char*)[objects[i]
 				    cStringWithEncoding:
 				    OF_STRING_ENCODING_NATIVE];
 

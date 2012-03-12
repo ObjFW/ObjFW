@@ -434,18 +434,18 @@ static Class CDATAClass = Nil;
 {
 	OFAutoreleasePool *pool;
 	OFMutableString *ret;
-	OFXMLElement **cArray;
+	OFXMLElement **objects;
 	size_t i, count = [children count];
 
 	if (count == 0)
 		return @"";
 
 	ret = [OFMutableString string];
-	cArray = [children cArray];
+	objects = [children objects];
 	pool = [[OFAutoreleasePool alloc] init];
 
 	for (i = 0; i < count; i++) {
-		[ret appendString: [cArray[i] stringValue]];
+		[ret appendString: [objects[i] stringValue]];
 		[pool releaseObjects];
 	}
 
@@ -465,7 +465,7 @@ static Class CDATAClass = Nil;
 	char *cString;
 	size_t length, i, j, attributesCount;
 	OFString *prefix, *parentPrefix;
-	OFXMLAttribute **attributesCArray;
+	OFXMLAttribute **attributesObjects;
 	OFString *ret;
 	OFString *defaultNS;
 
@@ -551,22 +551,22 @@ static Class CDATAClass = Nil;
 	}
 
 	/* Attributes */
-	attributesCArray = [attributes cArray];
+	attributesObjects = [attributes objects];
 	attributesCount = [attributes count];
 
 	pool2 = [[OFAutoreleasePool alloc] init];
 	for (j = 0; j < attributesCount; j++) {
-		OFString *attributeName = [attributesCArray[j] name];
+		OFString *attributeName = [attributesObjects[j] name];
 		OFString *attributePrefix = nil;
 		OFString *tmp =
-		    [[attributesCArray[j] stringValue] stringByXMLEscaping];
+		    [[attributesObjects[j] stringValue] stringByXMLEscaping];
 
-		if ([attributesCArray[j] namespace] != nil &&
+		if ([attributesObjects[j] namespace] != nil &&
 		    (attributePrefix = [allNamespaces objectForKey:
-		    [attributesCArray[j] namespace]]) == nil)
+		    [attributesObjects[j] namespace]]) == nil)
 			@throw [OFUnboundNamespaceException
 			    exceptionWithClass: isa
-				     namespace: [attributesCArray[j]
+				     namespace: [attributesObjects[j]
 						    namespace]];
 
 		length += [attributeName UTF8StringLength] +
@@ -603,7 +603,7 @@ static Class CDATAClass = Nil;
 
 	/* Childen */
 	if (children != nil) {
-		OFXMLElement **childrenCArray = [children cArray];
+		OFXMLElement **childrenObjects = [children objects];
 		size_t childrenCount = [children count];
 		OFDataArray *tmp = [OFDataArray dataArray];
 		BOOL indent;
@@ -612,8 +612,9 @@ static Class CDATAClass = Nil;
 			indent = YES;
 
 			for (j = 0; j < childrenCount; j++) {
-				if (childrenCArray[j]->isa == charactersClass ||
-				    childrenCArray[j]->isa == CDATAClass) {
+				if ([childrenObjects[j] isKindOfClass:
+				    charactersClass] || [childrenObjects[j]
+				    isKindOfClass: CDATAClass]) {
 					indent = NO;
 					break;
 				}
@@ -628,15 +629,15 @@ static Class CDATAClass = Nil;
 			if (ind)
 				[tmp addItem: "\n"];
 
-			if ([childrenCArray[j] isKindOfClass:
+			if ([childrenObjects[j] isKindOfClass:
 			    [OFXMLElement class]])
-				child = [childrenCArray[j]
+				child = [childrenObjects[j]
 				    _XMLStringWithParent: self
 					      namespaces: allNamespaces
 					     indentation: ind
 						   level: level + 1];
 			else
-				child = [childrenCArray[j]
+				child = [childrenObjects[j]
 				    XMLStringWithIndentation: ind
 						       level: level + 1];
 
@@ -829,13 +830,13 @@ static Class CDATAClass = Nil;
 
 - (OFXMLAttribute*)attributeForName: (OFString*)attributeName
 {
-	OFXMLAttribute **cArray = [attributes cArray];
+	OFXMLAttribute **objects = [attributes objects];
 	size_t i, count = [attributes count];
 
 	for (i = 0; i < count; i++)
-		if (cArray[i]->ns == nil &&
-		    [cArray[i]->name isEqual: attributeName])
-			return cArray[i];
+		if (objects[i]->ns == nil &&
+		    [objects[i]->name isEqual: attributeName])
+			return objects[i];
 
 	return nil;
 }
@@ -843,31 +844,31 @@ static Class CDATAClass = Nil;
 - (OFXMLAttribute*)attributeForName: (OFString*)attributeName
 			  namespace: (OFString*)attributeNS
 {
-	OFXMLAttribute **cArray;
+	OFXMLAttribute **objects;
 	size_t i, count;
 
 	if (attributeNS == nil)
 		return [self attributeForName: attributeName];
 
-	cArray = [attributes cArray];
+	objects = [attributes objects];
 	count = [attributes count];
 
 	for (i = 0; i < count; i++)
-		if ([cArray[i]->ns isEqual: attributeNS] &&
-		    [cArray[i]->name isEqual: attributeName])
-			return cArray[i];
+		if ([objects[i]->ns isEqual: attributeNS] &&
+		    [objects[i]->name isEqual: attributeName])
+			return objects[i];
 
 	return nil;
 }
 
 - (void)removeAttributeForName: (OFString*)attributeName
 {
-	OFXMLAttribute **cArray = [attributes cArray];
+	OFXMLAttribute **objects = [attributes objects];
 	size_t i, count = [attributes count];
 
 	for (i = 0; i < count; i++) {
-		if (cArray[i]->ns == nil &&
-		    [cArray[i]->name isEqual: attributeName]) {
+		if (objects[i]->ns == nil &&
+		    [objects[i]->name isEqual: attributeName]) {
 			[attributes removeObjectAtIndex: i];
 
 			return;
@@ -878,18 +879,18 @@ static Class CDATAClass = Nil;
 - (void)removeAttributeForName: (OFString*)attributeName
 		     namespace: (OFString*)attributeNS
 {
-	OFXMLAttribute **cArray;
+	OFXMLAttribute **objects;
 	size_t i, count;
 
 	if (attributeNS == nil)
 		return [self removeAttributeForName: attributeName];
 
-	cArray = [attributes cArray];
+	objects = [attributes objects];
 	count = [attributes count];
 
 	for (i = 0; i < count; i++) {
-		if ([cArray[i]->ns isEqual: attributeNS] &&
-		    [cArray[i]->name isEqual: attributeName]) {
+		if ([objects[i]->ns isEqual: attributeNS] &&
+		    [objects[i]->name isEqual: attributeName]) {
 			[attributes removeObjectAtIndex: i];
 				return;
 		}
@@ -965,12 +966,12 @@ static Class CDATAClass = Nil;
 - (OFArray*)elements
 {
 	OFMutableArray *ret = [OFMutableArray array];
-	OFXMLElement **cArray = [children cArray];
+	OFXMLElement **objects = [children objects];
 	size_t i, count = [children count];
 
 	for (i = 0; i < count; i++)
-		if ([cArray[i] isKindOfClass: [OFXMLElement class]])
-			[ret addObject: cArray[i]];
+		if ([objects[i] isKindOfClass: [OFXMLElement class]])
+			[ret addObject: objects[i]];
 
 	[ret makeImmutable];
 
@@ -980,14 +981,14 @@ static Class CDATAClass = Nil;
 - (OFArray*)elementsForName: (OFString*)elementName
 {
 	OFMutableArray *ret = [OFMutableArray array];
-	OFXMLElement **cArray = [children cArray];
+	OFXMLElement **objects = [children objects];
 	size_t i, count = [children count];
 
 	for (i = 0; i < count; i++)
-		if ([cArray[i] isKindOfClass: [OFXMLElement class]] &&
-		    cArray[i]->ns == nil &&
-		    [cArray[i]->name isEqual: elementName])
-			[ret addObject: cArray[i]];
+		if ([objects[i] isKindOfClass: [OFXMLElement class]] &&
+		    objects[i]->ns == nil &&
+		    [objects[i]->name isEqual: elementName])
+			[ret addObject: objects[i]];
 
 	[ret makeImmutable];
 
@@ -997,14 +998,14 @@ static Class CDATAClass = Nil;
 - (OFArray*)elementsForNamespace: (OFString*)elementNS
 {
 	OFMutableArray *ret = [OFMutableArray array];
-	OFXMLElement **cArray = [children cArray];
+	OFXMLElement **objects = [children objects];
 	size_t i, count = [children count];
 
 	for (i = 0; i < count; i++)
-		if ([cArray[i] isKindOfClass: [OFXMLElement class]] &&
-		    cArray[i]->name != nil &&
-		    [cArray[i]->ns isEqual: elementNS])
-			[ret addObject: cArray[i]];
+		if ([objects[i] isKindOfClass: [OFXMLElement class]] &&
+		    objects[i]->name != nil &&
+		    [objects[i]->ns isEqual: elementNS])
+			[ret addObject: objects[i]];
 
 	[ret makeImmutable];
 
@@ -1015,21 +1016,21 @@ static Class CDATAClass = Nil;
 		  namespace: (OFString*)elementNS
 {
 	OFMutableArray *ret;
-	OFXMLElement **cArray;
+	OFXMLElement **objects;
 	size_t i, count;
 
 	if (elementNS == nil)
 		return [self elementsForName: elementName];
 
 	ret = [OFMutableArray array];
-	cArray = [children cArray];
+	objects = [children objects];
 	count = [children count];
 
 	for (i = 0; i < count; i++)
-		if ([cArray[i] isKindOfClass: [OFXMLElement class]] &&
-		    [cArray[i]->ns isEqual: elementNS] &&
-		    [cArray[i]->name isEqual: elementName])
-			[ret addObject: cArray[i]];
+		if ([objects[i] isKindOfClass: [OFXMLElement class]] &&
+		    [objects[i]->ns isEqual: elementNS] &&
+		    [objects[i]->name isEqual: elementName])
+			[ret addObject: objects[i]];
 
 	[ret makeImmutable];
 

@@ -87,13 +87,13 @@
 
 - initWithArray: (OFArray*)array_
 {
-	id *cArray;
+	id *objects;
 	size_t i, count;
 
 	self = [self init];
 
 	@try {
-		cArray = [array_ cArray];
+		objects = [array_ objects];
 		count = [array_ count];
 	} @catch (id e) {
 		[self release];
@@ -102,13 +102,13 @@
 
 	@try {
 		for (i = 0; i < count; i++)
-			[cArray[i] retain];
+			[objects[i] retain];
 
 		[array addNItems: count
-		      fromCArray: cArray];
+		      fromCArray: objects];
 	} @catch (id e) {
 		for (i = 0; i < count; i++)
-			[cArray[i] release];
+			[objects[i] release];
 
 		/* Prevent double-release of objects */
 		[array release];
@@ -121,23 +121,23 @@
 	return self;
 }
 
-- initWithCArray: (id*)objects
-	  length: (size_t)length
+- initWithObjects: (id*)objects
+	    count: (size_t)count
 {
 	self = [self init];
 
 	@try {
 		size_t i;
 
-		for (i = 0; i < length; i++)
+		for (i = 0; i < count; i++)
 			[objects[i] retain];
 
-		[array addNItems: length
+		[array addNItems: count
 		      fromCArray: objects];
 	} @catch (id e) {
 		size_t i;
 
-		for (i = 0; i < length; i++)
+		for (i = 0; i < count; i++)
 			[objects[i] release];
 
 		[self release];
@@ -191,7 +191,7 @@
 	return [array count];
 }
 
-- (id*)cArray
+- (id*)objects
 {
 	return [array cArray];
 }
@@ -204,23 +204,23 @@
 - (void)getObjects: (id*)buffer
 	   inRange: (of_range_t)range
 {
-	id *cArray = [array cArray];
+	id *objects = [array cArray];
 	size_t i, count = [array count];
 
 	if (range.start + range.length > count)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	for (i = 0; i < range.length; i++)
-		buffer[i] = cArray[range.start + i];
+		buffer[i] = objects[range.start + i];
 }
 
 - (size_t)indexOfObject: (id)object
 {
-	id *cArray = [array cArray];
+	id *objects = [array cArray];
 	size_t i, count = [array count];
 
 	for (i = 0; i < count; i++)
-		if ([cArray[i] isEqual: object])
+		if ([objects[i] isEqual: object])
 			return i;
 
 	return OF_INVALID_INDEX;
@@ -228,11 +228,11 @@
 
 - (size_t)indexOfObjectIdenticalTo: (id)object
 {
-	id *cArray = [array cArray];
+	id *objects = [array cArray];
 	size_t i, count = [array count];
 
 	for (i = 0; i < count; i++)
-		if (cArray[i] == object)
+		if (objects[i] == object)
 			return i;
 
 	return OF_INVALID_INDEX;
@@ -252,14 +252,14 @@
 	if (range.start + range.length > count)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
-	return [OFArray arrayWithCArray: (id*)[array cArray] + range.start
-				 length: range.length];
+	return [OFArray arrayWithObjects: (id*)[array cArray] + range.start
+				   count: range.length];
 }
 
 - (BOOL)isEqual: (id)object
 {
 	OFArray *otherArray;
-	id *cArray, *otherCArray;
+	id *objects, *otherObjects;
 	size_t i, count;
 
 	if ([object class] != [OFArray_adjacent class] &&
@@ -274,11 +274,11 @@
 	if (count != [otherArray count])
 		return NO;
 
-	cArray = [array cArray];
-	otherCArray = [otherArray cArray];
+	objects = [array cArray];
+	otherObjects = [otherArray objects];
 
 	for (i = 0; i < count; i++)
-		if (![cArray[i] isEqual: otherCArray[i]])
+		if (![objects[i] isEqual: otherObjects[i]])
 			return NO;
 
 	return YES;
@@ -286,14 +286,14 @@
 
 - (uint32_t)hash
 {
-	id *cArray = [array cArray];
+	id *objects = [array cArray];
 	size_t i, count = [array count];
 	uint32_t hash;
 
 	OF_HASH_INIT(hash);
 
 	for (i = 0; i < count; i++) {
-		uint32_t h = [cArray[i] hash];
+		uint32_t h = [objects[i] hash];
 
 		OF_HASH_ADD(hash, h >> 24);
 		OF_HASH_ADD(hash, (h >> 16) & 0xFF);
@@ -309,22 +309,22 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
-	id *cArray = [array cArray];
+	id *objects = [array cArray];
 	size_t i, count = [array count];
 	BOOL stop = NO;
 
 	for (i = 0; i < count && !stop; i++)
-		block(cArray[i], i, &stop);
+		block(objects[i], i, &stop);
 }
 #endif
 
 - (void)dealloc
 {
-	id *cArray = [array cArray];
+	id *objects = [array cArray];
 	size_t i, count = [array count];
 
 	for (i = 0; i < count; i++)
-		[cArray[i] release];
+		[objects[i] release];
 
 	[array release];
 

@@ -241,8 +241,8 @@ struct of_dictionary_hashtable_bucket
 		id *objectsCArray, *keysCArray;
 		uint32_t i, j, newSize;
 
-		keysCArray = [keys cArray];
-		objectsCArray = [objects cArray];
+		keysCArray = [keys objects];
+		objectsCArray = [objects objects];
 		count = [keys count];
 
 		if (count > UINT32_MAX)
@@ -630,21 +630,21 @@ struct of_dictionary_hashtable_bucket
 - (OFArray*)allKeys
 {
 	OFArray *ret;
-	id *cArray = [self allocMemoryForNItems: count
-					 ofSize: sizeof(id)];
+	id *keys = [self allocMemoryForNItems: count
+				       ofSize: sizeof(id)];
 	size_t i, j;
 
 	for (i = j = 0; i < size; i++)
 		if (data[i] != NULL && data[i] != DELETED)
-			cArray[j++] = data[i]->key;
+			keys[j++] = data[i]->key;
 
 	assert(j == count);
 
 	@try {
-		ret = [OFArray arrayWithCArray: cArray
-					length: count];
+		ret = [OFArray arrayWithObjects: keys
+					  count: count];
 	} @finally {
-		[self freeMemory: cArray];
+		[self freeMemory: keys];
 	}
 
 	return ret;
@@ -653,21 +653,21 @@ struct of_dictionary_hashtable_bucket
 - (OFArray*)allObjects
 {
 	OFArray *ret;
-	id *cArray = [self allocMemoryForNItems: count
-					 ofSize: sizeof(id)];
+	id *objects = [self allocMemoryForNItems: count
+					  ofSize: sizeof(id)];
 	size_t i, j;
 
 	for (i = j = 0; i < size; i++)
 		if (data[i] != NULL && data[i] != DELETED)
-			cArray[j++] = data[i]->object;
+			objects[j++] = data[i]->object;
 
 	assert(j == count);
 
 	@try {
-		ret = [OFArray arrayWithCArray: cArray
-					length: count];
+		ret = [OFArray arrayWithObjects: objects
+					  count: count];
 	} @finally {
-		[self freeMemory: cArray];
+		[self freeMemory: objects];
 	}
 
 	return ret;

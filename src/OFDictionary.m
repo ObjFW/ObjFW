@@ -313,8 +313,8 @@ static struct {
 - (OFArray*)allKeys
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	id *cArray = [self allocMemoryForNItems: [self count]
-					 ofSize: sizeof(id)];
+	id *keys = [self allocMemoryForNItems: [self count]
+				       ofSize: sizeof(id)];
 	OFArray *ret;
 	OFEnumerator *enumerator;
 	id key;
@@ -324,17 +324,17 @@ static struct {
 	enumerator = [self keyEnumerator];
 
 	while ((key = [enumerator nextObject]) != nil)
-		cArray[i++] = key;
+		keys[i++] = key;
 
 	assert(i == [self count]);
 
 	[pool release];
 
 	@try {
-		ret = [OFArray arrayWithCArray: cArray
-					length: [self count]];
+		ret = [OFArray arrayWithObjects: keys
+					  count: [self count]];
 	} @finally {
-		[self freeMemory: cArray];
+		[self freeMemory: keys];
 	}
 
 	return ret;
@@ -343,8 +343,8 @@ static struct {
 - (OFArray*)allObjects
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	id *cArray = [self allocMemoryForNItems: [self count]
-					 ofSize: sizeof(id)];
+	id *objects = [self allocMemoryForNItems: [self count]
+					  ofSize: sizeof(id)];
 	OFArray *ret;
 	OFEnumerator *enumerator;
 	id object;
@@ -354,17 +354,17 @@ static struct {
 	enumerator = [self objectEnumerator];
 
 	while ((object = [enumerator nextObject]) != nil)
-		cArray[i++] = object;
+		objects[i++] = object;
 
 	assert(i == [self count]);
 
 	[pool release];
 
 	@try {
-		ret = [OFArray arrayWithCArray: cArray
-					length: [self count]];
+		ret = [OFArray arrayWithObjects: objects
+					  count: [self count]];
 	} @finally {
-		[self freeMemory: cArray];
+		[self freeMemory: objects];
 	}
 
 	return ret;

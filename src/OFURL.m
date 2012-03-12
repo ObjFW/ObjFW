@@ -44,20 +44,20 @@ resolve_relative_path(OFString *path)
 	    autorelease];
 
 	while (!done) {
-		id *cArray = [array cArray];
+		id *objects = [array objects];
 		size_t i, length = [array count];
 
 		done = YES;
 
 		for (i = 0; i < length; i++) {
-			if ([cArray[i] isEqual: @"."]) {
+			if ([objects[i] isEqual: @"."]) {
 				[array removeObjectAtIndex: i];
 				done = NO;
 
 				break;
 			}
 
-			if ([cArray[i] isEqual: @".."]) {
+			if ([objects[i] isEqual: @".."]) {
 				[array removeObjectAtIndex: i];
 
 				if (i > 0)

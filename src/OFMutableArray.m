@@ -108,11 +108,11 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 	return (id)[[OFMutableArray_adjacent alloc] initWithArray: array];
 }
 
-- initWithCArray: (id*)objects
-	  length: (size_t)length
+- initWithObjects: (id*)objects
+	    count: (size_t)count
 {
-	return (id)[[OFMutableArray_adjacent alloc] initWithCArray: objects
-							    length: length];
+	return (id)[[OFMutableArray_adjacent alloc] initWithObjects: objects
+							      count: count];
 }
 
 - initWithSerialization: (OFXMLElement*)element

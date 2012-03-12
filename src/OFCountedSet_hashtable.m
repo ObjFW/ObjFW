@@ -81,11 +81,11 @@
 	self = [self init];
 
 	@try {
-		id *cArray = [array cArray];
+		id *objects = [array objects];
 		size_t i, count = [array count];
 
 		for (i = 0; i < count; i++)
-			[self addObject: cArray[i]];
+			[self addObject: objects[i]];
 	} @catch (id e) {
 		[self release];
 		@throw e;
