@@ -197,6 +197,7 @@ normalizeKey(OFString *key)
 	OFString *key, *object, *contentLengthHeader;
 	int status;
 	const char *type = NULL;
+	size_t contentLength;
 	BOOL chunked;
 	char *buffer;
 	size_t bytesReceived;
@@ -373,6 +374,15 @@ normalizeKey(OFString *key)
 	chunked = [[serverHeaders objectForKey: @"Transfer-Encoding"]
 	    isEqual: @"chunked"];
 
+	contentLengthHeader = [serverHeaders objectForKey: @"Content-Length"];
+
+	if (contentLengthHeader != nil) {
+		contentLength = (size_t)[contentLengthHeader decimalValue];
+
+		if (contentLength > SIZE_MAX)
+			@throw [OFOutOfRangeException exceptionWithClass: isa];
+	}
+
 	buffer = [self allocMemoryWithSize: of_pagesize];
 	bytesReceived = 0;
 	@try {
@@ -403,7 +413,9 @@ normalizeKey(OFString *key)
 					    exceptionWithClass: isa];
 				}
 
-				if (toRead == 0)
+				if (toRead == 0 ||
+				    (contentLengthHeader != nil &&
+				    contentLength >= bytesReceived))
 					break;
 
 				while (toRead > 0) {
@@ -451,6 +463,10 @@ normalizeKey(OFString *key)
 				bytesReceived += length;
 				[data addNItems: length
 				     fromCArray: buffer];
+
+				if (contentLengthHeader != nil &&
+				    bytesReceived >= contentLength)
+					break;
 			}
 		}
 
@@ -461,23 +477,14 @@ normalizeKey(OFString *key)
 
 	[sock close];
 
-	if ((contentLengthHeader =
-	    [serverHeaders objectForKey: @"Content-Length"]) != nil) {
-		intmax_t cl = [contentLengthHeader decimalValue];
-
-		if (cl > SIZE_MAX)
-			@throw [OFOutOfRangeException exceptionWithClass: isa];
-
-		/*
-		 * We only want to throw on these status codes as we will throw
-		 * an OFHTTPRequestFailedException for all other status codes
-		 * later.
-		 */
-		if (cl != bytesReceived && (status == 200 || status == 301 ||
-		    status == 302 || status == 303))
-			@throw [OFTruncatedDataException
-			    exceptionWithClass: isa];
-	}
+	/*
+	 * We only want to throw on these status codes as we will throw an
+	 * OFHTTPRequestFailedException for all other status codes later.
+	 */
+	if (contentLengthHeader != nil && contentLength != bytesReceived &&
+	    (status == 200 || status == 301 || status == 302 || status == 303 ||
+	    status == 307))
+		@throw [OFTruncatedDataException exceptionWithClass: isa];
 
 	[serverHeaders makeImmutable];
 
