@@ -609,6 +609,7 @@ typedef struct of_rectangle_t
 extern "C" {
 #endif
 extern size_t of_pagesize;
+extern size_t of_num_cpus;
 #ifdef __cplusplus
 }
 #endif

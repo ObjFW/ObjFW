@@ -91,6 +91,7 @@ static SEL cxx_construct = NULL;
 static SEL cxx_destruct = NULL;
 
 size_t of_pagesize;
+size_t of_num_cpus;
 
 #ifdef NEED_OBJC_SYNC_INIT
 extern BOOL objc_sync_init();
@@ -211,11 +212,15 @@ void _references_to_categories_of_OFObject(void)
 	SYSTEM_INFO si;
 	GetSystemInfo(&si);
 	of_pagesize = si.dwPageSize;
+	of_num_cpus = si.dwNumberOfProcessors;
 #elif defined(_PSP)
 	of_pagesize = 4096;
+	of_num_cpus = 1;
 #else
 	if ((of_pagesize = sysconf(_SC_PAGESIZE)) < 1)
 		of_pagesize = 4096;
+	if ((of_num_cpus = sysconf(_SC_NPROCESSORS_CONF)) < 1)
+		of_num_cpus = 1;
 #endif
 }
 
