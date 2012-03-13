@@ -280,20 +280,26 @@ static struct {
 	return [[OFMutableDictionary alloc] initWithDictionary: self];
 }
 
-- (BOOL)isEqual: (id)dictionary
+- (BOOL)isEqual: (id)object
 {
+	OFDictionary *otherDictionary;
 	OFAutoreleasePool *pool;
 	OFEnumerator *enumerator;
 	id key;
 
-	if ([dictionary count] != [self count])
+	if (![object isKindOfClass: [OFDictionary class]])
+		return NO;
+
+	otherDictionary = object;
+
+	if ([otherDictionary count] != [self count])
 		return NO;
 
 	pool = [[OFAutoreleasePool alloc] init];
 
 	enumerator = [self keyEnumerator];
 	while ((key = [enumerator nextObject]) != nil) {
-		id object = [dictionary objectForKey: key];
+		id object = [otherDictionary objectForKey: key];
 
 		if (object == nil ||
 		    ![object isEqual: [self objectForKey: key]]) {
