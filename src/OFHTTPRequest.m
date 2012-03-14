@@ -197,7 +197,7 @@ normalizeKey(OFString *key)
 	OFString *key, *object, *contentLengthHeader;
 	int status;
 	const char *type = NULL;
-	size_t contentLength;
+	size_t contentLength = 0;
 	BOOL chunked;
 	char *buffer;
 	size_t bytesReceived;
