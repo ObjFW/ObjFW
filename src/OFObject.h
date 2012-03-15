@@ -477,16 +477,6 @@ typedef struct of_rectangle_t
 - (OFString*)description;
 
 /**
- * \brief Adds a pointer to the object's memory pool.
- *
- * This is useful to add memory allocated by functions such as asprintf to the
- * pool so it gets free'd automatically when the object is deallocated.
- *
- * \param pointer A pointer to add to the memory pool
- */
-- (void)addMemoryToPool: (void*)pointer;
-
-/**
  * \brief Allocates memory and stores it in the object's memory pool.
  *
  * It will be free'd automatically when the object is deallocated.

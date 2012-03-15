@@ -398,12 +398,6 @@ _Block_object_dispose(const void *obj_, const int flags_)
 						    selector: _cmd];
 }
 
-- (void)addMemoryToPool: (void*)ptr
-{
-	@throw [OFNotImplementedException exceptionWithClass: isa
-						    selector: _cmd];
-}
-
 - (void*)allocMemoryWithSize: (size_t)size
 {
 	@throw [OFNotImplementedException exceptionWithClass: isa

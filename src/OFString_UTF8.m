@@ -435,6 +435,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 	self = [super init];
 
 	@try {
+		char *tmp;
 		int cStringLength;
 
 		if (format == nil)
@@ -445,16 +446,16 @@ memcasecmp(const char *first, const char *second, size_t length)
 		s = [self allocMemoryWithSize: sizeof(*s)];
 		memset(s, 0, sizeof(*s));
 
-		if ((cStringLength = of_vasprintf(&s->cString,
-		    [format UTF8String], arguments)) == -1)
+		if ((cStringLength = of_vasprintf(&tmp, [format UTF8String],
+		    arguments)) == -1)
 			@throw [OFInvalidFormatException
 			    exceptionWithClass: isa];
 
 		s->cStringLength = cStringLength;
 
 		@try {
-			switch (of_string_check_utf8(s->cString,
-			    cStringLength, &s->length)) {
+			switch (of_string_check_utf8(tmp, cStringLength,
+			    &s->length)) {
 			case 1:
 				s->UTF8 = YES;
 				break;
@@ -463,10 +464,11 @@ memcasecmp(const char *first, const char *second, size_t length)
 				    exceptionWithClass: isa];
 			}
 
-			[self addMemoryToPool: s->cString];
-		} @catch (id e) {
-			free(s->cString);
-			@throw e;
+			s->cString = [self
+			    allocMemoryWithSize: cStringLength + 1];
+			memcpy(s->cString, tmp, cStringLength + 1);
+		} @finally {
+			free(tmp);
 		}
 	} @catch (id e) {
 		[self release];
