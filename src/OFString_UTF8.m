@@ -64,8 +64,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 	self = [super init];
 
 	@try {
-		s = [self allocMemoryWithSize: sizeof(*s)];
-		memset(s, 0, sizeof(*s));
+		s = &s_store;
 
 		s->cString = [self allocMemoryWithSize: 1];
 		s->cString[0] = '\0';
@@ -93,8 +92,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 			cStringLength -= 3;
 		}
 
-		s = [self allocMemoryWithSize: sizeof(*s)];
-		memset(s, 0, sizeof(*s));
+		s = &s_store;
 
 		s->cString = [self allocMemoryWithSize: cStringLength + 1];
 		s->cStringLength = cStringLength;
@@ -214,8 +212,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 	self = [super init];
 
 	@try {
-		s = [self allocMemoryWithSize: sizeof(*s)];
-		memset(s, 0, sizeof(*s));
+		s = &s_store;
 
 		s->cStringLength = [string UTF8StringLength];
 
@@ -257,8 +254,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 		} else if (byteOrder != OF_ENDIANESS_NATIVE)
 			swap = YES;
 
-		s = [self allocMemoryWithSize: sizeof(*s)];
-		memset(s, 0, sizeof(*s));
+		s = &s_store;
 
 		s->cStringLength = length;
 		s->cString = [self allocMemoryWithSize: (length * 4) + 1];
@@ -340,8 +336,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 		} else if (byteOrder != OF_ENDIANESS_NATIVE)
 			swap = YES;
 
-		s = [self allocMemoryWithSize: sizeof(*s)];
-		memset(s, 0, sizeof(*s));
+		s = &s_store;
 
 		s->cStringLength = length;
 		s->cString = [self allocMemoryWithSize: (length * 4) + 1];
@@ -443,8 +438,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 			    exceptionWithClass: isa
 				      selector: _cmd];
 
-		s = [self allocMemoryWithSize: sizeof(*s)];
-		memset(s, 0, sizeof(*s));
+		s = &s_store;
 
 		if ((cStringLength = of_vasprintf(&tmp, [format UTF8String],
 		    arguments)) == -1)
@@ -488,8 +482,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 		size_t i, cStringLength;
 		va_list argumentsCopy;
 
-		s = [self allocMemoryWithSize: sizeof(*s)];
-		memset(s, 0, sizeof(*s));
+		s = &s_store;
 
 		s->cStringLength = [firstComponent UTF8StringLength];
 
