@@ -189,6 +189,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		cache = [[OFBigDataArray alloc] init];
 		previous = [[OFMutableArray alloc] init];
 		namespaces = [[OFMutableArray alloc] init];
+		attributes = [[OFMutableArray alloc] init];
 
 		pool = [[OFAutoreleasePool alloc] init];
 		dict = [OFMutableDictionary dictionaryWithKeysAndObjects:
@@ -726,9 +727,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	[name release];
 	[prefix release];
-	[attributes release];
+	[attributes removeAllObjects];
 	name = prefix = nil;
-	attributes = nil;
 
 	*last = *i + 1;
 	state = (buffer[*i] == '/'
@@ -826,9 +826,6 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	if ([attributePrefix isEqual: @"xmlns"])
 		[[namespaces lastObject] setObject: attributeValue
 					    forKey: attributeName];
-
-	if (attributes == nil)
-		attributes = [[OFMutableArray alloc] init];
 
 	[attributes addObject:
 	    [OFXMLAttribute attributeWithName: attributeName
