@@ -540,8 +540,7 @@ void _references_to_categories_of_OFDataArray(void)
 
 	if (size != newSize)
 		data = [self resizeMemory: data
-				 toNItems: newSize
-				   ofSize: itemSize];
+				   toSize: newSize];
 
 	memmove(data + (index + nItems) * itemSize, data + index * itemSize,
 	    (count - index) * itemSize);
