@@ -62,7 +62,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	pool2 = [[OFAutoreleasePool alloc] init];
 	while ((line = [file readLine])) {
 		OFArray *split;
-		OFString **splitCArray;
+		OFString **splitObjects;
 		of_unichar_t codep;
 
 		split = [line componentsSeparatedByString: @";"];
@@ -70,13 +70,13 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 			of_log(@"Invalid line: %@\n", line);
 			[OFApplication terminateWithStatus: 1];
 		}
-		splitCArray = [split cArray];
+		splitObjects = [split objects];
 
-		codep = (of_unichar_t)[splitCArray[0] hexadecimalValue];
+		codep = (of_unichar_t)[splitObjects[0] hexadecimalValue];
 		upperTable[codep] =
-		    (of_unichar_t)[splitCArray[12] hexadecimalValue];
+		    (of_unichar_t)[splitObjects[12] hexadecimalValue];
 		lowerTable[codep] =
-		    (of_unichar_t)[splitCArray[13] hexadecimalValue];
+		    (of_unichar_t)[splitObjects[13] hexadecimalValue];
 
 		[pool2 releaseObjects];
 	}
@@ -92,12 +92,12 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	OFString *line;
 
 	pool2 = [[OFAutoreleasePool alloc] init];
-	while ((line = [file readLine])) {
+	while ((line = [file readLine]) != nil) {
 		OFArray *split;
-		OFString **splitCArray;
+		OFString **splitObjects;
 		of_unichar_t codep;
 
-		if ([line characterAtIndex: 0] == '#')
+		if ([line length] == 0 || [line hasPrefix: @"#"])
 			continue;
 
 		split = [line componentsSeparatedByString: @"; "];
@@ -105,15 +105,15 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 			of_log(@"Invalid line: %s\n", line);
 			[OFApplication terminateWithStatus: 1];
 		}
-		splitCArray = [split cArray];
+		splitObjects = [split objects];
 
-		if (![splitCArray[1] isEqual: @"S"] &&
-		    ![splitCArray[1] isEqual: @"C"])
+		if (![splitObjects[1] isEqual: @"S"] &&
+		    ![splitObjects[1] isEqual: @"C"])
 			continue;
 
-		codep = (of_unichar_t)[splitCArray[0] hexadecimalValue];
+		codep = (of_unichar_t)[splitObjects[0] hexadecimalValue];
 		casefoldingTable[codep] =
-		    (of_unichar_t)[splitCArray[2] hexadecimalValue];
+		    (of_unichar_t)[splitObjects[2] hexadecimalValue];
 
 		[pool2 releaseObjects];
 	}
