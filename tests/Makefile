@@ -73,7 +73,8 @@ run-on-ios: all
 		'rm -fr ${IOS_TMP} && mkdir -p ${IOS_TMP}/plugin'
 	scp -q ../src/libobjfw.dylib tests testfile.bin testfile.txt \
 		serialization.xml ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/
-	scp -q plugin/TestPlugin.impl ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/plugin/
+	scp -q plugin/TestPlugin.bundle \
+		${IOS_USER}@${IOS_HOST}:${IOS_TMP}/plugin/
 	echo "Running tests binary on iOS device ${IOS_HOST}..."
 	ssh ${IOS_USER}@${IOS_HOST} \
 		'cd ${IOS_TMP} && ${TEST_LAUNCHER} ./tests'
