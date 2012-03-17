@@ -96,6 +96,15 @@ extern void of_log(OFConstantString*, ...);
 + (void)createDirectoryAtPath: (OFString*)path;
 
 /**
+ * \brief Creates a directory at the specified path.
+ *
+ * \param path The path of the directory
+ * \param createParents Whether to create the parents of the directory
+ */
++ (void)createDirectoryAtPath: (OFString*)path
+		createParents: (BOOL)createParents;
+
+/**
  * \brief Returns an array with the files in the specified directory.
  *
  * \param path The path of the directory
