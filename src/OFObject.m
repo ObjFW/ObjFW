@@ -73,11 +73,6 @@ struct pre_mem {
 	struct pre_mem *prev, *next;
 };
 
-/* Hopefully no arch needs more than 16 bytes padding */
-#ifndef __BIGGEST_ALIGNMENT__
-# define __BIGGEST_ALIGNMENT__ 16
-#endif
-
 #define PRE_IVAR_ALIGN ((sizeof(struct pre_ivar) + \
 	(__BIGGEST_ALIGNMENT__ - 1)) & ~(__BIGGEST_ALIGNMENT__ - 1))
 #define PRE_IVAR ((struct pre_ivar*)(void*)((char*)self - PRE_IVAR_ALIGN))

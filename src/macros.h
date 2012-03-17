@@ -64,6 +64,11 @@
 # define OF_ENDIANESS_NATIVE OF_ENDIANESS_LITTLE_ENDIAN
 #endif
 
+/* Hopefully no arch needs more than 16 bytes padding */
+#ifndef __BIGGEST_ALIGNMENT__
+# define __BIGGEST_ALIGNMENT__ 16
+#endif
+
 #ifdef __GNUC__
 # if defined(__amd64__) || defined(__x86_64__)
 #  define OF_AMD64_ASM
