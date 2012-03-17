@@ -600,6 +600,8 @@ extern "C" {
 #endif
 extern size_t of_pagesize;
 extern size_t of_num_cpus;
+extern id of_alloc_object(Class class_, size_t extraSize, size_t extraAlignment,
+    void **extra);
 #ifdef __cplusplus
 }
 #endif

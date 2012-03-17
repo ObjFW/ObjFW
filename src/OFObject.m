@@ -133,6 +133,52 @@ objc_enumerationMutation(id object)
 extern void objc_setEnumerationMutationHandler(void(*handler)(id));
 #endif
 
+id
+of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
+    void **extra)
+{
+	OFObject *instance;
+	size_t instanceSize;
+
+	instanceSize = class_getInstanceSize(class);
+
+	if (OF_UNLIKELY(extraAlignment > 0))
+		extraAlignment = ((instanceSize + extraAlignment - 1) &
+		    ~(extraAlignment - 1)) - extraAlignment;
+
+	instance = malloc(PRE_IVAR_ALIGN + instanceSize +
+	    extraAlignment + extraSize);
+
+	if (OF_UNLIKELY(instance == nil)) {
+		alloc_failed_exception.isa = [OFAllocFailedException class];
+		@throw (OFAllocFailedException*)&alloc_failed_exception;
+	}
+
+	((struct pre_ivar*)instance)->retainCount = 1;
+	((struct pre_ivar*)instance)->firstMem = NULL;
+	((struct pre_ivar*)instance)->lastMem = NULL;
+
+#if !defined(OF_ATOMIC_OPS) && defined(OF_THREADS)
+	if (OF_UNLIKELY(!of_spinlock_new(
+	    &((struct pre_ivar*)instance)->retainCountSpinlock))) {
+		free(instance);
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: class];
+	}
+#endif
+
+	instance = (OFObject*)((char*)instance + PRE_IVAR_ALIGN);
+
+	instance->isa = class;
+	memset((char*)instance + sizeof(instance->isa), 0,
+	    instanceSize - sizeof(instance->isa));
+
+	if (OF_UNLIKELY(extra != NULL))
+		*extra = (char*)instance + instanceSize + extraAlignment;
+
+	return instance;
+}
+
 const char*
 _NSPrintForDebugger(id object)
 {
@@ -233,29 +279,7 @@ void _references_to_categories_of_OFObject(void)
 
 + alloc
 {
-	OFObject *instance;
-	size_t instanceSize = class_getInstanceSize(self);
-
-	if ((instance = calloc(instanceSize + PRE_IVAR_ALIGN, 1)) == NULL) {
-		alloc_failed_exception.isa = [OFAllocFailedException class];
-		@throw (OFAllocFailedException*)&alloc_failed_exception;
-	}
-
-	((struct pre_ivar*)instance)->retainCount = 1;
-
-#if !defined(OF_ATOMIC_OPS) && defined(OF_THREADS)
-	if (!of_spinlock_new(
-	    &((struct pre_ivar*)instance)->retainCountSpinlock)) {
-		free(instance);
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-	}
-#endif
-
-	instance = (OFObject*)((char*)instance + PRE_IVAR_ALIGN);
-	instance->isa = self;
-
-	return instance;
+	return of_alloc_object(self, 0, 0, NULL);
 }
 
 + new
