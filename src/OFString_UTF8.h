@@ -36,4 +36,8 @@
 	} *restrict s;
 	struct of_string_utf8_ivars s_store;
 }
+
+- _initWithUTF8String: (const char*)UTF8String
+	       length: (size_t)UTF8StringLength
+	      storage: (char*)storage;
 @end

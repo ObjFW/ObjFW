@@ -76,6 +76,44 @@ memcasecmp(const char *first, const char *second, size_t length)
 	return self;
 }
 
+- _initWithUTF8String: (const char*)UTF8String
+	       length: (size_t)UTF8StringLength
+	      storage: (char*)storage
+{
+	self = [super init];
+
+	@try {
+		if (UTF8StringLength >= 3 &&
+		    !memcmp(UTF8String, "\xEF\xBB\xBF", 3)) {
+			UTF8String += 3;
+			UTF8StringLength -= 3;
+		}
+
+		s = &s_store;
+
+		s->cString = storage;
+		s->cStringLength = UTF8StringLength;
+
+		switch (of_string_check_utf8(UTF8String, UTF8StringLength,
+		    &s->length)) {
+		case 1:
+			s->UTF8 = YES;
+			break;
+		case -1:
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: isa];
+		}
+
+		memcpy(s->cString, UTF8String, UTF8StringLength);
+		s->cString[UTF8StringLength] = 0;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
 - initWithCString: (const char*)cString
 	 encoding: (of_string_encoding_t)encoding
 	   length: (size_t)cStringLength

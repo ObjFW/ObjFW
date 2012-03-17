@@ -257,19 +257,50 @@ static struct {
 
 - initWithUTF8String: (const char*)UTF8String
 {
-	return (id)[[OFString_UTF8 alloc] initWithUTF8String: UTF8String];
+	id string;
+	size_t length;
+	void *storage;
+
+	length = strlen(UTF8String);
+	string = of_alloc_object([OFString_UTF8 class],
+	    length + 1, 1, &storage);
+
+	return (id)[string _initWithUTF8String: UTF8String
+					length: length
+				       storage: storage];
 }
 
 - initWithUTF8String: (const char*)UTF8String
 	      length: (size_t)UTF8StringLength
 {
-	return (id)[[OFString_UTF8 alloc] initWithUTF8String: UTF8String
-						      length: UTF8StringLength];
+	id string;
+	void *storage;
+
+	string = of_alloc_object([OFString_UTF8 class],
+	    UTF8StringLength + 1, 1, &storage);
+
+	return (id)[string _initWithUTF8String: UTF8String
+					length: UTF8StringLength
+				       storage: storage];
 }
 
 - initWithCString: (const char*)cString
 	 encoding: (of_string_encoding_t)encoding
 {
+	if (encoding == OF_STRING_ENCODING_UTF_8) {
+		id string;
+		size_t length;
+		void *storage;
+
+		length = strlen(cString);
+		string = of_alloc_object([OFString_UTF8 class],
+		    length + 1, 1, &storage);
+
+		return (id)[string _initWithUTF8String: cString
+						length: length
+					       storage: storage];
+	}
+
 	return (id)[[OFString_UTF8 alloc] initWithCString: cString
 						 encoding: encoding];
 }
@@ -278,6 +309,18 @@ static struct {
 	 encoding: (of_string_encoding_t)encoding
 	   length: (size_t)cStringLength
 {
+	if (encoding == OF_STRING_ENCODING_UTF_8) {
+		id string;
+		void *storage;
+
+		string = of_alloc_object([OFString_UTF8 class],
+		    cStringLength + 1, 1, &storage);
+
+		return (id)[string _initWithUTF8String: cString
+						length: cStringLength
+					       storage: storage];
+	}
+
 	return (id)[[OFString_UTF8 alloc] initWithCString: cString
 						 encoding: encoding
 						   length: cStringLength];
