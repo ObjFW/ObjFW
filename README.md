@@ -39,10 +39,6 @@ Using the Mac OS X framework in Xcode
 
     -fconstant-string-class=OFConstantString -fno-constant-cfstrings
 
-  Additionally, since Xcode 4, you need to manually set the compiler to GCC
-  or LLVM-GCC due to bugs in Clang on OS X with using a different constant
-  string class.
-
   Optionally, if you want to use blocks, you also need to add:
 
     -fblocks
