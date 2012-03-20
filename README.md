@@ -16,7 +16,7 @@ Installation
     $ make
     $ make install
 
-  In case you checked out ObjFW from the Mercurial repository, you need
+  In case you checked out ObjFW from the Git repository, you need
   to run the following command first:
 
     $ ./autogen.sh
