@@ -28,7 +28,7 @@ Building as a Mac OS X framework
   It is also possible to build ObjFW as a Mac OS X framework. To do so,
   just execute xcodebuild -target ObjFW in the root directory of ObjFW
   or open the .xcodeproj in Xcode and choose Build -> Build from the
-  menu. Copy the resulting ObjFW.framework to /Library/Frameworks and
+  menu. Copy the resulting ObjFW.framework to `/Library/Frameworks` and
   you are done.
 
 
