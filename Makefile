@@ -28,11 +28,11 @@ tarball:
 		exit 1; \
 	fi; \
 	echo "Generating tarball for version $$V..."; \
-	rm -f objfw-$$V.tar.gz; \
-	rm -fr objfw-$$V; \
-	hg archive objfw-$$V; \
-	cp configure config.h.in objfw-$$V; \
-	cd objfw-$$V && rm -f .hg_archival.txt .hgignore .hgtags && cd ..; \
-	tar cf objfw-$$V.tar objfw-$$V; \
+	rm -fr objfw-$$V objfw-$$V.tar objfw-$$V.tar.gz; \
+	git archive HEAD --prefix objfw-$$V/ -o objfw-$$V.tar && \
+	tar xf objfw-$$V.tar && \
+	rm -f objfw-$$V.tar objfw-$$V/.gitignore && \
+	cp configure config.h.in objfw-$$V/ && \
+	tar cf objfw-$$V.tar objfw-$$V && \
 	gzip -9 objfw-$$V.tar; \
-	rm -fr objfw-$$V
+	rm -fr objfw-$$V objfw-$$V.tar
