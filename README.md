@@ -16,8 +16,8 @@ Installation
     $ make
     $ make install
 
-  In case you checked out ObjFW from the Git repository, you need
-  to run the following command first:
+  In case you checked out ObjFW from the Git repository, you need to run
+  the following command first:
 
     $ ./autogen.sh
 
@@ -26,9 +26,10 @@ Building as a Mac OS X framework
 ================================
 
   It is also possible to build ObjFW as a Mac OS X framework. To do so,
-  just execute xcodebuild -target ObjFW in the root directory of ObjFW or open
-  the .xcodeproj in Xcode and choose Build -> Build from the menu. Copy the
-  resulting ObjFW.framework to /Library/Frameworks and you are done.
+  just execute xcodebuild -target ObjFW in the root directory of ObjFW
+  or open the .xcodeproj in Xcode and choose Build -> Build from the
+  menu. Copy the resulting ObjFW.framework to /Library/Frameworks and
+  you are done.
 
 
 Using the Mac OS X framework in Xcode
