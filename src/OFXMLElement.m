@@ -386,7 +386,7 @@ static Class CDATAClass = Nil;
 		@throw [OFInvalidArgumentException exceptionWithClass: isa
 							     selector: _cmd];
 
-	OF_SETTER(name, name_, YES, YES)
+	OF_SETTER(name, name_, YES, 1)
 }
 
 - (OFString*)name
@@ -396,7 +396,7 @@ static Class CDATAClass = Nil;
 
 - (void)setNamespace: (OFString*)ns_
 {
-	OF_SETTER(ns, ns_, YES, YES)
+	OF_SETTER(ns, ns_, YES, 1)
 }
 
 - (OFString*)namespace
@@ -411,7 +411,6 @@ static Class CDATAClass = Nil;
 
 - (void)setChildren: (OFArray*)children_
 {
-	/* 2 = mutableCopy */
 	OF_SETTER(children, children_, YES, 2)
 }
 
@@ -927,7 +926,7 @@ static Class CDATAClass = Nil;
 
 - (void)setDefaultNamespace: (OFString*)ns_
 {
-	OF_SETTER(defaultNamespace, ns_, YES, YES)
+	OF_SETTER(defaultNamespace, ns_, YES, 1)
 }
 
 - (void)addChild: (OFXMLNode*)child

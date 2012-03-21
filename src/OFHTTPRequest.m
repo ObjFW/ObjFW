@@ -111,7 +111,7 @@ normalizeKey(OFString *key)
 
 - (void)setURL: (OFURL*)URL_
 {
-	OF_SETTER(URL, URL_, YES, YES)
+	OF_SETTER(URL, URL_, YES, 1)
 }
 
 - (OFURL*)URL
@@ -131,7 +131,7 @@ normalizeKey(OFString *key)
 
 - (void)setQueryString: (OFString*)queryString_
 {
-	OF_SETTER(queryString, queryString_, YES, YES)
+	OF_SETTER(queryString, queryString_, YES, 1)
 }
 
 - (OFString*)queryString
@@ -141,7 +141,7 @@ normalizeKey(OFString *key)
 
 - (void)setHeaders: (OFDictionary*)headers_
 {
-	OF_SETTER(headers, headers_, YES, YES)
+	OF_SETTER(headers, headers_, YES, 1)
 }
 
 - (OFDictionary*)headers
