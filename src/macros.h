@@ -100,7 +100,7 @@
 #endif
 
 extern id objc_getProperty(id, SEL, ptrdiff_t, BOOL);
-extern void objc_setProperty(id, SEL, ptrdiff_t, id, BOOL, BOOL);
+extern void objc_setProperty(id, SEL, ptrdiff_t, id, BOOL, signed char);
 
 #define OF_IVAR_OFFSET(ivar) ((intptr_t)&ivar - (intptr_t)self)
 #define OF_GETTER(ivar, atomic) \
