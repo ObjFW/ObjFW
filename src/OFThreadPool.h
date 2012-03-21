@@ -27,16 +27,19 @@ typedef void (^of_thread_pool_block_t)(id object);
 
 /**
  * \brief A class providing a pool of reusable threads.
+ *
+ * \note When the thread pool is released, all threads will terminate after
+ *	 they finish the job they are currently processing.
  */
 @interface OFThreadPool: OFObject
 {
 	size_t size;
 	OFMutableArray *threads;
-	int count;
+	volatile int count;
 @public
 	OFList *queue;
 	OFCondition *queueCondition;
-	int doneCount;
+	volatile int doneCount;
 	OFCondition *countCondition;
 }
 
