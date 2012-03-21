@@ -12,27 +12,14 @@ DISTCLEAN = aclocal.m4		\
 include buildsys.mk
 
 tarball:
-	V=$$(fgrep VERSION= utils/objfw-config.in | \
-	      sed 's/VERSION="\(.*\)"/\1/'); \
-	V2=$$(fgrep AC_INIT configure.ac | \
-	      sed 's/AC_INIT([^,]*,\([^,]*\),.*/\1/' | sed 's/ //'); \
-	V3=$$(fgrep -A1 CFBundleVersion Info.plist | tail -1 | \
-	      sed 's/.*>\(.*\)<.*/\1/'); \
-	V4=$$(fgrep -A1 CFBundleShortVersion Info.plist | tail -1 | \
-	      sed 's/.*>\(.*\)<.*/\1/'); \
-	if test x"$$V2" != x"$$V" \
-	    -o x"$$V3" != x"$$V" \
-	    -o x"$$V4" != x"$$V4"; then \
-		echo "Not all files have the same version number!"; \
-		echo "Files: util/objfw-config.in configure.ac Info.plist"; \
-		exit 1; \
-	fi; \
-	echo "Generating tarball for version $$V..."; \
-	rm -fr objfw-$$V objfw-$$V.tar objfw-$$V.tar.gz; \
-	git archive HEAD --prefix objfw-$$V/ -o objfw-$$V.tar && \
-	tar xf objfw-$$V.tar && \
-	rm -f objfw-$$V.tar objfw-$$V/.gitignore && \
-	cp configure config.h.in objfw-$$V/ && \
-	tar cf objfw-$$V.tar objfw-$$V && \
-	gzip -9 objfw-$$V.tar; \
-	rm -fr objfw-$$V objfw-$$V.tar
+	echo "Generating tarball for version ${PACKAGE_VERSION}..."
+	rm -fr tmp.tar objfw-${PACKAGE_VERSION} objfw-${PACKAGE_VERSION}.tar \
+		objfw-${PACKAGE_VERSION}.tar.gz
+	git archive HEAD --prefix objfw-${PACKAGE_VERSION}/ -o tmp.tar
+	tar xf tmp.tar
+	rm -f tmp.tar objfw-${PACKAGE_VERSION}/.gitignore
+	cp configure config.h.in objfw-${PACKAGE_VERSION}/
+	tar cf objfw-${PACKAGE_VERSION}.tar objfw-${PACKAGE_VERSION}
+	rm -fr objfw-${PACKAGE_VERSION}
+	gzip -9 objfw-${PACKAGE_VERSION}.tar
+	rm -f objfw-${PACKAGE_VERSION}.tar
