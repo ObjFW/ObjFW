@@ -33,13 +33,26 @@ of_atomic_add_int(volatile int *p, int i)
 #if !defined(OF_THREADS)
 	return (*p += i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	__asm__ (
-	    "lock\n\t"
-	    "xaddl	%0, %2\n\t"
-	    "addl	%1, %0"
-	    : "+&r"(i)
-	    : "r"(i), "m"(*p)
-	);
+	if (sizeof(int) == 4)
+		__asm__ (
+		    "lock\n\t"
+		    "xaddl	%0, %2\n\t"
+		    "addl	%1, %0"
+		    : "+&r"(i)
+		    : "r"(i), "m"(*p)
+		);
+# ifdef OF_AMD64_ASM
+	else if (sizeof(int) == 8)
+		__asm__ (
+		    "lock\n\t"
+		    "xaddq	%0, %2\n\t"
+		    "addq	%1, %0"
+		    : "+&r"(i)
+		    : "r"(i), "m"(*p)
+		);
+# endif
+	else
+		abort();
 
 	return i;
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
@@ -123,14 +136,28 @@ of_atomic_sub_int(volatile int *p, int i)
 #if !defined(OF_THREADS)
 	return (*p -= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	__asm__ (
-	    "negl	%0\n\t"
-	    "lock\n\t"
-	    "xaddl	%0, %2\n\t"
-	    "subl	%1, %0"
-	    : "+&r"(i)
-	    : "r"(i), "m"(*p)
-	);
+	if (sizeof(int) == 4)
+		__asm__ (
+		    "negl	%0\n\t"
+		    "lock\n\t"
+		    "xaddl	%0, %2\n\t"
+		    "subl	%1, %0"
+		    : "+&r"(i)
+		    : "r"(i), "m"(*p)
+		);
+# ifdef OF_AMD64_ASM
+	else if (sizeof(int) == 8)
+		__asm__ (
+		    "negq	%0\n\t"
+		    "lock\n\t"
+		    "xaddq	%0, %2\n\t"
+		    "subq	%1, %0"
+		    : "+&r"(i)
+		    : "r"(i), "m"(*p)
+		);
+# endif
+	else
+		abort();
 
 	return i;
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
@@ -219,15 +246,30 @@ of_atomic_inc_int(volatile int *p)
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	uint32_t i;
 
-	__asm__ (
-	    "xorl	%0, %0\n\t"
-	    "incl	%0\n\t"
-	    "lock\n\t"
-	    "xaddl	%0, %1\n\t"
-	    "incl	%0"
-	    : "=&r"(i)
-	    : "m"(*p)
-	);
+	if (sizeof(int) == 4)
+		__asm__ (
+		    "xorl	%0, %0\n\t"
+		    "incl	%0\n\t"
+		    "lock\n\t"
+		    "xaddl	%0, %1\n\t"
+		    "incl	%0"
+		    : "=&r"(i)
+		    : "m"(*p)
+		);
+# ifdef OF_AMD64_ASM
+	else if (sizeof(int) == 8)
+		__asm__ (
+		    "xorq	%0, %0\n\t"
+		    "incq	%0\n\t"
+		    "lock\n\t"
+		    "xaddq	%0, %1\n\t"
+		    "incq	%0"
+		    : "=&r"(i)
+		    : "m"(*p)
+		);
+# endif
+	else
+		abort();
 
 	return i;
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
@@ -277,15 +319,30 @@ of_atomic_dec_int(volatile int *p)
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	uint32_t i;
 
-	__asm__ (
-	    "xorl	%0, %0\n\t"
-	    "decl	%0\n\t"
-	    "lock\n\t"
-	    "xaddl	%0, %1\n\t"
-	    "decl	%0"
-	    : "=&r"(i)
-	    : "m"(*p)
-	);
+	if (sizeof(int) == 4)
+		__asm__ (
+		    "xorl	%0, %0\n\t"
+		    "decl	%0\n\t"
+		    "lock\n\t"
+		    "xaddl	%0, %1\n\t"
+		    "decl	%0"
+		    : "=&r"(i)
+		    : "m"(*p)
+		);
+# ifdef OF_AMD64_ASM
+	else if (sizeof(int) == 8)
+		__asm__ (
+		    "xorq	%0, %0\n\t"
+		    "decq	%0\n\t"
+		    "lock\n\t"
+		    "xaddq	%0, %1\n\t"
+		    "decq	%0"
+		    : "=&r"(i)
+		    : "m"(*p)
+		);
+# endif
+	else
+		abort();
 
 	return i;
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
@@ -334,18 +391,36 @@ of_atomic_or_int(volatile unsigned int *p, unsigned int i)
 #if !defined(OF_THREADS)
 	return (*p |= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	__asm__ (
-	    "0:\n\t"
-	    "movl	%2, %0\n\t"
-	    "movl	%2, %%eax\n\t"
-	    "orl	%1, %0\n\t"
-	    "lock\n\t"
-	    "cmpxchg	%0, %2\n\t"
-	    "jne	0\n\t"
-	    : "=&r"(i)
-	    : "r"(i), "m"(*p)
-	    : "eax"
-	);
+	if (sizeof(int) == 4)
+		__asm__ (
+		    "0:\n\t"
+		    "movl	%2, %0\n\t"
+		    "movl	%2, %%eax\n\t"
+		    "orl	%1, %0\n\t"
+		    "lock\n\t"
+		    "cmpxchg	%0, %2\n\t"
+		    "jne	0\n\t"
+		    : "=&r"(i)
+		    : "r"(i), "m"(*p)
+		    : "eax"
+		);
+# ifdef OF_AMD64_ASM
+	if (sizeof(int) == 8)
+		__asm__ (
+		    "0:\n\t"
+		    "movq	%2, %0\n\t"
+		    "movq	%2, %%rax\n\t"
+		    "orq	%1, %0\n\t"
+		    "lock\n\t"
+		    "cmpxchg	%0, %2\n\t"
+		    "jne	0\n\t"
+		    : "=&r"(i)
+		    : "r"(i), "m"(*p)
+		    : "rax"
+		);
+# endif
+	else
+		abort();
 
 	return i;
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
@@ -395,18 +470,36 @@ of_atomic_and_int(volatile unsigned int *p, unsigned int i)
 #if !defined(OF_THREADS)
 	return (*p &= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	__asm__ (
-	    "0:\n\t"
-	    "movl	%2, %0\n\t"
-	    "movl	%2, %%eax\n\t"
-	    "andl	%1, %0\n\t"
-	    "lock\n\t"
-	    "cmpxchg	%0, %2\n\t"
-	    "jne	0\n\t"
-	    : "=&r"(i)
-	    : "r"(i), "m"(*p)
-	    : "eax"
-	);
+	if (sizeof(int) == 4)
+		__asm__ (
+		    "0:\n\t"
+		    "movl	%2, %0\n\t"
+		    "movl	%2, %%eax\n\t"
+		    "andl	%1, %0\n\t"
+		    "lock\n\t"
+		    "cmpxchg	%0, %2\n\t"
+		    "jne	0\n\t"
+		    : "=&r"(i)
+		    : "r"(i), "m"(*p)
+		    : "eax"
+		);
+# ifdef OF_AMD64_ASM
+	if (sizeof(int) == 8)
+		__asm__ (
+		    "0:\n\t"
+		    "movq	%2, %0\n\t"
+		    "movq	%2, %%rax\n\t"
+		    "andq	%1, %0\n\t"
+		    "lock\n\t"
+		    "cmpxchg	%0, %2\n\t"
+		    "jne	0\n\t"
+		    : "=&r"(i)
+		    : "r"(i), "m"(*p)
+		    : "rax"
+		);
+# endif
+	else
+		abort();
 
 	return i;
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
@@ -456,18 +549,36 @@ of_atomic_xor_int(volatile unsigned int *p, unsigned int i)
 #if !defined(OF_THREADS)
 	return (*p ^= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	__asm__ (
-	    "0:\n\t"
-	    "movl	%2, %0\n\t"
-	    "movl	%2, %%eax\n\t"
-	    "xorl	%1, %0\n\t"
-	    "lock\n\t"
-	    "cmpxchgl	%0, %2\n\t"
-	    "jne	0\n\t"
-	    : "=&r"(i)
-	    : "r"(i), "m"(*p)
-	    : "eax"
-	);
+	if (sizeof(int) == 4)
+		__asm__ (
+		    "0:\n\t"
+		    "movl	%2, %0\n\t"
+		    "movl	%2, %%eax\n\t"
+		    "xorl	%1, %0\n\t"
+		    "lock\n\t"
+		    "cmpxchg	%0, %2\n\t"
+		    "jne	0\n\t"
+		    : "=&r"(i)
+		    : "r"(i), "m"(*p)
+		    : "eax"
+		);
+# ifdef OF_AMD64_ASM
+	if (sizeof(int) == 8)
+		__asm__ (
+		    "0:\n\t"
+		    "movq	%2, %0\n\t"
+		    "movq	%2, %%rax\n\t"
+		    "xorq	%1, %0\n\t"
+		    "lock\n\t"
+		    "cmpxchg	%0, %2\n\t"
+		    "jne	0\n\t"
+		    : "=&r"(i)
+		    : "r"(i), "m"(*p)
+		    : "rax"
+		);
+# endif
+	else
+		abort();
 
 	return i;
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
@@ -522,7 +633,7 @@ of_atomic_cmpswap_int(volatile int *p, int o, int n)
 
 	return NO;
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	int r;
+	int32_t r;
 
 	__asm__ (
 	    "xorl	%0, %0\n\t"
