@@ -271,6 +271,8 @@
 		4B90B7A5133AD87D00BD33CB /* OFConnectionFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B90B79B133AD87D00BD33CB /* OFConnectionFailedException.m */; };
 		4B90B7A6133AD87D00BD33CB /* OFListenFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B90B79C133AD87D00BD33CB /* OFListenFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B90B7A7133AD87D00BD33CB /* OFListenFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B90B79D133AD87D00BD33CB /* OFListenFailedException.m */; };
+		4B9361A81511000C00DCD16B /* OFThreadPool.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B9361A61511000C00DCD16B /* OFThreadPool.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B9361A91511000C00DCD16B /* OFThreadPool.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9361A71511000C00DCD16B /* OFThreadPool.m */; };
 		4B989C2F13771A3700109A30 /* OFSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B989C2E13771A3700109A30 /* OFSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B9BB7BD141CDE2D000AD1CC /* OFArray_adjacentSubarray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B9BB7B9141CDE2D000AD1CC /* OFArray_adjacentSubarray.h */; };
 		4B9BB7BE141CDE2D000AD1CC /* OFArray_adjacentSubarray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9BB7BA141CDE2D000AD1CC /* OFArray_adjacentSubarray.m */; };
@@ -619,6 +621,8 @@
 		4B90B79B133AD87D00BD33CB /* OFConnectionFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFConnectionFailedException.m; path = src/exceptions/OFConnectionFailedException.m; sourceTree = "<group>"; };
 		4B90B79C133AD87D00BD33CB /* OFListenFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFListenFailedException.h; path = src/exceptions/OFListenFailedException.h; sourceTree = "<group>"; };
 		4B90B79D133AD87D00BD33CB /* OFListenFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFListenFailedException.m; path = src/exceptions/OFListenFailedException.m; sourceTree = "<group>"; };
+		4B9361A61511000C00DCD16B /* OFThreadPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFThreadPool.h; path = src/OFThreadPool.h; sourceTree = "<group>"; };
+		4B9361A71511000C00DCD16B /* OFThreadPool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFThreadPool.m; path = src/OFThreadPool.m; sourceTree = "<group>"; };
 		4B981CDE116F71DD00294DB7 /* OFSeekableStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSeekableStream.h; path = src/OFSeekableStream.h; sourceTree = "<group>"; };
 		4B981CDF116F71DD00294DB7 /* OFSeekableStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSeekableStream.m; path = src/OFSeekableStream.m; sourceTree = "<group>"; };
 		4B989C2E13771A3700109A30 /* OFSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSerialization.h; path = src/OFSerialization.h; sourceTree = "<group>"; };
@@ -999,6 +1003,8 @@
 				4BD653C4143B8489006182F0 /* OFTCPSocket+SOCKS5.m */,
 				4B6799831099E7C50041064A /* OFThread.h */,
 				4B6799841099E7C50041064A /* OFThread.m */,
+				4B9361A61511000C00DCD16B /* OFThreadPool.h */,
+				4B9361A71511000C00DCD16B /* OFThreadPool.m */,
 				4BA02BA015041F5900002F84 /* OFTLSSocket.h */,
 				4B4A61F212DF5EA20048F3F2 /* OFURL.h */,
 				4B4A61F312DF5EA20048F3F2 /* OFURL.m */,
@@ -1178,6 +1184,7 @@
 				4B3D23DC1337FCB000DD29B8 /* OFString+XMLUnescaping.h in Headers */,
 				4B3D23DD1337FCB000DD29B8 /* OFTCPSocket.h in Headers */,
 				4B3D23DE1337FCB000DD29B8 /* OFThread.h in Headers */,
+				4B9361A81511000C00DCD16B /* OFThreadPool.h in Headers */,
 				4BA02BA215041F5900002F84 /* OFTLSSocket.h in Headers */,
 				4B3D23DF1337FCB000DD29B8 /* OFURL.h in Headers */,
 				4B3D23E01337FCB000DD29B8 /* OFXMLAttribute.h in Headers */,
@@ -1473,6 +1480,7 @@
 				4B3D23AB1337FC0D00DD29B8 /* OFTCPSocket.m in Sources */,
 				4BD653C6143B8489006182F0 /* OFTCPSocket+SOCKS5.m in Sources */,
 				4B3D23AC1337FC0D00DD29B8 /* OFThread.m in Sources */,
+				4B9361A91511000C00DCD16B /* OFThreadPool.m in Sources */,
 				4B3D23AD1337FC0D00DD29B8 /* OFURL.m in Sources */,
 				4B3D23AE1337FC0D00DD29B8 /* OFXMLAttribute.m in Sources */,
 				4B49EA6E143B3A090005BBC6 /* OFXMLCDATA.m in Sources */,

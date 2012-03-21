@@ -50,6 +50,7 @@ SRCS = OFApplication.m			\
        OFString+XMLUnescaping.m		\
        OFTCPSocket.m			\
        ${OFTHREAD_M}			\
+       OFThreadPool.m			\
        OFURL.m				\
        OFXMLAttribute.m			\
        OFXMLCDATA.m			\
