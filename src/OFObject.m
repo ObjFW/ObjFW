@@ -69,8 +69,8 @@ struct pre_ivar {
 };
 
 struct pre_mem {
-	id owner;
 	struct pre_mem *prev, *next;
+	id owner;
 };
 
 #define PRE_IVAR_ALIGN ((sizeof(struct pre_ivar) + \
@@ -987,6 +987,13 @@ void _references_to_categories_of_OFObject(void)
 	iter = PRE_IVAR->firstMem;
 	while (iter != NULL) {
 		struct pre_mem *next = iter->next;
+
+		/*
+		 * We can use owner as a sentinel to prevent exploitation in
+		 * case there is a buffer underflow somewhere.
+		 */
+		if (iter->owner != self)
+			abort();
 
 		free(iter);
 
