@@ -83,11 +83,21 @@ of_atomic_add_ptr(void* volatile *p, intptr_t i)
 {
 #if !defined(OF_THREADS)
 	return (*(char* volatile*)p += i);
-#elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
+#elif defined(OF_X86_ASM)
 	__asm__ (
 	    "lock\n\t"
 	    "xaddl	%0, %2\n\t"
 	    "addl	%1, %0"
+	    : "+&r"(i)
+	    : "r"(i), "m"(*p)
+	);
+
+	return (void*)i;
+#elif defined(OF_AMD64_ASM)
+	__asm__ (
+	    "lock\n\t"
+	    "xaddq	%0, %2\n\t"
+	    "addq	%1, %0"
 	    : "+&r"(i)
 	    : "r"(i), "m"(*p)
 	);
@@ -165,12 +175,23 @@ of_atomic_sub_ptr(void* volatile *p, intptr_t i)
 {
 #if !defined(OF_THREADS)
 	return (*(char* volatile*)p -= i);
-#elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
+#elif defined(OF_X86_ASM)
 	__asm__ (
 	    "negl	%0\n\t"
 	    "lock\n\t"
 	    "xaddl	%0, %2\n\t"
 	    "subl	%1, %0"
+	    : "+&r"(i)
+	    : "r"(i), "m"(*p)
+	);
+
+	return (void*)i;
+#elif defined(OF_AMD64_ASM)
+	__asm__ (
+	    "negq	%0\n\t"
+	    "lock\n\t"
+	    "xaddq	%0, %2\n\t"
+	    "subq	%1, %0"
 	    : "+&r"(i)
 	    : "r"(i), "m"(*p)
 	);
