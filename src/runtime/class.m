@@ -386,13 +386,13 @@ class_replaceMethod(Class cls, SEL sel, IMP newimp, const char *types)
 	if ((ml = malloc(sizeof(struct objc_method_list))) == NULL)
 		ERROR("Not enough memory to replace method!");
 
-	ml->next = cls->isa->methodlist;
+	ml->next = cls->methodlist;
 	ml->count = 1;
 	ml->methods[0].sel.uid = sel->uid;
 	ml->methods[0].sel.types = types;
 	ml->methods[0].imp = newimp;
 
-	cls->isa->methodlist = ml;
+	cls->methodlist = ml;
 
 	objc_update_dtable(cls);
 
