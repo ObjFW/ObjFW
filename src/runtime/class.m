@@ -216,13 +216,8 @@ objc_lookup_class(const char *name)
 
 		add_subclass(cls);
 		add_subclass(cls->isa);
-	} else if ((superclass = ((struct objc_abi_class*)cls->isa)->superclass)
-	    != NULL) {
-		if (strcmp(superclass, name))
-			abort();
-
+	} else
 		cls->isa->superclass = cls;
-	}
 
 	objc_update_dtable(cls);
 	objc_update_dtable(cls->isa);
