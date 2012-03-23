@@ -26,7 +26,7 @@ OBJCFLAGS="@GNU_RUNTIME@ -fexceptions -fobjc-exceptions"
 OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstantString"
 OBJCFLAGS="$OBJCFLAGS @NO_CONST_CFSTRINGS@ @BLOCKS_FLAGS@ @NO_WARN_UNUSED@"
 LIB_CFLAGS="@LIB_CFLAGS@"
-LIB_LDFLAGS='@LIB_LDFLAGS@'
+LIB_LDFLAGS="@LIB_LDFLAGS@"
 LIB_PREFIX="@LIB_PREFIX@"
 LIB_SUFFIX="@LIB_SUFFIX@"
 LDFLAGS=""
@@ -108,8 +108,7 @@ while test ! -z "$1"; do
 				exit 1
 			fi
 
-			eval "printf '%s' \"$(echo $LIB_LDFLAGS | \
-				sed 's/\$\$/$/g')\""
+			printf "%s" "$LIB_LDFLAGS"
 			;;
 		--lib-prefix)
 			if test x"$LIB_MAJOR" = x"" -o x"$LIB_MINOR" = x""; then
