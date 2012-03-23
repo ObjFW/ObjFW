@@ -83,7 +83,8 @@ objc_update_dtable(Class cls)
 	for (ml = cls->methodlist; ml != NULL; ml = ml->next)
 		for (i = 0; i < ml->count; i++)
 			objc_sparsearray_set(dtable,
-			    ml->methods[i].sel.uid, ml->methods[i].imp);
+			    (uint32_t)ml->methods[i].sel.uid,
+			    ml->methods[i].imp);
 
 	if ((cats = objc_categories_for_class(cls)) != NULL) {
 		for (i = 0; cats[i] != NULL; i++) {

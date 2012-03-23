@@ -782,7 +782,7 @@ void _references_to_categories_of_OFObject(void)
 {
 	/*
 	 * Cache OFAutoreleasePool since class lookups are expensive with the
-	 * GNU runtime.
+	 * GNU ABI.
 	 */
 	if (autoreleasePool == Nil)
 		autoreleasePool = [OFAutoreleasePool class];
