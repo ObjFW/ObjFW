@@ -90,11 +90,8 @@ static SEL cxx_destruct = NULL;
 size_t of_pagesize;
 size_t of_num_cpus;
 
-#ifdef NEED_OBJC_SYNC_INIT
+#ifdef OF_OBJFW_RUNTIME
 extern BOOL objc_sync_init();
-#endif
-
-#ifdef NEED_OBJC_PROPERTIES_INIT
 extern BOOL objc_properties_init();
 #endif
 
@@ -185,14 +182,12 @@ void _references_to_categories_of_OFObject(void)
 @implementation OFObject
 + (void)load
 {
-#ifdef NEED_OBJC_SYNC_INIT
+#ifdef OF_OBJFW_RUNTIME
 	if (!objc_sync_init()) {
 		fputs("Runtime error: objc_sync_init() failed!\n", stderr);
 		abort();
 	}
-#endif
 
-#ifdef NEED_OBJC_PROPERTIES_INIT
 	if (!objc_properties_init()) {
 		fputs("Runtime error: objc_properties_init() failed!\n",
 		    stderr);

@@ -202,12 +202,6 @@ case $objc_runtime in
 		;;
 esac
 
-AC_CHECK_FUNC(objc_getProperty,, [
-	AC_DEFINE(NEED_OBJC_PROPERTIES_INIT, 1,
-		[Whether objc_properties_init needs to be called])
-	AC_SUBST(OBJC_PROPERTIES_M, "objc_properties.m")
-])
-
 AC_CHECK_FUNC(objc_enumerationMutation, [
 	AC_DEFINE(HAVE_OBJC_ENUMERATIONMUTATION, 1,
 		[Whether we have objc_enumerationMutation])
@@ -376,12 +370,6 @@ AS_IF([test x"$enable_threads" != x"no"], [
 	AC_SUBST(OFTHREADTESTS_M, "OFThreadTests.m")
 	AC_SUBST(OFHTTPREQUESTTESTS_M, "OFHTTPRequestTests.m")
 	AC_SUBST(THREADING_H, "threading.h")
-
-	AC_CHECK_FUNC(objc_sync_enter,, [
-		AC_SUBST(OBJC_SYNC_M, "objc_sync.m")
-		AC_DEFINE(NEED_OBJC_SYNC_INIT, 1,
-			[Whether objc_sync_init needs to be called])
-	])
 
 	atomic_ops="none"
 
