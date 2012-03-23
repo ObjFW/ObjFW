@@ -280,13 +280,7 @@ class_getInstanceSize(Class cls)
 }
 
 IMP
-objc_get_class_method(Class cls, SEL sel)
-{
-	return objc_sparsearray_get(cls->isa->dtable, (uint32_t)sel->uid);
-}
-
-IMP
-objc_get_instance_method(Class cls, SEL sel)
+class_getMethodImplementation(Class cls, SEL sel)
 {
 	return objc_sparsearray_get(cls->dtable, (uint32_t)sel->uid);
 }

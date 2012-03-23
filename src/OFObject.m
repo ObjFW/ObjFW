@@ -287,11 +287,7 @@ void _references_to_categories_of_OFObject(void)
 
 + (IMP)instanceMethodForSelector: (SEL)selector
 {
-#if defined(OF_OBJFW_RUNTIME)
-	return objc_get_instance_method(self, selector);
-#else
 	return class_getMethodImplementation(self, selector);
-#endif
 }
 
 + (const char*)typeEncodingForInstanceSelector: (SEL)selector
@@ -519,11 +515,7 @@ void _references_to_categories_of_OFObject(void)
 
 - (IMP)methodForSelector: (SEL)selector
 {
-#if defined(OF_OBJFW_RUNTIME)
-	return objc_msg_lookup(self, selector);
-#else
 	return class_getMethodImplementation(isa, selector);
-#endif
 }
 
 - (id)performSelector: (SEL)selector
