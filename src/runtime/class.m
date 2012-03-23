@@ -300,7 +300,7 @@ objc_get_type_encoding(Class cls, SEL sel)
 
 	objc_global_mutex_lock();
 
-	for (ml = cls->isa->methodlist; ml != NULL; ml = ml->next) {
+	for (ml = cls->methodlist; ml != NULL; ml = ml->next) {
 		for (i = 0; i < ml->count; i++) {
 			if (ml->methods[i].sel.uid == sel->uid) {
 				const char *ret = ml->methods[i].sel.types;
@@ -312,7 +312,7 @@ objc_get_type_encoding(Class cls, SEL sel)
 
 	if ((cats = objc_categories_for_class(cls)) != NULL) {
 		for (; *cats != NULL; cats++) {
-			for (ml = (*cats)->class_methods; ml != NULL;
+			for (ml = (*cats)->instance_methods; ml != NULL;
 			    ml = ml->next) {
 				for (i = 0; i < ml->count; i++) {
 					if (ml->methods[i].sel.uid ==
