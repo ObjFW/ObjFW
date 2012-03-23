@@ -249,6 +249,43 @@ of_log(OFConstantString *format, ...)
 				  path: path];
 }
 
++ (void)createDirectoryAtPath: (OFString*)path
+		createParents: (BOOL)createParents
+{
+	OFAutoreleasePool *pool, *pool2;
+	OFArray *pathComponents;
+	OFString *currentPath = nil, *component;
+	OFEnumerator *enumerator;
+
+	if (!createParents) {
+		[OFFile createDirectoryAtPath: path];
+		return;
+	}
+
+	pool = [[OFAutoreleasePool alloc] init];
+
+	pathComponents = [path pathComponents];
+	enumerator = [pathComponents objectEnumerator];
+	pool2 = [[OFAutoreleasePool alloc] init];
+	while ((component = [enumerator nextObject]) != nil) {
+		if (currentPath != nil)
+			currentPath = [OFString
+			    stringWithPath: currentPath, component, nil];
+		else
+			currentPath = component;
+
+		if (![currentPath isEqual: @""] &&
+		    ![OFFile directoryExistsAtPath: currentPath])
+			[OFFile createDirectoryAtPath: currentPath];
+
+		[currentPath retain];
+		[pool2 releaseObjects];
+		[currentPath autorelease];
+	}
+
+	[pool release];
+}
+
 + (OFArray*)filesInDirectoryAtPath: (OFString*)path
 {
 	OFAutoreleasePool *pool;
@@ -372,6 +409,20 @@ of_log(OFConstantString *format, ...)
 # endif
 }
 #endif
+
++ (off_t)sizeOfFile: (OFString*)path
+{
+	struct stat s;
+
+	if (stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	    &s) == -1)
+		/* FIXME: Maybe use another exception? */
+		@throw [OFOpenFileFailedException exceptionWithClass: self
+								path: path
+								mode: @"r"];
+
+	return s.st_size;
+}
 
 + (OFDate*)modificationDateOfFile: (OFString*)path
 {

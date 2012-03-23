@@ -62,6 +62,11 @@
 # define OF_ENDIANESS_NATIVE OF_ENDIANESS_LITTLE_ENDIAN
 #endif
 
+/* Hopefully no arch needs more than 16 bytes padding */
+#ifndef __BIGGEST_ALIGNMENT__
+# define __BIGGEST_ALIGNMENT__ 16
+#endif
+
 #ifdef __GNUC__
 # if defined(__amd64__) || defined(__x86_64__)
 #  define OF_AMD64_ASM
@@ -83,6 +88,9 @@
 #else
 # define OF_PATH_DELIMITER '\\'
 #endif
+
+extern id objc_getProperty(id, SEL, ptrdiff_t, BOOL);
+extern void objc_setProperty(id, SEL, ptrdiff_t, id, BOOL, signed char);
 
 #define OF_IVAR_OFFSET(ivar) ((intptr_t)&ivar - (intptr_t)self)
 #define OF_GETTER(ivar, atomic) \

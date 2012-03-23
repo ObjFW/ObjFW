@@ -130,7 +130,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 - (void)setSOCKS5Host: (OFString*)host
 {
-	OF_SETTER(SOCKS5Host, host, YES, YES)
+	OF_SETTER(SOCKS5Host, host, YES, 1)
 }
 
 - (OFString*)SOCKS5Host

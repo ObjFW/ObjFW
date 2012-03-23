@@ -59,11 +59,14 @@ static OFCondition *cond;
 
 	client = [listener accept];
 
-	if (![[client readLine] isEqual: @"GET /foo HTTP/1.0"])
+	if (![[client readLine] isEqual: @"GET /foo HTTP/1.1"])
 		assert(0);
 
 	if (![[client readLine] isEqual:
 	    [OFString stringWithFormat: @"Host: 127.0.0.1:%" @PRIu16, port]])
+		assert(0);
+
+	if (![[client readLine] isEqual: @"Connection: close"])
 		assert(0);
 
 	if (![[client readLine] hasPrefix: @"User-Agent:"])
@@ -72,7 +75,7 @@ static OFCondition *cond;
 	if (![[client readLine] isEqual: @""])
 		assert(0);
 
-	[client writeString: @"HTTP/1.0 200 OK\r\n"
+	[client writeString: @"HTTP/1.1 200 OK\r\n"
 			     @"cONTeNT-lENgTH: 7\r\n"
 			     @"\r\n"
 			     @"foo\n"

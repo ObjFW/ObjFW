@@ -71,7 +71,7 @@
 - (BOOL)observeWithTimeout: (int)timeout
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFStream **cArray;
+	OFStream **objects;
 	fd_set readFDs_;
 	fd_set writeFDs_;
 	fd_set exceptFDs_;
@@ -113,19 +113,19 @@
 #endif
 	}
 
-	cArray = [readStreams cArray];
+	objects = [readStreams objects];
 	count = [readStreams count];
 
 	for (i = 0; i < count; i++) {
-		int fileDescriptor = [cArray[i] fileDescriptor];
+		int fileDescriptor = [objects[i] fileDescriptor];
 
 		if (FD_ISSET(fileDescriptor, &readFDs_)) {
-			[delegate streamIsReadyForReading: cArray[i]];
+			[delegate streamIsReadyForReading: objects[i]];
 			[pool releaseObjects];
 		}
 
 		if (FD_ISSET(fileDescriptor, &exceptFDs_)) {
-			[delegate streamDidReceiveException: cArray[i]];
+			[delegate streamDidReceiveException: objects[i]];
 			[pool releaseObjects];
 
 			/*
@@ -136,19 +136,19 @@
 		}
 	}
 
-	cArray = [writeStreams cArray];
+	objects = [writeStreams objects];
 	count = [writeStreams count];
 
 	for (i = 0; i < count; i++) {
-		int fileDescriptor = [cArray[i] fileDescriptor];
+		int fileDescriptor = [objects[i] fileDescriptor];
 
 		if (FD_ISSET(fileDescriptor, &writeFDs_)) {
-			[delegate streamIsReadyForWriting: cArray[i]];
+			[delegate streamIsReadyForWriting: objects[i]];
 			[pool releaseObjects];
 		}
 
 		if (FD_ISSET(fileDescriptor, &exceptFDs_)) {
-			[delegate streamDidReceiveException: cArray[i]];
+			[delegate streamDidReceiveException: objects[i]];
 			[pool releaseObjects];
 		}
 	}

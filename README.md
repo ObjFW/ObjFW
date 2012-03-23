@@ -7,7 +7,8 @@ would otherwise need if you want to be portable.
 See https://webkeks.org/objfw for more information.
 
 
-INSTALLATION
+Installation
+============
 
   To install ObjFW, just run the following commands:
 
@@ -15,37 +16,37 @@ INSTALLATION
     $ make
     $ make install
 
-  In case you checked out ObjFW from the Mercurial repository, you need
-  to run the following command first:
+  In case you checked out ObjFW from the Git repository, you need to run
+  the following command first:
 
     $ ./autogen.sh
 
 
-BUILDING AS A MAC OS X FRAMEWORK
+Building as a Mac OS X framework
+================================
 
   It is also possible to build ObjFW as a Mac OS X framework. To do so,
-  just execute xcodebuild -target ObjFW in the root directory of ObjFW or open
-  the .xcodeproj in Xcode and choose Build -> Build from the menu. Copy the
-  resulting ObjFW.framework to /Library/Frameworks and you are done.
+  just execute xcodebuild -target ObjFW in the root directory of ObjFW
+  or open the .xcodeproj in Xcode and choose Build -> Build from the
+  menu. Copy the resulting ObjFW.framework to `/Library/Frameworks` and
+  you are done.
 
 
-USING THE MAC OS X FRAMEWORK IN XCODE
+Using the Mac OS X framework in Xcode
+=====================================
 
   To use the Mac OS X framework in Xcode, you need to add the .framework
   to your project and add the following flags to "Other C Flags":
 
     -fconstant-string-class=OFConstantString -fno-constant-cfstrings
 
-  Additionally, since Xcode 4, you need to manually set the compiler to GCC
-  or LLVM-GCC due to bugs in Clang on OS X with using a different constant
-  string class.
-
   Optionally, if you want to use blocks, you also need to add:
 
     -fblocks
 
 
-BUGS AND FEATURE REQUESTS
+Bugs and feature requests
+=========================
 
   If you find any bugs or have feature requests, feel free to send a
   mail to js-spam@webkeks.org (remove -spam from the address!).

@@ -108,16 +108,11 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 	return (id)[[OFMutableArray_adjacent alloc] initWithArray: array];
 }
 
-- initWithCArray: (id*)objects
+- initWithObjects: (id*)objects
+	    count: (size_t)count
 {
-	return (id)[[OFMutableArray_adjacent alloc] initWithCArray: objects];
-}
-
-- initWithCArray: (id*)objects
-	  length: (size_t)length
-{
-	return (id)[[OFMutableArray_adjacent alloc] initWithCArray: objects
-							    length: length];
+	return (id)[[OFMutableArray_adjacent alloc] initWithObjects: objects
+							      count: count];
 }
 
 - initWithSerialization: (OFXMLElement*)element
@@ -198,6 +193,13 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 {
 	@throw [OFNotImplementedException exceptionWithClass: isa
 						    selector: _cmd];
+}
+
+-    (void)setObject: (id)object
+  atIndexedSubscript: (size_t)index
+{
+	[self replaceObjectAtIndex: index
+			withObject: object];
 }
 
 - (void)replaceObject: (id)oldObject

@@ -75,16 +75,11 @@ static struct {
 	return (id)[[OFArray_adjacent alloc] initWithArray: array];
 }
 
-- initWithCArray: (id*)objects
+- initWithObjects: (id*)objects
+	    count: (size_t)count
 {
-	return (id)[[OFArray_adjacent alloc] initWithCArray: objects];
-}
-
-- initWithCArray: (id*)objects
-	  length: (size_t)length
-{
-	return (id)[[OFArray_adjacent alloc] initWithCArray: objects
-						     length: length];
+	return (id)[[OFArray_adjacent alloc] initWithObjects: objects
+						       count: count];
 }
 
 - initWithSerialization: (OFXMLElement*)element
@@ -157,16 +152,11 @@ static struct {
 	return [[[self alloc] initWithArray: array] autorelease];
 }
 
-+ arrayWithCArray: (id*)objects
++ arrayWithObjects: (id*)objects
+	     count: (size_t)count
 {
-	return [[[self alloc] initWithCArray: objects] autorelease];
-}
-
-+ arrayWithCArray: (id*)objects
-	   length: (size_t)length
-{
-	return [[[self alloc] initWithCArray: objects
-				      length: length] autorelease];
+	return [[[self alloc] initWithObjects: objects
+					count: count] autorelease];
 }
 
 - init
@@ -216,16 +206,8 @@ static struct {
 						    selector: _cmd];
 }
 
-- initWithCArray: (id*)objects
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithCArray: (id*)objects
-	  length: (size_t)length
+- initWithObjects: (id*)objects
+	    count: (size_t)count
 {
 	Class c = isa;
 	[self release];
@@ -256,7 +238,7 @@ static struct {
 		buffer[i] = [self objectAtIndex: range.start + i];
 }
 
-- (id*)cArray
+- (id*)objects
 {
 	OFObject *container;
 	size_t count;
@@ -287,6 +269,11 @@ static struct {
 {
 	@throw [OFNotImplementedException exceptionWithClass: isa
 						    selector: _cmd];
+}
+
+- (id)objectAtIndexedSubscript: (size_t)index
+{
+	return [self objectAtIndex: index];
 }
 
 - (size_t)indexOfObject: (id)object
@@ -355,8 +342,8 @@ static struct {
 		[self getObjects: buffer
 			 inRange: range];
 
-		ret = [OFArray arrayWithCArray: buffer
-					length: range.length];
+		ret = [OFArray arrayWithObjects: buffer
+					  count: range.length];
 	} @finally {
 		[self freeMemory: buffer];
 	}
@@ -375,7 +362,7 @@ static struct {
 {
 	OFAutoreleasePool *pool, *pool2;
 	OFMutableString *ret;
-	id *cArray;
+	id *objects;
 	size_t i, count = [self count];
 	IMP append;
 
@@ -388,19 +375,19 @@ static struct {
 	append = [ret methodForSelector: @selector(appendString:)];
 
 	pool = [[OFAutoreleasePool alloc] init];
-	cArray = [self cArray];
+	objects = [self objects];
 
 	pool2 = [[OFAutoreleasePool alloc] init];
 
 	for (i = 0; i < count - 1; i++) {
 		append(ret, @selector(appendString:),
-		    [cArray[i] performSelector: selector]);
+		    [objects[i] performSelector: selector]);
 		append(ret, @selector(appendString:), separator);
 
 		[pool2 releaseObjects];
 	}
 	append(ret, @selector(appendString:),
-	    [cArray[i] performSelector: selector]);
+	    [objects[i] performSelector: selector]);
 
 	[ret makeImmutable];
 
@@ -435,14 +422,14 @@ static struct {
 
 - (uint32_t)hash
 {
-	id *cArray = [self cArray];
+	id *objects = [self objects];
 	size_t i, count = [self count];
 	uint32_t hash;
 
 	OF_HASH_INIT(hash);
 
 	for (i = 0; i < count; i++) {
-		uint32_t h = [cArray[i] hash];
+		uint32_t h = [objects[i] hash];
 
 		OF_HASH_ADD(hash, h >> 24);
 		OF_HASH_ADD(hash, (h >> 16) & 0xFF);
@@ -489,7 +476,7 @@ static struct {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFAutoreleasePool *pool2;
 	OFXMLElement *element;
-	id <OFSerialization> *cArray = [self cArray];
+	id <OFSerialization> *objects = [self objects];
 	size_t i, count = [self count];
 
 	if ([self isKindOfClass: [OFMutableArray class]])
@@ -502,7 +489,7 @@ static struct {
 	pool2 = [[OFAutoreleasePool alloc] init];
 
 	for (i = 0; i < count; i++) {
-		[element addChild: [cArray[i] XMLElementBySerializing]];
+		[element addChild: [objects[i] XMLElementBySerializing]];
 
 		[pool2 releaseObjects];
 	}
@@ -535,23 +522,23 @@ static struct {
 
 - (void)makeObjectsPerformSelector: (SEL)selector
 {
-	id *cArray = [self cArray];
+	id *objects = [self objects];
 	size_t i, count = [self count];
 
 	for (i = 0; i < count; i++)
-		((void(*)(id, SEL))[cArray[i]
-		    methodForSelector: selector])(cArray[i], selector);
+		((void(*)(id, SEL))[objects[i]
+		    methodForSelector: selector])(objects[i], selector);
 }
 
 - (void)makeObjectsPerformSelector: (SEL)selector
 			withObject: (id)object
 {
-	id *cArray = [self cArray];
+	id *objects = [self objects];
 	size_t i, count = [self count];
 
 	for (i = 0; i < count; i++)
-		((void(*)(id, SEL, id))[cArray[i]
-		    methodForSelector: selector])(cArray[i], selector, object);
+		((void(*)(id, SEL, id))[objects[i]
+		    methodForSelector: selector])(objects[i], selector, object);
 }
 
 - (OFArray*)sortedArray
@@ -590,7 +577,7 @@ static struct {
 		return 0;
 
 	state->state = count;
-	state->itemsPtr = [self cArray];
+	state->itemsPtr = [self objects];
 	state->mutationsPtr = (unsigned long*)self;
 
 	return (int)count;
@@ -631,8 +618,8 @@ static struct {
 			tmp[index] = block(object, index);
 		}];
 
-		ret = [OFArray arrayWithCArray: tmp
-					length: count];
+		ret = [OFArray arrayWithObjects: tmp
+					  count: count];
 	} @finally {
 		[self freeMemory: tmp];
 	}
@@ -656,8 +643,8 @@ static struct {
 				tmp[i++] = object;
 		}];
 
-		ret = [OFArray arrayWithCArray: tmp
-					length: i];
+		ret = [OFArray arrayWithObjects: tmp
+					  count: i];
 	} @finally {
 		[self freeMemory: tmp];
 	}

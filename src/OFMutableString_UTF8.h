@@ -15,10 +15,12 @@
  */
 
 #import "OFMutableString.h"
+#import "OFString_UTF8.h"
 
 @interface OFMutableString_UTF8: OFMutableString
 {
 @public
 	struct of_string_utf8_ivars *restrict s;
+	struct of_string_utf8_ivars s_store;
 }
 @end

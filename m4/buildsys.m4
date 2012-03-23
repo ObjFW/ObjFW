@@ -1,7 +1,8 @@
 dnl
-dnl Copyright (c) 2007 - 2009, Jonathan Schleifer <js@webkeks.org>
+dnl Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012
+dnl Jonathan Schleifer <js@webkeks.org>
 dnl
-dnl https://webkeks.org/hg/buildsys/
+dnl https://webkeks.org/git/?p=buildsys.git
 dnl
 dnl Permission to use, copy, modify, and/or distribute this software for any
 dnl purpose with or without fee is hereby granted, provided that the above
@@ -100,8 +101,8 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 			LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
 			PLUGIN_CFLAGS='-fPIC -DPIC'
 			PLUGIN_LDFLAGS='-bundle -undefined dynamic_lookup'
-			PLUGIN_SUFFIX='.impl'
-			INSTALL_LIB='&& ${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$${i%.dylib}.${LIB_MAJOR}.${LIB_MINOR}.dylib && ${LN_S} -f $${i%.dylib}.${LIB_MAJOR}.${LIB_MINOR}.dylib ${DESTDIR}${libdir}/$${i%.dylib}.${LIB_MAJOR}.dylib && ${LN_S} -f $${i%.dylib}.${LIB_MAJOR}.${LIB_MINOR}.dylib ${DESTDIR}${libdir}/$$i'
+			PLUGIN_SUFFIX='.bundle'
+			INSTALL_LIB='&& ${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$${i%.dylib}.${LIB_MAJOR}.${LIB_MINOR}.dylib && install_name_tool -id ${libdir}/$${i%.dylib}.${LIB_MAJOR}.dylib ${DESTDIR}${libdir}/$${i%.dylib}.${LIB_MAJOR}.${LIB_MINOR}.dylib && ${LN_S} -f $${i%.dylib}.${LIB_MAJOR}.${LIB_MINOR}.dylib ${DESTDIR}${libdir}/$${i%.dylib}.${LIB_MAJOR}.dylib && ${LN_S} -f $${i%.dylib}.${LIB_MAJOR}.${LIB_MINOR}.dylib ${DESTDIR}${libdir}/$$i'
 			UNINSTALL_LIB='&& rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$${i%.dylib}.${LIB_MAJOR}.dylib ${DESTDIR}${libdir}/$${i%.dylib}.${LIB_MAJOR}.${LIB_MINOR}.dylib'
 			CLEAN_LIB=''
 			;;

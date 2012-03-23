@@ -26,7 +26,7 @@ ObjFW 0.5.3 -> ObjFW 0.5.4, 30.08.2011
  * Various small fixes.
 
 ObjFW 0.5.2 -> ObjFW 0.5.3, 01.07.2011
- * Lots of bugfixes, see Mercurial log for details. (hg log -b 0.5)
+ * Lots of bugfixes, see Git log for details.
 
 ObjFW 0.5.1 -> ObjFW 0.5.2, 25.04.2011
  * Fix double-retain in OFList.

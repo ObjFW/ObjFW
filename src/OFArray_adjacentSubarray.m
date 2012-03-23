@@ -21,15 +21,15 @@
 #import "OFMutableArray_adjacent.h"
 
 @implementation OFArray_adjacentSubarray
-- (id*)cArray
+- (id*)objects
 {
-	return [array cArray] + range.start;
+	return [array objects] + range.start;
 }
 
 - (BOOL)isEqual: (id)object
 {
 	OFArray *otherArray;
-	id *cArray, *otherCArray;
+	id *objects, *otherObjects;
 	size_t i;
 
 	if ([object class] != [OFArray_adjacent class] &&
@@ -42,11 +42,11 @@
 	if (range.length != [otherArray count])
 		return NO;
 
-	cArray = [self cArray];
-	otherCArray = [otherArray cArray];
+	objects = [self objects];
+	otherObjects = [otherArray objects];
 
 	for (i = 0; i < range.length; i++)
-		if (![cArray[i] isEqual: otherCArray[i]])
+		if (![objects[i] isEqual: otherObjects[i]])
 			return NO;
 
 	return YES;
@@ -55,12 +55,12 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
-	id *cArray = [self cArray];
+	id *objects = [self objects];
 	size_t i;
 	BOOL stop = NO;
 
 	for (i = 0; i < range.length && !stop; i++)
-		block(cArray[i], i, &stop);
+		block(objects[i], i, &stop);
 }
 #endif
 @end

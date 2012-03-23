@@ -134,6 +134,7 @@
 
 #ifdef OF_THREADS
 # import "OFThread.h"
+# import "OFThreadPool.h"
 # import "threading.h"
 #endif
 

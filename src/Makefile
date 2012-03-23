@@ -50,6 +50,7 @@ SRCS = OFApplication.m			\
        OFString+XMLUnescaping.m		\
        OFTCPSocket.m			\
        ${OFTHREAD_M}			\
+       OFThreadPool.m			\
        OFURL.m				\
        OFXMLAttribute.m			\
        OFXMLCDATA.m			\
@@ -99,11 +100,11 @@ SRCS += OFArray_adjacent.m		\
 	${OBJC_PROPERTIES_M}		\
 	${OBJC_SYNC_M}
 
+OBJS_EXTRA = ${EXCEPTIONS_EXCEPTIONS_A} ${RUNTIME_RUNTIME_A}
+LIB_OBJS_EXTRA = ${EXCEPTIONS_EXCEPTIONS_LIB_A} ${RUNTIME_RUNTIME_LIB_A}
+
 include ../buildsys.mk
 
 CPPFLAGS += -I. -I.. -Iexceptions -Iruntime
 LD = ${OBJC}
 LDFLAGS += ${REEXPORT_LIBOBJC} ${MACH_ALIAS_LIST}
-
-LIB_OBJS := ${LIB_OBJS} ${EXCEPTIONS_EXCEPTIONS_LIB_A} ${RUNTIME_RUNTIME_LIB_A}
-OBJS += ${EXCEPTIONS_EXCEPTIONS_A} ${RUNTIME_RUNTIME_A}

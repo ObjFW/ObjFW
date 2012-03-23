@@ -30,6 +30,8 @@
 #import "OFAutoreleasePool.h"
 
 #import "OFHTTPRequestFailedException.h"
+#import "OFInvalidEncodingException.h"
+#import "OFInvalidFormatException.h"
 #import "OFInvalidServerReplyException.h"
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
@@ -40,7 +42,7 @@
 Class of_http_request_tls_socket_class = Nil;
 
 static OF_INLINE void
-normalize_key(OFString *key)
+normalizeKey(OFString *key)
 {
 	uint8_t *str = (uint8_t*)[key UTF8String];
 	BOOL firstLetter = YES;
@@ -75,10 +77,10 @@ normalize_key(OFString *key)
 	self = [super init];
 
 	requestType = OF_HTTP_REQUEST_TYPE_GET;
-	headers = [[OFDictionary alloc]
-	    initWithObject: @"Something using ObjFW "
-			    @"<https://webkeks.org/objfw/>"
-		    forKey: @"User-Agent"];
+	headers = [[OFDictionary alloc] initWithKeysAndObjects:
+	    @"Connection", @"close",
+	    @"User-Agent", @"Something using ObjFW "
+			   @"<https://webkeks.org/objfw/>", nil];
 	storesData = YES;
 
 	return self;
@@ -109,7 +111,7 @@ normalize_key(OFString *key)
 
 - (void)setURL: (OFURL*)URL_
 {
-	OF_SETTER(URL, URL_, YES, YES)
+	OF_SETTER(URL, URL_, YES, 1)
 }
 
 - (OFURL*)URL
@@ -129,7 +131,7 @@ normalize_key(OFString *key)
 
 - (void)setQueryString: (OFString*)queryString_
 {
-	OF_SETTER(queryString, queryString_, YES, YES)
+	OF_SETTER(queryString, queryString_, YES, 1)
 }
 
 - (OFString*)queryString
@@ -139,7 +141,7 @@ normalize_key(OFString *key)
 
 - (void)setHeaders: (OFDictionary*)headers_
 {
-	OF_SETTER(headers, headers_, YES, YES)
+	OF_SETTER(headers, headers_, YES, 1)
 }
 
 - (OFDictionary*)headers
@@ -195,6 +197,8 @@ normalize_key(OFString *key)
 	OFString *key, *object, *contentLengthHeader;
 	int status;
 	const char *type = NULL;
+	size_t contentLength = 0;
+	BOOL chunked;
 	char *buffer;
 	size_t bytesReceived;
 
@@ -237,10 +241,10 @@ normalize_key(OFString *key)
 		path = @"/";
 
 	if ([URL query] != nil)
-		[sock writeFormat: @"%s %@?%@ HTTP/1.0\r\n",
+		[sock writeFormat: @"%s %@?%@ HTTP/1.1\r\n",
 		    type, path, [URL query]];
 	else
-		[sock writeFormat: @"%s %@ HTTP/1.0\r\n", type, path];
+		[sock writeFormat: @"%s %@ HTTP/1.1\r\n", type, path];
 
 	if ([URL port] == 80)
 		[sock writeFormat: @"Host: %@\r\n", [URL host]];
@@ -275,11 +279,12 @@ normalize_key(OFString *key)
 	if (requestType == OF_HTTP_REQUEST_TYPE_POST)
 		[sock writeString: queryString];
 
-	/*
-	 * We also need to check for HTTP/1.1 since Apache always declares the
-	 * reply to be HTTP/1.1.
-	 */
-	line = [sock readLine];
+	@try {
+		line = [sock readLine];
+	} @catch (OFInvalidEncodingException *e) {
+		@throw [OFInvalidServerReplyException exceptionWithClass: isa];
+	}
+
 	if (![line hasPrefix: @"HTTP/1.0 "] && ![line hasPrefix: @"HTTP/1.1 "])
 		@throw [OFInvalidServerReplyException exceptionWithClass: isa];
 
@@ -287,12 +292,25 @@ normalize_key(OFString *key)
 
 	serverHeaders = [OFMutableDictionary dictionary];
 
-	while ((line = [sock readLine]) != nil) {
+	for (;;) {
 		OFString *key, *value;
-		const char *line_c = [line UTF8String], *tmp;
+		const char *line_c, *tmp;
+
+		@try {
+			line = [sock readLine];
+		} @catch (OFInvalidEncodingException *e) {
+			@throw [OFInvalidServerReplyException
+			    exceptionWithClass: isa];
+		}
+
+		if (line == nil)
+			@throw [OFInvalidServerReplyException
+			    exceptionWithClass: isa];
 
 		if ([line isEqual: @""])
 			break;
+
+		line_c = [line UTF8String];
 
 		if ((tmp = strchr(line_c, ':')) == NULL)
 			@throw [OFInvalidServerReplyException
@@ -300,7 +318,7 @@ normalize_key(OFString *key)
 
 		key = [OFString stringWithUTF8String: line_c
 					      length: tmp - line_c];
-		normalize_key(key);
+		normalizeKey(key);
 
 		do {
 			tmp++;
@@ -309,7 +327,8 @@ normalize_key(OFString *key)
 		value = [OFString stringWithUTF8String: tmp];
 
 		if ((redirects > 0 && (status == 301 || status == 302 ||
-		    status == 303) && [key isEqual: @"Location"]) &&
+		    status == 303 || status == 307) &&
+		    [key isEqual: @"Location"]) &&
 		    (redirectsFromHTTPSToHTTPAllowed ||
 		    [scheme isEqual: @"http"] ||
 		    ![value hasPrefix: @"http://"])) {
@@ -352,43 +371,120 @@ normalize_key(OFString *key)
 	   withStatusCode: status];
 
 	data = (storesData ? [OFDataArray dataArray] : nil);
+	chunked = [[serverHeaders objectForKey: @"Transfer-Encoding"]
+	    isEqual: @"chunked"];
+
+	contentLengthHeader = [serverHeaders objectForKey: @"Content-Length"];
+
+	if (contentLengthHeader != nil) {
+		contentLength = (size_t)[contentLengthHeader decimalValue];
+
+		if (contentLength > SIZE_MAX)
+			@throw [OFOutOfRangeException exceptionWithClass: isa];
+	}
 
 	buffer = [self allocMemoryWithSize: of_pagesize];
 	bytesReceived = 0;
 	@try {
-		size_t len;
+		OFAutoreleasePool *pool2 = [[OFAutoreleasePool alloc] init];
 
-		while ((len = [sock readNBytes: of_pagesize
-				    intoBuffer: buffer]) > 0) {
-			[delegate request: self
-			   didReceiveData: buffer
-			       withLength: len];
+		if (chunked) {
+			for (;;) {
+				size_t pos, toRead;
 
-			bytesReceived += len;
-			[data addNItems: len
-			     fromCArray: buffer];
+				@try {
+					line = [sock readLine];
+				} @catch (OFInvalidEncodingException *e) {
+					@throw [OFInvalidServerReplyException
+					    exceptionWithClass: isa];
+				}
+
+				pos = [line
+				    indexOfFirstOccurrenceOfString: @";"];
+				if (pos != OF_INVALID_INDEX)
+					line = [line substringWithRange:
+					    of_range(0, pos)];
+
+				@try {
+					toRead =
+					    (size_t)[line hexadecimalValue];
+				} @catch (OFInvalidFormatException *e) {
+					@throw [OFInvalidServerReplyException
+					    exceptionWithClass: isa];
+				}
+
+				if (toRead == 0 ||
+				    (contentLengthHeader != nil &&
+				    contentLength >= bytesReceived))
+					break;
+
+				while (toRead > 0) {
+					size_t length = (toRead < of_pagesize
+					    ? toRead : of_pagesize);
+
+					length = [sock readNBytes: length
+						       intoBuffer: buffer];
+
+					[delegate request: self
+					   didReceiveData: buffer
+					       withLength: length];
+					[pool2 releaseObjects];
+
+					bytesReceived += length;
+					[data addNItems: length
+					     fromCArray: buffer];
+
+					toRead -= length;
+				}
+
+				@try {
+					line = [sock readLine];
+				} @catch (OFInvalidEncodingException *e) {
+					@throw [OFInvalidServerReplyException
+					    exceptionWithClass: isa];
+				}
+
+				if (![line isEqual: @""])
+					@throw [OFInvalidServerReplyException
+					    exceptionWithClass: isa];
+
+				[pool2 releaseObjects];
+			}
+		} else {
+			size_t length;
+
+			while ((length = [sock readNBytes: of_pagesize
+					       intoBuffer: buffer]) > 0) {
+				[delegate request: self
+				   didReceiveData: buffer
+				       withLength: length];
+				[pool2 releaseObjects];
+
+				bytesReceived += length;
+				[data addNItems: length
+				     fromCArray: buffer];
+
+				if (contentLengthHeader != nil &&
+				    bytesReceived >= contentLength)
+					break;
+			}
 		}
+
+		[pool2 release];
 	} @finally {
 		[self freeMemory: buffer];
 	}
 
-	if ((contentLengthHeader =
-	    [serverHeaders objectForKey: @"Content-Length"]) != nil) {
-		intmax_t cl = [contentLengthHeader decimalValue];
+	[sock close];
 
-		if (cl > SIZE_MAX)
-			@throw [OFOutOfRangeException exceptionWithClass: isa];
-
-		/*
-		 * We only want to throw on these status codes as we will throw
-		 * an OFHTTPRequestFailedException for all other status codes
-		 * later.
-		 */
-		if (cl != bytesReceived && (status == 200 || status == 301 ||
-		    status == 302 || status == 303))
-			@throw [OFTruncatedDataException
-			    exceptionWithClass: isa];
-	}
+	/*
+	 * We only want to throw on these status codes as we will throw an
+	 * OFHTTPRequestFailedException for all other status codes later.
+	 */
+	if (contentLengthHeader != nil && contentLength != bytesReceived &&
+	    (status == 200 || status == 301 || status == 302 || status == 303 ||
+	    status == 307))
+		@throw [OFTruncatedDataException exceptionWithClass: isa];
 
 	[serverHeaders makeImmutable];
 
@@ -396,11 +492,22 @@ normalize_key(OFString *key)
 							 headers: serverHeaders
 							    data: data];
 
-	if (status != 200 && status != 301 && status != 302 && status != 303)
+	switch (status) {
+	case 200:
+	case 301:
+	case 302:
+	case 303:
+	case 307:
+		break;
+	default:
+		[result release];
 		@throw [OFHTTPRequestFailedException
 		    exceptionWithClass: isa
 			   HTTPRequest: self
 				result: result];
+	}
+
+	[pool release];
 
 	return [result autorelease];
 }

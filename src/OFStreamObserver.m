@@ -297,13 +297,13 @@ enum {
 {
 	[mutex lock];
 	@try {
-		OFStream **queueCArray = [queue cArray];
+		OFStream **queueObjects = [queue objects];
 		int *queueInfoCArray = [queueInfo cArray];
 		int *queueFDsCArray = [queueFDs cArray];
 		size_t i, count = [queue count];
 
 		for (i = 0; i < count; i++) {
-			OFStream *stream = queueCArray[i];
+			OFStream *stream = queueObjects[i];
 			int action = queueInfoCArray[i];
 			int fd = queueFDsCArray[i];
 
@@ -376,16 +376,16 @@ enum {
 - (BOOL)_processCache
 {
 	OFAutoreleasePool *pool;
-	OFStream **cArray = [readStreams cArray];
+	OFStream **objects = [readStreams objects];
 	size_t i, count = [readStreams count];
 	BOOL foundInCache = NO;
 
 	pool = [[OFAutoreleasePool alloc] init];
 
 	for (i = 0; i < count; i++) {
-		if ([cArray[i] pendingBytes] > 0 &&
-		    ![cArray[i] _isWaitingForDelimiter]) {
-			[delegate streamIsReadyForReading: cArray[i]];
+		if ([objects[i] pendingBytes] > 0 &&
+		    ![objects[i] _isWaitingForDelimiter]) {
+			[delegate streamIsReadyForReading: objects[i]];
 			foundInCache = YES;
 			[pool releaseObjects];
 		}

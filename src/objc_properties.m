@@ -66,7 +66,7 @@ objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, BOOL atomic)
 
 void
 objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
-    BOOL copy)
+    signed char copy)
 {
 	if (atomic) {
 		id *ptr = (id*)(void*)((char*)self + offset);
@@ -84,11 +84,6 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
 				*ptr = [value retain];
 				break;
 			case 2:
-				/*
-				 * Apple uses this to indicate that the copy
-				 * should be mutable. Please hit them for
-				 * abusing a poor BOOL!
-				 */
 				*ptr = [value mutableCopy];
 				break;
 			default:

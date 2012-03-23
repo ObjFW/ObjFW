@@ -44,20 +44,20 @@ resolve_relative_path(OFString *path)
 	    autorelease];
 
 	while (!done) {
-		id *cArray = [array cArray];
+		id *objects = [array objects];
 		size_t i, length = [array count];
 
 		done = YES;
 
 		for (i = 0; i < length; i++) {
-			if ([cArray[i] isEqual: @"."]) {
+			if ([objects[i] isEqual: @"."]) {
 				[array removeObjectAtIndex: i];
 				done = NO;
 
 				break;
 			}
 
-			if ([cArray[i] isEqual: @".."]) {
+			if ([objects[i] isEqual: @".."]) {
 				[array removeObjectAtIndex: i];
 
 				if (i > 0)
@@ -416,7 +416,7 @@ resolve_relative_path(OFString *path)
 		@throw [OFInvalidArgumentException exceptionWithClass: isa
 							     selector: _cmd];
 
-	OF_SETTER(scheme, scheme_, YES, YES)
+	OF_SETTER(scheme, scheme_, YES, 1)
 }
 
 - (OFString*)host
@@ -426,7 +426,7 @@ resolve_relative_path(OFString *path)
 
 - (void)setHost: (OFString*)host_
 {
-	OF_SETTER(host, host_, YES, YES)
+	OF_SETTER(host, host_, YES, 1)
 }
 
 - (uint16_t)port
@@ -446,7 +446,7 @@ resolve_relative_path(OFString *path)
 
 - (void)setUser: (OFString*)user_
 {
-	OF_SETTER(user, user_, YES, YES)
+	OF_SETTER(user, user_, YES, 1)
 }
 
 - (OFString*)password
@@ -456,7 +456,7 @@ resolve_relative_path(OFString *path)
 
 - (void)setPassword: (OFString*)password_
 {
-	OF_SETTER(password, password_, YES, YES)
+	OF_SETTER(password, password_, YES, 1)
 }
 
 - (OFString*)path
@@ -471,7 +471,7 @@ resolve_relative_path(OFString *path)
 		@throw [OFInvalidArgumentException exceptionWithClass: isa
 							     selector: _cmd];
 
-	OF_SETTER(path, path_, YES, YES)
+	OF_SETTER(path, path_, YES, 1)
 }
 
 - (OFString*)parameters
@@ -481,7 +481,7 @@ resolve_relative_path(OFString *path)
 
 - (void)setParameters: (OFString*)parameters_
 {
-	OF_SETTER(parameters, parameters_, YES, YES)
+	OF_SETTER(parameters, parameters_, YES, 1)
 }
 
 - (OFString*)query
@@ -491,7 +491,7 @@ resolve_relative_path(OFString *path)
 
 - (void)setQuery: (OFString*)query_
 {
-	OF_SETTER(query, query_, YES, YES)
+	OF_SETTER(query, query_, YES, 1)
 }
 
 - (OFString*)fragment
@@ -501,7 +501,7 @@ resolve_relative_path(OFString *path)
 
 - (void)setFragment: (OFString*)fragment_
 {
-	OF_SETTER(fragment, fragment_, YES, YES)
+	OF_SETTER(fragment, fragment_, YES, 1)
 }
 
 - (OFString*)string

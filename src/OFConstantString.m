@@ -55,11 +55,6 @@ struct {
 						    selector: _cmd];
 }
 
-- (void)addMemoryToPool: (void*)ptr
-{
-	@throw [OFNotImplementedException exceptionWithClass: isa
-						    selector: _cmd];
-}
 
 - (void*)allocMemoryWithSize: (size_t)size
 {
@@ -178,12 +173,6 @@ struct {
 + alloc
 {
 	@throw [OFNotImplementedException exceptionWithClass: self
-						    selector: _cmd];
-}
-
-- (void)addMemoryToPool: (void*)ptr
-{
-	@throw [OFNotImplementedException exceptionWithClass: isa
 						    selector: _cmd];
 }
 

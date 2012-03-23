@@ -59,22 +59,25 @@
 #endif
 
 struct pre_ivar {
-	int32_t	      retainCount;
-	void	      **memoryChunks;
-	unsigned int  memoryChunksSize;
+	int32_t retainCount;
+	struct pre_mem *firstMem, *lastMem;
 #if !defined(OF_ATOMIC_OPS) && defined(OF_THREADS)
 	of_spinlock_t retainCountSpinlock;
 #endif
 };
 
-/* Hopefully no arch needs more than 16 bytes padding */
-#ifndef __BIGGEST_ALIGNMENT__
-# define __BIGGEST_ALIGNMENT__ 16
-#endif
+struct pre_mem {
+	struct pre_mem *prev, *next;
+	id owner;
+};
 
 #define PRE_IVAR_ALIGN ((sizeof(struct pre_ivar) + \
 	(__BIGGEST_ALIGNMENT__ - 1)) & ~(__BIGGEST_ALIGNMENT__ - 1))
 #define PRE_IVAR ((struct pre_ivar*)(void*)((char*)self - PRE_IVAR_ALIGN))
+
+#define PRE_MEM_ALIGN ((sizeof(struct pre_mem) + \
+	(__BIGGEST_ALIGNMENT__ - 1)) & ~(__BIGGEST_ALIGNMENT__ - 1))
+#define PRE_MEM(mem) ((struct pre_mem*)(void*)((char*)mem - PRE_MEM_ALIGN))
 
 static struct {
 	Class isa;
@@ -85,6 +88,7 @@ static SEL cxx_construct = NULL;
 static SEL cxx_destruct = NULL;
 
 size_t of_pagesize;
+size_t of_num_cpus;
 
 #ifdef NEED_OBJC_SYNC_INIT
 extern BOOL objc_sync_init();
@@ -118,6 +122,52 @@ objc_enumerationMutation(id object)
 	enumeration_mutation_handler(object);
 }
 #endif
+
+id
+of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
+    void **extra)
+{
+	OFObject *instance;
+	size_t instanceSize;
+
+	instanceSize = class_getInstanceSize(class);
+
+	if (OF_UNLIKELY(extraAlignment > 0))
+		extraAlignment = ((instanceSize + extraAlignment - 1) &
+		    ~(extraAlignment - 1)) - extraAlignment;
+
+	instance = malloc(PRE_IVAR_ALIGN + instanceSize +
+	    extraAlignment + extraSize);
+
+	if (OF_UNLIKELY(instance == nil)) {
+		alloc_failed_exception.isa = [OFAllocFailedException class];
+		@throw (OFAllocFailedException*)&alloc_failed_exception;
+	}
+
+	((struct pre_ivar*)instance)->retainCount = 1;
+	((struct pre_ivar*)instance)->firstMem = NULL;
+	((struct pre_ivar*)instance)->lastMem = NULL;
+
+#if !defined(OF_ATOMIC_OPS) && defined(OF_THREADS)
+	if (OF_UNLIKELY(!of_spinlock_new(
+	    &((struct pre_ivar*)instance)->retainCountSpinlock))) {
+		free(instance);
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: class];
+	}
+#endif
+
+	instance = (OFObject*)((char*)instance + PRE_IVAR_ALIGN);
+
+	instance->isa = class;
+	memset((char*)instance + sizeof(instance->isa), 0,
+	    instanceSize - sizeof(instance->isa));
+
+	if (OF_UNLIKELY(extra != NULL))
+		*extra = (char*)instance + instanceSize + extraAlignment;
+
+	return instance;
+}
 
 const char*
 _NSPrintForDebugger(id object)
@@ -171,11 +221,15 @@ void _references_to_categories_of_OFObject(void)
 	SYSTEM_INFO si;
 	GetSystemInfo(&si);
 	of_pagesize = si.dwPageSize;
+	of_num_cpus = si.dwNumberOfProcessors;
 #elif defined(_PSP)
 	of_pagesize = 4096;
+	of_num_cpus = 1;
 #else
 	if ((of_pagesize = sysconf(_SC_PAGESIZE)) < 1)
 		of_pagesize = 4096;
+	if ((of_num_cpus = sysconf(_SC_NPROCESSORS_CONF)) < 1)
+		of_num_cpus = 1;
 #endif
 }
 
@@ -185,31 +239,7 @@ void _references_to_categories_of_OFObject(void)
 
 + alloc
 {
-	OFObject *instance;
-	size_t instanceSize = class_getInstanceSize(self);
-
-	if ((instance = calloc(instanceSize + PRE_IVAR_ALIGN, 1)) == NULL) {
-		alloc_failed_exception.isa = [OFAllocFailedException class];
-		@throw (OFAllocFailedException*)&alloc_failed_exception;
-	}
-
-	((struct pre_ivar*)instance)->memoryChunks = NULL;
-	((struct pre_ivar*)instance)->memoryChunksSize = 0;
-	((struct pre_ivar*)instance)->retainCount = 1;
-
-#if !defined(OF_ATOMIC_OPS) && defined(OF_THREADS)
-	if (!of_spinlock_new(
-	    &((struct pre_ivar*)instance)->retainCountSpinlock)) {
-		free(instance);
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-	}
-#endif
-
-	instance = (OFObject*)((char*)instance + PRE_IVAR_ALIGN);
-	instance->isa = self;
-
-	return instance;
+	return of_alloc_object(self, 0, 0, NULL);
 }
 
 + new
@@ -568,59 +598,29 @@ void _references_to_categories_of_OFObject(void)
 	return [OFString stringWithFormat: @"<%@: %p>", [self className], self];
 }
 
-- (void)addMemoryToPool: (void*)pointer
-{
-	void **memoryChunks;
-	unsigned int memoryChunksSize;
-
-	memoryChunksSize = PRE_IVAR->memoryChunksSize + 1;
-
-	if (UINT_MAX - PRE_IVAR->memoryChunksSize < 1 ||
-	    memoryChunksSize > UINT_MAX / sizeof(void*))
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
-
-	if ((memoryChunks = realloc(PRE_IVAR->memoryChunks,
-	    memoryChunksSize * sizeof(void*))) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithClass: isa
-			 requestedSize: memoryChunksSize];
-
-	PRE_IVAR->memoryChunks = memoryChunks;
-	PRE_IVAR->memoryChunks[PRE_IVAR->memoryChunksSize] = pointer;
-	PRE_IVAR->memoryChunksSize = memoryChunksSize;
-}
-
 - (void*)allocMemoryWithSize: (size_t)size
 {
-	void *pointer, **memoryChunks;
-	unsigned int memoryChunksSize;
+	void *pointer;
+	struct pre_mem *preMem;
 
-	if (size == 0)
-		return NULL;
-
-	memoryChunksSize = PRE_IVAR->memoryChunksSize + 1;
-
-	if (UINT_MAX - PRE_IVAR->memoryChunksSize == 0 ||
-	    memoryChunksSize > UINT_MAX / sizeof(void*))
+	if (size > SIZE_MAX - PRE_IVAR_ALIGN)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
-	if ((pointer = malloc(size)) == NULL)
+	if ((pointer = malloc(PRE_MEM_ALIGN + size)) == NULL)
 		@throw [OFOutOfMemoryException exceptionWithClass: isa
 						    requestedSize: size];
+	preMem = pointer;
 
-	if ((memoryChunks = realloc(PRE_IVAR->memoryChunks,
-	    memoryChunksSize * sizeof(void*))) == NULL) {
-		free(pointer);
-		@throw [OFOutOfMemoryException
-		    exceptionWithClass: isa
-			 requestedSize: memoryChunksSize];
-	}
+	preMem->owner = self;
+	preMem->prev = PRE_IVAR->lastMem;
+	preMem->next = NULL;
 
-	PRE_IVAR->memoryChunks = memoryChunks;
-	PRE_IVAR->memoryChunks[PRE_IVAR->memoryChunksSize] = pointer;
-	PRE_IVAR->memoryChunksSize = memoryChunksSize;
+	if (PRE_IVAR->lastMem != NULL)
+		PRE_IVAR->lastMem->next = preMem;
 
-	return pointer;
+	PRE_IVAR->lastMem = preMem;
+
+	return (char*)pointer + PRE_MEM_ALIGN;
 }
 
 - (void*)allocMemoryForNItems: (size_t)nItems
@@ -638,7 +638,8 @@ void _references_to_categories_of_OFObject(void)
 - (void*)resizeMemory: (void*)pointer
 	       toSize: (size_t)size
 {
-	void **iter;
+	void *new;
+	struct pre_mem *preMem;
 
 	if (pointer == NULL)
 		return [self allocMemoryWithSize: size];
@@ -648,23 +649,29 @@ void _references_to_categories_of_OFObject(void)
 		return NULL;
 	}
 
-	iter = PRE_IVAR->memoryChunks + PRE_IVAR->memoryChunksSize;
+	if (PRE_MEM(pointer)->owner != self)
+		@throw [OFMemoryNotPartOfObjectException
+		    exceptionWithClass: isa
+			       pointer: pointer];
 
-	while (iter-- > PRE_IVAR->memoryChunks) {
-		if (OF_UNLIKELY(*iter == pointer)) {
-			if (OF_UNLIKELY((pointer = realloc(pointer,
-			    size)) == NULL))
-				@throw [OFOutOfMemoryException
-				     exceptionWithClass: isa
-					  requestedSize: size];
+	if ((new = realloc(PRE_MEM(pointer), PRE_MEM_ALIGN + size)) == NULL)
+		@throw [OFOutOfMemoryException exceptionWithClass: isa
+						    requestedSize: size];
+	preMem = new;
 
-			*iter = pointer;
-			return pointer;
-		}
+	if (preMem != PRE_MEM(pointer)) {
+		if (preMem->prev != NULL)
+			preMem->prev->next = preMem;
+		if (preMem->next != NULL)
+			preMem->next->prev = preMem;
+
+		if (PRE_IVAR->firstMem == PRE_MEM(pointer))
+			PRE_IVAR->firstMem = preMem;
+		if (PRE_IVAR->lastMem == PRE_MEM(pointer))
+			PRE_IVAR->lastMem = preMem;
 	}
 
-	@throw [OFMemoryNotPartOfObjectException exceptionWithClass: isa
-							    pointer: pointer];
+	return (char*)new + PRE_MEM_ALIGN;
 }
 
 - (void*)resizeMemory: (void*)pointer
@@ -689,52 +696,28 @@ void _references_to_categories_of_OFObject(void)
 
 - (void)freeMemory: (void*)pointer
 {
-	void **iter, *last, **memoryChunks;
-	unsigned int i, memoryChunksSize;
-
 	if (pointer == NULL)
 		return;
 
-	iter = PRE_IVAR->memoryChunks + PRE_IVAR->memoryChunksSize;
-	i = PRE_IVAR->memoryChunksSize;
+	if (PRE_MEM(pointer)->owner != self)
+		@throw [OFMemoryNotPartOfObjectException
+		    exceptionWithClass: isa
+			       pointer: pointer];
 
-	while (iter-- > PRE_IVAR->memoryChunks) {
-		i--;
+	if (PRE_MEM(pointer)->prev != NULL)
+		PRE_MEM(pointer)->prev->next = PRE_MEM(pointer)->next;
+	if (PRE_MEM(pointer)->next != NULL)
+		PRE_MEM(pointer)->next->prev = PRE_MEM(pointer)->prev;
 
-		if (OF_UNLIKELY(*iter == pointer)) {
-			memoryChunksSize = PRE_IVAR->memoryChunksSize - 1;
-			last = PRE_IVAR->memoryChunks[memoryChunksSize];
+	if (PRE_IVAR->firstMem == PRE_MEM(pointer))
+		PRE_IVAR->firstMem = PRE_MEM(pointer)->next;
+	if (PRE_IVAR->lastMem == PRE_MEM(pointer))
+		PRE_IVAR->lastMem = PRE_MEM(pointer)->prev;
 
-			assert(PRE_IVAR->memoryChunksSize != 0 &&
-			    memoryChunksSize <= UINT_MAX / sizeof(void*));
+	/* To detect double-free */
+	PRE_MEM(pointer)->owner = nil;
 
-			if (OF_UNLIKELY(memoryChunksSize == 0)) {
-				free(pointer);
-				free(PRE_IVAR->memoryChunks);
-
-				PRE_IVAR->memoryChunks = NULL;
-				PRE_IVAR->memoryChunksSize = 0;
-
-				return;
-			}
-
-			free(pointer);
-			PRE_IVAR->memoryChunks[i] = last;
-			PRE_IVAR->memoryChunksSize = memoryChunksSize;
-
-			if (OF_UNLIKELY((memoryChunks = realloc(
-			    PRE_IVAR->memoryChunks, memoryChunksSize *
-			    sizeof(void*))) == NULL))
-				return;
-
-			PRE_IVAR->memoryChunks = memoryChunks;
-
-			return;
-		}
-	}
-
-	@throw [OFMemoryNotPartOfObjectException exceptionWithClass: isa
-							    pointer: pointer];
+	free(PRE_MEM(pointer));
 }
 
 - retain
@@ -806,7 +789,7 @@ void _references_to_categories_of_OFObject(void)
 {
 	Class class;
 	void (*last)(id, SEL) = NULL;
-	void **iter;
+	struct pre_mem *iter;
 
 	for (class = isa; class != Nil; class = class_getSuperclass(class)) {
 		void (*destruct)(id, SEL);
@@ -821,12 +804,21 @@ void _references_to_categories_of_OFObject(void)
 			break;
 	}
 
-	iter = PRE_IVAR->memoryChunks + PRE_IVAR->memoryChunksSize;
-	while (iter-- > PRE_IVAR->memoryChunks)
-		free(*iter);
+	iter = PRE_IVAR->firstMem;
+	while (iter != NULL) {
+		struct pre_mem *next = iter->next;
 
-	if (PRE_IVAR->memoryChunks != NULL)
-		free(PRE_IVAR->memoryChunks);
+		/*
+		 * We can use owner as a sentinel to prevent exploitation in
+		 * case there is a buffer underflow somewhere.
+		 */
+		if (iter->owner != self)
+			abort();
+
+		free(iter);
+
+		iter = next;
+	}
 
 	free((char*)self - PRE_IVAR_ALIGN);
 }
@@ -854,12 +846,6 @@ void _references_to_categories_of_OFObject(void)
  * Those are needed as the root class is the superclass of the root class's
  * metaclass and thus instance methods can be sent to class objects as well.
  */
-+ (void)addMemoryToPool: (void*)pointer
-{
-	@throw [OFNotImplementedException exceptionWithClass: self
-						    selector: _cmd];
-}
-
 + (void*)allocMemoryWithSize: (size_t)size
 {
 	@throw [OFNotImplementedException exceptionWithClass: self

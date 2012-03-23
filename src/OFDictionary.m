@@ -60,6 +60,15 @@ static struct {
 							   forKeys: keys];
 }
 
+- initWithObjects: (id*)objects
+	  forKeys: (id*)keys
+	    count: (size_t)count
+{
+	return (id)[[OFDictionary_hashtable alloc] initWithObjects: objects
+							   forKeys: keys
+							     count: count];
+}
+
 - initWithKeysAndObjects: (id <OFCopying>)firstKey, ...
 {
 	id ret;
@@ -147,6 +156,15 @@ static struct {
 				      forKeys: keys] autorelease];
 }
 
++ dictionaryWithObjects: (id*)objects
+		forKeys: (id*)keys
+		  count: (size_t)count
+{
+	return [[[self alloc] initWithObjects: objects
+				      forKeys: keys
+					count: count] autorelease];
+}
+
 + dictionaryWithKeysAndObjects: (id)firstKey, ...
 {
 	id ret;
@@ -195,6 +213,16 @@ static struct {
 						    selector: _cmd];
 }
 
+- initWithObjects: (id*)objects
+	  forKeys: (id*)keys
+	    count: (size_t)count
+{
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
+}
+
 - initWithKeysAndObjects: (id)firstKey, ...
 {
 	id ret;
@@ -231,6 +259,11 @@ static struct {
 						    selector: _cmd];
 }
 
+- (id)objectForKeyedSubscript: (id)key
+{
+	return [self objectForKey: key];
+}
+
 - (size_t)count
 {
 	@throw [OFNotImplementedException exceptionWithClass: isa
@@ -247,20 +280,26 @@ static struct {
 	return [[OFMutableDictionary alloc] initWithDictionary: self];
 }
 
-- (BOOL)isEqual: (id)dictionary
+- (BOOL)isEqual: (id)object
 {
+	OFDictionary *otherDictionary;
 	OFAutoreleasePool *pool;
 	OFEnumerator *enumerator;
 	id key;
 
-	if ([dictionary count] != [self count])
+	if (![object isKindOfClass: [OFDictionary class]])
+		return NO;
+
+	otherDictionary = object;
+
+	if ([otherDictionary count] != [self count])
 		return NO;
 
 	pool = [[OFAutoreleasePool alloc] init];
 
 	enumerator = [self keyEnumerator];
 	while ((key = [enumerator nextObject]) != nil) {
-		id object = [dictionary objectForKey: key];
+		id object = [otherDictionary objectForKey: key];
 
 		if (object == nil ||
 		    ![object isEqual: [self objectForKey: key]]) {
@@ -313,8 +352,8 @@ static struct {
 - (OFArray*)allKeys
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	id *cArray = [self allocMemoryForNItems: [self count]
-					 ofSize: sizeof(id)];
+	id *keys = [self allocMemoryForNItems: [self count]
+				       ofSize: sizeof(id)];
 	OFArray *ret;
 	OFEnumerator *enumerator;
 	id key;
@@ -324,17 +363,17 @@ static struct {
 	enumerator = [self keyEnumerator];
 
 	while ((key = [enumerator nextObject]) != nil)
-		cArray[i++] = key;
+		keys[i++] = key;
 
 	assert(i == [self count]);
 
 	[pool release];
 
 	@try {
-		ret = [OFArray arrayWithCArray: cArray
-					length: [self count]];
+		ret = [OFArray arrayWithObjects: keys
+					  count: [self count]];
 	} @finally {
-		[self freeMemory: cArray];
+		[self freeMemory: keys];
 	}
 
 	return ret;
@@ -343,8 +382,8 @@ static struct {
 - (OFArray*)allObjects
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	id *cArray = [self allocMemoryForNItems: [self count]
-					 ofSize: sizeof(id)];
+	id *objects = [self allocMemoryForNItems: [self count]
+					  ofSize: sizeof(id)];
 	OFArray *ret;
 	OFEnumerator *enumerator;
 	id object;
@@ -354,17 +393,17 @@ static struct {
 	enumerator = [self objectEnumerator];
 
 	while ((object = [enumerator nextObject]) != nil)
-		cArray[i++] = object;
+		objects[i++] = object;
 
 	assert(i == [self count]);
 
 	[pool release];
 
 	@try {
-		ret = [OFArray arrayWithCArray: cArray
-					length: [self count]];
+		ret = [OFArray arrayWithObjects: objects
+					  count: [self count]];
 	} @finally {
-		[self freeMemory: cArray];
+		[self freeMemory: objects];
 	}
 
 	return ret;

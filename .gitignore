@@ -1,8 +1,7 @@
-syntax: glob
 *.a
+*.bundle
 *.dll
 *.dylib
-*.impl
 *.o
 *.orig
 *.so
@@ -24,7 +23,7 @@ generators/gen_tables
 generators/gen_tables.exe
 generators/CaseFolding.txt
 generators/UnicodeData.txt
-objfw-config
+Info.plist
 ObjFW.xcodeproj/*.mode1v3
 ObjFW.xcodeproj/*.pbxuser
 ObjFW.xcodeproj/project.xcworkspace
@@ -35,3 +34,4 @@ tests/tests
 tests/tests.exe
 tests/EBOOT.PBP
 tests/PARAM.SFO
+utils/objfw-config

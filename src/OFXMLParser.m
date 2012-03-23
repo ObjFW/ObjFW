@@ -98,7 +98,7 @@ transform_string(OFDataArray *cache, size_t cut, BOOL unescape,
 static OFString*
 namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 {
-	OFDictionary **cArray = [namespaces cArray];
+	OFDictionary **objects = [namespaces objects];
 	ssize_t i;
 
 	if (prefix == nil)
@@ -107,7 +107,7 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 	for (i = [namespaces count] - 1; i >= 0; i--) {
 		OFString *tmp;
 
-		if ((tmp = [cArray[i] objectForKey: prefix]) != nil)
+		if ((tmp = [objects[i] objectForKey: prefix]) != nil)
 			return tmp;
 	}
 
@@ -189,6 +189,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		cache = [[OFBigDataArray alloc] init];
 		previous = [[OFMutableArray alloc] init];
 		namespaces = [[OFMutableArray alloc] init];
+		attributes = [[OFMutableArray alloc] init];
 
 		pool = [[OFAutoreleasePool alloc] init];
 		dict = [OFMutableDictionary dictionaryWithKeysAndObjects:
@@ -670,7 +671,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 {
 	OFAutoreleasePool *pool;
 	OFString *ns;
-	OFXMLAttribute **attributesCArray;
+	OFXMLAttribute **attributesObjects;
 	size_t j, attributesCount;
 
 	if (buffer[*i] != '>' && buffer[*i] != '/') {
@@ -684,7 +685,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		return;
 	}
 
-	attributesCArray = [attributes cArray];
+	attributesObjects = [attributes objects];
 	attributesCount = [attributes count];
 
 	ns = namespace_for_prefix(prefix, namespaces);
@@ -694,7 +695,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 								prefix: prefix];
 
 	for (j = 0; j < attributesCount; j++)
-		resolve_attribute_namespace(attributesCArray[j], namespaces,
+		resolve_attribute_namespace(attributesObjects[j], namespaces,
 		    isa);
 
 	pool = [[OFAutoreleasePool alloc] init];
@@ -726,9 +727,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	[name release];
 	[prefix release];
-	[attributes release];
+	[attributes removeAllObjects];
 	name = prefix = nil;
-	attributes = nil;
 
 	*last = *i + 1;
 	state = (buffer[*i] == '/'
@@ -826,9 +826,6 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	if ([attributePrefix isEqual: @"xmlns"])
 		[[namespaces lastObject] setObject: attributeValue
 					    forKey: attributeName];
-
-	if (attributes == nil)
-		attributes = [[OFMutableArray alloc] init];
 
 	[attributes addObject:
 	    [OFXMLAttribute attributeWithName: attributeName
