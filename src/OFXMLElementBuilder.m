@@ -90,26 +90,26 @@
        attributes: (OFArray*)attributes
 {
 	OFXMLElement *element;
-	OFXMLAttribute **cArray;
+	OFXMLAttribute **objects;
 	size_t i, count;
 
 	element = [OFXMLElement elementWithName: name
 				      namespace: ns];
 
-	cArray = [attributes cArray];
+	objects = [attributes objects];
 	count = [attributes count];
 
 	for (i = 0; i < count; i++) {
-		if ([cArray[i] namespace] == nil &&
-		    [[cArray[i] name] isEqual: @"xmlns"])
+		if ([objects[i] namespace] == nil &&
+		    [[objects[i] name] isEqual: @"xmlns"])
 			continue;
 
-		if ([[cArray[i] namespace]
+		if ([[objects[i] namespace]
 		    isEqual: @"http://www.w3.org/2000/xmlns/"])
-			[element setPrefix: [cArray[i] name]
-			      forNamespace: [cArray[i] stringValue]];
+			[element setPrefix: [objects[i] name]
+			      forNamespace: [objects[i] stringValue]];
 
-		[element addAttribute: cArray[i]];
+		[element addAttribute: objects[i]];
 	}
 
 	[[stack lastObject] addChild: element];

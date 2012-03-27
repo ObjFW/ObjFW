@@ -14,13 +14,19 @@
  * file.
  */
 
-#include <stdio.h>
+#ifndef __STDC_LIMIT_MACROS
+# define __STDC_LIMIT_MACROS
+#endif
+#ifndef __STDC_CONSTANT_MACROS
+# define __STDC_CONSTANT_MACROS
+#endif
+
 #include <stdarg.h>
 #include <inttypes.h>
 
 #import "OFObject.h"
 #import "OFSerialization.h"
-#import "OFJSONEncoding.h"
+#import "OFJSONRepresentation.h"
 
 #import "macros.h"
 
@@ -74,7 +80,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * constant string is initialized.
  */
 @interface OFString: OFObject <OFCopying, OFMutableCopying, OFComparing,
-    OFSerialization, OFJSON>
+    OFSerialization, OFJSONRepresentation>
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly) size_t length;
 #endif
@@ -723,6 +729,16 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \return An autoreleased OFArray with the split string
  */
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter;
+
+/**
+ * \brief Splits an OFString into an OFArray of OFStrings.
+ *
+ * \param delimiter The delimiter for splitting
+ * \param skipEmpty Whether empty components should be skipped
+ * \return An autoreleased OFArray with the split string
+ */
+- (OFArray*)componentsSeparatedByString: (OFString*)delimiter
+			      skipEmpty: (BOOL)skipEmpty;
 
 /**
  * \brief Returns the components of the path.

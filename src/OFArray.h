@@ -14,13 +14,20 @@
  * file.
  */
 
+#ifndef __STDC_LIMIT_MACROS
+# define __STDC_LIMIT_MACROS
+#endif
+#ifndef __STDC_CONSTANT_MACROS
+# define __STDC_CONSTANT_MACROS
+#endif
+
 #include <stdarg.h>
 
 #import "OFObject.h"
 #import "OFCollection.h"
 #import "OFEnumerator.h"
 #import "OFSerialization.h"
-#import "OFJSONEncoding.h"
+#import "OFJSONRepresentation.h"
 
 @class OFString;
 
@@ -36,7 +43,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \brief An abstract class for storing objects in an array.
  */
 @interface OFArray: OFObject <OFCopying, OFMutableCopying, OFCollection,
-    OFSerialization, OFJSON>
+    OFSerialization, OFJSONRepresentation>
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly) size_t count;
 #endif
@@ -73,14 +80,6 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 + arrayWithArray: (OFArray*)array;
 
 /**
- * \brief Creates a new OFArray with the objects from the specified C array.
- *
- * \param objects A C array of objects, terminated with nil
- * \return A new autoreleased OFArray
- */
-+ arrayWithCArray: (id*)objects;
-
-/**
  * \brief Creates a new OFArray with the objects from the specified C array of
  *	  the specified length.
  *
@@ -88,8 +87,8 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \param length The length of the C array
  * \return A new autoreleased OFArray
  */
-+ arrayWithCArray: (id*)objects
-	   length: (size_t)length;
++ arrayWithObjects: (id*)objects
+	     count: (size_t)count;
 
 /**
  * \brief Initializes an OFArray with the specified object.
@@ -126,14 +125,6 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 - initWithArray: (OFArray*)array;
 
 /**
- * \brief Initializes an OFArray with the objects from the specified C array.
- *
- * \param objects A C array of objects, terminated with nil
- * \return An initialized OFArray
- */
-- initWithCArray: (id*)objects;
-
-/**
  * \brief Initializes an OFArray with the objects from the specified C array of
  *	  the specified length.
  *
@@ -141,8 +132,8 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \param length The length of the C array
  * \return An initialized OFArray
  */
-- initWithCArray: (id*)objects
-	  length: (size_t)length;
+- initWithObjects: (id*)objects
+	    count: (size_t)count;
 
 /**
  * \brief Returns a specified object of the array.
@@ -154,6 +145,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \return The specified object of the OFArray
  */
 - (id)objectAtIndex: (size_t)index;
+- (id)objectAtIndexedSubscript: (size_t)index;
 
 /**
  * \brief Copies the objects at the specified range to the specified buffer.
@@ -169,7 +161,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  *
  * \return The objects of the array as a C array
  */
-- (id*)cArray;
+- (id*)objects;
 
 /**
  * \brief Returns the index of the first object that is equivalent to the
@@ -340,3 +332,8 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 @end
 
 #import "OFMutableArray.h"
+
+#ifndef NSINTEGER_DEFINED
+/* Required for array literals to work */
+@compatibility_alias NSArray OFArray;
+#endif

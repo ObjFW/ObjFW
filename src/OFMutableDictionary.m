@@ -55,6 +55,16 @@ static struct {
 		    forKeys: keys];
 }
 
+- initWithObjects: (id*)objects
+	  forKeys: (id*)keys
+	    count: (size_t)count
+{
+	return (id)[[OFMutableDictionary_hashtable alloc]
+	    initWithObjects: objects
+		    forKeys: keys
+		      count: count];
+}
+
 - initWithKeysAndObjects: (id)firstKey, ...
 {
 	id ret;
@@ -137,6 +147,13 @@ static struct {
 {
 	@throw [OFNotImplementedException exceptionWithClass: isa
 						    selector: _cmd];
+}
+
+-   (void)setObject: (id)object
+  forKeyedSubscript: (id)key
+{
+	[self setObject: object
+		 forKey: key];
 }
 
 - (void)removeObjectForKey: (id)key

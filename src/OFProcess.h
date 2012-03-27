@@ -14,9 +14,14 @@
  * file.
  */
 
-#ifndef _WIN32
-# include <sys/types.h>
+#ifndef __STDC_LIMIT_MACROS
+# define __STDC_LIMIT_MACROS
 #endif
+#ifndef __STDC_CONSTANT_MACROS
+# define __STDC_CONSTANT_MACROS
+#endif
+
+#include <sys/types.h>
 
 #import "OFStream.h"
 

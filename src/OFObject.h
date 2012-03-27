@@ -113,6 +113,15 @@ typedef struct of_rectangle_t
 - (BOOL)isKindOfClass: (Class)class_;
 
 /**
+ * \brief Returns a boolean whether the object is a member of the specified
+ *	  class.
+ *
+ * \param class_ The class for which the receiver is checked
+ * \return A boolean whether the object is a member of the specified class
+ */
+- (BOOL)isMemberOfClass: (Class)class_;
+
+/**
  * \brief Returns a boolean whether the object responds to the specified
  *	  selector.
  *
@@ -236,6 +245,13 @@ typedef struct of_rectangle_t
  * \return The receiver
  */
 - self;
+
+/**
+ * \brief Returns whether the object is a proxy object.
+ *
+ * \return A boolean whether the object is a proxy object
+ */
+- (BOOL)isProxy;
 @end
 
 /**
@@ -361,16 +377,6 @@ typedef struct of_rectangle_t
 + (OFString*)description;
 
 /**
- * \brief Replaces a class method implementation with another implementation.
- *
- * \param newImp The new implementation for the class method
- * \param selector The selector of the class method to replace
- * \return The old implementation
- */
-+ (IMP)setImplementation: (IMP)newImp
-	  forClassMethod: (SEL)selector;
-
-/**
  * \brief Replaces a class method with a class method from another class.
  *
  * \param selector The selector of the class method to replace
@@ -379,17 +385,6 @@ typedef struct of_rectangle_t
  */
 + (IMP)replaceClassMethod: (SEL)selector
       withMethodFromClass: (Class)class_;
-
-/**
- * \brief Replaces an instance method implementation with another
- *	  implementation.
- *
- * \param newImp The new implementation for the instance method
- * \param selector The selector of the instance method to replace
- * \return The old implementation
- */
-+ (IMP)setImplementation: (IMP)newImp
-       forInstanceMethod: (SEL)selector;
 
 /**
  * \brief Replaces an instance method with an instance method from another
@@ -403,36 +398,36 @@ typedef struct of_rectangle_t
 	 withMethodFromClass: (Class)class_;
 
 /**
- * \brief Adds a class method to the class.
+ * \brief Replaces or adds a class method.
  *
- * If the method already exists, nothing is done and NO is returned. If you want
- * to change the implementation of a method, use
- * setImplementation:forClassMethod:.
+ * If the method already exists, it is replaced and the old implementation
+ * returned. If the method does not exist, it is added with the specified type
+ * encoding.
  *
  * \param selector The selector for the new method
- * \param typeEncoding The type encoding for the new method
  * \param implementation The implementation for the new method
- * \return Whether the method has been added
+ * \param typeEncoding The type encoding for the new method
+ * \return The old implementation or nil if the method was added
  */
-+ (BOOL)addClassMethod: (SEL)selector
-      withTypeEncoding: (const char*)typeEncoding
-	implementation: (IMP)implementation;
++ (IMP)replaceClassMethod: (SEL)selector
+       withImplementation: (IMP)implementation
+	     typeEncoding: (const char*)typeEncoding;
 
 /**
- * \brief Adds an instance method to the class.
+ * \brief Replaces or adds an instance method.
  *
- * If the method already exists, nothing is done and NO is returned. If you want
- * to change the implementation of a method, use
- * setImplementation:forInstanceMethod:.
+ * If the method already exists, it is replaced and the old implementation
+ * returned. If the method does not exist, it is added with the specified type
+ * encoding.
  *
  * \param selector The selector for the new method
- * \param typeEncoding The type encoding for the new method
  * \param implementation The implementation for the new method
- * \return Whether the method has been added
+ * \param typeEncoding The type encoding for the new method
+ * \return The old implementation or nil if the method was added
  */
-+ (BOOL)addInstanceMethod: (SEL)selector
-	 withTypeEncoding: (const char*)typeEncoding
-	   implementation: (IMP)implementation;
++ (IMP)replaceInstanceMethod: (SEL)selector
+	  withImplementation: (IMP)implementation
+		typeEncoding: (const char*)typeEncoding;
 
 /**
  * \brief Adds all methods from the specified class to the class that is the
@@ -480,16 +475,6 @@ typedef struct of_rectangle_t
  * \return A description for the object
  */
 - (OFString*)description;
-
-/**
- * \brief Adds a pointer to the object's memory pool.
- *
- * This is useful to add memory allocated by functions such as asprintf to the
- * pool so it gets free'd automatically when the object is deallocated.
- *
- * \param pointer A pointer to add to the memory pool
- */
-- (void)addMemoryToPool: (void*)pointer;
 
 /**
  * \brief Allocates memory and stores it in the object's memory pool.
@@ -613,9 +598,10 @@ typedef struct of_rectangle_t
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern id objc_getProperty(id, SEL, ptrdiff_t, BOOL);
-extern void objc_setProperty(id, SEL, ptrdiff_t, id, BOOL, BOOL);
 extern size_t of_pagesize;
+extern size_t of_num_cpus;
+extern id of_alloc_object(Class class_, size_t extraSize, size_t extraAlignment,
+    void **extra);
 #ifdef __cplusplus
 }
 #endif

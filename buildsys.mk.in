@@ -1,8 +1,8 @@
 #
-#  Copyright (c) 2007, 2008, 2009, 2010, 2011
+#  Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012
 #  Jonathan Schleifer <js@webkeks.org>
 #
-#  https://webkeks.org/hg/buildsys/
+#  https://webkeks.org/git/?p=buildsys.git
 #
 #  Permission to use, copy, modify, and/or distribute this software for any
 #  purpose with or without fee is hereby granted, provided that the above
@@ -21,7 +21,8 @@
 #  POSSIBILITY OF SUCH DAMAGE.
 #
 
-PACKAGE = @PACKAGE@
+PACKAGE_NAME = @PACKAGE_NAME@
+PACKAGE_VERSION = @PACKAGE_VERSION@
 AS = @AS@
 CC = @CC@
 CXX = @CXX@
@@ -72,13 +73,13 @@ prefix = @prefix@
 exec_prefix = @exec_prefix@
 bindir = @bindir@
 libdir = @libdir@
-plugindir ?= ${libdir}/${PACKAGE}
+plugindir ?= ${libdir}/${PACKAGE_NAME}
 datarootdir = @datarootdir@
 datadir = @datadir@
 includedir = @includedir@
-includesubdir ?= ${PACKAGE}
+includesubdir ?= ${PACKAGE_NAME}
 localedir = @localedir@
-localename ?= ${PACKAGE}
+localename ?= ${PACKAGE_NAME}
 mandir = @mandir@
 mansubdir ?= man1
 
@@ -148,52 +149,106 @@ depend: pre-depend ${SRCS}
 
 pre-depend:
 
-${PROG} ${PROG_NOINST}: ${EXT_DEPS} ${OBJS}
+${PROG} ${PROG_NOINST}: ${EXT_DEPS} ${OBJS} ${OBJS_EXTRA}
 	${LINK_STATUS}
-	if ${LD} -o $@ ${OBJS} ${LDFLAGS} ${LIBS}; then \
+	if ${LD} -o $@ ${OBJS} ${OBJS_EXTRA} ${LDFLAGS} ${LIBS}; then \
 		${LINK_OK}; \
 	else \
 		${LINK_FAILED}; \
 	fi
 
-${JARFILE}: ${EXT_DEPS} ${JAR_MANIFEST} ${OBJS}
+${JARFILE}: ${EXT_DEPS} ${JAR_MANIFEST} ${OBJS} ${OBJS_EXTRA}
 	${LINK_STATUS}
 	if test x"${JAR_MANIFEST}" != x""; then \
-		if ${JAR} cfm ${JARFILE} ${JAR_MANIFEST} ${OBJS}; then \
+		if ${JAR} cfm ${JARFILE} ${JAR_MANIFEST} ${OBJS} ${OBJS_EXTRA}; then \
 			${LINK_OK}; \
 		else \
 			${LINK_FAILED}; \
 		fi \
 	else \
-		if ${JAR} cf ${JARFILE} ${OBJS}; then \
+		if ${JAR} cf ${JARFILE} ${OBJS} ${OBJS_EXTRA}; then \
 			${LINK_OK}; \
 		else \
 			${LINK_FAILED}; \
 		fi \
 	fi
 
-${SHARED_LIB} ${SHARED_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS}
+${SHARED_LIB} ${SHARED_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 	${LINK_STATUS}; \
-	if ${LD} -o $@ ${LIB_OBJS} ${LIB_LDFLAGS} ${LDFLAGS} ${LIBS}; then \
+	objs=""; \
+	ars=""; \
+	for i in ${LIB_OBJS} ${LIB_OBJS_EXTRA}; do \
+		case $$i in \
+			*.a) \
+				ars="$$ars $$i" \
+				;; \
+			*.o) \
+				objs="$$objs $$i" \
+				;; \
+		esac \
+	done; \
+	for i in $$ars; do \
+		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
+		rm -fr $$dir; \
+		mkdir -p $$dir; \
+		cd $$dir; \
+		${AR} x ../$$i; \
+		for j in *.o; do \
+			objs="$$objs $$dir/$$j"; \
+		done; \
+		cd ..; \
+	done; \
+	if ${LD} -o $@ $$objs ${LIB_LDFLAGS} ${LDFLAGS} ${LIBS}; then \
 		${LINK_OK}; \
 	else \
 		${LINK_FAILED}; \
-	fi \
+	fi; \
+	for i in $$ars; do \
+		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
+		rm -fr $$dir; \
+	done
 
 ${PLUGIN} ${PLUGIN_NOINST}: ${EXT_DEPS} ${PLUGIN_OBJS}
 	${LINK_STATUS}
-	if ${LD} -o $@ ${PLUGIN_OBJS} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}; then \
+	objs=""; \
+	ars=""; \
+	for i in ${PLUGIN_OBJS}; do \
+		case $$i in \
+			*.a) \
+				ars="$$ars $$i" \
+				;; \
+			*.o) \
+				objs="$$objs $$i" \
+				;; \
+		esac \
+	done; \
+	for i in $$ars; do \
+		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
+		rm -fr $$dir; \
+		mkdir -p $$dir; \
+		cd $$dir; \
+		${AR} x ../$$i; \
+		for j in *.o; do \
+			objs="$$objs $$dir/$$j"; \
+		done; \
+		cd ..; \
+	done; \
+	if ${LD} -o $@ $$objs ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}; then \
 		${LINK_OK}; \
 	else \
 		${LINK_FAILED}; \
-	fi
+	fi; \
+	for i in $$ars; do \
+		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
+		rm -fr $$dir; \
+	done
 
-${STATIC_LIB} ${STATIC_LIB_NOINST}: ${EXT_DEPS} ${OBJS}
+${STATIC_LIB} ${STATIC_LIB_NOINST}: ${EXT_DEPS} ${OBJS} ${OBJS_EXTRA}
 	${LINK_STATUS}
 	rm -f $@
 	objs=""; \
 	ars=""; \
-	for i in ${OBJS}; do \
+	for i in ${OBJS} ${OBJS_EXTRA}; do \
 		case $$i in \
 			*.a) \
 				ars="$$ars $$i" \
@@ -225,15 +280,42 @@ ${STATIC_LIB} ${STATIC_LIB_NOINST}: ${EXT_DEPS} ${OBJS}
 		rm -fr $$dir; \
 	done
 
-${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS}
+${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 	${LINK_STATUS}
 	rm -f $@
-	if ${AR} cr $@ ${LIB_OBJS} && ${RANLIB} $@; then \
+	objs=""; \
+	ars=""; \
+	for i in ${LIB_OBJS} ${LIB_OBJS_EXTRA}; do \
+		case $$i in \
+			*.a) \
+				ars="$$ars $$i" \
+				;; \
+			*.o) \
+				objs="$$objs $$i" \
+				;; \
+		esac \
+	done; \
+	for i in $$ars; do \
+		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
+		rm -fr $$dir; \
+		mkdir -p $$dir; \
+		cd $$dir; \
+		${AR} x ../$$i; \
+		for j in *.o; do \
+			objs="$$objs $$dir/$$j"; \
+		done; \
+		cd ..; \
+	done; \
+	if ${AR} cr $@ $$objs && ${RANLIB} $@; then \
 		${LINK_OK}; \
 	else \
 		${LINK_FAILED}; \
 		rm -f $@; \
-	fi
+	fi; \
+	for i in $$ars; do \
+		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
+		rm -fr $$dir; \
+	done
 
 locales: ${MO_FILES}
 
@@ -461,7 +543,7 @@ install: ${SHARED_LIB} ${STATIC_LIB} ${STATIC_PIC_LIB} ${PLUGIN} ${PROG} install
 
 	for i in ${DATA}; do \
 		${INSTALL_STATUS}; \
-		if ${MKDIR_P} $$(dirname ${DESTDIR}${datadir}/${PACKAGE}/$$i) && ${INSTALL} -m 644 $$i ${DESTDIR}${datadir}/${PACKAGE}/$$i; then \
+		if ${MKDIR_P} $$(dirname ${DESTDIR}${datadir}/${PACKAGE_NAME}/$$i) && ${INSTALL} -m 644 $$i ${DESTDIR}${datadir}/${PACKAGE_NAME}/$$i; then \
 			${INSTALL_OK}; \
 		else \
 			${INSTALL_FAILED}; \
@@ -545,16 +627,16 @@ uninstall: uninstall-extra
 	-rmdir ${DESTDIR}${plugindir} >/dev/null 2>&1
 
 	for i in ${DATA}; do \
-		if test -f ${DESTDIR}${datadir}/${PACKAGE}/$$i; then \
-			if rm -f ${DESTDIR}${datadir}/${PACKAGE}/$$i; then \
+		if test -f ${DESTDIR}${datadir}/${PACKAGE_NAME}/$$i; then \
+			if rm -f ${DESTDIR}${datadir}/${PACKAGE_NAME}/$$i; then \
 				${DELETE_OK}; \
 			else \
 				${DELETE_FAILED}; \
 			fi \
 		fi; \
-		rmdir "$$(dirname ${DESTDIR}${datadir}/${PACKAGE}/$$i)" >/dev/null 2>&1 || true; \
+		rmdir "$$(dirname ${DESTDIR}${datadir}/${PACKAGE_NAME}/$$i)" >/dev/null 2>&1 || true; \
 	done
-	-rmdir ${DESTDIR}${datadir}/${PACKAGE} >/dev/null 2>&1
+	-rmdir ${DESTDIR}${datadir}/${PACKAGE_NAME} >/dev/null 2>&1
 
 	for i in ${PROG}; do \
 		if test -f ${DESTDIR}${bindir}/$$i; then \
@@ -606,7 +688,7 @@ clean:
 		${DIR_LEAVE}; \
 	done
 
-	for i in ${DEPS} ${OBJS} ${LIB_OBJS} ${PLUGIN_OBJS} ${PROG} ${PROG_NOINST} ${SHARED_LIB} ${SHARED_LIB_NOINST} ${STATIC_LIB} ${STATIC_LIB_NOINST} ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${PLUGIN} ${PLUGIN_NOINST} ${CLEAN_LIB} ${MO_FILES} ${CLEAN}; do \
+	for i in ${DEPS} ${OBJS} ${OBJS_EXTRA} ${LIB_OBJS} ${LIB_OBJS_EXTRA} ${PLUGIN_OBJS} ${PROG} ${PROG_NOINST} ${SHARED_LIB} ${SHARED_LIB_NOINST} ${STATIC_LIB} ${STATIC_LIB_NOINST} ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${PLUGIN} ${PLUGIN_NOINST} ${CLEAN_LIB} ${MO_FILES} ${CLEAN}; do \
 		if test -f $$i -o -d $$i; then \
 			if rm -fr $$i; then \
 				${DELETE_OK}; \

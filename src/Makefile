@@ -50,6 +50,7 @@ SRCS = OFApplication.m			\
        OFString+XMLUnescaping.m		\
        OFTCPSocket.m			\
        ${OFTHREAD_M}			\
+       OFThreadPool.m			\
        OFURL.m				\
        OFXMLAttribute.m			\
        OFXMLCDATA.m			\
@@ -66,15 +67,16 @@ SRCS = OFApplication.m			\
        of_strptime.m			\
        unicode.m
 
-INCLUDES := ${SRCS:.m=.h}	\
-	    OFCollection.h	\
-	    OFJSONEncoding.h	\
-	    OFSerialization.h	\
-	    ObjFW.h		\
-	    asprintf.h		\
-	    ${ATOMIC_H}		\
-	    macros.h		\
-	    objfw-defs.h	\
+INCLUDES := ${SRCS:.m=.h}		\
+	    OFCollection.h		\
+	    OFJSONRepresentation.h	\
+	    OFSerialization.h		\
+	    OFTLSSocket.h		\
+	    ObjFW.h			\
+	    asprintf.h			\
+	    ${ATOMIC_H}			\
+	    macros.h			\
+	    objfw-defs.h		\
 	    ${THREADING_H}
 
 SRCS += OFArray_adjacent.m		\
@@ -98,11 +100,11 @@ SRCS += OFArray_adjacent.m		\
 	${OBJC_PROPERTIES_M}		\
 	${OBJC_SYNC_M}
 
+OBJS_EXTRA = ${EXCEPTIONS_EXCEPTIONS_A}
+LIB_OBJS_EXTRA = ${EXCEPTIONS_EXCEPTIONS_LIB_A}
+
 include ../buildsys.mk
 
 CPPFLAGS += -I. -I.. -Iexceptions
 LD = ${OBJC}
 LDFLAGS += ${REEXPORT_LIBOBJC} ${MACH_ALIAS_LIST}
-
-LIB_OBJS := ${LIB_OBJS} ${EXCEPTIONS_EXCEPTIONS_LIB_A}
-OBJS += ${EXCEPTIONS_EXCEPTIONS_A}

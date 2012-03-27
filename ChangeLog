@@ -2,6 +2,22 @@ Legend:
  * Changes of existing features or bugfixes.
  + New features.
 
+ObjFW 0.5.4 -> ObjFW 0.6, 27.02.2012
+ The differences between 0.5.4 and 0.6 are too big to list them all. However,
+ the major new features are:
+ * OFString, OFArray, OFDictionary, OFSet and OFCountedSet are now class
+   clusters.
+ + Serialization and deserialization of objects into/from XML and JSON.
+ + New class OFIntrospection for introspecting classes.
+ + New class OFProcess for working with and controlling child processes.
+ * Lots of OFXMLParser and OFXMLElement improvements.
+ + OFHTTPRequests can have a delegate now for status updates and processing
+   data as soon as it arrives.
+ + There are several backends for OFStreamObserver now, including kqueue, poll
+   and select.
+ + SOCKS5 support for OFTCPSockets (client only).
+ * Several API changes.
+
 ObjFW 0.5.3 -> ObjFW 0.5.4, 30.08.2011
  * The blocks runtime is now working correctly.
  * Documentation fixes.
@@ -10,7 +26,7 @@ ObjFW 0.5.3 -> ObjFW 0.5.4, 30.08.2011
  * Various small fixes.
 
 ObjFW 0.5.2 -> ObjFW 0.5.3, 01.07.2011
- * Lots of bugfixes, see Mercurial log for details. (hg log -b 0.5)
+ * Lots of bugfixes, see Git log for details.
 
 ObjFW 0.5.1 -> ObjFW 0.5.2, 25.04.2011
  * Fix double-retain in OFList.

@@ -249,12 +249,22 @@ static uint16_t sutf16str[] = {
 	i = 0;
 	TEST(@"-[componentsSeparatedByString:]",
 	    (a = [@"fooXXbarXXXXbazXXXX" componentsSeparatedByString: @"XX"]) &&
+	    [a count] == 6 &&
 	    [[a objectAtIndex: i++] isEqual: @"foo"] &&
 	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
 	    [[a objectAtIndex: i++] isEqual: @""] &&
 	    [[a objectAtIndex: i++] isEqual: @"baz"] &&
 	    [[a objectAtIndex: i++] isEqual: @""] &&
 	    [[a objectAtIndex: i++] isEqual: @""])
+
+	i = 0;
+	TEST(@"-[componentsSeparatedByString:skipEmpty:]",
+	    (a = [@"fooXXbarXXXXbazXXXX" componentsSeparatedByString: @"XX"
+							   skipEmpty: YES]) &&
+	    [a count] == 3 &&
+	    [[a objectAtIndex: i++] isEqual: @"foo"] &&
+	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
+	    [[a objectAtIndex: i++] isEqual: @"baz"])
 
 	TEST(@"+[stringWithPath:]",
 	    (s[0] = [OFString stringWithPath: @"foo", @"bar", @"baz", nil]) &&

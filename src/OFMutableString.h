@@ -14,9 +14,6 @@
  * file.
  */
 
-#include <stdio.h>
-#include <stdarg.h>
-
 #import "OFString.h"
 
 /**

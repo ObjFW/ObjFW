@@ -21,6 +21,8 @@
 #include <string.h>
 #include <ctype.h>
 
+#include <sys/types.h>
+
 #import "OFString_UTF8.h"
 #import "OFMutableString_UTF8.h"
 #import "OFArray.h"
@@ -62,11 +64,48 @@ memcasecmp(const char *first, const char *second, size_t length)
 	self = [super init];
 
 	@try {
-		s = [self allocMemoryWithSize: sizeof(*s)];
-		memset(s, 0, sizeof(*s));
+		s = &s_store;
 
 		s->cString = [self allocMemoryWithSize: 1];
 		s->cString[0] = '\0';
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- _initWithUTF8String: (const char*)UTF8String
+	       length: (size_t)UTF8StringLength
+	      storage: (char*)storage
+{
+	self = [super init];
+
+	@try {
+		if (UTF8StringLength >= 3 &&
+		    !memcmp(UTF8String, "\xEF\xBB\xBF", 3)) {
+			UTF8String += 3;
+			UTF8StringLength -= 3;
+		}
+
+		s = &s_store;
+
+		s->cString = storage;
+		s->cStringLength = UTF8StringLength;
+
+		switch (of_string_check_utf8(UTF8String, UTF8StringLength,
+		    &s->length)) {
+		case 1:
+			s->UTF8 = YES;
+			break;
+		case -1:
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: isa];
+		}
+
+		memcpy(s->cString, UTF8String, UTF8StringLength);
+		s->cString[UTF8StringLength] = 0;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -91,8 +130,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 			cStringLength -= 3;
 		}
 
-		s = [self allocMemoryWithSize: sizeof(*s)];
-		memset(s, 0, sizeof(*s));
+		s = &s_store;
 
 		s->cString = [self allocMemoryWithSize: cStringLength + 1];
 		s->cStringLength = cStringLength;
@@ -212,8 +250,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 	self = [super init];
 
 	@try {
-		s = [self allocMemoryWithSize: sizeof(*s)];
-		memset(s, 0, sizeof(*s));
+		s = &s_store;
 
 		s->cStringLength = [string UTF8StringLength];
 
@@ -255,8 +292,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 		} else if (byteOrder != OF_ENDIANESS_NATIVE)
 			swap = YES;
 
-		s = [self allocMemoryWithSize: sizeof(*s)];
-		memset(s, 0, sizeof(*s));
+		s = &s_store;
 
 		s->cStringLength = length;
 		s->cString = [self allocMemoryWithSize: (length * 4) + 1];
@@ -338,8 +374,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 		} else if (byteOrder != OF_ENDIANESS_NATIVE)
 			swap = YES;
 
-		s = [self allocMemoryWithSize: sizeof(*s)];
-		memset(s, 0, sizeof(*s));
+		s = &s_store;
 
 		s->cStringLength = length;
 		s->cString = [self allocMemoryWithSize: (length * 4) + 1];
@@ -433,6 +468,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 	self = [super init];
 
 	@try {
+		char *tmp;
 		int cStringLength;
 
 		if (format == nil)
@@ -440,19 +476,18 @@ memcasecmp(const char *first, const char *second, size_t length)
 			    exceptionWithClass: isa
 				      selector: _cmd];
 
-		s = [self allocMemoryWithSize: sizeof(*s)];
-		memset(s, 0, sizeof(*s));
+		s = &s_store;
 
-		if ((cStringLength = of_vasprintf(&s->cString,
-		    [format UTF8String], arguments)) == -1)
+		if ((cStringLength = of_vasprintf(&tmp, [format UTF8String],
+		    arguments)) == -1)
 			@throw [OFInvalidFormatException
 			    exceptionWithClass: isa];
 
 		s->cStringLength = cStringLength;
 
 		@try {
-			switch (of_string_check_utf8(s->cString,
-			    cStringLength, &s->length)) {
+			switch (of_string_check_utf8(tmp, cStringLength,
+			    &s->length)) {
 			case 1:
 				s->UTF8 = YES;
 				break;
@@ -461,10 +496,11 @@ memcasecmp(const char *first, const char *second, size_t length)
 				    exceptionWithClass: isa];
 			}
 
-			[self addMemoryToPool: s->cString];
-		} @catch (id e) {
-			free(s->cString);
-			@throw e;
+			s->cString = [self
+			    allocMemoryWithSize: cStringLength + 1];
+			memcpy(s->cString, tmp, cStringLength + 1);
+		} @finally {
+			free(tmp);
 		}
 	} @catch (id e) {
 		[self release];
@@ -484,8 +520,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 		size_t i, cStringLength;
 		va_list argumentsCopy;
 
-		s = [self allocMemoryWithSize: sizeof(*s)];
-		memset(s, 0, sizeof(*s));
+		s = &s_store;
 
 		s->cStringLength = [firstComponent UTF8StringLength];
 
@@ -890,12 +925,14 @@ memcasecmp(const char *first, const char *second, size_t length)
 }
 
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter
+			      skipEmpty: (BOOL)skipEmpty
 {
 	OFAutoreleasePool *pool;
 	OFMutableArray *array;
 	const char *cString = [delimiter UTF8String];
 	size_t cStringLength = [delimiter UTF8StringLength];
 	size_t i, last;
+	OFString *component;
 
 	array = [OFMutableArray array];
 	pool = [[OFAutoreleasePool alloc] init];
@@ -911,13 +948,17 @@ memcasecmp(const char *first, const char *second, size_t length)
 		if (memcmp(s->cString + i, cString, cStringLength))
 			continue;
 
-		[array addObject:
-		    [OFString stringWithUTF8String: s->cString + last
-					    length: i - last]];
+		component = [OFString stringWithUTF8String: s->cString + last
+						    length: i - last];
+		if (!skipEmpty || ![component isEqual: @""])
+			[array addObject: component];
+
 		i += cStringLength - 1;
 		last = i + 1;
 	}
-	[array addObject: [OFString stringWithUTF8String: s->cString + last]];
+	component = [OFString stringWithUTF8String: s->cString + last];
+	if (!skipEmpty || ![component isEqual: @""])
+		[array addObject: component];
 
 	[array makeImmutable];
 

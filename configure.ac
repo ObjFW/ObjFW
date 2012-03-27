@@ -1,4 +1,4 @@
-AC_INIT(ObjFW, 0.6-dev, js@webkeks.org)
+AC_INIT(ObjFW, 0.7-dev, js@webkeks.org)
 AC_CONFIG_SRCDIR(src)
 
 AS_IF([test x"$host" = x"psp"], [
@@ -480,20 +480,6 @@ AC_CHECK_FUNC(localtime_r, [
 	AC_DEFINE(HAVE_LOCALTIME_R, 1, [Whether we have localtime_r])
 ])
 
-AC_MSG_CHECKING(for tm_gmtoff in struct tm)
-AC_TRY_COMPILE([
-	#define _GNU_SOURCE
-	#include <time.h>
-], [
-	struct tm tm;
-	tm.tm_gmtoff = 0;
-], [
-	AC_DEFINE(STRUCT_TM_HAS_TM_GMTOFF, 1, [Whether struct tm has tm_gmtoff])
-	AC_MSG_RESULT(yes)
-], [
-	AC_MSG_RESULT(no)
-])
-
 AC_CHECK_FUNC(kqueue, [
 	AC_DEFINE(HAVE_KQUEUE, 1, [Whether we have kqueue])
 	AC_SUBST(OFSTREAMOBSERVER_KQUEUE_M, "OFStreamObserver_kqueue.m")
@@ -700,6 +686,6 @@ AC_SUBST(CPP)
 AC_SUBST(CPPFLAGS)
 
 AC_SUBST(PACKAGE, ObjFW)
-AC_CONFIG_FILES([buildsys.mk extra.mk utils/objfw-config])
+AC_CONFIG_FILES([buildsys.mk extra.mk utils/objfw-config Info.plist])
 AC_CONFIG_HEADERS([config.h src/objfw-defs.h])
 AC_OUTPUT

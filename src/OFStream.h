@@ -14,6 +14,13 @@
  * file.
  */
 
+#ifndef __STDC_LIMIT_MACROS
+# define __STDC_LIMIT_MACROS
+#endif
+#ifndef __STDC_CONSTANT_MACROS
+# define __STDC_CONSTANT_MACROS
+#endif
+
 #include <stdarg.h>
 
 #import "OFObject.h"
@@ -814,11 +821,9 @@
  */
 - (void)close;
 
-/// \cond internal
 - (size_t)_readNBytes: (size_t)length
 	   intoBuffer: (void*)buffer;
 - (void)_writeNBytes: (size_t)length
 	  fromBuffer: (const void*)buffer;
 - (BOOL)_isWaitingForDelimiter;
-/// \endcond
 @end

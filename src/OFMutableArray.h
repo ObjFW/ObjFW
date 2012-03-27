@@ -59,6 +59,8 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
  */
 - (void)replaceObjectAtIndex: (size_t)index
 		  withObject: (id)object;
+-    (void)setObject: (id)object
+  atIndexedSubscript: (size_t)index;
 
 /**
  * \brief Replaces the first object that has the same address as the specified

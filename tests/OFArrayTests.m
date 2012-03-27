@@ -29,8 +29,7 @@ static OFString *module = @"OFArray";
 static OFString *c_ary[] = {
 	@"Foo",
 	@"Bar",
-	@"Baz",
-	nil
+	@"Baz"
 };
 
 @implementation TestsAppDelegate (OFArrayTests)
@@ -49,12 +48,10 @@ static OFString *c_ary[] = {
 	TEST(@"+[arrayWithObjects:]",
 	    (a[0] = [OFArray arrayWithObjects: @"Foo", @"Bar", @"Baz", nil]))
 
-	TEST(@"+[arrayWithCArray:]", (a[1] = [OFArray arrayWithCArray: c_ary]))
-
-	TEST(@"+[arrayWithCArray:length:]",
-	    (a[2] = [OFArray arrayWithCArray: c_ary
-				      length: 3]) &&
-	    [a[2] isEqual: a[1]])
+	TEST(@"+[arrayWithObjects:count:]",
+	    (a[1] = [OFArray arrayWithObjects: c_ary
+					count: 3]) &&
+	    [a[1] isEqual: a[0]])
 
 	TEST(@"-[description]",
 	    [[a[0] description ]isEqual: @"(\n\tFoo,\n\tBar,\n\tBaz\n)"])

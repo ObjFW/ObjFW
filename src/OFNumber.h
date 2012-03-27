@@ -14,11 +14,18 @@
  * file.
  */
 
+#ifndef __STDC_LIMIT_MACROS
+# define __STDC_LIMIT_MACROS
+#endif
+#ifndef __STDC_CONSTANT_MACROS
+# define __STDC_CONSTANT_MACROS
+#endif
+
 #include <sys/types.h>
 
 #import "OFObject.h"
 #import "OFSerialization.h"
-#import "OFJSONEncoding.h"
+#import "OFJSONRepresentation.h"
 
 /**
  * \brief The type of a number.
@@ -55,7 +62,7 @@ typedef enum of_number_type_t {
 /**
  * \brief Provides a way to store a number in an object.
  */
-@interface OFNumber: OFObject <OFCopying, OFSerialization, OFJSON>
+@interface OFNumber: OFObject <OFCopying, OFSerialization, OFJSONRepresentation>
 {
 	union of_number_value {
 		BOOL	       bool_;

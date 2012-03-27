@@ -19,6 +19,13 @@
 @interface OFString_UTF8: OFString
 {
 @public
+	/**
+	 * A pointer to the actual data.
+	 *
+	 * Since constant strings don't have s_store, they have to malloc it on
+	 * the first access. Strings created at runtime just set the pointer to
+	 * &s_store.
+	 */
 	struct of_string_utf8_ivars {
 		char	 *cString;
 		size_t	 cStringLength;
@@ -27,5 +34,10 @@
 		BOOL	 hashed;
 		uint32_t hash;
 	} *restrict s;
+	struct of_string_utf8_ivars s_store;
 }
+
+- _initWithUTF8String: (const char*)UTF8String
+	       length: (size_t)UTF8StringLength
+	      storage: (char*)storage;
 @end

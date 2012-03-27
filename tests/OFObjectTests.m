@@ -40,17 +40,12 @@ static OFString *module = @"OFObject";
 	void *p, *q, *r;
 	OFObject *o;
 	MyObj *m;
-
-	EXPECT_EXCEPTION(@"Detect freeing of memory not allocated by object",
-	    OFMemoryNotPartOfObjectException, [obj freeMemory: (void*)1])
+	char *tmp;
 
 	TEST(@"Allocating 4096 bytes",
 	    (p = [obj allocMemoryWithSize: 4096]) != NULL)
 
 	TEST(@"Freeing memory", R([obj freeMemory: p]))
-
-	EXPECT_EXCEPTION(@"Detect freeing of memory twice",
-	    OFMemoryNotPartOfObjectException, [obj freeMemory: p])
 
 	TEST(@"Allocating and freeing 4096 bytes 3 times",
 	    (p = [obj allocMemoryWithSize: 4096]) != NULL &&
@@ -59,15 +54,19 @@ static OFString *module = @"OFObject";
 	    R([obj freeMemory: p]) && R([obj freeMemory: q]) &&
 	    R([obj freeMemory: r]))
 
+	tmp = [self allocMemoryWithSize: 1024];
+	EXPECT_EXCEPTION(@"Detect freeing of memory not allocated by object",
+	    OFMemoryNotPartOfObjectException, [obj freeMemory: tmp])
+
 	EXPECT_EXCEPTION(@"Detect out of memory on alloc",
-	    OFOutOfMemoryException, [obj allocMemoryWithSize: SIZE_MAX])
+	    OFOutOfMemoryException, [obj allocMemoryWithSize: SIZE_MAX - 128])
 
 	EXPECT_EXCEPTION(@"Detect out of memory on resize",
 	    OFOutOfMemoryException,
 	    {
 		p = [obj allocMemoryWithSize: 1];
 		[obj resizeMemory: p
-			   toSize: SIZE_MAX];
+			   toSize: SIZE_MAX - 128];
 	    })
 	[obj freeMemory: p];
 
@@ -77,8 +76,9 @@ static OFString *module = @"OFObject";
 	[obj freeMemory: p];
 
 	EXPECT_EXCEPTION(@"Detect resizing of memory not allocated by object",
-	    OFMemoryNotPartOfObjectException, [obj resizeMemory: (void*)1
-							 toSize: 1024])
+	    OFMemoryNotPartOfObjectException, [obj resizeMemory: tmp
+							 toSize: 2048])
+	[self freeMemory: tmp];
 
 	TEST(@"+[description]",
 	    [[OFObject description] isEqual: @"OFObject"] &&

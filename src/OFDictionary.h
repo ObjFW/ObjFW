@@ -14,13 +14,20 @@
  * file.
  */
 
+#ifndef __STDC_LIMIT_MACROS
+# define __STDC_LIMIT_MACROS
+#endif
+#ifndef __STDC_CONSTANT_MACROS
+# define __STDC_CONSTANT_MACROS
+#endif
+
 #include <stdarg.h>
 
 #import "OFObject.h"
 #import "OFCollection.h"
 #import "OFEnumerator.h"
 #import "OFSerialization.h"
-#import "OFJSONEncoding.h"
+#import "OFJSONRepresentation.h"
 
 @class OFArray;
 
@@ -40,7 +47,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * dictionary.
  */
 @interface OFDictionary: OFObject <OFCopying, OFMutableCopying, OFCollection,
-    OFSerialization, OFJSON>
+    OFSerialization, OFJSONRepresentation>
 /**
  * \brief Creates a new OFDictionary.
  *
@@ -75,6 +82,18 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  */
 + dictionaryWithObjects: (OFArray*)objects
 		forKeys: (OFArray*)keys;
+
+/**
+ * \brief Creates a new OFDictionary with the specified keys and objects.
+ *
+ * \param keys An array of keys
+ * \param objects An array of objects
+ * \param count The number of objects in the arrays
+ * \return A new autoreleased OFDictionary
+ */
++ dictionaryWithObjects: (id*)objects
+		forKeys: (id*)keys
+		  count: (size_t)count;
 
 /**
  * \brief Creates a new OFDictionary with the specified keys objects.
@@ -126,6 +145,19 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * \brief Initializes an already allocated OFDictionary with the specified keys
  *	  and objects.
  *
+ * \param keys An array of keys
+ * \param objects An array of objects
+ * \param count The number of objects in the arrays
+ * \return A new initialized OFDictionary
+ */
+- initWithObjects: (id*)objects
+	  forKeys: (id*)keys
+	    count: (size_t)count;
+
+/**
+ * \brief Initializes an already allocated OFDictionary with the specified keys
+ *	  and objects.
+ *
  * \param firstKey The first key
  * \return A new initialized OFDictionary
  */
@@ -152,6 +184,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * \return The object for the given key or nil if the key was not found
  */
 - (id)objectForKey: (id)key;
+- (id)objectForKeyedSubscript: (id)key;
 
 /**
  * \brief Checks whether the dictionary contains an object with the specified
@@ -221,3 +254,8 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
 @end
 
 #import "OFMutableDictionary.h"
+
+#ifndef NSINTEGER_DEFINED
+/* Required for dictionary literals to work */
+@compatibility_alias NSDictionary OFDictionary;
+#endif

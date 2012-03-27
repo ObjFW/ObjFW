@@ -87,15 +87,18 @@
 
 		switch ((pid = fork())) {
 		case 0:;
-			OFString **cArray = [arguments cArray];
+			OFString **objects = [arguments objects];
 			size_t i, count = [arguments count];
-			char **argv = alloca((count + 2) * sizeof(char*));
+			char **argv;
+
+			argv = [self allocMemoryForNItems: count + 2
+						   ofSize: sizeof(char*)];
 
 			argv[0] = (char*)[programName cStringWithEncoding:
 			    OF_STRING_ENCODING_NATIVE];
 
 			for (i = 0; i < count; i++)
-				argv[i + 1] = (char*)[cArray[i]
+				argv[i + 1] = (char*)[objects[i]
 				    cStringWithEncoding:
 				    OF_STRING_ENCODING_NATIVE];
 

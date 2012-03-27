@@ -22,10 +22,6 @@
 
 #include <sys/stat.h>
 
-#ifdef _WIN32
-# include <malloc.h>
-#endif
-
 #import "OFString.h"
 #import "OFString_UTF8.h"
 #import "OFArray.h"
@@ -261,19 +257,50 @@ static struct {
 
 - initWithUTF8String: (const char*)UTF8String
 {
-	return (id)[[OFString_UTF8 alloc] initWithUTF8String: UTF8String];
+	id string;
+	size_t length;
+	void *storage;
+
+	length = strlen(UTF8String);
+	string = of_alloc_object([OFString_UTF8 class],
+	    length + 1, 1, &storage);
+
+	return (id)[string _initWithUTF8String: UTF8String
+					length: length
+				       storage: storage];
 }
 
 - initWithUTF8String: (const char*)UTF8String
 	      length: (size_t)UTF8StringLength
 {
-	return (id)[[OFString_UTF8 alloc] initWithUTF8String: UTF8String
-						      length: UTF8StringLength];
+	id string;
+	void *storage;
+
+	string = of_alloc_object([OFString_UTF8 class],
+	    UTF8StringLength + 1, 1, &storage);
+
+	return (id)[string _initWithUTF8String: UTF8String
+					length: UTF8StringLength
+				       storage: storage];
 }
 
 - initWithCString: (const char*)cString
 	 encoding: (of_string_encoding_t)encoding
 {
+	if (encoding == OF_STRING_ENCODING_UTF_8) {
+		id string;
+		size_t length;
+		void *storage;
+
+		length = strlen(cString);
+		string = of_alloc_object([OFString_UTF8 class],
+		    length + 1, 1, &storage);
+
+		return (id)[string _initWithUTF8String: cString
+						length: length
+					       storage: storage];
+	}
+
 	return (id)[[OFString_UTF8 alloc] initWithCString: cString
 						 encoding: encoding];
 }
@@ -282,6 +309,18 @@ static struct {
 	 encoding: (of_string_encoding_t)encoding
 	   length: (size_t)cStringLength
 {
+	if (encoding == OF_STRING_ENCODING_UTF_8) {
+		id string;
+		void *storage;
+
+		string = of_alloc_object([OFString_UTF8 class],
+		    cStringLength + 1, 1, &storage);
+
+		return (id)[string _initWithUTF8String: cString
+						length: cStringLength
+					       storage: storage];
+	}
+
 	return (id)[[OFString_UTF8 alloc] initWithCString: cString
 						 encoding: encoding
 						   length: cStringLength];
@@ -1471,7 +1510,6 @@ static struct {
 
 - (BOOL)hasPrefix: (OFString*)prefix
 {
-	OFAutoreleasePool *pool;
 	of_unichar_t *tmp;
 	const of_unichar_t *prefixString;
 	size_t prefixLength;
@@ -1480,24 +1518,30 @@ static struct {
 	if ((prefixLength = [prefix length]) > [self length])
 		return NO;
 
-	tmp = alloca(prefixLength * sizeof(of_unichar_t));
-	[self getCharacters: tmp
-		    inRange: of_range(0, prefixLength)];
+	tmp = [self allocMemoryForNItems: prefixLength
+				  ofSize: sizeof(of_unichar_t)];
+	@try {
+		OFAutoreleasePool *pool;
 
-	pool = [[OFAutoreleasePool alloc] init];
+		[self getCharacters: tmp
+			    inRange: of_range(0, prefixLength)];
 
-	prefixString = [prefix unicodeString];
-	compare = memcmp(tmp, prefixString,
-	    prefixLength * sizeof(of_unichar_t));
+		pool = [[OFAutoreleasePool alloc] init];
 
-	[pool release];
+		prefixString = [prefix unicodeString];
+		compare = memcmp(tmp, prefixString,
+		    prefixLength * sizeof(of_unichar_t));
+
+		[pool release];
+	} @finally {
+		[self freeMemory: tmp];
+	}
 
 	return !compare;
 }
 
 - (BOOL)hasSuffix: (OFString*)suffix
 {
-	OFAutoreleasePool *pool;
 	of_unichar_t *tmp;
 	const of_unichar_t *suffixString;
 	size_t length, suffixLength;
@@ -1508,22 +1552,37 @@ static struct {
 
 	length = [self length];
 
-	tmp = alloca(suffixLength * sizeof(of_unichar_t));
-	[self getCharacters: tmp
-		    inRange: of_range(length - suffixLength, suffixLength)];
+	tmp = [self allocMemoryForNItems: suffixLength
+				  ofSize: sizeof(of_unichar_t)];
+	@try {
+		OFAutoreleasePool *pool;
 
-	pool = [[OFAutoreleasePool alloc] init];
+		[self getCharacters: tmp
+			    inRange: of_range(length - suffixLength,
+					 suffixLength)];
 
-	suffixString = [suffix unicodeString];
-	compare = memcmp(tmp, suffixString,
-	    suffixLength * sizeof(of_unichar_t));
+		pool = [[OFAutoreleasePool alloc] init];
 
-	[pool release];
+		suffixString = [suffix unicodeString];
+		compare = memcmp(tmp, suffixString,
+		    suffixLength * sizeof(of_unichar_t));
+
+		[pool release];
+	} @finally {
+		[self freeMemory: tmp];
+	}
 
 	return !compare;
 }
 
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter
+{
+	return [self componentsSeparatedByString: delimiter
+				       skipEmpty: NO];
+}
+
+- (OFArray*)componentsSeparatedByString: (OFString*)delimiter
+			      skipEmpty: (BOOL)skipEmpty
 {
 	OFAutoreleasePool *pool;
 	OFMutableArray *array = [OFMutableArray array];
@@ -1531,6 +1590,7 @@ static struct {
 	size_t length = [self length];
 	size_t delimiterLength = [delimiter length];
 	size_t i, last;
+	OFString *component;
 
 	pool = [[OFAutoreleasePool alloc] init];
 
@@ -1551,14 +1611,16 @@ static struct {
 		    delimiterLength * sizeof(of_unichar_t)))
 			continue;
 
-		[array addObject: [self substringWithRange:
-		    of_range(last, i - last)]];
+		component = [self substringWithRange: of_range(last, i - last)];
+		if (!skipEmpty || ![component isEqual: @""])
+			[array addObject: component];
 
 		i += delimiterLength - 1;
 		last = i + 1;
 	}
-	[array addObject:
-	    [self substringWithRange: of_range(last, length - last)]];
+	component = [self substringWithRange: of_range(last, length - last)];
+	if (!skipEmpty || ![component isEqual: @""])
+		[array addObject: component];
 
 	[array makeImmutable];
 
