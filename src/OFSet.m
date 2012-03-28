@@ -60,6 +60,13 @@ static struct {
 	return ret;
 }
 
+- initWithObjects: (id*)objects
+	    count: (size_t)count
+{
+	return (id)[[OFSet_hashtable alloc] initWithObjects: objects
+						      count: count];
+}
+
 - initWithObject: (id)firstObject
        arguments: (va_list)arguments
 {
@@ -137,6 +144,13 @@ static struct {
 	return ret;
 }
 
++ setWithObjects: (id*)objects
+	   count: (size_t)count
+{
+	return [[[self alloc] initWithObjects: objects
+					count: count] autorelease];
+}
+
 - init
 {
 	if (isa == [OFSet class]) {
@@ -165,7 +179,7 @@ static struct {
 						    selector: _cmd];
 }
 
-- (id)initWithObjects:(id)firstObject, ...
+- (id)initWithObjects: (id)firstObject, ...
 {
 	id ret;
 	va_list arguments;
@@ -176,6 +190,15 @@ static struct {
 	va_end(arguments);
 
 	return ret;
+}
+
+- initWithObjects: (id*)objects
+	    count: (size_t)count
+{
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
 }
 
 - initWithObject: (id)firstObject

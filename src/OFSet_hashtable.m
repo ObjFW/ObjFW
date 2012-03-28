@@ -97,6 +97,30 @@
 	return self;
 }
 
+- initWithObjects: (id*)objects
+	    count: (size_t)count
+{
+	self = [self init];
+
+	@try {
+		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		OFNumber *one = [OFNumber numberWithSize: 1];
+		size_t i;
+
+		for (i = 0; i < count; i++)
+			[dictionary _setObject: one
+					forKey: objects[i]
+				       copyKey: NO];
+
+		[pool release];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
 - initWithObject: (id)firstObject
        arguments: (va_list)arguments
 {

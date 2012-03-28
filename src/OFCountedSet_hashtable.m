@@ -94,6 +94,24 @@
 	return self;
 }
 
+- initWithObjects: (id*)objects
+	    count: (size_t)count
+{
+	self = [self init];
+
+	@try {
+		size_t i;
+
+		for (i = 0; i < count; i++)
+			[self addObject: objects[i]];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
 - initWithObject: (id)firstObject
        arguments: (va_list)arguments
 {
