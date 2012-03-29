@@ -108,7 +108,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 	return (id)[[OFMutableArray_adjacent alloc] initWithArray: array];
 }
 
-- initWithObjects: (id*)objects
+- initWithObjects: (id const*)objects
 	    count: (size_t)count
 {
 	return (id)[[OFMutableArray_adjacent alloc] initWithObjects: objects

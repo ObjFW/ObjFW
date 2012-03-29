@@ -55,8 +55,8 @@ static struct {
 		    forKeys: keys];
 }
 
-- initWithObjects: (id*)objects
-	  forKeys: (id*)keys
+- initWithObjects: (id const*)objects
+	  forKeys: (id const*)keys
 	    count: (size_t)count
 {
 	return (id)[[OFMutableDictionary_hashtable alloc]

@@ -75,7 +75,7 @@ static struct {
 	return (id)[[OFArray_adjacent alloc] initWithArray: array];
 }
 
-- initWithObjects: (id*)objects
+- initWithObjects: (id const*)objects
 	    count: (size_t)count
 {
 	return (id)[[OFArray_adjacent alloc] initWithObjects: objects
@@ -152,7 +152,7 @@ static struct {
 	return [[[self alloc] initWithArray: array] autorelease];
 }
 
-+ arrayWithObjects: (id*)objects
++ arrayWithObjects: (id const*)objects
 	     count: (size_t)count
 {
 	return [[[self alloc] initWithObjects: objects
@@ -206,7 +206,7 @@ static struct {
 						    selector: _cmd];
 }
 
-- initWithObjects: (id*)objects
+- initWithObjects: (id const*)objects
 	    count: (size_t)count
 {
 	Class c = isa;

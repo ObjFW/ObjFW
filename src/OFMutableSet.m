@@ -60,7 +60,7 @@ static struct {
 	return ret;
 }
 
-- initWithObjects: (id*)objects
+- initWithObjects: (id const*)objects
 	    count: (size_t)count
 {
 	return (id)[[OFMutableSet_hashtable alloc] initWithObjects: objects

@@ -77,7 +77,7 @@ typedef BOOL (^of_set_filter_block_t)(id object);
  * \param count The number of objects in the specified array
  * \return A new, autoreleased set with the specified objects
  */
-+ setWithObjects: (id*)objects
++ setWithObjects: (id const*)objects
 	   count: (size_t)count;
 
 /**
@@ -111,7 +111,7 @@ typedef BOOL (^of_set_filter_block_t)(id object);
  * \param count The number of objects in the specified array
  * \return An initialized set with the specified objects
  */
-- initWithObjects: (id*)objects
+- initWithObjects: (id const*)objects
 	    count: (size_t)count;
 
 /**

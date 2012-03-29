@@ -253,8 +253,8 @@ struct of_dictionary_hashtable_bucket
 	return ret;
 }
 
-- initWithObjects: (id*)objects
-	  forKeys: (id*)keys
+- initWithObjects: (id const*)objects
+	  forKeys: (id const*)keys
 	    count: (size_t)count_
 {
 	self = [super init];

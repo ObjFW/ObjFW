@@ -60,8 +60,8 @@ static struct {
 							   forKeys: keys];
 }
 
-- initWithObjects: (id*)objects
-	  forKeys: (id*)keys
+- initWithObjects: (id const*)objects
+	  forKeys: (id const*)keys
 	    count: (size_t)count
 {
 	return (id)[[OFDictionary_hashtable alloc] initWithObjects: objects
@@ -156,8 +156,8 @@ static struct {
 				      forKeys: keys] autorelease];
 }
 
-+ dictionaryWithObjects: (id*)objects
-		forKeys: (id*)keys
++ dictionaryWithObjects: (id const*)objects
+		forKeys: (id const*)keys
 		  count: (size_t)count
 {
 	return [[[self alloc] initWithObjects: objects
@@ -213,8 +213,8 @@ static struct {
 						    selector: _cmd];
 }
 
-- initWithObjects: (id*)objects
-	  forKeys: (id*)keys
+- initWithObjects: (id const*)objects
+	  forKeys: (id const*)keys
 	    count: (size_t)count
 {
 	Class c = isa;

@@ -60,7 +60,7 @@ static struct {
 	return ret;
 }
 
-- initWithObjects: (id*)objects
+- initWithObjects: (id const*)objects
 	    count: (size_t)count
 {
 	return (id)[[OFSet_hashtable alloc] initWithObjects: objects
@@ -144,7 +144,7 @@ static struct {
 	return ret;
 }
 
-+ setWithObjects: (id*)objects
++ setWithObjects: (id const*)objects
 	   count: (size_t)count
 {
 	return [[[self alloc] initWithObjects: objects
@@ -192,7 +192,7 @@ static struct {
 	return ret;
 }
 
-- initWithObjects: (id*)objects
+- initWithObjects: (id const*)objects
 	    count: (size_t)count
 {
 	Class c = isa;

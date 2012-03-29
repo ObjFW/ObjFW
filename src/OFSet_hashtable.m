@@ -97,7 +97,7 @@
 	return self;
 }
 
-- initWithObjects: (id*)objects
+- initWithObjects: (id const*)objects
 	    count: (size_t)count
 {
 	self = [self init];

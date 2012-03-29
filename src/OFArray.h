@@ -87,7 +87,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \param length The length of the C array
  * \return A new autoreleased OFArray
  */
-+ arrayWithObjects: (id*)objects
++ arrayWithObjects: (id const*)objects
 	     count: (size_t)count;
 
 /**
@@ -132,7 +132,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \param length The length of the C array
  * \return An initialized OFArray
  */
-- initWithObjects: (id*)objects
+- initWithObjects: (id const*)objects
 	    count: (size_t)count;
 
 /**
