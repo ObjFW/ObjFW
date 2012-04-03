@@ -21,13 +21,11 @@
 #import "OFAutoreleasePool.h"
 
 #if defined(OF_OBJFW_RUNTIME)
-# include <objfw-rt.h>
-#elif defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+# include "runtime.h"
+#elif defined(OF_APPLE_RUNTIME)
 # include <objc/runtime.h>
-#elif defined(OF_OLD_GNU_RUNTIME)
-# include <objc/objc-api.h>
 #endif
-#if defined(OF_OLD_GNU_RUNTIME) || defined(OF_OBJFW_RUNTIME)
+#ifdef OF_OBJFW_RUNTIME
 # define objc_getClass objc_get_class
 #endif
 
