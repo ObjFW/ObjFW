@@ -119,7 +119,7 @@
 - (void)perform
 {
 #ifdef OF_HAVE_BLOCKS
-	if (block != nil)
+	if (block != NULL)
 		block(object);
 	else
 #endif
