@@ -91,8 +91,8 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * \param count The number of objects in the arrays
  * \return A new autoreleased OFDictionary
  */
-+ dictionaryWithObjects: (id*)objects
-		forKeys: (id*)keys
++ dictionaryWithObjects: (id const*)objects
+		forKeys: (id const*)keys
 		  count: (size_t)count;
 
 /**
@@ -150,8 +150,8 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * \param count The number of objects in the arrays
  * \return A new initialized OFDictionary
  */
-- initWithObjects: (id*)objects
-	  forKeys: (id*)keys
+- initWithObjects: (id const*)objects
+	  forKeys: (id const*)keys
 	    count: (size_t)count;
 
 /**

@@ -61,6 +61,13 @@ static struct {
 	return ret;
 }
 
+- initWithObjects: (id const*)objects
+	    count: (size_t)count
+{
+	return (id)[[OFCountedSet_hashtable alloc] initWithObjects: objects
+							     count: count];
+}
+
 - initWithObject: (id)firstObject
        arguments: (va_list)arguments
 {

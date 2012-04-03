@@ -71,6 +71,16 @@ typedef BOOL (^of_set_filter_block_t)(id object);
 + setWithObjects: (id)firstObject, ...;
 
 /**
+ * \brief Creates a new set with the specified objects.
+ *
+ * \param objects An array of objects for the set
+ * \param count The number of objects in the specified array
+ * \return A new, autoreleased set with the specified objects
+ */
++ setWithObjects: (id const*)objects
+	   count: (size_t)count;
+
+/**
  * \brief Initializes an already allocated set with the specified set.
  *
  * \param set The set to initialize the set with
@@ -93,6 +103,16 @@ typedef BOOL (^of_set_filter_block_t)(id object);
  * \return An initialized set with the specified objects
  */
 - initWithObjects: (id)firstObject, ...;
+
+/**
+ * \brief Initializes an already allocated set with the specified objects.
+ *
+ * \param objects An array of objects for the set
+ * \param count The number of objects in the specified array
+ * \return An initialized set with the specified objects
+ */
+- initWithObjects: (id const*)objects
+	    count: (size_t)count;
 
 /**
  * \brief Initializes an already allocated set with the specified object and
