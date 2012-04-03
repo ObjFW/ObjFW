@@ -418,7 +418,7 @@ void _references_to_categories_of_OFObject(void)
 		int i;
 
 		for (i = 0; i < methodlist->count; i++) {
-			SEL selector = &methodlist->methods[i].sel;
+			SEL selector = (SEL)&methodlist->methods[i].sel;
 
 			/*
 			 * Don't replace methods implemented in receiving class.
@@ -437,7 +437,7 @@ void _references_to_categories_of_OFObject(void)
 		int i;
 
 		for (i = 0; i < methodlist->count; i++) {
-			SEL selector = &methodlist->methods[i].sel;
+			SEL selector = (SEL)&methodlist->methods[i].sel;
 
 			/*
 			 * Don't replace methods implemented in receiving class.

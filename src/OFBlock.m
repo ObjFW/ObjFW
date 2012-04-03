@@ -83,11 +83,11 @@ enum objc_abi_class_info {
 #endif
 
 #if defined(OF_OBJFW_RUNTIME)
-extern void __objc_exec_class(void*);
+extern void __objc_exec_class(struct objc_abi_module*);
 
 /* Begin of ObjC module */
 static struct objc_abi_class _NSConcreteStackBlock_metaclass = {
-	(struct objc_abi_class*)"OFBlock", "OFBlock", "OFStackBlock", 8,
+	(struct objc_abi_class*)(void*)"OFBlock", "OFBlock", "OFStackBlock", 8,
 	OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_abi_class), NULL, NULL
 };
 
@@ -97,7 +97,7 @@ struct objc_abi_class _NSConcreteStackBlock = {
 };
 
 static struct objc_abi_class _NSConcreteGlobalBlock_metaclass = {
-	(struct objc_abi_class*)"OFBlock", "OFBlock", "OFGlobalBlock", 8,
+	(struct objc_abi_class*)(void*)"OFBlock", "OFBlock", "OFGlobalBlock", 8,
 	OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_abi_class), NULL, NULL
 };
 
@@ -107,7 +107,7 @@ struct objc_abi_class _NSConcreteGlobalBlock = {
 };
 
 static struct objc_abi_class _NSConcreteMallocBlock_metaclass = {
-	(struct objc_abi_class*)"OFBlock", "OFBlock", "OFMallocBlock", 8,
+	(struct objc_abi_class*)(void*)"OFBlock", "OFBlock", "OFMallocBlock", 8,
 	OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_abi_class), NULL, NULL
 };
 
