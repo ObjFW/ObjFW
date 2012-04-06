@@ -16,53 +16,52 @@
 
 #if defined(__x86_64__) && defined(__ELF__)
 
-.intel_syntax noprefix
 .globl objc_msg_lookup
 .globl objc_msg_lookup_super
 
 .section .text
 objc_msg_lookup:
-	test	rdi, rdi
+	testq	%rdi, %rdi
 	jz	ret_nil
 
-	mov	r8, [rdi]
-	mov	r8, [r8+64]
+	movq	(%rdi), %r8
+	movq	64(%r8), %r8
 
 lookup:
-	mov	rax, [rsi]
-	movzx	ecx, ah
-	movzx	edx, al
-	shr	eax, 16
+	movq	(%rsi), %rax
+	movzbl	%ah, %ecx
+	movzbl	%al, %edx
+	shrl	$16, %eax
 
-	mov	r8, [r8+rax*8]
-	mov	r8, [r8+rcx*8]
-	mov	rax, [r8+rdx*8]
+	movq	(%r8,%rax,8), %r8
+	movq	(%r8,%rcx,8), %r8
+	movq	(%r8,%rdx,8), %rax
 
-	test	rax, rax
+	testq	%rax, %rax
 	jz	forward
 
 	ret
 
 forward:
-	mov	rax, qword ptr objc_forward_handler@GOTPCREL[rip]
-	jmp	[rax]
+	mov	objc_forward_handler@GOTPCREL(%rip), %rax
+	jmp	*%rax
 
 objc_msg_lookup_super:
-	mov	rax, [rdi]
-	test	rax, rax
+	movq	(%rdi), %rax
+	testq	%rax, %rax
 	jz	ret_nil
 
-	mov	r8, [rdi+8]
-	mov	r8, [r8+64]
-	mov	rdi, rax
+	movq	8(%rdi), %r8
+	movq	64(%r8), %r8
+	movq	%rdi, %rax
 	jmp	lookup
 
 ret_nil:
-	lea	rax, nil_method[rip]
+	leaq	nil_method(%rip), %rax
 	ret
 
 nil_method:
-	mov	rax, rdi
+	movq	%rdi, %rax
 	ret
 
 .type objc_msg_lookup, @function
