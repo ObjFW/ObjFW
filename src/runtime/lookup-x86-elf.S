@@ -16,30 +16,29 @@
 
 #if defined(__i386__) && defined(__ELF__)
 
-.intel_syntax noprefix
 .globl objc_msg_lookup
 .globl objc_msg_lookup_super
 
 .section .text
 objc_msg_lookup:
-	mov	edx, [esp+4]
-	test	edx, edx
+	movl	4(%esp), %edx
+	testl	%edx, %edx
 	jz	ret_nil
 
-	mov	edx, [edx]
-	mov	edx, [edx+32]
+	movl	(%edx), %edx
+	movl	32(%edx), %edx
 
 lookup:
-	mov	eax, [esp+8]
+	movl	8(%esp), %eax
 
-	movzx	ecx, byte ptr [eax+2]
-	mov	edx, [edx+ecx*4]
-	movzx	ecx, byte ptr [eax+1]
-	mov	edx, [edx+ecx*4]
-	movzx	ecx, byte ptr [eax]
-	mov	eax, [edx+ecx*4]
+	movzbl	2(%eax), %ecx
+	movl	(%edx,%ecx,4), %edx
+	movzbl	1(%eax), %ecx
+	movl	(%edx,ecx,4), %edx
+	movzbl	(%eax), %ecx
+	movl	(%edx,%ecx,4), %eax
 
-	test	eax, eax
+	testl	%eax, %eax
 	jz	forward
 
 	ret
@@ -47,30 +46,30 @@ lookup:
 forward:
 	call	get_eip
 .L1:
-	add	eax, offset objc_forward_handler - offset .L1
-	jmp	[eax]
+	addl	$objc_forward_handler-.L1, %eax
+	jmp	*%eax
 
 objc_msg_lookup_super:
-	mov	edx, [esp+4]
-	cmp	dword ptr [edx], 0
+	movl	4(%esp), %edx
+	cmpl	$0, (%edx)
 	je	ret_nil
 
-	mov	edx, [edx+4]
-	mov	edx, [edx+32]
+	movl	4(%edx), %edx
+	movl	32(%edx), %edx
 	jmp	lookup
 
 ret_nil:
 	call	get_eip
 .L2:
-	add	eax, offset nil_method - offset .L2
+	addl	$nil_method-.L2, %eax
 	ret
 
 nil_method:
-	mov	eax, [esp+4]
+	movl	4(%esp), %eax
 	ret
 
 get_eip:
-	mov	eax, dword ptr [esp]
+	movl	(%esp), %eax
 	ret
 
 .type objc_msg_lookup, @function
