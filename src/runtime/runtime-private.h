@@ -60,11 +60,6 @@ struct objc_abi_category {
 	struct objc_protocol_list *protocols;
 };
 
-struct objc_abi_super {
-	id self;
-	Class class;
-};
-
 struct objc_abi_method_description {
 	const char *name;
 	const char *types;

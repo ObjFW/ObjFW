@@ -67,6 +67,11 @@ struct objc_selector {
 	const char *types;
 };
 
+struct objc_super {
+	id self;
+	Class class;
+};
+
 struct objc_method {
 	struct objc_selector sel;
 	IMP imp;
@@ -112,6 +117,7 @@ extern IMP class_getMethodImplementation(Class, SEL);
 extern IMP class_replaceMethod(Class, SEL, IMP, const char*);
 extern const char* objc_get_type_encoding(Class, SEL);
 extern IMP objc_msg_lookup(id, SEL);
+extern IMP objc_msg_lookup_super(struct objc_super*, SEL);
 extern void objc_thread_add(void);
 extern void objc_thread_remove(void);
 extern void objc_exit(void);

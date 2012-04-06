@@ -64,7 +64,7 @@ objc_msg_lookup(id obj, SEL sel)
 }
 
 IMP
-objc_msg_lookup_super(struct objc_abi_super *super, SEL sel)
+objc_msg_lookup_super(struct objc_super *super, SEL sel)
 {
 	IMP imp;
 
