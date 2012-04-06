@@ -30,7 +30,7 @@ typedef id (*IMP)(id, SEL, ...);
 @private
 	Class isa;
 	const char *name;
-	struct objc_abi_protocol_list *protocol_list;
+	struct objc_protocol_list *protocol_list;
 	struct objc_abi_method_description_list *instance_methods;
 	struct objc_abi_method_description_list *class_methods;
 }
