@@ -24,21 +24,6 @@ typedef const struct objc_selector *SEL;
 typedef signed char BOOL;
 typedef id (*IMP)(id, SEL, ...);
 
-#ifdef __OBJC__
-@interface Protocol
-{
-@private
-	Class isa;
-	const char *name;
-	struct objc_protocol_list *protocol_list;
-	struct objc_abi_method_description_list *instance_methods;
-	struct objc_abi_method_description_list *class_methods;
-}
-@end
-#else
-typedef const void Protocol;
-#endif
-
 struct objc_class {
 	Class isa;
 	Class superclass;
@@ -90,6 +75,25 @@ struct objc_category {
 	struct objc_method_list *class_methods;
 	struct objc_protocol_list *protocols;
 };
+
+#ifdef __OBJC__
+@interface Protocol
+{
+@public
+#else
+typedef struct {
+#endif
+	Class isa;
+	const char *name;
+	struct objc_protocol_list *protocol_list;
+	struct objc_abi_method_description_list *instance_methods;
+	struct objc_abi_method_description_list *class_methods;
+#ifdef __OBJC__
+}
+@end
+#else
+} Protocol;
+#endif
 
 struct objc_protocol_list {
 	struct objc_protocol_list *next;

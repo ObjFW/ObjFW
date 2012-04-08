@@ -22,7 +22,10 @@
 #import "runtime-private.h"
 
 @implementation Protocol
-- (BOOL)_isImplementedByClass: (Class)cls
+@end
+
+BOOL
+class_conformsToProtocol(Class cls, Protocol *p)
 {
 	struct objc_protocol_list *pl;
 	struct objc_category **cats;
@@ -32,7 +35,7 @@
 
 	for (pl = cls->protocols; pl != NULL; pl = pl->next) {
 		for (i = 0; i < pl->count; i++) {
-			if (!strcmp(pl->list[i]->name, name)) {
+			if (!strcmp(pl->list[i]->name, p->name)) {
 				objc_global_mutex_unlock();
 				return YES;
 			}
@@ -47,7 +50,7 @@
 	for (i = 0; cats[i] != NULL; i++) {
 		for (pl = cats[i]->protocols; pl != NULL; pl = pl->next) {
 			for (j = 0; j < pl->count; j++) {
-				if (!strcmp(pl->list[j]->name, name)) {
+				if (!strcmp(pl->list[j]->name, p->name)) {
 					objc_global_mutex_unlock();
 					return YES;
 				}
@@ -58,11 +61,4 @@
 	objc_global_mutex_unlock();
 
 	return NO;
-}
-@end
-
-BOOL
-class_conformsToProtocol(Class cls, Protocol *p)
-{
-	return [p _isImplementedByClass: cls];
 }
