@@ -60,12 +60,10 @@ class_conformsToProtocol(Class cls, Protocol *p)
 	struct objc_category **cats;
 	long i, j;
 
-	for (pl = cls->protocols; pl != NULL; pl = pl->next) {
-		for (i = 0; i < pl->count; i++) {
-			if (!strcmp(pl->list[i]->name, p->name))
+	for (pl = cls->protocols; pl != NULL; pl = pl->next)
+		for (i = 0; i < pl->count; i++)
+			if (protocol_conformsToProtocol(pl->list[i], p))
 				return YES;
-		}
-	}
 
 	objc_global_mutex_lock();
 
@@ -77,7 +75,8 @@ class_conformsToProtocol(Class cls, Protocol *p)
 	for (i = 0; cats[i] != NULL; i++) {
 		for (pl = cats[i]->protocols; pl != NULL; pl = pl->next) {
 			for (j = 0; j < pl->count; j++) {
-				if (!strcmp(pl->list[j]->name, p->name)) {
+				if (protocol_conformsToProtocol(
+				    pl->list[j], p)) {
 					objc_global_mutex_unlock();
 					return YES;
 				}
