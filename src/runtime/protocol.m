@@ -31,16 +31,14 @@ class_conformsToProtocol(Class cls, Protocol *p)
 	struct objc_category **cats;
 	long i, j;
 
-	objc_global_mutex_lock();
-
 	for (pl = cls->protocols; pl != NULL; pl = pl->next) {
 		for (i = 0; i < pl->count; i++) {
-			if (!strcmp(pl->list[i]->name, p->name)) {
-				objc_global_mutex_unlock();
+			if (!strcmp(pl->list[i]->name, p->name))
 				return YES;
-			}
 		}
 	}
+
+	objc_global_mutex_lock();
 
 	if ((cats = objc_categories_for_class(cls)) == NULL) {
 		objc_global_mutex_unlock();
