@@ -224,9 +224,10 @@ objc_lookup_class(const char *name)
 	}
 
 	if ((superclass = ((struct objc_abi_class*)cls)->superclass) != NULL) {
-		if ((cls->superclass = objc_lookup_class(superclass)) == Nil)
-			ERROR("Class %s not found, which is the superclass for "
-			    "class %s!", superclass, cls->name);
+		if ((cls->superclass = objc_lookup_class(superclass)) == Nil) {
+			objc_global_mutex_unlock();
+			return Nil;
+		}
 
 		cls->isa->superclass = cls->superclass->isa;
 
