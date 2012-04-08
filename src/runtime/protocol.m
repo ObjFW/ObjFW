@@ -24,6 +24,35 @@
 @implementation Protocol
 @end
 
+inline const char*
+protocol_getName(Protocol *p)
+{
+	return p->name;
+}
+
+inline BOOL
+protocol_isEqual(Protocol *a, Protocol *b)
+{
+	return !strcmp(protocol_getName(a), protocol_getName(b));
+}
+
+BOOL
+protocol_conformsToProtocol(Protocol *a, Protocol *b)
+{
+	struct objc_protocol_list *pl;
+	size_t i;
+
+	if (protocol_isEqual(a, b))
+		return YES;
+
+	for (pl = a->protocol_list; pl != NULL; pl = pl->next)
+		for (i = 0; i < pl->count; i++)
+			if (protocol_conformsToProtocol(pl->list[i], b))
+				return YES;
+
+	return NO;
+}
+
 BOOL
 class_conformsToProtocol(Class cls, Protocol *p)
 {
