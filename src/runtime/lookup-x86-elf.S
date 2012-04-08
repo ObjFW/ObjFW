@@ -34,7 +34,7 @@ lookup:
 	movzbl	2(%eax), %ecx
 	movl	(%edx,%ecx,4), %edx
 	movzbl	1(%eax), %ecx
-	movl	(%edx,ecx,4), %edx
+	movl	(%edx,%ecx,4), %edx
 	movzbl	(%eax), %ecx
 	movl	(%edx,%ecx,4), %eax
 
