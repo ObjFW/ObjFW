@@ -183,6 +183,22 @@ objc_classname_to_class(const char *name)
 	return c;
 }
 
+static void
+call_initialize(Class cls)
+{
+	struct objc_method_list *ml;
+	SEL initialize;
+	unsigned int i;
+
+	initialize = sel_registerName("initialize");
+
+	for (ml = cls->isa->methodlist; ml != NULL; ml = ml->next)
+		for (i = 0; i < ml->count; i++)
+			if (sel_isEqual(&ml->methods[i].sel, initialize))
+				((void(*)(id, SEL))ml->methods[i].imp)(cls,
+				    initialize);
+}
+
 inline Class
 objc_lookup_class(const char *name)
 {
@@ -225,8 +241,7 @@ objc_lookup_class(const char *name)
 	cls->info |= OBJC_CLASS_INFO_INITIALIZED;
 	cls->isa->info |= OBJC_CLASS_INFO_INITIALIZED;
 
-	if (class_respondsToSelector(cls->isa, @selector(initialize)))
-		[cls initialize];
+	call_initialize(cls);
 
 	objc_global_mutex_unlock();
 
