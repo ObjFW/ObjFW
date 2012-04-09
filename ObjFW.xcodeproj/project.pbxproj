@@ -71,7 +71,7 @@
 		4B17FFBA133A381D003E6DCD /* OFInvalidServerReplyException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B17FFB8133A3813003E6DCD /* OFInvalidServerReplyException.m */; };
 		4B23CA92133811DC0047A1D9 /* TestPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF684123535B60076B512 /* TestPlugin.m */; };
 		4B23CA93133811E20047A1D9 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
-		4B23CA941338121C0047A1D9 /* TestPlugin.impl in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B23CA8A133811610047A1D9 /* TestPlugin.impl */; };
+		4B23CA941338121C0047A1D9 /* TestPlugin.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B23CA8A133811610047A1D9 /* TestPlugin.bundle */; };
 		4B29BC3B133AC4E80004B236 /* OFChangeDirectoryFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B29BC33133AC4E80004B236 /* OFChangeDirectoryFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B29BC3C133AC4E80004B236 /* OFChangeDirectoryFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B29BC34133AC4E80004B236 /* OFChangeDirectoryFailedException.m */; };
 		4B29BC3D133AC4E80004B236 /* OFChangeFileModeFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B29BC35133AC4E80004B236 /* OFChangeFileModeFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -375,7 +375,7 @@
 			dstPath = plugin;
 			dstSubfolderSpec = 16;
 			files = (
-				4B23CA941338121C0047A1D9 /* TestPlugin.impl in CopyFiles */,
+				4B23CA941338121C0047A1D9 /* TestPlugin.bundle in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -439,7 +439,7 @@
 		4B17FFB8133A3813003E6DCD /* OFInvalidServerReplyException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFInvalidServerReplyException.m; path = src/exceptions/OFInvalidServerReplyException.m; sourceTree = "<group>"; };
 		4B19023A1338D6A2000374C9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = src/Makefile; sourceTree = SOURCE_ROOT; };
 		4B19023D1338D6D5000374C9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = tests/Makefile; sourceTree = "<group>"; };
-		4B23CA8A133811610047A1D9 /* TestPlugin.impl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = TestPlugin.impl; sourceTree = BUILT_PRODUCTS_DIR; };
+		4B23CA8A133811610047A1D9 /* TestPlugin.bundle */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = TestPlugin.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B29BC33133AC4E80004B236 /* OFChangeDirectoryFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFChangeDirectoryFailedException.h; path = src/exceptions/OFChangeDirectoryFailedException.h; sourceTree = "<group>"; };
 		4B29BC34133AC4E80004B236 /* OFChangeDirectoryFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFChangeDirectoryFailedException.m; path = src/exceptions/OFChangeDirectoryFailedException.m; sourceTree = "<group>"; };
 		4B29BC35133AC4E80004B236 /* OFChangeFileModeFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFChangeFileModeFailedException.h; path = src/exceptions/OFChangeFileModeFailedException.h; sourceTree = "<group>"; };
@@ -863,7 +863,7 @@
 			isa = PBXGroup;
 			children = (
 				4BF33AF0133807310059CEF7 /* Tests */,
-				4B23CA8A133811610047A1D9 /* TestPlugin.impl */,
+				4B23CA8A133811610047A1D9 /* TestPlugin.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1294,7 +1294,7 @@
 			);
 			name = TestPlugin;
 			productName = TestPlugin;
-			productReference = 4B23CA8A133811610047A1D9 /* TestPlugin.impl */;
+			productReference = 4B23CA8A133811610047A1D9 /* TestPlugin.bundle */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		4B3D23751337FBC800DD29B8 /* ObjFW */ = {
@@ -1673,7 +1673,7 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = "";
 				DYLIB_CURRENT_VERSION = "";
-				EXECUTABLE_EXTENSION = impl;
+				EXECUTABLE_EXTENSION = bundle;
 				INSTALL_PATH = "";
 				MACH_O_TYPE = mh_bundle;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1685,7 +1685,7 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = "";
 				DYLIB_CURRENT_VERSION = "";
-				EXECUTABLE_EXTENSION = impl;
+				EXECUTABLE_EXTENSION = bundle;
 				INSTALL_PATH = "";
 				MACH_O_TYPE = mh_bundle;
 				PRODUCT_NAME = "$(TARGET_NAME)";
