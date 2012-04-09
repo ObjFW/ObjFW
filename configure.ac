@@ -37,6 +37,8 @@ AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings, [
 	OBJCFLAGS="$OBJCFLAGS -fno-constant-cfstrings"
 	AC_SUBST(NO_CONST_CFSTRINGS, "-fno-constant-cfstrings")
 ])
+AX_CHECK_COMPILER_FLAGS(-fno-objc-default-synthesize-properties,
+	[OBJCFLAGS="$OBJCFLAGS -fno-objc-default-synthesize-properties"])
 AX_CHECK_COMPILER_FLAGS(-Wshorten-64-to-32, [
 	old_OBJCFLAGS="$OBJCFLAGS"
 	OBJCFLAGS="$OBJCFLAGS -Wshorten-64-to-32 -Werror"
@@ -681,7 +683,6 @@ dnl and add OBJCPPFLAGS to CPPFLAGS, thus we need to AC_SUBST these ourself.
 AC_SUBST(CPP)
 AC_SUBST(CPPFLAGS)
 
-AC_SUBST(PACKAGE, ObjFW)
 AC_CONFIG_FILES([buildsys.mk extra.mk utils/objfw-config Info.plist])
 AC_CONFIG_HEADERS([config.h src/objfw-defs.h])
 AC_OUTPUT
