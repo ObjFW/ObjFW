@@ -163,6 +163,32 @@ add_subclass(Class cls)
 	cls->superclass->subclass_list[i + 1] = Nil;
 }
 
+static void
+setup_class(Class cls)
+{
+	const char *superclass;
+
+	if (cls->info & OBJC_CLASS_INFO_SETUP)
+		return;
+
+	if ((superclass = ((struct objc_abi_class*)cls)->superclass) != NULL) {
+		if ((cls->superclass = objc_lookup_class(superclass)) == Nil)
+			return;
+
+		cls->isa->superclass = cls->superclass->isa;
+
+		add_subclass(cls);
+		add_subclass(cls->isa);
+	} else
+		cls->isa->superclass = cls;
+
+	objc_update_dtable(cls);
+	objc_update_dtable(cls->isa);
+
+	cls->info |= OBJC_CLASS_INFO_SETUP;
+	cls->isa->info |= OBJC_CLASS_INFO_SETUP;
+}
+
 inline Class
 objc_classname_to_class(const char *name)
 {
@@ -198,7 +224,6 @@ inline Class
 objc_lookup_class(const char *name)
 {
 	Class cls = objc_classname_to_class(name);
-	const char *superclass;
 
 	if (cls == NULL)
 		return Nil;
@@ -218,22 +243,14 @@ objc_lookup_class(const char *name)
 		return cls;
 	}
 
-	if ((superclass = ((struct objc_abi_class*)cls)->superclass) != NULL) {
-		if ((cls->superclass = objc_lookup_class(superclass)) == Nil) {
-			objc_global_mutex_unlock();
-			return Nil;
-		}
+	setup_class(cls);
 
-		cls->isa->superclass = cls->superclass->isa;
+	if (!(cls->info & OBJC_CLASS_INFO_SETUP)) {
+		objc_global_mutex_unlock();
+		return Nil;
+	}
 
-		add_subclass(cls);
-		add_subclass(cls->isa);
-	} else
-		cls->isa->superclass = cls;
-
-	objc_update_dtable(cls);
-	objc_update_dtable(cls->isa);
-
+	/* Set it first to prevent calling it recursively */
 	cls->info |= OBJC_CLASS_INFO_INITIALIZED;
 	cls->isa->info |= OBJC_CLASS_INFO_INITIALIZED;
 

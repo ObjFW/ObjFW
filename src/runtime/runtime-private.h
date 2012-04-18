@@ -119,7 +119,9 @@ struct objc_sparsearray_level3 {
 enum objc_abi_class_info {
 	OBJC_CLASS_INFO_CLASS	    = 0x01,
 	OBJC_CLASS_INFO_METACLASS   = 0x02,
-	OBJC_CLASS_INFO_INITIALIZED = 0x04
+	OBJC_CLASS_INFO_SETUP	    = 0x04,
+	OBJC_CLASS_INFO_LOADED	    = 0x08,
+	OBJC_CLASS_INFO_INITIALIZED = 0x10
 };
 
 typedef struct {
