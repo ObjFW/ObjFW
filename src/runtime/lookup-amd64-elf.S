@@ -44,7 +44,7 @@ lookup:
 
 forward:
 	mov	objc_forward_handler@GOTPCREL(%rip), %rax
-	jmp	*%rax
+	jmp	*(%rax)
 
 objc_msg_lookup_super:
 	movq	(%rdi), %rax
