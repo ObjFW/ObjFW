@@ -26,6 +26,8 @@
 #import "runtime-private.h"
 
 static struct objc_hashtable *classes = NULL;
+static Class *load_queue = NULL;
+static size_t load_queue_cnt = 0;
 
 static void
 register_class(Class cls)
@@ -48,6 +50,22 @@ register_selectors(struct objc_abi_class *cls)
 			    (struct objc_abi_selector*)&ml->methods[i]);
 }
 
+static void
+call_method(Class cls, const char *method)
+{
+	struct objc_method_list *ml;
+	SEL selector;
+	unsigned int i;
+
+	selector = sel_registerName(method);
+
+	for (ml = cls->isa->methodlist; ml != NULL; ml = ml->next)
+		for (i = 0; i < ml->count; i++)
+			if (sel_isEqual((SEL)&ml->methods[i].sel, selector))
+				((void(*)(id, SEL))ml->methods[i].imp)(cls,
+				    selector);
+}
+
 static BOOL
 has_load(struct objc_abi_class *cls)
 {
@@ -60,6 +78,20 @@ has_load(struct objc_abi_class *cls)
 				return YES;
 
 	return NO;
+}
+
+static void
+call_load(Class cls)
+{
+	if (cls->info & OBJC_CLASS_INFO_LOADED)
+		return;
+
+	if (cls->superclass != Nil)
+		call_load(cls->superclass);
+
+	call_method(cls, "load");
+
+	cls->info |= OBJC_CLASS_INFO_LOADED;
 }
 
 void
@@ -104,33 +136,6 @@ objc_update_dtable(Class cls)
 	if (cls->subclass_list != NULL)
 		for (i = 0; cls->subclass_list[i] != NULL; i++)
 			objc_update_dtable(cls->subclass_list[i]);
-}
-
-void
-objc_register_all_classes(struct objc_abi_symtab *symtab)
-{
-	size_t i;
-
-	for (i = 0; i < symtab->cls_def_cnt; i++)
-		register_class((Class)symtab->defs[i]);
-
-	for (i = 0; i < symtab->cls_def_cnt; i++) {
-		struct objc_abi_class *cls;
-		BOOL load;
-
-		cls = (struct objc_abi_class*)symtab->defs[i];
-		load = has_load(cls->metaclass);
-
-		register_selectors(cls);
-		register_selectors(cls->metaclass);
-
-		if (load) {
-			/* Sets up the dtable */
-			assert(objc_get_class(cls->name) == (Class)cls);
-
-			[(Class)cls load];
-		}
-	}
 }
 
 static void
@@ -189,6 +194,74 @@ setup_class(Class cls)
 	cls->isa->info |= OBJC_CLASS_INFO_SETUP;
 }
 
+void
+objc_register_all_classes(struct objc_abi_symtab *symtab)
+{
+	size_t i;
+
+	for (i = 0; i < symtab->cls_def_cnt; i++)
+		register_class((Class)symtab->defs[i]);
+
+	for (i = 0; i < symtab->cls_def_cnt; i++) {
+		struct objc_abi_class *cls;
+		BOOL load;
+
+		cls = (struct objc_abi_class*)symtab->defs[i];
+		load = has_load(cls->metaclass);
+
+		register_selectors(cls);
+		register_selectors(cls->metaclass);
+
+		if (load) {
+			Class cls_ = (Class)cls;
+
+			setup_class(cls_);
+
+			if (cls_->info & OBJC_CLASS_INFO_SETUP)
+				call_load(cls_);
+			else {
+				if (load_queue == NULL)
+					load_queue = malloc(sizeof(Class));
+				else
+					load_queue = realloc(load_queue,
+					    sizeof(Class) *
+					    (load_queue_cnt + 1));
+
+				if (load_queue == NULL)
+					ERROR("Not enough memory for load "
+					    "queue!");
+
+				load_queue[load_queue_cnt++] = cls_;
+			}
+		}
+	}
+
+	/* Process load queue */
+	for (i = 0; i < load_queue_cnt; i++) {
+		setup_class(load_queue[i]);
+
+		if (load_queue[i]->info & OBJC_CLASS_INFO_LOADED) {
+			call_load(load_queue[i]);
+
+			load_queue_cnt--;
+
+			if (load_queue_cnt == 0) {
+				free(load_queue);
+				load_queue = NULL;
+				continue;
+			}
+
+			load_queue[i] = load_queue[load_queue_cnt];
+
+			load_queue = realloc(load_queue,
+			    sizeof(Class) * load_queue_cnt);
+
+			if (load_queue == NULL)
+				ERROR("Not enough memory for load queue!");
+		}
+	}
+}
+
 inline Class
 objc_classname_to_class(const char *name)
 {
@@ -202,22 +275,6 @@ objc_classname_to_class(const char *name)
 	objc_global_mutex_unlock();
 
 	return c;
-}
-
-static void
-call_initialize(Class cls)
-{
-	struct objc_method_list *ml;
-	SEL initialize;
-	unsigned int i;
-
-	initialize = sel_registerName("initialize");
-
-	for (ml = cls->isa->methodlist; ml != NULL; ml = ml->next)
-		for (i = 0; i < ml->count; i++)
-			if (sel_isEqual((SEL)&ml->methods[i].sel, initialize))
-				((void(*)(id, SEL))ml->methods[i].imp)(cls,
-				    initialize);
 }
 
 inline Class
@@ -254,7 +311,7 @@ objc_lookup_class(const char *name)
 	cls->info |= OBJC_CLASS_INFO_INITIALIZED;
 	cls->isa->info |= OBJC_CLASS_INFO_INITIALIZED;
 
-	call_initialize(cls);
+	call_method(cls, "initialize");
 
 	objc_global_mutex_unlock();
 
