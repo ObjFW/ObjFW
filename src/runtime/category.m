@@ -69,7 +69,7 @@ register_category(struct objc_abi_category *cat)
 		ncats[i + 1] = NULL;
 		objc_hashtable_set(categories, cat->class_name, ncats);
 
-		if (cls != Nil && cls->info & OBJC_CLASS_INFO_INITIALIZED) {
+		if (cls != Nil && cls->info & OBJC_CLASS_INFO_SETUP) {
 			objc_update_dtable(cls);
 			objc_update_dtable(cls->isa);
 		}
@@ -85,7 +85,7 @@ register_category(struct objc_abi_category *cat)
 	cats[1] = NULL;
 	objc_hashtable_set(categories, cat->class_name, cats);
 
-	if (cls != Nil && cls->info & OBJC_CLASS_INFO_INITIALIZED) {
+	if (cls != Nil && cls->info & OBJC_CLASS_INFO_SETUP) {
 		objc_update_dtable(cls);
 		objc_update_dtable(cls->isa);
 	}
