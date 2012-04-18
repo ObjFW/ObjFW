@@ -189,7 +189,7 @@ call_initialize(Class cls)
 
 	for (ml = cls->isa->methodlist; ml != NULL; ml = ml->next)
 		for (i = 0; i < ml->count; i++)
-			if (sel_isEqual(&ml->methods[i].sel, initialize))
+			if (sel_isEqual((SEL)&ml->methods[i].sel, initialize))
 				((void(*)(id, SEL))ml->methods[i].imp)(cls,
 				    initialize);
 }
