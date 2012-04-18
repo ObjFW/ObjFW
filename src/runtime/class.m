@@ -25,11 +25,6 @@
 #import "runtime.h"
 #import "runtime-private.h"
 
-@protocol BasicClass
-+ (void)load;
-+ (void)initialize;
-@end
-
 static struct objc_hashtable *classes = NULL;
 
 static void
