@@ -267,7 +267,7 @@ objc_register_all_classes(struct objc_abi_symtab *symtab)
 	for (i = 0; i < load_queue_cnt; i++) {
 		setup_class(load_queue[i]);
 
-		if (load_queue[i]->info & OBJC_CLASS_INFO_LOADED) {
+		if (load_queue[i]->info & OBJC_CLASS_INFO_SETUP) {
 			call_load(load_queue[i]);
 
 			load_queue_cnt--;
