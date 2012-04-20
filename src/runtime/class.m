@@ -177,10 +177,18 @@ setup_class(Class cls)
 		return;
 
 	if ((superclass = ((struct objc_abi_class*)cls)->superclass) != NULL) {
-		if ((cls->superclass = objc_lookup_class(superclass)) == Nil)
+		Class super = objc_classname_to_class(superclass);
+
+		if (super == nil)
 			return;
 
-		cls->isa->superclass = cls->superclass->isa;
+		setup_class(super);
+
+		if (!(super->info & OBJC_CLASS_INFO_SETUP))
+			return;
+
+		cls->superclass = super;
+		cls->isa->superclass = super->isa;
 
 		add_subclass(cls);
 		add_subclass(cls->isa);
@@ -192,6 +200,25 @@ setup_class(Class cls)
 
 	cls->info |= OBJC_CLASS_INFO_SETUP;
 	cls->isa->info |= OBJC_CLASS_INFO_SETUP;
+}
+
+static void
+initialize_class(Class cls)
+{
+	if (cls->info & OBJC_CLASS_INFO_INITIALIZED)
+		return;
+
+	if (cls->superclass)
+		initialize_class(cls->superclass);
+
+	/*
+	 * Set it first to prevent calling it recursively due to message sends
+	 * in the initialize method
+	 */
+	cls->info |= OBJC_CLASS_INFO_INITIALIZED;
+	cls->isa->info |= OBJC_CLASS_INFO_INITIALIZED;
+
+	call_method(cls, "initialize");
 }
 
 void
@@ -307,11 +334,7 @@ objc_lookup_class(const char *name)
 		return Nil;
 	}
 
-	/* Set it first to prevent calling it recursively */
-	cls->info |= OBJC_CLASS_INFO_INITIALIZED;
-	cls->isa->info |= OBJC_CLASS_INFO_INITIALIZED;
-
-	call_method(cls, "initialize");
+	initialize_class(cls);
 
 	objc_global_mutex_unlock();
 
