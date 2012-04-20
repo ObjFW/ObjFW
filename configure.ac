@@ -37,8 +37,6 @@ AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings, [
 	OBJCFLAGS="$OBJCFLAGS -fno-constant-cfstrings"
 	AC_SUBST(NO_CONST_CFSTRINGS, "-fno-constant-cfstrings")
 ])
-AX_CHECK_COMPILER_FLAGS(-fno-objc-default-synthesize-properties,
-	[OBJCFLAGS="$OBJCFLAGS -fno-objc-default-synthesize-properties"])
 AX_CHECK_COMPILER_FLAGS(-Wshorten-64-to-32, [
 	old_OBJCFLAGS="$OBJCFLAGS"
 	OBJCFLAGS="$OBJCFLAGS -Wshorten-64-to-32 -Werror"
