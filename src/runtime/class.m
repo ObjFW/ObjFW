@@ -272,7 +272,8 @@ objc_register_all_classes(struct objc_abi_symtab *symtab)
 
 				load_queue[load_queue_cnt++] = cls_;
 			}
-		}
+		} else
+			cls->info |= OBJC_CLASS_INFO_LOADED;
 	}
 
 	/* Process load queue */
