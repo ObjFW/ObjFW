@@ -33,6 +33,13 @@
 # import <objc/objc.h>
 #endif
 
+#if defined(__has_feature) && __has_feature(objc_bool)
+# undef YES
+# define YES __objc_yes
+# undef NO
+# define NO __objc_no
+#endif
+
 #define OF_RETAIN_COUNT_MAX UINT_MAX
 #define OF_INVALID_INDEX SIZE_MAX
 
