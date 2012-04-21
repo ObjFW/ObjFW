@@ -50,6 +50,21 @@ register_selectors(struct objc_abi_class *cls)
 			    (struct objc_abi_selector*)&ml->methods[i]);
 }
 
+inline Class
+objc_classname_to_class(const char *name)
+{
+	Class c;
+
+	if (classes == NULL)
+		return Nil;
+
+	objc_global_mutex_lock();
+	c = (Class)objc_hashtable_get(classes, name);
+	objc_global_mutex_unlock();
+
+	return c;
+}
+
 static void
 call_method(Class cls, const char *method)
 {
@@ -284,21 +299,6 @@ objc_register_all_classes(struct objc_abi_symtab *symtab)
 				ERROR("Not enough memory for load queue!");
 		}
 	}
-}
-
-inline Class
-objc_classname_to_class(const char *name)
-{
-	Class c;
-
-	if (classes == NULL)
-		return Nil;
-
-	objc_global_mutex_lock();
-	c = (Class)objc_hashtable_get(classes, name);
-	objc_global_mutex_unlock();
-
-	return c;
 }
 
 inline Class
