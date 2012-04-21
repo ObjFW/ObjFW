@@ -30,7 +30,7 @@ static Class *load_queue = NULL;
 static size_t load_queue_cnt = 0;
 
 static void
-register_class(Class cls)
+register_class(struct objc_abi_class *cls)
 {
 	if (classes == NULL)
 		classes = objc_hashtable_alloc(2);
@@ -82,14 +82,17 @@ call_method(Class cls, const char *method)
 }
 
 static BOOL
-has_load(struct objc_abi_class *cls)
+has_load(Class cls)
 {
-	struct objc_abi_method_list *ml;
+	struct objc_method_list *ml;
+	SEL selector;
 	unsigned int i;
 
-	for (ml = cls->methodlist; ml != NULL; ml = ml->next)
+	selector = sel_registerName("load");
+
+	for (ml = cls->isa->methodlist; ml != NULL; ml = ml->next)
 		for (i = 0; i < ml->count; i++)
-			if (!strcmp(ml->methods[i].name, "load"))
+			if (sel_isEqual((SEL)&ml->methods[i].sel, selector))
 				return YES;
 
 	return NO;
@@ -234,28 +237,25 @@ initialize_class(Class cls)
 void
 objc_register_all_classes(struct objc_abi_symtab *symtab)
 {
-	size_t i;
-
-	for (i = 0; i < symtab->cls_def_cnt; i++)
-		register_class((Class)symtab->defs[i]);
+	uint_fast32_t i;
 
 	for (i = 0; i < symtab->cls_def_cnt; i++) {
-		struct objc_abi_class *cls;
-		BOOL load;
+		struct objc_abi_class *cls =
+		    (struct objc_abi_class*)symtab->defs[i];
 
-		cls = (struct objc_abi_class*)symtab->defs[i];
-		load = has_load(cls->metaclass);
-
+		register_class(cls);
 		register_selectors(cls);
 		register_selectors(cls->metaclass);
+	}
 
-		if (load) {
-			Class cls_ = (Class)cls;
+	for (i = 0; i < symtab->cls_def_cnt; i++) {
+		Class cls = (Class)symtab->defs[i];
 
-			setup_class(cls_);
+		if (has_load(cls)) {
+			setup_class(cls);
 
-			if (cls_->info & OBJC_CLASS_INFO_SETUP)
-				call_load(cls_);
+			if (cls->info & OBJC_CLASS_INFO_SETUP)
+				call_load(cls);
 			else {
 				if (load_queue == NULL)
 					load_queue = malloc(sizeof(Class));
@@ -268,7 +268,7 @@ objc_register_all_classes(struct objc_abi_symtab *symtab)
 					ERROR("Not enough memory for load "
 					    "queue!");
 
-				load_queue[load_queue_cnt++] = cls_;
+				load_queue[load_queue_cnt++] = cls;
 			}
 		} else
 			cls->info |= OBJC_CLASS_INFO_LOADED;
