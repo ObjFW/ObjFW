@@ -99,17 +99,19 @@ objc_update_dtable(Class cls)
 {
 	struct objc_method_list *ml;
 	struct objc_category **cats;
-	struct objc_sparsearray *dtable;
 	unsigned int i;
 
-	if (cls->superclass != Nil)
-		dtable = objc_sparsearray_copy(cls->superclass->dtable);
-	else
-		dtable = objc_sparsearray_new();
+	if (cls->dtable == NULL) {
+		if (cls->superclass != Nil)
+			cls->dtable =
+			    objc_sparsearray_copy(cls->superclass->dtable);
+		else
+			cls->dtable = objc_sparsearray_new();
+	}
 
 	for (ml = cls->methodlist; ml != NULL; ml = ml->next)
 		for (i = 0; i < ml->count; i++)
-			objc_sparsearray_set(dtable,
+			objc_sparsearray_set(cls->dtable,
 			    (uint32_t)ml->methods[i].sel.uid,
 			    ml->methods[i].imp);
 
@@ -122,16 +124,11 @@ objc_update_dtable(Class cls)
 
 			for (; ml != NULL; ml = ml->next)
 				for (j = 0; j < ml->count; j++)
-					objc_sparsearray_set(dtable,
+					objc_sparsearray_set(cls->dtable,
 					    (uint32_t)ml->methods[j].sel.uid,
 					    ml->methods[j].imp);
 		}
 	}
-
-	if (cls->dtable != NULL)
-		objc_sparsearray_free_when_singlethreaded(cls->dtable);
-
-	cls->dtable = dtable;
 
 	if (cls->subclass_list != NULL)
 		for (i = 0; cls->subclass_list[i] != NULL; i++)

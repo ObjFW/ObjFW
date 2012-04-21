@@ -161,26 +161,6 @@ objc_sparsearray_free(struct objc_sparsearray *s)
 }
 
 void
-objc_sparsearray_free_when_singlethreaded(struct objc_sparsearray *s)
-{
-	size_t i, j;
-
-	for (i = 0; i < 256; i++) {
-		if (s->buckets[i]->empty)
-			continue;
-
-		for (j = 0; j < 256; j++)
-			if (!s->buckets[i]->buckets[j]->empty)
-				objc_free_when_singlethreaded(
-				    s->buckets[i]->buckets[j]);
-
-		objc_free_when_singlethreaded(s->buckets[i]);
-	}
-
-	objc_free_when_singlethreaded(s);
-}
-
-void
 objc_sparsearray_cleanup(void)
 {
 	if (empty_level2 != NULL)

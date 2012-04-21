@@ -23,9 +23,6 @@
 #import "runtime-private.h"
 
 static objc_mutex_t global_mutex;
-static int num_threads = 1;
-static void **free_queue = NULL;
-static size_t free_queue_cnt = 0;
 
 BOOL
 objc_mutex_new(objc_mutex_t *mutex)
@@ -96,57 +93,4 @@ objc_global_mutex_free(void)
 {
 	if (!objc_mutex_free(&global_mutex))
 		ERROR("Failed to free global mutex!");
-}
-
-void
-objc_thread_add(void)
-{
-	/*
-	 * If some class is being initialized, we want to wait for it, thus
-	 * we use the global lock instead of atomic operations.
-	 */
-	objc_global_mutex_lock();
-	num_threads++;
-	objc_global_mutex_unlock();
-}
-
-void
-objc_thread_remove(void)
-{
-	size_t i;
-
-	objc_global_mutex_lock();
-
-	if (free_queue != NULL) {
-		for (i = 0; i < free_queue_cnt; i++)
-			free(free_queue[i]);
-
-		free(free_queue);
-
-		free_queue = NULL;
-		free_queue_cnt = 0;
-	}
-
-	num_threads--;
-	objc_global_mutex_unlock();
-}
-
-void
-objc_free_when_singlethreaded(void *ptr)
-{
-	if (num_threads == 1) {
-		free(ptr);
-		return;
-	}
-
-	if (free_queue == NULL)
-		free_queue = malloc(sizeof(void*));
-	else
-		free_queue = realloc(free_queue, sizeof(void*) *
-		    (free_queue_cnt + 1));
-
-	if (free_queue == NULL)
-		ERROR("Not enough memory for queue of pointers to free!");
-
-	free_queue[free_queue_cnt++] = ptr;
 }
