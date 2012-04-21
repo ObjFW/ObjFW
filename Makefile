@@ -11,6 +11,8 @@ DISTCLEAN = aclocal.m4		\
 
 include buildsys.mk
 
+utils ${TESTS}: src
+
 tarball:
 	echo "Generating tarball for version ${PACKAGE_VERSION}..."
 	rm -fr tmp.tar objfw-${PACKAGE_VERSION} objfw-${PACKAGE_VERSION}.tar \

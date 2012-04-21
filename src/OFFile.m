@@ -161,13 +161,6 @@ of_log(OFConstantString *format, ...)
 @end
 
 @implementation OFFile
-+ (void)load
-{
-	of_stdin = [[OFFileSingleton alloc] initWithFileDescriptor: 0];
-	of_stdout = [[OFFileSingleton alloc] initWithFileDescriptor: 1];
-	of_stderr = [[OFFileSingleton alloc] initWithFileDescriptor: 2];
-}
-
 #if defined(OF_THREADS) && !defined(_WIN32)
 + (void)initialize
 {
@@ -788,6 +781,13 @@ of_log(OFConstantString *format, ...)
 @end
 
 @implementation OFFileSingleton
++ (void)load
+{
+	of_stdin = [[OFFileSingleton alloc] initWithFileDescriptor: 0];
+	of_stdout = [[OFFileSingleton alloc] initWithFileDescriptor: 1];
+	of_stderr = [[OFFileSingleton alloc] initWithFileDescriptor: 2];
+}
+
 - initWithPath: (OFString*)path
 	  mode: (OFString*)mode
 {
