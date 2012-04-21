@@ -63,14 +63,12 @@ objc_sparsearray_new(void)
 	return s;
 }
 
-struct objc_sparsearray*
-objc_sparsearray_copy(struct objc_sparsearray *src)
+void
+objc_sparsearray_copy(struct objc_sparsearray *dst,
+    struct objc_sparsearray *src)
 {
-	struct objc_sparsearray *dst;
 	size_t i, j, k;
 	uint32_t idx;
-
-	dst = objc_sparsearray_new();
 
 	for (i = 0; i < 256; i++) {
 		if (src->buckets[i]->empty)
@@ -93,8 +91,6 @@ objc_sparsearray_copy(struct objc_sparsearray *src)
 			}
 		}
 	}
-
-	return dst;
 }
 
 void

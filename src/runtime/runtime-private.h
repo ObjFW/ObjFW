@@ -148,7 +148,8 @@ extern void objc_register_selector(struct objc_abi_selector*);
 extern void objc_register_all_selectors(struct objc_abi_symtab*);
 extern void objc_free_all_selectors(void);
 extern struct objc_sparsearray* objc_sparsearray_new(void);
-extern struct objc_sparsearray* objc_sparsearray_copy(struct objc_sparsearray*);
+extern void objc_sparsearray_copy(struct objc_sparsearray*,
+    struct objc_sparsearray*);
 extern void objc_sparsearray_set(struct objc_sparsearray*, uint32_t,
     const void*);
 extern void objc_sparsearray_free(struct objc_sparsearray*);

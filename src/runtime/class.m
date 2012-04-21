@@ -116,13 +116,11 @@ objc_update_dtable(Class cls)
 	struct objc_category **cats;
 	unsigned int i;
 
-	if (cls->dtable == NULL) {
-		if (cls->superclass != Nil)
-			cls->dtable =
-			    objc_sparsearray_copy(cls->superclass->dtable);
-		else
-			cls->dtable = objc_sparsearray_new();
-	}
+	if (cls->dtable == NULL)
+		cls->dtable = objc_sparsearray_new();
+
+	if (cls->superclass != Nil)
+		objc_sparsearray_copy(cls->dtable, cls->superclass->dtable);
 
 	for (ml = cls->methodlist; ml != NULL; ml = ml->next)
 		for (i = 0; i < ml->count; i++)
