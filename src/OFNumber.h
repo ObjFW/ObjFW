@@ -820,3 +820,8 @@ typedef enum of_number_type_t {
  */
 - (OFNumber*)remainderOfDivisionWithNumber: (OFNumber*)num;
 @end
+
+#ifndef NSINTEGER_DEFINED
+/* Required for number literals to work */
+@compatibility_alias NSNumber OFNumber;
+#endif

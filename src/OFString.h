@@ -858,3 +858,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 #import "OFString+URLEncoding.h"
 #import "OFString+XMLEscaping.h"
 #import "OFString+XMLUnescaping.h"
+
+#ifndef NSINTEGER_DEFINED
+/* Required for string boxing literals to work */
+@compatibility_alias NSString OFString;
+#endif
