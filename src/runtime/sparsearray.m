@@ -28,7 +28,7 @@ static struct objc_sparsearray_level3 *empty_level3 = NULL;
 static void
 init(void)
 {
-	size_t i;
+	uint_fast16_t i;
 
 	empty_level2 = malloc(sizeof(struct objc_sparsearray_level2));
 	empty_level3 = malloc(sizeof(struct objc_sparsearray_level3));
@@ -49,7 +49,7 @@ struct objc_sparsearray*
 objc_sparsearray_new(void)
 {
 	struct objc_sparsearray *s;
-	size_t i;
+	uint_fast16_t i;
 
 	if (empty_level2 == NULL || empty_level3 == NULL)
 		init();
@@ -67,7 +67,7 @@ void
 objc_sparsearray_copy(struct objc_sparsearray *dst,
     struct objc_sparsearray *src)
 {
-	size_t i, j, k;
+	uint_fast16_t i, j, k;
 	uint32_t idx;
 
 	for (i = 0; i < 256; i++) {
@@ -102,7 +102,7 @@ objc_sparsearray_set(struct objc_sparsearray *s, uint32_t idx, const void *obj)
 
 	if (s->buckets[i]->empty) {
 		struct objc_sparsearray_level2 *t;
-		size_t l;
+		uint_fast16_t l;
 
 		t = malloc(sizeof(struct objc_sparsearray_level2));
 
@@ -119,7 +119,7 @@ objc_sparsearray_set(struct objc_sparsearray *s, uint32_t idx, const void *obj)
 
 	if (s->buckets[i]->buckets[j]->empty) {
 		struct objc_sparsearray_level3 *t;
-		size_t l;
+		uint_fast16_t l;
 
 		t = malloc(sizeof(struct objc_sparsearray_level3));
 
@@ -140,7 +140,7 @@ objc_sparsearray_set(struct objc_sparsearray *s, uint32_t idx, const void *obj)
 void
 objc_sparsearray_free(struct objc_sparsearray *s)
 {
-	size_t i, j;
+	uint_fast16_t i, j;
 
 	for (i = 0; i < 256; i++) {
 		if (s->buckets[i]->empty)

@@ -39,7 +39,8 @@ class_respondsToSelector(Class cls, SEL sel)
 	if (cls == Nil)
 		return NO;
 
-	return (objc_sparsearray_get(cls->dtable, sel->uid) != NULL ? YES : NO);
+	return (objc_sparsearray_get(cls->dtable, (uint32_t)sel->uid) != NULL
+	    ? YES : NO);
 }
 
 #if !defined(__ELF__) || (!defined(OF_X86_ASM) && !defined(OF_AMD64_ASM))
@@ -57,7 +58,9 @@ objc_msg_lookup(id obj, SEL sel)
 	if (obj == nil)
 		return (IMP)nil_method;
 
-	if ((imp = objc_sparsearray_get(obj->isa->dtable, sel->uid)) == NULL)
+	imp = objc_sparsearray_get(obj->isa->dtable, (uint32_t)sel->uid);
+
+	if (imp == NULL)
 		return objc_forward_handler(obj, sel);
 
 	return imp;
@@ -71,7 +74,7 @@ objc_msg_lookup_super(struct objc_super *super, SEL sel)
 	if (super->self == nil)
 		return (IMP)nil_method;
 
-	imp = objc_sparsearray_get(super->class->dtable, sel->uid);
+	imp = objc_sparsearray_get(super->class->dtable, (uint32_t)sel->uid);
 
 	if (imp == NULL)
 		return objc_forward_handler(super->self, sel);

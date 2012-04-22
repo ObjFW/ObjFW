@@ -105,7 +105,7 @@ sel_getName(SEL sel)
 	const char *ret;
 
 	objc_global_mutex_lock();
-	ret = objc_sparsearray_get(selectors, sel->uid);
+	ret = objc_sparsearray_get(selectors, (uint32_t)sel->uid);
 	objc_global_mutex_unlock();
 
 	return ret;
