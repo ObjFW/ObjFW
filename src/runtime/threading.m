@@ -23,6 +23,7 @@
 #import "runtime-private.h"
 
 static objc_mutex_t global_mutex;
+static BOOL global_mutex_init = NO;
 
 BOOL
 objc_mutex_new(objc_mutex_t *mutex)
@@ -67,16 +68,21 @@ objc_mutex_free(objc_mutex_t *mutex)
 	return of_mutex_free(&mutex->mutex);
 }
 
-static void __attribute__((constructor))
+static void
 objc_global_mutex_new(void)
 {
 	if (!objc_mutex_new(&global_mutex))
 		ERROR("Failed to create global mutex!");
+
+	global_mutex_init = YES;
 }
 
 void
 objc_global_mutex_lock(void)
 {
+	if (!global_mutex_init)
+		objc_global_mutex_new();
+
 	if (!objc_mutex_lock(&global_mutex))
 		ERROR("Failed to lock global mutex!");
 }
