@@ -157,17 +157,21 @@ AS_IF([test x"$PLUGIN_SUFFIX" != x""], [
 objc_runtime="ObjFW runtime"
 AC_CHECK_HEADER(objc/objc.h)
 AC_MSG_CHECKING(which Objective C runtime to use)
-AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
-	dnl TODO: This is ugly. Let's think of a better check.
-	AC_EGREP_CPP(yes, [
-		#import <objc/objc.h>
-		#ifdef __objc_INCLUDE_GNU
-		yes
-		#endif
-	], [
-		dnl We don't want the GNU runtime
-	], [
-		objc_runtime="Apple runtime"
+AC_ARG_ENABLE(runtime,
+	AS_HELP_STRING([--enable-runtime], [use the included runtime]))
+AS_IF([test x"$enable_runtime" != x"yes"], [
+	AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
+		dnl TODO: This is ugly. Let's think of a better check.
+		AC_EGREP_CPP(yes, [
+			#import <objc/objc.h>
+			#ifdef __objc_INCLUDE_GNU
+			yes
+			#endif
+		], [
+			dnl We don't want the GNU runtime
+		], [
+			objc_runtime="Apple runtime"
+		])
 	])
 ])
 AC_MSG_RESULT($objc_runtime)
@@ -178,6 +182,9 @@ case $objc_runtime in
 			[Whether we use the ObjFW runtime])
 		AC_SUBST(GNU_RUNTIME, "-fgnu-runtime")
 		OBJCFLAGS="$OBJCFLAGS -fgnu-runtime"
+
+		AX_CHECK_COMPILER_FLAGS(-fno-objc-nonfragile-abi, [
+			OBJCFLAGS="$OBJCFLAGS -fno-objc-nonfragile-abi"])
 
 		AC_SUBST(RUNTIME, "runtime")
 		if test x"$enable_shared" != x"no"; then
@@ -211,8 +218,10 @@ case "$host_os" in
 	darwin*)
 		AC_SUBST(REEXPORT_LIBOBJC, ["-Wl,-reexport-lobjc"])
 		AC_SUBST(LDFLAGS_REEXPORT, ["-Wl,-reexport-lobjfw"])
-		AC_SUBST(MACH_ALIAS_LIST,
-			 ["-Xarch_x86_64 -Wl,-alias_list,mach_alias_list"])
+		AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
+			tmp="-Xarch_x86_64 -Wl,-alias_list,mach_alias_list"
+			AC_SUBST(MACH_ALIAS_LIST, $tmp)
+		])
 		;;
 esac
 
