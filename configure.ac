@@ -216,9 +216,9 @@ AC_CHECK_FUNC(objc_enumerationMutation, [
 
 case "$host_os" in
 	darwin*)
-		AC_SUBST(REEXPORT_LIBOBJC, ["-Wl,-reexport-lobjc"])
 		AC_SUBST(LDFLAGS_REEXPORT, ["-Wl,-reexport-lobjfw"])
 		AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
+		       AC_SUBST(REEXPORT_LIBOBJC, ["-Wl,-reexport-lobjc"])
 			tmp="-Xarch_x86_64 -Wl,-alias_list,mach_alias_list"
 			AC_SUBST(MACH_ALIAS_LIST, $tmp)
 		])
