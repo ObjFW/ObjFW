@@ -180,11 +180,16 @@ case $objc_runtime in
 	"ObjFW runtime")
 		AC_DEFINE(OF_OBJFW_RUNTIME, 1,
 			[Whether we use the ObjFW runtime])
-		AC_SUBST(GNU_RUNTIME, "-fgnu-runtime")
+		GNU_RUNTIME="-fgnu-runtime"
 		OBJCFLAGS="$OBJCFLAGS -fgnu-runtime"
+		RUNTIME_FLAGS="-fgnu-runtime"
 
 		AX_CHECK_COMPILER_FLAGS(-fno-objc-nonfragile-abi, [
-			OBJCFLAGS="$OBJCFLAGS -fno-objc-nonfragile-abi"])
+			OBJCFLAGS="$OBJCFLAGS -fno-objc-nonfragile-abi"
+			GNU_RUNTIME="$GNU_RUNTIME -fno-objc-nonfragile-abi"
+		])
+
+		AC_SUBST(GNU_RUNTIME)
 
 		AC_SUBST(RUNTIME, "runtime")
 		if test x"$enable_shared" != x"no"; then
