@@ -38,6 +38,17 @@ register_class(struct objc_abi_class *cls)
 	objc_hashtable_set(classes, cls->name, cls);
 }
 
+BOOL
+class_registerAlias_np(Class cls, const char *name)
+{
+	if (classes == NULL)
+		return NO;
+
+	objc_hashtable_set(classes, name, cls);
+
+	return YES;
+}
+
 static void
 register_selectors(struct objc_abi_class *cls)
 {
