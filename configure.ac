@@ -37,17 +37,8 @@ AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings, [
 	OBJCFLAGS="$OBJCFLAGS -fno-constant-cfstrings"
 	AC_SUBST(NO_CONST_CFSTRINGS, "-fno-constant-cfstrings")
 ])
-AX_CHECK_COMPILER_FLAGS(-Wshorten-64-to-32, [
-	old_OBJCFLAGS="$OBJCFLAGS"
-	OBJCFLAGS="$OBJCFLAGS -Wshorten-64-to-32 -Werror"
-	AC_TRY_COMPILE([
-		#import <objc/objc-api.h>
-	], [], [
-		OBJCFLAGS="$old_OBJCFLAGS -Wshorten-64-to-32"
-	], [
-		OBJCFLAGS="$old_OBJCFLAGS"
-	])
-])
+AX_CHECK_COMPILER_FLAGS(-Wshorten-64-to-32,
+	[OBJCFLAGS="$OBJCFLAGS -Wshorten-64-to-32"])
 AX_CHECK_COMPILER_FLAGS(-Wsemicolon-before-method-body,
 	[OBJCFLAGS="$OBJCFLAGS -Wsemicolon-before-method-body"])
 
