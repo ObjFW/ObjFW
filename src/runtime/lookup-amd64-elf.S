@@ -14,8 +14,6 @@
  * file.
  */
 
-#if defined(__x86_64__) && defined(__ELF__)
-
 .globl objc_msg_lookup
 .globl objc_msg_lookup_super
 
@@ -68,5 +66,3 @@ nil_method:
 .type objc_msg_lookup_super, @function
 .size objc_msg_lookup, forward-objc_msg_lookup
 .size objc_msg_lookup_super, ret_nil-objc_msg_lookup_super
-
-#endif

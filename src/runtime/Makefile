@@ -8,8 +8,7 @@ SRCS = category.m		\
        hashtable.m		\
        init.m			\
        lookup.m			\
-       lookup-amd64-elf.S	\
-       lookup-x86-elf.S		\
+       ${LOOKUP_S}		\
        property.m		\
        protocol.m		\
        selector.m		\

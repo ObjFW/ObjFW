@@ -192,6 +192,28 @@ case $objc_runtime in
 			AC_SUBST(RUNTIME_A, "runtime.a")
 			AC_SUBST(RUNTIME_RUNTIME_A, "runtime/runtime.a")
 		fi
+
+		AC_EGREP_CPP(yes, [
+			#if defined(__amd64__) || defined(__x86_64__)
+			# ifdef __ELF__
+			yes
+			# endif
+			#endif
+		], [
+			AC_SUBST(LOOKUP_S, lookup-amd64-elf.S)
+			AC_DEFINE(OF_ASM_LOOKUP, 1,
+				[Whether to use lookup in assembly])
+		], [
+			AC_EGREP_CPP(yes, [
+				#if defined(__i386__) && defined(__ELF__)
+				yes
+				#endif
+			], [
+				AC_SUBST(LOOKUP_S, lookup-x86-elf.S)
+				AC_DEFINE(OF_ASM_LOOKUP, 1,
+					[Whether to use lookup in assembly])
+			])
+		])
 		;;
 	"Apple runtime")
 		AC_DEFINE(OF_APPLE_RUNTIME, 1,

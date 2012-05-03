@@ -43,7 +43,7 @@ class_respondsToSelector(Class cls, SEL sel)
 	    ? YES : NO);
 }
 
-#if !defined(__ELF__) || (!defined(OF_X86_ASM) && !defined(OF_AMD64_ASM))
+#ifndef OF_ASM_LOOKUP
 static id
 nil_method(id self, SEL _cmd)
 {
