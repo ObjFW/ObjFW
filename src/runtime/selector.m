@@ -60,6 +60,9 @@ objc_register_selector(struct objc_abi_selector *sel)
 
 			hash++;
 		}
+
+		if (hash >= last)
+			ERROR("Selector slots exhausted!");
 	}
 
 	objc_sparsearray_set(selectors, hash, (void*)sel->name);
