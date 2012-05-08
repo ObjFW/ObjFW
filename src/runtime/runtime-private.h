@@ -106,6 +106,7 @@ struct objc_sparsearray {
 	struct objc_sparsearray_level2 *buckets[256];
 };
 
+#ifndef OF_SELUID16
 struct objc_sparsearray_level2 {
 	struct objc_sparsearray_level3 *buckets[256];
 	BOOL empty;
@@ -115,6 +116,13 @@ struct objc_sparsearray_level3 {
 	const void *buckets[256];
 	BOOL empty;
 };
+#else
+struct objc_sparsearray_level2 {
+	const void *buckets[256];
+	BOOL empty;
+};
+#endif
+
 
 enum objc_abi_class_info {
 	OBJC_CLASS_INFO_CLASS	    = 0x001,
@@ -169,11 +177,18 @@ extern void objc_free_when_singlethreaded(void*);
 static inline const void*
 objc_sparsearray_get(const struct objc_sparsearray *s, uint32_t idx)
 {
+#ifndef OF_SELUID16
 	uint8_t i = idx >> 16;
 	uint8_t j = idx >>  8;
 	uint8_t k = idx;
 
 	return s->buckets[i]->buckets[j]->buckets[k];
+#else
+	uint8_t i = idx >> 8;
+	uint8_t j = idx;
+
+	return s->buckets[i]->buckets[j];
+#endif
 }
 
 #define ERROR(...)							\

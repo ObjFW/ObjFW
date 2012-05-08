@@ -150,6 +150,9 @@ AC_CHECK_HEADER(objc/objc.h)
 AC_MSG_CHECKING(which Objective C runtime to use)
 AC_ARG_ENABLE(runtime,
 	AS_HELP_STRING([--enable-runtime], [use the included runtime]))
+AC_ARG_ENABLE(seluid16,
+	AS_HELP_STRING([--enable-seluid16],
+		[use only 16 bit for selectors UIDs]))
 AS_IF([test x"$enable_runtime" != x"yes"], [
 	AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
 		dnl TODO: This is ugly. Let's think of a better check.
@@ -213,6 +216,11 @@ case $objc_runtime in
 				AC_DEFINE(OF_ASM_LOOKUP, 1,
 					[Whether to use lookup in assembly])
 			])
+		])
+
+		AS_IF([test x"$enable_seluid16" = x"yes"], [
+			AC_DEFINE(OF_SELUID16, 1,
+				[Whether to use 16 bit selector UIDs])
 		])
 		;;
 	"Apple runtime")

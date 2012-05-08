@@ -14,6 +14,8 @@
  * file.
  */
 
+#include "config.h"
+
 .globl objc_msg_lookup
 .globl objc_msg_lookup_super
 
@@ -29,8 +31,10 @@ objc_msg_lookup:
 lookup:
 	movl	8(%esp), %eax
 
+#ifndef OF_SELUID16
 	movzbl	2(%eax), %ecx
 	movl	(%edx,%ecx,4), %edx
+#endif
 	movzbl	1(%eax), %ecx
 	movl	(%edx,%ecx,4), %edx
 	movzbl	(%eax), %ecx

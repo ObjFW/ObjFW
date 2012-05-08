@@ -23,6 +23,12 @@
 #import "runtime.h"
 #import "runtime-private.h"
 
+#ifndef OF_SELUID16
+# define SEL_MAX 0xFFFFFF
+#else
+# define SEL_MAX 0xFFFF
+#endif
+
 static struct objc_sparsearray *selectors = NULL;
 
 void
@@ -35,9 +41,9 @@ objc_register_selector(struct objc_abi_selector *sel)
 	if (selectors == NULL)
 		selectors = objc_sparsearray_new();
 
-	hash = objc_hash_string(sel->name) & 0xFFFFFF;
+	hash = objc_hash_string(sel->name) & SEL_MAX;
 
-	while (hash <= 0xFFFFFF &&
+	while (hash <= SEL_MAX &&
 	    (name = objc_sparsearray_get(selectors, hash)) != NULL) {
 		if (!strcmp(name, sel->name)) {
 			rsel->uid = hash;
@@ -47,7 +53,7 @@ objc_register_selector(struct objc_abi_selector *sel)
 		hash++;
 	}
 
-	if (hash > 0xFFFFFF) {
+	if (hash > SEL_MAX) {
 		last = hash;
 		hash = 0;
 
