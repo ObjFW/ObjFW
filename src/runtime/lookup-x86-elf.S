@@ -48,7 +48,7 @@ lookup:
 forward:
 	call	get_eip
 .L1:
-	addl	$objc_forward_handler-.L1, %eax
+	addl	$objc_not_found_handler-.L1, %eax
 	jmp	*(%eax)
 
 objc_msg_lookup_super:

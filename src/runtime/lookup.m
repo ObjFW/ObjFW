@@ -23,12 +23,14 @@
 #import "runtime-private.h"
 #import "macros.h"
 
-static IMP not_found_handler(id, SEL);
-IMP (*objc_forward_handler)(id, SEL) = not_found_handler;
+IMP (*objc_forward_handler)(id, SEL) = NULL;
 
-static IMP
-not_found_handler(id obj, SEL sel)
+IMP
+objc_not_found_handler(id obj, SEL sel)
 {
+	if (objc_forward_handler != NULL)
+		return objc_forward_handler(obj, sel);
+
 	ERROR("Selector %s is not implemented for class %s!",
 	    sel_getName(sel), obj->isa->name);
 }
@@ -61,7 +63,7 @@ objc_msg_lookup(id obj, SEL sel)
 	imp = objc_sparsearray_get(obj->isa->dtable, (uint32_t)sel->uid);
 
 	if (imp == NULL)
-		return objc_forward_handler(obj, sel);
+		return objc_not_found_handler(obj, sel);
 
 	return imp;
 }
@@ -77,7 +79,7 @@ objc_msg_lookup_super(struct objc_super *super, SEL sel)
 	imp = objc_sparsearray_get(super->class->dtable, (uint32_t)sel->uid);
 
 	if (imp == NULL)
-		return objc_forward_handler(super->self, sel);
+		return objc_not_found_handler(super->self, sel);
 
 	return imp;
 }
