@@ -28,6 +28,7 @@
 static struct objc_hashtable *classes = NULL;
 static Class *load_queue = NULL;
 static size_t load_queue_cnt = 0;
+static struct objc_sparsearray *empty_dtable = NULL;
 
 static void
 register_class(struct objc_abi_class *cls)
@@ -36,6 +37,12 @@ register_class(struct objc_abi_class *cls)
 		classes = objc_hashtable_alloc(2);
 
 	objc_hashtable_set(classes, cls->name, cls);
+
+	if (empty_dtable == NULL)
+		empty_dtable = objc_sparsearray_new();
+
+	cls->dtable = empty_dtable;
+	cls->metaclass->dtable = empty_dtable;
 }
 
 BOOL
@@ -130,7 +137,10 @@ objc_update_dtable(Class cls)
 	struct objc_category **cats;
 	unsigned int i;
 
-	if (cls->dtable == NULL)
+	if (!(cls->info & OBJC_CLASS_INFO_INITIALIZED))
+		return;
+
+	if (cls->dtable == empty_dtable)
 		cls->dtable = objc_sparsearray_new();
 
 	if (cls->superclass != Nil)
@@ -219,9 +229,6 @@ setup_class(Class cls)
 	} else
 		cls->isa->superclass = cls;
 
-	objc_update_dtable(cls);
-	objc_update_dtable(cls->isa);
-
 	cls->info |= OBJC_CLASS_INFO_SETUP;
 	cls->isa->info |= OBJC_CLASS_INFO_SETUP;
 }
@@ -242,7 +249,40 @@ initialize_class(Class cls)
 	cls->info |= OBJC_CLASS_INFO_INITIALIZED;
 	cls->isa->info |= OBJC_CLASS_INFO_INITIALIZED;
 
+	objc_update_dtable(cls);
+	objc_update_dtable(cls->isa);
+
 	call_method(cls, "initialize");
+}
+
+void
+objc_initialize_class(Class cls)
+{
+	if (cls->info & OBJC_CLASS_INFO_INITIALIZED)
+		return;
+
+	objc_global_mutex_lock();
+
+	/*
+	 * It's possible that two threads try to initialize a class at the same
+	 * time. Make sure that the thread which held the lock did not already
+	 * initialize it.
+	 */
+	if (cls->info & OBJC_CLASS_INFO_INITIALIZED) {
+		objc_global_mutex_unlock();
+		return;
+	}
+
+	setup_class(cls);
+
+	if (!(cls->info & OBJC_CLASS_INFO_SETUP)) {
+		objc_global_mutex_unlock();
+		return;
+	}
+
+	initialize_class(cls);
+
+	objc_global_mutex_unlock();
 }
 
 void
@@ -319,31 +359,17 @@ objc_lookup_class(const char *name)
 	if (cls == NULL)
 		return Nil;
 
-	if (cls->info & OBJC_CLASS_INFO_INITIALIZED)
+	if (cls->info & OBJC_CLASS_INFO_SETUP)
 		return cls;
 
 	objc_global_mutex_lock();
 
-	/*
-	 * It's possible that two threads try to get a class at the same time.
-	 * Make sure that the thread which held the lock did not already
-	 * initialize it.
-	 */
-	if (cls->info & OBJC_CLASS_INFO_INITIALIZED) {
-		objc_global_mutex_unlock();
-		return cls;
-	}
-
 	setup_class(cls);
 
-	if (!(cls->info & OBJC_CLASS_INFO_SETUP)) {
-		objc_global_mutex_unlock();
-		return Nil;
-	}
-
-	initialize_class(cls);
-
 	objc_global_mutex_unlock();
+
+	if (!(cls->info & OBJC_CLASS_INFO_SETUP))
+		return Nil;
 
 	return cls;
 }

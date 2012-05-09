@@ -141,6 +141,7 @@ typedef struct {
 extern void objc_register_all_categories(struct objc_abi_symtab*);
 extern struct objc_category** objc_categories_for_class(Class);
 extern void objc_free_all_categories(void);
+extern void objc_initialize_class(Class);
 extern void objc_update_dtable(Class);
 extern void objc_register_all_classes(struct objc_abi_symtab*);
 extern Class objc_classname_to_class(const char*);

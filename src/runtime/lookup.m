@@ -28,6 +28,29 @@ IMP (*objc_forward_handler)(id, SEL) = NULL;
 IMP
 objc_not_found_handler(id obj, SEL sel)
 {
+	if (!(obj->isa->info & OBJC_CLASS_INFO_INITIALIZED)) {
+		BOOL is_class = obj->isa->info & OBJC_CLASS_INFO_METACLASS;
+		Class cls = (is_class ? (Class)obj : obj->isa);
+
+		objc_initialize_class(cls);
+
+		if (!(cls->info & OBJC_CLASS_INFO_SETUP)) {
+			if (is_class)
+				return objc_msg_lookup(nil, sel);
+			else
+				ERROR("Could not dispatch message for "
+				    "incomplete class %s!", cls->name);
+		}
+
+		/*
+		 * We don't need to handle the case that super was called.
+		 * The reason for this is that a call to super is not possible
+		 * before a message to the class has been sent and it thus has
+		 * been initialized together with its superclasses.
+		 */
+		return objc_msg_lookup(obj, sel);
+	}
+
 	if (objc_forward_handler != NULL)
 		return objc_forward_handler(obj, sel);
 
