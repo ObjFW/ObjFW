@@ -150,7 +150,7 @@ extern uint32_t objc_hash_string(const char*);
 extern struct objc_hashtable* objc_hashtable_new(uint32_t);
 extern void objc_hashtable_set(struct objc_hashtable*, const char*,
     const void*);
-extern const void* objc_hashtable_get(struct objc_hashtable*, const char*);
+extern void* objc_hashtable_get(struct objc_hashtable*, const char*);
 extern void objc_hashtable_free(struct objc_hashtable *h);
 extern BOOL objc_hashtable_warn_on_collision;
 extern void objc_register_selector(struct objc_abi_selector*);
@@ -175,7 +175,7 @@ extern void objc_global_mutex_unlock(void);
 extern void objc_global_mutex_free(void);
 extern void objc_free_when_singlethreaded(void*);
 
-static inline const void*
+static inline void*
 objc_sparsearray_get(const struct objc_sparsearray *s, uint32_t idx)
 {
 #ifndef OF_SELUID16
@@ -183,12 +183,12 @@ objc_sparsearray_get(const struct objc_sparsearray *s, uint32_t idx)
 	uint8_t j = idx >>  8;
 	uint8_t k = idx;
 
-	return s->buckets[i]->buckets[j]->buckets[k];
+	return (void*)s->buckets[i]->buckets[j]->buckets[k];
 #else
 	uint8_t i = idx >> 8;
 	uint8_t j = idx;
 
-	return s->buckets[i]->buckets[j];
+	return (void*)s->buckets[i]->buckets[j];
 #endif
 }
 

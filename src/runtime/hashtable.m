@@ -175,7 +175,7 @@ objc_hashtable_set(struct objc_hashtable *h, const char *key, const void *obj)
 	h->data[idx]->obj = obj;
 }
 
-const void*
+void*
 objc_hashtable_get(struct objc_hashtable *h, const char *key)
 {
 	int64_t idx = index_for_key(h, key);
@@ -183,7 +183,7 @@ objc_hashtable_get(struct objc_hashtable *h, const char *key)
 	if (idx < 0)
 		return NULL;
 
-	return h->data[idx]->obj;
+	return (void*)h->data[idx]->obj;
 }
 
 void
