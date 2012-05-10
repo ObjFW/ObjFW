@@ -34,7 +34,7 @@ static void
 register_class(struct objc_abi_class *cls)
 {
 	if (classes == NULL)
-		classes = objc_hashtable_alloc(2);
+		classes = objc_hashtable_new(2);
 
 	objc_hashtable_set(classes, cls->name, cls);
 

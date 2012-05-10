@@ -46,7 +46,7 @@ objc_hash_string(const char *str)
 }
 
 struct objc_hashtable*
-objc_hashtable_alloc(uint32_t size)
+objc_hashtable_new(uint32_t size)
 {
 	struct objc_hashtable *h;
 	uint32_t i;
