@@ -29,56 +29,45 @@
 # define SEL_MAX 0xFFFF
 #endif
 
-static struct objc_sparsearray *selectors = NULL;
+static struct objc_hashtable *selectors = NULL;
+static uint32_t selectors_cnt = 0;
+static struct objc_sparsearray *selector_names = NULL;
 
 void
 objc_register_selector(struct objc_abi_selector *sel)
 {
-	uint32_t hash, last;
-	struct objc_selector *rsel = (struct objc_selector*)sel;
+	struct objc_selector *rsel;
 	const char *name;
 
 	if (selectors == NULL)
-		selectors = objc_sparsearray_new();
-
-	hash = objc_hash_string(sel->name) & SEL_MAX;
-
-	while (hash <= SEL_MAX &&
-	    (name = objc_sparsearray_get(selectors, hash)) != NULL) {
-		if (!strcmp(name, sel->name)) {
-			rsel->uid = hash;
-			return;
-		}
-
-		hash++;
+		selectors = objc_hashtable_new(2);
+	else if ((rsel = objc_hashtable_get(selectors, sel->name)) != NULL) {
+		((struct objc_selector*)sel)->uid = rsel->uid;
+		return;
 	}
 
-	if (hash > SEL_MAX) {
-		last = hash;
-		hash = 0;
+	if (selector_names == NULL)
+		selector_names = objc_sparsearray_new();
 
-		while (hash < last &&
-		    (name = objc_sparsearray_get(selectors, hash)) != NULL) {
-			if (!strcmp(name, sel->name)) {
-				rsel->uid = hash;
-				return;
-			}
+	name = sel->name;
+	rsel = (struct objc_selector*)sel;
+	rsel->uid = selectors_cnt++;
 
-			hash++;
-		}
+	if (selectors_cnt > SEL_MAX)
+		ERROR("Out of selector slots!");
 
-		if (hash >= last)
-			ERROR("Selector slots exhausted!");
-	}
-
-	objc_sparsearray_set(selectors, hash, (void*)sel->name);
-	rsel->uid = hash;
+	objc_hashtable_set(selectors, name, rsel);
+	objc_sparsearray_set(selector_names, (uint32_t)rsel->uid, name);
 }
 
 SEL
 sel_registerName(const char *name)
 {
+	const struct objc_abi_selector *rsel;
 	struct objc_abi_selector *sel;
+
+	if ((rsel = objc_hashtable_get(selectors, name)) != NULL)
+		return (SEL)rsel;
 
 	/* FIXME: Free on objc_exit() */
 	if ((sel = malloc(sizeof(struct objc_abi_selector))) == NULL)
@@ -114,7 +103,7 @@ sel_getName(SEL sel)
 	const char *ret;
 
 	objc_global_mutex_lock();
-	ret = objc_sparsearray_get(selectors, (uint32_t)sel->uid);
+	ret = objc_sparsearray_get(selector_names, (uint32_t)sel->uid);
 	objc_global_mutex_unlock();
 
 	return ret;
@@ -129,6 +118,10 @@ sel_isEqual(SEL sel1, SEL sel2)
 void
 objc_free_all_selectors(void)
 {
-	objc_sparsearray_free(selectors);
+	objc_hashtable_free(selectors);
+	objc_sparsearray_free(selector_names);
+
 	selectors = NULL;
+	selectors_cnt = 0;
+	selector_names = NULL;
 }
