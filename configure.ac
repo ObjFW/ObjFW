@@ -218,6 +218,16 @@ case $objc_runtime in
 			])
 		])
 
+		AC_EGREP_CPP(yes, [
+			#if defined(__amd64__) && defined(__MACH__)
+			yes
+			#endif
+		], [
+			AC_SUBST(LOOKUP_S, lookup-amd64-macho.S)
+			AC_DEFINE(OF_ASM_LOOKUP, 1,
+				[Whether to use lookup in assembly])
+		])
+
 		AS_IF([test x"$enable_seluid16" = x"yes"], [
 			AC_DEFINE(OF_SELUID16, 1,
 				[Whether to use 16 bit selector UIDs])
