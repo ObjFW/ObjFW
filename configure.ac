@@ -182,6 +182,8 @@ case $objc_runtime in
 			OBJCFLAGS="$OBJCFLAGS -fno-objc-nonfragile-abi"
 			GNU_RUNTIME="$GNU_RUNTIME -fno-objc-nonfragile-abi"
 		])
+		AX_CHECK_COMPILER_FLAGS(-Wno-deprecated-objc-isa-usage,
+			[OBJCFLAGS="$OBJCFLAGS -Wno-deprecated-objc-isa-usage"])
 
 		AC_SUBST(GNU_RUNTIME)
 
