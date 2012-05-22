@@ -1414,6 +1414,11 @@ static struct {
 	return new;
 }
 
+- (OFString*)stringByAppendingPathComponent: (OFString*)component
+{
+	return [OFString stringWithPath: self, component, nil];
+}
+
 - (OFString*)stringByPrependingString: (OFString*)string
 {
 	OFMutableString *new = [[string mutableCopy] autorelease];
