@@ -45,8 +45,8 @@ lookup:
 	ret
 
 forward:
-	mov	objc_not_found_handler@GOTPCREL(%rip), %rax
-	jmp	*(%rax)
+	movq	objc_not_found_handler@GOTPCREL(%rip), %rax
+	jmp	*%rax
 
 objc_msg_lookup_super:
 	movq	(%rdi), %rax
