@@ -357,12 +357,13 @@ parseDictionary(const char *restrict *pointer, const char *stop)
 static inline OFNumber*
 parseNumber(const char *restrict *pointer, const char *stop)
 {
+	BOOL isHex = (*pointer + 1 < stop && (*pointer)[1] == 'x');
 	BOOL hasDecimal = NO;
 	size_t i;
 	OFString *string;
 	OFNumber *number;
 
-	for (i = 1; *pointer + i < stop; i++) {
+	for (i = 0; *pointer + i < stop; i++) {
 		if ((*pointer)[i] == '.')
 			hasDecimal = YES;
 
@@ -381,6 +382,9 @@ parseNumber(const char *restrict *pointer, const char *stop)
 		if (hasDecimal)
 			number = [OFNumber numberWithDouble:
 			    [string doubleValue]];
+		else if (isHex)
+			number = [OFNumber numberWithIntMax:
+			    [string hexadecimalValue]];
 		else
 			number = [OFNumber numberWithIntMax:
 			    [string decimalValue]];
@@ -448,6 +452,7 @@ nextObject(const char *restrict *pointer, const char *stop)
 	case '8':
 	case '9':
 	case '-':
+	case '.':
 		return parseNumber(pointer, stop);
 	default:
 		return nil;
