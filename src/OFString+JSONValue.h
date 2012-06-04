@@ -28,6 +28,9 @@ extern int _OFString_JSONValue_reference;
 /**
  * \brief Creates an object from the JSON value of the string.
  *
+ * \note This also allows parsing JSON5, an extension of JSON. See
+ *	 http://json5.org/ for more details.
+ *
  * \return An object
  */
 - (id)JSONValue;

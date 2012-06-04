@@ -33,10 +33,10 @@ static OFString *module = @"OFJSON";
 - (void)JSONTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFString *s = @"{\"foo\"\t:\"bar\", \"x\":/*fooo*/ [7.5\r,null//bar\n"
+	OFString *s = @"{\"foo\"\t:'ba\\r', \"x\":/*fooo*/ [7.5\r,null//bar\n"
 	    @",\"foo\",false]}";
 	OFDictionary *d = [OFDictionary dictionaryWithKeysAndObjects:
-	    @"foo", @"bar",
+	    @"foo", @"ba\r",
 	    @"x", [OFArray arrayWithObjects:
 		[OFNumber numberWithFloat: 7.5f],
 		[OFNull null],
@@ -48,7 +48,7 @@ static OFString *module = @"OFJSON";
 	TEST(@"-[JSONValue #1]", [[s JSONValue] isEqual: d])
 
 	TEST(@"-[JSONRepresentation]", [[d JSONRepresentation] isEqual:
-	    @"{\"foo\":\"bar\",\"x\":[7.5,null,\"foo\",false]}"])
+	    @"{\"foo\":\"ba\\r\",\"x\":[7.5,null,\"foo\",false]}"])
 
 	EXPECT_EXCEPTION(@"-[JSONValue #2]", OFInvalidEncodingException,
 	    [@"{" JSONValue])

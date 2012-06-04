@@ -130,6 +130,7 @@ parseString(const char *restrict *pointer, const char *stop)
 {
 	char *buffer;
 	size_t i = 0;
+	char delimiter = **pointer;
 
 	if (++(*pointer) + 1 >= stop)
 		return nil;
@@ -236,7 +237,7 @@ parseString(const char *restrict *pointer, const char *stop)
 				 return nil;
 			}
 		/* End of string found */
-		} else if (**pointer == '"') {
+		} else if (**pointer == delimiter) {
 			OFString *ret;
 
 			@try {
@@ -400,6 +401,7 @@ nextObject(const char *restrict *pointer, const char *stop)
 
 	switch (**pointer) {
 	case '"':
+	case '\'':
 		return parseString(pointer, stop);
 	case '[':
 		return parseArray(pointer, stop);
