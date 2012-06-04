@@ -232,9 +232,19 @@ parseString(const char *restrict *pointer, const char *stop)
 				*pointer += 11;
 
 				break;
+			case '\r':
+				(*pointer)++;
+
+				if (*pointer < stop && **pointer == '\n')
+					(*pointer)++;
+
+				break;
+			case '\n':
+				(*pointer)++;
+				break;
 			default:
-				 free(buffer);
-				 return nil;
+				free(buffer);
+				return nil;
 			}
 		/* End of string found */
 		} else if (**pointer == delimiter) {
