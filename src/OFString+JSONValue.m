@@ -288,6 +288,16 @@ parseArray(const char *restrict *pointer, const char *stop)
 		if (**pointer == ']')
 			break;
 
+		if (**pointer == ',') {
+			(*pointer)++;
+			skipWhitespacesAndComments(pointer, stop);
+
+			if (*pointer >= stop || **pointer != ']')
+				return nil;
+
+			break;
+		}
+
 		if ((object = nextObject(pointer, stop)) == nil)
 			return nil;
 
@@ -329,6 +339,16 @@ parseDictionary(const char *restrict *pointer, const char *stop)
 
 		if (**pointer == '}')
 			break;
+
+		if (**pointer == ',') {
+			(*pointer)++;
+			skipWhitespacesAndComments(pointer, stop);
+
+			if (*pointer >= stop || **pointer != '}')
+				return nil;
+
+			break;
+		}
 
 		if ((key = nextObject(pointer, stop)) == nil)
 			return nil;
