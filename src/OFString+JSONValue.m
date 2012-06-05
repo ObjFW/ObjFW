@@ -258,6 +258,10 @@ parseString(const char *restrict *pointer, const char *stop)
 			(*pointer)++;
 
 			return ret;
+		/* Newlines in strings are disallowed */
+		} else if (**pointer == '\n' || **pointer == '\r') {
+			free(buffer);
+			return nil;
 		} else {
 			buffer[i++] = **pointer;
 			(*pointer)++;
