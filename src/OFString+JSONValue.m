@@ -195,7 +195,6 @@ parseString(const char *restrict *pointer, const char *stop)
 				if ((c1 & 0xFC00) != 0xD800) {
 					l = of_string_unicode_to_utf8(c1,
 					    buffer + i);
-
 					if (l == 0) {
 						free(buffer);
 						return nil;
@@ -222,7 +221,6 @@ parseString(const char *restrict *pointer, const char *stop)
 				    (c2 & 0x3FF)) + 0x10000;
 
 				l = of_string_unicode_to_utf8(c, buffer + i);
-
 				if (l == 0) {
 					free(buffer);
 					return nil;
