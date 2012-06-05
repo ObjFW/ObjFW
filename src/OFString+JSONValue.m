@@ -268,6 +268,106 @@ parseString(const char *restrict *pointer, const char *stop)
 	return nil;
 }
 
+static inline OFString*
+parseIdentifier(const char *restrict *pointer, const char *stop)
+{
+	char *buffer;
+	size_t i = 0;
+
+	if ((buffer = malloc(stop - *pointer)) == NULL)
+		return nil;
+
+	while (*pointer < stop) {
+		if ((**pointer >= 'a' && **pointer <= 'z') ||
+		    (**pointer >= 'A' && **pointer <= 'Z') ||
+		    (**pointer >= '0' && **pointer <= '9') ||
+		    **pointer == '_' || **pointer == '$' ||
+		    (**pointer & 0x80)) {
+			buffer[i++] = **pointer;
+			(*pointer)++;
+		} else if (**pointer == '\\') {
+			uint16_t c1, c2;
+			of_unichar_t c;
+			size_t l;
+
+			if (++(*pointer) >= stop || **pointer != 'u') {
+				free(buffer);
+				return nil;
+			}
+
+			c1 = parseUnicodeEscape(*pointer - 1, stop);
+			if (c1 == 0xFFFF) {
+				free(buffer);
+				return nil;
+			}
+
+			/* Low surrogate */
+			if ((c1 & 0xFC00) == 0xDC00) {
+				free(buffer);
+				return nil;
+			}
+
+			/* Normal character */
+			if ((c1 & 0xFC00) != 0xD800) {
+				l = of_string_unicode_to_utf8(c1, buffer + i);
+				if (l == 0) {
+					free(buffer);
+					return nil;
+				}
+
+				i += l;
+				*pointer += 5;
+
+				continue;
+			}
+
+			/*
+			 * If we are still here, we only got one UTF-16
+			 * surrogate and now need to get the other one in order
+			 * to produce UTF-8 and not CESU-8.
+			 */
+			c2 = parseUnicodeEscape(*pointer + 5, stop);
+			if (c2 == 0xFFFF) {
+				free(buffer);
+				return nil;
+			}
+
+			c = (((c1 & 0x3FF) << 10) | (c2 & 0x3FF)) + 0x10000;
+
+			l = of_string_unicode_to_utf8(c, buffer + i);
+			if (l == 0) {
+				free(buffer);
+				return nil;
+			}
+
+			i += l;
+			*pointer += 11;
+		} else {
+			OFString *ret;
+
+			if (i == 0 || (buffer[0] >= '0' && buffer[0] <= '9')) {
+				free(buffer);
+				return nil;
+			}
+
+			@try {
+				ret = [OFString stringWithUTF8String: buffer
+							      length: i];
+			} @finally {
+				free(buffer);
+			}
+
+			return ret;
+		}
+	}
+
+	/*
+	 * It is never possible to end with an identifier, thus we should never
+	 * reach stop.
+	 */
+	return nil;
+}
+
 static inline OFMutableArray*
 parseArray(const char *restrict *pointer, const char *stop)
 {
@@ -348,7 +448,18 @@ parseDictionary(const char *restrict *pointer, const char *stop)
 			break;
 		}
 
-		if ((key = nextObject(pointer, stop)) == nil)
+		skipWhitespacesAndComments(pointer, stop);
+		if (*pointer + 1 >= stop)
+			return nil;
+
+		if ((**pointer >= 'a' && **pointer <= 'z') ||
+		    (**pointer >= 'A' && **pointer <= 'Z') ||
+		    **pointer == '_' || **pointer == '$' || **pointer == '\\')
+			key = parseIdentifier(pointer, stop);
+		else
+			key = nextObject(pointer, stop);
+
+		if (key == nil)
 			return nil;
 
 		skipWhitespacesAndComments(pointer, stop);
