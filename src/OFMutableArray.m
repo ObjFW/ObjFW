@@ -177,12 +177,12 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 
 - (void)addObject: (id)object
 {
-	[self addObject: object
-		atIndex: [self count]];
+	[self insertObject: object
+		   atIndex: [self count]];
 }
 
-- (void)addObject: (id)object
-	  atIndex: (size_t)index
+- (void)insertObject: (id)object
+	     atIndex: (size_t)index
 {
 	@throw [OFNotImplementedException exceptionWithClass: isa
 						    selector: _cmd];

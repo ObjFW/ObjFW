@@ -42,8 +42,8 @@
 	mutations++;
 }
 
-- (void)addObject: (id)object
-	  atIndex: (size_t)index
+- (void)insertObject: (id)object
+	     atIndex: (size_t)index
 {
 	[array addItem: &object
 	       atIndex: index];

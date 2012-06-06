@@ -59,8 +59,8 @@ static OFString *c_ary[] = {
 	TEST(@"-[addObject:]", R([m[0] addObject: c_ary[0]]) &&
 	    R([m[0] addObject: c_ary[2]]))
 
-	TEST(@"-[addObject:atIndex:]", R([m[0] addObject: c_ary[1]
-						 atIndex: 1]))
+	TEST(@"-[insertObject:atIndex:]", R([m[0] insertObject: c_ary[1]
+						       atIndex: 1]))
 
 	TEST(@"-[count]", [m[0] count] == 3 && [a[0] count] == 3 &&
 	    [a[1] count] == 3)
