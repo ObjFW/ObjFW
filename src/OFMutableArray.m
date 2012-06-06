@@ -265,13 +265,6 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 	}
 }
 
-- (void)removeNObjects: (size_t)nObjects
-{
-	size_t count = [self count];
-
-	[self removeObjectsInRange: of_range(count - nObjects, nObjects)];
-}
-
 - (void)removeObjectsInRange: (of_range_t)range
 {
 	size_t i;
@@ -282,12 +275,15 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 
 - (void)removeLastObject
 {
-	[self removeNObjects: 1];
+	size_t count = [self count];
+
+	if (count > 0)
+		[self removeObjectAtIndex: count - 1];
 }
 
 - (void)removeAllObjects
 {
-	[self removeNObjects: [self count]];
+	[self removeObjectsInRange: of_range(0, [self count])];
 }
 
 #ifdef OF_HAVE_BLOCKS

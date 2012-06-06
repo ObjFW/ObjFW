@@ -95,13 +95,6 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
 - (void)removeObjectAtIndex: (size_t)index;
 
 /**
- * \brief Removes the specified amount of objects from the end of the OFArray.
- *
- * \param nObjects The number of objects to remove
- */
-- (void)removeNObjects: (size_t)nObjects;
-
-/**
  * \brief Removes the object in the specified range.
  *
  * \param range The range of the objects to remove

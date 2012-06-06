@@ -27,8 +27,6 @@
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
-#import "macros.h"
-
 @implementation OFMutableArray_adjacent
 + (void)initialize
 {
@@ -145,30 +143,6 @@
 	[object release];
 
 	mutations++;
-}
-
-- (void)removeNObjects: (size_t)nObjects
-{
-	id *objects = [array cArray], *copy;
-	size_t i, count = [array count];
-
-	if (nObjects > count)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
-
-	copy = [self allocMemoryForNItems: nObjects
-				   ofSize: sizeof(id)];
-	memcpy(copy, objects + (count - nObjects), nObjects * sizeof(id));
-
-	@try {
-		[array removeItemsInRange:
-		    of_range(count - nObjects, nObjects)];
-		mutations++;
-
-		for (i = 0; i < nObjects; i++)
-			[copy[i] release];
-	} @finally {
-		[self freeMemory: copy];
-	}
 }
 
 - (void)removeAllObjects
