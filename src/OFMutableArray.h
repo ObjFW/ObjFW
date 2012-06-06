@@ -128,13 +128,13 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
 #endif
 
 /**
- * \brief Swaps the objects at the specified indices.
+ * \brief Exchange the objects at the specified indices.
  *
- * \param index1 The index of the first object to swap
- * \param index2 The index of the second object to swap
+ * \param index1 The index of the first object to exchange
+ * \param index2 The index of the second object to exchange
  */
-- (void)swapObjectAtIndex: (size_t)index1
-	withObjectAtIndex: (size_t)index2;
+- (void)exchangeObjectAtIndex: (size_t)index1
+	    withObjectAtIndex: (size_t)index2;
 
 /**
  * \brief Sorts the array.

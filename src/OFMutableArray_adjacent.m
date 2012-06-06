@@ -212,8 +212,8 @@
 	mutations++;
 }
 
-- (void)swapObjectAtIndex: (size_t)index1
-	withObjectAtIndex: (size_t)index2
+- (void)exchangeObjectAtIndex: (size_t)index1
+	    withObjectAtIndex: (size_t)index2
 {
 	id *objects = [array cArray];
 	size_t count = [array count];

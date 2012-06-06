@@ -59,13 +59,13 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 			j--;
 
 		if (i < j)
-			[array swapObjectAtIndex: i
-			       withObjectAtIndex: j];
+			[array exchangeObjectAtIndex: i
+				   withObjectAtIndex: j];
 	} while (i < j);
 
 	if ([[array objectAtIndex: i] compare: pivot] == OF_ORDERED_DESCENDING)
-		[array swapObjectAtIndex: i
-		       withObjectAtIndex: right];
+		[array exchangeObjectAtIndex: i
+			   withObjectAtIndex: right];
 
 	if (i > 0)
 		quicksort(array, left, i - 1);
@@ -299,8 +299,8 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 }
 #endif
 
-- (void)swapObjectAtIndex: (size_t)index1
-	withObjectAtIndex: (size_t)index2
+- (void)exchangeObjectAtIndex: (size_t)index1
+	    withObjectAtIndex: (size_t)index2
 {
 	id object1 = [self objectAtIndex: index1];
 	id object2 = [self objectAtIndex: index2];
@@ -334,8 +334,8 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 		return;
 
 	for (i = 0, j = count - 1; i < j; i++, j--)
-		[self swapObjectAtIndex: i
-		      withObjectAtIndex: j];
+		[self exchangeObjectAtIndex: i
+			  withObjectAtIndex: j];
 }
 
 - (void)makeImmutable
