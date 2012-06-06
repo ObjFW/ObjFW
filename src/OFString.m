@@ -1414,6 +1414,11 @@ static struct {
 	return new;
 }
 
+- (OFString*)stringByAppendingPathComponent: (OFString*)component
+{
+	return [OFString stringWithPath: self, component, nil];
+}
+
 - (OFString*)stringByPrependingString: (OFString*)string
 {
 	OFMutableString *new = [[string mutableCopy] autorelease];
@@ -1518,8 +1523,8 @@ static struct {
 	if ((prefixLength = [prefix length]) > [self length])
 		return NO;
 
-	tmp = [self allocMemoryForNItems: prefixLength
-				  ofSize: sizeof(of_unichar_t)];
+	tmp = [self allocMemoryWithItemSize: sizeof(of_unichar_t)
+				      count: prefixLength];
 	@try {
 		OFAutoreleasePool *pool;
 
@@ -1552,8 +1557,8 @@ static struct {
 
 	length = [self length];
 
-	tmp = [self allocMemoryForNItems: suffixLength
-				  ofSize: sizeof(of_unichar_t)];
+	tmp = [self allocMemoryWithItemSize: sizeof(of_unichar_t)
+				      count: suffixLength];
 	@try {
 		OFAutoreleasePool *pool;
 
@@ -1954,8 +1959,8 @@ static struct {
 	size_t length = [self length];
 	of_unichar_t *ret;
 
-	ret = [object allocMemoryForNItems: length + 1
-				    ofSize: sizeof(of_unichar_t)];
+	ret = [object allocMemoryWithItemSize: sizeof(of_unichar_t)
+					count: length + 1];
 	[self getCharacters: ret
 		    inRange: of_range(0, length)];
 	ret[length] = 0;
@@ -1973,8 +1978,8 @@ static struct {
 	size_t i, j;
 
 	/* Allocate memory for the worst case */
-	ret = [object allocMemoryForNItems: length * 2 + 1
-				    ofSize: sizeof(uint16_t)];
+	ret = [object allocMemoryWithItemSize: sizeof(uint16_t)
+					count: length * 2 + 1];
 
 	j = 0;
 
@@ -1997,8 +2002,8 @@ static struct {
 
 	@try {
 		ret = [object resizeMemory: ret
-				  toNItems: j + 1
-				    ofSize: sizeof(uint16_t)];
+				  itemSize: sizeof(uint16_t)
+				     count: j + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only tried to make it smaller */
 	}

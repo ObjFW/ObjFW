@@ -130,6 +130,7 @@ parseString(const char *restrict *pointer, const char *stop)
 {
 	char *buffer;
 	size_t i = 0;
+	char delimiter = **pointer;
 
 	if (++(*pointer) + 1 >= stop)
 		return nil;
@@ -194,7 +195,6 @@ parseString(const char *restrict *pointer, const char *stop)
 				if ((c1 & 0xFC00) != 0xD800) {
 					l = of_string_unicode_to_utf8(c1,
 					    buffer + i);
-
 					if (l == 0) {
 						free(buffer);
 						return nil;
@@ -221,7 +221,6 @@ parseString(const char *restrict *pointer, const char *stop)
 				    (c2 & 0x3FF)) + 0x10000;
 
 				l = of_string_unicode_to_utf8(c, buffer + i);
-
 				if (l == 0) {
 					free(buffer);
 					return nil;
@@ -231,12 +230,22 @@ parseString(const char *restrict *pointer, const char *stop)
 				*pointer += 11;
 
 				break;
+			case '\r':
+				(*pointer)++;
+
+				if (*pointer < stop && **pointer == '\n')
+					(*pointer)++;
+
+				break;
+			case '\n':
+				(*pointer)++;
+				break;
 			default:
-				 free(buffer);
-				 return nil;
+				free(buffer);
+				return nil;
 			}
 		/* End of string found */
-		} else if (**pointer == '"') {
+		} else if (**pointer == delimiter) {
 			OFString *ret;
 
 			@try {
@@ -249,6 +258,10 @@ parseString(const char *restrict *pointer, const char *stop)
 			(*pointer)++;
 
 			return ret;
+		/* Newlines in strings are disallowed */
+		} else if (**pointer == '\n' || **pointer == '\r') {
+			free(buffer);
+			return nil;
 		} else {
 			buffer[i++] = **pointer;
 			(*pointer)++;
@@ -256,6 +269,106 @@ parseString(const char *restrict *pointer, const char *stop)
 	}
 
 	free(buffer);
+	return nil;
+}
+
+static inline OFString*
+parseIdentifier(const char *restrict *pointer, const char *stop)
+{
+	char *buffer;
+	size_t i = 0;
+
+	if ((buffer = malloc(stop - *pointer)) == NULL)
+		return nil;
+
+	while (*pointer < stop) {
+		if ((**pointer >= 'a' && **pointer <= 'z') ||
+		    (**pointer >= 'A' && **pointer <= 'Z') ||
+		    (**pointer >= '0' && **pointer <= '9') ||
+		    **pointer == '_' || **pointer == '$' ||
+		    (**pointer & 0x80)) {
+			buffer[i++] = **pointer;
+			(*pointer)++;
+		} else if (**pointer == '\\') {
+			uint16_t c1, c2;
+			of_unichar_t c;
+			size_t l;
+
+			if (++(*pointer) >= stop || **pointer != 'u') {
+				free(buffer);
+				return nil;
+			}
+
+			c1 = parseUnicodeEscape(*pointer - 1, stop);
+			if (c1 == 0xFFFF) {
+				free(buffer);
+				return nil;
+			}
+
+			/* Low surrogate */
+			if ((c1 & 0xFC00) == 0xDC00) {
+				free(buffer);
+				return nil;
+			}
+
+			/* Normal character */
+			if ((c1 & 0xFC00) != 0xD800) {
+				l = of_string_unicode_to_utf8(c1, buffer + i);
+				if (l == 0) {
+					free(buffer);
+					return nil;
+				}
+
+				i += l;
+				*pointer += 5;
+
+				continue;
+			}
+
+			/*
+			 * If we are still here, we only got one UTF-16
+			 * surrogate and now need to get the other one in order
+			 * to produce UTF-8 and not CESU-8.
+			 */
+			c2 = parseUnicodeEscape(*pointer + 5, stop);
+			if (c2 == 0xFFFF) {
+				free(buffer);
+				return nil;
+			}
+
+			c = (((c1 & 0x3FF) << 10) | (c2 & 0x3FF)) + 0x10000;
+
+			l = of_string_unicode_to_utf8(c, buffer + i);
+			if (l == 0) {
+				free(buffer);
+				return nil;
+			}
+
+			i += l;
+			*pointer += 11;
+		} else {
+			OFString *ret;
+
+			if (i == 0 || (buffer[0] >= '0' && buffer[0] <= '9')) {
+				free(buffer);
+				return nil;
+			}
+
+			@try {
+				ret = [OFString stringWithUTF8String: buffer
+							      length: i];
+			} @finally {
+				free(buffer);
+			}
+
+			return ret;
+		}
+	}
+
+	/*
+	 * It is never possible to end with an identifier, thus we should never
+	 * reach stop.
+	 */
 	return nil;
 }
 
@@ -276,6 +389,16 @@ parseArray(const char *restrict *pointer, const char *stop)
 
 		if (**pointer == ']')
 			break;
+
+		if (**pointer == ',') {
+			(*pointer)++;
+			skipWhitespacesAndComments(pointer, stop);
+
+			if (*pointer >= stop || **pointer != ']')
+				return nil;
+
+			break;
+		}
 
 		if ((object = nextObject(pointer, stop)) == nil)
 			return nil;
@@ -319,7 +442,28 @@ parseDictionary(const char *restrict *pointer, const char *stop)
 		if (**pointer == '}')
 			break;
 
-		if ((key = nextObject(pointer, stop)) == nil)
+		if (**pointer == ',') {
+			(*pointer)++;
+			skipWhitespacesAndComments(pointer, stop);
+
+			if (*pointer >= stop || **pointer != '}')
+				return nil;
+
+			break;
+		}
+
+		skipWhitespacesAndComments(pointer, stop);
+		if (*pointer + 1 >= stop)
+			return nil;
+
+		if ((**pointer >= 'a' && **pointer <= 'z') ||
+		    (**pointer >= 'A' && **pointer <= 'Z') ||
+		    **pointer == '_' || **pointer == '$' || **pointer == '\\')
+			key = parseIdentifier(pointer, stop);
+		else
+			key = nextObject(pointer, stop);
+
+		if (key == nil)
 			return nil;
 
 		skipWhitespacesAndComments(pointer, stop);
@@ -356,12 +500,13 @@ parseDictionary(const char *restrict *pointer, const char *stop)
 static inline OFNumber*
 parseNumber(const char *restrict *pointer, const char *stop)
 {
+	BOOL isHex = (*pointer + 1 < stop && (*pointer)[1] == 'x');
 	BOOL hasDecimal = NO;
 	size_t i;
 	OFString *string;
 	OFNumber *number;
 
-	for (i = 1; *pointer + i < stop; i++) {
+	for (i = 0; *pointer + i < stop; i++) {
 		if ((*pointer)[i] == '.')
 			hasDecimal = YES;
 
@@ -380,6 +525,9 @@ parseNumber(const char *restrict *pointer, const char *stop)
 		if (hasDecimal)
 			number = [OFNumber numberWithDouble:
 			    [string doubleValue]];
+		else if (isHex)
+			number = [OFNumber numberWithIntMax:
+			    [string hexadecimalValue]];
 		else
 			number = [OFNumber numberWithIntMax:
 			    [string decimalValue]];
@@ -400,6 +548,7 @@ nextObject(const char *restrict *pointer, const char *stop)
 
 	switch (**pointer) {
 	case '"':
+	case '\'':
 		return parseString(pointer, stop);
 	case '[':
 		return parseArray(pointer, stop);
@@ -446,6 +595,7 @@ nextObject(const char *restrict *pointer, const char *stop)
 	case '8':
 	case '9':
 	case '-':
+	case '.':
 		return parseNumber(pointer, stop);
 	default:
 		return nil;

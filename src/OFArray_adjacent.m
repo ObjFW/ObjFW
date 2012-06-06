@@ -104,8 +104,8 @@
 		for (i = 0; i < count; i++)
 			[objects[i] retain];
 
-		[array addNItems: count
-		      fromCArray: objects];
+		[array addItemsFromCArray: objects
+				    count: count];
 	} @catch (id e) {
 		for (i = 0; i < count; i++)
 			[objects[i] release];
@@ -132,8 +132,8 @@
 		for (i = 0; i < count; i++)
 			[objects[i] retain];
 
-		[array addNItems: count
-		      fromCArray: objects];
+		[array addItemsFromCArray: objects
+				    count: count];
 	} @catch (id e) {
 		size_t i;
 

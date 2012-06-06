@@ -188,28 +188,28 @@
  * \param item A pointer to an arbitrary item
  * \param index The index where the item should be added
  */
-- (void)addItem: (const void*)item
-	atIndex: (size_t)index;
+- (void)insertItem: (const void*)item
+	   atIndex: (size_t)index;
 
 /**
  * \brief Adds items from a C array to the OFDataArray.
  *
- * \param nItems The number of items to add
+ * \param count The number of items to add
  * \param cArray A C array containing the items to add
  */
-- (void)addNItems: (size_t)nItems
-       fromCArray: (const void*)cArray;
+- (void)addItemsFromCArray: (const void*)cArray
+		     count: (size_t)count;
 
 /**
  * \brief Adds items from a C array to the OFDataArray at the specified index.
  *
- * \param nItems The number of items to add
  * \param cArray A C array containing the items to add
  * \param index The index where the items should be added
+ * \param count The number of items to add
  */
-- (void)addNItems: (size_t)nItems
-       fromCArray: (const void*)cArray
-	  atIndex: (size_t)index;
+- (void)insertItemsFromCArray: (const void*)cArray
+		      atIndex: (size_t)index
+			count: (size_t)count;
 
 /**
  * \brief Removes the item at the specified index.
@@ -219,20 +219,11 @@
 - (void)removeItemAtIndex: (size_t)index;
 
 /**
- * \brief Removes the specified amount of items from the end of the OFDataArray.
- *
- * \param nItems The number of items to remove
- */
-- (void)removeNItems: (size_t)nItems;
-
-/**
  * \brief Removes the specified amount of items at the specified index.
  *
- * \param nItems The number of items to remove
- * \param index The index at which the items are removed
+ * \param range The range of items to remove
  */
-- (void)removeNItems: (size_t)nItems
-	     atIndex: (size_t)index;
+- (void)removeItemsInRange: (of_range_t)range;
 
 /**
  * \brief Removes the last item.

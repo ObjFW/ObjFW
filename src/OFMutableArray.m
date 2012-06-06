@@ -18,6 +18,8 @@
 
 #include <string.h>
 
+#include <assert.h>
+
 #import "OFMutableArray.h"
 #import "OFMutableArray_adjacent.h"
 #import "OFAutoreleasePool.h"
@@ -59,13 +61,13 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 			j--;
 
 		if (i < j)
-			[array swapObjectAtIndex: i
-			       withObjectAtIndex: j];
+			[array exchangeObjectAtIndex: i
+				   withObjectAtIndex: j];
 	} while (i < j);
 
 	if ([[array objectAtIndex: i] compare: pivot] == OF_ORDERED_DESCENDING)
-		[array swapObjectAtIndex: i
-		       withObjectAtIndex: right];
+		[array exchangeObjectAtIndex: i
+			   withObjectAtIndex: right];
 
 	if (i > 0)
 		quicksort(array, left, i - 1);
@@ -177,12 +179,12 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 
 - (void)addObject: (id)object
 {
-	[self addObject: object
-		atIndex: [self count]];
+	[self insertObject: object
+		   atIndex: [self count]];
 }
 
-- (void)addObject: (id)object
-	  atIndex: (size_t)index
+- (void)insertObject: (id)object
+	     atIndex: (size_t)index
 {
 	@throw [OFNotImplementedException exceptionWithClass: isa
 						    selector: _cmd];
@@ -263,13 +265,6 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 	}
 }
 
-- (void)removeNObjects: (size_t)nObjects
-{
-	size_t count = [self count];
-
-	[self removeObjectsInRange: of_range(count - nObjects, nObjects)];
-}
-
 - (void)removeObjectsInRange: (of_range_t)range
 {
 	size_t i;
@@ -280,12 +275,15 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 
 - (void)removeLastObject
 {
-	[self removeNObjects: 1];
+	size_t count = [self count];
+
+	if (count > 0)
+		[self removeObjectAtIndex: count - 1];
 }
 
 - (void)removeAllObjects
 {
-	[self removeNObjects: [self count]];
+	[self removeObjectsInRange: of_range(0, [self count])];
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -299,8 +297,8 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 }
 #endif
 
-- (void)swapObjectAtIndex: (size_t)index1
-	withObjectAtIndex: (size_t)index2
+- (void)exchangeObjectAtIndex: (size_t)index1
+	    withObjectAtIndex: (size_t)index2
 {
 	id object1 = [self objectAtIndex: index1];
 	id object2 = [self objectAtIndex: index2];
@@ -334,8 +332,8 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 		return;
 
 	for (i = 0, j = count - 1; i < j; i++, j--)
-		[self swapObjectAtIndex: i
-		      withObjectAtIndex: j];
+		[self exchangeObjectAtIndex: i
+			  withObjectAtIndex: j];
 }
 
 - (void)makeImmutable

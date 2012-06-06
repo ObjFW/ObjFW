@@ -122,4 +122,11 @@ typedef void (^of_thread_pool_block_t)(id object);
  * \brief Waits until all threads have finished.
  */
 - (void)waitUntilFinished;
+
+/**
+ * \brief Returns the size of the thread pool.
+ *
+ * \return The size of the thread pool
+ */
+- (size_t)size;
 @end

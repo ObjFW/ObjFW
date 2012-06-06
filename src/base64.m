@@ -150,8 +150,8 @@ of_base64_decode(OFDataArray *data, const char *string, size_t length)
 		db[1] = (sb & 0x00FF00) >> 8;
 		db[2] = sb & 0x0000FF;
 
-		[data addNItems: count
-		     fromCArray: db];
+		[data addItemsFromCArray: db
+				   count: count];
 	}
 
 	return YES;

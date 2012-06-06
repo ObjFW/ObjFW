@@ -634,9 +634,17 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \brief Creates a new string by appending another string.
  *
  * \param string The string to append
- * \return A new autoreleased OFString with the specified string appended
+ * \return A new, autoreleased OFString with the specified string appended
  */
 - (OFString*)stringByAppendingString: (OFString*)string;
+
+/**
+ * \brief Creates a new string by appending a path component.
+ *
+ * \param component The path component to append
+ * \return A new, autoreleased OFString with the path component appended
+ */
+- (OFString*)stringByAppendingPathComponent: (OFString*)component;
 
 /**
  * \brief Creates a new string by prepending another string.

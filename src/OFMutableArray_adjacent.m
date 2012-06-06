@@ -42,11 +42,11 @@
 	mutations++;
 }
 
-- (void)addObject: (id)object
-	  atIndex: (size_t)index
+- (void)insertObject: (id)object
+	     atIndex: (size_t)index
 {
-	[array addItem: &object
-	       atIndex: index];
+	[array insertItem: &object
+		  atIndex: index];
 	[object retain];
 
 	mutations++;
@@ -145,29 +145,6 @@
 	mutations++;
 }
 
-- (void)removeNObjects: (size_t)nObjects
-{
-	id *objects = [array cArray], *copy;
-	size_t i, count = [array count];
-
-	if (nObjects > count)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
-
-	copy = [self allocMemoryForNItems: nObjects
-				   ofSize: sizeof(id)];
-	memcpy(copy, objects + (count - nObjects), nObjects * sizeof(id));
-
-	@try {
-		[array removeNItems: nObjects];
-		mutations++;
-
-		for (i = 0; i < nObjects; i++)
-			[copy[i] release];
-	} @finally {
-		[self freeMemory: copy];
-	}
-}
-
 - (void)removeAllObjects
 {
 	id *objects = [array cArray];
@@ -187,13 +164,12 @@
 	if (range.length > count - range.start)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
-	copy = [self allocMemoryForNItems: range.length
-				   ofSize: sizeof(id)];
+	copy = [self allocMemoryWithItemSize: sizeof(*copy)
+				       count: range.length];
 	memcpy(copy, objects + range.start, range.length * sizeof(id));
 
 	@try {
-		[array removeNItems: range.length
-			    atIndex: range.start];
+		[array removeItemsInRange: range];
 		mutations++;
 
 		for (i = 0; i < range.length; i++)
@@ -212,8 +188,8 @@
 	mutations++;
 }
 
-- (void)swapObjectAtIndex: (size_t)index1
-	withObjectAtIndex: (size_t)index2
+- (void)exchangeObjectAtIndex: (size_t)index1
+	    withObjectAtIndex: (size_t)index2
 {
 	id *objects = [array cArray];
 	size_t count = [array count];

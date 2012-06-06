@@ -352,8 +352,8 @@ static struct {
 - (OFArray*)allKeys
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	id *keys = [self allocMemoryForNItems: [self count]
-				       ofSize: sizeof(id)];
+	id *keys = [self allocMemoryWithItemSize: sizeof(id)
+					   count: [self count]];
 	OFArray *ret;
 	OFEnumerator *enumerator;
 	id key;
@@ -382,8 +382,8 @@ static struct {
 - (OFArray*)allObjects
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	id *objects = [self allocMemoryForNItems: [self count]
-					  ofSize: sizeof(id)];
+	id *objects = [self allocMemoryWithItemSize: sizeof(id)
+					      count: [self count]];
 	OFArray *ret;
 	OFEnumerator *enumerator;
 	id object;

@@ -26,20 +26,20 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
  */
 @interface OFMutableArray: OFArray
 /**
- * \brief Adds an object to the OFArray.
+ * \brief Adds an object to the end of the array.
  *
  * \param object An object to add
  */
 - (void)addObject: (id)object;
 
 /**
- * \brief Adds an object to the OFArray at the specified index.
+ * \brief Inserts an object to the OFArray at the specified index.
  *
  * \param object An object to add
- * \param index The index where the object should be added
+ * \param index The index where the object should be inserted
  */
-- (void)addObject: (id)object
-	  atIndex: (size_t)index;
+- (void)insertObject: (id)object
+	     atIndex: (size_t)index;
 
 /**
  * \brief Replaces the first object equivalent to the specified object with the
@@ -95,13 +95,6 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
 - (void)removeObjectAtIndex: (size_t)index;
 
 /**
- * \brief Removes the specified amount of objects from the end of the OFArray.
- *
- * \param nObjects The number of objects to remove
- */
-- (void)removeNObjects: (size_t)nObjects;
-
-/**
  * \brief Removes the object in the specified range.
  *
  * \param range The range of the objects to remove
@@ -128,13 +121,13 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
 #endif
 
 /**
- * \brief Swaps the objects at the specified indices.
+ * \brief Exchange the objects at the specified indices.
  *
- * \param index1 The index of the first object to swap
- * \param index2 The index of the second object to swap
+ * \param index1 The index of the first object to exchange
+ * \param index2 The index of the second object to exchange
  */
-- (void)swapObjectAtIndex: (size_t)index1
-	withObjectAtIndex: (size_t)index2;
+- (void)exchangeObjectAtIndex: (size_t)index1
+	    withObjectAtIndex: (size_t)index2;
 
 /**
  * \brief Sorts the array.

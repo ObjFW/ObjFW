@@ -45,15 +45,15 @@ cache_append(OFDataArray *cache, const char *string,
     of_string_encoding_t encoding, size_t length)
 {
 	if (OF_LIKELY(encoding == OF_STRING_ENCODING_UTF_8))
-		[cache addNItems: length
-		      fromCArray: string];
+		[cache addItemsFromCArray: string
+				    count: length];
 	else {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 		OFString *tmp = [OFString stringWithCString: string
 						   encoding: encoding
 						     length: length];
-		[cache addNItems: [tmp UTF8StringLength]
-		      fromCArray: [tmp UTF8String]];
+		[cache addItemsFromCArray: [tmp UTF8String]
+				    count: [tmp UTF8StringLength]];
 		[pool release];
 	}
 }

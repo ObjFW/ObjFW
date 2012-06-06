@@ -156,6 +156,9 @@ while test x"$1" != "x"; do
 			OBJCFLAGS="$OBJCFLAGS $1"
 			LDFLAGS="$LDFLAGS $1"
 			;;
+		-std=*)
+			OBJCFLAGS="$OBJCFLAGS $1"
+			;;
 		-Wl,*)
 			LDFLAGS="$LDFLAGS $1"
 			;;

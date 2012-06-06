@@ -127,7 +127,7 @@
 		}
 	}
 
-	[changeList removeNItems: [changeList count]];
+	[changeList removeAllItems];
 
 	if (events == 0) {
 		[pool release];

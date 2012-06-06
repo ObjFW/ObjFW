@@ -1094,8 +1094,8 @@ memcasecmp(const char *first, const char *second, size_t length)
 	of_unichar_t *ret;
 	size_t i, j;
 
-	ret = [object allocMemoryForNItems: s->length + 1
-				    ofSize: sizeof(of_unichar_t)];
+	ret = [object allocMemoryWithItemSize: sizeof(of_unichar_t)
+					count: s->length + 1];
 
 	i = 0;
 	j = 0;

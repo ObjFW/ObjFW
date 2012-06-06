@@ -383,4 +383,9 @@
 						   object: object]];
 }
 #endif
+
+- (size_t)size
+{
+	return size;
+}
 @end

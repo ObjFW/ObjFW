@@ -610,16 +610,16 @@ void _references_to_categories_of_OFObject(void)
 	return (char*)pointer + PRE_MEM_ALIGN;
 }
 
-- (void*)allocMemoryForNItems: (size_t)nItems
-		       ofSize: (size_t)size
+- (void*)allocMemoryWithItemSize: (size_t)itemSize
+			   count: (size_t)count
 {
-	if (nItems == 0 || size == 0)
+	if (itemSize == 0 || count == 0)
 		return NULL;
 
-	if (nItems > SIZE_MAX / size)
+	if (count > SIZE_MAX / itemSize)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
-	return [self allocMemoryWithSize: nItems * size];
+	return [self allocMemoryWithSize: itemSize * count];
 }
 
 - (void*)resizeMemory: (void*)pointer
@@ -662,23 +662,23 @@ void _references_to_categories_of_OFObject(void)
 }
 
 - (void*)resizeMemory: (void*)pointer
-	     toNItems: (size_t)nItems
-	       ofSize: (size_t)size
+	     itemSize: (size_t)itemSize
+		count: (size_t)count
 {
 	if (pointer == NULL)
-		return [self allocMemoryForNItems: nItems
-					   ofSize: size];
+		return [self allocMemoryWithItemSize: itemSize
+					       count: count];
 
-	if (nItems == 0 || size == 0) {
+	if (itemSize == 0 || count == 0) {
 		[self freeMemory: pointer];
 		return NULL;
 	}
 
-	if (nItems > SIZE_MAX / size)
+	if (count > SIZE_MAX / itemSize)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	return [self resizeMemory: pointer
-			   toSize: nItems * size];
+			   toSize: itemSize * count];
 }
 
 - (void)freeMemory: (void*)pointer
@@ -839,8 +839,8 @@ void _references_to_categories_of_OFObject(void)
 						    selector: _cmd];
 }
 
-+ (void*)allocMemoryForNItems: (size_t)nItems
-		       ofSize: (size_t)size
++ (void*)allocMemoryWithItemSize: (size_t)itemSize
+			   count: (size_t)count
 {
 	@throw [OFNotImplementedException exceptionWithClass: self
 						    selector: _cmd];
@@ -854,8 +854,8 @@ void _references_to_categories_of_OFObject(void)
 }
 
 + (void*)resizeMemory: (void*)pointer
-	     toNItems: (size_t)nItems
-	      ofSize: (size_t)size
+	     itemSize: (size_t)itemSize
+		count: (size_t)count
 {
 	@throw [OFNotImplementedException exceptionWithClass: self
 						    selector: _cmd];

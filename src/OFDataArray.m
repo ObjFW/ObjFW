@@ -113,8 +113,8 @@ void _references_to_categories_of_OFDataArray(void)
 
 				length = [file readNBytes: of_pagesize
 					       intoBuffer: buffer];
-				[self addNItems: length
-				     fromCArray: buffer];
+				[self addItemsFromCArray: buffer
+						   count: length];
 			}
 
 			[self freeMemory: buffer];
@@ -257,46 +257,46 @@ void _references_to_categories_of_OFDataArray(void)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	data = [self resizeMemory: data
-			 toNItems: count + 1
-			   ofSize: itemSize];
+			 itemSize: itemSize
+			    count: count + 1];
 
 	memcpy(data + count * itemSize, item, itemSize);
 
 	count++;
 }
 
-- (void)addItem: (const void*)item
-	atIndex: (size_t)index
+- (void)insertItem: (const void*)item
+	   atIndex: (size_t)index
 {
-	[self addNItems: 1
-	     fromCArray: item
-		atIndex: index];
+	[self insertItemsFromCArray: item
+			    atIndex: index
+			      count: 1];
 }
 
-- (void)addNItems: (size_t)nItems
-       fromCArray: (const void*)cArray
+- (void)addItemsFromCArray: (const void*)cArray
+		     count: (size_t)nItems
 {
 	if (nItems > SIZE_MAX - count)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	data = [self resizeMemory: data
-			 toNItems: count + nItems
-			   ofSize: itemSize];
+			 itemSize: itemSize
+			    count: count + nItems];
 
 	memcpy(data + count * itemSize, cArray, nItems * itemSize);
 	count += nItems;
 }
 
-- (void)addNItems: (size_t)nItems
-       fromCArray: (const void*)cArray
-	  atIndex: (size_t)index
+- (void)insertItemsFromCArray: (const void*)cArray
+		      atIndex: (size_t)index
+			count: (size_t)nItems
 {
-	if (nItems > SIZE_MAX - count)
+	if (nItems > SIZE_MAX - count || index > count)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	data = [self resizeMemory: data
-			 toNItems: count + nItems
-			   ofSize: itemSize];
+			 itemSize: itemSize
+			    count: count + nItems];
 
 	memmove(data + (index + nItems) * itemSize, data + index * itemSize,
 	    (count - index) * itemSize);
@@ -307,40 +307,23 @@ void _references_to_categories_of_OFDataArray(void)
 
 - (void)removeItemAtIndex: (size_t)index
 {
-	[self removeNItems: 1
-		   atIndex: index];
+	[self removeItemsInRange: of_range(index, 1)];
 }
 
-- (void)removeNItems: (size_t)nItems
+- (void)removeItemsInRange: (of_range_t)range
 {
-	if (nItems > count)
+	if (range.start + range.length > count)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
+	memmove(data + range.start * itemSize,
+	    data + (range.start + range.length) * itemSize,
+	    (count - range.start - range.length) * itemSize);
 
-	count -= nItems;
+	count -= range.length;
 	@try {
 		data = [self resizeMemory: data
-				 toNItems: count
-				   ofSize: itemSize];
-	} @catch (OFOutOfMemoryException *e) {
-		/* We don't really care, as we only made it smaller */
-	}
-}
-
-- (void)removeNItems: (size_t)nItems
-	     atIndex: (size_t)index
-{
-	if (nItems > count)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
-
-	memmove(data + index * itemSize, data + (index + nItems) * itemSize,
-	    (count - index - nItems) * itemSize);
-
-	count -= nItems;
-	@try {
-		data = [self resizeMemory: data
-				 toNItems: count
-				   ofSize: itemSize];
+				 itemSize: itemSize
+				    count: count];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 	}
@@ -354,8 +337,8 @@ void _references_to_categories_of_OFDataArray(void)
 	count--;
 	@try {
 		data = [self resizeMemory: data
-				 toNItems: count
-				   ofSize: itemSize];
+				 itemSize: itemSize
+				    count: count];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only made it smaller */
 	}
@@ -373,8 +356,8 @@ void _references_to_categories_of_OFDataArray(void)
 {
 	OFDataArray *copy = [[isa alloc] initWithItemSize: itemSize];
 
-	[copy addNItems: count
-	     fromCArray: data];
+	[copy addItemsFromCArray: data
+			   count: count];
 
 	return copy;
 }
@@ -505,8 +488,8 @@ void _references_to_categories_of_OFDataArray(void)
 	size = newSize;
 }
 
-- (void)addNItems: (size_t)nItems
-       fromCArray: (const void*)cArray
+- (void)addItemsFromCArray: (const void*)cArray
+		     count: (size_t)nItems
 {
 	size_t newSize, lastPageByte;
 
@@ -526,13 +509,14 @@ void _references_to_categories_of_OFDataArray(void)
 	size = newSize;
 }
 
-- (void)addNItems: (size_t)nItems
-       fromCArray: (const void*)cArray
-	  atIndex: (size_t)index
+- (void)insertItemsFromCArray: (const void*)cArray
+		      atIndex: (size_t)index
+			count: (size_t)nItems
 {
 	size_t newSize, lastPageByte;
 
-	if (nItems > SIZE_MAX - count || count + nItems > SIZE_MAX / itemSize)
+	if (nItems > SIZE_MAX - count || index > count ||
+	    count + nItems > SIZE_MAX / itemSize)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	lastPageByte = of_pagesize - 1;
@@ -550,35 +534,18 @@ void _references_to_categories_of_OFDataArray(void)
 	size = newSize;
 }
 
-- (void)removeNItems: (size_t)nItems
+- (void)removeItemsInRange: (of_range_t)range
 {
 	size_t newSize, lastPageByte;
 
-	if (nItems > count)
+	if (range.start + range.length > count)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
-	count -= nItems;
-	lastPageByte = of_pagesize - 1;
-	newSize = (count * itemSize + lastPageByte) & ~lastPageByte;
+	memmove(data + range.start * itemSize,
+	    data + (range.start + range.length) * itemSize,
+	    (count - range.start - range.length) * itemSize);
 
-	if (size != newSize)
-		data = [self resizeMemory: data
-				   toSize: newSize];
-	size = newSize;
-}
-
-- (void)removeNItems: (size_t)nItems
-	     atIndex: (size_t)index
-{
-	size_t newSize, lastPageByte;
-
-	if (nItems > count)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
-
-	memmove(data + index * itemSize, data + (index + nItems) * itemSize,
-	    (count - index - nItems) * itemSize);
-
-	count -= nItems;
+	count -= range.length;
 	lastPageByte = of_pagesize - 1;
 	newSize = (count * itemSize + lastPageByte) & ~lastPageByte;
 
@@ -602,8 +569,7 @@ void _references_to_categories_of_OFDataArray(void)
 	if (size != newSize) {
 		@try {
 			data = [self resizeMemory: data
-					 toNItems: count
-					   ofSize: newSize];
+					   toSize: newSize];
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only made it smaller */
 		}
