@@ -164,8 +164,8 @@
 	if (range.length > count - range.start)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
-	copy = [self allocMemoryForNItems: range.length
-				   ofSize: sizeof(id)];
+	copy = [self allocMemoryWithItemSize: sizeof(*copy)
+				       count: range.length];
 	memcpy(copy, objects + range.start, range.length * sizeof(id));
 
 	@try {

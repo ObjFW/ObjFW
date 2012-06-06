@@ -501,12 +501,12 @@ typedef struct of_rectangle_t
  *
  * It will be free'd automatically when the object is deallocated.
  *
- * \param nItems The number of items to allocate
- * \param size The size of each item to allocate
+ * \param itemSize The size of each item to allocate
+ * \param count The number of items to allocate
  * \return A pointer to the allocated memory
  */
-- (void*)allocMemoryForNItems: (size_t)nItems
-		       ofSize: (size_t)size;
+- (void*)allocMemoryWithItemSize: (size_t)itemSize
+			   count: (size_t)count;
 
 /**
  * \brief Resizes memory in the object's memory pool to the specified size.
@@ -529,13 +529,13 @@ typedef struct of_rectangle_t
  * If the size or number of items is 0, this is equivalent to freeing memory.
  *
  * \param pointer A pointer to the already allocated memory
- * \param nItems The number of items to resize to
- * \param size The size of each item to resize to
+ * \param itemSize The size of each item to resize to
+ * \param count The number of items to resize to
  * \return A pointer to the resized memory chunk
  */
 - (void*)resizeMemory: (void*)pointer
-	     toNItems: (size_t)nItems
-	       ofSize: (size_t)size;
+	     itemSize: (size_t)itemSize
+		count: (size_t)count;
 
 /**
  * \brief Frees allocated memory and removes it from the object's memory pool.

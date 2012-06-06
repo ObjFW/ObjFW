@@ -257,8 +257,8 @@ void _references_to_categories_of_OFDataArray(void)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	data = [self resizeMemory: data
-			 toNItems: count + 1
-			   ofSize: itemSize];
+			 itemSize: itemSize
+			    count: count + 1];
 
 	memcpy(data + count * itemSize, item, itemSize);
 
@@ -280,8 +280,8 @@ void _references_to_categories_of_OFDataArray(void)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	data = [self resizeMemory: data
-			 toNItems: count + nItems
-			   ofSize: itemSize];
+			 itemSize: itemSize
+			    count: count + nItems];
 
 	memcpy(data + count * itemSize, cArray, nItems * itemSize);
 	count += nItems;
@@ -295,8 +295,8 @@ void _references_to_categories_of_OFDataArray(void)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	data = [self resizeMemory: data
-			 toNItems: count + nItems
-			   ofSize: itemSize];
+			 itemSize: itemSize
+			    count: count + nItems];
 
 	memmove(data + (index + nItems) * itemSize, data + index * itemSize,
 	    (count - index) * itemSize);
@@ -322,8 +322,8 @@ void _references_to_categories_of_OFDataArray(void)
 	count -= range.length;
 	@try {
 		data = [self resizeMemory: data
-				 toNItems: count
-				   ofSize: itemSize];
+				 itemSize: itemSize
+				    count: count];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 	}
@@ -337,8 +337,8 @@ void _references_to_categories_of_OFDataArray(void)
 	count--;
 	@try {
 		data = [self resizeMemory: data
-				 toNItems: count
-				   ofSize: itemSize];
+				 itemSize: itemSize
+				    count: count];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only made it smaller */
 	}
@@ -569,8 +569,7 @@ void _references_to_categories_of_OFDataArray(void)
 	if (size != newSize) {
 		@try {
 			data = [self resizeMemory: data
-					 toNItems: count
-					   ofSize: newSize];
+					   toSize: newSize];
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only made it smaller */
 		}
