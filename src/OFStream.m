@@ -442,10 +442,10 @@
 - (OFDataArray*)readDataArrayWithItemSize: (size_t)itemSize
 				andNItems: (size_t)nItems
 {
-	OFDataArray *da;
+	OFDataArray *dataArray;
 	char *tmp;
 
-	da = [OFDataArray dataArrayWithItemSize: itemSize];
+	dataArray = [OFDataArray dataArrayWithItemSize: itemSize];
 	tmp = [self allocMemoryForNItems: nItems
 				  ofSize: itemSize];
 
@@ -453,13 +453,13 @@
 		[self readExactlyNBytes: nItems * itemSize
 			     intoBuffer: tmp];
 
-		[da addNItems: nItems
-		   fromCArray: tmp];
+		[dataArray addItemsFromCArray: tmp
+					count: nItems];
 	} @finally {
 		[self freeMemory: tmp];
 	}
 
-	return da;
+	return dataArray;
 }
 
 - (OFDataArray*)readDataArrayTillEndOfStream
@@ -476,8 +476,8 @@
 
 			length = [self readNBytes: of_pagesize
 				       intoBuffer: buffer];
-			[dataArray addNItems: length
-				  fromCArray: buffer];
+			[dataArray addItemsFromCArray: buffer
+						count: length];
 		}
 	} @finally {
 		[self freeMemory: buffer];

@@ -354,9 +354,9 @@ enum {
 			}
 		}
 
-		[queue removeNObjects: count];
-		[queueInfo removeNItems: count];
-		[queueFDs removeNItems: count];
+		[queue removeAllObjects];
+		[queueInfo removeAllItems];
+		[queueFDs removeAllItems];
 	} @finally {
 		[mutex unlock];
 	}

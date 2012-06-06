@@ -26,7 +26,7 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
  */
 @interface OFMutableArray: OFArray
 /**
- * \brief Adds an object to the OFArray.
+ * \brief Adds an object to the end of the array.
  *
  * \param object An object to add
  */
@@ -36,7 +36,7 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
  * \brief Inserts an object to the OFArray at the specified index.
  *
  * \param object An object to add
- * \param index The index where the object should be added
+ * \param index The index where the object should be inserted
  */
 - (void)insertObject: (id)object
 	     atIndex: (size_t)index;

@@ -27,6 +27,8 @@
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
+#import "macros.h"
+
 @implementation OFMutableArray_adjacent
 + (void)initialize
 {
@@ -45,8 +47,8 @@
 - (void)insertObject: (id)object
 	     atIndex: (size_t)index
 {
-	[array addItem: &object
-	       atIndex: index];
+	[array insertItem: &object
+		  atIndex: index];
 	[object retain];
 
 	mutations++;
@@ -158,7 +160,8 @@
 	memcpy(copy, objects + (count - nObjects), nObjects * sizeof(id));
 
 	@try {
-		[array removeNItems: nObjects];
+		[array removeItemsInRange:
+		    of_range(count - nObjects, nObjects)];
 		mutations++;
 
 		for (i = 0; i < nObjects; i++)
@@ -192,8 +195,7 @@
 	memcpy(copy, objects + range.start, range.length * sizeof(id));
 
 	@try {
-		[array removeNItems: range.length
-			    atIndex: range.start];
+		[array removeItemsInRange: range];
 		mutations++;
 
 		for (i = 0; i < range.length; i++)

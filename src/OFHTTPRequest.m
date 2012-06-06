@@ -431,8 +431,8 @@ normalizeKey(OFString *key)
 					[pool2 releaseObjects];
 
 					bytesReceived += length;
-					[data addNItems: length
-					     fromCArray: buffer];
+					[data addItemsFromCArray: buffer
+							   count: length];
 
 					toRead -= length;
 				}
@@ -461,8 +461,8 @@ normalizeKey(OFString *key)
 				[pool2 releaseObjects];
 
 				bytesReceived += length;
-				[data addNItems: length
-				     fromCArray: buffer];
+				[data addItemsFromCArray: buffer
+						   count: length];
 
 				if (contentLengthHeader != nil &&
 				    bytesReceived >= contentLength)

@@ -640,8 +640,8 @@ static Class CDATAClass = Nil;
 				    XMLStringWithIndentation: ind
 						       level: level + 1];
 
-			[tmp addNItems: [child UTF8StringLength]
-			    fromCArray: [child UTF8String]];
+			[tmp addItemsFromCArray: [child UTF8String]
+					  count: [child UTF8StringLength]];
 		}
 
 		if (indent)

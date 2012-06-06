@@ -18,6 +18,8 @@
 
 #include <string.h>
 
+#include <assert.h>
+
 #import "OFMutableArray.h"
 #import "OFMutableArray_adjacent.h"
 #import "OFAutoreleasePool.h"
