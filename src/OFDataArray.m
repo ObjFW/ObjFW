@@ -291,7 +291,7 @@ void _references_to_categories_of_OFDataArray(void)
        fromCArray: (const void*)cArray
 	  atIndex: (size_t)index
 {
-	if (nItems > SIZE_MAX - count)
+	if (nItems > SIZE_MAX - count || index > count)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	data = [self resizeMemory: data
