@@ -235,7 +235,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 - (void)parseBuffer: (const char*)buffer
-	 withLength: (size_t)length
+	     length: (size_t)length
 {
 	size_t i, last = 0;
 
@@ -263,7 +263,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 - (void)parseString: (OFString*)string
 {
 	[self parseBuffer: [string UTF8String]
-	       withLength: [string UTF8StringLength]];
+		   length: [string UTF8StringLength]];
 }
 
 - (void)parseStream: (OFStream*)stream
@@ -276,7 +276,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 						intoBuffer: buffer];
 
 			[self parseBuffer: buffer
-			       withLength: length];
+				   length: length];
 		}
 	} @finally {
 		[self freeMemory: buffer];

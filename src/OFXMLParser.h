@@ -201,7 +201,7 @@
  * \param length The length of the buffer
  */
 - (void)parseBuffer: (const char*)buffer
-	 withLength: (size_t)length;
+	     length: (size_t)length;
 
 /**
  * \brief Parses the specified string.
