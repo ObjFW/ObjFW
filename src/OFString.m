@@ -832,8 +832,8 @@ static struct {
 		@try {
 			tmp = [self allocMemoryWithSize: (size_t)st.st_size];
 
-			[file readExactlyNBytes: (size_t)st.st_size
-				     intoBuffer: tmp];
+			[file readIntoBuffer: tmp
+				 exactLength: (size_t)st.st_size];
 		} @finally {
 			[file release];
 		}

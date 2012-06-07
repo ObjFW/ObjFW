@@ -32,25 +32,25 @@
  * \brief A base class for different types of streams.
  *
  * \warning Even though the OFCopying protocol is implemented, it does
- *	    <i>not</i> return an independant copy of the stream but instead
+ *	    <i>not</i> return an independent copy of the stream but instead
  *	    retains it.  This is so that the stream can be used as a key for a
- *	    dictionary so context can be associated with a stream. Using a
+ *	    dictionary, so context can be associated with a stream. Using a
  *	    stream in more than one thread at the same time is not thread-safe,
- *	    even if copy was called!
+ *	    even if copy was called to create one "instance" for every thread!
  *
- * \warning If you want to subclass this, override _readNBytes:intoBuffer:,
- *	    _writeNBytes:fromBuffer: and _isAtEndOfStream, but nothing else.
- *	    Those are not defined in the headers, but do the actual work.
- *	    OFStream uses those and does all the caching and other stuff. If
- *	    you override these methods without the _ prefix, you *WILL* break
- *	    caching and get broken results!
+ * \warning If you want to subclass this, override _readIntoBuffer:length:,
+ *	    _writeBuffer:length: and _isAtEndOfStream, but nothing else, as
+ *	    those are are the methods that do the actual work. OFStream uses
+ *	    those for all other methods and does all the caching and other
+ *	    stuff for you. If you override these methods without the _ prefix,
+ *	    you <i>will</i> break caching and get broken results!
  */
 @interface OFStream: OFObject <OFCopying>
 {
 	char   *cache;
 	char   *writeBuffer;
 	size_t cacheLength, writeBufferLength;
-	BOOL   buffersWrites;
+	BOOL   writeBufferEnabled;
 	BOOL   blocking;
 	BOOL   waitingForDelimiter;
 }
@@ -72,21 +72,21 @@
  *
  * On network streams, this might read less than the specified number of bytes.
  * If you want to read exactly the specified number of bytes, use
- * -[readExactlyNBytes:intoBuffer:].
+ * -[readIntoBuffer:exactLength:].
  *
  * \param buffer The buffer into which the data is read
  * \param length The length of the data that should be read at most.
- *		 The buffer MUST be at least this big!
+ *		 The buffer <i>must</i> be at least this big!
  * \return The number of bytes read
  */
-- (size_t)readNBytes: (size_t)size
-	  intoBuffer: (void*)buffer;
+- (size_t)readIntoBuffer: (void*)buffer
+		  length: (size_t)size;
 
 /**
  * \brief Reads exactly the specified length bytes from the stream into a
  *	  buffer.
  *
- * Unlike readNBytes:intoBuffer:, this method does not return when less than the
+ * Unlike readIntoBuffer:length:, this method does not return when less than the
  * specified length has been read - instead, it waits until it got exactly the
  * specified length.
  *
@@ -95,10 +95,10 @@
  *
  * \param buffer The buffer into which the data is read
  * \param length The length of the data that should be read.
- *	       The buffer MUST be EXACTLY this big!
+ *	       The buffer <i>must</i> be <i>exactly</i> this big!
  */
-- (void)readExactlyNBytes: (size_t)length
-	       intoBuffer: (void*)buffer;
+ - (void)readIntoBuffer: (void*)buffer
+	    exactLength: (size_t)length;
 
 /**
  * \brief Reads a uint8_t from the stream.
@@ -172,8 +172,8 @@
  *		 uint16_ts
  * \return The number of bytes read
  */
-- (size_t)readNBigEndianInt16s: (size_t)nInt16s
-		    intoBuffer: (uint16_t*)buffer;
+- (size_t)readBigEndianInt16sIntoBuffer: (uint16_t*)buffer
+				  count: (size_t)nInt16s;
 
 /**
  * \brief Reads the specified number of uint32_ts from the stream which are
@@ -187,8 +187,8 @@
  *		 uint32_ts
  * \return The number of bytes read
  */
-- (size_t)readNBigEndianInt32s: (size_t)nInt32s
-		    intoBuffer: (uint32_t*)buffer;
+- (size_t)readBigEndianInt32sIntoBuffer: (uint32_t*)buffer
+				  count: (size_t)nInt32s;
 
 /**
  * \brief Reads the specified number of uint64_ts from the stream which are
@@ -202,8 +202,8 @@
  *		 uint64_ts
  * \return The number of bytes read
  */
-- (size_t)readNBigEndianInt64s: (size_t)nInt64s
-		    intoBuffer: (uint64_t*)buffer;
+- (size_t)readBigEndianInt64sIntoBuffer: (uint64_t*)buffer
+				  count: (size_t)nInt64s;
 
 /**
  * \brief Reads the specified number of floats from the stream which are encoded
@@ -217,8 +217,8 @@
  *		 floats
  * \return The number of bytes read
  */
-- (size_t)readNBigEndianFloats: (size_t)nFloats
-		    intoBuffer: (float*)buffer;
+- (size_t)readBigEndianFloatsIntoBuffer: (float*)buffer
+				  count: (size_t)nFloats;
 
 /**
  * \brief Reads the specified number of doubles from the stream which are
@@ -232,8 +232,8 @@
  *		 doubles
  * \return The number of bytes read
  */
-- (size_t)readNBigEndianDoubles: (size_t)nDoubles
-		     intoBuffer: (double*)buffer;
+- (size_t)readBigEndianDoublesIntoBuffer: (double*)buffer
+				   count: (size_t)nDoubles;
 
 /**
  * \brief Reads a uint16_t from the stream which is encoded in little endian.
@@ -297,8 +297,8 @@
  *		 uint16_ts
  * \return The number of bytes read
  */
-- (size_t)readNLittleEndianInt16s: (size_t)nInt16s
-		       intoBuffer: (uint16_t*)buffer;
+- (size_t)readLittleEndianInt16sIntoBuffer: (uint16_t*)buffer
+				     count: (size_t)nInt16s;
 
 /**
  * \brief Reads the specified number of uint32_ts from the stream which are
@@ -312,8 +312,8 @@
  *		 uint32_ts
  * \return The number of bytes read
  */
-- (size_t)readNLittleEndianInt32s: (size_t)nInt32s
-		       intoBuffer: (uint32_t*)buffer;
+- (size_t)readLittleEndianInt32sIntoBuffer: (uint32_t*)buffer
+				     count: (size_t)nInt32s;
 
 /**
  * \brief Reads the specified number of uint64_ts from the stream which are
@@ -327,8 +327,8 @@
  *		 uint64_ts
  * \return The number of bytes read
  */
-- (size_t)readNLittleEndianInt64s: (size_t)nInt64s
-		       intoBuffer: (uint64_t*)buffer;
+- (size_t)readLittleEndianInt64sIntoBuffer: (uint64_t*)buffer
+				     count: (size_t)nInt64s;
 
 /**
  * \brief Reads the specified number of floats from the stream which are
@@ -342,8 +342,8 @@
  *		 floats
  * \return The number of bytes read
  */
-- (size_t)readNLittleEndianFloats: (size_t)nFloats
-		       intoBuffer: (float*)buffer;
+- (size_t)readLittleEndianFloatsIntoBuffer: (float*)buffer
+				     count: (size_t)nFloats;
 
 /**
  * \brief Reads the specified number of doubles from the stream which are
@@ -357,8 +357,8 @@
  *		 doubles
  * \return The number of bytes read
  */
-- (size_t)readNLittleEndianDoubles: (size_t)nDoubles
-			intoBuffer: (double*)buffer;
+- (size_t)readLittleEndianDoublesIntoBuffer: (double*)buffer
+				      count: (size_t)nDoubles;
 
 /**
  * \brief Reads the specified number of items with an item size of 1 from the
@@ -370,7 +370,7 @@
  * \param nItems The number of items to read
  * \return An OFDataArray with at nItems items.
  */
-- (OFDataArray*)readDataArrayWithNItems: (size_t)nItems;
+- (OFDataArray*)readDataArrayWithSize: (size_t)size;
 
 /**
  * \brief Reads the specified number of items with the specified item size from
@@ -384,7 +384,7 @@
  * \return An OFDataArray with at nItems items.
  */
 - (OFDataArray*)readDataArrayWithItemSize: (size_t)itemSize
-				andNItems: (size_t)nItems;
+				    count: (size_t)nItems;
 
 /**
  * \brief Returns an OFDataArray with all the remaining data of the stream.
@@ -425,8 +425,8 @@
  * \param length The length (in bytes) of the string to read from the stream
  * \return A string with the specified length
  */
-- (OFString*)readStringWithEncoding: (of_string_encoding_t)encoding
-			     length: (size_t)length;
+- (OFString*)readStringWithLength: (size_t)length
+			 encoding: (of_string_encoding_t)encoding;
 
 /**
  * \brief Reads until a newline, \\0 or end of stream occurs.
@@ -486,7 +486,7 @@
  *	   stream has been reached.
  */
 - (OFString*)readTillDelimiter: (OFString*)delimiter
-		  withEncoding: (of_string_encoding_t)encoding;
+		      encoding: (of_string_encoding_t)encoding;
 
 /**
  * \brief Tries to reads until the specified string or \\0 is found or the end
@@ -510,21 +510,21 @@
  *	   stream has been reached.
  */
 - (OFString*)tryReadTillDelimiter: (OFString*)delimiter
-		     withEncoding: (of_string_encoding_t)encoding;
+			 encoding: (of_string_encoding_t)encoding;
 
 /**
  * \brief Returns a boolen whether writes are buffered.
  *
  * \return A boolean whether writes are buffered
  */
-- (BOOL)buffersWrites;
+- (BOOL)writeBufferEnabled;
 
 /**
  * \brief Enables or disables the write buffer.
  *
  * \param enable Whether the write buffer should be enabled or disabled
  */
-- (void)setBuffersWrites: (BOOL)enable;
+- (void)setWriteBufferEnabled: (BOOL)enable;
 
 /**
  * \brief Writes everythig in the write buffer to the stream.
@@ -537,8 +537,8 @@
  * \param buffer The buffer from which the data is written to the stream
  * \param length The length of the data that should be written
  */
-- (void)writeNBytes: (size_t)length
-	 fromBuffer: (const void*)buffer;
+- (void)writeBuffer: (const void*)buffer
+	     length: (size_t)length;
 
 /**
  * \brief Writes a uint8_t into the stream.
@@ -591,8 +591,8 @@
  *		 it has been byte swapped if necessary
  * \return The number of bytes written to the stream
  */
-- (size_t)writeNBigEndianInt16s: (size_t)nInt16s
-		     fromBuffer: (const uint16_t*)buffer;
+- (size_t)writeBigEndianInt16s: (const uint16_t*)buffer
+			 count: (size_t)nInt16s;
 
 /**
  * \brief Writes the specified number of uint32_ts into the stream, encoded in
@@ -603,8 +603,8 @@
  *		 it has been byte swapped if necessary
  * \return The number of bytes written to the stream
  */
-- (size_t)writeNBigEndianInt32s: (size_t)nInt32s
-		     fromBuffer: (const uint32_t*)buffer;
+- (size_t)writeBigEndianInt32s: (const uint32_t*)buffer
+			 count: (size_t)nInt32s;
 
 /**
  * \brief Writes the specified number of uint64_ts into the stream, encoded in
@@ -615,8 +615,8 @@
  *		 it has been byte swapped if necessary
  * \return The number of bytes written to the stream
  */
-- (size_t)writeNBigEndianInt64s: (size_t)nInt64s
-		     fromBuffer: (const uint64_t*)buffer;
+- (size_t)writeBigEndianInt64s: (const uint64_t*)buffer
+			 count: (size_t)nInt64s;
 
 /**
  * \brief Writes the specified number of floats into the stream, encoded in big
@@ -627,8 +627,8 @@
  *		 it has been byte swapped if necessary
  * \return The number of bytes written to the stream
  */
-- (size_t)writeNBigEndianFloats: (size_t)nFloats
-		     fromBuffer: (const float*)buffer;
+- (size_t)writeBigEndianFloats: (const float*)buffer
+			 count: (size_t)nFloats;
 
 /**
  * \brief Writes the specified number of doubles into the stream, encoded in
@@ -639,8 +639,8 @@
  *		 it has been byte swapped if necessary
  * \return The number of bytes written to the stream
  */
-- (size_t)writeNBigEndianDoubles: (size_t)nDoubles
-		      fromBuffer: (const double*)buffer;
+- (size_t)writeBigEndianDoubles: (const double*)buffer
+			  count: (size_t)nDoubles;
 
 /**
  * \brief Writes a uint16_t into the stream, encoded in little endian.
@@ -686,8 +686,8 @@
  *		 it has been byte swapped if necessary
  * \return The number of bytes written to the stream
  */
-- (size_t)writeNLittleEndianInt16s: (size_t)nInt16s
-			fromBuffer: (const uint16_t*)buffer;
+- (size_t)writeLittleEndianInt16s: (const uint16_t*)buffer
+			    count: (size_t)nInt16s;
 
 /**
  * \brief Writes the specified number of uint32_ts into the stream, encoded in
@@ -698,8 +698,8 @@
  *		 it has been byte swapped if necessary
  * \return The number of bytes written to the stream
  */
-- (size_t)writeNLittleEndianInt32s: (size_t)nInt32s
-			fromBuffer: (const uint32_t*)buffer;
+- (size_t)writeLittleEndianInt32s: (const uint32_t*)buffer
+			    count: (size_t)nInt32s;
 
 /**
  * \brief Writes the specified number of uint64_ts into the stream, encoded in
@@ -710,8 +710,8 @@
  *		 it has been byte swapped if necessary
  * \return The number of bytes written to the stream
  */
-- (size_t)writeNLittleEndianInt64s: (size_t)nInt64s
-			fromBuffer: (const uint64_t*)buffer;
+- (size_t)writeLittleEndianInt64s: (const uint64_t*)buffer
+			    count: (size_t)nInt64s;
 
 /**
  * \brief Writes the specified number of floats into the stream, encoded in
@@ -722,8 +722,8 @@
  *		 it has been byte swapped if necessary
  * \return The number of bytes written to the stream
  */
-- (size_t)writeNLittleEndianFloats: (size_t)nFloats
-			fromBuffer: (const float*)buffer;
+- (size_t)writeLittleEndianFloats: (const float*)buffer
+			    count: (size_t)nFloats;
 
 /**
  * \brief Writes the specified number of doubles into the stream, encoded in
@@ -734,8 +734,8 @@
  *		 it has been byte swapped if necessary
  * \return The number of bytes written to the stream
  */
-- (size_t)writeNLittleEndianDoubles: (size_t)nDoubles
-			 fromBuffer: (const double*)buffer;
+- (size_t)writeLittleEndianDoubles: (const double*)buffer
+			     count: (size_t)nDoubles;
 
 /**
  * \brief Writes from an OFDataArray into the stream.
@@ -783,12 +783,12 @@
  * \return The number of bytes written
  */
 - (size_t)writeFormat: (OFConstantString*)format
-	withArguments: (va_list)arguments;
+	    arguments: (va_list)arguments;
 
 /**
- * \brief Returns the number of bytes still present in the internal cache.
+ * \brief Returns the number of bytes still present in the internal read cache.
  *
- * \return The number of bytes still present in the internal cache.
+ * \return The number of bytes still present in the internal read cache.
  */
 - (size_t)pendingBytes;
 
@@ -821,9 +821,9 @@
  */
 - (void)close;
 
-- (size_t)_readNBytes: (size_t)length
-	   intoBuffer: (void*)buffer;
-- (void)_writeNBytes: (size_t)length
-	  fromBuffer: (const void*)buffer;
+- (size_t)_readIntoBuffer: (void*)buffer
+		   length: (size_t)length;
+- (void)_writeBuffer: (const void*)buffer
+	      length: (size_t)length;
 - (BOOL)_isWaitingForDelimiter;
 @end

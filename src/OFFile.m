@@ -525,10 +525,12 @@ of_log(OFConstantString *format, ...)
 						  mode: @"wb"];
 
 		while (![sourceFile isAtEndOfStream]) {
-			size_t len = [sourceFile readNBytes: of_pagesize
-						 intoBuffer: buffer];
-			[destinationFile writeNBytes: len
-					  fromBuffer: buffer];
+			size_t length;
+
+			length = [sourceFile readIntoBuffer: buffer
+						     length: of_pagesize];
+			[destinationFile writeBuffer: buffer
+					      length: length];
 		}
 
 #if !defined(_WIN32) && !defined(_PSP)
@@ -696,8 +698,8 @@ of_log(OFConstantString *format, ...)
 	return atEndOfStream;
 }
 
-- (size_t)_readNBytes: (size_t)length
-	   intoBuffer: (void*)buffer
+- (size_t)_readIntoBuffer: (void*)buffer
+		   length: (size_t)length
 {
 	ssize_t ret;
 
@@ -713,8 +715,8 @@ of_log(OFConstantString *format, ...)
 	return ret;
 }
 
-- (void)_writeNBytes: (size_t)length
-	  fromBuffer: (const void*)buffer
+- (void)_writeBuffer: (const void*)buffer
+	      length: (size_t)length
 {
 	if (fileDescriptor == -1 || atEndOfStream ||
 	    write(fileDescriptor, buffer, length) < length)

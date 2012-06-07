@@ -56,8 +56,8 @@ static OFString *module = @"OFTCPSocket";
 
 	TEST(@"-[writeString:]", [client writeString: @"Hello!"])
 
-	TEST(@"-[readNBytes:intoBuffer:]", [accepted readNBytes: 6
-						     intoBuffer: buf] &&
+	TEST(@"-[readIntoBuffer:length:]", [accepted readIntoBuffer: buf
+							     length: 6] &&
 	    !memcmp(buf, "Hello!", 6))
 
 	[pool drain];

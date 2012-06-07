@@ -228,7 +228,7 @@ normalizeKey(OFString *key)
 	 * Work around a bug with packet bisection in lighttpd when using
 	 * HTTPS.
 	 */
-	[sock setBuffersWrites: YES];
+	[sock setWriteBufferEnabled: YES];
 
 	if (requestType == OF_HTTP_REQUEST_TYPE_GET)
 		type = "GET";
@@ -274,7 +274,7 @@ normalizeKey(OFString *key)
 
 	/* Work around a bug in lighttpd, see above */
 	[sock flushWriteBuffer];
-	[sock setBuffersWrites: NO];
+	[sock setWriteBufferEnabled: NO];
 
 	if (requestType == OF_HTTP_REQUEST_TYPE_POST)
 		[sock writeString: queryString];
@@ -422,8 +422,8 @@ normalizeKey(OFString *key)
 					size_t length = (toRead < of_pagesize
 					    ? toRead : of_pagesize);
 
-					length = [sock readNBytes: length
-						       intoBuffer: buffer];
+					length = [sock readIntoBuffer: buffer
+							       length: length];
 
 					[delegate request: self
 					   didReceiveData: buffer
@@ -453,8 +453,9 @@ normalizeKey(OFString *key)
 		} else {
 			size_t length;
 
-			while ((length = [sock readNBytes: of_pagesize
-					       intoBuffer: buffer]) > 0) {
+			while ((length = [sock
+			    readIntoBuffer: buffer
+				    length: of_pagesize]) > 0) {
 				[delegate request: self
 				   didReceiveData: buffer
 				       withLength: length];

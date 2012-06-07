@@ -236,8 +236,8 @@
 	return atEndOfStream;
 }
 
-- (size_t)_readNBytes: (size_t)length
-	   intoBuffer: (void*)buffer
+- (size_t)_readIntoBuffer: (void*)buffer
+		   length: (size_t)length
 {
 #ifndef _WIN32
 	ssize_t ret;
@@ -268,8 +268,8 @@
 	return ret;
 }
 
-- (void)_writeNBytes: (size_t)length
-	  fromBuffer: (const void*)buffer
+- (void)_writeBuffer: (const void*)buffer
+	      length: (size_t)length
 {
 #ifndef _WIN32
 	if (writePipe[1] == -1 || atEndOfStream ||

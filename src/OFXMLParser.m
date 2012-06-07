@@ -272,8 +272,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	@try {
 		while (![stream isAtEndOfStream]) {
-			size_t length = [stream readNBytes: of_pagesize
-						intoBuffer: buffer];
+			size_t length = [stream readIntoBuffer: buffer
+							length: of_pagesize];
 
 			[self parseBuffer: buffer
 				   length: length];

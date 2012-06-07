@@ -44,8 +44,8 @@ const uint8_t testfile_md5[OF_MD5_DIGEST_SIZE] =
 
 	while (![f isAtEndOfStream]) {
 		char buf[64];
-		size_t len = [f readNBytes: 64
-				intoBuffer: buf];
+		size_t len = [f readIntoBuffer: buf
+					length: 64];
 		[md5 updateWithBuffer: buf
 			       length: len];
 	}

@@ -38,8 +38,8 @@ static OFString *module = @"OFStream";
 	return (state > 1 ? YES : NO);
 }
 
-- (size_t)_readNBytes: (size_t)size
-	   intoBuffer: (void*)buffer
+- (size_t)_readIntoBuffer: (void*)buffer
+		   length: (size_t)size
 {
 	switch (state) {
 	case 0:
