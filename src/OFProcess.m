@@ -91,8 +91,8 @@
 			size_t i, count = [arguments count];
 			char **argv;
 
-			argv = [self allocMemoryWithItemSize: sizeof(char*)
-						       count: count + 2];
+			argv = [self allocMemoryWithSize: sizeof(char*)
+						   count: count + 2];
 
 			argv[0] = (char*)[programName cStringWithEncoding:
 			    OF_STRING_ENCODING_NATIVE];

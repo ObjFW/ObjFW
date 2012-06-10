@@ -446,8 +446,8 @@
 	char *tmp;
 
 	dataArray = [OFDataArray dataArrayWithItemSize: itemSize];
-	tmp = [self allocMemoryWithItemSize: itemSize
-				      count: nItems];
+	tmp = [self allocMemoryWithSize: itemSize
+				  count: nItems];
 
 	@try {
 		[self readIntoBuffer: tmp
@@ -609,7 +609,7 @@
 					 */
 					cache = [self
 					    resizeMemory: cache
-						  toSize: cacheLength +
+						    size: cacheLength +
 							  bufferLength];
 
 					if (cache != NULL)
@@ -640,11 +640,11 @@
 
 		/* There was no newline or \0 */
 		cache = [self resizeMemory: cache
-				    toSize: cacheLength + bufferLength];
+				      size: cacheLength + bufferLength];
 
 		/*
 		 * It's possible that cacheLen + len is 0 and thus cache was
-		 * set to NULL by resizeMemory:toSize:.
+		 * set to NULL by resizeMemory:size:.
 		 */
 		if (cache != NULL)
 			memcpy(cache + cacheLength, buffer, bufferLength);
@@ -803,11 +803,11 @@
 
 		/* Neither the delimiter nor \0 was found */
 		cache = [self resizeMemory: cache
-				    toSize: cacheLength + bufferLength];
+				      size: cacheLength + bufferLength];
 
 		/*
 		 * It's possible that cacheLen + len is 0 and thus cache was
-		 * set to NULL by resizeMemory:toSize:.
+		 * set to NULL by resizeMemory:size:.
 		 */
 		if (cache != NULL)
 			memcpy(cache + cacheLength, buffer,
@@ -880,7 +880,7 @@
 			    length: length];
 	else {
 		writeBuffer = [self resizeMemory: writeBuffer
-					  toSize: writeBufferLength + length];
+					    size: writeBufferLength + length];
 		memcpy(writeBuffer + writeBufferLength, buffer, length);
 		writeBufferLength += length;
 	}
@@ -943,8 +943,8 @@
 #else
 	uint16_t *tmp;
 
-	tmp = [self allocMemoryWithItemSize: sizeof(uint16_t)
-				      count: nInt16s];
+	tmp = [self allocMemoryWithSize: sizeof(uint16_t)
+				  count: nInt16s];
 
 	@try {
 		size_t i;
@@ -973,8 +973,8 @@
 #else
 	uint32_t *tmp;
 
-	tmp = [self allocMemoryWithItemSize: sizeof(uint32_t)
-				      count: nInt32s];
+	tmp = [self allocMemoryWithSize: sizeof(uint32_t)
+				  count: nInt32s];
 
 	@try {
 		size_t i;
@@ -1003,8 +1003,8 @@
 #else
 	uint64_t *tmp;
 
-	tmp = [self allocMemoryWithItemSize: sizeof(uint64_t)
-				      count: nInt64s];
+	tmp = [self allocMemoryWithSize: sizeof(uint64_t)
+				  count: nInt64s];
 
 	@try {
 		size_t i;
@@ -1033,8 +1033,8 @@
 #else
 	float *tmp;
 
-	tmp = [self allocMemoryWithItemSize: sizeof(float)
-				      count: nFloats];
+	tmp = [self allocMemoryWithSize: sizeof(float)
+				  count: nFloats];
 
 	@try {
 		size_t i;
@@ -1063,8 +1063,8 @@
 #else
 	double *tmp;
 
-	tmp = [self allocMemoryWithItemSize: sizeof(double)
-				      count: nDoubles];
+	tmp = [self allocMemoryWithSize: sizeof(double)
+				  count: nDoubles];
 
 	@try {
 		size_t i;
@@ -1133,8 +1133,8 @@
 #else
 	uint16_t *tmp;
 
-	tmp = [self allocMemoryWithItemSize: sizeof(uint16_t)
-				      count: nInt16s];
+	tmp = [self allocMemoryWithSize: sizeof(uint16_t)
+				  count: nInt16s];
 
 	@try {
 		size_t i;
@@ -1163,8 +1163,8 @@
 #else
 	uint32_t *tmp;
 
-	tmp = [self allocMemoryWithItemSize: sizeof(uint32_t)
-				      count: nInt32s];
+	tmp = [self allocMemoryWithSize: sizeof(uint32_t)
+				  count: nInt32s];
 
 	@try {
 		size_t i;
@@ -1193,8 +1193,8 @@
 #else
 	uint64_t *tmp;
 
-	tmp = [self allocMemoryWithItemSize: sizeof(uint64_t)
-				      count: nInt64s];
+	tmp = [self allocMemoryWithSize: sizeof(uint64_t)
+				  count: nInt64s];
 
 	@try {
 		size_t i;
@@ -1223,8 +1223,8 @@
 #else
 	float *tmp;
 
-	tmp = [self allocMemoryWithItemSize: sizeof(float)
-				      count: nFloats];
+	tmp = [self allocMemoryWithSize: sizeof(float)
+				  count: nFloats];
 
 	@try {
 		size_t i;
@@ -1253,8 +1253,8 @@
 #else
 	double *tmp;
 
-	tmp = [self allocMemoryWithItemSize: sizeof(double)
-				      count: nDoubles];
+	tmp = [self allocMemoryWithSize: sizeof(double)
+				  count: nDoubles];
 
 	@try {
 		size_t i;

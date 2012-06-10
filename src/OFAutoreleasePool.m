@@ -121,8 +121,8 @@ static OFAutoreleasePool *firstPool = nil, *lastPool = nil;
 			previousPool->nextPool = self;
 
 		size = GROW_SIZE;
-		objects = [self allocMemoryWithItemSize: sizeof(id)
-						  count: GROW_SIZE];
+		objects = [self allocMemoryWithSize: sizeof(id)
+					      count: GROW_SIZE];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -135,7 +135,7 @@ static OFAutoreleasePool *firstPool = nil, *lastPool = nil;
 {
 	if (count + 1 > size) {
 		objects = [self resizeMemory: objects
-				    itemSize: sizeof(id)
+					size: sizeof(id)
 				       count: size + GROW_SIZE];
 		size += GROW_SIZE;
 	}

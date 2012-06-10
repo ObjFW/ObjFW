@@ -515,7 +515,7 @@ static Class CDATAClass = Nil;
 		length += [prefix UTF8StringLength] + 1;
 		@try {
 			cString = [self resizeMemory: cString
-					      toSize: length];
+						size: length];
 		} @catch (id e) {
 			[self freeMemory: cString];
 			@throw e;
@@ -536,7 +536,7 @@ static Class CDATAClass = Nil;
 		length += [ns UTF8StringLength] + 9;
 		@try {
 			cString = [self resizeMemory: cString
-					      toSize: length];
+						size: length];
 		} @catch (id e) {
 			[self freeMemory: cString];
 			@throw e;
@@ -575,7 +575,7 @@ static Class CDATAClass = Nil;
 
 		@try {
 			cString = [self resizeMemory: cString
-					      toSize: length];
+						size: length];
 		} @catch (id e) {
 			[self freeMemory: cString];
 			@throw e;
@@ -651,7 +651,7 @@ static Class CDATAClass = Nil;
 		    (indent ? level * indentation : 0);
 		@try {
 			cString = [self resizeMemory: cString
-					      toSize: length];
+						size: length];
 		} @catch (id e) {
 			[self freeMemory: cString];
 			@throw e;
@@ -673,7 +673,7 @@ static Class CDATAClass = Nil;
 			length += [prefix UTF8StringLength] + 1;
 			@try {
 				cString = [self resizeMemory: cString
-						      toSize: length];
+							size: length];
 			} @catch (id e) {
 				[self freeMemory: cString];
 				@throw e;

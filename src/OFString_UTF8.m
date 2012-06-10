@@ -181,7 +181,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 				s->cStringLength += bytes - 1;
 				s->cString = [self
 				    resizeMemory: s->cString
-					  toSize: s->cStringLength + 1];
+					    size: s->cStringLength + 1];
 
 				memcpy(s->cString + j, buffer, bytes);
 				j += bytes;
@@ -230,7 +230,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 
 			s->cStringLength += characterBytes - 1;
 			s->cString = [self resizeMemory: s->cString
-						 toSize: s->cStringLength + 1];
+						   size: s->cStringLength + 1];
 
 			memcpy(s->cString + j, buffer, characterBytes);
 			j += characterBytes;
@@ -342,7 +342,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 
 		@try {
 			s->cString = [self resizeMemory: s->cString
-						 toSize: s->cStringLength + 1];
+						   size: s->cStringLength + 1];
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only tried to make it smaller */
 		}
@@ -450,7 +450,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 
 		@try {
 			s->cString = [self resizeMemory: s->cString
-						 toSize: s->cStringLength + 1];
+						   size: s->cStringLength + 1];
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only tried to make it smaller */
 		}
@@ -1094,8 +1094,8 @@ memcasecmp(const char *first, const char *second, size_t length)
 	of_unichar_t *ret;
 	size_t i, j;
 
-	ret = [object allocMemoryWithItemSize: sizeof(of_unichar_t)
-					count: s->length + 1];
+	ret = [object allocMemoryWithSize: sizeof(of_unichar_t)
+				    count: s->length + 1];
 
 	i = 0;
 	j = 0;

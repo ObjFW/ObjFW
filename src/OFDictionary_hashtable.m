@@ -81,8 +81,8 @@ struct of_dictionary_hashtable_bucket
 
 		hashtable = (OFDictionary_hashtable*)dictionary;
 
-		data = [self allocMemoryWithItemSize: sizeof(*data)
-					       count: hashtable->size];
+		data = [self allocMemoryWithSize: sizeof(*data)
+					   count: hashtable->size];
 
 		for (i = 0; i < hashtable->size; i++)
 			data[i] = NULL;
@@ -141,8 +141,8 @@ struct of_dictionary_hashtable_bucket
 		if (newSize == 0)
 			@throw [OFOutOfRangeException exceptionWithClass: isa];
 
-		data = [self allocMemoryWithItemSize: sizeof(*data)
-					       count: newSize];
+		data = [self allocMemoryWithSize: sizeof(*data)
+					   count: newSize];
 
 		for (i = 0; i < newSize; i++)
 			data[i] = NULL;
@@ -208,8 +208,8 @@ struct of_dictionary_hashtable_bucket
 			    exceptionWithClass: isa
 				      selector: _cmd];
 
-		data = [self allocMemoryWithItemSize: sizeof(*data)
-					       count: 2];
+		data = [self allocMemoryWithSize: sizeof(*data)
+					   count: 2];
 
 		size = 2;
 		for (i = 0; i < size; i++)
@@ -274,8 +274,8 @@ struct of_dictionary_hashtable_bucket
 		if (newSize == 0)
 			@throw [OFOutOfRangeException exceptionWithClass: isa];
 
-		data = [self allocMemoryWithItemSize: sizeof(*data)
-					       count: newSize];
+		data = [self allocMemoryWithSize: sizeof(*data)
+					   count: newSize];
 
 		for (j = 0; j < newSize; j++)
 			data[j] = NULL;
@@ -395,8 +395,8 @@ struct of_dictionary_hashtable_bucket
 		if (newSize == 0)
 			@throw [OFOutOfRangeException exceptionWithClass: isa];
 
-		data = [self allocMemoryWithItemSize: sizeof(*data)
-					       count: newSize];
+		data = [self allocMemoryWithSize: sizeof(*data)
+					   count: newSize];
 
 		for (j = 0; j < newSize; j++)
 			data[j] = NULL;
@@ -648,8 +648,8 @@ struct of_dictionary_hashtable_bucket
 - (OFArray*)allKeys
 {
 	OFArray *ret;
-	id *keys = [self allocMemoryWithItemSize: sizeof(*keys)
-					   count: count];
+	id *keys = [self allocMemoryWithSize: sizeof(*keys)
+				       count: count];
 	size_t i, j;
 
 	for (i = j = 0; i < size; i++)
@@ -671,8 +671,8 @@ struct of_dictionary_hashtable_bucket
 - (OFArray*)allObjects
 {
 	OFArray *ret;
-	id *objects = [self allocMemoryWithItemSize: sizeof(*objects)
-					      count: count];
+	id *objects = [self allocMemoryWithSize: sizeof(*objects)
+					  count: count];
 	size_t i, j;
 
 	for (i = j = 0; i < size; i++)

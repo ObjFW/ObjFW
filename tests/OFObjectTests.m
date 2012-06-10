@@ -66,18 +66,18 @@ static OFString *module = @"OFObject";
 	    {
 		p = [obj allocMemoryWithSize: 1];
 		[obj resizeMemory: p
-			   toSize: SIZE_MAX - 128];
+			     size: SIZE_MAX - 128];
 	    })
 	[obj freeMemory: p];
 
 	TEST(@"Allocate when trying to resize NULL",
 	    (p = [obj resizeMemory: NULL
-			    toSize: 1024]) != NULL)
+			      size: 1024]) != NULL)
 	[obj freeMemory: p];
 
 	EXPECT_EXCEPTION(@"Detect resizing of memory not allocated by object",
 	    OFMemoryNotPartOfObjectException, [obj resizeMemory: tmp
-							 toSize: 2048])
+							   size: 2048])
 	[self freeMemory: tmp];
 
 	TEST(@"+[description]",

@@ -69,8 +69,8 @@
 	}
 
 	unicodeLen = [self length];
-	unicodeString = [self allocMemoryWithItemSize: sizeof(of_unichar_t)
-						count: unicodeLen];
+	unicodeString = [self allocMemoryWithSize: sizeof(of_unichar_t)
+					    count: unicodeLen];
 
 	i = j = 0;
 	newCStringLength = 0;
@@ -178,8 +178,8 @@
 
 	if (length > oldLength) {
 		s->cString = [self resizeMemory: s->cString
-					 toSize: s->cStringLength -
-						 oldLength + length + 1];
+					   size: s->cStringLength - oldLength +
+						 length + 1];
 
 		memmove(s->cString + index + length,
 		    s->cString + index + oldLength,
@@ -208,7 +208,7 @@
 
 		@try {
 			s->cString = [self resizeMemory: s->cString
-						 toSize: s->cStringLength + 1];
+						   size: s->cStringLength + 1];
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't really care, as we only made it smaller */
 		}
@@ -239,7 +239,7 @@
 
 	s->hashed = NO;
 	s->cString = [self resizeMemory: s->cString
-				 toSize: s->cStringLength +
+				   size: s->cStringLength +
 					 UTF8StringLength + 1];
 	memcpy(s->cString + s->cStringLength, UTF8String, UTF8StringLength + 1);
 
@@ -267,7 +267,7 @@
 
 	s->hashed = NO;
 	s->cString = [self resizeMemory: s->cString
-				 toSize: s->cStringLength +
+				   size: s->cStringLength +
 					 UTF8StringLength + 1];
 	memcpy(s->cString + s->cStringLength, UTF8String, UTF8StringLength);
 
@@ -314,7 +314,7 @@
 
 	s->hashed = NO;
 	s->cString = [self resizeMemory: s->cString
-				 toSize: s->cStringLength +
+				   size: s->cStringLength +
 					 UTF8StringLength + 1];
 	memcpy(s->cString + s->cStringLength, [string UTF8String],
 	    UTF8StringLength);
@@ -453,7 +453,7 @@
 	newCStringLength = s->cStringLength + [string UTF8StringLength];
 	s->hashed = NO;
 	s->cString = [self resizeMemory: s->cString
-				 toSize: newCStringLength + 1];
+				   size: newCStringLength + 1];
 
 	memmove(s->cString + index + [string UTF8StringLength],
 	    s->cString + index, s->cStringLength - index);
@@ -496,7 +496,7 @@
 
 	@try {
 		s->cString = [self resizeMemory: s->cString
-					 toSize: s->cStringLength + 1];
+					   size: s->cStringLength + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 	}
@@ -525,7 +525,7 @@
 	    [replacement UTF8StringLength];
 	s->hashed = NO;
 	s->cString = [self resizeMemory: s->cString
-				 toSize: newCStringLength + 1];
+				   size: newCStringLength + 1];
 
 	memmove(s->cString + start + [replacement UTF8StringLength],
 	    s->cString + end, s->cStringLength - end);
@@ -572,7 +572,7 @@
 		@try {
 			newCString = [self
 			    resizeMemory: newCString
-				  toSize: newCStringLength + i - last +
+				    size: newCStringLength + i - last +
 					  replacementLength + 1];
 		} @catch (id e) {
 			[self freeMemory: newCString];
@@ -591,10 +591,9 @@
 	}
 
 	@try {
-		newCString = [self
-		    resizeMemory: newCString
-			  toSize: newCStringLength +
-				  s->cStringLength - last + 1];
+		newCString = [self resizeMemory: newCString
+					   size: newCStringLength +
+						 s->cStringLength - last + 1];
 	} @catch (id e) {
 		[self freeMemory: newCString];
 		@throw e;
@@ -630,7 +629,7 @@
 
 	@try {
 		s->cString = [self resizeMemory: s->cString
-					 toSize: s->cStringLength + 1];
+					   size: s->cStringLength + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 	}
@@ -658,7 +657,7 @@
 
 	@try {
 		s->cString = [self resizeMemory: s->cString
-					 toSize: s->cStringLength + 1];
+					   size: s->cStringLength + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 	}
@@ -698,7 +697,7 @@
 
 	@try {
 		s->cString = [self resizeMemory: s->cString
-					 toSize: s->cStringLength + 1];
+					   size: s->cStringLength + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 	}

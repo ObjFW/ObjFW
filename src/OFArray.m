@@ -246,8 +246,8 @@ static struct {
 
 	container = [[[OFObject alloc] init] autorelease];
 	count = [self count];
-	buffer = [container allocMemoryWithItemSize: sizeof(*buffer)
-					      count: [self count]];
+	buffer = [container allocMemoryWithSize: sizeof(*buffer)
+					  count: [self count]];
 
 	[self getObjects: buffer
 		 inRange: of_range(0, count)];
@@ -335,8 +335,8 @@ static struct {
 		return [OFArray_subarray arrayWithArray: self
 						  range: range];
 
-	buffer = [self allocMemoryWithItemSize: sizeof(*buffer)
-					 count: range.length];
+	buffer = [self allocMemoryWithSize: sizeof(*buffer)
+				     count: range.length];
 
 	@try {
 		[self getObjects: buffer
@@ -609,8 +609,8 @@ static struct {
 {
 	OFArray *ret;
 	size_t count = [self count];
-	id *tmp = [self allocMemoryWithItemSize: sizeof(id)
-					  count: count];
+	id *tmp = [self allocMemoryWithSize: sizeof(id)
+				      count: count];
 
 	@try {
 		[self enumerateObjectsUsingBlock: ^ (id object, size_t index,
@@ -631,8 +631,8 @@ static struct {
 {
 	OFArray *ret;
 	size_t count = [self count];
-	id *tmp = [self allocMemoryWithItemSize: sizeof(id)
-					  count: count];
+	id *tmp = [self allocMemoryWithSize: sizeof(id)
+				      count: count];
 
 	@try {
 		__block size_t i = 0;

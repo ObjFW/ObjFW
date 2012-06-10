@@ -60,8 +60,8 @@ static Class dictionary = Nil;
 	if (newSize == 0)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
-	newData = [self allocMemoryWithItemSize: sizeof(*newData)
-					  count: newSize];
+	newData = [self allocMemoryWithSize: sizeof(*newData)
+				      count: newSize];
 
 	for (i = 0; i < newSize; i++)
 		newData[i] = NULL;
