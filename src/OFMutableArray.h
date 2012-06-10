@@ -33,6 +33,13 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
 - (void)addObject: (id)object;
 
 /**
+ * \brief Adds the objects from the specified OFArray to the end of the array.
+ *
+ * \brief array An array of objects to add
+ */
+- (void)addObjectsFromArray: (OFArray*)array;
+
+/**
  * \brief Inserts an object to the OFArray at the specified index.
  *
  * \param object An object to add
@@ -40,6 +47,15 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
  */
 - (void)insertObject: (id)object
 	     atIndex: (size_t)index;
+
+/**
+ * \brief Inserts the objects from the specified OFArray at the specified index.
+ *
+ * \param array An array of objects
+ * \param index The index where the objects should be inserted
+ */
+- (void)insertObjectsFromArray: (OFArray*)array
+		       atIndex: (size_t)index;
 
 /**
  * \brief Replaces the first object equivalent to the specified object with the

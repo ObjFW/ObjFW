@@ -272,6 +272,22 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  */
 - (OFArray*)reversedArray;
 
+/**
+ * \brief Creates a new array with the specified object added.
+ *
+ * \param object The object to add
+ * \return A new array with the specified object added
+ */
+- (OFArray*)arrayByAddingObject: (id)object;
+
+/**
+ * \brief Creates a new array with the objects from the specified array added.
+ *
+ * \param array The array with objects to add
+ * \return A new array with the objects from the specified array added
+ */
+- (OFArray*)arrayByAddingObjectsFromArray: (OFArray*)array;
+
 #ifdef OF_HAVE_BLOCKS
 /**
  * \brief Executes a block for each object.

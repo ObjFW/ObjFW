@@ -604,6 +604,26 @@ static struct {
 }
 #endif
 
+- (OFArray*)arrayByAddingObject: (id)object
+{
+	OFMutableArray *ret = [[self mutableCopy] autorelease];
+
+	[ret addObject: object];
+	[ret makeImmutable];
+
+	return ret;
+}
+
+- (OFArray*)arrayByAddingObjectsFromArray: (OFArray*)array
+{
+	OFMutableArray *ret = [[self mutableCopy] autorelease];
+
+	[ret addObjectsFromArray: array];
+	[ret makeImmutable];
+
+	return ret;
+}
+
 #ifdef OF_HAVE_BLOCKS
 - (OFArray*)mappedArrayUsingBlock: (of_array_map_block_t)block
 {
