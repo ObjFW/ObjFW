@@ -27,24 +27,31 @@
 #import "OFNumber.h"
 #import "OFNull.h"
 
-#import "OFInvalidEncodingException.h"
+#import "OFInvalidJSONException.h"
 
 #import "macros.h"
 
 int _OFString_JSONValue_reference;
 
-static id nextObject(const char *restrict *, const char*);
+static id nextObject(const char *restrict *, const char*,
+    size_t *restrict line);
 
 static void
-skipWhitespaces(const char *restrict *pointer, const char *stop)
+skipWhitespaces(const char *restrict *pointer, const char *stop,
+    size_t *restrict line)
 {
 	while (*pointer < stop && (**pointer == ' ' || **pointer == '\t' ||
-	    **pointer == '\r' || **pointer == '\n'))
+	    **pointer == '\r' || **pointer == '\n')) {
+		if (**pointer == '\n')
+			(*line)++;
+
 		(*pointer)++;
+	}
 }
 
 static void
-skipComment(const char *restrict *pointer, const char *stop)
+skipComment(const char *restrict *pointer, const char *stop,
+    size_t *restrict line)
 {
 	if (**pointer != '/')
 		return;
@@ -67,32 +74,38 @@ skipComment(const char *restrict *pointer, const char *stop)
 
 			lastIsAsterisk = (**pointer == '*');
 
+			if (**pointer == '\n')
+				(*line)++;
+
 			(*pointer)++;
 		}
-	} else {
+	} else if (**pointer == '/') {
 		(*pointer)++;
 
 		while (*pointer < stop) {
 			if (**pointer == '\r' || **pointer == '\n') {
 				(*pointer)++;
+				(*line)++;
 				return;
 			}
 
 			(*pointer)++;
 		}
-	}
+	} else
+		(*pointer)--;
 }
 
 static void
-skipWhitespacesAndComments(const char *restrict *pointer, const char *stop)
+skipWhitespacesAndComments(const char *restrict *pointer, const char *stop,
+    size_t *restrict line)
 {
 	const char *old = NULL;
 
 	while (old != *pointer) {
 		old = *pointer;
 
-		skipWhitespaces(pointer, stop);
-		skipComment(pointer, stop);
+		skipWhitespaces(pointer, stop, line);
+		skipComment(pointer, stop, line);
 	}
 }
 
@@ -126,7 +139,8 @@ parseUnicodeEscape(const char *pointer, const char *stop)
 }
 
 static inline OFString*
-parseString(const char *restrict *pointer, const char *stop)
+parseString(const char *restrict *pointer, const char *stop,
+    size_t *restrict line)
 {
 	char *buffer;
 	size_t i = 0;
@@ -233,12 +247,15 @@ parseString(const char *restrict *pointer, const char *stop)
 			case '\r':
 				(*pointer)++;
 
-				if (*pointer < stop && **pointer == '\n')
+				if (*pointer < stop && **pointer == '\n') {
 					(*pointer)++;
+					(*line)++;
+				}
 
 				break;
 			case '\n':
 				(*pointer)++;
+				(*line)++;
 				break;
 			default:
 				free(buffer);
@@ -260,6 +277,7 @@ parseString(const char *restrict *pointer, const char *stop)
 			return ret;
 		/* Newlines in strings are disallowed */
 		} else if (**pointer == '\n' || **pointer == '\r') {
+			(*line)++;
 			free(buffer);
 			return nil;
 		} else {
@@ -373,7 +391,8 @@ parseIdentifier(const char *restrict *pointer, const char *stop)
 }
 
 static inline OFMutableArray*
-parseArray(const char *restrict *pointer, const char *stop)
+parseArray(const char *restrict *pointer, const char *stop,
+    size_t *restrict line)
 {
 	OFMutableArray *array = [OFMutableArray array];
 
@@ -383,7 +402,7 @@ parseArray(const char *restrict *pointer, const char *stop)
 	while (**pointer != ']') {
 		id object;
 
-		skipWhitespacesAndComments(pointer, stop);
+		skipWhitespacesAndComments(pointer, stop, line);
 		if (*pointer >= stop)
 			return nil;
 
@@ -392,7 +411,7 @@ parseArray(const char *restrict *pointer, const char *stop)
 
 		if (**pointer == ',') {
 			(*pointer)++;
-			skipWhitespacesAndComments(pointer, stop);
+			skipWhitespacesAndComments(pointer, stop, line);
 
 			if (*pointer >= stop || **pointer != ']')
 				return nil;
@@ -400,18 +419,18 @@ parseArray(const char *restrict *pointer, const char *stop)
 			break;
 		}
 
-		if ((object = nextObject(pointer, stop)) == nil)
+		if ((object = nextObject(pointer, stop, line)) == nil)
 			return nil;
 
 		[array addObject: object];
 
-		skipWhitespacesAndComments(pointer, stop);
+		skipWhitespacesAndComments(pointer, stop, line);
 		if (*pointer >= stop)
 			return nil;
 
 		if (**pointer == ',') {
 			(*pointer)++;
-			skipWhitespacesAndComments(pointer, stop);
+			skipWhitespacesAndComments(pointer, stop, line);
 
 			if (*pointer >= stop)
 				return nil;
@@ -425,7 +444,8 @@ parseArray(const char *restrict *pointer, const char *stop)
 }
 
 static inline OFMutableDictionary*
-parseDictionary(const char *restrict *pointer, const char *stop)
+parseDictionary(const char *restrict *pointer, const char *stop,
+    size_t *restrict line)
 {
 	OFMutableDictionary *dictionary = [OFMutableDictionary dictionary];
 
@@ -435,7 +455,7 @@ parseDictionary(const char *restrict *pointer, const char *stop)
 	while (**pointer != '}') {
 		id key, object;
 
-		skipWhitespacesAndComments(pointer, stop);
+		skipWhitespacesAndComments(pointer, stop, line);
 		if (*pointer >= stop)
 			return nil;
 
@@ -444,7 +464,7 @@ parseDictionary(const char *restrict *pointer, const char *stop)
 
 		if (**pointer == ',') {
 			(*pointer)++;
-			skipWhitespacesAndComments(pointer, stop);
+			skipWhitespacesAndComments(pointer, stop, line);
 
 			if (*pointer >= stop || **pointer != '}')
 				return nil;
@@ -452,7 +472,7 @@ parseDictionary(const char *restrict *pointer, const char *stop)
 			break;
 		}
 
-		skipWhitespacesAndComments(pointer, stop);
+		skipWhitespacesAndComments(pointer, stop, line);
 		if (*pointer + 1 >= stop)
 			return nil;
 
@@ -461,30 +481,30 @@ parseDictionary(const char *restrict *pointer, const char *stop)
 		    **pointer == '_' || **pointer == '$' || **pointer == '\\')
 			key = parseIdentifier(pointer, stop);
 		else
-			key = nextObject(pointer, stop);
+			key = nextObject(pointer, stop, line);
 
 		if (key == nil)
 			return nil;
 
-		skipWhitespacesAndComments(pointer, stop);
+		skipWhitespacesAndComments(pointer, stop, line);
 		if (*pointer + 1 >= stop || **pointer != ':')
 			return nil;
 
 		(*pointer)++;
 
-		if ((object = nextObject(pointer, stop)) == nil)
+		if ((object = nextObject(pointer, stop, line)) == nil)
 			return nil;
 
 		[dictionary setObject: object
 			       forKey: key];
 
-		skipWhitespacesAndComments(pointer, stop);
+		skipWhitespacesAndComments(pointer, stop, line);
 		if (*pointer >= stop)
 			return nil;
 
 		if (**pointer == ',') {
 			(*pointer)++;
-			skipWhitespacesAndComments(pointer, stop);
+			skipWhitespacesAndComments(pointer, stop, line);
 
 			if (*pointer >= stop)
 				return nil;
@@ -498,7 +518,8 @@ parseDictionary(const char *restrict *pointer, const char *stop)
 }
 
 static inline OFNumber*
-parseNumber(const char *restrict *pointer, const char *stop)
+parseNumber(const char *restrict *pointer, const char *stop,
+    size_t *restrict line)
 {
 	BOOL isHex = (*pointer + 1 < stop && (*pointer)[1] == 'x');
 	BOOL hasDecimal = NO;
@@ -513,8 +534,12 @@ parseNumber(const char *restrict *pointer, const char *stop)
 		if ((*pointer)[i] == ' ' || (*pointer)[i] == '\t' ||
 		    (*pointer)[i] == '\r' || (*pointer)[i] == '\n' ||
 		    (*pointer)[i] == ',' || (*pointer)[i] == ']' ||
-		    (*pointer)[i] == '}')
+		    (*pointer)[i] == '}') {
+			if ((*pointer)[i] == '\n')
+				(*line)++;
+
 			break;
+		}
 	}
 
 	string = [[OFString alloc] initWithUTF8String: *pointer
@@ -539,9 +564,10 @@ parseNumber(const char *restrict *pointer, const char *stop)
 }
 
 static id
-nextObject(const char *restrict *pointer, const char *stop)
+nextObject(const char *restrict *pointer, const char *stop,
+    size_t *restrict line)
 {
-	skipWhitespacesAndComments(pointer, stop);
+	skipWhitespacesAndComments(pointer, stop, line);
 
 	if (*pointer >= stop)
 		return nil;
@@ -549,11 +575,11 @@ nextObject(const char *restrict *pointer, const char *stop)
 	switch (**pointer) {
 	case '"':
 	case '\'':
-		return parseString(pointer, stop);
+		return parseString(pointer, stop, line);
 	case '[':
-		return parseArray(pointer, stop);
+		return parseArray(pointer, stop, line);
 	case '{':
-		return parseDictionary(pointer, stop);
+		return parseDictionary(pointer, stop, line);
 	case 't':
 		if (*pointer + 3 >= stop)
 			return nil;
@@ -596,7 +622,7 @@ nextObject(const char *restrict *pointer, const char *stop)
 	case '9':
 	case '-':
 	case '.':
-		return parseNumber(pointer, stop);
+		return parseNumber(pointer, stop, line);
 	default:
 		return nil;
 	}
@@ -608,12 +634,14 @@ nextObject(const char *restrict *pointer, const char *stop)
 	const char *pointer = [self UTF8String];
 	const char *stop = pointer + [self UTF8StringLength];
 	id object;
+	size_t line = 1;
 
-	object = nextObject(&pointer, stop);
-	skipWhitespacesAndComments(&pointer, stop);
+	object = nextObject(&pointer, stop, &line);
+	skipWhitespacesAndComments(&pointer, stop, &line);
 
 	if (pointer < stop || object == nil)
-		@throw [OFInvalidEncodingException exceptionWithClass: isa];
+		@throw [OFInvalidJSONException exceptionWithClass: isa
+							     line: line];
 
 	return object;
 }

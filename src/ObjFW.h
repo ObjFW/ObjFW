@@ -95,6 +95,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
+#import "OFInvalidJSONException.h"
 #import "OFInvalidServerReplyException.h"
 #import "OFLinkFailedException.h"
 #import "OFListenFailedException.h"

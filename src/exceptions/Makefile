@@ -28,6 +28,7 @@ SRCS = OFAcceptFailedException.m		\
        OFInvalidArgumentException.m		\
        OFInvalidEncodingException.m		\
        OFInvalidFormatException.m		\
+       OFInvalidJSONException.m			\
        OFInvalidServerReplyException.m		\
        OFLinkFailedException.m			\
        OFListenFailedException.m		\
