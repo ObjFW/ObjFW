@@ -610,20 +610,20 @@ void _references_to_categories_of_OFObject(void)
 	return (char*)pointer + PRE_MEM_ALIGN;
 }
 
-- (void*)allocMemoryWithItemSize: (size_t)itemSize
-			   count: (size_t)count
+- (void*)allocMemoryWithSize: (size_t)size
+		       count: (size_t)count
 {
-	if (itemSize == 0 || count == 0)
+	if (size == 0 || count == 0)
 		return NULL;
 
-	if (count > SIZE_MAX / itemSize)
+	if (count > SIZE_MAX / size)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
-	return [self allocMemoryWithSize: itemSize * count];
+	return [self allocMemoryWithSize: size * count];
 }
 
 - (void*)resizeMemory: (void*)pointer
-	       toSize: (size_t)size
+		 size: (size_t)size
 {
 	void *new;
 	struct pre_mem *preMem;
@@ -662,23 +662,23 @@ void _references_to_categories_of_OFObject(void)
 }
 
 - (void*)resizeMemory: (void*)pointer
-	     itemSize: (size_t)itemSize
+		 size: (size_t)size
 		count: (size_t)count
 {
 	if (pointer == NULL)
-		return [self allocMemoryWithItemSize: itemSize
-					       count: count];
+		return [self allocMemoryWithSize: size
+					   count: count];
 
-	if (itemSize == 0 || count == 0) {
+	if (size == 0 || count == 0) {
 		[self freeMemory: pointer];
 		return NULL;
 	}
 
-	if (count > SIZE_MAX / itemSize)
+	if (count > SIZE_MAX / size)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	return [self resizeMemory: pointer
-			   toSize: itemSize * count];
+			     size: size * count];
 }
 
 - (void)freeMemory: (void*)pointer
@@ -839,22 +839,22 @@ void _references_to_categories_of_OFObject(void)
 						    selector: _cmd];
 }
 
-+ (void*)allocMemoryWithItemSize: (size_t)itemSize
-			   count: (size_t)count
++ (void*)allocMemoryWithSize: (size_t)size
+		       count: (size_t)count
 {
 	@throw [OFNotImplementedException exceptionWithClass: self
 						    selector: _cmd];
 }
 
 + (void*)resizeMemory: (void*)pointer
-	       toSize: (size_t)size
+		 size: (size_t)size
 {
 	@throw [OFNotImplementedException exceptionWithClass: self
 						    selector: _cmd];
 }
 
 + (void*)resizeMemory: (void*)pointer
-	     itemSize: (size_t)itemSize
+		 size: (size_t)size
 		count: (size_t)count
 {
 	@throw [OFNotImplementedException exceptionWithClass: self

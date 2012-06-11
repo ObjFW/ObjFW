@@ -183,11 +183,36 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 		   atIndex: [self count]];
 }
 
+- (void)addObjectsFromArray: (OFArray*)array
+{
+	[self insertObjectsFromArray: array
+			     atIndex: [self count]];
+}
+
 - (void)insertObject: (id)object
 	     atIndex: (size_t)index
 {
 	@throw [OFNotImplementedException exceptionWithClass: isa
 						    selector: _cmd];
+}
+
+- (void)insertObjectsFromArray: (OFArray*)array
+		       atIndex: (size_t)index
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFEnumerator *enumerator = [array objectEnumerator];
+	size_t i, count = [array count];
+
+	for (i = 0; i < count; i++) {
+		id object = [enumerator nextObject];
+
+		assert(object != nil);
+
+		[self insertObject: object
+			   atIndex: index + i];
+	}
+
+	[pool release];
 }
 
 - (void)replaceObjectAtIndex: (size_t)index

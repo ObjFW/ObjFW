@@ -139,8 +139,8 @@ enum {
 #endif
 
 		maxFD = cancelFD[0];
-		FDToStream = [self allocMemoryWithItemSize: sizeof(OFStream*)
-						     count: maxFD + 1];
+		FDToStream = [self allocMemoryWithSize: sizeof(OFStream*)
+						 count: maxFD + 1];
 		FDToStream[cancelFD[0]] = nil;
 
 #ifdef OF_THREADS
@@ -312,7 +312,7 @@ enum {
 					maxFD = fd;
 					FDToStream = [self
 					    resizeMemory: FDToStream
-						itemSize: sizeof(OFStream*)
+						    size: sizeof(OFStream*)
 						   count: maxFD + 1];
 				}
 

@@ -386,23 +386,23 @@ _Block_object_dispose(const void *obj_, const int flags_)
 						    selector: _cmd];
 }
 
-- (void*)allocMemoryForNItems: (size_t)nitems
-		     withSize: (size_t)size
+- (void*)allocMemoryWithSize: (size_t)size
+		       count: (size_t)count
 {
 	@throw [OFNotImplementedException exceptionWithClass: isa
 						    selector: _cmd];
 }
 
 - (void*)resizeMemory: (void*)ptr
-	       toSize: (size_t)size
+		 size: (size_t)size
 {
 	@throw [OFNotImplementedException exceptionWithClass: isa
 						    selector: _cmd];
 }
 
 - (void*)resizeMemory: (void*)ptr
-	     toNItems: (size_t)nitems
-	     withSize: (size_t)size
+		 size: (size_t)size
+		count: (size_t)count
 {
 	@throw [OFNotImplementedException exceptionWithClass: isa
 						    selector: _cmd];

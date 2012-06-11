@@ -23,7 +23,7 @@
 #import "OFNull.h"
 #import "OFAutoreleasePool.h"
 
-#import "OFInvalidEncodingException.h"
+#import "OFInvalidJSONException.h"
 
 #import "TestsAppDelegate.h"
 
@@ -51,13 +51,13 @@ static OFString *module = @"OFJSON";
 	TEST(@"-[JSONRepresentation]", [[d JSONRepresentation] isEqual:
 	    @"{\"foo\":\"ba\\r\",\"x\":[0.5,15,null,\"foo\",false]}"])
 
-	EXPECT_EXCEPTION(@"-[JSONValue #2]", OFInvalidEncodingException,
+	EXPECT_EXCEPTION(@"-[JSONValue #2]", OFInvalidJSONException,
 	    [@"{" JSONValue])
-	EXPECT_EXCEPTION(@"-[JSONValue #3]", OFInvalidEncodingException,
+	EXPECT_EXCEPTION(@"-[JSONValue #3]", OFInvalidJSONException,
 	    [@"]" JSONValue])
-	EXPECT_EXCEPTION(@"-[JSONValue #4]", OFInvalidEncodingException,
+	EXPECT_EXCEPTION(@"-[JSONValue #4]", OFInvalidJSONException,
 	    [@"bar" JSONValue])
-	EXPECT_EXCEPTION(@"-[JSONValue #5]", OFInvalidEncodingException,
+	EXPECT_EXCEPTION(@"-[JSONValue #5]", OFInvalidJSONException,
 	    [@"[\"a\" \"b\"]" JSONValue])
 
 	[pool drain];

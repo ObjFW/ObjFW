@@ -111,8 +111,8 @@ void _references_to_categories_of_OFDataArray(void)
 			while (![file isAtEndOfStream]) {
 				size_t length;
 
-				length = [file readNBytes: of_pagesize
-					       intoBuffer: buffer];
+				length = [file readIntoBuffer: buffer
+						       length: of_pagesize];
 				[self addItemsFromCArray: buffer
 						   count: length];
 			}
@@ -257,7 +257,7 @@ void _references_to_categories_of_OFDataArray(void)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	data = [self resizeMemory: data
-			 itemSize: itemSize
+			     size: itemSize
 			    count: count + 1];
 
 	memcpy(data + count * itemSize, item, itemSize);
@@ -280,7 +280,7 @@ void _references_to_categories_of_OFDataArray(void)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	data = [self resizeMemory: data
-			 itemSize: itemSize
+			     size: itemSize
 			    count: count + nItems];
 
 	memcpy(data + count * itemSize, cArray, nItems * itemSize);
@@ -295,7 +295,7 @@ void _references_to_categories_of_OFDataArray(void)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
 	data = [self resizeMemory: data
-			 itemSize: itemSize
+			     size: itemSize
 			    count: count + nItems];
 
 	memmove(data + (index + nItems) * itemSize, data + index * itemSize,
@@ -322,7 +322,7 @@ void _references_to_categories_of_OFDataArray(void)
 	count -= range.length;
 	@try {
 		data = [self resizeMemory: data
-				 itemSize: itemSize
+				     size: itemSize
 				    count: count];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
@@ -337,7 +337,7 @@ void _references_to_categories_of_OFDataArray(void)
 	count--;
 	@try {
 		data = [self resizeMemory: data
-				 itemSize: itemSize
+				     size: itemSize
 				    count: count];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only made it smaller */
@@ -437,8 +437,8 @@ void _references_to_categories_of_OFDataArray(void)
 					       mode: @"wb"];
 
 	@try {
-		[file writeNBytes: count * itemSize
-		       fromBuffer: data];
+		[file writeBuffer: data
+			   length: count * itemSize];
 	} @finally {
 		[file release];
 	}
@@ -480,7 +480,7 @@ void _references_to_categories_of_OFDataArray(void)
 
 	if (size != newSize)
 		data = [self resizeMemory: data
-				   toSize: newSize];
+				     size: newSize];
 
 	memcpy(data + count * itemSize, item, itemSize);
 
@@ -501,7 +501,7 @@ void _references_to_categories_of_OFDataArray(void)
 
 	if (size != newSize)
 		data = [self resizeMemory: data
-				   toSize: newSize];
+				     size: newSize];
 
 	memcpy(data + count * itemSize, cArray, nItems * itemSize);
 
@@ -524,7 +524,7 @@ void _references_to_categories_of_OFDataArray(void)
 
 	if (size != newSize)
 		data = [self resizeMemory: data
-				   toSize: newSize];
+				     size: newSize];
 
 	memmove(data + (index + nItems) * itemSize, data + index * itemSize,
 	    (count - index) * itemSize);
@@ -551,7 +551,7 @@ void _references_to_categories_of_OFDataArray(void)
 
 	if (size != newSize)
 		data = [self resizeMemory: data
-				   toSize: newSize];
+				     size: newSize];
 	size = newSize;
 }
 
@@ -569,7 +569,7 @@ void _references_to_categories_of_OFDataArray(void)
 	if (size != newSize) {
 		@try {
 			data = [self resizeMemory: data
-					   toSize: newSize];
+					     size: newSize];
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only made it smaller */
 		}

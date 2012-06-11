@@ -29,14 +29,14 @@ int _OFTCPSocket_SOCKS5_reference;
 {
 	const char request[] = { 5, 1, 0, 3 };
 	char reply[256];
-	BOOL oldBuffersWrites;
+	BOOL oldWriteBufferEnabled;
 
 	/* 5 1 0 -> no authentication */
-	[self writeNBytes: 3
-	       fromBuffer: request];
+	[self writeBuffer: request
+		   length: 3];
 
-	[self readExactlyNBytes: 2
-		     intoBuffer: reply];
+	[self readIntoBuffer: reply
+		 exactLength: 2];
 
 	if (reply[0] != 5 || reply[1] != 0) {
 		[self close];
@@ -47,25 +47,25 @@ int _OFTCPSocket_SOCKS5_reference;
 				  port: port];
 	}
 
-	oldBuffersWrites = [self buffersWrites];
-	[self setBuffersWrites: YES];
+	oldWriteBufferEnabled = [self writeBufferEnabled];
+	[self setWriteBufferEnabled: YES];
 
 	/* CONNECT request */
-	[self writeNBytes: 4
-	       fromBuffer: request];
+	[self writeBuffer: request
+		   length: 4];
 	[self writeInt8:
 	    [host cStringLengthWithEncoding: OF_STRING_ENCODING_NATIVE]];
-	[self writeNBytes: [host cStringLengthWithEncoding:
+	[self writeBuffer: [host cStringWithEncoding:
 			       OF_STRING_ENCODING_NATIVE]
-	       fromBuffer: [host cStringWithEncoding:
+		   length: [host cStringLengthWithEncoding:
 			       OF_STRING_ENCODING_NATIVE]];
 	[self writeBigEndianInt16: port];
 
 	[self flushWriteBuffer];
-	[self setBuffersWrites: oldBuffersWrites];
+	[self setWriteBufferEnabled: oldWriteBufferEnabled];
 
-	[self readExactlyNBytes: 4
-		     intoBuffer: reply];
+	[self readIntoBuffer: reply
+		 exactLength: 4];
 
 	if (reply[0] != 5 || reply[1] != 0 || reply[2] != 0) {
 		[self close];
@@ -78,16 +78,16 @@ int _OFTCPSocket_SOCKS5_reference;
 	/* Skip the rest of the reply */
 	switch (reply[3]) {
 	case 1: /* IPv4 */
-		[self readExactlyNBytes: 4
-			     intoBuffer: reply];
+		[self readIntoBuffer: reply
+			 exactLength: 4];
 		break;
 	case 3: /* Domainname */
-		[self readExactlyNBytes: [self readInt8]
-			     intoBuffer: reply];
+		[self readIntoBuffer: reply
+			 exactLength: [self readInt8]];
 		break;
 	case 4: /* IPv6 */
-		[self readExactlyNBytes: 16
-			     intoBuffer: reply];
+		[self readIntoBuffer: reply
+			 exactLength: 16];
 		break;
 	default:
 		[self close];

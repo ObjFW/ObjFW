@@ -52,6 +52,22 @@
 	mutations++;
 }
 
+- (void)insertObjectsFromArray: (OFArray*)array_
+		       atIndex: (size_t)index
+{
+	id *objects = [array_ objects];
+	size_t i, count = [array_ count];
+
+	[array insertItemsFromCArray: objects
+			     atIndex: index
+			       count: count];
+
+	for (i = 0; i < count; i++)
+		[objects[i] retain];
+
+	mutations++;
+}
+
 - (void)replaceObject: (id)oldObject
 	   withObject: (id)newObject
 {
@@ -164,8 +180,8 @@
 	if (range.length > count - range.start)
 		@throw [OFOutOfRangeException exceptionWithClass: isa];
 
-	copy = [self allocMemoryWithItemSize: sizeof(*copy)
-				       count: range.length];
+	copy = [self allocMemoryWithSize: sizeof(*copy)
+				   count: range.length];
 	memcpy(copy, objects + range.start, range.length * sizeof(id));
 
 	@try {

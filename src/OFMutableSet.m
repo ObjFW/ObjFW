@@ -159,8 +159,8 @@ static struct {
 	size_t count = [self count];
 	id *cArray;
 
-	cArray = [self allocMemoryWithItemSize: sizeof(id)
-					 count: count];
+	cArray = [self allocMemoryWithSize: sizeof(id)
+				     count: count];
 
 	@try {
 		OFEnumerator *enumerator = [self objectEnumerator];

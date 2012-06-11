@@ -300,6 +300,8 @@
 		4BB25E8D139C388A00F574EA /* OFXMLElement+Serialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB25E87139C388A00F574EA /* OFXMLElement+Serialization.m */; };
 		4BB524C1143D1E4E0085FBCC /* OFProcess.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB524BF143D1E4E0085FBCC /* OFProcess.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BB524C2143D1E4E0085FBCC /* OFProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB524C0143D1E4E0085FBCC /* OFProcess.m */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BC090441584F6760040640F /* OFInvalidJSONException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC090421584F6760040640F /* OFInvalidJSONException.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BC090451584F6760040640F /* OFInvalidJSONException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BC090431584F6760040640F /* OFInvalidJSONException.m */; };
 		4BD653C5143B8489006182F0 /* OFTCPSocket+SOCKS5.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD653C3143B8489006182F0 /* OFTCPSocket+SOCKS5.h */; };
 		4BD653C6143B8489006182F0 /* OFTCPSocket+SOCKS5.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BD653C4143B8489006182F0 /* OFTCPSocket+SOCKS5.m */; };
 		4BD98C03133814220048DD5B /* objfw-defs.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD98C011338140B0048DD5B /* objfw-defs.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -663,6 +665,8 @@
 		4BB524C0143D1E4E0085FBCC /* OFProcess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFProcess.m; path = src/OFProcess.m; sourceTree = "<group>"; };
 		4BBA36C411406AB700CBA3AC /* atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic.h; path = src/atomic.h; sourceTree = "<group>"; };
 		4BBA36C511406AB700CBA3AC /* macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = macros.h; path = src/macros.h; sourceTree = "<group>"; };
+		4BC090421584F6760040640F /* OFInvalidJSONException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFInvalidJSONException.h; path = src/exceptions/OFInvalidJSONException.h; sourceTree = "<group>"; };
+		4BC090431584F6760040640F /* OFInvalidJSONException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFInvalidJSONException.m; path = src/exceptions/OFInvalidJSONException.m; sourceTree = "<group>"; };
 		4BD653C3143B8489006182F0 /* OFTCPSocket+SOCKS5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFTCPSocket+SOCKS5.h"; path = "src/OFTCPSocket+SOCKS5.h"; sourceTree = "<group>"; };
 		4BD653C4143B8489006182F0 /* OFTCPSocket+SOCKS5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFTCPSocket+SOCKS5.m"; path = "src/OFTCPSocket+SOCKS5.m"; sourceTree = "<group>"; };
 		4BD86D801237A6C600ED9912 /* OFBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFBlock.h; path = src/OFBlock.h; sourceTree = SOURCE_ROOT; };
@@ -794,6 +798,8 @@
 				4B17FF98133A3243003E6DCD /* OFInvalidEncodingException.m */,
 				4B17FF9B133A32B7003E6DCD /* OFInvalidFormatException.h */,
 				4B17FF9C133A32B8003E6DCD /* OFInvalidFormatException.m */,
+				4BC090421584F6760040640F /* OFInvalidJSONException.h */,
+				4BC090431584F6760040640F /* OFInvalidJSONException.m */,
 				4B17FFB7133A380F003E6DCD /* OFInvalidServerReplyException.h */,
 				4B17FFB8133A3813003E6DCD /* OFInvalidServerReplyException.m */,
 				4B29BC5D133AC9C40004B236 /* OFLinkFailedException.h */,
@@ -1231,6 +1237,7 @@
 				4B17FF93133A317C003E6DCD /* OFInvalidArgumentException.h in Headers */,
 				4B17FF99133A3245003E6DCD /* OFInvalidEncodingException.h in Headers */,
 				4B17FF9D133A32BA003E6DCD /* OFInvalidFormatException.h in Headers */,
+				4BC090441584F6760040640F /* OFInvalidJSONException.h in Headers */,
 				4B17FFB9133A381D003E6DCD /* OFInvalidServerReplyException.h in Headers */,
 				4B29BC61133AC9CB0004B236 /* OFLinkFailedException.h in Headers */,
 				4B90B7A6133AD87D00BD33CB /* OFListenFailedException.h in Headers */,
@@ -1524,6 +1531,7 @@
 				4B17FF94133A317C003E6DCD /* OFInvalidArgumentException.m in Sources */,
 				4B17FF9A133A3245003E6DCD /* OFInvalidEncodingException.m in Sources */,
 				4B17FF9E133A32BA003E6DCD /* OFInvalidFormatException.m in Sources */,
+				4BC090451584F6760040640F /* OFInvalidJSONException.m in Sources */,
 				4B17FFBA133A381D003E6DCD /* OFInvalidServerReplyException.m in Sources */,
 				4B29BC62133AC9CB0004B236 /* OFLinkFailedException.m in Sources */,
 				4B90B7A7133AD87D00BD33CB /* OFListenFailedException.m in Sources */,

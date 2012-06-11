@@ -45,8 +45,8 @@ const uint8_t testfile_sha1[OF_SHA1_DIGEST_SIZE] =
 
 	while (![f isAtEndOfStream]) {
 		char buf[64];
-		size_t len = [f readNBytes: 64
-				intoBuffer: buf];
+		size_t len = [f readIntoBuffer: buf
+					length: 64];
 		[sha1 updateWithBuffer: buf
 				length: len];
 	}

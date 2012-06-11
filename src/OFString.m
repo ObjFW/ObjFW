@@ -832,8 +832,8 @@ static struct {
 		@try {
 			tmp = [self allocMemoryWithSize: (size_t)st.st_size];
 
-			[file readExactlyNBytes: (size_t)st.st_size
-				     intoBuffer: tmp];
+			[file readIntoBuffer: tmp
+				 exactLength: (size_t)st.st_size];
 		} @finally {
 			[file release];
 		}
@@ -999,7 +999,7 @@ static struct {
 
 	@try {
 		UTF8String = [object resizeMemory: UTF8String
-					   toSize: UTF8StringLength + 1];
+					     size: UTF8StringLength + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only tried to make it smaller */
 	}
@@ -1523,8 +1523,8 @@ static struct {
 	if ((prefixLength = [prefix length]) > [self length])
 		return NO;
 
-	tmp = [self allocMemoryWithItemSize: sizeof(of_unichar_t)
-				      count: prefixLength];
+	tmp = [self allocMemoryWithSize: sizeof(of_unichar_t)
+				  count: prefixLength];
 	@try {
 		OFAutoreleasePool *pool;
 
@@ -1557,8 +1557,8 @@ static struct {
 
 	length = [self length];
 
-	tmp = [self allocMemoryWithItemSize: sizeof(of_unichar_t)
-				      count: suffixLength];
+	tmp = [self allocMemoryWithSize: sizeof(of_unichar_t)
+				  count: suffixLength];
 	@try {
 		OFAutoreleasePool *pool;
 
@@ -1959,8 +1959,8 @@ static struct {
 	size_t length = [self length];
 	of_unichar_t *ret;
 
-	ret = [object allocMemoryWithItemSize: sizeof(of_unichar_t)
-					count: length + 1];
+	ret = [object allocMemoryWithSize: sizeof(of_unichar_t)
+				    count: length + 1];
 	[self getCharacters: ret
 		    inRange: of_range(0, length)];
 	ret[length] = 0;
@@ -1978,8 +1978,8 @@ static struct {
 	size_t i, j;
 
 	/* Allocate memory for the worst case */
-	ret = [object allocMemoryWithItemSize: sizeof(uint16_t)
-					count: length * 2 + 1];
+	ret = [object allocMemoryWithSize: sizeof(uint16_t)
+				    count: length * 2 + 1];
 
 	j = 0;
 
@@ -2002,7 +2002,7 @@ static struct {
 
 	@try {
 		ret = [object resizeMemory: ret
-				  itemSize: sizeof(uint16_t)
+				      size: sizeof(uint16_t)
 				     count: j + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only tried to make it smaller */
