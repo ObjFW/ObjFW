@@ -29,6 +29,14 @@
 				       line: line] autorelease];
 }
 
+- init
+{
+	Class c = isa;
+	[self release];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
+}
+
 - initWithClass: (Class)class_
 	   line: (size_t)line_
 {
@@ -37,14 +45,6 @@
 	line = line_;
 
 	return self;
-}
-
-- init
-{
-	Class c = isa;
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
 }
 
 - (OFString*)description

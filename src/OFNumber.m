@@ -1140,6 +1140,8 @@
 
 - (OFString*)description
 {
+	OFMutableString *ret;
+
 	switch (type) {
 	case OF_NUMBER_BOOL:
 		return (value.bool_ ? @"YES" : @"NO");
@@ -1169,9 +1171,23 @@
 	case OF_NUMBER_INTPTR:
 		return [OFString stringWithFormat: @"%jd", [self intMaxValue]];
 	case OF_NUMBER_FLOAT:
-		return [OFString stringWithFormat: @"%g", value.float_];
+		ret = [OFMutableString stringWithFormat: @"%g", value.float_];
+
+		if (![ret containsString: @"."])
+			[ret appendString: @".0"];
+
+		[ret makeImmutable];
+
+		return ret;
 	case OF_NUMBER_DOUBLE:
-		return [OFString stringWithFormat: @"%lg", value.double_];
+		ret = [OFMutableString stringWithFormat: @"%lg", value.double_];
+
+		if (![ret containsString: @"."])
+			[ret appendString: @".0"];
+
+		[ret makeImmutable];
+
+		return ret;
 	default:
 		@throw [OFInvalidFormatException exceptionWithClass: isa];
 	}
