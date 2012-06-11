@@ -98,6 +98,7 @@
 #else
 # define OF_PATH_DELIMITER '\\'
 #endif
+#define OF_PATH_PARENT_DIR @".."
 
 extern id objc_getProperty(id, SEL, ptrdiff_t, BOOL);
 extern void objc_setProperty(id, SEL, ptrdiff_t, id, BOOL, signed char);
