@@ -58,6 +58,12 @@
 
 - (OFString*)description
 {
-	return @"An exception occurred";
+	if (description != nil)
+		return description;
+
+	description = [[OFString alloc] initWithFormat:
+	    @"An exception of class %@ occurred in class %@", isa, inClass];
+
+	return description;
 }
 @end
