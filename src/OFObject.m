@@ -95,7 +95,7 @@ extern BOOL objc_sync_init();
 extern BOOL objc_properties_init();
 #endif
 
-#if defined(OF_APPLE_RUNTIME) && __OBJC2__
+#if !defined(OF_APPLE_RUNTIME) || defined(__OBJC2__)
 static void
 uncaught_exception_handler(id exception)
 {
@@ -195,7 +195,7 @@ void _references_to_categories_of_OFObject(void)
 	}
 #endif
 
-#if defined(OF_APPLE_RUNTIME) && __OBJC2__
+#if !defined(OF_APPLE_RUNTIME) || defined(__OBJC2__)
 	objc_setUncaughtExceptionHandler(uncaught_exception_handler);
 #endif
 

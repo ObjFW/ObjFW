@@ -106,6 +106,8 @@ struct objc_protocol_list {
 #define YES (BOOL)1
 #define NO  (BOOL)0
 
+typedef void (*objc_uncaught_exception_handler)(id);
+
 extern SEL sel_registerName(const char*);
 extern const char* sel_getName(SEL);
 extern BOOL sel_isEqual(SEL, SEL);
@@ -128,4 +130,7 @@ extern BOOL protocol_conformsToProtocol(Protocol*, Protocol*);
 extern void objc_thread_add(void);
 extern void objc_thread_remove(void);
 extern void objc_exit(void);
+extern objc_uncaught_exception_handler objc_setUncaughtExceptionHandler(
+    objc_uncaught_exception_handler);
+
 #endif

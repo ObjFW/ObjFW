@@ -5,6 +5,7 @@ STATIC_LIB_NOINST = ${RUNTIME_A}
 
 SRCS = category.m		\
        class.m			\
+       exception.m		\
        hashtable.m		\
        init.m			\
        lookup.m			\
