@@ -37,17 +37,8 @@ AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings, [
 	OBJCFLAGS="$OBJCFLAGS -fno-constant-cfstrings"
 	AC_SUBST(NO_CONST_CFSTRINGS, "-fno-constant-cfstrings")
 ])
-AX_CHECK_COMPILER_FLAGS(-Wshorten-64-to-32, [
-	old_OBJCFLAGS="$OBJCFLAGS"
-	OBJCFLAGS="$OBJCFLAGS -Wshorten-64-to-32 -Werror"
-	AC_TRY_COMPILE([
-		#import <objc/objc-api.h>
-	], [], [
-		OBJCFLAGS="$old_OBJCFLAGS -Wshorten-64-to-32"
-	], [
-		OBJCFLAGS="$old_OBJCFLAGS"
-	])
-])
+AX_CHECK_COMPILER_FLAGS(-Wshorten-64-to-32,
+	[OBJCFLAGS="$OBJCFLAGS -Wshorten-64-to-32"])
 AX_CHECK_COMPILER_FLAGS(-Wsemicolon-before-method-body,
 	[OBJCFLAGS="$OBJCFLAGS -Wsemicolon-before-method-body"])
 
@@ -128,97 +119,6 @@ AC_TRY_COMPILE([], [
 	OBJCFLAGS="$old_OBJCFLAGS"
 ])
 
-AC_CHECK_HEADERS([objfw-rt.h objc/objc.h])
-
-test x"$ac_cv_header_objfw_rt_h" = x"yes" && objc_runtime="ObjFW-RT"
-
-AC_MSG_CHECKING(which Objective C runtime we use)
-AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
-	dnl Only accept it if it's from gcc >= 4.7, as the one in 4.6 is buggy
-	dnl when using the new API.
-	AC_EGREP_CPP(yes, [
-		#import <objc/objc.h>
-		#if defined(__GNU_LIBOBJC__) && __GNU_LIBOBJC__ >= 20110608
-		yes
-		#endif
-	], [
-		test x"$objc_runtime" = x"" && objc_runtime="GNU"
-	], [
-		dnl TODO: This is ugly. Let's think of a better check.
-		AC_EGREP_CPP(yes, [
-			#import <objc/objc.h>
-			#ifdef __objc_INCLUDE_GNU
-			yes
-			#endif
-		], [
-			test x"$objc_runtime" = x"" && objc_runtime="old GNU"
-		], [
-			objc_runtime="Apple"
-		])
-	])
-])
-AC_MSG_RESULT($objc_runtime)
-
-case $objc_runtime in
-	ObjFW-RT)
-		AC_DEFINE(OF_OBJFW_RUNTIME, 1,
-			[Whether we use the ObjFW runtime])
-		AC_SUBST(GNU_RUNTIME, "-fgnu-runtime")
-		OBJCFLAGS="$OBJCFLAGS -fgnu-runtime"
-
-		AC_CHECK_LIB(objfw-rt, objc_msg_lookup, [
-			LIBS="-lobjfw-rt $LIBS"
-		], [
-			AC_MSG_ERROR([libobjfw-rt not found!])
-		])
-		;;
-	Apple)
-		AC_DEFINE(OF_APPLE_RUNTIME, 1,
-			[Whether we use the Apple ObjC runtime])
-
-		AC_CHECK_LIB(objc, objc_msgSend, [
-			LIBS="-lobjc $LIBS"
-		], [
-			AC_MSG_ERROR([libobjc not found!])
-		])
-		;;
-	GNU)
-		AC_DEFINE(OF_GNU_RUNTIME, 1,
-			[Whether we use the GNU ObjC runtime])
-
-		AC_CHECK_LIB(objc, objc_msg_lookup, [
-			LIBS="-lobjc $LIBS"
-		], [
-			AC_MSG_ERROR([libobjc not found!])
-		])
-		;;
-	"old GNU")
-		AC_DEFINE(OF_OLD_GNU_RUNTIME, 1,
-			[Whether we use the old GNU ObjC runtime])
-
-		AC_CHECK_LIB(objc, objc_msg_lookup, [
-			LIBS="-lobjc $LIBS"
-		], [
-			AC_MSG_ERROR([libobjc not found!])
-		])
-		;;
-	*)
-		AC_MSG_RESULT(none)
-		AC_MSG_ERROR(No ObjC runtime found! Please install ObjFW-RT!)
-		;;
-esac
-
-AC_CHECK_FUNC(objc_getProperty,, [
-	AC_DEFINE(NEED_OBJC_PROPERTIES_INIT, 1,
-		[Whether objc_properties_init needs to be called])
-	AC_SUBST(OBJC_PROPERTIES_M, "objc_properties.m")
-])
-
-AC_CHECK_FUNC(objc_enumerationMutation, [
-	AC_DEFINE(HAVE_OBJC_ENUMERATIONMUTATION, 1,
-		[Whether we have objc_enumerationMutation])
-])
-
 AC_CHECK_TOOL(AR, ar)
 AC_PROG_RANLIB
 AC_ARG_ENABLE(shared,
@@ -245,12 +145,121 @@ AS_IF([test x"$PLUGIN_SUFFIX" != x""], [
 	AC_SUBST(OFPLUGINS_DEF, "-DOF_PLUGINS")
 ])
 
+objc_runtime="ObjFW runtime"
+AC_CHECK_HEADER(objc/objc.h)
+AC_MSG_CHECKING(which Objective C runtime to use)
+AC_ARG_ENABLE(runtime,
+	AS_HELP_STRING([--enable-runtime], [use the included runtime]))
+AC_ARG_ENABLE(seluid16,
+	AS_HELP_STRING([--enable-seluid16],
+		[use only 16 bit for selectors UIDs]))
+AS_IF([test x"$enable_runtime" != x"yes"], [
+	AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
+		dnl TODO: This is ugly. Let's think of a better check.
+		AC_EGREP_CPP(yes, [
+			#import <objc/objc.h>
+			#ifdef __objc_INCLUDE_GNU
+			yes
+			#endif
+		], [
+			dnl We don't want the GNU runtime
+		], [
+			objc_runtime="Apple runtime"
+		])
+	])
+])
+AC_MSG_RESULT($objc_runtime)
+
+case $objc_runtime in
+	"ObjFW runtime")
+		AC_DEFINE(OF_OBJFW_RUNTIME, 1,
+			[Whether we use the ObjFW runtime])
+		GNU_RUNTIME="-fgnu-runtime"
+		OBJCFLAGS="$OBJCFLAGS -fgnu-runtime"
+		RUNTIME_FLAGS="-fgnu-runtime"
+
+		AX_CHECK_COMPILER_FLAGS(-fno-objc-nonfragile-abi, [
+			OBJCFLAGS="$OBJCFLAGS -fno-objc-nonfragile-abi"
+			GNU_RUNTIME="$GNU_RUNTIME -fno-objc-nonfragile-abi"
+		])
+		AX_CHECK_COMPILER_FLAGS(-Wno-deprecated-objc-isa-usage,
+			[OBJCFLAGS="$OBJCFLAGS -Wno-deprecated-objc-isa-usage"])
+
+		AC_SUBST(GNU_RUNTIME)
+
+		AC_SUBST(RUNTIME, "runtime")
+		if test x"$enable_shared" != x"no"; then
+			AC_SUBST(RUNTIME_LIB_A, "runtime.lib.a")
+			AC_SUBST(RUNTIME_RUNTIME_LIB_A, "runtime/runtime.lib.a")
+		fi
+		if test x"$enable_static" = x"yes" \
+		    -o x"$enable_shared" = x"no"; then
+			AC_SUBST(RUNTIME_A, "runtime.a")
+			AC_SUBST(RUNTIME_RUNTIME_A, "runtime/runtime.a")
+		fi
+
+		AC_EGREP_CPP(yes, [
+			#if defined(__amd64__) || defined(__x86_64__)
+			# ifdef __ELF__
+			yes
+			# endif
+			#endif
+		], [
+			AC_SUBST(LOOKUP_S, lookup-amd64-elf.S)
+			AC_DEFINE(OF_ASM_LOOKUP, 1,
+				[Whether to use lookup in assembly])
+		], [
+			AC_EGREP_CPP(yes, [
+				#if defined(__i386__) && defined(__ELF__)
+				yes
+				#endif
+			], [
+				AC_SUBST(LOOKUP_S, lookup-x86-elf.S)
+				AC_DEFINE(OF_ASM_LOOKUP, 1,
+					[Whether to use lookup in assembly])
+			])
+		])
+
+		AC_EGREP_CPP(yes, [
+			#if defined(__amd64__) && defined(__MACH__)
+			yes
+			#endif
+		], [
+			AC_SUBST(LOOKUP_S, lookup-amd64-macho.S)
+			AC_DEFINE(OF_ASM_LOOKUP, 1,
+				[Whether to use lookup in assembly])
+		])
+
+		AS_IF([test x"$enable_seluid16" = x"yes"], [
+			AC_DEFINE(OF_SELUID16, 1,
+				[Whether to use 16 bit selector UIDs])
+		])
+		;;
+	"Apple runtime")
+		AC_DEFINE(OF_APPLE_RUNTIME, 1,
+			[Whether we use the Apple ObjC runtime])
+
+		AC_CHECK_LIB(objc, objc_msgSend, [
+			LIBS="-lobjc $LIBS"
+		], [
+			AC_MSG_ERROR([libobjc not found!])
+		])
+		;;
+esac
+
+AC_CHECK_FUNC(objc_enumerationMutation, [
+	AC_DEFINE(HAVE_OBJC_ENUMERATIONMUTATION, 1,
+		[Whether we have objc_enumerationMutation])
+])
+
 case "$host_os" in
 	darwin*)
-		AC_SUBST(REEXPORT_LIBOBJC, ["-Wl,-reexport-lobjc"])
 		AC_SUBST(LDFLAGS_REEXPORT, ["-Wl,-reexport-lobjfw"])
-		AC_SUBST(MACH_ALIAS_LIST,
-			 ["-Xarch_x86_64 -Wl,-alias_list,mach_alias_list"])
+		AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
+		       AC_SUBST(REEXPORT_LIBOBJC, ["-Wl,-reexport-lobjc"])
+			tmp="-Xarch_x86_64 -Wl,-alias_list,mach_alias_list"
+			AC_SUBST(MACH_ALIAS_LIST, $tmp)
+		])
 		;;
 esac
 
@@ -408,12 +417,6 @@ AS_IF([test x"$enable_threads" != x"no"], [
 	AC_SUBST(OFTHREADTESTS_M, "OFThreadTests.m")
 	AC_SUBST(OFHTTPREQUESTTESTS_M, "OFHTTPRequestTests.m")
 	AC_SUBST(THREADING_H, "threading.h")
-
-	AC_CHECK_FUNC(objc_sync_enter,, [
-		AC_SUBST(OBJC_SYNC_M, "objc_sync.m")
-		AC_DEFINE(NEED_OBJC_SYNC_INIT, 1,
-			[Whether objc_sync_init needs to be called])
-	])
 
 	atomic_ops="none"
 
@@ -578,7 +581,7 @@ AC_TRY_COMPILE([
 	AC_MSG_RESULT(no)
 ])
 
-AS_IF([test x"$objc_runtime" = x"Apple"], [
+AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 	AC_CHECK_HEADER(Foundation/NSObject.h, [
 		AC_SUBST(FOUNDATION_COMPAT_M, "foundation-compat.m")
 	])

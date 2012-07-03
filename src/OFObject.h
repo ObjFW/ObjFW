@@ -28,7 +28,7 @@
 #include <limits.h>
 
 #ifdef OF_OBJFW_RUNTIME
-# import <objfw-rt.h>
+# import "runtime.h"
 #else
 # import <objc/objc.h>
 #endif

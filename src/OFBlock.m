@@ -24,6 +24,8 @@
 
 #if defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
 # import <objc/runtime.h>
+#elif defined(OF_OBJFW_RUNTIME)
+# import "runtime-private.h"
 #endif
 
 #import "OFBlock.h"
@@ -73,41 +75,20 @@ enum {
 - (void)release;
 @end
 
-#if defined(OF_OBJFW_RUNTIME) || defined(OF_GNU_RUNTIME) || \
-    defined(OF_OLD_GNU_RUNTIME)
-struct objc_abi_class {
-	struct objc_abi_metaclass *metaclass;
-	const char *superclass, *name;
-	unsigned long version, info, instance_size;
-	void *ivars, *methodlist, *dtable, *subclass_list, *sibling_class;
-	void *protocols, *gc_object_type;
-	long abi_version;
-	void *ivar_offsets, *properties;
-};
-
-struct objc_abi_metaclass {
-	const char *metaclass, *superclass, *name;
-	unsigned long version, info, instance_size;
-	void *ivars, *methodlist, *dtable, *subclass_list, *sibling_class;
-	void *protocols, *gc_object_type;
-	long abi_version;
-	void *ivar_offsets, *properties;
-};
-
 #ifndef OF_OBJFW_RUNTIME
-/* ObjFW-RT already defines those */
 enum objc_abi_class_info {
 	OBJC_CLASS_INFO_CLASS	  = 0x01,
 	OBJC_CLASS_INFO_METACLASS = 0x02
 };
 #endif
 
-extern void __objc_exec_class(void*);
+#if defined(OF_OBJFW_RUNTIME)
+extern void __objc_exec_class(struct objc_abi_module*);
 
 /* Begin of ObjC module */
-static struct objc_abi_metaclass _NSConcreteStackBlock_metaclass = {
-	"OFBlock", "OFBlock", "OFStackBlock", 8, OBJC_CLASS_INFO_METACLASS,
-	sizeof(struct objc_abi_class), NULL, NULL
+static struct objc_abi_class _NSConcreteStackBlock_metaclass = {
+	(struct objc_abi_class*)(void*)"OFBlock", "OFBlock", "OFStackBlock", 8,
+	OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_abi_class), NULL, NULL
 };
 
 struct objc_abi_class _NSConcreteStackBlock = {
@@ -115,9 +96,9 @@ struct objc_abi_class _NSConcreteStackBlock = {
 	OBJC_CLASS_INFO_CLASS, sizeof(of_block_literal_t), NULL, NULL
 };
 
-static struct objc_abi_metaclass _NSConcreteGlobalBlock_metaclass = {
-	"OFBlock", "OFBlock", "OFGlobalBlock", 8, OBJC_CLASS_INFO_METACLASS,
-	sizeof(struct objc_abi_class), NULL, NULL
+static struct objc_abi_class _NSConcreteGlobalBlock_metaclass = {
+	(struct objc_abi_class*)(void*)"OFBlock", "OFBlock", "OFGlobalBlock", 8,
+	OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_abi_class), NULL, NULL
 };
 
 struct objc_abi_class _NSConcreteGlobalBlock = {
@@ -125,9 +106,9 @@ struct objc_abi_class _NSConcreteGlobalBlock = {
 	8, OBJC_CLASS_INFO_CLASS, sizeof(of_block_literal_t), NULL, NULL
 };
 
-static struct objc_abi_metaclass _NSConcreteMallocBlock_metaclass = {
-	"OFBlock", "OFBlock", "OFMallocBlock", 8, OBJC_CLASS_INFO_METACLASS,
-	sizeof(struct objc_abi_class), NULL, NULL
+static struct objc_abi_class _NSConcreteMallocBlock_metaclass = {
+	(struct objc_abi_class*)(void*)"OFBlock", "OFBlock", "OFMallocBlock", 8,
+	OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_abi_class), NULL, NULL
 };
 
 struct objc_abi_class _NSConcreteMallocBlock = {
@@ -140,16 +121,17 @@ static struct {
 	struct objc_abi_selector *sel_refs;
 	uint16_t cls_def_cnt, cat_def_cnt;
 	void *defs[4];
-} symtab = { 0, NULL, 3, 0, {
-	&_NSConcreteStackBlock, &_NSConcreteGlobalBlock,
-	&_NSConcreteMallocBlock, NULL
-}};
+} symtab = {
+	0, NULL, 3, 0,
+	{
+		&_NSConcreteStackBlock, &_NSConcreteGlobalBlock,
+		&_NSConcreteMallocBlock, NULL
+	}
+};
 
-static struct {
-	unsigned long version, size;
-	const char *name;
-	void *symtab;
-} module = { 8, sizeof(module), NULL, &symtab };
+static struct objc_abi_module module = {
+	8, sizeof(module), NULL, (struct objc_abi_symtab*)&symtab
+};
 
 static void __attribute__((constructor))
 constructor(void)

@@ -58,6 +58,11 @@ void _references_to_categories_of_OFString(void)
 	_OFString_XMLUnescaping_reference = 1;
 }
 
+void _reference_to_OFConstantString(void)
+{
+	[OFConstantString class];
+}
+
 int
 of_string_check_utf8(const char *cString, size_t cStringLength, size_t *length)
 {

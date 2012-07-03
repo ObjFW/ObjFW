@@ -18,10 +18,8 @@
 
 #include <stdlib.h>
 
-#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+#if defined(OF_APPLE_RUNTIME)
 # import <objc/runtime.h>
-#elif defined(OF_OLD_GNU_RUNTIME)
-# import <objc/objc-api.h>
 #endif
 
 #import "OFIntrospection.h"
@@ -32,7 +30,7 @@
 #import "macros.h"
 
 @implementation OFMethod
-#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+#if defined(OF_APPLE_RUNTIME)
 - _initWithMethod: (Method)method
 {
 	self = [super init];
@@ -43,24 +41,6 @@
 		    initWithCString: sel_getName(selector)
 			   encoding: OF_STRING_ENCODING_ASCII];
 		typeEncoding = method_getTypeEncoding(method);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-#elif defined(OF_OLD_GNU_RUNTIME)
-- _initWithMethod: (Method_t)method
-{
-	self = [super init];
-
-	@try {
-		selector = method->method_name;
-		name = [[OFString alloc]
-		    initWithCString: sel_get_name(selector)
-			   encoding: OF_STRING_ENCODING_ASCII];
-		typeEncoding = method->method_types;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -100,7 +80,7 @@
 @end
 
 @implementation OFInstanceVariable
-#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+#if defined(OF_APPLE_RUNTIME)
 - _initWithIvar: (Ivar)ivar
 {
 	self = [super init];
@@ -111,24 +91,6 @@
 			   encoding: OF_STRING_ENCODING_ASCII];
 		offset = ivar_getOffset(ivar);
 		typeEncoding = ivar_getTypeEncoding(ivar);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-#elif defined(OF_OLD_GNU_RUNTIME)
-- _initWithIvar: (Ivar_t)ivar
-{
-	self = [super init];
-
-	@try {
-		name = [[OFString alloc]
-		    initWithCString: ivar->ivar_name
-			   encoding: OF_STRING_ENCODING_ASCII];
-		offset = ivar->ivar_offset;
-		typeEncoding = ivar->ivar_type;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -172,7 +134,7 @@
 @implementation OFProperty
 @synthesize name, attributes;
 
-#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+#if defined(OF_APPLE_RUNTIME)
 - _initWithProperty: (objc_property_t)property
 {
 	self = [super init];
@@ -222,15 +184,13 @@
 
 	@try {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+#if defined(OF_APPLE_RUNTIME)
 		Method *methodList;
 		Ivar *ivarList;
 # ifdef OF_HAVE_PROPERTIES
 		objc_property_t *propertyList;
 # endif
 		unsigned i, count;
-#elif defined(OF_OLD_GNU_RUNTIME)
-		MethodList_t methodList;
 #endif
 
 		classMethods = [[OFMutableArray alloc] init];
@@ -240,7 +200,7 @@
 		properties = [[OFMutableArray alloc] init];
 #endif
 
-#if defined(OF_APPLE_RUNTIME) || defined(OF_GNU_RUNTIME)
+#if defined(OF_APPLE_RUNTIME)
 		methodList = class_copyMethodList(((OFObject*)class)->isa,
 		    &count);
 		@try {
@@ -289,42 +249,6 @@
 			}
 		} @finally {
 			free(propertyList);
-		}
-#elif defined(OF_OLD_GNU_RUNTIME)
-		for (methodList = class->class_pointer->methods;
-		    methodList != NULL; methodList = methodList->method_next) {
-			int i;
-
-			for (i = 0; i < methodList->method_count; i++) {
-				[classMethods addObject: [[[OFMethod alloc]
-				    _initWithMethod:
-				    &methodList->method_list[i]] autorelease]];
-				[pool releaseObjects];
-			}
-		}
-
-		for (methodList = class->methods; methodList != NULL;
-		    methodList = methodList->method_next) {
-			int i;
-
-			for (i = 0; i < methodList->method_count; i++) {
-				[instanceMethods addObject: [[[OFMethod alloc]
-				    _initWithMethod:
-				    &methodList->method_list[i]] autorelease]];
-				[pool releaseObjects];
-			}
-		}
-
-		if (class->ivars != NULL) {
-			int i;
-
-			for (i = 0; i < class->ivars->ivar_count; i++) {
-				[instanceVariables addObject:
-				    [[[OFInstanceVariable alloc]
-				    _initWithIvar: class->ivars->ivar_list + i]
-				    autorelease]];
-				[pool releaseObjects];
-			}
 		}
 #endif
 

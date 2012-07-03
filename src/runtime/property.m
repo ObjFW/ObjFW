@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#include <string.h>
+
 #include <assert.h>
 
 #import "OFObject.h"
@@ -119,4 +121,51 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
 	}
 
 	[old release];
+}
+
+/* The following methods are only required for GCC >= 4.6 */
+void
+objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, BOOL atomic,
+    BOOL strong)
+{
+	if (atomic) {
+#ifdef OF_THREADS
+		unsigned hash = SPINLOCK_HASH(src);
+
+		assert(of_spinlock_lock(&spinlocks[hash]));
+#endif
+
+		memcpy(dest, src, size);
+
+#ifdef OF_THREADS
+		assert(of_spinlock_unlock(&spinlocks[hash]));
+#endif
+
+		return;
+	}
+
+	memcpy(dest, src, size);
+}
+
+void
+objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, BOOL atomic,
+    BOOL strong)
+{
+	if (atomic) {
+#ifdef OF_THREADS
+		unsigned hash = SPINLOCK_HASH(src);
+
+		assert(of_spinlock_lock(&spinlocks[hash]));
+#endif
+
+		memcpy(dest, src, size);
+
+#ifdef OF_THREADS
+		assert(of_spinlock_unlock(&spinlocks[hash]));
+#endif
+
+		return;
+	}
+
+	memcpy(dest, src, size);
 }

@@ -22,12 +22,7 @@
 
 #include <sys/types.h>
 
-#ifdef OF_OBJFW_RUNTIME
-# import <objfw-rt.h>
-#else
-# import <objc/objc.h>
-#endif
-
+#import "runtime.h"
 #import "threading.h"
 
 struct lock_s {

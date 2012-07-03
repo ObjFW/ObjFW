@@ -87,6 +87,6 @@ EBOOT.PBP: ${PROG_NOINST}
 
 include ../buildsys.mk
 
-CPPFLAGS += -I../src -I../src/exceptions -I.. -DSTDOUT
+CPPFLAGS += -I../src -I../src/exceptions -I../src/runtime -I.. -DSTDOUT
 LIBS := -L../src -lobjfw ${LIBS}
 LD = ${OBJC}

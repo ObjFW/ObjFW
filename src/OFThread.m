@@ -27,10 +27,6 @@
 # include <windows.h>
 #endif
 
-#if defined(OF_GNU_RUNTIME) || defined(OF_OLD_GNU_RUNTIME)
-# import <objc/thr.h>
-#endif
-
 #import "OFThread.h"
 #import "OFList.h"
 #import "OFDate.h"
@@ -61,10 +57,6 @@ call_main(id object)
 {
 	OFThread *thread = (OFThread*)object;
 
-#if defined(OF_GNU_RUNTIME) || defined(OF_OLD_GNU_RUNTIME)
-	objc_thread_add();
-#endif
-
 	if (!of_tlskey_set(threadSelf, thread))
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: [thread class]];
@@ -90,10 +82,6 @@ call_main(id object)
 	[OFAutoreleasePool _releaseAll];
 
 	[thread release];
-
-#if defined(OF_GNU_RUNTIME) || defined(OF_OLD_GNU_RUNTIME)
-	objc_thread_remove();
-#endif
 
 	return 0;
 }
@@ -226,10 +214,6 @@ call_main(id object)
 	[OFAutoreleasePool _releaseAll];
 
 	[thread release];
-
-#if defined(OF_GNU_RUNTIME) || defined(OF_OLD_GNU_RUNTIME)
-	objc_thread_remove();
-#endif
 
 	of_thread_exit();
 }
