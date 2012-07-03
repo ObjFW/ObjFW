@@ -92,7 +92,7 @@ typedef id (^of_thread_block_t)(id object);
 }
 
 #if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
-@property (retain) of_thread_block_t block;
+@property (copy) of_thread_block_t block;
 #endif
 
 /**
