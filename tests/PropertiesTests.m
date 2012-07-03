@@ -52,10 +52,11 @@ static OFString *module = @"Properties";
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	PropertiesTest *pt = [[[PropertiesTest alloc] init] autorelease];
 	OFString *t = [OFMutableString stringWithString: @"foo"];
+	OFString *foo = @"foo";
 
 	[pt setFoo: t];
-	TEST(@"copy, nonatomic", [[pt foo] isEqual: @"foo"] &&
-	    [pt foo] != @"foo" && [[pt foo] retainCount] == 1)
+	TEST(@"copy, nonatomic", [[pt foo] isEqual: foo] &&
+	    [pt foo] != foo && [[pt foo] retainCount] == 1)
 
 	[pt setBar: t];
 	TEST(@"retain, atomic", [pt bar] == t && [t retainCount] == 3)
