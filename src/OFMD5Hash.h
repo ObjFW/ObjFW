@@ -30,11 +30,4 @@
 		uint32_t u32[16];
 	} in;
 }
-
-/**
- * \brief Creates a new OFMD5Hash.
- *
- * \return A new autoreleased OFMD5Hash
- */
-+ MD5Hash;
 @end

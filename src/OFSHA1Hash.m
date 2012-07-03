@@ -129,11 +129,6 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 }
 
 @implementation OFSHA1Hash
-+ SHA1Hash
-{
-	return [[[self alloc] init] autorelease];
-}
-
 + (size_t)digestSize
 {
 	return 20;
@@ -157,7 +152,7 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 	return self;
 }
 
-- (void)updateWithBuffer: (const char*)buffer_
+- (void)updateWithBuffer: (const void*)buffer_
 		  length: (size_t)length
 {
 	if (length == 0)

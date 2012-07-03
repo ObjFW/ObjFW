@@ -28,9 +28,4 @@
 	char	 buffer[64];
 	uint8_t	 digest[OF_SHA1_DIGEST_SIZE];
 }
-
-/**
- * \return A new autoreleased SHA1 Hash
- */
-+ SHA1Hash;
 @end

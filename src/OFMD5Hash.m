@@ -119,11 +119,6 @@ md5_transform(uint32_t buffer[4], const uint32_t in[16])
 }
 
 @implementation OFMD5Hash
-+ MD5Hash
-{
-	return [[[self alloc] init] autorelease];
-}
-
 + (size_t)digestSize
 {
 	return 16;
@@ -146,10 +141,11 @@ md5_transform(uint32_t buffer[4], const uint32_t in[16])
 	return self;
 }
 
-- (void)updateWithBuffer: (const char*)buffer_
+- (void)updateWithBuffer: (const void*)buffer__
 		  length: (size_t)length
 {
 	uint32_t t;
+	const char *buffer_ = buffer__;
 
 	if (length == 0)
 		return;

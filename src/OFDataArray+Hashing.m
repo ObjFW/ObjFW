@@ -28,7 +28,7 @@ int _OFDataArray_Hashing_reference;
 - (OFString*)MD5Hash
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFMD5Hash *hash = [OFMD5Hash MD5Hash];
+	OFMD5Hash *hash = [OFMD5Hash hash];
 	uint8_t *digest;
 	char cString[OF_MD5_DIGEST_SIZE * 2];
 	size_t i;
@@ -57,7 +57,7 @@ int _OFDataArray_Hashing_reference;
 - (OFString*)SHA1Hash
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFMD5Hash *hash = [OFSHA1Hash SHA1Hash];
+	OFMD5Hash *hash = [OFSHA1Hash hash];
 	uint8_t *digest;
 	char cString[OF_SHA1_DIGEST_SIZE * 2];
 	size_t i;

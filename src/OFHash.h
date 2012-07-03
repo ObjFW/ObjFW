@@ -29,6 +29,13 @@
 #endif
 
 /**
+ * \brief Creates a new hash.
+ *
+ * \return A new autoreleased OFHash
+ */
++ hash;
+
+/**
  * \brief Returns the digest size of the hash, in bytes.
  *
  * \return The digest size of the hash, in bytes
@@ -45,10 +52,10 @@
 /**
  * \brief Adds a buffer to the hash to be calculated.
  *
- * \param buf The buffer which should be included into the calculation.
+ * \param buffer The buffer which should be included into the calculation
  * \param length The length of the buffer
  */
-- (void)updateWithBuffer: (const char*)buf
+- (void)updateWithBuffer: (const void*)buffer
 		  length: (size_t)length;
 
 /**

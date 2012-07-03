@@ -21,6 +21,11 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFHash
++ hash
+{
+	return [[[self alloc] init] autorelease];
+}
+
 + (size_t)digestSize
 {
 	@throw [OFNotImplementedException exceptionWithClass: self
@@ -33,7 +38,7 @@
 						    selector: _cmd];
 }
 
-- (void)updateWithBuffer: (const char*)buffer
+- (void)updateWithBuffer: (const void*)buffer
 		  length: (size_t)length
 {
 	@throw [OFNotImplementedException exceptionWithClass: isa
