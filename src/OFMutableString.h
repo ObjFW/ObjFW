@@ -111,12 +111,12 @@
 /**
  * \brief Converts the OFMutableString to uppercase.
  */
-- (void)upper;
+- (void)uppercase;
 
 /**
  * \brief Converts the OFMutableString to lowercase.
  */
-- (void)lower;
+- (void)lowercase;
 
 /**
  * \brief Inserts a string at the specified index.

@@ -131,16 +131,18 @@ static uint16_t sutf16str[] = {
 
 	s[1] = [OFMutableString stringWithString: @"abc"];
 
-	TEST(@"-[upper]", R([s[0] upper]) && [s[0] isEqual: @"3𝄞1€SÄT"] &&
-	    R([s[1] upper]) && [s[1] isEqual: @"ABC"])
+	TEST(@"-[uppercase]", R([s[0] uppercase]) &&
+	    [s[0] isEqual: @"3𝄞1€SÄT"] &&
+	    R([s[1] uppercase]) && [s[1] isEqual: @"ABC"])
 
-	TEST(@"-[lower]", R([s[0] lower]) && [s[0] isEqual: @"3𝄞1€sät"] &&
-	    R([s[1] lower]) && [s[1] isEqual: @"abc"])
+	TEST(@"-[lowercase]", R([s[0] lowercase]) &&
+	    [s[0] isEqual: @"3𝄞1€sät"] &&
+	    R([s[1] lowercase]) && [s[1] isEqual: @"abc"])
 
 	TEST(@"-[uppercaseString]",
 	    [[s[0] uppercaseString] isEqual: @"3𝄞1€SÄT"])
 
-	TEST(@"-[lowercaseString]", R([s[0] upper]) &&
+	TEST(@"-[lowercaseString]", R([s[0] uppercase]) &&
 	    [[s[0] lowercaseString] isEqual: @"3𝄞1€sät"])
 
 	TEST(@"+[stringWithUTF8String:length:]",

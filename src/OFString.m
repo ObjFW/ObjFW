@@ -1466,7 +1466,7 @@ static struct {
 {
 	OFMutableString *new = [[self mutableCopy] autorelease];
 
-	[new upper];
+	[new uppercase];
 
 	[new makeImmutable];
 
@@ -1477,7 +1477,7 @@ static struct {
 {
 	OFMutableString *new = [[self mutableCopy] autorelease];
 
-	[new lower];
+	[new lowercase];
 
 	[new makeImmutable];
 

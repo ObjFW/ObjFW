@@ -438,7 +438,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 					return NO;
 
 			if ([attribute isEqual: @"encoding"]) {
-				[value lower];
+				[value lowercase];
 
 				if ([value isEqual: @"utf-8"])
 					encoding = OF_STRING_ENCODING_UTF_8;

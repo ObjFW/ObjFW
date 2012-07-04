@@ -380,13 +380,13 @@ static struct {
 	}
 }
 
-- (void)upper
+- (void)uppercase
 {
 	[self _applyTable: of_unicode_uppercase_table
 		 withSize: OF_UNICODE_UPPERCASE_TABLE_SIZE];
 }
 
-- (void)lower
+- (void)lowercase
 {
 	[self _applyTable: of_unicode_lowercase_table
 		 withSize: OF_UNICODE_LOWERCASE_TABLE_SIZE];
