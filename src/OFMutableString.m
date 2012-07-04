@@ -382,14 +382,14 @@ static struct {
 
 - (void)upper
 {
-	[self _applyTable: of_unicode_upper_table
-		 withSize: OF_UNICODE_UPPER_TABLE_SIZE];
+	[self _applyTable: of_unicode_uppercase_table
+		 withSize: OF_UNICODE_UPPERCASE_TABLE_SIZE];
 }
 
 - (void)lower
 {
-	[self _applyTable: of_unicode_lower_table
-		 withSize: OF_UNICODE_LOWER_TABLE_SIZE];
+	[self _applyTable: of_unicode_lowercase_table
+		 withSize: OF_UNICODE_LOWERCASE_TABLE_SIZE];
 }
 
 - (void)insertString: (OFString*)string

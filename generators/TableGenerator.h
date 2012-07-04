@@ -18,14 +18,17 @@
 
 @interface TableGenerator: OFObject
 {
-	of_unichar_t upperTable[0x110000];
-	of_unichar_t lowerTable[0x110000];
+	of_unichar_t uppercaseTable[0x110000];
+	of_unichar_t lowercaseTable[0x110000];
+	of_unichar_t titlecaseTable[0x110000];
 	of_unichar_t casefoldingTable[0x110000];
-	BOOL upperTableUsed[0x1100];
-	BOOL lowerTableUsed[0x1100];
+	BOOL uppercaseTableUsed[0x1100];
+	BOOL lowercaseTableUsed[0x1100];
+	char titlecaseTableUsed[0x1100];
 	char casefoldingTableUsed[0x1100];
-	size_t upperTableSize;
-	size_t lowerTableSize;
+	size_t uppercaseTableSize;
+	size_t lowercaseTableSize;
+	size_t titlecaseTableSize;
 	size_t casefoldingTableSize;
 }
 

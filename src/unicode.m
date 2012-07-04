@@ -20,7 +20,7 @@
 
 static const of_unichar_t nop_page[0x100] = {};
 
-static const of_unichar_t upper_page_0[0x100] = {
+static const of_unichar_t uppercase_page_0[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -55,7 +55,7 @@ static const of_unichar_t upper_page_0[0x100] = {
 	216, 217, 218, 219, 220, 221, 222, 376,
 };
 
-static const of_unichar_t upper_page_1[0x100] = {
+static const of_unichar_t uppercase_page_1[0x100] = {
 	0, 256, 0, 258, 0, 260, 0, 262,
 	0, 264, 0, 266, 0, 268, 0, 270,
 	0, 272, 0, 274, 0, 276, 0, 278,
@@ -90,7 +90,7 @@ static const of_unichar_t upper_page_1[0x100] = {
 	0, 504, 0, 506, 0, 508, 0, 510,
 };
 
-static const of_unichar_t upper_page_2[0x100] = {
+static const of_unichar_t uppercase_page_2[0x100] = {
 	0, 512, 0, 514, 0, 516, 0, 518,
 	0, 520, 0, 522, 0, 524, 0, 526,
 	0, 528, 0, 530, 0, 532, 0, 534,
@@ -125,7 +125,7 @@ static const of_unichar_t upper_page_2[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t upper_page_3[0x100] = {
+static const of_unichar_t uppercase_page_3[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -160,7 +160,7 @@ static const of_unichar_t upper_page_3[0x100] = {
 	1015, 0, 0, 1018, 0, 0, 0, 0,
 };
 
-static const of_unichar_t upper_page_4[0x100] = {
+static const of_unichar_t uppercase_page_4[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -195,7 +195,7 @@ static const of_unichar_t upper_page_4[0x100] = {
 	0, 1272, 0, 1274, 0, 1276, 0, 1278,
 };
 
-static const of_unichar_t upper_page_5[0x100] = {
+static const of_unichar_t uppercase_page_5[0x100] = {
 	0, 1280, 0, 1282, 0, 1284, 0, 1286,
 	0, 1288, 0, 1290, 0, 1292, 0, 1294,
 	0, 1296, 0, 1298, 0, 1300, 0, 1302,
@@ -230,7 +230,7 @@ static const of_unichar_t upper_page_5[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t upper_page_29[0x100] = {
+static const of_unichar_t uppercase_page_29[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -265,7 +265,7 @@ static const of_unichar_t upper_page_29[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t upper_page_30[0x100] = {
+static const of_unichar_t uppercase_page_30[0x100] = {
 	0, 7680, 0, 7682, 0, 7684, 0, 7686,
 	0, 7688, 0, 7690, 0, 7692, 0, 7694,
 	0, 7696, 0, 7698, 0, 7700, 0, 7702,
@@ -300,7 +300,7 @@ static const of_unichar_t upper_page_30[0x100] = {
 	0, 7928, 0, 7930, 0, 7932, 0, 7934,
 };
 
-static const of_unichar_t upper_page_31[0x100] = {
+static const of_unichar_t uppercase_page_31[0x100] = {
 	7944, 7945, 7946, 7947, 7948, 7949, 7950, 7951,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	7960, 7961, 7962, 7963, 7964, 7965, 0, 0,
@@ -335,7 +335,7 @@ static const of_unichar_t upper_page_31[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t upper_page_33[0x100] = {
+static const of_unichar_t uppercase_page_33[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -370,7 +370,7 @@ static const of_unichar_t upper_page_33[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t upper_page_36[0x100] = {
+static const of_unichar_t uppercase_page_36[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -405,7 +405,7 @@ static const of_unichar_t upper_page_36[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t upper_page_44[0x100] = {
+static const of_unichar_t uppercase_page_44[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -440,7 +440,7 @@ static const of_unichar_t upper_page_44[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t upper_page_45[0x100] = {
+static const of_unichar_t uppercase_page_45[0x100] = {
 	4256, 4257, 4258, 4259, 4260, 4261, 4262, 4263,
 	4264, 4265, 4266, 4267, 4268, 4269, 4270, 4271,
 	4272, 4273, 4274, 4275, 4276, 4277, 4278, 4279,
@@ -475,7 +475,7 @@ static const of_unichar_t upper_page_45[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t upper_page_166[0x100] = {
+static const of_unichar_t uppercase_page_166[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -510,7 +510,7 @@ static const of_unichar_t upper_page_166[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t upper_page_167[0x100] = {
+static const of_unichar_t uppercase_page_167[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -545,7 +545,7 @@ static const of_unichar_t upper_page_167[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t upper_page_255[0x100] = {
+static const of_unichar_t uppercase_page_255[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -580,7 +580,7 @@ static const of_unichar_t upper_page_255[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t upper_page_260[0x100] = {
+static const of_unichar_t uppercase_page_260[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -615,7 +615,7 @@ static const of_unichar_t upper_page_260[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lower_page_0[0x100] = {
+static const of_unichar_t lowercase_page_0[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -650,7 +650,7 @@ static const of_unichar_t lower_page_0[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lower_page_1[0x100] = {
+static const of_unichar_t lowercase_page_1[0x100] = {
 	257, 0, 259, 0, 261, 0, 263, 0,
 	265, 0, 267, 0, 269, 0, 271, 0,
 	273, 0, 275, 0, 277, 0, 279, 0,
@@ -685,7 +685,7 @@ static const of_unichar_t lower_page_1[0x100] = {
 	505, 0, 507, 0, 509, 0, 511, 0,
 };
 
-static const of_unichar_t lower_page_2[0x100] = {
+static const of_unichar_t lowercase_page_2[0x100] = {
 	513, 0, 515, 0, 517, 0, 519, 0,
 	521, 0, 523, 0, 525, 0, 527, 0,
 	529, 0, 531, 0, 533, 0, 535, 0,
@@ -720,7 +720,7 @@ static const of_unichar_t lower_page_2[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lower_page_3[0x100] = {
+static const of_unichar_t lowercase_page_3[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -755,7 +755,7 @@ static const of_unichar_t lower_page_3[0x100] = {
 	0, 1010, 1019, 0, 0, 891, 892, 893,
 };
 
-static const of_unichar_t lower_page_4[0x100] = {
+static const of_unichar_t lowercase_page_4[0x100] = {
 	1104, 1105, 1106, 1107, 1108, 1109, 1110, 1111,
 	1112, 1113, 1114, 1115, 1116, 1117, 1118, 1119,
 	1072, 1073, 1074, 1075, 1076, 1077, 1078, 1079,
@@ -790,7 +790,7 @@ static const of_unichar_t lower_page_4[0x100] = {
 	1273, 0, 1275, 0, 1277, 0, 1279, 0,
 };
 
-static const of_unichar_t lower_page_5[0x100] = {
+static const of_unichar_t lowercase_page_5[0x100] = {
 	1281, 0, 1283, 0, 1285, 0, 1287, 0,
 	1289, 0, 1291, 0, 1293, 0, 1295, 0,
 	1297, 0, 1299, 0, 1301, 0, 1303, 0,
@@ -825,7 +825,7 @@ static const of_unichar_t lower_page_5[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lower_page_16[0x100] = {
+static const of_unichar_t lowercase_page_16[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -860,7 +860,7 @@ static const of_unichar_t lower_page_16[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lower_page_30[0x100] = {
+static const of_unichar_t lowercase_page_30[0x100] = {
 	7681, 0, 7683, 0, 7685, 0, 7687, 0,
 	7689, 0, 7691, 0, 7693, 0, 7695, 0,
 	7697, 0, 7699, 0, 7701, 0, 7703, 0,
@@ -895,7 +895,7 @@ static const of_unichar_t lower_page_30[0x100] = {
 	7929, 0, 7931, 0, 7933, 0, 7935, 0,
 };
 
-static const of_unichar_t lower_page_31[0x100] = {
+static const of_unichar_t lowercase_page_31[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	7936, 7937, 7938, 7939, 7940, 7941, 7942, 7943,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -930,7 +930,7 @@ static const of_unichar_t lower_page_31[0x100] = {
 	8056, 8057, 8060, 8061, 8179, 0, 0, 0,
 };
 
-static const of_unichar_t lower_page_33[0x100] = {
+static const of_unichar_t lowercase_page_33[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -965,7 +965,7 @@ static const of_unichar_t lower_page_33[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lower_page_36[0x100] = {
+static const of_unichar_t lowercase_page_36[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1000,7 +1000,7 @@ static const of_unichar_t lower_page_36[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lower_page_44[0x100] = {
+static const of_unichar_t lowercase_page_44[0x100] = {
 	11312, 11313, 11314, 11315, 11316, 11317, 11318, 11319,
 	11320, 11321, 11322, 11323, 11324, 11325, 11326, 11327,
 	11328, 11329, 11330, 11331, 11332, 11333, 11334, 11335,
@@ -1035,7 +1035,7 @@ static const of_unichar_t lower_page_44[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lower_page_166[0x100] = {
+static const of_unichar_t lowercase_page_166[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1070,7 +1070,7 @@ static const of_unichar_t lower_page_166[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lower_page_167[0x100] = {
+static const of_unichar_t lowercase_page_167[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1105,7 +1105,7 @@ static const of_unichar_t lower_page_167[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lower_page_255[0x100] = {
+static const of_unichar_t lowercase_page_255[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1140,7 +1140,7 @@ static const of_unichar_t lower_page_255[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lower_page_260[0x100] = {
+static const of_unichar_t lowercase_page_260[0x100] = {
 	66600, 66601, 66602, 66603, 66604, 66605, 66606, 66607,
 	66608, 66609, 66610, 66611, 66612, 66613, 66614, 66615,
 	66616, 66617, 66618, 66619, 66620, 66621, 66622, 66623,
@@ -1175,7 +1175,42 @@ static const of_unichar_t lower_page_260[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t cf_page_0[0x100] = {
+static const of_unichar_t titlecase_page_1[0x100] = {
+	0, 256, 0, 258, 0, 260, 0, 262,
+	0, 264, 0, 266, 0, 268, 0, 270,
+	0, 272, 0, 274, 0, 276, 0, 278,
+	0, 280, 0, 282, 0, 284, 0, 286,
+	0, 288, 0, 290, 0, 292, 0, 294,
+	0, 296, 0, 298, 0, 300, 0, 302,
+	0, 73, 0, 306, 0, 308, 0, 310,
+	0, 0, 313, 0, 315, 0, 317, 0,
+	319, 0, 321, 0, 323, 0, 325, 0,
+	327, 0, 0, 330, 0, 332, 0, 334,
+	0, 336, 0, 338, 0, 340, 0, 342,
+	0, 344, 0, 346, 0, 348, 0, 350,
+	0, 352, 0, 354, 0, 356, 0, 358,
+	0, 360, 0, 362, 0, 364, 0, 366,
+	0, 368, 0, 370, 0, 372, 0, 374,
+	0, 0, 377, 0, 379, 0, 381, 83,
+	579, 0, 0, 386, 0, 388, 0, 0,
+	391, 0, 0, 0, 395, 0, 0, 0,
+	0, 0, 401, 0, 0, 502, 0, 0,
+	0, 408, 573, 0, 0, 0, 544, 0,
+	0, 416, 0, 418, 0, 420, 0, 0,
+	423, 0, 0, 0, 0, 428, 0, 0,
+	431, 0, 0, 0, 435, 0, 437, 0,
+	0, 440, 0, 0, 0, 444, 0, 503,
+	0, 0, 0, 0, 453, 453, 453, 456,
+	456, 456, 459, 459, 459, 0, 461, 0,
+	463, 0, 465, 0, 467, 0, 469, 0,
+	471, 0, 473, 0, 475, 398, 0, 478,
+	0, 480, 0, 482, 0, 484, 0, 486,
+	0, 488, 0, 490, 0, 492, 0, 494,
+	0, 498, 498, 498, 0, 500, 0, 0,
+	0, 504, 0, 506, 0, 508, 0, 510,
+};
+
+static const of_unichar_t casefolding_page_0[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1210,7 +1245,7 @@ static const of_unichar_t cf_page_0[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t cf_page_1[0x100] = {
+static const of_unichar_t casefolding_page_1[0x100] = {
 	257, 0, 259, 0, 261, 0, 263, 0,
 	265, 0, 267, 0, 269, 0, 271, 0,
 	273, 0, 275, 0, 277, 0, 279, 0,
@@ -1245,7 +1280,7 @@ static const of_unichar_t cf_page_1[0x100] = {
 	505, 0, 507, 0, 509, 0, 511, 0,
 };
 
-static const of_unichar_t cf_page_3[0x100] = {
+static const of_unichar_t casefolding_page_3[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1280,7 +1315,7 @@ static const of_unichar_t cf_page_3[0x100] = {
 	0, 1010, 1019, 0, 0, 891, 892, 893,
 };
 
-static const of_unichar_t cf_page_30[0x100] = {
+static const of_unichar_t casefolding_page_30[0x100] = {
 	7681, 0, 7683, 0, 7685, 0, 7687, 0,
 	7689, 0, 7691, 0, 7693, 0, 7695, 0,
 	7697, 0, 7699, 0, 7701, 0, 7703, 0,
@@ -1315,7 +1350,7 @@ static const of_unichar_t cf_page_30[0x100] = {
 	7929, 0, 7931, 0, 7933, 0, 7935, 0,
 };
 
-static const of_unichar_t cf_page_31[0x100] = {
+static const of_unichar_t casefolding_page_31[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	7936, 7937, 7938, 7939, 7940, 7941, 7942, 7943,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1350,25 +1385,19 @@ static const of_unichar_t cf_page_31[0x100] = {
 	8056, 8057, 8060, 8061, 8179, 0, 0, 0,
 };
 
-const of_unichar_t* const of_unicode_upper_table[0x105] = {
-	upper_page_0, upper_page_1, upper_page_2, upper_page_3,
-	upper_page_4, upper_page_5, nop_page, nop_page,
+const of_unichar_t* const of_unicode_uppercase_table[0x105] = {
+	uppercase_page_0, uppercase_page_1, uppercase_page_2, uppercase_page_3,
+	uppercase_page_4, uppercase_page_5, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
-	nop_page, upper_page_29, upper_page_30, upper_page_31,
-	nop_page, upper_page_33, nop_page, nop_page,
-	upper_page_36, nop_page, nop_page, nop_page,
+	nop_page, uppercase_page_29, uppercase_page_30, uppercase_page_31,
+	nop_page, uppercase_page_33, nop_page, nop_page,
+	uppercase_page_36, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
-	upper_page_44, upper_page_45, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
+	uppercase_page_44, uppercase_page_45, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
@@ -1392,7 +1421,13 @@ const of_unichar_t* const of_unicode_upper_table[0x105] = {
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, upper_page_166, upper_page_167,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, uppercase_page_166, uppercase_page_167,
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
@@ -1414,27 +1449,24 @@ const of_unichar_t* const of_unicode_upper_table[0x105] = {
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, upper_page_255,
+	nop_page, nop_page, nop_page, uppercase_page_255,
 	nop_page, nop_page, nop_page, nop_page,
-	upper_page_260
+	uppercase_page_260
 };
 
-const of_unichar_t* const of_unicode_lower_table[0x105] = {
-	lower_page_0, lower_page_1, lower_page_2, lower_page_3,
-	lower_page_4, lower_page_5, nop_page, nop_page,
+const of_unichar_t* const of_unicode_lowercase_table[0x105] = {
+	lowercase_page_0, lowercase_page_1, lowercase_page_2, lowercase_page_3,
+	lowercase_page_4, lowercase_page_5, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
-	lower_page_16, nop_page, nop_page, nop_page,
+	lowercase_page_16, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, lower_page_30, lower_page_31,
-	nop_page, lower_page_33, nop_page, nop_page,
-	lower_page_36, nop_page, nop_page, nop_page,
+	nop_page, nop_page, lowercase_page_30, lowercase_page_31,
+	nop_page, lowercase_page_33, nop_page, nop_page,
+	lowercase_page_36, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
-	lower_page_44, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
+	lowercase_page_44, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
@@ -1461,7 +1493,10 @@ const of_unichar_t* const of_unicode_lower_table[0x105] = {
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, lower_page_166, lower_page_167,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, lowercase_page_166, lowercase_page_167,
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
@@ -1483,76 +1518,166 @@ const of_unichar_t* const of_unicode_lower_table[0x105] = {
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
 	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, lower_page_255,
+	nop_page, nop_page, nop_page, lowercase_page_255,
 	nop_page, nop_page, nop_page, nop_page,
-	lower_page_260
+	lowercase_page_260
+};
+
+const of_unichar_t* const of_unicode_titlecase_table[0x105] = {
+	uppercase_page_0, titlecase_page_1, uppercase_page_2, uppercase_page_3,
+	uppercase_page_4, uppercase_page_5, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, uppercase_page_29, uppercase_page_30, uppercase_page_31,
+	nop_page, uppercase_page_33, nop_page, nop_page,
+	uppercase_page_36, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	uppercase_page_44, uppercase_page_45, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, uppercase_page_166, uppercase_page_167,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page, uppercase_page_255,
+	nop_page, nop_page, nop_page, nop_page,
+	uppercase_page_260
 };
 
 const of_unichar_t* const of_unicode_casefolding_table[0x105] = {
-	cf_page_0, cf_page_1, lower_page_2, cf_page_3,
-	lower_page_4, lower_page_5, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	lower_page_16, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, cf_page_30, cf_page_31,
-	nop_page, lower_page_33, nop_page, nop_page,
-	lower_page_36, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	lower_page_44, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, lower_page_166, lower_page_167,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, nop_page,
-	nop_page, nop_page, nop_page, lower_page_255,
-	nop_page, nop_page, nop_page, nop_page,
-	lower_page_260
+	casefolding_page_0, casefolding_page_1, lowercase_page_2,
+	casefolding_page_3, lowercase_page_4, lowercase_page_5,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, lowercase_page_16, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	casefolding_page_30, casefolding_page_31, nop_page,
+	lowercase_page_33, nop_page, nop_page,
+	lowercase_page_36, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, lowercase_page_44,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, lowercase_page_166, lowercase_page_167,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	nop_page, nop_page, nop_page,
+	lowercase_page_255, nop_page, nop_page,
+	nop_page, nop_page, lowercase_page_260
 };
