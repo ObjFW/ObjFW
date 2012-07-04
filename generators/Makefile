@@ -40,6 +40,6 @@ CaseFolding.txt:
 
 include ../buildsys.mk
 
-CPPFLAGS += -I../src -I..
+CPPFLAGS += -I../src -I../src/runtime -I..
 LIBS := -L../src -lobjfw ${LIBS}
 LD = ${OBJC}
