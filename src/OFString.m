@@ -867,7 +867,7 @@ static struct {
 	OFAutoreleasePool *pool;
 	OFHTTPRequest *request;
 	OFHTTPRequestResult *result;
-	OFMutableString *contentType;
+	OFString *contentType;
 	Class c;
 
 	c = isa;
@@ -896,10 +896,9 @@ static struct {
 
 	if (encoding == OF_STRING_ENCODING_AUTODETECT &&
 	    (contentType = [[result headers] objectForKey: @"Content-Type"])) {
-		contentType = [[contentType mutableCopy] autorelease];
-		[contentType lower];
+		contentType = [contentType lowercaseString];
 
-		if ([contentType hasSuffix: @"charset=UTF-8"])
+		if ([contentType hasSuffix: @"charset=utf-8"])
 			encoding = OF_STRING_ENCODING_UTF_8;
 		if ([contentType hasSuffix: @"charset=iso-8859-1"])
 			encoding = OF_STRING_ENCODING_ISO_8859_1;
