@@ -100,8 +100,8 @@ extern void _Unwind_DeleteException(struct _Unwind_Exception*);
 
 static objc_uncaught_exception_handler uncaught_exception_handler;
 
-static inline uint64_t
-read_leb128(const uint8_t **ptr, uint8_t *bits)
+static uint64_t
+read_uleb128(const uint8_t **ptr)
 {
 	uint64_t value = 0;
 	uint8_t shift = 0;
@@ -112,25 +112,18 @@ read_leb128(const uint8_t **ptr, uint8_t *bits)
 		shift += 7;
 	} while (*(*ptr - 1) & 0x80);
 
-	if (bits != NULL)
-		*bits = shift;
-
 	return value;
-}
-
-static uint64_t
-read_uleb128(const uint8_t **ptr)
-{
-	return read_leb128(ptr, NULL);
 }
 
 static int64_t
 read_sleb128(const uint8_t **ptr)
 {
+	const uint8_t *oldptr = *ptr;
 	uint8_t bits;
 	int64_t value;
 
-	value = read_leb128(ptr, &bits);
+	value = read_uleb128(ptr);
+	bits = (*ptr - oldptr) * 7;
 
 	if (bits < 64 && value & (1 << (bits - 1)))
 		value |= -(1 << bits);
@@ -189,34 +182,34 @@ read_value(uint8_t enc, const uint8_t **ptr)
 		/* Not implemented */
 		abort();
 
-#define READ_TYPE(type, size)			\
+#define READ_TYPE(type)				\
 	{					\
 		value = *(type*)(void*)*ptr;	\
-		*ptr += size;			\
+		*ptr += size_for_encoding(enc);	\
 		break;				\
 	}
 
 	switch (enc & 0x0F) {
 	case DW_EH_PE_absptr:
-		READ_TYPE(uintptr_t, sizeof(void*))
+		READ_TYPE(uintptr_t)
 	case DW_EH_PE_uleb128:
 		value = read_uleb128(ptr);
 		break;
 	case DW_EH_PE_udata2:
-		READ_TYPE(uint16_t, 2)
+		READ_TYPE(uint16_t)
 	case DW_EH_PE_udata4:
-		READ_TYPE(uint32_t, 4)
+		READ_TYPE(uint32_t)
 	case DW_EH_PE_udata8:
-		READ_TYPE(uint64_t, 8)
+		READ_TYPE(uint64_t)
 	case DW_EH_PE_sleb128:
 		value = read_sleb128(ptr);
 		break;
 	case DW_EH_PE_sdata2:
-		READ_TYPE(int16_t, 2)
+		READ_TYPE(int16_t)
 	case DW_EH_PE_sdata4:
-		READ_TYPE(int32_t, 4)
+		READ_TYPE(int32_t)
 	case DW_EH_PE_sdata8:
-		READ_TYPE(int64_t, 8)
+		READ_TYPE(int64_t)
 	default:
 		abort();
 	}
@@ -248,7 +241,7 @@ read_lsda(struct _Unwind_Context *ctx, const uint8_t *ptr, struct lsda *lsda)
 
 	lsda->region_start = _Unwind_GetRegionStart(ctx);
 	lsda->landingpads_start = lsda->region_start;
-	lsda->typestable = 0;
+	lsda->typestable = NULL;
 
 	if ((landingpads_start_enc = *ptr++) != DW_EH_PE_omit)
 		lsda->landingpads_start =
