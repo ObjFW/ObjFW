@@ -44,26 +44,50 @@
 		[self inheritMethodsFromClass: [OFString_UTF8 class]];
 }
 
-- (void)_applyTable: (const of_unichar_t* const[])table
-	   withSize: (size_t)tableSize
+- (void)_convertWithWordStartTable: (const of_unichar_t *const[])startTable
+		   wordMiddleTable: (const of_unichar_t *const[])middleTable
+		wordStartTableSize: (size_t)startTableSize
+	       wordMiddleTableSize: (size_t)middleTableSize
 {
-	of_unichar_t c;
 	of_unichar_t *unicodeString;
-	size_t unicodeLen, newCStringLength, cLen;
-	size_t i, j, d;
+	size_t unicodeLen, newCStringLength;
+	size_t i, j;
 	char *newCString;
+	BOOL isStart = YES;
 
 	if (!s->UTF8) {
-		assert(tableSize >= 1);
-
-		uint8_t *p = (uint8_t*)s->cString + s->cStringLength;
 		uint8_t t;
+		const of_unichar_t *const *table;
+		size_t tableSize;
+
+		assert(startTableSize >= 1 && middleTableSize >= 1);
 
 		s->hashed = NO;
 
-		while (--p >= (uint8_t*)s->cString)
-			if ((t = table[0][*p]) != 0)
-				*p = t;
+		for (i = 0; i < s->cStringLength; i++) {
+			if (isStart) {
+				table = startTable;
+				tableSize = middleTableSize;
+			} else {
+				table = middleTable;
+				tableSize = middleTableSize;
+			}
+
+			switch (s->cString[i]) {
+			case ' ':
+			case '\t':
+			case '\n':
+			case '\r':
+				isStart = YES;
+				break;
+			default:
+				isStart = NO;
+				break;
+			}
+
+			if ((t = table[0][(uint8_t)s->cString[i]]) != 0)
+				s->cString[i] = t;
+		}
 
 		return;
 	}
@@ -76,6 +100,19 @@
 	newCStringLength = 0;
 
 	while (i < s->cStringLength) {
+		const of_unichar_t *const *table;
+		size_t tableSize;
+		of_unichar_t c;
+		size_t cLen;
+
+		if (isStart) {
+			table = startTable;
+			tableSize = middleTableSize;
+		} else {
+			table = middleTable;
+			tableSize = middleTableSize;
+		}
+
 		cLen = of_string_utf8_to_unicode(s->cString + i,
 		    s->cStringLength - i, &c);
 
@@ -83,6 +120,18 @@
 			[self freeMemory: unicodeString];
 			@throw [OFInvalidEncodingException
 			    exceptionWithClass: isa];
+		}
+
+		switch (c) {
+		case ' ':
+		case '\t':
+		case '\n':
+		case '\r':
+			isStart = YES;
+			break;
+		default:
+			isStart = NO;
+			break;
 		}
 
 		if (c >> 8 < tableSize) {
@@ -120,6 +169,8 @@
 	j = 0;
 
 	for (i = 0; i < unicodeLen; i++) {
+		size_t d;
+
 		if ((d = of_string_unicode_to_utf8(unicodeString[i],
 		    newCString + j)) == 0) {
 			[self freeMemory: unicodeString];

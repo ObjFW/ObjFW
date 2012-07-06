@@ -693,6 +693,17 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (OFString*)lowercaseString;
 
 /**
+ * \brief Returns the string capitalized.
+ *
+ * \note This only considers spaces, tab and newlines to be word delimiters!
+ *	 Also note that this might change in the future to all word delimiters
+ *	 specified by Unicode!
+ *
+ * \return The capitalized string
+ */
+- (OFString*)capitalizedString;
+
+/**
  * \brief Creates a new string by deleting leading whitespaces.
  *
  * \return A new autoreleased OFString with leading whitespaces deleted

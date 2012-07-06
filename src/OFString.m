@@ -1484,6 +1484,17 @@ static struct {
 	return new;
 }
 
+- (OFString*)capitalizedString
+{
+	OFMutableString *new = [[self mutableCopy] autorelease];
+
+	[new capitalize];
+
+	[new makeImmutable];
+
+	return new;
+}
+
 - (OFString*)stringByDeletingLeadingWhitespaces
 {
 	OFMutableString *new = [[self mutableCopy] autorelease];

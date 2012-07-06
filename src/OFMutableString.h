@@ -104,19 +104,28 @@
 - (void)prependString: (OFString*)string;
 
 /**
- * \brief Reverses the OFMutableString.
+ * \brief Reverses the string.
  */
 - (void)reverse;
 
 /**
- * \brief Converts the OFMutableString to uppercase.
+ * \brief Converts the string to uppercase.
  */
 - (void)uppercase;
 
 /**
- * \brief Converts the OFMutableString to lowercase.
+ * \brief Converts the string to lowercase.
  */
 - (void)lowercase;
+
+/**
+ * \brief Capitalizes the string.
+ *
+ * \note This only considers spaces, tabs and newlines to be word delimiters!
+ *	 Also note that this might change in the future to all word delimiters
+ *	 specified by Unicode!
+ */
+- (void)capitalize;
 
 /**
  * \brief Inserts a string at the specified index.

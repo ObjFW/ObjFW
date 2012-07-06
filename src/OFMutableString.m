@@ -254,19 +254,44 @@ static struct {
 	return [super alloc];
 }
 
-- (void)_applyTable: (const of_unichar_t* const[])table
-	   withSize: (size_t)tableSize
+- (void)_convertWithWordStartTable: (const of_unichar_t *const[])startTable
+		   wordMiddleTable: (const of_unichar_t *const[])middleTable
+		wordStartTableSize: (size_t)startTableSize
+	       wordMiddleTableSize: (size_t)middleTableSize
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	const of_unichar_t *string = [self unicodeString];
 	size_t i, length = [self length];
+	BOOL isStart = YES;
 
 	for (i = 0; i < length; i++) {
+		const of_unichar_t *const *table;
+		size_t tableSize;
 		of_unichar_t c = string[i];
+
+		if (isStart) {
+			table = startTable;
+			tableSize = middleTableSize;
+		} else {
+			table = middleTable;
+			tableSize = middleTableSize;
+		}
 
 		if (c >> 8 < tableSize && table[c >> 8][c & 0xFF])
 			[self setCharacter: table[c >> 8][c & 0xFF]
 				   atIndex: i];
+
+		switch (c) {
+		case ' ':
+		case '\t':
+		case '\n':
+		case '\r':
+			isStart = YES;
+			break;
+		default:
+			isStart = NO;
+			break;
+		}
 	}
 
 	[pool release];
@@ -382,14 +407,26 @@ static struct {
 
 - (void)uppercase
 {
-	[self _applyTable: of_unicode_uppercase_table
-		 withSize: OF_UNICODE_UPPERCASE_TABLE_SIZE];
+	[self _convertWithWordStartTable: of_unicode_uppercase_table
+			 wordMiddleTable: of_unicode_uppercase_table
+		      wordStartTableSize: OF_UNICODE_UPPERCASE_TABLE_SIZE
+		     wordMiddleTableSize: OF_UNICODE_UPPERCASE_TABLE_SIZE];
 }
 
 - (void)lowercase
 {
-	[self _applyTable: of_unicode_lowercase_table
-		 withSize: OF_UNICODE_LOWERCASE_TABLE_SIZE];
+	[self _convertWithWordStartTable: of_unicode_lowercase_table
+			 wordMiddleTable: of_unicode_lowercase_table
+		      wordStartTableSize: OF_UNICODE_LOWERCASE_TABLE_SIZE
+		     wordMiddleTableSize: OF_UNICODE_LOWERCASE_TABLE_SIZE];
+}
+
+- (void)capitalize
+{
+	[self _convertWithWordStartTable: of_unicode_titlecase_table
+			 wordMiddleTable: of_unicode_lowercase_table
+		      wordStartTableSize: OF_UNICODE_TITLECASE_TABLE_SIZE
+		     wordMiddleTableSize: OF_UNICODE_LOWERCASE_TABLE_SIZE];
 }
 
 - (void)insertString: (OFString*)string
