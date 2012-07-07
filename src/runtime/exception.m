@@ -90,12 +90,12 @@ struct lsda {
 
 extern _Unwind_Reason_Code _Unwind_RaiseException(struct _Unwind_Exception*);
 extern void* _Unwind_GetLanguageSpecificData(struct _Unwind_Context*);
-extern uint64_t _Unwind_GetRegionStart(struct _Unwind_Context*);
-extern uint64_t _Unwind_GetDataRelBase(struct _Unwind_Context*);
-extern uint64_t _Unwind_GetTextRelBase(struct _Unwind_Context*);
-extern uint64_t _Unwind_GetIP(struct _Unwind_Context*);
-extern void _Unwind_SetIP(struct _Unwind_Context*, uint64_t);
-extern void _Unwind_SetGR(struct _Unwind_Context*, int, uint64_t);
+extern uintptr_t _Unwind_GetRegionStart(struct _Unwind_Context*);
+extern uintptr_t _Unwind_GetDataRelBase(struct _Unwind_Context*);
+extern uintptr_t _Unwind_GetTextRelBase(struct _Unwind_Context*);
+extern uintptr_t _Unwind_GetIP(struct _Unwind_Context*);
+extern void _Unwind_SetIP(struct _Unwind_Context*, uintptr_t);
+extern void _Unwind_SetGR(struct _Unwind_Context*, int, uintptr_t);
 extern void _Unwind_DeleteException(struct _Unwind_Exception*);
 
 static objc_uncaught_exception_handler uncaught_exception_handler;
@@ -228,7 +228,7 @@ resolve_value(uint64_t value, uint8_t enc, const uint8_t *start, uint64_t base)
 	value += ((enc & 0x70) == DW_EH_PE_pcrel ? (uintptr_t)start : base);
 
 	if (enc & DW_EH_PE_indirect)
-		value = *(uint64_t*)value;
+		value = *(uint64_t*)(uintptr_t)value;
 
 	return value;
 }
@@ -245,17 +245,17 @@ read_lsda(struct _Unwind_Context *ctx, const uint8_t *ptr, struct lsda *lsda)
 
 	if ((landingpads_start_enc = *ptr++) != DW_EH_PE_omit)
 		lsda->landingpads_start =
-		    read_value(landingpads_start_enc, &ptr);
+		    (uintptr_t)read_value(landingpads_start_enc, &ptr);
 
 	if ((lsda->typestable_enc = *ptr++) != DW_EH_PE_omit) {
-		uintptr_t tmp = read_uleb128(&ptr);
+		uintptr_t tmp = (uintptr_t)read_uleb128(&ptr);
 		lsda->typestable = ptr + tmp;
 	}
 
 	lsda->typestable_base = get_base(ctx, lsda->typestable_enc);
 
 	lsda->callsites_enc = *ptr++;
-	callsites_size = read_uleb128(&ptr);
+	callsites_size = (uintptr_t)read_uleb128(&ptr);
 	lsda->callsites = ptr;
 
 	lsda->actiontable = lsda->callsites + callsites_size;
@@ -277,10 +277,11 @@ find_callsite(struct _Unwind_Context *ctx, struct lsda *lsda,
 		uintptr_t callsite_action;
 
 		callsite_start = lsda->region_start +
-		    read_value(lsda->callsites_enc, &ptr);
-		callsite_len = read_value(lsda->callsites_enc, &ptr);
-		callsite_landingpad = read_value(lsda->callsites_enc, &ptr);
-		callsite_action = read_uleb128(&ptr);
+		    (uintptr_t)read_value(lsda->callsites_enc, &ptr);
+		callsite_len = (uintptr_t)read_value(lsda->callsites_enc, &ptr);
+		callsite_landingpad =
+		    (uintptr_t)read_value(lsda->callsites_enc, &ptr);
+		callsite_action = (uintptr_t)read_uleb128(&ptr);
 
 		/* We can stop if we passed IP, as the table is sorted */
 		if (callsite_start >= ip)
@@ -329,7 +330,7 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 
 	do {
 		ptr = actionrecords;
-		filter = read_sleb128(&ptr);
+		filter = (intptr_t)read_sleb128(&ptr);
 
 		/*
 		 * Get the next action record. Since read_sleb128 modifies ptr,
@@ -337,7 +338,7 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 		 * add the displacement.
 		 */
 		actionrecords = ptr;
-		displacement = read_sleb128(&ptr);
+		displacement = (intptr_t)read_sleb128(&ptr);
 		actionrecords += displacement;
 
 		if (filter > 0 && !(actions & _UA_FORCE_UNWIND) && !foreign) {
@@ -347,8 +348,8 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 
 			i = filter * size_for_encoding(lsda->typestable_enc);
 			tmp = lsda->typestable - i;
-			c = read_value(lsda->typestable_enc, &tmp);
-			c = resolve_value(c, lsda->typestable_enc,
+			c = (uintptr_t)read_value(lsda->typestable_enc, &tmp);
+			c = (uintptr_t)resolve_value(c, lsda->typestable_enc,
 			    lsda->typestable - i, lsda->typestable_base);
 
 			class = (c != 0 ? objc_get_class((const char*)c) : Nil);
@@ -394,7 +395,7 @@ __gnu_objc_personality_v0(int version, int actions, uint64_t ex_class,
 		 * #1 the filter.
 		 */
 		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(0),
-		    __builtin_extend_pointer(e->object));
+		    (uintptr_t)e->object);
 		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(1),
 		    e->filter);
 		_Unwind_SetIP(ctx, e->landingpad);
@@ -434,7 +435,7 @@ __gnu_objc_personality_v0(int version, int actions, uint64_t ex_class,
 	} else if (actions & _UA_CLEANUP_PHASE) {
 		/* For cleanup, reg #0 must be the exception and reg #1 zero */
 		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(0),
-		    __builtin_extend_pointer(e));
+		    (uintptr_t)e);
 		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(1), 0);
 		_Unwind_SetIP(ctx, landingpad);
 
