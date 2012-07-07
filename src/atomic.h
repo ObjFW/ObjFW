@@ -117,7 +117,7 @@ of_atomic_add_ptr(void* volatile *p, intptr_t i)
 
 	return (void*)i;
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_add_and_fetch(p, i);
+	return __sync_add_and_fetch(p, (void*)i);
 #elif defined(OF_HAVE_OSATOMIC)
 	if (sizeof(void*) == 4)
 		return (void*)OSAtomicAdd32Barrier(i, (int32_t*)p);
@@ -225,7 +225,7 @@ of_atomic_sub_ptr(void* volatile *p, intptr_t i)
 
 	return (void*)i;
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_sub_and_fetch(p, i);
+	return __sync_sub_and_fetch(p, (void*)i);
 #elif defined(OF_HAVE_OSATOMIC)
 	if (sizeof(void*) == 4)
 		return (void*)OSAtomicAdd32Barrier(-i, (int32_t*)p);
