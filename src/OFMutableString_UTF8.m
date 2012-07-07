@@ -58,20 +58,16 @@
 	if (!s->UTF8) {
 		uint8_t t;
 		const of_unichar_t *const *table;
-		size_t tableSize;
 
 		assert(startTableSize >= 1 && middleTableSize >= 1);
 
 		s->hashed = NO;
 
 		for (i = 0; i < s->cStringLength; i++) {
-			if (isStart) {
+			if (isStart)
 				table = startTable;
-				tableSize = middleTableSize;
-			} else {
+			else
 				table = middleTable;
-				tableSize = middleTableSize;
-			}
 
 			switch (s->cString[i]) {
 			case ' ':
