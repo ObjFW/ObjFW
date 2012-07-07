@@ -19,7 +19,7 @@ AC_PROG_EGREP
 
 CPP="$OBJCPP"
 CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS"
-OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions -fobjc-exceptions"
+OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions -fobjc-exceptions -funwind-tables"
 OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstantString"
 
 AX_CHECK_COMPILER_FLAGS(-std=gnu99, [OBJCFLAGS="$OBJCFLAGS -std=gnu99"])
