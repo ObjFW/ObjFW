@@ -66,8 +66,13 @@ sel_registerName(const char *name)
 	const struct objc_abi_selector *rsel;
 	struct objc_abi_selector *sel;
 
-	if ((rsel = objc_hashtable_get(selectors, name)) != NULL)
+	objc_global_mutex_lock();
+
+	if (selectors != NULL &&
+	    (rsel = objc_hashtable_get(selectors, name)) != NULL) {
+		objc_global_mutex_unlock();
 		return (SEL)rsel;
+	}
 
 	/* FIXME: Free on objc_exit() */
 	if ((sel = malloc(sizeof(struct objc_abi_selector))) == NULL)
@@ -78,10 +83,9 @@ sel_registerName(const char *name)
 
 	sel->types = NULL;
 
-	objc_global_mutex_lock();
 	objc_register_selector(sel);
-	objc_global_mutex_unlock();
 
+	objc_global_mutex_unlock();
 	return (SEL)sel;
 }
 
