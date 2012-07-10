@@ -9,7 +9,7 @@ Linux
 -----
 
  * Architectures: x86, x86_64
- * Compilers: Clang 3.1, GCC 4.7.1
+ * Compilers: Clang 3.0-3.1, GCC 4.7.1
  * Runtimes: ObjFW
 
 

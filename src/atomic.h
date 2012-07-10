@@ -641,7 +641,7 @@ of_atomic_cmpswap_int(volatile int *p, int o, int n)
 	    "cmpxchg	%2, %3\n\t"
 	    "sete	%b0\n\t"
 	    "movzbl	%b0, %0"
-	    : "=&r"(r)
+	    : "=&d"(r)	/* use d instead of r due to gcc bug */
 	    : "a"(o), "r"(n), "m"(*p)
 	);
 
@@ -672,7 +672,7 @@ of_atomic_cmpswap_32(volatile int32_t *p, int32_t o, int32_t n)
 	    "cmpxchg	%2, %3\n\t"
 	    "sete	%b0\n\t"
 	    "movzbl	%b0, %0"
-	    : "=&r"(r)
+	    : "=&d"(r)	/* use d instead of r due to gcc bug */
 	    : "a"(o), "r"(n), "m"(*p)
 	);
 
@@ -703,7 +703,7 @@ of_atomic_cmpswap_ptr(void* volatile *p, void *o, void *n)
 	    "cmpxchg	%2, %3\n\t"
 	    "sete	%b0\n\t"
 	    "movzbl	%b0, %0"
-	    : "=&r"(r)
+	    : "=&d"(r)	/* use d instead of r due to gcc bug */
 	    : "a"(o), "r"(n), "m"(*p)
 	);
 
