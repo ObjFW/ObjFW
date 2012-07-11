@@ -26,6 +26,10 @@
 
 #include <assert.h>
 
+#ifdef __QNX__
+# include <sys/syspage.h>
+#endif
+
 #import "OFObject.h"
 #import "OFAutoreleasePool.h"
 
@@ -217,6 +221,10 @@ void _references_to_categories_of_OFObject(void)
 	GetSystemInfo(&si);
 	of_pagesize = si.dwPageSize;
 	of_num_cpus = si.dwNumberOfProcessors;
+#elif defined(__QNX__)
+	if ((of_pagesize = sysconf(_SC_PAGESIZE)) < 1)
+		of_pagesize = 4096;
+	of_num_cpus = _syspage_ptr->num_cpu;
 #else
 # ifdef _SC_PAGESIZE
 	if ((of_pagesize = sysconf(_SC_PAGESIZE)) < 1)
