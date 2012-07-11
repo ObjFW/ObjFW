@@ -163,6 +163,7 @@ AS_IF([test x"$enable_runtime" != x"yes"], [
 			#endif
 		], [
 			dnl We don't want the GNU runtime
+			true
 		], [
 			objc_runtime="Apple runtime"
 		])
