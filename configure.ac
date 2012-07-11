@@ -175,18 +175,53 @@ case $objc_runtime in
 	"ObjFW runtime")
 		AC_DEFINE(OF_OBJFW_RUNTIME, 1,
 			[Whether we use the ObjFW runtime])
-		GNU_RUNTIME="-fgnu-runtime"
-		OBJCFLAGS="$OBJCFLAGS -fgnu-runtime"
-		RUNTIME_FLAGS="-fgnu-runtime"
 
-		AX_CHECK_COMPILER_FLAGS(-fno-objc-nonfragile-abi, [
-			OBJCFLAGS="$OBJCFLAGS -fno-objc-nonfragile-abi"
-			GNU_RUNTIME="$GNU_RUNTIME -fno-objc-nonfragile-abi"
+		AC_MSG_CHECKING([whether -fobjc-runtime=objfw is supported])
+
+		old_OBJCFLAGS="$OBJCFLAGS"
+		OBJCFLAGS="$OBJCFLAGS -fobjc-runtime=objfw"
+		AC_TRY_LINK([
+			@interface Test
+			+ (void)test;
+			@end
+
+			@implementation Test
+			+ (void)test
+			{
+			}
+			@end
+
+			void*
+			objc_msg_lookup(void *obj, void *sel)
+			{
+				return (void*)0;
+			}
+
+			void
+			__objc_exec_class(void *module)
+			{
+			}
+		], [
+			[Test test];
+		], [
+			RUNTIME_FLAGS="-fobjc-runtime=objfw"
+			AC_MSG_RESULT(yes)
+		], [
+			RUNTIME_FLAGS="-fgnu-runtime"
+			OBJCFLAGS="$old_OBJCFLAGS -fgnu-runtime"
+			AC_MSG_RESULT(no)
+
+			AX_CHECK_COMPILER_FLAGS(-fno-objc-nonfragile-abi, [
+				flag="-fno-objc-nonfragile-abi"
+				OBJCFLAGS="$OBJCFLAGS $flag"
+				RUNTIME_FLAGS="$RUNTIME_FLAGS $flag"
+			])
 		])
+
 		AX_CHECK_COMPILER_FLAGS(-Wno-deprecated-objc-isa-usage,
 			[OBJCFLAGS="$OBJCFLAGS -Wno-deprecated-objc-isa-usage"])
 
-		AC_SUBST(GNU_RUNTIME)
+		AC_SUBST(RUNTIME_FLAGS)
 
 		AC_SUBST(RUNTIME, "runtime")
 		if test x"$enable_shared" != x"no"; then
