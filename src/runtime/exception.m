@@ -96,7 +96,6 @@ extern uintptr_t _Unwind_GetTextRelBase(struct _Unwind_Context*);
 extern uintptr_t _Unwind_GetIP(struct _Unwind_Context*);
 extern void _Unwind_SetIP(struct _Unwind_Context*, uintptr_t);
 extern void _Unwind_SetGR(struct _Unwind_Context*, int, uintptr_t);
-extern void _Unwind_DeleteException(struct _Unwind_Exception*);
 
 static objc_uncaught_exception_handler uncaught_exception_handler;
 
@@ -399,6 +398,8 @@ __gnu_objc_personality_v0(int version, int actions, uint64_t ex_class,
 		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(1),
 		    e->filter);
 		_Unwind_SetIP(ctx, e->landingpad);
+
+		free(ex);
 
 		return _URC_INSTALL_CONTEXT;
 	}
