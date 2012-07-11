@@ -217,13 +217,14 @@ void _references_to_categories_of_OFObject(void)
 	GetSystemInfo(&si);
 	of_pagesize = si.dwPageSize;
 	of_num_cpus = si.dwNumberOfProcessors;
-#elif defined(_PSP)
-	of_pagesize = 4096;
-	of_num_cpus = 1;
 #else
+# ifdef _SC_PAGESIZE
 	if ((of_pagesize = sysconf(_SC_PAGESIZE)) < 1)
+# endif
 		of_pagesize = 4096;
+# ifdef _SC_NPROCESSORS_CONF
 	if ((of_num_cpus = sysconf(_SC_NPROCESSORS_CONF)) < 1)
+# endif
 		of_num_cpus = 1;
 #endif
 }
