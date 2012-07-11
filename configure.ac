@@ -11,7 +11,7 @@ AS_IF([test x"$host" = x"psp"], [
 AC_CANONICAL_HOST
 
 AC_LANG([Objective C])
-AC_PROG_OBJC
+AC_PROG_OBJC([clang gcc])
 AC_PROG_OBJCPP
 AC_PROG_LN_S
 AC_PROG_INSTALL
