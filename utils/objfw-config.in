@@ -157,6 +157,7 @@ while test ! -z "$1"; do
 			exit 1
 			;;
 	esac
+	printf " "
 
 	shift
 done
