@@ -133,4 +133,26 @@ extern void objc_exit(void);
 extern objc_uncaught_exception_handler objc_setUncaughtExceptionHandler(
     objc_uncaught_exception_handler);
 
+static inline Class
+object_getClass(id obj_)
+{
+	struct objc_object *obj = (struct objc_object*)obj_;
+
+	return obj->isa;
+}
+
+static inline void
+object_setClass(id obj_, Class cls)
+{
+	struct objc_object *obj = (struct objc_object*)obj_;
+
+	obj->isa = cls;
+}
+
+static inline const char*
+object_getClassName(id obj)
+{
+	return class_getName(object_getClass(obj));
+}
+
 #endif
