@@ -145,6 +145,9 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[lowercaseString]", R([s[0] uppercase]) &&
 	    [[s[0] lowercaseString] isEqual: @"3𝄞1€sät"])
 
+	TEST(@"-[capitalizedString]", [[@"ǆbla tǆst TǄST" capitalizedString]
+	    isEqual: @"ǅbla Tǆst Tǆst"])
+
 	TEST(@"+[stringWithUTF8String:length:]",
 	    (s[0] = [OFMutableString stringWithUTF8String: "\xEF\xBB\xBF"
 							   "foobar"
