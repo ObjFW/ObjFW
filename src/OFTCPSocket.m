@@ -155,8 +155,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 	uint16_t destinationPort = port;
 
 	if (sock != INVALID_SOCKET)
-		@throw [OFAlreadyConnectedException exceptionWithClass: isa
-								socket: self];
+		@throw [OFAlreadyConnectedException
+		    exceptionWithClass: [self class]
+				socket: self];
 
 	if (SOCKS5Host != nil) {
 		/* Connect to the SOCKS5 proxy instead */
@@ -176,7 +177,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (getaddrinfo([host cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    portCString, &hints, &res0))
 		@throw [OFAddressTranslationFailedException
-		    exceptionWithClass: isa
+		    exceptionWithClass: [self class]
 				socket: self
 				  host: host];
 
@@ -214,7 +215,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		[mutex unlock];
 # endif
 		@throw [OFAddressTranslationFailedException
-		    exceptionWithClass: isa
+		    exceptionWithClass: [self class]
 				socket: self
 				  host: host];
 	}
@@ -229,8 +230,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 		[addrlist release];
 		[mutex unlock];
 # endif
-		@throw [OFConnectionFailedException exceptionWithClass: isa
-								socket: self
+		@throw [OFConnectionFailedException
+		    exceptionWithClass: [self class]
+				socket: self
 								  host: host
 								  port: port];
 	}
@@ -273,10 +275,11 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 
 	if (sock == INVALID_SOCKET)
-		@throw [OFConnectionFailedException exceptionWithClass: isa
-								socket: self
-								  host: host
-								  port: port];
+		@throw [OFConnectionFailedException
+		    exceptionWithClass: [self class]
+				socket: self
+				  host: host
+				  port: port];
 
 	if (SOCKS5Host != nil)
 		[self _SOCKS5ConnectToHost: destinationHost
@@ -294,12 +297,14 @@ static uint16_t defaultSOCKS5Port = 1080;
 	socklen_t addrLen;
 
 	if (sock != INVALID_SOCKET)
-		@throw [OFAlreadyConnectedException exceptionWithClass: isa
-								socket: self];
+		@throw [OFAlreadyConnectedException
+		    exceptionWithClass: [self class]
+				socket: self];
 
 	if (SOCKS5Host != nil)
-		@throw [OFNotImplementedException exceptionWithClass: isa
-							    selector: _cmd];
+		@throw [OFNotImplementedException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 
 #ifdef HAVE_THREADSAFE_GETADDRINFO
 	struct addrinfo hints, *res;
@@ -313,12 +318,12 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (getaddrinfo([host cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    portCString, &hints, &res))
 		@throw [OFAddressTranslationFailedException
-		    exceptionWithClass: isa
+		    exceptionWithClass: [self class]
 				socket: self
 				  host: host];
 
 	if ((sock = socket(res->ai_family, SOCK_STREAM, 0)) == INVALID_SOCKET)
-		@throw [OFBindFailedException exceptionWithClass: isa
+		@throw [OFBindFailedException exceptionWithClass: [self class]
 							  socket: self
 							    host: host
 							    port: port];
@@ -327,7 +332,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		freeaddrinfo(res);
 		close(sock);
 		sock = INVALID_SOCKET;
-		@throw [OFBindFailedException exceptionWithClass: isa
+		@throw [OFBindFailedException exceptionWithClass: [self class]
 							  socket: self
 							    host: host
 							    port: port];
@@ -347,7 +352,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		[mutex unlock];
 # endif
 		@throw [OFAddressTranslationFailedException
-		    exceptionWithClass: isa
+		    exceptionWithClass: [self class]
 				socket: self
 				  host: host];
 	}
@@ -361,7 +366,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		[mutex unlock];
 # endif
 		@throw [OFAddressTranslationFailedException
-		    exceptionWithClass: isa
+		    exceptionWithClass: [self class]
 				socket: self
 				  host: host];
 	}
@@ -372,7 +377,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	[mutex unlock];
 # endif
 	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
-		@throw [OFBindFailedException exceptionWithClass: isa
+		@throw [OFBindFailedException exceptionWithClass: [self class]
 							  socket: self
 							    host: host
 							    port: port];
@@ -380,7 +385,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (bind(sock, (struct sockaddr*)&addr.in, sizeof(addr.in)) == -1) {
 		close(sock);
 		sock = INVALID_SOCKET;
-		@throw [OFBindFailedException exceptionWithClass: isa
+		@throw [OFBindFailedException exceptionWithClass: [self class]
 							  socket: self
 							    host: host
 							    port: port];
@@ -394,7 +399,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (getsockname(sock, (struct sockaddr*)&addr, &addrLen)) {
 		close(sock);
 		sock = INVALID_SOCKET;
-		@throw [OFBindFailedException exceptionWithClass: isa
+		@throw [OFBindFailedException exceptionWithClass: [self class]
 							  socket: self
 							    host: host
 							    port: port];
@@ -407,7 +412,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	close(sock);
 	sock = INVALID_SOCKET;
-	@throw [OFBindFailedException exceptionWithClass: isa
+	@throw [OFBindFailedException exceptionWithClass: [self class]
 						  socket: self
 						    host: host
 						    port: port];
@@ -416,11 +421,11 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (void)listenWithBackLog: (int)backLog
 {
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithClass: isa
+		@throw [OFNotConnectedException exceptionWithClass: [self class]
 							    socket: self];
 
 	if (listen(sock, backLog) == -1)
-		@throw [OFListenFailedException exceptionWithClass: isa
+		@throw [OFListenFailedException exceptionWithClass: [self class]
 							    socket: self
 							   backLog: backLog];
 
@@ -430,11 +435,11 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (void)listen
 {
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithClass: isa
+		@throw [OFNotConnectedException exceptionWithClass: [self class]
 							    socket: self];
 
 	if (listen(sock, 5) == -1)
-		@throw [OFListenFailedException exceptionWithClass: isa
+		@throw [OFListenFailedException exceptionWithClass: [self class]
 							    socket: self
 							   backLog: 5];
 
@@ -448,7 +453,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	socklen_t addrLen;
 	int newSock;
 
-	newSocket = [[[isa alloc] init] autorelease];
+	newSocket = [[[[self class] alloc] init] autorelease];
 	addrLen = sizeof(struct sockaddr);
 
 	@try {
@@ -461,7 +466,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if ((newSock = accept(sock, (struct sockaddr*)addr,
 	    &addrLen)) == INVALID_SOCKET) {
 		[newSocket release];
-		@throw [OFAcceptFailedException exceptionWithClass: isa
+		@throw [OFAcceptFailedException exceptionWithClass: [self class]
 							    socket: self];
 	}
 
@@ -477,8 +482,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 	int v = enable;
 
 	if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char*)&v, sizeof(v)))
-		@throw [OFSetOptionFailedException exceptionWithClass: isa
-							       stream: self];
+		@throw [OFSetOptionFailedException
+		    exceptionWithClass: [self class]
+				stream: self];
 }
 
 - (OFString*)remoteAddress
@@ -486,8 +492,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 	char *host;
 
 	if (sockAddr == NULL || sockAddrLen == 0)
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 
 #ifdef HAVE_THREADSAFE_GETADDRINFO
 	host = [self allocMemoryWithSize: NI_MAXHOST];
@@ -496,7 +503,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		if (getnameinfo((struct sockaddr*)sockAddr, sockAddrLen, host,
 		    NI_MAXHOST, NULL, 0, NI_NUMERICHOST))
 			@throw [OFAddressTranslationFailedException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		return [OFString stringWithCString: host
 					  encoding: OF_STRING_ENCODING_NATIVE];
@@ -513,7 +520,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 		if (host == NULL)
 			@throw [OFAddressTranslationFailedException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		return [OFString stringWithCString: host
 					  encoding: OF_STRING_ENCODING_NATIVE];

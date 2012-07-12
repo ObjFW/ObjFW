@@ -23,8 +23,8 @@
 @implementation OFEnumerator
 - init
 {
-	if (isa == [OFEnumerator class]) {
-		Class c = isa;
+	if (object_getClass(self) == [OFEnumerator class]) {
+		Class c = [self class];
 		[self release];
 		@throw [OFNotImplementedException exceptionWithClass: c
 							    selector: _cmd];
@@ -35,13 +35,13 @@
 
 - (id)nextObject
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (void)reset
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 @end

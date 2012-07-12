@@ -95,7 +95,7 @@ static struct {
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 	[super dealloc];	/* Get rid of a stupid warning */
 }
@@ -105,7 +105,7 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFSet class])
-		placeholder.isa = [OFSet_placeholder class];
+		object_setClass((id)&placeholder, [OFSet_placeholder class]);
 }
 
 + alloc
@@ -153,8 +153,8 @@ static struct {
 
 - init
 {
-	if (isa == [OFSet class]) {
-		Class c = isa;
+	if (object_getClass(self) == [OFSet class]) {
+		Class c = [self class];
 		[self release];
 		@throw [OFNotImplementedException exceptionWithClass: c
 							    selector: _cmd];
@@ -165,7 +165,7 @@ static struct {
 
 - initWithSet: (OFSet*)set
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -173,7 +173,7 @@ static struct {
 
 - initWithArray: (OFArray*)array
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -195,7 +195,7 @@ static struct {
 - initWithObjects: (id const*)objects
 	    count: (size_t)count
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -204,7 +204,7 @@ static struct {
 - initWithObject: (id)firstObject
        arguments: (va_list)arguments
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -212,7 +212,7 @@ static struct {
 
 - initWithSerialization: (OFXMLElement*)element
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -220,19 +220,19 @@ static struct {
 
 - (size_t)count
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (BOOL)containsObject: (id)object
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (OFEnumerator*)objectEnumerator
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -240,7 +240,7 @@ static struct {
 			   objects: (id*)objects
 			     count: (int)count
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 

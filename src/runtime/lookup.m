@@ -28,9 +28,10 @@ IMP (*objc_forward_handler)(id, SEL) = NULL;
 IMP
 objc_not_found_handler(id obj, SEL sel)
 {
-	if (!(obj->isa->info & OBJC_CLASS_INFO_INITIALIZED)) {
-		BOOL is_class = obj->isa->info & OBJC_CLASS_INFO_METACLASS;
-		Class cls = (is_class ? (Class)obj : obj->isa);
+	if (!(object_getClass(obj)->info & OBJC_CLASS_INFO_INITIALIZED)) {
+		BOOL is_class =
+		    object_getClass(obj)->info & OBJC_CLASS_INFO_METACLASS;
+		Class cls = (is_class ? (Class)obj : object_getClass(obj));
 
 		objc_initialize_class(cls);
 
@@ -55,7 +56,7 @@ objc_not_found_handler(id obj, SEL sel)
 		return objc_forward_handler(obj, sel);
 
 	ERROR("Selector %s is not implemented for class %s!",
-	    sel_getName(sel), obj->isa->name);
+	    sel_getName(sel), object_getClassName(obj));
 }
 
 BOOL
@@ -83,7 +84,8 @@ objc_msg_lookup(id obj, SEL sel)
 	if (obj == nil)
 		return (IMP)nil_method;
 
-	imp = objc_sparsearray_get(obj->isa->dtable, (uint32_t)sel->uid);
+	imp = objc_sparsearray_get(object_getClass(obj)->dtable,
+	    (uint32_t)sel->uid);
 
 	if (imp == NULL)
 		return objc_not_found_handler(obj, sel);

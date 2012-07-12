@@ -312,7 +312,8 @@ class_matches(Class class, id object)
 	if (object == nil)
 		return NO;
 
-	for (iter = object->isa; iter != Nil; iter = class_getSuperclass(iter))
+	for (iter = object_getClass(object); iter != Nil;
+	    iter = class_getSuperclass(iter))
 		if (iter == class)
 			return YES;
 

@@ -101,7 +101,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 			break;
 		case -1:
 			@throw [OFInvalidEncodingException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 		}
 
 		memcpy(s->cString, UTF8String, UTF8StringLength);
@@ -142,13 +142,13 @@ memcasecmp(const char *first, const char *second, size_t length)
 			case 1:
 				if (encoding == OF_STRING_ENCODING_ASCII)
 					@throw [OFInvalidEncodingException
-					    exceptionWithClass: isa];
+					    exceptionWithClass: [self class]];
 
 				s->UTF8 = YES;
 				break;
 			case -1:
 				@throw [OFInvalidEncodingException
-				    exceptionWithClass: isa];
+				    exceptionWithClass: [self class]];
 			}
 
 			memcpy(s->cString, cString, cStringLength);
@@ -176,7 +176,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 
 				if (bytes == 0)
 					@throw [OFInvalidEncodingException
-					    exceptionWithClass: isa];
+					    exceptionWithClass: [self class]];
 
 				s->cStringLength += bytes - 1;
 				s->cString = [self
@@ -201,7 +201,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 			break;
 		default:
 			@throw [OFInvalidEncodingException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 		}
 
 		for (i = j = 0; i < cStringLength; i++) {
@@ -218,7 +218,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 
 			if (character == 0xFFFD)
 				@throw [OFInvalidEncodingException
-				    exceptionWithClass: isa];
+				    exceptionWithClass: [self class]];
 
 			s->UTF8 = YES;
 			characterBytes = of_string_unicode_to_utf8(character,
@@ -226,7 +226,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 
 			if (characterBytes == 0)
 				@throw [OFInvalidEncodingException
-				    exceptionWithClass: isa];
+				    exceptionWithClass: [self class]];
 
 			s->cStringLength += characterBytes - 1;
 			s->cString = [self resizeMemory: s->cString
@@ -334,7 +334,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 				break;
 			default:
 				@throw [OFInvalidEncodingException
-				    exceptionWithClass: isa];
+				    exceptionWithClass: [self class]];
 			}
 		}
 
@@ -389,14 +389,14 @@ memcasecmp(const char *first, const char *second, size_t length)
 			/* Missing high surrogate */
 			if ((character & 0xFC00) == 0xDC00)
 				@throw [OFInvalidEncodingException
-				    exceptionWithClass: isa];
+				    exceptionWithClass: [self class]];
 
 			if ((character & 0xFC00) == 0xD800) {
 				uint16_t nextCharacter;
 
 				if (length <= i + 1)
 					@throw [OFInvalidEncodingException
-					    exceptionWithClass: isa];
+					    exceptionWithClass: [self class]];
 
 				nextCharacter = (swap
 				    ? of_bswap16(string[i + 1])
@@ -442,7 +442,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 				break;
 			default:
 				@throw [OFInvalidEncodingException
-				    exceptionWithClass: isa];
+				    exceptionWithClass: [self class]];
 			}
 		}
 
@@ -473,7 +473,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 
 		if (format == nil)
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		s = &s_store;
@@ -481,7 +481,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 		if ((cStringLength = of_vasprintf(&tmp, [format UTF8String],
 		    arguments)) == -1)
 			@throw [OFInvalidFormatException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		s->cStringLength = cStringLength;
 
@@ -493,7 +493,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 				break;
 			case -1:
 				@throw [OFInvalidEncodingException
-				    exceptionWithClass: isa];
+				    exceptionWithClass: [self class]];
 			}
 
 			s->cString = [self
@@ -585,12 +585,13 @@ memcasecmp(const char *first, const char *second, size_t length)
 	case OF_STRING_ENCODING_ASCII:
 		if (s->UTF8)
 			@throw [OFInvalidEncodingException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		return s->cString;
 	default:
-		@throw [OFNotImplementedException exceptionWithClass: isa
-							    selector: _cmd];
+		@throw [OFNotImplementedException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 	}
 }
 
@@ -612,12 +613,13 @@ memcasecmp(const char *first, const char *second, size_t length)
 	case OF_STRING_ENCODING_ASCII:
 		if (s->UTF8)
 			@throw [OFInvalidEncodingException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		return s->cStringLength;
 	default:
-		@throw [OFNotImplementedException exceptionWithClass: isa
-							    selector: _cmd];
+		@throw [OFNotImplementedException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 	}
 }
 
@@ -653,8 +655,9 @@ memcasecmp(const char *first, const char *second, size_t length)
 		return OF_ORDERED_SAME;
 
 	if (![object isKindOfClass: [OFString class]])
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 
 	otherString = object;
 	otherCStringLength = [otherString UTF8StringLength];
@@ -686,8 +689,9 @@ memcasecmp(const char *first, const char *second, size_t length)
 		return OF_ORDERED_SAME;
 
 	if (![otherString isKindOfClass: [OFString class]])
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 
 	otherCString = [otherString UTF8String];
 	otherCStringLength = [otherString UTF8StringLength];
@@ -724,7 +728,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 
 		if (l1 == 0 || l2 == 0 || c1 > 0x10FFFF || c2 > 0x10FFFF)
 			@throw [OFInvalidEncodingException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		if (c1 >> 8 < OF_UNICODE_CASEFOLDING_TABLE_SIZE) {
 			of_unichar_t tc =
@@ -776,7 +780,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 		if ((length = of_string_utf8_to_unicode(s->cString + i,
 		    s->cStringLength - i, &c)) == 0)
 			@throw [OFInvalidEncodingException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		OF_HASH_ADD(hash, (c & 0xFF0000) >> 16);
 		OF_HASH_ADD(hash, (c & 0x00FF00) >>  8);
@@ -798,7 +802,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 	of_unichar_t character;
 
 	if (index >= s->length)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	if (!s->UTF8)
 		return s->cString[index];
@@ -808,7 +812,8 @@ memcasecmp(const char *first, const char *second, size_t length)
 
 	if (!of_string_utf8_to_unicode(s->cString + index,
 	    s->cStringLength - index, &character))
-		@throw [OFInvalidEncodingException exceptionWithClass: isa];
+		@throw [OFInvalidEncodingException
+		    exceptionWithClass: [self class]];
 
 	return character;
 }
@@ -890,7 +895,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 	size_t end = range.start + range.length;
 
 	if (end > s->length)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	if (s->UTF8) {
 		start = of_string_index_to_position(s->cString, start,
@@ -1109,7 +1114,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 
 		if (cLen == 0 || c > 0x10FFFF)
 			@throw [OFInvalidEncodingException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		ret[j++] = c;
 		i += cLen;

@@ -97,7 +97,7 @@ static struct {
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 	[super dealloc];	/* Get rid of a stupid warning */
 }
@@ -107,7 +107,8 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFCountedSet class])
-		placeholder.isa = [OFCountedSet_placeholder class];
+		object_setClass((id)&placeholder,
+		    [OFCountedSet_placeholder class]);
 }
 
 + alloc
@@ -120,8 +121,8 @@ static struct {
 
 - init
 {
-	if (isa == [OFCountedSet class]) {
-		Class c = isa;
+	if (object_getClass(self) == [OFCountedSet class]) {
+		Class c = [self class];
 		[self release];
 		@throw [OFNotImplementedException exceptionWithClass: c
 							    selector: _cmd];
@@ -132,7 +133,7 @@ static struct {
 
 - (size_t)countForObject: (id)object
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 

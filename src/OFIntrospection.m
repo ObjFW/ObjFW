@@ -201,7 +201,7 @@
 #endif
 
 #if defined(OF_APPLE_RUNTIME)
-		methodList = class_copyMethodList(((OFObject*)class)->isa,
+		methodList = class_copyMethodList(object_getClass(class),
 		    &count);
 		@try {
 			for (i = 0; i < count; i++) {

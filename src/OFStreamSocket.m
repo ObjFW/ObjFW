@@ -76,13 +76,13 @@
 	ssize_t ret;
 
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithClass: isa
+		@throw [OFNotConnectedException exceptionWithClass: [self class]
 							    socket: self];
 
 	if (atEndOfStream) {
 		OFReadFailedException *e;
 
-		e = [OFReadFailedException exceptionWithClass: isa
+		e = [OFReadFailedException exceptionWithClass: [self class]
 						       stream: self
 					      requestedLength: length];
 #ifndef _WIN32
@@ -95,7 +95,7 @@
 	}
 
 	if ((ret = recv(sock, buffer, length, 0)) < 0)
-		@throw [OFReadFailedException exceptionWithClass: isa
+		@throw [OFReadFailedException exceptionWithClass: [self class]
 							  stream: self
 						 requestedLength: length];
 
@@ -109,13 +109,13 @@
 	      length: (size_t)length
 {
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithClass: isa
+		@throw [OFNotConnectedException exceptionWithClass: [self class]
 							    socket: self];
 
 	if (atEndOfStream) {
 		OFWriteFailedException *e;
 
-		e = [OFWriteFailedException exceptionWithClass: isa
+		e = [OFWriteFailedException exceptionWithClass: [self class]
 							stream: self
 					       requestedLength: length];
 #ifndef _WIN32
@@ -128,7 +128,7 @@
 	}
 
 	if (send(sock, buffer, length, 0) < length)
-		@throw [OFWriteFailedException exceptionWithClass: isa
+		@throw [OFWriteFailedException exceptionWithClass: [self class]
 							   stream: self
 						  requestedLength: length];
 }
@@ -140,8 +140,9 @@
 	blocking = enable;
 
 	if (ioctlsocket(sock, FIONBIO, &v) == SOCKET_ERROR)
-		@throw [OFSetOptionFailedException exceptionWithClass: isa
-							       stream: self];
+		@throw [OFSetOptionFailedException
+		    exceptionWithClass: [self class]
+				stream: self];
 }
 #endif
 
@@ -153,7 +154,7 @@
 - (void)close
 {
 	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithClass: isa
+		@throw [OFNotConnectedException exceptionWithClass: [self class]
 							    socket: self];
 
 	close(sock);

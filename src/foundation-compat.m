@@ -73,10 +73,11 @@ init(void)
 	    autoreleaseMethod == NULL)
 		return;
 
-	class_replaceMethod(NSAutoreleasePool->isa, @selector(alloc),
-	    (IMP)alloc, method_getTypeEncoding(allocMethod));
-	class_replaceMethod(NSAutoreleasePool->isa, @selector(addObject:),
-	    (IMP)addObject, method_getTypeEncoding(addObjectMethod));
+	class_replaceMethod(object_getClass(NSAutoreleasePool),
+	    @selector(alloc), (IMP)alloc, method_getTypeEncoding(allocMethod));
+	class_replaceMethod(object_getClass(NSAutoreleasePool),
+	    @selector(addObject:), (IMP)addObject,
+	    method_getTypeEncoding(addObjectMethod));
 	class_replaceMethod(NSObject, @selector(autorelease),
 	    (IMP)autorelease, method_getTypeEncoding(autoreleaseMethod));
 }

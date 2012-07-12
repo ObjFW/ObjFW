@@ -140,7 +140,7 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				if (tmp == nil)
 					@throw [OFInvalidEncodingException
-					    exceptionWithClass: isa];
+					    exceptionWithClass: [self class]];
 
 				[ret appendString: tmp];
 				[pool release];
@@ -158,13 +158,13 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				if (tmp == nil)
 					@throw [OFInvalidEncodingException
-					    exceptionWithClass: isa];
+					    exceptionWithClass: [self class]];
 
 				[ret appendString: tmp];
 				[pool release];
 			} else
 				@throw [OFInvalidEncodingException
-				    exceptionWithClass: isa];
+				    exceptionWithClass: [self class]];
 
 			last = i + 1;
 			inEntity = NO;
@@ -172,7 +172,8 @@ parse_numeric_entity(const char *entity, size_t length)
 	}
 
 	if (inEntity)
-		@throw [OFInvalidEncodingException exceptionWithClass: isa];
+		@throw [OFInvalidEncodingException
+		    exceptionWithClass: [self class]];
 
 	[ret appendUTF8String: string + last
 		   withLength: i - last];
@@ -242,7 +243,7 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				if (tmp == nil)
 					@throw [OFInvalidEncodingException
-					    exceptionWithClass: isa];
+					    exceptionWithClass: [self class]];
 
 				[ret appendString: tmp];
 				[pool release];
@@ -259,7 +260,7 @@ parse_numeric_entity(const char *entity, size_t length)
 
 				if (tmp == nil)
 					@throw [OFInvalidEncodingException
-					    exceptionWithClass: isa];
+					    exceptionWithClass: [self class]];
 
 				[ret appendString: tmp];
 				[pool release];
@@ -271,7 +272,8 @@ parse_numeric_entity(const char *entity, size_t length)
 	}
 
 	if (inEntity)
-		@throw [OFInvalidEncodingException exceptionWithClass: isa];
+		@throw [OFInvalidEncodingException
+		    exceptionWithClass: [self class]];
 
 	[ret appendUTF8String: string + last
 		   withLength: i - last];

@@ -248,7 +248,7 @@ call_main(id object)
 
 - (id)main
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 
 	return nil;
@@ -261,8 +261,9 @@ call_main(id object)
 - (void)start
 {
 	if (running == OF_THREAD_RUNNING)
-		@throw [OFThreadStillRunningException exceptionWithClass: isa
-								  thread: self];
+		@throw [OFThreadStillRunningException
+		    exceptionWithClass: [self class]
+				thread: self];
 
 	if (running == OF_THREAD_WAITING_FOR_JOIN) {
 		of_thread_detach(thread);
@@ -273,8 +274,9 @@ call_main(id object)
 
 	if (!of_thread_new(&thread, call_main, self)) {
 		[self release];
-		@throw [OFThreadStartFailedException exceptionWithClass: isa
-								 thread: self];
+		@throw [OFThreadStartFailedException
+		    exceptionWithClass: [self class]
+				thread: self];
 	}
 
 	running = OF_THREAD_RUNNING;
@@ -283,8 +285,9 @@ call_main(id object)
 - (id)join
 {
 	if (running == OF_THREAD_NOT_RUNNING || !of_thread_join(thread))
-		@throw [OFThreadJoinFailedException exceptionWithClass: isa
-								thread: self];
+		@throw [OFThreadJoinFailedException
+		    exceptionWithClass: [self class]
+				thread: self];
 
 	running = OF_THREAD_NOT_RUNNING;
 
@@ -294,8 +297,9 @@ call_main(id object)
 - (void)dealloc
 {
 	if (running == OF_THREAD_RUNNING)
-		@throw [OFThreadStillRunningException exceptionWithClass: isa
-								  thread: self];
+		@throw [OFThreadStillRunningException
+		    exceptionWithClass: [self class]
+				thread: self];
 
 	/*
 	 * We should not be running anymore, but call detach in order to free
@@ -350,7 +354,7 @@ call_main(id object)
 	@try {
 		if (!of_tlskey_new(&key))
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		initialized = YES;
 
@@ -404,7 +408,7 @@ call_main(id object)
 	self = [super init];
 
 	if (!of_mutex_new(&mutex)) {
-		Class c = isa;
+		Class c = [self class];
 		[self release];
 		@throw [OFInitializationFailedException exceptionWithClass: c];
 	}
@@ -417,8 +421,9 @@ call_main(id object)
 - (void)lock
 {
 	if (!of_mutex_lock(&mutex))
-		@throw [OFMutexLockFailedException exceptionWithClass: isa
-								mutex: self];
+		@throw [OFMutexLockFailedException
+		    exceptionWithClass: [self class]
+				 mutex: self];
 }
 
 - (BOOL)tryLock
@@ -429,8 +434,9 @@ call_main(id object)
 - (void)unlock
 {
 	if (!of_mutex_unlock(&mutex))
-		@throw [OFMutexUnlockFailedException exceptionWithClass: isa
-								  mutex: self];
+		@throw [OFMutexUnlockFailedException
+		    exceptionWithClass: [self class]
+				 mutex: self];
 }
 
 - (void)dealloc
@@ -438,7 +444,7 @@ call_main(id object)
 	if (initialized)
 		if (!of_mutex_free(&mutex))
 			@throw [OFMutexStillLockedException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 					 mutex: self];
 
 	[super dealloc];
@@ -456,7 +462,7 @@ call_main(id object)
 	self = [super init];
 
 	if (!of_condition_new(&condition)) {
-		Class c = isa;
+		Class c = [self class];
 		[self release];
 		@throw [OFInitializationFailedException exceptionWithClass: c];
 	}
@@ -470,7 +476,7 @@ call_main(id object)
 {
 	if (!of_condition_wait(&condition, &mutex))
 		@throw [OFConditionWaitFailedException
-		    exceptionWithClass: isa
+		    exceptionWithClass: [self class]
 			     condition: self];
 }
 
@@ -478,7 +484,7 @@ call_main(id object)
 {
 	if (!of_condition_signal(&condition))
 		@throw [OFConditionSignalFailedException
-		    exceptionWithClass: isa
+		    exceptionWithClass: [self class]
 			     condition: self];
 }
 
@@ -486,7 +492,7 @@ call_main(id object)
 {
 	if (!of_condition_broadcast(&condition))
 		@throw [OFConditionBroadcastFailedException
-		    exceptionWithClass: isa
+		    exceptionWithClass: [self class]
 			     condition: self];
 }
 
@@ -495,7 +501,7 @@ call_main(id object)
 	if (conditionInitialized)
 		if (!of_condition_free(&condition))
 			@throw [OFConditionStillWaitingException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				     condition: self];
 
 	[super dealloc];

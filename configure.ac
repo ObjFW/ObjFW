@@ -218,12 +218,9 @@ case $objc_runtime in
 			])
 		])
 
-		AX_CHECK_COMPILER_FLAGS(-Wno-deprecated-objc-isa-usage,
-			[OBJCFLAGS="$OBJCFLAGS -Wno-deprecated-objc-isa-usage"])
-
+		AC_SUBST(RUNTIME, "runtime")
 		AC_SUBST(RUNTIME_FLAGS)
 
-		AC_SUBST(RUNTIME, "runtime")
 		if test x"$enable_shared" != x"no"; then
 			AC_SUBST(RUNTIME_LIB_A, "runtime.lib.a")
 			AC_SUBST(RUNTIME_RUNTIME_LIB_A, "runtime/runtime.lib.a")

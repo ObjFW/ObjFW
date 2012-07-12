@@ -162,7 +162,7 @@
 		    ![[element name] isEqual: @"OFMutableArray"]) ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		enumerator = [[element elementsForNamespace:
@@ -213,7 +213,7 @@
 	size_t i, count = [array count];
 
 	if (range.start + range.length > count)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	for (i = 0; i < range.length; i++)
 		buffer[i] = objects[range.start + i];
@@ -255,7 +255,7 @@
 	count = [array count];
 
 	if (range.start + range.length > count)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	return [OFArray arrayWithObjects: (id*)[array cArray] + range.start
 				   count: range.length];

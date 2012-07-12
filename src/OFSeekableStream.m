@@ -21,19 +21,19 @@
 @implementation OFSeekableStream
 - (void)_seekToOffset: (off_t)offset
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (off_t)_seekForwardWithOffset: (off_t)offset
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (off_t)_seekToOffsetRelativeToEnd: (off_t)offset
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 

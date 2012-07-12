@@ -99,7 +99,7 @@ static OFAutoreleasePool *firstPool = nil, *lastPool = nil;
 
 		if (!of_tlskey_set(lastKey, self))
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 #else
 		previousPool = lastPool;
 		lastPool = self;
@@ -110,7 +110,7 @@ static OFAutoreleasePool *firstPool = nil, *lastPool = nil;
 			if (!of_tlskey_set(firstKey, self)) {
 				of_tlskey_set(lastKey, previousPool);
 				@throw [OFInitializationFailedException
-				    exceptionWithClass: isa];
+				    exceptionWithClass: [self class]];
 			}
 #else
 			firstPool = self;
@@ -211,13 +211,13 @@ static OFAutoreleasePool *firstPool = nil, *lastPool = nil;
 
 - retain
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - autorelease
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 @end

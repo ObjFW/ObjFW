@@ -233,7 +233,7 @@ static struct {
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 	[super dealloc];	/* Get rid of a stupid warning */
 }
@@ -243,7 +243,8 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFMutableString class])
-		placeholder.isa = [OFMutableString_placeholder class];
+		object_setClass((id)&placeholder,
+		    [OFMutableString_placeholder class]);
 }
 
 + alloc
@@ -300,7 +301,7 @@ static struct {
 - (void)setCharacter: (of_unichar_t)character
 	     atIndex: (size_t)index
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -371,12 +372,14 @@ static struct {
 	int UTF8StringLength;
 
 	if (format == nil)
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 
 	if ((UTF8StringLength = of_vasprintf(&UTF8String, [format UTF8String],
 	    arguments)) == -1)
-		@throw [OFInvalidFormatException exceptionWithClass: isa];
+		@throw [OFInvalidFormatException
+		    exceptionWithClass: [self class]];
 
 	@try {
 		[self appendUTF8String: UTF8String
@@ -432,13 +435,13 @@ static struct {
 - (void)insertString: (OFString*)string
 	     atIndex: (size_t)index
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (void)deleteCharactersInRange: (of_range_t)range
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -470,7 +473,7 @@ static struct {
 	size_t i;
 
 	if (range.start + range.length > [self length])
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	if (searchLength > range.length) {
 		[pool release];

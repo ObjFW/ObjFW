@@ -106,7 +106,7 @@ enum {
 #ifndef _WIN32
 		if (pipe(cancelFD))
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 #else
 		/* Make sure WSAStartup has been called */
 		[OFTCPSocket class];
@@ -117,7 +117,7 @@ enum {
 		if (cancelFD[0] == INVALID_SOCKET ||
 		    cancelFD[1] == INVALID_SOCKET)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		cancelAddr.sin_family = AF_INET;
 		cancelAddr.sin_port = 0;
@@ -128,14 +128,14 @@ enum {
 		    sizeof(cancelAddr)) || bind(cancelFD[1],
 		    (struct sockaddr*)&cancelAddr2, sizeof(cancelAddr2)))
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		cancelAddrLen = sizeof(cancelAddr);
 
 		if (getsockname(cancelFD[0], (struct sockaddr*)&cancelAddr,
 		    &cancelAddrLen))
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 #endif
 
 		maxFD = cancelFD[0];
@@ -271,25 +271,25 @@ enum {
 
 - (void)_addFileDescriptorForReading: (int)fd
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (void)_addFileDescriptorForWriting: (int)fd
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (void)_removeFileDescriptorForReading: (int)fd
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (void)_removeFileDescriptorForWriting: (int)fd
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -369,7 +369,7 @@ enum {
 
 - (BOOL)observeWithTimeout: (int)timeout
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 

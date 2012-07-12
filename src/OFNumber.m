@@ -86,7 +86,7 @@
 		return (t)value.double_;				\
 	default:							\
 		@throw [OFInvalidFormatException			\
-		    exceptionWithClass: isa];				\
+		    exceptionWithClass: [self class]];			\
 	}
 #define CALCULATE(o, n)							\
 	switch (type) {							\
@@ -170,7 +170,7 @@
 		    value.double_ o [n doubleValue]];			\
 	default:							\
 		@throw [OFInvalidFormatException			\
-		    exceptionWithClass: isa];				\
+		    exceptionWithClass: [self class]];			\
 	}
 #define CALCULATE2(o, n)						\
 	switch (type) {							\
@@ -249,11 +249,11 @@
 	case OF_NUMBER_FLOAT:						\
 	case OF_NUMBER_DOUBLE:						\
 		@throw [OFNotImplementedException			\
-		    exceptionWithClass: isa				\
+		    exceptionWithClass: [self class]			\
 			      selector: _cmd];				\
 	default:							\
 		@throw [OFInvalidFormatException			\
-		    exceptionWithClass: isa];				\
+		    exceptionWithClass: [self class]];			\
 	}
 #define CALCULATE3(o)							\
 	switch (type) {							\
@@ -314,7 +314,7 @@
 		return [OFNumber numberWithDouble: value.double_ o];	\
 	default:							\
 		@throw [OFInvalidFormatException			\
-		    exceptionWithClass: isa];				\
+		    exceptionWithClass: [self class]];			\
 	}
 
 @implementation OFNumber
@@ -450,7 +450,7 @@
 
 - init
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -725,7 +725,7 @@
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		typeString = [[element attributeForName: @"type"] stringValue];
@@ -739,7 +739,7 @@
 				value.bool_ = NO;
 			else
 				@throw [OFInvalidArgumentException
-				    exceptionWithClass: isa
+				    exceptionWithClass: [self class]
 					      selector: _cmd];
 		} else if ([typeString isEqual: @"unsigned"]) {
 			/*
@@ -759,7 +759,7 @@
 			value.double_ = [element doubleValue];
 		} else
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		[pool release];
@@ -1129,7 +1129,8 @@
 		return [OFNumber numberWithDouble:
 		    fmod(value.double_, [number doubleValue])];
 	default:
-		@throw [OFInvalidFormatException exceptionWithClass: isa];
+		@throw [OFInvalidFormatException
+		    exceptionWithClass: [self class]];
 	}
 }
 
@@ -1189,7 +1190,8 @@
 
 		return ret;
 	default:
-		@throw [OFInvalidFormatException exceptionWithClass: isa];
+		@throw [OFInvalidFormatException
+		    exceptionWithClass: [self class]];
 	}
 }
 
@@ -1251,7 +1253,8 @@
 
 		break;
 	default:
-		@throw [OFInvalidFormatException exceptionWithClass: isa];
+		@throw [OFInvalidFormatException
+		    exceptionWithClass: [self class]];
 	}
 
 	[element retain];

@@ -125,7 +125,7 @@ static Class CDATAClass = Nil;
 
 - init
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -163,7 +163,7 @@ static Class CDATAClass = Nil;
 	@try {
 		if (name_ == nil)
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		name = [name_ copy];
@@ -191,7 +191,7 @@ static Class CDATAClass = Nil;
 	@try {
 		if (element == nil)
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		name = [element->name copy];
@@ -216,11 +216,11 @@ static Class CDATAClass = Nil;
 	OFXMLElement_OFXMLElementBuilderDelegate *delegate;
 	Class c;
 
-	c = isa;
+	c = [self class];
 	[self release];
 
 	if (string == nil)
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
+		@throw [OFInvalidArgumentException exceptionWithClass: c
 							     selector: _cmd];
 
 	pool = [[OFAutoreleasePool alloc] init];
@@ -254,7 +254,7 @@ static Class CDATAClass = Nil;
 	OFXMLElement_OFXMLElementBuilderDelegate *delegate;
 	Class c;
 
-	c = isa;
+	c = [self class];
 	[self release];
 
 	pool = [[OFAutoreleasePool alloc] init];
@@ -294,7 +294,7 @@ static Class CDATAClass = Nil;
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		name = [[[element attributeForName: @"name"] stringValue] copy];
@@ -331,14 +331,14 @@ static Class CDATAClass = Nil;
 		    (children != nil &&
 		    ![children isKindOfClass: [OFMutableArray class]]))
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		objectEnumerator = [attributes objectEnumerator];
 		while ((object = [objectEnumerator nextObject]) != nil)
 			if (![object isKindOfClass: [OFXMLAttribute class]])
 				@throw [OFInvalidArgumentException
-				    exceptionWithClass: isa
+				    exceptionWithClass: [self class]
 					      selector: _cmd];
 
 		keyEnumerator = [namespaces keyEnumerator];
@@ -348,14 +348,14 @@ static Class CDATAClass = Nil;
 			if (![key isKindOfClass: [OFString class]] ||
 			    ![object isKindOfClass: [OFString class]])
 				@throw [OFInvalidArgumentException
-				    exceptionWithClass: isa
+				    exceptionWithClass: [self class]
 					      selector: _cmd];
 
 		objectEnumerator = [children objectEnumerator];
 		while ((object = [objectEnumerator nextObject]) != nil)
 			if (![object isKindOfClass: [OFXMLNode class]])
 				@throw [OFInvalidArgumentException
-				    exceptionWithClass: isa
+				    exceptionWithClass: [self class]
 					      selector: _cmd];
 
 		if (namespaces == nil)
@@ -368,7 +368,7 @@ static Class CDATAClass = Nil;
 
 		if (name == nil)
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		[pool release];
@@ -383,8 +383,9 @@ static Class CDATAClass = Nil;
 - (void)setName: (OFString*)name_
 {
 	if (name_ == nil)
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 
 	OF_SETTER(name, name_, YES, 1)
 }
@@ -564,7 +565,7 @@ static Class CDATAClass = Nil;
 		    (attributePrefix = [allNamespaces objectForKey:
 		    [attributesObjects[j] namespace]]) == nil)
 			@throw [OFUnboundNamespaceException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				     namespace: [attributesObjects[j]
 						    namespace]];
 
@@ -900,8 +901,9 @@ static Class CDATAClass = Nil;
      forNamespace: (OFString*)ns_
 {
 	if (prefix == nil || [prefix isEqual: @""])
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 	if (ns_ == nil)
 		ns_ = @"";
 
@@ -932,8 +934,9 @@ static Class CDATAClass = Nil;
 - (void)addChild: (OFXMLNode*)child
 {
 	if ([child isKindOfClass: [OFXMLAttribute class]])
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 
 	if (children == nil)
 		children = [[OFMutableArray alloc] init];
@@ -944,8 +947,9 @@ static Class CDATAClass = Nil;
 - (void)removeChild: (OFXMLNode*)child
 {
 	if ([child isKindOfClass: [OFXMLAttribute class]])
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 
 	[children removeObject: child];
 }
@@ -1085,7 +1089,7 @@ static Class CDATAClass = Nil;
 
 - copy
 {
-	return [[isa alloc] initWithElement: self];
+	return [[[self class] alloc] initWithElement: self];
 }
 
 - (void)dealloc

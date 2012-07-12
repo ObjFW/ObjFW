@@ -477,7 +477,7 @@ static struct {
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 	[super dealloc];	/* Get rid of a stupid warning */
 }
@@ -487,7 +487,7 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFString class])
-		placeholder.isa = [OFString_placeholder class];
+		object_setClass((id)&placeholder, [OFString_placeholder class]);
 }
 
 + alloc
@@ -645,8 +645,8 @@ static struct {
 
 - init
 {
-	if (isa == [OFString class]) {
-		Class c = isa;
+	if (object_getClass(self) == [OFString class]) {
+		Class c = [self class];
 		[self release];
 		@throw [OFNotImplementedException exceptionWithClass: c
 							    selector: _cmd];
@@ -682,7 +682,7 @@ static struct {
 	 encoding: (of_string_encoding_t)encoding
 	   length: (size_t)cStringLength
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -690,7 +690,7 @@ static struct {
 
 - initWithString: (OFString*)string
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -723,7 +723,7 @@ static struct {
 	      byteOrder: (of_endianess_t)byteOrder
 		 length: (size_t)length
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -756,7 +756,7 @@ static struct {
 	    byteOrder: (of_endianess_t)byteOrder
 	       length: (size_t)length
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -778,7 +778,7 @@ static struct {
 - initWithFormat: (OFConstantString*)format
        arguments: (va_list)arguments
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -800,7 +800,7 @@ static struct {
 - initWithPath: (OFString*)firstComponent
      arguments: (va_list)arguments
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -824,12 +824,13 @@ static struct {
 		if (stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 		    &st) == -1)
 			@throw [OFOpenFileFailedException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 					  path: path
 					  mode: @"rb"];
 
 		if (st.st_size > SIZE_MAX)
-			@throw [OFOutOfRangeException exceptionWithClass: isa];
+			@throw [OFOutOfRangeException
+			    exceptionWithClass: [self class]];
 
 		file = [[OFFile alloc] initWithPath: path
 					       mode: @"rb"];
@@ -870,7 +871,7 @@ static struct {
 	OFString *contentType;
 	Class c;
 
-	c = isa;
+	c = [self class];
 	[self release];
 
 	pool = [[OFAutoreleasePool alloc] init];
@@ -926,18 +927,18 @@ static struct {
 
 		if (![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		if ([self isKindOfClass: [OFMutableString class]]) {
 			if (![[element name] isEqual: @"OFMutableString"])
 				@throw [OFInvalidArgumentException
-				    exceptionWithClass: isa
+				    exceptionWithClass: [self class]
 					      selector: _cmd];
 		} else {
 			if (![[element name] isEqual: @"OFString"])
 				@throw [OFInvalidArgumentException
-				    exceptionWithClass: isa
+				    exceptionWithClass: [self class]
 					      selector: _cmd];
 		}
 
@@ -995,7 +996,7 @@ static struct {
 			break;
 		default:
 			@throw [OFInvalidEncodingException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 		}
 	}
 
@@ -1017,13 +1018,13 @@ static struct {
 		return [self UTF8String];
 
 	/* TODO: Implement! */
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (size_t)length
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -1040,7 +1041,7 @@ static struct {
 
 		if (characterLen == 0)
 			@throw [OFInvalidEncodingException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		UTF8StringLength += characterLen;
 	}
@@ -1054,13 +1055,13 @@ static struct {
 		return [self UTF8StringLength];
 
 	/* TODO: Implement! */
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (of_unichar_t)characterAtIndex: (size_t)index
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -1129,8 +1130,9 @@ static struct {
 		return OF_ORDERED_SAME;
 
 	if (![object isKindOfClass: [OFString class]])
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 
 	otherString = object;
 	minimumLength = ([self length] > [otherString length]
@@ -1395,7 +1397,8 @@ static struct {
 	OFString *ret;
 
 	if (range.start + range.length > [self length])
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
+		@throw [OFOutOfRangeException
+		    exceptionWithClass: [self class]];
 
 	pool = [[OFAutoreleasePool alloc] init];
 	ret = [[OFString alloc]
@@ -1817,7 +1820,7 @@ static struct {
 			    string[i] != '\n' && string[i] != '\r' &&
 			    string[i] != '\f')
 				@throw [OFInvalidFormatException
-				    exceptionWithClass: isa];
+				    exceptionWithClass: [self class]];
 			continue;
 		}
 
@@ -1825,7 +1828,7 @@ static struct {
 			if (INTMAX_MAX / 10 < value ||
 			    INTMAX_MAX - value * 10 < string[i] - '0')
 				@throw [OFOutOfRangeException
-				    exceptionWithClass: isa];
+				    exceptionWithClass: [self class]];
 
 			value = (value * 10) + (string[i] - '0');
 		} else if (string[i] == ' ' || string[i] == '\t' ||
@@ -1834,7 +1837,7 @@ static struct {
 			expectWhitespace = YES;
 		else
 			@throw [OFInvalidFormatException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 	}
 
 	if (string[0] == '-')
@@ -1878,7 +1881,7 @@ static struct {
 			    string[i] != '\n' && string[i] != '\r' &&
 			    string[i] != '\f')
 				@throw [OFInvalidFormatException
-				    exceptionWithClass: isa];
+				    exceptionWithClass: [self class]];
 			continue;
 		}
 
@@ -1898,16 +1901,18 @@ static struct {
 			continue;
 		} else
 			@throw [OFInvalidFormatException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		if (newValue < value)
-			@throw [OFOutOfRangeException exceptionWithClass: isa];
+			@throw [OFOutOfRangeException
+			    exceptionWithClass: [self class]];
 
 		value = newValue;
 	}
 
 	if (!foundValue)
-		@throw [OFInvalidFormatException exceptionWithClass: isa];
+		@throw [OFInvalidFormatException
+		    exceptionWithClass: [self class]];
 
 	[pool release];
 
@@ -1934,7 +1939,7 @@ static struct {
 			    *endPointer != '\n' && *endPointer != '\r' &&
 			    *endPointer != '\f')
 				@throw [OFInvalidFormatException
-				    exceptionWithClass: isa];
+				    exceptionWithClass: [self class]];
 
 	[pool release];
 
@@ -1961,7 +1966,7 @@ static struct {
 			    *endPointer != '\n' && *endPointer != '\r' &&
 			    *endPointer != '\f')
 				@throw [OFInvalidFormatException
-				    exceptionWithClass: isa];
+				    exceptionWithClass: [self class]];
 
 	[pool release];
 
@@ -2003,7 +2008,7 @@ static struct {
 
 		if (c > 0x10FFFF)
 			@throw [OFInvalidEncodingException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		if (c > 0xFFFF) {
 			c -= 0x10000;

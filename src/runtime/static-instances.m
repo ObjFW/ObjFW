@@ -40,7 +40,7 @@ objc_init_static_instances(struct objc_abi_symtab *symtab)
 
 			for (instances = static_instances[i]->instances;
 			    *instances != nil; instances++)
-				(*instances)->isa = cls;
+				object_setClass(*instances, cls);
 
 			static_instances_cnt--;
 
@@ -77,7 +77,7 @@ objc_init_static_instances(struct objc_abi_symtab *symtab)
 
 			for (instances = (*si)->instances; *instances != nil;
 			    instances++)
-				(*instances)->isa = cls;
+				object_setClass(*instances, cls);
 		} else {
 			if (static_instances == NULL)
 				static_instances = malloc(sizeof(

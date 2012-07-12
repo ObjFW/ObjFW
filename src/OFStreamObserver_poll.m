@@ -137,7 +137,7 @@
 
 #ifdef OPEN_MAX
 	if (nFDs > OPEN_MAX)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 #endif
 
 	if (poll(FDsCArray, (nfds_t)nFDs, timeout) < 1) {

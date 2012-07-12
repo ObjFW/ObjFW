@@ -109,7 +109,7 @@ static struct {
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 	[super dealloc];	/* Get rid of a stupid warning */
 }
@@ -119,7 +119,8 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFMutableDictionary class])
-		placeholder.isa = [OFMutableDictionary_placeholder class];
+		object_setClass((id)&placeholder,
+		    [OFMutableDictionary_placeholder class]);
 }
 
 + alloc
@@ -132,8 +133,8 @@ static struct {
 
 - init
 {
-	if (isa == [OFMutableDictionary class]) {
-		Class c = isa;
+	if (object_getClass(self) == [OFMutableDictionary class]) {
+		Class c = [self class];
 		[self release];
 		@throw [OFNotImplementedException exceptionWithClass: c
 							    selector: _cmd];
@@ -145,7 +146,7 @@ static struct {
 - (void)setObject: (id)object
 	   forKey: (id)key
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -158,7 +159,7 @@ static struct {
 
 - (void)removeObjectForKey: (id)key
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 

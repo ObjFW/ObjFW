@@ -176,17 +176,17 @@ _Block_copy(const void *block_)
 {
 	of_block_literal_t *block = (of_block_literal_t*)block_;
 
-	if (block->isa == (Class)&_NSConcreteStackBlock) {
+	if (object_getClass((id)block) == (Class)&_NSConcreteStackBlock) {
 		of_block_literal_t *copy;
 
 		if ((copy = malloc(block->descriptor->size)) == NULL) {
-			alloc_failed_exception.isa =
-			    [OFAllocFailedException class];
+			object_setClass((id)&alloc_failed_exception,
+			    [OFAllocFailedException class]);
 			@throw (OFAllocFailedException*)&alloc_failed_exception;
 		}
 		memcpy(copy, block, block->descriptor->size);
 
-		copy->isa = (Class)&_NSConcreteMallocBlock;
+		object_setClass((id)copy, (Class)&_NSConcreteMallocBlock);
 		copy->flags++;
 
 		if (block->flags & OF_BLOCK_HAS_COPY_DISPOSE)
@@ -195,7 +195,7 @@ _Block_copy(const void *block_)
 		return copy;
 	}
 
-	if (block->isa == (Class)&_NSConcreteMallocBlock) {
+	if (object_getClass((id)block) == (Class)&_NSConcreteMallocBlock) {
 #if defined(OF_ATOMIC_OPS)
 		of_atomic_inc_int(&block->flags);
 #else
@@ -215,7 +215,7 @@ _Block_release(const void *block_)
 {
 	of_block_literal_t *block = (of_block_literal_t*)block_;
 
-	if (block->isa != (Class)&_NSConcreteMallocBlock)
+	if (object_getClass((id)block) != (Class)&_NSConcreteMallocBlock)
 		return;
 
 #ifdef OF_ATOMIC_OPS
@@ -268,8 +268,8 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 
 		if ((src->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
 			if ((*dst = malloc(src->size)) == NULL) {
-				alloc_failed_exception.isa =
-				    [OFAllocFailedException class];
+				object_setClass((id)&alloc_failed_exception,
+				    [OFAllocFailedException class]);
 				@throw (OFAllocFailedException*)
 				    &alloc_failed_exception;
 			}
@@ -376,27 +376,27 @@ _Block_object_dispose(const void *obj_, const int flags_)
 
 - init
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (void*)allocMemoryWithSize: (size_t)size
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (void*)allocMemoryWithSize: (size_t)size
 		       count: (size_t)count
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (void*)resizeMemory: (void*)ptr
 		 size: (size_t)size
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -404,19 +404,19 @@ _Block_object_dispose(const void *obj_, const int flags_)
 		 size: (size_t)size
 		count: (size_t)count
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (void)freeMemory: (void*)ptr
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - retain
 {
-	if (isa == (Class)&_NSConcreteMallocBlock)
+	if (object_getClass(self) == (Class)&_NSConcreteMallocBlock)
 		return Block_copy(self);
 
 	return self;
@@ -429,7 +429,7 @@ _Block_object_dispose(const void *obj_, const int flags_)
 
 - autorelease
 {
-	if (isa == (Class)&_NSConcreteMallocBlock)
+	if (object_getClass(self) == (Class)&_NSConcreteMallocBlock)
 		return [super autorelease];
 
 	return self;
@@ -437,7 +437,7 @@ _Block_object_dispose(const void *obj_, const int flags_)
 
 - (unsigned int)retainCount
 {
-	if (isa == (Class)&_NSConcreteMallocBlock)
+	if (object_getClass(self) == (Class)&_NSConcreteMallocBlock)
 		return ((of_block_literal_t*)self)->flags &
 		    OF_BLOCK_REFCOUNT_MASK;
 
@@ -446,13 +446,13 @@ _Block_object_dispose(const void *obj_, const int flags_)
 
 - (void)release
 {
-	if (isa == (Class)&_NSConcreteMallocBlock)
+	if (object_getClass(self) == (Class)&_NSConcreteMallocBlock)
 		Block_release(self);
 }
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 	[super dealloc];	/* Get rid of a stupid warning */
 }

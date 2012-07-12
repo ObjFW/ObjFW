@@ -165,7 +165,7 @@
 		    ![[element name] isEqual: @"OFMutableSet"]) ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		one = [OFNumber numberWithSize: 1];

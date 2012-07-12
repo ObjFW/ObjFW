@@ -83,7 +83,7 @@
 #ifndef _WIN32
 		if (pipe(readPipe) != 0 || pipe(writePipe) != 0)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		switch ((pid = fork())) {
 		case 0:;
@@ -112,10 +112,10 @@
 			    OF_STRING_ENCODING_NATIVE], argv);
 
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 		case -1:
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 		default:
 			close(readPipe[1]);
 			close(writePipe[0]);
@@ -137,19 +137,19 @@
 
 		if (!CreatePipe(&readPipe[0], &readPipe[1], &sa, 0))
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		if (!SetHandleInformation(readPipe[0], HANDLE_FLAG_INHERIT, 0))
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		if (!CreatePipe(&writePipe[0], &writePipe[1], &sa, 0))
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		if (!SetHandleInformation(writePipe[1], HANDLE_FLAG_INHERIT, 0))
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		memset(&pi, 0, sizeof(pi));
 		memset(&si, 0, sizeof(si));
@@ -203,7 +203,7 @@
 			    OF_STRING_ENCODING_NATIVE], argumentsCString, NULL,
 			    NULL, TRUE, 0, NULL, NULL, &si, &pi))
 				@throw [OFInitializationFailedException
-				    exceptionWithClass: isa];
+				    exceptionWithClass: [self class]];
 		} @finally {
 			free(argumentsString);
 		}
@@ -257,7 +257,7 @@
 		}
 
 #endif
-		@throw [OFReadFailedException exceptionWithClass: isa
+		@throw [OFReadFailedException exceptionWithClass: [self class]
 							  stream: self
 						 requestedLength: length];
 	}
@@ -281,7 +281,7 @@
 	    !WriteFile(writePipe[1], buffer, length, &ret, NULL) ||
 	    ret < length)
 #endif
-		@throw [OFWriteFailedException exceptionWithClass: isa
+		@throw [OFWriteFailedException exceptionWithClass: [self class]
 							   stream: self
 						  requestedLength: length];
 }

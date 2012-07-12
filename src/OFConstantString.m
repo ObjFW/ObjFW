@@ -58,21 +58,21 @@ struct {
 
 - (void*)allocMemoryWithSize: (size_t)size
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (void*)allocMemoryWithSize: (size_t)itemSize
 		       count: (size_t)count
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (void*)resizeMemory: (void*)ptr
 		 size: (size_t)size
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -80,13 +80,13 @@ struct {
 	     toNItems: (size_t)nitems
 	     withSize: (size_t)size
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (void)freeMemory: (void*)ptr
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -111,7 +111,7 @@ struct {
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 	[super dealloc];	/* Get rid of a stupid warning */
 }
@@ -149,7 +149,7 @@ struct {
 
 	if ((ivars = malloc(sizeof(*ivars))) == NULL)
 		@throw [OFOutOfMemoryException
-		    exceptionWithClass: isa
+		    exceptionWithClass: [self class]
 			 requestedSize: sizeof(*ivars)];
 	memset(ivars, 0, sizeof(*ivars));
 
@@ -163,11 +163,12 @@ struct {
 		break;
 	case -1:
 		free(ivars);
-		@throw [OFInvalidEncodingException exceptionWithClass: isa];
+		@throw [OFInvalidEncodingException
+		    exceptionWithClass: [self class]];
 	}
 
 	cString = (char*)ivars;
-	isa = [OFString_const class];
+	object_setClass(self, [OFString_const class]);
 }
 
 + alloc
@@ -178,21 +179,21 @@ struct {
 
 - (void*)allocMemoryWithSize: (size_t)size
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (void*)allocMemoryWithSize: (size_t)size
 		       count: (size_t)count
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (void*)resizeMemory: (void*)ptr
 		 size: (size_t)size
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -200,13 +201,13 @@ struct {
 		 size: (size_t)size
 		count: (size_t)count
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (void)freeMemory: (void*)ptr
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -231,7 +232,7 @@ struct {
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 	[super dealloc];	/* Get rid of a stupid warning */
 }

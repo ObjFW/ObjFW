@@ -645,7 +645,7 @@ of_log(OFConstantString *format, ...)
 
 - init
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -662,13 +662,13 @@ of_log(OFConstantString *format, ...)
 		if ((flags = parse_mode([mode cStringWithEncoding:
 		    OF_STRING_ENCODING_NATIVE])) == -1)
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		if ((fileDescriptor = open([path cStringWithEncoding:
 		    OF_STRING_ENCODING_NATIVE], flags, DEFAULT_MODE)) == -1)
 			@throw [OFOpenFileFailedException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 					  path: path
 					  mode: mode];
 
@@ -705,7 +705,7 @@ of_log(OFConstantString *format, ...)
 
 	if (fileDescriptor == -1 || atEndOfStream ||
 	    (ret = read(fileDescriptor, buffer, length)) < 0)
-		@throw [OFReadFailedException exceptionWithClass: isa
+		@throw [OFReadFailedException exceptionWithClass: [self class]
 							  stream: self
 						 requestedLength: length];
 
@@ -720,7 +720,7 @@ of_log(OFConstantString *format, ...)
 {
 	if (fileDescriptor == -1 || atEndOfStream ||
 	    write(fileDescriptor, buffer, length) < length)
-		@throw [OFWriteFailedException exceptionWithClass: isa
+		@throw [OFWriteFailedException exceptionWithClass: [self class]
 							   stream: self
 						  requestedLength: length];
 }
@@ -728,7 +728,7 @@ of_log(OFConstantString *format, ...)
 - (void)_seekToOffset: (off_t)offset
 {
 	if (lseek(fileDescriptor, offset, SEEK_SET) == -1)
-		@throw [OFSeekFailedException exceptionWithClass: isa
+		@throw [OFSeekFailedException exceptionWithClass: [self class]
 							  stream: self
 							  offset: offset
 							  whence: SEEK_SET];
@@ -739,7 +739,7 @@ of_log(OFConstantString *format, ...)
 	off_t ret;
 
 	if ((ret = lseek(fileDescriptor, offset, SEEK_CUR)) == -1)
-		@throw [OFSeekFailedException exceptionWithClass: isa
+		@throw [OFSeekFailedException exceptionWithClass: [self class]
 							  stream: self
 							  offset: offset
 							  whence: SEEK_CUR];
@@ -752,7 +752,7 @@ of_log(OFConstantString *format, ...)
 	off_t ret;
 
 	if ((ret = lseek(fileDescriptor, offset, SEEK_END)) == -1)
-		@throw [OFSeekFailedException exceptionWithClass: isa
+		@throw [OFSeekFailedException exceptionWithClass: [self class]
 							  stream: self
 							  offset: offset
 							  whence: SEEK_END];
@@ -793,7 +793,7 @@ of_log(OFConstantString *format, ...)
 - initWithPath: (OFString*)path
 	  mode: (OFString*)mode
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -820,26 +820,26 @@ of_log(OFConstantString *format, ...)
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 	[super dealloc];	/* Get rid of stupid warning */
 }
 
 - (void)_seekToOffset: (off_t)offset
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (off_t)_seekForwardWithOffset: (off_t)offset
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (off_t)_seekToOffsetRelativeToEnd: (off_t)offset
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 @end

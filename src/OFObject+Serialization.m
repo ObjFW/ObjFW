@@ -37,7 +37,7 @@ int _OFObject_Serialization_reference;
 
 	if (![self conformsToProtocol: @protocol(OFSerialization)])
 		@throw [OFNotImplementedException
-		    exceptionWithClass: isa
+		    exceptionWithClass: [self class]
 			      selector: @selector(stringBySerializing)];
 
 	pool = [[OFAutoreleasePool alloc] init];

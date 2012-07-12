@@ -300,7 +300,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 @implementation OFObject (OFApplicationDelegate)
 - (void)applicationDidFinishLaunching
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 

@@ -33,6 +33,10 @@
 # import <objc/objc.h>
 #endif
 
+#ifdef OF_APPLE_RUNTIME
+# import <objc/runtime.h>
+#endif
+
 #ifdef __has_feature
 # if __has_feature(objc_bool)
 #  undef YES

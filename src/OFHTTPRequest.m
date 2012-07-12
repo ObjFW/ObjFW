@@ -203,15 +203,16 @@ normalizeKey(OFString *key)
 	size_t bytesReceived;
 
 	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
-		@throw [OFUnsupportedProtocolException exceptionWithClass: isa
-								      URL: URL];
+		@throw [OFUnsupportedProtocolException
+		    exceptionWithClass: [self class]
+				   URL: URL];
 
 	if ([scheme isEqual: @"http"])
 		sock = [OFTCPSocket socket];
 	else {
 		if (of_http_request_tls_socket_class == Nil)
 			@throw [OFUnsupportedProtocolException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 					   URL: URL];
 
 		sock = [[[of_http_request_tls_socket_class alloc] init]
@@ -282,11 +283,13 @@ normalizeKey(OFString *key)
 	@try {
 		line = [sock readLine];
 	} @catch (OFInvalidEncodingException *e) {
-		@throw [OFInvalidServerReplyException exceptionWithClass: isa];
+		@throw [OFInvalidServerReplyException
+		    exceptionWithClass: [self class]];
 	}
 
 	if (![line hasPrefix: @"HTTP/1.0 "] && ![line hasPrefix: @"HTTP/1.1 "])
-		@throw [OFInvalidServerReplyException exceptionWithClass: isa];
+		@throw [OFInvalidServerReplyException
+		    exceptionWithClass: [self class]];
 
 	status = (int)[[line substringWithRange: of_range(9, 3)] decimalValue];
 
@@ -300,12 +303,12 @@ normalizeKey(OFString *key)
 			line = [sock readLine];
 		} @catch (OFInvalidEncodingException *e) {
 			@throw [OFInvalidServerReplyException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 		}
 
 		if (line == nil)
 			@throw [OFInvalidServerReplyException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		if ([line isEqual: @""])
 			break;
@@ -314,7 +317,7 @@ normalizeKey(OFString *key)
 
 		if ((tmp = strchr(line_c, ':')) == NULL)
 			@throw [OFInvalidServerReplyException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		key = [OFString stringWithUTF8String: line_c
 					      length: tmp - line_c];
@@ -380,7 +383,8 @@ normalizeKey(OFString *key)
 		contentLength = (size_t)[contentLengthHeader decimalValue];
 
 		if (contentLength > SIZE_MAX)
-			@throw [OFOutOfRangeException exceptionWithClass: isa];
+			@throw [OFOutOfRangeException
+			    exceptionWithClass: [self class]];
 	}
 
 	buffer = [self allocMemoryWithSize: of_pagesize];
@@ -396,7 +400,7 @@ normalizeKey(OFString *key)
 					line = [sock readLine];
 				} @catch (OFInvalidEncodingException *e) {
 					@throw [OFInvalidServerReplyException
-					    exceptionWithClass: isa];
+					    exceptionWithClass: [self class]];
 				}
 
 				pos = [line
@@ -410,7 +414,7 @@ normalizeKey(OFString *key)
 					    (size_t)[line hexadecimalValue];
 				} @catch (OFInvalidFormatException *e) {
 					@throw [OFInvalidServerReplyException
-					    exceptionWithClass: isa];
+					    exceptionWithClass: [self class]];
 				}
 
 				if (toRead == 0 ||
@@ -441,12 +445,12 @@ normalizeKey(OFString *key)
 					line = [sock readLine];
 				} @catch (OFInvalidEncodingException *e) {
 					@throw [OFInvalidServerReplyException
-					    exceptionWithClass: isa];
+					    exceptionWithClass: [self class]];
 				}
 
 				if (![line isEqual: @""])
 					@throw [OFInvalidServerReplyException
-					    exceptionWithClass: isa];
+					    exceptionWithClass: [self class]];
 
 				[pool2 releaseObjects];
 			}
@@ -485,7 +489,8 @@ normalizeKey(OFString *key)
 	if (contentLengthHeader != nil && contentLength != bytesReceived &&
 	    (status == 200 || status == 301 || status == 302 || status == 303 ||
 	    status == 307))
-		@throw [OFTruncatedDataException exceptionWithClass: isa];
+		@throw [OFTruncatedDataException
+		    exceptionWithClass: [self class]];
 
 	[serverHeaders makeImmutable];
 
@@ -503,7 +508,7 @@ normalizeKey(OFString *key)
 	default:
 		[result release];
 		@throw [OFHTTPRequestFailedException
-		    exceptionWithClass: isa
+		    exceptionWithClass: [self class]
 			   HTTPRequest: self
 				result: result];
 	}

@@ -141,8 +141,9 @@ of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
 	    extraAlignment + extraSize);
 
 	if (OF_UNLIKELY(instance == nil)) {
-		alloc_failed_exception.isa = [OFAllocFailedException class];
-		@throw (OFAllocFailedException*)&alloc_failed_exception;
+		object_setClass((id)&alloc_failed_exception,
+		    [OFAllocFailedException class]);
+		@throw (id)&alloc_failed_exception;
 	}
 
 	((struct pre_ivar*)instance)->retainCount = 1;
@@ -160,9 +161,8 @@ of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
 
 	instance = (OFObject*)((char*)instance + PRE_IVAR_ALIGN);
 
-	instance->isa = class;
-	memset((char*)instance + sizeof(instance->isa), 0,
-	    instanceSize - sizeof(instance->isa));
+	memset(instance, 0, instanceSize);
+	object_setClass(instance, class);
 
 	if (OF_UNLIKELY(extra != NULL))
 		*extra = (char*)instance + instanceSize + extraAlignment;
@@ -367,7 +367,7 @@ void _references_to_categories_of_OFObject(void)
        withImplementation: (IMP)implementation
 	     typeEncoding: (const char*)typeEncoding
 {
-	return class_replaceMethod(((OFObject*)self)->isa, selector,
+	return class_replaceMethod(object_getClass(self), selector,
 	    implementation, typeEncoding);
 }
 
@@ -382,7 +382,7 @@ void _references_to_categories_of_OFObject(void)
 	Method *methodList;
 	unsigned i, count;
 
-	methodList = class_copyMethodList(((OFObject*)class)->isa, &count);
+	methodList = class_copyMethodList(object_getClass(class), &count);
 	@try {
 		for (i = 0; i < count; i++) {
 			SEL selector = method_getName(methodList[i]);
@@ -422,7 +422,7 @@ void _references_to_categories_of_OFObject(void)
 #elif defined(OF_OBJFW_RUNTIME)
 	struct objc_method_list *methodlist;
 
-	for (methodlist = class->isa->methodlist;
+	for (methodlist = object_getClass(class)->methodlist;
 	    methodlist != NULL; methodlist = methodlist->next) {
 		int i;
 
@@ -469,7 +469,8 @@ void _references_to_categories_of_OFObject(void)
 	Class class;
 	void (*last)(id, SEL) = NULL;
 
-	for (class = isa; class != Nil; class = class_getSuperclass(class)) {
+	for (class = object_getClass(self); class != Nil;
+	    class = class_getSuperclass(class)) {
 		void (*construct)(id, SEL);
 
 		if ([class instancesRespondToSelector: cxx_construct]) {
@@ -487,12 +488,12 @@ void _references_to_categories_of_OFObject(void)
 
 - (Class)class
 {
-	return isa;
+	return object_getClass(self);
 }
 
 - (OFString*)className
 {
-	return [OFString stringWithCString: class_getName(isa)
+	return [OFString stringWithCString: object_getClassName(self)
 				  encoding: OF_STRING_ENCODING_ASCII];
 }
 
@@ -500,7 +501,8 @@ void _references_to_categories_of_OFObject(void)
 {
 	Class iter;
 
-	for (iter = isa; iter != Nil; iter = class_getSuperclass(iter))
+	for (iter = object_getClass(self); iter != Nil;
+	    iter = class_getSuperclass(iter))
 		if (iter == class)
 			return YES;
 
@@ -509,22 +511,22 @@ void _references_to_categories_of_OFObject(void)
 
 - (BOOL)isMemberOfClass: (Class)class
 {
-	return (isa == class);
+	return (object_getClass(self) == class);
 }
 
 - (BOOL)respondsToSelector: (SEL)selector
 {
-	return class_respondsToSelector(isa, selector);
+	return class_respondsToSelector(object_getClass(self), selector);
 }
 
 - (BOOL)conformsToProtocol: (Protocol*)protocol
 {
-	return [isa conformsToProtocol: protocol];
+	return [object_getClass(self) conformsToProtocol: protocol];
 }
 
 - (IMP)methodForSelector: (SEL)selector
 {
-	return class_getMethodImplementation(isa, selector);
+	return class_getMethodImplementation(object_getClass(self), selector);
 }
 
 - (id)performSelector: (SEL)selector
@@ -558,19 +560,22 @@ void _references_to_categories_of_OFObject(void)
 #if defined(OF_OBJFW_RUNTIME)
 	const char *ret;
 
-	if ((ret = objc_get_type_encoding(isa, selector)) == NULL)
-		@throw [OFNotImplementedException exceptionWithClass: isa
-							    selector: selector];
+	if ((ret = objc_get_type_encoding(object_getClass(self),
+	    selector)) == NULL)
+		@throw [OFNotImplementedException
+		    exceptionWithClass: [self class]
+			      selector: selector];
 
 	return ret;
 #else
 	Method m;
 	const char *ret;
 
-	if ((m = class_getInstanceMethod(isa, selector)) == NULL ||
-	    (ret = method_getTypeEncoding(m)) == NULL)
-		@throw [OFNotImplementedException exceptionWithClass: isa
-							    selector: selector];
+	if ((m = class_getInstanceMethod(object_getClass(self),
+	    selector)) == NULL || (ret = method_getTypeEncoding(m)) == NULL)
+		@throw [OFNotImplementedException
+		    exceptionWithClass: [self class]
+			      selector: selector];
 
 	return ret;
 #endif
@@ -600,10 +605,10 @@ void _references_to_categories_of_OFObject(void)
 	struct pre_mem *preMem;
 
 	if (size > SIZE_MAX - PRE_IVAR_ALIGN)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	if ((pointer = malloc(PRE_MEM_ALIGN + size)) == NULL)
-		@throw [OFOutOfMemoryException exceptionWithClass: isa
+		@throw [OFOutOfMemoryException exceptionWithClass: [self class]
 						    requestedSize: size];
 	preMem = pointer;
 
@@ -626,7 +631,7 @@ void _references_to_categories_of_OFObject(void)
 		return NULL;
 
 	if (count > SIZE_MAX / size)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	return [self allocMemoryWithSize: size * count];
 }
@@ -647,11 +652,11 @@ void _references_to_categories_of_OFObject(void)
 
 	if (PRE_MEM(pointer)->owner != self)
 		@throw [OFMemoryNotPartOfObjectException
-		    exceptionWithClass: isa
+		    exceptionWithClass: [self class]
 			       pointer: pointer];
 
 	if ((new = realloc(PRE_MEM(pointer), PRE_MEM_ALIGN + size)) == NULL)
-		@throw [OFOutOfMemoryException exceptionWithClass: isa
+		@throw [OFOutOfMemoryException exceptionWithClass: [self class]
 						    requestedSize: size];
 	preMem = new;
 
@@ -684,7 +689,7 @@ void _references_to_categories_of_OFObject(void)
 	}
 
 	if (count > SIZE_MAX / size)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	return [self resizeMemory: pointer
 			     size: size * count];
@@ -697,7 +702,7 @@ void _references_to_categories_of_OFObject(void)
 
 	if (PRE_MEM(pointer)->owner != self)
 		@throw [OFMemoryNotPartOfObjectException
-		    exceptionWithClass: isa
+		    exceptionWithClass: [self class]
 			       pointer: pointer];
 
 	if (PRE_MEM(pointer)->prev != NULL)
@@ -787,7 +792,8 @@ void _references_to_categories_of_OFObject(void)
 	void (*last)(id, SEL) = NULL;
 	struct pre_mem *iter;
 
-	for (class = isa; class != Nil; class = class_getSuperclass(class)) {
+	for (class = object_getClass(self); class != Nil;
+	    class = class_getSuperclass(class)) {
 		void (*destruct)(id, SEL);
 
 		if ([class instancesRespondToSelector: cxx_destruct]) {
@@ -823,8 +829,9 @@ void _references_to_categories_of_OFObject(void)
 - copyWithZone: (void*)zone
 {
 	if (zone != NULL)
-		@throw [OFNotImplementedException exceptionWithClass: isa
-							    selector: _cmd];
+		@throw [OFNotImplementedException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 
 	return [(id)self copy];
 }
@@ -832,8 +839,9 @@ void _references_to_categories_of_OFObject(void)
 - mutableCopyWithZone: (void*)zone
 {
 	if (zone != NULL)
-		@throw [OFNotImplementedException exceptionWithClass: isa
-							    selector: _cmd];
+		@throw [OFNotImplementedException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 
 	return [(id)self mutableCopy];
 }

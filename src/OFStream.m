@@ -54,8 +54,8 @@
 
 - init
 {
-	if (isa == [OFStream class]) {
-		Class c = isa;
+	if (object_getClass(self) == [OFStream class]) {
+		Class c = [self class];
 		[self release];
 		@throw [OFNotImplementedException exceptionWithClass: c
 							    selector: _cmd];
@@ -72,21 +72,21 @@
 
 - (BOOL)_isAtEndOfStream
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (size_t)_readIntoBuffer: (void*)buffer
 		   length: (size_t)length
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (void)_writeBuffer: (const void*)buffer
 	      length: (size_t)length
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -693,8 +693,9 @@
 	j = 0;
 
 	if (delimiterLength == 0)
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 
 	/* Look if there's something in our cache */
 	if (!waitingForDelimiter && cache != NULL) {
@@ -1332,12 +1333,14 @@
 	int length;
 
 	if (format == nil)
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 
 	if ((length = of_vasprintf(&UTF8String, [format UTF8String],
 	    arguments)) == -1)
-		@throw [OFInvalidFormatException exceptionWithClass: isa];
+		@throw [OFInvalidFormatException
+		    exceptionWithClass: [self class]];
 
 	@try {
 		[self writeBuffer: UTF8String
@@ -1367,8 +1370,9 @@
 	blocking = enable;
 
 	if ((flags = fcntl([self fileDescriptor], F_GETFL)) == -1)
-		@throw [OFSetOptionFailedException exceptionWithClass: isa
-							       stream: self];
+		@throw [OFSetOptionFailedException
+		    exceptionWithClass: [self class]
+				stream: self];
 
 	if (enable)
 		flags &= ~O_NONBLOCK;
@@ -1376,23 +1380,24 @@
 		flags |= O_NONBLOCK;
 
 	if (fcntl([self fileDescriptor], F_SETFL, flags) == -1)
-		@throw [OFSetOptionFailedException exceptionWithClass: isa
-							       stream: self];
+		@throw [OFSetOptionFailedException
+		    exceptionWithClass: [self class]
+				stream: self];
 #else
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 #endif
 }
 
 - (int)fileDescriptor
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (void)close
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 

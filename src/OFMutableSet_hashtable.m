@@ -49,6 +49,6 @@
 
 - (void)makeImmutable
 {
-	isa = [OFSet_hashtable class];
+	object_setClass(self, [OFSet_hashtable class]);
 }
 @end

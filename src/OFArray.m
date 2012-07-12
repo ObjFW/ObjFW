@@ -103,7 +103,7 @@ static struct {
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 	[super dealloc];	/* Get rid of a stupid warning */
 }
@@ -113,7 +113,7 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFArray class])
-		placeholder.isa = [OFArray_placeholder class];
+		object_setClass((id)&placeholder, [OFArray_placeholder class]);
 }
 
 + alloc
@@ -161,8 +161,8 @@ static struct {
 
 - init
 {
-	if (isa == [OFArray class]) {
-		Class c = isa;
+	if (object_getClass(self) == [OFArray class]) {
+		Class c = [self class];
 		[self release];
 		@throw [OFNotImplementedException exceptionWithClass: c
 							    selector: _cmd];
@@ -192,7 +192,7 @@ static struct {
 - initWithObject: (id)firstObject
        arguments: (va_list)arguments
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -200,7 +200,7 @@ static struct {
 
 - initWithArray: (OFArray*)array
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -209,7 +209,7 @@ static struct {
 - initWithObjects: (id const*)objects
 	    count: (size_t)count
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -217,7 +217,7 @@ static struct {
 
 - initWithSerialization: (OFXMLElement*)element
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -225,7 +225,7 @@ static struct {
 
 - (size_t)count
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -267,7 +267,7 @@ static struct {
 
 - (id)objectAtIndex: (size_t)index
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -571,7 +571,7 @@ static struct {
 	size_t count = [self count];
 
 	if (count > INT_MAX)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	if (state->state >= count)
 		return 0;
@@ -729,7 +729,7 @@ static struct {
 {
 	if (mutationsPtr != NULL && *mutationsPtr != mutations)
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: isa
+		    exceptionWithClass: [self class]
 				object: array];
 
 	if (position < count)
@@ -742,7 +742,7 @@ static struct {
 {
 	if (mutationsPtr != NULL && *mutationsPtr != mutations)
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: isa
+		    exceptionWithClass: [self class]
 				object: array];
 
 	position = 0;

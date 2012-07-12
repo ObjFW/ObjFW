@@ -48,7 +48,7 @@ static Class dictionary = Nil;
 	uint32_t i, newSize;
 
 	if (newCount > UINT32_MAX)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	if (fullness >= 3)
 		newSize = size << 1;
@@ -58,7 +58,7 @@ static Class dictionary = Nil;
 		return;
 
 	if (newSize == 0)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	newData = [self allocMemoryWithSize: sizeof(*newData)
 				      count: newSize];
@@ -86,7 +86,7 @@ static Class dictionary = Nil;
 			if (j >= last) {
 				[self freeMemory: newData];
 				@throw [OFOutOfRangeException
-				    exceptionWithClass: isa];
+				    exceptionWithClass: [self class]];
 			}
 
 			newData[j] = data[i];
@@ -106,8 +106,9 @@ static Class dictionary = Nil;
 	id old;
 
 	if (key == nil || object == nil)
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 
 	hash = [key hash];
 	last = size;
@@ -155,7 +156,8 @@ static Class dictionary = Nil;
 		}
 
 		if (i >= last)
-			@throw [OFOutOfRangeException exceptionWithClass: isa];
+			@throw [OFOutOfRangeException
+			    exceptionWithClass: [self class]];
 
 		bucket = [self allocMemoryWithSize: sizeof(*bucket)];
 
@@ -196,8 +198,9 @@ static Class dictionary = Nil;
 	uint32_t i, hash, last;
 
 	if (key == nil)
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 
 	hash = [key hash];
 	last = size;
@@ -291,7 +294,7 @@ static Class dictionary = Nil;
 	for (i = 0; i < size && !stop; i++) {
 		if (mutations != mutations2)
 			@throw [OFEnumerationMutationException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 					object: self];
 
 		if (data[i] != NULL && data[i] != DELETED)
@@ -308,7 +311,7 @@ static Class dictionary = Nil;
 	for (i = 0; i < size && !stop; i++) {
 		if (mutations != mutations2)
 			@throw [OFEnumerationMutationException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 					object: self];
 
 		if (data[i] != NULL && data[i] != DELETED) {
@@ -316,7 +319,7 @@ static Class dictionary = Nil;
 
 			if (new == nil)
 				@throw [OFInvalidArgumentException
-				    exceptionWithClass: isa
+				    exceptionWithClass: [self class]
 					      selector: _cmd];
 
 			[new retain];
@@ -329,6 +332,6 @@ static Class dictionary = Nil;
 
 - (void)makeImmutable
 {
-	isa = [OFDictionary_hashtable class];
+	object_setClass(self, [OFDictionary_hashtable class]);
 }
 @end

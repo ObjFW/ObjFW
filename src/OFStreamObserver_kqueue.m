@@ -42,7 +42,7 @@
 	@try {
 		if ((kernelQueue = kqueue()) == -1)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		changeList = [[OFDataArray alloc] initWithItemSize:
 		    sizeof(struct kevent)];
@@ -121,7 +121,8 @@
 			return NO;
 		case ENOMEM:
 			[pool release];
-			@throw [OFOutOfMemoryException exceptionWithClass: isa];
+			@throw [OFOutOfMemoryException
+			    exceptionWithClass: [self class]];
 		default:
 			assert(0);
 		}

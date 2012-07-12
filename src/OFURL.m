@@ -101,7 +101,7 @@ resolve_relative_path(OFString *path)
 
 		if ((UTF8String2 = strdup([string UTF8String])) == NULL)
 			@throw [OFOutOfMemoryException
-			     exceptionWithClass: isa
+			     exceptionWithClass: [self class]
 				  requestedSize: [string UTF8StringLength]];
 
 		UTF8String = UTF8String2;
@@ -119,7 +119,7 @@ resolve_relative_path(OFString *path)
 			UTF8String += 8;
 		} else
 			@throw [OFInvalidFormatException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		if ((tmp = strchr(UTF8String, '/')) != NULL) {
 			*tmp = '\0';
@@ -162,7 +162,7 @@ resolve_relative_path(OFString *path)
 
 			if ([portString decimalValue] > 65535)
 				@throw [OFInvalidFormatException
-				    exceptionWithClass: isa];
+				    exceptionWithClass: [self class]];
 
 			port = [portString decimalValue];
 
@@ -236,7 +236,7 @@ resolve_relative_path(OFString *path)
 
 		if ((UTF8String2 = strdup([string UTF8String])) == NULL)
 			@throw [OFOutOfMemoryException
-			     exceptionWithClass: isa
+			     exceptionWithClass: [self class]
 				  requestedSize: [string UTF8StringLength]];
 
 		UTF8String = UTF8String2;
@@ -298,7 +298,7 @@ resolve_relative_path(OFString *path)
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		self = [self initWithString: [element stringValue]];
@@ -385,7 +385,7 @@ resolve_relative_path(OFString *path)
 
 - copy
 {
-	OFURL *copy = [[isa alloc] init];
+	OFURL *copy = [[[self class] alloc] init];
 
 	@try {
 		copy->scheme = [scheme copy];
@@ -413,8 +413,9 @@ resolve_relative_path(OFString *path)
 - (void)setScheme: (OFString*)scheme_
 {
 	if (![scheme_ isEqual: @"http"] && ![scheme_ isEqual: @"https"])
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 
 	OF_SETTER(scheme, scheme_, YES, 1)
 }
@@ -468,8 +469,9 @@ resolve_relative_path(OFString *path)
 {
 	if (([scheme isEqual: @"http"] || [scheme isEqual: @"https"]) &&
 	    ![path_ hasPrefix: @"/"])
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 
 	OF_SETTER(path, path_, YES, 1)
 }

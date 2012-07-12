@@ -92,7 +92,7 @@
 	id oldObject;
 
 	if (index >= [array count])
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	oldObject = objects[index];
 	objects[index] = [object retain];
@@ -178,7 +178,7 @@
 	size_t i, count = [array count];
 
 	if (range.length > count - range.start)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	copy = [self allocMemoryWithSize: sizeof(*copy)
 				   count: range.length];
@@ -212,7 +212,7 @@
 	id tmp;
 
 	if (index1 >= count || index2 >= count)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	tmp = objects[index1];
 	objects[index1] = objects[index2];
@@ -270,7 +270,7 @@
 	for (i = 0; i < count && !stop; i++) {
 		if (mutations != mutations2)
 			@throw [OFEnumerationMutationException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 					object: self];
 
 		block(objects[i], i, &stop);
@@ -289,14 +289,14 @@
 
 		if (mutations != mutations2)
 			@throw [OFEnumerationMutationException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 					object: self];
 
 		newObject = block(objects[i], i, &stop);
 
 		if (newObject == nil)
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		[newObject retain];
@@ -308,6 +308,6 @@
 
 - (void)makeImmutable
 {
-	isa = [OFArray_adjacent class];
+	object_setClass(self, [OFArray_adjacent class]);
 }
 @end

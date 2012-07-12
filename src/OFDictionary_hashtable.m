@@ -68,7 +68,7 @@ struct of_dictionary_hashtable_bucket
 
 		if (dictionary == nil)
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		if (![dictionary isKindOfClass:
@@ -76,7 +76,7 @@ struct of_dictionary_hashtable_bucket
 		    ![dictionary isKindOfClass:
 		    [OFMutableDictionary_hashtable class]])
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		hashtable = (OFDictionary_hashtable*)dictionary;
@@ -132,14 +132,16 @@ struct of_dictionary_hashtable_bucket
 		count = [dictionary count];
 
 		if (count > UINT32_MAX)
-			@throw [OFOutOfRangeException exceptionWithClass: isa];
+			@throw [OFOutOfRangeException
+			    exceptionWithClass: [self class]];
 
 		for (newSize = 1; newSize < count; newSize <<= 1);
 		if (count * 4 / newSize >= 3)
 			newSize <<= 1;
 
 		if (newSize == 0)
-			@throw [OFOutOfRangeException exceptionWithClass: isa];
+			@throw [OFOutOfRangeException
+			    exceptionWithClass: [self class]];
 
 		data = [self allocMemoryWithSize: sizeof(*data)
 					   count: newSize];
@@ -172,7 +174,7 @@ struct of_dictionary_hashtable_bucket
 
 			if (data[i] != NULL)
 				@throw [OFOutOfRangeException
-				    exceptionWithClass: isa];
+				    exceptionWithClass: [self class]];
 
 			bucket = [self allocMemoryWithSize: sizeof(*bucket)];
 
@@ -205,7 +207,7 @@ struct of_dictionary_hashtable_bucket
 
 		if (key == nil || object == nil)
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		data = [self allocMemoryWithSize: sizeof(*data)
@@ -240,7 +242,7 @@ struct of_dictionary_hashtable_bucket
 	@try {
 		if ([objects count] != [keys count])
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		ret = [self initWithObjects: [objects objects]
 				    forKeys: [keys objects]
@@ -265,14 +267,16 @@ struct of_dictionary_hashtable_bucket
 		count = count_;
 
 		if (count > UINT32_MAX)
-			@throw [OFOutOfRangeException exceptionWithClass: isa];
+			@throw [OFOutOfRangeException
+			    exceptionWithClass: [self class]];
 
 		for (newSize = 1; newSize < count; newSize <<= 1);
 		if (count * 4 / newSize >= 3)
 			newSize <<= 1;
 
 		if (newSize == 0)
-			@throw [OFOutOfRangeException exceptionWithClass: isa];
+			@throw [OFOutOfRangeException
+			    exceptionWithClass: [self class]];
 
 		data = [self allocMemoryWithSize: sizeof(*data)
 					   count: newSize];
@@ -323,7 +327,7 @@ struct of_dictionary_hashtable_bucket
 
 				if (j >= last)
 					@throw [OFOutOfRangeException
-					    exceptionWithClass: isa];
+					    exceptionWithClass: [self class]];
 
 				bucket =
 				    [self allocMemoryWithSize: sizeof(*bucket)];
@@ -371,14 +375,14 @@ struct of_dictionary_hashtable_bucket
 
 		if (firstKey == nil)
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		key = firstKey;
 
 		if ((object = va_arg(arguments, id)) == nil)
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		count = 1;
@@ -386,14 +390,16 @@ struct of_dictionary_hashtable_bucket
 		count >>= 1;
 
 		if (count > UINT32_MAX)
-			@throw [OFOutOfRangeException exceptionWithClass: isa];
+			@throw [OFOutOfRangeException
+			    exceptionWithClass: [self class]];
 
 		for (newSize = 1; newSize < count; newSize <<= 1);
 		if (count * 4 / newSize >= 3)
 			newSize <<= 1;
 
 		if (newSize == 0)
-			@throw [OFOutOfRangeException exceptionWithClass: isa];
+			@throw [OFOutOfRangeException
+			    exceptionWithClass: [self class]];
 
 		data = [self allocMemoryWithSize: sizeof(*data)
 					   count: newSize];
@@ -422,7 +428,7 @@ struct of_dictionary_hashtable_bucket
 
 			if (key == nil || object == nil)
 				@throw [OFInvalidArgumentException
-				    exceptionWithClass: isa
+				    exceptionWithClass: [self class]
 					      selector: _cmd];
 
 			hash = [key hash];
@@ -460,7 +466,7 @@ struct of_dictionary_hashtable_bucket
 
 				if (j >= last)
 					@throw [OFOutOfRangeException
-					    exceptionWithClass: isa];
+					    exceptionWithClass: [self class]];
 
 				bucket =
 				    [self allocMemoryWithSize: sizeof(*bucket)];
@@ -506,7 +512,7 @@ struct of_dictionary_hashtable_bucket
 		    ![[element name] isEqual: @"OFMutableDictionary"]) ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		dictionary = [OFMutableDictionary dictionary];
@@ -518,7 +524,7 @@ struct of_dictionary_hashtable_bucket
 
 		if ([keys count] != [objects count])
 			@throw [OFInvalidFormatException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
 
 		keyEnumerator = [keys objectEnumerator];
 		objectEnumerator = [objects objectEnumerator];
@@ -535,7 +541,7 @@ struct of_dictionary_hashtable_bucket
 
 			if (key == nil || object == nil)
 				@throw [OFInvalidFormatException
-				    exceptionWithClass: isa];
+				    exceptionWithClass: [self class]];
 
 			[dictionary setObject: [object objectByDeserializing]
 				       forKey: [key objectByDeserializing]];
@@ -559,8 +565,9 @@ struct of_dictionary_hashtable_bucket
 	uint32_t i, hash, last;
 
 	if (key == nil)
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 
 	hash = [key hash];
 	last = size;
@@ -802,7 +809,7 @@ struct of_dictionary_hashtable_bucket
 {
 	if (mutationsPtr != NULL && *mutationsPtr != mutations)
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: isa
+		    exceptionWithClass: [self class]
 				object: dictionary];
 
 	pos = 0;
@@ -814,7 +821,7 @@ struct of_dictionary_hashtable_bucket
 {
 	if (mutationsPtr != NULL && *mutationsPtr != mutations)
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: isa
+		    exceptionWithClass: [self class]
 				object: dictionary];
 
 	for (; pos < size && (data[pos] == NULL ||
@@ -832,7 +839,7 @@ struct of_dictionary_hashtable_bucket
 {
 	if (mutationsPtr != NULL && *mutationsPtr != mutations)
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: isa
+		    exceptionWithClass: [self class]
 				object: dictionary];
 
 	for (; pos < size && (data[pos] == NULL ||

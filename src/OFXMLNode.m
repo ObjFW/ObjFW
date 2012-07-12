@@ -24,7 +24,7 @@
 @implementation OFXMLNode
 - initWithSerialization: (OFXMLElement*)element
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -32,7 +32,7 @@
 
 - (OFString*)stringValue
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -71,7 +71,7 @@
 - (OFString*)XMLStringWithIndentation: (unsigned int)indentation
 				level: (unsigned int)level
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -82,7 +82,7 @@
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 

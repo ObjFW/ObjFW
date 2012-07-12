@@ -29,7 +29,7 @@
 
 - init
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -62,7 +62,8 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"An exception of class %@ occurred in class %@", isa, inClass];
+	    @"An exception of class %@ occurred in class %@",
+	    object_getClass(self), inClass];
 
 	return description;
 }

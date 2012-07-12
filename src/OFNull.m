@@ -47,8 +47,9 @@ static OFNull *null = nil;
 
 	if (![[element name] isEqual: [self className]] ||
 	    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-		@throw [OFInvalidArgumentException exceptionWithClass: isa
-							     selector: _cmd];
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 
 	[pool release];
 
@@ -106,7 +107,7 @@ static OFNull *null = nil;
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 	[super dealloc];	/* Get rid of a stupid warning */
 }

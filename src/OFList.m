@@ -48,7 +48,7 @@
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException
-			    exceptionWithClass: isa
+			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
 		enumerator = [[element elementsForNamespace:
@@ -272,7 +272,7 @@
 
 - copy
 {
-	OFList *copy = [[isa alloc] init];
+	OFList *copy = [[[self class] alloc] init];
 	of_list_object_t *iter, *listObject, *previous;
 
 	listObject = NULL;
@@ -443,7 +443,7 @@
 
 	if (*mutationsPtr != mutations)
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: isa
+		    exceptionWithClass: [self class]
 				object: list];
 
 	if (current == NULL)
@@ -459,7 +459,7 @@
 {
 	if (*mutationsPtr != mutations)
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: isa
+		    exceptionWithClass: [self class]
 				object: list];
 
 	current = [list firstListObject];

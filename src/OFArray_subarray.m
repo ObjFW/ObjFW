@@ -60,7 +60,7 @@
 - (id)objectAtIndex: (size_t)index
 {
 	if (index >= range.length)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	return [array objectAtIndex: index + range.start];
 }
@@ -69,7 +69,7 @@
 	   inRange: (of_range_t)range_
 {
 	if (range_.start + range_.length > range.length)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	range_.start += range.start;
 
@@ -110,7 +110,7 @@
 - (OFArray*)objectsInRange: (of_range_t)range_
 {
 	if (range_.start + range_.length > range.length)
-		@throw [OFOutOfRangeException exceptionWithClass: isa];
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	range_.start += range.start;
 

@@ -69,8 +69,8 @@
 
 - init
 {
-	if (isa == [OFPlugin class]) {
-		Class c = isa;
+	if (object_getClass(self) == [OFPlugin class]) {
+		Class c = [self class];
 		[self release];
 		@throw [OFNotImplementedException exceptionWithClass: c
 							    selector: _cmd];

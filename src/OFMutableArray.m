@@ -139,7 +139,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 	[super dealloc];	/* Get rid of a stupid warning */
 }
@@ -149,7 +149,8 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 + (void)initialize
 {
 	if (self == [OFMutableArray class])
-		placeholder.isa = [OFMutableArray_placeholder class];
+		object_setClass((id)&placeholder,
+		    [OFMutableArray_placeholder class]);
 }
 
 + alloc
@@ -162,8 +163,8 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 
 - init
 {
-	if (isa == [OFMutableArray class]) {
-		Class c = isa;
+	if (object_getClass(self) == [OFMutableArray class]) {
+		Class c = [self class];
 		[self release];
 		@throw [OFNotImplementedException exceptionWithClass: c
 							    selector: _cmd];
@@ -192,7 +193,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 - (void)insertObject: (id)object
 	     atIndex: (size_t)index
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -218,7 +219,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 - (void)replaceObjectAtIndex: (size_t)index
 		  withObject: (id)object
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -260,7 +261,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 
 - (void)removeObjectAtIndex: (size_t)index
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 

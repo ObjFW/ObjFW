@@ -35,7 +35,7 @@
 
 - initWithClass: (Class)class_
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];

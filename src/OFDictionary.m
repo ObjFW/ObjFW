@@ -111,7 +111,7 @@ static struct {
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 	[super dealloc];	/* Get rid of a stupid warning */
 }
@@ -121,7 +121,8 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFDictionary class])
-		placeholder.isa = [OFDictionary_placeholder class];
+		object_setClass((id)&placeholder,
+		    [OFDictionary_placeholder class]);
 }
 
 + alloc
@@ -180,8 +181,8 @@ static struct {
 
 - init
 {
-	if (isa == [OFDictionary class]) {
-		Class c = isa;
+	if (object_getClass(self) == [OFDictionary class]) {
+		Class c = [self class];
 		[self release];
 		@throw [OFNotImplementedException exceptionWithClass: c
 							    selector: _cmd];
@@ -192,7 +193,7 @@ static struct {
 
 - initWithDictionary: (OFDictionary*)dictionary
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -207,7 +208,7 @@ static struct {
 - initWithObjects: (OFArray*)objects
 	  forKeys: (OFArray*)keys
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -217,7 +218,7 @@ static struct {
 	  forKeys: (id const*)keys
 	    count: (size_t)count
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -239,7 +240,7 @@ static struct {
 - initWithKey: (id)firstKey
     arguments: (va_list)arguments
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -247,7 +248,7 @@ static struct {
 
 - initWithSerialization: (OFXMLElement*)element
 {
-	Class c = isa;
+	Class c = [self class];
 	[self release];
 	@throw [OFNotImplementedException exceptionWithClass: c
 						    selector: _cmd];
@@ -255,7 +256,7 @@ static struct {
 
 - (id)objectForKey: (id)key
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -266,7 +267,7 @@ static struct {
 
 - (size_t)count
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -411,13 +412,13 @@ static struct {
 
 - (OFEnumerator*)objectEnumerator
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (OFEnumerator*)keyEnumerator
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
@@ -425,7 +426,7 @@ static struct {
 			   objects: (id*)objects
 			     count: (int)count_
 {
-	@throw [OFNotImplementedException exceptionWithClass: isa
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
