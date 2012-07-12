@@ -141,12 +141,15 @@ object_getClass(id obj_)
 	return obj->isa;
 }
 
-static inline void
+static inline Class
 object_setClass(id obj_, Class cls)
 {
 	struct objc_object *obj = (struct objc_object*)obj_;
+	Class old = obj->isa;
 
 	obj->isa = cls;
+
+	return old;
 }
 
 static inline const char*
