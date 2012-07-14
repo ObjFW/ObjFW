@@ -255,27 +255,19 @@ of_tlskey_new(of_tlskey_t *key)
 #endif
 }
 
-static OF_INLINE id
+static OF_INLINE void*
 of_tlskey_get(of_tlskey_t key)
 {
 #if defined(OF_HAVE_PTHREADS)
-	void *ret = pthread_getspecific(key);
+	return pthread_getspecific(key);
 #elif defined(_WIN32)
-	void *ret = TlsGetValue(key);
+	return TlsGetValue(key);
 #endif
-
-	/* NULL and nil might be different! */
-	if (ret == NULL)
-		return nil;
-
-	return (id)ret;
 }
 
 static OF_INLINE BOOL
-of_tlskey_set(of_tlskey_t key, id obj)
+of_tlskey_set(of_tlskey_t key, void *ptr)
 {
-	void *ptr = (obj != nil ? (void*)obj : NULL);
-
 #if defined(OF_HAVE_PTHREADS)
 	return !pthread_setspecific(key, ptr);
 #elif defined(_WIN32)

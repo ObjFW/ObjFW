@@ -139,12 +139,12 @@ call_main(id object)
 
 + (id)objectForTLSKey: (OFTLSKey*)key
 {
-	return [[of_tlskey_get(key->key) retain] autorelease];
+	return [[(id)of_tlskey_get(key->key) retain] autorelease];
 }
 
 + (OFThread*)currentThread
 {
-	return [[of_tlskey_get(threadSelf) retain] autorelease];
+	return [[(id)of_tlskey_get(threadSelf) retain] autorelease];
 }
 
 + (void)sleepForTimeInterval: (double)seconds
