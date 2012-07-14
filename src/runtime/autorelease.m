@@ -28,7 +28,7 @@
 
 static __thread id *objects = NULL;
 static __thread id *top = NULL;
-static size_t size = 0;
+static __thread size_t size = 0;
 
 id
 objc_autorelease(id object)
