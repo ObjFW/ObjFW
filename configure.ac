@@ -451,6 +451,23 @@ AS_IF([test x"$enable_threads" != x"no"], [
 	AC_SUBST(OFHTTPREQUESTTESTS_M, "OFHTTPRequestTests.m")
 	AC_SUBST(THREADING_H, "threading.h")
 
+	AC_MSG_CHECKING(whether __thread works)
+	AC_TRY_LINK([
+		/* It seems __thread is buggy with GCC 4.1 */
+		#if __GNUC__ == 4 && __GNUC_MINOR__ < 2
+		# error buggy
+		#endif
+
+		__thread int x = 0;
+	], [
+		x++;
+	], [
+		AC_MSG_RESULT(yes)
+		AC_DEFINE(OF_COMPILER_TLS, 1, [Whether __thread works])
+	], [
+		AC_MSG_RESULT(no)
+	])
+
 	atomic_ops="none"
 
 	AC_MSG_CHECKING(whether we have an atomic ops assembly implementation)

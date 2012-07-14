@@ -18,8 +18,16 @@
 
 #include <stdlib.h>
 
+#include <assert.h>
+
 #import "OFAutoreleasePool.h"
 #import "OFArray.h"
+
+#ifndef OF_COMPILER_TLS
+# import "threading.h"
+
+# import "OFInitializationFailedException.h"
+#endif
 
 #import "OFNotImplementedException.h"
 
@@ -27,11 +35,31 @@ extern id _objc_rootAutorelease(id);
 extern void* objc_autoreleasePoolPush(void);
 extern void objc_autoreleasePoolPop(void*);
 
+#ifdef OF_COMPILER_TLS
 static __thread void *first = NULL;
+#else
+static of_tlskey_t firstKey;
+#endif
 
 @implementation OFAutoreleasePool
+#ifndef OF_COMPILER_TLS
++ (void)initialize
+{
+	if (self != [OFAutoreleasePool class])
+		return;
+
+	if (!of_tlskey_new(&firstKey))
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+}
+#endif
+
 + (id)addObject: (id)object
 {
+#ifndef OF_COMPILER_TLS
+	void *first = of_tlskey_get(firstKey);
+#endif
+
 	if (first == NULL)
 		[[OFAutoreleasePool alloc] init];
 
@@ -40,6 +68,10 @@ static __thread void *first = NULL;
 
 + (void)_releaseAll
 {
+#ifndef OF_COMPILER_TLS
+	void *first = of_tlskey_get(firstKey);
+#endif
+
 	objc_autoreleasePoolPop(first);
 }
 
@@ -48,10 +80,20 @@ static __thread void *first = NULL;
 	self = [super init];
 
 	@try {
+#ifndef OF_COMPILER_TLS
+		void *first = of_tlskey_get(firstKey);
+#endif
+
 		pool = objc_autoreleasePoolPush();
 
 		if (first == NULL)
+#ifdef OF_COMPILER_TLS
 			first = pool;
+#else
+			if (!of_tlskey_set(firstKey, pool))
+				@throw [OFInitializationFailedException
+				    exceptionWithClass: [self class]];
+#endif
 
 		_objc_rootAutorelease(self);
 	} @catch (id e) {
@@ -91,8 +133,13 @@ static __thread void *first = NULL;
 
 	ignoreRelease = YES;
 
+#ifdef OF_COMPILER_TLS
 	if (first == pool)
 		first = NULL;
+#else
+	if (of_tlskey_get(firstKey) == pool)
+		assert(of_tlskey_set(firstKey, NULL));
+#endif
 
 	objc_autoreleasePoolPop(pool);
 
