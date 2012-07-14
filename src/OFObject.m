@@ -771,9 +771,7 @@ void _references_to_categories_of_OFObject(void)
 	if (autoreleasePool == Nil)
 		autoreleasePool = [OFAutoreleasePool class];
 
-	[autoreleasePool addObject: self];
-
-	return self;
+	return [autoreleasePool addObject: self];
 }
 
 - self

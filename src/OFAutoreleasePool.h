@@ -26,9 +26,8 @@
  */
 @interface OFAutoreleasePool: OFObject
 {
-	OFAutoreleasePool *nextPool, *previousPool;
-	id *objects;
-	size_t count, size;
+	void *pool;
+	BOOL ignoreRelease;
 }
 
 /**
@@ -36,11 +35,11 @@
  *	  thread-specific autorelease pool stack.
  *
  * \param object The object to add to the autorelease pool
+ * \return The object
  */
-+ (void)addObject: (id)object;
++ (id)addObject: (id)object;
 
 + (void)_releaseAll;
-- (void)_addObject: (id)object;
 
 /**
  * \brief Releases all objects in the autorelease pool.

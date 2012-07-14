@@ -132,6 +132,10 @@ extern void objc_thread_remove(void);
 extern void objc_exit(void);
 extern objc_uncaught_exception_handler objc_setUncaughtExceptionHandler(
     objc_uncaught_exception_handler);
+extern id objc_autorelease(id);
+extern void* objc_autoreleasePoolPush(void);
+extern void objc_autoreleasePoolPop(void*);
+extern id _objc_rootAutorelease(id);
 
 static inline Class
 object_getClass(id obj_)

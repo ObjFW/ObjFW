@@ -21,71 +21,26 @@
 #import "OFAutoreleasePool.h"
 #import "OFArray.h"
 
-#import "OFInitializationFailedException.h"
 #import "OFNotImplementedException.h"
 
-#ifdef OF_THREADS
-# import "threading.h"
-static of_tlskey_t firstKey, lastKey;
-#else
-static OFAutoreleasePool *firstPool = nil, *lastPool = nil;
-#endif
+extern id _objc_rootAutorelease(id);
+extern void* objc_autoreleasePoolPush(void);
+extern void objc_autoreleasePoolPop(void*);
 
-#define GROW_SIZE 16
+static __thread void *first = NULL;
 
 @implementation OFAutoreleasePool
-#ifdef OF_THREADS
-+ (void)initialize
++ (id)addObject: (id)object
 {
-	if (self != [OFAutoreleasePool class])
-		return;
+	if (first == NULL)
+		[[OFAutoreleasePool alloc] init];
 
-	if (!of_tlskey_new(&firstKey) || !of_tlskey_new(&lastKey))
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-}
-#endif
-
-+ (void)addObject: (id)object
-{
-#ifdef OF_THREADS
-	id lastPool = of_tlskey_get(lastKey);
-#endif
-
-	if (lastPool == nil) {
-		@try {
-			[[self alloc] init];
-		} @catch (id e) {
-			[object release];
-			@throw e;
-		}
-
-#ifdef OF_THREADS
-		lastPool = of_tlskey_get(lastKey);
-#endif
-	}
-
-	if (lastPool == nil) {
-		[object release];
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-	}
-
-	@try {
-		[lastPool _addObject: object];
-	} @catch (id e) {
-		[object release];
-		@throw e;
-	}
+	return _objc_rootAutorelease(object);
 }
 
 + (void)_releaseAll
 {
-#ifdef OF_THREADS
-	[of_tlskey_get(firstKey) release];
-#else
-	[firstPool release];
-#endif
+	objc_autoreleasePoolPop(first);
 }
 
 - init
@@ -93,36 +48,12 @@ static OFAutoreleasePool *firstPool = nil, *lastPool = nil;
 	self = [super init];
 
 	@try {
-#ifdef OF_THREADS
-		id firstPool = of_tlskey_get(firstKey);
-		previousPool = of_tlskey_get(lastKey);
+		pool = objc_autoreleasePoolPush();
 
-		if (!of_tlskey_set(lastKey, self))
-			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
-#else
-		previousPool = lastPool;
-		lastPool = self;
-#endif
+		if (first == NULL)
+			first = pool;
 
-		if (firstPool == nil) {
-#ifdef OF_THREADS
-			if (!of_tlskey_set(firstKey, self)) {
-				of_tlskey_set(lastKey, previousPool);
-				@throw [OFInitializationFailedException
-				    exceptionWithClass: [self class]];
-			}
-#else
-			firstPool = self;
-#endif
-		}
-
-		if (previousPool != nil)
-			previousPool->nextPool = self;
-
-		size = GROW_SIZE;
-		objects = [self allocMemoryWithSize: sizeof(id)
-					      count: GROW_SIZE];
+		_objc_rootAutorelease(self);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -131,29 +62,16 @@ static OFAutoreleasePool *firstPool = nil, *lastPool = nil;
 	return self;
 }
 
-- (void)_addObject: (id)object
-{
-	if (count + 1 > size) {
-		objects = [self resizeMemory: objects
-					size: sizeof(id)
-				       count: size + GROW_SIZE];
-		size += GROW_SIZE;
-	}
-
-	objects[count] = object;
-	count++;
-}
-
 - (void)releaseObjects
 {
-	size_t i;
+	ignoreRelease = YES;
 
-	[nextPool releaseObjects];
+	objc_autoreleasePoolPop(pool);
+	pool = objc_autoreleasePoolPush();
 
-	for (i = 0; i < count; i++)
-		[objects[i] release];
+	_objc_rootAutorelease(self);
 
-	count = 0;
+	ignoreRelease = NO;
 }
 
 - (void)release
@@ -168,43 +86,15 @@ static OFAutoreleasePool *firstPool = nil, *lastPool = nil;
 
 - (void)dealloc
 {
-	size_t i;
-
-	[nextPool dealloc];
-
-	for (i = 0; i < count; i++)
-		[objects[i] release];
-
-	/*
-	 * If of_tlskey_set fails, this is a real problem. The best we can do
-	 * is to not change the pool below the current pool and stop
-	 * deallocation. This way, new objects will be added to the current
-	 * pool, but released when the pool below gets released - and maybe
-	 * the pool itself will be released as well then, because maybe
-	 * of_tlskey_set will work this time.
-	 */
-#ifdef OF_THREADS
-	if (!of_tlskey_set(lastKey, previousPool))
+	if (ignoreRelease)
 		return;
-#else
-	lastPool = previousPool;
-#endif
 
-	if (previousPool != nil)
-		previousPool->nextPool = nil;
+	ignoreRelease = YES;
 
-	/*
-	 * If of_tlskey_set fails here, this is even worse, as this will
-	 * definitely be a memory leak. But this should never happen anyway.
-	 */
-#ifdef OF_THREADS
-	if (of_tlskey_get(firstKey) == self)
-		if (!of_tlskey_set(firstKey, nil))
-			return;
-#else
-	if (firstPool == self)
-		firstPool = nil;
-#endif
+	if (first == pool)
+		first = NULL;
+
+	objc_autoreleasePoolPop(pool);
 
 	[super dealloc];
 }
