@@ -28,7 +28,7 @@ fi
 
 CPPFLAGS="$CPPFLAGS $($OBJFW_CONFIG --cppflags)"
 OBJC="$($OBJFW_CONFIG --objc)"
-OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --objcflags)"
+OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --objcflags) -Wall"
 LIBS="$LIBS $($OBJFW_CONFIG --libs)"
 LDFLAGS="$LDFLAGS $($OBJFW_CONFIG --ldflags --rpath)"
 
