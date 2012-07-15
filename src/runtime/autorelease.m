@@ -105,6 +105,7 @@ _objc_rootAutorelease(id object)
 #endif
 
 		top = objects;
+		size = of_pagesize;
 	}
 
 	if ((uintptr_t)top >= (uintptr_t)objects + size) {
