@@ -544,7 +544,9 @@ free_class(Class rcls)
 		rcls->subclass_list = NULL;
 	}
 
-	objc_sparsearray_free(rcls->dtable);
+	if (rcls->dtable != NULL)
+		objc_sparsearray_free(rcls->dtable);
+
 	rcls->dtable = NULL;
 
 	if (rcls->superclass != Nil)
