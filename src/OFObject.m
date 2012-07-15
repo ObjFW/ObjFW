@@ -619,6 +619,8 @@ void _references_to_categories_of_OFObject(void)
 	if (PRE_IVAR->lastMem != NULL)
 		PRE_IVAR->lastMem->next = preMem;
 
+	if (PRE_IVAR->firstMem == NULL)
+		PRE_IVAR->firstMem = preMem;
 	PRE_IVAR->lastMem = preMem;
 
 	return (char*)pointer + PRE_MEM_ALIGN;
