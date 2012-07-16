@@ -30,7 +30,25 @@
 #import "macros.h"
 
 @implementation OFMethod
-#if defined(OF_APPLE_RUNTIME)
+#if defined(OF_OBJFW_RUNTIME)
+- _initWithMethod: (struct objc_method*)method
+{
+	self = [super init];
+
+	@try {
+		selector = (SEL)&method->sel;
+		name = [[OFString alloc]
+		    initWithCString: sel_getName(selector)
+			   encoding: OF_STRING_ENCODING_ASCII];
+		typeEncoding = method->sel.types;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+#elif defined(OF_APPLE_RUNTIME)
 - _initWithMethod: (Method)method
 {
 	self = [super init];
@@ -184,7 +202,9 @@
 
 	@try {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-#if defined(OF_APPLE_RUNTIME)
+#if defined(OF_OBJFW_RUNTIME)
+		struct objc_method_list *methodList;
+#elif defined(OF_APPLE_RUNTIME)
 		Method *methodList;
 		Ivar *ivarList;
 # ifdef OF_HAVE_PROPERTIES
@@ -200,7 +220,34 @@
 		properties = [[OFMutableArray alloc] init];
 #endif
 
-#if defined(OF_APPLE_RUNTIME)
+#if defined(OF_OBJFW_RUNTIME)
+		for (methodList = object_getClass(class)->methodlist;
+		    methodList != NULL; methodList = methodList->next) {
+			int i;
+
+			for (i = 0; i < methodList->count; i++) {
+				OFMethod *method = [[OFMethod alloc]
+				    _initWithMethod: &methodList->methods[i]];
+				[classMethods addObject: [method autorelease]];
+				[pool releaseObjects];
+			}
+		}
+
+		for (methodList = class->methodlist; methodList != NULL;
+		    methodList = methodList->next) {
+			int i;
+
+			for (i = 0; i < methodList->count; i++) {
+				OFMethod *method = [[OFMethod alloc]
+				    _initWithMethod: &methodList->methods[i]];
+				[instanceMethods addObject:
+				    [method autorelease]];
+				[pool releaseObjects];
+			}
+		}
+
+		/* TODO: ivars and properties */
+#elif defined(OF_APPLE_RUNTIME)
 		methodList = class_copyMethodList(object_getClass(class),
 		    &count);
 		@try {
