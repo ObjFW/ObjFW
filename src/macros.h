@@ -18,6 +18,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #if defined(OF_APPLE_RUNTIME)
 # import <objc/runtime.h>
@@ -78,6 +80,13 @@
 #  define OF_ARM_ASM
 # endif
 #endif
+
+#define OF_ENSURE(cond)							\
+	if (!(cond)) {							\
+		fprintf(stderr, "Failed to ensure condition in "	\
+		    __FILE__ ":%d:\n" #cond "\n", __LINE__);		\
+		abort();						\
+	}
 
 #ifdef OF_OBJFW_RUNTIME
 # define objc_lookUpClass objc_lookup_class

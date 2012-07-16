@@ -18,10 +18,9 @@
 
 #include <string.h>
 
-#include <assert.h>
-
 #import "OFObject.h"
 
+#import "macros.h"
 #ifdef OF_THREADS
 # import "threading.h"
 # define NUM_SPINLOCKS 8	/* needs to be a power of 2 */
@@ -51,12 +50,11 @@ objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, BOOL atomic)
 #ifdef OF_THREADS
 		unsigned hash = SPINLOCK_HASH(ptr);
 
-		assert(of_spinlock_lock(&spinlocks[hash]));
-
+		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
 		@try {
 			return [[*ptr retain] autorelease];
 		} @finally {
-			assert(of_spinlock_unlock(&spinlocks[hash]));
+			OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
 		}
 #else
 		return [[*ptr retain] autorelease];
@@ -75,8 +73,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
 #ifdef OF_THREADS
 		unsigned hash = SPINLOCK_HASH(ptr);
 
-		assert(of_spinlock_lock(&spinlocks[hash]));
-
+		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
 		@try {
 #endif
 			id old = *ptr;
@@ -95,7 +92,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
 			[old release];
 #ifdef OF_THREADS
 		} @finally {
-			assert(of_spinlock_unlock(&spinlocks[hash]));
+			OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
 		}
 #endif
 
@@ -132,13 +129,11 @@ objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, BOOL atomic,
 #ifdef OF_THREADS
 		unsigned hash = SPINLOCK_HASH(src);
 
-		assert(of_spinlock_lock(&spinlocks[hash]));
+		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
 #endif
-
 		memcpy(dest, src, size);
-
 #ifdef OF_THREADS
-		assert(of_spinlock_unlock(&spinlocks[hash]));
+		OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
 #endif
 
 		return;
@@ -155,13 +150,11 @@ objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, BOOL atomic,
 #ifdef OF_THREADS
 		unsigned hash = SPINLOCK_HASH(src);
 
-		assert(of_spinlock_lock(&spinlocks[hash]));
+		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
 #endif
-
 		memcpy(dest, src, size);
-
 #ifdef OF_THREADS
-		assert(of_spinlock_unlock(&spinlocks[hash]));
+		OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
 #endif
 
 		return;

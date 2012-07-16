@@ -729,9 +729,9 @@ void _references_to_categories_of_OFObject(void)
 #if defined(OF_ATOMIC_OPS)
 	of_atomic_inc_32(&PRE_IVAR->retainCount);
 #elif defined(OF_THREADS)
-	assert(of_spinlock_lock(&PRE_IVAR->retainCountSpinlock));
+	OF_ENSURE(of_spinlock_lock(&PRE_IVAR->retainCountSpinlock));
 	PRE_IVAR->retainCount++;
-	assert(of_spinlock_unlock(&PRE_IVAR->retainCountSspinlock));
+	OF_ENSURE(of_spinlock_unlock(&PRE_IVAR->retainCountSspinlock));
 #else
 	PRE_IVAR->retainCount++;
 #endif
@@ -753,9 +753,9 @@ void _references_to_categories_of_OFObject(void)
 #elif defined(OF_THREADS)
 	size_t c;
 
-	assert(of_spinlock_lock(&PRE_IVAR->retainCountSpinlock));
+	OF_ENSURE(of_spinlock_lock(&PRE_IVAR->retainCountSpinlock));
 	c = --PRE_IVAR->retainCount;
-	assert(of_spinlock_unlock(&PRE_IVAR->retainCountSpinlock));
+	OF_ENSURE(of_spinlock_unlock(&PRE_IVAR->retainCountSpinlock));
 
 	if (c == 0)
 		[self dealloc];

@@ -22,7 +22,6 @@
 #include <time.h>
 #include <math.h>
 #include <float.h>
-#include <assert.h>
 
 #include <sys/time.h>
 
@@ -219,7 +218,7 @@ static int month_to_day_of_year[12] = {
 
 	self = [super init];
 
-	assert(!gettimeofday(&t, NULL));
+	OF_ENSURE(!gettimeofday(&t, NULL));
 
 	seconds = t.tv_sec;
 	seconds += (double)t.tv_usec / 1000000;
@@ -625,7 +624,7 @@ static int month_to_day_of_year[12] = {
 	struct timeval t;
 	double seconds_;
 
-	assert(!gettimeofday(&t, NULL));
+	OF_ENSURE(!gettimeofday(&t, NULL));
 
 	seconds_ = t.tv_sec;
 	seconds_ += (double)t.tv_usec / 1000000;

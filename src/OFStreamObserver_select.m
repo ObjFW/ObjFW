@@ -19,13 +19,14 @@
 #define __NO_EXT_QNX
 
 #include <string.h>
-#include <assert.h>
 #include <unistd.h>
 
 #import "OFStreamObserver_select.h"
 #import "OFStream.h"
 #import "OFArray.h"
 #import "OFAutoreleasePool.h"
+
+#import "macros.h"
 
 @implementation OFStreamObserver_select
 - init
@@ -107,9 +108,9 @@
 	if (FD_ISSET(cancelFD[0], &readFDs_)) {
 		char buffer;
 #ifndef _WIN32
-		assert(read(cancelFD[0], &buffer, 1) > 0);
+		OF_ENSURE(read(cancelFD[0], &buffer, 1) > 0);
 #else
-		assert(recvfrom(cancelFD[0], &buffer, 1, 0, NULL, NULL) > 0);
+		OF_ENSURE(recvfrom(cancelFD[0], &buffer, 1, 0, NULL, NULL) > 0);
 #endif
 	}
 

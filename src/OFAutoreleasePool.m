@@ -18,18 +18,17 @@
 
 #include <stdlib.h>
 
-#include <assert.h>
-
 #import "OFAutoreleasePool.h"
 #import "OFArray.h"
 
+#import "OFNotImplementedException.h"
+
+#import "macros.h"
 #ifndef OF_COMPILER_TLS
 # import "threading.h"
 
 # import "OFInitializationFailedException.h"
 #endif
-
-#import "OFNotImplementedException.h"
 
 extern id _objc_rootAutorelease(id);
 extern void* objc_autoreleasePoolPush(void);
@@ -90,7 +89,7 @@ static of_tlskey_t firstKey;
 #ifdef OF_COMPILER_TLS
 			first = pool;
 #else
-			assert(of_tlskey_set(firstKey, pool));
+			OF_ENSURE(of_tlskey_set(firstKey, pool));
 #endif
 
 		_objc_rootAutorelease(self);
@@ -136,7 +135,7 @@ static of_tlskey_t firstKey;
 		first = NULL;
 #else
 	if (of_tlskey_get(firstKey) == pool)
-		assert(of_tlskey_set(firstKey, NULL));
+		OF_ENSURE(of_tlskey_set(firstKey, NULL));
 #endif
 
 	objc_autoreleasePoolPop(pool);

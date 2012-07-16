@@ -32,6 +32,8 @@
 #import "OFInitializationFailedException.h"
 #import "OFOutOfMemoryException.h"
 
+#import "macros.h"
+
 #define EVENTLIST_SIZE 64
 
 @implementation OFStreamObserver_kqueue
@@ -139,7 +141,7 @@
 		if (eventList[i].ident == cancelFD[0]) {
 			char buffer;
 
-			assert(read(cancelFD[0], &buffer, 1) > 0);
+			OF_ENSURE(read(cancelFD[0], &buffer, 1) > 0);
 
 			continue;
 		}

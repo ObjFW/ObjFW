@@ -18,7 +18,6 @@
 
 #define __NO_EXT_QNX
 
-#include <assert.h>
 #include <unistd.h>
 #include <poll.h>
 
@@ -27,6 +26,8 @@
 #import "OFAutoreleasePool.h"
 
 #import "OFOutOfRangeException.h"
+
+#import "macros.h"
 
 @implementation OFStreamObserver_poll
 - init
@@ -150,7 +151,7 @@
 			if (FDsCArray[i].fd == cancelFD[0]) {
 				char buffer;
 
-				assert(read(cancelFD[0], &buffer, 1) > 0);
+				OF_ENSURE(read(cancelFD[0], &buffer, 1) > 0);
 				FDsCArray[i].revents = 0;
 
 				continue;

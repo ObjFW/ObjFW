@@ -19,8 +19,9 @@
 #define OF_STREAM_OBSERVER_M
 #define __NO_EXT_QNX
 
-#include <assert.h>
 #include <unistd.h>
+
+#include <assert.h>
 
 #import "OFStreamObserver.h"
 #import "OFArray.h"
@@ -46,6 +47,8 @@
 #import "OFInitializationFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
+
+#import "macros.h"
 
 enum {
 	QUEUE_ADD = 0,
@@ -196,9 +199,9 @@ enum {
 	}
 
 #ifndef _WIN32
-	assert(write(cancelFD[1], "", 1) > 0);
+	OF_ENSURE(write(cancelFD[1], "", 1) > 0);
 #else
-	assert(sendto(cancelFD[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
+	OF_ENSURE(sendto(cancelFD[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
 	    sizeof(cancelAddr)) > 0);
 #endif
 }
@@ -218,9 +221,9 @@ enum {
 	}
 
 #ifndef _WIN32
-	assert(write(cancelFD[1], "", 1) > 0);
+	OF_ENSURE(write(cancelFD[1], "", 1) > 0);
 #else
-	assert(sendto(cancelFD[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
+	OF_ENSURE(sendto(cancelFD[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
 	    sizeof(cancelAddr)) > 0);
 #endif
 }
@@ -240,9 +243,9 @@ enum {
 	}
 
 #ifndef _WIN32
-	assert(write(cancelFD[1], "", 1) > 0);
+	OF_ENSURE(write(cancelFD[1], "", 1) > 0);
 #else
-	assert(sendto(cancelFD[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
+	OF_ENSURE(sendto(cancelFD[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
 	    sizeof(cancelAddr)) > 0);
 #endif
 }
@@ -262,9 +265,9 @@ enum {
 	}
 
 #ifndef _WIN32
-	assert(write(cancelFD[1], "", 1) > 0);
+	OF_ENSURE(write(cancelFD[1], "", 1) > 0);
 #else
-	assert(sendto(cancelFD[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
+	OF_ENSURE(sendto(cancelFD[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
 	    sizeof(cancelAddr)) > 0);
 #endif
 }

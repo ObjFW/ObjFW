@@ -20,8 +20,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <assert.h>
-
 #if defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
 # import <objc/runtime.h>
 #elif defined(OF_OBJFW_RUNTIME)
@@ -34,6 +32,7 @@
 #import "OFInitializationFailedException.h"
 #import "OFNotImplementedException.h"
 
+#import "macros.h"
 #ifdef OF_ATOMIC_OPS
 # import "atomic.h"
 #endif
@@ -201,9 +200,9 @@ _Block_copy(const void *block_)
 #else
 		unsigned hash = SPINLOCK_HASH(block);
 
-		assert(of_spinlock_lock(&spinlocks[hash]));
+		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
 		block->flags++;
-		assert(of_spinlock_unlock(&spinlocks[hash]));
+		OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
 #endif
 	}
 
@@ -228,9 +227,9 @@ _Block_release(const void *block_)
 #else
 	unsigned hash = SPINLOCK_HASH(block);
 
-	assert(of_spinlock_lock(&spinlocks[hash]));
+	OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
 	if ((--block->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
-		assert(of_spinlock_unlock(&spinlocks[hash]));
+		OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
 
 		if (block->flags & OF_BLOCK_HAS_COPY_DISPOSE)
 			block->descriptor->dispose_helper(block);
@@ -239,7 +238,7 @@ _Block_release(const void *block_)
 
 		return;
 	}
-	assert(of_spinlock_unlock(&spinlocks[hash]));
+	OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
 #endif
 }
 
