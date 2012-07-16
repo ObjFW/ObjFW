@@ -71,53 +71,53 @@ of_string_check_utf8(const char *cString, size_t cStringLength, size_t *length)
 
 	for (i = 0; i < cStringLength; i++) {
 		/* No sign of UTF-8 here */
-		if (OF_LIKELY(!(cString[i] & 0x80)))
+		if OF_LIKELY (!(cString[i] & 0x80))
 			continue;
 
 		UTF8 = 1;
 
 		/* We're missing a start byte here */
-		if (OF_UNLIKELY(!(cString[i] & 0x40)))
+		if OF_UNLIKELY (!(cString[i] & 0x40))
 			return -1;
 
 		/* 2 byte sequences for code points 0 - 127 are forbidden */
-		if (OF_UNLIKELY((cString[i] & 0x7E) == 0x40))
+		if OF_UNLIKELY ((cString[i] & 0x7E) == 0x40)
 			return -1;
 
 		/* We have at minimum a 2 byte character -> check next byte */
-		if (OF_UNLIKELY(cStringLength <= i + 1 ||
-		    (cString[i + 1] & 0xC0) != 0x80))
+		if OF_UNLIKELY (cStringLength <= i + 1 ||
+		    (cString[i + 1] & 0xC0) != 0x80)
 			return -1;
 
 		/* Check if we have at minimum a 3 byte character */
-		if (OF_LIKELY(!(cString[i] & 0x20))) {
+		if OF_LIKELY (!(cString[i] & 0x20)) {
 			i++;
 			tmpLength--;
 			continue;
 		}
 
 		/* We have at minimum a 3 byte char -> check second next byte */
-		if (OF_UNLIKELY(cStringLength <= i + 2 ||
-		    (cString[i + 2] & 0xC0) != 0x80))
+		if OF_UNLIKELY (cStringLength <= i + 2 ||
+		    (cString[i + 2] & 0xC0) != 0x80)
 			return -1;
 
 		/* Check if we have a 4 byte character */
-		if (OF_LIKELY(!(cString[i] & 0x10))) {
+		if OF_LIKELY (!(cString[i] & 0x10)) {
 			i += 2;
 			tmpLength -= 2;
 			continue;
 		}
 
 		/* We have a 4 byte character -> check third next byte */
-		if (OF_UNLIKELY(cStringLength <= i + 3 ||
-		    (cString[i + 3] & 0xC0) != 0x80))
+		if OF_UNLIKELY (cStringLength <= i + 3 ||
+		    (cString[i + 3] & 0xC0) != 0x80)
 			return -1;
 
 		/*
 		 * Just in case, check if there's a 5th character, which is
 		 * forbidden by UTF-8
 		 */
-		if (OF_UNLIKELY(cString[i] & 0x08))
+		if OF_UNLIKELY (cString[i] & 0x08)
 			return -1;
 
 		i += 3;
@@ -172,7 +172,7 @@ of_string_utf8_to_unicode(const char *buffer_, size_t length, of_unichar_t *ret)
 	}
 
 	if ((*buffer & 0xE0) == 0xC0) {
-		if (OF_UNLIKELY(length < 2))
+		if OF_UNLIKELY (length < 2)
 			return 0;
 
 		*ret = ((buffer[0] & 0x1F) << 6) | (buffer[1] & 0x3F);
@@ -180,7 +180,7 @@ of_string_utf8_to_unicode(const char *buffer_, size_t length, of_unichar_t *ret)
 	}
 
 	if ((*buffer & 0xF0) == 0xE0) {
-		if (OF_UNLIKELY(length < 3))
+		if OF_UNLIKELY (length < 3)
 			return 0;
 
 		*ret = ((buffer[0] & 0x0F) << 12) | ((buffer[1] & 0x3F) << 6) |
@@ -189,7 +189,7 @@ of_string_utf8_to_unicode(const char *buffer_, size_t length, of_unichar_t *ret)
 	}
 
 	if ((*buffer & 0xF8) == 0xF0) {
-		if (OF_UNLIKELY(length < 4))
+		if OF_UNLIKELY (length < 4)
 			return 0;
 
 		*ret = ((buffer[0] & 0x07) << 18) | ((buffer[1] & 0x3F) << 12) |
@@ -206,7 +206,7 @@ of_string_position_to_index(const char *string, size_t position)
 	size_t i, index = position;
 
 	for (i = 0; i < position; i++)
-		if (OF_UNLIKELY((string[i] & 0xC0) == 0x80))
+		if OF_UNLIKELY ((string[i] & 0xC0) == 0x80)
 			index--;
 
 	return index;
@@ -218,7 +218,7 @@ of_string_index_to_position(const char *string, size_t index, size_t length)
 	size_t i;
 
 	for (i = 0; i <= index; i++)
-		if (OF_UNLIKELY((string[i] & 0xC0) == 0x80))
+		if OF_UNLIKELY ((string[i] & 0xC0) == 0x80)
 			if (++index > length)
 				return OF_INVALID_INDEX;
 

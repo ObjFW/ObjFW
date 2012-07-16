@@ -427,22 +427,22 @@
 
 	for (i = 0; i < s->cStringLength; i++) {
 		/* ASCII */
-		if (OF_LIKELY(!(s->cString[i] & 0x80)))
+		if OF_LIKELY (!(s->cString[i] & 0x80))
 			continue;
 
 		/* A start byte can't happen first as we reversed everything */
-		if (OF_UNLIKELY(s->cString[i] & 0x40))
+		if OF_UNLIKELY (s->cString[i] & 0x40)
 			@throw [OFInvalidEncodingException
 			    exceptionWithClass: [self class]];
 
 		/* Next byte must not be ASCII */
-		if (OF_UNLIKELY(s->cStringLength < i + 1 ||
-		    !(s->cString[i + 1] & 0x80)))
+		if OF_UNLIKELY (s->cStringLength < i + 1 ||
+		    !(s->cString[i + 1] & 0x80))
 			@throw [OFInvalidEncodingException
 			    exceptionWithClass: [self class]];
 
 		/* Next byte is the start byte */
-		if (OF_LIKELY(s->cString[i + 1] & 0x40)) {
+		if OF_LIKELY (s->cString[i + 1] & 0x40) {
 			s->cString[i] ^= s->cString[i + 1];
 			s->cString[i + 1] ^= s->cString[i];
 			s->cString[i] ^= s->cString[i + 1];
@@ -452,13 +452,13 @@
 		}
 
 		/* Second next byte must not be ASCII */
-		if (OF_UNLIKELY(s->cStringLength < i + 2 ||
-		    !(s->cString[i + 2] & 0x80)))
+		if OF_UNLIKELY (s->cStringLength < i + 2 ||
+		    !(s->cString[i + 2] & 0x80))
 			@throw [OFInvalidEncodingException
 			    exceptionWithClass: [self class]];
 
 		/* Second next byte is the start byte */
-		if (OF_LIKELY(s->cString[i + 2] & 0x40)) {
+		if OF_LIKELY (s->cString[i + 2] & 0x40) {
 			s->cString[i] ^= s->cString[i + 2];
 			s->cString[i + 2] ^= s->cString[i];
 			s->cString[i] ^= s->cString[i + 2];
@@ -468,13 +468,13 @@
 		}
 
 		/* Third next byte must not be ASCII */
-		if (OF_UNLIKELY(s->cStringLength < i + 3 ||
-		    !(s->cString[i + 3] & 0x80)))
+		if OF_UNLIKELY (s->cStringLength < i + 3 ||
+		    !(s->cString[i + 3] & 0x80))
 			@throw [OFInvalidEncodingException
 			    exceptionWithClass: [self class]];
 
 		/* Third next byte is the start byte */
-		if (OF_LIKELY(s->cString[i + 3] & 0x40)) {
+		if OF_LIKELY (s->cString[i + 3] & 0x40) {
 			s->cString[i] ^= s->cString[i + 3];
 			s->cString[i + 3] ^= s->cString[i];
 			s->cString[i] ^= s->cString[i + 3];

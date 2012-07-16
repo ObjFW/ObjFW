@@ -29,8 +29,8 @@
 
 #ifdef __GNUC__
 # define OF_INLINE inline __attribute__((always_inline))
-# define OF_LIKELY(cond) __builtin_expect(!!(cond), 1)
-# define OF_UNLIKELY(cond) __builtin_expect(!!(cond), 0)
+# define OF_LIKELY(cond) (__builtin_expect(!!(cond), 1))
+# define OF_UNLIKELY(cond) (__builtin_expect(!!(cond), 0))
 # define OF_CONST_FUNC __attribute__((const))
 #else
 # define OF_INLINE inline

@@ -133,14 +133,14 @@ of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
 
 	instanceSize = class_getInstanceSize(class);
 
-	if (OF_UNLIKELY(extraAlignment > 0))
+	if OF_UNLIKELY (extraAlignment > 0)
 		extraAlignment = ((instanceSize + extraAlignment - 1) &
 		    ~(extraAlignment - 1)) - extraAlignment;
 
 	instance = malloc(PRE_IVAR_ALIGN + instanceSize +
 	    extraAlignment + extraSize);
 
-	if (OF_UNLIKELY(instance == nil)) {
+	if OF_UNLIKELY (instance == nil) {
 		object_setClass((id)&alloc_failed_exception,
 		    [OFAllocFailedException class]);
 		@throw (id)&alloc_failed_exception;
@@ -151,8 +151,8 @@ of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
 	((struct pre_ivar*)instance)->lastMem = NULL;
 
 #if !defined(OF_ATOMIC_OPS) && defined(OF_THREADS)
-	if (OF_UNLIKELY(!of_spinlock_new(
-	    &((struct pre_ivar*)instance)->retainCountSpinlock))) {
+	if OF_UNLIKELY (!of_spinlock_new(
+	    &((struct pre_ivar*)instance)->retainCountSpinlock)) {
 		free(instance);
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: class];
@@ -164,7 +164,7 @@ of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
 	memset(instance, 0, instanceSize);
 	object_setClass(instance, class);
 
-	if (OF_UNLIKELY(extra != NULL))
+	if OF_UNLIKELY (extra != NULL)
 		*extra = (char*)instance + instanceSize + extraAlignment;
 
 	return instance;
@@ -604,10 +604,10 @@ void _references_to_categories_of_OFObject(void)
 	void *pointer;
 	struct pre_mem *preMem;
 
-	if (size > SIZE_MAX - PRE_IVAR_ALIGN)
+	if OF_UNLIKELY (size > SIZE_MAX - PRE_IVAR_ALIGN)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	if ((pointer = malloc(PRE_MEM_ALIGN + size)) == NULL)
+	if OF_UNLIKELY ((pointer = malloc(PRE_MEM_ALIGN + size)) == NULL)
 		@throw [OFOutOfMemoryException exceptionWithClass: [self class]
 						    requestedSize: size];
 	preMem = pointer;
@@ -616,10 +616,10 @@ void _references_to_categories_of_OFObject(void)
 	preMem->prev = PRE_IVAR->lastMem;
 	preMem->next = NULL;
 
-	if (PRE_IVAR->lastMem != NULL)
+	if OF_LIKELY (PRE_IVAR->lastMem != NULL)
 		PRE_IVAR->lastMem->next = preMem;
 
-	if (PRE_IVAR->firstMem == NULL)
+	if OF_UNLIKELY (PRE_IVAR->firstMem == NULL)
 		PRE_IVAR->firstMem = preMem;
 	PRE_IVAR->lastMem = preMem;
 
@@ -629,10 +629,10 @@ void _references_to_categories_of_OFObject(void)
 - (void*)allocMemoryWithSize: (size_t)size
 		       count: (size_t)count
 {
-	if (size == 0 || count == 0)
+	if OF_UNLIKELY (size == 0 || count == 0)
 		return NULL;
 
-	if (count > SIZE_MAX / size)
+	if OF_UNLIKELY (count > SIZE_MAX / size)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	return [self allocMemoryWithSize: size * count];
@@ -644,33 +644,34 @@ void _references_to_categories_of_OFObject(void)
 	void *new;
 	struct pre_mem *preMem;
 
-	if (pointer == NULL)
+	if OF_UNLIKELY (pointer == NULL)
 		return [self allocMemoryWithSize: size];
 
-	if (size == 0) {
+	if OF_UNLIKELY (size == 0) {
 		[self freeMemory: pointer];
 		return NULL;
 	}
 
-	if (PRE_MEM(pointer)->owner != self)
+	if OF_UNLIKELY (PRE_MEM(pointer)->owner != self)
 		@throw [OFMemoryNotPartOfObjectException
 		    exceptionWithClass: [self class]
 			       pointer: pointer];
 
-	if ((new = realloc(PRE_MEM(pointer), PRE_MEM_ALIGN + size)) == NULL)
+	if OF_UNLIKELY ((new = realloc(PRE_MEM(pointer),
+	    PRE_MEM_ALIGN + size)) == NULL)
 		@throw [OFOutOfMemoryException exceptionWithClass: [self class]
 						    requestedSize: size];
 	preMem = new;
 
-	if (preMem != PRE_MEM(pointer)) {
-		if (preMem->prev != NULL)
+	if OF_UNLIKELY (preMem != PRE_MEM(pointer)) {
+		if OF_LIKELY (preMem->prev != NULL)
 			preMem->prev->next = preMem;
-		if (preMem->next != NULL)
+		if OF_LIKELY (preMem->next != NULL)
 			preMem->next->prev = preMem;
 
-		if (PRE_IVAR->firstMem == PRE_MEM(pointer))
+		if OF_UNLIKELY (PRE_IVAR->firstMem == PRE_MEM(pointer))
 			PRE_IVAR->firstMem = preMem;
-		if (PRE_IVAR->lastMem == PRE_MEM(pointer))
+		if OF_UNLIKELY (PRE_IVAR->lastMem == PRE_MEM(pointer))
 			PRE_IVAR->lastMem = preMem;
 	}
 
@@ -681,16 +682,16 @@ void _references_to_categories_of_OFObject(void)
 		 size: (size_t)size
 		count: (size_t)count
 {
-	if (pointer == NULL)
+	if OF_UNLIKELY (pointer == NULL)
 		return [self allocMemoryWithSize: size
 					   count: count];
 
-	if (size == 0 || count == 0) {
+	if OF_UNLIKELY (size == 0 || count == 0) {
 		[self freeMemory: pointer];
 		return NULL;
 	}
 
-	if (count > SIZE_MAX / size)
+	if OF_UNLIKELY (count > SIZE_MAX / size)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	return [self resizeMemory: pointer
@@ -699,22 +700,22 @@ void _references_to_categories_of_OFObject(void)
 
 - (void)freeMemory: (void*)pointer
 {
-	if (pointer == NULL)
+	if OF_UNLIKELY (pointer == NULL)
 		return;
 
-	if (PRE_MEM(pointer)->owner != self)
+	if OF_UNLIKELY (PRE_MEM(pointer)->owner != self)
 		@throw [OFMemoryNotPartOfObjectException
 		    exceptionWithClass: [self class]
 			       pointer: pointer];
 
-	if (PRE_MEM(pointer)->prev != NULL)
+	if OF_LIKELY (PRE_MEM(pointer)->prev != NULL)
 		PRE_MEM(pointer)->prev->next = PRE_MEM(pointer)->next;
-	if (PRE_MEM(pointer)->next != NULL)
+	if OF_LIKELY (PRE_MEM(pointer)->next != NULL)
 		PRE_MEM(pointer)->next->prev = PRE_MEM(pointer)->prev;
 
-	if (PRE_IVAR->firstMem == PRE_MEM(pointer))
+	if OF_UNLIKELY (PRE_IVAR->firstMem == PRE_MEM(pointer))
 		PRE_IVAR->firstMem = PRE_MEM(pointer)->next;
-	if (PRE_IVAR->lastMem == PRE_MEM(pointer))
+	if OF_UNLIKELY (PRE_IVAR->lastMem == PRE_MEM(pointer))
 		PRE_IVAR->lastMem = PRE_MEM(pointer)->prev;
 
 	/* To detect double-free */
@@ -768,7 +769,7 @@ void _references_to_categories_of_OFObject(void)
 {
 	/*
 	 * Cache OFAutoreleasePool since class lookups are expensive with the
-	 * GNU ABI.
+	 * GNU ABI used by GCC.
 	 */
 	if (autoreleasePool == Nil)
 		autoreleasePool = [OFAutoreleasePool class];
@@ -814,7 +815,7 @@ void _references_to_categories_of_OFObject(void)
 		 * We can use owner as a sentinel to prevent exploitation in
 		 * case there is a buffer underflow somewhere.
 		 */
-		if (iter->owner != self)
+		if OF_UNLIKELY (iter->owner != self)
 			abort();
 
 		free(iter);
@@ -828,7 +829,7 @@ void _references_to_categories_of_OFObject(void)
 /* Required to use properties with the Apple runtime */
 - copyWithZone: (void*)zone
 {
-	if (zone != NULL)
+	if OF_UNLIKELY (zone != NULL)
 		@throw [OFNotImplementedException
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
@@ -838,7 +839,7 @@ void _references_to_categories_of_OFObject(void)
 
 - mutableCopyWithZone: (void*)zone
 {
-	if (zone != NULL)
+	if OF_UNLIKELY (zone != NULL)
 		@throw [OFNotImplementedException
 		    exceptionWithClass: [self class]
 			      selector: _cmd];

@@ -521,8 +521,7 @@
 	/* Look if there's a line or \0 in our cache */
 	if (!waitingForDelimiter && cache != NULL) {
 		for (i = 0; i < cacheLength; i++) {
-			if (OF_UNLIKELY(cache[i] == '\n' ||
-			    cache[i] == '\0')) {
+			if OF_UNLIKELY (cache[i] == '\n' || cache[i] == '\0') {
 				retLength = i;
 
 				if (i > 0 && cache[i - 1] == '\r')
@@ -580,8 +579,8 @@
 
 		/* Look if there's a newline or \0 */
 		for (i = 0; i < bufferLength; i++) {
-			if (OF_UNLIKELY(buffer[i] == '\n' ||
-			    buffer[i] == '\0')) {
+			if OF_UNLIKELY (buffer[i] == '\n' ||
+			    buffer[i] == '\0') {
 				retLength = cacheLength + i;
 				retCString = [self
 				    allocMemoryWithSize: retLength];
