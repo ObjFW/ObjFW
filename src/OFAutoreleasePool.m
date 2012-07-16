@@ -90,9 +90,7 @@ static of_tlskey_t firstKey;
 #ifdef OF_COMPILER_TLS
 			first = pool;
 #else
-			if (!of_tlskey_set(firstKey, pool))
-				@throw [OFInitializationFailedException
-				    exceptionWithClass: [self class]];
+			assert(of_tlskey_set(firstKey, pool));
 #endif
 
 		_objc_rootAutorelease(self);

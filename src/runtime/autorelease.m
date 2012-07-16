@@ -76,10 +76,17 @@ objc_autoreleasePoolPop(void *offset)
 	for (iter = pool; iter < top; iter++)
 		[*iter release];
 
-#ifdef OF_COMPILER_TLS
 	top = pool;
-#else
-	if (!of_tlskey_set(topKey, pool))
+
+	if (top == objects) {
+		free(objects);
+
+		objects = NULL;
+		top = NULL;
+	}
+
+#ifndef OF_COMPILER_TLS
+	if (!of_tlskey_set(objectsKey, objects) ||!of_tlskey_set(topKey, top))
 		ERROR("Failed to set TLS key!")
 #endif
 }
