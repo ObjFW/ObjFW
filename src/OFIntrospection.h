@@ -64,8 +64,8 @@
 @interface OFInstanceVariable: OFObject
 {
 	OFString *name;
-	ptrdiff_t offset;
 	const char *typeEncoding;
+	ptrdiff_t offset;
 }
 
 #ifdef OF_HAVE_PROPERTIES

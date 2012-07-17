@@ -98,7 +98,25 @@
 @end
 
 @implementation OFInstanceVariable
-#if defined(OF_APPLE_RUNTIME)
+#if defined(OF_OBJFW_RUNTIME)
+- _initWithIvar: (struct objc_ivar*)ivar
+{
+	self = [super init];
+
+	@try {
+		name = [[OFString alloc]
+		    initWithCString: ivar->name
+			   encoding: OF_STRING_ENCODING_ASCII];
+		typeEncoding = ivar->type;
+		offset = ivar->offset;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+#elif defined(OF_APPLE_RUNTIME)
 - _initWithIvar: (Ivar)ivar
 {
 	self = [super init];
@@ -107,8 +125,8 @@
 		name = [[OFString alloc]
 		    initWithCString: ivar_getName(ivar)
 			   encoding: OF_STRING_ENCODING_ASCII];
-		offset = ivar_getOffset(ivar);
 		typeEncoding = ivar_getTypeEncoding(ivar);
+		offset = ivar_getOffset(ivar);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -246,7 +264,21 @@
 			}
 		}
 
-		/* TODO: ivars and properties */
+		if (class->ivars != NULL) {
+			unsigned i;
+
+			for (i = 0; i < class->ivars->count; i++) {
+				OFInstanceVariable *ivar;
+
+				ivar = [[OFInstanceVariable alloc]
+				    _initWithIvar: &class->ivars->ivars[i]];
+				[instanceVariables addObject:
+				    [ivar autorelease]];
+				[pool releaseObjects];
+			}
+		}
+
+		/* TODO: properties */
 #elif defined(OF_APPLE_RUNTIME)
 		methodList = class_copyMethodList(object_getClass(class),
 		    &count);
