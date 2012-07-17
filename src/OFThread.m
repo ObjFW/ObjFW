@@ -23,14 +23,16 @@
 #ifndef _WIN32
 # include <unistd.h>
 # include <sched.h>
-#else
-# include <windows.h>
 #endif
 
 #import "OFThread.h"
 #import "OFList.h"
 #import "OFDate.h"
 #import "OFAutoreleasePool.h"
+
+#ifdef _WIN32
+# include <windows.h>
+#endif
 
 #import "OFConditionBroadcastFailedException.h"
 #import "OFConditionSignalFailedException.h"

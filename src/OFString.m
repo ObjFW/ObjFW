@@ -47,6 +47,14 @@
 #import "of_asprintf.h"
 #import "unicode.h"
 
+/*
+ * It seems strtod is buggy on Win32.
+ * However, the MinGW version __strtod seems to be ok.
+ */
+#ifdef _WIN32
+# define strtod __strtod
+#endif
+
 /* References for static linking */
 void _references_to_categories_of_OFString(void)
 {
