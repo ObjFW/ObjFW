@@ -31,7 +31,7 @@ struct objc_class {
 	unsigned long version;
 	unsigned long info;
 	unsigned long instance_size;
-	void *ivars;
+	struct objc_ivar_list *ivars;
 	struct objc_method_list *methodlist;
 	struct objc_sparsearray *dtable;
 	Class *subclass_list;
@@ -74,6 +74,17 @@ struct objc_category {
 	struct objc_method_list *instance_methods;
 	struct objc_method_list *class_methods;
 	struct objc_protocol_list *protocols;
+};
+
+struct objc_ivar {
+	const char *name;
+	const char *type;
+	unsigned offset;
+};
+
+struct objc_ivar_list {
+	unsigned count;
+	struct objc_ivar ivars[1];
 };
 
 #ifdef __OBJC__
