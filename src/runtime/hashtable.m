@@ -52,14 +52,14 @@ objc_hashtable_new(uint32_t size)
 	uint32_t i;
 
 	if ((h = malloc(sizeof(struct objc_hashtable))) == NULL)
-		ERROR("Not enough memory to allocate hash table!");
+		OBJC_ERROR("Not enough memory to allocate hash table!");
 
 	h->count = 0;
 	h->last_idx = size - 1;
 	h->data = malloc(size * sizeof(struct objc_hashtable_bucket*));
 
 	if (h->data == NULL)
-		ERROR("Not enough memory to allocate hash table!");
+		OBJC_ERROR("Not enough memory to allocate hash table!");
 
 	for (i = 0; i < size; i++)
 		h->data[i] = NULL;
@@ -84,7 +84,8 @@ insert(struct objc_hashtable *h, const char *key, const void *obj)
 
 		ndata = malloc(nsize * sizeof(struct objc_hashtable_bucket*));
 		if (ndata == NULL)
-			ERROR("Not enough memory to insert into hash table!");
+			OBJC_ERROR("Not enough memory to insert into hash "
+			    "table!");
 
 		for (i = 0; i < nsize; i++)
 			ndata[i] = NULL;
@@ -106,7 +107,7 @@ insert(struct objc_hashtable *h, const char *key, const void *obj)
 				}
 
 				if (j >= last)
-					ERROR("No free bucket!");
+					OBJC_ERROR("No free bucket!");
 
 				ndata[j] = h->data[i];
 			}
@@ -128,10 +129,10 @@ insert(struct objc_hashtable *h, const char *key, const void *obj)
 	}
 
 	if (i >= last)
-		ERROR("No free bucket!");
+		OBJC_ERROR("No free bucket!");
 
 	if ((bucket = malloc(sizeof(struct objc_hashtable_bucket))) == NULL)
-		ERROR("Not enough memory to allocate hash table bucket!");
+		OBJC_ERROR("Not enough memory to allocate hash table bucket!");
 
 	bucket->key = key;
 	bucket->hash = hash;

@@ -54,7 +54,7 @@ objc_register_selector(struct objc_abi_selector *sel)
 	rsel->uid = selectors_cnt++;
 
 	if (selectors_cnt > SEL_MAX)
-		ERROR("Out of selector slots!");
+		OBJC_ERROR("Out of selector slots!");
 
 	objc_hashtable_set(selectors, name, rsel);
 	objc_sparsearray_set(selector_names, (uint32_t)rsel->uid, name);
@@ -76,10 +76,10 @@ sel_registerName(const char *name)
 
 	/* FIXME: Free on objc_exit() */
 	if ((sel = malloc(sizeof(struct objc_abi_selector))) == NULL)
-		ERROR("Not enough memory to allocate selector!");
+		OBJC_ERROR("Not enough memory to allocate selector!");
 
 	if ((sel->name = strdup(name)) == NULL)
-		ERROR("Not enough memory to allocate selector!");
+		OBJC_ERROR("Not enough memory to allocate selector!");
 
 	sel->types = NULL;
 

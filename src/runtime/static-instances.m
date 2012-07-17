@@ -58,8 +58,8 @@ objc_init_static_instances(struct objc_abi_symtab *symtab)
 			    static_instances_cnt);
 
 			if (static_instances == NULL)
-				ERROR("Not enough memory for list of static "
-				    "instances!");
+				OBJC_ERROR("Not enough memory for list of "
+				    "static instances!");
 		}
 	}
 
@@ -88,8 +88,8 @@ objc_init_static_instances(struct objc_abi_symtab *symtab)
 				    (static_instances_cnt + 1));
 
 			if (static_instances == NULL)
-				ERROR("Not enough memory for list of static "
-				    "instances!");
+				OBJC_ERROR("Not enough memory for list of "
+				    "static instances!");
 
 			static_instances[static_instances_cnt++] = *si;
 		}

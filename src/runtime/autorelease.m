@@ -41,7 +41,7 @@ init(void)
 {
 	if (!of_tlskey_new(&objectsKey) || !of_tlskey_new(&sizeKey) ||
 	    !of_tlskey_new(&topKey))
-		ERROR("Unable to create TLS key for autorelease pools!")
+		OBJC_ERROR("Unable to create TLS key for autorelease pools!")
 }
 #endif
 
@@ -87,7 +87,7 @@ objc_autoreleasePoolPop(void *offset)
 
 #ifndef OF_COMPILER_TLS
 	if (!of_tlskey_set(objectsKey, objects) ||!of_tlskey_set(topKey, top))
-		ERROR("Failed to set TLS key!")
+		OBJC_ERROR("Failed to set TLS key!")
 #endif
 }
 
@@ -102,13 +102,13 @@ _objc_rootAutorelease(id object)
 
 	if (objects == NULL) {
 		if ((objects = malloc(of_pagesize)) == NULL)
-			ERROR("Out of memory for autorelease pools!")
+			OBJC_ERROR("Out of memory for autorelease pools!")
 
 #ifndef OF_COMPILER_TLS
 		if (!of_tlskey_set(objectsKey, objects))
-			ERROR("Failed to set TLS key!")
+			OBJC_ERROR("Failed to set TLS key!")
 		if (!of_tlskey_set(sizeKey, (void*)(uintptr_t)of_pagesize))
-			ERROR("Failed to set TLS key!")
+			OBJC_ERROR("Failed to set TLS key!")
 #endif
 
 		top = objects;
@@ -120,13 +120,13 @@ _objc_rootAutorelease(id object)
 
 		size += of_pagesize;
 		if ((objects = realloc(objects, size)) == NULL)
-			ERROR("Out of memory for autorelease pools!")
+			OBJC_ERROR("Out of memory for autorelease pools!")
 
 #ifndef OF_COMPILER_TLS
 		if (!of_tlskey_set(objectsKey, objects))
-			ERROR("Failed to set TLS key!")
+			OBJC_ERROR("Failed to set TLS key!")
 		if (!of_tlskey_set(sizeKey, (void*)(uintptr_t)size))
-			ERROR("Failed to set TLS key!")
+			OBJC_ERROR("Failed to set TLS key!")
 #endif
 
 		top = objects + diff;
@@ -137,7 +137,7 @@ _objc_rootAutorelease(id object)
 
 #ifndef OF_COMPILER_TLS
 	if (!of_tlskey_set(topKey, objects))
-		ERROR("Failed to set TLS key!")
+		OBJC_ERROR("Failed to set TLS key!")
 #endif
 
 	return object;

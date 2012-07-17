@@ -39,7 +39,7 @@ objc_not_found_handler(id obj, SEL sel)
 			if (is_class)
 				return objc_msg_lookup(nil, sel);
 			else
-				ERROR("Could not dispatch message for "
+				OBJC_ERROR("Could not dispatch message for "
 				    "incomplete class %s!", cls->name);
 		}
 
@@ -55,7 +55,7 @@ objc_not_found_handler(id obj, SEL sel)
 	if (objc_forward_handler != NULL)
 		return objc_forward_handler(obj, sel);
 
-	ERROR("Selector %s is not implemented for class %s!",
+	OBJC_ERROR("Selector %s is not implemented for class %s!",
 	    sel_getName(sel), object_getClassName(obj));
 }
 

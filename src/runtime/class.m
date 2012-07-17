@@ -180,7 +180,7 @@ add_subclass(Class cls)
 	if (cls->superclass->subclass_list == NULL) {
 		if ((cls->superclass->subclass_list =
 		    malloc(2 * sizeof(Class))) == NULL)
-			ERROR("Not enough memory for subclass list of "
+			OBJC_ERROR("Not enough memory for subclass list of "
 			    "class %s!", cls->superclass->name);
 
 		cls->superclass->subclass_list[0] = cls;
@@ -195,7 +195,7 @@ add_subclass(Class cls)
 	    realloc(cls->superclass->subclass_list, (i + 2) * sizeof(Class));
 
 	if (cls->superclass->subclass_list == NULL)
-		ERROR("Not enough memory for subclass list of class %s\n",
+		OBJC_ERROR("Not enough memory for subclass list of class %s\n",
 		    cls->superclass->name);
 
 	cls->superclass->subclass_list[i] = cls;
@@ -316,7 +316,7 @@ objc_register_all_classes(struct objc_abi_symtab *symtab)
 					    (load_queue_cnt + 1));
 
 				if (load_queue == NULL)
-					ERROR("Not enough memory for load "
+					OBJC_ERROR("Not enough memory for load "
 					    "queue!");
 
 				load_queue[load_queue_cnt++] = cls;
@@ -346,7 +346,7 @@ objc_register_all_classes(struct objc_abi_symtab *symtab)
 			    sizeof(Class) * load_queue_cnt);
 
 			if (load_queue == NULL)
-				ERROR("Not enough memory for load queue!");
+				OBJC_ERROR("Not enough memory for load queue!");
 		}
 	}
 }
@@ -380,7 +380,7 @@ objc_get_class(const char *name)
 	Class cls;
 
 	if ((cls = objc_lookup_class(name)) == Nil)
-		ERROR("Class %s not found!", name);
+		OBJC_ERROR("Class %s not found!", name);
 
 	return cls;
 }
@@ -514,7 +514,7 @@ class_replaceMethod(Class cls, SEL sel, IMP newimp, const char *types)
 
 	/* FIXME: We need a way to free this at objc_exit() */
 	if ((ml = malloc(sizeof(struct objc_method_list))) == NULL)
-		ERROR("Not enough memory to replace method!");
+		OBJC_ERROR("Not enough memory to replace method!");
 
 	ml->next = cls->methodlist;
 	ml->count = 1;

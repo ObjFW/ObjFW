@@ -72,7 +72,7 @@ static void
 objc_global_mutex_new(void)
 {
 	if (!objc_mutex_new(&global_mutex))
-		ERROR("Failed to create global mutex!");
+		OBJC_ERROR("Failed to create global mutex!");
 
 	global_mutex_init = YES;
 }
@@ -84,19 +84,19 @@ objc_global_mutex_lock(void)
 		objc_global_mutex_new();
 
 	if (!objc_mutex_lock(&global_mutex))
-		ERROR("Failed to lock global mutex!");
+		OBJC_ERROR("Failed to lock global mutex!");
 }
 
 void
 objc_global_mutex_unlock(void)
 {
 	if (!objc_mutex_unlock(&global_mutex))
-		ERROR("Failed to unlock global mutex!");
+		OBJC_ERROR("Failed to unlock global mutex!");
 }
 
 void
 objc_global_mutex_free(void)
 {
 	if (!objc_mutex_free(&global_mutex))
-		ERROR("Failed to free global mutex!");
+		OBJC_ERROR("Failed to free global mutex!");
 }

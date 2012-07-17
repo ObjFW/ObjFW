@@ -192,7 +192,7 @@ objc_sparsearray_get(const struct objc_sparsearray *s, uint32_t idx)
 #endif
 }
 
-#define ERROR(...)							\
+#define OBJC_ERROR(...)							\
 	{								\
 		fprintf(stderr, "[objc @ " __FILE__ ":%d] ", __LINE__);	\
 		fprintf(stderr, __VA_ARGS__);				\

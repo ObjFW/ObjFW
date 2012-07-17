@@ -34,14 +34,14 @@ init(void)
 
 	empty_level2 = malloc(sizeof(struct objc_sparsearray_level2));
 	if (empty_level2 == NULL)
-		ERROR("Not enough memory to allocate sparse array!");
+		OBJC_ERROR("Not enough memory to allocate sparse array!");
 
 	empty_level2->empty = YES;
 
 #ifndef OF_SELUID16
 	empty_level3 = malloc(sizeof(struct objc_sparsearray_level3));
 	if (empty_level3 == NULL)
-		ERROR("Not enough memory to allocate sparse array!");
+		OBJC_ERROR("Not enough memory to allocate sparse array!");
 
 	empty_level3->empty = YES;
 #endif
@@ -72,7 +72,7 @@ objc_sparsearray_new(void)
 #endif
 
 	if ((s = malloc(sizeof(struct objc_sparsearray))) == NULL)
-		ERROR("Not enough memory to allocate sparse array!");
+		OBJC_ERROR("Not enough memory to allocate sparse array!");
 
 	for (i = 0; i < 256; i++)
 		s->buckets[i] = empty_level2;
@@ -147,7 +147,8 @@ objc_sparsearray_set(struct objc_sparsearray *s, uint32_t idx, const void *obj)
 		t = malloc(sizeof(struct objc_sparsearray_level2));
 
 		if (t == NULL)
-			ERROR("Not enough memory to insert into sparse array!");
+			OBJC_ERROR("Not enough memory to insert into sparse "
+			    "array!");
 
 		t->empty = NO;
 
@@ -169,7 +170,8 @@ objc_sparsearray_set(struct objc_sparsearray *s, uint32_t idx, const void *obj)
 		t = malloc(sizeof(struct objc_sparsearray_level3));
 
 		if (t == NULL)
-			ERROR("Not enough memory to insert into sparse array!");
+			OBJC_ERROR("Not enough memory to insert into sparse "
+			    "array!");
 
 		t->empty = NO;
 

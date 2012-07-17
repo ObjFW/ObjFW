@@ -62,8 +62,8 @@ register_category(struct objc_abi_category *cat)
 
 		if ((ncats = realloc(cats,
 		    (i + 2) * sizeof(struct objc_abi_category*))) == NULL)
-			ERROR("Not enough memory for category %s of class %s!",
-			    cat->category_name, cat->class_name);
+			OBJC_ERROR("Not enough memory for category %s of "
+			    "class %s!", cat->category_name, cat->class_name);
 
 		ncats[i] = cat;
 		ncats[i + 1] = NULL;
@@ -78,7 +78,7 @@ register_category(struct objc_abi_category *cat)
 	}
 
 	if ((cats = malloc(2 * sizeof(struct objc_abi_category*))) == NULL)
-		ERROR("Not enough memory for category %s of class %s!\n",
+		OBJC_ERROR("Not enough memory for category %s of class %s!\n",
 		    cat->category_name, cat->class_name);
 
 	cats[0] = cat;
