@@ -285,6 +285,10 @@ AC_CHECK_FUNC(objc_enumerationMutation, [
 		[Whether we have objc_enumerationMutation])
 ])
 
+AC_CHECK_FUNC(objc_autoreleasePoolPush, [], [
+	AC_SUBST(AUTORELEASE_M, "autorelease.m")
+])
+
 case "$host_os" in
 	darwin*)
 		AC_SUBST(LDFLAGS_REEXPORT, ["-Wl,-reexport-lobjfw"])

@@ -19,9 +19,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#import "runtime.h"
-#import "runtime-private.h"
-
 #import "OFObject.h"
 
 #ifndef OF_COMPILER_TLS
@@ -39,9 +36,9 @@ static of_tlskey_t objectsKey, topKey, sizeKey;
 static void __attribute__((constructor))
 init(void)
 {
-	if (!of_tlskey_new(&objectsKey) || !of_tlskey_new(&sizeKey) ||
-	    !of_tlskey_new(&topKey))
-		OBJC_ERROR("Unable to create TLS key for autorelease pools!")
+	OF_ENSURE(of_tlskey_new(&objectsKey));
+	OF_ENSURE(of_tlskey_new(&sizeKey));
+	OF_ENSURE(of_tlskey_new(&topKey));
 }
 #endif
 
@@ -86,8 +83,8 @@ objc_autoreleasePoolPop(void *offset)
 	}
 
 #ifndef OF_COMPILER_TLS
-	if (!of_tlskey_set(objectsKey, objects) ||!of_tlskey_set(topKey, top))
-		OBJC_ERROR("Failed to set TLS key!")
+	OF_ENSURE(of_tlskey_set(objectsKey, objects));
+	OF_ENSURE(of_tlskey_set(topKey, top));
 #endif
 }
 
@@ -101,14 +98,12 @@ _objc_rootAutorelease(id object)
 #endif
 
 	if (objects == NULL) {
-		if ((objects = malloc(of_pagesize)) == NULL)
-			OBJC_ERROR("Out of memory for autorelease pools!")
+		OF_ENSURE((objects = malloc(of_pagesize)) != NULL);
 
 #ifndef OF_COMPILER_TLS
-		if (!of_tlskey_set(objectsKey, objects))
-			OBJC_ERROR("Failed to set TLS key!")
-		if (!of_tlskey_set(sizeKey, (void*)(uintptr_t)of_pagesize))
-			OBJC_ERROR("Failed to set TLS key!")
+		OF_ENSURE(of_tlskey_set(objectsKey, objects));
+		OF_ENSURE(of_tlskey_set(sizeKey,
+			(void*)(uintptr_t)of_pagesize));
 #endif
 
 		top = objects;
@@ -119,14 +114,11 @@ _objc_rootAutorelease(id object)
 		ptrdiff_t diff = top - objects;
 
 		size += of_pagesize;
-		if ((objects = realloc(objects, size)) == NULL)
-			OBJC_ERROR("Out of memory for autorelease pools!")
+		OF_ENSURE((objects = realloc(objects, size)) != NULL);
 
 #ifndef OF_COMPILER_TLS
-		if (!of_tlskey_set(objectsKey, objects))
-			OBJC_ERROR("Failed to set TLS key!")
-		if (!of_tlskey_set(sizeKey, (void*)(uintptr_t)size))
-			OBJC_ERROR("Failed to set TLS key!")
+		OF_ENSURE(of_tlskey_set(objectsKey, objects));
+		OF_ENSURE(of_tlskey_set(sizeKey, (void*)(uintptr_t)size));
 #endif
 
 		top = objects + diff;
@@ -136,8 +128,7 @@ _objc_rootAutorelease(id object)
 	top++;
 
 #ifndef OF_COMPILER_TLS
-	if (!of_tlskey_set(topKey, objects))
-		OBJC_ERROR("Failed to set TLS key!")
+	OF_ENSURE(of_tlskey_set(topKey, objects));
 #endif
 
 	return object;

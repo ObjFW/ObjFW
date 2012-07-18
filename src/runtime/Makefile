@@ -3,8 +3,7 @@ include ../../extra.mk
 STATIC_PIC_LIB_NOINST = ${RUNTIME_LIB_A}
 STATIC_LIB_NOINST = ${RUNTIME_A}
 
-SRCS = autorelease.m		\
-       category.m		\
+SRCS = category.m		\
        class.m			\
        exception.m		\
        hashtable.m		\
