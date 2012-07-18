@@ -240,7 +240,7 @@ case $objc_runtime in
 		], [
 			AC_SUBST(LOOKUP_S, lookup-amd64-elf.S)
 			AC_DEFINE(OF_ASM_LOOKUP, 1,
-				[Whether to use lookup in assembly])
+				[Whether to use assembly for lookup])
 		], [
 			AC_EGREP_CPP(yes, [
 				#if defined(__i386__) && defined(__ELF__)
@@ -249,18 +249,32 @@ case $objc_runtime in
 			], [
 				AC_SUBST(LOOKUP_S, lookup-x86-elf.S)
 				AC_DEFINE(OF_ASM_LOOKUP, 1,
-					[Whether to use lookup in assembly])
+					[Whether to use assembly for lookup])
 			])
 		])
 
 		AC_EGREP_CPP(yes, [
-			#if defined(__amd64__) && defined(__MACH__)
+			#if defined(__amd64__) || defined(__x86_64__)
+			# ifdef __MACH__
 			yes
+			# endif
 			#endif
 		], [
 			AC_SUBST(LOOKUP_S, lookup-amd64-macho.S)
 			AC_DEFINE(OF_ASM_LOOKUP, 1,
-				[Whether to use lookup in assembly])
+				[Whether to use assembly for lookup])
+		])
+
+		AC_EGREP_CPP(yes, [
+			#if defined(__ppc__) || defined(__PPC__)
+			# ifdef __ELF__
+			yes
+			# endif
+			#endif
+		], [
+			AC_SUBST(LOOKUP_S, lookup-ppc-elf.S)
+			AC_DEFINE(OF_ASM_LOOKUP, 1,
+				[Whether to use assembly for lookup])
 		])
 
 		AS_IF([test x"$enable_seluid16" = x"yes"], [
