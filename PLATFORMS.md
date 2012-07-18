@@ -8,8 +8,8 @@ others as well.
 Linux
 -----
 
-  * Architectures: x86, x86_64
-  * Compilers: Clang 3.0-3.1, GCC 4.7.1
+  * Architectures: ppc, x86, x86_64
+  * Compilers: Clang 3.0-3.1, GCC 4.7.0 (prerelease), GCC 4.7.1
   * Runtimes: ObjFW
 
 
