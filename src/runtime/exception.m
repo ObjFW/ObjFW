@@ -17,6 +17,7 @@
 #include "config.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 #import "runtime.h"
 
@@ -57,26 +58,52 @@ struct _Unwind_Context;
 
 typedef enum
 {
+	_URC_OK			= 0,
 	_URC_FATAL_PHASE1_ERROR	= 3,
 	_URC_END_OF_STACK	= 5,
 	_URC_HANDLER_FOUND	= 6,
 	_URC_INSTALL_CONTEXT	= 7,
-	_URC_CONTINUE_UNWIND	= 8
+	_URC_CONTINUE_UNWIND	= 8,
+	_URC_FAILURE		= 9
 } _Unwind_Reason_Code;
 
 struct objc_exception {
 	struct _Unwind_Exception {
 		uint64_t class;
 		void (*cleanup)(_Unwind_Reason_Code, struct _Unwind_Exception*);
+#if defined(__arm__) || defined(__ARM__)
+		/* From "Exception Handling ABI for the ARM(R) Architecture" */
+		struct {
+			uint32_t reserved1, reserved2, reserved3, reserved4;
+			uint32_t reserved;
+		} unwinder_cache;
+		struct {
+			uint32_t sp;
+			uint32_t bitpattern[5];
+		} barrier_cache;
+		struct {
+			uint32_t bitpattern[4];
+		} cleanup_cache;
+		struct {
+			uint32_t fnstart;
+			uint32_t *ehtp;
+			uint32_t additional;
+			uint32_t reserved1;
+		} pr_cache;
+		long long int : 0;
+#else
 		/*
 		 * The Itanium Exception ABI says to have those and never touch
 		 * them.
 		 */
 		uintptr_t private1, private2;
+#endif
 	} exception;
 	id object;
+#if !defined(__arm__) && !defined(__ARM__)
 	uintptr_t landingpad;
 	intptr_t filter;
+#endif
 };
 
 struct lsda {
@@ -93,9 +120,54 @@ extern void* _Unwind_GetLanguageSpecificData(struct _Unwind_Context*);
 extern uintptr_t _Unwind_GetRegionStart(struct _Unwind_Context*);
 extern uintptr_t _Unwind_GetDataRelBase(struct _Unwind_Context*);
 extern uintptr_t _Unwind_GetTextRelBase(struct _Unwind_Context*);
+
+#if defined(__arm__) || defined(__ARM__)
+extern _Unwind_Reason_Code __gnu_unwind_frame(struct _Unwind_Exception*,
+    struct _Unwind_Context*);
+extern int _Unwind_VRS_Get(struct _Unwind_Context*, int, uint32_t, int, void*);
+extern int _Unwind_VRS_Set(struct _Unwind_Context*, int, uint32_t, int, void*);
+
+# define CONTINUE_UNWIND					\
+	{							\
+		if (__gnu_unwind_frame(ex, ctx) != _URC_OK)	\
+			return _URC_FAILURE;			\
+								\
+		return _URC_CONTINUE_UNWIND;			\
+	}
+
+static inline uintptr_t
+_Unwind_GetGR(struct _Unwind_Context *ctx, int regno)
+{
+	uintptr_t value;
+	_Unwind_VRS_Get(ctx, 0, regno, 0, &value);
+	return value;
+}
+
+static inline uintptr_t
+_Unwind_GetIP(struct _Unwind_Context *ctx)
+{
+	return _Unwind_GetGR(ctx, 15) & ~1;
+}
+
+static inline void
+_Unwind_SetGR(struct _Unwind_Context *ctx, int regno, uintptr_t value)
+{
+	_Unwind_VRS_Set(ctx, 0, regno, 0, &value);
+}
+
+static inline void
+_Unwind_SetIP(struct _Unwind_Context *ctx, uintptr_t value)
+{
+	uintptr_t thumb = _Unwind_GetGR(ctx, 15) & 1;
+	_Unwind_SetGR(ctx, 15, (value | thumb));
+}
+#else
+# define CONTINUE_UNWIND return _URC_CONTINUE_UNWIND
+
 extern uintptr_t _Unwind_GetIP(struct _Unwind_Context*);
 extern void _Unwind_SetIP(struct _Unwind_Context*, uintptr_t);
 extern void _Unwind_SetGR(struct _Unwind_Context*, int, uintptr_t);
+#endif
 
 static objc_uncaught_exception_handler uncaught_exception_handler;
 
@@ -218,6 +290,7 @@ read_value(uint8_t enc, const uint8_t **ptr)
 	return value;
 }
 
+#if !defined(__arm__) && !defined(__ARM__)
 static uint64_t
 resolve_value(uint64_t value, uint8_t enc, const uint8_t *start, uint64_t base)
 {
@@ -231,6 +304,7 @@ resolve_value(uint64_t value, uint8_t enc, const uint8_t *start, uint64_t base)
 
 	return value;
 }
+#endif
 
 static void
 read_lsda(struct _Unwind_Context *ctx, const uint8_t *ptr, struct lsda *lsda)
@@ -343,14 +417,26 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 
 		if (filter > 0 && !(actions & _UA_FORCE_UNWIND) && !foreign) {
 			Class class;
-			uintptr_t i, c;
+			uintptr_t c;
 			const uint8_t *tmp;
+
+#if defined(__arm__) || defined(__ARM__)
+			tmp = lsda->typestable - (filter * 4);
+			c = *(uintptr_t*)tmp;
+
+			if (c != 0) {
+				c += (uintptr_t)tmp;
+				c = *(uintptr_t*)c;
+			}
+#else
+			uintptr_t i;
 
 			i = filter * size_for_encoding(lsda->typestable_enc);
 			tmp = lsda->typestable - i;
 			c = (uintptr_t)read_value(lsda->typestable_enc, &tmp);
 			c = (uintptr_t)resolve_value(c, lsda->typestable_enc,
 			    lsda->typestable - i, lsda->typestable_base);
+#endif
 
 			class = (c != 0 ? objc_get_class((const char*)c) : Nil);
 
@@ -367,10 +453,37 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 	return found;
 }
 
+#if defined(__arm__) || defined(__ARM__)
+_Unwind_Reason_Code
+__gnu_objc_personality_v0(uint32_t state, struct _Unwind_Exception *ex,
+    struct _Unwind_Context *ctx)
+{
+	int version = 1;
+	uint64_t ex_class = ex->class;
+	int actions;
+
+	switch (state) {
+	case 0:	/* _US_VIRTUAL_UNWIND_FRAME */
+		actions = _UA_SEARCH_PHASE;
+		break;
+	case 1:	/* _US_UNWIND_FRAME_STARTING */
+		actions = _UA_CLEANUP_PHASE;
+		if ((ex->barrier_cache.sp == _Unwind_GetGR(ctx, 13)) != 0)
+			actions |= _UA_HANDLER_FRAME;
+		break;
+	case 2:	/* _US_UNWIND_FRAME_RESUME */
+		CONTINUE_UNWIND;
+	default:
+		return _URC_FAILURE;
+	}
+
+	_Unwind_SetGR(ctx, 12, (uintptr_t)ex);
+#else
 _Unwind_Reason_Code
 __gnu_objc_personality_v0(int version, int actions, uint64_t ex_class,
     struct _Unwind_Exception *ex, struct _Unwind_Context *ctx)
 {
+#endif
 	struct objc_exception *e = (struct objc_exception*)ex;
 	BOOL foreign = (ex_class != objc_exception_class);
 	const uint8_t *lsda_addr, *actionrecords;
@@ -396,9 +509,15 @@ __gnu_objc_personality_v0(int version, int actions, uint64_t ex_class,
 		 */
 		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(0),
 		    (uintptr_t)e->object);
+#if defined(__arm__) || defined(__ARM__)
+		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(1),
+		    ex->barrier_cache.bitpattern[1]);
+		_Unwind_SetIP(ctx, ex->barrier_cache.bitpattern[3]);
+#else
 		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(1),
 		    e->filter);
 		_Unwind_SetIP(ctx, e->landingpad);
+#endif
 
 		free(ex);
 
@@ -407,12 +526,12 @@ __gnu_objc_personality_v0(int version, int actions, uint64_t ex_class,
 
 	/* No LSDA -> nothing to handle */
 	if ((lsda_addr = _Unwind_GetLanguageSpecificData(ctx)) == NULL)
-		return _URC_CONTINUE_UNWIND;
+		CONTINUE_UNWIND;
 
 	read_lsda(ctx, lsda_addr, &lsda);
 
 	if (!find_callsite(ctx, &lsda, &landingpad, &actionrecords))
-		return _URC_CONTINUE_UNWIND;
+		CONTINUE_UNWIND;
 
 	if (landingpad != 0 && actionrecords == NULL)
 		found = CLEANUP_FOUND;
@@ -421,16 +540,22 @@ __gnu_objc_personality_v0(int version, int actions, uint64_t ex_class,
 		    foreign, e, &filter);
 
 	if (!found)
-		return _URC_CONTINUE_UNWIND;
+		CONTINUE_UNWIND;
 
 	if (actions & _UA_SEARCH_PHASE) {
 		if (!(found & HANDLER_FOUND))
-			return _URC_CONTINUE_UNWIND;
+			CONTINUE_UNWIND;
 
 		/* Cache it so we don't have to search it again in phase 2 */
 		if (!foreign) {
+#if defined(__arm__) || defined(__ARM__)
+			ex->barrier_cache.sp = _Unwind_GetGR(ctx, 13);
+			ex->barrier_cache.bitpattern[1] = filter;
+			ex->barrier_cache.bitpattern[3] = landingpad;
+#else
 			e->landingpad = landingpad;
 			e->filter = filter;
+#endif
 		}
 
 		return _URC_HANDLER_FOUND;
@@ -461,9 +586,9 @@ objc_exception_throw(id object)
 	if ((e = malloc(sizeof(*e))) == NULL)
 		abort();
 
+	memset(e, 0, sizeof(*e));
 	e->exception.class = objc_exception_class;
 	e->exception.cleanup = cleanup;
-	e->exception.private1 = e->exception.private2 = 0;
 	e->object = object;
 
 	if (_Unwind_RaiseException(&e->exception) == _URC_END_OF_STACK &&
