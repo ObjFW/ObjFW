@@ -8,7 +8,7 @@ others as well.
 Linux
 -----
 
-  * Architectures: ppc, x86, x86_64
+  * Architectures: ARM, PPC, x86, x86_64
   * Compilers: Clang 3.0-3.1, GCC 4.7.0 (prerelease), GCC 4.7.1
   * Runtimes: ObjFW
 
@@ -17,7 +17,7 @@ MacOS X
 -------
 
   * OS versions: 10.5, 10.7
-  * Architectures: x86, x86_64, PPC
+  * Architectures: PPC, x86, x86_64
   * Compilers: Clang 3.1, LLVM GCC 4.2.1
   * Runtimes: Apple, ObjFW
 
