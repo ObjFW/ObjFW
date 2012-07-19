@@ -152,7 +152,7 @@ of_bswap16_nonconst(uint16_t i)
 	    : "=r"(i)
 	    : "r"(&i), "m"(i)
 	);
-#elif defined(OF_ARM_ASM)
+#elif defined(OF_ARM_ASM) && defined(__ARM_ARCH_6__)
 	__asm__ (
 	    "rev16	%0, %0"
 	    : "=r"(i)
@@ -180,7 +180,7 @@ of_bswap32_nonconst(uint32_t i)
 	    : "=r"(i)
 	    : "r"(&i), "m"(i)
 	);
-#elif defined(OF_ARM_ASM)
+#elif defined(OF_ARM_ASM) && defined(__ARM_ARCH_6__)
 	__asm__ (
 	    "rev	%0, %0"
 	    : "=r"(i)
