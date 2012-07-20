@@ -56,7 +56,7 @@
 
 	[pool release];
 
-	initPlugin = (OFPlugin*(*)(void))dlsym(handle, "init_plugin");
+	*(void**)&initPlugin = dlsym(handle, "init_plugin");
 	if (initPlugin == NULL || (plugin = initPlugin()) == nil) {
 		dlclose(handle);
 		@throw [OFInitializationFailedException

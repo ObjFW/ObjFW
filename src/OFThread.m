@@ -241,7 +241,7 @@ call_main(id object)
 {
 	self = [super init];
 
-	block = [block_ retain];
+	block = [block_ copy];
 	object = [object_ retain];
 
 	return self;

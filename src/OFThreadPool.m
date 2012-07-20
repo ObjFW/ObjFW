@@ -94,7 +94,7 @@
 	self = [super init];
 
 	@try {
-		block = [block_ retain];
+		block = [block_ copy];
 		object = [object_ retain];
 	} @catch (id e) {
 		[self release];
