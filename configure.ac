@@ -277,6 +277,18 @@ case $objc_runtime in
 				[Whether to use assembly for lookup])
 		])
 
+		AC_EGREP_CPP(yes, [
+			#if defined(__arm__) || defined(__ARM__)
+			# ifdef __ELF__
+			yes
+			# endif
+			#endif
+		], [
+			AC_SUBST(LOOKUP_S, lookup-arm-elf.S)
+			AC_DEFINE(OF_ASM_LOOKUP, 1,
+				[Whether to use assembly for lookup])
+		])
+
 		AS_IF([test x"$enable_seluid16" = x"yes"], [
 			AC_DEFINE(OF_SELUID16, 1,
 				[Whether to use 16 bit selector UIDs])
