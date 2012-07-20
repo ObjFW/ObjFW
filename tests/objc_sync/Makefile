@@ -22,6 +22,6 @@ run: all
 
 include ../../buildsys.mk
 
-CPPFLAGS += -I../../src -I../..
+CPPFLAGS += -I../../src/runtime -I../../src -I../..
 LIBS := -L../../src -lobjfw ${LIBS}
 LD = ${OBJC}

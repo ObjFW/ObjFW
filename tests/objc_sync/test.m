@@ -30,15 +30,15 @@ OFObject *lock;
 @implementation MyThread
 - main
 {
-	printf("[%s] Entering #1\n", [object cString]);
+	printf("[%s] Entering #1\n", [object UTF8String]);
 	@synchronized (lock) {
-		printf("[%s] Entering #2\n", [object cString]);
+		printf("[%s] Entering #2\n", [object UTF8String]);
 		@synchronized (lock) {
-			printf("[%s] Hello!\n", [object cString]);
+			printf("[%s] Hello!\n", [object UTF8String]);
 		}
-		printf("[%s] Left #2\n", [object cString]);
+		printf("[%s] Left #2\n", [object UTF8String]);
 	}
-	printf("[%s] Left #1\n", [object cString]);
+	printf("[%s] Left #1\n", [object UTF8String]);
 
 	return nil;
 }
