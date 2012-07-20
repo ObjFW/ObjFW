@@ -5,6 +5,14 @@ ObjFW is known to work on the following platforms, but should run on many
 others as well.
 
 
+iOS
+---
+
+  * Architectures: ARM
+  * Compilers: GCC 4.2.1
+  * Runtimes: Apple
+
+
 Linux
 -----
 
