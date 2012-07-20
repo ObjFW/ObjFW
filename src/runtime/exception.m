@@ -422,7 +422,7 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 
 #if defined(__arm__) || defined(__ARM__)
 			tmp = lsda->typestable - (filter * 4);
-			c = *(uintptr_t*)tmp;
+			c = *(uintptr_t*)(void*)tmp;
 
 			if (c != 0) {
 				c += (uintptr_t)tmp;

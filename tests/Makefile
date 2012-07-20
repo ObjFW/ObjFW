@@ -63,7 +63,11 @@ run-tests:
 	rm -f libobjfw.dylib; \
 	exit $$EXIT
 
-run-on-ios: all
+sign-for-ios: all
+	codesign -s "iPhone Developer" -f \
+		../src/libobjfw.dylib tests plugin/TestPlugin.bundle
+
+run-on-ios: all sign-for-ios
 	if [ -z "${IOS_HOST}" ]; then \
 		echo "Please set IOS_HOST to the hostname of your iOS host!"; \
 		exit 1; \
