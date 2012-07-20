@@ -78,6 +78,42 @@
 #  define OF_PPC_ASM
 # elif defined(__arm__) || defined(__ARM__)
 #  define OF_ARM_ASM
+#  ifdef __ARM_ARCH_7__
+#   define OF_ARMV7_ASM
+#  endif
+#  ifdef __ARM_ARCH_7A__
+#   define OF_ARMV7_ASM
+#  endif
+#  ifdef __ARM_ARCH_7R__
+#   define OF_ARMV7_ASM
+#  endif
+#  ifdef __ARM_ARCH_7M__
+#   define OF_ARMV7_ASM
+#  endif
+#  ifdef __ARM_ARCH_7EM__
+#   define OF_ARMV7_ASM
+#  endif
+#  ifdef __ARM_ARCH_6__
+#   define OF_ARMV6_ASM
+#  endif
+#  ifdef __ARM_ARCH_6J__
+#   define OF_ARMV6_ASM
+#  endif
+#  ifdef __ARM_ARCH_6K__
+#   define OF_ARMV6_ASM
+#  endif
+#  ifdef __ARM_ARCH_6Z__
+#   define OF_ARMV6_ASM
+#  endif
+#  ifdef __ARM_ARCH_6ZK__
+#   define OF_ARMV6_ASM
+#  endif
+#  ifdef __ARM_ARCH_6T2__
+#   define OF_ARMV6_ASM
+#  endif
+#  ifdef OF_ARMV7_ASM
+#   define OF_ARMV6_ASM
+#  endif
 # endif
 #endif
 
@@ -152,7 +188,7 @@ of_bswap16_nonconst(uint16_t i)
 	    : "=r"(i)
 	    : "r"(&i), "m"(i)
 	);
-#elif defined(OF_ARM_ASM) && defined(__ARM_ARCH_6__)
+#elif defined(OF_ARMV6_ASM)
 	__asm__ (
 	    "rev16	%0, %0"
 	    : "=r"(i)
@@ -180,7 +216,7 @@ of_bswap32_nonconst(uint32_t i)
 	    : "=r"(i)
 	    : "r"(&i), "m"(i)
 	);
-#elif defined(OF_ARM_ASM) && defined(__ARM_ARCH_6__)
+#elif defined(OF_ARMV6_ASM)
 	__asm__ (
 	    "rev	%0, %0"
 	    : "=r"(i)
