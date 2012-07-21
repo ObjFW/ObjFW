@@ -306,13 +306,13 @@ case $objc_runtime in
 		;;
 esac
 
+AC_CHECK_FUNC(objc_autoreleasePoolPush, [], [
+	AC_SUBST(AUTORELEASE_M, "autorelease.m")
+])
+
 AC_CHECK_FUNC(objc_enumerationMutation, [
 	AC_DEFINE(HAVE_OBJC_ENUMERATIONMUTATION, 1,
 		[Whether we have objc_enumerationMutation])
-])
-
-AC_CHECK_FUNC(objc_autoreleasePoolPush, [], [
-	AC_SUBST(AUTORELEASE_M, "autorelease.m")
 ])
 
 case "$host_os" in
@@ -388,20 +388,6 @@ AS_IF([test x"$fp_endianess" = x"unknown"], [
 		[Floating point implementation does not conform to IEEE 754!])])
 
 AC_CHECK_LIB(m, fmod, LIBS="$LIBS -lm")
-
-AC_MSG_CHECKING(for M_PI)
-AC_EGREP_CPP(yes, [
-	#include <math.h>
-
-	#ifdef M_PI
-	yes
-	#endif
-], [
-	AC_MSG_RESULT(yes)
-], [
-	AC_MSG_RESULT(no)
-	AC_DEFINE(M_PI, 3.141592653589793238462643, [Precalculated Pi])
-])
 
 AC_CHECK_FUNC(asprintf, [
 	case "$host" in
