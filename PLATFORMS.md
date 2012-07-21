@@ -39,6 +39,15 @@ NetBSD
   * Runtimes: ObjFW
 
 
+OpenBSD
+-------
+
+  * OS versions: 5.2
+  * Architectures: PPC
+  * Compilers: GCC 4.2.1
+  * Runtimes: ObjFW
+
+
 Others
 ------
 
