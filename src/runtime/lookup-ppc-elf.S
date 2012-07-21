@@ -22,7 +22,7 @@
 .section .text
 objc_msg_lookup:
 	cmpwi	%r3, 0
-	beq	ret_nil
+	beq-	ret_nil
 
 	lwz	%r5, 0(%r3)
 	lwz	%r5, 32(%r5)
@@ -41,7 +41,7 @@ lookup:
 	lwzx	%r5, %r5, %r8
 
 	cmpwi	%r5, 0
-	beq	forward
+	beq-	forward
 
 	mr	%r3, %r5
 	blr
@@ -52,7 +52,7 @@ forward:
 objc_msg_lookup_super:
 	lwz	%r5, 0(%r3)
 	cmpwi	%r5, 0
-	beq	ret_nil
+	beq-	ret_nil
 
 	lwz	%r5, 4(%r3)
 	lwz	%r5, 32(%r5)
