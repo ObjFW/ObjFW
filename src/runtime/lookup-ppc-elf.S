@@ -28,15 +28,21 @@ objc_msg_lookup:
 	lwz	%r5, 32(%r5)
 
 lookup:
+#ifndef OF_SELUID16
 	lbz	%r6, 1(%r4)
+#endif
 	lbz	%r7, 2(%r4)
 	lbz	%r8, 3(%r4)
 
+#ifndef OF_SELUID16
 	slwi	%r6, %r6, 2
+#endif
 	slwi	%r7, %r7, 2
 	slwi	%r8, %r8, 2
 
+#ifndef OF_SELUID16
 	lwzx	%r5, %r5, %r6
+#endif
 	lwzx	%r5, %r5, %r7
 	lwzx	%r5, %r5, %r8
 
