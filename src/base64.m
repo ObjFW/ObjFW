@@ -111,7 +111,7 @@ of_base64_decode(OFDataArray *data, const char *string, size_t length)
 		uint32_t sb = 0;
 		uint8_t count = 3;
 		char db[3];
-		char tmp;
+		int8_t tmp;
 
 		if (buffer[i] > 0x7F || buffer[i + 1] > 0x7F ||
 		    buffer[i + 2] > 0x7F || buffer[i + 3] > 0x7F)
