@@ -20,6 +20,10 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+#ifdef __MINGW32__
+# define vsnprintf _vsnprintf
+#endif
+
 int
 vasprintf(char **cString, const char *format, va_list arguments)
 {
