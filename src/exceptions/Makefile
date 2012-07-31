@@ -54,6 +54,7 @@ SRCS = OFAcceptFailedException.m		\
        OFTruncatedDataException.m		\
        OFUnboundNamespaceException.m		\
        OFUnsupportedProtocolException.m		\
+       OFUnsupportedVersionException.m		\
        OFWriteFailedException.m
 
 INCLUDES = ${SRCS:.m=.h}
