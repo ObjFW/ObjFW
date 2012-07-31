@@ -34,4 +34,5 @@ tests/tests
 tests/tests.exe
 tests/EBOOT.PBP
 tests/PARAM.SFO
+tests/objc_sync/objc_sync
 utils/objfw-config
