@@ -57,7 +57,7 @@ int _OFString_Serialization_reference;
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	if ([version decimalValue] > 0)
+	if ([version decimalValue] != 1)
 		@throw [OFUnsupportedVersionException
 		    exceptionWithClass: [self class]
 			       version: version];

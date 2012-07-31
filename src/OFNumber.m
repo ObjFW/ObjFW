@@ -752,11 +752,25 @@
 			type = OF_NUMBER_INTMAX;
 			value.intmax = [element decimalValue];
 		} else if ([typeString isEqual: @"float"]) {
+			union {
+				float f;
+				uint32_t u;
+			} f;
+
+			f.u = (uint32_t)[element hexadecimalValue];
+
 			type = OF_NUMBER_FLOAT;
-			value.float_ = [element floatValue];
+			value.float_ = of_bswap_float_if_le(f.f);
 		} else if ([typeString isEqual: @"double"]) {
+			union {
+				double d;
+				uint64_t u;
+			} d;
+
+			d.u = (uint64_t)[element hexadecimalValue];
+
 			type = OF_NUMBER_DOUBLE;
-			value.double_ = [element doubleValue];
+			value.double_ = of_bswap_double_if_le(d.d);
 		} else
 			@throw [OFInvalidArgumentException
 			    exceptionWithClass: [self class]
@@ -1239,17 +1253,31 @@
 				  stringValue: @"signed"];
 		break;
 	case OF_NUMBER_FLOAT:;
+		union {
+			float f;
+			uint32_t u;
+		} f;
+
+		f.f = of_bswap_float_if_le(value.float_);
+
 		[element addAttributeWithName: @"type"
 				  stringValue: @"float"];
 		[element setStringValue:
-		    [OFString stringWithFormat: @"%a", value.float_]];
+		    [OFString stringWithFormat: @"%08" PRIx32, f.u]];
 
 		break;
 	case OF_NUMBER_DOUBLE:;
+		union {
+			double d;
+			uint64_t u;
+		} d;
+
+		d.d = of_bswap_double_if_le(value.double_);
+
 		[element addAttributeWithName: @"type"
 				  stringValue: @"double"];
 		[element setStringValue:
-		    [OFString stringWithFormat: @"%la", value.double_]];
+		    [OFString stringWithFormat: @"%016" PRIx64, d.u]];
 
 		break;
 	default:

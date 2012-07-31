@@ -323,6 +323,10 @@ static int month_to_day_of_year[12] = {
 
 	@try {
 		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		union {
+			double d;
+			uint64_t u;
+		} d;
 
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
@@ -330,7 +334,8 @@ static int month_to_day_of_year[12] = {
 			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
-		seconds = [element doubleValue];
+		d.u = (uint64_t)[element hexadecimalValue];
+		seconds = of_bswap_double_if_le(d.d);
 
 		[pool release];
 	} @catch (id e) {
@@ -410,10 +415,17 @@ static int month_to_day_of_year[12] = {
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFXMLElement *element;
+	union {
+		double d;
+		uint64_t u;
+	} d;
 
 	element = [OFXMLElement elementWithName: [self className]
 				      namespace: OF_SERIALIZATION_NS];
-	[element setStringValue: [OFString stringWithFormat: @"%la", seconds]];
+
+	d.d = of_bswap_double_if_le(seconds);
+	[element setStringValue:
+	    [OFString stringWithFormat: @"%016" PRIx64, d.u]];
 
 	[element retain];
 	[pool release];

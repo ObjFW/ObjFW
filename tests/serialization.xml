@@ -1,14 +1,14 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<serialization xmlns='https://webkeks.org/objfw/serialization' version='0'>
+<serialization xmlns='https://webkeks.org/objfw/serialization' version='1'>
   <OFMutableDictionary>
     <key>
       <OFArray>
         <OFString>Qu&quot;xbar
 test</OFString>
         <OFNumber type='signed'>1234</OFNumber>
-        <OFNumber type='double'>0x1.34a456d5cfaadp+10</OFNumber>
+        <OFNumber type='double'>adfa5c6d454a9340</OFNumber>
         <OFMutableString>asd</OFMutableString>
-        <OFDate>0x1.34a456d5cfaadp+10</OFDate>
+        <OFDate>adfa5c6d454a9340</OFDate>
       </OFArray>
     </key>
     <object>
