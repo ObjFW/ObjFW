@@ -26,6 +26,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFMalformedXMLException.h"
 #import "OFUnboundNamespaceException.h"
+#import "OFUnsupportedVersionException.h"
 
 int _OFString_Serialization_reference;
 
@@ -34,6 +35,7 @@ int _OFString_Serialization_reference;
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFXMLElement *root;
+	OFString *version;
 	OFArray *elements;
 	id object;
 
@@ -48,6 +50,17 @@ int _OFString_Serialization_reference;
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 	}
+
+	version = [[root attributeForName: @"version"] stringValue];
+	if (version == nil)
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
+
+	if ([version decimalValue] > 0)
+		@throw [OFUnsupportedVersionException
+		    exceptionWithClass: [self class]
+			       version: version];
 
 	elements = [root elementsForNamespace: OF_SERIALIZATION_NS];
 
