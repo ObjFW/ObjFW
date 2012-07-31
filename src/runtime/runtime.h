@@ -40,7 +40,16 @@ struct objc_class {
 	void *gc_object_type;
 	unsigned long abi_version;
 	void *ivar_offsets;
-	void *properties;
+	struct objc_property_list *properties;
+};
+
+enum objc_abi_class_info {
+	OBJC_CLASS_INFO_CLASS	    = 0x001,
+	OBJC_CLASS_INFO_METACLASS   = 0x002,
+	OBJC_CLASS_INFO_NEW_ABI	    = 0x010,
+	OBJC_CLASS_INFO_SETUP	    = 0x100,
+	OBJC_CLASS_INFO_LOADED	    = 0x200,
+	OBJC_CLASS_INFO_INITIALIZED = 0x400
 };
 
 struct objc_object {
@@ -85,6 +94,31 @@ struct objc_ivar {
 struct objc_ivar_list {
 	unsigned count;
 	struct objc_ivar ivars[1];
+};
+
+#define OBJC_PROPERTY_READONLY	0x01
+#define OBJC_PROPERTY_GETTER	0x02
+#define OBJC_PROPERTY_ASSIGN	0x04
+#define OBJC_PROPERTY_READWRITE	0x08
+#define OBJC_PROPERTY_RETAIN	0x10
+#define OBJC_PROPERTY_COPY	0x20
+#define OBJC_PROPERTY_NONATOMIC	0x40
+#define OBJC_PROPERTY_SETTER	0x80
+
+struct objc_property {
+	const char *name;
+	unsigned char attributes;
+	BOOL synthesized;
+	struct {
+		const char *name;
+		const char *type;
+	} getter, setter;
+};
+
+struct objc_property_list {
+	unsigned count;
+	struct objc_property_list *next;
+	struct objc_property properties[1];
 };
 
 #ifdef __OBJC__

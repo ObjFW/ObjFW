@@ -123,15 +123,6 @@ struct objc_sparsearray_level2 {
 };
 #endif
 
-
-enum objc_abi_class_info {
-	OBJC_CLASS_INFO_CLASS	    = 0x001,
-	OBJC_CLASS_INFO_METACLASS   = 0x002,
-	OBJC_CLASS_INFO_SETUP	    = 0x100,
-	OBJC_CLASS_INFO_LOADED	    = 0x200,
-	OBJC_CLASS_INFO_INITIALIZED = 0x400
-};
-
 typedef struct {
 	of_mutex_t mutex;
 	of_thread_t owner;
