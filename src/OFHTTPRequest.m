@@ -36,6 +36,7 @@
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedProtocolException.h"
+#import "OFUnsupportedVersionException.h"
 
 #import "macros.h"
 
@@ -190,7 +191,7 @@ normalizeKey(OFString *key)
 	OFString *scheme = [URL scheme];
 	OFTCPSocket *sock;
 	OFHTTPRequestResult *result;
-	OFString *line, *path;
+	OFString *line, *path, *version;
 	OFMutableDictionary *serverHeaders;
 	OFDataArray *data;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
@@ -287,9 +288,15 @@ normalizeKey(OFString *key)
 		    exceptionWithClass: [self class]];
 	}
 
-	if (![line hasPrefix: @"HTTP/1.0 "] && ![line hasPrefix: @"HTTP/1.1 "])
+	if (![line hasPrefix: @"HTTP/"] || [line characterAtIndex: 8] != ' ')
 		@throw [OFInvalidServerReplyException
 		    exceptionWithClass: [self class]];
+
+	version = [line substringWithRange: of_range(5, 3)];
+	if (![version isEqual: @"1.0"] && ![version isEqual: @"1.1"])
+		@throw [OFUnsupportedVersionException
+		    exceptionWithClass: [self class]
+			       version: version];
 
 	status = (int)[[line substringWithRange: of_range(9, 3)] decimalValue];
 
