@@ -57,6 +57,15 @@ QNX
   * Runtimes: ObjFW
 
 
+Windows
+-------
+
+  * OS versions: XP (x86), 7 (x64), Wine
+  * Architectures: x86
+  * Compilers: TDM GCC 4.6.1-dw2
+  * Runtimes: ObjFW
+
+
 Others
 ------
 
