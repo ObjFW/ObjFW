@@ -65,6 +65,7 @@ status_link_failed() {
 srcs=""
 out=""
 objs=""
+builddir=""
 link="no"
 link_stdcpp="no"
 lib="no"
@@ -99,6 +100,10 @@ while test x"$1" != "x"; do
 			OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --lib-cflags)"
 			out_prefix="$($OBJFW_CONFIG --lib-prefix)"
 			out_suffix="$($OBJFW_CONFIG --lib-suffix)"
+			;;
+		--builddir)
+			shift
+			builddir="$1"
 			;;
 		-D)
 			shift
@@ -190,24 +195,34 @@ if test x"$out" = x""; then
 	exit 1
 fi
 
+case "$builddir" in
+	"")
+		;;
+	*/)
+		;;
+	*)
+		builddir="$builddir/"
+		;;
+esac
+
 for i in $srcs; do
 	case $i in
 		*.m)
 			if test x"$lib" = x"yes"; then
-				obj="${i%.m}.lib.o"
+				obj="$builddir${i%.m}.lib.o"
 			elif test x"$plugin" = x"yes"; then
-				obj="${i%.m}.plugin.o"
+				obj="$builddir${i%.m}.plugin.o"
 			else
-				obj="${i%.m}.o"
+				obj="$builddir${i%.m}.o"
 			fi
 			;;
 		*.mm)
 			if test x"$lib" = x"yes"; then
-				obj="${i%.mm}.lib.o"
+				obj="$builddir${i%.mm}.lib.o"
 			elif test x"$plugin" = x"yes"; then
-				obj="${i%.mm}.plugin.o"
+				obj="$builddir${i%.mm}.plugin.o"
 			else
-				obj="${i%.mm}.o"
+				obj="$builddir${i%.mm}.o"
 			fi
 			;;
 	esac
