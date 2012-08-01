@@ -48,6 +48,15 @@ OpenBSD
   * Runtimes: ObjFW
 
 
+QNX
+---
+
+  * OS versions: 6.5.0
+  * Architectures: x86
+  * Compilers: GCC 4.6.1
+  * Runtimes: ObjFW
+
+
 Others
 ------
 
