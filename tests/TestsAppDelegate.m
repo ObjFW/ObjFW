@@ -144,6 +144,7 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 #ifdef OF_PLUGINS
 	[self pluginTests];
 #endif
+	[self forwardingTests];
 #ifdef OF_HAVE_PROPERTIES
 	[self propertiesTests];
 #endif

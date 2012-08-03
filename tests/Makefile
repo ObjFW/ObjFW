@@ -3,7 +3,8 @@ include ../extra.mk
 SUBDIRS = ${TESTPLUGIN}
 
 PROG_NOINST = tests${PROG_SUFFIX}
-SRCS = OFArrayTests.m			\
+SRCS = ForwardingTests.m		\
+       OFArrayTests.m			\
        ${OFBLOCKTESTS_M}		\
        OFDataArrayTests.m		\
        OFDateTests.m			\

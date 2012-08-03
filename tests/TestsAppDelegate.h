@@ -92,6 +92,10 @@
 - (void)dictionaryTests;
 @end
 
+@interface TestsAppDelegate (ForwardingTests)
+- (void)forwardingTests;
+@end
+
 @interface TestsAppDelegate (OFHTTPRequestTests)
 - (void)HTTPRequestTests;
 @end
