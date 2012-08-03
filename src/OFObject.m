@@ -103,7 +103,7 @@ extern BOOL objc_properties_init();
 static void
 uncaught_exception_handler(id exception)
 {
-	fprintf(stderr, "\nUnhandled exception:\n%s\n",
+	fprintf(stderr, "\nRuntime error: Unhandled exception:\n%s\n",
 	    [[exception description] UTF8String]);
 }
 #endif
@@ -115,6 +115,56 @@ enumeration_mutation_handler(id object)
 	    exceptionWithClass: [object class]
 			object: object];
 }
+
+#ifdef OF_OBJFW_RUNTIME
+static id
+method_not_found_handler(id obj, SEL sel, ...)
+{
+	fprintf(stderr, "Runtime error: Selector %s is not implemented in "
+	    "class %s!\n", sel_getName(sel),
+	    class_getName(object_getClass(obj)));
+	abort();
+}
+
+static IMP
+forward_handler(id obj, SEL sel)
+{
+	if (class_isMetaClass(object_getClass(obj))) {
+		if (![obj respondsToSelector: @selector(resolveClassMethod:)])
+			return method_not_found_handler;
+
+		if (![obj resolveClassMethod: sel])
+			return method_not_found_handler;
+
+		if (![obj respondsToSelector: sel]) {
+			fprintf(stderr, "Runtime error: [%s "
+			    "resolveClassMethod: %s] returned YES without "
+			    "adding the method!\n", class_getName(obj),
+			    sel_getName(sel));
+			abort();
+		}
+	} else {
+		Class c = object_getClass(obj);
+
+		if (![c respondsToSelector: @selector(resolveInstanceMethod:)])
+			return method_not_found_handler;
+
+		if (![c resolveInstanceMethod: sel])
+			return method_not_found_handler;
+
+		if (![obj respondsToSelector: sel]) {
+			fprintf(stderr, "Runtime error: [%s "
+			    "resolveInstanceMethod: %s] returned YES without "
+			    "adding the method!\n",
+			    class_getName(object_getClass(obj)),
+			    sel_getName(sel));
+			abort();
+		}
+	}
+
+	return objc_msg_lookup(obj, sel);
+}
+#endif
 
 #ifndef HAVE_OBJC_ENUMERATIONMUTATION
 void
@@ -201,6 +251,10 @@ void _references_to_categories_of_OFObject(void)
 
 #if !defined(OF_APPLE_RUNTIME) || defined(__OBJC2__)
 	objc_setUncaughtExceptionHandler(uncaught_exception_handler);
+#endif
+
+#ifdef OF_OBJFW_RUNTIME
+	objc_forward_handler = forward_handler;
 #endif
 
 #ifdef HAVE_OBJC_ENUMERATIONMUTATION
@@ -462,6 +516,16 @@ void _references_to_categories_of_OFObject(void)
 #endif
 
 	[self inheritMethodsFromClass: [class superclass]];
+}
+
++ (BOOL)resolveClassMethod: (SEL)selector
+{
+	return NO;
+}
+
++ (BOOL)resolveInstanceMethod: (SEL)selector
+{
+	return NO;
 }
 
 - init

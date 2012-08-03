@@ -480,6 +480,26 @@ typedef struct of_rectangle_t
 + (void)inheritMethodsFromClass: (Class)class_;
 
 /**
+ * \brief Try to resolve the specified class method.
+ *
+ * This method is called if a class method was not found, so that an
+ * implementation can be provided at runtime.
+ *
+ * \return Whether the method has been added to the class
+ */
++ (BOOL)resolveClassMethod: (SEL)selector;
+
+/**
+ * \brief Try to resolve the specified instance method.
+ *
+ * This method is called if an instance method was not found, so that an
+ * implementation can be provided at runtime.
+ *
+ * \return Whether the method has been added to the class
+ */
++ (BOOL)resolveInstanceMethod: (SEL)selector;
+
+/**
  * \brief Initializes an already allocated object.
  *
  * Derived classes may override this, but need to do self = [super init] before
