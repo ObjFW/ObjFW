@@ -183,6 +183,7 @@ extern void objc_thread_remove(void);
 extern void objc_exit(void);
 extern objc_uncaught_exception_handler objc_setUncaughtExceptionHandler(
     objc_uncaught_exception_handler);
+extern IMP (*objc_forward_handler)(id, SEL);
 extern id objc_autorelease(id);
 extern void* objc_autoreleasePoolPush(void);
 extern void objc_autoreleasePoolPop(void*);
@@ -211,6 +212,12 @@ static inline const char*
 object_getClassName(id obj)
 {
 	return class_getName(object_getClass(obj));
+}
+
+static inline BOOL
+class_isMetaClass(Class cls)
+{
+	return (cls->info & OBJC_CLASS_INFO_METACLASS);
 }
 
 #undef OBJC_BRIDGE
