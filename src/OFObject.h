@@ -37,13 +37,30 @@
 # import <objc/runtime.h>
 #endif
 
-#ifdef __has_feature
-# if __has_feature(objc_bool)
-#  undef YES
-#  define YES __objc_yes
-#  undef NO
-#  define NO __objc_no
-# endif
+#ifndef __has_feature
+# define __has_feature(x) 0
+#endif
+
+#if __has_feature(objc_bool)
+# undef YES
+# define YES __objc_yes
+# undef NO
+# define NO __objc_no
+#endif
+
+#if __has_feature(objc_arc)
+# define OF_RETURNS_RETAINED __attribute__((ns_returns_retained))
+# define OF_RETURNS_NOT_RETAINED __attribute__((ns_returns_not_retained))
+# define OF_RETURNS_INNER_POINTER __attribute__((objc_returns_inner_pointer))
+# define OF_CONSUMED __attribute__((ns_consumed))
+# define OF_WEAK_UNAVAILABLE __attribute__((objc_arc_weak_unavailable))
+#else
+# define OF_RETURNS_RETAINED
+# define OF_RETURNS_NOT_RETAINED
+# define OF_RETURNS_INNER_POINTER
+# define OF_CONSUMED
+# define OF_WEAK_UNAVAILABLE
+# define __unsafe_unretained
 #endif
 
 #define OF_RETAIN_COUNT_MAX UINT_MAX

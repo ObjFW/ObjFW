@@ -153,7 +153,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \param buffer The buffer to copy the objects to
  * \param range The range to copy
  */
-- (void)getObjects: (id*)buffer
+- (void)getObjects: (__unsafe_unretained id*)buffer
 	   inRange: (of_range_t)range;
 
 /**

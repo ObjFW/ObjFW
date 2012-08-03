@@ -90,6 +90,6 @@ typedef struct of_fast_enumeration_state_t {
  *	   finished.
  */
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
-			   objects: (id*)objects
+			   objects: (__unsafe_unretained id*)objects
 			     count: (int)count;
 @end

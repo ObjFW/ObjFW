@@ -18,6 +18,12 @@
 #define __OBJFW_RUNTIME_H__
 #include <stdint.h>
 
+#if defined(__has_feature) && __has_feature(objc_arc)
+# define OBJC_BRIDGE __bridge
+#else
+# define OBJC_BRIDGE
+#endif
+
 typedef struct objc_class *Class;
 typedef struct objc_object *id;
 typedef const struct objc_selector *SEL;
@@ -185,7 +191,7 @@ extern id _objc_rootAutorelease(id);
 static inline Class
 object_getClass(id obj_)
 {
-	struct objc_object *obj = (struct objc_object*)obj_;
+	struct objc_object *obj = (OBJC_BRIDGE struct objc_object*)obj_;
 
 	return obj->isa;
 }
@@ -193,7 +199,7 @@ object_getClass(id obj_)
 static inline Class
 object_setClass(id obj_, Class cls)
 {
-	struct objc_object *obj = (struct objc_object*)obj_;
+	struct objc_object *obj = (OBJC_BRIDGE struct objc_object*)obj_;
 	Class old = obj->isa;
 
 	obj->isa = cls;
@@ -206,5 +212,7 @@ object_getClassName(id obj)
 {
 	return class_getName(object_getClass(obj));
 }
+
+#undef OBJC_BRIDGE
 
 #endif

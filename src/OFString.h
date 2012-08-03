@@ -532,7 +532,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  *
  * \return The OFString as a UTF-8 encoded C string
  */
-- (const char*)UTF8String;
+- (const char*)UTF8String OF_RETURNS_INNER_POINTER;
 
 /**
  * \brief Returns the OFString as a C string in the specified encoding.
@@ -544,7 +544,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param encoding The encoding for the C string
  * \return The OFString as a C string in the specified encoding
  */
-- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding;;
+- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
+    OF_RETURNS_INNER_POINTER;
 
 /**
  * \brief Returns the length of the string in Unicode characters.
@@ -839,7 +840,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  *
  * \return The string as an array of Unicode characters
  */
-- (const of_unichar_t*)unicodeString;
+- (const of_unichar_t*)unicodeString OF_RETURNS_INNER_POINTER;
 
 /**
  * \brief Returns the string in big endian UTF-16 encoding.
@@ -850,7 +851,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  *
  * \return The string in big endian UTF-16 encoding
  */
-- (const uint16_t*)UTF16String;
+- (const uint16_t*)UTF16String OF_RETURNS_INNER_POINTER;
 
 /**
  * \brief Writes the string into the specified file using UTF-8 encoding.

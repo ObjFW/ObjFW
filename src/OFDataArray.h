@@ -151,7 +151,7 @@
  *
  * \return All elements of the OFDataArray as a C array
  */
-- (void*)cArray;
+- (void*)cArray OF_RETURNS_INNER_POINTER;
 
 /**
  * \brief Returns a specific item of the OFDataArray.
@@ -159,21 +159,21 @@
  * \param index The number of the item to return
  * \return The specified item of the OFDataArray
  */
-- (void*)itemAtIndex: (size_t)index;
+- (void*)itemAtIndex: (size_t)index OF_RETURNS_INNER_POINTER;
 
 /**
  * \brief Returns the first item of the OFDataArray.
  *
  * \return The first item of the OFDataArray or NULL
  */
-- (void*)firstItem;
+- (void*)firstItem OF_RETURNS_INNER_POINTER;
 
 /**
  * \brief Returns the last item of the OFDataArray.
  *
  * \return The last item of the OFDataArray or NULL
  */
-- (void*)lastItem;
+- (void*)lastItem OF_RETURNS_INNER_POINTER;
 
 /**
  * \brief Adds an item to the OFDataArray.
