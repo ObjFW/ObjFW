@@ -21,6 +21,7 @@
 #import "OFSerialization.h"
 #import "OFArray.h"
 #import "OFXMLElement.h"
+#import "OFXMLAttribute.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"
