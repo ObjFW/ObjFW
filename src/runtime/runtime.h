@@ -18,7 +18,11 @@
 #define __OBJFW_RUNTIME_H__
 #include <stdint.h>
 
-#if defined(__has_feature) && __has_feature(objc_arc)
+#ifndef __has_feature
+# define __has_feature(x) 0
+#endif
+
+#if __has_feature(objc_arc)
 # define OBJC_BRIDGE __bridge
 #else
 # define OBJC_BRIDGE
