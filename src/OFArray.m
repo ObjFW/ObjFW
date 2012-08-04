@@ -624,6 +624,16 @@ static struct {
 	return ret;
 }
 
+- (OFArray*)arrayByRemovingObject: (id)object
+{
+	OFMutableArray *ret = [[self mutableCopy] autorelease];
+
+	[ret removeObject: object];
+	[ret makeImmutable];
+
+	return ret;
+}
+
 #ifdef OF_HAVE_BLOCKS
 - (OFArray*)mappedArrayUsingBlock: (of_array_map_block_t)block
 {

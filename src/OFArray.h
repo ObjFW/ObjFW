@@ -288,6 +288,14 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  */
 - (OFArray*)arrayByAddingObjectsFromArray: (OFArray*)array;
 
+/**
+ * \brief Creates a new array with the specified object removed.
+ *
+ * \param object The object to remove
+ * \return A new array with the specified object removed
+ */
+- (OFArray*)arrayByRemovingObject: (id)object;
+
 #ifdef OF_HAVE_BLOCKS
 /**
  * \brief Executes a block for each object.
