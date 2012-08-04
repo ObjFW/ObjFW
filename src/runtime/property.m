@@ -18,6 +18,9 @@
 
 #include <string.h>
 
+#import "runtime.h"
+#import "runtime-private.h"
+
 #import "OFObject.h"
 
 #import "macros.h"
@@ -28,19 +31,17 @@
 static of_spinlock_t spinlocks[NUM_SPINLOCKS];
 #endif
 
-BOOL
-objc_properties_init(void)
-{
 #ifdef OF_THREADS
+static void __attribute__((constructor))
+init(void)
+{
 	size_t i;
 
 	for (i = 0; i < NUM_SPINLOCKS; i++)
 		if (!of_spinlock_new(&spinlocks[i]))
-			return NO;
-#endif
-
-	return YES;
+			OBJC_ERROR("Failed to initialize spinlocks!")
 }
+#endif
 
 id
 objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, BOOL atomic)

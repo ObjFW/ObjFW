@@ -23,14 +23,15 @@
 #include <sys/types.h>
 
 #import "runtime.h"
+#import "runtime-private.h"
 #import "threading.h"
 
 struct lock_s {
-	id		 object;
-	size_t		 count;
-	size_t		 recursion;
-	of_thread_t	 thread;
-	of_mutex_t	 mutex;
+	id	    object;
+	size_t	    count;
+	size_t	    recursion;
+	of_thread_t thread;
+	of_mutex_t  mutex;
 };
 
 static of_mutex_t mutex;
@@ -45,10 +46,11 @@ static ssize_t numLocks = 0;
 		return 1;						\
 	}
 
-BOOL
-objc_sync_init(void)
+static void __attribute__((constructor))
+init(void)
 {
-	return of_mutex_new(&mutex);
+	if (!of_mutex_new(&mutex))
+		OBJC_ERROR("Failed to create mutex!")
 }
 
 int

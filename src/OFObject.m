@@ -94,11 +94,6 @@ static SEL cxx_destruct = NULL;
 size_t of_pagesize;
 size_t of_num_cpus;
 
-#ifdef OF_OBJFW_RUNTIME
-extern BOOL objc_sync_init();
-extern BOOL objc_properties_init();
-#endif
-
 #if !defined(OF_APPLE_RUNTIME) || defined(__OBJC2__)
 static void
 uncaught_exception_handler(id exception)
@@ -236,19 +231,6 @@ void _references_to_categories_of_OFObject(void)
 @implementation OFObject
 + (void)load
 {
-#ifdef OF_OBJFW_RUNTIME
-	if (!objc_sync_init()) {
-		fputs("Runtime error: objc_sync_init() failed!\n", stderr);
-		abort();
-	}
-
-	if (!objc_properties_init()) {
-		fputs("Runtime error: objc_properties_init() failed!\n",
-		    stderr);
-		abort();
-	}
-#endif
-
 #if !defined(OF_APPLE_RUNTIME) || defined(__OBJC2__)
 	objc_setUncaughtExceptionHandler(uncaught_exception_handler);
 #endif
