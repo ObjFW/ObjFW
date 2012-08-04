@@ -282,6 +282,9 @@
 		4BA02BA215041F5900002F84 /* OFTLSSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA02BA015041F5900002F84 /* OFTLSSocket.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BA355BA14879BDD00442EF4 /* of_strptime.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA355B914879BDD00442EF4 /* of_strptime.m */; };
 		4BA355BD14879BF700442EF4 /* of_strptime.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA355BC14879BF700442EF4 /* of_strptime.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BA4846215CC9F1E00D75360 /* OFUnsupportedVersionException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA4846015CC9F1E00D75360 /* OFUnsupportedVersionException.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BA4846315CC9F1E00D75360 /* OFUnsupportedVersionException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA4846115CC9F1E00D75360 /* OFUnsupportedVersionException.m */; };
+		4BA4846615CC9FAD00D75360 /* ForwardingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA4846515CC9FAD00D75360 /* ForwardingTests.m */; };
 		4BA49D9013DB113B00381CDB /* OFIntrospection.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA49D8E13DB113B00381CDB /* OFIntrospection.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BA49D9113DB113B00381CDB /* OFIntrospection.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA49D8F13DB113B00381CDB /* OFIntrospection.m */; };
 		4BA85BCA140ECCE800E91D51 /* OFCountedSet_hashtable.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA85BC4140ECCE800E91D51 /* OFCountedSet_hashtable.h */; };
@@ -638,6 +641,9 @@
 		4BA02BA015041F5900002F84 /* OFTLSSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFTLSSocket.h; path = src/OFTLSSocket.h; sourceTree = "<group>"; };
 		4BA355B914879BDD00442EF4 /* of_strptime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = of_strptime.m; path = src/of_strptime.m; sourceTree = "<group>"; };
 		4BA355BC14879BF700442EF4 /* of_strptime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = of_strptime.h; path = src/of_strptime.h; sourceTree = "<group>"; };
+		4BA4846015CC9F1E00D75360 /* OFUnsupportedVersionException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFUnsupportedVersionException.h; path = src/exceptions/OFUnsupportedVersionException.h; sourceTree = "<group>"; };
+		4BA4846115CC9F1E00D75360 /* OFUnsupportedVersionException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFUnsupportedVersionException.m; path = src/exceptions/OFUnsupportedVersionException.m; sourceTree = "<group>"; };
+		4BA4846515CC9FAD00D75360 /* ForwardingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ForwardingTests.m; path = tests/ForwardingTests.m; sourceTree = "<group>"; };
 		4BA49D8E13DB113B00381CDB /* OFIntrospection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFIntrospection.h; path = src/OFIntrospection.h; sourceTree = "<group>"; };
 		4BA49D8F13DB113B00381CDB /* OFIntrospection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFIntrospection.m; path = src/OFIntrospection.m; sourceTree = "<group>"; };
 		4BA85BC4140ECCE800E91D51 /* OFCountedSet_hashtable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCountedSet_hashtable.h; path = src/OFCountedSet_hashtable.h; sourceTree = "<group>"; };
@@ -850,6 +856,8 @@
 				4B17FFB4133A3750003E6DCD /* OFUnboundNamespaceException.m */,
 				4B17FFAF133A3658003E6DCD /* OFUnsupportedProtocolException.h */,
 				4B17FFB0133A365C003E6DCD /* OFUnsupportedProtocolException.m */,
+				4BA4846015CC9F1E00D75360 /* OFUnsupportedVersionException.h */,
+				4BA4846115CC9F1E00D75360 /* OFUnsupportedVersionException.m */,
 				4B55A110133AC24500B58A93 /* OFWriteFailedException.h */,
 				4B55A111133AC24600B58A93 /* OFWriteFailedException.m */,
 				4B55A106133AC05100B58A93 /* common.h */,
@@ -1064,6 +1072,7 @@
 				4B6EF6831235359D0076B512 /* Plugin */,
 				4BF33B4113380CB60059CEF7 /* Supporting Files */,
 				4B6EF682123535960076B512 /* objc_sync */,
+				4BA4846515CC9FAD00D75360 /* ForwardingTests.m */,
 				4B6EF66E1235358D0076B512 /* OFArrayTests.m */,
 				4BE5F0E412DF4259005C7A0C /* OFBlockTests.m */,
 				4B6EF66F1235358D0076B512 /* OFDataArrayTests.m */,
@@ -1258,11 +1267,12 @@
 				4B90B791133AD46700BD33CB /* OFSetOptionFailedException.h in Headers */,
 				4B29BC63133AC9CB0004B236 /* OFSymlinkFailedException.h in Headers */,
 				4B17FFA9133A34E7003E6DCD /* OFTruncatedDataException.h in Headers */,
-				4B17FFB5133A375B003E6DCD /* OFUnboundNamespaceException.h in Headers */,
-				4B17FFB1133A3664003E6DCD /* OFUnsupportedProtocolException.h in Headers */,
 				4B55A0FF133ABEA900B58A93 /* OFThreadJoinFailedException.h in Headers */,
 				4B55A101133ABEA900B58A93 /* OFThreadStartFailedException.h in Headers */,
 				4B55A103133ABEA900B58A93 /* OFThreadStillRunningException.h in Headers */,
+				4B17FFB5133A375B003E6DCD /* OFUnboundNamespaceException.h in Headers */,
+				4B17FFB1133A3664003E6DCD /* OFUnsupportedProtocolException.h in Headers */,
+				4BA4846215CC9F1E00D75360 /* OFUnsupportedVersionException.h in Headers */,
 				4B55A116133AC24600B58A93 /* OFWriteFailedException.h in Headers */,
 				4B55A109133AC05100B58A93 /* common.h in Headers */,
 				4BDF37B51338055600F9A81A /* config.h in Headers */,
@@ -1557,6 +1567,7 @@
 				4B17FFAA133A34E7003E6DCD /* OFTruncatedDataException.m in Sources */,
 				4B17FFB6133A375B003E6DCD /* OFUnboundNamespaceException.m in Sources */,
 				4B17FFB2133A3664003E6DCD /* OFUnsupportedProtocolException.m in Sources */,
+				4BA4846315CC9F1E00D75360 /* OFUnsupportedVersionException.m in Sources */,
 				4B55A117133AC24600B58A93 /* OFWriteFailedException.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1565,6 +1576,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4BA4846615CC9FAD00D75360 /* ForwardingTests.m in Sources */,
 				4BF33AFC133807A20059CEF7 /* OFArrayTests.m in Sources */,
 				4BF33AFD133807A20059CEF7 /* OFBlockTests.m in Sources */,
 				4BF33AFE133807A20059CEF7 /* OFDataArrayTests.m in Sources */,
@@ -1639,6 +1651,7 @@
 					"-fblocks",
 					"-pipe",
 				);
+				SDKROOT = macosx;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Werror",
@@ -1665,6 +1678,7 @@
 					"-fblocks",
 					"-pipe",
 				);
+				SDKROOT = macosx;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Werror",
