@@ -47,7 +47,7 @@ test(id self, SEL _cmd)
 	if (sel_isEqual(selector, @selector(test))) {
 		[self replaceClassMethod: @selector(test)
 		      withImplementation: (IMP)test
-			    typeEncoding: "v@:"];
+			    typeEncoding: "v#:"];
 		return YES;
 	}
 
