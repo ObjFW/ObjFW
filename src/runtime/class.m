@@ -137,7 +137,7 @@ objc_update_dtable(Class cls)
 	struct objc_category **cats;
 	unsigned int i;
 
-	if (!(cls->info & OBJC_CLASS_INFO_INITIALIZED))
+	if (!(cls->info & OBJC_CLASS_INFO_DTABLE))
 		return;
 
 	if (cls->dtable == empty_dtable)
@@ -242,15 +242,18 @@ initialize_class(Class cls)
 	if (cls->superclass)
 		initialize_class(cls->superclass);
 
+	cls->info |= OBJC_CLASS_INFO_DTABLE;
+	cls->isa->info |= OBJC_CLASS_INFO_DTABLE;
+
+	objc_update_dtable(cls);
+	objc_update_dtable(cls->isa);
+
 	/*
 	 * Set it first to prevent calling it recursively due to message sends
 	 * in the initialize method
 	 */
 	cls->info |= OBJC_CLASS_INFO_INITIALIZED;
 	cls->isa->info |= OBJC_CLASS_INFO_INITIALIZED;
-
-	objc_update_dtable(cls);
-	objc_update_dtable(cls->isa);
 
 	call_method(cls, "initialize");
 }
@@ -536,15 +539,12 @@ free_class(Class rcls)
 {
 	struct objc_abi_class *cls = (struct objc_abi_class*)rcls;
 
-	if (!(rcls->info & OBJC_CLASS_INFO_INITIALIZED))
-		return;
-
 	if (rcls->subclass_list != NULL) {
 		free(rcls->subclass_list);
 		rcls->subclass_list = NULL;
 	}
 
-	if (rcls->dtable != NULL)
+	if (rcls->dtable != NULL && rcls->dtable != empty_dtable)
 		objc_sparsearray_free(rcls->dtable);
 
 	rcls->dtable = NULL;
