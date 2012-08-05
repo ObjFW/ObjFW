@@ -41,6 +41,8 @@ AX_CHECK_COMPILER_FLAGS(-Wshorten-64-to-32,
 	[OBJCFLAGS="$OBJCFLAGS -Wshorten-64-to-32"])
 AX_CHECK_COMPILER_FLAGS(-Wsemicolon-before-method-body,
 	[OBJCFLAGS="$OBJCFLAGS -Wsemicolon-before-method-body"])
+AX_CHECK_COMPILER_FLAGS(-Wno-objc-root-class,
+	[OBJCFLAGS="$OBJCFLAGS -Wno-objc-root-class"])
 
 AC_MSG_CHECKING(whether Objective C compiler supports fast enumeration)
 AC_TRY_COMPILE([
