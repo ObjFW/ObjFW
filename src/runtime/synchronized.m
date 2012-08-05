@@ -18,33 +18,19 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
-
-#include <sys/types.h>
 
 #import "runtime.h"
 #import "runtime-private.h"
 #import "threading.h"
 
 struct lock_s {
-	id	    object;
-	size_t	    count;
-	size_t	    recursion;
-	of_thread_t thread;
-	of_mutex_t  mutex;
-};
+	id	      object;
+	int	      count;
+	of_rmutex_t   rmutex;
+	struct lock_s *next;
+} *locks = NULL;
 
 static of_mutex_t mutex;
-static struct lock_s *locks = NULL;
-static ssize_t numLocks = 0;
-
-#define SYNC_ERR(f)							\
-	{								\
-		fprintf(stderr, "WARNING: %s failed in line %d!\n"	\
-		    "WARNING: This might result in a race "		\
-		    "condition!\n", f, __LINE__);			\
-		return 1;						\
-	}
 
 static void __attribute__((constructor))
 init(void)
@@ -56,84 +42,45 @@ init(void)
 int
 objc_sync_enter(id object)
 {
-	ssize_t i;
-
-	if (object == nil)
-		return 0;
+	struct lock_s *lock;
 
 	if (!of_mutex_lock(&mutex))
-		SYNC_ERR("of_mutex_lock(&mutex)");
+		OBJC_ERROR("Failed to lock mutex!");
 
-	for (i = numLocks - 1; i >= 0; i--) {
-		if (locks[i].object == object) {
-			if (of_thread_is_current(locks[i].thread))
-				locks[i].recursion++;
-			else {
-				/* Make sure objc_sync_exit doesn't free it */
-				locks[i].count++;
+	/* Look if we already have a lock */
+	for (lock = locks; lock != NULL; lock = lock->next) {
+		if (lock->object != object)
+			continue;
 
-				/* Unlock so objc_sync_exit can return */
-				if (!of_mutex_unlock(&mutex))
-					SYNC_ERR("of_mutex_unlock(&mutex)");
+		lock->count++;
 
-				if (!of_mutex_lock(&locks[i].mutex)) {
-					of_mutex_unlock(&mutex);
-					SYNC_ERR(
-					    "of_mutex_lock(&locks[i].mutex");
-				}
+		if (!of_mutex_unlock(&mutex))
+			OBJC_ERROR("Failed to unlock mutex!");
 
-				if (!of_mutex_lock(&mutex))
-					SYNC_ERR("of_mutex_lock(&mutex)");
+		if (!of_rmutex_lock(&lock->rmutex))
+			OBJC_ERROR("Failed to lock mutex!");
 
-				assert(locks[i].recursion == 0);
-
-				/* Update lock's active thread */
-				locks[i].thread = of_thread_current();
-			}
-
-			if (!of_mutex_unlock(&mutex))
-				SYNC_ERR("of_mutex_unlock(&mutex)");
-
-			return 0;
-		}
+		return 0;
 	}
 
-	if (locks == NULL) {
-		if ((locks = malloc(sizeof(struct lock_s))) == NULL) {
-			of_mutex_unlock(&mutex);
-			SYNC_ERR("malloc(...)");
-		}
-	} else {
-		struct lock_s *new_locks;
+	/* Create a new lock */
+	if ((lock = malloc(sizeof(*lock))) == NULL)
+		OBJC_ERROR("Failed to allocate memory for mutex!");
 
-		if ((new_locks = realloc(locks, (numLocks + 1) *
-		    sizeof(struct lock_s))) == NULL) {
-			of_mutex_unlock(&mutex);
-			SYNC_ERR("realloc(...)");
-		}
+	if (!of_rmutex_new(&lock->rmutex))
+		OBJC_ERROR("Failed to create mutex!");
 
-		locks = new_locks;
-	}
+	lock->object = object;
+	lock->count = 1;
+	lock->next = locks;
 
-	locks[numLocks].object = object;
-	locks[numLocks].count = 1;
-	locks[numLocks].recursion = 0;
-	locks[numLocks].thread = of_thread_current();
-
-	if (!of_mutex_new(&locks[numLocks].mutex)) {
-		of_mutex_unlock(&mutex);
-		SYNC_ERR("of_mutex_new(&locks[numLocks].mutex");
-	}
-
-	if (!of_mutex_lock(&locks[numLocks].mutex)) {
-		of_mutex_unlock(&mutex);
-		SYNC_ERR("of_mutex_lock(&locks[numLocks].mutex");
-	}
-
-	numLocks++;
+	locks = lock;
 
 	if (!of_mutex_unlock(&mutex))
-		SYNC_ERR("of_mutex_unlock(&mutex)");
+		OBJC_ERROR("Failed to unlock mutex!");
+
+	if (!of_rmutex_lock(&lock->rmutex))
+		OBJC_ERROR("Failed to lock mutex!");
 
 	return 0;
 }
@@ -141,65 +88,37 @@ objc_sync_enter(id object)
 int
 objc_sync_exit(id object)
 {
-	ssize_t i;
-
-	if (object == nil)
-		return 0;
+	struct lock_s *lock, *last = NULL;
 
 	if (!of_mutex_lock(&mutex))
-		SYNC_ERR("of_mutex_lock(&mutex)");
+		OBJC_ERROR("Failed to lock mutex!");
 
-	for (i = numLocks - 1; i >= 0; i--) {
-		if (locks[i].object == object) {
-			if (locks[i].recursion > 0 &&
-			    of_thread_is_current(locks[i].thread)) {
-				locks[i].recursion--;
-
-				if (!of_mutex_unlock(&mutex))
-					SYNC_ERR("of_mutex_unlock(&mutex)");
-
-				return 0;
-			}
-
-			if (!of_mutex_unlock(&locks[i].mutex)) {
-				of_mutex_unlock(&mutex);
-				SYNC_ERR("of_mutex_unlock(&locks[i].mutex)");
-			}
-
-			locks[i].count--;
-
-			if (locks[i].count == 0) {
-				struct lock_s *new_locks = NULL;
-
-				if (!of_mutex_free(&locks[i].mutex)) {
-					of_mutex_unlock(&mutex);
-					SYNC_ERR(
-					    "of_mutex_free(&locks[i].mutex");
-				}
-
-				numLocks--;
-				locks[i] = locks[numLocks];
-
-				if (numLocks == 0) {
-					free(locks);
-					new_locks = NULL;
-				} else if ((new_locks = realloc(locks,
-				    numLocks * sizeof(struct lock_s))) ==
-				    NULL) {
-					of_mutex_unlock(&mutex);
-					SYNC_ERR("realloc(...)");
-				}
-
-				locks = new_locks;
-			}
-
-			if (!of_mutex_unlock(&mutex))
-				SYNC_ERR("of_mutex_unlock(&mutex)");
-
-			return 0;
+	for (lock = locks; lock != NULL; lock = lock->next) {
+		if (lock->object != object) {
+			last = lock;
+			continue;
 		}
+
+		if (!of_rmutex_unlock(&lock->rmutex))
+			OBJC_ERROR("Failed to unlock mutex!");
+
+		if (--lock->count == 0) {
+			if (!of_rmutex_free(&lock->rmutex))
+				OBJC_ERROR("Failed to destroy mutex!");
+
+			if (last != NULL)
+				last->next = lock->next;
+			if (locks == lock)
+				locks = lock->next;
+
+			free(lock);
+		}
+
+		if (!of_mutex_unlock(&mutex))
+			OBJC_ERROR("Failed to unlock mutex!");
+
+		return 0;
 	}
 
-	of_mutex_unlock(&mutex);
-	SYNC_ERR("objc_sync_exit()");
+	OBJC_ERROR("objc_sync_exit() was called for an object not locked!");
 }
