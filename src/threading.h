@@ -49,6 +49,11 @@ typedef pthread_spinlock_t of_spinlock_t;
 typedef of_mutex_t of_spinlock_t;
 #endif
 
+typedef struct {
+	of_mutex_t mutex;
+	of_tlskey_t count;
+} of_rmutex_t;
+
 #if defined(OF_HAVE_PTHREADS)
 # define of_thread_is_current(t) pthread_equal(t, pthread_self())
 # define of_thread_current pthread_self
@@ -362,4 +367,70 @@ of_spinlock_free(of_spinlock_t *spinlock)
 #else
 	return of_mutex_free(spinlock);
 #endif
+}
+
+static OF_INLINE BOOL
+of_rmutex_new(of_rmutex_t *rmutex)
+{
+	if (!of_mutex_new(&rmutex->mutex))
+		return NO;
+
+	if (!of_tlskey_new(&rmutex->count))
+		return NO;
+
+	return YES;
+}
+
+static OF_INLINE BOOL
+of_rmutex_lock(of_rmutex_t *rmutex)
+{
+	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
+
+	if (count > 0) {
+		if (!of_tlskey_set(rmutex->count, (void*)(count + 1)))
+			return NO;
+		return YES;
+	}
+
+	if (!of_mutex_lock(&rmutex->mutex))
+		return NO;
+
+	if (!of_tlskey_set(rmutex->count, (void*)1)) {
+		of_mutex_unlock(&rmutex->mutex);
+		return NO;
+	}
+
+	return YES;
+}
+
+static OF_INLINE BOOL
+of_rmutex_unlock(of_rmutex_t *rmutex)
+{
+	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
+
+	if (count > 1) {
+		if (!of_tlskey_set(rmutex->count, (void*)(count - 1)))
+			return NO;
+		return YES;
+	}
+
+	if (!of_tlskey_set(rmutex->count, (void*)0))
+		return NO;
+
+	if (!of_mutex_unlock(&rmutex->mutex))
+		return NO;
+
+	return YES;
+}
+
+static OF_INLINE BOOL
+of_rmutex_free(of_rmutex_t *rmutex)
+{
+	if (!of_mutex_free(&rmutex->mutex))
+		return NO;
+
+	if (!of_tlskey_free(rmutex->count))
+		return NO;
+
+	return YES;
 }

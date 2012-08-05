@@ -21,57 +21,15 @@
 
 #import "runtime.h"
 #import "runtime-private.h"
+#import "threading.h"
 
-static objc_mutex_t global_mutex;
+static of_rmutex_t global_mutex;
 static BOOL global_mutex_init = NO;
-
-BOOL
-objc_mutex_new(objc_mutex_t *mutex)
-{
-	if (!of_mutex_new(&mutex->mutex ))
-		return NO;
-
-	mutex->count = 0;
-
-	return YES;
-}
-
-BOOL
-objc_mutex_lock(objc_mutex_t *mutex)
-{
-	if (mutex->count > 0 && of_thread_is_current(mutex->owner)) {
-		mutex->count++;
-		return YES;
-	}
-
-	if (!of_mutex_lock(&mutex->mutex))
-		return NO;
-
-	mutex->owner = of_thread_current();
-	mutex->count++;
-
-	return YES;
-}
-
-BOOL
-objc_mutex_unlock(objc_mutex_t *mutex)
-{
-	if (--mutex->count == 0)
-		return of_mutex_unlock(&mutex->mutex);
-
-	return YES;
-}
-
-BOOL
-objc_mutex_free(objc_mutex_t *mutex)
-{
-	return of_mutex_free(&mutex->mutex);
-}
 
 static void
 objc_global_mutex_new(void)
 {
-	if (!objc_mutex_new(&global_mutex))
+	if (!of_rmutex_new(&global_mutex))
 		OBJC_ERROR("Failed to create global mutex!");
 
 	global_mutex_init = YES;
@@ -83,20 +41,20 @@ objc_global_mutex_lock(void)
 	if (!global_mutex_init)
 		objc_global_mutex_new();
 
-	if (!objc_mutex_lock(&global_mutex))
+	if (!of_rmutex_lock(&global_mutex))
 		OBJC_ERROR("Failed to lock global mutex!");
 }
 
 void
 objc_global_mutex_unlock(void)
 {
-	if (!objc_mutex_unlock(&global_mutex))
+	if (!of_rmutex_unlock(&global_mutex))
 		OBJC_ERROR("Failed to unlock global mutex!");
 }
 
 void
 objc_global_mutex_free(void)
 {
-	if (!objc_mutex_free(&global_mutex))
+	if (!of_rmutex_free(&global_mutex))
 		OBJC_ERROR("Failed to free global mutex!");
 }
