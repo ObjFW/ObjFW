@@ -449,10 +449,23 @@ AS_IF([test x"$enable_threads" != x"no"], [
 			LIBS="$LIBS $PTHREAD_LIBS"
 			AC_DEFINE(OF_HAVE_PTHREADS, 1,
 				[Whether we have pthreads])
+
+			AC_TRY_COMPILE([
+				#include <pthread.h>
+			], [
+				pthread_mutexattr_t attr;
+				pthread_mutexattr_settype(&attr,
+				    PTHREAD_MUTEX_RECURSIVE);
+			], [
+				AC_DEFINE(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES, 1,
+					[If pthread mutexes can be recursive])
+			])
+
 			AC_CHECK_FUNC(pthread_spin_lock, [
 				AC_DEFINE(OF_HAVE_PTHREAD_SPINLOCKS, 1,
 					[Whether we have pthread spinlocks])
 			])
+
 			AC_CHECK_FUNC(sched_yield, [
 				AC_DEFINE(OF_HAVE_SCHED_YIELD, 1,
 					[Whether we have sched_yield])

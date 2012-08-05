@@ -49,10 +49,14 @@ typedef pthread_spinlock_t of_spinlock_t;
 typedef of_mutex_t of_spinlock_t;
 #endif
 
+#ifdef OF_HAVE_RECURSIVE_PTHREAD_MUTEXES
+# define of_rmutex_t of_mutex_t
+#else
 typedef struct {
 	of_mutex_t mutex;
 	of_tlskey_t count;
 } of_rmutex_t;
+#endif
 
 #if defined(OF_HAVE_PTHREADS)
 # define of_thread_is_current(t) pthread_equal(t, pthread_self())
@@ -369,6 +373,31 @@ of_spinlock_free(of_spinlock_t *spinlock)
 #endif
 }
 
+#ifdef OF_HAVE_RECURSIVE_PTHREAD_MUTEXES
+static OF_INLINE BOOL
+of_rmutex_new(of_mutex_t *mutex)
+{
+	pthread_mutexattr_t attr;
+
+	if (pthread_mutexattr_init(&attr))
+		return NO;
+
+	if (pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE))
+		return NO;
+
+	if (pthread_mutex_init(mutex, &attr))
+		return NO;
+
+	if (pthread_mutexattr_destroy(&attr))
+		return NO;
+
+	return YES;
+}
+
+# define of_rmutex_lock of_mutex_lock
+# define of_rmutex_unlock of_mutex_unlock
+# define of_rmutex_free of_mutex_free
+#else
 static OF_INLINE BOOL
 of_rmutex_new(of_rmutex_t *rmutex)
 {
@@ -434,3 +463,4 @@ of_rmutex_free(of_rmutex_t *rmutex)
 
 	return YES;
 }
+#endif
