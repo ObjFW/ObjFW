@@ -395,6 +395,7 @@ of_rmutex_new(of_mutex_t *mutex)
 }
 
 # define of_rmutex_lock of_mutex_lock
+# define of_rmutex_trylock of_mutex_trylock
 # define of_rmutex_unlock of_mutex_unlock
 # define of_rmutex_free of_mutex_free
 #else
@@ -422,6 +423,28 @@ of_rmutex_lock(of_rmutex_t *rmutex)
 	}
 
 	if (!of_mutex_lock(&rmutex->mutex))
+		return NO;
+
+	if (!of_tlskey_set(rmutex->count, (void*)1)) {
+		of_mutex_unlock(&rmutex->mutex);
+		return NO;
+	}
+
+	return YES;
+}
+
+static OF_INLINE BOOL
+of_rmutex_trylock(of_rmutex_t *rmutex)
+{
+	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
+
+	if (count > 0) {
+		if (!of_tlskey_set(rmutex->count, (void*)(count + 1)))
+			return NO;
+		return YES;
+	}
+
+	if (!of_mutex_trylock(&rmutex->mutex))
 		return NO;
 
 	if (!of_tlskey_set(rmutex->count, (void*)1)) {

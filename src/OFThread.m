@@ -420,6 +420,11 @@ call_main(id object)
 	return self;
 }
 
+- _initWithoutCreatingMutex
+{
+	return [super init];
+}
+
 - (void)lock
 {
 	if (!of_mutex_lock(&mutex))
@@ -445,6 +450,55 @@ call_main(id object)
 {
 	if (initialized)
 		if (!of_mutex_free(&mutex))
+			@throw [OFMutexStillLockedException
+			    exceptionWithClass: [self class]
+					 mutex: self];
+
+	[super dealloc];
+}
+@end
+
+@implementation OFRecursiveMutex
+- init
+{
+	self = [super _initWithoutCreatingMutex];
+
+	if (!of_rmutex_new(&rmutex)) {
+		Class c = [self class];
+		[self release];
+		@throw [OFInitializationFailedException exceptionWithClass: c];
+	}
+
+	initialized = YES;
+
+	return self;
+}
+
+- (void)lock
+{
+	if (!of_rmutex_lock(&rmutex))
+		@throw [OFMutexLockFailedException
+		    exceptionWithClass: [self class]
+				 mutex: self];
+}
+
+- (BOOL)tryLock
+{
+	return of_rmutex_trylock(&rmutex);
+}
+
+- (void)unlock
+{
+	if (!of_rmutex_unlock(&rmutex))
+		@throw [OFMutexUnlockFailedException
+		    exceptionWithClass: [self class]
+				 mutex: self];
+}
+
+- (void)dealloc
+{
+	if (initialized)
+		if (!of_rmutex_free(&rmutex))
 			@throw [OFMutexStillLockedException
 			    exceptionWithClass: [self class]
 					 mutex: self];

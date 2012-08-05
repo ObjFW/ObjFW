@@ -286,6 +286,16 @@ typedef id (^of_thread_block_t)(id object);
 @end
 
 /**
+ * \brief A class for creating mutual exclusions which can be entered
+ *	  recursively.
+ */
+@interface OFRecursiveMutex: OFMutex
+{
+	of_rmutex_t rmutex;
+}
+@end
+
+/**
  * \brief A class implementing a condition variable for thread synchronization.
  */
 @interface OFCondition: OFMutex
