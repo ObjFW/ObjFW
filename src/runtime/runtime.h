@@ -220,8 +220,10 @@ object_getClassName(id obj)
 }
 
 static inline BOOL
-class_isMetaClass(Class cls)
+class_isMetaClass(Class cls_)
 {
+	struct objc_class *cls = cls_;
+
 	return (cls->info & OBJC_CLASS_INFO_METACLASS);
 }
 
