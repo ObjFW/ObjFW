@@ -73,6 +73,9 @@ while test ! -z "$1"; do
 			printf "%s %s " "$LDFLAGS_REEXPORT" "$LDFLAGS_RPATH"
 			printf "%s" "$LIBS"
 			;;
+		--arc)
+			printf "%s" "-fobjc-arc -fobjc-arc-exceptions"
+			;;
 		--cflags)
 			printf "%s" "$CFLAGS"
 			;;

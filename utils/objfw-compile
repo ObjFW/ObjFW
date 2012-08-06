@@ -101,6 +101,9 @@ while test x"$1" != "x"; do
 			out_prefix="$($OBJFW_CONFIG --lib-prefix)"
 			out_suffix="$($OBJFW_CONFIG --lib-suffix)"
 			;;
+		--arc)
+			OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --arc)"
+			;;
 		--builddir)
 			shift
 			builddir="$1"
