@@ -44,12 +44,6 @@ init(void)
 }
 #endif
 
-id
-objc_autorelease(id object)
-{
-	return [object autorelease];
-}
-
 void*
 objc_autoreleasePoolPush()
 {

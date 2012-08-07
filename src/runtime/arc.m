@@ -46,6 +46,12 @@ objc_release(id object)
 }
 
 id
+objc_autorelease(id object)
+{
+	return [object autorelease];
+}
+
+id
 objc_autoreleaseReturnValue(id object)
 {
 	return objc_autorelease(object);
