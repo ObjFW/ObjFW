@@ -30,9 +30,7 @@
 # import "OFInitializationFailedException.h"
 #endif
 
-extern id _objc_rootAutorelease(id);
-extern void* objc_autoreleasePoolPush(void);
-extern void objc_autoreleasePoolPop(void*);
+#import "autorelease.h"
 
 #ifdef OF_COMPILER_TLS
 static __thread void *first = NULL;

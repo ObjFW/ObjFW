@@ -62,6 +62,7 @@ SRCS = OFApplication.m			\
        OFXMLNode.m			\
        OFXMLParser.m			\
        OFXMLProcessingInstructions.m	\
+       ${AUTORELEASE_M}			\
        base64.m				\
        of_asprintf.m			\
        of_strptime.m			\
@@ -94,7 +95,6 @@ SRCS += OFArray_adjacent.m		\
 	OFString_UTF8.m			\
 	OFTCPSocket+SOCKS5.m		\
 	${ASPRINTF_M}			\
-	${AUTORELEASE_M}		\
 	${FOUNDATION_COMPAT_M}		\
 	iso_8859_15.m			\
 	windows_1252.m

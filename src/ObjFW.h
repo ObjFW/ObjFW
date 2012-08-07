@@ -139,6 +139,7 @@
 # import "threading.h"
 #endif
 
+#import "autorelease.h"
 #import "asprintf.h"
 #import "base64.h"
 #import "of_asprintf.h"

@@ -26,6 +26,8 @@
 #endif
 #import "macros.h"
 
+#import "autorelease.h"
+
 #ifdef OF_COMPILER_TLS
 static __thread id *objects = NULL;
 static __thread id *top = NULL;
