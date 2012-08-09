@@ -20,9 +20,10 @@
 #import "OFSet_hashtable.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFNotImplementedException.h"
+
+#import "autorelease.h"
 
 static struct {
 	Class isa;
@@ -261,7 +262,7 @@ static struct {
 
 - (uint32_t)hash
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFEnumerator *enumerator = [self objectEnumerator];
 	id object;
 	uint32_t hash = 0;
@@ -269,15 +270,15 @@ static struct {
 	while ((object = [enumerator nextObject]) != nil)
 		hash += [object hash];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return hash;
 }
 
 - (OFString*)description
 {
+	void *pool;
 	OFMutableString *ret;
-	OFAutoreleasePool *pool, *pool2;
 	OFEnumerator *enumerator;
 	size_t i, count = [self count];
 	id object;
@@ -286,19 +287,20 @@ static struct {
 		return @"{()}";
 
 	ret = [OFMutableString stringWithString: @"{(\n"];
-	pool = [[OFAutoreleasePool alloc] init];
+
+	pool = objc_autoreleasePoolPush();
 	enumerator = [self objectEnumerator];
 
 	i = 0;
-	pool2 = [[OFAutoreleasePool alloc] init];
-
 	while ((object = [enumerator nextObject]) != nil) {
+		void *pool2 = objc_autoreleasePoolPush();
+
 		[ret appendString: [object description]];
 
 		if (++i < count)
 			[ret appendString: @",\n"];
 
-		[pool2 releaseObjects];
+		objc_autoreleasePoolPop(pool2);
 	}
 	[ret replaceOccurrencesOfString: @"\n"
 			     withString: @"\n\t"];
@@ -306,7 +308,7 @@ static struct {
 
 	[ret makeImmutable];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return ret;
 }
@@ -323,44 +325,43 @@ static struct {
 
 - (BOOL)isSubsetOfSet: (OFSet*)set
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFEnumerator *enumerator = [self objectEnumerator];
 	id object;
 
 	while ((object = [enumerator nextObject]) != nil) {
 		if (![set containsObject: object]) {
-			[pool release];
+			objc_autoreleasePoolPop(pool);
 			return NO;
 		}
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return YES;
 }
 
 - (BOOL)intersectsSet: (OFSet*)set
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFEnumerator *enumerator = [self objectEnumerator];
 	id object;
 
 	while ((object = [enumerator nextObject]) != nil) {
 		if ([set containsObject: object]) {
-			[pool release];
+			objc_autoreleasePoolPop(pool);
 			return YES;
 		}
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return NO;
 }
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFAutoreleasePool *pool2;
+	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
 	OFEnumerator *enumerator;
 	id <OFSerialization> object;
@@ -374,18 +375,19 @@ static struct {
 
 	enumerator = [self objectEnumerator];
 
-	pool2 = [[OFAutoreleasePool alloc] init];
 	while ((object = [enumerator nextObject]) != nil) {
+		void *pool2 = objc_autoreleasePoolPush();
+
 		[element addChild: [object XMLElementBySerializing]];
 
-		[pool2 releaseObjects];
+		objc_autoreleasePoolPop(pool2);
 	}
 
 	[element retain];
-	[pool release];
-	[element autorelease];
 
-	return element;
+	objc_autoreleasePoolPop(pool);
+
+	return [element autorelease];
 }
 
 #if defined(OF_HAVE_BLOCKS) && defined(OF_HAVE_FAST_ENUMERATION)

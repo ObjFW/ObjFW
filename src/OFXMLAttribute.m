@@ -20,10 +20,10 @@
 #import "OFString.h"
 #import "OFDictionary.h"
 #import "OFXMLElement.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 @implementation OFXMLAttribute
@@ -59,7 +59,7 @@
 	self = [super init];
 
 	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		void *pool = objc_autoreleasePoolPush();
 
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
@@ -74,7 +74,7 @@
 		stringValue = [[[element attributeForName: @"stringValue"]
 		    stringValue] copy];
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -143,7 +143,7 @@
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
 
 	element = [OFXMLElement elementWithName: [self className]
@@ -160,10 +160,10 @@
 			  stringValue: stringValue];
 
 	[element retain];
-	[pool release];
-	[element autorelease];
 
-	return element;
+	objc_autoreleasePoolPop(pool);
+
+	return [element autorelease];
 }
 
 - (OFString*)description

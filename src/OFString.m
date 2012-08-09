@@ -31,7 +31,6 @@
 #import "OFHTTPRequest.h"
 #import "OFDataArray.h"
 #import "OFXMLElement.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFHTTPRequestFailedException.h"
 #import "OFInitializationFailedException.h"
@@ -43,6 +42,7 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 #import "of_asprintf.h"
 #import "unicode.h"
@@ -873,7 +873,7 @@ static struct {
 - initWithContentsOfURL: (OFURL*)URL
 	       encoding: (of_string_encoding_t)encoding
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	OFHTTPRequest *request;
 	OFHTTPRequestResult *result;
 	OFString *contentType;
@@ -882,7 +882,7 @@ static struct {
 	c = [self class];
 	[self release];
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	if ([[URL scheme] isEqual: @"file"]) {
 		if (encoding == OF_STRING_ENCODING_AUTODETECT)
@@ -890,7 +890,7 @@ static struct {
 
 		self = [[c alloc] initWithContentsOfFile: [URL path]
 						encoding: encoding];
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 		return self;
 	}
 
@@ -924,14 +924,14 @@ static struct {
 				 encoding: encoding
 				   length: [[result data] count]];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 	return self;
 }
 
 - initWithSerialization: (OFXMLElement*)element
 {
 	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		void *pool = objc_autoreleasePoolPush();
 
 		if (![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException
@@ -952,7 +952,7 @@ static struct {
 
 		self = [self initWithString: [element stringValue]];
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -1084,7 +1084,7 @@ static struct {
 
 - (BOOL)isEqual: (id)object
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	OFString *otherString;
 	const of_unichar_t *unicodeString, *otherUnicodeString;
 	size_t length;
@@ -1101,18 +1101,18 @@ static struct {
 	if ([otherString length] != length)
 		return NO;
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	unicodeString = [self unicodeString];
 	otherUnicodeString = [otherString unicodeString];
 
 	if (memcmp(unicodeString, otherUnicodeString,
 	    length * sizeof(of_unichar_t))) {
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 		return NO;
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return YES;
 }
@@ -1129,7 +1129,7 @@ static struct {
 
 - (of_comparison_result_t)compare: (id)object
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	OFString *otherString;
 	const of_unichar_t *unicodeString, *otherUnicodeString;
 	size_t i, minimumLength;
@@ -1146,24 +1146,24 @@ static struct {
 	minimumLength = ([self length] > [otherString length]
 	    ? [otherString length] : [self length]);
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	unicodeString = [self unicodeString];
 	otherUnicodeString = [otherString unicodeString];
 
 	for (i = 0; i < minimumLength; i++) {
 		if (unicodeString[i] > otherUnicodeString[i]) {
-			[pool release];
+			objc_autoreleasePoolPop(pool);
 			return OF_ORDERED_DESCENDING;
 		}
 
 		if (unicodeString[i] < otherUnicodeString[i]) {
-			[pool release];
+			objc_autoreleasePoolPop(pool);
 			return OF_ORDERED_ASCENDING;
 		}
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	if ([self length] > [otherString length])
 		return OF_ORDERED_DESCENDING;
@@ -1175,7 +1175,7 @@ static struct {
 
 - (of_comparison_result_t)caseInsensitiveCompare: (OFString*)otherString
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *string, *otherUnicodeString;
 	size_t i, length, otherLength, minimumLength;
 
@@ -1210,16 +1210,16 @@ static struct {
 		}
 
 		if (c > oc) {
-			[pool release];
+			objc_autoreleasePoolPop(pool);
 			return OF_ORDERED_DESCENDING;
 		}
 		if (c < oc) {
-			[pool release];
+			objc_autoreleasePoolPop(pool);
 			return OF_ORDERED_ASCENDING;
 		}
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	if (length > otherLength)
 		return OF_ORDERED_DESCENDING;
@@ -1257,7 +1257,7 @@ static struct {
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
 	OFString *className;
 
@@ -1271,10 +1271,10 @@ static struct {
 				    stringValue: self];
 
 	[element retain];
-	[pool release];
-	[element autorelease];
 
-	return element;
+	objc_autoreleasePoolPop(pool);
+
+	return [element autorelease];
 }
 
 - (OFString*)JSONRepresentation
@@ -1307,7 +1307,7 @@ static struct {
 
 - (size_t)indexOfFirstOccurrenceOfString: (OFString*)string
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	const of_unichar_t *unicodeString, *searchString;
 	size_t i, length, searchLength;
 
@@ -1317,7 +1317,7 @@ static struct {
 	if (searchLength > (length = [self length]))
 		return OF_INVALID_INDEX;
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	unicodeString = [self unicodeString];
 	searchString = [string unicodeString];
@@ -1325,19 +1325,19 @@ static struct {
 	for (i = 0; i <= length - searchLength; i++) {
 		if (!memcmp(unicodeString + i, searchString,
 		    searchLength * sizeof(of_unichar_t))) {
-			[pool release];
+			objc_autoreleasePoolPop(pool);
 			return i;
 		}
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return OF_INVALID_INDEX;
 }
 
 - (size_t)indexOfLastOccurrenceOfString: (OFString*)string
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	const of_unichar_t *unicodeString, *searchString;
 	size_t i, length, searchLength;
 
@@ -1347,7 +1347,7 @@ static struct {
 	if (searchLength > (length = [self length]))
 		return OF_INVALID_INDEX;
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	unicodeString = [self unicodeString];
 	searchString = [string unicodeString];
@@ -1355,7 +1355,7 @@ static struct {
 	for (i = length - searchLength;; i--) {
 		if (!memcmp(unicodeString + i, searchString,
 		    searchLength * sizeof(of_unichar_t))) {
-			[pool release];
+			objc_autoreleasePoolPop(pool);
 			return i;
 		}
 
@@ -1364,14 +1364,14 @@ static struct {
 			break;
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return OF_INVALID_INDEX;
 }
 
 - (BOOL)containsString: (OFString*)string
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	const of_unichar_t *unicodeString, *searchString;
 	size_t i, length, searchLength;
 
@@ -1381,7 +1381,7 @@ static struct {
 	if (searchLength > (length = [self length]))
 		return NO;
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	unicodeString = [self unicodeString];
 	searchString = [string unicodeString];
@@ -1389,30 +1389,30 @@ static struct {
 	for (i = 0; i <= length - searchLength; i++) {
 		if (!memcmp(unicodeString + i, searchString,
 		    searchLength * sizeof(of_unichar_t))) {
-			[pool release];
+			objc_autoreleasePoolPop(pool);
 			return YES;
 		}
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return NO;
 }
 
 - (OFString*)substringWithRange: (of_range_t)range
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	OFString *ret;
 
 	if (range.start + range.length > [self length])
 		@throw [OFOutOfRangeException
 		    exceptionWithClass: [self class]];
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 	ret = [[OFString alloc]
 	    initWithUnicodeString: [self unicodeString] + range.start
 			   length: range.length];
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return [ret autorelease];
 }
@@ -1552,18 +1552,16 @@ static struct {
 	tmp = [self allocMemoryWithSize: sizeof(of_unichar_t)
 				  count: prefixLength];
 	@try {
-		OFAutoreleasePool *pool;
+		void *pool = objc_autoreleasePoolPush();
 
 		[self getCharacters: tmp
 			    inRange: of_range(0, prefixLength)];
-
-		pool = [[OFAutoreleasePool alloc] init];
 
 		prefixString = [prefix unicodeString];
 		compare = memcmp(tmp, prefixString,
 		    prefixLength * sizeof(of_unichar_t));
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @finally {
 		[self freeMemory: tmp];
 	}
@@ -1586,19 +1584,17 @@ static struct {
 	tmp = [self allocMemoryWithSize: sizeof(of_unichar_t)
 				  count: suffixLength];
 	@try {
-		OFAutoreleasePool *pool;
+		void *pool = objc_autoreleasePoolPush();
 
 		[self getCharacters: tmp
 			    inRange: of_range(length - suffixLength,
 					 suffixLength)];
 
-		pool = [[OFAutoreleasePool alloc] init];
-
 		suffixString = [suffix unicodeString];
 		compare = memcmp(tmp, suffixString,
 		    suffixLength * sizeof(of_unichar_t));
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @finally {
 		[self freeMemory: tmp];
 	}
@@ -1615,7 +1611,7 @@ static struct {
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter
 			      skipEmpty: (BOOL)skipEmpty
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	OFMutableArray *array = [OFMutableArray array];
 	const of_unichar_t *string, *delimiterString;
 	size_t length = [self length];
@@ -1623,7 +1619,7 @@ static struct {
 	size_t i, last;
 	OFString *component;
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	string = [self unicodeString];
 	delimiterString = [delimiter unicodeString];
@@ -1632,7 +1628,7 @@ static struct {
 		[array addObject: [[self copy] autorelease]];
 		[array makeImmutable];
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 
 		return array;
 	}
@@ -1655,7 +1651,7 @@ static struct {
 
 	[array makeImmutable];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return array;
 }
@@ -1663,7 +1659,7 @@ static struct {
 - (OFArray*)pathComponents
 {
 	OFMutableArray *ret;
-	OFAutoreleasePool *pool;
+	void *pool;
 	const of_unichar_t *string;
 	size_t i, last = 0, length = [self length];
 
@@ -1672,7 +1668,7 @@ static struct {
 	if (length == 0)
 		return ret;
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	string = [self unicodeString];
 
@@ -1700,14 +1696,14 @@ static struct {
 
 	[ret makeImmutable];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return ret;
 }
 
 - (OFString*)lastPathComponent
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	const of_unichar_t *string;
 	size_t length = [self length];
 	ssize_t i;
@@ -1715,7 +1711,7 @@ static struct {
 	if (length == 0)
 		return @"";
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	string = [self unicodeString];
 
@@ -1737,7 +1733,7 @@ static struct {
 		}
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	/*
 	 * Only one component, but the trailing delimiter might have been
@@ -1751,14 +1747,14 @@ static struct {
 
 - (OFString*)stringByDeletingLastPathComponent
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	const of_unichar_t *string;
 	size_t i, length = [self length];
 
 	if (length == 0)
 		return @"";
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	string = [self unicodeString];
 
@@ -1770,7 +1766,7 @@ static struct {
 		length--;
 
 	if (length == 0) {
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 		return [self substringWithRange: of_range(0, 1)];
 	}
 
@@ -1780,7 +1776,7 @@ static struct {
 #else
 		if (string[i] == '/' || string[i] == '\\') {
 #endif
-			[pool release];
+			objc_autoreleasePoolPop(pool);
 			return [self substringWithRange: of_range(0, i)];
 		}
 	}
@@ -1790,18 +1786,18 @@ static struct {
 #else
 	if (string[0] == '/' || string[0] == '\\') {
 #endif
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 		return [self substringWithRange: of_range(0, 1)];
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return @".";
 }
 
 - (intmax_t)decimalValue
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *string = [self unicodeString];
 	size_t length = [self length];
 	int i = 0;
@@ -1815,7 +1811,7 @@ static struct {
 	}
 
 	if (length == 0) {
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 		return 0;
 	}
 
@@ -1851,14 +1847,14 @@ static struct {
 	if (string[0] == '-')
 		value *= -1;
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return value;
 }
 
 - (uintmax_t)hexadecimalValue
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *string = [self unicodeString];
 	size_t length = [self length];
 	int i = 0;
@@ -1872,7 +1868,7 @@ static struct {
 	}
 
 	if (length == 0) {
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 		return 0;
 	}
 
@@ -1922,14 +1918,14 @@ static struct {
 		@throw [OFInvalidFormatException
 		    exceptionWithClass: [self class]];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return value;
 }
 
 - (float)floatValue
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	const char *cString = [self UTF8String];
 	char *endPointer = NULL;
 	float value;
@@ -1949,14 +1945,14 @@ static struct {
 				@throw [OFInvalidFormatException
 				    exceptionWithClass: [self class]];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return value;
 }
 
 - (double)doubleValue
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	const char *cString = [self UTF8String];
 	char *endPointer = NULL;
 	double value;
@@ -1976,7 +1972,7 @@ static struct {
 				@throw [OFInvalidFormatException
 				    exceptionWithClass: [self class]];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return value;
 }
@@ -1999,7 +1995,7 @@ static struct {
 - (const uint16_t*)UTF16String
 {
 	OFObject *object = [[[OFObject alloc] init] autorelease];
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *unicodeString = [self unicodeString];
 	size_t length = [self length];
 	uint16_t *ret;
@@ -2036,32 +2032,30 @@ static struct {
 		/* We don't care, as we only tried to make it smaller */
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return ret;
 }
 
 - (void)writeToFile: (OFString*)path
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFFile *file;
 
 	file = [OFFile fileWithPath: path
 			       mode: @"wb"];
 	[file writeString: self];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateLinesUsingBlock: (of_string_line_enumeration_block_t)block
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init], *pool2;
+	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *string = [self unicodeString];
 	size_t i, last = 0, length = [self length];
 	BOOL stop = NO, lastCarriageReturn = NO;
-
-	pool2 = [[OFAutoreleasePool alloc] init];
 
 	for (i = 0; i < length && !stop; i++) {
 		if (lastCarriageReturn && string[i] == '\n') {
@@ -2072,11 +2066,13 @@ static struct {
 		}
 
 		if (string[i] == '\n' || string[i] == '\r') {
+			void *pool2 = objc_autoreleasePoolPush();
+
 			block([self substringWithRange:
 			    of_range(last, i - last)], &stop);
 			last = i + 1;
 
-			[pool2 releaseObjects];
+			objc_autoreleasePoolPop(pool2);
 		}
 
 		lastCarriageReturn = (string[i] == '\r');
@@ -2086,7 +2082,7 @@ static struct {
 		block([self substringWithRange: of_range(last, i - last)],
 		    &stop);
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 #endif
 @end

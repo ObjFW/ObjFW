@@ -32,7 +32,6 @@
 # import "OFTCPSocket.h"
 #endif
 #import "OFThread.h"
-#import "OFAutoreleasePool.h"
 
 #ifdef HAVE_KQUEUE
 # import "OFStreamObserver_kqueue.h"
@@ -48,6 +47,7 @@
 #import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 enum {
@@ -378,23 +378,21 @@ enum {
 
 - (BOOL)_processCache
 {
-	OFAutoreleasePool *pool;
 	OFStream **objects = [readStreams objects];
 	size_t i, count = [readStreams count];
 	BOOL foundInCache = NO;
 
-	pool = [[OFAutoreleasePool alloc] init];
 
 	for (i = 0; i < count; i++) {
+
 		if ([objects[i] pendingBytes] > 0 &&
 		    ![objects[i] _isWaitingForDelimiter]) {
+			void *pool = objc_autoreleasePoolPush();
 			[delegate streamIsReadyForReading: objects[i]];
 			foundInCache = YES;
-			[pool releaseObjects];
+			objc_autoreleasePoolPop(pool);
 		}
 	}
-
-	[pool release];
 
 	/*
 	 * As long as we have data in the cache for any stream, we don't want

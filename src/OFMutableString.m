@@ -24,13 +24,13 @@
 
 #import "OFString.h"
 #import "OFMutableString_UTF8.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 #import "of_asprintf.h"
@@ -260,7 +260,7 @@ static struct {
 		wordStartTableSize: (size_t)startTableSize
 	       wordMiddleTableSize: (size_t)middleTableSize
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *string = [self unicodeString];
 	size_t i, length = [self length];
 	BOOL isStart = YES;
@@ -295,7 +295,7 @@ static struct {
 		}
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)setCharacter: (of_unichar_t)character
@@ -307,46 +307,46 @@ static struct {
 
 - (void)appendUTF8String: (const char*)UTF8String
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 
 	[self appendString: [OFString stringWithUTF8String: UTF8String]];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)appendUTF8String: (const char*)UTF8String
 	      withLength: (size_t)UTF8StringLength
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 
 	[self appendString: [OFString stringWithUTF8String: UTF8String
 						    length: UTF8StringLength]];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)appendCString: (const char*)cString
 	 withEncoding: (of_string_encoding_t)encoding
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 
 	[self appendString: [OFString stringWithCString: cString
 					       encoding: encoding]];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)appendCString: (const char*)cString
 	 withEncoding: (of_string_encoding_t)encoding
 	       length: (size_t)cStringLength
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 
 	[self appendString: [OFString stringWithCString: cString
 					       encoding: encoding
 						 length: cStringLength]];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)appendString: (OFString*)string
@@ -465,7 +465,7 @@ static struct {
 			withString: (OFString*)replacement
 			   inRange: (of_range_t)range
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init], *pool2;
+	void *pool = objc_autoreleasePoolPush(), *pool2;
 	const of_unichar_t *unicodeString;
 	const of_unichar_t *searchString = [string unicodeString];
 	size_t searchLength = [string length];
@@ -476,11 +476,11 @@ static struct {
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	if (searchLength > range.length) {
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 		return;
 	}
 
-	pool2 = [[OFAutoreleasePool alloc] init];
+	pool2 = objc_autoreleasePoolPush();
 	unicodeString = [self unicodeString];
 
 	for (i = range.start; i <= range.length - searchLength; i++) {
@@ -496,12 +496,13 @@ static struct {
 
 		i += replacementLength - 1;
 
-		[pool2 releaseObjects];
+		objc_autoreleasePoolPop(pool2);
+		pool2 = objc_autoreleasePoolPush();
 
 		unicodeString = [self unicodeString];
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)deleteLeadingWhitespaces

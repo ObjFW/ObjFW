@@ -24,8 +24,8 @@
 #import "OFStreamObserver_select.h"
 #import "OFStream.h"
 #import "OFArray.h"
-#import "OFAutoreleasePool.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 @implementation OFStreamObserver_select
@@ -71,7 +71,7 @@
 
 - (BOOL)observeWithTimeout: (int)timeout
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFStream **objects;
 	fd_set readFDs_;
 	fd_set writeFDs_;
@@ -82,9 +82,11 @@
 	[self _processQueue];
 
 	if ([self _processCache]) {
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 		return YES;
 	}
+
+	objc_autoreleasePoolPop(pool);
 
 #ifdef FD_COPY
 	FD_COPY(&readFDs, &readFDs_);
@@ -100,10 +102,8 @@
 	time.tv_usec = (timeout % 1000) * 1000;
 
 	if (select((int)maxFD + 1, &readFDs_, &writeFDs_, &exceptFDs_,
-	    (timeout != -1 ? &time : NULL)) < 1) {
-		[pool release];
+	    (timeout != -1 ? &time : NULL)) < 1)
 		return NO;
-	}
 
 	if (FD_ISSET(cancelFD[0], &readFDs_)) {
 		char buffer;
@@ -120,14 +120,13 @@
 	for (i = 0; i < count; i++) {
 		int fileDescriptor = [objects[i] fileDescriptor];
 
-		if (FD_ISSET(fileDescriptor, &readFDs_)) {
+		pool = objc_autoreleasePoolPush();
+
+		if (FD_ISSET(fileDescriptor, &readFDs_))
 			[delegate streamIsReadyForReading: objects[i]];
-			[pool releaseObjects];
-		}
 
 		if (FD_ISSET(fileDescriptor, &exceptFDs_)) {
 			[delegate streamDidReceiveException: objects[i]];
-			[pool releaseObjects];
 
 			/*
 			 * Prevent calling it twice in case the FD is in both
@@ -135,6 +134,8 @@
 			 */
 			FD_CLR(fileDescriptor, &exceptFDs_);
 		}
+
+		objc_autoreleasePoolPop(pool);
 	}
 
 	objects = [writeStreams objects];
@@ -143,18 +144,16 @@
 	for (i = 0; i < count; i++) {
 		int fileDescriptor = [objects[i] fileDescriptor];
 
-		if (FD_ISSET(fileDescriptor, &writeFDs_)) {
+		pool = objc_autoreleasePoolPush();
+
+		if (FD_ISSET(fileDescriptor, &writeFDs_))
 			[delegate streamIsReadyForWriting: objects[i]];
-			[pool releaseObjects];
-		}
 
-		if (FD_ISSET(fileDescriptor, &exceptFDs_)) {
+		if (FD_ISSET(fileDescriptor, &exceptFDs_))
 			[delegate streamDidReceiveException: objects[i]];
-			[pool releaseObjects];
-		}
-	}
 
-	[pool release];
+		objc_autoreleasePoolPop(pool);
+	}
 
 	return YES;
 }

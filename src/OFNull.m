@@ -19,10 +19,11 @@
 #import "OFNull.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
+
+#import "autorelease.h"
 
 static OFNull *null = nil;
 
@@ -39,11 +40,11 @@ static OFNull *null = nil;
 
 - initWithSerialization: (OFXMLElement*)element
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 
 	[self release];
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	if (![[element name] isEqual: [self className]] ||
 	    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
@@ -51,7 +52,7 @@ static OFNull *null = nil;
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return [OFNull null];
 }
@@ -68,17 +69,17 @@ static OFNull *null = nil;
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
 
 	element = [OFXMLElement elementWithName: [self className]
 				      namespace: OF_SERIALIZATION_NS];
 
 	[element retain];
-	[pool release];
-	[element autorelease];
 
-	return element;
+	objc_autoreleasePoolPop(pool);
+
+	return [element autorelease];
 }
 
 - (OFString*)JSONRepresentation

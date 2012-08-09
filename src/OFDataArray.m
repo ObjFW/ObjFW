@@ -26,7 +26,6 @@
 #import "OFURL.h"
 #import "OFHTTPRequest.h"
 #import "OFXMLElement.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -35,6 +34,7 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
+#import "autorelease.h"
 #import "base64.h"
 #import "macros.h"
 
@@ -131,7 +131,7 @@ void _references_to_categories_of_OFDataArray(void)
 
 - initWithContentsOfURL: (OFURL*)URL
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	OFHTTPRequest *request;
 	OFHTTPRequestResult *result;
 	Class c;
@@ -139,11 +139,11 @@ void _references_to_categories_of_OFDataArray(void)
 	c = [self class];
 	[self release];
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	if ([[URL scheme] isEqual: @"file"]) {
 		self = [[c alloc] initWithContentsOfFile: [URL path]];
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 		return self;
 	}
 
@@ -157,7 +157,7 @@ void _references_to_categories_of_OFDataArray(void)
 				result: result];
 
 	self = [[result data] retain];
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 	return self;
 }
 
@@ -185,7 +185,7 @@ void _references_to_categories_of_OFDataArray(void)
 	itemSize = 1;
 
 	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		void *pool = objc_autoreleasePoolPush();
 		OFString *stringValue;
 
 		if (![[element name] isEqual: [self className]] ||
@@ -203,7 +203,7 @@ void _references_to_categories_of_OFDataArray(void)
 			@throw [OFInvalidEncodingException
 			    exceptionWithClass: [self class]];
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -448,7 +448,7 @@ void _references_to_categories_of_OFDataArray(void)
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	OFXMLElement *element;
 
 	if (itemSize != 1)
@@ -456,17 +456,17 @@ void _references_to_categories_of_OFDataArray(void)
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 	element = [OFXMLElement
 	    elementWithName: [self className]
 		  namespace: OF_SERIALIZATION_NS
 		stringValue: of_base64_encode(data, count * itemSize)];
 
 	[element retain];
-	[pool release];
-	[element autorelease];
 
-	return element;
+	objc_autoreleasePoolPop(pool);
+
+	return [element autorelease];
 }
 @end
 

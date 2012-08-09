@@ -29,7 +29,6 @@
 #import "OFString.h"
 #import "OFDictionary.h"
 #import "OFXMLElement.h"
-#import "OFAutoreleasePool.h"
 #ifdef OF_THREADS
 # import "OFThread.h"
 #endif
@@ -39,6 +38,7 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 #import "of_strptime.h"
 
@@ -322,7 +322,7 @@ static int month_to_day_of_year[12] = {
 	self = [super init];
 
 	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		void *pool = objc_autoreleasePoolPush();
 		union {
 			double d;
 			uint64_t u;
@@ -337,7 +337,7 @@ static int month_to_day_of_year[12] = {
 		d.u = (uint64_t)[element hexadecimalValue];
 		seconds = of_bswap_double_if_le(d.d);
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -413,7 +413,7 @@ static int month_to_day_of_year[12] = {
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
 	union {
 		double d;
@@ -428,10 +428,10 @@ static int month_to_day_of_year[12] = {
 	    [OFString stringWithFormat: @"%016" PRIx64, d.u]];
 
 	[element retain];
-	[pool release];
-	[element autorelease];
 
-	return element;
+	objc_autoreleasePoolPop(pool);
+
+	return [element autorelease];
 }
 
 - (uint32_t)microsecond

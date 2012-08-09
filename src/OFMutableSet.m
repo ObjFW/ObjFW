@@ -20,9 +20,10 @@
 
 #import "OFMutableSet.h"
 #import "OFMutableSet_hashtable.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFNotImplementedException.h"
+
+#import "autorelease.h"
 
 static struct {
 	Class isa;
@@ -144,19 +145,19 @@ static struct {
 
 - (void)minusSet: (OFSet*)set
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFEnumerator *enumerator = [set objectEnumerator];
 	id object;
 
 	while ((object = [enumerator nextObject]) != nil)
 		[self removeObject: object];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)intersectSet: (OFSet*)set
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	size_t count = [self count];
 	id *cArray;
 
@@ -180,19 +181,19 @@ static struct {
 		[self freeMemory: cArray];
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)unionSet: (OFSet*)set
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFEnumerator *enumerator = [set objectEnumerator];
 	id object;
 
 	while ((object = [enumerator nextObject]) != nil)
 		[self addObject: object];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)makeImmutable

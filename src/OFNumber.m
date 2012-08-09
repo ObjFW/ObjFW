@@ -22,12 +22,12 @@
 #import "OFString.h"
 #import "OFXMLElement.h"
 #import "OFXMLAttribute.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 #define RETURN_AS(t)							\
@@ -719,7 +719,7 @@
 	self = [super init];
 
 	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		void *pool = objc_autoreleasePoolPush();
 		OFString *typeString;
 
 		if (![[element name] isEqual: [self className]] ||
@@ -776,7 +776,7 @@
 			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -1211,7 +1211,7 @@
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
 
 	element = [OFXMLElement elementWithName: [self className]
@@ -1286,10 +1286,10 @@
 	}
 
 	[element retain];
-	[pool release];
-	[element autorelease];
 
-	return element;
+	objc_autoreleasePoolPop(pool);
+
+	return [element autorelease];
 }
 
 - (OFString*)JSONRepresentation

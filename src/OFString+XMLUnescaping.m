@@ -19,10 +19,10 @@
 #include <string.h>
 
 #import "OFString.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFInvalidEncodingException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 int _OFString_XMLUnescaping_reference;
@@ -131,10 +131,10 @@ parse_numeric_entity(const char *entity, size_t length)
 				      withEncoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
 			else if (entity[0] == '#') {
-				OFAutoreleasePool *pool;
+				void *pool;
 				OFString *tmp;
 
-				pool = [[OFAutoreleasePool alloc] init];
+				pool = objc_autoreleasePoolPush();
 				tmp = parse_numeric_entity(entity,
 				    entityLength);
 
@@ -143,12 +143,12 @@ parse_numeric_entity(const char *entity, size_t length)
 					    exceptionWithClass: [self class]];
 
 				[ret appendString: tmp];
-				[pool release];
+				objc_autoreleasePoolPop(pool);
 			} else if (delegate != nil) {
-				OFAutoreleasePool *pool;
+				void *pool;
 				OFString *n, *tmp;
 
-				pool = [[OFAutoreleasePool alloc] init];
+				pool = objc_autoreleasePoolPush();
 
 				n = [OFString
 				    stringWithUTF8String: entity
@@ -161,7 +161,7 @@ parse_numeric_entity(const char *entity, size_t length)
 					    exceptionWithClass: [self class]];
 
 				[ret appendString: tmp];
-				[pool release];
+				objc_autoreleasePoolPop(pool);
 			} else
 				@throw [OFInvalidEncodingException
 				    exceptionWithClass: [self class]];
@@ -234,10 +234,10 @@ parse_numeric_entity(const char *entity, size_t length)
 				      withEncoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
 			else if (entity[0] == '#') {
-				OFAutoreleasePool *pool;
+				void *pool;
 				OFString *tmp;
 
-				pool = [[OFAutoreleasePool alloc] init];
+				pool = objc_autoreleasePoolPush();
 				tmp = parse_numeric_entity(entity,
 				    entityLength);
 
@@ -246,12 +246,12 @@ parse_numeric_entity(const char *entity, size_t length)
 					    exceptionWithClass: [self class]];
 
 				[ret appendString: tmp];
-				[pool release];
+				objc_autoreleasePoolPop(pool);
 			} else {
-				OFAutoreleasePool *pool;
+				void *pool;
 				OFString *entityString, *tmp;
 
-				pool = [[OFAutoreleasePool alloc] init];
+				pool = objc_autoreleasePoolPush();
 
 				entityString = [OFString
 				    stringWithUTF8String: entity
@@ -263,7 +263,7 @@ parse_numeric_entity(const char *entity, size_t length)
 					    exceptionWithClass: [self class]];
 
 				[ret appendString: tmp];
-				[pool release];
+				objc_autoreleasePoolPop(pool);
 			}
 
 			last = i + 1;

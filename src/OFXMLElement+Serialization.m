@@ -20,11 +20,11 @@
 #import "OFXMLElement+Serialization.h"
 #import "OFSerialization.h"
 #import "OFString.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 int _OFXMLElement_Serialization_reference;
@@ -32,11 +32,9 @@ int _OFXMLElement_Serialization_reference;
 @implementation OFXMLElement (Serialization)
 - (id)objectByDeserializing
 {
-	OFAutoreleasePool *pool;
+	void *pool = objc_autoreleasePoolPush();
 	Class class;
 	id object;
-
-	pool = [[OFAutoreleasePool alloc] init];
 
 	if ((class = objc_lookUpClass([name cStringWithEncoding:
 	    OF_STRING_ENCODING_ASCII])) == Nil)
@@ -49,7 +47,7 @@ int _OFXMLElement_Serialization_reference;
 
 	object = [[class alloc] initWithSerialization: self];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return [object autorelease];
 }

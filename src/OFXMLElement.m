@@ -29,7 +29,6 @@
 #import "OFXMLCDATA.h"
 #import "OFXMLParser.h"
 #import "OFXMLElementBuilder.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -37,6 +36,7 @@
 #import "OFNotImplementedException.h"
 #import "OFUnboundNamespaceException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 /* References for static linking */
@@ -210,7 +210,7 @@ static Class CDATAClass = Nil;
 
 - initWithXMLString: (OFString*)string
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	OFXMLParser *parser;
 	OFXMLElementBuilder *builder;
 	OFXMLElement_OFXMLElementBuilderDelegate *delegate;
@@ -223,7 +223,7 @@ static Class CDATAClass = Nil;
 		@throw [OFInvalidArgumentException exceptionWithClass: c
 							     selector: _cmd];
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	parser = [OFXMLParser parser];
 	builder = [OFXMLElementBuilder elementBuilder];
@@ -241,14 +241,14 @@ static Class CDATAClass = Nil;
 
 	self = [delegate->element retain];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
 
 - initWithFile: (OFString*)path
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	OFXMLParser *parser;
 	OFXMLElementBuilder *builder;
 	OFXMLElement_OFXMLElementBuilderDelegate *delegate;
@@ -257,7 +257,7 @@ static Class CDATAClass = Nil;
 	c = [self class];
 	[self release];
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	parser = [OFXMLParser parser];
 	builder = [OFXMLElementBuilder elementBuilder];
@@ -275,7 +275,7 @@ static Class CDATAClass = Nil;
 
 	self = [delegate->element retain];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
@@ -285,7 +285,7 @@ static Class CDATAClass = Nil;
 	self = [super init];
 
 	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		void *pool = objc_autoreleasePoolPush();
 		OFXMLElement *attributesElement, *namespacesElement;
 		OFXMLElement *childrenElement;
 		OFEnumerator *keyEnumerator, *objectEnumerator;
@@ -371,7 +371,7 @@ static Class CDATAClass = Nil;
 			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -422,17 +422,16 @@ static Class CDATAClass = Nil;
 
 - (void)setStringValue: (OFString*)stringValue
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 
 	[self setChildren: [OFArray arrayWithObject:
 	    [OFXMLCharacters charactersWithString: stringValue]]];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (OFString*)stringValue
 {
-	OFAutoreleasePool *pool;
 	OFMutableString *ret;
 	OFXMLElement **objects;
 	size_t i, count = [children count];
@@ -442,16 +441,16 @@ static Class CDATAClass = Nil;
 
 	ret = [OFMutableString string];
 	objects = [children objects];
-	pool = [[OFAutoreleasePool alloc] init];
 
 	for (i = 0; i < count; i++) {
+		void *pool = objc_autoreleasePoolPush();
+
 		[ret appendString: [objects[i] stringValue]];
-		[pool releaseObjects];
+
+		objc_autoreleasePoolPop(pool);
 	}
 
 	[ret makeImmutable];
-
-	[pool release];
 
 	return ret;
 }
@@ -461,7 +460,7 @@ static Class CDATAClass = Nil;
 		      indentation: (unsigned int)indentation
 			    level: (unsigned int)level
 {
-	OFAutoreleasePool *pool, *pool2;
+	void *pool;
 	char *cString;
 	size_t length, i, j, attributesCount;
 	OFString *prefix, *parentPrefix;
@@ -469,7 +468,7 @@ static Class CDATAClass = Nil;
 	OFString *ret;
 	OFString *defaultNS;
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	parentPrefix = [allNamespaces objectForKey:
 	    (parent != nil && parent->ns != nil ? parent->ns : (OFString*)@"")];
@@ -554,8 +553,8 @@ static Class CDATAClass = Nil;
 	attributesObjects = [attributes objects];
 	attributesCount = [attributes count];
 
-	pool2 = [[OFAutoreleasePool alloc] init];
 	for (j = 0; j < attributesCount; j++) {
+		void *pool2 = objc_autoreleasePoolPush();
 		OFString *attributeName = [attributesObjects[j] name];
 		OFString *attributePrefix = nil;
 		OFString *tmp =
@@ -598,7 +597,7 @@ static Class CDATAClass = Nil;
 		i += [tmp UTF8StringLength];
 		cString[i++] = '\'';
 
-		[pool2 releaseObjects];
+		objc_autoreleasePoolPop(pool2);
 	}
 
 	/* Childen */
@@ -693,7 +692,7 @@ static Class CDATAClass = Nil;
 	cString[i++] = '>';
 	assert(i == length);
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	@try {
 		ret = [OFString stringWithUTF8String: cString
@@ -731,7 +730,7 @@ static Class CDATAClass = Nil;
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
 
 	element = [OFXMLElement elementWithName: [self className]
@@ -791,10 +790,10 @@ static Class CDATAClass = Nil;
 	}
 
 	[element retain];
-	[pool release];
-	[element autorelease];
 
-	return element;
+	objc_autoreleasePoolPop(pool);
+
+	return [element autorelease];
 }
 
 - (void)addAttribute: (OFXMLAttribute*)attribute
@@ -819,13 +818,13 @@ static Class CDATAClass = Nil;
 		   namespace: (OFString*)ns_
 		 stringValue: (OFString*)stringValue
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 
 	[self addAttribute: [OFXMLAttribute attributeWithName: name_
 						    namespace: ns_
 						  stringValue: stringValue]];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (OFXMLAttribute*)attributeForName: (OFString*)attributeName

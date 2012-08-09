@@ -22,11 +22,11 @@
 #import "OFString.h"
 #import "OFXMLElement.h"
 #import "OFArray.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 @implementation OFList
@@ -40,8 +40,7 @@
 	self = [self init];
 
 	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-		OFAutoreleasePool *pool2;
+		void *pool = objc_autoreleasePoolPush();
 		OFEnumerator *enumerator;
 		OFXMLElement *child;
 
@@ -53,15 +52,15 @@
 
 		enumerator = [[element elementsForNamespace:
 		    OF_SERIALIZATION_NS] objectEnumerator];
-		pool2 = [[OFAutoreleasePool alloc] init];
-
 		while ((child = [enumerator nextObject]) != nil) {
+			void *pool2 = objc_autoreleasePoolPush();
+
 			[self appendObject: [child objectByDeserializing]];
 
-			[pool2 releaseObjects];
+			objc_autoreleasePoolPop(pool2);
 		}
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -329,22 +328,22 @@
 - (OFString*)description
 {
 	OFMutableString *ret;
-	OFAutoreleasePool *pool;
 	of_list_object_t *iter;
 
 	if (count == 0)
 		return @"[]";
 
 	ret = [OFMutableString stringWithString: @"[\n"];
-	pool = [[OFAutoreleasePool alloc] init];
 
 	for (iter = firstListObject; iter != NULL; iter = iter->next) {
+		void *pool = objc_autoreleasePoolPush();
+
 		[ret appendString: [iter->object description]];
 
 		if (iter->next != NULL)
 			[ret appendString: @",\n"];
 
-		[pool releaseObjects];
+		objc_autoreleasePoolPop(pool);
 	}
 	[ret replaceOccurrencesOfString: @"\n"
 			     withString: @"\n\t"];
@@ -352,32 +351,24 @@
 
 	[ret makeImmutable];
 
-	[pool release];
-
 	return ret;
 }
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFAutoreleasePool *pool2;
 	OFXMLElement *element;
 	of_list_object_t *iter;
 
 	element = [OFXMLElement elementWithName: [self className]
 				      namespace: OF_SERIALIZATION_NS];
 
-	pool2 = [[OFAutoreleasePool alloc] init];
-
 	for (iter = firstListObject; iter != NULL; iter = iter->next) {
+		void *pool = objc_autoreleasePoolPush();
+
 		[element addChild: [iter->object XMLElementBySerializing]];
 
-		[pool2 releaseObjects];
+		objc_autoreleasePoolPop(pool);
 	}
-
-	[element retain];
-	[pool release];
-	[element autorelease];
 
 	return element;
 }

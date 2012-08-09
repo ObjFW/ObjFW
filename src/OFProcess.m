@@ -26,7 +26,6 @@
 #import "OFProcess.h"
 #import "OFString.h"
 #import "OFArray.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFReadFailedException.h"
@@ -35,6 +34,8 @@
 #ifdef _WIN32
 # include <windows.h>
 #endif
+
+#import "autorelease.h"
 
 @implementation OFProcess
 + processWithProgram: (OFString*)program
@@ -125,7 +126,7 @@
 		SECURITY_ATTRIBUTES sa;
 		PROCESS_INFORMATION pi;
 		STARTUPINFO si;
-		OFAutoreleasePool *pool;
+		void *pool;
 		OFMutableString *argumentsString;
 		OFEnumerator *enumerator;
 		OFString *argument;
@@ -160,7 +161,7 @@
 		si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
 		si.dwFlags |= STARTF_USESTDHANDLES;
 
-		pool = [[OFAutoreleasePool alloc] init];
+		pool = objc_autoreleasePoolPush();
 
 		argumentsString =
 		    [OFMutableString stringWithString: programName];
@@ -208,7 +209,7 @@
 			free(argumentsString);
 		}
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 
 		CloseHandle(pi.hProcess);
 		CloseHandle(pi.hThread);

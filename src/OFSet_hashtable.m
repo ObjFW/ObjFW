@@ -26,9 +26,10 @@
 #import "OFString.h"
 #import "OFNumber.h"
 #import "OFXMLElement.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"
+
+#import "autorelease.h"
 
 @implementation OFSet_hashtable
 - init
@@ -50,7 +51,7 @@
 	self = [self init];
 
 	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		void *pool = objc_autoreleasePoolPush();
 		OFNumber *one = [OFNumber numberWithSize: 1];
 		OFEnumerator *enumerator = [set objectEnumerator];
 		id object;
@@ -64,7 +65,7 @@
 					forKey: object
 				       copyKey: NO];
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -78,7 +79,7 @@
 	self = [self init];
 
 	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		void *pool = objc_autoreleasePoolPush();
 		OFNumber *one = [OFNumber numberWithSize: 1];
 		id *objects = [array objects];
 		size_t i, count = [array count];
@@ -88,7 +89,7 @@
 					forKey: objects[i]
 				       copyKey: NO];
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -103,7 +104,7 @@
 	self = [self init];
 
 	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		void *pool = objc_autoreleasePoolPush();
 		OFNumber *one = [OFNumber numberWithSize: 1];
 		size_t i;
 
@@ -112,7 +113,7 @@
 					forKey: objects[i]
 				       copyKey: NO];
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -127,7 +128,7 @@
 	self = [self init];
 
 	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		void *pool = objc_autoreleasePoolPush();
 		OFNumber *one = [OFNumber numberWithSize: 1];
 		id object;
 
@@ -140,7 +141,7 @@
 					forKey: object
 				       copyKey: NO];
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -154,12 +155,10 @@
 	self = [self init];
 
 	@try {
-		OFAutoreleasePool *pool, *pool2;
+		void *pool = objc_autoreleasePoolPush();
 		OFNumber *one;
 		OFEnumerator *enumerator;
 		OFXMLElement *child;
-
-		pool = [[OFAutoreleasePool alloc] init];
 
 		if ((![[element name] isEqual: @"OFSet"] &&
 		    ![[element name] isEqual: @"OFMutableSet"]) ||
@@ -172,17 +171,17 @@
 
 		enumerator = [[element elementsForNamespace:
 		    OF_SERIALIZATION_NS] objectEnumerator];
-		pool2 = [[OFAutoreleasePool alloc] init];
-
 		while ((child = [enumerator nextObject]) != nil) {
+			void *pool2  = objc_autoreleasePoolPush();
+
 			[dictionary _setObject: one
 					forKey: [child objectByDeserializing]
 				       copyKey: NO];
 
-			[pool2 releaseObjects];
+			objc_autoreleasePoolPop(pool2);
 		}
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;

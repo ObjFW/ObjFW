@@ -23,13 +23,13 @@
 #import "OFArray_adjacent.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 static struct {
@@ -360,7 +360,7 @@ static struct {
 - (OFString*)componentsJoinedByString: (OFString*)separator
 			usingSelector: (SEL)selector
 {
-	OFAutoreleasePool *pool, *pool2;
+	void *pool;
 	OFMutableString *ret;
 	id *objects;
 	size_t i, count = [self count];
@@ -374,24 +374,24 @@ static struct {
 	ret = [OFMutableString string];
 	append = [ret methodForSelector: @selector(appendString:)];
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 	objects = [self objects];
 
-	pool2 = [[OFAutoreleasePool alloc] init];
-
 	for (i = 0; i < count - 1; i++) {
+		void *pool2 = objc_autoreleasePoolPush();
+
 		append(ret, @selector(appendString:),
 		    [objects[i] performSelector: selector]);
 		append(ret, @selector(appendString:), separator);
 
-		[pool2 releaseObjects];
+		objc_autoreleasePoolPop(pool2);
 	}
 	append(ret, @selector(appendString:),
 	    [objects[i] performSelector: selector]);
 
 	[ret makeImmutable];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return ret;
 }
@@ -444,13 +444,13 @@ static struct {
 
 - (OFString*)description
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	OFMutableString *ret;
 
 	if ([self count] == 0)
 		return @"()";
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 	ret = [[self componentsJoinedByString: @",\n"] mutableCopy];
 
 	@try {
@@ -463,18 +463,16 @@ static struct {
 		@throw e;
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	[ret makeImmutable];
-	[ret autorelease];
 
-	return ret;
+	return [ret autorelease];
 }
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFAutoreleasePool *pool2;
+	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
 	id <OFSerialization> *objects = [self objects];
 	size_t i, count = [self count];
@@ -486,38 +484,38 @@ static struct {
 		element = [OFXMLElement elementWithName: @"OFArray"
 					      namespace: OF_SERIALIZATION_NS];
 
-	pool2 = [[OFAutoreleasePool alloc] init];
-
 	for (i = 0; i < count; i++) {
+		void *pool2 = objc_autoreleasePoolPush();
+
 		[element addChild: [objects[i] XMLElementBySerializing]];
 
-		[pool2 releaseObjects];
+		objc_autoreleasePoolPop(pool2);
 	}
 
 	[element retain];
-	[pool release];
-	[element autorelease];
 
-	return element;
+	objc_autoreleasePoolPop(pool);
+
+	return [element autorelease];
 }
 
 - (OFString*)JSONRepresentation
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFMutableString *JSON;
 
 	JSON = [[self componentsJoinedByString: @","
 				 usingSelector: @selector(JSONRepresentation)]
 	    mutableCopy];
-	[pool release];
-	[JSON autorelease];
 
 	[JSON prependString: @"["];
 	[JSON appendString: @"]"];
 
 	[JSON makeImmutable];
 
-	return JSON;
+	objc_autoreleasePoolPop(pool);
+
+	return [JSON autorelease];
 }
 
 - (void)makeObjectsPerformSelector: (SEL)selector

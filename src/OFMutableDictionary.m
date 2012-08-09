@@ -17,7 +17,6 @@
 #include "config.h"
 
 #import "OFMutableDictionary_hashtable.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFNotImplementedException.h"
 

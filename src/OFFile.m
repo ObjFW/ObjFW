@@ -48,7 +48,6 @@
 #endif
 #import "OFDate.h"
 #import "OFApplication.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFChangeDirectoryFailedException.h"
 #import "OFChangeFileModeFailedException.h"
@@ -70,6 +69,7 @@
 #import "OFSymlinkFailedException.h"
 #import "OFWriteFailedException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 #ifdef _WIN32
@@ -137,7 +137,7 @@ static int parse_mode(const char *mode)
 void
 of_log(OFConstantString *format, ...)
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFDate *date;
 	OFString *dateString, *me, *msg;
 	va_list arguments;
@@ -154,7 +154,7 @@ of_log(OFConstantString *format, ...)
 	[of_stderr writeFormat: @"[%@.%03d %@(%d)] %@\n", dateString,
 				[date microsecond] / 1000, me, getpid(), msg];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 @interface OFFileSingleton: OFFile
@@ -245,7 +245,7 @@ of_log(OFConstantString *format, ...)
 + (void)createDirectoryAtPath: (OFString*)path
 		createParents: (BOOL)createParents
 {
-	OFAutoreleasePool *pool, *pool2;
+	void *pool;
 	OFArray *pathComponents;
 	OFString *currentPath = nil, *component;
 	OFEnumerator *enumerator;
@@ -255,12 +255,13 @@ of_log(OFConstantString *format, ...)
 		return;
 	}
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	pathComponents = [path pathComponents];
 	enumerator = [pathComponents objectEnumerator];
-	pool2 = [[OFAutoreleasePool alloc] init];
 	while ((component = [enumerator nextObject]) != nil) {
+		void *pool2 = objc_autoreleasePoolPush();
+
 		if (currentPath != nil)
 			currentPath = [OFString
 			    stringWithPath: currentPath, component, nil];
@@ -272,16 +273,17 @@ of_log(OFConstantString *format, ...)
 			[OFFile createDirectoryAtPath: currentPath];
 
 		[currentPath retain];
-		[pool2 releaseObjects];
+
+		objc_autoreleasePoolPop(pool2);
+
 		[currentPath autorelease];
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 + (OFArray*)filesInDirectoryAtPath: (OFString*)path
 {
-	OFAutoreleasePool *pool;
 	OFMutableArray *files = [OFMutableArray array];
 
 #ifndef _WIN32
@@ -295,9 +297,8 @@ of_log(OFConstantString *format, ...)
 							  mode: @"r"];
 
 	@try {
-		pool = [[OFAutoreleasePool alloc] init];
-
 		while ((dirent = readdir(dir)) != NULL) {
+			void *pool = objc_autoreleasePoolPush();
 			OFString *file;
 
 			if (!strcmp(dirent->d_name, ".") ||
@@ -309,18 +310,16 @@ of_log(OFConstantString *format, ...)
 				     encoding: OF_STRING_ENCODING_NATIVE];
 			[files addObject: file];
 
-			[pool releaseObjects];
+			objc_autoreleasePoolPop(pool);
 		}
-
-		[pool release];
 	} @finally {
 		closedir(dir);
 	}
 #else
+	void *pool = objc_autoreleasePoolPush();
 	HANDLE handle;
 	WIN32_FIND_DATA fd;
 
-	pool = [[OFAutoreleasePool alloc] init];
 	path = [path stringByAppendingString: @"\\*"];
 
 	if ((handle = FindFirstFile([path cStringWithEncoding:
@@ -330,9 +329,8 @@ of_log(OFConstantString *format, ...)
 								mode: @"r"];
 
 	@try {
-		OFAutoreleasePool *pool2 = [[OFAutoreleasePool alloc] init];
-
 		do {
+			void *pool2 = objc_autoreleasePoolPush();
 			OFString *file;
 
 			if (!strcmp(fd.cFileName, ".") ||
@@ -344,15 +342,13 @@ of_log(OFConstantString *format, ...)
 				     encoding: OF_STRING_ENCODING_NATIVE];
 			[files addObject: file];
 
-			[pool2 releaseObjects];
+			objc_autoreleasePoolPop(pool2);
 		} while (FindNextFile(handle, &fd));
-
-		[pool2 release];
 	} @finally {
 		FindClose(handle);
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 #endif
 
 	[files makeImmutable];
@@ -500,7 +496,7 @@ of_log(OFConstantString *format, ...)
 + (void)copyFileAtPath: (OFString*)source
 		toPath: (OFString*)destination
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	BOOL override;
 	OFFile *sourceFile = nil;
 	OFFile *destinationFile = nil;
@@ -550,13 +546,13 @@ of_log(OFConstantString *format, ...)
 		free(buffer);
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 + (void)renameFileAtPath: (OFString*)source
 		  toPath: (OFString*)destination
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 
 	if ([self directoryExistsAtPath: destination]) {
 		OFString *filename = [source lastPathComponent];
@@ -576,7 +572,7 @@ of_log(OFConstantString *format, ...)
 			    sourcePath: source
 		       destinationPath: destination];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 + (void)deleteFileAtPath: (OFString*)path
@@ -602,7 +598,7 @@ of_log(OFConstantString *format, ...)
 + (void)linkFileAtPath: (OFString*)source
 		toPath: (OFString*)destination
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 
 	if ([self directoryExistsAtPath: destination]) {
 		OFString *filename = [source lastPathComponent];
@@ -616,7 +612,7 @@ of_log(OFConstantString *format, ...)
 						      sourcePath: source
 						 destinationPath: destination];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 #endif
 
@@ -624,7 +620,7 @@ of_log(OFConstantString *format, ...)
 + (void)symlinkFileAtPath: (OFString*)source
 		   toPath: (OFString*)destination
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 
 	if ([self directoryExistsAtPath: destination]) {
 		OFString *filename = [source lastPathComponent];
@@ -639,7 +635,7 @@ of_log(OFConstantString *format, ...)
 			    sourcePath: source
 		       destinationPath: destination];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 #endif
 

@@ -24,7 +24,6 @@
 #import "OFString.h"
 #import "OFString_UTF8.h"
 #import "OFMutableString_UTF8.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
@@ -32,6 +31,7 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 #import "of_asprintf.h"
@@ -344,12 +344,12 @@
 		[self appendUTF8String: cString
 			    withLength: cStringLength];
 	else {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		void *pool = objc_autoreleasePoolPush();
 		[self appendString:
 		    [OFString stringWithCString: cString
 				       encoding: encoding
 					 length: cStringLength]];
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	}
 }
 

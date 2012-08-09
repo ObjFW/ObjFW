@@ -30,11 +30,12 @@
 #import "OFXMLAttribute.h"
 #import "OFStream.h"
 #import "OFFile.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFMalformedXMLException.h"
 #import "OFUnboundNamespaceException.h"
+
+#import "autorelease.h"
 
 typedef void (*state_function)(id, SEL, const char*, size_t*, size_t*);
 static SEL selectors[OF_XMLPARSER_NUM_STATES];
@@ -48,13 +49,13 @@ cache_append(OFDataArray *cache, const char *string,
 		[cache addItemsFromCArray: string
 				    count: length];
 	else {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		void *pool = objc_autoreleasePoolPush();
 		OFString *tmp = [OFString stringWithCString: string
 						   encoding: encoding
 						     length: length];
 		[cache addItemsFromCArray: [tmp UTF8String]
 				    count: [tmp UTF8StringLength]];
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	}
 }
 
@@ -183,7 +184,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	self = [super init];
 
 	@try {
-		OFAutoreleasePool *pool;
+		void *pool;
 		OFMutableDictionary *dict;
 
 		cache = [[OFBigDataArray alloc] init];
@@ -191,7 +192,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		namespaces = [[OFMutableArray alloc] init];
 		attributes = [[OFMutableArray alloc] init];
 
-		pool = [[OFAutoreleasePool alloc] init];
+		pool = objc_autoreleasePoolPush();
 		dict = [OFMutableDictionary dictionaryWithKeysAndObjects:
 		    @"xml", @"http://www.w3.org/XML/1998/namespace",
 		    @"xmlns", @"http://www.w3.org/2000/xmlns/", nil];
@@ -201,7 +202,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		lineNumber = 1;
 		encoding = OF_STRING_ENCODING_UTF_8;
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -321,16 +322,13 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		cache_append(cache, buffer + *last, encoding, length);
 
 	if ([cache count] > 0) {
-		OFString *characters;
-		OFAutoreleasePool *pool;
-
-		pool = [[OFAutoreleasePool alloc] init];
-		characters = transform_string(cache, 0, YES, self);
+		void *pool = objc_autoreleasePoolPush();
+		OFString *characters = transform_string(cache, 0, YES, self);
 
 		[delegate parser: self
 		 foundCharacters: characters];
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	}
 
 	[cache removeAllItems];
@@ -476,7 +474,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	if (buffer[*i] == '?')
 		level = 1;
 	else if (level == 1 && buffer[*i] == '>') {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		void *pool = objc_autoreleasePoolPush();
 		OFString *pi;
 
 		cache_append(cache, buffer + *last, encoding, *i - *last);
@@ -493,7 +491,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		[delegate parser: self
 		    foundProcessingInstructions: pi];
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 
 		[cache removeAllItems];
 
@@ -508,7 +506,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				i: (size_t*)i
 			     last: (size_t*)last
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	const char *cacheCString, *tmp;
 	size_t length, cacheLength;
 	OFString *cacheString;
@@ -520,7 +518,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	if ((length = *i - *last) > 0)
 		cache_append(cache, buffer + *last, encoding, length);
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	cacheCString = [cache cArray];
 	cacheLength = [cache count];
@@ -540,7 +538,6 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	}
 
 	if (buffer[*i] == '>' || buffer[*i] == '/') {
-		OFAutoreleasePool *pool2;
 		OFString *ns;
 
 		ns = namespace_for_prefix(prefix, namespaces);
@@ -549,8 +546,6 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 			@throw [OFUnboundNamespaceException
 			    exceptionWithClass: [self class]
 					prefix: prefix];
-
-		pool2 = [[OFAutoreleasePool alloc] init];
 
 		[delegate parser: self
 		 didStartElement: name
@@ -569,8 +564,6 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		} else
 			[previous addObject: cacheString];
 
-		[pool2 release];
-
 		[name release];
 		[prefix release];
 		name = prefix = nil;
@@ -581,13 +574,10 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	} else
 		state = OF_XMLPARSER_IN_TAG;
 
-	[pool release];
-
-	if (buffer[*i] != '/') {
-		pool = [[OFAutoreleasePool alloc] init];
+	if (buffer[*i] != '/')
 		[namespaces addObject: [OFMutableDictionary dictionary]];
-		[pool release];
-	}
+
+	objc_autoreleasePoolPop(pool);
 
 	[cache removeAllItems];
 	*last = *i + 1;
@@ -598,7 +588,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				     i: (size_t*)i
 				  last: (size_t*)last
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	const char *cacheCString, *tmp;
 	size_t length, cacheLength;
 	OFString *cacheString;
@@ -611,7 +601,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	if ((length = *i - *last) > 0)
 		cache_append(cache, buffer + *last, encoding, length);
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	cacheCString = [cache cArray];
 	cacheLength = [cache count];
@@ -649,7 +639,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	      withPrefix: prefix
 	       namespace: ns];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	[namespaces removeLastObject];
 	[name release];
@@ -670,7 +660,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 			    i: (size_t*)i
 			 last: (size_t*)last
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	OFString *ns;
 	OFXMLAttribute **attributesObjects;
 	size_t j, attributesCount;
@@ -700,7 +690,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		resolve_attribute_namespace(attributesObjects[j], namespaces,
 		    self);
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	[delegate parser: self
 	 didStartElement: name
@@ -725,7 +715,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	} else
 		[previous addObject: name];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	[name release];
 	[prefix release];
@@ -743,7 +733,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				      i: (size_t*)i
 				   last: (size_t*)last
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	OFMutableString *cacheString;
 	const char *cacheCString, *tmp;
 	size_t length, cacheLength;
@@ -754,7 +744,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	if ((length = *i - *last) > 0)
 		cache_append(cache, buffer + *last, encoding, length);
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	cacheString = [OFMutableString stringWithUTF8String: [cache cArray]
 						     length: [cache count]];
@@ -777,7 +767,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		attributePrefix = nil;
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	[cache removeAllItems];
 
@@ -809,7 +799,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				       i: (size_t*)i
 				    last: (size_t*)last
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	OFString *attributeValue;
 	size_t length;
 
@@ -819,7 +809,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	if ((length = *i - *last) > 0)
 		cache_append(cache, buffer + *last, encoding, length);
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 	attributeValue = transform_string(cache, 0, YES, self);
 
 	if (attributePrefix == nil && [attributeName isEqual: @"xmlns"])
@@ -834,7 +824,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				    namespace: attributePrefix
 				  stringValue: attributeValue]];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	[cache removeAllItems];
 	[attributeName release];
@@ -930,7 +920,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 			       i: (size_t*)i
 			    last: (size_t*)last
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	OFString *CDATA;
 
 	if (buffer[*i] != '>') {
@@ -940,7 +930,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		return;
 	}
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	cache_append(cache, buffer + *last, encoding, *i - *last);
 	CDATA = transform_string(cache, 2, NO, nil);
@@ -948,7 +938,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	[delegate parser: self
 	      foundCDATA: CDATA];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	[cache removeAllItems];
 
@@ -987,14 +977,14 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				 i: (size_t*)i
 			      last: (size_t*)last
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	OFString *comment;
 
 	if (buffer[*i] != '>')
 		@throw [OFMalformedXMLException exceptionWithClass: [self class]
 							    parser: self];
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	cache_append(cache, buffer + *last, encoding, *i - *last);
 	comment = transform_string(cache, 2, NO, nil);
@@ -1002,7 +992,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	[delegate parser: self
 	    foundComment: comment];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	[cache removeAllItems];
 

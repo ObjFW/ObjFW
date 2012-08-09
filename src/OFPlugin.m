@@ -25,10 +25,11 @@
 
 #import "OFPlugin.h"
 #import "OFString.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFNotImplementedException.h"
+
+#import "autorelease.h"
 
 #ifdef _WIN32
 # define dlopen(file, mode) LoadLibrary(file)
@@ -39,13 +40,12 @@
 @implementation OFPlugin
 + (id)pluginFromFile: (OFString*)path
 {
-	OFAutoreleasePool *pool;
+	void *pool = objc_autoreleasePoolPush();
 	OFMutableString *file;
 	of_plugin_handle_t handle;
 	OFPlugin *(*initPlugin)(void);
 	OFPlugin *plugin;
 
-	pool = [[OFAutoreleasePool alloc] init];
 	file = [OFMutableString stringWithString: path];
 	[file appendString: @PLUGIN_SUFFIX];
 
@@ -54,7 +54,7 @@
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	*(void**)&initPlugin = dlsym(handle, "init_plugin");
 	if (initPlugin == NULL || (plugin = initPlugin()) == nil) {

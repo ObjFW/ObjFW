@@ -21,16 +21,17 @@
 #import "OFSerialization.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFNotImplementedException.h"
+
+#import "autorelease.h"
 
 int _OFObject_Serialization_reference;
 
 @implementation OFObject (Serialization)
 - (OFString*)stringBySerializing
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	OFXMLElement *element;
 	OFXMLElement *root;
 	OFString *ret;
@@ -40,7 +41,7 @@ int _OFObject_Serialization_reference;
 		    exceptionWithClass: [self class]
 			      selector: @selector(stringBySerializing)];
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 	element = [(id)self XMLElementBySerializing];
 
 	root = [OFXMLElement elementWithName: @"serialization"
@@ -53,9 +54,9 @@ int _OFObject_Serialization_reference;
 	    stringByAppendingString: [root XMLStringWithIndentation: 2]];
 
 	[ret retain];
-	[pool release];
-	[ret autorelease];
 
-	return ret;
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
 }
 @end

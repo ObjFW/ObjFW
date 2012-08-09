@@ -27,7 +27,6 @@
 #import "OFTCPSocket.h"
 #import "OFDictionary.h"
 #import "OFDataArray.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidEncodingException.h"
@@ -38,6 +37,7 @@
 #import "OFUnsupportedProtocolException.h"
 #import "OFUnsupportedVersionException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 Class of_http_request_tls_socket_class = Nil;
@@ -187,7 +187,7 @@ normalizeKey(OFString *key)
 
 - (OFHTTPRequestResult*)performWithRedirects: (size_t)redirects
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFString *scheme = [URL scheme];
 	OFTCPSocket *sock;
 	OFHTTPRequestResult *result;
@@ -367,7 +367,7 @@ normalizeKey(OFString *key)
 				queryString = nil;
 			}
 
-			[pool release];
+			objc_autoreleasePoolPop(pool);
 
 			return [self performWithRedirects: redirects - 1];
 		}
@@ -397,10 +397,9 @@ normalizeKey(OFString *key)
 	buffer = [self allocMemoryWithSize: of_pagesize];
 	bytesReceived = 0;
 	@try {
-		OFAutoreleasePool *pool2 = [[OFAutoreleasePool alloc] init];
-
 		if (chunked) {
 			for (;;) {
+				void *pool2 = objc_autoreleasePoolPush();
 				size_t pos, toRead;
 
 				@try {
@@ -439,7 +438,9 @@ normalizeKey(OFString *key)
 					[delegate request: self
 					   didReceiveData: buffer
 					       withLength: length];
-					[pool2 releaseObjects];
+
+					objc_autoreleasePoolPop(pool2);
+					pool2 = objc_autoreleasePoolPush();
 
 					bytesReceived += length;
 					[data addItemsFromCArray: buffer
@@ -459,7 +460,7 @@ normalizeKey(OFString *key)
 					@throw [OFInvalidServerReplyException
 					    exceptionWithClass: [self class]];
 
-				[pool2 releaseObjects];
+				objc_autoreleasePoolPop(pool2);
 			}
 		} else {
 			size_t length;
@@ -467,10 +468,13 @@ normalizeKey(OFString *key)
 			while ((length = [sock
 			    readIntoBuffer: buffer
 				    length: of_pagesize]) > 0) {
+				void *pool2 = objc_autoreleasePoolPush();
+
 				[delegate request: self
 				   didReceiveData: buffer
 				       withLength: length];
-				[pool2 releaseObjects];
+
+				objc_autoreleasePoolPop(pool2);
 
 				bytesReceived += length;
 				[data addItemsFromCArray: buffer
@@ -481,8 +485,6 @@ normalizeKey(OFString *key)
 					break;
 			}
 		}
-
-		[pool2 release];
 	} @finally {
 		[self freeMemory: buffer];
 	}
@@ -520,7 +522,7 @@ normalizeKey(OFString *key)
 				result: result];
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return [result autorelease];
 }

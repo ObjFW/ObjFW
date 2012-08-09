@@ -27,11 +27,11 @@
 
 #import "OFStreamObserver_kqueue.h"
 #import "OFDataArray.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFOutOfMemoryException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 #define EVENTLIST_SIZE 64
@@ -100,7 +100,7 @@
 
 - (BOOL)observeWithTimeout: (int)timeout
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	struct timespec timespec = { timeout, 0 };
 	struct kevent eventList[EVENTLIST_SIZE];
 	int i, events;
@@ -108,9 +108,11 @@
 	[self _processQueue];
 
 	if ([self _processCache]) {
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 		return YES;
 	}
+
+	objc_autoreleasePoolPop(pool);
 
 	events = kevent(kernelQueue, [changeList cArray],
 	    (int)[changeList count], eventList, EVENTLIST_SIZE,
@@ -119,10 +121,8 @@
 	if (events == -1) {
 		switch (errno) {
 		case EINTR:
-			[pool release];
 			return NO;
 		case ENOMEM:
-			[pool release];
 			@throw [OFOutOfMemoryException
 			    exceptionWithClass: [self class]];
 		default:
@@ -132,10 +132,8 @@
 
 	[changeList removeAllItems];
 
-	if (events == 0) {
-		[pool release];
+	if (events == 0)
 		return NO;
-	}
 
 	for (i = 0; i < events; i++) {
 		if (eventList[i].ident == cancelFD[0]) {
@@ -146,10 +144,12 @@
 			continue;
 		}
 
+		pool = objc_autoreleasePoolPush();
+
 		if (eventList[i].flags & EV_ERROR) {
 			[delegate streamDidReceiveException:
 			    FDToStream[eventList[i].ident]];
-			[pool releaseObjects];
+			objc_autoreleasePoolPop(pool);
 			continue;
 		}
 
@@ -157,20 +157,17 @@
 		case EVFILT_READ:
 			[delegate streamIsReadyForReading:
 			    FDToStream[eventList[i].ident]];
-			[pool releaseObjects];
 			break;
 		case EVFILT_WRITE:
 			[delegate streamIsReadyForWriting:
 			    FDToStream[eventList[i].ident]];
-			[pool releaseObjects];
 			break;
 		default:
 			assert(0);
 		}
 
+		objc_autoreleasePoolPop(pool);
 	}
-
-	[pool release];
 
 	return YES;
 }

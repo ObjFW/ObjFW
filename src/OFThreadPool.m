@@ -20,7 +20,8 @@
 #import "OFArray.h"
 #import "OFList.h"
 #import "OFThread.h"
-#import "OFAutoreleasePool.h"
+
+#import "autorelease.h"
 
 @interface OFThreadPoolJob: OFObject
 {
@@ -175,12 +176,12 @@
 
 - (id)main
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool;
 
-	if (terminate) {
-		[pool release];
+	if (terminate)
 		return nil;
-	}
+
+	pool = objc_autoreleasePoolPush();
 
 	for (;;) {
 		OFThreadPoolJob *job;
@@ -190,7 +191,7 @@
 			of_list_object_t *listObject;
 
 			if (terminate) {
-				[pool release];
+				objc_autoreleasePoolPop(pool);
 				return nil;
 			}
 
@@ -200,7 +201,7 @@
 				[queueCondition wait];
 
 				if (terminate) {
-					[pool release];
+					objc_autoreleasePoolPop(pool);
 					return nil;
 				}
 
@@ -214,23 +215,24 @@
 		}
 
 		if (terminate) {
-			[pool release];
+			objc_autoreleasePoolPop(pool);
 			return nil;
 		}
 
 		[job perform];
 
 		if (terminate) {
-			[pool release];
+			objc_autoreleasePoolPop(pool);
 			return nil;
 		}
 
-		[pool releaseObjects];
+		objc_autoreleasePoolPop(pool);
+		pool = objc_autoreleasePoolPush();
 
 		[countCondition lock];
 		@try {
 			if (terminate) {
-				[pool release];
+				objc_autoreleasePoolPop(pool);
 				return nil;
 			}
 
@@ -265,7 +267,6 @@
 	self = [super init];
 
 	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 		size_t i;
 
 		size = size_;
@@ -275,12 +276,14 @@
 		countCondition = [[OFCondition alloc] init];
 
 		for (i = 0; i < size; i++) {
+			void *pool = objc_autoreleasePoolPush();
+
 			OFThreadPoolThread *thread =
 			    [OFThreadPoolThread threadWithThreadPool: self];
 
 			[threads addObject: thread];
 
-			[pool releaseObjects];
+			objc_autoreleasePoolPop(pool);
 		}
 
 		/*
@@ -292,8 +295,6 @@
 
 			[thread start];
 		}
-
-		[pool release];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -304,7 +305,7 @@
 
 - (void)dealloc
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	[queueCondition lock];
 	@try {
 		[countCondition lock];
@@ -322,7 +323,7 @@
 	} @finally {
 		[queueCondition unlock];
 	}
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	[threads release];
 	[queue release];

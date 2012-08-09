@@ -22,19 +22,20 @@
 #import "OFArray.h"
 #import "OFXMLElement.h"
 #import "OFXMLAttribute.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFMalformedXMLException.h"
 #import "OFUnboundNamespaceException.h"
 #import "OFUnsupportedVersionException.h"
 
+#import "autorelease.h"
+
 int _OFString_Serialization_reference;
 
 @implementation OFString (Serialization)
 - (id)objectByDeserializing
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *root;
 	OFString *version;
 	OFArray *elements;
@@ -70,12 +71,10 @@ int _OFString_Serialization_reference;
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	object = [[elements firstObject] objectByDeserializing];
+	object = [[[elements firstObject] objectByDeserializing] retain];
 
-	[object retain];
-	[pool release];
-	[object autorelease];
+	objc_autoreleasePoolPop(pool);
 
-	return object;
+	return [object autorelease];
 }
 @end

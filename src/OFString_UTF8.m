@@ -26,7 +26,6 @@
 #import "OFString_UTF8.h"
 #import "OFMutableString_UTF8.h"
 #import "OFArray.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -36,6 +35,7 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 #import "of_asprintf.h"
 #import "unicode.h"
@@ -822,13 +822,13 @@ memcasecmp(const char *first, const char *second, size_t length)
 	      inRange: (of_range_t)range
 {
 	/* TODO: Could be slightly optimized */
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *unicodeString = [self unicodeString];
 
 	memcpy(buffer, unicodeString + range.start,
 	    range.length * sizeof(of_unichar_t));
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (size_t)indexOfFirstOccurrenceOfString: (OFString*)string
@@ -932,7 +932,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter
 			      skipEmpty: (BOOL)skipEmpty
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	OFMutableArray *array;
 	const char *cString = [delimiter UTF8String];
 	size_t cStringLength = [delimiter UTF8StringLength];
@@ -940,11 +940,11 @@ memcasecmp(const char *first, const char *second, size_t length)
 	OFString *component;
 
 	array = [OFMutableArray array];
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	if (cStringLength > s->cStringLength) {
 		[array addObject: [[self copy] autorelease]];
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 
 		return array;
 	}
@@ -967,7 +967,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 
 	[array makeImmutable];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return array;
 }
@@ -975,7 +975,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 - (OFArray*)pathComponents
 {
 	OFMutableArray *ret;
-	OFAutoreleasePool *pool;
+	void *pool;
 	size_t i, last = 0, pathCStringLength = s->cStringLength;
 
 	ret = [OFMutableArray array];
@@ -983,7 +983,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 	if (pathCStringLength == 0)
 		return ret;
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 #ifndef _WIN32
 	if (s->cString[pathCStringLength - 1] == OF_PATH_DELIMITER)
@@ -1011,7 +1011,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 
 	[ret makeImmutable];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return ret;
 }
@@ -1128,7 +1128,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateLinesUsingBlock: (of_string_line_enumeration_block_t)block
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool;
 	const char *cString = s->cString;
 	const char *last = cString;
 	BOOL stop = NO, lastCarriageReturn = NO;
@@ -1144,23 +1144,27 @@ memcasecmp(const char *first, const char *second, size_t length)
 		}
 
 		if (*cString == '\n' || *cString == '\r') {
+			pool = objc_autoreleasePoolPush();
+
 			block([OFString
 			    stringWithUTF8String: last
 					  length: cString - last], &stop);
 			last = cString + 1;
 
-			[pool releaseObjects];
+			objc_autoreleasePoolPop(pool);
 		}
 
 		lastCarriageReturn = (*cString == '\r');
 		cString++;
 	}
 
+	pool = objc_autoreleasePoolPush();
+
 	if (!stop)
 		block([OFString stringWithUTF8String: last
 					      length: cString - last], &stop);
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 #endif
 @end

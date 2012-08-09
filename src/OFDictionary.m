@@ -23,9 +23,10 @@
 #import "OFArray.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFNotImplementedException.h"
+
+#import "autorelease.h"
 
 static struct {
 	Class isa;
@@ -284,7 +285,7 @@ static struct {
 - (BOOL)isEqual: (id)object
 {
 	OFDictionary *otherDictionary;
-	OFAutoreleasePool *pool;
+	void *pool;
 	OFEnumerator *enumerator;
 	id key;
 
@@ -296,7 +297,7 @@ static struct {
 	if ([otherDictionary count] != [self count])
 		return NO;
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	enumerator = [self keyEnumerator];
 	while ((key = [enumerator nextObject]) != nil) {
@@ -304,55 +305,55 @@ static struct {
 
 		if (object == nil ||
 		    ![object isEqual: [self objectForKey: key]]) {
-			[pool release];
+			objc_autoreleasePoolPop(pool);
 			return NO;
 		}
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return YES;
 }
 
 - (BOOL)containsObject: (id)object
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFEnumerator *enumerator = [self objectEnumerator];
 	id currentObject;
 
 	while ((currentObject = [enumerator nextObject]) != nil) {
 		if ([currentObject isEqual: object]) {
-			[pool release];
+			objc_autoreleasePoolPop(pool);
 			return YES;
 		}
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return NO;
 }
 
 - (BOOL)containsObjectIdenticalTo: (id)object
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFEnumerator *enumerator = [self objectEnumerator];
 	id currentObject;
 
 	while ((currentObject = [enumerator nextObject]) != nil) {
 		if (currentObject == object) {
-			[pool release];
+			objc_autoreleasePoolPop(pool);
 			return YES;
 		}
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return NO;
 }
 
 - (OFArray*)allKeys
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	id *keys = [self allocMemoryWithSize: sizeof(id)
 				       count: [self count]];
 	OFArray *ret;
@@ -360,15 +361,13 @@ static struct {
 	id key;
 	size_t i = 0;
 
-	pool = [[OFAutoreleasePool alloc] init];
 	enumerator = [self keyEnumerator];
-
 	while ((key = [enumerator nextObject]) != nil)
 		keys[i++] = key;
 
 	assert(i == [self count]);
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	@try {
 		ret = [OFArray arrayWithObjects: keys
@@ -382,7 +381,7 @@ static struct {
 
 - (OFArray*)allObjects
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	id *objects = [self allocMemoryWithSize: sizeof(id)
 					  count: [self count]];
 	OFArray *ret;
@@ -390,15 +389,13 @@ static struct {
 	id object;
 	size_t i = 0;
 
-	pool = [[OFAutoreleasePool alloc] init];
 	enumerator = [self objectEnumerator];
-
 	while ((object = [enumerator nextObject]) != nil)
 		objects[i++] = object;
 
 	assert(i == [self count]);
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	@try {
 		ret = [OFArray arrayWithObjects: objects
@@ -481,7 +478,7 @@ static struct {
 
 - (uint32_t)hash
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFEnumerator *enumerator = [self keyEnumerator];
 	id key;
 	uint32_t hash = 0;
@@ -491,7 +488,7 @@ static struct {
 		hash += [[self objectForKey: key] hash];
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return hash;
 }
@@ -499,7 +496,7 @@ static struct {
 - (OFString*)description
 {
 	OFMutableString *ret;
-	OFAutoreleasePool *pool, *pool2;
+	void *pool;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	id key, object;
 	size_t i, count = [self count];
@@ -508,15 +505,15 @@ static struct {
 		return @"{}";
 
 	ret = [OFMutableString stringWithString: @"{\n"];
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 	keyEnumerator = [self keyEnumerator];
 	objectEnumerator = [self objectEnumerator];
 
 	i = 0;
-	pool2 = [[OFAutoreleasePool alloc] init];
-
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil) {
+		void *pool2 = objc_autoreleasePoolPush();
+
 		[ret appendString: [key description]];
 		[ret appendString: @" = "];
 		[ret appendString: [object description]];
@@ -524,7 +521,7 @@ static struct {
 		if (++i < count)
 			[ret appendString: @";\n"];
 
-		[pool2 releaseObjects];
+		objc_autoreleasePoolPop(pool2);
 	}
 	[ret replaceOccurrencesOfString: @"\n"
 			     withString: @"\n\t"];
@@ -532,15 +529,14 @@ static struct {
 
 	[ret makeImmutable];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return ret;
 }
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFAutoreleasePool *pool2;
+	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	id key, object;
@@ -554,10 +550,9 @@ static struct {
 
 	keyEnumerator = [self keyEnumerator];
 	objectEnumerator = [self objectEnumerator];
-	pool2 = [[OFAutoreleasePool alloc] init];
-
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	       (object = [objectEnumerator nextObject]) != nil) {
+		void *pool2 = objc_autoreleasePoolPush();
 		OFXMLElement *keyElement, *objectElement;
 
 		keyElement = [OFXMLElement
@@ -573,30 +568,30 @@ static struct {
 		[element addChild: keyElement];
 		[element addChild: objectElement];
 
-		[pool2 releaseObjects];
+		objc_autoreleasePoolPop(pool2);
 	}
 
 	[element retain];
-	[pool release];
-	[element autorelease];
 
-	return element;
+	objc_autoreleasePoolPop(pool);
+
+	return [element autorelease];
 }
 
 - (OFString*)JSONRepresentation
 {
 	OFMutableString *JSON = [OFMutableString stringWithString: @"{"];
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init], *pool2;
+	void *pool = objc_autoreleasePoolPush();
 	OFEnumerator *keyEnumerator = [self keyEnumerator];
 	OFEnumerator *objectEnumerator = [self objectEnumerator];
 	size_t i = 0, count = [self count];
 	OFString *key;
 	OFString *object;
 
-	pool2 = [[OFAutoreleasePool alloc] init];
-
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil) {
+		void *pool2 = objc_autoreleasePoolPush();
+
 		[JSON appendString: [key JSONRepresentation]];
 		[JSON appendString: @":"];
 		[JSON appendString: [object JSONRepresentation]];
@@ -604,13 +599,13 @@ static struct {
 		if (++i < count)
 			[JSON appendString: @","];
 
-		[pool2 releaseObjects];
+		objc_autoreleasePoolPop(pool2);
 	}
-
-	[pool release];
 
 	[JSON appendString: @"}"];
 	[JSON makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
 
 	return JSON;
 }

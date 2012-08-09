@@ -26,7 +26,6 @@
 #import "OFArray.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
@@ -34,6 +33,7 @@
 #import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 struct of_dictionary_hashtable_bucket
@@ -124,7 +124,7 @@ struct of_dictionary_hashtable_bucket
 	self = [super init];
 
 	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		void *pool;
 		OFEnumerator *enumerator;
 		id key;
 		uint32_t i, newSize;
@@ -151,9 +151,9 @@ struct of_dictionary_hashtable_bucket
 
 		size = newSize;
 
-		pool = [[OFAutoreleasePool alloc] init];
-		enumerator = [dictionary keyEnumerator];
+		pool = objc_autoreleasePoolPush();
 
+		enumerator = [dictionary keyEnumerator];
 		while ((key = [enumerator nextObject]) != nil) {
 			uint32_t hash, last;
 			struct of_dictionary_hashtable_bucket *bucket;
@@ -187,7 +187,7 @@ struct of_dictionary_hashtable_bucket
 			data[i] = bucket;
 		}
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -501,8 +501,7 @@ struct of_dictionary_hashtable_bucket
 - initWithSerialization: (OFXMLElement*)element
 {
 	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-		OFAutoreleasePool *pool2;
+		void *pool = objc_autoreleasePoolPush();
 		OFMutableDictionary *dictionary;
 		OFArray *keys, *objects;
 		OFEnumerator *keyEnumerator, *objectEnumerator;
@@ -528,10 +527,9 @@ struct of_dictionary_hashtable_bucket
 
 		keyEnumerator = [keys objectEnumerator];
 		objectEnumerator = [objects objectEnumerator];
-		pool2 = [[OFAutoreleasePool alloc] init];
-
 		while ((keyElement = [keyEnumerator nextObject]) != nil &&
 		    (objectElement = [objectEnumerator nextObject]) != nil) {
+			void *pool2 = objc_autoreleasePoolPush();
 			OFXMLElement *key, *object;
 
 			key = [[keyElement elementsForNamespace:
@@ -546,12 +544,12 @@ struct of_dictionary_hashtable_bucket
 			[dictionary setObject: [object objectByDeserializing]
 				       forKey: [key objectByDeserializing]];
 
-			[pool2 releaseObjects];
+			objc_autoreleasePoolPop(pool2);
 		}
 
 		self = [self initWithDictionary: dictionary];
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;

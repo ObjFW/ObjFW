@@ -24,12 +24,12 @@
 #import "OFDataArray.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 @implementation OFArray_adjacent
@@ -152,11 +152,9 @@
 	self = [self init];
 
 	@try {
-		OFAutoreleasePool *pool, *pool2;
+		void *pool = objc_autoreleasePoolPush();
 		OFEnumerator *enumerator;
 		OFXMLElement *child;
-
-		pool = [[OFAutoreleasePool alloc] init];
 
 		if ((![[element name] isEqual: @"OFArray"] &&
 		    ![[element name] isEqual: @"OFMutableArray"]) ||
@@ -167,17 +165,19 @@
 
 		enumerator = [[element elementsForNamespace:
 		    OF_SERIALIZATION_NS] objectEnumerator];
-		pool2 = [[OFAutoreleasePool alloc] init];
 
 		while ((child = [enumerator nextObject]) != nil) {
-			id object = [child objectByDeserializing];
+			void *pool2 = objc_autoreleasePoolPush();
+			id object;
+
+			object = [child objectByDeserializing];
 			[array addItem: &object];
 			[object retain];
 
-			[pool2 releaseObjects];
+			objc_autoreleasePoolPop(pool2);
 		}
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;

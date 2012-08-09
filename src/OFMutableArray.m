@@ -22,13 +22,13 @@
 
 #import "OFMutableArray.h"
 #import "OFMutableArray_adjacent.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 static struct {
@@ -200,7 +200,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 - (void)insertObjectsFromArray: (OFArray*)array
 		       atIndex: (size_t)index
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFEnumerator *enumerator = [array objectEnumerator];
 	size_t i, count = [array count];
 
@@ -213,7 +213,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 			   atIndex: index + i];
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)replaceObjectAtIndex: (size_t)index

@@ -31,7 +31,6 @@
 #endif
 
 #import "OFObject.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFAllocFailedException.h"
 #import "OFEnumerationMutationException.h"
@@ -42,6 +41,7 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 #if defined(OF_APPLE_RUNTIME) && __OBJC2__
@@ -86,7 +86,6 @@ struct pre_mem {
 static struct {
 	Class isa;
 } alloc_failed_exception;
-static Class autoreleasePool = Nil;
 
 static SEL cxx_construct = NULL;
 static SEL cxx_destruct = NULL;
@@ -813,14 +812,7 @@ void _references_to_categories_of_OFObject(void)
 
 - autorelease
 {
-	/*
-	 * Cache OFAutoreleasePool since class lookups are expensive with the
-	 * GNU ABI used by GCC.
-	 */
-	if (autoreleasePool == Nil)
-		autoreleasePool = [OFAutoreleasePool class];
-
-	return [autoreleasePool addObject: self];
+	return _objc_rootAutorelease(self);
 }
 
 - self

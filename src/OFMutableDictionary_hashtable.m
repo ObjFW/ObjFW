@@ -20,7 +20,6 @@
 
 #import "OFMutableDictionary_hashtable.h"
 #import "OFDictionary_hashtable.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"

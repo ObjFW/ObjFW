@@ -21,7 +21,6 @@
 #import "OFMutableArray_adjacent.h"
 #import "OFArray_adjacent.h"
 #import "OFDataArray.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"

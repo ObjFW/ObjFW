@@ -24,18 +24,18 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFXMLElement.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 static OF_INLINE OFString*
 resolve_relative_path(OFString *path)
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *array;
 	OFString *ret;
 	BOOL done = NO;
@@ -72,7 +72,7 @@ resolve_relative_path(OFString *path)
 
 	ret = [[array componentsJoinedByString: @"/"] retain];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return [ret autorelease];
 }
@@ -148,7 +148,7 @@ resolve_relative_path(OFString *path)
 		}
 
 		if ((tmp2 = strchr(UTF8String, ':')) != NULL) {
-			OFAutoreleasePool *pool;
+			void *pool;
 			OFString *portString;
 
 			*tmp2 = '\0';
@@ -157,7 +157,7 @@ resolve_relative_path(OFString *path)
 			host = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
 
-			pool = [[OFAutoreleasePool alloc] init];
+			pool = objc_autoreleasePoolPush();
 			portString = [OFString stringWithUTF8String: tmp2];
 
 			if ([portString decimalValue] > 65535)
@@ -166,7 +166,7 @@ resolve_relative_path(OFString *path)
 
 			port = [portString decimalValue];
 
-			[pool release];
+			objc_autoreleasePoolPop(pool);
 		} else {
 			host = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
@@ -262,10 +262,10 @@ resolve_relative_path(OFString *path)
 			path = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
 		else {
-			OFAutoreleasePool *pool;
+			void *pool;
 			OFString *s;
 
-			pool = [[OFAutoreleasePool alloc] init];
+			pool = objc_autoreleasePoolPush();
 
 			if ([URL->path hasSuffix: @"/"])
 				s = [OFString stringWithFormat: @"%@%s",
@@ -278,7 +278,7 @@ resolve_relative_path(OFString *path)
 
 			path = [resolve_relative_path(s) copy];
 
-			[pool release];
+			objc_autoreleasePoolPop(pool);
 		}
 	} @catch (id e) {
 		[self release];
@@ -293,7 +293,7 @@ resolve_relative_path(OFString *path)
 - initWithSerialization: (OFXMLElement*)element
 {
 	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		void *pool = objc_autoreleasePoolPush();
 
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
@@ -303,7 +303,7 @@ resolve_relative_path(OFString *path)
 
 		self = [self initWithString: [element stringValue]];
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -554,7 +554,7 @@ resolve_relative_path(OFString *path)
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
 
 	element = [OFXMLElement elementWithName: [self className]
@@ -562,9 +562,9 @@ resolve_relative_path(OFString *path)
 				    stringValue: [self string]];
 
 	[element retain];
-	[pool release];
-	[element autorelease];
 
-	return element;
+	objc_autoreleasePoolPop(pool);
+
+	return [element autorelease];
 }
 @end

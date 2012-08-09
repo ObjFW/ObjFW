@@ -21,9 +21,10 @@
 #import "OFNumber.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFNotImplementedException.h"
+
+#import "autorelease.h"
 
 static struct {
 	Class isa;
@@ -140,7 +141,7 @@ static struct {
 - (OFString*)description
 {
 	OFMutableString *ret;
-	OFAutoreleasePool *pool, *pool2;
+	void *pool;
 	OFEnumerator *enumerator;
 	size_t i, count = [self count];
 	id object;
@@ -149,20 +150,21 @@ static struct {
 		return @"{()}";
 
 	ret = [OFMutableString stringWithString: @"{(\n"];
-	pool = [[OFAutoreleasePool alloc] init];
+
+	pool = objc_autoreleasePoolPush();
+
 	enumerator = [self objectEnumerator];
-
 	i = 0;
-	pool2 = [[OFAutoreleasePool alloc] init];
-
 	while ((object = [enumerator nextObject]) != nil) {
+		void *pool2 = objc_autoreleasePoolPush();
+
 		[ret appendString: object];
 		[ret appendFormat: @": %zu", [self countForObject: object]];
 
 		if (++i < count)
 			[ret appendString: @",\n"];
 
-		[pool2 releaseObjects];
+		objc_autoreleasePoolPop(pool2);
 	}
 	[ret replaceOccurrencesOfString: @"\n"
 			     withString: @"\n\t"];
@@ -170,7 +172,7 @@ static struct {
 
 	[ret makeImmutable];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return ret;
 }
@@ -187,8 +189,7 @@ static struct {
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFAutoreleasePool *pool2;
+	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
 	OFEnumerator *enumerator;
 	id <OFSerialization> object;
@@ -198,8 +199,9 @@ static struct {
 
 	enumerator = [self objectEnumerator];
 
-	pool2 = [[OFAutoreleasePool alloc] init];
 	while ((object = [enumerator nextObject]) != nil) {
+		void *pool2 = objc_autoreleasePoolPush();
+
 		OFXMLElement *objectElement;
 		OFString *count;
 
@@ -215,14 +217,14 @@ static struct {
 		[objectElement addChild: [object XMLElementBySerializing]];
 		[element addChild: objectElement];
 
-		[pool2 releaseObjects];
+		objc_autoreleasePoolPop(pool2);
 	}
 
 	[element retain];
-	[pool release];
-	[element autorelease];
 
-	return element;
+	objc_autoreleasePoolPop(pool);
+
+	return [element autorelease];
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -237,7 +239,7 @@ static struct {
 
 - (void)minusSet: (OFSet*)set
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 
 	if ([set isKindOfClass: [OFCountedSet class]]) {
 		OFCountedSet *countedSet = (OFCountedSet*)set;
@@ -258,12 +260,12 @@ static struct {
 			[self removeObject: object];
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)unionSet: (OFSet*)set
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 
 	if ([set isKindOfClass: [OFCountedSet class]]) {
 		OFCountedSet *countedSet = (OFCountedSet*)set;
@@ -284,6 +286,6 @@ static struct {
 			[self addObject: object];
 	}
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 @end

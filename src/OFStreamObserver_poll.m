@@ -23,10 +23,10 @@
 
 #import "OFStreamObserver_poll.h"
 #import "OFDataArray.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFOutOfRangeException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 @implementation OFStreamObserver_poll
@@ -122,16 +122,18 @@
 
 - (BOOL)observeWithTimeout: (int)timeout
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	struct pollfd *FDsCArray;
 	size_t i, nFDs;
 
 	[self _processQueue];
 
 	if ([self _processCache]) {
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 		return YES;
 	}
+
+	objc_autoreleasePoolPop(pool);
 
 	FDsCArray = [FDs cArray];
 	nFDs = [FDs count];
@@ -141,12 +143,12 @@
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 #endif
 
-	if (poll(FDsCArray, (nfds_t)nFDs, timeout) < 1) {
-		[pool release];
+	if (poll(FDsCArray, (nfds_t)nFDs, timeout) < 1)
 		return NO;
-	}
 
 	for (i = 0; i < nFDs; i++) {
+		pool = objc_autoreleasePoolPush();
+
 		if (FDsCArray[i].revents & POLLIN) {
 			if (FDsCArray[i].fd == cancelFD[0]) {
 				char buffer;
@@ -154,30 +156,28 @@
 				OF_ENSURE(read(cancelFD[0], &buffer, 1) > 0);
 				FDsCArray[i].revents = 0;
 
+				objc_autoreleasePoolPop(pool);
 				continue;
 			}
 
 			[delegate streamIsReadyForReading:
 			    FDToStream[FDsCArray[i].fd]];
-			[pool releaseObjects];
 		}
 
 		if (FDsCArray[i].revents & POLLOUT) {
 			[delegate streamIsReadyForWriting:
 			    FDToStream[FDsCArray[i].fd]];
-			[pool releaseObjects];
 		}
 
 		if (FDsCArray[i].revents & POLLERR) {
 			[delegate streamDidReceiveException:
 			    FDToStream[FDsCArray[i].fd]];
-			[pool releaseObjects];
 		}
 
 		FDsCArray[i].revents = 0;
-	}
 
-	[pool release];
+		objc_autoreleasePoolPop(pool);
+	}
 
 	return YES;
 }

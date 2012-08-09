@@ -21,9 +21,10 @@
 #import "OFXMLComment.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"
+
+#import "autorelease.h"
 
 @implementation OFXMLComment
 + commentWithString: (OFString*)string
@@ -50,7 +51,7 @@
 	self = [super init];
 
 	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		void *pool = objc_autoreleasePoolPush();
 
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
@@ -60,7 +61,7 @@
 
 		comment = [[element stringValue] copy];
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;

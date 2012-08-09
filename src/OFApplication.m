@@ -28,9 +28,10 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFNotImplementedException.h"
+
+#import "autorelease.h"
 
 #if defined(__MACH__) && !defined(OF_IOS)
 # include <crt_externs.h>
@@ -120,7 +121,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 	self = [super init];
 
 	@try {
-		OFAutoreleasePool *pool;
+		void *pool;
 #if defined(__MACH__) && !defined(OF_IOS)
 		char **env = *_NSGetEnviron();
 #elif !defined(OF_IOS)
@@ -132,13 +133,13 @@ of_application_main(int *argc, char **argv[], Class cls)
 		environment = [[OFMutableDictionary alloc] init];
 
 		atexit(atexit_handler);
-
-		pool = [[OFAutoreleasePool alloc] init];
 #ifndef OF_IOS
 		for (; *env != NULL; env++) {
 			OFString *key;
 			OFString *value;
 			char *sep;
+
+			pool = objc_autoreleasePoolPush();
 
 			if ((sep = strchr(*env, '=')) == NULL) {
 				fprintf(stderr, "Warning: Invalid environment "
@@ -156,7 +157,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 			[environment setObject: value
 					forKey: key];
 
-			[pool releaseObjects];
+			objc_autoreleasePoolPop(pool);
 		}
 #else
 		/*
@@ -165,6 +166,8 @@ of_application_main(int *argc, char **argv[], Class cls)
 		 * variables from the environment which applications might
 		 * expect.
 		 */
+		pool = objc_autoreleasePoolPush();
+
 		if ((env = getenv("HOME")) != NULL)
 			[environment
 			    setObject: [OFString stringWithUTF8String: env]
@@ -185,8 +188,9 @@ of_application_main(int *argc, char **argv[], Class cls)
 			[environment
 			    setObject: [OFString stringWithUTF8String: env]
 			       forKey: @"USER"];
+
+		objc_autoreleasePoolPop(pool);
 #endif
-		[pool release];
 
 		[environment makeImmutable];
 	} @catch (id e) {
@@ -200,7 +204,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 - (void)setArgumentCount: (int*)argc_
        andArgumentValues: (char***)argv_
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	int i;
 
 	[programName release];
@@ -221,7 +225,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 	[arguments makeImmutable];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)getArgumentCount: (int**)argc_

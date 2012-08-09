@@ -26,10 +26,11 @@
 #import "OFArray.h"
 #import "OFXMLElement.h"
 #import "OFXMLAttribute.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+
+#import "autorelease.h"
 
 @implementation OFCountedSet_hashtable
 + (void)initialize
@@ -43,7 +44,7 @@
 	self = [self init];
 
 	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+		void *pool = objc_autoreleasePoolPush();
 
 		if ([set isKindOfClass: [OFCountedSet class]]) {
 			OFCountedSet *countedSet = (OFCountedSet*)countedSet;
@@ -67,7 +68,7 @@
 				[self addObject: object];
 		}
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -137,8 +138,7 @@
 	self = [self init];
 
 	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-		OFAutoreleasePool *pool2;
+		void *pool = objc_autoreleasePoolPush();
 		OFArray *objects;
 		OFEnumerator *enumerator;
 		OFXMLElement *objectElement;
@@ -153,9 +153,8 @@
 					 namespace: OF_SERIALIZATION_NS];
 
 		enumerator = [objects objectEnumerator];
-		pool2 = [[OFAutoreleasePool alloc] init];
-
 		while ((objectElement = [enumerator nextObject]) != nil) {
+			void *pool2 = objc_autoreleasePoolPush();
 			OFXMLElement *object;
 			OFXMLAttribute *count;
 			OFNumber *number;
@@ -175,10 +174,10 @@
 					forKey: [object objectByDeserializing]
 				       copyKey: NO];
 
-			[pool2 releaseObjects];
+			objc_autoreleasePoolPop(pool2);
 		}
 
-		[pool release];
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -205,7 +204,7 @@
 
 - (void)addObject: (id)object
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFNumber *count;
 
 	count = [[dictionary objectForKey: object] numberByIncreasing];
@@ -219,18 +218,18 @@
 
 	mutations++;
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)removeObject: (id)object
 {
 	OFNumber *count = [dictionary objectForKey: object];
-	OFAutoreleasePool *pool;
+	void *pool;
 
 	if (count == nil)
 		return;
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 	count = [count numberByDecreasing];
 
 	if ([count sizeValue] > 0)
@@ -242,7 +241,7 @@
 
 	mutations++;
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)makeImmutable

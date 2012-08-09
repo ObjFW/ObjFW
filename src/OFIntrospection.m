@@ -25,8 +25,8 @@
 #import "OFIntrospection.h"
 #import "OFString.h"
 #import "OFArray.h"
-#import "OFAutoreleasePool.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 @implementation OFMethod
@@ -219,7 +219,6 @@
 	self = [super init];
 
 	@try {
-		OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 #if defined(OF_OBJFW_RUNTIME)
 		struct objc_method_list *methodList;
 #elif defined(OF_APPLE_RUNTIME)
@@ -244,10 +243,11 @@
 			int i;
 
 			for (i = 0; i < methodList->count; i++) {
+				void *pool = objc_autoreleasePoolPush();
 				OFMethod *method = [[OFMethod alloc]
 				    _initWithMethod: &methodList->methods[i]];
 				[classMethods addObject: [method autorelease]];
-				[pool releaseObjects];
+				objc_autoreleasePoolPop(pool);
 			}
 		}
 
@@ -256,11 +256,12 @@
 			int i;
 
 			for (i = 0; i < methodList->count; i++) {
+				void *pool = objc_autoreleasePoolPush();
 				OFMethod *method = [[OFMethod alloc]
 				    _initWithMethod: &methodList->methods[i]];
 				[instanceMethods addObject:
 				    [method autorelease]];
-				[pool releaseObjects];
+				objc_autoreleasePoolPop(pool);
 			}
 		}
 
@@ -268,13 +269,15 @@
 			unsigned i;
 
 			for (i = 0; i < class->ivars->count; i++) {
+				void *pool = objc_autoreleasePoolPush();
 				OFInstanceVariable *ivar;
 
 				ivar = [[OFInstanceVariable alloc]
 				    _initWithIvar: &class->ivars->ivars[i]];
 				[instanceVariables addObject:
 				    [ivar autorelease]];
-				[pool releaseObjects];
+
+				objc_autoreleasePoolPop(pool);
 			}
 		}
 
@@ -284,10 +287,11 @@
 		    &count);
 		@try {
 			for (i = 0; i < count; i++) {
+				void *pool = objc_autoreleasePoolPush();
 				[classMethods addObject: [[[OFMethod alloc]
 				    _initWithMethod: methodList[i]]
 				    autorelease]];
-				[pool releaseObjects];
+				objc_autoreleasePoolPop(pool);
 			}
 		} @finally {
 			free(methodList);
@@ -296,10 +300,11 @@
 		methodList = class_copyMethodList(class, &count);
 		@try {
 			for (i = 0; i < count; i++) {
+				void *pool = objc_autoreleasePoolPush();
 				[instanceMethods addObject: [[[OFMethod alloc]
 				    _initWithMethod: methodList[i]]
 				    autorelease]];
-				[pool releaseObjects];
+				objc_autoreleasePoolPop(pool);
 			}
 		} @finally {
 			free(methodList);
@@ -308,10 +313,11 @@
 		ivarList = class_copyIvarList(class, &count);
 		@try {
 			for (i = 0; i < count; i++) {
+				void *pool = objc_autoreleasePoolPush();
 				[instanceVariables addObject:
 				    [[[OFInstanceVariable alloc]
 				    _initWithIvar: ivarList[i]] autorelease]];
-				[pool releaseObjects];
+				objc_autoreleasePoolPop(pool);
 			}
 		} @finally {
 			free(ivarList);
@@ -320,11 +326,12 @@
 		propertyList = class_copyPropertyList(class, &count);
 		@try {
 			for (i = 0; i < count; i++) {
+				void *pool = objc_autoreleasePoolPush();
 				[properties addObject:
 				    [[[OFProperty alloc]
 				    _initWithProperty: propertyList[i]]
 				    autorelease]];
-				[pool releaseObjects];
+				objc_autoreleasePoolPop(pool);
 			}
 		} @finally {
 			free(propertyList);
@@ -337,8 +344,6 @@
 #ifdef OF_HAVE_PROPERTIES
 		[properties makeImmutable];
 #endif
-
-		[pool release];
 	} @catch (id e) {
 		[self release];
 		@throw e;

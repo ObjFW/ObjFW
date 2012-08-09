@@ -22,7 +22,6 @@
 #import "OFMutableSet_hashtable.h"
 #import "OFMutableDictionary_hashtable.h"
 #import "OFNumber.h"
-#import "OFAutoreleasePool.h"
 
 @implementation OFMutableSet_hashtable
 + (void)initialize
