@@ -78,3 +78,7 @@ get_eip:
 .type objc_msg_lookup_super, @function
 .size objc_msg_lookup, forward-objc_msg_lookup
 .size objc_msg_lookup_super, ret_nil-objc_msg_lookup_super
+
+#ifdef __linux__
+.section .note.GNU-stack, "", %progbits
+#endif
