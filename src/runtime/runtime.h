@@ -74,7 +74,7 @@ struct objc_selector {
 
 struct objc_super {
 	id self;
-	Class class;
+	Class cls;
 };
 
 struct objc_method {
@@ -222,7 +222,7 @@ object_getClassName(id obj)
 static inline BOOL
 class_isMetaClass(Class cls_)
 {
-	struct objc_class *cls = cls_;
+	struct objc_class *cls = (struct objc_class*)cls_;
 
 	return (cls->info & OBJC_CLASS_INFO_METACLASS);
 }
