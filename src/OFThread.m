@@ -274,14 +274,14 @@ call_main(id object)
 
 	[self retain];
 
+	running = OF_THREAD_RUNNING;
+
 	if (!of_thread_new(&thread, call_main, self)) {
 		[self release];
 		@throw [OFThreadStartFailedException
 		    exceptionWithClass: [self class]
 				thread: self];
 	}
-
-	running = OF_THREAD_RUNNING;
 }
 
 - (id)join
