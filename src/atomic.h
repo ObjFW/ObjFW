@@ -418,7 +418,7 @@ of_atomic_or_int(volatile unsigned int *p, unsigned int i)
 		    "jne	0\n\t"
 		    : "=&r"(i)
 		    : "r"(i), "m"(*p)
-		    : "eax"
+		    : "eax", "cc"
 		);
 # ifdef OF_AMD64_ASM
 	if (sizeof(int) == 8)
@@ -432,7 +432,7 @@ of_atomic_or_int(volatile unsigned int *p, unsigned int i)
 		    "jne	0\n\t"
 		    : "=&r"(i)
 		    : "r"(i), "m"(*p)
-		    : "rax"
+		    : "rax", "cc"
 		);
 # endif
 	else
@@ -471,7 +471,7 @@ of_atomic_or_32(volatile uint32_t *p, uint32_t i)
 	    "jne	0\n\t"
 	    : "=&r"(i)
 	    : "r"(i), "m"(*p)
-	    : "eax"
+	    : "eax", "cc"
 	);
 
 	return i;
@@ -501,7 +501,7 @@ of_atomic_and_int(volatile unsigned int *p, unsigned int i)
 		    "jne	0\n\t"
 		    : "=&r"(i)
 		    : "r"(i), "m"(*p)
-		    : "eax"
+		    : "eax", "cc"
 		);
 # ifdef OF_AMD64_ASM
 	if (sizeof(int) == 8)
@@ -515,7 +515,7 @@ of_atomic_and_int(volatile unsigned int *p, unsigned int i)
 		    "jne	0\n\t"
 		    : "=&r"(i)
 		    : "r"(i), "m"(*p)
-		    : "rax"
+		    : "rax", "cc"
 		);
 # endif
 	else
@@ -554,7 +554,7 @@ of_atomic_and_32(volatile uint32_t *p, uint32_t i)
 	    "jne	0\n\t"
 	    : "=&r"(i)
 	    : "r"(i), "m"(*p)
-	    : "eax"
+	    : "eax", "cc"
 	);
 
 	return i;
@@ -584,7 +584,7 @@ of_atomic_xor_int(volatile unsigned int *p, unsigned int i)
 		    "jne	0\n\t"
 		    : "=&r"(i)
 		    : "r"(i), "m"(*p)
-		    : "eax"
+		    : "eax", "cc"
 		);
 # ifdef OF_AMD64_ASM
 	if (sizeof(int) == 8)
@@ -598,7 +598,7 @@ of_atomic_xor_int(volatile unsigned int *p, unsigned int i)
 		    "jne	0\n\t"
 		    : "=&r"(i)
 		    : "r"(i), "m"(*p)
-		    : "rax"
+		    : "rax", "cc"
 		);
 # endif
 	else
@@ -637,7 +637,7 @@ of_atomic_xor_32(volatile uint32_t *p, uint32_t i)
 	    "jne	0\n\t"
 	    : "=&r"(i)
 	    : "r"(i), "m"(*p)
-	    : "eax"
+	    : "eax", "cc"
 	);
 
 	return i;
@@ -661,7 +661,7 @@ of_atomic_cmpswap_int(volatile int *p, int o, int n)
 
 	return NO;
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	int32_t r;
+	int r;
 
 	__asm__ (
 	    "xorl	%0, %0\n\t"
@@ -671,6 +671,7 @@ of_atomic_cmpswap_int(volatile int *p, int o, int n)
 	    "movzbl	%b0, %0"
 	    : "=&d"(r)	/* use d instead of r due to gcc bug */
 	    : "a"(o), "r"(n), "m"(*p)
+	    : "cc"
 	);
 
 	return r;
@@ -704,6 +705,7 @@ of_atomic_cmpswap_32(volatile int32_t *p, int32_t o, int32_t n)
 	    "movzbl	%b0, %0"
 	    : "=&d"(r)	/* use d instead of r due to gcc bug */
 	    : "a"(o), "r"(n), "m"(*p)
+	    : "cc"
 	);
 
 	return r;
@@ -737,6 +739,7 @@ of_atomic_cmpswap_ptr(void* volatile *p, void *o, void *n)
 	    "movzbl	%b0, %0"
 	    : "=&d"(r)	/* use d instead of r due to gcc bug */
 	    : "a"(o), "r"(n), "m"(*p)
+	    : "cc"
 	);
 
 	return r;
