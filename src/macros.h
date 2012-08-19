@@ -378,7 +378,7 @@ of_range(size_t start, size_t length)
 }
 
 static OF_INLINE of_point_t
-of_point(int x, int y)
+of_point(float x, float y)
 {
 	of_point_t point = { x, y };
 
@@ -386,7 +386,7 @@ of_point(int x, int y)
 }
 
 static OF_INLINE of_dimension_t
-of_dimension(int width, int height)
+of_dimension(float width, float height)
 {
 	of_dimension_t dimension = { width, height };
 
@@ -394,7 +394,7 @@ of_dimension(int width, int height)
 }
 
 static OF_INLINE of_rectangle_t
-of_rectangle(int x, int y, int width, int height)
+of_rectangle(float x, float y, float width, float height)
 {
 	of_rectangle_t rectangle = {
 		of_point(x, y),
