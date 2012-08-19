@@ -64,7 +64,7 @@ typedef struct of_fast_enumeration_state_t {
 	/// Arbitrary state information for the enumeration
 	unsigned long state;
 	/// Pointer to a C array of objects to return
-	id *itemsPtr;
+	__unsafe_unretained id *itemsPtr;
 	/// Arbitrary state information to detect mutations
 	unsigned long *mutationsPtr;
 	/// Additional arbitrary state information

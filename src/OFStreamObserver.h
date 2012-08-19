@@ -80,7 +80,7 @@
 {
 	OFMutableArray *readStreams;
 	OFMutableArray *writeStreams;
-	OFStream **FDToStream;
+	__unsafe_unretained OFStream **FDToStream;
 	size_t maxFD;
 	OFMutableArray *queue;
 	OFDataArray *queueInfo, *queueFDs;

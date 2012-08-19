@@ -61,6 +61,8 @@
 # define OF_CONSUMED
 # define OF_WEAK_UNAVAILABLE
 # define __unsafe_unretained
+# define __bridge
+# define __autoreleasing
 #endif
 
 #define OF_RETAIN_COUNT_MAX UINT_MAX

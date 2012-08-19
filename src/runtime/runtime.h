@@ -23,8 +23,10 @@
 #endif
 
 #if __has_feature(objc_arc)
+# define OBJC_UNSAFE_UNRETAINED __unsafe_unretained
 # define OBJC_BRIDGE __bridge
 #else
+# define OBJC_UNSAFE_UNRETAINED
 # define OBJC_BRIDGE
 #endif
 
@@ -73,7 +75,7 @@ struct objc_selector {
 };
 
 struct objc_super {
-	id self;
+	OBJC_UNSAFE_UNRETAINED id self;
 	Class cls;
 };
 
@@ -154,7 +156,7 @@ typedef struct {
 struct objc_protocol_list {
 	struct objc_protocol_list *next;
 	long count;
-	Protocol *list[1];
+	OBJC_UNSAFE_UNRETAINED Protocol *list[1];
 };
 
 #define Nil (Class)0
@@ -222,11 +224,12 @@ object_getClassName(id obj)
 static inline BOOL
 class_isMetaClass(Class cls_)
 {
-	struct objc_class *cls = (struct objc_class*)cls_;
+	struct objc_class *cls = (OBJC_BRIDGE struct objc_class*)cls_;
 
 	return (cls->info & OBJC_CLASS_INFO_METACLASS);
 }
 
+#undef OBJC_UNSAFE_UNRETAINED
 #undef OBJC_BRIDGE
 
 #endif

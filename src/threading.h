@@ -71,10 +71,10 @@ of_thread_new(of_thread_t *thread, id (*main)(id), id data)
 {
 #if defined(OF_HAVE_PTHREADS)
 	return !pthread_create(thread, NULL, (void*(*)(void*))main,
-	    (void*)data);
+	    (__bridge void*)data);
 #elif defined(_WIN32)
 	*thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)main,
-	    (void*)data, 0, NULL);
+	    (__bridge void*)data, 0, NULL);
 
 	return (thread != NULL);
 #endif

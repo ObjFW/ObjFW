@@ -32,7 +32,7 @@ struct of_list_object_t {
 	/// A pointer to the previous list object in the list
 	of_list_object_t *previous;
 	/// The object for the list object
-	id		 object;
+	__unsafe_unretained id object;
 };
 
 /**
