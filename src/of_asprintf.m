@@ -27,9 +27,9 @@
 #include <sys/types.h>
 
 #import "OFString.h"
-#import "OFAutoreleasePool.h"
-#import "asprintf.h"
 
+#import "asprintf.h"
+#import "autorelease.h"
 #import "macros.h"
 
 #define MAX_SUBFORMAT_LEN 64
@@ -289,12 +289,12 @@ formatConversionSpecifierState(struct context *ctx)
 			id object;
 
 			if ((object = va_arg(ctx->arguments, id)) != nil) {
-				OFAutoreleasePool *pool;
+				void *pool = objc_autoreleasePoolPush();
 
-				pool = [[OFAutoreleasePool alloc] init];
 				tmpLen = asprintf(&tmp, ctx->subformat,
 				    [[object description] UTF8String]);
-				[pool release];
+
+				objc_autoreleasePoolPop(pool);
 			} else
 				tmpLen = asprintf(&tmp, ctx->subformat,
 				    "(nil)");
