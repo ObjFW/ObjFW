@@ -62,7 +62,6 @@ SRCS = OFApplication.m			\
        OFXMLNode.m			\
        OFXMLParser.m			\
        OFXMLProcessingInstructions.m	\
-       ${AUTORELEASE_M}			\
        base64.m				\
        of_asprintf.m			\
        of_strptime.m			\
@@ -75,6 +74,7 @@ INCLUDES := ${SRCS:.m=.h}		\
 	    OFTLSSocket.h		\
 	    ObjFW.h			\
 	    asprintf.h			\
+	    autorelease.h		\
 	    ${ATOMIC_H}			\
 	    macros.h			\
 	    objfw-defs.h		\
@@ -82,6 +82,7 @@ INCLUDES := ${SRCS:.m=.h}		\
 
 SRCS += OFArray_adjacent.m		\
 	OFArray_adjacentSubarray.m	\
+	${AUTORELEASE_M}		\
 	OFCountedSet_hashtable.m	\
 	OFDictionary_hashtable.m	\
 	OFMutableArray_adjacent.m	\

@@ -293,6 +293,7 @@
 		4BA85BCD140ECCE800E91D51 /* OFMutableSet_hashtable.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA85BC7140ECCE800E91D51 /* OFMutableSet_hashtable.m */; };
 		4BA85BCE140ECCE800E91D51 /* OFSet_hashtable.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA85BC8140ECCE800E91D51 /* OFSet_hashtable.h */; };
 		4BA85BCF140ECCE800E91D51 /* OFSet_hashtable.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA85BC9140ECCE800E91D51 /* OFSet_hashtable.m */; };
+		4BA9CFA415E129D30076DC74 /* autorelease.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA9CFA315E129D30076DC74 /* autorelease.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BAA60C814D09699006F068D /* OFJSONTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BAA60C714D09699006F068D /* OFJSONTests.m */; };
 		4BAE7354139C508E00F682ED /* serialization.xml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BAE7353139C507F00F682ED /* serialization.xml */; };
 		4BB25E88139C388A00F574EA /* OFObject+Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB25E82139C388A00F574EA /* OFObject+Serialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -652,6 +653,7 @@
 		4BA85BC7140ECCE800E91D51 /* OFMutableSet_hashtable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMutableSet_hashtable.m; path = src/OFMutableSet_hashtable.m; sourceTree = "<group>"; };
 		4BA85BC8140ECCE800E91D51 /* OFSet_hashtable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSet_hashtable.h; path = src/OFSet_hashtable.h; sourceTree = "<group>"; };
 		4BA85BC9140ECCE800E91D51 /* OFSet_hashtable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSet_hashtable.m; path = src/OFSet_hashtable.m; sourceTree = "<group>"; };
+		4BA9CFA315E129D30076DC74 /* autorelease.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = autorelease.h; path = src/autorelease.h; sourceTree = "<group>"; };
 		4BAA60C714D09699006F068D /* OFJSONTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFJSONTests.m; path = tests/OFJSONTests.m; sourceTree = "<group>"; };
 		4BAE7353139C507F00F682ED /* serialization.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = serialization.xml; path = tests/serialization.xml; sourceTree = "<group>"; };
 		4BAF5F46123460C900F4E111 /* OFCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCollection.h; path = src/OFCollection.h; sourceTree = "<group>"; };
@@ -1046,6 +1048,7 @@
 				4B6799561099E7C50041064A /* asprintf.h */,
 				4B6AF96C10A8D3E40003FB0A /* asprintf.m */,
 				4BBA36C411406AB700CBA3AC /* atomic.h */,
+				4BA9CFA315E129D30076DC74 /* autorelease.h */,
 				4B3D236D1337FB5800DD29B8 /* base64.h */,
 				4B3D236E1337FB5800DD29B8 /* base64.m */,
 				4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */,
@@ -1215,6 +1218,7 @@
 				4B3D23E41337FCB000DD29B8 /* ObjFW.h in Headers */,
 				4B3D23E51337FCB000DD29B8 /* asprintf.h in Headers */,
 				4B3D23E61337FCB000DD29B8 /* atomic.h in Headers */,
+				4BA9CFA415E129D30076DC74 /* autorelease.h in Headers */,
 				4B3D23E71337FCB000DD29B8 /* base64.h in Headers */,
 				4B3D23E81337FCB000DD29B8 /* macros.h in Headers */,
 				4BD98C03133814220048DD5B /* objfw-defs.h in Headers */,
