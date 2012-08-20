@@ -28,9 +28,9 @@ IMP (*objc_forward_handler)(id, SEL) = NULL;
 IMP
 objc_not_found_handler(id obj, SEL sel)
 {
+	BOOL is_class = object_getClass(obj)->info & OBJC_CLASS_INFO_METACLASS;
+
 	if (!(object_getClass(obj)->info & OBJC_CLASS_INFO_INITIALIZED)) {
-		BOOL is_class =
-		    object_getClass(obj)->info & OBJC_CLASS_INFO_METACLASS;
 		Class cls = (is_class ? (Class)obj : object_getClass(obj));
 
 		objc_initialize_class(cls);
@@ -55,8 +55,8 @@ objc_not_found_handler(id obj, SEL sel)
 	if (objc_forward_handler != NULL)
 		return objc_forward_handler(obj, sel);
 
-	OBJC_ERROR("Selector %s is not implemented for class %s!",
-	    sel_getName(sel), object_getClassName(obj));
+	OBJC_ERROR("Selector %c[%s] is not implemented for class %s!",
+	    (is_class ? '+' : '-'), sel_getName(sel), object_getClassName(obj));
 }
 
 BOOL
