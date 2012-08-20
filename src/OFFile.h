@@ -117,21 +117,21 @@ extern void of_log(OFConstantString*, ...);
  *
  * \param path The new directory to change to
  */
-+ (void)changeToDirectory: (OFString*)path;
++ (void)changeToDirectoryAtPath: (OFString*)path;
 
 /**
  * \brief Returns the size of the specified file.
  *
  * \return The size of the specified file
  */
-+ (off_t)sizeOfFile: (OFString*)path;
++ (off_t)sizeOfFileAtPath: (OFString*)path;
 
 /**
  * \brief Returns the date of the last modification of the file.
  *
  * \return The date of the last modification of the file
  */
-+ (OFDate*)modificationDateOfFile: (OFString*)path;
++ (OFDate*)modificationDateOfFileAtPath: (OFString*)path;
 
 #ifndef _PSP
 /**
@@ -143,8 +143,8 @@ extern void of_log(OFConstantString*, ...);
  *	       string
  * \param mode The new mode for the file
  */
-+ (void)changeModeOfFile: (OFString*)path
-		  toMode: (mode_t)mode;
++ (void)changeModeOfFileAtPath: (OFString*)path
+			  mode: (mode_t)mode;
 #endif
 
 #if !defined(_WIN32) && !defined(_PSP)
@@ -158,9 +158,9 @@ extern void of_log(OFConstantString*, ...);
  * \param owner The new owner for the file
  * \param group The new group for the file
  */
-+ (void)changeOwnerOfFile: (OFString*)path
-		  toOwner: (OFString*)owner
-		    group: (OFString*)group;
++ (void)changeOwnerOfFileAtPath: (OFString*)path
+			  owner: (OFString*)owner
+			  group: (OFString*)group;
 #endif
 
 /**

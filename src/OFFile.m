@@ -356,7 +356,7 @@ of_log(OFConstantString *format, ...)
 	return files;
 }
 
-+ (void)changeToDirectory: (OFString*)path
++ (void)changeToDirectoryAtPath: (OFString*)path
 {
 	if (chdir([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
 		@throw [OFChangeDirectoryFailedException
@@ -365,8 +365,8 @@ of_log(OFConstantString *format, ...)
 }
 
 #ifndef _PSP
-+ (void)changeModeOfFile: (OFString*)path
-		  toMode: (mode_t)mode
++ (void)changeModeOfFileAtPath: (OFString*)path
+			  mode: (mode_t)mode
 {
 # ifndef _WIN32
 	if (chmod([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE], mode))
@@ -399,7 +399,7 @@ of_log(OFConstantString *format, ...)
 }
 #endif
 
-+ (off_t)sizeOfFile: (OFString*)path
++ (off_t)sizeOfFileAtPath: (OFString*)path
 {
 	struct stat s;
 
@@ -413,7 +413,7 @@ of_log(OFConstantString *format, ...)
 	return s.st_size;
 }
 
-+ (OFDate*)modificationDateOfFile: (OFString*)path
++ (OFDate*)modificationDateOfFileAtPath: (OFString*)path
 {
 	struct stat s;
 
@@ -429,9 +429,9 @@ of_log(OFConstantString *format, ...)
 }
 
 #if !defined(_WIN32) && !defined(_PSP)
-+ (void)changeOwnerOfFile: (OFString*)path
-		  toOwner: (OFString*)owner
-		    group: (OFString*)group
++ (void)changeOwnerOfFileAtPath: (OFString*)path
+			  owner: (OFString*)owner
+			  group: (OFString*)group
 {
 	uid_t uid = -1;
 	gid_t gid = -1;
