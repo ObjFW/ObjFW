@@ -166,49 +166,7 @@
 }
 @end
 
-#ifdef OF_HAVE_PROPERTIES
-@implementation OFProperty
-@synthesize name, attributes;
-
-#if defined(OF_APPLE_RUNTIME)
-- _initWithProperty: (objc_property_t)property
-{
-	self = [super init];
-
-	@try {
-		name = [[OFString alloc]
-		    initWithCString: property_getName(property)
-			   encoding: OF_STRING_ENCODING_ASCII];
-		attributes = property_getAttributes(property);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-#endif
-
-- (void)dealloc
-{
-	[name release];
-
-	[super dealloc];
-}
-
-- (OFString*)description
-{
-	return [OFString stringWithFormat: @"<OFProperty %@ [%s]>",
-					   name, attributes];
-}
-@end
-#endif
-
 @implementation OFIntrospection
-#ifdef OF_HAVE_PROPERTIES
-@synthesize properties;
-#endif
-
 + introspectionWithClass: (Class)class
 {
 	return [[[self alloc] initWithClass: class] autorelease];
@@ -224,18 +182,12 @@
 #elif defined(OF_APPLE_RUNTIME)
 		Method *methodList;
 		Ivar *ivarList;
-# ifdef OF_HAVE_PROPERTIES
-		objc_property_t *propertyList;
-# endif
 		unsigned i, count;
 #endif
 
 		classMethods = [[OFMutableArray alloc] init];
 		instanceMethods = [[OFMutableArray alloc] init];
 		instanceVariables = [[OFMutableArray alloc] init];
-#ifdef OF_HAVE_PROPERTIES
-		properties = [[OFMutableArray alloc] init];
-#endif
 
 #if defined(OF_OBJFW_RUNTIME)
 		for (methodList = object_getClass(class)->methodlist;
@@ -280,8 +232,6 @@
 				objc_autoreleasePoolPop(pool);
 			}
 		}
-
-		/* TODO: properties */
 #elif defined(OF_APPLE_RUNTIME)
 		methodList = class_copyMethodList(object_getClass(class),
 		    &count);
@@ -322,28 +272,11 @@
 		} @finally {
 			free(ivarList);
 		}
-
-		propertyList = class_copyPropertyList(class, &count);
-		@try {
-			for (i = 0; i < count; i++) {
-				void *pool = objc_autoreleasePoolPush();
-				[properties addObject:
-				    [[[OFProperty alloc]
-				    _initWithProperty: propertyList[i]]
-				    autorelease]];
-				objc_autoreleasePoolPop(pool);
-			}
-		} @finally {
-			free(propertyList);
-		}
 #endif
 
 		[classMethods makeImmutable];
 		[instanceMethods makeImmutable];
 		[instanceVariables makeImmutable];
-#ifdef OF_HAVE_PROPERTIES
-		[properties makeImmutable];
-#endif
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -357,9 +290,6 @@
 	[classMethods release];
 	[instanceMethods release];
 	[instanceVariables release];
-#ifdef OF_HAVE_PROPERTIES
-	[properties release];
-#endif
 
 	[super dealloc];
 }

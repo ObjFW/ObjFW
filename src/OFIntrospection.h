@@ -96,23 +96,6 @@
 - (const char*)typeEncoding;
 @end
 
-#ifdef OF_HAVE_PROPERTIES
-/**
- * \brief A class for describing a property.
- */
-@interface OFProperty: OFObject
-{
-	OFString *name;
-	const char *attributes;
-}
-
-/// The name of the property.
-@property (readonly, copy) OFString *name;
-/// The attributes of the property.
-@property (readonly) const char *attributes;
-@end
-#endif
-
 /**
  * \brief A class for introspecting classes.
  */
@@ -130,13 +113,6 @@
 @property (readonly, copy) OFArray *classMethods;
 @property (readonly, copy) OFArray *instanceMethods;
 @property (readonly, copy) OFArray *instanceVariables;
-
-/**
- * \brief The properties of the class.
- *
- * Only available if OF_HAVE_PROPERTIES is defined.
- */
-@property (readonly, copy) OFArray *properties;
 #endif
 
 /**
