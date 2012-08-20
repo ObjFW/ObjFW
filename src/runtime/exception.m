@@ -539,7 +539,7 @@ __gnu_objc_personality_v0(int version, int actions, uint64_t ex_class,
 		found = find_actionrecord(actionrecords, &lsda, actions,
 		    foreign, e, &filter);
 
-	if (!found)
+	if (!found || foreign)
 		CONTINUE_UNWIND;
 
 	if (actions & _UA_SEARCH_PHASE) {
@@ -547,24 +547,26 @@ __gnu_objc_personality_v0(int version, int actions, uint64_t ex_class,
 			CONTINUE_UNWIND;
 
 		/* Cache it so we don't have to search it again in phase 2 */
-		if (!foreign) {
 #if defined(__arm__) || defined(__ARM__)
-			ex->barrier_cache.sp = _Unwind_GetGR(ctx, 13);
-			ex->barrier_cache.bitpattern[1] = filter;
-			ex->barrier_cache.bitpattern[3] = landingpad;
+		ex->barrier_cache.sp = _Unwind_GetGR(ctx, 13);
+		ex->barrier_cache.bitpattern[1] = filter;
+		ex->barrier_cache.bitpattern[3] = landingpad;
 #else
-			e->landingpad = landingpad;
-			e->filter = filter;
+		e->landingpad = landingpad;
+		e->filter = filter;
 #endif
-		}
 
 		return _URC_HANDLER_FOUND;
 	} else if (actions & _UA_CLEANUP_PHASE) {
-		/* For cleanup, reg #0 must be the exception and reg #1 zero */
+		if (!(found & CLEANUP_FOUND))
+			CONTINUE_UNWIND;
+
 		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(0),
-		    (uintptr_t)e);
-		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(1), 0);
+		    (uintptr_t)e->object);
+		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(1), filter);
 		_Unwind_SetIP(ctx, landingpad);
+
+		free(ex);
 
 		return _URC_INSTALL_CONTEXT;
 	}
