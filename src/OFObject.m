@@ -87,9 +87,6 @@ static struct {
 	Class isa;
 } alloc_failed_exception;
 
-static SEL cxx_construct = NULL;
-static SEL cxx_destruct = NULL;
-
 size_t of_pagesize;
 size_t of_num_cpus;
 
@@ -206,7 +203,12 @@ of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
 	instance = (OFObject*)((char*)instance + PRE_IVAR_ALIGN);
 
 	memset(instance, 0, instanceSize);
-	object_setClass(instance, class);
+
+	if (!objc_constructInstance(class, instance)) {
+		free((char*)instance - PRE_IVAR_ALIGN);
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: class];
+	}
 
 	if OF_UNLIKELY (extra != NULL)
 		*extra = (char*)instance + instanceSize + extraAlignment;
@@ -241,15 +243,6 @@ void _references_to_categories_of_OFObject(void)
 #ifdef HAVE_OBJC_ENUMERATIONMUTATION
 	objc_setEnumerationMutationHandler(enumeration_mutation_handler);
 #endif
-
-	cxx_construct = sel_registerName(".cxx_construct");
-	cxx_destruct = sel_registerName(".cxx_destruct");
-
-	if (cxx_construct == NULL || cxx_destruct == NULL) {
-		fputs("Runtime error: Failed to register selector "
-		    ".cxx_construct and/or .cxx_destruct!\n", stderr);
-		abort();
-	}
 
 #if defined(_WIN32)
 	SYSTEM_INFO si;
@@ -511,23 +504,6 @@ void _references_to_categories_of_OFObject(void)
 
 - init
 {
-	Class class;
-	void (*last)(id, SEL) = NULL;
-
-	for (class = object_getClass(self); class != Nil;
-	    class = class_getSuperclass(class)) {
-		void (*construct)(id, SEL);
-
-		if ([class instancesRespondToSelector: cxx_construct]) {
-			if ((construct = (void(*)(id, SEL))[class
-			    instanceMethodForSelector: cxx_construct]) != last)
-				construct(self, cxx_construct);
-
-			last = construct;
-		} else
-			break;
-	}
-
 	return self;
 }
 
@@ -827,23 +803,9 @@ void _references_to_categories_of_OFObject(void)
 
 - (void)dealloc
 {
-	Class class;
-	void (*last)(id, SEL) = NULL;
 	struct pre_mem *iter;
 
-	for (class = object_getClass(self); class != Nil;
-	    class = class_getSuperclass(class)) {
-		void (*destruct)(id, SEL);
-
-		if ([class instancesRespondToSelector: cxx_destruct]) {
-			if ((destruct = (void(*)(id, SEL))[class
-			    instanceMethodForSelector: cxx_destruct]) != last)
-				destruct(self, cxx_destruct);
-
-			last = destruct;
-		} else
-			break;
-	}
+	objc_destructInstance(self);
 
 	iter = PRE_IVAR->firstMem;
 	while (iter != NULL) {
