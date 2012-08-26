@@ -398,7 +398,6 @@ static uint8_t
 find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
     BOOL foreign, struct objc_exception *e, intptr_t *filtervalue)
 {
-	uint8_t found = 0;
 	const uint8_t *ptr;
 	intptr_t filter, displacement;
 
@@ -442,15 +441,15 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 
 			if (class_matches(class, e->object)) {
 				*filtervalue = filter;
-				return (found | HANDLER_FOUND);
+				return HANDLER_FOUND;
 			}
 		} else if (filter == 0)
-			found |= CLEANUP_FOUND;
+			return CLEANUP_FOUND;
 		else
 			abort();
 	} while (displacement != 0);
 
-	return found;
+	return 0;
 }
 
 #if defined(__arm__) || defined(__ARM__)
@@ -539,11 +538,11 @@ __gnu_objc_personality_v0(int version, int actions, uint64_t ex_class,
 		found = find_actionrecord(actionrecords, &lsda, actions,
 		    foreign, e, &filter);
 
-	if (!found || foreign)
+	if (!found)
 		CONTINUE_UNWIND;
 
 	if (actions & _UA_SEARCH_PHASE) {
-		if (!(found & HANDLER_FOUND))
+		if (!(found & HANDLER_FOUND) || foreign)
 			CONTINUE_UNWIND;
 
 		/* Cache it so we don't have to search it again in phase 2 */
@@ -562,11 +561,10 @@ __gnu_objc_personality_v0(int version, int actions, uint64_t ex_class,
 			CONTINUE_UNWIND;
 
 		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(0),
-		    (uintptr_t)e->object);
+		    (uintptr_t)ex);
 		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(1), filter);
 		_Unwind_SetIP(ctx, landingpad);
 
-		free(ex);
 
 		return _URC_INSTALL_CONTEXT;
 	}
