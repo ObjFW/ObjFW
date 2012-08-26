@@ -44,6 +44,12 @@
 		[self inheritMethodsFromClass: [OFString_UTF8 class]];
 }
 
+- initWithUTF8StringNoCopy: (const char*)UTF8String
+	      freeWhenDone: (BOOL)freeWhenDone
+{
+	return [self initWithUTF8String: UTF8String];
+}
+
 - (void)_convertWithWordStartTable: (const of_unichar_t *const[])startTable
 		   wordMiddleTable: (const of_unichar_t *const[])middleTable
 		wordStartTableSize: (size_t)startTableSize

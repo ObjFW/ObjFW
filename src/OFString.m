@@ -297,6 +297,14 @@ static struct {
 				       storage: storage];
 }
 
+- initWithUTF8StringNoCopy: (const char*)UTF8String
+	      freeWhenDone: (BOOL)freeWhenDone
+{
+	return (id)[[OFString_UTF8 alloc]
+	    initWithUTF8StringNoCopy: UTF8String
+			freeWhenDone: freeWhenDone];
+}
+
 - initWithCString: (const char*)cString
 	 encoding: (of_string_encoding_t)encoding
 {
@@ -676,6 +684,12 @@ static struct {
 	return [self initWithCString: UTF8String
 			    encoding: OF_STRING_ENCODING_UTF_8
 			      length: UTF8StringLength];
+}
+
+- initWithUTF8StringNoCopy: (const char*)UTF8String
+	      freeWhenDone: (BOOL)freeWhenDone
+{
+	return [self initWithUTF8String: UTF8String];
 }
 
 - initWithCString: (const char*)cString

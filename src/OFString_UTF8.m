@@ -245,6 +245,45 @@ memcasecmp(const char *first, const char *second, size_t length)
 	return self;
 }
 
+- initWithUTF8StringNoCopy: (const char*)UTF8String
+	      freeWhenDone: (BOOL)freeWhenDone
+{
+	self = [super init];
+
+	@try {
+		size_t UTF8StringLength = strlen(UTF8String);
+
+		if (freeWhenDone)
+			s->freeWhenDone = (char*)UTF8String;
+
+		if (UTF8StringLength >= 3 &&
+		    !memcmp(UTF8String, "\xEF\xBB\xBF", 3)) {
+			UTF8String += 3;
+			UTF8StringLength -= 3;
+		}
+
+		s = &s_store;
+
+		s->cString = (char*)UTF8String;
+		s->cStringLength = UTF8StringLength;
+
+		switch (of_string_check_utf8(UTF8String, UTF8StringLength,
+		    &s->length)) {
+		case 1:
+			s->UTF8 = YES;
+			break;
+		case -1:
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: [self class]];
+		}
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
 - initWithString: (OFString*)string
 {
 	self = [super init];
@@ -570,6 +609,14 @@ memcasecmp(const char *first, const char *second, size_t length)
 	}
 
 	return self;
+}
+
+- (void)dealloc
+{
+	if (s != NULL && s->freeWhenDone != NULL)
+		free(s->freeWhenDone);
+
+	[super dealloc];
 }
 
 - (const char*)UTF8String

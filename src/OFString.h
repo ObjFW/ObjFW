@@ -314,6 +314,20 @@ extern size_t of_utf16_string_length(const uint16_t*);
 	      length: (size_t)UTF8StringLength;
 
 /**
+ * \brief Initializes an already allocated OFString from an UTF-8 encoded C
+ *	  string without copying it, if possible.
+ *
+ * \note Mutable versions always create a copy!
+ *
+ * \param UTF8String A UTF-8 encoded C string to initialize the OFString with
+ * \param freeWhenDone Whether to free the C string when it is not needed
+ *		       anymore
+ * \return An initialized OFString
+ */
+- initWithUTF8StringNoCopy: (const char*)UTF8String
+	      freeWhenDone: (BOOL)freeWhenDone;
+
+/**
  * \brief Initializes an already allocated OFString from a C string with the
  *	  specified encoding.
  *

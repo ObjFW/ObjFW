@@ -33,6 +33,7 @@
 		size_t	 length;
 		BOOL	 hashed;
 		uint32_t hash;
+		char	 *freeWhenDone;
 	} *restrict s;
 	struct of_string_utf8_ivars s_store;
 }

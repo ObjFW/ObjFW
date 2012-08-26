@@ -147,11 +147,10 @@ struct {
 {
 	struct of_string_utf8_ivars *ivars;
 
-	if ((ivars = malloc(sizeof(*ivars))) == NULL)
+	if ((ivars = calloc(1, sizeof(*ivars))) == NULL)
 		@throw [OFOutOfMemoryException
 		    exceptionWithClass: [self class]
 			 requestedSize: sizeof(*ivars)];
-	memset(ivars, 0, sizeof(*ivars));
 
 	ivars->cString = cString;
 	ivars->cStringLength = cStringLength;
