@@ -101,7 +101,7 @@ objc_msg_lookup_super(struct objc_super *super, SEL sel)
 	if (super->self == nil)
 		return (IMP)nil_method;
 
-	imp = objc_sparsearray_get(super->class->dtable, (uint32_t)sel->uid);
+	imp = objc_sparsearray_get(super->cls->dtable, (uint32_t)sel->uid);
 
 	if (imp == NULL)
 		return objc_not_found_handler(super->self, sel);

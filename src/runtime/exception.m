@@ -565,7 +565,6 @@ __gnu_objc_personality_v0(int version, int actions, uint64_t ex_class,
 		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(1), filter);
 		_Unwind_SetIP(ctx, landingpad);
 
-
 		return _URC_INSTALL_CONTEXT;
 	}
 
