@@ -28,6 +28,7 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OFThread.h"
 
 #import "OFNotImplementedException.h"
 
@@ -295,6 +296,9 @@ of_application_main(int *argc, char **argv[], Class cls)
 - (void)run
 {
 	[delegate applicationDidFinishLaunching];
+
+	for (;;)
+		[OFThread sleepForTimeInterval: 86400];
 }
 
 - (void)terminate

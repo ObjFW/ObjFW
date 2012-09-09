@@ -34,7 +34,7 @@ an installation path, it is recommended to keep the default of `C:\MinGW32`;
 the selected mirror does not really matter. After that, the components to be
 installed have to be selected. Select `TDM-GCC Recommended, C/C++` as
 installation type, then expand `Components` → `gcc` → `Version` and select the
-TDM-GCC version ending in -dw2 and enable the `objc` checkbox. Click next and
+TDM-GCC version ending in -dw2 and enable the `objc` checkbox. In the next step
 the installer will start downloading and installing the selected components.
 
 

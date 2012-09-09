@@ -149,7 +149,6 @@ OF_APPLICATION_DELEGATE(TestsAppDelegate)
 	[self propertiesTests];
 #endif
 
-	if (fails > 0)
-		[OFApplication terminateWithStatus: fails];
+	[OFApplication terminateWithStatus: fails];
 }
 @end
