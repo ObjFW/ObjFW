@@ -96,8 +96,8 @@ struct of_list_object_t {
  * \brief Inserts an object before another list object.
  *
  * \param object The object to insert
- * \param listObject The of_list_object_t of the object before which it should be
- *	  inserted
+ * \param listObject The of_list_object_t of the object before which it should
+ *	  be inserted
  * \return An of_list_object_t, needed to identify the object inside the list.
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.

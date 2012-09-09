@@ -38,6 +38,7 @@ SRCS = OFApplication.m			\
        OFSeekableStream.m		\
        OFSet.m				\
        OFSHA1Hash.m			\
+       OFSortedList.m			\
        OFStream.m			\
        OFStreamObserver.m		\
        OFStreamSocket.m			\

@@ -26,6 +26,7 @@
 #import "OFArray.h"
 
 #import "OFList.h"
+#import "OFSortedList.h"
 
 #import "OFDictionary.h"
 
