@@ -1141,7 +1141,7 @@ static struct {
 	return [[OFMutableString alloc] initWithString: self];
 }
 
-- (of_comparison_result_t)compare: (id)object
+- (of_comparison_result_t)compare: (id <OFComparing>)object
 {
 	void *pool;
 	OFString *otherString;
@@ -1156,7 +1156,7 @@ static struct {
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	otherString = object;
+	otherString = (OFString*)object;
 	minimumLength = ([self length] > [otherString length]
 	    ? [otherString length] : [self length]);
 

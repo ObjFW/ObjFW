@@ -938,6 +938,49 @@
 	return ([number uIntMaxValue] == [self uIntMaxValue]);
 }
 
+- (of_comparison_result_t)compare: (id)object
+{
+	OFNumber *number;
+
+	if (![object isKindOfClass: [OFNumber class]])
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]];
+
+	number = object;
+
+	if (type & OF_NUMBER_FLOAT || number->type & OF_NUMBER_FLOAT) {
+		double double1 = [self doubleValue];
+		double double2 = [number doubleValue];
+
+		if (double1 > double2)
+			return OF_ORDERED_DESCENDING;
+		if (double1 < double2)
+			return OF_ORDERED_ASCENDING;
+
+		return OF_ORDERED_SAME;
+	} else if (type & OF_NUMBER_SIGNED || number->type & OF_NUMBER_SIGNED) {
+		intmax_t int1 = [self intMaxValue];
+		intmax_t int2 = [number intMaxValue];
+
+		if (int1 > int2)
+			return OF_ORDERED_DESCENDING;
+		if (int1 < int2)
+			return OF_ORDERED_ASCENDING;
+
+		return OF_ORDERED_SAME;
+	} else {
+		uintmax_t uint1 = [self uIntMaxValue];
+		uintmax_t uint2 = [number uIntMaxValue];
+
+		if (uint1 > uint2)
+			return OF_ORDERED_DESCENDING;
+		if (uint1 < uint2)
+			return OF_ORDERED_ASCENDING;
+
+		return OF_ORDERED_SAME;
+	}
+}
+
 - (uint32_t)hash
 {
 	uint32_t hash;

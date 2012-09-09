@@ -642,7 +642,7 @@ typedef struct of_rectangle_t
  * \param object An object to compare the object to
  * \return The result of the comparison
  */
-- (of_comparison_result_t)compare: (id)object;
+- (of_comparison_result_t)compare: (id <OFComparing>)object;
 @end
 
 #import "OFObject+Serialization.h"

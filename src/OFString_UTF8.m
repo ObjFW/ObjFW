@@ -692,7 +692,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 	return YES;
 }
 
-- (of_comparison_result_t)compare: (id)object
+- (of_comparison_result_t)compare: (id <OFComparing>)object
 {
 	OFString *otherString;
 	size_t otherCStringLength, minimumCStringLength;
@@ -706,7 +706,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	otherString = object;
+	otherString = (OFString*)object;
 	otherCStringLength = [otherString UTF8StringLength];
 	minimumCStringLength = (s->cStringLength > otherCStringLength
 	    ? otherCStringLength : s->cStringLength);

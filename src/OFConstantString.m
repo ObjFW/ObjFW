@@ -258,7 +258,7 @@ struct {
 }
 
 /* From protocol OFComparing */
-- (of_comparison_result_t)compare: (id)object
+- (of_comparison_result_t)compare: (id <OFComparing>)object
 {
 	[self finishInitialization];
 

@@ -380,7 +380,7 @@ void _references_to_categories_of_OFDataArray(void)
 	return YES;
 }
 
-- (of_comparison_result_t)compare: (id)object
+- (of_comparison_result_t)compare: (id <OFComparing>)object
 {
 	OFDataArray *otherDataArray;
 	int comparison;
@@ -390,7 +390,7 @@ void _references_to_categories_of_OFDataArray(void)
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
-	otherDataArray = object;
+	otherDataArray = (OFDataArray*)object;
 
 	if ([otherDataArray itemSize] != itemSize)
 		@throw [OFInvalidArgumentException
