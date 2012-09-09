@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#define OF_THREAD_M
+
 #define __NO_EXT_QNX
 
 #include <math.h>

@@ -77,7 +77,11 @@ typedef id (^of_thread_block_t)(id object);
  */
 @interface OFThread: OFObject
 {
+#ifdef OF_THREAD_M
 @public
+#else
+@private
+#endif
 	id object;
 	of_thread_t thread;
 	enum {
