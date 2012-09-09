@@ -156,9 +156,16 @@ typedef id (^of_thread_block_t)(id object);
 /**
  * \brief Returns the current thread.
  *
- * \return The current thread or nil if we are in the main thread
+ * \return The current thread
  */
 + (OFThread*)currentThread;
+
+/**
+ * \brief Returns the main thread.
+ *
+ * \return The main thread
+ */
++ (OFThread*)mainThread;
 
 /**
  * \brief Suspends execution of the current thread for the specified time
@@ -192,6 +199,8 @@ typedef id (^of_thread_block_t)(id object);
  * \param object The object which the terminated thread will return
  */
 + (void)terminateWithObject: (id)object;
+
++ (void)_createMainThread;
 
 /**
  * \brief Initializes an already allocated thread with the specified object.

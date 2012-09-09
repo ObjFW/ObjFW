@@ -295,6 +295,8 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 - (void)run
 {
+	[OFThread _createMainThread];
+
 	[delegate applicationDidFinishLaunching];
 
 	for (;;)

@@ -52,14 +52,15 @@
 #import "threading.h"
 
 static OFList *TLSKeys;
-static of_tlskey_t threadSelf;
+static of_tlskey_t threadSelfKey;
+static OFThread *mainThread;
 
 static id
 call_main(id object)
 {
 	OFThread *thread = (OFThread*)object;
 
-	if (!of_tlskey_set(threadSelf, thread))
+	if (!of_tlskey_set(threadSelfKey, thread))
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: [thread class]];
 
@@ -98,7 +99,7 @@ call_main(id object)
 	if (self != [OFThread class])
 		return;
 
-	if (!of_tlskey_new(&threadSelf))
+	if (!of_tlskey_new(&threadSelfKey))
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -146,7 +147,12 @@ call_main(id object)
 
 + (OFThread*)currentThread
 {
-	return [[(id)of_tlskey_get(threadSelf) retain] autorelease];
+	return [[(id)of_tlskey_get(threadSelfKey) retain] autorelease];
+}
+
++ (OFThread*)mainThread
+{
+	return mainThread;
 }
 
 + (void)sleepForTimeInterval: (double)seconds
@@ -202,7 +208,7 @@ call_main(id object)
 
 + (void)terminateWithObject: (id)object
 {
-	OFThread *thread = of_tlskey_get(threadSelf);
+	OFThread *thread = of_tlskey_get(threadSelfKey);
 
 	if (thread != nil) {
 		thread->returnValue = [object retain];
@@ -218,6 +224,16 @@ call_main(id object)
 	[thread release];
 
 	of_thread_exit();
+}
+
++ (void)_createMainThread
+{
+	mainThread = [[OFThread alloc] init];
+	mainThread->thread = of_thread_current();
+
+	if (!of_tlskey_set(threadSelfKey, mainThread))
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
 }
 
 - initWithObject: (id)object_
