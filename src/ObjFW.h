@@ -70,6 +70,8 @@
 #import "OFSerialization.h"
 
 #import "OFApplication.h"
+#import "OFTimer.h"
+#import "OFRunLoop.h"
 
 #import "OFAllocFailedException.h"
 #import "OFException.h"

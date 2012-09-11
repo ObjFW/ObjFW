@@ -30,6 +30,7 @@
 #import "OFThread.h"
 #import "OFList.h"
 #import "OFDate.h"
+#import "OFSortedList.h"
 #import "OFAutoreleasePool.h"
 
 #ifdef _WIN32
@@ -259,8 +260,13 @@ call_main(id object)
 {
 	self = [super init];
 
-	block = [block_ copy];
-	object = [object_ retain];
+	@try {
+		block = [block_ copy];
+		object = [object_ retain];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -276,6 +282,13 @@ call_main(id object)
 
 - (void)handleTermination
 {
+	@synchronized (timersQueue) {
+		/*
+		 * Make sure we don't run old timers when the thread is
+		 * restarted.
+		 */
+		[timersQueue removeAllObjects];
+	}
 }
 
 - (void)start
@@ -314,6 +327,18 @@ call_main(id object)
 	return returnValue;
 }
 
+- (OFSortedList*)_timersQueue
+{
+	if (timersQueue == nil) {
+		OFSortedList *tmp = [[OFSortedList alloc] init];
+
+		if (!of_atomic_cmpswap_ptr((void**)&timersQueue, nil, tmp))
+			[tmp release];
+	}
+
+	return [[timersQueue retain] autorelease];
+}
+
 - (void)dealloc
 {
 	if (running == OF_THREAD_RUNNING)
@@ -330,6 +355,7 @@ call_main(id object)
 
 	[object release];
 	[returnValue release];
+	[timersQueue release];
 
 	[super dealloc];
 }

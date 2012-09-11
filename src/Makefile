@@ -35,6 +35,7 @@ SRCS = OFApplication.m			\
        OFObject+Serialization.m		\
        ${OFPLUGIN_M}			\
        OFProcess.m			\
+       OFRunLoop.m			\
        OFSeekableStream.m		\
        OFSet.m				\
        OFSHA1Hash.m			\
@@ -52,6 +53,7 @@ SRCS = OFApplication.m			\
        OFTCPSocket.m			\
        ${OFTHREAD_M}			\
        OFThreadPool.m			\
+       OFTimer.m			\
        OFURL.m				\
        OFXMLAttribute.m			\
        OFXMLCDATA.m			\

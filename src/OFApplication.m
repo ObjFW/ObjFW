@@ -29,6 +29,7 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFThread.h"
+#import "OFRunLoop.h"
 
 #import "OFNotImplementedException.h"
 
@@ -295,12 +296,15 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 - (void)run
 {
+	OFRunLoop *runLoop;
+
 	[OFThread _createMainThread];
+	runLoop = [[[OFRunLoop alloc] init] autorelease];
+	[OFRunLoop _setMainRunLoop: runLoop];
 
 	[delegate applicationDidFinishLaunching];
 
-	for (;;)
-		[OFThread sleepForTimeInterval: 86400];
+	[runLoop run];
 }
 
 - (void)terminate

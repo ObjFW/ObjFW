@@ -20,6 +20,7 @@
 #import "threading.h"
 
 @class OFDate;
+@class OFSortedList;
 
 #ifdef OF_HAVE_BLOCKS
 typedef id (^of_thread_block_t)(id object);
@@ -94,6 +95,12 @@ typedef id (^of_thread_block_t)(id object);
 	of_thread_block_t block;
 #endif
 	id returnValue;
+#ifdef OF_THREAD_M
+@protected
+#else
+@private
+#endif
+	OFSortedList *timersQueue;
 }
 
 #if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
@@ -249,6 +256,8 @@ typedef id (^of_thread_block_t)(id object);
 /**
  * \brief This routine is exectued when the thread's main method has finished
  *	  executing or terminate has been called.
+ *
+ * \note Be sure to call [super handleTermination]!
  */
 - (void)handleTermination;
 
@@ -263,6 +272,8 @@ typedef id (^of_thread_block_t)(id object);
  * \return The object returned by the main method of the thread.
  */
 - (id)join;
+
+- (OFSortedList*)_timersQueue;
 @end
 
 /**
