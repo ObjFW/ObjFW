@@ -79,10 +79,11 @@ typedef id (^of_thread_block_t)(id object);
 {
 #ifdef OF_THREAD_M
 @public
-#else
-@private
 #endif
 	id object;
+#ifndef OF_THREAD_M
+@private
+#endif
 	of_thread_t thread;
 	enum {
 		OF_THREAD_NOT_RUNNING,
