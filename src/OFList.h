@@ -153,6 +153,11 @@ struct of_list_object_t {
  * \return The last object of the list or nil
  */
 - (id)lastObject;
+
+/**
+ * \brief Removes all objects from the list.
+ */
+- (void)removeAllObjects;
 @end
 
 @interface OFListEnumerator: OFEnumerator

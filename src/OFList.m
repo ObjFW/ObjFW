@@ -269,6 +269,22 @@
 	return NO;
 }
 
+- (void)removeAllObjects
+{
+	of_list_object_t *iter, *next;
+
+	mutations++;
+
+	for (iter = firstListObject; iter != NULL; iter = next) {
+		next = iter->next;
+
+		[iter->object release];
+		[self freeMemory: iter];
+	}
+
+	firstListObject = lastListObject = NULL;
+}
+
 - copy
 {
 	OFList *copy = [[[self class] alloc] init];

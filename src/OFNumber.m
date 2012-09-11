@@ -944,7 +944,8 @@
 
 	if (![object isKindOfClass: [OFNumber class]])
 		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]];
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 
 	number = object;
 
