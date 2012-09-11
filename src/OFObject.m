@@ -96,6 +96,7 @@ uncaught_exception_handler(id exception)
 {
 	fprintf(stderr, "\nRuntime error: Unhandled exception:\n%s\n",
 	    [[exception description] UTF8String]);
+	abort();
 }
 #endif
 
