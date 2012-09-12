@@ -92,43 +92,43 @@ static OFRunLoop *mainRunLoop;
 	for (;;) {
 		void *pool = objc_autoreleasePoolPush();
 		OFDate *now = [OFDate date];
+		OFTimer *timer;
+		OFDate *nextTimer;
 
 		@synchronized (timersQueue) {
-			of_list_object_t *iter;
+			of_list_object_t *listObject =
+			    [timersQueue firstListObject];
 
-			while ((iter = [timersQueue firstListObject]) != NULL) {
-				void *pool2 = objc_autoreleasePoolPush();
-				OFTimer *timer;
+			if (listObject != NULL &&
+			    [[listObject->object fireDate] compare: now] !=
+			    OF_ORDERED_DESCENDING) {
+				timer =
+				    [[listObject->object retain] autorelease];
 
-				/*
-				 * If a timer is in the future, we can
-				 * stop now as it is sorted.
-				 */
-				if ([[iter->object fireDate] compare: now] ==
-				    OF_ORDERED_DESCENDING)
-					break;
+				[timersQueue removeListObject: listObject];
+			} else
+				timer = nil;
+		}
 
-				timer = [[iter->object retain] autorelease];
-				[timersQueue removeListObject: iter];
+		[timer fire];
 
-				[timer fire];
+		@synchronized (timersQueue) {
+			nextTimer = [[timersQueue firstObject] fireDate];
+		}
 
-				objc_autoreleasePoolPop(pool2);
-			}
+		/* Watch for stream events until the next timer is due */
+		if (nextTimer != nil) {
+			double timeout = [nextTimer timeIntervalSinceNow];
 
-			/* Watch for stream events till the next timer is due */
-			if (iter != NULL) {
-				double timeout = [[iter->object fireDate]
-				    timeIntervalSinceNow];
+			if (timeout > 0)
 				[streamObserver observeWithTimeout: timeout];
-			} else {
-				/*
-				 * No more timers: Just watch for streams until
-				 * we get an event. If a timer is added by
-				 * another thread, it cancels the observe.
-				 */
-				[streamObserver observe];
-			}
+		} else {
+			/*
+			 * No more timers: Just watch for streams until we get
+			 * an event. If a timer is added by another thread, it
+			 * cancels the observe.
+			 */
+			[streamObserver observe];
 		}
 
 		objc_autoreleasePoolPop(pool);
