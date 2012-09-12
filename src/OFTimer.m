@@ -95,6 +95,27 @@
 	return [timer autorelease];
 }
 
+#ifdef OF_HAVE_BLOCKS
++ scheduledTimerWithTimeInterval: (double)interval
+			 repeats: (BOOL)repeats
+			   block: (of_timer_block_t)block
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: interval];
+	id timer = [[[self alloc] initWithFireDate: fireDate
+					  interval: interval
+					   repeats: repeats
+					     block: block] autorelease];
+
+	[[OFRunLoop currentRunLoop] addTimer: timer];
+
+	[timer retain];
+	objc_autoreleasePoolPop(pool);
+
+	return [timer autorelease];
+}
+#endif
+
 + timerWithTimeInterval: (double)interval
 		 target: (id)target
 	       selector: (SEL)selector
@@ -157,6 +178,25 @@
 
 	return [timer autorelease];
 }
+
+#ifdef OF_HAVE_BLOCKS
++ timerWithTimeInterval: (double)interval
+		repeats: (BOOL)repeats
+		  block: (of_timer_block_t)block
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: interval];
+	id timer = [[[self alloc] initWithFireDate: fireDate
+					  interval: interval
+					   repeats: repeats
+					     block: block] autorelease];
+
+	[timer retain];
+	objc_autoreleasePoolPop(pool);
+
+	return [timer autorelease];
+}
+#endif
 
 - _initWithFireDate: (OFDate*)fireDate_
 	   interval: (double)interval_
@@ -237,12 +277,37 @@
 			       repeats: repeats_];
 }
 
+#ifdef OF_HAVE_BLOCKS
+- initWithFireDate: (OFDate*)fireDate_
+	   interval: (double)interval_
+	    repeats: (BOOL)repeats_
+	      block: (of_timer_block_t)block_
+{
+	self = [super init];
+
+	@try {
+		fireDate = [fireDate_ retain];
+		interval = interval_;
+		repeats = repeats_;
+		block = [block_ copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+#endif
+
 - (void)dealloc
 {
 	[fireDate release];
 	[target release];
 	[object1 release];
 	[object2 release];
+#ifdef OF_HAVE_BLOCKS
+	[block release];
+#endif
 
 	[super dealloc];
 }
@@ -265,20 +330,28 @@
 {
 	OF_ENSURE(arguments >= 0 && arguments <= 2);
 
-	switch (arguments) {
-	case 0:
-		[target performSelector: selector];
-		break;
-	case 1:
-		[target performSelector: selector
-			     withObject: object1];
-		break;
-	case 2:
-		[target performSelector: selector
-			     withObject: object1
-			     withObject: object2];
-		break;
+#ifdef OF_HAVE_BLOCKS
+	if (block != NULL)
+		block();
+	else {
+#endif
+		switch (arguments) {
+		case 0:
+			[target performSelector: selector];
+			break;
+		case 1:
+			[target performSelector: selector
+				     withObject: object1];
+			break;
+		case 2:
+			[target performSelector: selector
+				     withObject: object1
+				     withObject: object2];
+			break;
+		}
+#ifdef OF_HAVE_BLOCKS
 	}
+#endif
 
 	if (repeats) {
 		OFDate *old = fireDate;

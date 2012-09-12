@@ -16,6 +16,10 @@
 
 #import "OFObject.h"
 
+#ifdef OF_HAVE_BLOCKS
+typedef void (^of_timer_block_t)(void);
+#endif
+
 @class OFDate;
 
 /**
@@ -29,6 +33,9 @@
 	SEL selector;
 	uint8_t arguments;
 	BOOL repeats;
+#ifdef OF_HAVE_BLOCKS
+	of_timer_block_t block;
+#endif
 }
 
 /**
@@ -84,6 +91,21 @@
 			  object: (id)object2
 			 repeats: (BOOL)repeats;
 
+#ifdef OF_HAVE_BLOCKS
+/**
+ * \brief Creates and schedules a new timer with the specified time interval.
+ *
+ * \param interval The time interval after which the timer should be executed
+ *		   when fired
+ * \param repeats Whether the timer repeats after it has been executed
+ * \param block The block to invoke when the timer fires
+ * \return A new, autoreleased timer
+ */
++ scheduledTimerWithTimeInterval: (double)interval
+			 repeats: (BOOL)repeats
+			   block: (of_timer_block_t)block;
+#endif
+
 /**
  * \brief Creates a new timer with the specified time interval.
  *
@@ -136,6 +158,21 @@
 		 object: (id)object1
 		 object: (id)object2
 		repeats: (BOOL)repeats;
+
+#ifdef OF_HAVE_BLOCKS
+/**
+ * \brief Creates a new timer with the specified time interval.
+ *
+ * \param interval The time interval after which the timer should be executed
+ *		   when fired
+ * \param repeats Whether the timer repeats after it has been executed
+ * \param block The block to invoke when the timer fires
+ * \return A new, autoreleased timer
+ */
++ timerWithTimeInterval: (double)interval
+		repeats: (BOOL)repeats
+		  block: (of_timer_block_t)block;
+#endif
 
 /**
  * \brief Initializes an already allocated timer with the specified time
@@ -194,6 +231,24 @@
 	    object: (id)object1
 	    object: (id)object2
 	   repeats: (BOOL)repeats;
+
+#ifdef OF_HAVE_BLOCKS
+/**
+ * \brief Initializes an already allocated timer with the specified time
+ *	  interval.
+ *
+ * \param fireDate The date at which the timer should fire
+ * \param interval The time interval after which to repeat the timer, if it is
+ *		   a repeating timer
+ * \param repeats Whether the timer repeats after it has been executed
+ * \param block The block to invoke when the timer fires
+ * \return An initialized timer
+ */
+- initWithFireDate: (OFDate*)fireDate
+	  interval: (double)interval
+	   repeats: (BOOL)repeats
+	     block: (of_timer_block_t)block;
+#endif
 
 /**
  * \brief Fires the timer, meaning it will execute the specified selector on the
