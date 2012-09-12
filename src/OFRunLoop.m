@@ -89,10 +89,12 @@ static OFRunLoop *mainRunLoop;
 		OFDate *now = [OFDate date];
 
 		@synchronized (timersQueue) {
-			of_list_object_t *iter, *next;
+			of_list_object_t *iter;
 
-			for (iter = [timersQueue firstListObject];
-			    iter != NULL; iter = next) {
+			while ((iter = [timersQueue firstListObject]) != NULL) {
+				void *pool2 = objc_autoreleasePoolPush();
+				OFTimer *timer;
+
 				/*
 				 * If a timer is in the future, we can
 				 * stop now as it is sorted.
@@ -101,10 +103,12 @@ static OFRunLoop *mainRunLoop;
 				    OF_ORDERED_DESCENDING)
 					break;
 
-				[iter->object fire];
-
-				next = iter->next;
+				timer = [[iter->object retain] autorelease];
 				[timersQueue removeListObject: iter];
+
+				[timer fire];
+
+				objc_autoreleasePoolPop(pool2);
 			}
 
 			/* Sleep until we reach the next timer */
