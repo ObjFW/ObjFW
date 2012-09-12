@@ -41,7 +41,7 @@ extern void of_log(OFConstantString*, ...);
  */
 @interface OFFile: OFSeekableStream
 {
-	int  fileDescriptor;
+	int  fd;
 	BOOL closable;
 	BOOL atEndOfStream;
 }

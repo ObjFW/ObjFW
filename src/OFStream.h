@@ -810,11 +810,18 @@
 - (void)setBlocking: (BOOL)enable;
 
 /**
- * \brief Returns the file descriptor for the stream.
+ * \brief Returns the file descriptor for the read end of the stream.
  *
- * \return The file descriptor for the stream
+ * \return The file descriptor for the read end of the stream
  */
-- (int)fileDescriptor;
+- (int)fileDescriptorForReading;
+
+/**
+ * \brief Returns the file descriptor for the write end of the stream.
+ *
+ * \return The file descriptor for the write end of the stream
+ */
+- (int)fileDescriptorForWriting;
 
 /**
  * \brief Closes the stream.

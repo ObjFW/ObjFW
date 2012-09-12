@@ -118,16 +118,16 @@
 	count = [readStreams count];
 
 	for (i = 0; i < count; i++) {
-		int fileDescriptor = [objects[i] fileDescriptor];
+		int fd = [objects[i] fileDescriptorForReading];
 
 		pool = objc_autoreleasePoolPush();
 
-		if (FD_ISSET(fileDescriptor, &readFDs_)) {
+		if (FD_ISSET(fd, &readFDs_)) {
 			realEvents++;
 			[delegate streamIsReadyForReading: objects[i]];
 		}
 
-		if (FD_ISSET(fileDescriptor, &exceptFDs_)) {
+		if (FD_ISSET(fd, &exceptFDs_)) {
 			realEvents++;
 			[delegate streamDidReceiveException: objects[i]];
 
@@ -135,7 +135,7 @@
 			 * Prevent calling it twice in case the FD is in both
 			 * sets.
 			 */
-			FD_CLR(fileDescriptor, &exceptFDs_);
+			FD_CLR(fd, &exceptFDs_);
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -145,16 +145,16 @@
 	count = [writeStreams count];
 
 	for (i = 0; i < count; i++) {
-		int fileDescriptor = [objects[i] fileDescriptor];
+		int fd = [objects[i] fileDescriptorForWriting];
 
 		pool = objc_autoreleasePoolPush();
 
-		if (FD_ISSET(fileDescriptor, &writeFDs_)) {
+		if (FD_ISSET(fd, &writeFDs_)) {
 			realEvents++;
 			[delegate streamIsReadyForWriting: objects[i]];
 		}
 
-		if (FD_ISSET(fileDescriptor, &exceptFDs_)) {
+		if (FD_ISSET(fd, &exceptFDs_)) {
 			realEvents++;
 			[delegate streamDidReceiveException: objects[i]];
 		}

@@ -146,7 +146,12 @@
 }
 #endif
 
-- (int)fileDescriptor
+- (int)fileDescriptorForReading
+{
+	return sock;
+}
+
+- (int)fileDescriptorForWriting
 {
 	return sock;
 }

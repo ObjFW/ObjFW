@@ -189,7 +189,7 @@ enum {
 	[mutex lock];
 	@try {
 		int qi = QUEUE_ADD | QUEUE_READ;
-		int fd = [stream fileDescriptor];
+		int fd = [stream fileDescriptorForReading];
 
 		[queue addObject: stream];
 		[queueInfo addItem: &qi];
@@ -206,7 +206,7 @@ enum {
 	[mutex lock];
 	@try {
 		int qi = QUEUE_ADD | QUEUE_WRITE;
-		int fd = [stream fileDescriptor];
+		int fd = [stream fileDescriptorForWriting];
 
 		[queue addObject: stream];
 		[queueInfo addItem: &qi];
@@ -223,7 +223,7 @@ enum {
 	[mutex lock];
 	@try {
 		int qi = QUEUE_REMOVE | QUEUE_READ;
-		int fd = [stream fileDescriptor];
+		int fd = [stream fileDescriptorForReading];
 
 		[queue addObject: stream];
 		[queueInfo addItem: &qi];
@@ -245,7 +245,7 @@ enum {
 	[mutex lock];
 	@try {
 		int qi = QUEUE_REMOVE | QUEUE_WRITE;
-		int fd = [stream fileDescriptor];
+		int fd = [stream fileDescriptorForWriting];
 
 		[queue addObject: stream];
 		[queueInfo addItem: &qi];

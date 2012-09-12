@@ -533,9 +533,8 @@ of_log(OFConstantString *format, ...)
 		if (!override) {
 			struct stat s;
 
-			if (fstat(sourceFile->fileDescriptor, &s) == 0)
-				fchmod(destinationFile->fileDescriptor,
-				    s.st_mode);
+			if (fstat(sourceFile->fd, &s) == 0)
+				fchmod(destinationFile->fd, s.st_mode);
 		}
 #else
 		(void)override;
@@ -661,7 +660,7 @@ of_log(OFConstantString *format, ...)
 			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
-		if ((fileDescriptor = open([path cStringWithEncoding:
+		if ((fd = open([path cStringWithEncoding:
 		    OF_STRING_ENCODING_NATIVE], flags, DEFAULT_MODE)) == -1)
 			@throw [OFOpenFileFailedException
 			    exceptionWithClass: [self class]
@@ -677,18 +676,18 @@ of_log(OFConstantString *format, ...)
 	return self;
 }
 
-- initWithFileDescriptor: (int)fileDescriptor_
+- initWithFileDescriptor: (int)fileDescriptor
 {
 	self = [super init];
 
-	fileDescriptor = fileDescriptor_;
+	fd = fileDescriptor;
 
 	return self;
 }
 
 - (BOOL)_isAtEndOfStream
 {
-	if (fileDescriptor == -1)
+	if (fd == -1)
 		return YES;
 
 	return atEndOfStream;
@@ -699,8 +698,7 @@ of_log(OFConstantString *format, ...)
 {
 	ssize_t ret;
 
-	if (fileDescriptor == -1 || atEndOfStream ||
-	    (ret = read(fileDescriptor, buffer, length)) < 0)
+	if (fd == -1 || atEndOfStream || (ret = read(fd, buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithClass: [self class]
 							  stream: self
 						 requestedLength: length];
@@ -714,8 +712,7 @@ of_log(OFConstantString *format, ...)
 - (void)_writeBuffer: (const void*)buffer
 	      length: (size_t)length
 {
-	if (fileDescriptor == -1 || atEndOfStream ||
-	    write(fileDescriptor, buffer, length) < length)
+	if (fd == -1 || atEndOfStream || write(fd, buffer, length) < length)
 		@throw [OFWriteFailedException exceptionWithClass: [self class]
 							   stream: self
 						  requestedLength: length];
@@ -723,7 +720,7 @@ of_log(OFConstantString *format, ...)
 
 - (void)_seekToOffset: (off_t)offset
 {
-	if (lseek(fileDescriptor, offset, SEEK_SET) == -1)
+	if (lseek(fd, offset, SEEK_SET) == -1)
 		@throw [OFSeekFailedException exceptionWithClass: [self class]
 							  stream: self
 							  offset: offset
@@ -734,7 +731,7 @@ of_log(OFConstantString *format, ...)
 {
 	off_t ret;
 
-	if ((ret = lseek(fileDescriptor, offset, SEEK_CUR)) == -1)
+	if ((ret = lseek(fd, offset, SEEK_CUR)) == -1)
 		@throw [OFSeekFailedException exceptionWithClass: [self class]
 							  stream: self
 							  offset: offset
@@ -747,7 +744,7 @@ of_log(OFConstantString *format, ...)
 {
 	off_t ret;
 
-	if ((ret = lseek(fileDescriptor, offset, SEEK_END)) == -1)
+	if ((ret = lseek(fd, offset, SEEK_END)) == -1)
 		@throw [OFSeekFailedException exceptionWithClass: [self class]
 							  stream: self
 							  offset: offset
@@ -756,23 +753,28 @@ of_log(OFConstantString *format, ...)
 	return ret;
 }
 
-- (int)fileDescriptor
+- (int)fileDescriptorForReading
 {
-	return fileDescriptor;
+	return fd;
+}
+
+- (int)fileDescriptorForWriting
+{
+	return fd;
 }
 
 - (void)close
 {
-	if (fileDescriptor != -1)
-		close(fileDescriptor);
+	if (fd != -1)
+		close(fd);
 
-	fileDescriptor = -1;
+	fd = -1;
 }
 
 - (void)dealloc
 {
-	if (closable && fileDescriptor != -1)
-		close(fileDescriptor);
+	if (closable && fd != -1)
+		close(fd);
 
 	[super dealloc];
 }

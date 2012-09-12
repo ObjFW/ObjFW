@@ -1364,21 +1364,26 @@
 - (void)setBlocking: (BOOL)enable
 {
 #ifndef _WIN32
-	int flags;
+	int readFlags, writeFlags;
 
-	blocking = enable;
+	readFlags = fcntl([self fileDescriptorForReading], F_GETFL);
+	writeFlags = fcntl([self fileDescriptorForWriting], F_GETFL);
 
-	if ((flags = fcntl([self fileDescriptor], F_GETFL)) == -1)
+	if (readFlags == -1 || writeFlags == -1)
 		@throw [OFSetOptionFailedException
 		    exceptionWithClass: [self class]
 				stream: self];
 
-	if (enable)
-		flags &= ~O_NONBLOCK;
-	else
-		flags |= O_NONBLOCK;
+	if (enable) {
+		readFlags &= ~O_NONBLOCK;
+		writeFlags &= ~O_NONBLOCK;
+	} else {
+		readFlags |= O_NONBLOCK;
+		writeFlags |= O_NONBLOCK;
+	}
 
-	if (fcntl([self fileDescriptor], F_SETFL, flags) == -1)
+	if (fcntl([self fileDescriptorForReading], F_SETFL, readFlags) == -1 ||
+	    fcntl([self fileDescriptorForWriting], F_SETFL, writeFlags) == -1)
 		@throw [OFSetOptionFailedException
 		    exceptionWithClass: [self class]
 				stream: self];
@@ -1388,7 +1393,13 @@
 #endif
 }
 
-- (int)fileDescriptor
+- (int)fileDescriptorForReading
+{
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
+						    selector: _cmd];
+}
+
+- (int)fileDescriptorForWriting
 {
 	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];

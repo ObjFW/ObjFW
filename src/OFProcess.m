@@ -294,11 +294,25 @@
 	[super dealloc];
 }
 
-/*
- * FIXME: Add -[fileDescriptor]. The problem is that we have two FDs, which is
- *	  not yet supported by OFStreamObserver. This has to be split into one
- *	  FD for reading and one for writing.
- */
+- (int)fileDescriptorForReading
+{
+#ifndef _WIN32
+	return readPipe[0];
+#else
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
+						    selector: _cmd];
+#endif
+}
+
+- (int)fileDescriptorForWRiting
+{
+#ifndef _WIN32
+	return writePipe[1];
+#else
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
+						    selector: _cmd];
+#endif
+}
 
 - (void)closeForWriting
 {
