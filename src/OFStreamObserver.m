@@ -370,7 +370,7 @@ enum {
 	[self observeWithTimeout: -1];
 }
 
-- (BOOL)observeWithTimeout: (int)timeout
+- (BOOL)observeWithTimeout: (double)timeout
 {
 	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];

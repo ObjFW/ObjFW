@@ -98,12 +98,15 @@
 	[changeList addItem: &event];
 }
 
-- (BOOL)observeWithTimeout: (int)timeout
+- (BOOL)observeWithTimeout: (double)timeout
 {
 	void *pool = objc_autoreleasePoolPush();
-	struct timespec timespec = { timeout, 0 };
+	struct timespec timespec;
 	struct kevent eventList[EVENTLIST_SIZE];
 	int i, events;
+
+	timespec.tv_sec = timeout;
+	timespec.tv_nsec = (timeout - timespec.tv_sec) * 1000000000;
 
 	[self _processQueue];
 

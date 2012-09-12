@@ -173,10 +173,10 @@
  * \brief Observes all streams until an event happens on a stream or the
  *	  timeout is reached.
  *
- * \param timeout The time to wait for an event, in milliseconds
+ * \param timeout The time to wait for an event, in seconds
  * \return A boolean whether events occurred during the timeinterval
  */
-- (BOOL)observeWithTimeout: (int)timeout;
+- (BOOL)observeWithTimeout: (double)timeout;
 
 - (void)_addFileDescriptorForReading: (int)fd;
 - (void)_addFileDescriptorForWriting: (int)fd;

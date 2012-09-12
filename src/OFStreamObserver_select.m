@@ -69,7 +69,7 @@
 		FD_CLR(fd, &exceptFDs);
 }
 
-- (BOOL)observeWithTimeout: (int)timeout
+- (BOOL)observeWithTimeout: (double)timeout
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFStream **objects;
@@ -98,8 +98,8 @@
 	exceptFDs_ = exceptFDs;
 #endif
 
-	time.tv_sec = timeout / 1000;
-	time.tv_usec = (timeout % 1000) * 1000;
+	time.tv_sec = timeout;
+	time.tv_usec = (timeout - time.tv_sec) * 1000;
 
 	if (select((int)maxFD + 1, &readFDs_, &writeFDs_, &exceptFDs_,
 	    (timeout != -1 ? &time : NULL)) < 1)

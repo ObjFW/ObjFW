@@ -120,7 +120,7 @@
 			 withEvents: POLLOUT];
 }
 
-- (BOOL)observeWithTimeout: (int)timeout
+- (BOOL)observeWithTimeout: (double)timeout
 {
 	void *pool = objc_autoreleasePoolPush();
 	struct pollfd *FDsCArray;
@@ -143,7 +143,8 @@
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 #endif
 
-	if (poll(FDsCArray, (nfds_t)nFDs, timeout) < 1)
+	if (poll(FDsCArray, (nfds_t)nFDs,
+	    (timeout != -1 ? timeout * 1000 : -1)) < 1)
 		return NO;
 
 	for (i = 0; i < nFDs; i++) {
