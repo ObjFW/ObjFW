@@ -77,7 +77,7 @@
 	fd_set writeFDs_;
 	fd_set exceptFDs_;
 	struct timeval time;
-	size_t i, count;
+	size_t i, count, realEvents = 0;
 
 	[self _processQueue];
 
@@ -122,10 +122,13 @@
 
 		pool = objc_autoreleasePoolPush();
 
-		if (FD_ISSET(fileDescriptor, &readFDs_))
+		if (FD_ISSET(fileDescriptor, &readFDs_)) {
+			realEvents++;
 			[delegate streamIsReadyForReading: objects[i]];
+		}
 
 		if (FD_ISSET(fileDescriptor, &exceptFDs_)) {
+			realEvents++;
 			[delegate streamDidReceiveException: objects[i]];
 
 			/*
@@ -146,14 +149,21 @@
 
 		pool = objc_autoreleasePoolPush();
 
-		if (FD_ISSET(fileDescriptor, &writeFDs_))
+		if (FD_ISSET(fileDescriptor, &writeFDs_)) {
+			realEvents++;
 			[delegate streamIsReadyForWriting: objects[i]];
+		}
 
-		if (FD_ISSET(fileDescriptor, &exceptFDs_))
+		if (FD_ISSET(fileDescriptor, &exceptFDs_)) {
+			realEvents++;
 			[delegate streamDidReceiveException: objects[i]];
+		}
 
 		objc_autoreleasePoolPop(pool);
 	}
+
+	if (realEvents == 0)
+		return NO;
 
 	return YES;
 }

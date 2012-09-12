@@ -103,7 +103,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	struct timespec timespec;
 	struct kevent eventList[EVENTLIST_SIZE];
-	int i, events;
+	int i, events, realEvents = 0;
 
 	timespec.tv_sec = timeout;
 	timespec.tv_nsec = (timeout - timespec.tv_sec) * 1000000000;
@@ -147,6 +147,8 @@
 			continue;
 		}
 
+		realEvents++;
+
 		pool = objc_autoreleasePoolPush();
 
 		if (eventList[i].flags & EV_ERROR) {
@@ -171,6 +173,9 @@
 
 		objc_autoreleasePoolPop(pool);
 	}
+
+	if (realEvents == 0)
+		return NO;
 
 	return YES;
 }

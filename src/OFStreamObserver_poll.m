@@ -124,7 +124,7 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	struct pollfd *FDsCArray;
-	size_t i, nFDs;
+	size_t i, nFDs, realEvents = 0;
 
 	[self _processQueue];
 
@@ -161,16 +161,19 @@
 				continue;
 			}
 
+			realEvents++;
 			[delegate streamIsReadyForReading:
 			    FDToStream[FDsCArray[i].fd]];
 		}
 
 		if (FDsCArray[i].revents & POLLOUT) {
+			realEvents++;
 			[delegate streamIsReadyForWriting:
 			    FDToStream[FDsCArray[i].fd]];
 		}
 
 		if (FDsCArray[i].revents & POLLERR) {
+			realEvents++;
 			[delegate streamDidReceiveException:
 			    FDToStream[FDsCArray[i].fd]];
 		}
@@ -179,6 +182,9 @@
 
 		objc_autoreleasePoolPop(pool);
 	}
+
+	if (realEvents == 0)
+		return NO;
 
 	return YES;
 }
