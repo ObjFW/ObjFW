@@ -17,6 +17,7 @@
 #import "OFObject.h"
 
 @class OFSortedList;
+@class OFStreamObserver;
 @class OFTimer;
 
 /**
@@ -25,6 +26,7 @@
 @interface OFRunLoop: OFObject
 {
 	OFSortedList *timersQueue;
+	OFStreamObserver *streamObserver;
 }
 
 /**

@@ -21,6 +21,7 @@
 #import "OFSortedList.h"
 #import "OFTimer.h"
 #import "OFDate.h"
+#import "OFStreamObserver.h"
 
 static OFTLSKey *currentRunLoopKey;
 static OFRunLoop *mainRunLoop;
@@ -56,6 +57,8 @@ static OFRunLoop *mainRunLoop;
 		void *pool = objc_autoreleasePoolPush();
 
 		timersQueue = [[[OFThread currentThread] _timersQueue] retain];
+		streamObserver = [[OFStreamObserver alloc] init];
+
 		[OFThread setObject: self
 			  forTLSKey: currentRunLoopKey];
 
@@ -71,6 +74,7 @@ static OFRunLoop *mainRunLoop;
 - (void)dealloc
 {
 	[timersQueue release];
+	[streamObserver release];
 
 	[super dealloc];
 }
@@ -80,6 +84,7 @@ static OFRunLoop *mainRunLoop;
 	@synchronized (timersQueue) {
 		[timersQueue addObject: timer];
 	}
+	[streamObserver cancel];
 }
 
 - (void)run
@@ -111,27 +116,18 @@ static OFRunLoop *mainRunLoop;
 				objc_autoreleasePoolPop(pool2);
 			}
 
-			/* Sleep until we reach the next timer */
-			if (iter != NULL)
-				[OFThread sleepUntilDate:
-				    [iter->object fireDate]];
-			else {
+			/* Watch for stream events till the next timer is due */
+			if (iter != NULL) {
+				double timeout = [[iter->object fireDate]
+				    timeIntervalSinceNow];
+				[streamObserver observeWithTimeout: timeout];
+			} else {
 				/*
-				 * FIXME:
-				 * Theoretically, another thread could add
-				 * something to the run loop. This means we
-				 * would need a way to block the thread until
-				 * another event is added. The most easy way to
-				 * achieve that would be if a run loop also
-				 * handles streams: An OFStreamObserver could
-				 * be called instead of sleepUntilDate above
-				 * and get a timeout. If no timers are left,
-				 * it could be called without a timeout and
-				 * would automatically stop blocking once a new
-				 * stream is added. This could also be used to
-				 * stop blocking once a new timer is added.
+				 * No more timers: Just watch for streams until
+				 * we get an event. If a timer is added by
+				 * another thread, it cancels the observe.
 				 */
-				[OFThread sleepForTimeInterval: 24 * 3600];
+				[streamObserver observe];
 			}
 		}
 
