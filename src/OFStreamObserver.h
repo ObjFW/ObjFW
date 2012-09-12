@@ -178,6 +178,15 @@
  */
 - (BOOL)observeWithTimeout: (double)timeout;
 
+/**
+ * \brief Cancels the currently blocking observe call.
+ *
+ * This is automatically done when a new stream is added or removed by another
+ * thread, but in some circumstances, it might be desirable for a thread to
+ * manually stop the observe running in another thread.
+ */
+- (void)cancel;
+
 - (void)_addFileDescriptorForReading: (int)fd;
 - (void)_addFileDescriptorForWriting: (int)fd;
 - (void)_removeFileDescriptorForReading: (int)fd;

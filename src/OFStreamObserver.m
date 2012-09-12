@@ -198,12 +198,7 @@ enum {
 		[mutex unlock];
 	}
 
-#ifndef _WIN32
-	OF_ENSURE(write(cancelFD[1], "", 1) > 0);
-#else
-	OF_ENSURE(sendto(cancelFD[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
-	    sizeof(cancelAddr)) > 0);
-#endif
+	[self cancel];
 }
 
 - (void)addStreamForWriting: (OFStream*)stream
@@ -220,12 +215,7 @@ enum {
 		[mutex unlock];
 	}
 
-#ifndef _WIN32
-	OF_ENSURE(write(cancelFD[1], "", 1) > 0);
-#else
-	OF_ENSURE(sendto(cancelFD[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
-	    sizeof(cancelAddr)) > 0);
-#endif
+	[self cancel];
 }
 
 - (void)removeStreamForReading: (OFStream*)stream
@@ -374,6 +364,16 @@ enum {
 {
 	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
+}
+
+- (void)cancel
+{
+#ifndef _WIN32
+	OF_ENSURE(write(cancelFD[1], "", 1) > 0);
+#else
+	OF_ENSURE(sendto(cancelFD[1], "", 1, 0, (struct sockaddr*)&cancelAddr,
+	    sizeof(cancelAddr)) > 0);
+#endif
 }
 
 - (BOOL)_processCache
