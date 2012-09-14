@@ -218,8 +218,10 @@ static OFRunLoop *mainRunLoop;
 		if (![queueItem block](stream, buffer, length)) {
 			[queue removeListObject: listObject];
 
-			if ([queue count] == 0)
+			if ([queue count] == 0) {
 				[streamObserver removeStreamForReading: stream];
+				[readQueues removeObjectForKey: stream];
+			}
 		}
 	} else if ([listObject->object isKindOfClass:
 	    [OFRunLoop_ReadLineQueueItem class]]) {
@@ -232,9 +234,11 @@ static OFRunLoop *mainRunLoop;
 			if (![queueItem block](stream, line)) {
 				[queue removeListObject: listObject];
 
-				if ([queue count] == 0)
+				if ([queue count] == 0) {
 					[streamObserver
 					    removeStreamForReading: stream];
+					[readQueues removeObjectForKey: stream];
+				}
 			}
 		}
 	} else
