@@ -209,15 +209,15 @@ typedef struct of_rectangle_t
  * \brief Performs the specified selector with the specified objects.
  *
  * \param selector The selector to perform
- * \param object The first object that is passed to the method specified by the
+ * \param object1 The first object that is passed to the method specified by the
  *		 selector
- * \param otherObject The second object that is passed to the method specified
- *		      by the selector
+ * \param object2 The second object that is passed to the method specified by
+ *		  the selector
  * \return The object returned by the method specified by the selector
  */
 - (id)performSelector: (SEL)selector
-	   withObject: (id)object
-	   withObject: (id)otherObject;
+	   withObject: (id)object1
+	   withObject: (id)object2;
 
 /**
  * \brief Checks two objects for equality.
@@ -597,6 +597,44 @@ typedef struct of_rectangle_t
  * This also frees all memory in its memory pool.
  */
 - (void)dealloc;
+
+/**
+ * \brief Performs the specified selector after the specified delay.
+ *
+ * \param selector The selector to perform
+ * \param delay The delay after which the selector will be performed
+ */
+- (void)performSelector: (SEL)selector
+	     afterDelay: (double)delay;
+
+/**
+ * \brief Performs the specified selector with the specified object after the
+ *	  specified delay.
+ *
+ * \param selector The selector to perform
+ * \param object The object that is passed to the method specified by the
+ *		 selector
+ * \param delay The delay after which the selector will be performed
+ */
+- (void)performSelector: (SEL)selector
+	     withObject: (id)object
+	     afterDelay: (double)delay;
+
+/**
+ * \brief Performs the specified selector with the specified objects after the
+ *	  specified delay.
+ *
+ * \param selector The selector to perform
+ * \param object1 The first object that is passed to the method specified by the
+ *		 selector
+ * \param object2 The second object that is passed to the method specified by
+ *		  the selector
+ * \param delay The delay after which the selector will be performed
+ */
+- (void)performSelector: (SEL)selector
+	     withObject: (id)object1
+	     withObject: (id)object2
+	     afterDelay: (double)delay;
 @end
 
 /**

@@ -31,6 +31,7 @@
 #endif
 
 #import "OFObject.h"
+#import "OFTimer.h"
 
 #import "OFAllocFailedException.h"
 #import "OFEnumerationMutationException.h"
@@ -575,6 +576,51 @@ void _references_to_categories_of_OFObject(void)
 	    (id(*)(id, SEL, id, id))[self methodForSelector: selector];
 
 	return imp(self, selector, object, otherObject);
+}
+
+- (void)performSelector: (SEL)selector
+	     afterDelay: (double)delay
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[OFTimer scheduledTimerWithTimeInterval: delay
+					 target: self
+				       selector: selector
+					repeats: NO];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)performSelector: (SEL)selector
+	     withObject: (id)object
+	     afterDelay: (double)delay
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[OFTimer scheduledTimerWithTimeInterval: delay
+					 target: self
+				       selector: selector
+					 object: object
+					repeats: NO];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)performSelector: (SEL)selector
+	     withObject: (id)object
+	     withObject: (id)otherObject
+	     afterDelay: (double)delay
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[OFTimer scheduledTimerWithTimeInterval: delay
+					 target: self
+				       selector: selector
+					 object: object
+					 object: object
+					repeats: NO];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (const char*)typeEncodingForSelector: (SEL)selector
