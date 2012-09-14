@@ -90,13 +90,22 @@ static OFRunLoop *mainRunLoop;
 
 + (OFRunLoop*)currentRunLoop
 {
-	return [[[OFThread objectForTLSKey: currentRunLoopKey]
-	    retain] autorelease];
+	OFRunLoop *runLoop = [OFThread objectForTLSKey: currentRunLoopKey];
+
+	if (runLoop == nil) {
+		runLoop = [[OFRunLoop alloc] init];
+		[OFThread setObject: runLoop
+			  forTLSKey: currentRunLoopKey];
+	}
+
+	return [[runLoop retain] autorelease];
 }
 
 + (void)_setMainRunLoop: (OFRunLoop*)mainRunLoop_
 {
 	mainRunLoop = [mainRunLoop_ retain];
+	[OFThread setObject: mainRunLoop
+		  forTLSKey: currentRunLoopKey];
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -168,9 +177,6 @@ static OFRunLoop *mainRunLoop;
 		[streamObserver setDelegate: self];
 
 		readQueues = [[OFMutableDictionary alloc] init];
-
-		[OFThread setObject: self
-			  forTLSKey: currentRunLoopKey];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
