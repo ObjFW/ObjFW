@@ -26,7 +26,13 @@
 #import "OFObject.h"
 #import "OFString.h"
 
+@class OFStream;
 @class OFDataArray;
+
+#ifdef OF_HAVE_BLOCKS
+typedef BOOL (^of_stream_async_read_block_t)(OFStream*, void*, size_t);
+typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*);
+#endif
 
 /**
  * \brief A base class for different types of streams.
@@ -81,6 +87,30 @@
  */
 - (size_t)readIntoBuffer: (void*)buffer
 		  length: (size_t)size;
+
+#ifdef OF_HAVE_BLOCKS
+/**
+ * \brief Asyncronously reads <i>at most</i> size bytes from the stream into a
+ *	  buffer.
+ *
+ * On network streams, this might read less than the specified number of bytes.
+ * If you want to read exactly the specified number of bytes, use
+ * -[readIntoBuffer:exactLength:].
+ *
+ * \param buffer The buffer into which the data is read.
+ *		 The buffer must not be free'd before the async read completed!
+ * \param length The length of the data that should be read at most.
+ *		 The buffer <i>must</i> be at least this big!
+ * \param block The block to call when the data has been received.
+ *		If the block returns YES, it will be called again with the same
+ *		buffer and maximum length when more data has been received. If
+ *		you want the next block in the queue to handle the data
+ *		received next, you need to return NO from the block.
+ */
+- (void)asyncReadWithBuffer: (void*)buffer
+		     length: (size_t)length
+		      block: (of_stream_async_read_block_t)block;
+#endif
 
 /**
  * \brief Reads exactly the specified length bytes from the stream into a
@@ -445,6 +475,31 @@
  *	   stream has been reached.
  */
 - (OFString*)readLineWithEncoding: (of_string_encoding_t)encoding;
+
+#ifdef OF_HAVE_BLOCKS
+/**
+ * \brief Asyncronously reads until a newline, \\0 or end of stream occurs.
+ *
+ * \param block The block to call when the data has been received.
+ *		If the block returns YES, it will be called again when the next
+ *		line has been received. If you want the next block in the queue
+ *		to handle the next line, you need to return NO from the block.
+ */
+- (void)asyncReadLineWithBlock: (of_stream_async_read_line_block_t)block;
+
+/**
+ * \brief Asyncronously reads with the specified encoding until a newline, \\0
+ *	  or end of stream occurs.
+ *
+ * \param encoding The encoding used by the stream
+ * \param block The block to call when the data has been received.
+ *		If the block returns YES, it will be called again when the next
+ *		line has been received. If you want the next block in the queue
+ *		to handle the next line, you need to return NO from the block.
+ */
+- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
+			    block: (of_stream_async_read_line_block_t)block;
+#endif
 
 /**
  * \brief Tries to read a line from the stream (see readLine) and returns nil if

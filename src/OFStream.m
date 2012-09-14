@@ -34,6 +34,7 @@
 #import "OFStream.h"
 #import "OFString.h"
 #import "OFDataArray.h"
+#import "OFRunLoop.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -131,6 +132,16 @@
 
 		return length;
 	}
+}
+
+- (void)asyncReadWithBuffer: (void*)buffer
+		     length: (size_t)length
+		      block: (of_stream_async_read_block_t)block
+{
+	[OFRunLoop _addAsyncReadForStream: self
+				   buffer: buffer
+				   length: length
+				    block: block];
 }
 
 - (void)readIntoBuffer: (void*)buffer
@@ -672,6 +683,22 @@
 
 	return line;
 }
+
+#ifdef OF_HAVE_BLOCKS
+- (void)asyncReadLineWithBlock: (of_stream_async_read_line_block_t)block
+{
+	return [self asyncReadLineWithEncoding: OF_STRING_ENCODING_UTF_8
+					 block: block];
+}
+
+- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
+			    block: (of_stream_async_read_line_block_t)block
+{
+	[OFRunLoop _addAsyncReadLineForStream: self
+				     encoding: encoding
+					block: block];
+}
+#endif
 
 - (OFString*)tryReadLine
 {

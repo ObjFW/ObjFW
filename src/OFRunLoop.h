@@ -15,18 +15,24 @@
  */
 
 #import "OFObject.h"
+#import "OFStream.h"
+#import "OFStreamObserver.h"
 
 @class OFSortedList;
-@class OFStreamObserver;
 @class OFTimer;
+@class OFMutableDictionary;
 
 /**
  * \brief A class providing a run loop for the application and its processes.
  */
 @interface OFRunLoop: OFObject
+#ifdef OF_RUNLOOP_M
+    <OFStreamObserverDelegate>
+#endif
 {
 	OFSortedList *timersQueue;
 	OFStreamObserver *streamObserver;
+	OFMutableDictionary *readQueues;
 }
 
 /**
@@ -44,6 +50,15 @@
 + (OFRunLoop*)currentRunLoop;
 
 + (void)_setMainRunLoop: (OFRunLoop*)mainRunLoop;
+#ifdef OF_HAVE_BLOCKS
++ (void)_addAsyncReadForStream: (OFStream*)stream
+			buffer: (void*)buffer
+			length: (size_t)length
+			 block: (of_stream_async_read_block_t)block;
++ (void)_addAsyncReadLineForStream: (OFStream*)stream
+			  encoding: (of_string_encoding_t)encoding
+			     block: (of_stream_async_read_line_block_t)block;
+#endif
 
 /**
  * \brief Adds an OFTimer to the run loop.
