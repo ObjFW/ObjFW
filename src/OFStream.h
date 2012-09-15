@@ -38,8 +38,8 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*);
  * \brief A base class for different types of streams.
  *
  * \warning Even though the OFCopying protocol is implemented, it does
- *	    <i>not</i> return an independent copy of the stream but instead
- *	    retains it.  This is so that the stream can be used as a key for a
+ *	    <i>not</i> return an independent copy of the stream, but instead
+ *	    retains it. This is so that the stream can be used as a key for a
  *	    dictionary, so context can be associated with a stream. Using a
  *	    stream in more than one thread at the same time is not thread-safe,
  *	    even if copy was called to create one "instance" for every thread!

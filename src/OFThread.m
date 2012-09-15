@@ -359,6 +359,11 @@ call_main(id object)
 
 	[super dealloc];
 }
+
+- copy
+{
+	return [self retain];
+}
 @end
 
 @implementation OFTLSKey

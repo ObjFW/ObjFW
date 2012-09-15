@@ -75,8 +75,13 @@ typedef id (^of_thread_block_t)(id object);
  *
  * To use it, you should create a new class derived from it and reimplement
  * main.
+ *
+ * \warning Even though the OFCopying protocol is implemented, it does
+ *	    <i>not</i> return an independent copy of the thread, but instead
+ *	    retains it. This is so that the thread can be used as a key for a
+ *	    dictionary, so context can be associated with a thread.
  */
-@interface OFThread: OFObject
+@interface OFThread: OFObject <OFCopying>
 {
 #ifdef OF_THREAD_M
 @public
