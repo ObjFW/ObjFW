@@ -33,7 +33,12 @@
 # include <ws2tcpip.h>
 #endif
 
+@class OFTCPSocket;
 @class OFString;
+
+#ifdef OF_HAVE_BLOCKS
+typedef void (^of_tcpsocket_async_connect_block_t)(OFTCPSocket*);
+#endif
 
 /**
  * \brief A class which provides functions to create and use TCP sockets.
@@ -122,6 +127,19 @@
  */
 - (void)connectToHost: (OFString*)host
 		 port: (uint16_t)port;
+
+#ifdef OF_HAVE_BLOCKS
+/**
+ * \brief Asyncronously connect the OFTCPSocket to the specified destination.
+ *
+ * \param host The host to connect to
+ * \param port The port on the host to connect to
+ * \param block The block to execute once the connection has been established
+ */
+- (void)asyncConnectToHost: (OFString*)host
+		      port: (uint16_t)port
+		     block: (of_tcpsocket_async_connect_block_t)block;
+#endif
 
 /**
  * \brief Bind the socket on the specified port and host.

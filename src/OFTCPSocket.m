@@ -35,6 +35,9 @@
 #import "OFTCPSocket.h"
 #import "OFTCPSocket+SOCKS5.h"
 #import "OFString.h"
+#import "OFThread.h"
+#import "OFTimer.h"
+#import "OFRunLoop.h"
 
 #import "OFAcceptFailedException.h"
 #import "OFAlreadyConnectedException.h"
@@ -285,6 +288,40 @@ static uint16_t defaultSOCKS5Port = 1080;
 		[self _SOCKS5ConnectToHost: destinationHost
 				      port: destinationPort];
 }
+
+#ifdef OF_HAVE_BLOCKS
+- (void)asyncConnectToHost: (OFString*)host
+		      port: (uint16_t)port
+		     block: (of_tcpsocket_async_connect_block_t)block
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
+
+	[[OFThread threadWithObject: self
+			      block: ^ (id s) {
+		void *pool2 = objc_autoreleasePoolPush();
+		OFThread *connectThread = [OFThread currentThread];
+		OFTimer *timer;
+
+		[s connectToHost: host
+			    port: port];
+
+		timer = [OFTimer timerWithTimeInterval: 0
+					       repeats: NO
+						 block: ^ {
+			[connectThread join];
+			block(s);
+		}];
+		[runLoop addTimer: timer];
+
+		objc_autoreleasePoolPop(pool2);
+
+		return nil;
+	}] start];
+
+	objc_autoreleasePoolPop(pool);
+}
+#endif
 
 - (uint16_t)bindToHost: (OFString*)host
 		  port: (uint16_t)port
