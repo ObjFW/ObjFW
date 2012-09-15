@@ -123,11 +123,11 @@ call_main(id object)
 	return [[[self alloc] initWithBlock: block] autorelease];
 }
 
-+ threadWithBlock: (of_thread_block_t)block
-	   object: (id)object
++ threadWithObject: (id)object
+	     block: (of_thread_block_t)block
 {
-	return [[[self alloc] initWithBlock: block
-				     object: object] autorelease];
+	return [[[self alloc] initWithObject: object
+				       block: block] autorelease];
 }
 #endif
 
@@ -251,18 +251,18 @@ call_main(id object)
 #ifdef OF_HAVE_BLOCKS
 - initWithBlock: (of_thread_block_t)block_
 {
-	return [self initWithBlock: block_
-			    object: nil];
+	return [self initWithObject: nil
+			      block: block_];
 }
 
-- initWithBlock: (of_thread_block_t)block_
-	 object: (id)object_
+- initWithObject: (id)object_
+	   block: (of_thread_block_t)block_
 {
 	self = [super init];
 
 	@try {
-		block = [block_ copy];
 		object = [object_ retain];
+		block = [block_ copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
