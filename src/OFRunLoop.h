@@ -17,6 +17,7 @@
 #import "OFObject.h"
 #import "OFStream.h"
 #import "OFStreamObserver.h"
+#import "OFTCPSocket.h"
 
 @class OFSortedList;
 @class OFTimer;
@@ -58,6 +59,8 @@
 + (void)_addAsyncReadLineForStream: (OFStream*)stream
 			  encoding: (of_string_encoding_t)encoding
 			     block: (of_stream_async_read_line_block_t)block;
++ (void)_addAsyncAcceptForTCPSocket: (OFTCPSocket*)socket
+			      block: (of_tcpsocket_async_accept_block_t)block;
 #endif
 
 /**

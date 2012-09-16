@@ -53,6 +53,14 @@ static OFRunLoop *mainRunLoop;
 @property of_string_encoding_t encoding;
 @end
 
+@interface OFRunLoop_AcceptQueueItem: OFObject
+{
+	of_tcpsocket_async_accept_block_t block;
+}
+
+@property (copy) of_tcpsocket_async_accept_block_t block;
+@end
+
 @implementation OFRunLoop_ReadQueueItem
 @synthesize buffer, length, block;
 
@@ -66,6 +74,17 @@ static OFRunLoop *mainRunLoop;
 
 @implementation OFRunLoop_ReadLineQueueItem
 @synthesize block, encoding;
+
+- (void)dealloc
+{
+	[block release];
+
+	[super dealloc];
+}
+@end
+
+@implementation OFRunLoop_AcceptQueueItem
+@synthesize block;
 
 - (void)dealloc
 {
@@ -162,6 +181,30 @@ static OFRunLoop *mainRunLoop;
 
 	objc_autoreleasePoolPop(pool);
 }
+
++ (void)_addAsyncAcceptForTCPSocket: (OFTCPSocket*)socket
+			      block: (of_tcpsocket_async_accept_block_t)block
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFRunLoop *runLoop = [self currentRunLoop];
+	OFList *queue = [runLoop->readQueues objectForKey: socket];
+	OFRunLoop_AcceptQueueItem *queueItem;
+
+	if (queue == nil) {
+		queue = [OFList list];
+		[runLoop->readQueues setObject: queue
+					forKey: socket];
+	}
+
+	if ([queue count] == 0)
+		[runLoop->streamObserver addStreamForReading: socket];
+
+	queueItem = [[[OFRunLoop_AcceptQueueItem alloc] init] autorelease];
+	[queueItem setBlock: block];
+	[queue appendObject: queueItem];
+
+	objc_autoreleasePoolPop(pool);
+}
 #endif
 
 - init
@@ -245,6 +288,19 @@ static OFRunLoop *mainRunLoop;
 					    removeStreamForReading: stream];
 					[readQueues removeObjectForKey: stream];
 				}
+			}
+		}
+	} else if ([listObject->object isKindOfClass:
+	    [OFRunLoop_AcceptQueueItem class]]) {
+		OFRunLoop_AcceptQueueItem *queueItem = listObject->object;
+		OFTCPSocket *newSocket = [(OFTCPSocket*)stream accept];
+
+		if (![queueItem block]((OFTCPSocket*)stream, newSocket)) {
+			[queue removeListObject: listObject];
+
+			if ([queue count] == 0) {
+				[streamObserver removeStreamForReading: stream];
+				[readQueues removeObjectForKey: stream];
 			}
 		}
 	} else

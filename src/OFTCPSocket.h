@@ -38,6 +38,7 @@
 
 #ifdef OF_HAVE_BLOCKS
 typedef void (^of_tcpsocket_async_connect_block_t)(OFTCPSocket*);
+typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*);
 #endif
 
 /**
@@ -171,6 +172,17 @@ typedef void (^of_tcpsocket_async_connect_block_t)(OFTCPSocket*);
  * \return An autoreleased OFTCPSocket for the accepted connection.
  */
 - (OFTCPSocket*)accept;
+
+#ifdef OF_HAVE_BLOCKS
+/**
+ * \brief Asyncronously ccept an incoming connection.
+ *
+ * \param block The block to execute when a new connection has been accepted.
+ *		Returns whether the next incoming connection should be accepted
+ *		by the specified block as well.
+ */
+- (void)asyncAcceptWithBlock: (of_tcpsocket_async_accept_block_t)block;
+#endif
 
 /**
  * \brief Enable or disable keep alives for the connection.

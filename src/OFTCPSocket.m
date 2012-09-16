@@ -514,6 +514,14 @@ static uint16_t defaultSOCKS5Port = 1080;
 	return newSocket;
 }
 
+#ifdef OF_HAVE_BLOCKS
+- (void)asyncAcceptWithBlock: (of_tcpsocket_async_accept_block_t)block
+{
+	[OFRunLoop _addAsyncAcceptForTCPSocket: self
+					 block: block];
+}
+#endif
+
 - (void)setKeepAlivesEnabled: (BOOL)enable
 {
 	int v = enable;
