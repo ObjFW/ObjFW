@@ -638,6 +638,50 @@ typedef struct of_rectangle_t
 	     afterDelay: (double)delay;
 
 /**
+ * \brief Performs the specified selector on the specified thread.
+ *
+ * \param selector The selector to perform
+ * \param thread The thread on which to perform the selector
+ * \param waitUntilDone Whether to wait until the perform finished
+ */
+- (void)performSelector: (SEL)selector
+	       onThread: (OFThread*)thread
+	  waitUntilDone: (BOOL)waitUntilDone;
+
+/**
+ * \brief Performs the specified selector on the specified thread with the
+ *	  specified object.
+ *
+ * \param selector The selector to perform
+ * \param thread The thread on which to perform the selector
+ * \param object The object that is passed to the method specified by the
+ *		 selector
+ * \param waitUntilDone Whether to wait until the perform finished
+ */
+- (void)performSelector: (SEL)selector
+	       onThread: (OFThread*)thread
+	     withObject: (id)object
+	  waitUntilDone: (BOOL)waitUntilDone;
+
+/**
+ * \brief Performs the specified selector on the specified thread with the
+ *	  specified objects.
+ *
+ * \param selector The selector to perform
+ * \param thread The thread on which to perform the selector
+ * \param object1 The first object that is passed to the method specified by the
+ *		 selector
+ * \param object2 The second object that is passed to the method specified by
+ *		  the selector
+ * \param waitUntilDone Whether to wait until the perform finished
+ */
+- (void)performSelector: (SEL)selector
+	       onThread: (OFThread*)thread
+	     withObject: (id)object1
+	     withObject: (id)object2
+	  waitUntilDone: (BOOL)waitUntilDone;
+
+/**
  * \brief Performs the specified selector on the specified thread after the
  *	  specified delay.
  *
