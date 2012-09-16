@@ -19,19 +19,19 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFSeekableStream
-- (void)_seekToOffset: (off_t)offset
+- (void)lowlevelSeekToOffset: (off_t)offset
 {
 	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
-- (off_t)_seekForwardWithOffset: (off_t)offset
+- (off_t)lowlevelSeekForwardWithOffset: (off_t)offset
 {
 	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
-- (off_t)_seekToOffsetRelativeToEnd: (off_t)offset
+- (off_t)lowlevelSeekToOffsetRelativeToEnd: (off_t)offset
 {
 	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
@@ -39,7 +39,7 @@
 
 - (void)seekToOffset: (off_t)offset
 {
-	[self _seekToOffset: offset];
+	[self lowlevelSeekToOffset: offset];
 
 	[self freeMemory: cache];
 	cache = NULL;
@@ -50,7 +50,7 @@
 {
 	off_t ret;
 
-	ret = [self _seekForwardWithOffset: offset - cacheLength];
+	ret = [self lowlevelSeekForwardWithOffset: offset - cacheLength];
 
 	[self freeMemory: cache];
 	cache = NULL;
@@ -63,7 +63,7 @@
 {
 	off_t ret;
 
-	ret = [self _seekToOffsetRelativeToEnd: offset];
+	ret = [self lowlevelSeekToOffsetRelativeToEnd: offset];
 
 	[self freeMemory: cache];
 	cache = NULL;

@@ -71,21 +71,21 @@
 	return self;
 }
 
-- (BOOL)_isAtEndOfStream
+- (BOOL)lowlevelIsAtEndOfStream
 {
 	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
-- (size_t)_readIntoBuffer: (void*)buffer
-		   length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void*)buffer
+			  length: (size_t)length
 {
 	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
-- (void)_writeBuffer: (const void*)buffer
-	      length: (size_t)length
+- (void)lowlevelWriteBuffer: (const void*)buffer
+		     length: (size_t)length
 {
 	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
@@ -101,15 +101,15 @@
 	if (cache != NULL)
 		return NO;
 
-	return [self _isAtEndOfStream];
+	return [self lowlevelIsAtEndOfStream];
 }
 
 - (size_t)readIntoBuffer: (void*)buffer
 		  length: (size_t)length
 {
 	if (cache == NULL)
-		return [self _readIntoBuffer: buffer
-				      length: length];
+		return [self lowlevelReadIntoBuffer: buffer
+					     length: length];
 
 	if (length >= cacheLength) {
 		size_t ret = cacheLength;
@@ -562,7 +562,7 @@
 	buffer = [self allocMemoryWithSize: of_pagesize];
 
 	@try {
-		if ([self _isAtEndOfStream]) {
+		if ([self lowlevelIsAtEndOfStream]) {
 			if (cache == NULL) {
 				waitingForDelimiter = NO;
 				return nil;
@@ -585,8 +585,8 @@
 			return ret;
 		}
 
-		bufferLength = [self _readIntoBuffer: buffer
-					      length: of_pagesize];
+		bufferLength = [self lowlevelReadIntoBuffer: buffer
+						     length: of_pagesize];
 
 		/* Look if there's a newline or \0 */
 		for (i = 0; i < bufferLength; i++) {
@@ -758,7 +758,7 @@
 	buffer = [self allocMemoryWithSize: of_pagesize];
 
 	@try {
-		if ([self _isAtEndOfStream]) {
+		if ([self lowlevelIsAtEndOfStream]) {
 			if (cache == NULL) {
 				waitingForDelimiter = NO;
 				return nil;
@@ -776,8 +776,8 @@
 			return ret;
 		}
 
-		bufferLength = [self _readIntoBuffer: buffer
-					      length: of_pagesize];
+		bufferLength = [self lowlevelReadIntoBuffer: buffer
+						     length: of_pagesize];
 
 		/* Look if there's a delimiter or \0 */
 		for (i = 0; i < bufferLength; i++) {
@@ -891,8 +891,8 @@
 	if (writeBuffer == NULL)
 		return;
 
-	[self _writeBuffer: writeBuffer
-		    length: writeBufferLength];
+	[self lowlevelWriteBuffer: writeBuffer
+			   length: writeBufferLength];
 
 	[self freeMemory: writeBuffer];
 	writeBuffer = NULL;
@@ -903,8 +903,8 @@
 	     length: (size_t)length
 {
 	if (!writeBufferEnabled)
-		[self _writeBuffer: buffer
-			    length: length];
+		[self lowlevelWriteBuffer: buffer
+				   length: length];
 	else {
 		writeBuffer = [self resizeMemory: writeBuffer
 					    size: writeBufferLength + length];

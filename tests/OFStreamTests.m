@@ -33,13 +33,13 @@ static OFString *module = @"OFStream";
 @end
 
 @implementation StreamTester
-- (BOOL)_isAtEndOfStream
+- (BOOL)lowlevelIsAtEndOfStream
 {
 	return (state > 1 ? YES : NO);
 }
 
-- (size_t)_readIntoBuffer: (void*)buffer
-		   length: (size_t)size
+- (size_t)lowlevelReadIntoBuffer: (void*)buffer
+			  length: (size_t)size
 {
 	switch (state) {
 	case 0:

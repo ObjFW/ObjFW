@@ -44,12 +44,12 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*);
  *	    stream in more than one thread at the same time is not thread-safe,
  *	    even if copy was called to create one "instance" for every thread!
  *
- * \warning If you want to subclass this, override _readIntoBuffer:length:,
- *	    _writeBuffer:length: and _isAtEndOfStream, but nothing else, as
- *	    those are are the methods that do the actual work. OFStream uses
- *	    those for all other methods and does all the caching and other
- *	    stuff for you. If you override these methods without the _ prefix,
- *	    you <i>will</i> break caching and get broken results!
+ * \note If you want to subclass this, override lowlevelReadIntoBuffer:length:,
+ *	 lowlevelWriteBuffer:length: and lowlevelIsAtEndOfStream, but nothing
+ *	 else, as those are are the methods that do the actual work. OFStream
+ *	 uses those for all other methods and does all the caching and other
+ *	 stuff for you. If you override these methods without the lowlevel
+ *	 prefix, you <i>will</i> break caching and get broken results!
  */
 @interface OFStream: OFObject <OFCopying>
 {
@@ -883,11 +883,45 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*);
  */
 - (void)close;
 
-- (size_t)_readIntoBuffer: (void*)buffer
-		   length: (size_t)length;
-- (void)_writeBuffer: (const void*)buffer
-	      length: (size_t)length;
-- (BOOL)_isAtEndOfStream;
+/**
+ * \brief Performs a lowlevel read.
+ *
+ * \warning Do not call this directly!
+ *
+ * Override this method with your actual read implementation when subclassing!
+ *
+ * \param buffer The buffer for the data to read
+ * \param length The length of the buffer
+ * \return The number of bytes read
+ */
+- (size_t)lowlevelReadIntoBuffer: (void*)buffer
+			  length: (size_t)length;
+
+
+/**
+ * \brief Performs a lowlevel write.
+ *
+ * \warning Do not call this directly!
+ *
+ * Override this method with your actual write implementation when subclassing!
+ *
+ * \param buffer The buffer with the data to write
+ * \param length The length of the data to write
+ */
+- (void)lowlevelWriteBuffer: (const void*)buffer
+		     length: (size_t)length;
+
+/**
+ * \brief Returns whether the lowlevel is at the end of the stream.
+ *
+ * \warning Do not call this directly!
+ *
+ * Override this method with your actual end of stream checking implementation
+ * when subclassing!
+ *
+ * \return Whether the lowlevel is at the end of the stream
+ */
+- (BOOL)lowlevelIsAtEndOfStream;
 
 - (BOOL)OF_isWaitingForDelimiter;
 @end

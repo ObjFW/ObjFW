@@ -225,7 +225,7 @@
 	return self;
 }
 
-- (BOOL)_isAtEndOfStream
+- (BOOL)lowlevelIsAtEndOfStream
 {
 #ifndef _WIN32
 	if (readPipe[0] == -1)
@@ -237,8 +237,8 @@
 	return atEndOfStream;
 }
 
-- (size_t)_readIntoBuffer: (void*)buffer
-		   length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void*)buffer
+			  length: (size_t)length
 {
 #ifndef _WIN32
 	ssize_t ret;
@@ -269,8 +269,8 @@
 	return ret;
 }
 
-- (void)_writeBuffer: (const void*)buffer
-	      length: (size_t)length
+- (void)lowlevelWriteBuffer: (const void*)buffer
+		     length: (size_t)length
 {
 #ifndef _WIN32
 	if (writePipe[1] == -1 || atEndOfStream ||

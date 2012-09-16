@@ -685,7 +685,7 @@ of_log(OFConstantString *format, ...)
 	return self;
 }
 
-- (BOOL)_isAtEndOfStream
+- (BOOL)lowlevelIsAtEndOfStream
 {
 	if (fd == -1)
 		return YES;
@@ -693,8 +693,8 @@ of_log(OFConstantString *format, ...)
 	return atEndOfStream;
 }
 
-- (size_t)_readIntoBuffer: (void*)buffer
-		   length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void*)buffer
+			  length: (size_t)length
 {
 	ssize_t ret;
 
@@ -709,8 +709,8 @@ of_log(OFConstantString *format, ...)
 	return ret;
 }
 
-- (void)_writeBuffer: (const void*)buffer
-	      length: (size_t)length
+- (void)lowlevelWriteBuffer: (const void*)buffer
+		     length: (size_t)length
 {
 	if (fd == -1 || atEndOfStream || write(fd, buffer, length) < length)
 		@throw [OFWriteFailedException exceptionWithClass: [self class]
@@ -718,7 +718,7 @@ of_log(OFConstantString *format, ...)
 						  requestedLength: length];
 }
 
-- (void)_seekToOffset: (off_t)offset
+- (void)lowlevelSeekToOffset: (off_t)offset
 {
 	if (lseek(fd, offset, SEEK_SET) == -1)
 		@throw [OFSeekFailedException exceptionWithClass: [self class]
@@ -727,7 +727,7 @@ of_log(OFConstantString *format, ...)
 							  whence: SEEK_SET];
 }
 
-- (off_t)_seekForwardWithOffset: (off_t)offset
+- (off_t)lowlevelSeekForwardWithOffset: (off_t)offset
 {
 	off_t ret;
 
@@ -740,7 +740,7 @@ of_log(OFConstantString *format, ...)
 	return ret;
 }
 
-- (off_t)_seekToOffsetRelativeToEnd: (off_t)offset
+- (off_t)lowlevelSeekToOffsetRelativeToEnd: (off_t)offset
 {
 	off_t ret;
 
@@ -823,19 +823,19 @@ of_log(OFConstantString *format, ...)
 	[super dealloc];	/* Get rid of stupid warning */
 }
 
-- (void)_seekToOffset: (off_t)offset
+- (void)lowlevelSeekToOffset: (off_t)offset
 {
 	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
-- (off_t)_seekForwardWithOffset: (off_t)offset
+- (off_t)lowlevelSeekForwardWithOffset: (off_t)offset
 {
 	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
-- (off_t)_seekToOffsetRelativeToEnd: (off_t)offset
+- (off_t)lowlevelSeekToOffsetRelativeToEnd: (off_t)offset
 {
 	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];

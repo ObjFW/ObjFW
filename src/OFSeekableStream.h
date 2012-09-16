@@ -28,12 +28,13 @@
 /**
  * \brief A stream that supports seeking.
  *
- * IMPORTANT: If you want to subclass this, override _seekToOffset:,
- * _seekForwardWithOffset: and _seekToOffsetRelativeToEnd:, but nothing else.
- * Those are not defined in the headers, but do the actual work.
- * OFSeekableStream uses those and makes them work together with the caching of
- * OFStream. If you override these methods without the _ prefix, you *WILL*
- * break caching, get broken results and seek to the wrong position!
+ * \note If you want to subclass this, override lowlevelSeekToOffset:,
+ *	 lowlevelSeekForwardWithOffset: and lowlevelSeekToOffsetRelativeToEnd:,
+ *	 but nothing else. Those are not defined in the headers, but do the
+ *	 actual work. OFSeekableStream uses those and makes them work together
+ *	 with the caching of OFStream. If you override these methods without
+ *	 the lowlevel prefix, you <i>will</i> break caching, get broken results
+ *	 and seek to the wrong position!
  */
 @interface OFSeekableStream: OFStream
 /**
@@ -58,4 +59,40 @@
  * \return The absolute offset
  */
 - (off_t)seekToOffsetRelativeToEnd: (off_t)offset;
+
+/**
+ * \brief Seek the stream on the lowlevel.
+ *
+ * \warning Do not call this directly!
+ *
+ * Override this with this method with your actual seek implementation when
+ * subclassing!
+ *
+ * \param offset The offset to seek to
+ */
+- (void)lowlevelSeekToOffset: (off_t)offset;
+
+/**
+ * \brief Seek the stream on the lowlevel.
+ *
+ * \warning Do not call this directly!
+ *
+ * Override this with this method with your actual seek implementation when
+ * subclassing!
+ *
+ * \param offset The offset to seek forward to
+ */
+- (off_t)lowlevelSeekForwardWithOffset: (off_t)offset;
+
+/**
+ * \brief Seek the stream on the lowlevel.
+ *
+ * \warning Do not call this directly!
+ *
+ * Override this with this method with your actual seek implementation when
+ * subclassing!
+ *
+ * \param offset The offset to seek to, relative to the end
+ */
+- (off_t)lowlevelSeekToOffsetRelativeToEnd: (off_t)offset;
 @end

@@ -65,13 +65,13 @@
 	return [[[self alloc] init] autorelease];
 }
 
-- (BOOL)_isAtEndOfStream
+- (BOOL)lowlevelIsAtEndOfStream
 {
 	return atEndOfStream;
 }
 
-- (size_t)_readIntoBuffer: (void*)buffer
-		   length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void*)buffer
+			  length: (size_t)length
 {
 	ssize_t ret;
 
@@ -105,8 +105,8 @@
 	return ret;
 }
 
-- (void)_writeBuffer: (const void*)buffer
-	      length: (size_t)length
+- (void)lowlevelWriteBuffer: (const void*)buffer
+		     length: (size_t)length
 {
 	if (sock == INVALID_SOCKET)
 		@throw [OFNotConnectedException exceptionWithClass: [self class]
