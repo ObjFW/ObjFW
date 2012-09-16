@@ -93,8 +93,8 @@
 /**
  * \brief Sets the passphrase to decrypt the PKCS#8 private key file.
  *
- * \warning You have to ensure that this is in secure memory that is protected
- *	    from swapping! This is also the reason why this is not an OFString.
+ * \warning You have to ensure that this is in secure memory protected from
+ *	    swapping! This is also the reason why this is not an OFString.
  *
  * \param privateKeyPassphrase The passphrase to decrypt the PKCS#8 private
  *			       key file
@@ -104,7 +104,7 @@
 /**
  * \brief Returns the passphrase to decrypt the PKCS#8 private key file.
  *
- * \warning You should not copy this to insecure memory that is swappable!
+ * \warning You should not copy this to insecure memory which is swappable!
  *
  * \return The passphrase to decrypt the PKCS#8 private key file
  */

@@ -107,6 +107,10 @@
 		4B2B3E82140D430500EC2F7C /* OFMutableArray_adjacent.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2B3E78140D430500EC2F7C /* OFMutableArray_adjacent.m */; };
 		4B2B3E83140D430500EC2F7C /* OFMutableDictionary_hashtable.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2B3E79140D430500EC2F7C /* OFMutableDictionary_hashtable.h */; settings = {ATTRIBUTES = (); }; };
 		4B2B3E84140D430500EC2F7C /* OFMutableDictionary_hashtable.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2B3E7A140D430500EC2F7C /* OFMutableDictionary_hashtable.m */; };
+		4B325EDD1605F3A0007836CA /* OFRunLoop.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B325ED91605F3A0007836CA /* OFRunLoop.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B325EDE1605F3A0007836CA /* OFRunLoop.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B325EDA1605F3A0007836CA /* OFRunLoop.m */; };
+		4B325EDF1605F3A0007836CA /* OFTimer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B325EDB1605F3A0007836CA /* OFTimer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B325EE01605F3A0007836CA /* OFTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B325EDC1605F3A0007836CA /* OFTimer.m */; };
 		4B39844213D3A24600E6F825 /* OFSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B39844013D3A24600E6F825 /* OFSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B39844313D3A24600E6F825 /* OFSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B39844113D3A24600E6F825 /* OFSet.m */; };
 		4B39844713D3AFB400E6F825 /* OFMutableSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B39844513D3AFB400E6F825 /* OFMutableSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -480,6 +484,10 @@
 		4B2B3E78140D430500EC2F7C /* OFMutableArray_adjacent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMutableArray_adjacent.m; path = src/OFMutableArray_adjacent.m; sourceTree = "<group>"; };
 		4B2B3E79140D430500EC2F7C /* OFMutableDictionary_hashtable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMutableDictionary_hashtable.h; path = src/OFMutableDictionary_hashtable.h; sourceTree = "<group>"; };
 		4B2B3E7A140D430500EC2F7C /* OFMutableDictionary_hashtable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMutableDictionary_hashtable.m; path = src/OFMutableDictionary_hashtable.m; sourceTree = "<group>"; };
+		4B325ED91605F3A0007836CA /* OFRunLoop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFRunLoop.h; path = src/OFRunLoop.h; sourceTree = "<group>"; };
+		4B325EDA1605F3A0007836CA /* OFRunLoop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFRunLoop.m; path = src/OFRunLoop.m; sourceTree = "<group>"; };
+		4B325EDB1605F3A0007836CA /* OFTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFTimer.h; path = src/OFTimer.h; sourceTree = "<group>"; };
+		4B325EDC1605F3A0007836CA /* OFTimer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFTimer.m; path = src/OFTimer.m; sourceTree = "<group>"; };
 		4B39844013D3A24600E6F825 /* OFSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSet.h; path = src/OFSet.h; sourceTree = "<group>"; };
 		4B39844113D3A24600E6F825 /* OFSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSet.m; path = src/OFSet.m; sourceTree = "<group>"; };
 		4B39844513D3AFB400E6F825 /* OFMutableSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMutableSet.h; path = src/OFMutableSet.h; sourceTree = "<group>"; };
@@ -980,6 +988,8 @@
 				4B67997A1099E7C50041064A /* OFPlugin.m */,
 				4BB524BF143D1E4E0085FBCC /* OFProcess.h */,
 				4BB524C0143D1E4E0085FBCC /* OFProcess.m */,
+				4B325ED91605F3A0007836CA /* OFRunLoop.h */,
+				4B325EDA1605F3A0007836CA /* OFRunLoop.m */,
 				4B981CDE116F71DD00294DB7 /* OFSeekableStream.h */,
 				4B981CDF116F71DD00294DB7 /* OFSeekableStream.m */,
 				4B989C2E13771A3700109A30 /* OFSerialization.h */,
@@ -1027,6 +1037,8 @@
 				4B6799841099E7C50041064A /* OFThread.m */,
 				4B9361A61511000C00DCD16B /* OFThreadPool.h */,
 				4B9361A71511000C00DCD16B /* OFThreadPool.m */,
+				4B325EDB1605F3A0007836CA /* OFTimer.h */,
+				4B325EDC1605F3A0007836CA /* OFTimer.m */,
 				4BA02BA015041F5900002F84 /* OFTLSSocket.h */,
 				4B4A61F212DF5EA20048F3F2 /* OFURL.h */,
 				4B4A61F312DF5EA20048F3F2 /* OFURL.m */,
@@ -1192,6 +1204,7 @@
 				4BB25E88139C388A00F574EA /* OFObject+Serialization.h in Headers */,
 				4B3D23D21337FCB000DD29B8 /* OFPlugin.h in Headers */,
 				4BB524C1143D1E4E0085FBCC /* OFProcess.h in Headers */,
+				4B325EDD1605F3A0007836CA /* OFRunLoop.h in Headers */,
 				4B3D23D31337FCB000DD29B8 /* OFSeekableStream.h in Headers */,
 				4B989C2F13771A3700109A30 /* OFSerialization.h in Headers */,
 				4B39844213D3A24600E6F825 /* OFSet.h in Headers */,
@@ -1210,6 +1223,7 @@
 				4B3D23DD1337FCB000DD29B8 /* OFTCPSocket.h in Headers */,
 				4B3D23DE1337FCB000DD29B8 /* OFThread.h in Headers */,
 				4B9361A81511000C00DCD16B /* OFThreadPool.h in Headers */,
+				4B325EDF1605F3A0007836CA /* OFTimer.h in Headers */,
 				4BA02BA215041F5900002F84 /* OFTLSSocket.h in Headers */,
 				4B3D23DF1337FCB000DD29B8 /* OFURL.h in Headers */,
 				4B3D23E01337FCB000DD29B8 /* OFXMLAttribute.h in Headers */,
@@ -1370,7 +1384,7 @@
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0440;
 			};
 			buildConfigurationList = 1DEB919308733D9F0010E9CD /* Build configuration list for PBXProject "ObjFW" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -1487,6 +1501,7 @@
 				4BB25E89139C388A00F574EA /* OFObject+Serialization.m in Sources */,
 				4B3D23A01337FC0D00DD29B8 /* OFPlugin.m in Sources */,
 				4BB524C2143D1E4E0085FBCC /* OFProcess.m in Sources */,
+				4B325EDE1605F3A0007836CA /* OFRunLoop.m in Sources */,
 				4B3D23A11337FC0D00DD29B8 /* OFSeekableStream.m in Sources */,
 				4B39844313D3A24600E6F825 /* OFSet.m in Sources */,
 				4BA85BCF140ECCE800E91D51 /* OFSet_hashtable.m in Sources */,
@@ -1510,6 +1525,7 @@
 				4BD653C6143B8489006182F0 /* OFTCPSocket+SOCKS5.m in Sources */,
 				4B3D23AC1337FC0D00DD29B8 /* OFThread.m in Sources */,
 				4B9361A91511000C00DCD16B /* OFThreadPool.m in Sources */,
+				4B325EE01605F3A0007836CA /* OFTimer.m in Sources */,
 				4B3D23AD1337FC0D00DD29B8 /* OFURL.m in Sources */,
 				4B3D23AE1337FC0D00DD29B8 /* OFXMLAttribute.m in Sources */,
 				4B49EA6E143B3A090005BBC6 /* OFXMLCDATA.m in Sources */,
@@ -1663,7 +1679,7 @@
 					"-fblocks",
 					"-pipe",
 				);
-				SDKROOT = macosx;
+				SDKROOT = "";
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Werror",
@@ -1690,7 +1706,7 @@
 					"-fblocks",
 					"-pipe",
 				);
-				SDKROOT = macosx;
+				SDKROOT = "";
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Werror",
