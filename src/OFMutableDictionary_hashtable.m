@@ -40,7 +40,7 @@ static Class dictionary = Nil;
 	}
 }
 
-- (void)_resizeForCount: (size_t)newCount
+- (void)OF_resizeForCount: (size_t)newCount
 {
 	size_t fullness = newCount * 4 / size;
 	struct of_dictionary_hashtable_bucket **newData;
@@ -97,9 +97,9 @@ static Class dictionary = Nil;
 	size = newSize;
 }
 
-- (void)_setObject: (id)object
-	    forKey: (id)key
-	   copyKey: (BOOL)copyKey
+- (void)OF_setObject: (id)object
+	      forKey: (id)key
+	     copyKey: (BOOL)copyKey
 {
 	uint32_t i, hash, last;
 	id old;
@@ -138,7 +138,7 @@ static Class dictionary = Nil;
 	    ![data[i]->key isEqual: key]) {
 		struct of_dictionary_hashtable_bucket *bucket;
 
-		[self _resizeForCount: count + 1];
+		[self OF_resizeForCount: count + 1];
 
 		mutations++;
 		last = size;
@@ -187,9 +187,9 @@ static Class dictionary = Nil;
 - (void)setObject: (id)object
 	   forKey: (id)key
 {
-	[self _setObject: object
-		  forKey: key
-		 copyKey: YES];
+	[self OF_setObject: object
+		    forKey: key
+		   copyKey: YES];
 }
 
 - (void)removeObjectForKey: (id)key
@@ -216,7 +216,7 @@ static Class dictionary = Nil;
 
 			count--;
 			mutations++;
-			[self _resizeForCount: count];
+			[self OF_resizeForCount: count];
 
 			return;
 		}
@@ -240,7 +240,7 @@ static Class dictionary = Nil;
 
 			count--;
 			mutations++;
-			[self _resizeForCount: count];
+			[self OF_resizeForCount: count];
 
 			return;
 		}

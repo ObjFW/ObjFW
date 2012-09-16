@@ -57,8 +57,8 @@ struct of_dictionary_hashtable_bucket
 	return self;
 }
 
-- _initWithDictionary: (OFDictionary*)dictionary
-	     copyKeys: (BOOL)copyKeys
+- OF_initWithDictionary: (OFDictionary*)dictionary
+	       copyKeys: (BOOL)copyKeys
 {
 	self = [super init];
 
@@ -118,8 +118,8 @@ struct of_dictionary_hashtable_bucket
 {
 	if ([dictionary class] == [OFDictionary_hashtable class] ||
 	    [dictionary class] == [OFMutableDictionary_hashtable class])
-		return [self _initWithDictionary: dictionary
-					copyKeys: YES];
+		return [self OF_initWithDictionary: dictionary
+					  copyKeys: YES];
 
 	self = [super init];
 

@@ -57,8 +57,8 @@
 	[super dealloc];
 }
 
-- (void)_addFileDescriptor: (int)fd
-		withEvents: (short)events
+- (void)OF_addFileDescriptor: (int)fd
+		  withEvents: (short)events
 {
 	struct pollfd *FDsCArray = [FDs cArray];
 	size_t i, count = [FDs count];
@@ -78,8 +78,8 @@
 	}
 }
 
-- (void)_removeFileDescriptor: (int)fd
-		   withEvents: (short)events
+- (void)OF_removeFileDescriptor: (int)fd
+		     withEvents: (short)events
 {
 	struct pollfd *FDsCArray = [FDs cArray];
 	size_t i, nFDs = [FDs count];
@@ -96,28 +96,28 @@
 	}
 }
 
-- (void)_addFileDescriptorForReading: (int)fd
+- (void)OF_addFileDescriptorForReading: (int)fd
 {
-	[self _addFileDescriptor: fd
-		      withEvents: POLLIN];
+	[self OF_addFileDescriptor: fd
+			withEvents: POLLIN];
 }
 
-- (void)_addFileDescriptorForWriting: (int)fd
+- (void)OF_addFileDescriptorForWriting: (int)fd
 {
-	[self _addFileDescriptor: fd
-		      withEvents: POLLOUT];
+	[self OF_addFileDescriptor: fd
+			withEvents: POLLOUT];
 }
 
-- (void)_removeFileDescriptorForReading: (int)fd
+- (void)OF_removeFileDescriptorForReading: (int)fd
 {
-	[self _removeFileDescriptor: fd
-			 withEvents: POLLIN];
+	[self OF_removeFileDescriptor: fd
+			   withEvents: POLLIN];
 }
 
-- (void)_removeFileDescriptorForWriting: (int)fd
+- (void)OF_removeFileDescriptorForWriting: (int)fd
 {
-	[self _removeFileDescriptor: fd
-			 withEvents: POLLOUT];
+	[self OF_removeFileDescriptor: fd
+			   withEvents: POLLOUT];
 }
 
 - (BOOL)observeWithTimeout: (double)timeout
@@ -126,9 +126,9 @@
 	struct pollfd *FDsCArray;
 	size_t i, nFDs, realEvents = 0;
 
-	[self _processQueue];
+	[self OF_processQueue];
 
-	if ([self _processCache]) {
+	if ([self OF_processCache]) {
 		objc_autoreleasePoolPop(pool);
 		return YES;
 	}

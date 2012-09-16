@@ -31,7 +31,7 @@
 
 @implementation OFMethod
 #if defined(OF_OBJFW_RUNTIME)
-- _initWithMethod: (struct objc_method*)method
+- OF_initWithMethod: (struct objc_method*)method
 {
 	self = [super init];
 
@@ -49,7 +49,7 @@
 	return self;
 }
 #elif defined(OF_APPLE_RUNTIME)
-- _initWithMethod: (Method)method
+- OF_initWithMethod: (Method)method
 {
 	self = [super init];
 
@@ -99,7 +99,7 @@
 
 @implementation OFInstanceVariable
 #if defined(OF_OBJFW_RUNTIME)
-- _initWithIvar: (struct objc_ivar*)ivar
+- OF_initWithIvar: (struct objc_ivar*)ivar
 {
 	self = [super init];
 
@@ -117,7 +117,7 @@
 	return self;
 }
 #elif defined(OF_APPLE_RUNTIME)
-- _initWithIvar: (Ivar)ivar
+- OF_initWithIvar: (Ivar)ivar
 {
 	self = [super init];
 
@@ -197,7 +197,7 @@
 			for (i = 0; i < methodList->count; i++) {
 				void *pool = objc_autoreleasePoolPush();
 				OFMethod *method = [[OFMethod alloc]
-				    _initWithMethod: &methodList->methods[i]];
+				    OF_initWithMethod: &methodList->methods[i]];
 				[classMethods addObject: [method autorelease]];
 				objc_autoreleasePoolPop(pool);
 			}
@@ -210,7 +210,7 @@
 			for (i = 0; i < methodList->count; i++) {
 				void *pool = objc_autoreleasePoolPush();
 				OFMethod *method = [[OFMethod alloc]
-				    _initWithMethod: &methodList->methods[i]];
+				    OF_initWithMethod: &methodList->methods[i]];
 				[instanceMethods addObject:
 				    [method autorelease]];
 				objc_autoreleasePoolPop(pool);
@@ -225,7 +225,7 @@
 				OFInstanceVariable *ivar;
 
 				ivar = [[OFInstanceVariable alloc]
-				    _initWithIvar: &class->ivars->ivars[i]];
+				    OF_initWithIvar: &class->ivars->ivars[i]];
 				[instanceVariables addObject:
 				    [ivar autorelease]];
 
@@ -239,7 +239,7 @@
 			for (i = 0; i < count; i++) {
 				void *pool = objc_autoreleasePoolPush();
 				[classMethods addObject: [[[OFMethod alloc]
-				    _initWithMethod: methodList[i]]
+				    OF_initWithMethod: methodList[i]]
 				    autorelease]];
 				objc_autoreleasePoolPop(pool);
 			}
@@ -252,7 +252,7 @@
 			for (i = 0; i < count; i++) {
 				void *pool = objc_autoreleasePoolPush();
 				[instanceMethods addObject: [[[OFMethod alloc]
-				    _initWithMethod: methodList[i]]
+				    OF_initWithMethod: methodList[i]]
 				    autorelease]];
 				objc_autoreleasePoolPop(pool);
 			}
@@ -266,7 +266,7 @@
 				void *pool = objc_autoreleasePoolPush();
 				[instanceVariables addObject:
 				    [[[OFInstanceVariable alloc]
-				    _initWithIvar: ivarList[i]] autorelease]];
+				    OF_initWithIvar: ivarList[i]] autorelease]];
 				objc_autoreleasePoolPop(pool);
 			}
 		} @finally {

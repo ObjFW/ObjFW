@@ -50,17 +50,17 @@
  */
 + (OFRunLoop*)currentRunLoop;
 
-+ (void)_setMainRunLoop;
++ (void)OF_setMainRunLoop;
 #ifdef OF_HAVE_BLOCKS
-+ (void)_addAsyncReadForStream: (OFStream*)stream
-			buffer: (void*)buffer
-			length: (size_t)length
-			 block: (of_stream_async_read_block_t)block;
-+ (void)_addAsyncReadLineForStream: (OFStream*)stream
-			  encoding: (of_string_encoding_t)encoding
-			     block: (of_stream_async_read_line_block_t)block;
-+ (void)_addAsyncAcceptForTCPSocket: (OFTCPSocket*)socket
-			      block: (of_tcpsocket_async_accept_block_t)block;
++ (void)OF_addAsyncReadForStream: (OFStream*)stream
+			  buffer: (void*)buffer
+			  length: (size_t)length
+			   block: (of_stream_async_read_block_t)block;
++ (void)OF_addAsyncReadLineForStream: (OFStream*)stream
+			    encoding: (of_string_encoding_t)encoding
+			       block: (of_stream_async_read_line_block_t)block;
++ (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket*)socket
+				block: (of_tcpsocket_async_accept_block_t)block;
 #endif
 
 /**

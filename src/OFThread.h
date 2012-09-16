@@ -213,7 +213,7 @@ typedef id (^of_thread_block_t)(id object);
  */
 + (void)terminateWithObject: (id)object;
 
-+ (void)_createMainThread;
++ (void)OF_createMainThread;
 
 /**
  * \brief Initializes an already allocated thread with the specified object.
@@ -281,7 +281,7 @@ typedef id (^of_thread_block_t)(id object);
  */
 - (OFRunLoop*)runLoop;
 
-- (void)_setRunLoop: (OFRunLoop*)runLoop;
+- (void)OF_setRunLoop: (OFRunLoop*)runLoop;
 @end
 
 /**

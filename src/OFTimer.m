@@ -198,14 +198,14 @@
 }
 #endif
 
-- _initWithFireDate: (OFDate*)fireDate_
-	   interval: (double)interval_
-	     target: (id)target_
-	   selector: (SEL)selector_
-	     object: (id)object1_
-	     object: (id)object2_
-	  arguments: (uint8_t)arguments_
-	    repeats: (BOOL)repeats_
+- OF_initWithFireDate: (OFDate*)fireDate_
+	     interval: (double)interval_
+	       target: (id)target_
+	     selector: (SEL)selector_
+	       object: (id)object1_
+	       object: (id)object2_
+	    arguments: (uint8_t)arguments_
+	      repeats: (BOOL)repeats_
 {
 	self = [super init];
 
@@ -232,14 +232,14 @@
 	  selector: (SEL)selector_
 	   repeats: (BOOL)repeats_
 {
-	return [self _initWithFireDate: fireDate_
-			      interval: interval_
-				target: target_
-			      selector: selector_
-				object: nil
-				object: nil
-			     arguments: 0
-			       repeats: repeats_];
+	return [self OF_initWithFireDate: fireDate_
+				interval: interval_
+				  target: target_
+				selector: selector_
+				  object: nil
+				  object: nil
+			       arguments: 0
+				 repeats: repeats_];
 }
 
 - initWithFireDate: (OFDate*)fireDate_
@@ -249,14 +249,14 @@
 	    object: (id)object
 	   repeats: (BOOL)repeats_
 {
-	return [self _initWithFireDate: fireDate_
-			      interval: interval_
-				target: target_
-			      selector: selector_
-				object: object
-				object: nil
-			     arguments: 1
-			       repeats: repeats_];
+	return [self OF_initWithFireDate: fireDate_
+				interval: interval_
+				  target: target_
+				selector: selector_
+				  object: object
+				  object: nil
+			       arguments: 1
+				 repeats: repeats_];
 }
 
 - initWithFireDate: (OFDate*)fireDate_
@@ -267,14 +267,14 @@
 	    object: (id)object2_
 	   repeats: (BOOL)repeats_
 {
-	return [self _initWithFireDate: fireDate_
-			      interval: interval_
-				target: target_
-			      selector: selector_
-				object: object1_
-				object: object2_
-			     arguments: 2
-			       repeats: repeats_];
+	return [self OF_initWithFireDate: fireDate_
+				interval: interval_
+				  target: target_
+				selector: selector_
+				  object: object1_
+				  object: object2_
+			       arguments: 2
+				 repeats: repeats_];
 }
 
 #ifdef OF_HAVE_BLOCKS

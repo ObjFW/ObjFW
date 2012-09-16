@@ -138,10 +138,10 @@
 		     length: (size_t)length
 		      block: (of_stream_async_read_block_t)block
 {
-	[OFRunLoop _addAsyncReadForStream: self
-				   buffer: buffer
-				   length: length
-				    block: block];
+	[OFRunLoop OF_addAsyncReadForStream: self
+				     buffer: buffer
+				     length: length
+				      block: block];
 }
 
 - (void)readIntoBuffer: (void*)buffer
@@ -694,9 +694,9 @@
 - (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
 			    block: (of_stream_async_read_line_block_t)block
 {
-	[OFRunLoop _addAsyncReadLineForStream: self
-				     encoding: encoding
-					block: block];
+	[OFRunLoop OF_addAsyncReadLineForStream: self
+				       encoding: encoding
+					  block: block];
 }
 #endif
 
@@ -1438,7 +1438,7 @@
 						    selector: _cmd];
 }
 
-- (BOOL)_isWaitingForDelimiter
+- (BOOL)OF_isWaitingForDelimiter
 {
 	return waitingForDelimiter;
 }

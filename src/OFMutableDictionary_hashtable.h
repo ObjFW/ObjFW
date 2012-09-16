@@ -24,15 +24,10 @@
 	unsigned long mutations;
 }
 
-#if defined(OF_SET_HASHTABLE_M) || defined(OF_COUNTED_SET_HASHTABLE_M)
-- _initWithDictionary: (OFDictionary*)dictionary
-	     copyKeys: (BOOL)copyKeys;
-#endif
-
 #if defined(OF_SET_HASHTABLE_M) || defined(OF_MUTABLE_SET_HASHTABLE_M) || \
     defined(OF_COUNTED_SET_HASHTABLE_M)
-- (void)_setObject: (id)object
-	    forKey: (id)key
-	   copyKey: (BOOL)copyKey;
+- (void)OF_setObject: (id)object
+	      forKey: (id)key
+	     copyKey: (BOOL)copyKey;
 #endif
 @end

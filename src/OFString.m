@@ -278,9 +278,9 @@ static struct {
 	string = of_alloc_object([OFString_UTF8 class],
 	    length + 1, 1, &storage);
 
-	return (id)[string _initWithUTF8String: UTF8String
-					length: length
-				       storage: storage];
+	return (id)[string OF_initWithUTF8String: UTF8String
+					  length: length
+					 storage: storage];
 }
 
 - initWithUTF8String: (const char*)UTF8String
@@ -292,9 +292,9 @@ static struct {
 	string = of_alloc_object([OFString_UTF8 class],
 	    UTF8StringLength + 1, 1, &storage);
 
-	return (id)[string _initWithUTF8String: UTF8String
-					length: UTF8StringLength
-				       storage: storage];
+	return (id)[string OF_initWithUTF8String: UTF8String
+					  length: UTF8StringLength
+					 storage: storage];
 }
 
 - initWithUTF8StringNoCopy: (const char*)UTF8String
@@ -317,9 +317,9 @@ static struct {
 		string = of_alloc_object([OFString_UTF8 class],
 		    length + 1, 1, &storage);
 
-		return (id)[string _initWithUTF8String: cString
-						length: length
-					       storage: storage];
+		return (id)[string OF_initWithUTF8String: cString
+						  length: length
+						 storage: storage];
 	}
 
 	return (id)[[OFString_UTF8 alloc] initWithCString: cString
@@ -337,9 +337,9 @@ static struct {
 		string = of_alloc_object([OFString_UTF8 class],
 		    cStringLength + 1, 1, &storage);
 
-		return (id)[string _initWithUTF8String: cString
-						length: cStringLength
-					       storage: storage];
+		return (id)[string OF_initWithUTF8String: cString
+						  length: cStringLength
+						 storage: storage];
 	}
 
 	return (id)[[OFString_UTF8 alloc] initWithCString: cString

@@ -187,12 +187,12 @@
  */
 - (void)cancel;
 
-- (void)_addFileDescriptorForReading: (int)fd;
-- (void)_addFileDescriptorForWriting: (int)fd;
-- (void)_removeFileDescriptorForReading: (int)fd;
-- (void)_removeFileDescriptorForWriting: (int)fd;
-- (void)_processQueue;
-- (BOOL)_processCache;
+- (void)OF_addFileDescriptorForReading: (int)fd;
+- (void)OF_addFileDescriptorForWriting: (int)fd;
+- (void)OF_removeFileDescriptorForReading: (int)fd;
+- (void)OF_removeFileDescriptorForWriting: (int)fd;
+- (void)OF_processQueue;
+- (BOOL)OF_processCache;
 @end
 
 @interface OFObject (OFStreamObserverDelegate) <OFStreamObserverDelegate>

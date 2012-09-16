@@ -41,19 +41,19 @@
 	return self;
 }
 
-- (void)_addFileDescriptorForReading: (int)fd
+- (void)OF_addFileDescriptorForReading: (int)fd
 {
 	FD_SET(fd, &readFDs);
 	FD_SET(fd, &exceptFDs);
 }
 
-- (void)_addFileDescriptorForWriting: (int)fd
+- (void)OF_addFileDescriptorForWriting: (int)fd
 {
 	FD_SET(fd, &writeFDs);
 	FD_SET(fd, &exceptFDs);
 }
 
-- (void)_removeFileDescriptorForReading: (int)fd
+- (void)OF_removeFileDescriptorForReading: (int)fd
 {
 	FD_CLR(fd, &readFDs);
 
@@ -61,7 +61,7 @@
 		FD_CLR(fd, &exceptFDs);
 }
 
-- (void)_removeFileDescriptorForWriting: (int)fd
+- (void)OF_removeFileDescriptorForWriting: (int)fd
 {
 	FD_CLR(fd, &writeFDs);
 
@@ -79,9 +79,9 @@
 	struct timeval time;
 	size_t i, count, realEvents = 0;
 
-	[self _processQueue];
+	[self OF_processQueue];
 
-	if ([self _processCache]) {
+	if ([self OF_processCache]) {
 		objc_autoreleasePoolPop(pool);
 		return YES;
 	}

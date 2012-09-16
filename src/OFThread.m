@@ -86,7 +86,7 @@ call_main(id object)
 	thread->running = OF_THREAD_WAITING_FOR_JOIN;
 
 	[OFTLSKey callAllDestructors];
-	[OFAutoreleasePool _releaseAll];
+	[OFAutoreleasePool OF_releaseAll];
 
 	[thread release];
 
@@ -223,14 +223,14 @@ call_main(id object)
 	}
 
 	[OFTLSKey callAllDestructors];
-	[OFAutoreleasePool _releaseAll];
+	[OFAutoreleasePool OF_releaseAll];
 
 	[thread release];
 
 	of_thread_exit();
 }
 
-+ (void)_createMainThread
++ (void)OF_createMainThread
 {
 	mainThread = [[OFThread alloc] init];
 	mainThread->thread = of_thread_current();
@@ -328,7 +328,7 @@ call_main(id object)
 	return [[runLoop retain] autorelease];
 }
 
-- (void)_setRunLoop: (OFRunLoop*)runLoop_
+- (void)OF_setRunLoop: (OFRunLoop*)runLoop_
 {
 	OFRunLoop *old = runLoop;
 	runLoop = [runLoop_ retain];
@@ -464,7 +464,7 @@ call_main(id object)
 	return self;
 }
 
-- _initWithoutCreatingMutex
+- OF_initWithoutCreatingMutex
 {
 	return [super init];
 }
@@ -505,7 +505,7 @@ call_main(id object)
 @implementation OFRecursiveMutex
 - init
 {
-	self = [super _initWithoutCreatingMutex];
+	self = [super OF_initWithoutCreatingMutex];
 
 	if (!of_rmutex_new(&rmutex)) {
 		Class c = [self class];

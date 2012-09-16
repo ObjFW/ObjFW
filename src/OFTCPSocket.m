@@ -286,8 +286,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 				  port: port];
 
 	if (SOCKS5Host != nil)
-		[self _SOCKS5ConnectToHost: destinationHost
-				      port: destinationPort];
+		[self OF_SOCKS5ConnectToHost: destinationHost
+					port: destinationPort];
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -518,8 +518,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncAcceptWithBlock: (of_tcpsocket_async_accept_block_t)block
 {
-	[OFRunLoop _addAsyncAcceptForTCPSocket: self
-					 block: block];
+	[OFRunLoop OF_addAsyncAcceptForTCPSocket: self
+					   block: block];
 }
 #endif
 

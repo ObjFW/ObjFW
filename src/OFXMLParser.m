@@ -142,25 +142,25 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	size_t i;
 
 	const SEL selectors_[] = {
-		@selector(_parseOutsideTagWithBuffer:i:last:),
-		@selector(_parseTagOpenedWithBuffer:i:last:),
-		@selector(_parseInProcessingInstructionsWithBuffer:i:last:),
-		@selector(_parseInTagNameWithBuffer:i:last:),
-		@selector(_parseInCloseTagNameWithBuffer:i:last:),
-		@selector(_parseInTagWithBuffer:i:last:),
-		@selector(_parseInAttributeNameWithBuffer:i:last:),
-		@selector(_parseExpectDelimiterWithBuffer:i:last:),
-		@selector(_parseInAttributeValueWithBuffer:i:last:),
-		@selector(_parseExpectCloseWithBuffer:i:last:),
-		@selector(_parseExpectSpaceOrCloseWithBuffer:i:last:),
-		@selector(_parseInExclamationMarkWithBuffer:i:last:),
-		@selector(_parseInCDATAOpeningWithBuffer:i:last:),
-		@selector(_parseInCDATA1WithBuffer:i:last:),
-		@selector(_parseInCDATA2WithBuffer:i:last:),
-		@selector(_parseInCommentOpeningWithBuffer:i:last:),
-		@selector(_parseInComment1WithBuffer:i:last:),
-		@selector(_parseInComment2WithBuffer:i:last:),
-		@selector(_parseInDoctypeWithBuffer:i:last:),
+		@selector(OF_parseOutsideTagWithBuffer:i:last:),
+		@selector(OF_parseTagOpenedWithBuffer:i:last:),
+		@selector(OF_parseInProcessingInstructionsWithBuffer:i:last:),
+		@selector(OF_parseInTagNameWithBuffer:i:last:),
+		@selector(OF_parseInCloseTagNameWithBuffer:i:last:),
+		@selector(OF_parseInTagWithBuffer:i:last:),
+		@selector(OF_parseInAttributeNameWithBuffer:i:last:),
+		@selector(OF_parseExpectDelimiterWithBuffer:i:last:),
+		@selector(OF_parseInAttributeValueWithBuffer:i:last:),
+		@selector(OF_parseExpectCloseWithBuffer:i:last:),
+		@selector(OF_parseExpectSpaceOrCloseWithBuffer:i:last:),
+		@selector(OF_parseInExclamationMarkWithBuffer:i:last:),
+		@selector(OF_parseInCDATAOpeningWithBuffer:i:last:),
+		@selector(OF_parseInCDATA1WithBuffer:i:last:),
+		@selector(OF_parseInCDATA2WithBuffer:i:last:),
+		@selector(OF_parseInCommentOpeningWithBuffer:i:last:),
+		@selector(OF_parseInComment1WithBuffer:i:last:),
+		@selector(OF_parseInComment2WithBuffer:i:last:),
+		@selector(OF_parseInDoctypeWithBuffer:i:last:),
 	};
 	memcpy(selectors, selectors_, sizeof(selectors_));
 
@@ -303,9 +303,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
  */
 
 /* Not in a tag */
-- (void)_parseOutsideTagWithBuffer: (const char*)buffer
-				 i: (size_t*)i
-			      last: (size_t*)last
+- (void)OF_parseOutsideTagWithBuffer: (const char*)buffer
+				   i: (size_t*)i
+				last: (size_t*)last
 {
 	size_t length;
 
@@ -338,9 +338,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Tag was just opened */
-- (void)_parseTagOpenedWithBuffer: (const char*)buffer
-				i: (size_t*)i
-			     last: (size_t*)last
+- (void)OF_parseTagOpenedWithBuffer: (const char*)buffer
+				  i: (size_t*)i
+			       last: (size_t*)last
 {
 	if (finishedParsing && buffer[*i] != '!' && buffer[*i] != '?')
 		@throw [OFMalformedXMLException exceptionWithClass: [self class]
@@ -371,7 +371,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* <?xml […]?> */
-- (BOOL)_parseXMLProcessingInstructions: (OFString*)pi
+- (BOOL)OF_parseXMLProcessingInstructions: (OFString*)pi
 {
 	const char *cString;
 	size_t i, last, length;
@@ -467,9 +467,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Inside processing instructions */
-- (void)_parseInProcessingInstructionsWithBuffer: (const char*)buffer
-					       i: (size_t*)i
-					    last: (size_t*)last
+- (void)OF_parseInProcessingInstructionsWithBuffer: (const char*)buffer
+						 i: (size_t*)i
+					      last: (size_t*)last
 {
 	if (buffer[*i] == '?')
 		level = 1;
@@ -483,7 +483,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		if ([pi isEqual: @"xml"] || [pi hasPrefix: @"xml "] ||
 		    [pi hasPrefix: @"xml\t"] || [pi hasPrefix: @"xml\r"] ||
 		    [pi hasPrefix: @"xml\n"])
-			if (![self _parseXMLProcessingInstructions: pi])
+			if (![self OF_parseXMLProcessingInstructions: pi])
 				@throw [OFMalformedXMLException
 				    exceptionWithClass: [self class]
 						parser: self];
@@ -502,9 +502,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Inside a tag, no name yet */
-- (void)_parseInTagNameWithBuffer: (const char*)buffer
-				i: (size_t*)i
-			     last: (size_t*)last
+- (void)OF_parseInTagNameWithBuffer: (const char*)buffer
+				  i: (size_t*)i
+			       last: (size_t*)last
 {
 	void *pool;
 	const char *cacheCString, *tmp;
@@ -584,9 +584,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Inside a close tag, no name yet */
-- (void)_parseInCloseTagNameWithBuffer: (const char*)buffer
-				     i: (size_t*)i
-				  last: (size_t*)last
+- (void)OF_parseInCloseTagNameWithBuffer: (const char*)buffer
+				       i: (size_t*)i
+				    last: (size_t*)last
 {
 	void *pool;
 	const char *cacheCString, *tmp;
@@ -656,9 +656,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Inside a tag, name found */
-- (void)_parseInTagWithBuffer: (const char*)buffer
-			    i: (size_t*)i
-			 last: (size_t*)last
+- (void)OF_parseInTagWithBuffer: (const char*)buffer
+			      i: (size_t*)i
+			   last: (size_t*)last
 {
 	void *pool;
 	OFString *ns;
@@ -729,9 +729,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Looking for attribute name */
-- (void)_parseInAttributeNameWithBuffer: (const char*)buffer
-				      i: (size_t*)i
-				   last: (size_t*)last
+- (void)OF_parseInAttributeNameWithBuffer: (const char*)buffer
+					i: (size_t*)i
+				     last: (size_t*)last
 {
 	void *pool;
 	OFMutableString *cacheString;
@@ -776,9 +776,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Expecting delimiter */
-- (void)_parseExpectDelimiterWithBuffer: (const char*)buffer
-				      i: (size_t*)i
-				   last: (size_t*)last
+- (void)OF_parseExpectDelimiterWithBuffer: (const char*)buffer
+					i: (size_t*)i
+				     last: (size_t*)last
 {
 	*last = *i + 1;
 
@@ -795,9 +795,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Looking for attribute value */
-- (void)_parseInAttributeValueWithBuffer: (const char*)buffer
-				       i: (size_t*)i
-				    last: (size_t*)last
+- (void)OF_parseInAttributeValueWithBuffer: (const char*)buffer
+					 i: (size_t*)i
+				      last: (size_t*)last
 {
 	void *pool;
 	OFString *attributeValue;
@@ -836,9 +836,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Expecting closing '>' */
-- (void)_parseExpectCloseWithBuffer: (const char*)buffer
-				  i: (size_t*)i
-			       last: (size_t*)last
+- (void)OF_parseExpectCloseWithBuffer: (const char*)buffer
+				    i: (size_t*)i
+				 last: (size_t*)last
 {
 	if (buffer[*i] == '>') {
 		*last = *i + 1;
@@ -849,9 +849,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Expecting closing '>' or space */
-- (void)_parseExpectSpaceOrCloseWithBuffer: (const char*)buffer
-					 i: (size_t*)i
-				      last: (size_t*)last
+- (void)OF_parseExpectSpaceOrCloseWithBuffer: (const char*)buffer
+					   i: (size_t*)i
+					last: (size_t*)last
 {
 	if (buffer[*i] == '>') {
 		*last = *i + 1;
@@ -863,9 +863,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* In <! */
-- (void)_parseInExclamationMarkWithBuffer: (const char*)buffer
-					i: (size_t*)i
-				     last: (size_t*)last
+- (void)OF_parseInExclamationMarkWithBuffer: (const char*)buffer
+					  i: (size_t*)i
+				       last: (size_t*)last
 {
 	if (finishedParsing && buffer[*i] != '-')
 		@throw [OFMalformedXMLException exceptionWithClass: [self class]
@@ -887,9 +887,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* CDATA */
-- (void)_parseInCDATAOpeningWithBuffer: (const char*)buffer
-				     i: (size_t*)i
-				  last: (size_t*)last
+- (void)OF_parseInCDATAOpeningWithBuffer: (const char*)buffer
+				       i: (size_t*)i
+				    last: (size_t*)last
 {
 	if (buffer[*i] != "CDATA["[level])
 		@throw [OFMalformedXMLException exceptionWithClass: [self class]
@@ -903,9 +903,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	*last = *i + 1;
 }
 
-- (void)_parseInCDATA1WithBuffer: (const char*)buffer
-			       i: (size_t*)i
-			    last: (size_t*)last
+- (void)OF_parseInCDATA1WithBuffer: (const char*)buffer
+				 i: (size_t*)i
+			      last: (size_t*)last
 {
 	if (buffer[*i] == ']')
 		level++;
@@ -916,9 +916,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		state = OF_XMLPARSER_IN_CDATA_2;
 }
 
-- (void)_parseInCDATA2WithBuffer: (const char*)buffer
-			       i: (size_t*)i
-			    last: (size_t*)last
+- (void)OF_parseInCDATA2WithBuffer: (const char*)buffer
+				 i: (size_t*)i
+			      last: (size_t*)last
 {
 	void *pool;
 	OFString *CDATA;
@@ -947,9 +947,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Comment */
-- (void)_parseInCommentOpeningWithBuffer: (const char*)buffer
-				       i: (size_t*)i
-				    last: (size_t*)last
+- (void)OF_parseInCommentOpeningWithBuffer: (const char*)buffer
+					 i: (size_t*)i
+				      last: (size_t*)last
 {
 	if (buffer[*i] != '-')
 		@throw [OFMalformedXMLException exceptionWithClass: [self class]
@@ -960,9 +960,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	level = 0;
 }
 
-- (void)_parseInComment1WithBuffer: (const char*)buffer
-				 i: (size_t*)i
-			      last: (size_t*)last
+- (void)OF_parseInComment1WithBuffer: (const char*)buffer
+				   i: (size_t*)i
+				last: (size_t*)last
 {
 	if (buffer[*i] == '-')
 		level++;
@@ -973,9 +973,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		state = OF_XMLPARSER_IN_COMMENT_2;
 }
 
-- (void)_parseInComment2WithBuffer: (const char*)buffer
-				 i: (size_t*)i
-			      last: (size_t*)last
+- (void)OF_parseInComment2WithBuffer: (const char*)buffer
+				   i: (size_t*)i
+				last: (size_t*)last
 {
 	void *pool;
 	OFString *comment;
@@ -1001,9 +1001,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* In <!DOCTYPE ...> */
-- (void)_parseInDoctypeWithBuffer: (const char*)buffer
-				i: (size_t*)i
-			     last: (size_t*)last
+- (void)OF_parseInDoctypeWithBuffer: (const char*)buffer
+				  i: (size_t*)i
+			       last: (size_t*)last
 {
 	if ((level < 6 && buffer[*i] != "OCTYPE"[level]) ||
 	    (level == 6 && buffer[*i] != ' ' && buffer[*i] != '\t' &&

@@ -262,31 +262,31 @@ enum {
 #endif
 }
 
-- (void)_addFileDescriptorForReading: (int)fd
+- (void)OF_addFileDescriptorForReading: (int)fd
 {
 	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
-- (void)_addFileDescriptorForWriting: (int)fd
+- (void)OF_addFileDescriptorForWriting: (int)fd
 {
 	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
-- (void)_removeFileDescriptorForReading: (int)fd
+- (void)OF_removeFileDescriptorForReading: (int)fd
 {
 	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
-- (void)_removeFileDescriptorForWriting: (int)fd
+- (void)OF_removeFileDescriptorForWriting: (int)fd
 {
 	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
-- (void)_processQueue
+- (void)OF_processQueue
 {
 	[mutex lock];
 	@try {
@@ -321,25 +321,25 @@ enum {
 			case QUEUE_ADD | QUEUE_READ:
 				[readStreams addObject: stream];
 
-				[self _addFileDescriptorForReading: fd];
+				[self OF_addFileDescriptorForReading: fd];
 
 				break;
 			case QUEUE_ADD | QUEUE_WRITE:
 				[writeStreams addObject: stream];
 
-				[self _addFileDescriptorForWriting: fd];
+				[self OF_addFileDescriptorForWriting: fd];
 
 				break;
 			case QUEUE_REMOVE | QUEUE_READ:
 				[readStreams removeObjectIdenticalTo: stream];
 
-				[self _removeFileDescriptorForReading: fd];
+				[self OF_removeFileDescriptorForReading: fd];
 
 				break;
 			case QUEUE_REMOVE | QUEUE_WRITE:
 				[writeStreams removeObjectIdenticalTo: stream];
 
-				[self _removeFileDescriptorForWriting: fd];
+				[self OF_removeFileDescriptorForWriting: fd];
 
 				break;
 			default:
@@ -376,7 +376,7 @@ enum {
 #endif
 }
 
-- (BOOL)_processCache
+- (BOOL)OF_processCache
 {
 	OFStream **objects = [readStreams objects];
 	size_t i, count = [readStreams count];
@@ -386,7 +386,7 @@ enum {
 	for (i = 0; i < count; i++) {
 
 		if ([objects[i] pendingBytes] > 0 &&
-		    ![objects[i] _isWaitingForDelimiter]) {
+		    ![objects[i] OF_isWaitingForDelimiter]) {
 			void *pool = objc_autoreleasePoolPush();
 			[delegate streamIsReadyForReading: objects[i]];
 			foundInCache = YES;

@@ -32,9 +32,9 @@
 
 - (void)addObject: (id)object
 {
-	[dictionary _setObject: [OFNumber numberWithSize: 1]
-			forKey: object
-		       copyKey: NO];
+	[dictionary OF_setObject: [OFNumber numberWithSize: 1]
+			  forKey: object
+			 copyKey: NO];
 
 	mutations++;
 }

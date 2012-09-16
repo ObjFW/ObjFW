@@ -170,9 +170,9 @@
 			number = [OFNumber numberWithSize:
 			    (size_t)[[count stringValue] decimalValue]];
 
-			[dictionary _setObject: number
-					forKey: [object objectByDeserializing]
-				       copyKey: NO];
+			[dictionary OF_setObject: number
+					  forKey: [object objectByDeserializing]
+					 copyKey: NO];
 
 			objc_autoreleasePoolPop(pool2);
 		}
@@ -212,9 +212,9 @@
 	if (count == nil)
 		count = [OFNumber numberWithSize: 1];
 
-	[dictionary _setObject: count
-			forKey: object
-		       copyKey: NO];
+	[dictionary OF_setObject: count
+			  forKey: object
+			 copyKey: NO];
 
 	mutations++;
 
@@ -233,9 +233,9 @@
 	count = [count numberByDecreasing];
 
 	if ([count sizeValue] > 0)
-		[dictionary _setObject: count
-				forKey: object
-			       copyKey: NO];
+		[dictionary OF_setObject: count
+				  forKey: object
+				 copyKey: NO];
 	else
 		[dictionary removeObjectForKey: object];
 

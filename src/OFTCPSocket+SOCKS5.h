@@ -25,6 +25,6 @@ extern int _OFTCPSocket_SOCKS5_reference;
 #endif
 
 @interface OFTCPSocket (SOCKS5)
-- (void)_SOCKS5ConnectToHost: (OFString*)host
-			port: (uint16_t)port;
+- (void)OF_SOCKS5ConnectToHost: (OFString*)host
+			  port: (uint16_t)port;
 @end

@@ -299,9 +299,9 @@ of_application_main(int *argc, char **argv[], Class cls)
 	void *pool;
 	OFRunLoop *runLoop;
 
-	[OFThread _createMainThread];
+	[OFThread OF_createMainThread];
 	runLoop = [OFRunLoop currentRunLoop];
-	[OFRunLoop _setMainRunLoop];
+	[OFRunLoop OF_setMainRunLoop];
 
 	pool = objc_autoreleasePoolPush();
 	[delegate applicationDidFinishLaunching];

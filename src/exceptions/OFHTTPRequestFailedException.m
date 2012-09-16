@@ -19,9 +19,10 @@
 #import "OFHTTPRequestFailedException.h"
 #import "OFString.h"
 #import "OFHTTPRequest.h"
-#import "OFAutoreleasePool.h"
 
 #import "OFNotImplementedException.h"
+
+#import "autorelease.h"
 
 @implementation OFHTTPRequestFailedException
 + exceptionWithClass: (Class)class_
@@ -63,7 +64,7 @@
 
 - (OFString*)description
 {
-	OFAutoreleasePool *pool;
+	void *pool;
 	const char *type = "(unknown)";
 
 	if (description != nil)
@@ -81,13 +82,13 @@
 		break;
 	}
 
-	pool = [[OFAutoreleasePool alloc] init];
+	pool = objc_autoreleasePoolPush();
 
 	description = [[OFString alloc] initWithFormat:
 	    @"A HTTP %s request in class %@ with URL %@ failed with code %d",
 	    type, inClass, [HTTPRequest URL], [result statusCode]];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 	return description;
 }

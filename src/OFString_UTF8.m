@@ -76,9 +76,9 @@ memcasecmp(const char *first, const char *second, size_t length)
 	return self;
 }
 
-- _initWithUTF8String: (const char*)UTF8String
-	       length: (size_t)UTF8StringLength
-	      storage: (char*)storage
+- OF_initWithUTF8String: (const char*)UTF8String
+		 length: (size_t)UTF8StringLength
+		storage: (char*)storage
 {
 	self = [super init];
 

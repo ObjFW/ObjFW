@@ -50,10 +50,10 @@
 	return [self initWithUTF8String: UTF8String];
 }
 
-- (void)_convertWithWordStartTable: (const of_unichar_t *const[])startTable
-		   wordMiddleTable: (const of_unichar_t *const[])middleTable
-		wordStartTableSize: (size_t)startTableSize
-	       wordMiddleTableSize: (size_t)middleTableSize
+- (void)OF_convertWithWordStartTable: (const of_unichar_t *const[])startTable
+		     wordMiddleTable: (const of_unichar_t *const[])middleTable
+		  wordStartTableSize: (size_t)startTableSize
+		 wordMiddleTableSize: (size_t)middleTableSize
 {
 	of_unichar_t *unicodeString;
 	size_t unicodeLen, newCStringLength;

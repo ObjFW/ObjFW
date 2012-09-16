@@ -87,7 +87,7 @@ static of_tlskey_t firstKey, cacheKey;
 	return _objc_rootAutorelease(object);
 }
 
-+ (void)_releaseAll
++ (void)OF_releaseAll
 {
 #ifndef OF_COMPILER_TLS
 	void *first = of_tlskey_get(firstKey);

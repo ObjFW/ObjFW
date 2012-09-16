@@ -333,7 +333,7 @@
 	[super dealloc];
 }
 
-- (void)_dispatchJob: (OFThreadPoolJob*)job
+- (void)OF_dispatchJob: (OFThreadPoolJob*)job
 {
 	of_atomic_inc_int(&count);
 
@@ -365,23 +365,23 @@
 		  selector: (SEL)selector
 		    object: (id)object
 {
-	[self _dispatchJob: [OFThreadPoolJob jobWithTarget: target
-						  selector: selector
-						    object: object]];
+	[self OF_dispatchJob: [OFThreadPoolJob jobWithTarget: target
+						    selector: selector
+						      object: object]];
 }
 
 #ifdef OF_HAVE_BLOCKS
 - (void)dispatchWithBlock: (of_thread_pool_block_t)block
 {
-	[self _dispatchJob: [OFThreadPoolJob jobWithBlock: block
-						   object: nil]];
+	[self OF_dispatchJob: [OFThreadPoolJob jobWithBlock: block
+						     object: nil]];
 }
 
 - (void)dispatchWithBlock: (of_thread_pool_block_t)block
 		   object: (id)object
 {
-	[self _dispatchJob: [OFThreadPoolJob jobWithBlock: block
-						   object: object]];
+	[self OF_dispatchJob: [OFThreadPoolJob jobWithBlock: block
+						     object: object]];
 }
 #endif
 

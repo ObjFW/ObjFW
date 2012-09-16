@@ -61,9 +61,9 @@
 		 * be a counted set, but we're just a normal set.
 		 */
 		while ((object = [enumerator nextObject]) != nil)
-			[dictionary _setObject: one
-					forKey: object
-				       copyKey: NO];
+			[dictionary OF_setObject: one
+					  forKey: object
+					 copyKey: NO];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -85,9 +85,9 @@
 		size_t i, count = [array count];
 
 		for (i = 0; i < count; i++)
-			[dictionary _setObject: one
-					forKey: objects[i]
-				       copyKey: NO];
+			[dictionary OF_setObject: one
+					  forKey: objects[i]
+					 copyKey: NO];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -109,9 +109,9 @@
 		size_t i;
 
 		for (i = 0; i < count; i++)
-			[dictionary _setObject: one
-					forKey: objects[i]
-				       copyKey: NO];
+			[dictionary OF_setObject: one
+					  forKey: objects[i]
+					 copyKey: NO];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -132,14 +132,14 @@
 		OFNumber *one = [OFNumber numberWithSize: 1];
 		id object;
 
-		[dictionary _setObject: one
-				forKey: firstObject
-			       copyKey: NO];
+		[dictionary OF_setObject: one
+				  forKey: firstObject
+				 copyKey: NO];
 
 		while ((object = va_arg(arguments, id)) != nil)
-			[dictionary _setObject: one
-					forKey: object
-				       copyKey: NO];
+			[dictionary OF_setObject: one
+					  forKey: object
+					 copyKey: NO];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -174,9 +174,9 @@
 		while ((child = [enumerator nextObject]) != nil) {
 			void *pool2  = objc_autoreleasePoolPush();
 
-			[dictionary _setObject: one
-					forKey: [child objectByDeserializing]
-				       copyKey: NO];
+			[dictionary OF_setObject: one
+					  forKey: [child objectByDeserializing]
+					 copyKey: NO];
 
 			objc_autoreleasePoolPop(pool2);
 		}

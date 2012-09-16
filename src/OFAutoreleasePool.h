@@ -39,7 +39,7 @@
  */
 + (id)addObject: (id)object;
 
-+ (void)_releaseAll;
++ (void)OF_releaseAll;
 
 /**
  * \brief Releases all objects in the autorelease pool.

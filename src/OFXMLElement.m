@@ -455,10 +455,10 @@ static Class CDATAClass = Nil;
 	return ret;
 }
 
-- (OFString*)_XMLStringWithParent: (OFXMLElement*)parent
-		       namespaces: (OFDictionary*)allNamespaces
-		      indentation: (unsigned int)indentation
-			    level: (unsigned int)level
+- (OFString*)OF_XMLStringWithParent: (OFXMLElement*)parent
+			 namespaces: (OFDictionary*)allNamespaces
+			indentation: (unsigned int)indentation
+			      level: (unsigned int)level
 {
 	void *pool;
 	char *cString;
@@ -631,10 +631,10 @@ static Class CDATAClass = Nil;
 			if ([childrenObjects[j] isKindOfClass:
 			    [OFXMLElement class]])
 				child = [childrenObjects[j]
-				    _XMLStringWithParent: self
-					      namespaces: allNamespaces
-					     indentation: ind
-						   level: level + 1];
+				    OF_XMLStringWithParent: self
+						namespaces: allNamespaces
+					       indentation: ind
+						     level: level + 1];
 			else
 				child = [childrenObjects[j]
 				    XMLStringWithIndentation: ind
@@ -705,27 +705,27 @@ static Class CDATAClass = Nil;
 
 - (OFString*)XMLString
 {
-	return [self _XMLStringWithParent: nil
-			       namespaces: nil
-			      indentation: 0
-				    level: 0];
+	return [self OF_XMLStringWithParent: nil
+				 namespaces: nil
+				indentation: 0
+				      level: 0];
 }
 
 - (OFString*)XMLStringWithIndentation: (unsigned int)indentation
 {
-	return [self _XMLStringWithParent: nil
-			       namespaces: nil
-			      indentation: indentation
-				    level: 0];
+	return [self OF_XMLStringWithParent: nil
+				 namespaces: nil
+				indentation: indentation
+				      level: 0];
 }
 
 - (OFString*)XMLStringWithIndentation: (unsigned int)indentation
 				level: (unsigned int)level
 {
-	return [self _XMLStringWithParent: nil
-			       namespaces: nil
-			      indentation: indentation
-				    level: level];
+	return [self OF_XMLStringWithParent: nil
+				 namespaces: nil
+				indentation: indentation
+				      level: level];
 }
 
 - (OFXMLElement*)XMLElementBySerializing

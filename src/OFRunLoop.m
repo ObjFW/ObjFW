@@ -110,12 +110,12 @@ static OFRunLoop *mainRunLoop = nil;
 		return runLoop;
 
 	runLoop = [[[OFRunLoop alloc] init] autorelease];
-	[currentThread _setRunLoop: runLoop];
+	[currentThread OF_setRunLoop: runLoop];
 
 	return runLoop;
 }
 
-+ (void)_setMainRunLoop
++ (void)OF_setMainRunLoop
 {
 	void *pool = objc_autoreleasePoolPush();
 	mainRunLoop = [[[OFThread currentThread] runLoop] retain];
@@ -123,7 +123,7 @@ static OFRunLoop *mainRunLoop = nil;
 }
 
 #ifdef OF_HAVE_BLOCKS
-+ (void)_addAsyncReadForStream: (OFStream*)stream
++ (void)OF_addAsyncReadForStream: (OFStream*)stream
 			buffer: (void*)buffer
 			length: (size_t)length
 			 block: (of_stream_async_read_block_t)block
@@ -151,9 +151,9 @@ static OFRunLoop *mainRunLoop = nil;
 	objc_autoreleasePoolPop(pool);
 }
 
-+ (void)_addAsyncReadLineForStream: (OFStream*)stream
-			  encoding: (of_string_encoding_t)encoding
-			     block: (of_stream_async_read_line_block_t)block
++ (void)OF_addAsyncReadLineForStream: (OFStream*)stream
+			    encoding: (of_string_encoding_t)encoding
+			       block: (of_stream_async_read_line_block_t)block
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRunLoop *runLoop = [self currentRunLoop];
@@ -177,8 +177,8 @@ static OFRunLoop *mainRunLoop = nil;
 	objc_autoreleasePoolPop(pool);
 }
 
-+ (void)_addAsyncAcceptForTCPSocket: (OFTCPSocket*)socket
-			      block: (of_tcpsocket_async_accept_block_t)block
++ (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket*)socket
+				block: (of_tcpsocket_async_accept_block_t)block
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRunLoop *runLoop = [self currentRunLoop];

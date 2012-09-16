@@ -246,11 +246,6 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
 - (OFDictionary*)filteredDictionaryUsingBlock:
     (of_dictionary_filter_block_t)block;
 #endif
-
-#if defined(OF_SET_M) || defined(OF_COUNTED_SET_M)
-- _initWithDictionary: (OFDictionary*)dictionary
-	     copyKeys: (BOOL)copyKeys;
-#endif
 @end
 
 #import "OFMutableDictionary.h"

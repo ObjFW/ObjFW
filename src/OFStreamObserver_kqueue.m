@@ -49,7 +49,7 @@
 		changeList = [[OFDataArray alloc] initWithItemSize:
 		    sizeof(struct kevent)];
 
-		[self _addFileDescriptorForReading: cancelFD[0]];
+		[self OF_addFileDescriptorForReading: cancelFD[0]];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -66,7 +66,7 @@
 	[super dealloc];
 }
 
-- (void)_addFileDescriptorForReading: (int)fd
+- (void)OF_addFileDescriptorForReading: (int)fd
 {
 	struct kevent event;
 
@@ -74,7 +74,7 @@
 	[changeList addItem: &event];
 }
 
-- (void)_addFileDescriptorForWriting: (int)fd
+- (void)OF_addFileDescriptorForWriting: (int)fd
 {
 	struct kevent event;
 
@@ -82,7 +82,7 @@
 	[changeList addItem: &event];
 }
 
-- (void)_removeFileDescriptorForReading: (int)fd
+- (void)OF_removeFileDescriptorForReading: (int)fd
 {
 	struct kevent event;
 
@@ -90,7 +90,7 @@
 	[changeList addItem: &event];
 }
 
-- (void)_removeFileDescriptorForWriting: (int)fd
+- (void)OF_removeFileDescriptorForWriting: (int)fd
 {
 	struct kevent event;
 
@@ -108,9 +108,9 @@
 	timespec.tv_sec = timeout;
 	timespec.tv_nsec = (timeout - timespec.tv_sec) * 1000000000;
 
-	[self _processQueue];
+	[self OF_processQueue];
 
-	if ([self _processCache]) {
+	if ([self OF_processCache]) {
 		objc_autoreleasePoolPop(pool);
 		return YES;
 	}

@@ -887,5 +887,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*);
 		   length: (size_t)length;
 - (void)_writeBuffer: (const void*)buffer
 	      length: (size_t)length;
-- (BOOL)_isWaitingForDelimiter;
+- (BOOL)_isAtEndOfStream;
+
+- (BOOL)OF_isWaitingForDelimiter;
 @end

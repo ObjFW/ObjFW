@@ -24,8 +24,8 @@
 int _OFTCPSocket_SOCKS5_reference;
 
 @implementation OFTCPSocket (SOCKS5)
-- (void)_SOCKS5ConnectToHost: (OFString*)host
-			port: (uint16_t)port
+- (void)OF_SOCKS5ConnectToHost: (OFString*)host
+			  port: (uint16_t)port
 {
 	const char request[] = { 5, 1, 0, 3 };
 	char reply[256];
