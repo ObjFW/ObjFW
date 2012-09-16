@@ -21,6 +21,7 @@ typedef void (^of_timer_block_t)(void);
 #endif
 
 @class OFDate;
+@class OFCondition;
 
 /**
  * \brief A class for creating and firing timers.
@@ -37,6 +38,7 @@ typedef void (^of_timer_block_t)(void);
 	of_timer_block_t block;
 #endif
 	BOOL isValid;
+	OFCondition *condition;
 }
 
 /**
@@ -284,4 +286,9 @@ typedef void (^of_timer_block_t)(void);
  *	   repeating timer
  */
 - (double)timeInterval;
+
+/**
+ * \brief Waits until the timer fired.
+ */
+- (void)waitUntilDone;
 @end

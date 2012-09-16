@@ -19,8 +19,10 @@
 #import "OFTimer.h"
 #import "OFDate.h"
 #import "OFRunLoop.h"
+#import "OFThread.h"
 
 #import "OFInvalidArgumentException.h"
+#import "OFNotImplementedException.h"
 
 #import "autorelease.h"
 #import "macros.h"
@@ -198,6 +200,14 @@
 }
 #endif
 
+- init
+{
+	Class c = [self class];
+	[self release];
+	@throw [OFNotImplementedException exceptionWithClass: c
+						    selector: _cmd];
+}
+
 - OF_initWithFireDate: (OFDate*)fireDate_
 	     interval: (double)interval_
 	       target: (id)target_
@@ -219,6 +229,7 @@
 		arguments = arguments_;
 		repeats = repeats_;
 		isValid = YES;
+		condition = [[OFCondition alloc] init];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -309,6 +320,7 @@
 #ifdef OF_HAVE_BLOCKS
 	[block release];
 #endif
+	[condition release];
 
 	[super dealloc];
 }
@@ -354,6 +366,10 @@
 	}
 #endif
 
+	[condition lock];
+	[condition signal];
+	[condition unlock];
+
 	if (repeats) {
 		OFDate *old = fireDate;
 		fireDate = [[OFDate alloc]
@@ -383,5 +399,12 @@
 - (BOOL)isValid
 {
 	return isValid;
+}
+
+- (void)waitUntilDone
+{
+	[condition lock];
+	[condition wait];
+	[condition unlock];
 }
 @end
