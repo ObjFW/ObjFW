@@ -50,6 +50,7 @@
 #import "OFNotImplementedException.h"
 #import "OFSetOptionFailedException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 #ifndef INVALID_SOCKET
@@ -298,7 +299,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
 
 	[[OFThread threadWithObject: self
-			      block: ^ (id s) {
+			      block: ^ id (id s) {
 		void *pool2 = objc_autoreleasePoolPush();
 		OFThread *connectThread = [OFThread currentThread];
 		OFTimer *timer;

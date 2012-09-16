@@ -25,6 +25,7 @@
 #import "OFTimer.h"
 #import "OFDate.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 static OFTLSKey *currentRunLoopKey;
