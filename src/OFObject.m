@@ -32,6 +32,8 @@
 
 #import "OFObject.h"
 #import "OFTimer.h"
+#import "OFThread.h"
+#import "OFRunLoop.h"
 
 #import "OFAllocFailedException.h"
 #import "OFEnumerationMutationException.h"
@@ -619,6 +621,54 @@ void _references_to_categories_of_OFObject(void)
 					 object: object
 					 object: object
 					repeats: NO];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)performSelector: (SEL)selector
+	       onThread: (OFThread*)thread
+	     afterDelay: (double)delay
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[[thread runLoop] addTimer: [OFTimer timerWithTimeInterval: delay
+							    target: self
+							  selector: selector
+							   repeats: NO]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)performSelector: (SEL)selector
+	       onThread: (OFThread*)thread
+	     withObject: (id)object
+	     afterDelay: (double)delay
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[[thread runLoop] addTimer: [OFTimer timerWithTimeInterval: delay
+							    target: self
+							  selector: selector
+							    object: object
+							   repeats: NO]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)performSelector: (SEL)selector
+	       onThread: (OFThread*)thread
+	     withObject: (id)object
+	     withObject: (id)otherObject
+	     afterDelay: (double)delay
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[[thread runLoop] addTimer: [OFTimer timerWithTimeInterval: delay
+							    target: self
+							  selector: selector
+							    object: object
+							    object: object
+							   repeats: NO]];
 
 	objc_autoreleasePoolPop(pool);
 }

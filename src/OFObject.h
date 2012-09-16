@@ -124,6 +124,7 @@ typedef struct of_rectangle_t
 } of_rectangle_t;
 
 @class OFString;
+@class OFThread;
 
 /**
  * \brief The protocol which all root classes implement.
@@ -632,6 +633,51 @@ typedef struct of_rectangle_t
  * \param delay The delay after which the selector will be performed
  */
 - (void)performSelector: (SEL)selector
+	     withObject: (id)object1
+	     withObject: (id)object2
+	     afterDelay: (double)delay;
+
+/**
+ * \brief Performs the specified selector on the specified thread after the
+ *	  specified delay.
+ *
+ * \param selector The selector to perform
+ * \param thread The thread on which to perform the selector
+ * \param delay The delay after which the selector will be performed
+ */
+- (void)performSelector: (SEL)selector
+	       onThread: (OFThread*)thread
+	     afterDelay: (double)delay;
+
+/**
+ * \brief Performs the specified selector on the specified thread with the
+ *	  specified object after the specified delay.
+ *
+ * \param selector The selector to perform
+ * \param thread The thread on which to perform the selector
+ * \param object The object that is passed to the method specified by the
+ *		 selector
+ * \param delay The delay after which the selector will be performed
+ */
+- (void)performSelector: (SEL)selector
+	       onThread: (OFThread*)thread
+	     withObject: (id)object
+	     afterDelay: (double)delay;
+
+/**
+ * \brief Performs the specified selector on the specified thread with the
+ *	  specified objects after the specified delay.
+ *
+ * \param selector The selector to perform
+ * \param thread The thread on which to perform the selector
+ * \param object1 The first object that is passed to the method specified by the
+ *		 selector
+ * \param object2 The second object that is passed to the method specified by
+ *		  the selector
+ * \param delay The delay after which the selector will be performed
+ */
+- (void)performSelector: (SEL)selector
+	       onThread: (OFThread*)thread
 	     withObject: (id)object1
 	     withObject: (id)object2
 	     afterDelay: (double)delay;
