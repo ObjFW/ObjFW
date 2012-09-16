@@ -275,13 +275,11 @@ typedef id (^of_thread_block_t)(id object);
 - (id)join;
 
 /**
- * \brief Returns the run loop for the thread or nil if it has no run loop.
+ * \brief Returns the run loop for the thread.
  *
- * \return The run loop for the thread or nil if it has no run loop
+ * \return The run loop for the thread
  */
 - (OFRunLoop*)runLoop;
-
-- (void)OF_setRunLoop: (OFRunLoop*)runLoop;
 @end
 
 /**

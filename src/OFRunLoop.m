@@ -103,22 +103,13 @@ static OFRunLoop *mainRunLoop = nil;
 
 + (OFRunLoop*)currentRunLoop
 {
-	OFThread *currentThread = [OFThread currentThread];
-	OFRunLoop *runLoop = [currentThread runLoop];
-
-	if (runLoop != nil)
-		return runLoop;
-
-	runLoop = [[[OFRunLoop alloc] init] autorelease];
-	[currentThread OF_setRunLoop: runLoop];
-
-	return runLoop;
+	return [[OFThread currentThread] runLoop];
 }
 
 + (void)OF_setMainRunLoop
 {
 	void *pool = objc_autoreleasePoolPush();
-	mainRunLoop = [[[OFThread currentThread] runLoop] retain];
+	mainRunLoop = [[self currentRunLoop] retain];
 	objc_autoreleasePoolPop(pool);
 }
 

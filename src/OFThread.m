@@ -240,9 +240,23 @@ call_main(id object)
 		    exceptionWithClass: self];
 }
 
-- initWithObject: (id)object_
+- init
 {
 	self = [super init];
+
+	@try {
+		runLoop = [[OFRunLoop alloc] init];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithObject: (id)object_
+{
+	self = [self init];
 
 	object = [object_ retain];
 
@@ -259,7 +273,7 @@ call_main(id object)
 - initWithObject: (id)object_
 	   block: (of_thread_block_t)block_
 {
-	self = [super init];
+	self = [self init];
 
 	@try {
 		object = [object_ retain];
@@ -283,8 +297,9 @@ call_main(id object)
 
 - (void)handleTermination
 {
-	[runLoop release];
-	runLoop = nil;
+	OFRunLoop *old = runLoop;
+	runLoop = [[OFRunLoop alloc] init];
+	[old release];
 }
 
 - (void)start
@@ -328,13 +343,6 @@ call_main(id object)
 	return [[runLoop retain] autorelease];
 }
 
-- (void)OF_setRunLoop: (OFRunLoop*)runLoop_
-{
-	OFRunLoop *old = runLoop;
-	runLoop = [runLoop_ retain];
-	[old release];
-}
-
 - (void)dealloc
 {
 	if (running == OF_THREAD_RUNNING)
@@ -351,6 +359,7 @@ call_main(id object)
 
 	[object release];
 	[returnValue release];
+	[runLoop release];
 
 	[super dealloc];
 }
