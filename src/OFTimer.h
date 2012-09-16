@@ -36,6 +36,7 @@ typedef void (^of_timer_block_t)(void);
 #ifdef OF_HAVE_BLOCKS
 	of_timer_block_t block;
 #endif
+	BOOL isValid;
 }
 
 /**
@@ -262,4 +263,25 @@ typedef void (^of_timer_block_t)(void);
  * \return The next date at which the timer will fire
  */
 - (OFDate*)fireDate;
+
+/**
+ * \brief Invalidates the timer, preventing it from firing.
+ */
+- (void)invalidate;
+
+/**
+ * \brief Returns whether the timer is valid.
+ *
+ * \return Whether the timer is valid
+ */
+- (BOOL)isValid;
+
+/**
+ * \brief Returns the time interval in which the timer will repeat, if it is a
+ *	  repeating timer.
+ *
+ * \return The time interval in which the timer will repeat, if it is a
+ *	   repeating timer
+ */
+- (double)timeInterval;
 @end

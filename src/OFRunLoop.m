@@ -322,7 +322,8 @@ static OFRunLoop *mainRunLoop = nil;
 				timer = nil;
 		}
 
-		[timer fire];
+		if ([timer isValid])
+			[timer fire];
 
 		@synchronized (timersQueue) {
 			nextTimer = [[timersQueue firstObject] fireDate];

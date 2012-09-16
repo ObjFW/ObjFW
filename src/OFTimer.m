@@ -218,6 +218,7 @@
 		object2 = [object2_ retain];
 		arguments = arguments_;
 		repeats = repeats_;
+		isValid = YES;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -360,11 +361,27 @@
 		[old release];
 
 		[[OFRunLoop currentRunLoop] addTimer: self];
-	}
+	} else
+		isValid = NO;
 }
 
 - (OFDate*)fireDate
 {
 	return [[fireDate retain] autorelease];
+}
+
+- (double)timeInterval
+{
+	return interval;
+}
+
+- (void)invalidate
+{
+	isValid = NO;
+}
+
+- (BOOL)isValid
+{
+	return isValid;
 }
 @end

@@ -609,8 +609,8 @@ void _references_to_categories_of_OFObject(void)
 }
 
 - (void)performSelector: (SEL)selector
-	     withObject: (id)object
-	     withObject: (id)otherObject
+	     withObject: (id)object1
+	     withObject: (id)object2
 	     afterDelay: (double)delay
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -618,8 +618,8 @@ void _references_to_categories_of_OFObject(void)
 	[OFTimer scheduledTimerWithTimeInterval: delay
 					 target: self
 				       selector: selector
-					 object: object
-					 object: object
+					 object: object1
+					 object: object2
 					repeats: NO];
 
 	objc_autoreleasePoolPop(pool);
@@ -657,8 +657,8 @@ void _references_to_categories_of_OFObject(void)
 
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread*)thread
-	     withObject: (id)object
-	     withObject: (id)otherObject
+	     withObject: (id)object1
+	     withObject: (id)object2
 	     afterDelay: (double)delay
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -666,8 +666,8 @@ void _references_to_categories_of_OFObject(void)
 	[[thread runLoop] addTimer: [OFTimer timerWithTimeInterval: delay
 							    target: self
 							  selector: selector
-							    object: object
-							    object: object
+							    object: object1
+							    object: object2
 							   repeats: NO]];
 
 	objc_autoreleasePoolPop(pool);
