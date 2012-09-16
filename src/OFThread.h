@@ -21,6 +21,7 @@
 
 @class OFDate;
 @class OFSortedList;
+@class OFRunLoop;
 
 #ifdef OF_HAVE_BLOCKS
 typedef id (^of_thread_block_t)(id object);
@@ -100,12 +101,7 @@ typedef id (^of_thread_block_t)(id object);
 	of_thread_block_t block;
 #endif
 	id returnValue;
-#ifdef OF_THREAD_M
-@protected
-#else
-@private
-#endif
-	OFSortedList *timersQueue;
+	OFRunLoop *runLoop;
 }
 
 #if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
@@ -278,7 +274,14 @@ typedef id (^of_thread_block_t)(id object);
  */
 - (id)join;
 
-- (OFSortedList*)_timersQueue;
+/**
+ * \brief Returns the run loop for the thread or nil if it has no run loop.
+ *
+ * \return The run loop for the thread or nil if it has no run loop
+ */
+- (OFRunLoop*)runLoop;
+
+- (void)_setRunLoop: (OFRunLoop*)runLoop;
 @end
 
 /**

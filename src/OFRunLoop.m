@@ -28,8 +28,7 @@
 #import "autorelease.h"
 #import "macros.h"
 
-static OFTLSKey *currentRunLoopKey;
-static OFRunLoop *mainRunLoop;
+static OFRunLoop *mainRunLoop = nil;
 
 #ifdef OF_HAVE_BLOCKS
 @interface OFRunLoop_ReadQueueItem: OFObject
@@ -97,12 +96,6 @@ static OFRunLoop *mainRunLoop;
 #endif
 
 @implementation OFRunLoop
-+ (void)initialize
-{
-	if (self == [OFRunLoop class])
-		currentRunLoopKey = [[OFTLSKey alloc] init];
-}
-
 + (OFRunLoop*)mainRunLoop
 {
 	return [[mainRunLoop retain] autorelease];
@@ -110,22 +103,23 @@ static OFRunLoop *mainRunLoop;
 
 + (OFRunLoop*)currentRunLoop
 {
-	OFRunLoop *runLoop = [OFThread objectForTLSKey: currentRunLoopKey];
+	OFThread *currentThread = [OFThread currentThread];
+	OFRunLoop *runLoop = [currentThread runLoop];
 
-	if (runLoop == nil) {
-		runLoop = [[OFRunLoop alloc] init];
-		[OFThread setObject: runLoop
-			  forTLSKey: currentRunLoopKey];
-	}
+	if (runLoop != nil)
+		return runLoop;
 
-	return [[runLoop retain] autorelease];
+	runLoop = [[[OFRunLoop alloc] init] autorelease];
+	[currentThread _setRunLoop: runLoop];
+
+	return runLoop;
 }
 
-+ (void)_setMainRunLoop: (OFRunLoop*)mainRunLoop_
++ (void)_setMainRunLoop
 {
-	mainRunLoop = [mainRunLoop_ retain];
-	[OFThread setObject: mainRunLoop
-		  forTLSKey: currentRunLoopKey];
+	void *pool = objc_autoreleasePoolPush();
+	mainRunLoop = [[[OFThread currentThread] runLoop] retain];
+	objc_autoreleasePoolPop(pool);
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -213,16 +207,12 @@ static OFRunLoop *mainRunLoop;
 	self = [super init];
 
 	@try {
-		void *pool = objc_autoreleasePoolPush();
-
-		timersQueue = [[[OFThread currentThread] _timersQueue] retain];
+		timersQueue = [[OFSortedList alloc] init];
 
 		streamObserver = [[OFStreamObserver alloc] init];
 		[streamObserver setDelegate: self];
 
 		readQueues = [[OFMutableDictionary alloc] init];
-
-		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;

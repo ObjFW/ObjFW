@@ -50,7 +50,7 @@
  */
 + (OFRunLoop*)currentRunLoop;
 
-+ (void)_setMainRunLoop: (OFRunLoop*)mainRunLoop;
++ (void)_setMainRunLoop;
 #ifdef OF_HAVE_BLOCKS
 + (void)_addAsyncReadForStream: (OFStream*)stream
 			buffer: (void*)buffer

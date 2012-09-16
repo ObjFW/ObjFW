@@ -300,8 +300,8 @@ of_application_main(int *argc, char **argv[], Class cls)
 	OFRunLoop *runLoop;
 
 	[OFThread _createMainThread];
-	runLoop = [[[OFRunLoop alloc] init] autorelease];
-	[OFRunLoop _setMainRunLoop: runLoop];
+	runLoop = [OFRunLoop currentRunLoop];
+	[OFRunLoop _setMainRunLoop];
 
 	pool = objc_autoreleasePoolPush();
 	[delegate applicationDidFinishLaunching];
