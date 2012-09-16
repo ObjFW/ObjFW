@@ -34,6 +34,7 @@
 #import "OFTimer.h"
 #import "OFThread.h"
 #import "OFRunLoop.h"
+#import "OFAutoreleasePool.h"
 
 #import "OFAllocFailedException.h"
 #import "OFEnumerationMutationException.h"
@@ -571,13 +572,13 @@ void _references_to_categories_of_OFObject(void)
 }
 
 - (id)performSelector: (SEL)selector
-	   withObject: (id)object
-	   withObject: (id)otherObject
+	   withObject: (id)object1
+	   withObject: (id)object2
 {
 	id (*imp)(id, SEL, id, id) =
 	    (id(*)(id, SEL, id, id))[self methodForSelector: selector];
 
-	return imp(self, selector, object, otherObject);
+	return imp(self, selector, object1, object2);
 }
 
 - (void)performSelector: (SEL)selector
@@ -885,7 +886,7 @@ void _references_to_categories_of_OFObject(void)
 
 - autorelease
 {
-	return _objc_rootAutorelease(self);
+	return of_autorelease(self);
 }
 
 - self

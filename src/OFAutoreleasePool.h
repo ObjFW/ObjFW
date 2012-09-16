@@ -68,3 +68,11 @@
  */
 - (void)drain;
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern id of_autorelease(id);
+#ifdef __cplusplus
+}
+#endif

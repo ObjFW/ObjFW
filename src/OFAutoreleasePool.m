@@ -41,6 +41,19 @@ static __thread OFAutoreleasePool **cache = NULL;
 static of_tlskey_t firstKey, cacheKey;
 #endif
 
+id
+of_autorelease(id object)
+{
+#ifndef OF_COMPILER_TLS
+	void *first = of_tlskey_get(firstKey);
+#endif
+
+	if (first == NULL)
+		[[OFAutoreleasePool alloc] init];
+
+	return _objc_rootAutorelease(object);
+}
+
 @implementation OFAutoreleasePool
 #ifndef OF_COMPILER_TLS
 + (void)initialize
@@ -77,14 +90,7 @@ static of_tlskey_t firstKey, cacheKey;
 
 + (id)addObject: (id)object
 {
-#ifndef OF_COMPILER_TLS
-	void *first = of_tlskey_get(firstKey);
-#endif
-
-	if (first == NULL)
-		[[OFAutoreleasePool alloc] init];
-
-	return _objc_rootAutorelease(object);
+	return of_autorelease(object);
 }
 
 + (void)OF_releaseAll
