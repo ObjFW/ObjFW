@@ -309,7 +309,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 		timer = [OFTimer timerWithTimeInterval: 0
 					       repeats: NO
-						 block: ^ {
+						 block: ^ (OFTimer *unused) {
 			[connectThread join];
 			block(s);
 		}];

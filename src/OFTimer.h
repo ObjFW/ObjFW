@@ -16,12 +16,13 @@
 
 #import "OFObject.h"
 
-#ifdef OF_HAVE_BLOCKS
-typedef void (^of_timer_block_t)(void);
-#endif
-
+@class OFTimer;
 @class OFDate;
 @class OFCondition;
+
+#ifdef OF_HAVE_BLOCKS
+typedef void (^of_timer_block_t)(OFTimer*);
+#endif
 
 /**
  * \brief A class for creating and firing timers.

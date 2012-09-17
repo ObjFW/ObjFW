@@ -345,7 +345,7 @@
 
 #ifdef OF_HAVE_BLOCKS
 	if (block != NULL)
-		block();
+		block(self);
 	else {
 #endif
 		switch (arguments) {
