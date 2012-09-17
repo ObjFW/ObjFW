@@ -683,6 +683,60 @@ void _references_to_categories_of_OFObject(void)
 	objc_autoreleasePoolPop(pool);
 }
 
+- (void)performSelectorOnMainThread: (SEL)selector
+		      waitUntilDone: (BOOL)waitUntilDone
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFTimer *timer = [OFTimer timerWithTimeInterval: 0
+						 target: self
+					       selector: selector
+						repeats: NO];
+	[[OFRunLoop mainRunLoop] addTimer: timer];
+
+	if (waitUntilDone)
+		[timer waitUntilDone];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)performSelectorOnMainThread: (SEL)selector
+			 withObject: (id)object
+		      waitUntilDone: (BOOL)waitUntilDone
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFTimer *timer = [OFTimer timerWithTimeInterval: 0
+						 target: self
+					       selector: selector
+						 object: object
+						repeats: NO];
+	[[OFRunLoop mainRunLoop] addTimer: timer];
+
+	if (waitUntilDone)
+		[timer waitUntilDone];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)performSelectorOnMainThread: (SEL)selector
+			 withObject: (id)object1
+			 withObject: (id)object2
+		      waitUntilDone: (BOOL)waitUntilDone
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFTimer *timer = [OFTimer timerWithTimeInterval: 0
+						 target: self
+					       selector: selector
+						 object: object1
+						 object: object2
+						repeats: NO];
+	[[OFRunLoop mainRunLoop] addTimer: timer];
+
+	if (waitUntilDone)
+		[timer waitUntilDone];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread*)thread
 	     afterDelay: (double)delay

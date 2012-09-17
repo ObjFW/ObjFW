@@ -682,6 +682,44 @@ typedef struct of_rectangle_t
 	  waitUntilDone: (BOOL)waitUntilDone;
 
 /**
+ * \brief Performs the specified selector on the main thread.
+ *
+ * \param selector The selector to perform
+ * \param waitUntilDone Whether to wait until the perform finished
+ */
+- (void)performSelectorOnMainThread: (SEL)selector
+		      waitUntilDone: (BOOL)waitUntilDone;
+
+/**
+ * \brief Performs the specified selector on the main thread with the specified
+ *	  object.
+ *
+ * \param selector The selector to perform
+ * \param object The object that is passed to the method specified by the
+ *		 selector
+ * \param waitUntilDone Whether to wait until the perform finished
+ */
+- (void)performSelectorOnMainThread: (SEL)selector
+			 withObject: (id)object
+		      waitUntilDone: (BOOL)waitUntilDone;
+
+/**
+ * \brief Performs the specified selector on the main thread with the specified
+ *	  objects.
+ *
+ * \param selector The selector to perform
+ * \param object1 The first object that is passed to the method specified by the
+ *		 selector
+ * \param object2 The second object that is passed to the method specified by
+ *		  the selector
+ * \param waitUntilDone Whether to wait until the perform finished
+ */
+- (void)performSelectorOnMainThread: (SEL)selector
+			 withObject: (id)object1
+			 withObject: (id)object2
+		      waitUntilDone: (BOOL)waitUntilDone;
+
+/**
  * \brief Performs the specified selector on the specified thread after the
  *	  specified delay.
  *
