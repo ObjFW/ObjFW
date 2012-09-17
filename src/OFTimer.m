@@ -302,6 +302,8 @@
 		interval = interval_;
 		repeats = repeats_;
 		block = [block_ copy];
+		isValid = YES;
+		condition = [[OFCondition alloc] init];
 	} @catch (id e) {
 		[self release];
 		@throw e;
