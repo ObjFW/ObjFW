@@ -53,6 +53,7 @@
 #import "OFThreadStartFailedException.h"
 #import "OFThreadStillRunningException.h"
 
+#import "atomic.h"
 #import "threading.h"
 
 static OFList *TLSKeys;
@@ -240,23 +241,9 @@ call_main(id object)
 		    exceptionWithClass: self];
 }
 
-- init
-{
-	self = [super init];
-
-	@try {
-		runLoop = [[OFRunLoop alloc] init];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
 - initWithObject: (id)object_
 {
-	self = [self init];
+	self = [super init];
 
 	object = [object_ retain];
 
@@ -273,7 +260,7 @@ call_main(id object)
 - initWithObject: (id)object_
 	   block: (of_thread_block_t)block_
 {
-	self = [self init];
+	self = [super init];
 
 	@try {
 		object = [object_ retain];
@@ -296,9 +283,9 @@ call_main(id object)
 
 - (void)handleTermination
 {
-	OFRunLoop *old = runLoop;
-	runLoop = [[OFRunLoop alloc] init];
-	[old release];
+	OFRunLoop *tmp = runLoop;
+	runLoop = nil;
+	[tmp release];
 }
 
 - (void)start
@@ -339,6 +326,13 @@ call_main(id object)
 
 - (OFRunLoop*)runLoop
 {
+	if (runLoop == nil) {
+		OFRunLoop *tmp = [[OFRunLoop alloc] init];
+
+		if (!of_atomic_cmpswap_ptr((void**)&runLoop, nil, tmp))
+			[tmp release];
+	}
+
 	return [[runLoop retain] autorelease];
 }
 
