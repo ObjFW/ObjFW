@@ -296,12 +296,14 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 - (void)run
 {
-	void *pool;
+	void *pool = objc_autoreleasePoolPush();
 	OFRunLoop *runLoop;
 
 	[OFThread OF_createMainThread];
 	runLoop = [OFRunLoop currentRunLoop];
 	[OFRunLoop OF_setMainRunLoop];
+
+	objc_autoreleasePoolPop(pool);
 
 	pool = objc_autoreleasePoolPush();
 	[delegate applicationDidFinishLaunching];

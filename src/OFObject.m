@@ -943,7 +943,7 @@ void _references_to_categories_of_OFObject(void)
 
 - autorelease
 {
-	return of_autorelease(self);
+	return _objc_rootAutorelease(self);
 }
 
 - self

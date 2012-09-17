@@ -35,24 +35,10 @@
 #define MAX_CACHE_SIZE 0x20
 
 #ifdef OF_COMPILER_TLS
-static __thread void *first = NULL;
 static __thread OFAutoreleasePool **cache = NULL;
 #else
-static of_tlskey_t firstKey, cacheKey;
+static of_tlskey_t cacheKey;
 #endif
-
-id
-of_autorelease(id object)
-{
-#ifndef OF_COMPILER_TLS
-	void *first = of_tlskey_get(firstKey);
-#endif
-
-	if (first == NULL)
-		[[OFAutoreleasePool alloc] init];
-
-	return _objc_rootAutorelease(object);
-}
 
 @implementation OFAutoreleasePool
 #ifndef OF_COMPILER_TLS
@@ -61,7 +47,7 @@ of_autorelease(id object)
 	if (self != [OFAutoreleasePool class])
 		return;
 
-	if (!of_tlskey_new(&firstKey) || !of_tlskey_new(&cacheKey))
+	if (!of_tlskey_new(&cacheKey))
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -90,16 +76,7 @@ of_autorelease(id object)
 
 + (id)addObject: (id)object
 {
-	return of_autorelease(object);
-}
-
-+ (void)OF_releaseAll
-{
-#ifndef OF_COMPILER_TLS
-	void *first = of_tlskey_get(firstKey);
-#endif
-
-	objc_autoreleasePoolPop(first);
+	return _objc_rootAutorelease(object);
 }
 
 - init
@@ -107,18 +84,7 @@ of_autorelease(id object)
 	self = [super init];
 
 	@try {
-#ifndef OF_COMPILER_TLS
-		void *first = of_tlskey_get(firstKey);
-#endif
-
 		pool = objc_autoreleasePoolPush();
-
-		if (first == NULL)
-#ifdef OF_COMPILER_TLS
-			first = pool;
-#else
-			OF_ENSURE(of_tlskey_set(firstKey, pool));
-#endif
 
 		_objc_rootAutorelease(self);
 	} @catch (id e) {
@@ -161,14 +127,6 @@ of_autorelease(id object)
 		return;
 
 	ignoreRelease = YES;
-
-#ifdef OF_COMPILER_TLS
-	if (first == pool)
-		first = NULL;
-#else
-	if (of_tlskey_get(firstKey) == pool)
-		OF_ENSURE(of_tlskey_set(firstKey, NULL));
-#endif
 
 	objc_autoreleasePoolPop(pool);
 

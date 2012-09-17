@@ -62,7 +62,7 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"An exception of class %@ occurred in class %@",
+	    @"An exception of class %@ occurred in class %@!",
 	    object_getClass(self), inClass];
 
 	return description;

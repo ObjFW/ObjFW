@@ -54,6 +54,7 @@
 #import "OFThreadStillRunningException.h"
 
 #import "atomic.h"
+#import "autorelease.h"
 #import "threading.h"
 
 static OFList *TLSKeys;
@@ -64,10 +65,13 @@ static id
 call_main(id object)
 {
 	OFThread *thread = (OFThread*)object;
+	void *pool;
 
 	if (!of_tlskey_set(threadSelfKey, thread))
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: [thread class]];
+
+	pool = objc_autoreleasePoolPush();
 
 	/*
 	 * Nasty workaround for thread implementations which can't return a
@@ -77,17 +81,22 @@ call_main(id object)
 	if (thread->block != NULL)
 		thread->returnValue = [thread->block(thread->object) retain];
 	else
-		thread->returnValue = [[thread main] retain];
-#else
-	thread->returnValue = [[thread main] retain];
 #endif
+		thread->returnValue = [[thread main] retain];
 
 	[thread handleTermination];
 
 	thread->running = OF_THREAD_WAITING_FOR_JOIN;
 
 	[OFTLSKey callAllDestructors];
-	[OFAutoreleasePool OF_releaseAll];
+#ifdef OF_OBJFW_RUNTIME
+	/*
+	 * As the values returned by objc_autoreleasePoolPush() in the ObjFW
+	 * runtime are not actually pointers, but sequential numbers, 0 means
+	 * we pop everything.
+	 */
+	objc_autoreleasePoolPop(0);
+#endif
 
 	[thread release];
 
@@ -224,7 +233,14 @@ call_main(id object)
 	}
 
 	[OFTLSKey callAllDestructors];
-	[OFAutoreleasePool OF_releaseAll];
+#ifdef OF_OBJFW_RUNTIME
+	/*
+	 * As the values returned by objc_autoreleasePoolPush() in the ObjFW
+	 * runtime are not actually pointers, but sequential numbers, 0 means
+	 * we pop everything.
+	 */
+	objc_autoreleasePoolPop(0);
+#endif
 
 	[thread release];
 
