@@ -289,8 +289,7 @@ call_main(id object)
 
 - (id)main
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[[OFRunLoop currentRunLoop] run];
 
 	return nil;
 }
