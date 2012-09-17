@@ -56,6 +56,10 @@
 			  buffer: (void*)buffer
 			  length: (size_t)length
 			   block: (of_stream_async_read_block_t)block;
++ (void)OF_addAsyncReadForStream: (OFStream*)stream
+			  buffer: (void*)buffer
+		     exactLength: (size_t)length
+			   block: (of_stream_async_read_block_t)block;
 + (void)OF_addAsyncReadLineForStream: (OFStream*)stream
 			    encoding: (of_string_encoding_t)encoding
 			       block: (of_stream_async_read_line_block_t)block;

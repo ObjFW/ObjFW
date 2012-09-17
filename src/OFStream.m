@@ -134,16 +134,6 @@
 	}
 }
 
-- (void)asyncReadWithBuffer: (void*)buffer
-		     length: (size_t)length
-		      block: (of_stream_async_read_block_t)block
-{
-	[OFRunLoop OF_addAsyncReadForStream: self
-				     buffer: buffer
-				     length: length
-				      block: block];
-}
-
 - (void)readIntoBuffer: (void*)buffer
 	   exactLength: (size_t)length
 {
@@ -153,6 +143,28 @@
 		readLength += [self readIntoBuffer: (char*)buffer + readLength
 					    length: length - readLength];
 }
+
+#ifdef OF_HAVE_BLOCKS
+- (void)asyncReadIntoBuffer: (void*)buffer
+		     length: (size_t)length
+		      block: (of_stream_async_read_block_t)block
+{
+	[OFRunLoop OF_addAsyncReadForStream: self
+				     buffer: buffer
+				     length: length
+				      block: block];
+}
+
+- (void)asyncReadIntoBuffer: (void*)buffer
+		exactLength: (size_t)length
+		      block: (of_stream_async_read_block_t)block
+{
+	[OFRunLoop OF_addAsyncReadForStream: self
+				     buffer: buffer
+				exactLength: length
+				      block: block];
+}
+#endif
 
 - (uint8_t)readInt8
 {

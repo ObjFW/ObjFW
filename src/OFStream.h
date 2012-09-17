@@ -78,7 +78,9 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*);
  *
  * On network streams, this might read less than the specified number of bytes.
  * If you want to read exactly the specified number of bytes, use
- * -[readIntoBuffer:exactLength:].
+ * -readIntoBuffer:exactLength:. Note that a read can even return 0 bytes -
+ * this does not necessarily mean that the stream ended, so you still need to
+ * check isAtEndOfStream.
  *
  * \param buffer The buffer into which the data is read
  * \param length The length of the data that should be read at most.
@@ -87,30 +89,6 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*);
  */
 - (size_t)readIntoBuffer: (void*)buffer
 		  length: (size_t)size;
-
-#ifdef OF_HAVE_BLOCKS
-/**
- * \brief Asyncronously reads <i>at most</i> size bytes from the stream into a
- *	  buffer.
- *
- * On network streams, this might read less than the specified number of bytes.
- * If you want to read exactly the specified number of bytes, use
- * -[readIntoBuffer:exactLength:].
- *
- * \param buffer The buffer into which the data is read.
- *		 The buffer must not be free'd before the async read completed!
- * \param length The length of the data that should be read at most.
- *		 The buffer <i>must</i> be at least this big!
- * \param block The block to call when the data has been received.
- *		If the block returns YES, it will be called again with the same
- *		buffer and maximum length when more data has been received. If
- *		you want the next block in the queue to handle the data
- *		received next, you need to return NO from the block.
- */
-- (void)asyncReadWithBuffer: (void*)buffer
-		     length: (size_t)length
-		      block: (of_stream_async_read_block_t)block;
-#endif
 
 /**
  * \brief Reads exactly the specified length bytes from the stream into a
@@ -125,10 +103,57 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*);
  *
  * \param buffer The buffer into which the data is read
  * \param length The length of the data that should be read.
- *	       The buffer <i>must</i> be <i>exactly</i> this big!
+ *		 The buffer <i>must</i> be <i>exactly</i> this big!
  */
  - (void)readIntoBuffer: (void*)buffer
 	    exactLength: (size_t)length;
+
+#ifdef OF_HAVE_BLOCKS
+/**
+ * \brief Asyncronously reads <i>at most</i> size bytes from the stream into a
+ *	  buffer.
+ *
+ * On network streams, this might read less than the specified number of bytes.
+ * If you want to read exactly the specified number of bytes, use
+ * asyncReadIntoBuffer:exactLength:block:. Note that a read can even return 0
+ * bytes - this does not necessarily mean that the stream ended, so you still
+ * need to check isAtEndOfStream.
+ *
+ * \param buffer The buffer into which the data is read.
+ *		 The buffer must not be free'd before the async read completed!
+ * \param length The length of the data that should be read at most.
+ *		 The buffer <i>must</i> be at least this big!
+ * \param block The block to call when the data has been received.
+ *		If the block returns YES, it will be called again with the same
+ *		buffer and maximum length when more data has been received. If
+ *		you want the next block in the queue to handle the data
+ *		received next, you need to return NO from the block.
+ */
+- (void)asyncReadIntoBuffer: (void*)buffer
+		     length: (size_t)length
+		      block: (of_stream_async_read_block_t)block;
+
+/**
+ * \brief Asyncronously reads exactly the specified length bytes from the
+ *	  stream into a buffer.
+ *
+ * Unlike asyncReadIntoBuffer:length:block, this method does not invoke the
+ * block when less than the specified length has been read - instead, it waits
+ * until it got exactly the specified length or the stream has ended.
+ *
+ * \param buffer The buffer into which the data is read
+ * \param length The length of the data that should be read.
+ *		 The buffer <i>must</i> be <i>exactly</i> this big!
+ * \param block The block to call when the data has been received.
+ *		If the block returns YES, it will be called again with the same
+ *		buffer and exact length when more data has been received. If
+ *		you want the next block in the queue to handle the data
+ *		received next, you need to return NO from the block.
+ */
+ - (void)asyncReadIntoBuffer: (void*)buffer
+		 exactLength: (size_t)length
+		       block: (of_stream_async_read_block_t)block;
+#endif
 
 /**
  * \brief Reads a uint8_t from the stream.

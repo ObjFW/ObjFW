@@ -384,7 +384,6 @@ enum {
 
 
 	for (i = 0; i < count; i++) {
-
 		if ([objects[i] pendingBytes] > 0 &&
 		    ![objects[i] OF_isWaitingForDelimiter]) {
 			void *pool = objc_autoreleasePoolPush();
