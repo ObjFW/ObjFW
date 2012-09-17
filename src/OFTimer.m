@@ -370,7 +370,7 @@
 	[condition signal];
 	[condition unlock];
 
-	if (repeats) {
+	if (repeats && isValid) {
 		OFDate *old = fireDate;
 		fireDate = [[OFDate alloc]
 		    initWithTimeIntervalSinceNow: interval];
