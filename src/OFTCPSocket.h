@@ -129,6 +129,21 @@ typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*);
 - (void)connectToHost: (OFString*)host
 		 port: (uint16_t)port;
 
+/**
+ * \brief Asyncronously connect the OFTCPSocket to the specified destination.
+ *
+ * \param host The host to connect to
+ * \param port The port on the host to connect to
+ * \param target The target on which to call the selector once the connection
+ *		 has been established
+ * \param selector The selector to call on the target. The signature must be
+ *		   void (OFTCPSocket *socket).
+ */
+- (void)asyncConnectToHost: (OFString*)host
+		      port: (uint16_t)port
+		    target: (id)target
+		  selector: (SEL)selector;
+
 #ifdef OF_HAVE_BLOCKS
 /**
  * \brief Asyncronously connect the OFTCPSocket to the specified destination.

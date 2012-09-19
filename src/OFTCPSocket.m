@@ -77,6 +77,132 @@ void _references_to_categories_of_OFTCPSocket(void)
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
 
+@interface OFTCPSocket_ConnectThread: OFThread
+{
+	OFThread *sourceThread;
+	OFTCPSocket *sock;
+	OFString *host;
+	uint16_t port;
+	id target;
+	SEL selector;
+#ifdef OF_HAVE_BLOCKS
+	of_tcpsocket_async_connect_block_t connectBlock;
+#endif
+}
+
+- initWithSourceThread: (OFThread*)sourceThread
+		socket: (OFTCPSocket*)socket
+		  host: (OFString*)host
+		  port: (uint16_t)port
+		target: (id)target
+	      selector: (SEL)selector;
+#ifdef OF_HAVE_BLOCKS
+- initWithSourceThread: (OFThread*)sourceThread
+		socket: (OFTCPSocket*)socket
+		  host: (OFString*)host
+		  port: (uint16_t)port
+		 block: (of_tcpsocket_async_connect_block_t)block;
+#endif
+@end
+
+@implementation OFTCPSocket_ConnectThread
+- initWithSourceThread: (OFThread*)sourceThread_
+		socket: (OFTCPSocket*)sock_
+		  host: (OFString*)host_
+		  port: (uint16_t)port_
+		target: (id)target_
+	      selector: (SEL)selector_
+{
+	self = [super init];
+
+	@try {
+		sourceThread = [sourceThread_ retain];
+		sock = [sock_ retain];
+		host = [host_ copy];
+		port = port_;
+		target = [target_ retain];
+		selector = selector_;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+#ifdef OF_HAVE_BLOCKS
+- initWithSourceThread: (OFThread*)sourceThread_
+		socket: (OFTCPSocket*)sock_
+		  host: (OFString*)host_
+		  port: (uint16_t)port_
+		 block: (of_tcpsocket_async_connect_block_t)block_
+{
+	self = [super init];
+
+	@try {
+		sourceThread = [sourceThread_ retain];
+		sock = [sock_ retain];
+		host = [host_ copy];
+		port = port_;
+		connectBlock = [block_ copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+#endif
+
+- (void)dealloc
+{
+	[sourceThread release];
+	[sock release];
+	[host release];
+	[target release];
+#ifdef OF_HAVE_BLOCKS
+	[connectBlock release];
+#endif
+
+	[super dealloc];
+}
+
+- (void)didConnect
+{
+	[self join];
+
+#ifdef OF_HAVE_BLOCKS
+	if (connectBlock != NULL)
+		connectBlock(sock);
+	else {
+#endif
+		void (*func)(id, SEL, OFTCPSocket*) =
+		    (void(*)(id, SEL, OFTCPSocket*))[target
+		    methodForSelector: selector];
+
+		func(target, selector, sock);
+#ifdef OF_HAVE_BLOCKS
+	}
+#endif
+}
+
+- (id)main
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[sock connectToHost: host
+		       port: port];
+
+	[self performSelector: @selector(didConnect)
+		     onThread: sourceThread
+		waitUntilDone: NO];
+
+	objc_autoreleasePoolPop(pool);
+
+	return nil;
+}
+@end
+
 @implementation OFTCPSocket
 #if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
 + (void)initialize
@@ -290,35 +416,37 @@ static uint16_t defaultSOCKS5Port = 1080;
 					port: destinationPort];
 }
 
+- (void)asyncConnectToHost: (OFString*)host
+		      port: (uint16_t)port
+		    target: (id)target
+		  selector: (SEL)selector
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[[[[OFTCPSocket_ConnectThread alloc]
+	    initWithSourceThread: [OFThread currentThread]
+			  socket: self
+			    host: host
+			    port: port
+			  target: target
+			selector: selector] autorelease] start];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncConnectToHost: (OFString*)host
 		      port: (uint16_t)port
 		     block: (of_tcpsocket_async_connect_block_t)block
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
 
-	[[OFThread threadWithObject: self
-			      block: ^ id (id s) {
-		void *pool2 = objc_autoreleasePoolPush();
-		OFThread *connectThread = [OFThread currentThread];
-		OFTimer *timer;
-
-		[s connectToHost: host
-			    port: port];
-
-		timer = [OFTimer timerWithTimeInterval: 0
-					       repeats: NO
-						 block: ^ (OFTimer *unused) {
-			[connectThread join];
-			block(s);
-		}];
-		[runLoop addTimer: timer];
-
-		objc_autoreleasePoolPop(pool2);
-
-		return nil;
-	}] start];
+	[[[[OFTCPSocket_ConnectThread alloc]
+	    initWithSourceThread: [OFThread currentThread]
+			  socket: self
+			    host: host
+			    port: port
+			   block: block] autorelease] start];
 
 	objc_autoreleasePoolPop(pool);
 }
