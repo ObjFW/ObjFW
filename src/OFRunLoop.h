@@ -51,6 +51,23 @@
 + (OFRunLoop*)currentRunLoop;
 
 + (void)OF_setMainRunLoop;
++ (void)OF_addAsyncReadForStream: (OFStream*)stream
+			  buffer: (void*)buffer
+			  length: (size_t)length
+			  target: (id)target
+			selector: (SEL)selector;
++ (void)OF_addAsyncReadForStream: (OFStream*)stream
+			  buffer: (void*)buffer
+		     exactLength: (size_t)length
+			  target: (id)target
+			selector: (SEL)selector;
++ (void)OF_addAsyncReadLineForStream: (OFStream*)stream
+			    encoding: (of_string_encoding_t)encoding
+			      target: (id)target
+			    selector: (SEL)selector;
++ (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket*)socket
+			       target: (id)target
+			     selector: (SEL)selector;
 #ifdef OF_HAVE_BLOCKS
 + (void)OF_addAsyncReadForStream: (OFStream*)stream
 			  buffer: (void*)buffer

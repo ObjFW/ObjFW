@@ -30,13 +30,16 @@
 
 static OFRunLoop *mainRunLoop = nil;
 
-#ifdef OF_HAVE_BLOCKS
 @interface OFRunLoop_ReadQueueItem: OFObject
 {
 @public
 	void *buffer;
 	size_t length;
+	id target;
+	SEL selector;
+#ifdef OF_HAVE_BLOCKS
 	of_stream_async_read_block_t block;
+#endif
 }
 @end
 
@@ -45,29 +48,44 @@ static OFRunLoop *mainRunLoop = nil;
 @public
 	void *buffer;
 	size_t exactLength, readLength;
+	id target;
+	SEL selector;
+#ifdef OF_HAVE_BLOCKS
 	of_stream_async_read_block_t block;
+#endif
 }
 @end
 
 @interface OFRunLoop_ReadLineQueueItem: OFObject
 {
 @public
-	of_stream_async_read_line_block_t block;
 	of_string_encoding_t encoding;
+	id target;
+	SEL selector;
+#ifdef OF_HAVE_BLOCKS
+	of_stream_async_read_line_block_t block;
+#endif
 }
 @end
 
 @interface OFRunLoop_AcceptQueueItem: OFObject
 {
 @public
+	id target;
+	SEL selector;
+#ifdef OF_HAVE_BLOCKS
 	of_tcpsocket_async_accept_block_t block;
+#endif
 }
 @end
 
 @implementation OFRunLoop_ReadQueueItem
 - (void)dealloc
 {
+	[target release];
+#ifdef OF_HAVE_BLOCKS
 	[block release];
+#endif
 
 	[super dealloc];
 }
@@ -76,7 +94,10 @@ static OFRunLoop *mainRunLoop = nil;
 @implementation OFRunLoop_ExactReadQueueItem
 - (void)dealloc
 {
+	[target release];
+#ifdef OF_HAVE_BLOCKS
 	[block release];
+#endif
 
 	[super dealloc];
 }
@@ -85,7 +106,10 @@ static OFRunLoop *mainRunLoop = nil;
 @implementation OFRunLoop_ReadLineQueueItem
 - (void)dealloc
 {
+	[target release];
+#ifdef OF_HAVE_BLOCKS
 	[block release];
+#endif
 
 	[super dealloc];
 }
@@ -94,12 +118,14 @@ static OFRunLoop *mainRunLoop = nil;
 @implementation OFRunLoop_AcceptQueueItem
 - (void)dealloc
 {
+	[target release];
+#ifdef OF_HAVE_BLOCKS
 	[block release];
+#endif
 
 	[super dealloc];
 }
 @end
-#endif
 
 @implementation OFRunLoop
 + (OFRunLoop*)mainRunLoop
@@ -119,33 +145,88 @@ static OFRunLoop *mainRunLoop = nil;
 	objc_autoreleasePoolPop(pool);
 }
 
+#define ADD(type, code)							\
+	void *pool = objc_autoreleasePoolPush();			\
+	OFRunLoop *runLoop = [self currentRunLoop];			\
+	OFList *queue = [runLoop->readQueues objectForKey: stream];	\
+	type *queueItem;						\
+									\
+	if (queue == nil) {						\
+		queue = [OFList list];					\
+		[runLoop->readQueues setObject: queue			\
+					forKey: stream];		\
+	}								\
+									\
+	if ([queue count] == 0)						\
+		[runLoop->streamObserver addStreamForReading: stream];	\
+									\
+	queueItem = [[[type alloc] init] autorelease];			\
+	code								\
+	[queue appendObject: queueItem];				\
+									\
+	objc_autoreleasePoolPop(pool);
+
++ (void)OF_addAsyncReadForStream: (OFStream*)stream
+			  buffer: (void*)buffer
+			  length: (size_t)length
+			  target: (id)target
+			selector: (SEL)selector
+{
+	ADD(OFRunLoop_ReadQueueItem, {
+		queueItem->buffer = buffer;
+		queueItem->length = length;
+		queueItem->target = [target retain];
+		queueItem->selector = selector;
+	})
+}
+
++ (void)OF_addAsyncReadForStream: (OFStream*)stream
+			  buffer: (void*)buffer
+		     exactLength: (size_t)exactLength
+			  target: (id)target
+			selector: (SEL)selector
+{
+	ADD(OFRunLoop_ExactReadQueueItem, {
+		queueItem->buffer = buffer;
+		queueItem->exactLength = exactLength;
+		queueItem->target = [target retain];
+		queueItem->selector = selector;
+	})
+}
+
++ (void)OF_addAsyncReadLineForStream: (OFStream*)stream
+			    encoding: (of_string_encoding_t)encoding
+			      target: (id)target
+			    selector: (SEL)selector
+{
+	ADD(OFRunLoop_ReadLineQueueItem, {
+		queueItem->encoding = encoding;
+		queueItem->target = [target retain];
+		queueItem->selector = selector;
+	})
+}
+
++ (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket*)stream
+			       target: (id)target
+			     selector: (SEL)selector
+{
+	ADD(OFRunLoop_AcceptQueueItem, {
+		queueItem->target = [target retain];
+		queueItem->selector = selector;
+	})
+}
+
 #ifdef OF_HAVE_BLOCKS
 + (void)OF_addAsyncReadForStream: (OFStream*)stream
 			  buffer: (void*)buffer
 			  length: (size_t)length
 			   block: (of_stream_async_read_block_t)block
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFRunLoop *runLoop = [self currentRunLoop];
-	OFList *queue = [runLoop->readQueues objectForKey: stream];
-	OFRunLoop_ReadQueueItem *queueItem;
-
-	if (queue == nil) {
-		queue = [OFList list];
-		[runLoop->readQueues setObject: queue
-					forKey: stream];
-	}
-
-	if ([queue count] == 0)
-		[runLoop->streamObserver addStreamForReading: stream];
-
-	queueItem = [[[OFRunLoop_ReadQueueItem alloc] init] autorelease];
-	queueItem->buffer = buffer;
-	queueItem->length = length;
-	queueItem->block = [block copy];
-	[queue appendObject: queueItem];
-
-	objc_autoreleasePoolPop(pool);
+	ADD(OFRunLoop_ReadQueueItem, {
+		queueItem->buffer = buffer;
+		queueItem->length = length;
+		queueItem->block = [block copy];
+	})
 }
 
 + (void)OF_addAsyncReadForStream: (OFStream*)stream
@@ -153,79 +234,33 @@ static OFRunLoop *mainRunLoop = nil;
 		     exactLength: (size_t)exactLength
 			   block: (of_stream_async_read_block_t)block
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFRunLoop *runLoop = [self currentRunLoop];
-	OFList *queue = [runLoop->readQueues objectForKey: stream];
-	OFRunLoop_ExactReadQueueItem *queueItem;
-
-	if (queue == nil) {
-		queue = [OFList list];
-		[runLoop->readQueues setObject: queue
-					forKey: stream];
-	}
-
-	if ([queue count] == 0)
-		[runLoop->streamObserver addStreamForReading: stream];
-
-	queueItem = [[[OFRunLoop_ExactReadQueueItem alloc] init] autorelease];
-	queueItem->buffer = buffer;
-	queueItem->exactLength = exactLength;
-	queueItem->block = [block copy];
-	[queue appendObject: queueItem];
-
-	objc_autoreleasePoolPop(pool);
+	ADD(OFRunLoop_ExactReadQueueItem, {
+		queueItem->buffer = buffer;
+		queueItem->exactLength = exactLength;
+		queueItem->block = [block copy];
+	})
 }
 
 + (void)OF_addAsyncReadLineForStream: (OFStream*)stream
 			    encoding: (of_string_encoding_t)encoding
 			       block: (of_stream_async_read_line_block_t)block
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFRunLoop *runLoop = [self currentRunLoop];
-	OFList *queue = [runLoop->readQueues objectForKey: stream];
-	OFRunLoop_ReadLineQueueItem *queueItem;
-
-	if (queue == nil) {
-		queue = [OFList list];
-		[runLoop->readQueues setObject: queue
-					forKey: stream];
-	}
-
-	if ([queue count] == 0)
-		[runLoop->streamObserver addStreamForReading: stream];
-
-	queueItem = [[[OFRunLoop_ReadLineQueueItem alloc] init] autorelease];
-	queueItem->block = [block copy];
-	queueItem->encoding = encoding;
-	[queue appendObject: queueItem];
-
-	objc_autoreleasePoolPop(pool);
+	ADD(OFRunLoop_ReadLineQueueItem, {
+		queueItem->encoding = encoding;
+		queueItem->block = [block copy];
+	})
 }
 
-+ (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket*)socket
++ (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket*)stream
 				block: (of_tcpsocket_async_accept_block_t)block
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFRunLoop *runLoop = [self currentRunLoop];
-	OFList *queue = [runLoop->readQueues objectForKey: socket];
-	OFRunLoop_AcceptQueueItem *queueItem;
-
-	if (queue == nil) {
-		queue = [OFList list];
-		[runLoop->readQueues setObject: queue
-					forKey: socket];
-	}
-
-	if ([queue count] == 0)
-		[runLoop->streamObserver addStreamForReading: socket];
-
-	queueItem = [[[OFRunLoop_AcceptQueueItem alloc] init] autorelease];
-	queueItem->block = [block copy];
-	[queue appendObject: queueItem];
-
-	objc_autoreleasePoolPop(pool);
+	ADD(OFRunLoop_AcceptQueueItem, {
+		queueItem->block = [block copy];
+	})
 }
 #endif
+
+#undef ADD
 
 - init
 {
@@ -263,7 +298,6 @@ static OFRunLoop *mainRunLoop = nil;
 	[streamObserver cancel];
 }
 
-#ifdef OF_HAVE_BLOCKS
 - (void)streamIsReadyForReading: (OFStream*)stream
 {
 	OFList *queue = [readQueues objectForKey: stream];
@@ -279,14 +313,38 @@ static OFRunLoop *mainRunLoop = nil;
 		size_t length = [stream readIntoBuffer: queueItem->buffer
 						length: queueItem->length];
 
-		if (!queueItem->block(stream, queueItem->buffer, length)) {
-			[queue removeListObject: listObject];
+#ifdef OF_HAVE_BLOCKS
+		if (queueItem->block != NULL) {
+			if (!queueItem->block(stream, queueItem->buffer,
+				length)) {
+				[queue removeListObject: listObject];
 
-			if ([queue count] == 0) {
-				[streamObserver removeStreamForReading: stream];
-				[readQueues removeObjectForKey: stream];
+				if ([queue count] == 0) {
+					[streamObserver
+					    removeStreamForReading: stream];
+					[readQueues removeObjectForKey: stream];
+				}
 			}
+		} else {
+#endif
+			BOOL (*func)(id, SEL, OFStream*, void*, size_t) =
+			    (BOOL(*)(id, SEL, OFStream*, void*, size_t))
+			    [queueItem->target methodForSelector:
+			    queueItem->selector];
+
+			if (!func(queueItem->target, queueItem->selector,
+			    stream, queueItem->buffer, length)) {
+				[queue removeListObject: listObject];
+
+				if ([queue count] == 0) {
+					[streamObserver
+					    removeStreamForReading: stream];
+					[readQueues removeObjectForKey: stream];
+				}
+			}
+#ifdef OF_HAVE_BLOCKS
 		}
+#endif
 	} else if ([listObject->object isKindOfClass:
 	    [OFRunLoop_ExactReadQueueItem class]]) {
 		OFRunLoop_ExactReadQueueItem *queueItem = listObject->object;
@@ -299,18 +357,47 @@ static OFRunLoop *mainRunLoop = nil;
 		queueItem->readLength += length;
 		if (queueItem->readLength == queueItem->exactLength ||
 		    [stream isAtEndOfStream]) {
-			if (queueItem->block(stream, queueItem->buffer,
-			    queueItem->readLength))
-				queueItem->readLength = 0;
-			else {
-				[queue removeListObject: listObject];
+#ifdef OF_HAVE_BLOCKS
+			if (queueItem->block != NULL) {
+				if (queueItem->block(stream, queueItem->buffer,
+				    queueItem->readLength))
+					queueItem->readLength = 0;
+				else {
+					[queue removeListObject: listObject];
 
-				if ([queue count] == 0) {
-					[streamObserver
-					    removeStreamForReading: stream];
-					[readQueues removeObjectForKey: stream];
+					if ([queue count] == 0) {
+						[streamObserver
+						    removeStreamForReading:
+						    stream];
+						[readQueues
+						    removeObjectForKey: stream];
+					}
 				}
+			} else {
+#endif
+				BOOL (*func)(id, SEL, OFStream*, void*,
+				    size_t) = (BOOL(*)(id, SEL, OFStream*,
+				    void*, size_t))[queueItem->target
+				    methodForSelector: queueItem->selector];
+
+				if (func(queueItem->target,
+				    queueItem->selector, stream,
+				    queueItem->buffer, queueItem->readLength))
+					queueItem->readLength = 0;
+				else {
+					[queue removeListObject: listObject];
+
+					if ([queue count] == 0) {
+						[streamObserver
+						    removeStreamForReading:
+						    stream];
+						[readQueues
+						    removeObjectForKey: stream];
+					}
+				}
+#ifdef OF_HAVE_BLOCKS
 			}
+#endif
 		}
 	} else if ([listObject->object isKindOfClass:
 	    [OFRunLoop_ReadLineQueueItem class]]) {
@@ -320,7 +407,51 @@ static OFRunLoop *mainRunLoop = nil;
 		line = [stream tryReadLineWithEncoding: queueItem->encoding];
 
 		if (line != nil || [stream isAtEndOfStream]) {
-			if (!queueItem->block(stream, line)) {
+#ifdef OF_HAVE_BLOCKS
+			if (queueItem->block != NULL) {
+				if (!queueItem->block(stream, line)) {
+					[queue removeListObject: listObject];
+
+					if ([queue count] == 0) {
+						[streamObserver
+						    removeStreamForReading:
+						    stream];
+						[readQueues
+						    removeObjectForKey: stream];
+					}
+				}
+			} else {
+#endif
+				BOOL (*func)(id, SEL, OFStream*, OFString*) =
+				    (BOOL(*)(id, SEL, OFStream*, OFString*))
+				    [queueItem->target methodForSelector:
+				    queueItem->selector];
+
+				if (!func(queueItem->target,
+				    queueItem->selector, stream, line)) {
+					[queue removeListObject: listObject];
+
+					if ([queue count] == 0) {
+						[streamObserver
+						    removeStreamForReading:
+						    stream];
+						[readQueues
+						    removeObjectForKey: stream];
+					}
+				}
+#ifdef OF_HAVE_BLOCKS
+			}
+#endif
+		}
+	} else if ([listObject->object isKindOfClass:
+	    [OFRunLoop_AcceptQueueItem class]]) {
+		OFRunLoop_AcceptQueueItem *queueItem = listObject->object;
+		OFTCPSocket *newSocket = [(OFTCPSocket*)stream accept];
+
+#ifdef OF_HAVE_BLOCKS
+		if (queueItem->block != NULL) {
+			if (!queueItem->block((OFTCPSocket*)stream,
+			    newSocket)) {
 				[queue removeListObject: listObject];
 
 				if ([queue count] == 0) {
@@ -329,24 +460,29 @@ static OFRunLoop *mainRunLoop = nil;
 					[readQueues removeObjectForKey: stream];
 				}
 			}
-		}
-	} else if ([listObject->object isKindOfClass:
-	    [OFRunLoop_AcceptQueueItem class]]) {
-		OFRunLoop_AcceptQueueItem *queueItem = listObject->object;
-		OFTCPSocket *newSocket = [(OFTCPSocket*)stream accept];
+		} else {
+#endif
+			BOOL (*func)(id, SEL, OFTCPSocket*, OFTCPSocket*) =
+			    (BOOL(*)(id, SEL, OFTCPSocket*, OFTCPSocket*))
+			    [queueItem->target methodForSelector:
+			    queueItem->selector];
 
-		if (!queueItem->block((OFTCPSocket*)stream, newSocket)) {
-			[queue removeListObject: listObject];
+			if (!func(queueItem->target, queueItem->selector,
+			    (OFTCPSocket*)stream, newSocket)) {
+				[queue removeListObject: listObject];
 
-			if ([queue count] == 0) {
-				[streamObserver removeStreamForReading: stream];
-				[readQueues removeObjectForKey: stream];
+				if ([queue count] == 0) {
+					[streamObserver
+					    removeStreamForReading: stream];
+					[readQueues removeObjectForKey: stream];
+				}
 			}
+#ifdef OF_HAVE_BLOCKS
 		}
+#endif
 	} else
 		OF_ENSURE(0);
 }
-#endif
 
 - (void)run
 {

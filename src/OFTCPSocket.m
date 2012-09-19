@@ -515,6 +515,14 @@ static uint16_t defaultSOCKS5Port = 1080;
 	return newSocket;
 }
 
+- (void)asyncAcceptWithTarget: (id)target
+		     selector: (SEL)selector
+{
+	[OFRunLoop OF_addAsyncAcceptForTCPSocket: self
+					  target: target
+					selector: selector];
+}
+
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncAcceptWithBlock: (of_tcpsocket_async_accept_block_t)block
 {

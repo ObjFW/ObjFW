@@ -173,6 +173,19 @@ typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*);
  */
 - (OFTCPSocket*)accept;
 
+/**
+ * \brief Asyncronously ccept an incoming connection.
+ *
+ * \param target The target on which to execute the selector when a new
+ *		 connection has been accepted. The method returns whether the
+ *		 next incoming connection should be accepted by the specified
+ *		 block as well.
+ * \param selector The selector to call on the target. The signature must be
+ *		   BOOL (OFTCPSocket *socket, OFTCPSocket *acceptedSocket).
+ */
+- (void)asyncAcceptWithTarget: (id)target
+		     selector: (SEL)selector;
+
 #ifdef OF_HAVE_BLOCKS
 /**
  * \brief Asyncronously ccept an incoming connection.

@@ -144,6 +144,30 @@
 					    length: length - readLength];
 }
 
+- (void)asyncReadIntoBuffer: (void*)buffer
+		     length: (size_t)length
+		     target: (id)target
+		   selector: (SEL)selector
+{
+	[OFRunLoop OF_addAsyncReadForStream: self
+				     buffer: buffer
+				     length: length
+				     target: target
+				   selector: selector];
+}
+
+- (void)asyncReadIntoBuffer: (void*)buffer
+		exactLength: (size_t)length
+		     target: (id)target
+		   selector: (SEL)selector
+{
+	[OFRunLoop OF_addAsyncReadForStream: self
+				     buffer: buffer
+				exactLength: length
+				     target: target
+				   selector: selector];
+}
+
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncReadIntoBuffer: (void*)buffer
 		     length: (size_t)length
@@ -694,6 +718,24 @@
 			return nil;
 
 	return line;
+}
+
+- (void)asyncReadLineWithTarget: (id)target
+		       selector: (SEL)selector
+{
+	return [self asyncReadLineWithEncoding: OF_STRING_ENCODING_UTF_8
+					target: target
+				      selector: selector];
+}
+
+- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
+			   target: (id)target
+			 selector: (SEL)selector
+{
+	[OFRunLoop OF_addAsyncReadLineForStream: self
+				       encoding: encoding
+					 target: target
+				       selector: selector];
 }
 
 #ifdef OF_HAVE_BLOCKS
