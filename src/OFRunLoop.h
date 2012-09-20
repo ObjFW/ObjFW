@@ -27,9 +27,6 @@
  * \brief A class providing a run loop for the application and its processes.
  */
 @interface OFRunLoop: OFObject
-#ifdef OF_RUNLOOP_M
-    <OFStreamObserverDelegate>
-#endif
 {
 	OFSortedList *timersQueue;
 	OFStreamObserver *streamObserver;

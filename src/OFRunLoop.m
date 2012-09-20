@@ -16,8 +16,6 @@
 
 #include "config.h"
 
-#define OF_RUNLOOP_M
-
 #import "OFRunLoop.h"
 #import "OFDictionary.h"
 #import "OFThread.h"
