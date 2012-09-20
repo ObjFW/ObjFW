@@ -938,7 +938,7 @@
 	return ([number uIntMaxValue] == [self uIntMaxValue]);
 }
 
-- (of_comparison_result_t)compare: (id)object
+- (of_comparison_result_t)compare: (id <OFComparing>)object
 {
 	OFNumber *number;
 
@@ -947,7 +947,7 @@
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	number = object;
+	number = (OFNumber*)object;
 
 	if (type & OF_NUMBER_FLOAT || number->type & OF_NUMBER_FLOAT) {
 		double double1 = [self doubleValue];

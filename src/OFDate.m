@@ -387,7 +387,7 @@ static int month_to_day_of_year[12] = {
 	return [self retain];
 }
 
-- (of_comparison_result_t)compare: (id)object
+- (of_comparison_result_t)compare: (id <OFComparing>)object
 {
 	OFDate *otherDate;
 
@@ -396,7 +396,7 @@ static int month_to_day_of_year[12] = {
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	otherDate = object;
+	otherDate = (OFDate*)object;
 
 	if (seconds < otherDate->seconds)
 		return OF_ORDERED_ASCENDING;
