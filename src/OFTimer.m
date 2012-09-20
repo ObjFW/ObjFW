@@ -343,7 +343,7 @@
 
 - (void)fire
 {
-	OF_ENSURE(arguments >= 0 && arguments <= 2);
+	OF_ENSURE(arguments <= 2);
 
 #ifdef OF_HAVE_BLOCKS
 	if (block != NULL)
