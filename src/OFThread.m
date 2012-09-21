@@ -65,13 +65,12 @@ static id
 call_main(id object)
 {
 	OFThread *thread = (OFThread*)object;
-	void *pool;
 
 	if (!of_tlskey_set(threadSelfKey, thread))
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: [thread class]];
 
-	pool = objc_autoreleasePoolPush();
+	objc_autoreleasePoolPush();
 
 	/*
 	 * Nasty workaround for thread implementations which can't return a
