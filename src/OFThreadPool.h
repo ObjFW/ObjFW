@@ -119,9 +119,9 @@ typedef void (^of_thread_pool_block_t)(id object);
 #endif
 
 /**
- * \brief Waits until all threads have finished.
+ * \brief Waits until all jobs are done.
  */
-- (void)waitUntilFinished;
+- (void)waitUntilDone;
 
 /**
  * \brief Returns the size of the thread pool.

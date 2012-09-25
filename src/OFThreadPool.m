@@ -346,7 +346,7 @@
 	}
 }
 
-- (void)waitUntilFinished
+- (void)waitUntilDone
 {
 	for (;;) {
 		[countCondition lock];
