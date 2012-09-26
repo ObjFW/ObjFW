@@ -465,10 +465,13 @@ normalizeKey(OFString *key)
 		} else {
 			size_t length;
 
-			while ((length = [sock
-			    readIntoBuffer: buffer
-				    length: of_pagesize]) > 0) {
-				void *pool2 = objc_autoreleasePoolPush();
+			while (![sock isAtEndOfStream]) {
+				void *pool2;
+
+				length = [sock readIntoBuffer: buffer
+						       length: of_pagesize];
+
+				pool2 = objc_autoreleasePoolPush();
 
 				[delegate request: self
 				   didReceiveData: buffer
