@@ -78,10 +78,10 @@ normalizeKey(OFString *key)
 	self = [super init];
 
 	requestType = OF_HTTP_REQUEST_TYPE_GET;
-	headers = [[OFDictionary alloc] initWithKeysAndObjects:
-	    @"Connection", @"close",
-	    @"User-Agent", @"Something using ObjFW "
-			   @"<https://webkeks.org/objfw/>", nil];
+	headers = [[OFDictionary alloc]
+	    initWithObject: @"Something using ObjFW "
+			    @"<https://webkeks.org/objfw/>"
+		    forKey: @"User-Agent"];
 	storesData = YES;
 
 	return self;
@@ -253,6 +253,8 @@ normalizeKey(OFString *key)
 	else
 		[sock writeFormat: @"Host: %@:%d\r\n", [URL host],
 		    [URL port]];
+
+	[sock writeString: @"Connection: close\r\n"];
 
 	keyEnumerator = [headers keyEnumerator];
 	objectEnumerator = [headers objectEnumerator];
