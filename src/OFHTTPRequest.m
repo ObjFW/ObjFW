@@ -518,7 +518,7 @@ normalizeKey(OFString *key)
 	case 307:
 		break;
 	default:
-		[result release];
+		[result autorelease];
 		@throw [OFHTTPRequestFailedException
 		    exceptionWithClass: [self class]
 			   HTTPRequest: self
