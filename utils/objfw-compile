@@ -244,6 +244,7 @@ for i in $srcs; do
 	if test x"$build" = x"yes"; then
 		link="yes"
 		status_compiling $i
+		mkdir -p "$(dirname $obj)" || status_compile_failed $i $?
 		$OBJC $CPPFLAGS $OBJCFLAGS -c -o $obj $i || \
 			status_compile_failed $i $?
 		status_compiled $i
