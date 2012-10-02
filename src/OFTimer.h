@@ -38,7 +38,7 @@ typedef void (^of_timer_block_t)(OFTimer*);
 #ifdef OF_HAVE_BLOCKS
 	of_timer_block_t block;
 #endif
-	BOOL isValid;
+	BOOL isValid, done;
 	OFCondition *condition;
 }
 

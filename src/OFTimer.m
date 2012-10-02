@@ -369,8 +369,12 @@
 #endif
 
 	[condition lock];
-	[condition signal];
-	[condition unlock];
+	@try {
+		done = YES;
+		[condition signal];
+	} @finally {
+		[condition unlock];
+	}
 
 	if (repeats && isValid) {
 		OFDate *old = fireDate;
@@ -406,7 +410,15 @@
 - (void)waitUntilDone
 {
 	[condition lock];
-	[condition wait];
-	[condition unlock];
+	@try {
+		if (done) {
+			done = NO;
+			return;
+		}
+
+		[condition wait];
+	} @finally {
+		[condition unlock];
+	}
 }
 @end
