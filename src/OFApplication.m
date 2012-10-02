@@ -254,17 +254,17 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 - (OFString*)programName
 {
-	return programName;
+	OF_GETTER(programName, NO)
 }
 
 - (OFArray*)arguments
 {
-	return arguments;
+	OF_GETTER(arguments, NO)
 }
 
 - (OFDictionary*)environment
 {
-	return environment;
+	OF_GETTER(environment, NO)
 }
 
 - (id <OFApplicationDelegate>)delegate

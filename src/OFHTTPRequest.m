@@ -562,12 +562,12 @@ normalizeKey(OFString *key)
 
 - (OFDictionary*)headers
 {
-	return [[headers copy] autorelease];
+	OF_GETTER(headers, YES)
 }
 
 - (OFDataArray*)data
 {
-	return [[data retain] autorelease];
+	OF_GETTER(data, YES)
 }
 @end
 

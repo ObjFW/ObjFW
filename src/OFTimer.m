@@ -389,7 +389,7 @@
 
 - (OFDate*)fireDate
 {
-	return [[fireDate retain] autorelease];
+	OF_GETTER(fireDate, YES)
 }
 
 - (double)timeInterval

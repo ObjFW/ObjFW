@@ -97,6 +97,10 @@ typedef enum of_number_type_t {
 	of_number_type_t type;
 }
 
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly) of_number_type_t type;
+#endif
+
 /**
  * \brief Creates a new OFNumber with the specified BOOL.
  *

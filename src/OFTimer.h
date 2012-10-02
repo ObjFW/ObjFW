@@ -42,6 +42,10 @@ typedef void (^of_timer_block_t)(OFTimer*);
 	OFCondition *condition;
 }
 
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, retain) OFDate *fireDate;
+#endif
+
 /**
  * \brief Creates and schedules a new timer with the specified time interval.
  *
