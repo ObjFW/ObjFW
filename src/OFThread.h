@@ -131,16 +131,6 @@ typedef id (^of_thread_block_t)(id object);
  * \return A new, autoreleased thread
  */
 + threadWithBlock: (of_thread_block_t)block;
-
-/**
- * \brief Creates a new thread with the specified block and object.
- *
- * \param object An object which is passed for use in the main method or nil
- * \param block A block which is executed by the thread
- * \return A new, autoreleased thread
- */
-+ threadWithObject: (id)object
-	     block: (of_thread_block_t)block;
 #endif
 
 /**
@@ -231,17 +221,6 @@ typedef id (^of_thread_block_t)(id object);
  * \return An initialized OFThread.
  */
 - initWithBlock: (of_thread_block_t)block;
-
-/**
- * \brief Initializes an already allocated thread with the specified block and
- *	  object.
- *
- * \param block A block which is executed by the thread
- * \param object An object which is passed for use in the main method or nil
- * \return An initialized OFThread.
- */
-- initWithObject: (id)object
-	   block: (of_thread_block_t)block;
 #endif
 
 /**
