@@ -27,7 +27,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, assign) OFStreamSocket *socket;
+@property (readonly, retain, nonatomic) OFStreamSocket *socket;
 #endif
 
 /**

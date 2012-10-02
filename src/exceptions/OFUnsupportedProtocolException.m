@@ -74,6 +74,6 @@
 
 - (OFURL*)URL
 {
-	return URL;
+	OF_GETTER(URL, NO)
 }
 @end

@@ -68,6 +68,6 @@
 
 - (OFStream*)stream
 {
-	return stream;
+	OF_GETTER(stream, NO)
 }
 @end

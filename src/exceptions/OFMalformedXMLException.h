@@ -27,7 +27,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, assign) OFXMLParser *parser;
+@property (readonly, retain, nonatomic) OFXMLParser *parser;
 #endif
 
 /**

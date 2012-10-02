@@ -69,6 +69,6 @@
 
 - (OFHash*)hashObject
 {
-	return hashObject;
+	OF_GETTER(hashObject, NO)
 }
 @end

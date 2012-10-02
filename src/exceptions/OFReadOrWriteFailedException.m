@@ -68,7 +68,7 @@
 
 - (OFStream*)stream
 {
-	return stream;
+	OF_GETTER(stream, NO)
 }
 
 - (size_t)requestedLength

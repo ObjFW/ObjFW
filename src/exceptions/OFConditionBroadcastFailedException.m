@@ -68,6 +68,6 @@
 
 - (OFCondition*)condition
 {
-	return condition;
+	OF_GETTER(condition, NO)
 }
 @end

@@ -73,6 +73,6 @@
 
 - (OFString*)version
 {
-	return version;
+	OF_GETTER(version, NO)
 }
 @end

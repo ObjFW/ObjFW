@@ -81,6 +81,6 @@
 
 - (OFString*)path
 {
-	return path;
+	OF_GETTER(path, NO)
 }
 @end

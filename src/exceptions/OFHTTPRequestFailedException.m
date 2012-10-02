@@ -95,11 +95,11 @@
 
 - (OFHTTPRequest*)HTTPRequest
 {
-	return HTTPRequest;
+	OF_GETTER(HTTPRequest, NO)
 }
 
 - (OFHTTPRequestResult*)result
 {
-	return result;
+	OF_GETTER(result, NO)
 }
 @end

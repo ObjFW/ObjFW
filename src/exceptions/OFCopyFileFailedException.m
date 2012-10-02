@@ -86,11 +86,11 @@
 
 - (OFString*)sourcePath
 {
-	return sourcePath;
+	OF_GETTER(sourcePath, NO)
 }
 
 - (OFString*)destinationPath
 {
-	return destinationPath;
+	OF_GETTER(destinationPath, NO)
 }
 @end

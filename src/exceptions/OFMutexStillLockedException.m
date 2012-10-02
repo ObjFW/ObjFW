@@ -69,6 +69,6 @@
 
 - (OFMutex*)mutex
 {
-	return mutex;
+	OF_GETTER(mutex, NO)
 }
 @end

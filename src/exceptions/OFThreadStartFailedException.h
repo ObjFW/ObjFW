@@ -27,7 +27,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, assign) OFThread *thread;
+@property (readonly, retain, nonatomic) OFThread *thread;
 #endif
 
 /**

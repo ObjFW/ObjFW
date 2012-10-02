@@ -86,11 +86,11 @@
 
 - (OFString*)path
 {
-	return path;
+	OF_GETTER(path, NO)
 }
 
 - (OFString*)mode
 {
-	return mode;
+	OF_GETTER(mode, NO)
 }
 @end

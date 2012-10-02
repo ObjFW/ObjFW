@@ -100,11 +100,11 @@
 
 - (OFString*)namespace
 {
-	return ns;
+	OF_GETTER(ns, NO)
 }
 
 - (OFString*)prefix
 {
-	return prefix;
+	OF_GETTER(prefix, NO)
 }
 @end

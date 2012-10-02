@@ -79,7 +79,7 @@
 
 - (OFSeekableStream*)stream
 {
-	return stream;
+	OF_GETTER(stream, NO)
 }
 
 - (off_t)offset

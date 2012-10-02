@@ -27,7 +27,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, assign) OFMutex *mutex;
+@property (readonly, retain, nonatomic) OFMutex *mutex;
 #endif
 
 /**

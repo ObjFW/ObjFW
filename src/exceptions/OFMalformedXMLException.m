@@ -64,6 +64,6 @@
 
 - (OFXMLParser*)parser
 {
-	return parser;
+	OF_GETTER(parser, NO)
 }
 @end

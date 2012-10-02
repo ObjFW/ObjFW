@@ -25,6 +25,10 @@
 	id object;
 }
 
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, retain, nonatomic) id object;
+#endif
+
 /**
  * \param class_ The class of the object which caused the exception
  * \param object The object which was mutated during enumeration

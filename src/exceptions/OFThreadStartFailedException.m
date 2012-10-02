@@ -68,6 +68,6 @@
 
 - (OFThread*)thread
 {
-	return thread;
+	OF_GETTER(thread, NO)
 }
 @end

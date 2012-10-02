@@ -29,8 +29,8 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, assign) OFHTTPRequest *HTTPRequest;
-@property (readonly, assign) OFHTTPRequestResult *result;
+@property (readonly, retain, nonatomic) OFHTTPRequest *HTTPRequest;
+@property (readonly, retain, nonatomic) OFHTTPRequestResult *result;
 #endif
 
 /**

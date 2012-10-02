@@ -26,7 +26,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, assign) OFString *version;
+@property (readonly, copy, nonatomic) OFString *version;
 #endif
 
 /**

@@ -28,8 +28,8 @@
 }
 
 # ifdef OF_HAVE_PROPERTIES
-@property (readonly, assign) OFString *sourcePath;
-@property (readonly, assign) OFString *destinationPath;
+@property (readonly, copy, nonatomic) OFString *sourcePath;
+@property (readonly, copy, nonatomic) OFString *destinationPath;
 @property (readonly) int errNo;
 # endif
 

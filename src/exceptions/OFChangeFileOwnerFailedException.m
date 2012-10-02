@@ -101,17 +101,17 @@
 
 - (OFString*)path
 {
-	return path;
+	OF_GETTER(path, NO)
 }
 
 - (OFString*)owner
 {
-	return owner;
+	OF_GETTER(owner, NO)
 }
 
 - (OFString*)group
 {
-	return group;
+	OF_GETTER(group, NO)
 }
 @end
 #endif

@@ -69,6 +69,6 @@
 
 - (OFTCPSocket*)socket
 {
-	return socket;
+	OF_GETTER(socket, NO)
 }
 @end

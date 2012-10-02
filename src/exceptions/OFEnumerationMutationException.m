@@ -67,6 +67,6 @@
 
 - (id)object
 {
-	return object;
+	OF_GETTER(object, NO)
 }
 @end

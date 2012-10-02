@@ -28,7 +28,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, assign) OFTCPSocket *socket;
+@property (readonly, retain, nonatomic) OFTCPSocket *socket;
 @property (readonly) int errNo;
 #endif
 
