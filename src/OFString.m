@@ -914,7 +914,7 @@ static struct {
 	if ([result statusCode] != 200)
 		@throw [OFHTTPRequestFailedException
 		    exceptionWithClass: [request class]
-			   HTTPRequest: request
+			       request: request
 				result: result];
 
 	if (encoding == OF_STRING_ENCODING_AUTODETECT &&

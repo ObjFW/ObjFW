@@ -153,7 +153,7 @@ void _references_to_categories_of_OFDataArray(void)
 	if ([result statusCode] != 200)
 		@throw [OFHTTPRequestFailedException
 		    exceptionWithClass: [request class]
-			   HTTPRequest: request
+			       request: request
 				result: result];
 
 	self = [[result data] retain];

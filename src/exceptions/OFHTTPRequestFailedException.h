@@ -24,12 +24,12 @@
  */
 @interface OFHTTPRequestFailedException: OFException
 {
-	OFHTTPRequest *HTTPRequest;
+	OFHTTPRequest *request;
 	OFHTTPRequestResult *result;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain, nonatomic) OFHTTPRequest *HTTPRequest;
+@property (readonly, retain, nonatomic) OFHTTPRequest *request;
 @property (readonly, retain, nonatomic) OFHTTPRequestResult *result;
 #endif
 
@@ -40,7 +40,7 @@
  * \return A new HTTP request failed exception
  */
 + exceptionWithClass: (Class)class_
-	 HTTPRequest: (OFHTTPRequest*)request
+	     request: (OFHTTPRequest*)request
 	      result: (OFHTTPRequestResult*)result;
 
 /**
@@ -52,13 +52,13 @@
  * \return A new HTTP request failed exception
  */
 - initWithClass: (Class)class_
-    HTTPRequest: (OFHTTPRequest*)request
+	request: (OFHTTPRequest*)request
 	 result: (OFHTTPRequestResult*)result;
 
 /**
  * \return The HTTP request which failed
  */
-- (OFHTTPRequest*)HTTPRequest;
+- (OFHTTPRequest*)request;
 
 /**
  * \return The result of the failed HTTP request

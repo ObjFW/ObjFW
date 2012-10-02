@@ -26,11 +26,11 @@
 
 @implementation OFHTTPRequestFailedException
 + exceptionWithClass: (Class)class_
-	 HTTPRequest: (OFHTTPRequest*)request
+	     request: (OFHTTPRequest*)request
 	      result: (OFHTTPRequestResult*)result
 {
 	return [[[self alloc] initWithClass: class_
-				HTTPRequest: request
+				    request: request
 				     result: result] autorelease];
 }
 
@@ -43,12 +43,12 @@
 }
 
 - initWithClass: (Class)class_
-    HTTPRequest: (OFHTTPRequest*)request
+	request: (OFHTTPRequest*)request_
 	 result: (OFHTTPRequestResult*)result_
 {
 	self = [super initWithClass: class_];
 
-	HTTPRequest = [request retain];
+	request = [request_ retain];
 	result = [result_ retain];
 
 	return self;
@@ -56,7 +56,7 @@
 
 - (void)dealloc
 {
-	[HTTPRequest release];
+	[request release];
 	[result release];
 
 	[super dealloc];
@@ -70,7 +70,7 @@
 	if (description != nil)
 		return description;
 
-	switch ([HTTPRequest requestType]) {
+	switch ([request requestType]) {
 	case OF_HTTP_REQUEST_TYPE_GET:
 		type = "GET";
 		break;
@@ -86,16 +86,16 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"A HTTP %s request in class %@ with URL %@ failed with code %d",
-	    type, inClass, [HTTPRequest URL], [result statusCode]];
+	    type, inClass, [request URL], [result statusCode]];
 
 	objc_autoreleasePoolPop(pool);
 
 	return description;
 }
 
-- (OFHTTPRequest*)HTTPRequest
+- (OFHTTPRequest*)request
 {
-	OF_GETTER(HTTPRequest, NO)
+	OF_GETTER(request, NO)
 }
 
 - (OFHTTPRequestResult*)result

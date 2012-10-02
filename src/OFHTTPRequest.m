@@ -523,7 +523,7 @@ normalizeKey(OFString *key)
 		[result autorelease];
 		@throw [OFHTTPRequestFailedException
 		    exceptionWithClass: [self class]
-			   HTTPRequest: self
+			       request: self
 				result: result];
 	}
 
