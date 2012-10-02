@@ -17,7 +17,7 @@
 #import "OFObject.h"
 
 #ifdef OF_HAVE_BLOCKS
-typedef void (^of_thread_pool_block_t)(id object);
+typedef void (^of_thread_pool_block_t)(void);
 #endif
 
 @class OFMutableArray;
@@ -107,15 +107,6 @@ typedef void (^of_thread_pool_block_t)(id object);
  * \param block The block to execute
  */
 - (void)dispatchWithBlock: (of_thread_pool_block_t)block;
-
-/**
- * \brief Executes the specified block as soon as a thread is ready.
- *
- * \param block The block to execute
- * \param object The object to pass to the block
- */
-- (void)dispatchWithBlock: (of_thread_pool_block_t)block
-		   object: (id)object;
 #endif
 
 /**

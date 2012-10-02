@@ -37,15 +37,13 @@
        selector: (SEL)selector
 	 object: (id)object;
 #ifdef OF_HAVE_BLOCKS
-+ jobWithBlock: (of_thread_pool_block_t)block
-	object: (id)object;
++ jobWithBlock: (of_thread_pool_block_t)block;
 #endif
 - initWithTarget: (id)target
 	selector: (SEL)selector
 	  object: (id)object;
 #ifdef OF_HAVE_BLOCKS
-- initWithBlock: (of_thread_pool_block_t)block
-	 object: (id)object;
+- initWithBlock: (of_thread_pool_block_t)block;
 #endif
 - (void)perform;
 @end
@@ -62,11 +60,9 @@
 
 #ifdef OF_HAVE_BLOCKS
 + jobWithBlock: (of_thread_pool_block_t)block
-	object: (id)object
 {
 	return [[(OFThreadPoolJob*)[self alloc]
-	    initWithBlock: block
-		   object: object] autorelease];
+	    initWithBlock: block] autorelease];
 }
 #endif
 
@@ -90,13 +86,11 @@
 
 #ifdef OF_HAVE_BLOCKS
 - initWithBlock: (of_thread_pool_block_t)block_
-	 object: (id)object_
 {
 	self = [super init];
 
 	@try {
 		block = [block_ copy];
-		object = [object_ retain];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -121,7 +115,7 @@
 {
 #ifdef OF_HAVE_BLOCKS
 	if (block != NULL)
-		block(object);
+		block();
 	else
 #endif
 		[object performSelector: selector
@@ -373,15 +367,7 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)dispatchWithBlock: (of_thread_pool_block_t)block
 {
-	[self OF_dispatchJob: [OFThreadPoolJob jobWithBlock: block
-						     object: nil]];
-}
-
-- (void)dispatchWithBlock: (of_thread_pool_block_t)block
-		   object: (id)object
-{
-	[self OF_dispatchJob: [OFThreadPoolJob jobWithBlock: block
-						     object: object]];
+	[self OF_dispatchJob: [OFThreadPoolJob jobWithBlock: block]];
 }
 #endif
 
