@@ -44,24 +44,6 @@ AX_CHECK_COMPILER_FLAGS(-Wsemicolon-before-method-body,
 AX_CHECK_COMPILER_FLAGS(-Wno-objc-root-class,
 	[OBJCFLAGS="$OBJCFLAGS -Wno-objc-root-class"])
 
-AC_MSG_CHECKING(whether Objective C compiler supports fast enumeration)
-AC_TRY_COMPILE([
-	@protocol OFFastEnumeration
-	- (int)countByEnumeratingWithState: (void*)state
-				   objects: (id*)objects
-				     count: (int)count;
-	@end
-], [
-	id n = (id)0;
-	for (id i in n);
-], [
-	AC_DEFINE(OF_HAVE_FAST_ENUMERATION, 1,
-		[Compiler support for Fast Enumeration])
-	AC_MSG_RESULT(yes)
-], [
-	AC_MSG_RESULT(no)
-])
-
 AC_MSG_CHECKING(whether Objective C compiler supports properties)
 AC_TRY_COMPILE([
 	@interface Foo
@@ -76,30 +58,7 @@ AC_TRY_COMPILE([
 	[foo setBar: (id)0];
 	[foo bar];
 ], [
-	AC_DEFINE(OF_HAVE_PROPERTIES, 1, [Compiler support for properties])
 	AC_SUBST(PROPERTIESTESTS_M, "PropertiesTests.m")
-	AC_MSG_RESULT(yes)
-], [
-	AC_MSG_RESULT(no)
-])
-
-AC_MSG_CHECKING(whether Objective C compiler supports optional protocols)
-AC_TRY_COMPILE([
-	@protocol Proto
-	@optional
-	+ (void)foo;
-	@end
-
-	@interface Foo <Proto>
-	@end
-
-	@implementation Foo
-	@end
-], [
-	[Foo foo];
-], [
-	AC_DEFINE(OF_HAVE_OPTIONAL_PROTOCOLS, 1,
-		[Compiler support for optional protocols])
 	AC_MSG_RESULT(yes)
 ], [
 	AC_MSG_RESULT(no)
@@ -112,7 +71,6 @@ AC_TRY_COMPILE([], [
 	int (^foo)(int bar);
 	foo = ^ (int bar) { return 0; }
 ], [
-	AC_DEFINE(OF_HAVE_BLOCKS, 1, [Compiler support for blocks])
 	AC_SUBST(BLOCKS_FLAGS, "-fblocks")
 	AC_SUBST(OFBLOCKTESTS_M, "OFBlockTests.m")
 	AC_MSG_RESULT(yes)
