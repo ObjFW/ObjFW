@@ -37,6 +37,12 @@
 # import <objc/runtime.h>
 #endif
 
+#if defined(__GNUC__)
+# define restrict __restrict__
+#elif __STDC_VERSION__ < 199901L
+# define restrict
+#endif
+
 #ifndef __has_feature
 # define __has_feature(x) 0
 #endif

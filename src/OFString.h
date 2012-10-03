@@ -28,8 +28,6 @@
 #import "OFSerialization.h"
 #import "OFJSONRepresentation.h"
 
-#import "macros.h"
-
 @class OFConstantString;
 
 typedef uint32_t of_unichar_t;

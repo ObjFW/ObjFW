@@ -21,6 +21,8 @@
 
 #import "OFNotImplementedException.h"
 
+#import "common.h"
+
 @implementation OFUnboundNamespaceException
 + exceptionWithClass: (Class)class_
 	   namespace: (OFString*)ns

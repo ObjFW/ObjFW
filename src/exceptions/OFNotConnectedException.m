@@ -22,6 +22,8 @@
 
 #import "OFNotImplementedException.h"
 
+#import "common.h"
+
 @implementation OFNotConnectedException
 + exceptionWithClass: (Class)class_
 	      socket: (OFStreamSocket*)socket

@@ -36,6 +36,7 @@
 #import "OFUnboundNamespaceException.h"
 
 #import "autorelease.h"
+#import "macros.h"
 
 typedef void (*state_function)(id, SEL, const char*, size_t*, size_t*);
 static SEL selectors[OF_XMLPARSER_NUM_STATES];

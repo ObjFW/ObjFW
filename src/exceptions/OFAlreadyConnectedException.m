@@ -22,6 +22,8 @@
 
 #import "OFNotImplementedException.h"
 
+#import "common.h"
+
 @implementation OFAlreadyConnectedException
 + exceptionWithClass: (Class)class_
 	      socket: (OFTCPSocket*)socket

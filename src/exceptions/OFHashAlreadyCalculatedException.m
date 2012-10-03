@@ -22,6 +22,8 @@
 
 #import "OFNotImplementedException.h"
 
+#import "common.h"
+
 @implementation OFHashAlreadyCalculatedException
 + exceptionWithClass: (Class)class_
 		hash: (OFHash*)hash

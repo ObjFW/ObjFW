@@ -22,6 +22,8 @@
 
 #import "OFNotImplementedException.h"
 
+#import "common.h"
+
 @implementation OFMalformedXMLException
 + exceptionWithClass: (Class)class_
 	      parser: (OFXMLParser*)parser

@@ -22,6 +22,8 @@
 
 #import "OFNotImplementedException.h"
 
+#import "common.h"
+
 @implementation OFUnsupportedProtocolException
 + exceptionWithClass: (Class)class_
 		 URL: (OFURL*)url

@@ -21,6 +21,8 @@
 
 #import "OFNotImplementedException.h"
 
+#import "common.h"
+
 @implementation OFUnsupportedVersionException
 + exceptionWithClass: (Class)class_
 	     version: (OFString*)version

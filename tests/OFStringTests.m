@@ -30,6 +30,8 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
+#import "macros.h"
+
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFString";

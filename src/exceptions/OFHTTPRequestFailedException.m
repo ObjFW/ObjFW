@@ -23,6 +23,7 @@
 #import "OFNotImplementedException.h"
 
 #import "autorelease.h"
+#import "common.h"
 
 @implementation OFHTTPRequestFailedException
 + exceptionWithClass: (Class)class_

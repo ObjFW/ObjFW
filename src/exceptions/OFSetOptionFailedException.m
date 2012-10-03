@@ -22,6 +22,8 @@
 
 #import "OFNotImplementedException.h"
 
+#import "common.h"
+
 @implementation OFSetOptionFailedException
 + exceptionWithClass: (Class)class_
 	      stream: (OFStream*)stream

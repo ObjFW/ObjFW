@@ -16,6 +16,8 @@
 
 #include <string.h>
 
+#import "macros.h"
+
 #ifndef _WIN32
 #if !defined(HAVE_THREADSAFE_GETADDRINFO) && !defined(_PSP)
 # include <netdb.h>

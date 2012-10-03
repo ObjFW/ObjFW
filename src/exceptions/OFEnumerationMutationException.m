@@ -21,6 +21,8 @@
 
 #import "OFNotImplementedException.h"
 
+#import "common.h"
+
 @implementation OFEnumerationMutationException
 + exceptionWithClass: (Class)class_
 	      object: (id)object
