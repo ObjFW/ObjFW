@@ -428,6 +428,27 @@ void _references_to_categories_of_OFDataArray(void)
 	return hash;
 }
 
+- (OFString*)description
+{
+	OFMutableString *ret = [OFMutableString stringWithString: @"<"];
+	size_t i;
+
+	for (i = 0; i < count; i++) {
+		size_t j;
+
+		if (i > 0)
+			[ret appendString: @" "];
+
+		for (j = 0; j < itemSize; j++)
+			[ret appendFormat: @"%02x", data[i * itemSize + j]];
+	}
+
+	[ret appendString: @">"];
+
+	[ret makeImmutable];
+	return ret;
+}
+
 - (OFString*)stringByBase64Encoding
 {
 	return of_base64_encode(data, count * itemSize);
