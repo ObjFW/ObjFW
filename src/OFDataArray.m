@@ -29,7 +29,7 @@
 
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidArgumentException.h"
-#import "OFInvalidEncodingException.h"
+#import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
@@ -63,6 +63,12 @@ void _references_to_categories_of_OFDataArray(void)
 + dataArrayWithContentsOfURL: (OFURL*)URL
 {
 	return [[[self alloc] initWithContentsOfURL: URL] autorelease];
+}
+
++ dataArrayWithStringRepresentation: (OFString*)string
+{
+	return [[[self alloc]
+	    initWithStringRepresentation: string] autorelease];
 }
 
 + dataArrayWithBase64EncodedString: (OFString*)string
@@ -161,18 +167,77 @@ void _references_to_categories_of_OFDataArray(void)
 	return self;
 }
 
+- initWithStringRepresentation: (OFString*)string
+{
+	self = [super init];
+
+	@try {
+		const char *cString;
+		size_t i;
+
+		itemSize = 1;
+		count = [string UTF8StringLength];
+
+		if (count & 1)
+			@throw [OFInvalidFormatException
+			    exceptionWithClass: [self class]];
+
+		count >>= 1;
+		cString = [string UTF8String];
+		data = [self allocMemoryWithSize: count];
+
+		for (i = 0; i < count; i++) {
+			uint8_t c1 = cString[2 * i];
+			uint8_t c2 = cString[2 * i + 1];
+			uint8_t byte;
+
+			if (c1 >= '0' && c1 <= '9')
+				byte = (c1 - '0') << 4;
+			else if (c1 >= 'a' && c1 <= 'f')
+				byte = (c1 - 'a' + 10) << 4;
+			else if (c1 >= 'A' && c1 <= 'F')
+				byte = (c1 - 'A' + 10) << 4;
+			else
+				@throw [OFInvalidFormatException
+				    exceptionWithClass: [self class]];
+
+			if (c2 >= '0' && c2 <= '9')
+				byte |= c2 - '0';
+			else if (c2 >= 'a' && c2 <= 'f')
+				byte |= c2 - 'a' + 10;
+			else if (c2 >= 'A' && c2 <= 'F')
+				byte |= c2 - 'A' + 10;
+			else
+				@throw [OFInvalidFormatException
+				    exceptionWithClass: [self class]];
+
+			data[i] = byte;
+		}
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
 - initWithBase64EncodedString: (OFString*)string
 {
 	self = [super init];
 
-	itemSize = 1;
+	@try {
+		itemSize = 1;
 
-	if (!of_base64_decode(self,
-	    [string cStringWithEncoding: OF_STRING_ENCODING_ASCII],
-	    [string cStringLengthWithEncoding: OF_STRING_ENCODING_ASCII])) {
-		Class c = [self class];
+		if (!of_base64_decode(self, [string cStringWithEncoding:
+		    OF_STRING_ENCODING_ASCII], [string
+		    cStringLengthWithEncoding: OF_STRING_ENCODING_ASCII])) {
+			Class c = [self class];
+			[self release];
+			@throw [OFInvalidFormatException exceptionWithClass: c];
+		}
+	} @catch (id e) {
 		[self release];
-		@throw [OFInvalidEncodingException exceptionWithClass: c];
+		@throw e;
 	}
 
 	return self;
@@ -200,7 +265,7 @@ void _references_to_categories_of_OFDataArray(void)
 		    [stringValue cStringWithEncoding: OF_STRING_ENCODING_ASCII],
 		    [stringValue cStringLengthWithEncoding:
 		    OF_STRING_ENCODING_ASCII]))
-			@throw [OFInvalidEncodingException
+			@throw [OFInvalidFormatException
 			    exceptionWithClass: [self class]];
 
 		objc_autoreleasePoolPop(pool);
@@ -444,6 +509,19 @@ void _references_to_categories_of_OFDataArray(void)
 	}
 
 	[ret appendString: @">"];
+
+	[ret makeImmutable];
+	return ret;
+}
+
+- (OFString*)stringRepresentation
+{
+	OFMutableString *ret = [OFMutableString string];
+	size_t i, j;
+
+	for (i = 0; i < count; i++)
+		for (j = 0; j < itemSize; j++)
+			[ret appendFormat: @"%02x", data[i * itemSize + j]];
 
 	[ret makeImmutable];
 	return ret;

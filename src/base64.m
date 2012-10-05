@@ -40,7 +40,7 @@ const int8_t of_base64_decode_table[128] = {
 };
 
 OFString*
-of_base64_encode(const char *data, size_t length)
+of_base64_encode(const void *data, size_t length)
 {
 	OFMutableString *ret = [OFMutableString string];
 	uint8_t *buffer = (uint8_t*)data;

@@ -31,7 +31,7 @@
  */
 @interface OFDataArray: OFObject <OFCopying, OFComparing, OFSerialization>
 {
-	char   *data;
+	uint8_t *data;
 	size_t count;
 	size_t itemSize;
 }
@@ -77,6 +77,15 @@
 
 /**
  * \brief Creates a new OFDataArray with an item size of 1, containing the data
+ *	  of the string representation.
+ *
+ * \param string The string representation of the data
+ * \return A new autoreleased OFDataArray
+ */
++ dataArrayWithStringRepresentation: (OFString*)string;
+
+/**
+ * \brief Creates a new OFDataArray with an item size of 1, containing the data
  *	  of the Base64-encoded string.
  *
  * \param string The string with the Base64-encoded data
@@ -117,6 +126,15 @@
  * \return A new autoreleased OFDataArray
  */
 - initWithContentsOfURL: (OFURL*)URL;
+
+/**
+ * \brief Initializes an already allocated OFDataArray with an item size of 1,
+ *	  containing the data of the string representation.
+ *
+ * \param string The string representation of the data
+ * \return A new autoreleased OFDataArray
+ */
+- initWithStringRepresentation: (OFString*)string;
 
 /**
  * \brief Initializes an already allocated OFDataArray with an item size of 1,
@@ -234,6 +252,13 @@
  * \brief Removes all items.
  */
 - (void)removeAllItems;
+
+/**
+ * \brief Returns the string representation of the data array.
+ *
+ * \return The string representation of the data array.
+ */
+- (OFString*)stringRepresentation;
 
 /**
  * \brief Returns a string containing the data in Base64 encoding.
