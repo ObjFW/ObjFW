@@ -23,17 +23,17 @@
 const char*
 of_strptime(const char *buffer, const char *format, struct tm *tm)
 {
-	size_t i, j, bufferLength, formatLength;
 	enum {
 		SEARCH_CONVERSION_SPECIFIER,
 		IN_CONVERSION_SPECIFIER
 	} state = SEARCH_CONVERSION_SPECIFIER;
+	size_t i, j, buffer_len, format_len;
 
-	bufferLength = strlen(buffer);
-	formatLength = strlen(format);
+	buffer_len = strlen(buffer);
+	format_len = strlen(format);
 
-	for (i = j = 0; i < formatLength; i++) {
-		if (j >= bufferLength)
+	for (i = j = 0; i < format_len; i++) {
+		if (j >= buffer_len)
 			return NULL;
 
 		switch (state) {
@@ -46,7 +46,7 @@ of_strptime(const char *buffer, const char *format, struct tm *tm)
 			break;
 
 		case IN_CONVERSION_SPECIFIER:;
-			int k, maxLength, number = 0;
+			int k, max_len, number = 0;
 
 			switch (format[i]) {
 			case 'd':
@@ -56,25 +56,24 @@ of_strptime(const char *buffer, const char *format, struct tm *tm)
 			case 'M':
 			case 'S':
 			case 'y':
-				maxLength = 2;
+				max_len = 2;
 				break;
 			case 'Y':
-				maxLength = 4;
+				max_len = 4;
 				break;
 			case '%':
 			case 'n':
 			case 't':
-				maxLength = 0;
+				max_len = 0;
 				break;
 			default:
 				return NULL;
 			}
 
-			if (maxLength > 0 &&
-			    (buffer[j] < '0' || buffer[j] > '9'))
+			if (max_len > 0 && (buffer[j] < '0' || buffer[j] > '9'))
 				return NULL;
 
-			for (k = 0; k < maxLength && j < bufferLength &&
+			for (k = 0; k < max_len && j < buffer_len &&
 			    buffer[j] >= '0' && buffer[j] <= '9'; k++, j++) {
 				number *= 10;
 				number += buffer[j] - '0';

@@ -37,7 +37,7 @@ struct {
 	const char *name;
 	long version, info, instance_size;
 	struct ivar_list *ivars;
-	struct method_list **methodLists;
+	struct method_list **method_lists;
 	struct cache *cache;
 	struct protocol_list *protocols;
 	const char *ivar_layout;

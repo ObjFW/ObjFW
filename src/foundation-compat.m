@@ -16,12 +16,17 @@
 
 /*
  * This file replaces NSAutoreleasePool with OFAutoreleasePool when it is
- * linked. This is done so there is no conflict because OFBlocks are used
- * (blocks are OFBlocks as soon as ObjFW is linked). An application expecting
- * an NSBlock, but getting an OFBlock because ObjFW is linked, would fail to
- * autorelease the block otherwise, as the block would be in an
- * OFAutoreleasePool. By replacing NSAutoreleasePool with OFAutoreleasePool,
- * the application will still properly free the autoreleased block.
+ * linked.
+ * This is done so there is no conflict because OFBlocks are used (blocks are
+ * OFBlocks as soon as ObjFW is linked). An application expecting an NSBlock,
+ * but getting an OFBlock because ObjFW is linked, would fail to autorelease
+ * the block otherwise, as the block would be in an OFAutoreleasePool. By
+ * replacing NSAutoreleasePool with OFAutoreleasePool, the application will
+ * still properly free the autoreleased block.
+ * With autorelease pools now being part of the runtime, this is not really
+ * necessary anymore, as both, ObjFW and Foundation, use the runtime's pools if
+ * available. However, this is kept for compatibility with older versions of
+ * OS X, which don't ship with a runtime with autorelease pools.
  */
 
 #include "config.h"

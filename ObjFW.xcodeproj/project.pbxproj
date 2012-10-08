@@ -504,7 +504,6 @@
 		4B45355213DCFE1E0037AB4D /* OFCountedSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCountedSet.m; path = src/OFCountedSet.m; sourceTree = "<group>"; };
 		4B48B95214DC23B100546D39 /* OFXMLProcessingInstructions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFXMLProcessingInstructions.h; path = src/OFXMLProcessingInstructions.h; sourceTree = "<group>"; };
 		4B48B95314DC23B100546D39 /* OFXMLProcessingInstructions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLProcessingInstructions.m; path = src/OFXMLProcessingInstructions.m; sourceTree = "<group>"; };
-		4B4986DF1101F64500A2CFDA /* objc_properties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = objc_properties.m; path = src/objc_properties.m; sourceTree = "<group>"; };
 		4B49EA65143B39CE0005BBC6 /* OFXMLNodeTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLNodeTests.m; path = tests/OFXMLNodeTests.m; sourceTree = "<group>"; };
 		4B49EA67143B3A090005BBC6 /* OFXMLCDATA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFXMLCDATA.h; path = src/OFXMLCDATA.h; sourceTree = "<group>"; };
 		4B49EA68143B3A090005BBC6 /* OFXMLCDATA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLCDATA.m; path = src/OFXMLCDATA.m; sourceTree = "<group>"; };
@@ -542,7 +541,6 @@
 		4B64D6ED1425381E007BDFB1 /* OFStreamObserver_select.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamObserver_select.h; path = src/OFStreamObserver_select.h; sourceTree = "<group>"; };
 		4B64D6EE1425381E007BDFB1 /* OFStreamObserver_select.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamObserver_select.m; path = src/OFStreamObserver_select.m; sourceTree = "<group>"; };
 		4B6799561099E7C50041064A /* asprintf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = asprintf.h; path = src/asprintf.h; sourceTree = "<group>"; };
-		4B6799581099E7C50041064A /* objc_sync.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = objc_sync.m; path = src/objc_sync.m; sourceTree = "<group>"; };
 		4B67995A1099E7C50041064A /* OFArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFArray.h; path = src/OFArray.h; sourceTree = "<group>"; };
 		4B67995B1099E7C50041064A /* OFArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFArray.m; path = src/OFArray.m; sourceTree = "<group>"; };
 		4B67995C1099E7C50041064A /* OFAutoreleasePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFAutoreleasePool.h; path = src/OFAutoreleasePool.h; sourceTree = "<group>"; };
@@ -1072,8 +1070,6 @@
 				4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */,
 				4BE17AD812FD744C002CEB0B /* foundation-compat.m */,
 				4BBA36C511406AB700CBA3AC /* macros.h */,
-				4B4986DF1101F64500A2CFDA /* objc_properties.m */,
-				4B6799581099E7C50041064A /* objc_sync.m */,
 				4BF1BCBF11C9663F0025511F /* objfw-defs.h.in */,
 				4BB50DCF12F863C700C9393F /* of_asprintf.h */,
 				4BB50DD012F863C700C9393F /* of_asprintf.m */,
@@ -1384,7 +1380,7 @@
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0440;
+				LastUpgradeCheck = 0450;
 			};
 			buildConfigurationList = 1DEB919308733D9F0010E9CD /* Build configuration list for PBXProject "ObjFW" */;
 			compatibilityVersion = "Xcode 3.2";

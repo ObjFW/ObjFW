@@ -36,12 +36,12 @@
 
 struct context {
 	const char *format;
-	size_t formatLen;
+	size_t format_len;
 	char subformat[MAX_SUBFORMAT_LEN + 1];
-	size_t subformatLen;
+	size_t subformat_len;
 	va_list arguments;
 	char *buffer;
-	size_t bufferLen;
+	size_t buffer_len;
 	size_t i, last;
 	enum {
 		STATE_STRING,
@@ -60,52 +60,53 @@ struct context {
 		LENGTH_MODIFIER_Z,
 		LENGTH_MODIFIER_T,
 		LENGTH_MODIFIER_CAPITAL_L
-	} lengthModifier;
+	} length_modifier;
 };
 
 static bool
-appendString(struct context *ctx, const char *append, size_t appendLen)
+append_string(struct context *ctx, const char *append, size_t append_len)
 {
-	char *nBuf;
+	char *new_buf;
 
-	if (appendLen == 0)
+	if (append_len == 0)
 		return true;
 
-	if ((nBuf = realloc(ctx->buffer,
-	    ctx->bufferLen + appendLen + 1)) == NULL)
+	if ((new_buf = realloc(ctx->buffer,
+	    ctx->buffer_len + append_len + 1)) == NULL)
 		return false;
 
-	memcpy(nBuf + ctx->bufferLen, append, appendLen);
+	memcpy(new_buf + ctx->buffer_len, append, append_len);
 
-	ctx->buffer = nBuf;
-	ctx->bufferLen += appendLen;
+	ctx->buffer = new_buf;
+	ctx->buffer_len += append_len;
 
 	return true;
 }
 
 static bool
-appendSubformat(struct context *ctx, const char *subformat, size_t subformatLen)
+append_subformat(struct context *ctx, const char *subformat,
+    size_t subformat_len)
 {
-	if (ctx->subformatLen + subformatLen > MAX_SUBFORMAT_LEN)
+	if (ctx->subformat_len + subformat_len > MAX_SUBFORMAT_LEN)
 		return false;
 
-	memcpy(ctx->subformat + ctx->subformatLen, subformat, subformatLen);
-	ctx->subformatLen += subformatLen;
-	ctx->subformat[ctx->subformatLen] = 0;
+	memcpy(ctx->subformat + ctx->subformat_len, subformat, subformat_len);
+	ctx->subformat_len += subformat_len;
+	ctx->subformat[ctx->subformat_len] = 0;
 
 	return true;
 }
 
 static bool
-stringState(struct context *ctx)
+state_string(struct context *ctx)
 {
 	if (ctx->format[ctx->i] == '%') {
 		if (ctx->i > 0)
-			if (!appendString(ctx, ctx->format + ctx->last,
+			if (!append_string(ctx, ctx->format + ctx->last,
 			    ctx->i - ctx->last))
 				return false;
 
-		if (!appendSubformat(ctx, ctx->format + ctx->i, 1))
+		if (!append_subformat(ctx, ctx->format + ctx->i, 1))
 			return false;
 
 		ctx->last = ctx->i + 1;
@@ -116,7 +117,7 @@ stringState(struct context *ctx)
 }
 
 static bool
-formatFlagsState(struct context *ctx)
+state_format_flags(struct context *ctx)
 {
 	switch (ctx->format[ctx->i]) {
 	case '-':
@@ -124,7 +125,7 @@ formatFlagsState(struct context *ctx)
 	case ' ':
 	case '#':
 	case '0':
-		if (!appendSubformat(ctx, ctx->format + ctx->i, 1))
+		if (!append_subformat(ctx, ctx->format + ctx->i, 1))
 			return false;
 
 		break;
@@ -139,11 +140,11 @@ formatFlagsState(struct context *ctx)
 }
 
 static bool
-formatFieldWidthState(struct context *ctx)
+state_format_field_width(struct context *ctx)
 {
 	if ((ctx->format[ctx->i] >= '0' && ctx->format[ctx->i] <= '9') ||
 	    ctx->format[ctx->i] == '*' || ctx->format[ctx->i] == '.') {
-		if (!appendSubformat(ctx, ctx->format + ctx->i, 1))
+		if (!append_subformat(ctx, ctx->format + ctx->i, 1))
 			return false;
 	} else {
 		ctx->state = STATE_FORMAT_LENGTH_MODIFIER;
@@ -154,88 +155,88 @@ formatFieldWidthState(struct context *ctx)
 }
 
 static bool
-formatLengthModifierState(struct context *ctx)
+state_format_length_modifier(struct context *ctx)
 {
 	/* Only one allowed */
 	switch (ctx->format[ctx->i]) {
 	case 'h': /* and also hh */
-		if (ctx->formatLen > ctx->i + 1 &&
+		if (ctx->format_len > ctx->i + 1 &&
 		    ctx->format[ctx->i + 1] == 'h') {
-			if (!appendSubformat(ctx, ctx->format + ctx->i, 2))
+			if (!append_subformat(ctx, ctx->format + ctx->i, 2))
 				return false;
 
 			ctx->i++;
-			ctx->lengthModifier = LENGTH_MODIFIER_HH;
+			ctx->length_modifier = LENGTH_MODIFIER_HH;
 		} else {
-			if (!appendSubformat(ctx, ctx->format + ctx->i, 1))
+			if (!append_subformat(ctx, ctx->format + ctx->i, 1))
 				return false;
 
-			ctx->lengthModifier = LENGTH_MODIFIER_H;
+			ctx->length_modifier = LENGTH_MODIFIER_H;
 		}
 
 		break;
 	case 'l': /* and also ll */
-		if (ctx->formatLen > ctx->i + 1 &&
+		if (ctx->format_len > ctx->i + 1 &&
 		    ctx->format[ctx->i + 1] == 'l') {
 #ifndef _WIN32
-			if (!appendSubformat(ctx, ctx->format + ctx->i, 2))
+			if (!append_subformat(ctx, ctx->format + ctx->i, 2))
 				return false;
 #else
-			if (!appendSubformat(ctx, "I64", 3))
+			if (!append_subformat(ctx, "I64", 3))
 				return false;
 #endif
 
 			ctx->i++;
-			ctx->lengthModifier = LENGTH_MODIFIER_LL;
+			ctx->length_modifier = LENGTH_MODIFIER_LL;
 		} else {
-			if (!appendSubformat(ctx, ctx->format + ctx->i, 1))
+			if (!append_subformat(ctx, ctx->format + ctx->i, 1))
 				return false;
 
-			ctx->lengthModifier = LENGTH_MODIFIER_L;
+			ctx->length_modifier = LENGTH_MODIFIER_L;
 		}
 
 		break;
 	case 'j':
 #ifndef _WIN32
-		if (!appendSubformat(ctx, ctx->format + ctx->i, 1))
+		if (!append_subformat(ctx, ctx->format + ctx->i, 1))
 			return false;
 #else
-		if (!appendSubformat(ctx, "I64", 3))
+		if (!append_subformat(ctx, "I64", 3))
 			return false;
 #endif
 
-		ctx->lengthModifier = LENGTH_MODIFIER_J;
+		ctx->length_modifier = LENGTH_MODIFIER_J;
 
 		break;
 	case 'z':
 #ifndef _WIN32
-		if (!appendSubformat(ctx, ctx->format + ctx->i, 1))
+		if (!append_subformat(ctx, ctx->format + ctx->i, 1))
 			return false;
 #else
-		if (!appendSubformat(ctx, "I", 1))
+		if (!append_subformat(ctx, "I", 1))
 			return false;
 #endif
 
-		ctx->lengthModifier = LENGTH_MODIFIER_Z;
+		ctx->length_modifier = LENGTH_MODIFIER_Z;
 
 		break;
 	case 't':
 #ifndef _WIN32
-		if (!appendSubformat(ctx, ctx->format + ctx->i, 1))
+		if (!append_subformat(ctx, ctx->format + ctx->i, 1))
 			return false;
 #else
-		if (!appendSubformat(ctx, "I", 1))
+		if (!append_subformat(ctx, "I", 1))
 			return false;
 #endif
 
-		ctx->lengthModifier = LENGTH_MODIFIER_T;
+		ctx->length_modifier = LENGTH_MODIFIER_T;
 
 		break;
 	case 'L':
-		if (!appendSubformat(ctx, ctx->format + ctx->i, 1))
+		if (!append_subformat(ctx, ctx->format + ctx->i, 1))
 			return false;
 
-		ctx->lengthModifier = LENGTH_MODIFIER_CAPITAL_L;
+		ctx->length_modifier = LENGTH_MODIFIER_CAPITAL_L;
 
 		break;
 #ifdef _WIN32
@@ -243,7 +244,7 @@ formatLengthModifierState(struct context *ctx)
 		if (ctx->formatLen > ctx->i + 2 &&
 		    ctx->format[ctx->i + 1] == '6' &&
 		    ctx->format[ctx->i + 2] == '4') {
-			if (!appendSubformat(ctx, ctx->format + ctx->i, 3))
+			if (!append_subformat(ctx, ctx->format + ctx->i, 3))
 				return false;
 
 			ctx->i += 2;
@@ -255,7 +256,7 @@ formatLengthModifierState(struct context *ctx)
 #endif
 #ifdef OF_IOS
 	case 'q': /* iOS uses this for PRI?64 */
-		if (!appendSubformat(ctx, ctx->format + ctx->i, 1))
+		if (!append_subformat(ctx, ctx->format + ctx->i, 1))
 			return false;
 
 		ctx->lengthModifier = LENGTH_MODIFIER_LL;
@@ -273,17 +274,17 @@ formatLengthModifierState(struct context *ctx)
 }
 
 static bool
-formatConversionSpecifierState(struct context *ctx)
+state_format_conversion_specifier(struct context *ctx)
 {
 	char *tmp = NULL;
-	int tmpLen = 0;
+	int tmp_len = 0;
 
-	if (!appendSubformat(ctx, ctx->format + ctx->i, 1))
+	if (!append_subformat(ctx, ctx->format + ctx->i, 1))
 		return false;
 
 	switch (ctx->format[ctx->i]) {
 	case '@':
-		ctx->subformat[ctx->subformatLen - 1] = 's';
+		ctx->subformat[ctx->subformat_len - 1] = 's';
 
 		@try {
 			id object;
@@ -291,12 +292,12 @@ formatConversionSpecifierState(struct context *ctx)
 			if ((object = va_arg(ctx->arguments, id)) != nil) {
 				void *pool = objc_autoreleasePoolPush();
 
-				tmpLen = asprintf(&tmp, ctx->subformat,
+				tmp_len = asprintf(&tmp, ctx->subformat,
 				    [[object description] UTF8String]);
 
 				objc_autoreleasePoolPop(pool);
 			} else
-				tmpLen = asprintf(&tmp, ctx->subformat,
+				tmp_len = asprintf(&tmp, ctx->subformat,
 				    "(nil)");
 		} @catch (id e) {
 			free(ctx->buffer);
@@ -306,31 +307,31 @@ formatConversionSpecifierState(struct context *ctx)
 		break;
 	case 'd':
 	case 'i':
-		switch (ctx->lengthModifier) {
+		switch (ctx->length_modifier) {
 		case LENGTH_MODIFIER_NONE:
 		case LENGTH_MODIFIER_HH:
 		case LENGTH_MODIFIER_H:
-			tmpLen = asprintf(&tmp, ctx->subformat,
+			tmp_len = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, int));
 			break;
 		case LENGTH_MODIFIER_L:
-			tmpLen = asprintf(&tmp, ctx->subformat,
+			tmp_len = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, long));
 			break;
 		case LENGTH_MODIFIER_LL:
-			tmpLen = asprintf(&tmp, ctx->subformat,
+			tmp_len = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, long long));
 			break;
 		case LENGTH_MODIFIER_J:
-			tmpLen = asprintf(&tmp, ctx->subformat,
+			tmp_len = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, intmax_t));
 			break;
 		case LENGTH_MODIFIER_Z:
-			tmpLen = asprintf(&tmp, ctx->subformat,
+			tmp_len = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, ssize_t));
 			break;
 		case LENGTH_MODIFIER_T:
-			tmpLen = asprintf(&tmp, ctx->subformat,
+			tmp_len = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, ptrdiff_t));
 			break;
 		default:
@@ -342,31 +343,31 @@ formatConversionSpecifierState(struct context *ctx)
 	case 'u':
 	case 'x':
 	case 'X':
-		switch (ctx->lengthModifier) {
+		switch (ctx->length_modifier) {
 		case LENGTH_MODIFIER_NONE:
 		case LENGTH_MODIFIER_HH:
 		case LENGTH_MODIFIER_H:
-			tmpLen = asprintf(&tmp, ctx->subformat,
+			tmp_len = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, unsigned int));
 			break;
 		case LENGTH_MODIFIER_L:
-			tmpLen = asprintf(&tmp, ctx->subformat,
+			tmp_len = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, unsigned long));
 			break;
 		case LENGTH_MODIFIER_LL:
-			tmpLen = asprintf(&tmp, ctx->subformat,
+			tmp_len = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, unsigned long long));
 			break;
 		case LENGTH_MODIFIER_J:
-			tmpLen = asprintf(&tmp, ctx->subformat,
+			tmp_len = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, uintmax_t));
 			break;
 		case LENGTH_MODIFIER_Z:
-			tmpLen = asprintf(&tmp, ctx->subformat,
+			tmp_len = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, size_t));
 			break;
 		case LENGTH_MODIFIER_T:
-			tmpLen = asprintf(&tmp, ctx->subformat,
+			tmp_len = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, ptrdiff_t));
 			break;
 		default:
@@ -382,14 +383,14 @@ formatConversionSpecifierState(struct context *ctx)
 	case 'G':
 	case 'a':
 	case 'A':
-		switch (ctx->lengthModifier) {
+		switch (ctx->length_modifier) {
 		case LENGTH_MODIFIER_NONE:
 		case LENGTH_MODIFIER_L:
-			tmpLen = asprintf(&tmp, ctx->subformat,
+			tmp_len = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, double));
 			break;
 		case LENGTH_MODIFIER_CAPITAL_L:
-			tmpLen = asprintf(&tmp, ctx->subformat,
+			tmp_len = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, long double));
 			break;
 		default:
@@ -398,17 +399,17 @@ formatConversionSpecifierState(struct context *ctx)
 
 		break;
 	case 'c':
-		switch (ctx->lengthModifier) {
+		switch (ctx->length_modifier) {
 		case LENGTH_MODIFIER_NONE:
-			tmpLen = asprintf(&tmp, ctx->subformat,
+			tmp_len = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, int));
 			break;
 		case LENGTH_MODIFIER_L:
 #if WINT_MAX >= INT_MAX
-			tmpLen = asprintf(&tmp, ctx->subformat,
+			tmp_len = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, wint_t));
 #else
-			tmpLen = asprintf(&tmp, ctx->subformat,
+			tmp_len = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, int));
 #endif
 			break;
@@ -418,13 +419,13 @@ formatConversionSpecifierState(struct context *ctx)
 
 		break;
 	case 's':
-		switch (ctx->lengthModifier) {
+		switch (ctx->length_modifier) {
 		case LENGTH_MODIFIER_NONE:
-			tmpLen = asprintf(&tmp, ctx->subformat,
+			tmp_len = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, const char*));
 			break;
 		case LENGTH_MODIFIER_L:
-			tmpLen = asprintf(&tmp, ctx->subformat,
+			tmp_len = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, const wchar_t*));
 			break;
 		default:
@@ -433,42 +434,46 @@ formatConversionSpecifierState(struct context *ctx)
 
 		break;
 	case 'p':
-		if (ctx->lengthModifier != LENGTH_MODIFIER_NONE)
+		if (ctx->length_modifier != LENGTH_MODIFIER_NONE)
 			return false;
 
-		tmpLen = asprintf(&tmp, ctx->subformat,
+		tmp_len = asprintf(&tmp, ctx->subformat,
 		    va_arg(ctx->arguments, void*));
 
 		break;
 	case 'n':
-		switch (ctx->lengthModifier) {
+		switch (ctx->length_modifier) {
 		case LENGTH_MODIFIER_NONE:
-			*va_arg(ctx->arguments, int*) = (int)ctx->bufferLen;
+			*va_arg(ctx->arguments, int*) =
+			    (int)ctx->buffer_len;
 			break;
 		case LENGTH_MODIFIER_HH:
 			*va_arg(ctx->arguments, signed char*) =
-			    (signed char)ctx->bufferLen;
+			    (signed char)ctx->buffer_len;
 			break;
 		case LENGTH_MODIFIER_H:
-			*va_arg(ctx->arguments, short*) = (short)ctx->bufferLen;
+			*va_arg(ctx->arguments, short*) =
+			    (short)ctx->buffer_len;
 			break;
 		case LENGTH_MODIFIER_L:
-			*va_arg(ctx->arguments, long*) = (long)ctx->bufferLen;
+			*va_arg(ctx->arguments, long*) =
+			    (long)ctx->buffer_len;
 			break;
 		case LENGTH_MODIFIER_LL:
 			*va_arg(ctx->arguments, long long*) =
-			    (long long)ctx->bufferLen;
+			    (long long)ctx->buffer_len;
 			break;
 		case LENGTH_MODIFIER_J:
 			*va_arg(ctx->arguments, intmax_t*) =
-			    (intmax_t)ctx->bufferLen;
+			    (intmax_t)ctx->buffer_len;
 			break;
 		case LENGTH_MODIFIER_Z:
-			*va_arg(ctx->arguments, size_t*) = ctx->bufferLen;
+			*va_arg(ctx->arguments, size_t*) =
+			    (size_t)ctx->buffer_len;
 			break;
 		case LENGTH_MODIFIER_T:
 			*va_arg(ctx->arguments, ptrdiff_t*) =
-			    (ptrdiff_t)ctx->bufferLen;
+			    (ptrdiff_t)ctx->buffer_len;
 			break;
 		default:
 			return false;
@@ -476,10 +481,10 @@ formatConversionSpecifierState(struct context *ctx)
 
 		break;
 	case '%':
-		if (ctx->lengthModifier != LENGTH_MODIFIER_NONE)
+		if (ctx->length_modifier != LENGTH_MODIFIER_NONE)
 			return false;
 
-		if (!appendString(ctx, "%", 1))
+		if (!append_string(ctx, "%", 1))
 			return false;
 
 		break;
@@ -487,11 +492,11 @@ formatConversionSpecifierState(struct context *ctx)
 		return false;
 	}
 
-	if (tmpLen == -1)
+	if (tmp_len == -1)
 		return false;
 
 	if (tmp != NULL) {
-		if (!appendString(ctx, tmp, tmpLen)) {
+		if (!append_string(ctx, tmp, tmp_len)) {
 			free(tmp);
 			return false;
 		}
@@ -500,8 +505,8 @@ formatConversionSpecifierState(struct context *ctx)
 	}
 
 	memset(ctx->subformat, 0, MAX_SUBFORMAT_LEN);
-	ctx->subformatLen = 0;
-	ctx->lengthModifier = LENGTH_MODIFIER_NONE;
+	ctx->subformat_len = 0;
+	ctx->length_modifier = LENGTH_MODIFIER_NONE;
 
 	ctx->last = ctx->i + 1;
 	ctx->state = STATE_STRING;
@@ -510,32 +515,32 @@ formatConversionSpecifierState(struct context *ctx)
 }
 
 static bool (*states[])(struct context*) = {
-	stringState,
-	formatFlagsState,
-	formatFieldWidthState,
-	formatLengthModifierState,
-	formatConversionSpecifierState
+	state_string,
+	state_format_flags,
+	state_format_field_width,
+	state_format_length_modifier,
+	state_format_conversion_specifier
 };
 
 int
-of_vasprintf(char **UTF8String, const char *format, va_list arguments)
+of_vasprintf(char **string, const char *format, va_list arguments)
 {
 	struct context ctx;
 
 	ctx.format = format;
-	ctx.formatLen = strlen(format);
+	ctx.format_len = strlen(format);
 	memset(ctx.subformat, 0, MAX_SUBFORMAT_LEN + 1);
-	ctx.subformatLen = 0;
+	ctx.subformat_len = 0;
 	va_copy(ctx.arguments, arguments);
-	ctx.bufferLen = 0;
+	ctx.buffer_len = 0;
 	ctx.last = 0;
 	ctx.state = STATE_STRING;
-	ctx.lengthModifier = LENGTH_MODIFIER_NONE;
+	ctx.length_modifier = LENGTH_MODIFIER_NONE;
 
 	if ((ctx.buffer = malloc(1)) == NULL)
 		return -1;
 
-	for (ctx.i = 0; ctx.i < ctx.formatLen; ctx.i++) {
+	for (ctx.i = 0; ctx.i < ctx.format_len; ctx.i++) {
 		if (!states[ctx.state](&ctx)) {
 			free(ctx.buffer);
 			return -1;
@@ -547,26 +552,26 @@ of_vasprintf(char **UTF8String, const char *format, va_list arguments)
 		return -1;
 	}
 
-	if (!appendString(&ctx, ctx.format + ctx.last,
-	    ctx.formatLen - ctx.last)) {
+	if (!append_string(&ctx, ctx.format + ctx.last,
+	    ctx.format_len - ctx.last)) {
 		free(ctx.buffer);
 		return -1;
 	}
 
-	ctx.buffer[ctx.bufferLen] = 0;
+	ctx.buffer[ctx.buffer_len] = 0;
 
-	*UTF8String = ctx.buffer;
-	return (ctx.bufferLen <= INT_MAX ? (int)ctx.bufferLen : -1);
+	*string = ctx.buffer;
+	return (ctx.buffer_len <= INT_MAX ? (int)ctx.buffer_len : -1);
 }
 
 int
-of_asprintf(char **UTF8String, const char *format, ...)
+of_asprintf(char **string, const char *format, ...)
 {
 	va_list arguments;
 	int ret;
 
 	va_start(arguments, format);
-	ret = of_vasprintf(UTF8String, format, arguments);
+	ret = of_vasprintf(string, format, arguments);
 	va_end(arguments);
 
 	return ret;
