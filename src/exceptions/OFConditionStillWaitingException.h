@@ -36,8 +36,8 @@
  * \param condition The condition for which is still being waited
  * \return A new condition still waiting exception
  */
-+ exceptionWithClass: (Class)class_
-	   condition: (OFCondition*)condition;
++ (instancetype)exceptionWithClass: (Class)class_
+			 condition: (OFCondition*)condition;
 
 /**
  * Initializes an already allocated condition still waiting exception.

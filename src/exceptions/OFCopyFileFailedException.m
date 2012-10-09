@@ -24,9 +24,9 @@
 #import "common.h"
 
 @implementation OFCopyFileFailedException
-+ exceptionWithClass: (Class)class_
-	  sourcePath: (OFString*)source
-     destinationPath: (OFString*)destination
++ (instancetype)exceptionWithClass: (Class)class_
+			sourcePath: (OFString*)source
+		   destinationPath: (OFString*)destination
 {
 	return [[[self alloc] initWithClass: class_
 				 sourcePath: source

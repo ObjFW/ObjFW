@@ -514,33 +514,33 @@ static struct {
 	return [super alloc];
 }
 
-+ string
++ (instancetype)string
 {
 	return [[[self alloc] init] autorelease];
 }
 
-+ stringWithUTF8String: (const char*)UTF8String
++ (instancetype)stringWithUTF8String: (const char*)UTF8String
 {
 	return [[[self alloc] initWithUTF8String: UTF8String] autorelease];
 }
 
-+ stringWithUTF8String: (const char*)UTF8String
-		length: (size_t)UTF8StringLength
++ (instancetype)stringWithUTF8String: (const char*)UTF8String
+			      length: (size_t)UTF8StringLength
 {
 	return [[[self alloc]
 	    initWithUTF8String: UTF8String
 			length: UTF8StringLength] autorelease];
 }
 
-+ stringWithCString: (const char*)cString
-	   encoding: (of_string_encoding_t)encoding
++ (instancetype)stringWithCString: (const char*)cString
+			 encoding: (of_string_encoding_t)encoding
 {
 	return [[[self alloc] initWithCString: cString
 				     encoding: encoding] autorelease];
 }
 
-+ stringWithCString: (const char*)cString
-	   encoding: (of_string_encoding_t)encoding
++ (instancetype)stringWithCString: (const char*)cString
+			 encoding: (of_string_encoding_t)encoding
 	     length: (size_t)cStringLength
 {
 	return [[[self alloc] initWithCString: cString
@@ -548,68 +548,68 @@ static struct {
 				       length: cStringLength] autorelease];
 }
 
-+ stringWithString: (OFString*)string
++ (instancetype)stringWithString: (OFString*)string
 {
 	return [[[self alloc] initWithString: string] autorelease];
 }
 
-+ stringWithUnicodeString: (const of_unichar_t*)string
++ (instancetype)stringWithUnicodeString: (const of_unichar_t*)string
 {
 	return [[[self alloc] initWithUnicodeString: string] autorelease];
 }
 
-+ stringWithUnicodeString: (const of_unichar_t*)string
-		byteOrder: (of_endianess_t)byteOrder
++ (instancetype)stringWithUnicodeString: (const of_unichar_t*)string
+			      byteOrder: (of_endianess_t)byteOrder
 {
 	return [[[self alloc] initWithUnicodeString: string
 					  byteOrder: byteOrder] autorelease];
 }
 
-+ stringWithUnicodeString: (const of_unichar_t*)string
-		   length: (size_t)length
++ (instancetype)stringWithUnicodeString: (const of_unichar_t*)string
+				 length: (size_t)length
 {
 	return [[[self alloc] initWithUnicodeString: string
 					     length: length] autorelease];
 }
 
-+ stringWithUnicodeString: (const of_unichar_t*)string
-		byteOrder: (of_endianess_t)byteOrder
-		   length: (size_t)length
++ (instancetype)stringWithUnicodeString: (const of_unichar_t*)string
+			      byteOrder: (of_endianess_t)byteOrder
+				 length: (size_t)length
 {
 	return [[[self alloc] initWithUnicodeString: string
 					  byteOrder: byteOrder
 					     length: length] autorelease];
 }
 
-+ stringWithUTF16String: (const uint16_t*)string
++ (instancetype)stringWithUTF16String: (const uint16_t*)string
 {
 	return [[[self alloc] initWithUTF16String: string] autorelease];
 }
 
-+ stringWithUTF16String: (const uint16_t*)string
-	      byteOrder: (of_endianess_t)byteOrder
++ (instancetype)stringWithUTF16String: (const uint16_t*)string
+			    byteOrder: (of_endianess_t)byteOrder
 {
 	return [[[self alloc] initWithUTF16String: string
 					byteOrder: byteOrder] autorelease];
 }
 
-+ stringWithUTF16String: (const uint16_t*)string
-		 length: (size_t)length
++ (instancetype)stringWithUTF16String: (const uint16_t*)string
+			       length: (size_t)length
 {
 	return [[[self alloc] initWithUTF16String: string
 					   length: length] autorelease];
 }
 
-+ stringWithUTF16String: (const uint16_t*)string
-	      byteOrder: (of_endianess_t)byteOrder
-		 length: (size_t)length
++ (instancetype)stringWithUTF16String: (const uint16_t*)string
+			    byteOrder: (of_endianess_t)byteOrder
+			       length: (size_t)length
 {
 	return [[[self alloc] initWithUTF16String: string
 					byteOrder: byteOrder
 					   length: length] autorelease];
 }
 
-+ stringWithFormat: (OFConstantString*)format, ...
++ (instancetype)stringWithFormat: (OFConstantString*)format, ...
 {
 	id ret;
 	va_list arguments;
@@ -622,7 +622,7 @@ static struct {
 	return ret;
 }
 
-+ stringWithPath: (OFString*)firstComponent, ...
++ (instancetype)stringWithPath: (OFString*)firstComponent, ...
 {
 	id ret;
 	va_list arguments;
@@ -635,25 +635,25 @@ static struct {
 	return ret;
 }
 
-+ stringWithContentsOfFile: (OFString*)path
++ (instancetype)stringWithContentsOfFile: (OFString*)path
 {
 	return [[[self alloc] initWithContentsOfFile: path] autorelease];
 }
 
-+ stringWithContentsOfFile: (OFString*)path
-		  encoding: (of_string_encoding_t)encoding
++ (instancetype)stringWithContentsOfFile: (OFString*)path
+				encoding: (of_string_encoding_t)encoding
 {
 	return [[[self alloc] initWithContentsOfFile: path
 					    encoding: encoding] autorelease];
 }
 
-+ stringWithContentsOfURL: (OFURL*)URL
++ (instancetype)stringWithContentsOfURL: (OFURL*)URL
 {
 	return [[[self alloc] initWithContentsOfURL: URL] autorelease];
 }
 
-+ stringWithContentsOfURL: (OFURL*)URL
-		 encoding: (of_string_encoding_t)encoding
++ (instancetype)stringWithContentsOfURL: (OFURL*)URL
+			       encoding: (of_string_encoding_t)encoding
 {
 	return [[[self alloc] initWithContentsOfURL: URL
 					   encoding: encoding] autorelease];

@@ -25,10 +25,10 @@
 #import "common.h"
 
 @implementation OFConnectionFailedException
-+ exceptionWithClass: (Class)class_
-	      socket: (OFTCPSocket*)socket
-		host: (OFString*)host
-		port: (uint16_t)port
++ (instancetype)exceptionWithClass: (Class)class_
+			    socket: (OFTCPSocket*)socket
+			      host: (OFString*)host
+			      port: (uint16_t)port
 {
 	return [[[self alloc] initWithClass: class_
 				     socket: socket

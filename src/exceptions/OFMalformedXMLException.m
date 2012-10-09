@@ -25,8 +25,8 @@
 #import "common.h"
 
 @implementation OFMalformedXMLException
-+ exceptionWithClass: (Class)class_
-	      parser: (OFXMLParser*)parser
++ (instancetype)exceptionWithClass: (Class)class_
+			    parser: (OFXMLParser*)parser
 {
 	return [[[self alloc] initWithClass: class_
 				     parser: parser] autorelease];

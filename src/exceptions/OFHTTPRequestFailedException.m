@@ -26,9 +26,9 @@
 #import "common.h"
 
 @implementation OFHTTPRequestFailedException
-+ exceptionWithClass: (Class)class_
-	     request: (OFHTTPRequest*)request
-	      result: (OFHTTPRequestResult*)result
++ (instancetype)exceptionWithClass: (Class)class_
+			   request: (OFHTTPRequest*)request
+			    result: (OFHTTPRequestResult*)result
 {
 	return [[[self alloc] initWithClass: class_
 				    request: request

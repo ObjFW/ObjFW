@@ -35,8 +35,8 @@
  * \param condition The condition which could not be signaled
  * \return A new condition signal failed exception
  */
-+ exceptionWithClass: (Class)class_
-	   condition: (OFCondition*)condition;
++ (instancetype)exceptionWithClass: (Class)class_
+			 condition: (OFCondition*)condition;
 
 /**
  * Initializes an already allocated condition signal failed exception.

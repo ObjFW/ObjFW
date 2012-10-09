@@ -78,13 +78,13 @@ resolve_relative_path(OFString *path)
 }
 
 @implementation OFURL
-+ URLWithString: (OFString*)string
++ (instancetype)URLWithString: (OFString*)string
 {
 	return [[[self alloc] initWithString: string] autorelease];
 }
 
-+ URLWithString: (OFString*)string
-  relativeToURL: (OFURL*)URL
++ (instancetype)URLWithString: (OFString*)string
+		relativeToURL: (OFURL*)URL
 {
 	return [[[self alloc] initWithString: string
 			       relativeToURL: URL] autorelease];

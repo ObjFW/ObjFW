@@ -27,9 +27,9 @@
 #import "macros.h"
 
 @implementation OFXMLAttribute
-+ attributeWithName: (OFString*)name
-	  namespace: (OFString*)ns
-	stringValue: (OFString*)value
++ (instancetype)attributeWithName: (OFString*)name
+			namespace: (OFString*)ns
+		      stringValue: (OFString*)value
 {
 	return [[[self alloc] initWithName: name
 				 namespace: ns

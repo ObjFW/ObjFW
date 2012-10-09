@@ -59,7 +59,7 @@ enum {
 #define QUEUE_ACTION (QUEUE_ADD | QUEUE_REMOVE)
 
 @implementation OFStreamObserver
-+ observer
++ (instancetype)observer
 {
 	return [[[self alloc] init] autorelease];
 }

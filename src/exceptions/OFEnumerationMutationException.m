@@ -24,8 +24,8 @@
 #import "common.h"
 
 @implementation OFEnumerationMutationException
-+ exceptionWithClass: (Class)class_
-	      object: (id)object
++ (instancetype)exceptionWithClass: (Class)class_
+			    object: (id)object
 {
 	return [[[self alloc] initWithClass: class_
 				     object: object] autorelease];

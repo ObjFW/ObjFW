@@ -35,8 +35,8 @@
  * \param thread The thread which could not be joined
  * \return A new thread join failed exception
  */
-+ exceptionWithClass: (Class)class_
-	      thread: (OFThread*)thread;
++ (instancetype)exceptionWithClass: (Class)class_
+			    thread: (OFThread*)thread;
 
 /**
  * Initializes an already allocated thread join failed exception.

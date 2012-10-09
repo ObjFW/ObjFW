@@ -53,8 +53,8 @@ extern void of_log(OFConstantString*, ...);
  * \param mode The mode in which the file should be opened as a string
  * \return A new autoreleased OFFile
  */
-+ fileWithPath: (OFString*)path
-	  mode: (OFString*)mode;
++ (instancetype)fileWithPath: (OFString*)path
+			mode: (OFString*)mode;
 
 /**
  * \brief Creates a new OFFile with the specified file descriptor.
@@ -63,7 +63,7 @@ extern void of_log(OFConstantString*, ...);
  *			 It is not closed when the OFFile object is deallocated!
  * \return A new autoreleased OFFile
  */
-+ fileWithFileDescriptor: (int)fileDescriptor;
++ (instancetype)fileWithFileDescriptor: (int)fileDescriptor;
 
 /**
  * \brief Returns the path fo the current working directory.

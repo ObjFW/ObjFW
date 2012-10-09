@@ -60,7 +60,7 @@
 }
 #endif
 
-+ socket
++ (instancetype)socket
 {
 	return [[[self alloc] init] autorelease];
 }

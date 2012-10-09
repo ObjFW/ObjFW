@@ -33,7 +33,7 @@
  *
  * \return A new, autoreleased OFDate with the current date and time
  */
-+ date;
++ (instancetype)date;
 
 /**
  * \brief Creates a new OFDate with the specified date and time since
@@ -42,7 +42,7 @@
  * \param seconds The seconds since 1970-01-01T00:00:00Z
  * \return A new, autoreleased OFDate with the specified date and time
  */
-+ dateWithTimeIntervalSince1970: (double)seconds;
++ (instancetype)dateWithTimeIntervalSince1970: (double)seconds;
 
 /**
  * \brief Creates a new OFDate with the specified date and time since now.
@@ -50,7 +50,7 @@
  * \param seconds The seconds since now
  * \return A new, autoreleased OFDate with the specified date and time
  */
-+ dateWithTimeIntervalSinceNow: (double)seconds;
++ (instancetype)dateWithTimeIntervalSinceNow: (double)seconds;
 
 /**
  * \brief Creates a new OFDate with the specified string in the specified
@@ -68,8 +68,8 @@
  * \param format The format of the string describing the date
  * \return A new, autoreleased OFDate with the specified date and time
  */
-+ dateWithDateString: (OFString*)string
-	      format: (OFString*)format;
++ (instancetype)dateWithDateString: (OFString*)string
+			    format: (OFString*)format;
 
 /**
  * \brief Creates a new OFDate with the specified string in the specified
@@ -84,8 +84,8 @@
  * \param format The format of the string describing the date
  * \return A new, autoreleased OFDate with the specified date and time
  */
-+ dateWithLocalDateString: (OFString*)string
-		   format: (OFString*)format;
++ (instancetype)dateWithLocalDateString: (OFString*)string
+				 format: (OFString*)format;
 
 /**
  * \brief Returns a date in the distant future.
@@ -94,7 +94,7 @@
  *
  * \return A date in the distant future
  */
-+ distantFuture;
++ (instancetype)distantFuture;
 
 /**
  * \brief Returns a date in the distant past.
@@ -103,7 +103,7 @@
  *
  * \return A date in the distant past
  */
-+ distantPast;
++ (instancetype)distantPast;
 
 /**
  * \brief Initializes an already allocated OFDate with the specified date and

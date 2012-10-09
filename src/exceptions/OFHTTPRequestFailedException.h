@@ -39,9 +39,9 @@
  * \param result The result of the failed HTTP request
  * \return A new HTTP request failed exception
  */
-+ exceptionWithClass: (Class)class_
-	     request: (OFHTTPRequest*)request
-	      result: (OFHTTPRequestResult*)result;
++ (instancetype)exceptionWithClass: (Class)class_
+			   request: (OFHTTPRequest*)request
+			    result: (OFHTTPRequestResult*)result;
 
 /**
  * Initializes an already allocated HTTP request failed exception

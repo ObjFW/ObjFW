@@ -80,45 +80,45 @@ static Class CDATAClass = Nil;
 	}
 }
 
-+ elementWithName: (OFString*)name
++ (instancetype)elementWithName: (OFString*)name
 {
 	return [[[self alloc] initWithName: name] autorelease];
 }
 
-+ elementWithName: (OFString*)name
-      stringValue: (OFString*)stringValue
++ (instancetype)elementWithName: (OFString*)name
+		    stringValue: (OFString*)stringValue
 {
 	return [[[self alloc] initWithName: name
 			       stringValue: stringValue] autorelease];
 }
 
-+ elementWithName: (OFString*)name
-	namespace: (OFString*)ns
++ (instancetype)elementWithName: (OFString*)name
+		      namespace: (OFString*)ns
 {
 	return [[[self alloc] initWithName: name
 				 namespace: ns] autorelease];
 }
 
-+ elementWithName: (OFString*)name
-	namespace: (OFString*)ns
-      stringValue: (OFString*)stringValue
++ (instancetype)elementWithName: (OFString*)name
+		      namespace: (OFString*)ns
+		    stringValue: (OFString*)stringValue
 {
 	return [[[self alloc] initWithName: name
 				 namespace: ns
 			       stringValue: stringValue] autorelease];
 }
 
-+ elementWithElement: (OFXMLElement*)element
++ (instancetype)elementWithElement: (OFXMLElement*)element
 {
 	return [[[self alloc] initWithElement: element] autorelease];
 }
 
-+ elementWithXMLString: (OFString*)string
++ (instancetype)elementWithXMLString: (OFString*)string
 {
 	return [[[self alloc] initWithXMLString: string] autorelease];
 }
 
-+ elementWithFile: (OFString*)path
++ (instancetype)elementWithFile: (OFString*)path
 {
 	return [[[self alloc] initWithFile: path] autorelease];
 }

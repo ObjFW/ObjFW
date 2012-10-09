@@ -35,8 +35,8 @@
  * \param thread The thread which is still running
  * \return A new thread still running exception
  */
-+ exceptionWithClass: (Class)class_
-	      thread: (OFThread*)thread;
++ (instancetype)exceptionWithClass: (Class)class_
+			    thread: (OFThread*)thread;
 
 /**
  * Initializes an already allocated thread still running exception.

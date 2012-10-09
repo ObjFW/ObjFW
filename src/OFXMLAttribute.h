@@ -43,9 +43,9 @@
  * \param value The string value of the attribute
  * \return A new autoreleased OFXMLAttribute with the specified parameters
  */
-+ attributeWithName: (OFString*)name
-	  namespace: (OFString*)ns
-	stringValue: (OFString*)value;
++ (instancetype)attributeWithName: (OFString*)name
+			namespace: (OFString*)ns
+		      stringValue: (OFString*)value;
 
 /**
  * \brief Initializes an already allocated OFXMLAttribute.

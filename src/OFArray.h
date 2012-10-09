@@ -53,7 +53,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  *
  * \return A new autoreleased OFArray
  */
-+ array;
++ (instancetype)array;
 
 /**
  * \brief Creates a new OFArray with the specified object.
@@ -61,7 +61,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \param object An object
  * \return A new autoreleased OFArray
  */
-+ arrayWithObject: (id)object;
++ (instancetype)arrayWithObject: (id)object;
 
 /**
  * \brief Creates a new OFArray with the specified objects, terminated by nil.
@@ -69,7 +69,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \param firstObject The first object in the array
  * \return A new autoreleased OFArray
  */
-+ arrayWithObjects: (id)firstObject, ...;
++ (instancetype)arrayWithObjects: (id)firstObject, ...;
 
 /**
  * \brief Creates a new OFArray with the objects from the specified array.
@@ -77,7 +77,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \param array An array
  * \return A new autoreleased OFArray
  */
-+ arrayWithArray: (OFArray*)array;
++ (instancetype)arrayWithArray: (OFArray*)array;
 
 /**
  * \brief Creates a new OFArray with the objects from the specified C array of
@@ -87,8 +87,8 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \param length The length of the C array
  * \return A new autoreleased OFArray
  */
-+ arrayWithObjects: (id const*)objects
-	     count: (size_t)count;
++ (instancetype)arrayWithObjects: (id const*)objects
+			   count: (size_t)count;
 
 /**
  * \brief Initializes an OFArray with the specified object.

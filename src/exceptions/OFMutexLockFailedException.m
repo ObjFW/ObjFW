@@ -23,8 +23,8 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFMutexLockFailedException
-+ exceptionWithClass: (Class)class_
-	       mutex: (OFMutex*)mutex
++ (instancetype)exceptionWithClass: (Class)class_
+			     mutex: (OFMutex*)mutex
 {
 	return [[[self alloc] initWithClass: class_
 				      mutex: mutex] autorelease];

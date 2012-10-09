@@ -24,15 +24,15 @@
 #import "common.h"
 
 @implementation OFUnboundNamespaceException
-+ exceptionWithClass: (Class)class_
-	   namespace: (OFString*)ns
++ (instancetype)exceptionWithClass: (Class)class_
+			 namespace: (OFString*)ns
 {
 	return [[[self alloc] initWithClass: class_
 				  namespace: ns] autorelease];
 }
 
-+ exceptionWithClass: (Class)class_
-	      prefix: (OFString*)prefix
++ (instancetype)exceptionWithClass: (Class)class_
+			    prefix: (OFString*)prefix
 {
 	return [[[self alloc] initWithClass: class_
 				     prefix: prefix] autorelease];

@@ -25,8 +25,8 @@
 #import "common.h"
 
 @implementation OFSetOptionFailedException
-+ exceptionWithClass: (Class)class_
-	      stream: (OFStream*)stream
++ (instancetype)exceptionWithClass: (Class)class_
+			    stream: (OFStream*)stream
 {
 	return [[[self alloc] initWithClass: class_
 				     stream: stream] autorelease];

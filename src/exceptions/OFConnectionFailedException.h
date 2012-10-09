@@ -43,10 +43,10 @@
  * \param port The port on the host to which the connection failed
  * \return A new connection failed exception
  */
-+ exceptionWithClass: (Class)class_
-	      socket: (OFTCPSocket*)socket
-		host: (OFString*)host
-		port: (uint16_t)port;
++ (instancetype)exceptionWithClass: (Class)class_
+			    socket: (OFTCPSocket*)socket
+			      host: (OFString*)host
+			      port: (uint16_t)port;
 
 /**
  * Initializes an already allocated connection failed exception.

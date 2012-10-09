@@ -30,7 +30,7 @@
  * \param string The string for the comment
  * \return A new OFXMLComment
  */
-+ commentWithString: (OFString*)string;
++ (instancetype)commentWithString: (OFString*)string;
 
 /**
  * \brief Initializes an already allocated OFXMLComment with the specified

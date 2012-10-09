@@ -35,8 +35,8 @@
  * \param path A string with the path of the directory which couldn't be created
  * \return A new create directory failed exception
  */
-+ exceptionWithClass: (Class)class_
-		path: (OFString*)path;
++ (instancetype)exceptionWithClass: (Class)class_
+			      path: (OFString*)path;
 
 /**
  * Initializes an already allocated create directory failed exception.

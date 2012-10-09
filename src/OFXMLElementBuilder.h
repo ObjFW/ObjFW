@@ -117,7 +117,7 @@
  *
  * \return A new, autoreleased OFXMLElementBuilder
  */
-+ elementBuilder;
++ (instancetype)elementBuilder;
 
 /**
  * \brief Returns the delegate for the OFXMLElementBuilder.

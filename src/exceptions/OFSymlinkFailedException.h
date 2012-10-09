@@ -39,9 +39,9 @@
  * \param destination The destination for the symlink
  * \return A new symlink failed exception
  */
-+ exceptionWithClass: (Class)class_
-	  sourcePath: (OFString*)source
-     destinationPath: (OFString*)destination;
++ (instancetype)exceptionWithClass: (Class)class_
+			sourcePath: (OFString*)source
+		   destinationPath: (OFString*)destination;
 
 /**
  * Initializes an already allocated symlink failed exception.

@@ -24,8 +24,8 @@
 #import "common.h"
 
 @implementation OFUnsupportedVersionException
-+ exceptionWithClass: (Class)class_
-	     version: (OFString*)version
++ (instancetype)exceptionWithClass: (Class)class_
+			   version: (OFString*)version
 {
 	return [[[self alloc] initWithClass: class_
 				    version: version] autorelease];

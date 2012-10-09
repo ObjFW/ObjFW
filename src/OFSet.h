@@ -44,7 +44,7 @@ typedef BOOL (^of_set_filter_block_t)(id object);
  *
  * \return A new, autoreleased set
  */
-+ set;
++ (instancetype)set;
 
 /**
  * \brief Creates a new set with the specified set.
@@ -52,7 +52,7 @@ typedef BOOL (^of_set_filter_block_t)(id object);
  * \param set The set to initialize the set with
  * \return A new, autoreleased set with the specified set
  */
-+ setWithSet: (OFSet*)set;
++ (instancetype)setWithSet: (OFSet*)set;
 
 /**
  * \brief Creates a new set with the specified array.
@@ -60,7 +60,7 @@ typedef BOOL (^of_set_filter_block_t)(id object);
  * \param array The array to initialize the set with
  * \return A new, autoreleased set with the specified array
  */
-+ setWithArray: (OFArray*)array;
++ (instancetype)setWithArray: (OFArray*)array;
 
 /**
  * \brief Creates a new set with the specified objects.
@@ -68,7 +68,7 @@ typedef BOOL (^of_set_filter_block_t)(id object);
  * \param firstObject The first object for the set
  * \return A new, autoreleased set with the specified objects
  */
-+ setWithObjects: (id)firstObject, ...;
++ (instancetype)setWithObjects: (id)firstObject, ...;
 
 /**
  * \brief Creates a new set with the specified objects.
@@ -77,8 +77,8 @@ typedef BOOL (^of_set_filter_block_t)(id object);
  * \param count The number of objects in the specified array
  * \return A new, autoreleased set with the specified objects
  */
-+ setWithObjects: (id const*)objects
-	   count: (size_t)count;
++ (instancetype)setWithObjects: (id const*)objects
+			 count: (size_t)count;
 
 /**
  * \brief Initializes an already allocated set with the specified set.

@@ -22,8 +22,8 @@
 #import "common.h"
 
 @implementation OFNotImplementedException
-+ exceptionWithClass: (Class)class_
-	    selector: (SEL)selector
++ (instancetype)exceptionWithClass: (Class)class_
+			  selector: (SEL)selector
 {
 	return [[[self alloc] initWithClass: class_
 				   selector: selector] autorelease];

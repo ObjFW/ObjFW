@@ -24,9 +24,9 @@
 #import "common.h"
 
 @implementation OFChangeFileModeFailedException
-+ exceptionWithClass: (Class)class_
-		path: (OFString*)path
-		mode: (mode_t)mode
++ (instancetype)exceptionWithClass: (Class)class_
+			      path: (OFString*)path
+			      mode: (mode_t)mode
 {
 	return [[[self alloc] initWithClass: class_
 				       path: path

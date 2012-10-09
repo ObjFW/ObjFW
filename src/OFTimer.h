@@ -56,10 +56,10 @@ typedef void (^of_timer_block_t)(OFTimer*);
  * \param repeats Whether the timer repeats after it has been executed
  * \return A new, autoreleased timer
  */
-+ scheduledTimerWithTimeInterval: (double)interval
-			  target: (id)target
-			selector: (SEL)selector
-			 repeats: (BOOL)repeats;
++ (instancetype)scheduledTimerWithTimeInterval: (double)interval
+					target: (id)target
+				      selector: (SEL)selector
+				       repeats: (BOOL)repeats;
 
 /**
  * \brief Creates and schedules a new timer with the specified time interval.
@@ -72,11 +72,11 @@ typedef void (^of_timer_block_t)(OFTimer*);
  * \param repeats Whether the timer repeats after it has been executed
  * \return A new, autoreleased timer
  */
-+ scheduledTimerWithTimeInterval: (double)interval
-			  target: (id)target
-			selector: (SEL)selector
-			  object: (id)object
-			 repeats: (BOOL)repeats;
++ (instancetype)scheduledTimerWithTimeInterval: (double)interval
+					target: (id)target
+				      selector: (SEL)selector
+					object: (id)object
+				       repeats: (BOOL)repeats;
 
 /**
  * \brief Creates and schedules a new timer with the specified time interval.
@@ -92,12 +92,12 @@ typedef void (^of_timer_block_t)(OFTimer*);
  * \param repeats Whether the timer repeats after it has been executed
  * \return A new, autoreleased timer
  */
-+ scheduledTimerWithTimeInterval: (double)interval
-			  target: (id)target
-			selector: (SEL)selector
-			  object: (id)object1
-			  object: (id)object2
-			 repeats: (BOOL)repeats;
++ (instancetype)scheduledTimerWithTimeInterval: (double)interval
+					target: (id)target
+				      selector: (SEL)selector
+					object: (id)object1
+					object: (id)object2
+				       repeats: (BOOL)repeats;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -109,9 +109,9 @@ typedef void (^of_timer_block_t)(OFTimer*);
  * \param block The block to invoke when the timer fires
  * \return A new, autoreleased timer
  */
-+ scheduledTimerWithTimeInterval: (double)interval
-			 repeats: (BOOL)repeats
-			   block: (of_timer_block_t)block;
++ (instancetype)scheduledTimerWithTimeInterval: (double)interval
+				       repeats: (BOOL)repeats
+					 block: (of_timer_block_t)block;
 #endif
 
 /**
@@ -124,10 +124,10 @@ typedef void (^of_timer_block_t)(OFTimer*);
  * \param repeats Whether the timer repeats after it has been executed
  * \return A new, autoreleased timer
  */
-+ timerWithTimeInterval: (double)interval
-		 target: (id)target
-	       selector: (SEL)selector
-		repeats: (BOOL)repeats;
++ (instancetype)timerWithTimeInterval: (double)interval
+			       target: (id)target
+			     selector: (SEL)selector
+			      repeats: (BOOL)repeats;
 
 /**
  * \brief Creates a new timer with the specified time interval.
@@ -140,11 +140,11 @@ typedef void (^of_timer_block_t)(OFTimer*);
  * \param repeats Whether the timer repeats after it has been executed
  * \return A new, autoreleased timer
  */
-+ timerWithTimeInterval: (double)interval
-		 target: (id)target
-	       selector: (SEL)selector
-		 object: (id)object
-		repeats: (BOOL)repeats;
++ (instancetype)timerWithTimeInterval: (double)interval
+			       target: (id)target
+			     selector: (SEL)selector
+			       object: (id)object
+			      repeats: (BOOL)repeats;
 
 /**
  * \brief Creates a new timer with the specified time interval.
@@ -160,12 +160,12 @@ typedef void (^of_timer_block_t)(OFTimer*);
  * \param repeats Whether the timer repeats after it has been executed
  * \return A new, autoreleased timer
  */
-+ timerWithTimeInterval: (double)interval
-		 target: (id)target
-	       selector: (SEL)selector
-		 object: (id)object1
-		 object: (id)object2
-		repeats: (BOOL)repeats;
++ (instancetype)timerWithTimeInterval: (double)interval
+			       target: (id)target
+			     selector: (SEL)selector
+			       object: (id)object1
+			       object: (id)object2
+			      repeats: (BOOL)repeats;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -177,9 +177,9 @@ typedef void (^of_timer_block_t)(OFTimer*);
  * \param block The block to invoke when the timer fires
  * \return A new, autoreleased timer
  */
-+ timerWithTimeInterval: (double)interval
-		repeats: (BOOL)repeats
-		  block: (of_timer_block_t)block;
++ (instancetype)timerWithTimeInterval: (double)interval
+			      repeats: (BOOL)repeats
+				block: (of_timer_block_t)block;
 #endif
 
 /**

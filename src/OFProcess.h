@@ -52,7 +52,7 @@
  *		  search path specified in PATH is used.
  * \return A new, autoreleased OFProcess.
  */
-+ processWithProgram: (OFString*)program;
++ (instancetype)processWithProgram: (OFString*)program;
 
 /**
  * \brief Creates a new OFProcess with the specified program and arguments and
@@ -63,8 +63,8 @@
  * \param arguments The arguments to pass to the program, or nil
  * \return A new, autoreleased OFProcess.
  */
-+ processWithProgram: (OFString*)program
-	   arguments: (OFArray*)arguments;
++ (instancetype)processWithProgram: (OFString*)program
+			 arguments: (OFArray*)arguments;
 
 /**
  * \brief Creates a new OFProcess with the specified program, program name and
@@ -77,9 +77,9 @@
  * \param arguments The arguments to pass to the program, or nil
  * \return A new, autoreleased OFProcess.
  */
-+ processWithProgram: (OFString*)program
-	 programName: (OFString*)programName
-	   arguments: (OFArray*)arguments;
++ (instancetype)processWithProgram: (OFString*)program
+		       programName: (OFString*)programName
+			 arguments: (OFArray*)arguments;
 
 /**
  * \brief Initializes an already allocated OFProcess with the specified program

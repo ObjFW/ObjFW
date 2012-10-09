@@ -42,10 +42,10 @@
  * \param group The new group for the file
  * \return An initialized change file owner failed exception
  */
-+ exceptionWithClass: (Class)class_
-		path: (OFString*)path
-	       owner: (OFString*)owner
-	       group: (OFString*)group;
++ (instancetype)exceptionWithClass: (Class)class_
+			      path: (OFString*)path
+			     owner: (OFString*)owner
+			     group: (OFString*)group;
 
 /**
  * Initializes an already allocated change file owner failed exception.

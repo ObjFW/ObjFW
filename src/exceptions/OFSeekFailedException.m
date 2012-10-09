@@ -25,10 +25,10 @@
 #import "common.h"
 
 @implementation OFSeekFailedException
-+ exceptionWithClass: (Class)class_
-	      stream: (OFSeekableStream*)stream
-	      offset: (off_t)offset
-	      whence: (int)whence
++ (instancetype)exceptionWithClass: (Class)class_
+			    stream: (OFSeekableStream*)stream
+			    offset: (off_t)offset
+			    whence: (int)whence
 {
 	return [[[self alloc] initWithClass: class_
 				     stream: stream

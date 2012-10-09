@@ -318,132 +318,132 @@
 	}
 
 @implementation OFNumber
-+ numberWithBool: (BOOL)bool_
++ (instancetype)numberWithBool: (BOOL)bool_
 {
 	return [[[self alloc] initWithBool: bool_] autorelease];
 }
 
-+ numberWithChar: (signed char)char_
++ (instancetype)numberWithChar: (signed char)char_
 {
 	return [[[self alloc] initWithChar: char_] autorelease];
 }
 
-+ numberWithShort: (signed short)short_
++ (instancetype)numberWithShort: (signed short)short_
 {
 	return [[[self alloc] initWithShort: short_] autorelease];
 }
 
-+ numberWithInt: (signed int)int_
++ (instancetype)numberWithInt: (signed int)int_
 {
 	return [[[self alloc] initWithInt: int_] autorelease];
 }
 
-+ numberWithLong: (signed long)long_
++ (instancetype)numberWithLong: (signed long)long_
 {
 	return [[[self alloc] initWithLong: long_] autorelease];
 }
 
-+ numberWithUnsignedChar: (unsigned char)uchar
++ (instancetype)numberWithUnsignedChar: (unsigned char)uchar
 {
 	return [[[self alloc] initWithUnsignedChar: uchar] autorelease];
 }
 
-+ numberWithUnsignedShort: (unsigned short)ushort
++ (instancetype)numberWithUnsignedShort: (unsigned short)ushort
 {
 	return [[[self alloc] initWithUnsignedShort: ushort] autorelease];
 }
 
-+ numberWithUnsignedInt: (unsigned int)uint
++ (instancetype)numberWithUnsignedInt: (unsigned int)uint
 {
 	return [[[self alloc] initWithUnsignedInt: uint] autorelease];
 }
 
-+ numberWithUnsignedLong: (unsigned long)ulong
++ (instancetype)numberWithUnsignedLong: (unsigned long)ulong
 {
 	return [[[self alloc] initWithUnsignedLong: ulong] autorelease];
 }
 
-+ numberWithInt8: (int8_t)int8
++ (instancetype)numberWithInt8: (int8_t)int8
 {
 	return [[[self alloc] initWithInt8: int8] autorelease];
 }
 
-+ numberWithInt16: (int16_t)int16
++ (instancetype)numberWithInt16: (int16_t)int16
 {
 	return [[[self alloc] initWithInt16: int16] autorelease];
 }
 
-+ numberWithInt32: (int32_t)int32
++ (instancetype)numberWithInt32: (int32_t)int32
 {
 	return [[[self alloc] initWithInt32: int32] autorelease];
 }
 
-+ numberWithInt64: (int64_t)int64
++ (instancetype)numberWithInt64: (int64_t)int64
 {
 	return [[[self alloc] initWithInt64: int64] autorelease];
 }
 
-+ numberWithUInt8: (uint8_t)uint8
++ (instancetype)numberWithUInt8: (uint8_t)uint8
 {
 	return [[[self alloc] initWithUInt8: uint8] autorelease];
 }
 
-+ numberWithUInt16: (uint16_t)uint16
++ (instancetype)numberWithUInt16: (uint16_t)uint16
 {
 	return [[[self alloc] initWithUInt16: uint16] autorelease];
 }
 
-+ numberWithUInt32: (uint32_t)uint32
++ (instancetype)numberWithUInt32: (uint32_t)uint32
 {
 	return [[[self alloc] initWithUInt32: uint32] autorelease];
 }
 
-+ numberWithUInt64: (uint64_t)uint64
++ (instancetype)numberWithUInt64: (uint64_t)uint64
 {
 	return [[[self alloc] initWithUInt64: uint64] autorelease];
 }
 
-+ numberWithSize: (size_t)size
++ (instancetype)numberWithSize: (size_t)size
 {
 	return [[[self alloc] initWithSize: size] autorelease];
 }
 
-+ numberWithSSize: (ssize_t)ssize
++ (instancetype)numberWithSSize: (ssize_t)ssize
 {
 	return [[[self alloc] initWithSSize: ssize] autorelease];
 }
 
-+ numberWithIntMax: (intmax_t)intmax
++ (instancetype)numberWithIntMax: (intmax_t)intmax
 {
 	return [[[self alloc] initWithIntMax: intmax] autorelease];
 }
 
-+ numberWithUIntMax: (uintmax_t)uintmax
++ (instancetype)numberWithUIntMax: (uintmax_t)uintmax
 {
 	return [[[self alloc] initWithUIntMax: uintmax] autorelease];
 }
 
-+ numberWithPtrDiff: (ptrdiff_t)ptrdiff
++ (instancetype)numberWithPtrDiff: (ptrdiff_t)ptrdiff
 {
 	return [[[self alloc] initWithPtrDiff: ptrdiff] autorelease];
 }
 
-+ numberWithIntPtr: (intptr_t)intptr
++ (instancetype)numberWithIntPtr: (intptr_t)intptr
 {
 	return [[[self alloc] initWithIntPtr: intptr] autorelease];
 }
 
-+ numberWithUIntPtr: (uintptr_t)uintptr
++ (instancetype)numberWithUIntPtr: (uintptr_t)uintptr
 {
 	return [[[self alloc] initWithUIntPtr: uintptr] autorelease];
 }
 
-+ numberWithFloat: (float)float_
++ (instancetype)numberWithFloat: (float)float_
 {
 	return [[[self alloc] initWithFloat: float_] autorelease];
 }
 
-+ numberWithDouble: (double)double_
++ (instancetype)numberWithDouble: (double)double_
 {
 	return [[[self alloc] initWithDouble: double_] autorelease];
 }

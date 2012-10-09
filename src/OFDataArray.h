@@ -47,7 +47,7 @@
  *
  * \return A new autoreleased OFDataArray
  */
-+ dataArray;
++ (instancetype)dataArray;
 
 /**
  * \brief Creates a new OFDataArray whose items all have the same size.
@@ -55,7 +55,7 @@
  * \param itemSize The size of each element in the OFDataArray
  * \return A new autoreleased OFDataArray
  */
-+ dataArrayWithItemSize: (size_t)itemSize;
++ (instancetype)dataArrayWithItemSize: (size_t)itemSize;
 
 /**
  * \brief Creates a new OFDataArary with an item size of 1, containing the data
@@ -64,7 +64,7 @@
  * \param path The path of the file
  * \return A new autoreleased OFDataArray
  */
-+ dataArrayWithContentsOfFile: (OFString*)path;
++ (instancetype)dataArrayWithContentsOfFile: (OFString*)path;
 
 /**
  * \brief Creates a new OFDataArray with an item size of 1, containing the data
@@ -73,7 +73,7 @@
  * \param URL The URL to the contents for the OFDataArray
  * \return A new autoreleased OFDataArray
  */
-+ dataArrayWithContentsOfURL: (OFURL*)URL;
++ (instancetype)dataArrayWithContentsOfURL: (OFURL*)URL;
 
 /**
  * \brief Creates a new OFDataArray with an item size of 1, containing the data
@@ -82,7 +82,7 @@
  * \param string The string representation of the data
  * \return A new autoreleased OFDataArray
  */
-+ dataArrayWithStringRepresentation: (OFString*)string;
++ (instancetype)dataArrayWithStringRepresentation: (OFString*)string;
 
 /**
  * \brief Creates a new OFDataArray with an item size of 1, containing the data
@@ -91,7 +91,7 @@
  * \param string The string with the Base64-encoded data
  * \return A new autoreleased OFDataArray
  */
-+ dataArrayWithBase64EncodedString: (OFString*)string;
++ (instancetype)dataArrayWithBase64EncodedString: (OFString*)string;
 
 /**
  * \brief Initializes an already allocated OFDataArray with an item size of 1.

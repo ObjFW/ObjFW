@@ -24,8 +24,8 @@
 #import "common.h"
 
 @implementation OFInvalidArgumentException
-+ exceptionWithClass: (Class)class_
-	    selector: (SEL)selector_
++ (instancetype)exceptionWithClass: (Class)class_
+			  selector: (SEL)selector_
 {
 	return [[[self alloc] initWithClass: class_
 				   selector: selector_] autorelease];

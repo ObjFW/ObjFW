@@ -53,7 +53,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  *
  * \return A new autoreleased OFDictionary
  */
-+ dictionary;
++ (instancetype)dictionary;
 
 /**
  * \brief Creates a new OFDictionary with the specified dictionary.
@@ -61,7 +61,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * \param dictionary An OFDictionary
  * \return A new autoreleased OFDictionary
  */
-+ dictionaryWithDictionary: (OFDictionary*)dictionary;
++ (instancetype)dictionaryWithDictionary: (OFDictionary*)dictionary;
 
 /**
  * \brief Creates a new OFDictionary with the specified key and object.
@@ -70,8 +70,8 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * \param object The object
  * \return A new autoreleased OFDictionary
  */
-+ dictionaryWithObject: (id)object
-		forKey: (id)key;
++ (instancetype)dictionaryWithObject: (id)object
+			      forKey: (id)key;
 
 /**
  * \brief Creates a new OFDictionary with the specified keys and objects.
@@ -80,8 +80,8 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * \param objects An array of objects
  * \return A new autoreleased OFDictionary
  */
-+ dictionaryWithObjects: (OFArray*)objects
-		forKeys: (OFArray*)keys;
++ (instancetype)dictionaryWithObjects: (OFArray*)objects
+			      forKeys: (OFArray*)keys;
 
 /**
  * \brief Creates a new OFDictionary with the specified keys and objects.
@@ -91,8 +91,8 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * \param count The number of objects in the arrays
  * \return A new autoreleased OFDictionary
  */
-+ dictionaryWithObjects: (id const*)objects
-		forKeys: (id const*)keys
++ (instancetype)dictionaryWithObjects: (id const*)objects
+			      forKeys: (id const*)keys
 		  count: (size_t)count;
 
 /**
@@ -101,7 +101,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * \param firstKey The first key
  * \return A new autoreleased OFDictionary
  */
-+ dictionaryWithKeysAndObjects: (id)firstKey, ...;
++ (instancetype)dictionaryWithKeysAndObjects: (id)firstKey, ...;
 
 /**
  * \brief Initializes an already allocated OFDictionary.

@@ -33,7 +33,7 @@
 #import "macros.h"
 
 @implementation OFXMLElementBuilder
-+ elementBuilder
++ (instancetype)elementBuilder
 {
 	return [[[self alloc] init] autorelease];
 }

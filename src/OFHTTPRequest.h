@@ -129,7 +129,7 @@ typedef enum of_http_request_type_t {
  *
  * \return A new, autoreleased OFHTTPRequest
  */
-+ request;
++ (instancetype)request;
 
 /**
  * \brief Creates a new OFHTTPRequest with the specified URL.
@@ -137,7 +137,7 @@ typedef enum of_http_request_type_t {
  * \param URL The URL for the request
  * \return A new, autoreleased OFHTTPRequest
  */
-+ requestWithURL: (OFURL*)URL;
++ (instancetype)requestWithURL: (OFURL*)URL;
 
 /**
  * \brief Initializes an already allocated OFHTTPRequest with the specified URL.

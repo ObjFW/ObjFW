@@ -35,8 +35,8 @@
  * \param condition The condition for which could not be waited
  * \return A new condition wait failed exception
  */
-+ exceptionWithClass: (Class)class_
-	   condition: (OFCondition*)condition;
++ (instancetype)exceptionWithClass: (Class)class_
+			 condition: (OFCondition*)condition;
 
 /**
  * Initializes an already allocated condition wait failed exception.

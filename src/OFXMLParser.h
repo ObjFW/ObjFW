@@ -178,7 +178,7 @@
  *
  * \return A new, autoreleased OFXMLParser
  */
-+ parser;
++ (instancetype)parser;
 
 /**
  * \brief Returns the delegate that is used by the XML parser.

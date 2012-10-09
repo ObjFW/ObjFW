@@ -44,10 +44,10 @@
  * \param whence To what the offset is relative
  * \return A new seek failed exception
  */
-+ exceptionWithClass: (Class)class_
-	      stream: (OFSeekableStream*)stream
-	      offset: (off_t)offset
-	      whence: (int)whence;
++ (instancetype)exceptionWithClass: (Class)class_
+			    stream: (OFSeekableStream*)stream
+			    offset: (off_t)offset
+			    whence: (int)whence;
 
 /**
  * Initializes an already allocated seek failed exception.

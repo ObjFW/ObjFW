@@ -34,8 +34,8 @@
  * \param parser The parser which encountered malformed XML
  * \return A new malformed XML exception
  */
-+ exceptionWithClass: (Class)class_
-	      parser: (OFXMLParser*)parser;
++ (instancetype)exceptionWithClass: (Class)class_
+			    parser: (OFXMLParser*)parser;
 
 /**
  * Initializes an already allocated malformed XML exception.

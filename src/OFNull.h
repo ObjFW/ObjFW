@@ -27,5 +27,5 @@
  *
  * \return An OFNull singleton
  */
-+ null;
++ (OFNull*)null;
 @end

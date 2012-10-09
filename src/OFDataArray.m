@@ -45,33 +45,33 @@ void _references_to_categories_of_OFDataArray(void)
 }
 
 @implementation OFDataArray
-+ dataArray
++ (instancetype)dataArray
 {
 	return [[[self alloc] init] autorelease];
 }
 
-+ dataArrayWithItemSize: (size_t)itemSize
++ (instancetype)dataArrayWithItemSize: (size_t)itemSize
 {
 	return [[[self alloc] initWithItemSize: itemSize] autorelease];
 }
 
-+ dataArrayWithContentsOfFile: (OFString*)path
++ (instancetype)dataArrayWithContentsOfFile: (OFString*)path
 {
 	return [[[self alloc] initWithContentsOfFile: path] autorelease];
 }
 
-+ dataArrayWithContentsOfURL: (OFURL*)URL
++ (instancetype)dataArrayWithContentsOfURL: (OFURL*)URL
 {
 	return [[[self alloc] initWithContentsOfURL: URL] autorelease];
 }
 
-+ dataArrayWithStringRepresentation: (OFString*)string
++ (instancetype)dataArrayWithStringRepresentation: (OFString*)string
 {
 	return [[[self alloc]
 	    initWithStringRepresentation: string] autorelease];
 }
 
-+ dataArrayWithBase64EncodedString: (OFString*)string
++ (instancetype)dataArrayWithBase64EncodedString: (OFString*)string
 {
 	return [[[self alloc] initWithBase64EncodedString: string] autorelease];
 }

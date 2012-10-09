@@ -51,7 +51,7 @@ typedef void (^of_thread_pool_block_t)(void);
  *
  * \return A new thread pool with one thread for each core in the system
  */
-+ threadPool;
++ (instancetype)threadPool;
 
 /**
  * \brief Returns a new thread pool with the specified number of threads.
@@ -62,7 +62,7 @@ typedef void (^of_thread_pool_block_t)(void);
  * \param size The number of threads for the pool
  * \return A new thread pool with the specified number of threads
  */
-+ threadPoolWithSize: (size_t)size;
++ (instancetype)threadPoolWithSize: (size_t)size;
 
 /**
  * \brief Initializes an already allocated OFThreadPool with one thread for

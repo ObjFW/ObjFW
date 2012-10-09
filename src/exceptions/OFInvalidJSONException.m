@@ -22,8 +22,8 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFInvalidJSONException
-+ exceptionWithClass: (Class)class_
-		line: (size_t)line
++ (instancetype)exceptionWithClass: (Class)class_
+			      line: (size_t)line
 {
 	return [[[self alloc] initWithClass: class_
 				       line: line] autorelease];

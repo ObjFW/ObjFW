@@ -27,7 +27,7 @@
 #import "autorelease.h"
 
 @implementation OFXMLComment
-+ commentWithString: (OFString*)string
++ (instancetype)commentWithString: (OFString*)string
 {
 	return [[[self alloc] initWithString: string] autorelease];
 }

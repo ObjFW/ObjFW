@@ -101,7 +101,7 @@
  *
  * \return A new, autoreleased OFStreamObserver
  */
-+ observer;
++ (instancetype)observer;
 
 /**
  * \brief Returns the delegate for the OFStreamObserver.

@@ -33,7 +33,7 @@
  *
  * \return A new autoreleased OFHash
  */
-+ hash;
++ (instancetype)hash;
 
 /**
  * \brief Returns the digest size of the hash, in bytes.

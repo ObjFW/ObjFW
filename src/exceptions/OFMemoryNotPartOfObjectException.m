@@ -22,8 +22,8 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFMemoryNotPartOfObjectException
-+ exceptionWithClass: (Class)class_
-	     pointer: (void*)ptr
++ (instancetype)exceptionWithClass: (Class)class_
+			   pointer: (void*)ptr
 {
 	return [[[self alloc] initWithClass: class_
 				    pointer: ptr] autorelease];

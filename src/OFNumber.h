@@ -107,7 +107,7 @@ typedef enum of_number_type_t {
  * \param bool_ A BOOL which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithBool: (BOOL)bool_;
++ (instancetype)numberWithBool: (BOOL)bool_;
 
 /**
  * \brief Creates a new OFNumber with the specified signed char.
@@ -115,7 +115,7 @@ typedef enum of_number_type_t {
  * \param char_ A signed char which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithChar: (signed char)char_;
++ (instancetype)numberWithChar: (signed char)char_;
 
 /**
  * \brief Creates a new OFNumber with the specified signed short.
@@ -123,7 +123,7 @@ typedef enum of_number_type_t {
  * \param short_ A signed short which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithShort: (signed short)short_;
++ (instancetype)numberWithShort: (signed short)short_;
 
 /**
  * \brief Creates a new OFNumber with the specified signed int.
@@ -131,7 +131,7 @@ typedef enum of_number_type_t {
  * \param int_ A signed int which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithInt: (signed int)int_;
++ (instancetype)numberWithInt: (signed int)int_;
 
 /**
  * \brief Creates a new OFNumber with the specified signed long.
@@ -139,7 +139,7 @@ typedef enum of_number_type_t {
  * \param long_ A signed long which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithLong: (signed long)long_;
++ (instancetype)numberWithLong: (signed long)long_;
 
 /**
  * \brief Creates a new OFNumber with the specified unsigned char.
@@ -147,7 +147,7 @@ typedef enum of_number_type_t {
  * \param uchar An unsigned char which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithUnsignedChar: (unsigned char)uchar;
++ (instancetype)numberWithUnsignedChar: (unsigned char)uchar;
 
 /**
  * \brief Creates a new OFNumber with the specified unsigned short.
@@ -155,7 +155,7 @@ typedef enum of_number_type_t {
  * \param ushort An unsigned short which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithUnsignedShort: (unsigned short)ushort;
++ (instancetype)numberWithUnsignedShort: (unsigned short)ushort;
 
 /**
  * \brief Creates a new OFNumber with the specified unsigned int.
@@ -163,7 +163,7 @@ typedef enum of_number_type_t {
  * \param uint An unsigned int which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithUnsignedInt: (unsigned int)uint;
++ (instancetype)numberWithUnsignedInt: (unsigned int)uint;
 
 /**
  * \brief Creates a new OFNumber with the specified unsigned long.
@@ -171,7 +171,7 @@ typedef enum of_number_type_t {
  * \param ulong An unsigned long which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithUnsignedLong: (unsigned long)ulong;
++ (instancetype)numberWithUnsignedLong: (unsigned long)ulong;
 
 /**
  * \brief Creates a new OFNumber with the specified int8_t.
@@ -179,7 +179,7 @@ typedef enum of_number_type_t {
  * \param int8 An int8_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithInt8: (int8_t)int8;
++ (instancetype)numberWithInt8: (int8_t)int8;
 
 /**
  * \brief Creates a new OFNumber with the specified int16_t.
@@ -187,7 +187,7 @@ typedef enum of_number_type_t {
  * \param int16 An int16_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithInt16: (int16_t)int16;
++ (instancetype)numberWithInt16: (int16_t)int16;
 
 /**
  * \brief Creates a new OFNumber with the specified int32_t.
@@ -195,7 +195,7 @@ typedef enum of_number_type_t {
  * \param int32 An int32_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithInt32: (int32_t)int32;
++ (instancetype)numberWithInt32: (int32_t)int32;
 
 /**
  * \brief Creates a new OFNumber with the specified int64_t.
@@ -203,7 +203,7 @@ typedef enum of_number_type_t {
  * \param int64 An int64_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithInt64: (int64_t)int64;
++ (instancetype)numberWithInt64: (int64_t)int64;
 
 /**
  * \brief Creates a new OFNumber with the specified uint8_t.
@@ -211,7 +211,7 @@ typedef enum of_number_type_t {
  * \param uint8 A uint8_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithUInt8: (uint8_t)uint8;
++ (instancetype)numberWithUInt8: (uint8_t)uint8;
 
 /**
  * \brief Creates a new OFNumber with the specified uint16_t.
@@ -219,7 +219,7 @@ typedef enum of_number_type_t {
  * \param uint16 A uint16_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithUInt16: (uint16_t)uint16;
++ (instancetype)numberWithUInt16: (uint16_t)uint16;
 
 /**
  * \brief Creates a new OFNumber with the specified uint32_t.
@@ -227,7 +227,7 @@ typedef enum of_number_type_t {
  * \param uint32 A uint32_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithUInt32: (uint32_t)uint32;
++ (instancetype)numberWithUInt32: (uint32_t)uint32;
 
 /**
  * \brief Creates a new OFNumber with the specified uint64_t.
@@ -235,7 +235,7 @@ typedef enum of_number_type_t {
  * \param uint64 A uint64_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithUInt64: (uint64_t)uint64;
++ (instancetype)numberWithUInt64: (uint64_t)uint64;
 
 /**
  * \brief Creates a new OFNumber with the specified size_t.
@@ -243,7 +243,7 @@ typedef enum of_number_type_t {
  * \param size A size_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithSize: (size_t)size;
++ (instancetype)numberWithSize: (size_t)size;
 
 /**
  * \brief Creates a new OFNumber with the specified ssize_t.
@@ -251,7 +251,7 @@ typedef enum of_number_type_t {
  * \param ssize An ssize_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithSSize: (ssize_t)ssize;
++ (instancetype)numberWithSSize: (ssize_t)ssize;
 
 /**
  * \brief Creates a new OFNumber with the specified intmax_t.
@@ -259,7 +259,7 @@ typedef enum of_number_type_t {
  * \param intmax An intmax_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithIntMax: (intmax_t)intmax;
++ (instancetype)numberWithIntMax: (intmax_t)intmax;
 
 /**
  * \brief Creates a new OFNumber with the specified uintmax_t.
@@ -267,7 +267,7 @@ typedef enum of_number_type_t {
  * \param uintmax A uintmax_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithUIntMax: (uintmax_t)uintmax;
++ (instancetype)numberWithUIntMax: (uintmax_t)uintmax;
 
 /**
  * \brief Creates a new OFNumber with the specified ptrdiff_t.
@@ -275,7 +275,7 @@ typedef enum of_number_type_t {
  * \param ptrdiff A ptrdiff_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithPtrDiff: (ptrdiff_t)ptrdiff;
++ (instancetype)numberWithPtrDiff: (ptrdiff_t)ptrdiff;
 
 /**
  * \brief Creates a new OFNumber with the specified intptr_t.
@@ -283,7 +283,7 @@ typedef enum of_number_type_t {
  * \param intptr An intptr_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithIntPtr: (intptr_t)intptr;
++ (instancetype)numberWithIntPtr: (intptr_t)intptr;
 
 /**
  * \brief Creates a new OFNumber with the specified uintptr_t.
@@ -291,7 +291,7 @@ typedef enum of_number_type_t {
  * \param uintptr A uintptr_t which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithUIntPtr: (uintptr_t)uintptr;
++ (instancetype)numberWithUIntPtr: (uintptr_t)uintptr;
 
 /**
  * \brief Creates a new OFNumber with the specified float.
@@ -299,7 +299,7 @@ typedef enum of_number_type_t {
  * \param float_ A float which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithFloat: (float)float_;
++ (instancetype)numberWithFloat: (float)float_;
 
 /**
  * \brief Creates a new OFNumber with the specified double.
@@ -307,7 +307,7 @@ typedef enum of_number_type_t {
  * \param double_ A double which the OFNumber should contain
  * \return A new autoreleased OFNumber
  */
-+ numberWithDouble: (double)double_;
++ (instancetype)numberWithDouble: (double)double_;
 
 /**
  * \brief Initializes an already allocated OFNumber with the specified BOOL.

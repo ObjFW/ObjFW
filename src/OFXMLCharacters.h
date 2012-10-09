@@ -30,7 +30,7 @@
  * \param string The string value for the characters
  * \return A new OFXMLCharacters
  */
-+ charactersWithString: (OFString*)string;
++ (instancetype)charactersWithString: (OFString*)string;
 
 /**
  * \brief Initializes an already allocated OFXMLCharacters with the specified

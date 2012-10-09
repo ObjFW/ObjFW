@@ -25,8 +25,8 @@
 #import "common.h"
 
 @implementation OFHashAlreadyCalculatedException
-+ exceptionWithClass: (Class)class_
-		hash: (OFHash*)hash
++ (instancetype)exceptionWithClass: (Class)class_
+			      hash: (OFHash*)hash
 {
 	return [[[self alloc] initWithClass: class_
 				       hash: hash] autorelease];

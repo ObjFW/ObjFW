@@ -175,7 +175,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	}
 }
 
-+ parser
++ (instancetype)parser
 {
 	return [[[self alloc] init] autorelease];
 }

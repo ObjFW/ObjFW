@@ -24,9 +24,9 @@
 #import "common.h"
 
 @implementation OFOpenFileFailedException
-+ exceptionWithClass: (Class)class_
-		path: (OFString*)path
-	  mode: (OFString*)mode
++ (instancetype)exceptionWithClass: (Class)class_
+			      path: (OFString*)path
+			      mode: (OFString*)mode
 {
 	return [[[self alloc] initWithClass: class_
 				       path: path

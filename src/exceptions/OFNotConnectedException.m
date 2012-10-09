@@ -25,8 +25,8 @@
 #import "common.h"
 
 @implementation OFNotConnectedException
-+ exceptionWithClass: (Class)class_
-	      socket: (OFStreamSocket*)socket
++ (instancetype)exceptionWithClass: (Class)class_
+			    socket: (OFStreamSocket*)socket
 {
 	return [[[self alloc] initWithClass: class_
 				     socket: socket] autorelease];

@@ -36,8 +36,8 @@
  * \param url The URL whose protocol is unsupported
  * \return A new unsupported protocol exception
  */
-+ exceptionWithClass: (Class)class_
-		 URL: (OFURL*)url;
++ (instancetype)exceptionWithClass: (Class)class_
+			       URL: (OFURL*)url;
 
 /**
  * Initializes an already allocated unsupported protocol exception

@@ -117,18 +117,18 @@ call_main(id object)
 		    exceptionWithClass: self];
 }
 
-+ thread
++ (instancetype)thread
 {
 	return [[[self alloc] init] autorelease];
 }
 
-+ threadWithObject: (id)object
++ (instancetype)threadWithObject: (id)object
 {
 	return [[[self alloc] initWithObject: object] autorelease];
 }
 
 #ifdef OF_HAVE_BLOCKS
-+ threadWithBlock: (of_thread_block_t)block
++ (instancetype)threadWithBlock: (of_thread_block_t)block
 {
 	return [[[self alloc] initWithBlock: block] autorelease];
 }
@@ -370,12 +370,12 @@ call_main(id object)
 		TLSKeys = [[OFList alloc] init];
 }
 
-+ TLSKey
++ (instancetype)TLSKey
 {
 	return [[[self alloc] init] autorelease];
 }
 
-+ TLSKeyWithDestructor: (void(*)(id))destructor
++ (instancetype)TLSKeyWithDestructor: (void(*)(id))destructor
 {
 	return [[[self alloc] initWithDestructor: destructor] autorelease];
 }
@@ -446,7 +446,7 @@ call_main(id object)
 @end
 
 @implementation OFMutex
-+ mutex
++ (instancetype)mutex
 {
 	return [[[self alloc] init] autorelease];
 }
@@ -554,7 +554,7 @@ call_main(id object)
 @end
 
 @implementation OFCondition
-+ condition
++ (instancetype)condition
 {
 	return [[[self alloc] init] autorelease];
 }

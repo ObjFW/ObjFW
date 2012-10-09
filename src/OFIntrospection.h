@@ -120,7 +120,7 @@
  *
  * \return A new, autoreleased introspection for the specified class
  */
-+ introspectionWithClass: (Class)class_;
++ (instancetype)introspectionWithClass: (Class)class_;
 
 /**
  * \brief Initializes an already allocated OFIntrospection with the specified

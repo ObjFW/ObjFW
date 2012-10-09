@@ -30,7 +30,7 @@
  * \param string The string value for the CDATA
  * \return A new OFXMLCDATA
  */
-+ CDATAWithString: (OFString*)string;
++ (instancetype)CDATAWithString: (OFString*)string;
 
 /**
  * \brief Initializes an alredy allocated OFXMLCDATA with the specified string.

@@ -21,7 +21,7 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFHash
-+ hash
++ (instancetype)hash
 {
 	return [[[self alloc] init] autorelease];
 }

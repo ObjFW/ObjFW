@@ -40,7 +40,7 @@
  * \param class_ The class of the object which caused the exception
  * \return A new exception
  */
-+ exceptionWithClass: (Class)class_;
++ (instancetype)exceptionWithClass: (Class)class_;
 
 /**
  * Initializes an already allocated OFException.

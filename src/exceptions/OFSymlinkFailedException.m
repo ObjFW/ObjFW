@@ -25,9 +25,9 @@
 
 #ifndef _WIN32
 @implementation OFSymlinkFailedException
-+ exceptionWithClass: (Class)class_
-	  sourcePath: (OFString*)source
-     destinationPath: (OFString*)destination
++ (instancetype)exceptionWithClass: (Class)class_
+			sourcePath: (OFString*)source
+		   destinationPath: (OFString*)destination
 {
 	return [[[self alloc] initWithClass: class_
 				 sourcePath: source

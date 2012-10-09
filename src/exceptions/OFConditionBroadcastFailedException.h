@@ -35,8 +35,8 @@
  * \param condition The condition which could not be broadcasted
  * \return A new condition broadcast failed exception
  */
-+ exceptionWithClass: (Class)class_
-	   condition: (OFCondition*)condition;
++ (instancetype)exceptionWithClass: (Class)class_
+			 condition: (OFCondition*)condition;
 
 /**
  * Initializes an already allocated condition broadcast failed exception.

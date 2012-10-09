@@ -30,7 +30,7 @@
  * \param string The string for the processing instructions
  * \return A new OFXMLProcessingInstructions
  */
-+ processingInstructionsWithString: (OFString*)string;
++ (instancetype)processingInstructionsWithString: (OFString*)string;
 
 /**
  * \brief Initializes an already allocated OFXMLProcessingInstructions with the

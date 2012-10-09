@@ -34,8 +34,8 @@
  * \param selector The selector which is not or not fully implemented
  * \return A new not implemented exception
  */
-+ exceptionWithClass: (Class)class_
-	    selector: (SEL)selector;
++ (instancetype)exceptionWithClass: (Class)class_
+			  selector: (SEL)selector;
 
 /**
  * Initializes an already allocated not implemented exception.

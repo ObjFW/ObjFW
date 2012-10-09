@@ -23,8 +23,8 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFConditionSignalFailedException
-+ exceptionWithClass: (Class)class_
-	   condition: (OFCondition*)condition
++ (instancetype)exceptionWithClass: (Class)class_
+			 condition: (OFCondition*)condition
 {
 	return [[[self alloc] initWithClass: class_
 				  condition: condition] autorelease];

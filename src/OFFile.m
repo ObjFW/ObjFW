@@ -173,14 +173,14 @@ of_log(OFConstantString *format, ...)
 }
 #endif
 
-+ fileWithPath: (OFString*)path
-	  mode: (OFString*)mode
++ (instancetype)fileWithPath: (OFString*)path
+			mode: (OFString*)mode
 {
 	return [[[self alloc] initWithPath: path
 				      mode: mode] autorelease];
 }
 
-+ fileWithFileDescriptor: (int)filedescriptor
++ (instancetype)fileWithFileDescriptor: (int)filedescriptor
 {
 	return [[[self alloc]
 	    initWithFileDescriptor: filedescriptor] autorelease];

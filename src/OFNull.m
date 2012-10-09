@@ -28,7 +28,7 @@
 static OFNull *null = nil;
 
 @implementation OFNull
-+ null
++ (OFNull*)null
 {
 	if (null != nil)
 		return null;

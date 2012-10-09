@@ -33,11 +33,11 @@
 #endif
 }
 
-+ jobWithTarget: (id)target
-       selector: (SEL)selector
-	 object: (id)object;
++ (instancetype)jobWithTarget: (id)target
+		     selector: (SEL)selector
+		       object: (id)object;
 #ifdef OF_HAVE_BLOCKS
-+ jobWithBlock: (of_thread_pool_block_t)block;
++ (instancetype)jobWithBlock: (of_thread_pool_block_t)block;
 #endif
 - initWithTarget: (id)target
 	selector: (SEL)selector
@@ -49,9 +49,9 @@
 @end
 
 @implementation OFThreadPoolJob
-+ jobWithTarget: (id)target
-       selector: (SEL)selector
-	 object: (id)object
++ (instancetype)jobWithTarget: (id)target
+		     selector: (SEL)selector
+		       object: (id)object
 {
 	return [[[self alloc] initWithTarget: target
 				    selector: selector
@@ -59,7 +59,7 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-+ jobWithBlock: (of_thread_pool_block_t)block
++ (instancetype)jobWithBlock: (of_thread_pool_block_t)block
 {
 	return [[(OFThreadPoolJob*)[self alloc]
 	    initWithBlock: block] autorelease];
@@ -132,12 +132,12 @@
 	volatile int *doneCount;
 }
 
-+ threadWithThreadPool: (OFThreadPool*)threadPool;
++ (instancetype)threadWithThreadPool: (OFThreadPool*)threadPool;
 - initWithThreadPool: (OFThreadPool*)threadPool;
 @end
 
 @implementation OFThreadPoolThread
-+ threadWithThreadPool: (OFThreadPool*)threadPool
++ (instancetype)threadWithThreadPool: (OFThreadPool*)threadPool
 {
 	return [[[self alloc] initWithThreadPool: threadPool] autorelease];
 }
@@ -241,12 +241,12 @@
 @end
 
 @implementation OFThreadPool
-+ threadPool
++ (instancetype)threadPool
 {
 	return [[[self alloc] init] autorelease];
 }
 
-+ threadPoolWithSize: (size_t)size
++ (instancetype)threadPoolWithSize: (size_t)size
 {
 	return [[[self alloc] initWithSize: size] autorelease];
 }

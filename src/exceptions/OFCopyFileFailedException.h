@@ -38,9 +38,9 @@
  * \param destination The new path
  * \return A new copy file failed exception
  */
-+ exceptionWithClass: (Class)class_
-	  sourcePath: (OFString*)source
-     destinationPath: (OFString*)destination;
++ (instancetype)exceptionWithClass: (Class)class_
+			sourcePath: (OFString*)source
+		   destinationPath: (OFString*)destination;
 
 /**
  * Initializes an already allocated copy file failed exception.

@@ -169,44 +169,44 @@ static int month_to_day_of_year[12] = {
 }
 #endif
 
-+ date
++ (instancetype)date
 {
 	return [[[self alloc] init] autorelease];
 }
 
-+ dateWithTimeIntervalSince1970: (double)seconds
++ (instancetype)dateWithTimeIntervalSince1970: (double)seconds
 {
 	return [[[self alloc]
 	    initWithTimeIntervalSince1970: seconds] autorelease];
 }
 
-+ dateWithTimeIntervalSinceNow: (double)seconds
++ (instancetype)dateWithTimeIntervalSinceNow: (double)seconds
 {
 	return [[[self alloc]
 	    initWithTimeIntervalSinceNow: seconds] autorelease];
 }
 
-+ dateWithDateString: (OFString*)string
-	      format: (OFString*)format
++ (instancetype)dateWithDateString: (OFString*)string
+			    format: (OFString*)format
 {
 	return [[[self alloc] initWithDateString: string
 					  format: format] autorelease];
 }
 
-+ dateWithLocalDateString: (OFString*)string
-		   format: (OFString*)format
++ (instancetype)dateWithLocalDateString: (OFString*)string
+				 format: (OFString*)format
 {
 	return [[[self alloc] initWithLocalDateString: string
 					       format: format] autorelease];
 }
 
-+ distantFuture
++ (instancetype)distantFuture
 {
 	return [[[self alloc]
 	    initWithTimeIntervalSince1970: DBL_MAX] autorelease];
 }
 
-+ distantPast
++ (instancetype)distantPast
 {
 	return [[[self alloc]
 	    initWithTimeIntervalSince1970: DBL_MIN] autorelease];

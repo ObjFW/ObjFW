@@ -34,8 +34,8 @@
  * \param object The object which was mutated during enumeration
  * \return A new enumeration mutation exception
  */
-+ exceptionWithClass: (Class)class_
-	      object: (id)object;
++ (instancetype)exceptionWithClass: (Class)class_
+			    object: (id)object;
 
 /**
  * Initializes an already allocated enumeration mutation exception.

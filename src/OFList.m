@@ -30,7 +30,7 @@
 #import "macros.h"
 
 @implementation OFList
-+ list
++ (instancetype)list
 {
 	return [[[self alloc] init] autorelease];
 }

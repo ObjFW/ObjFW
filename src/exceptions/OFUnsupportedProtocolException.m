@@ -25,8 +25,8 @@
 #import "common.h"
 
 @implementation OFUnsupportedProtocolException
-+ exceptionWithClass: (Class)class_
-		 URL: (OFURL*)url
++ (instancetype)exceptionWithClass: (Class)class_
+			       URL: (OFURL*)url
 {
 	return [[[self alloc] initWithClass: class_
 					URL: url] autorelease];

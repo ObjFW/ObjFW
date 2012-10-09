@@ -38,21 +38,21 @@
 #import "autorelease.h"
 
 @implementation OFProcess
-+ processWithProgram: (OFString*)program
++ (instancetype)processWithProgram: (OFString*)program
 {
 	return [[[self alloc] initWithProgram: program] autorelease];
 }
 
-+ processWithProgram: (OFString*)program
-	   arguments: (OFArray*)arguments
++ (instancetype)processWithProgram: (OFString*)program
+			 arguments: (OFArray*)arguments
 {
 	return [[[self alloc] initWithProgram: program
 				    arguments: arguments] autorelease];
 }
 
-+ processWithProgram: (OFString*)program
-	 programName: (OFString*)programName
-	   arguments: (OFArray*)arguments
++ (instancetype)processWithProgram: (OFString*)program
+		       programName: (OFString*)programName
+			 arguments: (OFArray*)arguments
 {
 	return [[[self alloc] initWithProgram: program
 				  programName: programName

@@ -23,8 +23,8 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFThreadStillRunningException
-+ exceptionWithClass: (Class)class_
-	      thread: (OFThread*)thread
++ (instancetype)exceptionWithClass: (Class)class_
+			    thread: (OFThread*)thread
 {
 	return [[[self alloc] initWithClass: class_
 				     thread: thread] autorelease];

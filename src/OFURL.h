@@ -53,7 +53,7 @@
  * \param string A string describing a URL
  * \return A new, autoreleased OFURL
  */
-+ URLWithString: (OFString*)string;
++ (instancetype)URLWithString: (OFString*)string;
 
 /**
  * Creates a new URL with the specified string relative to the specified URL.
@@ -62,8 +62,8 @@
  * \param URL An URL to which the string is relative
  * \return A new, autoreleased OFURL
  */
-+ URLWithString: (OFString*)string
-  relativeToURL: (OFURL*)URL;
++ (instancetype)URLWithString: (OFString*)string
+		relativeToURL: (OFURL*)URL;
 
 /**
  * \brief Initializes an already allocated OFURL with the specified string.

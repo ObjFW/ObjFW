@@ -42,9 +42,9 @@
  *		 written
  * \return A new open file failed exception
  */
-+ exceptionWithClass: (Class)class_
-	      stream: (OFStream*)stream
-     requestedLength: (size_t)length;
++ (instancetype)exceptionWithClass: (Class)class_
+			    stream: (OFStream*)stream
+		   requestedLength: (size_t)length;
 
 /**
  * Initializes an already allocated read or write failed exception.

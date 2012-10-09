@@ -63,12 +63,12 @@ normalizeKey(OFString *key)
 }
 
 @implementation OFHTTPRequest
-+ request
++ (instancetype)request
 {
 	return [[[self alloc] init] autorelease];
 }
 
-+ requestWithURL: (OFURL*)URL
++ (instancetype)requestWithURL: (OFURL*)URL
 {
 	return [[[self alloc] initWithURL: URL] autorelease];
 }

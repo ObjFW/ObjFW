@@ -22,8 +22,8 @@
 	of_range_t range;
 }
 
-+ arrayWithArray: (OFArray*)array
-	   range: (of_range_t)range;
++ (instancetype)arrayWithArray: (OFArray*)array
+			 range: (of_range_t)range;
 - initWithArray: (OFArray*)array
 	  range: (of_range_t)range;
 @end

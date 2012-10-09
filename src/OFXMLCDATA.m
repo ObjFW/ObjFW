@@ -25,7 +25,7 @@
 #import "autorelease.h"
 
 @implementation OFXMLCDATA
-+ CDATAWithString: (OFString*)string
++ (instancetype)CDATAWithString: (OFString*)string
 {
 	return [[[self alloc] initWithString: string] autorelease];
 }

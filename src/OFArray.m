@@ -124,17 +124,17 @@ static struct {
 	return [super alloc];
 }
 
-+ array
++ (instancetype)array
 {
 	return [[[self alloc] init] autorelease];
 }
 
-+ arrayWithObject: (id)object
++ (instancetype)arrayWithObject: (id)object
 {
 	return [[[self alloc] initWithObject: object] autorelease];
 }
 
-+ arrayWithObjects: (id)firstObject, ...
++ (instancetype)arrayWithObjects: (id)firstObject, ...
 {
 	id ret;
 	va_list arguments;
@@ -147,13 +147,13 @@ static struct {
 	return ret;
 }
 
-+ arrayWithArray: (OFArray*)array
++ (instancetype)arrayWithArray: (OFArray*)array
 {
 	return [[[self alloc] initWithArray: array] autorelease];
 }
 
-+ arrayWithObjects: (id const*)objects
-	     count: (size_t)count
++ (instancetype)arrayWithObjects: (id const*)objects
+			   count: (size_t)count
 {
 	return [[[self alloc] initWithObjects: objects
 					count: count] autorelease];

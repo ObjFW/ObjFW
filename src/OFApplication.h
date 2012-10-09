@@ -132,7 +132,7 @@
  *
  * \return The only OFApplication instance in the application
  */
-+ sharedApplication;
++ (OFApplication*)sharedApplication;
 
 /**
  * \brief Returns the name of the program (argv[0]).

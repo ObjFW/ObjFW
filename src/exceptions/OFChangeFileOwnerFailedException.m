@@ -25,10 +25,10 @@
 
 #ifndef _WIN32
 @implementation OFChangeFileOwnerFailedException
-+ exceptionWithClass: (Class)class_
-		path: (OFString*)path
-	 owner: (OFString*)owner
-	 group: (OFString*)group
++ (instancetype)exceptionWithClass: (Class)class_
+			      path: (OFString*)path
+			     owner: (OFString*)owner
+			     group: (OFString*)group
 {
 	return [[[self alloc] initWithClass: class_
 				       path: path

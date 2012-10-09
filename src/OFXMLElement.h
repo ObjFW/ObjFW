@@ -50,7 +50,7 @@
  * \param name The name for the element
  * \return A new autoreleased OFXMLElement with the specified element name
  */
-+ elementWithName: (OFString*)name;
++ (instancetype)elementWithName: (OFString*)name;
 
 /**
  * \brief Creates a new XML element with the specified name and string value.
@@ -60,8 +60,8 @@
  * \return A new autoreleased OFXMLElement with the specified element name and
  *	   value
  */
-+ elementWithName: (OFString*)name
-      stringValue: (OFString*)stringValue;
++ (instancetype)elementWithName: (OFString*)name
+		    stringValue: (OFString*)stringValue;
 
 /**
  * \brief Creates a new XML element with the specified name and namespace.
@@ -71,8 +71,8 @@
  * \return A new autoreleased OFXMLElement with the specified element name and
  *	   namespace
  */
-+ elementWithName: (OFString*)name
-	namespace: (OFString*)ns;
++ (instancetype)elementWithName: (OFString*)name
+		      namespace: (OFString*)ns;
 
 /**
  * \brief Creates a new XML element with the specified name, namespace and
@@ -84,9 +84,9 @@
  * \return A new autoreleased OFXMLElement with the specified element name,
  *	   namespace and value
  */
-+ elementWithName: (OFString*)name
-	namespace: (OFString*)ns
-      stringValue: (OFString*)stringValue;
++ (instancetype)elementWithName: (OFString*)name
+		      namespace: (OFString*)ns
+		    stringValue: (OFString*)stringValue;
 
 /**
  * \brief Creates a new element with the specified element.
@@ -95,7 +95,7 @@
  * \return A new autoreleased OFXMLElement with the contents of the specified
  *	   element
  */
-+ elementWithElement: (OFXMLElement*)element;
++ (instancetype)elementWithElement: (OFXMLElement*)element;
 
 /**
  * \brief Parses the string and returns an OFXMLElement for it.
@@ -103,7 +103,7 @@
  * \param string The string to parse
  * \return A new autoreleased OFXMLElement with the contents of the string
  */
-+ elementWithXMLString: (OFString*)string;
++ (instancetype)elementWithXMLString: (OFString*)string;
 
 /**
  * \brief Parses the specified file and returns an OFXMLElement for it.
@@ -112,7 +112,7 @@
  * \return A new autoreleased OFXMLElement with the contents of the specified
  *	   file
  */
-+ elementWithFile: (OFString*)path;
++ (instancetype)elementWithFile: (OFString*)path;
 
 /**
  * \brief Initializes an already allocated OFXMLElement with the specified name.

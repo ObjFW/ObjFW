@@ -25,9 +25,9 @@
 #import "common.h"
 
 @implementation OFListenFailedException
-+ exceptionWithClass: (Class)class_
-	      socket: (OFTCPSocket*)socket
-	     backLog: (int)backlog
++ (instancetype)exceptionWithClass: (Class)class_
+			    socket: (OFTCPSocket*)socket
+			   backLog: (int)backlog
 {
 	return [[[self alloc] initWithClass: class_
 				     socket: socket

@@ -51,12 +51,14 @@
 # define OF_HAVE_PROPERTIES
 # define OF_HAVE_OPTIONAL_PROTOCOLS
 # define OF_HAVE_FAST_ENUMERATION
-#elif defined(__GNUC__)
-# if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
-#  define OF_HAVE_PROPERTIES
-#  define OF_HAVE_OPTIONAL_PROTOCOLS
-#  define OF_HAVE_FAST_ENUMERATION
-# endif
+#elif defined(__GNUC__) && (__GNUC__ * 100 + __GNUC__) >= 406
+# define OF_HAVE_PROPERTIES
+# define OF_HAVE_OPTIONAL_PROTOCOLS
+# define OF_HAVE_FAST_ENUMERATION
+#endif
+
+#if !__has_feature(objc_instancetype)
+# define instancetype id
 #endif
 
 #if __has_feature(blocks)

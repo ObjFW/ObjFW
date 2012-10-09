@@ -35,8 +35,8 @@
  * \param mutex The mutex which is still locked
  * \return A new mutex still locked exception
  */
-+ exceptionWithClass: (Class)class_
-	       mutex: (OFMutex*)mutex;
++ (instancetype)exceptionWithClass: (Class)class_
+			     mutex: (OFMutex*)mutex;
 
 /**
  * Initializes an already allocated mutex still locked exception.

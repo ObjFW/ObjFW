@@ -167,7 +167,7 @@
 @end
 
 @implementation OFIntrospection
-+ introspectionWithClass: (Class)class
++ (instancetype)introspectionWithClass: (Class)class
 {
 	return [[[self alloc] initWithClass: class] autorelease];
 }

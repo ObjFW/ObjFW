@@ -27,7 +27,7 @@
 #import "autorelease.h"
 
 @implementation OFXMLProcessingInstructions
-+ processingInstructionsWithString: (OFString*)string
++ (instancetype)processingInstructionsWithString: (OFString*)string
 {
 	return [[[self alloc] initWithString: string] autorelease];
 }

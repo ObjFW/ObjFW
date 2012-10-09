@@ -85,7 +85,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 }
 
 @implementation OFApplication
-+ sharedApplication
++ (OFApplication*)sharedApplication
 {
 	if (app == nil)
 		app = [[self alloc] init];

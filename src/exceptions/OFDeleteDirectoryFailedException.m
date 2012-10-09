@@ -24,8 +24,8 @@
 #import "common.h"
 
 @implementation OFDeleteDirectoryFailedException
-+ exceptionWithClass: (Class)class_
-		path: (OFString*)path_
++ (instancetype)exceptionWithClass: (Class)class_
+			      path: (OFString*)path_
 {
 	return [[[self alloc] initWithClass: class_
 				       path: path_] autorelease];

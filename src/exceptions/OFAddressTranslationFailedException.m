@@ -23,9 +23,9 @@
 #import "common.h"
 
 @implementation OFAddressTranslationFailedException
-+ exceptionWithClass: (Class)class_
-	      socket: (OFTCPSocket*)socket
-		host: (OFString*)host
++ (instancetype)exceptionWithClass: (Class)class_
+			    socket: (OFTCPSocket*)socket
+			      host: (OFString*)host
 {
 	return [[[self alloc] initWithClass: class_
 				     socket: socket

@@ -38,9 +38,9 @@
  * \param destination The new path
  * \return A new rename file failed exception
  */
-+ exceptionWithClass: (Class)class_
-	  sourcePath: (OFString*)source
-     destinationPath: (OFString*)destination;
++ (instancetype)exceptionWithClass: (Class)class_
+			sourcePath: (OFString*)source
+		   destinationPath: (OFString*)destination;
 
 /**
  * Initializes an already allocated rename failed exception.

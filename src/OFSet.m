@@ -117,22 +117,22 @@ static struct {
 	return [super alloc];
 }
 
-+ set
++ (instancetype)set
 {
 	return [[[self alloc] init] autorelease];
 }
 
-+ setWithSet: (OFSet*)set
++ (instancetype)setWithSet: (OFSet*)set
 {
 	return [[[self alloc] initWithSet: set] autorelease];
 }
 
-+ setWithArray: (OFArray*)array
++ (instancetype)setWithArray: (OFArray*)array
 {
 	return [[[self alloc] initWithArray: array] autorelease];
 }
 
-+ setWithObjects: (id)firstObject, ...
++ (instancetype)setWithObjects: (id)firstObject, ...
 {
 	id ret;
 	va_list arguments;
@@ -145,8 +145,8 @@ static struct {
 	return ret;
 }
 
-+ setWithObjects: (id const*)objects
-	   count: (size_t)count
++ (instancetype)setWithObjects: (id const*)objects
+			 count: (size_t)count
 {
 	return [[[self alloc] initWithObjects: objects
 					count: count] autorelease];

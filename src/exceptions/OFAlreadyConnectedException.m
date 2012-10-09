@@ -25,8 +25,8 @@
 #import "common.h"
 
 @implementation OFAlreadyConnectedException
-+ exceptionWithClass: (Class)class_
-	      socket: (OFTCPSocket*)socket
++ (instancetype)exceptionWithClass: (Class)class_
+			    socket: (OFTCPSocket*)socket
 {
 	return [[[self alloc] initWithClass: class_
 				     socket: socket] autorelease];

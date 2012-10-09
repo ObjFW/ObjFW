@@ -33,8 +33,8 @@
  * \param size The size of the memory that couldn't be allocated
  * \return A new no memory exception
  */
-+ exceptionWithClass: (Class)class_
-       requestedSize: (size_t)size;
++ (instancetype)exceptionWithClass: (Class)class_
+		     requestedSize: (size_t)size;
 
 /**
  * Initializes an already allocated no memory exception.

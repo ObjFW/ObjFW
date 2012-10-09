@@ -37,5 +37,5 @@
  *
  * \return A new, autoreleased OFTCPSocket
  */
-+ socket;
++ (instancetype)socket;
 @end

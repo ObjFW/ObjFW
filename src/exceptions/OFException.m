@@ -22,7 +22,7 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFException
-+ exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class_
 {
 	return [[[self alloc] initWithClass: class_] autorelease];
 }

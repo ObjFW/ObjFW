@@ -33,8 +33,8 @@
  * \param line The line in which the parsing error encountered
  * \return A new invalid JSON exception
  */
-+ exceptionWithClass: (Class)class_
-		line: (size_t)line;
++ (instancetype)exceptionWithClass: (Class)class_
+			      line: (size_t)line;
 
 /**
  * Initializes an already allocated invalid JSON exception.

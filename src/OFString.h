@@ -88,7 +88,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  *
  * \return A new, autoreleased OFString
  */
-+ string;
++ (instancetype)string;
 
 /**
  * \brief Creates a new OFString from a UTF-8 encoded C string.
@@ -96,7 +96,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param UTF8String A UTF-8 encoded C string to initialize the OFString with
  * \return A new autoreleased OFString
  */
-+ stringWithUTF8String: (const char*)UTF8String;
++ (instancetype)stringWithUTF8String: (const char*)UTF8String;
 
 /**
  * \brief Creates a new OFString from a UTF-8 encoded C string with the
@@ -106,8 +106,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param UTF8StringLength The length of the UTF-8 encoded C string
  * \return A new autoreleased OFString
  */
-+ stringWithUTF8String: (const char*)UTF8String
-		length: (size_t)UTF8StringLength;
++ (instancetype)stringWithUTF8String: (const char*)UTF8String
+			      length: (size_t)UTF8StringLength;
 
 /**
  * \brief Creates a new OFString from a C string with the specified encoding.
@@ -116,8 +116,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param encoding The encoding of the C string
  * \return A new autoreleased OFString
  */
-+ stringWithCString: (const char*)cString
-	   encoding: (of_string_encoding_t)encoding;
++ (instancetype)stringWithCString: (const char*)cString
+			 encoding: (of_string_encoding_t)encoding;
 
 /**
  * \brief Creates a new OFString from a C string with the specified encoding
@@ -128,9 +128,9 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param cStringLength The length of the C string
  * \return A new autoreleased OFString
  */
-+ stringWithCString: (const char*)cString
-	   encoding: (of_string_encoding_t)encoding
-	     length: (size_t)cStringLength;
++ (instancetype)stringWithCString: (const char*)cString
+			 encoding: (of_string_encoding_t)encoding
+			   length: (size_t)cStringLength;
 
 /**
  * \brief Creates a new OFString from another string.
@@ -138,7 +138,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param string A string to initialize the OFString with
  * \return A new autoreleased OFString
  */
-+ stringWithString: (OFString*)string;
++ (instancetype)stringWithString: (OFString*)string;
 
 /**
  * \brief Creates a new OFString from a unicode string.
@@ -146,7 +146,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param string The unicode string
  * \return A new autoreleased OFString
  */
-+ stringWithUnicodeString: (const of_unichar_t*)string;
++ (instancetype)stringWithUnicodeString: (const of_unichar_t*)string;
 
 /**
  * \brief Creates a new OFString from a unicode string, assuming the specified
@@ -156,8 +156,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param byteOrder The byte order to assume if there is no BOM
  * \return A new autoreleased OFString
  */
-+ stringWithUnicodeString: (const of_unichar_t*)string
-		byteOrder: (of_endianess_t)byteOrder;
++ (instancetype)stringWithUnicodeString: (const of_unichar_t*)string
+			      byteOrder: (of_endianess_t)byteOrder;
 
 /**
  * \brief Creates a new OFString from a unicode string with the specified
@@ -167,8 +167,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param length The length of the unicode string
  * \return A new autoreleased OFString
  */
-+ stringWithUnicodeString: (const of_unichar_t*)string
-		   length: (size_t)length;
++ (instancetype)stringWithUnicodeString: (const of_unichar_t*)string
+				 length: (size_t)length;
 
 /**
  * \brief Creates a new OFString from a unicode string with the specified
@@ -179,9 +179,9 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param length The length of the unicode string
  * \return A new autoreleased OFString
  */
-+ stringWithUnicodeString: (const of_unichar_t*)string
-		byteOrder: (of_endianess_t)byteOrder
-		   length: (size_t)length;
++ (instancetype)stringWithUnicodeString: (const of_unichar_t*)string
+			      byteOrder: (of_endianess_t)byteOrder
+				 length: (size_t)length;
 
 /**
  * \brief Creates a new OFString from a UTF-16 encoded string.
@@ -189,7 +189,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param string The UTF-16 string
  * \return A new autoreleased OFString
  */
-+ stringWithUTF16String: (const uint16_t*)string;
++ (instancetype)stringWithUTF16String: (const uint16_t*)string;
 
 /**
  * \brief Creates a new OFString from a UTF-16 encoded string, assuming the
@@ -199,8 +199,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param byteOrder The byte order to assume if there is no BOM
  * \return A new autoreleased OFString
  */
-+ stringWithUTF16String: (const uint16_t*)string
-	      byteOrder: (of_endianess_t)byteOrder;
++ (instancetype)stringWithUTF16String: (const uint16_t*)string
+			    byteOrder: (of_endianess_t)byteOrder;
 
 /**
  * \brief Creates a new OFString from a UTF-16 encoded string with the specified
@@ -210,8 +210,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param length The length of the unicode string
  * \return A new autoreleased OFString
  */
-+ stringWithUTF16String: (const uint16_t*)string
-		 length: (size_t)length;
++ (instancetype)stringWithUTF16String: (const uint16_t*)string
+			       length: (size_t)length;
 
 /**
  * \brief Creates a new OFString from a UTF-16 encoded string with the
@@ -223,9 +223,9 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param length The length of the unicode string
  * \return A new autoreleased OFString
  */
-+ stringWithUTF16String: (const uint16_t*)string
-	      byteOrder: (of_endianess_t)byteOrder
-		 length: (size_t)length;
++ (instancetype)stringWithUTF16String: (const uint16_t*)string
+			    byteOrder: (of_endianess_t)byteOrder
+			       length: (size_t)length;
 
 /**
  * \brief Creates a new OFString from a format string.
@@ -236,7 +236,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param format A string used as format to initialize the OFString
  * \return A new autoreleased OFString
  */
-+ stringWithFormat: (OFConstantString*)format, ...;
++ (instancetype)stringWithFormat: (OFConstantString*)format, ...;
 
 /**
  * \brief Creates a new OFString containing the constructed specified path.
@@ -244,7 +244,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param firstComponent The first component of the path
  * \return A new autoreleased OFString
  */
-+ stringWithPath: (OFString*)firstComponent, ...;
++ (instancetype)stringWithPath: (OFString*)firstComponent, ...;
 
 /**
  * \brief Creates a new OFString with the contents of the specified UTF-8
@@ -253,7 +253,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param path The path to the file
  * \return A new autoreleased OFString
  */
-+ stringWithContentsOfFile: (OFString*)path;
++ (instancetype)stringWithContentsOfFile: (OFString*)path;
 
 /**
  * \brief Creates a new OFString with the contents of the specified file in the
@@ -263,8 +263,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param encoding The encoding of the file
  * \return A new autoreleased OFString
  */
-+ stringWithContentsOfFile: (OFString*)path
-		  encoding: (of_string_encoding_t)encoding;
++ (instancetype)stringWithContentsOfFile: (OFString*)path
+				encoding: (of_string_encoding_t)encoding;
 
 /**
  * \brief Creates a new OFString with the contents of the specified URL.
@@ -278,7 +278,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param URL The URL to the contents for the string
  * \return A new autoreleased OFString
  */
-+ stringWithContentsOfURL: (OFURL*)URL;
++ (instancetype)stringWithContentsOfURL: (OFURL*)URL;
 
 /**
  * \brief Creates a new OFString with the contents of the specified URL in the
@@ -288,8 +288,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param encoding The encoding to assume
  * \return A new autoreleased OFString
  */
-+ stringWithContentsOfURL: (OFURL*)URL
-		 encoding: (of_string_encoding_t)encoding;
++ (instancetype)stringWithContentsOfURL: (OFURL*)URL
+			       encoding: (of_string_encoding_t)encoding;
 
 /**
  * \brief Initializes an already allocated OFString from a UTF-8 encoded C

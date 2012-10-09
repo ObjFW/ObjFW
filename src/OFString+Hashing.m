@@ -57,7 +57,7 @@ int _OFString_Hashing_reference;
 - (OFString*)SHA1Hash
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFMD5Hash *hash = [OFSHA1Hash hash];
+	OFSHA1Hash *hash = [OFSHA1Hash hash];
 	uint8_t *digest;
 	char ret[OF_SHA1_DIGEST_SIZE * 2];
 	size_t i;

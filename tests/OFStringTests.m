@@ -73,6 +73,7 @@ static uint16_t sutf16str[] = {
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFMutableString *s[3];
+	OFString *is;
 	OFArray *a;
 	int i;
 	const of_unichar_t *ua;
@@ -157,27 +158,27 @@ static uint16_t sutf16str[] = {
 	    [s[0] isEqual: @"foo"])
 
 	TEST(@"+[stringWithUnicodeString:]",
-	    (s[1] = [OFString stringWithUnicodeString: ucstr]) &&
-	    [s[1] isEqual: @"fööbär🀺"] &&
-	    (s[1] = [OFString stringWithUnicodeString: sucstr]) &&
-	    [s[1] isEqual: @"fööbär🀺"])
+	    (is = [OFString stringWithUnicodeString: ucstr]) &&
+	    [is isEqual: @"fööbär🀺"] &&
+	    (is = [OFString stringWithUnicodeString: sucstr]) &&
+	    [is isEqual: @"fööbär🀺"])
 
 	TEST(@"+[stringWithUTF16String:]",
-	    (s[1] = [OFString stringWithUTF16String: utf16str]) &&
-	    [s[1] isEqual: @"fööbär🀺"] &&
-	    (s[1] = [OFString stringWithUTF16String: sutf16str]) &&
-	    [s[1] isEqual: @"fööbär🀺"])
+	    (is = [OFString stringWithUTF16String: utf16str]) &&
+	    [is isEqual: @"fööbär🀺"] &&
+	    (is = [OFString stringWithUTF16String: sutf16str]) &&
+	    [is isEqual: @"fööbär🀺"])
 
-	TEST(@"+[stringWithContentsOfFile:encoding]", (s[1] = [OFString
+	TEST(@"+[stringWithContentsOfFile:encoding]", (is = [OFString
 	    stringWithContentsOfFile: @"testfile.txt"
 			    encoding: OF_STRING_ENCODING_ISO_8859_1]) &&
-	    [s[1] isEqual: @"testäöü"])
+	    [is isEqual: @"testäöü"])
 
-	TEST(@"+[stringWithContentsOfURL:encoding]", (s[1] = [OFString
+	TEST(@"+[stringWithContentsOfURL:encoding]", (is = [OFString
 	    stringWithContentsOfURL: [OFURL URLWithString:
 					 @"file://testfile.txt"]
 			   encoding: OF_STRING_ENCODING_ISO_8859_1]) &&
-	    [s[1] isEqual: @"testäöü"])
+	    [is isEqual: @"testäöü"])
 
 	TEST(@"-[appendUTFString:withLength:]",
 	    R([s[0] appendUTF8String: "foo\xEF\xBB\xBF" "barqux" + 3
@@ -274,14 +275,14 @@ static uint16_t sutf16str[] = {
 	    [[a objectAtIndex: i++] isEqual: @"baz"])
 
 	TEST(@"+[stringWithPath:]",
-	    (s[0] = [OFString stringWithPath: @"foo", @"bar", @"baz", nil]) &&
+	    (is = [OFString stringWithPath: @"foo", @"bar", @"baz", nil]) &&
 #ifndef _WIN32
-	    [s[0] isEqual: @"foo/bar/baz"] &&
+	    [is isEqual: @"foo/bar/baz"] &&
 #else
-	    [s[0] isEqual: @"foo\\bar\\baz"] &&
+	    [is isEqual: @"foo\\bar\\baz"] &&
 #endif
-	    (s[0] = [OFString stringWithPath: @"foo", nil]) &&
-	    [s[0] isEqual: @"foo"])
+	    (is = [OFString stringWithPath: @"foo", nil]) &&
+	    [is isEqual: @"foo"])
 
 	TEST(@"-[pathComponents]",
 	    /* /tmp */

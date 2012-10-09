@@ -25,7 +25,7 @@
 #import "autorelease.h"
 
 @implementation OFXMLCharacters
-+ charactersWithString: (OFString*)string
++ (instancetype)charactersWithString: (OFString*)string
 {
 	return [[[self alloc] initWithString: string] autorelease];
 }

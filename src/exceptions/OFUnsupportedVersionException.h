@@ -34,8 +34,8 @@
  * \param version The version which is unsupported
  * \return A new unsupported version exception
  */
-+ exceptionWithClass: (Class)class_
-	     version: (OFString*)version;
++ (instancetype)exceptionWithClass: (Class)class_
+			   version: (OFString*)version;
 
 /**
  * Initializes an already allocated unsupported protocol exception

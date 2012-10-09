@@ -21,8 +21,8 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFArray_subarray
-+ arrayWithArray: (OFArray*)array
-	   range: (of_range_t)range
++ (instancetype)arrayWithArray: (OFArray*)array
+			 range: (of_range_t)range
 {
 	return [[[self alloc] initWithArray: array
 				      range: range] autorelease];

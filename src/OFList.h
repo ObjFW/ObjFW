@@ -56,7 +56,7 @@ struct of_list_object_t {
  *
  * \return A new autoreleased OFList
  */
-+ list;
++ (instancetype)list;
 
 /**
  * \brief Returns the first list object of the list.

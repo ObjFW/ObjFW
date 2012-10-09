@@ -25,9 +25,9 @@
 #import "common.h"
 
 @implementation OFReadOrWriteFailedException
-+ exceptionWithClass: (Class)class_
-	      stream: (OFStream*)stream
-     requestedLength: (size_t)length
++ (instancetype)exceptionWithClass: (Class)class_
+			    stream: (OFStream*)stream
+		   requestedLength: (size_t)length
 {
 	return [[[self alloc] initWithClass: class_
 				     stream: stream

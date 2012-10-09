@@ -39,7 +39,8 @@ static OFString *values[] = {
 - (void)dictionaryTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFMutableDictionary *dict = [OFMutableDictionary dictionary], *dict2;
+	OFMutableDictionary *dict = [OFMutableDictionary dictionary];
+	OFDictionary *idict;
 	OFEnumerator *key_enum, *obj_enum;
 	OFArray *akeys, *avalues;
 
@@ -192,34 +193,33 @@ static OFString *values[] = {
 	TEST(@"-[count]", [dict count] == 2)
 
 	TEST(@"+[dictionaryWithKeysAndObjects:]",
-	    (dict = [OFDictionary dictionaryWithKeysAndObjects: @"foo", @"bar",
-								@"baz", @"qux",
-								nil]) &&
-	    [[dict objectForKey: @"foo"] isEqual: @"bar"] &&
-	    [[dict objectForKey: @"baz"] isEqual: @"qux"])
+	    (idict = [OFDictionary dictionaryWithKeysAndObjects: @"foo", @"bar",
+								 @"baz", @"qux",
+								 nil]) &&
+	    [[idict objectForKey: @"foo"] isEqual: @"bar"] &&
+	    [[idict objectForKey: @"baz"] isEqual: @"qux"])
 
 	TEST(@"+[dictionaryWithObject:forKey:]",
-	    (dict = [OFDictionary dictionaryWithObject: @"bar"
-						forKey: @"foo"]) &&
-	    [[dict objectForKey: @"foo"] isEqual: @"bar"])
+	    (idict = [OFDictionary dictionaryWithObject: @"bar"
+						 forKey: @"foo"]) &&
+	    [[idict objectForKey: @"foo"] isEqual: @"bar"])
 
 	akeys = [OFArray arrayWithObjects: keys[0], keys[1], nil];
 	avalues = [OFArray arrayWithObjects: values[0], values[1], nil];
 	TEST(@"+[dictionaryWithObjects:forKeys:]",
-	    (dict = [OFDictionary dictionaryWithObjects: avalues
-						forKeys: akeys]) &&
-	    [[dict objectForKey: keys[0]] isEqual: values[0]] &&
-	    [[dict objectForKey: keys[1]] isEqual: values[1]])
+	    (idict = [OFDictionary dictionaryWithObjects: avalues
+						 forKeys: akeys]) &&
+	    [[idict objectForKey: keys[0]] isEqual: values[0]] &&
+	    [[idict objectForKey: keys[1]] isEqual: values[1]])
 
 	TEST(@"-[copy]",
-	    (dict = [[dict copy] autorelease]) &&
-	    [[dict objectForKey: keys[0]] isEqual: values[0]] &&
-	    [[dict objectForKey: keys[1]] isEqual: values[1]])
+	    (idict = [[idict copy] autorelease]) &&
+	    [[idict objectForKey: keys[0]] isEqual: values[0]] &&
+	    [[idict objectForKey: keys[1]] isEqual: values[1]])
 
-	dict2 = dict;
 	TEST(@"-[mutableCopy]",
-	    (dict = [[dict mutableCopy] autorelease]) &&
-	    [dict count] == [dict2 count] &&
+	    (dict = [[idict mutableCopy] autorelease]) &&
+	    [dict count] == [idict count] &&
 	    [[dict objectForKey: keys[0]] isEqual: values[0]] &&
 	    [[dict objectForKey: keys[1]] isEqual: values[1]] &&
 	    R([dict setObject: @"value3"
@@ -236,12 +236,12 @@ static OFString *values[] = {
 
 	[dict setObject: @"foo"
 		 forKey: keys[0]];
-	TEST(@"-[isEqual:]", ![dict isEqual: dict2] &&
+	TEST(@"-[isEqual:]", ![dict isEqual: idict] &&
 	    R([dict removeObjectForKey: @"key3"]) &&
-	    ![dict isEqual: dict2] &&
+	    ![dict isEqual: idict] &&
 	    R([dict setObject: values[0]
 		       forKey: keys[0]]) &&
-	    [dict isEqual: dict2])
+	    [dict isEqual: idict])
 
 	[pool drain];
 }

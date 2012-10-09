@@ -28,10 +28,10 @@
 #import "macros.h"
 
 @implementation OFTimer
-+ scheduledTimerWithTimeInterval: (double)interval
-			  target: (id)target
-			selector: (SEL)selector
-			 repeats: (BOOL)repeats
++ (instancetype)scheduledTimerWithTimeInterval: (double)interval
+					target: (id)target
+				      selector: (SEL)selector
+				       repeats: (BOOL)repeats
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: interval];
@@ -49,11 +49,11 @@
 	return [timer autorelease];
 }
 
-+ scheduledTimerWithTimeInterval: (double)interval
-			  target: (id)target
-			selector: (SEL)selector
-			  object: (id)object
-			 repeats: (BOOL)repeats
++ (instancetype)scheduledTimerWithTimeInterval: (double)interval
+					target: (id)target
+				      selector: (SEL)selector
+					object: (id)object
+				       repeats: (BOOL)repeats
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: interval];
@@ -72,12 +72,12 @@
 	return [timer autorelease];
 }
 
-+ scheduledTimerWithTimeInterval: (double)interval
-			  target: (id)target
-			selector: (SEL)selector
-			  object: (id)object1
-			  object: (id)object2
-			 repeats: (BOOL)repeats
++ (instancetype)scheduledTimerWithTimeInterval: (double)interval
+					target: (id)target
+				      selector: (SEL)selector
+					object: (id)object1
+					object: (id)object2
+				       repeats: (BOOL)repeats
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: interval];
@@ -98,9 +98,9 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-+ scheduledTimerWithTimeInterval: (double)interval
-			 repeats: (BOOL)repeats
-			   block: (of_timer_block_t)block
++ (instancetype)scheduledTimerWithTimeInterval: (double)interval
+				       repeats: (BOOL)repeats
+					 block: (of_timer_block_t)block
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: interval];
@@ -118,10 +118,10 @@
 }
 #endif
 
-+ timerWithTimeInterval: (double)interval
-		 target: (id)target
-	       selector: (SEL)selector
-		repeats: (BOOL)repeats
++ (instancetype)timerWithTimeInterval: (double)interval
+			       target: (id)target
+			     selector: (SEL)selector
+			      repeats: (BOOL)repeats
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: interval];
@@ -137,11 +137,11 @@
 	return [timer autorelease];
 }
 
-+ timerWithTimeInterval: (double)interval
-		 target: (id)target
-	       selector: (SEL)selector
-		 object: (id)object
-		repeats: (BOOL)repeats
++ (instancetype)timerWithTimeInterval: (double)interval
+			       target: (id)target
+			     selector: (SEL)selector
+			       object: (id)object
+			      repeats: (BOOL)repeats
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: interval];
@@ -158,12 +158,12 @@
 	return [timer autorelease];
 }
 
-+ timerWithTimeInterval: (double)interval
-		 target: (id)target
-	       selector: (SEL)selector
-		 object: (id)object1
-		 object: (id)object2
-		repeats: (BOOL)repeats
++ (instancetype)timerWithTimeInterval: (double)interval
+			       target: (id)target
+			     selector: (SEL)selector
+			       object: (id)object1
+			       object: (id)object2
+			      repeats: (BOOL)repeats
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: interval];
@@ -182,9 +182,9 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-+ timerWithTimeInterval: (double)interval
-		repeats: (BOOL)repeats
-		  block: (of_timer_block_t)block
++ (instancetype)timerWithTimeInterval: (double)interval
+			      repeats: (BOOL)repeats
+				block: (of_timer_block_t)block
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: interval];

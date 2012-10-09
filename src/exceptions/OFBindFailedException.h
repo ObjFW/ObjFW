@@ -43,10 +43,10 @@
  * \param port The port on which binding failed
  * \return A new bind failed exception
  */
-+ exceptionWithClass: (Class)class_
-	      socket: (OFTCPSocket*)socket
-		host: (OFString*)host
-		port: (uint16_t)port;
++ (instancetype)exceptionWithClass: (Class)class_
+			    socket: (OFTCPSocket*)socket
+			      host: (OFString*)host
+			      port: (uint16_t)port;
 
 /**
  * Initializes an already allocated bind failed exception.

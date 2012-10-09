@@ -134,32 +134,32 @@ static struct {
 	return [super alloc];
 }
 
-+ dictionary
++ (instancetype)dictionary
 {
 	return [[[self alloc] init] autorelease];
 }
 
-+ dictionaryWithDictionary: (OFDictionary*)dictionary
++ (instancetype)dictionaryWithDictionary: (OFDictionary*)dictionary
 {
 	return [[[self alloc] initWithDictionary: dictionary] autorelease];
 }
 
-+ dictionaryWithObject: (id)object
-		forKey: (id)key
++ (instancetype)dictionaryWithObject: (id)object
+			      forKey: (id)key
 {
 	return [[[self alloc] initWithObject: object
 				      forKey: key] autorelease];
 }
 
-+ dictionaryWithObjects: (OFArray*)objects
-		forKeys: (OFArray*)keys
++ (instancetype)dictionaryWithObjects: (OFArray*)objects
+			      forKeys: (OFArray*)keys
 {
 	return [[[self alloc] initWithObjects: objects
 				      forKeys: keys] autorelease];
 }
 
-+ dictionaryWithObjects: (id const*)objects
-		forKeys: (id const*)keys
++ (instancetype)dictionaryWithObjects: (id const*)objects
+			      forKeys: (id const*)keys
 		  count: (size_t)count
 {
 	return [[[self alloc] initWithObjects: objects
@@ -167,7 +167,7 @@ static struct {
 					count: count] autorelease];
 }
 
-+ dictionaryWithKeysAndObjects: (id)firstKey, ...
++ (instancetype)dictionaryWithKeysAndObjects: (id)firstKey, ...
 {
 	id ret;
 	va_list arguments;

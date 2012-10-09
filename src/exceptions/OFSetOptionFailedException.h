@@ -34,8 +34,8 @@
  * \param stream The stream for which the option could not be set
  * \return A new set option failed exception
  */
-+ exceptionWithClass: (Class)class_
-	      stream: (OFStream*)stream;
++ (instancetype)exceptionWithClass: (Class)class_
+			    stream: (OFStream*)stream;
 
 /**
  * Initializes an already allocated set option failed exception.

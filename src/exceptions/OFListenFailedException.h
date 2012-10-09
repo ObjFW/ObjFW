@@ -40,9 +40,9 @@
  * \param backlog The requested size of the back log
  * \return A new listen failed exception
  */
-+ exceptionWithClass: (Class)class_
-	      socket: (OFTCPSocket*)socket
-	     backLog: (int)backlog;
++ (instancetype)exceptionWithClass: (Class)class_
+			    socket: (OFTCPSocket*)socket
+			   backLog: (int)backlog;
 
 /**
  * Initializes an already allocated listen failed exception

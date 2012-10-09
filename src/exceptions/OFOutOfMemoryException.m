@@ -20,8 +20,8 @@
 #import "OFString.h"
 
 @implementation OFOutOfMemoryException
-+ exceptionWithClass: (Class)class_
-       requestedSize: (size_t)size
++ (instancetype)exceptionWithClass: (Class)class_
+		     requestedSize: (size_t)size
 {
 	return [[[self alloc] initWithClass: class_
 			      requestedSize: size] autorelease];

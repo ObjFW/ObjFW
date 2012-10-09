@@ -40,9 +40,9 @@
  * \param host The host for which translation was requested
  * \return A new address translation failed exception
  */
-+ exceptionWithClass: (Class)class_
-	      socket: (OFTCPSocket*)socket
-		host: (OFString*)host;
++ (instancetype)exceptionWithClass: (Class)class_
+			    socket: (OFTCPSocket*)socket
+			      host: (OFString*)host;
 
 /**
  * Initializes an already allocated address translation failed exception.
