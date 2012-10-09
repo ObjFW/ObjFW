@@ -98,8 +98,14 @@
 	exceptFDs_ = exceptFDs;
 #endif
 
-	time.tv_sec = timeout;
-	time.tv_usec = (timeout - time.tv_sec) * 1000;
+	/*
+	 * We cast to int before assigning to tv_usec in order to avoid a
+	 * warning with Apple GCC on PPC. POSIX defines this as suseconds_t,
+	 * however, this is not available on Win32. As an int should always
+	 * satisfy the required range, we just cast to int.
+	 */
+	time.tv_sec = (time_t)timeout;
+	time.tv_usec = (int)((timeout - time.tv_sec) * 1000);
 
 	if (select((int)maxFD + 1, &readFDs_, &writeFDs_, &exceptFDs_,
 	    (timeout != -1 ? &time : NULL)) < 1)

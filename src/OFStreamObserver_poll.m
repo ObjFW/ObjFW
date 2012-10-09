@@ -144,7 +144,7 @@
 #endif
 
 	if (poll(FDsCArray, (nfds_t)nFDs,
-	    (timeout != -1 ? timeout * 1000 : -1)) < 1)
+	    (int)(timeout != -1 ? timeout * 1000 : -1)) < 1)
 		return NO;
 
 	for (i = 0; i < nFDs; i++) {

@@ -105,8 +105,8 @@
 	struct kevent eventList[EVENTLIST_SIZE];
 	int i, events, realEvents = 0;
 
-	timespec.tv_sec = timeout;
-	timespec.tv_nsec = (timeout - timespec.tv_sec) * 1000000000;
+	timespec.tv_sec = (time_t)timeout;
+	timespec.tv_nsec = (long)((timeout - timespec.tv_sec) * 1000000000);
 
 	[self OF_processQueue];
 
