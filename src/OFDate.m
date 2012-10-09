@@ -335,7 +335,7 @@ static int month_to_day_of_year[12] = {
 				      selector: _cmd];
 
 		d.u = (uint64_t)[element hexadecimalValue];
-		seconds = of_bswap_double_if_le(d.d);
+		seconds = d.d;
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -423,7 +423,7 @@ static int month_to_day_of_year[12] = {
 	element = [OFXMLElement elementWithName: [self className]
 				      namespace: OF_SERIALIZATION_NS];
 
-	d.d = of_bswap_double_if_le(seconds);
+	d.d = seconds;
 	[element setStringValue:
 	    [OFString stringWithFormat: @"%016" PRIx64, d.u]];
 

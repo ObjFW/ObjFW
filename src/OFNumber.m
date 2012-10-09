@@ -760,7 +760,7 @@
 			f.u = (uint32_t)[element hexadecimalValue];
 
 			type = OF_NUMBER_FLOAT;
-			value.float_ = of_bswap_float_if_le(f.f);
+			value.float_ = f.f;
 		} else if ([typeString isEqual: @"double"]) {
 			union {
 				double d;
@@ -770,7 +770,7 @@
 			d.u = (uint64_t)[element hexadecimalValue];
 
 			type = OF_NUMBER_DOUBLE;
-			value.double_ = of_bswap_double_if_le(d.d);
+			value.double_ = d.d;
 		} else
 			@throw [OFInvalidArgumentException
 			    exceptionWithClass: [self class]
@@ -1332,7 +1332,7 @@
 			uint32_t u;
 		} f;
 
-		f.f = of_bswap_float_if_le(value.float_);
+		f.f = value.float_;
 
 		[element addAttributeWithName: @"type"
 				  stringValue: @"float"];
@@ -1346,7 +1346,7 @@
 			uint64_t u;
 		} d;
 
-		d.d = of_bswap_double_if_le(value.double_);
+		d.d = value.double_;
 
 		[element addAttributeWithName: @"type"
 				  stringValue: @"double"];
