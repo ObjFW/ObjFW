@@ -792,7 +792,63 @@
 
 - (BOOL)boolValue
 {
-	RETURN_AS(BOOL)
+	switch (type) {
+	case OF_NUMBER_BOOL:
+		return !!value.bool_;
+	case OF_NUMBER_CHAR:
+		return !!value.char_;
+	case OF_NUMBER_SHORT:
+		return !!value.short_;
+	case OF_NUMBER_INT:
+		return !!value.int_;
+	case OF_NUMBER_LONG:
+		return !!value.long_;
+	case OF_NUMBER_UCHAR:
+		return !!value.uchar;
+	case OF_NUMBER_USHORT:
+		return !!value.ushort;
+	case OF_NUMBER_UINT:
+		return !!value.uint;
+	case OF_NUMBER_ULONG:
+		return !!value.ulong;
+	case OF_NUMBER_INT8:
+		return !!value.int8;
+	case OF_NUMBER_INT16:
+		return !!value.int16;
+	case OF_NUMBER_INT32:
+		return !!value.int32;
+	case OF_NUMBER_INT64:
+		return !!value.int64;
+	case OF_NUMBER_UINT8:
+		return !!value.uint8;
+	case OF_NUMBER_UINT16:
+		return !!value.uint16;
+	case OF_NUMBER_UINT32:
+		return !!value.uint32;
+	case OF_NUMBER_UINT64:
+		return !!value.uint64;
+	case OF_NUMBER_SIZE:
+		return !!value.size;
+	case OF_NUMBER_SSIZE:
+		return !!value.ssize;
+	case OF_NUMBER_INTMAX:
+		return !!value.intmax;
+	case OF_NUMBER_UINTMAX:
+		return !!value.uintmax;
+	case OF_NUMBER_PTRDIFF:
+		return !!value.ptrdiff;
+	case OF_NUMBER_INTPTR:
+		return !!value.intptr;
+	case OF_NUMBER_UINTPTR:
+		return !!value.uintptr;
+	case OF_NUMBER_FLOAT:
+		return !!value.float_;
+	case OF_NUMBER_DOUBLE:
+		return !!value.double_;
+	default:
+		@throw [OFInvalidFormatException
+		    exceptionWithClass: [self class]];
+	}
 }
 
 - (signed char)charValue
