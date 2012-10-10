@@ -30,9 +30,6 @@ static Class *load_queue = NULL;
 static size_t load_queue_cnt = 0;
 static struct objc_sparsearray *empty_dtable = NULL;
 
-static SEL cxx_construct = NULL;
-static SEL cxx_destruct = NULL;
-
 static void
 register_class(struct objc_abi_class *cls)
 {
@@ -296,11 +293,6 @@ objc_register_all_classes(struct objc_abi_symtab *symtab)
 {
 	uint_fast32_t i;
 
-	if (cxx_construct == NULL)
-		cxx_construct = sel_registerName(".cxx_construct");
-	if (cxx_destruct == NULL)
-		cxx_destruct = sel_registerName(".cxx_destruct");
-
 	for (i = 0; i < symtab->cls_def_cnt; i++) {
 		struct objc_abi_class *cls =
 		    (struct objc_abi_class*)symtab->defs[i];
@@ -540,60 +532,6 @@ class_replaceMethod(Class cls, SEL sel, IMP newimp, const char *types)
 	objc_global_mutex_unlock();
 
 	return (IMP)nil;
-}
-
-id
-objc_constructInstance(Class cls, void *bytes)
-{
-	id obj = (id)bytes;
-	BOOL (*last)(id, SEL) = NULL;
-
-	if (cls == Nil || bytes == NULL)
-		return nil;
-
-	object_setClass(obj, cls);
-
-	/* FIXME: Constructors of superclasses should be called first */
-	for (; cls != Nil; cls = class_getSuperclass(cls)) {
-		BOOL (*ctor)(id, SEL);
-
-		if (class_respondsToSelector(cls, cxx_construct)) {
-			if ((ctor = (BOOL(*)(id, SEL))
-			    class_getMethodImplementation(cls,
-			    cxx_construct)) != last)
-				if (!ctor(obj, cxx_construct))
-					return nil;
-
-			last = ctor;
-		} else
-			break;
-	}
-
-	return obj;
-}
-
-void*
-objc_destructInstance(id obj)
-{
-	Class cls;
-	void (*last)(id, SEL) = NULL;
-
-	for (cls = object_getClass(obj); cls != Nil;
-	    cls = class_getSuperclass(cls)) {
-		void (*dtor)(id, SEL);
-
-		if (class_respondsToSelector(cls, cxx_destruct)) {
-			if ((dtor = (void(*)(id, SEL))
-			    class_getMethodImplementation(cls,
-			    cxx_destruct)) != last)
-				dtor(obj, cxx_destruct);
-
-			last = dtor;
-		} else
-			break;
-	}
-
-	return obj;
 }
 
 static void

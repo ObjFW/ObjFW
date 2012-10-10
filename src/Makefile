@@ -79,6 +79,7 @@ INCLUDES := ${SRCS:.m=.h}		\
 	    asprintf.h			\
 	    autorelease.h		\
 	    ${ATOMIC_H}			\
+	    instance.h			\
 	    macros.h			\
 	    objfw-defs.h		\
 	    ${THREADING_H}
@@ -86,6 +87,7 @@ INCLUDES := ${SRCS:.m=.h}		\
 SRCS += OFArray_adjacent.m		\
 	OFArray_adjacentSubarray.m	\
 	${AUTORELEASE_M}		\
+	${INSTANCE_M}			\
 	OFCountedSet_hashtable.m	\
 	OFDictionary_hashtable.m	\
 	OFMutableArray_adjacent.m	\

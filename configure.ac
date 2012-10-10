@@ -266,6 +266,10 @@ case $objc_runtime in
 		;;
 esac
 
+AC_CHECK_FUNC(objc_constructInstance, [], [
+	AC_SUBST(INSTANCE_M, "instance.m")
+])
+
 AC_CHECK_FUNC(objc_autoreleasePoolPush, [], [
 	AC_SUBST(AUTORELEASE_M, "autorelease.m")
 ])
