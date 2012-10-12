@@ -47,11 +47,17 @@
 # define __has_feature(x) 0
 #endif
 
+#ifdef __GNUC__
+# define __GCC_VERSION__ (__GNUC__ * 100 + __GNUC_MINOR__)
+#else
+# define __GCC_VERSION__ 0
+#endif
+
 #if defined(__clang__)
 # define OF_HAVE_PROPERTIES
 # define OF_HAVE_OPTIONAL_PROTOCOLS
 # define OF_HAVE_FAST_ENUMERATION
-#elif defined(__GNUC__) && (__GNUC__ * 100 + __GNUC__) >= 406
+#elif __GCC_VERSION__ >= 406
 # define OF_HAVE_PROPERTIES
 # define OF_HAVE_OPTIONAL_PROTOCOLS
 # define OF_HAVE_FAST_ENUMERATION
@@ -70,6 +76,10 @@
 # define YES __objc_yes
 # undef NO
 # define NO __objc_no
+#endif
+
+#if defined(__clang__) || __GCC_VERSION__ >= 406
+# define OF_SENTINEL __attribute__((sentinel))
 #endif
 
 #if __has_feature(objc_arc)

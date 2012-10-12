@@ -69,7 +69,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \param firstObject The first object in the array
  * \return A new autoreleased OFArray
  */
-+ (instancetype)arrayWithObjects: (id)firstObject, ...;
++ (instancetype)arrayWithObjects: (id)firstObject, ... OF_SENTINEL;
 
 /**
  * \brief Creates a new OFArray with the objects from the specified array.
@@ -104,7 +104,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * \param firstObject The first object
  * \return An initialized OFArray
  */
-- initWithObjects: (id)firstObject, ...;
+- initWithObjects: (id)firstObject, ... OF_SENTINEL;
 
 /**
  * \brief Initializes an OFArray with the specified object and a va_list.

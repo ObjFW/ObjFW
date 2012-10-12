@@ -101,7 +101,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * \param firstKey The first key
  * \return A new autoreleased OFDictionary
  */
-+ (instancetype)dictionaryWithKeysAndObjects: (id)firstKey, ...;
++ (instancetype)dictionaryWithKeysAndObjects: (id)firstKey, ... OF_SENTINEL;
 
 /**
  * \brief Initializes an already allocated OFDictionary.
@@ -161,7 +161,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * \param firstKey The first key
  * \return A new initialized OFDictionary
  */
-- initWithKeysAndObjects: (id)firstKey, ...;
+- initWithKeysAndObjects: (id)firstKey, ... OF_SENTINEL;
 
 /**
  * \brief Initializes an already allocated OFDictionary with the specified key
