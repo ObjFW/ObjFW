@@ -1319,68 +1319,55 @@ static struct {
 	return JSON;
 }
 
-- (size_t)indexOfFirstOccurrenceOfString: (OFString*)string
+- (of_range_t)rangeOfString: (OFString*)string
 {
-	void *pool;
-	const of_unichar_t *unicodeString, *searchString;
-	size_t i, length, searchLength;
-
-	if ((searchLength = [string length]) == 0)
-		return [self length];
-
-	if (searchLength > (length = [self length]))
-		return OF_INVALID_INDEX;
-
-	pool = objc_autoreleasePoolPush();
-
-	unicodeString = [self unicodeString];
-	searchString = [string unicodeString];
-
-	for (i = 0; i <= length - searchLength; i++) {
-		if (!memcmp(unicodeString + i, searchString,
-		    searchLength * sizeof(of_unichar_t))) {
-			objc_autoreleasePoolPop(pool);
-			return i;
-		}
-	}
-
-	objc_autoreleasePoolPop(pool);
-
-	return OF_INVALID_INDEX;
+	return [self rangeOfString: string
+			   options: 0];
 }
 
-- (size_t)indexOfLastOccurrenceOfString: (OFString*)string
+- (of_range_t)rangeOfString: (OFString*)string
+		    options: (of_string_search_options_t)options
 {
 	void *pool;
 	const of_unichar_t *unicodeString, *searchString;
 	size_t i, length, searchLength;
 
 	if ((searchLength = [string length]) == 0)
-		return [self length];
+		return of_range(0, 0);
 
 	if (searchLength > (length = [self length]))
-		return OF_INVALID_INDEX;
+		return of_range(OF_INVALID_INDEX, 0);
 
 	pool = objc_autoreleasePoolPush();
 
 	unicodeString = [self unicodeString];
 	searchString = [string unicodeString];
 
-	for (i = length - searchLength;; i--) {
-		if (!memcmp(unicodeString + i, searchString,
-		    searchLength * sizeof(of_unichar_t))) {
-			objc_autoreleasePoolPop(pool);
-			return i;
-		}
+	if (options & OF_STRING_SEARCH_BACKWARDS) {
+		for (i = length - searchLength;; i--) {
+			if (!memcmp(unicodeString + i, searchString,
+			    searchLength * sizeof(of_unichar_t))) {
+				objc_autoreleasePoolPop(pool);
+				return of_range(i, searchLength);
+			}
 
-		/* Did not match and we're at the last character */
-		if (i == 0)
-			break;
+			/* Did not match and we're at the last character */
+			if (i == 0)
+				break;
+		}
+	} else {
+		for (i = 0; i <= length - searchLength; i++) {
+			if (!memcmp(unicodeString + i, searchString,
+			    searchLength * sizeof(of_unichar_t))) {
+				objc_autoreleasePoolPop(pool);
+				return of_range(i, searchLength);
+			}
+		}
 	}
 
 	objc_autoreleasePoolPop(pool);
 
-	return OF_INVALID_INDEX;
+	return of_range(OF_INVALID_INDEX, 0);
 }
 
 - (BOOL)containsString: (OFString*)string

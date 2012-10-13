@@ -44,6 +44,11 @@ typedef enum of_string_encoding_t {
 	OF_STRING_ENCODING_AUTODETECT = 0xFF
 } of_string_encoding_t;
 
+
+typedef enum of_string_search_options_t {
+	OF_STRING_SEARCH_BACKWARDS = 1
+} of_string_search_options_t;
+
 /* FIXME */
 #define OF_STRING_ENCODING_NATIVE OF_STRING_ENCODING_UTF_8
 
@@ -610,22 +615,24 @@ extern size_t of_utf16_string_length(const uint16_t*);
 	      inRange: (of_range_t)range;
 
 /**
- * \brief Returns the index of the first occurrence of the string.
+ * \brief Returns the range of the first occurrence of the string.
  *
  * \param string The string to search
- * \return The index of the first occurrence of the string or OF_INVALID_INDEX
- *	   if it was not found
+ * \return The range of the first occurrence of the string or a range with
+ *	   OF_INVALID_INDEX as start position if it was not found
  */
-- (size_t)indexOfFirstOccurrenceOfString: (OFString*)string;
+- (of_range_t)rangeOfString: (OFString*)string;
 
 /**
- * \brief Returns the index of the last occurrence of the string.
+ * \brief Returns the range of the string.
  *
  * \param string The string to search
- * \return The index of the last occurrence of the string or OF_INVALID_INDEX if
- *	   it was not found
+ * \param options Options modifying search behaviour.
+ * \return The range of the first occurrence of the string or a range with
+ *	   OF_INVALID_INDEX as start position if it was not found
  */
-- (size_t)indexOfLastOccurrenceOfString: (OFString*)string;
+- (of_range_t)rangeOfString: (OFString*)string
+		    options: (of_string_search_options_t)options;
 
 /**
  * \brief Returns whether the string contains the specified string.

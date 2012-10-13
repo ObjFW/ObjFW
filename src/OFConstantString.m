@@ -346,18 +346,20 @@ struct {
 			   inRange: range];
 }
 
-- (size_t)indexOfFirstOccurrenceOfString: (OFString*)string
+- (of_range_t)rangeOfString: (OFString*)string
 {
 	[self finishInitialization];
 
-	return [self indexOfFirstOccurrenceOfString: string];
+	return [self rangeOfString: string];
 }
 
-- (size_t)indexOfLastOccurrenceOfString: (OFString*)string
+- (of_range_t)rangeOfString: (OFString*)string
+		    options: (of_string_search_options_t)options
 {
 	[self finishInitialization];
 
-	return [self indexOfLastOccurrenceOfString: string];
+	return [self rangeOfString: string
+			   options: options];
 }
 
 - (BOOL)containsString: (OFString*)string

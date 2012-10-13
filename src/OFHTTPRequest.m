@@ -402,7 +402,8 @@ normalizeKey(OFString *key)
 		if (chunked) {
 			for (;;) {
 				void *pool2 = objc_autoreleasePoolPush();
-				size_t pos, toRead;
+				size_t toRead;
+				of_range_t range;
 
 				@try {
 					line = [sock readLine];
@@ -411,11 +412,10 @@ normalizeKey(OFString *key)
 					    exceptionWithClass: [self class]];
 				}
 
-				pos = [line
-				    indexOfFirstOccurrenceOfString: @";"];
-				if (pos != OF_INVALID_INDEX)
+				range = [line rangeOfString: @";"];
+				if (range.start != OF_INVALID_INDEX)
 					line = [line substringWithRange:
-					    of_range(0, pos)];
+					    of_range(0, range.start)];
 
 				@try {
 					toRead =

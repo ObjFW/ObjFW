@@ -221,17 +221,20 @@ static uint16_t sutf16str[] = {
 	    R(([s[0] appendFormat: @"%02X", 15])) &&
 	    [s[0] isEqual: @"test:1230F"])
 
-	TEST(@"-[indexOfFirstOccurrenceOfString:]",
-	    [@"𝄞öö" indexOfFirstOccurrenceOfString: @"öö"] == 1 &&
-	    [@"𝄞öö" indexOfFirstOccurrenceOfString: @"ö"] == 1 &&
-	    [@"𝄞öö" indexOfFirstOccurrenceOfString: @"𝄞"] == 0 &&
-	    [@"𝄞öö" indexOfFirstOccurrenceOfString: @"x"] == OF_INVALID_INDEX)
-
-	TEST(@"-[indexOfLastOccurrenceOfString:]",
-	    [@"𝄞öö" indexOfLastOccurrenceOfString: @"öö"] == 1 &&
-	    [@"𝄞öö" indexOfLastOccurrenceOfString: @"ö"] == 2 &&
-	    [@"𝄞öö" indexOfLastOccurrenceOfString: @"𝄞"] == 0 &&
-	    [@"𝄞öö" indexOfLastOccurrenceOfString: @"x"] == OF_INVALID_INDEX)
+	TEST(@"-[rangeOfString:]",
+	    [@"𝄞öö" rangeOfString: @"öö"].start == 1 &&
+	    [@"𝄞öö" rangeOfString: @"ö"].start == 1 &&
+	    [@"𝄞öö" rangeOfString: @"𝄞"].start == 0 &&
+	    [@"𝄞öö" rangeOfString: @"x"].start == OF_INVALID_INDEX &&
+	    [@"𝄞öö" rangeOfString: @"öö"
+			  options: OF_STRING_SEARCH_BACKWARDS].start == 1 &&
+	    [@"𝄞öö" rangeOfString: @"ö"
+			  options: OF_STRING_SEARCH_BACKWARDS].start == 2 &&
+	    [@"𝄞öö" rangeOfString: @"𝄞"
+			  options: OF_STRING_SEARCH_BACKWARDS].start == 0 &&
+	    [@"𝄞öö" rangeOfString: @"x"
+			  options: OF_STRING_SEARCH_BACKWARDS].start ==
+	     OF_INVALID_INDEX)
 
 	TEST(@"-[substringWithRange:]",
 	    [[@"𝄞öö" substringWithRange: of_range(1, 1)] isEqual: @"ö"] &&

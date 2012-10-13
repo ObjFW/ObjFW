@@ -878,44 +878,38 @@ memcasecmp(const char *first, const char *second, size_t length)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (size_t)indexOfFirstOccurrenceOfString: (OFString*)string
+- (of_range_t)rangeOfString: (OFString*)string
+		    options: (of_string_search_options_t)options
 {
 	const char *cString = [string UTF8String];
 	size_t i, cStringLength = [string UTF8StringLength];
 
 	if (cStringLength == 0)
-		return 0;
+		return of_range(0, 0);
 
 	if (cStringLength > s->cStringLength)
-		return OF_INVALID_INDEX;
+		return of_range(OF_INVALID_INDEX, 0);
 
-	for (i = 0; i <= s->cStringLength - cStringLength; i++)
-		if (!memcmp(s->cString + i, cString, cStringLength))
-			return of_string_position_to_index(s->cString, i);
+	if (options & OF_STRING_SEARCH_BACKWARDS) {
+		for (i = s->cStringLength - cStringLength;; i--) {
+			if (!memcmp(s->cString + i, cString, cStringLength))
+				return of_range(
+				    of_string_position_to_index(s->cString, i),
+				    [string length]);
 
-	return OF_INVALID_INDEX;
-}
-
-- (size_t)indexOfLastOccurrenceOfString: (OFString*)string
-{
-	const char *cString = [string UTF8String];
-	size_t i, cStringLength = [string UTF8StringLength];
-
-	if (cStringLength == 0)
-		return of_string_position_to_index(s->cString,
-		    s->cStringLength);
-
-	if (cStringLength > s->cStringLength)
-		return OF_INVALID_INDEX;
-
-	for (i = s->cStringLength - cStringLength;; i--) {
-		if (!memcmp(s->cString + i, cString, cStringLength))
-			return of_string_position_to_index(s->cString, i);
-
-		/* Did not match and we're at the last char */
-		if (i == 0)
-			return OF_INVALID_INDEX;
+			/* Did not match and we're at the last char */
+			if (i == 0)
+				return of_range(OF_INVALID_INDEX, 0);
+		}
+	} else {
+		for (i = 0; i <= s->cStringLength - cStringLength; i++)
+			if (!memcmp(s->cString + i, cString, cStringLength))
+				return of_range(
+				    of_string_position_to_index(s->cString, i),
+				    [string length]);
 	}
+
+	return of_range(OF_INVALID_INDEX, 0);
 }
 
 - (BOOL)containsString: (OFString*)string
