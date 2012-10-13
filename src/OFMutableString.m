@@ -315,7 +315,7 @@ static struct {
 }
 
 - (void)appendUTF8String: (const char*)UTF8String
-	      withLength: (size_t)UTF8StringLength
+		  length: (size_t)UTF8StringLength
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -326,7 +326,7 @@ static struct {
 }
 
 - (void)appendCString: (const char*)cString
-	 withEncoding: (of_string_encoding_t)encoding
+	     encoding: (of_string_encoding_t)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -337,7 +337,7 @@ static struct {
 }
 
 - (void)appendCString: (const char*)cString
-	 withEncoding: (of_string_encoding_t)encoding
+	     encoding: (of_string_encoding_t)encoding
 	       length: (size_t)cStringLength
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -361,12 +361,12 @@ static struct {
 
 	va_start(arguments, format);
 	[self appendFormat: format
-	     withArguments: arguments];
+		 arguments: arguments];
 	va_end(arguments);
 }
 
 - (void)appendFormat: (OFConstantString*)format
-       withArguments: (va_list)arguments
+	   arguments: (va_list)arguments
 {
 	char *UTF8String;
 	int UTF8StringLength;
@@ -383,7 +383,7 @@ static struct {
 
 	@try {
 		[self appendUTF8String: UTF8String
-			    withLength: UTF8StringLength];
+				length: UTF8StringLength];
 	} @finally {
 		free(UTF8String);
 	}

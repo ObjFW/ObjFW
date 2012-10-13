@@ -44,7 +44,7 @@
  * \param UTF8StringLength The length of the UTF-8 encoded C string
  */
 - (void)appendUTF8String: (const char*)UTF8String
-	      withLength: (size_t)UTF8StringLength;
+		  length: (size_t)UTF8StringLength;
 
 /**
  * \brief Appends a C string with the specified encoding to the OFMutableString.
@@ -53,7 +53,7 @@
  * \param encoding The encoding of the C string
  */
 - (void)appendCString: (const char*)cString
-	 withEncoding: (of_string_encoding_t)encoding;
+	     encoding: (of_string_encoding_t)encoding;
 
 /**
  * \brief Appends a C string with the specified encoding and length to the
@@ -64,7 +64,7 @@
  * \param cStringLength The length of the UTF-8 encoded C string
  */
 - (void)appendCString: (const char*)cString
-	 withEncoding: (of_string_encoding_t)encoding
+	     encoding: (of_string_encoding_t)encoding
 	       length: (size_t)cStringLength;
 
 /**
@@ -94,7 +94,7 @@
  * \param arguments The arguments used in the format string
  */
 - (void)appendFormat: (OFConstantString*)format
-       withArguments: (va_list)arguments;
+	   arguments: (va_list)arguments;
 
 /**
  * \brief Prepends another OFString to the OFMutableString.

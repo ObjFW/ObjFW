@@ -180,9 +180,9 @@ static uint16_t sutf16str[] = {
 			   encoding: OF_STRING_ENCODING_ISO_8859_1]) &&
 	    [is isEqual: @"testäöü"])
 
-	TEST(@"-[appendUTFString:withLength:]",
+	TEST(@"-[appendUTFString:length:]",
 	    R([s[0] appendUTF8String: "foo\xEF\xBB\xBF" "barqux" + 3
-			  withLength: 6]) && [s[0] isEqual: @"foobar"])
+			      length: 6]) && [s[0] isEqual: @"foobar"])
 
 	EXPECT_EXCEPTION(@"Detection of invalid UTF-8 encoding #1",
 	    OFInvalidEncodingException,

@@ -100,7 +100,7 @@ parse_numeric_entity(const char *entity, size_t length)
 	for (i = 0; i < length; i++) {
 		if (!inEntity && string[i] == '&') {
 			[ret appendUTF8String: string + last
-				   withLength: i - last];
+				       length: i - last];
 
 			last = i + 1;
 			inEntity = YES;
@@ -110,25 +110,25 @@ parse_numeric_entity(const char *entity, size_t length)
 
 			if (entityLength == 2 && !memcmp(entity, "lt", 2))
 				[ret appendCString: "<"
-				      withEncoding: OF_STRING_ENCODING_ASCII
+					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
 			else if (entityLength == 2 && !memcmp(entity, "gt", 2))
 				[ret appendCString: ">"
-				      withEncoding: OF_STRING_ENCODING_ASCII
+					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
 			else if (entityLength == 4 &&
 			    !memcmp(entity, "quot", 4))
 				[ret appendCString: "\""
-				      withEncoding: OF_STRING_ENCODING_ASCII
+					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
 			else if (entityLength == 4 &&
 			    !memcmp(entity, "apos", 4))
 				[ret appendCString: "'"
-				      withEncoding: OF_STRING_ENCODING_ASCII
+					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
 			else if (entityLength == 3 && !memcmp(entity, "amp", 3))
 				[ret appendCString: "&"
-				      withEncoding: OF_STRING_ENCODING_ASCII
+					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
 			else if (entity[0] == '#') {
 				void *pool;
@@ -176,7 +176,7 @@ parse_numeric_entity(const char *entity, size_t length)
 		    exceptionWithClass: [self class]];
 
 	[ret appendUTF8String: string + last
-		   withLength: i - last];
+		       length: i - last];
 
 	[ret makeImmutable];
 
@@ -203,7 +203,7 @@ parse_numeric_entity(const char *entity, size_t length)
 	for (i = 0; i < length; i++) {
 		if (!inEntity && string[i] == '&') {
 			[ret appendUTF8String: string + last
-				   withLength: i - last];
+				       length: i - last];
 
 			last = i + 1;
 			inEntity = YES;
@@ -213,25 +213,25 @@ parse_numeric_entity(const char *entity, size_t length)
 
 			if (entityLength == 2 && !memcmp(entity, "lt", 2))
 				[ret appendCString: "<"
-				      withEncoding: OF_STRING_ENCODING_ASCII
+					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
 			else if (entityLength == 2 && !memcmp(entity, "gt", 2))
 				[ret appendCString: ">"
-				      withEncoding: OF_STRING_ENCODING_ASCII
+					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
 			else if (entityLength == 4 &&
 			    !memcmp(entity, "quot", 4))
 				[ret appendCString: "\""
-				      withEncoding: OF_STRING_ENCODING_ASCII
+					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
 			else if (entityLength == 4 &&
 			    !memcmp(entity, "apos", 4))
 				[ret appendCString: "'"
-				      withEncoding: OF_STRING_ENCODING_ASCII
+					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
 			else if (entityLength == 3 && !memcmp(entity, "amp", 3))
 				[ret appendCString: "&"
-				      withEncoding: OF_STRING_ENCODING_ASCII
+					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
 			else if (entity[0] == '#') {
 				void *pool;
@@ -276,7 +276,7 @@ parse_numeric_entity(const char *entity, size_t length)
 		    exceptionWithClass: [self class]];
 
 	[ret appendUTF8String: string + last
-		   withLength: i - last];
+		       length: i - last];
 
 	[ret makeImmutable];
 
