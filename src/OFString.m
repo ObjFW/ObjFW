@@ -71,168 +71,6 @@ void _reference_to_OFConstantString(void)
 	[OFConstantString class];
 }
 
-int
-of_string_check_utf8(const char *cString, size_t cStringLength, size_t *length)
-{
-	size_t i, tmpLength = cStringLength;
-	int UTF8 = 0;
-
-	for (i = 0; i < cStringLength; i++) {
-		/* No sign of UTF-8 here */
-		if OF_LIKELY (!(cString[i] & 0x80))
-			continue;
-
-		UTF8 = 1;
-
-		/* We're missing a start byte here */
-		if OF_UNLIKELY (!(cString[i] & 0x40))
-			return -1;
-
-		/* 2 byte sequences for code points 0 - 127 are forbidden */
-		if OF_UNLIKELY ((cString[i] & 0x7E) == 0x40)
-			return -1;
-
-		/* We have at minimum a 2 byte character -> check next byte */
-		if OF_UNLIKELY (cStringLength <= i + 1 ||
-		    (cString[i + 1] & 0xC0) != 0x80)
-			return -1;
-
-		/* Check if we have at minimum a 3 byte character */
-		if OF_LIKELY (!(cString[i] & 0x20)) {
-			i++;
-			tmpLength--;
-			continue;
-		}
-
-		/* We have at minimum a 3 byte char -> check second next byte */
-		if OF_UNLIKELY (cStringLength <= i + 2 ||
-		    (cString[i + 2] & 0xC0) != 0x80)
-			return -1;
-
-		/* Check if we have a 4 byte character */
-		if OF_LIKELY (!(cString[i] & 0x10)) {
-			i += 2;
-			tmpLength -= 2;
-			continue;
-		}
-
-		/* We have a 4 byte character -> check third next byte */
-		if OF_UNLIKELY (cStringLength <= i + 3 ||
-		    (cString[i + 3] & 0xC0) != 0x80)
-			return -1;
-
-		/*
-		 * Just in case, check if there's a 5th character, which is
-		 * forbidden by UTF-8
-		 */
-		if OF_UNLIKELY (cString[i] & 0x08)
-			return -1;
-
-		i += 3;
-		tmpLength -= 3;
-	}
-
-	if (length != NULL)
-		*length = tmpLength;
-
-	return UTF8;
-}
-
-size_t
-of_string_unicode_to_utf8(of_unichar_t character, char *buffer)
-{
-	size_t i = 0;
-
-	if (character < 0x80) {
-		buffer[i] = character;
-		return 1;
-	}
-	if (character < 0x800) {
-		buffer[i++] = 0xC0 | (character >> 6);
-		buffer[i] = 0x80 | (character & 0x3F);
-		return 2;
-	}
-	if (character < 0x10000) {
-		buffer[i++] = 0xE0 | (character >> 12);
-		buffer[i++] = 0x80 | (character >> 6 & 0x3F);
-		buffer[i] = 0x80 | (character & 0x3F);
-		return 3;
-	}
-	if (character < 0x110000) {
-		buffer[i++] = 0xF0 | (character >> 18);
-		buffer[i++] = 0x80 | (character >> 12 & 0x3F);
-		buffer[i++] = 0x80 | (character >> 6 & 0x3F);
-		buffer[i] = 0x80 | (character & 0x3F);
-		return 4;
-	}
-
-	return 0;
-}
-
-size_t
-of_string_utf8_to_unicode(const char *buffer_, size_t length, of_unichar_t *ret)
-{
-	const uint8_t *buffer = (const uint8_t*)buffer_;
-
-	if (!(*buffer & 0x80)) {
-		*ret = buffer[0];
-		return 1;
-	}
-
-	if ((*buffer & 0xE0) == 0xC0) {
-		if OF_UNLIKELY (length < 2)
-			return 0;
-
-		*ret = ((buffer[0] & 0x1F) << 6) | (buffer[1] & 0x3F);
-		return 2;
-	}
-
-	if ((*buffer & 0xF0) == 0xE0) {
-		if OF_UNLIKELY (length < 3)
-			return 0;
-
-		*ret = ((buffer[0] & 0x0F) << 12) | ((buffer[1] & 0x3F) << 6) |
-		    (buffer[2] & 0x3F);
-		return 3;
-	}
-
-	if ((*buffer & 0xF8) == 0xF0) {
-		if OF_UNLIKELY (length < 4)
-			return 0;
-
-		*ret = ((buffer[0] & 0x07) << 18) | ((buffer[1] & 0x3F) << 12) |
-		    ((buffer[2] & 0x3F) << 6) | (buffer[3] & 0x3F);
-		return 4;
-	}
-
-	return 0;
-}
-
-size_t
-of_string_position_to_index(const char *string, size_t position)
-{
-	size_t i, index = position;
-
-	for (i = 0; i < position; i++)
-		if OF_UNLIKELY ((string[i] & 0xC0) == 0x80)
-			index--;
-
-	return index;
-}
-
-size_t
-of_string_index_to_position(const char *string, size_t index, size_t length)
-{
-	size_t i;
-
-	for (i = 0; i <= index; i++)
-		if OF_UNLIKELY ((string[i] & 0xC0) == 0x80)
-			if (++index > length)
-				return OF_INVALID_INDEX;
-
-	return index;
-}
-
 size_t
 of_unicode_string_length(const of_unichar_t *string)
 {
@@ -988,10 +826,9 @@ static struct {
 
 	for (i = 0; i < length; i++) {
 		char buffer[4];
-		size_t characterLen = of_string_unicode_to_utf8(
-		    unicodeString[i], buffer);
+		size_t len = of_string_utf8_encode(unicodeString[i], buffer);
 
-		switch (characterLen) {
+		switch (len) {
 		case 1:
 			UTF8String[j++] = buffer[0];
 			break;
@@ -1058,14 +895,13 @@ static struct {
 
 	for (i = 0; i < length; i++) {
 		char buffer[4];
-		size_t characterLen = of_string_unicode_to_utf8(
-		    unicodeString[i], buffer);
+		size_t len = of_string_utf8_encode(unicodeString[i], buffer);
 
-		if (characterLen == 0)
+		if (len == 0)
 			@throw [OFInvalidEncodingException
 			    exceptionWithClass: [self class]];
 
-		UTF8StringLength += characterLen;
+		UTF8StringLength += len;
 	}
 
 	return UTF8StringLength;

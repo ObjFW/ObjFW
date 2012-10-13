@@ -155,7 +155,7 @@ struct {
 	ivars->cString = cString;
 	ivars->cStringLength = cStringLength;
 
-	switch (of_string_check_utf8(ivars->cString, ivars->cStringLength,
+	switch (of_string_utf8_check(ivars->cString, ivars->cStringLength,
 	    &ivars->length)) {
 	case 1:
 		ivars->UTF8 = YES;

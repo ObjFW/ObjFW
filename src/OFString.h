@@ -59,11 +59,11 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int of_string_check_utf8(const char*, size_t, size_t*);
-extern size_t of_string_unicode_to_utf8(of_unichar_t, char*);
-extern size_t of_string_utf8_to_unicode(const char*, size_t, of_unichar_t*);
-extern size_t of_string_position_to_index(const char*, size_t);
-extern size_t of_string_index_to_position(const char*, size_t, size_t);
+extern int of_string_utf8_check(const char*, size_t, size_t*);
+extern size_t of_string_utf8_encode(of_unichar_t, char*);
+extern size_t of_string_utf8_decode(const char*, size_t, of_unichar_t*);
+extern size_t of_string_utf8_get_index(const char*, size_t);
+extern size_t of_string_utf8_get_position(const char*, size_t, size_t);
 extern size_t of_unicode_string_length(const of_unichar_t*);
 extern size_t of_utf16_string_length(const uint16_t*);
 #ifdef __cplusplus

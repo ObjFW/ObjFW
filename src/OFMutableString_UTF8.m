@@ -115,7 +115,7 @@
 			tableSize = middleTableSize;
 		}
 
-		cLen = of_string_utf8_to_unicode(s->cString + i,
+		cLen = of_string_utf8_decode(s->cString + i,
 		    s->cStringLength - i, &c);
 
 		if (cLen == 0 || c > 0x10FFFF) {
@@ -173,7 +173,7 @@
 	for (i = 0; i < unicodeLen; i++) {
 		size_t d;
 
-		if ((d = of_string_unicode_to_utf8(unicodeString[i],
+		if ((d = of_string_utf8_encode(unicodeString[i],
 		    newCString + j)) == 0) {
 			[self freeMemory: unicodeString];
 			[self freeMemory: newCString];
@@ -203,65 +203,59 @@
 {
 	char buffer[4];
 	of_unichar_t c;
-	size_t length, oldLength;
+	size_t lenNew, lenOld;
 
 	if (s->UTF8)
-		index = of_string_index_to_position(s->cString, index,
+		index = of_string_utf8_get_position(s->cString, index,
 		    s->cStringLength);
 
 	if (index > s->cStringLength)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
+	/* Shortcut if old and new character both are ASCII */
 	if (!(character & 0x80) && !(s->cString[index] & 0x80)) {
 		s->hashed = NO;
 		s->cString[index] = character;
 		return;
 	}
 
-	if ((length = of_string_unicode_to_utf8(character, buffer)) == 0)
+	if ((lenNew = of_string_utf8_encode(character, buffer)) == 0)
 		@throw [OFInvalidEncodingException
 		    exceptionWithClass: [self class]];
 
-	if ((oldLength = of_string_utf8_to_unicode(s->cString + index,
+	if ((lenOld = of_string_utf8_decode(s->cString + index,
 	    s->cStringLength - index, &c)) == 0)
 		@throw [OFInvalidEncodingException
 		    exceptionWithClass: [self class]];
 
 	s->hashed = NO;
 
-	if (length == oldLength) {
-		memcpy(s->cString + index, buffer, length);
-		return;
-	}
-
-	if (length > oldLength) {
+	if (lenNew == lenOld)
+		memcpy(s->cString + index, buffer, lenNew);
+	else if (lenNew > lenOld) {
 		s->cString = [self resizeMemory: s->cString
-					   size: s->cStringLength - oldLength +
-						 length + 1];
+					   size: s->cStringLength -
+						 lenOld + lenNew + 1];
 
-		memmove(s->cString + index + length,
-		    s->cString + index + oldLength,
-		    s->cStringLength - index - oldLength);
-		memcpy(s->cString + index, buffer, length);
+		memmove(s->cString + index + lenNew,
+		    s->cString + index + lenOld,
+		    s->cStringLength - index - lenOld);
+		memcpy(s->cString + index, buffer, lenNew);
 
-		s->cStringLength -= oldLength;
-		s->cStringLength += length;
+		s->cStringLength -= lenOld;
+		s->cStringLength += lenNew;
 		s->cString[s->cStringLength] = '\0';
 
 		if (character & 0x80)
 			s->UTF8 = YES;
+	} else if (lenNew < lenOld) {
+		memmove(s->cString + index + lenNew,
+		    s->cString + index + lenOld,
+		    s->cStringLength - index - lenOld);
+		memcpy(s->cString + index, buffer, lenNew);
 
-		return;
-	}
-
-	if (length < oldLength) {
-		memmove(s->cString + index + length,
-		    s->cString + index + oldLength,
-		    s->cStringLength - index - oldLength);
-		memcpy(s->cString + index, buffer, length);
-
-		s->cStringLength -= oldLength;
-		s->cStringLength += length;
+		s->cStringLength -= lenOld;
+		s->cStringLength += lenNew;
 		s->cString[s->cStringLength] = '\0';
 
 		@try {
@@ -270,11 +264,8 @@
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't really care, as we only made it smaller */
 		}
-
-		return;
-	}
-
-	assert(0);
+	} else
+		assert(0);
 }
 
 - (void)appendUTF8String: (const char*)UTF8String
@@ -287,7 +278,7 @@
 		UTF8StringLength -= 3;
 	}
 
-	switch (of_string_check_utf8(UTF8String, UTF8StringLength, &length)) {
+	switch (of_string_utf8_check(UTF8String, UTF8StringLength, &length)) {
 	case 1:
 		s->UTF8 = YES;
 		break;
@@ -316,7 +307,7 @@
 		UTF8StringLength -= 3;
 	}
 
-	switch (of_string_check_utf8(UTF8String, UTF8StringLength, &length)) {
+	switch (of_string_utf8_check(UTF8String, UTF8StringLength, &length)) {
 	case 1:
 		s->UTF8 = YES;
 		break;
@@ -512,7 +503,7 @@
 		    exceptionWithClass: [self class]];
 
 	if (s->UTF8)
-		index = of_string_index_to_position(s->cString, index,
+		index = of_string_utf8_get_position(s->cString, index,
 		    s->cStringLength);
 
 	newCStringLength = s->cStringLength + [string UTF8StringLength];
@@ -549,9 +540,9 @@
 	s->length -= end - start;
 
 	if (s->UTF8) {
-		start = of_string_index_to_position(s->cString, start,
+		start = of_string_utf8_get_position(s->cString, start,
 		    s->cStringLength);
-		end = of_string_index_to_position(s->cString, end,
+		end = of_string_utf8_get_position(s->cString, end,
 		    s->cStringLength);
 	}
 
@@ -580,9 +571,9 @@
 	newLength = s->length - (end - start) + [replacement length];
 
 	if (s->UTF8) {
-		start = of_string_index_to_position(s->cString, start,
+		start = of_string_utf8_get_position(s->cString, start,
 		    s->cStringLength);
-		end = of_string_index_to_position(s->cString, end,
+		end = of_string_utf8_get_position(s->cString, end,
 		    s->cStringLength);
 	}
 
@@ -614,9 +605,9 @@
 	char *newCString;
 
 	if (s->UTF8) {
-		range.start = of_string_index_to_position(s->cString,
+		range.start = of_string_utf8_get_position(s->cString,
 		    range.start, s->cStringLength);
-		range.length = of_string_index_to_position(s->cString,
+		range.length = of_string_utf8_get_position(s->cString,
 		    range.start + range.length, s->cStringLength) - range.start;
 	}
 

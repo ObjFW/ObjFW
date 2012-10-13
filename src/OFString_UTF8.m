@@ -58,6 +58,165 @@ memcasecmp(const char *first, const char *second, size_t length)
 	return OF_ORDERED_SAME;
 }
 
+int
+of_string_utf8_check(const char *UTF8String, size_t UTF8Length, size_t *length)
+{
+	size_t i, tmpLength = UTF8Length;
+	int isUTF8 = 0;
+
+	for (i = 0; i < UTF8Length; i++) {
+		/* No sign of UTF-8 here */
+		if OF_LIKELY (!(UTF8String[i] & 0x80))
+			continue;
+
+		isUTF8 = 1;
+
+		/* We're missing a start byte here */
+		if OF_UNLIKELY (!(UTF8String[i] & 0x40))
+			return -1;
+
+		/* 2 byte sequences for code points 0 - 127 are forbidden */
+		if OF_UNLIKELY ((UTF8String[i] & 0x7E) == 0x40)
+			return -1;
+
+		/* We have at minimum a 2 byte character -> check next byte */
+		if OF_UNLIKELY (UTF8Length <= i + 1 ||
+		    (UTF8String[i + 1] & 0xC0) != 0x80)
+			return -1;
+
+		/* Check if we have at minimum a 3 byte character */
+		if OF_LIKELY (!(UTF8String[i] & 0x20)) {
+			i++;
+			tmpLength--;
+			continue;
+		}
+
+		/* We have at minimum a 3 byte char -> check second next byte */
+		if OF_UNLIKELY (UTF8Length <= i + 2 ||
+		    (UTF8String[i + 2] & 0xC0) != 0x80)
+			return -1;
+
+		/* Check if we have a 4 byte character */
+		if OF_LIKELY (!(UTF8String[i] & 0x10)) {
+			i += 2;
+			tmpLength -= 2;
+			continue;
+		}
+
+		/* We have a 4 byte character -> check third next byte */
+		if OF_UNLIKELY (UTF8Length <= i + 3 ||
+		    (UTF8String[i + 3] & 0xC0) != 0x80)
+			return -1;
+
+		/*
+		 * Just in case, check if there's a 5th character, which is
+		 * forbidden by UTF-8
+		 */
+		if OF_UNLIKELY (UTF8String[i] & 0x08)
+			return -1;
+
+		i += 3;
+		tmpLength -= 3;
+	}
+
+	if (length != NULL)
+		*length = tmpLength;
+
+	return isUTF8;
+}
+
+size_t
+of_string_utf8_encode(of_unichar_t character, char *buffer)
+{
+	size_t i = 0;
+
+	if (character < 0x80) {
+		buffer[i] = character;
+		return 1;
+	} else if (character < 0x800) {
+		buffer[i++] = 0xC0 | (character >> 6);
+		buffer[i] = 0x80 | (character & 0x3F);
+		return 2;
+	} else if (character < 0x10000) {
+		buffer[i++] = 0xE0 | (character >> 12);
+		buffer[i++] = 0x80 | (character >> 6 & 0x3F);
+		buffer[i] = 0x80 | (character & 0x3F);
+		return 3;
+	} else if (character < 0x110000) {
+		buffer[i++] = 0xF0 | (character >> 18);
+		buffer[i++] = 0x80 | (character >> 12 & 0x3F);
+		buffer[i++] = 0x80 | (character >> 6 & 0x3F);
+		buffer[i] = 0x80 | (character & 0x3F);
+		return 4;
+	}
+
+	return 0;
+}
+
+size_t
+of_string_utf8_decode(const char *buffer_, size_t length, of_unichar_t *ret)
+{
+	const uint8_t *buffer = (const uint8_t*)buffer_;
+
+	if (!(*buffer & 0x80)) {
+		*ret = buffer[0];
+		return 1;
+	}
+
+	if ((*buffer & 0xE0) == 0xC0) {
+		if OF_UNLIKELY (length < 2)
+			return 0;
+
+		*ret = ((buffer[0] & 0x1F) << 6) | (buffer[1] & 0x3F);
+		return 2;
+	}
+
+	if ((*buffer & 0xF0) == 0xE0) {
+		if OF_UNLIKELY (length < 3)
+			return 0;
+
+		*ret = ((buffer[0] & 0x0F) << 12) | ((buffer[1] & 0x3F) << 6) |
+		    (buffer[2] & 0x3F);
+		return 3;
+	}
+
+	if ((*buffer & 0xF8) == 0xF0) {
+		if OF_UNLIKELY (length < 4)
+			return 0;
+
+		*ret = ((buffer[0] & 0x07) << 18) | ((buffer[1] & 0x3F) << 12) |
+		    ((buffer[2] & 0x3F) << 6) | (buffer[3] & 0x3F);
+		return 4;
+	}
+
+	return 0;
+}
+
+size_t
+of_string_utf8_get_index(const char *string, size_t position)
+{
+	size_t i, index = position;
+
+	for (i = 0; i < position; i++)
+		if OF_UNLIKELY ((string[i] & 0xC0) == 0x80)
+			index--;
+
+	return index;
+}
+
+size_t
+of_string_utf8_get_position(const char *string, size_t index, size_t length)
+{
+	size_t i;
+
+	for (i = 0; i <= index; i++)
+		if OF_UNLIKELY ((string[i] & 0xC0) == 0x80)
+			if (++index > length)
+				return OF_INVALID_INDEX;
+
+	return index;
+}
+
 @implementation OFString_UTF8
 - init
 {
@@ -94,7 +253,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 		s->cString = storage;
 		s->cStringLength = UTF8StringLength;
 
-		switch (of_string_check_utf8(UTF8String, UTF8StringLength,
+		switch (of_string_utf8_check(UTF8String, UTF8StringLength,
 		    &s->length)) {
 		case 1:
 			s->UTF8 = YES;
@@ -137,7 +296,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 
 		if (encoding == OF_STRING_ENCODING_UTF_8 ||
 		    encoding == OF_STRING_ENCODING_ASCII) {
-			switch (of_string_check_utf8(cString, cStringLength,
+			switch (of_string_utf8_check(cString, cStringLength,
 			    &s->length)) {
 			case 1:
 				if (encoding == OF_STRING_ENCODING_ASCII)
@@ -171,7 +330,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 				}
 
 				s->UTF8 = YES;
-				bytes = of_string_unicode_to_utf8(
+				bytes = of_string_utf8_encode(
 				    (uint8_t)cString[i], buffer);
 
 				if (bytes == 0)
@@ -221,7 +380,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 				    exceptionWithClass: [self class]];
 
 			s->UTF8 = YES;
-			characterBytes = of_string_unicode_to_utf8(character,
+			characterBytes = of_string_utf8_encode(character,
 			    buffer);
 
 			if (characterBytes == 0)
@@ -267,7 +426,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 		s->cString = (char*)UTF8String;
 		s->cStringLength = UTF8StringLength;
 
-		switch (of_string_check_utf8(UTF8String, UTF8StringLength,
+		switch (of_string_utf8_check(UTF8String, UTF8StringLength,
 		    &s->length)) {
 		case 1:
 			s->UTF8 = YES;
@@ -339,7 +498,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 
 		for (i = 0; i < length; i++) {
 			char buffer[4];
-			size_t characterLen = of_string_unicode_to_utf8(
+			size_t characterLen = of_string_utf8_encode(
 			    (swap ? of_bswap32(string[i]) : string[i]),
 			    buffer);
 
@@ -448,8 +607,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 				s->length--;
 			}
 
-			characterLen = of_string_unicode_to_utf8(
-			    character, buffer);
+			characterLen = of_string_utf8_encode(character, buffer);
 
 			switch (characterLen) {
 			case 1:
@@ -525,7 +683,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 		s->cStringLength = cStringLength;
 
 		@try {
-			switch (of_string_check_utf8(tmp, cStringLength,
+			switch (of_string_utf8_check(tmp, cStringLength,
 			    &s->length)) {
 			case 1:
 				s->UTF8 = YES;
@@ -768,9 +926,9 @@ memcasecmp(const char *first, const char *second, size_t length)
 		of_unichar_t c1, c2;
 		size_t l1, l2;
 
-		l1 = of_string_utf8_to_unicode(s->cString + i,
+		l1 = of_string_utf8_decode(s->cString + i,
 		    s->cStringLength - i, &c1);
-		l2 = of_string_utf8_to_unicode(otherCString + j,
+		l2 = of_string_utf8_decode(otherCString + j,
 		    otherCStringLength - j, &c2);
 
 		if (l1 == 0 || l2 == 0 || c1 > 0x10FFFF || c2 > 0x10FFFF)
@@ -824,7 +982,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 		of_unichar_t c;
 		size_t length;
 
-		if ((length = of_string_utf8_to_unicode(s->cString + i,
+		if ((length = of_string_utf8_decode(s->cString + i,
 		    s->cStringLength - i, &c)) == 0)
 			@throw [OFInvalidEncodingException
 			    exceptionWithClass: [self class]];
@@ -854,11 +1012,11 @@ memcasecmp(const char *first, const char *second, size_t length)
 	if (!s->UTF8)
 		return s->cString[index];
 
-	index = of_string_index_to_position(s->cString, index,
+	index = of_string_utf8_get_position(s->cString, index,
 	    s->cStringLength);
 
-	if (!of_string_utf8_to_unicode(s->cString + index,
-	    s->cStringLength - index, &character))
+	if (!of_string_utf8_decode(s->cString + index, s->cStringLength - index,
+	    &character))
 		@throw [OFInvalidEncodingException
 		    exceptionWithClass: [self class]];
 
@@ -894,7 +1052,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 		for (i = s->cStringLength - cStringLength;; i--) {
 			if (!memcmp(s->cString + i, cString, cStringLength))
 				return of_range(
-				    of_string_position_to_index(s->cString, i),
+				    of_string_utf8_get_index(s->cString, i),
 				    [string length]);
 
 			/* Did not match and we're at the last char */
@@ -905,7 +1063,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 		for (i = 0; i <= s->cStringLength - cStringLength; i++)
 			if (!memcmp(s->cString + i, cString, cStringLength))
 				return of_range(
-				    of_string_position_to_index(s->cString, i),
+				    of_string_utf8_get_index(s->cString, i),
 				    [string length]);
 	}
 
@@ -939,9 +1097,9 @@ memcasecmp(const char *first, const char *second, size_t length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	if (s->UTF8) {
-		start = of_string_index_to_position(s->cString, start,
+		start = of_string_utf8_get_position(s->cString, start,
 		    s->cStringLength);
-		end = of_string_index_to_position(s->cString, end,
+		end = of_string_utf8_get_position(s->cString, end,
 		    s->cStringLength);
 	}
 
@@ -1150,7 +1308,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 		of_unichar_t c;
 		size_t cLen;
 
-		cLen = of_string_utf8_to_unicode(s->cString + i,
+		cLen = of_string_utf8_decode(s->cString + i,
 		    s->cStringLength - i, &c);
 
 		if (cLen == 0 || c > 0x10FFFF)
