@@ -209,6 +209,9 @@
 		index = of_string_index_to_position(s->cString, index,
 		    s->cStringLength);
 
+	if (index > s->cStringLength)
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+
 	if (!(character & 0x80) && !(s->cString[index] & 0x80)) {
 		s->hashed = NO;
 		s->cString[index] = character;
