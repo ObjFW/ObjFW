@@ -61,7 +61,7 @@
 	char *newCString;
 	BOOL isStart = YES;
 
-	if (!s->UTF8) {
+	if (!s->isUTF8) {
 		uint8_t t;
 		const of_unichar_t *const *table;
 
@@ -205,7 +205,7 @@
 	of_unichar_t c;
 	size_t lenNew, lenOld;
 
-	if (s->UTF8)
+	if (s->isUTF8)
 		index = of_string_utf8_get_position(s->cString, index,
 		    s->cStringLength);
 
@@ -247,7 +247,7 @@
 		s->cString[s->cStringLength] = '\0';
 
 		if (character & 0x80)
-			s->UTF8 = YES;
+			s->isUTF8 = YES;
 	} else if (lenNew < lenOld) {
 		memmove(s->cString + index + lenNew,
 		    s->cString + index + lenOld,
@@ -280,7 +280,7 @@
 
 	switch (of_string_utf8_check(UTF8String, UTF8StringLength, &length)) {
 	case 1:
-		s->UTF8 = YES;
+		s->isUTF8 = YES;
 		break;
 	case -1:
 		@throw [OFInvalidEncodingException
@@ -309,7 +309,7 @@
 
 	switch (of_string_utf8_check(UTF8String, UTF8StringLength, &length)) {
 	case 1:
-		s->UTF8 = YES;
+		s->isUTF8 = YES;
 		break;
 	case -1:
 		@throw [OFInvalidEncodingException
@@ -378,10 +378,10 @@
 
 	if ([string isKindOfClass: [OFString_UTF8 class]] ||
 	    [string isKindOfClass: [OFMutableString_UTF8 class]]) {
-		if (((OFString_UTF8*)string)->s->UTF8)
-			s->UTF8 = YES;
+		if (((OFString_UTF8*)string)->s->isUTF8)
+			s->isUTF8 = YES;
 	} else
-		s->UTF8 = YES;
+		s->isUTF8 = YES;
 }
 
 - (void)appendFormat: (OFConstantString*)format
@@ -422,7 +422,7 @@
 		s->cString[i] ^= s->cString[j];
 	}
 
-	if (!s->UTF8)
+	if (!s->isUTF8)
 		return;
 
 	for (i = 0; i < s->cStringLength; i++) {
@@ -502,7 +502,7 @@
 		@throw [OFOutOfRangeException
 		    exceptionWithClass: [self class]];
 
-	if (s->UTF8)
+	if (s->isUTF8)
 		index = of_string_utf8_get_position(s->cString, index,
 		    s->cStringLength);
 
@@ -522,10 +522,10 @@
 
 	if ([string isKindOfClass: [OFString_UTF8 class]] ||
 	    [string isKindOfClass: [OFMutableString_UTF8 class]]) {
-		if (((OFString_UTF8*)string)->s->UTF8)
-			s->UTF8 = YES;
+		if (((OFString_UTF8*)string)->s->isUTF8)
+			s->isUTF8 = YES;
 	} else
-		s->UTF8 = YES;
+		s->isUTF8 = YES;
 }
 
 - (void)deleteCharactersInRange: (of_range_t)range
@@ -539,7 +539,7 @@
 	s->hashed = NO;
 	s->length -= end - start;
 
-	if (s->UTF8) {
+	if (s->isUTF8) {
 		start = of_string_utf8_get_position(s->cString, start,
 		    s->cStringLength);
 		end = of_string_utf8_get_position(s->cString, end,
@@ -570,7 +570,7 @@
 
 	newLength = s->length - (end - start) + [replacement length];
 
-	if (s->UTF8) {
+	if (s->isUTF8) {
 		start = of_string_utf8_get_position(s->cString, start,
 		    s->cStringLength);
 		end = of_string_utf8_get_position(s->cString, end,
@@ -604,7 +604,7 @@
 	size_t i, last, newCStringLength, newLength;
 	char *newCString;
 
-	if (s->UTF8) {
+	if (s->isUTF8) {
 		range.start = of_string_utf8_get_position(s->cString,
 		    range.start, s->cStringLength);
 		range.length = of_string_utf8_get_position(s->cString,

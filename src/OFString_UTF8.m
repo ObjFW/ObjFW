@@ -256,7 +256,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		switch (of_string_utf8_check(UTF8String, UTF8StringLength,
 		    &s->length)) {
 		case 1:
-			s->UTF8 = YES;
+			s->isUTF8 = YES;
 			break;
 		case -1:
 			@throw [OFInvalidEncodingException
@@ -303,7 +303,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 					@throw [OFInvalidEncodingException
 					    exceptionWithClass: [self class]];
 
-				s->UTF8 = YES;
+				s->isUTF8 = YES;
 				break;
 			case -1:
 				@throw [OFInvalidEncodingException
@@ -329,7 +329,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 					continue;
 				}
 
-				s->UTF8 = YES;
+				s->isUTF8 = YES;
 				bytes = of_string_utf8_encode(
 				    (uint8_t)cString[i], buffer);
 
@@ -379,7 +379,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				@throw [OFInvalidEncodingException
 				    exceptionWithClass: [self class]];
 
-			s->UTF8 = YES;
+			s->isUTF8 = YES;
 			characterBytes = of_string_utf8_encode(character,
 			    buffer);
 
@@ -429,7 +429,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		switch (of_string_utf8_check(UTF8String, UTF8StringLength,
 		    &s->length)) {
 		case 1:
-			s->UTF8 = YES;
+			s->isUTF8 = YES;
 			break;
 		case -1:
 			@throw [OFInvalidEncodingException
@@ -454,9 +454,9 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 		if ([string isKindOfClass: [OFString_UTF8 class]] ||
 		    [string isKindOfClass: [OFMutableString_UTF8 class]])
-			s->UTF8 = ((OFString_UTF8*)string)->s->UTF8;
+			s->isUTF8 = ((OFString_UTF8*)string)->s->isUTF8;
 		else
-			s->UTF8 = YES;
+			s->isUTF8 = YES;
 
 		s->length = [string length];
 
@@ -507,7 +507,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				s->cString[j++] = buffer[0];
 				break;
 			case 2:
-				s->UTF8 = YES;
+				s->isUTF8 = YES;
 				s->cStringLength++;
 
 				memcpy(s->cString + j, buffer, 2);
@@ -515,7 +515,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 				break;
 			case 3:
-				s->UTF8 = YES;
+				s->isUTF8 = YES;
 				s->cStringLength += 2;
 
 				memcpy(s->cString + j, buffer, 3);
@@ -523,7 +523,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 				break;
 			case 4:
-				s->UTF8 = YES;
+				s->isUTF8 = YES;
 				s->cStringLength += 3;
 
 				memcpy(s->cString + j, buffer, 4);
@@ -614,7 +614,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				s->cString[j++] = buffer[0];
 				break;
 			case 2:
-				s->UTF8 = YES;
+				s->isUTF8 = YES;
 				s->cStringLength++;
 
 				memcpy(s->cString + j, buffer, 2);
@@ -622,7 +622,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 				break;
 			case 3:
-				s->UTF8 = YES;
+				s->isUTF8 = YES;
 				s->cStringLength += 2;
 
 				memcpy(s->cString + j, buffer, 3);
@@ -630,7 +630,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 				break;
 			case 4:
-				s->UTF8 = YES;
+				s->isUTF8 = YES;
 				s->cStringLength += 3;
 
 				memcpy(s->cString + j, buffer, 4);
@@ -686,7 +686,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			switch (of_string_utf8_check(tmp, cStringLength,
 			    &s->length)) {
 			case 1:
-				s->UTF8 = YES;
+				s->isUTF8 = YES;
 				break;
 			case -1:
 				@throw [OFInvalidEncodingException
@@ -724,9 +724,9 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		if ([firstComponent isKindOfClass: [OFString_UTF8 class]] ||
 		    [firstComponent isKindOfClass:
 		    [OFMutableString_UTF8 class]])
-			s->UTF8 = ((OFString_UTF8*)firstComponent)->s->UTF8;
+			s->isUTF8 = ((OFString_UTF8*)firstComponent)->s->isUTF8;
 		else
-			s->UTF8 = YES;
+			s->isUTF8 = YES;
 
 		s->length = [firstComponent length];
 
@@ -739,9 +739,10 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			if ([component isKindOfClass: [OFString_UTF8 class]] ||
 			    [component isKindOfClass:
 			    [OFMutableString_UTF8 class]])
-				s->UTF8 = ((OFString_UTF8*)component)->s->UTF8;
+				s->isUTF8 =
+				    ((OFString_UTF8*)component)->s->isUTF8;
 			else
-				s->UTF8 = YES;
+				s->isUTF8 = YES;
 		}
 
 		s->cString = [self allocMemoryWithSize: s->cStringLength + 1];
@@ -788,7 +789,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	case OF_STRING_ENCODING_UTF_8:
 		return s->cString;
 	case OF_STRING_ENCODING_ASCII:
-		if (s->UTF8)
+		if (s->isUTF8)
 			@throw [OFInvalidEncodingException
 			    exceptionWithClass: [self class]];
 
@@ -816,7 +817,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	case OF_STRING_ENCODING_UTF_8:
 		return s->cStringLength;
 	case OF_STRING_ENCODING_ASCII:
-		if (s->UTF8)
+		if (s->isUTF8)
 			@throw [OFInvalidEncodingException
 			    exceptionWithClass: [self class]];
 
@@ -901,7 +902,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	otherCString = [otherString UTF8String];
 	otherCStringLength = [otherString UTF8StringLength];
 
-	if (!s->UTF8) {
+	if (!s->isUTF8) {
 		minimumCStringLength = (s->cStringLength > otherCStringLength
 		    ? otherCStringLength : s->cStringLength);
 
@@ -1009,7 +1010,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	if (index >= s->length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	if (!s->UTF8)
+	if (!s->isUTF8)
 		return s->cString[index];
 
 	index = of_string_utf8_get_position(s->cString, index,
@@ -1096,7 +1097,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	if (end > s->length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	if (s->UTF8) {
+	if (s->isUTF8) {
 		start = of_string_utf8_get_position(s->cString, start,
 		    s->cStringLength);
 		end = of_string_utf8_get_position(s->cString, end,
