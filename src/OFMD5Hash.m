@@ -34,6 +34,19 @@
 #define MD5STEP(f, w, x, y, z, data, s) \
 	(w += f(x, y, z) + data, w = w << s | w >> (32 - s), w += x)
 
+#ifdef OF_BIG_ENDIAN
+static OF_INLINE void
+BSWAP32_VEC_IF_BE(uint32_t *buffer, size_t length)
+{
+	while (length--) {
+		*buffer = OF_BSWAP32(*buffer);
+		buffer++;
+	}
+}
+#else
+# define BSWAP32_VEC_IF_BE(buffer, length)
+#endif
+
 static void
 md5_transform(uint32_t buffer[4], const uint32_t in[16])
 {
@@ -177,7 +190,7 @@ md5_transform(uint32_t buffer[4], const uint32_t in[16])
 		}
 
 		memcpy(p, buffer_, t);
-		of_bswap32_vec_if_be(in.u32, 16);
+		BSWAP32_VEC_IF_BE(in.u32, 16);
 		md5_transform(buffer, in.u32);
 
 		buffer_ += t;
@@ -187,7 +200,7 @@ md5_transform(uint32_t buffer[4], const uint32_t in[16])
 	/* Process data in 64-byte chunks */
 	while (length >= 64) {
 		memcpy(in.u8, buffer_, 64);
-		of_bswap32_vec_if_be(in.u32, 16);
+		BSWAP32_VEC_IF_BE(in.u32, 16);
 		md5_transform(buffer, in.u32);
 
 		buffer_ += 64;
@@ -223,7 +236,7 @@ md5_transform(uint32_t buffer[4], const uint32_t in[16])
 	if (count < 8) {
 		/* Two lots of padding: Pad the first block to 64 bytes */
 		memset(p, 0, count);
-		of_bswap32_vec_if_be(in.u32, 16);
+		BSWAP32_VEC_IF_BE(in.u32, 16);
 		md5_transform(buffer, in.u32);
 
 		/* Now fill the next block with 56 bytes */
@@ -232,14 +245,14 @@ md5_transform(uint32_t buffer[4], const uint32_t in[16])
 		/* Pad block to 56 bytes */
 		memset(p, 0, count - 8);
 	}
-	of_bswap32_vec_if_be(in.u32, 14);
+	BSWAP32_VEC_IF_BE(in.u32, 14);
 
 	/* Append length in bits and transform */
 	in.u32[14] = bits[0];
 	in.u32[15] = bits[1];
 
 	md5_transform(buffer, in.u32);
-	of_bswap32_vec_if_be(buffer, 4);
+	BSWAP32_VEC_IF_BE(buffer, 4);
 
 	calculated = YES;
 

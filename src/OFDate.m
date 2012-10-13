@@ -370,7 +370,7 @@ static int month_to_day_of_year[12] = {
 	} d;
 	uint8_t i;
 
-	d.d = of_bswap_double_if_le(seconds);
+	d.d = OF_BSWAP_DOUBLE_IF_LE(seconds);
 
 	OF_HASH_INIT(hash);
 

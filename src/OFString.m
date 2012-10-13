@@ -1853,10 +1853,10 @@ static struct {
 
 		if (c > 0xFFFF) {
 			c -= 0x10000;
-			ret[j++] = of_bswap16_if_le(0xD800 | (c >> 10));
-			ret[j++] = of_bswap16_if_le(0xDC00 | (c & 0x3FF));
+			ret[j++] = OF_BSWAP16_IF_LE(0xD800 | (c >> 10));
+			ret[j++] = OF_BSWAP16_IF_LE(0xDC00 | (c & 0x3FF));
 		} else
-			ret[j++] = of_bswap16_if_le(c);
+			ret[j++] = OF_BSWAP16_IF_LE(c);
 	}
 
 	ret[j] = 0;

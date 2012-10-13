@@ -499,7 +499,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		for (i = 0; i < length; i++) {
 			char buffer[4];
 			size_t characterLen = of_string_utf8_encode(
-			    (swap ? of_bswap32(string[i]) : string[i]),
+			    (swap ? OF_BSWAP32(string[i]) : string[i]),
 			    buffer);
 
 			switch (characterLen) {
@@ -581,7 +581,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		for (i = 0; i < length; i++) {
 			char buffer[4];
 			of_unichar_t character =
-			    (swap ? of_bswap16(string[i]) : string[i]);
+			    (swap ? OF_BSWAP16(string[i]) : string[i]);
 			size_t characterLen;
 
 			/* Missing high surrogate */
@@ -597,7 +597,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 					    exceptionWithClass: [self class]];
 
 				nextCharacter = (swap
-				    ? of_bswap16(string[i + 1])
+				    ? OF_BSWAP16(string[i + 1])
 				    : string[i + 1]);
 				character = (((character & 0x3FF) << 10) |
 				    (nextCharacter & 0x3FF)) + 0x10000;

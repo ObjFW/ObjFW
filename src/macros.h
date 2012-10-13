@@ -139,14 +139,14 @@ extern void objc_setProperty(id, SEL, ptrdiff_t, id, BOOL, signed char);
 	objc_setProperty(self, _cmd, OF_IVAR_OFFSET(ivar), value, atomic, copy);
 
 static OF_INLINE uint16_t OF_CONST_FUNC
-of_bswap16_const(uint16_t i)
+OF_BSWAP16_CONST(uint16_t i)
 {
 	return (i & UINT16_C(0xFF00)) >> 8 |
 	    (i & UINT16_C(0x00FF)) << 8;
 }
 
 static OF_INLINE uint32_t OF_CONST_FUNC
-of_bswap32_const(uint32_t i)
+OF_BSWAP32_CONST(uint32_t i)
 {
 	return (i & UINT32_C(0xFF000000)) >> 24 |
 	    (i & UINT32_C(0x00FF0000)) >>  8 |
@@ -155,7 +155,7 @@ of_bswap32_const(uint32_t i)
 }
 
 static OF_INLINE uint64_t OF_CONST_FUNC
-of_bswap64_const(uint64_t i)
+OF_BSWAP64_CONST(uint64_t i)
 {
 	return (i & UINT64_C(0xFF00000000000000)) >> 56 |
 	    (i & UINT64_C(0x00FF000000000000)) >> 40 |
@@ -168,7 +168,7 @@ of_bswap64_const(uint64_t i)
 }
 
 static OF_INLINE uint16_t OF_CONST_FUNC
-of_bswap16_nonconst(uint16_t i)
+OF_BSWAP16_NONCONST(uint16_t i)
 {
 #if defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	__asm__ (
@@ -196,7 +196,7 @@ of_bswap16_nonconst(uint16_t i)
 }
 
 static OF_INLINE uint32_t OF_CONST_FUNC
-of_bswap32_nonconst(uint32_t i)
+OF_BSWAP32_NONCONST(uint32_t i)
 {
 #if defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	__asm__ (
@@ -226,7 +226,7 @@ of_bswap32_nonconst(uint32_t i)
 }
 
 static OF_INLINE uint64_t OF_CONST_FUNC
-of_bswap64_nonconst(uint64_t i)
+OF_BSWAP64_NONCONST(uint64_t i)
 {
 #if defined(OF_AMD64_ASM)
 	__asm__ (
@@ -243,27 +243,27 @@ of_bswap64_nonconst(uint64_t i)
 	    : "0"(i)
 	);
 #else
-	i = (uint64_t)of_bswap32_nonconst((uint32_t)(i & 0xFFFFFFFF)) << 32 |
-	    of_bswap32_nonconst((uint32_t)(i >> 32));
+	i = (uint64_t)OF_BSWAP32_NONCONST((uint32_t)(i & 0xFFFFFFFF)) << 32 |
+	    OF_BSWAP32_NONCONST((uint32_t)(i >> 32));
 #endif
 	return i;
 }
 
 #ifdef __GNUC__
-# define of_bswap16(i) \
-	(__builtin_constant_p(i) ? of_bswap16_const(i) : of_bswap16_nonconst(i))
-# define of_bswap32(i) \
-	(__builtin_constant_p(i) ? of_bswap32_const(i) : of_bswap32_nonconst(i))
-# define of_bswap64(i) \
-	(__builtin_constant_p(i) ? of_bswap64_const(i) : of_bswap64_nonconst(i))
+# define OF_BSWAP16(i) \
+	(__builtin_constant_p(i) ? OF_BSWAP16_CONST(i) : OF_BSWAP16_NONCONST(i))
+# define OF_BSWAP32(i) \
+	(__builtin_constant_p(i) ? OF_BSWAP32_CONST(i) : OF_BSWAP32_NONCONST(i))
+# define OF_BSWAP64(i) \
+	(__builtin_constant_p(i) ? OF_BSWAP64_CONST(i) : OF_BSWAP64_NONCONST(i))
 #else
-# define of_bswap16(i) of_bswap16_const(i)
-# define of_bswap32(i) of_bswap32_const(i)
-# define of_bswap64(i) of_bswap64_const(i)
+# define OF_BSWAP16(i) OF_BSWAP16_CONST(i)
+# define OF_BSWAP32(i) OF_BSWAP32_CONST(i)
+# define OF_BSWAP64(i) OF_BSWAP64_CONST(i)
 #endif
 
 static OF_INLINE float OF_CONST_FUNC
-of_bswap_float(float f)
+OF_BSWAP_FLOAT(float f)
 {
 	union {
 		float f;
@@ -271,13 +271,13 @@ of_bswap_float(float f)
 	} u;
 
 	u.f = f;
-	u.i = of_bswap32(u.i);
+	u.i = OF_BSWAP32(u.i);
 
 	return u.f;
 }
 
 static OF_INLINE double OF_CONST_FUNC
-of_bswap_double(double d)
+OF_BSWAP_DOUBLE(double d)
 {
 	union {
 		double d;
@@ -285,48 +285,37 @@ of_bswap_double(double d)
 	} u;
 
 	u.d = d;
-	u.i = of_bswap64(u.i);
+	u.i = OF_BSWAP64(u.i);
 
 	return u.d;
 }
 
-static OF_INLINE void
-of_bswap32_vec(uint32_t *buffer, size_t length)
-{
-	while (length--) {
-		*buffer = of_bswap32(*buffer);
-		buffer++;
-	}
-}
-
 #ifdef OF_BIG_ENDIAN
-# define of_bswap16_if_be(i) of_bswap16(i)
-# define of_bswap32_if_be(i) of_bswap32(i)
-# define of_bswap64_if_be(i) of_bswap64(i)
-# define of_bswap16_if_le(i) (i)
-# define of_bswap32_if_le(i) (i)
-# define of_bswap64_if_le(i) (i)
-# define of_bswap32_vec_if_be(buffer, length) of_bswap32_vec(buffer, length)
+# define OF_BSWAP16_IF_BE(i) OF_BSWAP16(i)
+# define OF_BSWAP32_IF_BE(i) OF_BSWAP32(i)
+# define OF_BSWAP64_IF_BE(i) OF_BSWAP64(i)
+# define OF_BSWAP16_IF_LE(i) (i)
+# define OF_BSWAP32_IF_LE(i) (i)
+# define OF_BSWAP64_IF_LE(i) (i)
 #else
-# define of_bswap16_if_be(i) (i)
-# define of_bswap32_if_be(i) (i)
-# define of_bswap64_if_be(i) (i)
-# define of_bswap16_if_le(i) of_bswap16(i)
-# define of_bswap32_if_le(i) of_bswap32(i)
-# define of_bswap64_if_le(i) of_bswap64(i)
-# define of_bswap32_vec_if_be(buffer, length)
+# define OF_BSWAP16_IF_BE(i) (i)
+# define OF_BSWAP32_IF_BE(i) (i)
+# define OF_BSWAP64_IF_BE(i) (i)
+# define OF_BSWAP16_IF_LE(i) OF_BSWAP16(i)
+# define OF_BSWAP32_IF_LE(i) OF_BSWAP32(i)
+# define OF_BSWAP64_IF_LE(i) OF_BSWAP64(i)
 #endif
 
 #ifdef OF_FLOAT_BIG_ENDIAN
-# define of_bswap_float_if_be(i) of_bswap_float(i)
-# define of_bswap_double_if_be(i) of_bswap_double(i)
-# define of_bswap_float_if_le(i) (i)
-# define of_bswap_double_if_le(i) (i)
+# define OF_BSWAP_FLOAT_IF_BE(i) OF_BSWAP_FLOAT(i)
+# define OF_BSWAP_DOUBLE_IF_BE(i) OF_BSWAP_DOUBLE(i)
+# define OF_BSWAP_FLOAT_IF_LE(i) (i)
+# define OF_BSWAP_DOUBLE_IF_LE(i) (i)
 #else
-# define of_bswap_float_if_be(i) (i)
-# define of_bswap_double_if_be(i) (i)
-# define of_bswap_float_if_le(i) of_bswap_float(i)
-# define of_bswap_double_if_le(i) of_bswap_double(i)
+# define OF_BSWAP_FLOAT_IF_BE(i) (i)
+# define OF_BSWAP_DOUBLE_IF_BE(i) (i)
+# define OF_BSWAP_FLOAT_IF_LE(i) OF_BSWAP_FLOAT(i)
+# define OF_BSWAP_DOUBLE_IF_LE(i) OF_BSWAP_DOUBLE(i)
 #endif
 
 /*

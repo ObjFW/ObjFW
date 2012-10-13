@@ -1050,7 +1050,7 @@
 			uint8_t b[sizeof(float)];
 		} f;
 
-		f.f = of_bswap_float_if_le(value.float_);
+		f.f = OF_BSWAP_FLOAT_IF_LE(value.float_);
 
 		OF_HASH_INIT(hash);
 
@@ -1066,7 +1066,7 @@
 			uint8_t b[sizeof(double)];
 		} d;
 
-		d.d = of_bswap_double_if_le(value.double_);
+		d.d = OF_BSWAP_DOUBLE_IF_LE(value.double_);
 
 		OF_HASH_INIT(hash);
 

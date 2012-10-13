@@ -352,7 +352,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
-	addr.sin_port = of_bswap16_if_le(port);
+	addr.sin_port = OF_BSWAP16_IF_LE(port);
 
 	if (he->h_addrtype != AF_INET ||
 	    (sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
@@ -525,7 +525,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	memset(&addr, 0, sizeof(addr));
 	addr.in.sin_family = AF_INET;
-	addr.in.sin_port = of_bswap16_if_le(port);
+	addr.in.sin_port = OF_BSWAP16_IF_LE(port);
 
 	if (he->h_addrtype != AF_INET || he->h_addr_list[0] == NULL) {
 # ifdef OF_THREADS
@@ -572,9 +572,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 	}
 
 	if (addr.storage.ss_family == AF_INET)
-		return of_bswap16_if_le(addr.in.sin_port);
+		return OF_BSWAP16_IF_LE(addr.in.sin_port);
 	if (addr.storage.ss_family == AF_INET6)
-		return of_bswap16_if_le(addr.in6.sin6_port);
+		return OF_BSWAP16_IF_LE(addr.in6.sin6_port);
 
 	close(sock);
 	sock = INVALID_SOCKET;
