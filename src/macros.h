@@ -53,9 +53,9 @@
 #endif
 
 #ifdef OF_BIG_ENDIAN
-# define OF_ENDIANESS_NATIVE OF_ENDIANESS_BIG_ENDIAN
+# define OF_BYTE_ORDER_NATIVE OF_BYTE_ORDER_BIG_ENDIAN
 #else
-# define OF_ENDIANESS_NATIVE OF_ENDIANESS_LITTLE_ENDIAN
+# define OF_BYTE_ORDER_NATIVE OF_BYTE_ORDER_LITTLE_ENDIAN
 #endif
 
 /* Hopefully no arch needs more than 16 bytes padding */

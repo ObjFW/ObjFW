@@ -117,10 +117,10 @@ typedef enum of_comparison_result_t {
 /**
  * \brief An enum for storing endianess.
  */
-typedef enum of_endianess_t {
-	OF_ENDIANESS_BIG_ENDIAN,
-	OF_ENDIANESS_LITTLE_ENDIAN
-} of_endianess_t;
+typedef enum of_byte_order_t {
+	OF_BYTE_ORDER_BIG_ENDIAN,
+	OF_BYTE_ORDER_LITTLE_ENDIAN
+} of_byte_order_t;
 
 /**
  * \brief A range.

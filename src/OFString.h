@@ -157,7 +157,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \return A new autoreleased OFString
  */
 + (instancetype)stringWithUnicodeString: (const of_unichar_t*)string
-			      byteOrder: (of_endianess_t)byteOrder;
+			      byteOrder: (of_byte_order_t)byteOrder;
 
 /**
  * \brief Creates a new OFString from a unicode string with the specified
@@ -180,7 +180,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \return A new autoreleased OFString
  */
 + (instancetype)stringWithUnicodeString: (const of_unichar_t*)string
-			      byteOrder: (of_endianess_t)byteOrder
+			      byteOrder: (of_byte_order_t)byteOrder
 				 length: (size_t)length;
 
 /**
@@ -200,7 +200,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \return A new autoreleased OFString
  */
 + (instancetype)stringWithUTF16String: (const uint16_t*)string
-			    byteOrder: (of_endianess_t)byteOrder;
+			    byteOrder: (of_byte_order_t)byteOrder;
 
 /**
  * \brief Creates a new OFString from a UTF-16 encoded string with the specified
@@ -224,7 +224,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \return A new autoreleased OFString
  */
 + (instancetype)stringWithUTF16String: (const uint16_t*)string
-			    byteOrder: (of_endianess_t)byteOrder
+			    byteOrder: (of_byte_order_t)byteOrder
 			       length: (size_t)length;
 
 /**
@@ -374,7 +374,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \return An initialized OFString
  */
 - initWithUnicodeString: (const of_unichar_t*)string
-	      byteOrder: (of_endianess_t)byteOrder;
+	      byteOrder: (of_byte_order_t)byteOrder;
 
 /**
  * \brief Initializes an already allocated OFString with a unicode string with
@@ -398,7 +398,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \return An initialized OFString
  */
 - initWithUnicodeString: (const of_unichar_t*)string
-	      byteOrder: (of_endianess_t)byteOrder
+	      byteOrder: (of_byte_order_t)byteOrder
 		 length: (size_t)length;
 
 /**
@@ -418,7 +418,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \return An initialized OFString
  */
 - initWithUTF16String: (const uint16_t*)string
-	    byteOrder: (of_endianess_t)byteOrder;
+	    byteOrder: (of_byte_order_t)byteOrder;
 
 /**
  * \brief Initializes an already allocated OFString with a UTF-16 string with
@@ -442,7 +442,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \return An initialized OFString
  */
 - initWithUTF16String: (const uint16_t*)string
-	    byteOrder: (of_endianess_t)byteOrder
+	    byteOrder: (of_byte_order_t)byteOrder
 	       length: (size_t)length;
 
 /**

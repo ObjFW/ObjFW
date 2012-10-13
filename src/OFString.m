@@ -358,7 +358,7 @@ static struct {
 }
 
 - initWithUnicodeString: (const of_unichar_t*)string
-	      byteOrder: (of_endianess_t)byteOrder
+	      byteOrder: (of_byte_order_t)byteOrder
 {
 	return (id)[[OFString_UTF8 alloc] initWithUnicodeString: string
 						      byteOrder: byteOrder];
@@ -372,7 +372,7 @@ static struct {
 }
 
 - initWithUnicodeString: (const of_unichar_t*)string
-	      byteOrder: (of_endianess_t)byteOrder
+	      byteOrder: (of_byte_order_t)byteOrder
 		 length: (size_t)length
 {
 	return (id)[[OFString_UTF8 alloc] initWithUnicodeString: string
@@ -386,7 +386,7 @@ static struct {
 }
 
 - initWithUTF16String: (const uint16_t*)string
-	    byteOrder: (of_endianess_t)byteOrder
+	    byteOrder: (of_byte_order_t)byteOrder
 {
 	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string
 						    byteOrder: byteOrder];
@@ -400,7 +400,7 @@ static struct {
 }
 
 - initWithUTF16String: (const uint16_t*)string
-	    byteOrder: (of_endianess_t)byteOrder
+	    byteOrder: (of_byte_order_t)byteOrder
 	       length: (size_t)length
 {
 	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string
@@ -559,7 +559,7 @@ static struct {
 }
 
 + (instancetype)stringWithUnicodeString: (const of_unichar_t*)string
-			      byteOrder: (of_endianess_t)byteOrder
+			      byteOrder: (of_byte_order_t)byteOrder
 {
 	return [[[self alloc] initWithUnicodeString: string
 					  byteOrder: byteOrder] autorelease];
@@ -573,7 +573,7 @@ static struct {
 }
 
 + (instancetype)stringWithUnicodeString: (const of_unichar_t*)string
-			      byteOrder: (of_endianess_t)byteOrder
+			      byteOrder: (of_byte_order_t)byteOrder
 				 length: (size_t)length
 {
 	return [[[self alloc] initWithUnicodeString: string
@@ -587,7 +587,7 @@ static struct {
 }
 
 + (instancetype)stringWithUTF16String: (const uint16_t*)string
-			    byteOrder: (of_endianess_t)byteOrder
+			    byteOrder: (of_byte_order_t)byteOrder
 {
 	return [[[self alloc] initWithUTF16String: string
 					byteOrder: byteOrder] autorelease];
@@ -601,7 +601,7 @@ static struct {
 }
 
 + (instancetype)stringWithUTF16String: (const uint16_t*)string
-			    byteOrder: (of_endianess_t)byteOrder
+			    byteOrder: (of_byte_order_t)byteOrder
 			       length: (size_t)length
 {
 	return [[[self alloc] initWithUTF16String: string
@@ -721,12 +721,12 @@ static struct {
 - initWithUnicodeString: (const of_unichar_t*)string
 {
 	return [self initWithUnicodeString: string
-				 byteOrder: OF_ENDIANESS_NATIVE
+				 byteOrder: OF_BYTE_ORDER_NATIVE
 				    length: of_unicode_string_length(string)];
 }
 
 - initWithUnicodeString: (const of_unichar_t*)string
-	      byteOrder: (of_endianess_t)byteOrder
+	      byteOrder: (of_byte_order_t)byteOrder
 {
 	return [self initWithUnicodeString: string
 				 byteOrder: byteOrder
@@ -737,12 +737,12 @@ static struct {
 		 length: (size_t)length
 {
 	return [self initWithUnicodeString: string
-				 byteOrder: OF_ENDIANESS_NATIVE
+				 byteOrder: OF_BYTE_ORDER_NATIVE
 				    length: length];
 }
 
 - initWithUnicodeString: (const of_unichar_t*)string
-	      byteOrder: (of_endianess_t)byteOrder
+	      byteOrder: (of_byte_order_t)byteOrder
 		 length: (size_t)length
 {
 	Class c = [self class];
@@ -754,12 +754,12 @@ static struct {
 - initWithUTF16String: (const uint16_t*)string
 {
 	return [self initWithUTF16String: string
-			       byteOrder: OF_ENDIANESS_BIG_ENDIAN
+			       byteOrder: OF_BYTE_ORDER_BIG_ENDIAN
 				  length: of_utf16_string_length(string)];
 }
 
 - initWithUTF16String: (const uint16_t*)string
-	    byteOrder: (of_endianess_t)byteOrder
+	    byteOrder: (of_byte_order_t)byteOrder
 {
 	return [self initWithUTF16String: string
 			       byteOrder: byteOrder
@@ -770,12 +770,12 @@ static struct {
 	       length: (size_t)length
 {
 	return [self initWithUTF16String: string
-			       byteOrder: OF_ENDIANESS_BIG_ENDIAN
+			       byteOrder: OF_BYTE_ORDER_BIG_ENDIAN
 				  length: length];
 }
 
 - initWithUTF16String: (const uint16_t*)string
-	    byteOrder: (of_endianess_t)byteOrder
+	    byteOrder: (of_byte_order_t)byteOrder
 	       length: (size_t)length
 {
 	Class c = [self class];

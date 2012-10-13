@@ -312,7 +312,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 }
 
 - initWithUnicodeString: (const of_unichar_t*)string
-	      byteOrder: (of_endianess_t)byteOrder
+	      byteOrder: (of_byte_order_t)byteOrder
 		 length: (size_t)length
 {
 	self = [super init];
@@ -328,7 +328,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 			swap = YES;
 			string++;
 			length--;
-		} else if (byteOrder != OF_ENDIANESS_NATIVE)
+		} else if (byteOrder != OF_BYTE_ORDER_NATIVE)
 			swap = YES;
 
 		s = &s_store;
@@ -394,7 +394,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 }
 
 - initWithUTF16String: (const uint16_t*)string
-	    byteOrder: (of_endianess_t)byteOrder
+	    byteOrder: (of_byte_order_t)byteOrder
 	       length: (size_t)length
 {
 	self = [super init];
@@ -410,7 +410,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 			swap = YES;
 			string++;
 			length--;
-		} else if (byteOrder != OF_ENDIANESS_NATIVE)
+		} else if (byteOrder != OF_BYTE_ORDER_NATIVE)
 			swap = YES;
 
 		s = &s_store;
