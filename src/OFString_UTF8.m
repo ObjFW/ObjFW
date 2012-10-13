@@ -1039,33 +1039,56 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 - (of_range_t)rangeOfString: (OFString*)string
 		    options: (of_string_search_options_t)options
+		      range: (of_range_t)range
 {
 	const char *cString = [string UTF8String];
 	size_t i, cStringLength = [string UTF8StringLength];
+	size_t rangeStart, rangeLength;
+
+	if (s->isUTF8) {
+		rangeStart = of_string_utf8_get_position(
+		    s->cString, range.start, s->cStringLength);
+		rangeLength = of_string_utf8_get_position(
+		    s->cString + rangeStart, range.length,
+		    s->cStringLength - rangeStart);
+	} else {
+		rangeStart = range.start;
+		rangeLength = range.length;
+	}
 
 	if (cStringLength == 0)
 		return of_range(0, 0);
 
-	if (cStringLength > s->cStringLength)
+	if (cStringLength > rangeLength ||
+	    rangeStart + rangeLength > s->cStringLength)
 		return of_range(OF_INVALID_INDEX, 0);
 
 	if (options & OF_STRING_SEARCH_BACKWARDS) {
-		for (i = s->cStringLength - cStringLength;; i--) {
-			if (!memcmp(s->cString + i, cString, cStringLength))
-				return of_range(
-				    of_string_utf8_get_index(s->cString, i),
-				    [string length]);
+		for (i = rangeLength - cStringLength;; i--) {
+			if (!memcmp(s->cString + rangeStart + i, cString,
+			    cStringLength)) {
+				range.start += of_string_utf8_get_index(
+				    s->cString + rangeStart, i);
+				range.length = [string length];
+
+				return range;
+			}
 
 			/* Did not match and we're at the last char */
 			if (i == 0)
 				return of_range(OF_INVALID_INDEX, 0);
 		}
 	} else {
-		for (i = 0; i <= s->cStringLength - cStringLength; i++)
-			if (!memcmp(s->cString + i, cString, cStringLength))
-				return of_range(
-				    of_string_utf8_get_index(s->cString, i),
-				    [string length]);
+		for (i = 0; i <= rangeLength - cStringLength; i++) {
+			if (!memcmp(s->cString + rangeStart + i, cString,
+			    cStringLength)) {
+				range.start += of_string_utf8_get_index(
+				    s->cString + rangeStart, i);
+				range.length = [string length];
+
+				return range;
+			}
+		}
 	}
 
 	return of_range(OF_INVALID_INDEX, 0);

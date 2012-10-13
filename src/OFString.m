@@ -1158,47 +1158,75 @@ static struct {
 - (of_range_t)rangeOfString: (OFString*)string
 {
 	return [self rangeOfString: string
-			   options: 0];
+			   options: 0
+			     range: of_range(0, [self length])];
 }
 
 - (of_range_t)rangeOfString: (OFString*)string
 		    options: (of_string_search_options_t)options
 {
+	return [self rangeOfString: string
+			   options: options
+			     range: of_range(0, [self length])];
+}
+
+- (of_range_t)rangeOfString: (OFString*)string
+		    options: (of_string_search_options_t)options
+		      range: (of_range_t)range
+{
 	void *pool;
-	const of_unichar_t *unicodeString, *searchString;
-	size_t i, length, searchLength;
+	const of_unichar_t *searchString;
+	of_unichar_t *unicodeString;
+	size_t i, searchLength;
 
 	if ((searchLength = [string length]) == 0)
 		return of_range(0, 0);
 
-	if (searchLength > (length = [self length]))
+	if (searchLength > range.length)
 		return of_range(OF_INVALID_INDEX, 0);
+
+	if (range.length > SIZE_MAX / sizeof(of_unichar_t))
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	pool = objc_autoreleasePoolPush();
 
-	unicodeString = [self unicodeString];
 	searchString = [string unicodeString];
+	unicodeString = malloc(range.length * sizeof(of_unichar_t));
 
-	if (options & OF_STRING_SEARCH_BACKWARDS) {
-		for (i = length - searchLength;; i--) {
-			if (!memcmp(unicodeString + i, searchString,
-			    searchLength * sizeof(of_unichar_t))) {
-				objc_autoreleasePoolPop(pool);
-				return of_range(i, searchLength);
-			}
+	if (unicodeString == NULL)
+		@throw [OFOutOfMemoryException
+		    exceptionWithClass: [self class]
+			 requestedSize: range.length * sizeof(of_unichar_t)];
 
-			/* Did not match and we're at the last character */
-			if (i == 0)
-				break;
-		}
-	} else {
-		for (i = 0; i <= length - searchLength; i++) {
-			if (!memcmp(unicodeString + i, searchString,
-			    searchLength * sizeof(of_unichar_t))) {
-				objc_autoreleasePoolPop(pool);
-				return of_range(i, searchLength);
+	@try {
+		[self getCharacters: unicodeString
+			    inRange: range];
+
+		if (options & OF_STRING_SEARCH_BACKWARDS) {
+			for (i = range.length - searchLength;; i--) {
+				if (!memcmp(unicodeString + i, searchString,
+				    searchLength * sizeof(of_unichar_t))) {
+					objc_autoreleasePoolPop(pool);
+					return of_range(range.start + i,
+					    searchLength);
+				}
+
+				/* No match and we're at the last character */
+				if (i == 0)
+					break;
+			}
+		} else {
+			for (i = 0; i <= range.length - searchLength; i++) {
+				if (!memcmp(unicodeString + i, searchString,
+				    searchLength * sizeof(of_unichar_t))) {
+					objc_autoreleasePoolPop(pool);
+					return of_range(range.start + i,
+					    searchLength);
+				}
 			}
 		}
+	} @finally {
+		free(unicodeString);
 	}
 
 	objc_autoreleasePoolPop(pool);
