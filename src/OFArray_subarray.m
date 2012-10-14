@@ -82,12 +82,12 @@
 	size_t index = [array indexOfObject: object];
 
 	if (index < range.location)
-		return OF_INVALID_INDEX;
+		return OF_NOT_FOUND;
 
 	index -= range.location;
 
 	if (index >= range.length)
-		return OF_INVALID_INDEX;
+		return OF_NOT_FOUND;
 
 	return index;
 }
@@ -97,12 +97,12 @@
 	size_t index = [array indexOfObjectIdenticalTo: object];
 
 	if (index < range.location)
-		return OF_INVALID_INDEX;
+		return OF_NOT_FOUND;
 
 	index -= range.location;
 
 	if (index >= range.length)
-		return OF_INVALID_INDEX;
+		return OF_NOT_FOUND;
 
 	return index;
 }

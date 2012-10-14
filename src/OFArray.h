@@ -165,21 +165,21 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 
 /**
  * \brief Returns the index of the first object that is equivalent to the
- *	  specified object or OF_INVALID_INDEX if it was not found.
+ *	  specified object or OF_NOT_FOUND if it was not found.
  *
  * \param object The object whose index is returned
  * \return The index of the first object equivalent to the specified object
- *	   or OF_INVALID_INDEX if it was not found
+ *	   or OF_NOT_FOUND if it was not found
  */
 - (size_t)indexOfObject: (id)object;
 
 /**
  * \brief Returns the index of the first object that has the same address as the
- *	  specified object or OF_INVALID_INDEX if it was not found.
+ *	  specified object or OF_NOT_FOUND if it was not found.
  *
  * \param object The object whose index is returned
  * \return The index of the first object that has the same aaddress as
- *	   the specified object or OF_INVALID_INDEX if it was not found
+ *	   the specified object or OF_NOT_FOUND if it was not found
  */
 - (size_t)indexOfObjectIdenticalTo: (id)object;
 

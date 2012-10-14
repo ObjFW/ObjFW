@@ -619,7 +619,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  *
  * \param string The string to search
  * \return The range of the first occurrence of the string or a range with
- *	   OF_INVALID_INDEX as start position if it was not found
+ *	   OF_NOT_FOUND as start position if it was not found
  */
 - (of_range_t)rangeOfString: (OFString*)string;
 
@@ -629,7 +629,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param string The string to search
  * \param options Options modifying search behaviour
  * \return The range of the first occurrence of the string or a range with
- *	   OF_INVALID_INDEX as start position if it was not found
+ *	   OF_NOT_FOUND as start position if it was not found
  */
 - (of_range_t)rangeOfString: (OFString*)string
 		    options: (of_string_search_options_t)options;
@@ -641,7 +641,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \param options Options modifying search behaviour
  * \param range The range in which to search
  * \return The range of the first occurrence of the string or a range with
- *	   OF_INVALID_INDEX as start position if it was not found
+ *	   OF_NOT_FOUND as start position if it was not found
  */
 - (of_range_t)rangeOfString: (OFString*)string
 		    options: (of_string_search_options_t)options

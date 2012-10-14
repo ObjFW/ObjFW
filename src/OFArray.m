@@ -284,7 +284,7 @@ static struct {
 		if ([[self objectAtIndex: i] isEqual: object])
 			return i;
 
-	return OF_INVALID_INDEX;
+	return OF_NOT_FOUND;
 }
 
 - (size_t)indexOfObjectIdenticalTo: (id)object
@@ -295,17 +295,17 @@ static struct {
 		if ([self objectAtIndex: i] == object)
 			return i;
 
-	return OF_INVALID_INDEX;
+	return OF_NOT_FOUND;
 }
 
 - (BOOL)containsObject: (id)object
 {
-	return ([self indexOfObject: object] != OF_INVALID_INDEX);
+	return ([self indexOfObject: object] != OF_NOT_FOUND);
 }
 
 - (BOOL)containsObjectIdenticalTo: (id)object
 {
-	return ([self indexOfObjectIdenticalTo: object] != OF_INVALID_INDEX);
+	return ([self indexOfObjectIdenticalTo: object] != OF_NOT_FOUND);
 }
 
 - (id)firstObject

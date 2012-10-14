@@ -1183,7 +1183,7 @@ static struct {
 		return of_range(0, 0);
 
 	if (searchLength > range.length)
-		return of_range(OF_INVALID_INDEX, 0);
+		return of_range(OF_NOT_FOUND, 0);
 
 	if (range.length > SIZE_MAX / sizeof(of_unichar_t))
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
@@ -1231,7 +1231,7 @@ static struct {
 
 	objc_autoreleasePoolPop(pool);
 
-	return of_range(OF_INVALID_INDEX, 0);
+	return of_range(OF_NOT_FOUND, 0);
 }
 
 - (BOOL)containsString: (OFString*)string

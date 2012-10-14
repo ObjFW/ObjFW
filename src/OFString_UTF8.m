@@ -212,7 +212,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	for (i = 0; i <= index; i++)
 		if OF_UNLIKELY ((string[i] & 0xC0) == 0x80)
 			if (++index > length)
-				return OF_INVALID_INDEX;
+				return OF_NOT_FOUND;
 
 	return index;
 }
@@ -1061,7 +1061,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	if (cStringLength > rangeLength ||
 	    rangeStart + rangeLength > s->cStringLength)
-		return of_range(OF_INVALID_INDEX, 0);
+		return of_range(OF_NOT_FOUND, 0);
 
 	if (options & OF_STRING_SEARCH_BACKWARDS) {
 		for (i = rangeLength - cStringLength;; i--) {
@@ -1076,7 +1076,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 			/* Did not match and we're at the last char */
 			if (i == 0)
-				return of_range(OF_INVALID_INDEX, 0);
+				return of_range(OF_NOT_FOUND, 0);
 		}
 	} else {
 		for (i = 0; i <= rangeLength - cStringLength; i++) {
@@ -1091,7 +1091,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		}
 	}
 
-	return of_range(OF_INVALID_INDEX, 0);
+	return of_range(OF_NOT_FOUND, 0);
 }
 
 - (BOOL)containsString: (OFString*)string

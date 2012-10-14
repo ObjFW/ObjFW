@@ -413,7 +413,7 @@ normalizeKey(OFString *key)
 				}
 
 				range = [line rangeOfString: @";"];
-				if (range.location != OF_INVALID_INDEX)
+				if (range.location != OF_NOT_FOUND)
 					line = [line substringWithRange:
 					    of_range(0, range.location)];
 

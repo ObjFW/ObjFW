@@ -228,7 +228,7 @@
 		if ([objects[i] isEqual: object])
 			return i;
 
-	return OF_INVALID_INDEX;
+	return OF_NOT_FOUND;
 }
 
 - (size_t)indexOfObjectIdenticalTo: (id)object
@@ -240,7 +240,7 @@
 		if (objects[i] == object)
 			return i;
 
-	return OF_INVALID_INDEX;
+	return OF_NOT_FOUND;
 }
 
 

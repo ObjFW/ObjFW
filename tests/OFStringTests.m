@@ -225,7 +225,7 @@ static uint16_t sutf16str[] = {
 	    [@"𝄞öö" rangeOfString: @"öö"].location == 1 &&
 	    [@"𝄞öö" rangeOfString: @"ö"].location == 1 &&
 	    [@"𝄞öö" rangeOfString: @"𝄞"].location == 0 &&
-	    [@"𝄞öö" rangeOfString: @"x"].location == OF_INVALID_INDEX &&
+	    [@"𝄞öö" rangeOfString: @"x"].location == OF_NOT_FOUND &&
 	    [@"𝄞öö" rangeOfString: @"öö"
 			  options: OF_STRING_SEARCH_BACKWARDS].location == 1 &&
 	    [@"𝄞öö" rangeOfString: @"ö"
@@ -234,7 +234,7 @@ static uint16_t sutf16str[] = {
 			  options: OF_STRING_SEARCH_BACKWARDS].location == 0 &&
 	    [@"𝄞öö" rangeOfString: @"x"
 			  options: OF_STRING_SEARCH_BACKWARDS].location ==
-	     OF_INVALID_INDEX)
+	     OF_NOT_FOUND)
 
 	TEST(@"-[substringWithRange:]",
 	    [[@"𝄞öö" substringWithRange: of_range(1, 1)] isEqual: @"ö"] &&
