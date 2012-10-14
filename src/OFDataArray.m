@@ -377,7 +377,8 @@ void _references_to_categories_of_OFDataArray(void)
 
 - (void)removeItemsInRange: (of_range_t)range
 {
-	if (range.location + range.length > count)
+	if (range.length > SIZE_MAX - range.location ||
+	    range.location + range.length > count)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	memmove(data + range.location * itemSize,
@@ -640,7 +641,8 @@ void _references_to_categories_of_OFDataArray(void)
 {
 	size_t newSize, lastPageByte;
 
-	if (range.location + range.length > count)
+	if (range.length > SIZE_MAX - range.location ||
+	    range.location + range.length > count)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	memmove(data + range.location * itemSize,

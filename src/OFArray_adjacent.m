@@ -212,7 +212,8 @@
 	id *objects = [array cArray];
 	size_t i, count = [array count];
 
-	if (range.location + range.length > count)
+	if (range.length > SIZE_MAX - range.location ||
+	    range.location + range.length > count)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	for (i = 0; i < range.length; i++)
@@ -246,19 +247,18 @@
 
 - (OFArray*)objectsInRange: (of_range_t)range
 {
-	size_t count;
+	if (range.length > SIZE_MAX - range.location ||
+	    range.location + range.length > [array count])
+		@throw [OFOutOfRangeException
+		    exceptionWithClass: [self class]];
 
-	if (![self isKindOfClass: [OFMutableArray class]])
-		return [OFArray_adjacentSubarray arrayWithArray: self
-							  range: range];
+	if ([self isKindOfClass: [OFMutableArray class]])
+		return [OFArray
+		    arrayWithObjects: (id*)[array cArray] + range.location
+			       count: range.length];
 
-	count = [array count];
-
-	if (range.location + range.length > count)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
-
-	return [OFArray arrayWithObjects: (id*)[array cArray] + range.location
-				   count: range.length];
+	return [OFArray_adjacentSubarray arrayWithArray: self
+						  range: range];
 }
 
 - (BOOL)isEqual: (id)object

@@ -68,7 +68,8 @@
 - (void)getObjects: (id*)buffer
 	   inRange: (of_range_t)range_
 {
-	if (range_.location + range_.length > range.length)
+	if (range_.length > SIZE_MAX - range_.location ||
+	    range_.location + range_.length > range.length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	range_.location += range.location;
@@ -109,7 +110,8 @@
 
 - (OFArray*)objectsInRange: (of_range_t)range_
 {
-	if (range_.location + range_.length > range.length)
+	if (range_.length > SIZE_MAX - range_.location ||
+	    range_.location + range_.length > range.length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	range_.location += range.location;

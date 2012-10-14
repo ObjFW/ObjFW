@@ -1031,6 +1031,10 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *unicodeString = [self unicodeString];
 
+	if (range.length > SIZE_MAX - range.location ||
+	    range.location + range.length > s->length)
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+
 	memcpy(buffer, unicodeString + range.location,
 	    range.length * sizeof(of_unichar_t));
 
@@ -1043,32 +1047,35 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 {
 	const char *cString = [string UTF8String];
 	size_t i, cStringLength = [string UTF8StringLength];
-	size_t rangeStart, rangeLength;
+	size_t rangeLocation, rangeLength;
+
+	if (range.length > SIZE_MAX - range.location ||
+	    range.location + range.length > s->length)
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	if (s->isUTF8) {
-		rangeStart = of_string_utf8_get_position(
+		rangeLocation = of_string_utf8_get_position(
 		    s->cString, range.location, s->cStringLength);
 		rangeLength = of_string_utf8_get_position(
-		    s->cString + rangeStart, range.length,
-		    s->cStringLength - rangeStart);
+		    s->cString + rangeLocation, range.length,
+		    s->cStringLength - rangeLocation);
 	} else {
-		rangeStart = range.location;
+		rangeLocation = range.location;
 		rangeLength = range.length;
 	}
 
 	if (cStringLength == 0)
 		return of_range(0, 0);
 
-	if (cStringLength > rangeLength ||
-	    rangeStart + rangeLength > s->cStringLength)
+	if (cStringLength > rangeLength)
 		return of_range(OF_NOT_FOUND, 0);
 
 	if (options & OF_STRING_SEARCH_BACKWARDS) {
 		for (i = rangeLength - cStringLength;; i--) {
-			if (!memcmp(s->cString + rangeStart + i, cString,
+			if (!memcmp(s->cString + rangeLocation + i, cString,
 			    cStringLength)) {
 				range.location += of_string_utf8_get_index(
-				    s->cString + rangeStart, i);
+				    s->cString + rangeLocation, i);
 				range.length = [string length];
 
 				return range;
@@ -1080,10 +1087,10 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		}
 	} else {
 		for (i = 0; i <= rangeLength - cStringLength; i++) {
-			if (!memcmp(s->cString + rangeStart + i, cString,
+			if (!memcmp(s->cString + rangeLocation + i, cString,
 			    cStringLength)) {
 				range.location += of_string_utf8_get_index(
-				    s->cString + rangeStart, i);
+				    s->cString + rangeLocation, i);
 				range.length = [string length];
 
 				return range;
@@ -1117,7 +1124,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	size_t start = range.location;
 	size_t end = range.location + range.length;
 
-	if (end > s->length)
+	if (range.length > SIZE_MAX - range.location || end > s->length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	if (s->isUTF8) {

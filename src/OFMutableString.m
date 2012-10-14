@@ -472,7 +472,8 @@ static struct {
 	size_t replacementLength = [replacement length];
 	size_t i;
 
-	if (range.location + range.length > [self length])
+	if (range.length > SIZE_MAX - range.location ||
+	    range.location + range.length > [self length])
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	if (searchLength > range.length) {

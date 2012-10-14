@@ -331,6 +331,10 @@ static struct {
 	OFArray *ret;
 	id *buffer;
 
+	if (range.length > SIZE_MAX - range.location ||
+	    range.location + range.length < [self count])
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+
 	if (![self isKindOfClass: [OFMutableArray class]])
 		return [OFArray_subarray arrayWithArray: self
 						  range: range];

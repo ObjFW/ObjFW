@@ -533,7 +533,7 @@
 	size_t start = range.location;
 	size_t end = range.location + range.length;
 
-	if (end > s->length)
+	if (range.length > SIZE_MAX - range.location || end > s->length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	s->hashed = NO;
@@ -565,7 +565,7 @@
 	size_t end = range.location + range.length;
 	size_t newCStringLength, newLength;
 
-	if (end > s->length)
+	if (range.length > SIZE_MAX - range.location || end > s->length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	newLength = s->length - (end - start) + [replacement length];
@@ -604,6 +604,10 @@
 	size_t i, last, newCStringLength, newLength;
 	char *newCString;
 
+	if (range.length > SIZE_MAX - range.location ||
+	    range.location + range.length > [self length])
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+
 	if (s->isUTF8) {
 		range.location = of_string_utf8_get_position(s->cString,
 		    range.location, s->cStringLength);
@@ -611,9 +615,6 @@
 		    s->cString + range.location, range.length,
 		    s->cStringLength - range.location);
 	}
-
-	if (range.location + range.length > [self UTF8StringLength])
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	if ([string UTF8StringLength] > range.length)
 		return;

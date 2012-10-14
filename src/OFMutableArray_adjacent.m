@@ -176,7 +176,8 @@
 	id *objects = [array cArray], *copy;
 	size_t i, count = [array count];
 
-	if (range.length > count - range.location)
+	if (range.length > SIZE_MAX - range.location ||
+	    range.length > count - range.location)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	copy = [self allocMemoryWithSize: sizeof(*copy)

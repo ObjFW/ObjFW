@@ -1269,7 +1269,8 @@ static struct {
 	void *pool;
 	OFString *ret;
 
-	if (range.location + range.length > [self length])
+	if (range.length > SIZE_MAX - range.location ||
+	    range.location + range.length > [self length])
 		@throw [OFOutOfRangeException
 		    exceptionWithClass: [self class]];
 
