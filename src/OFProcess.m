@@ -28,6 +28,7 @@
 #import "OFArray.h"
 
 #import "OFInitializationFailedException.h"
+#import "OFNotImplementedException.h"
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
@@ -304,7 +305,7 @@
 #endif
 }
 
-- (int)fileDescriptorForWRiting
+- (int)fileDescriptorForWriting
 {
 #ifndef _WIN32
 	return writePipe[1];
