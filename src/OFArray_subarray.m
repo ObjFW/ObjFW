@@ -62,16 +62,16 @@
 	if (index >= range.length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	return [array objectAtIndex: index + range.start];
+	return [array objectAtIndex: index + range.location];
 }
 
 - (void)getObjects: (id*)buffer
 	   inRange: (of_range_t)range_
 {
-	if (range_.start + range_.length > range.length)
+	if (range_.location + range_.length > range.length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	range_.start += range.start;
+	range_.location += range.location;
 
 	return [array getObjects: buffer
 			 inRange: range_];
@@ -81,10 +81,10 @@
 {
 	size_t index = [array indexOfObject: object];
 
-	if (index < range.start)
+	if (index < range.location)
 		return OF_INVALID_INDEX;
 
-	index -= range.start;
+	index -= range.location;
 
 	if (index >= range.length)
 		return OF_INVALID_INDEX;
@@ -96,10 +96,10 @@
 {
 	size_t index = [array indexOfObjectIdenticalTo: object];
 
-	if (index < range.start)
+	if (index < range.location)
 		return OF_INVALID_INDEX;
 
-	index -= range.start;
+	index -= range.location;
 
 	if (index >= range.length)
 		return OF_INVALID_INDEX;
@@ -109,10 +109,10 @@
 
 - (OFArray*)objectsInRange: (of_range_t)range_
 {
-	if (range_.start + range_.length > range.length)
+	if (range_.location + range_.length > range.length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	range_.start += range.start;
+	range_.location += range.location;
 
 	return [array objectsInRange: range_];
 }

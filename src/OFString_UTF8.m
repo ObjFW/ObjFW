@@ -1031,7 +1031,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *unicodeString = [self unicodeString];
 
-	memcpy(buffer, unicodeString + range.start,
+	memcpy(buffer, unicodeString + range.location,
 	    range.length * sizeof(of_unichar_t));
 
 	objc_autoreleasePoolPop(pool);
@@ -1047,12 +1047,12 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	if (s->isUTF8) {
 		rangeStart = of_string_utf8_get_position(
-		    s->cString, range.start, s->cStringLength);
+		    s->cString, range.location, s->cStringLength);
 		rangeLength = of_string_utf8_get_position(
 		    s->cString + rangeStart, range.length,
 		    s->cStringLength - rangeStart);
 	} else {
-		rangeStart = range.start;
+		rangeStart = range.location;
 		rangeLength = range.length;
 	}
 
@@ -1067,7 +1067,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		for (i = rangeLength - cStringLength;; i--) {
 			if (!memcmp(s->cString + rangeStart + i, cString,
 			    cStringLength)) {
-				range.start += of_string_utf8_get_index(
+				range.location += of_string_utf8_get_index(
 				    s->cString + rangeStart, i);
 				range.length = [string length];
 
@@ -1082,7 +1082,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		for (i = 0; i <= rangeLength - cStringLength; i++) {
 			if (!memcmp(s->cString + rangeStart + i, cString,
 			    cStringLength)) {
-				range.start += of_string_utf8_get_index(
+				range.location += of_string_utf8_get_index(
 				    s->cString + rangeStart, i);
 				range.length = [string length];
 
@@ -1114,8 +1114,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 - (OFString*)substringWithRange: (of_range_t)range
 {
-	size_t start = range.start;
-	size_t end = range.start + range.length;
+	size_t start = range.location;
+	size_t end = range.location + range.length;
 
 	if (end > s->length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];

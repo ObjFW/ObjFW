@@ -413,9 +413,9 @@ normalizeKey(OFString *key)
 				}
 
 				range = [line rangeOfString: @";"];
-				if (range.start != OF_INVALID_INDEX)
+				if (range.location != OF_INVALID_INDEX)
 					line = [line substringWithRange:
-					    of_range(0, range.start)];
+					    of_range(0, range.location)];
 
 				@try {
 					toRead =

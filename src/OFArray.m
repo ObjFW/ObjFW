@@ -235,7 +235,7 @@ static struct {
 	size_t i;
 
 	for (i = 0; i < range.length; i++)
-		buffer[i] = [self objectAtIndex: range.start + i];
+		buffer[i] = [self objectAtIndex: range.location + i];
 }
 
 - (id*)objects

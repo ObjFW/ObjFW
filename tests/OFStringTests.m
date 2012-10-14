@@ -222,18 +222,18 @@ static uint16_t sutf16str[] = {
 	    [s[0] isEqual: @"test:1230F"])
 
 	TEST(@"-[rangeOfString:]",
-	    [@"𝄞öö" rangeOfString: @"öö"].start == 1 &&
-	    [@"𝄞öö" rangeOfString: @"ö"].start == 1 &&
-	    [@"𝄞öö" rangeOfString: @"𝄞"].start == 0 &&
-	    [@"𝄞öö" rangeOfString: @"x"].start == OF_INVALID_INDEX &&
+	    [@"𝄞öö" rangeOfString: @"öö"].location == 1 &&
+	    [@"𝄞öö" rangeOfString: @"ö"].location == 1 &&
+	    [@"𝄞öö" rangeOfString: @"𝄞"].location == 0 &&
+	    [@"𝄞öö" rangeOfString: @"x"].location == OF_INVALID_INDEX &&
 	    [@"𝄞öö" rangeOfString: @"öö"
-			  options: OF_STRING_SEARCH_BACKWARDS].start == 1 &&
+			  options: OF_STRING_SEARCH_BACKWARDS].location == 1 &&
 	    [@"𝄞öö" rangeOfString: @"ö"
-			  options: OF_STRING_SEARCH_BACKWARDS].start == 2 &&
+			  options: OF_STRING_SEARCH_BACKWARDS].location == 2 &&
 	    [@"𝄞öö" rangeOfString: @"𝄞"
-			  options: OF_STRING_SEARCH_BACKWARDS].start == 0 &&
+			  options: OF_STRING_SEARCH_BACKWARDS].location == 0 &&
 	    [@"𝄞öö" rangeOfString: @"x"
-			  options: OF_STRING_SEARCH_BACKWARDS].start ==
+			  options: OF_STRING_SEARCH_BACKWARDS].location ==
 	     OF_INVALID_INDEX)
 
 	TEST(@"-[substringWithRange:]",

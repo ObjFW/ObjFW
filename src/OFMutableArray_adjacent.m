@@ -176,12 +176,12 @@
 	id *objects = [array cArray], *copy;
 	size_t i, count = [array count];
 
-	if (range.length > count - range.start)
+	if (range.length > count - range.location)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	copy = [self allocMemoryWithSize: sizeof(*copy)
 				   count: range.length];
-	memcpy(copy, objects + range.start, range.length * sizeof(id));
+	memcpy(copy, objects + range.location, range.length * sizeof(id));
 
 	@try {
 		[array removeItemsInRange: range];

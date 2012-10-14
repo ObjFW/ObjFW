@@ -530,8 +530,8 @@
 
 - (void)deleteCharactersInRange: (of_range_t)range
 {
-	size_t start = range.start;
-	size_t end = range.start + range.length;
+	size_t start = range.location;
+	size_t end = range.location + range.length;
 
 	if (end > s->length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
@@ -561,8 +561,8 @@
 - (void)replaceCharactersInRange: (of_range_t)range
 		      withString: (OFString*)replacement
 {
-	size_t start = range.start;
-	size_t end = range.start + range.length;
+	size_t start = range.location;
+	size_t end = range.location + range.length;
 	size_t newCStringLength, newLength;
 
 	if (end > s->length)
@@ -605,13 +605,14 @@
 	char *newCString;
 
 	if (s->isUTF8) {
-		range.start = of_string_utf8_get_position(s->cString,
-		    range.start, s->cStringLength);
-		range.length = of_string_utf8_get_position(s->cString,
-		    range.start + range.length, s->cStringLength) - range.start;
+		range.location = of_string_utf8_get_position(s->cString,
+		    range.location, s->cStringLength);
+		range.length = of_string_utf8_get_position(
+		    s->cString + range.location, range.length,
+		    s->cStringLength - range.location);
 	}
 
-	if (range.start + range.length > [self UTF8StringLength])
+	if (range.location + range.length > [self UTF8StringLength])
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	if ([string UTF8StringLength] > range.length)
@@ -621,7 +622,8 @@
 	newCStringLength = 0;
 	newLength = s->length;
 
-	for (i = range.start, last = 0; i <= range.length - searchLength; i++) {
+	last = 0;
+	for (i = range.location; i <= range.length - searchLength; i++) {
 		if (memcmp(s->cString + i, searchString, searchLength))
 			continue;
 

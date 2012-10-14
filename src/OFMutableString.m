@@ -450,7 +450,7 @@ static struct {
 {
 	[self deleteCharactersInRange: range];
 	[self insertString: replacement
-		   atIndex: range.start];
+		   atIndex: range.location];
 }
 
 - (void)replaceOccurrencesOfString: (OFString*)string
@@ -472,7 +472,7 @@ static struct {
 	size_t replacementLength = [replacement length];
 	size_t i;
 
-	if (range.start + range.length > [self length])
+	if (range.location + range.length > [self length])
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	if (searchLength > range.length) {
@@ -483,7 +483,7 @@ static struct {
 	pool2 = objc_autoreleasePoolPush();
 	unicodeString = [self unicodeString];
 
-	for (i = range.start; i <= range.length - searchLength; i++) {
+	for (i = range.location; i <= range.length - searchLength; i++) {
 		if (memcmp(unicodeString + i, searchString,
 		    searchLength * sizeof(of_unichar_t)))
 			continue;

@@ -23,7 +23,7 @@
 @implementation OFArray_adjacentSubarray
 - (id*)objects
 {
-	return [array objects] + range.start;
+	return [array objects] + range.location;
 }
 
 - (BOOL)isEqual: (id)object

@@ -296,7 +296,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 	size_t i;
 
 	for (i = 0; i < range.length; i++)
-		[self removeObjectAtIndex: range.start];
+		[self removeObjectAtIndex: range.location];
 }
 
 - (void)removeLastObject

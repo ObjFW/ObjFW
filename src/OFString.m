@@ -929,7 +929,7 @@ static struct {
 	size_t i;
 
 	for (i = 0; i < range.length; i++)
-		buffer[i] = [self characterAtIndex: range.start + i];
+		buffer[i] = [self characterAtIndex: range.location + i];
 }
 
 - (BOOL)isEqual: (id)object
@@ -1207,7 +1207,7 @@ static struct {
 				if (!memcmp(unicodeString + i, searchString,
 				    searchLength * sizeof(of_unichar_t))) {
 					objc_autoreleasePoolPop(pool);
-					return of_range(range.start + i,
+					return of_range(range.location + i,
 					    searchLength);
 				}
 
@@ -1220,7 +1220,7 @@ static struct {
 				if (!memcmp(unicodeString + i, searchString,
 				    searchLength * sizeof(of_unichar_t))) {
 					objc_autoreleasePoolPop(pool);
-					return of_range(range.start + i,
+					return of_range(range.location + i,
 					    searchLength);
 				}
 			}
@@ -1269,13 +1269,13 @@ static struct {
 	void *pool;
 	OFString *ret;
 
-	if (range.start + range.length > [self length])
+	if (range.location + range.length > [self length])
 		@throw [OFOutOfRangeException
 		    exceptionWithClass: [self class]];
 
 	pool = objc_autoreleasePoolPush();
 	ret = [[OFString alloc]
-	    initWithUnicodeString: [self unicodeString] + range.start
+	    initWithUnicodeString: [self unicodeString] + range.location
 			   length: range.length];
 	objc_autoreleasePoolPop(pool);
 

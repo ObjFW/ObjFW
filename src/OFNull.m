@@ -28,13 +28,13 @@
 static OFNull *null = nil;
 
 @implementation OFNull
++ (void)initialize
+{
+	null = [[self alloc] init];
+}
+
 + (OFNull*)null
 {
-	if (null != nil)
-		return null;
-
-	null = [[self alloc] init];
-
 	return null;
 }
 

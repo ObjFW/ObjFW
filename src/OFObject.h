@@ -127,7 +127,7 @@ typedef enum of_byte_order_t {
  */
 typedef struct of_range_t {
 	/// The start of the range
-	size_t start;
+	size_t location;
 	/// The length of the range
 	size_t length;
 } of_range_t;
