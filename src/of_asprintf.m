@@ -241,14 +241,14 @@ state_format_length_modifier(struct context *ctx)
 		break;
 #ifdef _WIN32
 	case 'I': /* win32 strangeness (I64 instead of ll or j) */
-		if (ctx->formatLen > ctx->i + 2 &&
+		if (ctx->format_len > ctx->i + 2 &&
 		    ctx->format[ctx->i + 1] == '6' &&
 		    ctx->format[ctx->i + 2] == '4') {
 			if (!append_subformat(ctx, ctx->format + ctx->i, 3))
 				return false;
 
 			ctx->i += 2;
-			ctx->lengthModifier = LENGTH_MODIFIER_LL;
+			ctx->length_modifier = LENGTH_MODIFIER_LL;
 		} else
 			ctx->i--;
 
@@ -259,7 +259,7 @@ state_format_length_modifier(struct context *ctx)
 		if (!append_subformat(ctx, ctx->format + ctx->i, 1))
 			return false;
 
-		ctx->lengthModifier = LENGTH_MODIFIER_LL;
+		ctx->length_modifier = LENGTH_MODIFIER_LL;
 
 		break;
 #endif

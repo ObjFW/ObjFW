@@ -329,15 +329,15 @@
 }
 
 - (void)appendCString: (const char*)cString
-	 withEncoding: (of_string_encoding_t)encoding
+	     encoding: (of_string_encoding_t)encoding
 {
 	return [self appendCString: cString
-		      withEncoding: encoding
+			  encoding: encoding
 			    length: strlen(cString)];
 }
 
 - (void)appendCString: (const char*)cString
-	 withEncoding: (of_string_encoding_t)encoding
+	     encoding: (of_string_encoding_t)encoding
 	       length: (size_t)cStringLength
 {
 	if (encoding == OF_STRING_ENCODING_UTF_8)
