@@ -362,6 +362,17 @@ struct {
 			   options: options];
 }
 
+- (of_range_t)rangeOfString: (OFString*)string
+		    options: (int)options
+		      range: (of_range_t)range
+{
+	[self finishInitialization];
+
+	return [self rangeOfString: string
+			   options: options
+			     range: range];
+}
+
 - (BOOL)containsString: (OFString*)string
 {
 	[self finishInitialization];
@@ -383,11 +394,40 @@ struct {
 	return [self stringByAppendingString: string];
 }
 
+- (OFString*)stringByAppendingPathComponent: (OFString*)component
+{
+	[self finishInitialization];
+
+	return [self stringByAppendingPathComponent: component];
+}
+
 - (OFString*)stringByPrependingString: (OFString*)string
 {
 	[self finishInitialization];
 
 	return [self stringByPrependingString: string];
+}
+
+- (OFString*)stringByReplacingOccurrencesOfString: (OFString*)string
+				       withString: (OFString*)replacement
+{
+	[self finishInitialization];
+
+	return [self stringByReplacingOccurrencesOfString: string
+					       withString: replacement];
+}
+
+- (OFString*)stringByReplacingOccurrencesOfString: (OFString*)string
+				       withString: (OFString*)replacement
+					  options: (int)options
+					    range: (of_range_t)range
+{
+	[self finishInitialization];
+
+	return [self stringByReplacingOccurrencesOfString: string
+					       withString: replacement
+						  options: options
+						    range: range];
 }
 
 - (OFString*)uppercaseString
@@ -402,6 +442,13 @@ struct {
 	[self finishInitialization];
 
 	return [self lowercaseString];
+}
+
+- (OFString*)capitalizedString
+{
+	[self finishInitialization];
+
+	return [self capitalizedString];
 }
 
 - (OFString*)stringByDeletingLeadingWhitespaces
@@ -444,6 +491,15 @@ struct {
 	[self finishInitialization];
 
 	return [self componentsSeparatedByString: delimiter];
+}
+
+- (OFArray*)componentsSeparatedByString: (OFString*)delimiter
+				options: (int)options
+{
+	[self finishInitialization];
+
+	return [self componentsSeparatedByString: delimiter
+					 options: options];
 }
 
 - (OFArray*)pathComponents
