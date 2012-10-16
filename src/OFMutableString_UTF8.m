@@ -298,7 +298,7 @@
 }
 
 - (void)appendUTF8String: (const char*)UTF8String
-	      withLength: (size_t)UTF8StringLength
+		  length: (size_t)UTF8StringLength
 {
 	size_t length;
 
@@ -342,7 +342,7 @@
 {
 	if (encoding == OF_STRING_ENCODING_UTF_8)
 		[self appendUTF8String: cString
-			    withLength: cStringLength];
+				length: cStringLength];
 	else {
 		void *pool = objc_autoreleasePoolPush();
 		[self appendString:
@@ -385,7 +385,7 @@
 }
 
 - (void)appendFormat: (OFConstantString*)format
-       withArguments: (va_list)arguments
+	   arguments: (va_list)arguments
 {
 	char *UTF8String;
 	int UTF8StringLength;
@@ -402,7 +402,7 @@
 
 	@try {
 		[self appendUTF8String: UTF8String
-			    withLength: UTF8StringLength];
+				length: UTF8StringLength];
 	} @finally {
 		free(UTF8String);
 	}
