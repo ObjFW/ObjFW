@@ -17,6 +17,7 @@
 #include "config.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 #if defined(OF_APPLE_RUNTIME)
 # import <objc/runtime.h>
@@ -94,6 +95,51 @@
 {
 	return [OFString stringWithFormat: @"<OFMethod: %@ [%s]>",
 					   name, typeEncoding];
+}
+
+- (BOOL)isEqual: (id)object
+{
+	OFMethod *otherMethod;
+
+	if (![object isKindOfClass: [OFMethod class]])
+		return NO;
+
+	otherMethod = object;
+
+	if (!sel_isEqual(otherMethod->selector, selector))
+		return NO;
+
+	if (![otherMethod->name isEqual: name])
+		return NO;
+
+	if ((otherMethod->typeEncoding == NULL && typeEncoding != NULL) ||
+	    (otherMethod->typeEncoding != NULL && typeEncoding == NULL))
+		return NO;
+	if (strcmp(otherMethod->typeEncoding, typeEncoding))
+		return NO;
+
+	return YES;
+}
+
+- (uint32_t)hash
+{
+	uint32_t hash;
+
+	OF_HASH_INIT(hash);
+
+	OF_HASH_ADD_HASH(hash, [name hash]);
+
+	if (typeEncoding != NULL) {
+		size_t i, length;
+
+		length = strlen(typeEncoding);
+		for (i = 0; i < length; i++)
+			OF_HASH_ADD(hash, typeEncoding[i]);
+	}
+
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
 }
 @end
 
