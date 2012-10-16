@@ -595,7 +595,8 @@
 
 - (void)replaceOccurrencesOfString: (OFString*)string
 			withString: (OFString*)replacement
-			   inRange: (of_range_t)range
+			   options: (int)options
+			     range: (of_range_t)range
 {
 	const char *searchString = [string UTF8String];
 	const char *replacementString = [replacement UTF8String];

@@ -1163,7 +1163,7 @@ static struct {
 }
 
 - (of_range_t)rangeOfString: (OFString*)string
-		    options: (of_string_search_options_t)options
+		    options: (int)options
 {
 	return [self rangeOfString: string
 			   options: options
@@ -1171,7 +1171,7 @@ static struct {
 }
 
 - (of_range_t)rangeOfString: (OFString*)string
-		    options: (of_string_search_options_t)options
+		    options: (int)options
 		      range: (of_range_t)range
 {
 	void *pool;
@@ -1326,13 +1326,15 @@ static struct {
 
 - (OFString*)stringByReplacingOccurrencesOfString: (OFString*)string
 				       withString: (OFString*)replacement
-					  inRange: (of_range_t)range
+					  options: (int)options
+					    range: (of_range_t)range
 {
 	OFMutableString *new = [[self mutableCopy] autorelease];
 
 	[new replaceOccurrencesOfString: string
 			     withString: replacement
-				inRange: range];
+				options: options
+				  range: range];
 
 	[new makeImmutable];
 
@@ -1471,15 +1473,16 @@ static struct {
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter
 {
 	return [self componentsSeparatedByString: delimiter
-				       skipEmpty: NO];
+					 options: 0];
 }
 
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter
-			      skipEmpty: (BOOL)skipEmpty
+				options: (int)options
 {
 	void *pool;
 	OFMutableArray *array = [OFMutableArray array];
 	const of_unichar_t *string, *delimiterString;
+	BOOL skipEmpty = (options & OF_STRING_SKIP_EMPTY);
 	size_t length = [self length];
 	size_t delimiterLength = [delimiter length];
 	size_t i, last;

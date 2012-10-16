@@ -44,10 +44,10 @@ typedef enum of_string_encoding_t {
 	OF_STRING_ENCODING_AUTODETECT = 0xFF
 } of_string_encoding_t;
 
-
-typedef enum of_string_search_options_t {
-	OF_STRING_SEARCH_BACKWARDS = 1
-} of_string_search_options_t;
+enum {
+	OF_STRING_SEARCH_BACKWARDS = 1,
+	OF_STRING_SKIP_EMPTY	   = 2
+};
 
 /* FIXME */
 #define OF_STRING_ENCODING_NATIVE OF_STRING_ENCODING_UTF_8
@@ -627,24 +627,26 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * \brief Returns the range of the string.
  *
  * \param string The string to search
- * \param options Options modifying search behaviour
+ * \param options Options modifying search behaviour.
+ *		  Possible values: OF_STRING_SEARCH_BACKWARDS
  * \return The range of the first occurrence of the string or a range with
  *	   OF_NOT_FOUND as start position if it was not found
  */
 - (of_range_t)rangeOfString: (OFString*)string
-		    options: (of_string_search_options_t)options;
+		    options: (int)options;
 
 /**
  * \brief Returns the range of the string in the specified range.
  *
  * \param string The string to search
- * \param options Options modifying search behaviour
+ * \param options Options modifying search behaviour.
+ *		  Possible values: OF_STRING_SEARCH_BACKWARDS
  * \param range The range in which to search
  * \return The range of the first occurrence of the string or a range with
  *	   OF_NOT_FOUND as start position if it was not found
  */
 - (of_range_t)rangeOfString: (OFString*)string
-		    options: (of_string_search_options_t)options
+		    options: (int)options
 		      range: (of_range_t)range;
 
 /**
@@ -704,12 +706,15 @@ extern size_t of_utf16_string_length(const uint16_t*);
  *
  * \param string The string to replace
  * \param replacement The string with which it should be replaced
+ * \param options Options modifying search behaviour.
+ *		  Possible values: None yet
  * \param range The range in which to replace the string
  * \return A new string with the occurrences of the specified string replaced
  */
 - (OFString*)stringByReplacingOccurrencesOfString: (OFString*)string
 				       withString: (OFString*)replacement
-					  inRange: (of_range_t)range;
+					  options: (int)options
+					    range: (of_range_t)range;
 
 /**
  * \brief Returns the string in uppercase.
@@ -775,22 +780,23 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (BOOL)hasSuffix: (OFString*)suffix;
 
 /**
- * \brief Splits an OFString into an OFArray of OFStrings.
+ * \brief Separates an OFString into an OFArray of OFStrings.
  *
- * \param delimiter The delimiter for splitting
- * \return An autoreleased OFArray with the split string
+ * \param delimiter The delimiter for separating
+ * \return An autoreleased OFArray with the separated string
  */
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter;
 
 /**
- * \brief Splits an OFString into an OFArray of OFStrings.
+ * \brief Separates an OFString into an OFArray of OFStrings.
  *
- * \param delimiter The delimiter for splitting
- * \param skipEmpty Whether empty components should be skipped
- * \return An autoreleased OFArray with the split string
+ * \param delimiter The delimiter for separating
+ * \param options Options according to which the string should be separated
+ * 		  Possible values: OF_STRING_SKIP_EMPTY
+ * \return An autoreleased OFArray with the separated string
  */
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter
-			      skipEmpty: (BOOL)skipEmpty;
+				options: (int)options;
 
 /**
  * \brief Returns the components of the path.

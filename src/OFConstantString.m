@@ -354,7 +354,7 @@ struct {
 }
 
 - (of_range_t)rangeOfString: (OFString*)string
-		    options: (of_string_search_options_t)options
+		    options: (int)options
 {
 	[self finishInitialization];
 

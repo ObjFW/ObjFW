@@ -269,9 +269,10 @@ static uint16_t sutf16str[] = {
 	    [[a objectAtIndex: i++] isEqual: @""])
 
 	i = 0;
-	TEST(@"-[componentsSeparatedByString:skipEmpty:]",
-	    (a = [@"fooXXbarXXXXbazXXXX" componentsSeparatedByString: @"XX"
-							   skipEmpty: YES]) &&
+	TEST(@"-[componentsSeparatedByString:options:]",
+	    (a = [@"fooXXbarXXXXbazXXXX"
+	    componentsSeparatedByString: @"XX"
+				options: OF_STRING_SKIP_EMPTY]) &&
 	    [a count] == 3 &&
 	    [[a objectAtIndex: i++] isEqual: @"foo"] &&
 	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
@@ -501,12 +502,13 @@ static uint16_t sutf16str[] = {
 				    withString: @"XX"]) &&
 	    [s[0] isEqual: @"XXXX"])
 
-	TEST(@"-[replaceOccurrencesOfString:withString:inRange:]",
+	TEST(@"-[replaceOccurrencesOfString:withString:options:range:]",
 	    (s[0] = [OFMutableString stringWithString:
 	    @"foofoobarfoobarfoo"]) &&
 	    R([s[0] replaceOccurrencesOfString: @"oo"
 				    withString: @"óò"
-				       inRange: of_range(2, 15)]) &&
+				       options: 0
+					 range: of_range(2, 15)]) &&
 	    [s[0] isEqual: @"foofóòbarfóòbarfoo"])
 
 	TEST(@"-[deleteLeadingWhitespaces]",

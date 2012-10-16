@@ -1042,7 +1042,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 }
 
 - (of_range_t)rangeOfString: (OFString*)string
-		    options: (of_string_search_options_t)options
+		    options: (int)options
 		      range: (of_range_t)range
 {
 	const char *cString = [string UTF8String];
@@ -1160,12 +1160,13 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 }
 
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter
-			      skipEmpty: (BOOL)skipEmpty
+				options: (int)options
 {
 	void *pool;
 	OFMutableArray *array;
 	const char *cString = [delimiter UTF8String];
 	size_t cStringLength = [delimiter UTF8StringLength];
+	BOOL skipEmpty = (options & OF_STRING_SKIP_EMPTY);
 	size_t i, last;
 	OFString *component;
 

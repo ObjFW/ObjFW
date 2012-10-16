@@ -167,11 +167,14 @@
  *
  * \param string The string to replace
  * \param replacement The string with which it should be replaced
+ * \param options Options modifying search behaviour
+ *		  Possible values: None yet
  * \param range The range in which the string should be replaced
  */
 - (void)replaceOccurrencesOfString: (OFString*)string
 			withString: (OFString*)replacement
-			   inRange: (of_range_t)range;
+			   options: (int)options
+			     range: (of_range_t)range;
 
 /**
  * \brief Deletes all whitespaces at the beginning of the string.

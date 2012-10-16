@@ -458,12 +458,14 @@ static struct {
 {
 	[self replaceOccurrencesOfString: string
 			      withString: replacement
-				 inRange: of_range(0, [self length])];
+				 options: 0
+				   range: of_range(0, [self length])];
 }
 
 - (void)replaceOccurrencesOfString: (OFString*)string
 			withString: (OFString*)replacement
-			   inRange: (of_range_t)range
+			   options: (int)options
+			     range: (of_range_t)range
 {
 	void *pool = objc_autoreleasePoolPush(), *pool2;
 	const of_unichar_t *unicodeString;
