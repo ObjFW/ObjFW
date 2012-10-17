@@ -37,8 +37,9 @@
 @class OFString;
 
 #ifdef OF_HAVE_BLOCKS
-typedef void (^of_tcpsocket_async_connect_block_t)(OFTCPSocket*);
-typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*);
+typedef void (^of_tcpsocket_async_connect_block_t)(OFTCPSocket*, OFException*);
+typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*,
+    OFException*);
 #endif
 
 /**
@@ -137,7 +138,7 @@ typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*);
  * \param target The target on which to call the selector once the connection
  *		 has been established
  * \param selector The selector to call on the target. The signature must be
- *		   void (OFTCPSocket *socket).
+ *		   void (OFTCPSocket *socket, OFException *exception).
  */
 - (void)asyncConnectToHost: (OFString*)host
 		      port: (uint16_t)port
@@ -196,7 +197,8 @@ typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*);
  *		 next incoming connection should be accepted by the specified
  *		 block as well.
  * \param selector The selector to call on the target. The signature must be
- *		   BOOL (OFTCPSocket *socket, OFTCPSocket *acceptedSocket).
+ *		   BOOL (OFTCPSocket *socket, OFTCPSocket *acceptedSocket,
+ *		   OFException *exception).
  */
 - (void)asyncAcceptWithTarget: (id)target
 		     selector: (SEL)selector;

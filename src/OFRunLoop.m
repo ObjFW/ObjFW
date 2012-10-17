@@ -308,13 +308,21 @@ static OFRunLoop *mainRunLoop = nil;
 	if ([listObject->object isKindOfClass:
 	    [OFRunLoop_ReadQueueItem class]]) {
 		OFRunLoop_ReadQueueItem *queueItem = listObject->object;
-		size_t length = [stream readIntoBuffer: queueItem->buffer
-						length: queueItem->length];
+		size_t length;
+		OFException *exception = nil;
+
+		@try {
+			length = [stream readIntoBuffer: queueItem->buffer
+						 length: queueItem->length];
+		} @catch (OFException *e) {
+			length = 0;
+			exception = e;
+		}
 
 #ifdef OF_HAVE_BLOCKS
 		if (queueItem->block != NULL) {
 			if (!queueItem->block(stream, queueItem->buffer,
-				length)) {
+			    length, exception)) {
 				[queue removeListObject: listObject];
 
 				if ([queue count] == 0) {
@@ -325,13 +333,14 @@ static OFRunLoop *mainRunLoop = nil;
 			}
 		} else {
 #endif
-			BOOL (*func)(id, SEL, OFStream*, void*, size_t) =
-			    (BOOL(*)(id, SEL, OFStream*, void*, size_t))
+			BOOL (*func)(id, SEL, OFStream*, void*, size_t,
+			    OFException*) = (BOOL(*)(id, SEL, OFStream*, void*,
+			    size_t, OFException*))
 			    [queueItem->target methodForSelector:
 			    queueItem->selector];
 
 			if (!func(queueItem->target, queueItem->selector,
-			    stream, queueItem->buffer, length)) {
+			    stream, queueItem->buffer, length, exception)) {
 				[queue removeListObject: listObject];
 
 				if ([queue count] == 0) {
@@ -346,19 +355,27 @@ static OFRunLoop *mainRunLoop = nil;
 	} else if ([listObject->object isKindOfClass:
 	    [OFRunLoop_ExactReadQueueItem class]]) {
 		OFRunLoop_ExactReadQueueItem *queueItem = listObject->object;
-		size_t length = [stream
-		    readIntoBuffer: (char*)queueItem->buffer +
-				    queueItem->readLength
-			    length: queueItem->exactLength -
-				    queueItem->readLength];
+		size_t length;
+		OFException *exception = nil;
+
+		@try {
+			length = [stream
+			    readIntoBuffer: (char*)queueItem->buffer +
+					    queueItem->readLength
+				    length: queueItem->exactLength -
+					    queueItem->readLength];
+		} @catch (OFException *e) {
+			length = 0;
+			exception = e;
+		}
 
 		queueItem->readLength += length;
 		if (queueItem->readLength == queueItem->exactLength ||
-		    [stream isAtEndOfStream]) {
+		    [stream isAtEndOfStream] || exception != nil) {
 #ifdef OF_HAVE_BLOCKS
 			if (queueItem->block != NULL) {
 				if (queueItem->block(stream, queueItem->buffer,
-				    queueItem->readLength))
+				    queueItem->readLength, exception))
 					queueItem->readLength = 0;
 				else {
 					[queue removeListObject: listObject];
@@ -374,13 +391,15 @@ static OFRunLoop *mainRunLoop = nil;
 			} else {
 #endif
 				BOOL (*func)(id, SEL, OFStream*, void*,
-				    size_t) = (BOOL(*)(id, SEL, OFStream*,
-				    void*, size_t))[queueItem->target
+				    size_t, OFException*) = (BOOL(*)(id, SEL,
+				    OFStream*, void*, size_t, OFException*))
+				    [queueItem->target
 				    methodForSelector: queueItem->selector];
 
 				if (func(queueItem->target,
 				    queueItem->selector, stream,
-				    queueItem->buffer, queueItem->readLength))
+				    queueItem->buffer, queueItem->readLength,
+				    exception))
 					queueItem->readLength = 0;
 				else {
 					[queue removeListObject: listObject];
@@ -401,13 +420,22 @@ static OFRunLoop *mainRunLoop = nil;
 	    [OFRunLoop_ReadLineQueueItem class]]) {
 		OFRunLoop_ReadLineQueueItem *queueItem = listObject->object;
 		OFString *line;
+		OFException *exception = nil;
 
-		line = [stream tryReadLineWithEncoding: queueItem->encoding];
+		@try {
+			line = [stream
+			    tryReadLineWithEncoding: queueItem->encoding];
+		} @catch (OFException *e) {
+			line = nil;
+			exception = e;
+		}
 
-		if (line != nil || [stream isAtEndOfStream]) {
+		if (line != nil || [stream isAtEndOfStream] ||
+		    exception != nil) {
 #ifdef OF_HAVE_BLOCKS
 			if (queueItem->block != NULL) {
-				if (!queueItem->block(stream, line)) {
+				if (!queueItem->block(stream, line,
+				    exception)) {
 					[queue removeListObject: listObject];
 
 					if ([queue count] == 0) {
@@ -420,13 +448,15 @@ static OFRunLoop *mainRunLoop = nil;
 				}
 			} else {
 #endif
-				BOOL (*func)(id, SEL, OFStream*, OFString*) =
-				    (BOOL(*)(id, SEL, OFStream*, OFString*))
+				BOOL (*func)(id, SEL, OFStream*, OFString*,
+				    OFException*) = (BOOL(*)(id, SEL, OFStream*,
+				    OFString*, OFException*))
 				    [queueItem->target methodForSelector:
 				    queueItem->selector];
 
 				if (!func(queueItem->target,
-				    queueItem->selector, stream, line)) {
+				    queueItem->selector, stream, line,
+				    exception)) {
 					[queue removeListObject: listObject];
 
 					if ([queue count] == 0) {
@@ -444,12 +474,20 @@ static OFRunLoop *mainRunLoop = nil;
 	} else if ([listObject->object isKindOfClass:
 	    [OFRunLoop_AcceptQueueItem class]]) {
 		OFRunLoop_AcceptQueueItem *queueItem = listObject->object;
-		OFTCPSocket *newSocket = [(OFTCPSocket*)stream accept];
+		OFTCPSocket *newSocket;
+		OFException *exception = nil;
+
+		@try {
+			newSocket = [(OFTCPSocket*)stream accept];
+		} @catch (OFException *e) {
+			newSocket = nil;
+			exception = e;
+		}
 
 #ifdef OF_HAVE_BLOCKS
 		if (queueItem->block != NULL) {
 			if (!queueItem->block((OFTCPSocket*)stream,
-			    newSocket)) {
+			    newSocket, exception)) {
 				[queue removeListObject: listObject];
 
 				if ([queue count] == 0) {
@@ -460,13 +498,15 @@ static OFRunLoop *mainRunLoop = nil;
 			}
 		} else {
 #endif
-			BOOL (*func)(id, SEL, OFTCPSocket*, OFTCPSocket*) =
-			    (BOOL(*)(id, SEL, OFTCPSocket*, OFTCPSocket*))
+			BOOL (*func)(id, SEL, OFTCPSocket*, OFTCPSocket*,
+			    OFException*) =
+			    (BOOL(*)(id, SEL, OFTCPSocket*, OFTCPSocket*,
+			    OFException*))
 			    [queueItem->target methodForSelector:
 			    queueItem->selector];
 
 			if (!func(queueItem->target, queueItem->selector,
-			    (OFTCPSocket*)stream, newSocket)) {
+			    (OFTCPSocket*)stream, newSocket, exception)) {
 				[queue removeListObject: listObject];
 
 				if ([queue count] == 0) {

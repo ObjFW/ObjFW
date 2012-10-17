@@ -28,10 +28,13 @@
 
 @class OFStream;
 @class OFDataArray;
+@class OFException;
 
 #ifdef OF_HAVE_BLOCKS
-typedef BOOL (^of_stream_async_read_block_t)(OFStream*, void*, size_t);
-typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*);
+typedef BOOL (^of_stream_async_read_block_t)(OFStream*, void*, size_t,
+    OFException*);
+typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
+    OFException*);
 #endif
 
 /**
@@ -129,7 +132,8 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*);
  *		 queue to handle the data received next, you need to return NO
  *		 from the method.
  * \param selector The selector to call on the target. The signature must be
- *		   BOOL (OFStream *stream, void *buffer, size_t size).
+ *		   BOOL (OFStream *stream, void *buffer, size_t size,
+ *		   OFException *exception).
  */
 - (void)asyncReadIntoBuffer: (void*)buffer
 		     length: (size_t)length
@@ -142,7 +146,8 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*);
  *
  * Unlike asyncReadIntoBuffer:length:block, this method does not call the
  * method when less than the specified length has been read - instead, it waits
- * until it got exactly the specified length or the stream has ended.
+ * until it got exactly the specified length, the stream has ended or an
+ * exception occurred.
  *
  * \param buffer The buffer into which the data is read
  * \param length The length of the data that should be read.
@@ -154,7 +159,8 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*);
  *		 queue to handle the data received next, you need to return NO
  *		 from the method.
  * \param selector The selector to call on the target. The signature must be
- *		   BOOL (OFStream *stream, void *buffer, size_t size).
+ *		   BOOL (OFStream *stream, void *buffer, size_t size,
+ *		   OFException *exception).
  */
  - (void)asyncReadIntoBuffer: (void*)buffer
 		 exactLength: (size_t)length
@@ -192,7 +198,8 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*);
  *
  * Unlike asyncReadIntoBuffer:length:block, this method does not invoke the
  * block when less than the specified length has been read - instead, it waits
- * until it got exactly the specified length or the stream has ended.
+ * until it got exactly the specified length, the stream has ended or an
+ * exception occurred.
  *
  * \param buffer The buffer into which the data is read
  * \param length The length of the data that should be read.
@@ -555,8 +562,8 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*);
 - (OFString*)readLineWithEncoding: (of_string_encoding_t)encoding;
 
 /**
- * \brief Asyncronously reads with the specified encoding until a newline, \\0
- *	  or end of stream occurs.
+ * \brief Asyncronously reads until a newline, \\0, end of stream or an
+ *	  exception occurs.
  *
  * \param target The target on which to call the selector when the data has
  *		 been received. If the method returns YES, it will be called
@@ -564,14 +571,15 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*);
  *		 next method in the queue to handle the next line, you need to
  *		 return NO from the method
  * \param selector The selector to call on the target. The signature must be
- *		   BOOL (OFStream *stream, OFString *line).
+ *		   BOOL (OFStream *stream, OFString *line,
+ *		   OFException *exception).
  */
 - (void)asyncReadLineWithTarget: (id)target
 		       selector: (SEL)selector;
 
 /**
- * \brief Asyncronously reads with the specified encoding until a newline, \\0
- *	  or end of stream occurs.
+ * \brief Asyncronously reads with the specified encoding until a newline, \\0,
+ *	  end of stream or an exception occurs.
  *
  * \param encoding The encoding used by the stream
  * \param target The target on which to call the selector when the data has
@@ -580,7 +588,8 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*);
  *		 next method in the queue to handle the next line, you need to
  *		 return NO from the method
  * \param selector The selector to call on the target. The signature must be
- *		   BOOL (OFStream *stream, OFString *line).
+ *		   BOOL (OFStream *stream, OFString *line,
+ *		   OFException *exception).
  */
 - (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
 			   target: (id)target
@@ -588,7 +597,8 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*);
 
 #ifdef OF_HAVE_BLOCKS
 /**
- * \brief Asyncronously reads until a newline, \\0 or end of stream occurs.
+ * \brief Asyncronously reads until a newline, \\0, end of stream or an
+ *	  exception occurs.
  *
  * \param block The block to call when the data has been received.
  *		If the block returns YES, it will be called again when the next
@@ -598,8 +608,8 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*);
 - (void)asyncReadLineWithBlock: (of_stream_async_read_line_block_t)block;
 
 /**
- * \brief Asyncronously reads with the specified encoding until a newline, \\0
- *	  or end of stream occurs.
+ * \brief Asyncronously reads with the specified encoding until a newline, \\0,
+ *	  end of stream or an exception occurs.
  *
  * \param encoding The encoding used by the stream
  * \param block The block to call when the data has been received.

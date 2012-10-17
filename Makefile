@@ -23,6 +23,6 @@ tarball:
 	cp configure config.h.in objfw-${PACKAGE_VERSION}/
 	tar cf objfw-${PACKAGE_VERSION}.tar objfw-${PACKAGE_VERSION}
 	rm -fr objfw-${PACKAGE_VERSION}
-	xz -9 objfw-${PACKAGE_VERSION}.tar
+	xz objfw-${PACKAGE_VERSION}.tar
 	rm -f objfw-${PACKAGE_VERSION}.tar
 	gpg -b objfw-${PACKAGE_VERSION}.tar.xz || true

@@ -88,6 +88,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 #ifdef OF_HAVE_BLOCKS
 	of_tcpsocket_async_connect_block_t connectBlock;
 #endif
+	OFException *exception;
 }
 
 - initWithSourceThread: (OFThread*)sourceThread
@@ -163,6 +164,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 #ifdef OF_HAVE_BLOCKS
 	[connectBlock release];
 #endif
+	[exception release];
 
 	[super dealloc];
 }
@@ -173,14 +175,14 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 #ifdef OF_HAVE_BLOCKS
 	if (connectBlock != NULL)
-		connectBlock(sock);
+		connectBlock(sock, exception);
 	else {
 #endif
-		void (*func)(id, SEL, OFTCPSocket*) =
-		    (void(*)(id, SEL, OFTCPSocket*))[target
+		void (*func)(id, SEL, OFTCPSocket*, OFException*) =
+		    (void(*)(id, SEL, OFTCPSocket*, OFException*))[target
 		    methodForSelector: selector];
 
-		func(target, selector, sock);
+		func(target, selector, sock, exception);
 #ifdef OF_HAVE_BLOCKS
 	}
 #endif
@@ -190,8 +192,12 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[sock connectToHost: host
-		       port: port];
+	@try {
+		[sock connectToHost: host
+			       port: port];
+	} @catch (OFException *e) {
+		exception = [[e retain] autorelease];
+	}
 
 	[self performSelector: @selector(didConnect)
 		     onThread: sourceThread
