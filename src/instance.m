@@ -21,15 +21,6 @@
 static SEL cxx_construct = NULL;
 static SEL cxx_destruct = NULL;
 
-static void __attribute__((constructor))
-init(void)
-{
-	if (cxx_construct == NULL)
-		cxx_construct = sel_registerName(".cxx_construct");
-	if (cxx_destruct == NULL)
-		cxx_destruct = sel_registerName(".cxx_destruct");
-}
-
 id
 objc_constructInstance(Class cls, void *bytes)
 {
@@ -38,6 +29,11 @@ objc_constructInstance(Class cls, void *bytes)
 
 	if (cls == Nil || bytes == NULL)
 		return nil;
+
+	if (cxx_construct == NULL)
+		cxx_construct = sel_registerName(".cxx_construct");
+	if (cxx_destruct == NULL)
+		cxx_destruct = sel_registerName(".cxx_destruct");
 
 	object_setClass(obj, cls);
 
