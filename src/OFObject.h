@@ -80,6 +80,8 @@
 
 #if defined(__clang__) || __GCC_VERSION__ >= 406
 # define OF_SENTINEL __attribute__((sentinel))
+#else
+# define OF_SENTINEL
 #endif
 
 #if __has_feature(objc_arc)
