@@ -21,37 +21,46 @@
 static SEL cxx_construct = NULL;
 static SEL cxx_destruct = NULL;
 
+static BOOL
+call_ctors(Class cls, id obj)
+{
+	Class super = class_getSuperclass(cls);
+	id (*ctor)(id, SEL);
+	id (*last)(id, SEL);
+
+	if (super != nil)
+		if (!call_ctors(super, obj))
+			return NO;
+
+	if (cxx_construct == NULL)
+		cxx_construct = sel_registerName(".cxx_construct");
+
+	if (!class_respondsToSelector(cls, cxx_construct))
+		return YES;
+
+	ctor = (id(*)(id, SEL))
+	    class_getMethodImplementation(cls, cxx_construct);
+	last = (id(*)(id, SEL))
+	    class_getMethodImplementation(super, cxx_construct);
+
+	if (ctor == last)
+		return YES;
+
+	return (ctor(obj, cxx_construct) != nil ? YES : NO);
+}
+
 id
 objc_constructInstance(Class cls, void *bytes)
 {
 	id obj = (id)bytes;
-	BOOL (*last)(id, SEL) = NULL;
 
 	if (cls == Nil || bytes == NULL)
 		return nil;
 
-	if (cxx_construct == NULL)
-		cxx_construct = sel_registerName(".cxx_construct");
-	if (cxx_destruct == NULL)
-		cxx_destruct = sel_registerName(".cxx_destruct");
-
 	object_setClass(obj, cls);
 
-	/* FIXME: Constructors of superclasses should be called first */
-	for (; cls != Nil; cls = class_getSuperclass(cls)) {
-		BOOL (*ctor)(id, SEL);
-
-		if (class_respondsToSelector(cls, cxx_construct)) {
-			if ((ctor = (BOOL(*)(id, SEL))
-			    class_getMethodImplementation(cls,
-			    cxx_construct)) != last)
-				if (!ctor(obj, cxx_construct))
-					return nil;
-
-			last = ctor;
-		} else
-			break;
-	}
+	if (!call_ctors(cls, obj))
+		return nil;
 
 	return obj;
 }
@@ -61,6 +70,9 @@ objc_destructInstance(id obj)
 {
 	Class cls;
 	void (*last)(id, SEL) = NULL;
+
+	if (cxx_destruct == NULL)
+		cxx_destruct = sel_registerName(".cxx_destruct");
 
 	for (cls = object_getClass(obj); cls != Nil;
 	    cls = class_getSuperclass(cls)) {
