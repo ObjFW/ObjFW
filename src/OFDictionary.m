@@ -122,8 +122,7 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFDictionary class])
-		object_setClass((id)&placeholder,
-		    [OFDictionary_placeholder class]);
+		placeholder.isa = [OFDictionary_placeholder class];
 }
 
 + alloc

@@ -56,7 +56,7 @@
 
 	objc_autoreleasePoolPop(pool);
 
-	*(void**)&initPlugin = dlsym(handle, "init_plugin");
+	initPlugin = (OFPlugin*(*)(void))dlsym(handle, "init_plugin");
 	if (initPlugin == NULL || (plugin = initPlugin()) == nil) {
 		dlclose(handle);
 		@throw [OFInitializationFailedException

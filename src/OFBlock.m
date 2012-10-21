@@ -179,8 +179,8 @@ _Block_copy(const void *block_)
 		of_block_literal_t *copy;
 
 		if ((copy = malloc(block->descriptor->size)) == NULL) {
-			object_setClass((id)&alloc_failed_exception,
-			    [OFAllocFailedException class]);
+			alloc_failed_exception.isa =
+			    [OFAllocFailedException class];
 			@throw (OFAllocFailedException*)&alloc_failed_exception;
 		}
 		memcpy(copy, block, block->descriptor->size);
@@ -267,8 +267,8 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 
 		if ((src->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
 			if ((*dst = malloc(src->size)) == NULL) {
-				object_setClass((id)&alloc_failed_exception,
-				    [OFAllocFailedException class]);
+				alloc_failed_exception.isa =
+				    [OFAllocFailedException class];
 				@throw (OFAllocFailedException*)
 				    &alloc_failed_exception;
 			}

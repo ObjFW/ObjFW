@@ -149,8 +149,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 + (void)initialize
 {
 	if (self == [OFMutableArray class])
-		object_setClass((id)&placeholder,
-		    [OFMutableArray_placeholder class]);
+		placeholder.isa = [OFMutableArray_placeholder class];
 }
 
 + alloc

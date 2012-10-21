@@ -106,7 +106,7 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFSet class])
-		object_setClass((id)&placeholder, [OFSet_placeholder class]);
+		placeholder.isa = [OFSet_placeholder class];
 }
 
 + alloc

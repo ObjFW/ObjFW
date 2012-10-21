@@ -113,7 +113,7 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFArray class])
-		object_setClass((id)&placeholder, [OFArray_placeholder class]);
+		placeholder.isa = [OFArray_placeholder class];
 }
 
 + alloc

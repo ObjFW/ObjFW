@@ -188,8 +188,7 @@ of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
 	    extraAlignment + extraSize);
 
 	if OF_UNLIKELY (instance == nil) {
-		object_setClass((id)&alloc_failed_exception,
-		    [OFAllocFailedException class]);
+		alloc_failed_exception.isa = [OFAllocFailedException class];
 		@throw (id)&alloc_failed_exception;
 	}
 
