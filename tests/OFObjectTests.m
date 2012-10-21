@@ -24,6 +24,12 @@
 
 #import "TestsAppDelegate.h"
 
+#if defined(__DragonFly__) && defined(__LP64__)
+# define TOO_BIG (SIZE_MAX / 3)
+#else
+# define TOO_BIG (SIZE_MAX - 128)
+#endif
+
 static OFString *module = @"OFObject";
 
 @interface MyObj: OFObject
@@ -59,14 +65,14 @@ static OFString *module = @"OFObject";
 	    OFMemoryNotPartOfObjectException, [obj freeMemory: tmp])
 
 	EXPECT_EXCEPTION(@"Detect out of memory on alloc",
-	    OFOutOfMemoryException, [obj allocMemoryWithSize: SIZE_MAX - 128])
+	    OFOutOfMemoryException, [obj allocMemoryWithSize: TOO_BIG])
 
 	EXPECT_EXCEPTION(@"Detect out of memory on resize",
 	    OFOutOfMemoryException,
 	    {
 		p = [obj allocMemoryWithSize: 1];
 		[obj resizeMemory: p
-			     size: SIZE_MAX - 128];
+			     size: TOO_BIG];
 	    })
 	[obj freeMemory: p];
 
