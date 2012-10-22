@@ -5,6 +5,15 @@ ObjFW is known to work on the following platforms, but should run on many
 others as well.
 
 
+DragonFlyBSD
+------------
+
+  * OS versions: 3.0, 3.3-DEVELOPMENT
+  * Architectures: x86, x86_64
+  * Compilers: GCC 4.4.7
+  * Runtimes: ObjFW
+
+
 iOS
 ---
 
