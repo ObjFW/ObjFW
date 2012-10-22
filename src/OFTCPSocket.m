@@ -626,10 +626,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 	int newSock;
 
 	newSocket = [[[[self class] alloc] init] autorelease];
-	addrLen = sizeof(struct sockaddr);
+	addrLen = sizeof(*addr);
 
 	@try {
-		addr = [newSocket allocMemoryWithSize: sizeof(struct sockaddr)];
+		addr = [newSocket allocMemoryWithSize: addrLen];
 	} @catch (id e) {
 		[newSocket release];
 		@throw e;
