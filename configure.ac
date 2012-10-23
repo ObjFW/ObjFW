@@ -170,6 +170,7 @@ case $objc_runtime in
 			RUNTIME_FLAGS="-fgnu-runtime"
 			OBJCFLAGS="$old_OBJCFLAGS -fgnu-runtime"
 			AC_MSG_RESULT(no)
+			old_compiler="yes"
 
 			AX_CHECK_COMPILER_FLAGS(-fno-objc-nonfragile-abi, [
 				flag="-fno-objc-nonfragile-abi"
@@ -730,3 +731,13 @@ AC_SUBST(CPPFLAGS)
 AC_CONFIG_FILES([buildsys.mk extra.mk utils/objfw-config Info.plist])
 AC_CONFIG_HEADERS([config.h src/objfw-defs.h])
 AC_OUTPUT
+
+AS_IF([test x"$old_compiler" = x"yes"], [
+	echo
+	printf "  ** Note: Your compiler does not seem to "
+	echo "accept -fobjc-runtime=objfw."
+	printf "  ** To get optimal performance and be able to use all "
+	echo "features, you should "
+	echo "  ** install Clang >= 3.2."
+	echo
+])
