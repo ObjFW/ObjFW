@@ -69,9 +69,9 @@ QNX
 Windows
 -------
 
-  * OS versions: XP (x86), 7 (x64), Wine
+  * OS versions: XP (x86), 7 (x64), 8 (x64), Wine
   * Architectures: x86
-  * Compilers: TDM GCC 4.6.1-dw2
+  * Compilers: TDM GCC 4.6.1-dw2, TDM GCC 4.7.1-dw2
   * Runtimes: ObjFW
 
 

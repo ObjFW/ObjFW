@@ -45,13 +45,13 @@ Next, we're going to install MSys. To do so, we're going to use the official
 MinGW installer, but we are *not* going to install MinGW with it, so follow
 these steps carefully. First, go to the [SourceForge download page for the
 MinGW installer](http://sourceforge.net/projects/mingw/files/Installer/mingw-get-inst/)
-and select the latest version. Get the .exe file there.  When you launch it,
+and select the latest version. Get the .exe file there. When you launch it,
 select the same installation path you selected for TDM-GCC before. After
 selecting the installation directory, *deselect* all compilers and select
 *only* `MSYS Basic System` and `MinGW Developer ToolKit`. Make sure `MinGW
 Compiler Suite` is white and not grey! The installation progress bar will be
 completely filled after a short while and it will appear to hang - this is
-*not* the case.  When it reaches that step, it starts downloading the required
+*not* the case. When it reaches that step, it starts downloading the required
 files and installs them. Just give it some time.
 
 
