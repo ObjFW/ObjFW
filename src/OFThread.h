@@ -59,7 +59,7 @@ typedef id (^of_thread_block_t)(id object);
  */
 + (instancetype)TLSKeyWithDestructor: (void(*)(id))destructor;
 
-+ (void)callAllDestructors;
++ (void)OF_callAllDestructors;
 
 /**
  * \brief Initializes an already allocated Thread Local Storage Key with the

@@ -87,7 +87,7 @@ call_main(id object)
 
 	thread->running = OF_THREAD_WAITING_FOR_JOIN;
 
-	[OFTLSKey callAllDestructors];
+	[OFTLSKey OF_callAllDestructors];
 #ifdef OF_OBJFW_RUNTIME
 	/*
 	 * As the values returned by objc_autoreleasePoolPush() in the ObjFW
@@ -224,7 +224,7 @@ call_main(id object)
 		thread->running = OF_THREAD_WAITING_FOR_JOIN;
 	}
 
-	[OFTLSKey callAllDestructors];
+	[OFTLSKey OF_callAllDestructors];
 #ifdef OF_OBJFW_RUNTIME
 	/*
 	 * As the values returned by objc_autoreleasePoolPush() in the ObjFW
@@ -380,7 +380,7 @@ call_main(id object)
 	return [[[self alloc] initWithDestructor: destructor] autorelease];
 }
 
-+ (void)callAllDestructors
++ (void)OF_callAllDestructors
 {
 	of_list_object_t *iter;
 
