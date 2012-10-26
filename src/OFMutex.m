@@ -19,9 +19,9 @@
 #import "OFMutex.h"
 
 #import "OFInitializationFailedException.h"
-#import "OFMutexLockFailedException.h"
-#import "OFMutexStillLockedException.h"
-#import "OFMutexUnlockFailedException.h"
+#import "OFLockFailedException.h"
+#import "OFStillLockedException.h"
+#import "OFUnlockFailedException.h"
 
 @implementation OFMutex
 + (instancetype)mutex
@@ -44,17 +44,11 @@
 	return self;
 }
 
-- OF_initWithoutCreatingMutex
-{
-	return [super init];
-}
-
 - (void)lock
 {
 	if (!of_mutex_lock(&mutex))
-		@throw [OFMutexLockFailedException
-		    exceptionWithClass: [self class]
-				 mutex: self];
+		@throw [OFLockFailedException exceptionWithClass: [self class]
+							    lock: self];
 }
 
 - (BOOL)tryLock
@@ -65,20 +59,18 @@
 - (void)unlock
 {
 	if (!of_mutex_unlock(&mutex))
-		@throw [OFMutexUnlockFailedException
-		    exceptionWithClass: [self class]
-				 mutex: self];
+		@throw [OFUnlockFailedException exceptionWithClass: [self class]
+							      lock: self];
 }
 
 - (void)dealloc
 {
 	if (initialized)
 		if (!of_mutex_free(&mutex))
-			@throw [OFMutexStillLockedException
+			@throw [OFStillLockedException
 			    exceptionWithClass: [self class]
-					 mutex: self];
+					  lock: self];
 
 	[super dealloc];
 }
 @end
-

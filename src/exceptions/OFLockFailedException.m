@@ -16,41 +16,34 @@
 
 #include "config.h"
 
-#import "OFMutexUnlockFailedException.h"
+#import "OFLockFailedException.h"
 #import "OFString.h"
-#import "OFMutex.h"
 
 #import "OFNotImplementedException.h"
 
-@implementation OFMutexUnlockFailedException
+#import "macros.h"
+
+@implementation OFLockFailedException
 + (instancetype)exceptionWithClass: (Class)class_
-			     mutex: (OFMutex*)mutex
+			      lock: (id <OFLocking>)lock
 {
 	return [[[self alloc] initWithClass: class_
-				      mutex: mutex] autorelease];
+				       lock: lock] autorelease];
 }
 
 - initWithClass: (Class)class_
-{
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithClass: (Class)class_
-	  mutex: (OFMutex*)mutex_
+	   lock: (id <OFLocking>)lock_
 {
 	self = [super initWithClass: class_];
 
-	mutex = [mutex_ retain];
+	lock = [lock_ retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[mutex release];
+	[lock release];
 
 	[super dealloc];
 }
@@ -61,13 +54,14 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"A mutex of class %@ could not be unlocked!", inClass];
+	    @"A lock of type %@ could not be locked in class %@!",
+	    [(id)lock className], inClass];
 
 	return description;
 }
 
-- (OFMutex*)mutex
+- (id <OFLocking>)lock
 {
-	OF_GETTER(mutex, NO)
+	OF_GETTER(lock, NO)
 }
 @end

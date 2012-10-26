@@ -72,6 +72,7 @@ SRCS = OFApplication.m			\
 INCLUDES := ${SRCS:.m=.h}		\
 	    OFCollection.h		\
 	    OFJSONRepresentation.h	\
+	    OFLocking.h			\
 	    OFSerialization.h		\
 	    OFTLSSocket.h		\
 	    ObjFW.h			\

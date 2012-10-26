@@ -58,8 +58,7 @@
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFLinkFailedException.h"
-#import "OFMutexLockFailedException.h"
-#import "OFMutexUnlockFailedException.h"
+#import "OFLockFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFOpenFileFailedException.h"
 #import "OFOutOfMemoryException.h"
@@ -67,6 +66,7 @@
 #import "OFRenameFileFailedException.h"
 #import "OFSeekFailedException.h"
 #import "OFSymlinkFailedException.h"
+#import "OFUnlockFailedException.h"
 #import "OFWriteFailedException.h"
 
 #import "autorelease.h"
@@ -442,8 +442,7 @@ of_log(OFConstantString *format, ...)
 
 # ifdef OF_THREADS
 	if (!of_mutex_lock(&mutex))
-		@throw [OFMutexLockFailedException exceptionWithClass: self
-								mutex: nil];
+		@throw [OFLockFailedException exceptionWithClass: self];
 
 	@try {
 # endif
@@ -477,9 +476,8 @@ of_log(OFConstantString *format, ...)
 # ifdef OF_THREADS
 	} @finally {
 		if (!of_mutex_unlock(&mutex))
-			@throw [OFMutexUnlockFailedException
-			    exceptionWithClass: self
-					 mutex: nil];
+			@throw [OFUnlockFailedException
+			    exceptionWithClass: self];
 	}
 # endif
 

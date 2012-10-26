@@ -104,13 +104,9 @@
 #import "OFInvalidServerReplyException.h"
 #import "OFLinkFailedException.h"
 #import "OFListenFailedException.h"
+#import "OFLockFailedException.h"
 #import "OFMalformedXMLException.h"
 #import "OFMemoryNotPartOfObjectException.h"
-#ifdef OF_THREADS
-# import "OFMutexLockFailedException.h"
-# import "OFMutexStillLockedException.h"
-# import "OFMutexUnlockFailedException.h"
-#endif
 #import "OFNotConnectedException.h"
 #import "OFNotImplementedException.h"
 #import "OFOpenFileFailedException.h"
@@ -121,6 +117,7 @@
 #import "OFRenameFileFailedException.h"
 #import "OFSeekFailedException.h"
 #import "OFSetOptionFailedException.h"
+#import "OFStillLockedException.h"
 #import "OFSymlinkFailedException.h"
 #ifdef OF_THREADS
 # import "OFThreadJoinFailedException.h"
@@ -129,6 +126,7 @@
 #endif
 #import "OFTruncatedDataException.h"
 #import "OFUnboundNamespaceException.h"
+#import "OFUnlockFailedException.h"
 #import "OFUnsupportedProtocolException.h"
 #import "OFWriteFailedException.h"
 
@@ -142,6 +140,7 @@
 # import "atomic.h"
 #endif
 
+#import "OFLocking.h"
 #ifdef OF_THREADS
 # import "threading.h"
 # import "OFThread.h"

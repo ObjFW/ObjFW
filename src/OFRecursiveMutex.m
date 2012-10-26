@@ -19,14 +19,19 @@
 #import "OFRecursiveMutex.h"
 
 #import "OFInitializationFailedException.h"
-#import "OFMutexLockFailedException.h"
-#import "OFMutexStillLockedException.h"
-#import "OFMutexUnlockFailedException.h"
+#import "OFLockFailedException.h"
+#import "OFStillLockedException.h"
+#import "OFUnlockFailedException.h"
 
 @implementation OFRecursiveMutex
++ (instancetype)mutex
+{
+	return [[[self alloc] init] autorelease];
+}
+
 - init
 {
-	self = [super OF_initWithoutCreatingMutex];
+	self = [super init];
 
 	if (!of_rmutex_new(&rmutex)) {
 		Class c = [self class];
@@ -42,9 +47,8 @@
 - (void)lock
 {
 	if (!of_rmutex_lock(&rmutex))
-		@throw [OFMutexLockFailedException
-		    exceptionWithClass: [self class]
-				 mutex: self];
+		@throw [OFLockFailedException exceptionWithClass: [self class]
+							    lock: self];
 }
 
 - (BOOL)tryLock
@@ -55,18 +59,17 @@
 - (void)unlock
 {
 	if (!of_rmutex_unlock(&rmutex))
-		@throw [OFMutexUnlockFailedException
-		    exceptionWithClass: [self class]
-				 mutex: self];
+		@throw [OFUnlockFailedException exceptionWithClass: [self class]
+							      lock: self];
 }
 
 - (void)dealloc
 {
 	if (initialized)
 		if (!of_rmutex_free(&rmutex))
-			@throw [OFMutexStillLockedException
+			@throw [OFStillLockedException
 			    exceptionWithClass: [self class]
-					 mutex: self];
+					  lock: self];
 
 	[super dealloc];
 }

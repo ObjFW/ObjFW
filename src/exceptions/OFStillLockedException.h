@@ -15,41 +15,40 @@
  */
 
 #import "OFException.h"
-
-@class OFMutex;
+#import "OFLocking.h"
 
 /**
- * \brief An exception indicating that locking a mutex failed.
+ * \brief An exception indicating that a lock is still locked.
  */
-@interface OFMutexLockFailedException: OFException
+@interface OFStillLockedException: OFException
 {
-	OFMutex *mutex;
+	id <OFLocking> lock;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain, nonatomic) OFMutex *mutex;
+@property (readonly, retain, nonatomic) id <OFLocking> lock;
 #endif
 
 /**
  * \param class_ The class of the object which caused the exception
- * \param mutex The mutex which is could not be locked
- * \return A new mutex lock failed exception
+ * \param lock The lock which is still locked
+ * \return A new still locked exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
-			     mutex: (OFMutex*)mutex;
+			      lock: (id <OFLocking>)lock;
 
 /**
- * Initializes an already allocated mutex lock failed exception.
+ * Initializes an already allocated still locked exception.
  *
  * \param class_ The class of the object which caused the exception
- * \param mutex The mutex which is could not be locked
- * \return An initialized mutex lock failed exception
+ * \param lock The lock which is still locked
+ * \return An initialized still locked exception
  */
 - initWithClass: (Class)class_
-	  mutex: (OFMutex*)mutex;
+	   lock: (id <OFLocking>)lock;
 
 /**
- * \param The mutex which is could not be locked
+ * \return The lock which is still locked
  */
-- (OFMutex*)mutex;
+- (id <OFLocking>)lock;
 @end

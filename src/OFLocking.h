@@ -15,24 +15,25 @@
  */
 
 #import "OFObject.h"
-#import "OFLocking.h"
-
-#import "threading.h"
 
 /**
- * \brief A class for creating mutual exclusions which can be entered
- *	  recursively.
+ * \brief A protocol for locks.
  */
-@interface OFRecursiveMutex: OFObject <OFLocking>
-{
-	of_rmutex_t rmutex;
-	BOOL initialized;
-}
+@protocol OFLocking <OFObject>
+/**
+ * \brief Locks the lock.
+ */
+- (void)lock;
 
 /**
- * \brief Creates a new recursive mutex.
+ * \brief Tries to lock the lock.
  *
- * \return A new autoreleased recursive mutex.
+ * \return A boolean whether the lock could be locked
  */
-+ (instancetype)mutex;
+- (BOOL)tryLock;
+
+/**
+ * \brief Unlocks the lock.
+ */
+- (void)unlock;
 @end

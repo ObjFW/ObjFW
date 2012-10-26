@@ -15,13 +15,14 @@
  */
 
 #import "OFObject.h"
+#import "OFLocking.h"
 
 #import "threading.h"
 
 /**
  * \brief A class for creating mutual exclusions.
  */
-@interface OFMutex: OFObject
+@interface OFMutex: OFObject <OFLocking>
 {
 	of_mutex_t mutex;
 	BOOL initialized;
@@ -33,23 +34,4 @@
  * \return A new autoreleased mutex.
  */
 + (instancetype)mutex;
-
-- OF_initWithoutCreatingMutex;
-
-/**
- * \brief Locks the mutex.
- */
-- (void)lock;
-
-/**
- * \brief Tries to lock the mutex.
- *
- * \return A boolean whether the mutex could be acquired
- */
-- (BOOL)tryLock;
-
-/**
- * \brief Unlocks the mutex.
- */
-- (void)unlock;
 @end

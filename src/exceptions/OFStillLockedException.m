@@ -16,41 +16,34 @@
 
 #include "config.h"
 
-#import "OFMutexStillLockedException.h"
+#import "OFStillLockedException.h"
 #import "OFString.h"
-#import "OFMutex.h"
 
 #import "OFNotImplementedException.h"
 
-@implementation OFMutexStillLockedException
+#import "macros.h"
+
+@implementation OFStillLockedException
 + (instancetype)exceptionWithClass: (Class)class_
-			     mutex: (OFMutex*)mutex
+			      lock: (id <OFLocking>)lock
 {
 	return [[[self alloc] initWithClass: class_
-				      mutex: mutex] autorelease];
+				       lock: lock] autorelease];
 }
 
 - initWithClass: (Class)class_
-{
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
-- initWithClass: (Class)class_
-	  mutex: (OFMutex*)mutex_
+	   lock: (id <OFLocking>)lock_
 {
 	self = [super initWithClass: class_];
 
-	mutex = [mutex_ retain];
+	lock = [lock_ retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[mutex release];
+	[lock release];
 
 	[super dealloc];
 }
@@ -61,14 +54,14 @@
 		return description;
 
 	description = [[OFString alloc] initWithFormat:
-	    @"Deallocation of a mutex of type %@ was tried, even though it "
-	    @"was still locked!", inClass];
+	    @"Deallocation of a lock of type %@ was tried in class %@, even "
+	    @"though it was still locked!", [(id)lock className], inClass];
 
 	return description;
 }
 
-- (OFMutex*)mutex
+- (id <OFLocking>)lock
 {
-	OF_GETTER(mutex, NO)
+	OF_GETTER(lock, NO)
 }
 @end

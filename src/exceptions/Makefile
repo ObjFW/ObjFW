@@ -32,11 +32,9 @@ SRCS = OFAcceptFailedException.m		\
        OFInvalidServerReplyException.m		\
        OFLinkFailedException.m			\
        OFListenFailedException.m		\
+       OFLockFailedException.m			\
        OFMalformedXMLException.m		\
        OFMemoryNotPartOfObjectException.m	\
-       OFMutexLockFailedException.m		\
-       OFMutexStillLockedException.m		\
-       OFMutexUnlockFailedException.m		\
        OFNotConnectedException.m		\
        OFNotImplementedException.m		\
        OFOpenFileFailedException.m		\
@@ -47,12 +45,14 @@ SRCS = OFAcceptFailedException.m		\
        OFRenameFileFailedException.m		\
        OFSeekFailedException.m			\
        OFSetOptionFailedException.m		\
+       OFStillLockedException.m			\
        OFSymlinkFailedException.m		\
        OFThreadJoinFailedException.m		\
        OFThreadStartFailedException.m		\
        OFThreadStillRunningException.m		\
        OFTruncatedDataException.m		\
        OFUnboundNamespaceException.m		\
+       OFUnlockFailedException.m		\
        OFUnsupportedProtocolException.m		\
        OFUnsupportedVersionException.m		\
        OFWriteFailedException.m
