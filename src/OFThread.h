@@ -15,7 +15,7 @@
  */
 
 #import "OFObject.h"
-#import "OFList.h"
+#import "OFTLSKey.h"
 
 #import "threading.h"
 
@@ -26,50 +26,6 @@
 #ifdef OF_HAVE_BLOCKS
 typedef id (^of_thread_block_t)(id object);
 #endif
-
-/**
- * \brief A class for Thread Local Storage keys.
- */
-@interface OFTLSKey: OFObject
-{
-@public
-	of_tlskey_t key;
-/* Work around a bug in gcc 4.4.4 (possibly only on Haiku) */
-#if !defined(__GNUC__) || __GNUC__ != 4 || __GNUC_MINOR__ != 4 || \
-    __GNUC_PATCHLEVEL__ != 4
-@protected
-#endif
-	void (*destructor)(id);
-	of_list_object_t *listObject;
-	BOOL initialized;
-}
-
-/**
- * \brief Creates a new Thread Local Storage key
- *
- * \return A new, autoreleased Thread Local Storage key
- */
-+ (instancetype)TLSKey;
-
-/**
- * \brief Creates a new Thread Local Storage key with the specified destructor.
- *
- * \param destructor A destructor that is called when the thread is terminated
- * \return A new autoreleased Thread Local Storage key
- */
-+ (instancetype)TLSKeyWithDestructor: (void(*)(id))destructor;
-
-+ (void)OF_callAllDestructors;
-
-/**
- * \brief Initializes an already allocated Thread Local Storage Key with the
- *	  specified destructor.
- *
- * \param destructor A destructor that is called when the thread is terminated
- * \return An initialized Thread Local Storage key
- */
-- initWithDestructor: (void(*)(id))destructor;
-@end
 
 /**
  * \brief A class which provides portable threads.
@@ -259,81 +215,4 @@ typedef id (^of_thread_block_t)(id object);
  * \return The run loop for the thread
  */
 - (OFRunLoop*)runLoop;
-@end
-
-/**
- * \brief A class for creating mutual exclusions.
- */
-@interface OFMutex: OFObject
-{
-	of_mutex_t mutex;
-	BOOL initialized;
-}
-
-/**
- * \brief Creates a new mutex.
- *
- * \return A new autoreleased mutex.
- */
-+ (instancetype)mutex;
-
-/**
- * \brief Locks the mutex.
- */
-- (void)lock;
-
-/**
- * \brief Tries to lock the mutex.
- *
- * \return A boolean whether the mutex could be acquired
- */
-- (BOOL)tryLock;
-
-/**
- * \brief Unlocks the mutex.
- */
-- (void)unlock;
-@end
-
-/**
- * \brief A class for creating mutual exclusions which can be entered
- *	  recursively.
- */
-@interface OFRecursiveMutex: OFMutex
-{
-	of_rmutex_t rmutex;
-}
-@end
-
-/**
- * \brief A class implementing a condition variable for thread synchronization.
- */
-@interface OFCondition: OFMutex
-{
-	of_condition_t condition;
-	BOOL conditionInitialized;
-}
-
-/**
- * \brief Creates a new condition.
- *
- * \return A new, autoreleased OFCondition
- */
-+ (instancetype)condition;
-
-/**
- * \brief Blocks the current thread until another thread calls -[signal] or
- *	  -[broadcast].
- */
-- (void)wait;
-
-/**
- * \brief Signals the next waiting thread to continue.
- */
-- (void)signal;
-
-/**
- * \brief Signals all threads to continue.
- */
-- (void)broadcast;
 @end

@@ -51,8 +51,6 @@ SRCS = OFApplication.m			\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
        OFTCPSocket.m			\
-       ${OFTHREAD_M}			\
-       OFThreadPool.m			\
        OFTimer.m			\
        OFURL.m				\
        OFXMLAttribute.m			\
@@ -65,6 +63,7 @@ SRCS = OFApplication.m			\
        OFXMLNode.m			\
        OFXMLParser.m			\
        OFXMLProcessingInstructions.m	\
+       ${THREADING_SOURCES}		\
        base64.m				\
        of_asprintf.m			\
        of_strptime.m			\

@@ -26,6 +26,7 @@
 #import "OFString.h"
 #import "OFTCPSocket.h"
 #import "OFThread.h"
+#import "OFCondition.h"
 #import "OFURL.h"
 #import "OFDictionary.h"
 #import "OFAutoreleasePool.h"

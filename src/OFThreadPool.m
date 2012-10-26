@@ -20,6 +20,7 @@
 #import "OFArray.h"
 #import "OFList.h"
 #import "OFThread.h"
+#import "OFCondition.h"
 
 #import "autorelease.h"
 

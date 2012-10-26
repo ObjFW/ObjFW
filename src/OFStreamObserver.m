@@ -31,7 +31,9 @@
 #ifdef _WIN32
 # import "OFTCPSocket.h"
 #endif
-#import "OFThread.h"
+#ifdef OF_THREADS
+# import "OFMutex.h"
+#endif
 
 #ifdef HAVE_KQUEUE
 # import "OFStreamObserver_kqueue.h"

@@ -18,7 +18,7 @@
 
 #import "OFConditionBroadcastFailedException.h"
 #import "OFString.h"
-#import "OFThread.h"
+#import "OFCondition.h"
 
 #import "OFNotImplementedException.h"
 

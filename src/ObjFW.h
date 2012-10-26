@@ -82,10 +82,12 @@
 #import "OFChangeDirectoryFailedException.h"
 #import "OFChangeFileModeFailedException.h"
 #import "OFChangeFileOwnerFailedException.h"
-#import "OFConditionBroadcastFailedException.h"
-#import "OFConditionSignalFailedException.h"
-#import "OFConditionStillWaitingException.h"
-#import "OFConditionWaitFailedException.h"
+#ifdef OF_THREADS
+# import "OFConditionBroadcastFailedException.h"
+# import "OFConditionSignalFailedException.h"
+# import "OFConditionStillWaitingException.h"
+# import "OFConditionWaitFailedException.h"
+#endif
 #import "OFConnectionFailedException.h"
 #import "OFCopyFileFailedException.h"
 #import "OFCreateDirectoryFailedException.h"
@@ -104,9 +106,11 @@
 #import "OFListenFailedException.h"
 #import "OFMalformedXMLException.h"
 #import "OFMemoryNotPartOfObjectException.h"
-#import "OFMutexLockFailedException.h"
-#import "OFMutexStillLockedException.h"
-#import "OFMutexUnlockFailedException.h"
+#ifdef OF_THREADS
+# import "OFMutexLockFailedException.h"
+# import "OFMutexStillLockedException.h"
+# import "OFMutexUnlockFailedException.h"
+#endif
 #import "OFNotConnectedException.h"
 #import "OFNotImplementedException.h"
 #import "OFOpenFileFailedException.h"
@@ -118,9 +122,11 @@
 #import "OFSeekFailedException.h"
 #import "OFSetOptionFailedException.h"
 #import "OFSymlinkFailedException.h"
-#import "OFThreadJoinFailedException.h"
-#import "OFThreadStartFailedException.h"
-#import "OFThreadStillRunningException.h"
+#ifdef OF_THREADS
+# import "OFThreadJoinFailedException.h"
+# import "OFThreadStartFailedException.h"
+# import "OFThreadStillRunningException.h"
+#endif
 #import "OFTruncatedDataException.h"
 #import "OFUnboundNamespaceException.h"
 #import "OFUnsupportedProtocolException.h"
@@ -137,9 +143,13 @@
 #endif
 
 #ifdef OF_THREADS
+# import "threading.h"
 # import "OFThread.h"
 # import "OFThreadPool.h"
-# import "threading.h"
+# import "OFTLSKey.h"
+# import "OFMutex.h"
+# import "OFRecursiveMutex.h"
+# import "OFCondition.h"
 #endif
 
 #import "autorelease.h"

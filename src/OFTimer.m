@@ -19,7 +19,7 @@
 #import "OFTimer.h"
 #import "OFDate.h"
 #import "OFRunLoop.h"
-#import "OFThread.h"
+#import "OFCondition.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
