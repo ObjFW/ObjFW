@@ -51,6 +51,8 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	[generator writeTablesToFileAtPath: @"../src/unicode.m"];
 	[generator writeHeaderToFileAtPath: @"../src/unicode.h"];
+
+	[OFApplication terminate];
 }
 
 - (void)readUnicodeDataFileAtPath: (OFString*)path
