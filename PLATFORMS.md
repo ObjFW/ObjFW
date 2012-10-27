@@ -33,7 +33,7 @@ Linux
 MacOS X
 -------
 
-  * OS versions: 10.5, 10.7
+  * OS versions: 10.5, 10.7, 10.8
   * Architectures: PPC, x86, x86_64
   * Compilers: Clang 3.1, LLVM GCC 4.2.1
   * Runtimes: Apple, ObjFW
