@@ -30,7 +30,7 @@
 #import "OFDictionary.h"
 #import "OFXMLElement.h"
 #ifdef OF_THREADS
-# import "OFThread.h"
+# import "OFMutex.h"
 #endif
 
 #import "OFInitializationFailedException.h"

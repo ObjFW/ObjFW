@@ -58,7 +58,7 @@
 #endif
 
 #if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
-# import "OFThread.h"
+# import "OFMutex.h"
 # import "OFDataArray.h"
 
 static OFMutex *mutex = nil;
