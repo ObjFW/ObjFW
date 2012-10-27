@@ -2,6 +2,30 @@ Legend:
  * Changes of existing features or bugfixes.
  + New features.
 
+ObjFW 0.6 -> ObjFW 0.7, 27.10.2012
+ Again, the differences are more than in any release before, thus listing them
+ all would be too much. The major differences are:
+ + ObjFW now comes with its own runtime, which greatly increases performance
+   compared to the GNU runtime and is even faster than the Apple runtime
+   (using Clang >= 3.2 is recommended, but not necessary).
+ * Support for the GNU runtime has been dropped.
+ + New, much faster autorelease pool implementation (now inside the runtime).
+ + Support for Automatic Reference Counting (requires Clang >= 3.2).
+ + Forwarding has been implemented.
+ + Asynchronous stream handling.
+ + New classes: OFThreadPool, OFRecursiveMutex, OFSortedList, OFTimer, OFRunLoop
+ + New protocols: OFLocking, OFTLSSocket
+ * Lots of API changes to make APIs more future-proof.
+ + Support for the new Objective-C literals.
+ * OFHTTPRequest now implements HTTP/1.1.
+ * OFObject's memory handling has been improved, leading to better performance.
+ * Strings are allocated faster now.
+ + Support for JSON5.
+ * All private methods use the prefix OF_ now instead of _, making it possible
+   to use the _ prefix in applications.
+ * Most ObjC compiler feature checks are not part of configure anymore, making
+   it possible to use the same installation with different compilers.
+
 ObjFW 0.5.4 -> ObjFW 0.6, 27.02.2012
  The differences between 0.5.4 and 0.6 are too big to list them all. However,
  the major new features are:
