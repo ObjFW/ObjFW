@@ -24,14 +24,14 @@ extern int _OFString_Serialization_reference;
 }
 #endif
 
-/**
- * \brief A category that provides methods for deserializing objects.
+/*!
+ * @brief A category that provides methods for deserializing objects.
  */
 @interface OFString (OFSerialization)
-/**
- * \brief Deserializes the receiver into an object.
+/*!
+ * @brief Deserializes the receiver into an object.
  *
- * \return The deserialized object
+ * @return The deserialized object
  */
 - (id)objectByDeserializing;
 @end

@@ -16,28 +16,28 @@
 
 #import "OFXMLNode.h"
 
-/**
- * \brief A class for representing XML processing instructions.
+/*!
+ * @brief A class for representing XML processing instructions.
  */
 @interface OFXMLProcessingInstructions: OFXMLNode
 {
 	OFString *processingInstructions;
 }
 
-/**
- * \brief Creates a new OFXMLProcessingInstructions with the specified string.
+/*!
+ * @brief Creates a new OFXMLProcessingInstructions with the specified string.
  *
- * \param string The string for the processing instructions
- * \return A new OFXMLProcessingInstructions
+ * @param string The string for the processing instructions
+ * @return A new OFXMLProcessingInstructions
  */
 + (instancetype)processingInstructionsWithString: (OFString*)string;
 
-/**
- * \brief Initializes an already allocated OFXMLProcessingInstructions with the
+/*!
+ * @brief Initializes an already allocated OFXMLProcessingInstructions with the
  *	  specified string.
  *
- * \param string The string for the processing instructions
- * \return An initialized OFXMLProcessingInstructions
+ * @param string The string for the processing instructions
+ * @return An initialized OFXMLProcessingInstructions
  */
 - initWithString: (OFString*)string;
 @end

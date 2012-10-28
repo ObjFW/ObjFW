@@ -24,14 +24,14 @@ extern int _OFString_XMLEscaping_reference;
 }
 #endif
 
-/**
- * \brief A category to escape strings for use in an XML document.
+/*!
+ * @brief A category to escape strings for use in an XML document.
  */
 @interface OFString (XMLEscaping)
-/**
- * \brief Escapes a string for use in an XML document.
+/*!
+ * @brief Escapes a string for use in an XML document.
  *
- * \return A new autoreleased string
+ * @return A new autoreleased string
  */
 - (OFString*)stringByXMLEscaping;
 @end

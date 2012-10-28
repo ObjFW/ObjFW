@@ -16,8 +16,8 @@
 
 #import "OFException.h"
 
-/**
- * \brief An exception indicating that a method or part of it is not
+/*!
+ * @brief An exception indicating that a method or part of it is not
  *        implemented.
  */
 @interface OFNotImplementedException: OFException
@@ -29,26 +29,26 @@
 @property (readonly) SEL selector;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param selector The selector which is not or not fully implemented
- * \return A new not implemented exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param selector The selector which is not or not fully implemented
+ * @return A new not implemented exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			  selector: (SEL)selector;
 
-/**
+/*!
  * Initializes an already allocated not implemented exception.
  *
- * \param class_ The class of the object which caused the exception
- * \param selector The selector which is not or not fully implemented
- * \return An initialized not implemented exception
+ * @param class_ The class of the object which caused the exception
+ * @param selector The selector which is not or not fully implemented
+ * @return An initialized not implemented exception
  */
 - initWithClass: (Class)class_
        selector: (SEL)selector;
 
-/**
- * \return The selector which is not or not fully implemented
+/*!
+ * @return The selector which is not or not fully implemented
  */
 - (SEL)selector;
 @end

@@ -24,21 +24,21 @@ extern int _OFString_URLEncoding_reference;
 }
 #endif
 
-/**
- * \brief A category which provides URL encoding and decoding.
+/*!
+ * @brief A category which provides URL encoding and decoding.
  */
 @interface OFString (URLEncoding)
-/**
- * \brief Encodes a string for use in a URL.
+/*!
+ * @brief Encodes a string for use in a URL.
  *
- * \return A new autoreleased string
+ * @return A new autoreleased string
  */
 - (OFString*)stringByURLEncoding;
 
-/**
- * \brief Decodes a string used in a URL.
+/*!
+ * @brief Decodes a string used in a URL.
  *
- * \return A new autoreleased string
+ * @return A new autoreleased string
  */
 - (OFString*)stringByURLDecoding;
 @end

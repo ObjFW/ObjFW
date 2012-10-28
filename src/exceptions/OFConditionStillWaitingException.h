@@ -18,8 +18,8 @@
 
 @class OFCondition;
 
-/**
- * \brief An exception indicating that a thread is still waiting for a
+/*!
+ * @brief An exception indicating that a thread is still waiting for a
  *	  condition.
  */
 @interface OFConditionStillWaitingException: OFException
@@ -31,26 +31,26 @@
 @property (readonly, retain, nonatomic) OFCondition *condition;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param condition The condition for which is still being waited
- * \return A new condition still waiting exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param condition The condition for which is still being waited
+ * @return A new condition still waiting exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			 condition: (OFCondition*)condition;
 
-/**
+/*!
  * Initializes an already allocated condition still waiting exception.
  *
- * \param class_ The class of the object which caused the exception
- * \param condition The condition for which is still being waited
- * \return An initialized condition still waiting exception
+ * @param class_ The class of the object which caused the exception
+ * @param condition The condition for which is still being waited
+ * @return An initialized condition still waiting exception
  */
 - initWithClass: (Class)class_
       condition: (OFCondition*)condition;
 
-/**
- * \return The condition for which is still being waited
+/*!
+ * @return The condition for which is still being waited
  */
 - (OFCondition*)condition;
 @end

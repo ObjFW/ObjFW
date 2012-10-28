@@ -24,8 +24,8 @@
 @class OFDataArray;
 @class OFStream;
 
-/**
- * \brief A protocol that needs to be implemented by delegates for OFXMLParser.
+/*!
+ * @brief A protocol that needs to be implemented by delegates for OFXMLParser.
  */
 #ifndef OF_XML_PARSER_M
 @protocol OFXMLParserDelegate <OFObject>
@@ -35,25 +35,25 @@
 #ifdef OF_HAVE_OPTIONAL_PROTOCOLS
 @optional
 #endif
-/**
- * \brief This callback is called when the XML parser found processing
+/*!
+ * @brief This callback is called when the XML parser found processing
  *	  instructions.
  *
- * \param parser The parser which found processing instructions
- * \param pi The processing instructions
+ * @param parser The parser which found processing instructions
+ * @param pi The processing instructions
  */
 -		 (void)parser: (OFXMLParser*)parser
   foundProcessingInstructions: (OFString*)pi;
 
-/**
- * \brief This callback is called when the XML parser found the start of a new
+/*!
+ * @brief This callback is called when the XML parser found the start of a new
  *	  tag.
  *
- * \param parser The parser which found a new tag
- * \param name The name of the tag which just started
- * \param prefix The prefix of the tag which just started or nil
- * \param ns The namespace of the tag which just started or nil
- * \param attributes The attributes included in the tag which just started or
+ * @param parser The parser which found a new tag
+ * @param name The name of the tag which just started
+ * @param prefix The prefix of the tag which just started or nil
+ * @param ns The namespace of the tag which just started or nil
+ * @param attributes The attributes included in the tag which just started or
  *		     nil
  */
 -    (void)parser: (OFXMLParser*)parser
@@ -62,67 +62,67 @@
 	namespace: (OFString*)ns
        attributes: (OFArray*)attributes;
 
-/**
- * \brief This callback is called when the XML parser found the end of a tag.
+/*!
+ * @brief This callback is called when the XML parser found the end of a tag.
  *
- * \param parser The parser which found the end of a tag
- * \param name The name of the tag which just ended
- * \param prefix The prefix of the tag which just ended or nil
- * \param ns The namespace of the tag which just ended or nil
+ * @param parser The parser which found the end of a tag
+ * @param name The name of the tag which just ended
+ * @param prefix The prefix of the tag which just ended or nil
+ * @param ns The namespace of the tag which just ended or nil
  */
 -  (void)parser: (OFXMLParser*)parser
   didEndElement: (OFString*)name
      withPrefix: (OFString*)prefix
       namespace: (OFString*)ns;
 
-/**
- * \brief This callback is called when the XML parser found characters.
+/*!
+ * @brief This callback is called when the XML parser found characters.
  *
  * In case there are comments or CDATA, it is possible that this callback is
  * called multiple times in a row.
  *
- * \param parser The parser which found a string
- * \param characters The characters the XML parser found
+ * @param parser The parser which found a string
+ * @param characters The characters the XML parser found
  */
 -    (void)parser: (OFXMLParser*)parser
   foundCharacters: (OFString*)characters;
 
-/**
- * \brief This callback is called when the XML parser found CDATA.
+/*!
+ * @brief This callback is called when the XML parser found CDATA.
  *
- * \param parser The parser which found a string
- * \param CDATA The CDATA the XML parser found
+ * @param parser The parser which found a string
+ * @param CDATA The CDATA the XML parser found
  */
 - (void)parser: (OFXMLParser*)parser
     foundCDATA: (OFString*)CDATA;
 
-/**
- * \brief This callback is called when the XML parser found a comment.
+/*!
+ * @brief This callback is called when the XML parser found a comment.
  *
- * \param parser The parser which found a comment
- * \param comment The comment the XML parser found
+ * @param parser The parser which found a comment
+ * @param comment The comment the XML parser found
  */
 - (void)parser: (OFXMLParser*)parser
   foundComment: (OFString*)comment;
 
-/**
- * \brief This callback is called when the XML parser found an entity it
+/*!
+ * @brief This callback is called when the XML parser found an entity it
  *	  doesn't know.
  *
  * The callback is supposed to return a substitution for the entity or nil if
  * it is not known to the callback as well, in which case an exception will be
  * risen.
  *
- * \param parser The parser which found an unknown entity
- * \param entity The name of the entity the XML parser didn't know
- * \return A substitution for the entity or nil
+ * @param parser The parser which found an unknown entity
+ * @param entity The name of the entity the XML parser didn't know
+ * @return A substitution for the entity or nil
  */
 -	(OFString*)parser: (OFXMLParser*)parser
   foundUnknownEntityNamed: (OFString*)entity;
 @end
 
-/**
- * \brief An event-based XML parser.
+/*!
+ * @brief An event-based XML parser.
  *
  * OFXMLParser is an event-based XML parser which calls the delegate's callbacks
  * as soon asit finds something, thus suitable for streams as well.
@@ -173,68 +173,68 @@
 @property (assign) id <OFXMLParserDelegate> delegate;
 #endif
 
-/**
- * \brief Creates a new XML parser.
+/*!
+ * @brief Creates a new XML parser.
  *
- * \return A new, autoreleased OFXMLParser
+ * @return A new, autoreleased OFXMLParser
  */
 + (instancetype)parser;
 
-/**
- * \brief Returns the delegate that is used by the XML parser.
+/*!
+ * @brief Returns the delegate that is used by the XML parser.
  *
- * \return The delegate that is used by the XML parser
+ * @return The delegate that is used by the XML parser
  */
 - (id <OFXMLParserDelegate>)delegate;
 
-/**
- * \brief Sets the delegate the OFXMLParser should use.
+/*!
+ * @brief Sets the delegate the OFXMLParser should use.
  *
- * \param delegate The delegate to use
+ * @param delegate The delegate to use
  */
 - (void)setDelegate: (id <OFXMLParserDelegate>)delegate;
 
-/**
- * \brief Parses the specified buffer with the specified size.
+/*!
+ * @brief Parses the specified buffer with the specified size.
  *
- * \param buffer The buffer to parse
- * \param length The length of the buffer
+ * @param buffer The buffer to parse
+ * @param length The length of the buffer
  */
 - (void)parseBuffer: (const char*)buffer
 	     length: (size_t)length;
 
-/**
- * \brief Parses the specified string.
+/*!
+ * @brief Parses the specified string.
  *
- * \param string The string to parse
+ * @param string The string to parse
  */
 - (void)parseString: (OFString*)string;
 
-/**
- * \brief Parses the specified stream.
+/*!
+ * @brief Parses the specified stream.
  *
- * \param stream The stream to parse
+ * @param stream The stream to parse
  */
 - (void)parseStream: (OFStream*)stream;
 
-/**
- * \brief Parses the specified file.
+/*!
+ * @brief Parses the specified file.
  *
- * \param path The path to the file to parse
+ * @param path The path to the file to parse
 */
 - (void)parseFile: (OFString*)path;
 
-/**
- * \brief Returns the current line number.
+/*!
+ * @brief Returns the current line number.
  *
- * \return The current line number
+ * @return The current line number
  */
 - (size_t)lineNumber;
 
-/**
- * \brief Returns whether the XML parser has finished parsing.
+/*!
+ * @brief Returns whether the XML parser has finished parsing.
  *
- * \return Whether the XML parser has finished parsing
+ * @return Whether the XML parser has finished parsing
  */
 - (BOOL)finishedParsing;
 @end

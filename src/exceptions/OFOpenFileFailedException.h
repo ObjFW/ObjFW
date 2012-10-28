@@ -16,8 +16,8 @@
 
 #import "OFException.h"
 
-/**
- * \brief An exception indicating a file couldn't be opened.
+/*!
+ * @brief An exception indicating a file couldn't be opened.
  */
 @interface OFOpenFileFailedException: OFException
 {
@@ -32,40 +32,40 @@
 @property (readonly) int errNo;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param path A string with the path of the file tried to open
- * \param mode A string with the mode in which the file should have been opened
- * \return A new open file failed exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param path A string with the path of the file tried to open
+ * @param mode A string with the mode in which the file should have been opened
+ * @return A new open file failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			      path: (OFString*)path
 			      mode: (OFString*)mode;
 
-/**
+/*!
  * Initializes an already allocated open file failed exception.
  *
- * \param class_ The class of the object which caused the exception
- * \param path A string with the path of the file which couldn't be opened
- * \param mode A string with the mode in which the file should have been opened
- * \return An initialized open file failed exception
+ * @param class_ The class of the object which caused the exception
+ * @param path A string with the path of the file which couldn't be opened
+ * @param mode A string with the mode in which the file should have been opened
+ * @return An initialized open file failed exception
  */
 - initWithClass: (Class)class_
 	   path: (OFString*)path
 	   mode: (OFString*)mode;
 
-/**
- * \return The errno from when the exception was created
+/*!
+ * @return The errno from when the exception was created
  */
 - (int)errNo;
 
-/**
- * \return A string with the path of the file which couldn't be opened
+/*!
+ * @return A string with the path of the file which couldn't be opened
  */
 - (OFString*)path;
 
-/**
- * \return A string with the mode in which the file should have been opened
+/*!
+ * @return A string with the mode in which the file should have been opened
  */
 - (OFString*)mode;
 @end

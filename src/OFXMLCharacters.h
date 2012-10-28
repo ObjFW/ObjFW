@@ -16,28 +16,28 @@
 
 #import "OFXMLNode.h"
 
-/**
- * \brief A class representing XML characters.
+/*!
+ * @brief A class representing XML characters.
  */
 @interface OFXMLCharacters: OFXMLNode
 {
 	OFString *characters;
 }
 
-/**
- * \brief Creates a new OFXMLCharacters with the specified string.
+/*!
+ * @brief Creates a new OFXMLCharacters with the specified string.
  *
- * \param string The string value for the characters
- * \return A new OFXMLCharacters
+ * @param string The string value for the characters
+ * @return A new OFXMLCharacters
  */
 + (instancetype)charactersWithString: (OFString*)string;
 
-/**
- * \brief Initializes an already allocated OFXMLCharacters with the specified
+/*!
+ * @brief Initializes an already allocated OFXMLCharacters with the specified
  *	  string.
  *
- * \param string The string value for the characters
- * \return An initialized OFXMLCharacters
+ * @param string The string value for the characters
+ * @return An initialized OFXMLCharacters
  */
 - initWithString: (OFString*)string;
 @end

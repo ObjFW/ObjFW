@@ -42,8 +42,8 @@ typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*,
     OFException*);
 #endif
 
-/**
- * \brief A class which provides functions to create and use TCP sockets.
+/*!
+ * @brief A class which provides functions to create and use TCP sockets.
  *
  * To connect to a server, create a socket and connect it.
  * To create a server, create a socket, bind it and listen on it.
@@ -63,81 +63,81 @@ typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*,
 @property uint16_t SOCKS5Port;
 #endif
 
-/**
- * \brief Sets the global SOCKS5 proxy host to use when creating a new socket
+/*!
+ * @brief Sets the global SOCKS5 proxy host to use when creating a new socket
  *
- * \param host The host to use as a SOCKS5 proxy when creating a new socket
+ * @param host The host to use as a SOCKS5 proxy when creating a new socket
  */
 + (void)setSOCKS5Host: (OFString*)host;
 
-/**
- * \brief Returns the host to use as a SOCKS5 proxy when creating a new socket
+/*!
+ * @brief Returns the host to use as a SOCKS5 proxy when creating a new socket
  *
- * \return The host to use as a SOCKS5 proxy when creating a new socket
+ * @return The host to use as a SOCKS5 proxy when creating a new socket
  */
 + (OFString*)SOCKS5Host;
 
-/**
- * \brief Sets the global SOCKS5 proxy port to use when creating a new socket
+/*!
+ * @brief Sets the global SOCKS5 proxy port to use when creating a new socket
  *
- * \param port The port to use as a SOCKS5 proxy when creating a new socket
+ * @param port The port to use as a SOCKS5 proxy when creating a new socket
  */
 + (void)setSOCKS5Port: (uint16_t)port;
 
-/**
- * \brief Returns the port to use as a SOCKS5 proxy when creating a new socket
+/*!
+ * @brief Returns the port to use as a SOCKS5 proxy when creating a new socket
  *
- * \return The port to use as a SOCKS5 proxy when creating a new socket
+ * @return The port to use as a SOCKS5 proxy when creating a new socket
  */
 + (uint16_t)SOCKS5Port;
 
-/**
- * \brief Sets the host to use as a SOCKS5 proxy.
+/*!
+ * @brief Sets the host to use as a SOCKS5 proxy.
  *
- * \param host The host to use as a SOCKS5 proxy
+ * @param host The host to use as a SOCKS5 proxy
  */
 - (void)setSOCKS5Host: (OFString*)host;
 
-/**
- * \brief Returns the host to use as a SOCKS5 proxy.
+/*!
+ * @brief Returns the host to use as a SOCKS5 proxy.
  *
- * \return The host to use as a SOCKS5 proxy
+ * @return The host to use as a SOCKS5 proxy
  */
 - (OFString*)SOCKS5Host;
 
-/**
- * \brief Sets the port to use on the SOCKS5 proxy.
+/*!
+ * @brief Sets the port to use on the SOCKS5 proxy.
  *
  * The default port is 1080.
  *
- * \param port The port to use on the SOCKS5 proxy
+ * @param port The port to use on the SOCKS5 proxy
  */
 - (void)setSOCKS5Port: (uint16_t)port;
 
-/**
- * \brief Returns the port to use on the SOCKS5 proxy.
+/*!
+ * @brief Returns the port to use on the SOCKS5 proxy.
  *
- * \return The port to use on the SOCKS5 proxy
+ * @return The port to use on the SOCKS5 proxy
  */
 - (uint16_t)SOCKS5Port;
 
-/**
- * \brief Connect the OFTCPSocket to the specified destination.
+/*!
+ * @brief Connect the OFTCPSocket to the specified destination.
  *
- * \param host The host to connect to
- * \param port The port on the host to connect to
+ * @param host The host to connect to
+ * @param port The port on the host to connect to
  */
 - (void)connectToHost: (OFString*)host
 		 port: (uint16_t)port;
 
-/**
- * \brief Asyncronously connect the OFTCPSocket to the specified destination.
+/*!
+ * @brief Asyncronously connect the OFTCPSocket to the specified destination.
  *
- * \param host The host to connect to
- * \param port The port on the host to connect to
- * \param target The target on which to call the selector once the connection
+ * @param host The host to connect to
+ * @param port The port on the host to connect to
+ * @param target The target on which to call the selector once the connection
  *		 has been established
- * \param selector The selector to call on the target. The signature must be
+ * @param selector The selector to call on the target. The signature must be
  *		   void (OFTCPSocket *socket, OFException *exception).
  */
 - (void)asyncConnectToHost: (OFString*)host
@@ -146,57 +146,57 @@ typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*,
 		  selector: (SEL)selector;
 
 #ifdef OF_HAVE_BLOCKS
-/**
- * \brief Asyncronously connect the OFTCPSocket to the specified destination.
+/*!
+ * @brief Asyncronously connect the OFTCPSocket to the specified destination.
  *
- * \param host The host to connect to
- * \param port The port on the host to connect to
- * \param block The block to execute once the connection has been established
+ * @param host The host to connect to
+ * @param port The port on the host to connect to
+ * @param block The block to execute once the connection has been established
  */
 - (void)asyncConnectToHost: (OFString*)host
 		      port: (uint16_t)port
 		     block: (of_tcpsocket_async_connect_block_t)block;
 #endif
 
-/**
- * \brief Bind the socket on the specified port and host.
+/*!
+ * @brief Bind the socket on the specified port and host.
  *
- * \param host The host to bind to. Use @"0.0.0.0" for IPv4 or @"::" for IPv6
+ * @param host The host to bind to. Use @"0.0.0.0" for IPv4 or @"::" for IPv6
  *	       to bind to all.
- * \param port The port to bind to. If the port is 0, an unused port will be
+ * @param port The port to bind to. If the port is 0, an unused port will be
  *	       chosen, which can be obtained using the return value.
- * \return The port the socket was bound to
+ * @return The port the socket was bound to
  */
 - (uint16_t)bindToHost: (OFString*)host
 		  port: (uint16_t)port;
 
-/**
- * \brief Listen on the socket.
+/*!
+ * @brief Listen on the socket.
  *
- * \param backlog Maximum length for the queue of pending connections.
+ * @param backlog Maximum length for the queue of pending connections.
  */
 - (void)listenWithBackLog: (int)backLog;
 
-/**
- * \brief Listen on the socket.
+/*!
+ * @brief Listen on the socket.
  */
 - (void)listen;
 
-/**
- * \brief Accept an incoming connection.
+/*!
+ * @brief Accept an incoming connection.
  *
- * \return An autoreleased OFTCPSocket for the accepted connection.
+ * @return An autoreleased OFTCPSocket for the accepted connection.
  */
 - (OFTCPSocket*)accept;
 
-/**
- * \brief Asyncronously ccept an incoming connection.
+/*!
+ * @brief Asyncronously ccept an incoming connection.
  *
- * \param target The target on which to execute the selector when a new
+ * @param target The target on which to execute the selector when a new
  *		 connection has been accepted. The method returns whether the
  *		 next incoming connection should be accepted by the specified
  *		 block as well.
- * \param selector The selector to call on the target. The signature must be
+ * @param selector The selector to call on the target. The signature must be
  *		   BOOL (OFTCPSocket *socket, OFTCPSocket *acceptedSocket,
  *		   OFException *exception).
  */
@@ -204,36 +204,36 @@ typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*,
 		     selector: (SEL)selector;
 
 #ifdef OF_HAVE_BLOCKS
-/**
- * \brief Asyncronously ccept an incoming connection.
+/*!
+ * @brief Asyncronously ccept an incoming connection.
  *
- * \param block The block to execute when a new connection has been accepted.
+ * @param block The block to execute when a new connection has been accepted.
  *		Returns whether the next incoming connection should be accepted
  *		by the specified block as well.
  */
 - (void)asyncAcceptWithBlock: (of_tcpsocket_async_accept_block_t)block;
 #endif
 
-/**
- * \brief Enable or disable keep alives for the connection.
+/*!
+ * @brief Enable or disable keep alives for the connection.
  *
- * \param enable Whether to enable or disable keep alives for the connection
+ * @param enable Whether to enable or disable keep alives for the connection
  */
 - (void)setKeepAlivesEnabled: (BOOL)enable;
 
-/**
- * \brief Returns the remote address of the socket.
+/*!
+ * @brief Returns the remote address of the socket.
  *
  * Only works with accepted sockets!
  *
- * \return The remote address as a string
+ * @return The remote address as a string
  */
 - (OFString*)remoteAddress;
 
-/**
- * \brief Returns whether the socket is a listening socket.
+/*!
+ * @brief Returns whether the socket is a listening socket.
  *
- * \return Whether the socket is a listening socket
+ * @return Whether the socket is a listening socket
  */
 - (BOOL)isListening;
 @end

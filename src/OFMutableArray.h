@@ -20,143 +20,143 @@
 typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
 #endif
 
-/**
- * \brief An abstract class for storing, adding and removing objects in anr
+/*!
+ * @brief An abstract class for storing, adding and removing objects in anr
  *	  array.
  */
 @interface OFMutableArray: OFArray
-/**
- * \brief Adds an object to the end of the array.
+/*!
+ * @brief Adds an object to the end of the array.
  *
- * \param object An object to add
+ * @param object An object to add
  */
 - (void)addObject: (id)object;
 
-/**
- * \brief Adds the objects from the specified OFArray to the end of the array.
+/*!
+ * @brief Adds the objects from the specified OFArray to the end of the array.
  *
- * \brief array An array of objects to add
+ * @brief array An array of objects to add
  */
 - (void)addObjectsFromArray: (OFArray*)array;
 
-/**
- * \brief Inserts an object to the OFArray at the specified index.
+/*!
+ * @brief Inserts an object to the OFArray at the specified index.
  *
- * \param object An object to add
- * \param index The index where the object should be inserted
+ * @param object An object to add
+ * @param index The index where the object should be inserted
  */
 - (void)insertObject: (id)object
 	     atIndex: (size_t)index;
 
-/**
- * \brief Inserts the objects from the specified OFArray at the specified index.
+/*!
+ * @brief Inserts the objects from the specified OFArray at the specified index.
  *
- * \param array An array of objects
- * \param index The index where the objects should be inserted
+ * @param array An array of objects
+ * @param index The index where the objects should be inserted
  */
 - (void)insertObjectsFromArray: (OFArray*)array
 		       atIndex: (size_t)index;
 
-/**
- * \brief Replaces the first object equivalent to the specified object with the
+/*!
+ * @brief Replaces the first object equivalent to the specified object with the
  *	  other specified object.
  *
- * \param oldObject The object to replace
- * \param newObject The replacement object
+ * @param oldObject The object to replace
+ * @param newObject The replacement object
  */
 - (void)replaceObject: (id)oldObject
 	   withObject: (id)newObject;
 
-/**
- * \brief Replaces the object at the specified index with the specified object.
+/*!
+ * @brief Replaces the object at the specified index with the specified object.
  *
- * \param index The index of the object to replace
- * \param object The replacement object
+ * @param index The index of the object to replace
+ * @param object The replacement object
  */
 - (void)replaceObjectAtIndex: (size_t)index
 		  withObject: (id)object;
 -    (void)setObject: (id)object
   atIndexedSubscript: (size_t)index;
 
-/**
- * \brief Replaces the first object that has the same address as the specified
+/*!
+ * @brief Replaces the first object that has the same address as the specified
  *	  object with the other specified object.
  *
- * \param oldObject The object to replace
- * \param newObject The replacement object
+ * @param oldObject The object to replace
+ * @param newObject The replacement object
  */
 - (void)replaceObjectIdenticalTo: (id)oldObject
 		      withObject: (id)newObject;
 
-/**
- * \brief Removes the first object equivalent to the specified object.
+/*!
+ * @brief Removes the first object equivalent to the specified object.
  *
- * \param object The object to remove
+ * @param object The object to remove
  */
 - (void)removeObject: (id)object;
 
-/**
- * \brief Removes the first object that has the same address as the specified
+/*!
+ * @brief Removes the first object that has the same address as the specified
  *	  object.
  *
- * \param object The object to remove
+ * @param object The object to remove
  */
 - (void)removeObjectIdenticalTo: (id)object;
 
-/**
- * \brief Removes the object at the specified index.
+/*!
+ * @brief Removes the object at the specified index.
  *
- * \param index The index of the object to remove
+ * @param index The index of the object to remove
  */
 - (void)removeObjectAtIndex: (size_t)index;
 
-/**
- * \brief Removes the object in the specified range.
+/*!
+ * @brief Removes the object in the specified range.
  *
- * \param range The range of the objects to remove
+ * @param range The range of the objects to remove
  */
 - (void)removeObjectsInRange: (of_range_t)range;
 
-/**
- * \brief Removes the last object.
+/*!
+ * @brief Removes the last object.
  */
 - (void)removeLastObject;
 
-/**
- * \brief Removes all objects.
+/*!
+ * @brief Removes all objects.
  */
 - (void)removeAllObjects;
 
 #ifdef OF_HAVE_BLOCKS
-/**
- * \brief Replaces each object with the object returned by the block.
+/*!
+ * @brief Replaces each object with the object returned by the block.
  *
- * \param block The block which returns a new object for each object
+ * @param block The block which returns a new object for each object
  */
 - (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block;
 #endif
 
-/**
- * \brief Exchange the objects at the specified indices.
+/*!
+ * @brief Exchange the objects at the specified indices.
  *
- * \param index1 The index of the first object to exchange
- * \param index2 The index of the second object to exchange
+ * @param index1 The index of the first object to exchange
+ * @param index2 The index of the second object to exchange
  */
 - (void)exchangeObjectAtIndex: (size_t)index1
 	    withObjectAtIndex: (size_t)index2;
 
-/**
- * \brief Sorts the array.
+/*!
+ * @brief Sorts the array.
  */
 - (void)sort;
 
-/**
- * \brief Reverts the order of the objects in the array.
+/*!
+ * @brief Reverts the order of the objects in the array.
  */
 - (void)reverse;
 
-/**
- * \brief Converts the mutable array to an immutable array.
+/*!
+ * @brief Converts the mutable array to an immutable array.
  */
 - (void)makeImmutable;
 @end

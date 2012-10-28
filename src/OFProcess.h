@@ -29,8 +29,8 @@
 # include <windows.h>
 #endif
 
-/**
- * \brief A class for stream-like communication with a newly created process.
+/*!
+ * @brief A class for stream-like communication with a newly created process.
  */
 @interface OFProcess: OFStream
 {
@@ -44,82 +44,82 @@
 	BOOL atEndOfStream;
 }
 
-/**
- * \brief Creates a new OFProcess with the specified program and invokes the
+/*!
+ * @brief Creates a new OFProcess with the specified program and invokes the
  *	  program.
  *
- * \param program The program to execute. If it does not start with a slash, the
+ * @param program The program to execute. If it does not start with a slash, the
  *		  search path specified in PATH is used.
- * \return A new, autoreleased OFProcess.
+ * @return A new, autoreleased OFProcess.
  */
 + (instancetype)processWithProgram: (OFString*)program;
 
-/**
- * \brief Creates a new OFProcess with the specified program and arguments and
+/*!
+ * @brief Creates a new OFProcess with the specified program and arguments and
  *	  invokes the program.
  *
- * \param program The program to execute. If it does not start with a slash, the
+ * @param program The program to execute. If it does not start with a slash, the
  *		  search path specified in PATH is used.
- * \param arguments The arguments to pass to the program, or nil
- * \return A new, autoreleased OFProcess.
+ * @param arguments The arguments to pass to the program, or nil
+ * @return A new, autoreleased OFProcess.
  */
 + (instancetype)processWithProgram: (OFString*)program
 			 arguments: (OFArray*)arguments;
 
-/**
- * \brief Creates a new OFProcess with the specified program, program name and
+/*!
+ * @brief Creates a new OFProcess with the specified program, program name and
  *	  arguments and invokes the program.
  *
- * \param program The program to execute. If it does not start with a slash, the
+ * @param program The program to execute. If it does not start with a slash, the
  *		  search path specified in PATH is used.
- * \param programName The program name for the program to invoke (argv[0]).
+ * @param programName The program name for the program to invoke (argv[0]).
  *		      Usually, this is equal to program.
- * \param arguments The arguments to pass to the program, or nil
- * \return A new, autoreleased OFProcess.
+ * @param arguments The arguments to pass to the program, or nil
+ * @return A new, autoreleased OFProcess.
  */
 + (instancetype)processWithProgram: (OFString*)program
 		       programName: (OFString*)programName
 			 arguments: (OFArray*)arguments;
 
-/**
- * \brief Initializes an already allocated OFProcess with the specified program
+/*!
+ * @brief Initializes an already allocated OFProcess with the specified program
  *	  and invokes the program.
  *
- * \param program The program to execute. If it does not start with a slash, the
+ * @param program The program to execute. If it does not start with a slash, the
  *		  search path specified in PATH is used.
- * \return An initialized OFProcess.
+ * @return An initialized OFProcess.
  */
 - initWithProgram: (OFString*)program;
 
-/**
- * \brief Initializes an already allocated OFProcess with the specified program
+/*!
+ * @brief Initializes an already allocated OFProcess with the specified program
  *	  and arguments and invokes the program.
  *
- * \param program The program to execute. If it does not start with a slash, the
+ * @param program The program to execute. If it does not start with a slash, the
  *		  search path specified in PATH is used.
- * \param arguments The arguments to pass to the program, or nil
- * \return An initialized OFProcess.
+ * @param arguments The arguments to pass to the program, or nil
+ * @return An initialized OFProcess.
  */
 - initWithProgram: (OFString*)program
 	arguments: (OFArray*)arguments;
 
-/**
- * \brief Initializes an already allocated OFProcess with the specified program,
+/*!
+ * @brief Initializes an already allocated OFProcess with the specified program,
  *	  program name and arguments and invokes the program.
  *
- * \param program The program to execute. If it does not start with a slash, the
+ * @param program The program to execute. If it does not start with a slash, the
  *		  search path specified in PATH is used.
- * \param programName The program name for the program to invoke (argv[0]).
+ * @param programName The program name for the program to invoke (argv[0]).
  *		      Usually, this is equal to program.
- * \param arguments The arguments to pass to the program, or nil
- * \return An initialized OFProcess.
+ * @param arguments The arguments to pass to the program, or nil
+ * @return An initialized OFProcess.
  */
 - initWithProgram: (OFString*)program
       programName: (OFString*)programName
 	arguments: (OFArray*)arguments;
 
-/**
- * \brief Closes the write direction of the process.
+/*!
+ * @brief Closes the write direction of the process.
  *
  * This method needs to be called for some programs before data can be read,
  * since some programs don't start processing before the write direction is

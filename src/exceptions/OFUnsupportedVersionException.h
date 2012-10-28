@@ -16,8 +16,8 @@
 
 #import "OFException.h"
 
-/**
- * \brief An exception indicating that the specified version of the format or
+/*!
+ * @brief An exception indicating that the specified version of the format or
  *	  protocol is not supported.
  */
 @interface OFUnsupportedVersionException: OFException
@@ -29,26 +29,26 @@
 @property (readonly, copy, nonatomic) OFString *version;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param version The version which is unsupported
- * \return A new unsupported version exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param version The version which is unsupported
+ * @return A new unsupported version exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			   version: (OFString*)version;
 
-/**
+/*!
  * Initializes an already allocated unsupported protocol exception
  *
- * \param class_ The class of the object which caused the exception
- * \param version The version which is unsupported
- * \return An initialized unsupported version exception
+ * @param class_ The class of the object which caused the exception
+ * @param version The version which is unsupported
+ * @return An initialized unsupported version exception
  */
 - initWithClass: (Class)class_
 	version: (OFString*)version;
 
-/**
- * \return The version which is unsupported
+/*!
+ * @return The version which is unsupported
  */
 - (OFString*)version;
 @end

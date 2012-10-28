@@ -17,8 +17,8 @@
 #import "OFException.h"
 #import "OFLocking.h"
 
-/**
- * \brief An exception indicating that unlocking a lock failed.
+/*!
+ * @brief An exception indicating that unlocking a lock failed.
  */
 @interface OFUnlockFailedException: OFException
 {
@@ -29,26 +29,26 @@
 @property (readonly, retain, nonatomic) id <OFLocking> lock;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param lock The lock which could not be unlocked
- * \return A new unlock failed exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param lock The lock which could not be unlocked
+ * @return A new unlock failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			      lock: (id <OFLocking>)lock;
 
-/**
+/*!
  * Initializes an already allocated unlock failed exception.
  *
- * \param class_ The class of the object which caused the exception
- * \param lock The lock which could not be unlocked
- * \return An initialized unlock failed exception
+ * @param class_ The class of the object which caused the exception
+ * @param lock The lock which could not be unlocked
+ * @return An initialized unlock failed exception
  */
 - initWithClass: (Class)class_
 	   lock: (id <OFLocking>)lock;
 
-/**
- * \return The lock which could not be unlocked
+/*!
+ * @return The lock which could not be unlocked
  */
 - (id <OFLocking>)lock;
 @end

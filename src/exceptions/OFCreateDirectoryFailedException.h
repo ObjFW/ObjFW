@@ -16,8 +16,8 @@
 
 #import "OFException.h"
 
-/**
- * \brief An exception indicating a directory couldn't be created.
+/*!
+ * @brief An exception indicating a directory couldn't be created.
  */
 @interface OFCreateDirectoryFailedException: OFException
 {
@@ -30,31 +30,31 @@
 @property (readonly) int errNo;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param path A string with the path of the directory which couldn't be created
- * \return A new create directory failed exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param path A string with the path of the directory which couldn't be created
+ * @return A new create directory failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			      path: (OFString*)path;
 
-/**
+/*!
  * Initializes an already allocated create directory failed exception.
  *
- * \param class_ The class of the object which caused the exception
- * \param path A string with the path of the directory which couldn't be created
- * \return An initialized create directory failed exception
+ * @param class_ The class of the object which caused the exception
+ * @param path A string with the path of the directory which couldn't be created
+ * @return An initialized create directory failed exception
  */
 - initWithClass: (Class)class_
 	   path: (OFString*)path;
 
-/**
- * \return The errno from when the exception was created
+/*!
+ * @return The errno from when the exception was created
  */
 - (int)errNo;
 
-/**
- * \return A string with the path of the directory which couldn't be created
+/*!
+ * @return A string with the path of the directory which couldn't be created
  */
 - (OFString*)path;
 @end

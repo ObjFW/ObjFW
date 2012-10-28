@@ -26,21 +26,21 @@ extern int _OFDataArray_Hashing_reference;
 }
 #endif
 
-/**
- * \brief A category which provides methods to calculate hashes for data arrays.
+/*!
+ * @brief A category which provides methods to calculate hashes for data arrays.
  */
 @interface OFDataArray (Hashing)
-/**
- * \brief Returns the MD5 hash of the data array as an autoreleased OFString.
+/*!
+ * @brief Returns the MD5 hash of the data array as an autoreleased OFString.
  *
- * \return The MD5 hash of the data array as an autoreleased OFString
+ * @return The MD5 hash of the data array as an autoreleased OFString
  */
 - (OFString*)MD5Hash;
 
-/**
- * \brief Returns the SHA-1 hash of the data array as an autoreleased OFString.
+/*!
+ * @brief Returns the SHA-1 hash of the data array as an autoreleased OFString.
  *
- * \return The SHA-1 hash of the data array as an autoreleased OFString
+ * @return The SHA-1 hash of the data array as an autoreleased OFString
  */
 - (OFString*)SHA1Hash;
 @end

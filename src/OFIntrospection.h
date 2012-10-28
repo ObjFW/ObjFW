@@ -20,8 +20,8 @@
 @class OFArray;
 @class OFMutableArray;
 
-/**
- * \brief A class for describing a method.
+/*!
+ * @brief A class for describing a method.
  */
 @interface OFMethod: OFObject
 {
@@ -36,30 +36,30 @@
 @property (readonly) const char *typeEncoding;
 #endif
 
-/**
- * \brief Returns the selector of the method.
+/*!
+ * @brief Returns the selector of the method.
  *
- * \return The selector of the method
+ * @return The selector of the method
  */
 - (SEL)selector;
 
-/**
- * \brief Returns the name of the method.
+/*!
+ * @brief Returns the name of the method.
  *
- * \return The name of the method
+ * @return The name of the method
  */
 - (OFString*)name;
 
-/**
- * \brief Returns the type encoding for the method.
+/*!
+ * @brief Returns the type encoding for the method.
  *
- * \return The type encoding for the method
+ * @return The type encoding for the method
  */
 - (const char*)typeEncoding;
 @end
 
-/**
- * \brief A class for describing an instance variable.
+/*!
+ * @brief A class for describing an instance variable.
  */
 @interface OFInstanceVariable: OFObject
 {
@@ -74,30 +74,30 @@
 @property (readonly) const char *typeEncoding;
 #endif
 
-/**
- * \brief Returns the name of the instance variable.
+/*!
+ * @brief Returns the name of the instance variable.
  *
- * \return The name of the instance variable
+ * @return The name of the instance variable
  */
 - (OFString*)name;
 
-/**
- * \brief Returns the offset of the instance variable.
+/*!
+ * @brief Returns the offset of the instance variable.
  *
- * \return The offset of the instance variable
+ * @return The offset of the instance variable
  */
 - (ptrdiff_t)offset;
 
-/**
- * \brief Returns the type encoding for the instance variable.
+/*!
+ * @brief Returns the type encoding for the instance variable.
  *
- * \return The type encoding for the instance variable
+ * @return The type encoding for the instance variable
  */
 - (const char*)typeEncoding;
 @end
 
-/**
- * \brief A class for introspecting classes.
+/*!
+ * @brief A class for introspecting classes.
  */
 @interface OFIntrospection: OFObject
 {
@@ -115,39 +115,39 @@
 @property (readonly, copy) OFArray *instanceVariables;
 #endif
 
-/**
- * \brief Creates a new introspection for the specified class.
+/*!
+ * @brief Creates a new introspection for the specified class.
  *
- * \return A new, autoreleased introspection for the specified class
+ * @return A new, autoreleased introspection for the specified class
  */
 + (instancetype)introspectionWithClass: (Class)class_;
 
-/**
- * \brief Initializes an already allocated OFIntrospection with the specified
+/*!
+ * @brief Initializes an already allocated OFIntrospection with the specified
  *	  class.
  *
- * \return An initialized OFIntrospection
+ * @return An initialized OFIntrospection
  */
 - initWithClass: (Class)class_;
 
-/**
- * \brief Returns the class methods of the class.
+/*!
+ * @brief Returns the class methods of the class.
  *
- * \return An array of OFMethods
+ * @return An array of OFMethods
  */
 - (OFArray*)classMethods;
 
-/**
- * \brief Returns the instance methods of the class.
+/*!
+ * @brief Returns the instance methods of the class.
  *
- * \return An array of OFMethods
+ * @return An array of OFMethods
  */
 - (OFArray*)instanceMethods;
 
-/**
- * \brief Returns the instance variables of the class.
+/*!
+ * @brief Returns the instance variables of the class.
  *
- * \return An array of OFInstanceVariables
+ * @return An array of OFInstanceVariables
  */
 - (OFArray*)instanceVariables;
 

@@ -16,8 +16,8 @@
 
 #import "OFException.h"
 
-/**
- * \brief An exception indicating that deleting a file failed.
+/*!
+ * @brief An exception indicating that deleting a file failed.
  */
 @interface OFDeleteFileFailedException: OFException
 {
@@ -30,31 +30,31 @@
 @property (readonly) int errNo;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param path The path of the file
- * \return A new delete file failed exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param path The path of the file
+ * @return A new delete file failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			      path: (OFString*)path;
 
-/**
+/*!
  * Initializes an already allocated delete file failed exception.
  *
- * \param class_ The class of the object which caused the exception
- * \param path The path of the file
- * \return An initialized delete file failed exception
+ * @param class_ The class of the object which caused the exception
+ * @param path The path of the file
+ * @return An initialized delete file failed exception
  */
 - initWithClass: (Class)class_
 	   path: (OFString*)path;
 
-/**
- * \return The errno from when the exception was created
+/*!
+ * @return The errno from when the exception was created
  */
 - (int)errNo;
 
-/**
- * \return The path of the file
+/*!
+ * @return The path of the file
  */
 - (OFString*)path;
 @end

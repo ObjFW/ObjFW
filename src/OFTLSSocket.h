@@ -20,24 +20,24 @@
 @class OFArray;
 @protocol OFTLSSocket;
 
-/**
- * \brief A delegate for classes implementing the OFTLSSocket protocol.
+/*!
+ * @brief A delegate for classes implementing the OFTLSSocket protocol.
  */
 @protocol OFTLSSocketDelegate
-/**
- * \brief This callback is called when the TLS socket wants to know if it
+/*!
+ * @brief This callback is called when the TLS socket wants to know if it
  *	  should accept the received keychain.
  *
- * \param certificate An array of objects implementing the OFX509Certificate
+ * @param certificate An array of objects implementing the OFX509Certificate
  *		      protocol
- * \return Whether the TLS socket should accept the received keychain
+ * @return Whether the TLS socket should accept the received keychain
  */
 -	  (BOOL)socket: (id <OFTLSSocket>)socket
   shouldAcceptKeychain: (OFArray*)keychain;
 @end
 
-/**
- * \brief A protocol that should be implemented by 3rd party libraries
+/*!
+ * @brief A protocol that should be implemented by 3rd party libraries
  *	  implementing TLS.
  */
 @protocol OFTLSSocket
@@ -47,66 +47,66 @@
 @property const char *privateKeyPassphrase;
 #endif
 
-/**
- * \brief Sets a delegate for the TLS socket.
+/*!
+ * @brief Sets a delegate for the TLS socket.
  *
- * \param delegate The delegate to use
+ * @param delegate The delegate to use
  */
 - (void)setDelegate: (id <OFTLSSocketDelegate>)delegate;
 
-/**
- * \brief Returns the delegate used by the TLS socket.
+/*!
+ * @brief Returns the delegate used by the TLS socket.
  *
- * \return The delegate used by the TLS socket
+ * @return The delegate used by the TLS socket
  */
 - (id <OFTLSSocketDelegate>)delegate;
 
-/**
- * \brief Sets the path to the X.509 certificate file to use.
+/*!
+ * @brief Sets the path to the X.509 certificate file to use.
  *
- * \param certificateFile The path to the X.509 certificate file
+ * @param certificateFile The path to the X.509 certificate file
  */
 - (void)setCertificateFile: (OFString*)certificateFile;
 
-/**
- * \brief Returns the path of the X.509 certificate file used by the TLS socket.
+/*!
+ * @brief Returns the path of the X.509 certificate file used by the TLS socket.
  *
- * \return The path of the X.509 certificate file used by the TLS socket
+ * @return The path of the X.509 certificate file used by the TLS socket
  */
 - (OFString*)certificateFile;
 
-/**
- * \brief Sets the path to the PKCS#8 private key file to use.
+/*!
+ * @brief Sets the path to the PKCS#8 private key file to use.
  *
- * \param privateKeyFile The path to the PKCS#8 private key file
+ * @param privateKeyFile The path to the PKCS#8 private key file
  */
 - (void)setPrivateKeyFile: (OFString*)privateKeyFile;
 
-/**
- * \brief Returns the path of the PKCS#8 private key file used by the TLS
+/*!
+ * @brief Returns the path of the PKCS#8 private key file used by the TLS
  *	  socket.
  *
- * \return The path of the PKCS#8 private key file used by the TLS socket
+ * @return The path of the PKCS#8 private key file used by the TLS socket
  */
 - (OFString*)privateKeyFile;
 
-/**
- * \brief Sets the passphrase to decrypt the PKCS#8 private key file.
+/*!
+ * @brief Sets the passphrase to decrypt the PKCS#8 private key file.
  *
- * \warning You have to ensure that this is in secure memory protected from
+ * @warning You have to ensure that this is in secure memory protected from
  *	    swapping! This is also the reason why this is not an OFString.
  *
- * \param privateKeyPassphrase The passphrase to decrypt the PKCS#8 private
+ * @param privateKeyPassphrase The passphrase to decrypt the PKCS#8 private
  *			       key file
  */
 - (void)setPrivateKeyPassphrase: (const char*)privateKeyPassphrase;
 
-/**
- * \brief Returns the passphrase to decrypt the PKCS#8 private key file.
+/*!
+ * @brief Returns the passphrase to decrypt the PKCS#8 private key file.
  *
- * \warning You should not copy this to insecure memory which is swappable!
+ * @warning You should not copy this to insecure memory which is swappable!
  *
- * \return The passphrase to decrypt the PKCS#8 private key file
+ * @return The passphrase to decrypt the PKCS#8 private key file
  */
 - (const char*)privateKeyPassphrase;
 @end

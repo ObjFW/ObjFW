@@ -16,8 +16,8 @@
 
 #import "OFException.h"
 
-/**
- * \brief An exception indicating that copying a file failed.
+/*!
+ * @brief An exception indicating that copying a file failed.
  */
 @interface OFCopyFileFailedException: OFException
 {
@@ -32,40 +32,40 @@
 @property (readonly) int errNo;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param source The original path
- * \param destination The new path
- * \return A new copy file failed exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param source The original path
+ * @param destination The new path
+ * @return A new copy file failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			sourcePath: (OFString*)source
 		   destinationPath: (OFString*)destination;
 
-/**
+/*!
  * Initializes an already allocated copy file failed exception.
  *
- * \param class_ The class of the object which caused the exception
- * \param source The original path
- * \param destination The new path
- * \return An initialized copy file failed exception
+ * @param class_ The class of the object which caused the exception
+ * @param source The original path
+ * @param destination The new path
+ * @return An initialized copy file failed exception
  */
 -   initWithClass: (Class)class_
        sourcePath: (OFString*)source
   destinationPath: (OFString*)destination;
 
-/**
- * \return The errno from when the exception was created
+/*!
+ * @return The errno from when the exception was created
  */
 - (int)errNo;
 
-/**
- * \return The path of the source file
+/*!
+ * @return The path of the source file
  */
 - (OFString*)sourcePath;
 
-/**
- * \return The destination path
+/*!
+ * @return The destination path
  */
 - (OFString*)destinationPath;
 @end

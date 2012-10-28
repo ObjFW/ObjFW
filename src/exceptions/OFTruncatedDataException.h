@@ -16,8 +16,8 @@
 
 #import "OFException.h"
 
-/**
- * \brief An exception indicating that data was truncated while it should not
+/*!
+ * @brief An exception indicating that data was truncated while it should not
  *	  have been truncated.
  */
 @interface OFTruncatedDataException: OFException

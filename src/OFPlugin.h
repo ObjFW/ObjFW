@@ -25,19 +25,19 @@ typedef void* of_plugin_handle_t;
 typedef HMODULE of_plugin_handle_t;
 #endif
 
-/**
- * \brief Provides a system for loading plugins at runtime.
+/*!
+ * @brief Provides a system for loading plugins at runtime.
  */
 @interface OFPlugin: OFObject
 {
 	of_plugin_handle_t handle;
 }
 
-/**
- * \brief Loads a plugin from a file.
+/*!
+ * @brief Loads a plugin from a file.
  *
- * \param path Path to the plugin file. The suffix is appended automatically.
- * \return The loaded plugin
+ * @param path Path to the plugin file. The suffix is appended automatically.
+ * @return The loaded plugin
  */
 + (id)pluginFromFile: (OFString*)path;
 @end

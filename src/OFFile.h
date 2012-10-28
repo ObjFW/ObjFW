@@ -36,8 +36,8 @@ extern void of_log(OFConstantString*, ...);
 }
 #endif
 
-/**
- * \brief A class which provides functions to read, write and manipulate files.
+/*!
+ * @brief A class which provides functions to read, write and manipulate files.
  */
 @interface OFFile: OFSeekableStream
 {
@@ -46,195 +46,195 @@ extern void of_log(OFConstantString*, ...);
 	BOOL atEndOfStream;
 }
 
-/**
- * \brief Creates a new OFFile with the specified path and mode.
+/*!
+ * @brief Creates a new OFFile with the specified path and mode.
  *
- * \param path The path to the file to open as a string
- * \param mode The mode in which the file should be opened as a string
- * \return A new autoreleased OFFile
+ * @param path The path to the file to open as a string
+ * @param mode The mode in which the file should be opened as a string
+ * @return A new autoreleased OFFile
  */
 + (instancetype)fileWithPath: (OFString*)path
 			mode: (OFString*)mode;
 
-/**
- * \brief Creates a new OFFile with the specified file descriptor.
+/*!
+ * @brief Creates a new OFFile with the specified file descriptor.
  *
- * \param fileDescriptor A file descriptor, returned from for example open().
+ * @param fileDescriptor A file descriptor, returned from for example open().
  *			 It is not closed when the OFFile object is deallocated!
- * \return A new autoreleased OFFile
+ * @return A new autoreleased OFFile
  */
 + (instancetype)fileWithFileDescriptor: (int)fileDescriptor;
 
-/**
- * \brief Returns the path fo the current working directory.
+/*!
+ * @brief Returns the path fo the current working directory.
  *
- * \return The path of the current working directory
+ * @return The path of the current working directory
  */
 + (OFString*)currentDirectoryPath;
 
-/**
- * \brief Checks whether a file exists at the specified path.
+/*!
+ * @brief Checks whether a file exists at the specified path.
  *
- * \param path The path to check
- * \return A boolean whether there is a file at the specified path
+ * @param path The path to check
+ * @return A boolean whether there is a file at the specified path
  */
 + (BOOL)fileExistsAtPath: (OFString*)path;
 
-/**
- * \brief Checks whether a directory exists at the specified path.
+/*!
+ * @brief Checks whether a directory exists at the specified path.
  *
- * \param path The path to check
- * \return A boolean whether there is a directory at the specified path
+ * @param path The path to check
+ * @return A boolean whether there is a directory at the specified path
  */
 + (BOOL)directoryExistsAtPath: (OFString*)path;
 
-/**
- * \brief Creates a directory at the specified path.
+/*!
+ * @brief Creates a directory at the specified path.
  *
- * \param path The path of the directory
+ * @param path The path of the directory
  */
 + (void)createDirectoryAtPath: (OFString*)path;
 
-/**
- * \brief Creates a directory at the specified path.
+/*!
+ * @brief Creates a directory at the specified path.
  *
- * \param path The path of the directory
- * \param createParents Whether to create the parents of the directory
+ * @param path The path of the directory
+ * @param createParents Whether to create the parents of the directory
  */
 + (void)createDirectoryAtPath: (OFString*)path
 		createParents: (BOOL)createParents;
 
-/**
- * \brief Returns an array with the files in the specified directory.
+/*!
+ * @brief Returns an array with the files in the specified directory.
  *
- * \param path The path of the directory
- * \return An array of OFStrings with the files at the specified path
+ * @param path The path of the directory
+ * @return An array of OFStrings with the files at the specified path
  */
 + (OFArray*)filesInDirectoryAtPath: (OFString*)path;
 
-/**
- * \brief Changes the current working directory.
+/*!
+ * @brief Changes the current working directory.
  *
- * \param path The new directory to change to
+ * @param path The new directory to change to
  */
 + (void)changeToDirectoryAtPath: (OFString*)path;
 
-/**
- * \brief Returns the size of the specified file.
+/*!
+ * @brief Returns the size of the specified file.
  *
- * \return The size of the specified file
+ * @return The size of the specified file
  */
 + (off_t)sizeOfFileAtPath: (OFString*)path;
 
-/**
- * \brief Returns the date of the last modification of the file.
+/*!
+ * @brief Returns the date of the last modification of the file.
  *
- * \return The date of the last modification of the file
+ * @return The date of the last modification of the file
  */
 + (OFDate*)modificationDateOfFileAtPath: (OFString*)path;
 
 #ifndef _PSP
-/**
- * \brief Changes the mode of a file.
+/*!
+ * @brief Changes the mode of a file.
  *
  * Only changes read-only flag on Windows.
  *
- * \param path The path to the file of which the mode should be changed as a
+ * @param path The path to the file of which the mode should be changed as a
  *	       string
- * \param mode The new mode for the file
+ * @param mode The new mode for the file
  */
 + (void)changeModeOfFileAtPath: (OFString*)path
 			  mode: (mode_t)mode;
 #endif
 
 #if !defined(_WIN32) && !defined(_PSP)
-/**
- * \brief Changes the owner of a file.
+/*!
+ * @brief Changes the owner of a file.
  *
  * Not available on Windows.
  *
- * \param path The path to the file of which the owner should be changed as a
+ * @param path The path to the file of which the owner should be changed as a
  *	       string
- * \param owner The new owner for the file
- * \param group The new group for the file
+ * @param owner The new owner for the file
+ * @param group The new group for the file
  */
 + (void)changeOwnerOfFileAtPath: (OFString*)path
 			  owner: (OFString*)owner
 			  group: (OFString*)group;
 #endif
 
-/**
- * \brief Copies a file.
+/*!
+ * @brief Copies a file.
  *
- * \param source The file to copy
- * \param destination The destination path
+ * @param source The file to copy
+ * @param destination The destination path
  */
 + (void)copyFileAtPath: (OFString*)source
 		toPath: (OFString*)destination;
 
-/**
- * \brief Renames a file.
+/*!
+ * @brief Renames a file.
  *
- * \param source The file to rename
- * \param destination The new name
+ * @param source The file to rename
+ * @param destination The new name
  */
 + (void)renameFileAtPath: (OFString*)source
 		  toPath: (OFString*)destination;
 
-/**
- * \brief Deletes a file.
+/*!
+ * @brief Deletes a file.
  *
- * \param path The path to the file of which should be deleted as a string
+ * @param path The path to the file of which should be deleted as a string
  */
 + (void)deleteFileAtPath: (OFString*)path;
 
-/**
- * \brief Deletes an empty directory.
+/*!
+ * @brief Deletes an empty directory.
  *
- * \param path The path to the directory which should be deleted as a string
+ * @param path The path to the directory which should be deleted as a string
  */
 + (void)deleteDirectoryAtPath: (OFString*)path;
 
 #ifndef _WIN32
-/**
- * \brief Creates a hard link for a file.
+/*!
+ * @brief Creates a hard link for a file.
  *
  * Not available on Windows.
  *
- * \param source The path to the file of which should be linked as a string
- * \param destination The path to where the file should be linked as a string
+ * @param source The path to the file of which should be linked as a string
+ * @param destination The path to where the file should be linked as a string
  */
 + (void)linkFileAtPath: (OFString*)source
 		toPath: (OFString*)destination;
 #endif
 
 #if !defined(_WIN32) && !defined(_PSP)
-/**
- * \brief Creates a symbolink link for a file.
+/*!
+ * @brief Creates a symbolink link for a file.
  *
  * Not available on Windows.
  *
- * \param source The path to the file of which should be symlinked as a string
- * \param destination The path to where the file should be symlinked as a string
+ * @param source The path to the file of which should be symlinked as a string
+ * @param destination The path to where the file should be symlinked as a string
  */
 + (void)symlinkFileAtPath: (OFString*)source
 		   toPath: (OFString*)destination;
 #endif
 
-/**
- * \brief Initializes an already allocated OFFile.
+/*!
+ * @brief Initializes an already allocated OFFile.
  *
- * \param path The path to the file to open as a string
- * \param mode The mode in which the file should be opened as a string
- * \return An initialized OFFile
+ * @param path The path to the file to open as a string
+ * @param mode The mode in which the file should be opened as a string
+ * @return An initialized OFFile
  */
 - initWithPath: (OFString*)path
 	  mode: (OFString*)mode;
 
-/**
- * \brief Initializes an already allocated OFFile.
+/*!
+ * @brief Initializes an already allocated OFFile.
  *
- * \param fileDescriptor A file descriptor, returned from for example open().
+ * @param fileDescriptor A file descriptor, returned from for example open().
  *			 It is not closed when the OFFile object is deallocated!
  */
 - initWithFileDescriptor: (int)fileDescriptor;

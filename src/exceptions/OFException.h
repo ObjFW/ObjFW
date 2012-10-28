@@ -18,8 +18,8 @@
 
 @class OFString;
 
-/**
- * \brief The base class for all exceptions in ObjFW
+/*!
+ * @brief The base class for all exceptions in ObjFW
  *
  * The OFException class is the base class for all exceptions in ObjFW, except
  * the OFAllocFailedException.
@@ -34,29 +34,29 @@
 @property (readonly) Class inClass;
 #endif
 
-/**
+/*!
  * Creates a new exception.
  *
- * \param class_ The class of the object which caused the exception
- * \return A new exception
+ * @param class_ The class of the object which caused the exception
+ * @return A new exception
  */
 + (instancetype)exceptionWithClass: (Class)class_;
 
-/**
+/*!
  * Initializes an already allocated OFException.
  *
- * \param class_ The class of the object which caused the exception
- * \return An initialized OFException
+ * @param class_ The class of the object which caused the exception
+ * @return An initialized OFException
  */
 - initWithClass: (Class)class_;
 
-/**
- * \return The class of the object in which the exception happened
+/*!
+ * @return The class of the object in which the exception happened
  */
 - (Class)inClass;
 
-/**
- * \return A description of the exception
+/*!
+ * @return A description of the exception
  */
 - (OFString*)description;
 @end

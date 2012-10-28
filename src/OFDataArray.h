@@ -20,8 +20,8 @@
 @class OFString;
 @class OFURL;
 
-/**
- * \brief A class for storing arbitrary data in an array.
+/*!
+ * @brief A class for storing arbitrary data in an array.
  *
  * If you plan to store large hunks of data, you should consider using
  * OFBigDataArray, which allocates the memory in pages rather than in bytes.
@@ -42,241 +42,241 @@
 @property (readonly) size_t itemSize;
 #endif
 
-/**
- * \brief Creates a new OFDataArray with an item size of 1.
+/*!
+ * @brief Creates a new OFDataArray with an item size of 1.
  *
- * \return A new autoreleased OFDataArray
+ * @return A new autoreleased OFDataArray
  */
 + (instancetype)dataArray;
 
-/**
- * \brief Creates a new OFDataArray whose items all have the same size.
+/*!
+ * @brief Creates a new OFDataArray whose items all have the same size.
  *
- * \param itemSize The size of each element in the OFDataArray
- * \return A new autoreleased OFDataArray
+ * @param itemSize The size of each element in the OFDataArray
+ * @return A new autoreleased OFDataArray
  */
 + (instancetype)dataArrayWithItemSize: (size_t)itemSize;
 
-/**
- * \brief Creates a new OFDataArary with an item size of 1, containing the data
+/*!
+ * @brief Creates a new OFDataArary with an item size of 1, containing the data
  *	  of the specified file.
  *
- * \param path The path of the file
- * \return A new autoreleased OFDataArray
+ * @param path The path of the file
+ * @return A new autoreleased OFDataArray
  */
 + (instancetype)dataArrayWithContentsOfFile: (OFString*)path;
 
-/**
- * \brief Creates a new OFDataArray with an item size of 1, containing the data
+/*!
+ * @brief Creates a new OFDataArray with an item size of 1, containing the data
  *	  of the specified URL.
  *
- * \param URL The URL to the contents for the OFDataArray
- * \return A new autoreleased OFDataArray
+ * @param URL The URL to the contents for the OFDataArray
+ * @return A new autoreleased OFDataArray
  */
 + (instancetype)dataArrayWithContentsOfURL: (OFURL*)URL;
 
-/**
- * \brief Creates a new OFDataArray with an item size of 1, containing the data
+/*!
+ * @brief Creates a new OFDataArray with an item size of 1, containing the data
  *	  of the string representation.
  *
- * \param string The string representation of the data
- * \return A new autoreleased OFDataArray
+ * @param string The string representation of the data
+ * @return A new autoreleased OFDataArray
  */
 + (instancetype)dataArrayWithStringRepresentation: (OFString*)string;
 
-/**
- * \brief Creates a new OFDataArray with an item size of 1, containing the data
+/*!
+ * @brief Creates a new OFDataArray with an item size of 1, containing the data
  *	  of the Base64-encoded string.
  *
- * \param string The string with the Base64-encoded data
- * \return A new autoreleased OFDataArray
+ * @param string The string with the Base64-encoded data
+ * @return A new autoreleased OFDataArray
  */
 + (instancetype)dataArrayWithBase64EncodedString: (OFString*)string;
 
-/**
- * \brief Initializes an already allocated OFDataArray with an item size of 1.
+/*!
+ * @brief Initializes an already allocated OFDataArray with an item size of 1.
  *
- * \return A initialized OFDataArray
+ * @return A initialized OFDataArray
  */
 - init;
 
-/**
- * \brief Initializes an already allocated OFDataArray whose items all have the
+/*!
+ * @brief Initializes an already allocated OFDataArray whose items all have the
  *	  same size.
  *
- * \param itemSize The size of each element in the OFDataArray
- * \return An initialized OFDataArray
+ * @param itemSize The size of each element in the OFDataArray
+ * @return An initialized OFDataArray
  */
 - initWithItemSize: (size_t)itemSize;
 
-/**
- * \brief Initializes an already allocated OFDataArray with an item size of 1,
+/*!
+ * @brief Initializes an already allocated OFDataArray with an item size of 1,
  *	  containing the data of the specified file.
  *
- * \param path The path of the file
- * \return An initialized OFDataArray
+ * @param path The path of the file
+ * @return An initialized OFDataArray
  */
 - initWithContentsOfFile: (OFString*)path;
 
-/**
- * \brief Initializes an already allocated OFDataArray with an item size of 1,
+/*!
+ * @brief Initializes an already allocated OFDataArray with an item size of 1,
  *	  containing the data of the specified URL.
  *
- * \param URL The URL to the contents for the OFDataArray
- * \return A new autoreleased OFDataArray
+ * @param URL The URL to the contents for the OFDataArray
+ * @return A new autoreleased OFDataArray
  */
 - initWithContentsOfURL: (OFURL*)URL;
 
-/**
- * \brief Initializes an already allocated OFDataArray with an item size of 1,
+/*!
+ * @brief Initializes an already allocated OFDataArray with an item size of 1,
  *	  containing the data of the string representation.
  *
- * \param string The string representation of the data
- * \return A new autoreleased OFDataArray
+ * @param string The string representation of the data
+ * @return A new autoreleased OFDataArray
  */
 - initWithStringRepresentation: (OFString*)string;
 
-/**
- * \brief Initializes an already allocated OFDataArray with an item size of 1,
+/*!
+ * @brief Initializes an already allocated OFDataArray with an item size of 1,
  *	  containing the data of the Base64-encoded string.
  *
- * \param string The string with the Base64-encoded data
- * \return A initialized OFDataArray
+ * @param string The string with the Base64-encoded data
+ * @return A initialized OFDataArray
  */
 - initWithBase64EncodedString: (OFString*)string;
 
-/**
- * \brief Returns the number of items in the OFDataArray.
+/*!
+ * @brief Returns the number of items in the OFDataArray.
  *
- * \return The number of items in the OFDataArray
+ * @return The number of items in the OFDataArray
  */
 - (size_t)count;
 
-/**
- * \brief Returns the size of each item in the OFDataArray in bytes.
+/*!
+ * @brief Returns the size of each item in the OFDataArray in bytes.
  *
- * \return The size of each item in the OFDataArray in bytes
+ * @return The size of each item in the OFDataArray in bytes
  */
 - (size_t)itemSize;
 
-/**
- * \brief Returns all elements of the OFDataArray as a C array.
+/*!
+ * @brief Returns all elements of the OFDataArray as a C array.
  *
- * \warning The pointer is only valid until the OFDataArray is changed!
+ * @warning The pointer is only valid until the OFDataArray is changed!
  *
  * Modifying the returned array directly is allowed and will change the contents
  * of the data array.
  *
- * \return All elements of the OFDataArray as a C array
+ * @return All elements of the OFDataArray as a C array
  */
 - (void*)cArray OF_RETURNS_INNER_POINTER;
 
-/**
- * \brief Returns a specific item of the OFDataArray.
+/*!
+ * @brief Returns a specific item of the OFDataArray.
  *
- * \param index The number of the item to return
- * \return The specified item of the OFDataArray
+ * @param index The number of the item to return
+ * @return The specified item of the OFDataArray
  */
 - (void*)itemAtIndex: (size_t)index OF_RETURNS_INNER_POINTER;
 
-/**
- * \brief Returns the first item of the OFDataArray.
+/*!
+ * @brief Returns the first item of the OFDataArray.
  *
- * \return The first item of the OFDataArray or NULL
+ * @return The first item of the OFDataArray or NULL
  */
 - (void*)firstItem OF_RETURNS_INNER_POINTER;
 
-/**
- * \brief Returns the last item of the OFDataArray.
+/*!
+ * @brief Returns the last item of the OFDataArray.
  *
- * \return The last item of the OFDataArray or NULL
+ * @return The last item of the OFDataArray or NULL
  */
 - (void*)lastItem OF_RETURNS_INNER_POINTER;
 
-/**
- * \brief Adds an item to the OFDataArray.
+/*!
+ * @brief Adds an item to the OFDataArray.
  *
- * \param item A pointer to an arbitrary item
+ * @param item A pointer to an arbitrary item
  */
 - (void)addItem: (const void*)item;
 
-/**
- * \brief Adds an item to the OFDataArray at the specified index.
+/*!
+ * @brief Adds an item to the OFDataArray at the specified index.
  *
- * \param item A pointer to an arbitrary item
- * \param index The index where the item should be added
+ * @param item A pointer to an arbitrary item
+ * @param index The index where the item should be added
  */
 - (void)insertItem: (const void*)item
 	   atIndex: (size_t)index;
 
-/**
- * \brief Adds items from a C array to the OFDataArray.
+/*!
+ * @brief Adds items from a C array to the OFDataArray.
  *
- * \param count The number of items to add
- * \param cArray A C array containing the items to add
+ * @param count The number of items to add
+ * @param cArray A C array containing the items to add
  */
 - (void)addItemsFromCArray: (const void*)cArray
 		     count: (size_t)count;
 
-/**
- * \brief Adds items from a C array to the OFDataArray at the specified index.
+/*!
+ * @brief Adds items from a C array to the OFDataArray at the specified index.
  *
- * \param cArray A C array containing the items to add
- * \param index The index where the items should be added
- * \param count The number of items to add
+ * @param cArray A C array containing the items to add
+ * @param index The index where the items should be added
+ * @param count The number of items to add
  */
 - (void)insertItemsFromCArray: (const void*)cArray
 		      atIndex: (size_t)index
 			count: (size_t)count;
 
-/**
- * \brief Removes the item at the specified index.
+/*!
+ * @brief Removes the item at the specified index.
  *
- * \param index The index of the item to remove
+ * @param index The index of the item to remove
  */
 - (void)removeItemAtIndex: (size_t)index;
 
-/**
- * \brief Removes the specified amount of items at the specified index.
+/*!
+ * @brief Removes the specified amount of items at the specified index.
  *
- * \param range The range of items to remove
+ * @param range The range of items to remove
  */
 - (void)removeItemsInRange: (of_range_t)range;
 
-/**
- * \brief Removes the last item.
+/*!
+ * @brief Removes the last item.
  */
 - (void)removeLastItem;
 
-/**
- * \brief Removes all items.
+/*!
+ * @brief Removes all items.
  */
 - (void)removeAllItems;
 
-/**
- * \brief Returns the string representation of the data array.
+/*!
+ * @brief Returns the string representation of the data array.
  *
- * \return The string representation of the data array.
+ * @return The string representation of the data array.
  */
 - (OFString*)stringRepresentation;
 
-/**
- * \brief Returns a string containing the data in Base64 encoding.
+/*!
+ * @brief Returns a string containing the data in Base64 encoding.
  *
- * \return A string containing the data in Base64 encoding
+ * @return A string containing the data in Base64 encoding
  */
 - (OFString*)stringByBase64Encoding;
 
-/**
- * \brief Writes the OFDataArray into the specified file.
+/*!
+ * @brief Writes the OFDataArray into the specified file.
  *
- * \param path The path of the file to write to
+ * @param path The path of the file to write to
  */
 - (void)writeToFile: (OFString*)path;
 @end
 
-/**
- * \brief A class for storing arbitrary big data in an array.
+/*!
+ * @brief A class for storing arbitrary big data in an array.
  *
  * The OFBigDataArray class is a class for storing arbitrary data in an array
  * and is designed to store large hunks of data. Therefore, it allocates

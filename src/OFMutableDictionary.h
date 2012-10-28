@@ -20,41 +20,41 @@
 typedef id (^of_dictionary_replace_block_t)(id key, id object, BOOL *stop);
 #endif
 
-/**
- * \brief An abstract class for storing and changing objects in a dictionary.
+/*!
+ * @brief An abstract class for storing and changing objects in a dictionary.
  */
 @interface OFMutableDictionary: OFDictionary
-/**
- * \brief Sets an object for a key.
+/*!
+ * @brief Sets an object for a key.
  *
  * A key can be any object that conforms to the OFCopying protocol.
  *
- * \param key The key to set
- * \param object The object to set the key to
+ * @param key The key to set
+ * @param object The object to set the key to
  */
 - (void)setObject: (id)object
 	   forKey: (id)key;
 -   (void)setObject: (id)object
   forKeyedSubscript: (id)key;
 
-/**
- * \brief Removes the object for the specified key from the dictionary.
+/*!
+ * @brief Removes the object for the specified key from the dictionary.
  *
- * \param key The key whose object should be removed
+ * @param key The key whose object should be removed
  */
 - (void)removeObjectForKey: (id)key;
 
 #ifdef OF_HAVE_BLOCKS
-/**
- * \brief Replaces each object with the object returned by the block.
+/*!
+ * @brief Replaces each object with the object returned by the block.
  *
- * \param block The block which returns a new object for each object
+ * @param block The block which returns a new object for each object
  */
 - (void)replaceObjectsUsingBlock: (of_dictionary_replace_block_t)block;
 #endif
 
-/**
- * \brief Converts the mutable dictionary to an immutable dictionary.
+/*!
+ * @brief Converts the mutable dictionary to an immutable dictionary.
  */
 - (void)makeImmutable;
 @end

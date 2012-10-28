@@ -18,8 +18,8 @@
 
 #define OF_SHA1_DIGEST_SIZE 20
 
-/**
- * \brief A class which provides functions to create an SHA1 hash.
+/*!
+ * @brief A class which provides functions to create an SHA1 hash.
  */
 @interface OFSHA1Hash: OFHash
 {

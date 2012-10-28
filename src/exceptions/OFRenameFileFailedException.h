@@ -16,8 +16,8 @@
 
 #import "OFException.h"
 
-/**
- * \brief An exception indicating that renaming a file failed.
+/*!
+ * @brief An exception indicating that renaming a file failed.
  */
 @interface OFRenameFileFailedException: OFException
 {
@@ -32,40 +32,40 @@
 @property (readonly) int errNo;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param source The original path
- * \param destination The new path
- * \return A new rename file failed exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param source The original path
+ * @param destination The new path
+ * @return A new rename file failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			sourcePath: (OFString*)source
 		   destinationPath: (OFString*)destination;
 
-/**
+/*!
  * Initializes an already allocated rename failed exception.
  *
- * \param class_ The class of the object which caused the exception
- * \param source The original path
- * \param destination The new path
- * \return An initialized rename file failed exception
+ * @param class_ The class of the object which caused the exception
+ * @param source The original path
+ * @param destination The new path
+ * @return An initialized rename file failed exception
  */
 -   initWithClass: (Class)class_
        sourcePath: (OFString*)source
   destinationPath: (OFString*)destination;
 
-/**
- * \return The errno from when the exception was created
+/*!
+ * @return The errno from when the exception was created
  */
 - (int)errNo;
 
-/**
- * \return The original path
+/*!
+ * @return The original path
  */
 - (OFString*)sourcePath;
 
-/**
- * \return The new path
+/*!
+ * @return The new path
  */
 - (OFString*)destinationPath;
 @end

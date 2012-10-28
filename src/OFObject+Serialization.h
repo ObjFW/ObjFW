@@ -26,14 +26,14 @@ extern int _OFObject_Serialization_reference;
 }
 #endif
 
-/**
- * \brief A category that provides methods for serializing objects.
+/*!
+ * @brief A category that provides methods for serializing objects.
  */
 @interface OFObject (OFSerialization)
-/**
- * \brief Creates a string by serializing the receiver.
+/*!
+ * @brief Creates a string by serializing the receiver.
  *
- * \return The object serialized as a string
+ * @return The object serialized as a string
  */
 - (OFString*)stringBySerializing;
 @end

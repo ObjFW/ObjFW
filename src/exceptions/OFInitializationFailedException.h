@@ -16,8 +16,8 @@
 
 #import "OFException.h"
 
-/**
- * \brief An exception indicating that initializing something failed.
+/*!
+ * @brief An exception indicating that initializing something failed.
  */
 @interface OFInitializationFailedException: OFException
 @end

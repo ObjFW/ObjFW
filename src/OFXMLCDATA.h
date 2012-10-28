@@ -16,27 +16,27 @@
 
 #import "OFXMLNode.h"
 
-/**
- * \brief A class representing XML CDATA.
+/*!
+ * @brief A class representing XML CDATA.
  */
 @interface OFXMLCDATA: OFXMLNode
 {
 	OFString *CDATA;
 }
 
-/**
- * \brief Creates a new OFXMLCDATA with the specified string.
+/*!
+ * @brief Creates a new OFXMLCDATA with the specified string.
  *
- * \param string The string value for the CDATA
- * \return A new OFXMLCDATA
+ * @param string The string value for the CDATA
+ * @return A new OFXMLCDATA
  */
 + (instancetype)CDATAWithString: (OFString*)string;
 
-/**
- * \brief Initializes an alredy allocated OFXMLCDATA with the specified string.
+/*!
+ * @brief Initializes an alredy allocated OFXMLCDATA with the specified string.
  *
- * \param string The string value for the CDATA
- * \return An initialized OFXMLCDATA
+ * @param string The string value for the CDATA
+ * @return An initialized OFXMLCDATA
  */
 - initWithString: (OFString*)string;
 @end

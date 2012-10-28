@@ -18,8 +18,8 @@
 
 @class OFCondition;
 
-/**
- * \brief An exception indicating waiting for a condition failed.
+/*!
+ * @brief An exception indicating waiting for a condition failed.
  */
 @interface OFConditionWaitFailedException: OFException
 {
@@ -30,26 +30,26 @@
 @property (readonly, retain, nonatomic) OFCondition *condition;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param condition The condition for which could not be waited
- * \return A new condition wait failed exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param condition The condition for which could not be waited
+ * @return A new condition wait failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			 condition: (OFCondition*)condition;
 
-/**
+/*!
  * Initializes an already allocated condition wait failed exception.
  *
- * \param class_ The class of the object which caused the exception
- * \param condition The condition for which could not be waited
- * \return An initialized condition wait failed exception
+ * @param class_ The class of the object which caused the exception
+ * @param condition The condition for which could not be waited
+ * @return An initialized condition wait failed exception
  */
 - initWithClass: (Class)class_
       condition: (OFCondition*)condition;
 
-/**
- * \return The condition for which could not be waited
+/*!
+ * @return The condition for which could not be waited
  */
 - (OFCondition*)condition;
 @end

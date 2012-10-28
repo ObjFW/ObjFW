@@ -16,8 +16,8 @@
 
 #import "OFException.h"
 
-/**
- * \brief An exception indicating that the server sent an invalid reply.
+/*!
+ * @brief An exception indicating that the server sent an invalid reply.
  */
 @interface OFInvalidServerReplyException: OFException
 @end

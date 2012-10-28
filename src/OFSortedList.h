@@ -16,18 +16,18 @@
 
 #import "OFList.h"
 
-/**
- * \brief A class which provides easy to use sorted double-linked lists.
+/*!
+ * @brief A class which provides easy to use sorted double-linked lists.
  *
- * \warning Because the list is sorted, all methods inserting an object at a
+ * @warning Because the list is sorted, all methods inserting an object at a
  *	    specific place are unavailable, even though they exist in OFList!
  */
 @interface OFSortedList: OFList
-/**
- * \brief Adds the object to the list while keeping the list sorted.
+/*!
+ * @brief Adds the object to the list while keeping the list sorted.
  *
- * \param object The object to add
- * \return The list object for the object just added
+ * @param object The object to add
+ * @return The list object for the object just added
  */
 - (of_list_object_t*)addObject: (id <OFComparing>)object;
 @end

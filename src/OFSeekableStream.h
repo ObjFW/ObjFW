@@ -25,10 +25,10 @@
 
 #import "OFStream.h"
 
-/**
- * \brief A stream that supports seeking.
+/*!
+ * @brief A stream that supports seeking.
  *
- * \note If you want to subclass this, override lowlevelSeekToOffset:,
+ * @note If you want to subclass this, override lowlevelSeekToOffset:,
  *	 lowlevelSeekForwardWithOffset: and lowlevelSeekToOffsetRelativeToEnd:,
  *	 but nothing else. Those are not defined in the headers, but do the
  *	 actual work. OFSeekableStream uses those and makes them work together
@@ -37,62 +37,62 @@
  *	 and seek to the wrong position!
  */
 @interface OFSeekableStream: OFStream
-/**
- * \brief Seeks to the specified absolute offset.
+/*!
+ * @brief Seeks to the specified absolute offset.
  *
- * \param offset The offset in bytes
+ * @param offset The offset in bytes
  */
 - (void)seekToOffset: (off_t)offset;
 
-/**
- * \brief Seeks to the specified offset, relative to the current location.
+/*!
+ * @brief Seeks to the specified offset, relative to the current location.
  *
- * \param offset The offset relative to the current location
- * \return The absolute offset
+ * @param offset The offset relative to the current location
+ * @return The absolute offset
  */
 - (off_t)seekForwardWithOffset: (off_t)offset;
 
-/**
- * \brief Seeks to the specified offset, relative to the end of the stream.
+/*!
+ * @brief Seeks to the specified offset, relative to the end of the stream.
  *
- * \param offset The offset relative to the end of the stream
- * \return The absolute offset
+ * @param offset The offset relative to the end of the stream
+ * @return The absolute offset
  */
 - (off_t)seekToOffsetRelativeToEnd: (off_t)offset;
 
-/**
- * \brief Seek the stream on the lowlevel.
+/*!
+ * @brief Seek the stream on the lowlevel.
  *
- * \warning Do not call this directly!
+ * @warning Do not call this directly!
  *
  * Override this with this method with your actual seek implementation when
  * subclassing!
  *
- * \param offset The offset to seek to
+ * @param offset The offset to seek to
  */
 - (void)lowlevelSeekToOffset: (off_t)offset;
 
-/**
- * \brief Seek the stream on the lowlevel.
+/*!
+ * @brief Seek the stream on the lowlevel.
  *
- * \warning Do not call this directly!
+ * @warning Do not call this directly!
  *
  * Override this with this method with your actual seek implementation when
  * subclassing!
  *
- * \param offset The offset to seek forward to
+ * @param offset The offset to seek forward to
  */
 - (off_t)lowlevelSeekForwardWithOffset: (off_t)offset;
 
-/**
- * \brief Seek the stream on the lowlevel.
+/*!
+ * @brief Seek the stream on the lowlevel.
  *
- * \warning Do not call this directly!
+ * @warning Do not call this directly!
  *
  * Override this with this method with your actual seek implementation when
  * subclassing!
  *
- * \param offset The offset to seek to, relative to the end
+ * @param offset The offset to seek to, relative to the end
  */
 - (off_t)lowlevelSeekToOffsetRelativeToEnd: (off_t)offset;
 @end

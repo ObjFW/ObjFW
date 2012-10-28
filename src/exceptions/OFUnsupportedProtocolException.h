@@ -18,8 +18,8 @@
 
 @class OFURL;
 
-/**
- * \brief An exception indicating that the protocol specified by the URL is not
+/*!
+ * @brief An exception indicating that the protocol specified by the URL is not
  *	  supported.
  */
 @interface OFUnsupportedProtocolException: OFException
@@ -31,26 +31,26 @@
 @property (readonly, retain, nonatomic) OFURL *URL;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param url The URL whose protocol is unsupported
- * \return A new unsupported protocol exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param url The URL whose protocol is unsupported
+ * @return A new unsupported protocol exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			       URL: (OFURL*)url;
 
-/**
+/*!
  * Initializes an already allocated unsupported protocol exception
  *
- * \param class_ The class of the object which caused the exception
- * \param url The URL whose protocol is unsupported
- * \return An initialized unsupported protocol exception
+ * @param class_ The class of the object which caused the exception
+ * @param url The URL whose protocol is unsupported
+ * @return An initialized unsupported protocol exception
  */
 - initWithClass: (Class)class_
 	    URL: (OFURL*)url;
 
-/**
- * \return The URL whose protocol is unsupported
+/*!
+ * @return The URL whose protocol is unsupported
  */
 - (OFURL*)URL;
 @end

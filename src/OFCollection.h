@@ -16,27 +16,27 @@
 
 #import "OFEnumerator.h"
 
-/**
- * \brief A protocol with methods common for all collections.
+/*!
+ * @brief A protocol with methods common for all collections.
  */
 @protocol OFCollection <OFEnumerating, OFFastEnumeration>
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly) size_t count;
 #endif
 
-/**
- * \brief Returns the number of objects in the collection.
+/*!
+ * @brief Returns the number of objects in the collection.
  *
- * \return The number of objects in the collection
+ * @return The number of objects in the collection
  */
 - (size_t)count;
 
-/**
- * \brief Checks whether the collection contains an object equal to the
+/*!
+ * @brief Checks whether the collection contains an object equal to the
  *	  specified object.
  *
- * \param object The object which is checked for being in the collection
- * \return A boolean whether the collection contains the specified object
+ * @param object The object which is checked for being in the collection
+ * @return A boolean whether the collection contains the specified object
  */
 - (BOOL)containsObject: (id)object;
 @end

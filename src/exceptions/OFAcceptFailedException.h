@@ -18,8 +18,8 @@
 
 @class OFTCPSocket;
 
-/**
- * \brief An exception indicating that accepting a connection failed.
+/*!
+ * @brief An exception indicating that accepting a connection failed.
  */
 @interface OFAcceptFailedException: OFException
 {
@@ -32,31 +32,31 @@
 @property (readonly) int errNo;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param socket The socket which could not accept a connection
- * \return A new accept failed exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param socket The socket which could not accept a connection
+ * @return A new accept failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    socket: (OFTCPSocket*)socket;
 
-/**
+/*!
  * Initializes an already allocated accept failed exception.
  *
- * \param class_ The class of the object which caused the exception
- * \param socket The socket which could not accept a connection
- * \return An initialized accept failed exception
+ * @param class_ The class of the object which caused the exception
+ * @param socket The socket which could not accept a connection
+ * @return An initialized accept failed exception
  */
 - initWithClass: (Class)class_
 	 socket: (OFTCPSocket*)socket;
 
-/**
- * \return The socket which could not accept a connection
+/*!
+ * @return The socket which could not accept a connection
  */
 - (OFTCPSocket*)socket;
 
-/**
- * \return The errno from when the exception was created
+/*!
+ * @return The errno from when the exception was created
  */
 - (int)errNo;
 @end

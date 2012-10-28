@@ -18,8 +18,8 @@
 
 @class OFCondition;
 
-/**
- * \brief An exception indicating signaling a condition failed.
+/*!
+ * @brief An exception indicating signaling a condition failed.
  */
 @interface OFConditionSignalFailedException: OFException
 {
@@ -30,26 +30,26 @@
 @property (readonly, retain, nonatomic) OFCondition *condition;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param condition The condition which could not be signaled
- * \return A new condition signal failed exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param condition The condition which could not be signaled
+ * @return A new condition signal failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			 condition: (OFCondition*)condition;
 
-/**
+/*!
  * Initializes an already allocated condition signal failed exception.
  *
- * \param class_ The class of the object which caused the exception
- * \param condition The condition which could not be signaled
- * \return An initialized condition signal failed exception
+ * @param class_ The class of the object which caused the exception
+ * @param condition The condition which could not be signaled
+ * @return An initialized condition signal failed exception
  */
 - initWithClass: (Class)class_
       condition: (OFCondition*)condition;
 
-/**
- * \return The condition which could not be signaled
+/*!
+ * @return The condition which could not be signaled
  */
 - (OFCondition*)condition;
 @end

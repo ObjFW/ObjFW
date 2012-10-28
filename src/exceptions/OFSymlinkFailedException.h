@@ -17,8 +17,8 @@
 #import "OFException.h"
 
 #ifndef _WIN32
-/**
- * \brief An exception indicating that creating a symlink failed.
+/*!
+ * @brief An exception indicating that creating a symlink failed.
  */
 @interface OFSymlinkFailedException: OFException
 {
@@ -33,40 +33,40 @@
 @property (readonly) int errNo;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param source The source for the symlink
- * \param destination The destination for the symlink
- * \return A new symlink failed exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param source The source for the symlink
+ * @param destination The destination for the symlink
+ * @return A new symlink failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			sourcePath: (OFString*)source
 		   destinationPath: (OFString*)destination;
 
-/**
+/*!
  * Initializes an already allocated symlink failed exception.
  *
- * \param class_ The class of the object which caused the exception
- * \param source The source for the symlink
- * \param destination The destination for the symlink
- * \return An initialized symlink failed exception
+ * @param class_ The class of the object which caused the exception
+ * @param source The source for the symlink
+ * @param destination The destination for the symlink
+ * @return An initialized symlink failed exception
  */
 -   initWithClass: (Class)class_
        sourcePath: (OFString*)source
   destinationPath: (OFString*)destination;
 
-/**
- * \return The errno from when the exception was created
+/*!
+ * @return The errno from when the exception was created
  */
 - (int)errNo;
 
-/**
- * \return A string with the source for the symlink
+/*!
+ * @return A string with the source for the symlink
  */
 - (OFString*)sourcePath;
 
-/**
- * \return A string with the destination for the symlink
+/*!
+ * @return A string with the destination for the symlink
  */
 - (OFString*)destinationPath;
 @end

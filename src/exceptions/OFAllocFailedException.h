@@ -18,8 +18,8 @@
 
 @class OFString;
 
-/**
- * \brief An exception indicating an object could not be allocated.
+/*!
+ * @brief An exception indicating an object could not be allocated.
  *
  * This exception is preallocated, as if there's no memory, no exception can
  * be allocated of course. That's why you shouldn't and even can't deallocate
@@ -31,8 +31,8 @@
  * allowed to allocate ANY memory.
  */
 @interface OFAllocFailedException: OFObject
-/**
- * \return A description of the exception
+/*!
+ * @return A description of the exception
  */
 - (OFString*)description;
 @end

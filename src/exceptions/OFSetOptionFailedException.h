@@ -18,8 +18,8 @@
 
 @class OFStream;
 
-/**
- * \brief An exception indicating that setting an option for a stream failed.
+/*!
+ * @brief An exception indicating that setting an option for a stream failed.
  */
 @interface OFSetOptionFailedException: OFException
 {
@@ -30,24 +30,24 @@
 @property (readonly, retain, nonatomic) OFStream *stream;
 #endif
 
-/**
- * \param stream The stream for which the option could not be set
- * \return A new set option failed exception
+/*!
+ * @param stream The stream for which the option could not be set
+ * @return A new set option failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    stream: (OFStream*)stream;
 
-/**
+/*!
  * Initializes an already allocated set option failed exception.
  *
- * \param stream The stream for which the option could not be set
- * \return An initialized set option failed exception
+ * @param stream The stream for which the option could not be set
+ * @return An initialized set option failed exception
  */
 - initWithClass: (Class)class_
 	 stream: (OFStream*)stream;
 
-/**
- * \return The stream for which the option could not be set
+/*!
+ * @return The stream for which the option could not be set
  */
 - (OFStream*)stream;
 @end

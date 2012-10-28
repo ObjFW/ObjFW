@@ -16,28 +16,28 @@
 
 #import "OFXMLNode.h"
 
-/**
- * \brief A class for representing XML comments.
+/*!
+ * @brief A class for representing XML comments.
  */
 @interface OFXMLComment: OFXMLNode
 {
 	OFString *comment;
 }
 
-/**
- * \brief Creates a new OFXMLComment with the specified string.
+/*!
+ * @brief Creates a new OFXMLComment with the specified string.
  *
- * \param string The string for the comment
- * \return A new OFXMLComment
+ * @param string The string for the comment
+ * @return A new OFXMLComment
  */
 + (instancetype)commentWithString: (OFString*)string;
 
-/**
- * \brief Initializes an already allocated OFXMLComment with the specified
+/*!
+ * @brief Initializes an already allocated OFXMLComment with the specified
  *	  string.
  *
- * \param string The string for the comment
- * \return An initialized OFXMLComment
+ * @param string The string for the comment
+ * @return An initialized OFXMLComment
  */
 - initWithString: (OFString*)string;
 @end

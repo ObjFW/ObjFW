@@ -23,8 +23,8 @@
 # include <winsock2.h>
 #endif
 
-/**
- * \brief A class which provides functions to create and use stream sockets.
+/*!
+ * @brief A class which provides functions to create and use stream sockets.
  */
 @interface OFStreamSocket: OFStream
 {
@@ -32,10 +32,10 @@
 	BOOL atEndOfStream;
 }
 
-/**
- * \brief Returns a new, autoreleased OFTCPSocket.
+/*!
+ * @brief Returns a new, autoreleased OFTCPSocket.
  *
- * \return A new, autoreleased OFTCPSocket
+ * @return A new, autoreleased OFTCPSocket
  */
 + (instancetype)socket;
 @end

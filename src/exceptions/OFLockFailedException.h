@@ -17,8 +17,8 @@
 #import "OFException.h"
 #import "OFLocking.h"
 
-/**
- * \brief An exception indicating that locking a lock failed.
+/*!
+ * @brief An exception indicating that locking a lock failed.
  */
 @interface OFLockFailedException: OFException
 {
@@ -29,26 +29,26 @@
 @property (readonly, retain, nonatomic) id <OFLocking> lock;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param lock The lock which could not be locked
- * \return A new lock failed exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param lock The lock which could not be locked
+ * @return A new lock failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			      lock: (id <OFLocking>)lock;
 
-/**
+/*!
  * Initializes an already allocated lock failed exception.
  *
- * \param class_ The class of the object which caused the exception
- * \param lock The lock which could not be locked
- * \return An initialized lock failed exception
+ * @param class_ The class of the object which caused the exception
+ * @param lock The lock which could not be locked
+ * @return An initialized lock failed exception
  */
 - initWithClass: (Class)class_
 	   lock: (id <OFLocking>)lock;
 
-/**
- * \param The lock which could not be locked
+/*!
+ * @param The lock which could not be locked
  */
 - (id <OFLocking>)lock;
 @end

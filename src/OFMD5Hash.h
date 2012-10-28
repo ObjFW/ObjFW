@@ -18,8 +18,8 @@
 
 #define OF_MD5_DIGEST_SIZE  16
 
-/**
- * \brief A class which provides functions to create an MD5 hash.
+/*!
+ * @brief A class which provides functions to create an MD5 hash.
  */
 @interface OFMD5Hash: OFHash
 {

@@ -25,13 +25,13 @@ extern int _OFString_JSONValue_reference;
 #endif
 
 @interface OFString (JSONValue)
-/**
- * \brief Creates an object from the JSON value of the string.
+/*!
+ * @brief Creates an object from the JSON value of the string.
  *
- * \note This also allows parsing JSON5, an extension of JSON. See
+ * @note This also allows parsing JSON5, an extension of JSON. See
  *	 http://json5.org/ for more details.
  *
- * \warning Although not specified by the JSON specification, this can also
+ * @warning Although not specified by the JSON specification, this can also
  *          return primitives like strings and numbers. The rationale behind
  *          this is that most JSON parsers allow JSON data just consisting of a
  *          single primitive, leading to realworld JSON files sometimes only
@@ -40,7 +40,7 @@ extern int _OFString_JSONValue_reference;
  *          want your program to terminate due to a message not understood, but
  *          instead check the returned object using -[isKindOfClass:].
  *
- * \return An object
+ * @return An object
  */
 - (id)JSONValue;
 @end

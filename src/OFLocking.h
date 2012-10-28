@@ -16,24 +16,24 @@
 
 #import "OFObject.h"
 
-/**
- * \brief A protocol for locks.
+/*!
+ * @brief A protocol for locks.
  */
 @protocol OFLocking <OFObject>
-/**
- * \brief Locks the lock.
+/*!
+ * @brief Locks the lock.
  */
 - (void)lock;
 
-/**
- * \brief Tries to lock the lock.
+/*!
+ * @brief Tries to lock the lock.
  *
- * \return A boolean whether the lock could be locked
+ * @return A boolean whether the lock could be locked
  */
 - (BOOL)tryLock;
 
-/**
- * \brief Unlocks the lock.
+/*!
+ * @brief Unlocks the lock.
  */
 - (void)unlock;
 @end

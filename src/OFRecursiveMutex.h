@@ -19,8 +19,8 @@
 
 #import "threading.h"
 
-/**
- * \brief A class for creating mutual exclusions which can be entered
+/*!
+ * @brief A class for creating mutual exclusions which can be entered
  *	  recursively.
  */
 @interface OFRecursiveMutex: OFObject <OFLocking>
@@ -29,10 +29,10 @@
 	BOOL initialized;
 }
 
-/**
- * \brief Creates a new recursive mutex.
+/*!
+ * @brief Creates a new recursive mutex.
  *
- * \return A new autoreleased recursive mutex.
+ * @return A new autoreleased recursive mutex.
  */
 + (instancetype)mutex;
 @end

@@ -21,23 +21,23 @@ typedef void (^of_counted_set_enumeration_block_t)(id object, size_t count,
     BOOL *stop);
 #endif
 
-/**
- * \brief An abstract class for a mutable unordered set of objects, counting how
+/*!
+ * @brief An abstract class for a mutable unordered set of objects, counting how
  *	  often it contains an object.
  */
 @interface OFCountedSet: OFMutableSet
-/**
- * \brief Returns how often the object is in the set.
+/*!
+ * @brief Returns how often the object is in the set.
  *
- * \return How often the object is in the set
+ * @return How often the object is in the set
  */
 - (size_t)countForObject: (id)object;
 
 #ifdef OF_HAVE_BLOCKS
-/**
- * \brief Executes a block for each object in the set.
+/*!
+ * @brief Executes a block for each object in the set.
  *
- * \param block The block to execute for each object in the set
+ * @param block The block to execute for each object in the set
  */
 - (void)enumerateObjectsAndCountUsingBlock:
     (of_counted_set_enumeration_block_t)block;

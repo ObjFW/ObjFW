@@ -18,8 +18,8 @@
 
 @class OFString;
 
-/**
- * \brief A representation of an attribute of an XML element as an object.
+/*!
+ * @brief A representation of an attribute of an XML element as an object.
  */
 @interface OFXMLAttribute: OFXMLNode
 {
@@ -35,41 +35,41 @@
 @property (readonly, copy) OFString *stringValue;
 #endif
 
-/**
- * \brief Creates a new XML attribute.
+/*!
+ * @brief Creates a new XML attribute.
  *
- * \param name The name of the attribute
- * \param ns The namespace of the attribute
- * \param value The string value of the attribute
- * \return A new autoreleased OFXMLAttribute with the specified parameters
+ * @param name The name of the attribute
+ * @param ns The namespace of the attribute
+ * @param value The string value of the attribute
+ * @return A new autoreleased OFXMLAttribute with the specified parameters
  */
 + (instancetype)attributeWithName: (OFString*)name
 			namespace: (OFString*)ns
 		      stringValue: (OFString*)value;
 
-/**
- * \brief Initializes an already allocated OFXMLAttribute.
+/*!
+ * @brief Initializes an already allocated OFXMLAttribute.
  *
- * \param name The name of the attribute
- * \param ns The namespace of the attribute
- * \param value The string value of the attribute
- * \return An initialized OFXMLAttribute with the specified parameters
+ * @param name The name of the attribute
+ * @param ns The namespace of the attribute
+ * @param value The string value of the attribute
+ * @return An initialized OFXMLAttribute with the specified parameters
  */
 - initWithName: (OFString*)name
      namespace: (OFString*)ns
    stringValue: (OFString*)value;
 
-/**
- * \brief Returns the name of the attribute as an autoreleased OFString.
+/*!
+ * @brief Returns the name of the attribute as an autoreleased OFString.
  *
- * \return The name of the attribute as an autoreleased OFString
+ * @return The name of the attribute as an autoreleased OFString
  */
 - (OFString*)name;
 
-/**
- * \brief Returns the namespace of the attribute as an autoreleased OFString.
+/*!
+ * @brief Returns the namespace of the attribute as an autoreleased OFString.
  *
- * \return The namespace of the attribute as an autoreleased OFString
+ * @return The namespace of the attribute as an autoreleased OFString
  */
 - (OFString*)namespace;
 @end

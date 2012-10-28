@@ -16,8 +16,8 @@
 
 #import "OFException.h"
 
-/**
- * \brief An exception indicating that the encoding is invalid for this object.
+/*!
+ * @brief An exception indicating that the encoding is invalid for this object.
  */
 @interface OFInvalidEncodingException: OFException
 @end

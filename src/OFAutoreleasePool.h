@@ -16,8 +16,8 @@
 
 #import "OFObject.h"
 
-/**
- * \brief A pool that keeps track of objects to release.
+/*!
+ * @brief A pool that keeps track of objects to release.
  *
  * The OFAutoreleasePool class is a class that keeps track of objects that will
  * be released when the autorelease pool is released.
@@ -30,17 +30,17 @@
 	BOOL ignoreRelease;
 }
 
-/**
- * \brief Adds an object to the autorelease pool at the top of the
+/*!
+ * @brief Adds an object to the autorelease pool at the top of the
  *	  thread-specific autorelease pool stack.
  *
- * \param object The object to add to the autorelease pool
- * \return The object
+ * @param object The object to add to the autorelease pool
+ * @return The object
  */
 + (id)addObject: (id)object;
 
-/**
- * \brief Releases all objects in the autorelease pool.
+/*!
+ * @brief Releases all objects in the autorelease pool.
  *
  * This does not free the memory allocated to store pointers to the objects in
  * the pool, so reusing the pool does not allocate any memory until the previous
@@ -56,13 +56,13 @@
  */
 - (void)releaseObjects;
 
-/**
- * \brief Releases all objects in the autorelease pool and deallocates the pool.
+/*!
+ * @brief Releases all objects in the autorelease pool and deallocates the pool.
  */
 - (void)release;
 
-/**
- * \brief Releases all objects in the autorelease pool and deallocates the pool.
+/*!
+ * @brief Releases all objects in the autorelease pool and deallocates the pool.
  */
 - (void)drain;
 @end

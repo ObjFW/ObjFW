@@ -16,8 +16,8 @@
 
 #import "OFMutex.h"
 
-/**
- * \brief A class implementing a condition variable for thread synchronization.
+/*!
+ * @brief A class implementing a condition variable for thread synchronization.
  */
 @interface OFCondition: OFMutex
 {
@@ -25,26 +25,26 @@
 	BOOL conditionInitialized;
 }
 
-/**
- * \brief Creates a new condition.
+/*!
+ * @brief Creates a new condition.
  *
- * \return A new, autoreleased OFCondition
+ * @return A new, autoreleased OFCondition
  */
 + (instancetype)condition;
 
-/**
- * \brief Blocks the current thread until another thread calls -[signal] or
+/*!
+ * @brief Blocks the current thread until another thread calls -[signal] or
  *	  -[broadcast].
  */
 - (void)wait;
 
-/**
- * \brief Signals the next waiting thread to continue.
+/*!
+ * @brief Signals the next waiting thread to continue.
  */
 - (void)signal;
 
-/**
- * \brief Signals all threads to continue.
+/*!
+ * @brief Signals all threads to continue.
  */
 - (void)broadcast;
 @end

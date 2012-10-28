@@ -19,8 +19,8 @@
 
 #import "threading.h"
 
-/**
- * \brief A class for Thread Local Storage keys.
+/*!
+ * @brief A class for Thread Local Storage keys.
  */
 @interface OFTLSKey: OFObject
 {
@@ -32,29 +32,29 @@
 	BOOL initialized;
 }
 
-/**
- * \brief Creates a new Thread Local Storage key
+/*!
+ * @brief Creates a new Thread Local Storage key
  *
- * \return A new, autoreleased Thread Local Storage key
+ * @return A new, autoreleased Thread Local Storage key
  */
 + (instancetype)TLSKey;
 
-/**
- * \brief Creates a new Thread Local Storage key with the specified destructor.
+/*!
+ * @brief Creates a new Thread Local Storage key with the specified destructor.
  *
- * \param destructor A destructor that is called when the thread is terminated
- * \return A new autoreleased Thread Local Storage key
+ * @param destructor A destructor that is called when the thread is terminated
+ * @return A new autoreleased Thread Local Storage key
  */
 + (instancetype)TLSKeyWithDestructor: (void(*)(id))destructor;
 
 + (void)OF_callAllDestructors;
 
-/**
- * \brief Initializes an already allocated Thread Local Storage Key with the
+/*!
+ * @brief Initializes an already allocated Thread Local Storage Key with the
  *	  specified destructor.
  *
- * \param destructor A destructor that is called when the thread is terminated
- * \return An initialized Thread Local Storage key
+ * @param destructor A destructor that is called when the thread is terminated
+ * @return An initialized Thread Local Storage key
  */
 - initWithDestructor: (void(*)(id))destructor;
 @end

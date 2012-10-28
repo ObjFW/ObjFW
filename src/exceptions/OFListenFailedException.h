@@ -18,8 +18,8 @@
 
 @class OFTCPSocket;
 
-/**
- * \brief An exception indicating that listening on the socket failed.
+/*!
+ * @brief An exception indicating that listening on the socket failed.
  */
 @interface OFListenFailedException: OFException
 {
@@ -34,40 +34,40 @@
 @property (readonly) int errNo;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param socket The socket which failed to listen
- * \param backlog The requested size of the back log
- * \return A new listen failed exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param socket The socket which failed to listen
+ * @param backlog The requested size of the back log
+ * @return A new listen failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    socket: (OFTCPSocket*)socket
 			   backLog: (int)backlog;
 
-/**
+/*!
  * Initializes an already allocated listen failed exception
  *
- * \param class_ The class of the object which caused the exception
- * \param socket The socket which failed to listen
- * \param backlog The requested size of the back log
- * \return An initialized listen failed exception
+ * @param class_ The class of the object which caused the exception
+ * @param socket The socket which failed to listen
+ * @param backlog The requested size of the back log
+ * @return An initialized listen failed exception
  */
 - initWithClass: (Class)class_
 	 socket: (OFTCPSocket*)socket
 	backLog: (int)backlog;
 
-/**
- * \return The socket which failed to listen
+/*!
+ * @return The socket which failed to listen
  */
 - (OFTCPSocket*)socket;
 
-/**
- * \return The requested back log.
+/*!
+ * @return The requested back log.
  */
 - (int)backLog;
 
-/**
- * \return The errno from when the exception was created
+/*!
+ * @return The errno from when the exception was created
  */
 - (int)errNo;
 @end

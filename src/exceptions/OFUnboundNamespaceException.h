@@ -16,8 +16,8 @@
 
 #import "OFException.h"
 
-/**
- * \brief An exception indicating an attempt to use an unbound namespace.
+/*!
+ * @brief An exception indicating an attempt to use an unbound namespace.
  */
 @interface OFUnboundNamespaceException: OFException
 {
@@ -30,49 +30,49 @@
 @property (readonly, copy, nonatomic) OFString *prefix;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param ns The namespace which is unbound
- * \return A new unbound namespace exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param ns The namespace which is unbound
+ * @return A new unbound namespace exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			 namespace: (OFString*)ns;
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param prefix The prefix which is unbound
- * \return A new unbound namespace exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param prefix The prefix which is unbound
+ * @return A new unbound namespace exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    prefix: (OFString*)prefix;
 
-/**
+/*!
  * Initializes an already allocated unbound namespace exception
  *
- * \param class_ The class of the object which caused the exception
- * \param ns The namespace which is unbound
- * \return An initialized unbound namespace exception
+ * @param class_ The class of the object which caused the exception
+ * @param ns The namespace which is unbound
+ * @return An initialized unbound namespace exception
  */
 - initWithClass: (Class)class_
       namespace: (OFString*)ns;
 
-/**
+/*!
  * Initializes an already allocated unbound namespace exception
  *
- * \param class_ The class of the object which caused the exception
- * \param prefix The prefix which is unbound
- * \return An initialized unbound namespace exception
+ * @param class_ The class of the object which caused the exception
+ * @param prefix The prefix which is unbound
+ * @return An initialized unbound namespace exception
  */
 - initWithClass: (Class)class_
 	 prefix: (OFString*)prefix;
 
-/**
- * \return The unbound namespace
+/*!
+ * @return The unbound namespace
  */
 - (OFString*)namespace;
 
-/**
- * \return The unbound prefix
+/*!
+ * @return The unbound prefix
  */
 - (OFString*)prefix;
 @end

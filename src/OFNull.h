@@ -18,14 +18,14 @@
 #import "OFSerialization.h"
 #import "OFJSONRepresentation.h"
 
-/**
- * \brief A class for representing null values in collections.
+/*!
+ * @brief A class for representing null values in collections.
  */
 @interface OFNull: OFObject <OFCopying, OFSerialization, OFJSONRepresentation>
-/**
- * \brief Returns an OFNull singleton.
+/*!
+ * @brief Returns an OFNull singleton.
  *
- * \return An OFNull singleton
+ * @return An OFNull singleton
  */
 + (OFNull*)null;
 @end

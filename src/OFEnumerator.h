@@ -18,32 +18,32 @@
 
 @class OFEnumerator;
 
-/**
- * \brief A protocol for getting an enumerator for the object.
+/*!
+ * @brief A protocol for getting an enumerator for the object.
  */
 @protocol OFEnumerating
-/**
- * \brief Returns an OFEnumerator to enumerate through all objects of the
+/*!
+ * @brief Returns an OFEnumerator to enumerate through all objects of the
  *	  collection.
  *
- * \returns An OFEnumerator to enumerate through all objects of the collection
+ * @returns An OFEnumerator to enumerate through all objects of the collection
  */
 - (OFEnumerator*)objectEnumerator;
 @end
 
-/**
- * \brief A class which provides methods to enumerate through collections.
+/*!
+ * @brief A class which provides methods to enumerate through collections.
  */
 @interface OFEnumerator: OFObject
-/**
- * \brief Returns the next object.
+/*!
+ * @brief Returns the next object.
  *
- * \return The next object
+ * @return The next object
  */
 - (id)nextObject;
 
-/**
- * \brief Resets the enumerator, so the next call to nextObject returns the
+/*!
+ * @brief Resets the enumerator, so the next call to nextObject returns the
  *	  first object again.
  */
 - (void)reset;
@@ -57,8 +57,8 @@
  */
 #define of_fast_enumeration_state_t NSFastEnumerationState
 #ifndef NSINTEGER_DEFINED
-/**
- * \brief State information for fast enumerations.
+/*!
+ * @brief State information for fast enumerations.
  */
 typedef struct of_fast_enumeration_state_t {
 	/// Arbitrary state information for the enumeration
@@ -72,21 +72,21 @@ typedef struct of_fast_enumeration_state_t {
 } of_fast_enumeration_state_t;
 #endif
 
-/**
- * \brief A protocol for fast enumeration.
+/*!
+ * @brief A protocol for fast enumeration.
  *
  * The OFFastEnumeration protocol needs to be implemented by all classes
  * supporting fast enumeration.
  */
 @protocol OFFastEnumeration
-/**
- * \brief A method which is called by the code produced by the compiler when
+/*!
+ * @brief A method which is called by the code produced by the compiler when
  *	  doing a fast enumeration.
  *
- * \param state Context information for the enumeration
- * \param objects A pointer to an array where to put the objects
- * \param count The number of objects that can be stored at objects
- * \return The number of objects returned in objects or 0 when the enumeration
+ * @param state Context information for the enumeration
+ * @param objects A pointer to an array where to put the objects
+ * @param count The number of objects that can be stored at objects
+ * @return The number of objects returned in objects or 0 when the enumeration
  *	   finished.
  */
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state

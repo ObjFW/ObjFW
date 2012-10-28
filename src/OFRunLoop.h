@@ -23,8 +23,8 @@
 @class OFTimer;
 @class OFMutableDictionary;
 
-/**
- * \brief A class providing a run loop for the application and its processes.
+/*!
+ * @brief A class providing a run loop for the application and its processes.
  */
 @interface OFRunLoop: OFObject
 {
@@ -33,17 +33,17 @@
 	OFMutableDictionary *readQueues;
 }
 
-/**
- * \brief Returns the main run loop.
+/*!
+ * @brief Returns the main run loop.
  *
- * \return The main run loop
+ * @return The main run loop
  */
 + (OFRunLoop*)mainRunLoop;
 
-/**
- * \brief Returns the run loop for the current thread.
+/*!
+ * @brief Returns the run loop for the current thread.
  *
- * \return The run loop for the current thread
+ * @return The run loop for the current thread
  */
 + (OFRunLoop*)currentRunLoop;
 
@@ -81,15 +81,15 @@
 				block: (of_tcpsocket_async_accept_block_t)block;
 #endif
 
-/**
- * \brief Adds an OFTimer to the run loop.
+/*!
+ * @brief Adds an OFTimer to the run loop.
  *
- * \param timer The timer to add
+ * @param timer The timer to add
  */
 - (void)addTimer: (OFTimer*)timer;
 
-/**
- * \brief Starts the run loop.
+/*!
+ * @brief Starts the run loop.
  */
 - (void)run;
 @end

@@ -17,8 +17,8 @@
 #import "OFException.h"
 #import "OFLocking.h"
 
-/**
- * \brief An exception indicating that a lock is still locked.
+/*!
+ * @brief An exception indicating that a lock is still locked.
  */
 @interface OFStillLockedException: OFException
 {
@@ -29,26 +29,26 @@
 @property (readonly, retain, nonatomic) id <OFLocking> lock;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param lock The lock which is still locked
- * \return A new still locked exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param lock The lock which is still locked
+ * @return A new still locked exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			      lock: (id <OFLocking>)lock;
 
-/**
+/*!
  * Initializes an already allocated still locked exception.
  *
- * \param class_ The class of the object which caused the exception
- * \param lock The lock which is still locked
- * \return An initialized still locked exception
+ * @param class_ The class of the object which caused the exception
+ * @param lock The lock which is still locked
+ * @return An initialized still locked exception
  */
 - initWithClass: (Class)class_
 	   lock: (id <OFLocking>)lock;
 
-/**
- * \return The lock which is still locked
+/*!
+ * @return The lock which is still locked
  */
 - (id <OFLocking>)lock;
 @end

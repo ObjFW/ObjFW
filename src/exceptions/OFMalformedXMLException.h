@@ -18,8 +18,8 @@
 
 @class OFXMLParser;
 
-/**
- * \brief An exception indicating that a parser encountered malformed XML.
+/*!
+ * @brief An exception indicating that a parser encountered malformed XML.
  */
 @interface OFMalformedXMLException: OFException
 {
@@ -30,24 +30,24 @@
 @property (readonly, retain, nonatomic) OFXMLParser *parser;
 #endif
 
-/**
- * \param parser The parser which encountered malformed XML
- * \return A new malformed XML exception
+/*!
+ * @param parser The parser which encountered malformed XML
+ * @return A new malformed XML exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    parser: (OFXMLParser*)parser;
 
-/**
+/*!
  * Initializes an already allocated malformed XML exception.
  *
- * \param parser The parser which encountered malformed XML
- * \return An initialized malformed XML exception
+ * @param parser The parser which encountered malformed XML
+ * @return An initialized malformed XML exception
  */
 - initWithClass: (Class)class_
 	 parser: (OFXMLParser*)parser;
 
-/**
- * \return The parser which encountered malformed XML
+/*!
+ * @return The parser which encountered malformed XML
  */
 - (OFXMLParser*)parser;
 @end

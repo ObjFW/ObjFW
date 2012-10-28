@@ -18,8 +18,8 @@
 
 @class OFTCPSocket;
 
-/**
- * \brief An exception indicating the translation of an address failed.
+/*!
+ * @brief An exception indicating the translation of an address failed.
  */
 @interface OFAddressTranslationFailedException: OFException
 {
@@ -34,40 +34,40 @@
 @property (readonly) int errNo;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param socket The socket which could not translate the address
- * \param host The host for which translation was requested
- * \return A new address translation failed exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param socket The socket which could not translate the address
+ * @param host The host for which translation was requested
+ * @return A new address translation failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    socket: (OFTCPSocket*)socket
 			      host: (OFString*)host;
 
-/**
+/*!
  * Initializes an already allocated address translation failed exception.
  *
- * \param class_ The class of the object which caused the exception
- * \param socket The socket which could not translate the address
- * \param host The host for which translation was requested
- * \return An initialized address translation failed exception
+ * @param class_ The class of the object which caused the exception
+ * @param socket The socket which could not translate the address
+ * @param host The host for which translation was requested
+ * @return An initialized address translation failed exception
  */
 - initWithClass: (Class)class_
 	 socket: (OFTCPSocket*)socket
 	   host: (OFString*)host;
 
-/**
- * \return The socket which could not translate the address
+/*!
+ * @return The socket which could not translate the address
  */
 - (OFTCPSocket*)socket;
 
-/**
+/*!
  * /return The host for which translation was requested
  */
 - (OFString*)host;
 
-/**
- * \return The errno from when the exception was created
+/*!
+ * @return The errno from when the exception was created
  */
 - (int)errNo;
 @end

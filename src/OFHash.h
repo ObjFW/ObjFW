@@ -16,8 +16,8 @@
 
 #import "OFObject.h"
 
-/**
- * \brief A base class for classes providing hash functions.
+/*!
+ * @brief A base class for classes providing hash functions.
  */
 @interface OFHash: OFObject
 {
@@ -28,50 +28,50 @@
 @property (readonly, getter=isCalculated) BOOL calculated;
 #endif
 
-/**
- * \brief Creates a new hash.
+/*!
+ * @brief Creates a new hash.
  *
- * \return A new autoreleased OFHash
+ * @return A new autoreleased OFHash
  */
 + (instancetype)hash;
 
-/**
- * \brief Returns the digest size of the hash, in bytes.
+/*!
+ * @brief Returns the digest size of the hash, in bytes.
  *
- * \return The digest size of the hash, in bytes
+ * @return The digest size of the hash, in bytes
  */
 + (size_t)digestSize;
 
-/**
- * \brief Returns the block size of the hash, in bytes.
+/*!
+ * @brief Returns the block size of the hash, in bytes.
  *
- * \return The block size of the hash, in bytes
+ * @return The block size of the hash, in bytes
  */
 + (size_t)blockSize;
 
-/**
- * \brief Adds a buffer to the hash to be calculated.
+/*!
+ * @brief Adds a buffer to the hash to be calculated.
  *
- * \param buffer The buffer which should be included into the calculation
- * \param length The length of the buffer
+ * @param buffer The buffer which should be included into the calculation
+ * @param length The length of the buffer
  */
 - (void)updateWithBuffer: (const void*)buffer
 		  length: (size_t)length;
 
-/**
- * \brief Returns a buffer containing the hash.
+/*!
+ * @brief Returns a buffer containing the hash.
  *
  * The size of the buffer depends on the hash used. The buffer is part of the
  * receiver's memory pool.
  *
- * \return A buffer containing the hash
+ * @return A buffer containing the hash
  */
 - (uint8_t*)digest OF_RETURNS_INNER_POINTER;
 
-/**
- * \brief Returns a boolean whether the hash has already been calculated.
+/*!
+ * @brief Returns a boolean whether the hash has already been calculated.
  *
- * \return A boolean whether the hash has already been calculated
+ * @return A boolean whether the hash has already been calculated
  */
 - (BOOL)isCalculated;
 @end

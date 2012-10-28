@@ -16,8 +16,8 @@
 
 #import "OFException.h"
 
-/**
- * \brief An exception indicating a JSON representation is invalid.
+/*!
+ * @brief An exception indicating a JSON representation is invalid.
  */
 @interface OFInvalidJSONException: OFException
 {
@@ -28,26 +28,26 @@
 @property (readonly) size_t line;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param line The line in which the parsing error encountered
- * \return A new invalid JSON exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param line The line in which the parsing error encountered
+ * @return A new invalid JSON exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			      line: (size_t)line;
 
-/**
+/*!
  * Initializes an already allocated invalid JSON exception.
  *
- * \param class_ The class of the object which caused the exception
- * \param line The line in which the parsing error encountered
- * \return An initialized invalid JSON exception
+ * @param class_ The class of the object which caused the exception
+ * @param line The line in which the parsing error encountered
+ * @return An initialized invalid JSON exception
  */
 - initWithClass: (Class)class_
 	   line: (size_t)line;
 
-/**
- * \return The line in which parsing the JSON representation failed
+/*!
+ * @return The line in which parsing the JSON representation failed
  */
 - (size_t)line;
 @end

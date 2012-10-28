@@ -19,8 +19,8 @@
 @class OFHTTPRequest;
 @class OFHTTPRequestResult;
 
-/**
- * \brief An exception indicating that a HTTP request failed.
+/*!
+ * @brief An exception indicating that a HTTP request failed.
  */
 @interface OFHTTPRequestFailedException: OFException
 {
@@ -33,35 +33,35 @@
 @property (readonly, retain, nonatomic) OFHTTPRequestResult *result;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param request The HTTP request which failed
- * \param result The result of the failed HTTP request
- * \return A new HTTP request failed exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param request The HTTP request which failed
+ * @param result The result of the failed HTTP request
+ * @return A new HTTP request failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			   request: (OFHTTPRequest*)request
 			    result: (OFHTTPRequestResult*)result;
 
-/**
+/*!
  * Initializes an already allocated HTTP request failed exception
  *
- * \param class_ The class of the object which caused the exception
- * \param request The HTTP request which failed
- * \param result The result of the failed HTTP request
- * \return A new HTTP request failed exception
+ * @param class_ The class of the object which caused the exception
+ * @param request The HTTP request which failed
+ * @param result The result of the failed HTTP request
+ * @return A new HTTP request failed exception
  */
 - initWithClass: (Class)class_
 	request: (OFHTTPRequest*)request
 	 result: (OFHTTPRequestResult*)result;
 
-/**
- * \return The HTTP request which failed
+/*!
+ * @return The HTTP request which failed
  */
 - (OFHTTPRequest*)request;
 
-/**
- * \return The result of the failed HTTP request
+/*!
+ * @return The result of the failed HTTP request
  */
 - (OFHTTPRequestResult*)result;
 @end

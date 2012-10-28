@@ -20,8 +20,8 @@
 
 @class OFSeekableStream;
 
-/**
- * \brief An exception indicating that seeking in a stream failed.
+/*!
+ * @brief An exception indicating that seeking in a stream failed.
  */
 @interface OFSeekFailedException: OFException
 {
@@ -38,47 +38,47 @@
 @property (readonly) int errNo;
 #endif
 
-/**
- * \param stream The stream for which seeking failed
- * \param offset The offset to which seeking failed
- * \param whence To what the offset is relative
- * \return A new seek failed exception
+/*!
+ * @param stream The stream for which seeking failed
+ * @param offset The offset to which seeking failed
+ * @param whence To what the offset is relative
+ * @return A new seek failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    stream: (OFSeekableStream*)stream
 			    offset: (off_t)offset
 			    whence: (int)whence;
 
-/**
+/*!
  * Initializes an already allocated seek failed exception.
  *
- * \param stream The stream for which seeking failed
- * \param offset The offset to which seeking failed
- * \param whence To what the offset is relative
- * \return An initialized seek failed exception
+ * @param stream The stream for which seeking failed
+ * @param offset The offset to which seeking failed
+ * @param whence To what the offset is relative
+ * @return An initialized seek failed exception
  */
 - initWithClass: (Class)class_
 	 stream: (OFSeekableStream*)stream
 	 offset: (off_t)offset
 	 whence: (int)whence;
 
-/**
- * \return The stream for which seeking failed
+/*!
+ * @return The stream for which seeking failed
  */
 - (OFSeekableStream*)stream;
 
-/**
- * \return The offset to which seeking failed
+/*!
+ * @return The offset to which seeking failed
  */
 - (off_t)offset;
 
-/**
- * \return To what the offset is relative
+/*!
+ * @return To what the offset is relative
  */
 - (int)whence;
 
-/**
- * \return The errno from when the exception was created
+/*!
+ * @return The errno from when the exception was created
  */
 - (int)errNo;
 @end

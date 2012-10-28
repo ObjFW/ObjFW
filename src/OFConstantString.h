@@ -27,8 +27,8 @@ extern void *_OFConstantStringClassReference;
 # endif
 #endif
 
-/**
- * \brief A class for storing constant strings using the \@"" literal.
+/*!
+ * @brief A class for storing constant strings using the \@"" literal.
  */
 @interface OFConstantString: OFString
 {

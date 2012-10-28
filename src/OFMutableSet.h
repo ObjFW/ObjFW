@@ -16,48 +16,48 @@
 
 #import "OFSet.h"
 
-/**
- * \brief An abstract class for a mutable unordered set of unique objects.
+/*!
+ * @brief An abstract class for a mutable unordered set of unique objects.
  */
 @interface OFMutableSet: OFSet
-/**
- * \brief Adds the specified object to the set.
+/*!
+ * @brief Adds the specified object to the set.
  *
- * \param object The object to add to the set
+ * @param object The object to add to the set
  */
 - (void)addObject: (id)object;
 
-/**
- * \brief Removes the specified object from the set.
+/*!
+ * @brief Removes the specified object from the set.
  *
- * \param object The object to remove from the set
+ * @param object The object to remove from the set
  */
 - (void)removeObject: (id)object;
 
-/**
- * \brief Removes all objects from the receiver that are in the specified set.
+/*!
+ * @brief Removes all objects from the receiver that are in the specified set.
  *
- * \param set The set whose objects will be removed from the receiver
+ * @param set The set whose objects will be removed from the receiver
  */
 - (void)minusSet: (OFSet*)set;
 
-/**
- * \brief Removes all objects from the receiver that are not in the specified
+/*!
+ * @brief Removes all objects from the receiver that are not in the specified
  *	  set.
  *
- * \param set The set to intersect
+ * @param set The set to intersect
  */
 - (void)intersectSet: (OFSet*)set;
 
-/**
- * \brief Creates a union of the receiver and the specified set.
+/*!
+ * @brief Creates a union of the receiver and the specified set.
  *
- * \param set The set to create the union with
+ * @param set The set to create the union with
  */
 - (void)unionSet: (OFSet*)set;
 
-/**
- * \brief Converts the mutable set to an immutable set.
+/*!
+ * @brief Converts the mutable set to an immutable set.
  */
 - (void)makeImmutable;
 @end

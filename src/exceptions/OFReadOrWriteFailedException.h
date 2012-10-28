@@ -18,8 +18,8 @@
 
 @class OFStream;
 
-/**
- * \brief An exception indicating a read or write to a stream failed.
+/*!
+ * @brief An exception indicating a read or write to a stream failed.
  */
 @interface OFReadOrWriteFailedException: OFException
 {
@@ -35,42 +35,42 @@
 @property (readonly) int errNo;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param stream The stream which caused the read or write failed exception
- * \param length The requested length of the data that couldn't be read /
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param stream The stream which caused the read or write failed exception
+ * @param length The requested length of the data that couldn't be read /
  *		 written
- * \return A new open file failed exception
+ * @return A new open file failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    stream: (OFStream*)stream
 		   requestedLength: (size_t)length;
 
-/**
+/*!
  * Initializes an already allocated read or write failed exception.
  *
- * \param class_ The class of the object which caused the exception
- * \param stream The stream which caused the read or write failed exception
- * \param length The requested length of the data that couldn't be read /
+ * @param class_ The class of the object which caused the exception
+ * @param stream The stream which caused the read or write failed exception
+ * @param length The requested length of the data that couldn't be read /
  *		 written
- * \return A new open file failed exception
+ * @return A new open file failed exception
  */
 -   initWithClass: (Class)class_
 	   stream: (OFStream*)stream
   requestedLength: (size_t)length;
 
-/**
- * \return The stream which caused the read or write failed exception
+/*!
+ * @return The stream which caused the read or write failed exception
  */
 - (OFStream*)stream;
 
-/**
- * \return The requested length of the data that couldn't be read / written
+/*!
+ * @return The requested length of the data that couldn't be read / written
  */
 - (size_t)requestedLength;
 
-/**
- * \return The errno from when the exception was created
+/*!
+ * @return The errno from when the exception was created
  */
 - (int)errNo;
 @end

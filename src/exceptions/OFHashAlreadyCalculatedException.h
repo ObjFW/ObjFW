@@ -18,8 +18,8 @@
 
 @class OFHash;
 
-/**
- * \brief An exception indicating that the hash has already been calculated.
+/*!
+ * @brief An exception indicating that the hash has already been calculated.
  */
 @interface OFHashAlreadyCalculatedException: OFException
 {
@@ -30,26 +30,26 @@
 @property (readonly, retain, nonatomic) OFHash *hashObject;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param hash The hash which has already been calculated
- * \return A new hash already calculated exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param hash The hash which has already been calculated
+ * @return A new hash already calculated exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			      hash: (OFHash*)hash;
 
-/**
+/*!
  * Initializes an already allocated hash already calculated exception.
  *
- * \param class_ The class of the object which caused the exception
- * \param hash The hash which has already been calculated
- * \return An initialized hash already calculated exception
+ * @param class_ The class of the object which caused the exception
+ * @param hash The hash which has already been calculated
+ * @return An initialized hash already calculated exception
  */
 - initWithClass: (Class)class_
 	   hash: (OFHash*)hash;
 
-/**
- * \return The hash which has already been calculated
+/*!
+ * @return The hash which has already been calculated
  */
 - (OFHash*)hashObject;
 @end

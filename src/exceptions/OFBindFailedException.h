@@ -18,8 +18,8 @@
 
 @class OFTCPSocket;
 
-/**
- * \brief An exception indicating that binding a socket failed.
+/*!
+ * @brief An exception indicating that binding a socket failed.
  */
 @interface OFBindFailedException: OFException
 {
@@ -36,49 +36,49 @@
 @property (readonly) int errNo;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param socket The socket which could not be bound
- * \param host The host on which binding failed
- * \param port The port on which binding failed
- * \return A new bind failed exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param socket The socket which could not be bound
+ * @param host The host on which binding failed
+ * @param port The port on which binding failed
+ * @return A new bind failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    socket: (OFTCPSocket*)socket
 			      host: (OFString*)host
 			      port: (uint16_t)port;
 
-/**
+/*!
  * Initializes an already allocated bind failed exception.
  *
- * \param class_ The class of the object which caused the exception
- * \param socket The socket which could not be bound
- * \param host The host on which binding failed
- * \param port The port on which binding failed
- * \return An initialized bind failed exception
+ * @param class_ The class of the object which caused the exception
+ * @param socket The socket which could not be bound
+ * @param host The host on which binding failed
+ * @param port The port on which binding failed
+ * @return An initialized bind failed exception
  */
 - initWithClass: (Class)class_
 	 socket: (OFTCPSocket*)socket
 	   host: (OFString*)host
 	   port: (uint16_t)port;
 
-/**
- * \return The socket which could not be bound
+/*!
+ * @return The socket which could not be bound
  */
 - (OFTCPSocket*)socket;
 
-/**
- * \return The host on which binding failed
+/*!
+ * @return The host on which binding failed
  */
 - (OFString*)host;
 
-/**
- * \return The port on which binding failed
+/*!
+ * @return The port on which binding failed
  */
 - (uint16_t)port;
 
-/**
- * \return The errno from when the exception was created
+/*!
+ * @return The errno from when the exception was created
  */
 - (int)errNo;
 @end

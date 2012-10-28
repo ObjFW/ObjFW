@@ -16,8 +16,8 @@
 
 #import "OFException.h"
 
-/**
- * \brief An exception indicating the given value is out of range.
+/*!
+ * @brief An exception indicating the given value is out of range.
  */
 @interface OFOutOfRangeException: OFException
 @end

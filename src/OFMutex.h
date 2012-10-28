@@ -19,8 +19,8 @@
 
 #import "threading.h"
 
-/**
- * \brief A class for creating mutual exclusions.
+/*!
+ * @brief A class for creating mutual exclusions.
  */
 @interface OFMutex: OFObject <OFLocking>
 {
@@ -28,10 +28,10 @@
 	BOOL initialized;
 }
 
-/**
- * \brief Creates a new mutex.
+/*!
+ * @brief Creates a new mutex.
  *
- * \return A new autoreleased mutex.
+ * @return A new autoreleased mutex.
  */
 + (instancetype)mutex;
 @end

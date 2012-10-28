@@ -25,10 +25,10 @@ typedef void (^of_thread_pool_block_t)(void);
 @class OFCondition;
 @class OFThreadPoolJob;
 
-/**
- * \brief A class providing a pool of reusable threads.
+/*!
+ * @brief A class providing a pool of reusable threads.
  *
- * \note When the thread pool is released, all threads will terminate after
+ * @note When the thread pool is released, all threads will terminate after
  *	 they finish the job they are currently processing.
  */
 @interface OFThreadPool: OFObject
@@ -43,81 +43,81 @@ typedef void (^of_thread_pool_block_t)(void);
 	OFCondition *countCondition;
 }
 
-/**
- * \brief Returns a new thread pool with one thread for each core in the system.
+/*!
+ * @brief Returns a new thread pool with one thread for each core in the system.
  *
- * \warning If for some reason the number of cores in the system could not be
+ * @warning If for some reason the number of cores in the system could not be
  *	    determined, the pool will only have one thread!
  *
- * \return A new thread pool with one thread for each core in the system
+ * @return A new thread pool with one thread for each core in the system
  */
 + (instancetype)threadPool;
 
-/**
- * \brief Returns a new thread pool with the specified number of threads.
+/*!
+ * @brief Returns a new thread pool with the specified number of threads.
  *
- * \warning If for some reason the number of cores in the system could not be
+ * @warning If for some reason the number of cores in the system could not be
  *	    determined, the pool will only have one thread!
  *
- * \param size The number of threads for the pool
- * \return A new thread pool with the specified number of threads
+ * @param size The number of threads for the pool
+ * @return A new thread pool with the specified number of threads
  */
 + (instancetype)threadPoolWithSize: (size_t)size;
 
-/**
- * \brief Initializes an already allocated OFThreadPool with one thread for
+/*!
+ * @brief Initializes an already allocated OFThreadPool with one thread for
  *	  each core in the system.
  *
- * \warning If for some reason the number of cores in the system could not be
+ * @warning If for some reason the number of cores in the system could not be
  *	    determined, the pool will only have one thread!
  *
- * \return An initialized OFThreadPool with one thread for each core in the
+ * @return An initialized OFThreadPool with one thread for each core in the
  *	   system
  */
 - init;
 
-/**
- * \brief Initializes an already allocated OFThreadPool with the specified
+/*!
+ * @brief Initializes an already allocated OFThreadPool with the specified
  *	  number of threads.
  *
- * \warning If for some reason the number of cores in the system could not be
+ * @warning If for some reason the number of cores in the system could not be
  *	    determined, the pool will only have one thread!
  *
- * \param size The number of threads for the pool
- * \return An initialized OFThreadPool with the specified number of threads
+ * @param size The number of threads for the pool
+ * @return An initialized OFThreadPool with the specified number of threads
  */
 - initWithSize: (size_t)size;
 
-/**
- * \brief Execute the specified selector on the specified target with the
+/*!
+ * @brief Execute the specified selector on the specified target with the
  *	  specified object as soon as a thread is ready.
  *
- * \param target The target on which to perform the selector
- * \param selector The selector to perform on the target
- * \param object THe object with which the selector is performed on the target
+ * @param target The target on which to perform the selector
+ * @param selector The selector to perform on the target
+ * @param object THe object with which the selector is performed on the target
  */
 - (void)dispatchWithTarget: (id)target
 		  selector: (SEL)selector
 		    object: (id)object;
 
 #ifdef OF_HAVE_BLOCKS
-/**
- * \brief Executes the specified block as soon as a thread is ready.
+/*!
+ * @brief Executes the specified block as soon as a thread is ready.
  *
- * \param block The block to execute
+ * @param block The block to execute
  */
 - (void)dispatchWithBlock: (of_thread_pool_block_t)block;
 #endif
 
-/**
- * \brief Waits until all jobs are done.
+/*!
+ * @brief Waits until all jobs are done.
  */
 - (void)waitUntilDone;
 
-/**
- * \brief Returns the size of the thread pool.
+/*!
+ * @brief Returns the size of the thread pool.
  *
- * \return The size of the thread pool
+ * @return The size of the thread pool
  */
 - (size_t)size;
 @end

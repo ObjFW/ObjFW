@@ -21,8 +21,8 @@
 @class OFXMLElement;
 @class OFXMLElementBuilder;
 
-/**
- * \brief A protocol that needs to be implemented by delegates for
+/*!
+ * @brief A protocol that needs to be implemented by delegates for
  * OFXMLElementBuilder.
  */
 #ifndef OF_XML_ELEMENT_BUILDER_M
@@ -30,15 +30,15 @@
 #else
 @protocol OFXMLElementBuilderDelegate
 #endif
-/**
- * \brief This callback is called when the OFXMLElementBuilder built an element.
+/*!
+ * @brief This callback is called when the OFXMLElementBuilder built an element.
  *
  * If the OFXMLElementBuilder was used as a delegate for the OFXMLParser since
  * parsing started, this will return the complete document as an OFXMLElement
  * with all children.
  *
- * \param builder The builder which built an OFXMLElement
- * \param elem The OFXMLElement the OFXMLElementBuilder built
+ * @param builder The builder which built an OFXMLElement
+ * @param elem The OFXMLElement the OFXMLElementBuilder built
  */
 - (void)elementBuilder: (OFXMLElementBuilder*)builder
        didBuildElement: (OFXMLElement*)element;
@@ -47,21 +47,21 @@
 @optional
 #endif
 
-/**
- * \brief This callback is called when the OFXMLElementBuilder built an
+/*!
+ * @brief This callback is called when the OFXMLElementBuilder built an
  *	  OFXMLNode which is not inside an element.
  *
  * This is usually called for comments or whitespace character data before the
  * root element.
  *
- * \param builder The builder which built the OFXMLNode without parent
- * \param node The OFXMLNode the OFXMLElementBuilder built
+ * @param builder The builder which built the OFXMLNode without parent
+ * @param node The OFXMLNode the OFXMLElementBuilder built
  */
 -   (void)elementBuilder: (OFXMLElementBuilder*)builder
   didBuildParentlessNode: (OFXMLNode*)node;
 
-/**
- * \brief This callback is called when the OFXMLElementBuilder gets a close tag
+/*!
+ * @brief This callback is called when the OFXMLElementBuilder gets a close tag
  *	  which does not belong there.
  *
  * Most likely, the OFXMLElementBuilder was used to build XML only of a child
@@ -73,29 +73,29 @@
  * If this method is not implemented in the delegate, the default is to throw
  * an OFMalformedXMLException.
  *
- * \param builder The builder which did not expect the close tag
- * \param name The name of the close tag
- * \param prefix The prefix of the close tag
- * \param ns The namespace of the close tag
+ * @param builder The builder which did not expect the close tag
+ * @param name The name of the close tag
+ * @param prefix The prefix of the close tag
+ * @param ns The namespace of the close tag
  */
 - (void)elementBuilder: (OFXMLElementBuilder*)builder
   didNotExpectCloseTag: (OFString*)name
 	    withPrefix: (OFString*)prefix
 	     namespace: (OFString*)ns;
 
-/**
- * \brief This callback is called when the XML parser for the element builder
+/*!
+ * @brief This callback is called when the XML parser for the element builder
  *	  found an unknown entity.
  *
- * \param entity The name of the entity
- * \return The substitution for the entity
+ * @param entity The name of the entity
+ * @return The substitution for the entity
  */
 - (OFString*)elementBuilder: (OFXMLElementBuilder*)builder
     foundUnknownEntityNamed: (OFString*)entity;
 @end
 
-/**
- * \brief A class implementing the OFXMLParserDelegate protocol that can build
+/*!
+ * @brief A class implementing the OFXMLParserDelegate protocol that can build
  * OFXMLElements from the document parsed by the OFXMLParser.
  *
  * It can also be used to build OFXMLElements from parts of the document by
@@ -112,24 +112,24 @@
 @property (assign) id <OFXMLElementBuilderDelegate> delegate;
 #endif
 
-/**
- * \brief Creates a new element builder.
+/*!
+ * @brief Creates a new element builder.
  *
- * \return A new, autoreleased OFXMLElementBuilder
+ * @return A new, autoreleased OFXMLElementBuilder
  */
 + (instancetype)elementBuilder;
 
-/**
- * \brief Returns the delegate for the OFXMLElementBuilder.
+/*!
+ * @brief Returns the delegate for the OFXMLElementBuilder.
  *
- * \return The delegate for the OFXMLElementBuilder
+ * @return The delegate for the OFXMLElementBuilder
  */
 - (id <OFXMLElementBuilderDelegate>)delegate;
 
-/**
- * \brief Sets the delegate for the OFXMLElementBuilder.
+/*!
+ * @brief Sets the delegate for the OFXMLElementBuilder.
  *
- * \param delegate The delegate for the OFXMLElementBuilder
+ * @param delegate The delegate for the OFXMLElementBuilder
  */
 - (void)setDelegate: (id <OFXMLElementBuilderDelegate>)delegate;
 @end

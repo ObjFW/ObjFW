@@ -16,8 +16,8 @@
 
 #import "OFException.h"
 
-/**
- * \brief An exception indicating that deleting a directory failed.
+/*!
+ * @brief An exception indicating that deleting a directory failed.
  */
 @interface OFDeleteDirectoryFailedException: OFException
 {
@@ -30,31 +30,31 @@
 @property (readonly) int errNo;
 #endif
 
-/**
- * \param class_ The class of the object which caused the exception
- * \param path The path of the directory
- * \return A new delete directory failed exception
+/*!
+ * @param class_ The class of the object which caused the exception
+ * @param path The path of the directory
+ * @return A new delete directory failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			      path: (OFString*)path;
 
-/**
+/*!
  * Initializes an already allocated delete directory failed exception.
  *
- * \param class_ The class of the object which caused the exception
- * \param path The path of the directory
- * \return An initialized delete directory failed exception
+ * @param class_ The class of the object which caused the exception
+ * @param path The path of the directory
+ * @return An initialized delete directory failed exception
  */
 - initWithClass: (Class)class_
 	   path: (OFString*)path;
 
-/**
- * \return The errno from when the exception was created
+/*!
+ * @return The errno from when the exception was created
  */
 - (int)errNo;
 
-/**
- * \return The path of the directory
+/*!
+ * @return The path of the directory
  */
 - (OFString*)path;
 @end

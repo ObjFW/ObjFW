@@ -16,8 +16,8 @@
 
 #import "OFException.h"
 
-/**
- * \brief An exception indicating that the format is invalid.
+/*!
+ * @brief An exception indicating that the format is invalid.
  */
 @interface OFInvalidFormatException: OFException
 @end

@@ -20,22 +20,22 @@
 
 @class OFXMLElement;
 
-/**
- * \brief A protocol for serializing objects.
+/*!
+ * @brief A protocol for serializing objects.
  */
 @protocol OFSerialization
-/**
- * \brief Initializes the object with the specified XML element serialization.
+/*!
+ * @brief Initializes the object with the specified XML element serialization.
  *
- * \param element An OFXMLElement with the serialized object
- * \return An initialized object
+ * @param element An OFXMLElement with the serialized object
+ * @return An initialized object
  */
 - initWithSerialization: (OFXMLElement*)element;
 
-/**
- * \brief Serializes the object into an XML element.
+/*!
+ * @brief Serializes the object into an XML element.
  *
- * \return The object serialized into an XML element
+ * @return The object serialized into an XML element
  */
 - (OFXMLElement*)XMLElementBySerializing;
 @end
