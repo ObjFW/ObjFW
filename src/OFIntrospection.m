@@ -39,8 +39,7 @@
 	@try {
 		selector = (SEL)&method->sel;
 		name = [[OFString alloc]
-		    initWithCString: sel_getName(selector)
-			   encoding: OF_STRING_ENCODING_ASCII];
+		    initWithUTF8String: sel_getName(selector)];
 		typeEncoding = method->sel.types;
 	} @catch (id e) {
 		[self release];
@@ -57,8 +56,7 @@
 	@try {
 		selector = method_getName(method);
 		name = [[OFString alloc]
-		    initWithCString: sel_getName(selector)
-			   encoding: OF_STRING_ENCODING_ASCII];
+		    initWithUTF8String: sel_getName(selector)];
 		typeEncoding = method_getTypeEncoding(method);
 	} @catch (id e) {
 		[self release];
@@ -150,9 +148,7 @@
 	self = [super init];
 
 	@try {
-		name = [[OFString alloc]
-		    initWithCString: ivar->name
-			   encoding: OF_STRING_ENCODING_ASCII];
+		name = [[OFString alloc] initWithUTF8String: ivar->name];
 		typeEncoding = ivar->type;
 		offset = ivar->offset;
 	} @catch (id e) {
@@ -169,8 +165,7 @@
 
 	@try {
 		name = [[OFString alloc]
-		    initWithCString: ivar_getName(ivar)
-			   encoding: OF_STRING_ENCODING_ASCII];
+		    initWithUTF8String: ivar_getName(ivar)];
 		typeEncoding = ivar_getTypeEncoding(ivar);
 		offset = ivar_getOffset(ivar);
 	} @catch (id e) {
