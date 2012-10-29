@@ -33,17 +33,19 @@
 #endif
 
 /*!
+ * @brief Creates a new, autoreleased rename file failed exception.
+ *
  * @param class_ The class of the object which caused the exception
  * @param source The original path
  * @param destination The new path
- * @return A new rename file failed exception
+ * @return A new, autoreleased rename file failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			sourcePath: (OFString*)source
 		   destinationPath: (OFString*)destination;
 
 /*!
- * Initializes an already allocated rename failed exception.
+ * @brief Initializes an already allocated rename failed exception.
  *
  * @param class_ The class of the object which caused the exception
  * @param source The original path
@@ -55,16 +57,22 @@
   destinationPath: (OFString*)destination;
 
 /*!
+ * @brief Returns the errno from when the exception was created.
+ *
  * @return The errno from when the exception was created
  */
 - (int)errNo;
 
 /*!
+ * @brief Returns the original path.
+ *
  * @return The original path
  */
 - (OFString*)sourcePath;
 
 /*!
+ * @brief Returns the new path.
+ *
  * @return The new path
  */
 - (OFString*)destinationPath;

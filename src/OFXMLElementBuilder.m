@@ -189,7 +189,7 @@
 
 @implementation OFObject (OFXMLElementBuilderDelegate)
 - (void)elementBuilder: (OFXMLElementBuilder*)builder
-       didBuildElement: (OFXMLElement*)elem
+       didBuildElement: (OFXMLElement*)element
 {
 }
 

@@ -120,7 +120,9 @@ typedef enum of_comparison_result_t {
  * @brief An enum for storing endianess.
  */
 typedef enum of_byte_order_t {
+	/// Most significant byte first (big endian)
 	OF_BYTE_ORDER_BIG_ENDIAN,
+	/// Least significant byte first (little endian)
 	OF_BYTE_ORDER_LITTLE_ENDIAN
 } of_byte_order_t;
 
@@ -138,7 +140,9 @@ typedef struct of_range_t {
  * @brief A point.
  */
 typedef struct of_point_t {
+	/// The x coordinate of the point
 	float x;
+	/// The y coordinate of the point
 	float y;
 } of_point_t;
 
@@ -146,7 +150,9 @@ typedef struct of_point_t {
  * @brief A dimension.
  */
 typedef struct of_dimension_t {
+	/// The width of the dimension
 	float width;
+	/// The height of the dimension
 	float height;
 } of_dimension_t;
 
@@ -155,7 +161,9 @@ typedef struct of_dimension_t {
  */
 typedef struct of_rectangle_t
 {
+	/// The point from where the rectangle originates
 	of_point_t origin;
+	/// The size of the rectangle
 	of_dimension_t size;
 } of_rectangle_t;
 
@@ -329,7 +337,6 @@ typedef struct of_rectangle_t
 @interface OFObject <OFObject>
 {
 @public
-	/// The class of the object
 	Class isa;
 }
 
@@ -514,7 +521,7 @@ typedef struct of_rectangle_t
  * The methods which will be added from the specified class are not allowed to
  * use super or access instance variables, instead they have to use accessors.
  *
- * @param class The class from which the instance methods should be inherited
+ * @param class_ The class from which the instance methods should be inherited
  */
 + (void)inheritMethodsFromClass: (Class)class_;
 

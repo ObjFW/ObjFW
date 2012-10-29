@@ -28,8 +28,10 @@
  * @brief This callback is called when the TLS socket wants to know if it
  *	  should accept the received keychain.
  *
- * @param certificate An array of objects implementing the OFX509Certificate
- *		      protocol
+ * @param socket The socket which wants to know if it should accept the received
+ *		 keychain
+ * @param keychain An array of objects implementing the OFX509Certificate
+ *		   protocol
  * @return Whether the TLS socket should accept the received keychain
  */
 -	  (BOOL)socket: (id <OFTLSSocket>)socket

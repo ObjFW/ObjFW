@@ -36,11 +36,13 @@
 #endif
 
 /*!
+ * @brief Creates a new, autoreleased change file owner failed exception.
+ *
  * @param class_ The class of the object which caused the exception
  * @param path The path of the file
  * @param owner The new owner for the file
  * @param group The new group for the file
- * @return An initialized change file owner failed exception
+ * @return A new, autoreleased change file owner failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			      path: (OFString*)path
@@ -48,7 +50,7 @@
 			     group: (OFString*)group;
 
 /*!
- * Initializes an already allocated change file owner failed exception.
+ * @brief Initializes an already allocated change file owner failed exception.
  *
  * @param class_ The class of the object which caused the exception
  * @param path The path of the file
@@ -62,21 +64,29 @@
 	  group: (OFString*)group;
 
 /*!
+ * @brief Returns the errno from when the exception was created.
+ *
  * @return The errno from when the exception was created
  */
 - (int)errNo;
 
 /*!
+ * @brief Returns the path of the file.
+ *
  * @return The path of the file
  */
 - (OFString*)path;
 
 /*!
+ * @brief Returns the new owner for the file.
+ *
  * @return The new owner for the file
  */
 - (OFString*)owner;
 
 /*!
+ * @brief Returns the new group for the file.
+ *
  * @return The new group for the file
  */
 - (OFString*)group;

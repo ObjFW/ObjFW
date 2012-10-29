@@ -31,15 +31,17 @@
 #endif
 
 /*!
+ * @brief Creates a new, autoreleased delete file failed exception.
+ *
  * @param class_ The class of the object which caused the exception
  * @param path The path of the file
- * @return A new delete file failed exception
+ * @return A new, autoreleased delete file failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			      path: (OFString*)path;
 
 /*!
- * Initializes an already allocated delete file failed exception.
+ * @brief Initializes an already allocated delete file failed exception.
  *
  * @param class_ The class of the object which caused the exception
  * @param path The path of the file
@@ -49,11 +51,15 @@
 	   path: (OFString*)path;
 
 /*!
+ * @brief Returns the errno from when the exception was created.
+ *
  * @return The errno from when the exception was created
  */
 - (int)errNo;
 
 /*!
+ * @brief Returns the path of the file.
+ *
  * @return The path of the file
  */
 - (OFString*)path;

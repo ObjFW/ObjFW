@@ -30,15 +30,17 @@
 #endif
 
 /*!
+ * @brief Creates a new, autoreleased not implemented exception.
+ *
  * @param class_ The class of the object which caused the exception
  * @param selector The selector which is not or not fully implemented
- * @return A new not implemented exception
+ * @return A new, autoreleased not implemented exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			  selector: (SEL)selector;
 
 /*!
- * Initializes an already allocated not implemented exception.
+ * @brief Initializes an already allocated not implemented exception.
  *
  * @param class_ The class of the object which caused the exception
  * @param selector The selector which is not or not fully implemented
@@ -48,6 +50,8 @@
        selector: (SEL)selector;
 
 /*!
+ * @brief Returns the selector which is not or not fully implemented.
+ *
  * @return The selector which is not or not fully implemented
  */
 - (SEL)selector;

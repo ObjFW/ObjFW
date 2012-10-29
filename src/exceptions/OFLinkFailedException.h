@@ -34,17 +34,19 @@
 # endif
 
 /*!
+ * @brief Creates a new, autoreleased link failed exception.
+ *
  * @param class_ The class of the object which caused the exception
  * @param source The source for the link
  * @param destination The destination for the link
- * @return A new link failed exception
+ * @return A new, autoreleased link failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			sourcePath: (OFString*)source
 		   destinationPath: (OFString*)destination;
 
 /*!
- * Initializes an already allocated link failed exception.
+ * @brief Initializes an already allocated link failed exception.
  *
  * @param class_ The class of the object which caused the exception
  * @param source The source for the link
@@ -56,16 +58,22 @@
   destinationPath: (OFString*)destination;
 
 /*!
+ * @brief Returns the errno from when the exception was created.
+ *
  * @return The errno from when the exception was created
  */
 - (int)errNo;
 
 /*!
+ * @brief Returns a string with the source for the link.
+ *
  * @return A string with the source for the link
  */
 - (OFString*)sourcePath;
 
 /*!
+ * @brief Returns a string with the destination for the link.
+ *
  * @return A string with the destination for the link
  */
 - (OFString*)destinationPath;

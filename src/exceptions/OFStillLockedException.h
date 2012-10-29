@@ -30,15 +30,17 @@
 #endif
 
 /*!
+ * @brief Creates a new, autoreleased still locked exception.
+ *
  * @param class_ The class of the object which caused the exception
  * @param lock The lock which is still locked
- * @return A new still locked exception
+ * @return A new, autoreleased still locked exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			      lock: (id <OFLocking>)lock;
 
 /*!
- * Initializes an already allocated still locked exception.
+ * @brief Initializes an already allocated still locked exception.
  *
  * @param class_ The class of the object which caused the exception
  * @param lock The lock which is still locked
@@ -48,6 +50,8 @@
 	   lock: (id <OFLocking>)lock;
 
 /*!
+ * @brief Returns the lock which is still locked.
+ *
  * @return The lock which is still locked
  */
 - (id <OFLocking>)lock;

@@ -31,15 +31,17 @@
 #endif
 
 /*!
+ * @brief Creates a new, autoreleased create directory failed exception.
+ *
  * @param class_ The class of the object which caused the exception
  * @param path A string with the path of the directory which couldn't be created
- * @return A new create directory failed exception
+ * @return A new, autoreleased create directory failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			      path: (OFString*)path;
 
 /*!
- * Initializes an already allocated create directory failed exception.
+ * @brief Initializes an already allocated create directory failed exception.
  *
  * @param class_ The class of the object which caused the exception
  * @param path A string with the path of the directory which couldn't be created
@@ -49,11 +51,16 @@
 	   path: (OFString*)path;
 
 /*!
+ * @brief Returns the errno from when the exception was created.
+ *
  * @return The errno from when the exception was created
  */
 - (int)errNo;
 
 /*!
+ * @brief Returns a string with the path of the directory which couldn't be
+ *	  created.
+ *
  * @return A string with the path of the directory which couldn't be created
  */
 - (OFString*)path;

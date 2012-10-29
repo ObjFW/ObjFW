@@ -379,7 +379,7 @@ static struct {
 
 + (instancetype)stringWithCString: (const char*)cString
 			 encoding: (of_string_encoding_t)encoding
-	     length: (size_t)cStringLength
+			   length: (size_t)cStringLength
 {
 	return [[[self alloc] initWithCString: cString
 				     encoding: encoding

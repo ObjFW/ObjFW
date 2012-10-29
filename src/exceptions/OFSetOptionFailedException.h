@@ -31,15 +31,19 @@
 #endif
 
 /*!
+ * @brief Creates a new, autoreleased set option failed exception.
+ *
+ * @param class_ The class of the object which caused the exception
  * @param stream The stream for which the option could not be set
- * @return A new set option failed exception
+ * @return A new, autoreleased set option failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    stream: (OFStream*)stream;
 
 /*!
- * Initializes an already allocated set option failed exception.
+ * @brief Initializes an already allocated set option failed exception.
  *
+ * @param class_ The class of the object which caused the exception
  * @param stream The stream for which the option could not be set
  * @return An initialized set option failed exception
  */
@@ -47,6 +51,8 @@
 	 stream: (OFStream*)stream;
 
 /*!
+ * @brief Returns the stream for which the option could not be set.
+ *
  * @return The stream for which the option could not be set
  */
 - (OFStream*)stream;

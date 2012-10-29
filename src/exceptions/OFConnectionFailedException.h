@@ -37,11 +37,13 @@
 #endif
 
 /*!
+ * @brief Creates a new, autoreleased connection failed exception.
+ *
  * @param class_ The class of the object which caused the exception
  * @param socket The socket which could not connect
  * @param host The host to which the connection failed
  * @param port The port on the host to which the connection failed
- * @return A new connection failed exception
+ * @return A new, autoreleased connection failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    socket: (OFTCPSocket*)socket
@@ -49,7 +51,7 @@
 			      port: (uint16_t)port;
 
 /*!
- * Initializes an already allocated connection failed exception.
+ * @brief Initializes an already allocated connection failed exception.
  *
  * @param class_ The class of the object which caused the exception
  * @param socket The socket which could not connect
@@ -63,21 +65,29 @@
 	   port: (uint16_t)port;
 
 /*!
+ * @brief Returns the socket which could not connect.
+ *
  * @return The socket which could not connect
  */
 - (OFTCPSocket*)socket;
 
 /*!
+ * @brief Returns the host to which the connection failed.
+ *
  * @return The host to which the connection failed
  */
 - (OFString*)host;
 
 /*!
+ * @brief Returns the port on the host to which the connection failed.
+ *
  * @return The port on the host to which the connection failed
  */
 - (uint16_t)port;
 
 /*!
+ * @brief Returns the errno from when the exception was created.
+ *
  * @return The errno from when the exception was created
  */
 - (int)errNo;

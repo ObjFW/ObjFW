@@ -29,15 +29,17 @@
 #endif
 
 /*!
+ * @brief Creates a new, autoreleased no memory exception.
+ *
  * @param class_ The class of the object which caused the exception
  * @param size The size of the memory that couldn't be allocated
- * @return A new no memory exception
+ * @return A new, autoreleased no memory exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 		     requestedSize: (size_t)size;
 
 /*!
- * Initializes an already allocated no memory exception.
+ * @brief Initializes an already allocated no memory exception.
  *
  * @param class_ The class of the object which caused the exception
  * @param size The size of the memory that couldn't be allocated
@@ -47,6 +49,8 @@
   requestedSize: (size_t)size;
 
 /*!
+ * @brief Returns the size of the memoory that couldn't be allocated.
+ *
  * @return The size of the memoory that couldn't be allocated
  */
 - (size_t)requestedSize;

@@ -31,16 +31,18 @@
 #endif
 
 /*!
+ * @brief Creates a new, autoreleased change directory failed exception.
+ *
  * @param class_ The class of the object which caused the exception
  * @param path A string with the path of the directory to which couldn't be
  *	       changed
- * @return A new change directory failed exception
+ * @return A new, autoreleased change directory failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			      path: (OFString*)path;
 
 /*!
- * Initializes an already allocated change directory failed exception.
+ * @brief Initializes an already allocated change directory failed exception.
  *
  * @param class_ The class of the object which caused the exception
  * @param path A string with the path of the directory to which couldn't be
@@ -51,12 +53,16 @@
 	   path: (OFString*)path;
 
 /*!
+ * @brief Returns the errno from when the exception was created.
+ *
  * @return The errno from when the exception was created
  */
 - (int)errNo;
 
 /*!
- * @return A string with the path of the directory to which couldn't changed
+ * @brief Returns the path to which changing failed.
+ *
+ * @return The path to which changing failed
  */
 - (OFString*)path;
 @end

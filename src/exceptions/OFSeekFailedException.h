@@ -39,10 +39,13 @@
 #endif
 
 /*!
+ * @brief Creates a new, autoreleased seek failed exception.
+ *
+ * @param class_ The class of the object which caused the exception
  * @param stream The stream for which seeking failed
  * @param offset The offset to which seeking failed
  * @param whence To what the offset is relative
- * @return A new seek failed exception
+ * @return A new, autoreleased seek failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    stream: (OFSeekableStream*)stream
@@ -50,8 +53,9 @@
 			    whence: (int)whence;
 
 /*!
- * Initializes an already allocated seek failed exception.
+ * @brief Initializes an already allocated seek failed exception.
  *
+ * @param class_ The class of the object which caused the exception
  * @param stream The stream for which seeking failed
  * @param offset The offset to which seeking failed
  * @param whence To what the offset is relative
@@ -63,21 +67,29 @@
 	 whence: (int)whence;
 
 /*!
+ * @brief Returns the stream for which seeking failed.
+ *
  * @return The stream for which seeking failed
  */
 - (OFSeekableStream*)stream;
 
 /*!
+ * @brief Returns the offset to which seeking failed.
+ *
  * @return The offset to which seeking failed
  */
 - (off_t)offset;
 
 /*!
+ * @brief Returns to what the offset is relative.
+ *
  * @return To what the offset is relative
  */
 - (int)whence;
 
 /*!
+ * @brief Returns the errno from when the exception was created.
+ *
  * @return The errno from when the exception was created
  */
 - (int)errNo;

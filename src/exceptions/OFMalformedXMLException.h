@@ -31,15 +31,19 @@
 #endif
 
 /*!
+ * @brief Creates a new, autoreleased malformed XML exception.
+ *
+ * @param class_ The class of the object which caused the exception
  * @param parser The parser which encountered malformed XML
- * @return A new malformed XML exception
+ * @return A new, autoreleased malformed XML exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    parser: (OFXMLParser*)parser;
 
 /*!
- * Initializes an already allocated malformed XML exception.
+ * @brief Initializes an already allocated malformed XML exception.
  *
+ * @param class_ The class of the object which caused the exception
  * @param parser The parser which encountered malformed XML
  * @return An initialized malformed XML exception
  */
@@ -47,6 +51,8 @@
 	 parser: (OFXMLParser*)parser;
 
 /*!
+ * @brief Returns the parser which encountered malformed XML.
+ *
  * @return The parser which encountered malformed XML
  */
 - (OFXMLParser*)parser;

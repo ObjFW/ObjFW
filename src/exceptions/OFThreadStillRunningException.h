@@ -31,15 +31,17 @@
 #endif
 
 /*!
+ * @brief Creates a new, autoreleased thread still running exception.
+ *
  * @param class_ The class of the object which caused the exception
  * @param thread The thread which is still running
- * @return A new thread still running exception
+ * @return A new, autoreleased thread still running exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    thread: (OFThread*)thread;
 
 /*!
- * Initializes an already allocated thread still running exception.
+ * @brief Initializes an already allocated thread still running exception.
  *
  * @param class_ The class of the object which caused the exception
  * @param thread The thread which is still running
@@ -49,6 +51,8 @@
 	 thread: (OFThread*)thread;
 
 /*!
+ * @brief Returns the thread which is still running.
+ *
  * @return The thread which is still running
  */
 - (OFThread*)thread;

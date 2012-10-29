@@ -33,17 +33,19 @@
 #endif
 
 /*!
+ * @brief Creates a new, autoreleased copy file failed exception.
+ *
  * @param class_ The class of the object which caused the exception
  * @param source The original path
  * @param destination The new path
- * @return A new copy file failed exception
+ * @return A new, autoreleased copy file failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			sourcePath: (OFString*)source
 		   destinationPath: (OFString*)destination;
 
 /*!
- * Initializes an already allocated copy file failed exception.
+ * @brief Initializes an already allocated copy file failed exception.
  *
  * @param class_ The class of the object which caused the exception
  * @param source The original path
@@ -55,16 +57,22 @@
   destinationPath: (OFString*)destination;
 
 /*!
+ * @brief Returns the errno from when the exception was created.
+ *
  * @return The errno from when the exception was created
  */
 - (int)errNo;
 
 /*!
+ * @brief Returns the path of the source file.
+ *
  * @return The path of the source file
  */
 - (OFString*)sourcePath;
 
 /*!
+ * @brief Returns the destination path.
+ *
  * @return The destination path
  */
 - (OFString*)destinationPath;

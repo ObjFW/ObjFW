@@ -289,7 +289,7 @@
 /*!
  * @brief Returns the earlier of the two dates.
  *
- * @param date Another date
+ * @param otherDate Another date
  * @return The earlier date of the two dates
  */
 - (OFDate*)earlierDate: (OFDate*)otherDate;
@@ -297,7 +297,7 @@
 /*!
  * @brief Returns the later of the two dates.
  *
- * @param date Another date
+ * @param otherDate Another date
  * @return The later date of the two dates
  */
 - (OFDate*)laterDate: (OFDate*)otherDate;
@@ -312,7 +312,7 @@
 /*!
  * @brief Returns the seconds the receiver is after the date.
  *
- * @param date Date date to generate the difference with receiver
+ * @param otherDate Date date to generate the difference with receiver
  * @return The seconds the receiver is after the date.
  */
 - (double)timeIntervalSinceDate: (OFDate*)otherDate;

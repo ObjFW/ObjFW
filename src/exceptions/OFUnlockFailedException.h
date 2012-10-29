@@ -30,15 +30,17 @@
 #endif
 
 /*!
+ * @brief Creates a new, autoreleased unlock failed exception.
+ *
  * @param class_ The class of the object which caused the exception
  * @param lock The lock which could not be unlocked
- * @return A new unlock failed exception
+ * @return A new, autoreleased unlock failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			      lock: (id <OFLocking>)lock;
 
 /*!
- * Initializes an already allocated unlock failed exception.
+ * @brief Initializes an already allocated unlock failed exception.
  *
  * @param class_ The class of the object which caused the exception
  * @param lock The lock which could not be unlocked
@@ -48,6 +50,8 @@
 	   lock: (id <OFLocking>)lock;
 
 /*!
+ * @brief Returns the lock which could not be unlocked.
+ *
  * @return The lock which could not be unlocked
  */
 - (id <OFLocking>)lock;

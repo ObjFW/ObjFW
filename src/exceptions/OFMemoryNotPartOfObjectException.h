@@ -29,15 +29,17 @@
 #endif
 
 /*!
+ * @brief Creates a new, autoreleased memory not part of object exception.
+ *
  * @param class_ The class of the object which caused the exception
  * @param ptr A pointer to the memory that is not part of the object
- * @return A new memory not part of object exception
+ * @return A new, autoreleased memory not part of object exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			   pointer: (void*)ptr;
 
 /*!
- * Initializes an already allocated memory not part of object exception.
+ * @brief Initializes an already allocated memory not part of object exception.
  *
  * @param class_ The class of the object which caused the exception
  * @param ptr A pointer to the memory that is not part of the object
@@ -47,6 +49,8 @@
 	pointer: (void*)ptr;
 
 /*!
+ * @brief Returns a pointer to the memory which is not part of the object.
+ *
  * @return A pointer to the memory which is not part of the object
  */
 - (void*)pointer;

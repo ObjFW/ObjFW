@@ -29,15 +29,17 @@
 #endif
 
 /*!
+ * @brief Creates a new, autoreleased invalid argument exception.
+ *
  * @param class_ The class of the object which caused the exception
  * @param selector The selector which doesn't accept the argument
- * @return A new invalid argument exception
+ * @return A new, autoreleased invalid argument exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			  selector: (SEL)selector;
 
 /*!
- * Initializes an already allocated invalid argument exception
+ * @brief Initializes an already allocated invalid argument exception.
  *
  * @param class_ The class of the object which caused the exception
  * @param selector The selector which doesn't accept the argument
@@ -47,6 +49,8 @@
        selector: (SEL)selector;
 
 /*!
+ * @brief Returns the selector to which an invalid argument was passed.
+ *
  * @return The selector to which an invalid argument was passed
  */
 - (SEL)selector;
