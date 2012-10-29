@@ -31,15 +31,17 @@
 #endif
 
 /**
+ * \brief Creates a new, autoreleased condition signal failed exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param condition The condition which could not be signaled
- * \return A new condition signal failed exception
+ * \return A new, autoreleased condition signal failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			 condition: (OFCondition*)condition;
 
 /**
- * Initializes an already allocated condition signal failed exception.
+ * \brief Initializes an already allocated condition signal failed exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param condition The condition which could not be signaled
@@ -49,6 +51,8 @@
       condition: (OFCondition*)condition;
 
 /**
+ * \brief Return the condition which could not be signaled.
+ *
  * \return The condition which could not be signaled
  */
 - (OFCondition*)condition;

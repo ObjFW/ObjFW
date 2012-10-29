@@ -33,15 +33,17 @@
 #endif
 
 /**
+ * \brief Creates a new, autoreleased accept failed exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param socket The socket which could not accept a connection
- * \return A new accept failed exception
+ * \return A new, autoreleased accept failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    socket: (OFTCPSocket*)socket;
 
 /**
- * Initializes an already allocated accept failed exception.
+ * \brief Initializes an already allocated accept failed exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param socket The socket which could not accept a connection
@@ -51,11 +53,15 @@
 	 socket: (OFTCPSocket*)socket;
 
 /**
+ * \brief Returns the socket which could not accept a connection.
+ *
  * \return The socket which could not accept a connection
  */
 - (OFTCPSocket*)socket;
 
 /**
+ * \brief Returns the errno from when the exception was created.
+ *
  * \return The errno from when the exception was created
  */
 - (int)errNo;

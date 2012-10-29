@@ -303,7 +303,7 @@
 /**
  * \brief Removes the attribute with the specified name.
  *
- * \param attribteName The name of the attribute
+ * \param attributeName The name of the attribute
  */
 - (void)removeAttributeForName: (OFString*)attributeName;
 

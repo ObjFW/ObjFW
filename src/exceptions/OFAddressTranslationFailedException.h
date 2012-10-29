@@ -35,17 +35,19 @@
 #endif
 
 /**
+ * \brief Creates a new, autoreleased address translation failed exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param socket The socket which could not translate the address
  * \param host The host for which translation was requested
- * \return A new address translation failed exception
+ * \return A new, autoreleased address translation failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    socket: (OFTCPSocket*)socket
 			      host: (OFString*)host;
 
 /**
- * Initializes an already allocated address translation failed exception.
+ * \brief Initializes an already allocated address translation failed exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param socket The socket which could not translate the address
@@ -57,16 +59,22 @@
 	   host: (OFString*)host;
 
 /**
+ * \brief Returns the socket which could not translate the address.
+ *
  * \return The socket which could not translate the address
  */
 - (OFTCPSocket*)socket;
 
 /**
- * /return The host for which translation was requested
+ * \brief Returns the host for which the address translation was requested.
+ *
+ * \return The host for which the address translation was requested
  */
 - (OFString*)host;
 
 /**
+ * \brief Returns the errno from when the exception was created.
+ *
  * \return The errno from when the exception was created
  */
 - (int)errNo;

@@ -34,17 +34,19 @@
 #endif
 
 /**
+ * \brief Creates a new, autoreleased HTTP request failed exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param request The HTTP request which failed
  * \param result The result of the failed HTTP request
- * \return A new HTTP request failed exception
+ * \return A new, autoreleased HTTP request failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			   request: (OFHTTPRequest*)request
 			    result: (OFHTTPRequestResult*)result;
 
 /**
- * Initializes an already allocated HTTP request failed exception
+ * \brief Initializes an already allocated HTTP request failed exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param request The HTTP request which failed
@@ -56,11 +58,15 @@
 	 result: (OFHTTPRequestResult*)result;
 
 /**
+ * \brief Returns the HTTP request which failed.
+ *
  * \return The HTTP request which failed
  */
 - (OFHTTPRequest*)request;
 
 /**
+ * \brief Returns the result of the failed HTTP request.
+ *
  * \return The result of the failed HTTP request
  */
 - (OFHTTPRequestResult*)result;

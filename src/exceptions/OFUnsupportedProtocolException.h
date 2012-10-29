@@ -32,15 +32,17 @@
 #endif
 
 /**
+ * \brief Creates a new, autoreleased unsupported protocol exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param url The URL whose protocol is unsupported
- * \return A new unsupported protocol exception
+ * \return A new, autoreleased unsupported protocol exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			       URL: (OFURL*)url;
 
 /**
- * Initializes an already allocated unsupported protocol exception
+ * \brief Initializes an already allocated unsupported protocol exception
  *
  * \param class_ The class of the object which caused the exception
  * \param url The URL whose protocol is unsupported
@@ -50,6 +52,8 @@
 	    URL: (OFURL*)url;
 
 /**
+ * \brief Returns the URL whose protocol is unsupported.
+ *
  * \return The URL whose protocol is unsupported
  */
 - (OFURL*)URL;

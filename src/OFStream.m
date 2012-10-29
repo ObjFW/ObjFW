@@ -251,9 +251,9 @@
 }
 
 - (size_t)readBigEndianInt16sIntoBuffer: (uint16_t*)buffer
-				  count: (size_t)nInt16s
+				  count: (size_t)count
 {
-	size_t size = nInt16s * sizeof(uint16_t);
+	size_t size = count * sizeof(uint16_t);
 
 	[self readIntoBuffer: buffer
 		 exactLength: size];
@@ -261,7 +261,7 @@
 #ifndef OF_BIG_ENDIAN
 	size_t i;
 
-	for (i = 0; i < nInt16s; i++)
+	for (i = 0; i < count; i++)
 		buffer[i] = OF_BSWAP16(buffer[i]);
 #endif
 
@@ -269,9 +269,9 @@
 }
 
 - (size_t)readBigEndianInt32sIntoBuffer: (uint32_t*)buffer
-				  count: (size_t)nInt32s
+				  count: (size_t)count
 {
-	size_t size = nInt32s * sizeof(uint32_t);
+	size_t size = count * sizeof(uint32_t);
 
 	[self readIntoBuffer: buffer
 		 exactLength: size];
@@ -279,7 +279,7 @@
 #ifndef OF_BIG_ENDIAN
 	size_t i;
 
-	for (i = 0; i < nInt32s; i++)
+	for (i = 0; i < count; i++)
 		buffer[i] = OF_BSWAP32(buffer[i]);
 #endif
 
@@ -287,9 +287,9 @@
 }
 
 - (size_t)readBigEndianInt64sIntoBuffer: (uint64_t*)buffer
-				  count: (size_t)nInt64s
+				  count: (size_t)count
 {
-	size_t size = nInt64s * sizeof(uint64_t);
+	size_t size = count * sizeof(uint64_t);
 
 	[self readIntoBuffer: buffer
 		 exactLength: size];
@@ -297,7 +297,7 @@
 #ifndef OF_BIG_ENDIAN
 	size_t i;
 
-	for (i = 0; i < nInt64s; i++)
+	for (i = 0; i < count; i++)
 		buffer[i] = OF_BSWAP64(buffer[i]);
 #endif
 
@@ -305,9 +305,9 @@
 }
 
 - (size_t)readBigEndianFloatsIntoBuffer: (float*)buffer
-				  count: (size_t)nFloats
+				  count: (size_t)count
 {
-	size_t size = nFloats * sizeof(float);
+	size_t size = count * sizeof(float);
 
 	[self readIntoBuffer: buffer
 		 exactLength: size];
@@ -315,7 +315,7 @@
 #ifndef OF_FLOAT_BIG_ENDIAN
 	size_t i;
 
-	for (i = 0; i < nFloats; i++)
+	for (i = 0; i < count; i++)
 		buffer[i] = OF_BSWAP_FLOAT(buffer[i]);
 #endif
 
@@ -323,9 +323,9 @@
 }
 
 - (size_t)readBigEndianDoublesIntoBuffer: (double*)buffer
-				   count: (size_t)nDoubles
+				   count: (size_t)count
 {
-	size_t size = nDoubles * sizeof(double);
+	size_t size = count * sizeof(double);
 
 	[self readIntoBuffer: buffer
 		 exactLength: size];
@@ -333,7 +333,7 @@
 #ifndef OF_FLOAT_BIG_ENDIAN
 	size_t i;
 
-	for (i = 0; i < nDoubles; i++)
+	for (i = 0; i < count; i++)
 		buffer[i] = OF_BSWAP_DOUBLE(buffer[i]);
 #endif
 
@@ -391,9 +391,9 @@
 }
 
 - (size_t)readLittleEndianInt16sIntoBuffer: (uint16_t*)buffer
-				     count: (size_t)nInt16s
+				     count: (size_t)count
 {
-	size_t size = nInt16s * sizeof(uint16_t);
+	size_t size = count * sizeof(uint16_t);
 
 	[self readIntoBuffer: buffer
 		 exactLength: size];
@@ -401,7 +401,7 @@
 #ifdef OF_BIG_ENDIAN
 	size_t i;
 
-	for (i = 0; i < nInt16s; i++)
+	for (i = 0; i < count; i++)
 		buffer[i] = OF_BSWAP16(buffer[i]);
 #endif
 
@@ -409,9 +409,9 @@
 }
 
 - (size_t)readLittleEndianInt32sIntoBuffer: (uint32_t*)buffer
-				     count: (size_t)nInt32s
+				     count: (size_t)count
 {
-	size_t size = nInt32s * sizeof(uint32_t);
+	size_t size = count * sizeof(uint32_t);
 
 	[self readIntoBuffer: buffer
 		 exactLength: size];
@@ -419,7 +419,7 @@
 #ifdef OF_BIG_ENDIAN
 	size_t i;
 
-	for (i = 0; i < nInt32s; i++)
+	for (i = 0; i < count; i++)
 		buffer[i] = OF_BSWAP32(buffer[i]);
 #endif
 
@@ -427,9 +427,9 @@
 }
 
 - (size_t)readLittleEndianInt64sIntoBuffer: (uint64_t*)buffer
-				     count: (size_t)nInt64s
+				     count: (size_t)count
 {
-	size_t size = nInt64s * sizeof(uint64_t);
+	size_t size = count * sizeof(uint64_t);
 
 	[self readIntoBuffer: buffer
 		 exactLength: size];
@@ -437,7 +437,7 @@
 #ifdef OF_BIG_ENDIAN
 	size_t i;
 
-	for (i = 0; i < nInt64s; i++)
+	for (i = 0; i < count; i++)
 		buffer[i] = OF_BSWAP64(buffer[i]);
 #endif
 
@@ -445,9 +445,9 @@
 }
 
 - (size_t)readLittleEndianFloatsIntoBuffer: (float*)buffer
-				     count: (size_t)nFloats
+				     count: (size_t)count
 {
-	size_t size = nFloats * sizeof(float);
+	size_t size = count * sizeof(float);
 
 	[self readIntoBuffer: buffer
 		 exactLength: size];
@@ -455,7 +455,7 @@
 #ifdef OF_FLOAT_BIG_ENDIAN
 	size_t i;
 
-	for (i = 0; i < nFloats; i++)
+	for (i = 0; i < count; i++)
 		buffer[i] = OF_BSWAP_FLOAT(buffer[i]);
 #endif
 
@@ -463,9 +463,9 @@
 }
 
 - (size_t)readLittleEndianDoublesIntoBuffer: (double*)buffer
-				      count: (size_t)nDoubles
+				      count: (size_t)count
 {
-	size_t size = nDoubles * sizeof(double);
+	size_t size = count * sizeof(double);
 
 	[self readIntoBuffer: buffer
 		 exactLength: size];
@@ -473,35 +473,35 @@
 #ifdef OF_FLOAT_BIG_ENDIAN
 	size_t i;
 
-	for (i = 0; i < nDoubles; i++)
+	for (i = 0; i < count; i++)
 		buffer[i] = OF_BSWAP_DOUBLE(buffer[i]);
 #endif
 
 	return size;
 }
 
-- (OFDataArray*)readDataArrayWithSize: (size_t)nItems
+- (OFDataArray*)readDataArrayWithSize: (size_t)size
 {
 	return [self readDataArrayWithItemSize: 1
-					 count: nItems];
+					 count: size];
 }
 
 - (OFDataArray*)readDataArrayWithItemSize: (size_t)itemSize
-				    count: (size_t)nItems
+				    count: (size_t)count
 {
 	OFDataArray *dataArray;
 	char *tmp;
 
 	dataArray = [OFDataArray dataArrayWithItemSize: itemSize];
 	tmp = [self allocMemoryWithSize: itemSize
-				  count: nItems];
+				  count: count];
 
 	@try {
 		[self readIntoBuffer: tmp
-			 exactLength: nItems * itemSize];
+			 exactLength: count * itemSize];
 
 		[dataArray addItemsFromCArray: tmp
-					count: nItems];
+					count: count];
 	} @finally {
 		[self freeMemory: tmp];
 	}
@@ -1014,9 +1014,9 @@
 }
 
 - (size_t)writeBigEndianInt16s: (const uint16_t*)buffer
-			 count: (size_t)nInt16s
+			 count: (size_t)count
 {
-	size_t size = nInt16s * sizeof(uint16_t);
+	size_t size = count * sizeof(uint16_t);
 
 #ifdef OF_BIG_ENDIAN
 	[self writeBuffer: buffer
@@ -1025,12 +1025,12 @@
 	uint16_t *tmp;
 
 	tmp = [self allocMemoryWithSize: sizeof(uint16_t)
-				  count: nInt16s];
+				  count: count];
 
 	@try {
 		size_t i;
 
-		for (i = 0; i < nInt16s; i++)
+		for (i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP16(buffer[i]);
 
 		[self writeBuffer: tmp
@@ -1044,9 +1044,9 @@
 }
 
 - (size_t)writeBigEndianInt32s: (const uint32_t*)buffer
-			 count: (size_t)nInt32s
+			 count: (size_t)count
 {
-	size_t size = nInt32s * sizeof(uint32_t);
+	size_t size = count * sizeof(uint32_t);
 
 #ifdef OF_BIG_ENDIAN
 	[self writeBuffer: buffer
@@ -1055,12 +1055,12 @@
 	uint32_t *tmp;
 
 	tmp = [self allocMemoryWithSize: sizeof(uint32_t)
-				  count: nInt32s];
+				  count: count];
 
 	@try {
 		size_t i;
 
-		for (i = 0; i < nInt32s; i++)
+		for (i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP32(buffer[i]);
 
 		[self writeBuffer: tmp
@@ -1074,9 +1074,9 @@
 }
 
 - (size_t)writeBigEndianInt64s: (const uint64_t*)buffer
-			 count: (size_t)nInt64s
+			 count: (size_t)count
 {
-	size_t size = nInt64s * sizeof(uint64_t);
+	size_t size = count * sizeof(uint64_t);
 
 #ifdef OF_BIG_ENDIAN
 	[self writeBuffer: buffer
@@ -1085,12 +1085,12 @@
 	uint64_t *tmp;
 
 	tmp = [self allocMemoryWithSize: sizeof(uint64_t)
-				  count: nInt64s];
+				  count: count];
 
 	@try {
 		size_t i;
 
-		for (i = 0; i < nInt64s; i++)
+		for (i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP64(buffer[i]);
 
 		[self writeBuffer: tmp
@@ -1104,9 +1104,9 @@
 }
 
 - (size_t)writeBigEndianFloats: (const float*)buffer
-			 count: (size_t)nFloats
+			 count: (size_t)count
 {
-	size_t size = nFloats * sizeof(float);
+	size_t size = count * sizeof(float);
 
 #ifdef OF_FLOAT_BIG_ENDIAN
 	[self writeBuffer: buffer
@@ -1115,12 +1115,12 @@
 	float *tmp;
 
 	tmp = [self allocMemoryWithSize: sizeof(float)
-				  count: nFloats];
+				  count: count];
 
 	@try {
 		size_t i;
 
-		for (i = 0; i < nFloats; i++)
+		for (i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP_FLOAT(buffer[i]);
 
 		[self writeBuffer: tmp
@@ -1134,9 +1134,9 @@
 }
 
 - (size_t)writeBigEndianDoubles: (const double*)buffer
-			  count: (size_t)nDoubles
+			  count: (size_t)count
 {
-	size_t size = nDoubles * sizeof(double);
+	size_t size = count * sizeof(double);
 
 #ifdef OF_FLOAT_BIG_ENDIAN
 	[self writeBuffer: buffer
@@ -1145,12 +1145,12 @@
 	double *tmp;
 
 	tmp = [self allocMemoryWithSize: sizeof(double)
-				  count: nDoubles];
+				  count: count];
 
 	@try {
 		size_t i;
 
-		for (i = 0; i < nDoubles; i++)
+		for (i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP_DOUBLE(buffer[i]);
 
 		[self writeBuffer: tmp
@@ -1204,9 +1204,9 @@
 }
 
 - (size_t)writeLittleEndianInt16s: (const uint16_t*)buffer
-			    count: (size_t)nInt16s
+			    count: (size_t)count
 {
-	size_t size = nInt16s * sizeof(uint16_t);
+	size_t size = count * sizeof(uint16_t);
 
 #ifndef OF_BIG_ENDIAN
 	[self writeBuffer: buffer
@@ -1215,12 +1215,12 @@
 	uint16_t *tmp;
 
 	tmp = [self allocMemoryWithSize: sizeof(uint16_t)
-				  count: nInt16s];
+				  count: count];
 
 	@try {
 		size_t i;
 
-		for (i = 0; i < nInt16s; i++)
+		for (i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP16(buffer[i]);
 
 		[self writeBuffer: tmp
@@ -1234,9 +1234,9 @@
 }
 
 - (size_t)writeLittleEndianInt32s: (const uint32_t*)buffer
-			    count: (size_t)nInt32s
+			    count: (size_t)count
 {
-	size_t size = nInt32s * sizeof(uint32_t);
+	size_t size = count * sizeof(uint32_t);
 
 #ifndef OF_BIG_ENDIAN
 	[self writeBuffer: buffer
@@ -1245,12 +1245,12 @@
 	uint32_t *tmp;
 
 	tmp = [self allocMemoryWithSize: sizeof(uint32_t)
-				  count: nInt32s];
+				  count: count];
 
 	@try {
 		size_t i;
 
-		for (i = 0; i < nInt32s; i++)
+		for (i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP32(buffer[i]);
 
 		[self writeBuffer: tmp
@@ -1264,9 +1264,9 @@
 }
 
 - (size_t)writeLittleEndianInt64s: (const uint64_t*)buffer
-			    count: (size_t)nInt64s
+			    count: (size_t)count
 {
-	size_t size = nInt64s * sizeof(uint64_t);
+	size_t size = count * sizeof(uint64_t);
 
 #ifndef OF_BIG_ENDIAN
 	[self writeBuffer: buffer
@@ -1275,12 +1275,12 @@
 	uint64_t *tmp;
 
 	tmp = [self allocMemoryWithSize: sizeof(uint64_t)
-				  count: nInt64s];
+				  count: count];
 
 	@try {
 		size_t i;
 
-		for (i = 0; i < nInt64s; i++)
+		for (i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP64(buffer[i]);
 
 		[self writeBuffer: tmp
@@ -1294,9 +1294,9 @@
 }
 
 - (size_t)writeLittleEndianFloats: (const float*)buffer
-			    count: (size_t)nFloats
+			    count: (size_t)count
 {
-	size_t size = nFloats * sizeof(float);
+	size_t size = count * sizeof(float);
 
 #ifndef OF_FLOAT_BIG_ENDIAN
 	[self writeBuffer: buffer
@@ -1305,12 +1305,12 @@
 	float *tmp;
 
 	tmp = [self allocMemoryWithSize: sizeof(float)
-				  count: nFloats];
+				  count: count];
 
 	@try {
 		size_t i;
 
-		for (i = 0; i < nFloats; i++)
+		for (i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP_FLOAT(buffer[i]);
 
 		[self writeBuffer: tmp
@@ -1324,9 +1324,9 @@
 }
 
 - (size_t)writeLittleEndianDoubles: (const double*)buffer
-			     count: (size_t)nDoubles
+			     count: (size_t)count
 {
-	size_t size = nDoubles * sizeof(double);
+	size_t size = count * sizeof(double);
 
 #ifndef OF_FLOAT_BIG_ENDIAN
 	[self writeBuffer: buffer
@@ -1335,12 +1335,12 @@
 	double *tmp;
 
 	tmp = [self allocMemoryWithSize: sizeof(double)
-				  count: nDoubles];
+				  count: count];
 
 	@try {
 		size_t i;
 
-		for (i = 0; i < nDoubles; i++)
+		for (i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP_DOUBLE(buffer[i]);
 
 		[self writeBuffer: tmp

@@ -38,7 +38,7 @@
  * with all children.
  *
  * \param builder The builder which built an OFXMLElement
- * \param elem The OFXMLElement the OFXMLElementBuilder built
+ * \param element The OFXMLElement the OFXMLElementBuilder built
  */
 - (void)elementBuilder: (OFXMLElementBuilder*)builder
        didBuildElement: (OFXMLElement*)element;
@@ -87,6 +87,7 @@
  * \brief This callback is called when the XML parser for the element builder
  *	  found an unknown entity.
  *
+ * \param builder The element builder which found an unknown entity
  * \param entity The name of the entity
  * \return The substitution for the entity
  */

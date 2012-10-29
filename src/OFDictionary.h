@@ -93,7 +93,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  */
 + (instancetype)dictionaryWithObjects: (id const*)objects
 			      forKeys: (id const*)keys
-		  count: (size_t)count;
+				count: (size_t)count;
 
 /**
  * \brief Creates a new OFDictionary with the specified keys objects.

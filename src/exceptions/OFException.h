@@ -35,15 +35,15 @@
 #endif
 
 /**
- * Creates a new exception.
+ * \brief Creates a new, autoreleased exception.
  *
  * \param class_ The class of the object which caused the exception
- * \return A new exception
+ * \return A new, autoreleased exception
  */
 + (instancetype)exceptionWithClass: (Class)class_;
 
 /**
- * Initializes an already allocated OFException.
+ * \brief Initializes an already allocated OFException.
  *
  * \param class_ The class of the object which caused the exception
  * \return An initialized OFException
@@ -51,11 +51,15 @@
 - initWithClass: (Class)class_;
 
 /**
+ * \brief Returns the class of the object in which the exception happened.
+ *
  * \return The class of the object in which the exception happened
  */
 - (Class)inClass;
 
 /**
+ * \brief Returns a description of the exception.
+ *
  * \return A description of the exception
  */
 - (OFString*)description;

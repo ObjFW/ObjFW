@@ -32,15 +32,17 @@
 #endif
 
 /**
+ * \brief Creates a new, autoreleased condition still waiting exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param condition The condition for which is still being waited
- * \return A new condition still waiting exception
+ * \return A new, autoreleased condition still waiting exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			 condition: (OFCondition*)condition;
 
 /**
- * Initializes an already allocated condition still waiting exception.
+ * \brief Initializes an already allocated condition still waiting exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param condition The condition for which is still being waited
@@ -50,6 +52,8 @@
       condition: (OFCondition*)condition;
 
 /**
+ * \brief Return the condition for which is still being waited.
+ *
  * \return The condition for which is still being waited
  */
 - (OFCondition*)condition;

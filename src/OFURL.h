@@ -82,7 +82,7 @@
  * \return An initialized OFURL
  */
 - initWithString: (OFString*)string
-   relativeToURL: (OFURL*)url;
+   relativeToURL: (OFURL*)URL;
 
 /**
  * \brief Returns the scheme part of the URL.

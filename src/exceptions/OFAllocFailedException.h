@@ -21,17 +21,19 @@
 /**
  * \brief An exception indicating an object could not be allocated.
  *
- * This exception is preallocated, as if there's no memory, no exception can
+ * This exception is preallocated, as when there's no memory, no exception can
  * be allocated of course. That's why you shouldn't and even can't deallocate
  * it.
  *
  * This is the only exception that is not an OFException as it's special.
  * It does not know for which class allocation failed and it should not be
  * handled like other exceptions, as the exception handling code is not
- * allowed to allocate ANY memory.
+ * allowed to allocate <i>any</i> memory.
  */
 @interface OFAllocFailedException: OFObject
 /**
+ * \brief Returns a description of the exception.
+ *
  * \return A description of the exception
  */
 - (OFString*)description;

@@ -31,15 +31,17 @@
 #endif
 
 /**
+ * \brief Creates a new, autoreleased thread start failed exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param thread The thread which could not be started
- * \return An initialized thread start failed exception
+ * \return A new, autoreleased thread start failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    thread: (OFThread*)thread;
 
 /**
- * Initializes an already allocated thread start failed exception.
+ * \brief Initializes an already allocated thread start failed exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param thread The thread which could not be started
@@ -49,6 +51,8 @@
 	 thread: (OFThread*)thread;
 
 /**
+ * \brief Returns the thread which could not be started.
+ *
  * \return The thread which could not be started
  */
 - (OFThread*)thread;

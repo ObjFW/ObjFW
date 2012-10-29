@@ -217,7 +217,7 @@ typedef void (^of_timer_block_t)(OFTimer*);
 	  interval: (double)interval
 	    target: (id)target
 	  selector: (SEL)selector
-	    object: (id)object1
+	    object: (id)object
 	   repeats: (BOOL)repeats;
 
 /**
@@ -229,6 +229,10 @@ typedef void (^of_timer_block_t)(OFTimer*);
  *		   a repeating timer
  * \param target The target on which to call the selector
  * \param selector The selector to call on the target
+ * \param object1 The first object to pass when calling the selector on the
+ *		  target
+ * \param object2 The second object to pass when calling the selector on the
+ *		  target
  * \param repeats Whether the timer repeats after it has been executed
  * \return An initialized timer
  */

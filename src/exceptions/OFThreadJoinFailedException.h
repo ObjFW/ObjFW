@@ -31,15 +31,17 @@
 #endif
 
 /**
+ * \brief Creates a new, autoreleased thread join failed exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param thread The thread which could not be joined
- * \return A new thread join failed exception
+ * \return A new, autoreleased thread join failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    thread: (OFThread*)thread;
 
 /**
- * Initializes an already allocated thread join failed exception.
+ * \brief Initializes an already allocated thread join failed exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param thread The thread which could not be joined
@@ -49,6 +51,8 @@
 	 thread: (OFThread*)thread;
 
 /**
+ * \brief Returns the thread which could not be joined.
+ *
  * \return The thread which could not be joined
  */
 - (OFThread*)thread;

@@ -34,17 +34,19 @@
 #endif
 
 /**
+ * \brief Creates a new, autoreleased symlink failed exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param source The source for the symlink
  * \param destination The destination for the symlink
- * \return A new symlink failed exception
+ * \return A new, autoreleased symlink failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			sourcePath: (OFString*)source
 		   destinationPath: (OFString*)destination;
 
 /**
- * Initializes an already allocated symlink failed exception.
+ * \brief Initializes an already allocated symlink failed exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param source The source for the symlink
@@ -56,16 +58,22 @@
   destinationPath: (OFString*)destination;
 
 /**
+ * \brief Returns the errno from when the exception was created.
+ *
  * \return The errno from when the exception was created
  */
 - (int)errNo;
 
 /**
+ * \brief Returns a string with the source for the symlink.
+ *
  * \return A string with the source for the symlink
  */
 - (OFString*)sourcePath;
 
 /**
+ * \brief Returns a string with the destination for the symlink.
+ *
  * \return A string with the destination for the symlink
  */
 - (OFString*)destinationPath;

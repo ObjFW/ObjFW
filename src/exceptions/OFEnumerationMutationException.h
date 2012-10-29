@@ -30,15 +30,17 @@
 #endif
 
 /**
+ * \brief Creates a new, autoreleased enumeration mutation exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param object The object which was mutated during enumeration
- * \return A new enumeration mutation exception
+ * \return A new, autoreleased enumeration mutation exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    object: (id)object;
 
 /**
- * Initializes an already allocated enumeration mutation exception.
+ * \brief Initializes an already allocated enumeration mutation exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param object The object which was mutated during enumeration
@@ -48,6 +50,8 @@
 	 object: (id)object;
 
 /**
+ * \brief Returns the object which was mutated during enumeration.
+ *
  * \return The object which was mutated during enumeration
  */
 - (id)object;

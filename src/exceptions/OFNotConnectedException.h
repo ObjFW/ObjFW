@@ -31,15 +31,17 @@
 #endif
 
 /**
+ * \brief Creates a new, autoreleased not connected exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param socket The socket which is not connected
- * \return A new not connected exception
+ * \return A new, autoreleased not connected exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    socket: (OFStreamSocket*)socket;
 
 /**
- * Initializes an already allocated not connected exception.
+ * \brief Initializes an already allocated not connected exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param socket The socket which is not connected
@@ -49,6 +51,8 @@
 	 socket: (OFStreamSocket*)socket;
 
 /**
+ * \brief Returns the socket which is not connected.
+ *
  * \return The socket which is not connected
  */
 - (OFStreamSocket*)socket;

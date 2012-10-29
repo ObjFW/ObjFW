@@ -31,15 +31,17 @@
 #endif
 
 /**
+ * \brief Creates a new, autoreleased condition wait failed exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param condition The condition for which could not be waited
- * \return A new condition wait failed exception
+ * \return A new, autoreleased condition wait failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			 condition: (OFCondition*)condition;
 
 /**
- * Initializes an already allocated condition wait failed exception.
+ * \brief Initializes an already allocated condition wait failed exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param condition The condition for which could not be waited
@@ -49,6 +51,8 @@
       condition: (OFCondition*)condition;
 
 /**
+ * \brief Return the condition for which could not be waited.
+ *
  * \return The condition for which could not be waited
  */
 - (OFCondition*)condition;

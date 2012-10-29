@@ -37,11 +37,13 @@
 #endif
 
 /**
+ * \brief Creates a new, autoreleased bind failed exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param socket The socket which could not be bound
  * \param host The host on which binding failed
  * \param port The port on which binding failed
- * \return A new bind failed exception
+ * \return A new, autoreleased bind failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    socket: (OFTCPSocket*)socket
@@ -49,7 +51,7 @@
 			      port: (uint16_t)port;
 
 /**
- * Initializes an already allocated bind failed exception.
+ * \brief Initializes an already allocated bind failed exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param socket The socket which could not be bound
@@ -63,21 +65,29 @@
 	   port: (uint16_t)port;
 
 /**
+ * \brief Returns the socket which could not be bound.
+ *
  * \return The socket which could not be bound
  */
 - (OFTCPSocket*)socket;
 
 /**
+ * \brief Returns the host on which binding failed.
+ *
  * \return The host on which binding failed
  */
 - (OFString*)host;
 
 /**
+ * \brief Return the port on which binding failed.
+ *
  * \return The port on which binding failed
  */
 - (uint16_t)port;
 
 /**
+ * \brief Returns the errno from when the exception was created.
+ *
  * \return The errno from when the exception was created
  */
 - (int)errNo;

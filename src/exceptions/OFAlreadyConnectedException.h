@@ -32,15 +32,17 @@
 #endif
 
 /**
+ * \brief Creates a new, autoreleased already connected exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param socket The socket which is already connected
- * \return A new already connected exception
+ * \return A new, autoreleased already connected exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    socket: (OFTCPSocket*)socket;
 
 /**
- * Initializes an already allocated already connected exception.
+ * \brief Initializes an already allocated already connected exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param socket The socket which is already connected
@@ -50,6 +52,8 @@
 	 socket: (OFTCPSocket*)socket;
 
 /**
+ * \brief Returns the socket which is already connected.
+ *
  * \return The socket which is already connected
  */
 - (OFTCPSocket*)socket;

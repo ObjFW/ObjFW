@@ -91,7 +91,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * \return The number of bytes read
  */
 - (size_t)readIntoBuffer: (void*)buffer
-		  length: (size_t)size;
+		  length: (size_t)length;
 
 /**
  * \brief Reads exactly the specified length bytes from the stream into a
@@ -282,13 +282,13 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * \param nInt16s The number of uint16_ts to read
  * \param buffer A buffer of sufficient size to store the specified number of
  *		 uint16_ts
+ * \param count The number of uint16_ts to read
  * \return The number of bytes read
  */
 - (size_t)readBigEndianInt16sIntoBuffer: (uint16_t*)buffer
-				  count: (size_t)nInt16s;
+				  count: (size_t)count;
 
 /**
  * \brief Reads the specified number of uint32_ts from the stream which are
@@ -297,13 +297,13 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * \param nInt32s The number of uint32_ts to read
  * \param buffer A buffer of sufficient size to store the specified number of
  *		 uint32_ts
+ * \param count The number of uint32_ts to read
  * \return The number of bytes read
  */
 - (size_t)readBigEndianInt32sIntoBuffer: (uint32_t*)buffer
-				  count: (size_t)nInt32s;
+				  count: (size_t)count;
 
 /**
  * \brief Reads the specified number of uint64_ts from the stream which are
@@ -312,13 +312,13 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * \param nInt64s The number of uint64_ts to read
  * \param buffer A buffer of sufficient size to store the specified number of
  *		 uint64_ts
+ * \param count The number of uint64_ts to read
  * \return The number of bytes read
  */
 - (size_t)readBigEndianInt64sIntoBuffer: (uint64_t*)buffer
-				  count: (size_t)nInt64s;
+				  count: (size_t)count;
 
 /**
  * \brief Reads the specified number of floats from the stream which are encoded
@@ -327,13 +327,13 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * \param nFloatss The number of floats to read
  * \param buffer A buffer of sufficient size to store the specified number of
  *		 floats
+ * \param count The number of floats to read
  * \return The number of bytes read
  */
 - (size_t)readBigEndianFloatsIntoBuffer: (float*)buffer
-				  count: (size_t)nFloats;
+				  count: (size_t)count;
 
 /**
  * \brief Reads the specified number of doubles from the stream which are
@@ -342,13 +342,13 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * \param nDoubles The number of doubles to read
  * \param buffer A buffer of sufficient size to store the specified number of
  *		 doubles
+ * \param count The number of doubles to read
  * \return The number of bytes read
  */
 - (size_t)readBigEndianDoublesIntoBuffer: (double*)buffer
-				   count: (size_t)nDoubles;
+				   count: (size_t)count;
 
 /**
  * \brief Reads a uint16_t from the stream which is encoded in little endian.
@@ -407,13 +407,13 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * \param nInt16s The number of uint16_ts to read
  * \param buffer A buffer of sufficient size to store the specified number of
  *		 uint16_ts
+ * \param count The number of uint16_ts to read
  * \return The number of bytes read
  */
 - (size_t)readLittleEndianInt16sIntoBuffer: (uint16_t*)buffer
-				     count: (size_t)nInt16s;
+				     count: (size_t)count;
 
 /**
  * \brief Reads the specified number of uint32_ts from the stream which are
@@ -422,13 +422,13 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * \param nInt32s The number of uint32_ts to read
  * \param buffer A buffer of sufficient size to store the specified number of
  *		 uint32_ts
+ * \param count The number of uint32_ts to read
  * \return The number of bytes read
  */
 - (size_t)readLittleEndianInt32sIntoBuffer: (uint32_t*)buffer
-				     count: (size_t)nInt32s;
+				     count: (size_t)count;
 
 /**
  * \brief Reads the specified number of uint64_ts from the stream which are
@@ -437,13 +437,13 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * \param nInt64s The number of uint64_ts to read
  * \param buffer A buffer of sufficient size to store the specified number of
  *		 uint64_ts
+ * \param count The number of uint64_ts to read
  * \return The number of bytes read
  */
 - (size_t)readLittleEndianInt64sIntoBuffer: (uint64_t*)buffer
-				     count: (size_t)nInt64s;
+				     count: (size_t)count;
 
 /**
  * \brief Reads the specified number of floats from the stream which are
@@ -452,13 +452,13 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * \param nFloats The number of floats to read
  * \param buffer A buffer of sufficient size to store the specified number of
  *		 floats
+ * \param count The number of floats to read
  * \return The number of bytes read
  */
 - (size_t)readLittleEndianFloatsIntoBuffer: (float*)buffer
-				     count: (size_t)nFloats;
+				     count: (size_t)count;
 
 /**
  * \brief Reads the specified number of doubles from the stream which are
@@ -467,13 +467,13 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * \param nDoubles The number of doubles to read
  * \param buffer A buffer of sufficient size to store the specified number of
  *		 doubles
+ * \param count The number of doubles to read
  * \return The number of bytes read
  */
 - (size_t)readLittleEndianDoublesIntoBuffer: (double*)buffer
-				      count: (size_t)nDoubles;
+				      count: (size_t)count;
 
 /**
  * \brief Reads the specified number of items with an item size of 1 from the
@@ -482,8 +482,8 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * \warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * \param nItems The number of items to read
- * \return An OFDataArray with at nItems items.
+ * \param size The number of items to read
+ * \return An OFDataArray with count items.
  */
 - (OFDataArray*)readDataArrayWithSize: (size_t)size;
 
@@ -495,11 +495,11 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *	    Otherwise you will get an exception!
  *
  * \param itemSize The size of each item
- * \param nItems The number of items to read
- * \return An OFDataArray with at nItems items.
+ * \param count The number of items to read
+ * \return An OFDataArray with count items.
  */
 - (OFDataArray*)readDataArrayWithItemSize: (size_t)itemSize
-				    count: (size_t)nItems;
+				    count: (size_t)count;
 
 /**
  * \brief Returns an OFDataArray with all the remaining data of the stream.
@@ -761,61 +761,61 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * \brief Writes the specified number of uint16_ts into the stream, encoded in
  *	  big endian.
  *
- * \param nInt16 The number of uint16_ts to write
  * \param buffer The buffer from which the data is written to the stream after
  *		 it has been byte swapped if necessary
+ * \param count The number of uint16_ts to write
  * \return The number of bytes written to the stream
  */
 - (size_t)writeBigEndianInt16s: (const uint16_t*)buffer
-			 count: (size_t)nInt16s;
+			 count: (size_t)count;
 
 /**
  * \brief Writes the specified number of uint32_ts into the stream, encoded in
  *	  big endian.
  *
- * \param nInt32 The number of uint32_ts to write
  * \param buffer The buffer from which the data is written to the stream after
  *		 it has been byte swapped if necessary
+ * \param count The number of uint32_ts to write
  * \return The number of bytes written to the stream
  */
 - (size_t)writeBigEndianInt32s: (const uint32_t*)buffer
-			 count: (size_t)nInt32s;
+			 count: (size_t)count;
 
 /**
  * \brief Writes the specified number of uint64_ts into the stream, encoded in
  *	  big endian.
  *
- * \param nInt64 The number of uint64_ts to write
  * \param buffer The buffer from which the data is written to the stream after
  *		 it has been byte swapped if necessary
+ * \param count The number of uint64_ts to write
  * \return The number of bytes written to the stream
  */
 - (size_t)writeBigEndianInt64s: (const uint64_t*)buffer
-			 count: (size_t)nInt64s;
+			 count: (size_t)count;
 
 /**
  * \brief Writes the specified number of floats into the stream, encoded in big
  *	  endian.
  *
- * \param nFloats The number of floats to write
  * \param buffer The buffer from which the data is written to the stream after
  *		 it has been byte swapped if necessary
+ * \param count The number of floats to write
  * \return The number of bytes written to the stream
  */
 - (size_t)writeBigEndianFloats: (const float*)buffer
-			 count: (size_t)nFloats;
+			 count: (size_t)count;
 
 /**
  * \brief Writes the specified number of doubles into the stream, encoded in
  *	  big endian.
  *
- * \param nDoubles The number of doubles to write
  * \param buffer The buffer from which the data is written to the stream after
  *		 it has been byte swapped if necessary
+ * \param count The number of doubles to write
  * \return The number of bytes written to the stream
  */
 - (size_t)writeBigEndianDoubles: (const double*)buffer
-			  count: (size_t)nDoubles;
+			  count: (size_t)count;
 
 /**
  * \brief Writes a uint16_t into the stream, encoded in little endian.
@@ -856,61 +856,61 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * \brief Writes the specified number of uint16_ts into the stream, encoded in
  *	  little endian.
  *
- * \param nInt16 The number of uint16_ts to write
  * \param buffer The buffer from which the data is written to the stream after
  *		 it has been byte swapped if necessary
+ * \param count The number of uint16_ts to write
  * \return The number of bytes written to the stream
  */
 - (size_t)writeLittleEndianInt16s: (const uint16_t*)buffer
-			    count: (size_t)nInt16s;
+			    count: (size_t)count;
 
 /**
  * \brief Writes the specified number of uint32_ts into the stream, encoded in
  *	  little endian.
  *
- * \param nInt32 The number of uint32_ts to write
+ * \param count The number of uint32_ts to write
  * \param buffer The buffer from which the data is written to the stream after
  *		 it has been byte swapped if necessary
  * \return The number of bytes written to the stream
  */
 - (size_t)writeLittleEndianInt32s: (const uint32_t*)buffer
-			    count: (size_t)nInt32s;
+			    count: (size_t)count;
 
 /**
  * \brief Writes the specified number of uint64_ts into the stream, encoded in
  *	  little endian.
  *
- * \param nInt64 The number of uint64_ts to write
  * \param buffer The buffer from which the data is written to the stream after
  *		 it has been byte swapped if necessary
+ * \param count The number of uint64_ts to write
  * \return The number of bytes written to the stream
  */
 - (size_t)writeLittleEndianInt64s: (const uint64_t*)buffer
-			    count: (size_t)nInt64s;
+			    count: (size_t)count;
 
 /**
  * \brief Writes the specified number of floats into the stream, encoded in
  *	  little endian.
  *
- * \param nFloats The number of floats to write
  * \param buffer The buffer from which the data is written to the stream after
  *		 it has been byte swapped if necessary
+ * \param count The number of floats to write
  * \return The number of bytes written to the stream
  */
 - (size_t)writeLittleEndianFloats: (const float*)buffer
-			    count: (size_t)nFloats;
+			    count: (size_t)count;
 
 /**
  * \brief Writes the specified number of doubles into the stream, encoded in
  *	  little endian.
  *
- * \param nDoubles The number of doubles to write
  * \param buffer The buffer from which the data is written to the stream after
  *		 it has been byte swapped if necessary
+ * \param count The number of doubles to write
  * \return The number of bytes written to the stream
  */
 - (size_t)writeLittleEndianDoubles: (const double*)buffer
-			     count: (size_t)nDoubles;
+			     count: (size_t)count;
 
 /**
  * \brief Writes from an OFDataArray into the stream.

@@ -31,15 +31,17 @@
 #endif
 
 /**
+ * \brief Returns a new, autoreleased condition broadcast failed exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param condition The condition which could not be broadcasted
- * \return A new condition broadcast failed exception
+ * \return A new, autoreleased condition broadcast failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			 condition: (OFCondition*)condition;
 
 /**
- * Initializes an already allocated condition broadcast failed exception.
+ * \brief Initializes an already allocated condition broadcast failed exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param condition The condition which could not be broadcasted
@@ -49,6 +51,8 @@
       condition: (OFCondition*)condition;
 
 /**
+ * \brief Returns the condition which could not be broadcasted.
+ *
  * \return The condition which could not be broadcasted
  */
 - (OFCondition*)condition;

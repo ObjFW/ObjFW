@@ -36,18 +36,20 @@
 #endif
 
 /**
+ * \brief Creates a new, autoreleased read or write failed exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param stream The stream which caused the read or write failed exception
  * \param length The requested length of the data that couldn't be read /
  *		 written
- * \return A new open file failed exception
+ * \return A new, autoreleased read or write failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    stream: (OFStream*)stream
 		   requestedLength: (size_t)length;
 
 /**
- * Initializes an already allocated read or write failed exception.
+ * \brief Initializes an already allocated read or write failed exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param stream The stream which caused the read or write failed exception
@@ -60,16 +62,23 @@
   requestedLength: (size_t)length;
 
 /**
+ * \brief Returns the stream which caused the read or write failed exception.
+ *
  * \return The stream which caused the read or write failed exception
  */
 - (OFStream*)stream;
 
 /**
+ * \brief Returns the requested length of the data that couldn't be read /
+ *	  written.
+ *
  * \return The requested length of the data that couldn't be read / written
  */
 - (size_t)requestedLength;
 
 /**
+ * \brief Returns the errno from when the exception was created.
+ *
  * \return The errno from when the exception was created
  */
 - (int)errNo;

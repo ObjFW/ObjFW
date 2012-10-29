@@ -31,23 +31,27 @@
 #endif
 
 /**
+ * \brief Creates a new, autoreleased unbound namespace exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param ns The namespace which is unbound
- * \return A new unbound namespace exception
+ * \return A new, autoreleased unbound namespace exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			 namespace: (OFString*)ns;
 
 /**
+ * \brief Creates a new, autoreleased unbound namespace exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param prefix The prefix which is unbound
- * \return A new unbound namespace exception
+ * \return A new, autoreleased unbound namespace exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    prefix: (OFString*)prefix;
 
 /**
- * Initializes an already allocated unbound namespace exception
+ * \brief Initializes an already allocated unbound namespace exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param ns The namespace which is unbound
@@ -57,7 +61,7 @@
       namespace: (OFString*)ns;
 
 /**
- * Initializes an already allocated unbound namespace exception
+ * \brief Initializes an already allocated unbound namespace exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param prefix The prefix which is unbound
@@ -67,11 +71,15 @@
 	 prefix: (OFString*)prefix;
 
 /**
+ * \brief Returns the unbound namespace.
+ *
  * \return The unbound namespace
  */
 - (OFString*)namespace;
 
 /**
+ * \brief Returns the unbound prefix.
+ *
  * \return The unbound prefix
  */
 - (OFString*)prefix;

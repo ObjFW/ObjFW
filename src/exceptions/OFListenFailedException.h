@@ -35,17 +35,19 @@
 #endif
 
 /**
+ * \brief Creates a new, autoreleased listen failed exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param socket The socket which failed to listen
  * \param backlog The requested size of the back log
- * \return A new listen failed exception
+ * \return A new, autoreleased listen failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    socket: (OFTCPSocket*)socket
 			   backLog: (int)backlog;
 
 /**
- * Initializes an already allocated listen failed exception
+ * \brief Initializes an already allocated listen failed exception
  *
  * \param class_ The class of the object which caused the exception
  * \param socket The socket which failed to listen
@@ -57,16 +59,22 @@
 	backLog: (int)backlog;
 
 /**
+ * \brief Returns the socket which failed to listen.
+ *
  * \return The socket which failed to listen
  */
 - (OFTCPSocket*)socket;
 
 /**
- * \return The requested back log.
+ * \brief Returns the requested back log.
+ *
+ * \return The requested back log
  */
 - (int)backLog;
 
 /**
+ * \brief Returns the errno from when the exception was created.
+ *
  * \return The errno from when the exception was created
  */
 - (int)errNo;

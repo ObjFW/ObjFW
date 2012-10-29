@@ -30,15 +30,17 @@
 #endif
 
 /**
+ * \brief Creates a new, autoreleased lock failed exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param lock The lock which could not be locked
- * \return A new lock failed exception
+ * \return A new, autoreleased lock failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			      lock: (id <OFLocking>)lock;
 
 /**
- * Initializes an already allocated lock failed exception.
+ * \brief Initializes an already allocated lock failed exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param lock The lock which could not be locked
@@ -48,7 +50,9 @@
 	   lock: (id <OFLocking>)lock;
 
 /**
- * \param The lock which could not be locked
+ * \brief Returns the lock which could not be locked.
+ *
+ * \return The lock which could not be locked
  */
 - (id <OFLocking>)lock;
 @end

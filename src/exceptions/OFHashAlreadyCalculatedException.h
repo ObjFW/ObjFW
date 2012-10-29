@@ -31,15 +31,17 @@
 #endif
 
 /**
+ * \brief Creates a new, autoreleased hash already calculated exception.
+ *
  * \param class_ The class of the object which caused the exception
  * \param hash The hash which has already been calculated
- * \return A new hash already calculated exception
+ * \return A new, autoreleased hash already calculated exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			      hash: (OFHash*)hash;
 
 /**
- * Initializes an already allocated hash already calculated exception.
+ * \brief Initializes an already allocated hash already calculated exception.
  *
  * \param class_ The class of the object which caused the exception
  * \param hash The hash which has already been calculated
@@ -49,6 +51,8 @@
 	   hash: (OFHash*)hash;
 
 /**
+ * \brief Returns the hash which has already been calculated.
+ *
  * \return The hash which has already been calculated
  */
 - (OFHash*)hashObject;

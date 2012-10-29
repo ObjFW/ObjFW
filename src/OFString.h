@@ -117,7 +117,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 /**
  * \brief Creates a new OFString from a C string with the specified encoding.
  *
- * \param string A C string to initialize the OFString with
+ * \param cString A C string to initialize the OFString with
  * \param encoding The encoding of the C string
  * \return A new autoreleased OFString
  */
