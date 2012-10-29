@@ -717,38 +717,13 @@ of_log(OFConstantString *format, ...)
 }
 
 - (void)lowlevelSeekToOffset: (off_t)offset
+		      whence: (int)whence
 {
-	if (lseek(fd, offset, SEEK_SET) == -1)
+	if (lseek(fd, offset, whence) == -1)
 		@throw [OFSeekFailedException exceptionWithClass: [self class]
 							  stream: self
 							  offset: offset
-							  whence: SEEK_SET];
-}
-
-- (off_t)lowlevelSeekForwardWithOffset: (off_t)offset
-{
-	off_t ret;
-
-	if ((ret = lseek(fd, offset, SEEK_CUR)) == -1)
-		@throw [OFSeekFailedException exceptionWithClass: [self class]
-							  stream: self
-							  offset: offset
-							  whence: SEEK_CUR];
-
-	return ret;
-}
-
-- (off_t)lowlevelSeekToOffsetRelativeToEnd: (off_t)offset
-{
-	off_t ret;
-
-	if ((ret = lseek(fd, offset, SEEK_END)) == -1)
-		@throw [OFSeekFailedException exceptionWithClass: [self class]
-							  stream: self
-							  offset: offset
-							  whence: SEEK_END];
-
-	return ret;
+							  whence: whence];
 }
 
 - (int)fileDescriptorForReading
@@ -822,18 +797,7 @@ of_log(OFConstantString *format, ...)
 }
 
 - (void)lowlevelSeekToOffset: (off_t)offset
-{
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
-}
-
-- (off_t)lowlevelSeekForwardWithOffset: (off_t)offset
-{
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
-}
-
-- (off_t)lowlevelSeekToOffsetRelativeToEnd: (off_t)offset
+		      whence: (int)whence
 {
 	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];

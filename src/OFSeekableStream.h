@@ -28,37 +28,24 @@
 /*!
  * @brief A stream that supports seeking.
  *
- * @note If you want to subclass this, override lowlevelSeekToOffset:,
- *	 lowlevelSeekForwardWithOffset: and lowlevelSeekToOffsetRelativeToEnd:,
- *	 but nothing else, as they do the actual work. OFSeekableStream uses
- *	 those and makes them work together with the caching of OFStream.
- *	 If you override these methods without the lowlevel prefix, you
- *	 <i>will</i> break caching, get broken results and seek to the wrong
- *	 position!
+ * @note If you want to subclass this, override
+ *	 @ref lowlevelSeekToOffset:whence:. OFSeekableStream uses this method
+ *	 and makes it work together with the caching of OFStream. If you
+ *	 override this methods without the lowlevel prefix, you <i>will</i>
+ *	 break caching, get broken results and seek to the wrong position!
  */
 @interface OFSeekableStream: OFStream
 /*!
  * @brief Seeks to the specified absolute offset.
  *
  * @param offset The offset in bytes
+ * @param whence From where to seek. Possible values are:
+ *		  * SEEK_SET: Seek to the specified byte.
+ *		  * SEEK_CUR: Seek to the current location + offset.
+ *		  * SEEK_END: Seek to the end of the stream + offset.
  */
-- (void)seekToOffset: (off_t)offset;
-
-/*!
- * @brief Seeks to the specified offset, relative to the current location.
- *
- * @param offset The offset relative to the current location
- * @return The absolute offset
- */
-- (off_t)seekForwardWithOffset: (off_t)offset;
-
-/*!
- * @brief Seeks to the specified offset, relative to the end of the stream.
- *
- * @param offset The offset relative to the end of the stream
- * @return The absolute offset
- */
-- (off_t)seekToOffsetRelativeToEnd: (off_t)offset;
+- (void)seekToOffset: (off_t)offset
+	      whence: (int)whence;
 
 /*!
  * @brief Seek the stream on the lowlevel.
@@ -69,30 +56,11 @@
  * subclassing!
  *
  * @param offset The offset to seek to
+ * @param whence From where to seek. Possible values are:
+ *		  * SEEK_SET: Seek to the specified byte.
+ *		  * SEEK_CUR: Seek to the current location + offset.
+ *		  * SEEK_END: Seek to the end of the stream + offset.
  */
-- (void)lowlevelSeekToOffset: (off_t)offset;
-
-/*!
- * @brief Seek the stream on the lowlevel.
- *
- * @warning Do not call this directly!
- *
- * Override this with this method with your actual seek implementation when
- * subclassing!
- *
- * @param offset The offset to seek forward to
- */
-- (off_t)lowlevelSeekForwardWithOffset: (off_t)offset;
-
-/*!
- * @brief Seek the stream on the lowlevel.
- *
- * @warning Do not call this directly!
- *
- * Override this with this method with your actual seek implementation when
- * subclassing!
- *
- * @param offset The offset to seek to, relative to the end
- */
-- (off_t)lowlevelSeekToOffsetRelativeToEnd: (off_t)offset;
+- (void)lowlevelSeekToOffset: (off_t)offset
+		      whence: (int)whence;
 @end

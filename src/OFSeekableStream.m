@@ -20,55 +20,20 @@
 
 @implementation OFSeekableStream
 - (void)lowlevelSeekToOffset: (off_t)offset
-{
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
-}
-
-- (off_t)lowlevelSeekForwardWithOffset: (off_t)offset
-{
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
-}
-
-- (off_t)lowlevelSeekToOffsetRelativeToEnd: (off_t)offset
+		      whence: (int)whence
 {
 	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
 }
 
 - (void)seekToOffset: (off_t)offset
+	      whence: (int)whence
 {
-	[self lowlevelSeekToOffset: offset];
+	[self lowlevelSeekToOffset: offset
+			    whence: whence];
 
 	[self freeMemory: cache];
 	cache = NULL;
 	cacheLength = 0;
-}
-
-- (off_t)seekForwardWithOffset: (off_t)offset
-{
-	off_t ret;
-
-	ret = [self lowlevelSeekForwardWithOffset: offset - cacheLength];
-
-	[self freeMemory: cache];
-	cache = NULL;
-	cacheLength = 0;
-
-	return ret;
-}
-
-- (off_t)seekToOffsetRelativeToEnd: (off_t)offset
-{
-	off_t ret;
-
-	ret = [self lowlevelSeekToOffsetRelativeToEnd: offset];
-
-	[self freeMemory: cache];
-	cache = NULL;
-	cacheLength = 0;
-
-	return ret;
 }
 @end
