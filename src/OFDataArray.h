@@ -94,13 +94,6 @@
 + (instancetype)dataArrayWithBase64EncodedString: (OFString*)string;
 
 /**
- * \brief Initializes an already allocated OFDataArray with an item size of 1.
- *
- * \return A initialized OFDataArray
- */
-- init;
-
-/**
  * \brief Initializes an already allocated OFDataArray whose items all have the
  *	  same size.
  *
@@ -141,7 +134,7 @@
  *	  containing the data of the Base64-encoded string.
  *
  * \param string The string with the Base64-encoded data
- * \return A initialized OFDataArray
+ * \return An initialized OFDataArray
  */
 - initWithBase64EncodedString: (OFString*)string;
 

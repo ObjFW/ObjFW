@@ -45,7 +45,7 @@
 /**
  * \brief This callback is called when a stream did get ready for reading.
  *
- * NOTE: When -[tryReadLine] or -[tryReadTillDelimiter:] has been called on the
+ * \note When \ref tryReadLine or \ref tryReadTillDelimiter: has been called on
  *	 the stream, this callback will not be called again until new data has
  *	 been received, even though there is still data in the cache. The reason
  *	 for this is to prevent spinning in a loop when there is an incomplete
@@ -74,7 +74,7 @@
 /**
  * \brief A class that can observe multiple streams at once.
  *
- * Note: Currently, Win32 can only observe sockets and not files!
+ * \note Currently, Win32 can only observe sockets and not files!
  */
 @interface OFStreamObserver: OFObject
 {
@@ -125,8 +125,8 @@
  *
  * It is recommended that the stream you add is set to non-blocking mode.
  *
- * If there is an -[observe] call blocking, it will be canceled. The reason for
- * this is to prevent blocking even though the new added stream is ready.
+ * If there is an \ref observe call blocking, it will be canceled. The reason
+ * for this is to prevent blocking even though the new added stream is ready.
  *
  * \param stream The stream to observe for reading
  */
@@ -137,8 +137,8 @@
  *
  * It is recommended that the stream you add is set to non-blocking mode.
  *
- * If there is an -[observe] call blocking, it will be canceled. The reason for
- * this is to prevent blocking even though the new added stream is ready.
+ * If there is an \ref observe call blocking, it will be canceled. The reason
+ * for this is to prevent blocking even though the new added stream is ready.
  *
  * \param stream The stream to observe for writing
  */
@@ -147,8 +147,8 @@
 /**
  * \brief Removes a stream to observe for reading.
  *
- * If there is an -[observe] call blocking, it will be canceled. The reason for
- * this is to prevent the removed stream from still being observed.
+ * If there is an \ref observe call blocking, it will be canceled. The reason
+ * for this is to prevent the removed stream from still being observed.
  *
  * \param stream The stream to remove from observing for reading
  */
@@ -157,8 +157,8 @@
 /**
  * \brief Removes a stream to observe for writing.
  *
- * If there is an -[observe] call blocking, it will be canceled. The reason for
- * this is to prevent the removed stream from still being observed.
+ * If there is an \ref observe call blocking, it will be canceled. The reason
+ * for this is to prevent the removed stream from still being observed.
  *
  * \param stream The stream to remove from observing for writing
  */

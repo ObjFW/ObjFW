@@ -47,12 +47,13 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *	    stream in more than one thread at the same time is not thread-safe,
  *	    even if copy was called to create one "instance" for every thread!
  *
- * \note If you want to subclass this, override lowlevelReadIntoBuffer:length:,
- *	 lowlevelWriteBuffer:length: and lowlevelIsAtEndOfStream, but nothing
- *	 else, as those are are the methods that do the actual work. OFStream
- *	 uses those for all other methods and does all the caching and other
- *	 stuff for you. If you override these methods without the lowlevel
- *	 prefix, you <i>will</i> break caching and get broken results!
+ * \note If you want to subclass this, override
+ *	 \ref lowlevelReadIntoBuffer:length:, \ref lowlevelWriteBuffer:length:
+ *	 and \ref lowlevelIsAtEndOfStream, but nothing else, as those are are
+ *	 the methods that do the actual work. OFStream uses those for all other
+ *	 methods and does all the caching and other stuff for you. If you
+ *	 override these methods without the lowlevel prefix, you <i>will</i>
+ *	 break caching and get broken results!
  */
 @interface OFStream: OFObject <OFCopying>
 {
@@ -81,9 +82,9 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *
  * On network streams, this might read less than the specified number of bytes.
  * If you want to read exactly the specified number of bytes, use
- * -readIntoBuffer:exactLength:. Note that a read can even return 0 bytes -
+ * \ref readIntoBuffer:exactLength:. Note that a read can even return 0 bytes -
  * this does not necessarily mean that the stream ended, so you still need to
- * check isAtEndOfStream.
+ * check \ref isAtEndOfStream.
  *
  * \param buffer The buffer into which the data is read
  * \param length The length of the data that should be read at most.
@@ -97,9 +98,9 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * \brief Reads exactly the specified length bytes from the stream into a
  *	  buffer.
  *
- * Unlike readIntoBuffer:length:, this method does not return when less than the
- * specified length has been read - instead, it waits until it got exactly the
- * specified length.
+ * Unlike \ref readIntoBuffer:length:, this method does not return when less
+ * than the specified length has been read - instead, it waits until it got
+ * exactly the specified length.
  *
  * \warning Only call this when you know that specified amount of data is
  *	    available! Otherwise you will get an exception!
@@ -117,9 +118,9 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *
  * On network streams, this might read less than the specified number of bytes.
  * If you want to read exactly the specified number of bytes, use
- * asyncReadIntoBuffer:exactLength:block:. Note that a read can even return 0
- * bytes - this does not necessarily mean that the stream ended, so you still
- * need to check isAtEndOfStream.
+ * \ref asyncReadIntoBuffer:exactLength:block:. Note that a read can even
+ * return 0 bytes - this does not necessarily mean that the stream ended, so
+ * you still need to check \ref isAtEndOfStream.
  *
  * \param buffer The buffer into which the data is read.
  *		 The buffer must not be free'd before the async read completed!
@@ -144,7 +145,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * \brief Asyncronously reads exactly the specified length bytes from the
  *	  stream into a buffer.
  *
- * Unlike asyncReadIntoBuffer:length:block, this method does not call the
+ * Unlike \ref asyncReadIntoBuffer:length:block, this method does not call the
  * method when less than the specified length has been read - instead, it waits
  * until it got exactly the specified length, the stream has ended or an
  * exception occurred.
@@ -174,9 +175,9 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *
  * On network streams, this might read less than the specified number of bytes.
  * If you want to read exactly the specified number of bytes, use
- * asyncReadIntoBuffer:exactLength:block:. Note that a read can even return 0
- * bytes - this does not necessarily mean that the stream ended, so you still
- * need to check isAtEndOfStream.
+ * \ref asyncReadIntoBuffer:exactLength:block:. Note that a read can even
+ * return 0 bytes - this does not necessarily mean that the stream ended, so
+ * you still need to check \ref isAtEndOfStream.
  *
  * \param buffer The buffer into which the data is read.
  *		 The buffer must not be free'd before the async read completed!
@@ -196,7 +197,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * \brief Asyncronously reads exactly the specified length bytes from the
  *	  stream into a buffer.
  *
- * Unlike asyncReadIntoBuffer:length:block, this method does not invoke the
+ * Unlike \ref asyncReadIntoBuffer:length:block, this method does not invoke the
  * block when less than the specified length has been read - instead, it waits
  * until it got exactly the specified length, the stream has ended or an
  * exception occurred.
@@ -632,8 +633,8 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
 
 /**
  * \brief Tries to read a line from the stream with the specified encoding (see
- *	  readLineWithEncoding:) and returns nil if no complete line has been
- *	  received yet.
+ *	  \ref readLineWithEncoding:) and returns nil if no complete line has
+ *	  been received yet.
  *
  * \param encoding The encoding used by the stream
  * \return The line that was read, autoreleased, or nil if the line is not
@@ -665,8 +666,8 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
 
 /**
  * \brief Tries to reads until the specified string or \\0 is found or the end
- *	  of stream (see readTillDelimiter:) and returns nil if not enough data
- *	  has been received yet.
+ *	  of stream (see \ref readTillDelimiter:) and returns nil if not enough
+ *	  data has been received yet.
  *
  * \param delimiter The delimiter
  * \return The line that was read, autoreleased, or nil if the end of the
@@ -676,8 +677,8 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
 
 /**
  * \brief Tries to read until the specified string or \\0 is found or the end
- *	  of stream occurs (see readTIllDelimiterWithEncoding:) and returns nil
- *	  if not enough data has been received yet.
+ *	  of stream occurs (see \ref readTillDelimiterWithEncoding:) and
+ *	  returns nil if not enough data has been received yet.
  *
  * \param delimiter The delimiter
  * \param encoding The encoding used by the stream

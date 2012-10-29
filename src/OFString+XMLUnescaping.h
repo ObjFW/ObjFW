@@ -25,13 +25,13 @@ extern int _OFString_XMLUnescaping_reference;
 #endif
 
 #ifdef OF_HAVE_BLOCKS
-typedef OFString* (^of_string_xml_unescaping_block_t)(OFString *str,
+typedef OFString* (^of_string_xml_unescaping_block_t)(OFString *string,
     OFString *entity);
 #endif
 
 /**
  * \brief A protocol that needs to be implemented by delegates for
- *	  -[stringByXMLUnescapingWithHandler:].
+ *	  stringByXMLUnescapingWithHandler:.
  */
 @protocol OFStringXMLUnescapingDelegate <OFObject>
 /**
@@ -42,11 +42,11 @@ typedef OFString* (^of_string_xml_unescaping_block_t)(OFString *str,
  * it is unknown to the callback as well, in which case an exception will be
  * thrown.
  *
- * \param str The string which contains the unknown entity
+ * \param string The string which contains the unknown entity
  * \param entity The name of the entity that is unknown
  * \return A substitution for the entity or nil
  */
--	   (OFString*)string: (OFString*)str
+-	   (OFString*)string: (OFString*)string
   containsUnknownEntityNamed: (OFString*)entity;
 @end
 

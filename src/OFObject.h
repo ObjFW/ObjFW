@@ -372,7 +372,7 @@ typedef struct of_rectangle_t
 + alloc;
 
 /**
- * \brief Allocates memory for a new instance and calls -[init] on it.
+ * \brief Allocates memory for a new instance and calls \ref init on it.
  * \return An allocated and initialized object
  */
 + new;
@@ -548,9 +548,13 @@ typedef struct of_rectangle_t
 /**
  * \brief Initializes an already allocated object.
  *
- * Derived classes may override this, but need to do self = [super init] before
- * they do any initialization themselves. init may never return nil, instead
- * an exception (for example OFInitializationFailed) should be thrown.
+ * Derived classes may override this, but need to do
+ * \code
+ *   self = [super init]
+ * \endcode
+ * before they do any initialization themselves. \ref init may never return nil,
+ * instead an exception (for example OFInitializationFailedException) should be
+ * thrown.
  *
  * \return An initialized object
  */

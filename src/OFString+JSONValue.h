@@ -38,7 +38,7 @@ extern int _OFString_JSONValue_reference;
  *          consisting of a single primitive. Therefore, you should not make any
  *          assumptions about the object returned by this method if you don't
  *          want your program to terminate due to a message not understood, but
- *          instead check the returned object using -[isKindOfClass:].
+ *          instead check the returned object using \ref isKindOfClass:.
  *
  * \return An object
  */

@@ -28,13 +28,13 @@
 /**
  * \brief A stream that supports seeking.
  *
- * \note If you want to subclass this, override lowlevelSeekToOffset:,
- *	 lowlevelSeekForwardWithOffset: and lowlevelSeekToOffsetRelativeToEnd:,
- *	 but nothing else, as they do the actual work. OFSeekableStream uses
- *	 those and makes them work together with the caching of OFStream.
- *	 If you override these methods without the lowlevel prefix, you
- *	 <i>will</i> break caching, get broken results and seek to the wrong
- *	 position!
+ * \note If you want to subclass this, override \ref lowlevelSeekToOffset:,
+ *	 \ref lowlevelSeekForwardWithOffset: and
+ *	 \ref lowlevelSeekToOffsetRelativeToEnd:, but nothing else, as they do
+ *	 the actual work. OFSeekableStream uses those and makes them work
+ *	 together with the caching of OFStream. If you override these methods
+ *	 without the lowlevel prefix, you <i>will</i> break caching, get broken
+ *	 results and seek to the wrong position!
  */
 @interface OFSeekableStream: OFStream
 /**
