@@ -65,18 +65,6 @@ typedef void (^of_thread_pool_block_t)(void);
 + (instancetype)threadPoolWithSize: (size_t)size;
 
 /*!
- * @brief Initializes an already allocated OFThreadPool with one thread for
- *	  each core in the system.
- *
- * @warning If for some reason the number of cores in the system could not be
- *	    determined, the pool will only have one thread!
- *
- * @return An initialized OFThreadPool with one thread for each core in the
- *	   system
- */
-- init;
-
-/*!
  * @brief Initializes an already allocated OFThreadPool with the specified
  *	  number of threads.
  *

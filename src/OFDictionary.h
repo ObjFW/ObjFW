@@ -104,13 +104,6 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
 + (instancetype)dictionaryWithKeysAndObjects: (id)firstKey, ... OF_SENTINEL;
 
 /*!
- * @brief Initializes an already allocated OFDictionary.
- *
- * @return An initialized OFDictionary
- */
-- init;
-
-/*!
  * @brief Initializes an already allocated OFDictionary with the specified
  *	  OFDictionary.
  *

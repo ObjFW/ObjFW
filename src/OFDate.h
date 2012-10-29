@@ -56,7 +56,7 @@
  * @brief Creates a new OFDate with the specified string in the specified
  *	  format.
  *
- * The time zone used is UTC. See +[dateWithLocalDateString:format:] if you
+ * The time zone used is UTC. See @ref dateWithLocalDateString:format: if you
  * want local time.
  *
  * See the manpage for strftime for information on the format.
@@ -128,7 +128,7 @@
  *	  the specified format.
  *
  * The time zone used is UTC. If a time zone is specified anyway, an
- * OFInvalidFormatException is thrown. See -[initWithLocalDateString:format:]
+ * OFInvalidFormatException is thrown. See @ref initWithLocalDateString:format:
  * if you want to specify a time zone.
  *
  * See the manpage for strftime for information on the format.

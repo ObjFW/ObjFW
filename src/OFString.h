@@ -75,12 +75,6 @@ extern size_t of_utf16_string_length(const uint16_t*);
 
 /*!
  * @brief A class for handling strings.
- *
- * <b>Warning:</b> If you add methods to OFString using a category, you are not
- * allowed to access the ivars directly, as these might be still uninitialized
- * for a constant string and get initialized on the first message! Therefore,
- * you should use the corresponding methods to get the ivars, which ensures the
- * constant string is initialized.
  */
 @interface OFString: OFObject <OFCopying, OFMutableCopying, OFComparing,
     OFSerialization, OFJSONRepresentation>
@@ -628,7 +622,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
  *
  * @param string The string to search
  * @param options Options modifying search behaviour.
- *		  Possible values: OF_STRING_SEARCH_BACKWARDS
+ *		  Possible values:
+ *		    * OF_STRING_SEARCH_BACKWARDS
  * @return The range of the first occurrence of the string or a range with
  *	   OF_NOT_FOUND as start position if it was not found
  */
@@ -640,7 +635,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
  *
  * @param string The string to search
  * @param options Options modifying search behaviour.
- *		  Possible values: OF_STRING_SEARCH_BACKWARDS
+ *		  Possible values:
+ *		    * OF_STRING_SEARCH_BACKWARDS
  * @param range The range in which to search
  * @return The range of the first occurrence of the string or a range with
  *	   OF_NOT_FOUND as start position if it was not found
@@ -707,7 +703,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * @param string The string to replace
  * @param replacement The string with which it should be replaced
  * @param options Options modifying search behaviour.
- *		  Possible values: None yet
+ *		  Possible values:
+ *		    * None yet
  * @param range The range in which to replace the string
  * @return A new string with the occurrences of the specified string replaced
  */
@@ -733,7 +730,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 /*!
  * @brief Returns the string capitalized.
  *
- * @note This only considers spaces, tab and newlines to be word delimiters!
+ * @note This only considers spaces, tabs and newlines to be word delimiters!
  *	 Also note that this might change in the future to all word delimiters
  *	 specified by Unicode!
  *
@@ -791,8 +788,9 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * @brief Separates an OFString into an OFArray of OFStrings.
  *
  * @param delimiter The delimiter for separating
- * @param options Options according to which the string should be separated
- * 		  Possible values: OF_STRING_SKIP_EMPTY
+ * @param options Options according to which the string should be separated.
+ * 		  Possible values:
+ * 		    * OF_STRING_SKIP_EMPTY
  * @return An autoreleased OFArray with the separated string
  */
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter

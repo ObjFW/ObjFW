@@ -33,8 +33,8 @@
 + (instancetype)condition;
 
 /*!
- * @brief Blocks the current thread until another thread calls -[signal] or
- *	  -[broadcast].
+ * @brief Blocks the current thread until another thread calls @ref signal or
+ *	  @ref broadcast.
  */
 - (void)wait;
 
