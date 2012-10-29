@@ -1,6 +1,6 @@
 include ../extra.mk
 
-SUBDIRS = exceptions ${RUNTIME}
+SUBDIRS = exceptions ${RUNTIME} ${BRIDGE}
 
 SHARED_LIB = ${OBJFW_SHARED_LIB}
 STATIC_LIB = ${OBJFW_STATIC_LIB}
@@ -113,3 +113,5 @@ include ../buildsys.mk
 CPPFLAGS += -I. -I.. -Iexceptions -Iruntime
 LD = ${OBJC}
 LDFLAGS += ${REEXPORT_LIBOBJC} ${MACH_ALIAS_LIST}
+
+${BRIDGE}: ${SHARED_LIB}

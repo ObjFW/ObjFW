@@ -635,6 +635,16 @@ AC_TRY_COMPILE([
 AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 	AC_CHECK_HEADER(Foundation/NSObject.h, [
 		AC_SUBST(FOUNDATION_COMPAT_M, "foundation-compat.m")
+		AC_SUBST(BRIDGE, "bridge")
+
+		AS_IF([test x"$enable_shared" != x"no"], [
+			AC_SUBST(OBJFW_BRIDGE_SHARED_LIB,
+				"${LIB_PREFIX}objfw-bridge${LIB_SUFFIX}")
+		])
+		AS_IF([test x"$enable_static" = x"yes" \
+		    -o x"$enable_shared" = x"no"], [
+			AC_SUBST(OBJFW_BRIDGE_STATIC_LIB, "libobjfw-bridge.a")
+		])
 	])
 ])
 
