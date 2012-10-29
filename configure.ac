@@ -745,7 +745,13 @@ dnl and add OBJCPPFLAGS to CPPFLAGS, thus we need to AC_SUBST these ourself.
 AC_SUBST(CPP)
 AC_SUBST(CPPFLAGS)
 
-AC_CONFIG_FILES([buildsys.mk extra.mk utils/objfw-config Info.plist])
+AC_CONFIG_FILES([
+	buildsys.mk
+	extra.mk
+	Info.plist
+	utils/objfw-config
+	src/bridge/Info.plist
+])
 AC_CONFIG_HEADERS([config.h src/objfw-defs.h])
 AC_OUTPUT
 

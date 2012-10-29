@@ -17,9 +17,11 @@ SRCS = OFArray+NSObject.m		\
        NSString+OFObject.m
 
 INCLUDES = ${SRCS:.m=.h}	\
-	   OFBridging.h		\
 	   NSBridging.h		\
-	   bridge.h
+	   OFBridging.h		\
+	   ObjFW-Bridge.h
+
+includesubdir = ObjFW-Bridge
 
 include ../../buildsys.mk
 

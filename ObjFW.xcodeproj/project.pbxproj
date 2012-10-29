@@ -71,6 +71,42 @@
 		4B17FFB6133A375B003E6DCD /* OFUnboundNamespaceException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B17FFB4133A3750003E6DCD /* OFUnboundNamespaceException.m */; };
 		4B17FFB9133A381D003E6DCD /* OFInvalidServerReplyException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B17FFB7133A380F003E6DCD /* OFInvalidServerReplyException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B17FFBA133A381D003E6DCD /* OFInvalidServerReplyException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B17FFB8133A3813003E6DCD /* OFInvalidServerReplyException.m */; };
+		4B187E3B163EA3DA0049A832 /* ObjFW-Bridge.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E22163EA3DA0049A832 /* ObjFW-Bridge.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B187E3D163EA3DA0049A832 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E24163EA3DA0049A832 /* Makefile */; };
+		4B187E3F163EA3DA0049A832 /* NSArray_OFArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E25163EA3DA0049A832 /* NSArray_OFArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B187E40163EA3DA0049A832 /* NSArray_OFArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E26163EA3DA0049A832 /* NSArray_OFArray.m */; };
+		4B187E41163EA3DA0049A832 /* NSArray_OFArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E26163EA3DA0049A832 /* NSArray_OFArray.m */; };
+		4B187E42163EA3DA0049A832 /* NSArray+OFObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E27163EA3DA0049A832 /* NSArray+OFObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B187E43163EA3DA0049A832 /* NSArray+OFObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E28163EA3DA0049A832 /* NSArray+OFObject.m */; };
+		4B187E44163EA3DA0049A832 /* NSArray+OFObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E28163EA3DA0049A832 /* NSArray+OFObject.m */; };
+		4B187E45163EA3DA0049A832 /* NSBridging.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E29163EA3DA0049A832 /* NSBridging.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B187E46163EA3DA0049A832 /* NSDictionary_OFDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E2A163EA3DA0049A832 /* NSDictionary_OFDictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B187E47163EA3DA0049A832 /* NSDictionary_OFDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E2B163EA3DA0049A832 /* NSDictionary_OFDictionary.m */; };
+		4B187E48163EA3DA0049A832 /* NSDictionary_OFDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E2B163EA3DA0049A832 /* NSDictionary_OFDictionary.m */; };
+		4B187E49163EA3DA0049A832 /* NSDictionary+OFObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E2C163EA3DA0049A832 /* NSDictionary+OFObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B187E4A163EA3DA0049A832 /* NSDictionary+OFObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E2D163EA3DA0049A832 /* NSDictionary+OFObject.m */; };
+		4B187E4B163EA3DA0049A832 /* NSDictionary+OFObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E2D163EA3DA0049A832 /* NSDictionary+OFObject.m */; };
+		4B187E4C163EA3DA0049A832 /* NSString+OFObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E2E163EA3DA0049A832 /* NSString+OFObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B187E4D163EA3DA0049A832 /* NSString+OFObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E2F163EA3DA0049A832 /* NSString+OFObject.m */; };
+		4B187E4E163EA3DA0049A832 /* NSString+OFObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E2F163EA3DA0049A832 /* NSString+OFObject.m */; };
+		4B187E4F163EA3DA0049A832 /* OFArray_NSArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E30163EA3DA0049A832 /* OFArray_NSArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B187E50163EA3DA0049A832 /* OFArray_NSArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E31163EA3DA0049A832 /* OFArray_NSArray.m */; };
+		4B187E51163EA3DA0049A832 /* OFArray_NSArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E31163EA3DA0049A832 /* OFArray_NSArray.m */; };
+		4B187E52163EA3DA0049A832 /* OFArray+NSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E32163EA3DA0049A832 /* OFArray+NSObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B187E53163EA3DA0049A832 /* OFArray+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E33163EA3DA0049A832 /* OFArray+NSObject.m */; };
+		4B187E54163EA3DA0049A832 /* OFArray+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E33163EA3DA0049A832 /* OFArray+NSObject.m */; };
+		4B187E55163EA3DA0049A832 /* OFBridging.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E34163EA3DA0049A832 /* OFBridging.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B187E56163EA3DA0049A832 /* OFDictionary_NSDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E35163EA3DA0049A832 /* OFDictionary_NSDictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B187E57163EA3DA0049A832 /* OFDictionary_NSDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E36163EA3DA0049A832 /* OFDictionary_NSDictionary.m */; };
+		4B187E58163EA3DA0049A832 /* OFDictionary_NSDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E36163EA3DA0049A832 /* OFDictionary_NSDictionary.m */; };
+		4B187E59163EA3DA0049A832 /* OFDictionary+NSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E37163EA3DA0049A832 /* OFDictionary+NSObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B187E5A163EA3DA0049A832 /* OFDictionary+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E38163EA3DA0049A832 /* OFDictionary+NSObject.m */; };
+		4B187E5B163EA3DA0049A832 /* OFDictionary+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E38163EA3DA0049A832 /* OFDictionary+NSObject.m */; };
+		4B187E5C163EA3DA0049A832 /* OFString+NSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E39163EA3DA0049A832 /* OFString+NSObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B187E5D163EA3DA0049A832 /* OFString+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E3A163EA3DA0049A832 /* OFString+NSObject.m */; };
+		4B187E5E163EA3DA0049A832 /* OFString+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E3A163EA3DA0049A832 /* OFString+NSObject.m */; };
+		4B187E61163EA4530049A832 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B187E60163EA4530049A832 /* Foundation.framework */; };
+		4B187E62163EA46D0049A832 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
 		4B23CA92133811DC0047A1D9 /* TestPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF684123535B60076B512 /* TestPlugin.m */; };
 		4B23CA93133811E20047A1D9 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
 		4B23CA941338121C0047A1D9 /* TestPlugin.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B23CA8A133811610047A1D9 /* TestPlugin.bundle */; };
@@ -460,6 +496,33 @@
 		4B17FFB4133A3750003E6DCD /* OFUnboundNamespaceException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFUnboundNamespaceException.m; path = src/exceptions/OFUnboundNamespaceException.m; sourceTree = "<group>"; };
 		4B17FFB7133A380F003E6DCD /* OFInvalidServerReplyException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFInvalidServerReplyException.h; path = src/exceptions/OFInvalidServerReplyException.h; sourceTree = "<group>"; };
 		4B17FFB8133A3813003E6DCD /* OFInvalidServerReplyException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFInvalidServerReplyException.m; path = src/exceptions/OFInvalidServerReplyException.m; sourceTree = "<group>"; };
+		4B187E0E163EA29F0049A832 /* ObjFW-Bridge.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "ObjFW-Bridge.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4B187E22163EA3DA0049A832 /* ObjFW-Bridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ObjFW-Bridge.h"; path = "src/bridge/ObjFW-Bridge.h"; sourceTree = "<group>"; };
+		4B187E23163EA3DA0049A832 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = src/bridge/Info.plist; sourceTree = "<group>"; };
+		4B187E24163EA3DA0049A832 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = src/bridge/Makefile; sourceTree = "<group>"; };
+		4B187E25163EA3DA0049A832 /* NSArray_OFArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSArray_OFArray.h; path = src/bridge/NSArray_OFArray.h; sourceTree = "<group>"; };
+		4B187E26163EA3DA0049A832 /* NSArray_OFArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NSArray_OFArray.m; path = src/bridge/NSArray_OFArray.m; sourceTree = "<group>"; };
+		4B187E27163EA3DA0049A832 /* NSArray+OFObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSArray+OFObject.h"; path = "src/bridge/NSArray+OFObject.h"; sourceTree = "<group>"; };
+		4B187E28163EA3DA0049A832 /* NSArray+OFObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSArray+OFObject.m"; path = "src/bridge/NSArray+OFObject.m"; sourceTree = "<group>"; };
+		4B187E29163EA3DA0049A832 /* NSBridging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSBridging.h; path = src/bridge/NSBridging.h; sourceTree = "<group>"; };
+		4B187E2A163EA3DA0049A832 /* NSDictionary_OFDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSDictionary_OFDictionary.h; path = src/bridge/NSDictionary_OFDictionary.h; sourceTree = "<group>"; };
+		4B187E2B163EA3DA0049A832 /* NSDictionary_OFDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NSDictionary_OFDictionary.m; path = src/bridge/NSDictionary_OFDictionary.m; sourceTree = "<group>"; };
+		4B187E2C163EA3DA0049A832 /* NSDictionary+OFObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSDictionary+OFObject.h"; path = "src/bridge/NSDictionary+OFObject.h"; sourceTree = "<group>"; };
+		4B187E2D163EA3DA0049A832 /* NSDictionary+OFObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSDictionary+OFObject.m"; path = "src/bridge/NSDictionary+OFObject.m"; sourceTree = "<group>"; };
+		4B187E2E163EA3DA0049A832 /* NSString+OFObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+OFObject.h"; path = "src/bridge/NSString+OFObject.h"; sourceTree = "<group>"; };
+		4B187E2F163EA3DA0049A832 /* NSString+OFObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+OFObject.m"; path = "src/bridge/NSString+OFObject.m"; sourceTree = "<group>"; };
+		4B187E30163EA3DA0049A832 /* OFArray_NSArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFArray_NSArray.h; path = src/bridge/OFArray_NSArray.h; sourceTree = "<group>"; };
+		4B187E31163EA3DA0049A832 /* OFArray_NSArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFArray_NSArray.m; path = src/bridge/OFArray_NSArray.m; sourceTree = "<group>"; };
+		4B187E32163EA3DA0049A832 /* OFArray+NSObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFArray+NSObject.h"; path = "src/bridge/OFArray+NSObject.h"; sourceTree = "<group>"; };
+		4B187E33163EA3DA0049A832 /* OFArray+NSObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFArray+NSObject.m"; path = "src/bridge/OFArray+NSObject.m"; sourceTree = "<group>"; };
+		4B187E34163EA3DA0049A832 /* OFBridging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFBridging.h; path = src/bridge/OFBridging.h; sourceTree = "<group>"; };
+		4B187E35163EA3DA0049A832 /* OFDictionary_NSDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFDictionary_NSDictionary.h; path = src/bridge/OFDictionary_NSDictionary.h; sourceTree = "<group>"; };
+		4B187E36163EA3DA0049A832 /* OFDictionary_NSDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDictionary_NSDictionary.m; path = src/bridge/OFDictionary_NSDictionary.m; sourceTree = "<group>"; };
+		4B187E37163EA3DA0049A832 /* OFDictionary+NSObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFDictionary+NSObject.h"; path = "src/bridge/OFDictionary+NSObject.h"; sourceTree = "<group>"; };
+		4B187E38163EA3DA0049A832 /* OFDictionary+NSObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFDictionary+NSObject.m"; path = "src/bridge/OFDictionary+NSObject.m"; sourceTree = "<group>"; };
+		4B187E39163EA3DA0049A832 /* OFString+NSObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFString+NSObject.h"; path = "src/bridge/OFString+NSObject.h"; sourceTree = "<group>"; };
+		4B187E3A163EA3DA0049A832 /* OFString+NSObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFString+NSObject.m"; path = "src/bridge/OFString+NSObject.m"; sourceTree = "<group>"; };
+		4B187E60163EA4530049A832 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		4B19023A1338D6A2000374C9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = src/Makefile; sourceTree = SOURCE_ROOT; };
 		4B19023D1338D6D5000374C9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = tests/Makefile; sourceTree = "<group>"; };
 		4B23CA8A133811610047A1D9 /* TestPlugin.bundle */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = TestPlugin.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -743,6 +806,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		4B187E0A163EA29F0049A832 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B187E61163EA4530049A832 /* Foundation.framework in Frameworks */,
+				4B187E62163EA46D0049A832 /* ObjFW.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4B23CA87133811610047A1D9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -903,11 +975,52 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		4B187E07163EA2730049A832 /* Bridge */ = {
+			isa = PBXGroup;
+			children = (
+				4B187E5F163EA42A0049A832 /* Supporting Files */,
+				4B187E25163EA3DA0049A832 /* NSArray_OFArray.h */,
+				4B187E26163EA3DA0049A832 /* NSArray_OFArray.m */,
+				4B187E27163EA3DA0049A832 /* NSArray+OFObject.h */,
+				4B187E28163EA3DA0049A832 /* NSArray+OFObject.m */,
+				4B187E29163EA3DA0049A832 /* NSBridging.h */,
+				4B187E2A163EA3DA0049A832 /* NSDictionary_OFDictionary.h */,
+				4B187E2B163EA3DA0049A832 /* NSDictionary_OFDictionary.m */,
+				4B187E2C163EA3DA0049A832 /* NSDictionary+OFObject.h */,
+				4B187E2D163EA3DA0049A832 /* NSDictionary+OFObject.m */,
+				4B187E2E163EA3DA0049A832 /* NSString+OFObject.h */,
+				4B187E2F163EA3DA0049A832 /* NSString+OFObject.m */,
+				4B187E30163EA3DA0049A832 /* OFArray_NSArray.h */,
+				4B187E31163EA3DA0049A832 /* OFArray_NSArray.m */,
+				4B187E32163EA3DA0049A832 /* OFArray+NSObject.h */,
+				4B187E33163EA3DA0049A832 /* OFArray+NSObject.m */,
+				4B187E34163EA3DA0049A832 /* OFBridging.h */,
+				4B187E35163EA3DA0049A832 /* OFDictionary_NSDictionary.h */,
+				4B187E36163EA3DA0049A832 /* OFDictionary_NSDictionary.m */,
+				4B187E37163EA3DA0049A832 /* OFDictionary+NSObject.h */,
+				4B187E38163EA3DA0049A832 /* OFDictionary+NSObject.m */,
+				4B187E39163EA3DA0049A832 /* OFString+NSObject.h */,
+				4B187E3A163EA3DA0049A832 /* OFString+NSObject.m */,
+				4B187E22163EA3DA0049A832 /* ObjFW-Bridge.h */,
+			);
+			name = Bridge;
+			sourceTree = "<group>";
+		};
+		4B187E5F163EA42A0049A832 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				4B187E23163EA3DA0049A832 /* Info.plist */,
+				4B187E24163EA3DA0049A832 /* Makefile */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		4B3D23771337FBC800DD29B8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				4BF33AF0133807310059CEF7 /* Tests */,
 				4B23CA8A133811610047A1D9 /* TestPlugin.bundle */,
+				4B187E0E163EA29F0049A832 /* ObjFW-Bridge.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -928,6 +1041,7 @@
 		4B6EF66C123535340076B512 /* ObjFW */ = {
 			isa = PBXGroup;
 			children = (
+				4B187E07163EA2730049A832 /* Bridge */,
 				4B17FF6E133A28E0003E6DCD /* Exceptions */,
 				4B3D23801337FBC800DD29B8 /* Supporting Files */,
 				4B175C1D116D130B003C99CB /* OFApplication.h */,
@@ -1167,6 +1281,7 @@
 			isa = PBXGroup;
 			children = (
 				4B3D23761337FBC800DD29B8 /* ObjFW.framework */,
+				4B187E60163EA4530049A832 /* Foundation.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1185,6 +1300,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		4B187E0B163EA29F0049A832 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B187E3F163EA3DA0049A832 /* NSArray_OFArray.h in Headers */,
+				4B187E42163EA3DA0049A832 /* NSArray+OFObject.h in Headers */,
+				4B187E45163EA3DA0049A832 /* NSBridging.h in Headers */,
+				4B187E46163EA3DA0049A832 /* NSDictionary_OFDictionary.h in Headers */,
+				4B187E49163EA3DA0049A832 /* NSDictionary+OFObject.h in Headers */,
+				4B187E4C163EA3DA0049A832 /* NSString+OFObject.h in Headers */,
+				4B187E4F163EA3DA0049A832 /* OFArray_NSArray.h in Headers */,
+				4B187E52163EA3DA0049A832 /* OFArray+NSObject.h in Headers */,
+				4B187E55163EA3DA0049A832 /* OFBridging.h in Headers */,
+				4B187E56163EA3DA0049A832 /* OFDictionary_NSDictionary.h in Headers */,
+				4B187E59163EA3DA0049A832 /* OFDictionary+NSObject.h in Headers */,
+				4B187E5C163EA3DA0049A832 /* OFString+NSObject.h in Headers */,
+				4B187E3B163EA3DA0049A832 /* ObjFW-Bridge.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4B23CA88133811610047A1D9 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -1349,6 +1484,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		4B187E0D163EA29F0049A832 /* ObjFW-Bridge */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4B187E1F163EA29F0049A832 /* Build configuration list for PBXNativeTarget "ObjFW-Bridge" */;
+			buildPhases = (
+				4B187E09163EA29F0049A832 /* Sources */,
+				4B187E0A163EA29F0049A832 /* Frameworks */,
+				4B187E0B163EA29F0049A832 /* Headers */,
+				4B187E0C163EA29F0049A832 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "ObjFW-Bridge";
+			productName = "ObjFW-Bridge";
+			productReference = 4B187E0E163EA29F0049A832 /* ObjFW-Bridge.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		4B23CA89133811610047A1D9 /* TestPlugin */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4B23CA8B133811610047A1D9 /* Build configuration list for PBXNativeTarget "TestPlugin" */;
@@ -1432,6 +1585,7 @@
 			targets = (
 				4BF33AEF133807310059CEF7 /* Tests */,
 				4B3D23751337FBC800DD29B8 /* ObjFW */,
+				4B187E0D163EA29F0049A832 /* ObjFW-Bridge */,
 				4B23CA89133811610047A1D9 /* TestPlugin */,
 				4B5D8DDD1099E1B0000896FF /* autogen.sh */,
 				4BDF37AD1338047700F9A81A /* configure */,
@@ -1440,6 +1594,13 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		4B187E0C163EA29F0049A832 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4B3D23741337FBC800DD29B8 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1481,6 +1642,23 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		4B187E09163EA29F0049A832 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B187E41163EA3DA0049A832 /* NSArray_OFArray.m in Sources */,
+				4B187E44163EA3DA0049A832 /* NSArray+OFObject.m in Sources */,
+				4B187E48163EA3DA0049A832 /* NSDictionary_OFDictionary.m in Sources */,
+				4B187E4B163EA3DA0049A832 /* NSDictionary+OFObject.m in Sources */,
+				4B187E4E163EA3DA0049A832 /* NSString+OFObject.m in Sources */,
+				4B187E51163EA3DA0049A832 /* OFArray_NSArray.m in Sources */,
+				4B187E54163EA3DA0049A832 /* OFArray+NSObject.m in Sources */,
+				4B187E58163EA3DA0049A832 /* OFDictionary_NSDictionary.m in Sources */,
+				4B187E5B163EA3DA0049A832 /* OFDictionary+NSObject.m in Sources */,
+				4B187E5E163EA3DA0049A832 /* OFString+NSObject.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4B23CA86133811610047A1D9 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1662,6 +1840,17 @@
 				4BF33B10133807A20059CEF7 /* OFXMLParserTests.m in Sources */,
 				4BF33B11133807A20059CEF7 /* PropertiesTests.m in Sources */,
 				4BF33B12133807A20059CEF7 /* TestsAppDelegate.m in Sources */,
+				4B187E3D163EA3DA0049A832 /* Makefile in Sources */,
+				4B187E40163EA3DA0049A832 /* NSArray_OFArray.m in Sources */,
+				4B187E43163EA3DA0049A832 /* NSArray+OFObject.m in Sources */,
+				4B187E47163EA3DA0049A832 /* NSDictionary_OFDictionary.m in Sources */,
+				4B187E4A163EA3DA0049A832 /* NSDictionary+OFObject.m in Sources */,
+				4B187E4D163EA3DA0049A832 /* NSString+OFObject.m in Sources */,
+				4B187E50163EA3DA0049A832 /* OFArray_NSArray.m in Sources */,
+				4B187E53163EA3DA0049A832 /* OFArray+NSObject.m in Sources */,
+				4B187E57163EA3DA0049A832 /* OFDictionary_NSDictionary.m in Sources */,
+				4B187E5A163EA3DA0049A832 /* OFDictionary+NSObject.m in Sources */,
+				4B187E5D163EA3DA0049A832 /* OFString+NSObject.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1747,6 +1936,73 @@
 					"-Wcast-align",
 					"-Wpointer-arith",
 				);
+			};
+			name = Release;
+		};
+		4B187E20163EA29F0049A832 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = src/bridge/Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Debug;
+		};
+		4B187E21163EA29F0049A832 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = src/bridge/Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
 		};
@@ -1869,6 +2125,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		4B187E1F163EA29F0049A832 /* Build configuration list for PBXNativeTarget "ObjFW-Bridge" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4B187E20163EA29F0049A832 /* Debug */,
+				4B187E21163EA29F0049A832 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 		4B23CA8B133811610047A1D9 /* Build configuration list for PBXNativeTarget "TestPlugin" */ = {
 			isa = XCConfigurationList;
