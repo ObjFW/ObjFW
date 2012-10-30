@@ -567,22 +567,24 @@ static struct {
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
 			   objects: (id*)objects
-			     count: (int)count_
+			     count: (int)count
 {
-	/* FIXME: Use -[getObjects:inRange:] on the passed objects */
-	size_t count = [self count];
+	of_range_t range = of_range(state->state, count);
 
-	if (count > INT_MAX)
+	if (range.length > SIZE_MAX - range.location)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	if (state->state >= count)
-		return 0;
+	if (range.location + range.length > [self count])
+		range.length = [self count] - range.location;
 
-	state->state = count;
-	state->itemsPtr = [self objects];
+	[self getObjects: objects
+		 inRange: range];
+
+	state->state = range.location + range.length;
+	state->itemsPtr = objects;
 	state->mutationsPtr = (unsigned long*)self;
 
-	return (int)count;
+	return (int)range.length;
 }
 
 - (OFEnumerator*)objectEnumerator
