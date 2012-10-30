@@ -134,12 +134,14 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *		 from the method.
  * @param selector The selector to call on the target. The signature must be
  *		   BOOL (OFStream *stream, void *buffer, size_t size,
- *		   OFException *exception).
+ *		   id context, OFException *exception).
+ * @param context A context to pass when the target gets called
  */
 - (void)asyncReadIntoBuffer: (void*)buffer
 		     length: (size_t)length
 		     target: (id)target
-		   selector: (SEL)selector;
+		   selector: (SEL)selector
+		    context: (id)context;
 
 /*!
  * @brief Asyncronously reads exactly the specified length bytes from the
@@ -161,12 +163,14 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *		 from the method.
  * @param selector The selector to call on the target. The signature must be
  *		   BOOL (OFStream *stream, void *buffer, size_t size,
- *		   OFException *exception).
+ *		   id context, OFException *exception).
+ * @param context A context to pass when the target gets called
  */
  - (void)asyncReadIntoBuffer: (void*)buffer
 		 exactLength: (size_t)length
 		      target: (id)target
-		    selector: (SEL)selector;
+		    selector: (SEL)selector
+		     context: (id)context;
 
 #ifdef OF_HAVE_BLOCKS
 /*!
@@ -572,11 +576,13 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *		 next method in the queue to handle the next line, you need to
  *		 return NO from the method
  * @param selector The selector to call on the target. The signature must be
- *		   BOOL (OFStream *stream, OFString *line,
+ *		   BOOL (OFStream *stream, OFString *line, id context,
  *		   OFException *exception).
+ * @param context A context to pass when the target gets called
  */
 - (void)asyncReadLineWithTarget: (id)target
-		       selector: (SEL)selector;
+		       selector: (SEL)selector
+			context: (id)context;
 
 /*!
  * @brief Asyncronously reads with the specified encoding until a newline, \\0,
@@ -589,12 +595,14 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *		 next method in the queue to handle the next line, you need to
  *		 return NO from the method
  * @param selector The selector to call on the target. The signature must be
- *		   BOOL (OFStream *stream, OFString *line,
+ *		   BOOL (OFStream *stream, OFString *line, id context,
  *		   OFException *exception).
+ * @param context A context to pass when the target gets called
  */
 - (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
 			   target: (id)target
-			 selector: (SEL)selector;
+			 selector: (SEL)selector
+			  context: (id)context;
 
 #ifdef OF_HAVE_BLOCKS
 /*!
