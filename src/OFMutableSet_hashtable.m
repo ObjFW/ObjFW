@@ -35,15 +35,11 @@
 	[dictionary OF_setObject: [OFNumber numberWithSize: 1]
 			  forKey: object
 			 copyKey: NO];
-
-	mutations++;
 }
 
 - (void)removeObject: (id)object
 {
 	[dictionary removeObjectForKey: object];
-
-	mutations++;
 }
 
 - (void)makeImmutable

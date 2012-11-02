@@ -21,6 +21,5 @@
 @interface OFCountedSet_hashtable: OFCountedSet
 {
 	OFMutableDictionary_hashtable *dictionary;
-	unsigned long mutations;
 }
 @end

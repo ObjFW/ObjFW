@@ -216,8 +216,6 @@
 			  forKey: object
 			 copyKey: NO];
 
-	mutations++;
-
 	objc_autoreleasePoolPop(pool);
 }
 
@@ -238,8 +236,6 @@
 				 copyKey: NO];
 	else
 		[dictionary removeObjectForKey: object];
-
-	mutations++;
 
 	objc_autoreleasePoolPop(pool);
 }
