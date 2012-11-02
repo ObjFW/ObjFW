@@ -397,8 +397,8 @@ void _references_to_categories_of_OFDataArray(void)
 
 - (void)removeLastItem
 {
-	if (count < 1)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+	if (count == 0)
+		return;
 
 	count--;
 	@try {
@@ -663,8 +663,8 @@ void _references_to_categories_of_OFDataArray(void)
 {
 	size_t newSize, lastPageByte;
 
-	if (count < 1)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+	if (count == 0)
+		return;
 
 	count--;
 	lastPageByte = of_pagesize - 1;
