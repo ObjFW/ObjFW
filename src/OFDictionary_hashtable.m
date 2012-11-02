@@ -807,7 +807,7 @@ struct of_dictionary_hashtable_bucket
 {
 	if (mutationsPtr != NULL && *mutationsPtr != mutations)
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: [self class]
+		    exceptionWithClass: [dictionary class]
 				object: dictionary];
 
 	pos = 0;
@@ -819,7 +819,7 @@ struct of_dictionary_hashtable_bucket
 {
 	if (mutationsPtr != NULL && *mutationsPtr != mutations)
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: [self class]
+		    exceptionWithClass: [dictionary class]
 				object: dictionary];
 
 	for (; pos < size && (data[pos] == NULL ||
@@ -837,7 +837,7 @@ struct of_dictionary_hashtable_bucket
 {
 	if (mutationsPtr != NULL && *mutationsPtr != mutations)
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: [self class]
+		    exceptionWithClass: [dictionary class]
 				object: dictionary];
 
 	for (; pos < size && (data[pos] == NULL ||
