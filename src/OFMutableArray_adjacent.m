@@ -197,7 +197,13 @@
 
 - (void)removeLastObject
 {
-	id object = [self objectAtIndex: [array count] - 1];
+	size_t count = [array count];
+	id object;
+
+	if (count == 0)
+		return;
+
+	object = [self objectAtIndex: count - 1];
 	[array removeLastItem];
 	[object release];
 

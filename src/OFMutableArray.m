@@ -302,8 +302,10 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 {
 	size_t count = [self count];
 
-	if (count > 0)
-		[self removeObjectAtIndex: count - 1];
+	if (count == 0)
+		return;
+
+	[self removeObjectAtIndex: count - 1];
 }
 
 - (void)removeAllObjects
