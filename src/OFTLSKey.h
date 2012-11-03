@@ -19,6 +19,11 @@
 
 #import "threading.h"
 
+/* Haiku used to define this for some unknown reason which causes trouble */
+#ifdef protected
+# undef protected
+#endif
+
 /**
  * \brief A class for Thread Local Storage keys.
  */
