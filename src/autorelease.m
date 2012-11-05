@@ -39,8 +39,8 @@ static void __attribute__((constructor))
 init(void)
 {
 	OF_ENSURE(of_tlskey_new(&objectsKey));
-	OF_ENSURE(of_tlskey_new(&sizeKey));
 	OF_ENSURE(of_tlskey_new(&topKey));
+	OF_ENSURE(of_tlskey_new(&sizeKey));
 }
 #endif
 
@@ -79,8 +79,8 @@ objc_autoreleasePoolPop(void *offset)
 	}
 
 #ifndef OF_COMPILER_TLS
-	OF_ENSURE(of_tlskey_set(objectsKey, objects));
 	OF_ENSURE(of_tlskey_set(topKey, top));
+	OF_ENSURE(of_tlskey_set(objectsKey, objects));
 #endif
 }
 
@@ -96,14 +96,13 @@ _objc_rootAutorelease(id object)
 	if (objects == NULL) {
 		OF_ENSURE((objects = malloc(of_pagesize)) != NULL);
 
-#ifndef OF_COMPILER_TLS
-		OF_ENSURE(of_tlskey_set(objectsKey, objects));
-		OF_ENSURE(of_tlskey_set(sizeKey,
-			(void*)(uintptr_t)of_pagesize));
-#endif
-
 		top = objects;
 		size = of_pagesize;
+
+#ifndef OF_COMPILER_TLS
+		OF_ENSURE(of_tlskey_set(objectsKey, objects));
+		OF_ENSURE(of_tlskey_set(sizeKey, (void*)(uintptr_t)size));
+#endif
 	}
 
 	if ((uintptr_t)top >= (uintptr_t)objects + size) {
@@ -124,7 +123,7 @@ _objc_rootAutorelease(id object)
 	top++;
 
 #ifndef OF_COMPILER_TLS
-	OF_ENSURE(of_tlskey_set(topKey, objects));
+	OF_ENSURE(of_tlskey_set(topKey, top));
 #endif
 
 	return object;
