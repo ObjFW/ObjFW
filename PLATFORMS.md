@@ -14,6 +14,15 @@ DragonFlyBSD
   * Runtimes: ObjFW
 
 
+Haiku
+-----
+
+  * OS version: r1-alpha4
+  * Architectures: x86
+  * Compilers: GCC 4.6.3
+  * Runtimes: ObjFW
+
+
 iOS
 ---
 
