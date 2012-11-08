@@ -28,69 +28,59 @@
 
 static OFRunLoop *mainRunLoop = nil;
 
-@interface OFRunLoop_QueueItem: OFObject
-{
-@public
-	id target;
-	SEL selector;
-	id context;
-}
-@end
-
-@interface OFRunLoop_ReadQueueItem: OFRunLoop_QueueItem
+@interface OFRunLoop_ReadQueueItem: OFObject
 {
 @public
 	void *buffer;
 	size_t length;
+	id target;
+	SEL selector;
 #ifdef OF_HAVE_BLOCKS
 	of_stream_async_read_block_t block;
 #endif
 }
 @end
 
-@interface OFRunLoop_ExactReadQueueItem: OFRunLoop_QueueItem
+@interface OFRunLoop_ExactReadQueueItem: OFObject
 {
 @public
 	void *buffer;
 	size_t exactLength, readLength;
+	id target;
+	SEL selector;
 #ifdef OF_HAVE_BLOCKS
 	of_stream_async_read_block_t block;
 #endif
 }
 @end
 
-@interface OFRunLoop_ReadLineQueueItem: OFRunLoop_QueueItem
+@interface OFRunLoop_ReadLineQueueItem: OFObject
 {
 @public
 	of_string_encoding_t encoding;
+	id target;
+	SEL selector;
 #ifdef OF_HAVE_BLOCKS
 	of_stream_async_read_line_block_t block;
 #endif
 }
 @end
 
-@interface OFRunLoop_AcceptQueueItem: OFRunLoop_QueueItem
+@interface OFRunLoop_AcceptQueueItem: OFObject
 {
 @public
+	id target;
+	SEL selector;
 #ifdef OF_HAVE_BLOCKS
 	of_tcpsocket_async_accept_block_t block;
 #endif
 }
 @end
 
-@implementation OFRunLoop_QueueItem
-- (void)dealloc
-{
-	[target release];
-	[context release];
-
-	[super dealloc];
-}
-@end
-
 @implementation OFRunLoop_ReadQueueItem
 - (void)dealloc
 {
+	[target release];
 #ifdef OF_HAVE_BLOCKS
 	[block release];
 #endif
@@ -102,6 +92,7 @@ static OFRunLoop *mainRunLoop = nil;
 @implementation OFRunLoop_ExactReadQueueItem
 - (void)dealloc
 {
+	[target release];
 #ifdef OF_HAVE_BLOCKS
 	[block release];
 #endif
@@ -113,6 +104,7 @@ static OFRunLoop *mainRunLoop = nil;
 @implementation OFRunLoop_ReadLineQueueItem
 - (void)dealloc
 {
+	[target release];
 #ifdef OF_HAVE_BLOCKS
 	[block release];
 #endif
@@ -124,6 +116,7 @@ static OFRunLoop *mainRunLoop = nil;
 @implementation OFRunLoop_AcceptQueueItem
 - (void)dealloc
 {
+	[target release];
 #ifdef OF_HAVE_BLOCKS
 	[block release];
 #endif
@@ -176,14 +169,12 @@ static OFRunLoop *mainRunLoop = nil;
 			  length: (size_t)length
 			  target: (id)target
 			selector: (SEL)selector
-			 context: (id)context
 {
 	ADD(OFRunLoop_ReadQueueItem, {
 		queueItem->buffer = buffer;
 		queueItem->length = length;
 		queueItem->target = [target retain];
 		queueItem->selector = selector;
-		queueItem->context = [context retain];
 	})
 }
 
@@ -192,14 +183,12 @@ static OFRunLoop *mainRunLoop = nil;
 		     exactLength: (size_t)exactLength
 			  target: (id)target
 			selector: (SEL)selector
-			 context: (id)context
 {
 	ADD(OFRunLoop_ExactReadQueueItem, {
 		queueItem->buffer = buffer;
 		queueItem->exactLength = exactLength;
 		queueItem->target = [target retain];
 		queueItem->selector = selector;
-		queueItem->context = [context retain];
 	})
 }
 
@@ -207,25 +196,21 @@ static OFRunLoop *mainRunLoop = nil;
 			    encoding: (of_string_encoding_t)encoding
 			      target: (id)target
 			    selector: (SEL)selector
-			     context: (id)context
 {
 	ADD(OFRunLoop_ReadLineQueueItem, {
 		queueItem->encoding = encoding;
 		queueItem->target = [target retain];
 		queueItem->selector = selector;
-		queueItem->context = [context retain];
 	})
 }
 
 + (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket*)stream
 			       target: (id)target
 			     selector: (SEL)selector
-			      context: (id)context
 {
 	ADD(OFRunLoop_AcceptQueueItem, {
 		queueItem->target = [target retain];
 		queueItem->selector = selector;
-		queueItem->context = [context retain];
 	})
 }
 
@@ -348,15 +333,14 @@ static OFRunLoop *mainRunLoop = nil;
 			}
 		} else {
 #endif
-			BOOL (*func)(id, SEL, OFStream*, void*, size_t, id,
+			BOOL (*func)(id, SEL, OFStream*, void*, size_t,
 			    OFException*) = (BOOL(*)(id, SEL, OFStream*, void*,
-			    size_t, id, OFException*))
+			    size_t, OFException*))
 			    [queueItem->target methodForSelector:
 			    queueItem->selector];
 
 			if (!func(queueItem->target, queueItem->selector,
-			    stream, queueItem->buffer, length,
-			    queueItem->context, exception)) {
+			    stream, queueItem->buffer, length, exception)) {
 				[queue removeListObject: listObject];
 
 				if ([queue count] == 0) {
@@ -406,16 +390,16 @@ static OFRunLoop *mainRunLoop = nil;
 				}
 			} else {
 #endif
-				BOOL (*func)(id, SEL, OFStream*, void*, size_t,
-				    id, OFException*) = (BOOL(*)(id, SEL,
-				    OFStream*, void*, size_t, id, OFException*))
+				BOOL (*func)(id, SEL, OFStream*, void*,
+				    size_t, OFException*) = (BOOL(*)(id, SEL,
+				    OFStream*, void*, size_t, OFException*))
 				    [queueItem->target
 				    methodForSelector: queueItem->selector];
 
 				if (func(queueItem->target,
 				    queueItem->selector, stream,
 				    queueItem->buffer, queueItem->readLength,
-				    queueItem->context, exception))
+				    exception))
 					queueItem->readLength = 0;
 				else {
 					[queue removeListObject: listObject];
@@ -465,14 +449,14 @@ static OFRunLoop *mainRunLoop = nil;
 			} else {
 #endif
 				BOOL (*func)(id, SEL, OFStream*, OFString*,
-				    id, OFException*) = (BOOL(*)(id, SEL,
-				    OFStream*, OFString*, id, OFException*))
+				    OFException*) = (BOOL(*)(id, SEL, OFStream*,
+				    OFString*, OFException*))
 				    [queueItem->target methodForSelector:
 				    queueItem->selector];
 
 				if (!func(queueItem->target,
 				    queueItem->selector, stream, line,
-				    queueItem->context, exception)) {
+				    exception)) {
 					[queue removeListObject: listObject];
 
 					if ([queue count] == 0) {
@@ -515,15 +499,14 @@ static OFRunLoop *mainRunLoop = nil;
 		} else {
 #endif
 			BOOL (*func)(id, SEL, OFTCPSocket*, OFTCPSocket*,
-			    id, OFException*) =
+			    OFException*) =
 			    (BOOL(*)(id, SEL, OFTCPSocket*, OFTCPSocket*,
-			    id, OFException*))
+			    OFException*))
 			    [queueItem->target methodForSelector:
 			    queueItem->selector];
 
 			if (!func(queueItem->target, queueItem->selector,
-			    (OFTCPSocket*)stream, newSocket, queueItem->context,
-			    exception)) {
+			    (OFTCPSocket*)stream, newSocket, exception)) {
 				[queue removeListObject: listObject];
 
 				if ([queue count] == 0) {

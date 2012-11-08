@@ -138,15 +138,12 @@ typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*,
  * @param target The target on which to call the selector once the connection
  *		 has been established
  * @param selector The selector to call on the target. The signature must be
- *		   void (OFTCPSocket *socket, id context,
- *		   OFException *exception).
- * @param context A context to pass when the target gets called
+ *		   void (OFTCPSocket *socket, OFException *exception).
  */
 - (void)asyncConnectToHost: (OFString*)host
 		      port: (uint16_t)port
 		    target: (id)target
-		  selector: (SEL)selector
-		   context: (id)context;
+		  selector: (SEL)selector;
 
 #ifdef OF_HAVE_BLOCKS
 /*!
@@ -201,12 +198,10 @@ typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*,
  *		 block as well.
  * @param selector The selector to call on the target. The signature must be
  *		   BOOL (OFTCPSocket *socket, OFTCPSocket *acceptedSocket,
- *		   id context, OFException *exception).
- * @param context A context to pass when the target gets called
+ *		   OFException *exception).
  */
 - (void)asyncAcceptWithTarget: (id)target
-		     selector: (SEL)selector
-		      context: (id)context;
+		     selector: (SEL)selector;
 
 #ifdef OF_HAVE_BLOCKS
 /*!
