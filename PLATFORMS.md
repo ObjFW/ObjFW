@@ -19,7 +19,7 @@ Haiku
 
   * OS version: r1-alpha4
   * Architectures: x86
-  * Compilers: GCC 4.6.3
+  * Compilers: Clang 3.2, GCC 4.6.3
   * Runtimes: ObjFW
 
 
