@@ -27,6 +27,10 @@
 # include <sched.h>
 #endif
 
+#ifdef __HAIKU__
+# include <kernel/OS.h>
+#endif
+
 #import "OFThread.h"
 #import "OFList.h"
 #import "OFDate.h"
@@ -92,6 +96,19 @@ call_main(id object)
 	[thread release];
 
 	return 0;
+}
+
+static void
+set_thread_name(OFThread *thread)
+{
+#ifdef __HAIKU__
+	OFString *name = thread->name;
+
+	if (name == nil)
+		name = [thread className];
+
+	rename_thread(get_pthread_thread_id(thread->thread), [name UTF8String]);
+#endif
 }
 
 @implementation OFThread
@@ -288,6 +305,8 @@ call_main(id object)
 		    exceptionWithClass: [self class]
 				thread: self];
 	}
+
+	set_thread_name(self);
 }
 
 - (id)join
@@ -302,6 +321,11 @@ call_main(id object)
 	return returnValue;
 }
 
+- copy
+{
+	return [self retain];
+}
+
 - (OFRunLoop*)runLoop
 {
 	if (runLoop == nil) {
@@ -312,6 +336,19 @@ call_main(id object)
 	}
 
 	return [[runLoop retain] autorelease];
+}
+
+- (OFString*)name
+{
+	OF_GETTER(name, YES)
+}
+
+- (void)setName: (OFString*)name_
+{
+	OF_SETTER(name, name_, YES, YES)
+
+	if (running == OF_THREAD_RUNNING)
+		set_thread_name(self);
 }
 
 - (void)dealloc
@@ -332,10 +369,5 @@ call_main(id object)
 	[runLoop release];
 
 	[super dealloc];
-}
-
-- copy
-{
-	return [self retain];
 }
 @end

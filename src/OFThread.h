@@ -61,10 +61,14 @@ typedef id (^of_thread_block_t)(void);
 #endif
 	id returnValue;
 	OFRunLoop *runLoop;
+	OFString *name;
 }
 
-#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
+#ifdef OF_HAVE_PROPERTIES
+# ifdef OF_HAVE_BLOCKS
 @property (copy) of_thread_block_t block;
+# endif
+@property (copy) OFString *name;
 #endif
 
 /*!
@@ -202,4 +206,18 @@ typedef id (^of_thread_block_t)(void);
  * @return The run loop for the thread
  */
 - (OFRunLoop*)runLoop;
+
+/*!
+ * @brief Returns the name of the thread or nil if none has been set.
+ *
+ * @return The name of the thread or nik if none has been set
+ */
+- (OFString*)name;
+
+/*!
+ * @brief Sets the name for the thread.
+ *
+ * @param name The name for the thread
+ */
+- (void)setName: (OFString*)name;
 @end
