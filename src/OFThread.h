@@ -29,7 +29,7 @@
 @class OFRunLoop;
 
 #ifdef OF_HAVE_BLOCKS
-typedef id (^of_thread_block_t)(id object);
+typedef id (^of_thread_block_t)(void);
 #endif
 
 /*!
@@ -47,9 +47,7 @@ typedef id (^of_thread_block_t)(id object);
 {
 #ifdef OF_THREAD_M
 @public
-#endif
-	id object;
-#ifndef OF_THREAD_M
+#else
 @private
 #endif
 	of_thread_t thread;
@@ -75,14 +73,6 @@ typedef id (^of_thread_block_t)(id object);
  * @return A new, autoreleased thread
  */
 + (instancetype)thread;
-
-/*!
- * @brief Creates a new thread with the specified object.
- *
- * @param object An object which is passed for use in the main method or nil
- * @return A new, autoreleased thread
- */
-+ (instancetype)threadWithObject: (id)object;
 
 #ifdef OF_HAVE_BLOCKS
 /*!
@@ -165,14 +155,6 @@ typedef id (^of_thread_block_t)(id object);
 + (void)terminateWithObject: (id)object;
 
 + (void)OF_createMainThread;
-
-/*!
- * @brief Initializes an already allocated thread with the specified object.
- *
- * @param object An object which is passed for use in the main method or nil
- * @return An initialized OFThread.
- */
-- initWithObject: (id)object;
 
 #ifdef OF_HAVE_BLOCKS
 /*!

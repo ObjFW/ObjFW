@@ -70,7 +70,7 @@ call_main(id object)
 	 */
 #ifdef OF_HAVE_BLOCKS
 	if (thread->block != NULL)
-		thread->returnValue = [thread->block(thread->object) retain];
+		thread->returnValue = [thread->block() retain];
 	else
 #endif
 		thread->returnValue = [[thread main] retain];
@@ -112,11 +112,6 @@ call_main(id object)
 + (instancetype)thread
 {
 	return [[[self alloc] init] autorelease];
-}
-
-+ (instancetype)threadWithObject: (id)object
-{
-	return [[[self alloc] initWithObject: object] autorelease];
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -241,15 +236,6 @@ call_main(id object)
 		    exceptionWithClass: self];
 }
 
-- initWithObject: (id)object_
-{
-	self = [super init];
-
-	object = [object_ retain];
-
-	return self;
-}
-
 #ifdef OF_HAVE_BLOCKS
 - initWithBlock: (of_thread_block_t)block_
 {
@@ -275,9 +261,9 @@ call_main(id object)
 
 - (void)handleTermination
 {
-	OFRunLoop *tmp = runLoop;
+	OFRunLoop *oldRunLoop = runLoop;
 	runLoop = nil;
-	[tmp release];
+	[oldRunLoop release];
 }
 
 - (void)start
@@ -342,7 +328,6 @@ call_main(id object)
 	if (running == OF_THREAD_WAITING_FOR_JOIN)
 		of_thread_detach(thread);
 
-	[object release];
 	[returnValue release];
 	[runLoop release];
 

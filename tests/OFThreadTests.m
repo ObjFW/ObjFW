@@ -30,10 +30,7 @@ static OFString *module = @"OFThread";
 @implementation TestThread
 - (id)main
 {
-	if ([object isEqual: @"foo"])
-		return @"success";
-
-	return nil;
+	return @"success";
 }
 @end
 
@@ -44,8 +41,7 @@ static OFString *module = @"OFThread";
 	TestThread *t;
 	OFTLSKey *key;
 
-	TEST(@"+[threadWithObject:]",
-	    (t = [TestThread threadWithObject: @"foo"]))
+	TEST(@"+[thread]", (t = [TestThread thread]))
 
 	TEST(@"-[start]", R([t start]))
 
