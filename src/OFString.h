@@ -243,7 +243,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * @param firstComponent The first component of the path
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithPath: (OFString*)firstComponent, ...;
++ (instancetype)stringWithPath: (OFString*)firstComponent, ... OF_SENTINEL;
 
 /*!
  * @brief Creates a new OFString with the contents of the specified UTF-8
@@ -475,7 +475,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * @param firstComponent The first component of the path
  * @return A new autoreleased OFString
  */
-- initWithPath: (OFString*)firstComponent, ...;
+- initWithPath: (OFString*)firstComponent, ... OF_SENTINEL;
 
 /*!
  * @brief Initializes an already allocated OFString with the constructed
