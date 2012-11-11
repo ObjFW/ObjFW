@@ -670,6 +670,14 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (OFString*)stringByAppendingString: (OFString*)string;
 
 /*!
+ * @brief Creates a new string by appending the specified format.
+ *
+ * @param format A format string which generates the string to append
+ * @return A new, autoreleased OFString with the specified format appended
+ */
+- (OFString*)stringByAppendingFormat: (OFConstantString*)format, ...;
+
+/*!
  * @brief Creates a new string by appending a path component.
  *
  * @param component The path component to append

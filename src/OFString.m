@@ -1295,6 +1295,23 @@ static struct {
 	return new;
 }
 
+- (OFString*)stringByAppendingFormat: (OFConstantString*)format, ...
+{
+	OFMutableString *new;
+	va_list arguments;
+
+	new = [OFMutableString stringWithString: self];
+
+	va_start(arguments, format);
+	[new appendFormat: format
+		arguments: arguments];
+	va_end(arguments);
+
+	[new makeImmutable];
+
+	return new;
+}
+
 - (OFString*)stringByAppendingPathComponent: (OFString*)component
 {
 	return [OFString stringWithPath: self, component, nil];
