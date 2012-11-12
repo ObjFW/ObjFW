@@ -29,23 +29,38 @@
 @implementation OFXMLAttribute
 + (instancetype)attributeWithName: (OFString*)name
 			namespace: (OFString*)ns
-		      stringValue: (OFString*)value
+		      stringValue: (OFString*)stringValue
 {
 	return [[[self alloc] initWithName: name
 				 namespace: ns
-			       stringValue: value] autorelease];
+			       stringValue: stringValue] autorelease];
+}
+
++ (instancetype)attributeWithName: (OFString*)name
+		      stringValue: (OFString*)stringValue
+{
+	return [[[self alloc] initWithName: name
+			       stringValue: stringValue] autorelease];
+}
+
+- initWithName: (OFString*)name_
+   stringValue: (OFString*)stringValue_
+{
+	return [self initWithName: name_
+			namespace: nil
+		      stringValue: stringValue_];
 }
 
 - initWithName: (OFString*)name_
      namespace: (OFString*)ns_
-   stringValue: (OFString*)value
+   stringValue: (OFString*)stringValue_
 {
 	self = [super init];
 
 	@try {
 		name = [name_ copy];
 		ns = [ns_ copy];
-		stringValue = [value copy];
+		stringValue = [stringValue_ copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;

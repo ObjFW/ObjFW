@@ -39,25 +39,45 @@
  * @brief Creates a new XML attribute.
  *
  * @param name The name of the attribute
+ * @param stringValue The string value of the attribute
+ * @return A new autoreleased OFXMLAttribute with the specified parameters
+ */
++ (instancetype)attributeWithName: (OFString*)name
+		      stringValue: (OFString*)stringValue;
+
+/*!
+ * @brief Creates a new XML attribute.
+ *
+ * @param name The name of the attribute
  * @param ns The namespace of the attribute
- * @param value The string value of the attribute
+ * @param stringValue The string value of the attribute
  * @return A new autoreleased OFXMLAttribute with the specified parameters
  */
 + (instancetype)attributeWithName: (OFString*)name
 			namespace: (OFString*)ns
-		      stringValue: (OFString*)value;
+		      stringValue: (OFString*)stringValue;
+
+/*!
+ * @brief Initializes an already allocated OFXMLAttribute.
+ *
+ * @param name The name of the attribute
+ * @param stringValue The string value of the attribute
+ * @return An initialized OFXMLAttribute with the specified parameters
+ */
+- initWithName: (OFString*)name
+   stringValue: (OFString*)stringValue;
 
 /*!
  * @brief Initializes an already allocated OFXMLAttribute.
  *
  * @param name The name of the attribute
  * @param ns The namespace of the attribute
- * @param value The string value of the attribute
+ * @param stringValue The string value of the attribute
  * @return An initialized OFXMLAttribute with the specified parameters
  */
 - initWithName: (OFString*)name
      namespace: (OFString*)ns
-   stringValue: (OFString*)value;
+   stringValue: (OFString*)stringValue;
 
 /*!
  * @brief Returns the name of the attribute as an autoreleased OFString.
