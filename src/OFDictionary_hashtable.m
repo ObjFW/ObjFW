@@ -66,11 +66,6 @@ struct of_dictionary_hashtable_bucket
 		uint32_t i;
 		OFDictionary_hashtable *hashtable;
 
-		if (dictionary == nil)
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
-
 		if (![dictionary isKindOfClass:
 		    [OFDictionary_hashtable class]] &&
 		    ![dictionary isKindOfClass:
@@ -116,6 +111,9 @@ struct of_dictionary_hashtable_bucket
 
 - initWithDictionary: (OFDictionary*)dictionary
 {
+	if (dictionary == nil)
+		return [self init];
+
 	if ([dictionary class] == [OFDictionary_hashtable class] ||
 	    [dictionary class] == [OFMutableDictionary_hashtable class])
 		return [self OF_initWithDictionary: dictionary
@@ -128,6 +126,10 @@ struct of_dictionary_hashtable_bucket
 		OFEnumerator *enumerator;
 		id key;
 		uint32_t i, newSize;
+
+		if (dictionary == nil)
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: [self class]];
 
 		count = [dictionary count];
 
@@ -288,6 +290,10 @@ struct of_dictionary_hashtable_bucket
 
 		for (i = 0; i < count; i++) {
 			uint32_t hash, last;
+
+			if (keys[i] == nil || objects[i] == nil)
+				@throw [OFInvalidArgumentException
+				    exceptionWithClass: [self class]];
 
 			hash = [keys[i] hash];
 			last = size;
@@ -624,7 +630,7 @@ struct of_dictionary_hashtable_bucket
 {
 	uint32_t i;
 
-	if (count == 0)
+	if (object == nil || count == 0)
 		return NO;
 
 	for (i = 0; i < size; i++)
@@ -639,7 +645,7 @@ struct of_dictionary_hashtable_bucket
 {
 	uint32_t i;
 
-	if (count == 0)
+	if (object == nil || count == 0)
 		return NO;
 
 	for (i = 0; i < size; i++)

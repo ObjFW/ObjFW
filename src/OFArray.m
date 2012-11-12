@@ -173,6 +173,12 @@ static struct {
 
 - initWithObject: (id)object
 {
+	if (object == nil) {
+		Class c = [self class];
+		[self release];
+		@throw [OFInvalidArgumentException exceptionWithClass: c];
+	}
+
 	return [self initWithObjects: object, nil];
 }
 
@@ -278,7 +284,12 @@ static struct {
 
 - (size_t)indexOfObject: (id)object
 {
-	size_t i, count = [self count];
+	size_t i, count;
+
+	if (object == nil)
+		return OF_NOT_FOUND;
+
+	count = [self count];
 
 	for (i = 0; i < count; i++)
 		if ([[self objectAtIndex: i] isEqual: object])
@@ -289,7 +300,12 @@ static struct {
 
 - (size_t)indexOfObjectIdenticalTo: (id)object
 {
-	size_t i, count = [self count];
+	size_t i, count;
+
+	if (object == nil)
+		return OF_NOT_FOUND;
+
+	count = [self count];
 
 	for (i = 0; i < count; i++)
 		if ([self objectAtIndex: i] == object)
@@ -367,8 +383,14 @@ static struct {
 	void *pool;
 	OFMutableString *ret;
 	id *objects;
-	size_t i, count = [self count];
+	size_t i, count;
 	IMP append;
+
+	if (separator == nil)
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]];
+
+	count = [self count];
 
 	if (count == 0)
 		return @"";
@@ -610,7 +632,13 @@ static struct {
 
 - (OFArray*)arrayByAddingObject: (id)object
 {
-	OFMutableArray *ret = [[self mutableCopy] autorelease];
+	OFMutableArray *ret;
+
+	if (object == nil)
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]];
+
+	ret = [[self mutableCopy] autorelease];
 
 	[ret addObject: object];
 	[ret makeImmutable];

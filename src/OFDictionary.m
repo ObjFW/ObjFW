@@ -24,6 +24,7 @@
 #import "OFString.h"
 #import "OFXMLElement.h"
 
+#import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
 
 #import "autorelease.h"
@@ -202,6 +203,10 @@ static struct {
 - initWithObject: (id)object
 	  forKey: (id)key
 {
+	if (key == nil || object == nil)
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]];
+
 	return [self initWithKeysAndObjects: key, object, nil];
 }
 
@@ -316,9 +321,15 @@ static struct {
 
 - (BOOL)containsObject: (id)object
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator = [self objectEnumerator];
+	void *pool;
+	OFEnumerator *enumerator;
 	id currentObject;
+
+	if (object == nil)
+		return NO;
+
+	pool = objc_autoreleasePoolPush();
+	enumerator = [self objectEnumerator];
 
 	while ((currentObject = [enumerator nextObject]) != nil) {
 		if ([currentObject isEqual: object]) {
@@ -334,9 +345,15 @@ static struct {
 
 - (BOOL)containsObjectIdenticalTo: (id)object
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator = [self objectEnumerator];
+	void *pool;
+	OFEnumerator *enumerator;
 	id currentObject;
+
+	if (object == nil)
+		return NO;
+
+	pool = objc_autoreleasePoolPush();
+	enumerator = [self objectEnumerator];
 
 	while ((currentObject = [enumerator nextObject]) != nil) {
 		if (currentObject == object) {

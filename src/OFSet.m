@@ -326,9 +326,10 @@ static struct {
 - (BOOL)isSubsetOfSet: (OFSet*)set
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator = [self objectEnumerator];
+	OFEnumerator *enumerator;
 	id object;
 
+	enumerator = [self objectEnumerator];
 	while ((object = [enumerator nextObject]) != nil) {
 		if (![set containsObject: object]) {
 			objc_autoreleasePoolPop(pool);
@@ -344,9 +345,10 @@ static struct {
 - (BOOL)intersectsSet: (OFSet*)set
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator = [self objectEnumerator];
+	OFEnumerator *enumerator;
 	id object;
 
+	enumerator = [self objectEnumerator];
 	while ((object = [enumerator nextObject]) != nil) {
 		if ([set containsObject: object]) {
 			objc_autoreleasePoolPop(pool);

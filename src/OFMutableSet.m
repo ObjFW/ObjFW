@@ -164,10 +164,12 @@ static struct {
 				     count: count];
 
 	@try {
-		OFEnumerator *enumerator = [self objectEnumerator];
+		OFEnumerator *enumerator;
 		id object;
-		size_t i = 0;
+		size_t i;
 
+		i = 0;
+		enumerator = [self objectEnumerator];
 		while ((object = [enumerator nextObject]) != nil) {
 			assert(i < count);
 			cArray[i++] = object;
@@ -186,9 +188,10 @@ static struct {
 - (void)unionSet: (OFSet*)set
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator = [set objectEnumerator];
+	OFEnumerator *enumerator;
 	id object;
 
+	enumerator = [set objectEnumerator];
 	while ((object = [enumerator nextObject]) != nil)
 		[self addObject: object];
 

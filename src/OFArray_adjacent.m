@@ -52,6 +52,10 @@
 	self = [self init];
 
 	@try {
+		if (object == nil)
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: [self class]];
+
 		[array addItem: &object];
 		[object retain];
 	} @catch (id e) {
@@ -92,6 +96,9 @@
 
 	self = [self init];
 
+	if (array_ == nil)
+		return self;
+
 	@try {
 		objects = [array_ objects];
 		count = [array_ count];
@@ -128,9 +135,18 @@
 
 	@try {
 		size_t i;
+		BOOL ok = YES;
 
-		for (i = 0; i < count; i++)
+		for (i = 0; i < count; i++) {
+			if (objects[i] == nil)
+				ok = NO;
+
 			[objects[i] retain];
+		}
+
+		if (!ok)
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: [self class]];
 
 		[array addItemsFromCArray: objects
 				    count: count];
@@ -222,8 +238,14 @@
 
 - (size_t)indexOfObject: (id)object
 {
-	id *objects = [array cArray];
-	size_t i, count = [array count];
+	id *objects;
+	size_t i, count;
+
+	if (object == nil)
+		return OF_NOT_FOUND;
+
+	objects = [array cArray];
+	count = [array count];
 
 	for (i = 0; i < count; i++)
 		if ([objects[i] isEqual: object])
@@ -234,8 +256,14 @@
 
 - (size_t)indexOfObjectIdenticalTo: (id)object
 {
-	id *objects = [array cArray];
-	size_t i, count = [array count];
+	id *objects;
+	size_t i, count;
+
+	if (object == nil)
+		return OF_NOT_FOUND;
+
+	objects = [array cArray];
+	count = [array count];
 
 	for (i = 0; i < count; i++)
 		if (objects[i] == object)

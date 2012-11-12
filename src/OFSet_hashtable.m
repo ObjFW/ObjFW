@@ -50,16 +50,22 @@
 {
 	self = [self init];
 
+	if (set == nil)
+		return self;
+
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFNumber *one = [OFNumber numberWithSize: 1];
-		OFEnumerator *enumerator = [set objectEnumerator];
+		OFNumber *one;
+		OFEnumerator *enumerator;
 		id object;
+
+		one = [OFNumber numberWithSize: 1];
 
 		/*
 		 * We can't just copy the dictionary as the specified set might
 		 * be a counted set, but we're just a normal set.
 		 */
+		enumerator = [set objectEnumerator];
 		while ((object = [enumerator nextObject]) != nil)
 			[dictionary OF_setObject: one
 					  forKey: object
@@ -78,15 +84,19 @@
 {
 	self = [self init];
 
+	if (array == nil)
+		return self;
+
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 		OFNumber *one = [OFNumber numberWithSize: 1];
-		id *objects = [array objects];
-		size_t i, count = [array count];
+		OFEnumerator *enumerator;
+		id object;
 
-		for (i = 0; i < count; i++)
+		enumerator = [array objectEnumerator];
+		while ((object = [enumerator nextObject]) != nil)
 			[dictionary OF_setObject: one
-					  forKey: objects[i]
+					  forKey: object
 					 copyKey: NO];
 
 		objc_autoreleasePoolPop(pool);
@@ -204,6 +214,9 @@
 
 - (BOOL)containsObject: (id)object
 {
+	if (object == nil)
+		return NO;
+
 	return ([dictionary objectForKey: object] != nil);
 }
 

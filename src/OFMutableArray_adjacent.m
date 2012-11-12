@@ -35,6 +35,10 @@
 
 - (void)addObject: (id)object
 {
+	if (object == nil)
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]];
+
 	[array addItem: &object];
 	[object retain];
 
@@ -44,6 +48,10 @@
 - (void)insertObject: (id)object
 	     atIndex: (size_t)index
 {
+	if (object == nil)
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]];
+
 	[array insertItem: &object
 		  atIndex: index];
 	[object retain];
@@ -70,8 +78,15 @@
 - (void)replaceObject: (id)oldObject
 	   withObject: (id)newObject
 {
-	id *objects = [array cArray];
-	size_t i, count = [array count];
+	id *objects;
+	size_t i, count;
+
+	if (oldObject == nil || newObject == nil)
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]];
+
+	objects = [array cArray];
+	count = [array count];
 
 	for (i = 0; i < count; i++) {
 		if ([objects[i] isEqual: oldObject]) {
@@ -87,8 +102,14 @@
 - (void)replaceObjectAtIndex: (size_t)index
 		  withObject: (id)object
 {
-	id *objects = [array cArray];
+	id *objects;
 	id oldObject;
+
+	if (object == nil)
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]];
+
+	objects = [array cArray];
 
 	if (index >= [array count])
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
@@ -101,8 +122,15 @@
 - (void)replaceObjectIdenticalTo: (id)oldObject
 		      withObject: (id)newObject
 {
-	id *objects = [array cArray];
-	size_t i, count = [array count];
+	id *objects;
+	size_t i, count;
+
+	if (oldObject == nil || newObject == nil)
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]];
+
+	objects = [array cArray];
+	count = [array count];
 
 	for (i = 0; i < count; i++) {
 		if (objects[i] == oldObject) {
@@ -117,8 +145,15 @@
 
 - (void)removeObject: (id)object
 {
-	id *objects = [array cArray];
-	size_t i, count = [array count];
+	id *objects;
+	size_t i, count;
+
+	if (object == nil)
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]];
+
+	objects = [array cArray];
+	count = [array count];
 
 	for (i = 0; i < count; i++) {
 		if ([objects[i] isEqual: object]) {
@@ -136,8 +171,15 @@
 
 - (void)removeObjectIdenticalTo: (id)object
 {
-	id *objects = [array cArray];
-	size_t i, count = [array count];
+	id *objects;
+	size_t i, count;
+
+	if (object == nil)
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]];
+
+	objects = [array cArray];
+	count = [array count];
 
 	for (i = 0; i < count; i++) {
 		if (objects[i] == object) {

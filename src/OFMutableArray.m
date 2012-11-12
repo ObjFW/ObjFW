@@ -232,7 +232,13 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 - (void)replaceObject: (id)oldObject
 	   withObject: (id)newObject
 {
-	size_t i, count = [self count];
+	size_t i, count;
+
+	if (oldObject == nil || newObject == nil)
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]];
+
+	count = [self count];
 
 	for (i = 0; i < count; i++) {
 		if ([[self objectAtIndex: i] isEqual: oldObject]) {
@@ -246,7 +252,13 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 - (void)replaceObjectIdenticalTo: (id)oldObject
 		      withObject: (id)newObject
 {
-	size_t i, count = [self count];
+	size_t i, count;
+
+	if (oldObject == nil || newObject == nil)
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]];
+
+	count = [self count];
 
 	for (i = 0; i < count; i++) {
 		if ([self objectAtIndex: i] == oldObject) {
@@ -266,7 +278,13 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 
 - (void)removeObject: (id)object
 {
-	size_t i, count = [self count];
+	size_t i, count;
+
+	if (object == nil)
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]];
+
+	count = [self count];
 
 	for (i = 0; i < count; i++) {
 		if ([[self objectAtIndex: i] isEqual: object]) {
@@ -279,7 +297,13 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 
 - (void)removeObjectIdenticalTo: (id)object
 {
-	size_t i, count = [self count];
+	size_t i, count;
+
+	if (object == nil)
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]];
+
+	count = [self count];
 
 	for (i = 0; i < count; i++) {
 		if ([self objectAtIndex: i] == object) {
