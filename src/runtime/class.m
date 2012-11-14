@@ -435,7 +435,7 @@ objc_get_type_encoding(Class cls, SEL sel)
 
 	for (ml = cls->methodlist; ml != NULL; ml = ml->next) {
 		for (i = 0; i < ml->count; i++) {
-			if (ml->methods[i].sel.uid == sel->uid) {
+			if (sel_isEqual((SEL)&ml->methods[i].sel, sel)) {
 				const char *ret = ml->methods[i].sel.types;
 				objc_global_mutex_unlock();
 				return ret;
@@ -461,6 +461,9 @@ objc_get_type_encoding(Class cls, SEL sel)
 	}
 
 	objc_global_mutex_unlock();
+
+	if (cls->superclass != NULL)
+		return objc_get_type_encoding(cls->superclass, sel);
 
 	return NULL;
 }
