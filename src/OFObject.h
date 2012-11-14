@@ -810,6 +810,18 @@ typedef struct of_rectangle_t
 	     withObject: (id)object1
 	     withObject: (id)object2
 	     afterDelay: (double)delay;
+
+/*!
+ * @brief This method is called when @ref resolveClassMethod: or
+ *	  @ref resolveInstanceMethod: returned NO. It should return a target
+ *	  to which the message should be forwarded.
+ *
+ * @note When the message should not be forwarded, you should not return nil,
+ *	 but instead return the result of the superclass!
+ *
+ * @return The target to forward the message to
+ */
+- (id)forwardingTargetForSelector: (SEL)selector;
 @end
 
 /*!

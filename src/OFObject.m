@@ -126,40 +126,47 @@ method_not_found_handler(id obj, SEL sel, ...)
 static IMP
 forward_handler(id obj, SEL sel)
 {
+	id target;
+
+	/* Try resolveClassMethod:/resolveInstanceMethod: */
 	if (class_isMetaClass(object_getClass(obj))) {
-		if (![obj respondsToSelector: @selector(resolveClassMethod:)])
-			return method_not_found_handler;
+		if ([obj respondsToSelector: @selector(resolveClassMethod:)] &&
+		    [obj resolveClassMethod: sel]) {
+			if (![obj respondsToSelector: sel]) {
+				fprintf(stderr, "Runtime error: [%s "
+				    "resolveClassMethod: %s] returned YES "
+				    "without adding the method!\n",
+				    class_getName(obj), sel_getName(sel));
+				abort();
+			}
 
-		if (![obj resolveClassMethod: sel])
-			return method_not_found_handler;
-
-		if (![obj respondsToSelector: sel]) {
-			fprintf(stderr, "Runtime error: [%s "
-			    "resolveClassMethod: %s] returned YES without "
-			    "adding the method!\n", class_getName(obj),
-			    sel_getName(sel));
-			abort();
+			return objc_msg_lookup(obj, sel);
 		}
 	} else {
 		Class c = object_getClass(obj);
 
-		if (![c respondsToSelector: @selector(resolveInstanceMethod:)])
-			return method_not_found_handler;
+		if ([c respondsToSelector: @selector(resolveInstanceMethod:)] &&
+		    [c resolveInstanceMethod: sel]) {
+			if (![obj respondsToSelector: sel]) {
+				fprintf(stderr, "Runtime error: [%s "
+				    "resolveInstanceMethod: %s] returned YES "
+				    "without adding the method!\n",
+				    class_getName(object_getClass(obj)),
+				    sel_getName(sel));
+				abort();
+			}
 
-		if (![c resolveInstanceMethod: sel])
-			return method_not_found_handler;
-
-		if (![obj respondsToSelector: sel]) {
-			fprintf(stderr, "Runtime error: [%s "
-			    "resolveInstanceMethod: %s] returned YES without "
-			    "adding the method!\n",
-			    class_getName(object_getClass(obj)),
-			    sel_getName(sel));
-			abort();
+			return objc_msg_lookup(obj, sel);
 		}
 	}
 
-	return objc_msg_lookup(obj, sel);
+	/* Try forwardingTargetForSelector: */
+	target = [obj forwardingTargetForSelector: sel];
+
+	if (target != obj && target != nil)
+		return objc_msg_lookup(target, sel);
+
+	return method_not_found_handler;
 }
 #endif
 
@@ -952,6 +959,11 @@ void _references_to_categories_of_OFObject(void)
 	PRE_MEM(pointer)->owner = nil;
 
 	free(PRE_MEM(pointer));
+}
+
+- (id)forwardingTargetForSelector: (SEL)selector
+{
+	return nil;
 }
 
 - retain
