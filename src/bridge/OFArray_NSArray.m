@@ -20,6 +20,7 @@
 #import "NSBridging.h"
 
 #import "OFInitializationFailedException.h"
+#import "OFOutOfRangeException.h"
 
 @implementation OFArray_NSArray
 - initWithNSArray: (NSArray*)array_
@@ -42,7 +43,12 @@
 
 - (id)objectAtIndex: (size_t)index
 {
-	id object = [array objectAtIndex: index];
+	id object;
+
+	if (index > NSUIntegerMax)
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+
+	object = [array objectAtIndex: index];
 
 	if ([object conformsToProtocol: @protocol(NSBridging)])
 		return [object OFObject];

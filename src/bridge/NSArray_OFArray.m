@@ -18,6 +18,8 @@
 #import "OFArray.h"
 #import "OFBridging.h"
 
+#import "OFOutOfRangeException.h"
+
 @implementation NSArray_OFArray
 - initWithOFArray: (OFArray*)array_
 {
@@ -32,7 +34,7 @@
 	return self;
 }
 
-- (id)objectAtIndex: (size_t)index
+- (id)objectAtIndex: (NSUInteger)index
 {
 	id object = [array objectAtIndex: index];
 
@@ -42,8 +44,13 @@
 	return object;
 }
 
-- (size_t)count
+- (NSUInteger)count
 {
-	return [array count];
+	size_t count = [array count];
+
+	if (count > NSUIntegerMax)
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+
+	return (NSUInteger)count;
 }
 @end

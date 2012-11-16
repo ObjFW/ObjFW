@@ -20,6 +20,8 @@
 #import "NSBridging.h"
 #import "OFBridging.h"
 
+#import "OFOutOfRangeException.h"
+
 @implementation NSDictionary_OFDictionary
 - initWithOFDictionary: (OFDictionary*)dictionary_
 {
@@ -49,8 +51,13 @@
 	return object;
 }
 
-- (size_t)count
+- (NSUInteger)count
 {
-	return [dictionary count];
+	size_t count = [dictionary count];
+
+	if (count > NSUIntegerMax)
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+
+	return (NSUInteger)count;
 }
 @end
