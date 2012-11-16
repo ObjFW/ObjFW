@@ -67,6 +67,11 @@
 # import "threading.h"
 #endif
 
+#if defined(OF_APPLE_RUNTIME) && defined(__x86_64__)
+extern id of_forward(id, SEL, ...);
+extern struct stret of_forward_stret(id, SEL, ...);
+#endif
+
 struct pre_ivar {
 	int32_t retainCount;
 	struct pre_mem *firstMem, *lastMem;
@@ -113,9 +118,8 @@ enumeration_mutation_handler(id object)
 			object: object];
 }
 
-#ifdef OF_OBJFW_RUNTIME
-static id
-method_not_found_handler(id obj, SEL sel, ...)
+void
+of_method_not_found(id obj, SEL sel)
 {
 	fprintf(stderr, "Runtime error: Selector %s is not implemented in "
 	    "class %s!\n", sel_getName(sel),
@@ -123,11 +127,10 @@ method_not_found_handler(id obj, SEL sel, ...)
 	abort();
 }
 
+#ifdef OF_OBJFW_RUNTIME
 static IMP
 forward_handler(id obj, SEL sel)
 {
-	id target;
-
 	/* Try resolveClassMethod:/resolveInstanceMethod: */
 	if (class_isMetaClass(object_getClass(obj))) {
 		if ([obj respondsToSelector: @selector(resolveClassMethod:)] &&
@@ -161,12 +164,16 @@ forward_handler(id obj, SEL sel)
 	}
 
 	/* Try forwardingTargetForSelector: */
-	target = [obj forwardingTargetForSelector: sel];
+	if (class_respondsToSelector(object_getClass(obj),
+	    @selector(forwardingTargetForSelector:))) {
+		id target = [obj forwardingTargetForSelector: sel];
 
-	if (target != obj && target != nil)
-		return objc_msg_lookup(target, sel);
+		if (target != obj && target != nil)
+			return objc_msg_lookup(target, sel);
+	}
 
-	return method_not_found_handler;
+	of_method_not_found(obj, sel);
+	return NULL;
 }
 #endif
 
@@ -248,8 +255,12 @@ void _references_to_categories_of_OFObject(void)
 	objc_setUncaughtExceptionHandler(uncaught_exception_handler);
 #endif
 
-#ifdef OF_OBJFW_RUNTIME
+#if defined(OF_OBJFW_RUNTIME)
 	objc_forward_handler = forward_handler;
+#elif defined(OF_APPLE_RUNTIME)
+# ifdef __x86_64__
+	objc_setForwardHandler(of_forward, of_forward_stret);
+# endif
 #endif
 
 #ifdef HAVE_OBJC_ENUMERATIONMUTATION

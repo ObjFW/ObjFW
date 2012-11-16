@@ -264,6 +264,8 @@ case $objc_runtime in
 		], [
 			AC_MSG_ERROR([libobjc not found!])
 		])
+
+		AC_SUBST(APPLE_FORWARDING_S, "apple-forwarding.S")
 		;;
 esac
 

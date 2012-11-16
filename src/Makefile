@@ -100,6 +100,7 @@ SRCS += OFArray_adjacent.m		\
 	${OFSTREAMOBSERVER_SELECT_M}	\
 	OFString_UTF8.m			\
 	OFTCPSocket+SOCKS5.m		\
+	${APPLE_FORWARDING_S}		\
 	${ASPRINTF_M}			\
 	${FOUNDATION_COMPAT_M}		\
 	iso_8859_15.m			\
@@ -111,6 +112,9 @@ LIB_OBJS_EXTRA = ${EXCEPTIONS_EXCEPTIONS_LIB_A} ${RUNTIME_RUNTIME_LIB_A}
 include ../buildsys.mk
 
 CPPFLAGS += -I. -I.. -Iexceptions -Iruntime
+AS = ${OBJC}
+ASFLAGS = ${CPPFLAGS}
+AS_DEPENDS = ${OBJC_DEPENDS}
 LD = ${OBJC}
 LDFLAGS += ${REEXPORT_LIBOBJC} ${MACH_ALIAS_LIST}
 
