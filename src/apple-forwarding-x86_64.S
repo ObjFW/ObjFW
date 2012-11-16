@@ -30,7 +30,7 @@ L_sel_forwardingTargetForSelector:
 
 .section __TEXT, __text, regular, pure_instructions
 .macro forward dispatch_func
-	push	%rbp
+	pushq	%rbp
 	movq	%rsp, %rbp
 
 	/* Save all arguments */
@@ -55,7 +55,7 @@ L_sel_forwardingTargetForSelector:
 	movq	%rax, %rdi
 	movq	L_sel_forwardingTargetForSelector(%rip), %rsi
 	call	_class_respondsToSelector
-	test	%rax, %rax
+	testq	%rax, %rax
 	jz	fail
 
 	movq	0xA0(%rsp), %rdi
@@ -64,10 +64,10 @@ L_sel_forwardingTargetForSelector:
 	call	\dispatch_func
 	movq	%rax, %rdi
 
-	test	%rdi, %rdi
+	testq	%rdi, %rdi
 	jz	fail
 
-	cmp	0xA0(%rsp), %rdi
+	cmpq	0xA0(%rsp), %rdi
 	je	fail
 
 	/* Restore all arguments, except %rdi */
@@ -87,13 +87,14 @@ L_sel_forwardingTargetForSelector:
 	movq	0xA8(%rsp),  %rax
 
 	movq	%rbp, %rsp
-	pop	%rbp
+	popq	%rbp
 
 	jmp	\dispatch_func
 .endmacro
 
 _of_forward:
 	forward	_objc_msgSend
+
 _of_forward_stret:
 	forward	_objc_msgSend_stret
 
@@ -102,6 +103,6 @@ fail:
 	movq	0x98(%rsp),  %rsi
 
 	movq	%rbp, %rsp
-	pop	%rbp
+	popq	%rbp
 
 	jmp	_of_method_not_found

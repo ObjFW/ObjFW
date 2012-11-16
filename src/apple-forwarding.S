@@ -16,6 +16,8 @@
 
 #include "config.h"
 
-#ifdef __x86_64__
+#if defined(__x86_64__)
 # include "apple-forwarding-x86_64.S"
+#elif defined(__i386__)
+# include "apple-forwarding-i386.S"
 #endif
