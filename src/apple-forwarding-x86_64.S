@@ -29,7 +29,7 @@ L_sel_forwardingTargetForSelector:
 	.long 0, 0
 
 .section __TEXT, __text, regular, pure_instructions
-.macro forward dispatch_func
+_of_forward:
 	pushq	%rbp
 	movq	%rsp, %rbp
 
@@ -52,6 +52,7 @@ L_sel_forwardingTargetForSelector:
 	movd	%xmm7,     (%rsp)
 
 	call	_object_getClass
+
 	movq	%rax, %rdi
 	movq	L_sel_forwardingTargetForSelector(%rip), %rsi
 	call	_class_respondsToSelector
@@ -61,7 +62,7 @@ L_sel_forwardingTargetForSelector:
 	movq	0xA0(%rsp), %rdi
 	movq	L_sel_forwardingTargetForSelector(%rip), %rsi
 	movq	0x98(%rsp), %rdx
-	call	\dispatch_func
+	call	_objc_msgSend
 	movq	%rax, %rdi
 
 	testq	%rdi, %rdi
@@ -89,18 +90,84 @@ L_sel_forwardingTargetForSelector:
 	movq	%rbp, %rsp
 	popq	%rbp
 
-	jmp	\dispatch_func
-.endmacro
-
-_of_forward:
-	forward	_objc_msgSend
-
-_of_forward_stret:
-	forward	_objc_msgSend_stret
+	jmp	_objc_msgSend
 
 fail:
 	movq	0xA0(%rsp),  %rdi
 	movq	0x98(%rsp),  %rsi
+
+	movq	%rbp, %rsp
+	popq	%rbp
+
+	jmp	_of_method_not_found
+
+_of_forward_stret:
+	pushq	%rbp
+	movq	%rsp, %rbp
+
+	/* Save all arguments */
+	subq	$0xC0, %rsp	/* 16-byte alignment */
+	movq	 %rax, 0xA8(%rsp)
+	movq	 %rdi, 0xA0(%rsp)
+	movq	 %rsi, 0x98(%rsp)
+	movq	 %rdx, 0x90(%rsp)
+	movq	 %rcx, 0x88(%rsp)
+	movq	  %r8, 0x80(%rsp)
+	movq	  %r9, 0x78(%rsp)
+	movd	%xmm0, 0x70(%rsp)
+	movd	%xmm1, 0x60(%rsp)
+	movd	%xmm2, 0x50(%rsp)
+	movd	%xmm3, 0x40(%rsp)
+	movd	%xmm4, 0x30(%rsp)
+	movd	%xmm5, 0x20(%rsp)
+	movd	%xmm6, 0x10(%rsp)
+	movd	%xmm7,     (%rsp)
+
+	movq	%rsi, %rdi
+	call	_object_getClass
+
+	movq	%rax, %rdi
+	movq	L_sel_forwardingTargetForSelector(%rip), %rsi
+	call	_class_respondsToSelector
+	testq	%rax, %rax
+	jz	fail_stret
+
+	movq	0x98(%rsp), %rdi
+	movq	L_sel_forwardingTargetForSelector(%rip), %rsi
+	movq	0x90(%rsp), %rdx
+	call	_objc_msgSend
+	movq	%rax, %rsi
+
+	testq	%rsi, %rsi
+	jz	fail_stret
+
+	cmpq	0x98(%rsp), %rsi
+	je	fail_stret
+
+	/* Restore all arguments, except %rsi */
+	movd	    (%rsp), %xmm7
+	movd	0x10(%rsp), %xmm6
+	movd	0x20(%rsp), %xmm5
+	movd	0x30(%rsp), %xmm4
+	movd	0x40(%rsp), %xmm3
+	movd	0x50(%rsp), %xmm2
+	movd	0x60(%rsp), %xmm1
+	movd	0x70(%rsp), %xmm0
+	movq	0x78(%rsp),   %r9
+	movq	0x80(%rsp),   %r8
+	movq	0x88(%rsp),  %rcx
+	movq	0x90(%rsp),  %rdx
+	movq	0xA0(%rsp),  %rdi
+	movq	0xA8(%rsp),  %rax
+
+	movq	%rbp, %rsp
+	popq	%rbp
+
+	jmp	_objc_msgSend_stret
+
+fail_stret:
+	movq	0x98(%rsp),  %rdi
+	movq	0x90(%rsp),  %rsi
 
 	movq	%rbp, %rsp
 	popq	%rbp

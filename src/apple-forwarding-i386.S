@@ -29,19 +29,18 @@ L_sel_forwardingTargetForSelector:
 	.long 0, 0
 
 .section __TEXT, __text, regular, pure_instructions
-.macro forward dispatch_func
+_of_forward:
 	pushl	%ebp
 	movl	%esp, %ebp
 
 	pushl	8(%ebp)
 	call	_object_getClass
 	addl	$4, %esp
-	movl	%eax, %edx
 
 	call	get_eip
-L0_\dispatch_func:
-	pushl	L_sel_forwardingTargetForSelector-L0_\dispatch_func(%eax)
-	pushl	%edx
+L0:
+	pushl	L_sel_forwardingTargetForSelector-L0(%edx)
+	pushl	%eax
 	call	_class_respondsToSelector
 	addl	$8, %esp
 	testl	%eax, %eax
@@ -49,8 +48,8 @@ L0_\dispatch_func:
 
 	pushl	12(%ebp)
 	call	get_eip
-L1_\dispatch_func:
-	pushl	L_sel_forwardingTargetForSelector-L1_\dispatch_func(%eax)
+L1:
+	pushl	L_sel_forwardingTargetForSelector-L1(%edx)
 	pushl	8(%ebp)
 	call	_objc_msgSend
 
@@ -65,14 +64,7 @@ L1_\dispatch_func:
 	movl	%ebp, %esp
 	popl	%ebp
 
-	jmp	\dispatch_func
-.endmacro
-
-_of_forward:
-	forward	_objc_msgSend
-
-_of_forward_stret:
-	forward	_objc_msgSend_stret
+	jmp	_objc_msgSend
 
 fail:
 	movl	%ebp, %esp
@@ -80,6 +72,54 @@ fail:
 
 	jmp	_of_method_not_found
 
+_of_forward_stret:
+	pushl	%ebp
+	movl	%esp, %ebp
+
+	pushl	12(%ebp)
+	call	_object_getClass
+	addl	$4, %esp
+
+	call	get_eip
+L2:
+	pushl	L_sel_forwardingTargetForSelector-L2(%edx)
+	pushl	%eax
+	call	_class_respondsToSelector
+	addl	$8, %esp
+	testl	%eax, %eax
+	jz	fail_stret
+
+	pushl	16(%ebp)
+	call	get_eip
+L3:
+	pushl	L_sel_forwardingTargetForSelector-L3(%edx)
+	pushl	12(%ebp)
+	call	_objc_msgSend
+
+	testl	%eax, %eax
+	jz	fail_stret
+
+	cmpl	12(%ebp), %eax
+	je	fail_stret
+
+	movl	%eax, 12(%ebp)
+
+	movl	%ebp, %esp
+	popl	%ebp
+
+	jmp	_objc_msgSend_stret
+
+fail_stret:
+	movl	12(%ebp), %eax
+	movl	%eax, 8(%ebp)
+	movl	16(%ebp), %eax
+	movl	%eax, 12(%ebp)
+
+	movl	%ebp, %esp
+	popl	%ebp
+
+	jmp	_of_method_not_found
+
 get_eip:
-	movl	(%esp), %eax
+	movl	(%esp), %edx
 	ret
