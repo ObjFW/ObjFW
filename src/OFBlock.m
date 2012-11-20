@@ -20,10 +20,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
-# import <objc/runtime.h>
-#elif defined(OF_OBJFW_RUNTIME)
+#if defined(OF_OBJFW_RUNTIME)
 # import "runtime-private.h"
+#elif defined(OF_APPLE_RUNTIME)
+# import <objc/runtime.h>
 #endif
 
 #import "OFBlock.h"
@@ -72,16 +72,7 @@ enum {
 - (void)release;
 @end
 
-#ifndef OF_OBJFW_RUNTIME
-enum objc_abi_class_info {
-	OBJC_CLASS_INFO_CLASS	  = 0x01,
-	OBJC_CLASS_INFO_METACLASS = 0x02
-};
-#endif
-
-#if defined(OF_OBJFW_RUNTIME)
-extern void __objc_exec_class(struct objc_abi_module*);
-
+#ifdef OF_OBJFW_RUNTIME
 /* Begin of ObjC module */
 static struct objc_abi_class _NSConcreteStackBlock_metaclass = {
 	(struct objc_abi_class*)(void*)"OFBlock", "OFBlock", "OFStackBlock", 8,
@@ -130,13 +121,17 @@ static struct objc_abi_module module = {
 	8, sizeof(module), NULL, (struct objc_abi_symtab*)&symtab
 };
 
+extern void __objc_exec_class(struct objc_abi_module*);
+
 static void __attribute__((constructor))
 constructor(void)
 {
 	__objc_exec_class(&module);
 }
 /* End of ObjC module */
-#elif defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
+#elif defined(OF_APPLE_RUNTIME)
+extern Class objc_initializeClassPair(Class, const char*, Class, Class);
+
 struct class {
 	struct class *isa, *super_class;
 	const char *name;
@@ -152,10 +147,11 @@ struct class {
 struct class _NSConcreteStackBlock;
 struct class _NSConcreteGlobalBlock;
 struct class _NSConcreteMallocBlock;
-#else
-extern void *_NSConcreteStackBlock;
-extern void *_NSConcreteGlobalBlock;
-extern void *_NSConcreteMallocBlock;
+# ifdef __OBJC2__
+struct class _NSConcreteStackBlock_metaclass;
+struct class _NSConcreteGlobalBlock_metaclass;
+struct class _NSConcreteMallocBlock_metaclass;
+# endif
 #endif
 
 static struct {
@@ -319,11 +315,36 @@ _Block_object_dispose(const void *obj_, const int flags_)
 }
 
 @implementation OFBlock
-#if defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
+#ifdef OF_APPLE_RUNTIME
 + (void)load
 {
 	Class tmp;
 
+#ifdef __OBJC2__
+	tmp = objc_initializeClassPair(self, "OFStackBlock",
+	    (Class)&_NSConcreteStackBlock,
+	    (Class)&_NSConcreteStackBlock_metaclass);
+	if (tmp == Nil)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+	objc_registerClassPair(tmp);
+
+	tmp = objc_initializeClassPair(self, "OFGlobalBlock",
+	    (Class)&_NSConcreteGlobalBlock,
+	    (Class)&_NSConcreteGlobalBlock_metaclass);
+	if (tmp == Nil)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+	objc_registerClassPair(tmp);
+
+	tmp = objc_initializeClassPair([OFBlock class], "OFMallocBlock",
+	    (Class)&_NSConcreteMallocBlock,
+	    (Class)&_NSConcreteMallocBlock_metaclass);
+	if (tmp == Nil)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+	objc_registerClassPair(tmp);
+# else
 	/*
 	 * There is no objc_initializeClassPair in 10.5.
 	 * However, objc_allocateClassPair does not register the new class with
@@ -350,6 +371,7 @@ _Block_object_dispose(const void *obj_, const int flags_)
 	memcpy(&_NSConcreteMallocBlock, tmp, sizeof(_NSConcreteMallocBlock));
 	free(tmp);
 	objc_registerClassPair((Class)&_NSConcreteMallocBlock);
+# endif
 }
 #endif
 
@@ -454,38 +476,3 @@ _Block_object_dispose(const void *obj_, const int flags_)
 	[super dealloc];	/* Get rid of a stupid warning */
 }
 @end
-
-#if defined(OF_APPLE_RUNTIME) && defined(__OBJC2__)
-@implementation OFStackBlock
-+ (void)load
-{
-	/*
-	 * Send a message to the class to ensure it's initialized. Otherwise it
-	 * it might not get initialized as blocks are preallocated.
-	 */
-	[self class];
-}
-@end
-
-@implementation OFGlobalBlock
-+ (void)load
-{
-	/*
-	 * Send a message to the class to ensure it's initialized. Otherwise it
-	 * it might not get initialized as blocks are preallocated.
-	 */
-	[self class];
-}
-@end
-
-@implementation OFMallocBlock
-+ (void)load
-{
-	/*
-	 * Send a message to the class to ensure it's initialized. Otherwise it
-	 * it might not get initialized as blocks are preallocated.
-	 */
-	[self class];
-}
-@end
-#endif
