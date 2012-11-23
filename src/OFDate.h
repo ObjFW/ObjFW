@@ -289,6 +289,8 @@
 /*!
  * @brief Returns the earlier of the two dates.
  *
+ * If the argument is nil, it returns the receiver.
+ *
  * @param otherDate Another date
  * @return The earlier date of the two dates
  */
@@ -296,6 +298,8 @@
 
 /*!
  * @brief Returns the later of the two dates.
+ *
+ * If the argument is nil, it returns the receiver.
  *
  * @param otherDate Another date
  * @return The later date of the two dates

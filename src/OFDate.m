@@ -607,6 +607,9 @@ static int month_to_day_of_year[12] = {
 
 - (OFDate*)earlierDate: (OFDate*)otherDate
 {
+	if (otherDate == nil)
+		return [[self retain] autorelease];
+
 	if ([self compare: otherDate] == OF_ORDERED_DESCENDING)
 		return [[otherDate retain] autorelease];
 
@@ -615,6 +618,9 @@ static int month_to_day_of_year[12] = {
 
 - (OFDate*)laterDate: (OFDate*)otherDate
 {
+	if (otherDate == nil)
+		return [[self retain] autorelease];
+
 	if ([self compare: otherDate] == OF_ORDERED_ASCENDING)
 		return [[otherDate retain] autorelease];
 
