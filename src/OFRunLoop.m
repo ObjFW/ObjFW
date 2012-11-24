@@ -291,7 +291,7 @@ static OFRunLoop *mainRunLoop = nil;
 - (void)addTimer: (OFTimer*)timer
 {
 	@synchronized (timersQueue) {
-		[timersQueue addObject: timer];
+		[timersQueue insertObject: timer];
 	}
 	[streamObserver cancel];
 }

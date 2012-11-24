@@ -47,7 +47,7 @@
 						    selector: _cmd];
 }
 
-- (of_list_object_t*)addObject: (id <OFComparing>)object
+- (of_list_object_t*)insertObject: (id <OFComparing>)object
 {
 	of_list_object_t *iter;
 
