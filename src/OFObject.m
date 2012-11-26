@@ -67,11 +67,9 @@
 # import "threading.h"
 #endif
 
-#ifdef OF_APPLE_RUNTIME
-# if defined(__x86_64__) || defined(__i386__) || defined(__ppc__)
+#if defined(OF_APPLE_RUNTIME) && !defined(__ppc64__)
 extern id of_forward(id, SEL, ...);
 extern struct stret of_forward_stret(id, SEL, ...);
-# endif
 #endif
 
 struct pre_ivar {
@@ -259,10 +257,8 @@ void _references_to_categories_of_OFObject(void)
 
 #if defined(OF_OBJFW_RUNTIME)
 	objc_forward_handler = forward_handler;
-#elif defined(OF_APPLE_RUNTIME)
-# if defined(__x86_64__) || defined(__i386__) || defined(__ppc__)
+#elif defined(OF_APPLE_RUNTIME) && !defined(__ppc64__)
 	objc_setForwardHandler(of_forward, of_forward_stret);
-# endif
 #endif
 
 #ifdef HAVE_OBJC_ENUMERATIONMUTATION
