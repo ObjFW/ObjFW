@@ -43,6 +43,8 @@ AX_CHECK_COMPILER_FLAGS(-Wsemicolon-before-method-body,
 	[OBJCFLAGS="$OBJCFLAGS -Wsemicolon-before-method-body"])
 AX_CHECK_COMPILER_FLAGS(-Wno-objc-root-class,
 	[OBJCFLAGS="$OBJCFLAGS -Wno-objc-root-class"])
+AX_CHECK_COMPILER_FLAGS([-no-integrated-as],
+	[ASFLAGS="$ASFLAGS -no-integrated-as"])
 
 AC_MSG_CHECKING(whether Objective C compiler supports properties)
 AC_TRY_COMPILE([
@@ -744,6 +746,10 @@ dnl We don't call AC_PROG_CPP, but only AC_PROG_OBJCPP and set CPP to OBJCPP
 dnl and add OBJCPPFLAGS to CPPFLAGS, thus we need to AC_SUBST these ourself.
 AC_SUBST(CPP)
 AC_SUBST(CPPFLAGS)
+dnl We use the OBJC compiler as our assembler
+AC_SUBST(AS, $OBJC)
+AC_SUBST(ASFLAGS)
+AC_SUBST(AS_DEPENDS, $OBJC_DEPENDS)
 
 AC_CONFIG_FILES([
 	buildsys.mk

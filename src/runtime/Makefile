@@ -23,7 +23,4 @@ INCLUDES = runtime.h
 include ../../buildsys.mk
 
 CPPFLAGS += -I. -I.. -I../..
-AS = ${OBJC}
-ASFLAGS = ${CPPFLAGS}
-AS_DEPENDS = ${OBJC_DEPENDS}
 LD = ${OBJC}
