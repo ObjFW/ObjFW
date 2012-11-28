@@ -163,15 +163,6 @@ forward_handler(id obj, SEL sel)
 		}
 	}
 
-	/* Try forwardingTargetForSelector: */
-	if (class_respondsToSelector(object_getClass(obj),
-	    @selector(forwardingTargetForSelector:))) {
-		id target = [obj forwardingTargetForSelector: sel];
-
-		if (target != obj && target != nil)
-			return objc_msg_lookup(target, sel);
-	}
-
 	of_method_not_found(obj, sel);
 	return NULL;
 }
