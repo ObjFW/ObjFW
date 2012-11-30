@@ -118,10 +118,6 @@
 		abort();						\
 	}
 
-#ifdef OF_OBJFW_RUNTIME
-# define objc_lookUpClass objc_lookup_class
-#endif
-
 #ifndef _WIN32
 # define OF_PATH_DELIMITER '/'
 #else

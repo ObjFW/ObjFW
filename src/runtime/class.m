@@ -354,8 +354,8 @@ objc_register_all_classes(struct objc_abi_symtab *symtab)
 	}
 }
 
-Class
-objc_lookup_class(const char *name)
+id
+objc_lookUpClass(const char *name)
 {
 	Class cls = objc_classname_to_class(name);
 
@@ -377,15 +377,33 @@ objc_lookup_class(const char *name)
 	return cls;
 }
 
-Class
-objc_get_class(const char *name)
+id
+objc_getClass(const char *name)
+{
+	return objc_lookUpClass(name);
+}
+
+id
+objc_getRequiredClass(const char *name)
 {
 	Class cls;
 
-	if ((cls = objc_lookup_class(name)) == Nil)
+	if ((cls = objc_getClass(name)) == Nil)
 		OBJC_ERROR("Class %s not found!", name);
 
 	return cls;
+}
+
+Class
+objc_lookup_class(const char *name)
+{
+	return objc_getClass(name);
+}
+
+Class
+objc_get_class(const char *name)
+{
+	return objc_getRequiredClass(name);
 }
 
 const char*

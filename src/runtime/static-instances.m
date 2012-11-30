@@ -33,7 +33,7 @@ objc_init_static_instances(struct objc_abi_symtab *symtab)
 
 	/* Check if the class for a static instance became available */
 	for (i = 0; i < static_instances_cnt; i++) {
-		Class cls = objc_lookup_class(static_instances[i]->class_name);
+		Class cls = objc_lookUpClass(static_instances[i]->class_name);
 
 		if (cls != Nil) {
 			id *instances;
@@ -70,7 +70,7 @@ objc_init_static_instances(struct objc_abi_symtab *symtab)
 		return;
 
 	for (; *si != NULL; si++) {
-		Class cls = objc_lookup_class((*si)->class_name);
+		Class cls = objc_lookUpClass((*si)->class_name);
 
 		if (cls != Nil) {
 			id *instances;

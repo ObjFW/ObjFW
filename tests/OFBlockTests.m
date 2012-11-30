@@ -25,9 +25,6 @@
 #elif defined(OF_APPLE_RUNTIME)
 # include <objc/runtime.h>
 #endif
-#ifdef OF_OBJFW_RUNTIME
-# define objc_getClass objc_get_class
-#endif
 
 #import "TestsAppDelegate.h"
 

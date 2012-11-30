@@ -437,7 +437,10 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 			    lsda->typestable - i, lsda->typestable_base);
 #endif
 
-			class = (c != 0 ? objc_get_class((const char*)c) : Nil);
+			if (c != 0)
+				class = objc_getRequiredClass((const char*)c);
+			else
+				class = Nil;
 
 			if (class_matches(class, e->object)) {
 				*filtervalue = filter;
