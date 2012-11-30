@@ -185,8 +185,6 @@ extern IMP objc_msg_lookup_super(struct objc_super*, SEL);
 extern const char* protocol_getName(Protocol*);
 extern BOOL protocol_isEqual(Protocol*, Protocol*);
 extern BOOL protocol_conformsToProtocol(Protocol*, Protocol*);
-extern void objc_thread_add(void);
-extern void objc_thread_remove(void);
 extern void objc_exit(void);
 extern objc_uncaught_exception_handler objc_setUncaughtExceptionHandler(
     objc_uncaught_exception_handler);
