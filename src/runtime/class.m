@@ -354,7 +354,7 @@ objc_register_all_classes(struct objc_abi_symtab *symtab)
 	}
 }
 
-inline Class
+Class
 objc_lookup_class(const char *name)
 {
 	Class cls = objc_classname_to_class(name);
