@@ -24,6 +24,7 @@ SRCS = OFApplication.m			\
        OFHTTPRequest.m			\
        OFIntrospection.m		\
        OFList.m				\
+       OFMapTable.m			\
        OFMD5Hash.m			\
        OFMutableArray.m			\
        OFMutableDictionary.m		\

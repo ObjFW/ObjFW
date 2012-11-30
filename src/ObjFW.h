@@ -22,13 +22,14 @@
 #import "OFAutoreleasePool.h"
 #import "OFString.h"
 
-#import "OFDataArray.h"
 #import "OFArray.h"
+#import "OFDataArray.h"
 
 #import "OFList.h"
 #import "OFSortedList.h"
 
 #import "OFDictionary.h"
+#import "OFMapTable.h"
 
 #import "OFSet.h"
 #import "OFCountedSet.h"

@@ -152,6 +152,8 @@
 		4B39844713D3AFB400E6F825 /* OFMutableSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B39844513D3AFB400E6F825 /* OFMutableSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B39844813D3AFB400E6F825 /* OFMutableSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B39844613D3AFB400E6F825 /* OFMutableSet.m */; };
 		4B39844A13D3D03000E6F825 /* OFSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B39844913D3D03000E6F825 /* OFSet.m */; };
+		4B3B0798166978780044E634 /* OFMapTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3B0796166978780044E634 /* OFMapTable.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3B0799166978780044E634 /* OFMapTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3B0797166978780044E634 /* OFMapTable.m */; };
 		4B3D238B1337FC0D00DD29B8 /* OFApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B175C1E116D130B003C99CB /* OFApplication.m */; };
 		4B3D238C1337FC0D00DD29B8 /* OFArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B67995B1099E7C50041064A /* OFArray.m */; };
 		4B3D238D1337FC0D00DD29B8 /* OFAutoreleasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B67995D1099E7C50041064A /* OFAutoreleasePool.m */; };
@@ -565,6 +567,8 @@
 		4B39844513D3AFB400E6F825 /* OFMutableSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMutableSet.h; path = src/OFMutableSet.h; sourceTree = "<group>"; };
 		4B39844613D3AFB400E6F825 /* OFMutableSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMutableSet.m; path = src/OFMutableSet.m; sourceTree = "<group>"; };
 		4B39844913D3D03000E6F825 /* OFSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSet.m; path = tests/OFSet.m; sourceTree = "<group>"; };
+		4B3B0796166978780044E634 /* OFMapTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMapTable.h; path = src/OFMapTable.h; sourceTree = "<group>"; };
+		4B3B0797166978780044E634 /* OFMapTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMapTable.m; path = src/OFMapTable.m; sourceTree = "<group>"; };
 		4B3D236D1337FB5800DD29B8 /* base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = base64.h; path = src/base64.h; sourceTree = "<group>"; };
 		4B3D236E1337FB5800DD29B8 /* base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = base64.m; path = src/base64.m; sourceTree = "<group>"; };
 		4B3D23701337FB7500DD29B8 /* OFHTTPRequestTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHTTPRequestTests.m; path = tests/OFHTTPRequestTests.m; sourceTree = "<group>"; };
@@ -1091,6 +1095,8 @@
 				4B67996C1099E7C50041064A /* OFList.h */,
 				4B67996D1099E7C50041064A /* OFList.m */,
 				4B6743F9163C395900EB1E59 /* OFLocking.h */,
+				4B3B0796166978780044E634 /* OFMapTable.h */,
+				4B3B0797166978780044E634 /* OFMapTable.m */,
 				4BF1BCC211C9663F0025511F /* OFMD5Hash.h */,
 				4BF1BCC311C9663F0025511F /* OFMD5Hash.m */,
 				4B67996F1099E7C50041064A /* OFMutableArray.h */,
@@ -1353,6 +1359,7 @@
 				4BA02BA115041F5900002F84 /* OFJSONRepresentation.h in Headers */,
 				4B3D23CB1337FCB000DD29B8 /* OFList.h in Headers */,
 				4B674402163C395900EB1E59 /* OFLocking.h in Headers */,
+				4B3B0798166978780044E634 /* OFMapTable.h in Headers */,
 				4B3D23CC1337FCB000DD29B8 /* OFMD5Hash.h in Headers */,
 				4B3D23CD1337FCB000DD29B8 /* OFMutableArray.h in Headers */,
 				4B3D23CE1337FCB000DD29B8 /* OFMutableDictionary.h in Headers */,
@@ -1678,6 +1685,7 @@
 				4B9BB7C0141CDE2D000AD1CC /* OFArray_subarray.m in Sources */,
 				4B3D238D1337FC0D00DD29B8 /* OFAutoreleasePool.m in Sources */,
 				4B3D238E1337FC0D00DD29B8 /* OFBlock.m in Sources */,
+				4B674401163C395900EB1E59 /* OFCondition.m in Sources */,
 				4B3D238F1337FC0D00DD29B8 /* OFConstantString.m in Sources */,
 				4B45355413DCFE1E0037AB4D /* OFCountedSet.m in Sources */,
 				4BA85BCB140ECCE800E91D51 /* OFCountedSet_hashtable.m in Sources */,
@@ -1692,6 +1700,7 @@
 				4B3D23981337FC0D00DD29B8 /* OFHTTPRequest.m in Sources */,
 				4BA49D9113DB113B00381CDB /* OFIntrospection.m in Sources */,
 				4B3D23991337FC0D00DD29B8 /* OFList.m in Sources */,
+				4B3B0799166978780044E634 /* OFMapTable.m in Sources */,
 				4B3D239A1337FC0D00DD29B8 /* OFMD5Hash.m in Sources */,
 				4B3D239B1337FC0D00DD29B8 /* OFMutableArray.m in Sources */,
 				4B2B3E82140D430500EC2F7C /* OFMutableArray_adjacent.m in Sources */,
@@ -1701,12 +1710,14 @@
 				4BA85BCD140ECCE800E91D51 /* OFMutableSet_hashtable.m in Sources */,
 				4B3D239D1337FC0D00DD29B8 /* OFMutableString.m in Sources */,
 				4B552553147AA5DB0003BF47 /* OFMutableString_UTF8.m in Sources */,
+				4B674404163C395900EB1E59 /* OFMutex.m in Sources */,
 				4B511B7D139C0A34003764A5 /* OFNull.m in Sources */,
 				4B3D239E1337FC0D00DD29B8 /* OFNumber.m in Sources */,
 				4B3D239F1337FC0D00DD29B8 /* OFObject.m in Sources */,
 				4BB25E89139C388A00F574EA /* OFObject+Serialization.m in Sources */,
 				4B3D23A01337FC0D00DD29B8 /* OFPlugin.m in Sources */,
 				4BB524C2143D1E4E0085FBCC /* OFProcess.m in Sources */,
+				4B674406163C395900EB1E59 /* OFRecursiveMutex.m in Sources */,
 				4B325EDE1605F3A0007836CA /* OFRunLoop.m in Sources */,
 				4B3D23A11337FC0D00DD29B8 /* OFSeekableStream.m in Sources */,
 				4B39844313D3A24600E6F825 /* OFSet.m in Sources */,
@@ -1732,6 +1743,7 @@
 				4B3D23AC1337FC0D00DD29B8 /* OFThread.m in Sources */,
 				4B9361A91511000C00DCD16B /* OFThreadPool.m in Sources */,
 				4B325EE01605F3A0007836CA /* OFTimer.m in Sources */,
+				4B674408163C395900EB1E59 /* OFTLSKey.m in Sources */,
 				4B3D23AD1337FC0D00DD29B8 /* OFURL.m in Sources */,
 				4B3D23AE1337FC0D00DD29B8 /* OFXMLAttribute.m in Sources */,
 				4B49EA6E143B3A090005BBC6 /* OFXMLCDATA.m in Sources */,
@@ -1803,10 +1815,6 @@
 				4B6743F2163C384A00EB1E59 /* OFLockFailedException.m in Sources */,
 				4B6743F4163C384A00EB1E59 /* OFStillLockedException.m in Sources */,
 				4B6743F6163C384A00EB1E59 /* OFUnlockFailedException.m in Sources */,
-				4B674401163C395900EB1E59 /* OFCondition.m in Sources */,
-				4B674404163C395900EB1E59 /* OFMutex.m in Sources */,
-				4B674406163C395900EB1E59 /* OFRecursiveMutex.m in Sources */,
-				4B674408163C395900EB1E59 /* OFTLSKey.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
