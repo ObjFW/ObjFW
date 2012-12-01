@@ -16,18 +16,10 @@
 
 #import "OFDictionary.h"
 
+@class OFMapTable;
+
 @interface OFMutableDictionary_hashtable: OFMutableDictionary
 {
-	struct of_dictionary_hashtable_bucket **data;
-	uint32_t size;
-	size_t count;
-	unsigned long mutations;
+	OFMapTable *mapTable;
 }
-
-#if defined(OF_SET_HASHTABLE_M) || defined(OF_MUTABLE_SET_HASHTABLE_M) || \
-    defined(OF_COUNTED_SET_HASHTABLE_M)
-- (void)OF_setObject: (id)object
-	      forKey: (id)key
-	     copyKey: (BOOL)copyKey;
-#endif
 @end

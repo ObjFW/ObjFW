@@ -313,10 +313,10 @@
 	id *objects = [array cArray];
 	size_t i, count = [array count];
 	BOOL stop = NO;
-	unsigned long mutations2 = mutations;
+	unsigned long mutations_ = mutations;
 
 	for (i = 0; i < count && !stop; i++) {
-		if (mutations != mutations2)
+		if (mutations != mutations_)
 			@throw [OFEnumerationMutationException
 			    exceptionWithClass: [self class]
 					object: self];
@@ -330,12 +330,12 @@
 	id *objects = [array cArray];
 	size_t i, count = [array count];
 	BOOL stop = NO;
-	unsigned long mutations2 = mutations;
+	unsigned long mutations_ = mutations;
 
 	for (i = 0; i < count && !stop; i++) {
 		id newObject;
 
-		if (mutations != mutations2)
+		if (mutations != mutations_)
 			@throw [OFEnumerationMutationException
 			    exceptionWithClass: [self class]
 					object: self];

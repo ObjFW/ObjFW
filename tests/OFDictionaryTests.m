@@ -99,7 +99,7 @@ static OFString *values[] = {
 	BOOL ok = YES;
 
 	for (OFString *key in dict) {
-		if (i > 1 || ![key isEqual: keys[1 - i]]) {
+		if (i > 1 || ![key isEqual: keys[i]]) {
 			ok = NO;
 			break;
 		}
@@ -132,7 +132,7 @@ static OFString *values[] = {
 
 		[dict enumerateKeysAndObjectsUsingBlock:
 		    ^ (id key, id obj, BOOL *stop) {
-			if (i > 1 || ![key isEqual: keys[1 - i]]) {
+			if (i > 1 || ![key isEqual: keys[i]]) {
 				ok = NO;
 				*stop = YES;
 				return;
@@ -182,7 +182,7 @@ static OFString *values[] = {
 			return @"val2";
 
 		return nil;
-	    }] description] isEqual: @"{\n\tkey2 = val2;\n\tkey1 = val1;\n}"])
+	    }] description] isEqual: @"{\n\tkey1 = val1;\n\tkey2 = val2;\n}"])
 
 	TEST(@"-[filteredDictionaryUsingBlock:]",
 	    [[[dict filteredDictionaryUsingBlock: ^ BOOL (id key, id obj) {

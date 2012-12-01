@@ -210,13 +210,29 @@ static struct {
 	return [self initWithKeysAndObjects: key, object, nil];
 }
 
-- initWithObjects: (OFArray*)objects
-	  forKeys: (OFArray*)keys
+- initWithObjects: (OFArray*)objects_
+	  forKeys: (OFArray*)keys_
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	id *objects, *keys;
+	size_t count;
+
+	@try {
+		count = [objects_ count];
+
+		if (count != [keys_ count])
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: [self class]];
+
+		objects = [objects_ objects];
+		keys = [keys_ objects];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return [self initWithObjects: objects
+			     forKeys: keys
+			       count: count];
 }
 
 - initWithObjects: (id const*)objects

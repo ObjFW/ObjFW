@@ -16,13 +16,11 @@
 
 #include "config.h"
 
-#include <string.h>
-
 #include <assert.h>
 
 #import "OFDictionary_hashtable.h"
 #import "OFMutableDictionary_hashtable.h"
-#import "OFEnumerator.h"
+#import "OFMapTable.h"
 #import "OFArray.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
@@ -31,76 +29,67 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
-#import "OFOutOfRangeException.h"
 
 #import "autorelease.h"
-#import "macros.h"
 
-struct of_dictionary_hashtable_bucket
-    of_dictionary_hashtable_deleted_bucket = {};
-#define DELETED &of_dictionary_hashtable_deleted_bucket
+static void*
+copy(void *value)
+{
+	return [(id)value copy];
+}
+
+static void*
+retain(void *value)
+{
+	return [(id)value retain];
+}
+
+static void
+release(void *value)
+{
+	[(id)value release];
+}
+
+static uint32_t
+hash(void *value)
+{
+	return [(id)value hash];
+}
+
+static BOOL
+equal(void *value1, void *value2)
+{
+	return [(id)value1 isEqual: (id)value2];
+}
+
+static of_map_table_functions_t keyFunctions = {
+	.retain = copy,
+	.release = release,
+	.hash = hash,
+	.equal = equal
+};
+static of_map_table_functions_t valueFunctions = {
+	.retain = retain,
+	.release = release,
+	.hash = hash,
+	.equal = equal
+};
 
 @implementation OFDictionary_hashtable
 - init
 {
-	self = [super init];
-
-	@try {
-		data = [self allocMemoryWithSize: sizeof(*data)];
-		size = 1;
-		data[0] = NULL;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	return [self initWithCapacity: 0];
 }
 
-- OF_initWithDictionary: (OFDictionary*)dictionary
-	       copyKeys: (BOOL)copyKeys
+- initWithCapacity: (size_t)capacity
 {
 	self = [super init];
 
 	@try {
-		uint32_t i;
-		OFDictionary_hashtable *hashtable;
-
-		if (![dictionary isKindOfClass:
-		    [OFDictionary_hashtable class]] &&
-		    ![dictionary isKindOfClass:
-		    [OFMutableDictionary_hashtable class]])
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
-
-		hashtable = (OFDictionary_hashtable*)dictionary;
-
-		data = [self allocMemoryWithSize: sizeof(*data)
-					   count: hashtable->size];
-
-		for (i = 0; i < hashtable->size; i++)
-			data[i] = NULL;
-
-		size = hashtable->size;
-		count = hashtable->count;
-
-		for (i = 0; i < size; i++) {
-			struct of_dictionary_hashtable_bucket *bucket;
-
-			if (hashtable->data[i] == NULL ||
-			    hashtable->data[i] == DELETED)
-				continue;
-
-			bucket = [self allocMemoryWithSize: sizeof(*bucket)];
-			bucket->key = (copyKeys
-			    ? [hashtable->data[i]->key copy]
-			    : [hashtable->data[i]->key retain]);
-			bucket->object = [hashtable->data[i]->object retain];
-			bucket->hash = hashtable->data[i]->hash;
-
-			data[i] = bucket;
-		}
+		mapTable = [[OFMapTable alloc]
+		    initWithKeyFunctions: keyFunctions
+			  valueFunctions: valueFunctions
+				capacity: capacity];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -111,83 +100,48 @@ struct of_dictionary_hashtable_bucket
 
 - initWithDictionary: (OFDictionary*)dictionary
 {
+	size_t count;
+
 	if (dictionary == nil)
 		return [self init];
 
 	if ([dictionary class] == [OFDictionary_hashtable class] ||
-	    [dictionary class] == [OFMutableDictionary_hashtable class])
-		return [self OF_initWithDictionary: dictionary
-					  copyKeys: YES];
+	    [dictionary class] == [OFMutableDictionary_hashtable class]) {
+		self = [super init];
 
-	self = [super init];
+		@try {
+			OFDictionary_hashtable *dictionary_ =
+			    (OFDictionary_hashtable*)dictionary;
+
+			mapTable = [dictionary_->mapTable copy];
+		} @catch (id e) {
+			[self release];
+			@throw e;
+		}
+
+		return self;
+	}
 
 	@try {
-		void *pool;
-		OFEnumerator *enumerator;
-		id key;
-		uint32_t i, newSize;
-
-		if (dictionary == nil)
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]];
-
 		count = [dictionary count];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
-		if (count > UINT32_MAX)
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
+	self = [self initWithCapacity: count];
 
-		for (newSize = 1; newSize < count; newSize <<= 1);
-		if (count * 4 / newSize >= 3)
-			newSize <<= 1;
+	@try {
+		void *pool = objc_autoreleasePoolPush();
+		OFEnumerator *keyEnumerator, *objectEnumerator;
+		id key, object;
 
-		if (newSize == 0)
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
-
-		data = [self allocMemoryWithSize: sizeof(*data)
-					   count: newSize];
-
-		for (i = 0; i < newSize; i++)
-			data[i] = NULL;
-
-		size = newSize;
-
-		pool = objc_autoreleasePoolPush();
-
-		enumerator = [dictionary keyEnumerator];
-		while ((key = [enumerator nextObject]) != nil) {
-			uint32_t hash, last;
-			struct of_dictionary_hashtable_bucket *bucket;
-			id object;
-
-			hash = [key hash];
-			last = size;
-
-			for (i = hash & (size - 1); i < last && data[i] != NULL;
-			    i++);
-
-			/* In case the last bucket is already used */
-			if (i >= last) {
-				last = hash & (size - 1);
-
-				for (i = 0; i < last && data[i] != NULL; i++);
-			}
-
-			if (data[i] != NULL)
-				@throw [OFOutOfRangeException
-				    exceptionWithClass: [self class]];
-
-			bucket = [self allocMemoryWithSize: sizeof(*bucket)];
-
-			object = [dictionary objectForKey: key];
-
-			bucket->key = [key copy];
-			bucket->object = [object retain];
-			bucket->hash = hash;
-
-			data[i] = bucket;
-		}
+		keyEnumerator = [dictionary keyEnumerator];
+		objectEnumerator = [dictionary objectEnumerator];
+		while ((key = [keyEnumerator nextObject]) != nil &&
+		    (object = [objectEnumerator nextObject]) != nil)
+			[mapTable setValue: object
+				    forKey: key];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -201,33 +155,11 @@ struct of_dictionary_hashtable_bucket
 - initWithObject: (id)object
 	  forKey: (id)key
 {
-	self = [super init];
+	self = [self initWithCapacity: 1];
 
 	@try {
-		uint32_t i;
-		struct of_dictionary_hashtable_bucket *bucket;
-
-		if (key == nil || object == nil)
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
-
-		data = [self allocMemoryWithSize: sizeof(*data)
-					   count: 2];
-
-		size = 2;
-		for (i = 0; i < size; i++)
-			data[i] = NULL;
-
-		i = [key hash] & 1;
-
-		bucket = [self allocMemoryWithSize: sizeof(*bucket)];
-		bucket->key = [key copy];
-		bucket->object = [object retain];
-		bucket->hash = [key hash];
-
-		data[i] = bucket;
-		count = 1;
+		[mapTable setValue: object
+			    forKey: key];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -236,128 +168,18 @@ struct of_dictionary_hashtable_bucket
 	return self;
 }
 
-- initWithObjects: (OFArray*)objects
-	  forKeys: (OFArray*)keys
-{
-	id ret;
-
-	@try {
-		if ([objects count] != [keys count])
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]];
-
-		ret = [self initWithObjects: [objects objects]
-				    forKeys: [keys objects]
-				      count: [objects count]];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return ret;
-}
-
 - initWithObjects: (id const*)objects
 	  forKeys: (id const*)keys
-	    count: (size_t)count_
+	    count: (size_t)count
 {
-	self = [super init];
+	self = [self initWithCapacity: count];
 
 	@try {
-		uint32_t i, j, newSize;
+		size_t i;
 
-		count = count_;
-
-		if (count > UINT32_MAX)
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
-
-		for (newSize = 1; newSize < count; newSize <<= 1);
-		if (count * 4 / newSize >= 3)
-			newSize <<= 1;
-
-		if (newSize == 0)
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
-
-		data = [self allocMemoryWithSize: sizeof(*data)
-					   count: newSize];
-
-		for (j = 0; j < newSize; j++)
-			data[j] = NULL;
-
-		size = newSize;
-
-		for (i = 0; i < count; i++) {
-			uint32_t hash, last;
-
-			if (keys[i] == nil || objects[i] == nil)
-				@throw [OFInvalidArgumentException
-				    exceptionWithClass: [self class]];
-
-			hash = [keys[i] hash];
-			last = size;
-
-			for (j = hash & (size - 1); j < last && data[j] != NULL;
-			    j++)
-				if ([data[j]->key isEqual: keys[i]])
-					break;
-
-			/* In case the last bucket is already used */
-			if (j >= last) {
-				last = hash & (size - 1);
-
-				for (j = 0; j < last && data[j] != NULL; j++)
-					if ([data[j]->key isEqual: keys[i]])
-						break;
-			}
-
-			/* Key not in dictionary */
-			if (j >= last || data[j] == NULL ||
-			    ![data[j]->key isEqual: keys[i]]) {
-				struct of_dictionary_hashtable_bucket *bucket;
-				id key;
-
-				last = size;
-
-				j = hash & (size - 1);
-				for (; j < last && data[j] != NULL; j++);
-
-				/* In case the last bucket is already used */
-				if (j >= last) {
-					last = hash & (size - 1);
-
-					for (j = 0; j < last && data[j] != NULL;
-					    j++);
-				}
-
-				if (j >= last)
-					@throw [OFOutOfRangeException
-					    exceptionWithClass: [self class]];
-
-				bucket =
-				    [self allocMemoryWithSize: sizeof(*bucket)];
-				key = [keys[i] copy];
-
-				bucket->key = key;
-				bucket->object = [objects[i] retain];
-				bucket->hash = hash;
-
-				data[j] = bucket;
-
-				continue;
-			}
-
-			/*
-			 * The key is already in the dictionary. However, we
-			 * just replace it so that the programmer gets the same
-			 * behavior as if he'd call setObject:forKey: for each
-			 * key/object pair.
-			 */
-			[objects[i] retain];
-			[data[j]->object release];
-			data[j]->object = objects[i];
-		}
+		for (i = 0; i < count; i++)
+			[mapTable setValue: objects[i]
+				    forKey: keys[i]];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -372,10 +194,9 @@ struct of_dictionary_hashtable_bucket
 	self = [super init];
 
 	@try {
-		id key, object;
-		uint32_t i, j, hash, newSize;
 		va_list argumentsCopy;
-		struct of_dictionary_hashtable_bucket *bucket;
+		id key, object;
+		size_t i, count;
 
 		va_copy(argumentsCopy, arguments);
 
@@ -395,40 +216,15 @@ struct of_dictionary_hashtable_bucket
 		for (; va_arg(argumentsCopy, id) != nil; count++);
 		count >>= 1;
 
-		if (count > UINT32_MAX)
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
+		mapTable = [[OFMapTable alloc]
+		    initWithKeyFunctions: keyFunctions
+			  valueFunctions: valueFunctions
+				capacity: count];
 
-		for (newSize = 1; newSize < count; newSize <<= 1);
-		if (count * 4 / newSize >= 3)
-			newSize <<= 1;
-
-		if (newSize == 0)
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
-
-		data = [self allocMemoryWithSize: sizeof(*data)
-					   count: newSize];
-
-		for (j = 0; j < newSize; j++)
-			data[j] = NULL;
-
-		size = newSize;
-
-		/* Add first key / object pair */
-		hash = [key hash];
-		j = hash & (size - 1);
-
-		bucket = [self allocMemoryWithSize: sizeof(*bucket)];
-		bucket->key = [key copy];
-		bucket->object = [object retain];
-		bucket->hash = hash;
-
-		data[j] = bucket;
+		[mapTable setValue: object
+			    forKey: key];
 
 		for (i = 1; i < count; i++) {
-			uint32_t last;
-
 			key = va_arg(arguments, id);
 			object = va_arg(arguments, id);
 
@@ -437,64 +233,8 @@ struct of_dictionary_hashtable_bucket
 				    exceptionWithClass: [self class]
 					      selector: _cmd];
 
-			hash = [key hash];
-			last = size;
-
-			for (j = hash & (size - 1); j < last && data[j] != NULL;
-			    j++)
-				if ([data[j]->key isEqual: key])
-					break;
-
-			/* In case the last bucket is already used */
-			if (j >= last) {
-				last = hash & (size - 1);
-
-				for (j = 0; j < last && data[j] != NULL; j++)
-					if ([data[j]->key isEqual: key])
-						break;
-			}
-
-			/* Key not in dictionary */
-			if (j >= last || data[j] == NULL ||
-			    ![data[j]->key isEqual: key]) {
-				last = size;
-
-				j = hash & (size - 1);
-				for (; j < last && data[j] != NULL; j++);
-
-				/* In case the last bucket is already used */
-				if (j >= last) {
-					last = hash & (size - 1);
-
-					for (j = 0; j < last && data[j] != NULL;
-					    j++);
-				}
-
-				if (j >= last)
-					@throw [OFOutOfRangeException
-					    exceptionWithClass: [self class]];
-
-				bucket =
-				    [self allocMemoryWithSize: sizeof(*bucket)];
-				bucket->key = [key copy];
-				bucket->object = [object retain];
-				bucket->hash = hash;
-
-				data[j] = bucket;
-
-				continue;
-			}
-
-			/*
-			 * The key is already in the dictionary. However, we
-			 * just replace it so that the programmer gets the same
-			 * behavior as if he'd call setObject:forKey: for each
-			 * key/object pair.
-			 */
-			[object retain];
-			[data[j]->object release];
-			data[j]->object = object;
-			count--;
+			[mapTable setValue: object
+				    forKey: key];
 		}
 	} @catch (id e) {
 		[self release];
@@ -506,21 +246,13 @@ struct of_dictionary_hashtable_bucket
 
 - initWithSerialization: (OFXMLElement*)element
 {
+	self = [super init];
+
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFMutableDictionary *dictionary;
 		OFArray *keys, *objects;
 		OFEnumerator *keyEnumerator, *objectEnumerator;
 		OFXMLElement *keyElement, *objectElement;
-
-		if ((![[element name] isEqual: @"OFDictionary"] &&
-		    ![[element name] isEqual: @"OFMutableDictionary"]) ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
-
-		dictionary = [OFMutableDictionary dictionary];
 
 		keys = [element elementsForName: @"key"
 				      namespace: OF_SERIALIZATION_NS];
@@ -530,6 +262,11 @@ struct of_dictionary_hashtable_bucket
 		if ([keys count] != [objects count])
 			@throw [OFInvalidFormatException
 			    exceptionWithClass: [self class]];
+
+		mapTable = [[OFMapTable alloc]
+		    initWithKeyFunctions: keyFunctions
+			  valueFunctions: valueFunctions
+				capacity: [keys count]];
 
 		keyEnumerator = [keys objectEnumerator];
 		objectEnumerator = [objects objectEnumerator];
@@ -547,13 +284,11 @@ struct of_dictionary_hashtable_bucket
 				@throw [OFInvalidFormatException
 				    exceptionWithClass: [self class]];
 
-			[dictionary setObject: [object objectByDeserializing]
-				       forKey: [key objectByDeserializing]];
+			[mapTable setValue: [object objectByDeserializing]
+				    forKey: [key objectByDeserializing]];
 
 			objc_autoreleasePoolPop(pool2);
 		}
-
-		self = [self initWithDictionary: dictionary];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -566,110 +301,63 @@ struct of_dictionary_hashtable_bucket
 
 - (id)objectForKey: (id)key
 {
-	uint32_t i, hash, last;
-
-	if (key == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
-
-	hash = [key hash];
-	last = size;
-
-	for (i = hash & (size - 1); i < last && data[i] != NULL; i++) {
-		if (data[i] == DELETED)
-			continue;
-
-		if ([data[i]->key isEqual: key])
-			return data[i]->object;
-	}
-
-	if (i < last)
-		return nil;
-
-	/* In case the last bucket is already used */
-	last = hash & (size - 1);
-
-	for (i = 0; i < last && data[i] != NULL; i++) {
-		if (data[i] == DELETED)
-			continue;
-
-		if ([data[i]->key isEqual: key])
-			return data[i]->object;
-	}
-
-	return nil;
+	return [mapTable valueForKey: key];
 }
 
 - (size_t)count
 {
-	return count;
+	return [mapTable count];
 }
 
 - (BOOL)isEqual: (id)dictionary
 {
-	uint32_t i;
+	OFDictionary_hashtable *dictionary_;
 
 	if ([self class] != [OFDictionary_hashtable class] &&
 	    [self class] != [OFMutableDictionary_hashtable class])
 		return [super isEqual: dictionary];
 
-	if ([dictionary count] != count)
-		return NO;
+	dictionary_ = (OFDictionary_hashtable*)dictionary;
 
-	for (i = 0; i < size; i++)
-		if (data[i] != NULL && data[i] != DELETED &&
-		    ![[dictionary objectForKey: data[i]->key]
-		    isEqual: data[i]->object])
-			return NO;
-
-	return YES;
+	return [dictionary_->mapTable isEqual: mapTable];
 }
 
 - (BOOL)containsObject: (id)object
 {
-	uint32_t i;
-
-	if (object == nil || count == 0)
-		return NO;
-
-	for (i = 0; i < size; i++)
-		if (data[i] != NULL && data[i] != DELETED &&
-		    [data[i]->object isEqual: object])
-			return YES;
-
-	return NO;
+	return [mapTable containsValue: object];
 }
 
 - (BOOL)containsObjectIdenticalTo: (id)object
 {
-	uint32_t i;
-
-	if (object == nil || count == 0)
-		return NO;
-
-	for (i = 0; i < size; i++)
-		if (data[i] != NULL && data[i] != DELETED &&
-		    data[i]->object == object)
-			return YES;
-
-	return NO;
+	return [mapTable containsValueIdenticalTo: object];
 }
 
 - (OFArray*)allKeys
 {
 	OFArray *ret;
-	id *keys = [self allocMemoryWithSize: sizeof(*keys)
-				       count: count];
-	size_t i, j;
+	id *keys;
+	size_t count;
 
-	for (i = j = 0; i < size; i++)
-		if (data[i] != NULL && data[i] != DELETED)
-			keys[j++] = data[i]->key;
-
-	assert(j == count);
+	count = [mapTable count];
+	keys = [self allocMemoryWithSize: sizeof(*keys)
+				   count: count];
 
 	@try {
+		void *pool = objc_autoreleasePoolPush();
+		OFMapTableEnumerator *enumerator;
+		id key;
+		size_t i;
+
+		i = 0;
+		enumerator = [mapTable keyEnumerator];
+		while ((key = [enumerator nextValue]) != nil) {
+			assert(i < count);
+
+			keys[i++] = key;
+		}
+
+		objc_autoreleasePoolPop(pool);
+
 		ret = [OFArray arrayWithObjects: keys
 					  count: count];
 	} @finally {
@@ -682,17 +370,29 @@ struct of_dictionary_hashtable_bucket
 - (OFArray*)allObjects
 {
 	OFArray *ret;
-	id *objects = [self allocMemoryWithSize: sizeof(*objects)
-					  count: count];
-	size_t i, j;
+	id *objects;
+	size_t count;
 
-	for (i = j = 0; i < size; i++)
-		if (data[i] != NULL && data[i] != DELETED)
-			objects[j++] = data[i]->object;
-
-	assert(j == count);
+	count = [mapTable count];
+	objects = [self allocMemoryWithSize: sizeof(*objects)
+				      count: count];
 
 	@try {
+		void *pool = objc_autoreleasePoolPush();
+		OFMapTableEnumerator *enumerator;
+		id object;
+		size_t i;
+
+		i = 0;
+		enumerator = [mapTable valueEnumerator];
+		while ((object = [enumerator nextValue]) != nil) {
+			assert(i < count);
+
+			objects[i++] = object;
+		}
+
+		objc_autoreleasePoolPop(pool);
+
 		ret = [OFArray arrayWithObjects: objects
 					  count: count];
 	} @finally {
@@ -704,154 +404,53 @@ struct of_dictionary_hashtable_bucket
 
 - (OFEnumerator*)keyEnumerator
 {
-	return [[[OFDictionaryKeyEnumerator_hashtable alloc]
-	    initWithDictionary: self
-			  data: data
-			  size: size
-	      mutationsPointer: NULL] autorelease];
+	return [[[OFMapTableEnumeratorWrapper alloc]
+	    initWithEnumerator: [mapTable keyEnumerator]
+			object: self] autorelease];
 }
 
 - (OFEnumerator*)objectEnumerator
 {
-	return [[[OFDictionaryObjectEnumerator_hashtable alloc]
-	    initWithDictionary: self
-			  data: data
-			  size: size
-	      mutationsPointer: NULL] autorelease];
+	return [[[OFMapTableEnumeratorWrapper alloc]
+	    initWithEnumerator: [mapTable valueEnumerator]
+			object: self] autorelease];
 }
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
 			   objects: (id*)objects
 			     count: (int)count_
 {
-	int i;
-
-	for (i = 0; i < count_; i++) {
-		for (; state->state < size && (data[state->state] == NULL ||
-		    data[state->state] == DELETED); state->state++);
-
-		if (state->state < size) {
-			objects[i] = data[state->state]->key;
-			state->state++;
-		} else
-			break;
-	}
-
-	state->itemsPtr = objects;
-	state->mutationsPtr = (unsigned long*)self;
-
-	return i;
+	return [mapTable countByEnumeratingWithState: state
+					     objects: objects
+					       count: count_];
 }
 
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateKeysAndObjectsUsingBlock:
     (of_dictionary_enumeration_block_t)block
 {
-	size_t i;
-	BOOL stop = NO;
-
-	for (i = 0; i < size && !stop; i++)
-		if (data[i] != NULL && data[i] != DELETED)
-			block(data[i]->key, data[i]->object, &stop);
+	@try {
+		[mapTable enumerateKeysAndValuesUsingBlock:
+		    ^ (void *key, void *value, BOOL *stop) {
+			block(key, value, stop);
+		}];
+	} @catch (OFEnumerationMutationException *e) {
+		@throw [OFEnumerationMutationException
+		    exceptionWithClass: [self class]
+				object: self];
+	}
 }
 #endif
 
 - (void)dealloc
 {
-	uint32_t i;
-
-	for (i = 0; i < size; i++) {
-		if (data[i] != NULL && data[i] != DELETED) {
-			[data[i]->key release];
-			[data[i]->object release];
-		}
-	}
+	[mapTable dealloc];
 
 	[super dealloc];
 }
 
 - (uint32_t)hash
 {
-	uint32_t i, hash = 0;
-
-	for (i = 0; i < size; i++) {
-		if (data[i] != NULL && data[i] != DELETED) {
-			hash += data[i]->hash;
-			hash += [data[i]->object hash];
-		}
-	}
-
-	return hash;
-}
-@end
-
-@implementation OFDictionaryEnumerator_hashtable
-- initWithDictionary: (OFDictionary_hashtable*)dictionary_
-		data: (struct of_dictionary_hashtable_bucket**)data_
-		size: (uint32_t)size_
-    mutationsPointer: (unsigned long*)mutationsPtr_
-{
-	self = [super init];
-
-	dictionary = [dictionary_ retain];
-	data = data_;
-	size = size_;
-	mutations = (mutationsPtr_ != NULL ? *mutationsPtr_ : 0);
-	mutationsPtr = mutationsPtr_;
-
-	return self;
-}
-
-- (void)dealloc
-{
-	[dictionary release];
-
-	[super dealloc];
-}
-
-- (void)reset
-{
-	if (mutationsPtr != NULL && *mutationsPtr != mutations)
-		@throw [OFEnumerationMutationException
-		    exceptionWithClass: [dictionary class]
-				object: dictionary];
-
-	pos = 0;
-}
-@end
-
-@implementation OFDictionaryObjectEnumerator_hashtable
-- (id)nextObject
-{
-	if (mutationsPtr != NULL && *mutationsPtr != mutations)
-		@throw [OFEnumerationMutationException
-		    exceptionWithClass: [dictionary class]
-				object: dictionary];
-
-	for (; pos < size && (data[pos] == NULL ||
-	    data[pos] == DELETED); pos++);
-
-	if (pos < size)
-		return data[pos++]->object;
-	else
-		return nil;
-}
-@end
-
-@implementation OFDictionaryKeyEnumerator_hashtable
-- (id)nextObject
-{
-	if (mutationsPtr != NULL && *mutationsPtr != mutations)
-		@throw [OFEnumerationMutationException
-		    exceptionWithClass: [dictionary class]
-				object: dictionary];
-
-	for (; pos < size && (data[pos] == NULL ||
-	    data[pos] == DELETED); pos++);
-
-	if (pos < size)
-		return data[pos++]->key;
-	else
-		return nil;
+	return [mapTable hash];
 }
 @end

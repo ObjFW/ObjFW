@@ -49,7 +49,7 @@ static OFString *module = @"OFJSON";
 	TEST(@"-[JSONValue #1]", [[s JSONValue] isEqual: d])
 
 	TEST(@"-[JSONRepresentation]", [[d JSONRepresentation] isEqual:
-	    @"{\"foo\":\"ba\\r\",\"x\":[0.5,15,null,\"foo\",false]}"])
+	    @"{\"x\":[0.5,15,null,\"foo\",false],\"foo\":\"ba\\r\"}"])
 
 	EXPECT_EXCEPTION(@"-[JSONValue #2]", OFInvalidJSONException,
 	    [@"{" JSONValue])
