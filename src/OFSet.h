@@ -36,6 +36,9 @@ typedef BOOL (^of_set_filter_block_t)(id object);
 
 /*!
  * @brief An abstract class for an unordered set of unique objects.
+ *
+ * @warning Do not mutate objects that are in a set! Changing the hash of
+ *	    objects in a set breaks the internal representation of the set!
  */
 @interface OFSet: OFObject <OFCollection, OFCopying, OFMutableCopying,
     OFSerialization>
