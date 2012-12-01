@@ -1778,7 +1778,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 6;
-				DYLIB_CURRENT_VERSION = 6;
+				DYLIB_CURRENT_VERSION = 6.1;
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Info.plist;
 				OTHER_LDFLAGS = (
@@ -1797,7 +1797,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 6;
-				DYLIB_CURRENT_VERSION = 6;
+				DYLIB_CURRENT_VERSION = 6.1;
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Info.plist;
 				OTHER_LDFLAGS = (
