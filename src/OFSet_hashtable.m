@@ -16,28 +16,66 @@
 
 #include "config.h"
 
-#define OF_SET_HASHTABLE_M
-
 #import "OFSet_hashtable.h"
 #import "OFMutableSet_hashtable.h"
 #import "OFCountedSet_hashtable.h"
-#import "OFMutableDictionary_hashtable.h"
+#import "OFMapTable.h"
 #import "OFArray.h"
 #import "OFString.h"
-#import "OFNumber.h"
 #import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
+#import "OFEnumerationMutationException.h"
 
 #import "autorelease.h"
+
+static void*
+retain(void *value)
+{
+	return [(id)value retain];
+}
+
+static void
+release(void *value)
+{
+	[(id)value release];
+}
+
+static uint32_t
+hash(void *value)
+{
+	return [(id)value hash];
+}
+
+static BOOL
+equal(void *value1, void *value2)
+{
+	return [(id)value1 isEqual: (id)value2];
+}
+
+static of_map_table_functions_t keyFunctions = {
+	.retain = retain,
+	.release = release,
+	.hash = hash,
+	.equal = equal
+};
+static of_map_table_functions_t valueFunctions = {};
 
 @implementation OFSet_hashtable
 - init
 {
+	return [self initWithCapacity: 0];
+}
+
+- initWithCapacity: (size_t)capacity
+{
 	self = [super init];
 
 	@try {
-		dictionary = [[OFMutableDictionary_hashtable alloc] init];
+		mapTable = [[OFMapTable alloc]
+		    initWithKeyFunctions: keyFunctions
+			  valueFunctions: valueFunctions
+				capacity: capacity];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -48,28 +86,29 @@
 
 - initWithSet: (OFSet*)set
 {
-	self = [self init];
+	size_t count;
 
 	if (set == nil)
-		return self;
+		return [self init];
+
+	@try {
+		count = [set count];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	self = [self initWithCapacity: count];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFNumber *one;
 		OFEnumerator *enumerator;
 		id object;
 
-		one = [OFNumber numberWithSize: 1];
-
-		/*
-		 * We can't just copy the dictionary as the specified set might
-		 * be a counted set, but we're just a normal set.
-		 */
 		enumerator = [set objectEnumerator];
 		while ((object = [enumerator nextObject]) != nil)
-			[dictionary OF_setObject: one
-					  forKey: object
-					 copyKey: NO];
+			[mapTable setValue: (void*)1
+				    forKey: object];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -82,22 +121,29 @@
 
 - initWithArray: (OFArray*)array
 {
-	self = [self init];
+	size_t count;
 
 	if (array == nil)
 		return self;
 
 	@try {
+		count = [array count];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	self = [self initWithCapacity: count];
+
+	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFNumber *one = [OFNumber numberWithSize: 1];
 		OFEnumerator *enumerator;
 		id object;
 
 		enumerator = [array objectEnumerator];
 		while ((object = [enumerator nextObject]) != nil)
-			[dictionary OF_setObject: one
-					  forKey: object
-					 copyKey: NO];
+			[mapTable setValue: (void*)1
+				    forKey: object];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -111,19 +157,14 @@
 - initWithObjects: (id const*)objects
 	    count: (size_t)count
 {
-	self = [self init];
+	self = [self initWithCapacity: count];
 
 	@try {
-		void *pool = objc_autoreleasePoolPush();
-		OFNumber *one = [OFNumber numberWithSize: 1];
 		size_t i;
 
 		for (i = 0; i < count; i++)
-			[dictionary OF_setObject: one
-					  forKey: objects[i]
-					 copyKey: NO];
-
-		objc_autoreleasePoolPop(pool);
+			[mapTable setValue: (void*)1
+				    forKey: objects[i]];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -135,23 +176,28 @@
 - initWithObject: (id)firstObject
        arguments: (va_list)arguments
 {
-	self = [self init];
+	self = [super init];
 
 	@try {
-		void *pool = objc_autoreleasePoolPush();
-		OFNumber *one = [OFNumber numberWithSize: 1];
 		id object;
+		va_list argumentsCopy;
+		size_t count;
 
-		[dictionary OF_setObject: one
-				  forKey: firstObject
-				 copyKey: NO];
+		va_copy(argumentsCopy, arguments);
+
+		for (count = 1; va_arg(argumentsCopy, id) != nil; count++);
+
+		mapTable = [[OFMapTable alloc]
+		    initWithKeyFunctions: keyFunctions
+			  valueFunctions: valueFunctions
+				capacity: count];
+
+		[mapTable setValue: (void*)1
+			    forKey: firstObject];
 
 		while ((object = va_arg(arguments, id)) != nil)
-			[dictionary OF_setObject: one
-					  forKey: object
-					 copyKey: NO];
-
-		objc_autoreleasePoolPop(pool);
+			[mapTable setValue: (void*)1
+				    forKey: object];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -166,7 +212,6 @@
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFNumber *one;
 		OFEnumerator *enumerator;
 		OFXMLElement *child;
 
@@ -177,16 +222,13 @@
 			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
-		one = [OFNumber numberWithSize: 1];
-
 		enumerator = [[element elementsForNamespace:
 		    OF_SERIALIZATION_NS] objectEnumerator];
 		while ((child = [enumerator nextObject]) != nil) {
 			void *pool2  = objc_autoreleasePoolPush();
 
-			[dictionary OF_setObject: one
-					  forKey: [child objectByDeserializing]
-					 copyKey: NO];
+			[mapTable setValue: (void*)1
+				    forKey: [child objectByDeserializing]];
 
 			objc_autoreleasePoolPop(pool2);
 		}
@@ -202,14 +244,14 @@
 
 - (void)dealloc
 {
-	[dictionary release];
+	[mapTable release];
 
 	[super dealloc];
 }
 
 - (size_t)count
 {
-	return [dictionary count];
+	return [mapTable count];
 }
 
 - (BOOL)containsObject: (id)object
@@ -217,7 +259,7 @@
 	if (object == nil)
 		return NO;
 
-	return ([dictionary objectForKey: object] != nil);
+	return ([mapTable valueForKey: object] != nil);
 }
 
 - (BOOL)isEqual: (id)object
@@ -231,30 +273,38 @@
 
 	otherSet = object;
 
-	return [otherSet->dictionary isEqual: dictionary];
+	return [otherSet->mapTable isEqual: mapTable];
 }
 
 - (OFEnumerator*)objectEnumerator
 {
-	return [dictionary keyEnumerator];
+	return [[[OFMapTableEnumeratorWrapper alloc]
+	    initWithEnumerator: [mapTable keyEnumerator]
+			object: self] autorelease];
 }
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
 			   objects: (id*)objects
 			     count: (int)count
 {
-	return [dictionary countByEnumeratingWithState: state
-					       objects: objects
-						 count: count];
+	return [mapTable countByEnumeratingWithState: state
+					     objects: objects
+					       count: count];
 }
 
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_set_enumeration_block_t)block
 {
-	[dictionary enumerateKeysAndObjectsUsingBlock: ^ (id key, id object,
-	    BOOL *stop) {
-		block(key, stop);
-	}];
+	@try {
+		[mapTable enumerateKeysAndValuesUsingBlock:
+		    ^ (void *key, void *value, BOOL *stop) {
+			block(key, stop);
+		}];
+	} @catch (OFEnumerationMutationException *e) {
+		@throw [OFEnumerationMutationException
+		    exceptionWithClass: [self class]
+				object: self];
+	}
 }
 #endif
 @end

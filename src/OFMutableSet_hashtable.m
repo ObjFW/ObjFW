@@ -16,12 +16,9 @@
 
 #include "config.h"
 
-#define OF_MUTABLE_SET_HASHTABLE_M
-
 #import "OFSet_hashtable.h"
 #import "OFMutableSet_hashtable.h"
-#import "OFMutableDictionary_hashtable.h"
-#import "OFNumber.h"
+#import "OFMapTable.h"
 
 @implementation OFMutableSet_hashtable
 + (void)initialize
@@ -32,14 +29,13 @@
 
 - (void)addObject: (id)object
 {
-	[dictionary OF_setObject: [OFNumber numberWithSize: 1]
-			  forKey: object
-			 copyKey: NO];
+	[mapTable setValue: (void*)1
+		    forKey: object];
 }
 
 - (void)removeObject: (id)object
 {
-	[dictionary removeObjectForKey: object];
+	[mapTable removeValueForKey: object];
 }
 
 - (void)makeImmutable

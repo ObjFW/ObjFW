@@ -16,19 +16,18 @@
 
 #include "config.h"
 
-#define OF_COUNTED_SET_HASHTABLE_M
-
 #import "OFMutableSet_hashtable.h"
 #import "OFCountedSet_hashtable.h"
-#import "OFMutableDictionary_hashtable.h"
+#import "OFMapTable.h"
 #import "OFString.h"
-#import "OFNumber.h"
 #import "OFArray.h"
 #import "OFXMLElement.h"
 #import "OFXMLAttribute.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFEnumerationMutationException.h"
+#import "OFOutOfRangeException.h"
 
 #import "autorelease.h"
 
@@ -156,23 +155,21 @@
 		while ((objectElement = [enumerator nextObject]) != nil) {
 			void *pool2 = objc_autoreleasePoolPush();
 			OFXMLElement *object;
-			OFXMLAttribute *count;
-			OFNumber *number;
+			OFXMLAttribute *count_;
+			size_t count;
 
 			object = [[objectElement elementsForNamespace:
 			    OF_SERIALIZATION_NS] firstObject];
-			count = [objectElement attributeForName: @"count"];
+			count_ = [objectElement attributeForName: @"count"];
 
-			if (object == nil || count == nil)
+			if (object == nil || count_ == nil)
 				@throw [OFInvalidFormatException
 				    exceptionWithClass: [self class]];
 
-			number = [OFNumber numberWithSize:
-			    (size_t)[[count stringValue] decimalValue]];
+			count = (size_t)[[count_ stringValue] decimalValue];
 
-			[dictionary OF_setObject: number
-					  forKey: [object objectByDeserializing]
-					 copyKey: NO];
+			[mapTable setValue: (void*)(uintptr_t)count
+				    forKey: [object objectByDeserializing]];
 
 			objc_autoreleasePoolPop(pool2);
 		}
@@ -188,56 +185,51 @@
 
 - (size_t)countForObject: (id)object
 {
-	return [[dictionary objectForKey: object] sizeValue];
+	return (size_t)(uintptr_t)[mapTable valueForKey: object];
 }
 
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsAndCountUsingBlock:
     (of_counted_set_enumeration_block_t)block
 {
-	[dictionary enumerateKeysAndObjectsUsingBlock: ^ (id key, id object,
-	    BOOL *stop) {
-		block(key, [object sizeValue], stop);
-	}];
+	@try {
+		[mapTable enumerateKeysAndValuesUsingBlock:
+		    ^ (void *key, void *value, BOOL *stop) {
+			block(key, (size_t)(uintptr_t)value, stop);
+		}];
+	} @catch (OFEnumerationMutationException *e) {
+		@throw [OFEnumerationMutationException
+		    exceptionWithClass: [self class]
+				object: self];
+	}
 }
 #endif
 
 - (void)addObject: (id)object
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFNumber *count;
+	size_t count = (size_t)(uintptr_t)[mapTable valueForKey: object];
 
-	count = [[dictionary objectForKey: object] numberByIncreasing];
+	if (SIZE_MAX - count < 1)
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	if (count == nil)
-		count = [OFNumber numberWithSize: 1];
-
-	[dictionary OF_setObject: count
-			  forKey: object
-			 copyKey: NO];
-
-	objc_autoreleasePoolPop(pool);
+	[mapTable setValue: (void*)(uintptr_t)(count + 1)
+		    forKey: object];
 }
 
 - (void)removeObject: (id)object
 {
-	OFNumber *count = [dictionary objectForKey: object];
-	void *pool;
+	size_t count = (size_t)(uintptr_t)[mapTable valueForKey: object];
 
-	if (count == nil)
+	if (count == 0)
 		return;
 
-	pool = objc_autoreleasePoolPush();
-	count = [count numberByDecreasing];
+	count--;
 
-	if ([count sizeValue] > 0)
-		[dictionary OF_setObject: count
-				  forKey: object
-				 copyKey: NO];
+	if (count > 0)
+		[mapTable setValue: (void*)(uintptr_t)count
+			    forKey: object];
 	else
-		[dictionary removeObjectForKey: object];
-
-	objc_autoreleasePoolPop(pool);
+		[mapTable removeValueForKey: object];
 }
 
 - (void)makeImmutable

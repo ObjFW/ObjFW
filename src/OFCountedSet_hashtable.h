@@ -16,10 +16,10 @@
 
 #import "OFCountedSet.h"
 
-@class OFMutableDictionary_hashtable;
+@class OFMapTable;
 
 @interface OFCountedSet_hashtable: OFCountedSet
 {
-	OFMutableDictionary_hashtable *dictionary;
+	OFMapTable *mapTable;
 }
 @end

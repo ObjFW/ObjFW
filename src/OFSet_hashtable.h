@@ -16,10 +16,10 @@
 
 #import "OFSet.h"
 
-@class OFMutableDictionary_hashtable;
+@class OFMapTable;
 
 @interface OFSet_hashtable: OFSet
 {
-	OFMutableDictionary_hashtable *dictionary;
+	OFMapTable *mapTable;
 }
 @end

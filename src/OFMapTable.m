@@ -707,3 +707,50 @@ default_equal(void *value1, void *value2)
 		return NULL;
 }
 @end
+
+@implementation OFMapTableEnumeratorWrapper
+- initWithEnumerator: (OFMapTableEnumerator*)enumerator_
+	      object: (id)object_
+{
+	self = [super init];
+
+	enumerator = [enumerator_ retain];
+	object = [object_ retain];
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[enumerator release];
+	[object release];
+
+	[super dealloc];
+}
+
+- (id)nextObject
+{
+	id ret;
+
+	@try {
+		ret = [enumerator nextValue];
+	} @catch (OFEnumerationMutationException *e) {
+		@throw [OFEnumerationMutationException
+		    exceptionWithClass: [object class]
+				object: object];
+	}
+
+	return ret;
+}
+
+- (void)reset
+{
+	@try {
+		[enumerator reset];
+	} @catch (OFEnumerationMutationException *e) {
+		@throw [OFEnumerationMutationException
+		    exceptionWithClass: [object class]
+				object: object];
+	}
+}
+@end

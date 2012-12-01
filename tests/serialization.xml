@@ -41,15 +41,15 @@ How are you?</OFString>
           </children>
         </OFXMLElement>
         <OFSet>
-          <OFString>foo</OFString>
           <OFString>bar</OFString>
+          <OFString>foo</OFString>
         </OFSet>
         <OFCountedSet>
-          <object count='2'>
-            <OFString>foo</OFString>
-          </object>
           <object count='1'>
             <OFString>bar</OFString>
+          </object>
+          <object count='2'>
+            <OFString>foo</OFString>
           </object>
         </OFCountedSet>
       </OFList>
