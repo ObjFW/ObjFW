@@ -113,7 +113,9 @@
 	if ((otherMethod->typeEncoding == NULL && typeEncoding != NULL) ||
 	    (otherMethod->typeEncoding != NULL && typeEncoding == NULL))
 		return NO;
-	if (strcmp(otherMethod->typeEncoding, typeEncoding))
+
+	if (otherMethod->typeEncoding != NULL && typeEncoding != NULL &&
+	    strcmp(otherMethod->typeEncoding, typeEncoding))
 		return NO;
 
 	return YES;
