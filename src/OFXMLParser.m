@@ -202,6 +202,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		acceptProlog = YES;
 		lineNumber = 1;
 		encoding = OF_STRING_ENCODING_UTF_8;
+		depthLimit = 32;
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -234,6 +235,16 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 - (void)setDelegate: (id <OFXMLParserDelegate>)delegate_
 {
 	delegate = delegate_;
+}
+
+- (size_t)depthLimit
+{
+	return depthLimit;
+}
+
+- (void)setDepthLimit: (size_t)depthLimit_
+{
+	depthLimit = depthLimit_;
 }
 
 - (void)parseBuffer: (const char*)buffer
@@ -364,6 +375,11 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		acceptProlog = NO;
 		break;
 	default:
+		if (depthLimit > 0 && [previous count] >= depthLimit)
+			@throw [OFMalformedXMLException
+			    exceptionWithClass: [self class]
+					parser: self];
+
 		state = OF_XMLPARSER_IN_TAG_NAME;
 		acceptProlog = NO;
 		(*i)--;
