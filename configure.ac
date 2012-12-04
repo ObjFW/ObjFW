@@ -398,6 +398,14 @@ AC_CHECK_FUNC(asprintf, [
 test x"$have_asprintf" != x"yes" -a x"$ac_cv_snprintf_useful_ret" != x"yes" && \
 	AC_MSG_ERROR(No asprintf and no snprintf returning required space!)
 
+AC_CHECK_FUNC(arc4random, [
+	AC_DEFINE(OF_HAVE_ARC4RANDOM, 1, [Whether we have arc4random()])
+], [
+	AC_CHECK_FUNC(random, [
+		AC_DEFINE(OF_HAVE_RANDOM, 1, [Whether we have random()])
+	])
+])
+
 AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
 
 AC_ARG_ENABLE(threads,

@@ -29,7 +29,14 @@
 PSP_MODULE_INFO("ObjFW Tests", 0, 0, 0);
 #endif
 
-OF_APPLICATION_DELEGATE(TestsAppDelegate)
+int
+main(int argc, char *argv[])
+{
+	/* We need deterministic hashes for tests */
+	of_hash_seed = 0;
+
+	return of_application_main(&argc, &argv, [TestsAppDelegate class]);
+}
 
 @implementation TestsAppDelegate
 - (void)outputString: (OFString*)str

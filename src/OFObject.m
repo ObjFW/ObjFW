@@ -26,6 +26,8 @@
 
 #include <assert.h>
 
+#include <sys/time.h>
+
 #ifdef __QNX__
 # include <sys/syspage.h>
 #endif
@@ -99,6 +101,7 @@ static struct {
 
 size_t of_pagesize;
 size_t of_num_cpus;
+uint32_t of_hash_seed;
 
 #if !defined(OF_APPLE_RUNTIME) || defined(__OBJC2__)
 static void
@@ -274,6 +277,20 @@ void _references_to_categories_of_OFObject(void)
 	if ((of_num_cpus = sysconf(_SC_NPROCESSORS_CONF)) < 1)
 # endif
 		of_num_cpus = 1;
+#endif
+
+#if defined(OF_HAVE_ARC4RANDOM)
+	of_hash_seed = arc4random();
+#elif defined(OF_HAVE_RANDOM)
+	struct timeval t;
+	gettimeofday(&t, NULL);
+	srandom(t.tv_usec);
+	of_hash_seed = random();
+#else
+	struct timeval t;
+	gettimeofday(&t, NULL);
+	srand(t.tv_usec);
+	of_hash_seed = rand();
 #endif
 }
 
