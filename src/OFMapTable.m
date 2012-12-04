@@ -16,7 +16,10 @@
 
 #include "config.h"
 
+#include <stdlib.h>
 #include <string.h>
+
+#include <sys/time.h>
 
 #import "OFMapTable.h"
 #import "OFEnumerator.h"
@@ -147,6 +150,16 @@ default_equal(void *value1, void *value2)
 					      count: capacity];
 
 		memset(buckets, 0, capacity * sizeof(*buckets));
+
+		if (of_hash_seed != 0) {
+#if defined(OF_HAVE_ARC4RANDOM)
+			seed = arc4random();
+#elif defined(OF_HAVE_RANDOM)
+			seed = random();
+#else
+			seed = rand();
+#endif
+		}
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -224,7 +237,7 @@ default_equal(void *value1, void *value2)
 			if (buckets[i] != NULL && buckets[i] != &deleted)
 				[copy OF_setValue: buckets[i]->value
 					   forKey: buckets[i]->key
-					     hash: buckets[i]->hash];
+					     hash: buckets[i]->hash ^ seed];
 	} @catch (id e) {
 		[copy release];
 		@throw e;
@@ -249,7 +262,7 @@ default_equal(void *value1, void *value2)
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	hash = keyFunctions.hash(key);
+	hash = keyFunctions.hash(key) ^ seed;
 	last = capacity;
 
 	for (i = hash & (capacity - 1); i < last && buckets[i] != NULL; i++) {
@@ -349,6 +362,7 @@ default_equal(void *value1, void *value2)
 			      selector: _cmd];
 
 	last = capacity;
+	hash ^= seed;
 
 	for (i = hash & (capacity - 1); i < last && buckets[i] != NULL; i++) {
 		if (buckets[i] == &deleted)
@@ -443,7 +457,7 @@ default_equal(void *value1, void *value2)
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	hash = keyFunctions.hash(key);
+	hash = keyFunctions.hash(key) ^ seed;
 	last = capacity;
 
 	for (i = hash & (capacity - 1); i < last && buckets[i] != NULL; i++) {
