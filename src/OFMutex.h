@@ -26,6 +26,7 @@
 {
 	of_mutex_t mutex;
 	BOOL initialized;
+	OFString *name;
 }
 
 /*!

@@ -27,6 +27,7 @@
 {
 	of_rmutex_t rmutex;
 	BOOL initialized;
+	OFString *name;
 }
 
 /*!

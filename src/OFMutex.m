@@ -17,11 +17,14 @@
 #include "config.h"
 
 #import "OFMutex.h"
+#import "OFString.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFLockFailedException.h"
 #import "OFStillLockedException.h"
 #import "OFUnlockFailedException.h"
+
+#import "macros.h"
 
 @implementation OFMutex
 + (instancetype)mutex
@@ -63,6 +66,24 @@
 							      lock: self];
 }
 
+- (void)setName: (OFString*)name_
+{
+	OF_SETTER(name, name_, YES, YES)
+}
+
+- (OFString*)name
+{
+	OF_GETTER(name, YES)
+}
+
+- (OFString*)description
+{
+	if (name == nil)
+		return [super description];
+
+	return [OFString stringWithFormat: @"<%@: %@>", [self className], name];
+}
+
 - (void)dealloc
 {
 	if (initialized)
@@ -70,6 +91,8 @@
 			@throw [OFStillLockedException
 			    exceptionWithClass: [self class]
 					  lock: self];
+
+	[name release];
 
 	[super dealloc];
 }

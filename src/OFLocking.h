@@ -20,6 +20,10 @@
  * @brief A protocol for locks.
  */
 @protocol OFLocking <OFObject>
+#ifdef OF_HAVE_PROPERTIES
+@property (copy) OFString *name;
+#endif
+
 /*!
  * @brief Locks the lock.
  */
@@ -36,4 +40,18 @@
  * @brief Unlocks the lock.
  */
 - (void)unlock;
+
+/*!
+ * @brief Sets a name for the lock.
+ *
+ * @param name The name for the lock
+ */
+- (void)setName: (OFString*)name;
+
+/*!
+ * @brief Returns the name for the lock.
+ *
+ * @return The name for the lock
+ */
+- (OFString*)name;
 @end
