@@ -19,6 +19,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <assert.h>
+
 #include <sys/time.h>
 
 #import "OFMapTable.h"
@@ -292,7 +294,7 @@ default_equal(void *value1, void *value2)
 
 - (void)OF_resizeForCount: (uint32_t)newCount
 {
-	uint32_t i, fullness, newCapacity;
+	uint32_t i, fullness, newCapacity, newSeed = 0, seedUpdate = 0;
 	struct of_map_table_bucket **newBuckets;
 
 	if (newCount > UINT32_MAX || newCount > UINT32_MAX / sizeof(*buckets) ||
@@ -317,9 +319,22 @@ default_equal(void *value1, void *value2)
 	for (i = 0; i < newCapacity; i++)
 		newBuckets[i] = NULL;
 
+	if (of_hash_seed != 0) {
+#if defined(OF_HAVE_ARC4RANDOM)
+		newSeed = arc4random();
+#elif defined(OF_HAVE_RANDOM)
+		newSeed = random();
+#else
+		newSeed = rand();
+#endif
+		seedUpdate = seed ^ newSeed;
+	}
+
 	for (i = 0; i < capacity; i++) {
 		if (buckets[i] != NULL && buckets[i] != &deleted) {
 			uint32_t j, last;
+
+			buckets[i]->hash ^= seedUpdate;
 
 			last = newCapacity;
 
@@ -334,11 +349,7 @@ default_equal(void *value1, void *value2)
 				    newBuckets[j] != NULL; j++);
 			}
 
-			if (j >= last) {
-				[self freeMemory: newBuckets];
-				@throw [OFOutOfRangeException
-				    exceptionWithClass: [self class]];
-			}
+			assert(j < last);
 
 			newBuckets[j] = buckets[i];
 		}
@@ -347,13 +358,14 @@ default_equal(void *value1, void *value2)
 	[self freeMemory: buckets];
 	buckets = newBuckets;
 	capacity = newCapacity;
+	seed = newSeed;
 }
 
 - (void)OF_setValue: (void*)value
 	     forKey: (void*)key
 	       hash: (uint32_t)hash
 {
-	uint32_t i, last;
+	uint32_t i, last, seededHash;
 	void *old;
 
 	if (key == NULL || value == NULL)
@@ -362,9 +374,10 @@ default_equal(void *value1, void *value2)
 			      selector: _cmd];
 
 	last = capacity;
-	hash ^= seed;
+	seededHash = hash ^ seed;
 
-	for (i = hash & (capacity - 1); i < last && buckets[i] != NULL; i++) {
+	for (i = seededHash & (capacity - 1); i < last && buckets[i] != NULL;
+	    i++) {
 		if (buckets[i] == &deleted)
 			continue;
 
@@ -374,7 +387,7 @@ default_equal(void *value1, void *value2)
 
 	/* In case the last bucket is already used */
 	if (i >= last) {
-		last = hash & (capacity - 1);
+		last = seededHash & (capacity - 1);
 
 		for (i = 0; i < last && buckets[i] != NULL; i++) {
 			if (buckets[i] == &deleted)
@@ -391,16 +404,17 @@ default_equal(void *value1, void *value2)
 		struct of_map_table_bucket *bucket;
 
 		[self OF_resizeForCount: count + 1];
+		seededHash = hash ^ seed;
 
 		mutations++;
 		last = capacity;
 
-		for (i = hash & (capacity - 1); i < last &&
+		for (i = seededHash & (capacity - 1); i < last &&
 		    buckets[i] != NULL && buckets[i] != &deleted; i++);
 
 		/* In case the last bucket is already used */
 		if (i >= last) {
-			last = hash & (capacity - 1);
+			last = seededHash & (capacity - 1);
 
 			for (i = 0; i < last && buckets[i] != NULL &&
 			    buckets[i] != &deleted; i++);
@@ -427,7 +441,7 @@ default_equal(void *value1, void *value2)
 			@throw e;
 		}
 
-		bucket->hash = hash;
+		bucket->hash = seededHash;
 
 		buckets[i] = bucket;
 		count++;
