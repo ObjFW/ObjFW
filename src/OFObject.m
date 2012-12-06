@@ -241,11 +241,11 @@ of_random()
 		struct timeval t;
 
 		gettimeofday(&t, NULL);
-		srandom(t.tv_sec ^ t.tv_usec);
+		srandom((unsigned)(t.tv_sec ^ t.tv_usec));
 		initialized = YES;
 	}
 
-	return (random() << 16) | (random() & 0xFFFF);
+	return (uint32_t)((random() << 16) | (random() & 0xFFFF));
 #else
 	static BOOL initialized = NO;
 
@@ -253,11 +253,11 @@ of_random()
 		struct timeval t;
 
 		gettimeofday(&t, NULL);
-		srand(t.tv_sec ^ t.tv_usec);
+		srand((unsigned)(t.tv_sec ^ t.tv_usec));
 		initialized = YES;
 	}
 
-	return (random() << 16) | (random() & 0xFFFF);
+	return (rand() << 16) | (rand() & 0xFFFF);
 #endif
 }
 
