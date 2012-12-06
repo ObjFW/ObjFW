@@ -351,7 +351,7 @@ normalizeKey(OFString *key)
 				     relativeToURL: URL];
 
 			follow = [delegate request: self
-			      willFollowRedirectTo: new];
+			    shouldFollowRedirectTo: new];
 
 			if (!follow && delegate != nil) {
 				[serverHeaders setObject: value
@@ -589,8 +589,8 @@ normalizeKey(OFString *key)
 {
 }
 
--	 (BOOL)request: (OFHTTPRequest*)request
-  willFollowRedirectTo: (OFURL*)url
+-	   (BOOL)request: (OFHTTPRequest*)request
+  shouldFollowRedirectTo: (OFURL*)url
 {
 	return YES;
 }

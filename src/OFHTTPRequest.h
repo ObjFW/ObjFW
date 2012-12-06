@@ -96,8 +96,8 @@ typedef enum of_http_request_type_t {
  * @param URL The URL to which it will follow a redirect
  * @return A boolean whether the OFHTTPRequest should follow the redirect
  */
--	 (BOOL)request: (OFHTTPRequest*)request
-  willFollowRedirectTo: (OFURL*)URL;
+-	   (BOOL)request: (OFHTTPRequest*)request
+  shouldFollowRedirectTo: (OFURL*)URL;
 @end
 
 /*!
