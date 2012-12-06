@@ -943,6 +943,40 @@ static Class CDATAClass = Nil;
 	[children addObject: child];
 }
 
+- (void)insertChild: (OFXMLNode*)child
+	    atIndex: (size_t)index
+{
+	if ([child isKindOfClass: [OFXMLAttribute class]])
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
+
+	if (children == nil)
+		children = [[OFMutableArray alloc] init];
+
+	[children insertObject: child
+		       atIndex: index];
+}
+
+- (void)insertChildren: (OFArray*)children_
+	       atIndex: (size_t)index
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFEnumerator *enumerator = [children_ objectEnumerator];
+	OFXMLNode *node;
+
+	while ((node = [enumerator nextObject]) != nil)
+		if ([node isKindOfClass: [OFXMLAttribute class]])
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: [self class]
+				      selector: _cmd];
+
+	[children insertObjectsFromArray: children_
+				 atIndex: index];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (void)removeChild: (OFXMLNode*)child
 {
 	if ([child isKindOfClass: [OFXMLAttribute class]])
@@ -951,6 +985,36 @@ static Class CDATAClass = Nil;
 			      selector: _cmd];
 
 	[children removeObject: child];
+}
+
+- (void)removeChildAtIndex: (size_t)index
+{
+	[children removeObjectAtIndex: index];
+}
+
+- (void)replaceChild: (OFXMLNode*)child
+	    withNode: (OFXMLNode*)node
+{
+	if ([node isKindOfClass: [OFXMLAttribute class]] ||
+	    [child isKindOfClass: [OFXMLAttribute class]])
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
+
+	[children replaceObject: child
+		     withObject: node];
+}
+
+- (void)replaceChildAtIndex: (size_t)index
+		   withNode: (OFXMLNode*)node
+{
+	if ([node isKindOfClass: [OFXMLAttribute class]])
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
+
+	[children replaceObjectAtIndex: index
+			    withObject: node];
 }
 
 - (OFXMLElement*)elementForName: (OFString*)elementName

@@ -350,11 +350,55 @@
 - (void)addChild: (OFXMLNode*)child;
 
 /*!
- * @brief Removes the first child that is equal to the specified OFXMLElement.
+ * @brief Inserts a child at the specified index.
+ *
+ * @param child An OFXMLNode which is added as a child
+ * @param index The index where the child is added
+ */
+- (void)insertChild: (OFXMLNode*)child
+	    atIndex: (size_t)index;
+
+/*!
+ * @brief Inserts the specified children at the specified index.
+ *
+ * @param child An OFXMLNode which is added as a child
+ * @param index The index where the child is added
+ */
+- (void)insertChildren: (OFArray*)children
+	       atIndex: (size_t)index;
+
+/*!
+ * @brief Removes the first child that is equal to the specified OFXMLNode.
  *
  * @param child The child to remove from the OFXMLElement
  */
 - (void)removeChild: (OFXMLNode*)child;
+
+/*!
+ * @brief Removes the child at the specified index.
+ *
+ * @param index The index of the child to remove
+ */
+
+- (void)removeChildAtIndex: (size_t)index;
+/*!
+ * @brief Replaces the first child that is equal to the specified OFXMLNode
+ *	  with the specified node.
+ *
+ * @param child The child to replace
+ * @param node The node to replace the child with
+ */
+- (void)replaceChild: (OFXMLNode*)child
+	    withNode: (OFXMLNode*)node;
+
+/*!
+ * @brief Replaces the child at the specified index with the specified node.
+ *
+ * @param index The index of the child to replace
+ * @param node The node to replace the child with
+ */
+- (void)replaceChildAtIndex: (size_t)index
+		   withNode: (OFXMLNode*)node;
 
 /*!
  * @brief Returns all children that are elements.
