@@ -229,6 +229,38 @@ of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
 	return instance;
 }
 
+uint32_t
+of_random()
+{
+#if defined(OF_HAVE_ARC4RANDOM)
+	return arc4random();
+#elif defined(OF_HAVE_RANDOM)
+	static BOOL initialized = NO;
+
+	if (!initialized) {
+		struct timeval t;
+
+		gettimeofday(&t, NULL);
+		srandom(t.tv_sec ^ t.tv_usec);
+		initialized = YES;
+	}
+
+	return (random() << 16) | (random() & 0xFFFF);
+#else
+	static BOOL initialized = NO;
+
+	if (!initialized) {
+		struct timeval t;
+
+		gettimeofday(&t, NULL);
+		srand(t.tv_sec ^ t.tv_usec);
+		initialized = YES;
+	}
+
+	return (random() << 16) | (random() & 0xFFFF);
+#endif
+}
+
 const char*
 _NSPrintForDebugger(id object)
 {
@@ -279,19 +311,7 @@ void _references_to_categories_of_OFObject(void)
 		of_num_cpus = 1;
 #endif
 
-#if defined(OF_HAVE_ARC4RANDOM)
-	of_hash_seed = arc4random();
-#elif defined(OF_HAVE_RANDOM)
-	struct timeval t;
-	gettimeofday(&t, NULL);
-	srandom(t.tv_usec);
-	of_hash_seed = random();
-#else
-	struct timeval t;
-	gettimeofday(&t, NULL);
-	srand(t.tv_usec);
-	of_hash_seed = rand();
-#endif
+	of_hash_seed = of_random();
 }
 
 + (void)initialize

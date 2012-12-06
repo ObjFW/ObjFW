@@ -153,15 +153,8 @@ default_equal(void *value1, void *value2)
 
 		memset(buckets, 0, capacity * sizeof(*buckets));
 
-		if (of_hash_seed != 0) {
-#if defined(OF_HAVE_ARC4RANDOM)
-			seed = arc4random();
-#elif defined(OF_HAVE_RANDOM)
-			seed = random();
-#else
-			seed = rand();
-#endif
-		}
+		if (of_hash_seed != 0)
+			seed = of_random();
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -320,13 +313,7 @@ default_equal(void *value1, void *value2)
 		newBuckets[i] = NULL;
 
 	if (of_hash_seed != 0) {
-#if defined(OF_HAVE_ARC4RANDOM)
-		newSeed = arc4random();
-#elif defined(OF_HAVE_RANDOM)
-		newSeed = random();
-#else
-		newSeed = rand();
-#endif
+		newSeed = of_random();
 		seedUpdate = seed ^ newSeed;
 	}
 
