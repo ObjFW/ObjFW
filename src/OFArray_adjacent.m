@@ -325,14 +325,8 @@
 
 	OF_HASH_INIT(hash);
 
-	for (i = 0; i < count; i++) {
-		uint32_t h = [objects[i] hash];
-
-		OF_HASH_ADD(hash, h >> 24);
-		OF_HASH_ADD(hash, (h >> 16) & 0xFF);
-		OF_HASH_ADD(hash, (h >> 8) & 0xFF);
-		OF_HASH_ADD(hash, h & 0xFF);
-	}
+	for (i = 0; i < count; i++)
+		OF_HASH_ADD_HASH(hash, [objects[i] hash]);
 
 	OF_HASH_FINALIZE(hash);
 

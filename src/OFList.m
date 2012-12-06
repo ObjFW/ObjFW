@@ -327,14 +327,8 @@
 
 	OF_HASH_INIT(hash);
 
-	for (iter = firstListObject; iter != NULL; iter = iter->next) {
-		uint32_t h = [iter->object hash];
-
-		OF_HASH_ADD(hash, h >> 24);
-		OF_HASH_ADD(hash, (h >> 16) & 0xFF);
-		OF_HASH_ADD(hash, (h >> 8) & 0xFF);
-		OF_HASH_ADD(hash, h & 0xFF);
-	}
+	for (iter = firstListObject; iter != NULL; iter = iter->next)
+		OF_HASH_ADD_HASH(hash, [iter->object hash]);
 
 	OF_HASH_FINALIZE(hash);
 

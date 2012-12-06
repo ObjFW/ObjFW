@@ -487,8 +487,10 @@ void _references_to_categories_of_OFDataArray(void)
 	size_t i;
 
 	OF_HASH_INIT(hash);
+
 	for (i = 0; i < count * itemSize; i++)
 		OF_HASH_ADD(hash, ((char*)data)[i]);
+
 	OF_HASH_FINALIZE(hash);
 
 	return hash;
