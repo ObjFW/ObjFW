@@ -153,8 +153,10 @@ default_equal(void *value1, void *value2)
 
 		memset(buckets, 0, capacity * sizeof(*buckets));
 
-		if (of_hash_seed != 0)
+		if (of_hash_seed != 0) {
 			seed = of_random();
+			rotate = of_random() & 0x1F;
+		}
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -232,7 +234,9 @@ default_equal(void *value1, void *value2)
 			if (buckets[i] != NULL && buckets[i] != &deleted)
 				[copy OF_setValue: buckets[i]->value
 					   forKey: buckets[i]->key
-					     hash: buckets[i]->hash ^ seed];
+					     hash: OF_ROR(
+						       buckets[i]->hash ^ seed,
+						       rotate)];
 	} @catch (id e) {
 		[copy release];
 		@throw e;
@@ -257,7 +261,7 @@ default_equal(void *value1, void *value2)
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	hash = keyFunctions.hash(key) ^ seed;
+	hash = OF_ROL(keyFunctions.hash(key) ^ seed, rotate);
 	last = capacity;
 
 	for (i = hash & (capacity - 1); i < last && buckets[i] != NULL; i++) {
@@ -289,6 +293,7 @@ default_equal(void *value1, void *value2)
 {
 	uint32_t i, fullness, newCapacity, newSeed = 0, seedUpdate = 0;
 	struct of_map_table_bucket **newBuckets;
+	uint8_t newRotate = 0;
 
 	if (newCount > UINT32_MAX || newCount > UINT32_MAX / sizeof(*buckets) ||
 	    newCount > UINT32_MAX / 8)
@@ -315,13 +320,17 @@ default_equal(void *value1, void *value2)
 	if (of_hash_seed != 0) {
 		newSeed = of_random();
 		seedUpdate = seed ^ newSeed;
+
+		newRotate = of_random() & 0x1F;
 	}
 
 	for (i = 0; i < capacity; i++) {
 		if (buckets[i] != NULL && buckets[i] != &deleted) {
 			uint32_t j, last;
 
-			buckets[i]->hash ^= seedUpdate;
+			buckets[i]->hash = OF_ROL(
+			    OF_ROR(buckets[i]->hash, rotate) ^ seedUpdate,
+			    newRotate);
 
 			last = newCapacity;
 
@@ -346,6 +355,7 @@ default_equal(void *value1, void *value2)
 	buckets = newBuckets;
 	capacity = newCapacity;
 	seed = newSeed;
+	rotate = newRotate;
 }
 
 - (void)OF_setValue: (void*)value
@@ -361,7 +371,7 @@ default_equal(void *value1, void *value2)
 			      selector: _cmd];
 
 	last = capacity;
-	seededHash = hash ^ seed;
+	seededHash = OF_ROL(hash ^ seed, rotate);
 
 	for (i = seededHash & (capacity - 1); i < last && buckets[i] != NULL;
 	    i++) {
@@ -391,7 +401,7 @@ default_equal(void *value1, void *value2)
 		struct of_map_table_bucket *bucket;
 
 		[self OF_resizeForCount: count + 1];
-		seededHash = hash ^ seed;
+		seededHash = OF_ROL(hash ^ seed, rotate);
 
 		mutations++;
 		last = capacity;
@@ -458,7 +468,7 @@ default_equal(void *value1, void *value2)
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	hash = keyFunctions.hash(key) ^ seed;
+	hash = OF_ROL(keyFunctions.hash(key) ^ seed, rotate);
 	last = capacity;
 
 	for (i = hash & (capacity - 1); i < last && buckets[i] != NULL; i++) {
