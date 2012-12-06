@@ -844,12 +844,26 @@ void _references_to_categories_of_OFObject(void)
 - (uint32_t)hash
 {
 	/* Classes containing data should reimplement this! */
-	return (uint32_t)(uintptr_t)self;
+
+	uintptr_t ptr = (uintptr_t)self;
+	uint32_t hash;
+
+	OF_HASH_INIT(hash);
+
+	while (ptr != 0) {
+		OF_HASH_ADD(hash, ptr & 0xFF);
+		ptr <<= 8;
+	}
+
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
 }
 
 - (OFString*)description
 {
 	/* Classes containing data should reimplement this! */
+
 	return [OFString stringWithFormat: @"<%@: %p>", [self className], self];
 }
 

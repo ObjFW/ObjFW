@@ -1040,45 +1040,62 @@
 
 - (uint32_t)hash
 {
+	of_number_type_t type_ = type;
 	uint32_t hash;
-	uint8_t i;
 
-	switch (type) {
-	case OF_NUMBER_FLOAT:;
-		union {
-			float f;
-			uint8_t b[sizeof(float)];
-		} f;
+	/* Do we really need signed to represent this number? */
+	if (type_ & OF_NUMBER_SIGNED && [self intMaxValue] >= 0)
+		type_ &= ~OF_NUMBER_SIGNED;
 
-		f.f = OF_BSWAP_FLOAT_IF_LE(value.float_);
+	/* Do we really need floating point to represent this number? */
+	if (type_ & OF_NUMBER_FLOAT) {
+		double v = [self doubleValue];
 
-		OF_HASH_INIT(hash);
+		if (v < 0) {
+			if (v == [self intMaxValue]) {
+				type_ &= ~OF_NUMBER_FLOAT;
+				type_ |= OF_NUMBER_SIGNED;
+			}
+		} else {
+			if (v == [self uIntMaxValue])
+				type_ &= ~OF_NUMBER_FLOAT;
+		}
+	}
 
-		for (i = 0; i < sizeof(float); i++)
-			OF_HASH_ADD(hash, f.b[i]);
+	OF_HASH_INIT(hash);
 
-		OF_HASH_FINALIZE(hash);
-
-		return hash;
-	case OF_NUMBER_DOUBLE:;
+	if (type_ & OF_NUMBER_FLOAT) {
 		union {
 			double d;
 			uint8_t b[sizeof(double)];
 		} d;
+		uint_fast8_t i;
 
-		d.d = OF_BSWAP_DOUBLE_IF_LE(value.double_);
-
-		OF_HASH_INIT(hash);
+		d.d = OF_BSWAP_DOUBLE_IF_BE([self doubleValue]);
 
 		for (i = 0; i < sizeof(double); i++)
 			OF_HASH_ADD(hash, d.b[i]);
+	} else if (type_ & OF_NUMBER_SIGNED) {
+		intmax_t v = [self intMaxValue] * -1;
 
-		OF_HASH_FINALIZE(hash);
+		while (v != 0) {
+			OF_HASH_ADD(hash, v & 0xFF);
+			v >>= 8;
+		}
 
-		return hash;
-	default:
-		return [self uInt32Value];
+		OF_HASH_ADD(hash, 1);
+	} else {
+		uintmax_t v = [self uIntMaxValue];
+
+		while (v != 0) {
+			OF_HASH_ADD(hash, v & 0xFF);
+			v >>= 8;
+		}
 	}
+
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
 }
 
 - (OFNumber*)numberByAddingNumber: (OFNumber*)num

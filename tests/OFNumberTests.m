@@ -36,9 +36,9 @@ static OFString *module = @"OFNumber";
 	TEST(@"-[isEqual:]",
 	    [num isEqual: [OFNumber numberWithUInt32: 123456789]])
 
-	TEST(@"-[hash]", [num hash] == 123456789)
+	TEST(@"-[hash]", [num hash] == 0x82D8BC42)
 
-	TEST(@"-[asDouble]", [num doubleValue] == 123456789.L)
+	TEST(@"-[doubleValue]", [num doubleValue] == 123456789.L)
 
 	TEST(@"-[numberByDecreasing]",
 	    [[num numberByDecreasing]

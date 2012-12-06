@@ -368,9 +368,9 @@ static int month_to_day_of_year[12] = {
 		double d;
 		uint8_t b[sizeof(double)];
 	} d;
-	uint8_t i;
+	uint_fast8_t i;
 
-	d.d = OF_BSWAP_DOUBLE_IF_LE(seconds);
+	d.d = OF_BSWAP_DOUBLE_IF_BE(seconds);
 
 	OF_HASH_INIT(hash);
 

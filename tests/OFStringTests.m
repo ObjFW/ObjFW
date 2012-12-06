@@ -120,7 +120,7 @@ static uint16_t sutf16str[] = {
 
 	TEST(@"-[length]", [s[0] length] == 7)
 	TEST(@"-[UTF8StringLength]", [s[0] UTF8StringLength] == 13)
-	TEST(@"-[hash]", [s[0] hash] == 0x2E623BD1)
+	TEST(@"-[hash]", [s[0] hash] == 0x705583C0)
 
 	TEST(@"-[characterAtIndex:]", [s[0] characterAtIndex: 0] == 't' &&
 	    [s[0] characterAtIndex: 1] == 0xE4 &&
