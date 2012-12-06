@@ -406,6 +406,12 @@ objc_get_class(const char *name)
 	return objc_getRequiredClass(name);
 }
 
+BOOL
+class_isMetaClass(Class cls)
+{
+	return (cls->info & OBJC_CLASS_INFO_METACLASS);
+}
+
 const char*
 class_getName(Class cls)
 {
@@ -553,6 +559,28 @@ class_replaceMethod(Class cls, SEL sel, IMP newimp, const char *types)
 	objc_global_mutex_unlock();
 
 	return (IMP)nil;
+}
+
+Class
+object_getClass(id obj)
+{
+	return obj->isa;
+}
+
+Class
+object_setClass(id obj, Class cls)
+{
+	Class old = obj->isa;
+
+	obj->isa = cls;
+
+	return old;
+}
+
+const char*
+object_getClassName(id obj)
+{
+	return obj->isa->name;
 }
 
 static void

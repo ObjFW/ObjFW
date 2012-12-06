@@ -24,10 +24,8 @@
 
 #if __has_feature(objc_arc)
 # define OBJC_UNSAFE_UNRETAINED __unsafe_unretained
-# define OBJC_BRIDGE __bridge
 #else
 # define OBJC_UNSAFE_UNRETAINED
-# define OBJC_BRIDGE
 #endif
 
 typedef struct objc_class *Class;
@@ -172,6 +170,7 @@ extern BOOL sel_isEqual(SEL, SEL);
 extern id objc_lookUpClass(const char*);
 extern id objc_getClass(const char*);
 extern id objc_getRequiredClass(const char*);
+extern BOOL class_isMetaClass(Class);
 extern const char* class_getName(Class);
 extern Class class_getSuperclass(Class);
 extern BOOL class_isKindOfClass(Class, Class);
@@ -181,6 +180,9 @@ extern BOOL class_conformsToProtocol(Class, Protocol*);
 extern IMP class_getMethodImplementation(Class, SEL);
 extern IMP class_replaceMethod(Class, SEL, IMP, const char*);
 extern const char* objc_get_type_encoding(Class, SEL);
+extern Class object_getClass(id);
+extern Class object_setClass(id, Class);
+extern const char* object_getClassName(id);
 extern IMP objc_msg_lookup(id, SEL);
 extern IMP objc_msg_lookup_super(struct objc_super*, SEL);
 extern const char* protocol_getName(Protocol*);
@@ -195,40 +197,6 @@ extern void* objc_autoreleasePoolPush(void);
 extern void objc_autoreleasePoolPop(void*);
 extern id _objc_rootAutorelease(id);
 
-static inline Class
-object_getClass(id obj_)
-{
-	struct objc_object *obj = (OBJC_BRIDGE struct objc_object*)obj_;
-
-	return obj->isa;
-}
-
-static inline Class
-object_setClass(id obj_, Class cls)
-{
-	struct objc_object *obj = (OBJC_BRIDGE struct objc_object*)obj_;
-	Class old = obj->isa;
-
-	obj->isa = cls;
-
-	return old;
-}
-
-static inline const char*
-object_getClassName(id obj)
-{
-	return class_getName(object_getClass(obj));
-}
-
-static inline BOOL
-class_isMetaClass(Class cls_)
-{
-	struct objc_class *cls = (OBJC_BRIDGE struct objc_class*)cls_;
-
-	return (cls->info & OBJC_CLASS_INFO_METACLASS);
-}
-
 #undef OBJC_UNSAFE_UNRETAINED
-#undef OBJC_BRIDGE
 
 #endif
