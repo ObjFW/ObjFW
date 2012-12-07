@@ -325,9 +325,6 @@ OF_BSWAP_DOUBLE(double d)
 #define OF_ROL(value, bits)						\
 	(((value) << ((bits) % (sizeof(value) * 8))) |			\
 	(value) >> (sizeof(value) * 8 - ((bits) % (sizeof(value) * 8))))
-#define OF_ROR(value, bits)						\
-	(((value) >> ((bits) % (sizeof(value) * 8))) |			\
-	(value) << (sizeof(value) * 8 - ((bits) % (sizeof(value) * 8))))
 
 #define OF_HASH_INIT(hash) hash = of_hash_seed
 #define OF_HASH_ADD(hash, byte)			\

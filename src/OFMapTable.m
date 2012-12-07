@@ -16,12 +16,9 @@
 
 #include "config.h"
 
-#include <stdlib.h>
 #include <string.h>
 
 #include <assert.h>
-
-#include <sys/time.h>
 
 #import "OFMapTable.h"
 #import "OFEnumerator.h"
@@ -152,11 +149,6 @@ default_equal(void *value1, void *value2)
 					      count: capacity];
 
 		memset(buckets, 0, capacity * sizeof(*buckets));
-
-		if (of_hash_seed != 0) {
-			seed = of_random();
-			rotate = of_random() & 0x1F;
-		}
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -234,9 +226,7 @@ default_equal(void *value1, void *value2)
 			if (buckets[i] != NULL && buckets[i] != &deleted)
 				[copy OF_setValue: buckets[i]->value
 					   forKey: buckets[i]->key
-					     hash: OF_ROR(
-						       buckets[i]->hash ^ seed,
-						       rotate)];
+					     hash: buckets[i]->hash];
 	} @catch (id e) {
 		[copy release];
 		@throw e;
@@ -261,7 +251,7 @@ default_equal(void *value1, void *value2)
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	hash = OF_ROL(keyFunctions.hash(key) ^ seed, rotate);
+	hash = keyFunctions.hash(key);
 	last = capacity;
 
 	for (i = hash & (capacity - 1); i < last && buckets[i] != NULL; i++) {
@@ -291,9 +281,8 @@ default_equal(void *value1, void *value2)
 
 - (void)OF_resizeForCount: (uint32_t)newCount
 {
-	uint32_t i, fullness, newCapacity, newSeed = 0, seedUpdate = 0;
+	uint32_t i, fullness, newCapacity;
 	struct of_map_table_bucket **newBuckets;
-	uint8_t newRotate = 0;
 
 	if (newCount > UINT32_MAX || newCount > UINT32_MAX / sizeof(*buckets) ||
 	    newCount > UINT32_MAX / 8)
@@ -317,20 +306,9 @@ default_equal(void *value1, void *value2)
 	for (i = 0; i < newCapacity; i++)
 		newBuckets[i] = NULL;
 
-	if (of_hash_seed != 0) {
-		newSeed = of_random();
-		seedUpdate = seed ^ newSeed;
-
-		newRotate = of_random() & 0x1F;
-	}
-
 	for (i = 0; i < capacity; i++) {
 		if (buckets[i] != NULL && buckets[i] != &deleted) {
 			uint32_t j, last;
-
-			buckets[i]->hash = OF_ROL(
-			    OF_ROR(buckets[i]->hash, rotate) ^ seedUpdate,
-			    newRotate);
 
 			last = newCapacity;
 
@@ -354,15 +332,13 @@ default_equal(void *value1, void *value2)
 	[self freeMemory: buckets];
 	buckets = newBuckets;
 	capacity = newCapacity;
-	seed = newSeed;
-	rotate = newRotate;
 }
 
 - (void)OF_setValue: (void*)value
 	     forKey: (void*)key
 	       hash: (uint32_t)hash
 {
-	uint32_t i, last, seededHash;
+	uint32_t i, last;
 	void *old;
 
 	if (key == NULL || value == NULL)
@@ -371,10 +347,8 @@ default_equal(void *value1, void *value2)
 			      selector: _cmd];
 
 	last = capacity;
-	seededHash = OF_ROL(hash ^ seed, rotate);
 
-	for (i = seededHash & (capacity - 1); i < last && buckets[i] != NULL;
-	    i++) {
+	for (i = hash & (capacity - 1); i < last && buckets[i] != NULL; i++) {
 		if (buckets[i] == &deleted)
 			continue;
 
@@ -384,7 +358,7 @@ default_equal(void *value1, void *value2)
 
 	/* In case the last bucket is already used */
 	if (i >= last) {
-		last = seededHash & (capacity - 1);
+		last = hash & (capacity - 1);
 
 		for (i = 0; i < last && buckets[i] != NULL; i++) {
 			if (buckets[i] == &deleted)
@@ -401,17 +375,16 @@ default_equal(void *value1, void *value2)
 		struct of_map_table_bucket *bucket;
 
 		[self OF_resizeForCount: count + 1];
-		seededHash = OF_ROL(hash ^ seed, rotate);
 
 		mutations++;
 		last = capacity;
 
-		for (i = seededHash & (capacity - 1); i < last &&
+		for (i = hash & (capacity - 1); i < last &&
 		    buckets[i] != NULL && buckets[i] != &deleted; i++);
 
 		/* In case the last bucket is already used */
 		if (i >= last) {
-			last = seededHash & (capacity - 1);
+			last = hash & (capacity - 1);
 
 			for (i = 0; i < last && buckets[i] != NULL &&
 			    buckets[i] != &deleted; i++);
@@ -438,7 +411,7 @@ default_equal(void *value1, void *value2)
 			@throw e;
 		}
 
-		bucket->hash = seededHash;
+		bucket->hash = hash;
 
 		buckets[i] = bucket;
 		count++;
@@ -468,7 +441,7 @@ default_equal(void *value1, void *value2)
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	hash = OF_ROL(keyFunctions.hash(key) ^ seed, rotate);
+	hash = keyFunctions.hash(key);
 	last = capacity;
 
 	for (i = hash & (capacity - 1); i < last && buckets[i] != NULL; i++) {
