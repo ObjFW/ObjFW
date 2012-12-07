@@ -22,4 +22,6 @@
 {
 	OFMapTable *mapTable;
 }
+
+- initWithCapacity: (size_t)capacity;
 @end
