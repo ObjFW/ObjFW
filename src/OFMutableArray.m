@@ -41,37 +41,44 @@ static struct {
 static void
 quicksort(OFMutableArray *array, size_t left, size_t right)
 {
-	size_t i, j;
-	id pivot;
+	while (left < right) {
+		size_t i, j;
+		id pivot;
 
-	if (left >= right)
-		return;
+		i = left;
+		j = right - 1;
+		pivot = [array objectAtIndex: right];
 
-	i = left;
-	j = right - 1;
-	pivot = [array objectAtIndex: right];
+		do {
+			while ([[array objectAtIndex: i] compare: pivot] !=
+			    OF_ORDERED_DESCENDING && i < right)
+				i++;
 
-	do {
-		while ([[array objectAtIndex: i] compare: pivot] !=
-		    OF_ORDERED_DESCENDING && i < right)
-			i++;
+			while ([[array objectAtIndex: j] compare: pivot] !=
+			    OF_ORDERED_ASCENDING && j > left)
+				j--;
 
-		while ([[array objectAtIndex: j] compare: pivot] !=
-		    OF_ORDERED_ASCENDING && j > left)
-			j--;
+			if (i < j)
+				[array exchangeObjectAtIndex: i
+					   withObjectAtIndex: j];
+		} while (i < j);
 
-		if (i < j)
+		if ([[array objectAtIndex: i] compare: pivot] ==
+		    OF_ORDERED_DESCENDING)
 			[array exchangeObjectAtIndex: i
-				   withObjectAtIndex: j];
-	} while (i < j);
+				   withObjectAtIndex: right];
 
-	if ([[array objectAtIndex: i] compare: pivot] == OF_ORDERED_DESCENDING)
-		[array exchangeObjectAtIndex: i
-			   withObjectAtIndex: right];
-
-	if (i > 0)
-		quicksort(array, left, i - 1);
-	quicksort(array, i + 1, right);
+		if (i > 0) {
+			if (i > left && i - 1 - left > right - i - 1) {
+				right = i - 1;
+				quicksort(array, i + 1, right);
+			} else {
+				quicksort(array, left, i - 1);
+				left = i + 1;
+			}
+		} else
+			left = i + 1;
+	}
 }
 
 @implementation OFMutableArray_placeholder
