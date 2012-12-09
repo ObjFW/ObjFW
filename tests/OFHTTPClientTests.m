@@ -22,6 +22,7 @@
 
 #include <assert.h>
 
+#import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
 #import "OFString.h"
 #import "OFTCPSocket.h"
@@ -33,17 +34,17 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFHTTPRequest";
+static OFString *module = @"OFHTTPClient";
 static OFCondition *cond;
 
-@interface OFHTTPRequestTestsServer: OFThread
+@interface OFHTTPClientTestsServer: OFThread
 {
 @public
 	uint16_t port;
 }
 @end
 
-@implementation OFHTTPRequestTestsServer
+@implementation OFHTTPClientTestsServer
 - main
 {
 	OFTCPSocket *listener, *client;
@@ -87,19 +88,20 @@ static OFCondition *cond;
 }
 @end
 
-@implementation TestsAppDelegate (OFHTTPRequesTests)
-- (void)HTTPRequestTests
+@implementation TestsAppDelegate (OFHTTPClientests)
+- (void)HTTPClientTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFHTTPRequestTestsServer *server;
+	OFHTTPClientTestsServer *server;
 	OFURL *url;
+	OFHTTPClient *client;
 	OFHTTPRequest *req;
 	OFHTTPRequestResult *res;
 
 	cond = [OFCondition condition];
 	[cond lock];
 
-	server = [[[OFHTTPRequestTestsServer alloc] init] autorelease];
+	server = [[[OFHTTPClientTestsServer alloc] init] autorelease];
 	[server start];
 
 	[cond wait];
@@ -109,9 +111,10 @@ static OFCondition *cond;
 	    [OFString stringWithFormat: @"http://127.0.0.1:%" @PRIu16 "/foo",
 					server->port]];
 
-	TEST(@"+[requestWithURL]", (req = [OFHTTPRequest requestWithURL: url]))
-
-	TEST(@"-[perform]", (res = [req perform]))
+	TEST(@"-[performRequest:]",
+	    R(client = [OFHTTPClient client]) &&
+	    R(req = [OFHTTPRequest requestWithURL: url]) &&
+	    R(res = [client performRequest: req]))
 
 	TEST(@"Normalization of server header keys",
 	     ([[res headers] objectForKey: @"Content-Length"] != nil))

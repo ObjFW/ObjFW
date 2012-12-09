@@ -9,7 +9,7 @@ SRCS = ForwardingTests.m		\
        OFDataArrayTests.m		\
        OFDateTests.m			\
        OFDictionaryTests.m		\
-       ${OFHTTPREQUESTTESTS_M}		\
+       ${OFHTTPCLIENTTESTS_M}		\
        OFJSONTests.m			\
        OFListTests.m			\
        OFMD5HashTests.m			\

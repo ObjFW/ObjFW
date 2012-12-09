@@ -96,8 +96,8 @@
 - (void)forwardingTests;
 @end
 
-@interface TestsAppDelegate (OFHTTPRequestTests)
-- (void)HTTPRequestTests;
+@interface TestsAppDelegate (OFHTTPClientTests)
+- (void)HTTPClientTests;
 @end
 
 @interface TestsAppDelegate (OFJSONTests)

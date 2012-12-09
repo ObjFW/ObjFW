@@ -1,0 +1,507 @@
+/*
+ * Copyright (c) 2008, 2009, 2010, 2011, 2012
+ *   Jonathan Schleifer <js@webkeks.org>
+ *
+ * All rights reserved.
+ *
+ * This file is part of ObjFW. It may be distributed under the terms of the
+ * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
+ * the packaging of this file.
+ *
+ * Alternatively, it may be distributed under the terms of the GNU General
+ * Public License, either version 2 or 3, which can be found in the file
+ * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
+ * file.
+ */
+
+#include "config.h"
+
+#define OF_HTTP_REQUEST_M
+
+#include <string.h>
+#include <ctype.h>
+
+#import "OFHTTPClient.h"
+#import "OFHTTPRequest.h"
+#import "OFString.h"
+#import "OFURL.h"
+#import "OFTCPSocket.h"
+#import "OFDictionary.h"
+#import "OFDataArray.h"
+
+#import "OFHTTPRequestFailedException.h"
+#import "OFInvalidEncodingException.h"
+#import "OFInvalidFormatException.h"
+#import "OFInvalidServerReplyException.h"
+#import "OFOutOfRangeException.h"
+#import "OFTruncatedDataException.h"
+#import "OFUnsupportedProtocolException.h"
+#import "OFUnsupportedVersionException.h"
+
+#import "autorelease.h"
+#import "macros.h"
+
+Class of_http_client_tls_socket_class = Nil;
+
+static OF_INLINE void
+normalizeKey(OFString *key)
+{
+	uint8_t *str = (uint8_t*)[key UTF8String];
+	BOOL firstLetter = YES;
+
+	while (*str != '\0') {
+		if (!isalnum(*str)) {
+			firstLetter = YES;
+			str++;
+			continue;
+		}
+
+		*str = (firstLetter ? toupper(*str) : tolower(*str));
+
+		firstLetter = NO;
+		str++;
+	}
+}
+
+@implementation OFHTTPClient
++ (instancetype)client
+{
+	return [[[self alloc] init] autorelease];
+}
+
+- init
+{
+	self = [super init];
+
+	storesData = YES;
+
+	return self;
+}
+
+- (void)setDelegate: (id <OFHTTPClientDelegate>)delegate_
+{
+	delegate = delegate_;
+}
+
+- (id <OFHTTPClientDelegate>)delegate
+{
+	return delegate;
+}
+
+- (void)setInsecureRedirectsAllowed: (BOOL)allowed
+{
+	insecureRedirectsAllowed = allowed;
+}
+
+- (BOOL)insecureRedirectsAllowed
+{
+	return insecureRedirectsAllowed;
+}
+
+- (void)setStoresData: (BOOL)storesData_
+{
+	storesData = storesData_;
+}
+
+- (BOOL)storesData
+{
+	return storesData;
+}
+
+- (OFHTTPRequestResult*)performRequest: (OFHTTPRequest*)request
+{
+	return [self performRequest: request
+			  redirects: 10];
+}
+
+- (OFHTTPRequestResult*)performRequest: (OFHTTPRequest*)request
+			     redirects: (size_t)redirects
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFURL *URL = [request URL];
+	OFString *scheme = [URL scheme];
+	of_http_request_type_t requestType = [request requestType];
+	OFDictionary *headers = [request headers];
+	OFDataArray *postData = [request postData];
+	OFTCPSocket *sock;
+	OFHTTPRequestResult *result;
+	OFString *line, *path, *version;
+	OFMutableDictionary *serverHeaders;
+	OFDataArray *data;
+	OFEnumerator *keyEnumerator, *objectEnumerator;
+	OFString *key, *object, *contentLengthHeader;
+	int status;
+	const char *type = NULL;
+	size_t contentLength = 0;
+	BOOL chunked;
+	char *buffer;
+	size_t bytesReceived;
+
+	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
+		@throw [OFUnsupportedProtocolException
+		    exceptionWithClass: [self class]
+				   URL: URL];
+
+	if ([scheme isEqual: @"http"])
+		sock = [OFTCPSocket socket];
+	else {
+		if (of_http_client_tls_socket_class == Nil)
+			@throw [OFUnsupportedProtocolException
+			    exceptionWithClass: [self class]
+					   URL: URL];
+
+		sock = [[[of_http_client_tls_socket_class alloc] init]
+		    autorelease];
+	}
+
+	[delegate client: self
+	 didCreateSocket: sock
+		 request: request];
+
+	[sock connectToHost: [URL host]
+		       port: [URL port]];
+
+	/*
+	 * Work around a bug with packet bisection in lighttpd when using
+	 * HTTPS.
+	 */
+	[sock setWriteBufferEnabled: YES];
+
+	if (requestType == OF_HTTP_REQUEST_TYPE_GET)
+		type = "GET";
+	if (requestType == OF_HTTP_REQUEST_TYPE_HEAD)
+		type = "HEAD";
+	if (requestType == OF_HTTP_REQUEST_TYPE_POST)
+		type = "POST";
+
+	if ([(path = [URL path]) isEqual: @""])
+		path = @"/";
+
+	if ([URL query] != nil)
+		[sock writeFormat: @"%s %@?%@ HTTP/1.1\r\n",
+		    type, path, [URL query]];
+	else
+		[sock writeFormat: @"%s %@ HTTP/1.1\r\n", type, path];
+
+	if ([URL port] == 80)
+		[sock writeFormat: @"Host: %@\r\n", [URL host]];
+	else
+		[sock writeFormat: @"Host: %@:%d\r\n", [URL host],
+		    [URL port]];
+
+	[sock writeString: @"Connection: close\r\n"];
+
+	if ([headers objectForKey: @"User-Agent"] == nil)
+		[sock writeString: @"User-Agent: Something using ObjFW "
+				   @"<https://webkeks.org/objfw>\r\n"];
+
+	keyEnumerator = [headers keyEnumerator];
+	objectEnumerator = [headers objectEnumerator];
+
+	while ((key = [keyEnumerator nextObject]) != nil &&
+	    (object = [objectEnumerator nextObject]) != nil)
+		[sock writeFormat: @"%@: %@\r\n", key, object];
+
+	if (requestType == OF_HTTP_REQUEST_TYPE_POST) {
+		OFString *contentType = [request MIMEType];
+
+		if (contentType == nil)
+			contentType = @"application/x-www-form-urlencoded; "
+			    @"charset=UTF-8\r\n";
+
+		[sock writeFormat: @"Content-Type: %@\r\n", contentType];
+		[sock writeFormat: @"Content-Length: %d\r\n",
+		    [postData count] * [postData itemSize]];
+	}
+
+	[sock writeString: @"\r\n"];
+
+	/* Work around a bug in lighttpd, see above */
+	[sock flushWriteBuffer];
+	[sock setWriteBufferEnabled: NO];
+
+	if (requestType == OF_HTTP_REQUEST_TYPE_POST)
+		[sock writeBuffer: [postData cArray]
+			   length: [postData count] * [postData itemSize]];
+
+	@try {
+		line = [sock readLine];
+	} @catch (OFInvalidEncodingException *e) {
+		@throw [OFInvalidServerReplyException
+		    exceptionWithClass: [self class]];
+	}
+
+	if (![line hasPrefix: @"HTTP/"] || [line characterAtIndex: 8] != ' ')
+		@throw [OFInvalidServerReplyException
+		    exceptionWithClass: [self class]];
+
+	version = [line substringWithRange: of_range(5, 3)];
+	if (![version isEqual: @"1.0"] && ![version isEqual: @"1.1"])
+		@throw [OFUnsupportedVersionException
+		    exceptionWithClass: [self class]
+			       version: version];
+
+	status = (int)[[line substringWithRange: of_range(9, 3)] decimalValue];
+
+	serverHeaders = [OFMutableDictionary dictionary];
+
+	for (;;) {
+		OFString *key, *value;
+		const char *line_c, *tmp;
+
+		@try {
+			line = [sock readLine];
+		} @catch (OFInvalidEncodingException *e) {
+			@throw [OFInvalidServerReplyException
+			    exceptionWithClass: [self class]];
+		}
+
+		if (line == nil)
+			@throw [OFInvalidServerReplyException
+			    exceptionWithClass: [self class]];
+
+		if ([line isEqual: @""])
+			break;
+
+		line_c = [line UTF8String];
+
+		if ((tmp = strchr(line_c, ':')) == NULL)
+			@throw [OFInvalidServerReplyException
+			    exceptionWithClass: [self class]];
+
+		key = [OFString stringWithUTF8String: line_c
+					      length: tmp - line_c];
+		normalizeKey(key);
+
+		do {
+			tmp++;
+		} while (*tmp == ' ');
+
+		value = [OFString stringWithUTF8String: tmp];
+
+		if ((redirects > 0 && (status == 301 || status == 302 ||
+		    status == 303 || status == 307) &&
+		    [key isEqual: @"Location"]) && (insecureRedirectsAllowed ||
+		    [scheme isEqual: @"http"] ||
+		    ![value hasPrefix: @"http://"])) {
+			OFURL *newURL;
+			OFHTTPRequest *newRequest;
+			BOOL follow;
+
+			newURL = [OFURL URLWithString: value
+					relativeToURL: URL];
+
+			follow = [delegate client: self
+			     shouldFollowRedirect: newURL
+					  request: request];
+
+			if (!follow && delegate != nil) {
+				[serverHeaders setObject: value
+						  forKey: key];
+				continue;
+			}
+
+			newRequest = [OFHTTPRequest requestWithURL: newURL];
+			[newRequest setRequestType: requestType];
+			[newRequest setHeaders: headers];
+			[newRequest setPostData: postData];
+			[newRequest setMIMEType: [request MIMEType]];
+
+			if (status == 303) {
+				[newRequest
+				    setRequestType: OF_HTTP_REQUEST_TYPE_GET];
+				[newRequest setPostData: nil];
+				[newRequest setMIMEType: nil];
+			}
+
+			[newRequest retain];
+			objc_autoreleasePoolPop(pool);
+			[newRequest autorelease];
+
+			return [self performRequest: newRequest
+					  redirects: redirects - 1];
+		}
+
+		[serverHeaders setObject: value
+				  forKey: key];
+	}
+
+	[delegate      client: self
+	    didReceiveHeaders: serverHeaders
+		   statusCode: status
+		      request: request];
+
+	data = (storesData ? [OFDataArray dataArray] : nil);
+	chunked = [[serverHeaders objectForKey: @"Transfer-Encoding"]
+	    isEqual: @"chunked"];
+
+	contentLengthHeader = [serverHeaders objectForKey: @"Content-Length"];
+
+	if (contentLengthHeader != nil) {
+		contentLength = (size_t)[contentLengthHeader decimalValue];
+
+		if (contentLength > SIZE_MAX)
+			@throw [OFOutOfRangeException
+			    exceptionWithClass: [self class]];
+	}
+
+	buffer = [self allocMemoryWithSize: of_pagesize];
+	bytesReceived = 0;
+	@try {
+		if (chunked) {
+			for (;;) {
+				void *pool2 = objc_autoreleasePoolPush();
+				size_t toRead;
+				of_range_t range;
+
+				@try {
+					line = [sock readLine];
+				} @catch (OFInvalidEncodingException *e) {
+					@throw [OFInvalidServerReplyException
+					    exceptionWithClass: [self class]];
+				}
+
+				range = [line rangeOfString: @";"];
+				if (range.location != OF_NOT_FOUND)
+					line = [line substringWithRange:
+					    of_range(0, range.location)];
+
+				@try {
+					toRead =
+					    (size_t)[line hexadecimalValue];
+				} @catch (OFInvalidFormatException *e) {
+					@throw [OFInvalidServerReplyException
+					    exceptionWithClass: [self class]];
+				}
+
+				if (toRead == 0 ||
+				    (contentLengthHeader != nil &&
+				    contentLength >= bytesReceived))
+					break;
+
+				while (toRead > 0) {
+					size_t length = (toRead < of_pagesize
+					    ? toRead : of_pagesize);
+
+					length = [sock readIntoBuffer: buffer
+							       length: length];
+
+					[delegate client: self
+					  didReceiveData: buffer
+						  length: length
+						 request: request];
+
+					objc_autoreleasePoolPop(pool2);
+					pool2 = objc_autoreleasePoolPush();
+
+					bytesReceived += length;
+					[data addItemsFromCArray: buffer
+							   count: length];
+
+					toRead -= length;
+				}
+
+				@try {
+					line = [sock readLine];
+				} @catch (OFInvalidEncodingException *e) {
+					@throw [OFInvalidServerReplyException
+					    exceptionWithClass: [self class]];
+				}
+
+				if (![line isEqual: @""])
+					@throw [OFInvalidServerReplyException
+					    exceptionWithClass: [self class]];
+
+				objc_autoreleasePoolPop(pool2);
+			}
+		} else {
+			size_t length;
+
+			while (![sock isAtEndOfStream]) {
+				void *pool2;
+
+				length = [sock readIntoBuffer: buffer
+						       length: of_pagesize];
+
+				pool2 = objc_autoreleasePoolPush();
+
+				[delegate client: self
+				  didReceiveData: buffer
+					  length: length
+					 request: request];
+
+				objc_autoreleasePoolPop(pool2);
+
+				bytesReceived += length;
+				[data addItemsFromCArray: buffer
+						   count: length];
+
+				if (contentLengthHeader != nil &&
+				    bytesReceived >= contentLength)
+					break;
+			}
+		}
+	} @finally {
+		[self freeMemory: buffer];
+	}
+
+	[sock close];
+
+	/*
+	 * We only want to throw on status code 200 as we will throw an
+	 * OFHTTPRequestFailedException for all other status codes later.
+	 */
+	if (status == 200 && contentLengthHeader != nil &&
+	    contentLength != bytesReceived)
+		@throw [OFTruncatedDataException
+		    exceptionWithClass: [self class]];
+
+	[serverHeaders makeImmutable];
+
+	result = [[OFHTTPRequestResult alloc]
+	    OF_initWithStatusCode: status
+			  headers: serverHeaders
+			     data: data];
+
+	objc_autoreleasePoolPop(pool);
+
+	[result autorelease];
+
+	if (status != 200)
+		@throw [OFHTTPRequestFailedException
+		    exceptionWithClass: [self class]
+			       request: request
+				result: result];
+
+	return result;
+}
+@end
+
+@implementation OFObject (OFHTTPClientDelegate)
+-    (void)client: (OFHTTPClient*)client
+  didCreateSocket: (OFTCPSocket*)socket
+	  request: (OFHTTPRequest*)request
+{
+}
+
+-      (void)client: (OFHTTPClient*)client
+  didReceiveHeaders: (OFDictionary*)headers
+	 statusCode: (int)statusCode
+	    request: (OFHTTPRequest*)request
+{
+}
+
+-   (void)client: (OFHTTPClient*)client
+  didReceiveData: (const char*)data
+	  length: (size_t)length
+	 request: (OFHTTPRequest*)request
+{
+}
+
+-	  (BOOL)client: (OFHTTPClient*)client
+  shouldFollowRedirect: (OFURL*)URL
+	       request: (OFHTTPRequest*)request
+{
+	return YES;
+}
+@end

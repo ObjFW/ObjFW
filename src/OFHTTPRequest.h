@@ -16,13 +16,10 @@
 
 #import "OFObject.h"
 
-@class OFString;
-@class OFDictionary;
 @class OFURL;
-@class OFHTTPRequest;
-@class OFHTTPRequestResult;
-@class OFTCPSocket;
+@class OFDictionary;
 @class OFDataArray;
+@class OFString;
 
 typedef enum of_http_request_type_t {
 	OF_HTTP_REQUEST_TYPE_GET,
@@ -31,97 +28,23 @@ typedef enum of_http_request_type_t {
 } of_http_request_type_t;
 
 /*!
- * @brief A delegate for OFHTTPRequests.
- */
-#ifndef OF_HTTP_REQUEST_M
-@protocol OFHTTPRequestDelegate <OFObject>
-#else
-@protocol OFHTTPRequestDelegate
-#endif
-#ifdef OF_HAVE_OPTIONAL_PROTOCOLS
-@optional
-#endif
-/*!
- * @brief A callback which is called when an OFHTTPRequest creates a socket.
- *
- * This is useful if the connection is using HTTPS and the server requires a
- * client certificate. This callback can then be used to tell the TLS socket
- * about the certificate. Another use case is to tell the socket about a SOCKS5
- * proxy it should use for this connection.
- *
- * @param request The OFHTTPRequest that created a socket
- * @param socket The socket created by the OFHTTPRequest
- */
--   (void)request: (OFHTTPRequest*)request
-  didCreateSocket: (OFTCPSocket*)socket;
-
-/*!
- * @brief A callback which is called when an OFHTTPRequest received headers.
- *
- * @param request The OFHTTPRequest which received the headers
- * @param headers The headers received
- * @param statusCode The status code received
- */
--     (void)request: (OFHTTPRequest*)request
-  didReceiveHeaders: (OFDictionary*)headers
-     withStatusCode: (int)statusCode;
-
-/*!
- * @brief A callback which is called when an OFHTTPRequest received data.
- *
- * This is useful for example if you want to update a status display.
- *
- * @param request The OFHTTPRequest which received data
- * @param data The data the OFHTTPRequest received
- * @param length The length of the data received, in bytes
- */
--  (void)request: (OFHTTPRequest*)request
-  didReceiveData: (const char*)data
-      withLength: (size_t)length;
-
-/*!
- * @brief A callback which is called when an OFHTTPRequest will follow a
- *	  redirect.
- *
- * If you want to get the headers and data for each redirect, set the number of
- * redirects to 0 and perform a new OFHTTPRequest for each redirect. However,
- * this callback will not be called then and you have to look at the status code
- * to detect a redirect.
- *
- * This callback will only be called if the OFHTTPRequest will follow a
- * redirect. If the maximum number of redirects has been reached already, this
- * callback will not be called.
- *
- * @param request The OFHTTPRequest which will follow a redirect
- * @param URL The URL to which it will follow a redirect
- * @return A boolean whether the OFHTTPRequest should follow the redirect
- */
--	   (BOOL)request: (OFHTTPRequest*)request
-  shouldFollowRedirectTo: (OFURL*)URL;
-@end
-
-/*!
- * @brief A class for storing and performing HTTP requests.
+ * @brief A class for storing HTTP requests.
  */
 @interface OFHTTPRequest: OFObject
 {
 	OFURL *URL;
 	of_http_request_type_t requestType;
-	OFString *queryString;
 	OFDictionary *headers;
-	BOOL redirectsFromHTTPSToHTTPAllowed;
-	id <OFHTTPRequestDelegate> delegate;
-	BOOL storesData;
+	OFDataArray *postData;
+	OFString *MIMEType;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (copy) OFURL *URL;
 @property of_http_request_type_t requestType;
-@property (copy) OFString *queryString;
 @property (copy) OFDictionary *headers;
-@property BOOL redirectsFromHTTPSToHTTPAllowed;
-@property (assign) id <OFHTTPRequestDelegate> delegate;
-@property BOOL storesData;
+@property (retain) OFDataArray *postData;
+@property (copy) OFString *MIMEType;
 #endif
 
 /*!
@@ -176,20 +99,6 @@ typedef enum of_http_request_type_t {
 - (of_http_request_type_t)requestType;
 
 /*!
- * @brief Sets the query string of the HTTP request.
- *
- * @param queryString The query string of the HTTP request
- */
-- (void)setQueryString: (OFString*)queryString;
-
-/*!
- * @brief Returns the query string of the HTTP request.
- *
- * @return The query string of the HTTP request
- */
-- (OFString*)queryString;
-
-/*!
  * @brief Sets a dictionary with headers for the HTTP request.
  *
  * @param headers A dictionary with headers for the HTTP request
@@ -204,66 +113,32 @@ typedef enum of_http_request_type_t {
 - (OFDictionary*)headers;
 
 /*!
- * @brief Sets whether redirects from HTTPS to HTTP are allowed.
+ * @brief Sets the POST data of the HTTP request.
  *
- * @param allowed Whether redirects from HTTPS to HTTP are allowed
+ * @param postData The POST data of the HTTP request
  */
-- (void)setRedirectsFromHTTPSToHTTPAllowed: (BOOL)allowed;
+- (void)setPostData: (OFDataArray*)postData;
 
 /*!
- * @brief Returns whether redirects from HTTPS to HTTP will be allowed
+ * @brief Returns the POST data of the HTTP request.
  *
- * @return Whether redirects from HTTPS to HTTP will be allowed
+ * @return The POST data of the HTTP request
  */
-- (BOOL)redirectsFromHTTPSToHTTPAllowed;
+- (OFDataArray*)postData;
 
 /*!
- * @brief Sets the delegate of the HTTP request.
+ * @brief Sets the MIME type for the POST data.
  *
- * @param delegate The delegate of the HTTP request
+ * @param MIMEType The MIME type for the POST data
  */
-- (void)setDelegate: (id <OFHTTPRequestDelegate>)delegate;
+- (void)setMIMEType: (OFString*)MIMEType;
 
 /*!
- * @brief Returns the delegate of the HTTP reqeust.
+ * @brief Returns the MIME type for the POST data.
  *
- * @return The delegate of the HTTP request
+ * @return The MIME type for the POST data
  */
-- (id <OFHTTPRequestDelegate>)delegate;
-
-/*!
- * @brief Sets whether an OFDataArray with the data should be created.
- *
- * Setting this to NO is only useful if you are using the delegate to handle the
- * data.
- *
- * @param storesData Whether to store the data in an OFDataArray
- */
-- (void)setStoresData: (BOOL)storesData;
-
-/*!
- * @brief Returns whether an OFDataArray with the date should be created.
- *
- * @return Whether an OFDataArray with the data should be created
- */
-- (BOOL)storesData;
-
-/*!
- * @brief Performs the HTTP request and returns an OFHTTPRequestResult.
- *
- * @return An OFHTTPRequestResult with the result of the HTTP request
- */
-- (OFHTTPRequestResult*)perform;
-
-/*!
- * @brief Performs the HTTP request and returns an OFHTTPRequestResult.
- *
- * @param redirects The maximum number of redirects after which no further
- *		    attempt is done to follow the redirect, but instead the
- *		    redirect is returned as an OFHTTPRequest
- * @return An OFHTTPRequestResult with the result of the HTTP request
- */
-- (OFHTTPRequestResult*)performWithRedirects: (size_t)redirects;
+- (OFString*)MIMEType;
 @end
 
 /*!
@@ -282,9 +157,9 @@ typedef enum of_http_request_type_t {
 @property (readonly, retain) OFDataArray *data;
 #endif
 
-- initWithStatusCode: (short)status
-	     headers: (OFDictionary*)headers
-		data: (OFDataArray*)data;
+- OF_initWithStatusCode: (short)status
+		headers: (OFDictionary*)headers
+		   data: (OFDataArray*)data;
 
 /*!
  * @brief Returns the state code of the result of the HTTP request.
@@ -303,14 +178,7 @@ typedef enum of_http_request_type_t {
 /*!
  * @brief Returns the data received for the HTTP request.
  *
- * Returns nil if storesData was set to NO.
- *
  * @return The data received for the HTTP request
  */
 - (OFDataArray*)data;
 @end
-
-@interface OFObject (OFHTTPRequestDelegate) <OFHTTPRequestDelegate>
-@end
-
-extern Class of_http_request_tls_socket_class;

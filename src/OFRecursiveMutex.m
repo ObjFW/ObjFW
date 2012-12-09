@@ -68,7 +68,7 @@
 
 - (void)setName: (OFString*)name_
 {
-	OF_SETTER(name, name_, YES, YES)
+	OF_SETTER(name, name_, YES, 1)
 }
 
 - (OFString*)name

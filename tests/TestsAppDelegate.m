@@ -141,7 +141,7 @@ main(int argc, char *argv[])
 #endif
 	[self URLTests];
 #ifdef OF_THREADS
-	[self HTTPRequestTests];
+	[self HTTPClientTests];
 #endif
 	[self XMLParserTests];
 	[self XMLNodeTests];

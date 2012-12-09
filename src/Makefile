@@ -21,6 +21,7 @@ SRCS = OFApplication.m			\
        OFEnumerator.m			\
        OFFile.m				\
        OFHash.m				\
+       OFHTTPClient.m			\
        OFHTTPRequest.m			\
        OFIntrospection.m		\
        OFList.m				\

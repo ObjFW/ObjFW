@@ -24,6 +24,7 @@
 #import "OFString.h"
 #import "OFFile.h"
 #import "OFURL.h"
+#import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
 #import "OFXMLElement.h"
 
@@ -138,6 +139,7 @@ void _references_to_categories_of_OFDataArray(void)
 - initWithContentsOfURL: (OFURL*)URL
 {
 	void *pool;
+	OFHTTPClient *client;
 	OFHTTPRequest *request;
 	OFHTTPRequestResult *result;
 	Class c;
@@ -153,8 +155,9 @@ void _references_to_categories_of_OFDataArray(void)
 		return self;
 	}
 
+	client = [OFHTTPClient client];
 	request = [OFHTTPRequest requestWithURL: URL];
-	result = [request perform];
+	result = [client performRequest: request];
 
 	if ([result statusCode] != 200)
 		@throw [OFHTTPRequestFailedException

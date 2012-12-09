@@ -462,7 +462,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 		OFCondition.m		\
 	")
 	AC_SUBST(OFTHREADTESTS_M, "OFThreadTests.m")
-	AC_SUBST(OFHTTPREQUESTTESTS_M, "OFHTTPRequestTests.m")
+	AC_SUBST(OFHTTPCLIENTTESTS_M, "OFHTTPClientTests.m")
 	AC_SUBST(THREADING_H, "threading.h")
 
 	AC_MSG_CHECKING(whether __thread works)

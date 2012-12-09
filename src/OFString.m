@@ -28,6 +28,7 @@
 #import "OFDictionary.h"
 #import "OFFile.h"
 #import "OFURL.h"
+#import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
 #import "OFDataArray.h"
 #import "OFXMLElement.h"
@@ -726,6 +727,7 @@ static struct {
 	       encoding: (of_string_encoding_t)encoding
 {
 	void *pool;
+	OFHTTPClient *client;
 	OFHTTPRequest *request;
 	OFHTTPRequestResult *result;
 	OFString *contentType;
@@ -746,8 +748,9 @@ static struct {
 		return self;
 	}
 
+	client = [OFHTTPClient client];
 	request = [OFHTTPRequest requestWithURL: URL];
-	result = [request perform];
+	result = [client performRequest: request];
 
 	if ([result statusCode] != 200)
 		@throw [OFHTTPRequestFailedException
