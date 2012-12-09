@@ -33,6 +33,7 @@
 #import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
 #import "OFInvalidServerReplyException.h"
+#import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedProtocolException.h"
@@ -44,9 +45,8 @@
 Class of_http_client_tls_socket_class = Nil;
 
 static OF_INLINE void
-normalizeKey(OFString *key)
+normalizeKey(char *str)
 {
-	uint8_t *str = (uint8_t*)[key UTF8String];
 	BOOL firstLetter = YES;
 
 	while (*str != '\0') {
@@ -248,6 +248,7 @@ normalizeKey(OFString *key)
 	for (;;) {
 		OFString *key, *value;
 		const char *line_c, *tmp;
+		char *key_c;
 
 		@try {
 			line = [sock readLine];
@@ -269,9 +270,21 @@ normalizeKey(OFString *key)
 			@throw [OFInvalidServerReplyException
 			    exceptionWithClass: [self class]];
 
-		key = [OFString stringWithUTF8String: line_c
-					      length: tmp - line_c];
-		normalizeKey(key);
+		if ((key_c = malloc(tmp - line_c + 1)) == NULL)
+			@throw [OFOutOfMemoryException
+			    exceptionWithClass: [self class]
+				 requestedSize: tmp - line_c + 1];
+
+		memcpy(key_c, line_c, tmp - line_c);
+		key_c[tmp - line_c] = '\0';
+		normalizeKey(key_c);
+
+		@try {
+			key = [OFString stringWithUTF8StringNoCopy: key_c
+						      freeWhenDone: YES];
+		} @catch (id e) {
+			free(key_c);
+		}
 
 		do {
 			tmp++;
