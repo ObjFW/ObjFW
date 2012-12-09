@@ -371,6 +371,14 @@ static struct {
 			length: UTF8StringLength] autorelease];
 }
 
++ (instancetype)stringWithUTF8StringNoCopy: (const char*)UTF8String
+			      freeWhenDone: (BOOL)freeWhenDone
+{
+	return [[[self alloc]
+	    initWithUTF8StringNoCopy: UTF8String
+			freeWhenDone: freeWhenDone] autorelease];
+}
+
 + (instancetype)stringWithCString: (const char*)cString
 			 encoding: (of_string_encoding_t)encoding
 {

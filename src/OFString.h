@@ -109,6 +109,18 @@ extern size_t of_utf16_string_length(const uint16_t*);
 			      length: (size_t)UTF8StringLength;
 
 /*!
+ * @brief Creates a new OFString from a UTF-8 encoded C string without copying
+ *	  the string.
+ *
+ * @param UTF8String A UTF-8 encoded C string to initialize the OFString with
+ * @param freeWhenDone Whether to free the C string when the OFString gets
+ *		       deallocated
+ * @return A new autoreleased OFString
+ */
++ (instancetype)stringWithUTF8StringNoCopy: (const char*)UTF8String
+			      freeWhenDone: (BOOL)freeWhenDone;
+
+/*!
  * @brief Creates a new OFString from a C string with the specified encoding.
  *
  * @param cString A C string to initialize the OFString with

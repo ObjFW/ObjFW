@@ -405,15 +405,13 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 }
 
 - initWithUTF8StringNoCopy: (const char*)UTF8String
-	      freeWhenDone: (BOOL)freeWhenDone
+	      freeWhenDone: (BOOL)freeWhenDone_
 {
 	self = [super init];
 
 	@try {
 		size_t UTF8StringLength = strlen(UTF8String);
-
-		if (freeWhenDone)
-			s->freeWhenDone = (char*)UTF8String;
+		char *freeWhenDone = (char*)UTF8String;
 
 		if (UTF8StringLength >= 3 &&
 		    !memcmp(UTF8String, "\xEF\xBB\xBF", 3)) {
@@ -425,6 +423,9 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 		s->cString = (char*)UTF8String;
 		s->cStringLength = UTF8StringLength;
+
+		if (freeWhenDone_)
+			s->freeWhenDone = freeWhenDone;
 
 		switch (of_string_utf8_check(UTF8String, UTF8StringLength,
 		    &s->length)) {
