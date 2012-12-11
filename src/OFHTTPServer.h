@@ -49,6 +49,7 @@
 	OFString *host;
 	uint16_t port;
 	id <OFHTTPServerDelegate> delegate;
+	OFString *name;
 	OFTCPSocket *listeningSocket;
 }
 
@@ -56,6 +57,7 @@
 @property (copy) OFString *host;
 @property uint16_t port;
 @property (assign) id <OFHTTPServerDelegate> delegate;
+@property (copy) OFString *name;
 #endif
 
 /*!
@@ -106,6 +108,20 @@
  * @return The delegate for the HTTP server
  */
 - (id <OFHTTPServerDelegate>)delegate;
+
+/*!
+ * @brief Sets the server name the server presents to clients.
+ *
+ * @param name The server name to present to clients
+ */
+- (void)setName: (OFString*)name;
+
+/*!
+ * @brief Returns the server name the server presents to clients.
+ *
+ * @return The server name the server presents to clients
+ */
+- (OFString*)name;
 
 /*!
  * @brief Starts the HTTP server in the current thread's runloop.

@@ -422,9 +422,10 @@ normalized_key(OFString *key)
 
 	[sock writeFormat: @"HTTP/1.1 %d %s\r\n"
 			   @"Date: %@\r\n"
-			   @"Server: OFHTTPServer (ObjFW's HTTP server class, "
-			   @"<https://webkeks.org/objfw/>)\r\n\r\n",
-			   statusCode, status_code_to_string(statusCode), date];
+			   @"Server: %@\r\n"
+			   @"\r\n",
+			   statusCode, status_code_to_string(statusCode), date,
+			   [server name]];
 	[sock close];
 
 	return NO;
@@ -475,10 +476,10 @@ normalized_key(OFString *key)
 	replyData = [reply data];
 
 	[sock writeFormat: @"HTTP/1.1 %d %s\r\n"
-			   @"Server: OFHTTPServer (ObjFW's HTTP server class, "
-			   @"<https://webkeks.org/objfw/>)\r\n",
+			   @"Server: %@\r\n",
 			   [reply statusCode],
-			   status_code_to_string([reply statusCode])];
+			   status_code_to_string([reply statusCode]),
+			   [server name]];
 
 	if (requestType != OF_HTTP_REQUEST_TYPE_HEAD)
 		[sock writeFormat: @"Content-Length: %zu\r\n",
@@ -504,10 +505,21 @@ normalized_key(OFString *key)
 	return [[[self alloc] init] autorelease];
 }
 
+- init
+{
+	self = [super init];
+
+	name = @"OFHTTPServer (ObjFW's HTTP server class "
+	    @"<https://webkeks.org/objfw/>)";
+
+	return self;
+}
+
 - (void)dealloc
 {
 	[host release];
 	[listeningSocket release];
+	[name release];
 
 	[super dealloc];
 }
@@ -540,6 +552,16 @@ normalized_key(OFString *key)
 - (id <OFHTTPServerDelegate>)delegate
 {
 	return delegate;
+}
+
+- (void)setName: (OFString*)name_
+{
+	OF_SETTER(name, name_, YES, 1)
+}
+
+- (OFString*)name
+{
+	OF_GETTER(name, YES)
 }
 
 - (void)start
