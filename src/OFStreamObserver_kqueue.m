@@ -30,6 +30,7 @@
 
 #import "OFInitializationFailedException.h"
 #import "OFOutOfMemoryException.h"
+#import "OFOutOfRangeException.h"
 
 #import "autorelease.h"
 #import "macros.h"
@@ -70,6 +71,9 @@
 {
 	struct kevent event;
 
+	if ([changeList count] >= INT_MAX)
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+
 	EV_SET(&event, fd, EVFILT_READ, EV_ADD, 0, 0, 0);
 	[changeList addItem: &event];
 }
@@ -77,6 +81,9 @@
 - (void)OF_addFileDescriptorForWriting: (int)fd
 {
 	struct kevent event;
+
+	if ([changeList count] >= INT_MAX)
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	EV_SET(&event, fd, EVFILT_WRITE, EV_ADD, 0, 0, 0);
 	[changeList addItem: &event];
