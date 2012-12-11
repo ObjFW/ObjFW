@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#define OF_HTTP_SERVER_M
+
 #include <string.h>
 #include <ctype.h>
 
@@ -140,7 +142,7 @@ static OF_INLINE OFString*
 normalized_key(OFString *key)
 {
 	char *cString = strdup([key UTF8String]);
-	char *tmp = cString;
+	uint8_t *tmp = (uint8_t*)cString;
 	BOOL firstLetter = YES;
 
 	if (cString == NULL)
@@ -465,7 +467,7 @@ normalized_key(OFString *key)
 	if (reply == nil) {
 		[self sendErrorAndClose: 500];
 		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [[server delegate] class]
+		    exceptionWithClass: [(id)[server delegate] class]
 			      selector: @selector(server:didReceiveRequest:)];
 	}
 

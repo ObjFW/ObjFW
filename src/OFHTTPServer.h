@@ -25,7 +25,10 @@
 /*!
  * @brief A delegate for OFHTTPServer.
  */
-@protocol OFHTTPServerDelegate <OFObject>
+@protocol OFHTTPServerDelegate
+#ifndef OF_HTTP_SERVER_M
+    <OFObject>
+#endif
 /*!
  * @brief This method is called when the HTTP server received a request from a
  *	  client.
