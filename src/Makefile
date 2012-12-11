@@ -23,6 +23,7 @@ SRCS = OFApplication.m			\
        OFHash.m				\
        OFHTTPClient.m			\
        OFHTTPRequest.m			\
+       OFHTTPServer.m			\
        OFIntrospection.m		\
        OFList.m				\
        OFMapTable.m			\

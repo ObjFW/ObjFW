@@ -54,6 +54,7 @@
 
 #import "OFHTTPRequest.h"
 #import "OFHTTPClient.h"
+#import "OFHTTPServer.h"
 
 #import "OFHash.h"
 #import "OFMD5Hash.h"
