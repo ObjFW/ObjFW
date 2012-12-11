@@ -481,6 +481,12 @@ normalized_key(OFString *key)
 			   status_code_to_string([reply statusCode]),
 			   [server name]];
 
+	if ([replyHeaders objectForKey: @"Date"] == nil) {
+		OFString *date = [[OFDate date]
+		    dateStringWithFormat: @"%a, %d %b %Y %H:%M:%S GMT"];
+		[sock writeFormat: @"Date: %@\r\n", date];
+	}
+
 	if (requestType != OF_HTTP_REQUEST_TYPE_HEAD)
 		[sock writeFormat: @"Content-Length: %zu\r\n",
 				   [replyData count] * [replyData itemSize]];
