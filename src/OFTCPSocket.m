@@ -618,20 +618,12 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	newSocket = [[[[self class] alloc] init] autorelease];
 	addrLen = sizeof(*addr);
-
-	@try {
-		addr = [newSocket allocMemoryWithSize: addrLen];
-	} @catch (id e) {
-		[newSocket release];
-		@throw e;
-	}
+	addr = [newSocket allocMemoryWithSize: addrLen];
 
 	if ((newSock = accept(sock, (struct sockaddr*)addr,
-	    &addrLen)) == INVALID_SOCKET) {
-		[newSocket release];
+	    &addrLen)) == INVALID_SOCKET)
 		@throw [OFAcceptFailedException exceptionWithClass: [self class]
 							    socket: self];
-	}
 
 	newSocket->sock = newSock;
 	newSocket->sockAddr = addr;
