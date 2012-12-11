@@ -120,9 +120,18 @@
 @end
 
 @implementation OFHTTPRequestResult
-- OF_initWithStatusCode: (short)status
-		headers: (OFDictionary*)headers_
-		   data: (OFDataArray*)data_
++ resultWithStatusCode: (short)status
+	       headers: (OFDictionary*)headers
+		  data: (OFDataArray*)data
+{
+	return [[[self alloc] initWithStatusCode: status
+					 headers: headers
+					    data: data] autorelease];
+}
+
+- initWithStatusCode: (short)status
+	     headers: (OFDictionary*)headers_
+		data: (OFDataArray*)data_
 {
 	self = [super init];
 

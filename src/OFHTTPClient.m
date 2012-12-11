@@ -471,10 +471,9 @@ normalize_key(char *str)
 
 	[serverHeaders makeImmutable];
 
-	result = [[OFHTTPRequestResult alloc]
-	    OF_initWithStatusCode: status
-			  headers: serverHeaders
-			     data: data];
+	result = [[OFHTTPRequestResult alloc] initWithStatusCode: status
+							 headers: serverHeaders
+							    data: data];
 
 	objc_autoreleasePoolPop(pool);
 

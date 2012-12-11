@@ -157,9 +157,29 @@ typedef enum of_http_request_type_t {
 @property (readonly, retain) OFDataArray *data;
 #endif
 
-- OF_initWithStatusCode: (short)status
-		headers: (OFDictionary*)headers
-		   data: (OFDataArray*)data;
+/*!
+ * @brief Creates a new OFHTTPRequestResult.
+ *
+ * @param status The HTTP status code replied to the request
+ * @param headers The headers replied to the request
+ * @param data The data replied to the request
+ * @return A new OFHTTPRequestResult
+ */
++ resultWithStatusCode: (short)status
+	       headers: (OFDictionary*)headers
+		  data: (OFDataArray*)data;
+
+/*!
+ * @brief Initializes an already allocated OFHTTPRequestResult.
+ *
+ * @param status The HTTP status code replied to the request
+ * @param headers The headers replied to the request
+ * @param data The data replied to the request
+ * @return An initialized OFHTTPRequestResult
+ */
+- initWithStatusCode: (short)status
+	     headers: (OFDictionary*)headers
+		data: (OFDataArray*)data;
 
 /*!
  * @brief Returns the state code of the result of the HTTP request.
