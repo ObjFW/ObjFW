@@ -72,38 +72,27 @@
 		4B17FFB9133A381D003E6DCD /* OFInvalidServerReplyException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B17FFB7133A380F003E6DCD /* OFInvalidServerReplyException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B17FFBA133A381D003E6DCD /* OFInvalidServerReplyException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B17FFB8133A3813003E6DCD /* OFInvalidServerReplyException.m */; };
 		4B187E3B163EA3DA0049A832 /* ObjFW-Bridge.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E22163EA3DA0049A832 /* ObjFW-Bridge.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B187E3D163EA3DA0049A832 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E24163EA3DA0049A832 /* Makefile */; };
 		4B187E3F163EA3DA0049A832 /* NSArray_OFArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E25163EA3DA0049A832 /* NSArray_OFArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B187E40163EA3DA0049A832 /* NSArray_OFArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E26163EA3DA0049A832 /* NSArray_OFArray.m */; };
 		4B187E41163EA3DA0049A832 /* NSArray_OFArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E26163EA3DA0049A832 /* NSArray_OFArray.m */; };
 		4B187E42163EA3DA0049A832 /* NSArray+OFObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E27163EA3DA0049A832 /* NSArray+OFObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B187E43163EA3DA0049A832 /* NSArray+OFObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E28163EA3DA0049A832 /* NSArray+OFObject.m */; };
 		4B187E44163EA3DA0049A832 /* NSArray+OFObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E28163EA3DA0049A832 /* NSArray+OFObject.m */; };
 		4B187E45163EA3DA0049A832 /* NSBridging.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E29163EA3DA0049A832 /* NSBridging.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B187E46163EA3DA0049A832 /* NSDictionary_OFDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E2A163EA3DA0049A832 /* NSDictionary_OFDictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B187E47163EA3DA0049A832 /* NSDictionary_OFDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E2B163EA3DA0049A832 /* NSDictionary_OFDictionary.m */; };
 		4B187E48163EA3DA0049A832 /* NSDictionary_OFDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E2B163EA3DA0049A832 /* NSDictionary_OFDictionary.m */; };
 		4B187E49163EA3DA0049A832 /* NSDictionary+OFObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E2C163EA3DA0049A832 /* NSDictionary+OFObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B187E4A163EA3DA0049A832 /* NSDictionary+OFObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E2D163EA3DA0049A832 /* NSDictionary+OFObject.m */; };
 		4B187E4B163EA3DA0049A832 /* NSDictionary+OFObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E2D163EA3DA0049A832 /* NSDictionary+OFObject.m */; };
 		4B187E4C163EA3DA0049A832 /* NSString+OFObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E2E163EA3DA0049A832 /* NSString+OFObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B187E4D163EA3DA0049A832 /* NSString+OFObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E2F163EA3DA0049A832 /* NSString+OFObject.m */; };
 		4B187E4E163EA3DA0049A832 /* NSString+OFObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E2F163EA3DA0049A832 /* NSString+OFObject.m */; };
 		4B187E4F163EA3DA0049A832 /* OFArray_NSArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E30163EA3DA0049A832 /* OFArray_NSArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B187E50163EA3DA0049A832 /* OFArray_NSArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E31163EA3DA0049A832 /* OFArray_NSArray.m */; };
 		4B187E51163EA3DA0049A832 /* OFArray_NSArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E31163EA3DA0049A832 /* OFArray_NSArray.m */; };
 		4B187E52163EA3DA0049A832 /* OFArray+NSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E32163EA3DA0049A832 /* OFArray+NSObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B187E53163EA3DA0049A832 /* OFArray+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E33163EA3DA0049A832 /* OFArray+NSObject.m */; };
 		4B187E54163EA3DA0049A832 /* OFArray+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E33163EA3DA0049A832 /* OFArray+NSObject.m */; };
 		4B187E55163EA3DA0049A832 /* OFBridging.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E34163EA3DA0049A832 /* OFBridging.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B187E56163EA3DA0049A832 /* OFDictionary_NSDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E35163EA3DA0049A832 /* OFDictionary_NSDictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B187E57163EA3DA0049A832 /* OFDictionary_NSDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E36163EA3DA0049A832 /* OFDictionary_NSDictionary.m */; };
 		4B187E58163EA3DA0049A832 /* OFDictionary_NSDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E36163EA3DA0049A832 /* OFDictionary_NSDictionary.m */; };
 		4B187E59163EA3DA0049A832 /* OFDictionary+NSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E37163EA3DA0049A832 /* OFDictionary+NSObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B187E5A163EA3DA0049A832 /* OFDictionary+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E38163EA3DA0049A832 /* OFDictionary+NSObject.m */; };
 		4B187E5B163EA3DA0049A832 /* OFDictionary+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E38163EA3DA0049A832 /* OFDictionary+NSObject.m */; };
 		4B187E5C163EA3DA0049A832 /* OFString+NSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E39163EA3DA0049A832 /* OFString+NSObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B187E5D163EA3DA0049A832 /* OFString+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E3A163EA3DA0049A832 /* OFString+NSObject.m */; };
 		4B187E5E163EA3DA0049A832 /* OFString+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E3A163EA3DA0049A832 /* OFString+NSObject.m */; };
 		4B187E61163EA4530049A832 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B187E60163EA4530049A832 /* Foundation.framework */; };
 		4B187E62163EA46D0049A832 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
@@ -355,6 +344,12 @@
 		4BB25E8B139C388A00F574EA /* OFString+Serialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB25E85139C388A00F574EA /* OFString+Serialization.m */; };
 		4BB25E8C139C388A00F574EA /* OFXMLElement+Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB25E86139C388A00F574EA /* OFXMLElement+Serialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BB25E8D139C388A00F574EA /* OFXMLElement+Serialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB25E87139C388A00F574EA /* OFXMLElement+Serialization.m */; };
+		4BB4B54316775FF4002A2DCE /* apple-forwarding.S in Sources */ = {isa = PBXBuildFile; fileRef = 4BB4B53E16775FF4002A2DCE /* apple-forwarding.S */; };
+		4BB4B54416775FF4002A2DCE /* OFHTTPClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB4B53F16775FF4002A2DCE /* OFHTTPClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BB4B54516775FF4002A2DCE /* OFHTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB4B54016775FF4002A2DCE /* OFHTTPClient.m */; };
+		4BB4B54616775FF4002A2DCE /* OFHTTPServer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB4B54116775FF4002A2DCE /* OFHTTPServer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BB4B54716775FF4002A2DCE /* OFHTTPServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB4B54216775FF4002A2DCE /* OFHTTPServer.m */; };
+		4BB4B54A16776094002A2DCE /* OFHTTPClientTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB4B54916776094002A2DCE /* OFHTTPClientTests.m */; };
 		4BB524C1143D1E4E0085FBCC /* OFProcess.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB524BF143D1E4E0085FBCC /* OFProcess.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BB524C2143D1E4E0085FBCC /* OFProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB524C0143D1E4E0085FBCC /* OFProcess.m */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BC090441584F6760040640F /* OFInvalidJSONException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC090421584F6760040640F /* OFInvalidJSONException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -369,7 +364,6 @@
 		4BF33AFE133807A20059CEF7 /* OFDataArrayTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF66F1235358D0076B512 /* OFDataArrayTests.m */; };
 		4BF33AFF133807A20059CEF7 /* OFDateTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE5F0E512DF4259005C7A0C /* OFDateTests.m */; };
 		4BF33B00133807A20059CEF7 /* OFDictionaryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6701235358D0076B512 /* OFDictionaryTests.m */; };
-		4BF33B02133807A20059CEF7 /* OFHTTPRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3D23701337FB7500DD29B8 /* OFHTTPRequestTests.m */; };
 		4BF33B03133807A20059CEF7 /* OFListTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6721235358D0076B512 /* OFListTests.m */; };
 		4BF33B04133807A20059CEF7 /* OFMD5HashTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6731235358D0076B512 /* OFMD5HashTests.m */; };
 		4BF33B05133807A20059CEF7 /* OFNumberTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6741235358D0076B512 /* OFNumberTests.m */; };
@@ -571,7 +565,6 @@
 		4B3B0797166978780044E634 /* OFMapTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMapTable.m; path = src/OFMapTable.m; sourceTree = "<group>"; };
 		4B3D236D1337FB5800DD29B8 /* base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = base64.h; path = src/base64.h; sourceTree = "<group>"; };
 		4B3D236E1337FB5800DD29B8 /* base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = base64.m; path = src/base64.m; sourceTree = "<group>"; };
-		4B3D23701337FB7500DD29B8 /* OFHTTPRequestTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHTTPRequestTests.m; path = tests/OFHTTPRequestTests.m; sourceTree = "<group>"; };
 		4B3D23761337FBC800DD29B8 /* ObjFW.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ObjFW.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B3D23BB1337FC5800DD29B8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
 		4B3D23EF1338008000DD29B8 /* mach_alias_list */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = mach_alias_list; path = src/mach_alias_list; sourceTree = SOURCE_ROOT; };
@@ -762,6 +755,12 @@
 		4BB25E85139C388A00F574EA /* OFString+Serialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFString+Serialization.m"; path = "src/OFString+Serialization.m"; sourceTree = "<group>"; };
 		4BB25E86139C388A00F574EA /* OFXMLElement+Serialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFXMLElement+Serialization.h"; path = "src/OFXMLElement+Serialization.h"; sourceTree = "<group>"; };
 		4BB25E87139C388A00F574EA /* OFXMLElement+Serialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFXMLElement+Serialization.m"; path = "src/OFXMLElement+Serialization.m"; sourceTree = "<group>"; };
+		4BB4B53E16775FF4002A2DCE /* apple-forwarding.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = "apple-forwarding.S"; path = "src/apple-forwarding.S"; sourceTree = "<group>"; };
+		4BB4B53F16775FF4002A2DCE /* OFHTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFHTTPClient.h; path = src/OFHTTPClient.h; sourceTree = "<group>"; };
+		4BB4B54016775FF4002A2DCE /* OFHTTPClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHTTPClient.m; path = src/OFHTTPClient.m; sourceTree = "<group>"; };
+		4BB4B54116775FF4002A2DCE /* OFHTTPServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFHTTPServer.h; path = src/OFHTTPServer.h; sourceTree = "<group>"; };
+		4BB4B54216775FF4002A2DCE /* OFHTTPServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHTTPServer.m; path = src/OFHTTPServer.m; sourceTree = "<group>"; };
+		4BB4B54916776094002A2DCE /* OFHTTPClientTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHTTPClientTests.m; path = tests/OFHTTPClientTests.m; sourceTree = "<group>"; };
 		4BB50DCF12F863C700C9393F /* of_asprintf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = of_asprintf.h; path = src/of_asprintf.h; sourceTree = SOURCE_ROOT; };
 		4BB50DD012F863C700C9393F /* of_asprintf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = of_asprintf.m; path = src/of_asprintf.m; sourceTree = SOURCE_ROOT; };
 		4BB524BF143D1E4E0085FBCC /* OFProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFProcess.h; path = src/OFProcess.h; sourceTree = "<group>"; };
@@ -1087,8 +1086,12 @@
 				4B6799671099E7C50041064A /* OFFile.m */,
 				4BF1BCC011C9663F0025511F /* OFHash.h */,
 				4BF1BCC111C9663F0025511F /* OFHash.m */,
+				4BB4B53F16775FF4002A2DCE /* OFHTTPClient.h */,
+				4BB4B54016775FF4002A2DCE /* OFHTTPClient.m */,
 				4B99250F12E0780000215DBE /* OFHTTPRequest.h */,
 				4B99251012E0780000215DBE /* OFHTTPRequest.m */,
+				4BB4B54116775FF4002A2DCE /* OFHTTPServer.h */,
+				4BB4B54216775FF4002A2DCE /* OFHTTPServer.m */,
 				4BA49D8E13DB113B00381CDB /* OFIntrospection.h */,
 				4BA49D8F13DB113B00381CDB /* OFIntrospection.m */,
 				4BA02B9F15041F5900002F84 /* OFJSONRepresentation.h */,
@@ -1208,6 +1211,7 @@
 				4B48B95214DC23B100546D39 /* OFXMLProcessingInstructions.h */,
 				4B48B95314DC23B100546D39 /* OFXMLProcessingInstructions.m */,
 				4B6AF97310A8D4450003FB0A /* ObjFW.h */,
+				4BB4B53E16775FF4002A2DCE /* apple-forwarding.S */,
 				4B6799561099E7C50041064A /* asprintf.h */,
 				4B6AF96C10A8D3E40003FB0A /* asprintf.m */,
 				4BBA36C411406AB700CBA3AC /* atomic.h */,
@@ -1242,7 +1246,7 @@
 				4B6EF66F1235358D0076B512 /* OFDataArrayTests.m */,
 				4BE5F0E512DF4259005C7A0C /* OFDateTests.m */,
 				4B6EF6701235358D0076B512 /* OFDictionaryTests.m */,
-				4B3D23701337FB7500DD29B8 /* OFHTTPRequestTests.m */,
+				4BB4B54916776094002A2DCE /* OFHTTPClientTests.m */,
 				4BAA60C714D09699006F068D /* OFJSONTests.m */,
 				4B6EF6721235358D0076B512 /* OFListTests.m */,
 				4B6EF6731235358D0076B512 /* OFMD5HashTests.m */,
@@ -1354,7 +1358,9 @@
 				4B17FF74133A2AAB003E6DCD /* OFException.h in Headers */,
 				4B3D23C81337FCB000DD29B8 /* OFFile.h in Headers */,
 				4B3D23C91337FCB000DD29B8 /* OFHash.h in Headers */,
+				4BB4B54416775FF4002A2DCE /* OFHTTPClient.h in Headers */,
 				4B3D23CA1337FCB000DD29B8 /* OFHTTPRequest.h in Headers */,
+				4BB4B54616775FF4002A2DCE /* OFHTTPServer.h in Headers */,
 				4BA49D9013DB113B00381CDB /* OFIntrospection.h in Headers */,
 				4BA02BA115041F5900002F84 /* OFJSONRepresentation.h in Headers */,
 				4B3D23CB1337FCB000DD29B8 /* OFList.h in Headers */,
@@ -1697,7 +1703,9 @@
 				4B3D23941337FC0D00DD29B8 /* OFEnumerator.m in Sources */,
 				4B3D23961337FC0D00DD29B8 /* OFFile.m in Sources */,
 				4B3D23971337FC0D00DD29B8 /* OFHash.m in Sources */,
+				4BB4B54516775FF4002A2DCE /* OFHTTPClient.m in Sources */,
 				4B3D23981337FC0D00DD29B8 /* OFHTTPRequest.m in Sources */,
+				4BB4B54716775FF4002A2DCE /* OFHTTPServer.m in Sources */,
 				4BA49D9113DB113B00381CDB /* OFIntrospection.m in Sources */,
 				4B3D23991337FC0D00DD29B8 /* OFList.m in Sources */,
 				4B3B0799166978780044E634 /* OFMapTable.m in Sources */,
@@ -1755,6 +1763,7 @@
 				4B11005D14329B9A003A45D8 /* OFXMLNode.m in Sources */,
 				4B3D23B11337FC0D00DD29B8 /* OFXMLParser.m in Sources */,
 				4B48B95514DC23B100546D39 /* OFXMLProcessingInstructions.m in Sources */,
+				4BB4B54316775FF4002A2DCE /* apple-forwarding.S in Sources */,
 				4B3D23B31337FC0D00DD29B8 /* base64.m in Sources */,
 				4B3D23B41337FC0D00DD29B8 /* iso_8859_15.m in Sources */,
 				4B3D23B51337FC0D00DD29B8 /* foundation-compat.m in Sources */,
@@ -1828,7 +1837,7 @@
 				4BF33AFE133807A20059CEF7 /* OFDataArrayTests.m in Sources */,
 				4BF33AFF133807A20059CEF7 /* OFDateTests.m in Sources */,
 				4BF33B00133807A20059CEF7 /* OFDictionaryTests.m in Sources */,
-				4BF33B02133807A20059CEF7 /* OFHTTPRequestTests.m in Sources */,
+				4BB4B54A16776094002A2DCE /* OFHTTPClientTests.m in Sources */,
 				4BAA60C814D09699006F068D /* OFJSONTests.m in Sources */,
 				4BF33B03133807A20059CEF7 /* OFListTests.m in Sources */,
 				4BF33B04133807A20059CEF7 /* OFMD5HashTests.m in Sources */,
@@ -1848,17 +1857,6 @@
 				4BF33B10133807A20059CEF7 /* OFXMLParserTests.m in Sources */,
 				4BF33B11133807A20059CEF7 /* PropertiesTests.m in Sources */,
 				4BF33B12133807A20059CEF7 /* TestsAppDelegate.m in Sources */,
-				4B187E3D163EA3DA0049A832 /* Makefile in Sources */,
-				4B187E40163EA3DA0049A832 /* NSArray_OFArray.m in Sources */,
-				4B187E43163EA3DA0049A832 /* NSArray+OFObject.m in Sources */,
-				4B187E47163EA3DA0049A832 /* NSDictionary_OFDictionary.m in Sources */,
-				4B187E4A163EA3DA0049A832 /* NSDictionary+OFObject.m in Sources */,
-				4B187E4D163EA3DA0049A832 /* NSString+OFObject.m in Sources */,
-				4B187E50163EA3DA0049A832 /* OFArray_NSArray.m in Sources */,
-				4B187E53163EA3DA0049A832 /* OFArray+NSObject.m in Sources */,
-				4B187E57163EA3DA0049A832 /* OFDictionary_NSDictionary.m in Sources */,
-				4B187E5A163EA3DA0049A832 /* OFDictionary+NSObject.m in Sources */,
-				4B187E5D163EA3DA0049A832 /* OFString+NSObject.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1901,7 +1899,6 @@
 				GCC_OPTIMIZATION_LEVEL = 2;
 				OTHER_CFLAGS = (
 					"-fexceptions",
-					"-fobjc-exceptions",
 					"-fconstant-string-class=OFConstantString",
 					"-fno-constant-cfstrings",
 					"-fno-common",
@@ -1928,7 +1925,6 @@
 				GCC_OPTIMIZATION_LEVEL = 2;
 				OTHER_CFLAGS = (
 					"-fexceptions",
-					"-fobjc-exceptions",
 					"-fconstant-string-class=OFConstantString",
 					"-fno-constant-cfstrings",
 					"-fno-common",
@@ -2049,8 +2045,6 @@
 					"-Wl,-reexport-lobjc",
 					"-lobjc",
 					"-lm",
-					"-Xarch_x86_64",
-					"-Wl,-alias_list,${SOURCE_ROOT}/src/mach_alias_list",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = framework;
@@ -2068,8 +2062,6 @@
 					"-Wl,-reexport-lobjc",
 					"-lobjc",
 					"-lm",
-					"-Xarch_x86_64",
-					"-Wl,-alias_list,${SOURCE_ROOT}/src/mach_alias_list",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = framework;
