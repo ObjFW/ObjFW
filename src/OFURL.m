@@ -78,6 +78,11 @@ resolve_relative_path(OFString *path)
 }
 
 @implementation OFURL
++ (instancetype)URL
+{
+	return [[[self alloc] init] autorelease];
+}
+
 + (instancetype)URLWithString: (OFString*)string
 {
 	return [[[self alloc] initWithString: string] autorelease];
@@ -513,7 +518,9 @@ resolve_relative_path(OFString *path)
 	BOOL needPort = YES;
 
 	if ([scheme isEqual: @"file"]) {
-		[ret appendString: path];
+		if (path != nil)
+			[ret appendString: path];
+
 		return ret;
 	}
 
@@ -522,7 +529,8 @@ resolve_relative_path(OFString *path)
 	else if (user != nil)
 		[ret appendFormat: @"%@@", user];
 
-	[ret appendString: host];
+	if (host != nil)
+		[ret appendString: host];
 
 	if (([scheme isEqual: @"http"] && port == 80) ||
 	    ([scheme isEqual: @"https"] && port == 443))
@@ -531,7 +539,8 @@ resolve_relative_path(OFString *path)
 	if (needPort)
 		[ret appendFormat: @":%d", port];
 
-	[ret appendString: path];
+	if (path != nil)
+		[ret appendString: path];
 
 	if (parameters != nil)
 		[ret appendFormat: @";%@", parameters];
