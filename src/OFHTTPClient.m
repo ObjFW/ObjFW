@@ -45,7 +45,7 @@
 Class of_http_client_tls_socket_class = Nil;
 
 static OF_INLINE void
-normalizeKey(char *str)
+normalize_key(char *str)
 {
 	BOOL firstLetter = YES;
 
@@ -247,8 +247,8 @@ normalizeKey(char *str)
 
 	for (;;) {
 		OFString *key, *value;
-		const char *line_c, *tmp;
-		char *key_c;
+		const char *lineC, *tmp;
+		char *keyC;
 
 		@try {
 			line = [sock readLine];
@@ -264,26 +264,26 @@ normalizeKey(char *str)
 		if ([line isEqual: @""])
 			break;
 
-		line_c = [line UTF8String];
+		lineC = [line UTF8String];
 
-		if ((tmp = strchr(line_c, ':')) == NULL)
+		if ((tmp = strchr(lineC, ':')) == NULL)
 			@throw [OFInvalidServerReplyException
 			    exceptionWithClass: [self class]];
 
-		if ((key_c = malloc(tmp - line_c + 1)) == NULL)
+		if ((keyC = malloc(tmp - lineC + 1)) == NULL)
 			@throw [OFOutOfMemoryException
 			    exceptionWithClass: [self class]
-				 requestedSize: tmp - line_c + 1];
+				 requestedSize: tmp - lineC + 1];
 
-		memcpy(key_c, line_c, tmp - line_c);
-		key_c[tmp - line_c] = '\0';
-		normalizeKey(key_c);
+		memcpy(keyC, lineC, tmp - lineC);
+		keyC[tmp - lineC] = '\0';
+		normalize_key(keyC);
 
 		@try {
-			key = [OFString stringWithUTF8StringNoCopy: key_c
+			key = [OFString stringWithUTF8StringNoCopy: keyC
 						      freeWhenDone: YES];
 		} @catch (id e) {
-			free(key_c);
+			free(keyC);
 		}
 
 		do {
