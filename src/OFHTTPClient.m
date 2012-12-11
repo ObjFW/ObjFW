@@ -16,7 +16,7 @@
 
 #include "config.h"
 
-#define OF_HTTP_REQUEST_M
+#define OF_HTTP_CLIENT_M
 
 #include <string.h>
 #include <ctype.h>
@@ -45,8 +45,9 @@
 Class of_http_client_tls_socket_class = Nil;
 
 static OF_INLINE void
-normalize_key(char *str)
+normalize_key(char *str_)
 {
+	uint8_t *str = (uint8_t*)str_;
 	BOOL firstLetter = YES;
 
 	while (*str != '\0') {
@@ -284,6 +285,7 @@ normalize_key(char *str)
 						      freeWhenDone: YES];
 		} @catch (id e) {
 			free(keyC);
+			@throw e;
 		}
 
 		do {
