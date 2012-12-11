@@ -606,16 +606,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 - (void)listen
 {
-	if (sock == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithClass: [self class]
-							    socket: self];
-
-	if (listen(sock, 5) == -1)
-		@throw [OFListenFailedException exceptionWithClass: [self class]
-							    socket: self
-							   backLog: 5];
-
-	listening = YES;
+	[self listenWithBackLog: SOMAXCONN];
 }
 
 - (OFTCPSocket*)accept
