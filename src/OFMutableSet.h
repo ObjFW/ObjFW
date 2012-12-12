@@ -35,17 +35,17 @@
 - (void)removeObject: (id)object;
 
 /*!
- * @brief Removes all objects from the receiver that are in the specified set.
+ * @brief Removes all objects from the receiver which are in the specified set.
  *
  * @param set The set whose objects will be removed from the receiver
  */
 - (void)minusSet: (OFSet*)set;
 
 /*!
- * @brief Removes all objects from the receiver that are not in the specified
+ * @brief Removes all objects from the receiver which are not in the specified
  *	  set.
  *
- * @param set The set to intersect
+ * @param set The set to intersect with
  */
 - (void)intersectSet: (OFSet*)set;
 

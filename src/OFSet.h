@@ -144,6 +144,30 @@ typedef BOOL (^of_set_filter_block_t)(id object);
  */
 - (BOOL)intersectsSet: (OFSet*)set;
 
+/*!
+ * @brief Creates a new set which contains the objects which are in the
+ *	  receiver, but not in the specified set.
+ *
+ * @param set The set whose objects will not be in the new set
+ */
+- (OFSet*)setBySubtractingSet: (OFSet*)set;
+
+/*!
+ * @brief Creates a new set by creating the intersection of the receiver and
+ *	  the specified set.
+ *
+ * @param set The set to intersect with
+ */
+- (OFSet*)setByIntersectingWithSet: (OFString*)set;
+
+/*!
+ * @brief Creates a new set by creating the union of the receiver and the
+ *	  specified set.
+ *
+ * @param set The set to create the union with
+ */
+- (OFSet*)setByAddingSet: (OFSet*)set;
+
 #ifdef OF_HAVE_BLOCKS
 /*!
  * @brief Executes a block for each object in the set.

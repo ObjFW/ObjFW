@@ -392,6 +392,42 @@ static struct {
 	return [element autorelease];
 }
 
+- (OFSet*)setBySubtractingSet: (OFSet*)set
+{
+	OFMutableSet *new;
+
+	new = [[self mutableCopy] autorelease];
+	[new minusSet: set];
+
+	[new makeImmutable];
+
+	return new;
+}
+
+- (OFSet*)setByIntersectingWithSet: (OFSet*)set
+{
+	OFMutableSet *new;
+
+	new = [[self mutableCopy] autorelease];
+	[new intersectSet: set];
+
+	[new makeImmutable];
+
+	return new;
+}
+
+- (OFSet*)setByAddingSet: (OFSet*)set
+{
+	OFMutableSet *new;
+
+	new = [[self mutableCopy] autorelease];
+	[new unionSet: set];
+
+	[new makeImmutable];
+
+	return new;
+}
+
 #if defined(OF_HAVE_BLOCKS) && defined(OF_HAVE_FAST_ENUMERATION)
 - (void)enumerateObjectsUsingBlock: (of_set_enumeration_block_t)block
 {
