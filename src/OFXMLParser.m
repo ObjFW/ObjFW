@@ -62,7 +62,7 @@ cache_append(OFDataArray *cache, const char *string,
 
 static OFString*
 transform_string(OFDataArray *cache, size_t cut, BOOL unescape,
-    OFObject <OFStringXMLUnescapingDelegate> *delegate)
+    id <OFStringXMLUnescapingDelegate> delegate)
 {
 	char *cArray;
 	size_t i, length;

@@ -195,7 +195,7 @@ extern size_t of_utf16_string_length(const uint16_t*);
 				 length: (size_t)length;
 
 /*!
- * @brief Creates a new OFString from a UTF-16 encoded string.
+ * @brief Creates a new OFString from a big endian UTF-16 encoded string.
  *
  * @param string The UTF-16 string
  * @return A new autoreleased OFString
@@ -214,8 +214,8 @@ extern size_t of_utf16_string_length(const uint16_t*);
 			    byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
- * @brief Creates a new OFString from a UTF-16 encoded string with the specified
- *	  length.
+ * @brief Creates a new OFString from a big endian UTF-16 encoded string with
+ *	  the specified length.
  *
  * @param string The UTF-16 string
  * @param length The length of the unicode string

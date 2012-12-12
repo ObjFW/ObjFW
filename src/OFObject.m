@@ -87,9 +87,9 @@ struct pre_mem {
 	id owner;
 };
 
-#define PRE_IVAR_ALIGN ((sizeof(struct pre_ivar) + \
+#define PRE_IVARS_ALIGN ((sizeof(struct pre_ivar) + \
 	(__BIGGEST_ALIGNMENT__ - 1)) & ~(__BIGGEST_ALIGNMENT__ - 1))
-#define PRE_IVAR ((struct pre_ivar*)(void*)((char*)self - PRE_IVAR_ALIGN))
+#define PRE_IVARS ((struct pre_ivar*)(void*)((char*)self - PRE_IVARS_ALIGN))
 
 #define PRE_MEM_ALIGN ((sizeof(struct pre_mem) + \
 	(__BIGGEST_ALIGNMENT__ - 1)) & ~(__BIGGEST_ALIGNMENT__ - 1))
@@ -192,7 +192,7 @@ of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
 		extraAlignment = ((instanceSize + extraAlignment - 1) &
 		    ~(extraAlignment - 1)) - extraAlignment;
 
-	instance = malloc(PRE_IVAR_ALIGN + instanceSize +
+	instance = malloc(PRE_IVARS_ALIGN + instanceSize +
 	    extraAlignment + extraSize);
 
 	if OF_UNLIKELY (instance == nil) {
@@ -213,12 +213,12 @@ of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
 	}
 #endif
 
-	instance = (OFObject*)((char*)instance + PRE_IVAR_ALIGN);
+	instance = (OFObject*)((char*)instance + PRE_IVARS_ALIGN);
 
 	memset(instance, 0, instanceSize);
 
 	if (!objc_constructInstance(class, instance)) {
-		free((char*)instance - PRE_IVAR_ALIGN);
+		free((char*)instance - PRE_IVARS_ALIGN);
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: class];
 	}
@@ -872,7 +872,7 @@ void _references_to_categories_of_OFObject(void)
 	void *pointer;
 	struct pre_mem *preMem;
 
-	if OF_UNLIKELY (size > SIZE_MAX - PRE_IVAR_ALIGN)
+	if OF_UNLIKELY (size > SIZE_MAX - PRE_IVARS_ALIGN)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	if OF_UNLIKELY ((pointer = malloc(PRE_MEM_ALIGN + size)) == NULL)
@@ -881,15 +881,15 @@ void _references_to_categories_of_OFObject(void)
 	preMem = pointer;
 
 	preMem->owner = self;
-	preMem->prev = PRE_IVAR->lastMem;
+	preMem->prev = PRE_IVARS->lastMem;
 	preMem->next = NULL;
 
-	if OF_LIKELY (PRE_IVAR->lastMem != NULL)
-		PRE_IVAR->lastMem->next = preMem;
+	if OF_LIKELY (PRE_IVARS->lastMem != NULL)
+		PRE_IVARS->lastMem->next = preMem;
 
-	if OF_UNLIKELY (PRE_IVAR->firstMem == NULL)
-		PRE_IVAR->firstMem = preMem;
-	PRE_IVAR->lastMem = preMem;
+	if OF_UNLIKELY (PRE_IVARS->firstMem == NULL)
+		PRE_IVARS->firstMem = preMem;
+	PRE_IVARS->lastMem = preMem;
 
 	return (char*)pointer + PRE_MEM_ALIGN;
 }
@@ -937,10 +937,10 @@ void _references_to_categories_of_OFObject(void)
 		if OF_LIKELY (preMem->next != NULL)
 			preMem->next->prev = preMem;
 
-		if OF_UNLIKELY (PRE_IVAR->firstMem == PRE_MEM(pointer))
-			PRE_IVAR->firstMem = preMem;
-		if OF_UNLIKELY (PRE_IVAR->lastMem == PRE_MEM(pointer))
-			PRE_IVAR->lastMem = preMem;
+		if OF_UNLIKELY (PRE_IVARS->firstMem == PRE_MEM(pointer))
+			PRE_IVARS->firstMem = preMem;
+		if OF_UNLIKELY (PRE_IVARS->lastMem == PRE_MEM(pointer))
+			PRE_IVARS->lastMem = preMem;
 	}
 
 	return (char*)new + PRE_MEM_ALIGN;
@@ -981,10 +981,10 @@ void _references_to_categories_of_OFObject(void)
 	if OF_LIKELY (PRE_MEM(pointer)->next != NULL)
 		PRE_MEM(pointer)->next->prev = PRE_MEM(pointer)->prev;
 
-	if OF_UNLIKELY (PRE_IVAR->firstMem == PRE_MEM(pointer))
-		PRE_IVAR->firstMem = PRE_MEM(pointer)->next;
-	if OF_UNLIKELY (PRE_IVAR->lastMem == PRE_MEM(pointer))
-		PRE_IVAR->lastMem = PRE_MEM(pointer)->prev;
+	if OF_UNLIKELY (PRE_IVARS->firstMem == PRE_MEM(pointer))
+		PRE_IVARS->firstMem = PRE_MEM(pointer)->next;
+	if OF_UNLIKELY (PRE_IVARS->lastMem == PRE_MEM(pointer))
+		PRE_IVARS->lastMem = PRE_MEM(pointer)->prev;
 
 	/* To detect double-free */
 	PRE_MEM(pointer)->owner = nil;
@@ -1000,13 +1000,13 @@ void _references_to_categories_of_OFObject(void)
 - retain
 {
 #if defined(OF_ATOMIC_OPS)
-	of_atomic_inc_32(&PRE_IVAR->retainCount);
+	of_atomic_inc_32(&PRE_IVARS->retainCount);
 #elif defined(OF_THREADS)
-	OF_ENSURE(of_spinlock_lock(&PRE_IVAR->retainCountSpinlock));
-	PRE_IVAR->retainCount++;
-	OF_ENSURE(of_spinlock_unlock(&PRE_IVAR->retainCountSspinlock));
+	OF_ENSURE(of_spinlock_lock(&PRE_IVARS->retainCountSpinlock));
+	PRE_IVARS->retainCount++;
+	OF_ENSURE(of_spinlock_unlock(&PRE_IVARS->retainCountSspinlock));
 #else
-	PRE_IVAR->retainCount++;
+	PRE_IVARS->retainCount++;
 #endif
 
 	return self;
@@ -1014,26 +1014,26 @@ void _references_to_categories_of_OFObject(void)
 
 - (unsigned int)retainCount
 {
-	assert(PRE_IVAR->retainCount >= 0);
-	return PRE_IVAR->retainCount;
+	assert(PRE_IVARS->retainCount >= 0);
+	return PRE_IVARS->retainCount;
 }
 
 - (void)release
 {
 #if defined(OF_ATOMIC_OPS)
-	if (of_atomic_dec_32(&PRE_IVAR->retainCount) <= 0)
+	if (of_atomic_dec_32(&PRE_IVARS->retainCount) <= 0)
 		[self dealloc];
 #elif defined(OF_THREADS)
 	size_t c;
 
-	OF_ENSURE(of_spinlock_lock(&PRE_IVAR->retainCountSpinlock));
-	c = --PRE_IVAR->retainCount;
-	OF_ENSURE(of_spinlock_unlock(&PRE_IVAR->retainCountSpinlock));
+	OF_ENSURE(of_spinlock_lock(&PRE_IVARS->retainCountSpinlock));
+	c = --PRE_IVARS->retainCount;
+	OF_ENSURE(of_spinlock_unlock(&PRE_IVARS->retainCountSpinlock));
 
 	if (c == 0)
 		[self dealloc];
 #else
-	if (--PRE_IVAR->retainCount == 0)
+	if (--PRE_IVARS->retainCount == 0)
 		[self dealloc];
 #endif
 }
@@ -1059,7 +1059,7 @@ void _references_to_categories_of_OFObject(void)
 
 	objc_destructInstance(self);
 
-	iter = PRE_IVAR->firstMem;
+	iter = PRE_IVARS->firstMem;
 	while (iter != NULL) {
 		struct pre_mem *next = iter->next;
 
@@ -1075,7 +1075,7 @@ void _references_to_categories_of_OFObject(void)
 		iter = next;
 	}
 
-	free((char*)self - PRE_IVAR_ALIGN);
+	free((char*)self - PRE_IVARS_ALIGN);
 }
 
 /* Required to use properties with the Apple runtime */
