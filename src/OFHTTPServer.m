@@ -290,11 +290,12 @@ normalized_key(OFString *key)
 		return [self sendErrorAndClose: 501];
 
 	@try {
-		path = [[line substringWithRange:
-		    of_range(pos + 1, [line length] - pos - 10)] retain];
+		path = [line substringWithRange:
+		    of_range(pos + 1, [line length] - pos - 10)];
 	} @catch (OFOutOfRangeException *e) {
 		return [self sendErrorAndClose: 400];
 	}
+	path = [[path stringByDeletingEnclosingWhitespaces] retain];
 
 	if (![path hasPrefix: @"/"])
 		return [self sendErrorAndClose: 400];

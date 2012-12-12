@@ -171,6 +171,9 @@ resolve_relative_path(OFString *path)
 
 			port = [portString decimalValue];
 
+			if (port == 0)
+				port = 80;
+
 			objc_autoreleasePoolPop(pool);
 		} else {
 			host = [[OFString alloc]
