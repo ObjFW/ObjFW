@@ -34,12 +34,6 @@
 						    selector: _cmd];
 }
 
-- (void)addMemoryToPool: (void*)ptr
-{
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
-}
-
 - (void*)allocMemoryWithSize: (size_t)size
 {
 	@throw [OFNotImplementedException exceptionWithClass: [self class]
