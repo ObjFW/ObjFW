@@ -237,3 +237,11 @@ typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*,
  */
 - (BOOL)isListening;
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern Class of_tls_socket_class;
+#ifdef __cplusplus
+}
+#endif

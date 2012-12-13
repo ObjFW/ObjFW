@@ -74,6 +74,8 @@ void _references_to_categories_of_OFTCPSocket(void)
 	_OFTCPSocket_SOCKS5_reference = 1;
 }
 
+Class of_tls_socket_class = Nil;
+
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
 

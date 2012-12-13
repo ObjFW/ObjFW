@@ -190,5 +190,3 @@
 
 @interface OFObject (OFHTTPClientDelegate) <OFHTTPClientDelegate>
 @end
-
-extern Class of_http_client_tls_socket_class;

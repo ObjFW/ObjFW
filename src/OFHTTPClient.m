@@ -42,8 +42,6 @@
 #import "autorelease.h"
 #import "macros.h"
 
-Class of_http_client_tls_socket_class = Nil;
-
 static OF_INLINE void
 normalize_key(char *str_)
 {
@@ -146,13 +144,12 @@ normalize_key(char *str_)
 	if ([scheme isEqual: @"http"])
 		sock = [OFTCPSocket socket];
 	else {
-		if (of_http_client_tls_socket_class == Nil)
+		if (of_tls_socket_class == Nil)
 			@throw [OFUnsupportedProtocolException
 			    exceptionWithClass: [self class]
 					   URL: URL];
 
-		sock = [[[of_http_client_tls_socket_class alloc] init]
-		    autorelease];
+		sock = [[[of_tls_socket_class alloc] init] autorelease];
 	}
 
 	[delegate client: self
