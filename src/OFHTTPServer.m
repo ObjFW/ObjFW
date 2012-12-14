@@ -182,7 +182,7 @@ normalized_key(OFString *key)
 	uint16_t port;
 	OFMutableDictionary *headers;
 	size_t contentLength;
-	OFDataArray *postData;
+	OFDataArray *POSTData;
 }
 
 - initWithSocket: (OFTCPSocket*)socket
@@ -219,7 +219,7 @@ normalized_key(OFString *key)
 	[host release];
 	[path release];
 	[headers release];
-	[postData release];
+	[POSTData release];
 
 	[super dealloc];
 }
@@ -332,7 +332,7 @@ normalized_key(OFString *key)
 			}
 
 			buffer = [self allocMemoryWithSize: BUFFER_SIZE];
-			postData = [[OFDataArray alloc] init];
+			POSTData = [[OFDataArray alloc] init];
 
 			[sock asyncReadIntoBuffer: buffer
 					   length: BUFFER_SIZE
@@ -400,10 +400,10 @@ normalized_key(OFString *key)
 	if ([sock_ isAtEndOfStream] || exception != nil)
 		return NO;
 
-	[postData addItemsFromCArray: buffer
+	[POSTData addItemsFromCArray: buffer
 			       count: length];
 
-	if ([postData count] >= contentLength) {
+	if ([POSTData count] >= contentLength) {
 		@try {
 			[self sendReply];
 		} @catch (OFWriteFailedException *e) {
@@ -461,7 +461,7 @@ normalized_key(OFString *key)
 	request = [OFHTTPRequest requestWithURL: URL];
 	[request setRequestType: requestType];
 	[request setHeaders: headers];
-	[request setPostData: postData];
+	[request setPOSTData: POSTData];
 
 	reply = [[server delegate] server: server
 			didReceiveRequest: request];

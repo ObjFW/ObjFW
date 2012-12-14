@@ -62,7 +62,7 @@
 {
 	[URL release];
 	[headers release];
-	[postData release];
+	[POSTData release];
 	[MIMEType release];
 
 	[super dealloc];
@@ -98,14 +98,14 @@
 	OF_GETTER(headers, YES)
 }
 
-- (void)setPostData: (OFDataArray*)postData_
+- (void)setPOSTData: (OFDataArray*)POSTData_
 {
-	OF_SETTER(postData, postData_, YES, 0)
+	OF_SETTER(POSTData, POSTData_, YES, 0)
 }
 
-- (OFDataArray*)postData
+- (OFDataArray*)POSTData
 {
-	OF_GETTER(postData, YES)
+	OF_GETTER(POSTData, YES)
 }
 
 - (void)setMIMEType: (OFString*)MIMEType_
@@ -136,16 +136,16 @@
 	self = [super init];
 
 	statusCode = status;
-	data = [data_ retain];
 	headers = [headers_ copy];
+	data = [data_ retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[data release];
 	[headers release];
+	[data release];
 
 	[super dealloc];
 }

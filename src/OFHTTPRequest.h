@@ -35,7 +35,7 @@ typedef enum of_http_request_type_t {
 	OFURL *URL;
 	of_http_request_type_t requestType;
 	OFDictionary *headers;
-	OFDataArray *postData;
+	OFDataArray *POSTData;
 	OFString *MIMEType;
 }
 
@@ -43,7 +43,7 @@ typedef enum of_http_request_type_t {
 @property (copy) OFURL *URL;
 @property of_http_request_type_t requestType;
 @property (copy) OFDictionary *headers;
-@property (retain) OFDataArray *postData;
+@property (retain) OFDataArray *POSTData;
 @property (copy) OFString *MIMEType;
 #endif
 
@@ -115,16 +115,16 @@ typedef enum of_http_request_type_t {
 /*!
  * @brief Sets the POST data of the HTTP request.
  *
- * @param postData The POST data of the HTTP request
+ * @param POSTData The POST data of the HTTP request
  */
-- (void)setPostData: (OFDataArray*)postData;
+- (void)setPOSTData: (OFDataArray*)postData;
 
 /*!
  * @brief Returns the POST data of the HTTP request.
  *
  * @return The POST data of the HTTP request
  */
-- (OFDataArray*)postData;
+- (OFDataArray*)POSTData;
 
 /*!
  * @brief Sets the MIME type for the POST data.

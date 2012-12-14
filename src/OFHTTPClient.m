@@ -121,7 +121,7 @@ normalize_key(char *str_)
 	OFString *scheme = [URL scheme];
 	of_http_request_type_t requestType = [request requestType];
 	OFDictionary *headers = [request headers];
-	OFDataArray *postData = [request postData];
+	OFDataArray *POSTData = [request POSTData];
 	OFTCPSocket *sock;
 	OFHTTPRequestResult *result;
 	OFString *line, *path, *version;
@@ -209,7 +209,7 @@ normalize_key(char *str_)
 
 		[sock writeFormat: @"Content-Type: %@\r\n", contentType];
 		[sock writeFormat: @"Content-Length: %d\r\n",
-		    [postData count] * [postData itemSize]];
+		    [POSTData count] * [POSTData itemSize]];
 	}
 
 	[sock writeString: @"\r\n"];
@@ -219,8 +219,8 @@ normalize_key(char *str_)
 	[sock setWriteBufferEnabled: NO];
 
 	if (requestType == OF_HTTP_REQUEST_TYPE_POST)
-		[sock writeBuffer: [postData cArray]
-			   length: [postData count] * [postData itemSize]];
+		[sock writeBuffer: [POSTData cArray]
+			   length: [POSTData count] * [POSTData itemSize]];
 
 	@try {
 		line = [sock readLine];
@@ -316,13 +316,13 @@ normalize_key(char *str_)
 			newRequest = [OFHTTPRequest requestWithURL: newURL];
 			[newRequest setRequestType: requestType];
 			[newRequest setHeaders: headers];
-			[newRequest setPostData: postData];
+			[newRequest setPOSTData: POSTData];
 			[newRequest setMIMEType: [request MIMEType]];
 
 			if (status == 303) {
 				[newRequest
 				    setRequestType: OF_HTTP_REQUEST_TYPE_GET];
-				[newRequest setPostData: nil];
+				[newRequest setPOSTData: nil];
 				[newRequest setMIMEType: nil];
 			}
 
