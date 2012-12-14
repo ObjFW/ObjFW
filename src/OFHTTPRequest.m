@@ -22,6 +22,7 @@
 #import "OFDictionary.h"
 #import "OFDataArray.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 @implementation OFHTTPRequest
@@ -117,6 +118,46 @@
 {
 	OF_GETTER(MIMEType, YES)
 }
+
+- (OFString*)description
+{
+	void *pool = objc_autoreleasePoolPush();
+	const char *requestTypeStr;
+	OFString *indentedHeaders, *indentedPOSTData, *ret;
+
+	switch (requestType) {
+	case OF_HTTP_REQUEST_TYPE_GET:
+		requestTypeStr = "GET";
+		break;
+	case OF_HTTP_REQUEST_TYPE_POST:
+		requestTypeStr = "POST";
+		break;
+	case OF_HTTP_REQUEST_TYPE_HEAD:
+		requestTypeStr = "HEAD";
+		break;
+	}
+
+	indentedHeaders = [[headers description]
+	    stringByReplacingOccurrencesOfString: @"\n"
+				      withString: @"\n\t"];
+	indentedPOSTData = [[POSTData description]
+	    stringByReplacingOccurrencesOfString: @"\n"
+				      withString: @"\n\t"];
+
+	ret = [[OFString alloc] initWithFormat:
+	    @"<%@:\n\tURL = %@\n"
+	    @"\tRequest type = %s\n"
+	    @"\tHeaders = %@\n"
+	    @"\tPOST data = %@\n"
+	    @"\tPOST data MIME type = %@\n"
+	    @">",
+	    [self class], URL, requestTypeStr, indentedHeaders,
+	    indentedPOSTData, MIMEType];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
+}
 @end
 
 @implementation OFHTTPRequestResult
@@ -163,5 +204,30 @@
 - (OFDataArray*)data
 {
 	OF_GETTER(data, YES)
+}
+
+- (OFString*)description
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *indentedHeaders, *indentedData, *ret;
+
+	indentedHeaders = [[headers description]
+	    stringByReplacingOccurrencesOfString: @"\n"
+				      withString: @"\n\t"];
+	indentedData = [[data description]
+	    stringByReplacingOccurrencesOfString: @"\n"
+				      withString: @"\n\t"];
+
+	ret = [[OFString alloc] initWithFormat:
+	    @"<%@:\n"
+	    @"\tStatus code = %d\n"
+	    @"\tHeaders = %@\n"
+	    @"\tData = %@\n"
+	    @">",
+	    [self class], statusCode, indentedHeaders, indentedData];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
 }
 @end
