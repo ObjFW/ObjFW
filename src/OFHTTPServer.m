@@ -367,6 +367,7 @@ normalized_key(OFString *key)
 			  options: OF_STRING_SEARCH_BACKWARDS].location;
 
 		if (pos != OF_NOT_FOUND) {
+			[host release];
 			host = [[value substringWithRange:
 			    of_range(0, pos)] retain];
 
@@ -384,6 +385,7 @@ normalized_key(OFString *key)
 				return [self sendErrorAndClose: 400];
 			}
 		} else {
+			[host release];
 			host = [value retain];
 			port = 80;
 		}
@@ -448,7 +450,7 @@ normalized_key(OFString *key)
 			return;
 		}
 
-		host = [server host];
+		host = [[server host] retain];
 		port = [server port];
 	}
 
