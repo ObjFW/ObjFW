@@ -34,7 +34,7 @@ int _OFDataArray_Hashing_reference;
 	char cString[OF_MD5_DIGEST_SIZE * 2];
 	size_t i;
 
-	[hash updateWithBuffer: data
+	[hash updateWithBuffer: items
 			length: count * itemSize];
 	digest = [hash digest];
 
@@ -52,7 +52,7 @@ int _OFDataArray_Hashing_reference;
 
 	return [OFString stringWithCString: cString
 				  encoding: OF_STRING_ENCODING_ASCII
-				    length: 32];
+				    length: OF_MD5_DIGEST_SIZE * 2];
 }
 
 - (OFString*)SHA1Hash
@@ -63,7 +63,7 @@ int _OFDataArray_Hashing_reference;
 	char cString[OF_SHA1_DIGEST_SIZE * 2];
 	size_t i;
 
-	[hash updateWithBuffer: data
+	[hash updateWithBuffer: items
 			length: count * itemSize];
 	digest = [hash digest];
 
@@ -81,6 +81,6 @@ int _OFDataArray_Hashing_reference;
 
 	return [OFString stringWithCString: cString
 				  encoding: OF_STRING_ENCODING_ASCII
-				    length: 40];
+				    length: OF_SHA1_DIGEST_SIZE * 2];
 }
 @end

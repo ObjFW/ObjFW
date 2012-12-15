@@ -500,8 +500,8 @@
 		[self readIntoBuffer: tmp
 			 exactLength: count * itemSize];
 
-		[dataArray addItemsFromCArray: tmp
-					count: count];
+		[dataArray addItems: tmp
+			      count: count];
 	} @finally {
 		[self freeMemory: tmp];
 	}
@@ -523,8 +523,8 @@
 
 			length = [self readIntoBuffer: buffer
 					       length: of_pagesize];
-			[dataArray addItemsFromCArray: buffer
-						count: length];
+			[dataArray addItems: buffer
+				      count: length];
 		}
 	} @finally {
 		[self freeMemory: buffer];
@@ -1357,10 +1357,10 @@
 {
 	size_t length = [dataArray count] * [dataArray itemSize];
 
-	[self writeBuffer: [dataArray cArray]
+	[self writeBuffer: [dataArray items]
 		   length: length];
 
-	return [dataArray count] * [dataArray itemSize];
+	return length;
 }
 
 - (size_t)writeString: (OFString*)string

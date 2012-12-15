@@ -293,14 +293,14 @@ enum {
 	[mutex lock];
 	@try {
 		OFStream **queueObjects = [queue objects];
-		int *queueInfoCArray = [queueInfo cArray];
-		int *queueFDsCArray = [queueFDs cArray];
+		int *queueInfoItems = [queueInfo items];
+		int *queueFDsItems = [queueFDs items];
 		size_t i, count = [queue count];
 
 		for (i = 0; i < count; i++) {
 			OFStream *stream = queueObjects[i];
-			int action = queueInfoCArray[i];
-			int fd = queueFDsCArray[i];
+			int action = queueInfoItems[i];
+			int fd = queueFDsItems[i];
 
 			if ((action & QUEUE_ACTION) == QUEUE_ADD) {
 				if (fd > maxFD) {

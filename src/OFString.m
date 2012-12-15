@@ -783,7 +783,7 @@ static struct {
 	if (encoding == OF_STRING_ENCODING_AUTODETECT)
 		encoding = OF_STRING_ENCODING_UTF_8;
 
-	self = [[c alloc] initWithCString: (char*)[[result data] cArray]
+	self = [[c alloc] initWithCString: (char*)[[result data] items]
 				 encoding: encoding
 				   length: [[result data] count]];
 

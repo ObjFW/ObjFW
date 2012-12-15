@@ -31,13 +31,13 @@
  */
 @interface OFDataArray: OFObject <OFCopying, OFComparing, OFSerialization>
 {
-	uint8_t *data;
+	uint8_t *items;
 	size_t count;
 	size_t itemSize;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, getter=cArray) void *data;
+@property (readonly) void *items;
 @property (readonly) size_t count;
 @property (readonly) size_t itemSize;
 #endif
@@ -153,7 +153,7 @@
 - (size_t)itemSize;
 
 /*!
- * @brief Returns all elements of the OFDataArray as a C array.
+ * @brief Returns all items of the OFDataArray as a C array.
  *
  * @warning The pointer is only valid until the OFDataArray is changed!
  *
@@ -162,7 +162,7 @@
  *
  * @return All elements of the OFDataArray as a C array
  */
-- (void*)cArray OF_RETURNS_INNER_POINTER;
+- (void*)items OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Returns a specific item of the OFDataArray.
@@ -206,21 +206,21 @@
  * @brief Adds items from a C array to the OFDataArray.
  *
  * @param count The number of items to add
- * @param cArray A C array containing the items to add
+ * @param items A C array containing the items to add
  */
-- (void)addItemsFromCArray: (const void*)cArray
-		     count: (size_t)count;
+- (void)addItems: (const void*)array
+	   count: (size_t)count;
 
 /*!
  * @brief Adds items from a C array to the OFDataArray at the specified index.
  *
- * @param cArray A C array containing the items to add
+ * @param items A C array containing the items to add
  * @param index The index where the items should be added
  * @param count The number of items to add
  */
-- (void)insertItemsFromCArray: (const void*)cArray
-		      atIndex: (size_t)index
-			count: (size_t)count;
+- (void)insertItems: (const void*)items
+	    atIndex: (size_t)index
+	      count: (size_t)count;
 
 /*!
  * @brief Removes the item at the specified index.

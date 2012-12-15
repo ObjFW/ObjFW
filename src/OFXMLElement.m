@@ -640,8 +640,8 @@ static Class CDATAClass = Nil;
 				    XMLStringWithIndentation: ind
 						       level: level + 1];
 
-			[tmp addItemsFromCArray: [child UTF8String]
-					  count: [child UTF8StringLength]];
+			[tmp addItems: [child UTF8String]
+				count: [child UTF8StringLength]];
 		}
 
 		if (indent)
@@ -659,7 +659,7 @@ static Class CDATAClass = Nil;
 
 		cString[i++] = '>';
 
-		memcpy(cString + i, [tmp cArray], [tmp count]);
+		memcpy(cString + i, [tmp items], [tmp count]);
 		i += [tmp count];
 
 		if (indent) {

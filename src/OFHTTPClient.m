@@ -219,7 +219,7 @@ normalize_key(char *str_)
 	[sock setWriteBufferEnabled: NO];
 
 	if (requestType == OF_HTTP_REQUEST_TYPE_POST)
-		[sock writeBuffer: [POSTData cArray]
+		[sock writeBuffer: [POSTData items]
 			   length: [POSTData count] * [POSTData itemSize]];
 
 	@try {
@@ -407,8 +407,8 @@ normalize_key(char *str_)
 					pool2 = objc_autoreleasePoolPush();
 
 					bytesReceived += length;
-					[data addItemsFromCArray: buffer
-							   count: length];
+					[data addItems: buffer
+						 count: length];
 
 					toRead -= length;
 				}
@@ -445,8 +445,8 @@ normalize_key(char *str_)
 				objc_autoreleasePoolPop(pool2);
 
 				bytesReceived += length;
-				[data addItemsFromCArray: buffer
-						   count: length];
+				[data addItems: buffer
+					 count: length];
 
 				if (contentLengthHeader != nil &&
 				    bytesReceived >= contentLength)

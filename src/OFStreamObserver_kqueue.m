@@ -124,7 +124,7 @@
 
 	objc_autoreleasePoolPop(pool);
 
-	events = kevent(kernelQueue, [changeList cArray],
+	events = kevent(kernelQueue, [changeList items],
 	    (int)[changeList count], eventList, EVENTLIST_SIZE,
 	    (timeout == -1 ? NULL : &timespec));
 

@@ -65,9 +65,9 @@
 	id *objects = [array_ objects];
 	size_t i, count = [array_ count];
 
-	[array insertItemsFromCArray: objects
-			     atIndex: index
-			       count: count];
+	[array insertItems: objects
+		   atIndex: index
+		     count: count];
 
 	for (i = 0; i < count; i++)
 		[objects[i] retain];
@@ -85,7 +85,7 @@
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]];
 
-	objects = [array cArray];
+	objects = [array items];
 	count = [array count];
 
 	for (i = 0; i < count; i++) {
@@ -109,7 +109,7 @@
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]];
 
-	objects = [array cArray];
+	objects = [array items];
 
 	if (index >= [array count])
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
@@ -129,7 +129,7 @@
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]];
 
-	objects = [array cArray];
+	objects = [array items];
 	count = [array count];
 
 	for (i = 0; i < count; i++) {
@@ -152,7 +152,7 @@
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]];
 
-	objects = [array cArray];
+	objects = [array items];
 	count = [array count];
 
 	for (i = 0; i < count; i++) {
@@ -178,7 +178,7 @@
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]];
 
-	objects = [array cArray];
+	objects = [array items];
 	count = [array count];
 
 	for (i = 0; i < count; i++) {
@@ -204,7 +204,7 @@
 
 - (void)removeAllObjects
 {
-	id *objects = [array cArray];
+	id *objects = [array items];
 	size_t i, count = [array count];
 
 	for (i = 0; i < count; i++)
@@ -215,7 +215,7 @@
 
 - (void)removeObjectsInRange: (of_range_t)range
 {
-	id *objects = [array cArray], *copy;
+	id *objects = [array items], *copy;
 	size_t i, count = [array count];
 
 	if (range.length > SIZE_MAX - range.location ||
@@ -255,7 +255,7 @@
 - (void)exchangeObjectAtIndex: (size_t)index1
 	    withObjectAtIndex: (size_t)index2
 {
-	id *objects = [array cArray];
+	id *objects = [array items];
 	size_t count = [array count];
 	id tmp;
 
@@ -269,7 +269,7 @@
 
 - (void)reverse
 {
-	id *objects = [array cArray];
+	id *objects = [array items];
 	size_t i, j, count = [array count];
 
 	if (count == 0 || count == 1)
@@ -310,7 +310,7 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
-	id *objects = [array cArray];
+	id *objects = [array items];
 	size_t i, count = [array count];
 	BOOL stop = NO;
 	unsigned long mutations_ = mutations;
@@ -327,7 +327,7 @@
 
 - (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block
 {
-	id *objects = [array cArray];
+	id *objects = [array items];
 	size_t i, count = [array count];
 	BOOL stop = NO;
 	unsigned long mutations_ = mutations;

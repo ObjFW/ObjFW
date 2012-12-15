@@ -111,8 +111,8 @@
 		for (i = 0; i < count; i++)
 			[objects[i] retain];
 
-		[array addItemsFromCArray: objects
-				    count: count];
+		[array addItems: objects
+			  count: count];
 	} @catch (id e) {
 		for (i = 0; i < count; i++)
 			[objects[i] release];
@@ -148,8 +148,8 @@
 			@throw [OFInvalidArgumentException
 			    exceptionWithClass: [self class]];
 
-		[array addItemsFromCArray: objects
-				    count: count];
+		[array addItems: objects
+			  count: count];
 	} @catch (id e) {
 		size_t i;
 
@@ -209,7 +209,7 @@
 
 - (id*)objects
 {
-	return [array cArray];
+	return [array items];
 }
 
 - (id)objectAtIndex: (size_t)index
@@ -225,7 +225,7 @@
 - (void)getObjects: (id*)buffer
 	   inRange: (of_range_t)range
 {
-	id *objects = [array cArray];
+	id *objects = [array items];
 	size_t i, count = [array count];
 
 	if (range.length > SIZE_MAX - range.location ||
@@ -244,7 +244,7 @@
 	if (object == nil)
 		return OF_NOT_FOUND;
 
-	objects = [array cArray];
+	objects = [array items];
 	count = [array count];
 
 	for (i = 0; i < count; i++)
@@ -262,7 +262,7 @@
 	if (object == nil)
 		return OF_NOT_FOUND;
 
-	objects = [array cArray];
+	objects = [array items];
 	count = [array count];
 
 	for (i = 0; i < count; i++)
@@ -282,7 +282,7 @@
 
 	if ([self isKindOfClass: [OFMutableArray class]])
 		return [OFArray
-		    arrayWithObjects: (id*)[array cArray] + range.location
+		    arrayWithObjects: (id*)[array items] + range.location
 			       count: range.length];
 
 	return [OFArray_adjacentSubarray arrayWithArray: self
@@ -307,7 +307,7 @@
 	if (count != [otherArray count])
 		return NO;
 
-	objects = [array cArray];
+	objects = [array items];
 	otherObjects = [otherArray objects];
 
 	for (i = 0; i < count; i++)
@@ -319,7 +319,7 @@
 
 - (uint32_t)hash
 {
-	id *objects = [array cArray];
+	id *objects = [array items];
 	size_t i, count = [array count];
 	uint32_t hash;
 
@@ -336,7 +336,7 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
-	id *objects = [array cArray];
+	id *objects = [array items];
 	size_t i, count = [array count];
 	BOOL stop = NO;
 
@@ -347,7 +347,7 @@
 
 - (void)dealloc
 {
-	id *objects = [array cArray];
+	id *objects = [array items];
 	size_t i, count = [array count];
 
 	for (i = 0; i < count; i++)

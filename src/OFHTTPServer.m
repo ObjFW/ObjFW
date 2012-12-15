@@ -400,8 +400,8 @@ normalized_key(OFString *key)
 	if ([sock_ isAtEndOfStream] || exception != nil)
 		return NO;
 
-	[POSTData addItemsFromCArray: buffer
-			       count: length];
+	[POSTData addItems: buffer
+		     count: length];
 
 	if ([POSTData count] >= contentLength) {
 		@try {
@@ -501,7 +501,7 @@ normalized_key(OFString *key)
 	[sock writeString: @"\r\n"];
 
 	if (requestType != OF_HTTP_REQUEST_TYPE_HEAD)
-		[sock writeBuffer: [replyData cArray]
+		[sock writeBuffer: [replyData items]
 			   length: [replyData count] * [replyData itemSize]];
 }
 @end

@@ -61,8 +61,8 @@ const char *str = "Hello!";
 	    ? [OFBigDataArray class]
 	    : [OFDataArray class]);
 	TEST(@"-[isEqual:]", (array[1] = [other dataArrayWithItemSize: 4096]) &&
-	    R([array[1] addItemsFromCArray: [array[0] cArray]
-				     count: [array[0] count]]) &&
+	    R([array[1] addItems: [array[0] items]
+			   count: [array[0] count]]) &&
 	    [array[1] isEqual: array[0]] &&
 	    R([array[1] removeLastItem]) && ![array[0] isEqual: array[1]])
 
@@ -83,22 +83,22 @@ const char *str = "Hello!";
 	TEST(@"-[hash]", [array[0] hash] == 0x634A529F)
 
 	array[0] = [class dataArray];
-	[array[0] addItemsFromCArray: "abcdef"
-			       count: 6];
+	[array[0] addItems: "abcdef"
+		     count: 6];
 
 	TEST(@"-[removeLastItem]", R([array[0] removeLastItem]) &&
 	    [array[0] count] == 5 &&
-	    !memcmp([array[0] cArray], "abcde", 5))
+	    !memcmp([array[0] items], "abcde", 5))
 
 	TEST(@"-[removeItemsInRange:]",
 	    R([array[0] removeItemsInRange: of_range(1, 2)]) &&
-	    [array[0] count] == 3 && !memcmp([array[0] cArray], "ade", 3))
+	    [array[0] count] == 3 && !memcmp([array[0] items], "ade", 3))
 
-	TEST(@"-[insertItemsFromCArray:atIndex:count:]",
-	    R([array[0] insertItemsFromCArray: "bc"
-				      atIndex: 1
-					count: 2]) && [array[0] count] == 5 &&
-	    !memcmp([array[0] cArray], "abcde", 5))
+	TEST(@"-[insertItems:atIndex:count:]",
+	    R([array[0] insertItems: "bc"
+			    atIndex: 1
+			      count: 2]) && [array[0] count] == 5 &&
+	    !memcmp([array[0] items], "abcde", 5))
 
 	TEST(@"-[MD5Hash]", [[array[0] MD5Hash] isEqual: [@"abcde" MD5Hash]])
 
@@ -109,21 +109,20 @@ const char *str = "Hello!";
 
 	TEST(@"+[dataArrayWithBase64EncodedString:]",
 	    !memcmp([[class dataArrayWithBase64EncodedString: @"YWJjZGU="]
-	    cArray], "abcde", 5))
+	    items], "abcde", 5))
 
 	TEST(@"Building strings",
 	    (array[0] = [class dataArray]) &&
-	    R([array[0] addItemsFromCArray: (void*)str
-				     count: 6]) && R([array[0] addItem: ""]) &&
-	    !strcmp([array[0] cArray], str))
+	    R([array[0] addItems: (void*)str
+			   count: 6]) && R([array[0] addItem: ""]) &&
+	    !strcmp([array[0] items], str))
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[itemAtIndex:]",
 	    OFOutOfRangeException, [array[0] itemAtIndex: [array[0] count]])
 
-	EXPECT_EXCEPTION(@"Detect out of range in "
-	    @"-[addItemsFromCArray:count:]",
-	    OFOutOfRangeException, [array[0] addItemsFromCArray: NULL
-							  count: SIZE_MAX])
+	EXPECT_EXCEPTION(@"Detect out of range in -[addItems:count:]",
+	    OFOutOfRangeException, [array[0] addItems: NULL
+						count: SIZE_MAX])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[removeItemsInRange:]",
 	    OFOutOfRangeException,

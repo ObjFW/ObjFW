@@ -47,15 +47,15 @@ cache_append(OFDataArray *cache, const char *string,
     of_string_encoding_t encoding, size_t length)
 {
 	if (OF_LIKELY(encoding == OF_STRING_ENCODING_UTF_8))
-		[cache addItemsFromCArray: string
-				    count: length];
+		[cache addItems: string
+			  count: length];
 	else {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *tmp = [OFString stringWithCString: string
 						   encoding: encoding
 						     length: length];
-		[cache addItemsFromCArray: [tmp UTF8String]
-				    count: [tmp UTF8StringLength]];
+		[cache addItems: [tmp UTF8String]
+			  count: [tmp UTF8StringLength]];
 		objc_autoreleasePoolPop(pool);
 	}
 }
@@ -64,29 +64,29 @@ static OFString*
 transform_string(OFDataArray *cache, size_t cut, BOOL unescape,
     id <OFStringXMLUnescapingDelegate> delegate)
 {
-	char *cArray;
+	char *items;
 	size_t i, length;
 	BOOL hasEntities = NO;
 	OFMutableString *ret;
 
-	cArray = [cache cArray];
+	items = [cache items];
 	length = [cache count] - cut;
 
 	for (i = 0; i < length; i++) {
-		if (cArray[i] == '\r') {
-			if (i + 1 < length && cArray[i + 1] == '\n') {
+		if (items[i] == '\r') {
+			if (i + 1 < length && items[i + 1] == '\n') {
 				[cache removeItemAtIndex: i];
-				cArray = [cache cArray];
+				items = [cache items];
 
 				i--;
 				length--;
 			} else
-				cArray[i] = '\n';
-		} else if (cArray[i] == '&')
+				items[i] = '\n';
+		} else if (items[i] == '&')
 			hasEntities = YES;
 	}
 
-	ret = [OFMutableString stringWithUTF8String: cArray
+	ret = [OFMutableString stringWithUTF8String: items
 					     length: length];
 
 	if (unescape && hasEntities)
@@ -537,7 +537,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	pool = objc_autoreleasePoolPush();
 
-	cacheCString = [cache cArray];
+	cacheCString = [cache items];
 	cacheLength = [cache count];
 	cacheString = [OFString stringWithUTF8String: cacheCString
 					      length: cacheLength];
@@ -620,7 +620,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	pool = objc_autoreleasePoolPush();
 
-	cacheCString = [cache cArray];
+	cacheCString = [cache items];
 	cacheLength = [cache count];
 	cacheString = [OFString stringWithUTF8String: cacheCString
 					      length: cacheLength];
@@ -763,7 +763,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	pool = objc_autoreleasePoolPush();
 
-	cacheString = [OFMutableString stringWithUTF8String: [cache cArray]
+	cacheString = [OFMutableString stringWithUTF8String: [cache items]
 						     length: [cache count]];
 	[cacheString deleteEnclosingWhitespaces];
 	/* Prevent a useless copy later */

@@ -60,13 +60,13 @@
 - (void)OF_addFileDescriptor: (int)fd
 		  withEvents: (short)events
 {
-	struct pollfd *FDsCArray = [FDs cArray];
+	struct pollfd *FDs_ = [FDs items];
 	size_t i, count = [FDs count];
 	BOOL found = NO;
 
 	for (i = 0; i < count; i++) {
-		if (FDsCArray[i].fd == fd) {
-			FDsCArray[i].events |= events;
+		if (FDs_[i].fd == fd) {
+			FDs_[i].events |= events;
 			found = YES;
 			break;
 		}
@@ -81,14 +81,14 @@
 - (void)OF_removeFileDescriptor: (int)fd
 		     withEvents: (short)events
 {
-	struct pollfd *FDsCArray = [FDs cArray];
+	struct pollfd *FDs_ = [FDs items];
 	size_t i, nFDs = [FDs count];
 
 	for (i = 0; i < nFDs; i++) {
-		if (FDsCArray[i].fd == fd) {
-			FDsCArray[i].events &= ~events;
+		if (FDs_[i].fd == fd) {
+			FDs_[i].events &= ~events;
 
-			if ((FDsCArray[i].events & ~POLLERR) == 0)
+			if ((FDs_[i].events & ~POLLERR) == 0)
 				[FDs removeItemAtIndex: i];
 
 			break;
@@ -123,7 +123,7 @@
 - (BOOL)observeWithTimeout: (double)timeout
 {
 	void *pool = objc_autoreleasePoolPush();
-	struct pollfd *FDsCArray;
+	struct pollfd *FDs_;
 	size_t i, nFDs, realEvents = 0;
 
 	[self OF_processQueue];
@@ -135,7 +135,7 @@
 
 	objc_autoreleasePoolPop(pool);
 
-	FDsCArray = [FDs cArray];
+	FDs_ = [FDs items];
 	nFDs = [FDs count];
 
 #ifdef OPEN_MAX
@@ -143,19 +143,19 @@
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 #endif
 
-	if (poll(FDsCArray, (nfds_t)nFDs,
+	if (poll(FDs_, (nfds_t)nFDs,
 	    (int)(timeout != -1 ? timeout * 1000 : -1)) < 1)
 		return NO;
 
 	for (i = 0; i < nFDs; i++) {
 		pool = objc_autoreleasePoolPush();
 
-		if (FDsCArray[i].revents & POLLIN) {
-			if (FDsCArray[i].fd == cancelFD[0]) {
+		if (FDs_[i].revents & POLLIN) {
+			if (FDs_[i].fd == cancelFD[0]) {
 				char buffer;
 
 				OF_ENSURE(read(cancelFD[0], &buffer, 1) > 0);
-				FDsCArray[i].revents = 0;
+				FDs_[i].revents = 0;
 
 				objc_autoreleasePoolPop(pool);
 				continue;
@@ -163,22 +163,22 @@
 
 			realEvents++;
 			[delegate streamIsReadyForReading:
-			    FDToStream[FDsCArray[i].fd]];
+			    FDToStream[FDs_[i].fd]];
 		}
 
-		if (FDsCArray[i].revents & POLLOUT) {
+		if (FDs_[i].revents & POLLOUT) {
 			realEvents++;
 			[delegate streamIsReadyForWriting:
-			    FDToStream[FDsCArray[i].fd]];
+			    FDToStream[FDs_[i].fd]];
 		}
 
-		if (FDsCArray[i].revents & POLLERR) {
+		if (FDs_[i].revents & POLLERR) {
 			realEvents++;
 			[delegate streamDidReceiveException:
-			    FDToStream[FDsCArray[i].fd]];
+			    FDToStream[FDs_[i].fd]];
 		}
 
-		FDsCArray[i].revents = 0;
+		FDs_[i].revents = 0;
 
 		objc_autoreleasePoolPop(pool);
 	}

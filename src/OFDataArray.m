@@ -120,8 +120,8 @@ void _references_to_categories_of_OFDataArray(void)
 
 				length = [file readIntoBuffer: buffer
 						       length: of_pagesize];
-				[self addItemsFromCArray: buffer
-						   count: length];
+				[self addItems: buffer
+					 count: length];
 			}
 
 			[self freeMemory: buffer];
@@ -187,7 +187,7 @@ void _references_to_categories_of_OFDataArray(void)
 
 		count >>= 1;
 		cString = [string UTF8String];
-		data = [self allocMemoryWithSize: count];
+		items = [self allocMemoryWithSize: count];
 
 		for (i = 0; i < count; i++) {
 			uint8_t c1 = cString[2 * i];
@@ -214,7 +214,7 @@ void _references_to_categories_of_OFDataArray(void)
 				@throw [OFInvalidFormatException
 				    exceptionWithClass: [self class]];
 
-			data[i] = byte;
+			items[i] = byte;
 		}
 	} @catch (id e) {
 		[self release];
@@ -290,9 +290,9 @@ void _references_to_categories_of_OFDataArray(void)
 	return itemSize;
 }
 
-- (void*)cArray
+- (void*)items
 {
-	return data;
+	return items;
 }
 
 - (void*)itemAtIndex: (size_t)index
@@ -300,23 +300,23 @@ void _references_to_categories_of_OFDataArray(void)
 	if (index >= count)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	return data + index * itemSize;
+	return items + index * itemSize;
 }
 
 - (void*)firstItem
 {
-	if (data == NULL || count == 0)
+	if (items == NULL || count == 0)
 		return NULL;
 
-	return data;
+	return items;
 }
 
 - (void*)lastItem
 {
-	if (data == NULL || count == 0)
+	if (items == NULL || count == 0)
 		return NULL;
 
-	return data + (count - 1) * itemSize;
+	return items + (count - 1) * itemSize;
 }
 
 - (void)addItem: (const void*)item
@@ -324,11 +324,11 @@ void _references_to_categories_of_OFDataArray(void)
 	if (SIZE_MAX - count < 1)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	data = [self resizeMemory: data
-			     size: itemSize
-			    count: count + 1];
+	items = [self resizeMemory: items
+			      size: itemSize
+			     count: count + 1];
 
-	memcpy(data + count * itemSize, item, itemSize);
+	memcpy(items + count * itemSize, item, itemSize);
 
 	count++;
 }
@@ -336,41 +336,41 @@ void _references_to_categories_of_OFDataArray(void)
 - (void)insertItem: (const void*)item
 	   atIndex: (size_t)index
 {
-	[self insertItemsFromCArray: item
-			    atIndex: index
-			      count: 1];
+	[self insertItems: item
+		  atIndex: index
+		    count: 1];
 }
 
-- (void)addItemsFromCArray: (const void*)cArray
-		     count: (size_t)nItems
+- (void)addItems: (const void*)items_
+	   count: (size_t)count_
 {
-	if (nItems > SIZE_MAX - count)
+	if (count_ > SIZE_MAX - count)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	data = [self resizeMemory: data
-			     size: itemSize
-			    count: count + nItems];
+	items = [self resizeMemory: items
+			      size: itemSize
+			     count: count + count_];
 
-	memcpy(data + count * itemSize, cArray, nItems * itemSize);
-	count += nItems;
+	memcpy(items + count * itemSize, items_, count_ * itemSize);
+	count += count_;
 }
 
-- (void)insertItemsFromCArray: (const void*)cArray
-		      atIndex: (size_t)index
-			count: (size_t)nItems
+- (void)insertItems: (const void*)items_
+	    atIndex: (size_t)index
+	      count: (size_t)count_
 {
-	if (nItems > SIZE_MAX - count || index > count)
+	if (count_ > SIZE_MAX - count || index > count)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	data = [self resizeMemory: data
-			     size: itemSize
-			    count: count + nItems];
+	items = [self resizeMemory: items
+			      size: itemSize
+			     count: count + count_];
 
-	memmove(data + (index + nItems) * itemSize, data + index * itemSize,
+	memmove(items + (index + count_) * itemSize, items + index * itemSize,
 	    (count - index) * itemSize);
-	memcpy(data + index * itemSize, cArray, nItems * itemSize);
+	memcpy(items + index * itemSize, items_, count_ * itemSize);
 
-	count += nItems;
+	count += count_;
 }
 
 - (void)removeItemAtIndex: (size_t)index
@@ -384,15 +384,15 @@ void _references_to_categories_of_OFDataArray(void)
 	    range.location + range.length > count)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	memmove(data + range.location * itemSize,
-	    data + (range.location + range.length) * itemSize,
+	memmove(items + range.location * itemSize,
+	    items + (range.location + range.length) * itemSize,
 	    (count - range.location - range.length) * itemSize);
 
 	count -= range.length;
 	@try {
-		data = [self resizeMemory: data
-				     size: itemSize
-				    count: count];
+		items = [self resizeMemory: items
+				      size: itemSize
+				     count: count];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 	}
@@ -405,9 +405,9 @@ void _references_to_categories_of_OFDataArray(void)
 
 	count--;
 	@try {
-		data = [self resizeMemory: data
-				     size: itemSize
-				    count: count];
+		items = [self resizeMemory: items
+				      size: itemSize
+				     count: count];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only made it smaller */
 	}
@@ -415,9 +415,9 @@ void _references_to_categories_of_OFDataArray(void)
 
 - (void)removeAllItems
 {
-	[self freeMemory: data];
+	[self freeMemory: items];
 
-	data = NULL;
+	items = NULL;
 	count = 0;
 }
 
@@ -425,8 +425,8 @@ void _references_to_categories_of_OFDataArray(void)
 {
 	OFDataArray *copy = [[[self class] alloc] initWithItemSize: itemSize];
 
-	[copy addItemsFromCArray: data
-			   count: count];
+	[copy addItems: items
+		 count: count];
 
 	return copy;
 }
@@ -443,7 +443,7 @@ void _references_to_categories_of_OFDataArray(void)
 	if ([otherDataArray count] != count ||
 	    [otherDataArray itemSize] != itemSize)
 		return NO;
-	if (memcmp([otherDataArray cArray], data, count * itemSize))
+	if (memcmp([otherDataArray items], items, count * itemSize))
 		return NO;
 
 	return YES;
@@ -469,7 +469,7 @@ void _references_to_categories_of_OFDataArray(void)
 	otherCount = [otherDataArray count];
 	minimumCount = (count > otherCount ? otherCount : count);
 
-	if ((comparison = memcmp(data, [otherDataArray cArray],
+	if ((comparison = memcmp(items, [otherDataArray items],
 	    minimumCount * itemSize)) == 0) {
 		if (count > otherCount)
 			return OF_ORDERED_DESCENDING;
@@ -492,7 +492,7 @@ void _references_to_categories_of_OFDataArray(void)
 	OF_HASH_INIT(hash);
 
 	for (i = 0; i < count * itemSize; i++)
-		OF_HASH_ADD(hash, ((char*)data)[i]);
+		OF_HASH_ADD(hash, ((uint8_t*)items)[i]);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -511,7 +511,7 @@ void _references_to_categories_of_OFDataArray(void)
 			[ret appendString: @" "];
 
 		for (j = 0; j < itemSize; j++)
-			[ret appendFormat: @"%02x", data[i * itemSize + j]];
+			[ret appendFormat: @"%02x", items[i * itemSize + j]];
 	}
 
 	[ret appendString: @">"];
@@ -527,7 +527,7 @@ void _references_to_categories_of_OFDataArray(void)
 
 	for (i = 0; i < count; i++)
 		for (j = 0; j < itemSize; j++)
-			[ret appendFormat: @"%02x", data[i * itemSize + j]];
+			[ret appendFormat: @"%02x", items[i * itemSize + j]];
 
 	[ret makeImmutable];
 	return ret;
@@ -535,7 +535,7 @@ void _references_to_categories_of_OFDataArray(void)
 
 - (OFString*)stringByBase64Encoding
 {
-	return of_base64_encode(data, count * itemSize);
+	return of_base64_encode(items, count * itemSize);
 }
 
 - (void)writeToFile: (OFString*)path
@@ -544,7 +544,7 @@ void _references_to_categories_of_OFDataArray(void)
 					       mode: @"wb"];
 
 	@try {
-		[file writeBuffer: data
+		[file writeBuffer: items
 			   length: count * itemSize];
 	} @finally {
 		[file release];
@@ -565,7 +565,7 @@ void _references_to_categories_of_OFDataArray(void)
 	element = [OFXMLElement
 	    elementWithName: [self className]
 		  namespace: OF_SERIALIZATION_NS
-		stringValue: of_base64_encode(data, count * itemSize)];
+		stringValue: of_base64_encode(items, count * itemSize)];
 
 	[element retain];
 
@@ -587,58 +587,58 @@ void _references_to_categories_of_OFDataArray(void)
 	newSize = ((count + 1) * itemSize + lastPageByte) & ~lastPageByte;
 
 	if (size != newSize)
-		data = [self resizeMemory: data
-				     size: newSize];
+		items = [self resizeMemory: items
+				      size: newSize];
 
-	memcpy(data + count * itemSize, item, itemSize);
+	memcpy(items + count * itemSize, item, itemSize);
 
 	count++;
 	size = newSize;
 }
 
-- (void)addItemsFromCArray: (const void*)cArray
-		     count: (size_t)nItems
+- (void)addItems: (const void*)items_
+	   count: (size_t)count_
 {
 	size_t newSize, lastPageByte;
 
-	if (nItems > SIZE_MAX - count || count + nItems > SIZE_MAX / itemSize)
+	if (count_ > SIZE_MAX - count || count + count_ > SIZE_MAX / itemSize)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	lastPageByte = of_pagesize - 1;
-	newSize = ((count + nItems) * itemSize + lastPageByte) & ~lastPageByte;
+	newSize = ((count + count_) * itemSize + lastPageByte) & ~lastPageByte;
 
 	if (size != newSize)
-		data = [self resizeMemory: data
-				     size: newSize];
+		items = [self resizeMemory: items
+				      size: newSize];
 
-	memcpy(data + count * itemSize, cArray, nItems * itemSize);
+	memcpy(items + count * itemSize, items_, count_ * itemSize);
 
-	count += nItems;
+	count += count_;
 	size = newSize;
 }
 
-- (void)insertItemsFromCArray: (const void*)cArray
-		      atIndex: (size_t)index
-			count: (size_t)nItems
+- (void)insertItems: (const void*)items_
+	    atIndex: (size_t)index
+	      count: (size_t)count_
 {
 	size_t newSize, lastPageByte;
 
-	if (nItems > SIZE_MAX - count || index > count ||
-	    count + nItems > SIZE_MAX / itemSize)
+	if (count_ > SIZE_MAX - count || index > count ||
+	    count + count_ > SIZE_MAX / itemSize)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	lastPageByte = of_pagesize - 1;
-	newSize = ((count + nItems) * itemSize + lastPageByte) & ~lastPageByte;
+	newSize = ((count + count_) * itemSize + lastPageByte) & ~lastPageByte;
 
 	if (size != newSize)
-		data = [self resizeMemory: data
-				     size: newSize];
+		items = [self resizeMemory: items
+				      size: newSize];
 
-	memmove(data + (index + nItems) * itemSize, data + index * itemSize,
+	memmove(items + (index + count_) * itemSize, items + index * itemSize,
 	    (count - index) * itemSize);
-	memcpy(data + index * itemSize, cArray, nItems * itemSize);
+	memcpy(items + index * itemSize, items_, count_ * itemSize);
 
-	count += nItems;
+	count += count_;
 	size = newSize;
 }
 
@@ -650,8 +650,8 @@ void _references_to_categories_of_OFDataArray(void)
 	    range.location + range.length > count)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	memmove(data + range.location * itemSize,
-	    data + (range.location + range.length) * itemSize,
+	memmove(items + range.location * itemSize,
+	    items + (range.location + range.length) * itemSize,
 	    (count - range.location - range.length) * itemSize);
 
 	count -= range.length;
@@ -659,8 +659,8 @@ void _references_to_categories_of_OFDataArray(void)
 	newSize = (count * itemSize + lastPageByte) & ~lastPageByte;
 
 	if (size != newSize)
-		data = [self resizeMemory: data
-				     size: newSize];
+		items = [self resizeMemory: items
+				      size: newSize];
 	size = newSize;
 }
 
@@ -677,8 +677,8 @@ void _references_to_categories_of_OFDataArray(void)
 
 	if (size != newSize) {
 		@try {
-			data = [self resizeMemory: data
-					     size: newSize];
+			items = [self resizeMemory: items
+					      size: newSize];
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only made it smaller */
 		}
@@ -689,9 +689,9 @@ void _references_to_categories_of_OFDataArray(void)
 
 - (void)removeAllItems
 {
-	[self freeMemory: data];
+	[self freeMemory: items];
 
-	data = NULL;
+	items = NULL;
 	count = 0;
 	size = 0;
 }

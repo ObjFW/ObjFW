@@ -67,8 +67,8 @@ static OFString *module = @"OFSerialization";
 	[d setObject: @"list"
 	      forKey: l];
 
-	[da addItemsFromCArray: "0123456789:;<ABCDEFGHJIKLMNOPQRSTUVWXYZ"
-			 count: 39];
+	[da addItems: "0123456789:;<ABCDEFGHJIKLMNOPQRSTUVWXYZ"
+	       count: 39];
 	[d setObject: @"data"
 	      forKey: da];
 
