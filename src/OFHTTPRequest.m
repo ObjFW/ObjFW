@@ -122,7 +122,7 @@
 - (OFString*)description
 {
 	void *pool = objc_autoreleasePoolPush();
-	const char *requestTypeStr;
+	const char *requestTypeStr = NULL;
 	OFString *indentedHeaders, *indentedPOSTData, *ret;
 
 	switch (requestType) {
