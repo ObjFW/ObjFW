@@ -464,6 +464,7 @@ normalized_key(OFString *key)
 	[request setRequestType: requestType];
 	[request setHeaders: headers];
 	[request setPOSTData: POSTData];
+	[request setRemoteAddress: [sock remoteAddress]];
 
 	reply = [[server delegate] server: server
 			didReceiveRequest: request];

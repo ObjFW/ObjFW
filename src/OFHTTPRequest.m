@@ -119,6 +119,16 @@
 	OF_GETTER(MIMEType, YES)
 }
 
+- (void)setRemoteAddress: (OFString*)remoteAddress_
+{
+	OF_SETTER(remoteAddress, remoteAddress_, YES, 1)
+}
+
+- (OFString*)remoteAddress
+{
+	OF_GETTER(remoteAddress, YES)
+}
+
 - (OFString*)description
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -150,9 +160,10 @@
 	    @"\tHeaders = %@\n"
 	    @"\tPOST data = %@\n"
 	    @"\tPOST data MIME type = %@\n"
+	    @"\tRemote address = %@\n"
 	    @">",
 	    [self class], URL, requestTypeStr, indentedHeaders,
-	    indentedPOSTData, MIMEType];
+	    indentedPOSTData, MIMEType, remoteAddress];
 
 	objc_autoreleasePoolPop(pool);
 

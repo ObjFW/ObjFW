@@ -37,6 +37,7 @@ typedef enum of_http_request_type_t {
 	OFDictionary *headers;
 	OFDataArray *POSTData;
 	OFString *MIMEType;
+	OFString *remoteAddress;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -45,6 +46,7 @@ typedef enum of_http_request_type_t {
 @property (copy) OFDictionary *headers;
 @property (retain) OFDataArray *POSTData;
 @property (copy) OFString *MIMEType;
+@property (copy) OFString *remoteAddress;
 #endif
 
 /*!
@@ -139,6 +141,20 @@ typedef enum of_http_request_type_t {
  * @return The MIME type for the POST data
  */
 - (OFString*)MIMEType;
+
+/*!
+ * @brief Sets the remote address from which the request originates.
+ *
+ * @param remoteAddress The remote address from which the request originates
+ */
+- (void)setRemoteAddress: (OFString*)remoteAddress;
+
+/*!
+ * @brief Returns the remote address from which the request originates.
+ *
+ * @return The remote address from which the request originates
+ */
+- (OFString*)remoteAddress;
 @end
 
 /*!
