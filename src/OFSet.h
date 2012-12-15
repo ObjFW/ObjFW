@@ -158,7 +158,7 @@ typedef BOOL (^of_set_filter_block_t)(id object);
  *
  * @param set The set to intersect with
  */
-- (OFSet*)setByIntersectingWithSet: (OFString*)set;
+- (OFSet*)setByIntersectingWithSet: (OFSet*)set;
 
 /*!
  * @brief Creates a new set by creating the union of the receiver and the
