@@ -690,7 +690,7 @@ static struct {
 	@try {
 		OFFile *file;
 
-		if (stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+		if (stat([path cStringUsingEncoding: OF_STRING_ENCODING_NATIVE],
 		    &st) == -1)
 			@throw [OFOpenFileFailedException
 			    exceptionWithClass: [self class]
@@ -824,16 +824,24 @@ static struct {
 	return self;
 }
 
-- (const char*)UTF8String
+- (const char*)cStringUsingEncoding: (of_string_encoding_t)encoding
 {
 	const of_unichar_t *unicodeString = [self unicodeString];
 	char *UTF8String;
-	size_t i, j = 0, length = [self length];
-	size_t UTF8StringLength = length;
+	size_t i, j = 0, length, UTF8StringLength;
 	OFObject *object;
 
+	if (encoding != OF_STRING_ENCODING_UTF_8)
+		/* TODO: Implement! */
+		@throw [OFNotImplementedException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
+
+	unicodeString = [self unicodeString];
+	length = [self length];
 	object = [[[OFObject alloc] init] autorelease];
 	UTF8String = [object allocMemoryWithSize: (length * 4) + 1];
+	UTF8StringLength = length;
 
 	for (i = 0; i < length; i++) {
 		char buffer[4];
@@ -882,14 +890,9 @@ static struct {
 	return UTF8String;
 }
 
-- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
+- (const char*)UTF8String
 {
-	if (encoding == OF_STRING_ENCODING_UTF_8)
-		return [self UTF8String];
-
-	/* TODO: Implement! */
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	return [self cStringUsingEncoding: OF_STRING_ENCODING_UTF_8];
 }
 
 - (size_t)length
@@ -898,11 +901,19 @@ static struct {
 						    selector: _cmd];
 }
 
-- (size_t)UTF8StringLength
+- (size_t)lengthOfBytesUsingEncoding: (of_string_encoding_t)encoding
 {
-	const of_unichar_t *unicodeString = [self unicodeString];
-	size_t length = [self length];
-	size_t i, UTF8StringLength = 0;
+	const of_unichar_t *unicodeString;
+	size_t i, length, UTF8StringLength = 0;
+
+	if (encoding != OF_STRING_ENCODING_UTF_8)
+		/* TODO: Implement! */
+		@throw [OFNotImplementedException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
+
+	unicodeString = [self unicodeString];
+	length = [self length];
 
 	for (i = 0; i < length; i++) {
 		char buffer[4];
@@ -918,14 +929,9 @@ static struct {
 	return UTF8StringLength;
 }
 
-- (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding
+- (size_t)UTF8StringLength
 {
-	if (encoding == OF_STRING_ENCODING_UTF_8)
-		return [self UTF8StringLength];
-
-	/* TODO: Implement! */
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	return [self lengthOfBytesUsingEncoding: OF_STRING_ENCODING_UTF_8];
 }
 
 - (of_unichar_t)characterAtIndex: (size_t)index

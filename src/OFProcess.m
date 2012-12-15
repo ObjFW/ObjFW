@@ -96,12 +96,12 @@
 			argv = [self allocMemoryWithSize: sizeof(char*)
 						   count: count + 2];
 
-			argv[0] = (char*)[programName cStringWithEncoding:
+			argv[0] = (char*)[programName cStringUsingEncoding:
 			    OF_STRING_ENCODING_NATIVE];
 
 			for (i = 0; i < count; i++)
 				argv[i + 1] = (char*)[objects[i]
-				    cStringWithEncoding:
+				    cStringUsingEncoding:
 				    OF_STRING_ENCODING_NATIVE];
 
 			argv[i + 1] = NULL;
@@ -110,7 +110,7 @@
 			close(writePipe[1]);
 			dup2(writePipe[0], 0);
 			dup2(readPipe[1], 1);
-			execvp([program cStringWithEncoding:
+			execvp([program cStringUsingEncoding:
 			    OF_STRING_ENCODING_NATIVE], argv);
 
 			@throw [OFInitializationFailedException
@@ -199,9 +199,9 @@
 		}
 
 		argumentsCString = strdup([argumentsString
-		    cStringWithEncoding: OF_STRING_ENCODING_NATIVE]);
+		    cStringUsingEncoding: OF_STRING_ENCODING_NATIVE]);
 		@try {
-			if (!CreateProcess([program cStringWithEncoding:
+			if (!CreateProcess([program cStringUsingEncoding:
 			    OF_STRING_ENCODING_NATIVE], argumentsCString, NULL,
 			    NULL, TRUE, 0, NULL, NULL, &si, &pi))
 				@throw [OFInitializationFailedException

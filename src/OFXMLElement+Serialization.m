@@ -36,7 +36,7 @@ int _OFXMLElement_Serialization_reference;
 	Class class;
 	id object;
 
-	if ((class = objc_lookUpClass([name cStringWithEncoding:
+	if ((class = objc_getClass([name cStringUsingEncoding:
 	    OF_STRING_ENCODING_ASCII])) == Nil)
 		@throw [OFNotImplementedException exceptionWithClass: Nil];
 

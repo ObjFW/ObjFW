@@ -49,7 +49,7 @@
 	file = [OFMutableString stringWithString: path];
 	[file appendString: @PLUGIN_SUFFIX];
 
-	if ((handle = dlopen([file cStringWithEncoding:
+	if ((handle = dlopen([file cStringUsingEncoding:
 	    OF_STRING_ENCODING_NATIVE], RTLD_LAZY)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];

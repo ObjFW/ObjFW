@@ -233,7 +233,7 @@ const char*
 _NSPrintForDebugger(id object)
 {
 	return [[object description]
-	    cStringWithEncoding: OF_STRING_ENCODING_NATIVE];
+	    cStringUsingEncoding: OF_STRING_ENCODING_NATIVE];
 }
 
 /* References for static linking */

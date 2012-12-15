@@ -547,6 +547,19 @@ extern size_t of_utf16_string_length(const uint16_t*);
 	       encoding: (of_string_encoding_t)encoding;
 
 /*!
+ * @brief Returns the OFString as a C string in the specified encoding.
+ *
+ * The result is valid until the autorelease pool is released. If you want to
+ * use the result outside the scope of the current autorelease pool, you have to
+ * copy it.
+ *
+ * @param encoding The encoding for the C string
+ * @return The OFString as a C string in the specified encoding
+ */
+- (const char*)cStringUsingEncoding: (of_string_encoding_t)encoding
+    OF_RETURNS_INNER_POINTER;
+
+/*!
  * @brief Returns the OFString as a UTF-8 encoded C string.
  *
  * The result is valid until the autorelease pool is released. If you want to
@@ -558,31 +571,11 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (const char*)UTF8String OF_RETURNS_INNER_POINTER;
 
 /*!
- * @brief Returns the OFString as a C string in the specified encoding.
- *
- * The result is valid until the autorelease pool is released. If you want to
- * use the result outside the scope of the current autorelease pool, you have to
- * copy it.
- *
- * @param encoding The encoding for the C string
- * @return The OFString as a C string in the specified encoding
- */
-- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
-    OF_RETURNS_INNER_POINTER;
-
-/*!
  * @brief Returns the length of the string in Unicode characters.
  *
  * @return The length of the string in Unicode characters
  */
 - (size_t)length;
-
-/*!
- * @brief Returns the number of bytes the string needs in UTF-8 encoding.
- *
- * @return The number of bytes the string needs in UTF-8 encoding.
- */
-- (size_t)UTF8StringLength;
 
 /*!
  * @brief Returns the number of bytes the string needs in the specified
@@ -591,7 +584,14 @@ extern size_t of_utf16_string_length(const uint16_t*);
  * @param encoding The encoding for the string
  * @return The number of bytes the string needs in the specified encoding.
  */
-- (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding;
+- (size_t)lengthOfBytesUsingEncoding: (of_string_encoding_t)encoding;
+
+/*!
+ * @brief Returns the number of bytes the string needs in UTF-8 encoding.
+ *
+ * @return The number of bytes the string needs in UTF-8 encoding.
+ */
+- (size_t)UTF8StringLength;
 
 /*!
  * @brief Compares the OFString to another OFString without caring about the

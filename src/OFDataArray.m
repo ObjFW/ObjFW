@@ -179,14 +179,16 @@ void _references_to_categories_of_OFDataArray(void)
 		size_t i;
 
 		itemSize = 1;
-		count = [string UTF8StringLength];
+		count = [string
+		    lengthOfBytesUsingEncoding: OF_STRING_ENCODING_ASCII];
 
 		if (count & 1)
 			@throw [OFInvalidFormatException
 			    exceptionWithClass: [self class]];
 
 		count >>= 1;
-		cString = [string UTF8String];
+		cString = [string
+		    cStringUsingEncoding: OF_STRING_ENCODING_ASCII];
 		items = [self allocMemoryWithSize: count];
 
 		for (i = 0; i < count; i++) {
@@ -231,9 +233,9 @@ void _references_to_categories_of_OFDataArray(void)
 	@try {
 		itemSize = 1;
 
-		if (!of_base64_decode(self, [string cStringWithEncoding:
+		if (!of_base64_decode(self, [string cStringUsingEncoding:
 		    OF_STRING_ENCODING_ASCII], [string
-		    cStringLengthWithEncoding: OF_STRING_ENCODING_ASCII])) {
+		    lengthOfBytesUsingEncoding: OF_STRING_ENCODING_ASCII])) {
 			Class c = [self class];
 			[self release];
 			@throw [OFInvalidFormatException exceptionWithClass: c];
@@ -264,9 +266,9 @@ void _references_to_categories_of_OFDataArray(void)
 
 		stringValue = [element stringValue];
 
-		if (!of_base64_decode(self,
-		    [stringValue cStringWithEncoding: OF_STRING_ENCODING_ASCII],
-		    [stringValue cStringLengthWithEncoding:
+		if (!of_base64_decode(self, [stringValue
+		    cStringUsingEncoding: OF_STRING_ENCODING_ASCII],
+		    [stringValue lengthOfBytesUsingEncoding:
 		    OF_STRING_ENCODING_ASCII]))
 			@throw [OFInvalidFormatException
 			    exceptionWithClass: [self class]];

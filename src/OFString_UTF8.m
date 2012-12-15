@@ -779,12 +779,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	[super dealloc];
 }
 
-- (const char*)UTF8String
-{
-	return s->cString;
-}
-
-- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
+- (const char*)cStringUsingEncoding: (of_string_encoding_t)encoding
 {
 	switch (encoding) {
 	case OF_STRING_ENCODING_UTF_8:
@@ -796,10 +791,13 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 		return s->cString;
 	default:
-		@throw [OFNotImplementedException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		return [super cStringUsingEncoding: encoding];
 	}
+}
+
+- (const char*)UTF8String
+{
+	return s->cString;
 }
 
 - (size_t)length
@@ -807,12 +805,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return s->length;
 }
 
-- (size_t)UTF8StringLength
-{
-	return s->cStringLength;
-}
-
-- (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding
+- (size_t)lengthOfBytesUsingEncoding: (of_string_encoding_t)encoding
 {
 	switch (encoding) {
 	case OF_STRING_ENCODING_UTF_8:
@@ -824,10 +817,13 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 		return s->cStringLength;
 	default:
-		@throw [OFNotImplementedException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		return [super lengthOfBytesUsingEncoding: encoding];
 	}
+}
+
+- (size_t)UTF8StringLength
+{
+	return s->cStringLength;
 }
 
 - (BOOL)isEqual: (id)object
