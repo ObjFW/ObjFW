@@ -930,12 +930,34 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
 - (size_t)writeString: (OFString*)string;
 
 /*!
+ * @brief Writes a string into the stream in the specified encoding, without
+ *	  the trailing zero.
+ *
+ * @param string The string from which the data is written to the stream
+ * @param encoding The encoding in which to write the string to the stream
+ * @return The number of bytes written
+ */
+- (size_t)writeString: (OFString*)string
+	usingEncoding: (of_string_encoding_t)encoding;
+
+/*!
  * @brief Writes a string into the stream with a trailing newline.
  *
  * @param string The string from which the data is written to the stream
  * @return The number of bytes written
  */
 - (size_t)writeLine: (OFString*)string;
+
+/*!
+ * @brief Writes a string into the stream in the specified encoding with a
+ *	  trailing newline.
+ *
+ * @param string The string from which the data is written to the stream
+ * @param encoding The encoding in which to write the string to the stream
+ * @return The number of bytes written
+ */
+- (size_t)writeLine: (OFString*)string
+      usingEncoding: (of_string_encoding_t)encoding;
 
 /*!
  * @brief Writes a formatted string into the stream.

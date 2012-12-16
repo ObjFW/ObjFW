@@ -1365,9 +1365,16 @@
 
 - (size_t)writeString: (OFString*)string
 {
-	size_t length = [string UTF8StringLength];
+	return [self writeString: string
+		   usingEncoding: OF_STRING_ENCODING_UTF_8];
+}
 
-	[self writeBuffer: [string UTF8String]
+- (size_t)writeString: (OFString*)string
+	usingEncoding: (of_string_encoding_t)encoding
+{
+	size_t length = [string lengthOfBytesUsingEncoding: encoding];
+
+	[self writeBuffer: [string cStringUsingEncoding: encoding]
 		   length: length];
 
 	return length;
@@ -1375,13 +1382,21 @@
 
 - (size_t)writeLine: (OFString*)string
 {
-	size_t stringLength = [string UTF8StringLength];
+	return [self writeLine: string
+		 usingEncoding: OF_STRING_ENCODING_UTF_8];
+}
+
+- (size_t)writeLine: (OFString*)string
+      usingEncoding: (of_string_encoding_t)encoding
+{
+	size_t stringLength = [string lengthOfBytesUsingEncoding: encoding];
 	char *buffer;
 
 	buffer = [self allocMemoryWithSize: stringLength + 1];
 
 	@try {
-		memcpy(buffer, [string UTF8String], stringLength);
+		memcpy(buffer, [string cStringUsingEncoding: encoding],
+		    stringLength);
 		buffer[stringLength] = '\n';
 
 		[self writeBuffer: buffer
