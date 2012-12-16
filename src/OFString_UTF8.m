@@ -809,12 +809,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 {
 	switch (encoding) {
 	case OF_STRING_ENCODING_UTF_8:
-		return s->cStringLength;
 	case OF_STRING_ENCODING_ASCII:
-		if (s->isUTF8)
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: [self class]];
-
 		return s->cStringLength;
 	default:
 		return [super lengthOfBytesUsingEncoding: encoding];

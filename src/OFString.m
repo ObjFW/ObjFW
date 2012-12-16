@@ -827,67 +827,97 @@ static struct {
 - (const char*)cStringUsingEncoding: (of_string_encoding_t)encoding
 {
 	const of_unichar_t *unicodeString = [self unicodeString];
-	char *UTF8String;
-	size_t i, j = 0, length, UTF8StringLength;
-	OFObject *object;
+	size_t i, length = [self length];
+	OFObject *object = [[[OFObject alloc] init] autorelease];
+	char *cString;
 
-	if (encoding != OF_STRING_ENCODING_UTF_8)
-		/* TODO: Implement! */
-		@throw [OFNotImplementedException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+	switch (encoding) {
+	case OF_STRING_ENCODING_UTF_8:;
+		size_t cStringLength, j = 0;
 
-	unicodeString = [self unicodeString];
-	length = [self length];
-	object = [[[OFObject alloc] init] autorelease];
-	UTF8String = [object allocMemoryWithSize: (length * 4) + 1];
-	UTF8StringLength = length;
+		cString = [object allocMemoryWithSize: (length * 4) + 1];
+		cStringLength = length;
 
-	for (i = 0; i < length; i++) {
-		char buffer[4];
-		size_t len = of_string_utf8_encode(unicodeString[i], buffer);
+		for (i = 0; i < length; i++) {
+			char buffer[4];
+			size_t len = of_string_utf8_encode(unicodeString[i],
+			    buffer);
 
-		switch (len) {
-		case 1:
-			UTF8String[j++] = buffer[0];
-			break;
-		case 2:
-			UTF8StringLength++;
+			switch (len) {
+			case 1:
+				cString[j++] = buffer[0];
+				break;
+			case 2:
+				cStringLength++;
 
-			memcpy(UTF8String + j, buffer, 2);
-			j += 2;
+				memcpy(cString + j, buffer, 2);
+				j += 2;
 
-			break;
-		case 3:
-			UTF8StringLength += 2;
+				break;
+			case 3:
+				cStringLength += 2;
 
-			memcpy(UTF8String + j, buffer, 3);
-			j += 3;
+				memcpy(cString + j, buffer, 3);
+				j += 3;
 
-			break;
-		case 4:
-			UTF8StringLength += 3;
+				break;
+			case 4:
+				cStringLength += 3;
 
-			memcpy(UTF8String + j, buffer, 4);
-			j += 4;
+				memcpy(cString + j, buffer, 4);
+				j += 4;
 
-			break;
-		default:
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: [self class]];
+				break;
+			default:
+				@throw [OFInvalidEncodingException
+				    exceptionWithClass: [self class]];
+			}
 		}
+
+		cString[j] = '\0';
+
+		@try {
+			cString = [object resizeMemory: cString
+						  size: cStringLength + 1];
+		} @catch (OFOutOfMemoryException *e) {
+			/* We don't care, as we only tried to make it smaller */
+		}
+
+		break;
+	case OF_STRING_ENCODING_ASCII:
+		cString = [object allocMemoryWithSize: length + 1];
+
+		for (i = 0; i < length; i++) {
+			if (unicodeString[i] > 0x80)
+				@throw [OFInvalidEncodingException
+				    exceptionWithClass: [self class]];
+
+			cString[i] = (char)unicodeString[i];
+		}
+
+		cString[i] = '\0';
+
+		break;
+	case OF_STRING_ENCODING_ISO_8859_1:
+		cString = [object allocMemoryWithSize: length + 1];
+
+		for (i = 0; i < length; i++) {
+			if (unicodeString[i] > 0xFF)
+				@throw [OFInvalidEncodingException
+				    exceptionWithClass: [self class]];
+
+			cString[i] = (uint8_t)unicodeString[i];
+		}
+
+		cString[i] = '\0';
+
+		break;
+	default:
+		@throw [OFNotImplementedException
+		    exceptionWithClass: [self class]];
 	}
 
-	UTF8String[j] = '\0';
-
-	@try {
-		UTF8String = [object resizeMemory: UTF8String
-					     size: UTF8StringLength + 1];
-	} @catch (OFOutOfMemoryException *e) {
-		/* We don't care, as we only tried to make it smaller */
-	}
-
-	return UTF8String;
+	return cString;
 }
 
 - (const char*)UTF8String
@@ -903,30 +933,35 @@ static struct {
 
 - (size_t)lengthOfBytesUsingEncoding: (of_string_encoding_t)encoding
 {
-	const of_unichar_t *unicodeString;
-	size_t i, length, UTF8StringLength = 0;
+	switch (encoding) {
+	case OF_STRING_ENCODING_UTF_8:;
+		const of_unichar_t *unicodeString;
+		size_t i, length, UTF8StringLength = 0;
 
-	if (encoding != OF_STRING_ENCODING_UTF_8)
-		/* TODO: Implement! */
+		unicodeString = [self unicodeString];
+		length = [self length];
+
+		for (i = 0; i < length; i++) {
+			char buffer[4];
+			size_t len = of_string_utf8_encode(unicodeString[i],
+			    buffer);
+
+			if (len == 0)
+				@throw [OFInvalidEncodingException
+				    exceptionWithClass: [self class]];
+
+			UTF8StringLength += len;
+		}
+
+		return UTF8StringLength;
+	case OF_STRING_ENCODING_ASCII:
+	case OF_STRING_ENCODING_ISO_8859_1:
+		return [self length];
+	default:
 		@throw [OFNotImplementedException
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
-
-	unicodeString = [self unicodeString];
-	length = [self length];
-
-	for (i = 0; i < length; i++) {
-		char buffer[4];
-		size_t len = of_string_utf8_encode(unicodeString[i], buffer);
-
-		if (len == 0)
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: [self class]];
-
-		UTF8StringLength += len;
 	}
-
-	return UTF8StringLength;
 }
 
 - (size_t)UTF8StringLength
