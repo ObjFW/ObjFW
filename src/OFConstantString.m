@@ -394,6 +394,15 @@ struct {
 	return [self stringByAppendingString: string];
 }
 
+- (OFString*)stringByAppendingFormat: (OFConstantString*)format
+			   arguments: (va_list)arguments
+{
+	[self finishInitialization];
+
+	return [self stringByAppendingFormat: format
+				   arguments: arguments];
+}
+
 - (OFString*)stringByAppendingPathComponent: (OFString*)component
 {
 	[self finishInitialization];

@@ -1349,15 +1349,25 @@ static struct {
 
 - (OFString*)stringByAppendingFormat: (OFConstantString*)format, ...
 {
-	OFMutableString *new;
+	OFString *ret;
 	va_list arguments;
 
-	new = [OFMutableString stringWithString: self];
-
 	va_start(arguments, format);
+	ret = [self stringByAppendingFormat: format
+				  arguments: arguments];
+	va_end(arguments);
+
+	return ret;
+}
+
+- (OFString*)stringByAppendingFormat: (OFConstantString*)format
+			   arguments: (va_list)arguments
+{
+	OFMutableString *new;
+
+	new = [OFMutableString stringWithString: self];
 	[new appendFormat: format
 		arguments: arguments];
-	va_end(arguments);
 
 	[new makeImmutable];
 
