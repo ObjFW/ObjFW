@@ -914,7 +914,8 @@ static struct {
 		break;
 	default:
 		@throw [OFNotImplementedException
-		    exceptionWithClass: [self class]];
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
 	}
 
 	return cString;
