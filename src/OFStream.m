@@ -762,14 +762,13 @@
 - (OFString*)tryReadTillDelimiter: (OFString*)delimiter
 			 encoding: (of_string_encoding_t)encoding
 {
-	const char *delimiterUTF8String;
+	const char *delimiterCString;
 	size_t i, j, delimiterLength, bufferLength, retLength;
 	char *retCString, *buffer, *newCache;
 	OFString *ret;
 
-	/* FIXME: Convert delimiter to specified charset */
-	delimiterUTF8String = [delimiter UTF8String];
-	delimiterLength = [delimiter UTF8StringLength];
+	delimiterCString = [delimiter cStringUsingEncoding: encoding];
+	delimiterLength = [delimiter lengthOfBytesUsingEncoding: encoding];
 	j = 0;
 
 	if (delimiterLength == 0)
@@ -780,7 +779,7 @@
 	/* Look if there's something in our cache */
 	if (!waitingForDelimiter && cache != NULL) {
 		for (i = 0; i < cacheLength; i++) {
-			if (cache[i] != delimiterUTF8String[j++])
+			if (cache[i] != delimiterCString[j++])
 				j = 0;
 
 			if (j == delimiterLength || cache[i] == '\0') {
@@ -835,7 +834,7 @@
 
 		/* Look if there's a delimiter or \0 */
 		for (i = 0; i < bufferLength; i++) {
-			if (buffer[i] != delimiterUTF8String[j++])
+			if (buffer[i] != delimiterCString[j++])
 				j = 0;
 
 			if (j == delimiterLength || buffer[i] == '\0') {
