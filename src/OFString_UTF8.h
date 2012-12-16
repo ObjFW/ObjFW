@@ -19,7 +19,7 @@
 @interface OFString_UTF8: OFString
 {
 @public
-	/**
+	/*
 	 * A pointer to the actual data.
 	 *
 	 * Since constant strings don't have s_store, they have to malloc it on
