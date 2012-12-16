@@ -20,6 +20,7 @@
 #import "OFDictionary.h"
 #import "OFThread.h"
 #import "OFSortedList.h"
+#import "OFMutex.h"
 #import "OFTimer.h"
 #import "OFDate.h"
 
@@ -266,6 +267,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 	@try {
 		timersQueue = [[OFSortedList alloc] init];
+		timersQueueLock = [[OFMutex alloc] init];
 
 		streamObserver = [[OFStreamObserver alloc] init];
 		[streamObserver setDelegate: self];
@@ -282,6 +284,7 @@ static OFRunLoop *mainRunLoop = nil;
 - (void)dealloc
 {
 	[timersQueue release];
+	[timersQueueLock release];
 	[streamObserver release];
 	[readQueues release];
 
@@ -290,9 +293,13 @@ static OFRunLoop *mainRunLoop = nil;
 
 - (void)addTimer: (OFTimer*)timer
 {
-	@synchronized (timersQueue) {
+	[timersQueueLock lock];
+	@try {
 		[timersQueue insertObject: timer];
+	} @finally {
+		[timersQueueLock unlock];
 	}
+
 	[streamObserver cancel];
 }
 
@@ -530,7 +537,8 @@ static OFRunLoop *mainRunLoop = nil;
 		OFTimer *timer;
 		OFDate *nextTimer;
 
-		@synchronized (timersQueue) {
+		[timersQueueLock lock];
+		@try {
 			of_list_object_t *listObject =
 			    [timersQueue firstListObject];
 
@@ -543,13 +551,18 @@ static OFRunLoop *mainRunLoop = nil;
 				[timersQueue removeListObject: listObject];
 			} else
 				timer = nil;
+		} @finally {
+			[timersQueueLock unlock];
 		}
 
 		if ([timer isValid])
 			[timer fire];
 
-		@synchronized (timersQueue) {
+		[timersQueueLock lock];
+		@try {
 			nextTimer = [[timersQueue firstObject] fireDate];
+		} @finally {
+			[timersQueueLock unlock];
 		}
 
 		/* Watch for stream events until the next timer is due */
