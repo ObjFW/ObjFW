@@ -160,7 +160,9 @@ while test ! -z "$1"; do
 			exit 1
 			;;
 	esac
-	echo
-
 	shift
+
+	test ! -z "$1" && printf " "
 done
+
+echo
