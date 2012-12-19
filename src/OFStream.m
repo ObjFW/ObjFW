@@ -723,9 +723,9 @@
 - (void)asyncReadLineWithTarget: (id)target
 		       selector: (SEL)selector
 {
-	return [self asyncReadLineWithEncoding: OF_STRING_ENCODING_UTF_8
-					target: target
-				      selector: selector];
+	[self asyncReadLineWithEncoding: OF_STRING_ENCODING_UTF_8
+				 target: target
+			       selector: selector];
 }
 
 - (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
@@ -741,8 +741,8 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncReadLineWithBlock: (of_stream_async_read_line_block_t)block
 {
-	return [self asyncReadLineWithEncoding: OF_STRING_ENCODING_UTF_8
-					 block: block];
+	[self asyncReadLineWithEncoding: OF_STRING_ENCODING_UTF_8
+				  block: block];
 }
 
 - (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
@@ -1498,6 +1498,11 @@
 {
 	@throw [OFNotImplementedException exceptionWithClass: [self class]
 						    selector: _cmd];
+}
+
+- (void)cancelAsyncRequests
+{
+	[OFRunLoop OF_cancelAsyncRequestsForStream: self];
 }
 
 - (void)close

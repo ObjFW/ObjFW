@@ -82,6 +82,7 @@
 + (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket*)socket
 				block: (of_tcpsocket_async_accept_block_t)block;
 #endif
++ (void)OF_cancelAsyncRequestsForStream: (OFStream*)stream;
 
 /*!
  * @brief Adds an OFTimer to the run loop.

@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#include <assert.h>
+
 #import "OFRunLoop.h"
 #import "OFDictionary.h"
 #import "OFThread.h"
@@ -260,6 +262,22 @@ static OFRunLoop *mainRunLoop = nil;
 #endif
 
 #undef ADD
+
++ (void)OF_cancelAsyncRequestsForStream: (OFStream*)stream
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFRunLoop *runLoop = [self currentRunLoop];
+	OFList *queue;
+
+	if ((queue = [runLoop->readQueues objectForKey: stream]) != nil) {
+		assert([queue count] > 0);
+
+		[runLoop->streamObserver removeStreamForReading: stream];
+		[runLoop->readQueues removeObjectForKey: stream];
+	}
+
+	objc_autoreleasePoolPop(pool);
+}
 
 - init
 {

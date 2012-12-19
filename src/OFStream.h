@@ -1022,6 +1022,11 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
 - (int)fileDescriptorForWriting;
 
 /*!
+ * @brief Cancels all pending asyncronous requests on the stream.
+ */
+- (void)cancelAsyncRequests;
+
+/*!
  * @brief Closes the stream.
  */
 - (void)close;
