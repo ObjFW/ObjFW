@@ -392,7 +392,7 @@
 
 		[[OFRunLoop currentRunLoop] addTimer: self];
 	} else
-		isValid = NO;
+		[self invalidate];
 }
 
 - (OFDate*)fireDate
@@ -424,6 +424,9 @@
 - (void)invalidate
 {
 	isValid = NO;
+
+	[target release];
+	target = nil;
 }
 
 - (BOOL)isValid
