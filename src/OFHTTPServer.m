@@ -28,6 +28,7 @@
 #import "OFURL.h"
 #import "OFHTTPRequest.h"
 #import "OFTCPSocket.h"
+#import "OFTimer.h"
 
 #import "OFAlreadyConnectedException.h"
 #import "OFInvalidArgumentException.h"
@@ -42,7 +43,6 @@
 #define BUFFER_SIZE 1024
 
 /*
- * FIXME: Currently, connections never time out, which means a DoS is possible.
  * TODO: Add support for chunked transfer encoding.
  * FIXME: Key normalization replaces headers like "DNT" with "Dnt".
  * FIXME: Errors are not reported to the user.
@@ -170,6 +170,7 @@ normalized_key(OFString *key)
 {
 	OFTCPSocket *sock;
 	OFHTTPServer *server;
+	OFTimer *timer;
 	enum {
 		AWAITING_PROLOG,
 		PARSING_HEADERS,
@@ -205,9 +206,20 @@ normalized_key(OFString *key)
 {
 	self = [super init];
 
-	sock = [sock_ retain];
-	server = [server_ retain];
-	state = AWAITING_PROLOG;
+	@try {
+		sock = [sock_ retain];
+		server = [server_ retain];
+		timer = [[OFTimer
+		    scheduledTimerWithTimeInterval: 10
+					    target: sock
+					  selector: @selector(
+							cancelAsyncRequests)
+					   repeats: NO] retain];
+		state = AWAITING_PROLOG;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -216,6 +228,10 @@ normalized_key(OFString *key)
 {
 	[sock release];
 	[server release];
+
+	[timer invalidate];
+	[timer release];
+
 	[host release];
 	[path release];
 	[headers release];
@@ -340,6 +356,8 @@ normalized_key(OFString *key)
 					 selector: @selector(socket:
 						       didReadIntoBuffer:
 						       length:exception:)];
+			[timer setFireDate:
+			    [OFDate dateWithTimeIntervalSinceNow: 5]];
 
 			return NO;
 		}
@@ -415,6 +433,8 @@ normalized_key(OFString *key)
 		return NO;
 	}
 
+	[timer setFireDate: [OFDate dateWithTimeIntervalSinceNow: 5]];
+
 	return YES;
 }
 
@@ -443,6 +463,10 @@ normalized_key(OFString *key)
 	OFDataArray *replyData;
 	OFEnumerator *keyEnumerator, *valueEnumerator;
 	OFString *key, *value;
+
+	[timer invalidate];
+	[timer release];
+	timer = nil;
 
 	if (host == nil || port == 0) {
 		if (HTTPMinorVersion > 0) {
@@ -616,6 +640,7 @@ normalized_key(OFString *key)
 	connection = [[[OFHTTPServer_Connection alloc]
 	    initWithSocket: clientSocket
 		    server: self] autorelease];
+
 	[clientSocket asyncReadLineWithTarget: connection
 				     selector: @selector(socket:didReadLine:
 						  exception:)];
