@@ -65,6 +65,7 @@
 	[headers release];
 	[POSTData release];
 	[MIMEType release];
+	[remoteAddress release];
 
 	[super dealloc];
 }
