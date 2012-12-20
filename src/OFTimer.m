@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#include <assert.h>
+
 #import "OFTimer.h"
 #import "OFDate.h"
 #import "OFRunLoop.h"
@@ -315,6 +317,12 @@
 
 - (void)dealloc
 {
+	/*
+	 * The run loop references the timer, so it should never be deallocated
+	 * if it is still in a run loop.
+	 */
+	assert(inRunLoop == nil);
+
 	[fireDate release];
 	[target release];
 	[object1 release];
@@ -392,6 +400,22 @@
 	OF_GETTER(fireDate, YES)
 }
 
+- (void)setFireDate: (OFDate*)fireDate_
+{
+	[self retain];
+	@try {
+		@synchronized (self) {
+			[inRunLoop OF_removeTimer: self];
+
+			OF_SETTER(fireDate, fireDate_, YES, 0)
+
+			[inRunLoop addTimer: self];
+		}
+	} @finally {
+		[self release];
+	}
+}
+
 - (double)timeInterval
 {
 	return interval;
@@ -420,5 +444,10 @@
 	} @finally {
 		[condition unlock];
 	}
+}
+
+- (void)OF_setInRunLoop: (OFRunLoop*)inRunLoop_
+{
+	OF_SETTER(inRunLoop, inRunLoop_, YES, 0)
 }
 @end

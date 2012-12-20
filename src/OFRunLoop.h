@@ -91,6 +91,8 @@
  */
 - (void)addTimer: (OFTimer*)timer;
 
+- (void)OF_removeTimer: (OFTimer*)timer;
+
 /*!
  * @brief Starts the run loop.
  */

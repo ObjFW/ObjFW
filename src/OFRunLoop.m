@@ -318,7 +318,27 @@ static OFRunLoop *mainRunLoop = nil;
 		[timersQueueLock unlock];
 	}
 
+	[timer OF_setInRunLoop: self];
+
 	[streamObserver cancel];
+}
+
+- (void)OF_removeTimer: (OFTimer*)timer
+{
+	[timersQueueLock lock];
+	@try {
+		of_list_object_t *iter;
+
+		for (iter = [timersQueue firstListObject]; iter != NULL;
+		    iter = iter->next) {
+			if ([iter->object isEqual: timer]) {
+				[timersQueue removeListObject: iter];
+				break;
+			}
+		}
+	} @finally {
+		[timersQueueLock unlock];
+	}
 }
 
 - (void)streamIsReadyForReading: (OFStream*)stream
@@ -567,6 +587,8 @@ static OFRunLoop *mainRunLoop = nil;
 				    [[listObject->object retain] autorelease];
 
 				[timersQueue removeListObject: listObject];
+
+				[timer OF_setInRunLoop: nil];
 			} else
 				timer = nil;
 		} @finally {

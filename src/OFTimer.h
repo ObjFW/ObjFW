@@ -19,6 +19,7 @@
 @class OFTimer;
 @class OFDate;
 @class OFCondition;
+@class OFRunLoop;
 
 #ifdef OF_HAVE_BLOCKS
 typedef void (^of_timer_block_t)(OFTimer*);
@@ -40,10 +41,11 @@ typedef void (^of_timer_block_t)(OFTimer*);
 #endif
 	BOOL isValid, done;
 	OFCondition *condition;
+	OFRunLoop *inRunLoop;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain) OFDate *fireDate;
+@property (retain) OFDate *fireDate;
 #endif
 
 /*!
@@ -276,6 +278,18 @@ typedef void (^of_timer_block_t)(OFTimer*);
 - (OFDate*)fireDate;
 
 /*!
+ * @brief Sets the next date at which the timer will fire.
+ *
+ * If the timer is already scheduled in a run loop, it will be rescheduled.
+ * Note that rescheduling is an expensive operation, though it still might be
+ * preferrable to reschedule instead of invalidating the timer and creating a
+ * new one.
+ *
+ * @param fireDate The next date at which the timer will fire
+ */
+- (void)setFireDate: (OFDate*)fireDate;
+
+/*!
  * @brief Invalidates the timer, preventing it from firing.
  */
 - (void)invalidate;
@@ -300,4 +314,6 @@ typedef void (^of_timer_block_t)(OFTimer*);
  * @brief Waits until the timer fired.
  */
 - (void)waitUntilDone;
+
+- (void)OF_setInRunLoop: (OFRunLoop*)inRunLoop;
 @end
