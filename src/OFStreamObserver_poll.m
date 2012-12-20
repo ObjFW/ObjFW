@@ -161,21 +161,30 @@
 				continue;
 			}
 
+			if ([delegate respondsToSelector:
+			    @selector(streamIsReadyForReading:)])
+				[delegate streamIsReadyForReading:
+				    FDToStream[FDs_[i].fd]];
+
 			realEvents++;
-			[delegate streamIsReadyForReading:
-			    FDToStream[FDs_[i].fd]];
 		}
 
 		if (FDs_[i].revents & POLLOUT) {
+			if ([delegate respondsToSelector:
+			    @selector(streamIsReadyForWriting:)])
+				[delegate streamIsReadyForWriting:
+				    FDToStream[FDs_[i].fd]];
+
 			realEvents++;
-			[delegate streamIsReadyForWriting:
-			    FDToStream[FDs_[i].fd]];
 		}
 
 		if (FDs_[i].revents & POLLERR) {
+			if ([delegate respondsToSelector:
+			    @selector(streamDidReceiveException:)])
+				[delegate streamDidReceiveException:
+				    FDToStream[FDs_[i].fd]];
+
 			realEvents++;
-			[delegate streamDidReceiveException:
-			    FDToStream[FDs_[i].fd]];
 		}
 
 		FDs_[i].revents = 0;

@@ -16,8 +16,6 @@
 
 #include "config.h"
 
-#define OF_XML_PARSER_M
-
 #include <string.h>
 
 #include <sys/types.h>
@@ -337,8 +335,10 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		void *pool = objc_autoreleasePoolPush();
 		OFString *characters = transform_string(cache, 0, YES, self);
 
-		[delegate parser: self
-		 foundCharacters: characters];
+		if ([delegate respondsToSelector:
+		    @selector(parser:foundCharacters:)])
+			[delegate    parser: self
+			    foundCharacters: characters];
 
 		objc_autoreleasePoolPop(pool);
 	}
@@ -505,8 +505,10 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				    exceptionWithClass: [self class]
 						parser: self];
 
-		[delegate parser: self
-		    foundProcessingInstructions: pi];
+		if ([delegate respondsToSelector:
+		    @selector(parser:foundProcessingInstructions:)])
+			[delegate		 parser: self
+			    foundProcessingInstructions: pi];
 
 		objc_autoreleasePoolPop(pool);
 
@@ -564,17 +566,21 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 			    exceptionWithClass: [self class]
 					prefix: prefix];
 
-		[delegate parser: self
-		 didStartElement: name
-		      withPrefix: prefix
-		       namespace: ns
-		      attributes: nil];
+		if ([delegate respondsToSelector: @selector(parser:
+		    didStartElement:prefix:namespace:attributes:)])
+			[delegate    parser: self
+			    didStartElement: name
+				     prefix: prefix
+				  namespace: ns
+				 attributes: nil];
 
 		if (buffer[*i] == '/') {
-			[delegate parser: self
-			   didEndElement: name
-			      withPrefix: prefix
-			       namespace: ns];
+			if ([delegate respondsToSelector:
+			    @selector(parser:didEndElement:prefix:namespace:)])
+				[delegate  parser: self
+				    didEndElement: name
+					   prefix: prefix
+					namespace: ns];
 
 			if ([previous count] == 0)
 				finishedParsing = YES;
@@ -651,10 +657,12 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		    exceptionWithClass: [self class]
 				prefix: prefix];
 
-	[delegate parser: self
-	   didEndElement: name
-	      withPrefix: prefix
-	       namespace: ns];
+	if ([delegate respondsToSelector:
+	    @selector(parser:didEndElement:prefix:namespace:)])
+		[delegate  parser: self
+		    didEndElement: name
+			   prefix: prefix
+			namespace: ns];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -709,17 +717,21 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	pool = objc_autoreleasePoolPush();
 
-	[delegate parser: self
-	 didStartElement: name
-	      withPrefix: prefix
-	       namespace: ns
-	      attributes: attributes];
+	if ([delegate respondsToSelector:
+	    @selector(parser:didStartElement:prefix:namespace:attributes:)])
+		[delegate    parser: self
+		    didStartElement: name
+			     prefix: prefix
+			  namespace: ns
+			 attributes: attributes];
 
 	if (buffer[*i] == '/') {
-		[delegate parser: self
-		   didEndElement: name
-		      withPrefix: prefix
-		       namespace: ns];
+		if ([delegate respondsToSelector:
+		    @selector(parser:didEndElement:prefix:namespace:)])
+			[delegate  parser: self
+			    didEndElement: name
+				   prefix: prefix
+				namespace: ns];
 
 		if ([previous count] == 0)
 			finishedParsing = YES;
@@ -952,8 +964,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	cache_append(cache, buffer + *last, encoding, *i - *last);
 	CDATA = transform_string(cache, 2, NO, nil);
 
-	[delegate parser: self
-	      foundCDATA: CDATA];
+	if ([delegate respondsToSelector: @selector(parser:foundCDATA:)])
+		[delegate parser: self
+		      foundCDATA: CDATA];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -1006,8 +1019,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	cache_append(cache, buffer + *last, encoding, *i - *last);
 	comment = transform_string(cache, 2, NO, nil);
 
-	[delegate parser: self
-	    foundComment: comment];
+	if ([delegate respondsToSelector: @selector(parser:foundComment:)])
+		[delegate parser: self
+		    foundComment: comment];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -1054,50 +1068,11 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 -	   (OFString*)string: (OFString*)string
   containsUnknownEntityNamed: (OFString*)entity
 {
-	return [delegate parser: self
-	foundUnknownEntityNamed: entity];
-}
-@end
+	if ([delegate respondsToSelector:
+	    @selector(parser:foundUnknownEntityNamed:)])
+		return [delegate     parser: self
+		    foundUnknownEntityNamed: entity];
 
-@implementation OFObject (OFXMLParserDelegate)
--		 (void)parser: (OFXMLParser*)parser
-  foundProcessingInstructions: (OFString*)pi
-{
-}
-
--    (void)parser: (OFXMLParser*)parser
-  didStartElement: (OFString*)name
-       withPrefix: (OFString*)prefix
-	namespace: (OFString*)ns
-       attributes: (OFArray*)attributes
-{
-}
-
--  (void)parser: (OFXMLParser*)parser
-  didEndElement: (OFString*)name
-     withPrefix: (OFString*)prefix
-      namespace: (OFString*)ns
-{
-}
-
--    (void)parser: (OFXMLParser*)parser
-  foundCharacters: (OFString*)characters
-{
-}
-
-- (void)parser: (OFXMLParser*)parser
-    foundCDATA: (OFString*)CDATA
-{
-}
-
-- (void)parser: (OFXMLParser*)parser
-  foundComment: (OFString*)comment
-{
-}
-
--	(OFString*)parser: (OFXMLParser*)parser
-  foundUnknownEntityNamed: (OFString*)entity
-{
 	return nil;
 }
 @end

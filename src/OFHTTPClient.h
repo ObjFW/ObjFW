@@ -27,11 +27,7 @@
 /*!
  * @brief A delegate for OFHTTPClient.
  */
-#ifndef OF_HTTP_CLIENT_M
 @protocol OFHTTPClientDelegate <OFObject>
-#else
-@protocol OFHTTPClientDelegate
-#endif
 #ifdef OF_HAVE_OPTIONAL_PROTOCOLS
 @optional
 #endif

@@ -16,8 +16,6 @@
 
 #include "config.h"
 
-#define OF_XML_ELEMENT_BUILDER_M
-
 #import "OFXMLElementBuilder.h"
 #import "OFXMLElement.h"
 #import "OFXMLAttribute.h"
@@ -78,14 +76,15 @@
 
 	if (parent != nil)
 		[parent addChild: node];
-	else
+	else if ([delegate respondsToSelector:
+	    @selector(elementBuilder:didBuildParentlessNode:)])
 		[delegate   elementBuilder: self
 		    didBuildParentlessNode: node];
 }
 
 -    (void)parser: (OFXMLParser*)parser
   didStartElement: (OFString*)name
-       withPrefix: (OFString*)prefix
+	   prefix: (OFString*)prefix
 	namespace: (OFString*)ns
        attributes: (OFArray*)attributes
 {
@@ -118,15 +117,21 @@
 
 -  (void)parser: (OFXMLParser*)parser
   didEndElement: (OFString*)name
-     withPrefix: (OFString*)prefix
+	 prefix: (OFString*)prefix
       namespace: (OFString*)ns
 {
 	switch ([stack count]) {
 	case 0:
-		[delegate elementBuilder: self
-		    didNotExpectCloseTag: name
-			      withPrefix: prefix
-			       namespace: ns];
+		if ([delegate respondsToSelector: @selector(elementBuilder:
+		    didNotExpectCloseTag:prefix:namespace:)])
+			[delegate elementBuilder: self
+			    didNotExpectCloseTag: name
+					  prefix: prefix
+				       namespace: ns];
+		else
+			@throw [OFMalformedXMLException
+			    exceptionWithClass: [self class]];
+
 		return;
 	case 1:
 		[delegate elementBuilder: self
@@ -148,7 +153,8 @@
 
 	if (parent != nil)
 		[parent addChild: node];
-	else
+	else if ([delegate respondsToSelector:
+	    @selector(elementBuilder:didBuildParentlessNode:)])
 		[delegate   elementBuilder: self
 		    didBuildParentlessNode: node];
 }
@@ -161,7 +167,8 @@
 
 	if (parent != nil)
 		[parent addChild: node];
-	else
+	else if ([delegate respondsToSelector:
+	    @selector(elementBuilder:didBuildParentlessNode:)])
 		[delegate   elementBuilder: self
 		    didBuildParentlessNode: node];
 }
@@ -174,7 +181,8 @@
 
 	if (parent != nil)
 		[parent addChild: node];
-	else
+	else if ([delegate respondsToSelector:
+	    @selector(elementBuilder:didBuildParentlessNode:)])
 		[delegate   elementBuilder: self
 		    didBuildParentlessNode: node];
 }
@@ -182,33 +190,11 @@
 -	(OFString*)parser: (OFXMLParser*)parser
   foundUnknownEntityNamed: (OFString*)entity
 {
-	return [delegate elementBuilder: self
-		foundUnknownEntityNamed: entity];
-}
-@end
+	if ([delegate respondsToSelector:
+	    @selector(elementBuilder:foundUnknownEntityNamed:)])
+		return [delegate elementBuilder: self
+			foundUnknownEntityNamed: entity];
 
-@implementation OFObject (OFXMLElementBuilderDelegate)
-- (void)elementBuilder: (OFXMLElementBuilder*)builder
-       didBuildElement: (OFXMLElement*)element
-{
-}
-
--   (void)elementBuilder: (OFXMLElementBuilder*)builder
-  didBuildParentlessNode: (OFXMLNode*)node
-{
-}
-
-- (void)elementBuilder: (OFXMLElementBuilder*)builder
-  didNotExpectCloseTag: (OFString*)name
-	    withPrefix: (OFString*)prefix
-	     namespace: (OFString*)ns
-{
-	@throw [OFMalformedXMLException exceptionWithClass: [builder class]];
-}
-
-- (OFString*)elementBuilder: (OFXMLElementBuilder*)builder
-    foundUnknownEntityNamed: (OFString*)entity
-{
 	return nil;
 }
 @end

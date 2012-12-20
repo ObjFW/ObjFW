@@ -16,8 +16,6 @@
 
 #include "config.h"
 
-#define OF_APPLICATION_M
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -48,7 +46,8 @@ atexit_handler(void)
 {
 	id <OFApplicationDelegate> delegate = [app delegate];
 
-	[delegate applicationWillTerminate];
+	if ([delegate respondsToSelector: @selector(applicationWillTerminate)])
+		[delegate applicationWillTerminate];
 
 	[(id)delegate release];
 }
@@ -276,14 +275,14 @@ of_application_main(int *argc, char **argv[], Class cls)
 {
 	delegate = delegate_;
 
-#define REGISTER_SIGNAL(sig)						  \
-	sig##Handler = (void(*)(id, SEL))[(id)delegate methodForSelector: \
-	    @selector(applicationDidReceive##sig)];			  \
-	if (sig##Handler != (void(*)(id, SEL))[OFObject			  \
-	    instanceMethodForSelector:					  \
-	    @selector(applicationDidReceive##sig)])			  \
-		signal(sig, handle##sig);				  \
-	else								  \
+#define REGISTER_SIGNAL(sig)						\
+	if ([delegate respondsToSelector:				\
+	    @selector(applicationDidReceive##sig)]) {			\
+		sig##Handler = (void(*)(id, SEL))[(id)delegate		\
+		    methodForSelector:					\
+		    @selector(applicationDidReceive##sig)];		\
+		signal(sig, handle##sig);				\
+	} else								\
 		signal(sig, SIG_DFL);
 	REGISTER_SIGNAL(SIGINT)
 #ifndef _WIN32
@@ -328,33 +327,5 @@ of_application_main(int *argc, char **argv[], Class cls)
 	[environment release];
 
 	[super dealloc];
-}
-@end
-
-@implementation OFObject (OFApplicationDelegate)
-- (void)applicationDidFinishLaunching
-{
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
-}
-
-- (void)applicationWillTerminate
-{
-}
-
-- (void)applicationDidReceiveSIGINT
-{
-}
-
-- (void)applicationDidReceiveSIGHUP
-{
-}
-
-- (void)applicationDidReceiveSIGUSR1
-{
-}
-
-- (void)applicationDidReceiveSIGUSR2
-{
 }
 @end

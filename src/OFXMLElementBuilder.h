@@ -25,11 +25,7 @@
  * @brief A protocol that needs to be implemented by delegates for
  * OFXMLElementBuilder.
  */
-#ifndef OF_XML_ELEMENT_BUILDER_M
 @protocol OFXMLElementBuilderDelegate <OFObject>
-#else
-@protocol OFXMLElementBuilderDelegate
-#endif
 /*!
  * @brief This callback is called when the OFXMLElementBuilder built an element.
  *
@@ -80,7 +76,7 @@
  */
 - (void)elementBuilder: (OFXMLElementBuilder*)builder
   didNotExpectCloseTag: (OFString*)name
-	    withPrefix: (OFString*)prefix
+		prefix: (OFString*)prefix
 	     namespace: (OFString*)ns;
 
 /*!

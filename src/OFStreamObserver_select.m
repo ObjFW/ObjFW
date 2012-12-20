@@ -129,19 +129,26 @@
 		pool = objc_autoreleasePoolPush();
 
 		if (FD_ISSET(fd, &readFDs_)) {
+			if ([delegate respondsToSelector:
+			    @selector(streamIsReadyForReading:)])
+				[delegate streamIsReadyForReading: objects[i]];
+
 			realEvents++;
-			[delegate streamIsReadyForReading: objects[i]];
 		}
 
 		if (FD_ISSET(fd, &exceptFDs_)) {
-			realEvents++;
-			[delegate streamDidReceiveException: objects[i]];
+			if ([delegate respondsToSelector:
+			    @selector(streamDidReceiveException:)])
+				[delegate streamDidReceiveException:
+				    objects[i]];
 
 			/*
 			 * Prevent calling it twice in case the FD is in both
 			 * sets.
 			 */
 			FD_CLR(fd, &exceptFDs_);
+
+			realEvents++;
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -156,13 +163,20 @@
 		pool = objc_autoreleasePoolPush();
 
 		if (FD_ISSET(fd, &writeFDs_)) {
+			if ([delegate respondsToSelector:
+			    @selector(streamIsReadyForWriting:)])
+				[delegate streamIsReadyForWriting: objects[i]];
+
 			realEvents++;
-			[delegate streamIsReadyForWriting: objects[i]];
 		}
 
 		if (FD_ISSET(fd, &exceptFDs_)) {
+			if ([delegate respondsToSelector:
+			    @selector(streamDidReceiveException:)])
+				[delegate streamDidReceiveException:
+				    objects[i]];
+
 			realEvents++;
-			[delegate streamDidReceiveException: objects[i]];
 		}
 
 		objc_autoreleasePoolPop(pool);

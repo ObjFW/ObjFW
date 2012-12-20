@@ -16,7 +16,6 @@
 
 #include "config.h"
 
-#define OF_STREAM_OBSERVER_M
 #define __NO_EXT_QNX
 
 #include <unistd.h>
@@ -389,8 +388,13 @@ enum {
 		if ([objects[i] pendingBytes] > 0 &&
 		    ![objects[i] OF_isWaitingForDelimiter]) {
 			void *pool = objc_autoreleasePoolPush();
-			[delegate streamIsReadyForReading: objects[i]];
+
+			if ([delegate respondsToSelector:
+			    @selector(streamIsReadyForReading:)])
+				[delegate streamIsReadyForReading: objects[i]];
+
 			foundInCache = YES;
+
 			objc_autoreleasePoolPop(pool);
 		}
 	}
@@ -403,19 +407,5 @@ enum {
 		return YES;
 
 	return NO;
-}
-@end
-
-@implementation OFObject (OFStreamObserverDelegate)
-- (void)streamIsReadyForReading: (OFStream*)stream
-{
-}
-
-- (void)streamIsReadyForWriting: (OFStream*)stream
-{
-}
-
-- (void)streamDidReceiveException: (OFStream*)stream
-{
 }
 @end

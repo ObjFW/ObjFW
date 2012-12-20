@@ -16,8 +16,6 @@
 
 #include "config.h"
 
-#define OF_HTTP_SERVER_M
-
 #include <string.h>
 #include <ctype.h>
 
@@ -646,14 +644,5 @@ normalized_key(OFString *key)
 						  exception:)];
 
 	return YES;
-}
-@end
-
-@implementation OFObject (OFHTTPServerDelegate)
-- (OFHTTPRequestResult*)server: (OFHTTPServer*)server
-	     didReceiveRequest: (OFHTTPRequest*)request
-{
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
 }
 @end

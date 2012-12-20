@@ -16,8 +16,6 @@
 
 #include "config.h"
 
-#define OF_HTTP_CLIENT_M
-
 #include <string.h>
 #include <ctype.h>
 
@@ -152,9 +150,11 @@ normalize_key(char *str_)
 		sock = [[[of_tls_socket_class alloc] init] autorelease];
 	}
 
-	[delegate client: self
-	 didCreateSocket: sock
-		 request: request];
+	if ([delegate respondsToSelector:
+	    @selector(client:didCreateSocket:request:)])
+		[delegate client: self
+		 didCreateSocket: sock
+			 request: request];
 
 	[sock connectToHost: [URL host]
 		       port: [URL port]];
@@ -298,16 +298,18 @@ normalize_key(char *str_)
 		    ![value hasPrefix: @"http://"])) {
 			OFURL *newURL;
 			OFHTTPRequest *newRequest;
-			BOOL follow;
+			BOOL follow = YES;
 
 			newURL = [OFURL URLWithString: value
 					relativeToURL: URL];
 
-			follow = [delegate client: self
-			     shouldFollowRedirect: newURL
-					  request: request];
+			if ([delegate respondsToSelector:
+			    @selector(client:shouldFollowRedirect:request:)])
+				follow = [delegate client: self
+				     shouldFollowRedirect: newURL
+						  request: request];
 
-			if (!follow && delegate != nil) {
+			if (!follow) {
 				[serverHeaders setObject: value
 						  forKey: key];
 				continue;
@@ -338,10 +340,12 @@ normalize_key(char *str_)
 				  forKey: key];
 	}
 
-	[delegate      client: self
-	    didReceiveHeaders: serverHeaders
-		   statusCode: status
-		      request: request];
+	if ([delegate respondsToSelector:
+	    @selector(client:didReceiveHeaders:statusCode:request:)])
+		[delegate      client: self
+		    didReceiveHeaders: serverHeaders
+			   statusCode: status
+			      request: request];
 
 	data = (storesData ? [OFDataArray dataArray] : nil);
 	chunked = [[serverHeaders objectForKey: @"Transfer-Encoding"]
@@ -398,10 +402,13 @@ normalize_key(char *str_)
 					length = [sock readIntoBuffer: buffer
 							       length: length];
 
-					[delegate client: self
-					  didReceiveData: buffer
-						  length: length
-						 request: request];
+					if ([delegate respondsToSelector:
+					    @selector(client:didReceiveData:
+					    length:request:)])
+						[delegate client: self
+						  didReceiveData: buffer
+							  length: length
+							 request: request];
 
 					objc_autoreleasePoolPop(pool2);
 					pool2 = objc_autoreleasePoolPush();
@@ -437,10 +444,13 @@ normalize_key(char *str_)
 
 				pool2 = objc_autoreleasePoolPush();
 
-				[delegate client: self
-				  didReceiveData: buffer
-					  length: length
-					 request: request];
+				if ([delegate respondsToSelector:
+				    @selector(client:didReceiveData:length:
+				    request:)])
+					[delegate client: self
+					  didReceiveData: buffer
+						  length: length
+						 request: request];
 
 				objc_autoreleasePoolPop(pool2);
 
@@ -485,34 +495,5 @@ normalize_key(char *str_)
 				result: result];
 
 	return result;
-}
-@end
-
-@implementation OFObject (OFHTTPClientDelegate)
--    (void)client: (OFHTTPClient*)client
-  didCreateSocket: (OFTCPSocket*)socket
-	  request: (OFHTTPRequest*)request
-{
-}
-
--      (void)client: (OFHTTPClient*)client
-  didReceiveHeaders: (OFDictionary*)headers
-	 statusCode: (int)statusCode
-	    request: (OFHTTPRequest*)request
-{
-}
-
--   (void)client: (OFHTTPClient*)client
-  didReceiveData: (const char*)data
-	  length: (size_t)length
-	 request: (OFHTTPRequest*)request
-{
-}
-
--	  (BOOL)client: (OFHTTPClient*)client
-  shouldFollowRedirect: (OFURL*)URL
-	       request: (OFHTTPRequest*)request
-{
-	return YES;
 }
 @end

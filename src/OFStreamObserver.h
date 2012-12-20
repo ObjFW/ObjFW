@@ -34,11 +34,7 @@
  * @brief A protocol that needs to be implemented by delegates for
  *	  OFStreamObserver.
  */
-#ifndef OF_STREAM_OBSERVER_M
 @protocol OFStreamObserverDelegate <OFObject>
-#else
-@protocol OFStreamObserverDelegate
-#endif
 #ifdef OF_HAVE_OPTIONAL_PROTOCOLS
 @optional
 #endif

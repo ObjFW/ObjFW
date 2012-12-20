@@ -253,7 +253,7 @@ enum event_type {
 
 -    (void)parser: (OFXMLParser*)parser
   didStartElement: (OFString*)name
-       withPrefix: (OFString*)prefix
+	   prefix: (OFString*)prefix
 	namespace: (OFString*)ns
        attributes: (OFArray*)attrs
 {
@@ -267,7 +267,7 @@ enum event_type {
 
 -  (void)parser: (OFXMLParser*)parser
   didEndElement: (OFString*)name
-     withPrefix: (OFString*)prefix
+	 prefix: (OFString*)prefix
       namespace: (OFString*)ns
 {
 	[self parserCallbackWithEventType: TAG_END

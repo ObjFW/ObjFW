@@ -27,11 +27,7 @@
 /*!
  * @brief A protocol that needs to be implemented by delegates for OFXMLParser.
  */
-#ifndef OF_XML_PARSER_M
 @protocol OFXMLParserDelegate <OFObject>
-#else
-@protocol OFXMLParserDelegate
-#endif
 #ifdef OF_HAVE_OPTIONAL_PROTOCOLS
 @optional
 #endif
@@ -58,7 +54,7 @@
  */
 -    (void)parser: (OFXMLParser*)parser
   didStartElement: (OFString*)name
-       withPrefix: (OFString*)prefix
+	   prefix: (OFString*)prefix
 	namespace: (OFString*)ns
        attributes: (OFArray*)attributes;
 
@@ -72,7 +68,7 @@
  */
 -  (void)parser: (OFXMLParser*)parser
   didEndElement: (OFString*)name
-     withPrefix: (OFString*)prefix
+	 prefix: (OFString*)prefix
       namespace: (OFString*)ns;
 
 /*!
