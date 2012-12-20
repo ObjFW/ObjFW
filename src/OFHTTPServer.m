@@ -45,7 +45,6 @@
  * FIXME: Currently, connections never time out, which means a DoS is possible.
  * TODO: Add support for chunked transfer encoding.
  * FIXME: Key normalization replaces headers like "DNT" with "Dnt".
- * FIXME: It is currently not possible to stop the server.
  * FIXME: Errors are not reported to the user.
  */
 
@@ -207,7 +206,7 @@ normalized_key(OFString *key)
 	self = [super init];
 
 	sock = [sock_ retain];
-	server = server_;
+	server = [server_ retain];
 	state = AWAITING_PROLOG;
 
 	return self;
@@ -216,6 +215,7 @@ normalized_key(OFString *key)
 - (void)dealloc
 {
 	[sock release];
+	[server release];
 	[host release];
 	[path release];
 	[headers release];
@@ -595,6 +595,13 @@ normalized_key(OFString *key)
 				      selector: @selector(OF_socket:
 						    didAcceptSocket:
 						    exception:)];
+}
+
+- (void)stop
+{
+	[listeningSocket cancelAsyncRequests];
+	[listeningSocket release];
+	listeningSocket = nil;
 }
 
 - (BOOL)OF_socket: (OFTCPSocket*)socket

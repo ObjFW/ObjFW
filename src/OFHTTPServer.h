@@ -128,6 +128,13 @@
  */
 - (void)start;
 
+/*!
+ * @brief Stops the HTTP server, meaning it will not accept any new incoming
+ *	  connections, but still handle existing connections until they are
+ *	  finished or timed out.
+ */
+- (void)stop;
+
 - (BOOL)OF_socket: (OFTCPSocket*)socket
   didAcceptSocket: (OFTCPSocket*)clientSocket
 	exception: (OFException*)exception;
