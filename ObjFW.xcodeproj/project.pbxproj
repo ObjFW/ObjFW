@@ -290,6 +290,8 @@
 		4B674408163C395900EB1E59 /* OFTLSKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6743FF163C395900EB1E59 /* OFTLSKey.m */; };
 		4B7FF3B4133CED6200000324 /* OFConditionStillWaitingException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7FF3B2133CED6100000324 /* OFConditionStillWaitingException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7FF3B5133CED6200000324 /* OFConditionStillWaitingException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7FF3B3133CED6100000324 /* OFConditionStillWaitingException.m */; };
+		4B837D7916829C5F007A3E83 /* block.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B837D7716829C5F007A3E83 /* block.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B837D7A16829C5F007A3E83 /* instance.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B837D7816829C5F007A3E83 /* instance.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B83F0F4142FDEFD00E4A821 /* OFStreamObserver_kqueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B83F0F2142FDEFD00E4A821 /* OFStreamObserver_kqueue.h */; };
 		4B83F0F5142FDEFD00E4A821 /* OFStreamObserver_kqueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B83F0F3142FDEFD00E4A821 /* OFStreamObserver_kqueue.m */; };
 		4B8B16FE133A3B84007CD8B3 /* OFHashAlreadyCalculatedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8B16FC133A3B84007CD8B3 /* OFHashAlreadyCalculatedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -689,6 +691,8 @@
 		4B6EF685123535C80076B512 /* test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = test.m; path = tests/objc_sync/test.m; sourceTree = SOURCE_ROOT; };
 		4B7FF3B2133CED6100000324 /* OFConditionStillWaitingException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFConditionStillWaitingException.h; path = src/exceptions/OFConditionStillWaitingException.h; sourceTree = "<group>"; };
 		4B7FF3B3133CED6100000324 /* OFConditionStillWaitingException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFConditionStillWaitingException.m; path = src/exceptions/OFConditionStillWaitingException.m; sourceTree = "<group>"; };
+		4B837D7716829C5F007A3E83 /* block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = block.h; path = src/block.h; sourceTree = "<group>"; };
+		4B837D7816829C5F007A3E83 /* instance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = instance.h; path = src/instance.h; sourceTree = "<group>"; };
 		4B83F0F2142FDEFD00E4A821 /* OFStreamObserver_kqueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamObserver_kqueue.h; path = src/OFStreamObserver_kqueue.h; sourceTree = "<group>"; };
 		4B83F0F3142FDEFD00E4A821 /* OFStreamObserver_kqueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamObserver_kqueue.m; path = src/OFStreamObserver_kqueue.m; sourceTree = "<group>"; };
 		4B8B16FC133A3B84007CD8B3 /* OFHashAlreadyCalculatedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFHashAlreadyCalculatedException.h; path = src/exceptions/OFHashAlreadyCalculatedException.h; sourceTree = "<group>"; };
@@ -1218,6 +1222,8 @@
 				4BA9CFA315E129D30076DC74 /* autorelease.h */,
 				4B3D236D1337FB5800DD29B8 /* base64.h */,
 				4B3D236E1337FB5800DD29B8 /* base64.m */,
+				4B837D7716829C5F007A3E83 /* block.h */,
+				4B837D7816829C5F007A3E83 /* instance.h */,
 				4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */,
 				4BE17AD812FD744C002CEB0B /* foundation-compat.m */,
 				4BBA36C511406AB700CBA3AC /* macros.h */,
@@ -1417,6 +1423,8 @@
 				4B3D23E61337FCB000DD29B8 /* atomic.h in Headers */,
 				4BA9CFA415E129D30076DC74 /* autorelease.h in Headers */,
 				4B3D23E71337FCB000DD29B8 /* base64.h in Headers */,
+				4B837D7916829C5F007A3E83 /* block.h in Headers */,
+				4B837D7A16829C5F007A3E83 /* instance.h in Headers */,
 				4B3D23E81337FCB000DD29B8 /* macros.h in Headers */,
 				4BD98C03133814220048DD5B /* objfw-defs.h in Headers */,
 				4B3D23E91337FCB000DD29B8 /* of_asprintf.h in Headers */,

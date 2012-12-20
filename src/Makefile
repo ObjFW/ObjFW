@@ -82,6 +82,7 @@ INCLUDES := ${SRCS:.m=.h}		\
 	    asprintf.h			\
 	    autorelease.h		\
 	    ${ATOMIC_H}			\
+	    block.h			\
 	    instance.h			\
 	    macros.h			\
 	    objfw-defs.h		\

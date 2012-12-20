@@ -16,35 +16,7 @@
 
 #import "OFObject.h"
 
-typedef struct of_block_literal_t {
-	Class isa;
-	int flags;
-	int reserved;
-	void (*invoke)(void *, ...);
-	struct of_block_descriptor_t {
-		unsigned long reserved;
-		unsigned long size;
-		void (*copy_helper)(void *dest, void *src);
-		void (*dispose_helper)(void *src);
-		const char *signature;
-	} *descriptor;
-} of_block_literal_t;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern void* _Block_copy(const void*);
-extern void _Block_release(const void*);
-#ifdef __cplusplus
-}
-#endif
-
-#ifndef Block_copy
-# define Block_copy(x) ((__typeof__(x))_Block_copy((const void*)(x)))
-#endif
-#ifndef Block_release
-# define Block_release(x) _Block_release((const void*)(x))
-#endif
+#import "block.h"
 
 /*!
  * @brief The class for all blocks, since all blocks are also objects.
