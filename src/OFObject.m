@@ -124,9 +124,12 @@ enumeration_mutation_handler(id object)
 void
 of_method_not_found(id obj, SEL sel)
 {
-	fprintf(stderr, "Runtime error: Selector %s is not implemented in "
-	    "class %s!\n", sel_getName(sel),
-	    class_getName(object_getClass(obj)));
+	[obj doesNotRecognizeSelector: sel];
+
+	/*
+	 * Just in case doesNotRecognizeSelector: returned, even though it must
+	 * never return.
+	 */
 	abort();
 }
 
@@ -977,6 +980,12 @@ void _references_to_categories_of_OFObject(void)
 	return nil;
 }
 
+- (void)doesNotRecognizeSelector: (SEL)selector
+{
+	@throw [OFNotImplementedException exceptionWithClass: [self class]
+						    selector: selector];
+}
+
 - retain
 {
 #if defined(OF_ATOMIC_OPS)
@@ -1061,20 +1070,20 @@ void _references_to_categories_of_OFObject(void)
 /* Required to use properties with the Apple runtime */
 - copyWithZone: (void*)zone
 {
-	if OF_UNLIKELY (zone != NULL)
-		@throw [OFNotImplementedException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+	if OF_UNLIKELY (zone != NULL) {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	}
 
 	return [(id)self copy];
 }
 
 - mutableCopyWithZone: (void*)zone
 {
-	if OF_UNLIKELY (zone != NULL)
-		@throw [OFNotImplementedException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+	if OF_UNLIKELY (zone != NULL) {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	}
 
 	return [(id)self mutableCopy];
 }
@@ -1085,36 +1094,36 @@ void _references_to_categories_of_OFObject(void)
  */
 + (void*)allocMemoryWithSize: (size_t)size
 {
-	@throw [OFNotImplementedException exceptionWithClass: self
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 + (void*)allocMemoryWithSize: (size_t)size
 		       count: (size_t)count
 {
-	@throw [OFNotImplementedException exceptionWithClass: self
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 + (void*)resizeMemory: (void*)pointer
 		 size: (size_t)size
 {
-	@throw [OFNotImplementedException exceptionWithClass: self
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 + (void*)resizeMemory: (void*)pointer
 		 size: (size_t)size
 		count: (size_t)count
 {
-	@throw [OFNotImplementedException exceptionWithClass: self
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 + (void)freeMemory: (void*)pointer
 {
-	@throw [OFNotImplementedException exceptionWithClass: self
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 + retain
@@ -1138,19 +1147,19 @@ void _references_to_categories_of_OFObject(void)
 
 + (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: self
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 + copyWithZone: (void*)zone
 {
-	@throw [OFNotImplementedException exceptionWithClass: self
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 + mutableCopyWithZone: (void*)zone
 {
-	@throw [OFNotImplementedException exceptionWithClass: self
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 @end

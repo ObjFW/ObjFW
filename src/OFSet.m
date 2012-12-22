@@ -16,12 +16,12 @@
 
 #include "config.h"
 
+#include <stdlib.h>
+
 #import "OFSet.h"
 #import "OFSet_hashtable.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
-
-#import "OFNotImplementedException.h"
 
 #import "autorelease.h"
 
@@ -96,9 +96,11 @@ static struct {
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
-	[super dealloc];	/* Get rid of a stupid warning */
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
+
+	/* Get rid of a stupid warning */
+	[super dealloc];
 }
 @end
 
@@ -155,10 +157,13 @@ static struct {
 - init
 {
 	if (object_getClass(self) == [OFSet class]) {
-		Class c = [self class];
-		[self release];
-		@throw [OFNotImplementedException exceptionWithClass: c
-							    selector: _cmd];
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+			abort();
+		} @catch (id e) {
+			[self release];
+			@throw e;
+		}
 	}
 
 	return [super init];
@@ -166,18 +171,36 @@ static struct {
 
 - initWithSet: (OFSet*)set
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithArray: (OFArray*)array
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+}
+
+- initWithObjects: (id const*)objects
+	    count: (size_t)count
+{
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - (id)initWithObjects: (id)firstObject, ...
@@ -193,56 +216,53 @@ static struct {
 	return ret;
 }
 
-- initWithObjects: (id const*)objects
-	    count: (size_t)count
-{
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
-}
-
 - initWithObject: (id)firstObject
        arguments: (va_list)arguments
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithSerialization: (OFXMLElement*)element
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - (size_t)count
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (BOOL)containsObject: (id)object
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (OFEnumerator*)objectEnumerator
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
 			   objects: (id*)objects
 			     count: (int)count
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (BOOL)isEqual: (id)object

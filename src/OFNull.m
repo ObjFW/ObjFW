@@ -16,12 +16,13 @@
 
 #include "config.h"
 
+#include <stdlib.h>
+
 #import "OFNull.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
-#import "OFNotImplementedException.h"
 
 #import "autorelease.h"
 
@@ -108,8 +109,10 @@ static OFNull *null = nil;
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
-	[super dealloc];	/* Get rid of a stupid warning */
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
+
+	/* Get rid of a stupid warning */
+	[super dealloc];
 }
 @end

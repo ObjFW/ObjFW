@@ -16,13 +16,13 @@
 
 #include "config.h"
 
+#include <stdlib.h>
+
 #import "OFCountedSet.h"
 #import "OFCountedSet_hashtable.h"
 #import "OFNumber.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
-
-#import "OFNotImplementedException.h"
 
 #import "autorelease.h"
 
@@ -98,9 +98,11 @@ static struct {
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
-	[super dealloc];	/* Get rid of a stupid warning */
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
+
+	/* Get rid of a stupid warning */
+	[super dealloc];
 }
 @end
 
@@ -122,10 +124,13 @@ static struct {
 - init
 {
 	if (object_getClass(self) == [OFCountedSet class]) {
-		Class c = [self class];
-		[self release];
-		@throw [OFNotImplementedException exceptionWithClass: c
-							    selector: _cmd];
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+			abort();
+		} @catch (id e) {
+			[self release];
+			@throw e;
+		}
 	}
 
 	return [super init];
@@ -133,8 +138,8 @@ static struct {
 
 - (size_t)countForObject: (id)object
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (OFString*)description

@@ -16,11 +16,11 @@
 
 #include "config.h"
 
+#include <stdlib.h>
+
 #import "OFHTTPRequestFailedException.h"
 #import "OFString.h"
 #import "OFHTTPRequest.h"
-
-#import "OFNotImplementedException.h"
 
 #import "autorelease.h"
 #import "common.h"
@@ -37,10 +37,13 @@
 
 - initWithClass: (Class)class_
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithClass: (Class)class_

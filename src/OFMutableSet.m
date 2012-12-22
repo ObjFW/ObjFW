@@ -16,12 +16,12 @@
 
 #include "config.h"
 
+#include <stdlib.h>
+
 #include <assert.h>
 
 #import "OFMutableSet.h"
 #import "OFMutableSet_hashtable.h"
-
-#import "OFNotImplementedException.h"
 
 #import "autorelease.h"
 
@@ -97,9 +97,11 @@ static struct {
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
-	[super dealloc];	/* Get rid of a stupid warning */
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
+
+	/* Get rid of a stupid warning */
+	[super dealloc];
 }
 @end
 
@@ -121,10 +123,13 @@ static struct {
 - init
 {
 	if (object_getClass(self) == [OFMutableSet class]) {
-		Class c = [self class];
-		[self release];
-		@throw [OFNotImplementedException exceptionWithClass: c
-							    selector: _cmd];
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+			abort();
+		} @catch (id e) {
+			[self release];
+			@throw e;
+		}
 	}
 
 	return [super init];
@@ -132,14 +137,14 @@ static struct {
 
 - (void)addObject: (id)object
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void)removeObject: (id)object
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void)minusSet: (OFSet*)set

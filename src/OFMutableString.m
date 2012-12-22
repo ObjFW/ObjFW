@@ -27,7 +27,6 @@
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
-#import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 
 #import "autorelease.h"
@@ -233,9 +232,11 @@ static struct {
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
-	[super dealloc];	/* Get rid of a stupid warning */
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
+
+	/* Get rid of a stupid warning */
+	[super dealloc];
 }
 @end
 
@@ -300,8 +301,8 @@ static struct {
 - (void)setCharacter: (of_unichar_t)character
 	     atIndex: (size_t)index
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void)appendUTF8String: (const char*)UTF8String
@@ -434,14 +435,14 @@ static struct {
 - (void)insertString: (OFString*)string
 	     atIndex: (size_t)index
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void)deleteCharactersInRange: (of_range_t)range
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void)replaceCharactersInRange: (of_range_t)range

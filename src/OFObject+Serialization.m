@@ -16,13 +16,13 @@
 
 #include "config.h"
 
+#include <stdlib.h>
+
 #import "OFObject.h"
 #import "OFObject+Serialization.h"
 #import "OFSerialization.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
-
-#import "OFNotImplementedException.h"
 
 #import "autorelease.h"
 
@@ -36,10 +36,10 @@ int _OFObject_Serialization_reference;
 	OFXMLElement *root;
 	OFString *ret;
 
-	if (![self conformsToProtocol: @protocol(OFSerialization)])
-		@throw [OFNotImplementedException
-		    exceptionWithClass: [self class]
-			      selector: @selector(stringBySerializing)];
+	if (![self conformsToProtocol: @protocol(OFSerialization)]) {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	}
 
 	pool = objc_autoreleasePoolPush();
 	element = [(id)self XMLElementBySerializing];

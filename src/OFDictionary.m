@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#include <stdlib.h>
+
 #include <assert.h>
 
 #import "OFDictionary.h"
@@ -25,7 +27,6 @@
 #import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
-#import "OFNotImplementedException.h"
 
 #import "autorelease.h"
 
@@ -113,9 +114,11 @@ static struct {
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
-	[super dealloc];	/* Get rid of a stupid warning */
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
+
+	/* Get rid of a stupid warning */
+	[super dealloc];
 }
 @end
 
@@ -183,10 +186,13 @@ static struct {
 - init
 {
 	if (object_getClass(self) == [OFDictionary class]) {
-		Class c = [self class];
-		[self release];
-		@throw [OFNotImplementedException exceptionWithClass: c
-							    selector: _cmd];
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+			abort();
+		} @catch (id e) {
+			[self release];
+			@throw e;
+		}
 	}
 
 	return [super init];
@@ -194,10 +200,13 @@ static struct {
 
 - initWithDictionary: (OFDictionary*)dictionary
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithObject: (id)object
@@ -239,10 +248,13 @@ static struct {
 	  forKeys: (id const*)keys
 	    count: (size_t)count
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithKeysAndObjects: (id)firstKey, ...
@@ -261,24 +273,30 @@ static struct {
 - initWithKey: (id)firstKey
     arguments: (va_list)arguments
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithSerialization: (OFXMLElement*)element
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - (id)objectForKey: (id)key
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (id)objectForKeyedSubscript: (id)key
@@ -288,8 +306,8 @@ static struct {
 
 - (size_t)count
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - copy
@@ -441,22 +459,22 @@ static struct {
 
 - (OFEnumerator*)objectEnumerator
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (OFEnumerator*)keyEnumerator
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
 			   objects: (id*)objects
 			     count: (int)count_
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 #if defined(OF_HAVE_BLOCKS) && defined(OF_HAVE_FAST_ENUMERATION)

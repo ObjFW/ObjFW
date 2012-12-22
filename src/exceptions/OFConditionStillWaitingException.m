@@ -16,11 +16,11 @@
 
 #include "config.h"
 
+#include <stdlib.h>
+
 #import "OFConditionStillWaitingException.h"
 #import "OFString.h"
 #import "OFCondition.h"
-
-#import "OFNotImplementedException.h"
 
 @implementation OFConditionStillWaitingException
 + (instancetype)exceptionWithClass: (Class)class_
@@ -32,10 +32,13 @@
 
 - initWithClass: (Class)class_
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithClass: (Class)class_

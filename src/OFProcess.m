@@ -28,7 +28,6 @@
 #import "OFArray.h"
 
 #import "OFInitializationFailedException.h"
-#import "OFNotImplementedException.h"
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
@@ -300,8 +299,8 @@
 #ifndef _WIN32
 	return readPipe[0];
 #else
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 #endif
 }
 
@@ -310,8 +309,8 @@
 #ifndef _WIN32
 	return writePipe[1];
 #else
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 #endif
 }
 

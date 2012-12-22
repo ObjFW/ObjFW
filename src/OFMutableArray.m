@@ -16,6 +16,7 @@
 
 #include "config.h"
 
+#include <stdlib.h>
 #include <string.h>
 
 #include <assert.h>
@@ -25,7 +26,6 @@
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
-#import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 
 #import "autorelease.h"
@@ -146,9 +146,11 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
-	[super dealloc];	/* Get rid of a stupid warning */
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
+
+	/* Get rid of a stupid warning */
+	[super dealloc];
 }
 @end
 
@@ -170,10 +172,13 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 - init
 {
 	if (object_getClass(self) == [OFMutableArray class]) {
-		Class c = [self class];
-		[self release];
-		@throw [OFNotImplementedException exceptionWithClass: c
-							    selector: _cmd];
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+			abort();
+		} @catch (id e) {
+			[self release];
+			@throw e;
+		}
 	}
 
 	return [super init];
@@ -199,8 +204,8 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 - (void)insertObject: (id)object
 	     atIndex: (size_t)index
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void)insertObjectsFromArray: (OFArray*)array
@@ -225,8 +230,8 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 - (void)replaceObjectAtIndex: (size_t)index
 		  withObject: (id)object
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 -    (void)setObject: (id)object
@@ -279,8 +284,8 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 
 - (void)removeObjectAtIndex: (size_t)index
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void)removeObject: (id)object

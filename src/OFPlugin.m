@@ -27,7 +27,6 @@
 #import "OFString.h"
 
 #import "OFInitializationFailedException.h"
-#import "OFNotImplementedException.h"
 
 #import "autorelease.h"
 
@@ -70,10 +69,13 @@
 - init
 {
 	if (object_getClass(self) == [OFPlugin class]) {
-		Class c = [self class];
-		[self release];
-		@throw [OFNotImplementedException exceptionWithClass: c
-							    selector: _cmd];
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+			abort();
+		} @catch (id e) {
+			[self release];
+			@throw e;
+		}
 	}
 
 	return [super init];

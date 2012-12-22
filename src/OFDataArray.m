@@ -31,7 +31,6 @@
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
-#import "OFNotImplementedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
@@ -559,9 +558,8 @@ void _references_to_categories_of_OFDataArray(void)
 	OFXMLElement *element;
 
 	if (itemSize != 1)
-		@throw [OFNotImplementedException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]];
 
 	pool = objc_autoreleasePoolPush();
 	element = [OFXMLElement

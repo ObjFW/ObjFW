@@ -30,7 +30,6 @@
 
 #import "OFAllocFailedException.h"
 #import "OFInitializationFailedException.h"
-#import "OFNotImplementedException.h"
 
 #import "macros.h"
 #ifdef OF_ATOMIC_OPS
@@ -389,48 +388,53 @@ _Block_object_dispose(const void *obj_, const int flags_)
 
 + alloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: self
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - init
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - (void*)allocMemoryWithSize: (size_t)size
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void*)allocMemoryWithSize: (size_t)size
 		       count: (size_t)count
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void*)resizeMemory: (void*)ptr
 		 size: (size_t)size
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void*)resizeMemory: (void*)ptr
 		 size: (size_t)size
 		count: (size_t)count
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void)freeMemory: (void*)ptr
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - retain
@@ -471,8 +475,10 @@ _Block_object_dispose(const void *obj_, const int flags_)
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
-	[super dealloc];	/* Get rid of a stupid warning */
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
+
+	/* Get rid of a stupid warning */
+	[super dealloc];
 }
 @end

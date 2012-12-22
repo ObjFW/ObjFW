@@ -16,35 +16,35 @@
 
 #include "config.h"
 
-#import "OFSortedList.h"
+#include <stdlib.h>
 
-#import "OFNotImplementedException.h"
+#import "OFSortedList.h"
 
 @implementation OFSortedList
 - (of_list_object_t*)appendObject: (id)object
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (of_list_object_t*)prependObject: (id)object
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (of_list_object_t*)insertObject: (id)object
 		 beforeListObject: (of_list_object_t*)listObject
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (of_list_object_t*)insertObject: (id)object
 		  afterListObject: (of_list_object_t*)listObject
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (of_list_object_t*)insertObject: (id <OFComparing>)object

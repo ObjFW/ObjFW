@@ -22,7 +22,6 @@
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
-#import "OFNotImplementedException.h"
 
 #import "autorelease.h"
 #import "macros.h"
@@ -38,12 +37,12 @@ int _OFXMLElement_Serialization_reference;
 
 	if ((class = objc_getClass([name cStringUsingEncoding:
 	    OF_STRING_ENCODING_ASCII])) == Nil)
-		@throw [OFNotImplementedException exceptionWithClass: Nil];
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]];
 
 	if (![class conformsToProtocol: @protocol(OFSerialization)])
-		@throw [OFNotImplementedException
-		    exceptionWithClass: class
-			      selector: @selector(initWithSerialization:)];
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]];
 
 	object = [[class alloc] initWithSerialization: self];
 

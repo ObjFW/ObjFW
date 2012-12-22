@@ -21,8 +21,6 @@
 #import "OFAutoreleasePool.h"
 #import "OFArray.h"
 
-#import "OFNotImplementedException.h"
-
 #import "macros.h"
 #ifndef OF_COMPILER_TLS
 # import "threading.h"
@@ -161,13 +159,13 @@ static of_tlskey_t cacheKey;
 
 - retain
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - autorelease
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 @end

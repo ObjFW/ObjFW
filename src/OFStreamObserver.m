@@ -18,6 +18,8 @@
 
 #define __NO_EXT_QNX
 
+#include <stdlib.h>
+
 #include <unistd.h>
 
 #include <assert.h>
@@ -45,7 +47,6 @@
 #endif
 
 #import "OFInitializationFailedException.h"
-#import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 
 #import "autorelease.h"
@@ -265,26 +266,26 @@ enum {
 
 - (void)OF_addFileDescriptorForReading: (int)fd
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void)OF_addFileDescriptorForWriting: (int)fd
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void)OF_removeFileDescriptorForReading: (int)fd
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void)OF_removeFileDescriptorForWriting: (int)fd
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void)OF_processQueue
@@ -363,8 +364,8 @@ enum {
 
 - (BOOL)observeWithTimeout: (double)timeout
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void)cancel

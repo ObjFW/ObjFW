@@ -29,8 +29,6 @@
 #import "OFThread.h"
 #import "OFRunLoop.h"
 
-#import "OFNotImplementedException.h"
-
 #import "autorelease.h"
 
 #if defined(__MACH__) && !defined(OF_IOS)

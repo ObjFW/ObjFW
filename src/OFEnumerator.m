@@ -16,18 +16,21 @@
 
 #include "config.h"
 
-#import "OFEnumerator.h"
+#include <stdlib.h>
 
-#import "OFNotImplementedException.h"
+#import "OFEnumerator.h"
 
 @implementation OFEnumerator
 - init
 {
 	if (object_getClass(self) == [OFEnumerator class]) {
-		Class c = [self class];
-		[self release];
-		@throw [OFNotImplementedException exceptionWithClass: c
-							    selector: _cmd];
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+			abort();
+		} @catch (id e) {
+			[self release];
+			@throw e;
+		}
 	}
 
 	return [super init];
@@ -35,13 +38,13 @@
 
 - (id)nextObject
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void)reset
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 @end

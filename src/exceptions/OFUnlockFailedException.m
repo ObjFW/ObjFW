@@ -19,8 +19,6 @@
 #import "OFUnlockFailedException.h"
 #import "OFString.h"
 
-#import "OFNotImplementedException.h"
-
 #import "macros.h"
 
 @implementation OFUnlockFailedException

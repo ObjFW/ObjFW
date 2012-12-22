@@ -14,16 +14,18 @@
  * file.
  */
 
-#import "OFSeekableStream.h"
+#include "config.h"
 
-#import "OFNotImplementedException.h"
+#include <stdlib.h>
+
+#import "OFSeekableStream.h"
 
 @implementation OFSeekableStream
 - (void)lowlevelSeekToOffset: (off_t)offset
 		      whence: (int)whence
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void)seekToOffset: (off_t)offset

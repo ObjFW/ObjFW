@@ -16,11 +16,11 @@
 
 #include "config.h"
 
+#include <stdlib.h>
+
 #import "OFAcceptFailedException.h"
 #import "OFString.h"
 #import "OFTCPSocket.h"
-
-#import "OFNotImplementedException.h"
 
 #import "common.h"
 
@@ -34,10 +34,13 @@
 
 - initWithClass: (Class)class_
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithClass: (Class)class_

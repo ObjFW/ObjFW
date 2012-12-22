@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#include <stdlib.h>
+
 #include <math.h>
 
 #import "OFNumber.h"
@@ -25,7 +27,6 @@
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
-#import "OFNotImplementedException.h"
 
 #import "autorelease.h"
 #import "macros.h"
@@ -248,7 +249,7 @@
 		    value.uintptr o [n uIntPtrValue]];			\
 	case OF_NUMBER_FLOAT:						\
 	case OF_NUMBER_DOUBLE:						\
-		@throw [OFNotImplementedException			\
+		@throw [OFInvalidArgumentException			\
 		    exceptionWithClass: [self class]			\
 			      selector: _cmd];				\
 	default:							\
@@ -450,8 +451,13 @@
 
 - init
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithBool: (BOOL)bool_

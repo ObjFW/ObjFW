@@ -16,10 +16,10 @@
 
 #include "config.h"
 
+#include <stdlib.h>
+
 #import "OFInvalidJSONException.h"
 #import "OFString.h"
-
-#import "OFNotImplementedException.h"
 
 @implementation OFInvalidJSONException
 + (instancetype)exceptionWithClass: (Class)class_
@@ -31,10 +31,13 @@
 
 - init
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithClass: (Class)class_

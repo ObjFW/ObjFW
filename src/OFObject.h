@@ -822,6 +822,16 @@ typedef struct of_rectangle_t
  * @return The target to forward the message to
  */
 - (id)forwardingTargetForSelector: (SEL)selector;
+
+/*!
+ * @brief Handles messages which are not understood by the receiver.
+ *
+ * @warning If you override this method, you must make sure that it never
+ *	    returns.
+ *
+ * @param selector The selector not understood by the receiver
+ */
+- (void)doesNotRecognizeSelector: (SEL)selector;
 @end
 
 /*!

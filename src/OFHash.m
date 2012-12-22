@@ -16,9 +16,9 @@
 
 #include "config.h"
 
-#import "OFHash.h"
+#include <stdlib.h>
 
-#import "OFNotImplementedException.h"
+#import "OFHash.h"
 
 @implementation OFHash
 + (instancetype)hash
@@ -28,27 +28,27 @@
 
 + (size_t)digestSize
 {
-	@throw [OFNotImplementedException exceptionWithClass: self
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 + (size_t)blockSize
 {
-	@throw [OFNotImplementedException exceptionWithClass: self
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void)updateWithBuffer: (const void*)buffer
 		  length: (size_t)length
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (uint8_t*)digest
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (BOOL)isCalculated

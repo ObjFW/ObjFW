@@ -59,7 +59,6 @@
 #import "OFInvalidArgumentException.h"
 #import "OFLinkFailedException.h"
 #import "OFLockFailedException.h"
-#import "OFNotImplementedException.h"
 #import "OFOpenFileFailedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFReadFailedException.h"
@@ -638,10 +637,13 @@ of_log(OFConstantString *format, ...)
 
 - init
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithPath: (OFString*)path
@@ -764,10 +766,13 @@ of_log(OFConstantString *format, ...)
 - initWithPath: (OFString*)path
 	  mode: (OFString*)mode
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - autorelease
@@ -791,15 +796,17 @@ of_log(OFConstantString *format, ...)
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
-	[super dealloc];	/* Get rid of stupid warning */
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
+
+	/* Get rid of stupid warning */
+	[super dealloc];
 }
 
 - (void)lowlevelSeekToOffset: (off_t)offset
 		      whence: (int)whence
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 @end

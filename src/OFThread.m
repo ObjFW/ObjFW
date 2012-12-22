@@ -44,7 +44,6 @@
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
-#import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFThreadJoinFailedException.h"
 #import "OFThreadStartFailedException.h"

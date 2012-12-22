@@ -19,8 +19,6 @@
 #import "OFLockFailedException.h"
 #import "OFString.h"
 
-#import "OFNotImplementedException.h"
-
 #import "macros.h"
 
 @implementation OFLockFailedException

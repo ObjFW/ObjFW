@@ -16,6 +16,7 @@
 
 #include "config.h"
 
+#include <stdlib.h>
 #include <string.h>
 
 #include <assert.h>
@@ -25,7 +26,6 @@
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
-#import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 
 #import "macros.h"
@@ -90,10 +90,13 @@ default_equal(void *value1, void *value2)
 
 - init
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithKeyFunctions: (of_map_table_functions_t)keyFunctions_
@@ -624,10 +627,13 @@ default_equal(void *value1, void *value2)
 @implementation OFMapTableEnumerator
 - init
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - OF_initWithMapTable: (OFMapTable*)mapTable_
@@ -655,8 +661,8 @@ default_equal(void *value1, void *value2)
 
 - (void*)nextValue
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void)reset

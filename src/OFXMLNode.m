@@ -16,24 +16,27 @@
 
 #include "config.h"
 
+#include <stdlib.h>
+
 #import "OFXMLNode.h"
 #import "OFString.h"
-
-#import "OFNotImplementedException.h"
 
 @implementation OFXMLNode
 - initWithSerialization: (OFXMLElement*)element
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - (OFString*)stringValue
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (intmax_t)decimalValue
@@ -71,8 +74,8 @@
 - (OFString*)XMLStringWithIndentation: (unsigned int)indentation
 				level: (unsigned int)level
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (OFString*)description
@@ -82,8 +85,8 @@
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - copy

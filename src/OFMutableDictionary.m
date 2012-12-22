@@ -16,9 +16,9 @@
 
 #include "config.h"
 
-#import "OFMutableDictionary_hashtable.h"
+#include <stdlib.h>
 
-#import "OFNotImplementedException.h"
+#import "OFMutableDictionary_hashtable.h"
 
 static struct {
 	Class isa;
@@ -108,9 +108,11 @@ static struct {
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
-	[super dealloc];	/* Get rid of a stupid warning */
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
+
+	/* Get rid of a stupid warning */
+	[super dealloc];
 }
 @end
 
@@ -132,10 +134,13 @@ static struct {
 - init
 {
 	if (object_getClass(self) == [OFMutableDictionary class]) {
-		Class c = [self class];
-		[self release];
-		@throw [OFNotImplementedException exceptionWithClass: c
-							    selector: _cmd];
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+			abort();
+		} @catch (id e) {
+			[self release];
+			@throw e;
+		}
 	}
 
 	return [super init];
@@ -144,8 +149,8 @@ static struct {
 - (void)setObject: (id)object
 	   forKey: (id)key
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 -   (void)setObject: (id)object
@@ -157,8 +162,8 @@ static struct {
 
 - (void)removeObjectForKey: (id)key
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - copy

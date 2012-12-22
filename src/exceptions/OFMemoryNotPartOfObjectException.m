@@ -16,10 +16,10 @@
 
 #include "config.h"
 
+#include <stdlib.h>
+
 #import "OFMemoryNotPartOfObjectException.h"
 #import "OFString.h"
-
-#import "OFNotImplementedException.h"
 
 @implementation OFMemoryNotPartOfObjectException
 + (instancetype)exceptionWithClass: (Class)class_
@@ -31,10 +31,13 @@
 
 - initWithClass: (Class)class_
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithClass: (Class)class_

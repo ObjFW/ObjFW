@@ -16,7 +16,9 @@
 
 #include "config.h"
 
+#include <stdlib.h>
 #include <string.h>
+
 #include <assert.h>
 
 #import "OFXMLElement.h"
@@ -33,7 +35,6 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFMalformedXMLException.h"
-#import "OFNotImplementedException.h"
 #import "OFUnboundNamespaceException.h"
 
 #import "autorelease.h"
@@ -125,10 +126,13 @@ static Class CDATAClass = Nil;
 
 - init
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithName: (OFString*)name_

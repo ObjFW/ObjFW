@@ -28,7 +28,6 @@
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
-#import "OFNotImplementedException.h"
 
 #import "autorelease.h"
 

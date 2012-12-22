@@ -332,9 +332,11 @@ static struct {
 
 - (void)dealloc
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
-	[super dealloc];	/* Get rid of a stupid warning */
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
+
+	/* Get rid of a stupid warning */
+	[super dealloc];
 }
 @end
 
@@ -509,10 +511,13 @@ static struct {
 - init
 {
 	if (object_getClass(self) == [OFString class]) {
-		Class c = [self class];
-		[self release];
-		@throw [OFNotImplementedException exceptionWithClass: c
-							    selector: _cmd];
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+			abort();
+		} @catch (id e) {
+			[self release];
+			@throw e;
+		}
 	}
 
 	return [super init];
@@ -551,18 +556,24 @@ static struct {
 	 encoding: (of_string_encoding_t)encoding
 	   length: (size_t)cStringLength
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithString: (OFString*)string
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithUnicodeString: (const of_unichar_t*)string
@@ -592,10 +603,13 @@ static struct {
 	      byteOrder: (of_byte_order_t)byteOrder
 		 length: (size_t)length
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithUTF16String: (const uint16_t*)string
@@ -625,10 +639,13 @@ static struct {
 	    byteOrder: (of_byte_order_t)byteOrder
 	       length: (size_t)length
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithFormat: (OFConstantString*)format, ...
@@ -647,10 +664,13 @@ static struct {
 - initWithFormat: (OFConstantString*)format
        arguments: (va_list)arguments
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithPath: (OFString*)firstComponent, ...
@@ -669,10 +689,13 @@ static struct {
 - initWithPath: (OFString*)firstComponent
      arguments: (va_list)arguments
 {
-	Class c = [self class];
-	[self release];
-	@throw [OFNotImplementedException exceptionWithClass: c
-						    selector: _cmd];
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithContentsOfFile: (OFString*)path
@@ -928,8 +951,8 @@ static struct {
 
 - (size_t)length
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (size_t)lengthOfBytesUsingEncoding: (of_string_encoding_t)encoding
@@ -972,8 +995,8 @@ static struct {
 
 - (of_unichar_t)characterAtIndex: (size_t)index
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: _cmd];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void)getCharacters: (of_unichar_t*)buffer

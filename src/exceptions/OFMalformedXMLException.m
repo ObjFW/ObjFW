@@ -20,8 +20,6 @@
 #import "OFString.h"
 #import "OFXMLParser.h"
 
-#import "OFNotImplementedException.h"
-
 #import "common.h"
 
 @implementation OFMalformedXMLException
