@@ -359,23 +359,14 @@ void _references_to_categories_of_OFObject(void)
 + (const char*)typeEncodingForInstanceSelector: (SEL)selector
 {
 #if defined(OF_OBJFW_RUNTIME)
-	const char *ret;
-
-	if ((ret = objc_get_type_encoding(self, selector)) == NULL)
-		@throw [OFNotImplementedException exceptionWithClass: self
-							    selector: selector];
-
-	return ret;
+	return objc_get_type_encoding(self, selector);
 #else
 	Method m;
-	const char *ret;
 
-	if ((m = class_getInstanceMethod(self, selector)) == NULL ||
-	    (ret = method_getTypeEncoding(m)) == NULL)
-		@throw [OFNotImplementedException exceptionWithClass: self
-							    selector: selector];
+	if ((m = class_getInstanceMethod(self, selector)) == NULL)
+		return NULL;
 
-	return ret;
+	return method_getTypeEncoding(m);
 #endif
 }
 
@@ -812,26 +803,15 @@ void _references_to_categories_of_OFObject(void)
 - (const char*)typeEncodingForSelector: (SEL)selector
 {
 #if defined(OF_OBJFW_RUNTIME)
-	const char *ret;
-
-	if ((ret = objc_get_type_encoding(object_getClass(self),
-	    selector)) == NULL)
-		@throw [OFNotImplementedException
-		    exceptionWithClass: [self class]
-			      selector: selector];
-
-	return ret;
+	return objc_get_type_encoding(object_getClass(self), selector);
 #else
 	Method m;
-	const char *ret;
 
 	if ((m = class_getInstanceMethod(object_getClass(self),
-	    selector)) == NULL || (ret = method_getTypeEncoding(m)) == NULL)
-		@throw [OFNotImplementedException
-		    exceptionWithClass: [self class]
-			      selector: selector];
+	    selector)) == NULL)
+		return NULL;
 
-	return ret;
+	return method_getTypeEncoding(m);
 #endif
 }
 
