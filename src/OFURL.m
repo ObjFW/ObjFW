@@ -32,51 +32,6 @@
 #import "autorelease.h"
 #import "macros.h"
 
-static OF_INLINE OFString*
-resolve_relative_path(OFString *path)
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFMutableArray *array;
-	OFString *ret;
-	BOOL done = NO;
-
-	array = [[[path componentsSeparatedByString: @"/"] mutableCopy]
-	    autorelease];
-
-	while (!done) {
-		id *objects = [array objects];
-		size_t i, length = [array count];
-
-		done = YES;
-
-		for (i = 0; i < length; i++) {
-			if ([objects[i] isEqual: @"."]) {
-				[array removeObjectAtIndex: i];
-				done = NO;
-
-				break;
-			}
-
-			if ([objects[i] isEqual: @".."]) {
-				[array removeObjectAtIndex: i];
-
-				if (i > 0)
-					[array removeObjectAtIndex: i - 1];
-
-				done = NO;
-
-				break;
-			}
-		}
-	}
-
-	ret = [[array componentsJoinedByString: @"/"] retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [ret autorelease];
-}
-
 @implementation OFURL
 + (instancetype)URL
 {
@@ -284,7 +239,7 @@ resolve_relative_path(OFString *path)
 								URL->path,
 								UTF8String];
 
-			path = [resolve_relative_path(s) copy];
+			path = [[s stringByStandardizingURLPath] copy];
 
 			objc_autoreleasePoolPop(pool);
 		}

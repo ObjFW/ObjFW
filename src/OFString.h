@@ -848,6 +848,23 @@ extern size_t of_utf16_string_length(const uint16_t*);
 - (OFString*)stringByDeletingLastPathComponent;
 
 /*!
+ * @brief Returns the path with relative sub paths resolved.
+ *
+ * @return The path with relative sub paths resolved
+ */
+- (OFString*)stringByStandardizingPath;
+
+/*!
+ * @brief Returns the URL path with relative sub paths resolved.
+ *
+ * This works similar to @ref stringByStandardizingPath, but is intended for
+ * standardization of paths that are part of a URL.
+ *
+ * @return The URL path with relative sub paths resolved
+ */
+- (OFString*)stringByStandardizingURLPath;
+
+/*!
  * @brief Returns the decimal value of the string as an intmax_t.
  *
  * Leading and trailing whitespaces are ignored.

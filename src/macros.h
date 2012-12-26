@@ -120,10 +120,13 @@
 
 #ifndef _WIN32
 # define OF_PATH_DELIMITER '/'
+# define OF_PATH_DELIMITER_STRING @"/"
 #else
 # define OF_PATH_DELIMITER '\\'
+# define OF_PATH_DELIMITER_STRING @"\\"
 #endif
-#define OF_PATH_PARENT_DIR @".."
+#define OF_PATH_CURRENT_DIRECTORY @"."
+#define OF_PATH_PARENT_DIRECTORY @".."
 
 extern id objc_getProperty(id, SEL, ptrdiff_t, BOOL);
 extern void objc_setProperty(id, SEL, ptrdiff_t, id, BOOL, signed char);

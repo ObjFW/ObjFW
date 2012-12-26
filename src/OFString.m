@@ -56,6 +56,53 @@
 # define strtod __strtod
 #endif
 
+static OFString*
+standardize_path(OFArray *components, OFString *currentDirectory,
+    OFString *parentDirectory, OFString *joinString)
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFMutableArray *array;
+	OFString *ret;
+	BOOL done = NO;
+
+	array = [[components mutableCopy] autorelease];
+
+	while (!done) {
+		size_t i, length = [array count];
+
+		done = YES;
+
+		for (i = 0; i < length; i++) {
+			id object = [array objectAtIndex: i];
+
+			if ([object isEqual: currentDirectory]) {
+				[array removeObjectAtIndex: i];
+				done = NO;
+
+				break;
+			}
+
+			if ([object isEqual: parentDirectory]) {
+				[array removeObjectAtIndex: i];
+
+				if (i > 0)
+					[array removeObjectAtIndex: i - 1];
+
+				done = NO;
+
+				break;
+			}
+		}
+	}
+
+	ret = [[array componentsJoinedByString: joinString] retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
+}
+
+
 /* References for static linking */
 void _references_to_categories_of_OFString(void)
 {
@@ -1765,6 +1812,19 @@ static struct {
 	objc_autoreleasePoolPop(pool);
 
 	return @".";
+}
+
+- (OFString*)stringByStandardizingPath
+{
+	return standardize_path([self pathComponents],
+	    OF_PATH_CURRENT_DIRECTORY, OF_PATH_PARENT_DIRECTORY,
+	    OF_PATH_DELIMITER_STRING);
+}
+
+- (OFString*)stringByStandardizingURLPath
+{
+	return standardize_path( [self componentsSeparatedByString: @"/"],
+	    @".", @"..", @"/");
 }
 
 - (intmax_t)decimalValue
