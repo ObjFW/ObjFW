@@ -460,6 +460,7 @@ normalized_key(OFString *key)
 	OFDataArray *replyData;
 	OFEnumerator *keyEnumerator, *valueEnumerator;
 	OFString *key, *value;
+	size_t pos;
 
 	[timer invalidate];
 	[timer release];
@@ -479,7 +480,18 @@ normalized_key(OFString *key)
 	[URL setScheme: @"http"];
 	[URL setHost: host];
 	[URL setPort: port];
-	[URL setPath: path];
+
+	if ((pos = [path rangeOfString: @"?"].location) != OF_NOT_FOUND) {
+		OFString *path_, *query;
+
+		path_ = [path substringWithRange: of_range(0, pos)];
+		query = [path substringWithRange:
+		    of_range(pos + 1, [path length] - pos - 1)];
+
+		[URL setPath: path_];
+		[URL setQuery: query];
+	} else
+		[URL setPath: path];
 
 	request = [OFHTTPRequest requestWithURL: URL];
 	[request setRequestType: requestType];
