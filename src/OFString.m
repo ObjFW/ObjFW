@@ -30,6 +30,7 @@
 #import "OFURL.h"
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
+#import "OFHTTPRequestReply.h"
 #import "OFDataArray.h"
 #import "OFXMLElement.h"
 
@@ -807,7 +808,7 @@ static struct {
 	void *pool;
 	OFHTTPClient *client;
 	OFHTTPRequest *request;
-	OFHTTPRequestResult *result;
+	OFHTTPRequestReply *reply;
 	OFString *contentType;
 	Class c;
 
@@ -828,16 +829,16 @@ static struct {
 
 	client = [OFHTTPClient client];
 	request = [OFHTTPRequest requestWithURL: URL];
-	result = [client performRequest: request];
+	reply = [client performRequest: request];
 
-	if ([result statusCode] != 200)
+	if ([reply statusCode] != 200)
 		@throw [OFHTTPRequestFailedException
 		    exceptionWithClass: [request class]
 			       request: request
-				result: result];
+				 reply: reply];
 
 	if (encoding == OF_STRING_ENCODING_AUTODETECT &&
-	    (contentType = [[result headers] objectForKey: @"Content-Type"])) {
+	    (contentType = [[reply headers] objectForKey: @"Content-Type"])) {
 		contentType = [contentType lowercaseString];
 
 		if ([contentType hasSuffix: @"charset=utf-8"])
@@ -853,9 +854,9 @@ static struct {
 	if (encoding == OF_STRING_ENCODING_AUTODETECT)
 		encoding = OF_STRING_ENCODING_UTF_8;
 
-	self = [[c alloc] initWithCString: (char*)[[result data] items]
+	self = [[c alloc] initWithCString: (char*)[[reply data] items]
 				 encoding: encoding
-				   length: [[result data] count]];
+				   length: [[reply data] count]];
 
 	objc_autoreleasePoolPop(pool);
 	return self;

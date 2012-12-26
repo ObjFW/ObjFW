@@ -18,7 +18,7 @@
 
 @class OFHTTPClient;
 @class OFHTTPRequest;
-@class OFHTTPRequestResult;
+@class OFHTTPRequestReply;
 @class OFURL;
 @class OFTCPSocket;
 @class OFDictionary;
@@ -170,18 +170,18 @@
 /*!
  * @brief Performs the specified HTTP request
  */
-- (OFHTTPRequestResult*)performRequest: (OFHTTPRequest*)request;
+- (OFHTTPRequestReply*)performRequest: (OFHTTPRequest*)request;
 
 /*!
- * @brief Performs the HTTP request and returns an OFHTTPRequestResult.
+ * @brief Performs the HTTP request and returns an OFHTTPRequestReply.
  *
  * @param redirects The maximum number of redirects after which no further
  *		    attempt is done to follow the redirect, but instead the
- *		    redirect is returned as an OFHTTPRequestResult
- * @return An OFHTTPRequestResult with the result of the HTTP request
+ *		    redirect is returned as an OFHTTPRequestReply
+ * @return An OFHTTPRequestReply with the reply of the HTTP request
  */
-- (OFHTTPRequestResult*)performRequest: (OFHTTPRequest*)request
-			     redirects: (size_t)redirects;
+- (OFHTTPRequestReply*)performRequest: (OFHTTPRequest*)request
+			    redirects: (size_t)redirects;
 @end
 
 @interface OFObject (OFHTTPClientDelegate) <OFHTTPClientDelegate>

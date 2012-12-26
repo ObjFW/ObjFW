@@ -53,6 +53,7 @@
 #import "OFStreamObserver.h"
 
 #import "OFHTTPRequest.h"
+#import "OFHTTPRequestReply.h"
 #import "OFHTTPClient.h"
 #import "OFHTTPServer.h"
 

@@ -24,6 +24,7 @@
 
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
+#import "OFHTTPRequestReply.h"
 #import "OFString.h"
 #import "OFTCPSocket.h"
 #import "OFThread.h"
@@ -95,8 +96,8 @@ static OFCondition *cond;
 	OFHTTPClientTestsServer *server;
 	OFURL *url;
 	OFHTTPClient *client;
-	OFHTTPRequest *req;
-	OFHTTPRequestResult *res;
+	OFHTTPRequest *request;
+	OFHTTPRequestReply *reply;
 
 	cond = [OFCondition condition];
 	[cond lock];
@@ -113,11 +114,11 @@ static OFCondition *cond;
 
 	TEST(@"-[performRequest:]",
 	    R(client = [OFHTTPClient client]) &&
-	    R(req = [OFHTTPRequest requestWithURL: url]) &&
-	    R(res = [client performRequest: req]))
+	    R(request = [OFHTTPRequest requestWithURL: url]) &&
+	    R(reply = [client performRequest: request]))
 
 	TEST(@"Normalization of server header keys",
-	     ([[res headers] objectForKey: @"Content-Length"] != nil))
+	     ([[reply headers] objectForKey: @"Content-Length"] != nil))
 
 	[server join];
 

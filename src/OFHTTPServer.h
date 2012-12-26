@@ -18,7 +18,7 @@
 
 @class OFHTTPServer;
 @class OFHTTPRequest;
-@class OFHTTPRequestResult;
+@class OFHTTPRequestReply;
 @class OFTCPSocket;
 @class OFException;
 
@@ -32,10 +32,10 @@
  *
  * @param server The HTTP server which received the request
  * @param request The request the HTTP server received
- * @return The result the HTTP server should send to the client
+ * @return The reply the HTTP server should send to the client
  */
-- (OFHTTPRequestResult*)server: (OFHTTPServer*)server
-	     didReceiveRequest: (OFHTTPRequest*)request;
+- (OFHTTPRequestReply*)server: (OFHTTPServer*)server
+	    didReceiveRequest: (OFHTTPRequest*)request;
 @end
 
 /*!

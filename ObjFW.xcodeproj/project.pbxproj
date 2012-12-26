@@ -358,7 +358,7 @@
 		4BB524C2143D1E4E0085FBCC /* OFProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB524C0143D1E4E0085FBCC /* OFProcess.m */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BC090441584F6760040640F /* OFInvalidJSONException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC090421584F6760040640F /* OFInvalidJSONException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BC090451584F6760040640F /* OFInvalidJSONException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BC090431584F6760040640F /* OFInvalidJSONException.m */; };
-		4BD653C5143B8489006182F0 /* OFTCPSocket+SOCKS5.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD653C3143B8489006182F0 /* OFTCPSocket+SOCKS5.h */; };
+		4BD653C5143B8489006182F0 /* OFTCPSocket+SOCKS5.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD653C3143B8489006182F0 /* OFTCPSocket+SOCKS5.h */; settings = {ATTRIBUTES = (); }; };
 		4BD653C6143B8489006182F0 /* OFTCPSocket+SOCKS5.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BD653C4143B8489006182F0 /* OFTCPSocket+SOCKS5.m */; };
 		4BD98C03133814220048DD5B /* objfw-defs.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD98C011338140B0048DD5B /* objfw-defs.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BDF37B51338055600F9A81A /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BDF37B41338055600F9A81A /* config.h */; };
@@ -385,6 +385,8 @@
 		4BF33B12133807A20059CEF7 /* TestsAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6811235358D0076B512 /* TestsAppDelegate.m */; };
 		4BF33B4713380CE20059CEF7 /* testfile.txt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BF33B4313380CD40059CEF7 /* testfile.txt */; };
 		4BF33B4813380D2D0059CEF7 /* testfile.bin in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BF33B4213380CD40059CEF7 /* testfile.bin */; };
+		4BFDB4D2168B93CB006A4027 /* OFHTTPRequestReply.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BFDB4CF168B939A006A4027 /* OFHTTPRequestReply.m */; };
+		4BFDB4D3168B93F9006A4027 /* OFHTTPRequestReply.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFDB4CE168B939A006A4027 /* OFHTTPRequestReply.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -814,6 +816,8 @@
 		4BF33B4213380CD40059CEF7 /* testfile.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = testfile.bin; path = tests/testfile.bin; sourceTree = "<group>"; };
 		4BF33B4313380CD40059CEF7 /* testfile.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = testfile.txt; path = tests/testfile.txt; sourceTree = "<group>"; };
 		4BFBDD1610A0724800051AFB /* unicode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = unicode.m; path = src/unicode.m; sourceTree = "<group>"; };
+		4BFDB4CE168B939A006A4027 /* OFHTTPRequestReply.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFHTTPRequestReply.h; path = src/OFHTTPRequestReply.h; sourceTree = "<group>"; };
+		4BFDB4CF168B939A006A4027 /* OFHTTPRequestReply.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHTTPRequestReply.m; path = src/OFHTTPRequestReply.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1098,6 +1102,8 @@
 				4BB4B54016775FF4002A2DCE /* OFHTTPClient.m */,
 				4B99250F12E0780000215DBE /* OFHTTPRequest.h */,
 				4B99251012E0780000215DBE /* OFHTTPRequest.m */,
+				4BFDB4CE168B939A006A4027 /* OFHTTPRequestReply.h */,
+				4BFDB4CF168B939A006A4027 /* OFHTTPRequestReply.m */,
 				4BB4B54116775FF4002A2DCE /* OFHTTPServer.h */,
 				4BB4B54216775FF4002A2DCE /* OFHTTPServer.m */,
 				4BA49D8E13DB113B00381CDB /* OFIntrospection.h */,
@@ -1372,6 +1378,7 @@
 				4B3D23C91337FCB000DD29B8 /* OFHash.h in Headers */,
 				4BB4B54416775FF4002A2DCE /* OFHTTPClient.h in Headers */,
 				4B3D23CA1337FCB000DD29B8 /* OFHTTPRequest.h in Headers */,
+				4BFDB4D3168B93F9006A4027 /* OFHTTPRequestReply.h in Headers */,
 				4BB4B54616775FF4002A2DCE /* OFHTTPServer.h in Headers */,
 				4BA49D9013DB113B00381CDB /* OFIntrospection.h in Headers */,
 				4BA02BA115041F5900002F84 /* OFJSONRepresentation.h in Headers */,
@@ -1491,7 +1498,6 @@
 				4BA4846215CC9F1E00D75360 /* OFUnsupportedVersionException.h in Headers */,
 				4B55A116133AC24600B58A93 /* OFWriteFailedException.h in Headers */,
 				4B55A109133AC05100B58A93 /* common.h in Headers */,
-				4BDF37B51338055600F9A81A /* config.h in Headers */,
 				4B2B3E7D140D430500EC2F7C /* OFArray_adjacent.h in Headers */,
 				4B9BB7BD141CDE2D000AD1CC /* OFArray_adjacentSubarray.h in Headers */,
 				4BA85BCA140ECCE800E91D51 /* OFCountedSet_hashtable.h in Headers */,
@@ -1506,6 +1512,7 @@
 				4B64D6F11425381E007BDFB1 /* OFStreamObserver_select.h in Headers */,
 				4B552554147AA5DB0003BF47 /* OFString_UTF8.h in Headers */,
 				4BD653C5143B8489006182F0 /* OFTCPSocket+SOCKS5.h in Headers */,
+				4BDF37B51338055600F9A81A /* config.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1720,6 +1727,7 @@
 				4B3D23971337FC0D00DD29B8 /* OFHash.m in Sources */,
 				4BB4B54516775FF4002A2DCE /* OFHTTPClient.m in Sources */,
 				4B3D23981337FC0D00DD29B8 /* OFHTTPRequest.m in Sources */,
+				4BFDB4D2168B93CB006A4027 /* OFHTTPRequestReply.m in Sources */,
 				4BB4B54716775FF4002A2DCE /* OFHTTPServer.m in Sources */,
 				4BA49D9113DB113B00381CDB /* OFIntrospection.m in Sources */,
 				4B3D23991337FC0D00DD29B8 /* OFList.m in Sources */,

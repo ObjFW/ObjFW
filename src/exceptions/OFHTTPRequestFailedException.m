@@ -21,6 +21,7 @@
 #import "OFHTTPRequestFailedException.h"
 #import "OFString.h"
 #import "OFHTTPRequest.h"
+#import "OFHTTPRequestReply.h"
 
 #import "autorelease.h"
 #import "common.h"
@@ -28,11 +29,11 @@
 @implementation OFHTTPRequestFailedException
 + (instancetype)exceptionWithClass: (Class)class_
 			   request: (OFHTTPRequest*)request
-			    result: (OFHTTPRequestResult*)result
+			     reply: (OFHTTPRequestReply*)reply
 {
 	return [[[self alloc] initWithClass: class_
 				    request: request
-				     result: result] autorelease];
+				      reply: reply] autorelease];
 }
 
 - initWithClass: (Class)class_
@@ -48,12 +49,12 @@
 
 - initWithClass: (Class)class_
 	request: (OFHTTPRequest*)request_
-	 result: (OFHTTPRequestResult*)result_
+	  reply: (OFHTTPRequestReply*)reply_
 {
 	self = [super initWithClass: class_];
 
 	request = [request_ retain];
-	result = [result_ retain];
+	reply = [reply_ retain];
 
 	return self;
 }
@@ -61,7 +62,7 @@
 - (void)dealloc
 {
 	[request release];
-	[result release];
+	[reply release];
 
 	[super dealloc];
 }
@@ -90,7 +91,7 @@
 
 	description = [[OFString alloc] initWithFormat:
 	    @"A HTTP %s request in class %@ with URL %@ failed with code %d",
-	    type, inClass, [request URL], [result statusCode]];
+	    type, inClass, [request URL], [reply statusCode]];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -102,8 +103,8 @@
 	OF_GETTER(request, NO)
 }
 
-- (OFHTTPRequestResult*)result
+- (OFHTTPRequestReply*)reply
 {
-	OF_GETTER(result, NO)
+	OF_GETTER(reply, NO)
 }
 @end

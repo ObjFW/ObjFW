@@ -26,6 +26,7 @@
 #import "OFURL.h"
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
+#import "OFHTTPRequestReply.h"
 #import "OFXMLElement.h"
 #import "OFSystemInfo.h"
 
@@ -142,7 +143,7 @@ void _references_to_categories_of_OFDataArray(void)
 	void *pool;
 	OFHTTPClient *client;
 	OFHTTPRequest *request;
-	OFHTTPRequestResult *result;
+	OFHTTPRequestReply *reply;
 	Class c;
 
 	c = [self class];
@@ -158,15 +159,15 @@ void _references_to_categories_of_OFDataArray(void)
 
 	client = [OFHTTPClient client];
 	request = [OFHTTPRequest requestWithURL: URL];
-	result = [client performRequest: request];
+	reply = [client performRequest: request];
 
-	if ([result statusCode] != 200)
+	if ([reply statusCode] != 200)
 		@throw [OFHTTPRequestFailedException
 		    exceptionWithClass: [request class]
 			       request: request
-				result: result];
+				 reply: reply];
 
-	self = [[result data] retain];
+	self = [[reply data] retain];
 	objc_autoreleasePoolPop(pool);
 	return self;
 }

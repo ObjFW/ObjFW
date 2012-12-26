@@ -21,6 +21,7 @@
 
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
+#import "OFHTTPRequestReply.h"
 #import "OFString.h"
 #import "OFURL.h"
 #import "OFTCPSocket.h"
@@ -106,14 +107,14 @@ normalize_key(char *str_)
 	return storesData;
 }
 
-- (OFHTTPRequestResult*)performRequest: (OFHTTPRequest*)request
+- (OFHTTPRequestReply*)performRequest: (OFHTTPRequest*)request
 {
 	return [self performRequest: request
 			  redirects: 10];
 }
 
-- (OFHTTPRequestResult*)performRequest: (OFHTTPRequest*)request
-			     redirects: (size_t)redirects
+- (OFHTTPRequestReply*)performRequest: (OFHTTPRequest*)request
+			    redirects: (size_t)redirects
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFURL *URL = [request URL];
@@ -122,7 +123,7 @@ normalize_key(char *str_)
 	OFDictionary *headers = [request headers];
 	OFDataArray *POSTData = [request POSTData];
 	OFTCPSocket *sock;
-	OFHTTPRequestResult *result;
+	OFHTTPRequestReply *reply;
 	OFString *line, *path, *version;
 	OFMutableDictionary *serverHeaders;
 	OFDataArray *data;
@@ -483,20 +484,20 @@ normalize_key(char *str_)
 
 	[serverHeaders makeImmutable];
 
-	result = [[OFHTTPRequestResult alloc] initWithStatusCode: status
-							 headers: serverHeaders
-							    data: data];
+	reply = [[OFHTTPRequestReply alloc] initWithStatusCode: status
+						       headers: serverHeaders
+							  data: data];
 
 	objc_autoreleasePoolPop(pool);
 
-	[result autorelease];
+	[reply autorelease];
 
 	if (status != 200)
 		@throw [OFHTTPRequestFailedException
 		    exceptionWithClass: [self class]
 			       request: request
-				result: result];
+				 reply: reply];
 
-	return result;
+	return reply;
 }
 @end

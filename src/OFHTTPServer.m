@@ -25,6 +25,7 @@
 #import "OFDictionary.h"
 #import "OFURL.h"
 #import "OFHTTPRequest.h"
+#import "OFHTTPRequestReply.h"
 #import "OFTCPSocket.h"
 #import "OFTimer.h"
 
@@ -455,7 +456,7 @@ normalized_key(OFString *key)
 {
 	OFURL *URL;
 	OFHTTPRequest *request;
-	OFHTTPRequestResult *reply;
+	OFHTTPRequestReply *reply;
 	OFDictionary *replyHeaders;
 	OFDataArray *replyData;
 	OFEnumerator *keyEnumerator, *valueEnumerator;
