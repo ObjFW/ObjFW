@@ -39,6 +39,9 @@ objc_register_selector(struct objc_abi_selector *sel)
 	struct objc_selector *rsel;
 	const char *name;
 
+	if (selectors_cnt > SEL_MAX)
+		OBJC_ERROR("Out of selector slots!");
+
 	if (selectors == NULL)
 		selectors = objc_hashtable_new(2);
 	else if ((rsel = objc_hashtable_get(selectors, sel->name)) != NULL) {
@@ -52,9 +55,6 @@ objc_register_selector(struct objc_abi_selector *sel)
 	name = sel->name;
 	rsel = (struct objc_selector*)sel;
 	rsel->uid = selectors_cnt++;
-
-	if (selectors_cnt > SEL_MAX)
-		OBJC_ERROR("Out of selector slots!");
 
 	objc_hashtable_set(selectors, name, rsel);
 	objc_sparsearray_set(selector_names, (uint32_t)rsel->uid, name);
