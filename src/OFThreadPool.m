@@ -21,6 +21,7 @@
 #import "OFList.h"
 #import "OFThread.h"
 #import "OFCondition.h"
+#import "OFSystemInfo.h"
 
 #import "autorelease.h"
 
@@ -254,7 +255,7 @@
 
 - init
 {
-	return [self initWithSize: of_num_cpus];
+	return [self initWithSize: [OFSystemInfo numberOfCPUs]];
 }
 
 - initWithSize: (size_t)size_

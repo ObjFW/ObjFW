@@ -20,6 +20,7 @@
 #include <stdlib.h>
 
 #import "OFObject.h"
+#import "OFSystemInfo.h"
 
 #ifndef OF_COMPILER_TLS
 # import "threading.h"
@@ -94,10 +95,11 @@ _objc_rootAutorelease(id object)
 #endif
 
 	if (objects == NULL) {
-		OF_ENSURE((objects = malloc(of_pagesize)) != NULL);
+		size = [OFSystemInfo pageSize];
+
+		OF_ENSURE((objects = malloc(size)) != NULL);
 
 		top = objects;
-		size = of_pagesize;
 
 #ifndef OF_COMPILER_TLS
 		OF_ENSURE(of_tlskey_set(objectsKey, objects));
@@ -108,7 +110,7 @@ _objc_rootAutorelease(id object)
 	if ((uintptr_t)top >= (uintptr_t)objects + size) {
 		ptrdiff_t diff = top - objects;
 
-		size += of_pagesize;
+		size += [OFSystemInfo pageSize];
 		OF_ENSURE((objects = realloc(objects, size)) != NULL);
 
 #ifndef OF_COMPILER_TLS

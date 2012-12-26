@@ -48,6 +48,7 @@
 #endif
 #import "OFDate.h"
 #import "OFApplication.h"
+#import "OFSystemInfo.h"
 
 #import "OFChangeDirectoryFailedException.h"
 #import "OFChangeFileModeFailedException.h"
@@ -498,6 +499,7 @@ of_log(OFConstantString *format, ...)
 	OFFile *sourceFile = nil;
 	OFFile *destinationFile = nil;
 	char *buffer;
+	size_t pageSize;
 
 	if ([self directoryExistsAtPath: destination]) {
 		OFString *filename = [source lastPathComponent];
@@ -506,10 +508,11 @@ of_log(OFConstantString *format, ...)
 	}
 
 	override = [self fileExistsAtPath: destination];
+	pageSize = [OFSystemInfo pageSize];
 
-	if ((buffer = malloc(of_pagesize)) == NULL)
+	if ((buffer = malloc(pageSize)) == NULL)
 		@throw [OFOutOfMemoryException exceptionWithClass: self
-						    requestedSize: of_pagesize];
+						    requestedSize: pageSize];
 
 	@try {
 		sourceFile = [OFFile fileWithPath: source
@@ -521,7 +524,7 @@ of_log(OFConstantString *format, ...)
 			size_t length;
 
 			length = [sourceFile readIntoBuffer: buffer
-						     length: of_pagesize];
+						     length: pageSize];
 			[destinationFile writeBuffer: buffer
 					      length: length];
 		}

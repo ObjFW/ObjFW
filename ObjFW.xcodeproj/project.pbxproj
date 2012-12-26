@@ -288,6 +288,8 @@
 		4B674406163C395900EB1E59 /* OFRecursiveMutex.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6743FD163C395900EB1E59 /* OFRecursiveMutex.m */; };
 		4B674407163C395900EB1E59 /* OFTLSKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6743FE163C395900EB1E59 /* OFTLSKey.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B674408163C395900EB1E59 /* OFTLSKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6743FF163C395900EB1E59 /* OFTLSKey.m */; };
+		4B745BA5168B25E600A6C20E /* OFSystemInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B745BA3168B25E600A6C20E /* OFSystemInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B745BA6168B25E600A6C20E /* OFSystemInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B745BA4168B25E600A6C20E /* OFSystemInfo.m */; };
 		4B7FF3B4133CED6200000324 /* OFConditionStillWaitingException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7FF3B2133CED6100000324 /* OFConditionStillWaitingException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7FF3B5133CED6200000324 /* OFConditionStillWaitingException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7FF3B3133CED6100000324 /* OFConditionStillWaitingException.m */; };
 		4B837D7916829C5F007A3E83 /* block.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B837D7716829C5F007A3E83 /* block.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -689,6 +691,8 @@
 		4B6EF6811235358D0076B512 /* TestsAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestsAppDelegate.m; path = tests/TestsAppDelegate.m; sourceTree = SOURCE_ROOT; };
 		4B6EF684123535B60076B512 /* TestPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestPlugin.m; path = tests/plugin/TestPlugin.m; sourceTree = SOURCE_ROOT; };
 		4B6EF685123535C80076B512 /* test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = test.m; path = tests/objc_sync/test.m; sourceTree = SOURCE_ROOT; };
+		4B745BA3168B25E600A6C20E /* OFSystemInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSystemInfo.h; path = src/OFSystemInfo.h; sourceTree = "<group>"; };
+		4B745BA4168B25E600A6C20E /* OFSystemInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSystemInfo.m; path = src/OFSystemInfo.m; sourceTree = "<group>"; };
 		4B7FF3B2133CED6100000324 /* OFConditionStillWaitingException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFConditionStillWaitingException.h; path = src/exceptions/OFConditionStillWaitingException.h; sourceTree = "<group>"; };
 		4B7FF3B3133CED6100000324 /* OFConditionStillWaitingException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFConditionStillWaitingException.m; path = src/exceptions/OFConditionStillWaitingException.m; sourceTree = "<group>"; };
 		4B837D7716829C5F007A3E83 /* block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = block.h; path = src/block.h; sourceTree = "<group>"; };
@@ -1179,6 +1183,8 @@
 				4BF1BCCD11C9663F0025511F /* OFString+XMLUnescaping.m */,
 				4B552550147AA5DB0003BF47 /* OFString_UTF8.h */,
 				4B552551147AA5DB0003BF47 /* OFString_UTF8.m */,
+				4B745BA3168B25E600A6C20E /* OFSystemInfo.h */,
+				4B745BA4168B25E600A6C20E /* OFSystemInfo.m */,
 				4B6799811099E7C50041064A /* OFTCPSocket.h */,
 				4B6799821099E7C50041064A /* OFTCPSocket.m */,
 				4BD653C3143B8489006182F0 /* OFTCPSocket+SOCKS5.h */,
@@ -1401,6 +1407,7 @@
 				4B3D23DA1337FCB000DD29B8 /* OFString+URLEncoding.h in Headers */,
 				4B3D23DB1337FCB000DD29B8 /* OFString+XMLEscaping.h in Headers */,
 				4B3D23DC1337FCB000DD29B8 /* OFString+XMLUnescaping.h in Headers */,
+				4B745BA5168B25E600A6C20E /* OFSystemInfo.h in Headers */,
 				4B3D23DD1337FCB000DD29B8 /* OFTCPSocket.h in Headers */,
 				4B3D23DE1337FCB000DD29B8 /* OFThread.h in Headers */,
 				4B9361A81511000C00DCD16B /* OFThreadPool.h in Headers */,
@@ -1754,6 +1761,7 @@
 				4B3D23A91337FC0D00DD29B8 /* OFString+XMLEscaping.m in Sources */,
 				4B3D23AA1337FC0D00DD29B8 /* OFString+XMLUnescaping.m in Sources */,
 				4B552555147AA5DB0003BF47 /* OFString_UTF8.m in Sources */,
+				4B745BA6168B25E600A6C20E /* OFSystemInfo.m in Sources */,
 				4B3D23AB1337FC0D00DD29B8 /* OFTCPSocket.m in Sources */,
 				4BD653C6143B8489006182F0 /* OFTCPSocket+SOCKS5.m in Sources */,
 				4B3D23AC1337FC0D00DD29B8 /* OFThread.m in Sources */,

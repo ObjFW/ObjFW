@@ -32,6 +32,7 @@
 #ifdef OF_THREADS
 # import "OFMutex.h"
 #endif
+#import "OFSystemInfo.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -514,6 +515,7 @@ static int month_to_day_of_year[12] = {
 	OFString *ret;
 	time_t seconds_ = (time_t)seconds;
 	struct tm tm;
+	size_t pageSize;
 	char *buffer;
 
 	if (seconds_ != floor(seconds))
@@ -542,10 +544,11 @@ static int month_to_day_of_year[12] = {
 # endif
 #endif
 
-	buffer = [self allocMemoryWithSize: of_pagesize];
+	pageSize = [OFSystemInfo pageSize];
+	buffer = [self allocMemoryWithSize: pageSize];
 
 	@try {
-		if (!strftime(buffer, of_pagesize, [format UTF8String], &tm))
+		if (!strftime(buffer, pageSize, [format UTF8String], &tm))
 			@throw [OFOutOfRangeException
 			    exceptionWithClass: [self class]];
 
@@ -562,6 +565,7 @@ static int month_to_day_of_year[12] = {
 	OFString *ret;
 	time_t seconds_ = (time_t)seconds;
 	struct tm tm;
+	size_t pageSize;
 	char *buffer;
 
 	if (seconds_ != floor(seconds))
@@ -590,10 +594,11 @@ static int month_to_day_of_year[12] = {
 # endif
 #endif
 
-	buffer = [self allocMemoryWithSize: of_pagesize];
+	pageSize = [OFSystemInfo pageSize];
+	buffer = [self allocMemoryWithSize: pageSize];
 
 	@try {
-		if (!strftime(buffer, of_pagesize, [format UTF8String], &tm))
+		if (!strftime(buffer, pageSize, [format UTF8String], &tm))
 			@throw [OFOutOfRangeException
 			    exceptionWithClass: [self class]];
 

@@ -887,8 +887,6 @@ extern "C" {
 #endif
 extern id of_alloc_object(Class class_, size_t extraSize, size_t extraAlignment,
     void **extra);
-extern size_t of_pagesize;
-extern size_t of_num_cpus;
 extern uint32_t of_hash_seed;
 #ifdef __cplusplus
 }

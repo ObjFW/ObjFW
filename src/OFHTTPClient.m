@@ -26,6 +26,7 @@
 #import "OFTCPSocket.h"
 #import "OFDictionary.h"
 #import "OFDataArray.h"
+#import "OFSystemInfo.h"
 
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidEncodingException.h"
@@ -131,6 +132,7 @@ normalize_key(char *str_)
 	const char *type = NULL;
 	size_t contentLength = 0;
 	BOOL chunked;
+	size_t pageSize;
 	char *buffer;
 	size_t bytesReceived;
 
@@ -361,7 +363,8 @@ normalize_key(char *str_)
 			    exceptionWithClass: [self class]];
 	}
 
-	buffer = [self allocMemoryWithSize: of_pagesize];
+	pageSize = [OFSystemInfo pageSize];
+	buffer = [self allocMemoryWithSize: pageSize];
 	bytesReceived = 0;
 	@try {
 		if (chunked) {
@@ -396,8 +399,8 @@ normalize_key(char *str_)
 					break;
 
 				while (toRead > 0) {
-					size_t length = (toRead < of_pagesize
-					    ? toRead : of_pagesize);
+					size_t length = (toRead < pageSize
+					    ? toRead : pageSize);
 
 					length = [sock readIntoBuffer: buffer
 							       length: length];
@@ -440,7 +443,7 @@ normalize_key(char *str_)
 				void *pool2;
 
 				length = [sock readIntoBuffer: buffer
-						       length: of_pagesize];
+						       length: pageSize];
 
 				pool2 = objc_autoreleasePoolPush();
 

@@ -53,6 +53,7 @@ SRCS = OFApplication.m			\
        OFString+URLEncoding.m		\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
+       OFSystemInfo.m			\
        OFTCPSocket.m			\
        OFTimer.m			\
        OFURL.m				\

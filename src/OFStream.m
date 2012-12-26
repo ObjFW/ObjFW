@@ -34,6 +34,7 @@
 #import "OFStream.h"
 #import "OFString.h"
 #import "OFDataArray.h"
+#import "OFSystemInfo.h"
 #import "OFRunLoop.h"
 
 #import "OFInvalidArgumentException.h"
@@ -514,17 +515,19 @@
 - (OFDataArray*)readDataArrayTillEndOfStream
 {
 	OFDataArray *dataArray;
+	size_t pageSize;
 	char *buffer;
 
 	dataArray = [OFDataArray dataArray];
-	buffer = [self allocMemoryWithSize: of_pagesize];
+	pageSize = [OFSystemInfo pageSize];
+	buffer = [self allocMemoryWithSize: pageSize];
 
 	@try {
 		while (![self isAtEndOfStream]) {
 			size_t length;
 
 			length = [self readIntoBuffer: buffer
-					       length: of_pagesize];
+					       length: pageSize];
 			[dataArray addItems: buffer
 				      count: length];
 		}
@@ -563,7 +566,7 @@
 
 - (OFString*)tryReadLineWithEncoding: (of_string_encoding_t)encoding
 {
-	size_t i, bufferLength, retLength;
+	size_t i, pageSize, bufferLength, retLength;
 	char *retCString, *buffer, *newCache;
 	OFString *ret;
 
@@ -596,8 +599,9 @@
 		}
 	}
 
-	/* Read and see if we get a newline or \0 */
-	buffer = [self allocMemoryWithSize: of_pagesize];
+	/* Read and see if we got a newline or \0 */
+	pageSize = [OFSystemInfo pageSize];
+	buffer = [self allocMemoryWithSize: pageSize];
 
 	@try {
 		if ([self lowlevelIsAtEndOfStream]) {
@@ -624,7 +628,7 @@
 		}
 
 		bufferLength = [self lowlevelReadIntoBuffer: buffer
-						     length: of_pagesize];
+						     length: pageSize];
 
 		/* Look if there's a newline or \0 */
 		for (i = 0; i < bufferLength; i++) {
@@ -765,7 +769,7 @@
 			 encoding: (of_string_encoding_t)encoding
 {
 	const char *delimiterCString;
-	size_t i, j, delimiterLength, bufferLength, retLength;
+	size_t i, j, delimiterLength, pageSize, bufferLength, retLength;
 	char *retCString, *buffer, *newCache;
 	OFString *ret;
 
@@ -809,8 +813,9 @@
 		}
 	}
 
-	/* Read and see if we get a delimiter or \0 */
-	buffer = [self allocMemoryWithSize: of_pagesize];
+	/* Read and see if we got a delimiter or \0 */
+	pageSize = [OFSystemInfo pageSize];
+	buffer = [self allocMemoryWithSize: pageSize];
 
 	@try {
 		if ([self lowlevelIsAtEndOfStream]) {
@@ -832,7 +837,7 @@
 		}
 
 		bufferLength = [self lowlevelReadIntoBuffer: buffer
-						     length: of_pagesize];
+						     length: pageSize];
 
 		/* Look if there's a delimiter or \0 */
 		for (i = 0; i < bufferLength; i++) {

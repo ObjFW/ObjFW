@@ -28,6 +28,7 @@
 #import "OFXMLAttribute.h"
 #import "OFStream.h"
 #import "OFFile.h"
+#import "OFSystemInfo.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFMalformedXMLException.h"
@@ -279,12 +280,13 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 - (void)parseStream: (OFStream*)stream
 {
-	char *buffer = [self allocMemoryWithSize: of_pagesize];
+	size_t pageSize = [OFSystemInfo pageSize];
+	char *buffer = [self allocMemoryWithSize: pageSize];
 
 	@try {
 		while (![stream isAtEndOfStream]) {
 			size_t length = [stream readIntoBuffer: buffer
-							length: of_pagesize];
+							length: pageSize];
 
 			[self parseBuffer: buffer
 				   length: length];

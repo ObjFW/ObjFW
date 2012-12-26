@@ -16,21 +16,13 @@
 
 #include "config.h"
 
-#define __NO_EXT_QNX
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <unistd.h>
-
 #include <assert.h>
 
 #include <sys/time.h>
-
-#ifdef __QNX__
-# include <sys/syspage.h>
-#endif
 
 #import "OFObject.h"
 #import "OFTimer.h"
@@ -99,8 +91,6 @@ static struct {
 	Class isa;
 } alloc_failed_exception;
 
-size_t of_pagesize;
-size_t of_num_cpus;
 uint32_t of_hash_seed;
 
 #if !defined(OF_APPLE_RUNTIME) || defined(__OBJC2__)
@@ -260,26 +250,6 @@ void _references_to_categories_of_OFObject(void)
 
 #ifdef HAVE_OBJC_ENUMERATIONMUTATION
 	objc_setEnumerationMutationHandler(enumeration_mutation_handler);
-#endif
-
-#if defined(_WIN32)
-	SYSTEM_INFO si;
-	GetSystemInfo(&si);
-	of_pagesize = si.dwPageSize;
-	of_num_cpus = si.dwNumberOfProcessors;
-#elif defined(__QNX__)
-	if ((of_pagesize = sysconf(_SC_PAGESIZE)) < 1)
-		of_pagesize = 4096;
-	of_num_cpus = _syspage_ptr->num_cpu;
-#else
-# ifdef _SC_PAGESIZE
-	if ((of_pagesize = sysconf(_SC_PAGESIZE)) < 1)
-# endif
-		of_pagesize = 4096;
-# ifdef _SC_NPROCESSORS_CONF
-	if ((of_num_cpus = sysconf(_SC_NPROCESSORS_CONF)) < 1)
-# endif
-		of_num_cpus = 1;
 #endif
 
 #if defined(OF_HAVE_ARC4RANDOM)

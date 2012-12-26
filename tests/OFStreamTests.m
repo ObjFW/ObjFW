@@ -20,6 +20,7 @@
 
 #import "OFStream.h"
 #import "OFString.h"
+#import "OFSystemInfo.h"
 #import "OFAutoreleasePool.h"
 
 #import "TestsAppDelegate.h"
@@ -41,6 +42,8 @@ static OFString *module = @"OFStream";
 - (size_t)lowlevelReadIntoBuffer: (void*)buffer
 			  length: (size_t)size
 {
+	size_t pageSize = [OFSystemInfo pageSize];
+
 	switch (state) {
 	case 0:
 		if (size < 1)
@@ -51,14 +54,14 @@ static OFString *module = @"OFStream";
 		state++;
 		return 1;
 	case 1:
-		if (size < of_pagesize)
+		if (size < pageSize)
 			return 0;
 
 		memcpy(buffer, "oo\n", 3);
-		memset((char*)buffer + 3, 'X', of_pagesize - 3);
+		memset((char*)buffer + 3, 'X', pageSize - 3);
 
 		state++;
-		return of_pagesize;
+		return pageSize;
 	}
 
 	return 0;
@@ -69,16 +72,17 @@ static OFString *module = @"OFStream";
 - (void)streamTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	size_t pageSize = [OFSystemInfo pageSize];
 	StreamTester *t = [[[StreamTester alloc] init] autorelease];
 	OFString *str;
 	char *cstr;
 
-	cstr = [t allocMemoryWithSize: of_pagesize - 2];
-	memset(cstr, 'X', of_pagesize - 3);
-	cstr[of_pagesize - 3] = '\0';
+	cstr = [t allocMemoryWithSize: pageSize - 2];
+	memset(cstr, 'X', pageSize - 3);
+	cstr[pageSize - 3] = '\0';
 
 	TEST(@"-[readLine]", [[t readLine] isEqual: @"foo"] &&
-	    [(str = [t readLine]) length] == of_pagesize - 3 &&
+	    [(str = [t readLine]) length] == pageSize - 3 &&
 	    !strcmp([str UTF8String], cstr))
 
 	[pool drain];

@@ -27,6 +27,7 @@
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
 #import "OFXMLElement.h"
+#import "OFSystemInfo.h"
 
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -112,13 +113,14 @@ void _references_to_categories_of_OFDataArray(void)
 		itemSize = 1;
 
 		@try {
-			char *buffer = [self allocMemoryWithSize: of_pagesize];
+			size_t pageSize = [OFSystemInfo pageSize];
+			char *buffer = [self allocMemoryWithSize: pageSize];
 
 			while (![file isAtEndOfStream]) {
 				size_t length;
 
 				length = [file readIntoBuffer: buffer
-						       length: of_pagesize];
+						       length: pageSize];
 				[self addItems: buffer
 					 count: length];
 			}
@@ -583,7 +585,7 @@ void _references_to_categories_of_OFDataArray(void)
 	if (SIZE_MAX - count < 1 || count + 1 > SIZE_MAX / itemSize)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	lastPageByte = of_pagesize - 1;
+	lastPageByte = [OFSystemInfo pageSize] - 1;
 	newSize = ((count + 1) * itemSize + lastPageByte) & ~lastPageByte;
 
 	if (size != newSize)
@@ -604,7 +606,7 @@ void _references_to_categories_of_OFDataArray(void)
 	if (count_ > SIZE_MAX - count || count + count_ > SIZE_MAX / itemSize)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	lastPageByte = of_pagesize - 1;
+	lastPageByte = [OFSystemInfo pageSize] - 1;
 	newSize = ((count + count_) * itemSize + lastPageByte) & ~lastPageByte;
 
 	if (size != newSize)
@@ -627,7 +629,7 @@ void _references_to_categories_of_OFDataArray(void)
 	    count + count_ > SIZE_MAX / itemSize)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	lastPageByte = of_pagesize - 1;
+	lastPageByte = [OFSystemInfo pageSize] - 1;
 	newSize = ((count + count_) * itemSize + lastPageByte) & ~lastPageByte;
 
 	if (size != newSize)
@@ -655,7 +657,7 @@ void _references_to_categories_of_OFDataArray(void)
 	    (count - range.location - range.length) * itemSize);
 
 	count -= range.length;
-	lastPageByte = of_pagesize - 1;
+	lastPageByte = [OFSystemInfo pageSize] - 1;
 	newSize = (count * itemSize + lastPageByte) & ~lastPageByte;
 
 	if (size != newSize)
@@ -672,7 +674,7 @@ void _references_to_categories_of_OFDataArray(void)
 		return;
 
 	count--;
-	lastPageByte = of_pagesize - 1;
+	lastPageByte = [OFSystemInfo pageSize] - 1;
 	newSize = (count * itemSize + lastPageByte) & ~lastPageByte;
 
 	if (size != newSize) {
