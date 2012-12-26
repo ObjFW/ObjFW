@@ -17,15 +17,21 @@
 #include "config.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 #ifndef _WIN32
 # include <unistd.h>
 # include <sys/wait.h>
 #endif
 
+#ifdef __MACH__
+# include <crt_externs.h>
+#endif
+
 #import "OFProcess.h"
 #import "OFString.h"
 #import "OFArray.h"
+#import "OFDictionary.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFReadFailedException.h"
@@ -36,6 +42,10 @@
 #endif
 
 #import "autorelease.h"
+
+#ifndef __MACH__
+extern char **environ;
+#endif
 
 @implementation OFProcess
 + (instancetype)processWithProgram: (OFString*)program
@@ -59,11 +69,23 @@
 				    arguments: arguments] autorelease];
 }
 
++ (instancetype)processWithProgram: (OFString*)program
+		       programName: (OFString*)programName
+			 arguments: (OFArray*)arguments
+		       environment: (OFDictionary*)environment
+{
+	return [[[self alloc] initWithProgram: program
+				  programName: programName
+				    arguments: arguments
+				  environment: environment] autorelease];
+}
+
 - initWithProgram: (OFString*)program
 {
 	return [self initWithProgram: program
 			 programName: program
-			   arguments: nil];
+			   arguments: nil
+			 environment: nil];
 }
 
 - initWithProgram: (OFString*)program
@@ -71,12 +93,24 @@
 {
 	return [self initWithProgram: program
 			 programName: program
-			   arguments: arguments];
+			   arguments: arguments
+			 environment: nil];
 }
 
 - initWithProgram: (OFString*)program
       programName: (OFString*)programName
 	arguments: (OFArray*)arguments
+{
+	return [self initWithProgram: program
+			 programName: program
+			   arguments: arguments
+			 environment: nil];
+}
+
+- initWithProgram: (OFString*)program
+      programName: (OFString*)programName
+	arguments: (OFArray*)arguments
+      environment: (OFDictionary*)environment
 {
 	self = [super init];
 
@@ -104,6 +138,9 @@
 				    OF_STRING_ENCODING_NATIVE];
 
 			argv[i + 1] = NULL;
+
+			if (environment != nil)
+				[self OF_setEnvironment: environment];
 
 			close(readPipe[0]);
 			close(writePipe[1]);
@@ -223,6 +260,51 @@
 	}
 
 	return self;
+}
+
+- (void)OF_setEnvironment: (OFDictionary*)environment
+{
+	OFEnumerator *keyEnumerator, *objectEnumerator;
+	char **envp;
+	size_t i, count;
+
+	count = [environment count];
+	envp = [self allocMemoryWithSize: sizeof(char*)
+				   count: count + 1];
+
+	keyEnumerator = [environment keyEnumerator];
+	objectEnumerator = [environment objectEnumerator];
+
+	for (i = 0; i < count; i++) {
+		OFString *key;
+		OFString *object;
+		size_t keyLen, objectLen;
+
+		key = [keyEnumerator nextObject];
+		object = [objectEnumerator nextObject];
+
+		keyLen = [key lengthOfBytesUsingEncoding:
+		    OF_STRING_ENCODING_NATIVE];
+		objectLen = [object lengthOfBytesUsingEncoding:
+		    OF_STRING_ENCODING_NATIVE];
+
+		envp[i] = [self allocMemoryWithSize: keyLen + objectLen + 2];
+
+		memcpy(envp[i], [key cStringUsingEncoding:
+		    OF_STRING_ENCODING_NATIVE], keyLen);
+		envp[i][keyLen] = '=';
+		memcpy(envp[i] + keyLen + 1, [object cStringUsingEncoding:
+		    OF_STRING_ENCODING_NATIVE], objectLen);
+		envp[i][keyLen + objectLen + 1] = '\0';
+	}
+
+	envp[i] = NULL;
+
+#ifdef __MACH__
+	*_NSGetEnviron() = envp;
+#else
+	environ = envp;
+#endif
 }
 
 - (BOOL)lowlevelIsAtEndOfStream

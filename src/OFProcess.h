@@ -29,6 +29,10 @@
 # include <windows.h>
 #endif
 
+@class OFString;
+@class OFArray;
+@class OFDictionary;
+
 /*!
  * @brief A class for stream-like communication with a newly created process.
  */
@@ -82,6 +86,27 @@
 			 arguments: (OFArray*)arguments;
 
 /*!
+ * @brief Creates a new OFProcess with the specified program, program name,
+ *	  arguments and environment and invokes the program.
+ *
+ * @param program The program to execute. If it does not start with a slash, the
+ *		  search path specified in PATH is used.
+ * @param programName The program name for the program to invoke (argv[0]).
+ *		      Usually, this is equal to program.
+ * @param arguments The arguments to pass to the program, or nil
+ * @param environment The environment to pass to the program, or nil. If it is
+ *		      non-nil, the passed dictionary will be used to override
+ *		      the environment. If you want to add to the existing
+ *		      environment, you need to get the existing environment
+ *		      first, copy it, modify it and then pass it.
+ * @return A new, autoreleased OFProcess.
+ */
++ (instancetype)processWithProgram: (OFString*)program
+		       programName: (OFString*)programName
+			 arguments: (OFArray*)arguments
+		       environment: (OFDictionary*)environment;
+
+/*!
  * @brief Initializes an already allocated OFProcess with the specified program
  *	  and invokes the program.
  *
@@ -117,6 +142,29 @@
 - initWithProgram: (OFString*)program
       programName: (OFString*)programName
 	arguments: (OFArray*)arguments;
+
+/*!
+ * @brief Initializes an already allocated OFProcess with the specified program,
+ *	  program name, arguments and environment and invokes the program.
+ *
+ * @param program The program to execute. If it does not start with a slash, the
+ *		  search path specified in PATH is used.
+ * @param programName The program name for the program to invoke (argv[0]).
+ *		      Usually, this is equal to program.
+ * @param arguments The arguments to pass to the program, or nil
+ * @param environment The environment to pass to the program, or nil. If it is
+ *		      non-nil, the passed dictionary will be used to override
+ *		      the environment. If you want to add to the existing
+ *		      environment, you need to get the existing environment
+ *		      first, copy it, modify it and then pass it.
+ * @return An initialized OFProcess.
+ */
+- initWithProgram: (OFString*)program
+      programName: (OFString*)programName
+	arguments: (OFArray*)arguments
+      environment: (OFDictionary*)environment;
+
+- (void)OF_setEnvironment: (OFDictionary*)dictionary;
 
 /*!
  * @brief Closes the write direction of the process.
