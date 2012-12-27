@@ -463,6 +463,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (uint16_t)bindToHost: (OFString*)host
 		  port: (uint16_t)port
 {
+	const int one = 1;
 	union {
 		struct sockaddr_storage storage;
 		struct sockaddr_in in;
@@ -501,6 +502,11 @@ static uint16_t defaultSOCKS5Port = 1080;
 							  socket: self
 							    host: host
 							    port: port];
+
+	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)))
+		@throw [OFSetOptionFailedException
+		    exceptionWithClass: [self class]
+				stream: self];
 
 	if (bind(sock, res->ai_addr, res->ai_addrlen) == -1) {
 		freeaddrinfo(res);
@@ -555,6 +561,11 @@ static uint16_t defaultSOCKS5Port = 1080;
 							  socket: self
 							    host: host
 							    port: port];
+
+	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)))
+		@throw [OFSetOptionFailedException
+		    exceptionWithClass: [self class]
+				stream: self];
 
 	if (bind(sock, (struct sockaddr*)&addr.in, sizeof(addr.in)) == -1) {
 		close(sock);
