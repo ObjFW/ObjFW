@@ -644,8 +644,14 @@ normalized_key(OFString *key)
 {
 	OFHTTPServer_Connection *connection;
 
-	if (exception != nil)
+	if (exception != nil) {
+		if ([delegate respondsToSelector:
+		    @selector(server:didReceiveExceptionOnListeningSocket:)])
+			return [delegate		  server: self
+			    didReceiveExceptionOnListeningSocket: exception];
+
 		return NO;
+	}
 
 	connection = [[[OFHTTPServer_Connection alloc]
 	    initWithSocket: clientSocket

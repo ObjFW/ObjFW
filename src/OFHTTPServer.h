@@ -36,6 +36,22 @@
  */
 - (OFHTTPRequestReply*)server: (OFHTTPServer*)server
 	    didReceiveRequest: (OFHTTPRequest*)request;
+
+#ifdef OF_HAVE_OPTIONAL_PROTOCOLS
+@optional
+#endif
+/*!
+ * @brief This method is called when the HTTP server's listening socket
+ *	  encountered an exception.
+ *
+ * @param exception The exception that occurred on the HTTP server's listening
+ *		    socket
+ * @return Whether to continue listening. If you return NO, existing connections
+ *	   will still be handled and you can start accepting new connections
+ *	   again by calling @ref start again.
+ */
+-			  (BOOL)server: (OFHTTPServer*)server
+  didReceiveExceptionOnListeningSocket: (OFException*)e;
 @end
 
 /*!
@@ -135,4 +151,7 @@
 - (BOOL)OF_socket: (OFTCPSocket*)socket
   didAcceptSocket: (OFTCPSocket*)clientSocket
 	exception: (OFException*)exception;
+@end
+
+@interface OFObject (OFHTTPServerDelegate) <OFHTTPServerDelegate>
 @end
