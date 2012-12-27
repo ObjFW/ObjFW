@@ -128,17 +128,8 @@
 	    (int)[changeList count], eventList, EVENTLIST_SIZE,
 	    (timeout == -1 ? NULL : &timespec));
 
-	if (events == -1) {
-		switch (errno) {
-		case EINTR:
-			return NO;
-		case ENOMEM:
-			@throw [OFOutOfMemoryException
-			    exceptionWithClass: [self class]];
-		default:
-			assert(0);
-		}
-	}
+	if (events < 0)
+		return NO;
 
 	[changeList removeAllItems];
 
