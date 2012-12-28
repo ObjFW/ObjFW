@@ -23,7 +23,7 @@
 #import "runtime.h"
 #import "runtime-private.h"
 
-#ifndef OF_SELUID16
+#ifdef OF_SELUID24
 # define SEL_MAX 0xFFFFFF
 #else
 # define SEL_MAX 0xFFFF

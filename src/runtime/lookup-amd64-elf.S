@@ -31,7 +31,7 @@ lookup:
 	movq	(%rsi), %rax
 	movzbl	%ah, %ecx
 	movzbl	%al, %edx
-#ifndef OF_SELUID16
+#ifdef OF_SELUID24
 	shrl	$16, %eax
 
 	movq	(%r8,%rax,8), %r8

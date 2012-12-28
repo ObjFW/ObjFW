@@ -116,9 +116,9 @@ AC_CHECK_HEADER(objc/objc.h)
 AC_MSG_CHECKING(which Objective C runtime to use)
 AC_ARG_ENABLE(runtime,
 	AS_HELP_STRING([--enable-runtime], [use the included runtime]))
-AC_ARG_ENABLE(seluid16,
-	AS_HELP_STRING([--enable-seluid16],
-		[use only 16 bit for selectors UIDs]))
+AC_ARG_ENABLE(seluid24,
+	AS_HELP_STRING([--enable-seluid24],
+		[use 24 bit for selectors UIDs]))
 AS_IF([test x"$enable_runtime" != x"yes"], [
 	AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
 		dnl TODO: This is ugly. Let's think of a better check.
@@ -256,9 +256,9 @@ case $objc_runtime in
 				[Whether to use assembly for lookup])
 		])
 
-		AS_IF([test x"$enable_seluid16" = x"yes"], [
-			AC_DEFINE(OF_SELUID16, 1,
-				[Whether to use 16 bit selector UIDs])
+		AS_IF([test x"$enable_seluid24" = x"yes"], [
+			AC_DEFINE(OF_SELUID24, 1,
+				[Whether to use 24 bit selector UIDs])
 		])
 
 		AX_CHECK_COMPILER_FLAGS(-Wno-deprecated-objc-isa-usage,

@@ -106,7 +106,7 @@ struct objc_sparsearray {
 	struct objc_sparsearray_level2 *buckets[256];
 };
 
-#ifndef OF_SELUID16
+#ifdef OF_SELUID24
 struct objc_sparsearray_level2 {
 	struct objc_sparsearray_level3 *buckets[256];
 	BOOL empty;
@@ -162,7 +162,7 @@ extern void objc_global_mutex_free(void);
 static inline void*
 objc_sparsearray_get(const struct objc_sparsearray *s, uint32_t idx)
 {
-#ifndef OF_SELUID16
+#ifdef OF_SELUID24
 	uint8_t i = idx >> 16;
 	uint8_t j = idx >>  8;
 	uint8_t k = idx;

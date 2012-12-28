@@ -23,7 +23,7 @@
 #import "runtime-private.h"
 
 static struct objc_sparsearray_level2 *empty_level2 = NULL;
-#ifndef OF_SELUID16
+#ifdef OF_SELUID24
 static struct objc_sparsearray_level3 *empty_level3 = NULL;
 #endif
 
@@ -38,7 +38,7 @@ init(void)
 
 	empty_level2->empty = YES;
 
-#ifndef OF_SELUID16
+#ifdef OF_SELUID24
 	empty_level3 = malloc(sizeof(struct objc_sparsearray_level3));
 	if (empty_level3 == NULL)
 		OBJC_ERROR("Not enough memory to allocate sparse array!");
@@ -46,7 +46,7 @@ init(void)
 	empty_level3->empty = YES;
 #endif
 
-#ifndef OF_SELUID16
+#ifdef OF_SELUID24
 	for (i = 0; i < 256; i++) {
 		empty_level2->buckets[i] = empty_level3;
 		empty_level3->buckets[i] = NULL;
@@ -63,7 +63,7 @@ objc_sparsearray_new(void)
 	struct objc_sparsearray *s;
 	uint_fast16_t i;
 
-#ifndef OF_SELUID16
+#ifdef OF_SELUID24
 	if (empty_level2 == NULL || empty_level3 == NULL)
 		init();
 #else
@@ -85,7 +85,7 @@ objc_sparsearray_copy(struct objc_sparsearray *dst,
     struct objc_sparsearray *src)
 {
 	uint_fast16_t i, j;
-#ifndef OF_SELUID16
+#ifdef OF_SELUID24
 	uint_fast16_t k;
 #endif
 	uint32_t idx;
@@ -94,7 +94,7 @@ objc_sparsearray_copy(struct objc_sparsearray *dst,
 		if (src->buckets[i]->empty)
 			continue;
 
-#ifndef OF_SELUID16
+#ifdef OF_SELUID24
 		for (j = 0; j < 256; j++) {
 			if (src->buckets[i]->buckets[j]->empty)
 				continue;
@@ -131,7 +131,7 @@ objc_sparsearray_copy(struct objc_sparsearray *dst,
 void
 objc_sparsearray_set(struct objc_sparsearray *s, uint32_t idx, const void *obj)
 {
-#ifndef OF_SELUID16
+#ifdef OF_SELUID24
 	uint8_t i = idx >> 16;
 	uint8_t j = idx >>  8;
 	uint8_t k = idx;
@@ -153,7 +153,7 @@ objc_sparsearray_set(struct objc_sparsearray *s, uint32_t idx, const void *obj)
 		t->empty = NO;
 
 		for (l = 0; l < 256; l++)
-#ifndef OF_SELUID16
+#ifdef OF_SELUID24
 			t->buckets[l] = empty_level3;
 #else
 			t->buckets[l] = NULL;
@@ -162,7 +162,7 @@ objc_sparsearray_set(struct objc_sparsearray *s, uint32_t idx, const void *obj)
 		s->buckets[i] = t;
 	}
 
-#ifndef OF_SELUID16
+#ifdef OF_SELUID24
 	if (s->buckets[i]->buckets[j]->empty) {
 		struct objc_sparsearray_level3 *t;
 		uint_fast16_t l;
@@ -191,12 +191,12 @@ void
 objc_sparsearray_free(struct objc_sparsearray *s)
 {
 	uint_fast16_t i;
-#ifndef OF_SELUID16
+#ifdef OF_SELUID24
 	uint_fast16_t j;
 #endif
 
 	for (i = 0; i < 256; i++) {
-#ifndef OF_SELUID16
+#ifdef OF_SELUID24
 		if (s->buckets[i]->empty)
 			continue;
 
@@ -216,13 +216,13 @@ objc_sparsearray_cleanup(void)
 {
 	if (empty_level2 != NULL)
 		free(empty_level2);
-#ifndef OF_SELUID16
+#ifdef OF_SELUID24
 	if (empty_level3 != NULL)
 		free(empty_level3);
 #endif
 
 	empty_level2 = NULL;
-#ifndef OF_SELUID16
+#ifdef OF_SELUID24
 	empty_level3 = NULL;
 #endif
 }

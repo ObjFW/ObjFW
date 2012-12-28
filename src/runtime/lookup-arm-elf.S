@@ -28,7 +28,7 @@ objc_msg_lookup:
 	ldr	r2, [r2, #32]
 
 lookup:
-#ifndef OF_SELUID16
+#ifdef OF_SELUID24
 	ldrb	r3, [r1, #2]
 	ldr	r2, [r2, r3, lsl #2]
 #endif

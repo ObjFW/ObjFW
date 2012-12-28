@@ -31,7 +31,7 @@ objc_msg_lookup:
 lookup:
 	movl	8(%esp), %eax
 
-#ifndef OF_SELUID16
+#ifdef OF_SELUID24
 	movzbl	2(%eax), %ecx
 	movl	(%edx,%ecx,4), %edx
 #endif
