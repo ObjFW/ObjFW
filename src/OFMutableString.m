@@ -301,8 +301,16 @@ static struct {
 - (void)setCharacter: (of_unichar_t)character
 	     atIndex: (size_t)index
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	void *pool = objc_autoreleasePoolPush();
+	OFString *string;
+
+	string = [OFString stringWithUnicodeString: &character
+					    length: 1];
+
+	[self replaceCharactersInRange: of_range(index, 1)
+			    withString: string];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)appendUTF8String: (const char*)UTF8String
@@ -435,22 +443,21 @@ static struct {
 - (void)insertString: (OFString*)string
 	     atIndex: (size_t)index
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	[self replaceCharactersInRange: of_range(index, 0)
+			    withString: string];
 }
 
 - (void)deleteCharactersInRange: (of_range_t)range
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	[self replaceCharactersInRange: range
+			    withString: @""];
 }
 
 - (void)replaceCharactersInRange: (of_range_t)range
 		      withString: (OFString*)replacement
 {
-	[self deleteCharactersInRange: range];
-	[self insertString: replacement
-		   atIndex: range.location];
+	[self doesNotRecognizeSelector: _cmd];
+	abort();
 }
 
 - (void)replaceOccurrencesOfString: (OFString*)string
