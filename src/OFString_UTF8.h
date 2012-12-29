@@ -42,3 +42,13 @@
 		 length: (size_t)UTF8StringLength
 		storage: (char*)storage;
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern int of_string_utf8_check(const char*, size_t, size_t*);
+extern size_t of_string_utf8_get_index(const char*, size_t);
+extern size_t of_string_utf8_get_position(const char*, size_t, size_t);
+#ifdef __cplusplus
+}
+#endif

@@ -536,9 +536,6 @@
 	if (range.length > SIZE_MAX - range.location || end > s->length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	s->hashed = NO;
-	s->length -= end - start;
-
 	if (s->isUTF8) {
 		start = of_string_utf8_get_position(s->cString, start,
 		    s->cStringLength);
@@ -547,6 +544,8 @@
 	}
 
 	memmove(s->cString + start, s->cString + end, s->cStringLength - end);
+	s->hashed = NO;
+	s->length -= range.length;
 	s->cStringLength -= end - start;
 	s->cString[s->cStringLength] = 0;
 
@@ -568,7 +567,7 @@
 	if (range.length > SIZE_MAX - range.location || end > s->length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	newLength = s->length - (end - start) + [replacement length];
+	newLength = s->length - range.length + [replacement length];
 
 	if (s->isUTF8) {
 		start = of_string_utf8_get_position(s->cString, start,

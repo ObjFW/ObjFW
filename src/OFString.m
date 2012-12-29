@@ -20,6 +20,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <assert.h>
+
 #include <sys/stat.h>
 
 #import "OFString.h"
@@ -56,6 +58,111 @@
 #ifdef _WIN32
 # define strtod __strtod
 #endif
+
+/* References for static linking */
+void _references_to_categories_of_OFString(void)
+{
+	_OFString_Hashing_reference = 1;
+	_OFString_JSONValue_reference = 1;
+	_OFString_Serialization_reference = 1;
+	_OFString_URLEncoding_reference = 1;
+	_OFString_XMLEscaping_reference = 1;
+	_OFString_XMLUnescaping_reference = 1;
+}
+
+void _reference_to_OFConstantString(void)
+{
+	[OFConstantString class];
+}
+
+size_t
+of_string_utf8_encode(of_unichar_t character, char *buffer)
+{
+	size_t i = 0;
+
+	if (character < 0x80) {
+		buffer[i] = character;
+		return 1;
+	} else if (character < 0x800) {
+		buffer[i++] = 0xC0 | (character >> 6);
+		buffer[i] = 0x80 | (character & 0x3F);
+		return 2;
+	} else if (character < 0x10000) {
+		buffer[i++] = 0xE0 | (character >> 12);
+		buffer[i++] = 0x80 | (character >> 6 & 0x3F);
+		buffer[i] = 0x80 | (character & 0x3F);
+		return 3;
+	} else if (character < 0x110000) {
+		buffer[i++] = 0xF0 | (character >> 18);
+		buffer[i++] = 0x80 | (character >> 12 & 0x3F);
+		buffer[i++] = 0x80 | (character >> 6 & 0x3F);
+		buffer[i] = 0x80 | (character & 0x3F);
+		return 4;
+	}
+
+	return 0;
+}
+
+size_t
+of_string_utf8_decode(const char *buffer_, size_t length, of_unichar_t *ret)
+{
+	const uint8_t *buffer = (const uint8_t*)buffer_;
+
+	if (!(*buffer & 0x80)) {
+		*ret = buffer[0];
+		return 1;
+	}
+
+	if ((*buffer & 0xE0) == 0xC0) {
+		if OF_UNLIKELY (length < 2)
+			return 0;
+
+		*ret = ((buffer[0] & 0x1F) << 6) | (buffer[1] & 0x3F);
+		return 2;
+	}
+
+	if ((*buffer & 0xF0) == 0xE0) {
+		if OF_UNLIKELY (length < 3)
+			return 0;
+
+		*ret = ((buffer[0] & 0x0F) << 12) | ((buffer[1] & 0x3F) << 6) |
+		    (buffer[2] & 0x3F);
+		return 3;
+	}
+
+	if ((*buffer & 0xF8) == 0xF0) {
+		if OF_UNLIKELY (length < 4)
+			return 0;
+
+		*ret = ((buffer[0] & 0x07) << 18) | ((buffer[1] & 0x3F) << 12) |
+		    ((buffer[2] & 0x3F) << 6) | (buffer[3] & 0x3F);
+		return 4;
+	}
+
+	return 0;
+}
+
+size_t
+of_string_unicode_length(const of_unichar_t *string)
+{
+	const of_unichar_t *string_ = string;
+
+	while (*string_ != 0)
+		string_++;
+
+	return (size_t)(string_ - string);
+}
+
+size_t
+of_string_utf16_length(const uint16_t *string)
+{
+	const uint16_t *string_ = string;
+
+	while (*string_ != 0)
+		string_++;
+
+	return (size_t)(string_ - string);
+}
 
 static OFString*
 standardize_path(OFArray *components, OFString *currentDirectory,
@@ -101,45 +208,6 @@ standardize_path(OFArray *components, OFString *currentDirectory,
 	objc_autoreleasePoolPop(pool);
 
 	return [ret autorelease];
-}
-
-
-/* References for static linking */
-void _references_to_categories_of_OFString(void)
-{
-	_OFString_Hashing_reference = 1;
-	_OFString_JSONValue_reference = 1;
-	_OFString_Serialization_reference = 1;
-	_OFString_URLEncoding_reference = 1;
-	_OFString_XMLEscaping_reference = 1;
-	_OFString_XMLUnescaping_reference = 1;
-}
-
-void _reference_to_OFConstantString(void)
-{
-	[OFConstantString class];
-}
-
-size_t
-of_unicode_string_length(const of_unichar_t *string)
-{
-	const of_unichar_t *string_ = string;
-
-	while (*string_ != 0)
-		string_++;
-
-	return (size_t)(string_ - string);
-}
-
-size_t
-of_utf16_string_length(const uint16_t *string)
-{
-	const uint16_t *string_ = string;
-
-	while (*string_ != 0)
-		string_++;
-
-	return (size_t)(string_ - string);
 }
 
 static struct {
@@ -628,7 +696,7 @@ static struct {
 {
 	return [self initWithUnicodeString: string
 				 byteOrder: OF_BYTE_ORDER_NATIVE
-				    length: of_unicode_string_length(string)];
+				    length: of_string_unicode_length(string)];
 }
 
 - initWithUnicodeString: (const of_unichar_t*)string
@@ -636,7 +704,7 @@ static struct {
 {
 	return [self initWithUnicodeString: string
 				 byteOrder: byteOrder
-				    length: of_unicode_string_length(string)];
+				    length: of_string_unicode_length(string)];
 }
 
 - initWithUnicodeString: (const of_unichar_t*)string
@@ -664,7 +732,7 @@ static struct {
 {
 	return [self initWithUTF16String: string
 			       byteOrder: OF_BYTE_ORDER_BIG_ENDIAN
-				  length: of_utf16_string_length(string)];
+				  length: of_string_utf16_length(string)];
 }
 
 - initWithUTF16String: (const uint16_t*)string
@@ -672,7 +740,7 @@ static struct {
 {
 	return [self initWithUTF16String: string
 			       byteOrder: byteOrder
-				  length: of_utf16_string_length(string)];
+				  length: of_string_utf16_length(string)];
 }
 
 - initWithUTF16String: (const uint16_t*)string
@@ -946,6 +1014,8 @@ static struct {
 		}
 
 		cString[j] = '\0';
+
+		assert(j == cStringLength);
 
 		@try {
 			cString = [object resizeMemory: cString

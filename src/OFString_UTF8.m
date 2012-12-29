@@ -125,73 +125,6 @@ of_string_utf8_check(const char *UTF8String, size_t UTF8Length, size_t *length)
 }
 
 size_t
-of_string_utf8_encode(of_unichar_t character, char *buffer)
-{
-	size_t i = 0;
-
-	if (character < 0x80) {
-		buffer[i] = character;
-		return 1;
-	} else if (character < 0x800) {
-		buffer[i++] = 0xC0 | (character >> 6);
-		buffer[i] = 0x80 | (character & 0x3F);
-		return 2;
-	} else if (character < 0x10000) {
-		buffer[i++] = 0xE0 | (character >> 12);
-		buffer[i++] = 0x80 | (character >> 6 & 0x3F);
-		buffer[i] = 0x80 | (character & 0x3F);
-		return 3;
-	} else if (character < 0x110000) {
-		buffer[i++] = 0xF0 | (character >> 18);
-		buffer[i++] = 0x80 | (character >> 12 & 0x3F);
-		buffer[i++] = 0x80 | (character >> 6 & 0x3F);
-		buffer[i] = 0x80 | (character & 0x3F);
-		return 4;
-	}
-
-	return 0;
-}
-
-size_t
-of_string_utf8_decode(const char *buffer_, size_t length, of_unichar_t *ret)
-{
-	const uint8_t *buffer = (const uint8_t*)buffer_;
-
-	if (!(*buffer & 0x80)) {
-		*ret = buffer[0];
-		return 1;
-	}
-
-	if ((*buffer & 0xE0) == 0xC0) {
-		if OF_UNLIKELY (length < 2)
-			return 0;
-
-		*ret = ((buffer[0] & 0x1F) << 6) | (buffer[1] & 0x3F);
-		return 2;
-	}
-
-	if ((*buffer & 0xF0) == 0xE0) {
-		if OF_UNLIKELY (length < 3)
-			return 0;
-
-		*ret = ((buffer[0] & 0x0F) << 12) | ((buffer[1] & 0x3F) << 6) |
-		    (buffer[2] & 0x3F);
-		return 3;
-	}
-
-	if ((*buffer & 0xF8) == 0xF0) {
-		if OF_UNLIKELY (length < 4)
-			return 0;
-
-		*ret = ((buffer[0] & 0x07) << 18) | ((buffer[1] & 0x3F) << 12) |
-		    ((buffer[2] & 0x3F) << 6) | (buffer[3] & 0x3F);
-		return 4;
-	}
-
-	return 0;
-}
-
-size_t
 of_string_utf8_get_index(const char *string, size_t position)
 {
 	size_t i, index = position;
@@ -1324,8 +1257,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	ret = [object allocMemoryWithSize: sizeof(of_unichar_t)
 				    count: s->length + 1];
 
-	i = 0;
-	j = 0;
+	i = j = 0;
 
 	while (i < s->cStringLength) {
 		of_unichar_t c;
