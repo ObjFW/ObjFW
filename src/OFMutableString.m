@@ -84,47 +84,21 @@ static struct {
 	return (id)[[OFMutableString_UTF8 alloc] initWithString: string];
 }
 
-- initWithUnicodeString: (const of_unichar_t*)string
+- initWithCharacters: (const of_unichar_t*)characters
+	      length: (size_t)length
 {
-	return (id)[[OFMutableString_UTF8 alloc] initWithUnicodeString: string];
+	return (id)[[OFMutableString_UTF8 alloc] initWithCharacters: characters
+							     length: length];
 }
 
-- initWithUnicodeString: (const of_unichar_t*)string
-	      byteOrder: (of_byte_order_t)byteOrder
+- initWithCharacters: (const of_unichar_t*)characters
+	      length: (size_t)length
+	   byteOrder: (of_byte_order_t)byteOrder
 {
 	return (id)[[OFMutableString_UTF8 alloc]
-	    initWithUnicodeString: string
-			byteOrder: byteOrder];
-}
-
-- initWithUnicodeString: (const of_unichar_t*)string
-		 length: (size_t)length
-{
-	return (id)[[OFMutableString_UTF8 alloc] initWithUnicodeString: string
-								length: length];
-}
-
-- initWithUnicodeString: (const of_unichar_t*)string
-	      byteOrder: (of_byte_order_t)byteOrder
-		 length: (size_t)length
-{
-	return (id)[[OFMutableString_UTF8 alloc]
-	    initWithUnicodeString: string
-			byteOrder: byteOrder
-			   length: length];
-}
-
-- initWithUTF16String: (const uint16_t*)string
-{
-	return (id)[[OFMutableString_UTF8 alloc] initWithUTF16String: string];
-}
-
-- initWithUTF16String: (const uint16_t*)string
-	    byteOrder: (of_byte_order_t)byteOrder
-{
-	return (id)[[OFMutableString_UTF8 alloc]
-	    initWithUTF16String: string
-		      byteOrder: byteOrder];
+	    initWithCharacters: characters
+			length: length
+		     byteOrder: byteOrder];
 }
 
 - initWithUTF16String: (const uint16_t*)string
@@ -135,13 +109,13 @@ static struct {
 }
 
 - initWithUTF16String: (const uint16_t*)string
-	    byteOrder: (of_byte_order_t)byteOrder
 	       length: (size_t)length
+	    byteOrder: (of_byte_order_t)byteOrder
 {
 	return (id)[[OFMutableString_UTF8 alloc]
 	    initWithUTF16String: string
-		      byteOrder: byteOrder
-			 length: length];
+			 length: length
+		      byteOrder: byteOrder];
 }
 
 - initWithFormat: (OFConstantString*)format, ...
@@ -261,14 +235,14 @@ static struct {
 		 wordMiddleTableSize: (size_t)middleTableSize
 {
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *string = [self unicodeString];
+	const of_unichar_t *characters = [self characters];
 	size_t i, length = [self length];
 	BOOL isStart = YES;
 
 	for (i = 0; i < length; i++) {
 		const of_unichar_t *const *table;
 		size_t tableSize;
-		of_unichar_t c = string[i];
+		of_unichar_t c = characters[i];
 
 		if (isStart) {
 			table = startTable;
@@ -304,8 +278,8 @@ static struct {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *string;
 
-	string = [OFString stringWithUnicodeString: &character
-					    length: 1];
+	string = [OFString stringWithCharacters: &character
+					 length: 1];
 
 	[self replaceCharactersInRange: of_range(index, 1)
 			    withString: string];
@@ -475,8 +449,8 @@ static struct {
 			     range: (of_range_t)range
 {
 	void *pool = objc_autoreleasePoolPush(), *pool2;
-	const of_unichar_t *unicodeString;
-	const of_unichar_t *searchString = [string unicodeString];
+	const of_unichar_t *characters;
+	const of_unichar_t *searchCharacters = [string characters];
 	size_t searchLength = [string length];
 	size_t replacementLength = [replacement length];
 	size_t i;
@@ -491,10 +465,10 @@ static struct {
 	}
 
 	pool2 = objc_autoreleasePoolPush();
-	unicodeString = [self unicodeString];
+	characters = [self characters];
 
 	for (i = range.location; i <= range.length - searchLength; i++) {
-		if (memcmp(unicodeString + i, searchString,
+		if (memcmp(characters + i, searchCharacters,
 		    searchLength * sizeof(of_unichar_t)))
 			continue;
 
@@ -509,7 +483,7 @@ static struct {
 		objc_autoreleasePoolPop(pool2);
 		pool2 = objc_autoreleasePoolPush();
 
-		unicodeString = [self unicodeString];
+		characters = [self characters];
 	}
 
 	objc_autoreleasePoolPop(pool);

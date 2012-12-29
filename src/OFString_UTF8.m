@@ -403,9 +403,9 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return self;
 }
 
-- initWithUnicodeString: (const of_unichar_t*)string
-	      byteOrder: (of_byte_order_t)byteOrder
-		 length: (size_t)length
+- initWithCharacters: (const of_unichar_t*)characters
+	      length: (size_t)length
+	   byteOrder: (of_byte_order_t)byteOrder
 {
 	self = [super init];
 
@@ -413,12 +413,12 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		size_t i, j = 0;
 		BOOL swap = NO;
 
-		if (length > 0 && *string == 0xFEFF) {
-			string++;
+		if (length > 0 && *characters == 0xFEFF) {
+			characters++;
 			length--;
-		} else if (length > 0 && *string == 0xFFFE0000) {
+		} else if (length > 0 && *characters == 0xFFFE0000) {
 			swap = YES;
-			string++;
+			characters++;
 			length--;
 		} else if (byteOrder != OF_BYTE_ORDER_NATIVE)
 			swap = YES;
@@ -432,7 +432,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		for (i = 0; i < length; i++) {
 			char buffer[4];
 			size_t characterLen = of_string_utf8_encode(
-			    (swap ? OF_BSWAP32(string[i]) : string[i]),
+			    (swap ? OF_BSWAP32(characters[i]) : characters[i]),
 			    buffer);
 
 			switch (characterLen) {
@@ -486,8 +486,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 }
 
 - initWithUTF16String: (const uint16_t*)string
-	    byteOrder: (of_byte_order_t)byteOrder
 	       length: (size_t)length
+	    byteOrder: (of_byte_order_t)byteOrder
 {
 	self = [super init];
 
@@ -953,13 +953,13 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 {
 	/* TODO: Could be slightly optimized */
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *unicodeString = [self unicodeString];
+	const of_unichar_t *characters = [self characters];
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > s->length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	memcpy(buffer, unicodeString + range.location,
+	memcpy(buffer, characters + range.location,
 	    range.length * sizeof(of_unichar_t));
 
 	objc_autoreleasePoolPop(pool);
@@ -1248,14 +1248,14 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return @".";
 }
 
-- (const of_unichar_t*)unicodeString
+- (const of_unichar_t*)characters
 {
 	OFObject *object = [[[OFObject alloc] init] autorelease];
 	of_unichar_t *ret;
 	size_t i, j;
 
 	ret = [object allocMemoryWithSize: sizeof(of_unichar_t)
-				    count: s->length + 1];
+				    count: s->length];
 
 	i = j = 0;
 
@@ -1273,8 +1273,6 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		ret[j++] = c;
 		i += cLen;
 	}
-
-	ret[j] = 0;
 
 	return ret;
 }

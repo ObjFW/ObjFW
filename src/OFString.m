@@ -142,28 +142,6 @@ of_string_utf8_decode(const char *buffer_, size_t length, of_unichar_t *ret)
 	return 0;
 }
 
-size_t
-of_string_unicode_length(const of_unichar_t *string)
-{
-	const of_unichar_t *string_ = string;
-
-	while (*string_ != 0)
-		string_++;
-
-	return (size_t)(string_ - string);
-}
-
-size_t
-of_string_utf16_length(const uint16_t *string)
-{
-	const uint16_t *string_ = string;
-
-	while (*string_ != 0)
-		string_++;
-
-	return (size_t)(string_ - string);
-}
-
 static OFString*
 standardize_path(OFArray *components, OFString *currentDirectory,
     OFString *parentDirectory, OFString *joinString)
@@ -307,60 +285,36 @@ static struct {
 	return (id)[[OFString_UTF8 alloc] initWithString: string];
 }
 
-- initWithUnicodeString: (const of_unichar_t*)string
+- initWithCharacters: (const of_unichar_t*)string
+	      length: (size_t)length
 {
-	return (id)[[OFString_UTF8 alloc] initWithUnicodeString: string];
+	return (id)[[OFString_UTF8 alloc] initWithCharacters: string
+						      length: length];
 }
 
-- initWithUnicodeString: (const of_unichar_t*)string
-	      byteOrder: (of_byte_order_t)byteOrder
+- initWithCharacters: (const of_unichar_t*)string
+	      length: (size_t)length
+	   byteOrder: (of_byte_order_t)byteOrder
 {
-	return (id)[[OFString_UTF8 alloc] initWithUnicodeString: string
-						      byteOrder: byteOrder];
-}
-
-- initWithUnicodeString: (const of_unichar_t*)string
-		 length: (size_t)length
-{
-	return (id)[[OFString_UTF8 alloc] initWithUnicodeString: string
-							 length: length];
-}
-
-- initWithUnicodeString: (const of_unichar_t*)string
-	      byteOrder: (of_byte_order_t)byteOrder
-		 length: (size_t)length
-{
-	return (id)[[OFString_UTF8 alloc] initWithUnicodeString: string
-						      byteOrder: byteOrder
-							 length: length];
+	return (id)[[OFString_UTF8 alloc] initWithCharacters: string
+						      length: length
+						   byteOrder: byteOrder];
 }
 
 - initWithUTF16String: (const uint16_t*)string
+	       length: (size_t)length
 {
-	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string];
+	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string
+						       length: length];
 }
 
 - initWithUTF16String: (const uint16_t*)string
+	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
 	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string
+						       length: length
 						    byteOrder: byteOrder];
-}
-
-- initWithUTF16String: (const uint16_t*)string
-	       length: (size_t)length
-{
-	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string
-						       length: length];
-}
-
-- initWithUTF16String: (const uint16_t*)string
-	    byteOrder: (of_byte_order_t)byteOrder
-	       length: (size_t)length
-{
-	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string
-						    byteOrder: byteOrder
-						       length: length];
 }
 
 - initWithFormat: (OFConstantString*)format, ...
@@ -518,60 +472,36 @@ static struct {
 	return [[[self alloc] initWithString: string] autorelease];
 }
 
-+ (instancetype)stringWithUnicodeString: (const of_unichar_t*)string
++ (instancetype)stringWithCharacters: (const of_unichar_t*)string
+			      length: (size_t)length
 {
-	return [[[self alloc] initWithUnicodeString: string] autorelease];
+	return [[[self alloc] initWithCharacters: string
+					  length: length] autorelease];
 }
 
-+ (instancetype)stringWithUnicodeString: (const of_unichar_t*)string
-			      byteOrder: (of_byte_order_t)byteOrder
++ (instancetype)stringWithCharacters: (const of_unichar_t*)string
+			      length: (size_t)length
+			   byteOrder: (of_byte_order_t)byteOrder
 {
-	return [[[self alloc] initWithUnicodeString: string
-					  byteOrder: byteOrder] autorelease];
-}
-
-+ (instancetype)stringWithUnicodeString: (const of_unichar_t*)string
-				 length: (size_t)length
-{
-	return [[[self alloc] initWithUnicodeString: string
-					     length: length] autorelease];
-}
-
-+ (instancetype)stringWithUnicodeString: (const of_unichar_t*)string
-			      byteOrder: (of_byte_order_t)byteOrder
-				 length: (size_t)length
-{
-	return [[[self alloc] initWithUnicodeString: string
-					  byteOrder: byteOrder
-					     length: length] autorelease];
+	return [[[self alloc] initWithCharacters: string
+					  length: length
+				       byteOrder: byteOrder] autorelease];
 }
 
 + (instancetype)stringWithUTF16String: (const uint16_t*)string
+			       length: (size_t)length
 {
-	return [[[self alloc] initWithUTF16String: string] autorelease];
+	return [[[self alloc] initWithUTF16String: string
+					   length: length] autorelease];
 }
 
 + (instancetype)stringWithUTF16String: (const uint16_t*)string
+			       length: (size_t)length
 			    byteOrder: (of_byte_order_t)byteOrder
 {
 	return [[[self alloc] initWithUTF16String: string
+					   length: length
 					byteOrder: byteOrder] autorelease];
-}
-
-+ (instancetype)stringWithUTF16String: (const uint16_t*)string
-			       length: (size_t)length
-{
-	return [[[self alloc] initWithUTF16String: string
-					   length: length] autorelease];
-}
-
-+ (instancetype)stringWithUTF16String: (const uint16_t*)string
-			    byteOrder: (of_byte_order_t)byteOrder
-			       length: (size_t)length
-{
-	return [[[self alloc] initWithUTF16String: string
-					byteOrder: byteOrder
-					   length: length] autorelease];
 }
 
 + (instancetype)stringWithFormat: (OFConstantString*)format, ...
@@ -692,32 +622,17 @@ static struct {
 	}
 }
 
-- initWithUnicodeString: (const of_unichar_t*)string
+- initWithCharacters: (const of_unichar_t*)string
+	      length: (size_t)length
 {
-	return [self initWithUnicodeString: string
-				 byteOrder: OF_BYTE_ORDER_NATIVE
-				    length: of_string_unicode_length(string)];
+	return [self initWithCharacters: string
+				 length: length
+			      byteOrder: OF_BYTE_ORDER_NATIVE];
 }
 
-- initWithUnicodeString: (const of_unichar_t*)string
-	      byteOrder: (of_byte_order_t)byteOrder
-{
-	return [self initWithUnicodeString: string
-				 byteOrder: byteOrder
-				    length: of_string_unicode_length(string)];
-}
-
-- initWithUnicodeString: (const of_unichar_t*)string
-		 length: (size_t)length
-{
-	return [self initWithUnicodeString: string
-				 byteOrder: OF_BYTE_ORDER_NATIVE
-				    length: length];
-}
-
-- initWithUnicodeString: (const of_unichar_t*)string
-	      byteOrder: (of_byte_order_t)byteOrder
-		 length: (size_t)length
+- initWithCharacters: (const of_unichar_t*)string
+	      length: (size_t)length
+	   byteOrder: (of_byte_order_t)byteOrder
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -729,31 +644,16 @@ static struct {
 }
 
 - initWithUTF16String: (const uint16_t*)string
+	       length: (size_t)length
 {
 	return [self initWithUTF16String: string
-			       byteOrder: OF_BYTE_ORDER_BIG_ENDIAN
-				  length: of_string_utf16_length(string)];
-}
-
-- initWithUTF16String: (const uint16_t*)string
-	    byteOrder: (of_byte_order_t)byteOrder
-{
-	return [self initWithUTF16String: string
-			       byteOrder: byteOrder
-				  length: of_string_utf16_length(string)];
+				  length: length
+			       byteOrder: OF_BYTE_ORDER_BIG_ENDIAN];
 }
 
 - initWithUTF16String: (const uint16_t*)string
 	       length: (size_t)length
-{
-	return [self initWithUTF16String: string
-			       byteOrder: OF_BYTE_ORDER_BIG_ENDIAN
-				  length: length];
-}
-
-- initWithUTF16String: (const uint16_t*)string
 	    byteOrder: (of_byte_order_t)byteOrder
-	       length: (size_t)length
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -965,7 +865,7 @@ static struct {
 
 - (const char*)cStringUsingEncoding: (of_string_encoding_t)encoding
 {
-	const of_unichar_t *unicodeString = [self unicodeString];
+	const of_unichar_t *characters = [self characters];
 	size_t i, length = [self length];
 	OFObject *object = [[[OFObject alloc] init] autorelease];
 	char *cString;
@@ -979,7 +879,7 @@ static struct {
 
 		for (i = 0; i < length; i++) {
 			char buffer[4];
-			size_t len = of_string_utf8_encode(unicodeString[i],
+			size_t len = of_string_utf8_encode(characters[i],
 			    buffer);
 
 			switch (len) {
@@ -1029,11 +929,11 @@ static struct {
 		cString = [object allocMemoryWithSize: length + 1];
 
 		for (i = 0; i < length; i++) {
-			if (unicodeString[i] > 0x80)
+			if (characters[i] > 0x80)
 				@throw [OFInvalidEncodingException
 				    exceptionWithClass: [self class]];
 
-			cString[i] = (char)unicodeString[i];
+			cString[i] = (char)characters[i];
 		}
 
 		cString[i] = '\0';
@@ -1043,11 +943,11 @@ static struct {
 		cString = [object allocMemoryWithSize: length + 1];
 
 		for (i = 0; i < length; i++) {
-			if (unicodeString[i] > 0xFF)
+			if (characters[i] > 0xFF)
 				@throw [OFInvalidEncodingException
 				    exceptionWithClass: [self class]];
 
-			cString[i] = (uint8_t)unicodeString[i];
+			cString[i] = (uint8_t)characters[i];
 		}
 
 		cString[i] = '\0';
@@ -1077,15 +977,15 @@ static struct {
 {
 	switch (encoding) {
 	case OF_STRING_ENCODING_UTF_8:;
-		const of_unichar_t *unicodeString;
+		const of_unichar_t *characters;
 		size_t i, length, UTF8StringLength = 0;
 
-		unicodeString = [self unicodeString];
+		characters = [self characters];
 		length = [self length];
 
 		for (i = 0; i < length; i++) {
 			char buffer[4];
-			size_t len = of_string_utf8_encode(unicodeString[i],
+			size_t len = of_string_utf8_encode(characters[i],
 			    buffer);
 
 			if (len == 0)
@@ -1130,7 +1030,7 @@ static struct {
 {
 	void *pool;
 	OFString *otherString;
-	const of_unichar_t *unicodeString, *otherUnicodeString;
+	const of_unichar_t *characters, *otherCharacters;
 	size_t length;
 
 	if (object == self)
@@ -1147,10 +1047,10 @@ static struct {
 
 	pool = objc_autoreleasePoolPush();
 
-	unicodeString = [self unicodeString];
-	otherUnicodeString = [otherString unicodeString];
+	characters = [self characters];
+	otherCharacters = [otherString characters];
 
-	if (memcmp(unicodeString, otherUnicodeString,
+	if (memcmp(characters, otherCharacters,
 	    length * sizeof(of_unichar_t))) {
 		objc_autoreleasePoolPop(pool);
 		return NO;
@@ -1175,7 +1075,7 @@ static struct {
 {
 	void *pool;
 	OFString *otherString;
-	const of_unichar_t *unicodeString, *otherUnicodeString;
+	const of_unichar_t *characters, *otherCharacters;
 	size_t i, minimumLength;
 
 	if (object == self)
@@ -1192,16 +1092,16 @@ static struct {
 
 	pool = objc_autoreleasePoolPush();
 
-	unicodeString = [self unicodeString];
-	otherUnicodeString = [otherString unicodeString];
+	characters = [self characters];
+	otherCharacters = [otherString characters];
 
 	for (i = 0; i < minimumLength; i++) {
-		if (unicodeString[i] > otherUnicodeString[i]) {
+		if (characters[i] > otherCharacters[i]) {
 			objc_autoreleasePoolPop(pool);
 			return OF_ORDERED_DESCENDING;
 		}
 
-		if (unicodeString[i] < otherUnicodeString[i]) {
+		if (characters[i] < otherCharacters[i]) {
 			objc_autoreleasePoolPop(pool);
 			return OF_ORDERED_ASCENDING;
 		}
@@ -1220,22 +1120,22 @@ static struct {
 - (of_comparison_result_t)caseInsensitiveCompare: (OFString*)otherString
 {
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *string, *otherUnicodeString;
+	const of_unichar_t *characters, *otherCharacters;
 	size_t i, length, otherLength, minimumLength;
 
 	if (otherString == self)
 		return OF_ORDERED_SAME;
 
-	string = [self unicodeString];
-	otherUnicodeString = [otherString unicodeString];
+	characters = [self characters];
+	otherCharacters = [otherString characters];
 	length = [self length];
 	otherLength = [otherString length];
 
 	minimumLength = (length > otherLength ? otherLength : length);
 
 	for (i = 0; i < minimumLength; i++) {
-		of_unichar_t c = string[i];
-		of_unichar_t oc = otherUnicodeString[i];
+		of_unichar_t c = characters[i];
+		of_unichar_t oc = otherCharacters[i];
 
 		if (c >> 8 < OF_UNICODE_CASEFOLDING_TABLE_SIZE) {
 			of_unichar_t tc =
@@ -1275,14 +1175,14 @@ static struct {
 
 - (uint32_t)hash
 {
-	const of_unichar_t *unicodeString = [self unicodeString];
+	const of_unichar_t *characters = [self characters];
 	size_t i, length = [self length];
 	uint32_t hash;
 
 	OF_HASH_INIT(hash);
 
 	for (i = 0; i < length; i++) {
-		const of_unichar_t c = unicodeString[i];
+		const of_unichar_t c = characters[i];
 
 		OF_HASH_ADD(hash, (c & 0xFF0000) >> 16);
 		OF_HASH_ADD(hash, (c & 0x00FF00) >>  8);
@@ -1369,8 +1269,8 @@ static struct {
 		      range: (of_range_t)range
 {
 	void *pool;
-	const of_unichar_t *searchString;
-	of_unichar_t *unicodeString;
+	const of_unichar_t *searchCharacters;
+	of_unichar_t *characters;
 	size_t i, searchLength;
 
 	if ((searchLength = [string length]) == 0)
@@ -1384,21 +1284,21 @@ static struct {
 
 	pool = objc_autoreleasePoolPush();
 
-	searchString = [string unicodeString];
-	unicodeString = malloc(range.length * sizeof(of_unichar_t));
+	searchCharacters = [string characters];
+	characters = malloc(range.length * sizeof(of_unichar_t));
 
-	if (unicodeString == NULL)
+	if (characters == NULL)
 		@throw [OFOutOfMemoryException
 		    exceptionWithClass: [self class]
 			 requestedSize: range.length * sizeof(of_unichar_t)];
 
 	@try {
-		[self getCharacters: unicodeString
+		[self getCharacters: characters
 			    inRange: range];
 
 		if (options & OF_STRING_SEARCH_BACKWARDS) {
 			for (i = range.length - searchLength;; i--) {
-				if (!memcmp(unicodeString + i, searchString,
+				if (!memcmp(characters + i, searchCharacters,
 				    searchLength * sizeof(of_unichar_t))) {
 					objc_autoreleasePoolPop(pool);
 					return of_range(range.location + i,
@@ -1411,7 +1311,7 @@ static struct {
 			}
 		} else {
 			for (i = 0; i <= range.length - searchLength; i++) {
-				if (!memcmp(unicodeString + i, searchString,
+				if (!memcmp(characters + i, searchCharacters,
 				    searchLength * sizeof(of_unichar_t))) {
 					objc_autoreleasePoolPop(pool);
 					return of_range(range.location + i,
@@ -1420,7 +1320,7 @@ static struct {
 			}
 		}
 	} @finally {
-		free(unicodeString);
+		free(characters);
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -1431,7 +1331,7 @@ static struct {
 - (BOOL)containsString: (OFString*)string
 {
 	void *pool;
-	const of_unichar_t *unicodeString, *searchString;
+	const of_unichar_t *characters, *searchCharacters;
 	size_t i, length, searchLength;
 
 	if ((searchLength = [string length]) == 0)
@@ -1442,11 +1342,11 @@ static struct {
 
 	pool = objc_autoreleasePoolPush();
 
-	unicodeString = [self unicodeString];
-	searchString = [string unicodeString];
+	characters = [self characters];
+	searchCharacters = [string characters];
 
 	for (i = 0; i <= length - searchLength; i++) {
-		if (!memcmp(unicodeString + i, searchString,
+		if (!memcmp(characters + i, searchCharacters,
 		    searchLength * sizeof(of_unichar_t))) {
 			objc_autoreleasePoolPop(pool);
 			return YES;
@@ -1470,8 +1370,8 @@ static struct {
 
 	pool = objc_autoreleasePoolPush();
 	ret = [[OFString alloc]
-	    initWithUnicodeString: [self unicodeString] + range.location
-			   length: range.length];
+	    initWithCharacters: [self characters] + range.location
+			length: range.length];
 	objc_autoreleasePoolPop(pool);
 
 	return [ret autorelease];
@@ -1631,7 +1531,7 @@ static struct {
 - (BOOL)hasPrefix: (OFString*)prefix
 {
 	of_unichar_t *tmp;
-	const of_unichar_t *prefixString;
+	const of_unichar_t *prefixCharacters;
 	size_t prefixLength;
 	int compare;
 
@@ -1646,8 +1546,8 @@ static struct {
 		[self getCharacters: tmp
 			    inRange: of_range(0, prefixLength)];
 
-		prefixString = [prefix unicodeString];
-		compare = memcmp(tmp, prefixString,
+		prefixCharacters = [prefix characters];
+		compare = memcmp(tmp, prefixCharacters,
 		    prefixLength * sizeof(of_unichar_t));
 
 		objc_autoreleasePoolPop(pool);
@@ -1661,7 +1561,7 @@ static struct {
 - (BOOL)hasSuffix: (OFString*)suffix
 {
 	of_unichar_t *tmp;
-	const of_unichar_t *suffixString;
+	const of_unichar_t *suffixCharacters;
 	size_t length, suffixLength;
 	int compare;
 
@@ -1679,8 +1579,8 @@ static struct {
 			    inRange: of_range(length - suffixLength,
 					 suffixLength)];
 
-		suffixString = [suffix unicodeString];
-		compare = memcmp(tmp, suffixString,
+		suffixCharacters = [suffix characters];
+		compare = memcmp(tmp, suffixCharacters,
 		    suffixLength * sizeof(of_unichar_t));
 
 		objc_autoreleasePoolPop(pool);
@@ -1702,7 +1602,7 @@ static struct {
 {
 	void *pool;
 	OFMutableArray *array = [OFMutableArray array];
-	const of_unichar_t *string, *delimiterString;
+	const of_unichar_t *characters, *delimiterCharacters;
 	BOOL skipEmpty = (options & OF_STRING_SKIP_EMPTY);
 	size_t length = [self length];
 	size_t delimiterLength = [delimiter length];
@@ -1711,8 +1611,8 @@ static struct {
 
 	pool = objc_autoreleasePoolPush();
 
-	string = [self unicodeString];
-	delimiterString = [delimiter unicodeString];
+	characters = [self characters];
+	delimiterCharacters = [delimiter characters];
 
 	if (delimiterLength > length) {
 		[array addObject: [[self copy] autorelease]];
@@ -1724,7 +1624,7 @@ static struct {
 	}
 
 	for (i = 0, last = 0; i <= length - delimiterLength; i++) {
-		if (memcmp(string + i, delimiterString,
+		if (memcmp(characters + i, delimiterCharacters,
 		    delimiterLength * sizeof(of_unichar_t)))
 			continue;
 
@@ -1750,7 +1650,7 @@ static struct {
 {
 	OFMutableArray *ret;
 	void *pool;
-	const of_unichar_t *string;
+	const of_unichar_t *characters;
 	size_t i, last = 0, length = [self length];
 
 	ret = [OFMutableArray array];
@@ -1760,20 +1660,20 @@ static struct {
 
 	pool = objc_autoreleasePoolPush();
 
-	string = [self unicodeString];
+	characters = [self characters];
 
 #ifndef _WIN32
-	if (string[length - 1] == OF_PATH_DELIMITER)
+	if (characters[length - 1] == OF_PATH_DELIMITER)
 #else
-	if (string[length - 1] == '/' || string[length - 1] == '\\')
+	if (characters[length - 1] == '/' || characters[length - 1] == '\\')
 #endif
 		length--;
 
 	for (i = 0; i < length; i++) {
 #ifndef _WIN32
-		if (string[i] == OF_PATH_DELIMITER) {
+		if (characters[i] == OF_PATH_DELIMITER) {
 #else
-		if (string[i] == '/' || string[i] == '\\') {
+		if (characters[i] == '/' || characters[i] == '\\') {
 #endif
 			[ret addObject: [self substringWithRange:
 			    of_range(last, i - last)]];
@@ -1794,7 +1694,7 @@ static struct {
 - (OFString*)lastPathComponent
 {
 	void *pool;
-	const of_unichar_t *string;
+	const of_unichar_t *characters;
 	size_t length = [self length];
 	ssize_t i;
 
@@ -1803,20 +1703,20 @@ static struct {
 
 	pool = objc_autoreleasePoolPush();
 
-	string = [self unicodeString];
+	characters = [self characters];
 
 #ifndef _WIN32
-	if (string[length - 1] == OF_PATH_DELIMITER)
+	if (characters[length - 1] == OF_PATH_DELIMITER)
 #else
-	if (string[length - 1] == '/' || string[length - 1] == '\\')
+	if (characters[length - 1] == '/' || characters[length - 1] == '\\')
 #endif
 		length--;
 
 	for (i = length - 1; i >= 0; i--) {
 #ifndef _WIN32
-		if (string[i] == OF_PATH_DELIMITER) {
+		if (characters[i] == OF_PATH_DELIMITER) {
 #else
-		if (string[i] == '/' || string[i] == '\\') {
+		if (characters[i] == '/' || characters[i] == '\\') {
 #endif
 			i++;
 			break;
@@ -1838,7 +1738,7 @@ static struct {
 - (OFString*)stringByDeletingLastPathComponent
 {
 	void *pool;
-	const of_unichar_t *string;
+	const of_unichar_t *characters;
 	size_t i, length = [self length];
 
 	if (length == 0)
@@ -1846,12 +1746,12 @@ static struct {
 
 	pool = objc_autoreleasePoolPush();
 
-	string = [self unicodeString];
+	characters = [self characters];
 
 #ifndef _WIN32
-	if (string[length - 1] == OF_PATH_DELIMITER)
+	if (characters[length - 1] == OF_PATH_DELIMITER)
 #else
-	if (string[length - 1] == '/' || string[length - 1] == '\\')
+	if (characters[length - 1] == '/' || characters[length - 1] == '\\')
 #endif
 		length--;
 
@@ -1862,9 +1762,9 @@ static struct {
 
 	for (i = length - 1; i >= 1; i--) {
 #ifndef _WIN32
-		if (string[i] == OF_PATH_DELIMITER) {
+		if (characters[i] == OF_PATH_DELIMITER) {
 #else
-		if (string[i] == '/' || string[i] == '\\') {
+		if (characters[i] == '/' || characters[i] == '\\') {
 #endif
 			objc_autoreleasePoolPop(pool);
 			return [self substringWithRange: of_range(0, i)];
@@ -1872,9 +1772,9 @@ static struct {
 	}
 
 #ifndef _WIN32
-	if (string[0] == OF_PATH_DELIMITER) {
+	if (characters[0] == OF_PATH_DELIMITER) {
 #else
-	if (string[0] == '/' || string[0] == '\\') {
+	if (characters[0] == '/' || characters[0] == '\\') {
 #endif
 		objc_autoreleasePoolPop(pool);
 		return [self substringWithRange: of_range(0, 1)];
@@ -1901,15 +1801,16 @@ static struct {
 - (intmax_t)decimalValue
 {
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *string = [self unicodeString];
+	const of_unichar_t *characters = [self characters];
 	size_t length = [self length];
 	int i = 0;
 	intmax_t value = 0;
 	BOOL expectWhitespace = NO;
 
-	while (*string == ' ' || *string == '\t' || *string == '\n' ||
-	    *string == '\r' || *string == '\f') {
-		string++;
+	while (length > 0 && (*characters == ' ' || *characters == '\t' ||
+	    *characters == '\n' || *characters == '\r' ||
+	    *characters == '\f')) {
+		characters++;
 		length--;
 	}
 
@@ -1918,36 +1819,36 @@ static struct {
 		return 0;
 	}
 
-	if (string[0] == '-' || string[0] == '+')
+	if (characters[0] == '-' || characters[0] == '+')
 		i++;
 
 	for (; i < length; i++) {
 		if (expectWhitespace) {
-			if (string[i] != ' ' && string[i] != '\t' &&
-			    string[i] != '\n' && string[i] != '\r' &&
-			    string[i] != '\f')
+			if (characters[i] != ' ' && characters[i] != '\t' &&
+			    characters[i] != '\n' && characters[i] != '\r' &&
+			    characters[i] != '\f')
 				@throw [OFInvalidFormatException
 				    exceptionWithClass: [self class]];
 			continue;
 		}
 
-		if (string[i] >= '0' && string[i] <= '9') {
+		if (characters[i] >= '0' && characters[i] <= '9') {
 			if (INTMAX_MAX / 10 < value ||
-			    INTMAX_MAX - value * 10 < string[i] - '0')
+			    INTMAX_MAX - value * 10 < characters[i] - '0')
 				@throw [OFOutOfRangeException
 				    exceptionWithClass: [self class]];
 
-			value = (value * 10) + (string[i] - '0');
-		} else if (string[i] == ' ' || string[i] == '\t' ||
-		    string[i] == '\n' || string[i] == '\r' ||
-		    string[i] == '\f')
+			value = (value * 10) + (characters[i] - '0');
+		} else if (characters[i] == ' ' || characters[i] == '\t' ||
+		    characters[i] == '\n' || characters[i] == '\r' ||
+		    characters[i] == '\f')
 			expectWhitespace = YES;
 		else
 			@throw [OFInvalidFormatException
 			    exceptionWithClass: [self class]];
 	}
 
-	if (string[0] == '-')
+	if (characters[0] == '-')
 		value *= -1;
 
 	objc_autoreleasePoolPop(pool);
@@ -1958,15 +1859,16 @@ static struct {
 - (uintmax_t)hexadecimalValue
 {
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *string = [self unicodeString];
+	const of_unichar_t *characters = [self characters];
 	size_t length = [self length];
 	int i = 0;
 	uintmax_t value = 0;
 	BOOL expectWhitespace = NO, foundValue = NO;
 
-	while (*string == ' ' || *string == '\t' || *string == '\n' ||
-	    *string == '\r' || *string == '\f') {
-		string++;
+	while (length > 0 && (*characters == ' ' || *characters == '\t' ||
+	    *characters == '\n' || *characters == '\r' ||
+	    *characters == '\f')) {
+		characters++;
 		length--;
 	}
 
@@ -1975,35 +1877,35 @@ static struct {
 		return 0;
 	}
 
-	if (length >= 2 && string[0] == '0' && string[1] == 'x')
+	if (length >= 2 && characters[0] == '0' && characters[1] == 'x')
 		i = 2;
-	else if (length >= 1 && (string[0] == 'x' || string[0] == '$'))
+	else if (length >= 1 && (characters[0] == 'x' || characters[0] == '$'))
 		i = 1;
 
 	for (; i < length; i++) {
 		uintmax_t newValue;
 
 		if (expectWhitespace) {
-			if (string[i] != ' ' && string[i] != '\t' &&
-			    string[i] != '\n' && string[i] != '\r' &&
-			    string[i] != '\f')
+			if (characters[i] != ' ' && characters[i] != '\t' &&
+			    characters[i] != '\n' && characters[i] != '\r' &&
+			    characters[i] != '\f')
 				@throw [OFInvalidFormatException
 				    exceptionWithClass: [self class]];
 			continue;
 		}
 
-		if (string[i] >= '0' && string[i] <= '9') {
-			newValue = (value << 4) | (string[i] - '0');
+		if (characters[i] >= '0' && characters[i] <= '9') {
+			newValue = (value << 4) | (characters[i] - '0');
 			foundValue = YES;
-		} else if (string[i] >= 'A' && string[i] <= 'F') {
-			newValue = (value << 4) | (string[i] - 'A' + 10);
+		} else if (characters[i] >= 'A' && characters[i] <= 'F') {
+			newValue = (value << 4) | (characters[i] - 'A' + 10);
 			foundValue = YES;
-		} else if (string[i] >= 'a' && string[i] <= 'f') {
-			newValue = (value << 4) | (string[i] - 'a' + 10);
+		} else if (characters[i] >= 'a' && characters[i] <= 'f') {
+			newValue = (value << 4) | (characters[i] - 'a' + 10);
 			foundValue = YES;
-		} else if (string[i] == 'h' || string[i] == ' ' ||
-		    string[i] == '\t' || string[i] == '\n' ||
-		    string[i] == '\r' || string[i] == '\f') {
+		} else if (characters[i] == 'h' || characters[i] == ' ' ||
+		    characters[i] == '\t' || characters[i] == '\n' ||
+		    characters[i] == '\r' || characters[i] == '\f') {
 			expectWhitespace = YES;
 			continue;
 		} else
@@ -2029,15 +1931,15 @@ static struct {
 - (float)floatValue
 {
 	void *pool = objc_autoreleasePoolPush();
-	const char *cString = [self UTF8String];
+	const char *UTF8String = [self UTF8String];
 	char *endPointer = NULL;
 	float value;
 
-	while (*cString == ' ' || *cString == '\t' || *cString == '\n' ||
-	    *cString == '\r' || *cString == '\f')
-		cString++;
+	while (*UTF8String == ' ' || *UTF8String == '\t' ||
+	    *UTF8String == '\n' || *UTF8String == '\r' || *UTF8String == '\f')
+		UTF8String++;
 
-	value = strtof(cString, &endPointer);
+	value = strtof(UTF8String, &endPointer);
 
 	/* Check if there are any invalid chars left */
 	if (endPointer != NULL)
@@ -2056,15 +1958,15 @@ static struct {
 - (double)doubleValue
 {
 	void *pool = objc_autoreleasePoolPush();
-	const char *cString = [self UTF8String];
+	const char *UTF8String = [self UTF8String];
 	char *endPointer = NULL;
 	double value;
 
-	while (*cString == ' ' || *cString == '\t' || *cString == '\n' ||
-	    *cString == '\r' || *cString == '\f')
-		cString++;
+	while (*UTF8String == ' ' || *UTF8String == '\t' ||
+	    *UTF8String == '\n' || *UTF8String == '\r' || *UTF8String == '\f')
+		UTF8String++;
 
-	value = strtod(cString, &endPointer);
+	value = strtod(UTF8String, &endPointer);
 
 	/* Check if there are any invalid chars left */
 	if (endPointer != NULL)
@@ -2080,17 +1982,16 @@ static struct {
 	return value;
 }
 
-- (const of_unichar_t*)unicodeString
+- (const of_unichar_t*)characters
 {
 	OFObject *object = [[[OFObject alloc] init] autorelease];
 	size_t length = [self length];
 	of_unichar_t *ret;
 
 	ret = [object allocMemoryWithSize: sizeof(of_unichar_t)
-				    count: length + 1];
+				    count: length];
 	[self getCharacters: ret
 		    inRange: of_range(0, length)];
-	ret[length] = 0;
 
 	return ret;
 }
@@ -2099,19 +2000,19 @@ static struct {
 {
 	OFObject *object = [[[OFObject alloc] init] autorelease];
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *unicodeString = [self unicodeString];
+	const of_unichar_t *characters = [self characters];
 	size_t length = [self length];
 	uint16_t *ret;
 	size_t i, j;
 
 	/* Allocate memory for the worst case */
 	ret = [object allocMemoryWithSize: sizeof(uint16_t)
-				    count: length * 2 + 1];
+				    count: length * 2];
 
 	j = 0;
 
 	for (i = 0; i < length; i++) {
-		of_unichar_t c = unicodeString[i];
+		of_unichar_t c = characters[i];
 
 		if (c > 0x10FFFF)
 			@throw [OFInvalidEncodingException
@@ -2125,12 +2026,10 @@ static struct {
 			ret[j++] = OF_BSWAP16_IF_LE(c);
 	}
 
-	ret[j] = 0;
-
 	@try {
 		ret = [object resizeMemory: ret
 				      size: sizeof(uint16_t)
-				     count: j + 1];
+				     count: j];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only tried to make it smaller */
 	}
@@ -2156,19 +2055,19 @@ static struct {
 - (void)enumerateLinesUsingBlock: (of_string_line_enumeration_block_t)block
 {
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *string = [self unicodeString];
+	const of_unichar_t *characters = [self characters];
 	size_t i, last = 0, length = [self length];
 	BOOL stop = NO, lastCarriageReturn = NO;
 
 	for (i = 0; i < length && !stop; i++) {
-		if (lastCarriageReturn && string[i] == '\n') {
+		if (lastCarriageReturn && characters[i] == '\n') {
 			lastCarriageReturn = NO;
 			last++;
 
 			continue;
 		}
 
-		if (string[i] == '\n' || string[i] == '\r') {
+		if (characters[i] == '\n' || characters[i] == '\r') {
 			void *pool2 = objc_autoreleasePoolPush();
 
 			block([self substringWithRange:
@@ -2178,7 +2077,7 @@ static struct {
 			objc_autoreleasePoolPop(pool2);
 		}
 
-		lastCarriageReturn = (string[i] == '\r');
+		lastCarriageReturn = (characters[i] == '\r');
 	}
 
 	if (!stop)

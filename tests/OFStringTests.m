@@ -40,18 +40,17 @@ static OFString* whitespace[] = {
 	@" \t\t  \t\t  \t \t"
 };
 static of_unichar_t ucstr[] = {
-	0xFEFF, 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0x1F03A, 0
+	0xFEFF, 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0x1F03A
 };
 static of_unichar_t sucstr[] = {
 	0xFFFE0000, 0x66000000, 0xF6000000, 0xF6000000, 0x62000000, 0xE4000000,
-	0x72000000, 0x3AF00100, 0
+	0x72000000, 0x3AF00100
 };
 static uint16_t utf16str[] = {
-	0xFEFF, 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0xD83C, 0xDC3A, 0
+	0xFEFF, 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0xD83C, 0xDC3A
 };
 static uint16_t sutf16str[] = {
-	0xFFFE, 0x6600, 0xF600, 0xF600, 0x6200, 0xE400, 0x7200, 0x3CD8, 0x3ADC,
-	0
+	0xFFFE, 0x6600, 0xF600, 0xF600, 0x6200, 0xE400, 0x7200, 0x3CD8, 0x3ADC
 };
 
 @interface EntityHandler: OFObject <OFStringXMLUnescapingDelegate>
@@ -157,16 +156,24 @@ static uint16_t sutf16str[] = {
 						   length: 6]) &&
 	    [s[0] isEqual: @"foo"])
 
-	TEST(@"+[stringWithUnicodeString:]",
-	    (is = [OFString stringWithUnicodeString: ucstr]) &&
+	TEST(@"+[stringWithCharacters:length:]",
+	    (is = [OFString stringWithCharacters: ucstr
+					  length: sizeof(ucstr) /
+						  sizeof(*ucstr)]) &&
 	    [is isEqual: @"fööbär🀺"] &&
-	    (is = [OFString stringWithUnicodeString: sucstr]) &&
+	    (is = [OFString stringWithCharacters: sucstr
+					  length: sizeof(sucstr) /
+						  sizeof(*sucstr)]) &&
 	    [is isEqual: @"fööbär🀺"])
 
-	TEST(@"+[stringWithUTF16String:]",
-	    (is = [OFString stringWithUTF16String: utf16str]) &&
+	TEST(@"+[stringWithUTF16String:length:]",
+	    (is = [OFString stringWithUTF16String: utf16str
+					   length: sizeof(utf16str) /
+						   sizeof(*utf16str)]) &&
 	    [is isEqual: @"fööbär🀺"] &&
-	    (is = [OFString stringWithUTF16String: sutf16str]) &&
+	    (is = [OFString stringWithUTF16String: sutf16str
+					   length: sizeof(sutf16str) /
+						   sizeof(*sutf16str)]) &&
 	    [is isEqual: @"fööbär🀺"])
 
 	TEST(@"+[stringWithContentsOfFile:encoding]", (is = [OFString
@@ -403,8 +410,8 @@ static uint16_t sutf16str[] = {
 	     @"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"
 	    hexadecimalValue])
 
-	TEST(@"-[unicodeString]", (ua = [@"fööbär🀺" unicodeString]) &&
-	    !memcmp(ua, ucstr + 1, sizeof(ucstr) - sizeof(of_unichar_t)))
+	TEST(@"-[characters]", (ua = [@"fööbär🀺" characters]) &&
+	    !memcmp(ua, ucstr + 1, sizeof(ucstr) / sizeof(*ucstr)))
 
 	TEST(@"-[UTF16String]", (u16a = [@"fööbär🀺" UTF16String]) &&
 #ifdef OF_BIG_ENDIAN
