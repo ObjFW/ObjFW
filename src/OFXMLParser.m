@@ -66,7 +66,7 @@ transform_string(OFDataArray *cache, size_t cut, BOOL unescape,
 	char *items;
 	size_t i, length;
 	BOOL hasEntities = NO;
-	OFMutableString *ret;
+	OFString *ret;
 
 	items = [cache items];
 	length = [cache count] - cut;
@@ -85,13 +85,11 @@ transform_string(OFDataArray *cache, size_t cut, BOOL unescape,
 			hasEntities = YES;
 	}
 
-	ret = [OFMutableString stringWithUTF8String: items
-					     length: length];
+	ret = [OFString stringWithUTF8String: items
+				      length: length];
 
 	if (unescape && hasEntities)
 		return [ret stringByXMLUnescapingWithDelegate: delegate];
-
-	[ret makeImmutable];
 
 	return ret;
 }
