@@ -230,7 +230,7 @@ static struct {
 					 storage: storage];
 }
 
-- initWithUTF8StringNoCopy: (const char*)UTF8String
+- initWithUTF8StringNoCopy: (char*)UTF8String
 	      freeWhenDone: (BOOL)freeWhenDone
 {
 	return (id)[[OFString_UTF8 alloc]
@@ -443,7 +443,7 @@ static struct {
 			length: UTF8StringLength] autorelease];
 }
 
-+ (instancetype)stringWithUTF8StringNoCopy: (const char*)UTF8String
++ (instancetype)stringWithUTF8StringNoCopy: (char*)UTF8String
 			      freeWhenDone: (BOOL)freeWhenDone
 {
 	return [[[self alloc]
@@ -584,7 +584,7 @@ static struct {
 			      length: UTF8StringLength];
 }
 
-- initWithUTF8StringNoCopy: (const char*)UTF8String
+- initWithUTF8StringNoCopy: (char*)UTF8String
 	      freeWhenDone: (BOOL)freeWhenDone
 {
 	return [self initWithUTF8String: UTF8String];

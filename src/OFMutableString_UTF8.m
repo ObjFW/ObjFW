@@ -44,10 +44,17 @@
 		[self inheritMethodsFromClass: [OFString_UTF8 class]];
 }
 
-- initWithUTF8StringNoCopy: (const char*)UTF8String
+- initWithUTF8StringNoCopy: (char*)UTF8String
 	      freeWhenDone: (BOOL)freeWhenDone
 {
-	return [self initWithUTF8String: UTF8String];
+	@try {
+		self = [self initWithUTF8String: UTF8String];
+	} @finally {
+		if (freeWhenDone)
+			free(UTF8String);
+	}
+
+	return self;
 }
 
 - (void)OF_convertWithWordStartTable: (const of_unichar_t *const[])startTable

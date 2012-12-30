@@ -103,7 +103,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
  *		       deallocated
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithUTF8StringNoCopy: (const char*)UTF8String
++ (instancetype)stringWithUTF8StringNoCopy: (char*)UTF8String
 			      freeWhenDone: (BOOL)freeWhenDone;
 
 /*!
@@ -281,7 +281,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
  *		       anymore
  * @return An initialized OFString
  */
-- initWithUTF8StringNoCopy: (const char*)UTF8String
+- initWithUTF8StringNoCopy: (char*)UTF8String
 	      freeWhenDone: (BOOL)freeWhenDone;
 
 /*!
