@@ -121,7 +121,7 @@ objc_sparsearray_copy(struct objc_sparsearray *dst,
 			if (obj == NULL)
 				continue;
 
-			idx = (i << 8) | j;
+			idx = (uint32_t)((i << 8) | j);
 			objc_sparsearray_set(dst, idx, obj);
 		}
 #endif
