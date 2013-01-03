@@ -152,6 +152,15 @@ default_equal(void *value1, void *value2)
 					      count: capacity];
 
 		memset(buckets, 0, capacity * sizeof(*buckets));
+
+		if (of_hash_seed != 0)
+#if defined(OF_HAVE_ARC4RANDOM)
+			rotate = arc4random() & 31;
+#elif defined(OF_HAVE_RANDOM)
+			rotate = random() & 31;
+#else
+			rotate = rand() & 31;
+#endif
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -207,7 +216,7 @@ default_equal(void *value1, void *value2)
 
 	for (i = 0; i < capacity; i++) {
 		if (buckets[i] != NULL && buckets[i] != &deleted) {
-			hash += buckets[i]->hash;
+			hash += OF_ROR(buckets[i]->hash, rotate);
 			hash += valueFunctions.hash(buckets[i]->value);
 		}
 	}
@@ -229,7 +238,8 @@ default_equal(void *value1, void *value2)
 			if (buckets[i] != NULL && buckets[i] != &deleted)
 				[copy OF_setValue: buckets[i]->value
 					   forKey: buckets[i]->key
-					     hash: buckets[i]->hash];
+					     hash: OF_ROR(buckets[i]->hash,
+						       rotate)];
 	} @catch (id e) {
 		[copy release];
 		@throw e;
@@ -254,7 +264,7 @@ default_equal(void *value1, void *value2)
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	hash = keyFunctions.hash(key);
+	hash = OF_ROL(keyFunctions.hash(key), rotate);
 	last = capacity;
 
 	for (i = hash & (capacity - 1); i < last && buckets[i] != NULL; i++) {
@@ -349,6 +359,7 @@ default_equal(void *value1, void *value2)
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
+	hash = OF_ROL(hash, rotate);
 	last = capacity;
 
 	for (i = hash & (capacity - 1); i < last && buckets[i] != NULL; i++) {
@@ -444,7 +455,7 @@ default_equal(void *value1, void *value2)
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	hash = keyFunctions.hash(key);
+	hash = OF_ROL(keyFunctions.hash(key), rotate);
 	last = capacity;
 
 	for (i = hash & (capacity - 1); i < last && buckets[i] != NULL; i++) {

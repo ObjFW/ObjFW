@@ -49,6 +49,7 @@ typedef void* (^of_map_table_replace_block_t)(void *key, void *value,
 	of_map_table_functions_t keyFunctions, valueFunctions;
 	struct of_map_table_bucket **buckets;
 	uint32_t minCapacity, capacity, count;
+	uint8_t rotate;
 	unsigned long mutations;
 }
 
