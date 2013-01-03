@@ -74,6 +74,7 @@
 #import "OFSerialization.h"
 
 #import "OFApplication.h"
+#import "OFSystemInfo.h"
 #import "OFTimer.h"
 #import "OFRunLoop.h"
 
