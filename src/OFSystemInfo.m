@@ -28,6 +28,10 @@
 # include <sys/syspage.h>
 #endif
 
+#ifdef _WIN32
+# include <windows.h>
+#endif
+
 static size_t pageSize;
 static size_t numberOfCPUs;
 

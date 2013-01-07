@@ -503,7 +503,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 							    host: host
 							    port: port];
 
-	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)))
+	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char*)&one,
+	    sizeof(one)))
 		@throw [OFSetOptionFailedException
 		    exceptionWithClass: [self class]
 				stream: self];
@@ -562,7 +563,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 							    host: host
 							    port: port];
 
-	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)))
+	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char*)&one,
+	    sizeof(one)))
 		@throw [OFSetOptionFailedException
 		    exceptionWithClass: [self class]
 				stream: self];
