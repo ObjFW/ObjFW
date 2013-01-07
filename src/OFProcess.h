@@ -164,7 +164,7 @@
 	arguments: (OFArray*)arguments
       environment: (OFDictionary*)environment;
 
-- (void)OF_setEnvironment: (OFDictionary*)dictionary;
+- (char**)OF_environmentForDictionary: (OFDictionary*)dictionary;
 
 /*!
  * @brief Closes the write direction of the process.

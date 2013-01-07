@@ -32,6 +32,7 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OFDataArray.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFReadFailedException.h"
@@ -139,8 +140,15 @@ extern char **environ;
 
 			argv[i + 1] = NULL;
 
-			if (environment != nil)
-				[self OF_setEnvironment: environment];
+			if (environment != nil) {
+#ifdef __MACH__
+				*_NSGetEnviron() = [self
+				    OF_environmentForDictionary: environment];
+#else
+				environ = [self
+				    OF_environmentForDictionary: environment];
+#endif
+			}
 
 			close(readPipe[0]);
 			close(writePipe[1]);
@@ -239,7 +247,8 @@ extern char **environ;
 		@try {
 			if (!CreateProcess([program cStringUsingEncoding:
 			    OF_STRING_ENCODING_NATIVE], argumentsCString, NULL,
-			    NULL, TRUE, 0, NULL, NULL, &si, &pi))
+			    NULL, TRUE, 0, [self OF_environmentForDictionary:
+			    environment], NULL, &si, &pi))
 				@throw [OFInitializationFailedException
 				    exceptionWithClass: [self class]];
 		} @finally {
@@ -262,11 +271,15 @@ extern char **environ;
 	return self;
 }
 
-- (void)OF_setEnvironment: (OFDictionary*)environment
+- (char**)OF_environmentForDictionary: (OFDictionary*)environment
 {
 	OFEnumerator *keyEnumerator, *objectEnumerator;
+#ifndef _WIN32
 	char **envp;
 	size_t i, count;
+
+	if (environment == nil)
+		return NULL;
 
 	count = [environment count];
 	envp = [self allocMemoryWithSize: sizeof(char*)
@@ -300,10 +313,29 @@ extern char **environ;
 
 	envp[i] = NULL;
 
-#ifdef __MACH__
-	*_NSGetEnviron() = envp;
+	return envp;
 #else
-	environ = envp;
+	OFDataArray *env = [OFDataArray dataArray];
+	OFString *key, *object;
+
+	keyEnumerator = [environment keyEnumerator];
+	objectEnumerator = [environment objectEnumerator];
+
+	while ((key = [keyEnumerator nextObject]) != nil &&
+	    (object = [objectEnumerator nextObject]) != nil) {
+		[env addItems: [key UTF8String]
+			count: [key UTF8StringLength]];
+		[env addItems: "="
+			count: 1];
+		[env addItems: [object UTF8String]
+			count: [object UTF8StringLength]];
+		[env addItems: ""
+			count: 1];
+	}
+	[env addItems: ""
+		count: 1];
+
+	return [env items];
 #endif
 }
 
