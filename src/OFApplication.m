@@ -33,6 +33,8 @@
 
 #if defined(__MACH__) && !defined(OF_IOS)
 # include <crt_externs.h>
+#elif defined(_WIN32)
+# include <windows.h>
 #elif !defined(OF_IOS)
 extern char **environ;
 #endif
@@ -123,6 +125,8 @@ of_application_main(int *argc, char **argv[], Class cls)
 		void *pool;
 #if defined(__MACH__) && !defined(OF_IOS)
 		char **env = *_NSGetEnviron();
+#elif defined(__WIN32)
+		uint16_t *env;
 #elif !defined(OF_IOS)
 		char **env = environ;
 #else
@@ -132,10 +136,51 @@ of_application_main(int *argc, char **argv[], Class cls)
 		environment = [[OFMutableDictionary alloc] init];
 
 		atexit(atexit_handler);
-#ifndef OF_IOS
+#if defined(_WIN32)
+		env = GetEnvironmentStringsW();
+
+		while (*env != 0) {
+			OFString *tmp, *key, *value;
+			size_t length, pos;
+
+			pool = objc_autoreleasePoolPush();
+
+			length = of_string_utf16_length(env);
+			tmp = [OFString stringWithUTF16String: env
+						       length: length];
+			env += length + 1;
+
+			/*
+			 * cmd.exe seems to add some special variables which
+			 * start with a "=", even though variable names are not
+			 * allowed to contain a "=".
+			 */
+			if ([tmp hasPrefix: @"="]) {
+				objc_autoreleasePoolPop(pool);
+				continue;
+			}
+
+			pos = [tmp rangeOfString: @"="].location;
+			if (pos == OF_NOT_FOUND) {
+				fprintf(stderr, "Warning: Invalid environment "
+				    "variable: %s\n", [tmp UTF8String]);
+				continue;
+			}
+
+			key = [tmp substringWithRange: of_range(0, pos)];
+			value = [tmp substringWithRange:
+			    of_range(pos + 1, [tmp length] - pos - 1)];
+
+			[environment setObject: value
+					forKey: key];
+
+			objc_autoreleasePoolPop(pool);
+		}
+
+		FreeEnvironmentStringsW(env);
+#elif !defined(OF_IOS)
 		for (; *env != NULL; env++) {
-			OFString *key;
-			OFString *value;
+			OFString *key, *value;
 			char *sep;
 
 			pool = objc_autoreleasePoolPush();
@@ -153,6 +198,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 			value = [OFString
 			    stringWithCString: sep + 1
 				     encoding: OF_STRING_ENCODING_NATIVE];
+
 			[environment setObject: value
 					forKey: key];
 
