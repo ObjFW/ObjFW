@@ -142,6 +142,17 @@ of_string_utf8_decode(const char *buffer_, size_t length, of_unichar_t *ret)
 	return 0;
 }
 
+size_t
+of_string_utf16_length(const uint16_t *string)
+{
+	size_t length = 0;
+
+	while (*string++ != 0)
+		length++;
+
+	return length;
+}
+
 static OFString*
 standardize_path(OFArray *components, OFString *currentDirectory,
     OFString *parentDirectory, OFString *joinString)
@@ -302,10 +313,22 @@ static struct {
 }
 
 - initWithUTF16String: (const uint16_t*)string
+{
+	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string];
+}
+
+- initWithUTF16String: (const uint16_t*)string
 	       length: (size_t)length
 {
 	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string
 						       length: length];
+}
+
+- initWithUTF16String: (const uint16_t*)string
+	    byteOrder: (of_byte_order_t)byteOrder
+{
+	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string
+						    byteOrder: byteOrder];
 }
 
 - initWithUTF16String: (const uint16_t*)string
@@ -489,10 +512,22 @@ static struct {
 }
 
 + (instancetype)stringWithUTF16String: (const uint16_t*)string
+{
+	return [[[self alloc] initWithUTF16String: string] autorelease];
+}
+
++ (instancetype)stringWithUTF16String: (const uint16_t*)string
 			       length: (size_t)length
 {
 	return [[[self alloc] initWithUTF16String: string
 					   length: length] autorelease];
+}
+
++ (instancetype)stringWithUTF16String: (const uint16_t*)string
+			    byteOrder: (of_byte_order_t)byteOrder
+{
+	return [[[self alloc] initWithUTF16String: string
+					byteOrder: byteOrder] autorelease];
 }
 
 + (instancetype)stringWithUTF16String: (const uint16_t*)string
@@ -644,11 +679,26 @@ static struct {
 }
 
 - initWithUTF16String: (const uint16_t*)string
+{
+	return [self initWithUTF16String: string
+				  length: of_string_utf16_length(string)
+			       byteOrder: OF_BYTE_ORDER_NATIVE];
+}
+
+- initWithUTF16String: (const uint16_t*)string
 	       length: (size_t)length
 {
 	return [self initWithUTF16String: string
 				  length: length
 			       byteOrder: OF_BYTE_ORDER_NATIVE];
+}
+
+- initWithUTF16String: (const uint16_t*)string
+	    byteOrder: (of_byte_order_t)byteOrder
+{
+	return [self initWithUTF16String: string
+				  length: of_string_utf16_length(string)
+			       byteOrder: byteOrder];
 }
 
 - initWithUTF16String: (const uint16_t*)string
@@ -2013,7 +2063,7 @@ static struct {
 
 	/* Allocate memory for the worst case */
 	ret = [object allocMemoryWithSize: sizeof(uint16_t)
-				    count: length * 2];
+				    count: (length + 1) * 2];
 
 	j = 0;
 
@@ -2040,11 +2090,12 @@ static struct {
 				ret[j++] = c;
 		}
 	}
+	ret[j] = 0;
 
 	@try {
 		ret = [object resizeMemory: ret
 				      size: sizeof(uint16_t)
-				     count: j];
+				     count: j + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only tried to make it smaller */
 	}

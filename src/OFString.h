@@ -162,8 +162,16 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
 			   byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
- * @brief Creates a new OFString from a big endian UTF-16 encoded string with
- *	  the specified length.
+ * @brief Creates a new OFString from a UTF-16 encoded string.
+ *
+ * @param string The UTF-16 string
+ * @return A new autoreleased OFString
+ */
++ (instancetype)stringWithUTF16String: (const uint16_t*)string;
+
+/*!
+ * @brief Creates a new OFString from a UTF-16 encoded string with the specified
+ *	  length.
  *
  * @param string The UTF-16 string
  * @param length The length of the unicode string
@@ -171,6 +179,17 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
  */
 + (instancetype)stringWithUTF16String: (const uint16_t*)string
 			       length: (size_t)length;
+
+/*!
+ * @brief Creates a new OFString from a UTF-16 encoded string, assuming the
+ *	  specified byte order if no BOM is found.
+ *
+ * @param string The UTF-16 string
+ * @param byteOrder The byte order to assume if there is no BOM
+ * @return A new autoreleased OFString
+ */
++ (instancetype)stringWithUTF16String: (const uint16_t*)string
+			    byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
  * @brief Creates a new OFString from a UTF-16 encoded string with the
@@ -342,6 +361,14 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
 	   byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
+ * @brief Initializes an already allocated OFString with a UTF-16 string.
+ *
+ * @param string The UTF-16 string
+ * @return An initialized OFString
+ */
+- initWithUTF16String: (const uint16_t*)string;
+
+/*!
  * @brief Initializes an already allocated OFString with a UTF-16 string with
  *	  the specified length.
  *
@@ -351,6 +378,17 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
  */
 - initWithUTF16String: (const uint16_t*)string
 	       length: (size_t)length;
+
+/*!
+ * @brief Initializes an already allocated OFString with a UTF-16 string,
+ *	  assuming the specified byte order if no BOM is found.
+ *
+ * @param string The UTF-16 string
+ * @param byteOrder The byte order to assume if there is no BOM
+ * @return An initialized OFString
+ */
+- initWithUTF16String: (const uint16_t*)string
+	    byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
  * @brief Initializes an already allocated OFString with a UTF-16 string with
@@ -902,6 +940,7 @@ extern "C" {
 #endif
 extern size_t of_string_utf8_encode(of_unichar_t, char*);
 extern size_t of_string_utf8_decode(const char*, size_t, of_unichar_t*);
+extern size_t of_string_utf16_length(const uint16_t*);
 #ifdef __cplusplus
 }
 #endif
