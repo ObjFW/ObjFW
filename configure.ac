@@ -668,7 +668,7 @@ AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 AS_IF([test x"$GOBJC" = x"yes"], [
 	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wpointer-arith -Werror"
 
-	AC_MSG_CHECKING(whether gcc has bug objc/27438)
+	AC_MSG_CHECKING(whether we have gcc bug objc/27438)
 	AC_TRY_COMPILE([
 		@interface OFConstantString
 		{

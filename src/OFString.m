@@ -648,7 +648,7 @@ static struct {
 {
 	return [self initWithUTF16String: string
 				  length: length
-			       byteOrder: OF_BYTE_ORDER_BIG_ENDIAN];
+			       byteOrder: OF_BYTE_ORDER_NATIVE];
 }
 
 - initWithUTF16String: (const uint16_t*)string
@@ -1998,12 +1998,18 @@ static struct {
 
 - (const uint16_t*)UTF16String
 {
+	return [self UTF16StringWithByteOrder: OF_BYTE_ORDER_NATIVE];
+}
+
+- (const uint16_t*)UTF16StringWithByteOrder: (of_byte_order_t)byteOrder
+{
 	OFObject *object = [[[OFObject alloc] init] autorelease];
 	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *characters = [self characters];
 	size_t length = [self length];
 	uint16_t *ret;
 	size_t i, j;
+	BOOL swap = (byteOrder != OF_BYTE_ORDER_NATIVE);
 
 	/* Allocate memory for the worst case */
 	ret = [object allocMemoryWithSize: sizeof(uint16_t)
@@ -2018,12 +2024,21 @@ static struct {
 			@throw [OFInvalidEncodingException
 			    exceptionWithClass: [self class]];
 
-		if (c > 0xFFFF) {
-			c -= 0x10000;
-			ret[j++] = OF_BSWAP16_IF_LE(0xD800 | (c >> 10));
-			ret[j++] = OF_BSWAP16_IF_LE(0xDC00 | (c & 0x3FF));
-		} else
-			ret[j++] = OF_BSWAP16_IF_LE(c);
+		if (swap) {
+			if (c > 0xFFFF) {
+				c -= 0x10000;
+				ret[j++] = OF_BSWAP16(0xD800 | (c >> 10));
+				ret[j++] = OF_BSWAP16(0xDC00 | (c & 0x3FF));
+			} else
+				ret[j++] = OF_BSWAP16(c);
+		} else {
+			if (c > 0xFFFF) {
+				c -= 0x10000;
+				ret[j++] = 0xD800 | (c >> 10);
+				ret[j++] = 0xDC00 | (c & 0x3FF);
+			} else
+				ret[j++] = c;
+		}
 	}
 
 	@try {
@@ -2037,6 +2052,20 @@ static struct {
 	objc_autoreleasePoolPop(pool);
 
 	return ret;
+}
+
+- (size_t)UTF16StringLength
+{
+	const of_unichar_t *characters = [self characters];
+	size_t i, length, UTF16StringLength;
+
+	length = UTF16StringLength = [self length];
+
+	for (i = 0; i < length; i++)
+		if (characters[i] > 0xFFFF)
+			UTF16StringLength++;
+
+	return UTF16StringLength;
 }
 
 - (void)writeToFile: (OFString*)path

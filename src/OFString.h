@@ -836,15 +836,35 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
 - (const of_unichar_t*)characters OF_RETURNS_INNER_POINTER;
 
 /*!
- * @brief Returns the string in big endian UTF-16 encoding.
+ * @brief Returns the string in UTF-16 encoding with native byte order.
  *
  * The result is valid until the autorelease pool is released. If you want to
  * use the result outside the scope of the current autorelease pool, you have to
  * copy it.
  *
- * @return The string in big endian UTF-16 encoding
+ * @return The string in UTF-16 encoding with native byte order
  */
 - (const uint16_t*)UTF16String OF_RETURNS_INNER_POINTER;
+
+/*!
+ * @brief Returns the string in UTF-16 encoding with the specified byte order.
+ *
+ * The result is valid until the autorelease pool is released. If you want to
+ * use the result outside the scope of the current autorelease pool, you have to
+ * copy it.
+ *
+ * @param byteOrder The byte order for the UTF-16 encoding
+ * @return The string in UTF-16 encoding with the specified byte order
+ */
+- (const uint16_t*)UTF16StringWithByteOrder: (of_byte_order_t)byteOrder
+    OF_RETURNS_INNER_POINTER;
+
+/*!
+ * @brief Returns the length of the string in UTF-16 characters.
+ *
+ * @return The length of string in UTF-16 characters
+ */
+- (size_t)UTF16StringLength;
 
 /*!
  * @brief Writes the string into the specified file using UTF-8 encoding.

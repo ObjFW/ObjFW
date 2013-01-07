@@ -414,11 +414,17 @@ static uint16_t sutf16str[] = {
 	    !memcmp(ua, ucstr + 1, sizeof(ucstr) / sizeof(*ucstr)))
 
 	TEST(@"-[UTF16String]", (u16a = [@"fööbär🀺" UTF16String]) &&
-#ifdef OF_BIG_ENDIAN
 	    !memcmp(u16a, utf16str + 1, sizeof(utf16str) - sizeof(uint16_t)))
+
+	TEST(@"-[UTF16String]", (u16a = [@"fööbär🀺"
+#ifdef OF_BIG_ENDIAN
+	    UTF16StringWithByteOrder: OF_BYTE_ORDER_LITTLE_ENDIAN]) &&
 #else
-	    !memcmp(u16a, sutf16str + 1, sizeof(sutf16str) - sizeof(uint16_t)))
+	    UTF16StringWithByteOrder: OF_BYTE_ORDER_BIG_ENDIAN]) &&
 #endif
+	    !memcmp(u16a, sutf16str + 1, sizeof(sutf16str) - sizeof(uint16_t)))
+
+	TEST(@"-[UTF16StringLength]", [@"fööbär🀺" UTF16StringLength] == 8)
 
 	TEST(@"-[MD5Hash]", [[@"asdfoobar" MD5Hash]
 	    isEqual: @"184dce2ec49b5422c7cfd8728864db4c"])

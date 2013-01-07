@@ -39,7 +39,7 @@
 @end
 
 /*!
- * @brief A protocol that should be implemented by 3rd party libraries
+ * @brief A protocol that should be implemented by 3rd-party libraries
  *	  implementing TLS.
  */
 @protocol OFTLSSocket
