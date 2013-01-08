@@ -531,6 +531,11 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				nextCharacter = (swap
 				    ? OF_BSWAP16(string[i + 1])
 				    : string[i + 1]);
+
+				if ((nextCharacter & 0xFC00) != 0xDC00)
+					@throw [OFInvalidEncodingException
+					    exceptionWithClass: [self class]];
+
 				character = (((character & 0x3FF) << 10) |
 				    (nextCharacter & 0x3FF)) + 0x10000;
 
@@ -1272,6 +1277,40 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		ret[j++] = c;
 		i += cLen;
 	}
+
+	return ret;
+}
+
+- (const of_unichar_t*)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
+{
+	OFObject *object = [[[OFObject alloc] init] autorelease];
+	of_unichar_t *ret;
+	size_t i, j;
+
+	ret = [object allocMemoryWithSize: sizeof(of_unichar_t)
+				    count: s->length + 1];
+
+	i = j = 0;
+
+	while (i < s->cStringLength) {
+		of_unichar_t c;
+		size_t cLen;
+
+		cLen = of_string_utf8_decode(s->cString + i,
+		    s->cStringLength - i, &c);
+
+		if (cLen == 0 || c > 0x10FFFF)
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: [self class]];
+
+		if (byteOrder != OF_BYTE_ORDER_NATIVE)
+			ret[j++] = OF_BSWAP32(c);
+		else
+			ret[j++] = c;
+
+		i += cLen;
+	}
+	ret[j] = 0;
 
 	return ret;
 }

@@ -153,6 +153,17 @@ of_string_utf16_length(const uint16_t *string)
 	return length;
 }
 
+size_t
+of_string_utf32_length(const uint32_t *string)
+{
+	size_t length = 0;
+
+	while (*string++ != 0)
+		length++;
+
+	return length;
+}
+
 static OFString*
 standardize_path(OFArray *components, OFString *currentDirectory,
     OFString *parentDirectory, OFString *joinString)
@@ -337,6 +348,18 @@ static struct {
 {
 	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string
 						       length: length
+						    byteOrder: byteOrder];
+}
+
+- initWithUTF32String: (const uint32_t*)string
+{
+	return (id)[[OFString_UTF8 alloc] initWithUTF32String: string];
+}
+
+- initWithUTF32String: (const uint32_t*)string
+	    byteOrder: (of_byte_order_t)byteOrder
+{
+	return (id)[[OFString_UTF8 alloc] initWithUTF32String: string
 						    byteOrder: byteOrder];
 }
 
@@ -539,6 +562,18 @@ static struct {
 					byteOrder: byteOrder] autorelease];
 }
 
++ (instancetype)stringWithUTF32String: (const uint32_t*)string
+{
+	return [[[self alloc] initWithUTF32String: string] autorelease];
+}
+
++ (instancetype)stringWithUTF32String: (const uint32_t*)string
+			    byteOrder: (of_byte_order_t)byteOrder
+{
+	return [[[self alloc] initWithUTF32String: string
+					byteOrder: byteOrder] autorelease];
+}
+
 + (instancetype)stringWithFormat: (OFConstantString*)format, ...
 {
 	id ret;
@@ -712,6 +747,21 @@ static struct {
 		[self release];
 		@throw e;
 	}
+}
+
+- initWithUTF32String: (const uint32_t*)string
+{
+	return [self initWithCharacters: string
+				 length: of_string_utf32_length(string)
+			      byteOrder: OF_BYTE_ORDER_NATIVE];
+}
+
+- initWithUTF32String: (const uint32_t*)string
+	    byteOrder: (of_byte_order_t)byteOrder
+{
+	return [self initWithCharacters: string
+				 length: of_string_utf32_length(string)
+			      byteOrder: byteOrder];
 }
 
 - initWithFormat: (OFConstantString*)format, ...
@@ -2117,6 +2167,33 @@ static struct {
 			UTF16StringLength++;
 
 	return UTF16StringLength;
+}
+
+- (const of_unichar_t*)UTF32String
+{
+	return [self UTF32StringWithByteOrder: OF_BYTE_ORDER_NATIVE];
+}
+
+- (const of_unichar_t*)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
+{
+	OFObject *object = [[[OFObject alloc] init] autorelease];
+	size_t length = [self length];
+	of_unichar_t *ret;
+
+	ret = [object allocMemoryWithSize: sizeof(of_unichar_t)
+				    count: length + 1];
+	[self getCharacters: ret
+		    inRange: of_range(0, length)];
+	ret[length] = 0;
+
+	if (byteOrder != OF_BYTE_ORDER_NATIVE) {
+		size_t i;
+
+		for (i = 0; i < length; i++)
+			ret[i] = OF_BSWAP32(ret[i]);
+	}
+
+	return ret;
 }
 
 - (void)writeToFile: (OFString*)path

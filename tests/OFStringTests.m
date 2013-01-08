@@ -40,11 +40,11 @@ static OFString* whitespace[] = {
 	@" \t\t  \t\t  \t \t"
 };
 static of_unichar_t ucstr[] = {
-	0xFEFF, 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0x1F03A
+	0xFEFF, 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0x1F03A, 0
 };
 static of_unichar_t sucstr[] = {
 	0xFFFE0000, 0x66000000, 0xF6000000, 0xF6000000, 0x62000000, 0xE4000000,
-	0x72000000, 0x3AF00100
+	0x72000000, 0x3AF00100, 0
 };
 static uint16_t utf16str[] = {
 	0xFEFF, 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0xD83C, 0xDC3A, 0
@@ -157,20 +157,16 @@ static uint16_t sutf16str[] = {
 						   length: 6]) &&
 	    [s[0] isEqual: @"foo"])
 
-	TEST(@"+[stringWithCharacters:length:]",
-	    (is = [OFString stringWithCharacters: ucstr
-					  length: sizeof(ucstr) /
-						  sizeof(*ucstr)]) &&
-	    [is isEqual: @"fööbär🀺"] &&
-	    (is = [OFString stringWithCharacters: sucstr
-					  length: sizeof(sucstr) /
-						  sizeof(*sucstr)]) &&
-	    [is isEqual: @"fööbär🀺"])
-
 	TEST(@"+[stringWithUTF16String:]",
 	    (is = [OFString stringWithUTF16String: utf16str]) &&
 	    [is isEqual: @"fööbär🀺"] &&
 	    (is = [OFString stringWithUTF16String: sutf16str]) &&
+	    [is isEqual: @"fööbär🀺"])
+
+	TEST(@"+[stringWithUTF32String::]",
+	    (is = [OFString stringWithUTF32String: ucstr]) &&
+	    [is isEqual: @"fööbär🀺"] &&
+	    (is = [OFString stringWithUTF32String: sucstr]) &&
 	    [is isEqual: @"fööbär🀺"])
 
 	TEST(@"+[stringWithContentsOfFile:encoding]", (is = [OFString
@@ -408,20 +404,29 @@ static uint16_t sutf16str[] = {
 	    hexadecimalValue])
 
 	TEST(@"-[characters]", (ua = [@"fööbär🀺" characters]) &&
-	    !memcmp(ua, ucstr + 1, sizeof(ucstr) / sizeof(*ucstr)))
+	    !memcmp(ua, ucstr + 1, sizeof(ucstr) - 8))
 
 	TEST(@"-[UTF16String]", (u16a = [@"fööbär🀺" UTF16String]) &&
-	    !memcmp(u16a, utf16str + 1, sizeof(utf16str) - sizeof(uint16_t)))
-
-	TEST(@"-[UTF16String]", (u16a = [@"fööbär🀺"
+	    !memcmp(u16a, utf16str + 1, of_string_utf16_length(utf16str) * 2) &&
+	    (u16a = [@"fööbär🀺"
 #ifdef OF_BIG_ENDIAN
 	    UTF16StringWithByteOrder: OF_BYTE_ORDER_LITTLE_ENDIAN]) &&
 #else
 	    UTF16StringWithByteOrder: OF_BYTE_ORDER_BIG_ENDIAN]) &&
 #endif
-	    !memcmp(u16a, sutf16str + 1, sizeof(sutf16str) - sizeof(uint16_t)))
+	    !memcmp(u16a, sutf16str + 1, of_string_utf16_length(sutf16str) * 2))
 
 	TEST(@"-[UTF16StringLength]", [@"fööbär🀺" UTF16StringLength] == 8)
+
+	TEST(@"-[UTF32String]", (ua = [@"fööbär🀺" UTF32String]) &&
+	    !memcmp(ua, ucstr + 1, of_string_utf32_length(ucstr) * 4) &&
+	    (ua = [@"fööbär🀺"
+#ifdef OF_BIG_ENDIAN
+	    UTF32StringWithByteOrder: OF_BYTE_ORDER_LITTLE_ENDIAN]) &&
+#else
+	    UTF32StringWithByteOrder: OF_BYTE_ORDER_BIG_ENDIAN]) &&
+#endif
+	    !memcmp(ua, sucstr + 1, of_string_utf32_length(sucstr) * 4))
 
 	TEST(@"-[MD5Hash]", [[@"asdfoobar" MD5Hash]
 	    isEqual: @"184dce2ec49b5422c7cfd8728864db4c"])

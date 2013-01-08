@@ -206,6 +206,25 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
 			    byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
+ * @brief Creates a new OFString from a UTF-32 encoded string.
+ *
+ * @param string The UTF-32 string
+ * @return A new autoreleased OFString
+ */
++ (instancetype)stringWithUTF32String: (const uint32_t*)string;
+
+/*!
+ * @brief Creates a new OFString from a UTF-32 encoded string, assuming the
+ *	  specified byte order if no BOM is found.
+ *
+ * @param string The UTF-32 string
+ * @param byteOrder The byte order to assume if there is no BOM
+ * @return A new autoreleased OFString
+ */
++ (instancetype)stringWithUTF32String: (const uint32_t*)string
+			    byteOrder: (of_byte_order_t)byteOrder;
+
+/*!
  * @brief Creates a new OFString from a format string.
  *
  * See printf for the format syntax. As an addition, %@ is available as format
@@ -402,6 +421,25 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
  */
 - initWithUTF16String: (const uint16_t*)string
 	       length: (size_t)length
+	    byteOrder: (of_byte_order_t)byteOrder;
+
+/*!
+ * @brief Initializes an already allocated OFString with a UTF-32 string.
+ *
+ * @param string The UTF-32 string
+ * @return An initialized OFString
+ */
+- initWithUTF32String: (const uint32_t*)string;
+
+/*!
+ * @brief Initializes an already allocated OFString with a UTF-32 string,
+ *	  assuming the specified byte order if no BOM is found.
+ *
+ * @param string The UTF-32 string
+ * @param byteOrder The byte order to assume if there is no BOM
+ * @return An initialized OFString
+ */
+- initWithUTF32String: (const uint32_t*)string
 	    byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
@@ -905,6 +943,30 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
 - (size_t)UTF16StringLength;
 
 /*!
+ * @brief Returns the string in UTF-32 encoding with native byte order.
+ *
+ * The result is valid until the autorelease pool is released. If you want to
+ * use the result outside the scope of the current autorelease pool, you have to
+ * copy it.
+ *
+ * @return The string in UTF-32 encoding with native byte order
+ */
+- (const of_unichar_t*)UTF32String OF_RETURNS_INNER_POINTER;
+
+/*!
+ * @brief Returns the string in UTF-32 encoding with the specified byte order.
+ *
+ * The result is valid until the autorelease pool is released. If you want to
+ * use the result outside the scope of the current autorelease pool, you have to
+ * copy it.
+ *
+ * @param byteOrder The byte order for the UTF-32 encoding
+ * @return The string in UTF-32 encoding with the specified byte order
+ */
+- (const of_unichar_t*)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
+    OF_RETURNS_INNER_POINTER;
+
+/*!
  * @brief Writes the string into the specified file using UTF-8 encoding.
  *
  * @param path The path of the file to write to
@@ -941,6 +1003,7 @@ extern "C" {
 extern size_t of_string_utf8_encode(of_unichar_t, char*);
 extern size_t of_string_utf8_decode(const char*, size_t, of_unichar_t*);
 extern size_t of_string_utf16_length(const uint16_t*);
+extern size_t of_string_utf32_length(const uint32_t*);
 #ifdef __cplusplus
 }
 #endif
