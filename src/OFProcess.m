@@ -170,12 +170,13 @@ extern char **environ;
 #else
 		SECURITY_ATTRIBUTES sa;
 		PROCESS_INFORMATION pi;
-		STARTUPINFO si;
+		STARTUPINFOW si;
 		void *pool;
 		OFMutableString *argumentsString;
 		OFEnumerator *enumerator;
 		OFString *argument;
-		char *argumentsCString;
+		uint16_t *argumentsCopy;
+		size_t length;
 
 		sa.nLength = sizeof(sa);
 		sa.bInheritHandle = TRUE;
@@ -242,17 +243,21 @@ extern char **environ;
 				[argumentsString appendString: @"\""];
 		}
 
-		argumentsCString = strdup([argumentsString
-		    cStringUsingEncoding: OF_STRING_ENCODING_NATIVE]);
+		length = [argumentsString UTF16StringLength];
+		argumentsCopy = [self allocMemoryWithSize: sizeof(uint16_t)
+						    count: length + 1];
+		memcpy(argumentsCopy, [argumentsString UTF16String],
+		    ([argumentsString UTF16StringLength] + 1) * 2);
 		@try {
-			if (!CreateProcess([program cStringUsingEncoding:
-			    OF_STRING_ENCODING_NATIVE], argumentsCString, NULL,
-			    NULL, TRUE, 0, [self OF_environmentForDictionary:
-			    environment], NULL, &si, &pi))
+			if (!CreateProcessW([program UTF16String],
+			    argumentsCopy, NULL, NULL, TRUE,
+			    CREATE_UNICODE_ENVIRONMENT,
+			    [self OF_environmentForDictionary: environment],
+			    NULL, &si, &pi))
 				@throw [OFInitializationFailedException
 				    exceptionWithClass: [self class]];
 		} @finally {
-			free(argumentsString);
+			[self freeMemory: argumentsCopy];
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -271,10 +276,10 @@ extern char **environ;
 	return self;
 }
 
+#ifndef _WIN32
 - (char**)OF_environmentForDictionary: (OFDictionary*)environment
 {
 	OFEnumerator *keyEnumerator, *objectEnumerator;
-#ifndef _WIN32
 	char **envp;
 	size_t i, count;
 
@@ -314,30 +319,36 @@ extern char **environ;
 	envp[i] = NULL;
 
 	return envp;
+}
 #else
-	OFDataArray *env = [OFDataArray dataArray];
+- (uint16_t*)OF_environmentForDictionary: (OFDictionary*)environment
+{
+	OFDataArray *env = [OFDataArray dataArrayWithItemSize: 2];
+	OFEnumerator *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
+	const uint16_t equal = '=';
+	const uint16_t zero = 0;
 
 	keyEnumerator = [environment keyEnumerator];
 	objectEnumerator = [environment objectEnumerator];
 
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil) {
-		[env addItems: [key UTF8String]
-			count: [key UTF8StringLength]];
-		[env addItems: "="
+		[env addItems: [key UTF16String]
+			count: [key UTF16StringLength]];
+		[env addItems: &equal
 			count: 1];
-		[env addItems: [object UTF8String]
-			count: [object UTF8StringLength]];
-		[env addItems: ""
+		[env addItems: [object UTF16String]
+			count: [object UTF16StringLength]];
+		[env addItems: &zero
 			count: 1];
 	}
-	[env addItems: ""
+	[env addItems: &zero
 		count: 1];
 
 	return [env items];
-#endif
 }
+#endif
 
 - (BOOL)lowlevelIsAtEndOfStream
 {
