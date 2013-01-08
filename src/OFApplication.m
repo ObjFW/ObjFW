@@ -35,6 +35,9 @@
 # include <crt_externs.h>
 #elif defined(_WIN32)
 # include <windows.h>
+
+extern int _CRT_glob;
+extern void __wgetmainargs(int*, wchar_t***, wchar_t***, int, int*);
 #elif !defined(OF_IOS)
 extern char **environ;
 #endif
@@ -72,9 +75,19 @@ of_application_main(int *argc, char **argv[], Class cls)
 {
 	OFApplication *app = [OFApplication sharedApplication];
 	id <OFApplicationDelegate> delegate = [[cls alloc] init];
+#ifdef _WIN32
+	wchar_t **wargv, **wenvp;
+	int wargc, si = 0;
+#endif
 
-	[app setArgumentCount: argc
-	    andArgumentValues: argv];
+	[app OF_setArgumentCount: argc
+	       andArgumentValues: argv];
+
+#ifdef _WIN32
+	__wgetmainargs(&wargc, &wargv, &wenvp, _CRT_glob, &si);
+	[app OF_setArgumentCount: wargc
+	   andWideArgumentValues: wargv];
+#endif
 
 	[app setDelegate: delegate];
 
@@ -261,14 +274,12 @@ of_application_main(int *argc, char **argv[], Class cls)
 	return self;
 }
 
-- (void)setArgumentCount: (int*)argc_
-       andArgumentValues: (char***)argv_
+- (void)OF_setArgumentCount: (int*)argc_
+	  andArgumentValues: (char***)argv_
 {
+#ifndef _WIN32
 	void *pool = objc_autoreleasePoolPush();
 	int i;
-
-	[programName release];
-	[arguments release];
 
 	argc = argc_;
 	argv = argv_;
@@ -286,7 +297,31 @@ of_application_main(int *argc, char **argv[], Class cls)
 	[arguments makeImmutable];
 
 	objc_autoreleasePoolPop(pool);
+#else
+	argc = argc_;
+	argv = argv_;
+#endif
 }
+
+#ifdef _WIN32
+- (void)OF_setArgumentCount: (int)argc_
+      andWideArgumentValues: (wchar_t**)argv_
+{
+	void *pool = objc_autoreleasePoolPush();
+	int i;
+
+	programName = [[OFString alloc] initWithUTF16String: argv_[0]];
+	arguments = [[OFMutableArray alloc] init];
+
+	for (i = 1; i < argc_; i++)
+		[arguments addObject:
+		    [OFString stringWithUTF16String: argv_[i]]];
+
+	[arguments makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
+}
+#endif
 
 - (void)getArgumentCount: (int**)argc_
        andArgumentValues: (char****)argv_

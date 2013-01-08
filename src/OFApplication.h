@@ -163,16 +163,12 @@
  */
 + (void)terminateWithStatus: (int)status;
 
-/*!
- * @brief Sets argc and argv.
- *
- * You should not call this directly, but use OF_APPLICATION_DELEGATE instead!
- *
- * @param argc The number of arguments
- * @param argv The argument values
- */
-- (void)setArgumentCount: (int*)argc
-       andArgumentValues: (char**[])argv;
+- (void)OF_setArgumentCount: (int*)argc
+	  andArgumentValues: (char**[])argv;
+#ifdef _WIN32
+- (void)OF_setArgumentCount: (int)argc
+      andWideArgumentValues: (wchar_t*[])argv;
+#endif
 
 /*!
  * @brief Gets args and argv.
