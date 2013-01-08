@@ -53,12 +53,9 @@ int _OFTCPSocket_SOCKS5_reference;
 	/* CONNECT request */
 	[self writeBuffer: request
 		   length: 4];
-	[self writeInt8:
-	    [host lengthOfBytesUsingEncoding: OF_STRING_ENCODING_NATIVE]];
-	[self writeBuffer: [host cStringUsingEncoding:
-			       OF_STRING_ENCODING_NATIVE]
-		   length: [host lengthOfBytesUsingEncoding:
-			       OF_STRING_ENCODING_NATIVE]];
+	[self writeInt8: [host UTF8StringLength]];
+	[self writeBuffer: [host UTF8String]
+		   length: [host UTF8StringLength]];
 	[self writeBigEndianInt16: port];
 
 	[self flushWriteBuffer];
