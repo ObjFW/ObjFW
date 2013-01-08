@@ -31,7 +31,6 @@
 #import "autorelease.h"
 
 #ifdef _WIN32
-# define dlopen(file, mode) LoadLibrary(file)
 # define dlsym(handle, symbol) GetProcAddress(handle, symbol)
 # define dlclose(handle) FreeLibrary(handle)
 #endif
@@ -40,16 +39,18 @@
 + (id)pluginFromFile: (OFString*)path
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFMutableString *file;
 	of_plugin_handle_t handle;
 	OFPlugin *(*initPlugin)(void);
 	OFPlugin *plugin;
 
-	file = [OFMutableString stringWithString: path];
-	[file appendString: @PLUGIN_SUFFIX];
+	path = [path stringByAppendingString: @PLUGIN_SUFFIX];
 
-	if ((handle = dlopen([file cStringUsingEncoding:
+#ifndef _WIN32
+	if ((handle = dlopen([path cStringUsingEncoding:
 	    OF_STRING_ENCODING_NATIVE], RTLD_LAZY)) == NULL)
+#else
+	if ((handle = LoadLibraryW([path UTF16String])) == NULL)
+#endif
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 

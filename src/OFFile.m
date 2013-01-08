@@ -73,7 +73,8 @@
 #import "macros.h"
 
 #ifdef _WIN32
-# import <windows.h>
+# include <windows.h>
+# include <wchar.h>
 #endif
 
 #ifndef O_BINARY
@@ -189,11 +190,19 @@ of_log(OFConstantString *format, ...)
 + (OFString*)currentDirectoryPath
 {
 	OFString *ret;
+#ifndef _WIN32
 	char *buffer = getcwd(NULL, 0);
+#else
+	wchar_t *buffer = _wgetcwd(NULL, 0);
+#endif
 
 	@try {
+#ifndef _WIN32
 		ret = [OFString stringWithCString: buffer
 					 encoding: OF_STRING_ENCODING_NATIVE];
+#else
+		ret = [OFString stringWithUTF16String: buffer];
+#endif
 	} @finally {
 		free(buffer);
 	}
@@ -203,11 +212,18 @@ of_log(OFConstantString *format, ...)
 
 + (BOOL)fileExistsAtPath: (OFString*)path
 {
+#ifndef _WIN32
 	struct stat s;
 
 	if (stat([path cStringUsingEncoding: OF_STRING_ENCODING_NATIVE],
 	    &s) == -1)
 		return NO;
+#else
+	struct _stat s;
+
+	if (_wstat([path UTF16String], &s) == -1)
+		return NO;
+#endif
 
 	if (S_ISREG(s.st_mode))
 		return YES;
@@ -217,11 +233,18 @@ of_log(OFConstantString *format, ...)
 
 + (BOOL)directoryExistsAtPath: (OFString*)path
 {
+#ifndef _WIN32
 	struct stat s;
 
 	if (stat([path cStringUsingEncoding: OF_STRING_ENCODING_NATIVE],
 	    &s) == -1)
 		return NO;
+#else
+	struct _stat s;
+
+	if (_wstat([path UTF16String], &s) == -1)
+		return NO;
+#endif
 
 	if (S_ISDIR(s.st_mode))
 		return YES;
@@ -235,7 +258,7 @@ of_log(OFConstantString *format, ...)
 	if (mkdir([path cStringUsingEncoding: OF_STRING_ENCODING_NATIVE],
 	    DIR_MODE))
 #else
-	if (mkdir([path cStringUsingEncoding: OF_STRING_ENCODING_NATIVE]))
+	if (_wmkdir([path UTF16String]))
 #endif
 		@throw [OFCreateDirectoryFailedException
 		    exceptionWithClass: self
@@ -318,12 +341,12 @@ of_log(OFConstantString *format, ...)
 #else
 	void *pool = objc_autoreleasePoolPush();
 	HANDLE handle;
-	WIN32_FIND_DATA fd;
+	WIN32_FIND_DATAW fd;
 
 	path = [path stringByAppendingString: @"\\*"];
 
-	if ((handle = FindFirstFile([path cStringUsingEncoding:
-	    OF_STRING_ENCODING_NATIVE], &fd)) == INVALID_HANDLE_VALUE)
+	if ((handle = FindFirstFileW([path UTF16String],
+	    &fd)) == INVALID_HANDLE_VALUE)
 		@throw [OFOpenFileFailedException exceptionWithClass: self
 								path: path
 								mode: @"r"];
@@ -333,17 +356,15 @@ of_log(OFConstantString *format, ...)
 			void *pool2 = objc_autoreleasePoolPush();
 			OFString *file;
 
-			if (!strcmp(fd.cFileName, ".") ||
-			    !strcmp(fd.cFileName, ".."))
+			if (!wcscmp(fd.cFileName, L".") ||
+			    !wcscmp(fd.cFileName, L".."))
 				continue;
 
-			file = [OFString
-			    stringWithCString: fd.cFileName
-				     encoding: OF_STRING_ENCODING_NATIVE];
+			file = [OFString stringWithUTF16String: fd.cFileName];
 			[files addObject: file];
 
 			objc_autoreleasePoolPop(pool2);
-		} while (FindNextFile(handle, &fd));
+		} while (FindNextFileW(handle, &fd));
 	} @finally {
 		FindClose(handle);
 	}
@@ -358,7 +379,11 @@ of_log(OFConstantString *format, ...)
 
 + (void)changeToDirectoryAtPath: (OFString*)path
 {
+#ifndef _WIN32
 	if (chdir([path cStringUsingEncoding: OF_STRING_ENCODING_NATIVE]))
+#else
+	if (_wchdir([path UTF16String]))
+#endif
 		@throw [OFChangeDirectoryFailedException
 		    exceptionWithClass: self
 				  path: path];
@@ -375,8 +400,7 @@ of_log(OFConstantString *format, ...)
 				  path: path
 				  mode: mode];
 # else
-	DWORD attributes = GetFileAttributes(
-	    [path cStringUsingEncoding: OF_STRING_ENCODING_NATIVE]);
+	DWORD attributes = GetFileAttributesW([path UTF16String]);
 
 	if (attributes == INVALID_FILE_ATTRIBUTES)
 		@throw [OFChangeFileModeFailedException
@@ -389,8 +413,7 @@ of_log(OFConstantString *format, ...)
 	else
 		attributes |= FILE_ATTRIBUTE_READONLY;
 
-	if (!SetFileAttributes([path cStringUsingEncoding:
-	    OF_STRING_ENCODING_NATIVE], attributes))
+	if (!SetFileAttributesW([path UTF16String], attributes))
 		@throw [OFChangeFileModeFailedException
 		    exceptionWithClass: self
 				  path: path
@@ -401,10 +424,16 @@ of_log(OFConstantString *format, ...)
 
 + (off_t)sizeOfFileAtPath: (OFString*)path
 {
+#ifndef _WIN32
 	struct stat s;
 
 	if (stat([path cStringUsingEncoding: OF_STRING_ENCODING_NATIVE],
 	    &s) == -1)
+#else
+	struct _stat s;
+
+	if (_wstat([path UTF16String], &s) == -1)
+#endif
 		/* FIXME: Maybe use another exception? */
 		@throw [OFOpenFileFailedException exceptionWithClass: self
 								path: path
@@ -415,10 +444,16 @@ of_log(OFConstantString *format, ...)
 
 + (OFDate*)modificationDateOfFileAtPath: (OFString*)path
 {
+#ifndef _WIN32
 	struct stat s;
 
 	if (stat([path cStringUsingEncoding: OF_STRING_ENCODING_NATIVE],
 	    &s) == -1)
+#else
+	struct _stat s;
+
+	if (_wstat([path UTF16String], &s) == -1)
+#endif
 		/* FIXME: Maybe use another exception? */
 		@throw [OFOpenFileFailedException exceptionWithClass: self
 								path: path
@@ -563,8 +598,7 @@ of_log(OFConstantString *format, ...)
 	if (rename([source cStringUsingEncoding: OF_STRING_ENCODING_NATIVE],
 	    [destination cStringUsingEncoding: OF_STRING_ENCODING_NATIVE]))
 #else
-	if (!MoveFile([source cStringUsingEncoding: OF_STRING_ENCODING_NATIVE],
-	    [destination cStringUsingEncoding: OF_STRING_ENCODING_NATIVE]))
+	if (!MoveFileW([source UTF16String], [destination UTF16String]))
 #endif
 		@throw [OFRenameFileFailedException
 		    exceptionWithClass: self
@@ -579,7 +613,7 @@ of_log(OFConstantString *format, ...)
 #ifndef _WIN32
 	if (unlink([path cStringUsingEncoding: OF_STRING_ENCODING_NATIVE]))
 #else
-	if (!DeleteFile([path cStringUsingEncoding: OF_STRING_ENCODING_NATIVE]))
+	if (_wunlink([path UTF16String]))
 #endif
 		@throw [OFDeleteFileFailedException exceptionWithClass: self
 								  path: path];
@@ -587,7 +621,11 @@ of_log(OFConstantString *format, ...)
 
 + (void)deleteDirectoryAtPath: (OFString*)path
 {
+#ifndef _WIN32
 	if (rmdir([path cStringUsingEncoding: OF_STRING_ENCODING_NATIVE]))
+#else
+	if (_wrmdir([path UTF16String]))
+#endif
 		@throw [OFDeleteDirectoryFailedException
 		    exceptionWithClass: self
 				  path: path];
@@ -657,14 +695,18 @@ of_log(OFConstantString *format, ...)
 	@try {
 		int flags;
 
-		if ((flags = parse_mode([mode cStringUsingEncoding:
-		    OF_STRING_ENCODING_NATIVE])) == -1)
+		if ((flags = parse_mode([mode UTF8String])) == -1)
 			@throw [OFInvalidArgumentException
 			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
+#ifndef _WIN32
 		if ((fd = open([path cStringUsingEncoding:
 		    OF_STRING_ENCODING_NATIVE], flags, DEFAULT_MODE)) == -1)
+#else
+		if ((fd = _wopen([path UTF16String], flags,
+		    DEFAULT_MODE)) == -1)
+#endif
 			@throw [OFOpenFileFailedException
 			    exceptionWithClass: [self class]
 					  path: path
