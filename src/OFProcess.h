@@ -42,7 +42,7 @@
 	pid_t pid;
 	int readPipe[2], writePipe[2];
 #else
-	HANDLE readPipe[2], writePipe[2];
+	HANDLE process, readPipe[2], writePipe[2];
 #endif
 	int status;
 	BOOL atEndOfStream;

@@ -21,6 +21,7 @@
 
 #ifndef _WIN32
 # include <unistd.h>
+# include <signal.h>
 # include <sys/wait.h>
 #endif
 
@@ -262,7 +263,7 @@ extern char **environ;
 
 		objc_autoreleasePoolPop(pool);
 
-		CloseHandle(pi.hProcess);
+		process = pi.hProcess;
 		CloseHandle(pi.hThread);
 
 		CloseHandle(readPipe[1]);
@@ -462,8 +463,10 @@ extern char **environ;
 	if (writePipe[1] != -1)
 		close(writePipe[1]);
 
-	if (pid != -1)
+	if (pid != -1) {
+		kill(pid, SIGKILL);
 		waitpid(pid, &status, WNOHANG);
+	}
 
 	pid = -1;
 	readPipe[0] = -1;
@@ -474,6 +477,12 @@ extern char **environ;
 	if (writePipe[1] != NULL)
 		CloseHandle(writePipe[1]);
 
+	if (process != INVALID_HANDLE_VALUE) {
+		TerminateProcess(process, 0);
+		CloseHandle(process);
+	}
+
+	process = INVALID_HANDLE_VALUE;
 	readPipe[0] = NULL;
 	writePipe[1] = NULL;
 #endif
