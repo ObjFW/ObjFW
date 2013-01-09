@@ -689,7 +689,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	@try {
 		if (getnameinfo((struct sockaddr*)sockAddr, sockAddrLen, host,
-		    NI_MAXHOST, NULL, 0, NI_NUMERICHOST))
+		    NI_MAXHOST, NULL, 0, NI_NUMERICHOST | NI_NUMERICSERV))
 			@throw [OFAddressTranslationFailedException
 			    exceptionWithClass: [self class]];
 
