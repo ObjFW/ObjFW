@@ -310,6 +310,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_flags = AI_NUMERICSERV | AI_ADDRCONFIG;
 	snprintf(portCString, 7, "%" PRIu16, port);
 
 	if (getaddrinfo([host cStringUsingEncoding: OF_STRING_ENCODING_NATIVE],
@@ -488,6 +489,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_flags = AI_NUMERICSERV | AI_ADDRCONFIG | AI_PASSIVE;
 	snprintf(portCString, 7, "%" PRIu16, port);
 
 	if (getaddrinfo([host cStringUsingEncoding: OF_STRING_ENCODING_NATIVE],
