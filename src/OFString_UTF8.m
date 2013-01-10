@@ -773,6 +773,12 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	    [otherString length] != s->length)
 		return NO;
 
+	if (([otherString isKindOfClass: [OFString_UTF8 class]] ||
+	    [otherString isKindOfClass: [OFMutableString_UTF8 class]]) &&
+	    s->hashed && otherString->s->hashed &&
+	    s->hash != otherString->s->hash)
+		return NO;
+
 	if (strcmp(s->cString, [otherString UTF8String]))
 		return NO;
 
