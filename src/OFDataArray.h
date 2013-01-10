@@ -205,10 +205,10 @@
 /*!
  * @brief Adds items from a C array to the OFDataArray.
  *
- * @param count The number of items to add
  * @param items A C array containing the items to add
+ * @param count The number of items to add
  */
-- (void)addItems: (const void*)array
+- (void)addItems: (const void*)items
 	   count: (size_t)count;
 
 /*!

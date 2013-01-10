@@ -44,14 +44,15 @@
  * @brief This method is called when the HTTP server's listening socket
  *	  encountered an exception.
  *
+ * @param server The HTTP server which encountered an exception
  * @param exception The exception that occurred on the HTTP server's listening
  *		    socket
  * @return Whether to continue listening. If you return NO, existing connections
  *	   will still be handled and you can start accepting new connections
- *	   again by calling @ref start again.
+ *	   again by calling @ref OFHTTPServer::start again.
  */
 -			  (BOOL)server: (OFHTTPServer*)server
-  didReceiveExceptionOnListeningSocket: (OFException*)e;
+  didReceiveExceptionOnListeningSocket: (OFException*)exception;
 @end
 
 /*!

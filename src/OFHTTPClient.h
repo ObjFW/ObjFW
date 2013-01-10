@@ -175,6 +175,7 @@
 /*!
  * @brief Performs the HTTP request and returns an OFHTTPRequestReply.
  *
+ * @param request The request which was redirected
  * @param redirects The maximum number of redirects after which no further
  *		    attempt is done to follow the redirect, but instead the
  *		    redirect is returned as an OFHTTPRequestReply

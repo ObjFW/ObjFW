@@ -50,7 +50,6 @@
 /*!
  * Creates a new URL.
  *
- * @param string A string describing a URL
  * @return A new, autoreleased OFURL
  */
 + (instancetype)URL;

@@ -119,7 +119,7 @@ typedef enum of_http_request_type_t {
  *
  * @param POSTData The POST data of the HTTP request
  */
-- (void)setPOSTData: (OFDataArray*)postData;
+- (void)setPOSTData: (OFDataArray*)POSTData;
 
 /*!
  * @brief Returns the POST data of the HTTP request.

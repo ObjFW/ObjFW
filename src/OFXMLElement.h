@@ -361,7 +361,7 @@
 /*!
  * @brief Inserts the specified children at the specified index.
  *
- * @param child An OFXMLNode which is added as a child
+ * @param children An array of OFXMLNodes which are added as children
  * @param index The index where the child is added
  */
 - (void)insertChildren: (OFArray*)children

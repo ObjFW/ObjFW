@@ -41,10 +41,11 @@
 /*!
  * @brief This callback is called when a stream did get ready for reading.
  *
- * @note When @ref tryReadLine or @ref tryReadTillDelimiter: has been called on
- *	 the stream, this callback will not be called again until new data has
- *	 been received, even though there is still data in the cache. The reason
- *	 for this is to prevent spinning in a loop when there is an incomplete
+ * @note When @ref OFStream::tryReadLine or
+ *	 @ref OFStream::tryReadTillDelimiter: has been called on the stream,
+ *	 this callback will not be called again until new data has been
+ *	 received, even though there is still data in the cache. The reason for
+ *	 this is to prevent spinning in a loop when there is an incomplete
  *	 string in the cache. Once the string is complete, the callback will be
  *	 called again if there is data in the cache.
  *

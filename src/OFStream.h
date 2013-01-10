@@ -145,10 +145,10 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * @brief Asyncronously reads exactly the specified length bytes from the
  *	  stream into a buffer.
  *
- * Unlike @ref asyncReadIntoBuffer:length:block, this method does not call the
- * method when less than the specified length has been read - instead, it waits
- * until it got exactly the specified length, the stream has ended or an
- * exception occurred.
+ * Unlike @ref asyncReadIntoBuffer:length:target:selector:, this method does
+ * not call the method when less than the specified length has been read -
+ * instead, it waits until it got exactly the specified length, the stream has
+ * ended or an exception occurred.
  *
  * @param buffer The buffer into which the data is read
  * @param length The length of the data that should be read.
@@ -197,9 +197,9 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * @brief Asyncronously reads exactly the specified length bytes from the
  *	  stream into a buffer.
  *
- * Unlike @ref asyncReadIntoBuffer:length:block, this method does not invoke the
- * block when less than the specified length has been read - instead, it waits
- * until it got exactly the specified length, the stream has ended or an
+ * Unlike @ref asyncReadIntoBuffer:length:block:, this method does not invoke
+ * the block when less than the specified length has been read - instead, it
+ * waits until it got exactly the specified length, the stream has ended or an
  * exception occurred.
  *
  * @param buffer The buffer into which the data is read
@@ -677,7 +677,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
 
 /*!
  * @brief Tries to read until the specified string or \\0 is found or the end
- *	  of stream occurs (see @ref readTillDelimiterWithEncoding:) and
+ *	  of stream occurs (see @ref readTillDelimiter:encoding:) and
  *	  returns nil if not enough data has been received yet.
  *
  * @param delimiter The delimiter
