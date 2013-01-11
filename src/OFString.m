@@ -314,15 +314,6 @@ static struct {
 						      length: length];
 }
 
-- initWithCharacters: (const of_unichar_t*)string
-	      length: (size_t)length
-	   byteOrder: (of_byte_order_t)byteOrder
-{
-	return (id)[[OFString_UTF8 alloc] initWithCharacters: string
-						      length: length
-						   byteOrder: byteOrder];
-}
-
 - initWithUTF16String: (const uint16_t*)string
 {
 	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string];
@@ -357,9 +348,25 @@ static struct {
 }
 
 - initWithUTF32String: (const uint32_t*)string
+	       length: (size_t)length
+{
+	return (id)[[OFString_UTF8 alloc] initWithUTF32String: string
+						       length: length];
+}
+
+- initWithUTF32String: (const uint32_t*)string
 	    byteOrder: (of_byte_order_t)byteOrder
 {
 	return (id)[[OFString_UTF8 alloc] initWithUTF32String: string
+						    byteOrder: byteOrder];
+}
+
+- initWithUTF32String: (const uint32_t*)string
+	       length: (size_t)length
+	    byteOrder: (of_byte_order_t)byteOrder
+{
+	return (id)[[OFString_UTF8 alloc] initWithUTF32String: string
+						       length: length
 						    byteOrder: byteOrder];
 }
 
@@ -525,15 +532,6 @@ static struct {
 					  length: length] autorelease];
 }
 
-+ (instancetype)stringWithCharacters: (const of_unichar_t*)string
-			      length: (size_t)length
-			   byteOrder: (of_byte_order_t)byteOrder
-{
-	return [[[self alloc] initWithCharacters: string
-					  length: length
-				       byteOrder: byteOrder] autorelease];
-}
-
 + (instancetype)stringWithUTF16String: (const uint16_t*)string
 {
 	return [[[self alloc] initWithUTF16String: string] autorelease];
@@ -568,9 +566,25 @@ static struct {
 }
 
 + (instancetype)stringWithUTF32String: (const uint32_t*)string
+			       length: (size_t)length
+{
+	return [[[self alloc] initWithUTF32String: string
+					   length: length] autorelease];
+}
+
++ (instancetype)stringWithUTF32String: (const uint32_t*)string
 			    byteOrder: (of_byte_order_t)byteOrder
 {
 	return [[[self alloc] initWithUTF32String: string
+					byteOrder: byteOrder] autorelease];
+}
+
++ (instancetype)stringWithUTF32String: (const uint32_t*)string
+			       length: (size_t)length
+			    byteOrder: (of_byte_order_t)byteOrder
+{
+	return [[[self alloc] initWithUTF32String: string
+					   length: length
 					byteOrder: byteOrder] autorelease];
 }
 
@@ -695,15 +709,6 @@ static struct {
 - initWithCharacters: (const of_unichar_t*)string
 	      length: (size_t)length
 {
-	return [self initWithCharacters: string
-				 length: length
-			      byteOrder: OF_BYTE_ORDER_NATIVE];
-}
-
-- initWithCharacters: (const of_unichar_t*)string
-	      length: (size_t)length
-	   byteOrder: (of_byte_order_t)byteOrder
-{
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
 		abort();
@@ -751,17 +756,38 @@ static struct {
 
 - initWithUTF32String: (const uint32_t*)string
 {
-	return [self initWithCharacters: string
-				 length: of_string_utf32_length(string)
-			      byteOrder: OF_BYTE_ORDER_NATIVE];
+	return [self initWithUTF32String: string
+				  length: of_string_utf32_length(string)
+			       byteOrder: OF_BYTE_ORDER_NATIVE];
+}
+
+- initWithUTF32String: (const uint32_t*)string
+	       length: (size_t)length
+{
+	return [self initWithUTF32String: string
+				  length: length
+			       byteOrder: OF_BYTE_ORDER_NATIVE];
 }
 
 - initWithUTF32String: (const uint32_t*)string
 	    byteOrder: (of_byte_order_t)byteOrder
 {
-	return [self initWithCharacters: string
-				 length: of_string_utf32_length(string)
-			      byteOrder: byteOrder];
+	return [self initWithUTF32String: string
+				  length: of_string_utf32_length(string)
+			       byteOrder: byteOrder];
+}
+
+- initWithUTF32String: (const uint32_t*)string
+	       length: (size_t)length
+	    byteOrder: (of_byte_order_t)byteOrder
+{
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - initWithFormat: (OFConstantString*)format, ...

@@ -404,23 +404,11 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 - initWithCharacters: (const of_unichar_t*)characters
 	      length: (size_t)length
-	   byteOrder: (of_byte_order_t)byteOrder
 {
 	self = [super init];
 
 	@try {
 		size_t i, j = 0;
-		BOOL swap = NO;
-
-		if (length > 0 && *characters == 0xFEFF) {
-			characters++;
-			length--;
-		} else if (length > 0 && *characters == 0xFFFE0000) {
-			swap = YES;
-			characters++;
-			length--;
-		} else if (byteOrder != OF_BYTE_ORDER_NATIVE)
-			swap = YES;
 
 		s = &s_store;
 
@@ -429,11 +417,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 		for (i = 0; i < length; i++) {
 			char buffer[4];
-			size_t characterLen = of_string_utf8_encode(
-			    (swap ? OF_BSWAP32(characters[i]) : characters[i]),
-			    buffer);
 
-			switch (characterLen) {
+			switch (of_string_utf8_encode(characters[i], buffer)) {
 			case 1:
 				s->cString[j++] = buffer[0];
 				break;
@@ -582,6 +567,85 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		@try {
 			s->cString = [self resizeMemory: s->cString
 						   size: s->cStringLength + 1];
+		} @catch (OFOutOfMemoryException *e) {
+			/* We don't care, as we only tried to make it smaller */
+		}
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithUTF32String: (const of_unichar_t*)characters
+	       length: (size_t)length
+	    byteOrder: (of_byte_order_t)byteOrder
+{
+	self = [super init];
+
+	@try {
+		size_t i, j = 0;
+		BOOL swap = NO;
+
+		if (length > 0 && *characters == 0xFEFF) {
+			characters++;
+			length--;
+		} else if (length > 0 && *characters == 0xFFFE0000) {
+			swap = YES;
+			characters++;
+			length--;
+		} else if (byteOrder != OF_BYTE_ORDER_NATIVE)
+			swap = YES;
+
+		s = &s_store;
+
+		s->cString = [self allocMemoryWithSize: (length * 4) + 1];
+		s->length = length;
+
+		for (i = 0; i < length; i++) {
+			char buffer[4];
+			size_t characterLen = of_string_utf8_encode(
+			    (swap ? OF_BSWAP32(characters[i]) : characters[i]),
+			    buffer);
+
+			switch (characterLen) {
+			case 1:
+				s->cString[j++] = buffer[0];
+				break;
+			case 2:
+				s->isUTF8 = YES;
+
+				memcpy(s->cString + j, buffer, 2);
+				j += 2;
+
+				break;
+			case 3:
+				s->isUTF8 = YES;
+
+				memcpy(s->cString + j, buffer, 3);
+				j += 3;
+
+				break;
+			case 4:
+				s->isUTF8 = YES;
+
+				memcpy(s->cString + j, buffer, 4);
+				j += 4;
+
+				break;
+			default:
+				@throw [OFInvalidEncodingException
+				    exceptionWithClass: [self class]];
+			}
+		}
+
+		s->cString[j] = '\0';
+		s->cStringLength = j;
+
+		@try {
+			s->cString = [self resizeMemory: s->cString
+						   size: j + 1];
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only tried to make it smaller */
 		}
