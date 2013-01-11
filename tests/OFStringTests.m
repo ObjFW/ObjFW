@@ -118,6 +118,10 @@ static uint16_t sutf16str[] = {
 	    R([s[1] appendUTF8String: "1𝄞"]) && R([s[1] appendString: @"3"]) &&
 	    R([s[0] appendString: s[1]]) && [s[0] isEqual: @"täs€1𝄞3"])
 
+	TEST(@"-[appendCharacters:length:]",
+	    R([s[1] appendCharacters: ucstr + 6
+			      length: 2]) && [s[1] isEqual: @"1𝄞3r🀺"])
+
 	TEST(@"-[length]", [s[0] length] == 7)
 	TEST(@"-[UTF8StringLength]", [s[0] UTF8StringLength] == 13)
 	TEST(@"-[hash]", [s[0] hash] == 0x705583C0)

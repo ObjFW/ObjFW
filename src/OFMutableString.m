@@ -287,6 +287,23 @@ static struct {
 	objc_autoreleasePoolPop(pool);
 }
 
+- (void)appendString: (OFString*)string
+{
+	return [self insertString: string
+			  atIndex: [self length]];
+}
+
+- (void)appendCharacters: (of_unichar_t*)characters
+		  length: (size_t)length
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	return [self appendString: [OFString stringWithCharacters: characters
+							   length: length]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (void)appendUTF8String: (const char*)UTF8String
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -329,12 +346,6 @@ static struct {
 						 length: cStringLength]];
 
 	objc_autoreleasePoolPop(pool);
-}
-
-- (void)appendString: (OFString*)string
-{
-	return [self insertString: string
-			  atIndex: [self length]];
 }
 
 - (void)appendFormat: (OFConstantString*)format, ...

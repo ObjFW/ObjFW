@@ -30,6 +30,22 @@
 	     atIndex: (size_t)index;
 
 /*!
+ * @brief Appends another OFString to the OFMutableString.
+ *
+ * @param string An OFString to append
+ */
+- (void)appendString: (OFString*)string;
+
+/*!
+ * @brief Appends the specified characters to the OFMutableString.
+ *
+ * @param characters An array of characters to append
+ * @param length The length of the array of characters
+ */
+- (void)appendCharacters: (of_unichar_t*)characters
+		  length: (size_t)length;
+
+/*!
  * @brief Appends a UTF-8 encoded C string to the OFMutableString.
  *
  * @param UTF8String A UTF-8 encoded C string to append
@@ -66,13 +82,6 @@
 - (void)appendCString: (const char*)cString
 	     encoding: (of_string_encoding_t)encoding
 	       length: (size_t)cStringLength;
-
-/*!
- * @brief Appends another OFString to the OFMutableString.
- *
- * @param string An OFString to append
- */
-- (void)appendString: (OFString*)string;
 
 /*!
  * @brief Appends a formatted string to the OFMutableString.

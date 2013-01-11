@@ -391,6 +391,67 @@
 		s->isUTF8 = YES;
 }
 
+- (void)appendCharacters: (of_unichar_t*)characters
+		  length: (size_t)length
+{
+	char *tmp;
+
+	tmp = [self allocMemoryWithSize: (length * 4) + 1];
+	@try {
+		size_t i, j = 0;
+		BOOL isUTF8 = NO;
+
+		for (i = 0; i < length; i++) {
+			char buffer[4];
+
+			switch (of_string_utf8_encode(characters[i], buffer)) {
+			case 1:
+				tmp[j++] = buffer[0];
+				break;
+			case 2:
+				isUTF8 = YES;
+
+				memcpy(tmp + j, buffer, 2);
+				j += 2;
+
+				break;
+			case 3:
+				isUTF8 = YES;
+
+				memcpy(tmp + j, buffer, 3);
+				j += 3;
+
+				break;
+			case 4:
+				isUTF8 = YES;
+
+				memcpy(tmp + j, buffer, 4);
+				j += 4;
+
+				break;
+			default:
+				@throw [OFInvalidEncodingException
+				    exceptionWithClass: [self class]];
+			}
+		}
+
+		tmp[j] = '\0';
+
+		s->hashed = NO;
+		s->cString = [self resizeMemory: s->cString
+					   size: s->cStringLength + j + 1];
+		memcpy(s->cString + s->cStringLength, tmp, j + 1);
+
+		s->cStringLength += j;
+		s->length += length;
+
+		if (isUTF8)
+			s->isUTF8 = YES;
+	} @finally {
+		[self freeMemory: tmp];
+	}
+}
+
 - (void)appendFormat: (OFConstantString*)format
 	   arguments: (va_list)arguments
 {

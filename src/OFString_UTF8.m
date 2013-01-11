@@ -424,7 +424,6 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 		s = &s_store;
 
-		s->cStringLength = length;
 		s->cString = [self allocMemoryWithSize: (length * 4) + 1];
 		s->length = length;
 
@@ -440,7 +439,6 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				break;
 			case 2:
 				s->isUTF8 = YES;
-				s->cStringLength++;
 
 				memcpy(s->cString + j, buffer, 2);
 				j += 2;
@@ -448,7 +446,6 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				break;
 			case 3:
 				s->isUTF8 = YES;
-				s->cStringLength += 2;
 
 				memcpy(s->cString + j, buffer, 3);
 				j += 3;
@@ -456,7 +453,6 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				break;
 			case 4:
 				s->isUTF8 = YES;
-				s->cStringLength += 3;
 
 				memcpy(s->cString + j, buffer, 4);
 				j += 4;
@@ -469,10 +465,11 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		}
 
 		s->cString[j] = '\0';
+		s->cStringLength = j;
 
 		@try {
 			s->cString = [self resizeMemory: s->cString
-						   size: s->cStringLength + 1];
+						   size: j + 1];
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only tried to make it smaller */
 		}
