@@ -9,26 +9,28 @@ SRCS = ForwardingTests.m		\
        OFDataArrayTests.m		\
        OFDateTests.m			\
        OFDictionaryTests.m		\
-       ${OFHTTPCLIENTTESTS_M}		\
        OFJSONTests.m			\
        OFListTests.m			\
        OFMD5HashTests.m			\
        OFNumberTests.m			\
        OFObjectTests.m			\
-       ${OFPLUGINTESTS_M}		\
        OFSerializationTests.m		\
        OFSet.m				\
        OFSHA1HashTests.m		\
        OFStreamTests.m			\
        OFStringTests.m			\
        OFTCPSocketTests.m		\
-       ${OFTHREADTESTS_M}		\
        OFURLTests.m			\
        OFXMLElementBuilderTests.m	\
        OFXMLNodeTests.m			\
        OFXMLParserTests.m		\
        ${PROPERTIESTESTS_M}		\
-       TestsAppDelegate.m
+       TestsAppDelegate.m		\
+       ${USE_SRCS_PLUGINS}		\
+       ${USE_SRCS_THREADS}
+SRCS_PLUGINS = OFPluginTests.m
+SRCS_THREADS = OFThreadTests.m		\
+	       OFHTTPClientTests.m
 
 IOS_USER ?= mobile
 IOS_TMP ?= /tmp/objfw-test

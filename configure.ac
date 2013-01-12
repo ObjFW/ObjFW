@@ -104,11 +104,9 @@ AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
 
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
 AS_IF([test x"$PLUGIN_SUFFIX" != x""], [
-	AC_SUBST(OFPLUGIN_M, "OFPlugin.m")
-	AC_SUBST(OFPLUGINTESTS_M, "OFPluginTests.m")
+	AC_SUBST(USE_SRCS_PLUGINS, '${SRCS_PLUGINS}')
 	AC_SUBST(TESTPLUGIN, "plugin")
 	AC_DEFINE(OF_PLUGINS, 1, [Whether we have plugin support])
-	AC_SUBST(OFPLUGINS_DEF, "-DOF_PLUGINS")
 ])
 
 objc_runtime="ObjFW runtime"
@@ -457,17 +455,8 @@ AS_IF([test x"$enable_threads" != x"no"], [
 	esac
 
 	AC_DEFINE(OF_THREADS, 1, [Whether we have threads])
-	AC_SUBST(THREADING_SOURCES, "	\
-		OFThread.m		\
-		OFThreadPool.m		\
-		OFTLSKey.m		\
-		OFMutex.m		\
-		OFRecursiveMutex.m	\
-		OFCondition.m		\
-	")
-	AC_SUBST(OFTHREADTESTS_M, "OFThreadTests.m")
-	AC_SUBST(OFHTTPCLIENTTESTS_M, "OFHTTPClientTests.m")
-	AC_SUBST(THREADING_H, "threading.h")
+	AC_SUBST(USE_SRCS_THREADS, '${SRCS_THREADS}')
+	AC_SUBST(USE_INCLUDES_THREADS, '${INCLUDES_THREADS}')
 
 	AC_MSG_CHECKING(whether __thread works)
 	AC_TRY_LINK([

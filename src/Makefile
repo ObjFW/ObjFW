@@ -37,7 +37,6 @@ SRCS = OFApplication.m			\
        OFNumber.m			\
        OFObject.m			\
        OFObject+Serialization.m		\
-       ${OFPLUGIN_M}			\
        OFProcess.m			\
        OFRunLoop.m			\
        OFSeekableStream.m		\
@@ -68,12 +67,21 @@ SRCS = OFApplication.m			\
        OFXMLNode.m			\
        OFXMLParser.m			\
        OFXMLProcessingInstructions.m	\
-       ${THREADING_SOURCES}		\
        base64.m				\
        of_asprintf.m			\
        of_strptime.m			\
-       unicode.m
+       unicode.m			\
+       ${USE_SRCS_PLUGINS}		\
+       ${USE_SRCS_THREADS}
+SRCS_PLUGINS = OFPlugin.m
+SRCS_THREADS = OFCondition.m		\
+	       OFMutex.m		\
+	       OFRecursiveMutex.m	\
+	       OFThread.m		\
+	       OFThreadPool.m		\
+	       OFTLSKey.m
 
+INCLUDES_THREADS = threading.h
 INCLUDES := ${SRCS:.m=.h}		\
 	    OFCollection.h		\
 	    OFJSONRepresentation.h	\
@@ -88,7 +96,7 @@ INCLUDES := ${SRCS:.m=.h}		\
 	    instance.h			\
 	    macros.h			\
 	    objfw-defs.h		\
-	    ${THREADING_H}
+	    ${USE_INCLUDES_THREADS}
 
 SRCS += OFArray_adjacent.m		\
 	OFArray_adjacentSubarray.m	\
