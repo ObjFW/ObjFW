@@ -20,7 +20,7 @@
 #import "OFTCPSocket.h"
 
 @class OFSortedList;
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 @class OFMutex;
 #endif
 @class OFTimer;
@@ -32,7 +32,7 @@
 @interface OFRunLoop: OFObject
 {
 	OFSortedList *timersQueue;
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 	OFMutex *timersQueueLock;
 #endif
 	OFStreamObserver *streamObserver;

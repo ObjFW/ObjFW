@@ -22,18 +22,18 @@
 #import "OFObject.h"
 #import "OFSystemInfo.h"
 
-#if !defined(OF_COMPILER_TLS) && defined(OF_THREADS)
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 # import "threading.h"
 #endif
 #import "macros.h"
 
 #import "autorelease.h"
 
-#if defined(OF_COMPILER_TLS)
+#if defined(OF_HAVE_COMPILER_TLS)
 static __thread id *objects = NULL;
 static __thread id *top = NULL;
 static __thread size_t size = 0;
-#elif defined(OF_THREADS)
+#elif defined(OF_HAVE_THREADS)
 static of_tlskey_t objectsKey, topKey, sizeKey;
 #else
 static id *objects = NULL;
@@ -41,7 +41,7 @@ static id *top = NULL;
 static size_t size = 0;
 #endif
 
-#if !defined(OF_COMPILER_TLS) && defined(OF_THREADS)
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 static void __attribute__((constructor))
 init(void)
 {
@@ -54,7 +54,7 @@ init(void)
 void*
 objc_autoreleasePoolPush()
 {
-#if !defined(OF_COMPILER_TLS) && defined(OF_THREADS)
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	id *top = of_tlskey_get(topKey);
 	id *objects = of_tlskey_get(objectsKey);
 #endif
@@ -66,7 +66,7 @@ objc_autoreleasePoolPush()
 void
 objc_autoreleasePoolPop(void *offset)
 {
-#if !defined(OF_COMPILER_TLS) && defined(OF_THREADS)
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	id *top = of_tlskey_get(topKey);
 	id *objects = of_tlskey_get(objectsKey);
 #endif
@@ -85,7 +85,7 @@ objc_autoreleasePoolPop(void *offset)
 		top = NULL;
 	}
 
-#if !defined(OF_COMPILER_TLS) && defined(OF_THREADS)
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	OF_ENSURE(of_tlskey_set(topKey, top));
 	OF_ENSURE(of_tlskey_set(objectsKey, objects));
 #endif
@@ -94,7 +94,7 @@ objc_autoreleasePoolPop(void *offset)
 id
 _objc_rootAutorelease(id object)
 {
-#if !defined(OF_COMPILER_TLS) && defined(OF_THREADS)
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	id *top = of_tlskey_get(topKey);
 	id *objects = of_tlskey_get(objectsKey);
 	size_t size = (size_t)(uintptr_t)of_tlskey_get(sizeKey);
@@ -107,7 +107,7 @@ _objc_rootAutorelease(id object)
 
 		top = objects;
 
-#if !defined(OF_COMPILER_TLS) && defined(OF_THREADS)
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 		OF_ENSURE(of_tlskey_set(objectsKey, objects));
 		OF_ENSURE(of_tlskey_set(sizeKey, (void*)(uintptr_t)size));
 #endif
@@ -119,7 +119,7 @@ _objc_rootAutorelease(id object)
 		size += [OFSystemInfo pageSize];
 		OF_ENSURE((objects = realloc(objects, size)) != NULL);
 
-#if !defined(OF_COMPILER_TLS) && defined(OF_THREADS)
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 		OF_ENSURE(of_tlskey_set(objectsKey, objects));
 		OF_ENSURE(of_tlskey_set(sizeKey, (void*)(uintptr_t)size));
 #endif
@@ -130,7 +130,7 @@ _objc_rootAutorelease(id object)
 	*top = object;
 	top++;
 
-#if !defined(OF_COMPILER_TLS) && defined(OF_THREADS)
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	OF_ENSURE(of_tlskey_set(topKey, top));
 #endif
 

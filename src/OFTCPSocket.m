@@ -35,7 +35,7 @@
 #import "OFTCPSocket.h"
 #import "OFTCPSocket+SOCKS5.h"
 #import "OFString.h"
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 # import "OFThread.h"
 #endif
 #import "OFTimer.h"
@@ -59,7 +59,7 @@
 # define INVALID_SOCKET -1
 #endif
 
-#if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
+#if defined(OF_HAVE_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
 # import "OFMutex.h"
 # import "OFDataArray.h"
 
@@ -81,7 +81,7 @@ Class of_tls_socket_class = Nil;
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
 
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 @interface OFTCPSocket_ConnectThread: OFThread
 {
 	OFThread *sourceThread;
@@ -216,7 +216,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 
 @implementation OFTCPSocket
-#if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
+#if defined(OF_HAVE_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
 + (void)initialize
 {
 	if (self == [OFTCPSocket class])
@@ -344,7 +344,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	struct hostent *he;
 	struct sockaddr_in addr;
 	char **ip;
-# ifdef OF_THREADS
+# ifdef OF_HAVE_THREADS
 	OFDataArray *addrlist;
 
 	addrlist = [[OFDataArray alloc] initWithItemSize: sizeof(char**)];
@@ -353,7 +353,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	if ((he = gethostbyname([host cStringWithEncoding:
 	    OF_STRING_ENCODING_NATIVE])) == NULL) {
-# ifdef OF_THREADS
+# ifdef OF_HAVE_THREADS
 		[addrlist release];
 		[mutex unlock];
 # endif
@@ -369,7 +369,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	if (he->h_addrtype != AF_INET ||
 	    (sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
-# ifdef OF_THREADS
+# ifdef OF_HAVE_THREADS
 		[addrlist release];
 		[mutex unlock];
 # endif
@@ -380,7 +380,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 								  port: port];
 	}
 
-# ifdef OF_THREADS
+# ifdef OF_HAVE_THREADS
 	@try {
 		for (ip = he->h_addr_list; *ip != NULL; ip++)
 			[addrlist addItem: ip];
@@ -407,7 +407,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		break;
 	}
 
-# ifdef OF_THREADS
+# ifdef OF_HAVE_THREADS
 	[addrlist release];
 # endif
 
@@ -429,7 +429,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 					port: destinationPort];
 }
 
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 - (void)asyncConnectToHost: (OFString*)host
 		      port: (uint16_t)port
 		    target: (id)target
@@ -531,13 +531,13 @@ static uint16_t defaultSOCKS5Port = 1080;
 #else
 	struct hostent *he;
 
-# ifdef OF_THREADS
+# ifdef OF_HAVE_THREADS
 	[mutex lock];
 # endif
 
 	if ((he = gethostbyname([host cStringWithEncoding:
 	    OF_STRING_ENCODING_NATIVE])) == NULL) {
-# ifdef OF_THREADS
+# ifdef OF_HAVE_THREADS
 		[mutex unlock];
 # endif
 		@throw [OFAddressTranslationFailedException
@@ -551,7 +551,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	addr.in.sin_port = OF_BSWAP16_IF_LE(port);
 
 	if (he->h_addrtype != AF_INET || he->h_addr_list[0] == NULL) {
-# ifdef OF_THREADS
+# ifdef OF_HAVE_THREADS
 		[mutex unlock];
 # endif
 		@throw [OFAddressTranslationFailedException
@@ -562,7 +562,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	memcpy(&addr.in.sin_addr.s_addr, he->h_addr_list[0], he->h_length);
 
-# ifdef OF_THREADS
+# ifdef OF_HAVE_THREADS
 	[mutex unlock];
 # endif
 	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
@@ -705,7 +705,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		[self freeMemory: host];
 	}
 #else
-# ifdef OF_THREADS
+# ifdef OF_HAVE_THREADS
 	[mutex lock];
 
 	@try {
@@ -718,7 +718,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 		return [OFString stringWithCString: host
 					  encoding: OF_STRING_ENCODING_NATIVE];
-# ifdef OF_THREADS
+# ifdef OF_HAVE_THREADS
 	} @finally {
 		[mutex unlock];
 	}

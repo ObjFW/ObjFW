@@ -24,14 +24,14 @@
 #import "OFObject.h"
 
 #import "macros.h"
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 # import "threading.h"
 # define NUM_SPINLOCKS 8	/* needs to be a power of 2 */
 # define SPINLOCK_HASH(p) ((unsigned)((uintptr_t)p >> 4) & (NUM_SPINLOCKS - 1))
 static of_spinlock_t spinlocks[NUM_SPINLOCKS];
 #endif
 
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 static void __attribute__((constructor))
 init(void)
 {
@@ -48,7 +48,7 @@ objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, BOOL atomic)
 {
 	if (atomic) {
 		id *ptr = (id*)(void*)((char*)self + offset);
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 		unsigned hash = SPINLOCK_HASH(ptr);
 
 		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
@@ -71,7 +71,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
 {
 	if (atomic) {
 		id *ptr = (id*)(void*)((char*)self + offset);
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 		unsigned hash = SPINLOCK_HASH(ptr);
 
 		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
@@ -91,7 +91,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
 			}
 
 			[old release];
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 		} @finally {
 			OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
 		}
@@ -123,13 +123,13 @@ objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, BOOL atomic,
     BOOL strong)
 {
 	if (atomic) {
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 		unsigned hash = SPINLOCK_HASH(src);
 
 		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
 #endif
 		memcpy(dest, src, size);
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 		OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
 #endif
 
@@ -144,13 +144,13 @@ objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, BOOL atomic,
     BOOL strong)
 {
 	if (atomic) {
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 		unsigned hash = SPINLOCK_HASH(src);
 
 		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
 #endif
 		memcpy(dest, src, size);
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 		OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
 #endif
 

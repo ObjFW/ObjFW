@@ -154,9 +154,9 @@ default_equal(void *value1, void *value2)
 		memset(buckets, 0, capacity * sizeof(*buckets));
 
 		if (of_hash_seed != 0)
-#if defined(OF_HAVE_ARC4RANDOM)
+#if defined(HAVE_ARC4RANDOM)
 			rotate = arc4random() & 31;
-#elif defined(OF_HAVE_RANDOM)
+#elif defined(HAVE_RANDOM)
 			rotate = random() & 31;
 #else
 			rotate = rand() & 31;

@@ -28,7 +28,7 @@
 @class OFMutableArray;
 @class OFMutableDictionary;
 @class OFDataArray;
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 @class OFMutex;
 #endif
 
@@ -88,7 +88,7 @@
 #ifdef _WIN32
 	struct sockaddr_in cancelAddr;
 #endif
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 	OFMutex *mutex;
 #endif
 }

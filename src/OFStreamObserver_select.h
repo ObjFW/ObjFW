@@ -21,7 +21,7 @@
 # define __STDC_CONSTANT_MACROS
 #endif
 
-#ifdef OF_HAVE_SYS_SELECT_H
+#ifdef HAVE_SYS_SELECT_H
 # include <sys/select.h>
 #endif
 

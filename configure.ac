@@ -106,7 +106,7 @@ AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
 AS_IF([test x"$PLUGIN_SUFFIX" != x""], [
 	AC_SUBST(USE_SRCS_PLUGINS, '${SRCS_PLUGINS}')
 	AC_SUBST(TESTPLUGIN, "plugin")
-	AC_DEFINE(OF_PLUGINS, 1, [Whether we have plugin support])
+	AC_DEFINE(OF_HAVE_PLUGINS, 1, [Whether we have plugin support])
 ])
 
 objc_runtime="ObjFW runtime"
@@ -404,10 +404,10 @@ test x"$have_asprintf" != x"yes" -a x"$ac_cv_snprintf_useful_ret" != x"yes" && \
 	AC_MSG_ERROR(No asprintf and no snprintf returning required space!)
 
 AC_CHECK_FUNC(arc4random, [
-	AC_DEFINE(OF_HAVE_ARC4RANDOM, 1, [Whether we have arc4random()])
+	AC_DEFINE(HAVE_ARC4RANDOM, 1, [Whether we have arc4random()])
 ], [
 	AC_CHECK_FUNC(random, [
-		AC_DEFINE(OF_HAVE_RANDOM, 1, [Whether we have random()])
+		AC_DEFINE(HAVE_RANDOM, 1, [Whether we have random()])
 	])
 ])
 
@@ -454,7 +454,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 		;;
 	esac
 
-	AC_DEFINE(OF_THREADS, 1, [Whether we have threads])
+	AC_DEFINE(OF_HAVE_THREADS, 1, [Whether we have threads])
 	AC_SUBST(USE_SRCS_THREADS, '${SRCS_THREADS}')
 	AC_SUBST(USE_INCLUDES_THREADS, '${INCLUDES_THREADS}')
 
@@ -470,7 +470,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 		x++;
 	], [
 		AC_MSG_RESULT(yes)
-		AC_DEFINE(OF_COMPILER_TLS, 1, [Whether __thread works])
+		AC_DEFINE(OF_HAVE_COMPILER_TLS, 1, [Whether __thread works])
 	], [
 		AC_MSG_RESULT(no)
 	])
@@ -521,7 +521,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 
 AC_MSG_CHECKING(for atomic operations)
 AS_IF([test x"$atomic_ops" != x"none"], [
-	AC_DEFINE(OF_ATOMIC_OPS, 1, [Whether we have atomic operations])
+	AC_DEFINE(OF_HAVE_ATOMIC_OPS, 1, [Whether we have atomic operations])
 	AC_SUBST(ATOMIC_H, "atomic.h")
 ])
 AC_MSG_RESULT($atomic_ops)
@@ -546,7 +546,7 @@ AC_CHECK_HEADER(poll.h, [
 	AC_SUBST(OFSTREAMOBSERVER_POLL_M, "OFStreamObserver_poll.m")
 ])
 AC_CHECK_HEADERS(sys/select.h, [
-	AC_DEFINE(OF_HAVE_SYS_SELECT_H, 1, [Whether we have sys/select.h])
+	AC_DEFINE(HAVE_SYS_SELECT_H, 1, [Whether we have sys/select.h])
 	AC_SUBST(OFSTREAMOBSERVER_SELECT_M, "OFStreamObserver_select.m")
 ])
 case "$host_os" in

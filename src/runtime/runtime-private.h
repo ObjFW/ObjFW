@@ -149,7 +149,7 @@ extern void objc_sparsearray_free(struct objc_sparsearray*);
 extern void objc_sparsearray_cleanup(void);
 extern void objc_init_static_instances(struct objc_abi_symtab*);
 extern void __objc_exec_class(struct objc_abi_module*);
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 extern void objc_global_mutex_lock(void);
 extern void objc_global_mutex_unlock(void);
 extern void objc_global_mutex_free(void);

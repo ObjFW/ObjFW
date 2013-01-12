@@ -33,10 +33,10 @@
 #import "OFInitializationFailedException.h"
 
 #import "macros.h"
-#ifdef OF_ATOMIC_OPS
+#ifdef OF_HAVE_ATOMIC_OPS
 # import "atomic.h"
 #endif
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 # import "threading.h"
 #endif
 
@@ -158,7 +158,7 @@ static struct {
 	Class isa;
 } alloc_failed_exception;
 
-#if !defined(OF_ATOMIC_OPS) && defined(OF_THREADS)
+#ifndef OF_HAVE_ATOMIC_OPS
 # define NUM_SPINLOCKS 8	/* needs to be a power of 2 */
 # define SPINLOCK_HASH(p) ((uintptr_t)p >> 4) & (NUM_SPINLOCKS - 1)
 static of_spinlock_t spinlocks[NUM_SPINLOCKS];
@@ -189,7 +189,7 @@ _Block_copy(const void *block_)
 	}
 
 	if (object_getClass((id)block) == (Class)&_NSConcreteMallocBlock) {
-#if defined(OF_ATOMIC_OPS)
+#ifdef OF_HAVE_ATOMIC_OPS
 		of_atomic_inc_int(&block->flags);
 #else
 		unsigned hash = SPINLOCK_HASH(block);
@@ -211,7 +211,7 @@ _Block_release(const void *block_)
 	if (object_getClass((id)block) != (Class)&_NSConcreteMallocBlock)
 		return;
 
-#ifdef OF_ATOMIC_OPS
+#ifdef OF_HAVE_ATOMIC_OPS
 	if ((of_atomic_dec_int(&block->flags) & OF_BLOCK_REFCOUNT_MASK) == 0) {
 		if (block->flags & OF_BLOCK_HAS_COPY_DISPOSE)
 			block->descriptor->dispose_helper(block);
@@ -375,7 +375,7 @@ _Block_object_dispose(const void *obj_, const int flags_)
 }
 #endif
 
-#if !defined(OF_ATOMIC_OPS)
+#ifndef OF_HAVE_ATOMIC_OPS
 + (void)initialize
 {
 	size_t i;

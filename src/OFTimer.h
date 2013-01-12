@@ -19,7 +19,7 @@
 @class OFTimer;
 @class OFDate;
 @class OFRunLoop;
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 @class OFCondition;
 #endif
 
@@ -42,7 +42,7 @@ typedef void (^of_timer_block_t)(OFTimer*);
 	of_timer_block_t block;
 #endif
 	BOOL isValid;
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 	OFCondition *condition;
 	BOOL done;
 #endif
@@ -315,7 +315,7 @@ typedef void (^of_timer_block_t)(OFTimer*);
  */
 - (double)timeInterval;
 
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 /*!
  * @brief Waits until the timer fired.
  */

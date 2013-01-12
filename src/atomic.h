@@ -25,7 +25,7 @@
 static OF_INLINE int
 of_atomic_add_int(volatile int *p, int i)
 {
-#if !defined(OF_THREADS)
+#if !defined(OF_HAVE_THREADS)
 	return (*p += i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	if (sizeof(int) == 4)
@@ -69,7 +69,7 @@ of_atomic_add_int(volatile int *p, int i)
 static OF_INLINE int32_t
 of_atomic_add_32(volatile int32_t *p, int32_t i)
 {
-#if !defined(OF_THREADS)
+#if !defined(OF_HAVE_THREADS)
 	return (*p += i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	__asm__ (
@@ -93,7 +93,7 @@ of_atomic_add_32(volatile int32_t *p, int32_t i)
 static OF_INLINE void*
 of_atomic_add_ptr(void* volatile *p, intptr_t i)
 {
-#if !defined(OF_THREADS)
+#if !defined(OF_HAVE_THREADS)
 	return (*(char* volatile*)p += i);
 #elif defined(OF_X86_ASM)
 	__asm__ (
@@ -134,7 +134,7 @@ of_atomic_add_ptr(void* volatile *p, intptr_t i)
 static OF_INLINE int
 of_atomic_sub_int(volatile int *p, int i)
 {
-#if !defined(OF_THREADS)
+#if !defined(OF_HAVE_THREADS)
 	return (*p -= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	if (sizeof(int) == 4)
@@ -180,7 +180,7 @@ of_atomic_sub_int(volatile int *p, int i)
 static OF_INLINE int32_t
 of_atomic_sub_32(volatile int32_t *p, int32_t i)
 {
-#if !defined(OF_THREADS)
+#if !defined(OF_HAVE_THREADS)
 	return (*p -= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	__asm__ (
@@ -205,7 +205,7 @@ of_atomic_sub_32(volatile int32_t *p, int32_t i)
 static OF_INLINE void*
 of_atomic_sub_ptr(void* volatile *p, intptr_t i)
 {
-#if !defined(OF_THREADS)
+#if !defined(OF_HAVE_THREADS)
 	return (*(char* volatile*)p -= i);
 #elif defined(OF_X86_ASM)
 	__asm__ (
@@ -248,7 +248,7 @@ of_atomic_sub_ptr(void* volatile *p, intptr_t i)
 static OF_INLINE int
 of_atomic_inc_int(volatile int *p)
 {
-#if !defined(OF_THREADS)
+#if !defined(OF_HAVE_THREADS)
 	return ++*p;
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	int i;
@@ -298,7 +298,7 @@ of_atomic_inc_int(volatile int *p)
 static OF_INLINE int32_t
 of_atomic_inc_32(volatile int32_t *p)
 {
-#if !defined(OF_THREADS)
+#if !defined(OF_HAVE_THREADS)
 	return ++*p;
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	uint32_t i;
@@ -326,7 +326,7 @@ of_atomic_inc_32(volatile int32_t *p)
 static OF_INLINE int
 of_atomic_dec_int(volatile int *p)
 {
-#if !defined(OF_THREADS)
+#if !defined(OF_HAVE_THREADS)
 	return --*p;
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	int i;
@@ -376,7 +376,7 @@ of_atomic_dec_int(volatile int *p)
 static OF_INLINE int32_t
 of_atomic_dec_32(volatile int32_t *p)
 {
-#if !defined(OF_THREADS)
+#if !defined(OF_HAVE_THREADS)
 	return --*p;
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	uint32_t i;
@@ -404,7 +404,7 @@ of_atomic_dec_32(volatile int32_t *p)
 static OF_INLINE unsigned int
 of_atomic_or_int(volatile unsigned int *p, unsigned int i)
 {
-#if !defined(OF_THREADS)
+#if !defined(OF_HAVE_THREADS)
 	return (*p |= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	if (sizeof(int) == 4)
@@ -458,7 +458,7 @@ of_atomic_or_int(volatile unsigned int *p, unsigned int i)
 static OF_INLINE uint32_t
 of_atomic_or_32(volatile uint32_t *p, uint32_t i)
 {
-#if !defined(OF_THREADS)
+#if !defined(OF_HAVE_THREADS)
 	return (*p |= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	__asm__ (
@@ -487,7 +487,7 @@ of_atomic_or_32(volatile uint32_t *p, uint32_t i)
 static OF_INLINE unsigned int
 of_atomic_and_int(volatile unsigned int *p, unsigned int i)
 {
-#if !defined(OF_THREADS)
+#if !defined(OF_HAVE_THREADS)
 	return (*p &= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	if (sizeof(int) == 4)
@@ -541,7 +541,7 @@ of_atomic_and_int(volatile unsigned int *p, unsigned int i)
 static OF_INLINE uint32_t
 of_atomic_and_32(volatile uint32_t *p, uint32_t i)
 {
-#if !defined(OF_THREADS)
+#if !defined(OF_HAVE_THREADS)
 	return (*p &= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	__asm__ (
@@ -570,7 +570,7 @@ of_atomic_and_32(volatile uint32_t *p, uint32_t i)
 static OF_INLINE unsigned int
 of_atomic_xor_int(volatile unsigned int *p, unsigned int i)
 {
-#if !defined(OF_THREADS)
+#if !defined(OF_HAVE_THREADS)
 	return (*p ^= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	if (sizeof(int) == 4)
@@ -624,7 +624,7 @@ of_atomic_xor_int(volatile unsigned int *p, unsigned int i)
 static OF_INLINE uint32_t
 of_atomic_xor_32(volatile uint32_t *p, uint32_t i)
 {
-#if !defined(OF_THREADS)
+#if !defined(OF_HAVE_THREADS)
 	return (*p ^= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	__asm__ (
@@ -653,7 +653,7 @@ of_atomic_xor_32(volatile uint32_t *p, uint32_t i)
 static OF_INLINE BOOL
 of_atomic_cmpswap_int(volatile int *p, int o, int n)
 {
-#if !defined(OF_THREADS)
+#if !defined(OF_HAVE_THREADS)
 	if (*p == o) {
 		*p = n;
 		return YES;
@@ -687,7 +687,7 @@ of_atomic_cmpswap_int(volatile int *p, int o, int n)
 static OF_INLINE BOOL
 of_atomic_cmpswap_32(volatile int32_t *p, int32_t o, int32_t n)
 {
-#if !defined(OF_THREADS)
+#if !defined(OF_HAVE_THREADS)
 	if (*p == o) {
 		*p = n;
 		return YES;
@@ -721,7 +721,7 @@ of_atomic_cmpswap_32(volatile int32_t *p, int32_t o, int32_t n)
 static OF_INLINE BOOL
 of_atomic_cmpswap_ptr(void* volatile *p, void *o, void *n)
 {
-#if !defined(OF_THREADS)
+#if !defined(OF_HAVE_THREADS)
 	if (*p == o) {
 		*p = n;
 		return YES;

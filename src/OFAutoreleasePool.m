@@ -22,7 +22,7 @@
 #import "OFArray.h"
 
 #import "macros.h"
-#if !defined(OF_COMPILER_TLS) && defined(OF_THREADS)
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 # import "threading.h"
 
 # import "OFInitializationFailedException.h"
@@ -32,16 +32,16 @@
 
 #define MAX_CACHE_SIZE 0x20
 
-#if defined(OF_COMPILER_TLS)
+#if defined(OF_HAVE_COMPILER_TLS)
 static __thread OFAutoreleasePool **cache = NULL;
-#elif defined(OF_THREADS)
+#elif defined(OF_HAVE_THREADS)
 static of_tlskey_t cacheKey;
 #else
 static OFAutoreleasePool **cache = NULL;
 #endif
 
 @implementation OFAutoreleasePool
-#if !defined(OF_COMPILER_TLS) && defined(OF_THREADS)
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 + (void)initialize
 {
 	if (self != [OFAutoreleasePool class])
@@ -55,7 +55,7 @@ static OFAutoreleasePool **cache = NULL;
 
 + alloc
 {
-#if !defined(OF_COMPILER_TLS) && defined(OF_THREADS)
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	OFAutoreleasePool **cache = of_tlskey_get(cacheKey);
 #endif
 
@@ -119,7 +119,7 @@ static OFAutoreleasePool **cache = NULL;
 
 - (void)dealloc
 {
-#if !defined(OF_COMPILER_TLS) && defined(OF_THREADS)
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	OFAutoreleasePool **cache = of_tlskey_get(cacheKey);
 #endif
 
@@ -133,7 +133,7 @@ static OFAutoreleasePool **cache = NULL;
 	if (cache == NULL) {
 		cache = calloc(sizeof(OFAutoreleasePool*), MAX_CACHE_SIZE);
 
-#if !defined(OF_COMPILER_TLS) && defined(OF_THREADS)
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 		if (!of_tlskey_set(cacheKey, cache)) {
 			free(cache);
 			cache = NULL;

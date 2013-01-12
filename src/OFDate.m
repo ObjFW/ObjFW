@@ -29,7 +29,7 @@
 #import "OFString.h"
 #import "OFDictionary.h"
 #import "OFXMLElement.h"
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 # import "OFMutex.h"
 #endif
 #import "OFSystemInfo.h"
@@ -44,7 +44,7 @@
 #import "of_strptime.h"
 
 #if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
-    defined(OF_THREADS)
+    defined(OF_HAVE_THREADS)
 static OFMutex *mutex;
 #endif
 
@@ -76,7 +76,7 @@ static OFMutex *mutex;
 									\
 	return tm.field;
 #else
-# ifdef OF_THREADS
+# ifdef OF_HAVE_THREADS
 #  define GMTIME_RET(field)						\
 	time_t seconds_ = (time_t)seconds;				\
 	struct tm *tm;							\
@@ -162,7 +162,7 @@ static int month_to_day_of_year[12] = {
 
 @implementation OFDate
 #if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
-    defined(OF_THREADS)
+    defined(OF_HAVE_THREADS)
 + (void)initialize
 {
 	if (self == [OFDate class])
@@ -525,7 +525,7 @@ static int month_to_day_of_year[12] = {
 	if (gmtime_r(&seconds_, &tm) == NULL)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 #else
-# ifdef OF_THREADS
+# ifdef OF_HAVE_THREADS
 	[mutex lock];
 
 	@try {
@@ -537,7 +537,7 @@ static int month_to_day_of_year[12] = {
 			    exceptionWithClass: [self class]];
 
 		tm = *tmp;
-# ifdef OF_THREADS
+# ifdef OF_HAVE_THREADS
 	} @finally {
 		[mutex unlock];
 	}
@@ -575,7 +575,7 @@ static int month_to_day_of_year[12] = {
 	if (localtime_r(&seconds_, &tm) == NULL)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 #else
-# ifdef OF_THREADS
+# ifdef OF_HAVE_THREADS
 	[mutex lock];
 
 	@try {
@@ -587,7 +587,7 @@ static int month_to_day_of_year[12] = {
 			    exceptionWithClass: [self class]];
 
 		tm = *tmp;
-# ifdef OF_THREADS
+# ifdef OF_HAVE_THREADS
 	} @finally {
 		[mutex unlock];
 	}

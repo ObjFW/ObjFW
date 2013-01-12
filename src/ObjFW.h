@@ -87,7 +87,7 @@
 #import "OFChangeDirectoryFailedException.h"
 #import "OFChangeFileModeFailedException.h"
 #import "OFChangeFileOwnerFailedException.h"
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 # import "OFConditionBroadcastFailedException.h"
 # import "OFConditionSignalFailedException.h"
 # import "OFConditionStillWaitingException.h"
@@ -124,7 +124,7 @@
 #import "OFSetOptionFailedException.h"
 #import "OFStillLockedException.h"
 #import "OFSymlinkFailedException.h"
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 # import "OFThreadJoinFailedException.h"
 # import "OFThreadStartFailedException.h"
 # import "OFThreadStillRunningException.h"
@@ -137,16 +137,16 @@
 
 #import "macros.h"
 
-#ifdef OF_PLUGINS
+#ifdef OF_HAVE_PLUGINS
 # import "OFPlugin.h"
 #endif
 
-#ifdef OF_ATOMIC_OPS
+#ifdef OF_HAVE_ATOMIC_OPS
 # import "atomic.h"
 #endif
 
 #import "OFLocking.h"
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 # import "threading.h"
 # import "OFThread.h"
 # import "OFThreadPool.h"

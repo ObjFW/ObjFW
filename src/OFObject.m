@@ -26,7 +26,7 @@
 
 #import "OFObject.h"
 #import "OFTimer.h"
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 # import "OFThread.h"
 #endif
 #import "OFRunLoop.h"
@@ -57,9 +57,9 @@
 #import "OFString.h"
 
 #import "instance.h"
-#if defined(OF_ATOMIC_OPS)
+#if defined(OF_HAVE_ATOMIC_OPS)
 # import "atomic.h"
-#elif defined(OF_THREADS)
+#elif defined(OF_HAVE_THREADS)
 # import "threading.h"
 #endif
 
@@ -71,7 +71,7 @@ extern struct stret of_forward_stret(id, SEL, ...);
 struct pre_ivar {
 	int32_t retainCount;
 	struct pre_mem *firstMem, *lastMem;
-#if !defined(OF_ATOMIC_OPS) && defined(OF_THREADS)
+#if !defined(OF_HAVE_ATOMIC_OPS) && defined(OF_HAVE_THREADS)
 	of_spinlock_t retainCountSpinlock;
 #endif
 };
@@ -199,7 +199,7 @@ of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
 	((struct pre_ivar*)instance)->firstMem = NULL;
 	((struct pre_ivar*)instance)->lastMem = NULL;
 
-#if !defined(OF_ATOMIC_OPS) && defined(OF_THREADS)
+#if !defined(OF_HAVE_ATOMIC_OPS) && defined(OF_HAVE_THREADS)
 	if OF_UNLIKELY (!of_spinlock_new(
 	    &((struct pre_ivar*)instance)->retainCountSpinlock)) {
 		free(instance);
@@ -254,9 +254,9 @@ void _references_to_categories_of_OFObject(void)
 	objc_setEnumerationMutationHandler(enumeration_mutation_handler);
 #endif
 
-#if defined(OF_HAVE_ARC4RANDOM)
+#if defined(HAVE_ARC4RANDOM)
 	of_hash_seed = arc4random();
-#elif defined(OF_HAVE_RANDOM)
+#elif defined(HAVE_RANDOM)
 	struct timeval t;
 	gettimeofday(&t, NULL);
 	srandom((unsigned)(t.tv_sec ^ t.tv_usec));
@@ -625,7 +625,7 @@ void _references_to_categories_of_OFObject(void)
 	objc_autoreleasePoolPop(pool);
 }
 
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread*)thread
 	  waitUntilDone: (BOOL)waitUntilDone
@@ -971,14 +971,12 @@ void _references_to_categories_of_OFObject(void)
 
 - retain
 {
-#if defined(OF_ATOMIC_OPS)
+#if defined(OF_HAVE_ATOMIC_OPS)
 	of_atomic_inc_32(&PRE_IVARS->retainCount);
-#elif defined(OF_THREADS)
+#else
 	OF_ENSURE(of_spinlock_lock(&PRE_IVARS->retainCountSpinlock));
 	PRE_IVARS->retainCount++;
 	OF_ENSURE(of_spinlock_unlock(&PRE_IVARS->retainCountSpinlock));
-#else
-	PRE_IVARS->retainCount++;
 #endif
 
 	return self;
@@ -992,10 +990,10 @@ void _references_to_categories_of_OFObject(void)
 
 - (void)release
 {
-#if defined(OF_ATOMIC_OPS)
+#if defined(OF_HAVE_ATOMIC_OPS)
 	if (of_atomic_dec_32(&PRE_IVARS->retainCount) <= 0)
 		[self dealloc];
-#elif defined(OF_THREADS)
+#else
 	size_t c;
 
 	OF_ENSURE(of_spinlock_lock(&PRE_IVARS->retainCountSpinlock));
@@ -1003,9 +1001,6 @@ void _references_to_categories_of_OFObject(void)
 	OF_ENSURE(of_spinlock_unlock(&PRE_IVARS->retainCountSpinlock));
 
 	if (c == 0)
-		[self dealloc];
-#else
-	if (--PRE_IVARS->retainCount == 0)
 		[self dealloc];
 #endif
 }

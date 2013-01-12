@@ -20,7 +20,7 @@
 
 #import "OFRunLoop.h"
 #import "OFDictionary.h"
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 # import "OFThread.h"
 # import "OFMutex.h"
 #endif
@@ -138,7 +138,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 + (OFRunLoop*)currentRunLoop
 {
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 	return [[OFThread currentThread] runLoop];
 #else
 	return [self mainRunLoop];
@@ -289,7 +289,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 	@try {
 		timersQueue = [[OFSortedList alloc] init];
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 		timersQueueLock = [[OFMutex alloc] init];
 #endif
 
@@ -308,7 +308,7 @@ static OFRunLoop *mainRunLoop = nil;
 - (void)dealloc
 {
 	[timersQueue release];
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 	[timersQueueLock release];
 #endif
 	[streamObserver release];
@@ -319,12 +319,12 @@ static OFRunLoop *mainRunLoop = nil;
 
 - (void)addTimer: (OFTimer*)timer
 {
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 	[timersQueueLock lock];
 	@try {
 #endif
 		[timersQueue insertObject: timer];
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 	} @finally {
 		[timersQueueLock unlock];
 	}
@@ -337,7 +337,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 - (void)OF_removeTimer: (OFTimer*)timer
 {
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 	[timersQueueLock lock];
 	@try {
 #endif
@@ -350,7 +350,7 @@ static OFRunLoop *mainRunLoop = nil;
 				break;
 			}
 		}
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 	} @finally {
 		[timersQueueLock unlock];
 	}
@@ -591,7 +591,7 @@ static OFRunLoop *mainRunLoop = nil;
 		OFTimer *timer;
 		OFDate *nextTimer;
 
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 		[timersQueueLock lock];
 		@try {
 #endif
@@ -609,7 +609,7 @@ static OFRunLoop *mainRunLoop = nil;
 				[timer OF_setInRunLoop: nil];
 			} else
 				timer = nil;
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 		} @finally {
 			[timersQueueLock unlock];
 		}
@@ -618,12 +618,12 @@ static OFRunLoop *mainRunLoop = nil;
 		if ([timer isValid])
 			[timer fire];
 
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 		[timersQueueLock lock];
 		@try {
 #endif
 			nextTimer = [[timersQueue firstObject] fireDate];
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 		} @finally {
 			[timersQueueLock unlock];
 		}

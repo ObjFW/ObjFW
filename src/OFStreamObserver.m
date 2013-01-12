@@ -32,7 +32,7 @@
 #ifdef _WIN32
 # import "OFTCPSocket.h"
 #endif
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 # import "OFMutex.h"
 #endif
 
@@ -148,7 +148,7 @@ enum {
 						 count: maxFD + 1];
 		FDToStream[cancelFD[0]] = nil;
 
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 		mutex = [[OFMutex alloc] init];
 #endif
 	} @catch (id e) {
@@ -169,7 +169,7 @@ enum {
 	[queue release];
 	[queueInfo release];
 	[queueFDs release];
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 	[mutex release];
 #endif
 
@@ -188,63 +188,63 @@ enum {
 
 - (void)addStreamForReading: (OFStream*)stream
 {
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 	[mutex lock];
-	@try {
 #endif
+	@try {
 		int qi = QUEUE_ADD | QUEUE_READ;
 		int fd = [stream fileDescriptorForReading];
 
 		[queue addObject: stream];
 		[queueInfo addItem: &qi];
 		[queueFDs addItem: &fd];
-#ifdef OF_THREADS
 	} @finally {
+#ifdef OF_HAVE_THREADS
 		[mutex unlock];
-	}
 #endif
+	}
 
 	[self cancel];
 }
 
 - (void)addStreamForWriting: (OFStream*)stream
 {
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 	[mutex lock];
-	@try {
 #endif
+	@try {
 		int qi = QUEUE_ADD | QUEUE_WRITE;
 		int fd = [stream fileDescriptorForWriting];
 
 		[queue addObject: stream];
 		[queueInfo addItem: &qi];
 		[queueFDs addItem: &fd];
-#ifdef OF_THREADS
 	} @finally {
+#ifdef OF_HAVE_THREADS
 		[mutex unlock];
-	}
 #endif
+	}
 
 	[self cancel];
 }
 
 - (void)removeStreamForReading: (OFStream*)stream
 {
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 	[mutex lock];
-	@try {
 #endif
+	@try {
 		int qi = QUEUE_REMOVE | QUEUE_READ;
 		int fd = [stream fileDescriptorForReading];
 
 		[queue addObject: stream];
 		[queueInfo addItem: &qi];
 		[queueFDs addItem: &fd];
-#ifdef OF_THREADS
 	} @finally {
+#ifdef OF_HAVE_THREADS
 		[mutex unlock];
-	}
 #endif
+	}
 
 #ifndef _WIN32
 	OF_ENSURE(write(cancelFD[1], "", 1) > 0);
@@ -256,21 +256,21 @@ enum {
 
 - (void)removeStreamForWriting: (OFStream*)stream
 {
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 	[mutex lock];
-	@try {
 #endif
+	@try {
 		int qi = QUEUE_REMOVE | QUEUE_WRITE;
 		int fd = [stream fileDescriptorForWriting];
 
 		[queue addObject: stream];
 		[queueInfo addItem: &qi];
 		[queueFDs addItem: &fd];
-#ifdef OF_THREADS
 	} @finally {
+#ifdef OF_HAVE_THREADS
 		[mutex unlock];
-	}
 #endif
+	}
 
 #ifndef _WIN32
 	OF_ENSURE(write(cancelFD[1], "", 1) > 0);
@@ -306,10 +306,10 @@ enum {
 
 - (void)OF_processQueue
 {
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 	[mutex lock];
-	@try {
 #endif
+	@try {
 		OFStream **queueObjects = [queue objects];
 		int *queueInfoItems = [queueInfo items];
 		int *queueFDsItems = [queueFDs items];
@@ -370,11 +370,11 @@ enum {
 		[queue removeAllObjects];
 		[queueInfo removeAllItems];
 		[queueFDs removeAllItems];
-#ifdef OF_THREADS
 	} @finally {
+#ifdef OF_HAVE_THREADS
 		[mutex unlock];
-	}
 #endif
+	}
 }
 
 - (void)observe

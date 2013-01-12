@@ -130,7 +130,7 @@ typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*,
 - (void)connectToHost: (OFString*)host
 		 port: (uint16_t)port;
 
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 /*!
  * @brief Asyncronously connect the OFTCPSocket to the specified destination.
  *

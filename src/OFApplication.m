@@ -26,7 +26,7 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 # import "OFThread.h"
 #endif
 #import "OFRunLoop.h"
@@ -380,7 +380,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 	void *pool = objc_autoreleasePoolPush();
 	OFRunLoop *runLoop;
 
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 	[OFThread OF_createMainThread];
 	runLoop = [OFRunLoop currentRunLoop];
 #else

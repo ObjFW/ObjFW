@@ -43,7 +43,7 @@
 #import "OFFile.h"
 #import "OFString.h"
 #import "OFArray.h"
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 # import "threading.h"
 #endif
 #import "OFDate.h"
@@ -101,7 +101,7 @@ OFStream *of_stdin = nil;
 OFStream *of_stdout = nil;
 OFStream *of_stderr = nil;
 
-#if defined(OF_THREADS) && !defined(_WIN32)
+#if defined(OF_HAVE_THREADS) && !defined(_WIN32)
 static of_mutex_t mutex;
 #endif
 
@@ -162,7 +162,7 @@ of_log(OFConstantString *format, ...)
 @end
 
 @implementation OFFile
-#if defined(OF_THREADS) && !defined(_WIN32)
+#if defined(OF_HAVE_THREADS) && !defined(_WIN32)
 + (void)initialize
 {
 	if (self != [OFFile class])
@@ -475,7 +475,7 @@ of_log(OFConstantString *format, ...)
 		@throw [OFInvalidArgumentException exceptionWithClass: self
 							     selector: _cmd];
 
-# ifdef OF_THREADS
+# ifdef OF_HAVE_THREADS
 	if (!of_mutex_lock(&mutex))
 		@throw [OFLockFailedException exceptionWithClass: self];
 
@@ -508,7 +508,7 @@ of_log(OFConstantString *format, ...)
 
 			gid = group_->gr_gid;
 		}
-# ifdef OF_THREADS
+# ifdef OF_HAVE_THREADS
 	} @finally {
 		if (!of_mutex_unlock(&mutex))
 			@throw [OFUnlockFailedException

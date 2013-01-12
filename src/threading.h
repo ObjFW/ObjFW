@@ -16,7 +16,8 @@
 
 #import "objfw-defs.h"
 
-#if !defined(OF_THREADS) || (!defined(OF_HAVE_PTHREADS) && !defined(_WIN32))
+#if !defined(OF_HAVE_THREADS) || \
+    (!defined(OF_HAVE_PTHREADS) && !defined(_WIN32))
 # error No threads available!
 #endif
 
@@ -39,7 +40,7 @@ typedef struct {
 } of_condition_t;
 #endif
 
-#if defined(OF_ATOMIC_OPS)
+#if defined(OF_HAVE_ATOMIC_OPS)
 # import "atomic.h"
 typedef volatile int of_spinlock_t;
 # define OF_SPINCOUNT 10
@@ -297,7 +298,7 @@ of_tlskey_free(of_tlskey_t key)
 static OF_INLINE BOOL
 of_spinlock_new(of_spinlock_t *spinlock)
 {
-#if defined(OF_ATOMIC_OPS)
+#if defined(OF_HAVE_ATOMIC_OPS)
 	*spinlock = 0;
 	return YES;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
@@ -310,7 +311,7 @@ of_spinlock_new(of_spinlock_t *spinlock)
 static OF_INLINE BOOL
 of_spinlock_trylock(of_spinlock_t *spinlock)
 {
-#if defined(OF_ATOMIC_OPS)
+#if defined(OF_HAVE_ATOMIC_OPS)
 	return of_atomic_cmpswap_int(spinlock, 0, 1);
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return !pthread_spin_trylock(spinlock);
@@ -322,7 +323,7 @@ of_spinlock_trylock(of_spinlock_t *spinlock)
 static OF_INLINE BOOL
 of_spinlock_lock(of_spinlock_t *spinlock)
 {
-#if defined(OF_ATOMIC_OPS)
+#if defined(OF_HAVE_ATOMIC_OPS)
 # if defined(OF_HAVE_SCHED_YIELD) || defined(_WIN32)
 	int i;
 
@@ -351,7 +352,7 @@ of_spinlock_lock(of_spinlock_t *spinlock)
 static OF_INLINE BOOL
 of_spinlock_unlock(of_spinlock_t *spinlock)
 {
-#if defined(OF_ATOMIC_OPS)
+#if defined(OF_HAVE_ATOMIC_OPS)
 	*spinlock = 0;
 	return YES;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
@@ -364,7 +365,7 @@ of_spinlock_unlock(of_spinlock_t *spinlock)
 static OF_INLINE BOOL
 of_spinlock_free(of_spinlock_t *spinlock)
 {
-#if defined(OF_ATOMIC_OPS)
+#if defined(OF_HAVE_ATOMIC_OPS)
 	return YES;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return !pthread_spin_destroy(spinlock);

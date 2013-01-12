@@ -22,7 +22,7 @@
 #import "runtime.h"
 #import "runtime-private.h"
 
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 # import "threading.h"
 
 struct lock_s {
@@ -45,7 +45,7 @@ init(void)
 int
 objc_sync_enter(id object)
 {
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 	struct lock_s *lock;
 
 	if (!of_mutex_lock(&mutex))
@@ -93,7 +93,7 @@ objc_sync_enter(id object)
 int
 objc_sync_exit(id object)
 {
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 	struct lock_s *lock, *last = NULL;
 
 	if (!of_mutex_lock(&mutex))

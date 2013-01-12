@@ -136,11 +136,11 @@ main(int argc, char *argv[])
 	[self numberTests];
 	[self streamTests];
 	[self TCPSocketTests];
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 	[self threadTests];
 #endif
 	[self URLTests];
-#ifdef OF_THREADS
+#ifdef OF_HAVE_THREADS
 	[self HTTPClientTests];
 #endif
 	[self XMLParserTests];
@@ -148,7 +148,7 @@ main(int argc, char *argv[])
 	[self XMLElementBuilderTests];
 	[self serializationTests];
 	[self JSONTests];
-#ifdef OF_PLUGINS
+#ifdef OF_HAVE_PLUGINS
 	[self pluginTests];
 #endif
 	[self forwardingTests];
