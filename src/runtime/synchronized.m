@@ -21,7 +21,9 @@
 
 #import "runtime.h"
 #import "runtime-private.h"
-#import "threading.h"
+
+#ifdef OF_THREADS
+# import "threading.h"
 
 struct lock_s {
 	id	      object;
@@ -38,10 +40,12 @@ init(void)
 	if (!of_mutex_new(&mutex))
 		OBJC_ERROR("Failed to create mutex!")
 }
+#endif
 
 int
 objc_sync_enter(id object)
 {
+#ifdef OF_THREADS
 	struct lock_s *lock;
 
 	if (!of_mutex_lock(&mutex))
@@ -81,6 +85,7 @@ objc_sync_enter(id object)
 
 	if (!of_rmutex_lock(&lock->rmutex))
 		OBJC_ERROR("Failed to lock mutex!");
+#endif
 
 	return 0;
 }
@@ -88,6 +93,7 @@ objc_sync_enter(id object)
 int
 objc_sync_exit(id object)
 {
+#ifdef OF_THREADS
 	struct lock_s *lock, *last = NULL;
 
 	if (!of_mutex_lock(&mutex))
@@ -121,4 +127,7 @@ objc_sync_exit(id object)
 	}
 
 	OBJC_ERROR("objc_sync_exit() was called for an object not locked!");
+#else
+	return 0;
+#endif
 }

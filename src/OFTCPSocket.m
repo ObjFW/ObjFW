@@ -35,7 +35,9 @@
 #import "OFTCPSocket.h"
 #import "OFTCPSocket+SOCKS5.h"
 #import "OFString.h"
-#import "OFThread.h"
+#ifdef OF_THREADS
+# import "OFThread.h"
+#endif
 #import "OFTimer.h"
 #import "OFRunLoop.h"
 
@@ -79,6 +81,7 @@ Class of_tls_socket_class = Nil;
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
 
+#ifdef OF_THREADS
 @interface OFTCPSocket_ConnectThread: OFThread
 {
 	OFThread *sourceThread;
@@ -87,9 +90,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 	uint16_t port;
 	id target;
 	SEL selector;
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 	of_tcpsocket_async_connect_block_t connectBlock;
-#endif
+# endif
 	OFException *exception;
 }
 
@@ -99,13 +102,13 @@ static uint16_t defaultSOCKS5Port = 1080;
 		  port: (uint16_t)port
 		target: (id)target
 	      selector: (SEL)selector;
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 - initWithSourceThread: (OFThread*)sourceThread
 		socket: (OFTCPSocket*)socket
 		  host: (OFString*)host
 		  port: (uint16_t)port
 		 block: (of_tcpsocket_async_connect_block_t)block;
-#endif
+# endif
 @end
 
 @implementation OFTCPSocket_ConnectThread
@@ -133,7 +136,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	return self;
 }
 
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 - initWithSourceThread: (OFThread*)sourceThread_
 		socket: (OFTCPSocket*)sock_
 		  host: (OFString*)host_
@@ -155,7 +158,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	return self;
 }
-#endif
+# endif
 
 - (void)dealloc
 {
@@ -163,9 +166,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 	[sock release];
 	[host release];
 	[target release];
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 	[connectBlock release];
-#endif
+# endif
 	[exception release];
 
 	[super dealloc];
@@ -175,19 +178,19 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	[self join];
 
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 	if (connectBlock != NULL)
 		connectBlock(sock, exception);
 	else {
-#endif
+# endif
 		void (*func)(id, SEL, OFTCPSocket*, OFException*) =
 		    (void(*)(id, SEL, OFTCPSocket*, OFException*))[target
 		    methodForSelector: selector];
 
 		func(target, selector, sock, exception);
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 	}
-#endif
+# endif
 }
 
 - (id)main
@@ -210,6 +213,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	return nil;
 }
 @end
+#endif
 
 @implementation OFTCPSocket
 #if defined(OF_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
@@ -425,6 +429,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 					port: destinationPort];
 }
 
+#ifdef OF_THREADS
 - (void)asyncConnectToHost: (OFString*)host
 		      port: (uint16_t)port
 		    target: (id)target
@@ -443,7 +448,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	objc_autoreleasePoolPop(pool);
 }
 
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 - (void)asyncConnectToHost: (OFString*)host
 		      port: (uint16_t)port
 		     block: (of_tcpsocket_async_connect_block_t)block
@@ -459,6 +464,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	objc_autoreleasePoolPop(pool);
 }
+# endif
 #endif
 
 - (uint16_t)bindToHost: (OFString*)host

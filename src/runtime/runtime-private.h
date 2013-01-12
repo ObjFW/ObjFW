@@ -14,7 +14,7 @@
  * file.
  */
 
-#import "threading.h"
+#include "config.h"
 
 struct objc_abi_class {
 	struct objc_abi_class *metaclass;
@@ -123,12 +123,6 @@ struct objc_sparsearray_level2 {
 };
 #endif
 
-typedef struct {
-	of_mutex_t mutex;
-	of_thread_t owner;
-	int count;
-} objc_mutex_t;
-
 extern void objc_register_all_categories(struct objc_abi_symtab*);
 extern struct objc_category** objc_categories_for_class(Class);
 extern void objc_free_all_categories(void);
@@ -155,9 +149,15 @@ extern void objc_sparsearray_free(struct objc_sparsearray*);
 extern void objc_sparsearray_cleanup(void);
 extern void objc_init_static_instances(struct objc_abi_symtab*);
 extern void __objc_exec_class(struct objc_abi_module*);
+#ifdef OF_THREADS
 extern void objc_global_mutex_lock(void);
 extern void objc_global_mutex_unlock(void);
 extern void objc_global_mutex_free(void);
+#else
+# define objc_global_mutex_lock()
+# define objc_global_mutex_unlock()
+# define objc_global_mutex_free()
+#endif
 
 static inline void*
 objc_sparsearray_get(const struct objc_sparsearray *s, uint32_t idx)

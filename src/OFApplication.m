@@ -26,10 +26,13 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
-#import "OFThread.h"
+#ifdef OF_THREADS
+# import "OFThread.h"
+#endif
 #import "OFRunLoop.h"
 
 #import "autorelease.h"
+#import "macros.h"
 
 #if defined(__MACH__) && !defined(OF_IOS)
 # include <crt_externs.h>
@@ -377,9 +380,14 @@ of_application_main(int *argc, char **argv[], Class cls)
 	void *pool = objc_autoreleasePoolPush();
 	OFRunLoop *runLoop;
 
+#ifdef OF_THREADS
 	[OFThread OF_createMainThread];
 	runLoop = [OFRunLoop currentRunLoop];
-	[OFRunLoop OF_setMainRunLoop];
+#else
+	runLoop = [[[OFRunLoop alloc] init] autorelease];
+#endif
+
+	[OFRunLoop OF_setMainRunLoop: runLoop];
 
 	objc_autoreleasePoolPop(pool);
 

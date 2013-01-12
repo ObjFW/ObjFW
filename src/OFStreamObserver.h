@@ -28,7 +28,9 @@
 @class OFMutableArray;
 @class OFMutableDictionary;
 @class OFDataArray;
+#ifdef OF_THREADS
 @class OFMutex;
+#endif
 
 /*!
  * @brief A protocol that needs to be implemented by delegates for
@@ -86,7 +88,9 @@
 #ifdef _WIN32
 	struct sockaddr_in cancelAddr;
 #endif
+#ifdef OF_THREADS
 	OFMutex *mutex;
+#endif
 }
 
 #ifdef OF_HAVE_PROPERTIES

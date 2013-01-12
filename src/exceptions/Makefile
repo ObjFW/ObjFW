@@ -11,10 +11,6 @@ SRCS = OFAcceptFailedException.m		\
        OFChangeDirectoryFailedException.m	\
        OFChangeFileModeFailedException.m	\
        OFChangeFileOwnerFailedException.m	\
-       OFConditionBroadcastFailedException.m	\
-       OFConditionSignalFailedException.m	\
-       OFConditionStillWaitingException.m	\
-       OFConditionWaitFailedException.m		\
        OFConnectionFailedException.m		\
        OFCopyFileFailedException.m		\
        OFCreateDirectoryFailedException.m	\
@@ -47,15 +43,20 @@ SRCS = OFAcceptFailedException.m		\
        OFSetOptionFailedException.m		\
        OFStillLockedException.m			\
        OFSymlinkFailedException.m		\
-       OFThreadJoinFailedException.m		\
-       OFThreadStartFailedException.m		\
-       OFThreadStillRunningException.m		\
        OFTruncatedDataException.m		\
        OFUnboundNamespaceException.m		\
        OFUnlockFailedException.m		\
        OFUnsupportedProtocolException.m		\
        OFUnsupportedVersionException.m		\
-       OFWriteFailedException.m
+       OFWriteFailedException.m			\
+       ${USE_SRCS_THREADS}
+SRCS_THREADS = OFConditionBroadcastFailedException.m	\
+	       OFConditionSignalFailedException.m	\
+	       OFConditionStillWaitingException.m	\
+	       OFConditionWaitFailedException.m		\
+	       OFThreadJoinFailedException.m		\
+	       OFThreadStartFailedException.m		\
+	       OFThreadStillRunningException.m
 
 INCLUDES = ${SRCS:.m=.h}
 

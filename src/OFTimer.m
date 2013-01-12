@@ -23,7 +23,9 @@
 #import "OFTimer.h"
 #import "OFDate.h"
 #import "OFRunLoop.h"
-#import "OFCondition.h"
+#ifdef OF_THREADS
+# import "OFCondition.h"
+#endif
 
 #import "OFInvalidArgumentException.h"
 
@@ -235,7 +237,9 @@
 		arguments = arguments_;
 		repeats = repeats_;
 		isValid = YES;
+#ifdef OF_THREADS
 		condition = [[OFCondition alloc] init];
+#endif
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -309,7 +313,9 @@
 		repeats = repeats_;
 		block = [block_ copy];
 		isValid = YES;
+# ifdef OF_THREADS
 		condition = [[OFCondition alloc] init];
+# endif
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -334,7 +340,9 @@
 #ifdef OF_HAVE_BLOCKS
 	[block release];
 #endif
+#ifdef OF_THREADS
 	[condition release];
+#endif
 
 	[super dealloc];
 }
@@ -380,6 +388,7 @@
 	}
 #endif
 
+#ifdef OF_THREADS
 	[condition lock];
 	@try {
 		done = YES;
@@ -387,6 +396,7 @@
 	} @finally {
 		[condition unlock];
 	}
+#endif
 
 	if (repeats && isValid) {
 		OFDate *old = fireDate;
@@ -438,6 +448,7 @@
 	return isValid;
 }
 
+#ifdef OF_THREADS
 - (void)waitUntilDone
 {
 	[condition lock];
@@ -452,6 +463,7 @@
 		[condition unlock];
 	}
 }
+#endif
 
 - (void)OF_setInRunLoop: (OFRunLoop*)inRunLoop_
 {

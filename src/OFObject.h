@@ -684,6 +684,7 @@ typedef struct of_rectangle_t
 	     withObject: (id)object2
 	     afterDelay: (double)delay;
 
+#ifdef OF_THREADS
 /*!
  * @brief Performs the specified selector on the specified thread.
  *
@@ -810,6 +811,7 @@ typedef struct of_rectangle_t
 	     withObject: (id)object1
 	     withObject: (id)object2
 	     afterDelay: (double)delay;
+#endif
 
 /*!
  * @brief This method is called when @ref resolveClassMethod: or

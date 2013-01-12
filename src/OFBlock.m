@@ -21,6 +21,7 @@
 #include <string.h>
 
 #if defined(OF_OBJFW_RUNTIME)
+# import "runtime.h"
 # import "runtime-private.h"
 #elif defined(OF_APPLE_RUNTIME)
 # import <objc/runtime.h>

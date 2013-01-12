@@ -17,7 +17,8 @@ SRCS = arc.m			\
        sparsearray.m		\
        static-instances.m	\
        synchronized.m		\
-       threading.m
+       ${USE_SRCS_THREADS}
+SRCS_THREADS = threading.m
 INCLUDES = runtime.h
 
 include ../../buildsys.mk

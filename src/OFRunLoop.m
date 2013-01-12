@@ -20,9 +20,11 @@
 
 #import "OFRunLoop.h"
 #import "OFDictionary.h"
-#import "OFThread.h"
+#ifdef OF_THREADS
+# import "OFThread.h"
+# import "OFMutex.h"
+#endif
 #import "OFSortedList.h"
-#import "OFMutex.h"
 #import "OFTimer.h"
 #import "OFDate.h"
 
@@ -136,14 +138,16 @@ static OFRunLoop *mainRunLoop = nil;
 
 + (OFRunLoop*)currentRunLoop
 {
+#ifdef OF_THREADS
 	return [[OFThread currentThread] runLoop];
+#else
+	return [self mainRunLoop];
+#endif
 }
 
-+ (void)OF_setMainRunLoop
++ (void)OF_setMainRunLoop: (OFRunLoop*)runLoop
 {
-	void *pool = objc_autoreleasePoolPush();
-	mainRunLoop = [[self currentRunLoop] retain];
-	objc_autoreleasePoolPop(pool);
+	mainRunLoop = [runLoop retain];
 }
 
 #define ADD(type, code)							\
@@ -285,7 +289,9 @@ static OFRunLoop *mainRunLoop = nil;
 
 	@try {
 		timersQueue = [[OFSortedList alloc] init];
+#ifdef OF_THREADS
 		timersQueueLock = [[OFMutex alloc] init];
+#endif
 
 		streamObserver = [[OFStreamObserver alloc] init];
 		[streamObserver setDelegate: self];
@@ -302,7 +308,9 @@ static OFRunLoop *mainRunLoop = nil;
 - (void)dealloc
 {
 	[timersQueue release];
+#ifdef OF_THREADS
 	[timersQueueLock release];
+#endif
 	[streamObserver release];
 	[readQueues release];
 
@@ -311,12 +319,16 @@ static OFRunLoop *mainRunLoop = nil;
 
 - (void)addTimer: (OFTimer*)timer
 {
+#ifdef OF_THREADS
 	[timersQueueLock lock];
 	@try {
+#endif
 		[timersQueue insertObject: timer];
+#ifdef OF_THREADS
 	} @finally {
 		[timersQueueLock unlock];
 	}
+#endif
 
 	[timer OF_setInRunLoop: self];
 
@@ -325,8 +337,10 @@ static OFRunLoop *mainRunLoop = nil;
 
 - (void)OF_removeTimer: (OFTimer*)timer
 {
+#ifdef OF_THREADS
 	[timersQueueLock lock];
 	@try {
+#endif
 		of_list_object_t *iter;
 
 		for (iter = [timersQueue firstListObject]; iter != NULL;
@@ -336,9 +350,11 @@ static OFRunLoop *mainRunLoop = nil;
 				break;
 			}
 		}
+#ifdef OF_THREADS
 	} @finally {
 		[timersQueueLock unlock];
 	}
+#endif
 }
 
 - (void)streamIsReadyForReading: (OFStream*)stream
@@ -575,8 +591,10 @@ static OFRunLoop *mainRunLoop = nil;
 		OFTimer *timer;
 		OFDate *nextTimer;
 
+#ifdef OF_THREADS
 		[timersQueueLock lock];
 		@try {
+#endif
 			of_list_object_t *listObject =
 			    [timersQueue firstListObject];
 
@@ -591,19 +609,25 @@ static OFRunLoop *mainRunLoop = nil;
 				[timer OF_setInRunLoop: nil];
 			} else
 				timer = nil;
+#ifdef OF_THREADS
 		} @finally {
 			[timersQueueLock unlock];
 		}
+#endif
 
 		if ([timer isValid])
 			[timer fire];
 
+#ifdef OF_THREADS
 		[timersQueueLock lock];
 		@try {
+#endif
 			nextTimer = [[timersQueue firstObject] fireDate];
+#ifdef OF_THREADS
 		} @finally {
 			[timersQueueLock unlock];
 		}
+#endif
 
 		/* Watch for stream events until the next timer is due */
 		if (nextTimer != nil) {

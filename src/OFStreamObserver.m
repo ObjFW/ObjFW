@@ -188,51 +188,63 @@ enum {
 
 - (void)addStreamForReading: (OFStream*)stream
 {
+#ifdef OF_THREADS
 	[mutex lock];
 	@try {
+#endif
 		int qi = QUEUE_ADD | QUEUE_READ;
 		int fd = [stream fileDescriptorForReading];
 
 		[queue addObject: stream];
 		[queueInfo addItem: &qi];
 		[queueFDs addItem: &fd];
+#ifdef OF_THREADS
 	} @finally {
 		[mutex unlock];
 	}
+#endif
 
 	[self cancel];
 }
 
 - (void)addStreamForWriting: (OFStream*)stream
 {
+#ifdef OF_THREADS
 	[mutex lock];
 	@try {
+#endif
 		int qi = QUEUE_ADD | QUEUE_WRITE;
 		int fd = [stream fileDescriptorForWriting];
 
 		[queue addObject: stream];
 		[queueInfo addItem: &qi];
 		[queueFDs addItem: &fd];
+#ifdef OF_THREADS
 	} @finally {
 		[mutex unlock];
 	}
+#endif
 
 	[self cancel];
 }
 
 - (void)removeStreamForReading: (OFStream*)stream
 {
+#ifdef OF_THREADS
 	[mutex lock];
 	@try {
+#endif
 		int qi = QUEUE_REMOVE | QUEUE_READ;
 		int fd = [stream fileDescriptorForReading];
 
 		[queue addObject: stream];
 		[queueInfo addItem: &qi];
 		[queueFDs addItem: &fd];
+#ifdef OF_THREADS
 	} @finally {
 		[mutex unlock];
 	}
+#endif
 
 #ifndef _WIN32
 	OF_ENSURE(write(cancelFD[1], "", 1) > 0);
@@ -244,17 +256,21 @@ enum {
 
 - (void)removeStreamForWriting: (OFStream*)stream
 {
+#ifdef OF_THREADS
 	[mutex lock];
 	@try {
+#endif
 		int qi = QUEUE_REMOVE | QUEUE_WRITE;
 		int fd = [stream fileDescriptorForWriting];
 
 		[queue addObject: stream];
 		[queueInfo addItem: &qi];
 		[queueFDs addItem: &fd];
+#ifdef OF_THREADS
 	} @finally {
 		[mutex unlock];
 	}
+#endif
 
 #ifndef _WIN32
 	OF_ENSURE(write(cancelFD[1], "", 1) > 0);
@@ -290,8 +306,10 @@ enum {
 
 - (void)OF_processQueue
 {
+#ifdef OF_THREADS
 	[mutex lock];
 	@try {
+#endif
 		OFStream **queueObjects = [queue objects];
 		int *queueInfoItems = [queueInfo items];
 		int *queueFDsItems = [queueFDs items];
@@ -352,9 +370,11 @@ enum {
 		[queue removeAllObjects];
 		[queueInfo removeAllItems];
 		[queueFDs removeAllItems];
+#ifdef OF_THREADS
 	} @finally {
 		[mutex unlock];
 	}
+#endif
 }
 
 - (void)observe

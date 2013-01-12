@@ -26,7 +26,9 @@
 
 #import "OFObject.h"
 #import "OFTimer.h"
-#import "OFThread.h"
+#ifdef OF_THREADS
+# import "OFThread.h"
+#endif
 #import "OFRunLoop.h"
 #import "OFAutoreleasePool.h"
 
@@ -623,6 +625,7 @@ void _references_to_categories_of_OFObject(void)
 	objc_autoreleasePoolPop(pool);
 }
 
+#ifdef OF_THREADS
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread*)thread
 	  waitUntilDone: (BOOL)waitUntilDone
@@ -781,6 +784,7 @@ void _references_to_categories_of_OFObject(void)
 
 	objc_autoreleasePoolPop(pool);
 }
+#endif
 
 - (const char*)typeEncodingForSelector: (SEL)selector
 {

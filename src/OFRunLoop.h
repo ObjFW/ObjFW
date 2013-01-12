@@ -20,7 +20,9 @@
 #import "OFTCPSocket.h"
 
 @class OFSortedList;
+#ifdef OF_THREADS
 @class OFMutex;
+#endif
 @class OFTimer;
 @class OFMutableDictionary;
 
@@ -30,7 +32,9 @@
 @interface OFRunLoop: OFObject
 {
 	OFSortedList *timersQueue;
+#ifdef OF_THREADS
 	OFMutex *timersQueueLock;
+#endif
 	OFStreamObserver *streamObserver;
 	OFMutableDictionary *readQueues;
 }
@@ -49,7 +53,7 @@
  */
 + (OFRunLoop*)currentRunLoop;
 
-+ (void)OF_setMainRunLoop;
++ (void)OF_setMainRunLoop: (OFRunLoop*)runLoop;
 + (void)OF_addAsyncReadForStream: (OFStream*)stream
 			  buffer: (void*)buffer
 			  length: (size_t)length
