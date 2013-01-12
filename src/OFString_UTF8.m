@@ -776,7 +776,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	[super dealloc];
 }
 
-- (const char*)cStringUsingEncoding: (of_string_encoding_t)encoding
+- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
 {
 	switch (encoding) {
 	case OF_STRING_ENCODING_UTF_8:
@@ -788,7 +788,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 		return s->cString;
 	default:
-		return [super cStringUsingEncoding: encoding];
+		return [super cStringWithEncoding: encoding];
 	}
 }
 
@@ -802,14 +802,14 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return s->length;
 }
 
-- (size_t)lengthOfBytesUsingEncoding: (of_string_encoding_t)encoding
+- (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding
 {
 	switch (encoding) {
 	case OF_STRING_ENCODING_UTF_8:
 	case OF_STRING_ENCODING_ASCII:
 		return s->cStringLength;
 	default:
-		return [super lengthOfBytesUsingEncoding: encoding];
+		return [super cStringLengthWithEncoding: encoding];
 	}
 }
 

@@ -855,7 +855,7 @@ static struct {
 	@try {
 		OFFile *file;
 
-		if (stat([path cStringUsingEncoding: OF_STRING_ENCODING_NATIVE],
+		if (stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 		    &st) == -1)
 			@throw [OFOpenFileFailedException
 			    exceptionWithClass: [self class]
@@ -989,7 +989,7 @@ static struct {
 	return self;
 }
 
-- (const char*)cStringUsingEncoding: (of_string_encoding_t)encoding
+- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
 {
 	const of_unichar_t *characters = [self characters];
 	size_t i, length = [self length];
@@ -1090,7 +1090,7 @@ static struct {
 
 - (const char*)UTF8String
 {
-	return [self cStringUsingEncoding: OF_STRING_ENCODING_UTF_8];
+	return [self cStringWithEncoding: OF_STRING_ENCODING_UTF_8];
 }
 
 - (size_t)length
@@ -1099,7 +1099,7 @@ static struct {
 	abort();
 }
 
-- (size_t)lengthOfBytesUsingEncoding: (of_string_encoding_t)encoding
+- (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding
 {
 	switch (encoding) {
 	case OF_STRING_ENCODING_UTF_8:;
@@ -1134,7 +1134,7 @@ static struct {
 
 - (size_t)UTF8StringLength
 {
-	return [self lengthOfBytesUsingEncoding: OF_STRING_ENCODING_UTF_8];
+	return [self cStringLengthWithEncoding: OF_STRING_ENCODING_UTF_8];
 }
 
 - (of_unichar_t)characterAtIndex: (size_t)index

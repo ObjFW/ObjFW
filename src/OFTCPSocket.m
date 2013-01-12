@@ -313,7 +313,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	hints.ai_flags = AI_NUMERICSERV | AI_ADDRCONFIG;
 	snprintf(portCString, 7, "%" PRIu16, port);
 
-	if (getaddrinfo([host cStringUsingEncoding: OF_STRING_ENCODING_NATIVE],
+	if (getaddrinfo([host cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    portCString, &hints, &res0))
 		@throw [OFAddressTranslationFailedException
 		    exceptionWithClass: [self class]
@@ -347,7 +347,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	[mutex lock];
 # endif
 
-	if ((he = gethostbyname([host cStringUsingEncoding:
+	if ((he = gethostbyname([host cStringWithEncoding:
 	    OF_STRING_ENCODING_NATIVE])) == NULL) {
 # ifdef OF_THREADS
 		[addrlist release];
@@ -492,7 +492,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	hints.ai_flags = AI_NUMERICSERV | AI_ADDRCONFIG | AI_PASSIVE;
 	snprintf(portCString, 7, "%" PRIu16, port);
 
-	if (getaddrinfo([host cStringUsingEncoding: OF_STRING_ENCODING_NATIVE],
+	if (getaddrinfo([host cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    portCString, &hints, &res))
 		@throw [OFAddressTranslationFailedException
 		    exceptionWithClass: [self class]
@@ -529,7 +529,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	[mutex lock];
 # endif
 
-	if ((he = gethostbyname([host cStringUsingEncoding:
+	if ((he = gethostbyname([host cStringWithEncoding:
 	    OF_STRING_ENCODING_NATIVE])) == NULL) {
 # ifdef OF_THREADS
 		[mutex unlock];

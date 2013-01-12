@@ -565,7 +565,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
  * @param encoding The encoding for the C string
  * @return The OFString as a C string in the specified encoding
  */
-- (const char*)cStringUsingEncoding: (of_string_encoding_t)encoding
+- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
     OF_RETURNS_INNER_POINTER;
 
 /*!
@@ -593,7 +593,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
  * @param encoding The encoding for the string
  * @return The number of bytes the string needs in the specified encoding.
  */
-- (size_t)lengthOfBytesUsingEncoding: (of_string_encoding_t)encoding;
+- (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding;
 
 /*!
  * @brief Returns the number of bytes the string needs in UTF-8 encoding.

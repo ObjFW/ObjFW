@@ -773,8 +773,8 @@
 	char *retCString, *buffer, *newCache;
 	OFString *ret;
 
-	delimiterCString = [delimiter cStringUsingEncoding: encoding];
-	delimiterLength = [delimiter lengthOfBytesUsingEncoding: encoding];
+	delimiterCString = [delimiter cStringWithEncoding: encoding];
+	delimiterLength = [delimiter cStringLengthWithEncoding: encoding];
 	j = 0;
 
 	if (delimiterLength == 0)
@@ -1378,9 +1378,9 @@
 - (size_t)writeString: (OFString*)string
 	usingEncoding: (of_string_encoding_t)encoding
 {
-	size_t length = [string lengthOfBytesUsingEncoding: encoding];
+	size_t length = [string cStringLengthWithEncoding: encoding];
 
-	[self writeBuffer: [string cStringUsingEncoding: encoding]
+	[self writeBuffer: [string cStringWithEncoding: encoding]
 		   length: length];
 
 	return length;
@@ -1395,13 +1395,13 @@
 - (size_t)writeLine: (OFString*)string
       usingEncoding: (of_string_encoding_t)encoding
 {
-	size_t stringLength = [string lengthOfBytesUsingEncoding: encoding];
+	size_t stringLength = [string cStringLengthWithEncoding: encoding];
 	char *buffer;
 
 	buffer = [self allocMemoryWithSize: stringLength + 1];
 
 	@try {
-		memcpy(buffer, [string cStringUsingEncoding: encoding],
+		memcpy(buffer, [string cStringWithEncoding: encoding],
 		    stringLength);
 		buffer[stringLength] = '\n';
 

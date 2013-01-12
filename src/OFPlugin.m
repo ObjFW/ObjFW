@@ -46,7 +46,7 @@
 	path = [path stringByAppendingString: @PLUGIN_SUFFIX];
 
 #ifndef _WIN32
-	if ((handle = dlopen([path cStringUsingEncoding:
+	if ((handle = dlopen([path cStringWithEncoding:
 	    OF_STRING_ENCODING_NATIVE], RTLD_LAZY)) == NULL)
 #else
 	if ((handle = LoadLibraryW([path UTF16String])) == NULL)

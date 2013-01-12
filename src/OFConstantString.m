@@ -298,11 +298,11 @@ struct {
 	return [self UTF8String];
 }
 
-- (const char*)cStringUsingEncoding: (of_string_encoding_t)encoding
+- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
 {
 	[self finishInitialization];
 
-	return [self cStringUsingEncoding: encoding];
+	return [self cStringWithEncoding: encoding];
 }
 
 - (size_t)length
@@ -319,11 +319,11 @@ struct {
 	return [self UTF8StringLength];
 }
 
-- (size_t)lengthOfBytesUsingEncoding: (of_string_encoding_t)encoding
+- (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding
 {
 	[self finishInitialization];
 
-	return [self lengthOfBytesUsingEncoding: encoding];
+	return [self cStringLengthWithEncoding: encoding];
 }
 
 - (of_comparison_result_t)caseInsensitiveCompare: (OFString*)otherString

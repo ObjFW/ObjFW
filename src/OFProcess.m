@@ -131,12 +131,12 @@ extern char **environ;
 			argv = [self allocMemoryWithSize: sizeof(char*)
 						   count: count + 2];
 
-			argv[0] = (char*)[programName cStringUsingEncoding:
+			argv[0] = (char*)[programName cStringWithEncoding:
 			    OF_STRING_ENCODING_NATIVE];
 
 			for (i = 0; i < count; i++)
 				argv[i + 1] = (char*)[objects[i]
-				    cStringUsingEncoding:
+				    cStringWithEncoding:
 				    OF_STRING_ENCODING_NATIVE];
 
 			argv[i + 1] = NULL;
@@ -155,7 +155,7 @@ extern char **environ;
 			close(writePipe[1]);
 			dup2(writePipe[0], 0);
 			dup2(readPipe[1], 1);
-			execvp([program cStringUsingEncoding:
+			execvp([program cStringWithEncoding:
 			    OF_STRING_ENCODING_NATIVE], argv);
 
 			@throw [OFInitializationFailedException
@@ -302,17 +302,17 @@ extern char **environ;
 		key = [keyEnumerator nextObject];
 		object = [objectEnumerator nextObject];
 
-		keyLen = [key lengthOfBytesUsingEncoding:
+		keyLen = [key cStringLengthWithEncoding:
 		    OF_STRING_ENCODING_NATIVE];
-		objectLen = [object lengthOfBytesUsingEncoding:
+		objectLen = [object cStringLengthWithEncoding:
 		    OF_STRING_ENCODING_NATIVE];
 
 		envp[i] = [self allocMemoryWithSize: keyLen + objectLen + 2];
 
-		memcpy(envp[i], [key cStringUsingEncoding:
+		memcpy(envp[i], [key cStringWithEncoding:
 		    OF_STRING_ENCODING_NATIVE], keyLen);
 		envp[i][keyLen] = '=';
-		memcpy(envp[i] + keyLen + 1, [object cStringUsingEncoding:
+		memcpy(envp[i] + keyLen + 1, [object cStringWithEncoding:
 		    OF_STRING_ENCODING_NATIVE], objectLen);
 		envp[i][keyLen + objectLen + 1] = '\0';
 	}
