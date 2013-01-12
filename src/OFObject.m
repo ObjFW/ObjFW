@@ -976,7 +976,7 @@ void _references_to_categories_of_OFObject(void)
 #elif defined(OF_THREADS)
 	OF_ENSURE(of_spinlock_lock(&PRE_IVARS->retainCountSpinlock));
 	PRE_IVARS->retainCount++;
-	OF_ENSURE(of_spinlock_unlock(&PRE_IVARS->retainCountSspinlock));
+	OF_ENSURE(of_spinlock_unlock(&PRE_IVARS->retainCountSpinlock));
 #else
 	PRE_IVARS->retainCount++;
 #endif

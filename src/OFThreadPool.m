@@ -331,7 +331,9 @@
 
 - (void)OF_dispatchJob: (OFThreadPoolJob*)job
 {
-	of_atomic_inc_int(&count);
+	[countCondition lock];
+	count++;
+	[countCondition unlock];
 
 	[queueCondition lock];
 	@try {
