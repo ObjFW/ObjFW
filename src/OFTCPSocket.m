@@ -59,6 +59,18 @@
 # define INVALID_SOCKET -1
 #endif
 
+#ifdef HAVE_THREADSAFE_GETADDRINFO
+# ifndef AI_NUMERICSERV
+#  define AI_NUMERICSERV 0
+# endif
+# ifndef AI_NUMERICHOST
+#  define AI_NUMERICHOST 0
+# endif
+# ifndef AI_ADDRCONFIG
+#  define AI_ADDRCONFIG 0
+# endif
+#endif
+
 #if defined(OF_HAVE_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
 # import "OFMutex.h"
 # import "OFDataArray.h"
