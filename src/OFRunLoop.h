@@ -37,6 +37,7 @@
 #endif
 	OFStreamObserver *streamObserver;
 	OFMutableDictionary *readQueues;
+	BOOL running;
 }
 
 /*!
@@ -101,4 +102,10 @@
  * @brief Starts the run loop.
  */
 - (void)run;
+
+/*!
+ * @brief Stops the run loop. If there is still an operation being executed, it
+ *	  is finished before the run loop stops.
+ */
+- (void)stop;
 @end

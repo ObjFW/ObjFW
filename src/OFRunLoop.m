@@ -585,7 +585,9 @@ static OFRunLoop *mainRunLoop = nil;
 
 - (void)run
 {
-	for (;;) {
+	running = YES;
+
+	while (running) {
 		void *pool = objc_autoreleasePoolPush();
 		OFDate *now = [OFDate date];
 		OFTimer *timer;
@@ -646,5 +648,11 @@ static OFRunLoop *mainRunLoop = nil;
 
 		objc_autoreleasePoolPop(pool);
 	}
+}
+
+- (void)stop
+{
+	running = NO;
+	[streamObserver cancel];
 }
 @end
