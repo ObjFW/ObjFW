@@ -598,7 +598,7 @@ of_log(OFConstantString *format, ...)
 	if (rename([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    [destination cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
 #else
-	if (!MoveFileW([source UTF16String], [destination UTF16String]))
+	if (_wrename([source UTF16String], [destination UTF16String]))
 #endif
 		@throw [OFRenameFileFailedException
 		    exceptionWithClass: self
