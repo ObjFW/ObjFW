@@ -39,8 +39,8 @@
 #import "of_asprintf.h"
 #import "unicode.h"
 
-extern const uint16_t of_iso_8859_15[256];
-extern const uint16_t of_windows_1252[256];
+extern const of_char16_t of_iso_8859_15[256];
+extern const of_char16_t of_windows_1252[256];
 
 static inline int
 memcasecmp(const char *first, const char *second, size_t length)
@@ -213,7 +213,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	@try {
 		size_t i, j;
-		const uint16_t *table;
+		const of_char16_t *table;
 
 		if (encoding == OF_STRING_ENCODING_UTF_8 &&
 		    cStringLength >= 3 && !memcmp(cString, "\xEF\xBB\xBF", 3)) {
@@ -466,7 +466,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return self;
 }
 
-- initWithUTF16String: (const uint16_t*)string
+- initWithUTF16String: (const of_char16_t*)string
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
@@ -504,7 +504,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				    exceptionWithClass: [self class]];
 
 			if ((character & 0xFC00) == 0xD800) {
-				uint16_t nextCharacter;
+				of_char16_t nextCharacter;
 
 				if (length <= i + 1)
 					@throw [OFInvalidEncodingException
@@ -578,7 +578,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return self;
 }
 
-- initWithUTF32String: (const of_unichar_t*)characters
+- initWithUTF32String: (const of_char32_t*)characters
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
@@ -1348,10 +1348,10 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return ret;
 }
 
-- (const of_unichar_t*)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const of_char32_t*)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
 {
 	OFObject *object = [[[OFObject alloc] init] autorelease];
-	of_unichar_t *ret;
+	of_char32_t *ret;
 	size_t i, j;
 
 	ret = [object allocMemoryWithSize: sizeof(of_unichar_t)

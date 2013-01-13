@@ -91,19 +91,19 @@ static struct {
 							     length: length];
 }
 
-- initWithUTF16String: (const uint16_t*)string
+- initWithUTF16String: (const of_char16_t*)string
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithUTF16String: string];
 }
 
-- initWithUTF16String: (const uint16_t*)string
+- initWithUTF16String: (const of_char16_t*)string
 	       length: (size_t)length
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithUTF16String: string
 							      length: length];
 }
 
-- initWithUTF16String: (const uint16_t*)string
+- initWithUTF16String: (const of_char16_t*)string
 	    byteOrder: (of_byte_order_t)byteOrder
 {
 	return (id)[[OFMutableString_UTF8 alloc]
@@ -111,7 +111,7 @@ static struct {
 		      byteOrder: byteOrder];
 }
 
-- initWithUTF16String: (const uint16_t*)string
+- initWithUTF16String: (const of_char16_t*)string
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
@@ -121,19 +121,19 @@ static struct {
 		      byteOrder: byteOrder];
 }
 
-- initWithUTF32String: (const uint32_t*)string
+- initWithUTF32String: (const of_char32_t*)string
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithUTF32String: string];
 }
 
-- initWithUTF32String: (const uint32_t*)string
+- initWithUTF32String: (const of_char32_t*)string
 	       length: (size_t)length
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithUTF32String: string
 							      length: length];
 }
 
-- initWithUTF32String: (const uint32_t*)string
+- initWithUTF32String: (const of_char32_t*)string
 	    byteOrder: (of_byte_order_t)byteOrder
 {
 	return (id)[[OFMutableString_UTF8 alloc]
@@ -141,7 +141,7 @@ static struct {
 		      byteOrder: byteOrder];
 }
 
-- initWithUTF32String: (const uint32_t*)string
+- initWithUTF32String: (const of_char32_t*)string
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
