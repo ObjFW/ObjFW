@@ -395,30 +395,13 @@ of_log(OFConstantString *format, ...)
 {
 # ifndef _WIN32
 	if (chmod([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE], mode))
-		@throw [OFChangeFileModeFailedException
-		    exceptionWithClass: self
-				  path: path
-				  mode: mode];
 # else
-	DWORD attributes = GetFileAttributesW([path UTF16String]);
-
-	if (attributes == INVALID_FILE_ATTRIBUTES)
-		@throw [OFChangeFileModeFailedException
-		    exceptionWithClass: self
-				  path: path
-				  mode: mode];
-
-	if ((mode / 100) & 2)
-		attributes &= ~FILE_ATTRIBUTE_READONLY;
-	else
-		attributes |= FILE_ATTRIBUTE_READONLY;
-
-	if (!SetFileAttributesW([path UTF16String], attributes))
-		@throw [OFChangeFileModeFailedException
-		    exceptionWithClass: self
-				  path: path
-				  mode: mode];
+	if (_wchmod([path UTF16String], mode))
 # endif
+		@throw [OFChangeFileModeFailedException
+		    exceptionWithClass: self
+				  path: path
+				  mode: mode];
 }
 #endif
 
