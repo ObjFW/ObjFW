@@ -416,6 +416,7 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 
 		if (filter > 0 && !(actions & _UA_FORCE_UNWIND) && !foreign) {
 			Class class;
+			const char *className;
 			uintptr_t c;
 			const uint8_t *tmp;
 
@@ -437,8 +438,10 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 			    lsda->typestable - i, lsda->typestable_base);
 #endif
 
-			if (c != 0)
-				class = objc_getRequiredClass((const char*)c);
+			className = (const char*)c;
+
+			if (className != NULL && *className != '\0')
+				class = objc_getRequiredClass(className);
 			else
 				class = Nil;
 
