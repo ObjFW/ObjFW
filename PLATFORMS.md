@@ -43,8 +43,8 @@ iOS
 Linux
 -----
 
-  * Architectures: ARM, PPC, x86, x86_64
-  * Compilers: Clang 3.0-3.2, GCC 4.7.0 (prerelease), GCC 4.7.1
+  * Architectures: ARM, m68k, PPC, x86, x86_64
+  * Compilers: Clang 3.0-3.2, GCC 4.6.3, GCC 4.7.0 (prerelease), GCC 4.7.1
   * Runtimes: ObjFW
 
 
