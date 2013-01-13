@@ -647,7 +647,7 @@ void _references_to_categories_of_OFDataArray(void)
 
 - (void)removeItemsInRange: (of_range_t)range
 {
-	size_t newSize, lastPageByte;
+	size_t pageSize, newSize;
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > count)
@@ -658,27 +658,33 @@ void _references_to_categories_of_OFDataArray(void)
 	    (count - range.location - range.length) * itemSize);
 
 	count -= range.length;
-	lastPageByte = [OFSystemInfo pageSize] - 1;
-	newSize = (count * itemSize + lastPageByte) & ~lastPageByte;
+	pageSize = [OFSystemInfo pageSize];
+	newSize = (count * itemSize + pageSize - 1) & ~(pageSize - 1);
 
-	if (size != newSize)
-		items = [self resizeMemory: items
-				      size: newSize];
-	size = newSize;
+	if (size != newSize && newSize >= pageSize) {
+		@try {
+			items = [self resizeMemory: items
+					      size: newSize];
+		} @catch (OFOutOfMemoryException *e) {
+			/* We don't care, as we only made it smaller */
+		}
+
+		size = newSize;
+	}
 }
 
 - (void)removeLastItem
 {
-	size_t newSize, lastPageByte;
+	size_t pageSize, newSize;
 
 	if (count == 0)
 		return;
 
 	count--;
-	lastPageByte = [OFSystemInfo pageSize] - 1;
-	newSize = (count * itemSize + lastPageByte) & ~lastPageByte;
+	pageSize = [OFSystemInfo pageSize];
+	newSize = (count * itemSize + pageSize - 1) & ~(pageSize - 1);
 
-	if (size != newSize) {
+	if (size != newSize && newSize >= pageSize) {
 		@try {
 			items = [self resizeMemory: items
 					      size: newSize];
@@ -692,10 +698,16 @@ void _references_to_categories_of_OFDataArray(void)
 
 - (void)removeAllItems
 {
-	[self freeMemory: items];
+	size_t pageSize = [OFSystemInfo pageSize];
 
-	items = NULL;
+	@try {
+		items = [self resizeMemory: items
+				      size: pageSize];
+		size = pageSize;
+	} @catch (OFOutOfMemoryException *e) {
+		/* We don't care, as we only made it smaller */
+	}
+
 	count = 0;
-	size = 0;
 }
 @end
