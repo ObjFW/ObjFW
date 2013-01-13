@@ -50,7 +50,22 @@ extern void of_log(OFConstantString*, ...);
  * @brief Creates a new OFFile with the specified path and mode.
  *
  * @param path The path to the file to open as a string
- * @param mode The mode in which the file should be opened as a string
+ * @param mode The mode in which the file should be opened.@n
+ *	       Possible modes are:
+ *	       Mode           | Description
+ *	       ---------------|-------------------------------------
+ *	       `r`            | read-only
+ *	       `rb`           | read-only, binary
+ *	       `r+`           | read-write
+ *	       `rb+` or `r+b` | read-write, binary
+ *	       `w`            | write-only, create, truncate
+ *	       `wb`           | write-only, create, truncate, binary
+ *	       `w`            | read-write, create, truncate
+ *	       `wb+` or `w+b` | read-write, create, truncate, binary
+ *	       `a`            | write-only, create, append
+ *	       `ab`           | write-only, create, append, binary
+ *	       `a+`           | read-write, create, append
+ *	       `ab+` or `a+b` | read-write, create, append, binary
  * @return A new autoreleased OFFile
  */
 + (instancetype)fileWithPath: (OFString*)path
@@ -225,7 +240,22 @@ extern void of_log(OFConstantString*, ...);
  * @brief Initializes an already allocated OFFile.
  *
  * @param path The path to the file to open as a string
- * @param mode The mode in which the file should be opened as a string
+ * @param mode The mode in which the file should be opened.@n
+ *	       Possible modes are:
+ *	       Mode           | Description
+ *	       ---------------|-------------------------------------
+ *	       `r`            | read-only
+ *	       `rb`           | read-only, binary
+ *	       `r+`           | read-write
+ *	       `rb+` or `r+b` | read-write, binary
+ *	       `w`            | write-only, create, truncate
+ *	       `wb`           | write-only, create, truncate, binary
+ *	       `w`            | read-write, create, truncate
+ *	       `wb+` or `w+b` | read-write, create, truncate, binary
+ *	       `a`            | write-only, create, append
+ *	       `ab`           | write-only, create, append, binary
+ *	       `a+`           | read-write, create, append
+ *	       `ab+` or `a+b` | read-write, create, append, binary
  * @return An initialized OFFile
  */
 - initWithPath: (OFString*)path

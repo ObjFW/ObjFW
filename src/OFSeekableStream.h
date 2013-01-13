@@ -39,10 +39,13 @@
  * @brief Seeks to the specified absolute offset.
  *
  * @param offset The offset in bytes
- * @param whence From where to seek. Possible values are:
- *		  * SEEK_SET: Seek to the specified byte.
- *		  * SEEK_CUR: Seek to the current location + offset.
- *		  * SEEK_END: Seek to the end of the stream + offset.
+ * @param whence From where to seek.@n
+ *		 Possible values are:
+ *		 Value    | Description
+ *		 ---------|---------------------------------------
+ *		 SEEK_SET | Seek to the specified byte
+ *		 SEEK_CUR | Seek to the current location + offset
+ *		 SEEK_END | Seek to the end of the stream + offset
  */
 - (void)seekToOffset: (off_t)offset
 	      whence: (int)whence;
@@ -56,10 +59,13 @@
  * subclassing!
  *
  * @param offset The offset to seek to
- * @param whence From where to seek. Possible values are:
- *		  * SEEK_SET: Seek to the specified byte.
- *		  * SEEK_CUR: Seek to the current location + offset.
- *		  * SEEK_END: Seek to the end of the stream + offset.
+ * @param whence From where to seek.@n
+ *		 Possible values are:
+ *		 Value    | Description
+ *		 ---------|---------------------------------------
+ *		 SEEK_SET | Seek to the specified byte
+ *		 SEEK_CUR | Seek to the current location + offset
+ *		 SEEK_END | Seek to the end of the stream + offset
  */
 - (void)lowlevelSeekToOffset: (off_t)offset
 		      whence: (int)whence;

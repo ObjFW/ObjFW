@@ -642,9 +642,11 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
  * @brief Returns the range of the string.
  *
  * @param string The string to search
- * @param options Options modifying search behaviour.
- *		  Possible values:
- *		    * OF_STRING_SEARCH_BACKWARDS
+ * @param options Options modifying search behaviour.@n
+ *		  Possible values are:
+ *		  Value                      | Description
+ *		  ---------------------------|-------------------------------
+ *		  OF_STRING_SEARCH_BACKWARDS | Search backwards in the string
  * @return The range of the first occurrence of the string or a range with
  *	   OF_NOT_FOUND as start position if it was not found
  */
@@ -655,9 +657,11 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
  * @brief Returns the range of the string in the specified range.
  *
  * @param string The string to search
- * @param options Options modifying search behaviour.
- *		  Possible values:
- *		    * OF_STRING_SEARCH_BACKWARDS
+ * @param options Options modifying search behaviour.@n
+ *		  Possible values are:
+ *		  Value                      | Description
+ *		  ---------------------------|-------------------------------
+ *		  OF_STRING_SEARCH_BACKWARDS | Search backwards in the string
  * @param range The range in which to search
  * @return The range of the first occurrence of the string or a range with
  *	   OF_NOT_FOUND as start position if it was not found
@@ -742,7 +746,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
  * @param string The string to replace
  * @param replacement The string with which it should be replaced
  * @param options Options modifying search behaviour.
- *		  Possible values:
+ *		  Possible values are:
  *		    * None yet
  * @param range The range in which to replace the string
  * @return A new string with the occurrences of the specified string replaced
@@ -827,9 +831,11 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
  * @brief Separates an OFString into an OFArray of OFStrings.
  *
  * @param delimiter The delimiter for separating
- * @param options Options according to which the string should be separated.
- * 		  Possible values:
- * 		    * OF_STRING_SKIP_EMPTY
+ * @param options Options according to which the string should be separated.@n
+ *		  Possible values are:
+ *		  Value                | Description
+ *		  ---------------------|----------------------
+ * 		  OF_STRING_SKIP_EMPTY | Skip empty components
  * @return An autoreleased OFArray with the separated string
  */
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter

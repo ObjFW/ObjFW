@@ -52,7 +52,7 @@
 /*!
  * @brief Creates a new OFDataArray whose items all have the same size.
  *
- * @param itemSize The size of each element in the OFDataArray
+ * @param itemSize The size of a single element in the OFDataArray
  * @return A new autoreleased OFDataArray
  */
 + (instancetype)dataArrayWithItemSize: (size_t)itemSize;
@@ -97,7 +97,7 @@
  * @brief Initializes an already allocated OFDataArray whose items all have the
  *	  same size.
  *
- * @param itemSize The size of each element in the OFDataArray
+ * @param itemSize The size of a single element in the OFDataArray
  * @return An initialized OFDataArray
  */
 - initWithItemSize: (size_t)itemSize;
@@ -146,9 +146,9 @@
 - (size_t)count;
 
 /*!
- * @brief Returns the size of each item in the OFDataArray in bytes.
+ * @brief Returns the size of a single item in the OFDataArray in bytes.
  *
- * @return The size of each item in the OFDataArray in bytes
+ * @return The size of a single item in the OFDataArray in bytes
  */
 - (size_t)itemSize;
 

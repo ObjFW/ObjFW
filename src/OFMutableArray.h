@@ -21,7 +21,7 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
 #endif
 
 /*!
- * @brief An abstract class for storing, adding and removing objects in anr
+ * @brief An abstract class for storing, adding and removing objects in an
  *	  array.
  */
 @interface OFMutableArray: OFArray
