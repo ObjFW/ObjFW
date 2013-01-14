@@ -459,6 +459,7 @@ normalized_key(OFString *key)
 	OFHTTPRequestReply *reply;
 	OFDictionary *replyHeaders;
 	OFDataArray *replyData;
+	OFString *date;
 	OFEnumerator *keyEnumerator, *valueEnumerator;
 	OFString *key, *value;
 	size_t pos;
@@ -503,6 +504,9 @@ normalized_key(OFString *key)
 	reply = [[server delegate] server: server
 			didReceiveRequest: request];
 
+	date = [[OFDate date]
+	    dateStringWithFormat: @"%a, %d %b %Y %H:%M:%S GMT"];
+
 	if (reply == nil) {
 		[self sendErrorAndClose: 500];
 		@throw [OFInvalidArgumentException
@@ -514,16 +518,11 @@ normalized_key(OFString *key)
 	replyData = [reply data];
 
 	[sock writeFormat: @"HTTP/1.1 %d %s\r\n"
-			   @"Server: %@\r\n",
+			   @"Server: %@\r\n"
+			   @"Date: %@\r\n",
 			   [reply statusCode],
 			   status_code_to_string([reply statusCode]),
-			   [server name]];
-
-	if ([replyHeaders objectForKey: @"Date"] == nil) {
-		OFString *date = [[OFDate date]
-		    dateStringWithFormat: @"%a, %d %b %Y %H:%M:%S GMT"];
-		[sock writeFormat: @"Date: %@\r\n", date];
-	}
+			   [server name], date];
 
 	if (requestType != OF_HTTP_REQUEST_TYPE_HEAD)
 		[sock writeFormat: @"Content-Length: %zu\r\n",
@@ -533,7 +532,8 @@ normalized_key(OFString *key)
 	valueEnumerator = [replyHeaders objectEnumerator];
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (value = [valueEnumerator nextObject]) != nil)
-		[sock writeFormat: @"%@: %@\r\n", key, value];
+		if (![key isEqual: @"Server"] && ![key isEqual: @"Date"])
+			[sock writeFormat: @"%@: %@\r\n", key, value];
 
 	[sock writeString: @"\r\n"];
 
