@@ -401,48 +401,7 @@ void _references_to_categories_of_OFObject(void)
 	if ([self isSubclassOfClass: class])
 		return;
 
-#if defined(OF_APPLE_RUNTIME)
-	Method *methodList;
-	unsigned i, count;
-
-	methodList = class_copyMethodList(object_getClass(class), &count);
-	@try {
-		for (i = 0; i < count; i++) {
-			SEL selector = method_getName(methodList[i]);
-
-			/*
-			 * Don't replace methods implemented in receiving class.
-			 */
-			if ([self methodForSelector: selector] !=
-			    [superclass methodForSelector: selector])
-				continue;
-
-			[self replaceClassMethod: selector
-			     withMethodFromClass: class];
-		}
-	} @finally {
-		free(methodList);
-	}
-
-	methodList = class_copyMethodList(class, &count);
-	@try {
-		for (i = 0; i < count; i++) {
-			SEL selector = method_getName(methodList[i]);
-
-			/*
-			 * Don't replace methods implemented in receiving class.
-			 */
-			if ([self instanceMethodForSelector: selector] !=
-			    [superclass instanceMethodForSelector: selector])
-				continue;
-
-			[self replaceInstanceMethod: selector
-				withMethodFromClass: class];
-		}
-	} @finally {
-		free(methodList);
-	}
-#elif defined(OF_OBJFW_RUNTIME)
+#if defined(OF_OBJFW_RUNTIME)
 	struct objc_method_list *methodlist;
 
 	for (methodlist = object_getClass(class)->methodlist;
@@ -453,7 +412,8 @@ void _references_to_categories_of_OFObject(void)
 			SEL selector = (SEL)&methodlist->methods[i].sel;
 
 			/*
-			 * Don't replace methods implemented in receiving class.
+			 * Don't replace methods implemented in the receiving
+			 * class.
 			 */
 			if ([self methodForSelector: selector] !=
 			    [superclass methodForSelector: selector])
@@ -472,7 +432,8 @@ void _references_to_categories_of_OFObject(void)
 			SEL selector = (SEL)&methodlist->methods[i].sel;
 
 			/*
-			 * Don't replace methods implemented in receiving class.
+			 * Don't replace methods implemented in the receiving
+			 * class.
 			 */
 			if ([self instanceMethodForSelector: selector] !=
 			    [superclass instanceMethodForSelector: selector])
@@ -481,6 +442,49 @@ void _references_to_categories_of_OFObject(void)
 			[self replaceInstanceMethod: selector
 				withMethodFromClass: class];
 		}
+	}
+#elif defined(OF_APPLE_RUNTIME)
+	Method *methodList;
+	unsigned i, count;
+
+	methodList = class_copyMethodList(object_getClass(class), &count);
+	@try {
+		for (i = 0; i < count; i++) {
+			SEL selector = method_getName(methodList[i]);
+
+			/*
+			 * Don't replace methods implemented in the receiving
+			 * class.
+			 */
+			if ([self methodForSelector: selector] !=
+			    [superclass methodForSelector: selector])
+				continue;
+
+			[self replaceClassMethod: selector
+			     withMethodFromClass: class];
+		}
+	} @finally {
+		free(methodList);
+	}
+
+	methodList = class_copyMethodList(class, &count);
+	@try {
+		for (i = 0; i < count; i++) {
+			SEL selector = method_getName(methodList[i]);
+
+			/*
+			 * Don't replace methods implemented in the receiving
+			 * class.
+			 */
+			if ([self instanceMethodForSelector: selector] !=
+			    [superclass instanceMethodForSelector: selector])
+				continue;
+
+			[self replaceInstanceMethod: selector
+				withMethodFromClass: class];
+		}
+	} @finally {
+		free(methodList);
 	}
 #endif
 
