@@ -938,7 +938,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * @return The number of bytes written
  */
 - (size_t)writeString: (OFString*)string
-	usingEncoding: (of_string_encoding_t)encoding;
+	     encoding: (of_string_encoding_t)encoding;
 
 /*!
  * @brief Writes a string into the stream with a trailing newline.
@@ -957,7 +957,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * @return The number of bytes written
  */
 - (size_t)writeLine: (OFString*)string
-      usingEncoding: (of_string_encoding_t)encoding;
+	   encoding: (of_string_encoding_t)encoding;
 
 /*!
  * @brief Writes a formatted string into the stream.

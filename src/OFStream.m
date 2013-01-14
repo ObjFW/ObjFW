@@ -1372,11 +1372,11 @@
 - (size_t)writeString: (OFString*)string
 {
 	return [self writeString: string
-		   usingEncoding: OF_STRING_ENCODING_UTF_8];
+			encoding: OF_STRING_ENCODING_UTF_8];
 }
 
 - (size_t)writeString: (OFString*)string
-	usingEncoding: (of_string_encoding_t)encoding
+	     encoding: (of_string_encoding_t)encoding
 {
 	size_t length = [string cStringLengthWithEncoding: encoding];
 
@@ -1389,11 +1389,11 @@
 - (size_t)writeLine: (OFString*)string
 {
 	return [self writeLine: string
-		 usingEncoding: OF_STRING_ENCODING_UTF_8];
+		      encoding: OF_STRING_ENCODING_UTF_8];
 }
 
 - (size_t)writeLine: (OFString*)string
-      usingEncoding: (of_string_encoding_t)encoding
+	   encoding: (of_string_encoding_t)encoding
 {
 	size_t stringLength = [string cStringLengthWithEncoding: encoding];
 	char *buffer;
