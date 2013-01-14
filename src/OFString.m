@@ -2224,12 +2224,20 @@ static struct {
 
 - (void)writeToFile: (OFString*)path
 {
+	return [self writeToFile: path
+			encoding: OF_STRING_ENCODING_UTF_8];
+}
+
+- (void)writeToFile: (OFString*)path
+	   encoding: (of_string_encoding_t)encoding
+{
 	void *pool = objc_autoreleasePoolPush();
 	OFFile *file;
 
 	file = [OFFile fileWithPath: path
 			       mode: @"wb"];
-	[file writeString: self];
+	[file writeString: self
+		 encoding: encoding];
 
 	objc_autoreleasePoolPop(pool);
 }

@@ -1009,6 +1009,16 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
  */
 - (void)writeToFile: (OFString*)path;
 
+/*!
+ * @brief Writes the string into the specified file using the specified
+ *	  encoding.
+ *
+ * @param path The path of the file to write to
+ * @param encoding The encoding to use to write the string into the file
+ */
+- (void)writeToFile: (OFString*)path
+	   encoding: (of_string_encoding_t)encoding;
+
 #ifdef OF_HAVE_BLOCKS
 /*!
  * Enumerates all lines in the receiver using the specified block.
