@@ -38,10 +38,10 @@ typedef id (^of_thread_block_t)(void);
  * To use it, you should create a new class derived from it and reimplement
  * main.
  *
- * @warning Even though the OFCopying protocol is implemented, it does
- *	    <i>not</i> return an independent copy of the thread, but instead
- *	    retains it. This is so that the thread can be used as a key for a
- *	    dictionary, so context can be associated with a thread.
+ * @warning Even though the OFCopying protocol is implemented, it does *not*
+ *	    return an independent copy of the thread, but instead retains it.
+ *	    This is so that the thread can be used as a key for a dictionary,
+ *	    so context can be associated with a thread.
  */
 @interface OFThread: OFObject <OFCopying>
 {
@@ -104,8 +104,8 @@ typedef id (^of_thread_block_t)(void);
 /*!
  * @brief Returns the object for the specified Thread Local Storage key.
  *
- * The returned object is <i>not</i> retained and autoreleased for performance
- * reasons!
+ * @warning The returned object is *not* retained and autoreleased for
+ *	    performance reasons!
  *
  * @param key The Thread Local Storage key
  */

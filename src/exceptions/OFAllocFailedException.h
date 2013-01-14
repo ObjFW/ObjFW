@@ -25,10 +25,10 @@
  * be allocated of course. That's why you shouldn't and even can't deallocate
  * it.
  *
- * This is the only exception that is not an OFException as it's special.
- * It does not know for which class allocation failed and it should not be
- * handled like other exceptions, as the exception handling code is not
- * allowed to allocate <i>any</i> memory.
+ * This is the only exception which is not an OFException as it's special. It
+ * does not know for which class allocation failed and it should not be handled
+ * like other exceptions, as the exception handling code is not allowed to
+ * allocate *any* memory.
  */
 @interface OFAllocFailedException: OFObject
 /*!

@@ -40,20 +40,20 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
 /*!
  * @brief A base class for different types of streams.
  *
- * @warning Even though the OFCopying protocol is implemented, it does
- *	    <i>not</i> return an independent copy of the stream, but instead
- *	    retains it. This is so that the stream can be used as a key for a
- *	    dictionary, so context can be associated with a stream. Using a
- *	    stream in more than one thread at the same time is not thread-safe,
- *	    even if copy was called to create one "instance" for every thread!
+ * @warning Even though the OFCopying protocol is implemented, it does *not*
+ *	    return an independent copy of the stream, but instead retains it.
+ *	    This is so that the stream can be used as a key for a dictionary,
+ *	    so context can be associated with a stream. Using a stream in more
+ *	    than one thread at the same time is not thread-safe, even if copy
+ *	    was called to create one "instance" for every thread!
  *
  * @note If you want to subclass this, override
  *	 @ref lowlevelReadIntoBuffer:length:, @ref lowlevelWriteBuffer:length:
  *	 and @ref lowlevelIsAtEndOfStream, but nothing else, as those are are
  *	 the methods that do the actual work. OFStream uses those for all other
  *	 methods and does all the caching and other stuff for you. If you
- *	 override these methods without the lowlevel prefix, you <i>will</i>
- *	 break caching and get broken results!
+ *	 override these methods without the lowlevel prefix, you *will* break
+ *	 caching and get broken results!
  */
 @interface OFStream: OFObject <OFCopying>
 {
@@ -78,7 +78,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
 - (BOOL)isAtEndOfStream;
 
 /*!
- * @brief Reads <i>at most</i> size bytes from the stream into a buffer.
+ * @brief Reads *at most* size bytes from the stream into a buffer.
  *
  * On network streams, this might read less than the specified number of bytes.
  * If you want to read exactly the specified number of bytes, use
@@ -88,7 +88,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *
  * @param buffer The buffer into which the data is read
  * @param length The length of the data that should be read at most.
- *		 The buffer <i>must</i> be at least this big!
+ *		 The buffer *must* be *at least* this big!
  * @return The number of bytes read
  */
 - (size_t)readIntoBuffer: (void*)buffer
@@ -107,13 +107,13 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *
  * @param buffer The buffer into which the data is read
  * @param length The length of the data that should be read.
- *		 The buffer <i>must</i> be <i>exactly</i> this big!
+ *		 The buffer *must* be *at least* this big!
  */
  - (void)readIntoBuffer: (void*)buffer
 	    exactLength: (size_t)length;
 
 /*!
- * @brief Asyncronously reads <i>at most</i> size bytes from the stream into a
+ * @brief Asyncronously reads *at most* size bytes from the stream into a
  *	  buffer.
  *
  * On network streams, this might read less than the specified number of bytes.
@@ -125,7 +125,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * @param buffer The buffer into which the data is read.
  *		 The buffer must not be free'd before the async read completed!
  * @param length The length of the data that should be read at most.
- *		 The buffer <i>must</i> be at least this big!
+ *		 The buffer *must* be *at least* this big!
  * @param target The target on which the selector should be called when the
  *		 data has been received. If the method returns YES, it will be
  *		 called again with the same buffer and maximum length when more
@@ -152,7 +152,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *
  * @param buffer The buffer into which the data is read
  * @param length The length of the data that should be read.
- *		 The buffer <i>must</i> be <i>exactly</i> this big!
+ *		 The buffer *must* be *at least* this big!
  * @param target The target on which the selector should be called when the
  *		 data has been received. If the method returns YES, it will be
  *		 called again with the same buffer and exact length when more
@@ -170,7 +170,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
 
 #ifdef OF_HAVE_BLOCKS
 /*!
- * @brief Asyncronously reads <i>at most</i> size bytes from the stream into a
+ * @brief Asyncronously reads *at most* ref size bytes from the stream into a
  *	  buffer.
  *
  * On network streams, this might read less than the specified number of bytes.
@@ -182,7 +182,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * @param buffer The buffer into which the data is read.
  *		 The buffer must not be free'd before the async read completed!
  * @param length The length of the data that should be read at most.
- *		 The buffer <i>must</i> be at least this big!
+ *		 The buffer *must* be *at least* this big!
  * @param block The block to call when the data has been received.
  *		If the block returns YES, it will be called again with the same
  *		buffer and maximum length when more data has been received. If
@@ -204,7 +204,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *
  * @param buffer The buffer into which the data is read
  * @param length The length of the data that should be read.
- *		 The buffer <i>must</i> be <i>exactly</i> this big!
+ *		 The buffer *must* be *at least* this big!
  * @param block The block to call when the data has been received.
  *		If the block returns YES, it will be called again with the same
  *		buffer and exact length when more data has been received. If

@@ -137,8 +137,8 @@ struct of_list_object_t {
 /*!
  * @brief Returns the first object of the list or nil.
  *
- * The returned object is <i>not</i> retained and autoreleased for performance
- * reasons!
+ * @warning The returned object is *not* retained and autoreleased for
+ *	    performance reasons!
  *
  * @return The first object of the list or nil
  */
@@ -147,8 +147,8 @@ struct of_list_object_t {
 /*!
  * @brief Returns the last object of the list or nil.
  *
- * The returned object is <i>not</i> retained and autoreleased for performance
- * reasons!
+ * @warning The returned object is *not* retained and autoreleased for
+ *	    performance reasons!
  *
  * @return The last object of the list or nil
  */

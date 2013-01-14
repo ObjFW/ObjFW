@@ -140,13 +140,13 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 	    count: (size_t)count;
 
 /*!
- * @brief Returns a specified object of the array.
+ * @brief Returns the object at the specified index in the array.
  *
- * The returned object is <i>not</i> retained and autoreleased for performance
- * reasons!
+ * @warning The returned object is *not* retained and autoreleased for
+ *	    performance reasons!
  *
- * @param index The number of the object to return
- * @return The specified object of the OFArray
+ * @param index The index of the object to return
+ * @return The object at the specified index in the array
  */
 - (id)objectAtIndex: (size_t)index;
 - (id)objectAtIndexedSubscript: (size_t)index;
@@ -200,8 +200,8 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 /*!
  * @brief Returns the first object of the array or nil.
  *
- * The returned object is <i>not</i> retained and autoreleased for performance
- * reasons!
+ * @warning The returned object is *not* retained and autoreleased for
+ *	    performance reasons!
  *
  * @return The first object of the array or nil
  */
@@ -210,8 +210,8 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 /*!
  * @brief Returns the last object of the array or nil.
  *
- * The returned object is <i>not</i> retained and autoreleased for performance
- * reasons!
+ * @warning The returned object is *not* retained and autoreleased for
+ *	    performance reasons!
  *
  * @return The last object of the array or nil
  */
