@@ -587,6 +587,17 @@ static struct {
 	return new;
 }
 
+- (OFArray*)sortedArrayWithOptions: (int)options
+{
+	OFMutableArray *new = [[self mutableCopy] autorelease];
+
+	[new sortWithOptions: options];
+
+	[new makeImmutable];
+
+	return new;
+}
+
 - (OFArray*)reversedArray
 {
 	OFMutableArray *new = [[self mutableCopy] autorelease];

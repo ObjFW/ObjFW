@@ -31,6 +31,10 @@
 
 @class OFString;
 
+enum {
+	OF_SORT_OPTIONS_DESCENDING = 1
+};
+
 #ifdef OF_HAVE_BLOCKS
 typedef void (^of_array_enumeration_block_t)(id object, size_t index,
     BOOL *stop);
@@ -264,6 +268,18 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * @return A sorted copy of the array
  */
 - (OFArray*)sortedArray;
+
+/*!
+ * @brief Returns a sorted copy of the array.
+ *
+ * @param options The options to use when sorting the array.@n
+ *		  Possible values are:
+ *		  Value                      | Description
+ *		  ---------------------------|-------------------------
+ *		  OF_SORT_OPTIONS_DESCENDING | Sort in descending order
+ * @return A sorted copy of the array
+ */
+- (OFArray*)sortedArrayWithOptions: (int)options;
 
 /*!
  * @brief Returns a copy of the array with the order reversed.

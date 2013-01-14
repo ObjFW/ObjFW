@@ -151,6 +151,17 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
 - (void)sort;
 
 /*!
+ * @brief Sorts the array.
+ *
+ * @param options The options to use when sorting the array.@n
+ *		  Possible values are:
+ *		  Value                      | Description
+ *		  ---------------------------|-------------------------
+ *		  OF_SORT_OPTIONS_DESCENDING | Sort in descending order
+ */
+- (void)sortWithOptions: (int)options;
+
+/*!
  * @brief Reverts the order of the objects in the array.
  */
 - (void)reverse;

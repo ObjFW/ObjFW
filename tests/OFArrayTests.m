@@ -153,7 +153,10 @@ static OFString *c_ary[] = {
 	[m[1] addObject: @"z"];
 	TEST(@"-[sortedArray]",
 	    [[m[1] sortedArray] isEqual: ([OFArray arrayWithObjects:
-	    @"0", @"Bar", @"Baz", @"Foo", @"z", nil])])
+	    @"0", @"Bar", @"Baz", @"Foo", @"z", nil])] &&
+	    [[m[1] sortedArrayWithOptions: OF_SORT_OPTIONS_DESCENDING]
+	    isEqual: ([OFArray arrayWithObjects:
+	    @"z", @"Foo", @"Baz", @"Bar", @"0", nil])])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[objectAtIndex:]",
 	    OFOutOfRangeException, [a[0] objectAtIndex: [a[0] count]])

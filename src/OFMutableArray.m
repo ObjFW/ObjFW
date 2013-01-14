@@ -39,8 +39,18 @@ static struct {
 @end
 
 static void
-quicksort(OFMutableArray *array, size_t left, size_t right)
+quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 {
+	of_comparison_result_t ascending, descending;
+
+	if (options & OF_SORT_OPTIONS_DESCENDING) {
+		ascending = OF_ORDERED_DESCENDING;
+		descending = OF_ORDERED_ASCENDING;
+	} else {
+		ascending = OF_ORDERED_ASCENDING;
+		descending = OF_ORDERED_DESCENDING;
+	}
+
 	while (left < right) {
 		size_t i, j;
 		id pivot;
@@ -51,11 +61,11 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 
 		do {
 			while ([[array objectAtIndex: i] compare: pivot] !=
-			    OF_ORDERED_DESCENDING && i < right)
+			    descending && i < right)
 				i++;
 
 			while ([[array objectAtIndex: j] compare: pivot] !=
-			    OF_ORDERED_ASCENDING && j > left)
+			    ascending && j > left)
 				j--;
 
 			if (i < j)
@@ -63,17 +73,16 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 					   withObjectAtIndex: j];
 		} while (i < j);
 
-		if ([[array objectAtIndex: i] compare: pivot] ==
-		    OF_ORDERED_DESCENDING)
+		if ([[array objectAtIndex: i] compare: pivot] == descending)
 			[array exchangeObjectAtIndex: i
 				   withObjectAtIndex: right];
 
 		if (i > 0) {
 			if (i > left && i - 1 - left > right - i - 1) {
 				right = i - 1;
-				quicksort(array, i + 1, right);
+				quicksort(array, i + 1, right, options);
 			} else {
-				quicksort(array, left, i - 1);
+				quicksort(array, left, i - 1, options);
 				left = i + 1;
 			}
 		} else
@@ -379,12 +388,17 @@ quicksort(OFMutableArray *array, size_t left, size_t right)
 
 - (void)sort
 {
+	[self sortWithOptions: 0];
+}
+
+- (void)sortWithOptions: (int)options
+{
 	size_t count = [self count];
 
 	if (count == 0 || count == 1)
 		return;
 
-	quicksort(self, 0, count - 1);
+	quicksort(self, 0, count - 1, options);
 }
 
 - (void)reverse
