@@ -14,6 +14,12 @@
  * file.
  */
 
+#import "objfw-defs.h"
+
+#ifndef OF_HAVE_ATOMIC_OPS
+# error No atomic operations available!
+#endif
+
 #include <stdlib.h>
 
 #import "macros.h"
