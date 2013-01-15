@@ -1079,6 +1079,62 @@ static struct {
 		cString[i] = '\0';
 
 		break;
+	case OF_STRING_ENCODING_ISO_8859_15:
+		cString = [object allocMemoryWithSize: length + 1];
+
+		for (i = 0; i < length; i++) {
+			of_unichar_t c = characters[i];
+
+			switch (c) {
+			case 0xA4:
+			case 0xA6:
+			case 0xA8:
+			case 0xB4:
+			case 0xB8:
+			case 0xBC:
+			case 0xBD:
+			case 0xBE:
+				@throw [OFInvalidEncodingException
+				    exceptionWithClass: [self class]];
+			}
+
+			if (c > 0xFF) {
+				switch (c) {
+				case 0x20AC:
+					cString[i] = 0xA4;
+					break;
+				case 0x160:
+					cString[i] = 0xA6;
+					break;
+				case 0x161:
+					cString[i] = 0xA8;
+					break;
+				case 0x17D:
+					cString[i] = 0xB4;
+					break;
+				case 0x17E:
+					cString[i] = 0xB8;
+					break;
+				case 0x152:
+					cString[i] = 0xBC;
+					break;
+				case 0x153:
+					cString[i] = 0xBD;
+					break;
+				case 0x178:
+					cString[i] = 0xBE;
+					break;
+				default:
+					@throw [OFInvalidEncodingException
+					    exceptionWithClass: [self class]];
+				}
+			} else
+				cString[i] = (uint8_t)c;
+		}
+
+		cString[i] = '\0';
+
+		break;
 	default:
 		@throw [OFNotImplementedException
 		    exceptionWithClass: [self class]
@@ -1124,6 +1180,7 @@ static struct {
 		return UTF8StringLength;
 	case OF_STRING_ENCODING_ASCII:
 	case OF_STRING_ENCODING_ISO_8859_1:
+	case OF_STRING_ENCODING_ISO_8859_15:
 		return [self length];
 	default:
 		@throw [OFNotImplementedException
