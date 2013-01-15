@@ -164,6 +164,9 @@ struct objc_protocol_list {
 
 typedef void (*objc_uncaught_exception_handler)(id);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern SEL sel_registerName(const char*);
 extern const char* sel_getName(SEL);
 extern BOOL sel_isEqual(SEL, SEL);
@@ -196,6 +199,9 @@ extern id objc_autorelease(id);
 extern void* objc_autoreleasePoolPush(void);
 extern void objc_autoreleasePoolPop(void*);
 extern id _objc_rootAutorelease(id);
+#ifdef __cplusplus
+}
+#endif
 
 #undef OBJC_UNSAFE_UNRETAINED
 
