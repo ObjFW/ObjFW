@@ -49,7 +49,9 @@
 #import "OFThreadStartFailedException.h"
 #import "OFThreadStillRunningException.h"
 
-#import "atomic.h"
+#ifdef OF_HAVE_ATOMIC_OPS
+# import "atomic.h"
+#endif
 #import "autorelease.h"
 #import "threading.h"
 
@@ -327,12 +329,19 @@ set_thread_name(OFThread *thread)
 
 - (OFRunLoop*)runLoop
 {
+#ifdef OF_HAVE_ATOMIC_OPS
 	if (runLoop == nil) {
 		OFRunLoop *tmp = [[OFRunLoop alloc] init];
 
 		if (!of_atomic_cmpswap_ptr((void**)&runLoop, nil, tmp))
 			[tmp release];
 	}
+#else
+	@synchronized (self) {
+		if (runLoop == nil)
+			runLoop = [[OFRunLoop alloc] init];
+	}
+#endif
 
 	return [[runLoop retain] autorelease];
 }
