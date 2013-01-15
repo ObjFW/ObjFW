@@ -1055,7 +1055,7 @@ static struct {
 		cString = [object allocMemoryWithSize: length + 1];
 
 		for (i = 0; i < length; i++) {
-			if (characters[i] > 0x80)
+			if OF_UNLIKELY (characters[i] > 0x80)
 				@throw [OFInvalidEncodingException
 				    exceptionWithClass: [self class]];
 
@@ -1069,7 +1069,7 @@ static struct {
 		cString = [object allocMemoryWithSize: length + 1];
 
 		for (i = 0; i < length; i++) {
-			if (characters[i] > 0xFF)
+			if OF_UNLIKELY (characters[i] > 0xFF)
 				@throw [OFInvalidEncodingException
 				    exceptionWithClass: [self class]];
 
@@ -1098,7 +1098,7 @@ static struct {
 				    exceptionWithClass: [self class]];
 			}
 
-			if (c > 0xFF) {
+			if OF_UNLIKELY (c > 0xFF) {
 				switch (c) {
 				case 0x20AC:
 					cString[i] = 0xA4;
@@ -1123,6 +1123,110 @@ static struct {
 					break;
 				case 0x178:
 					cString[i] = 0xBE;
+					break;
+				default:
+					@throw [OFInvalidEncodingException
+					    exceptionWithClass: [self class]];
+				}
+			} else
+				cString[i] = (uint8_t)c;
+		}
+
+		cString[i] = '\0';
+
+		break;
+	case OF_STRING_ENCODING_WINDOWS_1252:
+		cString = [object allocMemoryWithSize: length + 1];
+
+		for (i = 0; i < length; i++) {
+			of_unichar_t c = characters[i];
+
+			if OF_UNLIKELY (c >= 0x80 && c <= 0x9F)
+				@throw [OFInvalidEncodingException
+				    exceptionWithClass: [self class]];
+
+			if OF_UNLIKELY (c > 0xFF) {
+				switch (c) {
+				case 0x20AC:
+					cString[i] = 0x80;
+					break;
+				case 0x201A:
+					cString[i] = 0x82;
+					break;
+				case 0x192:
+					cString[i] = 0x83;
+					break;
+				case 0x201E:
+					cString[i] = 0x84;
+					break;
+				case 0x2026:
+					cString[i] = 0x85;
+					break;
+				case 0x2020:
+					cString[i] = 0x86;
+					break;
+				case 0x2021:
+					cString[i] = 0x87;
+					break;
+				case 0x2C6:
+					cString[i] = 0x88;
+					break;
+				case 0x2030:
+					cString[i] = 0x89;
+					break;
+				case 0x160:
+					cString[i] = 0x8A;
+					break;
+				case 0x2039:
+					cString[i] = 0x8B;
+					break;
+				case 0x152:
+					cString[i] = 0x8C;
+					break;
+				case 0x17D:
+					cString[i] = 0x8E;
+					break;
+				case 0x2018:
+					cString[i] = 0x91;
+					break;
+				case 0x2019:
+					cString[i] = 0x92;
+					break;
+				case 0x201C:
+					cString[i] = 0x93;
+					break;
+				case 0x201D:
+					cString[i] = 0x94;
+					break;
+				case 0x2022:
+					cString[i] = 0x95;
+					break;
+				case 0x2013:
+					cString[i] = 0x96;
+					break;
+				case 0x2014:
+					cString[i] = 0x97;
+					break;
+				case 0x2DC:
+					cString[i] = 0x98;
+					break;
+				case 0x2122:
+					cString[i] = 0x99;
+					break;
+				case 0x161:
+					cString[i] = 0x9A;
+					break;
+				case 0x203A:
+					cString[i] = 0x9B;
+					break;
+				case 0x153:
+					cString[i] = 0x9C;
+					break;
+				case 0x17E:
+					cString[i] = 0x9E;
+					break;
+				case 0x178:
+					cString[i] = 0x9F;
 					break;
 				default:
 					@throw [OFInvalidEncodingException
@@ -1181,6 +1285,7 @@ static struct {
 	case OF_STRING_ENCODING_ASCII:
 	case OF_STRING_ENCODING_ISO_8859_1:
 	case OF_STRING_ENCODING_ISO_8859_15:
+	case OF_STRING_ENCODING_WINDOWS_1252:
 		return [self length];
 	default:
 		@throw [OFNotImplementedException
