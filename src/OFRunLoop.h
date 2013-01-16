@@ -37,7 +37,7 @@
 #endif
 	OFStreamObserver *streamObserver;
 	OFMutableDictionary *readQueues;
-	BOOL running;
+	volatile BOOL running;
 }
 
 /*!
