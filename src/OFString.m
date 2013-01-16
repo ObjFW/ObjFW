@@ -20,8 +20,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <assert.h>
-
 #include <sys/stat.h>
 
 #import "OFString.h"
@@ -989,48 +987,40 @@ static struct {
 	return self;
 }
 
-- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
+- (size_t)getCString: (char*)cString
+	   maxLength: (size_t)maxLength
+	    encoding: (of_string_encoding_t)encoding
 {
 	const of_unichar_t *characters = [self characters];
 	size_t i, length = [self length];
-	OFObject *object = [[[OFObject alloc] init] autorelease];
-	char *cString;
 
 	switch (encoding) {
 	case OF_STRING_ENCODING_UTF_8:;
-		size_t cStringLength, j = 0;
-
-		cString = [object allocMemoryWithSize: (length * 4) + 1];
-		cStringLength = length;
+		size_t j = 0;
 
 		for (i = 0; i < length; i++) {
 			char buffer[4];
 			size_t len = of_string_utf8_encode(characters[i],
 			    buffer);
 
+			/*
+			 * Check for one more than the current index, as we
+			 * need one for the terminating zero.
+			 */
+			if (j + len >= maxLength)
+				@throw [OFOutOfRangeException
+				    exceptionWithClass: [self class]];
+
 			switch (len) {
 			case 1:
 				cString[j++] = buffer[0];
+
 				break;
 			case 2:
-				cStringLength++;
-
-				memcpy(cString + j, buffer, 2);
-				j += 2;
-
-				break;
 			case 3:
-				cStringLength += 2;
-
-				memcpy(cString + j, buffer, 3);
-				j += 3;
-
-				break;
 			case 4:
-				cStringLength += 3;
-
-				memcpy(cString + j, buffer, 4);
-				j += 4;
+				memcpy(cString + j, buffer, len);
+				j += len;
 
 				break;
 			default:
@@ -1041,18 +1031,11 @@ static struct {
 
 		cString[j] = '\0';
 
-		assert(j == cStringLength);
-
-		@try {
-			cString = [object resizeMemory: cString
-						  size: cStringLength + 1];
-		} @catch (OFOutOfMemoryException *e) {
-			/* We don't care, as we only tried to make it smaller */
-		}
-
-		break;
+		return j;
 	case OF_STRING_ENCODING_ASCII:
-		cString = [object allocMemoryWithSize: length + 1];
+		if (length + 1 > maxLength)
+			@throw [OFOutOfRangeException
+			    exceptionWithClass: [self class]];
 
 		for (i = 0; i < length; i++) {
 			if OF_UNLIKELY (characters[i] > 0x80)
@@ -1064,9 +1047,11 @@ static struct {
 
 		cString[i] = '\0';
 
-		break;
+		return length;
 	case OF_STRING_ENCODING_ISO_8859_1:
-		cString = [object allocMemoryWithSize: length + 1];
+		if (length + 1 > maxLength)
+			@throw [OFOutOfRangeException
+			    exceptionWithClass: [self class]];
 
 		for (i = 0; i < length; i++) {
 			if OF_UNLIKELY (characters[i] > 0xFF)
@@ -1078,9 +1063,11 @@ static struct {
 
 		cString[i] = '\0';
 
-		break;
+		return length;
 	case OF_STRING_ENCODING_ISO_8859_15:
-		cString = [object allocMemoryWithSize: length + 1];
+		if (length + 1 > maxLength)
+			@throw [OFOutOfRangeException
+			    exceptionWithClass: [self class]];
 
 		for (i = 0; i < length; i++) {
 			of_unichar_t c = characters[i];
@@ -1134,9 +1121,11 @@ static struct {
 
 		cString[i] = '\0';
 
-		break;
+		return length;
 	case OF_STRING_ENCODING_WINDOWS_1252:
-		cString = [object allocMemoryWithSize: length + 1];
+		if (length + 1 > maxLength)
+			@throw [OFOutOfRangeException
+			    exceptionWithClass: [self class]];
 
 		for (i = 0; i < length; i++) {
 			of_unichar_t c = characters[i];
@@ -1237,6 +1226,48 @@ static struct {
 		}
 
 		cString[i] = '\0';
+
+		return length;
+	default:
+		@throw [OFNotImplementedException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
+	}
+}
+
+- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
+{
+	OFObject *object = [[[OFObject alloc] init] autorelease];
+	size_t length = [self length];
+	char *cString;
+
+	switch (encoding) {
+	case OF_STRING_ENCODING_UTF_8:;
+		size_t cStringLength;
+
+		cString = [object allocMemoryWithSize: (length * 4) + 1];
+
+		cStringLength = [self getCString: cString
+				       maxLength: (length * 4) + 1
+					encoding: OF_STRING_ENCODING_UTF_8];
+
+		@try {
+			cString = [object resizeMemory: cString
+						  size: cStringLength + 1];
+		} @catch (OFOutOfMemoryException *e) {
+			/* We don't care, as we only tried to make it smaller */
+		}
+
+		break;
+	case OF_STRING_ENCODING_ASCII:
+	case OF_STRING_ENCODING_ISO_8859_1:
+	case OF_STRING_ENCODING_ISO_8859_15:
+	case OF_STRING_ENCODING_WINDOWS_1252:
+		cString = [object allocMemoryWithSize: length + 1];
+
+		[self getCString: cString
+		       maxLength: length + 1
+			encoding: encoding];
 
 		break;
 	default:

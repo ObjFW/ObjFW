@@ -563,6 +563,21 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
 	       encoding: (of_string_encoding_t)encoding;
 
 /*!
+ * @brief Writes the OFString into the specified C string with the specified
+ *	  encoding.
+ *
+ * @param cString The C string to write into
+ * @param maxLength The maximum number of bytes to write into the C string,
+ *		    including the terminating zero
+ * @param encoding The encoding to use for writing into the C string
+ * @return The number of bytes written into the C string, without the
+ *	   terminating zero
+ */
+- (size_t)getCString: (char*)cString
+	   maxLength: (size_t)maxLength
+	    encoding: (of_string_encoding_t)encoding;
+
+/*!
  * @brief Returns the OFString as a C string in the specified encoding.
  *
  * The result is valid until the autorelease pool is released. If you want to

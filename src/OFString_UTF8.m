@@ -417,30 +417,20 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 		for (i = 0; i < length; i++) {
 			char buffer[4];
+			size_t len = of_string_utf8_encode(characters[i],
+			    buffer);
 
-			switch (of_string_utf8_encode(characters[i], buffer)) {
+			switch (len) {
 			case 1:
 				s->cString[j++] = buffer[0];
 				break;
 			case 2:
-				s->isUTF8 = YES;
-
-				memcpy(s->cString + j, buffer, 2);
-				j += 2;
-
-				break;
 			case 3:
-				s->isUTF8 = YES;
-
-				memcpy(s->cString + j, buffer, 3);
-				j += 3;
-
-				break;
 			case 4:
 				s->isUTF8 = YES;
 
-				memcpy(s->cString + j, buffer, 4);
-				j += 4;
+				memcpy(s->cString + j, buffer, len);
+				j += len;
 
 				break;
 			default:
@@ -488,7 +478,6 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 		s = &s_store;
 
-		s->cStringLength = length;
 		s->cString = [self allocMemoryWithSize: (length * 4) + 1];
 		s->length = length;
 
@@ -496,7 +485,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			char buffer[4];
 			of_unichar_t character =
 			    (swap ? OF_BSWAP16(string[i]) : string[i]);
-			size_t characterLen;
+			size_t len;
 
 			/* Missing high surrogate */
 			if ((character & 0xFC00) == 0xDC00)
@@ -522,38 +511,22 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				    (nextCharacter & 0x3FF)) + 0x10000;
 
 				i++;
-				s->cStringLength--;
 				s->length--;
 			}
 
-			characterLen = of_string_utf8_encode(character, buffer);
+			len = of_string_utf8_encode(character, buffer);
 
-			switch (characterLen) {
+			switch (len) {
 			case 1:
 				s->cString[j++] = buffer[0];
 				break;
 			case 2:
-				s->isUTF8 = YES;
-				s->cStringLength++;
-
-				memcpy(s->cString + j, buffer, 2);
-				j += 2;
-
-				break;
 			case 3:
-				s->isUTF8 = YES;
-				s->cStringLength += 2;
-
-				memcpy(s->cString + j, buffer, 3);
-				j += 3;
-
-				break;
 			case 4:
 				s->isUTF8 = YES;
-				s->cStringLength += 3;
 
-				memcpy(s->cString + j, buffer, 4);
-				j += 4;
+				memcpy(s->cString + j, buffer, len);
+				j += len;
 
 				break;
 			default:
@@ -563,10 +536,11 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		}
 
 		s->cString[j] = '\0';
+		s->cStringLength = j;
 
 		@try {
 			s->cString = [self resizeMemory: s->cString
-						   size: s->cStringLength + 1];
+						   size: j + 1];
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only tried to make it smaller */
 		}
@@ -605,33 +579,21 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 		for (i = 0; i < length; i++) {
 			char buffer[4];
-			size_t characterLen = of_string_utf8_encode(
+			size_t len = of_string_utf8_encode(
 			    (swap ? OF_BSWAP32(characters[i]) : characters[i]),
 			    buffer);
 
-			switch (characterLen) {
+			switch (len) {
 			case 1:
 				s->cString[j++] = buffer[0];
 				break;
 			case 2:
-				s->isUTF8 = YES;
-
-				memcpy(s->cString + j, buffer, 2);
-				j += 2;
-
-				break;
 			case 3:
-				s->isUTF8 = YES;
-
-				memcpy(s->cString + j, buffer, 3);
-				j += 3;
-
-				break;
 			case 4:
 				s->isUTF8 = YES;
 
-				memcpy(s->cString + j, buffer, 4);
-				j += 4;
+				memcpy(s->cString + j, buffer, len);
+				j += len;
 
 				break;
 			default:
@@ -776,16 +738,40 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	[super dealloc];
 }
 
-- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
+- (size_t)getCString: (char*)cString
+	   maxLength: (size_t)maxLength
+	    encoding: (of_string_encoding_t)encoding
 {
 	switch (encoding) {
-	case OF_STRING_ENCODING_UTF_8:
-		return s->cString;
 	case OF_STRING_ENCODING_ASCII:
 		if (s->isUTF8)
 			@throw [OFInvalidEncodingException
 			    exceptionWithClass: [self class]];
+		/* intentional fall-through */
+	case OF_STRING_ENCODING_UTF_8:
+		if (s->cStringLength + 1 > maxLength)
+			@throw [OFOutOfRangeException
+			    exceptionWithClass: [self class]];
 
+		memcpy(cString, s->cString, s->cStringLength + 1);
+
+		return s->cStringLength;
+	default:
+		return [super getCString: cString
+			       maxLength: maxLength
+				encoding: encoding];
+	}
+}
+
+- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
+{
+	switch (encoding) {
+	case OF_STRING_ENCODING_ASCII:
+		if (s->isUTF8)
+			@throw [OFInvalidEncodingException
+			    exceptionWithClass: [self class]];
+		/* intentional fall-through */
+	case OF_STRING_ENCODING_UTF_8:
 		return s->cString;
 	default:
 		return [super cStringWithEncoding: encoding];
