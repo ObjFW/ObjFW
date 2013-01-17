@@ -21,9 +21,17 @@
 @class OFDataArray;
 @class OFString;
 
+/*! @file */
+
+/*!
+ * @brief The type of an HTTP request.
+ */
 typedef enum of_http_request_type_t {
+	/*! GET */
 	OF_HTTP_REQUEST_TYPE_GET,
+	/*! POST */
 	OF_HTTP_REQUEST_TYPE_POST,
+	/*! HEAD */
 	OF_HTTP_REQUEST_TYPE_HEAD
 } of_http_request_type_t;
 

@@ -104,15 +104,17 @@
 #define OF_RETAIN_COUNT_MAX UINT_MAX
 #define OF_NOT_FOUND SIZE_MAX
 
+/*! @file */
+
 /*!
  * @brief A result of a comparison.
  */
 typedef enum of_comparison_result_t {
-	/// The left object is smaller than the right
+	/*! The left object is smaller than the right */
 	OF_ORDERED_ASCENDING = -1,
-	/// Both objects are equal
+	/*! Both objects are equal */
 	OF_ORDERED_SAME = 0,
-	/// The left object is bigger than the right
+	/*! The left object is bigger than the right */
 	OF_ORDERED_DESCENDING = 1
 } of_comparison_result_t;
 
@@ -120,9 +122,9 @@ typedef enum of_comparison_result_t {
  * @brief An enum for storing endianess.
  */
 typedef enum of_byte_order_t {
-	/// Most significant byte first (big endian)
+	/*! Most significant byte first (big endian) */
 	OF_BYTE_ORDER_BIG_ENDIAN,
-	/// Least significant byte first (little endian)
+	/*! Least significant byte first (little endian) */
 	OF_BYTE_ORDER_LITTLE_ENDIAN
 } of_byte_order_t;
 
@@ -130,9 +132,9 @@ typedef enum of_byte_order_t {
  * @brief A range.
  */
 typedef struct of_range_t {
-	/// The start of the range
+	/*! The start of the range */
 	size_t location;
-	/// The length of the range
+	/*! The length of the range */
 	size_t length;
 } of_range_t;
 
@@ -140,9 +142,9 @@ typedef struct of_range_t {
  * @brief A point.
  */
 typedef struct of_point_t {
-	/// The x coordinate of the point
+	/*! The x coordinate of the point */
 	float x;
-	/// The y coordinate of the point
+	/*! The y coordinate of the point */
 	float y;
 } of_point_t;
 
@@ -150,9 +152,9 @@ typedef struct of_point_t {
  * @brief A dimension.
  */
 typedef struct of_dimension_t {
-	/// The width of the dimension
+	/*! The width of the dimension */
 	float width;
-	/// The height of the dimension
+	/*! The height of the dimension */
 	float height;
 } of_dimension_t;
 
@@ -161,9 +163,9 @@ typedef struct of_dimension_t {
  */
 typedef struct of_rectangle_t
 {
-	/// The point from where the rectangle originates
+	/*! The point from where the rectangle originates */
 	of_point_t origin;
-	/// The size of the rectangle
+	/*! The size of the rectangle */
 	of_dimension_t size;
 } of_rectangle_t;
 

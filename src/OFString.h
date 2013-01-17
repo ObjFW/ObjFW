@@ -39,15 +39,23 @@ typedef uint_least32_t of_char32_t;
 #endif
 typedef of_char32_t of_unichar_t;
 
+/*! @file */
+
 /*!
  * @brief The encoding of a string.
  */
 typedef enum of_string_encoding_t {
+	/*! UTF-8 */
 	OF_STRING_ENCODING_UTF_8,
+	/*! ASCII */
 	OF_STRING_ENCODING_ASCII,
+	/*! ISO 8859-1 */
 	OF_STRING_ENCODING_ISO_8859_1,
+	/*! ISO 8859-15 */
 	OF_STRING_ENCODING_ISO_8859_15,
+	/*! Windows-1252 */
 	OF_STRING_ENCODING_WINDOWS_1252,
+	/*! Try to automatically detect the encoding */
 	OF_STRING_ENCODING_AUTODETECT = 0xFF
 } of_string_encoding_t;
 

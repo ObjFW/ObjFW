@@ -273,8 +273,21 @@ extern void of_log(OFConstantString*, ...);
 #ifdef __cplusplus
 extern "C" {
 #endif
+/*! @file */
+
+/*!
+ * @brief The standard input stream.
+ */
 extern OFStream *of_stdin;
+
+/*!
+ * @brief The standard output stream.
+ */
 extern OFStream *of_stdout;
+
+/*!
+ * @brief The standard error stream.
+ */
 extern OFStream *of_stderr;
 #ifdef __cplusplus
 }

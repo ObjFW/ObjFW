@@ -27,36 +27,64 @@
 #import "OFSerialization.h"
 #import "OFJSONRepresentation.h"
 
+/*! @file */
+
 /*!
- * @brief The type of a number.
+ * @brief The C type of a number stored in an OFNumber.
  */
 typedef enum of_number_type_t {
+	/*! BOOL */
 	OF_NUMBER_BOOL		= 0x01,
+	/*! unsigned char */
 	OF_NUMBER_UCHAR		= 0x02,
+	/*! unsigned short */
 	OF_NUMBER_USHORT	= 0x03,
+	/*! unsigned int */
 	OF_NUMBER_UINT		= 0x04,
+	/*! unsigned long */
 	OF_NUMBER_ULONG		= 0x05,
+	/*! size_t */
 	OF_NUMBER_SIZE		= 0x06,
+	/*! uint8_t */
 	OF_NUMBER_UINT8		= 0x07,
+	/*! uint16_t */
 	OF_NUMBER_UINT16	= 0x08,
+	/*! uint32_t */
 	OF_NUMBER_UINT32	= 0x09,
+	/*! uint64_t */
 	OF_NUMBER_UINT64	= 0x0A,
+	/*! uintptr_t */
 	OF_NUMBER_UINTPTR	= 0x0B,
+	/*! uintmax_t */
 	OF_NUMBER_UINTMAX	= 0x0C,
 	OF_NUMBER_SIGNED	= 0x10,
+	/*! signed char */
 	OF_NUMBER_CHAR		= OF_NUMBER_UCHAR | OF_NUMBER_SIGNED,
+	/*! signed short */
 	OF_NUMBER_SHORT		= OF_NUMBER_USHORT | OF_NUMBER_SIGNED,
+	/*! signed int */
 	OF_NUMBER_INT		= OF_NUMBER_UINT | OF_NUMBER_SIGNED,
+	/*! signed long */
 	OF_NUMBER_LONG		= OF_NUMBER_ULONG | OF_NUMBER_SIGNED,
+	/*! int8_t */
 	OF_NUMBER_INT8		= OF_NUMBER_UINT8 | OF_NUMBER_SIGNED,
+	/*! int16_t */
 	OF_NUMBER_INT16		= OF_NUMBER_UINT16 | OF_NUMBER_SIGNED,
+	/*! int32_t */
 	OF_NUMBER_INT32		= OF_NUMBER_UINT32 | OF_NUMBER_SIGNED,
+	/*! int64_t */
 	OF_NUMBER_INT64		= OF_NUMBER_UINT64 | OF_NUMBER_SIGNED,
+	/*! ssize_t */
 	OF_NUMBER_SSIZE		= OF_NUMBER_SIZE | OF_NUMBER_SIGNED,
+	/*! intmax_t */
 	OF_NUMBER_INTMAX	= OF_NUMBER_UINTMAX | OF_NUMBER_SIGNED,
+	/*! ptrdiff_t */
 	OF_NUMBER_PTRDIFF	= 0x0D | OF_NUMBER_SIGNED,
+	/*! intptr_t */
 	OF_NUMBER_INTPTR	= 0x0E | OF_NUMBER_SIGNED,
+	/*! float */
 	OF_NUMBER_FLOAT		= 0x20,
+	/*! double */
 	OF_NUMBER_DOUBLE	= 0x40 | OF_NUMBER_FLOAT,
 } of_number_type_t;
 

@@ -50,7 +50,8 @@
 + (instancetype)dataArray;
 
 /*!
- * @brief Creates a new OFDataArray whose items all have the same size.
+ * @brief Creates a new OFDataArray whose items all have the same specified
+ *	  size.
  *
  * @param itemSize The size of a single element in the OFDataArray
  * @return A new autoreleased OFDataArray
