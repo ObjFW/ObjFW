@@ -298,6 +298,17 @@ struct {
 	return [self UTF8String];
 }
 
+- (size_t)getCString: (char*)cString_
+	   maxLength: (size_t)maxLength
+	    encoding: (of_string_encoding_t)encoding
+{
+	[self finishInitialization];
+
+	return [self getCString: cString_
+		      maxLength: maxLength
+		       encoding: encoding];
+}
+
 - (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
 {
 	[self finishInitialization];
@@ -563,18 +574,46 @@ struct {
 	return [self doubleValue];
 }
 
-- (const of_unichar_t*)unicodeString
+- (const of_unichar_t*)characters
 {
 	[self finishInitialization];
 
-	return [self unicodeString];
+	return [self characters];
 }
 
-- (const uint16_t*)UTF16String
+- (const of_char16_t*)UTF16String
 {
 	[self finishInitialization];
 
 	return [self UTF16String];
+}
+
+- (const of_char16_t*)UTF16StringWithByteOrder: (of_byte_order_t)byteOrder
+{
+	[self finishInitialization];
+
+	return [self UTF16StringWithByteOrder: byteOrder];
+}
+
+- (size_t)UTF16StringLength
+{
+	[self finishInitialization];
+
+	return [self UTF16StringLength];
+}
+
+- (const of_char32_t*)UTF32String
+{
+	[self finishInitialization];
+
+	return [self UTF32String];
+}
+
+- (const of_char32_t*)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
+{
+	[self finishInitialization];
+
+	return [self UTF32StringWithByteOrder: byteOrder];
 }
 
 - (void)writeToFile: (OFString*)path
@@ -582,6 +621,15 @@ struct {
 	[self finishInitialization];
 
 	return [self writeToFile: path];
+}
+
+- (void)writeToFile: (OFString*)path
+	   encoding: (of_string_encoding_t)encoding
+{
+	[self finishInitialization];
+
+	return [self writeToFile: path
+			encoding: encoding];
 }
 
 #ifdef OF_HAVE_BLOCKS
