@@ -52,12 +52,9 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 	}
 
 	while (left < right) {
-		size_t i, j;
-		id pivot;
-
-		i = left;
-		j = right - 1;
-		pivot = [array objectAtIndex: right];
+		size_t i = left;
+		size_t j = right - 1;
+		id pivot = [array objectAtIndex: right];
 
 		do {
 			while ([[array objectAtIndex: i] compare: pivot] !=
@@ -77,16 +74,10 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 			[array exchangeObjectAtIndex: i
 				   withObjectAtIndex: right];
 
-		if (i > 0) {
-			if (i > left && i - 1 - left > right - i - 1) {
-				right = i - 1;
-				quicksort(array, i + 1, right, options);
-			} else {
-				quicksort(array, left, i - 1, options);
-				left = i + 1;
-			}
-		} else
-			left = i + 1;
+		if (i > 0)
+			quicksort(array, left, i - 1, options);
+
+		left = i + 1;
 	}
 }
 
