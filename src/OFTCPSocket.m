@@ -406,7 +406,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		[mutex unlock];
 	}
 
-	for (ip = [addrlist cArray]; *ip != NULL; ip++) {
+	for (ip = [addrlist items]; *ip != NULL; ip++) {
 # else
 	for (ip = he->h_addr_list; *ip != NULL; ip++) {
 # endif
