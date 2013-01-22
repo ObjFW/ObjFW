@@ -936,7 +936,7 @@
 				 encoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (BOOL)writeBufferEnabled
+- (BOOL)isWriteBufferEnabled
 {
 	return writeBufferEnabled;
 }

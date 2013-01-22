@@ -66,6 +66,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
 }
 
 #ifdef OF_HAVE_PROPERTIES
+@property (getter=isWriteBufferEnabled) BOOL writeBufferEnabled;
 @property (getter=isBlocking) BOOL blocking;
 @property (readonly, getter=isAtEndOfStream) BOOL atEndOfStream;
 #endif
@@ -693,7 +694,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *
  * @return A boolean whether writes are buffered
  */
-- (BOOL)writeBufferEnabled;
+- (BOOL)isWriteBufferEnabled;
 
 /*!
  * @brief Enables or disables the write buffer.

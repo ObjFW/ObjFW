@@ -807,14 +807,11 @@ void _references_to_categories_of_OFObject(void)
 
 - (BOOL)isEqual: (id)object
 {
-	/* Classes containing data should reimplement this! */
 	return (self == object);
 }
 
 - (uint32_t)hash
 {
-	/* Classes containing data should reimplement this! */
-
 	uintptr_t ptr = (uintptr_t)self;
 	uint32_t hash;
 
