@@ -4,7 +4,7 @@ PROG_NOINST = gen_tables${PROG_SUFFIX}
 SRCS = TableGenerator.m
 
 .PHONY: run
-run: all UnicodeData.txt CaseFolding.txt
+run: all
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}
 	rm -f libobjfw.dll libobjfw.dylib
@@ -31,12 +31,6 @@ run: all UnicodeData.txt CaseFolding.txt
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR} libobjfw.dll \
 	rm -f libobjfw.dylib; \
 	exit $$EXIT
-
-UnicodeData.txt:
-	wget http://unicode.org/Public/UNIDATA/UnicodeData.txt
-
-CaseFolding.txt:
-	wget http://www.unicode.org/Public/UNIDATA/CaseFolding.txt
 
 include ../buildsys.mk
 

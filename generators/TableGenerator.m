@@ -20,12 +20,19 @@
 
 #import "OFString.h"
 #import "OFArray.h"
-#import "OFFile.h"
-#import "OFAutoreleasePool.h"
 #import "OFApplication.h"
+#import "OFURL.h"
+#import "OFFile.h"
+
+#import "autorelease.h"
 
 #import "TableGenerator.h"
 #import "copyright.h"
+
+#define UNICODE_DATA_URL \
+	@"http://unicode.org/Public/UNIDATA/UnicodeData.txt"
+#define CASE_FOLDING_URL \
+	@"http://www.unicode.org/Public/UNIDATA/CaseFolding.txt"
 
 OF_APPLICATION_DELEGATE(TableGenerator)
 
@@ -44,29 +51,56 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 - (void)applicationDidFinishLaunching
 {
-	TableGenerator *generator = [[[TableGenerator alloc] init] autorelease];
+	[self downloadFiles];
 
-	[generator readUnicodeDataFileAtPath: @"UnicodeData.txt"];
-	[generator readCaseFoldingFileAtPath: @"CaseFolding.txt"];
+	[self parseUnicodeData];
+	[self parseCaseFolding];
 
-	[generator writeTablesToFileAtPath: @"../src/unicode.m"];
-	[generator writeHeaderToFileAtPath: @"../src/unicode.h"];
+	[of_stdout writeString: @"Writing files..."];
+
+	[self writeTablesToFile: @"../src/unicode.m"];
+	[self writeHeaderToFile: @"../src/unicode.h"];
+
+	[of_stdout writeLine: @" done"];
 
 	[OFApplication terminate];
 }
 
-- (void)readUnicodeDataFileAtPath: (OFString*)path
+- (void)downloadFiles
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init], *pool2;
-	OFFile *file = [OFFile fileWithPath: path
-				       mode: @"rb"];
+	[of_stdout writeString: @"Downloading " UNICODE_DATA_URL @"..."];
+	unicodeData = [[OFString alloc] initWithContentsOfURL:
+	    [OFURL URLWithString: UNICODE_DATA_URL]];
+	[of_stdout writeLine: @" done"];
+
+	[of_stdout writeString: @"Downloading " CASE_FOLDING_URL @"..."];
+	caseFolding = [[OFString alloc] initWithContentsOfURL:
+	    [OFURL URLWithString: CASE_FOLDING_URL]];
+	[of_stdout writeLine: @" done"];
+}
+
+- (void)parseUnicodeData
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFArray *lines;
+	OFEnumerator *enumerator;
 	OFString *line;
 
-	pool2 = [[OFAutoreleasePool alloc] init];
-	while ((line = [file readLine])) {
+	[of_stdout writeString: @"Parsing UnicodeData.txt..."];
+
+	lines = [unicodeData componentsSeparatedByString: @"\n"];
+	enumerator = [lines objectEnumerator];
+
+	while ((line = [enumerator nextObject]) != nil) {
+		void *pool2;
 		OFArray *split;
 		OFString **splitObjects;
 		of_unichar_t codep;
+
+		if ([line length] == 0)
+			continue;
+
+		pool2 = objc_autoreleasePoolPush();
 
 		split = [line componentsSeparatedByString: @";"];
 		if ([split count] != 15) {
@@ -83,27 +117,36 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		titlecaseTable[codep] =
 		    (of_unichar_t)[splitObjects[14] hexadecimalValue];
 
-		[pool2 releaseObjects];
+		objc_autoreleasePoolPop(pool2);
 	}
 
-	[pool release];
+	[of_stdout writeLine: @" done"];
+
+	objc_autoreleasePoolPop(pool);
 }
 
-- (void)readCaseFoldingFileAtPath: (OFString*)path
+- (void)parseCaseFolding
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init], *pool2;
-	OFFile *file = [OFFile fileWithPath: path
-				       mode: @"rb"];
+	void *pool = objc_autoreleasePoolPush();
+	OFArray *lines;
+	OFEnumerator *enumerator;
 	OFString *line;
 
-	pool2 = [[OFAutoreleasePool alloc] init];
-	while ((line = [file readLine]) != nil) {
+	[of_stdout writeString: @"Parsing CaseFolding.txt..."];
+
+	lines = [caseFolding componentsSeparatedByString: @"\n"];
+	enumerator = [lines objectEnumerator];
+
+	while ((line = [enumerator nextObject]) != nil) {
+		void *pool2;
 		OFArray *split;
 		OFString **splitObjects;
 		of_unichar_t codep;
 
 		if ([line length] == 0 || [line hasPrefix: @"#"])
 			continue;
+
+		pool2 = objc_autoreleasePoolPush();
 
 		split = [line componentsSeparatedByString: @"; "];
 		if ([split count] != 4) {
@@ -120,27 +163,26 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		casefoldingTable[codep] =
 		    (of_unichar_t)[splitObjects[2] hexadecimalValue];
 
-		[pool2 releaseObjects];
+		objc_autoreleasePoolPop(pool2);
 	}
 
-	[pool release];
+	[of_stdout writeLine: @" done"];
+
+	objc_autoreleasePoolPop(pool);
 }
 
-- (void)writeTablesToFileAtPath: (OFString*)path
+- (void)writeTablesToFile: (OFString*)path
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init], *pool2;
-
-	of_unichar_t i, j;
+	void *pool = objc_autoreleasePoolPush();
 	OFFile *file = [OFFile fileWithPath: path
 				       mode: @"wb"];
+	of_unichar_t i, j;
 
 	[file writeString: COPYRIGHT
 	    @"#include \"config.h\"\n"
 	    @"\n"
 	    @"#import \"OFString.h\"\n\n"
 	    @"static const of_unichar_t nop_page[0x100] = {};\n\n"];
-
-	pool2 = [[OFAutoreleasePool alloc] init];
 
 	/* Write uppercase_page_%u */
 	for (i = 0; i < 0x110000; i += 0x100) {
@@ -156,6 +198,8 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		}
 
 		if (!isEmpty) {
+			void *pool2 = objc_autoreleasePoolPush();
+
 			[file writeString: [OFString stringWithFormat:
 			    @"static const of_unichar_t "
 			    @"uppercase_page_%u[0x100] = {\n", i >> 8]];
@@ -174,7 +218,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 			[file writeString: @"};\n\n"];
 
-			[pool2 releaseObjects];
+			objc_autoreleasePoolPop(pool2);
 		}
 	}
 
@@ -192,6 +236,8 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		}
 
 		if (!isEmpty) {
+			void *pool2 = objc_autoreleasePoolPush();
+
 			[file writeString: [OFString stringWithFormat:
 			    @"static const of_unichar_t "
 			    @"lowercase_page_%u[0x100] = {\n", i >> 8]];
@@ -210,7 +256,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 			[file writeString: @"};\n\n"];
 
-			[pool2 releaseObjects];
+			objc_autoreleasePoolPop(pool2);
 		}
 	}
 
@@ -231,6 +277,8 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		}
 
 		if (!isEmpty) {
+			void *pool2 = objc_autoreleasePoolPush();
+
 			[file writeString: [OFString stringWithFormat:
 			    @"static const of_unichar_t "
 			    @"titlecase_page_%u[0x100] = {\n", i >> 8]];
@@ -249,7 +297,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 			[file writeString: @"};\n\n"];
 
-			[pool2 releaseObjects];
+			objc_autoreleasePoolPop(pool2);
 		}
 	}
 
@@ -270,6 +318,8 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		}
 
 		if (!isEmpty) {
+			void *pool2 = objc_autoreleasePoolPush();
+
 			[file writeString: [OFString stringWithFormat:
 			    @"static const of_unichar_t "
 			    @"casefolding_page_%u[0x100] = {\n", i >> 8]];
@@ -288,7 +338,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 			[file writeString: @"};\n\n"];
 
-			[pool2 releaseObjects];
+			objc_autoreleasePoolPop(pool2);
 		}
 	}
 
@@ -310,7 +360,6 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		if (uppercaseTableUsed[i]) {
 			[file writeString: [OFString stringWithFormat:
 			    @"uppercase_page_%u", i]];
-			[pool2 releaseObjects];
 		} else
 			[file writeString: @"nop_page"];
 
@@ -333,7 +382,6 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		if (lowercaseTableUsed[i]) {
 			[file writeString: [OFString stringWithFormat:
 			    @"lowercase_page_%u", i]];
-			[pool2 releaseObjects];
 		} else
 			[file writeString: @"nop_page"];
 
@@ -356,7 +404,6 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		if (titlecaseTableUsed[i] == 1) {
 			[file writeString: [OFString stringWithFormat:
 			    @"titlecase_page_%u", i]];
-			[pool2 releaseObjects];
 		} else if (titlecaseTableUsed[i] == 2) {
 			[file writeString: [OFString stringWithFormat:
 			    @"uppercase_page_%u", i]];
@@ -382,7 +429,6 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		if (casefoldingTableUsed[i] == 1) {
 			[file writeString: [OFString stringWithFormat:
 			    @"casefolding_page_%u", i]];
-			[pool2 releaseObjects];
 		} else if (casefoldingTableUsed[i] == 2) {
 			[file writeString: [OFString stringWithFormat:
 			    @"lowercase_page_%u", i]];
@@ -399,12 +445,12 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	[file writeString: @"\n};\n"];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
-- (void)writeHeaderToFileAtPath: (OFString*)path
+- (void)writeHeaderToFile: (OFString*)path
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFFile *file = [OFFile fileWithPath: path
 				       mode: @"wb"];
 
@@ -439,6 +485,6 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	    @"}\n"
 	    @"#endif\n"];
 
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 @end

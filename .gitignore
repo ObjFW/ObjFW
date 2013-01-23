@@ -21,8 +21,6 @@ docs
 extra.mk
 generators/gen_tables
 generators/gen_tables.exe
-generators/CaseFolding.txt
-generators/UnicodeData.txt
 Info.plist
 ObjFW.xcodeproj/*.mode1v3
 ObjFW.xcodeproj/*.pbxuser

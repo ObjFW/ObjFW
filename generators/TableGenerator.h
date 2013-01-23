@@ -14,10 +14,13 @@
  * file.
  */
 
-#import "OFString.h"
+#import "OFObject.h"
+
+@class OFString;
 
 @interface TableGenerator: OFObject
 {
+	OFString *unicodeData, *caseFolding;
 	of_unichar_t uppercaseTable[0x110000];
 	of_unichar_t lowercaseTable[0x110000];
 	of_unichar_t titlecaseTable[0x110000];
@@ -32,8 +35,9 @@
 	size_t casefoldingTableSize;
 }
 
-- (void)readUnicodeDataFileAtPath: (OFString*)path;
-- (void)readCaseFoldingFileAtPath: (OFString*)path;
-- (void)writeTablesToFileAtPath: (OFString*)path;
-- (void)writeHeaderToFileAtPath: (OFString*)path;
+- (void)downloadFiles;
+- (void)parseUnicodeData;
+- (void)parseCaseFolding;
+- (void)writeTablesToFile: (OFString*)path;
+- (void)writeHeaderToFile: (OFString*)path;
 @end
