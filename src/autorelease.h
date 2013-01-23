@@ -17,8 +17,28 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+/*! @file */
+
+/*!
+ * @brief Creates a new autorelease pool.
+ *
+ * @return An identifier for the created autorelease pool
+ */
 extern void* objc_autoreleasePoolPush();
-extern void objc_autoreleasePoolPop(void*);
+
+/*!
+ * @brief Drains an autorelease pool.
+ *
+ * @param pool An identifier for the pool to drain
+ */
+extern void objc_autoreleasePoolPop(void *pool);
+
+/*!
+ * @brief Autoreleases an object.
+ *
+ * @param object The object to autorelease
+ * @return The autoreleased object
+ */
 extern id _objc_rootAutorelease(id object);
 #ifdef __cplusplus
 }
