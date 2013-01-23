@@ -325,7 +325,7 @@ normalized_key(OFString *key)
 	OFString *key, *value;
 	size_t pos;
 
-	if ([line isEqual: @""]) {
+	if ([line length] == 0) {
 		switch (requestType) {
 		case OF_HTTP_REQUEST_TYPE_GET:
 		case OF_HTTP_REQUEST_TYPE_HEAD:

@@ -903,7 +903,7 @@ static Class CDATAClass = Nil;
 - (void)setPrefix: (OFString*)prefix
      forNamespace: (OFString*)ns_
 {
-	if (prefix == nil || [prefix isEqual: @""])
+	if ([prefix length] == 0)
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]
 			      selector: _cmd];

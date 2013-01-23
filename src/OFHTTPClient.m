@@ -175,7 +175,7 @@ normalize_key(char *str_)
 	if (requestType == OF_HTTP_REQUEST_TYPE_POST)
 		type = "POST";
 
-	if ([(path = [URL path]) isEqual: @""])
+	if ([(path = [URL path]) length] == 0)
 		path = @"/";
 
 	if ([URL query] != nil)
@@ -262,7 +262,7 @@ normalize_key(char *str_)
 			@throw [OFInvalidServerReplyException
 			    exceptionWithClass: [self class]];
 
-		if ([line isEqual: @""])
+		if ([line length] == 0)
 			break;
 
 		lineC = [line UTF8String];
@@ -431,7 +431,7 @@ normalize_key(char *str_)
 					    exceptionWithClass: [self class]];
 				}
 
-				if (![line isEqual: @""])
+				if ([line length] > 0)
 					@throw [OFInvalidServerReplyException
 					    exceptionWithClass: [self class]];
 

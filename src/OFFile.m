@@ -291,7 +291,7 @@ of_log(OFConstantString *format, ...)
 		else
 			currentPath = component;
 
-		if (![currentPath isEqual: @""] &&
+		if ([currentPath length] > 0 &&
 		    ![OFFile directoryExistsAtPath: currentPath])
 			[OFFile createDirectoryAtPath: currentPath];
 

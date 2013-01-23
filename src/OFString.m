@@ -1948,14 +1948,14 @@ static struct {
 			continue;
 
 		component = [self substringWithRange: of_range(last, i - last)];
-		if (!skipEmpty || ![component isEqual: @""])
+		if (!skipEmpty || [component length] > 0)
 			[array addObject: component];
 
 		i += delimiterLength - 1;
 		last = i + 1;
 	}
 	component = [self substringWithRange: of_range(last, length - last)];
-	if (!skipEmpty || ![component isEqual: @""])
+	if (!skipEmpty || [component length] > 0)
 		[array addObject: component];
 
 	[array makeImmutable];

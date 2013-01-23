@@ -1167,14 +1167,14 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 		component = [OFString stringWithUTF8String: s->cString + last
 						    length: i - last];
-		if (!skipEmpty || ![component isEqual: @""])
+		if (!skipEmpty || [component length] > 0)
 			[array addObject: component];
 
 		i += cStringLength - 1;
 		last = i + 1;
 	}
 	component = [OFString stringWithUTF8String: s->cString + last];
-	if (!skipEmpty || ![component isEqual: @""])
+	if (!skipEmpty || [component length] > 0)
 		[array addObject: component];
 
 	[array makeImmutable];
