@@ -62,21 +62,6 @@
 	    request: (OFHTTPRequest*)request;
 
 /*!
- * @brief A callback which is called when an OFHTTPClient received data.
- *
- * This is useful for example if you want to update a status display.
- *
- * @param client The OFHTTPClient which received data
- * @param data The data the OFHTTPClient received
- * @param length The length of the data received, in bytes
- * @param request The request for which data has been received
- */
--   (void)client: (OFHTTPClient*)client
-  didReceiveData: (const char*)data
-	  length: (size_t)length
-	 request: (OFHTTPRequest*)request;
-
-/*!
  * @brief A callback which is called when an OFHTTPClient will follow a
  *	  redirect.
  *
@@ -105,13 +90,11 @@
 @interface OFHTTPClient: OFObject
 {
 	id <OFHTTPClientDelegate> delegate;
-	BOOL storesData;
 	BOOL insecureRedirectsAllowed;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (assign) id <OFHTTPClientDelegate> delegate;
-@property BOOL storesData;
 @property BOOL insecureRedirectsAllowed;
 #endif
 
@@ -149,23 +132,6 @@
  * @return Whether redirects from HTTPS to HTTP will be allowed
  */
 - (BOOL)insecureRedirectsAllowed;
-
-/*!
- * @brief Sets whether an OFDataArray with the data should be created.
- *
- * Setting this to NO is only useful if you are using the delegate to handle the
- * data.
- *
- * @param enabled Whether to store the data in an OFDataArray
- */
-- (void)setStoresData: (BOOL)enabled;
-
-/*!
- * @brief Returns whether an OFDataArray with the date should be created.
- *
- * @return Whether an OFDataArray with the data should be created
- */
-- (BOOL)storesData;
 
 /*!
  * @brief Performs the specified HTTP request

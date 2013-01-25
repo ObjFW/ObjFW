@@ -43,6 +43,7 @@
 #import "OFOpenFileFailedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
+#import "OFTruncatedDataException.h"
 
 #import "autorelease.h"
 #import "macros.h"
@@ -901,7 +902,9 @@ static struct {
 	OFHTTPClient *client;
 	OFHTTPRequest *request;
 	OFHTTPRequestReply *reply;
-	OFString *contentType;
+	OFDictionary *headers;
+	OFString *contentType, *contentLength;
+	OFDataArray *data;
 	Class c;
 
 	c = [self class];
@@ -929,8 +932,10 @@ static struct {
 			       request: request
 				 reply: reply];
 
+	headers = [reply headers];
+
 	if (encoding == OF_STRING_ENCODING_AUTODETECT &&
-	    (contentType = [[reply headers] objectForKey: @"Content-Type"])) {
+	    (contentType = [headers objectForKey: @"Content-Type"]) != nil) {
 		contentType = [contentType lowercaseString];
 
 		if ([contentType hasSuffix: @"charset=utf-8"])
@@ -946,11 +951,19 @@ static struct {
 	if (encoding == OF_STRING_ENCODING_AUTODETECT)
 		encoding = OF_STRING_ENCODING_UTF_8;
 
-	self = [[c alloc] initWithCString: (char*)[[reply data] items]
+	data = [reply readDataArrayTillEndOfStream];
+
+	if ((contentLength = [headers objectForKey: @"Content-Length"]) != nil)
+		if ([data count] != (size_t)[contentLength decimalValue])
+			@throw [OFTruncatedDataException
+			    exceptionWithClass: [self class]];
+
+	self = [[c alloc] initWithCString: (char*)[data items]
 				 encoding: encoding
-				   length: [[reply data] count]];
+				   length: [data count]];
 
 	objc_autoreleasePoolPop(pool);
+
 	return self;
 }
 

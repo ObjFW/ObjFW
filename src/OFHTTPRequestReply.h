@@ -14,69 +14,81 @@
  * file.
  */
 
-#import "OFObject.h"
+#import "OFStream.h"
+#import "OFHTTPRequest.h"
 
-@class OFDataArray;
 @class OFDictionary;
 
 /*!
- * @brief A class for storing a reply to an HTTP request.
+ * @brief A class for representing an HTTP request reply as a stream.
  */
-@interface OFHTTPRequestReply: OFObject
+@interface OFHTTPRequestReply: OFStream
 {
+	of_http_request_protocol_version_t protocolVersion;
 	short statusCode;
-	OFDataArray *data;
 	OFDictionary *headers;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly) short statusCode;
-@property (readonly, copy) OFDictionary *headers;
-@property (readonly, retain) OFDataArray *data;
+@property of_http_request_protocol_version_t protocolVersion;
+@property short statusCode;
+@property (copy) OFDictionary *headers;
 #endif
 
 /*!
- * @brief Creates a new OFHTTPRequestReply.
+ * @brief Sets the protocol version of the HTTP request reply.
  *
- * @param status The HTTP status code replied to the request
- * @param headers The headers replied to the request
- * @param data The data replied to the request
- * @return A new OFHTTPRequestReply
+ * @param protocolVersion The protocol version of the HTTP request reply
  */
-+ replyWithStatusCode: (short)status
-	      headers: (OFDictionary*)headers
-		 data: (OFDataArray*)data;
+- (void)setProtocolVersion: (of_http_request_protocol_version_t)protocolVersion;
 
 /*!
- * @brief Initializes an already allocated OFHTTPRequestReply.
+ * @brief Returns the protocol version of the HTTP request reply.
  *
- * @param status The HTTP status code replied to the request
- * @param headers The headers replied to the request
- * @param data The data replied to the request
- * @return An initialized OFHTTPRequestReply
+ * @return The protocol version of the HTTP request reply
  */
-- initWithStatusCode: (short)status
-	     headers: (OFDictionary*)headers
-		data: (OFDataArray*)data;
+- (of_http_request_protocol_version_t)protocolVersion;
 
 /*!
- * @brief Returns the state code of the reply of the HTTP request.
+ * @brief Sets the protocol version of the HTTP request reply to the version
+ *	  described by the specified string.
  *
- * @return The status code of the reply of the HTTP request
+ * @param string A string describing an HTTP version
+ */
+- (void)setProtocolVersionFromString: (OFString*)string;
+
+/*!
+ * @brief Returns the protocol version of the HTTP request reply as a string.
+ *
+ * @return The protocol version of the HTTP request reply as a string
+ */
+- (OFString*)protocolVersionString;
+
+/*!
+ * @brief Returns the status code of the reply to the HTTP request.
+ *
+ * @return The status code of the reply to the HTTP request
  */
 - (short)statusCode;
 
 /*!
- * @brief Returns the headers of the reply of the HTTP request.
+ * @brief Sets the status code of the reply to the HTTP request.
  *
- * @return The headers of the reply of the HTTP request
+ * @param statusCode The status code of the reply to the HTTP request
+ */
+- (void)setStatusCode: (short)statusCode;
+
+/*!
+ * @brief Returns the headers of the reply to the HTTP request.
+ *
+ * @return The headers of the reply to the HTTP request
  */
 - (OFDictionary*)headers;
 
 /*!
- * @brief Returns the data received for the HTTP request.
+ * @brief Returns the headers of the reply to the HTTP request.
  *
- * @return The data received for the HTTP request
+ * @param headers The headers of the reply to the HTTP request
  */
-- (OFDataArray*)data;
+- (void)setHeaders: (OFDictionary*)headers;
 @end

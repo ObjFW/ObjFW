@@ -27,6 +27,7 @@
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPRequestReply.h"
+#import "OFDictionary.h"
 #import "OFXMLElement.h"
 #import "OFSystemInfo.h"
 
@@ -35,6 +36,7 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
+#import "OFTruncatedDataException.h"
 
 #import "autorelease.h"
 #import "base64.h"
@@ -144,6 +146,8 @@ void _references_to_categories_of_OFDataArray(void)
 	OFHTTPClient *client;
 	OFHTTPRequest *request;
 	OFHTTPRequestReply *reply;
+	OFDictionary *headers;
+	OFString *contentLength;
 	Class c;
 
 	c = [self class];
@@ -167,8 +171,16 @@ void _references_to_categories_of_OFDataArray(void)
 			       request: request
 				 reply: reply];
 
-	self = [[reply data] retain];
+	self = [[reply readDataArrayTillEndOfStream] retain];
+
+	headers = [reply headers];
+	if ((contentLength = [headers objectForKey: @"Content-Length"]) != nil)
+		if ([self count] != (size_t)[contentLength decimalValue])
+			@throw [OFTruncatedDataException
+			    exceptionWithClass: [self class]];
+
 	objc_autoreleasePoolPop(pool);
+
 	return self;
 }
 

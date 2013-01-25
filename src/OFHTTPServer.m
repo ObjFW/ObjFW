@@ -41,7 +41,6 @@
 #define BUFFER_SIZE 1024
 
 /*
- * TODO: Add support for chunked transfer encoding.
  * FIXME: Key normalization replaces headers like "DNT" with "Dnt".
  * FIXME: Errors are not reported to the user.
  */
@@ -164,6 +163,116 @@ normalized_key(OFString *key)
 				       freeWhenDone: YES];
 }
 
+@interface OFHTTPServerReply: OFHTTPRequestReply
+{
+	OFTCPSocket *sock;
+	OFHTTPServer *server;
+	BOOL chunked, headersSent, closed;
+}
+
+- initWithSocket: (OFTCPSocket*)sock
+	  server: (OFHTTPServer*)server;
+@end
+
+@implementation OFHTTPServerReply
+- initWithSocket: (OFTCPSocket*)sock_
+	  server: (OFHTTPServer*)server_
+{
+	self = [super init];
+
+	statusCode = 500;
+	sock = [sock_ retain];
+	server = [server_ retain];
+
+	return self;
+}
+
+- (void)dealloc
+{
+	if (!closed)
+		[self close];
+
+	[sock release];
+	[server release];
+
+	[super dealloc];
+}
+
+- (void)sendHeaders
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *date = [[OFDate date]
+	    dateStringWithFormat: @"%a, %d %b %Y %H:%M:%S GMT"];
+	OFEnumerator *keyEnumerator, *valueEnumerator;
+	OFString *key, *value;
+
+	[sock writeFormat: @"HTTP/%@ %d %s\r\n"
+			   @"Server: %@\r\n"
+			   @"Date: %@\r\n",
+			   [self protocolVersionString], statusCode,
+			   status_code_to_string(statusCode),
+			   [server name], date];
+
+	keyEnumerator = [headers keyEnumerator];
+	valueEnumerator = [headers objectEnumerator];
+	while ((key = [keyEnumerator nextObject]) != nil &&
+	    (value = [valueEnumerator nextObject]) != nil)
+		if (![key isEqual: @"Server"] && ![key isEqual: @"Date"])
+			[sock writeFormat: @"%@: %@\r\n", key, value];
+
+	[sock writeString: @"\r\n"];
+
+	headersSent = YES;
+	chunked = [[headers objectForKey: @"Transfer-Encoding"]
+	    isEqual: @"chunked"];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)lowlevelWriteBuffer: (const void*)buffer
+		     length: (size_t)length
+{
+	void *pool;
+
+	if (!headersSent)
+		[self sendHeaders];
+
+	if (!chunked) {
+		[sock writeBuffer: buffer
+			   length: length];
+		return;
+	}
+
+	pool = objc_autoreleasePoolPush();
+	[sock writeString: [OFString stringWithFormat: @"%zx\r\n", length]];
+	objc_autoreleasePoolPop(pool);
+
+	[sock writeBuffer: buffer
+		   length: length];
+	[sock writeBuffer: "\r\n"
+		   length: 2];
+}
+
+- (void)close
+{
+	if (!headersSent)
+		[self sendHeaders];
+
+	if (chunked)
+		[sock writeBuffer: "0\r\n\r\n"
+			   length: 5];
+
+	[sock close];
+
+	closed = YES;
+}
+
+- (int)fileDescriptorForWriting
+{
+	return [sock fileDescriptorForWriting];
+}
+@end
+
 @interface OFHTTPServer_Connection: OFObject
 {
 	OFTCPSocket *sock;
@@ -195,7 +304,7 @@ normalized_key(OFString *key)
 	     length: (size_t)length
 	  exception: (OFException*)exception;
 - (BOOL)sendErrorAndClose: (short)statusCode;
-- (void)sendReply;
+- (void)createReply;
 @end
 
 @implementation OFHTTPServer_Connection
@@ -254,7 +363,7 @@ normalized_key(OFString *key)
 				return NO;
 
 			if (state == SEND_REPLY) {
-				[self sendReply];
+				[self createReply];
 				return NO;
 			}
 
@@ -423,7 +532,7 @@ normalized_key(OFString *key)
 
 	if ([POSTData count] >= contentLength) {
 		@try {
-			[self sendReply];
+			[self createReply];
 		} @catch (OFWriteFailedException *e) {
 			return NO;
 		}
@@ -452,16 +561,11 @@ normalized_key(OFString *key)
 	return NO;
 }
 
-- (void)sendReply
+- (void)createReply
 {
 	OFURL *URL;
 	OFHTTPRequest *request;
-	OFHTTPRequestReply *reply;
-	OFDictionary *replyHeaders;
-	OFDataArray *replyData;
-	OFString *date;
-	OFEnumerator *keyEnumerator, *valueEnumerator;
-	OFString *key, *value;
+	OFHTTPServerReply *reply;
 	size_t pos;
 
 	[timer invalidate];
@@ -497,49 +601,19 @@ normalized_key(OFString *key)
 
 	request = [OFHTTPRequest requestWithURL: URL];
 	[request setRequestType: requestType];
+	[request setProtocolVersion:
+	    (of_http_request_protocol_version_t){ 1, HTTPMinorVersion }];
 	[request setHeaders: headers];
 	[request setPOSTData: POSTData];
 	[request setRemoteAddress: [sock remoteAddress]];
 
-	reply = [[server delegate] server: server
-			didReceiveRequest: request];
+	reply = [[[OFHTTPServerReply alloc]
+	    initWithSocket: sock
+		    server: server] autorelease];
 
-	date = [[OFDate date]
-	    dateStringWithFormat: @"%a, %d %b %Y %H:%M:%S GMT"];
-
-	if (reply == nil) {
-		[self sendErrorAndClose: 500];
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [(id)[server delegate] class]
-			      selector: @selector(server:didReceiveRequest:)];
-	}
-
-	replyHeaders = [reply headers];
-	replyData = [reply data];
-
-	[sock writeFormat: @"HTTP/1.1 %d %s\r\n"
-			   @"Server: %@\r\n"
-			   @"Date: %@\r\n",
-			   [reply statusCode],
-			   status_code_to_string([reply statusCode]),
-			   [server name], date];
-
-	if (requestType != OF_HTTP_REQUEST_TYPE_HEAD)
-		[sock writeFormat: @"Content-Length: %zu\r\n",
-				   [replyData count] * [replyData itemSize]];
-
-	keyEnumerator = [replyHeaders keyEnumerator];
-	valueEnumerator = [replyHeaders objectEnumerator];
-	while ((key = [keyEnumerator nextObject]) != nil &&
-	    (value = [valueEnumerator nextObject]) != nil)
-		if (![key isEqual: @"Server"] && ![key isEqual: @"Date"])
-			[sock writeFormat: @"%@: %@\r\n", key, value];
-
-	[sock writeString: @"\r\n"];
-
-	if (requestType != OF_HTTP_REQUEST_TYPE_HEAD)
-		[sock writeBuffer: [replyData items]
-			   length: [replyData count] * [replyData itemSize]];
+	[[server delegate] server: server
+		didReceiveRequest: request
+			    reply: reply];
 }
 @end
 

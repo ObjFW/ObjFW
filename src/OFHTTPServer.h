@@ -32,10 +32,11 @@
  *
  * @param server The HTTP server which received the request
  * @param request The request the HTTP server received
- * @return The reply the HTTP server should send to the client
+ * @param reply The reply the server wants to send to the client
  */
-- (OFHTTPRequestReply*)server: (OFHTTPServer*)server
-	    didReceiveRequest: (OFHTTPRequest*)request;
+-      (void)server: (OFHTTPServer*)server
+  didReceiveRequest: (OFHTTPRequest*)request
+	      reply: (OFHTTPRequestReply*)reply;
 
 #ifdef OF_HAVE_OPTIONAL_PROTOCOLS
 @optional

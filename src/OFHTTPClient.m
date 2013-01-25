@@ -27,7 +27,6 @@
 #import "OFTCPSocket.h"
 #import "OFDictionary.h"
 #import "OFDataArray.h"
-#import "OFSystemInfo.h"
 
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidEncodingException.h"
@@ -62,19 +61,127 @@ normalize_key(char *str_)
 	}
 }
 
+@interface OFHTTPClientReply: OFHTTPRequestReply
+{
+	OFTCPSocket *sock;
+	BOOL chunked, atEndOfStream;
+	size_t toRead;
+}
+
+- initWithSocket: (OFTCPSocket*)sock;
+@end
+
+@implementation OFHTTPClientReply
+- initWithSocket: (OFTCPSocket*)sock_
+{
+	self = [super init];
+
+	sock = [sock_ retain];
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[sock release];
+
+	[super dealloc];
+}
+
+- (void)setHeaders: (OFDictionary*)headers_
+{
+	[super setHeaders: headers_];
+
+	chunked = [[headers_ objectForKey: @"Transfer-Encoding"]
+	    isEqual: @"chunked"];
+}
+
+- (size_t)lowlevelReadIntoBuffer: (void*)buffer
+			  length: (size_t)length
+{
+	if (!chunked)
+		return [sock readIntoBuffer: buffer
+				     length: length];
+
+	if (toRead > 0) {
+		if (length > toRead)
+			length = toRead;
+
+		length = [sock readIntoBuffer: buffer
+				       length: length];
+
+		toRead -= length;
+
+		if (toRead == 0)
+			if ([[sock readLine] length] > 0)
+				@throw [OFInvalidServerReplyException
+				    exceptionWithClass: [self class]];
+
+		return length;
+	} else {
+		void *pool = objc_autoreleasePoolPush();
+		OFString *line;
+		of_range_t range;
+
+		@try {
+			line = [sock readLine];
+		} @catch (OFInvalidEncodingException *e) {
+			@throw [OFInvalidServerReplyException
+			    exceptionWithClass: [self class]];
+		}
+
+		range = [line rangeOfString: @";"];
+		if (range.location != OF_NOT_FOUND)
+			line = [line substringWithRange:
+			    of_range(0, range.location)];
+
+		@try {
+			toRead =
+			    (size_t)[line hexadecimalValue];
+		} @catch (OFInvalidFormatException *e) {
+			@throw [OFInvalidServerReplyException
+			    exceptionWithClass: [self class]];
+		}
+
+		if (toRead == 0) {
+			[sock close];
+			atEndOfStream = YES;
+		}
+
+		objc_autoreleasePoolPop(pool);
+
+		return 0;
+	}
+}
+
+- (BOOL)lowlevelIsAtEndOfStream
+{
+	if (!chunked)
+		return [sock isAtEndOfStream];
+
+	return atEndOfStream;
+}
+
+- (int)fileDescriptorForReading
+{
+	return [sock fileDescriptorForReading];
+}
+
+- (size_t)pendingBytes
+{
+	return [super pendingBytes] + [sock pendingBytes];
+}
+
+- (void)close
+{
+	[sock close];
+}
+@end
+
 @implementation OFHTTPClient
 + (instancetype)client
 {
 	return [[[self alloc] init] autorelease];
-}
-
-- init
-{
-	self = [super init];
-
-	storesData = YES;
-
-	return self;
 }
 
 - (void)setDelegate: (id <OFHTTPClientDelegate>)delegate_
@@ -97,16 +204,6 @@ normalize_key(char *str_)
 	return insecureRedirectsAllowed;
 }
 
-- (void)setStoresData: (BOOL)storesData_
-{
-	storesData = storesData_;
-}
-
-- (BOOL)storesData
-{
-	return storesData;
-}
-
 - (OFHTTPRequestReply*)performRequest: (OFHTTPRequest*)request
 {
 	return [self performRequest: request
@@ -123,19 +220,13 @@ normalize_key(char *str_)
 	OFDictionary *headers = [request headers];
 	OFDataArray *POSTData = [request POSTData];
 	OFTCPSocket *sock;
-	OFHTTPRequestReply *reply;
+	OFHTTPClientReply *reply;
 	OFString *line, *path, *version;
 	OFMutableDictionary *serverHeaders;
-	OFDataArray *data;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
-	OFString *key, *object, *contentLengthHeader;
+	OFString *key, *object;
 	int status;
 	const char *type = NULL;
-	size_t contentLength = 0;
-	BOOL chunked;
-	size_t pageSize;
-	char *buffer;
-	size_t bytesReceived;
 
 	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
 		@throw [OFUnsupportedProtocolException
@@ -179,10 +270,11 @@ normalize_key(char *str_)
 		path = @"/";
 
 	if ([URL query] != nil)
-		[sock writeFormat: @"%s %@?%@ HTTP/1.1\r\n",
-		    type, path, [URL query]];
+		[sock writeFormat: @"%s %@?%@ HTTP/%@\r\n",
+		    type, path, [URL query], [request protocolVersionString]];
 	else
-		[sock writeFormat: @"%s %@ HTTP/1.1\r\n", type, path];
+		[sock writeFormat: @"%s %@ HTTP/%@\r\n",
+		    type, path, [request protocolVersionString]];
 
 	if ([URL port] == 80)
 		[sock writeFormat: @"Host: %@\r\n", [URL host]];
@@ -343,6 +435,8 @@ normalize_key(char *str_)
 				  forKey: key];
 	}
 
+	[serverHeaders makeImmutable];
+
 	if ([delegate respondsToSelector:
 	    @selector(client:didReceiveHeaders:statusCode:request:)])
 		[delegate      client: self
@@ -350,149 +444,16 @@ normalize_key(char *str_)
 			   statusCode: status
 			      request: request];
 
-	data = (storesData ? [OFDataArray dataArray] : nil);
-	chunked = [[serverHeaders objectForKey: @"Transfer-Encoding"]
-	    isEqual: @"chunked"];
-
-	contentLengthHeader = [serverHeaders objectForKey: @"Content-Length"];
-
-	if (contentLengthHeader != nil) {
-		contentLength = (size_t)[contentLengthHeader decimalValue];
-
-		if (contentLength > SIZE_MAX)
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
-	}
-
-	pageSize = [OFSystemInfo pageSize];
-	buffer = [self allocMemoryWithSize: pageSize];
-	bytesReceived = 0;
-	@try {
-		if (chunked) {
-			for (;;) {
-				void *pool2 = objc_autoreleasePoolPush();
-				size_t toRead;
-				of_range_t range;
-
-				@try {
-					line = [sock readLine];
-				} @catch (OFInvalidEncodingException *e) {
-					@throw [OFInvalidServerReplyException
-					    exceptionWithClass: [self class]];
-				}
-
-				range = [line rangeOfString: @";"];
-				if (range.location != OF_NOT_FOUND)
-					line = [line substringWithRange:
-					    of_range(0, range.location)];
-
-				@try {
-					toRead =
-					    (size_t)[line hexadecimalValue];
-				} @catch (OFInvalidFormatException *e) {
-					@throw [OFInvalidServerReplyException
-					    exceptionWithClass: [self class]];
-				}
-
-				if (toRead == 0 ||
-				    (contentLengthHeader != nil &&
-				    contentLength >= bytesReceived))
-					break;
-
-				while (toRead > 0) {
-					size_t length = (toRead < pageSize
-					    ? toRead : pageSize);
-
-					length = [sock readIntoBuffer: buffer
-							       length: length];
-
-					if ([delegate respondsToSelector:
-					    @selector(client:didReceiveData:
-					    length:request:)])
-						[delegate client: self
-						  didReceiveData: buffer
-							  length: length
-							 request: request];
-
-					objc_autoreleasePoolPop(pool2);
-					pool2 = objc_autoreleasePoolPush();
-
-					bytesReceived += length;
-					[data addItems: buffer
-						 count: length];
-
-					toRead -= length;
-				}
-
-				@try {
-					line = [sock readLine];
-				} @catch (OFInvalidEncodingException *e) {
-					@throw [OFInvalidServerReplyException
-					    exceptionWithClass: [self class]];
-				}
-
-				if ([line length] > 0)
-					@throw [OFInvalidServerReplyException
-					    exceptionWithClass: [self class]];
-
-				objc_autoreleasePoolPop(pool2);
-			}
-		} else {
-			size_t length;
-
-			while (![sock isAtEndOfStream]) {
-				void *pool2;
-
-				length = [sock readIntoBuffer: buffer
-						       length: pageSize];
-
-				pool2 = objc_autoreleasePoolPush();
-
-				if ([delegate respondsToSelector:
-				    @selector(client:didReceiveData:length:
-				    request:)])
-					[delegate client: self
-					  didReceiveData: buffer
-						  length: length
-						 request: request];
-
-				objc_autoreleasePoolPop(pool2);
-
-				bytesReceived += length;
-				[data addItems: buffer
-					 count: length];
-
-				if (contentLengthHeader != nil &&
-				    bytesReceived >= contentLength)
-					break;
-			}
-		}
-	} @finally {
-		[self freeMemory: buffer];
-	}
-
-	[sock close];
-
-	/*
-	 * We only want to throw on status code 200 as we will throw an
-	 * OFHTTPRequestFailedException for all other status codes later.
-	 */
-	if (status == 200 && contentLengthHeader != nil &&
-	    contentLength != bytesReceived)
-		@throw [OFTruncatedDataException
-		    exceptionWithClass: [self class]];
-
-	[serverHeaders makeImmutable];
-
-	reply = [[OFHTTPRequestReply alloc] initWithStatusCode: status
-						       headers: serverHeaders
-							  data: data];
+	reply = [[OFHTTPClientReply alloc] initWithSocket: sock];
+	[reply setProtocolVersionFromString: version];
+	[reply setStatusCode: status];
+	[reply setHeaders: serverHeaders];
 
 	objc_autoreleasePoolPop(pool);
 
 	[reply autorelease];
 
-	if (status != 200)
+	if (status / 100 != 2)
 		@throw [OFHTTPRequestFailedException
 		    exceptionWithClass: [self class]
 			       request: request

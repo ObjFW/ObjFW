@@ -31,6 +31,7 @@
 #import "OFCondition.h"
 #import "OFURL.h"
 #import "OFDictionary.h"
+#import "OFDataArray.h"
 #import "OFAutoreleasePool.h"
 
 #import "TestsAppDelegate.h"
@@ -98,6 +99,7 @@ static OFCondition *cond;
 	OFHTTPClient *client;
 	OFHTTPRequest *request;
 	OFHTTPRequestReply *reply;
+	OFDataArray *data;
 
 	cond = [OFCondition condition];
 	[cond lock];
@@ -118,7 +120,11 @@ static OFCondition *cond;
 	    R(reply = [client performRequest: request]))
 
 	TEST(@"Normalization of server header keys",
-	     ([[reply headers] objectForKey: @"Content-Length"] != nil))
+	    ([[reply headers] objectForKey: @"Content-Length"] != nil))
+
+	TEST(@"Correct parsing of data",
+	    (data = [reply readDataArrayTillEndOfStream]) &&
+	    [data count] == 7 && !memcmp([data items], "foo\nbar", 7))
 
 	[server join];
 

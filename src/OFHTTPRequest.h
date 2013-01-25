@@ -36,12 +36,23 @@ typedef enum of_http_request_type_t {
 } of_http_request_type_t;
 
 /*!
+ * @brief The HTTP version of the HTTP request.
+ */
+typedef struct of_http_request_protocol_version_t {
+	/*! The major of the HTTP version */
+	uint8_t major;
+	/*! The minor of the HTTP version */
+	uint8_t minor;
+} of_http_request_protocol_version_t;
+
+/*!
  * @brief A class for storing HTTP requests.
  */
 @interface OFHTTPRequest: OFObject
 {
 	OFURL *URL;
 	of_http_request_type_t requestType;
+	of_http_request_protocol_version_t protocolVersion;
 	OFDictionary *headers;
 	OFDataArray *POSTData;
 	OFString *MIMEType;
@@ -51,6 +62,7 @@ typedef enum of_http_request_type_t {
 #ifdef OF_HAVE_PROPERTIES
 @property (copy) OFURL *URL;
 @property of_http_request_type_t requestType;
+@property of_http_request_protocol_version_t protocolVersion;
 @property (copy) OFDictionary *headers;
 @property (retain) OFDataArray *POSTData;
 @property (copy) OFString *MIMEType;
@@ -107,6 +119,35 @@ typedef enum of_http_request_type_t {
  * @return The request type of the HTTP request
  */
 - (of_http_request_type_t)requestType;
+
+/*!
+ * @brief Sets the protocol version of the HTTP request.
+ *
+ * @param protocolVersion The protocol version of the HTTP request
+ */
+- (void)setProtocolVersion: (of_http_request_protocol_version_t)protocolVersion;
+
+/*!
+ * @brief Returns the protocol version of the HTTP request.
+ *
+ * @return The protocol version of the HTTP request
+ */
+- (of_http_request_protocol_version_t)protocolVersion;
+
+/*!
+ * @brief Sets the protocol version of the HTTP request to the version
+ *	  described by the specified string.
+ *
+ * @param string A string describing an HTTP version
+ */
+- (void)setProtocolVersionFromString: (OFString*)string;
+
+/*!
+ * @brief Returns the protocol version of the HTTP request as a string.
+ *
+ * @return The protocol version of the HTTP request as a string
+ */
+- (OFString*)protocolVersionString;
 
 /*!
  * @brief Sets a dictionary with headers for the HTTP request.
