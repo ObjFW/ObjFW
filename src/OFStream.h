@@ -61,8 +61,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
 	char   *writeBuffer;
 	size_t cacheLength, writeBufferLength;
 	BOOL   writeBufferEnabled;
-	BOOL   blocking;
-	BOOL   waitingForDelimiter;
+	BOOL   blocking, waitingForDelimiter;
 }
 
 #ifdef OF_HAVE_PROPERTIES

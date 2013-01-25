@@ -39,6 +39,7 @@
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFNotImplementedException.h"
 #import "OFSetOptionFailedException.h"
 
 #import "macros.h"
@@ -101,7 +102,7 @@
 
 - (BOOL)isAtEndOfStream
 {
-	if (cache != NULL)
+	if (cacheLength > 0)
 		return NO;
 
 	return [self lowlevelIsAtEndOfStream];
@@ -110,7 +111,7 @@
 - (size_t)readIntoBuffer: (void*)buffer
 		  length: (size_t)length
 {
-	if (cache == NULL)
+	if (cacheLength == 0)
 		return [self lowlevelReadIntoBuffer: buffer
 					     length: length];
 
@@ -1466,29 +1467,62 @@
 - (void)setBlocking: (BOOL)enable
 {
 #ifndef _WIN32
-	int readFlags, writeFlags;
+	BOOL readImplemented = NO, writeImplemented = NO;
 
-	readFlags = fcntl([self fileDescriptorForReading], F_GETFL);
-	writeFlags = fcntl([self fileDescriptorForWriting], F_GETFL);
+	@try {
+		int readFlags;
 
-	if (readFlags == -1 || writeFlags == -1)
-		@throw [OFSetOptionFailedException
-		    exceptionWithClass: [self class]
-				stream: self];
+		readFlags = fcntl([self fileDescriptorForReading], F_GETFL);
 
-	if (enable) {
-		readFlags &= ~O_NONBLOCK;
-		writeFlags &= ~O_NONBLOCK;
-	} else {
-		readFlags |= O_NONBLOCK;
-		writeFlags |= O_NONBLOCK;
+		readImplemented = YES;
+
+		if (readFlags == -1)
+			@throw [OFSetOptionFailedException
+			    exceptionWithClass: [self class]
+					stream: self];
+
+		if (enable)
+			readFlags &= ~O_NONBLOCK;
+		else
+			readFlags |= O_NONBLOCK;
+
+		if (fcntl([self fileDescriptorForReading], F_SETFL,
+		    readFlags) == -1)
+			@throw [OFSetOptionFailedException
+			    exceptionWithClass: [self class]
+					stream: self];
+	} @catch (OFNotImplementedException *e) {
 	}
 
-	if (fcntl([self fileDescriptorForReading], F_SETFL, readFlags) == -1 ||
-	    fcntl([self fileDescriptorForWriting], F_SETFL, writeFlags) == -1)
-		@throw [OFSetOptionFailedException
+	@try {
+		int writeFlags;
+
+		writeFlags = fcntl([self fileDescriptorForWriting], F_GETFL);
+
+		writeImplemented = YES;
+
+		if (writeFlags == -1)
+			@throw [OFSetOptionFailedException
+			    exceptionWithClass: [self class]
+					stream: self];
+
+		if (enable)
+			writeFlags &= ~O_NONBLOCK;
+		else
+			writeFlags |= O_NONBLOCK;
+
+		if (fcntl([self fileDescriptorForWriting], F_SETFL,
+		    writeFlags) == -1)
+			@throw [OFSetOptionFailedException
+			    exceptionWithClass: [self class]
+					stream: self];
+	} @catch (OFNotImplementedException *e) {
+	}
+
+	if (!readImplemented && !writeImplemented)
+		@throw [OFNotImplementedException
 		    exceptionWithClass: [self class]
-				stream: self];
+			      selector: _cmd];
 #else
 	[self doesNotRecognizeSelector: _cmd];
 	abort();
