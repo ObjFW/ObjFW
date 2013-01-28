@@ -1391,8 +1391,18 @@
 
 - (OFString*)JSONRepresentation
 {
+	double doubleValue;
+
 	if (type == OF_NUMBER_BOOL)
 		return (value.bool_ ? @"true" : @"false");
+
+	doubleValue = [self doubleValue];
+	if (isinf(doubleValue)) {
+		if (doubleValue > 0)
+			return @"Infinity";
+		else
+			return @"-Infinity";
+	}
 
 	return [self description];
 }

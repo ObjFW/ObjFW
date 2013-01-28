@@ -19,6 +19,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <math.h>
+
 #include <assert.h>
 
 #import "OFString+JSONValue.h"
@@ -562,6 +564,10 @@ parseNumber(const char *restrict *pointer, const char *stop,
 		else if (isHex)
 			number = [OFNumber numberWithIntMax:
 			    [string hexadecimalValue]];
+		else if ([string isEqual: @"Infinity"])
+			number = [OFNumber numberWithDouble: INFINITY];
+		else if ([string isEqual: @"-Infinity"])
+			number = [OFNumber numberWithDouble: -INFINITY];
 		else
 			number = [OFNumber numberWithIntMax:
 			    [string decimalValue]];
@@ -629,8 +635,10 @@ nextObject(const char *restrict *pointer, const char *stop,
 	case '7':
 	case '8':
 	case '9':
+	case '+':
 	case '-':
 	case '.':
+	case 'I':
 		return parseNumber(pointer, stop, line);
 	default:
 		return nil;
