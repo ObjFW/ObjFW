@@ -37,6 +37,7 @@ PLUGIN_CFLAGS="@PLUGIN_CFLAGS@"
 PLUGIN_LDFLAGS="@PLUGIN_LDFLAGS@"
 PLUGIN_SUFFIX="@PLUGIN_SUFFIX@"
 PROG_SUFFIX="@EXEEXT@"
+STATIC_LIBS="${libdir}/libobjfw.a @LIBS@"
 VERSION="@PACKAGE_VERSION@"
 
 show_help() {
@@ -58,6 +59,7 @@ objfw-config: Available arguments are:
 	--lib-prefix	Outputs the prefix for libraries"
 	--lib-suffix	Outputs the suffix for libraries"
 	--prog-suffix	Outputs the suffix for binaries"
+	--static-libs	Outputs the required LIBS to link ObjFW statically
 	--version	Outputs the installed version
 __EOF__
 	exit 0
@@ -151,6 +153,9 @@ while test ! -z "$1"; do
 			;;
 		--prog-suffix)
 			printf "%s" "$PROG_SUFFIX"
+			;;
+		--static-libs)
+			printf "%s" "$STATIC_LIBS"
 			;;
 		--version)
 			printf "%s" "$VERSION"
