@@ -36,6 +36,7 @@
 #import "OFOutOfRangeException.h"
 #import "OFWriteFailedException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 
 #define BUFFER_SIZE 1024
