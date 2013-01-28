@@ -20,7 +20,6 @@
 
 @interface TableGenerator: OFObject
 {
-	OFString *unicodeData, *caseFolding;
 	of_unichar_t uppercaseTable[0x110000];
 	of_unichar_t lowercaseTable[0x110000];
 	of_unichar_t titlecaseTable[0x110000];
@@ -35,7 +34,6 @@
 	size_t casefoldingTableSize;
 }
 
-- (void)downloadFiles;
 - (void)parseUnicodeData;
 - (void)parseCaseFolding;
 - (void)writeTablesToFile: (OFString*)path;

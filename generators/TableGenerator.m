@@ -22,6 +22,9 @@
 #import "OFArray.h"
 #import "OFApplication.h"
 #import "OFURL.h"
+#import "OFHTTPRequest.h"
+#import "OFHTTPRequestReply.h"
+#import "OFHTTPClient.h"
 #import "OFFile.h"
 
 #import "autorelease.h"
@@ -30,7 +33,7 @@
 #import "copyright.h"
 
 #define UNICODE_DATA_URL \
-	@"http://unicode.org/Public/UNIDATA/UnicodeData.txt"
+	@"http://www.unicode.org/Public/UNIDATA/UnicodeData.txt"
 #define CASE_FOLDING_URL \
 	@"http://www.unicode.org/Public/UNIDATA/CaseFolding.txt"
 
@@ -51,8 +54,6 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 - (void)applicationDidFinishLaunching
 {
-	[self downloadFiles];
-
 	[self parseUnicodeData];
 	[self parseCaseFolding];
 
@@ -66,32 +67,22 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	[OFApplication terminate];
 }
 
-- (void)downloadFiles
-{
-	[of_stdout writeString: @"Downloading " UNICODE_DATA_URL @"..."];
-	unicodeData = [[OFString alloc] initWithContentsOfURL:
-	    [OFURL URLWithString: UNICODE_DATA_URL]];
-	[of_stdout writeLine: @" done"];
-
-	[of_stdout writeString: @"Downloading " CASE_FOLDING_URL @"..."];
-	caseFolding = [[OFString alloc] initWithContentsOfURL:
-	    [OFURL URLWithString: CASE_FOLDING_URL]];
-	[of_stdout writeLine: @" done"];
-}
-
 - (void)parseUnicodeData
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFArray *lines;
-	OFEnumerator *enumerator;
+	OFHTTPRequest *request;
+	OFHTTPClient *client;
+	OFHTTPRequestReply *reply;
 	OFString *line;
 
-	[of_stdout writeString: @"Parsing UnicodeData.txt..."];
+	[of_stdout writeString: @"Downloading and parsing UnicodeData.txt..."];
 
-	lines = [unicodeData componentsSeparatedByString: @"\n"];
-	enumerator = [lines objectEnumerator];
+	request = [OFHTTPRequest requestWithURL:
+	    [OFURL URLWithString: UNICODE_DATA_URL]];
+	client = [OFHTTPClient client];
+	reply = [client performRequest: request];
 
-	while ((line = [enumerator nextObject]) != nil) {
+	while ((line = [reply readLine]) != nil) {
 		void *pool2;
 		OFArray *split;
 		OFString **splitObjects;
@@ -128,16 +119,19 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 - (void)parseCaseFolding
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFArray *lines;
-	OFEnumerator *enumerator;
+	OFHTTPRequest *request;
+	OFHTTPClient *client;
+	OFHTTPRequestReply *reply;
 	OFString *line;
 
-	[of_stdout writeString: @"Parsing CaseFolding.txt..."];
+	[of_stdout writeString: @"Downloading and parsing CaseFolding.txt..."];
 
-	lines = [caseFolding componentsSeparatedByString: @"\n"];
-	enumerator = [lines objectEnumerator];
+	request = [OFHTTPRequest requestWithURL:
+	    [OFURL URLWithString: CASE_FOLDING_URL]];
+	client = [OFHTTPClient client];
+	reply = [client performRequest: request];
 
-	while ((line = [enumerator nextObject]) != nil) {
+	while ((line = [reply readLine]) != nil) {
 		void *pool2;
 		OFArray *split;
 		OFString **splitObjects;
