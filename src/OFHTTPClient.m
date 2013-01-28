@@ -254,7 +254,7 @@ normalize_key(char *str_)
 		       port: [URL port]];
 
 	/*
-	 * Work around a bug with packet bisection in lighttpd when using
+	 * Work around a bug with packet splitting in lighttpd when using
 	 * HTTPS.
 	 */
 	[sock setWriteBufferEnabled: YES];

@@ -66,9 +66,6 @@
 # ifndef AI_NUMERICHOST
 #  define AI_NUMERICHOST 0
 # endif
-# ifndef AI_ADDRCONFIG
-#  define AI_ADDRCONFIG 0
-# endif
 #endif
 
 #if defined(OF_HAVE_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
@@ -326,7 +323,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags = AI_NUMERICSERV | AI_ADDRCONFIG;
+	hints.ai_flags = AI_NUMERICSERV;
 	snprintf(portCString, 7, "%" PRIu16, port);
 
 	if (getaddrinfo([host cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
@@ -507,7 +504,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags = AI_NUMERICSERV | AI_ADDRCONFIG | AI_PASSIVE;
+	hints.ai_flags = AI_NUMERICSERV | AI_PASSIVE;
 	snprintf(portCString, 7, "%" PRIu16, port);
 
 	if (getaddrinfo([host cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
