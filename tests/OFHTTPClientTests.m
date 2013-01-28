@@ -98,7 +98,7 @@ static OFCondition *cond;
 	OFURL *url;
 	OFHTTPClient *client;
 	OFHTTPRequest *request;
-	OFHTTPRequestReply *reply;
+	OFHTTPRequestReply *reply = nil;
 	OFDataArray *data;
 
 	cond = [OFCondition condition];
@@ -115,7 +115,7 @@ static OFCondition *cond;
 					server->port]];
 
 	TEST(@"-[performRequest:]",
-	    R(client = [OFHTTPClient client]) &&
+	    (client = [OFHTTPClient client]) &&
 	    R(request = [OFHTTPRequest requestWithURL: url]) &&
 	    R(reply = [client performRequest: request]))
 
