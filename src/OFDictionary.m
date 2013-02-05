@@ -188,11 +188,12 @@ static struct {
 	if (object_getClass(self) == [OFDictionary class]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
-			abort();
 		} @catch (id e) {
 			[self release];
 			@throw e;
 		}
+
+		abort();
 	}
 
 	return [super init];
@@ -202,11 +203,12 @@ static struct {
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - initWithObject: (id)object
@@ -250,11 +252,12 @@ static struct {
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - initWithKeysAndObjects: (id)firstKey, ...
@@ -275,22 +278,24 @@ static struct {
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - initWithSerialization: (OFXMLElement*)element
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - (id)objectForKey: (id)key

@@ -642,11 +642,12 @@ static struct {
 	if (object_getClass(self) == [OFString class]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
-			abort();
 		} @catch (id e) {
 			[self release];
 			@throw e;
 		}
+
+		abort();
 	}
 
 	return [super init];
@@ -687,22 +688,24 @@ static struct {
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - initWithString: (OFString*)string
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - initWithCharacters: (const of_unichar_t*)string
@@ -710,11 +713,12 @@ static struct {
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - initWithUTF16String: (const of_char16_t*)string
@@ -746,11 +750,12 @@ static struct {
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - initWithUTF32String: (const of_char32_t*)string
@@ -782,11 +787,12 @@ static struct {
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - initWithFormat: (OFConstantString*)format, ...
@@ -807,11 +813,12 @@ static struct {
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - initWithPath: (OFString*)firstComponent, ...
@@ -832,11 +839,12 @@ static struct {
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - initWithContentsOfFile: (OFString*)path

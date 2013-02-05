@@ -26,11 +26,12 @@
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - (OFString*)stringValue

@@ -92,11 +92,12 @@ default_equal(void *value1, void *value2)
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - initWithKeyFunctions: (of_map_table_functions_t)keyFunctions_
@@ -640,11 +641,12 @@ default_equal(void *value1, void *value2)
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - OF_initWithMapTable: (OFMapTable*)mapTable_

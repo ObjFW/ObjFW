@@ -159,11 +159,12 @@ static struct {
 	if (object_getClass(self) == [OFSet class]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
-			abort();
 		} @catch (id e) {
 			[self release];
 			@throw e;
 		}
+
+		abort();
 	}
 
 	return [super init];
@@ -173,22 +174,24 @@ static struct {
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - initWithArray: (OFArray*)array
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - initWithObjects: (id const*)objects
@@ -196,11 +199,12 @@ static struct {
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - (id)initWithObjects: (id)firstObject, ...
@@ -221,22 +225,24 @@ static struct {
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - initWithSerialization: (OFXMLElement*)element
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - (size_t)count

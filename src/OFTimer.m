@@ -209,11 +209,12 @@
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - OF_initWithFireDate: (OFDate*)fireDate_

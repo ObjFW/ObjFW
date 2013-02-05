@@ -663,11 +663,12 @@ of_log(OFConstantString *format, ...)
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - initWithPath: (OFString*)path
@@ -796,11 +797,12 @@ of_log(OFConstantString *format, ...)
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - autorelease

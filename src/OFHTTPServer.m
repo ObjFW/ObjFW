@@ -16,6 +16,7 @@
 
 #include "config.h"
 
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -375,6 +376,8 @@ normalized_key(OFString *key)
 	} @catch (OFWriteFailedException *e) {
 		return NO;
 	}
+
+	abort();
 }
 
 - (BOOL)parseProlog: (OFString*)line

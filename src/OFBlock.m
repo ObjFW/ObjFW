@@ -397,11 +397,12 @@ _Block_object_dispose(const void *obj_, const int flags_)
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - (void*)allocMemoryWithSize: (size_t)size
