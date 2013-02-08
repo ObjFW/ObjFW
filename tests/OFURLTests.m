@@ -41,22 +41,22 @@ static OFString *url_str = @"http://u:p@h:1234/f;p?q#f";
 
 	TEST(@"+[URLWithString:relativeToURL:]",
 	    [[[OFURL URLWithString: @"/foo"
-		     relativeToURL: u1] description] isEqual:
+		     relativeToURL: u1] string] isEqual:
 	    @"http://u:p@h:1234/foo"] &&
 	    [[[OFURL URLWithString: @"foo/bar?q"
 		     relativeToURL: [OFURL URLWithString: @"http://h/qux/quux"]]
-	    description] isEqual: @"http://h/qux/foo/bar?q"] &&
+	    string] isEqual: @"http://h/qux/foo/bar?q"] &&
 	    [[[OFURL URLWithString: @"foo/bar"
 		     relativeToURL: [OFURL URLWithString: @"http://h/qux/?x"]]
-	    description] isEqual: @"http://h/qux/foo/bar"] &&
+	    string] isEqual: @"http://h/qux/foo/bar"] &&
 	    [[[OFURL URLWithString: @"http://foo/?q"
-		     relativeToURL: u1] description] isEqual: @"http://foo/?q"])
+		     relativeToURL: u1] string] isEqual: @"http://foo/?q"])
 
-	TEST(@"-[description]",
-	    [[u1 description] isEqual: url_str] &&
-	    [[u2 description] isEqual: @"http://foo"] &&
-	    [[u3 description] isEqual: @"http://bar/"] &&
-	    [[u4 description] isEqual: @"file:///etc/passwd"])
+	TEST(@"-[string]",
+	    [[u1 string] isEqual: url_str] &&
+	    [[u2 string] isEqual: @"http://foo"] &&
+	    [[u3 string] isEqual: @"http://bar/"] &&
+	    [[u4 string] isEqual: @"file:///etc/passwd"])
 
 	TEST(@"-[scheme]",
 	    [[u1 scheme] isEqual: @"http"] && [[u4 scheme] isEqual: @"file"])

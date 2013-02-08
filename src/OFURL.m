@@ -516,7 +516,8 @@
 
 - (OFString*)description
 {
-	return [self string];
+	return [OFString stringWithFormat: @"<%@: %@>",
+					   [self class], [self string]];
 }
 
 - (OFXMLElement*)XMLElementBySerializing
