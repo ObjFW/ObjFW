@@ -840,7 +840,7 @@ static Class CDATAClass = Nil;
 	for (i = 0; i < count; i++)
 		if (objects[i]->ns == nil &&
 		    [objects[i]->name isEqual: attributeName])
-			return objects[i];
+			return [[objects[i] retain] autorelease];
 
 	return nil;
 }
@@ -860,7 +860,7 @@ static Class CDATAClass = Nil;
 	for (i = 0; i < count; i++)
 		if ([objects[i]->ns isEqual: attributeNS] &&
 		    [objects[i]->name isEqual: attributeName])
-			return objects[i];
+			return [[objects[i] retain] autorelease];
 
 	return nil;
 }
