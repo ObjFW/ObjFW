@@ -272,6 +272,9 @@ typedef struct of_rectangle_t
  * Classes containing data (like strings, arrays, lists etc.) should reimplement
  * this!
  *
+ * @warning If you reimplement this, you also need to reimplement @ref hash to
+ *	    return the same hash for objects which are equal!
+ *
  * @param object The object which should be tested for equality
  * @return A boolean whether the object is equal to the specified object
  */
@@ -282,6 +285,10 @@ typedef struct of_rectangle_t
  *
  * Classes containing data (like strings, arrays, lists etc.) should reimplement
  * this!
+ *
+ * @warning If you reimplement this, you also need to reimplement @ref isEqual:
+ *	    to behave in a way compatible to your reimplementation of this
+ *	    method!
  *
  * @return A 32 bit hash for the object
  */
