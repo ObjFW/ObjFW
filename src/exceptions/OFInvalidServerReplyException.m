@@ -22,12 +22,12 @@
 @implementation OFInvalidServerReplyException
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
-	    @"Got an invalid reply from the server in class %@", inClass];
+	_description = [[OFString alloc] initWithFormat:
+	    @"Got an invalid reply from the server in class %@", _inClass];
 
-	return description;
+	return _description;
 }
 @end

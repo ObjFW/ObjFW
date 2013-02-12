@@ -73,7 +73,7 @@
 {
 	of_list_object_t *iter;
 
-	for (iter = firstListObject; iter != NULL; iter = iter->next)
+	for (iter = _firstListObject; iter != NULL; iter = iter->next)
 		[iter->object release];
 
 	[super dealloc];
@@ -81,12 +81,12 @@
 
 - (of_list_object_t*)firstListObject
 {
-	return firstListObject;
+	return _firstListObject;
 }
 
 - (of_list_object_t*)lastListObject
 {
-	return lastListObject;
+	return _lastListObject;
 }
 
 - (of_list_object_t*)appendObject: (id)object
@@ -96,17 +96,17 @@
 	listObject = [self allocMemoryWithSize: sizeof(of_list_object_t)];
 	listObject->object = [object retain];
 	listObject->next = NULL;
-	listObject->previous = lastListObject;
+	listObject->previous = _lastListObject;
 
-	if (lastListObject != NULL)
-		lastListObject->next = listObject;
+	if (_lastListObject != NULL)
+		_lastListObject->next = listObject;
 
-	lastListObject = listObject;
-	if (firstListObject == NULL)
-		firstListObject = listObject;
+	_lastListObject = listObject;
+	if (_firstListObject == NULL)
+		_firstListObject = listObject;
 
-	count++;
-	mutations++;
+	_count++;
+	_mutations++;
 
 	return listObject;
 }
@@ -117,18 +117,18 @@
 
 	listObject = [self allocMemoryWithSize: sizeof(of_list_object_t)];
 	listObject->object = [object retain];
-	listObject->next = firstListObject;
+	listObject->next = _firstListObject;
 	listObject->previous = NULL;
 
-	if (firstListObject != NULL)
-		firstListObject->previous = listObject;
+	if (_firstListObject != NULL)
+		_firstListObject->previous = listObject;
 
-	firstListObject = listObject;
-	if (lastListObject == NULL)
-		lastListObject = listObject;
+	_firstListObject = listObject;
+	if (_lastListObject == NULL)
+		_lastListObject = listObject;
 
-	count++;
-	mutations++;
+	_count++;
+	_mutations++;
 
 	return listObject;
 }
@@ -148,11 +148,11 @@
 
 	listObject->previous = newListObject;
 
-	if (listObject == firstListObject)
-		firstListObject = newListObject;
+	if (listObject == _firstListObject)
+		_firstListObject = newListObject;
 
-	count++;
-	mutations++;
+	_count++;
+	_mutations++;
 
 	return newListObject;
 }
@@ -172,11 +172,11 @@
 
 	listObject->next = newListObject;
 
-	if (listObject == lastListObject)
-		lastListObject = newListObject;
+	if (listObject == _lastListObject)
+		_lastListObject = newListObject;
 
-	count++;
-	mutations++;
+	_count++;
+	_mutations++;
 
 	return newListObject;
 }
@@ -188,13 +188,13 @@
 	if (listObject->next != NULL)
 		listObject->next->previous = listObject->previous;
 
-	if (firstListObject == listObject)
-		firstListObject = listObject->next;
-	if (lastListObject == listObject)
-		lastListObject = listObject->previous;
+	if (_firstListObject == listObject)
+		_firstListObject = listObject->next;
+	if (_lastListObject == listObject)
+		_lastListObject = listObject->previous;
 
-	count--;
-	mutations++;
+	_count--;
+	_mutations++;
 
 	[listObject->object release];
 
@@ -203,39 +203,39 @@
 
 - (id)firstObject
 {
-	return (firstListObject != NULL ? firstListObject->object : nil);
+	return (_firstListObject != NULL ? _firstListObject->object : nil);
 }
 
 - (id)lastObject
 {
-	return (lastListObject != NULL ? lastListObject->object : nil);
+	return (_lastListObject != NULL ? _lastListObject->object : nil);
 }
 
 - (size_t)count
 {
-	return count;
+	return _count;
 }
 
 - (BOOL)isEqual: (id)object
 {
-	OFList *otherList;
+	OFList *list;
 	of_list_object_t *iter, *iter2;
 
 	if (![object isKindOfClass: [OFList class]])
 		return NO;
 
-	otherList = object;
+	list = object;
 
-	if ([otherList count] != count)
+	if ([list count] != _count)
 		return NO;
 
-	for (iter = firstListObject, iter2 = [otherList firstListObject];
+	for (iter = _firstListObject, iter2 = [list firstListObject];
 	    iter != NULL && iter2 != NULL;
 	    iter = iter->next, iter2 = iter2->next)
 		if (![iter->object isEqual: iter2->object])
 			return NO;
 
-	/* One is bigger than the other although we checked the count */
+	/* One is bigger than the other even though we checked the count */
 	assert(iter == NULL && iter2 == NULL);
 
 	return YES;
@@ -245,10 +245,10 @@
 {
 	of_list_object_t *iter;
 
-	if (count == 0)
+	if (_count == 0)
 		return NO;
 
-	for (iter = firstListObject; iter != NULL; iter = iter->next)
+	for (iter = _firstListObject; iter != NULL; iter = iter->next)
 		if ([iter->object isEqual: object])
 			return YES;
 
@@ -259,10 +259,10 @@
 {
 	of_list_object_t *iter;
 
-	if (count == 0)
+	if (_count == 0)
 		return NO;
 
-	for (iter = firstListObject; iter != NULL; iter = iter->next)
+	for (iter = _firstListObject; iter != NULL; iter = iter->next)
 		if (iter->object == object)
 			return YES;
 
@@ -273,16 +273,16 @@
 {
 	of_list_object_t *iter, *next;
 
-	mutations++;
+	_mutations++;
 
-	for (iter = firstListObject; iter != NULL; iter = next) {
+	for (iter = _firstListObject; iter != NULL; iter = next) {
 		next = iter->next;
 
 		[iter->object release];
 		[self freeMemory: iter];
 	}
 
-	firstListObject = lastListObject = NULL;
+	_firstListObject = _lastListObject = NULL;
 }
 
 - copy
@@ -294,19 +294,19 @@
 	previous = NULL;
 
 	@try {
-		for (iter = firstListObject; iter != NULL; iter = iter->next) {
+		for (iter = _firstListObject; iter != NULL; iter = iter->next) {
 			listObject = [copy allocMemoryWithSize:
 			    sizeof(of_list_object_t)];
 			listObject->object = [iter->object retain];
 			listObject->next = NULL;
 			listObject->previous = previous;
 
-			if (copy->firstListObject == NULL)
-				copy->firstListObject = listObject;
+			if (copy->_firstListObject == NULL)
+				copy->_firstListObject = listObject;
 			if (previous != NULL)
 				previous->next = listObject;
 
-			copy->count++;
+			copy->_count++;
 
 			previous = listObject;
 		}
@@ -315,7 +315,7 @@
 		@throw e;
 	}
 
-	copy->lastListObject = listObject;
+	copy->_lastListObject = listObject;
 
 	return copy;
 }
@@ -327,7 +327,7 @@
 
 	OF_HASH_INIT(hash);
 
-	for (iter = firstListObject; iter != NULL; iter = iter->next)
+	for (iter = _firstListObject; iter != NULL; iter = iter->next)
 		OF_HASH_ADD_HASH(hash, [iter->object hash]);
 
 	OF_HASH_FINALIZE(hash);
@@ -340,12 +340,12 @@
 	OFMutableString *ret;
 	of_list_object_t *iter;
 
-	if (count == 0)
+	if (_count == 0)
 		return @"[]";
 
 	ret = [OFMutableString stringWithString: @"[\n"];
 
-	for (iter = firstListObject; iter != NULL; iter = iter->next) {
+	for (iter = _firstListObject; iter != NULL; iter = iter->next) {
 		void *pool = objc_autoreleasePoolPush();
 
 		[ret appendString: [iter->object description]];
@@ -372,7 +372,7 @@
 	element = [OFXMLElement elementWithName: [self className]
 				      namespace: OF_SERIALIZATION_NS];
 
-	for (iter = firstListObject; iter != NULL; iter = iter->next) {
+	for (iter = _firstListObject; iter != NULL; iter = iter->next) {
 		void *pool = objc_autoreleasePoolPush();
 
 		[element addChild: [iter->object XMLElementBySerializing]];
@@ -385,20 +385,20 @@
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
 			   objects: (id*)objects
-			     count: (int)count_
+			     count: (int)count
 {
 	of_list_object_t **listObject = (of_list_object_t**)&state->extra[0];
 	int i;
 
 	state->itemsPtr = objects;
-	state->mutationsPtr = &mutations;
+	state->mutationsPtr = &_mutations;
 
 	if (state->state == 0) {
-		*listObject = firstListObject;
+		*listObject = _firstListObject;
 		state->state = 1;
 	}
 
-	for (i = 0; i < count_; i++) {
+	for (i = 0; i < count; i++) {
 		if (*listObject == NULL)
 			return i;
 
@@ -406,34 +406,34 @@
 		*listObject = (*listObject)->next;
 	}
 
-	return count_;
+	return count;
 }
 
 - (OFEnumerator*)objectEnumerator
 {
 	return [[[OFListEnumerator alloc]
 		initWithList: self
-	    mutationsPointer: &mutations] autorelease];
+	    mutationsPointer: &_mutations] autorelease];
 }
 @end
 
 @implementation OFListEnumerator
--     initWithList: (OFList*)list_
-  mutationsPointer: (unsigned long*)mutationsPtr_
+-     initWithList: (OFList*)list
+  mutationsPointer: (unsigned long*)mutationsPtr
 {
 	self = [super init];
 
-	list = [list_ retain];
-	current = [list firstListObject];
-	mutations = *mutationsPtr_;
-	mutationsPtr = mutationsPtr_;
+	_list = [list retain];
+	_current = [list firstListObject];
+	_mutations = *mutationsPtr;
+	_mutationsPtr = mutationsPtr;
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[list release];
+	[_list release];
 
 	[super dealloc];
 }
@@ -442,27 +442,27 @@
 {
 	id ret;
 
-	if (*mutationsPtr != mutations)
+	if (*_mutationsPtr != _mutations)
 		@throw [OFEnumerationMutationException
 		    exceptionWithClass: [self class]
-				object: list];
+				object: _list];
 
-	if (current == NULL)
+	if (_current == NULL)
 		return nil;
 
-	ret = current->object;
-	current = current->next;
+	ret = _current->object;
+	_current = _current->next;
 
 	return ret;
 }
 
 - (void)reset
 {
-	if (*mutationsPtr != mutations)
+	if (*_mutationsPtr != _mutations)
 		@throw [OFEnumerationMutationException
 		    exceptionWithClass: [self class]
-				object: list];
+				object: _list];
 
-	current = [list firstListObject];
+	_current = [_list firstListObject];
 }
 @end

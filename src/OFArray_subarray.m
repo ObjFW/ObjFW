@@ -28,15 +28,15 @@
 				      range: range] autorelease];
 }
 
-- initWithArray: (OFArray*)array_
-	  range: (of_range_t)range_
+- initWithArray: (OFArray*)array
+	  range: (of_range_t)range
 {
 	self = [super init];
 
 	@try {
 		/* Should usually be retain, as it's useless with a copy */
-		array = [array_ copy];
-		range = range_;
+		_array = [array copy];
+		_range = range;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -47,47 +47,47 @@
 
 - (void)dealloc
 {
-	[array release];
+	[_array release];
 
 	[super dealloc];
 }
 
 - (size_t)count
 {
-	return range.length;
+	return _range.length;
 }
 
 - (id)objectAtIndex: (size_t)index
 {
-	if (index >= range.length)
+	if (index >= _range.length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	return [array objectAtIndex: index + range.location];
+	return [_array objectAtIndex: index + _range.location];
 }
 
 - (void)getObjects: (id*)buffer
-	   inRange: (of_range_t)range_
+	   inRange: (of_range_t)range
 {
-	if (range_.length > SIZE_MAX - range_.location ||
-	    range_.location + range_.length > range.length)
+	if (range.length > SIZE_MAX - range.location ||
+	    range.location + range.length > _range.length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	range_.location += range.location;
+	range.location += _range.location;
 
-	return [array getObjects: buffer
-			 inRange: range_];
+	return [_array getObjects: buffer
+			  inRange: range];
 }
 
 - (size_t)indexOfObject: (id)object
 {
-	size_t index = [array indexOfObject: object];
+	size_t index = [_array indexOfObject: object];
 
-	if (index < range.location)
+	if (index < _range.location)
 		return OF_NOT_FOUND;
 
-	index -= range.location;
+	index -= _range.location;
 
-	if (index >= range.length)
+	if (index >= _range.length)
 		return OF_NOT_FOUND;
 
 	return index;
@@ -95,27 +95,27 @@
 
 - (size_t)indexOfObjectIdenticalTo: (id)object
 {
-	size_t index = [array indexOfObjectIdenticalTo: object];
+	size_t index = [_array indexOfObjectIdenticalTo: object];
 
-	if (index < range.location)
+	if (index < _range.location)
 		return OF_NOT_FOUND;
 
-	index -= range.location;
+	index -= _range.location;
 
-	if (index >= range.length)
+	if (index >= _range.length)
 		return OF_NOT_FOUND;
 
 	return index;
 }
 
-- (OFArray*)objectsInRange: (of_range_t)range_
+- (OFArray*)objectsInRange: (of_range_t)range
 {
-	if (range_.length > SIZE_MAX - range_.location ||
-	    range_.location + range_.length > range.length)
+	if (range.length > SIZE_MAX - range.location ||
+	    range.location + range.length > _range.length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	range_.location += range.location;
+	range.location += _range.location;
 
-	return [array objectsInRange: range_];
+	return [_array objectsInRange: range];
 }
 @end

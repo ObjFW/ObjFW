@@ -23,9 +23,9 @@
  */
 @interface OFAddressTranslationFailedException: OFException
 {
-	OFTCPSocket *socket;
-	OFString    *host;
-	int	    errNo;
+	OFTCPSocket *_socket;
+	OFString    *_host;
+	int	    _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES

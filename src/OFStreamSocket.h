@@ -28,8 +28,8 @@
  */
 @interface OFStreamSocket: OFStream
 {
-	int  sock;
-	BOOL atEndOfStream;
+	int  _socket;
+	BOOL _atEndOfStream;
 }
 
 /*!

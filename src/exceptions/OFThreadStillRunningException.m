@@ -23,14 +23,14 @@
 #import "OFThread.h"
 
 @implementation OFThreadStillRunningException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			    thread: (OFThread*)thread
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 				     thread: thread] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -42,37 +42,37 @@
 	abort();
 }
 
-- initWithClass: (Class)class_
-	 thread: (OFThread*)thread_
+- initWithClass: (Class)class
+	 thread: (OFThread*)thread
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
-	thread = [thread_ retain];
+	_thread = [thread retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[thread release];
+	[_thread release];
 
 	[super dealloc];
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
+	_description = [[OFString alloc] initWithFormat:
 	    @"Deallocation of a thread of type %@ was tried, even though it "
-	    @"was still running!", inClass];
+	    @"was still running!", _inClass];
 
-	return description;
+	return _description;
 }
 
 - (OFThread*)thread
 {
-	OF_GETTER(thread, NO)
+	OF_GETTER(_thread, NO)
 }
 @end

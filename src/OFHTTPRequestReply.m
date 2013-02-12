@@ -33,34 +33,34 @@
 {
 	self = [super init];
 
-	protocolVersion.major = 1;
-	protocolVersion.minor = 1;
+	_protocolVersion.major = 1;
+	_protocolVersion.minor = 1;
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[headers release];
+	[_headers release];
 
 	[super dealloc];
 }
 
-- (void)setProtocolVersion: (of_http_request_protocol_version_t)protocolVersion_
+- (void)setProtocolVersion: (of_http_request_protocol_version_t)protocolVersion
 {
-	if (protocolVersion_.major != 1 || protocolVersion.minor > 1)
+	if (protocolVersion.major != 1 || protocolVersion.minor > 1)
 		@throw [OFUnsupportedVersionException
 		    exceptionWithClass: [self class]
 			       version: [OFString stringWithFormat: @"%u.%u",
-					    protocolVersion_.major,
-					    protocolVersion_.minor]];
+					    protocolVersion.major,
+					    protocolVersion.minor]];
 
-	protocolVersion = protocolVersion_;
+	_protocolVersion = protocolVersion;
 }
 
 - (of_http_request_protocol_version_t)protocolVersion
 {
-	return protocolVersion;
+	return _protocolVersion;
 }
 
 - (void)setProtocolVersionFromString: (OFString*)string
@@ -68,7 +68,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *components = [string componentsSeparatedByString: @"."];
 	intmax_t major, minor;
-	of_http_request_protocol_version_t protocolVersion_;
+	of_http_request_protocol_version_t protocolVersion;
 
 	if ([components count] != 2)
 		@throw [OFInvalidFormatException
@@ -80,38 +80,38 @@
 	if (major < 0 || major > UINT8_MAX || minor < 0 || minor > UINT8_MAX)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	protocolVersion_.major = (uint8_t)major;
-	protocolVersion_.minor = (uint8_t)minor;
+	protocolVersion.major = (uint8_t)major;
+	protocolVersion.minor = (uint8_t)minor;
 
-	[self setProtocolVersion: protocolVersion_];
+	[self setProtocolVersion: protocolVersion];
 
 	objc_autoreleasePoolPop(pool);
 }
 
 - (OFString*)protocolVersionString
 {
-	return [OFString stringWithFormat: @"%u.%u", protocolVersion.major,
-					   protocolVersion.minor];
+	return [OFString stringWithFormat: @"%u.%u", _protocolVersion.major,
+					   _protocolVersion.minor];
 }
 
 - (short)statusCode
 {
-	return statusCode;
+	return _statusCode;
 }
 
-- (void)setStatusCode: (short)statusCode_
+- (void)setStatusCode: (short)statusCode
 {
-	statusCode = statusCode_;
+	_statusCode = statusCode;
 }
 
 - (OFDictionary*)headers
 {
-	OF_GETTER(headers, YES)
+	OF_GETTER(_headers, YES)
 }
 
-- (void)setHeaders: (OFDictionary*)headers_
+- (void)setHeaders: (OFDictionary*)headers
 {
-	OF_SETTER(headers, headers_, YES, YES)
+	OF_SETTER(_headers, headers, YES, YES)
 }
 
 - (OFString*)description
@@ -119,7 +119,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFString *indentedHeaders, *ret;
 
-	indentedHeaders = [[headers description]
+	indentedHeaders = [[_headers description]
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
 
@@ -128,7 +128,7 @@
 	    @"\tStatus code = %d\n"
 	    @"\tHeaders = %@\n"
 	    @">",
-	    [self class], statusCode, indentedHeaders];
+	    [self class], _statusCode, indentedHeaders];
 
 	objc_autoreleasePoolPop(pool);
 

@@ -24,7 +24,7 @@
  */
 @interface OFAlreadyConnectedException: OFException
 {
-	OFTCPSocket *socket;
+	OFTCPSocket *_socket;
 }
 
 #ifdef OF_HAVE_PROPERTIES

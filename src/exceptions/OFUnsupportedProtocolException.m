@@ -25,14 +25,14 @@
 #import "common.h"
 
 @implementation OFUnsupportedProtocolException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			       URL: (OFURL*)url
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 					URL: url] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -44,13 +44,13 @@
 	abort();
 }
 
-- initWithClass: (Class)class_
-	    URL: (OFURL*)url
+- initWithClass: (Class)class
+	    URL: (OFURL*)URL
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
 	@try {
-		URL = [url copy];
+		_URL = [URL copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -61,25 +61,25 @@
 
 - (void)dealloc
 {
-	[URL release];
+	[_URL release];
 
 	[super dealloc];
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
-	    @"The protocol of URL %@ is not supported by class %@", URL,
-	    inClass];
+	_description = [[OFString alloc] initWithFormat:
+	    @"The protocol of URL %@ is not supported by class %@", _URL,
+	    _inClass];
 
-	return description;
+	return _description;
 }
 
 - (OFURL*)URL
 {
-	OF_GETTER(URL, NO)
+	OF_GETTER(_URL, NO)
 }
 @end

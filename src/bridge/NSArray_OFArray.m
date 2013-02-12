@@ -21,11 +21,11 @@
 #import "OFOutOfRangeException.h"
 
 @implementation NSArray_OFArray
-- initWithOFArray: (OFArray*)array_
+- initWithOFArray: (OFArray*)array
 {
 	if ((self = [super init]) != nil) {
 		@try {
-			array = [array_ retain];
+			_array = [array retain];
 		} @catch (id e) {
 			return nil;
 		}
@@ -36,7 +36,7 @@
 
 - (id)objectAtIndex: (NSUInteger)index
 {
-	id object = [array objectAtIndex: index];
+	id object = [_array objectAtIndex: index];
 
 	if ([object conformsToProtocol: @protocol(OFBridging)])
 		return [object NSObject];
@@ -46,7 +46,7 @@
 
 - (NSUInteger)count
 {
-	size_t count = [array count];
+	size_t count = [_array count];
 
 	if (count > NSUIntegerMax)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];

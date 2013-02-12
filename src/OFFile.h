@@ -41,9 +41,9 @@ extern void of_log(OFConstantString*, ...);
  */
 @interface OFFile: OFSeekableStream
 {
-	int  fd;
-	BOOL closable;
-	BOOL atEndOfStream;
+	int  _fd;
+	BOOL _closable;
+	BOOL _atEndOfStream;
 }
 
 /*!
@@ -74,11 +74,11 @@ extern void of_log(OFConstantString*, ...);
 /*!
  * @brief Creates a new OFFile with the specified file descriptor.
  *
- * @param fileDescriptor A file descriptor, returned from for example open().
- *			 It is not closed when the OFFile object is deallocated!
+ * @param fd A file descriptor, returned from for example open().
+ *	     It is not closed when the OFFile object is deallocated!
  * @return A new autoreleased OFFile
  */
-+ (instancetype)fileWithFileDescriptor: (int)fileDescriptor;
++ (instancetype)fileWithFileDescriptor: (int)fd;
 
 /*!
  * @brief Returns the path fo the current working directory.
@@ -264,10 +264,10 @@ extern void of_log(OFConstantString*, ...);
 /*!
  * @brief Initializes an already allocated OFFile.
  *
- * @param fileDescriptor A file descriptor, returned from for example open().
- *			 It is not closed when the OFFile object is deallocated!
+ * @param fd A file descriptor, returned from for example open().
+ *	     It is not closed when the OFFile object is deallocated!
  */
-- initWithFileDescriptor: (int)fileDescriptor;
+- initWithFileDescriptor: (int)fd;
 @end
 
 #ifdef __cplusplus

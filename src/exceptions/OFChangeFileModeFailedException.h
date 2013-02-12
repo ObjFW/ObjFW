@@ -23,9 +23,9 @@
  */
 @interface OFChangeFileModeFailedException: OFException
 {
-	OFString *path;
-	mode_t mode;
-	int errNo;
+	OFString *_path;
+	mode_t _mode;
+	int _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES

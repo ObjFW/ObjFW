@@ -22,7 +22,7 @@
  */
 @interface OFNotImplementedException: OFException
 {
-	SEL selector;
+	SEL _selector;
 }
 
 #ifdef OF_HAVE_PROPERTIES

@@ -22,9 +22,9 @@
 #import "OFString.h"
 
 @implementation OFException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 {
-	return [[[self alloc] initWithClass: class_] autorelease];
+	return [[[self alloc] initWithClass: class] autorelease];
 }
 
 - init
@@ -39,36 +39,36 @@
 	abort();
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	self = [super init];
 
-	inClass = class_;
+	_inClass = class;
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[description release];
+	[_description release];
 
 	[super dealloc];
 }
 
 - (Class)inClass
 {
-	return inClass;
+	return _inClass;
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
+	_description = [[OFString alloc] initWithFormat:
 	    @"An exception of class %@ occurred in class %@!",
-	    object_getClass(self), inClass];
+	    object_getClass(self), _inClass];
 
-	return description;
+	return _description;
 }
 @end

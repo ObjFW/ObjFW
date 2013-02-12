@@ -155,10 +155,10 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	self = [super init];
 
 	@try {
-		s = &s_store;
+		_s = &_storage;
 
-		s->cString = [self allocMemoryWithSize: 1];
-		s->cString[0] = '\0';
+		_s->cString = [self allocMemoryWithSize: 1];
+		_s->cString[0] = '\0';
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -180,23 +180,23 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			UTF8StringLength -= 3;
 		}
 
-		s = &s_store;
+		_s = &_storage;
 
-		s->cString = storage;
-		s->cStringLength = UTF8StringLength;
+		_s->cString = storage;
+		_s->cStringLength = UTF8StringLength;
 
 		switch (of_string_utf8_check(UTF8String, UTF8StringLength,
-		    &s->length)) {
+		    &_s->length)) {
 		case 1:
-			s->isUTF8 = YES;
+			_s->isUTF8 = YES;
 			break;
 		case -1:
 			@throw [OFInvalidEncodingException
 			    exceptionWithClass: [self class]];
 		}
 
-		memcpy(s->cString, UTF8String, UTF8StringLength);
-		s->cString[UTF8StringLength] = 0;
+		memcpy(_s->cString, UTF8String, UTF8StringLength);
+		_s->cString[UTF8StringLength] = 0;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -221,35 +221,35 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			cStringLength -= 3;
 		}
 
-		s = &s_store;
+		_s = &_storage;
 
-		s->cString = [self allocMemoryWithSize: cStringLength + 1];
-		s->cStringLength = cStringLength;
+		_s->cString = [self allocMemoryWithSize: cStringLength + 1];
+		_s->cStringLength = cStringLength;
 
 		if (encoding == OF_STRING_ENCODING_UTF_8 ||
 		    encoding == OF_STRING_ENCODING_ASCII) {
 			switch (of_string_utf8_check(cString, cStringLength,
-			    &s->length)) {
+			    &_s->length)) {
 			case 1:
 				if (encoding == OF_STRING_ENCODING_ASCII)
 					@throw [OFInvalidEncodingException
 					    exceptionWithClass: [self class]];
 
-				s->isUTF8 = YES;
+				_s->isUTF8 = YES;
 				break;
 			case -1:
 				@throw [OFInvalidEncodingException
 				    exceptionWithClass: [self class]];
 			}
 
-			memcpy(s->cString, cString, cStringLength);
-			s->cString[cStringLength] = 0;
+			memcpy(_s->cString, cString, cStringLength);
+			_s->cString[cStringLength] = 0;
 
 			return self;
 		}
 
 		/* All other encodings we support are single byte encodings */
-		s->length = cStringLength;
+		_s->length = cStringLength;
 
 		if (encoding == OF_STRING_ENCODING_ISO_8859_1) {
 			for (i = j = 0; i < cStringLength; i++) {
@@ -257,11 +257,11 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				size_t bytes;
 
 				if (!(cString[i] & 0x80)) {
-					s->cString[j++] = cString[i];
+					_s->cString[j++] = cString[i];
 					continue;
 				}
 
-				s->isUTF8 = YES;
+				_s->isUTF8 = YES;
 				bytes = of_string_utf8_encode(
 				    (uint8_t)cString[i], buffer);
 
@@ -269,16 +269,16 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 					@throw [OFInvalidEncodingException
 					    exceptionWithClass: [self class]];
 
-				s->cStringLength += bytes - 1;
-				s->cString = [self
-				    resizeMemory: s->cString
-					    size: s->cStringLength + 1];
+				_s->cStringLength += bytes - 1;
+				_s->cString = [self
+				    resizeMemory: _s->cString
+					    size: _s->cStringLength + 1];
 
-				memcpy(s->cString + j, buffer, bytes);
+				memcpy(_s->cString + j, buffer, bytes);
 				j += bytes;
 			}
 
-			s->cString[s->cStringLength] = 0;
+			_s->cString[_s->cStringLength] = 0;
 
 			return self;
 		}
@@ -301,7 +301,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			size_t characterBytes;
 
 			if (!(cString[i] & 0x80)) {
-				s->cString[j++] = cString[i];
+				_s->cString[j++] = cString[i];
 				continue;
 			}
 
@@ -311,7 +311,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				@throw [OFInvalidEncodingException
 				    exceptionWithClass: [self class]];
 
-			s->isUTF8 = YES;
+			_s->isUTF8 = YES;
 			characterBytes = of_string_utf8_encode(character,
 			    buffer);
 
@@ -319,15 +319,16 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				@throw [OFInvalidEncodingException
 				    exceptionWithClass: [self class]];
 
-			s->cStringLength += characterBytes - 1;
-			s->cString = [self resizeMemory: s->cString
-						   size: s->cStringLength + 1];
+			_s->cStringLength += characterBytes - 1;
+			_s->cString = [self
+			    resizeMemory: _s->cString
+				    size: _s->cStringLength + 1];
 
-			memcpy(s->cString + j, buffer, characterBytes);
+			memcpy(_s->cString + j, buffer, characterBytes);
 			j += characterBytes;
 		}
 
-		s->cString[s->cStringLength] = 0;
+		_s->cString[_s->cStringLength] = 0;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -350,18 +351,18 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			UTF8StringLength -= 3;
 		}
 
-		s = &s_store;
+		_s = &_storage;
 
-		s->cString = (char*)UTF8String;
-		s->cStringLength = UTF8StringLength;
+		_s->cString = (char*)UTF8String;
+		_s->cStringLength = UTF8StringLength;
 
 		if (freeWhenDone)
-			s->freeWhenDone = UTF8String;
+			_s->freeWhenDone = UTF8String;
 
 		switch (of_string_utf8_check(UTF8String, UTF8StringLength,
-		    &s->length)) {
+		    &_s->length)) {
 		case 1:
-			s->isUTF8 = YES;
+			_s->isUTF8 = YES;
 			break;
 		case -1:
 			@throw [OFInvalidEncodingException
@@ -380,20 +381,20 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	self = [super init];
 
 	@try {
-		s = &s_store;
+		_s = &_storage;
 
-		s->cStringLength = [string UTF8StringLength];
+		_s->cStringLength = [string UTF8StringLength];
 
 		if ([string isKindOfClass: [OFString_UTF8 class]] ||
 		    [string isKindOfClass: [OFMutableString_UTF8 class]])
-			s->isUTF8 = ((OFString_UTF8*)string)->s->isUTF8;
+			_s->isUTF8 = ((OFString_UTF8*)string)->_s->isUTF8;
 		else
-			s->isUTF8 = YES;
+			_s->isUTF8 = YES;
 
-		s->length = [string length];
+		_s->length = [string length];
 
-		s->cString = [self allocMemoryWithSize: s->cStringLength + 1];
-		memcpy(s->cString, [string UTF8String], s->cStringLength + 1);
+		_s->cString = [self allocMemoryWithSize: _s->cStringLength + 1];
+		memcpy(_s->cString, [string UTF8String], _s->cStringLength + 1);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -410,10 +411,10 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	@try {
 		size_t i, j = 0;
 
-		s = &s_store;
+		_s = &_storage;
 
-		s->cString = [self allocMemoryWithSize: (length * 4) + 1];
-		s->length = length;
+		_s->cString = [self allocMemoryWithSize: (length * 4) + 1];
+		_s->length = length;
 
 		for (i = 0; i < length; i++) {
 			char buffer[4];
@@ -422,14 +423,14 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 			switch (len) {
 			case 1:
-				s->cString[j++] = buffer[0];
+				_s->cString[j++] = buffer[0];
 				break;
 			case 2:
 			case 3:
 			case 4:
-				s->isUTF8 = YES;
+				_s->isUTF8 = YES;
 
-				memcpy(s->cString + j, buffer, len);
+				memcpy(_s->cString + j, buffer, len);
 				j += len;
 
 				break;
@@ -439,12 +440,12 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			}
 		}
 
-		s->cString[j] = '\0';
-		s->cStringLength = j;
+		_s->cString[j] = '\0';
+		_s->cStringLength = j;
 
 		@try {
-			s->cString = [self resizeMemory: s->cString
-						   size: j + 1];
+			_s->cString = [self resizeMemory: _s->cString
+						    size: j + 1];
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only tried to make it smaller */
 		}
@@ -476,10 +477,10 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		} else if (byteOrder != OF_BYTE_ORDER_NATIVE)
 			swap = YES;
 
-		s = &s_store;
+		_s = &_storage;
 
-		s->cString = [self allocMemoryWithSize: (length * 4) + 1];
-		s->length = length;
+		_s->cString = [self allocMemoryWithSize: (length * 4) + 1];
+		_s->length = length;
 
 		for (i = 0; i < length; i++) {
 			char buffer[4];
@@ -511,21 +512,21 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				    (nextCharacter & 0x3FF)) + 0x10000;
 
 				i++;
-				s->length--;
+				_s->length--;
 			}
 
 			len = of_string_utf8_encode(character, buffer);
 
 			switch (len) {
 			case 1:
-				s->cString[j++] = buffer[0];
+				_s->cString[j++] = buffer[0];
 				break;
 			case 2:
 			case 3:
 			case 4:
-				s->isUTF8 = YES;
+				_s->isUTF8 = YES;
 
-				memcpy(s->cString + j, buffer, len);
+				memcpy(_s->cString + j, buffer, len);
 				j += len;
 
 				break;
@@ -535,12 +536,12 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			}
 		}
 
-		s->cString[j] = '\0';
-		s->cStringLength = j;
+		_s->cString[j] = '\0';
+		_s->cStringLength = j;
 
 		@try {
-			s->cString = [self resizeMemory: s->cString
-						   size: j + 1];
+			_s->cString = [self resizeMemory: _s->cString
+						    size: j + 1];
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only tried to make it smaller */
 		}
@@ -572,10 +573,10 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		} else if (byteOrder != OF_BYTE_ORDER_NATIVE)
 			swap = YES;
 
-		s = &s_store;
+		_s = &_storage;
 
-		s->cString = [self allocMemoryWithSize: (length * 4) + 1];
-		s->length = length;
+		_s->cString = [self allocMemoryWithSize: (length * 4) + 1];
+		_s->length = length;
 
 		for (i = 0; i < length; i++) {
 			char buffer[4];
@@ -585,14 +586,14 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 			switch (len) {
 			case 1:
-				s->cString[j++] = buffer[0];
+				_s->cString[j++] = buffer[0];
 				break;
 			case 2:
 			case 3:
 			case 4:
-				s->isUTF8 = YES;
+				_s->isUTF8 = YES;
 
-				memcpy(s->cString + j, buffer, len);
+				memcpy(_s->cString + j, buffer, len);
 				j += len;
 
 				break;
@@ -602,12 +603,12 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			}
 		}
 
-		s->cString[j] = '\0';
-		s->cStringLength = j;
+		_s->cString[j] = '\0';
+		_s->cStringLength = j;
 
 		@try {
-			s->cString = [self resizeMemory: s->cString
-						   size: j + 1];
+			_s->cString = [self resizeMemory: _s->cString
+						    size: j + 1];
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only tried to make it smaller */
 		}
@@ -633,29 +634,29 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
-		s = &s_store;
+		_s = &_storage;
 
 		if ((cStringLength = of_vasprintf(&tmp, [format UTF8String],
 		    arguments)) == -1)
 			@throw [OFInvalidFormatException
 			    exceptionWithClass: [self class]];
 
-		s->cStringLength = cStringLength;
+		_s->cStringLength = cStringLength;
 
 		@try {
 			switch (of_string_utf8_check(tmp, cStringLength,
-			    &s->length)) {
+			    &_s->length)) {
 			case 1:
-				s->isUTF8 = YES;
+				_s->isUTF8 = YES;
 				break;
 			case -1:
 				@throw [OFInvalidEncodingException
 				    exceptionWithClass: [self class]];
 			}
 
-			s->cString = [self
+			_s->cString = [self
 			    allocMemoryWithSize: cStringLength + 1];
-			memcpy(s->cString, tmp, cStringLength + 1);
+			memcpy(_s->cString, tmp, cStringLength + 1);
 		} @finally {
 			free(tmp);
 		}
@@ -677,51 +678,52 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		size_t i, cStringLength;
 		va_list argumentsCopy;
 
-		s = &s_store;
+		_s = &_storage;
 
-		s->cStringLength = [firstComponent UTF8StringLength];
+		_s->cStringLength = [firstComponent UTF8StringLength];
 
 		if ([firstComponent isKindOfClass: [OFString_UTF8 class]] ||
 		    [firstComponent isKindOfClass:
 		    [OFMutableString_UTF8 class]])
-			s->isUTF8 = ((OFString_UTF8*)firstComponent)->s->isUTF8;
+			_s->isUTF8 =
+			    ((OFString_UTF8*)firstComponent)->_s->isUTF8;
 		else
-			s->isUTF8 = YES;
+			_s->isUTF8 = YES;
 
-		s->length = [firstComponent length];
+		_s->length = [firstComponent length];
 
 		/* Calculate length and see if we need UTF-8 */
 		va_copy(argumentsCopy, arguments);
 		while ((component = va_arg(argumentsCopy, OFString*)) != nil) {
-			s->cStringLength += 1 + [component UTF8StringLength];
-			s->length += 1 + [component length];
+			_s->cStringLength += 1 + [component UTF8StringLength];
+			_s->length += 1 + [component length];
 
 			if ([component isKindOfClass: [OFString_UTF8 class]] ||
 			    [component isKindOfClass:
 			    [OFMutableString_UTF8 class]])
-				s->isUTF8 =
-				    ((OFString_UTF8*)component)->s->isUTF8;
+				_s->isUTF8 =
+				    ((OFString_UTF8*)component)->_s->isUTF8;
 			else
-				s->isUTF8 = YES;
+				_s->isUTF8 = YES;
 		}
 
-		s->cString = [self allocMemoryWithSize: s->cStringLength + 1];
+		_s->cString = [self allocMemoryWithSize: _s->cStringLength + 1];
 
 		cStringLength = [firstComponent UTF8StringLength];
-		memcpy(s->cString, [firstComponent UTF8String], cStringLength);
+		memcpy(_s->cString, [firstComponent UTF8String], cStringLength);
 		i = cStringLength;
 
 		while ((component = va_arg(arguments, OFString*)) != nil) {
 			cStringLength = [component UTF8StringLength];
 
-			s->cString[i] = OF_PATH_DELIMITER;
-			memcpy(s->cString + i + 1, [component UTF8String],
+			_s->cString[i] = OF_PATH_DELIMITER;
+			memcpy(_s->cString + i + 1, [component UTF8String],
 			    cStringLength);
 
 			i += 1 + cStringLength;
 		}
 
-		s->cString[i] = '\0';
+		_s->cString[i] = '\0';
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -732,8 +734,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 - (void)dealloc
 {
-	if (s != NULL && s->freeWhenDone != NULL)
-		free(s->freeWhenDone);
+	if (_s != NULL && _s->freeWhenDone != NULL)
+		free(_s->freeWhenDone);
 
 	[super dealloc];
 }
@@ -744,18 +746,18 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 {
 	switch (encoding) {
 	case OF_STRING_ENCODING_ASCII:
-		if (s->isUTF8)
+		if (_s->isUTF8)
 			@throw [OFInvalidEncodingException
 			    exceptionWithClass: [self class]];
 		/* intentional fall-through */
 	case OF_STRING_ENCODING_UTF_8:
-		if (s->cStringLength + 1 > maxLength)
+		if (_s->cStringLength + 1 > maxLength)
 			@throw [OFOutOfRangeException
 			    exceptionWithClass: [self class]];
 
-		memcpy(cString, s->cString, s->cStringLength + 1);
+		memcpy(cString, _s->cString, _s->cStringLength + 1);
 
-		return s->cStringLength;
+		return _s->cStringLength;
 	default:
 		return [super getCString: cString
 			       maxLength: maxLength
@@ -767,12 +769,12 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 {
 	switch (encoding) {
 	case OF_STRING_ENCODING_ASCII:
-		if (s->isUTF8)
+		if (_s->isUTF8)
 			@throw [OFInvalidEncodingException
 			    exceptionWithClass: [self class]];
 		/* intentional fall-through */
 	case OF_STRING_ENCODING_UTF_8:
-		return s->cString;
+		return _s->cString;
 	default:
 		return [super cStringWithEncoding: encoding];
 	}
@@ -780,12 +782,12 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 - (const char*)UTF8String
 {
-	return s->cString;
+	return _s->cString;
 }
 
 - (size_t)length
 {
-	return s->length;
+	return _s->length;
 }
 
 - (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding
@@ -793,7 +795,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	switch (encoding) {
 	case OF_STRING_ENCODING_UTF_8:
 	case OF_STRING_ENCODING_ASCII:
-		return s->cStringLength;
+		return _s->cStringLength;
 	default:
 		return [super cStringLengthWithEncoding: encoding];
 	}
@@ -801,7 +803,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 - (size_t)UTF8StringLength
 {
-	return s->cStringLength;
+	return _s->cStringLength;
 }
 
 - (BOOL)isEqual: (id)object
@@ -816,17 +818,17 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	otherString = object;
 
-	if ([otherString UTF8StringLength] != s->cStringLength ||
-	    [otherString length] != s->length)
+	if ([otherString UTF8StringLength] != _s->cStringLength ||
+	    [otherString length] != _s->length)
 		return NO;
 
 	if (([otherString isKindOfClass: [OFString_UTF8 class]] ||
 	    [otherString isKindOfClass: [OFMutableString_UTF8 class]]) &&
-	    s->hashed && otherString->s->hashed &&
-	    s->hash != otherString->s->hash)
+	    _s->hashed && otherString->_s->hashed &&
+	    _s->hash != otherString->_s->hash)
 		return NO;
 
-	if (strcmp(s->cString, [otherString UTF8String]))
+	if (strcmp(_s->cString, [otherString UTF8String]))
 		return NO;
 
 	return YES;
@@ -848,14 +850,14 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	otherString = (OFString*)object;
 	otherCStringLength = [otherString UTF8StringLength];
-	minimumCStringLength = (s->cStringLength > otherCStringLength
-	    ? otherCStringLength : s->cStringLength);
+	minimumCStringLength = (_s->cStringLength > otherCStringLength
+	    ? otherCStringLength : _s->cStringLength);
 
-	if ((compare = memcmp(s->cString, [otherString UTF8String],
+	if ((compare = memcmp(_s->cString, [otherString UTF8String],
 	    minimumCStringLength)) == 0) {
-		if (s->cStringLength > otherCStringLength)
+		if (_s->cStringLength > otherCStringLength)
 			return OF_ORDERED_DESCENDING;
-		if (s->cStringLength < otherCStringLength)
+		if (_s->cStringLength < otherCStringLength)
 			return OF_ORDERED_ASCENDING;
 		return OF_ORDERED_SAME;
 	}
@@ -883,15 +885,15 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	otherCString = [otherString UTF8String];
 	otherCStringLength = [otherString UTF8StringLength];
 
-	if (!s->isUTF8) {
-		minimumCStringLength = (s->cStringLength > otherCStringLength
-		    ? otherCStringLength : s->cStringLength);
+	if (!_s->isUTF8) {
+		minimumCStringLength = (_s->cStringLength > otherCStringLength
+		    ? otherCStringLength : _s->cStringLength);
 
-		if ((compare = memcasecmp(s->cString, otherCString,
+		if ((compare = memcasecmp(_s->cString, otherCString,
 		    minimumCStringLength)) == 0) {
-			if (s->cStringLength > otherCStringLength)
+			if (_s->cStringLength > otherCStringLength)
 				return OF_ORDERED_DESCENDING;
-			if (s->cStringLength < otherCStringLength)
+			if (_s->cStringLength < otherCStringLength)
 				return OF_ORDERED_ASCENDING;
 			return OF_ORDERED_SAME;
 		}
@@ -904,12 +906,12 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	i = j = 0;
 
-	while (i < s->cStringLength && j < otherCStringLength) {
+	while (i < _s->cStringLength && j < otherCStringLength) {
 		of_unichar_t c1, c2;
 		size_t l1, l2;
 
-		l1 = of_string_utf8_decode(s->cString + i,
-		    s->cStringLength - i, &c1);
+		l1 = of_string_utf8_decode(_s->cString + i,
+		    _s->cStringLength - i, &c1);
 		l2 = of_string_utf8_decode(otherCString + j,
 		    otherCStringLength - j, &c2);
 
@@ -942,9 +944,9 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		j += l2;
 	}
 
-	if (s->cStringLength - i > otherCStringLength - j)
+	if (_s->cStringLength - i > otherCStringLength - j)
 		return OF_ORDERED_DESCENDING;
-	else if (s->cStringLength - i < otherCStringLength - j)
+	else if (_s->cStringLength - i < otherCStringLength - j)
 		return OF_ORDERED_ASCENDING;
 
 	return OF_ORDERED_SAME;
@@ -955,17 +957,17 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	size_t i;
 	uint32_t hash;
 
-	if (s->hashed)
-		return s->hash;
+	if (_s->hashed)
+		return _s->hash;
 
 	OF_HASH_INIT(hash);
 
-	for (i = 0; i < s->cStringLength; i++) {
+	for (i = 0; i < _s->cStringLength; i++) {
 		of_unichar_t c;
 		size_t length;
 
-		if ((length = of_string_utf8_decode(s->cString + i,
-		    s->cStringLength - i, &c)) == 0)
+		if ((length = of_string_utf8_decode(_s->cString + i,
+		    _s->cStringLength - i, &c)) == 0)
 			@throw [OFInvalidEncodingException
 			    exceptionWithClass: [self class]];
 
@@ -978,8 +980,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	OF_HASH_FINALIZE(hash);
 
-	s->hash = hash;
-	s->hashed = YES;
+	_s->hash = hash;
+	_s->hashed = YES;
 
 	return hash;
 }
@@ -988,17 +990,17 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 {
 	of_unichar_t character;
 
-	if (index >= s->length)
+	if (index >= _s->length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	if (!s->isUTF8)
-		return s->cString[index];
+	if (!_s->isUTF8)
+		return _s->cString[index];
 
-	index = of_string_utf8_get_position(s->cString, index,
-	    s->cStringLength);
+	index = of_string_utf8_get_position(_s->cString, index,
+	    _s->cStringLength);
 
-	if (!of_string_utf8_decode(s->cString + index, s->cStringLength - index,
-	    &character))
+	if (!of_string_utf8_decode(_s->cString + index,
+	    _s->cStringLength - index, &character))
 		@throw [OFInvalidEncodingException
 		    exceptionWithClass: [self class]];
 
@@ -1013,7 +1015,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	const of_unichar_t *characters = [self characters];
 
 	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > s->length)
+	    range.location + range.length > _s->length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	memcpy(buffer, characters + range.location,
@@ -1031,15 +1033,15 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	size_t rangeLocation, rangeLength;
 
 	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > s->length)
+	    range.location + range.length > _s->length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	if (s->isUTF8) {
+	if (_s->isUTF8) {
 		rangeLocation = of_string_utf8_get_position(
-		    s->cString, range.location, s->cStringLength);
+		    _s->cString, range.location, _s->cStringLength);
 		rangeLength = of_string_utf8_get_position(
-		    s->cString + rangeLocation, range.length,
-		    s->cStringLength - rangeLocation);
+		    _s->cString + rangeLocation, range.length,
+		    _s->cStringLength - rangeLocation);
 	} else {
 		rangeLocation = range.location;
 		rangeLength = range.length;
@@ -1053,10 +1055,10 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	if (options & OF_STRING_SEARCH_BACKWARDS) {
 		for (i = rangeLength - cStringLength;; i--) {
-			if (!memcmp(s->cString + rangeLocation + i, cString,
+			if (!memcmp(_s->cString + rangeLocation + i, cString,
 			    cStringLength)) {
 				range.location += of_string_utf8_get_index(
-				    s->cString + rangeLocation, i);
+				    _s->cString + rangeLocation, i);
 				range.length = [string length];
 
 				return range;
@@ -1068,10 +1070,10 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		}
 	} else {
 		for (i = 0; i <= rangeLength - cStringLength; i++) {
-			if (!memcmp(s->cString + rangeLocation + i, cString,
+			if (!memcmp(_s->cString + rangeLocation + i, cString,
 			    cStringLength)) {
 				range.location += of_string_utf8_get_index(
-				    s->cString + rangeLocation, i);
+				    _s->cString + rangeLocation, i);
 				range.length = [string length];
 
 				return range;
@@ -1090,11 +1092,11 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	if (cStringLength == 0)
 		return YES;
 
-	if (cStringLength > s->cStringLength)
+	if (cStringLength > _s->cStringLength)
 		return NO;
 
-	for (i = 0; i <= s->cStringLength - cStringLength; i++)
-		if (!memcmp(s->cString + i, cString, cStringLength))
+	for (i = 0; i <= _s->cStringLength - cStringLength; i++)
+		if (!memcmp(_s->cString + i, cString, cStringLength))
 			return YES;
 
 	return NO;
@@ -1105,17 +1107,17 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	size_t start = range.location;
 	size_t end = range.location + range.length;
 
-	if (range.length > SIZE_MAX - range.location || end > s->length)
+	if (range.length > SIZE_MAX - range.location || end > _s->length)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	if (s->isUTF8) {
-		start = of_string_utf8_get_position(s->cString, start,
-		    s->cStringLength);
-		end = of_string_utf8_get_position(s->cString, end,
-		    s->cStringLength);
+	if (_s->isUTF8) {
+		start = of_string_utf8_get_position(_s->cString, start,
+		    _s->cStringLength);
+		end = of_string_utf8_get_position(_s->cString, end,
+		    _s->cStringLength);
 	}
 
-	return [OFString stringWithUTF8String: s->cString + start
+	return [OFString stringWithUTF8String: _s->cString + start
 				       length: end - start];
 }
 
@@ -1123,20 +1125,20 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 {
 	size_t cStringLength = [prefix UTF8StringLength];
 
-	if (cStringLength > s->cStringLength)
+	if (cStringLength > _s->cStringLength)
 		return NO;
 
-	return !memcmp(s->cString, [prefix UTF8String], cStringLength);
+	return !memcmp(_s->cString, [prefix UTF8String], cStringLength);
 }
 
 - (BOOL)hasSuffix: (OFString*)suffix
 {
 	size_t cStringLength = [suffix UTF8StringLength];
 
-	if (cStringLength > s->cStringLength)
+	if (cStringLength > _s->cStringLength)
 		return NO;
 
-	return !memcmp(s->cString + (s->cStringLength - cStringLength),
+	return !memcmp(_s->cString + (_s->cStringLength - cStringLength),
 	    [suffix UTF8String], cStringLength);
 }
 
@@ -1154,18 +1156,18 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	array = [OFMutableArray array];
 	pool = objc_autoreleasePoolPush();
 
-	if (cStringLength > s->cStringLength) {
+	if (cStringLength > _s->cStringLength) {
 		[array addObject: [[self copy] autorelease]];
 		objc_autoreleasePoolPop(pool);
 
 		return array;
 	}
 
-	for (i = 0, last = 0; i <= s->cStringLength - cStringLength; i++) {
-		if (memcmp(s->cString + i, cString, cStringLength))
+	for (i = 0, last = 0; i <= _s->cStringLength - cStringLength; i++) {
+		if (memcmp(_s->cString + i, cString, cStringLength))
 			continue;
 
-		component = [OFString stringWithUTF8String: s->cString + last
+		component = [OFString stringWithUTF8String: _s->cString + last
 						    length: i - last];
 		if (!skipEmpty || [component length] > 0)
 			[array addObject: component];
@@ -1173,7 +1175,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		i += cStringLength - 1;
 		last = i + 1;
 	}
-	component = [OFString stringWithUTF8String: s->cString + last];
+	component = [OFString stringWithUTF8String: _s->cString + last];
 	if (!skipEmpty || [component length] > 0)
 		[array addObject: component];
 
@@ -1188,7 +1190,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 {
 	OFMutableArray *ret;
 	void *pool;
-	size_t i, last = 0, pathCStringLength = s->cStringLength;
+	size_t i, last = 0, pathCStringLength = _s->cStringLength;
 
 	ret = [OFMutableArray array];
 
@@ -1198,27 +1200,27 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	pool = objc_autoreleasePoolPush();
 
 #ifndef _WIN32
-	if (s->cString[pathCStringLength - 1] == OF_PATH_DELIMITER)
+	if (_s->cString[pathCStringLength - 1] == OF_PATH_DELIMITER)
 #else
-	if (s->cString[pathCStringLength - 1] == '/' ||
-	    s->cString[pathCStringLength - 1] == '\\')
+	if (_s->cString[pathCStringLength - 1] == '/' ||
+	    _s->cString[pathCStringLength - 1] == '\\')
 #endif
 		pathCStringLength--;
 
 	for (i = 0; i < pathCStringLength; i++) {
 #ifndef _WIN32
-		if (s->cString[i] == OF_PATH_DELIMITER) {
+		if (_s->cString[i] == OF_PATH_DELIMITER) {
 #else
-		if (s->cString[i] == '/' || s->cString[i] == '\\') {
+		if (_s->cString[i] == '/' || _s->cString[i] == '\\') {
 #endif
 			[ret addObject:
-			    [OFString stringWithUTF8String: s->cString + last
+			    [OFString stringWithUTF8String: _s->cString + last
 						    length: i - last]];
 			last = i + 1;
 		}
 	}
 
-	[ret addObject: [OFString stringWithUTF8String: s->cString + last
+	[ret addObject: [OFString stringWithUTF8String: _s->cString + last
 						length: i - last]];
 
 	[ret makeImmutable];
@@ -1230,25 +1232,25 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 - (OFString*)lastPathComponent
 {
-	size_t pathCStringLength = s->cStringLength;
+	size_t pathCStringLength = _s->cStringLength;
 	ssize_t i;
 
 	if (pathCStringLength == 0)
 		return @"";
 
 #ifndef _WIN32
-	if (s->cString[pathCStringLength - 1] == OF_PATH_DELIMITER)
+	if (_s->cString[pathCStringLength - 1] == OF_PATH_DELIMITER)
 #else
-	if (s->cString[pathCStringLength - 1] == '/' ||
-	    s->cString[pathCStringLength - 1] == '\\')
+	if (_s->cString[pathCStringLength - 1] == '/' ||
+	    _s->cString[pathCStringLength - 1] == '\\')
 #endif
 		pathCStringLength--;
 
 	for (i = pathCStringLength - 1; i >= 0; i--) {
 #ifndef _WIN32
-		if (s->cString[i] == OF_PATH_DELIMITER) {
+		if (_s->cString[i] == OF_PATH_DELIMITER) {
 #else
-		if (s->cString[i] == '/' || s->cString[i] == '\\') {
+		if (_s->cString[i] == '/' || _s->cString[i] == '\\') {
 #endif
 			i++;
 			break;
@@ -1262,44 +1264,44 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	if (i < 0)
 		i = 0;
 
-	return [OFString stringWithUTF8String: s->cString + i
+	return [OFString stringWithUTF8String: _s->cString + i
 				       length: pathCStringLength - i];
 }
 
 - (OFString*)stringByDeletingLastPathComponent
 {
-	size_t i, pathCStringLength = s->cStringLength;
+	size_t i, pathCStringLength = _s->cStringLength;
 
 	if (pathCStringLength == 0)
 		return @"";
 
 #ifndef _WIN32
-	if (s->cString[pathCStringLength - 1] == OF_PATH_DELIMITER)
+	if (_s->cString[pathCStringLength - 1] == OF_PATH_DELIMITER)
 #else
-	if (s->cString[pathCStringLength - 1] == '/' ||
-	    s->cString[pathCStringLength - 1] == '\\')
+	if (_s->cString[pathCStringLength - 1] == '/' ||
+	    _s->cString[pathCStringLength - 1] == '\\')
 #endif
 		pathCStringLength--;
 
 	if (pathCStringLength == 0)
-		return [OFString stringWithUTF8String: s->cString
+		return [OFString stringWithUTF8String: _s->cString
 					       length: 1];
 
 	for (i = pathCStringLength - 1; i >= 1; i--)
 #ifndef _WIN32
-		if (s->cString[i] == OF_PATH_DELIMITER)
+		if (_s->cString[i] == OF_PATH_DELIMITER)
 #else
-		if (s->cString[i] == '/' || s->cString[i] == '\\')
+		if (_s->cString[i] == '/' || _s->cString[i] == '\\')
 #endif
-			return [OFString stringWithUTF8String: s->cString
+			return [OFString stringWithUTF8String: _s->cString
 						       length: i];
 
 #ifndef _WIN32
-	if (s->cString[0] == OF_PATH_DELIMITER)
+	if (_s->cString[0] == OF_PATH_DELIMITER)
 #else
-	if (s->cString[0] == '/' || s->cString[0] == '\\')
+	if (_s->cString[0] == '/' || _s->cString[0] == '\\')
 #endif
-		return [OFString stringWithUTF8String: s->cString
+		return [OFString stringWithUTF8String: _s->cString
 					       length: 1];
 
 	return @".";
@@ -1312,16 +1314,16 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	size_t i, j;
 
 	ret = [object allocMemoryWithSize: sizeof(of_unichar_t)
-				    count: s->length];
+				    count: _s->length];
 
 	i = j = 0;
 
-	while (i < s->cStringLength) {
+	while (i < _s->cStringLength) {
 		of_unichar_t c;
 		size_t cLen;
 
-		cLen = of_string_utf8_decode(s->cString + i,
-		    s->cStringLength - i, &c);
+		cLen = of_string_utf8_decode(_s->cString + i,
+		    _s->cStringLength - i, &c);
 
 		if (cLen == 0 || c > 0x10FFFF)
 			@throw [OFInvalidEncodingException
@@ -1341,16 +1343,16 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	size_t i, j;
 
 	ret = [object allocMemoryWithSize: sizeof(of_unichar_t)
-				    count: s->length + 1];
+				    count: _s->length + 1];
 
 	i = j = 0;
 
-	while (i < s->cStringLength) {
+	while (i < _s->cStringLength) {
 		of_unichar_t c;
 		size_t cLen;
 
-		cLen = of_string_utf8_decode(s->cString + i,
-		    s->cStringLength - i, &c);
+		cLen = of_string_utf8_decode(_s->cString + i,
+		    _s->cStringLength - i, &c);
 
 		if (cLen == 0 || c > 0x10FFFF)
 			@throw [OFInvalidEncodingException
@@ -1372,7 +1374,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 - (void)enumerateLinesUsingBlock: (of_string_line_enumeration_block_t)block
 {
 	void *pool;
-	const char *cString = s->cString;
+	const char *cString = _s->cString;
 	const char *last = cString;
 	BOOL stop = NO, lastCarriageReturn = NO;
 

@@ -23,7 +23,7 @@
  */
 @interface OFThreadJoinFailedException: OFException
 {
-	OFThread *thread;
+	OFThread *_thread;
 }
 
 #ifdef OF_HAVE_PROPERTIES

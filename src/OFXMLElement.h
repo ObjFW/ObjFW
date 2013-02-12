@@ -28,20 +28,16 @@
  */
 @interface OFXMLElement: OFXMLNode
 {
-	OFString *name;
-	OFString *ns;
-	OFString *defaultNamespace;
-	OFMutableArray *attributes;
-	OFMutableDictionary *namespaces;
-	OFMutableArray *children;
+	OFString *_name, *_namespace, *_defaultNamespace;
+	OFMutableArray *_attributes;
+	OFMutableDictionary *_namespaces;
+	OFMutableArray *_children;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (copy) OFString *name;
-@property (copy, getter=namespace, setter=setNamespace:) OFString *ns;
-@property (copy) OFString *defaultNamespace;
+@property (copy) OFString *name, *namespace, *defaultNamespace;
 @property (readonly, copy) OFArray *attributes;
-@property (readonly, copy) OFArray *children;
+@property (copy) OFArray *children;
 #endif
 
 /*!
@@ -67,25 +63,25 @@
  * @brief Creates a new XML element with the specified name and namespace.
  *
  * @param name The name for the element
- * @param ns The namespace for the element
+ * @param namespace The namespace for the element
  * @return A new autoreleased OFXMLElement with the specified element name and
  *	   namespace
  */
 + (instancetype)elementWithName: (OFString*)name
-		      namespace: (OFString*)ns;
+		      namespace: (OFString*)namespace;
 
 /*!
  * @brief Creates a new XML element with the specified name, namespace and
  * 	  string value.
  *
  * @param name The name for the element
- * @param ns The namespace for the element
+ * @param namespace The namespace for the element
  * @param stringValue The value for the element
  * @return A new autoreleased OFXMLElement with the specified element name,
  *	   namespace and value
  */
 + (instancetype)elementWithName: (OFString*)name
-		      namespace: (OFString*)ns
+		      namespace: (OFString*)namespace
 		    stringValue: (OFString*)stringValue;
 
 /*!
@@ -139,25 +135,25 @@
  *	  and namespace.
  *
  * @param name The name for the element
- * @param ns The namespace for the element
+ * @param namespace The namespace for the element
  * @return An initialized OFXMLElement with the specified element name and
  *	   namespace
  */
 - initWithName: (OFString*)name
-     namespace: (OFString*)ns;
+     namespace: (OFString*)namespace;
 
 /*!
  * @brief Initializes an already allocated OFXMLElement with the specified name,
  *	  namespace and value.
  *
  * @param name The name for the element
- * @param ns The namespace for the element
+ * @param namespace The namespace for the element
  * @param stringValue The value for the element
  * @return An initialized OFXMLElement with the specified element name,
  *	   namespace and value
  */
 - initWithName: (OFString*)name
-     namespace: (OFString*)ns
+     namespace: (OFString*)namespace
    stringValue: (OFString*)stringValue;
 
 /*!
@@ -205,9 +201,9 @@
 /*!
  * @brief Sets the namespace of the element.
  *
- * @param ns The new namespace
+ * @param namespace The new namespace
  */
-- (void)setNamespace: (OFString*)ns;
+- (void)setNamespace: (OFString*)namespace;
 
 /*!
  * @brief Returns the namespace of the element.
@@ -275,11 +271,11 @@
  * added.
  *
  * @param name The name of the attribute
- * @param ns The namespace of the attribute
+ * @param namespace The namespace of the attribute
  * @param stringValue The value of the attribute
  */
 - (void)addAttributeWithName: (OFString*)name
-		   namespace: (OFString*)ns
+		   namespace: (OFString*)namespace
 		 stringValue: (OFString*)stringValue;
 
 /*!
@@ -320,27 +316,27 @@
  * @brief Sets a prefix for a namespace.
  *
  * @param prefix The prefix for the namespace
- * @param ns The namespace for which the prefix is set
+ * @param namespace The namespace for which the prefix is set
  */
 - (void)setPrefix: (OFString*)prefix
-     forNamespace: (OFString*)ns;
+     forNamespace: (OFString*)namespace;
 
 /*!
  * @brief Binds a prefix for a namespace.
  *
  * @param prefix The prefix for the namespace
- * @param ns The namespace for which the prefix is bound
+ * @param namespace The namespace for which the prefix is bound
  */
 - (void)bindPrefix: (OFString*)prefix
-      forNamespace: (OFString*)ns;
+      forNamespace: (OFString*)namespace;
 
 /*!
  * @brief Sets the default namespace for the element to be used if there is no
  *	  parent.
  *
- * @param ns The default namespace for the element
+ * @param defaultNamespace The default namespace for the element
  */
-- (void)setDefaultNamespace: (OFString*)ns;
+- (void)setDefaultNamespace: (OFString*)defaultNamespace;
 
 /*!
  * @brief Adds a child to the OFXMLElement.

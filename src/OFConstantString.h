@@ -32,7 +32,7 @@ extern void *_OFConstantStringClassReference;
  */
 @interface OFConstantString: OFString
 {
-	char *cString;
-	size_t cStringLength;
+	char *_cString;
+	size_t _cStringLength;
 }
 @end

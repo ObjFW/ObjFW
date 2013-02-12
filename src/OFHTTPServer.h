@@ -61,11 +61,11 @@
  */
 @interface OFHTTPServer: OFObject
 {
-	OFString *host;
-	uint16_t port;
-	id <OFHTTPServerDelegate> delegate;
-	OFString *name;
-	OFTCPSocket *listeningSocket;
+	OFString *_host;
+	uint16_t _port;
+	id <OFHTTPServerDelegate> _delegate;
+	OFString *_name;
+	OFTCPSocket *_listeningSocket;
 }
 
 #ifdef OF_HAVE_PROPERTIES

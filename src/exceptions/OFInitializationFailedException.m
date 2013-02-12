@@ -22,12 +22,12 @@
 @implementation OFInitializationFailedException
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
-	    @"Initialization failed for or in class %@!", inClass];
+	_description = [[OFString alloc] initWithFormat:
+	    @"Initialization failed for or in class %@!", _inClass];
 
-	return description;
+	return _description;
 }
 @end

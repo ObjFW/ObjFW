@@ -35,49 +35,49 @@
 {
 	self = [super init];
 
-	FD_ZERO(&readFDs);
-	FD_ZERO(&writeFDs);
+	FD_ZERO(&_readFDs);
+	FD_ZERO(&_writeFDs);
 
-	FD_SET(cancelFD[0], &readFDs);
+	FD_SET(_cancelFD[0], &_readFDs);
 
 	return self;
 }
 
 - (void)OF_addFileDescriptorForReading: (int)fd
 {
-	FD_SET(fd, &readFDs);
-	FD_SET(fd, &exceptFDs);
+	FD_SET(fd, &_readFDs);
+	FD_SET(fd, &_exceptFDs);
 }
 
 - (void)OF_addFileDescriptorForWriting: (int)fd
 {
-	FD_SET(fd, &writeFDs);
-	FD_SET(fd, &exceptFDs);
+	FD_SET(fd, &_writeFDs);
+	FD_SET(fd, &_exceptFDs);
 }
 
 - (void)OF_removeFileDescriptorForReading: (int)fd
 {
-	FD_CLR(fd, &readFDs);
+	FD_CLR(fd, &_readFDs);
 
-	if (!FD_ISSET(fd, &writeFDs))
-		FD_CLR(fd, &exceptFDs);
+	if (!FD_ISSET(fd, &_writeFDs))
+		FD_CLR(fd, &_exceptFDs);
 }
 
 - (void)OF_removeFileDescriptorForWriting: (int)fd
 {
-	FD_CLR(fd, &writeFDs);
+	FD_CLR(fd, &_writeFDs);
 
-	if (!FD_ISSET(fd, &readFDs))
-		FD_CLR(fd, &exceptFDs);
+	if (!FD_ISSET(fd, &_readFDs))
+		FD_CLR(fd, &_exceptFDs);
 }
 
 - (BOOL)observeWithTimeout: (double)timeout
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFStream **objects;
-	fd_set readFDs_;
-	fd_set writeFDs_;
-	fd_set exceptFDs_;
+	fd_set readFDs;
+	fd_set writeFDs;
+	fd_set exceptFDs;
 	struct timeval time;
 	size_t i, count, realEvents = 0;
 
@@ -91,13 +91,13 @@
 	objc_autoreleasePoolPop(pool);
 
 #ifdef FD_COPY
-	FD_COPY(&readFDs, &readFDs_);
-	FD_COPY(&writeFDs, &writeFDs_);
-	FD_COPY(&exceptFDs, &exceptFDs_);
+	FD_COPY(&_readFDs, &readFDs);
+	FD_COPY(&_writeFDs, &writeFDs);
+	FD_COPY(&_exceptFDs, &exceptFDs);
 #else
-	readFDs_ = readFDs;
-	writeFDs_ = writeFDs;
-	exceptFDs_ = exceptFDs;
+	readFDs = _readFDs;
+	writeFDs = _writeFDs;
+	exceptFDs = _exceptFDs;
 #endif
 
 	/*
@@ -109,46 +109,47 @@
 	time.tv_sec = (time_t)timeout;
 	time.tv_usec = (int)((timeout - time.tv_sec) * 1000);
 
-	if (select((int)maxFD + 1, &readFDs_, &writeFDs_, &exceptFDs_,
+	if (select((int)_maxFD + 1, &readFDs, &writeFDs, &exceptFDs,
 	    (timeout != -1 ? &time : NULL)) < 1)
 		return NO;
 
-	if (FD_ISSET(cancelFD[0], &readFDs_)) {
+	if (FD_ISSET(_cancelFD[0], &readFDs)) {
 		char buffer;
 #ifndef _WIN32
-		OF_ENSURE(read(cancelFD[0], &buffer, 1) > 0);
+		OF_ENSURE(read(_cancelFD[0], &buffer, 1) > 0);
 #else
-		OF_ENSURE(recvfrom(cancelFD[0], &buffer, 1, 0, NULL, NULL) > 0);
+		OF_ENSURE(recvfrom(_cancelFD[0], &buffer, 1, 0, NULL,
+		    NULL) > 0);
 #endif
 	}
 
-	objects = [readStreams objects];
-	count = [readStreams count];
+	objects = [_readStreams objects];
+	count = [_readStreams count];
 
 	for (i = 0; i < count; i++) {
 		int fd = [objects[i] fileDescriptorForReading];
 
 		pool = objc_autoreleasePoolPush();
 
-		if (FD_ISSET(fd, &readFDs_)) {
-			if ([delegate respondsToSelector:
+		if (FD_ISSET(fd, &readFDs)) {
+			if ([_delegate respondsToSelector:
 			    @selector(streamIsReadyForReading:)])
-				[delegate streamIsReadyForReading: objects[i]];
+				[_delegate streamIsReadyForReading: objects[i]];
 
 			realEvents++;
 		}
 
-		if (FD_ISSET(fd, &exceptFDs_)) {
-			if ([delegate respondsToSelector:
+		if (FD_ISSET(fd, &exceptFDs)) {
+			if ([_delegate respondsToSelector:
 			    @selector(streamDidReceiveException:)])
-				[delegate streamDidReceiveException:
+				[_delegate streamDidReceiveException:
 				    objects[i]];
 
 			/*
 			 * Prevent calling it twice in case the FD is in both
 			 * sets.
 			 */
-			FD_CLR(fd, &exceptFDs_);
+			FD_CLR(fd, &exceptFDs);
 
 			realEvents++;
 		}
@@ -156,26 +157,26 @@
 		objc_autoreleasePoolPop(pool);
 	}
 
-	objects = [writeStreams objects];
-	count = [writeStreams count];
+	objects = [_writeStreams objects];
+	count = [_writeStreams count];
 
 	for (i = 0; i < count; i++) {
 		int fd = [objects[i] fileDescriptorForWriting];
 
 		pool = objc_autoreleasePoolPush();
 
-		if (FD_ISSET(fd, &writeFDs_)) {
-			if ([delegate respondsToSelector:
+		if (FD_ISSET(fd, &writeFDs)) {
+			if ([_delegate respondsToSelector:
 			    @selector(streamIsReadyForWriting:)])
-				[delegate streamIsReadyForWriting: objects[i]];
+				[_delegate streamIsReadyForWriting: objects[i]];
 
 			realEvents++;
 		}
 
-		if (FD_ISSET(fd, &exceptFDs_)) {
-			if ([delegate respondsToSelector:
+		if (FD_ISSET(fd, &exceptFDs)) {
+			if ([_delegate respondsToSelector:
 			    @selector(streamDidReceiveException:)])
-				[delegate streamDidReceiveException:
+				[_delegate streamDidReceiveException:
 				    objects[i]];
 
 			realEvents++;

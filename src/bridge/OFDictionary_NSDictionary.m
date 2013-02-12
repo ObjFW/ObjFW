@@ -24,16 +24,16 @@
 #import "OFInitializationFailedException.h"
 
 @implementation OFDictionary_NSDictionary
-- initWithNSDictionary: (NSDictionary*)dictionary_
+- initWithNSDictionary: (NSDictionary*)dictionary
 {
 	self = [super init];
 
 	@try {
-		dictionary = [dictionary_ retain];
-
 		if (dictionary == nil)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
+
+		_dictionary = [dictionary retain];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -49,7 +49,7 @@
 	if ([key conformsToProtocol: @protocol(OFBridging)])
 		key = [key NSObject];
 
-	object = [dictionary objectForKey: key];
+	object = [_dictionary objectForKey: key];
 
 	if ([object conformsToProtocol: @protocol(NSBridging)])
 		return [object OFObject];
@@ -59,6 +59,6 @@
 
 - (size_t)count
 {
-	return [dictionary count];
+	return [_dictionary count];
 }
 @end

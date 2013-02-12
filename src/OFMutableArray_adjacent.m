@@ -39,10 +39,10 @@
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]];
 
-	[array addItem: &object];
+	[_array addItem: &object];
 	[object retain];
 
-	mutations++;
+	_mutations++;
 }
 
 - (void)insertObject: (id)object
@@ -52,27 +52,27 @@
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]];
 
-	[array insertItem: &object
-		  atIndex: index];
+	[_array insertItem: &object
+		   atIndex: index];
 	[object retain];
 
-	mutations++;
+	_mutations++;
 }
 
-- (void)insertObjectsFromArray: (OFArray*)array_
+- (void)insertObjectsFromArray: (OFArray*)array
 		       atIndex: (size_t)index
 {
-	id *objects = [array_ objects];
-	size_t i, count = [array_ count];
+	id *objects = [array objects];
+	size_t i, count = [array count];
 
-	[array insertItems: objects
-		   atIndex: index
-		     count: count];
+	[_array insertItems: objects
+		    atIndex: index
+		      count: count];
 
 	for (i = 0; i < count; i++)
 		[objects[i] retain];
 
-	mutations++;
+	_mutations++;
 }
 
 - (void)replaceObject: (id)oldObject
@@ -85,8 +85,8 @@
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]];
 
-	objects = [array items];
-	count = [array count];
+	objects = [_array items];
+	count = [_array count];
 
 	for (i = 0; i < count; i++) {
 		if ([objects[i] isEqual: oldObject]) {
@@ -109,9 +109,9 @@
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]];
 
-	objects = [array items];
+	objects = [_array items];
 
-	if (index >= [array count])
+	if (index >= [_array count])
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	oldObject = objects[index];
@@ -129,8 +129,8 @@
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]];
 
-	objects = [array items];
-	count = [array count];
+	objects = [_array items];
+	count = [_array count];
 
 	for (i = 0; i < count; i++) {
 		if (objects[i] == oldObject) {
@@ -152,15 +152,15 @@
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]];
 
-	objects = [array items];
-	count = [array count];
+	objects = [_array items];
+	count = [_array count];
 
 	for (i = 0; i < count; i++) {
 		if ([objects[i] isEqual: object]) {
 			object = objects[i];
 
-			[array removeItemAtIndex: i];
-			mutations++;
+			[_array removeItemAtIndex: i];
+			_mutations++;
 
 			[object release];
 
@@ -178,13 +178,13 @@
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]];
 
-	objects = [array items];
-	count = [array count];
+	objects = [_array items];
+	count = [_array count];
 
 	for (i = 0; i < count; i++) {
 		if (objects[i] == object) {
-			[array removeItemAtIndex: i];
-			mutations++;
+			[_array removeItemAtIndex: i];
+			_mutations++;
 
 			[object release];
 
@@ -196,27 +196,27 @@
 - (void)removeObjectAtIndex: (size_t)index
 {
 	id object = [self objectAtIndex: index];
-	[array removeItemAtIndex: index];
+	[_array removeItemAtIndex: index];
 	[object release];
 
-	mutations++;
+	_mutations++;
 }
 
 - (void)removeAllObjects
 {
-	id *objects = [array items];
-	size_t i, count = [array count];
+	id *objects = [_array items];
+	size_t i, count = [_array count];
 
 	for (i = 0; i < count; i++)
 		[objects[i] release];
 
-	[array removeAllItems];
+	[_array removeAllItems];
 }
 
 - (void)removeObjectsInRange: (of_range_t)range
 {
-	id *objects = [array items], *copy;
-	size_t i, count = [array count];
+	id *objects = [_array items], *copy;
+	size_t i, count = [_array count];
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.length > count - range.location)
@@ -227,8 +227,8 @@
 	memcpy(copy, objects + range.location, range.length * sizeof(id));
 
 	@try {
-		[array removeItemsInRange: range];
-		mutations++;
+		[_array removeItemsInRange: range];
+		_mutations++;
 
 		for (i = 0; i < range.length; i++)
 			[copy[i] release];
@@ -239,24 +239,24 @@
 
 - (void)removeLastObject
 {
-	size_t count = [array count];
+	size_t count = [_array count];
 	id object;
 
 	if (count == 0)
 		return;
 
 	object = [self objectAtIndex: count - 1];
-	[array removeLastItem];
+	[_array removeLastItem];
 	[object release];
 
-	mutations++;
+	_mutations++;
 }
 
 - (void)exchangeObjectAtIndex: (size_t)index1
 	    withObjectAtIndex: (size_t)index2
 {
-	id *objects = [array items];
-	size_t count = [array count];
+	id *objects = [_array items];
+	size_t count = [_array count];
 	id tmp;
 
 	if (index1 >= count || index2 >= count)
@@ -269,8 +269,8 @@
 
 - (void)reverse
 {
-	id *objects = [array items];
-	size_t i, j, count = [array count];
+	id *objects = [_array items];
+	size_t i, j, count = [_array count];
 
 	if (count == 0 || count == 1)
 		return;
@@ -295,7 +295,7 @@
 					     objects: objects
 					       count: count];
 
-	state->mutationsPtr = &mutations;
+	state->mutationsPtr = &_mutations;
 
 	return ret;
 }
@@ -304,19 +304,19 @@
 {
 	return [[[OFArrayEnumerator alloc]
 	    initWithArray: self
-	     mutationsPtr: &mutations] autorelease];
+	     mutationsPtr: &_mutations] autorelease];
 }
 
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
-	id *objects = [array items];
-	size_t i, count = [array count];
+	id *objects = [_array items];
+	size_t i, count = [_array count];
 	BOOL stop = NO;
-	unsigned long mutations_ = mutations;
+	unsigned long mutations = _mutations;
 
 	for (i = 0; i < count && !stop; i++) {
-		if (mutations != mutations_)
+		if (_mutations != mutations)
 			@throw [OFEnumerationMutationException
 			    exceptionWithClass: [self class]
 					object: self];
@@ -327,15 +327,15 @@
 
 - (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block
 {
-	id *objects = [array items];
-	size_t i, count = [array count];
+	id *objects = [_array items];
+	size_t i, count = [_array count];
 	BOOL stop = NO;
-	unsigned long mutations_ = mutations;
+	unsigned long mutations = _mutations;
 
 	for (i = 0; i < count && !stop; i++) {
 		id newObject;
 
-		if (mutations != mutations_)
+		if (_mutations != mutations)
 			@throw [OFEnumerationMutationException
 			    exceptionWithClass: [self class]
 					object: self];

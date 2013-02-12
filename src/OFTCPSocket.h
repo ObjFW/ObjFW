@@ -50,11 +50,11 @@ typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*,
  */
 @interface OFTCPSocket: OFStreamSocket
 {
-	BOOL			listening;
-	struct sockaddr_storage	*sockAddr;
-	socklen_t		sockAddrLen;
-	OFString		*SOCKS5Host;
-	uint16_t		SOCKS5Port;
+	BOOL _listening;
+	struct sockaddr_storage *_sockAddr;
+	socklen_t _sockAddrLen;
+	OFString *_SOCKS5Host;
+	uint16_t _SOCKS5Port;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -66,9 +66,10 @@ typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*,
 /*!
  * @brief Sets the global SOCKS5 proxy host to use when creating a new socket
  *
- * @param host The host to use as a SOCKS5 proxy when creating a new socket
+ * @param SOCKS5Host The host to use as a SOCKS5 proxy when creating a new
+ *		     socket
  */
-+ (void)setSOCKS5Host: (OFString*)host;
++ (void)setSOCKS5Host: (OFString*)SOCKS5Host;
 
 /*!
  * @brief Returns the host to use as a SOCKS5 proxy when creating a new socket
@@ -80,9 +81,9 @@ typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*,
 /*!
  * @brief Sets the global SOCKS5 proxy port to use when creating a new socket
  *
- * @param port The port to use as a SOCKS5 proxy when creating a new socket
+ * @param SOCKS5Port The port to use as a SOCKS5 proxy when creating a new socket
  */
-+ (void)setSOCKS5Port: (uint16_t)port;
++ (void)setSOCKS5Port: (uint16_t)SOCKS5Port;
 
 /*!
  * @brief Returns the port to use as a SOCKS5 proxy when creating a new socket

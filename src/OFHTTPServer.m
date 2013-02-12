@@ -167,35 +167,35 @@ normalized_key(OFString *key)
 
 @interface OFHTTPServerReply: OFHTTPRequestReply
 {
-	OFTCPSocket *sock;
-	OFHTTPServer *server;
-	BOOL chunked, headersSent, closed;
+	OFTCPSocket *_socket;
+	OFHTTPServer *_server;
+	BOOL _chunked, _headersSent, _closed;
 }
 
-- initWithSocket: (OFTCPSocket*)sock
+- initWithSocket: (OFTCPSocket*)socket
 	  server: (OFHTTPServer*)server;
 @end
 
 @implementation OFHTTPServerReply
-- initWithSocket: (OFTCPSocket*)sock_
-	  server: (OFHTTPServer*)server_
+- initWithSocket: (OFTCPSocket*)socket
+	  server: (OFHTTPServer*)server
 {
 	self = [super init];
 
-	statusCode = 500;
-	sock = [sock_ retain];
-	server = [server_ retain];
+	_statusCode = 500;
+	_socket = [socket retain];
+	_server = [server retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	if (!closed)
+	if (!_closed)
 		[self close];
 
-	[sock release];
-	[server release];
+	[_socket release];
+	[_server release];
 
 	[super dealloc];
 }
@@ -208,24 +208,24 @@ normalized_key(OFString *key)
 	OFEnumerator *keyEnumerator, *valueEnumerator;
 	OFString *key, *value;
 
-	[sock writeFormat: @"HTTP/%@ %d %s\r\n"
-			   @"Server: %@\r\n"
-			   @"Date: %@\r\n",
-			   [self protocolVersionString], statusCode,
-			   status_code_to_string(statusCode),
-			   [server name], date];
+	[_socket writeFormat: @"HTTP/%@ %d %s\r\n"
+			      @"Server: %@\r\n"
+			      @"Date: %@\r\n",
+			      [self protocolVersionString], _statusCode,
+			      status_code_to_string(_statusCode),
+			      [_server name], date];
 
-	keyEnumerator = [headers keyEnumerator];
-	valueEnumerator = [headers objectEnumerator];
+	keyEnumerator = [_headers keyEnumerator];
+	valueEnumerator = [_headers objectEnumerator];
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (value = [valueEnumerator nextObject]) != nil)
 		if (![key isEqual: @"Server"] && ![key isEqual: @"Date"])
-			[sock writeFormat: @"%@: %@\r\n", key, value];
+			[_socket writeFormat: @"%@: %@\r\n", key, value];
 
-	[sock writeString: @"\r\n"];
+	[_socket writeString: @"\r\n"];
 
-	headersSent = YES;
-	chunked = [[headers objectForKey: @"Transfer-Encoding"]
+	_headersSent = YES;
+	_chunked = [[_headers objectForKey: @"Transfer-Encoding"]
 	    isEqual: @"chunked"];
 
 	objc_autoreleasePoolPop(pool);
@@ -236,72 +236,72 @@ normalized_key(OFString *key)
 {
 	void *pool;
 
-	if (!headersSent)
+	if (!_headersSent)
 		[self sendHeaders];
 
-	if (!chunked) {
-		[sock writeBuffer: buffer
-			   length: length];
+	if (!_chunked) {
+		[_socket writeBuffer: buffer
+			      length: length];
 		return;
 	}
 
 	pool = objc_autoreleasePoolPush();
-	[sock writeString: [OFString stringWithFormat: @"%zx\r\n", length]];
+	[_socket writeString: [OFString stringWithFormat: @"%zx\r\n", length]];
 	objc_autoreleasePoolPop(pool);
 
-	[sock writeBuffer: buffer
-		   length: length];
-	[sock writeBuffer: "\r\n"
-		   length: 2];
+	[_socket writeBuffer: buffer
+		      length: length];
+	[_socket writeBuffer: "\r\n"
+		      length: 2];
 }
 
 - (void)close
 {
-	if (!headersSent)
+	if (!_headersSent)
 		[self sendHeaders];
 
-	if (chunked)
-		[sock writeBuffer: "0\r\n\r\n"
-			   length: 5];
+	if (_chunked)
+		[_socket writeBuffer: "0\r\n\r\n"
+			      length: 5];
 
-	[sock close];
+	[_socket close];
 
-	closed = YES;
+	_closed = YES;
 }
 
 - (int)fileDescriptorForWriting
 {
-	return [sock fileDescriptorForWriting];
+	return [_socket fileDescriptorForWriting];
 }
 @end
 
 @interface OFHTTPServer_Connection: OFObject
 {
-	OFTCPSocket *sock;
-	OFHTTPServer *server;
-	OFTimer *timer;
+	OFTCPSocket *_socket;
+	OFHTTPServer *_server;
+	OFTimer *_timer;
 	enum {
 		AWAITING_PROLOG,
 		PARSING_HEADERS,
 		SEND_REPLY
-	} state;
-	uint8_t HTTPMinorVersion;
-	of_http_request_type_t requestType;
-	OFString *host, *path;
-	uint16_t port;
-	OFMutableDictionary *headers;
-	size_t contentLength;
-	OFDataArray *POSTData;
+	} _state;
+	uint8_t _HTTPMinorVersion;
+	of_http_request_type_t _requestType;
+	OFString *_host, *_path;
+	uint16_t _port;
+	OFMutableDictionary *_headers;
+	size_t _contentLength;
+	OFDataArray *_POSTData;
 }
 
 - initWithSocket: (OFTCPSocket*)socket
 	  server: (OFHTTPServer*)server;
-- (BOOL)socket: (OFTCPSocket*)sock
+- (BOOL)socket: (OFTCPSocket*)socket
    didReadLine: (OFString*)line
      exception: (OFException*)exception;
 - (BOOL)parseProlog: (OFString*)line;
 - (BOOL)parseHeaders: (OFString*)line;
--      (BOOL)socket: (OFTCPSocket*)sock
+-      (BOOL)socket: (OFTCPSocket*)socket
   didReadIntoBuffer: (const char*)buffer
 	     length: (size_t)length
 	  exception: (OFException*)exception;
@@ -310,21 +310,21 @@ normalized_key(OFString *key)
 @end
 
 @implementation OFHTTPServer_Connection
-- initWithSocket: (OFTCPSocket*)sock_
-	  server: (OFHTTPServer*)server_
+- initWithSocket: (OFTCPSocket*)socket
+	  server: (OFHTTPServer*)server
 {
 	self = [super init];
 
 	@try {
-		sock = [sock_ retain];
-		server = [server_ retain];
-		timer = [[OFTimer
+		_socket = [socket retain];
+		_server = [server retain];
+		_timer = [[OFTimer
 		    scheduledTimerWithTimeInterval: 10
-					    target: sock
+					    target: socket
 					  selector: @selector(
 							cancelAsyncRequests)
 					   repeats: NO] retain];
-		state = AWAITING_PROLOG;
+		_state = AWAITING_PROLOG;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -335,21 +335,21 @@ normalized_key(OFString *key)
 
 - (void)dealloc
 {
-	[sock release];
-	[server release];
+	[_socket release];
+	[_server release];
 
-	[timer invalidate];
-	[timer release];
+	[_timer invalidate];
+	[_timer release];
 
-	[host release];
-	[path release];
-	[headers release];
-	[POSTData release];
+	[_host release];
+	[_path release];
+	[_headers release];
+	[_POSTData release];
 
 	[super dealloc];
 }
 
-- (BOOL)socket: (OFTCPSocket*)sock_
+- (BOOL)socket: (OFTCPSocket*)socket
    didReadLine: (OFString*)line
      exception: (OFException*)exception
 {
@@ -357,14 +357,14 @@ normalized_key(OFString *key)
 		return NO;
 
 	@try {
-		switch (state) {
+		switch (_state) {
 		case AWAITING_PROLOG:
 			return [self parseProlog: line];
 		case PARSING_HEADERS:
 			if (![self parseHeaders: line])
 				return NO;
 
-			if (state == SEND_REPLY) {
+			if (_state == SEND_REPLY) {
 				[self createReply];
 				return NO;
 			}
@@ -397,7 +397,7 @@ normalized_key(OFString *key)
 		if (tmp < '0' || tmp > '9')
 			return [self sendErrorAndClose: 400];
 
-		HTTPMinorVersion = (uint8_t)(tmp - '0');
+		_HTTPMinorVersion = (uint8_t)(tmp - '0');
 	} @catch (OFOutOfRangeException *e) {
 		return [self sendErrorAndClose: 400];
 	}
@@ -408,27 +408,27 @@ normalized_key(OFString *key)
 
 	type = [line substringWithRange: of_range(0, pos)];
 	if ([type isEqual: @"GET"])
-		requestType = OF_HTTP_REQUEST_TYPE_GET;
+		_requestType = OF_HTTP_REQUEST_TYPE_GET;
 	else if ([type isEqual: @"POST"])
-		requestType = OF_HTTP_REQUEST_TYPE_POST;
+		_requestType = OF_HTTP_REQUEST_TYPE_POST;
 	else if ([type isEqual: @"HEAD"])
-		requestType = OF_HTTP_REQUEST_TYPE_HEAD;
+		_requestType = OF_HTTP_REQUEST_TYPE_HEAD;
 	else
 		return [self sendErrorAndClose: 501];
 
 	@try {
-		path = [line substringWithRange:
+		_path = [line substringWithRange:
 		    of_range(pos + 1, [line length] - pos - 10)];
 	} @catch (OFOutOfRangeException *e) {
 		return [self sendErrorAndClose: 400];
 	}
-	path = [[path stringByDeletingEnclosingWhitespaces] retain];
+	_path = [[_path stringByDeletingEnclosingWhitespaces] retain];
 
-	if (![path hasPrefix: @"/"])
+	if (![_path hasPrefix: @"/"])
 		return [self sendErrorAndClose: 400];
 
-	headers = [[OFMutableDictionary alloc] init];
-	state = PARSING_HEADERS;
+	_headers = [[OFMutableDictionary alloc] init];
+	_state = PARSING_HEADERS;
 
 	return YES;
 }
@@ -439,35 +439,35 @@ normalized_key(OFString *key)
 	size_t pos;
 
 	if ([line length] == 0) {
-		switch (requestType) {
+		switch (_requestType) {
 		case OF_HTTP_REQUEST_TYPE_GET:
 		case OF_HTTP_REQUEST_TYPE_HEAD:
-			state = SEND_REPLY;
+			_state = SEND_REPLY;
 			break;
 		case OF_HTTP_REQUEST_TYPE_POST:;
 			OFString *tmp;
 			char *buffer;
 
-			tmp = [headers objectForKey: @"Content-Length"];
+			tmp = [_headers objectForKey: @"Content-Length"];
 			if (tmp == nil)
 				return [self sendErrorAndClose: 411];
 
 			@try {
-				contentLength = (size_t)[tmp decimalValue];
+				_contentLength = (size_t)[tmp decimalValue];
 			} @catch (OFInvalidFormatException *e) {
 				return [self sendErrorAndClose: 400];
 			}
 
 			buffer = [self allocMemoryWithSize: BUFFER_SIZE];
-			POSTData = [[OFDataArray alloc] init];
+			_POSTData = [[OFDataArray alloc] init];
 
-			[sock asyncReadIntoBuffer: buffer
-					   length: BUFFER_SIZE
-					   target: self
-					 selector: @selector(socket:
-						       didReadIntoBuffer:
-						       length:exception:)];
-			[timer setFireDate:
+			[_socket asyncReadIntoBuffer: buffer
+					      length: BUFFER_SIZE
+					      target: self
+					    selector: @selector(socket:
+							  didReadIntoBuffer:
+							  length:exception:)];
+			[_timer setFireDate:
 			    [OFDate dateWithTimeIntervalSinceNow: 5]];
 
 			return NO;
@@ -487,8 +487,8 @@ normalized_key(OFString *key)
 	key = normalized_key([key stringByDeletingTrailingWhitespaces]);
 	value = [value stringByDeletingLeadingWhitespaces];
 
-	[headers setObject: value
-		    forKey: key];
+	[_headers setObject: value
+		     forKey: key];
 
 	if ([key isEqual: @"Host"]) {
 		pos = [value
@@ -496,8 +496,8 @@ normalized_key(OFString *key)
 			  options: OF_STRING_SEARCH_BACKWARDS].location;
 
 		if (pos != OF_NOT_FOUND) {
-			[host release];
-			host = [[value substringWithRange:
+			[_host release];
+			_host = [[value substringWithRange:
 			    of_range(0, pos)] retain];
 
 			@try {
@@ -509,32 +509,32 @@ normalized_key(OFString *key)
 				if (portTmp < 1 || portTmp > UINT16_MAX)
 					return [self sendErrorAndClose: 400];
 
-				port = (uint16_t)portTmp;
+				_port = (uint16_t)portTmp;
 			} @catch (OFInvalidFormatException *e) {
 				return [self sendErrorAndClose: 400];
 			}
 		} else {
-			[host release];
-			host = [value retain];
-			port = 80;
+			[_host release];
+			_host = [value retain];
+			_port = 80;
 		}
 	}
 
 	return YES;
 }
 
--      (BOOL)socket: (OFTCPSocket*)sock_
+-      (BOOL)socket: (OFTCPSocket*)socket
   didReadIntoBuffer: (const char*)buffer
 	     length: (size_t)length
 	  exception: (OFException*)exception
 {
-	if ([sock_ isAtEndOfStream] || exception != nil)
+	if ([socket isAtEndOfStream] || exception != nil)
 		return NO;
 
-	[POSTData addItems: buffer
-		     count: length];
+	[_POSTData addItems: buffer
+		      count: length];
 
-	if ([POSTData count] >= contentLength) {
+	if ([_POSTData count] >= _contentLength) {
 		@try {
 			[self createReply];
 		} @catch (OFWriteFailedException *e) {
@@ -544,7 +544,7 @@ normalized_key(OFString *key)
 		return NO;
 	}
 
-	[timer setFireDate: [OFDate dateWithTimeIntervalSinceNow: 5]];
+	[_timer setFireDate: [OFDate dateWithTimeIntervalSinceNow: 5]];
 
 	return YES;
 }
@@ -554,13 +554,13 @@ normalized_key(OFString *key)
 	OFString *date = [[OFDate date]
 	    dateStringWithFormat: @"%a, %d %b %Y %H:%M:%S GMT"];
 
-	[sock writeFormat: @"HTTP/1.1 %d %s\r\n"
-			   @"Date: %@\r\n"
-			   @"Server: %@\r\n"
-			   @"\r\n",
-			   statusCode, status_code_to_string(statusCode), date,
-			   [server name]];
-	[sock close];
+	[_socket writeFormat: @"HTTP/1.1 %d %s\r\n"
+			      @"Date: %@\r\n"
+			      @"Server: %@\r\n"
+			      @"\r\n",
+			      statusCode, status_code_to_string(statusCode),
+			      date, [_server name]];
+	[_socket close];
 
 	return NO;
 }
@@ -572,52 +572,53 @@ normalized_key(OFString *key)
 	OFHTTPServerReply *reply;
 	size_t pos;
 
-	[timer invalidate];
-	[timer release];
-	timer = nil;
+	[_timer invalidate];
+	[_timer release];
+	_timer = nil;
 
-	if (host == nil || port == 0) {
-		if (HTTPMinorVersion > 0) {
+	if (_host == nil || _port == 0) {
+		if (_HTTPMinorVersion > 0) {
 			[self sendErrorAndClose: 400];
 			return;
 		}
 
-		host = [[server host] retain];
-		port = [server port];
+		[_host release];
+		_host = [[_server host] retain];
+		_port = [_server port];
 	}
 
 	URL = [OFURL URL];
 	[URL setScheme: @"http"];
-	[URL setHost: host];
-	[URL setPort: port];
+	[URL setHost: _host];
+	[URL setPort: _port];
 
-	if ((pos = [path rangeOfString: @"?"].location) != OF_NOT_FOUND) {
-		OFString *path_, *query;
+	if ((pos = [_path rangeOfString: @"?"].location) != OF_NOT_FOUND) {
+		OFString *path, *query;
 
-		path_ = [path substringWithRange: of_range(0, pos)];
-		query = [path substringWithRange:
+		path = [_path substringWithRange: of_range(0, pos)];
+		query = [_path substringWithRange:
 		    of_range(pos + 1, [path length] - pos - 1)];
 
-		[URL setPath: path_];
+		[URL setPath: path];
 		[URL setQuery: query];
 	} else
-		[URL setPath: path];
+		[URL setPath: _path];
 
 	request = [OFHTTPRequest requestWithURL: URL];
-	[request setRequestType: requestType];
+	[request setRequestType: _requestType];
 	[request setProtocolVersion:
-	    (of_http_request_protocol_version_t){ 1, HTTPMinorVersion }];
-	[request setHeaders: headers];
-	[request setPOSTData: POSTData];
-	[request setRemoteAddress: [sock remoteAddress]];
+	    (of_http_request_protocol_version_t){ 1, _HTTPMinorVersion }];
+	[request setHeaders: _headers];
+	[request setPOSTData: _POSTData];
+	[request setRemoteAddress: [_socket remoteAddress]];
 
 	reply = [[[OFHTTPServerReply alloc]
-	    initWithSocket: sock
-		    server: server] autorelease];
+	    initWithSocket: _socket
+		    server: _server] autorelease];
 
-	[[server delegate] server: server
-		didReceiveRequest: request
-			    reply: reply];
+	[[_server delegate] server: _server
+		 didReceiveRequest: request
+			     reply: reply];
 }
 @end
 
@@ -631,7 +632,7 @@ normalized_key(OFString *key)
 {
 	self = [super init];
 
-	name = @"OFHTTPServer (ObjFW's HTTP server class "
+	_name = @"OFHTTPServer (ObjFW's HTTP server class "
 	    @"<https://webkeks.org/objfw/>)";
 
 	return self;
@@ -639,81 +640,81 @@ normalized_key(OFString *key)
 
 - (void)dealloc
 {
-	[host release];
-	[listeningSocket release];
-	[name release];
+	[_host release];
+	[_listeningSocket release];
+	[_name release];
 
 	[super dealloc];
 }
 
-- (void)setHost: (OFString*)host_
+- (void)setHost: (OFString*)host
 {
-	OF_SETTER(host, host_, YES, 1)
+	OF_SETTER(_host, host, YES, 1)
 }
 
 - (OFString*)host
 {
-	OF_GETTER(host, YES)
+	OF_GETTER(_host, YES)
 }
 
-- (void)setPort: (uint16_t)port_
+- (void)setPort: (uint16_t)port
 {
-	port = port_;
+	_port = port;
 }
 
 - (uint16_t)port
 {
-	return port;
+	return _port;
 }
 
-- (void)setDelegate: (id <OFHTTPServerDelegate>)delegate_
+- (void)setDelegate: (id <OFHTTPServerDelegate>)delegate
 {
-	delegate = delegate_;
+	_delegate = delegate;
 }
 
 - (id <OFHTTPServerDelegate>)delegate
 {
-	return delegate;
+	return _delegate;
 }
 
-- (void)setName: (OFString*)name_
+- (void)setName: (OFString*)name
 {
-	OF_SETTER(name, name_, YES, 1)
+	OF_SETTER(_name, name, YES, 1)
 }
 
 - (OFString*)name
 {
-	OF_GETTER(name, YES)
+	OF_GETTER(_name, YES)
 }
 
 - (void)start
 {
-	if (host == nil || port == 0)
+	if (_host == nil || _port == 0)
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	if (listeningSocket != nil)
+	if (_listeningSocket != nil)
 		@throw [OFAlreadyConnectedException
 		    exceptionWithClass: [self class]
-				socket: listeningSocket];
+				socket: _listeningSocket];
 
-	listeningSocket = [[OFTCPSocket alloc] init];
-	[listeningSocket bindToHost: host
-			       port: port];
-	[listeningSocket listen];
+	_listeningSocket = [[OFTCPSocket alloc] init];
+	[_listeningSocket bindToHost: _host
+				port: _port];
+	[_listeningSocket listen];
 
-	[listeningSocket asyncAcceptWithTarget: self
-				      selector: @selector(OF_socket:
-						    didAcceptSocket:
-						    exception:)];
+	[_listeningSocket asyncAcceptWithTarget: self
+				       selector: @selector(OF_socket:
+						     didAcceptSocket:
+						     exception:)];
 }
 
 - (void)stop
 {
-	[listeningSocket cancelAsyncRequests];
-	[listeningSocket release];
-	listeningSocket = nil;
+	[_listeningSocket cancelAsyncRequests];
+	[_listeningSocket release];
+	_listeningSocket = nil;
 }
 
 - (BOOL)OF_socket: (OFTCPSocket*)socket
@@ -723,9 +724,9 @@ normalized_key(OFString *key)
 	OFHTTPServer_Connection *connection;
 
 	if (exception != nil) {
-		if ([delegate respondsToSelector:
+		if ([_delegate respondsToSelector:
 		    @selector(server:didReceiveExceptionOnListeningSocket:)])
-			return [delegate		  server: self
+			return [_delegate		  server: self
 			    didReceiveExceptionOnListeningSocket: exception];
 
 		return NO;

@@ -25,14 +25,14 @@
 #import "common.h"
 
 @implementation OFNotConnectedException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			    socket: (OFStreamSocket*)socket
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 				     socket: socket] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -44,36 +44,36 @@
 	abort();
 }
 
-- initWithClass: (Class)class_
-	 socket: (OFStreamSocket*)socket_
+- initWithClass: (Class)class
+	 socket: (OFStreamSocket*)socket
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
-	socket = [socket_ retain];
+	_socket = [socket retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[socket release];
+	[_socket release];
 
 	[super dealloc];
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
-	    @"The socket of type %@ is not connected or bound!", inClass];
+	_description = [[OFString alloc] initWithFormat:
+	    @"The socket of type %@ is not connected or bound!", _inClass];
 
-	return description;
+	return _description;
 }
 
 - (OFStreamSocket*)socket
 {
-	OF_GETTER(socket, NO)
+	OF_GETTER(_socket, NO)
 }
 @end

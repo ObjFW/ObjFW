@@ -57,11 +57,11 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  */
 @interface OFStream: OFObject <OFCopying>
 {
-	char   *cache;
-	char   *writeBuffer;
-	size_t cacheLength, writeBufferLength;
-	BOOL   writeBufferEnabled;
-	BOOL   blocking, waitingForDelimiter;
+	char   *_cache;
+	char   *_writeBuffer;
+	size_t _cacheLength, _writeBufferLength;
+	BOOL   _writeBufferEnabled;
+	BOOL   _blocking, _waitingForDelimiter;
 }
 
 #ifdef OF_HAVE_PROPERTIES

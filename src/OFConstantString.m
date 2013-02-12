@@ -76,8 +76,8 @@ struct {
 }
 
 - (void*)resizeMemory: (void*)ptr
-	     toNItems: (size_t)nitems
-	     withSize: (size_t)size
+		 size: (size_t)nitems
+		count: (size_t)size
 {
 	[self doesNotRecognizeSelector: _cmd];
 	abort();
@@ -153,8 +153,8 @@ struct {
 		    exceptionWithClass: [self class]
 			 requestedSize: sizeof(*ivars)];
 
-	ivars->cString = cString;
-	ivars->cStringLength = cStringLength;
+	ivars->cString = _cString;
+	ivars->cStringLength = _cStringLength;
 
 	switch (of_string_utf8_check(ivars->cString, ivars->cStringLength,
 	    &ivars->length)) {
@@ -167,7 +167,7 @@ struct {
 		    exceptionWithClass: [self class]];
 	}
 
-	cString = (char*)ivars;
+	_cString = (char*)ivars;
 	object_setClass(self, [OFString_const class]);
 }
 

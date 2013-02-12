@@ -96,10 +96,10 @@ typedef enum of_number_type_t {
 {
 	union of_number_value {
 		BOOL	       bool_;
-		signed char    char_;
-		signed short   short_;
-		signed int     int_;
-		signed long    long_;
+		signed char    schar;
+		signed short   sshort;
+		signed int     sint;
+		signed long    slong;
 		unsigned char  uchar;
 		unsigned short ushort;
 		unsigned int   uint;
@@ -121,8 +121,8 @@ typedef enum of_number_type_t {
 		uintptr_t      uintptr;
 		float	       float_;
 		double	       double_;
-	} value;
-	of_number_type_t type;
+	} _value;
+	of_number_type_t _type;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -140,34 +140,34 @@ typedef enum of_number_type_t {
 /*!
  * @brief Creates a new OFNumber with the specified signed char.
  *
- * @param char_ A signed char which the OFNumber should contain
+ * @param schar A signed char which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithChar: (signed char)char_;
++ (instancetype)numberWithChar: (signed char)schar;
 
 /*!
  * @brief Creates a new OFNumber with the specified signed short.
  *
- * @param short_ A signed short which the OFNumber should contain
+ * @param sshort A signed short which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithShort: (signed short)short_;
++ (instancetype)numberWithShort: (signed short)sshort;
 
 /*!
  * @brief Creates a new OFNumber with the specified signed int.
  *
- * @param int_ A signed int which the OFNumber should contain
+ * @param sint A signed int which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithInt: (signed int)int_;
++ (instancetype)numberWithInt: (signed int)sint;
 
 /*!
  * @brief Creates a new OFNumber with the specified signed long.
  *
- * @param long_ A signed long which the OFNumber should contain
+ * @param slong A signed long which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithLong: (signed long)long_;
++ (instancetype)numberWithLong: (signed long)slong;
 
 /*!
  * @brief Creates a new OFNumber with the specified unsigned char.
@@ -349,37 +349,37 @@ typedef enum of_number_type_t {
  * @brief Initializes an already allocated OFNumber with the specified signed
  *	  char.
  *
- * @param char_ A signed char which the OFNumber should contain
+ * @param schar A signed char which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithChar: (signed char)char_;
+- initWithChar: (signed char)schar;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified signed
  *	  short.
  *
- * @param short_ A signed short which the OFNumber should contain
+ * @param sshort A signed short which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithShort: (signed short)short_;
+- initWithShort: (signed short)sshort;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified signed
  *	  int.
  *
- * @param int_ A signed int which the OFNumber should contain
+ * @param sint A signed int which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithInt: (signed int)int_;
+- initWithInt: (signed int)sint;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified signed
  *	  long.
  *
- * @param long_ A signed long which the OFNumber should contain
+ * @param slong A signed long which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithLong: (signed long)long_;
+- initWithLong: (signed long)slong;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified unsigned

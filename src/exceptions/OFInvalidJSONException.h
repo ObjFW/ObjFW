@@ -21,7 +21,7 @@
  */
 @interface OFInvalidJSONException: OFException
 {
-	size_t line;
+	size_t _line;
 }
 
 #ifdef OF_HAVE_PROPERTIES

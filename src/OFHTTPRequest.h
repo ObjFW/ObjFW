@@ -50,13 +50,13 @@ typedef struct of_http_request_protocol_version_t {
  */
 @interface OFHTTPRequest: OFObject
 {
-	OFURL *URL;
-	of_http_request_type_t requestType;
-	of_http_request_protocol_version_t protocolVersion;
-	OFDictionary *headers;
-	OFDataArray *POSTData;
-	OFString *MIMEType;
-	OFString *remoteAddress;
+	OFURL *_URL;
+	of_http_request_type_t _requestType;
+	of_http_request_protocol_version_t _protocolVersion;
+	OFDictionary *_headers;
+	OFDataArray *_POSTData;
+	OFString *_MIMEType;
+	OFString *_remoteAddress;
 }
 
 #ifdef OF_HAVE_PROPERTIES

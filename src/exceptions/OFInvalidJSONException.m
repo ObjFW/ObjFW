@@ -22,10 +22,10 @@
 #import "OFString.h"
 
 @implementation OFInvalidJSONException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			      line: (size_t)line
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 				       line: line] autorelease];
 }
 
@@ -41,30 +41,30 @@
 	abort();
 }
 
-- initWithClass: (Class)class_
-	   line: (size_t)line_
+- initWithClass: (Class)class
+	   line: (size_t)line
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
-	line = line_;
+	_line = line;
 
 	return self;
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
+	_description = [[OFString alloc] initWithFormat:
 	    @"The JSON representation class %@ tried to parse is invalid in "
-	    @"line %zd!", inClass, line];
+	    @"line %zd!", _inClass, _line];
 
-	return description;
+	return _description;
 }
 
 - (size_t)line
 {
-	return line;
+	return _line;
 }
 @end

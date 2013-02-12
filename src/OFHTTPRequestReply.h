@@ -24,9 +24,9 @@
  */
 @interface OFHTTPRequestReply: OFStream
 {
-	of_http_request_protocol_version_t protocolVersion;
-	short statusCode;
-	OFDictionary *headers;
+	of_http_request_protocol_version_t _protocolVersion;
+	short _statusCode;
+	OFDictionary *_headers;
 }
 
 #ifdef OF_HAVE_PROPERTIES

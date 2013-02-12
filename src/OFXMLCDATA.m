@@ -35,7 +35,7 @@
 	self = [super init];
 
 	@try {
-		CDATA = [string copy];
+		_CDATA = [string copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -57,7 +57,7 @@
 			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
-		CDATA = [[element stringValue] copy];
+		_CDATA = [[element stringValue] copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -70,45 +70,46 @@
 
 - (BOOL)isEqual: (id)object
 {
-	OFXMLCDATA *otherCDATA;
+	OFXMLCDATA *CDATA;
 
 	if (![object isKindOfClass: [OFXMLCDATA class]])
 		return NO;
 
-	otherCDATA = object;
+	CDATA = object;
 
-	return ([otherCDATA->CDATA isEqual: CDATA]);
+	return ([CDATA->_CDATA isEqual: _CDATA]);
 }
 
 - (uint32_t)hash
 {
-	return [CDATA hash];
+	return [_CDATA hash];
 }
 
 - (OFString*)stringValue
 {
-	return [[CDATA copy] autorelease];
+	return [[_CDATA copy] autorelease];
 }
 
 - (OFString*)XMLString
 {
-	return [OFString stringWithFormat: @"<![CDATA[%@]]>", CDATA];
+	/* FIXME: What to do about ]]>? */
+	return [OFString stringWithFormat: @"<![CDATA[%@]]>", _CDATA];
 }
 
 - (OFString*)XMLStringWithIndentation: (unsigned int)indentation
 {
-	return [OFString stringWithFormat: @"<![CDATA[%@]]>", CDATA];
+	return [self XMLString];
 }
 
 - (OFString*)XMLStringWithIndentation: (unsigned int)indentation
 				level: (unsigned int)level
 {
-	return [OFString stringWithFormat: @"<![CDATA[%@]]>", CDATA];
+	return [self XMLString];
 }
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat: @"<![CDATA[%@]]>", CDATA];
+	return [self XMLString];
 }
 
 - (OFXMLElement*)XMLElementBySerializing

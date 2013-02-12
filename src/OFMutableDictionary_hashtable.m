@@ -38,20 +38,20 @@
 - (void)setObject: (id)object
 	   forKey: (id)key
 {
-	[mapTable setValue: object
-		    forKey: key];
+	[_mapTable setValue: object
+		     forKey: key];
 }
 
 - (void)removeObjectForKey: (id)key
 {
-	[mapTable removeValueForKey: key];
+	[_mapTable removeValueForKey: key];
 }
 
 #ifdef OF_HAVE_BLOCKS
 - (void)replaceObjectsUsingBlock: (of_dictionary_replace_block_t)block
 {
 	@try {
-		[mapTable replaceValuesUsingBlock:
+		[_mapTable replaceValuesUsingBlock:
 		    ^ void* (void *key, void *value, BOOL *stop) {
 			return block(key, value, stop);
 		}];

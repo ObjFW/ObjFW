@@ -23,7 +23,7 @@
 @implementation OFArray_adjacentSubarray
 - (id*)objects
 {
-	return [array objects] + range.location;
+	return [_array objects] + _range.location;
 }
 
 - (BOOL)isEqual: (id)object
@@ -39,13 +39,13 @@
 
 	otherArray = object;
 
-	if (range.length != [otherArray count])
+	if (_range.length != [otherArray count])
 		return NO;
 
 	objects = [self objects];
 	otherObjects = [otherArray objects];
 
-	for (i = 0; i < range.length; i++)
+	for (i = 0; i < _range.length; i++)
 		if (![objects[i] isEqual: otherObjects[i]])
 			return NO;
 
@@ -59,7 +59,7 @@
 	size_t i;
 	BOOL stop = NO;
 
-	for (i = 0; i < range.length && !stop; i++)
+	for (i = 0; i < _range.length && !stop; i++)
 		block(objects[i], i, &stop);
 }
 #endif

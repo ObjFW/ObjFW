@@ -23,16 +23,16 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFArray_NSArray
-- initWithNSArray: (NSArray*)array_
+- initWithNSArray: (NSArray*)array
 {
 	self = [super init];
 
 	@try {
-		array = [array_ retain];
-
 		if (array == nil)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: isa];
+			    exceptionWithClass: [self class]];
+
+		_array = [array retain];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -48,7 +48,7 @@
 	if (index > NSUIntegerMax)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	object = [array objectAtIndex: index];
+	object = [_array objectAtIndex: index];
 
 	if ([object conformsToProtocol: @protocol(NSBridging)])
 		return [object OFObject];
@@ -58,6 +58,6 @@
 
 - (size_t)count
 {
-	return [array count];
+	return [_array count];
 }
 @end

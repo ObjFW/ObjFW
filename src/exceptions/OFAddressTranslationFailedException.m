@@ -23,34 +23,34 @@
 #import "common.h"
 
 @implementation OFAddressTranslationFailedException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			    socket: (OFTCPSocket*)socket
 			      host: (OFString*)host
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 				     socket: socket
 				       host: host] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
-	errNo = GET_AT_ERRNO;
+	_errNo = GET_AT_ERRNO;
 
 	return self;
 }
 
-- initWithClass: (Class)class_
-	 socket: (OFTCPSocket*)socket_
-	   host: (OFString*)host_
+- initWithClass: (Class)class
+	 socket: (OFTCPSocket*)socket
+	   host: (OFString*)host
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
 	@try {
-		socket = [socket_ retain];
-		host   = [host_ copy];
-		errNo  = GET_AT_ERRNO;
+		_socket = [socket retain];
+		_host   = [host copy];
+		_errNo  = GET_AT_ERRNO;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -61,44 +61,44 @@
 
 - (void)dealloc
 {
-	[socket release];
-	[host release];
+	[_socket release];
+	[_host release];
 
 	[super dealloc];
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	if (host != nil)
-		description = [[OFString alloc] initWithFormat:
+	if (_host != nil)
+		_description = [[OFString alloc] initWithFormat:
 		    @"The host %@ could not be translated to an address in "
 		    @"class %@. This means that either the host was not found, "
 		    @"there was a problem with the name server, there was a "
 		    @"problem with your network connection or you specified an "
-		    @"invalid host. " ERRFMT, host, inClass, AT_ERRPARAM];
+		    @"invalid host. " ERRFMT, _host, _inClass, AT_ERRPARAM];
 	else
-		description = [[OFString alloc] initWithFormat:
+		_description = [[OFString alloc] initWithFormat:
 		    @"An address translation failed in class %@! " ERRFMT,
-		    inClass, AT_ERRPARAM];
+		    _inClass, AT_ERRPARAM];
 
-	return description;
+	return _description;
 }
 
 - (OFTCPSocket*)socket
 {
-	OF_GETTER(socket, NO)
+	OF_GETTER(_socket, NO)
 }
 
 - (OFString*)host
 {
-	return host;
+	OF_GETTER(_host, NO)
 }
 
 - (int)errNo
 {
-	return errNo;
+	return _errNo;
 }
 @end

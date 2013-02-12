@@ -50,18 +50,18 @@ typedef id (^of_thread_block_t)(void);
 #else
 @private
 #endif
-	of_thread_t thread;
+	of_thread_t _thread;
 	enum {
 		OF_THREAD_NOT_RUNNING,
 		OF_THREAD_RUNNING,
 		OF_THREAD_WAITING_FOR_JOIN
-	} running;
+	} _running;
 #ifdef OF_HAVE_BLOCKS
-	of_thread_block_t block;
+	of_thread_block_t _block;
 #endif
-	id returnValue;
-	OFRunLoop *runLoop;
-	OFString *name;
+	id _returnValue;
+	OFRunLoop *_runLoop;
+	OFString *_name;
 }
 
 #ifdef OF_HAVE_PROPERTIES

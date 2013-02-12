@@ -118,11 +118,11 @@ extern char **environ;
 
 	@try {
 #ifndef _WIN32
-		if (pipe(readPipe) != 0 || pipe(writePipe) != 0)
+		if (pipe(_readPipe) != 0 || pipe(_writePipe) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 
-		switch ((pid = fork())) {
+		switch ((_pid = fork())) {
 		case 0:;
 			OFString **objects = [arguments objects];
 			size_t i, count = [arguments count];
@@ -151,10 +151,10 @@ extern char **environ;
 #endif
 			}
 
-			close(readPipe[0]);
-			close(writePipe[1]);
-			dup2(writePipe[0], 0);
-			dup2(readPipe[1], 1);
+			close(_readPipe[0]);
+			close(_writePipe[1]);
+			dup2(_writePipe[0], 0);
+			dup2(_readPipe[1], 1);
 			execvp([program cStringWithEncoding:
 			    OF_STRING_ENCODING_NATIVE], argv);
 
@@ -164,8 +164,8 @@ extern char **environ;
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 		default:
-			close(readPipe[1]);
-			close(writePipe[0]);
+			close(_readPipe[1]);
+			close(_writePipe[0]);
 			break;
 		}
 #else
@@ -183,19 +183,20 @@ extern char **environ;
 		sa.bInheritHandle = TRUE;
 		sa.lpSecurityDescriptor = NULL;
 
-		if (!CreatePipe(&readPipe[0], &readPipe[1], &sa, 0))
+		if (!CreatePipe(&_readPipe[0], &_readPipe[1], &sa, 0))
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 
-		if (!SetHandleInformation(readPipe[0], HANDLE_FLAG_INHERIT, 0))
+		if (!SetHandleInformation(_readPipe[0], HANDLE_FLAG_INHERIT, 0))
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 
-		if (!CreatePipe(&writePipe[0], &writePipe[1], &sa, 0))
+		if (!CreatePipe(&_writePipe[0], &_writePipe[1], &sa, 0))
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 
-		if (!SetHandleInformation(writePipe[1], HANDLE_FLAG_INHERIT, 0))
+		if (!SetHandleInformation(_writePipe[1],
+		    HANDLE_FLAG_INHERIT, 0))
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 
@@ -203,8 +204,8 @@ extern char **environ;
 		memset(&si, 0, sizeof(si));
 
 		si.cb = sizeof(si);
-		si.hStdInput = writePipe[0];
-		si.hStdOutput = readPipe[1];
+		si.hStdInput = _writePipe[0];
+		si.hStdOutput = _readPipe[1];
 		si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
 		si.dwFlags |= STARTF_USESTDHANDLES;
 
@@ -263,11 +264,11 @@ extern char **environ;
 
 		objc_autoreleasePoolPop(pool);
 
-		process = pi.hProcess;
+		_process = pi.hProcess;
 		CloseHandle(pi.hThread);
 
-		CloseHandle(readPipe[1]);
-		CloseHandle(writePipe[0]);
+		CloseHandle(_readPipe[1]);
+		CloseHandle(_writePipe[0]);
 #endif
 	} @catch (id e) {
 		[self release];
@@ -275,6 +276,13 @@ extern char **environ;
 	}
 
 	return self;
+}
+
+- (void)dealloc
+{
+	[self close];
+
+	[super dealloc];
 }
 
 #ifndef _WIN32
@@ -354,13 +362,13 @@ extern char **environ;
 - (BOOL)lowlevelIsAtEndOfStream
 {
 #ifndef _WIN32
-	if (readPipe[0] == -1)
+	if (_readPipe[0] == -1)
 #else
-	if (readPipe[0] == NULL)
+	if (_readPipe[0] == NULL)
 #endif
 		return YES;
 
-	return atEndOfStream;
+	return _atEndOfStream;
 }
 
 - (size_t)lowlevelReadIntoBuffer: (void*)buffer
@@ -373,13 +381,13 @@ extern char **environ;
 #endif
 
 #ifndef _WIN32
-	if (readPipe[0] == -1 || atEndOfStream ||
-	    (ret = read(readPipe[0], buffer, length)) < 0) {
+	if (_readPipe[0] == -1 || _atEndOfStream ||
+	    (ret = read(_readPipe[0], buffer, length)) < 0) {
 #else
-	if (readPipe[0] == NULL || atEndOfStream ||
-	    !ReadFile(readPipe[0], buffer, length, &ret, NULL)) {
+	if (_readPipe[0] == NULL || _atEndOfStream ||
+	    !ReadFile(_readPipe[0], buffer, length, &ret, NULL)) {
 		if (GetLastError() == ERROR_BROKEN_PIPE) {
-			atEndOfStream = YES;
+			_atEndOfStream = YES;
 			return 0;
 		}
 
@@ -390,7 +398,7 @@ extern char **environ;
 	}
 
 	if (ret == 0)
-		atEndOfStream = YES;
+		_atEndOfStream = YES;
 
 	return ret;
 }
@@ -399,13 +407,13 @@ extern char **environ;
 		     length: (size_t)length
 {
 #ifndef _WIN32
-	if (writePipe[1] == -1 || atEndOfStream ||
-	    write(writePipe[1], buffer, length) < length)
+	if (_writePipe[1] == -1 || _atEndOfStream ||
+	    write(_writePipe[1], buffer, length) < length)
 #else
 	DWORD ret;
 
-	if (writePipe[1] == NULL || atEndOfStream ||
-	    !WriteFile(writePipe[1], buffer, length, &ret, NULL) ||
+	if (_writePipe[1] == NULL || _atEndOfStream ||
+	    !WriteFile(_writePipe[1], buffer, length, &ret, NULL) ||
 	    ret < length)
 #endif
 		@throw [OFWriteFailedException exceptionWithClass: [self class]
@@ -413,17 +421,10 @@ extern char **environ;
 						  requestedLength: length];
 }
 
-- (void)dealloc
-{
-	[self close];
-
-	[super dealloc];
-}
-
 - (int)fileDescriptorForReading
 {
 #ifndef _WIN32
-	return readPipe[0];
+	return _readPipe[0];
 #else
 	[self doesNotRecognizeSelector: _cmd];
 	abort();
@@ -433,7 +434,7 @@ extern char **environ;
 - (int)fileDescriptorForWriting
 {
 #ifndef _WIN32
-	return writePipe[1];
+	return _writePipe[1];
 #else
 	[self doesNotRecognizeSelector: _cmd];
 	abort();
@@ -443,48 +444,48 @@ extern char **environ;
 - (void)closeForWriting
 {
 #ifndef _WIN32
-	if (writePipe[1] != -1)
-		close(writePipe[1]);
+	if (_writePipe[1] != -1)
+		close(_writePipe[1]);
 
-	writePipe[1] = -1;
+	_writePipe[1] = -1;
 #else
-	if (writePipe[1] != NULL)
-		CloseHandle(writePipe[1]);
+	if (_writePipe[1] != NULL)
+		CloseHandle(_writePipe[1]);
 
-	writePipe[1] = NULL;
+	_writePipe[1] = NULL;
 #endif
 }
 
 - (void)close
 {
 #ifndef _WIN32
-	if (readPipe[0] != -1)
-		close(readPipe[0]);
-	if (writePipe[1] != -1)
-		close(writePipe[1]);
+	if (_readPipe[0] != -1)
+		close(_readPipe[0]);
+	if (_writePipe[1] != -1)
+		close(_writePipe[1]);
 
-	if (pid != -1) {
-		kill(pid, SIGKILL);
-		waitpid(pid, &status, WNOHANG);
+	if (_pid != -1) {
+		kill(_pid, SIGKILL);
+		waitpid(_pid, &_status, WNOHANG);
 	}
 
-	pid = -1;
-	readPipe[0] = -1;
-	writePipe[1] = -1;
+	_pid = -1;
+	_readPipe[0] = -1;
+	_writePipe[1] = -1;
 #else
-	if (readPipe[0] != NULL)
-		CloseHandle(readPipe[0]);
-	if (writePipe[1] != NULL)
-		CloseHandle(writePipe[1]);
+	if (_readPipe[0] != NULL)
+		CloseHandle(_readPipe[0]);
+	if (_writePipe[1] != NULL)
+		CloseHandle(_writePipe[1]);
 
-	if (process != INVALID_HANDLE_VALUE) {
-		TerminateProcess(process, 0);
-		CloseHandle(process);
+	if (_process != INVALID_HANDLE_VALUE) {
+		TerminateProcess(_process, 0);
+		CloseHandle(_process);
 	}
 
-	process = INVALID_HANDLE_VALUE;
-	readPipe[0] = NULL;
-	writePipe[1] = NULL;
+	_process = INVALID_HANDLE_VALUE;
+	_readPipe[0] = NULL;
+	_writePipe[1] = NULL;
 #endif
 }
 @end

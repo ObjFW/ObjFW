@@ -23,7 +23,7 @@
  */
 @interface OFConditionWaitFailedException: OFException
 {
-	OFCondition *condition;
+	OFCondition *_condition;
 }
 
 #ifdef OF_HAVE_PROPERTIES

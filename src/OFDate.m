@@ -50,27 +50,27 @@ static OFMutex *mutex;
 
 #ifdef HAVE_GMTIME_R
 # define GMTIME_RET(field)						\
-	time_t seconds_ = (time_t)seconds;				\
+	time_t seconds = (time_t)_seconds;				\
 	struct tm tm;							\
 									\
-	if (seconds_ != floor(seconds))					\
+	if (seconds != floor(_seconds))					\
 		@throw [OFOutOfRangeException				\
 		    exceptionWithClass: [self class]];			\
 									\
-	if (gmtime_r(&seconds_, &tm) == NULL)				\
+	if (gmtime_r(&seconds, &tm) == NULL)				\
 		@throw [OFOutOfRangeException				\
 		    exceptionWithClass: [self class]];			\
 									\
 	return tm.field;
 # define LOCALTIME_RET(field)						\
-	time_t seconds_ = (time_t)seconds;				\
+	time_t seconds = (time_t)_seconds;				\
 	struct tm tm;							\
 									\
-	if (seconds_ != floor(seconds))					\
+	if (seconds != floor(_seconds))					\
 		@throw [OFOutOfRangeException				\
 		    exceptionWithClass: [self class]];			\
 									\
-	if (localtime_r(&seconds_, &tm) == NULL)			\
+	if (localtime_r(&seconds, &tm) == NULL)				\
 		@throw [OFOutOfRangeException				\
 		    exceptionWithClass: [self class]];			\
 									\
@@ -78,17 +78,17 @@ static OFMutex *mutex;
 #else
 # ifdef OF_HAVE_THREADS
 #  define GMTIME_RET(field)						\
-	time_t seconds_ = (time_t)seconds;				\
+	time_t seconds = (time_t)_seconds;				\
 	struct tm *tm;							\
 									\
-	if (seconds_ != floor(seconds))					\
+	if (seconds != floor(_seconds))					\
 		@throw [OFOutOfRangeException				\
 		    exceptionWithClass: [self class]];			\
 									\
 	[mutex lock];							\
 									\
 	@try {								\
-		if ((tm = gmtime(&seconds_)) == NULL)			\
+		if ((tm = gmtime(&seconds)) == NULL)			\
 			@throw [OFOutOfRangeException			\
 			    exceptionWithClass: [self class]];		\
 									\
@@ -97,17 +97,17 @@ static OFMutex *mutex;
 		[mutex unlock];						\
 	}
 #  define LOCALTIME_RET(field)						\
-	time_t seconds_ = (time_t)seconds;				\
+	time_t seconds = (time_t)_seconds;				\
 	struct tm *tm;							\
 									\
-	if (seconds_ != floor(seconds))					\
+	if (seconds != floor(_seconds))					\
 		@throw [OFOutOfRangeException				\
 		    exceptionWithClass: [self class]];			\
 									\
 	[mutex lock];							\
 									\
 	@try {								\
-		if ((tm = localtime(&seconds_)) == NULL)		\
+		if ((tm = localtime(&seconds)) == NULL)			\
 			@throw [OFOutOfRangeException			\
 			    exceptionWithClass: [self class]];		\
 									\
@@ -117,27 +117,27 @@ static OFMutex *mutex;
 	}
 # else
 #  define GMTIME_RET(field)						\
-	time_t seconds_ = (time_t)seconds;				\
+	time_t seconds = (time_t)_seconds;				\
 	struct tm *tm;							\
 									\
-	if (seconds_ != floor(seconds))					\
+	if (seconds != floor(_seconds))					\
 		@throw [OFOutOfRangeException				\
 		    exceptionWithClass: [self class]];			\
 									\
-	if ((tm = gmtime(&seconds_)) == NULL)				\
+	if ((tm = gmtime(&seconds)) == NULL)				\
 		@throw [OFOutOfRangeException				\
 		    exceptionWithClass: [self class]];			\
 									\
 	return tm->field;
 #  define LOCALTIME_RET(field)						\
-	time_t seconds_ = (time_t)seconds;				\
+	time_t seconds = (time_t)_seconds;				\
 	struct tm *tm;							\
 									\
-	if (seconds_ != floor(seconds))					\
+	if (seconds != floor(_seconds))					\
 		@throw [OFOutOfRangeException				\
 		    exceptionWithClass: [self class]];			\
 									\
-	if ((tm = localtime(&seconds_)) == NULL)			\
+	if ((tm = localtime(&seconds)) == NULL)				\
 		@throw [OFOutOfRangeException				\
 		    exceptionWithClass: [self class]];			\
 									\
@@ -219,28 +219,28 @@ static int month_to_day_of_year[12] = {
 
 	self = [super init];
 
-	OF_ENSURE(!gettimeofday(&t, NULL));
+	OF_ENSURE(gettimeofday(&t, NULL) == 0);
 
-	seconds = t.tv_sec;
-	seconds += (double)t.tv_usec / 1000000;
+	_seconds = t.tv_sec;
+	_seconds += (double)t.tv_usec / 1000000;
 
 	return self;
 }
 
-- initWithTimeIntervalSince1970: (double)seconds_
+- initWithTimeIntervalSince1970: (double)seconds
 {
 	self = [super init];
 
-	seconds = seconds_;
+	_seconds = seconds;
 
 	return self;
 }
 
-- initWithTimeIntervalSinceNow: (double)seconds_
+- initWithTimeIntervalSinceNow: (double)seconds
 {
 	self = [self init];
 
-	seconds += seconds_;
+	_seconds += seconds;
 
 	return self;
 }
@@ -261,29 +261,29 @@ static int month_to_day_of_year[12] = {
 			    exceptionWithClass: [self class]];
 
 		/* Years */
-		seconds = (int64_t)(tm.tm_year - 70) * 31536000;
+		_seconds = (int64_t)(tm.tm_year - 70) * 31536000;
 		/* Days of leap years, excluding the year to look at */
-		seconds += (((tm.tm_year + 1899) / 4) - 492) * 86400;
-		seconds -= (((tm.tm_year + 1899) / 100) - 19) * 86400;
-		seconds += (((tm.tm_year + 1899) / 400) - 4) * 86400;
+		_seconds += (((tm.tm_year + 1899) / 4) - 492) * 86400;
+		_seconds -= (((tm.tm_year + 1899) / 100) - 19) * 86400;
+		_seconds += (((tm.tm_year + 1899) / 400) - 4) * 86400;
 		/* Leap day */
 		if (tm.tm_mon >= 2 && (((tm.tm_year + 1900) % 4 == 0 &&
 		    (tm.tm_year + 1900) % 100 != 0) ||
 		    (tm.tm_year + 1900) % 400 == 0))
-			seconds += 86400;
+			_seconds += 86400;
 		/* Months */
 		if (tm.tm_mon < 0 || tm.tm_mon > 12)
 			@throw [OFInvalidFormatException
 			    exceptionWithClass: [self class]];
-		seconds += month_to_day_of_year[tm.tm_mon] * 86400;
+		_seconds += month_to_day_of_year[tm.tm_mon] * 86400;
 		/* Days */
-		seconds += (tm.tm_mday - 1) * 86400;
+		_seconds += (tm.tm_mday - 1) * 86400;
 		/* Hours */
-		seconds += tm.tm_hour * 3600;
+		_seconds += tm.tm_hour * 3600;
 		/* Minutes */
-		seconds += tm.tm_min * 60;
+		_seconds += tm.tm_min * 60;
 		/* Seconds */
-		seconds += tm.tm_sec;
+		_seconds += tm.tm_sec;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -307,7 +307,7 @@ static int month_to_day_of_year[12] = {
 			@throw [OFInvalidFormatException
 			    exceptionWithClass: [self class]];
 
-		if ((seconds = mktime(&tm)) == -1)
+		if ((_seconds = mktime(&tm)) == -1)
 			@throw [OFInvalidFormatException
 			    exceptionWithClass: [self class]];
 	} @catch (id e) {
@@ -336,7 +336,7 @@ static int month_to_day_of_year[12] = {
 				      selector: _cmd];
 
 		d.u = (uint64_t)[element hexadecimalValue];
-		seconds = d.d;
+		_seconds = d.d;
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -356,7 +356,7 @@ static int month_to_day_of_year[12] = {
 
 	otherDate = object;
 
-	if (otherDate->seconds != seconds)
+	if (otherDate->_seconds != _seconds)
 		return NO;
 
 	return YES;
@@ -371,7 +371,7 @@ static int month_to_day_of_year[12] = {
 	} d;
 	uint_fast8_t i;
 
-	d.d = OF_BSWAP_DOUBLE_IF_BE(seconds);
+	d.d = OF_BSWAP_DOUBLE_IF_BE(_seconds);
 
 	OF_HASH_INIT(hash);
 
@@ -399,9 +399,9 @@ static int month_to_day_of_year[12] = {
 
 	otherDate = (OFDate*)object;
 
-	if (seconds < otherDate->seconds)
+	if (_seconds < otherDate->_seconds)
 		return OF_ORDERED_ASCENDING;
-	if (seconds > otherDate->seconds)
+	if (_seconds > otherDate->_seconds)
 		return OF_ORDERED_DESCENDING;
 
 	return OF_ORDERED_SAME;
@@ -424,7 +424,7 @@ static int month_to_day_of_year[12] = {
 	element = [OFXMLElement elementWithName: [self className]
 				      namespace: OF_SERIALIZATION_NS];
 
-	d.d = seconds;
+	d.d = _seconds;
 	[element setStringValue:
 	    [OFString stringWithFormat: @"%016" PRIx64, d.u]];
 
@@ -437,7 +437,7 @@ static int month_to_day_of_year[12] = {
 
 - (uint32_t)microsecond
 {
-	return (uint32_t)rint((seconds - floor(seconds)) * 1000000);
+	return (uint32_t)rint((_seconds - floor(_seconds)) * 1000000);
 }
 
 - (uint8_t)second
@@ -513,16 +513,16 @@ static int month_to_day_of_year[12] = {
 - (OFString*)dateStringWithFormat: (OFConstantString*)format
 {
 	OFString *ret;
-	time_t seconds_ = (time_t)seconds;
+	time_t seconds = (time_t)_seconds;
 	struct tm tm;
 	size_t pageSize;
 	char *buffer;
 
-	if (seconds_ != floor(seconds))
+	if (seconds != floor(_seconds))
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 #ifdef HAVE_GMTIME_R
-	if (gmtime_r(&seconds_, &tm) == NULL)
+	if (gmtime_r(&seconds, &tm) == NULL)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 #else
 # ifdef OF_HAVE_THREADS
@@ -532,7 +532,7 @@ static int month_to_day_of_year[12] = {
 # endif
 		struct tm *tmp;
 
-		if ((tmp = gmtime(&seconds_)) == NULL)
+		if ((tmp = gmtime(&seconds)) == NULL)
 			@throw [OFOutOfRangeException
 			    exceptionWithClass: [self class]];
 
@@ -563,16 +563,16 @@ static int month_to_day_of_year[12] = {
 - (OFString*)localDateStringWithFormat: (OFConstantString*)format
 {
 	OFString *ret;
-	time_t seconds_ = (time_t)seconds;
+	time_t seconds = (time_t)_seconds;
 	struct tm tm;
 	size_t pageSize;
 	char *buffer;
 
-	if (seconds_ != floor(seconds))
+	if (seconds != floor(_seconds))
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 #ifdef HAVE_LOCALTIME_R
-	if (localtime_r(&seconds_, &tm) == NULL)
+	if (localtime_r(&seconds, &tm) == NULL)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 #else
 # ifdef OF_HAVE_THREADS
@@ -582,7 +582,7 @@ static int month_to_day_of_year[12] = {
 # endif
 		struct tm *tmp;
 
-		if ((tmp = localtime(&seconds_)) == NULL)
+		if ((tmp = localtime(&seconds)) == NULL)
 			@throw [OFOutOfRangeException
 			    exceptionWithClass: [self class]];
 
@@ -634,29 +634,29 @@ static int month_to_day_of_year[12] = {
 
 - (double)timeIntervalSince1970
 {
-	return seconds;
+	return _seconds;
 }
 
 - (double)timeIntervalSinceDate: (OFDate*)otherDate
 {
-	return seconds - otherDate->seconds;
+	return _seconds - otherDate->_seconds;
 }
 
 - (double)timeIntervalSinceNow
 {
 	struct timeval t;
-	double seconds_;
+	double seconds;
 
 	OF_ENSURE(!gettimeofday(&t, NULL));
 
-	seconds_ = t.tv_sec;
-	seconds_ += (double)t.tv_usec / 1000000;
+	seconds = t.tv_sec;
+	seconds += (double)t.tv_usec / 1000000;
 
-	return seconds - seconds_;
+	return _seconds - seconds;
 }
 
-- (OFDate*)dateByAddingTimeInterval: (double)seconds_
+- (OFDate*)dateByAddingTimeInterval: (double)seconds
 {
-	return [OFDate dateWithTimeIntervalSince1970: seconds + seconds_];
+	return [OFDate dateWithTimeIntervalSince1970: _seconds + seconds];
 }
 @end

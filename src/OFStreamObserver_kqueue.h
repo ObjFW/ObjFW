@@ -20,7 +20,7 @@
 
 @interface OFStreamObserver_kqueue: OFStreamObserver
 {
-	int kernelQueue;
-	OFDataArray *changeList;
+	int _kernelQueue;
+	OFDataArray *_changeList;
 }
 @end

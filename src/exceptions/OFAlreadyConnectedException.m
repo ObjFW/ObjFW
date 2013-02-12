@@ -25,14 +25,14 @@
 #import "common.h"
 
 @implementation OFAlreadyConnectedException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			    socket: (OFTCPSocket*)socket
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 				     socket: socket] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -44,37 +44,37 @@
 	abort();
 }
 
-- initWithClass: (Class)class_
-	 socket: (OFTCPSocket*)socket_
+- initWithClass: (Class)class
+	 socket: (OFTCPSocket*)socket
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
-	socket = [socket_ retain];
+	_socket = [socket retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[socket release];
+	[_socket release];
 
 	[super dealloc];
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
+	_description = [[OFString alloc] initWithFormat:
 	    @"The socket of type %@ is already connected or bound and thus "
-	    @"can't be connected or bound again!", inClass];
+	    @"can't be connected or bound again!", _inClass];
 
-	return description;
+	return _description;
 }
 
 - (OFTCPSocket*)socket
 {
-	OF_GETTER(socket, NO)
+	OF_GETTER(_socket, NO)
 }
 @end

@@ -22,9 +22,9 @@
 	/*
 	 * A pointer to the actual data.
 	 *
-	 * Since constant strings don't have s_store, they have to malloc it on
-	 * the first access. Strings created at runtime just set the pointer to
-	 * &s_store.
+	 * Since constant strings don't have _storage, they have to malloc it
+	 * on the first access. Strings created at runtime just set the pointer
+	 * to &_storage.
 	 */
 	struct of_string_utf8_ivars {
 		char	 *cString;
@@ -34,8 +34,8 @@
 		BOOL	 hashed;
 		uint32_t hash;
 		char	 *freeWhenDone;
-	} *restrict s;
-	struct of_string_utf8_ivars s_store;
+	} *restrict _s;
+	struct of_string_utf8_ivars _storage;
 }
 
 - OF_initWithUTF8String: (const char*)UTF8String

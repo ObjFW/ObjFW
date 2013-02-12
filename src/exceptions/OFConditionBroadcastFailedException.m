@@ -23,14 +23,14 @@
 #import "OFCondition.h"
 
 @implementation OFConditionBroadcastFailedException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			 condition: (OFCondition*)condition
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 				  condition: condition] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -42,36 +42,36 @@
 	abort();
 }
 
-- initWithClass: (Class)class_
-      condition: (OFCondition*)condition_
+- initWithClass: (Class)class
+      condition: (OFCondition*)condition
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
-	condition = [condition_ retain];
+	_condition = [condition retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[condition release];
+	[_condition release];
 
 	[super dealloc];
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
-	    @"Broadcasting a condition of type %@ failed!", inClass];
+	_description = [[OFString alloc] initWithFormat:
+	    @"Broadcasting a condition of type %@ failed!", _inClass];
 
-	return description;
+	return _description;
 }
 
 - (OFCondition*)condition
 {
-	OF_GETTER(condition, NO)
+	OF_GETTER(_condition, NO)
 }
 @end

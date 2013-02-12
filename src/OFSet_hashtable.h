@@ -20,7 +20,7 @@
 
 @interface OFSet_hashtable: OFSet
 {
-	OFMapTable *mapTable;
+	OFMapTable *_mapTable;
 }
 
 - initWithCapacity: (size_t)capacity;

@@ -35,7 +35,7 @@
 	self = [super init];
 
 	@try {
-		characters = [string copy];
+		_characters = [string copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -57,7 +57,7 @@
 			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
-		characters = [[element stringValue] copy];
+		_characters = [[element stringValue] copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -70,51 +70,51 @@
 
 - (BOOL)isEqual: (id)object
 {
-	OFXMLCharacters *otherCharacters;
+	OFXMLCharacters *characters;
 
 	if (![object isKindOfClass: [OFXMLCharacters class]])
 		return NO;
 
-	otherCharacters = object;
+	characters = object;
 
-	return ([otherCharacters->characters isEqual: characters]);
+	return ([characters->_characters isEqual: _characters]);
 }
 
 - (uint32_t)hash
 {
-	return [characters hash];
+	return [_characters hash];
 }
 
 - (OFString*)stringValue
 {
-	return [[characters copy] autorelease];
+	return [[_characters copy] autorelease];
 }
 
 - (OFString*)XMLString
 {
-	return [characters stringByXMLEscaping];
+	return [_characters stringByXMLEscaping];
 }
 
 - (OFString*)XMLStringWithIndentation: (unsigned int)indentation
 {
-	return [characters stringByXMLEscaping];
+	return [_characters stringByXMLEscaping];
 }
 
 - (OFString*)XMLStringWithIndentation: (unsigned int)indentation
 				level: (unsigned int)level
 {
-	return [characters stringByXMLEscaping];
+	return [_characters stringByXMLEscaping];
 }
 
 - (OFString*)description
 {
-	return [characters stringByXMLEscaping];
+	return [_characters stringByXMLEscaping];
 }
 
 - (OFXMLElement*)XMLElementBySerializing
 {
 	return [OFXMLElement elementWithName: [self className]
 				   namespace: OF_SERIALIZATION_NS
-				 stringValue: characters];
+				 stringValue: _characters];
 }
 @end

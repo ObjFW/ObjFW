@@ -28,7 +28,7 @@
 		else {					\
 			[self outputFailure: test	\
 				   inModule: module];	\
-			fails++;			\
+			_fails++;			\
 		}					\
 	}
 #define EXPECT_EXCEPTION(test, exception, code)		\
@@ -50,7 +50,7 @@
 		else {					\
 			[self outputFailure: test	\
 				   inModule: module];	\
-			fails++;			\
+			_fails++;			\
 		}					\
 	}
 #define R(x) (x, 1)
@@ -59,7 +59,7 @@
 
 @interface TestsAppDelegate: OFObject
 {
-	int fails;
+	int _fails;
 }
 
 - (void)outputString: (OFString*)str

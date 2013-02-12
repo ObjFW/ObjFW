@@ -93,16 +93,16 @@ static uint16_t defaultSOCKS5Port = 1080;
 #ifdef OF_HAVE_THREADS
 @interface OFTCPSocket_ConnectThread: OFThread
 {
-	OFThread *sourceThread;
-	OFTCPSocket *sock;
-	OFString *host;
-	uint16_t port;
-	id target;
-	SEL selector;
+	OFThread *_sourceThread;
+	OFTCPSocket *_socket;
+	OFString *_host;
+	uint16_t _port;
+	id _target;
+	SEL _selector;
 # ifdef OF_HAVE_BLOCKS
-	of_tcpsocket_async_connect_block_t connectBlock;
+	of_tcpsocket_async_connect_block_t _connectBlock;
 # endif
-	OFException *exception;
+	OFException *_exception;
 }
 
 - initWithSourceThread: (OFThread*)sourceThread
@@ -121,22 +121,22 @@ static uint16_t defaultSOCKS5Port = 1080;
 @end
 
 @implementation OFTCPSocket_ConnectThread
-- initWithSourceThread: (OFThread*)sourceThread_
-		socket: (OFTCPSocket*)sock_
-		  host: (OFString*)host_
-		  port: (uint16_t)port_
-		target: (id)target_
-	      selector: (SEL)selector_
+- initWithSourceThread: (OFThread*)sourceThread
+		socket: (OFTCPSocket*)socket
+		  host: (OFString*)host
+		  port: (uint16_t)port
+		target: (id)target
+	      selector: (SEL)selector
 {
 	self = [super init];
 
 	@try {
-		sourceThread = [sourceThread_ retain];
-		sock = [sock_ retain];
-		host = [host_ copy];
-		port = port_;
-		target = [target_ retain];
-		selector = selector_;
+		_sourceThread = [sourceThread retain];
+		_socket = [socket retain];
+		_host = [host copy];
+		_port = port;
+		_target = [target retain];
+		_selector = selector;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -146,20 +146,20 @@ static uint16_t defaultSOCKS5Port = 1080;
 }
 
 # ifdef OF_HAVE_BLOCKS
-- initWithSourceThread: (OFThread*)sourceThread_
-		socket: (OFTCPSocket*)sock_
-		  host: (OFString*)host_
-		  port: (uint16_t)port_
-		 block: (of_tcpsocket_async_connect_block_t)block_
+- initWithSourceThread: (OFThread*)sourceThread
+		socket: (OFTCPSocket*)socket
+		  host: (OFString*)host
+		  port: (uint16_t)port
+		 block: (of_tcpsocket_async_connect_block_t)block
 {
 	self = [super init];
 
 	@try {
-		sourceThread = [sourceThread_ retain];
-		sock = [sock_ retain];
-		host = [host_ copy];
-		port = port_;
-		connectBlock = [block_ copy];
+		_sourceThread = [sourceThread retain];
+		_socket = [socket retain];
+		_host = [host copy];
+		_port = port;
+		_connectBlock = [block copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -171,14 +171,14 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 - (void)dealloc
 {
-	[sourceThread release];
-	[sock release];
-	[host release];
-	[target release];
+	[_sourceThread release];
+	[_socket release];
+	[_host release];
+	[_target release];
 # ifdef OF_HAVE_BLOCKS
-	[connectBlock release];
+	[_connectBlock release];
 # endif
-	[exception release];
+	[_exception release];
 
 	[super dealloc];
 }
@@ -188,15 +188,15 @@ static uint16_t defaultSOCKS5Port = 1080;
 	[self join];
 
 # ifdef OF_HAVE_BLOCKS
-	if (connectBlock != NULL)
-		connectBlock(sock, exception);
+	if (_connectBlock != NULL)
+		_connectBlock(_socket, _exception);
 	else {
 # endif
 		void (*func)(id, SEL, OFTCPSocket*, OFException*) =
-		    (void(*)(id, SEL, OFTCPSocket*, OFException*))[target
-		    methodForSelector: selector];
+		    (void(*)(id, SEL, OFTCPSocket*, OFException*))[_target
+		    methodForSelector: _selector];
 
-		func(target, selector, sock, exception);
+		func(_target, _selector, _socket, _exception);
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -207,14 +207,14 @@ static uint16_t defaultSOCKS5Port = 1080;
 	void *pool = objc_autoreleasePoolPush();
 
 	@try {
-		[sock connectToHost: host
-			       port: port];
+		[_socket connectToHost: _host
+				  port: _port];
 	} @catch (OFException *e) {
-		exception = [[e retain] autorelease];
+		_exception = [[e retain] autorelease];
 	}
 
 	[self performSelector: @selector(didConnect)
-		     onThread: sourceThread
+		     onThread: _sourceThread
 		waitUntilDone: NO];
 
 	objc_autoreleasePoolPop(pool);
@@ -260,10 +260,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 	self = [super init];
 
 	@try {
-		sock = INVALID_SOCKET;
-		sockAddr = NULL;
-		SOCKS5Host = [defaultSOCKS5Host copy];
-		SOCKS5Port = defaultSOCKS5Port;
+		_socket = INVALID_SOCKET;
+		_sockAddr = NULL;
+		_SOCKS5Host = [defaultSOCKS5Host copy];
+		_SOCKS5Port = defaultSOCKS5Port;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -274,29 +274,29 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 - (void)dealloc
 {
-	[SOCKS5Host release];
+	[_SOCKS5Host release];
 
 	[super dealloc];
 }
 
-- (void)setSOCKS5Host: (OFString*)host
+- (void)setSOCKS5Host: (OFString*)SOCKS5Host
 {
-	OF_SETTER(SOCKS5Host, host, YES, 1)
+	OF_SETTER(_SOCKS5Host, SOCKS5Host, YES, 1)
 }
 
 - (OFString*)SOCKS5Host
 {
-	OF_GETTER(SOCKS5Host, YES)
+	OF_GETTER(_SOCKS5Host, YES)
 }
 
-- (void)setSOCKS5Port: (uint16_t)port
+- (void)setSOCKS5Port: (uint16_t)SOCKS5Port
 {
-	SOCKS5Port = port;
+	_SOCKS5Port = SOCKS5Port;
 }
 
 - (uint16_t)SOCKS5Port
 {
-	return SOCKS5Port;
+	return _SOCKS5Port;
 }
 
 - (void)connectToHost: (OFString*)host
@@ -305,15 +305,15 @@ static uint16_t defaultSOCKS5Port = 1080;
 	OFString *destinationHost = host;
 	uint16_t destinationPort = port;
 
-	if (sock != INVALID_SOCKET)
+	if (_socket != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException
 		    exceptionWithClass: [self class]
 				socket: self];
 
-	if (SOCKS5Host != nil) {
+	if (_SOCKS5Host != nil) {
 		/* Connect to the SOCKS5 proxy instead */
-		host = SOCKS5Host;
-		port = SOCKS5Port;
+		host = _SOCKS5Host;
+		port = _SOCKS5Port;
 	}
 
 #ifdef HAVE_THREADSAFE_GETADDRINFO
@@ -334,13 +334,13 @@ static uint16_t defaultSOCKS5Port = 1080;
 				  host: host];
 
 	for (res = res0; res != NULL; res = res->ai_next) {
-		if ((sock = socket(res->ai_family, res->ai_socktype,
+		if ((_socket = socket(res->ai_family, res->ai_socktype,
 		    res->ai_protocol)) == INVALID_SOCKET)
 			continue;
 
-		if (connect(sock, res->ai_addr, res->ai_addrlen) == -1) {
-			close(sock);
-			sock = INVALID_SOCKET;
+		if (connect(_socket, res->ai_addr, res->ai_addrlen) == -1) {
+			close(_socket);
+			_socket = INVALID_SOCKET;
 			continue;
 		}
 
@@ -377,7 +377,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	addr.sin_port = OF_BSWAP16_IF_LE(port);
 
 	if (he->h_addrtype != AF_INET ||
-	    (sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
+	    (_socket = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
 # ifdef OF_HAVE_THREADS
 		[addrlist release];
 		[mutex unlock];
@@ -385,8 +385,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 		@throw [OFConnectionFailedException
 		    exceptionWithClass: [self class]
 				socket: self
-								  host: host
-								  port: port];
+				  host: host
+				  port: port];
 	}
 
 # ifdef OF_HAVE_THREADS
@@ -409,7 +409,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 # endif
 		memcpy(&addr.sin_addr.s_addr, *ip, he->h_length);
 
-		if (connect(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1)
+		if (connect(_socket, (struct sockaddr*)&addr,
+		    sizeof(addr)) == -1)
 			continue;
 
 		connected = YES;
@@ -421,19 +422,19 @@ static uint16_t defaultSOCKS5Port = 1080;
 # endif
 
 	if (!connected) {
-		close(sock);
-		sock = INVALID_SOCKET;
+		close(_socket);
+		_socket = INVALID_SOCKET;
 	}
 #endif
 
-	if (sock == INVALID_SOCKET)
+	if (_socket == INVALID_SOCKET)
 		@throw [OFConnectionFailedException
 		    exceptionWithClass: [self class]
 				socket: self
 				  host: host
 				  port: port];
 
-	if (SOCKS5Host != nil)
+	if (_SOCKS5Host != nil)
 		[self OF_SOCKS5ConnectToHost: destinationHost
 					port: destinationPort];
 }
@@ -487,12 +488,12 @@ static uint16_t defaultSOCKS5Port = 1080;
 	} addr;
 	socklen_t addrLen;
 
-	if (sock != INVALID_SOCKET)
+	if (_socket != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException
 		    exceptionWithClass: [self class]
 				socket: self];
 
-	if (SOCKS5Host != nil)
+	if (_SOCKS5Host != nil)
 		@throw [OFNotImplementedException
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
@@ -514,22 +515,23 @@ static uint16_t defaultSOCKS5Port = 1080;
 				socket: self
 				  host: host];
 
-	if ((sock = socket(res->ai_family, SOCK_STREAM, 0)) == INVALID_SOCKET)
+	if ((_socket = socket(res->ai_family, SOCK_STREAM,
+	    0)) == INVALID_SOCKET)
 		@throw [OFBindFailedException exceptionWithClass: [self class]
 							  socket: self
 							    host: host
 							    port: port];
 
-	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char*)&one,
+	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, (const char*)&one,
 	    sizeof(one)))
 		@throw [OFSetOptionFailedException
 		    exceptionWithClass: [self class]
 				stream: self];
 
-	if (bind(sock, res->ai_addr, res->ai_addrlen) == -1) {
+	if (bind(_socket, res->ai_addr, res->ai_addrlen) == -1) {
 		freeaddrinfo(res);
-		close(sock);
-		sock = INVALID_SOCKET;
+		close(_socket);
+		_socket = INVALID_SOCKET;
 		@throw [OFBindFailedException exceptionWithClass: [self class]
 							  socket: self
 							    host: host
@@ -574,21 +576,21 @@ static uint16_t defaultSOCKS5Port = 1080;
 # ifdef OF_HAVE_THREADS
 	[mutex unlock];
 # endif
-	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
+	if ((_socket = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
 		@throw [OFBindFailedException exceptionWithClass: [self class]
 							  socket: self
 							    host: host
 							    port: port];
 
-	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char*)&one,
+	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, (const char*)&one,
 	    sizeof(one)))
 		@throw [OFSetOptionFailedException
 		    exceptionWithClass: [self class]
 				stream: self];
 
-	if (bind(sock, (struct sockaddr*)&addr.in, sizeof(addr.in)) == -1) {
-		close(sock);
-		sock = INVALID_SOCKET;
+	if (bind(_socket, (struct sockaddr*)&addr.in, sizeof(addr.in)) == -1) {
+		close(_socket);
+		_socket = INVALID_SOCKET;
 		@throw [OFBindFailedException exceptionWithClass: [self class]
 							  socket: self
 							    host: host
@@ -600,9 +602,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 		return port;
 
 	addrLen = sizeof(addr.storage);
-	if (getsockname(sock, (struct sockaddr*)&addr, &addrLen)) {
-		close(sock);
-		sock = INVALID_SOCKET;
+	if (getsockname(_socket, (struct sockaddr*)&addr, &addrLen)) {
+		close(_socket);
+		_socket = INVALID_SOCKET;
 		@throw [OFBindFailedException exceptionWithClass: [self class]
 							  socket: self
 							    host: host
@@ -614,8 +616,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (addr.storage.ss_family == AF_INET6)
 		return OF_BSWAP16_IF_LE(addr.in6.sin6_port);
 
-	close(sock);
-	sock = INVALID_SOCKET;
+	close(_socket);
+	_socket = INVALID_SOCKET;
 	@throw [OFBindFailedException exceptionWithClass: [self class]
 						  socket: self
 						    host: host
@@ -624,16 +626,16 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 - (void)listenWithBackLog: (int)backLog
 {
-	if (sock == INVALID_SOCKET)
+	if (_socket == INVALID_SOCKET)
 		@throw [OFNotConnectedException exceptionWithClass: [self class]
 							    socket: self];
 
-	if (listen(sock, backLog) == -1)
+	if (listen(_socket, backLog) == -1)
 		@throw [OFListenFailedException exceptionWithClass: [self class]
 							    socket: self
 							   backLog: backLog];
 
-	listening = YES;
+	_listening = YES;
 }
 
 - (void)listen
@@ -643,25 +645,25 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 - (OFTCPSocket*)accept
 {
-	OFTCPSocket *newSocket;
+	OFTCPSocket *client;
 	struct sockaddr_storage *addr;
 	socklen_t addrLen;
-	int newSock;
+	int socket;
 
-	newSocket = [[[[self class] alloc] init] autorelease];
+	client = [[[[self class] alloc] init] autorelease];
 	addrLen = sizeof(*addr);
-	addr = [newSocket allocMemoryWithSize: addrLen];
+	addr = [client allocMemoryWithSize: addrLen];
 
-	if ((newSock = accept(sock, (struct sockaddr*)addr,
+	if ((socket = accept(_socket, (struct sockaddr*)addr,
 	    &addrLen)) == INVALID_SOCKET)
 		@throw [OFAcceptFailedException exceptionWithClass: [self class]
 							    socket: self];
 
-	newSocket->sock = newSock;
-	newSocket->sockAddr = addr;
-	newSocket->sockAddrLen = addrLen;
+	client->_socket = socket;
+	client->_sockAddr = addr;
+	client->_sockAddrLen = addrLen;
 
-	return newSocket;
+	return client;
 }
 
 - (void)asyncAcceptWithTarget: (id)target
@@ -684,7 +686,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	int v = enable;
 
-	if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char*)&v, sizeof(v)))
+	if (setsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE, (char*)&v, sizeof(v)))
 		@throw [OFSetOptionFailedException
 		    exceptionWithClass: [self class]
 				stream: self];
@@ -694,7 +696,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	char *host;
 
-	if (sockAddr == NULL || sockAddrLen == 0)
+	if (_sockAddr == NULL || _sockAddrLen == 0)
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
@@ -703,7 +705,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	host = [self allocMemoryWithSize: NI_MAXHOST];
 
 	@try {
-		if (getnameinfo((struct sockaddr*)sockAddr, sockAddrLen, host,
+		if (getnameinfo((struct sockaddr*)_sockAddr, _sockAddrLen, host,
 		    NI_MAXHOST, NULL, 0, NI_NUMERICHOST | NI_NUMERICSERV))
 			@throw [OFAddressTranslationFailedException
 			    exceptionWithClass: [self class]];
@@ -719,7 +721,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	@try {
 # endif
-		host = inet_ntoa(((struct sockaddr_in*)sockAddr)->sin_addr);
+		host = inet_ntoa(((struct sockaddr_in*)_sockAddr)->sin_addr);
 
 		if (host == NULL)
 			@throw [OFAddressTranslationFailedException
@@ -740,16 +742,16 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 - (BOOL)isListening
 {
-	return listening;
+	return _listening;
 }
 
 - (void)close
 {
 	[super close];
 
-	listening = NO;
-	[self freeMemory: sockAddr];
-	sockAddr = NULL;
-	sockAddrLen = 0;
+	_listening = NO;
+	[self freeMemory: _sockAddr];
+	_sockAddr = NULL;
+	_sockAddrLen = 0;
 }
 @end

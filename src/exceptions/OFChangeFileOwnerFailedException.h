@@ -22,16 +22,12 @@
  */
 @interface OFChangeFileOwnerFailedException: OFException
 {
-	OFString *path;
-	OFString *owner;
-	OFString *group;
-	int errNo;
+	OFString *_path, *_owner, *_group;
+	int _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy, nonatomic) OFString *path;
-@property (readonly, copy, nonatomic) OFString *owner;
-@property (readonly, copy, nonatomic) OFString *group;
+@property (readonly, copy, nonatomic) OFString *path, *owner, *group;
 @property (readonly) int errNo;
 #endif
 

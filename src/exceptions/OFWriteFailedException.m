@@ -24,13 +24,13 @@
 @implementation OFWriteFailedException
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
-	    @"Failed to write %zu bytes in class %@! " ERRFMT, requestedLength,
-	    inClass, ERRPARAM];
+	_description = [[OFString alloc] initWithFormat:
+	    @"Failed to write %zu bytes in class %@! " ERRFMT, _requestedLength,
+	    _inClass, ERRPARAM];
 
-	return description;
+	return _description;
 }
 @end

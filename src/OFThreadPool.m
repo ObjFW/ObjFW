@@ -27,11 +27,11 @@
 
 @interface OFThreadPoolJob: OFObject
 {
-	id target;
-	SEL selector;
-	id object;
+	id _target;
+	SEL _selector;
+	id _object;
 #ifdef OF_HAVE_BLOCKS
-	of_thread_pool_block_t block;
+	of_thread_pool_block_t _block;
 #endif
 }
 
@@ -68,16 +68,16 @@
 }
 #endif
 
-- initWithTarget: (id)target_
-	selector: (SEL)selector_
-	  object: (id)object_
+- initWithTarget: (id)target
+	selector: (SEL)selector
+	  object: (id)object
 {
 	self = [super init];
 
 	@try {
-		target = [target_ retain];
-		selector = selector_;
-		object = [object_ retain];
+		_target = [target retain];
+		_selector = selector;
+		_object = [object retain];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -87,12 +87,12 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-- initWithBlock: (of_thread_pool_block_t)block_
+- initWithBlock: (of_thread_pool_block_t)block
 {
 	self = [super init];
 
 	@try {
-		block = [block_ copy];
+		_block = [block copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -104,10 +104,10 @@
 
 - (void)dealloc
 {
-	[target release];
-	[object release];
+	[_target release];
+	[_object release];
 #ifdef OF_HAVE_BLOCKS
-	[block release];
+	[_block release];
 #endif
 
 	[super dealloc];
@@ -116,22 +116,22 @@
 - (void)perform
 {
 #ifdef OF_HAVE_BLOCKS
-	if (block != NULL)
-		block();
+	if (_block != NULL)
+		_block();
 	else
 #endif
-		[object performSelector: selector
-			     withObject: object];
+		[_target performSelector: _selector
+			      withObject: _object];
 }
 @end
 
 @interface OFThreadPoolThread: OFThread
 {
-	OFList *queue;
-	OFCondition *queueCondition, *countCondition;
+	OFList *_queue;
+	OFCondition *_queueCondition, *_countCondition;
 @public
-	volatile BOOL terminate;
-	volatile int *doneCount;
+	volatile BOOL _terminate;
+	volatile int *_doneCount;
 }
 
 + (instancetype)threadWithThreadPool: (OFThreadPool*)threadPool;
@@ -149,10 +149,10 @@
 	self = [super init];
 
 	@try {
-		queue = [threadPool->queue retain];
-		queueCondition = [threadPool->queueCondition retain];
-		countCondition = [threadPool->countCondition retain];
-		doneCount = &threadPool->doneCount;
+		_queue = [threadPool->_queue retain];
+		_queueCondition = [threadPool->_queueCondition retain];
+		_countCondition = [threadPool->_countCondition retain];
+		_doneCount = &threadPool->_doneCount;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -163,9 +163,9 @@
 
 - (void)dealloc
 {
-	[queue release];
-	[queueCondition release];
-	[countCondition release];
+	[_queue release];
+	[_queueCondition release];
+	[_countCondition release];
 
 	[super dealloc];
 }
@@ -174,7 +174,7 @@
 {
 	void *pool;
 
-	if (terminate)
+	if (_terminate)
 		return nil;
 
 	pool = objc_autoreleasePoolPush();
@@ -182,42 +182,42 @@
 	for (;;) {
 		OFThreadPoolJob *job;
 
-		[queueCondition lock];
+		[_queueCondition lock];
 		@try {
 			of_list_object_t *listObject;
 
-			if (terminate) {
+			if (_terminate) {
 				objc_autoreleasePoolPop(pool);
 				return nil;
 			}
 
-			listObject = [queue firstListObject];
+			listObject = [_queue firstListObject];
 
 			while (listObject == NULL) {
-				[queueCondition wait];
+				[_queueCondition wait];
 
-				if (terminate) {
+				if (_terminate) {
 					objc_autoreleasePoolPop(pool);
 					return nil;
 				}
 
-				listObject = [queue firstListObject];
+				listObject = [_queue firstListObject];
 			}
 
 			job = [[listObject->object retain] autorelease];
-			[queue removeListObject: listObject];
+			[_queue removeListObject: listObject];
 		} @finally {
-			[queueCondition unlock];
+			[_queueCondition unlock];
 		}
 
-		if (terminate) {
+		if (_terminate) {
 			objc_autoreleasePoolPop(pool);
 			return nil;
 		}
 
 		[job perform];
 
-		if (terminate) {
+		if (_terminate) {
 			objc_autoreleasePoolPop(pool);
 			return nil;
 		}
@@ -225,18 +225,18 @@
 		objc_autoreleasePoolPop(pool);
 		pool = objc_autoreleasePoolPush();
 
-		[countCondition lock];
+		[_countCondition lock];
 		@try {
-			if (terminate) {
+			if (_terminate) {
 				objc_autoreleasePoolPop(pool);
 				return nil;
 			}
 
-			(*doneCount)++;
+			(*_doneCount)++;
 
-			[countCondition signal];
+			[_countCondition signal];
 		} @finally {
-			[countCondition unlock];
+			[_countCondition unlock];
 		}
 	}
 }
@@ -258,18 +258,18 @@
 	return [self initWithSize: [OFSystemInfo numberOfCPUs]];
 }
 
-- initWithSize: (size_t)size_
+- initWithSize: (size_t)size
 {
 	self = [super init];
 
 	@try {
 		size_t i;
 
-		size = size_;
-		threads = [[OFMutableArray alloc] init];
-		queue = [[OFList alloc] init];
-		queueCondition = [[OFCondition alloc] init];
-		countCondition = [[OFCondition alloc] init];
+		_size = size;
+		_threads = [[OFMutableArray alloc] init];
+		_queue = [[OFList alloc] init];
+		_queueCondition = [[OFCondition alloc] init];
+		_countCondition = [[OFCondition alloc] init];
 
 		for (i = 0; i < size; i++) {
 			void *pool = objc_autoreleasePoolPush();
@@ -277,7 +277,7 @@
 			OFThreadPoolThread *thread =
 			    [OFThreadPoolThread threadWithThreadPool: self];
 
-			[threads addObject: thread];
+			[_threads addObject: thread];
 
 			objc_autoreleasePoolPop(pool);
 		}
@@ -286,11 +286,8 @@
 		 * We need to start the threads in a separate loop to make sure
 		 * threads is not modified anymore to prevent a race condition.
 		 */
-		for (i = 0; i < size; i++) {
-			OFThreadPoolThread *thread = [threads objectAtIndex: i];
-
-			[thread start];
-		}
+		for (i = 0; i < size; i++)
+			[[_threads objectAtIndex: i] start];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -302,59 +299,59 @@
 - (void)dealloc
 {
 	void *pool = objc_autoreleasePoolPush();
-	[queueCondition lock];
+	[_queueCondition lock];
 	@try {
-		[countCondition lock];
+		[_countCondition lock];
 		@try {
-			OFEnumerator *enumerator = [threads objectEnumerator];
+			OFEnumerator *enumerator = [_threads objectEnumerator];
 			OFThreadPoolThread *thread;
 
 			while ((thread = [enumerator nextObject]) != nil)
-				thread->terminate = YES;
+				thread->_terminate = YES;
 		} @finally {
-			[countCondition unlock];
+			[_countCondition unlock];
 		}
 
-		[queueCondition broadcast];
+		[_queueCondition broadcast];
 	} @finally {
-		[queueCondition unlock];
+		[_queueCondition unlock];
 	}
 	objc_autoreleasePoolPop(pool);
 
-	[threads release];
-	[queue release];
-	[queueCondition release];
-	[countCondition release];
+	[_threads release];
+	[_queue release];
+	[_queueCondition release];
+	[_countCondition release];
 
 	[super dealloc];
 }
 
 - (void)OF_dispatchJob: (OFThreadPoolJob*)job
 {
-	[countCondition lock];
-	count++;
-	[countCondition unlock];
+	[_countCondition lock];
+	_count++;
+	[_countCondition unlock];
 
-	[queueCondition lock];
+	[_queueCondition lock];
 	@try {
-		[queue appendObject: job];
-		[queueCondition signal];
+		[_queue appendObject: job];
+		[_queueCondition signal];
 	} @finally {
-		[queueCondition unlock];
+		[_queueCondition unlock];
 	}
 }
 
 - (void)waitUntilDone
 {
 	for (;;) {
-		[countCondition lock];
+		[_countCondition lock];
 		@try {
-			if (doneCount == count)
+			if (_doneCount == _count)
 				return;
 
-			[countCondition wait];
+			[_countCondition wait];
 		} @finally {
-			[countCondition unlock];
+			[_countCondition unlock];
 		}
 	}
 }
@@ -377,6 +374,6 @@
 
 - (size_t)size
 {
-	return size;
+	return _size;
 }
 @end

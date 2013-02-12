@@ -22,7 +22,7 @@
  */
 @interface OFUnsupportedVersionException: OFException
 {
-	OFString *version;
+	OFString *_version;
 }
 
 #ifdef OF_HAVE_PROPERTIES

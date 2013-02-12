@@ -25,18 +25,18 @@
 #import "common.h"
 
 @implementation OFBindFailedException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			    socket: (OFTCPSocket*)socket
 			      host: (OFString*)host
 			      port: (uint16_t)port
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 				     socket: socket
 				       host: host
 				       port: port] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -48,18 +48,18 @@
 	abort();
 }
 
-- initWithClass: (Class)class_
-	 socket: (OFTCPSocket*)socket_
-	   host: (OFString*)host_
-	   port: (uint16_t)port_
+- initWithClass: (Class)class
+	 socket: (OFTCPSocket*)socket
+	   host: (OFString*)host
+	   port: (uint16_t)port
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
 	@try {
-		socket = [socket_ retain];
-		host   = [host_ copy];
-		port   = port_;
-		errNo  = GET_SOCK_ERRNO;
+		_socket = [socket retain];
+		_host   = [host copy];
+		_port   = port;
+		_errNo  = GET_SOCK_ERRNO;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -70,41 +70,41 @@
 
 - (void)dealloc
 {
-	[socket release];
-	[host release];
+	[_socket release];
+	[_host release];
 
 	[super dealloc];
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
+	_description = [[OFString alloc] initWithFormat:
 	    @"Binding to port %" @PRIu16 @" on host %@ failed in class %@! "
-	    ERRFMT, port, host, inClass, ERRPARAM];
+	    ERRFMT, _port, _host, _inClass, ERRPARAM];
 
-	return description;
+	return _description;
 }
 
 - (OFTCPSocket*)socket
 {
-	OF_GETTER(socket, NO)
+	OF_GETTER(_socket, NO)
 }
 
 - (OFString*)host
 {
-	OF_GETTER(host, NO)
+	OF_GETTER(_host, NO)
 }
 
 - (uint16_t)port
 {
-	return port;
+	return _port;
 }
 
 - (int)errNo
 {
-	return errNo;
+	return _errNo;
 }
 @end

@@ -21,7 +21,7 @@
  */
 @interface OFXMLProcessingInstructions: OFXMLNode
 {
-	OFString *processingInstructions;
+	OFString *_processingInstructions;
 }
 
 /*!

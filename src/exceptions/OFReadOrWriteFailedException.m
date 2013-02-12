@@ -25,16 +25,16 @@
 #import "common.h"
 
 @implementation OFReadOrWriteFailedException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			    stream: (OFStream*)stream
-		   requestedLength: (size_t)length
+		   requestedLength: (size_t)requestedLength
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 				     stream: stream
-			    requestedLength: length] autorelease];
+			    requestedLength: requestedLength] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -46,42 +46,42 @@
 	abort();
 }
 
--   initWithClass: (Class)class_
-	   stream: (OFStream*)stream_
-  requestedLength: (size_t)length
+-   initWithClass: (Class)class
+	   stream: (OFStream*)stream
+  requestedLength: (size_t)requestedLength
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
-	stream = [stream_ retain];
-	requestedLength = length;
+	_stream = [stream retain];
+	_requestedLength = requestedLength;
 
-	if ([class_ isSubclassOfClass: [OFStreamSocket class]])
-		errNo = GET_SOCK_ERRNO;
+	if ([class isSubclassOfClass: [OFStreamSocket class]])
+		_errNo = GET_SOCK_ERRNO;
 	else
-		errNo = GET_ERRNO;
+		_errNo = GET_ERRNO;
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[stream release];
+	[_stream release];
 
 	[super dealloc];
 }
 
 - (OFStream*)stream
 {
-	OF_GETTER(stream, NO)
+	OF_GETTER(_stream, NO)
 }
 
 - (size_t)requestedLength
 {
-	return requestedLength;
+	return _requestedLength;
 }
 
 - (int)errNo
 {
-	return errNo;
+	return _errNo;
 }
 @end

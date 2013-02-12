@@ -22,7 +22,7 @@
  */
 @interface OFUnlockFailedException: OFException
 {
-	id <OFLocking> lock;
+	id <OFLocking> _lock;
 }
 
 #ifdef OF_HAVE_PROPERTIES

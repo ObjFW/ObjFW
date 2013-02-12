@@ -25,9 +25,9 @@
  */
 @interface OFMethod: OFObject
 {
-	SEL selector;
-	OFString *name;
-	const char *typeEncoding;
+	SEL _selector;
+	OFString *_name;
+	const char *_typeEncoding;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -63,9 +63,9 @@
  */
 @interface OFInstanceVariable: OFObject
 {
-	OFString *name;
-	const char *typeEncoding;
-	ptrdiff_t offset;
+	OFString *_name;
+	const char *_typeEncoding;
+	ptrdiff_t _offset;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -101,11 +101,11 @@
  */
 @interface OFIntrospection: OFObject
 {
-	OFMutableArray *classMethods;
-	OFMutableArray *instanceMethods;
-	OFMutableArray *instanceVariables;
+	OFMutableArray *_classMethods;
+	OFMutableArray *_instanceMethods;
+	OFMutableArray *_instanceVariables;
 #ifdef OF_HAVE_PROPERTIES
-	OFMutableArray *properties;
+	OFMutableArray *_properties;
 #endif
 }
 

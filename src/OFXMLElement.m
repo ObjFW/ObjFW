@@ -52,21 +52,21 @@ static Class CDATAClass = Nil;
 @interface OFXMLElement_OFXMLElementBuilderDelegate: OFObject
 {
 @public
-	OFXMLElement *element;
+	OFXMLElement *_element;
 }
 @end
 
 @implementation OFXMLElement_OFXMLElementBuilderDelegate
 - (void)elementBuilder: (OFXMLElementBuilder*)builder
-       didBuildElement: (OFXMLElement*)element_
+       didBuildElement: (OFXMLElement*)element
 {
-	if (element == nil)
-		element = [element_ retain];
+	if (_element == nil)
+		_element = [element retain];
 }
 
 - (void)dealloc
 {
-	[element release];
+	[_element release];
 
 	[super dealloc];
 }
@@ -136,45 +136,45 @@ static Class CDATAClass = Nil;
 	abort();
 }
 
-- initWithName: (OFString*)name_
+- initWithName: (OFString*)name
 {
-	return [self initWithName: name_
+	return [self initWithName: name
 			namespace: nil
 		      stringValue: nil];
 }
 
-- initWithName: (OFString*)name_
+- initWithName: (OFString*)name
    stringValue: (OFString*)stringValue
 {
-	return [self initWithName: name_
+	return [self initWithName: name
 			namespace: nil
 		      stringValue: stringValue];
 }
 
-- initWithName: (OFString*)name_
-     namespace: (OFString*)ns_
+- initWithName: (OFString*)name
+     namespace: (OFString*)namespace
 {
-	return [self initWithName: name_
-			namespace: ns_
+	return [self initWithName: name
+			namespace: namespace
 		      stringValue: nil];
 }
 
-- initWithName: (OFString*)name_
-     namespace: (OFString*)ns_
+- initWithName: (OFString*)name
+     namespace: (OFString*)namespace
    stringValue: (OFString*)stringValue
 {
 	self = [super init];
 
 	@try {
-		if (name_ == nil)
+		if (name == nil)
 			@throw [OFInvalidArgumentException
 			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
-		name = [name_ copy];
-		ns = [ns_ copy];
+		_name = [name copy];
+		_namespace = [namespace copy];
 
-		namespaces = [[OFMutableDictionary alloc]
+		_namespaces = [[OFMutableDictionary alloc]
 		    initWithKeysAndObjects:
 		    @"http://www.w3.org/XML/1998/namespace", @"xml",
 		    @"http://www.w3.org/2000/xmlns/", @"xmlns", nil];
@@ -199,12 +199,12 @@ static Class CDATAClass = Nil;
 			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
-		name = [element->name copy];
-		ns = [element->ns copy];
-		defaultNamespace = [element->defaultNamespace copy];
-		attributes = [element->attributes mutableCopy];
-		namespaces = [element->namespaces mutableCopy];
-		children = [element->children mutableCopy];
+		_name = [element->_name copy];
+		_namespace = [element->_namespace copy];
+		_defaultNamespace = [element->_defaultNamespace copy];
+		_attributes = [element->_attributes mutableCopy];
+		_namespaces = [element->_namespaces mutableCopy];
+		_children = [element->_children mutableCopy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -244,7 +244,7 @@ static Class CDATAClass = Nil;
 		@throw [OFMalformedXMLException exceptionWithClass: c
 							    parser: parser];
 
-	self = [delegate->element retain];
+	self = [delegate->_element retain];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -278,7 +278,7 @@ static Class CDATAClass = Nil;
 		@throw [OFMalformedXMLException exceptionWithClass: c
 							    parser: parser];
 
-	self = [delegate->element retain];
+	self = [delegate->_element retain];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -302,10 +302,11 @@ static Class CDATAClass = Nil;
 			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
-		name = [[[element attributeForName: @"name"] stringValue] copy];
-		ns = [[[element attributeForName: @"namespace"] stringValue]
-		    copy];
-		defaultNamespace = [[[element attributeForName:
+		_name = [[[element attributeForName: @"name"]
+		    stringValue] copy];
+		_namespace = [[[element attributeForName: @"namespace"]
+		    stringValue] copy];
+		_defaultNamespace = [[[element attributeForName:
 		    @"defaultNamespace"] stringValue] copy];
 
 		attributesElement = [[[element
@@ -321,33 +322,32 @@ static Class CDATAClass = Nil;
 			 namespace: OF_SERIALIZATION_NS] elementsForNamespace:
 		    OF_SERIALIZATION_NS] firstObject];
 
-		attributes = [[attributesElement objectByDeserializing]
+		_attributes = [[attributesElement objectByDeserializing]
 		    mutableCopy];
-		namespaces = [[namespacesElement objectByDeserializing]
+		_namespaces = [[namespacesElement objectByDeserializing]
 		    mutableCopy];
-		children = [[childrenElement objectByDeserializing]
+		_children = [[childrenElement objectByDeserializing]
 		    mutableCopy];
 
 		/* Sanity checks */
-		if ((attributes != nil &&
-		    ![attributes isKindOfClass: [OFMutableArray class]]) ||
-		    (namespaces != nil &&
-		    ![namespaces isKindOfClass: [OFMutableDictionary class]]) ||
-		    (children != nil &&
-		    ![children isKindOfClass: [OFMutableArray class]]))
+		if ((_attributes != nil && ![_attributes isKindOfClass:
+		    [OFMutableArray class]]) || (_namespaces != nil &&
+		    ![_namespaces isKindOfClass:
+		    [OFMutableDictionary class]]) || (_children != nil &&
+		    ![_children isKindOfClass: [OFMutableArray class]]))
 			@throw [OFInvalidArgumentException
 			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
-		objectEnumerator = [attributes objectEnumerator];
+		objectEnumerator = [_attributes objectEnumerator];
 		while ((object = [objectEnumerator nextObject]) != nil)
 			if (![object isKindOfClass: [OFXMLAttribute class]])
 				@throw [OFInvalidArgumentException
 				    exceptionWithClass: [self class]
 					      selector: _cmd];
 
-		keyEnumerator = [namespaces keyEnumerator];
-		objectEnumerator = [namespaces objectEnumerator];
+		keyEnumerator = [_namespaces keyEnumerator];
+		objectEnumerator = [_namespaces objectEnumerator];
 		while ((key = [keyEnumerator nextObject]) != nil &&
 		    (object = [objectEnumerator nextObject]) != nil)
 			if (![key isKindOfClass: [OFString class]] ||
@@ -356,22 +356,23 @@ static Class CDATAClass = Nil;
 				    exceptionWithClass: [self class]
 					      selector: _cmd];
 
-		objectEnumerator = [children objectEnumerator];
+		objectEnumerator = [_children objectEnumerator];
 		while ((object = [objectEnumerator nextObject]) != nil)
 			if (![object isKindOfClass: [OFXMLNode class]])
 				@throw [OFInvalidArgumentException
 				    exceptionWithClass: [self class]
 					      selector: _cmd];
 
-		if (namespaces == nil)
-			namespaces = [[OFMutableDictionary alloc] init];
+		if (_namespaces == nil)
+			_namespaces = [[OFMutableDictionary alloc] init];
 
-		[namespaces setObject: @"xml"
-			       forKey: @"http://www.w3.org/XML/1998/namespace"];
-		[namespaces setObject: @"xmlns"
-			       forKey: @"http://www.w3.org/2000/xmlns/"];
+		[_namespaces
+		    setObject: @"xml"
+		       forKey: @"http://www.w3.org/XML/1998/namespace"];
+		[_namespaces setObject: @"xmlns"
+				forKey: @"http://www.w3.org/2000/xmlns/"];
 
-		if (name == nil)
+		if (_name == nil)
 			@throw [OFInvalidArgumentException
 			    exceptionWithClass: [self class]
 				      selector: _cmd];
@@ -385,44 +386,56 @@ static Class CDATAClass = Nil;
 	return self;
 }
 
-- (void)setName: (OFString*)name_
+- (void)dealloc
 {
-	if (name_ == nil)
+	[_name release];
+	[_namespace release];
+	[_defaultNamespace release];
+	[_attributes release];
+	[_namespaces release];
+	[_children release];
+
+	[super dealloc];
+}
+
+- (void)setName: (OFString*)name
+{
+	if (name == nil)
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	OF_SETTER(name, name_, YES, 1)
+	OF_SETTER(_name, name, YES, 1)
 }
 
 - (OFString*)name
 {
-	OF_GETTER(name, YES)
+	OF_GETTER(_name, YES)
 }
 
-- (void)setNamespace: (OFString*)ns_
+- (void)setNamespace: (OFString*)namespace
 {
-	OF_SETTER(ns, ns_, YES, 1)
+	OF_SETTER(_namespace, namespace, YES, 1)
 }
 
 - (OFString*)namespace
 {
-	OF_GETTER(ns, YES)
+	OF_GETTER(_namespace, YES)
 }
 
 - (OFArray*)attributes
 {
-	OF_GETTER(attributes, YES)
+	OF_GETTER(_attributes, YES)
 }
 
-- (void)setChildren: (OFArray*)children_
+- (void)setChildren: (OFArray*)children
 {
-	OF_SETTER(children, children_, YES, 2)
+	OF_SETTER(_children, children, YES, 2)
 }
 
 - (OFArray*)children
 {
-	OF_GETTER(children, YES)
+	OF_GETTER(_children, YES)
 }
 
 - (void)setStringValue: (OFString*)stringValue
@@ -439,13 +452,13 @@ static Class CDATAClass = Nil;
 {
 	OFMutableString *ret;
 	OFXMLElement **objects;
-	size_t i, count = [children count];
+	size_t i, count = [_children count];
 
 	if (count == 0)
 		return @"";
 
 	ret = [OFMutableString string];
-	objects = [children objects];
+	objects = [_children objects];
 
 	for (i = 0; i < count; i++) {
 		void *pool = objc_autoreleasePoolPush();
@@ -476,12 +489,13 @@ static Class CDATAClass = Nil;
 	pool = objc_autoreleasePoolPush();
 
 	parentPrefix = [allNamespaces objectForKey:
-	    (parent != nil && parent->ns != nil ? parent->ns : (OFString*)@"")];
+	    (parent != nil && parent->_namespace != nil
+	    ? parent->_namespace : (OFString*)@"")];
 
 	/* Add the namespaces of the current element */
 	if (allNamespaces != nil) {
-		OFEnumerator *keyEnumerator = [namespaces keyEnumerator];
-		OFEnumerator *objectEnumerator = [namespaces objectEnumerator];
+		OFEnumerator *keyEnumerator = [_namespaces keyEnumerator];
+		OFEnumerator *objectEnumerator = [_namespaces objectEnumerator];
 		OFMutableDictionary *tmp;
 		id key, object;
 
@@ -494,20 +508,20 @@ static Class CDATAClass = Nil;
 
 		allNamespaces = tmp;
 	} else
-		allNamespaces = namespaces;
+		allNamespaces = _namespaces;
 
 	prefix = [allNamespaces objectForKey:
-	    (ns != nil ? ns : (OFString*)@"")];
+	    (_namespace != nil ? _namespace : (OFString*)@"")];
 
-	if (parent != nil && parent->ns != nil && parentPrefix == nil)
-		defaultNS = parent->ns;
-	else if (parent != nil && parent->defaultNamespace != nil)
-		defaultNS = parent->defaultNamespace;
+	if (parent != nil && parent->_namespace != nil && parentPrefix == nil)
+		defaultNS = parent->_namespace;
+	else if (parent != nil && parent->_defaultNamespace != nil)
+		defaultNS = parent->_defaultNamespace;
 	else
-		defaultNS = defaultNamespace;
+		defaultNS = _defaultNamespace;
 
 	i = 0;
-	length = [name UTF8StringLength] + 3 + (level * indentation);
+	length = [_name UTF8StringLength] + 3 + (level * indentation);
 	cString = [self allocMemoryWithSize: length];
 
 	memset(cString + i, ' ', level * indentation);
@@ -516,7 +530,7 @@ static Class CDATAClass = Nil;
 	/* Start of tag */
 	cString[i++] = '<';
 
-	if (prefix != nil && ![ns isEqual: defaultNS]) {
+	if (prefix != nil && ![_namespace isEqual: defaultNS]) {
 		length += [prefix UTF8StringLength] + 1;
 		@try {
 			cString = [self resizeMemory: cString
@@ -532,13 +546,14 @@ static Class CDATAClass = Nil;
 		cString[i++] = ':';
 	}
 
-	memcpy(cString + i, [name UTF8String], [name UTF8StringLength]);
-	i += [name UTF8StringLength];
+	memcpy(cString + i, [_name UTF8String], [_name UTF8StringLength]);
+	i += [_name UTF8StringLength];
 
 	/* xmlns if necessary */
-	if (prefix == nil && ((ns != nil && ![ns isEqual: defaultNS]) ||
-	    (ns == nil && defaultNS != nil))) {
-		length += [ns UTF8StringLength] + 9;
+	if (prefix == nil && ((_namespace != nil &&
+	    ![_namespace isEqual: defaultNS]) ||
+	    (_namespace == nil && defaultNS != nil))) {
+		length += [_namespace UTF8StringLength] + 9;
 		@try {
 			cString = [self resizeMemory: cString
 						size: length];
@@ -549,14 +564,15 @@ static Class CDATAClass = Nil;
 
 		memcpy(cString + i, " xmlns='", 8);
 		i += 8;
-		memcpy(cString + i, [ns UTF8String], [ns UTF8StringLength]);
-		i += [ns UTF8StringLength];
+		memcpy(cString + i, [_namespace UTF8String],
+		    [_namespace UTF8StringLength]);
+		i += [_namespace UTF8StringLength];
 		cString[i++] = '\'';
 	}
 
 	/* Attributes */
-	attributesObjects = [attributes objects];
-	attributesCount = [attributes count];
+	attributesObjects = [_attributes objects];
+	attributesCount = [_attributes count];
 
 	for (j = 0; j < attributesCount; j++) {
 		void *pool2 = objc_autoreleasePoolPush();
@@ -606,9 +622,9 @@ static Class CDATAClass = Nil;
 	}
 
 	/* Childen */
-	if (children != nil) {
-		OFXMLElement **childrenObjects = [children objects];
-		size_t childrenCount = [children count];
+	if (_children != nil) {
+		OFXMLElement **childrenObjects = [_children objects];
+		size_t childrenCount = [_children count];
 		OFDataArray *tmp = [OFDataArray dataArray];
 		BOOL indent;
 
@@ -652,7 +668,7 @@ static Class CDATAClass = Nil;
 		if (indent)
 			[tmp addItem: "\n"];
 
-		length += [tmp count] + [name UTF8StringLength] + 2 +
+		length += [tmp count] + [_name UTF8StringLength] + 2 +
 		    (indent ? level * indentation : 0);
 		@try {
 			cString = [self resizeMemory: cString
@@ -689,8 +705,9 @@ static Class CDATAClass = Nil;
 			i += [prefix UTF8StringLength];
 			cString[i++] = ':';
 		}
-		memcpy(cString + i, [name UTF8String], [name UTF8StringLength]);
-		i += [name UTF8StringLength];
+		memcpy(cString + i, [_name UTF8String],
+		    [_name UTF8StringLength]);
+		i += [_name UTF8StringLength];
 	} else
 		cString[i++] = '/';
 
@@ -741,33 +758,33 @@ static Class CDATAClass = Nil;
 	element = [OFXMLElement elementWithName: [self className]
 				      namespace: OF_SERIALIZATION_NS];
 
-	if (name != nil)
+	if (_name != nil)
 		[element addAttributeWithName: @"name"
-				  stringValue: name];
+				  stringValue: _name];
 
-	if (ns != nil)
+	if (_namespace != nil)
 		[element addAttributeWithName: @"namespace"
-				  stringValue: ns];
+				  stringValue: _namespace];
 
-	if (defaultNamespace != nil)
+	if (_defaultNamespace != nil)
 		[element addAttributeWithName: @"defaultNamespace"
-				  stringValue: defaultNamespace];
+				  stringValue: _defaultNamespace];
 
-	if (attributes != nil) {
+	if (_attributes != nil) {
 		OFXMLElement *attributesElement;
 
 		attributesElement =
 		    [OFXMLElement elementWithName: @"attributes"
 					namespace: OF_SERIALIZATION_NS];
 		[attributesElement addChild:
-		    [attributes XMLElementBySerializing]];
+		    [_attributes XMLElementBySerializing]];
 		[element addChild: attributesElement];
 	}
 
-	if (namespaces != nil) {
+	if (_namespaces != nil) {
 		OFXMLElement *namespacesElement;
 		OFMutableDictionary *namespacesCopy =
-		    [[namespaces mutableCopy] autorelease];
+		    [[_namespaces mutableCopy] autorelease];
 
 		[namespacesCopy removeObjectForKey:
 		    @"http://www.w3.org/XML/1998/namespace"];
@@ -784,13 +801,13 @@ static Class CDATAClass = Nil;
 		}
 	}
 
-	if (children != nil) {
+	if (_children != nil) {
 		OFXMLElement *childrenElement;
 
 		childrenElement =
 		    [OFXMLElement elementWithName: @"children"
 					namespace: OF_SERIALIZATION_NS];
-		[childrenElement addChild: [children XMLElementBySerializing]];
+		[childrenElement addChild: [_children XMLElementBySerializing]];
 		[element addChild: childrenElement];
 	}
 
@@ -803,30 +820,30 @@ static Class CDATAClass = Nil;
 
 - (void)addAttribute: (OFXMLAttribute*)attribute
 {
-	if (attributes == nil)
-		attributes = [[OFMutableArray alloc] init];
+	if (_attributes == nil)
+		_attributes = [[OFMutableArray alloc] init];
 
-	if ([self attributeForName: attribute->name
-			 namespace: attribute->ns] == nil)
-		[attributes addObject: attribute];
+	if ([self attributeForName: attribute->_name
+			 namespace: attribute->_namespace] == nil)
+		[_attributes addObject: attribute];
 }
 
-- (void)addAttributeWithName: (OFString*)name_
+- (void)addAttributeWithName: (OFString*)name
 		 stringValue: (OFString*)stringValue
 {
-	[self addAttributeWithName: name_
+	[self addAttributeWithName: name
 			 namespace: nil
 		       stringValue: stringValue];
 }
 
-- (void)addAttributeWithName: (OFString*)name_
-		   namespace: (OFString*)ns_
+- (void)addAttributeWithName: (OFString*)name
+		   namespace: (OFString*)namespace
 		 stringValue: (OFString*)stringValue
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self addAttribute: [OFXMLAttribute attributeWithName: name_
-						    namespace: ns_
+	[self addAttribute: [OFXMLAttribute attributeWithName: name
+						    namespace: namespace
 						  stringValue: stringValue]];
 
 	objc_autoreleasePoolPop(pool);
@@ -834,12 +851,12 @@ static Class CDATAClass = Nil;
 
 - (OFXMLAttribute*)attributeForName: (OFString*)attributeName
 {
-	OFXMLAttribute **objects = [attributes objects];
-	size_t i, count = [attributes count];
+	OFXMLAttribute **objects = [_attributes objects];
+	size_t i, count = [_attributes count];
 
 	for (i = 0; i < count; i++)
-		if (objects[i]->ns == nil &&
-		    [objects[i]->name isEqual: attributeName])
+		if (objects[i]->_namespace == nil &&
+		    [objects[i]->_name isEqual: attributeName])
 			return [[objects[i] retain] autorelease];
 
 	return nil;
@@ -854,12 +871,12 @@ static Class CDATAClass = Nil;
 	if (attributeNS == nil)
 		return [self attributeForName: attributeName];
 
-	objects = [attributes objects];
-	count = [attributes count];
+	objects = [_attributes objects];
+	count = [_attributes count];
 
 	for (i = 0; i < count; i++)
-		if ([objects[i]->ns isEqual: attributeNS] &&
-		    [objects[i]->name isEqual: attributeName])
+		if ([objects[i]->_namespace isEqual: attributeNS] &&
+		    [objects[i]->_name isEqual: attributeName])
 			return [[objects[i] retain] autorelease];
 
 	return nil;
@@ -867,13 +884,13 @@ static Class CDATAClass = Nil;
 
 - (void)removeAttributeForName: (OFString*)attributeName
 {
-	OFXMLAttribute **objects = [attributes objects];
-	size_t i, count = [attributes count];
+	OFXMLAttribute **objects = [_attributes objects];
+	size_t i, count = [_attributes count];
 
 	for (i = 0; i < count; i++) {
-		if (objects[i]->ns == nil &&
-		    [objects[i]->name isEqual: attributeName]) {
-			[attributes removeObjectAtIndex: i];
+		if (objects[i]->_namespace == nil &&
+		    [objects[i]->_name isEqual: attributeName]) {
+			[_attributes removeObjectAtIndex: i];
 
 			return;
 		}
@@ -889,50 +906,50 @@ static Class CDATAClass = Nil;
 	if (attributeNS == nil)
 		return [self removeAttributeForName: attributeName];
 
-	objects = [attributes objects];
-	count = [attributes count];
+	objects = [_attributes objects];
+	count = [_attributes count];
 
 	for (i = 0; i < count; i++) {
-		if ([objects[i]->ns isEqual: attributeNS] &&
-		    [objects[i]->name isEqual: attributeName]) {
-			[attributes removeObjectAtIndex: i];
+		if ([objects[i]->_namespace isEqual: attributeNS] &&
+		    [objects[i]->_name isEqual: attributeName]) {
+			[_attributes removeObjectAtIndex: i];
 				return;
 		}
 	}
 }
 
 - (void)setPrefix: (OFString*)prefix
-     forNamespace: (OFString*)ns_
+     forNamespace: (OFString*)namespace
 {
 	if ([prefix length] == 0)
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
-	if (ns_ == nil)
-		ns_ = @"";
+	if (namespace == nil)
+		namespace = @"";
 
-	[namespaces setObject: prefix
-		       forKey: ns_];
+	[_namespaces setObject: prefix
+			forKey: namespace];
 }
 
 - (void)bindPrefix: (OFString*)prefix
-      forNamespace: (OFString*)ns_
+      forNamespace: (OFString*)namespace
 {
 	[self setPrefix: prefix
-	   forNamespace: ns_];
+	   forNamespace: namespace];
 	[self addAttributeWithName: prefix
 			 namespace: @"http://www.w3.org/2000/xmlns/"
-		       stringValue: ns_];
+		       stringValue: namespace];
 }
 
 - (OFString*)defaultNamespace
 {
-	OF_GETTER(defaultNamespace, YES)
+	OF_GETTER(_defaultNamespace, YES)
 }
 
-- (void)setDefaultNamespace: (OFString*)ns_
+- (void)setDefaultNamespace: (OFString*)defaultNamespace
 {
-	OF_SETTER(defaultNamespace, ns_, YES, 1)
+	OF_SETTER(_defaultNamespace, defaultNamespace, YES, 1)
 }
 
 - (void)addChild: (OFXMLNode*)child
@@ -942,10 +959,10 @@ static Class CDATAClass = Nil;
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	if (children == nil)
-		children = [[OFMutableArray alloc] init];
+	if (_children == nil)
+		_children = [[OFMutableArray alloc] init];
 
-	[children addObject: child];
+	[_children addObject: child];
 }
 
 - (void)insertChild: (OFXMLNode*)child
@@ -956,18 +973,18 @@ static Class CDATAClass = Nil;
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	if (children == nil)
-		children = [[OFMutableArray alloc] init];
+	if (_children == nil)
+		_children = [[OFMutableArray alloc] init];
 
-	[children insertObject: child
-		       atIndex: index];
+	[_children insertObject: child
+			atIndex: index];
 }
 
-- (void)insertChildren: (OFArray*)children_
+- (void)insertChildren: (OFArray*)children
 	       atIndex: (size_t)index
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator = [children_ objectEnumerator];
+	OFEnumerator *enumerator = [children objectEnumerator];
 	OFXMLNode *node;
 
 	while ((node = [enumerator nextObject]) != nil)
@@ -976,8 +993,8 @@ static Class CDATAClass = Nil;
 			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
-	[children insertObjectsFromArray: children_
-				 atIndex: index];
+	[_children insertObjectsFromArray: children
+				  atIndex: index];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -989,12 +1006,12 @@ static Class CDATAClass = Nil;
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	[children removeObject: child];
+	[_children removeObject: child];
 }
 
 - (void)removeChildAtIndex: (size_t)index
 {
-	[children removeObjectAtIndex: index];
+	[_children removeObjectAtIndex: index];
 }
 
 - (void)replaceChild: (OFXMLNode*)child
@@ -1006,8 +1023,8 @@ static Class CDATAClass = Nil;
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	[children replaceObject: child
-		     withObject: node];
+	[_children replaceObject: child
+		      withObject: node];
 }
 
 - (void)replaceChildAtIndex: (size_t)index
@@ -1018,8 +1035,8 @@ static Class CDATAClass = Nil;
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	[children replaceObjectAtIndex: index
-			    withObject: node];
+	[_children replaceObjectAtIndex: index
+			     withObject: node];
 }
 
 - (OFXMLElement*)elementForName: (OFString*)elementName
@@ -1037,8 +1054,8 @@ static Class CDATAClass = Nil;
 - (OFArray*)elements
 {
 	OFMutableArray *ret = [OFMutableArray array];
-	OFXMLElement **objects = [children objects];
-	size_t i, count = [children count];
+	OFXMLElement **objects = [_children objects];
+	size_t i, count = [_children count];
 
 	for (i = 0; i < count; i++)
 		if ([objects[i] isKindOfClass: [OFXMLElement class]])
@@ -1052,13 +1069,13 @@ static Class CDATAClass = Nil;
 - (OFArray*)elementsForName: (OFString*)elementName
 {
 	OFMutableArray *ret = [OFMutableArray array];
-	OFXMLElement **objects = [children objects];
-	size_t i, count = [children count];
+	OFXMLElement **objects = [_children objects];
+	size_t i, count = [_children count];
 
 	for (i = 0; i < count; i++)
 		if ([objects[i] isKindOfClass: [OFXMLElement class]] &&
-		    objects[i]->ns == nil &&
-		    [objects[i]->name isEqual: elementName])
+		    objects[i]->_namespace == nil &&
+		    [objects[i]->_name isEqual: elementName])
 			[ret addObject: objects[i]];
 
 	[ret makeImmutable];
@@ -1069,13 +1086,13 @@ static Class CDATAClass = Nil;
 - (OFArray*)elementsForNamespace: (OFString*)elementNS
 {
 	OFMutableArray *ret = [OFMutableArray array];
-	OFXMLElement **objects = [children objects];
-	size_t i, count = [children count];
+	OFXMLElement **objects = [_children objects];
+	size_t i, count = [_children count];
 
 	for (i = 0; i < count; i++)
 		if ([objects[i] isKindOfClass: [OFXMLElement class]] &&
-		    objects[i]->name != nil &&
-		    [objects[i]->ns isEqual: elementNS])
+		    objects[i]->_name != nil &&
+		    [objects[i]->_namespace isEqual: elementNS])
 			[ret addObject: objects[i]];
 
 	[ret makeImmutable];
@@ -1094,13 +1111,13 @@ static Class CDATAClass = Nil;
 		return [self elementsForName: elementName];
 
 	ret = [OFMutableArray array];
-	objects = [children objects];
-	count = [children count];
+	objects = [_children objects];
+	count = [_children count];
 
 	for (i = 0; i < count; i++)
 		if ([objects[i] isKindOfClass: [OFXMLElement class]] &&
-		    [objects[i]->ns isEqual: elementNS] &&
-		    [objects[i]->name isEqual: elementName])
+		    [objects[i]->_namespace isEqual: elementNS] &&
+		    [objects[i]->_name isEqual: elementName])
 			[ret addObject: objects[i]];
 
 	[ret makeImmutable];
@@ -1110,28 +1127,29 @@ static Class CDATAClass = Nil;
 
 - (BOOL)isEqual: (id)object
 {
-	OFXMLElement *otherElement;
+	OFXMLElement *element;
 
 	if (![object isKindOfClass: [OFXMLElement class]])
 		return NO;
 
-	otherElement = object;
+	element = object;
 
-	if (otherElement->name != name && ![otherElement->name isEqual: name])
+	if (element->_name != _name && ![element->_name isEqual: _name])
 		return NO;
-	if (otherElement->ns != ns && ![otherElement->ns isEqual: ns])
+	if (element->_namespace != _namespace &&
+	    ![element->_namespace isEqual: _namespace])
 		return NO;
-	if (otherElement->defaultNamespace != defaultNamespace &&
-	    ![otherElement->defaultNamespace isEqual: defaultNamespace])
+	if (element->_defaultNamespace != _defaultNamespace &&
+	    ![element->_defaultNamespace isEqual: _defaultNamespace])
 		return NO;
-	if (otherElement->attributes != attributes &&
-	    ![otherElement->attributes isEqual: attributes])
+	if (element->_attributes != _attributes &&
+	    ![element->_attributes isEqual: _attributes])
 		return NO;
-	if (otherElement->namespaces != namespaces &&
-	    ![otherElement->namespaces isEqual: namespaces])
+	if (element->_namespaces != _namespaces &&
+	    ![element->_namespaces isEqual: _namespaces])
 		return NO;
-	if (otherElement->children != children &&
-	    ![otherElement->children isEqual: children])
+	if (element->_children != _children &&
+	    ![element->_children isEqual: _children])
 		return NO;
 
 	return YES;
@@ -1143,12 +1161,12 @@ static Class CDATAClass = Nil;
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_HASH(hash, [name hash]);
-	OF_HASH_ADD_HASH(hash, [ns hash]);
-	OF_HASH_ADD_HASH(hash, [defaultNamespace hash]);
-	OF_HASH_ADD_HASH(hash, [attributes hash]);
-	OF_HASH_ADD_HASH(hash, [namespaces hash]);
-	OF_HASH_ADD_HASH(hash, [children hash]);
+	OF_HASH_ADD_HASH(hash, [_name hash]);
+	OF_HASH_ADD_HASH(hash, [_namespace hash]);
+	OF_HASH_ADD_HASH(hash, [_defaultNamespace hash]);
+	OF_HASH_ADD_HASH(hash, [_attributes hash]);
+	OF_HASH_ADD_HASH(hash, [_namespaces hash]);
+	OF_HASH_ADD_HASH(hash, [_children hash]);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -1158,17 +1176,5 @@ static Class CDATAClass = Nil;
 - copy
 {
 	return [[[self class] alloc] initWithElement: self];
-}
-
-- (void)dealloc
-{
-	[name release];
-	[ns release];
-	[defaultNamespace release];
-	[attributes release];
-	[namespaces release];
-	[children release];
-
-	[super dealloc];
 }
 @end

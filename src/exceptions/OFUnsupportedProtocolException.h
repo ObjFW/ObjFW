@@ -24,7 +24,7 @@
  */
 @interface OFUnsupportedProtocolException: OFException
 {
-	OFURL *URL;
+	OFURL *_URL;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -35,21 +35,21 @@
  * @brief Creates a new, autoreleased unsupported protocol exception.
  *
  * @param class_ The class of the object which caused the exception
- * @param url The URL whose protocol is unsupported
+ * @param URL The URL whose protocol is unsupported
  * @return A new, autoreleased unsupported protocol exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
-			       URL: (OFURL*)url;
+			       URL: (OFURL*)URL;
 
 /*!
  * @brief Initializes an already allocated unsupported protocol exception
  *
  * @param class_ The class of the object which caused the exception
- * @param url The URL whose protocol is unsupported
+ * @param URL The URL whose protocol is unsupported
  * @return An initialized unsupported protocol exception
  */
 - initWithClass: (Class)class_
-	    URL: (OFURL*)url;
+	    URL: (OFURL*)URL;
 
 /*!
  * @brief Returns the URL whose protocol is unsupported.

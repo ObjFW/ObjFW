@@ -25,14 +25,14 @@
 #import "common.h"
 
 @implementation OFAcceptFailedException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			    socket: (OFTCPSocket*)socket
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 				     socket: socket] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -44,43 +44,43 @@
 	abort();
 }
 
-- initWithClass: (Class)class_
-	 socket: (OFTCPSocket*)socket_
+- initWithClass: (Class)class
+	 socket: (OFTCPSocket*)socket
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
-	socket = [socket_ retain];
-	errNo = GET_SOCK_ERRNO;
+	_socket = [socket retain];
+	_errNo = GET_SOCK_ERRNO;
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[socket release];
+	[_socket release];
 
 	[super dealloc];
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
+	_description = [[OFString alloc] initWithFormat:
 	    @"Failed to accept connection in socket of type %@! " ERRFMT,
-	    inClass, ERRPARAM];
+	    _inClass, ERRPARAM];
 
-	return description;
+	return _description;
 }
 
 - (OFTCPSocket*)socket
 {
-	OF_GETTER(socket, NO)
+	OF_GETTER(_socket, NO)
 }
 
 - (int)errNo
 {
-	return errNo;
+	return _errNo;
 }
 @end

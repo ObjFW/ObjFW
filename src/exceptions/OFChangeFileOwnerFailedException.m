@@ -25,18 +25,18 @@
 
 #ifndef _WIN32
 @implementation OFChangeFileOwnerFailedException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			      path: (OFString*)path
 			     owner: (OFString*)owner
 			     group: (OFString*)group
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 				       path: path
 				      owner: owner
 				      group: group] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -48,18 +48,18 @@
 	abort();
 }
 
-- initWithClass: (Class)class_
-	   path: (OFString*)path_
-	  owner: (OFString*)owner_
-	  group: (OFString*)group_
+- initWithClass: (Class)class
+	   path: (OFString*)path
+	  owner: (OFString*)owner
+	  group: (OFString*)group
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
 	@try {
-		path  = [path_ copy];
-		owner = [owner_ copy];
-		group = [group_ copy];
-		errNo = GET_ERRNO;
+		_path  = [path copy];
+		_owner = [owner copy];
+		_group = [group copy];
+		_errNo = GET_ERRNO;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -70,52 +70,52 @@
 
 - (void)dealloc
 {
-	[path release];
-	[owner release];
-	[group release];
+	[_path release];
+	[_owner release];
+	[_group release];
 
 	[super dealloc];
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	if (group == nil)
-		description = [[OFString alloc] initWithFormat:
+	if (_group == nil)
+		_description = [[OFString alloc] initWithFormat:
 		    @"Failed to change owner for file %@ to %@ in class %@! "
-		    ERRFMT, path, owner, inClass, ERRPARAM];
-	else if (owner == nil)
-		description = [[OFString alloc] initWithFormat:
+		    ERRFMT, _path, _owner, _inClass, ERRPARAM];
+	else if (_owner == nil)
+		_description = [[OFString alloc] initWithFormat:
 		    @"Failed to change group for file %@ to %@ in class %@! "
-		    ERRFMT, path, group, inClass, ERRPARAM];
+		    ERRFMT, _path, _group, _inClass, ERRPARAM];
 	else
-		description = [[OFString alloc] initWithFormat:
+		_description = [[OFString alloc] initWithFormat:
 		    @"Failed to change owner for file %@ to %@:%@ in class %@! "
-		    ERRFMT, path, owner, group, inClass, ERRPARAM];
+		    ERRFMT, _path, _owner, _group, _inClass, ERRPARAM];
 
-	return description;
+	return _description;
 }
 
 - (int)errNo
 {
-	return errNo;
+	return _errNo;
 }
 
 - (OFString*)path
 {
-	OF_GETTER(path, NO)
+	OF_GETTER(_path, NO)
 }
 
 - (OFString*)owner
 {
-	OF_GETTER(owner, NO)
+	OF_GETTER(_owner, NO)
 }
 
 - (OFString*)group
 {
-	OF_GETTER(group, NO)
+	OF_GETTER(_group, NO)
 }
 @end
 #endif

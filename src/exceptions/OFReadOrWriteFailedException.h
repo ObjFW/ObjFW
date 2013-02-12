@@ -23,10 +23,10 @@
  */
 @interface OFReadOrWriteFailedException: OFException
 {
-	OFStream *stream;
-	size_t	 requestedLength;
+	OFStream *_stream;
+	size_t	 _requestedLength;
 @public
-	int	 errNo;
+	int	 _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -40,26 +40,26 @@
  *
  * @param class_ The class of the object which caused the exception
  * @param stream The stream which caused the read or write failed exception
- * @param length The requested length of the data that couldn't be read /
- *		 written
+ * @param requestedLength The requested length of the data that couldn't be
+ *			  read / written
  * @return A new, autoreleased read or write failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
 			    stream: (OFStream*)stream
-		   requestedLength: (size_t)length;
+		   requestedLength: (size_t)requestedLength;
 
 /*!
  * @brief Initializes an already allocated read or write failed exception.
  *
  * @param class_ The class of the object which caused the exception
  * @param stream The stream which caused the read or write failed exception
- * @param length The requested length of the data that couldn't be read /
- *		 written
+ * @param requestedLength The requested length of the data that couldn't be
+ *			  read / written
  * @return A new open file failed exception
  */
 -   initWithClass: (Class)class_
 	   stream: (OFStream*)stream
-  requestedLength: (size_t)length;
+  requestedLength: (size_t)requestedLength;
 
 /*!
  * @brief Returns the stream which caused the read or write failed exception.

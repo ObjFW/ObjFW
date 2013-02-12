@@ -25,17 +25,15 @@
  */
 @interface OFSeekFailedException: OFException
 {
-	OFSeekableStream *stream;
-	off_t		 offset;
-	int		 whence;
-	int		 errNo;
+	OFSeekableStream *_stream;
+	off_t _offset;
+	int _whence, _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, retain, nonatomic) OFSeekableStream *stream;
 @property (readonly) off_t offset;
-@property (readonly) int whence;
-@property (readonly) int errNo;
+@property (readonly) int whence, errNo;
 #endif
 
 /*!

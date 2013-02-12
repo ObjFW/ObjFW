@@ -30,7 +30,7 @@ typedef HMODULE of_plugin_handle_t;
  */
 @interface OFPlugin: OFObject
 {
-	of_plugin_handle_t handle;
+	of_plugin_handle_t _handle;
 }
 
 /*!

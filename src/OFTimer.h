@@ -32,21 +32,21 @@ typedef void (^of_timer_block_t)(OFTimer*);
  */
 @interface OFTimer: OFObject <OFComparing>
 {
-	OFDate *fireDate;
-	double interval;
-	id target, object1, object2;
-	SEL selector;
-	uint8_t arguments;
-	BOOL repeats;
+	OFDate *_fireDate;
+	double _interval;
+	id _target, _object1, _object2;
+	SEL _selector;
+	uint8_t _arguments;
+	BOOL _repeats;
 #ifdef OF_HAVE_BLOCKS
-	of_timer_block_t block;
+	of_timer_block_t _block;
 #endif
-	BOOL isValid;
+	BOOL _valid;
 #ifdef OF_HAVE_THREADS
-	OFCondition *condition;
-	BOOL done;
+	OFCondition *_condition;
+	BOOL _done;
 #endif
-	OFRunLoop *inRunLoop;
+	OFRunLoop *_inRunLoop;
 }
 
 #ifdef OF_HAVE_PROPERTIES

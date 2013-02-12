@@ -20,7 +20,7 @@
 
 @interface NSArray_OFArray: NSArray
 {
-	OFArray *array;
+	OFArray *_array;
 }
 
 - initWithOFArray: (OFArray*)array;

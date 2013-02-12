@@ -25,16 +25,16 @@
 
 #ifndef _WIN32
 @implementation OFLinkFailedException
-+ (instancetype)exceptionWithClass: (Class)class_
-			sourcePath: (OFString*)source
-		   destinationPath: (OFString*)destination
++ (instancetype)exceptionWithClass: (Class)class
+			sourcePath: (OFString*)sourcePath
+		   destinationPath: (OFString*)destinationPath
 {
-	return [[[self alloc] initWithClass: class_
-				 sourcePath: source
-			    destinationPath: destination] autorelease];
+	return [[[self alloc] initWithClass: class
+				 sourcePath: sourcePath
+			    destinationPath: destinationPath] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -46,16 +46,16 @@
 	abort();
 }
 
--   initWithClass: (Class)class_
-       sourcePath: (OFString*)source
-  destinationPath: (OFString*)destination
+-   initWithClass: (Class)class
+       sourcePath: (OFString*)sourcePath
+  destinationPath: (OFString*)destinationPath
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
 	@try {
-		sourcePath = [source copy];
-		destinationPath = [destination copy];
-		errNo = GET_ERRNO;
+		_sourcePath = [sourcePath copy];
+		_destinationPath = [destinationPath copy];
+		_errNo = GET_ERRNO;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -66,37 +66,37 @@
 
 - (void)dealloc
 {
-	[sourcePath release];
-	[destinationPath release];
+	[_sourcePath release];
+	[_destinationPath release];
 
 	[super dealloc];
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
-	    @"Failed to link file %@ to %@ in class %@! " ERRFMT, sourcePath,
-	    destinationPath, inClass, ERRPARAM];
+	_description = [[OFString alloc] initWithFormat:
+	    @"Failed to link file %@ to %@ in class %@! " ERRFMT, _sourcePath,
+	    _destinationPath, _inClass, ERRPARAM];
 
-	return description;
+	return _description;
 }
 
 - (int)errNo
 {
-	return errNo;
+	return _errNo;
 }
 
 - (OFString*)sourcePath
 {
-	OF_GETTER(sourcePath, NO)
+	OF_GETTER(_sourcePath, NO)
 }
 
 - (OFString*)destinationPath
 {
-	OF_GETTER(destinationPath, NO)
+	OF_GETTER(_destinationPath, NO)
 }
 @end
 #endif

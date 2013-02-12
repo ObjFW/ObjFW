@@ -21,24 +21,22 @@
  */
 @interface OFUnboundNamespaceException: OFException
 {
-	OFString *ns;
-	OFString *prefix;
+	OFString *_namespace, *_prefix;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy, nonatomic, getter=namespace) OFString *ns;
-@property (readonly, copy, nonatomic) OFString *prefix;
+@property (readonly, copy, nonatomic) OFString *namespace, *prefix;
 #endif
 
 /*!
  * @brief Creates a new, autoreleased unbound namespace exception.
  *
  * @param class_ The class of the object which caused the exception
- * @param ns The namespace which is unbound
+ * @param namespace The namespace which is unbound
  * @return A new, autoreleased unbound namespace exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
-			 namespace: (OFString*)ns;
+			 namespace: (OFString*)namespace;
 
 /*!
  * @brief Creates a new, autoreleased unbound namespace exception.
@@ -54,11 +52,11 @@
  * @brief Initializes an already allocated unbound namespace exception.
  *
  * @param class_ The class of the object which caused the exception
- * @param ns The namespace which is unbound
+ * @param namespace The namespace which is unbound
  * @return An initialized unbound namespace exception
  */
 - initWithClass: (Class)class_
-      namespace: (OFString*)ns;
+      namespace: (OFString*)namespace;
 
 /*!
  * @brief Initializes an already allocated unbound namespace exception.

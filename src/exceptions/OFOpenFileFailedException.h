@@ -21,14 +21,12 @@
  */
 @interface OFOpenFileFailedException: OFException
 {
-	OFString *path;
-	OFString *mode;
-	int errNo;
+	OFString *_path, *_mode;
+	int _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy, nonatomic) OFString *path;
-@property (readonly, copy, nonatomic) OFString *mode;
+@property (readonly, copy, nonatomic) OFString *path, *mode;
 @property (readonly) int errNo;
 #endif
 

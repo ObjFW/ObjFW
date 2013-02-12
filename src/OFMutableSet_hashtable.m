@@ -29,13 +29,13 @@
 
 - (void)addObject: (id)object
 {
-	[mapTable setValue: (void*)1
-		    forKey: object];
+	[_mapTable setValue: (void*)1
+		     forKey: object];
 }
 
 - (void)removeObject: (id)object
 {
-	[mapTable removeValueForKey: object];
+	[_mapTable removeValueForKey: object];
 }
 
 - (void)makeImmutable

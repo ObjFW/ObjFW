@@ -21,7 +21,7 @@
  */
 @interface OFXMLComment: OFXMLNode
 {
-	OFString *comment;
+	OFString *_comment;
 }
 
 /*!

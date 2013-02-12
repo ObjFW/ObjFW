@@ -37,7 +37,7 @@
 	self = [super init];
 
 	@try {
-		processingInstructions = [string copy];
+		_processingInstructions = [string copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -59,7 +59,7 @@
 			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
-		processingInstructions = [[element stringValue] copy];
+		_processingInstructions = [[element stringValue] copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -72,20 +72,20 @@
 
 - (BOOL)isEqual: (id)object
 {
-	OFXMLProcessingInstructions *otherProcessingInstructions;
+	OFXMLProcessingInstructions *processingInstructions;
 
 	if (![object isKindOfClass: [OFXMLProcessingInstructions class]])
 		return NO;
 
-	otherProcessingInstructions = object;
+	processingInstructions = object;
 
-	return ([otherProcessingInstructions->processingInstructions
-	    isEqual: processingInstructions]);
+	return ([processingInstructions->_processingInstructions
+	    isEqual: _processingInstructions]);
 }
 
 - (uint32_t)hash
 {
-	return [processingInstructions hash];
+	return [_processingInstructions hash];
 }
 
 - (OFString*)stringValue
@@ -95,12 +95,12 @@
 
 - (OFString*)XMLString
 {
-	return [OFString stringWithFormat: @"<?%@?>", processingInstructions];
+	return [OFString stringWithFormat: @"<?%@?>", _processingInstructions];
 }
 
 - (OFString*)XMLStringWithIndentation: (unsigned int)indentation
 {
-	return [OFString stringWithFormat: @"<?%@?>", processingInstructions];
+	return [OFString stringWithFormat: @"<?%@?>", _processingInstructions];
 }
 
 - (OFString*)XMLStringWithIndentation: (unsigned int)indentation
@@ -116,28 +116,26 @@
 
 		@try {
 			ret = [OFString stringWithFormat:
-			    @"%s<?%@?>",
-			    whitespaces,
-			    processingInstructions];
+			    @"%s<?%@?>", whitespaces, _processingInstructions];
 		} @finally {
 			[self freeMemory: whitespaces];
 		}
 	} else
 		ret = [OFString stringWithFormat: @"<?%@?>",
-						  processingInstructions];
+						  _processingInstructions];
 
 	return ret;
 }
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat: @"<?%@?>", processingInstructions];
+	return [OFString stringWithFormat: @"<?%@?>", _processingInstructions];
 }
 
 - (OFXMLElement*)XMLElementBySerializing
 {
 	return [OFXMLElement elementWithName: [self className]
 				   namespace: OF_SERIALIZATION_NS
-				 stringValue: processingInstructions];
+				 stringValue: _processingInstructions];
 }
 @end

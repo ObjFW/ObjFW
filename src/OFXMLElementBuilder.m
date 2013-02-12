@@ -41,7 +41,7 @@
 	self = [super init];
 
 	@try {
-		stack = [[OFMutableArray alloc] init];
+		_stack = [[OFMutableArray alloc] init];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -52,19 +52,19 @@
 
 - (void)dealloc
 {
-	[stack release];
+	[_stack release];
 
 	[super dealloc];
 }
 
 - (id <OFXMLElementBuilderDelegate>)delegate
 {
-	return delegate;
+	return _delegate;
 }
 
-- (void)setDelegate: (id <OFXMLElementBuilderDelegate>)delegate_
+- (void)setDelegate: (id <OFXMLElementBuilderDelegate>)delegate
 {
-	delegate = delegate_;
+	_delegate = delegate;
 }
 
 -		 (void)parser: (OFXMLParser*)parser
@@ -72,20 +72,20 @@
 {
 	OFXMLProcessingInstructions *node = [OFXMLProcessingInstructions
 	    processingInstructionsWithString: pi];
-	OFXMLElement *parent = [stack lastObject];
+	OFXMLElement *parent = [_stack lastObject];
 
 	if (parent != nil)
 		[parent addChild: node];
-	else if ([delegate respondsToSelector:
+	else if ([_delegate respondsToSelector:
 	    @selector(elementBuilder:didBuildParentlessNode:)])
-		[delegate   elementBuilder: self
-		    didBuildParentlessNode: node];
+		[_delegate elementBuilder: self
+		   didBuildParentlessNode: node];
 }
 
 -    (void)parser: (OFXMLParser*)parser
   didStartElement: (OFString*)name
 	   prefix: (OFString*)prefix
-	namespace: (OFString*)ns
+	namespace: (OFString*)namespace
        attributes: (OFArray*)attributes
 {
 	OFXMLElement *element;
@@ -93,7 +93,7 @@
 	size_t i, count;
 
 	element = [OFXMLElement elementWithName: name
-				      namespace: ns];
+				      namespace: namespace];
 
 	objects = [attributes objects];
 	count = [attributes count];
@@ -111,35 +111,35 @@
 		[element addAttribute: objects[i]];
 	}
 
-	[[stack lastObject] addChild: element];
-	[stack addObject: element];
+	[[_stack lastObject] addChild: element];
+	[_stack addObject: element];
 }
 
 -  (void)parser: (OFXMLParser*)parser
   didEndElement: (OFString*)name
 	 prefix: (OFString*)prefix
-      namespace: (OFString*)ns
+      namespace: (OFString*)namespace
 {
-	switch ([stack count]) {
+	switch ([_stack count]) {
 	case 0:
-		if ([delegate respondsToSelector: @selector(elementBuilder:
+		if ([_delegate respondsToSelector: @selector(elementBuilder:
 		    didNotExpectCloseTag:prefix:namespace:)])
-			[delegate elementBuilder: self
-			    didNotExpectCloseTag: name
-					  prefix: prefix
-				       namespace: ns];
+			[_delegate elementBuilder: self
+			     didNotExpectCloseTag: name
+					   prefix: prefix
+					namespace: namespace];
 		else
 			@throw [OFMalformedXMLException
 			    exceptionWithClass: [self class]];
 
 		return;
 	case 1:
-		[delegate elementBuilder: self
-			 didBuildElement: [stack firstObject]];
+		[_delegate elementBuilder: self
+			  didBuildElement: [_stack firstObject]];
 		break;
 	}
 
-	[stack removeLastObject];
+	[_stack removeLastObject];
 }
 
 -    (void)parser: (OFXMLParser*)parser
@@ -149,13 +149,13 @@
 	OFXMLElement *parent;
 
 	node = [OFXMLCharacters charactersWithString: characters];
-	parent = [stack lastObject];
+	parent = [_stack lastObject];
 
 	if (parent != nil)
 		[parent addChild: node];
-	else if ([delegate respondsToSelector:
+	else if ([_delegate respondsToSelector:
 	    @selector(elementBuilder:didBuildParentlessNode:)])
-		[delegate   elementBuilder: self
+		[_delegate  elementBuilder: self
 		    didBuildParentlessNode: node];
 }
 
@@ -163,37 +163,37 @@
     foundCDATA: (OFString*)CDATA
 {
 	OFXMLCDATA *node = [OFXMLCDATA CDATAWithString: CDATA];
-	OFXMLElement *parent = [stack lastObject];
+	OFXMLElement *parent = [_stack lastObject];
 
 	if (parent != nil)
 		[parent addChild: node];
-	else if ([delegate respondsToSelector:
+	else if ([_delegate respondsToSelector:
 	    @selector(elementBuilder:didBuildParentlessNode:)])
-		[delegate   elementBuilder: self
-		    didBuildParentlessNode: node];
+		[_delegate elementBuilder: self
+		   didBuildParentlessNode: node];
 }
 
 - (void)parser: (OFXMLParser*)parser
   foundComment: (OFString*)comment
 {
 	OFXMLComment *node = [OFXMLComment commentWithString: comment];
-	OFXMLElement *parent = [stack lastObject];
+	OFXMLElement *parent = [_stack lastObject];
 
 	if (parent != nil)
 		[parent addChild: node];
-	else if ([delegate respondsToSelector:
+	else if ([_delegate respondsToSelector:
 	    @selector(elementBuilder:didBuildParentlessNode:)])
-		[delegate   elementBuilder: self
-		    didBuildParentlessNode: node];
+		[_delegate elementBuilder: self
+		   didBuildParentlessNode: node];
 }
 
 -	(OFString*)parser: (OFXMLParser*)parser
   foundUnknownEntityNamed: (OFString*)entity
 {
-	if ([delegate respondsToSelector:
+	if ([_delegate respondsToSelector:
 	    @selector(elementBuilder:foundUnknownEntityNamed:)])
-		return [delegate elementBuilder: self
-			foundUnknownEntityNamed: entity];
+		return [_delegate elementBuilder: self
+			 foundUnknownEntityNamed: entity];
 
 	return nil;
 }

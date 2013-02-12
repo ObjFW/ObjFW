@@ -143,53 +143,53 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 {
 	self = [super init];
 
-	state[0] = 0x67452301;
-	state[1] = 0xEFCDAB89;
-	state[2] = 0x98BADCFE;
-	state[3] = 0x10325476;
-	state[4] = 0xC3D2E1F0;
+	_state[0] = 0x67452301;
+	_state[1] = 0xEFCDAB89;
+	_state[2] = 0x98BADCFE;
+	_state[3] = 0x10325476;
+	_state[4] = 0xC3D2E1F0;
 
 	return self;
 }
 
-- (void)updateWithBuffer: (const void*)buffer_
+- (void)updateWithBuffer: (const void*)buffer
 		  length: (size_t)length
 {
 	if (length == 0)
 		return;
 
-	if (calculated)
+	if (_calculated)
 		@throw [OFHashAlreadyCalculatedException
 		    exceptionWithClass: [self class]
 				  hash: self];
 
-	sha1_update(state, &count, buffer, buffer_, length);
+	sha1_update(_state, &_count, _buffer, buffer, length);
 }
 
 - (uint8_t*)digest
 {
 	size_t i;
-	char   finalcount[8];
+	char finalcount[8];
 
-	if (calculated)
-		return digest;
+	if (_calculated)
+		return _digest;
 
 	for (i = 0; i < 8; i++)
 		/* Endian independent */
-		finalcount[i] = (char)((count >> ((7 - (i & 7)) * 8)) & 255);
-	sha1_update(state, &count, buffer, "\200", 1);
+		finalcount[i] = (char)((_count >> ((7 - (i & 7)) * 8)) & 255);
+	sha1_update(_state, &_count, _buffer, "\200", 1);
 
-	while ((count & 504) != 448)
-		sha1_update(state, &count, buffer, "\0", 1);
+	while ((_count & 504) != 448)
+		sha1_update(_state, &_count, _buffer, "\0", 1);
 	/* Should cause a sha1_transform() */
-	sha1_update(state, &count, buffer, finalcount, 8);
+	sha1_update(_state, &_count, _buffer, finalcount, 8);
 
 	for (i = 0; i < OF_SHA1_DIGEST_SIZE; i++)
-		digest[i] = (char)((state[i >> 2] >>
+		_digest[i] = (char)((_state[i >> 2] >>
 		    ((3 - (i & 3)) * 8)) & 255);
 
-	calculated = YES;
+	_calculated = YES;
 
-	return digest;
+	return _digest;
 }
 @end

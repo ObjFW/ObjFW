@@ -25,18 +25,18 @@
 #import "common.h"
 
 @implementation OFSeekFailedException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			    stream: (OFSeekableStream*)stream
 			    offset: (off_t)offset
 			    whence: (int)whence
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 				     stream: stream
 				     offset: offset
 				     whence: whence] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -48,56 +48,56 @@
 	abort();
 }
 
-- initWithClass: (Class)class_
-	 stream: (OFSeekableStream*)stream_
-	 offset: (off_t)offset_
-	 whence: (int)whence_
+- initWithClass: (Class)class
+	 stream: (OFSeekableStream*)stream
+	 offset: (off_t)offset
+	 whence: (int)whence
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
-	stream = [stream_ retain];
-	offset = offset_;
-	whence = whence_;
-	errNo = GET_ERRNO;
+	_stream = [stream retain];
+	_offset = offset;
+	_whence = whence;
+	_errNo = GET_ERRNO;
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[stream	release];
+	[_stream release];
 
 	[super dealloc];
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
-	    @"Seeking failed in class %@! " ERRFMT, inClass, ERRPARAM];
+	_description = [[OFString alloc] initWithFormat:
+	    @"Seeking failed in class %@! " ERRFMT, _inClass, ERRPARAM];
 
-	return description;
+	return _description;
 }
 
 - (OFSeekableStream*)stream
 {
-	OF_GETTER(stream, NO)
+	OF_GETTER(_stream, NO)
 }
 
 - (off_t)offset
 {
-	return offset;
+	return _offset;
 }
 
 - (int)whence
 {
-	return whence;
+	return _whence;
 }
 
 - (int)errNo
 {
-	return errNo;
+	return _errNo;
 }
 @end

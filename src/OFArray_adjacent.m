@@ -38,7 +38,7 @@
 	self = [super init];
 
 	@try {
-		array = [[OFDataArray alloc] initWithItemSize: sizeof(id)];
+		_array = [[OFDataArray alloc] initWithItemSize: sizeof(id)];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -56,7 +56,7 @@
 			@throw [OFInvalidArgumentException
 			    exceptionWithClass: [self class]];
 
-		[array addItem: &object];
+		[_array addItem: &object];
 		[object retain];
 	} @catch (id e) {
 		[self release];
@@ -74,11 +74,11 @@
 	@try {
 		id object;
 
-		[array addItem: &firstObject];
+		[_array addItem: &firstObject];
 		[firstObject retain];
 
 		while ((object = va_arg(arguments, id)) != nil) {
-			[array addItem: &object];
+			[_array addItem: &object];
 			[object retain];
 		}
 	} @catch (id e) {
@@ -89,19 +89,19 @@
 	return self;
 }
 
-- initWithArray: (OFArray*)array_
+- initWithArray: (OFArray*)array
 {
 	id *objects;
 	size_t i, count;
 
 	self = [self init];
 
-	if (array_ == nil)
+	if (array == nil)
 		return self;
 
 	@try {
-		objects = [array_ objects];
-		count = [array_ count];
+		objects = [array objects];
+		count = [array count];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -111,15 +111,15 @@
 		for (i = 0; i < count; i++)
 			[objects[i] retain];
 
-		[array addItems: objects
-			  count: count];
+		[_array addItems: objects
+			   count: count];
 	} @catch (id e) {
 		for (i = 0; i < count; i++)
 			[objects[i] release];
 
 		/* Prevent double-release of objects */
-		[array release];
-		array = nil;
+		[_array release];
+		_array = nil;
 
 		[self release];
 		@throw e;
@@ -148,8 +148,8 @@
 			@throw [OFInvalidArgumentException
 			    exceptionWithClass: [self class]];
 
-		[array addItems: objects
-			  count: count];
+		[_array addItems: objects
+			   count: count];
 	} @catch (id e) {
 		size_t i;
 
@@ -187,7 +187,7 @@
 			id object;
 
 			object = [child objectByDeserializing];
-			[array addItem: &object];
+			[_array addItem: &object];
 			[object retain];
 
 			objc_autoreleasePoolPop(pool2);
@@ -204,29 +204,29 @@
 
 - (size_t)count
 {
-	return [array count];
+	return [_array count];
 }
 
 - (id*)objects
 {
-	return [array items];
+	return [_array items];
 }
 
 - (id)objectAtIndex: (size_t)index
 {
-	return *((id*)[array itemAtIndex: index]);
+	return *((id*)[_array itemAtIndex: index]);
 }
 
 - (id)objectAtIndexedSubscript: (size_t)index
 {
-	return *((id*)[array itemAtIndex: index]);
+	return *((id*)[_array itemAtIndex: index]);
 }
 
 - (void)getObjects: (id*)buffer
 	   inRange: (of_range_t)range
 {
-	id *objects = [array items];
-	size_t i, count = [array count];
+	id *objects = [_array items];
+	size_t i, count = [_array count];
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > count)
@@ -244,8 +244,8 @@
 	if (object == nil)
 		return OF_NOT_FOUND;
 
-	objects = [array items];
-	count = [array count];
+	objects = [_array items];
+	count = [_array count];
 
 	for (i = 0; i < count; i++)
 		if ([objects[i] isEqual: object])
@@ -262,8 +262,8 @@
 	if (object == nil)
 		return OF_NOT_FOUND;
 
-	objects = [array items];
-	count = [array count];
+	objects = [_array items];
+	count = [_array count];
 
 	for (i = 0; i < count; i++)
 		if (objects[i] == object)
@@ -276,13 +276,13 @@
 - (OFArray*)objectsInRange: (of_range_t)range
 {
 	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > [array count])
+	    range.location + range.length > [_array count])
 		@throw [OFOutOfRangeException
 		    exceptionWithClass: [self class]];
 
 	if ([self isKindOfClass: [OFMutableArray class]])
 		return [OFArray
-		    arrayWithObjects: (id*)[array items] + range.location
+		    arrayWithObjects: (id*)[_array items] + range.location
 			       count: range.length];
 
 	return [OFArray_adjacentSubarray arrayWithArray: self
@@ -302,12 +302,12 @@
 
 	otherArray = object;
 
-	count = [array count];
+	count = [_array count];
 
 	if (count != [otherArray count])
 		return NO;
 
-	objects = [array items];
+	objects = [_array items];
 	otherObjects = [otherArray objects];
 
 	for (i = 0; i < count; i++)
@@ -319,8 +319,8 @@
 
 - (uint32_t)hash
 {
-	id *objects = [array items];
-	size_t i, count = [array count];
+	id *objects = [_array items];
+	size_t i, count = [_array count];
 	uint32_t hash;
 
 	OF_HASH_INIT(hash);
@@ -336,8 +336,8 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
-	id *objects = [array items];
-	size_t i, count = [array count];
+	id *objects = [_array items];
+	size_t i, count = [_array count];
 	BOOL stop = NO;
 
 	for (i = 0; i < count && !stop; i++)
@@ -347,13 +347,13 @@
 
 - (void)dealloc
 {
-	id *objects = [array items];
-	size_t i, count = [array count];
+	id *objects = [_array items];
+	size_t i, count = [_array count];
 
 	for (i = 0; i < count; i++)
 		[objects[i] release];
 
-	[array release];
+	[_array release];
 
 	[super dealloc];
 }

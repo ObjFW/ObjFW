@@ -25,16 +25,16 @@
 #import "common.h"
 
 @implementation OFListenFailedException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			    socket: (OFTCPSocket*)socket
-			   backLog: (int)backlog
+			   backLog: (int)backLog
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 				     socket: socket
-				    backLog: backlog] autorelease];
+				    backLog: backLog] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -46,50 +46,50 @@
 	abort();
 }
 
-- initWithClass: (Class)class_
-	 socket: (OFTCPSocket*)socket_
-	backLog: (int)backlog
+- initWithClass: (Class)class
+	 socket: (OFTCPSocket*)socket
+	backLog: (int)backLog
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
-	socket = [socket_ retain];
-	backLog = backlog;
-	errNo = GET_SOCK_ERRNO;
+	_socket  = [socket retain];
+	_backLog = backLog;
+	_errNo   = GET_SOCK_ERRNO;
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[socket release];
+	[_socket release];
 
 	[super dealloc];
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
+	_description = [[OFString alloc] initWithFormat:
 	    @"Failed to listen in socket of type %@ with a back log of %d! "
-	    ERRFMT, inClass, backLog, ERRPARAM];
+	    ERRFMT, _inClass, _backLog, ERRPARAM];
 
-	return description;
+	return _description;
 }
 
 - (OFTCPSocket*)socket
 {
-	OF_GETTER(socket, NO)
+	OF_GETTER(_socket, NO)
 }
 
 - (int)backLog
 {
-	return backLog;
+	return _backLog;
 }
 
 - (int)errNo
 {
-	return errNo;
+	return _errNo;
 }
 @end

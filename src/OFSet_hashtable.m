@@ -72,7 +72,7 @@ static of_map_table_functions_t valueFunctions = {};
 	self = [super init];
 
 	@try {
-		mapTable = [[OFMapTable alloc]
+		_mapTable = [[OFMapTable alloc]
 		    initWithKeyFunctions: keyFunctions
 			  valueFunctions: valueFunctions
 				capacity: capacity];
@@ -107,8 +107,8 @@ static of_map_table_functions_t valueFunctions = {};
 
 		enumerator = [set objectEnumerator];
 		while ((object = [enumerator nextObject]) != nil)
-			[mapTable setValue: (void*)1
-				    forKey: object];
+			[_mapTable setValue: (void*)1
+				     forKey: object];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -142,8 +142,8 @@ static of_map_table_functions_t valueFunctions = {};
 
 		enumerator = [array objectEnumerator];
 		while ((object = [enumerator nextObject]) != nil)
-			[mapTable setValue: (void*)1
-				    forKey: object];
+			[_mapTable setValue: (void*)1
+				     forKey: object];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -163,8 +163,8 @@ static of_map_table_functions_t valueFunctions = {};
 		size_t i;
 
 		for (i = 0; i < count; i++)
-			[mapTable setValue: (void*)1
-				    forKey: objects[i]];
+			[_mapTable setValue: (void*)1
+				     forKey: objects[i]];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -187,17 +187,17 @@ static of_map_table_functions_t valueFunctions = {};
 
 		for (count = 1; va_arg(argumentsCopy, id) != nil; count++);
 
-		mapTable = [[OFMapTable alloc]
+		_mapTable = [[OFMapTable alloc]
 		    initWithKeyFunctions: keyFunctions
 			  valueFunctions: valueFunctions
 				capacity: count];
 
-		[mapTable setValue: (void*)1
-			    forKey: firstObject];
+		[_mapTable setValue: (void*)1
+			     forKey: firstObject];
 
 		while ((object = va_arg(arguments, id)) != nil)
-			[mapTable setValue: (void*)1
-				    forKey: object];
+			[_mapTable setValue: (void*)1
+				     forKey: object];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -227,8 +227,8 @@ static of_map_table_functions_t valueFunctions = {};
 		while ((child = [enumerator nextObject]) != nil) {
 			void *pool2  = objc_autoreleasePoolPush();
 
-			[mapTable setValue: (void*)1
-				    forKey: [child objectByDeserializing]];
+			[_mapTable setValue: (void*)1
+				     forKey: [child objectByDeserializing]];
 
 			objc_autoreleasePoolPop(pool2);
 		}
@@ -244,14 +244,14 @@ static of_map_table_functions_t valueFunctions = {};
 
 - (void)dealloc
 {
-	[mapTable release];
+	[_mapTable release];
 
 	[super dealloc];
 }
 
 - (size_t)count
 {
-	return [mapTable count];
+	return [_mapTable count];
 }
 
 - (BOOL)containsObject: (id)object
@@ -259,27 +259,27 @@ static of_map_table_functions_t valueFunctions = {};
 	if (object == nil)
 		return NO;
 
-	return ([mapTable valueForKey: object] != nil);
+	return ([_mapTable valueForKey: object] != nil);
 }
 
 - (BOOL)isEqual: (id)object
 {
-	OFSet_hashtable *otherSet;
+	OFSet_hashtable *set;
 
 	if (![object isKindOfClass: [OFSet_hashtable class]] &&
 	    ![object isKindOfClass: [OFMutableSet_hashtable class]] &&
 	    ![object isKindOfClass: [OFCountedSet_hashtable class]])
 		return [super isEqual: object];
 
-	otherSet = object;
+	set = object;
 
-	return [otherSet->mapTable isEqual: mapTable];
+	return [set->_mapTable isEqual: _mapTable];
 }
 
 - (OFEnumerator*)objectEnumerator
 {
 	return [[[OFMapTableEnumeratorWrapper alloc]
-	    initWithEnumerator: [mapTable keyEnumerator]
+	    initWithEnumerator: [_mapTable keyEnumerator]
 			object: self] autorelease];
 }
 
@@ -287,16 +287,16 @@ static of_map_table_functions_t valueFunctions = {};
 			   objects: (id*)objects
 			     count: (int)count
 {
-	return [mapTable countByEnumeratingWithState: state
-					     objects: objects
-					       count: count];
+	return [_mapTable countByEnumeratingWithState: state
+					      objects: objects
+						count: count];
 }
 
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_set_enumeration_block_t)block
 {
 	@try {
-		[mapTable enumerateKeysAndValuesUsingBlock:
+		[_mapTable enumerateKeysAndValuesUsingBlock:
 		    ^ (void *key, void *value, BOOL *stop) {
 			block(key, stop);
 		}];

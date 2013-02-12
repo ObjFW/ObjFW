@@ -23,7 +23,7 @@
  */
 @interface OFHashAlreadyCalculatedException: OFException
 {
-	OFHash *hashObject;
+	OFHash *_hashObject;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -34,21 +34,21 @@
  * @brief Creates a new, autoreleased hash already calculated exception.
  *
  * @param class_ The class of the object which caused the exception
- * @param hash The hash which has already been calculated
+ * @param hashObject The hash which has already been calculated
  * @return A new, autoreleased hash already calculated exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
-			      hash: (OFHash*)hash;
+			      hash: (OFHash*)hashObject;
 
 /*!
  * @brief Initializes an already allocated hash already calculated exception.
  *
  * @param class_ The class of the object which caused the exception
- * @param hash The hash which has already been calculated
+ * @param hashObject The hash which has already been calculated
  * @return An initialized hash already calculated exception
  */
 - initWithClass: (Class)class_
-	   hash: (OFHash*)hash;
+	   hash: (OFHash*)hashObject;
 
 /*!
  * @brief Returns the hash which has already been calculated.

@@ -18,8 +18,8 @@
 
 @interface OFArray_subarray: OFArray
 {
-	OFArray *array;
-	of_range_t range;
+	OFArray *_array;
+	of_range_t _range;
 }
 
 + (instancetype)arrayWithArray: (OFArray*)array

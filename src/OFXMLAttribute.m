@@ -28,11 +28,11 @@
 
 @implementation OFXMLAttribute
 + (instancetype)attributeWithName: (OFString*)name
-			namespace: (OFString*)ns
+			namespace: (OFString*)namespace
 		      stringValue: (OFString*)stringValue
 {
 	return [[[self alloc] initWithName: name
-				 namespace: ns
+				 namespace: namespace
 			       stringValue: stringValue] autorelease];
 }
 
@@ -43,24 +43,24 @@
 			       stringValue: stringValue] autorelease];
 }
 
-- initWithName: (OFString*)name_
-   stringValue: (OFString*)stringValue_
+- initWithName: (OFString*)name
+   stringValue: (OFString*)stringValue
 {
-	return [self initWithName: name_
+	return [self initWithName: name
 			namespace: nil
-		      stringValue: stringValue_];
+		      stringValue: stringValue];
 }
 
-- initWithName: (OFString*)name_
-     namespace: (OFString*)ns_
-   stringValue: (OFString*)stringValue_
+- initWithName: (OFString*)name
+     namespace: (OFString*)namespace
+   stringValue: (OFString*)stringValue
 {
 	self = [super init];
 
 	@try {
-		name = [name_ copy];
-		ns = [ns_ copy];
-		stringValue = [stringValue_ copy];
+		_name = [name copy];
+		_namespace = [namespace copy];
+		_stringValue = [stringValue copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -82,11 +82,11 @@
 			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
-		name = [[[element attributeForName: @"name"] stringValue]
-		    copy];
-		ns = [[[element attributeForName: @"namespace"] stringValue]
-		    copy];
-		stringValue = [[[element attributeForName: @"stringValue"]
+		_name = [[[element attributeForName: @"name"]
+		    stringValue] copy];
+		_namespace = [[[element attributeForName: @"namespace"]
+		    stringValue] copy];
+		_stringValue = [[[element attributeForName: @"stringValue"]
 		    stringValue] copy];
 
 		objc_autoreleasePoolPop(pool);
@@ -100,42 +100,43 @@
 
 - (void)dealloc
 {
-	[name release];
-	[ns release];
-	[stringValue release];
+	[_name release];
+	[_namespace release];
+	[_stringValue release];
 
 	[super dealloc];
 }
 
 - (OFString*)name
 {
-	OF_GETTER(name, YES)
+	OF_GETTER(_name, YES)
 }
 
 - (OFString*)namespace
 {
-	OF_GETTER(ns, YES)
+	OF_GETTER(_namespace, YES)
 }
 
 - (OFString*)stringValue
 {
-	OF_GETTER(stringValue, YES)
+	OF_GETTER(_stringValue, YES)
 }
 
 - (BOOL)isEqual: (id)object
 {
-	OFXMLAttribute *otherAttribute;
+	OFXMLAttribute *attribute;
 
 	if (![object isKindOfClass: [OFXMLAttribute class]])
 		return NO;
 
-	otherAttribute = object;
+	attribute = object;
 
-	if (![otherAttribute->name isEqual: name])
+	if (![attribute->_name isEqual: _name])
 		return NO;
-	if (otherAttribute->ns != ns && ![otherAttribute->ns isEqual: ns])
+	if (attribute->_namespace != _namespace &&
+	    ![attribute->_namespace isEqual: _namespace])
 		return NO;
-	if (![otherAttribute->stringValue isEqual: stringValue])
+	if (![attribute->_stringValue isEqual: _stringValue])
 		return NO;
 
 	return YES;
@@ -147,9 +148,9 @@
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_HASH(hash, [name hash]);
-	OF_HASH_ADD_HASH(hash, [ns hash]);
-	OF_HASH_ADD_HASH(hash, [stringValue hash]);
+	OF_HASH_ADD_HASH(hash, [_name hash]);
+	OF_HASH_ADD_HASH(hash, [_namespace hash]);
+	OF_HASH_ADD_HASH(hash, [_stringValue hash]);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -165,14 +166,14 @@
 				      namespace: OF_SERIALIZATION_NS];
 
 	[element addAttributeWithName: @"name"
-			  stringValue: name];
+			  stringValue: _name];
 
-	if (ns != nil)
+	if (_namespace != nil)
 		[element addAttributeWithName: @"namespace"
-				  stringValue: ns];
+				  stringValue: _namespace];
 
 	[element addAttributeWithName: @"stringValue"
-			  stringValue: stringValue];
+			  stringValue: _stringValue];
 
 	[element retain];
 
@@ -185,6 +186,6 @@
 {
 	return [OFString stringWithFormat: @"<OFXMLAttribute, name=%@, "
 					   @"namespace=%@, stringValue=%@>",
-					   name, ns, stringValue];
+					   _name, _namespace, _stringValue];
 }
 @end

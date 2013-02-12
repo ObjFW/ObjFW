@@ -67,7 +67,7 @@
 
 - (BOOL)lowlevelIsAtEndOfStream
 {
-	return atEndOfStream;
+	return _atEndOfStream;
 }
 
 - (size_t)lowlevelReadIntoBuffer: (void*)buffer
@@ -75,32 +75,32 @@
 {
 	ssize_t ret;
 
-	if (sock == INVALID_SOCKET)
+	if (_socket == INVALID_SOCKET)
 		@throw [OFNotConnectedException exceptionWithClass: [self class]
 							    socket: self];
 
-	if (atEndOfStream) {
+	if (_atEndOfStream) {
 		OFReadFailedException *e;
 
 		e = [OFReadFailedException exceptionWithClass: [self class]
 						       stream: self
 					      requestedLength: length];
 #ifndef _WIN32
-		e->errNo = ENOTCONN;
+		e->_errNo = ENOTCONN;
 #else
-		e->errNo = WSAENOTCONN;
+		e->_errNo = WSAENOTCONN;
 #endif
 
 		@throw e;
 	}
 
-	if ((ret = recv(sock, buffer, length, 0)) < 0)
+	if ((ret = recv(_socket, buffer, length, 0)) < 0)
 		@throw [OFReadFailedException exceptionWithClass: [self class]
 							  stream: self
 						 requestedLength: length];
 
 	if (ret == 0)
-		atEndOfStream = YES;
+		_atEndOfStream = YES;
 
 	return ret;
 }
@@ -108,26 +108,26 @@
 - (void)lowlevelWriteBuffer: (const void*)buffer
 		     length: (size_t)length
 {
-	if (sock == INVALID_SOCKET)
+	if (_socket == INVALID_SOCKET)
 		@throw [OFNotConnectedException exceptionWithClass: [self class]
 							    socket: self];
 
-	if (atEndOfStream) {
+	if (_atEndOfStream) {
 		OFWriteFailedException *e;
 
 		e = [OFWriteFailedException exceptionWithClass: [self class]
 							stream: self
 					       requestedLength: length];
 #ifndef _WIN32
-		e->errNo = ENOTCONN;
+		e->_errNo = ENOTCONN;
 #else
-		e->errNo = WSAENOTCONN;
+		e->_errNo = WSAENOTCONN;
 #endif
 
 		@throw e;
 	}
 
-	if (send(sock, buffer, length, 0) < length)
+	if (send(_socket, buffer, length, 0) < length)
 		@throw [OFWriteFailedException exceptionWithClass: [self class]
 							   stream: self
 						  requestedLength: length];
@@ -137,9 +137,9 @@
 - (void)setBlocking: (BOOL)enable
 {
 	u_long v = enable;
-	blocking = enable;
+	_blocking = enable;
 
-	if (ioctlsocket(sock, FIONBIO, &v) == SOCKET_ERROR)
+	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException
 		    exceptionWithClass: [self class]
 				stream: self];
@@ -148,29 +148,29 @@
 
 - (int)fileDescriptorForReading
 {
-	return sock;
+	return _socket;
 }
 
 - (int)fileDescriptorForWriting
 {
-	return sock;
+	return _socket;
 }
 
 - (void)close
 {
-	if (sock == INVALID_SOCKET)
+	if (_socket == INVALID_SOCKET)
 		@throw [OFNotConnectedException exceptionWithClass: [self class]
 							    socket: self];
 
-	close(sock);
+	close(_socket);
+	_socket = INVALID_SOCKET;
 
-	sock = INVALID_SOCKET;
-	atEndOfStream = NO;
+	_atEndOfStream = NO;
 }
 
 - (void)dealloc
 {
-	if (sock != INVALID_SOCKET)
+	if (_socket != INVALID_SOCKET)
 		[self close];
 
 	[super dealloc];

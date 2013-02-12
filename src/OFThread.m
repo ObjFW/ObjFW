@@ -74,15 +74,15 @@ call_main(id object)
 	 * value on join.
 	 */
 #ifdef OF_HAVE_BLOCKS
-	if (thread->block != NULL)
-		thread->returnValue = [thread->block() retain];
+	if (thread->_block != NULL)
+		thread->_returnValue = [thread->_block() retain];
 	else
 #endif
-		thread->returnValue = [[thread main] retain];
+		thread->_returnValue = [[thread main] retain];
 
 	[thread handleTermination];
 
-	thread->running = OF_THREAD_WAITING_FOR_JOIN;
+	thread->_running = OF_THREAD_WAITING_FOR_JOIN;
 
 	[OFTLSKey OF_callAllDestructors];
 #ifdef OF_OBJFW_RUNTIME
@@ -103,7 +103,7 @@ static void
 set_thread_name(OFThread *thread)
 {
 #ifdef __HAIKU__
-	OFString *name = thread->name;
+	OFString *name = thread->_name;
 
 	if (name == nil)
 		name = [thread className];
@@ -114,7 +114,7 @@ set_thread_name(OFThread *thread)
 
 @implementation OFThread
 #if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
-@synthesize block;
+@synthesize block = _block;
 #endif
 
 + (void)initialize
@@ -142,9 +142,9 @@ set_thread_name(OFThread *thread)
 + (void)setObject: (id)object
 	forTLSKey: (OFTLSKey*)key
 {
-	id oldObject = of_tlskey_get(key->key);
+	id oldObject = of_tlskey_get(key->_key);
 
-	if (!of_tlskey_set(key->key, [object retain]))
+	if (!of_tlskey_set(key->_key, [object retain]))
 		@throw [OFInvalidArgumentException exceptionWithClass: self
 							     selector: _cmd];
 
@@ -153,7 +153,7 @@ set_thread_name(OFThread *thread)
 
 + (id)objectForTLSKey: (OFTLSKey*)key
 {
-	return [[(id)of_tlskey_get(key->key) retain] autorelease];
+	return [[(id)of_tlskey_get(key->_key) retain] autorelease];
 }
 
 + (OFThread*)currentThread
@@ -222,11 +222,11 @@ set_thread_name(OFThread *thread)
 	OFThread *thread = of_tlskey_get(threadSelfKey);
 
 	if (thread != nil) {
-		thread->returnValue = [object retain];
+		thread->_returnValue = [object retain];
 
 		[thread handleTermination];
 
-		thread->running = OF_THREAD_WAITING_FOR_JOIN;
+		thread->_running = OF_THREAD_WAITING_FOR_JOIN;
 	}
 
 	[OFTLSKey OF_callAllDestructors];
@@ -247,7 +247,7 @@ set_thread_name(OFThread *thread)
 + (void)OF_createMainThread
 {
 	mainThread = [[OFThread alloc] init];
-	mainThread->thread = of_thread_current();
+	mainThread->_thread = of_thread_current();
 
 	if (!of_tlskey_set(threadSelfKey, mainThread))
 		@throw [OFInitializationFailedException
@@ -255,12 +255,12 @@ set_thread_name(OFThread *thread)
 }
 
 #ifdef OF_HAVE_BLOCKS
-- initWithBlock: (of_thread_block_t)block_
+- initWithBlock: (of_thread_block_t)block
 {
 	self = [super init];
 
 	@try {
-		block = [block_ copy];
+		_block = [block copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -279,28 +279,28 @@ set_thread_name(OFThread *thread)
 
 - (void)handleTermination
 {
-	OFRunLoop *oldRunLoop = runLoop;
-	runLoop = nil;
+	OFRunLoop *oldRunLoop = _runLoop;
+	_runLoop = nil;
 	[oldRunLoop release];
 }
 
 - (void)start
 {
-	if (running == OF_THREAD_RUNNING)
+	if (_running == OF_THREAD_RUNNING)
 		@throw [OFThreadStillRunningException
 		    exceptionWithClass: [self class]
 				thread: self];
 
-	if (running == OF_THREAD_WAITING_FOR_JOIN) {
-		of_thread_detach(thread);
-		[returnValue release];
+	if (_running == OF_THREAD_WAITING_FOR_JOIN) {
+		of_thread_detach(_thread);
+		[_returnValue release];
 	}
 
 	[self retain];
 
-	running = OF_THREAD_RUNNING;
+	_running = OF_THREAD_RUNNING;
 
-	if (!of_thread_new(&thread, call_main, self)) {
+	if (!of_thread_new(&_thread, call_main, self)) {
 		[self release];
 		@throw [OFThreadStartFailedException
 		    exceptionWithClass: [self class]
@@ -312,14 +312,14 @@ set_thread_name(OFThread *thread)
 
 - (id)join
 {
-	if (running == OF_THREAD_NOT_RUNNING || !of_thread_join(thread))
+	if (_running == OF_THREAD_NOT_RUNNING || !of_thread_join(_thread))
 		@throw [OFThreadJoinFailedException
 		    exceptionWithClass: [self class]
 				thread: self];
 
-	running = OF_THREAD_NOT_RUNNING;
+	_running = OF_THREAD_NOT_RUNNING;
 
-	return returnValue;
+	return _returnValue;
 }
 
 - copy
@@ -330,38 +330,38 @@ set_thread_name(OFThread *thread)
 - (OFRunLoop*)runLoop
 {
 #ifdef OF_HAVE_ATOMIC_OPS
-	if (runLoop == nil) {
+	if (_runLoop == nil) {
 		OFRunLoop *tmp = [[OFRunLoop alloc] init];
 
-		if (!of_atomic_cmpswap_ptr((void**)&runLoop, nil, tmp))
+		if (!of_atomic_cmpswap_ptr((void**)&_runLoop, nil, tmp))
 			[tmp release];
 	}
 #else
 	@synchronized (self) {
-		if (runLoop == nil)
-			runLoop = [[OFRunLoop alloc] init];
+		if (_runLoop == nil)
+			_runLoop = [[OFRunLoop alloc] init];
 	}
 #endif
 
-	return [[runLoop retain] autorelease];
+	return [[_runLoop retain] autorelease];
 }
 
 - (OFString*)name
 {
-	OF_GETTER(name, YES)
+	OF_GETTER(_name, YES)
 }
 
-- (void)setName: (OFString*)name_
+- (void)setName: (OFString*)name
 {
-	OF_SETTER(name, name_, YES, 1)
+	OF_SETTER(_name, name, YES, 1)
 
-	if (running == OF_THREAD_RUNNING)
+	if (_running == OF_THREAD_RUNNING)
 		set_thread_name(self);
 }
 
 - (void)dealloc
 {
-	if (running == OF_THREAD_RUNNING)
+	if (_running == OF_THREAD_RUNNING)
 		@throw [OFThreadStillRunningException
 		    exceptionWithClass: [self class]
 				thread: self];
@@ -370,11 +370,11 @@ set_thread_name(OFThread *thread)
 	 * We should not be running anymore, but call detach in order to free
 	 * the resources.
 	 */
-	if (running == OF_THREAD_WAITING_FOR_JOIN)
-		of_thread_detach(thread);
+	if (_running == OF_THREAD_WAITING_FOR_JOIN)
+		of_thread_detach(_thread);
 
-	[returnValue release];
-	[runLoop release];
+	[_returnValue release];
+	[_runLoop release];
 
 	[super dealloc];
 }

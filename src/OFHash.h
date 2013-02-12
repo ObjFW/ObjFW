@@ -21,7 +21,7 @@
  */
 @interface OFHash: OFObject
 {
-	BOOL calculated;
+	BOOL _calculated;
 }
 
 #ifdef OF_HAVE_PROPERTIES

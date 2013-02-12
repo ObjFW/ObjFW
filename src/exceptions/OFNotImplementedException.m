@@ -24,14 +24,14 @@
 #import "common.h"
 
 @implementation OFNotImplementedException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			  selector: (SEL)selector
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 				   selector: selector] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -43,30 +43,30 @@
 	abort();
 }
 
-- initWithClass: (Class)class_
-       selector: (SEL)selector_
+- initWithClass: (Class)class
+       selector: (SEL)selector
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
-	selector = selector_;
+	_selector = selector;
 
 	return self;
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
+	_description = [[OFString alloc] initWithFormat:
 	    @"The selector %s is not understood by class %@ or not (fully) "
-	    @"implemented!", sel_getName(selector), inClass];
+	    @"implemented!", sel_getName(_selector), _inClass];
 
-	return description;
+	return _description;
 }
 
 - (SEL)selector
 {
-	return selector;
+	return _selector;
 }
 @end

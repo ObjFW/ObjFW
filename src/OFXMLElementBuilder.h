@@ -72,12 +72,12 @@
  * @param builder The builder which did not expect the close tag
  * @param name The name of the close tag
  * @param prefix The prefix of the close tag
- * @param ns The namespace of the close tag
+ * @param namespace The namespace of the close tag
  */
 - (void)elementBuilder: (OFXMLElementBuilder*)builder
   didNotExpectCloseTag: (OFString*)name
 		prefix: (OFString*)prefix
-	     namespace: (OFString*)ns;
+	     namespace: (OFString*)namespace;
 
 /*!
  * @brief This callback is called when the XML parser for the element builder
@@ -101,8 +101,8 @@
  */
 @interface OFXMLElementBuilder: OFObject <OFXMLParserDelegate>
 {
-	OFMutableArray *stack;
-	id <OFXMLElementBuilderDelegate> delegate;
+	OFMutableArray *_stack;
+	id <OFXMLElementBuilderDelegate> _delegate;
 }
 
 #ifdef OF_HAVE_PROPERTIES

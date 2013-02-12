@@ -67,15 +67,15 @@
 		UTF8String = UTF8String2;
 
 		if (!strncmp(UTF8String, "file://", 7)) {
-			scheme = @"file";
-			path = [[OFString alloc]
+			_scheme = @"file";
+			_path = [[OFString alloc]
 			    initWithUTF8String: UTF8String + 7];
 			return self;
 		} else if (!strncmp(UTF8String, "http://", 7)) {
-			scheme = @"http";
+			_scheme = @"http";
 			UTF8String += 7;
 		} else if (!strncmp(UTF8String, "https://", 8)) {
-			scheme = @"https";
+			_scheme = @"https";
 			UTF8String += 8;
 		} else
 			@throw [OFInvalidFormatException
@@ -96,12 +96,12 @@
 				*tmp3 = '\0';
 				tmp3++;
 
-				user = [[OFString alloc]
+				_user = [[OFString alloc]
 				    initWithUTF8String: UTF8String];
-				password = [[OFString alloc]
+				_password = [[OFString alloc]
 				    initWithUTF8String: tmp3];
 			} else
-				user = [[OFString alloc]
+				_user = [[OFString alloc]
 				    initWithUTF8String: UTF8String];
 
 			UTF8String = tmp2;
@@ -114,7 +114,7 @@
 			*tmp2 = '\0';
 			tmp2++;
 
-			host = [[OFString alloc]
+			_host = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
 
 			pool = objc_autoreleasePoolPush();
@@ -124,20 +124,20 @@
 				@throw [OFInvalidFormatException
 				    exceptionWithClass: [self class]];
 
-			port = [portString decimalValue];
+			_port = [portString decimalValue];
 
-			if (port == 0)
-				port = 80;
+			if (_port == 0)
+				_port = 80;
 
 			objc_autoreleasePoolPop(pool);
 		} else {
-			host = [[OFString alloc]
+			_host = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
 
-			if ([scheme isEqual: @"http"])
-				port = 80;
-			else if ([scheme isEqual: @"https"])
-				port = 443;
+			if ([_scheme isEqual: @"http"])
+				_port = 80;
+			else if ([_scheme isEqual: @"https"])
+				_port = 443;
 			else
 				assert(0);
 		}
@@ -146,28 +146,28 @@
 			if ((tmp = strchr(UTF8String, '#')) != NULL) {
 				*tmp = '\0';
 
-				fragment = [[OFString alloc]
+				_fragment = [[OFString alloc]
 				    initWithUTF8String: tmp + 1];
 			}
 
 			if ((tmp = strchr(UTF8String, '?')) != NULL) {
 				*tmp = '\0';
 
-				query = [[OFString alloc]
+				_query = [[OFString alloc]
 				    initWithUTF8String: tmp + 1];
 			}
 
 			if ((tmp = strchr(UTF8String, ';')) != NULL) {
 				*tmp = '\0';
 
-				parameters = [[OFString alloc]
+				_parameters = [[OFString alloc]
 				    initWithUTF8String: tmp + 1];
 			}
 
-			path = [[OFString alloc] initWithFormat: @"/%s",
-								 UTF8String];
+			_path = [[OFString alloc] initWithFormat: @"/%s",
+								  UTF8String];
 		} else
-			path = @"";
+			_path = @"";
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -191,11 +191,11 @@
 	@try {
 		char *tmp;
 
-		scheme = [URL->scheme copy];
-		host = [URL->host copy];
-		port = URL->port;
-		user = [URL->user copy];
-		password = [URL->password copy];
+		_scheme = [URL->_scheme copy];
+		_host = [URL->_host copy];
+		_port = URL->_port;
+		_user = [URL->_user copy];
+		_password = [URL->_password copy];
 
 		if ((UTF8String2 = strdup([string UTF8String])) == NULL)
 			@throw [OFOutOfMemoryException
@@ -206,23 +206,23 @@
 
 		if ((tmp = strchr(UTF8String, '#')) != NULL) {
 			*tmp = '\0';
-			fragment = [[OFString alloc]
+			_fragment = [[OFString alloc]
 			    initWithUTF8String: tmp + 1];
 		}
 
 		if ((tmp = strchr(UTF8String, '?')) != NULL) {
 			*tmp = '\0';
-			query = [[OFString alloc] initWithUTF8String: tmp + 1];
+			_query = [[OFString alloc] initWithUTF8String: tmp + 1];
 		}
 
 		if ((tmp = strchr(UTF8String, ';')) != NULL) {
 			*tmp = '\0';
-			parameters = [[OFString alloc]
+			_parameters = [[OFString alloc]
 			    initWithUTF8String: tmp + 1];
 		}
 
 		if (*UTF8String == '/')
-			path = [[OFString alloc]
+			_path = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
 		else {
 			void *pool;
@@ -230,16 +230,16 @@
 
 			pool = objc_autoreleasePoolPush();
 
-			if ([URL->path hasSuffix: @"/"])
+			if ([URL->_path hasSuffix: @"/"])
 				s = [OFString stringWithFormat: @"%@%s",
-								URL->path,
+								URL->_path,
 								UTF8String];
 			else
 				s = [OFString stringWithFormat: @"%@/../%s",
-								URL->path,
+								URL->_path,
 								UTF8String];
 
-			path = [[s stringByStandardizingURLPath] copy];
+			_path = [[s stringByStandardizingURLPath] copy];
 
 			objc_autoreleasePoolPop(pool);
 		}
@@ -277,48 +277,48 @@
 
 - (void)dealloc
 {
-	[scheme release];
-	[host release];
-	[user release];
-	[password release];
-	[path release];
-	[parameters release];
-	[query release];
-	[fragment release];
+	[_scheme release];
+	[_host release];
+	[_user release];
+	[_password release];
+	[_path release];
+	[_parameters release];
+	[_query release];
+	[_fragment release];
 
 	[super dealloc];
 }
 
 - (BOOL)isEqual: (id)object
 {
-	OFURL *otherURL;
+	OFURL *URL;
 
 	if (![object isKindOfClass: [OFURL class]])
 		return NO;
 
-	otherURL = object;
+	URL = object;
 
-	if (![otherURL->scheme isEqual: scheme])
+	if (![URL->_scheme isEqual: _scheme])
 		return NO;
-	if (![otherURL->host isEqual: host])
+	if (![URL->_host isEqual: _host])
 		return NO;
-	if (otherURL->port != port)
+	if (URL->_port != _port)
 		return NO;
-	if (otherURL->user != user && ![otherURL->user isEqual: user])
+	if (URL->_user != _user && ![URL->_user isEqual: _user])
 		return NO;
-	if (otherURL->password != password &&
-	    ![otherURL->password isEqual: password])
+	if (URL->_password != _password &&
+	    ![URL->_password isEqual: _password])
 		return NO;
-	if (![otherURL->path isEqual: path])
+	if (![URL->_path isEqual: _path])
 		return NO;
-	if (otherURL->parameters != parameters &&
-	    ![otherURL->parameters isEqual: parameters])
+	if (URL->_parameters != _parameters &&
+	    ![URL->_parameters isEqual: _parameters])
 		return NO;
-	if (otherURL->query != query &&
-	    ![otherURL->query isEqual: query])
+	if (URL->_query != _query &&
+	    ![URL->_query isEqual: _query])
 		return NO;
-	if (otherURL->fragment != fragment &&
-	    ![otherURL->fragment isEqual: fragment])
+	if (URL->_fragment != _fragment &&
+	    ![URL->_fragment isEqual: _fragment])
 		return NO;
 
 	return YES;
@@ -330,16 +330,16 @@
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_HASH(hash, [scheme hash]);
-	OF_HASH_ADD_HASH(hash, [host hash]);
-	OF_HASH_ADD(hash, (port & 0xFF00) >> 8);
-	OF_HASH_ADD(hash, port & 0xFF);
-	OF_HASH_ADD_HASH(hash, [user hash]);
-	OF_HASH_ADD_HASH(hash, [password hash]);
-	OF_HASH_ADD_HASH(hash, [path hash]);
-	OF_HASH_ADD_HASH(hash, [parameters hash]);
-	OF_HASH_ADD_HASH(hash, [query hash]);
-	OF_HASH_ADD_HASH(hash, [fragment hash]);
+	OF_HASH_ADD_HASH(hash, [_scheme hash]);
+	OF_HASH_ADD_HASH(hash, [_host hash]);
+	OF_HASH_ADD(hash, (_port & 0xFF00) >> 8);
+	OF_HASH_ADD(hash, _port & 0xFF);
+	OF_HASH_ADD_HASH(hash, [_user hash]);
+	OF_HASH_ADD_HASH(hash, [_password hash]);
+	OF_HASH_ADD_HASH(hash, [_path hash]);
+	OF_HASH_ADD_HASH(hash, [_parameters hash]);
+	OF_HASH_ADD_HASH(hash, [_query hash]);
+	OF_HASH_ADD_HASH(hash, [_fragment hash]);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -351,15 +351,15 @@
 	OFURL *copy = [[[self class] alloc] init];
 
 	@try {
-		copy->scheme = [scheme copy];
-		copy->host = [host copy];
-		copy->port = port;
-		copy->user = [user copy];
-		copy->password = [password copy];
-		copy->path = [path copy];
-		copy->parameters = [parameters copy];
-		copy->query = [query copy];
-		copy->fragment = [fragment copy];
+		copy->_scheme = [_scheme copy];
+		copy->_host = [_host copy];
+		copy->_port = _port;
+		copy->_user = [_user copy];
+		copy->_password = [_password copy];
+		copy->_path = [_path copy];
+		copy->_parameters = [_parameters copy];
+		copy->_query = [_query copy];
+		copy->_fragment = [_fragment copy];
 	} @catch (id e) {
 		[copy release];
 		@throw e;
@@ -370,144 +370,140 @@
 
 - (OFString*)scheme
 {
-	OF_GETTER(scheme, YES)
+	OF_GETTER(_scheme, YES)
 }
 
-- (void)setScheme: (OFString*)scheme_
+- (void)setScheme: (OFString*)scheme
 {
-	if (![scheme_ isEqual: @"http"] && ![scheme_ isEqual: @"https"])
+	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	OF_SETTER(scheme, scheme_, YES, 1)
+	OF_SETTER(_scheme, scheme, YES, 1)
 }
 
 - (OFString*)host
 {
-	OF_GETTER(host, YES)
+	OF_GETTER(_host, YES)
 }
 
-- (void)setHost: (OFString*)host_
+- (void)setHost: (OFString*)host
 {
-	OF_SETTER(host, host_, YES, 1)
+	OF_SETTER(_host, host, YES, 1)
 }
 
 - (uint16_t)port
 {
-	return port;
+	return _port;
 }
 
-- (void)setPort: (uint16_t)port_
+- (void)setPort: (uint16_t)port
 {
-	port = port_;
+	_port = port;
 }
 
 - (OFString*)user
 {
-	OF_GETTER(user, YES)
+	OF_GETTER(_user, YES)
 }
 
-- (void)setUser: (OFString*)user_
+- (void)setUser: (OFString*)user
 {
-	OF_SETTER(user, user_, YES, 1)
+	OF_SETTER(_user, user, YES, 1)
 }
 
 - (OFString*)password
 {
-	OF_GETTER(password, YES)
+	OF_GETTER(_password, YES)
 }
 
-- (void)setPassword: (OFString*)password_
+- (void)setPassword: (OFString*)password
 {
-	OF_SETTER(password, password_, YES, 1)
+	OF_SETTER(_password, password, YES, 1)
 }
 
 - (OFString*)path
 {
-	OF_GETTER(path, YES)
+	OF_GETTER(_path, YES)
 }
 
-- (void)setPath: (OFString*)path_
+- (void)setPath: (OFString*)path
 {
-	if (([scheme isEqual: @"http"] || [scheme isEqual: @"https"]) &&
-	    ![path_ hasPrefix: @"/"])
+	if (([_scheme isEqual: @"http"] || [_scheme isEqual: @"https"]) &&
+	    ![path hasPrefix: @"/"])
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	OF_SETTER(path, path_, YES, 1)
+	OF_SETTER(_path, path, YES, 1)
 }
 
 - (OFString*)parameters
 {
-	OF_GETTER(parameters, YES)
+	OF_GETTER(_parameters, YES)
 }
 
-- (void)setParameters: (OFString*)parameters_
+- (void)setParameters: (OFString*)parameters
 {
-	OF_SETTER(parameters, parameters_, YES, 1)
+	OF_SETTER(_parameters, parameters, YES, 1)
 }
 
 - (OFString*)query
 {
-	OF_GETTER(query, YES)
+	OF_GETTER(_query, YES)
 }
 
-- (void)setQuery: (OFString*)query_
+- (void)setQuery: (OFString*)query
 {
-	OF_SETTER(query, query_, YES, 1)
+	OF_SETTER(_query, query, YES, 1)
 }
 
 - (OFString*)fragment
 {
-	OF_GETTER(fragment, YES)
+	OF_GETTER(_fragment, YES)
 }
 
-- (void)setFragment: (OFString*)fragment_
+- (void)setFragment: (OFString*)fragment
 {
-	OF_SETTER(fragment, fragment_, YES, 1)
+	OF_SETTER(_fragment, fragment, YES, 1)
 }
 
 - (OFString*)string
 {
 	OFMutableString *ret = [OFMutableString stringWithFormat: @"%@://",
-								  scheme];
-	BOOL needPort = YES;
+								  _scheme];
 
-	if ([scheme isEqual: @"file"]) {
-		if (path != nil)
-			[ret appendString: path];
+	if ([_scheme isEqual: @"file"]) {
+		if (_path != nil)
+			[ret appendString: _path];
 
 		return ret;
 	}
 
-	if (user != nil && password != nil)
-		[ret appendFormat: @"%@:%@@", user, password];
-	else if (user != nil)
-		[ret appendFormat: @"%@@", user];
+	if (_user != nil && _password != nil)
+		[ret appendFormat: @"%@:%@@", _user, _password];
+	else if (_user != nil)
+		[ret appendFormat: @"%@@", _user];
 
-	if (host != nil)
-		[ret appendString: host];
+	if (_host != nil)
+		[ret appendString: _host];
 
-	if (([scheme isEqual: @"http"] && port == 80) ||
-	    ([scheme isEqual: @"https"] && port == 443))
-		needPort = NO;
+	if (([_scheme isEqual: @"http"] && _port != 80) ||
+	    ([_scheme isEqual: @"https"] && _port != 443))
+		[ret appendFormat: @":%u", _port];
 
-	if (needPort)
-		[ret appendFormat: @":%d", port];
+	if (_path != nil)
+		[ret appendString: _path];
 
-	if (path != nil)
-		[ret appendString: path];
+	if (_parameters != nil)
+		[ret appendFormat: @";%@", _parameters];
 
-	if (parameters != nil)
-		[ret appendFormat: @";%@", parameters];
+	if (_query != nil)
+		[ret appendFormat: @"?%@", _query];
 
-	if (query != nil)
-		[ret appendFormat: @"?%@", query];
-
-	if (fragment != nil)
-		[ret appendFormat: @"#%@", fragment];
+	if (_fragment != nil)
+		[ret appendFormat: @"#%@", _fragment];
 
 	[ret makeImmutable];
 

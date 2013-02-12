@@ -25,7 +25,7 @@
  */
 @interface OFDate: OFObject <OFCopying, OFComparing, OFSerialization>
 {
-	double seconds;
+	double _seconds;
 }
 
 /*!

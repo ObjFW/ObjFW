@@ -46,11 +46,11 @@ typedef void* (^of_map_table_replace_block_t)(void *key, void *value,
  */
 @interface OFMapTable: OFObject <OFCopying, OFFastEnumeration>
 {
-	of_map_table_functions_t keyFunctions, valueFunctions;
-	struct of_map_table_bucket **buckets;
-	uint32_t minCapacity, capacity, count;
-	uint8_t rotate;
-	unsigned long mutations;
+	of_map_table_functions_t _keyFunctions, _valueFunctions;
+	struct of_map_table_bucket **_buckets;
+	uint32_t _minCapacity, _capacity, _count;
+	uint8_t _rotate;
+	unsigned long _mutations;
 }
 
 /*!
@@ -212,18 +212,18 @@ typedef void* (^of_map_table_replace_block_t)(void *key, void *value,
  */
 @interface OFMapTableEnumerator: OFObject
 {
-	OFMapTable *mapTable;
-	struct of_map_table_bucket **buckets;
-	uint32_t capacity;
-	unsigned long mutations;
-	unsigned long *mutationsPtr;
-	uint32_t position;
+	OFMapTable *_mapTable;
+	struct of_map_table_bucket **_buckets;
+	uint32_t _capacity;
+	unsigned long _mutations;
+	unsigned long *_mutationsPtr;
+	uint32_t _position;
 }
 
-- OF_initWithMapTable: (OFMapTable*)mapTable_
-	      buckets: (struct of_map_table_bucket**)buckets_
-	     capacity: (uint32_t)capacity_
-     mutationsPointer: (unsigned long*)mutationsPtr_;
+- OF_initWithMapTable: (OFMapTable*)mapTable
+	      buckets: (struct of_map_table_bucket**)buckets
+	     capacity: (uint32_t)capacity
+     mutationsPointer: (unsigned long*)mutationsPtr;
 
 /*!
  * @brief Returns the next value.
@@ -241,8 +241,8 @@ typedef void* (^of_map_table_replace_block_t)(void *key, void *value,
 
 @interface OFMapTableEnumeratorWrapper: OFEnumerator
 {
-	OFMapTableEnumerator *enumerator;
-	id object;
+	OFMapTableEnumerator *_enumerator;
+	id _object;
 }
 
 - initWithEnumerator: (OFMapTableEnumerator*)enumerator

@@ -31,13 +31,13 @@
  */
 @interface OFRunLoop: OFObject
 {
-	OFSortedList *timersQueue;
+	OFSortedList *_timersQueue;
 #ifdef OF_HAVE_THREADS
-	OFMutex *timersQueueLock;
+	OFMutex *_timersQueueLock;
 #endif
-	OFStreamObserver *streamObserver;
-	OFMutableDictionary *readQueues;
-	volatile BOOL running;
+	OFStreamObserver *_streamObserver;
+	OFMutableDictionary *_readQueues;
+	volatile BOOL _running;
 }
 
 /*!

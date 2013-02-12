@@ -37,11 +37,11 @@
 	@try {
 		struct pollfd p = { 0, POLLIN, 0 };
 
-		FDs = [[OFDataArray alloc] initWithItemSize:
+		_FDs = [[OFDataArray alloc] initWithItemSize:
 		    sizeof(struct pollfd)];
 
-		p.fd = cancelFD[0];
-		[FDs addItem: &p];
+		p.fd = _cancelFD[0];
+		[_FDs addItem: &p];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -52,7 +52,7 @@
 
 - (void)dealloc
 {
-	[FDs release];
+	[_FDs release];
 
 	[super dealloc];
 }
@@ -60,13 +60,13 @@
 - (void)OF_addFileDescriptor: (int)fd
 		  withEvents: (short)events
 {
-	struct pollfd *FDs_ = [FDs items];
-	size_t i, count = [FDs count];
+	struct pollfd *FDs = [_FDs items];
+	size_t i, count = [_FDs count];
 	BOOL found = NO;
 
 	for (i = 0; i < count; i++) {
-		if (FDs_[i].fd == fd) {
-			FDs_[i].events |= events;
+		if (FDs[i].fd == fd) {
+			FDs[i].events |= events;
 			found = YES;
 			break;
 		}
@@ -74,22 +74,22 @@
 
 	if (!found) {
 		struct pollfd p = { fd, events | POLLERR, 0 };
-		[FDs addItem: &p];
+		[_FDs addItem: &p];
 	}
 }
 
 - (void)OF_removeFileDescriptor: (int)fd
 		     withEvents: (short)events
 {
-	struct pollfd *FDs_ = [FDs items];
-	size_t i, nFDs = [FDs count];
+	struct pollfd *FDs = [_FDs items];
+	size_t i, nFDs = [_FDs count];
 
 	for (i = 0; i < nFDs; i++) {
-		if (FDs_[i].fd == fd) {
-			FDs_[i].events &= ~events;
+		if (FDs[i].fd == fd) {
+			FDs[i].events &= ~events;
 
-			if ((FDs_[i].events & ~POLLERR) == 0)
-				[FDs removeItemAtIndex: i];
+			if ((FDs[i].events & ~POLLERR) == 0)
+				[_FDs removeItemAtIndex: i];
 
 			break;
 		}
@@ -123,7 +123,7 @@
 - (BOOL)observeWithTimeout: (double)timeout
 {
 	void *pool = objc_autoreleasePoolPush();
-	struct pollfd *FDs_;
+	struct pollfd *FDs;
 	size_t i, nFDs, realEvents = 0;
 
 	[self OF_processQueue];
@@ -135,59 +135,59 @@
 
 	objc_autoreleasePoolPop(pool);
 
-	FDs_ = [FDs items];
-	nFDs = [FDs count];
+	FDs = [_FDs items];
+	nFDs = [_FDs count];
 
 #ifdef OPEN_MAX
 	if (nFDs > OPEN_MAX)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 #endif
 
-	if (poll(FDs_, (nfds_t)nFDs,
+	if (poll(FDs, (nfds_t)nFDs,
 	    (int)(timeout != -1 ? timeout * 1000 : -1)) < 1)
 		return NO;
 
 	for (i = 0; i < nFDs; i++) {
 		pool = objc_autoreleasePoolPush();
 
-		if (FDs_[i].revents & POLLIN) {
-			if (FDs_[i].fd == cancelFD[0]) {
+		if (FDs[i].revents & POLLIN) {
+			if (FDs[i].fd == _cancelFD[0]) {
 				char buffer;
 
-				OF_ENSURE(read(cancelFD[0], &buffer, 1) > 0);
-				FDs_[i].revents = 0;
+				OF_ENSURE(read(_cancelFD[0], &buffer, 1) > 0);
+				FDs[i].revents = 0;
 
 				objc_autoreleasePoolPop(pool);
 				continue;
 			}
 
-			if ([delegate respondsToSelector:
+			if ([_delegate respondsToSelector:
 			    @selector(streamIsReadyForReading:)])
-				[delegate streamIsReadyForReading:
-				    FDToStream[FDs_[i].fd]];
+				[_delegate streamIsReadyForReading:
+				    _FDToStream[FDs[i].fd]];
 
 			realEvents++;
 		}
 
-		if (FDs_[i].revents & POLLOUT) {
-			if ([delegate respondsToSelector:
+		if (FDs[i].revents & POLLOUT) {
+			if ([_delegate respondsToSelector:
 			    @selector(streamIsReadyForWriting:)])
-				[delegate streamIsReadyForWriting:
-				    FDToStream[FDs_[i].fd]];
+				[_delegate streamIsReadyForWriting:
+				    _FDToStream[FDs[i].fd]];
 
 			realEvents++;
 		}
 
-		if (FDs_[i].revents & POLLERR) {
-			if ([delegate respondsToSelector:
+		if (FDs[i].revents & POLLERR) {
+			if ([_delegate respondsToSelector:
 			    @selector(streamDidReceiveException:)])
-				[delegate streamDidReceiveException:
-				    FDToStream[FDs_[i].fd]];
+				[_delegate streamDidReceiveException:
+				    _FDToStream[FDs[i].fd]];
 
 			realEvents++;
 		}
 
-		FDs_[i].revents = 0;
+		FDs[i].revents = 0;
 
 		objc_autoreleasePoolPop(pool);
 	}

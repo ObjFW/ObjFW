@@ -24,16 +24,16 @@
 #import "common.h"
 
 @implementation OFOpenFileFailedException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			      path: (OFString*)path
 			      mode: (OFString*)mode
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 				       path: path
 				       mode: mode] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -45,16 +45,16 @@
 	abort();
 }
 
-- initWithClass: (Class)class_
-	   path: (OFString*)path_
-	   mode: (OFString*)mode_
+- initWithClass: (Class)class
+	   path: (OFString*)path
+	   mode: (OFString*)mode
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
 	@try {
-		path  = [path_ copy];
-		mode  = [mode_ copy];
-		errNo = GET_ERRNO;
+		_path  = [path copy];
+		_mode  = [mode copy];
+		_errNo = GET_ERRNO;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -65,36 +65,36 @@
 
 - (void)dealloc
 {
-	[path release];
-	[mode release];
+	[_path release];
+	[_mode release];
 
 	[super dealloc];
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
-	    @"Failed to open file %@ with mode %@ in class %@! " ERRFMT, path,
-	    mode, inClass, ERRPARAM];
+	_description = [[OFString alloc] initWithFormat:
+	    @"Failed to open file %@ with mode %@ in class %@! " ERRFMT, _path,
+	    _mode, _inClass, ERRPARAM];
 
-	return description;
+	return _description;
 }
 
 - (int)errNo
 {
-	return errNo;
+	return _errNo;
 }
 
 - (OFString*)path
 {
-	OF_GETTER(path, NO)
+	OF_GETTER(_path, NO)
 }
 
 - (OFString*)mode
 {
-	OF_GETTER(mode, NO)
+	OF_GETTER(_mode, NO)
 }
 @end

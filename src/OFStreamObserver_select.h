@@ -29,8 +29,6 @@
 
 @interface OFStreamObserver_select: OFStreamObserver
 {
-	fd_set readFDs;
-	fd_set writeFDs;
-	fd_set exceptFDs;
+	fd_set _readFDs, _writeFDs, _exceptFDs;
 }
 @end

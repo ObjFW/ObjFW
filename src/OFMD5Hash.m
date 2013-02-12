@@ -146,87 +146,87 @@ md5_transform(uint32_t buffer[4], const uint32_t in[16])
 {
 	self = [super init];
 
-	buffer[0] = 0x67452301;
-	buffer[1] = 0xEFCDAB89;
-	buffer[2] = 0x98BADCFE;
-	buffer[3] = 0x10325476;
+	_buffer[0] = 0x67452301;
+	_buffer[1] = 0xEFCDAB89;
+	_buffer[2] = 0x98BADCFE;
+	_buffer[3] = 0x10325476;
 
 	return self;
 }
 
-- (void)updateWithBuffer: (const void*)buffer__
+- (void)updateWithBuffer: (const void*)buffer_
 		  length: (size_t)length
 {
 	uint32_t t;
-	const char *buffer_ = buffer__;
+	const char *buffer = buffer_;
 
 	if (length == 0)
 		return;
 
-	if (calculated)
+	if (_calculated)
 		@throw [OFHashAlreadyCalculatedException
 		    exceptionWithClass: [self class]
 				  hash: self];
 
 	/* Update bitcount */
-	t = bits[0];
-	if ((bits[0] = t + ((uint32_t)length << 3)) < t)
+	t = _bits[0];
+	if ((_bits[0] = t + ((uint32_t)length << 3)) < t)
 		/* Carry from low to high */
-		bits[1]++;
-	bits[1] += (uint32_t)length >> 29;
+		_bits[1]++;
+	_bits[1] += (uint32_t)length >> 29;
 
 	/* Bytes already in shsInfo->data */
 	t = (t >> 3) & 0x3F;
 
 	/* Handle any leading odd-sized chunks */
 	if (t) {
-		uint8_t *p = in.u8 + t;
+		uint8_t *p = _in.u8 + t;
 
 		t = 64 - t;
 
 		if (length < t) {
-			memcpy(p, buffer_, length);
+			memcpy(p, buffer, length);
 			return;
 		}
 
-		memcpy(p, buffer_, t);
+		memcpy(p, buffer, t);
 		BSWAP32_VEC_IF_BE(in.u32, 16);
-		md5_transform(buffer, in.u32);
+		md5_transform(_buffer, _in.u32);
 
-		buffer_ += t;
+		buffer += t;
 		length -= t;
 	}
 
 	/* Process data in 64-byte chunks */
 	while (length >= 64) {
-		memcpy(in.u8, buffer_, 64);
-		BSWAP32_VEC_IF_BE(in.u32, 16);
-		md5_transform(buffer, in.u32);
+		memcpy(_in.u8, buffer, 64);
+		BSWAP32_VEC_IF_BE(_in.u32, 16);
+		md5_transform(_buffer, _in.u32);
 
-		buffer_ += 64;
+		buffer += 64;
 		length -= 64;
 	}
 
 	/* Handle any remaining bytes of data. */
-	memcpy(in.u8, buffer_, length);
+	memcpy(_in.u8, buffer, length);
 }
 
 - (uint8_t*)digest
 {
 	uint8_t	*p;
-	size_t	count;
+	size_t count;
 
-	if (calculated)
-		return (uint8_t*)buffer;
+	if (_calculated)
+		return (uint8_t*)_buffer;
 
 	/* Compute number of bytes mod 64 */
-	count = (bits[0] >> 3) & 0x3F;
+	count = (_bits[0] >> 3) & 0x3F;
 
 	/*
 	 * Set the first char of padding to 0x80. This is safe since there is
 	 * always at least one byte free
 	 */
-	p = in.u8 + count;
+	p = _in.u8 + count;
 	*p++ = 0x80;
 
 	/* Bytes of padding needed to make 64 bytes */
@@ -236,11 +236,11 @@ md5_transform(uint32_t buffer[4], const uint32_t in[16])
 	if (count < 8) {
 		/* Two lots of padding: Pad the first block to 64 bytes */
 		memset(p, 0, count);
-		BSWAP32_VEC_IF_BE(in.u32, 16);
-		md5_transform(buffer, in.u32);
+		BSWAP32_VEC_IF_BE(_in.u32, 16);
+		md5_transform(_buffer, _in.u32);
 
 		/* Now fill the next block with 56 bytes */
-		memset(in.u8, 0, 56);
+		memset(_in.u8, 0, 56);
 	} else {
 		/* Pad block to 56 bytes */
 		memset(p, 0, count - 8);
@@ -248,14 +248,14 @@ md5_transform(uint32_t buffer[4], const uint32_t in[16])
 	BSWAP32_VEC_IF_BE(in.u32, 14);
 
 	/* Append length in bits and transform */
-	in.u32[14] = bits[0];
-	in.u32[15] = bits[1];
+	_in.u32[14] = _bits[0];
+	_in.u32[15] = _bits[1];
 
-	md5_transform(buffer, in.u32);
-	BSWAP32_VEC_IF_BE(buffer, 4);
+	md5_transform(_buffer, _in.u32);
+	BSWAP32_VEC_IF_BE(_buffer, 4);
 
-	calculated = YES;
+	_calculated = YES;
 
-	return (uint8_t*)buffer;
+	return (uint8_t*)_buffer;
 }
 @end

@@ -20,41 +20,41 @@
 #import "OFString.h"
 
 @implementation OFOutOfMemoryException
-+ (instancetype)exceptionWithClass: (Class)class_
-		     requestedSize: (size_t)size
++ (instancetype)exceptionWithClass: (Class)class
+		     requestedSize: (size_t)requestedSize
 {
-	return [[[self alloc] initWithClass: class_
-			      requestedSize: size] autorelease];
+	return [[[self alloc] initWithClass: class
+			      requestedSize: requestedSize] autorelease];
 }
 
-- initWithClass: (Class)class_
-  requestedSize: (size_t)size
+- initWithClass: (Class)class
+  requestedSize: (size_t)requestedSize
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
-	requestedSize = size;
+	_requestedSize = requestedSize;
 
 	return self;
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	if (requestedSize != 0)
-		description = [[OFString alloc] initWithFormat:
-		    @"Could not allocate %zu bytes in class %@!", requestedSize,
-		    inClass];
+	if (_requestedSize != 0)
+		_description = [[OFString alloc] initWithFormat:
+		    @"Could not allocate %zu bytes in class %@!",
+		    _requestedSize, _inClass];
 	else
-		description = [[OFString alloc] initWithFormat:
-		    @"Could not allocate enough memory in class %@!", inClass];
+		_description = [[OFString alloc] initWithFormat:
+		    @"Could not allocate enough memory in class %@!", _inClass];
 
-	return description;
+	return _description;
 }
 
 - (size_t)requestedSize
 {
-	return requestedSize;
+	return _requestedSize;
 }
 @end

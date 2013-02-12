@@ -20,7 +20,7 @@
 
 @interface OFMutableArray_adjacent: OFMutableArray
 {
-	OFDataArray   *array;
-	unsigned long mutations;
+	OFDataArray   *_array;
+	unsigned long _mutations;
 }
 @end

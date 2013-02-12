@@ -551,8 +551,8 @@ of_log(OFConstantString *format, ...)
 		if (!override) {
 			struct stat s;
 
-			if (fstat(sourceFile->fd, &s) == 0)
-				fchmod(destinationFile->fd, s.st_mode);
+			if (fstat(sourceFile->_fd, &s) == 0)
+				fchmod(destinationFile->_fd, s.st_mode);
 		}
 #else
 		(void)override;
@@ -685,10 +685,10 @@ of_log(OFConstantString *format, ...)
 				      selector: _cmd];
 
 #ifndef _WIN32
-		if ((fd = open([path cStringWithEncoding:
+		if ((_fd = open([path cStringWithEncoding:
 		    OF_STRING_ENCODING_NATIVE], flags, DEFAULT_MODE)) == -1)
 #else
-		if ((fd = _wopen([path UTF16String], flags,
+		if ((_fd = _wopen([path UTF16String], flags,
 		    DEFAULT_MODE)) == -1)
 #endif
 			@throw [OFOpenFileFailedException
@@ -696,7 +696,7 @@ of_log(OFConstantString *format, ...)
 					  path: path
 					  mode: mode];
 
-		closable = YES;
+		_closable = YES;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -705,21 +705,21 @@ of_log(OFConstantString *format, ...)
 	return self;
 }
 
-- initWithFileDescriptor: (int)fileDescriptor
+- initWithFileDescriptor: (int)fd
 {
 	self = [super init];
 
-	fd = fileDescriptor;
+	_fd = fd;
 
 	return self;
 }
 
 - (BOOL)lowlevelIsAtEndOfStream
 {
-	if (fd == -1)
+	if (_fd == -1)
 		return YES;
 
-	return atEndOfStream;
+	return _atEndOfStream;
 }
 
 - (size_t)lowlevelReadIntoBuffer: (void*)buffer
@@ -727,13 +727,14 @@ of_log(OFConstantString *format, ...)
 {
 	ssize_t ret;
 
-	if (fd == -1 || atEndOfStream || (ret = read(fd, buffer, length)) < 0)
+	if (_fd == -1 || _atEndOfStream ||
+	    (ret = read(_fd, buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithClass: [self class]
 							  stream: self
 						 requestedLength: length];
 
 	if (ret == 0)
-		atEndOfStream = YES;
+		_atEndOfStream = YES;
 
 	return ret;
 }
@@ -741,7 +742,7 @@ of_log(OFConstantString *format, ...)
 - (void)lowlevelWriteBuffer: (const void*)buffer
 		     length: (size_t)length
 {
-	if (fd == -1 || atEndOfStream || write(fd, buffer, length) < length)
+	if (_fd == -1 || _atEndOfStream || write(_fd, buffer, length) < length)
 		@throw [OFWriteFailedException exceptionWithClass: [self class]
 							   stream: self
 						  requestedLength: length];
@@ -750,7 +751,7 @@ of_log(OFConstantString *format, ...)
 - (void)lowlevelSeekToOffset: (off_t)offset
 		      whence: (int)whence
 {
-	if (lseek(fd, offset, whence) == -1)
+	if (lseek(_fd, offset, whence) == -1)
 		@throw [OFSeekFailedException exceptionWithClass: [self class]
 							  stream: self
 							  offset: offset
@@ -759,26 +760,26 @@ of_log(OFConstantString *format, ...)
 
 - (int)fileDescriptorForReading
 {
-	return fd;
+	return _fd;
 }
 
 - (int)fileDescriptorForWriting
 {
-	return fd;
+	return _fd;
 }
 
 - (void)close
 {
-	if (fd != -1)
-		close(fd);
+	if (_fd != -1)
+		close(_fd);
 
-	fd = -1;
+	_fd = -1;
 }
 
 - (void)dealloc
 {
-	if (closable && fd != -1)
-		close(fd);
+	if (_closable && _fd != -1)
+		close(_fd);
 
 	[super dealloc];
 }

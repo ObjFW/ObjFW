@@ -34,20 +34,31 @@
 {
 	self = [super init];
 
-	if (!of_condition_new(&condition)) {
+	if (!of_condition_new(&_condition)) {
 		Class c = [self class];
 		[self release];
 		@throw [OFInitializationFailedException exceptionWithClass: c];
 	}
 
-	conditionInitialized = YES;
+	_conditionInitialized = YES;
 
 	return self;
 }
 
+- (void)dealloc
+{
+	if (_conditionInitialized)
+		if (!of_condition_free(&_condition))
+			@throw [OFConditionStillWaitingException
+			    exceptionWithClass: [self class]
+				     condition: self];
+
+	[super dealloc];
+}
+
 - (void)wait
 {
-	if (!of_condition_wait(&condition, &mutex))
+	if (!of_condition_wait(&_condition, &_mutex))
 		@throw [OFConditionWaitFailedException
 		    exceptionWithClass: [self class]
 			     condition: self];
@@ -55,7 +66,7 @@
 
 - (void)signal
 {
-	if (!of_condition_signal(&condition))
+	if (!of_condition_signal(&_condition))
 		@throw [OFConditionSignalFailedException
 		    exceptionWithClass: [self class]
 			     condition: self];
@@ -63,20 +74,9 @@
 
 - (void)broadcast
 {
-	if (!of_condition_broadcast(&condition))
+	if (!of_condition_broadcast(&_condition))
 		@throw [OFConditionBroadcastFailedException
 		    exceptionWithClass: [self class]
 			     condition: self];
-}
-
-- (void)dealloc
-{
-	if (conditionInitialized)
-		if (!of_condition_free(&condition))
-			@throw [OFConditionStillWaitingException
-			    exceptionWithClass: [self class]
-				     condition: self];
-
-	[super dealloc];
 }
 @end

@@ -25,9 +25,9 @@
  */
 @interface OFRecursiveMutex: OFObject <OFLocking>
 {
-	of_rmutex_t rmutex;
-	BOOL initialized;
-	OFString *name;
+	of_rmutex_t _rmutex;
+	BOOL _initialized;
+	OFString *_name;
 }
 
 /*!

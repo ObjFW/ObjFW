@@ -20,6 +20,6 @@
 
 @interface OFStreamObserver_poll: OFStreamObserver
 {
-	OFDataArray *FDs;
+	OFDataArray *_FDs;
 }
 @end

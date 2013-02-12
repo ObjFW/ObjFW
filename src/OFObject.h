@@ -346,7 +346,7 @@ typedef struct of_rectangle_t
 @interface OFObject <OFObject>
 {
 @public
-	Class isa;
+	Class _isa;
 }
 
 /*!

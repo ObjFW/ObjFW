@@ -23,7 +23,7 @@
  */
 @interface OFMalformedXMLException: OFException
 {
-	OFXMLParser *parser;
+	OFXMLParser *_parser;
 }
 
 #ifdef OF_HAVE_PROPERTIES

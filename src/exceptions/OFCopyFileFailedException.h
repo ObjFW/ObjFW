@@ -21,9 +21,8 @@
  */
 @interface OFCopyFileFailedException: OFException
 {
-	OFString *sourcePath;
-	OFString *destinationPath;
-	int errNo;
+	OFString *_sourcePath, *_destinationPath;
+	int _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -36,25 +35,25 @@
  * @brief Creates a new, autoreleased copy file failed exception.
  *
  * @param class_ The class of the object which caused the exception
- * @param source The original path
- * @param destination The new path
+ * @param sourcePath The original path
+ * @param destinationPath The new path
  * @return A new, autoreleased copy file failed exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
-			sourcePath: (OFString*)source
-		   destinationPath: (OFString*)destination;
+			sourcePath: (OFString*)sourcePath
+		   destinationPath: (OFString*)destinationPath;
 
 /*!
  * @brief Initializes an already allocated copy file failed exception.
  *
  * @param class_ The class of the object which caused the exception
- * @param source The original path
- * @param destination The new path
+ * @param sourcePath The original path
+ * @param destinationPath The new path
  * @return An initialized copy file failed exception
  */
 -   initWithClass: (Class)class_
-       sourcePath: (OFString*)source
-  destinationPath: (OFString*)destination;
+       sourcePath: (OFString*)sourcePath
+  destinationPath: (OFString*)destinationPath;
 
 /*!
  * @brief Returns the errno from when the exception was created.

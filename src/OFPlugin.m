@@ -63,7 +63,7 @@
 		    exceptionWithClass: self];
 	}
 
-	plugin->handle = handle;
+	plugin->_handle = handle;
 	return plugin;
 }
 
@@ -84,7 +84,7 @@
 
 - (void)dealloc
 {
-	of_plugin_handle_t h = handle;
+	of_plugin_handle_t h = _handle;
 
 	[super dealloc];
 

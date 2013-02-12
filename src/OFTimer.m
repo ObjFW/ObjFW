@@ -217,29 +217,29 @@
 	abort();
 }
 
-- OF_initWithFireDate: (OFDate*)fireDate_
-	     interval: (double)interval_
-	       target: (id)target_
-	     selector: (SEL)selector_
-	       object: (id)object1_
-	       object: (id)object2_
-	    arguments: (uint8_t)arguments_
-	      repeats: (BOOL)repeats_
+- OF_initWithFireDate: (OFDate*)fireDate
+	     interval: (double)interval
+	       target: (id)target
+	     selector: (SEL)selector
+	       object: (id)object1
+	       object: (id)object2
+	    arguments: (uint8_t)arguments
+	      repeats: (BOOL)repeats
 {
 	self = [super init];
 
 	@try {
-		fireDate = [fireDate_ retain];
-		interval = interval_;
-		target = [target_ retain];
-		selector = selector_;
-		object1 = [object1_ retain];
-		object2 = [object2_ retain];
-		arguments = arguments_;
-		repeats = repeats_;
-		isValid = YES;
+		_fireDate = [fireDate retain];
+		_interval = interval;
+		_target = [target retain];
+		_selector = selector;
+		_object1 = [object1 retain];
+		_object2 = [object2 retain];
+		_arguments = arguments;
+		_repeats = repeats;
+		_valid = YES;
 #ifdef OF_HAVE_THREADS
-		condition = [[OFCondition alloc] init];
+		_condition = [[OFCondition alloc] init];
 #endif
 	} @catch (id e) {
 		[self release];
@@ -249,73 +249,73 @@
 	return self;
 }
 
-- initWithFireDate: (OFDate*)fireDate_
-	  interval: (double)interval_
-	    target: (id)target_
-	  selector: (SEL)selector_
-	   repeats: (BOOL)repeats_
+- initWithFireDate: (OFDate*)fireDate
+	  interval: (double)interval
+	    target: (id)target
+	  selector: (SEL)selector
+	   repeats: (BOOL)repeats
 {
-	return [self OF_initWithFireDate: fireDate_
-				interval: interval_
-				  target: target_
-				selector: selector_
+	return [self OF_initWithFireDate: fireDate
+				interval: interval
+				  target: target
+				selector: selector
 				  object: nil
 				  object: nil
 			       arguments: 0
-				 repeats: repeats_];
+				 repeats: repeats];
 }
 
-- initWithFireDate: (OFDate*)fireDate_
-	  interval: (double)interval_
-	    target: (id)target_
-	  selector: (SEL)selector_
+- initWithFireDate: (OFDate*)fireDate
+	  interval: (double)interval
+	    target: (id)target
+	  selector: (SEL)selector
 	    object: (id)object
-	   repeats: (BOOL)repeats_
+	   repeats: (BOOL)repeats
 {
-	return [self OF_initWithFireDate: fireDate_
-				interval: interval_
-				  target: target_
-				selector: selector_
+	return [self OF_initWithFireDate: fireDate
+				interval: interval
+				  target: target
+				selector: selector
 				  object: object
 				  object: nil
 			       arguments: 1
-				 repeats: repeats_];
+				 repeats: repeats];
 }
 
-- initWithFireDate: (OFDate*)fireDate_
-	  interval: (double)interval_
-	    target: (id)target_
-	  selector: (SEL)selector_
-	    object: (id)object1_
-	    object: (id)object2_
-	   repeats: (BOOL)repeats_
+- initWithFireDate: (OFDate*)fireDate
+	  interval: (double)interval
+	    target: (id)target
+	  selector: (SEL)selector
+	    object: (id)object1
+	    object: (id)object2
+	   repeats: (BOOL)repeats
 {
-	return [self OF_initWithFireDate: fireDate_
-				interval: interval_
-				  target: target_
-				selector: selector_
-				  object: object1_
-				  object: object2_
+	return [self OF_initWithFireDate: fireDate
+				interval: interval
+				  target: target
+				selector: selector
+				  object: object1
+				  object: object2
 			       arguments: 2
-				 repeats: repeats_];
+				 repeats: repeats];
 }
 
 #ifdef OF_HAVE_BLOCKS
-- initWithFireDate: (OFDate*)fireDate_
-	   interval: (double)interval_
-	    repeats: (BOOL)repeats_
-	      block: (of_timer_block_t)block_
+- initWithFireDate: (OFDate*)fireDate
+	   interval: (double)interval
+	    repeats: (BOOL)repeats
+	      block: (of_timer_block_t)block
 {
 	self = [super init];
 
 	@try {
-		fireDate = [fireDate_ retain];
-		interval = interval_;
-		repeats = repeats_;
-		block = [block_ copy];
-		isValid = YES;
+		_fireDate = [fireDate retain];
+		_interval = interval;
+		_repeats = repeats;
+		_block = [block copy];
+		_valid = YES;
 # ifdef OF_HAVE_THREADS
-		condition = [[OFCondition alloc] init];
+		_condition = [[OFCondition alloc] init];
 # endif
 	} @catch (id e) {
 		[self release];
@@ -332,57 +332,57 @@
 	 * The run loop references the timer, so it should never be deallocated
 	 * if it is still in a run loop.
 	 */
-	assert(inRunLoop == nil);
+	assert(_inRunLoop == nil);
 
-	[fireDate release];
-	[target release];
-	[object1 release];
-	[object2 release];
+	[_fireDate release];
+	[_target release];
+	[_object1 release];
+	[_object2 release];
 #ifdef OF_HAVE_BLOCKS
-	[block release];
+	[_block release];
 #endif
 #ifdef OF_HAVE_THREADS
-	[condition release];
+	[_condition release];
 #endif
 
 	[super dealloc];
 }
 
-- (of_comparison_result_t)compare: (id <OFComparing>)object_
+- (of_comparison_result_t)compare: (id <OFComparing>)object
 {
-	OFTimer *otherTimer;
+	OFTimer *timer;
 
-	if (![object_ isKindOfClass: [OFTimer class]])
+	if (![object isKindOfClass: [OFTimer class]])
 		@throw[OFInvalidArgumentException
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	otherTimer = (OFTimer*)object_;
+	timer = (OFTimer*)object;
 
-	return [fireDate compare: otherTimer->fireDate];
+	return [_fireDate compare: timer->_fireDate];
 }
 
 - (void)fire
 {
-	OF_ENSURE(arguments <= 2);
+	OF_ENSURE(_arguments <= 2);
 
 #ifdef OF_HAVE_BLOCKS
-	if (block != NULL)
-		block(self);
+	if (_block != NULL)
+		_block(self);
 	else {
 #endif
-		switch (arguments) {
+		switch (_arguments) {
 		case 0:
-			[target performSelector: selector];
+			[_target performSelector: _selector];
 			break;
 		case 1:
-			[target performSelector: selector
-				     withObject: object1];
+			[_target performSelector: _selector
+				      withObject: _object1];
 			break;
 		case 2:
-			[target performSelector: selector
-				     withObject: object1
-				     withObject: object2];
+			[_target performSelector: _selector
+				      withObject: _object1
+				      withObject: _object2];
 			break;
 		}
 #ifdef OF_HAVE_BLOCKS
@@ -390,19 +390,19 @@
 #endif
 
 #ifdef OF_HAVE_THREADS
-	[condition lock];
+	[_condition lock];
 	@try {
-		done = YES;
-		[condition signal];
+		_done = YES;
+		[_condition signal];
 	} @finally {
-		[condition unlock];
+		[_condition unlock];
 	}
 #endif
 
-	if (repeats && isValid) {
-		OFDate *old = fireDate;
-		fireDate = [[OFDate alloc]
-		    initWithTimeIntervalSinceNow: interval];
+	if (_repeats && _valid) {
+		OFDate *old = _fireDate;
+		_fireDate = [[OFDate alloc]
+		    initWithTimeIntervalSinceNow: _interval];
 		[old release];
 
 		[[OFRunLoop currentRunLoop] addTimer: self];
@@ -412,19 +412,19 @@
 
 - (OFDate*)fireDate
 {
-	OF_GETTER(fireDate, YES)
+	OF_GETTER(_fireDate, YES)
 }
 
-- (void)setFireDate: (OFDate*)fireDate_
+- (void)setFireDate: (OFDate*)fireDate
 {
 	[self retain];
 	@try {
 		@synchronized (self) {
-			[inRunLoop OF_removeTimer: self];
+			[_inRunLoop OF_removeTimer: self];
 
-			OF_SETTER(fireDate, fireDate_, YES, 0)
+			OF_SETTER(_fireDate, fireDate, YES, 0)
 
-			[inRunLoop addTimer: self];
+			[_inRunLoop addTimer: self];
 		}
 	} @finally {
 		[self release];
@@ -433,41 +433,41 @@
 
 - (double)timeInterval
 {
-	return interval;
+	return _interval;
 }
 
 - (void)invalidate
 {
-	isValid = NO;
+	_valid = NO;
 
-	[target release];
-	target = nil;
+	[_target release];
+	_target = nil;
 }
 
 - (BOOL)isValid
 {
-	return isValid;
+	return _valid;
 }
 
 #ifdef OF_HAVE_THREADS
 - (void)waitUntilDone
 {
-	[condition lock];
+	[_condition lock];
 	@try {
-		if (done) {
-			done = NO;
+		if (_done) {
+			_done = NO;
 			return;
 		}
 
-		[condition wait];
+		[_condition wait];
 	} @finally {
-		[condition unlock];
+		[_condition unlock];
 	}
 }
 #endif
 
-- (void)OF_setInRunLoop: (OFRunLoop*)inRunLoop_
+- (void)OF_setInRunLoop: (OFRunLoop*)inRunLoop
 {
-	OF_SETTER(inRunLoop, inRunLoop_, YES, 0)
+	OF_SETTER(_inRunLoop, inRunLoop, YES, 0)
 }
 @end

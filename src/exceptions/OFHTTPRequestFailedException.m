@@ -27,16 +27,16 @@
 #import "common.h"
 
 @implementation OFHTTPRequestFailedException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			   request: (OFHTTPRequest*)request
 			     reply: (OFHTTPRequestReply*)reply
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 				    request: request
 				      reply: reply] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -48,22 +48,22 @@
 	abort();
 }
 
-- initWithClass: (Class)class_
-	request: (OFHTTPRequest*)request_
-	  reply: (OFHTTPRequestReply*)reply_
+- initWithClass: (Class)class
+	request: (OFHTTPRequest*)request
+	  reply: (OFHTTPRequestReply*)reply
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
-	request = [request_ retain];
-	reply = [reply_ retain];
+	_request = [request retain];
+	_reply = [reply retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[request release];
-	[reply release];
+	[_request release];
+	[_reply release];
 
 	[super dealloc];
 }
@@ -73,10 +73,10 @@
 	void *pool;
 	const char *type = "(unknown)";
 
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	switch ([request requestType]) {
+	switch ([_request requestType]) {
 	case OF_HTTP_REQUEST_TYPE_GET:
 		type = "GET";
 		break;
@@ -90,22 +90,22 @@
 
 	pool = objc_autoreleasePoolPush();
 
-	description = [[OFString alloc] initWithFormat:
+	_description = [[OFString alloc] initWithFormat:
 	    @"A HTTP %s request in class %@ with URL %@ failed with code %d",
-	    type, inClass, [request URL], [reply statusCode]];
+	    type, _inClass, [_request URL], [_reply statusCode]];
 
 	objc_autoreleasePoolPop(pool);
 
-	return description;
+	return _description;
 }
 
 - (OFHTTPRequest*)request
 {
-	OF_GETTER(request, NO)
+	OF_GETTER(_request, NO)
 }
 
 - (OFHTTPRequestReply*)reply
 {
-	OF_GETTER(reply, NO)
+	OF_GETTER(_reply, NO)
 }
 @end

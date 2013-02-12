@@ -24,15 +24,11 @@
 @interface OFXMLAttribute: OFXMLNode
 {
 @public
-	OFString *name;
-	OFString *ns;
-	OFString *stringValue;
+	OFString *_name, *_namespace, *_stringValue;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy) OFString *name;
-@property (readonly, copy, getter=namespace) OFString *ns;
-@property (readonly, copy) OFString *stringValue;
+@property (readonly, copy) OFString *name, *namespace, *stringValue;
 #endif
 
 /*!
@@ -49,12 +45,12 @@
  * @brief Creates a new XML attribute.
  *
  * @param name The name of the attribute
- * @param ns The namespace of the attribute
+ * @param namespace_ The namespace of the attribute
  * @param stringValue The string value of the attribute
  * @return A new autoreleased OFXMLAttribute with the specified parameters
  */
 + (instancetype)attributeWithName: (OFString*)name
-			namespace: (OFString*)ns
+			namespace: (OFString*)namespace_
 		      stringValue: (OFString*)stringValue;
 
 /*!
@@ -71,12 +67,12 @@
  * @brief Initializes an already allocated OFXMLAttribute.
  *
  * @param name The name of the attribute
- * @param ns The namespace of the attribute
+ * @param namespace_ The namespace of the attribute
  * @param stringValue The string value of the attribute
  * @return An initialized OFXMLAttribute with the specified parameters
  */
 - initWithName: (OFString*)name
-     namespace: (OFString*)ns
+     namespace: (OFString*)namespace_
    stringValue: (OFString*)stringValue;
 
 /*!

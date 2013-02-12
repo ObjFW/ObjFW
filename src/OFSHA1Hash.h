@@ -23,9 +23,9 @@
  */
 @interface OFSHA1Hash: OFHash
 {
-	uint32_t state[5];
-	uint64_t count;
-	char	 buffer[64];
-	uint8_t	 digest[OF_SHA1_DIGEST_SIZE];
+	uint32_t _state[5];
+	uint64_t _count;
+	char	 _buffer[64];
+	uint8_t	 _digest[OF_SHA1_DIGEST_SIZE];
 }
 @end

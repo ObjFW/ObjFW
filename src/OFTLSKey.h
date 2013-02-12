@@ -30,11 +30,11 @@
 @interface OFTLSKey: OFObject
 {
 @public
-	of_tlskey_t key;
+	of_tlskey_t _key;
 @protected
-	void (*destructor)(id);
-	of_list_object_t *listObject;
-	BOOL initialized;
+	void (*_destructor)(id);
+	of_list_object_t *_listObject;
+	BOOL _initialized;
 }
 
 /*!

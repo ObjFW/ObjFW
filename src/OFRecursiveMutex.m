@@ -36,63 +36,64 @@
 {
 	self = [super init];
 
-	if (!of_rmutex_new(&rmutex)) {
+	if (!of_rmutex_new(&_rmutex)) {
 		Class c = [self class];
 		[self release];
 		@throw [OFInitializationFailedException exceptionWithClass: c];
 	}
 
-	initialized = YES;
+	_initialized = YES;
 
 	return self;
 }
 
 - (void)lock
 {
-	if (!of_rmutex_lock(&rmutex))
+	if (!of_rmutex_lock(&_rmutex))
 		@throw [OFLockFailedException exceptionWithClass: [self class]
 							    lock: self];
 }
 
 - (BOOL)tryLock
 {
-	return of_rmutex_trylock(&rmutex);
+	return of_rmutex_trylock(&_rmutex);
 }
 
 - (void)unlock
 {
-	if (!of_rmutex_unlock(&rmutex))
+	if (!of_rmutex_unlock(&_rmutex))
 		@throw [OFUnlockFailedException exceptionWithClass: [self class]
 							      lock: self];
 }
 
-- (void)setName: (OFString*)name_
+- (void)setName: (OFString*)name
 {
-	OF_SETTER(name, name_, YES, 1)
+	OF_SETTER(_name, name, YES, 1)
 }
 
 - (OFString*)name
 {
-	OF_GETTER(name, YES)
+	OF_GETTER(_name, YES)
 }
 
 - (OFString*)description
 {
-	if (name == nil)
+	if (_name == nil)
 		return [super description];
 
-	return [OFString stringWithFormat: @"<%@: %@>", [self className], name];
+	return [OFString stringWithFormat: @"<%@: %@>",
+					   [self className], _name];
 }
 
 - (void)dealloc
 {
-	if (initialized)
-		if (!of_rmutex_free(&rmutex))
+	if (_initialized)
+		if (!of_rmutex_free(&_rmutex))
 			@throw [OFStillLockedException
 			    exceptionWithClass: [self class]
 					  lock: self];
 
-	[name release];
+	[_name release];
 
 	[super dealloc];
 }

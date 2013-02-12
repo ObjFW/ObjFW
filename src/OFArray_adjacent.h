@@ -20,6 +20,6 @@
 
 @interface OFArray_adjacent: OFArray
 {
-	OFDataArray *array;
+	OFDataArray *_array;
 }
 @end

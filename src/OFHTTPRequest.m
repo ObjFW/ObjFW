@@ -45,19 +45,19 @@
 {
 	self = [super init];
 
-	requestType = OF_HTTP_REQUEST_TYPE_GET;
-	protocolVersion.major = 1;
-	protocolVersion.minor = 1;
+	_requestType = OF_HTTP_REQUEST_TYPE_GET;
+	_protocolVersion.major = 1;
+	_protocolVersion.minor = 1;
 
 	return self;
 }
 
-- initWithURL: (OFURL*)URL_
+- initWithURL: (OFURL*)URL
 {
 	self = [self init];
 
 	@try {
-		[self setURL: URL_];
+		[self setURL: URL];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -68,50 +68,50 @@
 
 - (void)dealloc
 {
-	[URL release];
-	[headers release];
-	[POSTData release];
-	[MIMEType release];
-	[remoteAddress release];
+	[_URL release];
+	[_headers release];
+	[_POSTData release];
+	[_MIMEType release];
+	[_remoteAddress release];
 
 	[super dealloc];
 }
 
-- (void)setURL: (OFURL*)URL_
+- (void)setURL: (OFURL*)URL
 {
-	OF_SETTER(URL, URL_, YES, 1)
+	OF_SETTER(_URL, URL, YES, 1)
 }
 
 - (OFURL*)URL
 {
-	OF_GETTER(URL, YES)
+	OF_GETTER(_URL, YES)
 }
 
-- (void)setRequestType: (of_http_request_type_t)requestType_
+- (void)setRequestType: (of_http_request_type_t)requestType
 {
-	requestType = requestType_;
+	_requestType = requestType;
 }
 
 - (of_http_request_type_t)requestType
 {
-	return requestType;
+	return _requestType;
 }
 
-- (void)setProtocolVersion: (of_http_request_protocol_version_t)protocolVersion_
+- (void)setProtocolVersion: (of_http_request_protocol_version_t)protocolVersion
 {
-	if (protocolVersion_.major != 1 || protocolVersion.minor > 1)
+	if (protocolVersion.major != 1 || protocolVersion.minor > 1)
 		@throw [OFUnsupportedVersionException
 		    exceptionWithClass: [self class]
 			       version: [OFString stringWithFormat: @"%u.%u",
-					    protocolVersion_.major,
-					    protocolVersion_.minor]];
+					    protocolVersion.major,
+					    protocolVersion.minor]];
 
-	protocolVersion = protocolVersion_;
+	_protocolVersion = protocolVersion;
 }
 
 - (of_http_request_protocol_version_t)protocolVersion
 {
-	return protocolVersion;
+	return _protocolVersion;
 }
 
 - (void)setProtocolVersionFromString: (OFString*)string
@@ -119,7 +119,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *components = [string componentsSeparatedByString: @"."];
 	intmax_t major, minor;
-	of_http_request_protocol_version_t protocolVersion_;
+	of_http_request_protocol_version_t protocolVersion;
 
 	if ([components count] != 2)
 		@throw [OFInvalidFormatException
@@ -131,58 +131,58 @@
 	if (major < 0 || major > UINT8_MAX || minor < 0 || minor > UINT8_MAX)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	protocolVersion_.major = (uint8_t)major;
-	protocolVersion_.minor = (uint8_t)minor;
+	protocolVersion.major = (uint8_t)major;
+	protocolVersion.minor = (uint8_t)minor;
 
-	[self setProtocolVersion: protocolVersion_];
+	[self setProtocolVersion: protocolVersion];
 
 	objc_autoreleasePoolPop(pool);
 }
 
 - (OFString*)protocolVersionString
 {
-	return [OFString stringWithFormat: @"%u.%u", protocolVersion.major,
-					   protocolVersion.minor];
+	return [OFString stringWithFormat: @"%u.%u", _protocolVersion.major,
+					   _protocolVersion.minor];
 }
 
-- (void)setHeaders: (OFDictionary*)headers_
+- (void)setHeaders: (OFDictionary*)headers
 {
-	OF_SETTER(headers, headers_, YES, 1)
+	OF_SETTER(_headers, headers, YES, 1)
 }
 
 - (OFDictionary*)headers
 {
-	OF_GETTER(headers, YES)
+	OF_GETTER(_headers, YES)
 }
 
-- (void)setPOSTData: (OFDataArray*)POSTData_
+- (void)setPOSTData: (OFDataArray*)POSTData
 {
-	OF_SETTER(POSTData, POSTData_, YES, 0)
+	OF_SETTER(_POSTData, POSTData, YES, 0)
 }
 
 - (OFDataArray*)POSTData
 {
-	OF_GETTER(POSTData, YES)
+	OF_GETTER(_POSTData, YES)
 }
 
-- (void)setMIMEType: (OFString*)MIMEType_
+- (void)setMIMEType: (OFString*)MIMEType
 {
-	OF_SETTER(MIMEType, MIMEType_, YES, 1)
+	OF_SETTER(_MIMEType, MIMEType, YES, 1)
 }
 
 - (OFString*)MIMEType
 {
-	OF_GETTER(MIMEType, YES)
+	OF_GETTER(_MIMEType, YES)
 }
 
-- (void)setRemoteAddress: (OFString*)remoteAddress_
+- (void)setRemoteAddress: (OFString*)remoteAddress
 {
-	OF_SETTER(remoteAddress, remoteAddress_, YES, 1)
+	OF_SETTER(_remoteAddress, remoteAddress, YES, 1)
 }
 
 - (OFString*)remoteAddress
 {
-	OF_GETTER(remoteAddress, YES)
+	OF_GETTER(_remoteAddress, YES)
 }
 
 - (OFString*)description
@@ -191,7 +191,7 @@
 	const char *requestTypeStr = NULL;
 	OFString *indentedHeaders, *indentedPOSTData, *ret;
 
-	switch (requestType) {
+	switch (_requestType) {
 	case OF_HTTP_REQUEST_TYPE_GET:
 		requestTypeStr = "GET";
 		break;
@@ -203,10 +203,10 @@
 		break;
 	}
 
-	indentedHeaders = [[headers description]
+	indentedHeaders = [[_headers description]
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
-	indentedPOSTData = [[POSTData description]
+	indentedPOSTData = [[_POSTData description]
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
 
@@ -218,8 +218,8 @@
 	    @"\tPOST data MIME type = %@\n"
 	    @"\tRemote address = %@\n"
 	    @">",
-	    [self class], URL, requestTypeStr, indentedHeaders,
-	    indentedPOSTData, MIMEType, remoteAddress];
+	    [self class], _URL, requestTypeStr, indentedHeaders,
+	    indentedPOSTData, _MIMEType, _remoteAddress];
 
 	objc_autoreleasePoolPop(pool);
 

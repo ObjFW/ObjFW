@@ -125,7 +125,7 @@
  */
 @interface OFXMLParser: OFObject <OFStringXMLUnescapingDelegate>
 {
-	id <OFXMLParserDelegate> delegate;
+	id <OFXMLParserDelegate> _delegate;
 	enum {
 		OF_XMLPARSER_OUTSIDE_TAG,
 		OF_XMLPARSER_TAG_OPENED,
@@ -147,23 +147,19 @@
 		OF_XMLPARSER_IN_COMMENT_2,
 		OF_XMLPARSER_IN_DOCTYPE,
 		OF_XMLPARSER_NUM_STATES
-	} state;
-	OFDataArray *cache;
-	OFString *name;
-	OFString *prefix;
-	OFMutableArray *namespaces;
-	OFMutableArray *attributes;
-	OFString *attributeName;
-	OFString *attributePrefix;
-	char delimiter;
-	OFMutableArray *previous;
-	size_t level;
-	BOOL acceptProlog;
-	size_t lineNumber;
-	BOOL lastCarriageReturn;
-	BOOL finishedParsing;
-	of_string_encoding_t encoding;
-	size_t depthLimit;
+	} _state;
+	OFDataArray *_cache;
+	OFString *_name, *_prefix;
+	OFMutableArray *_namespaces, *_attributes;
+	OFString *_attributeName, *_attributePrefix;
+	char _delimiter;
+	OFMutableArray *_previous;
+	size_t _level;
+	BOOL _acceptProlog;
+	size_t _lineNumber;
+	BOOL _lastCarriageReturn, _finishedParsing;
+	of_string_encoding_t _encoding;
+	size_t _depthLimit;
 }
 
 #ifdef OF_HAVE_PROPERTIES

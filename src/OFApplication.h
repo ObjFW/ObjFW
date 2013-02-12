@@ -101,18 +101,18 @@
  */
 @interface OFApplication: OFObject
 {
-	OFString *programName;
-	OFMutableArray *arguments;
-	OFMutableDictionary *environment;
-	int *argc;
-	char ***argv;
+	OFString *_programName;
+	OFArray *_arguments;
+	OFDictionary *_environment;
+	int *_argc;
+	char ***_argv;
 @public
-	id <OFApplicationDelegate> delegate;
-	void (*SIGINTHandler)(id, SEL);
+	id <OFApplicationDelegate> _delegate;
+	void (*_SIGINTHandler)(id, SEL);
 #ifndef _WIN32
-	void (*SIGHUPHandler)(id, SEL);
-	void (*SIGUSR1Handler)(id, SEL);
-	void (*SIGUSR2Handler)(id, SEL);
+	void (*_SIGHUPHandler)(id, SEL);
+	void (*_SIGUSR1Handler)(id, SEL);
+	void (*_SIGUSR2Handler)(id, SEL);
 #endif
 }
 

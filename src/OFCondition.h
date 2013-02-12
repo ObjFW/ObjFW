@@ -21,8 +21,8 @@
  */
 @interface OFCondition: OFMutex
 {
-	of_condition_t condition;
-	BOOL conditionInitialized;
+	of_condition_t _condition;
+	BOOL _conditionInitialized;
 }
 
 /*!

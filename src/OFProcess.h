@@ -39,13 +39,13 @@
 @interface OFProcess: OFStream
 {
 #ifndef _WIN32
-	pid_t pid;
-	int readPipe[2], writePipe[2];
+	pid_t _pid;
+	int _readPipe[2], _writePipe[2];
 #else
-	HANDLE process, readPipe[2], writePipe[2];
+	HANDLE _process, _readPipe[2], _writePipe[2];
 #endif
-	int status;
-	BOOL atEndOfStream;
+	int _status;
+	BOOL _atEndOfStream;
 }
 
 /*!

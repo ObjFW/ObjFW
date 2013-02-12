@@ -48,8 +48,8 @@ static OFList *TLSKeys;
 		    iter = iter->next) {
 			OFTLSKey *key = (OFTLSKey*)iter->object;
 
-			if (key->destructor != NULL)
-				key->destructor(iter->object);
+			if (key->_destructor != NULL)
+				key->_destructor(iter->object);
 		}
 	}
 }
@@ -59,14 +59,14 @@ static OFList *TLSKeys;
 	self = [super init];
 
 	@try {
-		if (!of_tlskey_new(&key))
+		if (!of_tlskey_new(&_key))
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 
-		initialized = YES;
+		_initialized = YES;
 
 		@synchronized (TLSKeys) {
-			listObject = [TLSKeys appendObject: self];
+			_listObject = [TLSKeys appendObject: self];
 		}
 	} @catch (id e) {
 		[self release];
@@ -76,27 +76,28 @@ static OFList *TLSKeys;
 	return self;
 }
 
-- initWithDestructor: (void(*)(id))destructor_
+- initWithDestructor: (void(*)(id))destructor
 {
 	self = [self init];
 
-	destructor = destructor_;
+	_destructor = destructor;
 
 	return self;
 }
 
 - (void)dealloc
 {
-	if (destructor != NULL)
-		destructor(self);
+	if (_initialized) {
+		if (_destructor != NULL)
+			_destructor(self);
 
-	if (initialized)
-		of_tlskey_free(key);
+		of_tlskey_free(_key);
+	}
 
 	/* In case we called [self release] in init */
-	if (listObject != NULL) {
+	if (_listObject != NULL) {
 		@synchronized (TLSKeys) {
-			[TLSKeys removeListObject: listObject];
+			[TLSKeys removeListObject: _listObject];
 		}
 	}
 

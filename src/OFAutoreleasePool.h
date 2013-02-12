@@ -26,8 +26,8 @@
  */
 @interface OFAutoreleasePool: OFObject
 {
-	void *pool;
-	BOOL ignoreRelease;
+	void *_pool;
+	BOOL _ignoreRelease;
 }
 
 /*!

@@ -20,6 +20,6 @@
 
 @interface OFCountedSet_hashtable: OFCountedSet
 {
-	OFMapTable *mapTable;
+	OFMapTable *_mapTable;
 }
 @end

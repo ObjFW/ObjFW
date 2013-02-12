@@ -24,21 +24,21 @@
 #import "common.h"
 
 @implementation OFUnboundNamespaceException
-+ (instancetype)exceptionWithClass: (Class)class_
-			 namespace: (OFString*)ns
++ (instancetype)exceptionWithClass: (Class)class
+			 namespace: (OFString*)namespace
 {
-	return [[[self alloc] initWithClass: class_
-				  namespace: ns] autorelease];
+	return [[[self alloc] initWithClass: class
+				  namespace: namespace] autorelease];
 }
 
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			    prefix: (OFString*)prefix
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 				     prefix: prefix] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -50,13 +50,13 @@
 	abort();
 }
 
-- initWithClass: (Class)class_
-      namespace: (OFString*)ns_
+- initWithClass: (Class)class
+      namespace: (OFString*)namespace
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
 	@try {
-		ns = [ns_ copy];
+		_namespace = [namespace copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -65,13 +65,13 @@
 	return self;
 }
 
-- initWithClass: (Class)class_
-	 prefix: (OFString*)prefix_
+- initWithClass: (Class)class
+	 prefix: (OFString*)prefix
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
 	@try {
-		prefix = [prefix_ copy];
+		_prefix = [prefix copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -82,35 +82,36 @@
 
 - (void)dealloc
 {
-	[ns release];
-	[prefix release];
+	[_namespace release];
+	[_prefix release];
 
 	[super dealloc];
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	if (ns != nil)
-		description = [[OFString alloc] initWithFormat:
-		    @"The namespace %@ is not bound in class %@", ns, inClass];
-	else if (prefix != nil)
-		description = [[OFString alloc] initWithFormat:
+	if (_namespace != nil)
+		_description = [[OFString alloc] initWithFormat:
+		    @"The namespace %@ is not bound in class %@", _namespace,
+		    _inClass];
+	else if (_prefix != nil)
+		_description = [[OFString alloc] initWithFormat:
 		    @"The prefix %@ is not bound to any namespace in class %@",
-		    prefix, inClass];
+		    _prefix, _inClass];
 
-	return description;
+	return _description;
 }
 
 - (OFString*)namespace
 {
-	OF_GETTER(ns, NO)
+	OF_GETTER(_namespace, NO)
 }
 
 - (OFString*)prefix
 {
-	OF_GETTER(prefix, NO)
+	OF_GETTER(_prefix, NO)
 }
 @end

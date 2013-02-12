@@ -55,14 +55,14 @@ atexit_handler(void)
 	if ([delegate respondsToSelector: @selector(applicationWillTerminate)])
 		[delegate applicationWillTerminate];
 
-	[(id)delegate release];
+	[delegate release];
 }
 
 #define SIGNAL_HANDLER(sig)					\
 	static void						\
 	handle##sig(int signal)					\
 	{							\
-		app->sig##Handler(app->delegate,		\
+		app->_##sig##Handler(app->_delegate,		\
 		    @selector(applicationDidReceive##sig));	\
 	}
 SIGNAL_HANDLER(SIGINT)
@@ -139,6 +139,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 	@try {
 		void *pool;
+		OFMutableDictionary *environment;
 #if defined(__MACH__) && !defined(OF_IOS)
 		char **env = *_NSGetEnviron();
 #elif defined(__WIN32)
@@ -269,6 +270,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 #endif
 
 		[environment makeImmutable];
+		_environment = environment;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -277,17 +279,26 @@ of_application_main(int *argc, char **argv[], Class cls)
 	return self;
 }
 
-- (void)OF_setArgumentCount: (int*)argc_
-	  andArgumentValues: (char***)argv_
+- (void)dealloc
+{
+	[_arguments release];
+	[_environment release];
+
+	[super dealloc];
+}
+
+- (void)OF_setArgumentCount: (int*)argc
+	  andArgumentValues: (char***)argv
 {
 #ifndef _WIN32
 	void *pool = objc_autoreleasePoolPush();
+	OFMutableArray *arguments;
 	int i;
 
-	argc = argc_;
-	argv = argv_;
+	_argc = argc;
+	_argv = argv;
 
-	programName = [[OFString alloc]
+	_programName = [[OFString alloc]
 	    initWithCString: (*argv)[0]
 		   encoding: OF_STRING_ENCODING_NATIVE];
 	arguments = [[OFMutableArray alloc] init];
@@ -298,69 +309,72 @@ of_application_main(int *argc, char **argv[], Class cls)
 				       encoding: OF_STRING_ENCODING_NATIVE]];
 
 	[arguments makeImmutable];
+	_arguments = arguments;
 
 	objc_autoreleasePoolPop(pool);
 #else
-	argc = argc_;
-	argv = argv_;
+	_argc = argc;
+	_argv = argv;
 #endif
 }
 
 #ifdef _WIN32
-- (void)OF_setArgumentCount: (int)argc_
-      andWideArgumentValues: (wchar_t**)argv_
+- (void)OF_setArgumentCount: (int)argc
+      andWideArgumentValues: (wchar_t**)argv
 {
 	void *pool = objc_autoreleasePoolPush();
+	OFMutableArray *arguments;
 	int i;
 
-	programName = [[OFString alloc] initWithUTF16String: argv_[0]];
+	_programName = [[OFString alloc] initWithUTF16String: argv[0]];
 	arguments = [[OFMutableArray alloc] init];
 
-	for (i = 1; i < argc_; i++)
+	for (i = 1; i < argc; i++)
 		[arguments addObject:
-		    [OFString stringWithUTF16String: argv_[i]]];
+		    [OFString stringWithUTF16String: argv[i]]];
 
 	[arguments makeImmutable];
+	_arguments = arguments;
 
 	objc_autoreleasePoolPop(pool);
 }
 #endif
 
-- (void)getArgumentCount: (int**)argc_
-       andArgumentValues: (char****)argv_
+- (void)getArgumentCount: (int**)argc
+       andArgumentValues: (char****)argv
 {
-	*argc_ = argc;
-	*argv_ = argv;
+	*argc = _argc;
+	*argv = _argv;
 }
 
 - (OFString*)programName
 {
-	OF_GETTER(programName, NO)
+	OF_GETTER(_programName, NO)
 }
 
 - (OFArray*)arguments
 {
-	OF_GETTER(arguments, NO)
+	OF_GETTER(_arguments, NO)
 }
 
 - (OFDictionary*)environment
 {
-	OF_GETTER(environment, NO)
+	OF_GETTER(_environment, NO)
 }
 
 - (id <OFApplicationDelegate>)delegate
 {
-	return delegate;
+	return _delegate;
 }
 
-- (void)setDelegate: (id <OFApplicationDelegate>)delegate_
+- (void)setDelegate: (id <OFApplicationDelegate>)delegate
 {
-	delegate = delegate_;
+	_delegate = delegate;
 
 #define REGISTER_SIGNAL(sig)						\
 	if ([delegate respondsToSelector:				\
 	    @selector(applicationDidReceive##sig)]) {			\
-		sig##Handler = (void(*)(id, SEL))[(id)delegate		\
+		_##sig##Handler = (void(*)(id, SEL))[(id)delegate	\
 		    methodForSelector:					\
 		    @selector(applicationDidReceive##sig)];		\
 		signal(sig, handle##sig);				\
@@ -391,8 +405,14 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 	objc_autoreleasePoolPop(pool);
 
+	/*
+	 * Note: runLoop is still valid after the release of the pool, as
+	 * OF_setMainRunLoop: retained it. However, we only have a weak
+	 * reference to it now, whereas we had a strong reference before.
+	 */
+
 	pool = objc_autoreleasePoolPush();
-	[delegate applicationDidFinishLaunching];
+	[_delegate applicationDidFinishLaunching];
 	objc_autoreleasePoolPop(pool);
 
 	[runLoop run];
@@ -406,13 +426,5 @@ of_application_main(int *argc, char **argv[], Class cls)
 - (void)terminateWithStatus: (int)status
 {
 	exit(status);
-}
-
-- (void)dealloc
-{
-	[arguments release];
-	[environment release];
-
-	[super dealloc];
 }
 @end

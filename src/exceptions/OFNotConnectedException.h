@@ -23,7 +23,7 @@
  */
 @interface OFNotConnectedException: OFException
 {
-	OFStreamSocket *socket;
+	OFStreamSocket *_socket;
 }
 
 #ifdef OF_HAVE_PROPERTIES

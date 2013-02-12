@@ -22,7 +22,7 @@
  */
 @interface OFEnumerationMutationException: OFException
 {
-	id object;
+	id _object;
 }
 
 #ifdef OF_HAVE_PROPERTIES

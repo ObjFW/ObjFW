@@ -156,6 +156,6 @@ main(int argc, char *argv[])
 	[self propertiesTests];
 #endif
 
-	[OFApplication terminateWithStatus: fails];
+	[OFApplication terminateWithStatus: _fails];
 }
 @end

@@ -21,7 +21,7 @@
 
 @interface OFDictionary_hashtable: OFDictionary
 {
-	OFMapTable *mapTable;
+	OFMapTable *_mapTable;
 }
 
 - initWithCapacity: (size_t)capacity;

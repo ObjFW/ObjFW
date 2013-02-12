@@ -24,14 +24,14 @@
 #import "common.h"
 
 @implementation OFEnumerationMutationException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			    object: (id)object
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 				     object: object] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -43,36 +43,36 @@
 	abort();
 }
 
-- initWithClass: (Class)class_
-	 object: (id)object_
+- initWithClass: (Class)class
+	 object: (id)object
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
-	object = [object_ retain];
+	_object = [object retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[object release];
+	[_object release];
 
 	[super dealloc];
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
-	    @"Object of class %@ was mutated during enumeration!", inClass];
+	_description = [[OFString alloc] initWithFormat:
+	    @"Object of class %@ was mutated during enumeration!", _inClass];
 
-	return description;
+	return _description;
 }
 
 - (id)object
 {
-	OF_GETTER(object, NO)
+	OF_GETTER(_object, NO)
 }
 @end

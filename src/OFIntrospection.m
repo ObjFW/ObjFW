@@ -37,10 +37,10 @@
 	self = [super init];
 
 	@try {
-		selector = (SEL)&method->sel;
-		name = [[OFString alloc]
-		    initWithUTF8String: sel_getName(selector)];
-		typeEncoding = method->sel.types;
+		_selector = (SEL)&method->sel;
+		_name = [[OFString alloc]
+		    initWithUTF8String: sel_getName(_selector)];
+		_typeEncoding = method->sel.types;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -54,10 +54,10 @@
 	self = [super init];
 
 	@try {
-		selector = method_getName(method);
-		name = [[OFString alloc]
-		    initWithUTF8String: sel_getName(selector)];
-		typeEncoding = method_getTypeEncoding(method);
+		_selector = method_getName(method);
+		_name = [[OFString alloc]
+		    initWithUTF8String: sel_getName(_selector)];
+		_typeEncoding = method_getTypeEncoding(method);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -69,53 +69,53 @@
 
 - (void)dealloc
 {
-	[name release];
+	[_name release];
 
 	[super dealloc];
 }
 
 - (SEL)selector
 {
-	return selector;
+	return _selector;
 }
 
 - (OFString*)name
 {
-	OF_GETTER(name, YES)
+	OF_GETTER(_name, YES)
 }
 
 - (const char*)typeEncoding
 {
-	return typeEncoding;
+	return _typeEncoding;
 }
 
 - (OFString*)description
 {
 	return [OFString stringWithFormat: @"<OFMethod: %@ [%s]>",
-					   name, typeEncoding];
+					   _name, _typeEncoding];
 }
 
 - (BOOL)isEqual: (id)object
 {
-	OFMethod *otherMethod;
+	OFMethod *method;
 
 	if (![object isKindOfClass: [OFMethod class]])
 		return NO;
 
-	otherMethod = object;
+	method = object;
 
-	if (!sel_isEqual(otherMethod->selector, selector))
+	if (!sel_isEqual(method->_selector, _selector))
 		return NO;
 
-	if (![otherMethod->name isEqual: name])
+	if (![method->_name isEqual: _name])
 		return NO;
 
-	if ((otherMethod->typeEncoding == NULL && typeEncoding != NULL) ||
-	    (otherMethod->typeEncoding != NULL && typeEncoding == NULL))
+	if ((method->_typeEncoding == NULL && _typeEncoding != NULL) ||
+	    (method->_typeEncoding != NULL && _typeEncoding == NULL))
 		return NO;
 
-	if (otherMethod->typeEncoding != NULL && typeEncoding != NULL &&
-	    strcmp(otherMethod->typeEncoding, typeEncoding))
+	if (method->_typeEncoding != NULL && _typeEncoding != NULL &&
+	    strcmp(method->_typeEncoding, _typeEncoding))
 		return NO;
 
 	return YES;
@@ -127,14 +127,14 @@
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_HASH(hash, [name hash]);
+	OF_HASH_ADD_HASH(hash, [_name hash]);
 
-	if (typeEncoding != NULL) {
+	if (_typeEncoding != NULL) {
 		size_t i, length;
 
-		length = strlen(typeEncoding);
+		length = strlen(_typeEncoding);
 		for (i = 0; i < length; i++)
-			OF_HASH_ADD(hash, typeEncoding[i]);
+			OF_HASH_ADD(hash, _typeEncoding[i]);
 	}
 
 	OF_HASH_FINALIZE(hash);
@@ -150,9 +150,9 @@
 	self = [super init];
 
 	@try {
-		name = [[OFString alloc] initWithUTF8String: ivar->name];
-		typeEncoding = ivar->type;
-		offset = ivar->offset;
+		_name = [[OFString alloc] initWithUTF8String: ivar->name];
+		_typeEncoding = ivar->type;
+		_offset = ivar->offset;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -166,10 +166,10 @@
 	self = [super init];
 
 	@try {
-		name = [[OFString alloc]
+		_name = [[OFString alloc]
 		    initWithUTF8String: ivar_getName(ivar)];
-		typeEncoding = ivar_getTypeEncoding(ivar);
-		offset = ivar_getOffset(ivar);
+		_typeEncoding = ivar_getTypeEncoding(ivar);
+		_offset = ivar_getOffset(ivar);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -181,31 +181,31 @@
 
 - (void)dealloc
 {
-	[name release];
+	[_name release];
 
 	[super dealloc];
 }
 
 - (OFString*)name
 {
-	OF_GETTER(name, YES);
+	OF_GETTER(_name, YES);
 }
 
 - (ptrdiff_t)offset
 {
-	return offset;
+	return _offset;
 }
 
 - (const char*)typeEncoding
 {
-	return typeEncoding;
+	return _typeEncoding;
 }
 
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
 	    @"<OFInstanceVariable: %@ [%s] @ 0x%tx>",
-	    name, typeEncoding, offset];
+	    _name, _typeEncoding, _offset];
 }
 @end
 
@@ -228,9 +228,9 @@
 		unsigned i, count;
 #endif
 
-		classMethods = [[OFMutableArray alloc] init];
-		instanceMethods = [[OFMutableArray alloc] init];
-		instanceVariables = [[OFMutableArray alloc] init];
+		_classMethods = [[OFMutableArray alloc] init];
+		_instanceMethods = [[OFMutableArray alloc] init];
+		_instanceVariables = [[OFMutableArray alloc] init];
 
 #if defined(OF_OBJFW_RUNTIME)
 		for (methodList = object_getClass(class)->methodlist;
@@ -241,7 +241,7 @@
 				void *pool = objc_autoreleasePoolPush();
 				OFMethod *method = [[OFMethod alloc]
 				    OF_initWithMethod: &methodList->methods[i]];
-				[classMethods addObject: [method autorelease]];
+				[_classMethods addObject: [method autorelease]];
 				objc_autoreleasePoolPop(pool);
 			}
 		}
@@ -254,7 +254,7 @@
 				void *pool = objc_autoreleasePoolPush();
 				OFMethod *method = [[OFMethod alloc]
 				    OF_initWithMethod: &methodList->methods[i]];
-				[instanceMethods addObject:
+				[_instanceMethods addObject:
 				    [method autorelease]];
 				objc_autoreleasePoolPop(pool);
 			}
@@ -269,7 +269,7 @@
 
 				ivar = [[OFInstanceVariable alloc]
 				    OF_initWithIvar: &class->ivars->ivars[i]];
-				[instanceVariables addObject:
+				[_instanceVariables addObject:
 				    [ivar autorelease]];
 
 				objc_autoreleasePoolPop(pool);
@@ -281,7 +281,7 @@
 		@try {
 			for (i = 0; i < count; i++) {
 				void *pool = objc_autoreleasePoolPush();
-				[classMethods addObject: [[[OFMethod alloc]
+				[_classMethods addObject: [[[OFMethod alloc]
 				    OF_initWithMethod: methodList[i]]
 				    autorelease]];
 				objc_autoreleasePoolPop(pool);
@@ -294,7 +294,7 @@
 		@try {
 			for (i = 0; i < count; i++) {
 				void *pool = objc_autoreleasePoolPush();
-				[instanceMethods addObject: [[[OFMethod alloc]
+				[_instanceMethods addObject: [[[OFMethod alloc]
 				    OF_initWithMethod: methodList[i]]
 				    autorelease]];
 				objc_autoreleasePoolPop(pool);
@@ -307,7 +307,7 @@
 		@try {
 			for (i = 0; i < count; i++) {
 				void *pool = objc_autoreleasePoolPush();
-				[instanceVariables addObject:
+				[_instanceVariables addObject:
 				    [[[OFInstanceVariable alloc]
 				    OF_initWithIvar: ivarList[i]] autorelease]];
 				objc_autoreleasePoolPop(pool);
@@ -317,9 +317,9 @@
 		}
 #endif
 
-		[classMethods makeImmutable];
-		[instanceMethods makeImmutable];
-		[instanceVariables makeImmutable];
+		[_classMethods makeImmutable];
+		[_instanceMethods makeImmutable];
+		[_instanceVariables makeImmutable];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -330,25 +330,25 @@
 
 - (void)dealloc
 {
-	[classMethods release];
-	[instanceMethods release];
-	[instanceVariables release];
+	[_classMethods release];
+	[_instanceMethods release];
+	[_instanceVariables release];
 
 	[super dealloc];
 }
 
 - (OFArray*)classMethods
 {
-	OF_GETTER(classMethods, YES)
+	OF_GETTER(_classMethods, YES)
 }
 
 - (OFArray*)instanceMethods
 {
-	OF_GETTER(instanceMethods, YES)
+	OF_GETTER(_instanceMethods, YES)
 }
 
 - (OFArray*)instanceVariables
 {
-	OF_GETTER(instanceVariables, YES)
+	OF_GETTER(_instanceVariables, YES)
 }
 @end

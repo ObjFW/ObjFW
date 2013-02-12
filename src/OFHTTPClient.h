@@ -89,8 +89,8 @@
  */
 @interface OFHTTPClient: OFObject
 {
-	id <OFHTTPClientDelegate> delegate;
-	BOOL insecureRedirectsAllowed;
+	id <OFHTTPClientDelegate> _delegate;
+	BOOL _insecureRedirectsAllowed;
 }
 
 #ifdef OF_HAVE_PROPERTIES

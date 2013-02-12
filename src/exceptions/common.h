@@ -19,9 +19,9 @@
 #import "macros.h"
 
 #ifndef _WIN32
-#if !defined(HAVE_THREADSAFE_GETADDRINFO) && !defined(_PSP)
-# include <netdb.h>
-#endif
+# if !defined(HAVE_THREADSAFE_GETADDRINFO) && !defined(_PSP)
+#  include <netdb.h>
+# endif
 # include <errno.h>
 # define GET_ERRNO	errno
 # ifndef HAVE_THREADSAFE_GETADDRINFO
@@ -31,11 +31,11 @@
 # endif
 # define GET_SOCK_ERRNO	errno
 # define ERRFMT		"Error string was: %s"
-# define ERRPARAM	strerror(errNo)
+# define ERRPARAM	strerror(_errNo)
 # if !defined(HAVE_THREADSAFE_GETADDRINFO) && !defined(_PSP)
-#  define AT_ERRPARAM	hstrerror(errNo)
+#  define AT_ERRPARAM	hstrerror(_errNo)
 # else
-#  define AT_ERRPARAM	strerror(errNo)
+#  define AT_ERRPARAM	strerror(_errNo)
 # endif
 #else
 # include <windows.h>
@@ -43,6 +43,6 @@
 # define GET_AT_ERRNO	WSAGetLastError()
 # define GET_SOCK_ERRNO	WSAGetLastError()
 # define ERRFMT		"Error code was: %d"
-# define ERRPARAM	errNo
-# define AT_ERRPARAM	errNo
+# define ERRPARAM	_errNo
+# define AT_ERRPARAM	_errNo
 #endif

@@ -24,9 +24,9 @@
  */
 @interface OFMutex: OFObject <OFLocking>
 {
-	of_mutex_t mutex;
-	BOOL initialized;
-	OFString *name;
+	of_mutex_t _mutex;
+	BOOL _initialized;
+	OFString *_name;
 }
 
 /*!

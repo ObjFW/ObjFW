@@ -20,7 +20,7 @@
 
 @interface NSDictionary_OFDictionary: NSDictionary
 {
-	OFDictionary *dictionary;
+	OFDictionary *_dictionary;
 }
 
 - initWithOFDictionary: (OFDictionary*)dictionary;

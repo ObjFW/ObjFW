@@ -23,8 +23,8 @@
  */
 @interface OFAcceptFailedException: OFException
 {
-	OFTCPSocket *socket;
-	int errNo;
+	OFTCPSocket *_socket;
+	int _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES

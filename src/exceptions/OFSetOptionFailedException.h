@@ -23,7 +23,7 @@
  */
 @interface OFSetOptionFailedException: OFException
 {
-	OFStream *stream;
+	OFStream *_stream;
 }
 
 #ifdef OF_HAVE_PROPERTIES

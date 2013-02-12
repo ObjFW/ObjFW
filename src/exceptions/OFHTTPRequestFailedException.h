@@ -24,8 +24,8 @@
  */
 @interface OFHTTPRequestFailedException: OFException
 {
-	OFHTTPRequest *request;
-	OFHTTPRequestReply *reply;
+	OFHTTPRequest *_request;
+	OFHTTPRequestReply *_reply;
 }
 
 #ifdef OF_HAVE_PROPERTIES

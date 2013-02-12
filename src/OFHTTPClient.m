@@ -63,57 +63,57 @@ normalize_key(char *str_)
 
 @interface OFHTTPClientReply: OFHTTPRequestReply
 {
-	OFTCPSocket *sock;
-	BOOL chunked, atEndOfStream;
-	size_t toRead;
+	OFTCPSocket *_socket;
+	BOOL _chunked, _atEndOfStream;
+	size_t _toRead;
 }
 
-- initWithSocket: (OFTCPSocket*)sock;
+- initWithSocket: (OFTCPSocket*)socket;
 @end
 
 @implementation OFHTTPClientReply
-- initWithSocket: (OFTCPSocket*)sock_
+- initWithSocket: (OFTCPSocket*)socket
 {
 	self = [super init];
 
-	sock = [sock_ retain];
+	_socket = [socket retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[sock release];
+	[_socket release];
 
 	[super dealloc];
 }
 
-- (void)setHeaders: (OFDictionary*)headers_
+- (void)setHeaders: (OFDictionary*)headers
 {
-	[super setHeaders: headers_];
+	[super setHeaders: headers];
 
-	chunked = [[headers_ objectForKey: @"Transfer-Encoding"]
+	_chunked = [[headers objectForKey: @"Transfer-Encoding"]
 	    isEqual: @"chunked"];
 }
 
 - (size_t)lowlevelReadIntoBuffer: (void*)buffer
 			  length: (size_t)length
 {
-	if (!chunked)
-		return [sock readIntoBuffer: buffer
-				     length: length];
+	if (!_chunked)
+		return [_socket readIntoBuffer: buffer
+					length: length];
 
-	if (toRead > 0) {
-		if (length > toRead)
-			length = toRead;
+	if (_toRead > 0) {
+		if (length > _toRead)
+			length = _toRead;
 
-		length = [sock readIntoBuffer: buffer
-				       length: length];
+		length = [_socket readIntoBuffer: buffer
+					  length: length];
 
-		toRead -= length;
+		_toRead -= length;
 
-		if (toRead == 0)
-			if ([[sock readLine] length] > 0)
+		if (_toRead == 0)
+			if ([[_socket readLine] length] > 0)
 				@throw [OFInvalidServerReplyException
 				    exceptionWithClass: [self class]];
 
@@ -124,7 +124,7 @@ normalize_key(char *str_)
 		of_range_t range;
 
 		@try {
-			line = [sock readLine];
+			line = [_socket readLine];
 		} @catch (OFInvalidEncodingException *e) {
 			@throw [OFInvalidServerReplyException
 			    exceptionWithClass: [self class]];
@@ -136,16 +136,16 @@ normalize_key(char *str_)
 			    of_range(0, range.location)];
 
 		@try {
-			toRead =
+			_toRead =
 			    (size_t)[line hexadecimalValue];
 		} @catch (OFInvalidFormatException *e) {
 			@throw [OFInvalidServerReplyException
 			    exceptionWithClass: [self class]];
 		}
 
-		if (toRead == 0) {
-			[sock close];
-			atEndOfStream = YES;
+		if (_toRead == 0) {
+			[_socket close];
+			_atEndOfStream = YES;
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -156,25 +156,25 @@ normalize_key(char *str_)
 
 - (BOOL)lowlevelIsAtEndOfStream
 {
-	if (!chunked)
-		return [sock isAtEndOfStream];
+	if (!_chunked)
+		return [_socket isAtEndOfStream];
 
-	return atEndOfStream;
+	return _atEndOfStream;
 }
 
 - (int)fileDescriptorForReading
 {
-	return [sock fileDescriptorForReading];
+	return [_socket fileDescriptorForReading];
 }
 
 - (size_t)pendingBytes
 {
-	return [super pendingBytes] + [sock pendingBytes];
+	return [super pendingBytes] + [_socket pendingBytes];
 }
 
 - (void)close
 {
-	[sock close];
+	[_socket close];
 }
 @end
 
@@ -184,24 +184,24 @@ normalize_key(char *str_)
 	return [[[self alloc] init] autorelease];
 }
 
-- (void)setDelegate: (id <OFHTTPClientDelegate>)delegate_
+- (void)setDelegate: (id <OFHTTPClientDelegate>)delegate
 {
-	delegate = delegate_;
+	_delegate = delegate;
 }
 
 - (id <OFHTTPClientDelegate>)delegate
 {
-	return delegate;
+	return _delegate;
 }
 
 - (void)setInsecureRedirectsAllowed: (BOOL)allowed
 {
-	insecureRedirectsAllowed = allowed;
+	_insecureRedirectsAllowed = allowed;
 }
 
 - (BOOL)insecureRedirectsAllowed
 {
-	return insecureRedirectsAllowed;
+	return _insecureRedirectsAllowed;
 }
 
 - (OFHTTPRequestReply*)performRequest: (OFHTTPRequest*)request
@@ -219,7 +219,7 @@ normalize_key(char *str_)
 	of_http_request_type_t requestType = [request requestType];
 	OFDictionary *headers = [request headers];
 	OFDataArray *POSTData = [request POSTData];
-	OFTCPSocket *sock;
+	OFTCPSocket *socket;
 	OFHTTPClientReply *reply;
 	OFString *line, *path, *version;
 	OFMutableDictionary *serverHeaders;
@@ -234,30 +234,30 @@ normalize_key(char *str_)
 				   URL: URL];
 
 	if ([scheme isEqual: @"http"])
-		sock = [OFTCPSocket socket];
+		socket = [OFTCPSocket socket];
 	else {
 		if (of_tls_socket_class == Nil)
 			@throw [OFUnsupportedProtocolException
 			    exceptionWithClass: [self class]
 					   URL: URL];
 
-		sock = [[[of_tls_socket_class alloc] init] autorelease];
+		socket = [[[of_tls_socket_class alloc] init] autorelease];
 	}
 
-	if ([delegate respondsToSelector:
+	if ([_delegate respondsToSelector:
 	    @selector(client:didCreateSocket:request:)])
-		[delegate client: self
-		 didCreateSocket: sock
-			 request: request];
+		[_delegate client: self
+		  didCreateSocket: socket
+			  request: request];
 
-	[sock connectToHost: [URL host]
-		       port: [URL port]];
+	[socket connectToHost: [URL host]
+			 port: [URL port]];
 
 	/*
 	 * Work around a bug with packet splitting in lighttpd when using
 	 * HTTPS.
 	 */
-	[sock setWriteBufferEnabled: YES];
+	[socket setWriteBufferEnabled: YES];
 
 	if (requestType == OF_HTTP_REQUEST_TYPE_GET)
 		type = "GET";
@@ -270,30 +270,30 @@ normalize_key(char *str_)
 		path = @"/";
 
 	if ([URL query] != nil)
-		[sock writeFormat: @"%s %@?%@ HTTP/%@\r\n",
+		[socket writeFormat: @"%s %@?%@ HTTP/%@\r\n",
 		    type, path, [URL query], [request protocolVersionString]];
 	else
-		[sock writeFormat: @"%s %@ HTTP/%@\r\n",
+		[socket writeFormat: @"%s %@ HTTP/%@\r\n",
 		    type, path, [request protocolVersionString]];
 
 	if ([URL port] == 80)
-		[sock writeFormat: @"Host: %@\r\n", [URL host]];
+		[socket writeFormat: @"Host: %@\r\n", [URL host]];
 	else
-		[sock writeFormat: @"Host: %@:%d\r\n", [URL host],
+		[socket writeFormat: @"Host: %@:%d\r\n", [URL host],
 		    [URL port]];
 
-	[sock writeString: @"Connection: close\r\n"];
+	[socket writeString: @"Connection: close\r\n"];
 
 	if ([headers objectForKey: @"User-Agent"] == nil)
-		[sock writeString: @"User-Agent: Something using ObjFW "
-				   @"<https://webkeks.org/objfw>\r\n"];
+		[socket writeString: @"User-Agent: Something using ObjFW "
+				     @"<https://webkeks.org/objfw>\r\n"];
 
 	keyEnumerator = [headers keyEnumerator];
 	objectEnumerator = [headers objectEnumerator];
 
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil)
-		[sock writeFormat: @"%@: %@\r\n", key, object];
+		[socket writeFormat: @"%@: %@\r\n", key, object];
 
 	if (requestType == OF_HTTP_REQUEST_TYPE_POST) {
 		OFString *contentType = [request MIMEType];
@@ -302,23 +302,23 @@ normalize_key(char *str_)
 			contentType = @"application/x-www-form-urlencoded; "
 			    @"charset=UTF-8\r\n";
 
-		[sock writeFormat: @"Content-Type: %@\r\n", contentType];
-		[sock writeFormat: @"Content-Length: %d\r\n",
+		[socket writeFormat: @"Content-Type: %@\r\n", contentType];
+		[socket writeFormat: @"Content-Length: %d\r\n",
 		    [POSTData count] * [POSTData itemSize]];
 	}
 
-	[sock writeString: @"\r\n"];
+	[socket writeString: @"\r\n"];
 
 	/* Work around a bug in lighttpd, see above */
-	[sock flushWriteBuffer];
-	[sock setWriteBufferEnabled: NO];
+	[socket flushWriteBuffer];
+	[socket setWriteBufferEnabled: NO];
 
 	if (requestType == OF_HTTP_REQUEST_TYPE_POST)
-		[sock writeBuffer: [POSTData items]
-			   length: [POSTData count] * [POSTData itemSize]];
+		[socket writeBuffer: [POSTData items]
+			     length: [POSTData count] * [POSTData itemSize]];
 
 	@try {
-		line = [sock readLine];
+		line = [socket readLine];
 	} @catch (OFInvalidEncodingException *e) {
 		@throw [OFInvalidServerReplyException
 		    exceptionWithClass: [self class]];
@@ -344,7 +344,7 @@ normalize_key(char *str_)
 		char *keyC;
 
 		@try {
-			line = [sock readLine];
+			line = [socket readLine];
 		} @catch (OFInvalidEncodingException *e) {
 			@throw [OFInvalidServerReplyException
 			    exceptionWithClass: [self class]];
@@ -388,7 +388,7 @@ normalize_key(char *str_)
 
 		if ((redirects > 0 && (status == 301 || status == 302 ||
 		    status == 303 || status == 307) &&
-		    [key isEqual: @"Location"]) && (insecureRedirectsAllowed ||
+		    [key isEqual: @"Location"]) && (_insecureRedirectsAllowed ||
 		    [scheme isEqual: @"http"] ||
 		    ![value hasPrefix: @"http://"])) {
 			OFURL *newURL;
@@ -398,11 +398,11 @@ normalize_key(char *str_)
 			newURL = [OFURL URLWithString: value
 					relativeToURL: URL];
 
-			if ([delegate respondsToSelector:
+			if ([_delegate respondsToSelector:
 			    @selector(client:shouldFollowRedirect:request:)])
-				follow = [delegate client: self
-				     shouldFollowRedirect: newURL
-						  request: request];
+				follow = [_delegate client: self
+				      shouldFollowRedirect: newURL
+						   request: request];
 
 			if (!follow) {
 				[serverHeaders setObject: value
@@ -437,14 +437,14 @@ normalize_key(char *str_)
 
 	[serverHeaders makeImmutable];
 
-	if ([delegate respondsToSelector:
+	if ([_delegate respondsToSelector:
 	    @selector(client:didReceiveHeaders:statusCode:request:)])
-		[delegate      client: self
+		[_delegate     client: self
 		    didReceiveHeaders: serverHeaders
 			   statusCode: status
 			      request: request];
 
-	reply = [[OFHTTPClientReply alloc] initWithSocket: sock];
+	reply = [[OFHTTPClientReply alloc] initWithSocket: socket];
 	[reply setProtocolVersionFromString: version];
 	[reply setStatusCode: status];
 	[reply setHeaders: serverHeaders];

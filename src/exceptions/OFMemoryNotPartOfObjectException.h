@@ -21,7 +21,7 @@
  */
 @interface OFMemoryNotPartOfObjectException: OFException
 {
-	void *pointer;
+	void *_pointer;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -32,21 +32,21 @@
  * @brief Creates a new, autoreleased memory not part of object exception.
  *
  * @param class_ The class of the object which caused the exception
- * @param ptr A pointer to the memory that is not part of the object
+ * @param pointer A pointer to the memory that is not part of the object
  * @return A new, autoreleased memory not part of object exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
-			   pointer: (void*)ptr;
+			   pointer: (void*)pointer;
 
 /*!
  * @brief Initializes an already allocated memory not part of object exception.
  *
  * @param class_ The class of the object which caused the exception
- * @param ptr A pointer to the memory that is not part of the object
+ * @param pointer A pointer to the memory that is not part of the object
  * @return An initialized memory not part of object exception
  */
 - initWithClass: (Class)class_
-	pointer: (void*)ptr;
+	pointer: (void*)pointer;
 
 /*!
  * @brief Returns a pointer to the memory which is not part of the object.

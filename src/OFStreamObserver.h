@@ -77,19 +77,19 @@
  */
 @interface OFStreamObserver: OFObject
 {
-	OFMutableArray *readStreams;
-	OFMutableArray *writeStreams;
-	__unsafe_unretained OFStream **FDToStream;
-	size_t maxFD;
-	OFMutableArray *queue;
-	OFDataArray *queueInfo, *queueFDs;
-	id <OFStreamObserverDelegate> delegate;
-	int cancelFD[2];
+	OFMutableArray *_readStreams;
+	OFMutableArray *_writeStreams;
+	__unsafe_unretained OFStream **_FDToStream;
+	size_t _maxFD;
+	OFMutableArray *_queue;
+	OFDataArray *_queueInfo, *_queueFDs;
+	id <OFStreamObserverDelegate> _delegate;
+	int _cancelFD[2];
 #ifdef _WIN32
-	struct sockaddr_in cancelAddr;
+	struct sockaddr_in _cancelAddr;
 #endif
 #ifdef OF_HAVE_THREADS
-	OFMutex *mutex;
+	OFMutex *_mutex;
 #endif
 }
 

@@ -21,7 +21,7 @@
  */
 @interface OFXMLCDATA: OFXMLNode
 {
-	OFString *CDATA;
+	OFString *_CDATA;
 }
 
 /*!

@@ -24,15 +24,9 @@
  */
 @interface OFURL: OFObject <OFCopying, OFSerialization>
 {
-	OFString *scheme;
-	OFString *host;
-	uint16_t port;
-	OFString *user;
-	OFString *password;
-	OFString *path;
-	OFString *parameters;
-	OFString *query;
-	OFString *fragment;
+	OFString *_scheme, *_host;
+	uint16_t _port;
+	OFString *_user, *_password, *_path, *_parameters, *_query, *_fragment;
 }
 
 #ifdef OF_HAVE_PROPERTIES

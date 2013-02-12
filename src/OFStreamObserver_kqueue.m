@@ -43,14 +43,14 @@
 	self = [super init];
 
 	@try {
-		if ((kernelQueue = kqueue()) == -1)
+		if ((_kernelQueue = kqueue()) == -1)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 
-		changeList = [[OFDataArray alloc] initWithItemSize:
+		_changeList = [[OFDataArray alloc] initWithItemSize:
 		    sizeof(struct kevent)];
 
-		[self OF_addFileDescriptorForReading: cancelFD[0]];
+		[self OF_addFileDescriptorForReading: _cancelFD[0]];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -61,8 +61,8 @@
 
 - (void)dealloc
 {
-	close(kernelQueue);
-	[changeList release];
+	close(_kernelQueue);
+	[_changeList release];
 
 	[super dealloc];
 }
@@ -71,22 +71,22 @@
 {
 	struct kevent event;
 
-	if ([changeList count] >= INT_MAX)
+	if ([_changeList count] >= INT_MAX)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	EV_SET(&event, fd, EVFILT_READ, EV_ADD, 0, 0, 0);
-	[changeList addItem: &event];
+	[_changeList addItem: &event];
 }
 
 - (void)OF_addFileDescriptorForWriting: (int)fd
 {
 	struct kevent event;
 
-	if ([changeList count] >= INT_MAX)
+	if ([_changeList count] >= INT_MAX)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	EV_SET(&event, fd, EVFILT_WRITE, EV_ADD, 0, 0, 0);
-	[changeList addItem: &event];
+	[_changeList addItem: &event];
 }
 
 - (void)OF_removeFileDescriptorForReading: (int)fd
@@ -94,7 +94,7 @@
 	struct kevent event;
 
 	EV_SET(&event, fd, EVFILT_READ, EV_DELETE, 0, 0, 0);
-	[changeList addItem: &event];
+	[_changeList addItem: &event];
 }
 
 - (void)OF_removeFileDescriptorForWriting: (int)fd
@@ -102,7 +102,7 @@
 	struct kevent event;
 
 	EV_SET(&event, fd, EVFILT_WRITE, EV_DELETE, 0, 0, 0);
-	[changeList addItem: &event];
+	[_changeList addItem: &event];
 }
 
 - (BOOL)observeWithTimeout: (double)timeout
@@ -124,23 +124,23 @@
 
 	objc_autoreleasePoolPop(pool);
 
-	events = kevent(kernelQueue, [changeList items],
-	    (int)[changeList count], eventList, EVENTLIST_SIZE,
+	events = kevent(_kernelQueue, [_changeList items],
+	    (int)[_changeList count], eventList, EVENTLIST_SIZE,
 	    (timeout == -1 ? NULL : &timespec));
 
 	if (events < 0)
 		return NO;
 
-	[changeList removeAllItems];
+	[_changeList removeAllItems];
 
 	if (events == 0)
 		return NO;
 
 	for (i = 0; i < events; i++) {
-		if (eventList[i].ident == cancelFD[0]) {
+		if (eventList[i].ident == _cancelFD[0]) {
 			char buffer;
 
-			OF_ENSURE(read(cancelFD[0], &buffer, 1) > 0);
+			OF_ENSURE(read(_cancelFD[0], &buffer, 1) > 0);
 
 			continue;
 		}
@@ -150,10 +150,10 @@
 		pool = objc_autoreleasePoolPush();
 
 		if (eventList[i].flags & EV_ERROR) {
-			if ([delegate respondsToSelector:
+			if ([_delegate respondsToSelector:
 			    @selector(streamDidReceiveException:)])
-				[delegate streamDidReceiveException:
-				    FDToStream[eventList[i].ident]];
+				[_delegate streamDidReceiveException:
+				    _FDToStream[eventList[i].ident]];
 
 			objc_autoreleasePoolPop(pool);
 			continue;
@@ -161,16 +161,16 @@
 
 		switch (eventList[i].filter) {
 		case EVFILT_READ:
-			if ([delegate respondsToSelector:
+			if ([_delegate respondsToSelector:
 			    @selector(streamIsReadyForReading:)])
-				[delegate streamIsReadyForReading:
-				    FDToStream[eventList[i].ident]];
+				[_delegate streamIsReadyForReading:
+				    _FDToStream[eventList[i].ident]];
 			break;
 		case EVFILT_WRITE:
-			if ([delegate respondsToSelector:
+			if ([_delegate respondsToSelector:
 			    @selector(streamIsReadyForWriting:)])
-				[delegate streamIsReadyForWriting:
-				    FDToStream[eventList[i].ident]];
+				[_delegate streamIsReadyForWriting:
+				    _FDToStream[eventList[i].ident]];
 			break;
 		default:
 			assert(0);

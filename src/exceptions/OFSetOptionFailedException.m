@@ -25,14 +25,14 @@
 #import "common.h"
 
 @implementation OFSetOptionFailedException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			    stream: (OFStream*)stream
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 				     stream: stream] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -44,36 +44,36 @@
 	abort();
 }
 
-- initWithClass: (Class)class_
-	 stream: (OFStream*)stream_
+- initWithClass: (Class)class
+	 stream: (OFStream*)stream
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
-	stream = [stream_ retain];
+	_stream = [stream retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[stream release];
+	[_stream release];
 
 	[super dealloc];
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
-	    @"Setting an option in class %@ failed!", inClass];
+	_description = [[OFString alloc] initWithFormat:
+	    @"Setting an option in class %@ failed!", _inClass];
 
-	return description;
+	return _description;
 }
 
 - (OFStream*)stream
 {
-	OF_GETTER(stream, NO)
+	OF_GETTER(_stream, NO)
 }
 @end

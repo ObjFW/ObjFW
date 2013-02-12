@@ -53,6 +53,6 @@
 
 - (BOOL)isCalculated
 {
-	return calculated;
+	return _calculated;
 }
 @end

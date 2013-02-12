@@ -22,14 +22,14 @@
 #import "OFString.h"
 
 @implementation OFMemoryNotPartOfObjectException
-+ (instancetype)exceptionWithClass: (Class)class_
-			   pointer: (void*)ptr
++ (instancetype)exceptionWithClass: (Class)class
+			   pointer: (void*)pointer
 {
-	return [[[self alloc] initWithClass: class_
-				    pointer: ptr] autorelease];
+	return [[[self alloc] initWithClass: class
+				    pointer: pointer] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -41,32 +41,32 @@
 	abort();
 }
 
-- initWithClass: (Class)class_
-	pointer: (void*)ptr
+- initWithClass: (Class)class
+	pointer: (void*)pointer
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
-	pointer = ptr;
+	_pointer = pointer;
 
 	return self;
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
+	_description = [[OFString alloc] initWithFormat:
 	    @"Memory at %p was not allocated as part of object of class %@, "
 	    @"thus the memory allocation was not changed! It is also possible "
 	    @"that there was an attempt to free the same memory twice.",
-	    pointer, inClass];
+	    _pointer, _inClass];
 
-	return description;
+	return _description;
 }
 
 - (void*)pointer
 {
-	return pointer;
+	return _pointer;
 }
 @end

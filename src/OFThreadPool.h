@@ -33,14 +33,14 @@ typedef void (^of_thread_pool_block_t)(void);
  */
 @interface OFThreadPool: OFObject
 {
-	size_t size;
-	OFMutableArray *threads;
-	volatile int count;
+	size_t _size;
+	OFMutableArray *_threads;
+	volatile int _count;
 @public
-	OFList *queue;
-	OFCondition *queueCondition;
-	volatile int doneCount;
-	OFCondition *countCondition;
+	OFList *_queue;
+	OFCondition *_queueCondition;
+	volatile int _doneCount;
+	OFCondition *_countCondition;
 }
 
 /*!

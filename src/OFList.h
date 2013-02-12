@@ -40,10 +40,10 @@ struct of_list_object_t {
  */
 @interface OFList: OFObject <OFCopying, OFCollection, OFSerialization>
 {
-	of_list_object_t *firstListObject;
-	of_list_object_t *lastListObject;
-	size_t		 count;
-	unsigned long	 mutations;
+	of_list_object_t *_firstListObject;
+	of_list_object_t *_lastListObject;
+	size_t		 _count;
+	unsigned long	 _mutations;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -162,10 +162,10 @@ struct of_list_object_t {
 
 @interface OFListEnumerator: OFEnumerator
 {
-	OFList		 *list;
-	of_list_object_t *current;
-	unsigned long	 mutations;
-	unsigned long	 *mutationsPtr;
+	OFList		 *_list;
+	of_list_object_t *_current;
+	unsigned long	 _mutations;
+	unsigned long	 *_mutationsPtr;
 }
 
 -     initWithList: (OFList*)list

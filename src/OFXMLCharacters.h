@@ -21,7 +21,7 @@
  */
 @interface OFXMLCharacters: OFXMLNode
 {
-	OFString *characters;
+	OFString *_characters;
 }
 
 /*!

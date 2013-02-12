@@ -31,9 +31,9 @@
  */
 @interface OFDataArray: OFObject <OFCopying, OFComparing, OFSerialization>
 {
-	uint8_t *items;
-	size_t count;
-	size_t itemSize;
+	uint8_t *_items;
+	size_t _count;
+	size_t _itemSize;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -278,7 +278,7 @@
  */
 @interface OFBigDataArray: OFDataArray
 {
-	size_t size;
+	size_t _size;
 }
 @end
 

@@ -84,7 +84,7 @@ static OFAutoreleasePool **cache = NULL;
 	self = [super init];
 
 	@try {
-		pool = objc_autoreleasePoolPush();
+		_pool = objc_autoreleasePoolPush();
 
 		_objc_rootAutorelease(self);
 	} @catch (id e) {
@@ -97,14 +97,14 @@ static OFAutoreleasePool **cache = NULL;
 
 - (void)releaseObjects
 {
-	ignoreRelease = YES;
+	_ignoreRelease = YES;
 
-	objc_autoreleasePoolPop(pool);
-	pool = objc_autoreleasePoolPush();
+	objc_autoreleasePoolPop(_pool);
+	_pool = objc_autoreleasePoolPush();
 
 	_objc_rootAutorelease(self);
 
-	ignoreRelease = NO;
+	_ignoreRelease = NO;
 }
 
 - (void)release
@@ -123,12 +123,12 @@ static OFAutoreleasePool **cache = NULL;
 	OFAutoreleasePool **cache = of_tlskey_get(cacheKey);
 #endif
 
-	if (ignoreRelease)
+	if (_ignoreRelease)
 		return;
 
-	ignoreRelease = YES;
+	_ignoreRelease = YES;
 
-	objc_autoreleasePoolPop(pool);
+	objc_autoreleasePoolPop(_pool);
 
 	if (cache == NULL) {
 		cache = calloc(sizeof(OFAutoreleasePool*), MAX_CACHE_SIZE);
@@ -146,8 +146,8 @@ static OFAutoreleasePool **cache = NULL;
 
 		for (i = 0; i < MAX_CACHE_SIZE; i++) {
 			if (cache[i] == NULL) {
-				pool = NULL;
-				ignoreRelease = NO;
+				_pool = NULL;
+				_ignoreRelease = NO;
 
 				cache[i] = self;
 

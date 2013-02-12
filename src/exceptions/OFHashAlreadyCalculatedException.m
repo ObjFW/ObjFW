@@ -25,14 +25,14 @@
 #import "common.h"
 
 @implementation OFHashAlreadyCalculatedException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			      hash: (OFHash*)hash
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 				       hash: hash] autorelease];
 }
 
-- initWithClass: (Class)class_
+- initWithClass: (Class)class
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -44,37 +44,37 @@
 	abort();
 }
 
-- initWithClass: (Class)class_
-	   hash: (OFHash*)hash
+- initWithClass: (Class)class
+	   hash: (OFHash*)hashObject
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
-	hashObject = [hash retain];
+	_hashObject = [hashObject retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[hashObject release];
+	[_hashObject release];
 
 	[super dealloc];
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
+	_description = [[OFString alloc] initWithFormat:
 	    @"The hash has already been calculated in class %@ and thus no new "
-	    @"data can be added", inClass];
+	    @"data can be added", _inClass];
 
-	return description;
+	return _description;
 }
 
 - (OFHash*)hashObject
 {
-	OF_GETTER(hashObject, NO)
+	OF_GETTER(_hashObject, NO)
 }
 @end

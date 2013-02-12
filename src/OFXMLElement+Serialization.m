@@ -35,7 +35,7 @@ int _OFXMLElement_Serialization_reference;
 	Class class;
 	id object;
 
-	if ((class = objc_getClass([name cStringWithEncoding:
+	if ((class = objc_getClass([_name cStringWithEncoding:
 	    OF_STRING_ENCODING_ASCII])) == Nil)
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]];

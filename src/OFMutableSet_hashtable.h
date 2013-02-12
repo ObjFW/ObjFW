@@ -20,6 +20,6 @@
 
 @interface OFMutableSet_hashtable: OFMutableSet
 {
-	OFMapTable *mapTable;
+	OFMapTable *_mapTable;
 }
 @end

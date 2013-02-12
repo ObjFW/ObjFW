@@ -168,8 +168,8 @@
 
 			count = (size_t)[[count_ stringValue] decimalValue];
 
-			[mapTable setValue: (void*)(uintptr_t)count
-				    forKey: [object objectByDeserializing]];
+			[_mapTable setValue: (void*)(uintptr_t)count
+				     forKey: [object objectByDeserializing]];
 
 			objc_autoreleasePoolPop(pool2);
 		}
@@ -185,7 +185,7 @@
 
 - (size_t)countForObject: (id)object
 {
-	return (size_t)(uintptr_t)[mapTable valueForKey: object];
+	return (size_t)(uintptr_t)[_mapTable valueForKey: object];
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -193,7 +193,7 @@
     (of_counted_set_enumeration_block_t)block
 {
 	@try {
-		[mapTable enumerateKeysAndValuesUsingBlock:
+		[_mapTable enumerateKeysAndValuesUsingBlock:
 		    ^ (void *key, void *value, BOOL *stop) {
 			block(key, (size_t)(uintptr_t)value, stop);
 		}];
@@ -207,18 +207,18 @@
 
 - (void)addObject: (id)object
 {
-	size_t count = (size_t)(uintptr_t)[mapTable valueForKey: object];
+	size_t count = (size_t)(uintptr_t)[_mapTable valueForKey: object];
 
 	if (SIZE_MAX - count < 1)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
-	[mapTable setValue: (void*)(uintptr_t)(count + 1)
-		    forKey: object];
+	[_mapTable setValue: (void*)(uintptr_t)(count + 1)
+		     forKey: object];
 }
 
 - (void)removeObject: (id)object
 {
-	size_t count = (size_t)(uintptr_t)[mapTable valueForKey: object];
+	size_t count = (size_t)(uintptr_t)[_mapTable valueForKey: object];
 
 	if (count == 0)
 		return;
@@ -226,10 +226,10 @@
 	count--;
 
 	if (count > 0)
-		[mapTable setValue: (void*)(uintptr_t)count
-			    forKey: object];
+		[_mapTable setValue: (void*)(uintptr_t)count
+			     forKey: object];
 	else
-		[mapTable removeValueForKey: object];
+		[_mapTable removeValueForKey: object];
 }
 
 - (void)makeImmutable

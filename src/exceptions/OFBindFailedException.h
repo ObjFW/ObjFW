@@ -23,10 +23,10 @@
  */
 @interface OFBindFailedException: OFException
 {
-	OFTCPSocket *socket;
-	OFString    *host;
-	uint16_t    port;
-	int	    errNo;
+	OFTCPSocket *_socket;
+	OFString    *_host;
+	uint16_t    _port;
+	int	    _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES

@@ -21,8 +21,8 @@
  */
 @interface OFChangeDirectoryFailedException: OFException
 {
-	OFString *path;
-	int errNo;
+	OFString *_path;
+	int _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES

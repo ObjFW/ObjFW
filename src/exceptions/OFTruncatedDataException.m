@@ -22,13 +22,13 @@
 @implementation OFTruncatedDataException
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
+	_description = [[OFString alloc] initWithFormat:
 	    @"Truncated data was received or produced in class %@ while it "
-	    @"should not have been truncated!", inClass];
+	    @"should not have been truncated!", _inClass];
 
-	return description;
+	return _description;
 }
 @end

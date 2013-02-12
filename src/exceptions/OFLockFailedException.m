@@ -22,44 +22,44 @@
 #import "macros.h"
 
 @implementation OFLockFailedException
-+ (instancetype)exceptionWithClass: (Class)class_
++ (instancetype)exceptionWithClass: (Class)class
 			      lock: (id <OFLocking>)lock
 {
-	return [[[self alloc] initWithClass: class_
+	return [[[self alloc] initWithClass: class
 				       lock: lock] autorelease];
 }
 
-- initWithClass: (Class)class_
-	   lock: (id <OFLocking>)lock_
+- initWithClass: (Class)class
+	   lock: (id <OFLocking>)lock
 {
-	self = [super initWithClass: class_];
+	self = [super initWithClass: class];
 
-	lock = [lock_ retain];
+	_lock = [lock retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[lock release];
+	[_lock release];
 
 	[super dealloc];
 }
 
 - (OFString*)description
 {
-	if (description != nil)
-		return description;
+	if (_description != nil)
+		return _description;
 
-	description = [[OFString alloc] initWithFormat:
+	_description = [[OFString alloc] initWithFormat:
 	    @"A lock of type %@ could not be locked in class %@!",
-	    [(id)lock className], inClass];
+	    [_lock class], _inClass];
 
-	return description;
+	return _description;
 }
 
 - (id <OFLocking>)lock
 {
-	OF_GETTER(lock, NO)
+	OF_GETTER(_lock, NO)
 }
 @end

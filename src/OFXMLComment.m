@@ -37,7 +37,7 @@
 	self = [super init];
 
 	@try {
-		comment = [string copy];
+		_comment = [string copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -59,7 +59,7 @@
 			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
-		comment = [[element stringValue] copy];
+		_comment = [[element stringValue] copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -72,19 +72,19 @@
 
 - (BOOL)isEqual: (id)object
 {
-	OFXMLComment *otherComment;
+	OFXMLComment *comment;
 
 	if (![object isKindOfClass: [OFXMLComment class]])
 		return NO;
 
-	otherComment = object;
+	comment = object;
 
-	return ([otherComment->comment isEqual: comment]);
+	return ([comment->_comment isEqual: _comment]);
 }
 
 - (uint32_t)hash
 {
-	return [comment hash];
+	return [_comment hash];
 }
 
 - (OFString*)stringValue
@@ -94,12 +94,12 @@
 
 - (OFString*)XMLString
 {
-	return [OFString stringWithFormat: @"<!--%@-->", comment];
+	return [OFString stringWithFormat: @"<!--%@-->", _comment];
 }
 
 - (OFString*)XMLStringWithIndentation: (unsigned int)indentation
 {
-	return [OFString stringWithFormat: @"<!--%@-->", comment];
+	return [OFString stringWithFormat: @"<!--%@-->", _comment];
 }
 
 - (OFString*)XMLStringWithIndentation: (unsigned int)indentation
@@ -116,25 +116,25 @@
 		@try {
 			ret = [OFString stringWithFormat: @"%s<!--%@-->",
 							  whitespaces,
-							  comment];
+							  _comment];
 		} @finally {
 			[self freeMemory: whitespaces];
 		}
 	} else
-		ret = [OFString stringWithFormat: @"<!--%@-->", comment];
+		ret = [OFString stringWithFormat: @"<!--%@-->", _comment];
 
 	return ret;
 }
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat: @"<!--%@-->", comment];
+	return [OFString stringWithFormat: @"<!--%@-->", _comment];
 }
 
 - (OFXMLElement*)XMLElementBySerializing
 {
 	return [OFXMLElement elementWithName: [self className]
 				   namespace: OF_SERIALIZATION_NS
-				 stringValue: comment];
+				 stringValue: _comment];
 }
 @end
