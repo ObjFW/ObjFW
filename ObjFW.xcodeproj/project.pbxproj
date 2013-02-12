@@ -1937,6 +1937,7 @@
 					"-Wwrite-strings",
 					"-Wcast-align",
 					"-Wpointer-arith",
+					"-Wno-objc-root-class",
 				);
 			};
 			name = Debug;
@@ -1963,6 +1964,7 @@
 					"-Wwrite-strings",
 					"-Wcast-align",
 					"-Wpointer-arith",
+					"-Wno-objc-root-class",
 				);
 			};
 			name = Release;
