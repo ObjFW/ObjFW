@@ -24,13 +24,8 @@
 @implementation OFReadFailedException
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"Failed to read %zu bytes in class %@! " ERRFMT, _requestedLength,
 	    _inClass, ERRPARAM];
-
-	return _description;
 }
 @end

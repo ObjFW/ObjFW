@@ -68,14 +68,9 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"The protocol of URL %@ is not supported by class %@", _URL,
 	    _inClass];
-
-	return _description;
 }
 
 - (OFURL*)URL

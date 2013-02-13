@@ -39,18 +39,13 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
 	if (_requestedSize != 0)
-		_description = [[OFString alloc] initWithFormat:
+		return [OFString stringWithFormat:
 		    @"Could not allocate %zu bytes in class %@!",
 		    _requestedSize, _inClass];
 	else
-		_description = [[OFString alloc] initWithFormat:
+		return [OFString stringWithFormat:
 		    @"Could not allocate enough memory in class %@!", _inClass];
-
-	return _description;
 }
 
 - (size_t)requestedSize

@@ -73,14 +73,9 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"Failed to open file %@ with mode %@ in class %@! " ERRFMT, _path,
 	    _mode, _inClass, ERRPARAM];
-
-	return _description;
 }
 
 - (int)errNo

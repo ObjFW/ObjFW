@@ -22,12 +22,7 @@
 @implementation OFInvalidEncodingException
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"The encoding is invalid for class %@!", _inClass];
-
-	return _description;
 }
 @end

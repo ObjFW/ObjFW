@@ -67,14 +67,9 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"Version %@ of the format or protocol is not supported by class "
 	    @"%@", _version, _inClass];
-
-	return _description;
 }
 
 - (OFString*)version

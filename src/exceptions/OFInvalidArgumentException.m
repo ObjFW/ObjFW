@@ -55,14 +55,9 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"The argument or receiver for method %s of class %@ is invalid!",
 	    sel_getName(_selector), _inClass];
-
-	return _description;
 }
 
 - (SEL)selector

@@ -64,14 +64,9 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"Failed to accept connection in socket of type %@! " ERRFMT,
 	    _inClass, ERRPARAM];
-
-	return _description;
 }
 
 - (OFTCPSocket*)socket

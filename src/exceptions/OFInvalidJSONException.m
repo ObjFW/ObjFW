@@ -53,14 +53,9 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"The JSON representation class %@ tried to parse is invalid in "
 	    @"line %zd!", _inClass, _line];
-
-	return _description;
 }
 
 - (size_t)line

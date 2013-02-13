@@ -48,14 +48,9 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"Deallocation of a lock of type %@ was tried in class %@, even "
 	    @"though it was still locked!", [_lock class], _inClass];
-
-	return _description;
 }
 
 - (id <OFLocking>)lock

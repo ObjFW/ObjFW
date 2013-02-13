@@ -63,13 +63,8 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"Setting an option in class %@ failed!", _inClass];
-
-	return _description;
 }
 
 - (OFStream*)stream

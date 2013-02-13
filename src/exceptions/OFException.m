@@ -48,13 +48,6 @@
 	return self;
 }
 
-- (void)dealloc
-{
-	[_description release];
-
-	[super dealloc];
-}
-
 - (Class)inClass
 {
 	return _inClass;
@@ -62,13 +55,8 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"An exception of class %@ occurred in class %@!",
 	    object_getClass(self), _inClass];
-
-	return _description;
 }
 @end

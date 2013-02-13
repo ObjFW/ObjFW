@@ -22,12 +22,7 @@
 @implementation OFInvalidFormatException
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"The format is invalid for class %@!", _inClass];
-
-	return _description;
 }
 @end

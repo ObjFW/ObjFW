@@ -69,22 +69,17 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
 	if (_host != nil)
-		_description = [[OFString alloc] initWithFormat:
+		return [OFString stringWithFormat:
 		    @"The host %@ could not be translated to an address in "
 		    @"class %@. This means that either the host was not found, "
 		    @"there was a problem with the name server, there was a "
 		    @"problem with your network connection or you specified an "
 		    @"invalid host. " ERRFMT, _host, _inClass, AT_ERRPARAM];
 	else
-		_description = [[OFString alloc] initWithFormat:
+		return [OFString stringWithFormat:
 		    @"An address translation failed in class %@! " ERRFMT,
 		    _inClass, AT_ERRPARAM];
-
-	return _description;
 }
 
 - (OFTCPSocket*)socket

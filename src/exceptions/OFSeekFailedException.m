@@ -72,13 +72,8 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"Seeking failed in class %@! " ERRFMT, _inClass, ERRPARAM];
-
-	return _description;
 }
 
 - (OFSeekableStream*)stream

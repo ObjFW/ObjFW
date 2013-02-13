@@ -55,14 +55,9 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"The selector %s is not understood by class %@ or not (fully) "
 	    @"implemented!", sel_getName(_selector), _inClass];
-
-	return _description;
 }
 
 - (SEL)selector

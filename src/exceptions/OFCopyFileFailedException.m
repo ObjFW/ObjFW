@@ -73,14 +73,9 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"Failed to copy file %@ to %@ in class %@! " ERRFMT,
 	    _sourcePath, _destinationPath, _inClass, ERRPARAM];
-
-	return _description;
 }
 
 - (int)errNo

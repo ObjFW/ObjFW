@@ -53,16 +53,11 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"Memory at %p was not allocated as part of object of class %@, "
 	    @"thus the memory allocation was not changed! It is also possible "
 	    @"that there was an attempt to free the same memory twice.",
 	    _pointer, _inClass];
-
-	return _description;
 }
 
 - (void*)pointer

@@ -63,13 +63,8 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"The socket of type %@ is not connected or bound!", _inClass];
-
-	return _description;
 }
 
 - (OFStreamSocket*)socket

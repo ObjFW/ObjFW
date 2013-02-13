@@ -63,14 +63,9 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"The socket of type %@ is already connected or bound and thus "
 	    @"can't be connected or bound again!", _inClass];
-
-	return _description;
 }
 
 - (OFTCPSocket*)socket

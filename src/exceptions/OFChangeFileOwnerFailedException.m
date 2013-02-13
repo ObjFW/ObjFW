@@ -79,23 +79,18 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
 	if (_group == nil)
-		_description = [[OFString alloc] initWithFormat:
+		return [OFString stringWithFormat:
 		    @"Failed to change owner for file %@ to %@ in class %@! "
 		    ERRFMT, _path, _owner, _inClass, ERRPARAM];
 	else if (_owner == nil)
-		_description = [[OFString alloc] initWithFormat:
+		return [OFString stringWithFormat:
 		    @"Failed to change group for file %@ to %@ in class %@! "
 		    ERRFMT, _path, _group, _inClass, ERRPARAM];
 	else
-		_description = [[OFString alloc] initWithFormat:
+		return [OFString stringWithFormat:
 		    @"Failed to change owner for file %@ to %@:%@ in class %@! "
 		    ERRFMT, _path, _owner, _group, _inClass, ERRPARAM];
-
-	return _description;
 }
 
 - (int)errNo

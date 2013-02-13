@@ -27,7 +27,6 @@
 @interface OFException: OFObject
 {
 	Class _inClass;
-	OFString *_description;
 }
 
 #ifdef OF_HAVE_PROPERTIES

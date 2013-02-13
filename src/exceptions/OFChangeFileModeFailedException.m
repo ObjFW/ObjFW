@@ -72,14 +72,9 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"Failed to change mode for file %@ to %d in class %@! " ERRFMT,
 	    _path, _mode, _inClass, ERRPARAM];
-
-	return _description;
 }
 
 - (int)errNo

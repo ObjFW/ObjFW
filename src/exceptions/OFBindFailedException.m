@@ -78,14 +78,9 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"Binding to port %" @PRIu16 @" on host %@ failed in class %@! "
 	    ERRFMT, _port, _host, _inClass, ERRPARAM];
-
-	return _description;
 }
 
 - (OFTCPSocket*)socket

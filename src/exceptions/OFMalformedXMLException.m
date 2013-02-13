@@ -49,17 +49,12 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
 	if (_parser != nil)
-		_description = [[OFString alloc] initWithFormat:
+		return [OFString stringWithFormat:
 		    @"The XML parser in class %@ encountered malformed XML!",
 		    _inClass];
 	else
-		_description = @"An XML parser encountered malformed XML!";
-
-	return _description;
+		return @"An XML parser encountered malformed XML!";
 }
 
 - (OFXMLParser*)parser

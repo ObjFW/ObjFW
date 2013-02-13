@@ -63,14 +63,9 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"The hash has already been calculated in class %@ and thus no new "
 	    @"data can be added", _inClass];
-
-	return _description;
 }
 
 - (OFHash*)hashObject

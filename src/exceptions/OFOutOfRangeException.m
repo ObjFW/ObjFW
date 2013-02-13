@@ -22,12 +22,7 @@
 @implementation OFOutOfRangeException
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"Value out of range in class %@!", _inClass];
-
-	return _description;
 }
 @end

@@ -68,14 +68,9 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"Failed to change to directory %@ in class %@! " ERRFMT, _path,
 	    _inClass, ERRPARAM];
-
-	return _description;
 }
 
 - (int)errNo

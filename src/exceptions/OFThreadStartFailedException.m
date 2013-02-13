@@ -61,13 +61,8 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"Starting a thread of class %@ failed!", _inClass];
-
-	return _description;
 }
 
 - (OFThread*)thread

@@ -61,14 +61,9 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"Deallocation of a condition of type %@ was tried, even though a "
 	    @"thread was still waiting for it!", _inClass];
-
-	return _description;
 }
 
 - (OFCondition*)condition

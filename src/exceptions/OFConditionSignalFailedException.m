@@ -61,13 +61,8 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"Signaling a condition of type %@ failed!", _inClass];
-
-	return _description;
 }
 
 - (OFCondition*)condition

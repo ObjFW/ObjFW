@@ -68,14 +68,9 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"Failed to listen in socket of type %@ with a back log of %d! "
 	    ERRFMT, _inClass, _backLog, ERRPARAM];
-
-	return _description;
 }
 
 - (OFTCPSocket*)socket

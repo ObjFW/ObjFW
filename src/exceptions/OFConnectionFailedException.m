@@ -78,15 +78,10 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"A connection to %@ on port %" @PRIu16 @" could not be "
 	    @"established in class %@! " ERRFMT, _host, _port, _inClass,
 	    ERRPARAM];
-
-	return _description;
 }
 
 - (OFTCPSocket*)socket

@@ -62,13 +62,8 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"Object of class %@ was mutated during enumeration!", _inClass];
-
-	return _description;
 }
 
 - (id)object

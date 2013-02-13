@@ -90,19 +90,18 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
 	if (_namespace != nil)
-		_description = [[OFString alloc] initWithFormat:
+		return [OFString stringWithFormat:
 		    @"The namespace %@ is not bound in class %@", _namespace,
 		    _inClass];
 	else if (_prefix != nil)
-		_description = [[OFString alloc] initWithFormat:
+		return [OFString stringWithFormat:
 		    @"The prefix %@ is not bound to any namespace in class %@",
 		    _prefix, _inClass];
-
-	return _description;
+	else
+		return [OFString stringWithFormat:
+		    @"A namespace or prefix is not bound in class %@",
+		    _inClass];
 }
 
 - (OFString*)namespace

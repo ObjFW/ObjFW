@@ -61,14 +61,9 @@
 
 - (OFString*)description
 {
-	if (_description != nil)
-		return _description;
-
-	_description = [[OFString alloc] initWithFormat:
+	return [OFString stringWithFormat:
 	    @"Joining a thread of class %@ failed! Most likely, another thread "
 	    @"already waits for the thread to join.", _inClass];
-
-	return _description;
 }
 
 - (OFThread*)thread
