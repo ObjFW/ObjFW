@@ -35,7 +35,7 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
 /*!
  * @brief Adds the objects from the specified OFArray to the end of the array.
  *
- * @brief array An array of objects to add
+ * @param array An array of objects to add
  */
 - (void)addObjectsFromArray: (OFArray*)array;
 
