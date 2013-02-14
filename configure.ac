@@ -43,6 +43,8 @@ AX_CHECK_COMPILER_FLAGS(-Wsemicolon-before-method-body,
 	[OBJCFLAGS="$OBJCFLAGS -Wsemicolon-before-method-body"])
 AX_CHECK_COMPILER_FLAGS(-Wno-objc-root-class,
 	[OBJCFLAGS="$OBJCFLAGS -Wno-objc-root-class"])
+AX_CHECK_COMPILER_FLAGS(-Wdocumentation,
+	[OBJCFLAGS="$OBJCFLAGS -Wdocumentation"])
 
 case "$OBJC" in
 	*clang*)
