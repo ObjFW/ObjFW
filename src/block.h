@@ -42,8 +42,9 @@ extern void _Block_release(const void*);
 #endif
 
 #ifndef Block_copy
-# define Block_copy(x) ((__typeof__(x))_Block_copy((const void*)(x)))
+# define Block_copy(...) \
+	((__typeof__(__VA_ARGS__))_Block_copy((const void*)(__VA_ARGS__)))
 #endif
 #ifndef Block_release
-# define Block_release(x) _Block_release((const void*)(x))
+# define Block_release(...) _Block_release((const void*)(__VA_ARGS__))
 #endif
