@@ -260,9 +260,6 @@ case $objc_runtime in
 			AC_DEFINE(OF_SELUID24, 1,
 				[Whether to use 24 bit selector UIDs])
 		])
-
-		AX_CHECK_COMPILER_FLAGS(-Wno-deprecated-objc-isa-usage,
-			[OBJCFLAGS="$OBJCFLAGS -Wno-deprecated-objc-isa-usage"])
 		;;
 	"Apple runtime")
 		AC_DEFINE(OF_APPLE_RUNTIME, 1,

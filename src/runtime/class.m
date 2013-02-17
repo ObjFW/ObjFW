@@ -562,16 +562,20 @@ class_replaceMethod(Class cls, SEL sel, IMP newimp, const char *types)
 }
 
 Class
-object_getClass(id obj)
+object_getClass(id obj_)
 {
+	struct objc_object *obj = (struct objc_object*)obj_;
+
 	return obj->isa;
 }
 
 Class
-object_setClass(id obj, Class cls)
+object_setClass(id obj_, Class cls)
 {
-	Class old = obj->isa;
+	struct objc_object *obj = (struct objc_object*)obj_;
+	Class old;
 
+	old = obj->isa;
 	obj->isa = cls;
 
 	return old;
@@ -580,7 +584,7 @@ object_setClass(id obj, Class cls)
 const char*
 object_getClassName(id obj)
 {
-	return obj->isa->name;
+	return object_getClass(obj)->name;
 }
 
 static void
