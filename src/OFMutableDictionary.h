@@ -25,6 +25,24 @@ typedef id (^of_dictionary_replace_block_t)(id key, id object, BOOL *stop);
  */
 @interface OFMutableDictionary: OFDictionary
 /*!
+ * @brief Creates a new OFMutableDictionary with enough memory to hold the
+ *	  specified number of objects.
+ *
+ * @param capacity The initial capacity for the OFMutableDictionary
+ * @return A new autoreleased OFMutableDictionary
+ */
++ (instancetype)dictionaryWithCapacity: (size_t)capacity;
+
+/*!
+ * @brief Initializes an already allocated OFMutableDictionary with enough
+ *	  memory to hold the specified number of objects.
+ *
+ * @param capacity The initial capacity for the OFMutableDictionary
+ * @return A new initialized OFMutableDictionary
+ */
+- initWithCapacity: (size_t)capacity;
+
+/*!
  * @brief Sets an object for a key.
  *
  * A key can be any object that conforms to the OFCopying protocol.

@@ -92,6 +92,12 @@ static struct {
 	    initWithSerialization: element];
 }
 
+- initWithCapacity: (size_t)capacity
+{
+	return (id)[[OFMutableDictionary_hashtable alloc]
+	    initWithCapacity: capacity];
+}
+
 - retain
 {
 	return self;
@@ -131,6 +137,11 @@ static struct {
 	return [super alloc];
 }
 
++ dictionaryWithCapacity: (size_t)capacity
+{
+	return [[[self alloc] initWithCapacity: capacity] autorelease];
+}
+
 - init
 {
 	if (object_getClass(self) == [OFMutableDictionary class]) {
@@ -144,6 +155,17 @@ static struct {
 	}
 
 	return [super init];
+}
+
+- initWithCapacity: (size_t)capacity
+{
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 }
 
 - (void)setObject: (id)object

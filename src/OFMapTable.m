@@ -147,8 +147,6 @@ default_equal(void *value1, void *value2)
 		if (_capacity < MIN_CAPACITY)
 			_capacity = MIN_CAPACITY;
 
-		_minCapacity = _capacity;
-
 		_buckets = [self allocMemoryWithSize: sizeof(*_buckets)
 					       count: _capacity];
 
@@ -246,8 +244,6 @@ default_equal(void *value1, void *value2)
 		@throw e;
 	}
 
-	copy->_minCapacity = MIN_CAPACITY;
-
 	return copy;
 }
 
@@ -311,7 +307,11 @@ default_equal(void *value1, void *value2)
 	else
 		return;
 
-	if (capacity < _capacity && capacity < _minCapacity)
+	/*
+	 * Don't downsize if we have an initial capacity or if we would fall
+	 * below the minimum capacity.
+	 */
+	if ((capacity < _capacity && count > _count) || capacity < MIN_CAPACITY)
 		return;
 
 	buckets = [self allocMemoryWithSize: sizeof(*buckets)
