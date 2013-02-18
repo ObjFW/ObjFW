@@ -147,11 +147,12 @@ static struct {
 	if (object_getClass(self) == [OFMutableDictionary class]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
-			abort();
 		} @catch (id e) {
 			[self release];
 			@throw e;
 		}
+
+		abort();
 	}
 
 	return [super init];
@@ -161,11 +162,12 @@ static struct {
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
-		abort();
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	abort();
 }
 
 - (void)setObject: (id)object

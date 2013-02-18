@@ -132,7 +132,7 @@ void _references_to_categories_of_OFDataArray(void)
 			    exceptionWithClass: [self class]];
 
 		self = [self initWithItemSize: 1
-				     capacity: size];
+				     capacity: (size_t)size];
 
 		@try {
 			size_t pageSize = [OFSystemInfo pageSize];

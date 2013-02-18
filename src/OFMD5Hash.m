@@ -190,7 +190,7 @@ md5_transform(uint32_t buffer[4], const uint32_t in[16])
 		}
 
 		memcpy(p, buffer, t);
-		BSWAP32_VEC_IF_BE(in.u32, 16);
+		BSWAP32_VEC_IF_BE(_in.u32, 16);
 		md5_transform(_buffer, _in.u32);
 
 		buffer += t;
@@ -245,7 +245,7 @@ md5_transform(uint32_t buffer[4], const uint32_t in[16])
 		/* Pad block to 56 bytes */
 		memset(p, 0, count - 8);
 	}
-	BSWAP32_VEC_IF_BE(in.u32, 14);
+	BSWAP32_VEC_IF_BE(_in.u32, 14);
 
 	/* Append length in bits and transform */
 	_in.u32[14] = _bits[0];
