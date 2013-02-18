@@ -148,7 +148,7 @@
 		OF_XMLPARSER_IN_DOCTYPE,
 		OF_XMLPARSER_NUM_STATES
 	} _state;
-	OFDataArray *_cache;
+	OFDataArray *_buffer;
 	OFString *_name, *_prefix;
 	OFMutableArray *_namespaces, *_attributes;
 	OFString *_attributeName, *_attributePrefix;

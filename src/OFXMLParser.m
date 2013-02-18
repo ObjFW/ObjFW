@@ -42,25 +42,25 @@ static SEL selectors[OF_XMLPARSER_NUM_STATES];
 static state_function lookupTable[OF_XMLPARSER_NUM_STATES];
 
 static OF_INLINE void
-cache_append(OFDataArray *cache, const char *string,
+buffer_append(OFDataArray *buffer, const char *string,
     of_string_encoding_t encoding, size_t length)
 {
 	if (OF_LIKELY(encoding == OF_STRING_ENCODING_UTF_8))
-		[cache addItems: string
-			  count: length];
+		[buffer addItems: string
+			   count: length];
 	else {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *tmp = [OFString stringWithCString: string
 						   encoding: encoding
 						     length: length];
-		[cache addItems: [tmp UTF8String]
-			  count: [tmp UTF8StringLength]];
+		[buffer addItems: [tmp UTF8String]
+			   count: [tmp UTF8StringLength]];
 		objc_autoreleasePoolPop(pool);
 	}
 }
 
 static OFString*
-transform_string(OFDataArray *cache, size_t cut, BOOL unescape,
+transform_string(OFDataArray *buffer, size_t cut, BOOL unescape,
     id <OFStringXMLUnescapingDelegate> delegate)
 {
 	char *items;
@@ -68,14 +68,14 @@ transform_string(OFDataArray *cache, size_t cut, BOOL unescape,
 	BOOL hasEntities = NO;
 	OFString *ret;
 
-	items = [cache items];
-	length = [cache count] - cut;
+	items = [buffer items];
+	length = [buffer count] - cut;
 
 	for (i = 0; i < length; i++) {
 		if (items[i] == '\r') {
 			if (i + 1 < length && items[i + 1] == '\n') {
-				[cache removeItemAtIndex: i];
-				items = [cache items];
+				[buffer removeItemAtIndex: i];
+				items = [buffer items];
 
 				i--;
 				length--;
@@ -185,7 +185,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		void *pool;
 		OFMutableDictionary *dict;
 
-		_cache = [[OFBigDataArray alloc] init];
+		_buffer = [[OFBigDataArray alloc] init];
 		_previous = [[OFMutableArray alloc] init];
 		_namespaces = [[OFMutableArray alloc] init];
 		_attributes = [[OFMutableArray alloc] init];
@@ -212,7 +212,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 - (void)dealloc
 {
-	[_cache release];
+	[_buffer release];
 	[_name release];
 	[_prefix release];
 	[_namespaces release];
@@ -267,7 +267,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	/* In OF_XMLPARSER_IN_TAG, there can be only spaces */
 	if (length - last > 0 && _state != OF_XMLPARSER_IN_TAG)
-		cache_append(_cache, buffer + last, _encoding, length - last);
+		buffer_append(_buffer, buffer + last, _encoding, length - last);
 }
 
 - (void)parseString: (OFString*)string
@@ -329,11 +329,11 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		return;
 
 	if ((length = *i - *last) > 0)
-		cache_append(_cache, buffer + *last, _encoding, length);
+		buffer_append(_buffer, buffer + *last, _encoding, length);
 
-	if ([_cache count] > 0) {
+	if ([_buffer count] > 0) {
 		void *pool = objc_autoreleasePoolPush();
-		OFString *characters = transform_string(_cache, 0, YES, self);
+		OFString *characters = transform_string(_buffer, 0, YES, self);
 
 		if ([_delegate respondsToSelector:
 		    @selector(parser:foundCharacters:)])
@@ -343,7 +343,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		objc_autoreleasePoolPop(pool);
 	}
 
-	[_cache removeAllItems];
+	[_buffer removeAllItems];
 
 	*last = *i + 1;
 	_state = OF_XMLPARSER_TAG_OPENED;
@@ -494,8 +494,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		void *pool = objc_autoreleasePoolPush();
 		OFString *PI;
 
-		cache_append(_cache, buffer + *last, _encoding, *i - *last);
-		PI = transform_string(_cache, 1, NO, nil);
+		buffer_append(_buffer, buffer + *last, _encoding, *i - *last);
+		PI = transform_string(_buffer, 1, NO, nil);
 
 		if ([PI isEqual: @"xml"] || [PI hasPrefix: @"xml "] ||
 		    [PI hasPrefix: @"xml\t"] || [PI hasPrefix: @"xml\r"] ||
@@ -512,7 +512,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 		objc_autoreleasePoolPop(pool);
 
-		[_cache removeAllItems];
+		[_buffer removeAllItems];
 
 		*last = *i + 1;
 		_state = OF_XMLPARSER_OUTSIDE_TAG;
@@ -526,33 +526,34 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 			       last: (size_t*)last
 {
 	void *pool;
-	const char *cacheCString, *tmp;
-	size_t length, cacheLength;
-	OFString *cacheString;
+	const char *bufferCString, *tmp;
+	size_t length, bufferLength;
+	OFString *bufferString;
 
 	if (buffer[*i] != ' ' && buffer[*i] != '\t' && buffer[*i] != '\n' &&
 	    buffer[*i] != '\r' && buffer[*i] != '>' && buffer[*i] != '/')
 		return;
 
 	if ((length = *i - *last) > 0)
-		cache_append(_cache, buffer + *last, _encoding, length);
+		buffer_append(_buffer, buffer + *last, _encoding, length);
 
 	pool = objc_autoreleasePoolPush();
 
-	cacheCString = [_cache items];
-	cacheLength = [_cache count];
-	cacheString = [OFString stringWithUTF8String: cacheCString
-					      length: cacheLength];
+	bufferCString = [_buffer items];
+	bufferLength = [_buffer count];
+	bufferString = [OFString stringWithUTF8String: bufferCString
+					       length: bufferLength];
 
-	if ((tmp = memchr(cacheCString, ':', cacheLength)) != NULL) {
+	if ((tmp = memchr(bufferCString, ':', bufferLength)) != NULL) {
 		_name = [[OFString alloc]
 		    initWithUTF8String: tmp + 1
-				length: cacheLength - (tmp - cacheCString) - 1];
+				length: bufferLength -
+					(tmp - bufferCString) - 1];
 		_prefix = [[OFString alloc]
-		    initWithUTF8String: cacheCString
-				length: tmp - cacheCString];
+		    initWithUTF8String: bufferCString
+				length: tmp - bufferCString];
 	} else {
-		_name = [cacheString copy];
+		_name = [bufferString copy];
 		_prefix = nil;
 	}
 
@@ -585,7 +586,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 			if ([_previous count] == 0)
 				_finishedParsing = YES;
 		} else
-			[_previous addObject: cacheString];
+			[_previous addObject: bufferString];
 
 		[_name release];
 		[_prefix release];
@@ -602,7 +603,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	objc_autoreleasePoolPop(pool);
 
-	[_cache removeAllItems];
+	[_buffer removeAllItems];
 	*last = *i + 1;
 }
 
@@ -612,43 +613,44 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				    last: (size_t*)last
 {
 	void *pool;
-	const char *cacheCString, *tmp;
-	size_t length, cacheLength;
-	OFString *cacheString, *namespace;
+	const char *bufferCString, *tmp;
+	size_t length, bufferLength;
+	OFString *bufferString, *namespace;
 
 	if (buffer[*i] != ' ' && buffer[*i] != '\t' && buffer[*i] != '\n' &&
 	    buffer[*i] != '\r' && buffer[*i] != '>')
 		return;
 
 	if ((length = *i - *last) > 0)
-		cache_append(_cache, buffer + *last, _encoding, length);
+		buffer_append(_buffer, buffer + *last, _encoding, length);
 
 	pool = objc_autoreleasePoolPush();
 
-	cacheCString = [_cache items];
-	cacheLength = [_cache count];
-	cacheString = [OFString stringWithUTF8String: cacheCString
-					      length: cacheLength];
+	bufferCString = [_buffer items];
+	bufferLength = [_buffer count];
+	bufferString = [OFString stringWithUTF8String: bufferCString
+					       length: bufferLength];
 
-	if ((tmp = memchr(cacheCString, ':', cacheLength)) != NULL) {
+	if ((tmp = memchr(bufferCString, ':', bufferLength)) != NULL) {
 		_name = [[OFString alloc]
 		    initWithUTF8String: tmp + 1
-				length: cacheLength - (tmp - cacheCString) - 1];
+				length: bufferLength -
+					(tmp - bufferCString) - 1];
 		_prefix = [[OFString alloc]
-		    initWithUTF8String: cacheCString
-				length: tmp - cacheCString];
+		    initWithUTF8String: bufferCString
+				length: tmp - bufferCString];
 	} else {
-		_name = [cacheString copy];
+		_name = [bufferString copy];
 		_prefix = nil;
 	}
 
-	if (![[_previous lastObject] isEqual: cacheString])
+	if (![[_previous lastObject] isEqual: bufferString])
 		@throw [OFMalformedXMLException exceptionWithClass: [self class]
 							    parser: self];
 
 	[_previous removeLastObject];
 
-	[_cache removeAllItems];
+	[_buffer removeAllItems];
 
 	namespace = namespace_for_prefix(_prefix, _namespaces);
 	if (_prefix != nil && namespace == nil)
@@ -762,42 +764,43 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				     last: (size_t*)last
 {
 	void *pool;
-	OFMutableString *cacheString;
-	const char *cacheCString, *tmp;
-	size_t length, cacheLength;
+	OFMutableString *bufferString;
+	const char *bufferCString, *tmp;
+	size_t length, bufferLength;
 
 	if (buffer[*i] != '=')
 		return;
 
 	if ((length = *i - *last) > 0)
-		cache_append(_cache, buffer + *last, _encoding, length);
+		buffer_append(_buffer, buffer + *last, _encoding, length);
 
 	pool = objc_autoreleasePoolPush();
 
-	cacheString = [OFMutableString stringWithUTF8String: [_cache items]
-						     length: [_cache count]];
-	[cacheString deleteEnclosingWhitespaces];
+	bufferString = [OFMutableString stringWithUTF8String: [_buffer items]
+						      length: [_buffer count]];
+	[bufferString deleteEnclosingWhitespaces];
 	/* Prevent a useless copy later */
-	[cacheString makeImmutable];
+	[bufferString makeImmutable];
 
-	cacheCString = [cacheString UTF8String];
-	cacheLength = [cacheString UTF8StringLength];
+	bufferCString = [bufferString UTF8String];
+	bufferLength = [bufferString UTF8StringLength];
 
-	if ((tmp = memchr(cacheCString, ':', cacheLength)) != NULL) {
+	if ((tmp = memchr(bufferCString, ':', bufferLength)) != NULL) {
 		_attributeName = [[OFString alloc]
 		    initWithUTF8String: tmp + 1
-				length: cacheLength - (tmp - cacheCString) - 1];
+				length: bufferLength -
+					(tmp - bufferCString) - 1];
 		_attributePrefix = [[OFString alloc]
-		    initWithUTF8String: cacheCString
-				length: tmp - cacheCString];
+		    initWithUTF8String: bufferCString
+				length: tmp - bufferCString];
 	} else {
-		_attributeName = [cacheString copy];
+		_attributeName = [bufferString copy];
 		_attributePrefix = nil;
 	}
 
 	objc_autoreleasePoolPop(pool);
 
-	[_cache removeAllItems];
+	[_buffer removeAllItems];
 
 	*last = *i + 1;
 	_state = OF_XMLPARSER_EXPECT_DELIM;
@@ -835,10 +838,10 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		return;
 
 	if ((length = *i - *last) > 0)
-		cache_append(_cache, buffer + *last, _encoding, length);
+		buffer_append(_buffer, buffer + *last, _encoding, length);
 
 	pool = objc_autoreleasePoolPush();
-	attributeValue = transform_string(_cache, 0, YES, self);
+	attributeValue = transform_string(_buffer, 0, YES, self);
 
 	if (_attributePrefix == nil && [_attributeName isEqual: @"xmlns"])
 		[[_namespaces lastObject] setObject: attributeValue
@@ -854,7 +857,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	objc_autoreleasePoolPop(pool);
 
-	[_cache removeAllItems];
+	[_buffer removeAllItems];
 	[_attributeName release];
 	[_attributePrefix release];
 	_attributeName = _attributePrefix = nil;
@@ -960,8 +963,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	pool = objc_autoreleasePoolPush();
 
-	cache_append(_cache, buffer + *last, _encoding, *i - *last);
-	CDATA = transform_string(_cache, 2, NO, nil);
+	buffer_append(_buffer, buffer + *last, _encoding, *i - *last);
+	CDATA = transform_string(_buffer, 2, NO, nil);
 
 	if ([_delegate respondsToSelector: @selector(parser:foundCDATA:)])
 		[_delegate parser: self
@@ -969,7 +972,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	objc_autoreleasePoolPop(pool);
 
-	[_cache removeAllItems];
+	[_buffer removeAllItems];
 
 	*last = *i + 1;
 	_state = OF_XMLPARSER_OUTSIDE_TAG;
@@ -1015,8 +1018,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	pool = objc_autoreleasePoolPush();
 
-	cache_append(_cache, buffer + *last, _encoding, *i - *last);
-	comment = transform_string(_cache, 2, NO, nil);
+	buffer_append(_buffer, buffer + *last, _encoding, *i - *last);
+	comment = transform_string(_buffer, 2, NO, nil);
 
 	if ([_delegate respondsToSelector: @selector(parser:foundComment:)])
 		[_delegate parser: self
@@ -1024,7 +1027,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	objc_autoreleasePoolPop(pool);
 
-	[_cache removeAllItems];
+	[_buffer removeAllItems];
 
 	*last = *i + 1;
 	_state = OF_XMLPARSER_OUTSIDE_TAG;
