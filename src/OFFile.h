@@ -276,17 +276,17 @@ extern "C" {
 /*! @file */
 
 /*!
- * @brief The standard input stream.
+ * @brief The standard input stream as an OFStream instance.
  */
 extern OFStream *of_stdin;
 
 /*!
- * @brief The standard output stream.
+ * @brief The standard output stream as an OFStream instance.
  */
 extern OFStream *of_stdout;
 
 /*!
- * @brief The standard error stream.
+ * @brief The standard error stream as an OFStream instance.
  */
 extern OFStream *of_stderr;
 #ifdef __cplusplus

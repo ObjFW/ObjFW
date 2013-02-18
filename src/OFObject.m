@@ -839,6 +839,9 @@ void _references_to_categories_of_OFObject(void)
 	void *pointer;
 	struct pre_mem *preMem;
 
+	if OF_UNLIKELY (size == 0)
+		return NULL;
+
 	if OF_UNLIKELY (size > SIZE_MAX - PRE_IVARS_ALIGN)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
@@ -864,9 +867,6 @@ void _references_to_categories_of_OFObject(void)
 - (void*)allocMemoryWithSize: (size_t)size
 		       count: (size_t)count
 {
-	if OF_UNLIKELY (size == 0 || count == 0)
-		return NULL;
-
 	if OF_UNLIKELY (count > SIZE_MAX / size)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 

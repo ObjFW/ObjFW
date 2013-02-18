@@ -32,8 +32,7 @@
 @interface OFDataArray: OFObject <OFCopying, OFComparing, OFSerialization>
 {
 	uint8_t *_items;
-	size_t _count;
-	size_t _itemSize;
+	size_t _count, _itemSize, _capacity;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -57,6 +56,17 @@
  * @return A new autoreleased OFDataArray
  */
 + (instancetype)dataArrayWithItemSize: (size_t)itemSize;
+
+/*!
+ * @brief Creates a new OFDataArray with enough memory to hold the specified
+ *	  number of items which all have the same specified size.
+ *
+ * @param itemSize The size of a single element in the OFDataArray
+ * @param capacity The initial capacity for the OFDataArray
+ * @return A new autoreleased OFDataArray
+ */
++ (instancetype)dataArrayWithItemSize: (size_t)itemSize
+			     capacity: (size_t)capacity;
 
 /*!
  * @brief Creates a new OFDataArary with an item size of 1, containing the data
@@ -102,6 +112,18 @@
  * @return An initialized OFDataArray
  */
 - initWithItemSize: (size_t)itemSize;
+
+/*!
+ * @brief Initializes an already allocated OFDataArray with enough memory to
+ *	  hold the specified number of items which all have the same specified
+ *	  size.
+ *
+ * @param itemSize The size of a single element in the OFDataArray
+ * @param capacity The initial capacity for the OFDataArray
+ * @return An initialized OFDataArray
+ */
+- initWithItemSize: (size_t)itemSize
+	  capacity: (size_t)capacity;
 
 /*!
  * @brief Initializes an already allocated OFDataArray with an item size of 1,
