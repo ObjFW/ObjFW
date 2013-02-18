@@ -21,11 +21,12 @@
 /*!
  * @brief A class which provides functions to create an SHA1 hash.
  */
-@interface OFSHA1Hash: OFHash
+@interface OFSHA1Hash: OFObject <OFHash>
 {
 	uint32_t _state[5];
 	uint64_t _count;
 	char	 _buffer[64];
 	uint8_t	 _digest[OF_SHA1_DIGEST_SIZE];
+	BOOL	 _calculated;
 }
 @end

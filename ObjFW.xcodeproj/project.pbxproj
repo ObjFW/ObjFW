@@ -154,7 +154,6 @@
 		4B3D23931337FC0D00DD29B8 /* OFDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6799631099E7C50041064A /* OFDictionary.m */; };
 		4B3D23941337FC0D00DD29B8 /* OFEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B0108CA10EB8C9300631877 /* OFEnumerator.m */; };
 		4B3D23961337FC0D00DD29B8 /* OFFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6799671099E7C50041064A /* OFFile.m */; };
-		4B3D23971337FC0D00DD29B8 /* OFHash.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF1BCC111C9663F0025511F /* OFHash.m */; };
 		4B3D23981337FC0D00DD29B8 /* OFHTTPRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B99251012E0780000215DBE /* OFHTTPRequest.m */; };
 		4B3D23991337FC0D00DD29B8 /* OFList.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B67996D1099E7C50041064A /* OFList.m */; };
 		4B3D239A1337FC0D00DD29B8 /* OFMD5Hash.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF1BCC311C9663F0025511F /* OFMD5Hash.m */; };
@@ -797,7 +796,6 @@
 		4BF0749512DFAFCA00A4ADD1 /* OFURLTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFURLTests.m; path = tests/OFURLTests.m; sourceTree = SOURCE_ROOT; };
 		4BF1BCBF11C9663F0025511F /* objfw-defs.h.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "objfw-defs.h.in"; path = "src/objfw-defs.h.in"; sourceTree = "<group>"; };
 		4BF1BCC011C9663F0025511F /* OFHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFHash.h; path = src/OFHash.h; sourceTree = "<group>"; };
-		4BF1BCC111C9663F0025511F /* OFHash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHash.m; path = src/OFHash.m; sourceTree = "<group>"; };
 		4BF1BCC211C9663F0025511F /* OFMD5Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMD5Hash.h; path = src/OFMD5Hash.h; sourceTree = "<group>"; };
 		4BF1BCC311C9663F0025511F /* OFMD5Hash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMD5Hash.m; path = src/OFMD5Hash.m; sourceTree = "<group>"; };
 		4BF1BCC411C9663F0025511F /* OFSHA1Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSHA1Hash.h; path = src/OFSHA1Hash.h; sourceTree = "<group>"; };
@@ -1097,7 +1095,6 @@
 				4B6799661099E7C50041064A /* OFFile.h */,
 				4B6799671099E7C50041064A /* OFFile.m */,
 				4BF1BCC011C9663F0025511F /* OFHash.h */,
-				4BF1BCC111C9663F0025511F /* OFHash.m */,
 				4BB4B53F16775FF4002A2DCE /* OFHTTPClient.h */,
 				4BB4B54016775FF4002A2DCE /* OFHTTPClient.m */,
 				4B99250F12E0780000215DBE /* OFHTTPRequest.h */,
@@ -1600,7 +1597,7 @@
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0450;
+				LastUpgradeCheck = 0460;
 			};
 			buildConfigurationList = 1DEB919308733D9F0010E9CD /* Build configuration list for PBXProject "ObjFW" */;
 			compatibilityVersion = "Xcode 3.1";
@@ -1724,7 +1721,6 @@
 				4B2B3E80140D430500EC2F7C /* OFDictionary_hashtable.m in Sources */,
 				4B3D23941337FC0D00DD29B8 /* OFEnumerator.m in Sources */,
 				4B3D23961337FC0D00DD29B8 /* OFFile.m in Sources */,
-				4B3D23971337FC0D00DD29B8 /* OFHash.m in Sources */,
 				4BB4B54516775FF4002A2DCE /* OFHTTPClient.m in Sources */,
 				4B3D23981337FC0D00DD29B8 /* OFHTTPRequest.m in Sources */,
 				4BFDB4D2168B93CB006A4027 /* OFHTTPRequestReply.m in Sources */,

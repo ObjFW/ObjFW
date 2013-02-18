@@ -139,6 +139,11 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 	return 64;
 }
 
++ (instancetype)hash
+{
+	return [[[self alloc] init] autorelease];
+}
+
 - init
 {
 	self = [super init];
@@ -191,5 +196,10 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 	_calculated = YES;
 
 	return _digest;
+}
+
+- (BOOL)isCalculated
+{
+	return _calculated;
 }
 @end

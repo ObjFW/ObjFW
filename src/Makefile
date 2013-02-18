@@ -20,7 +20,6 @@ SRCS = OFApplication.m			\
        OFDictionary.m			\
        OFEnumerator.m			\
        OFFile.m				\
-       OFHash.m				\
        OFHTTPClient.m			\
        OFHTTPRequest.m			\
        OFHTTPRequestReply.m		\
@@ -84,6 +83,7 @@ SRCS_THREADS = OFCondition.m		\
 INCLUDES_THREADS = threading.h
 INCLUDES := ${SRCS:.m=.h}		\
 	    OFCollection.h		\
+	    OFHash.h			\
 	    OFJSONRepresentation.h	\
 	    OFLocking.h			\
 	    OFSerialization.h		\

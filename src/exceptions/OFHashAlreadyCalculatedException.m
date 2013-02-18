@@ -20,13 +20,12 @@
 
 #import "OFHashAlreadyCalculatedException.h"
 #import "OFString.h"
-#import "OFHash.h"
 
 #import "common.h"
 
 @implementation OFHashAlreadyCalculatedException
 + (instancetype)exceptionWithClass: (Class)class
-			      hash: (OFHash*)hash
+			      hash: (id <OFHash>)hash
 {
 	return [[[self alloc] initWithClass: class
 				       hash: hash] autorelease];
@@ -45,7 +44,7 @@
 }
 
 - initWithClass: (Class)class
-	   hash: (OFHash*)hashObject
+	   hash: (id <OFHash>)hashObject
 {
 	self = [super initWithClass: class];
 
@@ -68,7 +67,7 @@
 	    @"data can be added", _inClass];
 }
 
-- (OFHash*)hashObject
+- (id <OFHash>)hashObject
 {
 	OF_GETTER(_hashObject, NO)
 }

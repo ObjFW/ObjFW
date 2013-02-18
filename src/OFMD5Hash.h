@@ -21,7 +21,7 @@
 /*!
  * @brief A class which provides functions to create an MD5 hash.
  */
-@interface OFMD5Hash: OFHash
+@interface OFMD5Hash: OFObject <OFHash>
 {
 	uint32_t _buffer[4];
 	uint32_t _bits[2];
@@ -29,5 +29,6 @@
 		uint8_t	u8[64];
 		uint32_t u32[16];
 	} _in;
+	BOOL _calculated;
 }
 @end

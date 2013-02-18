@@ -15,19 +15,18 @@
  */
 
 #import "OFException.h"
-
-@class OFHash;
+#import "OFHash.h"
 
 /*!
  * @brief An exception indicating that the hash has already been calculated.
  */
 @interface OFHashAlreadyCalculatedException: OFException
 {
-	OFHash *_hashObject;
+	id <OFHash> _hashObject;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain, nonatomic) OFHash *hashObject;
+@property (readonly, retain, nonatomic) id <OFHash> hashObject;
 #endif
 
 /*!
@@ -38,7 +37,7 @@
  * @return A new, autoreleased hash already calculated exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
-			      hash: (OFHash*)hashObject;
+			      hash: (id <OFHash>)hashObject;
 
 /*!
  * @brief Initializes an already allocated hash already calculated exception.
@@ -48,12 +47,12 @@
  * @return An initialized hash already calculated exception
  */
 - initWithClass: (Class)class_
-	   hash: (OFHash*)hashObject;
+	   hash: (id <OFHash>)hashObject;
 
 /*!
  * @brief Returns the hash which has already been calculated.
  *
  * @return The hash which has already been calculated
  */
-- (OFHash*)hashObject;
+- (id <OFHash>)hashObject;
 @end

@@ -142,6 +142,11 @@ md5_transform(uint32_t buffer[4], const uint32_t in[16])
 	return 64;
 }
 
++ (instancetype)hash
+{
+	return [[[self alloc] init] autorelease];
+}
+
 - init
 {
 	self = [super init];
@@ -257,5 +262,10 @@ md5_transform(uint32_t buffer[4], const uint32_t in[16])
 	_calculated = YES;
 
 	return (uint8_t*)_buffer;
+}
+
+- (BOOL)isCalculated
+{
+	return _calculated;
 }
 @end

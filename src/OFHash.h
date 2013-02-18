@@ -17,13 +17,9 @@
 #import "OFObject.h"
 
 /*!
- * @brief A base class for classes providing hash functions.
+ * @brief A protocol for classes providing hash functions.
  */
-@interface OFHash: OFObject
-{
-	BOOL _calculated;
-}
-
+@protocol OFHash <OFObject>
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, getter=isCalculated) BOOL calculated;
 #endif
