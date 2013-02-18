@@ -94,7 +94,7 @@
 	id *objects;
 	size_t i, count;
 
-	self = [self init];
+	self = [super init];
 
 	if (array == nil)
 		return self;
@@ -102,6 +102,9 @@
 	@try {
 		objects = [array objects];
 		count = [array count];
+
+		_array = [[OFDataArray alloc] initWithItemSize: sizeof(id)
+						      capacity: count];
 	} @catch (id e) {
 		[self release];
 		@throw e;

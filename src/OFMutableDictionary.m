@@ -137,7 +137,7 @@ static struct {
 	return [super alloc];
 }
 
-+ dictionaryWithCapacity: (size_t)capacity
++ (instancetype)dictionaryWithCapacity: (size_t)capacity
 {
 	return [[[self alloc] initWithCapacity: capacity] autorelease];
 }

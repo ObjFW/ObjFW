@@ -33,6 +33,21 @@
 		[self inheritMethodsFromClass: [OFArray_adjacent class]];
 }
 
+- initWithCapacity: (size_t)capacity
+{
+	self = [super init];
+
+	@try {
+		_array = [[OFDataArray alloc] initWithItemSize: sizeof(id)
+						      capacity: capacity];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
 - (void)addObject: (id)object
 {
 	if (object == nil)

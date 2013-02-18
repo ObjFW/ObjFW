@@ -38,7 +38,7 @@ typedef id (^of_dictionary_replace_block_t)(id key, id object, BOOL *stop);
  *	  memory to hold the specified number of objects.
  *
  * @param capacity The initial capacity for the OFMutableDictionary
- * @return A new initialized OFMutableDictionary
+ * @return An initialized OFMutableDictionary
  */
 - initWithCapacity: (size_t)capacity;
 

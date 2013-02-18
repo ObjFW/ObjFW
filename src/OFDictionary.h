@@ -118,7 +118,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  *
  * @param key The key
  * @param object The object
- * @return A new initialized OFDictionary
+ * @return An initialized OFDictionary
  */
 - initWithObject: (id)object
 	  forKey: (id)key;
@@ -129,7 +129,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  *
  * @param keys An array of keys
  * @param objects An array of objects
- * @return A new initialized OFDictionary
+ * @return An initialized OFDictionary
  */
 - initWithObjects: (OFArray*)objects
 	  forKeys: (OFArray*)keys;
@@ -141,7 +141,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * @param keys An array of keys
  * @param objects An array of objects
  * @param count The number of objects in the arrays
- * @return A new initialized OFDictionary
+ * @return An initialized OFDictionary
  */
 - initWithObjects: (id const*)objects
 	  forKeys: (id const*)keys
@@ -152,7 +152,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  *	  and objects.
  *
  * @param firstKey The first key
- * @return A new initialized OFDictionary
+ * @return An initialized OFDictionary
  */
 - initWithKeysAndObjects: (id)firstKey, ... OF_SENTINEL;
 
@@ -162,7 +162,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  *
  * @param firstKey The first key
  * @param arguments A va_list of the other arguments
- * @return A new initialized OFDictionary
+ * @return An initialized OFDictionary
  */
 - initWithKey: (id)firstKey
     arguments: (va_list)arguments;

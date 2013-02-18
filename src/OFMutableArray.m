@@ -87,6 +87,11 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 	return (id)[[OFMutableArray_adjacent alloc] init];
 }
 
+- initWithCapacity: (size_t)capacity
+{
+	return (id)[[OFMutableArray_adjacent alloc] initWithCapacity: capacity];
+}
+
 - initWithObject: (id)object
 {
 	return (id)[[OFMutableArray_adjacent alloc] initWithObject: object];
@@ -169,6 +174,11 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 	return [super alloc];
 }
 
++ (instancetype)arrayWithCapacity: (size_t)capacity
+{
+	return [[[self alloc] initWithCapacity: capacity] autorelease];
+}
+
 - init
 {
 	if (object_getClass(self) == [OFMutableArray class]) {
@@ -182,6 +192,18 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 	}
 
 	return [super init];
+}
+
+- initWithCapacity: (size_t)capacity
+{
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	abort();
 }
 
 - copy

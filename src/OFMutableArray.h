@@ -26,6 +26,24 @@ typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
  */
 @interface OFMutableArray: OFArray
 /*!
+ * @brief Creates a new OFMutableArray with enough memory to hold the specified
+ *	  number of objects.
+ *
+ * @param capacity The initial capacity for the OFMutableArray
+ * @return A new autoreleased OFMutableArray
+ */
++ (instancetype)arrayWithCapacity: (size_t)capacity;
+
+/*!
+ * @brief Initializes an already allocated OFMutableArray with enough memory to
+ *	  hold the specified number of objects.
+ *
+ * @param capacity The initial capacity for the OFMutableArray
+ * @return An initialized OFMutableArray
+ */
+- initWithCapacity: (size_t)capacity;
+
+/*!
  * @brief Adds an object to the end of the array.
  *
  * @param object An object to add

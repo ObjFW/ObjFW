@@ -19,7 +19,6 @@
 #include <stdlib.h>
 
 #import "OFAutoreleasePool.h"
-#import "OFArray.h"
 
 #import "macros.h"
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
