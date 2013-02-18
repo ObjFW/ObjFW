@@ -57,11 +57,9 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  */
 @interface OFStream: OFObject <OFCopying>
 {
-	char   *_cache;
-	char   *_writeBuffer;
-	size_t _cacheLength, _writeBufferLength;
-	BOOL   _writeBufferEnabled;
-	BOOL   _blocking, _waitingForDelimiter;
+	char *_readBuffer, *_writeBuffer;
+	size_t _readBufferLength, _writeBufferLength;
+	BOOL _writeBufferEnabled, _blocking, _waitingForDelimiter;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -984,11 +982,11 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
 	    arguments: (va_list)arguments;
 
 /*!
- * @brief Returns the number of bytes still present in the internal read cache.
+ * @brief Returns the number of bytes still present in the internal read buffer.
  *
- * @return The number of bytes still present in the internal read cache.
+ * @return The number of bytes still present in the internal read buffer.
  */
-- (size_t)pendingBytes;
+- (size_t)numberOfBytesInReadBuffer;
 
 /*!
  * @brief Returns whether the stream is in blocking mode.

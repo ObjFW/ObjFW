@@ -100,7 +100,7 @@
 
 - (BOOL)isAtEndOfStream
 {
-	if (_cacheLength > 0)
+	if (_readBufferLength > 0)
 		return NO;
 
 	return [self lowlevelIsAtEndOfStream];
@@ -109,28 +109,30 @@
 - (size_t)readIntoBuffer: (void*)buffer
 		  length: (size_t)length
 {
-	if (_cacheLength == 0)
+	if (_readBufferLength == 0)
 		return [self lowlevelReadIntoBuffer: buffer
 					     length: length];
 
-	if (length >= _cacheLength) {
-		size_t ret = _cacheLength;
-		memcpy(buffer, _cache, _cacheLength);
+	if (length >= _readBufferLength) {
+		size_t ret = _readBufferLength;
+		memcpy(buffer, _readBuffer, _readBufferLength);
 
-		[self freeMemory: _cache];
-		_cache = NULL;
-		_cacheLength = 0;
+		[self freeMemory: _readBuffer];
+		_readBuffer = NULL;
+		_readBufferLength = 0;
 
 		return ret;
 	} else {
-		char *tmp = [self allocMemoryWithSize: _cacheLength - length];
-		memcpy(tmp, _cache + length, _cacheLength - length);
+		char *tmp;
 
-		memcpy(buffer, _cache, length);
+		tmp = [self allocMemoryWithSize: _readBufferLength - length];
+		memcpy(tmp, _readBuffer + length, _readBufferLength - length);
 
-		[self freeMemory: _cache];
-		_cache = tmp;
-		_cacheLength -= length;
+		memcpy(buffer, _readBuffer, length);
+
+		[self freeMemory: _readBuffer];
+		_readBuffer = tmp;
+		_readBufferLength -= length;
 
 		return length;
 	}
@@ -566,32 +568,32 @@
 - (OFString*)tryReadLineWithEncoding: (of_string_encoding_t)encoding
 {
 	size_t i, pageSize, bufferLength, retLength;
-	char *retCString, *buffer, *newCache;
+	char *retCString, *buffer, *readBuffer;
 	OFString *ret;
 
-	/* Look if there's a line or \0 in our cache */
-	if (!_waitingForDelimiter && _cache != NULL) {
-		for (i = 0; i < _cacheLength; i++) {
-			if OF_UNLIKELY (_cache[i] == '\n' ||
-			    _cache[i] == '\0') {
+	/* Look if there's a line or \0 in our buffer */
+	if (!_waitingForDelimiter && _readBuffer != NULL) {
+		for (i = 0; i < _readBufferLength; i++) {
+			if OF_UNLIKELY (_readBuffer[i] == '\n' ||
+			    _readBuffer[i] == '\0') {
 				retLength = i;
 
-				if (i > 0 && _cache[i - 1] == '\r')
+				if (i > 0 && _readBuffer[i - 1] == '\r')
 					retLength--;
 
-				ret = [OFString stringWithCString: _cache
+				ret = [OFString stringWithCString: _readBuffer
 							 encoding: encoding
 							   length: retLength];
 
-				newCache = [self
-				    allocMemoryWithSize: _cacheLength - i - 1];
-				if (newCache != NULL)
-					memcpy(newCache, _cache + i + 1,
-					    _cacheLength - i - 1);
+				readBuffer = [self allocMemoryWithSize:
+				    _readBufferLength - i - 1];
+				if (readBuffer != NULL)
+					memcpy(readBuffer, _readBuffer + i + 1,
+					    _readBufferLength - i - 1);
 
-				[self freeMemory: _cache];
-				_cache = newCache;
-				_cacheLength -= i + 1;
+				[self freeMemory: _readBuffer];
+				_readBuffer = readBuffer;
+				_readBufferLength -= i + 1;
 
 				_waitingForDelimiter = NO;
 				return ret;
@@ -605,23 +607,23 @@
 
 	@try {
 		if ([self lowlevelIsAtEndOfStream]) {
-			if (_cache == NULL) {
+			if (_readBuffer == NULL) {
 				_waitingForDelimiter = NO;
 				return nil;
 			}
 
-			retLength = _cacheLength;
+			retLength = _readBufferLength;
 
-			if (retLength > 0 && _cache[retLength - 1] == '\r')
+			if (retLength > 0 && _readBuffer[retLength - 1] == '\r')
 				retLength--;
 
-			ret = [OFString stringWithCString: _cache
+			ret = [OFString stringWithCString: _readBuffer
 						 encoding: encoding
 						   length: retLength];
 
-			[self freeMemory: _cache];
-			_cache = NULL;
-			_cacheLength = 0;
+			[self freeMemory: _readBuffer];
+			_readBuffer = NULL;
+			_readBufferLength = 0;
 
 			_waitingForDelimiter = NO;
 			return ret;
@@ -634,14 +636,15 @@
 		for (i = 0; i < bufferLength; i++) {
 			if OF_UNLIKELY (buffer[i] == '\n' ||
 			    buffer[i] == '\0') {
-				retLength = _cacheLength + i;
+				retLength = _readBufferLength + i;
 				retCString = [self
 				    allocMemoryWithSize: retLength];
 
-				if (_cache != NULL)
-					memcpy(retCString, _cache,
-					    _cacheLength);
-				memcpy(retCString + _cacheLength, buffer, i);
+				if (_readBuffer != NULL)
+					memcpy(retCString, _readBuffer,
+					    _readBufferLength);
+				memcpy(retCString + _readBufferLength,
+				    buffer, i);
 
 				if (retLength > 0 &&
 				    retCString[retLength - 1] == '\r')
@@ -657,34 +660,35 @@
 						       length: rl];
 				} @catch (id e) {
 					/*
-					 * Append data to cache to prevent loss
-					 * of data due to wrong encoding.
+					 * Append data to readBuffer to prevent
+					 * loss of data due to wrong encoding.
 					 */
-					_cache = [self
-					    resizeMemory: _cache
-						    size: _cacheLength +
+					_readBuffer = [self
+					    resizeMemory: _readBuffer
+						    size: _readBufferLength +
 							  bufferLength];
 
-					if (_cache != NULL)
-						memcpy(_cache + _cacheLength,
+					if (_readBuffer != NULL)
+						memcpy(_readBuffer +
+						    _readBufferLength,
 						    buffer, bufferLength);
 
-					_cacheLength += bufferLength;
+					_readBufferLength += bufferLength;
 
 					@throw e;
 				} @finally {
 					[self freeMemory: retCString];
 				}
 
-				newCache = [self allocMemoryWithSize:
-				    bufferLength - i - 1];
-				if (newCache != NULL)
-					memcpy(newCache, buffer + i + 1,
+				readBuffer = [self
+				    allocMemoryWithSize: bufferLength - i - 1];
+				if (readBuffer != NULL)
+					memcpy(readBuffer, buffer + i + 1,
 					    bufferLength - i - 1);
 
-				[self freeMemory: _cache];
-				_cache = newCache;
-				_cacheLength = bufferLength - i - 1;
+				[self freeMemory: _readBuffer];
+				_readBuffer = readBuffer;
+				_readBufferLength = bufferLength - i - 1;
 
 				_waitingForDelimiter = NO;
 				return ret;
@@ -692,17 +696,19 @@
 		}
 
 		/* There was no newline or \0 */
-		_cache = [self resizeMemory: _cache
-				       size: _cacheLength + bufferLength];
+		_readBuffer = [self resizeMemory: _readBuffer
+					    size: _readBufferLength +
+						  bufferLength];
 
 		/*
-		 * It's possible that _cacheLength + bufferLength is 0 and thus
-		 * _cache was set to NULL by resizeMemory:size:.
+		 * It's possible that _readBufferLength + bufferLength is 0 and
+		 * thus _readBuffer was set to NULL by resizeMemory:size:.
 		 */
-		if (_cache != NULL)
-			memcpy(_cache + _cacheLength, buffer, bufferLength);
+		if (_readBuffer != NULL)
+			memcpy(_readBuffer + _readBufferLength,
+			    buffer, bufferLength);
 
-		_cacheLength += bufferLength;
+		_readBufferLength += bufferLength;
 	} @finally {
 		[self freeMemory: buffer];
 	}
@@ -771,7 +777,7 @@
 {
 	const char *delimiterCString;
 	size_t i, j, delimiterLength, pageSize, bufferLength, retLength;
-	char *retCString, *buffer, *newCache;
+	char *retCString, *buffer, *readBuffer;
 	OFString *ret;
 
 	delimiterCString = [delimiter cStringWithEncoding: encoding];
@@ -783,30 +789,30 @@
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	/* Look if there's something in our cache */
-	if (!_waitingForDelimiter && _cache != NULL) {
-		for (i = 0; i < _cacheLength; i++) {
-			if (_cache[i] != delimiterCString[j++])
+	/* Look if there's something in our buffer */
+	if (!_waitingForDelimiter && _readBuffer != NULL) {
+		for (i = 0; i < _readBufferLength; i++) {
+			if (_readBuffer[i] != delimiterCString[j++])
 				j = 0;
 
-			if (j == delimiterLength || _cache[i] == '\0') {
-				if (_cache[i] == '\0')
+			if (j == delimiterLength || _readBuffer[i] == '\0') {
+				if (_readBuffer[i] == '\0')
 					delimiterLength = 1;
 
 				ret = [OFString
-				    stringWithCString: _cache
+				    stringWithCString: _readBuffer
 					     encoding: encoding
 					      length: i + 1 - delimiterLength];
 
-				newCache = [self allocMemoryWithSize:
-				    _cacheLength - i - 1];
-				if (newCache != NULL)
-					memcpy(newCache, _cache + i + 1,
-					    _cacheLength - i - 1);
+				readBuffer = [self allocMemoryWithSize:
+				    _readBufferLength - i - 1];
+				if (readBuffer != NULL)
+					memcpy(readBuffer, _readBuffer + i + 1,
+					    _readBufferLength - i - 1);
 
-				[self freeMemory: _cache];
-				_cache = newCache;
-				_cacheLength -= i + 1;
+				[self freeMemory: _readBuffer];
+				_readBuffer = readBuffer;
+				_readBufferLength -= i + 1;
 
 				_waitingForDelimiter = NO;
 				return ret;
@@ -820,18 +826,18 @@
 
 	@try {
 		if ([self lowlevelIsAtEndOfStream]) {
-			if (_cache == NULL) {
+			if (_readBuffer == NULL) {
 				_waitingForDelimiter = NO;
 				return nil;
 			}
 
-			ret = [OFString stringWithCString: _cache
+			ret = [OFString stringWithCString: _readBuffer
 						 encoding: encoding
-						   length: _cacheLength];
+						   length: _readBufferLength];
 
-			[self freeMemory: _cache];
-			_cache = NULL;
-			_cacheLength = 0;
+			[self freeMemory: _readBuffer];
+			_readBuffer = NULL;
+			_readBufferLength = 0;
 
 			_waitingForDelimiter = NO;
 			return ret;
@@ -849,18 +855,20 @@
 				if (buffer[i] == '\0')
 					delimiterLength = 1;
 
-				retLength = _cacheLength + i + 1 -
+				retLength = _readBufferLength + i + 1 -
 				    delimiterLength;
 				retCString = [self
 				    allocMemoryWithSize: retLength];
 
-				if (_cache != NULL && _cacheLength <= retLength)
-					memcpy(retCString, _cache,
-					    _cacheLength);
-				else if (_cache != NULL)
-					memcpy(retCString, _cache, retLength);
+				if (_readBuffer != NULL &&
+				    _readBufferLength <= retLength)
+					memcpy(retCString, _readBuffer,
+					    _readBufferLength);
+				else if (_readBuffer != NULL)
+					memcpy(retCString, _readBuffer,
+					    retLength);
 				if (i >= delimiterLength)
-					memcpy(retCString + _cacheLength,
+					memcpy(retCString + _readBufferLength,
 					    buffer, i + 1 - delimiterLength);
 
 				@try {
@@ -875,15 +883,15 @@
 					[self freeMemory: retCString];
 				}
 
-				newCache = [self allocMemoryWithSize:
+				readBuffer = [self allocMemoryWithSize:
 				    bufferLength - i - 1];
-				if (newCache != NULL)
-					memcpy(newCache, buffer + i + 1,
+				if (readBuffer != NULL)
+					memcpy(readBuffer, buffer + i + 1,
 					    bufferLength - i - 1);
 
-				[self freeMemory: _cache];
-				_cache = newCache;
-				_cacheLength = bufferLength - i - 1;
+				[self freeMemory: _readBuffer];
+				_readBuffer = readBuffer;
+				_readBufferLength = bufferLength - i - 1;
 
 				_waitingForDelimiter = NO;
 				return ret;
@@ -891,17 +899,19 @@
 		}
 
 		/* Neither the delimiter nor \0 was found */
-		_cache = [self resizeMemory: _cache
-				       size: _cacheLength + bufferLength];
+		_readBuffer = [self resizeMemory: _readBuffer
+					    size: _readBufferLength +
+						  bufferLength];
 
 		/*
-		 * It's possible that _cacheLength + bufferLength is 0 and thus
-		 * _cache was set to NULL by resizeMemory:size:.
+		 * It's possible that _readBufferLength + bufferLength is 0 and
+		 * thus _readBuffer was set to NULL by resizeMemory:size:.
 		 */
-		if (_cache != NULL)
-			memcpy(_cache + _cacheLength, buffer, bufferLength);
+		if (_readBuffer != NULL)
+			memcpy(_readBuffer + _readBufferLength,
+			    buffer, bufferLength);
 
-		_cacheLength += bufferLength;
+		_readBufferLength += bufferLength;
 	} @finally {
 		[self freeMemory: buffer];
 	}
@@ -1454,9 +1464,9 @@
 	return length;
 }
 
-- (size_t)pendingBytes
+- (size_t)numberOfBytesInReadBuffer
 {
-	return _cacheLength;
+	return _readBufferLength;
 }
 
 - (BOOL)isBlocking

@@ -167,9 +167,10 @@ normalize_key(char *str_)
 	return [_socket fileDescriptorForReading];
 }
 
-- (size_t)pendingBytes
+- (size_t)numberOfBytesInReadBuffer
 {
-	return [super pendingBytes] + [_socket pendingBytes];
+	return [super numberOfBytesInReadBuffer] +
+	    [_socket numberOfBytesInReadBuffer];
 }
 
 - (void)close

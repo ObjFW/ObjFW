@@ -34,8 +34,8 @@
 	[self lowlevelSeekToOffset: offset
 			    whence: whence];
 
-	[self freeMemory: _cache];
-	_cache = NULL;
-	_cacheLength = 0;
+	[self freeMemory: _readBuffer];
+	_readBuffer = NULL;
+	_readBufferLength = 0;
 }
 @end
