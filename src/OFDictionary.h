@@ -224,7 +224,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  *	  block.
  *
  * @param block A block which maps an object for each object
- * @return A new, autorelease OFDictionary
+ * @return A new autoreleased OFDictionary
  */
 - (OFDictionary*)mappedDictionaryUsingBlock: (of_dictionary_map_block_t)block;
 
@@ -234,7 +234,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  *
  * @param block A block which determines if the object should be in the new
  *		dictionary
- * @return A new, autoreleased OFDictionary
+ * @return A new autoreleased OFDictionary
  */
 - (OFDictionary*)filteredDictionaryUsingBlock:
     (of_dictionary_filter_block_t)block;

@@ -126,11 +126,12 @@ static struct {
 	if (object_getClass(self) == [OFCountedSet class]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
-			abort();
 		} @catch (id e) {
 			[self release];
 			@throw e;
 		}
+
+		abort();
 	}
 
 	return [super init];

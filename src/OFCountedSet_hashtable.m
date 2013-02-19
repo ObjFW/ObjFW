@@ -209,7 +209,7 @@
 {
 	size_t count = (size_t)(uintptr_t)[_mapTable valueForKey: object];
 
-	if (SIZE_MAX - count < 1)
+	if (SIZE_MAX - count < 1 || UINTPTR_MAX - count < 1)
 		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
 
 	[_mapTable setValue: (void*)(uintptr_t)(count + 1)
