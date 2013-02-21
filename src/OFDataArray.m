@@ -616,6 +616,51 @@ void _references_to_categories_of_OFDataArray(void)
 
 	return [element autorelease];
 }
+
+- (OFDataArray*)binaryPackRepresentation
+{
+	OFDataArray *data;
+
+	if (_itemSize != 1)
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
+
+	if (_count <= 15) {
+		uint8_t tmp = 0xA0 | ((uint8_t)_count & 0xF);
+
+		data = [OFDataArray dataArrayWithItemSize: 1
+						 capacity: _count + 1];
+
+		[data addItem: &tmp];
+	} else if (_count <= UINT16_MAX) {
+		uint8_t type = 0xDA;
+		uint16_t tmp = OF_BSWAP16_IF_LE((uint16_t)_count);
+
+		data = [OFDataArray dataArrayWithItemSize: 1
+						 capacity: _count + 3];
+
+		[data addItem: &type];
+		[data addItems: &tmp
+			 count: sizeof(tmp)];
+	} else if (_count <= UINT32_MAX) {
+		uint8_t type = 0xDB;
+		uint32_t tmp = OF_BSWAP32_IF_LE((uint32_t)_count);
+
+		data = [OFDataArray dataArrayWithItemSize: 1
+						 capacity: _count + 5];
+
+		[data addItem: &type];
+		[data addItems: &tmp
+			 count: sizeof(tmp)];
+	} else
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+
+	[data addItems: _items
+		 count: _count];
+
+	return data;
+}
 @end
 
 @implementation OFBigDataArray

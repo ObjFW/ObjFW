@@ -19,11 +19,14 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
+#include <assert.h>
+
 #import "OFArray.h"
 #import "OFArray_subarray.h"
 #import "OFArray_adjacent.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
+#import "OFDataArray.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
@@ -558,6 +561,61 @@ static struct {
 	objc_autoreleasePoolPop(pool);
 
 	return [JSON autorelease];
+}
+
+- (OFDataArray*)binaryPackRepresentation
+{
+	OFDataArray *data;
+	size_t i, count;
+	void *pool;
+	OFEnumerator *enumerator;
+	id object;
+
+	data = [OFDataArray dataArray];
+	count = [self count];
+
+	if (count <= 15) {
+		uint8_t tmp = 0x90 | ((uint8_t)count & 0xF);
+		[data addItem: &tmp];
+	} else if (count <= UINT16_MAX) {
+		uint8_t type = 0xDC;
+		uint16_t tmp = OF_BSWAP16_IF_LE((uint16_t)count);
+
+		[data addItem: &type];
+		[data addItems: &tmp
+			 count: sizeof(tmp)];
+	} else if (count <= UINT32_MAX) {
+		uint8_t type = 0xDC;
+		uint32_t tmp = OF_BSWAP32_IF_LE((uint32_t)count);
+
+		[data addItem: &type];
+		[data addItems: &tmp
+			 count: sizeof(tmp)];
+	} else
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+
+	pool = objc_autoreleasePoolPush();
+
+	i = 0;
+	enumerator = [self objectEnumerator];
+	while ((object = [enumerator nextObject]) != nil) {
+		void *pool2 = objc_autoreleasePoolPush();
+		OFDataArray *child;
+
+		i++;
+
+		child = [object binaryPackRepresentation];
+		[data addItems: [child items]
+			 count: [child count]];
+
+		objc_autoreleasePoolPop(pool2);
+	}
+
+	assert(i == count);
+
+	objc_autoreleasePoolPop(pool);
+
+	return data;
 }
 
 - (void)makeObjectsPerformSelector: (SEL)selector

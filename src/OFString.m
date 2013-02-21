@@ -1589,6 +1589,49 @@ static struct {
 	return JSON;
 }
 
+- (OFDataArray*)binaryPackRepresentation
+{
+	OFDataArray *data;
+	size_t length;
+
+	length = [self UTF8StringLength];
+
+	if (length <= 15) {
+		uint8_t tmp = 0xB0 | ((uint8_t)length & 0xF);
+
+		data = [OFDataArray dataArrayWithItemSize: 1
+						 capacity: length + 1];
+
+		[data addItem: &tmp];
+	} else if (length <= UINT16_MAX) {
+		uint8_t type = 0xD8;
+		uint16_t tmp = OF_BSWAP16_IF_LE((uint16_t)length);
+
+		data = [OFDataArray dataArrayWithItemSize: 1
+						 capacity: length + 3];
+
+		[data addItem: &type];
+		[data addItems: &tmp
+			 count: sizeof(tmp)];
+	} else if (length <= UINT32_MAX) {
+		uint8_t type = 0xD9;
+		uint32_t tmp = OF_BSWAP32_IF_LE((uint32_t)length);
+
+		data = [OFDataArray dataArrayWithItemSize: 1
+						 capacity: length + 5];
+
+		[data addItem: &type];
+		[data addItems: &tmp
+			 count: sizeof(tmp)];
+	} else
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+
+	[data addItems: [self UTF8String]
+		 count: length];
+
+	return data;
+}
+
 - (of_range_t)rangeOfString: (OFString*)string
 {
 	return [self rangeOfString: string

@@ -28,6 +28,7 @@
 #import "OFEnumerator.h"
 #import "OFSerialization.h"
 #import "OFJSONRepresentation.h"
+#import "OFBinaryPackRepresentation.h"
 
 @class OFArray;
 
@@ -47,7 +48,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * dictionary.
  */
 @interface OFDictionary: OFObject <OFCopying, OFMutableCopying, OFCollection,
-    OFSerialization, OFJSONRepresentation>
+    OFSerialization, OFJSONRepresentation, OFBinaryPackRepresentation>
 /*!
  * @brief Creates a new OFDictionary.
  *

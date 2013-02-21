@@ -27,6 +27,7 @@
 #import "OFObject.h"
 #import "OFSerialization.h"
 #import "OFJSONRepresentation.h"
+#import "OFBinaryPackRepresentation.h"
 
 @class OFConstantString;
 
@@ -78,7 +79,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
  * @brief A class for handling strings.
  */
 @interface OFString: OFObject <OFCopying, OFMutableCopying, OFComparing,
-    OFSerialization, OFJSONRepresentation>
+    OFSerialization, OFJSONRepresentation, OFBinaryPackRepresentation>
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly) size_t length;
 #endif

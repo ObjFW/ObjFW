@@ -14,20 +14,17 @@
  * file.
  */
 
-#import "OFObject.h"
-#import "OFSerialization.h"
-#import "OFJSONRepresentation.h"
-#import "OFBinaryPackRepresentation.h"
+@class OFDataArray;
 
 /*!
- * @brief A class for representing null values in collections.
+ * @brief A protocol implemented by classes that support encoding to a
+ *	  BinaryPack representation.
  */
-@interface OFNull: OFObject <OFCopying, OFSerialization, OFJSONRepresentation,
-    OFBinaryPackRepresentation>
+@protocol OFBinaryPackRepresentation
 /*!
- * @brief Returns an OFNull singleton.
+ * @brief Returns the BinaryPack representation of the object as an OFDataArray.
  *
- * @return An OFNull singleton
+ * @return The BinaryPack representation of the object as an OFDataArray.
  */
-+ (OFNull*)null;
+- (OFDataArray*)binaryPackRepresentation;
 @end

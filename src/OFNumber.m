@@ -24,9 +24,11 @@
 #import "OFString.h"
 #import "OFXMLElement.h"
 #import "OFXMLAttribute.h"
+#import "OFDataArray.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFOutOfRangeException.h"
 
 #import "autorelease.h"
 #import "macros.h"
@@ -1409,5 +1411,150 @@
 	}
 
 	return [self description];
+}
+
+- (OFDataArray*)binaryPackRepresentation
+{
+	OFDataArray *data;
+
+	if (_type == OF_NUMBER_BOOL) {
+		uint8_t type;
+
+		data = [OFDataArray dataArrayWithItemSize: 1
+						 capacity: 1];
+
+		if (_value.bool_)
+			type = 0xC3;
+		else
+			type = 0xC2;
+
+		[data addItem: &type];
+	} else if (_type == OF_NUMBER_FLOAT) {
+		uint8_t type = 0xCA;
+		float tmp = OF_BSWAP_FLOAT_IF_LE(_value.float_);
+
+		data = [OFDataArray dataArrayWithItemSize: 1
+						 capacity: 5];
+
+		[data addItem: &type];
+		[data addItems: &tmp
+			 count: sizeof(tmp)];
+	} else if (_type == OF_NUMBER_DOUBLE) {
+		uint8_t type = 0xCB;
+		double tmp = OF_BSWAP_DOUBLE_IF_LE(_value.double_);
+
+		data = [OFDataArray dataArrayWithItemSize: 1
+						 capacity: 9];
+
+		[data addItem: &type];
+		[data addItems: &tmp
+			 count: sizeof(tmp)];
+	} else if (_type & OF_NUMBER_SIGNED) {
+		intmax_t value = [self intMaxValue];
+
+		if (value >= -32 && value < 0) {
+			uint8_t tmp = 0xE0 | ((uint8_t)(value - 32) & 0x1F);
+
+			data = [OFDataArray dataArrayWithItemSize: 1
+							 capacity: 1];
+
+			[data addItem: &tmp];
+		} else if (value >= INT8_MIN && value <= INT8_MAX) {
+			uint8_t type = 0xD0;
+			int8_t tmp = (int8_t)value;
+
+			data = [OFDataArray dataArrayWithItemSize: 1
+							 capacity: 2];
+
+			[data addItem: &type];
+			[data addItem: &tmp];
+		} else if (value >= INT16_MIN && value <= INT16_MAX) {
+			uint8_t type = 0xD1;
+			int16_t tmp = OF_BSWAP16_IF_LE((int16_t)value);
+
+			data = [OFDataArray dataArrayWithItemSize: 1
+							 capacity: 3];
+
+			[data addItem: &type];
+			[data addItems: &tmp
+				 count: sizeof(tmp)];
+		} else if (value >= INT32_MIN && value <= INT32_MAX) {
+			uint8_t type = 0xD2;
+			int32_t tmp = OF_BSWAP32_IF_LE((int32_t)value);
+
+			data = [OFDataArray dataArrayWithItemSize: 1
+							 capacity: 5];
+
+			[data addItem: &type];
+			[data addItems: &tmp
+				 count: sizeof(tmp)];
+		} else if (value >= INT64_MIN && value <= INT64_MAX) {
+			uint8_t type = 0xD3;
+			int64_t tmp = OF_BSWAP64_IF_LE((int64_t)value);
+
+			data = [OFDataArray dataArrayWithItemSize: 1
+							 capacity: 9];
+
+			[data addItem: &type];
+			[data addItems: &tmp
+				 count: sizeof(tmp)];
+		} else
+			@throw [OFOutOfRangeException
+			    exceptionWithClass: [self class]];
+	} else {
+		uintmax_t value = [self uIntMaxValue];
+
+		if (value <= 127) {
+			uint8_t tmp = ((uint8_t)value & 0x7F);
+
+			data = [OFDataArray dataArrayWithItemSize: 1
+							 capacity: 1];
+
+			[data addItem: &tmp];
+		} else if (value <= UINT8_MAX) {
+			uint8_t type = 0xCC;
+			uint8_t tmp = (uint8_t)value;
+
+			data = [OFDataArray dataArrayWithItemSize: 1
+							 capacity: 2];
+
+			[data addItem: &type];
+			[data addItem: &tmp];
+		} else if (value <= UINT16_MAX) {
+			uint8_t type = 0xCD;
+			uint16_t tmp = OF_BSWAP16_IF_LE((uint16_t)value);
+
+			data = [OFDataArray dataArrayWithItemSize: 1
+							 capacity: 3];
+
+			[data addItem: &type];
+			[data addItems: &tmp
+				 count: sizeof(tmp)];
+		} else if (value <= UINT32_MAX) {
+			uint8_t type = 0xCE;
+			uint32_t tmp = OF_BSWAP32_IF_LE((uint32_t)value);
+
+			data = [OFDataArray dataArrayWithItemSize: 1
+							 capacity: 5];
+
+			[data addItem: &type];
+			[data addItems: &tmp
+				 count: sizeof(tmp)];
+		} else if (value <= UINT64_MAX) {
+			uint8_t type = 0xCF;
+			uint64_t tmp = OF_BSWAP64_IF_LE((uint64_t)value);
+
+			data = [OFDataArray dataArrayWithItemSize: 1
+							 capacity: 9];
+
+			[data addItem: &type];
+			[data addItems: &tmp
+				 count: sizeof(tmp)];
+		} else
+			@throw [OFOutOfRangeException
+			    exceptionWithClass: [self class]];
+	}
+
+	return data;
 }
 @end

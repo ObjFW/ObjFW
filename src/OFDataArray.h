@@ -16,6 +16,7 @@
 
 #import "OFObject.h"
 #import "OFSerialization.h"
+#import "OFBinaryPackRepresentation.h"
 
 @class OFString;
 @class OFURL;
@@ -29,7 +30,8 @@
  * For security reasons, serialization and deserialization is only implemented
  * for OFDataArrays with item size 1.
  */
-@interface OFDataArray: OFObject <OFCopying, OFComparing, OFSerialization>
+@interface OFDataArray: OFObject <OFCopying, OFComparing, OFSerialization,
+    OFBinaryPackRepresentation>
 {
 	uint8_t *_items;
 	size_t _count, _itemSize, _capacity;

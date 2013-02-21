@@ -82,21 +82,22 @@ SRCS_THREADS = OFCondition.m		\
 	       OFTLSKey.m
 
 INCLUDES_THREADS = threading.h
-INCLUDES := ${SRCS:.m=.h}		\
-	    OFCollection.h		\
-	    OFHash.h			\
-	    OFJSONRepresentation.h	\
-	    OFLocking.h			\
-	    OFSerialization.h		\
-	    OFTLSSocket.h		\
-	    ObjFW.h			\
-	    asprintf.h			\
-	    autorelease.h		\
-	    ${ATOMIC_H}			\
-	    block.h			\
-	    instance.h			\
-	    macros.h			\
-	    objfw-defs.h		\
+INCLUDES := ${SRCS:.m=.h}			\
+	    OFBinaryPackRepresentation.h	\
+	    OFCollection.h			\
+	    OFHash.h				\
+	    OFJSONRepresentation.h		\
+	    OFLocking.h				\
+	    OFSerialization.h			\
+	    OFTLSSocket.h			\
+	    ObjFW.h				\
+	    asprintf.h				\
+	    autorelease.h			\
+	    ${ATOMIC_H}				\
+	    block.h				\
+	    instance.h				\
+	    macros.h				\
+	    objfw-defs.h			\
 	    ${USE_INCLUDES_THREADS}
 
 SRCS += OFArray_adjacent.m		\

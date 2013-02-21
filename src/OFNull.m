@@ -21,6 +21,7 @@
 #import "OFNull.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
+#import "OFDataArray.h"
 
 #import "OFInvalidArgumentException.h"
 
@@ -86,6 +87,17 @@ static OFNull *null = nil;
 - (OFString*)JSONRepresentation
 {
 	return @"null";
+}
+
+- (OFDataArray*)binaryPackRepresentation
+{
+	OFDataArray *data = [OFDataArray dataArrayWithItemSize: 1
+						      capacity: 1];
+	uint8_t type = 0xC0;
+
+	[data addItem: &type];
+
+	return data;
 }
 
 - autorelease
