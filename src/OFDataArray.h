@@ -305,3 +305,4 @@
 @end
 
 #import "OFDataArray+Hashing.h"
+#import "OFDataArray+BinaryPackValue.h"

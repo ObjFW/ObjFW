@@ -15,6 +15,7 @@ SRCS = OFApplication.m			\
        OFConstantString.m		\
        OFCountedSet.m			\
        OFDataArray.m			\
+       OFDataArray+BinaryPackValue.m	\
        OFDataArray+Hashing.m		\
        OFDate.m				\
        OFDictionary.m			\

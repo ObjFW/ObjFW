@@ -268,6 +268,8 @@
 		4B55A117133AC24600B58A93 /* OFWriteFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B55A111133AC24600B58A93 /* OFWriteFailedException.m */; };
 		4B5CF8F914940BD2007AA324 /* OFString+JSONValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B5CF8F614940BD2007AA324 /* OFString+JSONValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B5CF8FA14940BD2007AA324 /* OFString+JSONValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5CF8F714940BD2007AA324 /* OFString+JSONValue.m */; };
+		4B6330ED16D67C4400187B8E /* OFDataArray+BinaryPackValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6330EB16D67C4400187B8E /* OFDataArray+BinaryPackValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B6330EE16D67C4400187B8E /* OFDataArray+BinaryPackValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6330EC16D67C4400187B8E /* OFDataArray+BinaryPackValue.m */; };
 		4B64D6EF1425381E007BDFB1 /* OFStreamObserver_poll.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B64D6EB1425381E007BDFB1 /* OFStreamObserver_poll.h */; };
 		4B64D6F01425381E007BDFB1 /* OFStreamObserver_poll.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B64D6EC1425381E007BDFB1 /* OFStreamObserver_poll.m */; };
 		4B64D6F11425381E007BDFB1 /* OFStreamObserver_select.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B64D6ED1425381E007BDFB1 /* OFStreamObserver_select.h */; };
@@ -610,6 +612,8 @@
 		4B55A111133AC24600B58A93 /* OFWriteFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFWriteFailedException.m; path = src/exceptions/OFWriteFailedException.m; sourceTree = "<group>"; };
 		4B5CF8F614940BD2007AA324 /* OFString+JSONValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFString+JSONValue.h"; path = "src/OFString+JSONValue.h"; sourceTree = "<group>"; };
 		4B5CF8F714940BD2007AA324 /* OFString+JSONValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFString+JSONValue.m"; path = "src/OFString+JSONValue.m"; sourceTree = "<group>"; };
+		4B6330EB16D67C4400187B8E /* OFDataArray+BinaryPackValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFDataArray+BinaryPackValue.h"; path = "src/OFDataArray+BinaryPackValue.h"; sourceTree = "<group>"; };
+		4B6330EC16D67C4400187B8E /* OFDataArray+BinaryPackValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFDataArray+BinaryPackValue.m"; path = "src/OFDataArray+BinaryPackValue.m"; sourceTree = "<group>"; };
 		4B64D6EB1425381E007BDFB1 /* OFStreamObserver_poll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamObserver_poll.h; path = src/OFStreamObserver_poll.h; sourceTree = "<group>"; };
 		4B64D6EC1425381E007BDFB1 /* OFStreamObserver_poll.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamObserver_poll.m; path = src/OFStreamObserver_poll.m; sourceTree = "<group>"; };
 		4B64D6ED1425381E007BDFB1 /* OFStreamObserver_select.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamObserver_select.h; path = src/OFStreamObserver_select.h; sourceTree = "<group>"; };
@@ -1082,6 +1086,8 @@
 				4BA85BC5140ECCE800E91D51 /* OFCountedSet_hashtable.m */,
 				4B6799601099E7C50041064A /* OFDataArray.h */,
 				4B6799611099E7C50041064A /* OFDataArray.m */,
+				4B6330EB16D67C4400187B8E /* OFDataArray+BinaryPackValue.h */,
+				4B6330EC16D67C4400187B8E /* OFDataArray+BinaryPackValue.m */,
 				4BE17AD912FD746D002CEB0B /* OFDataArray+Hashing.h */,
 				4BE17ADA12FD746D002CEB0B /* OFDataArray+Hashing.m */,
 				4BE5F0D912DF4225005C7A0C /* OFDate.h */,
@@ -1366,6 +1372,7 @@
 				4B3D23C11337FC8300DD29B8 /* OFConstantString.h in Headers */,
 				4B45355313DCFE1E0037AB4D /* OFCountedSet.h in Headers */,
 				4B3D23C21337FC8300DD29B8 /* OFDataArray.h in Headers */,
+				4B6330ED16D67C4400187B8E /* OFDataArray+BinaryPackValue.h in Headers */,
 				4B3D23C31337FC8300DD29B8 /* OFDataArray+Hashing.h in Headers */,
 				4B3D23C41337FC8300DD29B8 /* OFDate.h in Headers */,
 				4B3D23C51337FCB000DD29B8 /* OFDictionary.h in Headers */,
@@ -1715,6 +1722,7 @@
 				4B45355413DCFE1E0037AB4D /* OFCountedSet.m in Sources */,
 				4BA85BCB140ECCE800E91D51 /* OFCountedSet_hashtable.m in Sources */,
 				4B3D23901337FC0D00DD29B8 /* OFDataArray.m in Sources */,
+				4B6330EE16D67C4400187B8E /* OFDataArray+BinaryPackValue.m in Sources */,
 				4B3D23911337FC0D00DD29B8 /* OFDataArray+Hashing.m in Sources */,
 				4B3D23921337FC0D00DD29B8 /* OFDate.m in Sources */,
 				4B3D23931337FC0D00DD29B8 /* OFDictionary.m in Sources */,

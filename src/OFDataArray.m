@@ -45,6 +45,7 @@
 /* References for static linking */
 void _references_to_categories_of_OFDataArray(void)
 {
+	_OFDataArray_BinaryPackValue_reference = 1;
 	_OFDataArray_Hashing_reference = 1;
 }
 
