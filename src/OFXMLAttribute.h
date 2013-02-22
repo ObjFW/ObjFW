@@ -28,7 +28,13 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy) OFString *name, *namespace, *stringValue;
+@property (readonly, copy) OFString *name;
+# ifdef __cplusplus
+@property (readonly, copy, getter=namespace) OFString *namespace_;
+# else
+@property (readonly, copy) OFString *namespace;
+# endif
+@property (readonly, copy) OFString *stringValue;
 #endif
 
 /*!

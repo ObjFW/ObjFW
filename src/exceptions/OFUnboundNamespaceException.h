@@ -25,18 +25,23 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy, nonatomic) OFString *namespace, *prefix;
+# ifdef __cplusplus
+@property (readonly, copy, nonatomic, getter=namespace) OFString *namespace_;
+# else
+@property (readonly, copy, nonatomic) OFString *namespace;
+# endif
+@property (readonly, copy, nonatomic) OFString *prefix;
 #endif
 
 /*!
  * @brief Creates a new, autoreleased unbound namespace exception.
  *
  * @param class_ The class of the object which caused the exception
- * @param namespace The namespace which is unbound
+ * @param namespace_ The namespace which is unbound
  * @return A new, autoreleased unbound namespace exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
-			 namespace: (OFString*)namespace;
+			 namespace: (OFString*)namespace_;
 
 /*!
  * @brief Creates a new, autoreleased unbound namespace exception.
@@ -52,11 +57,11 @@
  * @brief Initializes an already allocated unbound namespace exception.
  *
  * @param class_ The class of the object which caused the exception
- * @param namespace The namespace which is unbound
+ * @param namespace_ The namespace which is unbound
  * @return An initialized unbound namespace exception
  */
 - initWithClass: (Class)class_
-      namespace: (OFString*)namespace;
+      namespace: (OFString*)namespace_;
 
 /*!
  * @brief Initializes an already allocated unbound namespace exception.
