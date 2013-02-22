@@ -76,12 +76,23 @@ SIGNAL_HANDLER(SIGUSR2)
 int
 of_application_main(int *argc, char **argv[], Class cls)
 {
-	OFApplication *app = [OFApplication sharedApplication];
-	id <OFApplicationDelegate> delegate = [[cls alloc] init];
+	id <OFApplicationDelegate> delegate;
 #ifdef _WIN32
 	wchar_t **wargv, **wenvp;
 	int wargc, si = 0;
 #endif
+
+	if ([cls isSubclassOfClass: [OFApplication class]]) {
+		fprintf(stderr, "FATAL ERROR:\n  Class %s is a subclass of "
+		    "class OFApplication, but class\n  %s was specified as "
+		    "application delegate!\n  Most likely, you wanted to "
+		    "subclass OFObject instead or specified\n  the wrong class "
+		    "with OF_APPLICATION_DELEGATE().\n",
+		    class_getName(cls), class_getName(cls));
+		exit(1);
+	}
+
+	app = [[OFApplication alloc] init];
 
 	[app OF_setArgumentCount: argc
 	       andArgumentValues: argv];
@@ -92,6 +103,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 	   andWideArgumentValues: wargv];
 #endif
 
+	delegate = [[cls alloc] init];
 	[app setDelegate: delegate];
 
 	[app run];
@@ -102,9 +114,6 @@ of_application_main(int *argc, char **argv[], Class cls)
 @implementation OFApplication
 + (OFApplication*)sharedApplication
 {
-	if (app == nil)
-		app = [[self alloc] init];
-
 	return app;
 }
 
