@@ -626,12 +626,14 @@ void _references_to_categories_of_OFDataArray(void)
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	if (_count <= 15) {
-		uint8_t tmp = 0xA0 | ((uint8_t)_count & 0xF);
+	if (_count <= UINT8_MAX) {
+		uint8_t type = 0xD9;
+		uint8_t tmp = (uint8_t)_count;
 
 		data = [OFDataArray dataArrayWithItemSize: 1
-						 capacity: _count + 1];
+						 capacity: _count + 2];
 
+		[data addItem: &type];
 		[data addItem: &tmp];
 	} else if (_count <= UINT16_MAX) {
 		uint8_t type = 0xDA;

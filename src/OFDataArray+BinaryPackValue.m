@@ -156,24 +156,9 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 		return 1;
 	}
 
-	/* Data */
-	if ((buffer[0] & 0xF0) == 0xA0) {
-		count = buffer[0] & 0xF;
-
-		if (length < count + 1)
-			goto error;
-
-		*object = [OFDataArray dataArrayWithItemSize: 1
-						    capacity: count];
-		[*object addItems: buffer + 1
-			    count: count];
-
-		return count + 1;
-	}
-
 	/* String */
-	if ((buffer[0] & 0xF0) == 0xB0) {
-		count = buffer[0] & 0xF;
+	if ((buffer[0] & 0xE0) == 0xA0) {
+		count = buffer[0] & 0x1F;
 
 		if (length < count + 1)
 			goto error;
@@ -290,6 +275,21 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 		*object = [OFNumber numberWithBool: YES];
 		return 1;
 	/* Data */
+	case 0xD9:
+		if (length < 2)
+			goto error;
+
+		count = buffer[1];
+
+		if (length < count + 2)
+			goto error;
+
+		*object = [OFDataArray dataArrayWithItemSize: 1
+						    capacity: count];
+		[*object addItems: buffer + 2
+			    count: count];
+
+		return count + 2;
 	case 0xDA:
 		if (length < 3)
 			goto error;
@@ -321,7 +321,20 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 
 		return count + 5;
 	/* Strings */
-	case 0xD8:
+	case 0xD6:
+		if (length < 2)
+			goto error;
+
+		count = buffer[1];
+
+		if (length < count + 2)
+			goto error;
+
+		*object = [OFString
+		    stringWithUTF8String: (const char*)buffer + 2
+				  length: count];
+		return count + 2;
+	case 0xD7:
 		if (length < 3)
 			goto error;
 
@@ -334,7 +347,7 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 		    stringWithUTF8String: (const char*)buffer + 3
 				  length: count];
 		return count + 3;
-	case 0xD9:
+	case 0xD8:
 		if (length < 5)
 			goto error;
 
