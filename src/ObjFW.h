@@ -133,6 +133,7 @@
 #import "OFUnboundNamespaceException.h"
 #import "OFUnlockFailedException.h"
 #import "OFUnsupportedProtocolException.h"
+#import "OFUnsupportedVersionException.h"
 #import "OFWriteFailedException.h"
 
 #import "macros.h"
