@@ -14,7 +14,11 @@
  * file.
  */
 
-#import "OFDictionary.h"
+#ifdef OF_BRIDGE_LOCAL_INCLUDES
+# import "OFDictionary.h"
+#else
+# import <ObjFW/OFDictionary.h>
+#endif
 
 #import "OFBridging.h"
 

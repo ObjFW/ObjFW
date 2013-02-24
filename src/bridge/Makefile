@@ -25,7 +25,7 @@ includesubdir = ObjFW-Bridge
 
 include ../../buildsys.mk
 
-CPPFLAGS += -I. -I.. -I../.. -I../exceptions
+CPPFLAGS += -I. -I.. -I../.. -I../exceptions -DOF_BRIDGE_LOCAL_INCLUDES
 LD = ${OBJC}
 LDFLAGS += -Wl,-flat_namespace,-undefined,suppress
 LIBS = -L.. -lobjfw -framework Foundation

@@ -14,7 +14,11 @@
  * file.
  */
 
-#import "OFArray.h"
+#ifdef OF_BRIDGE_LOCAL_INCLUDES
+# import "OFArray.h"
+#else
+# import <ObjFW/OFArray.h>
+#endif
 
 @class NSArray;
 
