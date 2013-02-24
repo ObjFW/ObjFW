@@ -1604,7 +1604,7 @@ static struct {
 
 		[data addItem: &tmp];
 	} else if (length <= UINT8_MAX) {
-		uint8_t type = 0xD6;
+		uint8_t type = 0xD9;
 		uint8_t tmp = (uint8_t)length;
 
 		data = [OFDataArray dataArrayWithItemSize: 1
@@ -1613,7 +1613,7 @@ static struct {
 		[data addItem: &type];
 		[data addItem: &tmp];
 	} else if (length <= UINT16_MAX) {
-		uint8_t type = 0xD7;
+		uint8_t type = 0xDA;
 		uint16_t tmp = OF_BSWAP16_IF_LE((uint16_t)length);
 
 		data = [OFDataArray dataArrayWithItemSize: 1
@@ -1623,7 +1623,7 @@ static struct {
 		[data addItems: &tmp
 			 count: sizeof(tmp)];
 	} else if (length <= UINT32_MAX) {
-		uint8_t type = 0xD8;
+		uint8_t type = 0xDB;
 		uint32_t tmp = OF_BSWAP32_IF_LE((uint32_t)length);
 
 		data = [OFDataArray dataArrayWithItemSize: 1

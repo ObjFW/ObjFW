@@ -627,7 +627,7 @@ void _references_to_categories_of_OFDataArray(void)
 			      selector: _cmd];
 
 	if (_count <= UINT8_MAX) {
-		uint8_t type = 0xD9;
+		uint8_t type = 0xD5;
 		uint8_t tmp = (uint8_t)_count;
 
 		data = [OFDataArray dataArrayWithItemSize: 1
@@ -636,7 +636,7 @@ void _references_to_categories_of_OFDataArray(void)
 		[data addItem: &type];
 		[data addItem: &tmp];
 	} else if (_count <= UINT16_MAX) {
-		uint8_t type = 0xDA;
+		uint8_t type = 0xD6;
 		uint16_t tmp = OF_BSWAP16_IF_LE((uint16_t)_count);
 
 		data = [OFDataArray dataArrayWithItemSize: 1
@@ -646,7 +646,7 @@ void _references_to_categories_of_OFDataArray(void)
 		[data addItems: &tmp
 			 count: sizeof(tmp)];
 	} else if (_count <= UINT32_MAX) {
-		uint8_t type = 0xDB;
+		uint8_t type = 0xD7;
 		uint32_t tmp = OF_BSWAP32_IF_LE((uint32_t)_count);
 
 		data = [OFDataArray dataArrayWithItemSize: 1

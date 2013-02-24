@@ -321,7 +321,7 @@ OF_BSWAP_DOUBLE(double d)
  * We define it here and not in objfw-defs.h, as it would be theoretically
  * possible to build a universal binary for Mac OS X and iOS.
  */
-#if defined(__MACH__) && defined(__arm__)
+#if defined(__APPLE__) && defined(__arm__)
 # define OF_IOS
 #endif
 
