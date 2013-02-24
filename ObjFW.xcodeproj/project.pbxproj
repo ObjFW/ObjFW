@@ -357,6 +357,7 @@
 		4BB4B54A16776094002A2DCE /* OFHTTPClientTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB4B54916776094002A2DCE /* OFHTTPClientTests.m */; };
 		4BB524C1143D1E4E0085FBCC /* OFProcess.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB524BF143D1E4E0085FBCC /* OFProcess.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BB524C2143D1E4E0085FBCC /* OFProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB524C0143D1E4E0085FBCC /* OFProcess.m */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BB61D4916DA2AB700986DE1 /* OFBinaryPackRepresentation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB61D4816DA2AB700986DE1 /* OFBinaryPackRepresentation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BC090441584F6760040640F /* OFInvalidJSONException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC090421584F6760040640F /* OFInvalidJSONException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BC090451584F6760040640F /* OFInvalidJSONException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BC090431584F6760040640F /* OFInvalidJSONException.m */; };
 		4BD653C5143B8489006182F0 /* OFTCPSocket+SOCKS5.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD653C3143B8489006182F0 /* OFTCPSocket+SOCKS5.h */; settings = {ATTRIBUTES = (); }; };
@@ -778,6 +779,7 @@
 		4BB50DD012F863C700C9393F /* of_asprintf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = of_asprintf.m; path = src/of_asprintf.m; sourceTree = SOURCE_ROOT; };
 		4BB524BF143D1E4E0085FBCC /* OFProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFProcess.h; path = src/OFProcess.h; sourceTree = "<group>"; };
 		4BB524C0143D1E4E0085FBCC /* OFProcess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFProcess.m; path = src/OFProcess.m; sourceTree = "<group>"; };
+		4BB61D4816DA2AB700986DE1 /* OFBinaryPackRepresentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFBinaryPackRepresentation.h; path = src/OFBinaryPackRepresentation.h; sourceTree = "<group>"; };
 		4BBA36C411406AB700CBA3AC /* atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic.h; path = src/atomic.h; sourceTree = "<group>"; };
 		4BBA36C511406AB700CBA3AC /* macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = macros.h; path = src/macros.h; sourceTree = "<group>"; };
 		4BC090421584F6760040640F /* OFInvalidJSONException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFInvalidJSONException.h; path = src/exceptions/OFInvalidJSONException.h; sourceTree = "<group>"; };
@@ -1073,6 +1075,7 @@
 				4B9BB7BC141CDE2D000AD1CC /* OFArray_subarray.m */,
 				4B67995C1099E7C50041064A /* OFAutoreleasePool.h */,
 				4B67995D1099E7C50041064A /* OFAutoreleasePool.m */,
+				4BB61D4816DA2AB700986DE1 /* OFBinaryPackRepresentation.h */,
 				4BD86D801237A6C600ED9912 /* OFBlock.h */,
 				4BD86D811237A6C600ED9912 /* OFBlock.m */,
 				4BAF5F46123460C900F4E111 /* OFCollection.h */,
@@ -1366,6 +1369,7 @@
 				4B3D23BD1337FC8300DD29B8 /* OFArray.h in Headers */,
 				4B9BB7BF141CDE2D000AD1CC /* OFArray_subarray.h in Headers */,
 				4B3D23BE1337FC8300DD29B8 /* OFAutoreleasePool.h in Headers */,
+				4BB61D4916DA2AB700986DE1 /* OFBinaryPackRepresentation.h in Headers */,
 				4B3D23BF1337FC8300DD29B8 /* OFBlock.h in Headers */,
 				4B3D23C01337FC8300DD29B8 /* OFCollection.h in Headers */,
 				4B674400163C395900EB1E59 /* OFCondition.h in Headers */,
