@@ -44,20 +44,22 @@ typedef enum of_number_type_t {
 	OF_NUMBER_UINT		= 0x04,
 	/*! unsigned long */
 	OF_NUMBER_ULONG		= 0x05,
+	/*! unsigned long long */
+	OF_NUMBER_ULONGLONG	= 0x06,
 	/*! size_t */
-	OF_NUMBER_SIZE		= 0x06,
+	OF_NUMBER_SIZE		= 0x07,
 	/*! uint8_t */
-	OF_NUMBER_UINT8		= 0x07,
+	OF_NUMBER_UINT8		= 0x08,
 	/*! uint16_t */
-	OF_NUMBER_UINT16	= 0x08,
+	OF_NUMBER_UINT16	= 0x09,
 	/*! uint32_t */
-	OF_NUMBER_UINT32	= 0x09,
+	OF_NUMBER_UINT32	= 0x0A,
 	/*! uint64_t */
-	OF_NUMBER_UINT64	= 0x0A,
+	OF_NUMBER_UINT64	= 0x0B,
 	/*! uintptr_t */
-	OF_NUMBER_UINTPTR	= 0x0B,
+	OF_NUMBER_UINTPTR	= 0x0C,
 	/*! uintmax_t */
-	OF_NUMBER_UINTMAX	= 0x0C,
+	OF_NUMBER_UINTMAX	= 0x0D,
 	OF_NUMBER_SIGNED	= 0x10,
 	/*! signed char */
 	OF_NUMBER_CHAR		= OF_NUMBER_UCHAR | OF_NUMBER_SIGNED,
@@ -67,6 +69,8 @@ typedef enum of_number_type_t {
 	OF_NUMBER_INT		= OF_NUMBER_UINT | OF_NUMBER_SIGNED,
 	/*! signed long */
 	OF_NUMBER_LONG		= OF_NUMBER_ULONG | OF_NUMBER_SIGNED,
+	/*! signed long long */
+	OF_NUMBER_LONGLONG	= OF_NUMBER_ULONGLONG | OF_NUMBER_SIGNED,
 	/*! int8_t */
 	OF_NUMBER_INT8		= OF_NUMBER_UINT8 | OF_NUMBER_SIGNED,
 	/*! int16_t */
@@ -80,9 +84,9 @@ typedef enum of_number_type_t {
 	/*! intmax_t */
 	OF_NUMBER_INTMAX	= OF_NUMBER_UINTMAX | OF_NUMBER_SIGNED,
 	/*! ptrdiff_t */
-	OF_NUMBER_PTRDIFF	= 0x0D | OF_NUMBER_SIGNED,
+	OF_NUMBER_PTRDIFF	= 0x0E | OF_NUMBER_SIGNED,
 	/*! intptr_t */
-	OF_NUMBER_INTPTR	= 0x0E | OF_NUMBER_SIGNED,
+	OF_NUMBER_INTPTR	= 0x0F | OF_NUMBER_SIGNED,
 	/*! float */
 	OF_NUMBER_FLOAT		= 0x20,
 	/*! double */
@@ -96,32 +100,34 @@ typedef enum of_number_type_t {
     OFJSONRepresentation, OFBinaryPackRepresentation>
 {
 	union of_number_value {
-		BOOL	       bool_;
-		signed char    schar;
-		signed short   sshort;
-		signed int     sint;
-		signed long    slong;
-		unsigned char  uchar;
-		unsigned short ushort;
-		unsigned int   uint;
-		unsigned long  ulong;
-		int8_t	       int8;
-		int16_t	       int16;
-		int32_t	       int32;
-		int64_t	       int64;
-		uint8_t	       uint8;
-		uint16_t       uint16;
-		uint32_t       uint32;
-		uint64_t       uint64;
-		size_t	       size;
-		ssize_t	       ssize;
-		intmax_t       intmax;
-		uintmax_t      uintmax;
-		ptrdiff_t      ptrdiff;
-		intptr_t       intptr;
-		uintptr_t      uintptr;
-		float	       float_;
-		double	       double_;
+		BOOL		   bool_;
+		signed char	   schar;
+		signed short	   sshort;
+		signed int	   sint;
+		signed long	   slong;
+		signed long long   slonglong;
+		unsigned char	   uchar;
+		unsigned short	   ushort;
+		unsigned int	   uint;
+		unsigned long	   ulong;
+		unsigned long long ulonglong;
+		int8_t		   int8;
+		int16_t		   int16;
+		int32_t		   int32;
+		int64_t		   int64;
+		uint8_t		   uint8;
+		uint16_t	   uint16;
+		uint32_t	   uint32;
+		uint64_t	   uint64;
+		size_t		   size;
+		ssize_t		   ssize;
+		intmax_t	   intmax;
+		uintmax_t	   uintmax;
+		ptrdiff_t	   ptrdiff;
+		intptr_t	   intptr;
+		uintptr_t	   uintptr;
+		float		   float_;
+		double		   double_;
 	} _value;
 	of_number_type_t _type;
 }
@@ -171,6 +177,14 @@ typedef enum of_number_type_t {
 + (instancetype)numberWithLong: (signed long)slong;
 
 /*!
+ * @brief Creates a new OFNumber with the specified signed long long.
+ *
+ * @param slonglong A signed long long which the OFNumber should contain
+ * @return A new autoreleased OFNumber
+ */
++ (instancetype)numberWithLongLong: (signed long long)slonglong;
+
+/*!
  * @brief Creates a new OFNumber with the specified unsigned char.
  *
  * @param uchar An unsigned char which the OFNumber should contain
@@ -201,6 +215,14 @@ typedef enum of_number_type_t {
  * @return A new autoreleased OFNumber
  */
 + (instancetype)numberWithUnsignedLong: (unsigned long)ulong;
+
+/*!
+ * @brief Creates a new OFNumber with the specified unsigned long long.
+ *
+ * @param ulonglong An unsigned long long which the OFNumber should contain
+ * @return A new autoreleased OFNumber
+ */
++ (instancetype)numberWithUnsignedLongLong: (unsigned long long)ulonglong;
 
 /*!
  * @brief Creates a new OFNumber with the specified int8_t.
@@ -383,6 +405,15 @@ typedef enum of_number_type_t {
 - initWithLong: (signed long)slong;
 
 /*!
+ * @brief Initializes an already allocated OFNumber with the specified signed
+ *	  long long.
+ *
+ * @param slonglong A signed long long which the OFNumber should contain
+ * @return An initialized OFNumber
+ */
+- initWithLongLong: (signed long long)slonglong;
+
+/*!
  * @brief Initializes an already allocated OFNumber with the specified unsigned
  *	  char.
  *
@@ -417,6 +448,15 @@ typedef enum of_number_type_t {
  * @return An initialized OFNumber
  */
 - initWithUnsignedLong: (unsigned long)ulong;
+
+/*!
+ * @brief Initializes an already allocated OFNumber with the specified unsigned
+ *	  long long.
+ *
+ * @param ulonglong An unsigned long long which the OFNumber should contain
+ * @return An initialized OFNumber
+ */
+- initWithUnsignedLongLong: (unsigned long long)ulonglong;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified int8_t.
@@ -581,23 +621,30 @@ typedef enum of_number_type_t {
 /*!
  * @brief Returns the OFNumber as a signed short.
  *
- * @return The OFNumber as a short
+ * @return The OFNumber as a signed short
  */
 - (signed short)shortValue;
 
 /*!
  * @brief Returns the OFNumber as a signed int.
  *
- * @return The OFNumber as an int
+ * @return The OFNumber as a signed int
  */
 - (signed int)intValue;
 
 /*!
  * @brief Returns the OFNumber as a signed long.
  *
- * @return The OFNumber as a long
+ * @return The OFNumber as a signed long
  */
 - (signed long)longValue;
+
+/*!
+ * @brief Returns the OFNumber as a signed long long.
+ *
+ * @return The OFNumber as a signed long long
+ */
+- (signed long long)longLongValue;
 
 /*!
  * @brief Returns the OFNumber as an unsigned char.
@@ -626,6 +673,13 @@ typedef enum of_number_type_t {
  * @return The OFNumber as an unsigned long
  */
 - (unsigned long)unsignedLongValue;
+
+/*!
+ * @brief Returns the OFNumber as an unsigned long long.
+ *
+ * @return The OFNumber as an unsigned long long
+ */
+- (unsigned long long)unsignedLongLongValue;
 
 /*!
  * @brief Returns the OFNumber as an int8_t.

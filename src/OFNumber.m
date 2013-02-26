@@ -45,6 +45,8 @@
 		return (t)_value.sint;					\
 	case OF_NUMBER_LONG:						\
 		return (t)_value.slong;					\
+	case OF_NUMBER_LONGLONG:					\
+		return (t)_value.slonglong;				\
 	case OF_NUMBER_UCHAR:						\
 		return (t)_value.uchar;					\
 	case OF_NUMBER_USHORT:						\
@@ -53,6 +55,8 @@
 		return (t)_value.uint;					\
 	case OF_NUMBER_ULONG:						\
 		return (t)_value.ulong;					\
+	case OF_NUMBER_ULONGLONG:					\
+		return (t)_value.ulonglong;				\
 	case OF_NUMBER_INT8:						\
 		return (t)_value.int8;					\
 	case OF_NUMBER_INT16:						\
@@ -108,6 +112,9 @@
 	case OF_NUMBER_LONG:						\
 		return [OFNumber numberWithLong:			\
 		    _value.slong o [n longValue]];			\
+	case OF_NUMBER_LONGLONG:					\
+		return [OFNumber numberWithLongLong:			\
+		    _value.slonglong o [n longLongValue]];		\
 	case OF_NUMBER_UCHAR:						\
 		return [OFNumber numberWithUnsignedChar:		\
 		    _value.uchar o [n unsignedCharValue]];		\
@@ -120,6 +127,9 @@
 	case OF_NUMBER_ULONG:						\
 		return [OFNumber numberWithUnsignedLong:		\
 		    _value.ulong o [n unsignedLongValue]];		\
+	case OF_NUMBER_ULONGLONG:					\
+		return [OFNumber numberWithUnsignedLongLong:		\
+		    _value.ulonglong o [n unsignedLongLongValue]];	\
 	case OF_NUMBER_INT8:						\
 		return [OFNumber numberWithInt8:			\
 		    _value.int8 o [n int8Value]];			\
@@ -192,6 +202,9 @@
 	case OF_NUMBER_LONG:						\
 		return [OFNumber numberWithLong:			\
 		    _value.slong o [n longValue]];			\
+	case OF_NUMBER_LONGLONG:					\
+		return [OFNumber numberWithLongLong:			\
+		    _value.slonglong o [n longLongValue]];		\
 	case OF_NUMBER_UCHAR:						\
 		return [OFNumber numberWithUnsignedChar:		\
 		    _value.uchar o [n unsignedCharValue]];		\
@@ -204,6 +217,9 @@
 	case OF_NUMBER_ULONG:						\
 		return [OFNumber numberWithUnsignedLong:		\
 		    _value.ulong o [n unsignedLongValue]];		\
+	case OF_NUMBER_ULONGLONG:					\
+		return [OFNumber numberWithUnsignedLongLong:		\
+		    _value.ulonglong o [n unsignedLongLongValue]];	\
 	case OF_NUMBER_INT8:						\
 		return [OFNumber numberWithInt8:			\
 		    _value.int8 o [n int8Value]];			\
@@ -270,6 +286,9 @@
 		return [OFNumber numberWithInt: _value.sint o];		\
 	case OF_NUMBER_LONG:						\
 		return [OFNumber numberWithLong: _value.slong o];	\
+	case OF_NUMBER_LONGLONG:					\
+		return [OFNumber numberWithLongLong:			\
+		    _value.slonglong o];				\
 	case OF_NUMBER_UCHAR:						\
 		return [OFNumber numberWithUnsignedChar:		\
 		    _value.uchar o];					\
@@ -280,7 +299,10 @@
 		return [OFNumber numberWithUnsignedInt: _value.uint o];	\
 	case OF_NUMBER_ULONG:						\
 		return [OFNumber numberWithUnsignedLong:		\
-		    _value.ulong o];	\
+		    _value.ulong o];					\
+	case OF_NUMBER_ULONGLONG:					\
+		return [OFNumber numberWithUnsignedLongLong:		\
+		    _value.ulonglong o];				\
 	case OF_NUMBER_INT8:						\
 		return [OFNumber numberWithInt8: _value.int8 o];	\
 	case OF_NUMBER_INT16:						\
@@ -346,6 +368,11 @@
 	return [[[self alloc] initWithLong: slong] autorelease];
 }
 
++ (instancetype)numberWithLongLong: (signed long long)slonglong
+{
+	return [[[self alloc] initWithLongLong: slonglong] autorelease];
+}
+
 + (instancetype)numberWithUnsignedChar: (unsigned char)uchar
 {
 	return [[[self alloc] initWithUnsignedChar: uchar] autorelease];
@@ -364,6 +391,11 @@
 + (instancetype)numberWithUnsignedLong: (unsigned long)ulong
 {
 	return [[[self alloc] initWithUnsignedLong: ulong] autorelease];
+}
+
++ (instancetype)numberWithUnsignedLongLong: (unsigned long long)ulonglong
+{
+	return [[[self alloc] initWithUnsignedLongLong: ulonglong] autorelease];
 }
 
 + (instancetype)numberWithInt8: (int8_t)int8
@@ -513,6 +545,16 @@
 	return self;
 }
 
+- initWithLongLong: (signed long long)slonglong
+{
+	self = [super init];
+
+	_value.slonglong = slonglong;
+	_type = OF_NUMBER_LONGLONG;
+
+	return self;
+}
+
 - initWithUnsignedChar: (unsigned char)uchar
 {
 	self = [super init];
@@ -549,6 +591,16 @@
 
 	_value.ulong = ulong;
 	_type = OF_NUMBER_ULONG;
+
+	return self;
+}
+
+- initWithUnsignedLongLong: (unsigned long long)ulonglong
+{
+	self = [super init];
+
+	_value.ulonglong = ulonglong;
+	_type = OF_NUMBER_ULONGLONG;
 
 	return self;
 }
@@ -812,6 +864,8 @@
 		return !!_value.sint;
 	case OF_NUMBER_LONG:
 		return !!_value.slong;
+	case OF_NUMBER_LONGLONG:
+		return !!_value.slonglong;
 	case OF_NUMBER_UCHAR:
 		return !!_value.uchar;
 	case OF_NUMBER_USHORT:
@@ -820,6 +874,8 @@
 		return !!_value.uint;
 	case OF_NUMBER_ULONG:
 		return !!_value.ulong;
+	case OF_NUMBER_ULONGLONG:
+		return !!_value.ulonglong;
 	case OF_NUMBER_INT8:
 		return !!_value.int8;
 	case OF_NUMBER_INT16:
@@ -880,6 +936,11 @@
 	RETURN_AS(signed long)
 }
 
+- (signed long long)longLongValue
+{
+	RETURN_AS(signed long long)
+}
+
 - (unsigned char)unsignedCharValue
 {
 	RETURN_AS(unsigned char)
@@ -898,6 +959,11 @@
 - (unsigned long)unsignedLongValue
 {
 	RETURN_AS(unsigned long)
+}
+
+- (unsigned long long)unsignedLongLongValue
+{
+	RETURN_AS(unsigned long long)
 }
 
 - (int8_t)int8Value
@@ -1181,6 +1247,9 @@
 	case OF_NUMBER_LONG:
 		return [OFNumber numberWithLong:
 		    _value.slong % [number longValue]];
+	case OF_NUMBER_LONGLONG:
+		return [OFNumber numberWithLongLong:
+		    _value.slonglong % [number longLongValue]];
 	case OF_NUMBER_UCHAR:
 		return [OFNumber numberWithUnsignedChar:
 		    _value.uchar % [number unsignedCharValue]];
@@ -1193,6 +1262,9 @@
 	case OF_NUMBER_ULONG:
 		return [OFNumber numberWithUnsignedLong:
 		    _value.ulong % [number unsignedLongValue]];
+	case OF_NUMBER_ULONGLONG:
+		return [OFNumber numberWithUnsignedLongLong:
+		    _value.ulonglong % [number unsignedLongLongValue]];
 	case OF_NUMBER_INT8:
 		return [OFNumber numberWithInt8:
 		    _value.int8 % [number int8Value]];
@@ -1266,6 +1338,7 @@
 	case OF_NUMBER_USHORT:
 	case OF_NUMBER_UINT:
 	case OF_NUMBER_ULONG:
+	case OF_NUMBER_ULONGLONG:
 	case OF_NUMBER_UINT8:
 	case OF_NUMBER_UINT16:
 	case OF_NUMBER_UINT32:
@@ -1278,6 +1351,7 @@
 	case OF_NUMBER_SHORT:
 	case OF_NUMBER_INT:
 	case OF_NUMBER_LONG:
+	case OF_NUMBER_LONGLONG:
 	case OF_NUMBER_INT8:
 	case OF_NUMBER_INT16:
 	case OF_NUMBER_INT32:
@@ -1330,6 +1404,7 @@
 	case OF_NUMBER_USHORT:
 	case OF_NUMBER_UINT:
 	case OF_NUMBER_ULONG:
+	case OF_NUMBER_ULONGLONG:
 	case OF_NUMBER_UINT8:
 	case OF_NUMBER_UINT16:
 	case OF_NUMBER_UINT32:
@@ -1344,6 +1419,7 @@
 	case OF_NUMBER_SHORT:
 	case OF_NUMBER_INT:
 	case OF_NUMBER_LONG:
+	case OF_NUMBER_LONGLONG:
 	case OF_NUMBER_INT8:
 	case OF_NUMBER_INT16:
 	case OF_NUMBER_INT32:
