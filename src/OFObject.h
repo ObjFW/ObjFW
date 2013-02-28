@@ -25,6 +25,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <limits.h>
 
 #ifdef OF_OBJFW_RUNTIME
@@ -76,6 +77,12 @@
 # define YES __objc_yes
 # undef NO
 # define NO __objc_no
+# ifndef __cplusplus
+#  undef true
+#  define true ((bool)1)
+#  undef false
+#  define false ((bool)0)
+# endif
 #endif
 
 #if defined(__clang__) || __GCC_VERSION__ >= 406
