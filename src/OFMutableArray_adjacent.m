@@ -67,8 +67,12 @@
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]];
 
-	[_array insertItem: &object
-		   atIndex: index];
+	@try {
+		[_array insertItem: &object
+			   atIndex: index];
+	} @catch (OFOutOfRangeException *e) {
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+	}
 	[object retain];
 
 	_mutations++;
@@ -80,9 +84,13 @@
 	id *objects = [array objects];
 	size_t i, count = [array count];
 
-	[_array insertItems: objects
-		    atIndex: index
-		      count: count];
+	@try {
+		[_array insertItems: objects
+			    atIndex: index
+			      count: count];
+	} @catch (OFOutOfRangeException *e) {
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+	}
 
 	for (i = 0; i < count; i++)
 		[objects[i] retain];

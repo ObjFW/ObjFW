@@ -217,12 +217,20 @@
 
 - (id)objectAtIndex: (size_t)index
 {
-	return *((id*)[_array itemAtIndex: index]);
+	@try {
+		return *((id*)[_array itemAtIndex: index]);
+	} @catch (OFOutOfRangeException *e) {
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+	}
 }
 
 - (id)objectAtIndexedSubscript: (size_t)index
 {
-	return *((id*)[_array itemAtIndex: index]);
+	@try {
+		return *((id*)[_array itemAtIndex: index]);
+	} @catch (OFOutOfRangeException *e) {
+		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+	}
 }
 
 - (void)getObjects: (id*)buffer

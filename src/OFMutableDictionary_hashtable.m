@@ -38,13 +38,25 @@
 - (void)setObject: (id)object
 	   forKey: (id)key
 {
-	[_mapTable setValue: object
-		     forKey: key];
+	@try {
+		[_mapTable setValue: object
+			     forKey: key];
+	} @catch (OFInvalidArgumentException *e) {
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
+	}
 }
 
 - (void)removeObjectForKey: (id)key
 {
-	[_mapTable removeValueForKey: key];
+	@try {
+		[_mapTable removeValueForKey: key];
+	} @catch (OFInvalidArgumentException *e) {
+		@throw [OFInvalidArgumentException
+		    exceptionWithClass: [self class]
+			      selector: _cmd];
+	}
 }
 
 #ifdef OF_HAVE_BLOCKS
