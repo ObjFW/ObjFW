@@ -159,7 +159,7 @@ struct {
 	switch (of_string_utf8_check(ivars->cString, ivars->cStringLength,
 	    &ivars->length)) {
 	case 1:
-		ivars->isUTF8 = YES;
+		ivars->isUTF8 = true;
 		break;
 	case -1:
 		free(ivars);
@@ -269,7 +269,7 @@ struct {
 }
 
 /* From OFObject, but reimplemented in OFString */
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	[self finishInitialization];
 
@@ -387,7 +387,7 @@ struct {
 			     range: range];
 }
 
-- (BOOL)containsString: (OFString*)string
+- (bool)containsString: (OFString*)string
 {
 	[self finishInitialization];
 
@@ -495,14 +495,14 @@ struct {
 	return [self stringByDeletingEnclosingWhitespaces];
 }
 
-- (BOOL)hasPrefix: (OFString*)prefix
+- (bool)hasPrefix: (OFString*)prefix
 {
 	[self finishInitialization];
 
 	return [self hasPrefix: prefix];
 }
 
-- (BOOL)hasSuffix: (OFString*)suffix
+- (bool)hasSuffix: (OFString*)suffix
 {
 	[self finishInitialization];
 

@@ -227,7 +227,7 @@ extern char **environ;
 		while ((argument = [enumerator nextObject]) != nil) {
 			OFMutableString *tmp =
 			    [[argument mutableCopy] autorelease];
-			BOOL containsSpaces = [tmp containsString: @" "];
+			bool containsSpaces = [tmp containsString: @" "];
 
 			[argumentsString appendString: @" "];
 
@@ -359,14 +359,14 @@ extern char **environ;
 }
 #endif
 
-- (BOOL)lowlevelIsAtEndOfStream
+- (bool)lowlevelIsAtEndOfStream
 {
 #ifndef _WIN32
 	if (_readPipe[0] == -1)
 #else
 	if (_readPipe[0] == NULL)
 #endif
-		return YES;
+		return true;
 
 	return _atEndOfStream;
 }
@@ -387,7 +387,7 @@ extern char **environ;
 	if (_readPipe[0] == NULL || _atEndOfStream ||
 	    !ReadFile(_readPipe[0], buffer, length, &ret, NULL)) {
 		if (GetLastError() == ERROR_BROKEN_PIPE) {
-			_atEndOfStream = YES;
+			_atEndOfStream = true;
 			return 0;
 		}
 
@@ -398,7 +398,7 @@ extern char **environ;
 	}
 
 	if (ret == 0)
-		_atEndOfStream = YES;
+		_atEndOfStream = true;
 
 	return ret;
 }

@@ -34,7 +34,7 @@
  * @brief The C type of a number stored in an OFNumber.
  */
 typedef enum of_number_type_t {
-	/*! BOOL */
+	/*! bool */
 	OF_NUMBER_BOOL		= 0x01,
 	/*! unsigned char */
 	OF_NUMBER_UCHAR		= 0x02,
@@ -100,7 +100,7 @@ typedef enum of_number_type_t {
     OFJSONRepresentation, OFBinaryPackRepresentation>
 {
 	union of_number_value {
-		BOOL		   bool_;
+		bool		   bool_;
 		signed char	   schar;
 		signed short	   sshort;
 		signed int	   sint;
@@ -137,12 +137,12 @@ typedef enum of_number_type_t {
 #endif
 
 /*!
- * @brief Creates a new OFNumber with the specified BOOL.
+ * @brief Creates a new OFNumber with the specified bool.
  *
- * @param bool_ A BOOL which the OFNumber should contain
+ * @param bool_ A bool which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithBool: (BOOL)bool_;
++ (instancetype)numberWithBool: (bool)bool_;
 
 /*!
  * @brief Creates a new OFNumber with the specified signed char.
@@ -361,12 +361,12 @@ typedef enum of_number_type_t {
 + (instancetype)numberWithDouble: (double)double_;
 
 /*!
- * @brief Initializes an already allocated OFNumber with the specified BOOL.
+ * @brief Initializes an already allocated OFNumber with the specified bool.
  *
- * @param bool_ A BOOL which the OFNumber should contain
+ * @param bool_ A bool which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithBool: (BOOL)bool_;
+- initWithBool: (bool)bool_;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified signed
@@ -605,11 +605,11 @@ typedef enum of_number_type_t {
 - (of_number_type_t)type;
 
 /*!
- * @brief Returns the OFNumber as a BOOL.
+ * @brief Returns the OFNumber as a bool.
  *
- * @return The OFNumber as a BOOL
+ * @return The OFNumber as a bool
  */
-- (BOOL)boolValue;
+- (bool)boolValue;
 
 /*!
  * @brief Returns the OFNumber as a signed char.

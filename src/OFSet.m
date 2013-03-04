@@ -251,7 +251,7 @@ static struct {
 	abort();
 }
 
-- (BOOL)containsObject: (id)object
+- (bool)containsObject: (id)object
 {
 	[self doesNotRecognizeSelector: _cmd];
 	abort();
@@ -271,17 +271,17 @@ static struct {
 	abort();
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	OFSet *otherSet;
 
 	if (![object isKindOfClass: [OFSet class]])
-		return NO;
+		return false;
 
 	otherSet = object;
 
 	if ([otherSet count] != [self count])
-		return NO;
+		return false;
 
 	return [otherSet isSubsetOfSet: self];
 }
@@ -349,7 +349,7 @@ static struct {
 	return [[OFMutableSet alloc] initWithSet: self];
 }
 
-- (BOOL)isSubsetOfSet: (OFSet*)set
+- (bool)isSubsetOfSet: (OFSet*)set
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFEnumerator *enumerator;
@@ -359,16 +359,16 @@ static struct {
 	while ((object = [enumerator nextObject]) != nil) {
 		if (![set containsObject: object]) {
 			objc_autoreleasePoolPop(pool);
-			return NO;
+			return false;
 		}
 	}
 
 	objc_autoreleasePoolPop(pool);
 
-	return YES;
+	return true;
 }
 
-- (BOOL)intersectsSet: (OFSet*)set
+- (bool)intersectsSet: (OFSet*)set
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFEnumerator *enumerator;
@@ -378,13 +378,13 @@ static struct {
 	while ((object = [enumerator nextObject]) != nil) {
 		if ([set containsObject: object]) {
 			objc_autoreleasePoolPop(pool);
-			return YES;
+			return true;
 		}
 	}
 
 	objc_autoreleasePoolPop(pool);
 
-	return NO;
+	return false;
 }
 
 - (OFXMLElement*)XMLElementBySerializing
@@ -457,7 +457,7 @@ static struct {
 #if defined(OF_HAVE_BLOCKS) && defined(OF_HAVE_FAST_ENUMERATION)
 - (void)enumerateObjectsUsingBlock: (of_set_enumeration_block_t)block
 {
-	BOOL stop = NO;
+	bool stop = false;
 
 	for (id object in self) {
 		block(object, &stop);
@@ -473,7 +473,7 @@ static struct {
 {
 	OFMutableSet *ret = [OFMutableSet set];
 
-	[self enumerateObjectsUsingBlock: ^ (id object, BOOL *stop) {
+	[self enumerateObjectsUsingBlock: ^ (id object, bool *stop) {
 		if (block(object))
 			[ret addObject: object];
 	}];

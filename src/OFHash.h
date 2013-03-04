@@ -21,7 +21,7 @@
  */
 @protocol OFHash <OFObject>
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, getter=isCalculated) BOOL calculated;
+@property (readonly, getter=isCalculated) bool calculated;
 #endif
 
 /*!
@@ -69,5 +69,5 @@
  *
  * @return A boolean whether the hash has already been calculated
  */
-- (BOOL)isCalculated;
+- (bool)isCalculated;
 @end

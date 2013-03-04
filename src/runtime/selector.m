@@ -113,10 +113,10 @@ sel_getName(SEL sel)
 	return ret;
 }
 
-BOOL
+bool
 sel_isEqual(SEL sel1, SEL sel2)
 {
-	return sel1->uid == sel2->uid;
+	return (sel1->uid == sel2->uid);
 }
 
 void

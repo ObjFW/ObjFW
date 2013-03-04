@@ -34,7 +34,7 @@
  *		   protocol
  * @return Whether the TLS socket should accept the received keychain
  */
--	  (BOOL)socket: (id <OFTLSSocket>)socket
+-	  (bool)socket: (id <OFTLSSocket>)socket
   shouldAcceptKeychain: (OFArray*)keychain;
 @end
 

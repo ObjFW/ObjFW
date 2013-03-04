@@ -22,7 +22,6 @@ run: all
 	if test -f ../src/libobjfw.dylib; then \
 		${LN_S} ../src/libobjfw.dylib libobjfw.dylib; \
 	fi
-	echo "Generating tables..."
 	LD_LIBRARY_PATH=.$${LD_LIBRARY_PATH+:}$$LD_LIBRARY_PATH \
 	DYLD_LIBRARY_PATH=.$${DYLD_LIBRARY_PATH+:}$$DYLD_LIBRARY_PATH \
 	LIBRARY_PATH=.$${LIBRARY_PATH+:}$$LIBRARY_PATH \

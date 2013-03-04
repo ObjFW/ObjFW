@@ -86,12 +86,12 @@
 
 - (OFString*)sourcePath
 {
-	OF_GETTER(_sourcePath, NO)
+	OF_GETTER(_sourcePath, false)
 }
 
 - (OFString*)destinationPath
 {
-	OF_GETTER(_destinationPath, NO)
+	OF_GETTER(_destinationPath, false)
 }
 @end
 #endif

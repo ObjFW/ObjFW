@@ -135,7 +135,7 @@ forward_handler(id obj, SEL sel)
 		    [obj resolveClassMethod: sel]) {
 			if (![obj respondsToSelector: sel]) {
 				fprintf(stderr, "Runtime error: [%s "
-				    "resolveClassMethod: %s] returned YES "
+				    "resolveClassMethod: %s] returned true "
 				    "without adding the method!\n",
 				    class_getName(obj), sel_getName(sel));
 				abort();
@@ -150,7 +150,7 @@ forward_handler(id obj, SEL sel)
 		    [c resolveInstanceMethod: sel]) {
 			if (![obj respondsToSelector: sel]) {
 				fprintf(stderr, "Runtime error: [%s "
-				    "resolveInstanceMethod: %s] returned YES "
+				    "resolveInstanceMethod: %s] returned true "
 				    "without adding the method!\n",
 				    class_getName(object_getClass(obj)),
 				    sel_getName(sel));
@@ -294,15 +294,15 @@ void _references_to_categories_of_OFObject(void)
 				  encoding: OF_STRING_ENCODING_ASCII];
 }
 
-+ (BOOL)isSubclassOfClass: (Class)class
++ (bool)isSubclassOfClass: (Class)class
 {
 	Class iter;
 
 	for (iter = self; iter != Nil; iter = class_getSuperclass(iter))
 		if (iter == class)
-			return YES;
+			return true;
 
-	return NO;
+	return false;
 }
 
 + (Class)superclass
@@ -310,20 +310,20 @@ void _references_to_categories_of_OFObject(void)
 	return class_getSuperclass(self);
 }
 
-+ (BOOL)instancesRespondToSelector: (SEL)selector
++ (bool)instancesRespondToSelector: (SEL)selector
 {
 	return class_respondsToSelector(self, selector);
 }
 
-+ (BOOL)conformsToProtocol: (Protocol*)protocol
++ (bool)conformsToProtocol: (Protocol*)protocol
 {
 	Class c;
 
 	for (c = self; c != Nil; c = class_getSuperclass(c))
 		if (class_conformsToProtocol(c, protocol))
-			return YES;
+			return true;
 
-	return NO;
+	return false;
 }
 
 + (IMP)instanceMethodForSelector: (SEL)selector
@@ -491,14 +491,14 @@ void _references_to_categories_of_OFObject(void)
 	[self inheritMethodsFromClass: [class superclass]];
 }
 
-+ (BOOL)resolveClassMethod: (SEL)selector
++ (bool)resolveClassMethod: (SEL)selector
 {
-	return NO;
+	return false;
 }
 
-+ (BOOL)resolveInstanceMethod: (SEL)selector
++ (bool)resolveInstanceMethod: (SEL)selector
 {
-	return NO;
+	return false;
 }
 
 - init
@@ -517,29 +517,29 @@ void _references_to_categories_of_OFObject(void)
 				  encoding: OF_STRING_ENCODING_ASCII];
 }
 
-- (BOOL)isKindOfClass: (Class)class
+- (bool)isKindOfClass: (Class)class
 {
 	Class iter;
 
 	for (iter = object_getClass(self); iter != Nil;
 	    iter = class_getSuperclass(iter))
 		if (iter == class)
-			return YES;
+			return true;
 
-	return NO;
+	return false;
 }
 
-- (BOOL)isMemberOfClass: (Class)class
+- (bool)isMemberOfClass: (Class)class
 {
 	return (object_getClass(self) == class);
 }
 
-- (BOOL)respondsToSelector: (SEL)selector
+- (bool)respondsToSelector: (SEL)selector
 {
 	return class_respondsToSelector(object_getClass(self), selector);
 }
 
-- (BOOL)conformsToProtocol: (Protocol*)protocol
+- (bool)conformsToProtocol: (Protocol*)protocol
 {
 	return [object_getClass(self) conformsToProtocol: protocol];
 }
@@ -592,7 +592,7 @@ void _references_to_categories_of_OFObject(void)
 	[OFTimer scheduledTimerWithTimeInterval: delay
 					 target: self
 				       selector: selector
-					repeats: NO];
+					repeats: false];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -607,7 +607,7 @@ void _references_to_categories_of_OFObject(void)
 					 target: self
 				       selector: selector
 					 object: object
-					repeats: NO];
+					repeats: false];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -624,7 +624,7 @@ void _references_to_categories_of_OFObject(void)
 				       selector: selector
 					 object: object1
 					 object: object2
-					repeats: NO];
+					repeats: false];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -632,13 +632,13 @@ void _references_to_categories_of_OFObject(void)
 #ifdef OF_HAVE_THREADS
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread*)thread
-	  waitUntilDone: (BOOL)waitUntilDone
+	  waitUntilDone: (bool)waitUntilDone
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFTimer *timer = [OFTimer timerWithTimeInterval: 0
 						 target: self
 					       selector: selector
-						repeats: NO];
+						repeats: false];
 	[[thread runLoop] addTimer: timer];
 
 	if (waitUntilDone)
@@ -650,14 +650,14 @@ void _references_to_categories_of_OFObject(void)
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread*)thread
 	     withObject: (id)object
-	  waitUntilDone: (BOOL)waitUntilDone
+	  waitUntilDone: (bool)waitUntilDone
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFTimer *timer = [OFTimer timerWithTimeInterval: 0
 						 target: self
 					       selector: selector
 						 object: object
-						repeats: NO];
+						repeats: false];
 	[[thread runLoop] addTimer: timer];
 
 	if (waitUntilDone)
@@ -670,7 +670,7 @@ void _references_to_categories_of_OFObject(void)
 	       onThread: (OFThread*)thread
 	     withObject: (id)object1
 	     withObject: (id)object2
-	  waitUntilDone: (BOOL)waitUntilDone
+	  waitUntilDone: (bool)waitUntilDone
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFTimer *timer = [OFTimer timerWithTimeInterval: 0
@@ -678,7 +678,7 @@ void _references_to_categories_of_OFObject(void)
 					       selector: selector
 						 object: object1
 						 object: object2
-						repeats: NO];
+						repeats: false];
 	[[thread runLoop] addTimer: timer];
 
 	if (waitUntilDone)
@@ -688,13 +688,13 @@ void _references_to_categories_of_OFObject(void)
 }
 
 - (void)performSelectorOnMainThread: (SEL)selector
-		      waitUntilDone: (BOOL)waitUntilDone
+		      waitUntilDone: (bool)waitUntilDone
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFTimer *timer = [OFTimer timerWithTimeInterval: 0
 						 target: self
 					       selector: selector
-						repeats: NO];
+						repeats: false];
 	[[OFRunLoop mainRunLoop] addTimer: timer];
 
 	if (waitUntilDone)
@@ -705,14 +705,14 @@ void _references_to_categories_of_OFObject(void)
 
 - (void)performSelectorOnMainThread: (SEL)selector
 			 withObject: (id)object
-		      waitUntilDone: (BOOL)waitUntilDone
+		      waitUntilDone: (bool)waitUntilDone
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFTimer *timer = [OFTimer timerWithTimeInterval: 0
 						 target: self
 					       selector: selector
 						 object: object
-						repeats: NO];
+						repeats: false];
 	[[OFRunLoop mainRunLoop] addTimer: timer];
 
 	if (waitUntilDone)
@@ -724,7 +724,7 @@ void _references_to_categories_of_OFObject(void)
 - (void)performSelectorOnMainThread: (SEL)selector
 			 withObject: (id)object1
 			 withObject: (id)object2
-		      waitUntilDone: (BOOL)waitUntilDone
+		      waitUntilDone: (bool)waitUntilDone
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFTimer *timer = [OFTimer timerWithTimeInterval: 0
@@ -732,7 +732,7 @@ void _references_to_categories_of_OFObject(void)
 					       selector: selector
 						 object: object1
 						 object: object2
-						repeats: NO];
+						repeats: false];
 	[[OFRunLoop mainRunLoop] addTimer: timer];
 
 	if (waitUntilDone)
@@ -750,7 +750,7 @@ void _references_to_categories_of_OFObject(void)
 	[[thread runLoop] addTimer: [OFTimer timerWithTimeInterval: delay
 							    target: self
 							  selector: selector
-							   repeats: NO]];
+							   repeats: false]];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -766,7 +766,7 @@ void _references_to_categories_of_OFObject(void)
 							    target: self
 							  selector: selector
 							    object: object
-							   repeats: NO]];
+							   repeats: false]];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -784,7 +784,7 @@ void _references_to_categories_of_OFObject(void)
 							  selector: selector
 							    object: object1
 							    object: object2
-							   repeats: NO]];
+							   repeats: false]];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -805,7 +805,7 @@ void _references_to_categories_of_OFObject(void)
 #endif
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	return (self == object);
 }
@@ -1016,9 +1016,9 @@ void _references_to_categories_of_OFObject(void)
 	return self;
 }
 
-- (BOOL)isProxy
+- (bool)isProxy
 {
-	return NO;
+	return false;
 }
 
 - (void)dealloc

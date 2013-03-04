@@ -109,37 +109,37 @@
 
 - (OFString*)name
 {
-	OF_GETTER(_name, YES)
+	OF_GETTER(_name, true)
 }
 
 - (OFString*)namespace
 {
-	OF_GETTER(_namespace, YES)
+	OF_GETTER(_namespace, true)
 }
 
 - (OFString*)stringValue
 {
-	OF_GETTER(_stringValue, YES)
+	OF_GETTER(_stringValue, true)
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	OFXMLAttribute *attribute;
 
 	if (![object isKindOfClass: [OFXMLAttribute class]])
-		return NO;
+		return false;
 
 	attribute = object;
 
 	if (![attribute->_name isEqual: _name])
-		return NO;
+		return false;
 	if (attribute->_namespace != _namespace &&
 	    ![attribute->_namespace isEqual: _namespace])
-		return NO;
+		return false;
 	if (![attribute->_stringValue isEqual: _stringValue])
-		return NO;
+		return false;
 
-	return YES;
+	return true;
 }
 
 - (uint32_t)hash

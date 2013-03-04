@@ -48,11 +48,11 @@
  * @param server The HTTP server which encountered an exception
  * @param exception The exception that occurred on the HTTP server's listening
  *		    socket
- * @return Whether to continue listening. If you return NO, existing connections
- *	   will still be handled and you can start accepting new connections
- *	   again by calling @ref OFHTTPServer::start again.
+ * @return Whether to continue listening. If you return false, existing
+ *	   connections will still be handled and you can start accepting new
+ *	   connections again by calling @ref OFHTTPServer::start again.
  */
--			  (BOOL)server: (OFHTTPServer*)server
+-			  (bool)server: (OFHTTPServer*)server
   didReceiveExceptionOnListeningSocket: (OFException*)exception;
 @end
 
@@ -150,7 +150,7 @@
  */
 - (void)stop;
 
-- (BOOL)OF_socket: (OFTCPSocket*)socket
+- (bool)OF_socket: (OFTCPSocket*)socket
   didAcceptSocket: (OFTCPSocket*)clientSocket
 	exception: (OFException*)exception;
 @end

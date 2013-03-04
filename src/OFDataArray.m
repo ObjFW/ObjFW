@@ -474,22 +474,22 @@ void _references_to_categories_of_OFDataArray(void)
 	return copy;
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	OFDataArray *dataArray;
 
 	if (![object isKindOfClass: [OFDataArray class]])
-		return NO;
+		return false;
 
 	dataArray = object;
 
 	if ([dataArray count] != _count ||
 	    [dataArray itemSize] != _itemSize)
-		return NO;
+		return false;
 	if (memcmp([dataArray items], _items, _count * _itemSize))
-		return NO;
+		return false;
 
-	return YES;
+	return true;
 }
 
 - (of_comparison_result_t)compare: (id <OFComparing>)object

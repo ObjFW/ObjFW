@@ -194,7 +194,7 @@
 {
 	@try {
 		[_mapTable enumerateKeysAndValuesUsingBlock:
-		    ^ (void *key, void *value, BOOL *stop) {
+		    ^ (void *key, void *value, bool *stop) {
 			block(key, (size_t)(uintptr_t)value, stop);
 		}];
 	} @catch (OFEnumerationMutationException *e) {

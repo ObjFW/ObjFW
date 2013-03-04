@@ -79,7 +79,7 @@
  * @param request The request for which the OFHTTPClient wants to redirect
  * @return A boolean whether the OFHTTPClient should follow the redirect
  */
--	  (BOOL)client: (OFHTTPClient*)client
+-	  (bool)client: (OFHTTPClient*)client
   shouldFollowRedirect: (OFURL*)URL
 	       request: (OFHTTPRequest*)request;
 @end
@@ -90,12 +90,12 @@
 @interface OFHTTPClient: OFObject
 {
 	id <OFHTTPClientDelegate> _delegate;
-	BOOL _insecureRedirectsAllowed;
+	bool _insecureRedirectsAllowed;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (assign) id <OFHTTPClientDelegate> delegate;
-@property BOOL insecureRedirectsAllowed;
+@property bool insecureRedirectsAllowed;
 #endif
 
 /*!
@@ -124,14 +124,14 @@
  *
  * @param allowed Whether redirects from HTTPS to HTTP are allowed
  */
-- (void)setInsecureRedirectsAllowed: (BOOL)allowed;
+- (void)setInsecureRedirectsAllowed: (bool)allowed;
 
 /*!
  * @brief Returns whether redirects from HTTPS to HTTP will be allowed
  *
  * @return Whether redirects from HTTPS to HTTP will be allowed
  */
-- (BOOL)insecureRedirectsAllowed;
+- (bool)insecureRedirectsAllowed;
 
 /*!
  * @brief Performs the specified HTTP request

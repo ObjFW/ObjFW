@@ -210,46 +210,46 @@ of_log(OFConstantString *format, ...)
 	return ret;
 }
 
-+ (BOOL)fileExistsAtPath: (OFString*)path
++ (bool)fileExistsAtPath: (OFString*)path
 {
 #ifndef _WIN32
 	struct stat s;
 
 	if (stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    &s) == -1)
-		return NO;
+		return false;
 #else
 	struct _stat s;
 
 	if (_wstat([path UTF16String], &s) == -1)
-		return NO;
+		return false;
 #endif
 
 	if (S_ISREG(s.st_mode))
-		return YES;
+		return true;
 
-	return NO;
+	return false;
 }
 
-+ (BOOL)directoryExistsAtPath: (OFString*)path
++ (bool)directoryExistsAtPath: (OFString*)path
 {
 #ifndef _WIN32
 	struct stat s;
 
 	if (stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    &s) == -1)
-		return NO;
+		return false;
 #else
 	struct _stat s;
 
 	if (_wstat([path UTF16String], &s) == -1)
-		return NO;
+		return false;
 #endif
 
 	if (S_ISDIR(s.st_mode))
-		return YES;
+		return true;
 
-	return NO;
+	return false;
 }
 
 + (void)createDirectoryAtPath: (OFString*)path
@@ -266,7 +266,7 @@ of_log(OFConstantString *format, ...)
 }
 
 + (void)createDirectoryAtPath: (OFString*)path
-		createParents: (BOOL)createParents
+		createParents: (bool)createParents
 {
 	void *pool;
 	OFArray *pathComponents;
@@ -513,7 +513,7 @@ of_log(OFConstantString *format, ...)
 		toPath: (OFString*)destination
 {
 	void *pool = objc_autoreleasePoolPush();
-	BOOL override;
+	bool override;
 	OFFile *sourceFile = nil;
 	OFFile *destinationFile = nil;
 	char *buffer;
@@ -696,7 +696,7 @@ of_log(OFConstantString *format, ...)
 					  path: path
 					  mode: mode];
 
-		_closable = YES;
+		_closable = true;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -714,10 +714,10 @@ of_log(OFConstantString *format, ...)
 	return self;
 }
 
-- (BOOL)lowlevelIsAtEndOfStream
+- (bool)lowlevelIsAtEndOfStream
 {
 	if (_fd == -1)
-		return YES;
+		return true;
 
 	return _atEndOfStream;
 }
@@ -734,7 +734,7 @@ of_log(OFConstantString *format, ...)
 						 requestedLength: length];
 
 	if (ret == 0)
-		_atEndOfStream = YES;
+		_atEndOfStream = true;
 
 	return ret;
 }

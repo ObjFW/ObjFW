@@ -236,7 +236,7 @@ static struct {
 - (void)enumerateObjectsAndCountUsingBlock:
     (of_counted_set_enumeration_block_t)block
 {
-	[self enumerateObjectsUsingBlock: ^ (id object, BOOL *stop) {
+	[self enumerateObjectsUsingBlock: ^ (id object, bool *stop) {
 		block(object, [self countForObject: object], stop);
 	}];
 }

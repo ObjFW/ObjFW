@@ -55,6 +55,6 @@
 
 - (id <OFLocking>)lock
 {
-	OF_GETTER(_lock, NO)
+	OF_GETTER(_lock, false)
 }
 @end

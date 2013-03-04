@@ -188,7 +188,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		switch (of_string_utf8_check(UTF8String, UTF8StringLength,
 		    &_s->length)) {
 		case 1:
-			_s->isUTF8 = YES;
+			_s->isUTF8 = true;
 			break;
 		case -1:
 			@throw [OFInvalidEncodingException
@@ -235,7 +235,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 					@throw [OFInvalidEncodingException
 					    exceptionWithClass: [self class]];
 
-				_s->isUTF8 = YES;
+				_s->isUTF8 = true;
 				break;
 			case -1:
 				@throw [OFInvalidEncodingException
@@ -261,7 +261,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 					continue;
 				}
 
-				_s->isUTF8 = YES;
+				_s->isUTF8 = true;
 				bytes = of_string_utf8_encode(
 				    (uint8_t)cString[i], buffer);
 
@@ -311,7 +311,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				@throw [OFInvalidEncodingException
 				    exceptionWithClass: [self class]];
 
-			_s->isUTF8 = YES;
+			_s->isUTF8 = true;
 			characterBytes = of_string_utf8_encode(character,
 			    buffer);
 
@@ -338,7 +338,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 }
 
 - initWithUTF8StringNoCopy: (char*)UTF8String
-	      freeWhenDone: (BOOL)freeWhenDone
+	      freeWhenDone: (bool)freeWhenDone
 {
 	self = [super init];
 
@@ -362,7 +362,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		switch (of_string_utf8_check(UTF8String, UTF8StringLength,
 		    &_s->length)) {
 		case 1:
-			_s->isUTF8 = YES;
+			_s->isUTF8 = true;
 			break;
 		case -1:
 			@throw [OFInvalidEncodingException
@@ -389,7 +389,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		    [string isKindOfClass: [OFMutableString_UTF8 class]])
 			_s->isUTF8 = ((OFString_UTF8*)string)->_s->isUTF8;
 		else
-			_s->isUTF8 = YES;
+			_s->isUTF8 = true;
 
 		_s->length = [string length];
 
@@ -428,7 +428,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			case 2:
 			case 3:
 			case 4:
-				_s->isUTF8 = YES;
+				_s->isUTF8 = true;
 
 				memcpy(_s->cString + j, buffer, len);
 				j += len;
@@ -465,17 +465,17 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	@try {
 		size_t i, j = 0;
-		BOOL swap = NO;
+		bool swap = false;
 
 		if (length > 0 && *string == 0xFEFF) {
 			string++;
 			length--;
 		} else if (length > 0 && *string == 0xFFFE) {
-			swap = YES;
+			swap = true;
 			string++;
 			length--;
 		} else if (byteOrder != OF_BYTE_ORDER_NATIVE)
-			swap = YES;
+			swap = true;
 
 		_s = &_storage;
 
@@ -524,7 +524,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			case 2:
 			case 3:
 			case 4:
-				_s->isUTF8 = YES;
+				_s->isUTF8 = true;
 
 				memcpy(_s->cString + j, buffer, len);
 				j += len;
@@ -561,17 +561,17 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	@try {
 		size_t i, j = 0;
-		BOOL swap = NO;
+		bool swap = false;
 
 		if (length > 0 && *characters == 0xFEFF) {
 			characters++;
 			length--;
 		} else if (length > 0 && *characters == 0xFFFE0000) {
-			swap = YES;
+			swap = true;
 			characters++;
 			length--;
 		} else if (byteOrder != OF_BYTE_ORDER_NATIVE)
-			swap = YES;
+			swap = true;
 
 		_s = &_storage;
 
@@ -591,7 +591,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			case 2:
 			case 3:
 			case 4:
-				_s->isUTF8 = YES;
+				_s->isUTF8 = true;
 
 				memcpy(_s->cString + j, buffer, len);
 				j += len;
@@ -647,7 +647,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			switch (of_string_utf8_check(tmp, cStringLength,
 			    &_s->length)) {
 			case 1:
-				_s->isUTF8 = YES;
+				_s->isUTF8 = true;
 				break;
 			case -1:
 				@throw [OFInvalidEncodingException
@@ -688,7 +688,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			_s->isUTF8 =
 			    ((OFString_UTF8*)firstComponent)->_s->isUTF8;
 		else
-			_s->isUTF8 = YES;
+			_s->isUTF8 = true;
 
 		_s->length = [firstComponent length];
 
@@ -704,7 +704,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				_s->isUTF8 =
 				    ((OFString_UTF8*)component)->_s->isUTF8;
 			else
-				_s->isUTF8 = YES;
+				_s->isUTF8 = true;
 		}
 
 		_s->cString = [self allocMemoryWithSize: _s->cStringLength + 1];
@@ -806,32 +806,32 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return _s->cStringLength;
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	OFString_UTF8 *otherString;
 
 	if (object == self)
-		return YES;
+		return true;
 
 	if (![object isKindOfClass: [OFString class]])
-		return NO;
+		return false;
 
 	otherString = object;
 
 	if ([otherString UTF8StringLength] != _s->cStringLength ||
 	    [otherString length] != _s->length)
-		return NO;
+		return false;
 
 	if (([otherString isKindOfClass: [OFString_UTF8 class]] ||
 	    [otherString isKindOfClass: [OFMutableString_UTF8 class]]) &&
 	    _s->hashed && otherString->_s->hashed &&
 	    _s->hash != otherString->_s->hash)
-		return NO;
+		return false;
 
 	if (strcmp(_s->cString, [otherString UTF8String]))
-		return NO;
+		return false;
 
-	return YES;
+	return true;
 }
 
 - (of_comparison_result_t)compare: (id <OFComparing>)object
@@ -981,7 +981,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	OF_HASH_FINALIZE(hash);
 
 	_s->hash = hash;
-	_s->hashed = YES;
+	_s->hashed = true;
 
 	return hash;
 }
@@ -1084,22 +1084,22 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return of_range(OF_NOT_FOUND, 0);
 }
 
-- (BOOL)containsString: (OFString*)string
+- (bool)containsString: (OFString*)string
 {
 	const char *cString = [string UTF8String];
 	size_t i, cStringLength = [string UTF8StringLength];
 
 	if (cStringLength == 0)
-		return YES;
+		return true;
 
 	if (cStringLength > _s->cStringLength)
-		return NO;
+		return false;
 
 	for (i = 0; i <= _s->cStringLength - cStringLength; i++)
 		if (!memcmp(_s->cString + i, cString, cStringLength))
-			return YES;
+			return true;
 
-	return NO;
+	return false;
 }
 
 - (OFString*)substringWithRange: (of_range_t)range
@@ -1121,22 +1121,22 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				       length: end - start];
 }
 
-- (BOOL)hasPrefix: (OFString*)prefix
+- (bool)hasPrefix: (OFString*)prefix
 {
 	size_t cStringLength = [prefix UTF8StringLength];
 
 	if (cStringLength > _s->cStringLength)
-		return NO;
+		return false;
 
 	return !memcmp(_s->cString, [prefix UTF8String], cStringLength);
 }
 
-- (BOOL)hasSuffix: (OFString*)suffix
+- (bool)hasSuffix: (OFString*)suffix
 {
 	size_t cStringLength = [suffix UTF8StringLength];
 
 	if (cStringLength > _s->cStringLength)
-		return NO;
+		return false;
 
 	return !memcmp(_s->cString + (_s->cStringLength - cStringLength),
 	    [suffix UTF8String], cStringLength);
@@ -1149,7 +1149,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	OFMutableArray *array;
 	const char *cString = [delimiter UTF8String];
 	size_t cStringLength = [delimiter UTF8StringLength];
-	BOOL skipEmpty = (options & OF_STRING_SKIP_EMPTY);
+	bool skipEmpty = (options & OF_STRING_SKIP_EMPTY);
 	size_t i, last;
 	OFString *component;
 
@@ -1376,11 +1376,11 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	void *pool;
 	const char *cString = _s->cString;
 	const char *last = cString;
-	BOOL stop = NO, lastCarriageReturn = NO;
+	bool stop = false, lastCarriageReturn = false;
 
 	while (!stop && *cString != 0) {
 		if (lastCarriageReturn && *cString == '\n') {
-			lastCarriageReturn = NO;
+			lastCarriageReturn = false;
 
 			cString++;
 			last++;

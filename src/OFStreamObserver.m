@@ -373,7 +373,7 @@ enum {
 	[self observeWithTimeout: -1];
 }
 
-- (BOOL)observeWithTimeout: (double)timeout
+- (bool)observeWithTimeout: (double)timeout
 {
 	[self doesNotRecognizeSelector: _cmd];
 	abort();
@@ -389,11 +389,11 @@ enum {
 #endif
 }
 
-- (BOOL)OF_processCache
+- (bool)OF_processCache
 {
 	OFStream **objects = [_readStreams objects];
 	size_t i, count = [_readStreams count];
-	BOOL foundInCache = NO;
+	bool foundInCache = false;
 
 	for (i = 0; i < count; i++) {
 		if ([objects[i] numberOfBytesInReadBuffer] > 0 &&
@@ -404,7 +404,7 @@ enum {
 			    @selector(streamIsReadyForReading:)])
 				[_delegate streamIsReadyForReading: objects[i]];
 
-			foundInCache = YES;
+			foundInCache = true;
 
 			objc_autoreleasePoolPop(pool);
 		}
@@ -415,8 +415,8 @@ enum {
 	 * to block.
 	 */
 	if (foundInCache)
-		return YES;
+		return true;
 
-	return NO;
+	return false;
 }
 @end

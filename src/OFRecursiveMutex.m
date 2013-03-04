@@ -42,7 +42,7 @@
 		@throw [OFInitializationFailedException exceptionWithClass: c];
 	}
 
-	_initialized = YES;
+	_initialized = true;
 
 	return self;
 }
@@ -54,7 +54,7 @@
 							    lock: self];
 }
 
-- (BOOL)tryLock
+- (bool)tryLock
 {
 	return of_rmutex_trylock(&_rmutex);
 }
@@ -68,12 +68,12 @@
 
 - (void)setName: (OFString*)name
 {
-	OF_SETTER(_name, name, YES, 1)
+	OF_SETTER(_name, name, true, 1)
 }
 
 - (OFString*)name
 {
-	OF_GETTER(_name, YES)
+	OF_GETTER(_name, true)
 }
 
 - (OFString*)description

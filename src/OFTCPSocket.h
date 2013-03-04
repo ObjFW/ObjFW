@@ -38,7 +38,7 @@
 
 #ifdef OF_HAVE_BLOCKS
 typedef void (^of_tcpsocket_async_connect_block_t)(OFTCPSocket*, OFException*);
-typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*,
+typedef bool (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*,
     OFException*);
 #endif
 
@@ -50,7 +50,7 @@ typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*,
  */
 @interface OFTCPSocket: OFStreamSocket
 {
-	BOOL _listening;
+	bool _listening;
 	struct sockaddr_storage *_sockAddr;
 	socklen_t _sockAddrLen;
 	OFString *_SOCKS5Host;
@@ -58,7 +58,7 @@ typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*,
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, getter=isListening) BOOL listening;
+@property (readonly, getter=isListening) bool listening;
 @property (copy) OFString *SOCKS5Host;
 @property uint16_t SOCKS5Port;
 #endif
@@ -200,7 +200,7 @@ typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*,
  *		 next incoming connection should be accepted by the specified
  *		 block as well.
  * @param selector The selector to call on the target. The signature must be
- *		   BOOL (OFTCPSocket *socket, OFTCPSocket *acceptedSocket,
+ *		   bool (OFTCPSocket *socket, OFTCPSocket *acceptedSocket,
  *		   OFException *exception).
  */
 - (void)asyncAcceptWithTarget: (id)target
@@ -222,7 +222,7 @@ typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*,
  *
  * @param enable Whether to enable or disable keep alives for the connection
  */
-- (void)setKeepAlivesEnabled: (BOOL)enable;
+- (void)setKeepAlivesEnabled: (bool)enable;
 
 /*!
  * @brief Returns the remote address of the socket.
@@ -238,7 +238,7 @@ typedef BOOL (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*,
  *
  * @return Whether the socket is a listening socket
  */
-- (BOOL)isListening;
+- (bool)isListening;
 @end
 
 #ifdef __cplusplus

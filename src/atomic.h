@@ -656,16 +656,16 @@ of_atomic_xor_32(volatile uint32_t *p, uint32_t i)
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_atomic_cmpswap_int(volatile int *p, int o, int n)
 {
 #if !defined(OF_HAVE_THREADS)
 	if (*p == o) {
 		*p = n;
-		return YES;
+		return true;
 	}
 
-	return NO;
+	return false;
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	int r;
 
@@ -690,16 +690,16 @@ of_atomic_cmpswap_int(volatile int *p, int o, int n)
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_atomic_cmpswap_32(volatile int32_t *p, int32_t o, int32_t n)
 {
 #if !defined(OF_HAVE_THREADS)
 	if (*p == o) {
 		*p = n;
-		return YES;
+		return true;
 	}
 
-	return NO;
+	return false;
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	int r;
 
@@ -724,16 +724,16 @@ of_atomic_cmpswap_32(volatile int32_t *p, int32_t o, int32_t n)
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_atomic_cmpswap_ptr(void* volatile *p, void *o, void *n)
 {
 #if !defined(OF_HAVE_THREADS)
 	if (*p == o) {
 		*p = n;
-		return YES;
+		return true;
 	}
 
-	return NO;
+	return false;
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	int r;
 

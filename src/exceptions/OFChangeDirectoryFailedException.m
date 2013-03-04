@@ -80,6 +80,6 @@
 
 - (OFString*)path
 {
-	OF_GETTER(_path, NO)
+	OF_GETTER(_path, false)
 }
 @end

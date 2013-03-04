@@ -335,7 +335,7 @@
 {
 	id *objects = [_array items];
 	size_t i, count = [_array count];
-	BOOL stop = NO;
+	bool stop = false;
 	unsigned long mutations = _mutations;
 
 	for (i = 0; i < count && !stop; i++) {
@@ -352,7 +352,7 @@
 {
 	id *objects = [_array items];
 	size_t i, count = [_array count];
-	BOOL stop = NO;
+	bool stop = false;
 	unsigned long mutations = _mutations;
 
 	for (i = 0; i < count && !stop; i++) {

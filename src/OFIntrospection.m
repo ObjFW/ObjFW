@@ -81,7 +81,7 @@
 
 - (OFString*)name
 {
-	OF_GETTER(_name, YES)
+	OF_GETTER(_name, true)
 }
 
 - (const char*)typeEncoding
@@ -95,30 +95,30 @@
 					   _name, _typeEncoding];
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	OFMethod *method;
 
 	if (![object isKindOfClass: [OFMethod class]])
-		return NO;
+		return false;
 
 	method = object;
 
 	if (!sel_isEqual(method->_selector, _selector))
-		return NO;
+		return false;
 
 	if (![method->_name isEqual: _name])
-		return NO;
+		return false;
 
 	if ((method->_typeEncoding == NULL && _typeEncoding != NULL) ||
 	    (method->_typeEncoding != NULL && _typeEncoding == NULL))
-		return NO;
+		return false;
 
 	if (method->_typeEncoding != NULL && _typeEncoding != NULL &&
 	    strcmp(method->_typeEncoding, _typeEncoding))
-		return NO;
+		return false;
 
-	return YES;
+	return true;
 }
 
 - (uint32_t)hash
@@ -188,7 +188,7 @@
 
 - (OFString*)name
 {
-	OF_GETTER(_name, YES);
+	OF_GETTER(_name, true);
 }
 
 - (ptrdiff_t)offset
@@ -339,16 +339,16 @@
 
 - (OFArray*)classMethods
 {
-	OF_GETTER(_classMethods, YES)
+	OF_GETTER(_classMethods, true)
 }
 
 - (OFArray*)instanceMethods
 {
-	OF_GETTER(_instanceMethods, YES)
+	OF_GETTER(_instanceMethods, true)
 }
 
 - (OFArray*)instanceVariables
 {
-	OF_GETTER(_instanceVariables, YES)
+	OF_GETTER(_instanceVariables, true)
 }
 @end

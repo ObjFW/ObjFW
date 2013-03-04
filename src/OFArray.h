@@ -38,8 +38,8 @@ enum {
 
 #ifdef OF_HAVE_BLOCKS
 typedef void (^of_array_enumeration_block_t)(id object, size_t index,
-    BOOL *stop);
-typedef BOOL (^of_array_filter_block_t)(id odject, size_t index);
+    bool *stop);
+typedef bool (^of_array_filter_block_t)(id odject, size_t index);
 typedef id (^of_array_map_block_t)(id object, size_t index);
 typedef id (^of_array_fold_block_t)(id left, id right);
 #endif
@@ -196,7 +196,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * @return A boolean whether the array contains an object with the specified
  *	   address.
  */
-- (BOOL)containsObjectIdenticalTo: (id)object;
+- (bool)containsObjectIdenticalTo: (id)object;
 
 /*!
  * @brief Returns the first object of the array or nil.
@@ -331,7 +331,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 
 /*!
  * @brief Creates a new array, only containing the objects for which the block
- *	  returns YES.
+ *	  returns true.
  *
  * @param block A block which determines if the object should be in the new
  *		array

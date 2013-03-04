@@ -105,7 +105,7 @@
 	[_changeList addItem: &event];
 }
 
-- (BOOL)observeWithTimeout: (double)timeout
+- (bool)observeWithTimeout: (double)timeout
 {
 	void *pool = objc_autoreleasePoolPush();
 	struct timespec timespec;
@@ -119,7 +119,7 @@
 
 	if ([self OF_processCache]) {
 		objc_autoreleasePoolPop(pool);
-		return YES;
+		return true;
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -129,12 +129,12 @@
 	    (timeout == -1 ? NULL : &timespec));
 
 	if (events < 0)
-		return NO;
+		return false;
 
 	[_changeList removeAllItems];
 
 	if (events == 0)
-		return NO;
+		return false;
 
 	for (i = 0; i < events; i++) {
 		if (eventList[i].ident == _cancelFD[0]) {
@@ -180,8 +180,8 @@
 	}
 
 	if (realEvents == 0)
-		return NO;
+		return false;
 
-	return YES;
+	return true;
 }
 @end

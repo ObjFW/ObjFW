@@ -22,7 +22,7 @@
 @interface OFCondition: OFMutex
 {
 	of_condition_t _condition;
-	BOOL _conditionInitialized;
+	bool _conditionInitialized;
 }
 
 /*!

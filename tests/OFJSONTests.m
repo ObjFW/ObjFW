@@ -42,7 +42,7 @@ static OFString *module = @"OFJSON";
 		[OFNumber numberWithInt: 0xF],
 		[OFNull null],
 		@"foo",
-		[OFNumber numberWithBool: NO],
+		[OFNumber numberWithBool: false],
 		nil],
 	    nil];
 

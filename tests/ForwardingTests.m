@@ -23,7 +23,7 @@
 
 static OFString *module = @"Forwarding";
 static size_t forwardings = 0;
-static BOOL success = NO;
+static bool success = false;
 
 @interface ForwardingTest: OFObject
 @end
@@ -36,11 +36,11 @@ static BOOL success = NO;
 static void
 test(id self, SEL _cmd)
 {
-	success = YES;
+	success = true;
 }
 
 @implementation ForwardingTest
-+ (BOOL)resolveClassMethod: (SEL)selector
++ (bool)resolveClassMethod: (SEL)selector
 {
 	forwardings++;
 
@@ -48,13 +48,13 @@ test(id self, SEL _cmd)
 		[self replaceClassMethod: @selector(test)
 		      withImplementation: (IMP)test
 			    typeEncoding: "v#:"];
-		return YES;
+		return true;
 	}
 
-	return NO;
+	return false;
 }
 
-+ (BOOL)resolveInstanceMethod: (SEL)selector
++ (bool)resolveInstanceMethod: (SEL)selector
 {
 	forwardings++;
 
@@ -62,10 +62,10 @@ test(id self, SEL _cmd)
 		[self replaceInstanceMethod: @selector(test)
 			 withImplementation: (IMP)test
 			       typeEncoding: "v@:"];
-		return YES;
+		return true;
 	}
 
-	return NO;
+	return false;
 }
 @end
 
@@ -80,7 +80,7 @@ test(id self, SEL _cmd)
 
 	ForwardingTest *t = [[[ForwardingTest alloc] init] autorelease];
 
-	success = NO;
+	success = false;
 	forwardings = 0;
 
 	TEST(@"Forwarding a message and adding an instance method",

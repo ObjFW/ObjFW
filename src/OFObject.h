@@ -196,7 +196,7 @@ typedef struct of_rectangle_t
  * @param class_ The class whose kind is checked
  * @return A boolean whether the object is of the specified kind
  */
-- (BOOL)isKindOfClass: (Class)class_;
+- (bool)isKindOfClass: (Class)class_;
 
 /*!
  * @brief Returns a boolean whether the object is a member of the specified
@@ -205,7 +205,7 @@ typedef struct of_rectangle_t
  * @param class_ The class for which the receiver is checked
  * @return A boolean whether the object is a member of the specified class
  */
-- (BOOL)isMemberOfClass: (Class)class_;
+- (bool)isMemberOfClass: (Class)class_;
 
 /*!
  * @brief Returns a boolean whether the object responds to the specified
@@ -214,7 +214,7 @@ typedef struct of_rectangle_t
  * @param selector The selector which should be checked for respondance
  * @return A boolean whether the objects responds to the specified selector
  */
-- (BOOL)respondsToSelector: (SEL)selector;
+- (bool)respondsToSelector: (SEL)selector;
 
 /*!
  * @brief Checks whether the object conforms to the specified protocol.
@@ -222,7 +222,7 @@ typedef struct of_rectangle_t
  * @param protocol The protocol which should be checked for conformance
  * @return A boolean whether the object conforms to the specified protocol
  */
-- (BOOL)conformsToProtocol: (Protocol*)protocol;
+- (bool)conformsToProtocol: (Protocol*)protocol;
 
 /*!
  * @brief Returns the implementation for the specified selector.
@@ -285,7 +285,7 @@ typedef struct of_rectangle_t
  * @param object The object which should be tested for equality
  * @return A boolean whether the object is equal to the specified object
  */
-- (BOOL)isEqual: (id)object;
+- (bool)isEqual: (id)object;
 
 /*!
  * @brief Calculates a hash for the object.
@@ -344,7 +344,7 @@ typedef struct of_rectangle_t
  *
  * @return A boolean whether the object is a proxy object
  */
-- (BOOL)isProxy;
+- (bool)isProxy;
 @end
 
 /*!
@@ -414,7 +414,7 @@ typedef struct of_rectangle_t
  * @param class_ The class which is checked for being a superclass
  * @return A boolean whether the class is a subclass of the specified class
  */
-+ (BOOL)isSubclassOfClass: (Class)class_;
++ (bool)isSubclassOfClass: (Class)class_;
 
 /*!
  * @brief Returns the superclass of the class.
@@ -430,7 +430,7 @@ typedef struct of_rectangle_t
  * @return A boolean whether instances of the class respond to the specified
  *	   selector
  */
-+ (BOOL)instancesRespondToSelector: (SEL)selector;
++ (bool)instancesRespondToSelector: (SEL)selector;
 
 /*!
  * @brief Checks whether the class conforms to a given protocol.
@@ -438,7 +438,7 @@ typedef struct of_rectangle_t
  * @param protocol The protocol which should be checked for conformance
  * @return A boolean whether the class conforms to the specified protocol
  */
-+ (BOOL)conformsToProtocol: (Protocol*)protocol;
++ (bool)conformsToProtocol: (Protocol*)protocol;
 
 /*!
  * @brief Returns the implementation of the instance method for the specified
@@ -549,7 +549,7 @@ typedef struct of_rectangle_t
  *
  * @return Whether the method has been added to the class
  */
-+ (BOOL)resolveClassMethod: (SEL)selector;
++ (bool)resolveClassMethod: (SEL)selector;
 
 /*!
  * @brief Try to resolve the specified instance method.
@@ -559,7 +559,7 @@ typedef struct of_rectangle_t
  *
  * @return Whether the method has been added to the class
  */
-+ (BOOL)resolveInstanceMethod: (SEL)selector;
++ (bool)resolveInstanceMethod: (SEL)selector;
 
 /*!
  * @brief Initializes an already allocated object.
@@ -710,7 +710,7 @@ typedef struct of_rectangle_t
  */
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread*)thread
-	  waitUntilDone: (BOOL)waitUntilDone;
+	  waitUntilDone: (bool)waitUntilDone;
 
 /*!
  * @brief Performs the specified selector on the specified thread with the
@@ -725,7 +725,7 @@ typedef struct of_rectangle_t
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread*)thread
 	     withObject: (id)object
-	  waitUntilDone: (BOOL)waitUntilDone;
+	  waitUntilDone: (bool)waitUntilDone;
 
 /*!
  * @brief Performs the specified selector on the specified thread with the
@@ -743,7 +743,7 @@ typedef struct of_rectangle_t
 	       onThread: (OFThread*)thread
 	     withObject: (id)object1
 	     withObject: (id)object2
-	  waitUntilDone: (BOOL)waitUntilDone;
+	  waitUntilDone: (bool)waitUntilDone;
 
 /*!
  * @brief Performs the specified selector on the main thread.
@@ -752,7 +752,7 @@ typedef struct of_rectangle_t
  * @param waitUntilDone Whether to wait until the perform finished
  */
 - (void)performSelectorOnMainThread: (SEL)selector
-		      waitUntilDone: (BOOL)waitUntilDone;
+		      waitUntilDone: (bool)waitUntilDone;
 
 /*!
  * @brief Performs the specified selector on the main thread with the specified
@@ -765,7 +765,7 @@ typedef struct of_rectangle_t
  */
 - (void)performSelectorOnMainThread: (SEL)selector
 			 withObject: (id)object
-		      waitUntilDone: (BOOL)waitUntilDone;
+		      waitUntilDone: (bool)waitUntilDone;
 
 /*!
  * @brief Performs the specified selector on the main thread with the specified
@@ -781,7 +781,7 @@ typedef struct of_rectangle_t
 - (void)performSelectorOnMainThread: (SEL)selector
 			 withObject: (id)object1
 			 withObject: (id)object2
-		      waitUntilDone: (BOOL)waitUntilDone;
+		      waitUntilDone: (bool)waitUntilDone;
 
 /*!
  * @brief Performs the specified selector on the specified thread after the
@@ -831,7 +831,7 @@ typedef struct of_rectangle_t
 
 /*!
  * @brief This method is called when @ref resolveClassMethod: or
- *	  @ref resolveInstanceMethod: returned NO. It should return a target
+ *	  @ref resolveInstanceMethod: returned false. It should return a target
  *	  to which the message should be forwarded.
  *
  * @note When the message should not be forwarded, you should not return nil,

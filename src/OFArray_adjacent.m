@@ -138,11 +138,11 @@
 
 	@try {
 		size_t i;
-		BOOL ok = YES;
+		bool ok = true;
 
 		for (i = 0; i < count; i++) {
 			if (objects[i] == nil)
-				ok = NO;
+				ok = false;
 
 			[objects[i] retain];
 		}
@@ -300,7 +300,7 @@
 						  range: range];
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	OFArray *otherArray;
 	id *objects, *otherObjects;
@@ -316,16 +316,16 @@
 	count = [_array count];
 
 	if (count != [otherArray count])
-		return NO;
+		return false;
 
 	objects = [_array items];
 	otherObjects = [otherArray objects];
 
 	for (i = 0; i < count; i++)
 		if (![objects[i] isEqual: otherObjects[i]])
-			return NO;
+			return false;
 
-	return YES;
+	return true;
 }
 
 - (uint32_t)hash
@@ -349,7 +349,7 @@
 {
 	id *objects = [_array items];
 	size_t i, count = [_array count];
-	BOOL stop = NO;
+	bool stop = false;
 
 	for (i = 0; i < count && !stop; i++)
 		block(objects[i], i, &stop);

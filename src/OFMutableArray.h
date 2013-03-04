@@ -17,7 +17,7 @@
 #import "OFArray.h"
 
 #ifdef OF_HAVE_BLOCKS
-typedef id (^of_array_replace_block_t)(id obj, size_t idx, BOOL *stop);
+typedef id (^of_array_replace_block_t)(id obj, size_t idx, bool *stop);
 #endif
 
 /*!

@@ -36,7 +36,7 @@
 + (instancetype)scheduledTimerWithTimeInterval: (double)interval
 					target: (id)target
 				      selector: (SEL)selector
-				       repeats: (BOOL)repeats
+				       repeats: (bool)repeats
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: interval];
@@ -58,7 +58,7 @@
 					target: (id)target
 				      selector: (SEL)selector
 					object: (id)object
-				       repeats: (BOOL)repeats
+				       repeats: (bool)repeats
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: interval];
@@ -82,7 +82,7 @@
 				      selector: (SEL)selector
 					object: (id)object1
 					object: (id)object2
-				       repeats: (BOOL)repeats
+				       repeats: (bool)repeats
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: interval];
@@ -104,7 +104,7 @@
 
 #ifdef OF_HAVE_BLOCKS
 + (instancetype)scheduledTimerWithTimeInterval: (double)interval
-				       repeats: (BOOL)repeats
+				       repeats: (bool)repeats
 					 block: (of_timer_block_t)block
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -126,7 +126,7 @@
 + (instancetype)timerWithTimeInterval: (double)interval
 			       target: (id)target
 			     selector: (SEL)selector
-			      repeats: (BOOL)repeats
+			      repeats: (bool)repeats
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: interval];
@@ -146,7 +146,7 @@
 			       target: (id)target
 			     selector: (SEL)selector
 			       object: (id)object
-			      repeats: (BOOL)repeats
+			      repeats: (bool)repeats
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: interval];
@@ -168,7 +168,7 @@
 			     selector: (SEL)selector
 			       object: (id)object1
 			       object: (id)object2
-			      repeats: (BOOL)repeats
+			      repeats: (bool)repeats
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: interval];
@@ -188,7 +188,7 @@
 
 #ifdef OF_HAVE_BLOCKS
 + (instancetype)timerWithTimeInterval: (double)interval
-			      repeats: (BOOL)repeats
+			      repeats: (bool)repeats
 				block: (of_timer_block_t)block
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -224,7 +224,7 @@
 	       object: (id)object1
 	       object: (id)object2
 	    arguments: (uint8_t)arguments
-	      repeats: (BOOL)repeats
+	      repeats: (bool)repeats
 {
 	self = [super init];
 
@@ -237,7 +237,7 @@
 		_object2 = [object2 retain];
 		_arguments = arguments;
 		_repeats = repeats;
-		_valid = YES;
+		_valid = true;
 #ifdef OF_HAVE_THREADS
 		_condition = [[OFCondition alloc] init];
 #endif
@@ -253,7 +253,7 @@
 	  interval: (double)interval
 	    target: (id)target
 	  selector: (SEL)selector
-	   repeats: (BOOL)repeats
+	   repeats: (bool)repeats
 {
 	return [self OF_initWithFireDate: fireDate
 				interval: interval
@@ -270,7 +270,7 @@
 	    target: (id)target
 	  selector: (SEL)selector
 	    object: (id)object
-	   repeats: (BOOL)repeats
+	   repeats: (bool)repeats
 {
 	return [self OF_initWithFireDate: fireDate
 				interval: interval
@@ -288,7 +288,7 @@
 	  selector: (SEL)selector
 	    object: (id)object1
 	    object: (id)object2
-	   repeats: (BOOL)repeats
+	   repeats: (bool)repeats
 {
 	return [self OF_initWithFireDate: fireDate
 				interval: interval
@@ -303,7 +303,7 @@
 #ifdef OF_HAVE_BLOCKS
 - initWithFireDate: (OFDate*)fireDate
 	   interval: (double)interval
-	    repeats: (BOOL)repeats
+	    repeats: (bool)repeats
 	      block: (of_timer_block_t)block
 {
 	self = [super init];
@@ -313,7 +313,7 @@
 		_interval = interval;
 		_repeats = repeats;
 		_block = [block copy];
-		_valid = YES;
+		_valid = true;
 # ifdef OF_HAVE_THREADS
 		_condition = [[OFCondition alloc] init];
 # endif
@@ -392,7 +392,7 @@
 #ifdef OF_HAVE_THREADS
 	[_condition lock];
 	@try {
-		_done = YES;
+		_done = true;
 		[_condition signal];
 	} @finally {
 		[_condition unlock];
@@ -412,7 +412,7 @@
 
 - (OFDate*)fireDate
 {
-	OF_GETTER(_fireDate, YES)
+	OF_GETTER(_fireDate, true)
 }
 
 - (void)setFireDate: (OFDate*)fireDate
@@ -422,7 +422,7 @@
 		@synchronized (self) {
 			[_inRunLoop OF_removeTimer: self];
 
-			OF_SETTER(_fireDate, fireDate, YES, 0)
+			OF_SETTER(_fireDate, fireDate, true, 0)
 
 			[_inRunLoop addTimer: self];
 		}
@@ -438,13 +438,13 @@
 
 - (void)invalidate
 {
-	_valid = NO;
+	_valid = false;
 
 	[_target release];
 	_target = nil;
 }
 
-- (BOOL)isValid
+- (bool)isValid
 {
 	return _valid;
 }
@@ -455,7 +455,7 @@
 	[_condition lock];
 	@try {
 		if (_done) {
-			_done = NO;
+			_done = false;
 			return;
 		}
 
@@ -468,6 +468,6 @@
 
 - (void)OF_setInRunLoop: (OFRunLoop*)inRunLoop
 {
-	OF_SETTER(_inRunLoop, inRunLoop, YES, 0)
+	OF_SETTER(_inRunLoop, inRunLoop, true, 0)
 }
 @end

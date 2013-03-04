@@ -106,11 +106,11 @@
 
 - (OFString*)namespace
 {
-	OF_GETTER(_namespace, NO)
+	OF_GETTER(_namespace, false)
 }
 
 - (OFString*)prefix
 {
-	OF_GETTER(_prefix, NO)
+	OF_GETTER(_prefix, false)
 }
 @end

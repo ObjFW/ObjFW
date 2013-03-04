@@ -75,7 +75,7 @@
 
 - (OFTCPSocket*)socket
 {
-	OF_GETTER(_socket, NO)
+	OF_GETTER(_socket, false)
 }
 
 - (int)backLog

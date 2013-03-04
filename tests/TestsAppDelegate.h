@@ -33,7 +33,7 @@
 	}
 #define EXPECT_EXCEPTION(test, exception, code)		\
 	{						\
-		BOOL caught = NO;			\
+		bool caught = false;			\
 							\
 		[self outputTesting: test		\
 			   inModule: module];		\
@@ -41,7 +41,7 @@
 		@try {					\
 			code;				\
 		} @catch (exception *e) {		\
-			caught = YES;			\
+			caught = true;			\
 		}					\
 							\
 		if (caught)				\

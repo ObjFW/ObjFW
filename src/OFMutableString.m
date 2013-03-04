@@ -270,7 +270,7 @@ static struct {
 	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *characters = [self characters];
 	size_t i, length = [self length];
-	BOOL isStart = YES;
+	bool isStart = true;
 
 	for (i = 0; i < length; i++) {
 		const of_unichar_t *const *table;
@@ -294,10 +294,10 @@ static struct {
 		case '\t':
 		case '\n':
 		case '\r':
-			isStart = YES;
+			isStart = true;
 			break;
 		default:
-			isStart = NO;
+			isStart = false;
 			break;
 		}
 	}

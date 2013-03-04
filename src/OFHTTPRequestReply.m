@@ -106,12 +106,12 @@
 
 - (OFDictionary*)headers
 {
-	OF_GETTER(_headers, YES)
+	OF_GETTER(_headers, true)
 }
 
 - (void)setHeaders: (OFDictionary*)headers
 {
-	OF_SETTER(_headers, headers, YES, YES)
+	OF_SETTER(_headers, headers, true, 1)
 }
 
 - (OFString*)description

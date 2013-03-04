@@ -268,11 +268,11 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 		return 1;
 	/* false */
 	case 0xC2:
-		*object = [OFNumber numberWithBool: NO];
+		*object = [OFNumber numberWithBool: false];
 		return 1;
 	/* true */
 	case 0xC3:
-		*object = [OFNumber numberWithBool: YES];
+		*object = [OFNumber numberWithBool: true];
 		return 1;
 	/* Data */
 	case 0xD5:

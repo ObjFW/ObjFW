@@ -259,12 +259,12 @@ md5_transform(uint32_t buffer[4], const uint32_t in[16])
 	md5_transform(_buffer, _in.u32);
 	BSWAP32_VEC_IF_BE(_buffer, 4);
 
-	_calculated = YES;
+	_calculated = true;
 
 	return (uint8_t*)_buffer;
 }
 
-- (BOOL)isCalculated
+- (bool)isCalculated
 {
 	return _calculated;
 }

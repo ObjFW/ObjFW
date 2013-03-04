@@ -29,6 +29,6 @@
 		uint8_t	u8[64];
 		uint32_t u32[16];
 	} _in;
-	BOOL _calculated;
+	bool _calculated;
 }
 @end

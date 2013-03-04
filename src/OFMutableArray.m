@@ -375,7 +375,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 - (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block
 {
 	[self enumerateObjectsUsingBlock: ^ (id object, size_t index,
-	    BOOL *stop) {
+	    bool *stop) {
 		[self replaceObjectAtIndex: index
 				withObject: block(object, index, stop)];
 	}];

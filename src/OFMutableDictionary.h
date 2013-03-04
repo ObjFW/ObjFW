@@ -17,7 +17,7 @@
 #import "OFDictionary.h"
 
 #ifdef OF_HAVE_BLOCKS
-typedef id (^of_dictionary_replace_block_t)(id key, id object, BOOL *stop);
+typedef id (^of_dictionary_replace_block_t)(id key, id object, bool *stop);
 #endif
 
 /*!

@@ -193,12 +193,12 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 		_digest[i] = (char)((_state[i >> 2] >>
 		    ((3 - (i & 3)) * 8)) & 255);
 
-	_calculated = YES;
+	_calculated = true;
 
 	return _digest;
 }
 
-- (BOOL)isCalculated
+- (bool)isCalculated
 {
 	return _calculated;
 }

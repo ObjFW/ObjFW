@@ -18,7 +18,7 @@
 
 #ifdef OF_HAVE_BLOCKS
 typedef void (^of_counted_set_enumeration_block_t)(id object, size_t count,
-    BOOL *stop);
+    bool *stop);
 #endif
 
 /*!

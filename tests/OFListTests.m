@@ -40,7 +40,7 @@ static OFString *strings[] = {
 	of_list_object_t *loe;
 	OFString *obj;
 	size_t i;
-	BOOL ok;
+	bool ok;
 
 	TEST(@"+[list]", (list = [OFList list]))
 
@@ -79,13 +79,13 @@ static OFString *strings[] = {
 	TEST(@"-[count]", [list count] == 3)
 
 	TEST(@"-[containsObject:]",
-	    [list containsObject: strings[1]] == YES &&
-	    [list containsObject: @"nonexistant"] == NO)
+	    [list containsObject: strings[1]] &&
+	    ![list containsObject: @"nonexistant"])
 
 	TEST(@"-[containsObjectIdenticalTo:]",
-	    [list containsObjectIdenticalTo: strings[1]] == YES &&
-	    [list containsObjectIdenticalTo:
-	    [OFString stringWithString: strings[1]]] == NO)
+	    [list containsObjectIdenticalTo: strings[1]] &&
+	    ![list containsObjectIdenticalTo:
+	    [OFString stringWithString: strings[1]]])
 
 	TEST(@"-[copy]", (list = [[list copy] autorelease]) &&
 	    [[list firstListObject]->object isEqual: strings[0]] &&
@@ -101,17 +101,17 @@ static OFString *strings[] = {
 
 	loe = [list firstListObject];
 	i = 0;
-	ok = YES;
+	ok = true;
 	while ((obj = [enumerator nextObject]) != nil) {
 		if (![obj isEqual: loe->object])
-			ok = NO;
+			ok = false;
 
 		loe = loe->next;
 		i++;
 	}
 
 	if ([list count] != i)
-		ok = NO;
+		ok = false;
 
 	TEST(@"OFEnumerator's -[nextObject]", ok);
 
@@ -126,27 +126,27 @@ static OFString *strings[] = {
 #ifdef OF_HAVE_FAST_ENUMERATION
 	loe = [list firstListObject];
 	i = 0;
-	ok = YES;
+	ok = true;
 
 	for (OFString *obj in list) {
 		if (![obj isEqual: loe->object])
-			ok = NO;
+			ok = false;
 
 		loe = loe->next;
 		i++;
 	}
 
 	if ([list count] != i)
-		ok = NO;
+		ok = false;
 
 	TEST(@"Fast Enumeration", ok)
 
-	ok = NO;
+	ok = false;
 	@try {
 		for (OFString *obj in list)
 			[list removeListObject: [list lastListObject]];
 	} @catch (OFEnumerationMutationException *e) {
-		ok = YES;
+		ok = true;
 	}
 
 	TEST(@"Detection of mutation during Fast Enumeration", ok)

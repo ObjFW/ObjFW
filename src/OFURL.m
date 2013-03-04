@@ -289,39 +289,39 @@
 	[super dealloc];
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	OFURL *URL;
 
 	if (![object isKindOfClass: [OFURL class]])
-		return NO;
+		return false;
 
 	URL = object;
 
 	if (![URL->_scheme isEqual: _scheme])
-		return NO;
+		return false;
 	if (![URL->_host isEqual: _host])
-		return NO;
+		return false;
 	if (URL->_port != _port)
-		return NO;
+		return false;
 	if (URL->_user != _user && ![URL->_user isEqual: _user])
-		return NO;
+		return false;
 	if (URL->_password != _password &&
 	    ![URL->_password isEqual: _password])
-		return NO;
+		return false;
 	if (![URL->_path isEqual: _path])
-		return NO;
+		return false;
 	if (URL->_parameters != _parameters &&
 	    ![URL->_parameters isEqual: _parameters])
-		return NO;
+		return false;
 	if (URL->_query != _query &&
 	    ![URL->_query isEqual: _query])
-		return NO;
+		return false;
 	if (URL->_fragment != _fragment &&
 	    ![URL->_fragment isEqual: _fragment])
-		return NO;
+		return false;
 
-	return YES;
+	return true;
 }
 
 - (uint32_t)hash
@@ -370,7 +370,7 @@
 
 - (OFString*)scheme
 {
-	OF_GETTER(_scheme, YES)
+	OF_GETTER(_scheme, true)
 }
 
 - (void)setScheme: (OFString*)scheme
@@ -380,17 +380,17 @@
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	OF_SETTER(_scheme, scheme, YES, 1)
+	OF_SETTER(_scheme, scheme, true, 1)
 }
 
 - (OFString*)host
 {
-	OF_GETTER(_host, YES)
+	OF_GETTER(_host, true)
 }
 
 - (void)setHost: (OFString*)host
 {
-	OF_SETTER(_host, host, YES, 1)
+	OF_SETTER(_host, host, true, 1)
 }
 
 - (uint16_t)port
@@ -405,27 +405,27 @@
 
 - (OFString*)user
 {
-	OF_GETTER(_user, YES)
+	OF_GETTER(_user, true)
 }
 
 - (void)setUser: (OFString*)user
 {
-	OF_SETTER(_user, user, YES, 1)
+	OF_SETTER(_user, user, true, 1)
 }
 
 - (OFString*)password
 {
-	OF_GETTER(_password, YES)
+	OF_GETTER(_password, true)
 }
 
 - (void)setPassword: (OFString*)password
 {
-	OF_SETTER(_password, password, YES, 1)
+	OF_SETTER(_password, password, true, 1)
 }
 
 - (OFString*)path
 {
-	OF_GETTER(_path, YES)
+	OF_GETTER(_path, true)
 }
 
 - (void)setPath: (OFString*)path
@@ -436,37 +436,37 @@
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	OF_SETTER(_path, path, YES, 1)
+	OF_SETTER(_path, path, true, 1)
 }
 
 - (OFString*)parameters
 {
-	OF_GETTER(_parameters, YES)
+	OF_GETTER(_parameters, true)
 }
 
 - (void)setParameters: (OFString*)parameters
 {
-	OF_SETTER(_parameters, parameters, YES, 1)
+	OF_SETTER(_parameters, parameters, true, 1)
 }
 
 - (OFString*)query
 {
-	OF_GETTER(_query, YES)
+	OF_GETTER(_query, true)
 }
 
 - (void)setQuery: (OFString*)query
 {
-	OF_SETTER(_query, query, YES, 1)
+	OF_SETTER(_query, query, true, 1)
 }
 
 - (OFString*)fragment
 {
-	OF_GETTER(_fragment, YES)
+	OF_GETTER(_fragment, true)
 }
 
 - (void)setFragment: (OFString*)fragment
 {
-	OF_SETTER(_fragment, fragment, YES, 1)
+	OF_SETTER(_fragment, fragment, true, 1)
 }
 
 - (OFString*)string

@@ -25,7 +25,7 @@
 @interface OFMutex: OFObject <OFLocking>
 {
 	of_mutex_t _mutex;
-	BOOL _initialized;
+	bool _initialized;
 	OFString *_name;
 }
 

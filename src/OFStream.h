@@ -31,9 +31,9 @@
 @class OFException;
 
 #ifdef OF_HAVE_BLOCKS
-typedef BOOL (^of_stream_async_read_block_t)(OFStream*, void*, size_t,
+typedef bool (^of_stream_async_read_block_t)(OFStream*, void*, size_t,
     OFException*);
-typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
+typedef bool (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
     OFException*);
 #endif
 
@@ -59,13 +59,13 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
 {
 	char *_readBuffer, *_writeBuffer;
 	size_t _readBufferLength, _writeBufferLength;
-	BOOL _writeBufferEnabled, _blocking, _waitingForDelimiter;
+	bool _writeBufferEnabled, _blocking, _waitingForDelimiter;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (getter=isWriteBufferEnabled) BOOL writeBufferEnabled;
-@property (getter=isBlocking) BOOL blocking;
-@property (readonly, getter=isAtEndOfStream) BOOL atEndOfStream;
+@property (getter=isWriteBufferEnabled) bool writeBufferEnabled;
+@property (getter=isBlocking) bool blocking;
+@property (readonly, getter=isAtEndOfStream) bool atEndOfStream;
 #endif
 
 /*!
@@ -73,7 +73,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *
  * @return A boolean whether the end of the stream has been reached
  */
-- (BOOL)isAtEndOfStream;
+- (bool)isAtEndOfStream;
 
 /*!
  * @brief Reads *at most* size bytes from the stream into a buffer.
@@ -125,13 +125,13 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * @param length The length of the data that should be read at most.
  *		 The buffer *must* be *at least* this big!
  * @param target The target on which the selector should be called when the
- *		 data has been received. If the method returns YES, it will be
+ *		 data has been received. If the method returns true, it will be
  *		 called again with the same buffer and maximum length when more
  *		 data has been received. If you want the next method in the
- *		 queue to handle the data received next, you need to return NO
- *		 from the method.
+ *		 queue to handle the data received next, you need to return
+ *		 false from the method.
  * @param selector The selector to call on the target. The signature must be
- *		   BOOL (OFStream *stream, void *buffer, size_t size,
+ *		   bool (OFStream *stream, void *buffer, size_t size,
  *		   OFException *exception).
  */
 - (void)asyncReadIntoBuffer: (void*)buffer
@@ -152,13 +152,13 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * @param length The length of the data that should be read.
  *		 The buffer *must* be *at least* this big!
  * @param target The target on which the selector should be called when the
- *		 data has been received. If the method returns YES, it will be
+ *		 data has been received. If the method returns true, it will be
  *		 called again with the same buffer and exact length when more
  *		 data has been received. If you want the next method in the
- *		 queue to handle the data received next, you need to return NO
- *		 from the method.
+ *		 queue to handle the data received next, you need to return
+ *		 false from the method.
  * @param selector The selector to call on the target. The signature must be
- *		   BOOL (OFStream *stream, void *buffer, size_t size,
+ *		   bool (OFStream *stream, void *buffer, size_t size,
  *		   OFException *exception).
  */
  - (void)asyncReadIntoBuffer: (void*)buffer
@@ -182,10 +182,10 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * @param length The length of the data that should be read at most.
  *		 The buffer *must* be *at least* this big!
  * @param block The block to call when the data has been received.
- *		If the block returns YES, it will be called again with the same
+ *		If the block returns true, it will be called again with the same
  *		buffer and maximum length when more data has been received. If
  *		you want the next block in the queue to handle the data
- *		received next, you need to return NO from the block.
+ *		received next, you need to return false from the block.
  */
 - (void)asyncReadIntoBuffer: (void*)buffer
 		     length: (size_t)length
@@ -204,10 +204,10 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  * @param length The length of the data that should be read.
  *		 The buffer *must* be *at least* this big!
  * @param block The block to call when the data has been received.
- *		If the block returns YES, it will be called again with the same
+ *		If the block returns true, it will be called again with the same
  *		buffer and exact length when more data has been received. If
  *		you want the next block in the queue to handle the data
- *		received next, you need to return NO from the block.
+ *		received next, you need to return false from the block.
  */
  - (void)asyncReadIntoBuffer: (void*)buffer
 		 exactLength: (size_t)length
@@ -565,12 +565,12 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *	  exception occurs.
  *
  * @param target The target on which to call the selector when the data has
- *		 been received. If the method returns YES, it will be called
+ *		 been received. If the method returns true, it will be called
  *		 again when the next line has been received. If you want the
  *		 next method in the queue to handle the next line, you need to
- *		 return NO from the method
+ *		 return false from the method
  * @param selector The selector to call on the target. The signature must be
- *		   BOOL (OFStream *stream, OFString *line,
+ *		   bool (OFStream *stream, OFString *line,
  *		   OFException *exception).
  */
 - (void)asyncReadLineWithTarget: (id)target
@@ -582,12 +582,12 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *
  * @param encoding The encoding used by the stream
  * @param target The target on which to call the selector when the data has
- *		 been received. If the method returns YES, it will be called
+ *		 been received. If the method returns true, it will be called
  *		 again when the next line has been received. If you want the
  *		 next method in the queue to handle the next line, you need to
- *		 return NO from the method
+ *		 return false from the method
  * @param selector The selector to call on the target. The signature must be
- *		   BOOL (OFStream *stream, OFString *line,
+ *		   bool (OFStream *stream, OFString *line,
  *		   OFException *exception).
  */
 - (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
@@ -600,9 +600,10 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *	  exception occurs.
  *
  * @param block The block to call when the data has been received.
- *		If the block returns YES, it will be called again when the next
+ *		If the block returns true, it will be called again when the next
  *		line has been received. If you want the next block in the queue
- *		to handle the next line, you need to return NO from the block.
+ *		to handle the next line, you need to return false from the
+ *		block.
  */
 - (void)asyncReadLineWithBlock: (of_stream_async_read_line_block_t)block;
 
@@ -612,9 +613,10 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *
  * @param encoding The encoding used by the stream
  * @param block The block to call when the data has been received.
- *		If the block returns YES, it will be called again when the next
+ *		If the block returns true, it will be called again when the next
  *		line has been received. If you want the next block in the queue
- *		to handle the next line, you need to return NO from the block.
+ *		to handle the next line, you need to return false from the
+ *		block.
  */
 - (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
 			    block: (of_stream_async_read_line_block_t)block;
@@ -691,14 +693,14 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *
  * @return A boolean whether writes are buffered
  */
-- (BOOL)isWriteBufferEnabled;
+- (bool)isWriteBufferEnabled;
 
 /*!
  * @brief Enables or disables the write buffer.
  *
  * @param enable Whether the write buffer should be enabled or disabled
  */
-- (void)setWriteBufferEnabled: (BOOL)enable;
+- (void)setWriteBufferEnabled: (bool)enable;
 
 /*!
  * @brief Writes everythig in the write buffer to the stream.
@@ -993,7 +995,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *
  * @return Whether the stream is in blocking mode
  */
-- (BOOL)isBlocking;
+- (bool)isBlocking;
 
 /*!
  * @brief Enables or disables non-blocking I/O.
@@ -1003,7 +1005,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *
  * @param enable Whether the stream should be blocking
  */
-- (void)setBlocking: (BOOL)enable;
+- (void)setBlocking: (bool)enable;
 
 /*!
  * @brief Returns the file descriptor for the read end of the stream.
@@ -1066,7 +1068,7 @@ typedef BOOL (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
  *
  * @return Whether the lowlevel is at the end of the stream
  */
-- (BOOL)lowlevelIsAtEndOfStream;
+- (bool)lowlevelIsAtEndOfStream;
 
-- (BOOL)OF_isWaitingForDelimiter;
+- (bool)OF_isWaitingForDelimiter;
 @end

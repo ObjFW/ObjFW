@@ -21,7 +21,7 @@
 static SEL cxx_construct = NULL;
 static SEL cxx_destruct = NULL;
 
-static BOOL
+static bool
 call_ctors(Class cls, id obj)
 {
 	Class super = class_getSuperclass(cls);
@@ -30,13 +30,13 @@ call_ctors(Class cls, id obj)
 
 	if (super != nil)
 		if (!call_ctors(super, obj))
-			return NO;
+			return false;
 
 	if (cxx_construct == NULL)
 		cxx_construct = sel_registerName(".cxx_construct");
 
 	if (!class_respondsToSelector(cls, cxx_construct))
-		return YES;
+		return true;
 
 	ctor = (id(*)(id, SEL))
 	    class_getMethodImplementation(cls, cxx_construct);
@@ -44,9 +44,9 @@ call_ctors(Class cls, id obj)
 	    class_getMethodImplementation(super, cxx_construct);
 
 	if (ctor == last)
-		return YES;
+		return true;
 
-	return (ctor(obj, cxx_construct) != nil ? YES : NO);
+	return (ctor(obj, cxx_construct) != nil);
 }
 
 id

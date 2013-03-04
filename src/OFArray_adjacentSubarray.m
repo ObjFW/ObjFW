@@ -26,7 +26,7 @@
 	return [_array objects] + _range.location;
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	OFArray *otherArray;
 	id *objects, *otherObjects;
@@ -40,16 +40,16 @@
 	otherArray = object;
 
 	if (_range.length != [otherArray count])
-		return NO;
+		return false;
 
 	objects = [self objects];
 	otherObjects = [otherArray objects];
 
 	for (i = 0; i < _range.length; i++)
 		if (![objects[i] isEqual: otherObjects[i]])
-			return NO;
+			return false;
 
-	return YES;
+	return true;
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -57,7 +57,7 @@
 {
 	id *objects = [self objects];
 	size_t i;
-	BOOL stop = NO;
+	bool stop = false;
 
 	for (i = 0; i < _range.length && !stop; i++)
 		block(objects[i], i, &stop);

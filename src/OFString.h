@@ -69,7 +69,7 @@ enum {
 #define OF_STRING_ENCODING_NATIVE OF_STRING_ENCODING_UTF_8
 
 #ifdef OF_HAVE_BLOCKS
-typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
+typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 #endif
 
 @class OFArray;
@@ -120,7 +120,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
  * @return A new autoreleased OFString
  */
 + (instancetype)stringWithUTF8StringNoCopy: (char*)UTF8String
-			      freeWhenDone: (BOOL)freeWhenDone;
+			      freeWhenDone: (bool)freeWhenDone;
 
 /*!
  * @brief Creates a new OFString from a C string with the specified encoding.
@@ -348,7 +348,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
  * @return An initialized OFString
  */
 - initWithUTF8StringNoCopy: (char*)UTF8String
-	      freeWhenDone: (BOOL)freeWhenDone;
+	      freeWhenDone: (bool)freeWhenDone;
 
 /*!
  * @brief Initializes an already allocated OFString from a C string with the
@@ -707,7 +707,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
  * @param string The string to search
  * @return Whether the string contains the specified string
  */
-- (BOOL)containsString: (OFString*)string;
+- (bool)containsString: (OFString*)string;
 
 /*!
  * @brief Creates a substring with the specified range.
@@ -840,7 +840,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
  * @param prefix The prefix to check for
  * @return A boolean whether the string has the specified prefix
  */
-- (BOOL)hasPrefix: (OFString*)prefix;
+- (bool)hasPrefix: (OFString*)prefix;
 
 /*!
  * @brief Checks whether the string has the specified suffix.
@@ -848,7 +848,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, BOOL *stop);
  * @param suffix The suffix to check for
  * @return A boolean whether the string has the specified suffix
  */
-- (BOOL)hasSuffix: (OFString*)suffix;
+- (bool)hasSuffix: (OFString*)suffix;
 
 /*!
  * @brief Separates an OFString into an OFArray of OFStrings.

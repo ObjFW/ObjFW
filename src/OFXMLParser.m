@@ -60,12 +60,12 @@ buffer_append(OFDataArray *buffer, const char *string,
 }
 
 static OFString*
-transform_string(OFDataArray *buffer, size_t cut, BOOL unescape,
+transform_string(OFDataArray *buffer, size_t cut, bool unescape,
     id <OFStringXMLUnescapingDelegate> delegate)
 {
 	char *items;
 	size_t i, length;
-	BOOL hasEntities = NO;
+	bool hasEntities = false;
 	OFString *ret;
 
 	items = [buffer items];
@@ -82,7 +82,7 @@ transform_string(OFDataArray *buffer, size_t cut, BOOL unescape,
 			} else
 				items[i] = '\n';
 		} else if (items[i] == '&')
-			hasEntities = YES;
+			hasEntities = true;
 	}
 
 	ret = [OFString stringWithUTF8String: items
@@ -196,7 +196,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		    @"xmlns", @"http://www.w3.org/2000/xmlns/", nil];
 		[_namespaces addObject: dict];
 
-		_acceptProlog = YES;
+		_acceptProlog = true;
 		_lineNumber = 1;
 		_encoding = OF_STRING_ENCODING_UTF_8;
 		_depthLimit = 32;
@@ -333,7 +333,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	if ([_buffer count] > 0) {
 		void *pool = objc_autoreleasePoolPush();
-		OFString *characters = transform_string(_buffer, 0, YES, self);
+		OFString *characters = transform_string(_buffer, 0, true, self);
 
 		if ([_delegate respondsToSelector:
 		    @selector(parser:foundCharacters:)])
@@ -367,12 +367,12 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	case '/':
 		*last = *i + 1;
 		_state = OF_XMLPARSER_IN_CLOSE_TAG_NAME;
-		_acceptProlog = NO;
+		_acceptProlog = false;
 		break;
 	case '!':
 		*last = *i + 1;
 		_state = OF_XMLPARSER_IN_EXCLAMATIONMARK;
-		_acceptProlog = NO;
+		_acceptProlog = false;
 		break;
 	default:
 		if (_depthLimit > 0 && [_previous count] >= _depthLimit)
@@ -381,14 +381,14 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 					parser: self];
 
 		_state = OF_XMLPARSER_IN_TAG_NAME;
-		_acceptProlog = NO;
+		_acceptProlog = false;
 		(*i)--;
 		break;
 	}
 }
 
 /* <?xml […]?> */
-- (BOOL)OF_parseXMLProcessingInstructions: (OFString*)pi
+- (bool)OF_parseXMLProcessingInstructions: (OFString*)pi
 {
 	const char *cString;
 	size_t i, last, length;
@@ -398,9 +398,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	char piDelimiter = 0;
 
 	if (!_acceptProlog)
-		return NO;
+		return false;
 
-	_acceptProlog = NO;
+	_acceptProlog = false;
 
 	pi = [pi substringWithRange: of_range(3, [pi length] - 3)];
 	pi = [pi stringByDeletingEnclosingWhitespaces];
@@ -433,7 +433,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 			break;
 		case 2:
 			if (cString[i] != '\'' && cString[i] != '"')
-				return NO;
+				return false;
 
 			piDelimiter = cString[i];
 			last = i + 1;
@@ -450,7 +450,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 			if ([attribute isEqual: @"version"])
 				if (![value hasPrefix: @"1."])
-					return NO;
+					return false;
 
 			if ([attribute isEqual: @"encoding"]) {
 				[value lowercase];
@@ -467,7 +467,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 					_encoding =
 					    OF_STRING_ENCODING_WINDOWS_1252;
 				else
-					return NO;
+					return false;
 			}
 
 			last = i + 1;
@@ -478,9 +478,9 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	}
 
 	if (PIState != 0)
-		return NO;
+		return false;
 
-	return YES;
+	return true;
 }
 
 /* Inside processing instructions */
@@ -495,7 +495,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		OFString *PI;
 
 		buffer_append(_buffer, buffer + *last, _encoding, *i - *last);
-		PI = transform_string(_buffer, 1, NO, nil);
+		PI = transform_string(_buffer, 1, false, nil);
 
 		if ([PI isEqual: @"xml"] || [PI hasPrefix: @"xml "] ||
 		    [PI hasPrefix: @"xml\t"] || [PI hasPrefix: @"xml\r"] ||
@@ -584,7 +584,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 					namespace: namespace];
 
 			if ([_previous count] == 0)
-				_finishedParsing = YES;
+				_finishedParsing = true;
 		} else
 			[_previous addObject: bufferString];
 
@@ -678,7 +678,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	    : OF_XMLPARSER_EXPECT_SPACE_OR_CLOSE);
 
 	if ([_previous count] == 0)
-		_finishedParsing = YES;
+		_finishedParsing = true;
 }
 
 /* Inside a tag, name found */
@@ -735,7 +735,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				namespace: namespace];
 
 		if ([_previous count] == 0)
-			_finishedParsing = YES;
+			_finishedParsing = true;
 
 		[_namespaces removeLastObject];
 	} else if (_prefix != nil) {
@@ -841,7 +841,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		buffer_append(_buffer, buffer + *last, _encoding, length);
 
 	pool = objc_autoreleasePoolPush();
-	attributeValue = transform_string(_buffer, 0, YES, self);
+	attributeValue = transform_string(_buffer, 0, true, self);
 
 	if (_attributePrefix == nil && [_attributeName isEqual: @"xmlns"])
 		[[_namespaces lastObject] setObject: attributeValue
@@ -964,7 +964,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	pool = objc_autoreleasePoolPush();
 
 	buffer_append(_buffer, buffer + *last, _encoding, *i - *last);
-	CDATA = transform_string(_buffer, 2, NO, nil);
+	CDATA = transform_string(_buffer, 2, false, nil);
 
 	if ([_delegate respondsToSelector: @selector(parser:foundCDATA:)])
 		[_delegate parser: self
@@ -1019,7 +1019,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	pool = objc_autoreleasePoolPush();
 
 	buffer_append(_buffer, buffer + *last, _encoding, *i - *last);
-	comment = transform_string(_buffer, 2, NO, nil);
+	comment = transform_string(_buffer, 2, false, nil);
 
 	if ([_delegate respondsToSelector: @selector(parser:foundComment:)])
 		[_delegate parser: self
@@ -1062,7 +1062,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	return _lineNumber;
 }
 
-- (BOOL)finishedParsing
+- (bool)finishedParsing
 {
 	return _finishedParsing;
 }

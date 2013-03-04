@@ -65,7 +65,7 @@
 	return [[[self alloc] init] autorelease];
 }
 
-- (BOOL)lowlevelIsAtEndOfStream
+- (bool)lowlevelIsAtEndOfStream
 {
 	return _atEndOfStream;
 }
@@ -100,7 +100,7 @@
 						 requestedLength: length];
 
 	if (ret == 0)
-		_atEndOfStream = YES;
+		_atEndOfStream = true;
 
 	return ret;
 }
@@ -134,7 +134,7 @@
 }
 
 #ifdef _WIN32
-- (void)setBlocking: (BOOL)enable
+- (void)setBlocking: (bool)enable
 {
 	u_long v = enable;
 	_blocking = enable;
@@ -165,7 +165,7 @@
 	close(_socket);
 	_socket = INVALID_SOCKET;
 
-	_atEndOfStream = NO;
+	_atEndOfStream = false;
 }
 
 - (void)dealloc

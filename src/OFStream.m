@@ -68,12 +68,12 @@
 
 	self = [super init];
 
-	_blocking = YES;
+	_blocking = true;
 
 	return self;
 }
 
-- (BOOL)lowlevelIsAtEndOfStream
+- (bool)lowlevelIsAtEndOfStream
 {
 	[self doesNotRecognizeSelector: _cmd];
 	abort();
@@ -98,10 +98,10 @@
 	return [self retain];
 }
 
-- (BOOL)isAtEndOfStream
+- (bool)isAtEndOfStream
 {
 	if (_readBufferLength > 0)
-		return NO;
+		return false;
 
 	return [self lowlevelIsAtEndOfStream];
 }
@@ -595,7 +595,7 @@
 				_readBuffer = readBuffer;
 				_readBufferLength -= i + 1;
 
-				_waitingForDelimiter = NO;
+				_waitingForDelimiter = false;
 				return ret;
 			}
 		}
@@ -608,7 +608,7 @@
 	@try {
 		if ([self lowlevelIsAtEndOfStream]) {
 			if (_readBuffer == NULL) {
-				_waitingForDelimiter = NO;
+				_waitingForDelimiter = false;
 				return nil;
 			}
 
@@ -625,7 +625,7 @@
 			_readBuffer = NULL;
 			_readBufferLength = 0;
 
-			_waitingForDelimiter = NO;
+			_waitingForDelimiter = false;
 			return ret;
 		}
 
@@ -690,7 +690,7 @@
 				_readBuffer = readBuffer;
 				_readBufferLength = bufferLength - i - 1;
 
-				_waitingForDelimiter = NO;
+				_waitingForDelimiter = false;
 				return ret;
 			}
 		}
@@ -713,7 +713,7 @@
 		[self freeMemory: buffer];
 	}
 
-	_waitingForDelimiter = YES;
+	_waitingForDelimiter = true;
 	return nil;
 }
 
@@ -814,7 +814,7 @@
 				_readBuffer = readBuffer;
 				_readBufferLength -= i + 1;
 
-				_waitingForDelimiter = NO;
+				_waitingForDelimiter = false;
 				return ret;
 			}
 		}
@@ -827,7 +827,7 @@
 	@try {
 		if ([self lowlevelIsAtEndOfStream]) {
 			if (_readBuffer == NULL) {
-				_waitingForDelimiter = NO;
+				_waitingForDelimiter = false;
 				return nil;
 			}
 
@@ -839,7 +839,7 @@
 			_readBuffer = NULL;
 			_readBufferLength = 0;
 
-			_waitingForDelimiter = NO;
+			_waitingForDelimiter = false;
 			return ret;
 		}
 
@@ -893,7 +893,7 @@
 				_readBuffer = readBuffer;
 				_readBufferLength = bufferLength - i - 1;
 
-				_waitingForDelimiter = NO;
+				_waitingForDelimiter = false;
 				return ret;
 			}
 		}
@@ -916,7 +916,7 @@
 		[self freeMemory: buffer];
 	}
 
-	_waitingForDelimiter = YES;
+	_waitingForDelimiter = true;
 	return nil;
 }
 
@@ -947,12 +947,12 @@
 				 encoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (BOOL)isWriteBufferEnabled
+- (bool)isWriteBufferEnabled
 {
 	return _writeBufferEnabled;
 }
 
-- (void)setWriteBufferEnabled: (BOOL)enable
+- (void)setWriteBufferEnabled: (bool)enable
 {
 	_writeBufferEnabled = enable;
 }
@@ -1469,22 +1469,22 @@
 	return _readBufferLength;
 }
 
-- (BOOL)isBlocking
+- (bool)isBlocking
 {
 	return _blocking;
 }
 
-- (void)setBlocking: (BOOL)enable
+- (void)setBlocking: (bool)enable
 {
 #ifndef _WIN32
-	BOOL readImplemented = NO, writeImplemented = NO;
+	bool readImplemented = false, writeImplemented = false;
 
 	@try {
 		int readFlags;
 
 		readFlags = fcntl([self fileDescriptorForReading], F_GETFL);
 
-		readImplemented = YES;
+		readImplemented = true;
 
 		if (readFlags == -1)
 			@throw [OFSetOptionFailedException
@@ -1509,7 +1509,7 @@
 
 		writeFlags = fcntl([self fileDescriptorForWriting], F_GETFL);
 
-		writeImplemented = YES;
+		writeImplemented = true;
 
 		if (writeFlags == -1)
 			@throw [OFSetOptionFailedException
@@ -1564,7 +1564,7 @@
 	abort();
 }
 
-- (BOOL)OF_isWaitingForDelimiter
+- (bool)OF_isWaitingForDelimiter
 {
 	return _waitingForDelimiter;
 }

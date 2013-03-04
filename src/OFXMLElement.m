@@ -405,37 +405,37 @@ static Class CDATAClass = Nil;
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 
-	OF_SETTER(_name, name, YES, 1)
+	OF_SETTER(_name, name, true, 1)
 }
 
 - (OFString*)name
 {
-	OF_GETTER(_name, YES)
+	OF_GETTER(_name, true)
 }
 
 - (void)setNamespace: (OFString*)namespace
 {
-	OF_SETTER(_namespace, namespace, YES, 1)
+	OF_SETTER(_namespace, namespace, true, 1)
 }
 
 - (OFString*)namespace
 {
-	OF_GETTER(_namespace, YES)
+	OF_GETTER(_namespace, true)
 }
 
 - (OFArray*)attributes
 {
-	OF_GETTER(_attributes, YES)
+	OF_GETTER(_attributes, true)
 }
 
 - (void)setChildren: (OFArray*)children
 {
-	OF_SETTER(_children, children, YES, 2)
+	OF_SETTER(_children, children, true, 2)
 }
 
 - (OFArray*)children
 {
-	OF_GETTER(_children, YES)
+	OF_GETTER(_children, true)
 }
 
 - (void)setStringValue: (OFString*)stringValue
@@ -626,21 +626,21 @@ static Class CDATAClass = Nil;
 		OFXMLElement **childrenObjects = [_children objects];
 		size_t childrenCount = [_children count];
 		OFDataArray *tmp = [OFDataArray dataArray];
-		BOOL indent;
+		bool indent;
 
 		if (indentation > 0) {
-			indent = YES;
+			indent = true;
 
 			for (j = 0; j < childrenCount; j++) {
 				if ([childrenObjects[j] isKindOfClass:
 				    charactersClass] || [childrenObjects[j]
 				    isKindOfClass: CDATAClass]) {
-					indent = NO;
+					indent = false;
 					break;
 				}
 			}
 		} else
-			indent = NO;
+			indent = false;
 
 		for (j = 0; j < childrenCount; j++) {
 			OFString *child;
@@ -944,12 +944,12 @@ static Class CDATAClass = Nil;
 
 - (OFString*)defaultNamespace
 {
-	OF_GETTER(_defaultNamespace, YES)
+	OF_GETTER(_defaultNamespace, true)
 }
 
 - (void)setDefaultNamespace: (OFString*)defaultNamespace
 {
-	OF_SETTER(_defaultNamespace, defaultNamespace, YES, 1)
+	OF_SETTER(_defaultNamespace, defaultNamespace, true, 1)
 }
 
 - (void)addChild: (OFXMLNode*)child
@@ -1125,34 +1125,34 @@ static Class CDATAClass = Nil;
 	return ret;
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	OFXMLElement *element;
 
 	if (![object isKindOfClass: [OFXMLElement class]])
-		return NO;
+		return false;
 
 	element = object;
 
 	if (element->_name != _name && ![element->_name isEqual: _name])
-		return NO;
+		return false;
 	if (element->_namespace != _namespace &&
 	    ![element->_namespace isEqual: _namespace])
-		return NO;
+		return false;
 	if (element->_defaultNamespace != _defaultNamespace &&
 	    ![element->_defaultNamespace isEqual: _defaultNamespace])
-		return NO;
+		return false;
 	if (element->_attributes != _attributes &&
 	    ![element->_attributes isEqual: _attributes])
-		return NO;
+		return false;
 	if (element->_namespaces != _namespaces &&
 	    ![element->_namespaces isEqual: _namespaces])
-		return NO;
+		return false;
 	if (element->_children != _children &&
 	    ![element->_children isEqual: _children])
-		return NO;
+		return false;
 
-	return YES;
+	return true;
 }
 
 - (uint32_t)hash

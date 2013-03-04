@@ -79,12 +79,12 @@
 
 - (void)setURL: (OFURL*)URL
 {
-	OF_SETTER(_URL, URL, YES, 1)
+	OF_SETTER(_URL, URL, true, 1)
 }
 
 - (OFURL*)URL
 {
-	OF_GETTER(_URL, YES)
+	OF_GETTER(_URL, true)
 }
 
 - (void)setRequestType: (of_http_request_type_t)requestType
@@ -147,42 +147,42 @@
 
 - (void)setHeaders: (OFDictionary*)headers
 {
-	OF_SETTER(_headers, headers, YES, 1)
+	OF_SETTER(_headers, headers, true, 1)
 }
 
 - (OFDictionary*)headers
 {
-	OF_GETTER(_headers, YES)
+	OF_GETTER(_headers, true)
 }
 
 - (void)setPOSTData: (OFDataArray*)POSTData
 {
-	OF_SETTER(_POSTData, POSTData, YES, 0)
+	OF_SETTER(_POSTData, POSTData, true, 0)
 }
 
 - (OFDataArray*)POSTData
 {
-	OF_GETTER(_POSTData, YES)
+	OF_GETTER(_POSTData, true)
 }
 
 - (void)setMIMEType: (OFString*)MIMEType
 {
-	OF_SETTER(_MIMEType, MIMEType, YES, 1)
+	OF_SETTER(_MIMEType, MIMEType, true, 1)
 }
 
 - (OFString*)MIMEType
 {
-	OF_GETTER(_MIMEType, YES)
+	OF_GETTER(_MIMEType, true)
 }
 
 - (void)setRemoteAddress: (OFString*)remoteAddress
 {
-	OF_SETTER(_remoteAddress, remoteAddress, YES, 1)
+	OF_SETTER(_remoteAddress, remoteAddress, true, 1)
 }
 
 - (OFString*)remoteAddress
 {
-	OF_GETTER(_remoteAddress, YES)
+	OF_GETTER(_remoteAddress, true)
 }
 
 - (OFString*)description

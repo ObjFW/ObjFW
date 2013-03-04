@@ -55,13 +55,13 @@ static OFString *values[] = {
 	    [dict objectForKey: @"key3"] == nil)
 
 	TEST(@"-[containsObject:]",
-	    [dict containsObject: values[0]] == YES &&
-	    [dict containsObject: @"nonexistant"] == NO)
+	    [dict containsObject: values[0]] &&
+	    ![dict containsObject: @"nonexistant"])
 
 	TEST(@"-[containsObjectIdenticalTo:]",
-	    [dict containsObjectIdenticalTo: values[0]] == YES &&
-	    [dict containsObjectIdenticalTo:
-	    [OFString stringWithString: values[0]]] == NO)
+	    [dict containsObjectIdenticalTo: values[0]] &&
+	    ![dict containsObjectIdenticalTo:
+	    [OFString stringWithString: values[0]]])
 
 	TEST(@"-[description]",
 	    [[dict description] isEqual:
@@ -96,11 +96,11 @@ static OFString *values[] = {
 
 #ifdef OF_HAVE_FAST_ENUMERATION
 	size_t i = 0;
-	BOOL ok = YES;
+	bool ok = true;
 
 	for (OFString *key in dict) {
 		if (i > 1 || ![key isEqual: keys[i]]) {
-			ok = NO;
+			ok = false;
 			break;
 		}
 
@@ -111,13 +111,13 @@ static OFString *values[] = {
 
 	TEST(@"Fast Enumeration", ok)
 
-	ok = NO;
+	ok = false;
 	@try {
 		for (OFString *key in dict)
 			[dict setObject: @""
 				 forKey: @""];
 	} @catch (OFEnumerationMutationException *e) {
-		ok = YES;
+		ok = true;
 	}
 
 	TEST(@"Detection of mutation during Fast Enumeration", ok)
@@ -128,13 +128,13 @@ static OFString *values[] = {
 #ifdef OF_HAVE_BLOCKS
 	{
 		__block size_t i = 0;
-		__block BOOL ok = YES;
+		__block bool ok = true;
 
 		[dict enumerateKeysAndObjectsUsingBlock:
-		    ^ (id key, id obj, BOOL *stop) {
+		    ^ (id key, id obj, bool *stop) {
 			if (i > 1 || ![key isEqual: keys[i]]) {
-				ok = NO;
-				*stop = YES;
+				ok = false;
+				*stop = true;
 				return;
 			}
 
@@ -145,15 +145,15 @@ static OFString *values[] = {
 
 		TEST(@"Enumeration using blocks", ok)
 
-		ok = NO;
+		ok = false;
 		@try {
 			[dict enumerateKeysAndObjectsUsingBlock:
-			    ^ (id key, id obj, BOOL *stop) {
+			    ^ (id key, id obj, bool *stop) {
 				[dict setObject: @""
 					 forKey: @""];
 			}];
 		} @catch (OFEnumerationMutationException *e) {
-			ok = YES;
+			ok = true;
 		}
 
 		TEST(@"Detection of mutation during enumeration using blocks",
@@ -164,7 +164,7 @@ static OFString *values[] = {
 
 	TEST(@"-[replaceObjectsUsingBlock:]",
 	    R([dict replaceObjectsUsingBlock:
-	    ^ id (id key, id obj, BOOL *stop) {
+	    ^ id (id key, id obj, bool *stop) {
 		if ([key isEqual: keys[0]])
 			return @"value_1";
 		if ([key isEqual: keys[1]])
@@ -185,8 +185,8 @@ static OFString *values[] = {
 	    }] description] isEqual: @"{\n\tkey1 = val1;\n\tkey2 = val2;\n}"])
 
 	TEST(@"-[filteredDictionaryUsingBlock:]",
-	    [[[dict filteredDictionaryUsingBlock: ^ BOOL (id key, id obj) {
-		return ([key isEqual: keys[0]] ?  YES : NO);
+	    [[[dict filteredDictionaryUsingBlock: ^ bool (id key, id obj) {
+		return [key isEqual: keys[0]];
 	    }] description] isEqual: @"{\n\tkey1 = value_1;\n}"])
 #endif
 

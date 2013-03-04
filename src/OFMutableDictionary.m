@@ -199,7 +199,7 @@ static struct {
 - (void)replaceObjectsUsingBlock: (of_dictionary_replace_block_t)block
 {
 	[self enumerateKeysAndObjectsUsingBlock: ^ (id key, id object,
-	    BOOL *stop) {
+	    bool *stop) {
 		[self setObject: block(key, object, stop)
 			 forKey: key];
 	}];

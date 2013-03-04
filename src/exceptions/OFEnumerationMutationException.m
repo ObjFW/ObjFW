@@ -68,6 +68,6 @@
 
 - (id)object
 {
-	OF_GETTER(_object, NO)
+	OF_GETTER(_object, false)
 }
 @end

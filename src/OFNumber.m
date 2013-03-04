@@ -343,7 +343,7 @@
 	}
 
 @implementation OFNumber
-+ (instancetype)numberWithBool: (BOOL)bool_
++ (instancetype)numberWithBool: (bool)bool_
 {
 	return [[[self alloc] initWithBool: bool_] autorelease];
 }
@@ -495,11 +495,11 @@
 	abort();
 }
 
-- initWithBool: (BOOL)bool_
+- initWithBool: (bool)bool_
 {
 	self = [super init];
 
-	_value.bool_ = (bool_ ? YES : NO);
+	_value.bool_ = bool_;
 	_type = OF_NUMBER_BOOL;
 
 	return self;
@@ -794,10 +794,10 @@
 		if ([typeString isEqual: @"boolean"]) {
 			_type = OF_NUMBER_BOOL;
 
-			if ([[element stringValue] isEqual: @"YES"])
-				_value.bool_ = YES;
-			else if ([[element stringValue] isEqual: @"NO"])
-				_value.bool_ = NO;
+			if ([[element stringValue] isEqual: @"true"])
+				_value.bool_ = true;
+			else if ([[element stringValue] isEqual: @"false"])
+				_value.bool_ = false;
 			else
 				@throw [OFInvalidArgumentException
 				    exceptionWithClass: [self class]
@@ -851,69 +851,9 @@
 	return _type;
 }
 
-- (BOOL)boolValue
+- (bool)boolValue
 {
-	switch (_type) {
-	case OF_NUMBER_BOOL:
-		return !!_value.bool_;
-	case OF_NUMBER_CHAR:
-		return !!_value.schar;
-	case OF_NUMBER_SHORT:
-		return !!_value.sshort;
-	case OF_NUMBER_INT:
-		return !!_value.sint;
-	case OF_NUMBER_LONG:
-		return !!_value.slong;
-	case OF_NUMBER_LONGLONG:
-		return !!_value.slonglong;
-	case OF_NUMBER_UCHAR:
-		return !!_value.uchar;
-	case OF_NUMBER_USHORT:
-		return !!_value.ushort;
-	case OF_NUMBER_UINT:
-		return !!_value.uint;
-	case OF_NUMBER_ULONG:
-		return !!_value.ulong;
-	case OF_NUMBER_ULONGLONG:
-		return !!_value.ulonglong;
-	case OF_NUMBER_INT8:
-		return !!_value.int8;
-	case OF_NUMBER_INT16:
-		return !!_value.int16;
-	case OF_NUMBER_INT32:
-		return !!_value.int32;
-	case OF_NUMBER_INT64:
-		return !!_value.int64;
-	case OF_NUMBER_UINT8:
-		return !!_value.uint8;
-	case OF_NUMBER_UINT16:
-		return !!_value.uint16;
-	case OF_NUMBER_UINT32:
-		return !!_value.uint32;
-	case OF_NUMBER_UINT64:
-		return !!_value.uint64;
-	case OF_NUMBER_SIZE:
-		return !!_value.size;
-	case OF_NUMBER_SSIZE:
-		return !!_value.ssize;
-	case OF_NUMBER_INTMAX:
-		return !!_value.intmax;
-	case OF_NUMBER_UINTMAX:
-		return !!_value.uintmax;
-	case OF_NUMBER_PTRDIFF:
-		return !!_value.ptrdiff;
-	case OF_NUMBER_INTPTR:
-		return !!_value.intptr;
-	case OF_NUMBER_UINTPTR:
-		return !!_value.uintptr;
-	case OF_NUMBER_FLOAT:
-		return !!_value.float_;
-	case OF_NUMBER_DOUBLE:
-		return !!_value.double_;
-	default:
-		@throw [OFInvalidFormatException
-		    exceptionWithClass: [self class]];
-	}
+	RETURN_AS(bool)
 }
 
 - (signed char)charValue
@@ -1051,12 +991,12 @@
 	RETURN_AS(double)
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	OFNumber *number;
 
 	if (![object isKindOfClass: [OFNumber class]])
-		return NO;
+		return false;
 
 	number = object;
 
@@ -1333,7 +1273,7 @@
 
 	switch (_type) {
 	case OF_NUMBER_BOOL:
-		return (_value.bool_ ? @"YES" : @"NO");
+		return (_value.bool_ ? @"true" : @"false");
 	case OF_NUMBER_UCHAR:
 	case OF_NUMBER_USHORT:
 	case OF_NUMBER_UINT:

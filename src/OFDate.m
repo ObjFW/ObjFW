@@ -347,19 +347,19 @@ static int month_to_day_of_year[12] = {
 	return self;
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	OFDate *otherDate;
 
 	if (![object isKindOfClass: [OFDate class]])
-		return NO;
+		return false;
 
 	otherDate = object;
 
 	if (otherDate->_seconds != _seconds)
-		return NO;
+		return false;
 
-	return YES;
+	return true;
 }
 
 - (uint32_t)hash

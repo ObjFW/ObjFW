@@ -34,8 +34,8 @@
 
 #ifdef OF_HAVE_BLOCKS
 typedef void (^of_dictionary_enumeration_block_t)(id key, id object,
-     BOOL *stop);
-typedef BOOL (^of_dictionary_filter_block_t)(id key, id object);
+     bool *stop);
+typedef bool (^of_dictionary_filter_block_t)(id key, id object);
 typedef id (^of_dictionary_map_block_t)(id key, id object);
 #endif
 
@@ -188,7 +188,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * @return A boolean whether the dictionary contains an object with the
  *	   specified address.
  */
-- (BOOL)containsObjectIdenticalTo: (id)object;
+- (bool)containsObjectIdenticalTo: (id)object;
 
 /*!
  * @brief Returns an array of all keys.
@@ -231,7 +231,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
 
 /*!
  * @brief Creates a new dictionary, only containing the objects for which the
- *	  block returns YES.
+ *	  block returns true.
  *
  * @param block A block which determines if the object should be in the new
  *		dictionary

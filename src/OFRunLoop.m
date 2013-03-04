@@ -400,8 +400,8 @@ static OFRunLoop *mainRunLoop = nil;
 			}
 		} else {
 #endif
-			BOOL (*func)(id, SEL, OFStream*, void*, size_t,
-			    OFException*) = (BOOL(*)(id, SEL, OFStream*, void*,
+			bool (*func)(id, SEL, OFStream*, void*, size_t,
+			    OFException*) = (bool(*)(id, SEL, OFStream*, void*,
 			    size_t, OFException*))
 			    [queueItem->_target methodForSelector:
 			    queueItem->_selector];
@@ -459,8 +459,8 @@ static OFRunLoop *mainRunLoop = nil;
 				}
 			} else {
 #endif
-				BOOL (*func)(id, SEL, OFStream*, void*,
-				    size_t, OFException*) = (BOOL(*)(id, SEL,
+				bool (*func)(id, SEL, OFStream*, void*,
+				    size_t, OFException*) = (bool(*)(id, SEL,
 				    OFStream*, void*, size_t, OFException*))
 				    [queueItem->_target
 				    methodForSelector: queueItem->_selector];
@@ -517,8 +517,8 @@ static OFRunLoop *mainRunLoop = nil;
 				}
 			} else {
 #endif
-				BOOL (*func)(id, SEL, OFStream*, OFString*,
-				    OFException*) = (BOOL(*)(id, SEL, OFStream*,
+				bool (*func)(id, SEL, OFStream*, OFString*,
+				    OFException*) = (bool(*)(id, SEL, OFStream*,
 				    OFString*, OFException*))
 				    [queueItem->_target methodForSelector:
 				    queueItem->_selector];
@@ -568,9 +568,9 @@ static OFRunLoop *mainRunLoop = nil;
 			}
 		} else {
 #endif
-			BOOL (*func)(id, SEL, OFTCPSocket*, OFTCPSocket*,
+			bool (*func)(id, SEL, OFTCPSocket*, OFTCPSocket*,
 			    OFException*) =
-			    (BOOL(*)(id, SEL, OFTCPSocket*, OFTCPSocket*,
+			    (bool(*)(id, SEL, OFTCPSocket*, OFTCPSocket*,
 			    OFException*))
 			    [queueItem->_target methodForSelector:
 			    queueItem->_selector];
@@ -595,7 +595,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 - (void)run
 {
-	_running = YES;
+	_running = true;
 
 	while (_running) {
 		void *pool = objc_autoreleasePoolPush();
@@ -662,7 +662,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 - (void)stop
 {
-	_running = NO;
+	_running = false;
 	[_streamObserver cancel];
 }
 @end

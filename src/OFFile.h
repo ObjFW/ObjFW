@@ -42,8 +42,8 @@ extern void of_log(OFConstantString*, ...);
 @interface OFFile: OFSeekableStream
 {
 	int  _fd;
-	BOOL _closable;
-	BOOL _atEndOfStream;
+	bool _closable;
+	bool _atEndOfStream;
 }
 
 /*!
@@ -93,7 +93,7 @@ extern void of_log(OFConstantString*, ...);
  * @param path The path to check
  * @return A boolean whether there is a file at the specified path
  */
-+ (BOOL)fileExistsAtPath: (OFString*)path;
++ (bool)fileExistsAtPath: (OFString*)path;
 
 /*!
  * @brief Checks whether a directory exists at the specified path.
@@ -101,7 +101,7 @@ extern void of_log(OFConstantString*, ...);
  * @param path The path to check
  * @return A boolean whether there is a directory at the specified path
  */
-+ (BOOL)directoryExistsAtPath: (OFString*)path;
++ (bool)directoryExistsAtPath: (OFString*)path;
 
 /*!
  * @brief Creates a directory at the specified path.
@@ -117,7 +117,7 @@ extern void of_log(OFConstantString*, ...);
  * @param createParents Whether to create the parents of the directory
  */
 + (void)createDirectoryAtPath: (OFString*)path
-		createParents: (BOOL)createParents;
+		createParents: (bool)createParents;
 
 /*!
  * @brief Returns an array with the files in the specified directory.

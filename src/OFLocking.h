@@ -34,7 +34,7 @@
  *
  * @return A boolean whether the lock could be locked
  */
-- (BOOL)tryLock;
+- (bool)tryLock;
 
 /*!
  * @brief Unlocks the lock.

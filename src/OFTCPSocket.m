@@ -215,7 +215,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	[self performSelector: @selector(didConnect)
 		     onThread: _sourceThread
-		waitUntilDone: NO];
+		waitUntilDone: false];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -281,12 +281,12 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 - (void)setSOCKS5Host: (OFString*)SOCKS5Host
 {
-	OF_SETTER(_SOCKS5Host, SOCKS5Host, YES, 1)
+	OF_SETTER(_SOCKS5Host, SOCKS5Host, true, 1)
 }
 
 - (OFString*)SOCKS5Host
 {
-	OF_GETTER(_SOCKS5Host, YES)
+	OF_GETTER(_SOCKS5Host, true)
 }
 
 - (void)setSOCKS5Port: (uint16_t)SOCKS5Port
@@ -349,7 +349,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	freeaddrinfo(res0);
 #else
-	BOOL connected = NO;
+	bool connected = false;
 	struct hostent *he;
 	struct sockaddr_in addr;
 	char **ip;
@@ -413,7 +413,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		    sizeof(addr)) == -1)
 			continue;
 
-		connected = YES;
+		connected = true;
 		break;
 	}
 
@@ -635,7 +635,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 							    socket: self
 							   backLog: backLog];
 
-	_listening = YES;
+	_listening = true;
 }
 
 - (void)listen
@@ -682,7 +682,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 }
 #endif
 
-- (void)setKeepAlivesEnabled: (BOOL)enable
+- (void)setKeepAlivesEnabled: (bool)enable
 {
 	int v = enable;
 
@@ -740,7 +740,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	assert(0);
 }
 
-- (BOOL)isListening
+- (bool)isListening
 {
 	return _listening;
 }
@@ -749,7 +749,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	[super close];
 
-	_listening = NO;
+	_listening = false;
 	[self freeMemory: _sockAddr];
 	_sockAddr = NULL;
 	_sockAddrLen = 0;

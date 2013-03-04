@@ -339,12 +339,12 @@ static struct {
 	return OF_NOT_FOUND;
 }
 
-- (BOOL)containsObject: (id)object
+- (bool)containsObject: (id)object
 {
 	return ([self indexOfObject: object] != OF_NOT_FOUND);
 }
 
-- (BOOL)containsObjectIdenticalTo: (id)object
+- (bool)containsObjectIdenticalTo: (id)object
 {
 	return ([self indexOfObjectIdenticalTo: object] != OF_NOT_FOUND);
 }
@@ -447,28 +447,28 @@ static struct {
 	return ret;
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	/* FIXME: Optimize (for example, buffer of 16 for each) */
 	OFArray *otherArray;
 	size_t i, count;
 
 	if (![object isKindOfClass: [OFArray class]])
-		return NO;
+		return false;
 
 	otherArray = object;
 
 	count = [self count];
 
 	if (count != [otherArray count])
-		return NO;
+		return false;
 
 	for (i = 0; i < count; i++)
 		if (![[self objectAtIndex: i] isEqual:
 		    [otherArray objectAtIndex: i]])
-			return NO;
+			return false;
 
-	return YES;
+	return true;
 }
 
 - (uint32_t)hash
@@ -704,7 +704,7 @@ static struct {
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
 	size_t i = 0;
-	BOOL stop = NO;
+	bool stop = false;
 
 	for (id object in self) {
 		block(object, i++, &stop);
@@ -761,7 +761,7 @@ static struct {
 
 	@try {
 		[self enumerateObjectsUsingBlock: ^ (id object, size_t index,
-		    BOOL *stop) {
+		    bool *stop) {
 			tmp[index] = block(object, index);
 		}];
 
@@ -785,7 +785,7 @@ static struct {
 		__block size_t i = 0;
 
 		[self enumerateObjectsUsingBlock: ^ (id object, size_t index,
-		    BOOL *stop) {
+		    bool *stop) {
 			if (block(object, index))
 				tmp[i++] = object;
 		}];
@@ -810,7 +810,7 @@ static struct {
 		return [[[self firstObject] retain] autorelease];
 
 	[self enumerateObjectsUsingBlock: ^ (id object, size_t index,
-	    BOOL *stop) {
+	    bool *stop) {
 		id new;
 
 		if (index == 0) {

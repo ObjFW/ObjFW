@@ -99,7 +99,7 @@ call_method(Class cls, const char *method)
 				    selector);
 }
 
-static BOOL
+static bool
 has_load(Class cls)
 {
 	struct objc_method_list *ml;
@@ -111,9 +111,9 @@ has_load(Class cls)
 	for (ml = cls->isa->methodlist; ml != NULL; ml = ml->next)
 		for (i = 0; i < ml->count; i++)
 			if (sel_isEqual((SEL)&ml->methods[i].sel, selector))
-				return YES;
+				return true;
 
-	return NO;
+	return false;
 }
 
 static void
@@ -406,7 +406,7 @@ objc_get_class(const char *name)
 	return objc_getRequiredClass(name);
 }
 
-BOOL
+bool
 class_isMetaClass(Class cls)
 {
 	return (cls->info & OBJC_CLASS_INFO_METACLASS);
@@ -424,16 +424,16 @@ class_getSuperclass(Class cls)
 	return cls->superclass;
 }
 
-BOOL
+bool
 class_isKindOfClass(Class cls1, Class cls2)
 {
 	Class iter;
 
 	for (iter = cls1; iter != Nil; iter = iter->superclass)
 		if (iter == cls2)
-			return YES;
+			return true;
 
-	return NO;
+	return false;
 }
 
 unsigned long

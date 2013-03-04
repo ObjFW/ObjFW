@@ -59,6 +59,6 @@
 
 - (OFXMLParser*)parser
 {
-	OF_GETTER(_parser, NO)
+	OF_GETTER(_parser, false)
 }
 @end

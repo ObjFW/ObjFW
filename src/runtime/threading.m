@@ -24,7 +24,7 @@
 #import "threading.h"
 
 static of_rmutex_t global_mutex;
-static BOOL global_mutex_init = NO;
+static bool global_mutex_init = false;
 
 static void
 objc_global_mutex_new(void)
@@ -32,7 +32,7 @@ objc_global_mutex_new(void)
 	if (!of_rmutex_new(&global_mutex))
 		OBJC_ERROR("Failed to create global mutex!");
 
-	global_mutex_init = YES;
+	global_mutex_init = true;
 }
 
 void

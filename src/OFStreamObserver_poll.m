@@ -62,12 +62,12 @@
 {
 	struct pollfd *FDs = [_FDs items];
 	size_t i, count = [_FDs count];
-	BOOL found = NO;
+	bool found = false;
 
 	for (i = 0; i < count; i++) {
 		if (FDs[i].fd == fd) {
 			FDs[i].events |= events;
-			found = YES;
+			found = true;
 			break;
 		}
 	}
@@ -120,7 +120,7 @@
 			   withEvents: POLLOUT];
 }
 
-- (BOOL)observeWithTimeout: (double)timeout
+- (bool)observeWithTimeout: (double)timeout
 {
 	void *pool = objc_autoreleasePoolPush();
 	struct pollfd *FDs;
@@ -130,7 +130,7 @@
 
 	if ([self OF_processCache]) {
 		objc_autoreleasePoolPop(pool);
-		return YES;
+		return true;
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -145,7 +145,7 @@
 
 	if (poll(FDs, (nfds_t)nFDs,
 	    (int)(timeout != -1 ? timeout * 1000 : -1)) < 1)
-		return NO;
+		return false;
 
 	for (i = 0; i < nFDs; i++) {
 		pool = objc_autoreleasePoolPush();
@@ -193,8 +193,8 @@
 	}
 
 	if (realEvents == 0)
-		return NO;
+		return false;
 
-	return YES;
+	return true;
 }
 @end

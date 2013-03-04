@@ -84,7 +84,7 @@
 
 - (OFString*)path
 {
-	OF_GETTER(_path, NO)
+	OF_GETTER(_path, false)
 }
 
 - (mode_t)mode

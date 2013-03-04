@@ -70,12 +70,12 @@
 	return self;
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	OFXMLProcessingInstructions *processingInstructions;
 
 	if (![object isKindOfClass: [OFXMLProcessingInstructions class]])
-		return NO;
+		return false;
 
 	processingInstructions = object;
 

@@ -29,9 +29,9 @@
 	struct of_string_utf8_ivars {
 		char	 *cString;
 		size_t	 cStringLength;
-		BOOL	 isUTF8;
+		bool	 isUTF8;
 		size_t	 length;
-		BOOL	 hashed;
+		bool	 hashed;
 		uint32_t hash;
 		char	 *freeWhenDone;
 	} *restrict _s;

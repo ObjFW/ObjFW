@@ -80,7 +80,7 @@ static uint16_t sutf16str[] = {
 	const uint16_t *u16a;
 	EntityHandler *h;
 #ifdef OF_HAVE_BLOCKS
-	__block BOOL ok;
+	__block bool ok;
 #endif
 
 	s[0] = [OFMutableString stringWithString: @"täs€"];
@@ -109,7 +109,7 @@ static uint16_t sutf16str[] = {
 	    [[OFString stringWithUTF8String: "ABC"] caseInsensitiveCompare:
 	    [OFString stringWithUTF8String: "AbD"]] == [@"abc" compare: @"abd"])
 
-	TEST(@"-[hash] is the same if -[isEqual:] is YES",
+	TEST(@"-[hash] is the same if -[isEqual:] is true",
 	    [s[0] hash] == [s[2] hash])
 
 	TEST(@"-[description]", [[s[0] description] isEqual: s[0]])
@@ -589,26 +589,26 @@ static uint16_t sutf16str[] = {
 		    return nil;
 	    }] isEqual: @"xbary"])
 
-	ok = YES;
+	ok = true;
 	[@"foo\nbar\nbaz" enumerateLinesUsingBlock:
-	    ^ (OFString *line, BOOL *stop) {
+	    ^ (OFString *line, bool *stop) {
 		static int i = 0;
 
 		switch (i) {
 		case 0:
 			if (![line isEqual: @"foo"])
-				ok = NO;
+				ok = false;
 			break;
 		case 1:
 			if (![line isEqual: @"bar"])
-				ok = NO;
+				ok = false;
 			break;
 		case 2:
 			if (![line isEqual: @"baz"])
-				ok = NO;
+				ok = false;
 			break;
 		default:
-			ok = NO;
+			ok = false;
 		}
 
 		i++;

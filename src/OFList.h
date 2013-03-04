@@ -132,7 +132,7 @@ struct of_list_object_t {
  * @return A boolean whether the list contains an object with the specified
  *	   address.
  */
-- (BOOL)containsObjectIdenticalTo: (id)object;
+- (bool)containsObjectIdenticalTo: (id)object;
 
 /*!
  * @brief Returns the first object of the list or nil.

@@ -55,7 +55,7 @@ hash(void *value)
 	return [(id)value hash];
 }
 
-static BOOL
+static bool
 equal(void *value1, void *value2)
 {
 	return [(id)value1 isEqual: (id)value2];
@@ -321,7 +321,7 @@ static of_map_table_functions_t valueFunctions = {
 	return [_mapTable count];
 }
 
-- (BOOL)isEqual: (id)dictionary
+- (bool)isEqual: (id)dictionary
 {
 	OFDictionary_hashtable *dictionary_;
 
@@ -334,12 +334,12 @@ static of_map_table_functions_t valueFunctions = {
 	return [dictionary_->_mapTable isEqual: _mapTable];
 }
 
-- (BOOL)containsObject: (id)object
+- (bool)containsObject: (id)object
 {
 	return [_mapTable containsValue: object];
 }
 
-- (BOOL)containsObjectIdenticalTo: (id)object
+- (bool)containsObjectIdenticalTo: (id)object
 {
 	return [_mapTable containsValueIdenticalTo: object];
 }
@@ -443,7 +443,7 @@ static of_map_table_functions_t valueFunctions = {
 {
 	@try {
 		[_mapTable enumerateKeysAndValuesUsingBlock:
-		    ^ (void *key, void *value, BOOL *stop) {
+		    ^ (void *key, void *value, bool *stop) {
 			block(key, value, stop);
 		}];
 	} @catch (OFEnumerationMutationException *e) {

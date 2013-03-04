@@ -177,7 +177,7 @@
  * @param timeout The time to wait for an event, in seconds
  * @return A boolean whether events occurred during the timeinterval
  */
-- (BOOL)observeWithTimeout: (double)timeout;
+- (bool)observeWithTimeout: (double)timeout;
 
 /*!
  * @brief Cancels the currently blocking observe call.
@@ -193,7 +193,7 @@
 - (void)OF_removeFileDescriptorForReading: (int)fd;
 - (void)OF_removeFileDescriptorForWriting: (int)fd;
 - (void)OF_processQueue;
-- (BOOL)OF_processCache;
+- (bool)OF_processCache;
 @end
 
 @interface OFObject (OFStreamObserverDelegate) <OFStreamObserverDelegate>

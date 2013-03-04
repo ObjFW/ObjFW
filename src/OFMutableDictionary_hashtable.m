@@ -64,7 +64,7 @@
 {
 	@try {
 		[_mapTable replaceValuesUsingBlock:
-		    ^ void* (void *key, void *value, BOOL *stop) {
+		    ^ void* (void *key, void *value, bool *stop) {
 			return block(key, value, stop);
 		}];
 	} @catch (OFEnumerationMutationException *e) {

@@ -38,5 +38,5 @@
  * @param object The object which is checked for being in the collection
  * @return A boolean whether the collection contains the specified object
  */
-- (BOOL)containsObject: (id)object;
+- (bool)containsObject: (id)object;
 @end

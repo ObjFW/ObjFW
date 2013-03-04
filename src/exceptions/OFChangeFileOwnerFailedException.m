@@ -100,17 +100,17 @@
 
 - (OFString*)path
 {
-	OF_GETTER(_path, NO)
+	OF_GETTER(_path, false)
 }
 
 - (OFString*)owner
 {
-	OF_GETTER(_owner, NO)
+	OF_GETTER(_owner, false)
 }
 
 - (OFString*)group
 {
-	OF_GETTER(_group, NO)
+	OF_GETTER(_group, false)
 }
 @end
 #endif

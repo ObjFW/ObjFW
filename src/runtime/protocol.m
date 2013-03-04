@@ -30,30 +30,30 @@ protocol_getName(Protocol *p)
 	return p->name;
 }
 
-inline BOOL
+inline bool
 protocol_isEqual(Protocol *a, Protocol *b)
 {
 	return !strcmp(protocol_getName(a), protocol_getName(b));
 }
 
-BOOL
+bool
 protocol_conformsToProtocol(Protocol *a, Protocol *b)
 {
 	struct objc_protocol_list *pl;
 	size_t i;
 
 	if (protocol_isEqual(a, b))
-		return YES;
+		return true;
 
 	for (pl = a->protocol_list; pl != NULL; pl = pl->next)
 		for (i = 0; i < pl->count; i++)
 			if (protocol_conformsToProtocol(pl->list[i], b))
-				return YES;
+				return true;
 
-	return NO;
+	return false;
 }
 
-BOOL
+bool
 class_conformsToProtocol(Class cls, Protocol *p)
 {
 	struct objc_protocol_list *pl;
@@ -63,13 +63,13 @@ class_conformsToProtocol(Class cls, Protocol *p)
 	for (pl = cls->protocols; pl != NULL; pl = pl->next)
 		for (i = 0; i < pl->count; i++)
 			if (protocol_conformsToProtocol(pl->list[i], p))
-				return YES;
+				return true;
 
 	objc_global_mutex_lock();
 
 	if ((cats = objc_categories_for_class(cls)) == NULL) {
 		objc_global_mutex_unlock();
-		return NO;
+		return false;
 	}
 
 	for (i = 0; cats[i] != NULL; i++) {
@@ -78,7 +78,7 @@ class_conformsToProtocol(Class cls, Protocol *p)
 				if (protocol_conformsToProtocol(
 				    pl->list[j], p)) {
 					objc_global_mutex_unlock();
-					return YES;
+					return true;
 				}
 			}
 		}
@@ -86,5 +86,5 @@ class_conformsToProtocol(Class cls, Protocol *p)
 
 	objc_global_mutex_unlock();
 
-	return NO;
+	return false;
 }

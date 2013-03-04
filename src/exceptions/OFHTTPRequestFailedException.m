@@ -90,11 +90,11 @@
 
 - (OFHTTPRequest*)request
 {
-	OF_GETTER(_request, NO)
+	OF_GETTER(_request, false)
 }
 
 - (OFHTTPRequestReply*)reply
 {
-	OF_GETTER(_reply, NO)
+	OF_GETTER(_reply, false)
 }
 @end

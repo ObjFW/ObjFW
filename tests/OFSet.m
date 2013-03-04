@@ -33,7 +33,7 @@ static OFString *module = @"OFSet";
 	OFSet *set1, *set2;
 	OFMutableSet *mutableSet;
 #ifdef OF_HAVE_FAST_ENUMERATION
-	BOOL ok;
+	bool ok;
 	size_t i;
 #endif
 
@@ -92,26 +92,26 @@ static OFString *module = @"OFSet";
 	    @"bar", @"x", nil])])
 
 #ifdef OF_HAVE_FAST_ENUMERATION
-	ok = YES;
+	ok = true;
 	i = 0;
 
 	for (OFString *s in set1) {
 		switch (i) {
 		case 0:
 			if (![s isEqual: @"x"])
-				ok = NO;
+				ok = false;
 			break;
 		case 1:
 			if (![s isEqual: @"bar"])
-				ok = NO;
+				ok = false;
 			break;
 		case 2:
 			if (![s isEqual: @"foo"])
-				ok = NO;
+				ok = false;
 			break;
 		case 3:
 			if (![s isEqual: @"baz"])
-				ok = NO;
+				ok = false;
 			break;
 		}
 
@@ -119,16 +119,16 @@ static OFString *module = @"OFSet";
 	}
 
 	if (i != 4)
-		ok = NO;
+		ok = false;
 
 	TEST(@"Fast enumeration", ok)
 
-	ok = NO;
+	ok = false;
 	@try {
 		for (OFString *s in mutableSet)
 			[mutableSet removeObject: s];
 	} @catch (OFEnumerationMutationException *e) {
-		ok = YES;
+		ok = true;
 	}
 
 	TEST(@"Detection of mutation during Fast Enumeration", ok);

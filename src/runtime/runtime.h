@@ -17,6 +17,7 @@
 #ifndef __OBJFW_RUNTIME_H__
 #define __OBJFW_RUNTIME_H__
 #include <stdint.h>
+#include <stdbool.h>
 
 #ifndef __has_feature
 # define __has_feature(x) 0
@@ -169,17 +170,17 @@ extern "C" {
 #endif
 extern SEL sel_registerName(const char*);
 extern const char* sel_getName(SEL);
-extern BOOL sel_isEqual(SEL, SEL);
+extern bool sel_isEqual(SEL, SEL);
 extern id objc_lookUpClass(const char*);
 extern id objc_getClass(const char*);
 extern id objc_getRequiredClass(const char*);
-extern BOOL class_isMetaClass(Class);
+extern bool class_isMetaClass(Class);
 extern const char* class_getName(Class);
 extern Class class_getSuperclass(Class);
-extern BOOL class_isKindOfClass(Class, Class);
+extern bool class_isKindOfClass(Class, Class);
 extern unsigned long class_getInstanceSize(Class);
-extern BOOL class_respondsToSelector(Class, SEL);
-extern BOOL class_conformsToProtocol(Class, Protocol*);
+extern bool class_respondsToSelector(Class, SEL);
+extern bool class_conformsToProtocol(Class, Protocol*);
 extern IMP class_getMethodImplementation(Class, SEL);
 extern IMP class_replaceMethod(Class, SEL, IMP, const char*);
 extern const char* objc_get_type_encoding(Class, SEL);
@@ -189,8 +190,8 @@ extern const char* object_getClassName(id);
 extern IMP objc_msg_lookup(id, SEL);
 extern IMP objc_msg_lookup_super(struct objc_super*, SEL);
 extern const char* protocol_getName(Protocol*);
-extern BOOL protocol_isEqual(Protocol*, Protocol*);
-extern BOOL protocol_conformsToProtocol(Protocol*, Protocol*);
+extern bool protocol_isEqual(Protocol*, Protocol*);
+extern bool protocol_conformsToProtocol(Protocol*, Protocol*);
 extern void objc_exit(void);
 extern objc_uncaught_exception_handler objc_setUncaughtExceptionHandler(
     objc_uncaught_exception_handler);

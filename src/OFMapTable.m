@@ -55,7 +55,7 @@ default_hash(void *value)
 	return (uint32_t)(uintptr_t)value;
 }
 
-static BOOL
+static bool
 default_equal(void *value1, void *value2)
 {
 	return (value1 == value2);
@@ -182,31 +182,31 @@ default_equal(void *value1, void *value2)
 	[super dealloc];
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	OFMapTable *mapTable;
 	uint32_t i;
 
 	if (![object isKindOfClass: [OFMapTable class]])
-		return NO;
+		return false;
 
 	mapTable = object;
 
 	if (mapTable->_count != _count ||
 	    mapTable->_keyFunctions.equal != _keyFunctions.equal ||
 	    mapTable->_valueFunctions.equal != _valueFunctions.equal)
-		return NO;
+		return false;
 
 	for (i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
 			void *value = [mapTable valueForKey: _buckets[i]->key];
 
 			if (!_valueFunctions.equal(value, _buckets[i]->value))
-				return NO;
+				return false;
 		}
 	}
 
-	return YES;
+	return true;
 }
 
 - (uint32_t)hash
@@ -504,34 +504,34 @@ default_equal(void *value1, void *value2)
 	}
 }
 
-- (BOOL)containsValue: (void*)value
+- (bool)containsValue: (void*)value
 {
 	uint32_t i;
 
 	if (value == NULL || _count == 0)
-		return NO;
+		return false;
 
 	for (i = 0; i < _capacity; i++)
 		if (_buckets[i] != NULL && _buckets[i] != &deleted)
 			if (_valueFunctions.equal(_buckets[i]->value, value))
-				return YES;
+				return true;
 
-	return NO;
+	return false;
 }
 
-- (BOOL)containsValueIdenticalTo: (void*)value
+- (bool)containsValueIdenticalTo: (void*)value
 {
 	uint32_t i;
 
 	if (value == NULL || _count == 0)
-		return NO;
+		return false;
 
 	for (i = 0; i < _capacity; i++)
 		if (_buckets[i] != NULL && _buckets[i] != &deleted)
 			if (_buckets[i]->value == value)
-				return YES;
+				return true;
 
-	return NO;
+	return false;
 }
 
 - (OFMapTableEnumerator*)keyEnumerator
@@ -582,7 +582,7 @@ default_equal(void *value1, void *value2)
     (of_map_table_enumeration_block_t)block
 {
 	size_t i;
-	BOOL stop = NO;
+	bool stop = false;
 	unsigned long mutations = _mutations;
 
 	for (i = 0; i < _capacity && !stop; i++) {
@@ -599,7 +599,7 @@ default_equal(void *value1, void *value2)
 - (void)replaceValuesUsingBlock: (of_map_table_replace_block_t)block
 {
 	size_t i;
-	BOOL stop = NO;
+	bool stop = false;
 	unsigned long mutations = _mutations;
 
 	for (i = 0; i < _capacity && !stop; i++) {

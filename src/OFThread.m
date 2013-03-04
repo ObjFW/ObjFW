@@ -348,12 +348,12 @@ set_thread_name(OFThread *thread)
 
 - (OFString*)name
 {
-	OF_GETTER(_name, YES)
+	OF_GETTER(_name, true)
 }
 
 - (void)setName: (OFString*)name
 {
-	OF_SETTER(_name, name, YES, 1)
+	OF_SETTER(_name, name, true, 1)
 
 	if (_running == OF_THREAD_RUNNING)
 		set_thread_name(self);

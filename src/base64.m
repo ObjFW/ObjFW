@@ -95,17 +95,17 @@ of_base64_encode(const void *data, size_t length)
 	return ret;
 }
 
-BOOL
+bool
 of_base64_decode(OFDataArray *data, const char *string, size_t length)
 {
 	const uint8_t *buffer = (const uint8_t*)string;
 	size_t i;
 
 	if ((length & 3) != 0)
-		return NO;
+		return false;
 
 	if ([data itemSize] != 1)
-		return NO;
+		return false;
 
 	for (i = 0; i < length; i += 4) {
 		uint32_t sb = 0;
@@ -115,11 +115,11 @@ of_base64_decode(OFDataArray *data, const char *string, size_t length)
 
 		if (buffer[i] > 0x7F || buffer[i + 1] > 0x7F ||
 		    buffer[i + 2] > 0x7F || buffer[i + 3] > 0x7F)
-			return NO;
+			return false;
 
 		if (buffer[i] == '=' || buffer[i + 1] == '=' ||
 		    (buffer[i + 2] == '=' && buffer[i + 3] != '='))
-			return NO;
+			return false;
 
 		if (buffer[i + 2] == '=')
 			count--;
@@ -127,22 +127,22 @@ of_base64_decode(OFDataArray *data, const char *string, size_t length)
 			count--;
 
 		if ((tmp = of_base64_decode_table[buffer[i]]) == -1)
-			return NO;
+			return false;
 
 		sb |= tmp << 18;
 
 		if ((tmp = of_base64_decode_table[buffer[i + 1]]) == -1)
-			return NO;
+			return false;
 
 		sb |= tmp << 12;
 
 		if ((tmp = of_base64_decode_table[buffer[i + 2]]) == -1)
-			return NO;
+			return false;
 
 		sb |= tmp << 6;
 
 		if ((tmp = of_base64_decode_table[buffer[i + 3]]) == -1)
-			return NO;
+			return false;
 
 		sb |= tmp;
 
@@ -154,5 +154,5 @@ of_base64_decode(OFDataArray *data, const char *string, size_t length)
 			 count: count];
 	}
 
-	return YES;
+	return true;
 }

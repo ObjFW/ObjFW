@@ -70,12 +70,12 @@
 	return self;
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	OFXMLComment *comment;
 
 	if (![object isKindOfClass: [OFXMLComment class]])
-		return NO;
+		return false;
 
 	comment = object;
 

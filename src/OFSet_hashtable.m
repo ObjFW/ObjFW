@@ -47,7 +47,7 @@ hash(void *value)
 	return [(id)value hash];
 }
 
-static BOOL
+static bool
 equal(void *value1, void *value2)
 {
 	return [(id)value1 isEqual: (id)value2];
@@ -254,15 +254,15 @@ static of_map_table_functions_t valueFunctions = {};
 	return [_mapTable count];
 }
 
-- (BOOL)containsObject: (id)object
+- (bool)containsObject: (id)object
 {
 	if (object == nil)
-		return NO;
+		return false;
 
 	return ([_mapTable valueForKey: object] != nil);
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	OFSet_hashtable *set;
 
@@ -297,7 +297,7 @@ static of_map_table_functions_t valueFunctions = {};
 {
 	@try {
 		[_mapTable enumerateKeysAndValuesUsingBlock:
-		    ^ (void *key, void *value, BOOL *stop) {
+		    ^ (void *key, void *value, bool *stop) {
 			block(key, stop);
 		}];
 	} @catch (OFEnumerationMutationException *e) {

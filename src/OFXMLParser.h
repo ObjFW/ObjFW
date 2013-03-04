@@ -155,9 +155,9 @@
 	char _delimiter;
 	OFMutableArray *_previous;
 	size_t _level;
-	BOOL _acceptProlog;
+	bool _acceptProlog;
 	size_t _lineNumber;
-	BOOL _lastCarriageReturn, _finishedParsing;
+	bool _lastCarriageReturn, _finishedParsing;
 	of_string_encoding_t _encoding;
 	size_t _depthLimit;
 }
@@ -248,7 +248,7 @@
  *
  * @return Whether the XML parser has finished parsing
  */
-- (BOOL)finishedParsing;
+- (bool)finishedParsing;
 @end
 
 @interface OFObject (OFXMLParserDelegate) <OFXMLParserDelegate>

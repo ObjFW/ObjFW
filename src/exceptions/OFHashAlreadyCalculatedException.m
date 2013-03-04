@@ -69,6 +69,6 @@
 
 - (id <OFHash>)hashObject
 {
-	OF_GETTER(_hashObject, NO)
+	OF_GETTER(_hashObject, false)
 }
 @end

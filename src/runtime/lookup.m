@@ -28,7 +28,7 @@ IMP (*objc_forward_handler)(id, SEL) = NULL;
 IMP
 objc_not_found_handler(id obj, SEL sel)
 {
-	BOOL is_class = object_getClass(obj)->info & OBJC_CLASS_INFO_METACLASS;
+	bool is_class = object_getClass(obj)->info & OBJC_CLASS_INFO_METACLASS;
 
 	if (!(object_getClass(obj)->info & OBJC_CLASS_INFO_INITIALIZED)) {
 		Class cls = (is_class ? (Class)obj : object_getClass(obj));
@@ -59,14 +59,13 @@ objc_not_found_handler(id obj, SEL sel)
 	    (is_class ? '+' : '-'), sel_getName(sel), object_getClassName(obj));
 }
 
-BOOL
+bool
 class_respondsToSelector(Class cls, SEL sel)
 {
 	if (cls == Nil)
-		return NO;
+		return false;
 
-	return (objc_sparsearray_get(cls->dtable, (uint32_t)sel->uid) != NULL
-	    ? YES : NO);
+	return (objc_sparsearray_get(cls->dtable, (uint32_t)sel->uid) != NULL);
 }
 
 #ifndef OF_ASM_LOOKUP

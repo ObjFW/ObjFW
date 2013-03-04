@@ -63,7 +63,7 @@ static OFList *TLSKeys;
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 
-		_initialized = YES;
+		_initialized = true;
 
 		@synchronized (TLSKeys) {
 			_listObject = [TLSKeys appendObject: self];

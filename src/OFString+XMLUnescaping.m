@@ -86,7 +86,7 @@ parse_numeric_entity(const char *entity, size_t length)
 {
 	const char *string;
 	size_t i, last, length;
-	BOOL inEntity;
+	bool inEntity;
 	OFMutableString *ret;
 
 	string = [self UTF8String];
@@ -95,7 +95,7 @@ parse_numeric_entity(const char *entity, size_t length)
 	ret = [OFMutableString string];
 
 	last = 0;
-	inEntity = NO;
+	inEntity = false;
 
 	for (i = 0; i < length; i++) {
 		if (!inEntity && string[i] == '&') {
@@ -103,7 +103,7 @@ parse_numeric_entity(const char *entity, size_t length)
 				       length: i - last];
 
 			last = i + 1;
-			inEntity = YES;
+			inEntity = true;
 		} else if (inEntity && string[i] == ';') {
 			const char *entity = string + last;
 			size_t entityLength = i - last;
@@ -167,7 +167,7 @@ parse_numeric_entity(const char *entity, size_t length)
 				    exceptionWithClass: [self class]];
 
 			last = i + 1;
-			inEntity = NO;
+			inEntity = false;
 		}
 	}
 
@@ -189,7 +189,7 @@ parse_numeric_entity(const char *entity, size_t length)
 {
 	const char *string;
 	size_t i, last, length;
-	BOOL inEntity;
+	bool inEntity;
 	OFMutableString *ret;
 
 	string = [self UTF8String];
@@ -198,7 +198,7 @@ parse_numeric_entity(const char *entity, size_t length)
 	ret = [OFMutableString string];
 
 	last = 0;
-	inEntity = NO;
+	inEntity = false;
 
 	for (i = 0; i < length; i++) {
 		if (!inEntity && string[i] == '&') {
@@ -206,7 +206,7 @@ parse_numeric_entity(const char *entity, size_t length)
 				       length: i - last];
 
 			last = i + 1;
-			inEntity = YES;
+			inEntity = true;
 		} else if (inEntity && string[i] == ';') {
 			const char *entity = string + last;
 			size_t entityLength = i - last;
@@ -267,7 +267,7 @@ parse_numeric_entity(const char *entity, size_t length)
 			}
 
 			last = i + 1;
-			inEntity = NO;
+			inEntity = false;
 		}
 	}
 

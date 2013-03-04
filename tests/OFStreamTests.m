@@ -34,9 +34,9 @@ static OFString *module = @"OFStream";
 @end
 
 @implementation StreamTester
-- (BOOL)lowlevelIsAtEndOfStream
+- (bool)lowlevelIsAtEndOfStream
 {
-	return (state > 1 ? YES : NO);
+	return (state > 1);
 }
 
 - (size_t)lowlevelReadIntoBuffer: (void*)buffer

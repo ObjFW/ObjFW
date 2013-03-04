@@ -68,12 +68,12 @@
 	return self;
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	OFXMLCDATA *CDATA;
 
 	if (![object isKindOfClass: [OFXMLCDATA class]])
-		return NO;
+		return false;
 
 	CDATA = object;
 

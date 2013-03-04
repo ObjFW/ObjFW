@@ -334,7 +334,7 @@ read_lsda(struct _Unwind_Context *ctx, const uint8_t *ptr, struct lsda *lsda)
 	lsda->actiontable = lsda->callsites + callsites_size;
 }
 
-static BOOL
+static bool
 find_callsite(struct _Unwind_Context *ctx, struct lsda *lsda,
     uintptr_t *landingpad, const uint8_t **actionrecords)
 {
@@ -368,35 +368,35 @@ find_callsite(struct _Unwind_Context *ctx, struct lsda *lsda,
 				*actionrecords = lsda->actiontable +
 				    callsite_action - 1;
 
-			return YES;
+			return true;
 		}
 	}
 
-	return NO;
+	return false;
 }
 
-static BOOL
+static bool
 class_matches(Class class, id object)
 {
 	Class iter;
 
 	if (class == Nil)
-		return YES;
+		return true;
 
 	if (object == nil)
-		return NO;
+		return false;
 
 	for (iter = object_getClass(object); iter != Nil;
 	    iter = class_getSuperclass(iter))
 		if (iter == class)
-			return YES;
+			return true;
 
-	return NO;
+	return false;
 }
 
 static uint8_t
 find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
-    BOOL foreign, struct objc_exception *e, intptr_t *filtervalue)
+    bool foreign, struct objc_exception *e, intptr_t *filtervalue)
 {
 	const uint8_t *ptr;
 	intptr_t filter, displacement;
@@ -490,7 +490,7 @@ __gnu_objc_personality_v0(int version, int actions, uint64_t ex_class,
 {
 #endif
 	struct objc_exception *e = (struct objc_exception*)ex;
-	BOOL foreign = (ex_class != objc_exception_class);
+	bool foreign = (ex_class != objc_exception_class);
 	const uint8_t *lsda_addr, *actionrecords;
 	struct lsda lsda;
 	uintptr_t landingpad = 0;

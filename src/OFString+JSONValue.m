@@ -64,7 +64,7 @@ skipComment(const char *restrict *pointer, const char *stop,
 	(*pointer)++;
 
 	if (**pointer == '*') {
-		BOOL lastIsAsterisk = NO;
+		bool lastIsAsterisk = false;
 
 		(*pointer)++;
 
@@ -535,15 +535,15 @@ static inline OFNumber*
 parseNumber(const char *restrict *pointer, const char *stop,
     size_t *restrict line)
 {
-	BOOL isHex = (*pointer + 1 < stop && (*pointer)[1] == 'x');
-	BOOL hasDecimal = NO;
+	bool isHex = (*pointer + 1 < stop && (*pointer)[1] == 'x');
+	bool hasDecimal = false;
 	size_t i;
 	OFString *string;
 	OFNumber *number;
 
 	for (i = 0; *pointer + i < stop; i++) {
 		if ((*pointer)[i] == '.')
-			hasDecimal = YES;
+			hasDecimal = true;
 
 		if ((*pointer)[i] == ' ' || (*pointer)[i] == '\t' ||
 		    (*pointer)[i] == '\r' || (*pointer)[i] == '\n' ||
@@ -607,7 +607,7 @@ nextObject(const char *restrict *pointer, const char *stop,
 
 		(*pointer) += 4;
 
-		return [OFNumber numberWithBool: YES];
+		return [OFNumber numberWithBool: true];
 	case 'f':
 		if (*pointer + 4 >= stop)
 			return nil;
@@ -617,7 +617,7 @@ nextObject(const char *restrict *pointer, const char *stop,
 
 		(*pointer) += 5;
 
-		return [OFNumber numberWithBool: NO];
+		return [OFNumber numberWithBool: false];
 	case 'n':
 		if (*pointer + 3 >= stop)
 			return nil;

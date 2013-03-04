@@ -45,7 +45,7 @@
 	HANDLE _process, _readPipe[2], _writePipe[2];
 #endif
 	int _status;
-	BOOL _atEndOfStream;
+	bool _atEndOfStream;
 }
 
 /*!

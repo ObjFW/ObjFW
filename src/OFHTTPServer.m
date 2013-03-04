@@ -141,7 +141,7 @@ normalized_key(OFString *key)
 {
 	char *cString = strdup([key UTF8String]);
 	uint8_t *tmp = (uint8_t*)cString;
-	BOOL firstLetter = YES;
+	bool firstLetter = true;
 
 	if (cString == NULL)
 		@throw [OFOutOfMemoryException
@@ -150,26 +150,26 @@ normalized_key(OFString *key)
 
 	while (*tmp != '\0') {
 		if (!isalnum(*tmp)) {
-			firstLetter = YES;
+			firstLetter = true;
 			tmp++;
 			continue;
 		}
 
 		*tmp = (firstLetter ? toupper(*tmp) : tolower(*tmp));
 
-		firstLetter = NO;
+		firstLetter = false;
 		tmp++;
 	}
 
 	return [OFString stringWithUTF8StringNoCopy: cString
-				       freeWhenDone: YES];
+				       freeWhenDone: true];
 }
 
 @interface OFHTTPServerReply: OFHTTPRequestReply
 {
 	OFTCPSocket *_socket;
 	OFHTTPServer *_server;
-	BOOL _chunked, _headersSent, _closed;
+	bool _chunked, _headersSent, _closed;
 }
 
 - initWithSocket: (OFTCPSocket*)socket
@@ -224,7 +224,7 @@ normalized_key(OFString *key)
 
 	[_socket writeString: @"\r\n"];
 
-	_headersSent = YES;
+	_headersSent = true;
 	_chunked = [[_headers objectForKey: @"Transfer-Encoding"]
 	    isEqual: @"chunked"];
 
@@ -266,7 +266,7 @@ normalized_key(OFString *key)
 
 	[_socket close];
 
-	_closed = YES;
+	_closed = true;
 }
 
 - (int)fileDescriptorForWriting
@@ -296,16 +296,16 @@ normalized_key(OFString *key)
 
 - initWithSocket: (OFTCPSocket*)socket
 	  server: (OFHTTPServer*)server;
-- (BOOL)socket: (OFTCPSocket*)socket
+- (bool)socket: (OFTCPSocket*)socket
    didReadLine: (OFString*)line
      exception: (OFException*)exception;
-- (BOOL)parseProlog: (OFString*)line;
-- (BOOL)parseHeaders: (OFString*)line;
--      (BOOL)socket: (OFTCPSocket*)socket
+- (bool)parseProlog: (OFString*)line;
+- (bool)parseHeaders: (OFString*)line;
+-      (bool)socket: (OFTCPSocket*)socket
   didReadIntoBuffer: (const char*)buffer
 	     length: (size_t)length
 	  exception: (OFException*)exception;
-- (BOOL)sendErrorAndClose: (short)statusCode;
+- (bool)sendErrorAndClose: (short)statusCode;
 - (void)createReply;
 @end
 
@@ -323,7 +323,7 @@ normalized_key(OFString *key)
 					    target: socket
 					  selector: @selector(
 							cancelAsyncRequests)
-					   repeats: NO] retain];
+					   repeats: false] retain];
 		_state = AWAITING_PROLOG;
 	} @catch (id e) {
 		[self release];
@@ -349,12 +349,12 @@ normalized_key(OFString *key)
 	[super dealloc];
 }
 
-- (BOOL)socket: (OFTCPSocket*)socket
+- (bool)socket: (OFTCPSocket*)socket
    didReadLine: (OFString*)line
      exception: (OFException*)exception
 {
 	if (line == nil || exception != nil)
-		return NO;
+		return false;
 
 	@try {
 		switch (_state) {
@@ -362,25 +362,25 @@ normalized_key(OFString *key)
 			return [self parseProlog: line];
 		case PARSING_HEADERS:
 			if (![self parseHeaders: line])
-				return NO;
+				return false;
 
 			if (_state == SEND_REPLY) {
 				[self createReply];
-				return NO;
+				return false;
 			}
 
-			return YES;
+			return true;
 		default:
-			return NO;
+			return false;
 		}
 	} @catch (OFWriteFailedException *e) {
-		return NO;
+		return false;
 	}
 
 	abort();
 }
 
-- (BOOL)parseProlog: (OFString*)line
+- (bool)parseProlog: (OFString*)line
 {
 	OFString *type;
 	size_t pos;
@@ -430,10 +430,10 @@ normalized_key(OFString *key)
 	_headers = [[OFMutableDictionary alloc] init];
 	_state = PARSING_HEADERS;
 
-	return YES;
+	return true;
 }
 
-- (BOOL)parseHeaders: (OFString*)line
+- (bool)parseHeaders: (OFString*)line
 {
 	OFString *key, *value;
 	size_t pos;
@@ -470,10 +470,10 @@ normalized_key(OFString *key)
 			[_timer setFireDate:
 			    [OFDate dateWithTimeIntervalSinceNow: 5]];
 
-			return NO;
+			return false;
 		}
 
-		return YES;
+		return true;
 	}
 
 	pos = [line rangeOfString: @":"].location;
@@ -520,16 +520,16 @@ normalized_key(OFString *key)
 		}
 	}
 
-	return YES;
+	return true;
 }
 
--      (BOOL)socket: (OFTCPSocket*)socket
+-      (bool)socket: (OFTCPSocket*)socket
   didReadIntoBuffer: (const char*)buffer
 	     length: (size_t)length
 	  exception: (OFException*)exception
 {
 	if ([socket isAtEndOfStream] || exception != nil)
-		return NO;
+		return false;
 
 	[_POSTData addItems: buffer
 		      count: length];
@@ -538,18 +538,18 @@ normalized_key(OFString *key)
 		@try {
 			[self createReply];
 		} @catch (OFWriteFailedException *e) {
-			return NO;
+			return false;
 		}
 
-		return NO;
+		return false;
 	}
 
 	[_timer setFireDate: [OFDate dateWithTimeIntervalSinceNow: 5]];
 
-	return YES;
+	return true;
 }
 
-- (BOOL)sendErrorAndClose: (short)statusCode
+- (bool)sendErrorAndClose: (short)statusCode
 {
 	OFString *date = [[OFDate date]
 	    dateStringWithFormat: @"%a, %d %b %Y %H:%M:%S GMT"];
@@ -562,7 +562,7 @@ normalized_key(OFString *key)
 			      date, [_server name]];
 	[_socket close];
 
-	return NO;
+	return false;
 }
 
 - (void)createReply
@@ -649,12 +649,12 @@ normalized_key(OFString *key)
 
 - (void)setHost: (OFString*)host
 {
-	OF_SETTER(_host, host, YES, 1)
+	OF_SETTER(_host, host, true, 1)
 }
 
 - (OFString*)host
 {
-	OF_GETTER(_host, YES)
+	OF_GETTER(_host, true)
 }
 
 - (void)setPort: (uint16_t)port
@@ -679,12 +679,12 @@ normalized_key(OFString *key)
 
 - (void)setName: (OFString*)name
 {
-	OF_SETTER(_name, name, YES, 1)
+	OF_SETTER(_name, name, true, 1)
 }
 
 - (OFString*)name
 {
-	OF_GETTER(_name, YES)
+	OF_GETTER(_name, true)
 }
 
 - (void)start
@@ -717,7 +717,7 @@ normalized_key(OFString *key)
 	_listeningSocket = nil;
 }
 
-- (BOOL)OF_socket: (OFTCPSocket*)socket
+- (bool)OF_socket: (OFTCPSocket*)socket
   didAcceptSocket: (OFTCPSocket*)clientSocket
 	exception: (OFException*)exception
 {
@@ -729,7 +729,7 @@ normalized_key(OFString *key)
 			return [_delegate		  server: self
 			    didReceiveExceptionOnListeningSocket: exception];
 
-		return NO;
+		return false;
 	}
 
 	connection = [[[OFHTTPServer_Connection alloc]
@@ -740,6 +740,6 @@ normalized_key(OFString *key)
 				     selector: @selector(socket:didReadLine:
 						  exception:)];
 
-	return YES;
+	return true;
 }
 @end

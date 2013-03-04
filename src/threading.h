@@ -67,7 +67,7 @@ typedef struct {
 # define of_thread_current GetCurrentThread
 #endif
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_thread_new(of_thread_t *thread, id (*function)(id), id data)
 {
 #if defined(OF_HAVE_PTHREADS)
@@ -81,34 +81,34 @@ of_thread_new(of_thread_t *thread, id (*function)(id), id data)
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_thread_join(of_thread_t thread)
 {
 #if defined(OF_HAVE_PTHREADS)
 	void *ret;
 
 	if (pthread_join(thread, &ret))
-		return NO;
+		return false;
 
 	return (ret != PTHREAD_CANCELED);
 #elif defined(_WIN32)
 	if (WaitForSingleObject(thread, INFINITE))
-		return NO;
+		return false;
 
 	CloseHandle(thread);
 
-	return YES;
+	return true;
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_thread_detach(of_thread_t thread)
 {
 #if defined(OF_HAVE_PTHREADS)
 	return !pthread_detach(thread);
 #elif defined(_WIN32)
 	/* FIXME */
-	return YES;
+	return true;
 #endif
 }
 
@@ -122,40 +122,40 @@ of_thread_exit(void)
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_mutex_new(of_mutex_t *mutex)
 {
 #if defined(OF_HAVE_PTHREADS)
 	return !pthread_mutex_init(mutex, NULL);
 #elif defined(_WIN32)
 	InitializeCriticalSection(mutex);
-	return YES;
+	return true;
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_mutex_free(of_mutex_t *mutex)
 {
 #if defined(OF_HAVE_PTHREADS)
 	return !pthread_mutex_destroy(mutex);
 #elif defined(_WIN32)
 	DeleteCriticalSection(mutex);
-	return YES;
+	return true;
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_mutex_lock(of_mutex_t *mutex)
 {
 #if defined(OF_HAVE_PTHREADS)
 	return !pthread_mutex_lock(mutex);
 #elif defined(_WIN32)
 	EnterCriticalSection(mutex);
-	return YES;
+	return true;
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_mutex_trylock(of_mutex_t *mutex)
 {
 #if defined(OF_HAVE_PTHREADS)
@@ -165,18 +165,18 @@ of_mutex_trylock(of_mutex_t *mutex)
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_mutex_unlock(of_mutex_t *mutex)
 {
 #if defined(OF_HAVE_PTHREADS)
 	return !pthread_mutex_unlock(mutex);
 #elif defined(_WIN32)
 	LeaveCriticalSection(mutex);
-	return YES;
+	return true;
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_condition_new(of_condition_t *condition)
 {
 #if defined(OF_HAVE_PTHREADS)
@@ -185,38 +185,38 @@ of_condition_new(of_condition_t *condition)
 	condition->count = 0;
 
 	if ((condition->event = CreateEvent(NULL, FALSE, 0, NULL)) == NULL)
-		return NO;
+		return false;
 
-	return YES;
+	return true;
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 {
 #if defined(OF_HAVE_PTHREADS)
 	return !pthread_cond_wait(condition, mutex);
 #elif defined(_WIN32)
 	if (!of_mutex_unlock(mutex))
-		return NO;
+		return false;
 
 	of_atomic_inc_int(&condition->count);
 
 	if (WaitForSingleObject(condition->event, INFINITE) != WAIT_OBJECT_0) {
 		of_mutex_lock(mutex);
-		return NO;
+		return false;
 	}
 
 	of_atomic_dec_int(&condition->count);
 
 	if (!of_mutex_lock(mutex))
-		return NO;
+		return false;
 
-	return YES;
+	return true;
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_condition_signal(of_condition_t *condition)
 {
 #if defined(OF_HAVE_PTHREADS)
@@ -226,7 +226,7 @@ of_condition_signal(of_condition_t *condition)
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_condition_broadcast(of_condition_t *condition)
 {
 #if defined(OF_HAVE_PTHREADS)
@@ -236,26 +236,26 @@ of_condition_broadcast(of_condition_t *condition)
 
 	for (i = 0; i < condition->count; i++)
 		if (!SetEvent(condition->event))
-			return NO;
+			return false;
 
-	return YES;
+	return true;
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_condition_free(of_condition_t *condition)
 {
 #if defined(OF_HAVE_PTHREADS)
 	return !pthread_cond_destroy(condition);
 #elif defined(_WIN32)
 	if (condition->count)
-		return NO;
+		return false;
 
 	return CloseHandle(condition->event);
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_tlskey_new(of_tlskey_t *key)
 {
 #if defined(OF_HAVE_PTHREADS)
@@ -275,7 +275,7 @@ of_tlskey_get(of_tlskey_t key)
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_tlskey_set(of_tlskey_t key, void *ptr)
 {
 #if defined(OF_HAVE_PTHREADS)
@@ -285,7 +285,7 @@ of_tlskey_set(of_tlskey_t key, void *ptr)
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_tlskey_free(of_tlskey_t key)
 {
 #if defined(OF_HAVE_PTHREADS)
@@ -295,12 +295,12 @@ of_tlskey_free(of_tlskey_t key)
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_spinlock_new(of_spinlock_t *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
 	*spinlock = 0;
-	return YES;
+	return true;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return !pthread_spin_init(spinlock, 0);
 #else
@@ -308,7 +308,7 @@ of_spinlock_new(of_spinlock_t *spinlock)
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_spinlock_trylock(of_spinlock_t *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
@@ -320,7 +320,7 @@ of_spinlock_trylock(of_spinlock_t *spinlock)
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_spinlock_lock(of_spinlock_t *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
@@ -329,7 +329,7 @@ of_spinlock_lock(of_spinlock_t *spinlock)
 
 	for (i = 0; i < OF_SPINCOUNT; i++)
 		if (of_spinlock_trylock(spinlock))
-			return YES;
+			return true;
 
 	while (!of_spinlock_trylock(spinlock))
 #  ifndef _WIN32
@@ -341,7 +341,7 @@ of_spinlock_lock(of_spinlock_t *spinlock)
 	while (!of_spinlock_trylock(spinlock));
 # endif
 
-	return YES;
+	return true;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return !pthread_spin_lock(spinlock);
 #else
@@ -349,12 +349,12 @@ of_spinlock_lock(of_spinlock_t *spinlock)
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_spinlock_unlock(of_spinlock_t *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
 	*spinlock = 0;
-	return YES;
+	return true;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return !pthread_spin_unlock(spinlock);
 #else
@@ -362,11 +362,11 @@ of_spinlock_unlock(of_spinlock_t *spinlock)
 #endif
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_spinlock_free(of_spinlock_t *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
-	return YES;
+	return true;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return !pthread_spin_destroy(spinlock);
 #else
@@ -375,24 +375,24 @@ of_spinlock_free(of_spinlock_t *spinlock)
 }
 
 #ifdef OF_HAVE_RECURSIVE_PTHREAD_MUTEXES
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_rmutex_new(of_mutex_t *mutex)
 {
 	pthread_mutexattr_t attr;
 
 	if (pthread_mutexattr_init(&attr))
-		return NO;
+		return false;
 
 	if (pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE))
-		return NO;
+		return false;
 
 	if (pthread_mutex_init(mutex, &attr))
-		return NO;
+		return false;
 
 	if (pthread_mutexattr_destroy(&attr))
-		return NO;
+		return false;
 
-	return YES;
+	return true;
 }
 
 # define of_rmutex_lock of_mutex_lock
@@ -400,91 +400,94 @@ of_rmutex_new(of_mutex_t *mutex)
 # define of_rmutex_unlock of_mutex_unlock
 # define of_rmutex_free of_mutex_free
 #else
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_rmutex_new(of_rmutex_t *rmutex)
 {
 	if (!of_mutex_new(&rmutex->mutex))
-		return NO;
+		return false;
 
 	if (!of_tlskey_new(&rmutex->count))
-		return NO;
+		return false;
 
-	return YES;
+	return true;
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_rmutex_lock(of_rmutex_t *rmutex)
 {
 	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
 
 	if (count > 0) {
 		if (!of_tlskey_set(rmutex->count, (void*)(count + 1)))
-			return NO;
-		return YES;
+			return false;
+
+		return true;
 	}
 
 	if (!of_mutex_lock(&rmutex->mutex))
-		return NO;
+		return false;
 
 	if (!of_tlskey_set(rmutex->count, (void*)1)) {
 		of_mutex_unlock(&rmutex->mutex);
-		return NO;
+		return false;
 	}
 
-	return YES;
+	return true;
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_rmutex_trylock(of_rmutex_t *rmutex)
 {
 	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
 
 	if (count > 0) {
 		if (!of_tlskey_set(rmutex->count, (void*)(count + 1)))
-			return NO;
-		return YES;
+			return false;
+
+		return true;
 	}
 
 	if (!of_mutex_trylock(&rmutex->mutex))
-		return NO;
+		return false;
 
 	if (!of_tlskey_set(rmutex->count, (void*)1)) {
 		of_mutex_unlock(&rmutex->mutex);
-		return NO;
+		return false;
 	}
 
-	return YES;
+	return true;
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_rmutex_unlock(of_rmutex_t *rmutex)
 {
 	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
 
 	if (count > 1) {
 		if (!of_tlskey_set(rmutex->count, (void*)(count - 1)))
-			return NO;
-		return YES;
+			return false;
+
+		return true;
 	}
 
 	if (!of_tlskey_set(rmutex->count, (void*)0))
-		return NO;
+		return false;
 
 	if (!of_mutex_unlock(&rmutex->mutex))
-		return NO;
+		return false;
 
-	return YES;
+	return true;
 }
 
-static OF_INLINE BOOL
+static OF_INLINE bool
 of_rmutex_free(of_rmutex_t *rmutex)
 {
 	if (!of_mutex_free(&rmutex->mutex))
-		return NO;
+		return false;
 
 	if (!of_tlskey_free(rmutex->count))
-		return NO;
+		return false;
 
-	return YES;
+	return true;
 }
 #endif

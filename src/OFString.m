@@ -170,21 +170,21 @@ standardize_path(OFArray *components, OFString *currentDirectory,
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *array;
 	OFString *ret;
-	BOOL done = NO;
+	bool done = false;
 
 	array = [[components mutableCopy] autorelease];
 
 	while (!done) {
 		size_t i, length = [array count];
 
-		done = YES;
+		done = true;
 
 		for (i = 0; i < length; i++) {
 			id object = [array objectAtIndex: i];
 
 			if ([object isEqual: currentDirectory]) {
 				[array removeObjectAtIndex: i];
-				done = NO;
+				done = false;
 
 				break;
 			}
@@ -195,7 +195,7 @@ standardize_path(OFArray *components, OFString *currentDirectory,
 				if (i > 0)
 					[array removeObjectAtIndex: i - 1];
 
-				done = NO;
+				done = false;
 
 				break;
 			}
@@ -252,7 +252,7 @@ static struct {
 }
 
 - initWithUTF8StringNoCopy: (char*)UTF8String
-	      freeWhenDone: (BOOL)freeWhenDone
+	      freeWhenDone: (bool)freeWhenDone
 {
 	return (id)[[OFString_UTF8 alloc]
 	    initWithUTF8StringNoCopy: UTF8String
@@ -496,7 +496,7 @@ static struct {
 }
 
 + (instancetype)stringWithUTF8StringNoCopy: (char*)UTF8String
-			      freeWhenDone: (BOOL)freeWhenDone
+			      freeWhenDone: (bool)freeWhenDone
 {
 	return [[[self alloc]
 	    initWithUTF8StringNoCopy: UTF8String
@@ -669,7 +669,7 @@ static struct {
 }
 
 - initWithUTF8StringNoCopy: (char*)UTF8String
-	      freeWhenDone: (BOOL)freeWhenDone
+	      freeWhenDone: (bool)freeWhenDone
 {
 	return [self initWithUTF8String: UTF8String];
 }
@@ -1366,7 +1366,7 @@ static struct {
 		buffer[i] = [self characterAtIndex: range.location + i];
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	void *pool;
 	OFString *otherString;
@@ -1374,16 +1374,16 @@ static struct {
 	size_t length;
 
 	if (object == self)
-		return YES;
+		return true;
 
 	if (![object isKindOfClass: [OFString class]])
-		return NO;
+		return false;
 
 	otherString = object;
 	length = [self length];
 
 	if ([otherString length] != length)
-		return NO;
+		return false;
 
 	pool = objc_autoreleasePoolPush();
 
@@ -1393,12 +1393,12 @@ static struct {
 	if (memcmp(characters, otherCharacters,
 	    length * sizeof(of_unichar_t))) {
 		objc_autoreleasePoolPop(pool);
-		return NO;
+		return false;
 	}
 
 	objc_autoreleasePoolPop(pool);
 
-	return YES;
+	return true;
 }
 
 - copy
@@ -1720,17 +1720,17 @@ static struct {
 	return of_range(OF_NOT_FOUND, 0);
 }
 
-- (BOOL)containsString: (OFString*)string
+- (bool)containsString: (OFString*)string
 {
 	void *pool;
 	const of_unichar_t *characters, *searchCharacters;
 	size_t i, length, searchLength;
 
 	if ((searchLength = [string length]) == 0)
-		return YES;
+		return true;
 
 	if (searchLength > (length = [self length]))
-		return NO;
+		return false;
 
 	pool = objc_autoreleasePoolPush();
 
@@ -1741,13 +1741,13 @@ static struct {
 		if (!memcmp(characters + i, searchCharacters,
 		    searchLength * sizeof(of_unichar_t))) {
 			objc_autoreleasePoolPop(pool);
-			return YES;
+			return true;
 		}
 	}
 
 	objc_autoreleasePoolPop(pool);
 
-	return NO;
+	return false;
 }
 
 - (OFString*)substringWithRange: (of_range_t)range
@@ -1920,7 +1920,7 @@ static struct {
 	return new;
 }
 
-- (BOOL)hasPrefix: (OFString*)prefix
+- (bool)hasPrefix: (OFString*)prefix
 {
 	of_unichar_t *tmp;
 	const of_unichar_t *prefixCharacters;
@@ -1928,7 +1928,7 @@ static struct {
 	int compare;
 
 	if ((prefixLength = [prefix length]) > [self length])
-		return NO;
+		return false;
 
 	tmp = [self allocMemoryWithSize: sizeof(of_unichar_t)
 				  count: prefixLength];
@@ -1950,7 +1950,7 @@ static struct {
 	return !compare;
 }
 
-- (BOOL)hasSuffix: (OFString*)suffix
+- (bool)hasSuffix: (OFString*)suffix
 {
 	of_unichar_t *tmp;
 	const of_unichar_t *suffixCharacters;
@@ -1958,7 +1958,7 @@ static struct {
 	int compare;
 
 	if ((suffixLength = [suffix length]) > [self length])
-		return NO;
+		return false;
 
 	length = [self length];
 
@@ -1995,7 +1995,7 @@ static struct {
 	void *pool;
 	OFMutableArray *array = [OFMutableArray array];
 	const of_unichar_t *characters, *delimiterCharacters;
-	BOOL skipEmpty = (options & OF_STRING_SKIP_EMPTY);
+	bool skipEmpty = (options & OF_STRING_SKIP_EMPTY);
 	size_t length = [self length];
 	size_t delimiterLength = [delimiter length];
 	size_t i, last;
@@ -2197,7 +2197,7 @@ static struct {
 	size_t length = [self length];
 	int i = 0;
 	intmax_t value = 0;
-	BOOL expectWhitespace = NO;
+	bool expectWhitespace = false;
 
 	while (length > 0 && (*characters == ' ' || *characters == '\t' ||
 	    *characters == '\n' || *characters == '\r' ||
@@ -2234,7 +2234,7 @@ static struct {
 		} else if (characters[i] == ' ' || characters[i] == '\t' ||
 		    characters[i] == '\n' || characters[i] == '\r' ||
 		    characters[i] == '\f')
-			expectWhitespace = YES;
+			expectWhitespace = true;
 		else
 			@throw [OFInvalidFormatException
 			    exceptionWithClass: [self class]];
@@ -2255,7 +2255,7 @@ static struct {
 	size_t length = [self length];
 	int i = 0;
 	uintmax_t value = 0;
-	BOOL expectWhitespace = NO, foundValue = NO;
+	bool expectWhitespace = false, foundValue = false;
 
 	while (length > 0 && (*characters == ' ' || *characters == '\t' ||
 	    *characters == '\n' || *characters == '\r' ||
@@ -2288,17 +2288,17 @@ static struct {
 
 		if (characters[i] >= '0' && characters[i] <= '9') {
 			newValue = (value << 4) | (characters[i] - '0');
-			foundValue = YES;
+			foundValue = true;
 		} else if (characters[i] >= 'A' && characters[i] <= 'F') {
 			newValue = (value << 4) | (characters[i] - 'A' + 10);
-			foundValue = YES;
+			foundValue = true;
 		} else if (characters[i] >= 'a' && characters[i] <= 'f') {
 			newValue = (value << 4) | (characters[i] - 'a' + 10);
-			foundValue = YES;
+			foundValue = true;
 		} else if (characters[i] == 'h' || characters[i] == ' ' ||
 		    characters[i] == '\t' || characters[i] == '\n' ||
 		    characters[i] == '\r' || characters[i] == '\f') {
-			expectWhitespace = YES;
+			expectWhitespace = true;
 			continue;
 		} else
 			@throw [OFInvalidFormatException
@@ -2401,7 +2401,7 @@ static struct {
 	size_t length = [self length];
 	of_char16_t *ret;
 	size_t i, j;
-	BOOL swap = (byteOrder != OF_BYTE_ORDER_NATIVE);
+	bool swap = (byteOrder != OF_BYTE_ORDER_NATIVE);
 
 	/* Allocate memory for the worst case */
 	ret = [object allocMemoryWithSize: sizeof(of_char16_t)
@@ -2514,11 +2514,11 @@ static struct {
 	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *characters = [self characters];
 	size_t i, last = 0, length = [self length];
-	BOOL stop = NO, lastCarriageReturn = NO;
+	bool stop = false, lastCarriageReturn = false;
 
 	for (i = 0; i < length && !stop; i++) {
 		if (lastCarriageReturn && characters[i] == '\n') {
-			lastCarriageReturn = NO;
+			lastCarriageReturn = false;
 			last++;
 
 			continue;

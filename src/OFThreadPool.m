@@ -130,7 +130,7 @@
 	OFList *_queue;
 	OFCondition *_queueCondition, *_countCondition;
 @public
-	volatile BOOL _terminate;
+	volatile bool _terminate;
 	volatile int *_doneCount;
 }
 
@@ -307,7 +307,7 @@
 			OFThreadPoolThread *thread;
 
 			while ((thread = [enumerator nextObject]) != nil)
-				thread->_terminate = YES;
+				thread->_terminate = true;
 		} @finally {
 			[_countCondition unlock];
 		}

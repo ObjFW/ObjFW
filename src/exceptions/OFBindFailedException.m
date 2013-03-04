@@ -85,12 +85,12 @@
 
 - (OFTCPSocket*)socket
 {
-	OF_GETTER(_socket, NO)
+	OF_GETTER(_socket, false)
 }
 
 - (OFString*)host
 {
-	OF_GETTER(_host, NO)
+	OF_GETTER(_host, false)
 }
 
 - (uint16_t)port

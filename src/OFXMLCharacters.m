@@ -68,12 +68,12 @@
 	return self;
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	OFXMLCharacters *characters;
 
 	if (![object isKindOfClass: [OFXMLCharacters class]])
-		return NO;
+		return false;
 
 	characters = object;
 

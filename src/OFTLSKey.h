@@ -34,7 +34,7 @@
 @protected
 	void (*_destructor)(id);
 	of_list_object_t *_listObject;
-	BOOL _initialized;
+	bool _initialized;
 }
 
 /*!

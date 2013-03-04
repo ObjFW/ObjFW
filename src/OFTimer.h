@@ -37,14 +37,14 @@ typedef void (^of_timer_block_t)(OFTimer*);
 	id _target, _object1, _object2;
 	SEL _selector;
 	uint8_t _arguments;
-	BOOL _repeats;
+	bool _repeats;
 #ifdef OF_HAVE_BLOCKS
 	of_timer_block_t _block;
 #endif
-	BOOL _valid;
+	bool _valid;
 #ifdef OF_HAVE_THREADS
 	OFCondition *_condition;
-	BOOL _done;
+	bool _done;
 #endif
 	OFRunLoop *_inRunLoop;
 }
@@ -66,7 +66,7 @@ typedef void (^of_timer_block_t)(OFTimer*);
 + (instancetype)scheduledTimerWithTimeInterval: (double)interval
 					target: (id)target
 				      selector: (SEL)selector
-				       repeats: (BOOL)repeats;
+				       repeats: (bool)repeats;
 
 /*!
  * @brief Creates and schedules a new timer with the specified time interval.
@@ -83,7 +83,7 @@ typedef void (^of_timer_block_t)(OFTimer*);
 					target: (id)target
 				      selector: (SEL)selector
 					object: (id)object
-				       repeats: (BOOL)repeats;
+				       repeats: (bool)repeats;
 
 /*!
  * @brief Creates and schedules a new timer with the specified time interval.
@@ -104,7 +104,7 @@ typedef void (^of_timer_block_t)(OFTimer*);
 				      selector: (SEL)selector
 					object: (id)object1
 					object: (id)object2
-				       repeats: (BOOL)repeats;
+				       repeats: (bool)repeats;
 
 #ifdef OF_HAVE_BLOCKS
 /*!
@@ -117,7 +117,7 @@ typedef void (^of_timer_block_t)(OFTimer*);
  * @return A new, autoreleased timer
  */
 + (instancetype)scheduledTimerWithTimeInterval: (double)interval
-				       repeats: (BOOL)repeats
+				       repeats: (bool)repeats
 					 block: (of_timer_block_t)block;
 #endif
 
@@ -134,7 +134,7 @@ typedef void (^of_timer_block_t)(OFTimer*);
 + (instancetype)timerWithTimeInterval: (double)interval
 			       target: (id)target
 			     selector: (SEL)selector
-			      repeats: (BOOL)repeats;
+			      repeats: (bool)repeats;
 
 /*!
  * @brief Creates a new timer with the specified time interval.
@@ -151,7 +151,7 @@ typedef void (^of_timer_block_t)(OFTimer*);
 			       target: (id)target
 			     selector: (SEL)selector
 			       object: (id)object
-			      repeats: (BOOL)repeats;
+			      repeats: (bool)repeats;
 
 /*!
  * @brief Creates a new timer with the specified time interval.
@@ -172,7 +172,7 @@ typedef void (^of_timer_block_t)(OFTimer*);
 			     selector: (SEL)selector
 			       object: (id)object1
 			       object: (id)object2
-			      repeats: (BOOL)repeats;
+			      repeats: (bool)repeats;
 
 #ifdef OF_HAVE_BLOCKS
 /*!
@@ -185,7 +185,7 @@ typedef void (^of_timer_block_t)(OFTimer*);
  * @return A new, autoreleased timer
  */
 + (instancetype)timerWithTimeInterval: (double)interval
-			      repeats: (BOOL)repeats
+			      repeats: (bool)repeats
 				block: (of_timer_block_t)block;
 #endif
 
@@ -205,7 +205,7 @@ typedef void (^of_timer_block_t)(OFTimer*);
 	  interval: (double)interval
 	    target: (id)target
 	  selector: (SEL)selector
-	   repeats: (BOOL)repeats;
+	   repeats: (bool)repeats;
 
 /*!
  * @brief Initializes an already allocated timer with the specified time
@@ -225,7 +225,7 @@ typedef void (^of_timer_block_t)(OFTimer*);
 	    target: (id)target
 	  selector: (SEL)selector
 	    object: (id)object
-	   repeats: (BOOL)repeats;
+	   repeats: (bool)repeats;
 
 /*!
  * @brief Initializes an already allocated timer with the specified time
@@ -249,7 +249,7 @@ typedef void (^of_timer_block_t)(OFTimer*);
 	  selector: (SEL)selector
 	    object: (id)object1
 	    object: (id)object2
-	   repeats: (BOOL)repeats;
+	   repeats: (bool)repeats;
 
 #ifdef OF_HAVE_BLOCKS
 /*!
@@ -265,7 +265,7 @@ typedef void (^of_timer_block_t)(OFTimer*);
  */
 - initWithFireDate: (OFDate*)fireDate
 	  interval: (double)interval
-	   repeats: (BOOL)repeats
+	   repeats: (bool)repeats
 	     block: (of_timer_block_t)block;
 #endif
 
@@ -304,7 +304,7 @@ typedef void (^of_timer_block_t)(OFTimer*);
  *
  * @return Whether the timer is valid
  */
-- (BOOL)isValid;
+- (bool)isValid;
 
 /*!
  * @brief Returns the time interval in which the timer will repeat, if it is a

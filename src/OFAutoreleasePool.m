@@ -96,14 +96,14 @@ static OFAutoreleasePool **cache = NULL;
 
 - (void)releaseObjects
 {
-	_ignoreRelease = YES;
+	_ignoreRelease = true;
 
 	objc_autoreleasePoolPop(_pool);
 	_pool = objc_autoreleasePoolPush();
 
 	_objc_rootAutorelease(self);
 
-	_ignoreRelease = NO;
+	_ignoreRelease = false;
 }
 
 - (void)release
@@ -125,7 +125,7 @@ static OFAutoreleasePool **cache = NULL;
 	if (_ignoreRelease)
 		return;
 
-	_ignoreRelease = YES;
+	_ignoreRelease = true;
 
 	objc_autoreleasePoolPop(_pool);
 
@@ -146,7 +146,7 @@ static OFAutoreleasePool **cache = NULL;
 		for (i = 0; i < MAX_CACHE_SIZE; i++) {
 			if (cache[i] == NULL) {
 				_pool = NULL;
-				_ignoreRelease = NO;
+				_ignoreRelease = false;
 
 				cache[i] = self;
 

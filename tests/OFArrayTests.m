@@ -42,7 +42,7 @@ static OFString *c_ary[] = {
 	OFMutableArray *m[2];
 	OFEnumerator *enumerator;
 	id obj;
-	BOOL ok;
+	bool ok;
 	size_t i;
 
 	TEST(@"+[array]", (m[0] = [OFMutableArray array]))
@@ -81,13 +81,13 @@ static OFString *c_ary[] = {
 	    [[a[1] objectAtIndex: 2] isEqual: c_ary[2]])
 
 	TEST(@"-[containsObject:]",
-	    [a[0] containsObject: c_ary[1]] == YES &&
-	    [a[0] containsObject: @"nonexistant"] == NO)
+	    [a[0] containsObject: c_ary[1]] &&
+	    ![a[0] containsObject: @"nonexistant"])
 
 	TEST(@"-[containsObjectIdenticalTo:]",
-	    [a[0] containsObjectIdenticalTo: c_ary[1]] == YES &&
-	    [a[0] containsObjectIdenticalTo:
-	    [OFString stringWithString: c_ary[1]]] == NO)
+	    [a[0] containsObjectIdenticalTo: c_ary[1]] &&
+	    ![a[0] containsObjectIdenticalTo:
+	    [OFString stringWithString: c_ary[1]]])
 
 	TEST(@"-[indexOfObject:]", [a[0] indexOfObject: c_ary[1]] == 1)
 
@@ -172,21 +172,21 @@ static OFString *c_ary[] = {
 	    [[a[1] componentsJoinedByString: @" "] isEqual: @"foo"])
 
 	m[0] = [[a[0] mutableCopy] autorelease];
-	ok = YES;
+	ok = true;
 	i = 0;
 
 	TEST(@"-[objectEnumerator]", (enumerator = [m[0] objectEnumerator]))
 
 	while ((obj = [enumerator nextObject]) != nil) {
 		if (![obj isEqual: c_ary[i]])
-			ok = NO;
+			ok = false;
 		[m[0] replaceObjectAtIndex: i
 				withObject: @""];
 		i++;
 	}
 
 	if ([m[0] count] != i)
-		ok = NO;
+		ok = false;
 
 	TEST(@"OFEnumerator's -[nextObject]", ok)
 
@@ -198,19 +198,19 @@ static OFString *c_ary[] = {
 
 #ifdef OF_HAVE_FAST_ENUMERATION
 	m[0] = [[a[0] mutableCopy] autorelease];
-	ok = YES;
+	ok = true;
 	i = 0;
 
 	for (OFString *s in m[0]) {
 		if (![s isEqual: c_ary[i]])
-			ok = NO;
+			ok = false;
 		[m[0] replaceObjectAtIndex: i
 				withObject: @""];
 		i++;
 	}
 
 	if ([m[0] count] != i)
-		ok = NO;
+		ok = false;
 
 	TEST(@"Fast Enumeration", ok)
 
@@ -221,7 +221,7 @@ static OFString *c_ary[] = {
 	[m[0] replaceObjectAtIndex: 2
 			withObject: c_ary[2]];
 
-	ok = NO;
+	ok = false;
 	i = 0;
 	@try {
 		for (OFString *s in m[0]) {
@@ -230,7 +230,7 @@ static OFString *c_ary[] = {
 			i++;
 		}
 	} @catch (OFEnumerationMutationException *e) {
-		ok = YES;
+		ok = true;
 	}
 
 	TEST(@"Detection of mutation during Fast Enumeration", ok)
@@ -240,33 +240,33 @@ static OFString *c_ary[] = {
 
 #ifdef OF_HAVE_BLOCKS
 	{
-		__block BOOL ok = YES;
+		__block bool ok = true;
 		__block size_t count = 0;
 		OFArray *cmp = a[0];
 		OFMutableArray *a2;
 
 		m[0] = [[a[0] mutableCopy] autorelease];
 		[m[0] enumerateObjectsUsingBlock:
-		    ^ (id obj, size_t idx, BOOL *stop) {
+		    ^ (id obj, size_t idx, bool *stop) {
 			    count++;
 			    if (![obj isEqual: [cmp objectAtIndex: idx]])
-				    ok = NO;
+				    ok = false;
 		}];
 
 		if (count != [cmp count])
-			ok = NO;
+			ok = false;
 
 		TEST(@"Enumeration using blocks", ok)
 
-		ok = NO;
+		ok = false;
 		a2 = m[0];
 		@try {
 			[a2 enumerateObjectsUsingBlock:
-			    ^ (id obj, size_t idx, BOOL *stop) {
+			    ^ (id obj, size_t idx, bool *stop) {
 				[a2 removeObjectAtIndex: idx];
 			}];
 		} @catch (OFEnumerationMutationException *e) {
-			ok = YES;
+			ok = true;
 		} @catch (OFOutOfRangeException *e) {
 			/*
 			 * Out of bounds access due to enumeration not being
@@ -280,7 +280,7 @@ static OFString *c_ary[] = {
 
 	TEST(@"-[replaceObjectsUsingBlock:]",
 	    R([m[0] replaceObjectsUsingBlock:
-	    ^ id (id obj, size_t idx, BOOL *stop) {
+	    ^ id (id obj, size_t idx, bool *stop) {
 		switch (idx) {
 		case 0:
 			return @"foo";
@@ -304,8 +304,8 @@ static OFString *c_ary[] = {
 	    }] description] isEqual: @"(\n\tfoobar,\n\tqux\n)"])
 
 	TEST(@"-[filteredArrayUsingBlock:]",
-	   [[[m[0] filteredArrayUsingBlock: ^ BOOL (id obj, size_t idx) {
-		return ([obj isEqual: @"foo"] ? YES : NO);
+	   [[[m[0] filteredArrayUsingBlock: ^ bool (id obj, size_t idx) {
+		return [obj isEqual: @"foo"];
 	    }] description] isEqual: @"(\n\tfoo\n)"])
 
 	TEST(@"-[foldUsingBlock:]",

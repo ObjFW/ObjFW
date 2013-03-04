@@ -180,11 +180,11 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	/* Write uppercase_page_%u */
 	for (i = 0; i < 0x110000; i += 0x100) {
-		BOOL isEmpty = YES;
+		bool isEmpty = true;
 
 		for (j = i; j < i + 0x100; j++) {
 			if (uppercaseTable[j] != 0) {
-				isEmpty = NO;
+				isEmpty = false;
 				uppercaseTableSize = i >> 8;
 				uppercaseTableUsed[uppercaseTableSize] = YES;
 				break;
@@ -218,11 +218,11 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	/* Write lowercase_page_%u */
 	for (i = 0; i < 0x110000; i += 0x100) {
-		BOOL isEmpty = YES;
+		bool isEmpty = true;
 
 		for (j = i; j < i + 0x100; j++) {
 			if (lowercaseTable[j] != 0) {
-				isEmpty = NO;
+				isEmpty = false;
 				lowercaseTableSize = i >> 8;
 				lowercaseTableUsed[lowercaseTableSize] = YES;
 				break;
@@ -256,13 +256,13 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	/* Write titlecase_page_%u if it does NOT match uppercase_page_%u */
 	for (i = 0; i < 0x110000; i += 0x100) {
-		BOOL isEmpty = YES;
+		bool isEmpty = true;
 
 		for (j = i; j < i + 0x100; j++) {
 			if (titlecaseTable[j] != 0) {
-				isEmpty = (memcmp(uppercaseTable + i,
+				isEmpty = !memcmp(uppercaseTable + i,
 				    titlecaseTable + i,
-				    256 * sizeof(of_unichar_t)) ? NO : YES);
+				    256 * sizeof(of_unichar_t));
 				titlecaseTableSize = i >> 8;
 				titlecaseTableUsed[titlecaseTableSize] =
 				    (isEmpty ? 2 : 1);
@@ -297,13 +297,13 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	/* Write casefolding_page_%u if it does NOT match lowercase_page_%u */
 	for (i = 0; i < 0x110000; i += 0x100) {
-		BOOL isEmpty = YES;
+		bool isEmpty = true;
 
 		for (j = i; j < i + 0x100; j++) {
 			if (casefoldingTable[j] != 0) {
-				isEmpty = (memcmp(lowercaseTable + i,
+				isEmpty = !memcmp(lowercaseTable + i,
 				    casefoldingTable + i,
-				    256 * sizeof(of_unichar_t)) ? NO : YES);
+				    256 * sizeof(of_unichar_t));
 				casefoldingTableSize = i >> 8;
 				casefoldingTableUsed[casefoldingTableSize] =
 				    (isEmpty ? 2 : 1);

@@ -71,7 +71,7 @@
 		FD_CLR(fd, &_exceptFDs);
 }
 
-- (BOOL)observeWithTimeout: (double)timeout
+- (bool)observeWithTimeout: (double)timeout
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFStream **objects;
@@ -85,7 +85,7 @@
 
 	if ([self OF_processCache]) {
 		objc_autoreleasePoolPop(pool);
-		return YES;
+		return true;
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -111,7 +111,7 @@
 
 	if (select((int)_maxFD + 1, &readFDs, &writeFDs, &exceptFDs,
 	    (timeout != -1 ? &time : NULL)) < 1)
-		return NO;
+		return false;
 
 	if (FD_ISSET(_cancelFD[0], &readFDs)) {
 		char buffer;
@@ -186,8 +186,8 @@
 	}
 
 	if (realEvents == 0)
-		return NO;
+		return false;
 
-	return YES;
+	return true;
 }
 @end

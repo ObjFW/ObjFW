@@ -28,14 +28,14 @@ typedef struct of_map_table_functions_t {
 	/// The function to hash keys
 	uint32_t (*hash)(void *value);
 	/// The function to compare keys / values
-	BOOL (*equal)(void *value1, void *value2);
+	bool (*equal)(void *value1, void *value2);
 } of_map_table_functions_t;
 
 #ifdef OF_HAVE_BLOCKS
 typedef void (^of_map_table_enumeration_block_t)(void *key, void *value,
-    BOOL *stop);
+    bool *stop);
 typedef void* (^of_map_table_replace_block_t)(void *key, void *value,
-    BOOL *stop);
+    bool *stop);
 #endif
 
 @class OFMapTableEnumerator;
@@ -146,7 +146,7 @@ typedef void* (^of_map_table_replace_block_t)(void *key, void *value,
  * @param value The value which is checked for being in the map table
  * @return A boolean whether the map table contains the specified value
 */
-- (BOOL)containsValue: (void*)value;
+- (bool)containsValue: (void*)value;
 
 /*!
  * @brief Checks whether the map table contains a value with the specified
@@ -156,7 +156,7 @@ typedef void* (^of_map_table_replace_block_t)(void *key, void *value,
  * @return A boolean whether the map table contains a value with the specified
  *	   address.
  */
-- (BOOL)containsValueIdenticalTo: (void*)value;
+- (bool)containsValueIdenticalTo: (void*)value;
 
 /*!
  * @brief Returns an OFMapTableEnumerator to enumerate through the map table's

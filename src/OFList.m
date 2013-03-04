@@ -216,57 +216,57 @@
 	return _count;
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	OFList *list;
 	of_list_object_t *iter, *iter2;
 
 	if (![object isKindOfClass: [OFList class]])
-		return NO;
+		return false;
 
 	list = object;
 
 	if ([list count] != _count)
-		return NO;
+		return false;
 
 	for (iter = _firstListObject, iter2 = [list firstListObject];
 	    iter != NULL && iter2 != NULL;
 	    iter = iter->next, iter2 = iter2->next)
 		if (![iter->object isEqual: iter2->object])
-			return NO;
+			return false;
 
 	/* One is bigger than the other even though we checked the count */
 	assert(iter == NULL && iter2 == NULL);
 
-	return YES;
+	return true;
 }
 
-- (BOOL)containsObject: (id)object
+- (bool)containsObject: (id)object
 {
 	of_list_object_t *iter;
 
 	if (_count == 0)
-		return NO;
+		return false;
 
 	for (iter = _firstListObject; iter != NULL; iter = iter->next)
 		if ([iter->object isEqual: object])
-			return YES;
+			return true;
 
-	return NO;
+	return false;
 }
 
-- (BOOL)containsObjectIdenticalTo: (id)object
+- (bool)containsObjectIdenticalTo: (id)object
 {
 	of_list_object_t *iter;
 
 	if (_count == 0)
-		return NO;
+		return false;
 
 	for (iter = _firstListObject; iter != NULL; iter = iter->next)
 		if (iter->object == object)
-			return YES;
+			return true;
 
-	return NO;
+	return false;
 }
 
 - (void)removeAllObjects

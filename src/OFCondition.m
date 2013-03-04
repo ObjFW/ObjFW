@@ -40,7 +40,7 @@
 		@throw [OFInitializationFailedException exceptionWithClass: c];
 	}
 
-	_conditionInitialized = YES;
+	_conditionInitialized = true;
 
 	return self;
 }

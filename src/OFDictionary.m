@@ -328,7 +328,7 @@ static struct {
 	return [[OFMutableDictionary alloc] initWithDictionary: self];
 }
 
-- (BOOL)isEqual: (id)object
+- (bool)isEqual: (id)object
 {
 	OFDictionary *otherDictionary;
 	void *pool;
@@ -336,12 +336,12 @@ static struct {
 	id key;
 
 	if (![object isKindOfClass: [OFDictionary class]])
-		return NO;
+		return false;
 
 	otherDictionary = object;
 
 	if ([otherDictionary count] != [self count])
-		return NO;
+		return false;
 
 	pool = objc_autoreleasePoolPush();
 
@@ -352,23 +352,23 @@ static struct {
 		if (object == nil ||
 		    ![object isEqual: [self objectForKey: key]]) {
 			objc_autoreleasePoolPop(pool);
-			return NO;
+			return false;
 		}
 	}
 
 	objc_autoreleasePoolPop(pool);
 
-	return YES;
+	return true;
 }
 
-- (BOOL)containsObject: (id)object
+- (bool)containsObject: (id)object
 {
 	void *pool;
 	OFEnumerator *enumerator;
 	id currentObject;
 
 	if (object == nil)
-		return NO;
+		return false;
 
 	pool = objc_autoreleasePoolPush();
 	enumerator = [self objectEnumerator];
@@ -376,23 +376,23 @@ static struct {
 	while ((currentObject = [enumerator nextObject]) != nil) {
 		if ([currentObject isEqual: object]) {
 			objc_autoreleasePoolPop(pool);
-			return YES;
+			return true;
 		}
 	}
 
 	objc_autoreleasePoolPop(pool);
 
-	return NO;
+	return false;
 }
 
-- (BOOL)containsObjectIdenticalTo: (id)object
+- (bool)containsObjectIdenticalTo: (id)object
 {
 	void *pool;
 	OFEnumerator *enumerator;
 	id currentObject;
 
 	if (object == nil)
-		return NO;
+		return false;
 
 	pool = objc_autoreleasePoolPush();
 	enumerator = [self objectEnumerator];
@@ -400,13 +400,13 @@ static struct {
 	while ((currentObject = [enumerator nextObject]) != nil) {
 		if (currentObject == object) {
 			objc_autoreleasePoolPop(pool);
-			return YES;
+			return true;
 		}
 	}
 
 	objc_autoreleasePoolPop(pool);
 
-	return NO;
+	return false;
 }
 
 - (OFArray*)allKeys
@@ -489,7 +489,7 @@ static struct {
 - (void)enumerateKeysAndObjectsUsingBlock:
     (of_dictionary_enumeration_block_t)block
 {
-	BOOL stop = NO;
+	bool stop = false;
 
 	for (id key in self) {
 		block(key, [self objectForKey: key], &stop);
@@ -506,7 +506,7 @@ static struct {
 	OFMutableDictionary *new = [OFMutableDictionary dictionary];
 
 	[self enumerateKeysAndObjectsUsingBlock: ^ (id key, id object,
-	    BOOL *stop) {
+	    bool *stop) {
 		[new setObject: block(key, object)
 			forKey: key];
 	}];
@@ -522,7 +522,7 @@ static struct {
 	OFMutableDictionary *new = [OFMutableDictionary dictionary];
 
 	[self enumerateKeysAndObjectsUsingBlock: ^ (id key, id object,
-	    BOOL *stop) {
+	    bool *stop) {
 		if (block(key, object))
 			[new setObject: object
 				forKey: key];

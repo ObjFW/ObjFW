@@ -30,8 +30,8 @@
 @class OFArray;
 
 #ifdef OF_HAVE_BLOCKS
-typedef void (^of_set_enumeration_block_t)(id object, BOOL *stop);
-typedef BOOL (^of_set_filter_block_t)(id object);
+typedef void (^of_set_enumeration_block_t)(id object, bool *stop);
+typedef bool (^of_set_filter_block_t)(id object);
 #endif
 
 /*!
@@ -133,7 +133,7 @@ typedef BOOL (^of_set_filter_block_t)(id object);
  *
  * @return Whether the receiver is a subset of the specified set
  */
-- (BOOL)isSubsetOfSet: (OFSet*)set;
+- (bool)isSubsetOfSet: (OFSet*)set;
 
 /*!
  * @brief Returns whether the receiver and the specified set have at least one
@@ -142,7 +142,7 @@ typedef BOOL (^of_set_filter_block_t)(id object);
  * @return Whether the receiver and the specified set have at least one object
  *	   in common
  */
-- (BOOL)intersectsSet: (OFSet*)set;
+- (bool)intersectsSet: (OFSet*)set;
 
 /*!
  * @brief Creates a new set which contains the objects which are in the
@@ -178,7 +178,7 @@ typedef BOOL (^of_set_filter_block_t)(id object);
 
 /*!
  * @brief Creates a new set, only containing the objects for which the block
- *	  returns YES.
+ *	  returns true.
  *
  * @param block A block which determines if the object should be in the new set
  * @return A new, autoreleased OFSet

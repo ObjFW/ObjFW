@@ -45,18 +45,18 @@ static OF_INLINE void
 normalize_key(char *str_)
 {
 	uint8_t *str = (uint8_t*)str_;
-	BOOL firstLetter = YES;
+	bool firstLetter = true;
 
 	while (*str != '\0') {
 		if (!isalnum(*str)) {
-			firstLetter = YES;
+			firstLetter = true;
 			str++;
 			continue;
 		}
 
 		*str = (firstLetter ? toupper(*str) : tolower(*str));
 
-		firstLetter = NO;
+		firstLetter = false;
 		str++;
 	}
 }
@@ -64,7 +64,7 @@ normalize_key(char *str_)
 @interface OFHTTPClientReply: OFHTTPRequestReply
 {
 	OFTCPSocket *_socket;
-	BOOL _chunked, _atEndOfStream;
+	bool _chunked, _atEndOfStream;
 	size_t _toRead;
 }
 
@@ -145,7 +145,7 @@ normalize_key(char *str_)
 
 		if (_toRead == 0) {
 			[_socket close];
-			_atEndOfStream = YES;
+			_atEndOfStream = true;
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -154,7 +154,7 @@ normalize_key(char *str_)
 	}
 }
 
-- (BOOL)lowlevelIsAtEndOfStream
+- (bool)lowlevelIsAtEndOfStream
 {
 	if (!_chunked)
 		return [_socket isAtEndOfStream];
@@ -195,12 +195,12 @@ normalize_key(char *str_)
 	return _delegate;
 }
 
-- (void)setInsecureRedirectsAllowed: (BOOL)allowed
+- (void)setInsecureRedirectsAllowed: (bool)allowed
 {
 	_insecureRedirectsAllowed = allowed;
 }
 
-- (BOOL)insecureRedirectsAllowed
+- (bool)insecureRedirectsAllowed
 {
 	return _insecureRedirectsAllowed;
 }
@@ -258,7 +258,7 @@ normalize_key(char *str_)
 	 * Work around a bug with packet splitting in lighttpd when using
 	 * HTTPS.
 	 */
-	[socket setWriteBufferEnabled: YES];
+	[socket setWriteBufferEnabled: true];
 
 	if (requestType == OF_HTTP_REQUEST_TYPE_GET)
 		type = "GET";
@@ -312,7 +312,7 @@ normalize_key(char *str_)
 
 	/* Work around a bug in lighttpd, see above */
 	[socket flushWriteBuffer];
-	[socket setWriteBufferEnabled: NO];
+	[socket setWriteBufferEnabled: false];
 
 	if (requestType == OF_HTTP_REQUEST_TYPE_POST)
 		[socket writeBuffer: [POSTData items]
@@ -375,7 +375,7 @@ normalize_key(char *str_)
 
 		@try {
 			key = [OFString stringWithUTF8StringNoCopy: keyC
-						      freeWhenDone: YES];
+						      freeWhenDone: true];
 		} @catch (id e) {
 			free(keyC);
 			@throw e;
@@ -394,7 +394,7 @@ normalize_key(char *str_)
 		    ![value hasPrefix: @"http://"])) {
 			OFURL *newURL;
 			OFHTTPRequest *newRequest;
-			BOOL follow = YES;
+			bool follow = true;
 
 			newURL = [OFURL URLWithString: value
 					relativeToURL: URL];

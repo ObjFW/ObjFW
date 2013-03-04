@@ -242,35 +242,35 @@ of_application_main(int *argc, char **argv[], Class cls)
 		if ((env = getenv("HOME")) != NULL) {
 			OFString *home = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
-					freeWhenDone: NO] autorelease];
+					freeWhenDone: false] autorelease];
 			[environment setObject: home
 					forKey: @"HOME"];
 		}
 		if ((env = getenv("PATH")) != NULL) {
 			OFString *path = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
-					freeWhenDone: NO] autorelease];
+					freeWhenDone: false] autorelease];
 			[environment setObject: path
 					forKey: @"PATH"];
 		}
 		if ((env = getenv("SHELL")) != NULL) {
 			OFString *shell = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
-					freeWhenDone: NO] autorelease];
+					freeWhenDone: false] autorelease];
 			[environment setObject: shell
 					forKey: @"SHELL"];
 		}
 		if ((env = getenv("TMPDIR")) != NULL) {
 			OFString *tmpdir = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
-					freeWhenDone: NO] autorelease];
+					freeWhenDone: false] autorelease];
 			[environment setObject: tmpdir
 					forKey: @"TMPDIR"];
 		}
 		if ((env = getenv("USER")) != NULL) {
 			OFString *user = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
-					freeWhenDone: NO] autorelease];
+					freeWhenDone: false] autorelease];
 			[environment setObject: user
 					forKey: @"USER"];
 		}
@@ -358,17 +358,17 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 - (OFString*)programName
 {
-	OF_GETTER(_programName, NO)
+	OF_GETTER(_programName, false)
 }
 
 - (OFArray*)arguments
 {
-	OF_GETTER(_arguments, NO)
+	OF_GETTER(_arguments, false)
 }
 
 - (OFDictionary*)environment
 {
-	OF_GETTER(_environment, NO)
+	OF_GETTER(_environment, false)
 }
 
 - (id <OFApplicationDelegate>)delegate
