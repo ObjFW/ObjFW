@@ -186,7 +186,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 			if (uppercaseTable[j] != 0) {
 				isEmpty = false;
 				uppercaseTableSize = i >> 8;
-				uppercaseTableUsed[uppercaseTableSize] = YES;
+				uppercaseTableUsed[uppercaseTableSize] = 1;
 				break;
 			}
 		}
@@ -224,7 +224,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 			if (lowercaseTable[j] != 0) {
 				isEmpty = false;
 				lowercaseTableSize = i >> 8;
-				lowercaseTableUsed[lowercaseTableSize] = YES;
+				lowercaseTableUsed[lowercaseTableSize] = 1;
 				break;
 			}
 		}

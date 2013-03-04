@@ -46,12 +46,12 @@
 {
 	id object;
 
-	if ([key conformsToProtocol: @protocol(OFBridging)])
+	if ([(OFObject*)key conformsToProtocol: @protocol(OFBridging)])
 		key = [key NSObject];
 
 	object = [_dictionary objectForKey: key];
 
-	if ([object conformsToProtocol: @protocol(NSBridging)])
+	if ([(NSObject*)object conformsToProtocol: @protocol(NSBridging)])
 		return [object OFObject];
 
 	return object;

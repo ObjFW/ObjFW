@@ -307,13 +307,17 @@ static of_map_table_functions_t valueFunctions = {
 
 - (id)objectForKey: (id)key
 {
+	id ret;
+
 	@try {
-		return [_mapTable valueForKey: key];
+		ret = [_mapTable valueForKey: key];
 	} @catch (OFInvalidArgumentException *e) {
 		@throw [OFInvalidArgumentException
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
 	}
+
+	return ret;
 }
 
 - (size_t)count

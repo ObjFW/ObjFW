@@ -38,7 +38,7 @@
 {
 	id object = [_array objectAtIndex: index];
 
-	if ([object conformsToProtocol: @protocol(OFBridging)])
+	if ([(OFObject*)object conformsToProtocol: @protocol(OFBridging)])
 		return [object NSObject];
 
 	return object;

@@ -50,7 +50,7 @@
 
 	object = [_array objectAtIndex: index];
 
-	if ([object conformsToProtocol: @protocol(NSBridging)])
+	if ([(NSObject*)object conformsToProtocol: @protocol(NSBridging)])
 		return [object OFObject];
 
 	return object;
