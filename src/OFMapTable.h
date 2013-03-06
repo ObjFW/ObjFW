@@ -17,6 +17,8 @@
 #import "OFObject.h"
 #import "OFEnumerator.h"
 
+/*! @file */
+
 /**
  * @brief A struct describing the functions to be used by the map table.
  */
@@ -32,10 +34,25 @@ typedef struct of_map_table_functions_t {
 } of_map_table_functions_t;
 
 #ifdef OF_HAVE_BLOCKS
+/*!
+ * @brief A block for enumerating an OFMapTable.
+ *
+ * @param key The current key
+ * @param value The current value
+ * @param stop A pointer to a variable that can be set to true to stop the
+ *	       enumeration
+ */
 typedef void (^of_map_table_enumeration_block_t)(void *key, void *value,
     bool *stop);
-typedef void* (^of_map_table_replace_block_t)(void *key, void *value,
-    bool *stop);
+
+/*!
+ * @brief A block for replacing values in an OFMapTable.
+ *
+ * @param key The key of the value to replace
+ * @param value The value to replace
+ * @return The value to replace the value with
+ */
+typedef void* (^of_map_table_replace_block_t)(void *key, void *value);
 #endif
 
 @class OFMapTableEnumerator;

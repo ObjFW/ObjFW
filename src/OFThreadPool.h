@@ -16,7 +16,12 @@
 
 #import "OFObject.h"
 
+/*! @file */
+
 #ifdef OF_HAVE_BLOCKS
+/*!
+ * @brief A block for a job which should be executed in a thread pool.
+ */
 typedef void (^of_thread_pool_block_t)(void);
 #endif
 

@@ -599,28 +599,28 @@ default_equal(void *value1, void *value2)
 - (void)replaceValuesUsingBlock: (of_map_table_replace_block_t)block
 {
 	size_t i;
-	bool stop = false;
 	unsigned long mutations = _mutations;
 
-	for (i = 0; i < _capacity && !stop; i++) {
+	for (i = 0; i < _capacity; i++) {
 		if (_mutations != mutations)
 			@throw [OFEnumerationMutationException
 			    exceptionWithClass: [self class]
 					object: self];
 
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
-			void *old, *new;
+			void *new;
 
-			new = block(_buckets[i]->key, _buckets[i]->value,
-			    &stop);
+			new = block(_buckets[i]->key, _buckets[i]->value);
 			if (new == NULL)
 				@throw [OFInvalidArgumentException
 				    exceptionWithClass: [self class]
 					      selector: _cmd];
 
-			old = _buckets[i]->value;
-			_buckets[i]->value = _valueFunctions.retain(new);
-			_valueFunctions.release(old);
+			if (new != _buckets[i]->value) {
+				_valueFunctions.release(_buckets[i]->value);
+				_buckets[i]->value =
+				    _valueFunctions.retain(new);
+			}
 		}
 	}
 }

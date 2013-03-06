@@ -200,8 +200,12 @@ static struct {
 {
 	[self enumerateKeysAndObjectsUsingBlock: ^ (id key, id object,
 	    bool *stop) {
-		[self setObject: block(key, object, stop)
-			 forKey: key];
+		id new = block(key, object);
+
+		if (new != object) {
+			[self setObject: block(key, object)
+				 forKey: key];
+		}
 	}];
 }
 #endif

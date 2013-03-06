@@ -30,6 +30,8 @@
 #import "OFJSONRepresentation.h"
 #import "OFBinaryPackRepresentation.h"
 
+/*! @file */
+
 @class OFString;
 
 enum {
@@ -37,10 +39,42 @@ enum {
 };
 
 #ifdef OF_HAVE_BLOCKS
+/*!
+ * @brief A block for enumerating an OFArray.
+ *
+ * @param object The current object
+ * @param index The index of the current object
+ * @param stop A pointer to a variable that can be set to true to stop the
+ *	       enumeration
+ */
 typedef void (^of_array_enumeration_block_t)(id object, size_t index,
     bool *stop);
-typedef bool (^of_array_filter_block_t)(id odject, size_t index);
+
+/*!
+ * @brief A block for filtering an OFArray.
+ *
+ * @param object The object to inspect
+ * @param index The index of the object to inspect
+ * @return Whether the object should be in the filtered array
+ */
+typedef bool (^of_array_filter_block_t)(id object, size_t index);
+
+/*!
+ * @brief A block for mapping objects to objects in an OFArray.
+ *
+ * @param object The object to map
+ * @param index The index of the object to map
+ * @return The object to map to
+ */
 typedef id (^of_array_map_block_t)(id object, size_t index);
+
+/*!
+ * @brief A block for folding an OFArray.
+ *
+ * @param left The object to which the object has been folded so far
+ * @param right The object that should be added to the left object
+ * @return The left and right side folded into one object
+ */
 typedef id (^of_array_fold_block_t)(id left, id right);
 #endif
 

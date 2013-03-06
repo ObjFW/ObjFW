@@ -352,27 +352,27 @@
 {
 	id *objects = [_array items];
 	size_t i, count = [_array count];
-	bool stop = false;
 	unsigned long mutations = _mutations;
 
-	for (i = 0; i < count && !stop; i++) {
-		id newObject;
+	for (i = 0; i < count; i++) {
+		id new;
 
 		if (_mutations != mutations)
 			@throw [OFEnumerationMutationException
 			    exceptionWithClass: [self class]
 					object: self];
 
-		newObject = block(objects[i], i, &stop);
+		new = block(objects[i], i);
 
-		if (newObject == nil)
+		if (new == nil)
 			@throw [OFInvalidArgumentException
 			    exceptionWithClass: [self class]
 				      selector: _cmd];
 
-		[newObject retain];
-		[objects[i] release];
-		objects[i] = newObject;
+		if (new != objects[i]) {
+			[objects[i] release];
+			objects[i] = [new retain];
+		}
 	}
 }
 #endif

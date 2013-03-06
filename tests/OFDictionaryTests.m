@@ -163,8 +163,7 @@ static OFString *values[] = {
 	}
 
 	TEST(@"-[replaceObjectsUsingBlock:]",
-	    R([dict replaceObjectsUsingBlock:
-	    ^ id (id key, id obj, bool *stop) {
+	    R([dict replaceObjectsUsingBlock: ^ id (id key, id obj) {
 		if ([key isEqual: keys[0]])
 			return @"value_1";
 		if ([key isEqual: keys[1]])

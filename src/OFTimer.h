@@ -16,6 +16,8 @@
 
 #import "OFObject.h"
 
+/*! @file */
+
 @class OFTimer;
 @class OFDate;
 @class OFRunLoop;
@@ -24,7 +26,12 @@
 #endif
 
 #ifdef OF_HAVE_BLOCKS
-typedef void (^of_timer_block_t)(OFTimer*);
+/*!
+ * @brief A block to execute when a timer fires.
+ *
+ * @param timer The timer which fired
+ */
+typedef void (^of_timer_block_t)(OFTimer *timer);
 #endif
 
 /*!

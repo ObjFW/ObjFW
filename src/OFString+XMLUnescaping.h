@@ -16,6 +16,8 @@
 
 #import "OFString.h"
 
+/*! @file */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -25,6 +27,14 @@ extern int _OFString_XMLUnescaping_reference;
 #endif
 
 #ifdef OF_HAVE_BLOCKS
+/*!
+ * @brief A block which is called to replace unknown XML entities in an XML
+ *	  string.
+ *
+ * @param string The XML string which contains an unknown entity
+ * @param entity The XML entity which is unknown
+ * @return A replacement string for the unknown entity
+ */
 typedef OFString* (^of_string_xml_unescaping_block_t)(OFString *string,
     OFString *entity);
 #endif

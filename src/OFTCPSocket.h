@@ -33,13 +33,34 @@
 # include <ws2tcpip.h>
 #endif
 
+/*! @file */
+
 @class OFTCPSocket;
 @class OFString;
 
 #ifdef OF_HAVE_BLOCKS
-typedef void (^of_tcpsocket_async_connect_block_t)(OFTCPSocket*, OFException*);
-typedef bool (^of_tcpsocket_async_accept_block_t)(OFTCPSocket*, OFTCPSocket*,
-    OFException*);
+/*!
+ * @brief A block which is called when the socket connected.
+ *
+ * @param socket The socket which connected
+ * @param exception An exception which occurred while connecting the socket or
+ *		    nil on success
+ */
+typedef void (^of_tcpsocket_async_connect_block_t)(OFTCPSocket *socket,
+    OFException *exception);
+
+/*!
+ * @brief A block which is called when the socket accepted a connection.
+ *
+ * @param socket The socket which accepted the connection
+ * @param acceptedSocket The socket which has been accepted
+ * @param exception An exception which occurred while accepting the socket or
+ *		    nil on success
+ * @return A bool whether the same block should be used for the next incoming
+ *	   connection
+ */
+typedef bool (^of_tcpsocket_async_accept_block_t)(OFTCPSocket *socket,
+    OFTCPSocket *acceptedSocket, OFException *exception);
 #endif
 
 /*!

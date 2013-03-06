@@ -16,8 +16,17 @@
 
 #import "OFArray.h"
 
+/*! @file */
+
 #ifdef OF_HAVE_BLOCKS
-typedef id (^of_array_replace_block_t)(id obj, size_t idx, bool *stop);
+/*!
+ * @brief A block for replacing values in an OFMutableArray.
+ *
+ * @param object The object to replace
+ * @param index The index of the object to replace
+ * @return The object to replace the object with
+ */
+typedef id (^of_array_replace_block_t)(id object, size_t index);
 #endif
 
 /*!

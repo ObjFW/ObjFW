@@ -16,7 +16,17 @@
 
 #import "OFSet.h"
 
+/*! @file */
+
 #ifdef OF_HAVE_BLOCKS
+/*!
+ * @brief A block for enumerating an OFCountedSet.
+ *
+ * @param object The current object
+ * @param count The count of the object
+ * @param stop A pointer to a variable that can be set to true to stop the
+ *	       enumeration
+ */
 typedef void (^of_counted_set_enumeration_block_t)(id object, size_t count,
     bool *stop);
 #endif

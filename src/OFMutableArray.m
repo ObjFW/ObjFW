@@ -376,8 +376,11 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 {
 	[self enumerateObjectsUsingBlock: ^ (id object, size_t index,
 	    bool *stop) {
-		[self replaceObjectAtIndex: index
-				withObject: block(object, index, stop)];
+		id new = block(object, index);
+
+		if (new != object)
+			[self replaceObjectAtIndex: index
+					withObject: new];
 	}];
 }
 #endif

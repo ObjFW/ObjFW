@@ -29,6 +29,8 @@
 #import "OFJSONRepresentation.h"
 #import "OFBinaryPackRepresentation.h"
 
+/*! @file */
+
 @class OFConstantString;
 
 #if defined(__cplusplus) && __cplusplus >= 201103L
@@ -39,8 +41,6 @@ typedef uint_least16_t of_char16_t;
 typedef uint_least32_t of_char32_t;
 #endif
 typedef of_char32_t of_unichar_t;
-
-/*! @file */
 
 /*!
  * @brief The encoding of a string.
@@ -69,6 +69,13 @@ enum {
 #define OF_STRING_ENCODING_NATIVE OF_STRING_ENCODING_UTF_8
 
 #ifdef OF_HAVE_BLOCKS
+/*!
+ * @brief A block for enumerating the lines of a string.
+ *
+ * @param line The current line
+ * @param stop A pointer to a variable that can be set to true to stop the
+ *	       enumeration
+ */
 typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 #endif
 

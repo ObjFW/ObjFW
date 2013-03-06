@@ -27,10 +27,26 @@
 #import "OFCollection.h"
 #import "OFSerialization.h"
 
+/*! @file */
+
 @class OFArray;
 
 #ifdef OF_HAVE_BLOCKS
+/*!
+ * @brief A block for enumerating an OFSet.
+ *
+ * @param object The current object
+ * @param stop A pointer to a variable that can be set to true to stop the
+ *             enumeration
+ */
 typedef void (^of_set_enumeration_block_t)(id object, bool *stop);
+
+/*!
+ * @brief A block for filtering an OFSet.
+ *
+ * @param object The object to inspect
+ * @return Whether the object should be in the filtered set
+ */
 typedef bool (^of_set_filter_block_t)(id object);
 #endif
 

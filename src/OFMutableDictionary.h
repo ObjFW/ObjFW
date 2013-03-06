@@ -16,8 +16,17 @@
 
 #import "OFDictionary.h"
 
+/*! @file */
+
 #ifdef OF_HAVE_BLOCKS
-typedef id (^of_dictionary_replace_block_t)(id key, id object, bool *stop);
+/*!
+ * @brief A block for replacing objects in an OFMutableDictionary.
+ *
+ * @param key The key of the object to replace
+ * @param object The object to replace
+ * @return The object to replace the object with
+ */
+typedef id (^of_dictionary_replace_block_t)(id key, id object);
 #endif
 
 /*!

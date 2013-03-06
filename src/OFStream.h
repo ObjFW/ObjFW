@@ -26,15 +26,35 @@
 #import "OFObject.h"
 #import "OFString.h"
 
+/*! @file */
+
 @class OFStream;
 @class OFDataArray;
 @class OFException;
 
 #ifdef OF_HAVE_BLOCKS
-typedef bool (^of_stream_async_read_block_t)(OFStream*, void*, size_t,
-    OFException*);
-typedef bool (^of_stream_async_read_line_block_t)(OFStream*, OFString*,
-    OFException*);
+/*!
+ * @brief A block which is called when data was read from the stream.
+ *
+ * @param stream The stream on which data was read
+ * @param buffer A buffer with the data that has been read
+ * @param length The length of the data that has been read
+ * @param exception An exception which occurred while reading or nil on success
+ * @return A bool whether the same block should be used for the next read
+ */
+typedef bool (^of_stream_async_read_block_t)(OFStream *stream, void *buffer,
+    size_t length, OFException *exception);
+
+/*!
+ * @brief A block which is called when a line was read from the stream.
+ *
+ * @param stream The stream on which a line was read
+ * @param line The line which has been read
+ * @param exception An exception which occurred while reading or nil on success
+ * @return A bool whether the same block should be used for the next read
+ */
+typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
+    OFString *line, OFException *exception);
 #endif
 
 /*!

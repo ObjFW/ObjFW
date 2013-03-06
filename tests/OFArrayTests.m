@@ -279,8 +279,7 @@ static OFString *c_ary[] = {
 	}
 
 	TEST(@"-[replaceObjectsUsingBlock:]",
-	    R([m[0] replaceObjectsUsingBlock:
-	    ^ id (id obj, size_t idx, bool *stop) {
+	    R([m[0] replaceObjectsUsingBlock: ^ id (id obj, size_t idx) {
 		switch (idx) {
 		case 0:
 			return @"foo";

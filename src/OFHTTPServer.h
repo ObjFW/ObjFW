@@ -46,7 +46,7 @@
  *	  encountered an exception.
  *
  * @param server The HTTP server which encountered an exception
- * @param exception The exception that occurred on the HTTP server's listening
+ * @param exception The exception which occurred on the HTTP server's listening
  *		    socket
  * @return Whether to continue listening. If you return false, existing
  *	   connections will still be handled and you can start accepting new

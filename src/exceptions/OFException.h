@@ -50,9 +50,9 @@
 - initWithClass: (Class)class_;
 
 /*!
- * @brief Returns the class of the object in which the exception happened.
+ * @brief Returns the class of the object in which the exception occurred.
  *
- * @return The class of the object in which the exception happened
+ * @return The class of the object in which the exception occurred
  */
 - (Class)inClass;
 

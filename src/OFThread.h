@@ -24,11 +24,18 @@
 # undef protected
 #endif
 
+/*! @file */
+
 @class OFDate;
 @class OFSortedList;
 @class OFRunLoop;
 
 #ifdef OF_HAVE_BLOCKS
+/*!
+ * @brief A block to be executed in a new thread.
+ *
+ * @return The object which should be returned when the thread is joined
+ */
 typedef id (^of_thread_block_t)(void);
 #endif
 
