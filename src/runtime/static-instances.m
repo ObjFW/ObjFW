@@ -79,13 +79,9 @@ objc_init_static_instances(struct objc_abi_symtab *symtab)
 			    instances++)
 				object_setClass(*instances, cls);
 		} else {
-			if (static_instances == NULL)
-				static_instances = malloc(sizeof(
-				    struct objc_abi_static_instances*));
-			else
-				static_instances = realloc(static_instances,
-				    sizeof(struct objc_abi_static_instances*) *
-				    (static_instances_cnt + 1));
+			static_instances = realloc(static_instances,
+			    sizeof(struct objc_abi_static_instances*) *
+			    (static_instances_cnt + 1));
 
 			if (static_instances == NULL)
 				OBJC_ERROR("Not enough memory for list of "

@@ -311,12 +311,8 @@ objc_register_all_classes(struct objc_abi_symtab *symtab)
 			if (cls->info & OBJC_CLASS_INFO_SETUP)
 				call_load(cls);
 			else {
-				if (load_queue == NULL)
-					load_queue = malloc(sizeof(Class));
-				else
-					load_queue = realloc(load_queue,
-					    sizeof(Class) *
-					    (load_queue_cnt + 1));
+				load_queue = realloc(load_queue,
+				    sizeof(Class) * (load_queue_cnt + 1));
 
 				if (load_queue == NULL)
 					OBJC_ERROR("Not enough memory for load "

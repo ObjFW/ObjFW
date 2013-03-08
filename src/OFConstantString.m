@@ -61,29 +61,29 @@ struct {
 	abort();
 }
 
-- (void*)allocMemoryWithSize: (size_t)itemSize
+- (void*)allocMemoryWithSize: (size_t)size
 		       count: (size_t)count
 {
 	[self doesNotRecognizeSelector: _cmd];
 	abort();
 }
 
-- (void*)resizeMemory: (void*)ptr
+- (void*)resizeMemory: (void*)pointer
 		 size: (size_t)size
 {
 	[self doesNotRecognizeSelector: _cmd];
 	abort();
 }
 
-- (void*)resizeMemory: (void*)ptr
-		 size: (size_t)nitems
-		count: (size_t)size
+- (void*)resizeMemory: (void*)pointer
+		 size: (size_t)size
+		count: (size_t)count
 {
 	[self doesNotRecognizeSelector: _cmd];
 	abort();
 }
 
-- (void)freeMemory: (void*)ptr
+- (void)freeMemory: (void*)pointer
 {
 	[self doesNotRecognizeSelector: _cmd];
 	abort();
@@ -190,14 +190,14 @@ struct {
 	abort();
 }
 
-- (void*)resizeMemory: (void*)ptr
+- (void*)resizeMemory: (void*)pointer
 		 size: (size_t)size
 {
 	[self doesNotRecognizeSelector: _cmd];
 	abort();
 }
 
-- (void*)resizeMemory: (void*)ptr
+- (void*)resizeMemory: (void*)pointer
 		 size: (size_t)size
 		count: (size_t)count
 {
@@ -205,7 +205,7 @@ struct {
 	abort();
 }
 
-- (void)freeMemory: (void*)ptr
+- (void)freeMemory: (void*)pointer
 {
 	[self doesNotRecognizeSelector: _cmd];
 	abort();
