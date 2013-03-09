@@ -583,8 +583,8 @@ object_getClassName(id obj)
 	return object_getClass(obj)->name;
 }
 
-static void
-free_class(Class rcls)
+void
+objc_free_class(Class rcls)
 {
 	struct objc_abi_class *cls = (struct objc_abi_class*)rcls;
 
@@ -600,6 +600,8 @@ free_class(Class rcls)
 
 	if (rcls->superclass != Nil)
 		cls->superclass = rcls->superclass->name;
+
+	objc_hashtable_set(classes, cls->name, NULL);
 }
 
 void
@@ -612,9 +614,19 @@ objc_free_all_classes(void)
 
 	for (i = 0; i <= classes->last_idx; i++) {
 		if (classes->data[i] != NULL) {
-			free_class((Class)classes->data[i]->obj);
-			free_class(((Class)classes->data[i]->obj)->isa);
+			Class cls = classes->data[i]->obj;
+
+			if (cls == Nil)
+				continue;
+
+			objc_free_class(cls);
+			objc_free_class(cls->isa);
 		}
+	}
+
+	if (empty_dtable != NULL) {
+		objc_sparsearray_free(empty_dtable);
+		empty_dtable = NULL;
 	}
 
 	objc_hashtable_free(classes);

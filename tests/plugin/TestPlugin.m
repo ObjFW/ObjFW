@@ -18,6 +18,16 @@
 
 #import "TestPlugin.h"
 
+#ifdef OF_OBJFW_RUNTIME
+# import "runtime-private.h"
+
+static void __attribute__((destructor))
+unload(void)
+{
+	objc_free_class(objc_getClass("TestPlugin"));
+}
+#endif
+
 @implementation TestPlugin
 - (int)test: (int)num
 {

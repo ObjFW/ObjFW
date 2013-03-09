@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#include <stdlib.h>
+
 #import "OFString.h"
 #import "OFFile.h"
 #import "OFAutoreleasePool.h"
@@ -32,6 +34,10 @@ PSP_MODULE_INFO("ObjFW Tests", 0, 0, 0);
 int
 main(int argc, char *argv[])
 {
+#ifdef OF_OBJFW_RUNTIME
+	atexit(objc_exit);
+#endif
+
 	/* We need deterministic hashes for tests */
 	of_hash_seed = 0;
 
