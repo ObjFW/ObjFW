@@ -68,6 +68,13 @@
 	return self;
 }
 
+- (void)dealloc
+{
+	[_CDATA release];
+
+	[super dealloc];
+}
+
 - (bool)isEqual: (id)object
 {
 	OFXMLCDATA *CDATA;

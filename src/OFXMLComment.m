@@ -70,6 +70,13 @@
 	return self;
 }
 
+- (void)dealloc
+{
+	[_comment release];
+
+	[super dealloc];
+}
+
 - (bool)isEqual: (id)object
 {
 	OFXMLComment *comment;

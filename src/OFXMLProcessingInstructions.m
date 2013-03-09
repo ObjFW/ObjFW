@@ -70,6 +70,13 @@
 	return self;
 }
 
+- (void)dealloc
+{
+	[_processingInstructions release];
+
+	[super dealloc];
+}
+
 - (bool)isEqual: (id)object
 {
 	OFXMLProcessingInstructions *processingInstructions;

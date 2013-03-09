@@ -24,7 +24,11 @@
 static void __attribute__((destructor))
 unload(void)
 {
-	objc_free_class(objc_getClass("TestPlugin"));
+	Class class = objc_getClass("TestPlugin");
+	Class metaclass = object_getClass(class);
+
+	objc_free_class(class);
+	objc_free_class(metaclass);
 }
 #endif
 

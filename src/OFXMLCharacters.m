@@ -68,6 +68,13 @@
 	return self;
 }
 
+- (void)dealloc
+{
+	[_characters release];
+
+	[super dealloc];
+}
+
 - (bool)isEqual: (id)object
 {
 	OFXMLCharacters *characters;
