@@ -109,17 +109,14 @@ struct objc_sparsearray {
 #ifdef OF_SELUID24
 struct objc_sparsearray_level2 {
 	struct objc_sparsearray_level3 *buckets[256];
-	bool empty;
 };
 
 struct objc_sparsearray_level3 {
 	const void *buckets[256];
-	bool empty;
 };
 #else
 struct objc_sparsearray_level2 {
 	const void *buckets[256];
-	bool empty;
 };
 #endif
 
