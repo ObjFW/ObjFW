@@ -97,7 +97,13 @@
 @end
 
 /*!
- * @brief Represents the application as an object.
+ * @brief A class which represents the application as an object.
+ *
+ * In order to create a new OFApplication, you should create a class conforming
+ * to the optional @ref OFApplicationDelegate protocol and put
+ * `OF_APPLICATION_DELEGATE(NameOfYourClass)` in the .m file of that class. The
+ * only required method of the @ref OFApplicationDelegate protocol is
+ * @ref OFApplicationDelegate::applicationDidFinishLaunching.
  */
 @interface OFApplication: OFObject
 {
