@@ -45,6 +45,7 @@ show_help() {
 objfw-config: Available arguments are:
 
 	--all		Outputs all flags + libs
+	--arc		Outputs the required OBJCFLAGS to use ARC
 	--cflags	Outputs the required CFLAGS
 	--cppflags	Outputs the required CPPFLAGS
 	--cxxflags	Outputs the required CXXFLAGS
