@@ -220,12 +220,7 @@
  */
 - (void)setDelegate: (id <OFApplicationDelegate>)delegate;
 
-/*!
- * @brief Starts the application after everything has been initialized.
- *
- * You should not call this directly, but use OF_APPLICATION_DELEGATE instead!
- */
-- (void)run;
+- (void)OF_run;
 
 /*!
  * @brief Terminates the application.

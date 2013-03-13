@@ -106,7 +106,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 	delegate = [[cls alloc] init];
 	[app setDelegate: delegate];
 
-	[app run];
+	[app OF_run];
 
 	return 0;
 }
@@ -398,7 +398,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 #undef REGISTER_SIGNAL
 }
 
-- (void)run
+- (void)OF_run
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRunLoop *runLoop;
