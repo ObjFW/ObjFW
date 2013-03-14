@@ -51,7 +51,7 @@ class_registerAlias_np(Class cls, const char *name)
 	if (classes == NULL)
 		return NO;
 
-	objc_hashtable_set(classes, name, cls);
+	objc_hashtable_set(classes, name, (Class)((uintptr_t)cls | 1));
 
 	return YES;
 }
@@ -77,7 +77,7 @@ objc_classname_to_class(const char *name)
 		return Nil;
 
 	objc_global_mutex_lock();
-	c = (Class)objc_hashtable_get(classes, name);
+	c = (Class)((uintptr_t)objc_hashtable_get(classes, name) & ~1);
 	objc_global_mutex_unlock();
 
 	return c;
@@ -616,7 +616,7 @@ objc_free_all_classes(void)
 		if (classes->data[i] != NULL) {
 			Class cls = classes->data[i]->obj;
 
-			if (cls == Nil)
+			if (cls == Nil || (uintptr_t)cls & 1)
 				continue;
 
 			objc_free_class(cls);
