@@ -757,3 +757,46 @@ of_atomic_cmpswap_ptr(void* volatile *p, void *o, void *n)
 # error No atomic operations available!
 #endif
 }
+
+static OF_INLINE void
+of_memory_barrier(void)
+{
+#if !defined(OF_HAVE_THREADS)
+#elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
+	__asm__ __volatile__ (
+	    "mfence"
+	);
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	__sync_synchronize();
+#elif defined(OF_HAVE_OSATOMIC)
+	OSMemoryBarrier();
+#else
+# error No atomic operations available!
+#endif
+}
+
+static OF_INLINE void
+of_memory_read_barrier(void)
+{
+#if !defined(OF_HAVE_THREADS)
+#elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
+	__asm__ __volatile__ (
+	    "lfence"
+	);
+#else
+	of_memory_barrier();
+#endif
+}
+
+static OF_INLINE void
+of_memory_write_barrier(void)
+{
+#if !defined(OF_HAVE_THREADS)
+#elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
+	__asm__ __volatile__ (
+	    "sfence"
+	);
+#else
+	of_memory_barrier();
+#endif
+}

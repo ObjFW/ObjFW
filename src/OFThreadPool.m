@@ -174,6 +174,7 @@
 {
 	void *pool;
 
+	of_memory_read_barrier();
 	if (_terminate)
 		return nil;
 
@@ -186,6 +187,7 @@
 		@try {
 			of_list_object_t *listObject;
 
+			of_memory_read_barrier();
 			if (_terminate) {
 				objc_autoreleasePoolPop(pool);
 				return nil;
@@ -196,6 +198,7 @@
 			while (listObject == NULL) {
 				[_queueCondition wait];
 
+				of_memory_read_barrier();
 				if (_terminate) {
 					objc_autoreleasePoolPop(pool);
 					return nil;
@@ -210,6 +213,7 @@
 			[_queueCondition unlock];
 		}
 
+		of_memory_read_barrier();
 		if (_terminate) {
 			objc_autoreleasePoolPop(pool);
 			return nil;
@@ -217,6 +221,7 @@
 
 		[job perform];
 
+		of_memory_read_barrier();
 		if (_terminate) {
 			objc_autoreleasePoolPop(pool);
 			return nil;
@@ -227,6 +232,7 @@
 
 		[_countCondition lock];
 		@try {
+			of_memory_read_barrier();
 			if (_terminate) {
 				objc_autoreleasePoolPop(pool);
 				return nil;
@@ -308,6 +314,8 @@
 
 			while ((thread = [enumerator nextObject]) != nil)
 				thread->_terminate = true;
+
+			of_memory_write_barrier();
 		} @finally {
 			[_countCondition unlock];
 		}

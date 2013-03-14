@@ -597,11 +597,18 @@ static OFRunLoop *mainRunLoop = nil;
 {
 	_running = true;
 
-	while (_running) {
-		void *pool = objc_autoreleasePoolPush();
-		OFDate *now = [OFDate date];
+	for (;;) {
+		void *pool;
+		OFDate *now;
 		OFTimer *timer;
 		OFDate *nextTimer;
+
+		of_memory_read_barrier();
+		if (!_running)
+			break;
+
+		pool = objc_autoreleasePoolPush();
+		now = [OFDate date];
 
 #ifdef OF_HAVE_THREADS
 		[_timersQueueLock lock];
@@ -663,6 +670,7 @@ static OFRunLoop *mainRunLoop = nil;
 - (void)stop
 {
 	_running = false;
+	of_memory_write_barrier();
 	[_streamObserver cancel];
 }
 @end

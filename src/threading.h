@@ -353,8 +353,7 @@ static OF_INLINE bool
 of_spinlock_unlock(of_spinlock_t *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
-	*spinlock = 0;
-	return true;
+	return of_atomic_cmpswap_int(spinlock, 1, 0);
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return !pthread_spin_unlock(spinlock);
 #else
