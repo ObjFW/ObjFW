@@ -23,6 +23,6 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Got an invalid reply from the server in class %@", _inClass];
+	    @"Got an invalid reply from the server in class %@!", _inClass];
 }
 @end

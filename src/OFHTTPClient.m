@@ -19,6 +19,8 @@
 #include <string.h>
 #include <ctype.h>
 
+#include <errno.h>
+
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPRequestReply.h"
@@ -32,11 +34,14 @@
 #import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
 #import "OFInvalidServerReplyException.h"
+#import "OFNotConnectedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
+#import "OFReadFailedException.h"
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedProtocolException.h"
 #import "OFUnsupportedVersionException.h"
+#import "OFWriteFailedException.h"
 
 #import "autorelease.h"
 #import "macros.h"
@@ -64,11 +69,12 @@ normalize_key(char *str_)
 @interface OFHTTPClientReply: OFHTTPRequestReply
 {
 	OFTCPSocket *_socket;
-	bool _chunked, _atEndOfStream;
+	bool _hasContentLength, _chunked, _keepAlive, _atEndOfStream;
 	size_t _toRead;
 }
 
 - initWithSocket: (OFTCPSocket*)socket;
+- (void)setKeepAlive: (bool)keepAlive;
 @end
 
 @implementation OFHTTPClientReply
@@ -81,6 +87,11 @@ normalize_key(char *str_)
 	return self;
 }
 
+- (void)setKeepAlive: (bool)keepAlive
+{
+	_keepAlive = keepAlive;
+}
+
 - (void)dealloc
 {
 	[_socket release];
@@ -90,19 +101,75 @@ normalize_key(char *str_)
 
 - (void)setHeaders: (OFDictionary*)headers
 {
+	OFString *contentLength;
+
 	[super setHeaders: headers];
 
 	_chunked = [[headers objectForKey: @"Transfer-Encoding"]
 	    isEqual: @"chunked"];
+
+	contentLength = [headers objectForKey: @"Content-Length"];
+	if (contentLength != nil) {
+		_hasContentLength = true;
+
+		@try {
+			_toRead = [contentLength decimalValue];
+		} @catch (OFInvalidFormatException *e) {
+			@throw [OFInvalidServerReplyException
+			    exceptionWithClass: [self class]];
+		}
+	}
 }
 
 - (size_t)lowlevelReadIntoBuffer: (void*)buffer
 			  length: (size_t)length
 {
-	if (!_chunked)
+	if (_atEndOfStream) {
+		OFReadFailedException *e;
+
+		e = [OFReadFailedException exceptionWithClass: [self class]
+						       stream: self
+					      requestedLength: length];
+
+#ifndef _WIN32
+		e->_errNo = ENOTCONN;
+#else
+		e->_errNo = WSAENOTCONN;
+#endif
+
+		@throw e;
+	}
+
+	if (!_hasContentLength && !_chunked)
 		return [_socket readIntoBuffer: buffer
 					length: length];
 
+	/* Content-Length */
+	if (!_chunked) {
+		size_t ret;
+
+		if (_toRead == 0) {
+			_atEndOfStream = true;
+
+			if (!_keepAlive)
+				[_socket close];
+
+			return 0;
+		}
+
+		if (_toRead < length)
+			ret = [_socket readIntoBuffer: buffer
+					       length: _toRead];
+		else
+			ret = [_socket readIntoBuffer: buffer
+					       length: length];
+
+		_toRead -= ret;
+
+		return ret;
+	}
+
+	/* Chunked */
 	if (_toRead > 0) {
 		if (length > _toRead)
 			length = _toRead;
@@ -144,8 +211,21 @@ normalize_key(char *str_)
 		}
 
 		if (_toRead == 0) {
-			[_socket close];
 			_atEndOfStream = true;
+
+			if (_keepAlive) {
+				@try {
+					line = [_socket readLine];
+				} @catch (OFInvalidEncodingException *e) {
+					@throw [OFInvalidServerReplyException
+					    exceptionWithClass: [self class]];
+				}
+
+				if ([line length] > 0)
+					@throw [OFInvalidServerReplyException
+					    exceptionWithClass: [self class]];
+			} else
+				[_socket close];
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -156,7 +236,7 @@ normalize_key(char *str_)
 
 - (bool)lowlevelIsAtEndOfStream
 {
-	if (!_chunked)
+	if (!_hasContentLength && !_chunked)
 		return [_socket isAtEndOfStream];
 
 	return _atEndOfStream;
@@ -185,6 +265,13 @@ normalize_key(char *str_)
 	return [[[self alloc] init] autorelease];
 }
 
+- (void)dealloc
+{
+	[self close];
+
+	[super dealloc];
+}
+
 - (void)setDelegate: (id <OFHTTPClientDelegate>)delegate
 {
 	_delegate = delegate;
@@ -211,30 +298,14 @@ normalize_key(char *str_)
 			  redirects: 10];
 }
 
-- (OFHTTPRequestReply*)performRequest: (OFHTTPRequest*)request
-			    redirects: (size_t)redirects
+- (OFTCPSocket*)OF_createSocketForRequest: (OFHTTPRequest*)request
 {
-	void *pool = objc_autoreleasePoolPush();
 	OFURL *URL = [request URL];
-	OFString *scheme = [URL scheme];
-	of_http_request_type_t requestType = [request requestType];
-	OFDictionary *headers = [request headers];
-	OFDataArray *POSTData = [request POSTData];
 	OFTCPSocket *socket;
-	OFHTTPClientReply *reply;
-	OFString *line, *path, *version;
-	OFMutableDictionary *serverHeaders;
-	OFEnumerator *keyEnumerator, *objectEnumerator;
-	OFString *key, *object;
-	int status;
-	const char *type = NULL;
 
-	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
-		@throw [OFUnsupportedProtocolException
-		    exceptionWithClass: [self class]
-				   URL: URL];
+	[self close];
 
-	if ([scheme isEqual: @"http"])
+	if ([[URL scheme] isEqual: @"http"])
 		socket = [OFTCPSocket socket];
 	else {
 		if (of_tls_socket_class == Nil)
@@ -242,7 +313,8 @@ normalize_key(char *str_)
 			    exceptionWithClass: [self class]
 					   URL: URL];
 
-		socket = [[[of_tls_socket_class alloc] init] autorelease];
+		socket = [[[of_tls_socket_class alloc] init]
+		    autorelease];
 	}
 
 	if ([_delegate respondsToSelector:
@@ -254,11 +326,60 @@ normalize_key(char *str_)
 	[socket connectToHost: [URL host]
 			 port: [URL port]];
 
-	/*
-	 * Work around a bug with packet splitting in lighttpd when using
-	 * HTTPS.
-	 */
-	[socket setWriteBufferEnabled: true];
+	return socket;
+}
+
+- (OFHTTPRequestReply*)performRequest: (OFHTTPRequest*)request
+			    redirects: (size_t)redirects
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFURL *URL = [request URL];
+	OFString *scheme = [URL scheme];
+	of_http_request_type_t requestType = [request requestType];
+	OFMutableString *requestString;
+	OFDictionary *headers = [request headers];
+	OFDataArray *POSTData = [request POSTData];
+	OFTCPSocket *socket;
+	OFHTTPClientReply *reply;
+	OFString *line, *path, *version, *redirect, *keepAlive;
+	OFMutableDictionary *serverHeaders;
+	OFEnumerator *keyEnumerator, *objectEnumerator;
+	OFString *key, *object;
+	int status;
+	const char *type = NULL;
+
+	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
+		@throw [OFUnsupportedProtocolException
+		    exceptionWithClass: [self class]
+				   URL: URL];
+
+	/* Can we reuse the socket? */
+	if (_socket != nil && [[_lastURL scheme] isEqual: [URL scheme]] &&
+	    [[_lastURL host] isEqual: [URL host]] &&
+	    [_lastURL port] == [URL port]) {
+		/*
+		 * Set _socket to nil, so that in case of an error it won't be
+		 * reused. If everything is successfull, we set _socket again
+		 * at the end.
+		 */
+		socket = [_socket autorelease];
+		_socket = nil;
+
+		[_lastURL release];
+		_lastURL = nil;
+
+		/* Throw away content that has not been read yet */
+		while (![_lastReply isAtEndOfStream]) {
+			char buffer[512];
+
+			[_lastReply readIntoBuffer: buffer
+					    length: 512];
+		}
+
+		[_lastReply release];
+		_lastReply = nil;
+	} else
+		socket = [self OF_createSocketForRequest: request];
 
 	if (requestType == OF_HTTP_REQUEST_TYPE_GET)
 		type = "GET";
@@ -270,31 +391,37 @@ normalize_key(char *str_)
 	if ([(path = [URL path]) length] == 0)
 		path = @"/";
 
+	/*
+	 * As a work around for a bug with split packets in lighttpd when using
+	 * HTTPS, we construct the complete request in a buffer string and then
+	 * send it all at once.
+	 */
 	if ([URL query] != nil)
-		[socket writeFormat: @"%s %@?%@ HTTP/%@\r\n",
+		requestString = [OFMutableString stringWithFormat:
+		    @"%s %@?%@ HTTP/%@\r\n",
 		    type, path, [URL query], [request protocolVersionString]];
 	else
-		[socket writeFormat: @"%s %@ HTTP/%@\r\n",
+		requestString = [OFMutableString stringWithFormat:
+		    @"%s %@ HTTP/%@\r\n",
 		    type, path, [request protocolVersionString]];
 
 	if ([URL port] == 80)
-		[socket writeFormat: @"Host: %@\r\n", [URL host]];
+		[requestString appendFormat: @"Host: %@\r\n", [URL host]];
 	else
-		[socket writeFormat: @"Host: %@:%d\r\n", [URL host],
+		[requestString appendFormat: @"Host: %@:%d\r\n", [URL host],
 		    [URL port]];
 
-	[socket writeString: @"Connection: close\r\n"];
-
 	if ([headers objectForKey: @"User-Agent"] == nil)
-		[socket writeString: @"User-Agent: Something using ObjFW "
-				     @"<https://webkeks.org/objfw>\r\n"];
+		[requestString appendString:
+		    @"User-Agent: Something using ObjFW "
+		    @"<https://webkeks.org/objfw>\r\n"];
 
 	keyEnumerator = [headers keyEnumerator];
 	objectEnumerator = [headers objectEnumerator];
 
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil)
-		[socket writeFormat: @"%@: %@\r\n", key, object];
+		[requestString appendFormat: @"%@: %@\r\n", key, object];
 
 	if (requestType == OF_HTTP_REQUEST_TYPE_POST) {
 		OFString *contentType = [request MIMEType];
@@ -303,16 +430,29 @@ normalize_key(char *str_)
 			contentType = @"application/x-www-form-urlencoded; "
 			    @"charset=UTF-8\r\n";
 
-		[socket writeFormat: @"Content-Type: %@\r\n", contentType];
-		[socket writeFormat: @"Content-Length: %d\r\n",
-		    [POSTData count] * [POSTData itemSize]];
+		[requestString appendFormat:
+		    @"Content-Type: %@\r\n"
+		    @"Content-Length: %d\r\n",
+		    contentType, [POSTData count] * [POSTData itemSize]];
 	}
 
-	[socket writeString: @"\r\n"];
+	if ([request protocolVersion].major == 1 &&
+	    [request protocolVersion].minor == 0)
+		[requestString appendString: @"Connection: keep-alive\r\n"];
 
-	/* Work around a bug in lighttpd, see above */
-	[socket flushWriteBuffer];
-	[socket setWriteBufferEnabled: false];
+	[requestString appendString: @"\r\n"];
+
+	@try {
+		[socket writeString: requestString];
+	} @catch (OFWriteFailedException *e) {
+		/* Reconnect in case a keep-alive connection timed out */
+		socket = [self OF_createSocketForRequest: request];
+		[socket writeString: requestString];
+	} @catch (OFNotConnectedException *e) {
+		/* Reconnect in case a keep-alive connection timed out */
+		socket = [self OF_createSocketForRequest: request];
+		[socket writeString: requestString];
+	}
 
 	if (requestType == OF_HTTP_REQUEST_TYPE_POST)
 		[socket writeBuffer: [POSTData items]
@@ -323,6 +463,28 @@ normalize_key(char *str_)
 	} @catch (OFInvalidEncodingException *e) {
 		@throw [OFInvalidServerReplyException
 		    exceptionWithClass: [self class]];
+	}
+
+	/*
+	 * It's possible that the write succeeds on a connection that is
+	 * keep-alive, but the connection has already been closed by the remote
+	 * end due to a timeout. In this case, we need to reconnect.
+	 */
+	if (line == nil) {
+		socket = [self OF_createSocketForRequest: request];
+		[socket writeString: requestString];
+
+		if (requestType == OF_HTTP_REQUEST_TYPE_POST)
+			[socket writeBuffer: [POSTData items]
+				     length: [POSTData count] *
+					     [POSTData itemSize]];
+
+		@try {
+			line = [socket readLine];
+		} @catch (OFInvalidEncodingException *e) {
+			@throw [OFInvalidServerReplyException
+			    exceptionWithClass: [self class]];
+		}
 	}
 
 	if (![line hasPrefix: @"HTTP/"] || [line characterAtIndex: 8] != ' ')
@@ -387,29 +549,54 @@ normalize_key(char *str_)
 
 		value = [OFString stringWithUTF8String: tmp];
 
-		if ((redirects > 0 && (status == 301 || status == 302 ||
-		    status == 303 || status == 307) &&
-		    [key isEqual: @"Location"]) && (_insecureRedirectsAllowed ||
-		    [scheme isEqual: @"http"] ||
-		    ![value hasPrefix: @"http://"])) {
-			OFURL *newURL;
+		[serverHeaders setObject: value
+				  forKey: key];
+	}
+
+	[serverHeaders makeImmutable];
+
+	if ([_delegate respondsToSelector:
+	    @selector(client:didReceiveHeaders:statusCode:request:)])
+		[_delegate     client: self
+		    didReceiveHeaders: serverHeaders
+			   statusCode: status
+			      request: request];
+
+	reply = [[[OFHTTPClientReply alloc] initWithSocket: socket]
+	    autorelease];
+	[reply setProtocolVersionFromString: version];
+	[reply setStatusCode: status];
+	[reply setHeaders: serverHeaders];
+
+	keepAlive = [serverHeaders objectForKey: @"Connection"];
+	if ([version isEqual: @"1.1"] ||
+	    (keepAlive != nil && [keepAlive isEqual: @"keep-alive"])) {
+		[reply setKeepAlive: true];
+
+		_socket = [socket retain];
+		_lastURL = [URL copy];
+		_lastReply = [reply retain];
+	}
+
+	if (redirects > 0 && (status == 301 || status == 302 ||
+	    status == 303 || status == 307) &&
+	    (redirect = [serverHeaders objectForKey: @"Location"]) != nil &&
+	    (_insecureRedirectsAllowed || [scheme isEqual: @"http"] ||
+	    ![redirect hasPrefix: @"http://"])) {
+		OFURL *newURL;
+		bool follow = true;
+
+		newURL = [OFURL URLWithString: redirect
+				relativeToURL: URL];
+
+		if ([_delegate respondsToSelector:
+		    @selector(client:shouldFollowRedirect:request:)])
+			follow = [_delegate client: self
+			      shouldFollowRedirect: newURL
+					   request: request];
+
+		if (follow) {
 			OFHTTPRequest *newRequest;
-			bool follow = true;
-
-			newURL = [OFURL URLWithString: value
-					relativeToURL: URL];
-
-			if ([_delegate respondsToSelector:
-			    @selector(client:shouldFollowRedirect:request:)])
-				follow = [_delegate client: self
-				      shouldFollowRedirect: newURL
-						   request: request];
-
-			if (!follow) {
-				[serverHeaders setObject: value
-						  forKey: key];
-				continue;
-			}
 
 			newRequest = [OFHTTPRequest requestWithURL: newURL];
 			[newRequest setRequestType: requestType];
@@ -431,27 +618,10 @@ normalize_key(char *str_)
 			return [self performRequest: newRequest
 					  redirects: redirects - 1];
 		}
-
-		[serverHeaders setObject: value
-				  forKey: key];
 	}
 
-	[serverHeaders makeImmutable];
-
-	if ([_delegate respondsToSelector:
-	    @selector(client:didReceiveHeaders:statusCode:request:)])
-		[_delegate     client: self
-		    didReceiveHeaders: serverHeaders
-			   statusCode: status
-			      request: request];
-
-	reply = [[OFHTTPClientReply alloc] initWithSocket: socket];
-	[reply setProtocolVersionFromString: version];
-	[reply setStatusCode: status];
-	[reply setHeaders: serverHeaders];
-
+	[reply retain];
 	objc_autoreleasePoolPop(pool);
-
 	[reply autorelease];
 
 	if (status / 100 != 2)
@@ -461,5 +631,17 @@ normalize_key(char *str_)
 				 reply: reply];
 
 	return reply;
+}
+
+- (void)close
+{
+	[_socket release];
+	_socket = nil;
+
+	[_lastURL release];
+	_lastURL = nil;
+
+	[_lastReply release];
+	_lastReply = nil;
 }
 @end

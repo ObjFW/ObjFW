@@ -91,6 +91,9 @@
 {
 	id <OFHTTPClientDelegate> _delegate;
 	bool _insecureRedirectsAllowed;
+	OFTCPSocket *_socket;
+	OFURL *_lastURL;
+	OFHTTPRequestReply *_lastReply;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -149,6 +152,11 @@
  */
 - (OFHTTPRequestReply*)performRequest: (OFHTTPRequest*)request
 			    redirects: (size_t)redirects;
+
+/*!
+ * @brief Closes connections that are still open due to keep-alive.
+ */
+- (void)close;
 @end
 
 @interface OFObject (OFHTTPClientDelegate) <OFHTTPClientDelegate>
