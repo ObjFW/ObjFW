@@ -116,8 +116,8 @@ SRCS += OFArray_adjacent.m		\
 	${OFSTREAMOBSERVER_SELECT_M}	\
 	OFString_UTF8.m			\
 	OFTCPSocket+SOCKS5.m		\
-	${APPLE_FORWARDING_S}		\
 	${ASPRINTF_M}			\
+	${FORWARDING_S}			\
 	${FOUNDATION_COMPAT_M}		\
 	iso_8859_15.m			\
 	windows_1252.m

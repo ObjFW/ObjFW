@@ -63,9 +63,19 @@
 # import "threading.h"
 #endif
 
-#if defined(OF_APPLE_RUNTIME) && !defined(__ppc64__)
+#if defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)
 extern id of_forward(id, SEL, ...);
+# ifdef OF_APPLE_RUNTIME
+/*
+ * Forwarding for methods returning structs only works with the Apple ABI, as
+ * with the GNU ABI, there is no way of knowing if a struct is returned and if
+ * so how.
+ * As forwardingTargetForSelector: only works for architectures for which
+ * assembly has been written anyway, it makes sense to switch to
+ * objc_msgSend(_{st,fp}ret) for those architectures to solve this problem.
+ */
 extern struct stret of_forward_stret(id, SEL, ...);
+# endif
 #endif
 
 struct pre_ivar {
@@ -160,6 +170,16 @@ forward_handler(id obj, SEL sel)
 			return objc_msg_lookup(obj, sel);
 		}
 	}
+
+#ifdef OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
+	if (class_respondsToSelector(object_getClass(obj),
+	    @selector(forwardingTargetForSelector:))) {
+		id target = [obj forwardingTargetForSelector: sel];
+
+		if (target != nil && target != obj)
+			return (IMP)of_forward;
+	}
+#endif
 
 	of_method_not_found(obj, sel);
 	return NULL;

@@ -40,13 +40,9 @@ lookup:
 	movq	(%r8,%rdx,8), %rax
 
 	testq	%rax, %rax
-	jz	forward
+	jz	objc_not_found_handler@PLT
 
 	ret
-
-forward:
-	movq	objc_not_found_handler@GOTPCREL(%rip), %rax
-	jmp	*%rax
 
 objc_msg_lookup_super:
 	movq	(%rdi), %rax
@@ -66,9 +62,9 @@ nil_method:
 	movq	%rdi, %rax
 	ret
 
-.type objc_msg_lookup, @function
-.type objc_msg_lookup_super, @function
-.size objc_msg_lookup, forward-objc_msg_lookup
+.type objc_msg_lookup, %function
+.type objc_msg_lookup_super, %function
+.size objc_msg_lookup, objc_msg_lookup_super-objc_msg_lookup
 .size objc_msg_lookup_super, ret_nil-objc_msg_lookup_super
 
 #ifdef __linux__

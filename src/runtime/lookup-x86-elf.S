@@ -74,8 +74,8 @@ get_eip:
 	movl	(%esp), %eax
 	ret
 
-.type objc_msg_lookup, @function
-.type objc_msg_lookup_super, @function
+.type objc_msg_lookup, %function
+.type objc_msg_lookup_super, %function
 .size objc_msg_lookup, forward-objc_msg_lookup
 .size objc_msg_lookup_super, ret_nil-objc_msg_lookup_super
 
