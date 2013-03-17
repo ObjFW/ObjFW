@@ -20,12 +20,14 @@
 #import "OFString.h"
 #import "OFDictionary.h"
 #import "OFArray.h"
+#import "OFDataArray.h"
 
 #import "autorelease.h"
 #import "macros.h"
 
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
+#import "OFTruncatedDataException.h"
 #import "OFUnsupportedVersionException.h"
 
 @implementation OFHTTPRequestReply
@@ -112,6 +114,50 @@
 - (void)setHeaders: (OFDictionary*)headers
 {
 	OF_SETTER(_headers, headers, true, 1)
+}
+
+- (OFString*)string
+{
+	return [self stringWithEncoding: OF_STRING_ENCODING_AUTODETECT];
+}
+
+- (OFString*)stringWithEncoding: (of_string_encoding_t)encoding
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *contentType, *contentLength, *ret;
+	OFDataArray *data;
+
+	if (encoding == OF_STRING_ENCODING_AUTODETECT &&
+	    (contentType = [_headers objectForKey: @"Content-Type"]) != nil) {
+		contentType = [contentType lowercaseString];
+
+		if ([contentType hasSuffix: @"charset=utf-8"])
+			encoding = OF_STRING_ENCODING_UTF_8;
+		if ([contentType hasSuffix: @"charset=iso-8859-1"])
+			encoding = OF_STRING_ENCODING_ISO_8859_1;
+		if ([contentType hasSuffix: @"charset=iso-8859-15"])
+			encoding = OF_STRING_ENCODING_ISO_8859_15;
+		if ([contentType hasSuffix: @"charset=windows-1252"])
+			encoding = OF_STRING_ENCODING_WINDOWS_1252;
+	}
+
+	if (encoding == OF_STRING_ENCODING_AUTODETECT)
+		encoding = OF_STRING_ENCODING_UTF_8;
+
+	data = [self readDataArrayTillEndOfStream];
+
+	if ((contentLength = [_headers objectForKey: @"Content-Length"]) != nil)
+		if ([data count] != (size_t)[contentLength decimalValue])
+			@throw [OFTruncatedDataException
+			    exceptionWithClass: [self class]];
+
+	ret = [[OFString alloc] initWithCString: (char*)[data items]
+				       encoding: encoding
+					 length: [data count]];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
 }
 
 - (OFString*)description

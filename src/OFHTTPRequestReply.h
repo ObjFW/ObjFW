@@ -91,4 +91,19 @@
  * @param headers The headers of the reply to the HTTP request
  */
 - (void)setHeaders: (OFDictionary*)headers;
+
+/*!
+ * @brief Returns the reply as a string, trying to detect the encoding.
+ *
+ * @return The reply as a string
+ */
+- (OFString*)string;
+
+/*!
+ * @brief Returns the reply as a string, trying to detect the encoding and
+ *	  falling back to the specified encoding if not detectable.
+ *
+ * @return The reply as a string
+ */
+- (OFString*)stringWithEncoding: (of_string_encoding_t)encoding;
 @end
