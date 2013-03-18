@@ -614,7 +614,7 @@ objc_free_all_classes(void)
 
 	for (i = 0; i <= classes->last_idx; i++) {
 		if (classes->data[i] != NULL) {
-			Class cls = classes->data[i]->obj;
+			Class cls = (Class)classes->data[i]->obj;
 
 			if (cls == Nil || (uintptr_t)cls & 1)
 				continue;
