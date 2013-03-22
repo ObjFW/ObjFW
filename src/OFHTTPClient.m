@@ -113,7 +113,7 @@ normalize_key(char *str_)
 		_hasContentLength = true;
 
 		@try {
-			_toRead = [contentLength decimalValue];
+			_toRead = (size_t)[contentLength decimalValue];
 		} @catch (OFInvalidFormatException *e) {
 			@throw [OFInvalidServerReplyException
 			    exceptionWithClass: [self class]];
