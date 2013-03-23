@@ -122,6 +122,13 @@ while test x"$1" != "x"; do
 		-f*)
 			OBJCFLAGS="$OBJCFLAGS $1"
 			;;
+		-F)
+			shift
+			LIBS="$LIBS -F$1"
+			;;
+		-F*)
+			LIBS="$LIBS $1"
+			;;
 		-g*)
 			OBJCFLAGS="$OBJCFLAGS $1"
 			;;
