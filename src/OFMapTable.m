@@ -140,9 +140,9 @@ default_equal(void *value1, void *value2)
 			@throw [OFOutOfRangeException
 			    exceptionWithClass: [self class]];
 
-		for (_capacity = 1; _capacity < capacity; _capacity <<= 1);
+		for (_capacity = 1; _capacity < capacity; _capacity *= 2);
 		if (capacity * 8 / _capacity >= 6)
-			_capacity <<= 1;
+			_capacity *= 2;
 
 		if (_capacity < MIN_CAPACITY)
 			_capacity = MIN_CAPACITY;
@@ -301,9 +301,9 @@ default_equal(void *value1, void *value2)
 	fullness = count * 8 / _capacity;
 
 	if (fullness >= 6)
-		capacity = _capacity << 1;
+		capacity = _capacity * 2;
 	else if (fullness <= 1)
-		capacity = _capacity >> 1;
+		capacity = _capacity / 2;
 	else
 		return;
 

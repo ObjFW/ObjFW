@@ -129,7 +129,7 @@ objc_sparsearray_set(struct objc_sparsearray *s, uint32_t idx, const void *obj)
 {
 #ifdef OF_SELUID24
 	uint8_t i = idx >> 16;
-	uint8_t j = idx >>  8;
+	uint8_t j = idx >> 8;
 	uint8_t k = idx;
 #else
 	uint8_t i = idx >> 8;

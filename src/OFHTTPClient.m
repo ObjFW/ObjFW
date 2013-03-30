@@ -305,9 +305,7 @@ normalize_key(char *str_)
 
 	[self close];
 
-	if ([[URL scheme] isEqual: @"http"])
-		socket = [OFTCPSocket socket];
-	else {
+	if ([[URL scheme] isEqual: @"https"]) {
 		if (of_tls_socket_class == Nil)
 			@throw [OFUnsupportedProtocolException
 			    exceptionWithClass: [self class]
@@ -315,7 +313,8 @@ normalize_key(char *str_)
 
 		socket = [[[of_tls_socket_class alloc] init]
 		    autorelease];
-	}
+	} else
+		socket = [OFTCPSocket socket];
 
 	if ([_delegate respondsToSelector:
 	    @selector(client:didCreateSocket:request:)])

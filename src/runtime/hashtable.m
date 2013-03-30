@@ -78,7 +78,7 @@ insert(struct objc_hashtable *h, const char *key, const void *obj)
 
 	if ((h->count + 1) * 4 / (h->last_idx + 1) >= 3) {
 		struct objc_hashtable_bucket **ndata;
-		uint32_t nsize = (h->last_idx + 1) << 1;
+		uint32_t nsize = (h->last_idx + 1) * 2;
 
 		assert(nsize > 0);
 

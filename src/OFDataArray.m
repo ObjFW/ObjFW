@@ -220,11 +220,11 @@ void _references_to_categories_of_OFDataArray(void)
 		_count = [string
 		    cStringLengthWithEncoding: OF_STRING_ENCODING_ASCII];
 
-		if (_count & 1)
+		if (_count % 2 != 0)
 			@throw [OFInvalidFormatException
 			    exceptionWithClass: [self class]];
 
-		_count >>= 1;
+		_count /= 2;
 		cString = [string
 		    cStringWithEncoding: OF_STRING_ENCODING_ASCII];
 		_items = [self allocMemoryWithSize: _count];

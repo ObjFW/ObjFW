@@ -213,7 +213,13 @@ static of_map_table_functions_t valueFunctions = {
 
 		count = 1;
 		for (; va_arg(argumentsCopy, id) != nil; count++);
-		count >>= 1;
+
+		if (count % 2 != 0)
+			@throw [OFInvalidArgumentException
+			    exceptionWithClass: [self class]
+				      selector: _cmd];
+
+		count /= 2;
 
 		_mapTable = [[OFMapTable alloc]
 		    initWithKeyFunctions: keyFunctions
