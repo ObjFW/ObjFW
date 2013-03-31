@@ -87,11 +87,35 @@
 - (void)setCertificateFile: (OFString*)certificateFile;
 
 /*!
+ * @brief Sets the path to the X.509 certificate file to use for the specified
+ *	  SNI host.
+ *
+ * @param SNIHost The SNI host for which the path of the X.509 certificate file
+ *		  should be set
+ *
+ * @param certificateFile The path to the X.509 certificate file
+ */
+- (void)setCertificateFile: (OFString*)certificateFile
+		forSNIHost: (OFString*)SNIHost;
+
+/*!
  * @brief Returns the path of the X.509 certificate file used by the TLS socket.
  *
  * @return The path of the X.509 certificate file used by the TLS socket
  */
 - (OFString*)certificateFile;
+
+/*!
+ * @brief Returns the path of the X.509 certificate file used by the TLS socket
+ *	  for the specified SNI host.
+ *
+ * @param SNIHost The SNI host for which the path of the X.509 certificate file
+ *		  should be returned
+ *
+ * @return The path of the X.509 certificate file used by the TLS socket for
+ *	   the specified SNI host
+ */
+- (OFString*)certificateFileForSNIHost: (OFString*)SNIHost;
 
 /*!
  * @brief Sets the path to the PKCS#8 private key file to use.
@@ -101,12 +125,35 @@
 - (void)setPrivateKeyFile: (OFString*)privateKeyFile;
 
 /*!
+ * @brief Sets the path to the PKCS#8 private key file to use for the specified
+ *	  SNI host.
+ *
+ * @param privateKeyFile The path to the PKCS#8 private key file
+ * @param SNIHost The SNI host for which the path to the PKCS#8 private key
+ *		  file should be set
+ */
+- (void)setPrivateKeyFile: (OFString*)privateKeyFile
+	       forSNIHost: (OFString*)SNIHost;
+
+/*!
  * @brief Returns the path of the PKCS#8 private key file used by the TLS
  *	  socket.
  *
  * @return The path of the PKCS#8 private key file used by the TLS socket
  */
 - (OFString*)privateKeyFile;
+
+/*!
+ * @brief Returns the path of the PKCS#8 private key file used by the TLS
+ *	  socket for the specified SNI host.
+ *
+ * @param SNIHost The SNI host for which the path of the PKCS#8 private key
+ *		  file should be returned
+ *
+ * @return The path of the PKCS#8 private key file used by the TLS socket for
+ *	   the specified SNI host
+ */
+- (OFString*)privateKeyFileForSNIHost: (OFString*)SNIHost;
 
 /*!
  * @brief Sets the passphrase to decrypt the PKCS#8 private key file.
@@ -120,6 +167,21 @@
 - (void)setPrivateKeyPassphrase: (const char*)privateKeyPassphrase;
 
 /*!
+ * @brief Sets the passphrase to decrypt the PKCS#8 private key file for the
+ *	  specified SNI host.
+ *
+ * @warning You have to ensure that this is in secure memory protected from
+ *	    swapping! This is also the reason why this is not an OFString.
+ *
+ * @param privateKeyPassphrase The passphrase to decrypt the PKCS#8 private
+ *			       key file for the specified SNI host
+ * @param SNIHost The SNI host for which the passphrase to decrypt the PKCS#8
+ *		  private key file should be set
+ */
+- (void)setPrivateKeyPassphrase: (const char*)privateKeyPassphrase
+		     forSNIHost: (OFString*)SNIHost;
+
+/*!
  * @brief Returns the passphrase to decrypt the PKCS#8 private key file.
  *
  * @warning You should not copy this to insecure memory which is swappable!
@@ -127,4 +189,18 @@
  * @return The passphrase to decrypt the PKCS#8 private key file
  */
 - (const char*)privateKeyPassphrase;
+
+/*!
+ * @brief Returns the passphrase to decrypt the PKCS#8 private key file for the
+ *	  specified SNI host.
+ *
+ * @warning You should not copy this to insecure memory which is swappable!
+ *
+ * @param SNIHost The SNI host for which the passphrase to decrypt the PKCS#8
+ *		  private key file should be returned
+ *
+ * @return The passphrase to decrypt the PKCS#8 private key file for the
+ *	   specified SNI host
+ */
+- (const char*)privateKeyPassphraseForSNIHost: (OFString*)SNIHost;
 @end
