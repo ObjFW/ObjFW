@@ -211,7 +211,7 @@ typedef bool (^of_tcpsocket_async_accept_block_t)(OFTCPSocket *socket,
  *
  * @return An autoreleased OFTCPSocket for the accepted connection.
  */
-- (OFTCPSocket*)accept;
+- (instancetype)accept;
 
 /*!
  * @brief Asyncronously accept an incoming connection.

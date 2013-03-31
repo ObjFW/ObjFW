@@ -50,6 +50,22 @@
 #endif
 
 /*!
+ * @brief Initializes the TLS socket with the specified TCP socket as its
+ *	  underlying socket.
+ *
+ * @param socket The TCP socket to use as underlying socket
+ */
+- initWithSocket: (OFTCPSocket*)socket;
+
+/*!
+ * @brief Initiates the TLS handshake.
+ *
+ * @note This is only useful if you used @ref initWithSocket: to start TLS on
+ *	 a TCP socket which is already connected!
+ */
+- (void)startTLS;
+
+/*!
  * @brief Sets a delegate for the TLS socket.
  *
  * @param delegate The delegate to use

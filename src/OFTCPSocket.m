@@ -643,7 +643,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	[self listenWithBackLog: SOMAXCONN];
 }
 
-- (OFTCPSocket*)accept
+- (instancetype)accept
 {
 	OFTCPSocket *client;
 	struct sockaddr_storage *addr;
