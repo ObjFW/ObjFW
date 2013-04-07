@@ -26,10 +26,10 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OFRunLoop.h"
 #ifdef OF_HAVE_THREADS
 # import "OFThread.h"
 #endif
-#import "OFRunLoop.h"
 
 #import "autorelease.h"
 #import "macros.h"

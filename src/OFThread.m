@@ -31,11 +31,11 @@
 # include <kernel/OS.h>
 #endif
 
+#import "OFRunLoop.h"
 #import "OFThread.h"
 #import "OFList.h"
 #import "OFDate.h"
 #import "OFSortedList.h"
-#import "OFRunLoop.h"
 #import "OFAutoreleasePool.h"
 
 #ifdef _WIN32

@@ -16,7 +16,6 @@
 
 #import "OFObject.h"
 #import "OFStream.h"
-#import "OFStreamObserver.h"
 #import "OFTCPSocket.h"
 
 @class OFSortedList;
@@ -25,6 +24,7 @@
 #endif
 @class OFTimer;
 @class OFMutableDictionary;
+@class OFStreamObserver;
 
 /*!
  * @brief A class providing a run loop for the application and its processes.

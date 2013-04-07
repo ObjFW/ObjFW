@@ -20,6 +20,7 @@
 
 #import "OFRunLoop.h"
 #import "OFDictionary.h"
+#import "OFStreamObserver.h"
 #ifdef OF_HAVE_THREADS
 # import "OFThread.h"
 # import "OFMutex.h"

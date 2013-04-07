@@ -31,6 +31,10 @@
 
 #import "OFStreamSocket.h"
 
+#ifdef _WIN32
+# include <winsock2.h>
+#endif
+
 #import "OFInitializationFailedException.h"
 #import "OFNotConnectedException.h"
 #import "OFReadFailedException.h"

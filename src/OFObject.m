@@ -26,10 +26,10 @@
 
 #import "OFObject.h"
 #import "OFTimer.h"
+#import "OFRunLoop.h"
 #ifdef OF_HAVE_THREADS
 # import "OFThread.h"
 #endif
-#import "OFRunLoop.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFAllocFailedException.h"

@@ -571,8 +571,7 @@ AC_TRY_COMPILE([
 	# include <sys/socket.h>
 	# include <netdb.h>
 	#else
-	# define _WIN32_WINNT 0x0501
-	# include <windows.h>
+	typedef unsigned char BOOL;
 	# include <ws2tcpip.h>
 	#endif
 ], [
