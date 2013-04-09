@@ -263,6 +263,46 @@ case $objc_runtime in
 			AC_DEFINE(OF_SELUID24, 1,
 				[Whether to use 24 bit selector UIDs])
 		])
+
+		AC_MSG_CHECKING(for exception type)
+		AC_TRY_COMPILE([
+			extern void foo();
+		], [
+			@try {
+				foo();
+			} @finally {
+				foo();
+			}
+		], [
+			AS_IF([$EGREP __gnu_objc_personality_v0 \
+					conftest.$ac_objext >/dev/null], [
+				exception_type="DWARF"
+			])
+			AS_IF([$EGREP __gnu_objc_personality_sj0 \
+					conftest.$ac_objext >/dev/null], [
+				exception_type="SjLj"
+			])
+
+			case $exception_type in
+			DWARF)
+				AC_DEFINE(HAVE_DWARF_EXCEPTIONS, 1,
+					[Whether DWARF exceptions are used])
+				;;
+			SjLj)
+				AC_DEFINE(HAVE_SJLJ_EXCEPTIONS, 1,
+					[Whether SjLj exceptions are used])
+				;;
+			*)
+				AC_MSG_RESULT(unknown)
+				AC_MSG_ERROR([Exception type not detected!])
+				;;
+			esac
+
+			AC_MSG_RESULT($exception_type)
+		], [
+			AC_MSG_RESULT(exceptions unavailable!)
+			AC_MSG_ERROR([Exceptions not accepted by compiler!])
+		])
 		;;
 	"Apple runtime")
 		AC_DEFINE(OF_APPLE_RUNTIME, 1,

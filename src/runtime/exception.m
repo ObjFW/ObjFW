@@ -115,7 +115,12 @@ struct lsda {
 	const uint8_t *callsites, *actiontable;
 };
 
+#ifndef HAVE_SJLJ_EXCEPTIONS
 extern _Unwind_Reason_Code _Unwind_RaiseException(struct _Unwind_Exception*);
+#else
+extern _Unwind_Reason_Code _Unwind_SjLj_RaiseException(
+    struct _Unwind_Exception*);
+#endif
 extern void* _Unwind_GetLanguageSpecificData(struct _Unwind_Context*);
 extern uintptr_t _Unwind_GetRegionStart(struct _Unwind_Context*);
 extern uintptr_t _Unwind_GetDataRelBase(struct _Unwind_Context*);
@@ -167,6 +172,16 @@ _Unwind_SetIP(struct _Unwind_Context *ctx, uintptr_t value)
 extern uintptr_t _Unwind_GetIP(struct _Unwind_Context*);
 extern void _Unwind_SetIP(struct _Unwind_Context*, uintptr_t);
 extern void _Unwind_SetGR(struct _Unwind_Context*, int, uintptr_t);
+#endif
+
+#if defined(HAVE_DWARF_EXCEPTIONS)
+# define PERSONALITY __gnu_objc_personality_v0
+# define RAISE_EXCEPTION _Unwind_RaiseException
+#elif defined(HAVE_SJLJ_EXCEPTIONS)
+# define PERSONALITY __gnu_objc_personality_sj0
+# define RAISE_EXCEPTION _Unwind_SjLj_RaiseException
+#else
+# error Unknown exception type!
 #endif
 
 static objc_uncaught_exception_handler uncaught_exception_handler;
@@ -339,12 +354,12 @@ find_callsite(struct _Unwind_Context *ctx, struct lsda *lsda,
     uintptr_t *landingpad, const uint8_t **actionrecords)
 {
 	uintptr_t ip = _Unwind_GetIP(ctx);
-	const uint8_t *ptr;
+	const uint8_t *ptr = lsda->callsites;
 
 	*landingpad = 0;
 	*actionrecords = NULL;
 
-	ptr = lsda->callsites;
+#ifndef HAVE_SJLJ_EXCEPTIONS
 	while (ptr < lsda->actiontable) {
 		uintptr_t callsite_start, callsite_len, callsite_landingpad;
 		uintptr_t callsite_action;
@@ -373,6 +388,23 @@ find_callsite(struct _Unwind_Context *ctx, struct lsda *lsda,
 	}
 
 	return false;
+#else
+	uintptr_t callsite_landingpad, callsite_action;
+
+	if ((uintptr_t)ip < 1)
+		return false;
+
+	do {
+		callsite_landingpad = (uintptr_t)read_uleb128(&ptr);
+		callsite_action = (uintptr_t)read_uleb128(&ptr);
+	} while (--ip > 1);
+
+	*landingpad = callsite_landingpad + 1;
+	if (callsite_action != 0)
+		*actionrecords = lsda->actiontable + callsite_action - 1;
+
+	return true;
+#endif
 }
 
 static bool
@@ -460,7 +492,7 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 
 #if defined(__arm__) || defined(__ARM__)
 _Unwind_Reason_Code
-__gnu_objc_personality_v0(uint32_t state, struct _Unwind_Exception *ex,
+PERSONALITY(uint32_t state, struct _Unwind_Exception *ex,
     struct _Unwind_Context *ctx)
 {
 	int version = 1;
@@ -485,7 +517,7 @@ __gnu_objc_personality_v0(uint32_t state, struct _Unwind_Exception *ex,
 	_Unwind_SetGR(ctx, 12, (uintptr_t)ex);
 #else
 _Unwind_Reason_Code
-__gnu_objc_personality_v0(int version, int actions, uint64_t ex_class,
+PERSONALITY(int version, int actions, uint64_t ex_class,
     struct _Unwind_Exception *ex, struct _Unwind_Context *ctx)
 {
 #endif
@@ -596,7 +628,7 @@ objc_exception_throw(id object)
 	e->exception.cleanup = cleanup;
 	e->object = object;
 
-	if (_Unwind_RaiseException(&e->exception) == _URC_END_OF_STACK &&
+	if (RAISE_EXCEPTION(&e->exception) == _URC_END_OF_STACK &&
 	    uncaught_exception_handler != NULL)
 		uncaught_exception_handler(object);
 
