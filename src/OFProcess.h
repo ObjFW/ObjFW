@@ -24,12 +24,12 @@
 #include <sys/types.h>
 
 #import "OFStream.h"
+#import "OFString.h"
 
 #ifdef _WIN32
 # include <windows.h>
 #endif
 
-@class OFString;
 @class OFArray;
 @class OFDictionary;
 
@@ -167,7 +167,7 @@
 #ifndef _WIN32
 - (char**)OF_environmentForDictionary: (OFDictionary*)dictionary;
 #else
-- (uint16_t*)OF_environmentForDictionary: (OFDictionary*)dictionary;
+- (of_char16_t*)OF_environmentForDictionary: (OFDictionary*)dictionary;
 #endif
 
 /*!

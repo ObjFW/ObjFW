@@ -152,7 +152,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 #if defined(__MACH__) && !defined(OF_IOS)
 		char **env = *_NSGetEnviron();
 #elif defined(__WIN32)
-		uint16_t *env;
+		of_char16_t *env;
 #elif !defined(OF_IOS)
 		char **env = environ;
 #else

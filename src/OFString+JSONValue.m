@@ -111,10 +111,10 @@ skipWhitespacesAndComments(const char *restrict *pointer, const char *stop,
 	}
 }
 
-static inline uint16_t
+static inline of_char16_t
 parseUnicodeEscape(const char *pointer, const char *stop)
 {
-	uint16_t ret = 0;
+	of_char16_t ret = 0;
 	char i;
 
 	if (pointer + 5 >= stop)
@@ -194,7 +194,7 @@ parseString(const char *restrict *pointer, const char *stop,
 				break;
 			/* Parse unicode escape sequence */
 			case 'u':;
-				uint16_t c1, c2;
+				of_char16_t c1, c2;
 				of_unichar_t c;
 				size_t l;
 
@@ -313,7 +313,7 @@ parseIdentifier(const char *restrict *pointer, const char *stop)
 			buffer[i++] = **pointer;
 			(*pointer)++;
 		} else if (**pointer == '\\') {
-			uint16_t c1, c2;
+			of_char16_t c1, c2;
 			of_unichar_t c;
 			size_t l;
 
