@@ -19,6 +19,9 @@
 #include <stdlib.h>
 
 #import "OFEnumerator.h"
+#import "OFArray.h"
+
+#import "autorelease.h"
 
 @implementation OFEnumerator
 - init
@@ -40,6 +43,22 @@
 {
 	[self doesNotRecognizeSelector: _cmd];
 	abort();
+}
+
+- (OFArray*)allObjects
+{
+	OFMutableArray *ret = [OFMutableArray array];
+	void *pool = objc_autoreleasePoolPush();
+	id object;
+
+	while ((object = [self nextObject]) != nil)
+		[ret addObject: object];
+
+	[ret makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
 }
 
 - (void)reset

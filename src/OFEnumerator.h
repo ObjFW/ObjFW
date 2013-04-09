@@ -17,6 +17,7 @@
 #import "OFObject.h"
 
 @class OFEnumerator;
+@class OFArray;
 
 /*!
  * @brief A protocol for getting an enumerator for the object.
@@ -41,6 +42,13 @@
  * @return The next object
  */
 - (id)nextObject;
+
+/*!
+ * @brief Returns an array of all remaining objects in the collection.
+ *
+ * @return An array of all remaining objects in the collection
+ */
+- (OFArray*)allObjects;
 
 /*!
  * @brief Resets the enumerator, so the next call to nextObject returns the
