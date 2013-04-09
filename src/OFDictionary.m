@@ -411,56 +411,34 @@ static struct {
 
 - (OFArray*)allKeys
 {
+	OFMutableArray *ret = [OFMutableArray arrayWithCapacity: [self count]];
 	void *pool = objc_autoreleasePoolPush();
-	id *keys = [self allocMemoryWithSize: sizeof(id)
-				       count: [self count]];
-	OFArray *ret;
-	OFEnumerator *enumerator;
+	OFEnumerator *enumerator = [self keyEnumerator];
 	id key;
-	size_t i = 0;
 
-	enumerator = [self keyEnumerator];
 	while ((key = [enumerator nextObject]) != nil)
-		keys[i++] = key;
+		[ret addObject: key];
 
-	assert(i == [self count]);
+	[ret makeImmutable];
 
 	objc_autoreleasePoolPop(pool);
-
-	@try {
-		ret = [OFArray arrayWithObjects: keys
-					  count: [self count]];
-	} @finally {
-		[self freeMemory: keys];
-	}
 
 	return ret;
 }
 
 - (OFArray*)allObjects
 {
+	OFMutableArray *ret = [OFMutableArray arrayWithCapacity: [self count]];
 	void *pool = objc_autoreleasePoolPush();
-	id *objects = [self allocMemoryWithSize: sizeof(id)
-					  count: [self count]];
-	OFArray *ret;
-	OFEnumerator *enumerator;
+	OFEnumerator *enumerator = [self objectEnumerator];
 	id object;
-	size_t i = 0;
 
-	enumerator = [self objectEnumerator];
 	while ((object = [enumerator nextObject]) != nil)
-		objects[i++] = object;
+		[ret addObject: object];
 
-	assert(i == [self count]);
+	[ret makeImmutable];
 
 	objc_autoreleasePoolPop(pool);
-
-	@try {
-		ret = [OFArray arrayWithObjects: objects
-					  count: [self count]];
-	} @finally {
-		[self freeMemory: objects];
-	}
 
 	return ret;
 }
