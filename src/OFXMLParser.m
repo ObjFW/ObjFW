@@ -396,6 +396,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	OFString *attribute = nil;
 	OFMutableString *value = nil;
 	char piDelimiter = 0;
+	bool hasVersion = false;
 
 	if (!_acceptProlog)
 		return false;
@@ -448,9 +449,12 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 			    stringWithUTF8String: cString + last
 					  length: i - last];
 
-			if ([attribute isEqual: @"version"])
+			if ([attribute isEqual: @"version"]) {
 				if (![value hasPrefix: @"1."])
 					return false;
+
+				hasVersion = true;
+			}
 
 			if ([attribute isEqual: @"encoding"]) {
 				[value lowercase];
@@ -477,7 +481,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		}
 	}
 
-	if (PIState != 0)
+	if (PIState != 0 || !hasVersion)
 		return false;
 
 	return true;
