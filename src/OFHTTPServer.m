@@ -597,7 +597,7 @@ normalized_key(OFString *key)
 
 		path = [_path substringWithRange: of_range(0, pos)];
 		query = [_path substringWithRange:
-		    of_range(pos + 1, [path length] - pos - 1)];
+		    of_range(pos + 1, [_path length] - pos - 1)];
 
 		[URL setPath: path];
 		[URL setQuery: query];
