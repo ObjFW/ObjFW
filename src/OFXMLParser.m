@@ -139,7 +139,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 {
 	size_t i;
 
-	const SEL selectors_[] = {
+	const SEL selectors_[OF_XMLPARSER_NUM_STATES] = {
+		@selector(OF_parseInByteOrderMarkWithBuffer:i:last:),
 		@selector(OF_parseOutsideTagWithBuffer:i:last:),
 		@selector(OF_parseTagOpenedWithBuffer:i:last:),
 		@selector(OF_parseInProcessingInstructionsWithBuffer:i:last:),
@@ -311,6 +312,27 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
  * looked up in +[initialize] and put in a lookup table to speed things up.
  * One dispatch for every character would be way too slow!
  */
+
+- (void)OF_parseInByteOrderMarkWithBuffer: (const char*)buffer
+					i: (size_t*)i
+				     last: (size_t*)last
+{
+	if (buffer[*i] != "\xEF\xBB\xBF"[_level]) {
+		if (_level == 0) {
+			_state = OF_XMLPARSER_OUTSIDE_TAG;
+			(*i)--;
+			return;
+		}
+
+		@throw [OFMalformedXMLException exceptionWithClass: [self class]
+							    parser: self];
+	}
+
+	if (_level++ == 2)
+		_state = OF_XMLPARSER_OUTSIDE_TAG;
+
+	*last = *i + 1;
+}
 
 /* Not in a tag */
 - (void)OF_parseOutsideTagWithBuffer: (const char*)buffer
@@ -807,7 +829,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	[_buffer removeAllItems];
 
 	*last = *i + 1;
-	_state = OF_XMLPARSER_EXPECT_DELIM;
+	_state = OF_XMLPARSER_EXPECT_DELIMITER;
 }
 
 /* Expecting delimiter */

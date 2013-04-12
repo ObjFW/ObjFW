@@ -323,7 +323,7 @@ enum event_type {
 - (void)XMLParserTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	const char *str = "<?xml version='1.0'?><?p?i?>"
+	const char *str = "\xEF\xBB\xBF<?xml version='1.0'?><?p?i?>"
 	    "<!DOCTYPE <<><<>>>><root>\r\r"
 	    " <![CDATA[f<]]]oo]]><bar/>\n"
 	    " <foobar xmlns='urn:objfw:test:foobar'>\r\n"
@@ -340,7 +340,7 @@ enum event_type {
 	    "</root>";
 	size_t j, len;
 
-	TEST(@"+[xmlParser]", (parser = [OFXMLParser parser]))
+	TEST(@"+[parser]", (parser = [OFXMLParser parser]))
 
 	TEST(@"-[setDelegate:]", R([parser setDelegate: self]))
 
