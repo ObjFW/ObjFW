@@ -24,8 +24,11 @@ int
 vasprintf(char **string, const char *format, va_list arguments)
 {
 	int length;
+	va_list argumentsCopy;
 
-	if ((length = vsnprintf(NULL, 0, format, arguments)) < 0)
+	va_copy(argumentsCopy, argumentsCopy);
+
+	if ((length = vsnprintf(NULL, 0, format, argumentsCopy)) < 0)
 		return length;
 	if ((*string = malloc((size_t)length + 1)) == NULL)
 		return -1;
