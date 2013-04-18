@@ -604,7 +604,9 @@ static OFRunLoop *mainRunLoop = nil;
 		OFTimer *timer;
 		OFDate *nextTimer;
 
+#ifdef OF_HAVE_THREADS
 		of_memory_read_barrier();
+#endif
 		if (!_running)
 			break;
 
@@ -671,7 +673,9 @@ static OFRunLoop *mainRunLoop = nil;
 - (void)stop
 {
 	_running = false;
+#ifdef OF_HAVE_THREADS
 	of_memory_write_barrier();
+#endif
 	[_streamObserver cancel];
 }
 @end
