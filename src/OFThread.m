@@ -108,7 +108,8 @@ set_thread_name(OFThread *thread)
 	if (name == nil)
 		name = [thread className];
 
-	rename_thread(get_pthread_thread_id(thread->thread), [name UTF8String]);
+	rename_thread(get_pthread_thread_id(thread->_thread),
+	    [name UTF8String]);
 #endif
 }
 
