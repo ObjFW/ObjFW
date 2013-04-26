@@ -696,6 +696,29 @@ AS_IF([test x"$enable_sockets" != x"no" -a x"$enable_threads" != x"no"], [
 	AC_SUBST(OFHTTPCLIENTTESTS_M, "OFHTTPClientTests.m")
 ])
 
+case "$host" in
+	*-*-mingw*)
+		have_processes="yes"
+		;;
+	*)
+		AC_CHECK_FUNCS([fork pipe dup2 execvp kill], [
+			if test x"$ac_cv_func_fork" = x"yes" \
+			    -a x"$ac_cv_func_pipe" = x"yes" \
+			    -a x"$ac_cv_func_dup2" = x"yes" \
+			    -a x"$ac_cv_func_execvp" = x"yes" \
+			    -a x"$ac_cv_func_kill" = x"yes"; then
+				have_processes="yes"
+			fi
+		], [
+			break
+		])
+		;;
+esac
+AS_IF([test x"$have_processes" = x"yes"], [
+	AC_SUBST(OFPROCESS_M, "OFProcess.m")
+	AC_DEFINE(OF_HAVE_PROCESSES, 1, [Whether we have processes])
+])
+
 AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 	AC_CHECK_HEADER(Foundation/NSObject.h, [
 		AC_SUBST(FOUNDATION_COMPAT_M, "foundation-compat.m")

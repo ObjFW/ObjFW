@@ -58,7 +58,9 @@
 # import "OFHTTPServer.h"
 #endif
 
-#import "OFProcess.h"
+#ifdef OF_HAVE_PROCESSES
+# import "OFProcess.h"
+#endif
 
 #import "OFHash.h"
 #import "OFMD5Hash.h"
