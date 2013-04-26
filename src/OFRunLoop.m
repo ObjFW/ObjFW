@@ -23,8 +23,8 @@
 #ifdef OF_HAVE_SOCKETS
 # import "OFStreamObserver.h"
 #endif
+#import "OFThread.h"
 #ifdef OF_HAVE_THREADS
-# import "OFThread.h"
 # import "OFMutex.h"
 #endif
 #import "OFSortedList.h"

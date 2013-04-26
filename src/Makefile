@@ -48,6 +48,7 @@ SRCS = OFApplication.m			\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
        OFSystemInfo.m			\
+       OFThread.m			\
        OFTimer.m			\
        OFURL.m				\
        OFXMLAttribute.m			\
@@ -78,7 +79,6 @@ SRCS_SOCKETS = OFHTTPClient.m		\
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
 	       OFRecursiveMutex.m	\
-	       OFThread.m		\
 	       OFThreadPool.m		\
 	       OFTLSKey.m
 

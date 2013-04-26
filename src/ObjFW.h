@@ -162,9 +162,9 @@
 #endif
 
 #import "OFLocking.h"
+#import "OFThread.h"
 #ifdef OF_HAVE_THREADS
 # import "threading.h"
-# import "OFThread.h"
 # import "OFThreadPool.h"
 # import "OFTLSKey.h"
 # import "OFMutex.h"

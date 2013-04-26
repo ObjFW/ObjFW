@@ -20,14 +20,18 @@
 
 #define __NO_EXT_QNX
 
+#include <stdlib.h>
 #include <math.h>
 
 #ifndef _WIN32
 # include <unistd.h>
+#endif
+
+#ifdef OF_HAVE_SCHED_YIELD
 # include <sched.h>
 #endif
 
-#ifdef __HAIKU__
+#if defined(OF_HAVE_THREADS) && defined(__HAIKU__)
 # include <kernel/OS.h>
 #endif
 
@@ -44,16 +48,21 @@
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
+#import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
-#import "OFThreadJoinFailedException.h"
-#import "OFThreadStartFailedException.h"
-#import "OFThreadStillRunningException.h"
+#ifdef OF_HAVE_THREADS
+# import "OFThreadJoinFailedException.h"
+# import "OFThreadStartFailedException.h"
+# import "OFThreadStillRunningException.h"
+#endif
 
 #ifdef OF_HAVE_ATOMIC_OPS
 # import "atomic.h"
 #endif
 #import "autorelease.h"
-#import "threading.h"
+
+#ifdef OF_HAVE_THREADS
+# import "threading.h"
 
 static of_tlskey_t threadSelfKey;
 static OFThread *mainThread;
@@ -73,11 +82,11 @@ call_main(id object)
 	 * Nasty workaround for thread implementations which can't return a
 	 * value on join.
 	 */
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 	if (thread->_block != NULL)
 		thread->_returnValue = [thread->_block() retain];
 	else
-#endif
+# endif
 		thread->_returnValue = [[thread main] retain];
 
 	[thread handleTermination];
@@ -85,14 +94,14 @@ call_main(id object)
 	thread->_running = OF_THREAD_WAITING_FOR_JOIN;
 
 	[OFTLSKey OF_callAllDestructors];
-#ifdef OF_OBJFW_RUNTIME
+# ifdef OF_OBJFW_RUNTIME
 	/*
 	 * As the values returned by objc_autoreleasePoolPush() in the ObjFW
 	 * runtime are not actually pointers, but sequential numbers, 0 means
 	 * we pop everything.
 	 */
 	objc_autoreleasePoolPop(0);
-#endif
+# endif
 
 	[thread release];
 
@@ -102,7 +111,7 @@ call_main(id object)
 static void
 set_thread_name(OFThread *thread)
 {
-#ifdef __HAIKU__
+# ifdef __HAIKU__
 	OFString *name = thread->_name;
 
 	if (name == nil)
@@ -110,13 +119,15 @@ set_thread_name(OFThread *thread)
 
 	rename_thread(get_pthread_thread_id(thread->_thread),
 	    [name UTF8String]);
-#endif
+# endif
 }
+#endif
 
 @implementation OFThread
-#if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
+#ifdef OF_HAVE_THREADS
+# if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
 @synthesize block = _block;
-#endif
+# endif
 
 + (void)initialize
 {
@@ -133,12 +144,12 @@ set_thread_name(OFThread *thread)
 	return [[[self alloc] init] autorelease];
 }
 
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 + (instancetype)threadWithBlock: (of_thread_block_t)block
 {
 	return [[[self alloc] initWithBlock: block] autorelease];
 }
-#endif
+# endif
 
 + (void)setObject: (id)object
 	forTLSKey: (OFTLSKey*)key
@@ -166,6 +177,7 @@ set_thread_name(OFThread *thread)
 {
 	return mainThread;
 }
+#endif
 
 + (void)sleepForTimeInterval: (double)seconds
 {
@@ -213,6 +225,7 @@ set_thread_name(OFThread *thread)
 #endif
 }
 
+#ifdef OF_HAVE_THREADS
 + (void)terminate
 {
 	[self terminateWithObject: nil];
@@ -231,14 +244,14 @@ set_thread_name(OFThread *thread)
 	}
 
 	[OFTLSKey OF_callAllDestructors];
-#ifdef OF_OBJFW_RUNTIME
+# ifdef OF_OBJFW_RUNTIME
 	/*
 	 * As the values returned by objc_autoreleasePoolPush() in the ObjFW
 	 * runtime are not actually pointers, but sequential numbers, 0 means
 	 * we pop everything.
 	 */
 	objc_autoreleasePoolPop(0);
-#endif
+# endif
 
 	[thread release];
 
@@ -255,7 +268,7 @@ set_thread_name(OFThread *thread)
 		    exceptionWithClass: self];
 }
 
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 - initWithBlock: (of_thread_block_t)block
 {
 	self = [super init];
@@ -269,7 +282,7 @@ set_thread_name(OFThread *thread)
 
 	return self;
 }
-#endif
+# endif
 
 - (id)main
 {
@@ -330,19 +343,19 @@ set_thread_name(OFThread *thread)
 
 - (OFRunLoop*)runLoop
 {
-#ifdef OF_HAVE_ATOMIC_OPS
+# ifdef OF_HAVE_ATOMIC_OPS
 	if (_runLoop == nil) {
 		OFRunLoop *tmp = [[OFRunLoop alloc] init];
 
 		if (!of_atomic_cmpswap_ptr((void**)&_runLoop, nil, tmp))
 			[tmp release];
 	}
-#else
+# else
 	@synchronized (self) {
 		if (_runLoop == nil)
 			_runLoop = [[OFRunLoop alloc] init];
 	}
-#endif
+# endif
 
 	return [[_runLoop retain] autorelease];
 }
@@ -379,4 +392,17 @@ set_thread_name(OFThread *thread)
 
 	[super dealloc];
 }
+#else
+- init
+{
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	abort();
+}
+#endif
 @end

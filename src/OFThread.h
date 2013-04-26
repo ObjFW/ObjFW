@@ -15,9 +15,11 @@
  */
 
 #import "OFObject.h"
-#import "OFTLSKey.h"
+#ifdef OF_HAVE_THREADS
+# import "OFTLSKey.h"
 
-#import "threading.h"
+# import "threading.h"
+#endif
 
 /* Haiku used to define this for some unknown reason which causes trouble */
 #ifdef protected
@@ -30,7 +32,7 @@
 @class OFSortedList;
 @class OFRunLoop;
 
-#ifdef OF_HAVE_BLOCKS
+#if defined(OF_HAVE_THREADS) && defined(OF_HAVE_BLOCKS)
 /*!
  * @brief A block to be executed in a new thread.
  *
@@ -50,33 +52,35 @@ typedef id (^of_thread_block_t)(void);
  *	    This is so that the thread can be used as a key for a dictionary,
  *	    so context can be associated with a thread.
  */
-@interface OFThread: OFObject <OFCopying>
+@interface OFThread: OFObject
+#ifdef OF_HAVE_THREADS
+    <OFCopying>
 {
-#ifdef OF_THREAD_M
+# ifdef OF_THREAD_M
 @public
-#else
+# else
 @private
-#endif
+# endif
 	of_thread_t _thread;
 	enum {
 		OF_THREAD_NOT_RUNNING,
 		OF_THREAD_RUNNING,
 		OF_THREAD_WAITING_FOR_JOIN
 	} _running;
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 	of_thread_block_t _block;
-#endif
+# endif
 	id _returnValue;
 	OFRunLoop *_runLoop;
 	OFString *_name;
 }
 
-#ifdef OF_HAVE_PROPERTIES
-# ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_PROPERTIES
+#  ifdef OF_HAVE_BLOCKS
 @property (copy) of_thread_block_t block;
-# endif
+#  endif
 @property (copy) OFString *name;
-#endif
+# endif
 
 /*!
  * @brief Creates a new thread.
@@ -85,7 +89,7 @@ typedef id (^of_thread_block_t)(void);
  */
 + (instancetype)thread;
 
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 /*!
  * @brief Creates a new thread with the specified block.
  *
@@ -93,7 +97,7 @@ typedef id (^of_thread_block_t)(void);
  * @return A new, autoreleased thread
  */
 + (instancetype)threadWithBlock: (of_thread_block_t)block;
-#endif
+# endif
 
 /*!
  * @brief Sets the Thread Local Storage for the specified key.
@@ -131,6 +135,7 @@ typedef id (^of_thread_block_t)(void);
  * @return The main thread
  */
 + (OFThread*)mainThread;
+#endif
 
 /*!
  * @brief Suspends execution of the current thread for the specified time
@@ -148,11 +153,12 @@ typedef id (^of_thread_block_t)(void);
 + (void)sleepUntilDate: (OFDate*)date;
 
 /*!
- * @brief Yields a processor voluntarily and moves the thread at the end of the
+ * @brief Yields a processor voluntarily and moves the thread to the end of the
  *	  queue for its priority.
  */
 + (void)yield;
 
+#ifdef OF_HAVE_THREADS
 /*!
  * @brief Terminates the current thread, letting it return nil.
  */
@@ -167,7 +173,7 @@ typedef id (^of_thread_block_t)(void);
 
 + (void)OF_createMainThread;
 
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 /*!
  * @brief Initializes an already allocated thread with the specified block.
  *
@@ -175,7 +181,7 @@ typedef id (^of_thread_block_t)(void);
  * @return An initialized OFThread.
  */
 - initWithBlock: (of_thread_block_t)block;
-#endif
+# endif
 
 /*!
  * @brief The main routine of the thread. You need to reimplement this!
@@ -227,4 +233,5 @@ typedef id (^of_thread_block_t)(void);
  * @param name The name for the thread
  */
 - (void)setName: (OFString*)name;
+#endif
 @end
