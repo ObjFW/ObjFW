@@ -18,6 +18,7 @@
 
 #define OF_THREAD_M
 
+#define _POSIX_TIMERS
 #define __NO_EXT_QNX
 
 #include <stdlib.h>

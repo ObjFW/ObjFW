@@ -148,7 +148,7 @@ extern void of_log(OFConstantString*, ...);
  */
 + (OFDate*)modificationDateOfFileAtPath: (OFString*)path;
 
-#ifndef _PSP
+#ifdef OF_HAVE_CHMOD
 /*!
  * @brief Changes the mode of a file.
  *
@@ -162,7 +162,7 @@ extern void of_log(OFConstantString*, ...);
 			  mode: (mode_t)mode;
 #endif
 
-#if !defined(_WIN32) && !defined(_PSP)
+#ifdef OF_HAVE_CHOWN
 /*!
  * @brief Changes the owner of a file.
  *
@@ -210,7 +210,7 @@ extern void of_log(OFConstantString*, ...);
  */
 + (void)deleteDirectoryAtPath: (OFString*)path;
 
-#ifndef _WIN32
+#ifdef OF_HAVE_LINK
 /*!
  * @brief Creates a hard link for a file.
  *
@@ -223,7 +223,7 @@ extern void of_log(OFConstantString*, ...);
 		toPath: (OFString*)destination;
 #endif
 
-#if !defined(_WIN32) && !defined(_PSP)
+#ifdef OF_HAVE_SYMLINK
 /*!
  * @brief Creates a symbolink link for a file.
  *

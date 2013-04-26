@@ -333,7 +333,7 @@ AC_CHECK_FUNC(objc_autoreleasePoolPush, [], [
 
 AC_CHECK_FUNC(objc_enumerationMutation, [
 	AC_DEFINE(HAVE_OBJC_ENUMERATIONMUTATION, 1,
-		[Whether we have objc_enumerationMutation])
+		[Whether we have objc_enumerationMutation()])
 ])
 
 case "$host_os" in
@@ -419,7 +419,7 @@ AC_CHECK_FUNC(asprintf, [
 		*)
 			have_asprintf="yes"
 			AC_DEFINE(OF_HAVE_ASPRINTF, 1,
-				[Whether we have asprintf])
+				[Whether we have asprintf()])
 			AC_SUBST(ASPRINTF_DEF, "-DOF_HAVE_ASPRINTF")
 		;;
 	esac
@@ -493,7 +493,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 
 			AC_CHECK_FUNC(sched_yield, [
 				AC_DEFINE(OF_HAVE_SCHED_YIELD, 1,
-					[Whether we have sched_yield])
+					[Whether we have sched_yield()])
 			])
 		], [
 			AC_MSG_ERROR(No supported threads found!)
@@ -575,6 +575,20 @@ AC_MSG_RESULT($atomic_ops)
 
 AC_CHECK_FUNCS([gmtime_r localtime_r nanosleep])
 
+AC_CHECK_HEADERS([pwd.h grp.h])
+AC_CHECK_FUNC(chmod, [
+	AC_DEFINE(OF_HAVE_CHMOD, 1, [Whether we have chmod()])
+])
+AC_CHECK_FUNC(chown, [
+	AC_DEFINE(OF_HAVE_CHOWN, 1, [Whether we have chown()])
+])
+AC_CHECK_FUNC(link, [
+	AC_DEFINE(OF_HAVE_LINK, 1, [Whether we have link()])
+])
+AC_CHECK_FUNC(symlink, [
+	AC_DEFINE(OF_HAVE_SYMLINK, 1, [Whether we have symlink()])
+])
+
 AC_ARG_ENABLE(sockets,
 	AS_HELP_STRING([--disable-sockets], [disable socket support]))
 AS_IF([test x"$enable_sockets" != x"no"], [
@@ -620,7 +634,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		getaddrinfo(NULL, NULL, NULL, NULL);
 	], [
 		AC_MSG_RESULT(yes)
-		AC_DEFINE(HAVE_GETADDRINFO, 1, [Whether we have getaddrinfo])
+		AC_DEFINE(HAVE_GETADDRINFO, 1, [Whether we have getaddrinfo()])
 
 		AS_IF([test x"$enable_threads" != x"no"], [
 			AC_MSG_CHECKING(whether getaddrinfo is thread-safe)

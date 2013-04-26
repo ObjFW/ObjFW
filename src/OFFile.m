@@ -35,8 +35,10 @@
 #include <fcntl.h>
 #include <dirent.h>
 
-#ifndef _WIN32
+#ifdef HAVE_PWD_H
 # include <pwd.h>
+#endif
+#ifdef HAVE_GRP_H
 # include <grp.h>
 #endif
 
@@ -101,7 +103,7 @@ OFStream *of_stdin = nil;
 OFStream *of_stdout = nil;
 OFStream *of_stderr = nil;
 
-#if defined(OF_HAVE_THREADS) && !defined(_WIN32)
+#if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS)
 static of_mutex_t mutex;
 #endif
 
@@ -162,7 +164,7 @@ of_log(OFConstantString *format, ...)
 @end
 
 @implementation OFFile
-#if defined(OF_HAVE_THREADS) && !defined(_WIN32)
+#if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS)
 + (void)initialize
 {
 	if (self != [OFFile class])
@@ -389,7 +391,7 @@ of_log(OFConstantString *format, ...)
 				  path: path];
 }
 
-#ifndef _PSP
+#ifdef OF_HAVE_CHMOD
 + (void)changeModeOfFileAtPath: (OFString*)path
 			  mode: (mode_t)mode
 {
@@ -446,7 +448,7 @@ of_log(OFConstantString *format, ...)
 	return [OFDate dateWithTimeIntervalSince1970: s.st_mtime];
 }
 
-#if !defined(_WIN32) && !defined(_PSP)
+#ifdef OF_HAVE_CHOWN
 + (void)changeOwnerOfFileAtPath: (OFString*)path
 			  owner: (OFString*)owner
 			  group: (OFString*)group
@@ -547,7 +549,7 @@ of_log(OFConstantString *format, ...)
 					      length: length];
 		}
 
-#if !defined(_WIN32) && !defined(_PSP)
+#ifdef OF_HAVE_CHMOD
 		if (!override) {
 			struct stat s;
 
@@ -614,7 +616,7 @@ of_log(OFConstantString *format, ...)
 				  path: path];
 }
 
-#ifndef _WIN32
+#ifdef OF_HAVE_LINK
 + (void)linkFileAtPath: (OFString*)source
 		toPath: (OFString*)destination
 {
@@ -636,7 +638,7 @@ of_log(OFConstantString *format, ...)
 }
 #endif
 
-#if !defined(_WIN32) && !defined(_PSP)
+#ifdef OF_HAVE_SYMLINK
 + (void)symlinkFileAtPath: (OFString*)source
 		   toPath: (OFString*)destination
 {
