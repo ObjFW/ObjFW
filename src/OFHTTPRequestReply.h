@@ -17,6 +17,10 @@
 #import "OFStream.h"
 #import "OFHTTPRequest.h"
 
+#ifndef OF_HAVE_SOCKETS
+# error No sockets available!
+#endif
+
 @class OFDictionary;
 
 /*!

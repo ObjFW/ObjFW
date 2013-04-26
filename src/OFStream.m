@@ -148,6 +148,7 @@
 					    length: length - readLength];
 }
 
+#ifdef OF_HAVE_SOCKETS
 - (void)asyncReadIntoBuffer: (void*)buffer
 		     length: (size_t)length
 		     target: (id)target
@@ -172,7 +173,7 @@
 				   selector: selector];
 }
 
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 - (void)asyncReadIntoBuffer: (void*)buffer
 		     length: (size_t)length
 		      block: (of_stream_async_read_block_t)block
@@ -192,6 +193,7 @@
 				exactLength: length
 				      block: block];
 }
+# endif
 #endif
 
 - (uint8_t)readInt8
@@ -733,6 +735,7 @@
 	return line;
 }
 
+#ifdef OF_HAVE_SOCKETS
 - (void)asyncReadLineWithTarget: (id)target
 		       selector: (SEL)selector
 {
@@ -751,7 +754,7 @@
 				       selector: selector];
 }
 
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 - (void)asyncReadLineWithBlock: (of_stream_async_read_line_block_t)block
 {
 	[self asyncReadLineWithEncoding: OF_STRING_ENCODING_UTF_8
@@ -765,6 +768,7 @@
 				       encoding: encoding
 					  block: block];
 }
+# endif
 #endif
 
 - (OFString*)tryReadLine
@@ -1553,10 +1557,12 @@
 	abort();
 }
 
+#ifdef OF_HAVE_SOCKETS
 - (void)cancelAsyncRequests
 {
 	[OFRunLoop OF_cancelAsyncRequestsForStream: self];
 }
+#endif
 
 - (void)close
 {

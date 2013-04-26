@@ -141,12 +141,14 @@ main(int argc, char *argv[])
 	[self dateTests];
 	[self numberTests];
 	[self streamTests];
+#ifdef OF_HAVE_SOCKETS
 	[self TCPSocketTests];
+#endif
 #ifdef OF_HAVE_THREADS
 	[self threadTests];
 #endif
 	[self URLTests];
-#ifdef OF_HAVE_THREADS
+#if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
 	[self HTTPClientTests];
 #endif
 	[self XMLParserTests];

@@ -16,6 +16,10 @@
 
 #import "OFObject.h"
 
+#ifndef OF_HAVE_SOCKETS
+# error No sockets available!
+#endif
+
 #ifdef _WIN32
 # include <winsock2.h>
 #endif

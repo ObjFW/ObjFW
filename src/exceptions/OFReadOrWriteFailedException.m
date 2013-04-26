@@ -20,7 +20,9 @@
 
 #import "OFReadOrWriteFailedException.h"
 #import "OFString.h"
-#import "OFStreamSocket.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFStreamSocket.h"
+#endif
 
 #import "common.h"
 
@@ -55,9 +57,11 @@
 	_stream = [stream retain];
 	_requestedLength = requestedLength;
 
+#ifdef OF_HAVE_SOCKETS
 	if ([class isSubclassOfClass: [OFStreamSocket class]])
 		_errNo = GET_SOCK_ERRNO;
 	else
+#endif
 		_errNo = GET_ERRNO;
 
 	return self;

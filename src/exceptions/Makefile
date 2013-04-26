@@ -3,22 +3,16 @@ include ../../extra.mk
 STATIC_PIC_LIB_NOINST = ${EXCEPTIONS_LIB_A}
 STATIC_LIB_NOINST = ${EXCEPTIONS_A}
 
-SRCS = OFAcceptFailedException.m		\
-       OFAddressTranslationFailedException.m	\
-       OFAllocFailedException.m			\
-       OFAlreadyConnectedException.m		\
-       OFBindFailedException.m			\
+SRCS = OFAllocFailedException.m			\
        OFChangeDirectoryFailedException.m	\
        OFChangeFileModeFailedException.m	\
        OFChangeFileOwnerFailedException.m	\
-       OFConnectionFailedException.m		\
        OFCopyFileFailedException.m		\
        OFCreateDirectoryFailedException.m	\
        OFDeleteDirectoryFailedException.m	\
        OFDeleteFileFailedException.m		\
        OFEnumerationMutationException.m		\
        OFException.m				\
-       OFHTTPRequestFailedException.m		\
        OFHashAlreadyCalculatedException.m	\
        OFInitializationFailedException.m	\
        OFInvalidArgumentException.m		\
@@ -27,11 +21,9 @@ SRCS = OFAcceptFailedException.m		\
        OFInvalidJSONException.m			\
        OFInvalidServerReplyException.m		\
        OFLinkFailedException.m			\
-       OFListenFailedException.m		\
        OFLockFailedException.m			\
        OFMalformedXMLException.m		\
        OFMemoryNotPartOfObjectException.m	\
-       OFNotConnectedException.m		\
        OFNotImplementedException.m		\
        OFOpenFileFailedException.m		\
        OFOutOfMemoryException.m			\
@@ -49,7 +41,16 @@ SRCS = OFAcceptFailedException.m		\
        OFUnsupportedProtocolException.m		\
        OFUnsupportedVersionException.m		\
        OFWriteFailedException.m			\
+       ${USE_SRCS_SOCKETS}			\
        ${USE_SRCS_THREADS}
+SRCS_SOCKETS = OFAcceptFailedException.m		\
+	       OFAddressTranslationFailedException.m	\
+	       OFAlreadyConnectedException.m		\
+	       OFBindFailedException.m			\
+	       OFConnectionFailedException.m		\
+	       OFHTTPRequestFailedException.m		\
+	       OFListenFailedException.m		\
+	       OFNotConnectedException.m
 SRCS_THREADS = OFConditionBroadcastFailedException.m	\
 	       OFConditionSignalFailedException.m	\
 	       OFConditionStillWaitingException.m	\

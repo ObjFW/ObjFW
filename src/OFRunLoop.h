@@ -16,7 +16,9 @@
 
 #import "OFObject.h"
 #import "OFStream.h"
-#import "OFTCPSocket.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFTCPSocket.h"
+#endif
 
 @class OFSortedList;
 #ifdef OF_HAVE_THREADS
@@ -35,8 +37,10 @@
 #ifdef OF_HAVE_THREADS
 	OFMutex *_timersQueueLock;
 #endif
+#ifdef OF_HAVE_SOCKETS
 	OFStreamObserver *_streamObserver;
 	OFMutableDictionary *_readQueues;
+#endif
 	volatile bool _running;
 }
 
@@ -55,6 +59,7 @@
 + (OFRunLoop*)currentRunLoop;
 
 + (void)OF_setMainRunLoop: (OFRunLoop*)runLoop;
+#ifdef OF_HAVE_SOCKETS
 + (void)OF_addAsyncReadForStream: (OFStream*)stream
 			  buffer: (void*)buffer
 			  length: (size_t)length
@@ -72,7 +77,7 @@
 + (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket*)socket
 			       target: (id)target
 			     selector: (SEL)selector;
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 + (void)OF_addAsyncReadForStream: (OFStream*)stream
 			  buffer: (void*)buffer
 			  length: (size_t)length
@@ -86,8 +91,9 @@
 			       block: (of_stream_async_read_line_block_t)block;
 + (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket*)socket
 				block: (of_tcpsocket_async_accept_block_t)block;
-#endif
+# endif
 + (void)OF_cancelAsyncRequestsForStream: (OFStream*)stream;
+#endif
 
 /*!
  * @brief Adds an OFTimer to the run loop.

@@ -46,16 +46,19 @@
 
 #import "OFStream.h"
 #import "OFFile.h"
-#import "OFStreamSocket.h"
-#import "OFTCPSocket.h"
-#import "OFTLSSocket.h"
-#import "OFProcess.h"
-#import "OFStreamObserver.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFStreamSocket.h"
+# import "OFTCPSocket.h"
+# import "OFTLSSocket.h"
+# import "OFStreamObserver.h"
 
-#import "OFHTTPRequest.h"
-#import "OFHTTPRequestReply.h"
-#import "OFHTTPClient.h"
-#import "OFHTTPServer.h"
+# import "OFHTTPRequest.h"
+# import "OFHTTPRequestReply.h"
+# import "OFHTTPClient.h"
+# import "OFHTTPServer.h"
+#endif
+
+#import "OFProcess.h"
 
 #import "OFHash.h"
 #import "OFMD5Hash.h"
@@ -80,10 +83,12 @@
 
 #import "OFAllocFailedException.h"
 #import "OFException.h"
-#import "OFAcceptFailedException.h"
-#import "OFAddressTranslationFailedException.h"
-#import "OFAlreadyConnectedException.h"
-#import "OFBindFailedException.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFAcceptFailedException.h"
+# import "OFAddressTranslationFailedException.h"
+# import "OFAlreadyConnectedException.h"
+# import "OFBindFailedException.h"
+#endif
 #import "OFChangeDirectoryFailedException.h"
 #import "OFChangeFileModeFailedException.h"
 #import "OFChangeFileOwnerFailedException.h"
@@ -93,14 +98,18 @@
 # import "OFConditionStillWaitingException.h"
 # import "OFConditionWaitFailedException.h"
 #endif
-#import "OFConnectionFailedException.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFConnectionFailedException.h"
+#endif
 #import "OFCopyFileFailedException.h"
 #import "OFCreateDirectoryFailedException.h"
 #import "OFDeleteDirectoryFailedException.h"
 #import "OFDeleteFileFailedException.h"
 #import "OFEnumerationMutationException.h"
 #import "OFHashAlreadyCalculatedException.h"
-#import "OFHTTPRequestFailedException.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFHTTPRequestFailedException.h"
+#endif
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
@@ -108,11 +117,15 @@
 #import "OFInvalidJSONException.h"
 #import "OFInvalidServerReplyException.h"
 #import "OFLinkFailedException.h"
-#import "OFListenFailedException.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFListenFailedException.h"
+#endif
 #import "OFLockFailedException.h"
 #import "OFMalformedXMLException.h"
 #import "OFMemoryNotPartOfObjectException.h"
-#import "OFNotConnectedException.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFNotConnectedException.h"
+#endif
 #import "OFNotImplementedException.h"
 #import "OFOpenFileFailedException.h"
 #import "OFOutOfMemoryException.h"

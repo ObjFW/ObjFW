@@ -16,6 +16,10 @@
 
 #import "OFObject.h"
 
+#ifndef OF_HAVE_SOCKETS
+# error No sockets available!
+#endif
+
 @class OFHTTPClient;
 @class OFHTTPRequest;
 @class OFHTTPRequestReply;

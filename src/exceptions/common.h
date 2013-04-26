@@ -19,30 +19,38 @@
 #import "macros.h"
 
 #ifndef _WIN32
-# if !defined(HAVE_THREADSAFE_GETADDRINFO) && !defined(_PSP)
+# if defined(OF_HAVE_SOCKETS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
 #  include <netdb.h>
 # endif
 # include <errno.h>
 # define GET_ERRNO	errno
-# ifndef HAVE_THREADSAFE_GETADDRINFO
-#  define GET_AT_ERRNO	h_errno
-# else
-#  define GET_AT_ERRNO	errno
-# endif
+# ifdef OF_HAVE_SOCKETS
+#  ifndef HAVE_THREADSAFE_GETADDRINFO
+#   define GET_AT_ERRNO	h_errno
+#  else
+#   define GET_AT_ERRNO	errno
+#  endif
 # define GET_SOCK_ERRNO	errno
-# define ERRFMT		"Error string was: %s"
-# define ERRPARAM	strerror(_errNo)
-# if !defined(HAVE_THREADSAFE_GETADDRINFO) && !defined(_PSP)
-#  define AT_ERRPARAM	hstrerror(_errNo)
-# else
-#  define AT_ERRPARAM	strerror(_errNo)
+# endif
+# define ERRFMT			"Error string was: %s"
+# define ERRPARAM		strerror(_errNo)
+# ifdef OF_HAVE_SOCKETS
+#  ifndef HAVE_THREADSAFE_GETADDRINFO
+#   define AT_ERRPARAM		hstrerror(_errNo)
+#  else
+#   define AT_ERRPARAM		strerror(_errNo)
+#  endif
 # endif
 #else
 # include <windows.h>
-# define GET_ERRNO	GetLastError()
-# define GET_AT_ERRNO	WSAGetLastError()
-# define GET_SOCK_ERRNO	WSAGetLastError()
-# define ERRFMT		"Error code was: %d"
-# define ERRPARAM	_errNo
-# define AT_ERRPARAM	_errNo
+# define GET_ERRNO		GetLastError()
+# ifdef OF_HAVE_SOCKETS
+#  define GET_AT_ERRNO		WSAGetLastError()
+#  define GET_SOCK_ERRNO	WSAGetLastError()
+# endif
+# define ERRFMT			"Error code was: %d"
+# define ERRPARAM		_errNo
+# ifdef OF_HAVE_SOCKETS
+#  define AT_ERRPARAM		_errNo
+# endif
 #endif

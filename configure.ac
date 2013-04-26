@@ -573,10 +573,6 @@ AS_IF([test x"$atomic_ops" != x"none"], [
 ])
 AC_MSG_RESULT($atomic_ops)
 
-AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
-AC_CHECK_LIB(network, socket, LIBS="$LIBS -lnetwork")
-AC_CHECK_LIB(ws2_32, main, LIBS="$LIBS -lws2_32")
-
 AC_CHECK_FUNC(gmtime_r, [
 	AC_DEFINE(HAVE_GMTIME_R, 1, [Whether we have gmtime_r])
 ])
@@ -584,104 +580,120 @@ AC_CHECK_FUNC(localtime_r, [
 	AC_DEFINE(HAVE_LOCALTIME_R, 1, [Whether we have localtime_r])
 ])
 
-AC_CHECK_FUNC(kqueue, [
-	AC_DEFINE(HAVE_KQUEUE, 1, [Whether we have kqueue])
-	AC_SUBST(OFSTREAMOBSERVER_KQUEUE_M, "OFStreamObserver_kqueue.m")
-])
-AC_CHECK_HEADER(poll.h, [
-	AC_DEFINE(HAVE_POLL_H, 1, [Whether we have poll.h])
-	AC_SUBST(OFSTREAMOBSERVER_POLL_M, "OFStreamObserver_poll.m")
-])
-AC_CHECK_HEADERS(sys/select.h, [
-	AC_DEFINE(HAVE_SYS_SELECT_H, 1, [Whether we have sys/select.h])
-	AC_SUBST(OFSTREAMOBSERVER_SELECT_M, "OFStreamObserver_select.m")
-])
-case "$host_os" in
-	mingw*)
-		AC_SUBST(OFSTREAMOBSERVER_SELECT_M,
-			"OFStreamObserver_select.m")
-		;;
-esac
+AC_ARG_ENABLE(sockets,
+	AS_HELP_STRING([--disable-sockets], [disable socket support]))
+AS_IF([test x"$enable_sockets" != x"no"], [
+	AC_DEFINE(OF_HAVE_SOCKETS, 1, [Whether we have sockets])
+	AC_SUBST(USE_SRCS_SOCKETS, '${SRCS_SOCKETS}')
 
-AC_MSG_CHECKING(for getaddrinfo)
-AC_TRY_COMPILE([
-	#include <stddef.h>
-	#ifndef _WIN32
-	# include <sys/types.h>
-	# include <sys/socket.h>
-	# include <netdb.h>
-	#else
-	typedef unsigned char BOOL;
-	# include <ws2tcpip.h>
-	#endif
-], [
-	struct addrinfo ai;
-	getaddrinfo(NULL, NULL, NULL, NULL);
-], [
-	AC_MSG_RESULT(yes)
-	AC_DEFINE(HAVE_GETADDRINFO, 1, [Whether we have getaddrinfo])
+	AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
+	AC_CHECK_LIB(network, socket, LIBS="$LIBS -lnetwork")
+	AC_CHECK_LIB(ws2_32, main, LIBS="$LIBS -lws2_32")
 
-	AS_IF([test x"$enable_threads" != x"no"], [
-		AC_MSG_CHECKING(whether getaddrinfo is thread-safe)
-
-		case "$host_os" in
-			darwin[[12345]].*)
-				have_threadsafe_getaddrinfo="no"
-				;;
-			darwin*)
-				have_threadsafe_getaddrinfo="yes"
-				;;
-			freebsd[[1234]].* | freebsd5.[[1234]]*)
-				have_threadsafe_getaddrinfo="no"
-				;;
-			freebsd*)
-				have_threadsafe_getaddrinfo="yes"
-				;;
-			netbsd[[123]].*)
-				have_threadsafe_getaddrinfo="no"
-				;;
-			netbsd*)
-				have_threadsafe_getaddrinfo="yes"
-				;;
-			solaris*)
-				have_threadsafe_getaddrinfo="yes"
-				;;
-			*)
-				have_threadsafe_getaddrinfo="unknown"
-				;;
-		esac
-
-		AS_IF([test x"$have_threadsafe_getaddrinfo" = x"unknown"], [
-			AC_EGREP_CPP(yes, [
-				#ifndef _WIN32
-				# include <sys/types.h>
-				# include <sys/socket.h>
-				# include <netdb.h>
-				#else
-				# define _WIN32_WINNT 0x0501
-				# include <windows.h>
-				# include <ws2tcpip.h>
-				#endif
-
-				#ifdef h_errno
-				yes
-				#end
-			], [
-				have_threadsafe_getaddrinfo="yes"
-			], [
-				have_threadsafe_getaddrinfo="no"
-			])
-		])
-
-		AS_IF([test x"$have_threadsafe_getaddrinfo" = x"yes"], [
-			AC_DEFINE(HAVE_THREADSAFE_GETADDRINFO, 1,
-				[Whether getaddrinfo is thread-safe])
-		])
-
-		AC_MSG_RESULT($have_threadsafe_getaddrinfo)
+	AC_CHECK_FUNC(kqueue, [
+		AC_DEFINE(HAVE_KQUEUE, 1, [Whether we have kqueue])
+		AC_SUBST(OFSTREAMOBSERVER_KQUEUE_M, "OFStreamObserver_kqueue.m")
 	])
-], [
-	AC_MSG_RESULT(no)
+	AC_CHECK_HEADER(poll.h, [
+		AC_DEFINE(HAVE_POLL_H, 1, [Whether we have poll.h])
+		AC_SUBST(OFSTREAMOBSERVER_POLL_M, "OFStreamObserver_poll.m")
+	])
+	AC_CHECK_HEADERS(sys/select.h, [
+		AC_DEFINE(HAVE_SYS_SELECT_H, 1, [Whether we have sys/select.h])
+		AC_SUBST(OFSTREAMOBSERVER_SELECT_M, "OFStreamObserver_select.m")
+	])
+	case "$host_os" in
+		mingw*)
+			AC_SUBST(OFSTREAMOBSERVER_SELECT_M,
+				"OFStreamObserver_select.m")
+			;;
+	esac
+
+	AC_MSG_CHECKING(for getaddrinfo)
+	AC_TRY_COMPILE([
+		#include <stddef.h>
+		#ifndef _WIN32
+		# include <sys/types.h>
+		# include <sys/socket.h>
+		# include <netdb.h>
+		#else
+		typedef unsigned char BOOL;
+		# include <ws2tcpip.h>
+		#endif
+	], [
+		struct addrinfo ai;
+		getaddrinfo(NULL, NULL, NULL, NULL);
+	], [
+		AC_MSG_RESULT(yes)
+		AC_DEFINE(HAVE_GETADDRINFO, 1, [Whether we have getaddrinfo])
+
+		AS_IF([test x"$enable_threads" != x"no"], [
+			AC_MSG_CHECKING(whether getaddrinfo is thread-safe)
+
+			case "$host_os" in
+				darwin[[12345]].*)
+					have_threadsafe_getaddrinfo="no"
+					;;
+				darwin*)
+					have_threadsafe_getaddrinfo="yes"
+					;;
+				freebsd[[1234]].* | freebsd5.[[1234]]*)
+					have_threadsafe_getaddrinfo="no"
+					;;
+				freebsd*)
+					have_threadsafe_getaddrinfo="yes"
+					;;
+				netbsd[[123]].*)
+					have_threadsafe_getaddrinfo="no"
+					;;
+				netbsd*)
+					have_threadsafe_getaddrinfo="yes"
+					;;
+				solaris*)
+					have_threadsafe_getaddrinfo="yes"
+					;;
+				*)
+					have_threadsafe_getaddrinfo="unknown"
+					;;
+			esac
+
+			AS_IF([test x"$have_threadsafe_getaddrinfo" = \
+					x"unknown"], [
+				AC_EGREP_CPP(yes, [
+					#ifndef _WIN32
+					# include <sys/types.h>
+					# include <sys/socket.h>
+					# include <netdb.h>
+					#else
+					# define _WIN32_WINNT 0x0501
+					# include <windows.h>
+					# include <ws2tcpip.h>
+					#endif
+
+					#ifdef h_errno
+					yes
+					#end
+				], [
+					have_threadsafe_getaddrinfo="yes"
+				], [
+					have_threadsafe_getaddrinfo="no"
+				])
+			])
+
+			AS_IF([test x"$have_threadsafe_getaddrinfo" = x"yes"], [
+				AC_DEFINE(HAVE_THREADSAFE_GETADDRINFO, 1,
+					[Whether getaddrinfo is thread-safe])
+			])
+
+			AC_MSG_RESULT($have_threadsafe_getaddrinfo)
+		])
+	], [
+		AC_MSG_RESULT(no)
+	])
+])
+
+AS_IF([test x"$enable_sockets" != x"no" -a x"$enable_threads" != x"no"], [
+	AC_SUBST(OFHTTPCLIENTTESTS_M, "OFHTTPClientTests.m")
 ])
 
 AS_IF([test x"$objc_runtime" = x"Apple runtime"], [

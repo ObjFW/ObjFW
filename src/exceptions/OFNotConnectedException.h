@@ -16,6 +16,10 @@
 
 #import "OFException.h"
 
+#ifndef OF_HAVE_SOCKETS
+# error No sockets available!
+#endif
+
 @class OFStreamSocket;
 
 /*!

@@ -32,7 +32,7 @@
 @class OFDataArray;
 @class OFException;
 
-#ifdef OF_HAVE_BLOCKS
+#if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_BLOCKS)
 /*!
  * @brief A block which is called when data was read from the stream.
  *
@@ -130,6 +130,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  - (void)readIntoBuffer: (void*)buffer
 	    exactLength: (size_t)length;
 
+#ifdef OF_HAVE_SOCKETS
 /*!
  * @brief Asyncronously reads *at most* size bytes from the stream into a
  *	  buffer.
@@ -186,7 +187,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 		      target: (id)target
 		    selector: (SEL)selector;
 
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 /*!
  * @brief Asyncronously reads *at most* ref size bytes from the stream into a
  *	  buffer.
@@ -232,6 +233,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  - (void)asyncReadIntoBuffer: (void*)buffer
 		 exactLength: (size_t)length
 		       block: (of_stream_async_read_block_t)block;
+# endif
 #endif
 
 /*!
@@ -580,6 +582,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  */
 - (OFString*)readLineWithEncoding: (of_string_encoding_t)encoding;
 
+#ifdef OF_HAVE_SOCKETS
 /*!
  * @brief Asyncronously reads until a newline, \\0, end of stream or an
  *	  exception occurs.
@@ -614,7 +617,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 			   target: (id)target
 			 selector: (SEL)selector;
 
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 /*!
  * @brief Asyncronously reads until a newline, \\0, end of stream or an
  *	  exception occurs.
@@ -640,6 +643,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  */
 - (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
 			    block: (of_stream_async_read_line_block_t)block;
+# endif
 #endif
 
 /*!
@@ -1041,10 +1045,12 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  */
 - (int)fileDescriptorForWriting;
 
+#ifdef OF_HAVE_SOCKETS
 /*!
  * @brief Cancels all pending asyncronous requests on the stream.
  */
 - (void)cancelAsyncRequests;
+#endif
 
 /*!
  * @brief Closes the stream.

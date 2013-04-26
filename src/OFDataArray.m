@@ -24,19 +24,24 @@
 #import "OFString.h"
 #import "OFFile.h"
 #import "OFURL.h"
-#import "OFHTTPClient.h"
-#import "OFHTTPRequest.h"
-#import "OFHTTPRequestReply.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFHTTPClient.h"
+# import "OFHTTPRequest.h"
+# import "OFHTTPRequestReply.h"
+#endif
 #import "OFDictionary.h"
 #import "OFXMLElement.h"
 #import "OFSystemInfo.h"
 
-#import "OFHTTPRequestFailedException.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFHTTPRequestFailedException.h"
+#endif
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
+#import "OFUnsupportedProtocolException.h"
 
 #import "autorelease.h"
 #import "base64.h"
@@ -163,11 +168,13 @@ void _references_to_categories_of_OFDataArray(void)
 - initWithContentsOfURL: (OFURL*)URL
 {
 	void *pool;
+#ifdef OF_HAVE_SOCKETS
 	OFHTTPClient *client;
 	OFHTTPRequest *request;
 	OFHTTPRequestReply *reply;
 	OFDictionary *headers;
 	OFString *contentLength;
+#endif
 	Class c;
 
 	c = [self class];
@@ -175,6 +182,7 @@ void _references_to_categories_of_OFDataArray(void)
 
 	pool = objc_autoreleasePoolPush();
 
+#ifdef OF_HAVE_SOCKETS
 	if ([[URL scheme] isEqual: @"file"]) {
 		self = [[c alloc] initWithContentsOfFile: [URL path]];
 		objc_autoreleasePoolPop(pool);
@@ -202,6 +210,9 @@ void _references_to_categories_of_OFDataArray(void)
 		if ([self count] != (size_t)[contentLength decimalValue])
 			@throw [OFTruncatedDataException
 			    exceptionWithClass: [self class]];
+#else
+	@throw [OFUnsupportedProtocolException exceptionWithClass: c];
+#endif
 
 	objc_autoreleasePoolPop(pool);
 

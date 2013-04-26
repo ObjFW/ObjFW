@@ -20,7 +20,9 @@
 
 #import "OFRunLoop.h"
 #import "OFDictionary.h"
-#import "OFStreamObserver.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFStreamObserver.h"
+#endif
 #ifdef OF_HAVE_THREADS
 # import "OFThread.h"
 # import "OFMutex.h"
@@ -34,6 +36,7 @@
 
 static OFRunLoop *mainRunLoop = nil;
 
+#ifdef OF_HAVE_SOCKETS
 @interface OFRunLoop_QueueItem: OFObject
 {
 @public
@@ -45,9 +48,9 @@ static OFRunLoop *mainRunLoop = nil;
 @interface OFRunLoop_ReadQueueItem: OFRunLoop_QueueItem
 {
 @public
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 	of_stream_async_read_block_t _block;
-#endif
+# endif
 	void *_buffer;
 	size_t _length;
 }
@@ -56,9 +59,9 @@ static OFRunLoop *mainRunLoop = nil;
 @interface OFRunLoop_ExactReadQueueItem: OFRunLoop_QueueItem
 {
 @public
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 	of_stream_async_read_block_t _block;
-#endif
+# endif
 	void *_buffer;
 	size_t _exactLength, _readLength;
 }
@@ -67,9 +70,9 @@ static OFRunLoop *mainRunLoop = nil;
 @interface OFRunLoop_ReadLineQueueItem: OFRunLoop_QueueItem
 {
 @public
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 	of_stream_async_read_line_block_t _block;
-#endif
+# endif
 	of_string_encoding_t _encoding;
 }
 @end
@@ -77,9 +80,9 @@ static OFRunLoop *mainRunLoop = nil;
 @interface OFRunLoop_AcceptQueueItem: OFRunLoop_QueueItem
 {
 @public
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 	of_tcpsocket_async_accept_block_t _block;
-#endif
+# endif
 }
 @end
 
@@ -93,48 +96,49 @@ static OFRunLoop *mainRunLoop = nil;
 @end
 
 @implementation OFRunLoop_ReadQueueItem
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 - (void)dealloc
 {
 	[_block release];
 
 	[super dealloc];
 }
-#endif
+# endif
 @end
 
 @implementation OFRunLoop_ExactReadQueueItem
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 - (void)dealloc
 {
 	[_block release];
 
 	[super dealloc];
 }
-#endif
+# endif
 @end
 
 @implementation OFRunLoop_ReadLineQueueItem
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 - (void)dealloc
 {
 	[_block release];
 
 	[super dealloc];
 }
-#endif
+# endif
 @end
 
 @implementation OFRunLoop_AcceptQueueItem
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 - (void)dealloc
 {
 	[_block release];
 
 	[super dealloc];
 }
-#endif
+# endif
 @end
+#endif
 
 @implementation OFRunLoop
 + (OFRunLoop*)mainRunLoop
@@ -156,7 +160,8 @@ static OFRunLoop *mainRunLoop = nil;
 	mainRunLoop = [runLoop retain];
 }
 
-#define ADD(type, code)							\
+#ifdef OF_HAVE_SOCKETS
+# define ADD(type, code)						\
 	void *pool = objc_autoreleasePoolPush();			\
 	OFRunLoop *runLoop = [self currentRunLoop];			\
 	OFList *queue = [runLoop->_readQueues objectForKey: stream];	\
@@ -227,7 +232,7 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 + (void)OF_addAsyncReadForStream: (OFStream*)stream
 			  buffer: (void*)buffer
 			  length: (size_t)length
@@ -269,9 +274,8 @@ static OFRunLoop *mainRunLoop = nil;
 		queueItem->_block = [block copy];
 	})
 }
-#endif
-
-#undef ADD
+# endif
+# undef ADD
 
 + (void)OF_cancelAsyncRequestsForStream: (OFStream*)stream
 {
@@ -288,6 +292,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 	objc_autoreleasePoolPop(pool);
 }
+#endif
 
 - init
 {
@@ -299,10 +304,12 @@ static OFRunLoop *mainRunLoop = nil;
 		_timersQueueLock = [[OFMutex alloc] init];
 #endif
 
+#ifdef OF_HAVE_SOCKETS
 		_streamObserver = [[OFStreamObserver alloc] init];
 		[_streamObserver setDelegate: self];
 
 		_readQueues = [[OFMutableDictionary alloc] init];
+#endif
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -317,8 +324,10 @@ static OFRunLoop *mainRunLoop = nil;
 #ifdef OF_HAVE_THREADS
 	[_timersQueueLock release];
 #endif
+#ifdef OF_HAVE_SOCKETS
 	[_streamObserver release];
 	[_readQueues release];
+#endif
 
 	[super dealloc];
 }
@@ -338,7 +347,13 @@ static OFRunLoop *mainRunLoop = nil;
 
 	[timer OF_setInRunLoop: self];
 
+#ifdef OF_HAVE_SOCKETS
 	[_streamObserver cancel];
+#endif
+
+#if defined(OF_HAVE_THREADS) && !defined(OF_HAVE_SOCKETS)
+	/* FIXME: No way to cancel waiting! What to do? */
+#endif
 }
 
 - (void)OF_removeTimer: (OFTimer*)timer
@@ -363,6 +378,7 @@ static OFRunLoop *mainRunLoop = nil;
 #endif
 }
 
+#ifdef OF_HAVE_SOCKETS
 - (void)streamIsReadyForReading: (OFStream*)stream
 {
 	OFList *queue = [_readQueues objectForKey: stream];
@@ -386,7 +402,7 @@ static OFRunLoop *mainRunLoop = nil;
 			exception = e;
 		}
 
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 		if (queueItem->_block != NULL) {
 			if (!queueItem->_block(stream, queueItem->_buffer,
 			    length, exception)) {
@@ -400,7 +416,7 @@ static OFRunLoop *mainRunLoop = nil;
 				}
 			}
 		} else {
-#endif
+# endif
 			bool (*func)(id, SEL, OFStream*, void*, size_t,
 			    OFException*) = (bool(*)(id, SEL, OFStream*, void*,
 			    size_t, OFException*))
@@ -418,9 +434,9 @@ static OFRunLoop *mainRunLoop = nil;
 					    removeObjectForKey: stream];
 				}
 			}
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 		}
-#endif
+# endif
 	} else if ([listObject->object isKindOfClass:
 	    [OFRunLoop_ExactReadQueueItem class]]) {
 		OFRunLoop_ExactReadQueueItem *queueItem = listObject->object;
@@ -441,7 +457,7 @@ static OFRunLoop *mainRunLoop = nil;
 		queueItem->_readLength += length;
 		if (queueItem->_readLength == queueItem->_exactLength ||
 		    [stream isAtEndOfStream] || exception != nil) {
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 			if (queueItem->_block != NULL) {
 				if (queueItem->_block(stream,
 				    queueItem->_buffer, queueItem->_readLength,
@@ -459,7 +475,7 @@ static OFRunLoop *mainRunLoop = nil;
 					}
 				}
 			} else {
-#endif
+# endif
 				bool (*func)(id, SEL, OFStream*, void*,
 				    size_t, OFException*) = (bool(*)(id, SEL,
 				    OFStream*, void*, size_t, OFException*))
@@ -482,9 +498,9 @@ static OFRunLoop *mainRunLoop = nil;
 						    removeObjectForKey: stream];
 					}
 				}
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 			}
-#endif
+# endif
 		}
 	} else if ([listObject->object isKindOfClass:
 	    [OFRunLoop_ReadLineQueueItem class]]) {
@@ -502,7 +518,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 		if (line != nil || [stream isAtEndOfStream] ||
 		    exception != nil) {
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 			if (queueItem->_block != NULL) {
 				if (!queueItem->_block(stream, line,
 				    exception)) {
@@ -517,7 +533,7 @@ static OFRunLoop *mainRunLoop = nil;
 					}
 				}
 			} else {
-#endif
+# endif
 				bool (*func)(id, SEL, OFStream*, OFString*,
 				    OFException*) = (bool(*)(id, SEL, OFStream*,
 				    OFString*, OFException*))
@@ -537,9 +553,9 @@ static OFRunLoop *mainRunLoop = nil;
 						    removeObjectForKey: stream];
 					}
 				}
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 			}
-#endif
+# endif
 		}
 	} else if ([listObject->object isKindOfClass:
 	    [OFRunLoop_AcceptQueueItem class]]) {
@@ -554,7 +570,7 @@ static OFRunLoop *mainRunLoop = nil;
 			exception = e;
 		}
 
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 		if (queueItem->_block != NULL) {
 			if (!queueItem->_block((OFTCPSocket*)stream,
 			    newSocket, exception)) {
@@ -568,7 +584,7 @@ static OFRunLoop *mainRunLoop = nil;
 				}
 			}
 		} else {
-#endif
+# endif
 			bool (*func)(id, SEL, OFTCPSocket*, OFTCPSocket*,
 			    OFException*) =
 			    (bool(*)(id, SEL, OFTCPSocket*, OFTCPSocket*,
@@ -587,12 +603,13 @@ static OFRunLoop *mainRunLoop = nil;
 					    removeObjectForKey: stream];
 				}
 			}
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 		}
-#endif
+# endif
 	} else
 		OF_ENSURE(0);
 }
+#endif
 
 - (void)run
 {
@@ -656,14 +673,22 @@ static OFRunLoop *mainRunLoop = nil;
 			double timeout = [nextTimer timeIntervalSinceNow];
 
 			if (timeout > 0)
+#ifdef OF_HAVE_SOCKETS
 				[_streamObserver observeWithTimeout: timeout];
+#else
+				[OFThread sleepForTimeInterval: timeout];
+#endif
 		} else {
 			/*
 			 * No more timers: Just watch for streams until we get
 			 * an event. If a timer is added by another thread, it
 			 * cancels the observe.
 			 */
+#ifdef OF_HAVE_SOCKETS
 			[_streamObserver observe];
+#else
+			[OFThread sleepForTimeInterval: 86400];
+#endif
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -676,6 +701,12 @@ static OFRunLoop *mainRunLoop = nil;
 #ifdef OF_HAVE_THREADS
 	of_memory_write_barrier();
 #endif
+#ifdef OF_HAVE_SOCKETS
 	[_streamObserver cancel];
+#endif
+
+#if defined(OF_HAVE_THREADS) && !defined(OF_HAVE_SOCKETS)
+	/* FIXME: No way to cancel waiting! What to do? */
+#endif
 }
 @end

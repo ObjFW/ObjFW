@@ -21,10 +21,6 @@ SRCS = OFApplication.m			\
        OFDictionary.m			\
        OFEnumerator.m			\
        OFFile.m				\
-       OFHTTPClient.m			\
-       OFHTTPRequest.m			\
-       OFHTTPRequestReply.m		\
-       OFHTTPServer.m			\
        OFIntrospection.m		\
        OFList.m				\
        OFMapTable.m			\
@@ -44,8 +40,6 @@ SRCS = OFApplication.m			\
        OFSHA1Hash.m			\
        OFSortedList.m			\
        OFStream.m			\
-       OFStreamObserver.m		\
-       OFStreamSocket.m			\
        OFString.m			\
        OFString+Hashing.m		\
        OFString+JSONValue.m		\
@@ -54,7 +48,6 @@ SRCS = OFApplication.m			\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
        OFSystemInfo.m			\
-       OFTCPSocket.m			\
        OFTimer.m			\
        OFURL.m				\
        OFXMLAttribute.m			\
@@ -72,8 +65,16 @@ SRCS = OFApplication.m			\
        of_strptime.m			\
        unicode.m			\
        ${USE_SRCS_PLUGINS}		\
+       ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_THREADS}
 SRCS_PLUGINS = OFPlugin.m
+SRCS_SOCKETS = OFHTTPClient.m		\
+	       OFHTTPRequest.m		\
+	       OFHTTPRequestReply.m	\
+	       OFHTTPServer.m		\
+	       OFStreamObserver.m	\
+	       OFStreamSocket.m		\
+	       OFTCPSocket.m
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
 	       OFRecursiveMutex.m	\
@@ -111,16 +112,16 @@ SRCS += OFArray_adjacent.m		\
 	OFMutableSet_hashtable.m	\
 	OFMutableString_UTF8.m		\
 	OFSet_hashtable.m		\
-	${OFSTREAMOBSERVER_KQUEUE_M}	\
-	${OFSTREAMOBSERVER_POLL_M}	\
-	${OFSTREAMOBSERVER_SELECT_M}	\
 	OFString_UTF8.m			\
-	OFTCPSocket+SOCKS5.m		\
 	${ASPRINTF_M}			\
 	${FORWARDING_S}			\
 	${FOUNDATION_COMPAT_M}		\
 	iso_8859_15.m			\
 	windows_1252.m
+SRCS_SOCKETS += ${OFSTREAMOBSERVER_KQUEUE_M}	\
+		${OFSTREAMOBSERVER_POLL_M}	\
+		${OFSTREAMOBSERVER_SELECT_M}	\
+		OFTCPSocket+SOCKS5.m
 
 OBJS_EXTRA = ${EXCEPTIONS_EXCEPTIONS_A} ${RUNTIME_RUNTIME_A}
 LIB_OBJS_EXTRA = ${EXCEPTIONS_EXCEPTIONS_LIB_A} ${RUNTIME_RUNTIME_LIB_A}

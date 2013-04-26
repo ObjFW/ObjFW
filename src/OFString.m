@@ -28,13 +28,17 @@
 #import "OFDictionary.h"
 #import "OFFile.h"
 #import "OFURL.h"
-#import "OFHTTPClient.h"
-#import "OFHTTPRequest.h"
-#import "OFHTTPRequestReply.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFHTTPClient.h"
+# import "OFHTTPRequest.h"
+# import "OFHTTPRequestReply.h"
+#endif
 #import "OFDataArray.h"
 #import "OFXMLElement.h"
 
-#import "OFHTTPRequestFailedException.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFHTTPRequestFailedException.h"
+#endif
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
@@ -44,6 +48,7 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
+#import "OFUnsupportedProtocolException.h"
 
 #import "autorelease.h"
 #import "macros.h"
@@ -907,12 +912,14 @@ static struct {
 	       encoding: (of_string_encoding_t)encoding
 {
 	void *pool;
+#ifdef OF_HAVE_SOCKETS
 	OFHTTPClient *client;
 	OFHTTPRequest *request;
 	OFHTTPRequestReply *reply;
 	OFDictionary *headers;
 	OFString *contentType, *contentLength;
 	OFDataArray *data;
+#endif
 	Class c;
 
 	c = [self class];
@@ -930,6 +937,7 @@ static struct {
 		return self;
 	}
 
+#ifdef OF_HAVE_SOCKETS
 	client = [OFHTTPClient client];
 	request = [OFHTTPRequest requestWithURL: URL];
 	reply = [client performRequest: request];
@@ -969,6 +977,9 @@ static struct {
 	self = [[c alloc] initWithCString: (char*)[data items]
 				 encoding: encoding
 				   length: [data count]];
+#else
+	@throw [OFUnsupportedProtocolException exceptionWithClass: c];
+#endif
 
 	objc_autoreleasePoolPop(pool);
 
