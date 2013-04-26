@@ -16,6 +16,10 @@
 
 #import "OFException.h"
 
+#ifndef OF_HAVE_THREADS
+# error No threads available!
+#endif
+
 @class OFThread;
 
 /*!

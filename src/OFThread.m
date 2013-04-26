@@ -22,6 +22,7 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 #ifndef _WIN32
 # include <unistd.h>
@@ -184,12 +185,22 @@ set_thread_name(OFThread *thread)
 	if (seconds < 0)
 		@throw [OFOutOfRangeException exceptionWithClass: self];
 
-#ifndef _WIN32
+#if defined(HAVE_NANOSLEEP)
+	struct timespec rqtp;
+
+	rqtp.tv_sec = (time_t)seconds;
+	rqtp.tv_nsec = lrint((seconds - rqtp.tv_sec) * 1000000000);
+
+	if (rqtp.tv_sec != floor(seconds))
+		@throw [OFOutOfRangeException exceptionWithClass: self];
+
+	nanosleep(&rqtp, NULL);
+#elif !defined(_WIN32)
 	if (seconds > UINT_MAX)
 		@throw [OFOutOfRangeException exceptionWithClass: self];
 
 	sleep((unsigned int)seconds);
-	usleep((useconds_t)rint((seconds - floor(seconds)) * 1000000));
+	usleep((useconds_t)lrint((seconds - floor(seconds)) * 1000000));
 #else
 	if (seconds * 1000 > UINT_MAX)
 		@throw [OFOutOfRangeException exceptionWithClass: self];
@@ -200,20 +211,7 @@ set_thread_name(OFThread *thread)
 
 + (void)sleepUntilDate: (OFDate*)date
 {
-	double seconds = [date timeIntervalSinceNow];
-
-#ifndef _WIN32
-	if (seconds > UINT_MAX)
-		@throw [OFOutOfRangeException exceptionWithClass: self];
-
-	sleep((unsigned int)seconds);
-	usleep((useconds_t)rint((seconds - floor(seconds)) * 1000000));
-#else
-	if (seconds * 1000 > UINT_MAX)
-		@throw [OFOutOfRangeException exceptionWithClass: self];
-
-	Sleep((unsigned int)(seconds * 1000));
-#endif
+	[self sleepForTimeInterval: [date timeIntervalSinceNow]];
 }
 
 + (void)yield

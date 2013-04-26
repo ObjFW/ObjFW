@@ -573,12 +573,7 @@ AS_IF([test x"$atomic_ops" != x"none"], [
 ])
 AC_MSG_RESULT($atomic_ops)
 
-AC_CHECK_FUNC(gmtime_r, [
-	AC_DEFINE(HAVE_GMTIME_R, 1, [Whether we have gmtime_r])
-])
-AC_CHECK_FUNC(localtime_r, [
-	AC_DEFINE(HAVE_LOCALTIME_R, 1, [Whether we have localtime_r])
-])
+AC_CHECK_FUNCS([gmtime_r localtime_r nanosleep])
 
 AC_ARG_ENABLE(sockets,
 	AS_HELP_STRING([--disable-sockets], [disable socket support]))
