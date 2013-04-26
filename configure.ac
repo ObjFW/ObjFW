@@ -573,7 +573,7 @@ AS_IF([test x"$atomic_ops" != x"none"], [
 ])
 AC_MSG_RESULT($atomic_ops)
 
-AC_CHECK_FUNCS([gmtime_r localtime_r nanosleep])
+AC_CHECK_FUNCS([sysconf gmtime_r localtime_r nanosleep])
 
 AC_CHECK_HEADERS([pwd.h grp.h])
 AC_CHECK_FUNC(chmod, [

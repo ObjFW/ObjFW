@@ -51,11 +51,11 @@ static size_t numberOfCPUs;
 		pageSize = 4096;
 	numberOfCPUs = _syspage_ptr->num_cpu;
 #else
-# ifdef _SC_PAGESIZE
+# if defined(HAVE_SYSCONF) && defined(_SC_PAGESIZE)
 	if ((pageSize = sysconf(_SC_PAGESIZE)) < 1)
 # endif
 		pageSize = 4096;
-# ifdef _SC_NPROCESSORS_CONF
+# if defined(HAVE_SYSCONF) && defined(_SC_NPROCESSORS_CONF)
 	if ((numberOfCPUs = sysconf(_SC_NPROCESSORS_CONF)) < 1)
 # endif
 		numberOfCPUs = 1;
