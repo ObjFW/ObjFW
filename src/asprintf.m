@@ -26,7 +26,7 @@ vasprintf(char **string, const char *format, va_list arguments)
 	int length;
 	va_list argumentsCopy;
 
-	va_copy(argumentsCopy, argumentsCopy);
+	va_copy(argumentsCopy, arguments);
 
 	if ((length = vsnprintf(NULL, 0, format, argumentsCopy)) < 0)
 		return length;
