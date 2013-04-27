@@ -27,7 +27,8 @@ AC_ARG_WITH(wii,
 AS_IF([test x"$with_wii" = x"yes"], [
 	OBJCFLAGS="$OBJCFLAGS -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float"
 	LDFLAGS="$LDFLAGS -mrvl -mcpu=750 -meabi -mhard-float"
-	LIBS="-lfat -lwiiuse -lbte -logc"
+	LIBS="$LIBS -lfat -logc"
+	TESTS_LIBS="$TESTS_LIBS -lwiiuse -lbte"
 ])
 
 AX_CHECK_COMPILER_FLAGS(-std=gnu99, [OBJCFLAGS="$OBJCFLAGS -std=gnu99"])
@@ -845,7 +846,7 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 	AS_IF([test x"$with_wii" = x"yes"], [
 		dnl Keep this lowercase, as WIILOAD is a variable used by
 		dnl wiiload and thus likely already set by the user to something
-		dnl that is not the path to the binary.
+		dnl that is not the path of the wiiload binary.
 		AC_CHECK_PROG(wiiload, wiiload, wiiload)
 
 		AS_IF([test x"$wiiload" != x""], [
@@ -868,6 +869,8 @@ dnl We use the OBJC compiler as our assembler
 AC_SUBST(AS, $OBJC)
 AC_SUBST(ASFLAGS)
 AC_SUBST(AS_DEPENDS, $OBJC_DEPENDS)
+
+AC_SUBST(TESTS_LIBS)
 
 AC_CONFIG_FILES([
 	buildsys.mk

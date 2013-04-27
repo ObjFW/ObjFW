@@ -87,9 +87,9 @@ main(int argc, char *argv[])
 		    @"\nRuntime error: Unhandled exception:\n%@\n", e];
 
 		[delegate outputString: string
-			     withColor: RED];
+			       inColor: RED];
 		[delegate outputString: @"Press home button to exit!\n"
-			     withColor: NO_COLOR];
+			       inColor: NO_COLOR];
 		for (;;) {
 			WPAD_ScanPads();
 
@@ -106,7 +106,7 @@ main(int argc, char *argv[])
 
 @implementation TestsAppDelegate
 - (void)outputString: (OFString*)str
-	   withColor: (int)color
+	     inColor: (int)color
 {
 #if defined(_PSP)
 	char i, space = ' ';
@@ -162,7 +162,7 @@ main(int argc, char *argv[])
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	[self outputString: [OFString stringWithFormat: @"[%@] %@: testing...",
 							module, test]
-		 withColor: YELLOW];
+		   inColor: YELLOW];
 	[pool release];
 }
 
@@ -172,7 +172,7 @@ main(int argc, char *argv[])
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	[self outputString: [OFString stringWithFormat: @"[%@] %@: ok\n",
 							module, test]
-		 withColor: GREEN];
+		   inColor: GREEN];
 	[pool release];
 }
 
@@ -182,12 +182,12 @@ main(int argc, char *argv[])
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	[self outputString: [OFString stringWithFormat: @"[%@] %@: failed\n",
 							module, test]
-		 withColor: RED];
+		   inColor: RED];
 	[pool release];
 
 #ifdef __wii__
 	[self outputString: @"Press A to continue!\n"
-		 withColor: NO_COLOR];
+		   inColor: NO_COLOR];
 	for (;;) {
 		WPAD_ScanPads();
 
@@ -205,7 +205,7 @@ main(int argc, char *argv[])
 	pspDebugScreenInit();
 #endif
 #ifdef __wii__
-	[OFFile changeToDirectoryAtPath: @"/objfw-tests"];
+	[OFFile changeToDirectoryAtPath: @"/apps/objfw-tests"];
 #endif
 
 	[self objectTests];
@@ -248,7 +248,7 @@ main(int argc, char *argv[])
 
 #ifdef __wii__
 	[self outputString: @"Press home button to exit!\n"
-		 withColor: NO_COLOR];
+		   inColor: NO_COLOR];
 	for (;;) {
 		WPAD_ScanPads();
 

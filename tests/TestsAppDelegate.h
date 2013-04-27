@@ -63,7 +63,7 @@
 }
 
 - (void)outputString: (OFString*)str
-	   withColor: (int)color;
+	     inColor: (int)color;
 - (void)outputTesting: (OFString*)test
 	     inModule: (OFString*)module;
 - (void)outputSuccess: (OFString*)test
