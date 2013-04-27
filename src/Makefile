@@ -39,6 +39,7 @@ SRCS = OFApplication.m			\
        OFSet.m				\
        OFSHA1Hash.m			\
        OFSortedList.m			\
+       OFStdIOStream.m			\
        OFStream.m			\
        OFString.m			\
        OFString+Hashing.m		\

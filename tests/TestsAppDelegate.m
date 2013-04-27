@@ -19,7 +19,7 @@
 #include <stdlib.h>
 
 #import "OFString.h"
-#import "OFFile.h"
+#import "OFStdIOStream.h"
 #import "OFAutoreleasePool.h"
 
 #import "TestsAppDelegate.h"

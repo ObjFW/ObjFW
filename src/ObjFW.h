@@ -45,6 +45,7 @@
 #import "OFURL.h"
 
 #import "OFStream.h"
+#import "OFStdIOStream.h"
 #import "OFFile.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFStreamSocket.h"

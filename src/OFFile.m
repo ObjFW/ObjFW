@@ -49,7 +49,6 @@
 # import "threading.h"
 #endif
 #import "OFDate.h"
-#import "OFApplication.h"
 #import "OFSystemInfo.h"
 
 #import "OFChangeDirectoryFailedException.h"
@@ -99,10 +98,6 @@
 #define DEFAULT_MODE S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH
 #define DIR_MODE DEFAULT_MODE | S_IXUSR | S_IXGRP | S_IXOTH
 
-OFStream *of_stdin = nil;
-OFStream *of_stdout = nil;
-OFStream *of_stderr = nil;
-
 #if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS)
 static of_mutex_t mutex;
 #endif
@@ -136,32 +131,6 @@ static int parse_mode(const char *mode)
 
 	return -1;
 }
-
-void
-of_log(OFConstantString *format, ...)
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFDate *date;
-	OFString *dateString, *me, *msg;
-	va_list arguments;
-
-	date = [OFDate date];
-	dateString = [date localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
-	me = [[OFApplication programName] lastPathComponent];
-
-	va_start(arguments, format);
-	msg = [[[OFString alloc] initWithFormat: format
-				      arguments: arguments] autorelease];
-	va_end(arguments);
-
-	[of_stderr writeFormat: @"[%@.%03d %@(%d)] %@\n", dateString,
-				[date microsecond] / 1000, me, getpid(), msg];
-
-	objc_autoreleasePoolPop(pool);
-}
-
-@interface OFFileSingleton: OFFile
-@end
 
 @implementation OFFile
 #if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS)
@@ -697,8 +666,6 @@ of_log(OFConstantString *format, ...)
 			    exceptionWithClass: [self class]
 					  path: path
 					  mode: mode];
-
-		_closable = true;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -780,66 +747,9 @@ of_log(OFConstantString *format, ...)
 
 - (void)dealloc
 {
-	if (_closable && _fd != -1)
+	if (_fd != -1)
 		close(_fd);
 
 	[super dealloc];
-}
-@end
-
-@implementation OFFileSingleton
-+ (void)load
-{
-	of_stdin = [[OFFileSingleton alloc] initWithFileDescriptor: 0];
-	of_stdout = [[OFFileSingleton alloc] initWithFileDescriptor: 1];
-	of_stderr = [[OFFileSingleton alloc] initWithFileDescriptor: 2];
-}
-
-- initWithPath: (OFString*)path
-	  mode: (OFString*)mode
-{
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
-}
-
-- autorelease
-{
-	return self;
-}
-
-- retain
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (unsigned int)retainCount
-{
-	return OF_RETAIN_COUNT_MAX;
-}
-
-- (void)dealloc
-{
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
-
-	/* Get rid of stupid warning */
-	[super dealloc];
-}
-
-- (void)lowlevelSeekToOffset: (off_t)offset
-		      whence: (int)whence
-{
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
 }
 @end

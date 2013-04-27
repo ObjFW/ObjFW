@@ -28,21 +28,12 @@
 @class OFArray;
 @class OFDate;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern void of_log(OFConstantString*, ...);
-#ifdef __cplusplus
-}
-#endif
-
 /*!
  * @brief A class which provides functions to read, write and manipulate files.
  */
 @interface OFFile: OFSeekableStream
 {
 	int  _fd;
-	bool _closable;
 	bool _atEndOfStream;
 }
 
@@ -269,26 +260,3 @@ extern void of_log(OFConstantString*, ...);
  */
 - initWithFileDescriptor: (int)fd;
 @end
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-/*! @file */
-
-/*!
- * @brief The standard input stream as an OFStream instance.
- */
-extern OFStream *of_stdin;
-
-/*!
- * @brief The standard output stream as an OFStream instance.
- */
-extern OFStream *of_stdout;
-
-/*!
- * @brief The standard error stream as an OFStream instance.
- */
-extern OFStream *of_stderr;
-#ifdef __cplusplus
-}
-#endif
