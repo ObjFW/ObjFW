@@ -535,7 +535,8 @@ static int parse_mode(const char *mode)
 			struct stat s;
 
 			if (fstat(sourceFile->_fd, &s) == 0)
-				fchmod(destinationFile->_fd, s.st_mode);
+				[self changeModeOfFileAtPath: destination
+							mode: s.st_mode];
 		}
 #else
 		(void)override;
