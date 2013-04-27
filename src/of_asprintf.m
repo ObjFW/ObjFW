@@ -197,11 +197,14 @@ state_format_length_modifier(struct context *ctx)
 
 		break;
 	case 'j':
-#ifndef _WIN32
-		if (!append_subformat(ctx, ctx->format + ctx->i, 1))
+#if defined(_WIN32)
+		if (!append_subformat(ctx, "I64", 3))
+			return false;
+#elif defined(__wii__)
+		if (!append_subformat(ctx, "ll", 2))
 			return false;
 #else
-		if (!append_subformat(ctx, "I64", 3))
+		if (!append_subformat(ctx, ctx->format + ctx->i, 1))
 			return false;
 #endif
 
@@ -209,11 +212,14 @@ state_format_length_modifier(struct context *ctx)
 
 		break;
 	case 'z':
-#ifndef _WIN32
-		if (!append_subformat(ctx, ctx->format + ctx->i, 1))
+#if defined(_WIN32)
+		if (!append_subformat(ctx, "I", 1))
+			return false;
+#elif defined(__wii__)
+		if (!append_subformat(ctx, "l", 1))
 			return false;
 #else
-		if (!append_subformat(ctx, "I", 1))
+		if (!append_subformat(ctx, ctx->format + ctx->i, 1))
 			return false;
 #endif
 
@@ -221,11 +227,14 @@ state_format_length_modifier(struct context *ctx)
 
 		break;
 	case 't':
-#ifndef _WIN32
-		if (!append_subformat(ctx, ctx->format + ctx->i, 1))
+#if defined(_WIN32)
+		if (!append_subformat(ctx, "I", 1))
+			return false;
+#elif defined(__wii__)
+		if (!append_subformat(ctx, "l", 1))
 			return false;
 #else
-		if (!append_subformat(ctx, "I", 1))
+		if (!append_subformat(ctx, ctx->format + ctx->i, 1))
 			return false;
 #endif
 

@@ -20,6 +20,7 @@
 
 #import "OFString.h"
 #import "OFStdIOStream.h"
+#import "OFFile.h"
 #import "OFAutoreleasePool.h"
 
 #import "TestsAppDelegate.h"
@@ -31,6 +32,20 @@
 PSP_MODULE_INFO("ObjFW Tests", 0, 0, 0);
 #endif
 
+#ifdef __wii__
+# define BOOL OGC_BOOL
+# include <gccore.h>
+# include <wiiuse/wpad.h>
+# undef BOOL
+#endif
+
+enum {
+	NO_COLOR,
+	RED,
+	GREEN,
+	YELLOW
+};
+
 int
 main(int argc, char *argv[])
 {
@@ -41,7 +56,52 @@ main(int argc, char *argv[])
 	/* We need deterministic hashes for tests */
 	of_hash_seed = 0;
 
+#ifdef __wii__
+	GXRModeObj *rmode;
+	void *xfb;
+
+	VIDEO_Init();
+	WPAD_Init();
+
+	rmode = VIDEO_GetPreferredMode(NULL);
+	xfb = MEM_K0_TO_K1(SYS_AllocateFramebuffer(rmode));
+	VIDEO_Configure(rmode);
+	VIDEO_SetNextFramebuffer(xfb);
+	VIDEO_SetBlack(FALSE);
+	VIDEO_Flush();
+
+	VIDEO_WaitVSync();
+	if (rmode->viTVMode & VI_NON_INTERLACE)
+		VIDEO_WaitVSync();
+
+	CON_InitEx(rmode, 10, 20, rmode->fbWidth - 10, rmode->xfbHeight - 20);
+	VIDEO_ClearFrameBuffer(rmode, xfb, COLOR_BLACK);
+
+	@try {
+		return of_application_main(&argc, &argv,
+		    [TestsAppDelegate class]);
+	} @catch (id e) {
+		TestsAppDelegate *delegate =
+		    [[OFApplication sharedApplication] delegate];
+		OFString *string = [OFString stringWithFormat:
+		    @"\nRuntime error: Unhandled exception:\n%@\n", e];
+
+		[delegate outputString: string
+			     withColor: RED];
+		[delegate outputString: @"Press home button to exit!\n"
+			     withColor: NO_COLOR];
+		for (;;) {
+			WPAD_ScanPads();
+
+			if (WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME)
+				[OFApplication terminateWithStatus: 1];
+
+			VIDEO_WaitVSync();
+		}
+	}
+#else
 	return of_application_main(&argc, &argv, [TestsAppDelegate class]);
+#endif
 }
 
 @implementation TestsAppDelegate
@@ -72,14 +132,20 @@ main(int argc, char *argv[])
 	pspDebugScreenPrintData([str UTF8String], [str UTF8StringLength]);
 #elif defined(STDOUT)
 	switch (color) {
-	case 0:
-		[of_stdout writeString: @"\r\033[K\033[1;33m"];
+	case NO_COLOR:
+		[of_stdout writeString: @"\r\033[K"];
+# ifdef __wii__
+		[of_stdout writeString: @"\033[37m"];
+# endif
 		break;
-	case 1:
-		[of_stdout writeString: @"\r\033[K\033[1;32m"];
+	case RED:
+		[of_stdout writeString: @"\r\033[K\033[31;1m"];
 		break;
-	case 2:
-		[of_stdout writeString: @"\r\033[K\033[1;31m"];
+	case GREEN:
+		[of_stdout writeString: @"\r\033[K\033[32;1m"];
+		break;
+	case YELLOW:
+		[of_stdout writeString: @"\r\033[K\033[33;1m"];
 		break;
 	}
 
@@ -96,7 +162,7 @@ main(int argc, char *argv[])
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	[self outputString: [OFString stringWithFormat: @"[%@] %@: testing...",
 							module, test]
-		 withColor: 0];
+		 withColor: YELLOW];
 	[pool release];
 }
 
@@ -106,7 +172,7 @@ main(int argc, char *argv[])
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	[self outputString: [OFString stringWithFormat: @"[%@] %@: ok\n",
 							module, test]
-		 withColor: 1];
+		 withColor: GREEN];
 	[pool release];
 }
 
@@ -116,14 +182,30 @@ main(int argc, char *argv[])
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	[self outputString: [OFString stringWithFormat: @"[%@] %@: failed\n",
 							module, test]
-		 withColor: 2];
+		 withColor: RED];
 	[pool release];
+
+#ifdef __wii__
+	[self outputString: @"Press A to continue!\n"
+		 withColor: NO_COLOR];
+	for (;;) {
+		WPAD_ScanPads();
+
+		if (WPAD_ButtonsDown(0) & WPAD_BUTTON_A)
+			return;
+
+		VIDEO_WaitVSync();
+	}
+#endif
 }
 
 - (void)applicationDidFinishLaunching
 {
 #ifdef _PSP
 	pspDebugScreenInit();
+#endif
+#ifdef __wii__
+	[OFFile changeToDirectoryAtPath: @"/objfw-tests"];
 #endif
 
 	[self objectTests];
@@ -164,6 +246,19 @@ main(int argc, char *argv[])
 	[self propertiesTests];
 #endif
 
+#ifdef __wii__
+	[self outputString: @"Press home button to exit!\n"
+		 withColor: NO_COLOR];
+	for (;;) {
+		WPAD_ScanPads();
+
+		if (WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME)
+			[OFApplication terminateWithStatus: _fails];
+
+		VIDEO_WaitVSync();
+	}
+#else
 	[OFApplication terminateWithStatus: _fails];
+#endif
 }
 @end

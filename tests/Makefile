@@ -97,4 +97,5 @@ include ../buildsys.mk
 
 CPPFLAGS += -I../src -I../src/exceptions -I../src/runtime -I.. -DSTDOUT
 LIBS := -L../src -lobjfw ${LIBS}
+LDFLAGS += ${MAP_LDFLAGS}
 LD = ${OBJC}

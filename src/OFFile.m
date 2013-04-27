@@ -42,6 +42,12 @@
 # include <grp.h>
 #endif
 
+#ifdef __wii__
+# define BOOL OGC_BOOL
+# include <fat.h>
+# undef BOOL
+#endif
+
 #import "OFFile.h"
 #import "OFString.h"
 #import "OFArray.h"
@@ -133,17 +139,23 @@ static int parse_mode(const char *mode)
 }
 
 @implementation OFFile
-#if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS)
 + (void)initialize
 {
 	if (self != [OFFile class])
 		return;
 
+#if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS)
 	if (!of_mutex_new(&mutex))
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
-}
 #endif
+
+#ifdef __wii__
+	if (!fatInitDefault())
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+#endif
+}
 
 + (instancetype)fileWithPath: (OFString*)path
 			mode: (OFString*)mode
@@ -288,7 +300,7 @@ static int parse_mode(const char *mode)
 	    OF_STRING_ENCODING_NATIVE])) == NULL)
 		@throw [OFOpenFileFailedException exceptionWithClass: self
 								path: path
-							  mode: @"r"];
+								mode: @"r"];
 
 	@try {
 		while ((dirent = readdir(dir)) != NULL) {

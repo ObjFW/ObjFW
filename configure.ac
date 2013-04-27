@@ -22,6 +22,14 @@ CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS"
 OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions -fobjc-exceptions -funwind-tables"
 OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstantString"
 
+AC_ARG_WITH(wii,
+	AS_HELP_STRING([--with-wii], [build for Wii]))
+AS_IF([test x"$with_wii" = x"yes"], [
+	OBJCFLAGS="$OBJCFLAGS -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float"
+	LDFLAGS="$LDFLAGS -mrvl -mcpu=750 -meabi -mhard-float"
+	LIBS="-lfat -lwiiuse -lbte -logc"
+])
+
 AX_CHECK_COMPILER_FLAGS(-std=gnu99, [OBJCFLAGS="$OBJCFLAGS -std=gnu99"])
 case $OBJC in
 	*clang*)
@@ -816,6 +824,10 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	])
 ])
 
+AS_IF([test x"$with_wii" = x"yes"], [
+	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$$(basename $@).map'])
+])
+
 AS_IF([test x"$cross_compiling" = x"yes"], [
 	AC_SUBST(BIN_PREFIX, "$host-")
 
@@ -829,6 +841,18 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 			])
 			;;
 	esac
+
+	AS_IF([test x"$with_wii" = x"yes"], [
+		dnl Keep this lowercase, as WIILOAD is a variable used by
+		dnl wiiload and thus likely already set by the user to something
+		dnl that is not the path to the binary.
+		AC_CHECK_PROG(wiiload, wiiload, wiiload)
+
+		AS_IF([test x"$wiiload" != x""], [
+			AC_SUBST(TESTS, "tests")
+			AC_SUBST(TEST_LAUNCHER, "$wiiload")
+		])
+	])
 ], [
 	AC_SUBST(TESTS, "tests")
 ])
