@@ -49,7 +49,8 @@ enum {
 int
 main(int argc, char *argv[])
 {
-#ifdef OF_OBJFW_RUNTIME
+#if defined(OF_OBJFW_RUNTIME) && !defined(_WIN32)
+	/* This does not work on Win32 if ObjFW is built as a DLL */
 	atexit(objc_exit);
 #endif
 
