@@ -21,6 +21,8 @@
 # error No threads available!
 #endif
 
+#include <math.h>
+
 #import "macros.h"
 
 #if defined(OF_HAVE_PTHREADS)
@@ -203,6 +205,38 @@ of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 	of_atomic_inc_int(&condition->count);
 
 	if (WaitForSingleObject(condition->event, INFINITE) != WAIT_OBJECT_0) {
+		of_mutex_lock(mutex);
+		return false;
+	}
+
+	of_atomic_dec_int(&condition->count);
+
+	if (!of_mutex_lock(mutex))
+		return false;
+
+	return true;
+#endif
+}
+
+static OF_INLINE bool
+of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
+    double timeout)
+{
+#if defined(OF_HAVE_PTHREADS)
+	struct timespec ts;
+
+	ts.tv_sec = (time_t)timeout;
+	ts.tv_nsec = lrint((timeout - ts.tv_sec) * 1000000000);
+
+	return !pthread_cond_timedwait(condition, mutex, &ts);
+#elif defined(_WIN32)
+	if (!of_mutex_unlock(mutex))
+		return false;
+
+	of_atomic_inc_int(&condition->count);
+
+	if (WaitForSingleObject(condition->event,
+	    timeout * 1000) != WAIT_OBJECT_0) {
 		of_mutex_lock(mutex);
 		return false;
 	}
