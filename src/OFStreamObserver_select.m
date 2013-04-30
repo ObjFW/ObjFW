@@ -19,6 +19,7 @@
 #define __NO_EXT_QNX
 
 #include <string.h>
+#include <math.h>
 #include <unistd.h>
 
 #include <sys/time.h>
@@ -71,14 +72,14 @@
 		FD_CLR(fd, &_exceptFDs);
 }
 
-- (bool)observeWithTimeout: (double)timeout
+- (bool)observeForTimeInterval: (double)timeInterval
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFStream **objects;
 	fd_set readFDs;
 	fd_set writeFDs;
 	fd_set exceptFDs;
-	struct timeval time;
+	struct timeval timeout;
 	size_t i, count, realEvents = 0;
 
 	[self OF_processQueue];
@@ -106,11 +107,11 @@
 	 * however, this is not available on Win32. As an int should always
 	 * satisfy the required range, we just cast to int.
 	 */
-	time.tv_sec = (time_t)timeout;
-	time.tv_usec = (int)((timeout - time.tv_sec) * 1000);
+	timeout.tv_sec = (time_t)timeInterval;
+	timeout.tv_usec = (int)lrint((timeInterval - timeout.tv_sec) * 1000);
 
 	if (select((int)_maxFD + 1, &readFDs, &writeFDs, &exceptFDs,
-	    (timeout != -1 ? &time : NULL)) < 1)
+	    (timeInterval != -1 ? &timeout : NULL)) < 1)
 		return false;
 
 	if (FD_ISSET(_cancelFD[0], &readFDs)) {

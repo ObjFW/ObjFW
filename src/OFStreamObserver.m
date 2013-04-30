@@ -35,6 +35,7 @@
 #ifdef OF_HAVE_THREADS
 # import "OFMutex.h"
 #endif
+#import "OFDate.h"
 
 #ifdef HAVE_KQUEUE
 # import "OFStreamObserver_kqueue.h"
@@ -370,13 +371,18 @@ enum {
 
 - (void)observe
 {
-	[self observeWithTimeout: -1];
+	[self observeForTimeInterval: -1];
 }
 
-- (bool)observeWithTimeout: (double)timeout
+- (bool)observeForTimeInterval: (double)timeInterval
 {
 	[self doesNotRecognizeSelector: _cmd];
 	abort();
+}
+
+- (bool)observeUntilDate: (OFDate*)date
+{
+	return [self observeForTimeInterval: [date timeIntervalSinceNow]];
 }
 
 - (void)cancel

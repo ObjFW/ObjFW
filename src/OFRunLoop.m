@@ -674,7 +674,8 @@ static OFRunLoop *mainRunLoop = nil;
 
 			if (timeout > 0)
 #ifdef OF_HAVE_SOCKETS
-				[_streamObserver observeWithTimeout: timeout];
+				[_streamObserver
+				    observeForTimeInterval: timeout];
 #else
 				[OFThread sleepForTimeInterval: timeout];
 #endif

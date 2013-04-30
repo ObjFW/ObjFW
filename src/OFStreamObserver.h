@@ -31,6 +31,7 @@
 #ifdef OF_HAVE_THREADS
 @class OFMutex;
 #endif
+@class OFDate;
 
 /*!
  * @brief A protocol that needs to be implemented by delegates for
@@ -174,10 +175,19 @@
  * @brief Observes all streams until an event happens on a stream or the
  *	  timeout is reached.
  *
- * @param timeout The time to wait for an event, in seconds
+ * @param timeInterval The time to wait for an event, in seconds
  * @return A boolean whether events occurred during the timeinterval
  */
-- (bool)observeWithTimeout: (double)timeout;
+- (bool)observeForTimeInterval: (double)timeInterval;
+
+/*!
+ * @brief Observes all streams until an event happens on a stream or the
+ *	  timeout is reached.
+ *
+ * @param date The until which to observe
+ * @return A boolean whether events occurred until the specified date
+ */
+- (bool)observeUntilDate: (OFDate*)date;
 
 /*!
  * @brief Cancels the currently blocking observe call.

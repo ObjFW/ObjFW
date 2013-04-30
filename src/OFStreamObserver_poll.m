@@ -120,7 +120,7 @@
 			   withEvents: POLLOUT];
 }
 
-- (bool)observeWithTimeout: (double)timeout
+- (bool)observeForTimeInterval: (double)timeInterval
 {
 	void *pool = objc_autoreleasePoolPush();
 	struct pollfd *FDs;
@@ -144,7 +144,7 @@
 #endif
 
 	if (poll(FDs, (nfds_t)nFDs,
-	    (int)(timeout != -1 ? timeout * 1000 : -1)) < 1)
+	    (int)(timeInterval != -1 ? timeInterval * 1000 : -1)) < 1)
 		return false;
 
 	for (i = 0; i < nFDs; i++) {

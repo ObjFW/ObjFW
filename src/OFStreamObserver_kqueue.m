@@ -16,6 +16,7 @@
 
 #include "config.h"
 
+#include <math.h>
 #include <unistd.h>
 #include <errno.h>
 
@@ -105,15 +106,15 @@
 	[_changeList addItem: &event];
 }
 
-- (bool)observeWithTimeout: (double)timeout
+- (bool)observeForTimeInterval: (double)timeInterval
 {
 	void *pool = objc_autoreleasePoolPush();
-	struct timespec timespec;
+	struct timespec timeout;
 	struct kevent eventList[EVENTLIST_SIZE];
 	int i, events, realEvents = 0;
 
-	timespec.tv_sec = (time_t)timeout;
-	timespec.tv_nsec = (long)((timeout - timespec.tv_sec) * 1000000000);
+	timeout.tv_sec = (time_t)timeInterval;
+	timeout.tv_nsec = lrint((timeInterval - timeout.tv_sec) * 1000000000);
 
 	[self OF_processQueue];
 
@@ -126,7 +127,7 @@
 
 	events = kevent(_kernelQueue, [_changeList items],
 	    (int)[_changeList count], eventList, EVENTLIST_SIZE,
-	    (timeout == -1 ? NULL : &timespec));
+	    (timeInterval == -1 ? NULL : &timeout));
 
 	if (events < 0)
 		return false;
