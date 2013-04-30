@@ -16,6 +16,8 @@
 
 #import "OFMutex.h"
 
+@class OFDate;
+
 /*!
  * @brief A class implementing a condition variable for thread synchronization.
  */
@@ -37,6 +39,24 @@
  *	  @ref broadcast.
  */
 - (void)wait;
+
+/*!
+ * @brief Blocks the current thread until another thread calls @ref signal,
+ *	  @ref broadcast or the timeout is reached.
+ *
+ * @param timeInterval The time interval until the timeout is reached
+ * @return Whether the condition has been signaled
+ */
+- (bool)waitForTimeInterval: (double)timeInterval;
+
+/*!
+ * @brief Blocks the current thread until another thread calls @ref signal,
+ *	  @ref broadcast or the timeout is reached.
+ *
+ * @param date The date at which the timeout is reached
+ * @return Whether the condition has been signaled
+ */
+- (bool)waitUntilDate: (OFDate*)date;
 
 /*!
  * @brief Signals the next waiting thread to continue.

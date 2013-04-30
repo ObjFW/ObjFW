@@ -17,6 +17,7 @@
 #include "config.h"
 
 #import "OFCondition.h"
+#import "OFDate.h"
 
 #import "OFConditionBroadcastFailedException.h"
 #import "OFConditionSignalFailedException.h"
@@ -62,6 +63,17 @@
 		@throw [OFConditionWaitFailedException
 		    exceptionWithClass: [self class]
 			     condition: self];
+}
+
+- (bool)waitForTimeInterval: (double)timeInterval
+{
+	return of_condition_timed_wait(&_condition, &_mutex, timeInterval);
+}
+
+- (bool)waitUntilDate: (OFDate*)date
+{
+	return of_condition_timed_wait(&_condition, &_mutex,
+	    [date timeIntervalSinceNow]);
 }
 
 - (void)signal
