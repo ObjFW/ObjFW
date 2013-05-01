@@ -805,14 +805,14 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	AC_TRY_COMPILE([
 		@interface Foo
 		{
-			struct objc_class *isa;
+			struct objc_class *_isa;
 		}
 		@end
 
 		@implementation Foo
 		- (void)foo
 		{
-			struct objc_class *c = isa;
+			struct objc_class *c = _isa;
 			(void)c;
 		}
 		@end
