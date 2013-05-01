@@ -146,29 +146,35 @@ struct {
 
 - (void)finishInitialization
 {
-	struct of_string_utf8_ivars *ivars;
+	@synchronized (self) {
+		struct of_string_utf8_ivars *ivars;
 
-	if ((ivars = calloc(1, sizeof(*ivars))) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithClass: [self class]
-			 requestedSize: sizeof(*ivars)];
+		if (object_getClass(self) == [OFString_const class])
+			return;
 
-	ivars->cString = _cString;
-	ivars->cStringLength = _cStringLength;
+		if ((ivars = calloc(1, sizeof(*ivars))) == NULL)
+			@throw [OFOutOfMemoryException
+			    exceptionWithClass: [self class]
+				 requestedSize: sizeof(*ivars)];
 
-	switch (of_string_utf8_check(ivars->cString, ivars->cStringLength,
-	    &ivars->length)) {
-	case 1:
-		ivars->isUTF8 = true;
-		break;
-	case -1:
-		free(ivars);
-		@throw [OFInvalidEncodingException
-		    exceptionWithClass: [self class]];
+		ivars->cString = _cString;
+		ivars->cStringLength = _cStringLength;
+
+		switch (of_string_utf8_check(ivars->cString,
+		    ivars->cStringLength,
+			&ivars->length)) {
+			case 1:
+				ivars->isUTF8 = true;
+				break;
+			case -1:
+				free(ivars);
+				@throw [OFInvalidEncodingException
+				    exceptionWithClass: [self class]];
+		}
+
+		_cString = (char*)ivars;
+		object_setClass(self, [OFString_const class]);
 	}
-
-	_cString = (char*)ivars;
-	object_setClass(self, [OFString_const class]);
 }
 
 + alloc
