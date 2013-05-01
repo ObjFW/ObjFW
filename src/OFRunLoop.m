@@ -26,6 +26,7 @@
 #import "OFThread.h"
 #ifdef OF_HAVE_THREADS
 # import "OFMutex.h"
+# import "OFCondition.h"
 #endif
 #import "OFSortedList.h"
 #import "OFTimer.h"
@@ -304,11 +305,13 @@ static OFRunLoop *mainRunLoop = nil;
 		_timersQueueLock = [[OFMutex alloc] init];
 #endif
 
-#ifdef OF_HAVE_SOCKETS
+#if defined(OF_HAVE_SOCKETS)
 		_streamObserver = [[OFStreamObserver alloc] init];
 		[_streamObserver setDelegate: self];
 
 		_readQueues = [[OFMutableDictionary alloc] init];
+#elif defined(OF_HAVE_THREADS)
+		_condition = [[OFCondition alloc] init];
 #endif
 	} @catch (id e) {
 		[self release];
@@ -324,9 +327,11 @@ static OFRunLoop *mainRunLoop = nil;
 #ifdef OF_HAVE_THREADS
 	[_timersQueueLock release];
 #endif
-#ifdef OF_HAVE_SOCKETS
+#if defined(OF_HAVE_SOCKETS)
 	[_streamObserver release];
 	[_readQueues release];
+#elif defined(OF_HAVE_THREADS)
+	[_condition release];
 #endif
 
 	[super dealloc];
@@ -347,12 +352,12 @@ static OFRunLoop *mainRunLoop = nil;
 
 	[timer OF_setInRunLoop: self];
 
-#ifdef OF_HAVE_SOCKETS
+#if defined(OF_HAVE_SOCKETS)
 	[_streamObserver cancel];
-#endif
-
-#if defined(OF_HAVE_THREADS) && !defined(OF_HAVE_SOCKETS)
-	/* FIXME: No way to cancel waiting! What to do? */
+#elif defined(OF_HAVE_THREADS)
+	[_condition lock];
+	[_condition signal];
+	[_condition unlock];
 #endif
 }
 
@@ -672,21 +677,30 @@ static OFRunLoop *mainRunLoop = nil;
 		if (nextTimer != nil) {
 			double timeout = [nextTimer timeIntervalSinceNow];
 
-			if (timeout > 0)
-#ifdef OF_HAVE_SOCKETS
+			if (timeout > 0) {
+#if defined(OF_HAVE_SOCKETS)
 				[_streamObserver
 				    observeForTimeInterval: timeout];
+#elif defined(OF_HAVE_THREADS)
+				[_condition lock];
+				[_condition waitForTimeInterval: timeout];
+				[_condition unlock];
 #else
 				[OFThread sleepForTimeInterval: timeout];
 #endif
+			}
 		} else {
 			/*
 			 * No more timers: Just watch for streams until we get
 			 * an event. If a timer is added by another thread, it
 			 * cancels the observe.
 			 */
-#ifdef OF_HAVE_SOCKETS
+#if defined(OF_HAVE_SOCKETS)
 			[_streamObserver observe];
+#elif defined(OF_HAVE_THREADS)
+			[_condition lock];
+			[_condition wait];
+			[_condition unlock];
 #else
 			[OFThread sleepForTimeInterval: 86400];
 #endif
@@ -702,12 +716,12 @@ static OFRunLoop *mainRunLoop = nil;
 #ifdef OF_HAVE_THREADS
 	of_memory_write_barrier();
 #endif
-#ifdef OF_HAVE_SOCKETS
+#if defined(OF_HAVE_SOCKETS)
 	[_streamObserver cancel];
-#endif
-
-#if defined(OF_HAVE_THREADS) && !defined(OF_HAVE_SOCKETS)
-	/* FIXME: No way to cancel waiting! What to do? */
+#elif defined(OF_HAVE_THREADS)
+	[_condition lock];
+	[_condition signal];
+	[_condition unlock];
 #endif
 }
 @end

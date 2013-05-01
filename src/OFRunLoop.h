@@ -23,10 +23,13 @@
 @class OFSortedList;
 #ifdef OF_HAVE_THREADS
 @class OFMutex;
+@class OFCondition;
 #endif
-@class OFTimer;
-@class OFMutableDictionary;
+#ifdef OF_HAVE_SOCKETS
 @class OFStreamObserver;
+#endif
+@class OFMutableDictionary;
+@class OFTimer;
 
 /*!
  * @brief A class providing a run loop for the application and its processes.
@@ -37,9 +40,11 @@
 #ifdef OF_HAVE_THREADS
 	OFMutex *_timersQueueLock;
 #endif
-#ifdef OF_HAVE_SOCKETS
+#if defined(OF_HAVE_SOCKETS)
 	OFStreamObserver *_streamObserver;
 	OFMutableDictionary *_readQueues;
+#elif defined(OF_HAVE_THREADS)
+	OFCondition *_condition;
 #endif
 	volatile bool _running;
 }
