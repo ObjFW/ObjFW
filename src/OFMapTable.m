@@ -317,8 +317,7 @@ default_equal(void *value1, void *value2)
 	buckets = [self allocMemoryWithSize: sizeof(*buckets)
 				      count: capacity];
 
-	for (i = 0; i < capacity; i++)
-		buckets[i] = NULL;
+	memset(buckets, 0, capacity * sizeof(*buckets));
 
 	for (i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
@@ -384,7 +383,7 @@ default_equal(void *value1, void *value2)
 		}
 	}
 
-	/* Key not in dictionary */
+	/* Key not in map table */
 	if (i >= last || _buckets[i] == NULL || _buckets[i] == &deleted ||
 	    !_keyFunctions.equal(_buckets[i]->key, key)) {
 		struct of_map_table_bucket *bucket;
@@ -421,7 +420,7 @@ default_equal(void *value1, void *value2)
 		@try {
 			bucket->value = _valueFunctions.retain(value);
 		} @catch (id e) {
-			_keyFunctions.release(key);
+			_keyFunctions.release(bucket->key);
 			[self freeMemory: bucket];
 			@throw e;
 		}
