@@ -184,6 +184,20 @@ typedef bool (^of_set_filter_block_t)(id object);
  */
 - (OFSet*)setByAddingSet: (OFSet*)set;
 
+/*!
+ * @brief Returns an array of all objects in the set.
+ *
+ * @return An array of all objects in the set
+ */
+- (OFArray*)allObjects;
+
+/*!
+ * @brief Returns an arbitrary object in the set.
+ *
+ * @return An arbitrary object in the set
+ */
+- (id)anyObject;
+
 #ifdef OF_HAVE_BLOCKS
 /*!
  * @brief Executes a block for each object in the set.

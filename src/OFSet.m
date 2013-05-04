@@ -454,6 +454,24 @@ static struct {
 	return new;
 }
 
+- (OFArray*)allObjects
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFArray *ret = [[[self objectEnumerator] allObjects] retain];
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
+}
+
+- (id)anyObject
+{
+	void *pool = objc_autoreleasePoolPush();
+	id ret = [[[self objectEnumerator] nextObject] retain];
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
+}
+
 #if defined(OF_HAVE_BLOCKS) && defined(OF_HAVE_FAST_ENUMERATION)
 - (void)enumerateObjectsUsingBlock: (of_set_enumeration_block_t)block
 {
