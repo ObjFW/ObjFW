@@ -16,7 +16,11 @@
 
 #import "OFObject.h"
 
+#define OF_EXCEPTION_MAX_BACKTRACE_SIZE 32
+
 @class OFString;
+@class OFArray;
+@class OFMutableArray;
 
 /*!
  * @brief The base class for all exceptions in ObjFW
@@ -27,6 +31,9 @@
 @interface OFException: OFObject
 {
 	Class _inClass;
+	OFMutableArray *_backtrace;
+	void *_backtraceBuffer[OF_EXCEPTION_MAX_BACKTRACE_SIZE];
+	int _backtraceSize;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -62,4 +69,12 @@
  * @return A description of the exception
  */
 - (OFString*)description;
+
+/*!
+ * @brief Returns a backtrace of when the exception was created or nil if no
+ *	  backtrace is available.
+ *
+ * @return A backtrace of when the exception was created
+ */
+- (OFArray*)backtrace;
 @end

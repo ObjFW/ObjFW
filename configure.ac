@@ -616,7 +616,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(HAVE_POLL_H, 1, [Whether we have poll.h])
 		AC_SUBST(OFSTREAMOBSERVER_POLL_M, "OFStreamObserver_poll.m")
 	])
-	AC_CHECK_HEADERS(sys/select.h, [
+	AC_CHECK_HEADER(sys/select.h, [
 		AC_DEFINE(HAVE_SYS_SELECT_H, 1, [Whether we have sys/select.h])
 		AC_SUBST(OFSTREAMOBSERVER_SELECT_M, "OFStreamObserver_select.m")
 	])
@@ -736,6 +736,8 @@ AS_IF([test x"$have_processes" = x"yes"], [
 	AC_SUBST(OFPROCESS_M, "OFProcess.m")
 	AC_DEFINE(OF_HAVE_PROCESSES, 1, [Whether we have processes])
 ])
+
+AC_CHECK_HEADERS(execinfo.h)
 
 AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 	AC_CHECK_HEADER(Foundation/NSObject.h, [
