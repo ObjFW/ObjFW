@@ -21,6 +21,7 @@
 #import "OFSet.h"
 #import "OFSet_hashtable.h"
 #import "OFString.h"
+#import "OFArray.h"
 #import "OFXMLElement.h"
 
 #import "autorelease.h"
