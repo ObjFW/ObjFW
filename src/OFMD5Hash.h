@@ -25,7 +25,7 @@
 {
 	uint32_t _buffer[4];
 	uint32_t _bits[2];
-	union {
+	union of_md5hash_in_union {
 		uint8_t	u8[64];
 		uint32_t u32[16];
 	} _in;
