@@ -266,7 +266,7 @@ of_condition_broadcast(of_condition_t *condition)
 #if defined(OF_HAVE_PTHREADS)
 	return !pthread_cond_broadcast(condition);
 #elif defined(_WIN32)
-	size_t i;
+	int i;
 
 	for (i = 0; i < condition->count; i++)
 		if (!SetEvent(condition->event))
