@@ -20,6 +20,10 @@
 # error No sockets available!
 #endif
 
+#ifdef OF_HAVE_SYS_SOCKET_H
+# include <sys/socket.h>
+#endif
+
 #ifdef _WIN32
 # include <winsock2.h>
 #endif
@@ -86,7 +90,7 @@
 	OFDataArray *_queueInfo, *_queueFDs;
 	id <OFStreamObserverDelegate> _delegate;
 	int _cancelFD[2];
-#ifdef _WIN32
+#ifndef OF_HAVE_PIPE
 	struct sockaddr_in _cancelAddr;
 #endif
 #ifdef OF_HAVE_THREADS

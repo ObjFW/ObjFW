@@ -29,8 +29,8 @@
 #import "OFDictionary.h"
 #import "OFStream.h"
 #import "OFDataArray.h"
-#ifdef _WIN32
-# import "OFTCPSocket.h"
+#ifndef OF_HAVE_PIPE
+# import "OFStreamSocket.h"
 #endif
 #ifdef OF_HAVE_THREADS
 # import "OFMutex.h"
@@ -98,7 +98,7 @@ enum {
 	self = [super init];
 
 	@try {
-#ifdef _WIN32
+#ifndef OF_HAVE_PIPE
 		struct sockaddr_in cancelAddr2;
 		socklen_t cancelAddrLen;
 #endif
@@ -110,13 +110,13 @@ enum {
 		    initWithItemSize: sizeof(int)];
 		_queueFDs = [[OFDataArray alloc] initWithItemSize: sizeof(int)];
 
-#ifndef _WIN32
+#ifdef OF_HAVE_PIPE
 		if (pipe(_cancelFD))
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 #else
-		/* Make sure WSAStartup has been called */
-		[OFTCPSocket class];
+		/* Make sure network has been initialized */
+		[OFStreamSocket class];
 
 		_cancelFD[0] = socket(AF_INET, SOCK_DGRAM, 0);
 		_cancelFD[1] = socket(AF_INET, SOCK_DGRAM, 0);
@@ -138,7 +138,6 @@ enum {
 			    exceptionWithClass: [self class]];
 
 		cancelAddrLen = sizeof(_cancelAddr);
-
 		if (getsockname(_cancelFD[0], (struct sockaddr*)&_cancelAddr,
 		    &cancelAddrLen))
 			@throw [OFInitializationFailedException
@@ -387,7 +386,7 @@ enum {
 
 - (void)cancel
 {
-#ifndef _WIN32
+#ifdef OF_HAVE_PIPE
 	OF_ENSURE(write(_cancelFD[1], "", 1) > 0);
 #else
 	OF_ENSURE(sendto(_cancelFD[1], "", 1, 0, (struct sockaddr*)&_cancelAddr,

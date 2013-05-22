@@ -24,16 +24,12 @@
 
 #include <errno.h>
 
-#ifndef _WIN32
-# include <sys/types.h>
+#include <sys/types.h>
+#ifdef OF_HAVE_SYS_SOCKET_H
 # include <sys/socket.h>
 #endif
 
 #import "OFStreamSocket.h"
-
-#ifdef _WIN32
-# include <winsock2.h>
-#endif
 
 #import "OFInitializationFailedException.h"
 #import "OFNotConnectedException.h"

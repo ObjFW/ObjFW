@@ -597,6 +597,9 @@ AC_CHECK_FUNC(link, [
 AC_CHECK_FUNC(symlink, [
 	AC_DEFINE(OF_HAVE_SYMLINK, 1, [Whether we have symlink()])
 ])
+AC_CHECK_FUNC(pipe, [
+	AC_DEFINE(OF_HAVE_PIPE, 1, [Whether we have pipe()])
+])
 
 AC_ARG_ENABLE(sockets,
 	AS_HELP_STRING([--disable-sockets], [disable socket support]))
@@ -607,6 +610,12 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
 	AC_CHECK_LIB(network, socket, LIBS="$LIBS -lnetwork")
 	AC_CHECK_LIB(ws2_32, main, LIBS="$LIBS -lws2_32")
+
+	AC_CHECK_HEADER(sys/socket.h, [
+		AC_DEFINE(OF_HAVE_SYS_SOCKET_H, 1,
+			[Whether we have sys/socket.h])
+	])
+	AC_CHECK_HEADERS([netinet/in.h arpa/inet.h netdb.h])
 
 	AC_CHECK_FUNC(kqueue, [
 		AC_DEFINE(HAVE_KQUEUE, 1, [Whether we have kqueue])
@@ -620,6 +629,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(HAVE_SYS_SELECT_H, 1, [Whether we have sys/select.h])
 		AC_SUBST(OFSTREAMOBSERVER_SELECT_M, "OFStreamObserver_select.m")
 	])
+
 	case "$host_os" in
 		mingw*)
 			AC_SUBST(OFSTREAMOBSERVER_SELECT_M,
@@ -701,12 +711,15 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			AS_IF([test x"$have_threadsafe_getaddrinfo" = x"yes"], [
 				AC_DEFINE(HAVE_THREADSAFE_GETADDRINFO, 1,
 					[Whether getaddrinfo is thread-safe])
+			], [
+				AC_CHECK_FUNCS([h_errno hstrerror])
 			])
 
 			AC_MSG_RESULT($have_threadsafe_getaddrinfo)
 		])
 	], [
 		AC_MSG_RESULT(no)
+		AC_CHECK_FUNCS([h_errno hstrerror])
 	])
 ])
 
@@ -719,7 +732,7 @@ case "$host" in
 		have_processes="yes"
 		;;
 	*)
-		AC_CHECK_FUNCS([fork pipe dup2 execvp kill], [
+		AC_CHECK_FUNCS([fork dup2 execvp kill], [
 			if test x"$ac_cv_func_fork" = x"yes" \
 			    -a x"$ac_cv_func_pipe" = x"yes" \
 			    -a x"$ac_cv_func_dup2" = x"yes" \

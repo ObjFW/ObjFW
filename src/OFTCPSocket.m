@@ -27,9 +27,13 @@
 
 #include <assert.h>
 
-#ifndef _WIN32
+#ifdef HAVE_NETINET_IN_H
 # include <netinet/in.h>
+#endif
+#ifdef HAVE_ARPA_INET_H
 # include <arpa/inet.h>
+#endif
+#ifdef HAVE_NETDB_H
 # include <netdb.h>
 #endif
 
@@ -67,6 +71,10 @@
 # ifndef AI_NUMERICHOST
 #  define AI_NUMERICHOST 0
 # endif
+#endif
+
+#ifndef SOMAXCONN
+# define SOMAXCONN 32
 #endif
 
 #if defined(OF_HAVE_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)

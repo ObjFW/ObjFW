@@ -21,10 +21,8 @@
 # define __STDC_CONSTANT_MACROS
 #endif
 
-#ifndef _WIN32
-# include <sys/types.h>
+#ifdef OF_HAVE_SYS_SOCKET_H
 # include <sys/socket.h>
-# include <netdb.h>
 #endif
 
 #import "OFStreamSocket.h"

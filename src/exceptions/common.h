@@ -15,17 +15,18 @@
  */
 
 #include <string.h>
+#include <errno.h>
 
 #import "macros.h"
 
+#ifdef HAVE_NETDB_H
+# include <netdb.h>
+#endif
+
 #ifndef _WIN32
-# if defined(OF_HAVE_SOCKETS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
-#  include <netdb.h>
-# endif
-# include <errno.h>
 # define GET_ERRNO	errno
 # ifdef OF_HAVE_SOCKETS
-#  ifndef HAVE_THREADSAFE_GETADDRINFO
+#  if !defined(HAVE_THREADSAFE_GETADDRINFO) && defined(HAVE_H_ERRNO)
 #   define GET_AT_ERRNO	h_errno
 #  else
 #   define GET_AT_ERRNO	errno
@@ -35,7 +36,7 @@
 # define ERRFMT			"Error string was: %s"
 # define ERRPARAM		strerror(_errNo)
 # ifdef OF_HAVE_SOCKETS
-#  ifndef HAVE_THREADSAFE_GETADDRINFO
+#  if !defined(HAVE_THREADSAFE_GETADDRINFO) && defined(HAVE_HSTRERROR)
 #   define AT_ERRPARAM		hstrerror(_errNo)
 #  else
 #   define AT_ERRPARAM		strerror(_errNo)

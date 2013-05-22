@@ -19,7 +19,10 @@
 #define __NO_EXT_QNX
 
 #include <unistd.h>
-#include <poll.h>
+
+#ifdef HAVE_POLL_H
+# include <poll.h>
+#endif
 
 #import "OFStreamObserver_poll.h"
 #import "OFDataArray.h"
