@@ -19,8 +19,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef _WIN32
-#include <dlfcn.h>
+#ifdef HAVE_DLFCN_H
+# include <dlfcn.h>
 #endif
 
 #import "OFPlugin.h"

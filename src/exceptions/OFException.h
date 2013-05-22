@@ -16,8 +16,6 @@
 
 #import "OFObject.h"
 
-#define OF_EXCEPTION_MAX_BACKTRACE_SIZE 32
-
 @class OFString;
 @class OFArray;
 @class OFMutableArray;
@@ -31,9 +29,7 @@
 @interface OFException: OFObject
 {
 	Class _inClass;
-	OFMutableArray *_backtrace;
-	void *_backtraceBuffer[OF_EXCEPTION_MAX_BACKTRACE_SIZE];
-	int _backtraceSize;
+	void *_returnAddresses[32];
 }
 
 #ifdef OF_HAVE_PROPERTIES

@@ -18,8 +18,8 @@
 
 #include <stdlib.h>
 
-#ifdef HAVE_EXECINFO_H
-# include <execinfo.h>
+#ifdef HAVE_DLFCN_H
+# include <dlfcn.h>
 #endif
 
 #import "OFException.h"
@@ -51,19 +51,54 @@
 	self = [super init];
 
 	_inClass = class;
-#ifdef HAVE_EXECINFO_H
-	_backtraceSize = backtrace(_backtraceBuffer,
-	    OF_EXCEPTION_MAX_BACKTRACE_SIZE);
+#ifdef HAVE_BUILTIN_RETURN_ADDRESS
+	/*
+	 * We can't use a loop here, as __builtin_return_address() and
+	 * __builtin_frame_address() only allow a constant as parameter.
+	 */
+# define GET_FRAME(i)					\
+	if (__builtin_frame_address(i + 1) == NULL)	\
+		goto backtrace_done;			\
+	if ((_returnAddresses[i] = (			\
+	    __builtin_return_address(i))) == NULL)	\
+		goto backtrace_done;
+	GET_FRAME(0)
+	GET_FRAME(1)
+	GET_FRAME(2)
+	GET_FRAME(3)
+	GET_FRAME(4)
+	GET_FRAME(5)
+	GET_FRAME(6)
+	GET_FRAME(7)
+	GET_FRAME(8)
+	GET_FRAME(9)
+	GET_FRAME(10)
+	GET_FRAME(11)
+	GET_FRAME(12)
+	GET_FRAME(13)
+	GET_FRAME(14)
+	GET_FRAME(15)
+	GET_FRAME(16)
+	GET_FRAME(17)
+	GET_FRAME(18)
+	GET_FRAME(19)
+	GET_FRAME(20)
+	GET_FRAME(21)
+	GET_FRAME(22)
+	GET_FRAME(23)
+	GET_FRAME(24)
+	GET_FRAME(25)
+	GET_FRAME(26)
+	GET_FRAME(27)
+	GET_FRAME(28)
+	GET_FRAME(29)
+	GET_FRAME(30)
+	GET_FRAME(31)
+# undef GET_FRAME
+backtrace_done:
 #endif
 
 	return self;
-}
-
-- (void)dealloc
-{
-	[_backtrace release];
-
-	[super dealloc];
 }
 
 - (Class)inClass
@@ -80,39 +115,39 @@
 
 - (OFArray*)backtrace
 {
-#ifdef HAVE_EXECINFO_H
-	char **symbols;
+#ifdef HAVE_BUILTIN_RETURN_ADDRESS
+	OFMutableArray *backtrace = [OFMutableArray array];
+	void *pool = objc_autoreleasePoolPush();
+	uint_fast8_t i;
 
-	if (_backtrace != nil)
-		return _backtrace;
+	for (i = 0; i < 32 && _returnAddresses[i] != NULL; i++) {
+		void *addr =
+		    __builtin_extract_return_addr(_returnAddresses[i]);
+# ifdef HAVE_DLFCN_H
+		Dl_info info;
 
-	if (_backtraceSize < 1)
-		return nil;
+		if (dladdr(addr, &info)) {
+			ptrdiff_t offset = (char*)addr - (char*)info.dli_saddr;
 
-	symbols = backtrace_symbols(_backtraceBuffer, _backtraceSize);
-	@try {
-		int i;
+			if (info.dli_sname == NULL)
+				info.dli_sname = "??";
 
-		_backtrace = [[OFMutableArray alloc] init];
-
-		for (i = 0; i < _backtraceSize; i++) {
-			void *pool = objc_autoreleasePoolPush();
-			OFString *symbol;
-
-			symbol = [OFString
-			    stringWithCString: symbols[i]
-				     encoding: OF_STRING_ENCODING_NATIVE];
-			[_backtrace addObject: symbol];
-
-			objc_autoreleasePoolPop(pool);
-		}
-	} @finally {
-		free(symbols);
+			[backtrace addObject:
+			    [OFString stringWithFormat: @"%p <%s+%td> at %s",
+							addr, info.dli_sname,
+							offset,
+							info.dli_fname]];
+		} else
+# endif
+			[backtrace addObject:
+			    [OFString stringWithFormat: @"%p", addr]];
 	}
 
-	[_backtrace makeImmutable];
+	objc_autoreleasePoolPop(pool);
 
-	return _backtrace;
+	[backtrace makeImmutable];
+
+	return backtrace;
 #else
 	return nil;
 #endif

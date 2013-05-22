@@ -468,6 +468,7 @@ AC_CHECK_FUNC(arc4random, [
 ])
 
 AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
+AC_CHECK_HEADERS(dlfcn.h)
 
 AC_ARG_ENABLE(threads,
 	AS_HELP_STRING([--disable-threads], [disable thread support]))
@@ -750,7 +751,16 @@ AS_IF([test x"$have_processes" = x"yes"], [
 	AC_DEFINE(OF_HAVE_PROCESSES, 1, [Whether we have processes])
 ])
 
-AC_CHECK_HEADERS(execinfo.h)
+AC_MSG_CHECKING(for __builtin_return_address)
+AC_TRY_LINK([], [
+	__builtin_return_address(0);
+], [
+	AC_MSG_RESULT(yes)
+	AC_DEFINE(HAVE_BUILTIN_RETURN_ADDRESS, 1,
+		[Whether we have __builtin_return_address])
+], [
+	AC_MSG_RESULT(no)
+])
 
 AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 	AC_CHECK_HEADER(Foundation/NSObject.h, [
