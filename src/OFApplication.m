@@ -27,9 +27,7 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFRunLoop.h"
-#ifdef OF_HAVE_THREADS
-# import "OFThread.h"
-#endif
+#import "OFThread.h"
 
 #import "autorelease.h"
 #import "macros.h"

@@ -27,10 +27,7 @@
 #import "OFObject.h"
 #import "OFTimer.h"
 #import "OFRunLoop.h"
-#ifdef OF_HAVE_THREADS
-# import "OFThread.h"
-#endif
-#import "OFAutoreleasePool.h"
+#import "OFThread.h"
 
 #import "OFAllocFailedException.h"
 #import "OFEnumerationMutationException.h"

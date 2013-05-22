@@ -40,9 +40,7 @@
 #import "OFTCPSocket.h"
 #import "OFTCPSocket+SOCKS5.h"
 #import "OFString.h"
-#ifdef OF_HAVE_THREADS
-# import "OFThread.h"
-#endif
+#import "OFThread.h"
 #import "OFTimer.h"
 #import "OFRunLoop.h"
 
