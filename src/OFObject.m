@@ -25,6 +25,7 @@
 #include <sys/time.h>
 
 #import "OFObject.h"
+#import "OFArray.h"
 #import "OFTimer.h"
 #import "OFRunLoop.h"
 #import "OFThread.h"
@@ -106,8 +107,18 @@ uint32_t of_hash_seed;
 static void
 uncaught_exception_handler(id exception)
 {
+	OFArray *backtrace = nil;
+
 	fprintf(stderr, "\nRuntime error: Unhandled exception:\n%s\n",
 	    [[exception description] UTF8String]);
+
+	if ([exception respondsToSelector: @selector(backtrace)])
+		backtrace = [exception backtrace];
+
+	if (backtrace != nil)
+		fprintf(stderr, "\nBacktrace:\n  %s\n\n",
+		    [[backtrace componentsJoinedByString: @"\n  "] UTF8String]);
+
 	abort();
 }
 #endif

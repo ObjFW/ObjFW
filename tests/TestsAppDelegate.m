@@ -19,9 +19,12 @@
 #include <stdlib.h>
 
 #import "OFString.h"
+#import "OFArray.h"
 #import "OFStdIOStream.h"
 #import "OFFile.h"
 #import "OFAutoreleasePool.h"
+
+#import "OFException.h"
 
 #import "TestsAppDelegate.h"
 
@@ -86,9 +89,17 @@ main(int argc, char *argv[])
 		    [[OFApplication sharedApplication] delegate];
 		OFString *string = [OFString stringWithFormat:
 		    @"\nRuntime error: Unhandled exception:\n%@\n", e];
+		OFString *backtrace = [[e backtrace]
+		    componentsJoinedByString: @"\n  "];
 
 		[delegate outputString: string
 			       inColor: RED];
+		if (backtrace != nil) {
+			backtrace = [OFString stringWithFormat:
+			    @"\nBacktrace:\n  %@\n\n", backtrace];
+			[delegate outputString: backtrace
+				       inColor: RED];
+		}
 		[delegate outputString: @"Press home button to exit!\n"
 			       inColor: NO_COLOR];
 		for (;;) {
