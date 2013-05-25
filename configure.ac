@@ -751,15 +751,27 @@ AS_IF([test x"$have_processes" = x"yes"], [
 	AC_DEFINE(OF_HAVE_PROCESSES, 1, [Whether we have processes])
 ])
 
-AC_MSG_CHECKING(for __builtin_return_address)
-AC_TRY_LINK([], [
-	__builtin_return_address(0);
+AC_DEFUN([CHECK_BUILTIN_RETURN_ADDRESS], [
+	AC_MSG_CHECKING(for __builtin_return_address)
+	AC_TRY_LINK([], [
+		__builtin_return_address(1);
+	], [
+		AC_MSG_RESULT(yes)
+		AC_DEFINE(HAVE_BUILTIN_RETURN_ADDRESS, 1,
+			[Whether we have __builtin_return_address])
+	], [
+		AC_MSG_RESULT(no)
+	])
+])
+AC_CHECK_HEADER(execinfo.h, [
+	AC_DEFINE(HAVE_EXECINFO_H, 1, [Whether we have execinfo.h])
+	AC_CHECK_FUNC(backtrace, [
+		AC_DEFINE(HAVE_BACKTRACE, 1, [Whether we have backtrace()])
+	], [
+		CHECK_BUILTIN_RETURN_ADDRESS
+	])
 ], [
-	AC_MSG_RESULT(yes)
-	AC_DEFINE(HAVE_BUILTIN_RETURN_ADDRESS, 1,
-		[Whether we have __builtin_return_address])
-], [
-	AC_MSG_RESULT(no)
+	CHECK_BUILTIN_RETURN_ADDRESS
 ])
 
 AS_IF([test x"$objc_runtime" = x"Apple runtime"], [

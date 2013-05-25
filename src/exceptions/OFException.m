@@ -18,6 +18,9 @@
 
 #include <stdlib.h>
 
+#ifdef HAVE_EXECINFO_H
+# include <execinfo.h>
+#endif
 #ifdef HAVE_DLFCN_H
 # include <dlfcn.h>
 #endif
@@ -51,16 +54,17 @@
 	self = [super init];
 
 	_inClass = class;
-#ifdef HAVE_BUILTIN_RETURN_ADDRESS
+#if defined(HAVE_EXECINFO_H) && defined(HAVE_BACKTRACE)
+	_backtraceSize = backtrace(_backtrace, 32);
+#elif defined(HAVE_BUILTIN_RETURN_ADDRESS) && defined(__ppc__)
 	/*
 	 * We can't use a loop here, as __builtin_return_address() and
 	 * __builtin_frame_address() only allow a constant as parameter.
 	 */
-# define GET_FRAME(i)					\
-	if (__builtin_frame_address(i + 1) == NULL)	\
-		goto backtrace_done;			\
-	if ((_returnAddresses[i] = (			\
-	    __builtin_return_address(i))) == NULL)	\
+# define GET_FRAME(i)							\
+	if (__builtin_frame_address(i + 1) == NULL)			\
+		goto backtrace_done;					\
+	if ((_backtrace[i] = (__builtin_return_address(i))) == NULL)	\
 		goto backtrace_done;
 	GET_FRAME(0)
 	GET_FRAME(1)
@@ -115,14 +119,41 @@ backtrace_done:
 
 - (OFArray*)backtrace
 {
-#ifdef HAVE_BUILTIN_RETURN_ADDRESS
+#if defined(HAVE_EXECINFO_H) && defined(HAVE_BACKTRACE)
+	OFMutableArray *backtrace = [OFMutableArray array];
+	void *pool = objc_autoreleasePoolPush();
+	char **symbols;
+
+	if (_backtraceSize < 0)
+		return nil;
+
+	symbols = backtrace_symbols(_backtrace, _backtraceSize);
+	@try {
+		int i;
+
+		for (i = 0; i < _backtraceSize; i++) {
+			OFString *symbol = [OFString
+			    stringWithCString: symbols[i]
+				     encoding: OF_STRING_ENCODING_NATIVE];
+			[backtrace addObject: symbol];
+		}
+	} @finally {
+		free(symbols);
+	}
+
+	objc_autoreleasePoolPop(pool);
+
+	[backtrace makeImmutable];
+
+	return backtrace;
+#elif defined(HAVE_BUILTIN_RETURN_ADDRESS) && defined(__ppc__)
 	OFMutableArray *backtrace = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 	uint_fast8_t i;
 
-	for (i = 0; i < 32 && _returnAddresses[i] != NULL; i++) {
+	for (i = 0; i < 32 && _backtrace[i] != NULL; i++) {
 		void *addr =
-		    __builtin_extract_return_addr(_returnAddresses[i]);
+		    __builtin_extract_return_addr(_backtrace[i]);
 # ifdef HAVE_DLFCN_H
 		Dl_info info;
 

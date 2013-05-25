@@ -29,7 +29,8 @@
 @interface OFException: OFObject
 {
 	Class _inClass;
-	void *_returnAddresses[32];
+	void *_backtrace[32];
+	int _backtraceSize;
 }
 
 #ifdef OF_HAVE_PROPERTIES
