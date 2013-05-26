@@ -21,6 +21,8 @@
 # define __STDC_CONSTANT_MACROS
 #endif
 
+#import "objfw-defs.h"
+
 #ifdef OF_HAVE_SYS_SOCKET_H
 # include <sys/socket.h>
 #endif
