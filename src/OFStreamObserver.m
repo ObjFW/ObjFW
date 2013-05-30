@@ -47,6 +47,10 @@
 # import "OFStreamObserver_select.h"
 #endif
 
+#ifdef _WIN32
+# include <ws2tcpip.h>
+#endif
+
 #import "OFInitializationFailedException.h"
 #import "OFOutOfRangeException.h"
 
