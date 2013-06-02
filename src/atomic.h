@@ -670,7 +670,6 @@ of_atomic_cmpswap_int(volatile int *p, int o, int n)
 	int r;
 
 	__asm__ (
-	    "xorl	%0, %0\n\t"
 	    "lock\n\t"
 	    "cmpxchg	%2, %3\n\t"
 	    "sete	%b0\n\t"
@@ -704,7 +703,6 @@ of_atomic_cmpswap_32(volatile int32_t *p, int32_t o, int32_t n)
 	int r;
 
 	__asm__ (
-	    "xorl	%0, %0\n\t"
 	    "lock\n\t"
 	    "cmpxchg	%2, %3\n\t"
 	    "sete	%b0\n\t"
@@ -738,7 +736,6 @@ of_atomic_cmpswap_ptr(void* volatile *p, void *o, void *n)
 	int r;
 
 	__asm__ (
-	    "xorl	%0, %0\n\t"
 	    "lock\n\t"
 	    "cmpxchg	%2, %3\n\t"
 	    "sete	%b0\n\t"
