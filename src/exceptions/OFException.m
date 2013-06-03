@@ -56,7 +56,7 @@
 	_inClass = class;
 #if defined(HAVE_EXECINFO_H) && defined(HAVE_BACKTRACE)
 	_backtraceSize = backtrace(_backtrace, 32);
-#elif defined(HAVE_BUILTIN_RETURN_ADDRESS) && defined(__ppc__)
+#elif defined(HAVE_BUILTIN_RETURN_ADDRESS)
 	/*
 	 * We can't use a loop here, as __builtin_return_address() and
 	 * __builtin_frame_address() only allow a constant as parameter.
@@ -146,7 +146,7 @@ backtrace_done:
 	[backtrace makeImmutable];
 
 	return backtrace;
-#elif defined(HAVE_BUILTIN_RETURN_ADDRESS) && defined(__ppc__)
+#elif defined(HAVE_BUILTIN_RETURN_ADDRESS)
 	OFMutableArray *backtrace = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 	uint_fast8_t i;

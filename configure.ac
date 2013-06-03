@@ -752,8 +752,14 @@ AS_IF([test x"$have_processes" = x"yes"], [
 ])
 
 AC_DEFUN([CHECK_BUILTIN_RETURN_ADDRESS], [
-	AC_MSG_CHECKING(for __builtin_return_address)
-	AC_TRY_LINK([], [
+	AC_MSG_CHECKING(for working __builtin_return_address)
+	AC_TRY_LINK([
+		#if defined(__ppc__) || defined(__PPC__)
+		/* __builtin_return_address() is known to work correctly */
+		#else
+		# error
+		#endif
+	], [
 		__builtin_return_address(1);
 	], [
 		AC_MSG_RESULT(yes)
