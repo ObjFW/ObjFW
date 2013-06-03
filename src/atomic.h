@@ -35,7 +35,7 @@ of_atomic_add_int(volatile int *p, int i)
 	return (*p += i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	if (sizeof(int) == 4)
-		__asm__ (
+		__asm__ __volatile__ (
 		    "lock\n\t"
 		    "xaddl	%0, %2\n\t"
 		    "addl	%1, %0"
@@ -44,7 +44,7 @@ of_atomic_add_int(volatile int *p, int i)
 		);
 # ifdef OF_AMD64_ASM
 	else if (sizeof(int) == 8)
-		__asm__ (
+		__asm__ __volatile__ (
 		    "lock\n\t"
 		    "xaddq	%0, %2\n\t"
 		    "addq	%1, %0"
@@ -78,7 +78,7 @@ of_atomic_add_32(volatile int32_t *p, int32_t i)
 #if !defined(OF_HAVE_THREADS)
 	return (*p += i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	__asm__ (
+	__asm__ __volatile__ (
 	    "lock\n\t"
 	    "xaddl	%0, %2\n\t"
 	    "addl	%1, %0"
@@ -102,7 +102,7 @@ of_atomic_add_ptr(void* volatile *p, intptr_t i)
 #if !defined(OF_HAVE_THREADS)
 	return (*(char* volatile*)p += i);
 #elif defined(OF_X86_ASM)
-	__asm__ (
+	__asm__ __volatile__ (
 	    "lock\n\t"
 	    "xaddl	%0, %2\n\t"
 	    "addl	%1, %0"
@@ -112,7 +112,7 @@ of_atomic_add_ptr(void* volatile *p, intptr_t i)
 
 	return (void*)i;
 #elif defined(OF_AMD64_ASM)
-	__asm__ (
+	__asm__ __volatile__ (
 	    "lock\n\t"
 	    "xaddq	%0, %2\n\t"
 	    "addq	%1, %0"
@@ -144,7 +144,7 @@ of_atomic_sub_int(volatile int *p, int i)
 	return (*p -= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	if (sizeof(int) == 4)
-		__asm__ (
+		__asm__ __volatile__ (
 		    "negl	%0\n\t"
 		    "lock\n\t"
 		    "xaddl	%0, %2\n\t"
@@ -154,7 +154,7 @@ of_atomic_sub_int(volatile int *p, int i)
 		);
 # ifdef OF_AMD64_ASM
 	else if (sizeof(int) == 8)
-		__asm__ (
+		__asm__ __volatile__ (
 		    "negq	%0\n\t"
 		    "lock\n\t"
 		    "xaddq	%0, %2\n\t"
@@ -189,7 +189,7 @@ of_atomic_sub_32(volatile int32_t *p, int32_t i)
 #if !defined(OF_HAVE_THREADS)
 	return (*p -= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	__asm__ (
+	__asm__ __volatile__ (
 	    "negl	%0\n\t"
 	    "lock\n\t"
 	    "xaddl	%0, %2\n\t"
@@ -214,7 +214,7 @@ of_atomic_sub_ptr(void* volatile *p, intptr_t i)
 #if !defined(OF_HAVE_THREADS)
 	return (*(char* volatile*)p -= i);
 #elif defined(OF_X86_ASM)
-	__asm__ (
+	__asm__ __volatile__ (
 	    "negl	%0\n\t"
 	    "lock\n\t"
 	    "xaddl	%0, %2\n\t"
@@ -225,7 +225,7 @@ of_atomic_sub_ptr(void* volatile *p, intptr_t i)
 
 	return (void*)i;
 #elif defined(OF_AMD64_ASM)
-	__asm__ (
+	__asm__ __volatile__ (
 	    "negq	%0\n\t"
 	    "lock\n\t"
 	    "xaddq	%0, %2\n\t"
@@ -260,7 +260,7 @@ of_atomic_inc_int(volatile int *p)
 	int i;
 
 	if (sizeof(int) == 4)
-		__asm__ (
+		__asm__ __volatile__ (
 		    "xorl	%0, %0\n\t"
 		    "incl	%0\n\t"
 		    "lock\n\t"
@@ -271,7 +271,7 @@ of_atomic_inc_int(volatile int *p)
 		);
 # ifdef OF_AMD64_ASM
 	else if (sizeof(int) == 8)
-		__asm__ (
+		__asm__ __volatile__ (
 		    "xorq	%0, %0\n\t"
 		    "incq	%0\n\t"
 		    "lock\n\t"
@@ -309,7 +309,7 @@ of_atomic_inc_32(volatile int32_t *p)
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	uint32_t i;
 
-	__asm__ (
+	__asm__ __volatile__ (
 	    "xorl	%0, %0\n\t"
 	    "incl	%0\n\t"
 	    "lock\n\t"
@@ -338,7 +338,7 @@ of_atomic_dec_int(volatile int *p)
 	int i;
 
 	if (sizeof(int) == 4)
-		__asm__ (
+		__asm__ __volatile__ (
 		    "xorl	%0, %0\n\t"
 		    "decl	%0\n\t"
 		    "lock\n\t"
@@ -349,7 +349,7 @@ of_atomic_dec_int(volatile int *p)
 		);
 # ifdef OF_AMD64_ASM
 	else if (sizeof(int) == 8)
-		__asm__ (
+		__asm__ __volatile__ (
 		    "xorq	%0, %0\n\t"
 		    "decq	%0\n\t"
 		    "lock\n\t"
@@ -387,7 +387,7 @@ of_atomic_dec_32(volatile int32_t *p)
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	uint32_t i;
 
-	__asm__ (
+	__asm__ __volatile__ (
 	    "xorl	%0, %0\n\t"
 	    "decl	%0\n\t"
 	    "lock\n\t"
@@ -414,10 +414,10 @@ of_atomic_or_int(volatile unsigned int *p, unsigned int i)
 	return (*p |= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	if (sizeof(int) == 4)
-		__asm__ (
+		__asm__ __volatile__ (
 		    "0:\n\t"
 		    "movl	%2, %0\n\t"
-		    "movl	%2, %%eax\n\t"
+		    "movl	%0, %%eax\n\t"
 		    "orl	%1, %0\n\t"
 		    "lock\n\t"
 		    "cmpxchg	%0, %2\n\t"
@@ -427,11 +427,11 @@ of_atomic_or_int(volatile unsigned int *p, unsigned int i)
 		    : "eax", "cc"
 		);
 # ifdef OF_AMD64_ASM
-	if (sizeof(int) == 8)
-		__asm__ (
+	else if (sizeof(int) == 8)
+		__asm__ __volatile__ (
 		    "0:\n\t"
 		    "movq	%2, %0\n\t"
-		    "movq	%2, %%rax\n\t"
+		    "movq	%0, %%rax\n\t"
 		    "orq	%1, %0\n\t"
 		    "lock\n\t"
 		    "cmpxchg	%0, %2\n\t"
@@ -467,10 +467,10 @@ of_atomic_or_32(volatile uint32_t *p, uint32_t i)
 #if !defined(OF_HAVE_THREADS)
 	return (*p |= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	__asm__ (
+	__asm__ __volatile__ (
 	    "0:\n\t"
 	    "movl	%2, %0\n\t"
-	    "movl	%2, %%eax\n\t"
+	    "movl	%0, %%eax\n\t"
 	    "orl	%1, %0\n\t"
 	    "lock\n\t"
 	    "cmpxchg	%0, %2\n\t"
@@ -497,10 +497,10 @@ of_atomic_and_int(volatile unsigned int *p, unsigned int i)
 	return (*p &= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	if (sizeof(int) == 4)
-		__asm__ (
+		__asm__ __volatile__ (
 		    "0:\n\t"
 		    "movl	%2, %0\n\t"
-		    "movl	%2, %%eax\n\t"
+		    "movl	%0, %%eax\n\t"
 		    "andl	%1, %0\n\t"
 		    "lock\n\t"
 		    "cmpxchg	%0, %2\n\t"
@@ -510,11 +510,11 @@ of_atomic_and_int(volatile unsigned int *p, unsigned int i)
 		    : "eax", "cc"
 		);
 # ifdef OF_AMD64_ASM
-	if (sizeof(int) == 8)
-		__asm__ (
+	else if (sizeof(int) == 8)
+		__asm__ __volatile__ (
 		    "0:\n\t"
 		    "movq	%2, %0\n\t"
-		    "movq	%2, %%rax\n\t"
+		    "movq	%0, %%rax\n\t"
 		    "andq	%1, %0\n\t"
 		    "lock\n\t"
 		    "cmpxchg	%0, %2\n\t"
@@ -550,10 +550,10 @@ of_atomic_and_32(volatile uint32_t *p, uint32_t i)
 #if !defined(OF_HAVE_THREADS)
 	return (*p &= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	__asm__ (
+	__asm__ __volatile__ (
 	    "0:\n\t"
 	    "movl	%2, %0\n\t"
-	    "movl	%2, %%eax\n\t"
+	    "movl	%0, %%eax\n\t"
 	    "andl	%1, %0\n\t"
 	    "lock\n\t"
 	    "cmpxchg	%0, %2\n\t"
@@ -580,10 +580,10 @@ of_atomic_xor_int(volatile unsigned int *p, unsigned int i)
 	return (*p ^= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	if (sizeof(int) == 4)
-		__asm__ (
+		__asm__ __volatile__ (
 		    "0:\n\t"
 		    "movl	%2, %0\n\t"
-		    "movl	%2, %%eax\n\t"
+		    "movl	%0, %%eax\n\t"
 		    "xorl	%1, %0\n\t"
 		    "lock\n\t"
 		    "cmpxchg	%0, %2\n\t"
@@ -593,11 +593,11 @@ of_atomic_xor_int(volatile unsigned int *p, unsigned int i)
 		    : "eax", "cc"
 		);
 # ifdef OF_AMD64_ASM
-	if (sizeof(int) == 8)
-		__asm__ (
+	else if (sizeof(int) == 8)
+		__asm__ __volatile__ (
 		    "0:\n\t"
 		    "movq	%2, %0\n\t"
-		    "movq	%2, %%rax\n\t"
+		    "movq	%0, %%rax\n\t"
 		    "xorq	%1, %0\n\t"
 		    "lock\n\t"
 		    "cmpxchg	%0, %2\n\t"
@@ -617,7 +617,7 @@ of_atomic_xor_int(volatile unsigned int *p, unsigned int i)
 	if (sizeof(int) == 4)
 		return OSAtomicXor32Barrier(i, p);
 # ifdef OF_HAVE_OSATOMIC_64
-	else (sizeof(int) == 8)
+	else if (sizeof(int) == 8)
 		return OSAtomicXor64Barrier(i, p);
 # endif
 	else
@@ -633,10 +633,10 @@ of_atomic_xor_32(volatile uint32_t *p, uint32_t i)
 #if !defined(OF_HAVE_THREADS)
 	return (*p ^= i);
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
-	__asm__ (
+	__asm__ __volatile__ (
 	    "0:\n\t"
 	    "movl	%2, %0\n\t"
-	    "movl	%2, %%eax\n\t"
+	    "movl	%0, %%eax\n\t"
 	    "xorl	%1, %0\n\t"
 	    "lock\n\t"
 	    "cmpxchgl	%0, %2\n\t"
@@ -669,13 +669,13 @@ of_atomic_cmpswap_int(volatile int *p, int o, int n)
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	int r;
 
-	__asm__ (
+	__asm__ __volatile__ (
 	    "lock\n\t"
 	    "cmpxchg	%2, %3\n\t"
 	    "sete	%b0\n\t"
 	    "movzbl	%b0, %0"
-	    : "=&d"(r)	/* use d instead of r due to gcc bug */
-	    : "a"(o), "r"(n), "m"(*p)
+	    : "=&d"(r), "+a"(o)	/* use d instead of r due to gcc bug */
+	    : "r"(n), "m"(*p)
 	    : "cc"
 	);
 
@@ -702,13 +702,13 @@ of_atomic_cmpswap_32(volatile int32_t *p, int32_t o, int32_t n)
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	int r;
 
-	__asm__ (
+	__asm__ __volatile__ (
 	    "lock\n\t"
 	    "cmpxchg	%2, %3\n\t"
 	    "sete	%b0\n\t"
 	    "movzbl	%b0, %0"
-	    : "=&d"(r)	/* use d instead of r due to gcc bug */
-	    : "a"(o), "r"(n), "m"(*p)
+	    : "=&d"(r), "+a"(o)	/* use d instead of r due to gcc bug */
+	    : "r"(n), "m"(*p)
 	    : "cc"
 	);
 
@@ -735,13 +735,13 @@ of_atomic_cmpswap_ptr(void* volatile *p, void *o, void *n)
 #elif defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
 	int r;
 
-	__asm__ (
+	__asm__ __volatile__ (
 	    "lock\n\t"
 	    "cmpxchg	%2, %3\n\t"
 	    "sete	%b0\n\t"
 	    "movzbl	%b0, %0"
-	    : "=&d"(r)	/* use d instead of r due to gcc bug */
-	    : "a"(o), "r"(n), "m"(*p)
+	    : "=&d"(r), "+a"(o)	/* use d instead of r due to gcc bug */
+	    : "r"(n), "m"(*p)
 	    : "cc"
 	);
 
