@@ -18,9 +18,6 @@
 
 #include <stdlib.h>
 
-#ifdef HAVE_EXECINFO_H
-# include <execinfo.h>
-#endif
 #ifdef HAVE_DLFCN_H
 # include <dlfcn.h>
 #endif
@@ -30,6 +27,34 @@
 #import "OFArray.h"
 
 #import "autorelease.h"
+
+struct _Unwind_Context;
+typedef enum {
+	_URC_OK		  = 0,
+	_URC_END_OF_STACK = 5
+}_Unwind_Reason_Code;
+
+struct backtrace_ctx {
+	void **backtrace;
+	uint_fast8_t i;
+};
+
+extern _Unwind_Reason_Code _Unwind_Backtrace(
+    _Unwind_Reason_Code(*)(struct _Unwind_Context*, void*), void*);
+extern uintptr_t _Unwind_GetIP(struct _Unwind_Context*);
+
+static _Unwind_Reason_Code
+backtrace_callback(struct _Unwind_Context *ctx, void *data)
+{
+	struct backtrace_ctx *bt = data;
+
+	if (bt->i < OF_BACKTRACE_SIZE) {
+		bt->backtrace[bt->i++] = (void*)_Unwind_GetIP(ctx);
+		return _URC_OK;
+	}
+
+	return _URC_END_OF_STACK;
+}
 
 @implementation OFException
 + (instancetype)exceptionWithClass: (Class)class
@@ -51,56 +76,15 @@
 
 - initWithClass: (Class)class
 {
+	struct backtrace_ctx ctx;
+
 	self = [super init];
 
 	_inClass = class;
-#if defined(HAVE_EXECINFO_H) && defined(HAVE_BACKTRACE)
-	_backtraceSize = backtrace(_backtrace, 32);
-#elif defined(HAVE_BUILTIN_RETURN_ADDRESS)
-	/*
-	 * We can't use a loop here, as __builtin_return_address() and
-	 * __builtin_frame_address() only allow a constant as parameter.
-	 */
-# define GET_FRAME(i)							\
-	if (__builtin_frame_address(i + 1) == NULL)			\
-		goto backtrace_done;					\
-	if ((_backtrace[i] = (__builtin_return_address(i))) == NULL)	\
-		goto backtrace_done;
-	GET_FRAME(0)
-	GET_FRAME(1)
-	GET_FRAME(2)
-	GET_FRAME(3)
-	GET_FRAME(4)
-	GET_FRAME(5)
-	GET_FRAME(6)
-	GET_FRAME(7)
-	GET_FRAME(8)
-	GET_FRAME(9)
-	GET_FRAME(10)
-	GET_FRAME(11)
-	GET_FRAME(12)
-	GET_FRAME(13)
-	GET_FRAME(14)
-	GET_FRAME(15)
-	GET_FRAME(16)
-	GET_FRAME(17)
-	GET_FRAME(18)
-	GET_FRAME(19)
-	GET_FRAME(20)
-	GET_FRAME(21)
-	GET_FRAME(22)
-	GET_FRAME(23)
-	GET_FRAME(24)
-	GET_FRAME(25)
-	GET_FRAME(26)
-	GET_FRAME(27)
-	GET_FRAME(28)
-	GET_FRAME(29)
-	GET_FRAME(30)
-	GET_FRAME(31)
-# undef GET_FRAME
-backtrace_done:
-#endif
+
+	ctx.backtrace = _backtrace;
+	ctx.i = 0;
+	_Unwind_Backtrace(backtrace_callback, &ctx);
 
 	return self;
 }
@@ -119,59 +103,30 @@ backtrace_done:
 
 - (OFArray*)backtrace
 {
-#if defined(HAVE_EXECINFO_H) && defined(HAVE_BACKTRACE)
-	OFMutableArray *backtrace = [OFMutableArray array];
-	void *pool = objc_autoreleasePoolPush();
-	char **symbols;
-
-	if (_backtraceSize < 0)
-		return nil;
-
-	symbols = backtrace_symbols(_backtrace, _backtraceSize);
-	@try {
-		int i;
-
-		for (i = 0; i < _backtraceSize; i++) {
-			OFString *symbol = [OFString
-			    stringWithCString: symbols[i]
-				     encoding: OF_STRING_ENCODING_NATIVE];
-			[backtrace addObject: symbol];
-		}
-	} @finally {
-		free(symbols);
-	}
-
-	objc_autoreleasePoolPop(pool);
-
-	[backtrace makeImmutable];
-
-	return backtrace;
-#elif defined(HAVE_BUILTIN_RETURN_ADDRESS)
 	OFMutableArray *backtrace = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 	uint_fast8_t i;
 
-	for (i = 0; i < 32 && _backtrace[i] != NULL; i++) {
-		void *addr =
-		    __builtin_extract_return_addr(_backtrace[i]);
-# ifdef HAVE_DLFCN_H
+	for (i = 0; i < OF_BACKTRACE_SIZE && _backtrace[i] != NULL; i++) {
+#ifdef HAVE_DLFCN_H
 		Dl_info info;
 
-		if (dladdr(addr, &info)) {
-			ptrdiff_t offset = (char*)addr - (char*)info.dli_saddr;
+		if (dladdr(_backtrace[i], &info)) {
+			ptrdiff_t offset = (char*)_backtrace[i] -
+			    (char*)info.dli_saddr;
 
 			if (info.dli_sname == NULL)
 				info.dli_sname = "??";
 
 			[backtrace addObject:
 			    [OFString stringWithFormat: @"%p <%s+%td> at %s",
-							addr, info.dli_sname,
-							offset,
+							_backtrace[i],
+							info.dli_sname, offset,
 							info.dli_fname]];
 		} else
-# endif
+#endif
 			[backtrace addObject:
-			    [OFString stringWithFormat: @"%p", addr]];
+			    [OFString stringWithFormat: @"%p", _backtrace[i]]];
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -179,8 +134,5 @@ backtrace_done:
 	[backtrace makeImmutable];
 
 	return backtrace;
-#else
-	return nil;
-#endif
 }
 @end

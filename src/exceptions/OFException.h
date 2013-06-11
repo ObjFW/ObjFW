@@ -20,6 +20,8 @@
 @class OFArray;
 @class OFMutableArray;
 
+#define OF_BACKTRACE_SIZE 32
+
 /*!
  * @brief The base class for all exceptions in ObjFW
  *
@@ -29,8 +31,7 @@
 @interface OFException: OFObject
 {
 	Class _inClass;
-	void *_backtrace[32];
-	int _backtraceSize;
+	void *_backtrace[OF_BACKTRACE_SIZE];
 }
 
 #ifdef OF_HAVE_PROPERTIES
