@@ -33,6 +33,12 @@
 # include <ws2tcpip.h>
 #endif
 
+#ifdef __wii__
+# define BOOL OGC_BOOL
+# include <network.h>
+# undef BOOL
+#endif
+
 /*! @file */
 
 @class OFTCPSocket;

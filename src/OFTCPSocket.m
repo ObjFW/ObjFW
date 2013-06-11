@@ -86,6 +86,19 @@ static OFMutex *mutex = nil;
 # define close(sock) closesocket(sock)
 #endif
 
+#ifdef __wii__
+# define accept(sock, addr, addrlen) net_accept(sock, addr, addrlen)
+# define bind(sock, addr, addrlen) net_bind(sock, addr, addrlen)
+# define close(sock) net_close(sock)
+# define connect(sock, addr, addrlen) net_connect(sock, addr, addrlen)
+# define gethostbyname(name) net_gethostbyname(name)
+# define getsockname(sock, addr, addrlen) net_getsockname(sock, addr, addrlen)
+# define listen(sock, backlog) net_listen(sock, backlog)
+# define setsockopt(sock, level, name, value, len) \
+	net_setsockopt(sock, level, name, value, len)
+# define socket(domain, type, proto) net_socket(domain, type, proto)
+#endif
+
 /* References for static linking */
 void _references_to_categories_of_OFTCPSocket(void)
 {
@@ -491,7 +504,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 	union {
 		struct sockaddr_storage storage;
 		struct sockaddr_in in;
+#ifdef AF_INET6
 		struct sockaddr_in6 in6;
+#endif
 	} addr;
 	socklen_t addrLen;
 
@@ -620,8 +635,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	if (addr.storage.ss_family == AF_INET)
 		return OF_BSWAP16_IF_LE(addr.in.sin_port);
+#ifdef AF_INET6
 	if (addr.storage.ss_family == AF_INET6)
 		return OF_BSWAP16_IF_LE(addr.in6.sin6_port);
+#endif
 
 	close(_socket);
 	_socket = INVALID_SOCKET;

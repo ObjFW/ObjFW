@@ -40,7 +40,7 @@
 #ifdef HAVE_KQUEUE
 # import "OFStreamObserver_kqueue.h"
 #endif
-#ifdef HAVE_POLL_H
+#if defined(HAVE_POLL_H) || defined(__wii__)
 # import "OFStreamObserver_poll.h"
 #endif
 #if defined(HAVE_SYS_SELECT_H) || defined(_WIN32)
@@ -56,6 +56,17 @@
 
 #import "autorelease.h"
 #import "macros.h"
+
+#ifdef __wii__
+# define BOOL OGC_BOOL
+# include <network.h>
+# undef BOOL
+# define bind(sock, addr, addrlen) net_bind(sock, addr, addrlen)
+# define getsockname(sock, addr, addrlen) net_getsockname(sock, addr, addrlen)
+# define sendto(sock, buf, len, flags, addr, addrlen) \
+	net_sendto(sock, buf, len, flags, addr, addrlen)
+# define socket(domain, type, proto) net_socket(domain, type, proto)
+#endif
 
 enum {
 	QUEUE_ADD = 0,
@@ -79,7 +90,7 @@ enum {
 
 	return [super alloc];
 }
-#elif defined(HAVE_POLL_H)
+#elif defined(HAVE_POLL_H) || defined(__wii__)
 + alloc
 {
 	if (self == [OFStreamObserver class])

@@ -28,6 +28,12 @@
 # include <winsock2.h>
 #endif
 
+#ifdef __wii__
+# define BOOL OGC_BOOL
+# include <network.h>
+# undef BOOL
+#endif
+
 @class OFStream;
 @class OFMutableArray;
 @class OFMutableDictionary;

@@ -93,6 +93,9 @@ EBOOT.PBP: ${PROG_NOINST}
 	psp-strip ${PROG_NOINST}
 	pack-pbp $@ PARAM.SFO NULL NULL NULL NULL NULL ${PROG_NOINST} NULL
 
+boot.dol: ${PROG_NOINST}
+	elf2dol ${PROG_NOINST} $@
+
 include ../buildsys.mk
 
 CPPFLAGS += -I../src -I../src/exceptions -I../src/runtime -I.. -DSTDOUT

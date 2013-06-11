@@ -32,6 +32,16 @@
 #import "autorelease.h"
 #import "macros.h"
 
+#ifdef __wii__
+# define BOOL OGC_BOOL
+# include <network.h>
+# undef BOOL
+# define poll(fds, nfds, timeout) net_poll(fds, nfds, timeout)
+# define pollfd pollsd
+# define fd socket
+typedef u32 nfds_t;
+#endif
+
 @implementation OFStreamObserver_poll
 - init
 {

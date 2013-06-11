@@ -10,6 +10,7 @@
 .deps
 aclocal.m4
 autom4te.cache
+boot.dol
 build
 buildsys.mk
 config.h

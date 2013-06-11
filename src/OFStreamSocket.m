@@ -37,6 +37,14 @@
 #import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
 
+#ifdef __wii__
+# define BOOL OGC_BOOL
+# include <network.h>
+# undef BOOL
+# define recv(sock, buf, len, flags) net_recv(sock, buf, len, flags)
+# define send(sock, buf, len, flags) net_send(sock, buf, len, flags)
+#endif
+
 #ifndef INVALID_SOCKET
 # define INVALID_SOCKET -1
 #endif
@@ -46,19 +54,25 @@
 #endif
 
 @implementation OFStreamSocket
-#ifdef _WIN32
 + (void)initialize
 {
+#ifdef _WIN32
 	WSADATA wsa;
+#endif
 
 	if (self != [OFStreamSocket class])
 		return;
 
+#if defined(_WIN32)
 	if (WSAStartup(MAKEWORD(2, 0), &wsa))
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
-}
+#elif defined(__wii__)
+	if (net_init() < 0)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
 #endif
+}
 
 + (instancetype)socket
 {
