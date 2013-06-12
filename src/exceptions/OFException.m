@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#define _GNU_SOURCE
+
 #include <stdlib.h>
 
 #ifdef HAVE_DLFCN_H
