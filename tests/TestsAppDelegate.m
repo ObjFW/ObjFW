@@ -91,7 +91,7 @@ main(int argc, char *argv[])
 		    @"\nRuntime error: Unhandled exception:\n%@\n", e];
 		OFString *backtrace = [OFString stringWithFormat:
 		    @"\nBacktrace:\n  %@\n\n",
-		    [[e backtrace] componentsJoinedByString: @"\n  "];
+		    [[e backtrace] componentsJoinedByString: @"\n  "]];
 
 		[delegate outputString: string
 			       inColor: RED];

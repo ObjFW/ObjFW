@@ -97,6 +97,7 @@ static OFMutex *mutex = nil;
 # define setsockopt(sock, level, name, value, len) \
 	net_setsockopt(sock, level, name, value, len)
 # define socket(domain, type, proto) net_socket(domain, type, proto)
+typedef u32 in_addr_t;
 #endif
 
 /* References for static linking */
@@ -375,7 +376,42 @@ static uint16_t defaultSOCKS5Port = 1080;
 	char **ip;
 # ifdef OF_HAVE_THREADS
 	OFDataArray *addrlist;
+# endif
 
+	memset(&addr, 0, sizeof(addr));
+	addr.sin_family = AF_INET;
+	addr.sin_port = OF_BSWAP16_IF_LE(port);
+
+	if ((addr.sin_addr.s_addr = inet_addr([host cStringWithEncoding:
+	    OF_STRING_ENCODING_NATIVE])) != (in_addr_t)(-1)) {
+		if ((_socket = socket(AF_INET, SOCK_STREAM,
+		    0)) == INVALID_SOCKET) {
+			@throw [OFConnectionFailedException
+			    exceptionWithClass: [self class]
+					socket: self
+					  host: host
+					  port: port];
+		}
+
+		if (connect(_socket, (struct sockaddr*)&addr,
+		    sizeof(addr)) == -1) {
+			close(_socket);
+			_socket = INVALID_SOCKET;
+			@throw [OFConnectionFailedException
+			    exceptionWithClass: [self class]
+					socket: self
+					  host: host
+					  port: port];
+		}
+
+		if (_SOCKS5Host != nil)
+			[self OF_SOCKS5ConnectToHost: destinationHost
+						port: destinationPort];
+
+		return;
+	}
+
+# ifdef OF_HAVE_THREADS
 	addrlist = [[OFDataArray alloc] initWithItemSize: sizeof(char**)];
 	[mutex lock];
 # endif
@@ -391,10 +427,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 				socket: self
 				  host: host];
 	}
-
-	memset(&addr, 0, sizeof(addr));
-	addr.sin_family = AF_INET;
-	addr.sin_port = OF_BSWAP16_IF_LE(port);
 
 	if (he->h_addrtype != AF_INET ||
 	    (_socket = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
@@ -562,42 +594,42 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	freeaddrinfo(res);
 #else
-	struct hostent *he;
-
-# ifdef OF_HAVE_THREADS
-	[mutex lock];
-# endif
-
-	if ((he = gethostbyname([host cStringWithEncoding:
-	    OF_STRING_ENCODING_NATIVE])) == NULL) {
-# ifdef OF_HAVE_THREADS
-		[mutex unlock];
-# endif
-		@throw [OFAddressTranslationFailedException
-		    exceptionWithClass: [self class]
-				socket: self
-				  host: host];
-	}
-
 	memset(&addr, 0, sizeof(addr));
 	addr.in.sin_family = AF_INET;
 	addr.in.sin_port = OF_BSWAP16_IF_LE(port);
 
-	if (he->h_addrtype != AF_INET || he->h_addr_list[0] == NULL) {
+	if ((addr.in.sin_addr.s_addr = inet_addr([host cStringWithEncoding:
+	    OF_STRING_ENCODING_NATIVE])) == (in_addr_t)(-1)) {
 # ifdef OF_HAVE_THREADS
-		[mutex unlock];
+		[mutex lock];
+		@try {
 # endif
-		@throw [OFAddressTranslationFailedException
-		    exceptionWithClass: [self class]
-				socket: self
-				  host: host];
+			struct hostent *he;
+
+			if ((he = gethostbyname([host cStringWithEncoding:
+			    OF_STRING_ENCODING_NATIVE])) == NULL)
+				@throw [OFAddressTranslationFailedException
+				    exceptionWithClass: [self class]
+						socket: self
+						  host: host];
+
+			if (he->h_addrtype != AF_INET ||
+			    he->h_addr_list[0] == NULL) {
+				@throw [OFAddressTranslationFailedException
+				    exceptionWithClass: [self class]
+						socket: self
+						  host: host];
+			}
+
+			memcpy(&addr.in.sin_addr.s_addr, he->h_addr_list[0],
+			    he->h_length);
+# ifdef OF_HAVE_THREADS
+		} @finally {
+			[mutex unlock];
+		}
+# endif
 	}
 
-	memcpy(&addr.in.sin_addr.s_addr, he->h_addr_list[0], he->h_length);
-
-# ifdef OF_HAVE_THREADS
-	[mutex unlock];
-# endif
 	if ((_socket = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
 		@throw [OFBindFailedException exceptionWithClass: [self class]
 							  socket: self
