@@ -92,12 +92,17 @@ static OFMutex *mutex = nil;
 # define close(sock) net_close(sock)
 # define connect(sock, addr, addrlen) net_connect(sock, addr, addrlen)
 # define gethostbyname(name) net_gethostbyname(name)
-# define getsockname(sock, addr, addrlen) net_getsockname(sock, addr, addrlen)
 # define listen(sock, backlog) net_listen(sock, backlog)
 # define setsockopt(sock, level, name, value, len) \
 	net_setsockopt(sock, level, name, value, len)
 # define socket(domain, type, proto) net_socket(domain, type, proto)
 typedef u32 in_addr_t;
+
+struct sockaddr_storage {
+	u8 ss_len;
+	u8 ss_family;
+	u8 ss_data[14];
+};
 #endif
 
 /* References for static linking */
@@ -110,6 +115,10 @@ Class of_tls_socket_class = Nil;
 
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
+
+#ifdef __wii__
+static uint16_t freePort = 65532;
+#endif
 
 #ifdef OF_HAVE_THREADS
 @interface OFTCPSocket_ConnectThread: OFThread
@@ -540,7 +549,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 		struct sockaddr_in6 in6;
 #endif
 	} addr;
+#ifndef __wii__
 	socklen_t addrLen;
+#endif
 
 	if (_socket != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException
@@ -551,6 +562,11 @@ static uint16_t defaultSOCKS5Port = 1080;
 		@throw [OFNotImplementedException
 		    exceptionWithClass: [self class]
 			      selector: _cmd];
+
+#ifdef __wii__
+	if (port == 0)
+		port = freePort--;
+#endif
 
 #ifdef HAVE_THREADSAFE_GETADDRINFO
 	struct addrinfo hints, *res;
@@ -655,6 +671,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (port > 0)
 		return port;
 
+#ifndef __wii__
 	addrLen = sizeof(addr.storage);
 	if (getsockname(_socket, (struct sockaddr*)&addr, &addrLen)) {
 		close(_socket);
@@ -667,9 +684,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	if (addr.storage.ss_family == AF_INET)
 		return OF_BSWAP16_IF_LE(addr.in.sin_port);
-#ifdef AF_INET6
+# ifdef AF_INET6
 	if (addr.storage.ss_family == AF_INET6)
 		return OF_BSWAP16_IF_LE(addr.in6.sin6_port);
+# endif
 #endif
 
 	close(_socket);

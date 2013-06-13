@@ -62,7 +62,6 @@
 # include <network.h>
 # undef BOOL
 # define bind(sock, addr, addrlen) net_bind(sock, addr, addrlen)
-# define getsockname(sock, addr, addrlen) net_getsockname(sock, addr, addrlen)
 # define sendto(sock, buf, len, flags, addr, addrlen) \
 	net_sendto(sock, buf, len, flags, addr, addrlen)
 # define socket(domain, type, proto) net_socket(domain, type, proto)
@@ -115,7 +114,9 @@ enum {
 	@try {
 #ifndef OF_HAVE_PIPE
 		struct sockaddr_in cancelAddr2;
+# ifndef __wii__
 		socklen_t cancelAddrLen;
+# endif
 #endif
 
 		_readStreams = [[OFMutableArray alloc] init];
@@ -146,17 +147,25 @@ enum {
 		_cancelAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 		cancelAddr2 = _cancelAddr;
 
+# ifdef __wii__
+		/* The Wii does not accept port 0 as "choose any free port" */
+		_cancelAddr.sin_port = 65533;
+		cancelAddr2.sin_port = 65534;
+# endif
+
 		if (bind(_cancelFD[0], (struct sockaddr*)&_cancelAddr,
 		    sizeof(_cancelAddr)) || bind(_cancelFD[1],
 		    (struct sockaddr*)&cancelAddr2, sizeof(cancelAddr2)))
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 
+# ifndef __wii__
 		cancelAddrLen = sizeof(_cancelAddr);
 		if (getsockname(_cancelFD[0], (struct sockaddr*)&_cancelAddr,
 		    &cancelAddrLen))
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
+# endif
 #endif
 
 		_maxFD = _cancelFD[0];
