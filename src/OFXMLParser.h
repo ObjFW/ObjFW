@@ -149,6 +149,8 @@
 		OF_XMLPARSER_IN_DOCTYPE,
 		OF_XMLPARSER_NUM_STATES
 	} _state;
+	size_t _i, _last;
+	const char *_data;
 	OFDataArray *_buffer;
 	OFString *_name, *_prefix;
 	OFMutableArray *_namespaces, *_attributes;

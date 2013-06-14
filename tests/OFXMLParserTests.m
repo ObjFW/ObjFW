@@ -324,7 +324,7 @@ enum event_type {
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	const char *str = "\xEF\xBB\xBF<?xml version='1.0'?><?p?i?>"
-	    "<!DOCTYPE <<><<>>>><root>\r\r"
+	    "<!DOCTYPE foo><root>\r\r"
 	    " <![CDATA[f<]]]oo]]><bar/>\n"
 	    " <foobar xmlns='urn:objfw:test:foobar'>\r\n"
 	    "  <qux xmlns:foo='urn:objfw:test:foo'>\n"
