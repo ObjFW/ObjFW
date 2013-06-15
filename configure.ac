@@ -25,10 +25,17 @@ OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstantString"
 AC_ARG_WITH(wii,
 	AS_HELP_STRING([--with-wii], [build for Wii]))
 AS_IF([test x"$with_wii" = x"yes"], [
+	AS_IF([test x"$DEVKITPRO" = x""], [
+		AC_MSG_ERROR([DEVKITPRO is not set! Please set DEVKITPRO.])
+	])
+
 	OBJCFLAGS="$OBJCFLAGS -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float"
+	CPPFLAGS="$CPPFLAGS -I$DEVKITPRO/libogc/include"
 	LDFLAGS="$LDFLAGS -mrvl -mcpu=750 -meabi -mhard-float"
-	LIBS="$LIBS -lfat -logc"
+	LIBS="$LIBS -L$DEVKITPRO/libogc/lib/wii -lfat -logc"
 	TESTS_LIBS="$TESTS_LIBS -lwiiuse -lbte"
+	enable_shared="no"
+	enable_threads="no"	# TODO
 ])
 
 AX_CHECK_COMPILER_FLAGS(-std=gnu99, [OBJCFLAGS="$OBJCFLAGS -std=gnu99"])
