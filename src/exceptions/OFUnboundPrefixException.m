@@ -18,20 +18,20 @@
 
 #include <stdlib.h>
 
-#import "OFUnboundNamespaceException.h"
+#import "OFUnboundPrefixException.h"
 #import "OFString.h"
-#import "OFXMLElement.h"
+#import "OFXMLParser.h"
 
 #import "common.h"
 
-@implementation OFUnboundNamespaceException
+@implementation OFUnboundPrefixException
 + (instancetype)exceptionWithClass: (Class)class
-			 namespace: (OFString*)namespace
-			   element: (OFXMLElement*)element
+			    prefix: (OFString*)prefix
+			    parser: (OFXMLParser*)parser
 {
 	return [[[self alloc] initWithClass: class
-				  namespace: namespace
-				    element: element] autorelease];
+				     prefix: prefix
+				     parser: parser] autorelease];
 }
 
 - initWithClass: (Class)class
@@ -47,14 +47,14 @@
 }
 
 - initWithClass: (Class)class
-      namespace: (OFString*)namespace
-	element: (OFXMLElement*)element
+	 prefix: (OFString*)prefix
+	 parser: (OFXMLParser*)parser
 {
 	self = [super initWithClass: class];
 
 	@try {
-		_namespace = [namespace copy];
-		_element = [element retain];
+		_prefix = [prefix copy];
+		_parser = [parser retain];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -65,8 +65,8 @@
 
 - (void)dealloc
 {
-	[_namespace release];
-	[_element release];
+	[_prefix release];
+	[_parser release];
 
 	[super dealloc];
 }
@@ -74,16 +74,17 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"The namespace %@ is not bound in class %@", _namespace, _inClass];
+	    @"The XML parser in class %@ encountered the unbound prefix %@ in "
+	    @"line %zd!", _inClass, _prefix, [_parser lineNumber]];
 }
 
-- (OFString*)namespace
+- (OFString*)prefix
 {
-	OF_GETTER(_namespace, false)
+	OF_GETTER(_prefix, false)
 }
 
-- (OFXMLElement*)element
+- (OFXMLParser*)parser
 {
-	OF_GETTER(_element, false)
+	OF_GETTER(_parser, false)
 }
 @end

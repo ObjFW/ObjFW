@@ -37,6 +37,7 @@ SRCS = OFAllocFailedException.m			\
        OFSymlinkFailedException.m		\
        OFTruncatedDataException.m		\
        OFUnboundNamespaceException.m		\
+       OFUnboundPrefixException.m		\
        OFUnlockFailedException.m		\
        OFUnsupportedProtocolException.m		\
        OFUnsupportedVersionException.m		\

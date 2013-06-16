@@ -587,7 +587,8 @@ static Class CDATAClass = Nil;
 			@throw [OFUnboundNamespaceException
 			    exceptionWithClass: [self class]
 				     namespace: [attributesObjects[j]
-						    namespace]];
+						    namespace]
+				       element: self];
 
 		length += [attributeName UTF8StringLength] +
 		    (attributePrefix != nil ?

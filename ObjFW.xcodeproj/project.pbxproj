@@ -364,6 +364,8 @@
 		4BC090451584F6760040640F /* OFInvalidJSONException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BC090431584F6760040640F /* OFInvalidJSONException.m */; };
 		4BD653C5143B8489006182F0 /* OFTCPSocket+SOCKS5.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD653C3143B8489006182F0 /* OFTCPSocket+SOCKS5.h */; settings = {ATTRIBUTES = (); }; };
 		4BD653C6143B8489006182F0 /* OFTCPSocket+SOCKS5.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BD653C4143B8489006182F0 /* OFTCPSocket+SOCKS5.m */; };
+		4BD77FDE176E4BC40031C497 /* OFUnboundPrefixException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD77FDC176E4BC40031C497 /* OFUnboundPrefixException.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BD77FDF176E4BC40031C497 /* OFUnboundPrefixException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BD77FDD176E4BC40031C497 /* OFUnboundPrefixException.m */; };
 		4BD98C03133814220048DD5B /* objfw-defs.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD98C011338140B0048DD5B /* objfw-defs.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BDF37B51338055600F9A81A /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BDF37B41338055600F9A81A /* config.h */; };
 		4BF33AFB133807590059CEF7 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
@@ -790,6 +792,8 @@
 		4BC090431584F6760040640F /* OFInvalidJSONException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFInvalidJSONException.m; path = src/exceptions/OFInvalidJSONException.m; sourceTree = "<group>"; };
 		4BD653C3143B8489006182F0 /* OFTCPSocket+SOCKS5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFTCPSocket+SOCKS5.h"; path = "src/OFTCPSocket+SOCKS5.h"; sourceTree = "<group>"; };
 		4BD653C4143B8489006182F0 /* OFTCPSocket+SOCKS5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFTCPSocket+SOCKS5.m"; path = "src/OFTCPSocket+SOCKS5.m"; sourceTree = "<group>"; };
+		4BD77FDC176E4BC40031C497 /* OFUnboundPrefixException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFUnboundPrefixException.h; path = src/exceptions/OFUnboundPrefixException.h; sourceTree = "<group>"; };
+		4BD77FDD176E4BC40031C497 /* OFUnboundPrefixException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFUnboundPrefixException.m; path = src/exceptions/OFUnboundPrefixException.m; sourceTree = "<group>"; };
 		4BD86D801237A6C600ED9912 /* OFBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFBlock.h; path = src/OFBlock.h; sourceTree = SOURCE_ROOT; };
 		4BD86D811237A6C600ED9912 /* OFBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFBlock.m; path = src/OFBlock.m; sourceTree = SOURCE_ROOT; };
 		4BD98C011338140B0048DD5B /* objfw-defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "objfw-defs.h"; path = "src/objfw-defs.h"; sourceTree = SOURCE_ROOT; };
@@ -977,6 +981,8 @@
 				4B17FFA8133A34E1003E6DCD /* OFTruncatedDataException.m */,
 				4B17FFB3133A374C003E6DCD /* OFUnboundNamespaceException.h */,
 				4B17FFB4133A3750003E6DCD /* OFUnboundNamespaceException.m */,
+				4BD77FDC176E4BC40031C497 /* OFUnboundPrefixException.h */,
+				4BD77FDD176E4BC40031C497 /* OFUnboundPrefixException.m */,
 				4B6743EF163C384A00EB1E59 /* OFUnlockFailedException.h */,
 				4B6743F0163C384A00EB1E59 /* OFUnlockFailedException.m */,
 				4B17FFAF133A3658003E6DCD /* OFUnsupportedProtocolException.h */,
@@ -1508,6 +1514,7 @@
 				4B55A101133ABEA900B58A93 /* OFThreadStartFailedException.h in Headers */,
 				4B55A103133ABEA900B58A93 /* OFThreadStillRunningException.h in Headers */,
 				4B17FFB5133A375B003E6DCD /* OFUnboundNamespaceException.h in Headers */,
+				4BD77FDE176E4BC40031C497 /* OFUnboundPrefixException.h in Headers */,
 				4B6743F5163C384A00EB1E59 /* OFUnlockFailedException.h in Headers */,
 				4B17FFB1133A3664003E6DCD /* OFUnsupportedProtocolException.h in Headers */,
 				4BA4846215CC9F1E00D75360 /* OFUnsupportedVersionException.h in Headers */,
@@ -1840,6 +1847,7 @@
 				4B17FFBA133A381D003E6DCD /* OFInvalidServerReplyException.m in Sources */,
 				4B29BC62133AC9CB0004B236 /* OFLinkFailedException.m in Sources */,
 				4B90B7A7133AD87D00BD33CB /* OFListenFailedException.m in Sources */,
+				4B6743F2163C384A00EB1E59 /* OFLockFailedException.m in Sources */,
 				4B17FFA2133A3335003E6DCD /* OFMalformedXMLException.m in Sources */,
 				4B17FF90133A3036003E6DCD /* OFMemoryNotPartOfObjectException.m in Sources */,
 				4B90B790133AD46700BD33CB /* OFNotConnectedException.m in Sources */,
@@ -1852,18 +1860,18 @@
 				4B29BC57133AC8420004B236 /* OFRenameFileFailedException.m in Sources */,
 				4B29BC42133AC4E80004B236 /* OFSeekFailedException.m in Sources */,
 				4B90B792133AD46700BD33CB /* OFSetOptionFailedException.m in Sources */,
+				4B6743F4163C384A00EB1E59 /* OFStillLockedException.m in Sources */,
 				4B29BC64133AC9CB0004B236 /* OFSymlinkFailedException.m in Sources */,
 				4B55A100133ABEA900B58A93 /* OFThreadJoinFailedException.m in Sources */,
 				4B55A102133ABEA900B58A93 /* OFThreadStartFailedException.m in Sources */,
 				4B55A104133ABEA900B58A93 /* OFThreadStillRunningException.m in Sources */,
 				4B17FFAA133A34E7003E6DCD /* OFTruncatedDataException.m in Sources */,
 				4B17FFB6133A375B003E6DCD /* OFUnboundNamespaceException.m in Sources */,
+				4BD77FDF176E4BC40031C497 /* OFUnboundPrefixException.m in Sources */,
+				4B6743F6163C384A00EB1E59 /* OFUnlockFailedException.m in Sources */,
 				4B17FFB2133A3664003E6DCD /* OFUnsupportedProtocolException.m in Sources */,
 				4BA4846315CC9F1E00D75360 /* OFUnsupportedVersionException.m in Sources */,
 				4B55A117133AC24600B58A93 /* OFWriteFailedException.m in Sources */,
-				4B6743F2163C384A00EB1E59 /* OFLockFailedException.m in Sources */,
-				4B6743F4163C384A00EB1E59 /* OFStillLockedException.m in Sources */,
-				4B6743F6163C384A00EB1E59 /* OFUnlockFailedException.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

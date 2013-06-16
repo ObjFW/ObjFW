@@ -16,12 +16,15 @@
 
 #import "OFException.h"
 
+@class OFXMLElement;
+
 /*!
  * @brief An exception indicating an attempt to use an unbound namespace.
  */
 @interface OFUnboundNamespaceException: OFException
 {
-	OFString *_namespace, *_prefix;
+	OFString *_namespace;
+	OFXMLElement *_element;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -30,7 +33,7 @@
 # else
 @property (readonly, copy, nonatomic) OFString *namespace;
 # endif
-@property (readonly, copy, nonatomic) OFString *prefix;
+@property (readonly, retain, nonatomic) OFXMLElement *element;
 #endif
 
 /*!
@@ -38,40 +41,24 @@
  *
  * @param class_ The class of the object which caused the exception
  * @param namespace_ The namespace which is unbound
+ * @param element The element in which the namespace was not bound
  * @return A new, autoreleased unbound namespace exception
  */
 + (instancetype)exceptionWithClass: (Class)class_
-			 namespace: (OFString*)namespace_;
-
-/*!
- * @brief Creates a new, autoreleased unbound namespace exception.
- *
- * @param class_ The class of the object which caused the exception
- * @param prefix The prefix which is unbound
- * @return A new, autoreleased unbound namespace exception
- */
-+ (instancetype)exceptionWithClass: (Class)class_
-			    prefix: (OFString*)prefix;
+			 namespace: (OFString*)namespace_
+			   element: (OFXMLElement*)element;
 
 /*!
  * @brief Initializes an already allocated unbound namespace exception.
  *
  * @param class_ The class of the object which caused the exception
  * @param namespace_ The namespace which is unbound
+ * @param element The element in which the namespace was not bound
  * @return An initialized unbound namespace exception
  */
 - initWithClass: (Class)class_
-      namespace: (OFString*)namespace_;
-
-/*!
- * @brief Initializes an already allocated unbound namespace exception.
- *
- * @param class_ The class of the object which caused the exception
- * @param prefix The prefix which is unbound
- * @return An initialized unbound namespace exception
- */
-- initWithClass: (Class)class_
-	 prefix: (OFString*)prefix;
+      namespace: (OFString*)namespace_
+	element: (OFXMLElement*)element;
 
 /*!
  * @brief Returns the unbound namespace.
@@ -81,9 +68,9 @@
 - (OFString*)namespace;
 
 /*!
- * @brief Returns the unbound prefix.
+ * @brief Returns the element in which the namespace was not bound.
  *
- * @return The unbound prefix
+ * @return The element in which the namespace was not bound
  */
-- (OFString*)prefix;
+- (OFXMLElement*)element;
 @end

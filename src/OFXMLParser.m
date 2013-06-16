@@ -32,7 +32,7 @@
 
 #import "OFInitializationFailedException.h"
 #import "OFMalformedXMLException.h"
-#import "OFUnboundNamespaceException.h"
+#import "OFUnboundPrefixException.h"
 
 #import "autorelease.h"
 #import "macros.h"
@@ -126,9 +126,10 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	attributeNS = namespace_for_prefix(attributePrefix, namespaces);
 
 	if ((attributePrefix != nil && attributeNS == nil))
-		@throw [OFUnboundNamespaceException
+		@throw [OFUnboundPrefixException
 		    exceptionWithClass: [self class]
-				prefix: attributePrefix];
+				prefix: attributePrefix
+				parser: self];
 
 	[attribute->_namespace release];
 	attribute->_namespace = [attributeNS retain];
@@ -582,9 +583,10 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		namespace = namespace_for_prefix(_prefix, _namespaces);
 
 		if (_prefix != nil && namespace == nil)
-			@throw [OFUnboundNamespaceException
+			@throw [OFUnboundPrefixException
 			    exceptionWithClass: [self class]
-					prefix: _prefix];
+					prefix: _prefix
+					parser: self];
 
 		if ([_delegate respondsToSelector: @selector(parser:
 		    didStartElement:prefix:namespace:attributes:)])
@@ -671,9 +673,10 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	namespace = namespace_for_prefix(_prefix, _namespaces);
 	if (_prefix != nil && namespace == nil)
-		@throw [OFUnboundNamespaceException
+		@throw [OFUnboundPrefixException
 		    exceptionWithClass: [self class]
-				prefix: _prefix];
+				prefix: _prefix
+				parser: self];
 
 	if ([_delegate respondsToSelector:
 	    @selector(parser:didEndElement:prefix:namespace:)])
@@ -723,9 +726,10 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	namespace = namespace_for_prefix(_prefix, _namespaces);
 
 	if (_prefix != nil && namespace == nil)
-		@throw [OFUnboundNamespaceException
+		@throw [OFUnboundPrefixException
 		    exceptionWithClass: [self class]
-				prefix: _prefix];
+				prefix: _prefix
+				parser: self];
 
 	for (j = 0; j < attributesCount; j++)
 		resolve_attribute_namespace(attributesObjects[j], _namespaces,
