@@ -21,8 +21,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <assert.h>
-
 #import "runtime.h"
 #import "runtime-private.h"
 
@@ -74,13 +72,16 @@ insert(struct objc_hashtable *h, const char *key, const void *obj)
 	struct objc_hashtable_bucket *bucket;
 
 	hash = objc_hash_string(key);
-	assert(h->count + 1 <= UINT32_MAX / 4);
+
+	if (h->count + 1 > UINT32_MAX / 4)
+		OBJC_ERROR("Integer overflow!");
 
 	if ((h->count + 1) * 4 / (h->last_idx + 1) >= 3) {
 		struct objc_hashtable_bucket **ndata;
 		uint32_t nsize = (h->last_idx + 1) * 2;
 
-		assert(nsize > 0);
+		if (nsize == 0)
+			OBJC_ERROR("Integer overflow!");
 
 		ndata = malloc(nsize * sizeof(struct objc_hashtable_bucket*));
 		if (ndata == NULL)

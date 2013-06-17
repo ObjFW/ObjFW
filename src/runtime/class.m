@@ -20,8 +20,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <assert.h>
-
 #import "runtime.h"
 #import "runtime-private.h"
 

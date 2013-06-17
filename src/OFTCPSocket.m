@@ -25,8 +25,6 @@
 
 #include <unistd.h>
 
-#include <assert.h>
-
 #ifdef HAVE_NETINET_IN_H
 # include <netinet/in.h>
 #endif
@@ -811,7 +809,7 @@ static uint16_t freePort = 65532;
 #endif
 
 	/* Get rid of a warning, never reached anyway */
-	assert(0);
+	OF_ENSURE(0);
 }
 
 - (bool)isListening
