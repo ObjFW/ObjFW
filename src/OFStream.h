@@ -503,10 +503,10 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @param size The number of items to read
+ * @param count The number of items to read
  * @return An OFDataArray with count items.
  */
-- (OFDataArray*)readDataArrayWithSize: (size_t)size;
+- (OFDataArray*)readDataArrayWithCount: (size_t)count;
 
 /*!
  * @brief Reads the specified number of items with the specified item size from

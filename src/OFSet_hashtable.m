@@ -276,6 +276,19 @@ static of_map_table_functions_t valueFunctions = {};
 	return [set->_mapTable isEqual: _mapTable];
 }
 
+- (id)anyObject
+{
+	void *pool = objc_autoreleasePoolPush();
+	id object;
+
+	object = [[_mapTable keyEnumerator] nextValue];
+	object = [object retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [object autorelease];
+}
+
 - (OFEnumerator*)objectEnumerator
 {
 	return [[[OFMapTableEnumeratorWrapper alloc]

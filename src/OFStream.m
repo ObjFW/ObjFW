@@ -486,10 +486,10 @@
 	return size;
 }
 
-- (OFDataArray*)readDataArrayWithSize: (size_t)size
+- (OFDataArray*)readDataArrayWithCount: (size_t)count
 {
 	return [self readDataArrayWithItemSize: 1
-					 count: size];
+					 count: count];
 }
 
 - (OFDataArray*)readDataArrayWithItemSize: (size_t)itemSize

@@ -237,7 +237,7 @@ extern char **environ;
 			[tmp replaceOccurrencesOfString: @"\\\""
 					     withString: @"\\\\\""];
 			[tmp replaceOccurrencesOfString: @"\""
-					     withString: @"\\\""];;
+					     withString: @"\\\""];
 
 			[argumentsString appendString: tmp];
 
