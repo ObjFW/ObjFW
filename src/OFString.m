@@ -175,9 +175,13 @@ standardize_path(OFArray *components, OFString *currentDirectory,
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *array;
 	OFString *ret;
-	bool done = false;
+	bool done = false, startsWithEmpty, endsWithEmpty;
 
 	array = [[components mutableCopy] autorelease];
+
+	if ((startsWithEmpty = [[array firstObject] isEqual: @""]))
+		[array removeObjectAtIndex: 0];
+	endsWithEmpty = [[array lastObject] isEqual: @""];
 
 	while (!done) {
 		size_t i, length = [array count];
@@ -186,26 +190,38 @@ standardize_path(OFArray *components, OFString *currentDirectory,
 
 		for (i = 0; i < length; i++) {
 			id object = [array objectAtIndex: i];
+			id parent;
 
-			if ([object isEqual: currentDirectory]) {
+			if (i > 0)
+				parent = [array objectAtIndex: i - 1];
+			else
+				parent = nil;
+
+			if ([object isEqual: currentDirectory] ||
+			   [object length] == 0) {
 				[array removeObjectAtIndex: i];
-				done = false;
 
+				done = false;
 				break;
 			}
 
-			if ([object isEqual: parentDirectory]) {
-				[array removeObjectAtIndex: i];
-
-				if (i > 0)
-					[array removeObjectAtIndex: i - 1];
+			if ([object isEqual: parentDirectory] &&
+			    parent != nil &&
+			    ![parent isEqual: parentDirectory]) {
+				[array removeObjectsInRange:
+				    of_range(i - 1, 2)];
 
 				done = false;
-
 				break;
 			}
 		}
 	}
+
+	if (startsWithEmpty)
+		[array insertObject: @""
+			    atIndex: 0];
+	if (endsWithEmpty)
+		[array addObject: @""];
 
 	ret = [[array componentsJoinedByString: joinString] retain];
 
