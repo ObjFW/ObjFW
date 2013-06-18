@@ -23,20 +23,18 @@
 
 #import "common.h"
 
-#ifndef _WIN32
+#ifdef OF_HAVE_CHOWN
 @implementation OFChangeFileOwnerFailedException
-+ (instancetype)exceptionWithClass: (Class)class
-			      path: (OFString*)path
-			     owner: (OFString*)owner
-			     group: (OFString*)group
++ (instancetype)exceptionWithPath: (OFString*)path
+			    owner: (OFString*)owner
+			    group: (OFString*)group
 {
-	return [[[self alloc] initWithClass: class
-				       path: path
-				      owner: owner
-				      group: group] autorelease];
+	return [[[self alloc] initWithPath: path
+				     owner: owner
+				     group: group] autorelease];
 }
 
-- initWithClass: (Class)class
+- init
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -48,12 +46,11 @@
 	abort();
 }
 
-- initWithClass: (Class)class
-	   path: (OFString*)path
-	  owner: (OFString*)owner
-	  group: (OFString*)group
+- initWithPath: (OFString*)path
+	 owner: (OFString*)owner
+	 group: (OFString*)group
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	@try {
 		_path  = [path copy];
@@ -81,21 +78,16 @@
 {
 	if (_group == nil)
 		return [OFString stringWithFormat:
-		    @"Failed to change owner for file %@ to %@ in class %@! "
-		    ERRFMT, _path, _owner, _inClass, ERRPARAM];
+		    @"Failed to change owner of file %@ to %@! "
+		    ERRFMT, _path, _owner, ERRPARAM];
 	else if (_owner == nil)
 		return [OFString stringWithFormat:
-		    @"Failed to change group for file %@ to %@ in class %@! "
-		    ERRFMT, _path, _group, _inClass, ERRPARAM];
+		    @"Failed to change group of file %@ to %@! "
+		    ERRFMT, _path, _group, ERRPARAM];
 	else
 		return [OFString stringWithFormat:
-		    @"Failed to change owner for file %@ to %@:%@ in class %@! "
-		    ERRFMT, _path, _owner, _group, _inClass, ERRPARAM];
-}
-
-- (int)errNo
-{
-	return _errNo;
+		    @"Failed to change owner of file %@ to %@:%@! "
+		    ERRFMT, _path, _owner, _group, ERRPARAM];
 }
 
 - (OFString*)path
@@ -111,6 +103,11 @@
 - (OFString*)group
 {
 	OF_GETTER(_group, false)
+}
+
+- (int)errNo
+{
+	return _errNo;
 }
 @end
 #endif

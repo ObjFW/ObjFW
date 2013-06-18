@@ -167,9 +167,7 @@ static Class CDATAClass = Nil;
 
 	@try {
 		if (name == nil)
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 		_name = [name copy];
 		_namespace = [namespace copy];
@@ -195,9 +193,7 @@ static Class CDATAClass = Nil;
 
 	@try {
 		if (element == nil)
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 		_name = [element->_name copy];
 		_namespace = [element->_namespace copy];
@@ -225,8 +221,7 @@ static Class CDATAClass = Nil;
 	[self release];
 
 	if (string == nil)
-		@throw [OFInvalidArgumentException exceptionWithClass: c
-							     selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
 
@@ -241,8 +236,7 @@ static Class CDATAClass = Nil;
 	[parser parseString: string];
 
 	if (![parser finishedParsing])
-		@throw [OFMalformedXMLException exceptionWithClass: c
-							    parser: parser];
+		@throw [OFMalformedXMLException exceptionWithParser: parser];
 
 	self = [delegate->_element retain];
 
@@ -275,8 +269,7 @@ static Class CDATAClass = Nil;
 	[parser parseFile: path];
 
 	if (![parser finishedParsing])
-		@throw [OFMalformedXMLException exceptionWithClass: c
-							    parser: parser];
+		@throw [OFMalformedXMLException exceptionWithParser: parser];
 
 	self = [delegate->_element retain];
 
@@ -298,9 +291,7 @@ static Class CDATAClass = Nil;
 
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 		_name = [[[element attributeForName: @"name"]
 		    stringValue] copy];
@@ -335,16 +326,12 @@ static Class CDATAClass = Nil;
 		    ![_namespaces isKindOfClass:
 		    [OFMutableDictionary class]]) || (_children != nil &&
 		    ![_children isKindOfClass: [OFMutableArray class]]))
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 		objectEnumerator = [_attributes objectEnumerator];
 		while ((object = [objectEnumerator nextObject]) != nil)
 			if (![object isKindOfClass: [OFXMLAttribute class]])
-				@throw [OFInvalidArgumentException
-				    exceptionWithClass: [self class]
-					      selector: _cmd];
+				@throw [OFInvalidArgumentException exception];
 
 		keyEnumerator = [_namespaces keyEnumerator];
 		objectEnumerator = [_namespaces objectEnumerator];
@@ -352,16 +339,12 @@ static Class CDATAClass = Nil;
 		    (object = [objectEnumerator nextObject]) != nil)
 			if (![key isKindOfClass: [OFString class]] ||
 			    ![object isKindOfClass: [OFString class]])
-				@throw [OFInvalidArgumentException
-				    exceptionWithClass: [self class]
-					      selector: _cmd];
+				@throw [OFInvalidArgumentException exception];
 
 		objectEnumerator = [_children objectEnumerator];
 		while ((object = [objectEnumerator nextObject]) != nil)
 			if (![object isKindOfClass: [OFXMLNode class]])
-				@throw [OFInvalidArgumentException
-				    exceptionWithClass: [self class]
-					      selector: _cmd];
+				@throw [OFInvalidArgumentException exception];
 
 		if (_namespaces == nil)
 			_namespaces = [[OFMutableDictionary alloc] init];
@@ -373,9 +356,7 @@ static Class CDATAClass = Nil;
 				forKey: @"http://www.w3.org/2000/xmlns/"];
 
 		if (_name == nil)
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -401,9 +382,7 @@ static Class CDATAClass = Nil;
 - (void)setName: (OFString*)name
 {
 	if (name == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	OF_SETTER(_name, name, true, 1)
 }
@@ -585,10 +564,9 @@ static Class CDATAClass = Nil;
 		    (attributePrefix = [allNamespaces objectForKey:
 		    [attributesObjects[j] namespace]]) == nil)
 			@throw [OFUnboundNamespaceException
-			    exceptionWithClass: [self class]
-				     namespace: [attributesObjects[j]
-						    namespace]
-				       element: self];
+			    exceptionWithNamespace: [attributesObjects[j]
+							namespace]
+					   element: self];
 
 		length += [attributeName UTF8StringLength] +
 		    (attributePrefix != nil ?
@@ -923,9 +901,7 @@ static Class CDATAClass = Nil;
      forNamespace: (OFString*)namespace
 {
 	if ([prefix length] == 0)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 	if (namespace == nil)
 		namespace = @"";
 
@@ -956,9 +932,7 @@ static Class CDATAClass = Nil;
 - (void)addChild: (OFXMLNode*)child
 {
 	if ([child isKindOfClass: [OFXMLAttribute class]])
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	if (_children == nil)
 		_children = [[OFMutableArray alloc] init];
@@ -970,9 +944,7 @@ static Class CDATAClass = Nil;
 	    atIndex: (size_t)index
 {
 	if ([child isKindOfClass: [OFXMLAttribute class]])
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	if (_children == nil)
 		_children = [[OFMutableArray alloc] init];
@@ -990,9 +962,7 @@ static Class CDATAClass = Nil;
 
 	while ((node = [enumerator nextObject]) != nil)
 		if ([node isKindOfClass: [OFXMLAttribute class]])
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 	[_children insertObjectsFromArray: children
 				  atIndex: index];
@@ -1003,9 +973,7 @@ static Class CDATAClass = Nil;
 - (void)removeChild: (OFXMLNode*)child
 {
 	if ([child isKindOfClass: [OFXMLAttribute class]])
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	[_children removeObject: child];
 }
@@ -1020,9 +988,7 @@ static Class CDATAClass = Nil;
 {
 	if ([node isKindOfClass: [OFXMLAttribute class]] ||
 	    [child isKindOfClass: [OFXMLAttribute class]])
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	[_children replaceObject: child
 		      withObject: node];
@@ -1032,9 +998,7 @@ static Class CDATAClass = Nil;
 		   withNode: (OFXMLNode*)node
 {
 	if ([node isKindOfClass: [OFXMLAttribute class]])
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	[_children replaceObjectAtIndex: index
 			     withObject: node];

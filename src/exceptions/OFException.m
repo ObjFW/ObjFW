@@ -59,30 +59,16 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 }
 
 @implementation OFException
-+ (instancetype)exceptionWithClass: (Class)class
++ (instancetype)exception
 {
-	return [[[self alloc] initWithClass: class] autorelease];
+	return [[[self alloc] init] autorelease];
 }
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
-}
-
-- initWithClass: (Class)class
-{
 	struct backtrace_ctx ctx;
 
 	self = [super init];
-
-	_inClass = class;
 
 	ctx.backtrace = _backtrace;
 	ctx.i = 0;
@@ -91,16 +77,10 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 	return self;
 }
 
-- (Class)inClass
-{
-	return _inClass;
-}
-
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"An exception of class %@ occurred in class %@!",
-	    object_getClass(self), _inClass];
+	    @"An exception of type %@ occurred!", [self class]];
 }
 
 - (OFArray*)backtrace

@@ -39,26 +39,22 @@
 /*!
  * @brief Creates a new, autoreleased unbound namespace exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param namespace_ The namespace which is unbound
  * @param element The element in which the namespace was not bound
  * @return A new, autoreleased unbound namespace exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			 namespace: (OFString*)namespace_
-			   element: (OFXMLElement*)element;
++ (instancetype)exceptionWithNamespace: (OFString*)namespace_
+			       element: (OFXMLElement*)element;
 
 /*!
  * @brief Initializes an already allocated unbound namespace exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param namespace_ The namespace which is unbound
  * @param element The element in which the namespace was not bound
  * @return An initialized unbound namespace exception
  */
-- initWithClass: (Class)class_
-      namespace: (OFString*)namespace_
-	element: (OFXMLElement*)element;
+- initWithNamespace: (OFString*)namespace_
+	    element: (OFXMLElement*)element;
 
 /*!
  * @brief Returns the unbound namespace.

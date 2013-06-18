@@ -218,8 +218,7 @@ static struct {
 	  forKey: (id)key
 {
 	if (key == nil || object == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidArgumentException exception];
 
 	return [self initWithKeysAndObjects: key, object, nil];
 }
@@ -234,8 +233,7 @@ static struct {
 		count = [objects_ count];
 
 		if (count != [keys_ count])
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidArgumentException exception];
 
 		objects = [objects_ objects];
 		keys = [keys_ objects];
@@ -675,7 +673,7 @@ static struct {
 		[data addItems: &tmp
 			 count: sizeof(tmp)];
 	} else
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	pool = objc_autoreleasePoolPush();
 

@@ -23,14 +23,12 @@
 #import "OFCondition.h"
 
 @implementation OFConditionStillWaitingException
-+ (instancetype)exceptionWithClass: (Class)class
-			 condition: (OFCondition*)condition
++ (instancetype)exceptionWithCondition: (OFCondition*)condition
 {
-	return [[[self alloc] initWithClass: class
-				  condition: condition] autorelease];
+	return [[[self alloc] initWithCondition: condition] autorelease];
 }
 
-- initWithClass: (Class)class
+- init
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -42,10 +40,9 @@
 	abort();
 }
 
-- initWithClass: (Class)class
-      condition: (OFCondition*)condition
+- initWithCondition: (OFCondition*)condition
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	_condition = [condition retain];
 
@@ -63,7 +60,7 @@
 {
 	return [OFString stringWithFormat:
 	    @"Deallocation of a condition of type %@ was tried, even though a "
-	    @"thread was still waiting for it!", _inClass];
+	    @"thread was still waiting for it!", [_condition class]];
 }
 
 - (OFCondition*)condition

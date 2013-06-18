@@ -22,7 +22,6 @@
 @implementation OFInvalidServerReplyException
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"Got an invalid reply from the server in class %@!", _inClass];
+	return @"Got an invalid reply from the server!";
 }
 @end

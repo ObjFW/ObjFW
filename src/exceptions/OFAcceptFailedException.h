@@ -39,22 +39,18 @@
 /*!
  * @brief Creates a new, autoreleased accept failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param socket The socket which could not accept a connection
  * @return A new, autoreleased accept failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			    socket: (OFTCPSocket*)socket;
++ (instancetype)exceptionWithSocket: (OFTCPSocket*)socket;
 
 /*!
  * @brief Initializes an already allocated accept failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param socket The socket which could not accept a connection
  * @return An initialized accept failed exception
  */
-- initWithClass: (Class)class_
-	 socket: (OFTCPSocket*)socket;
+- initWithSocket: (OFTCPSocket*)socket;
 
 /*!
  * @brief Returns the socket which could not accept a connection.

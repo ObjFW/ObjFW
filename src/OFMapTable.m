@@ -137,8 +137,7 @@ default_equal(void *value1, void *value2)
 		if (capacity > UINT32_MAX ||
 		    capacity > UINT32_MAX / sizeof(*_buckets) ||
 		    capacity > UINT32_MAX / 8)
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
+			@throw [OFOutOfRangeException exception];
 
 		for (_capacity = 1; _capacity < capacity; _capacity *= 2);
 		if (capacity * 8 / _capacity >= 6)
@@ -257,9 +256,7 @@ default_equal(void *value1, void *value2)
 	uint32_t i, hash, last;
 
 	if (key == NULL)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	hash = OF_ROL(_keyFunctions.hash(key), _rotate);
 	last = _capacity;
@@ -296,7 +293,7 @@ default_equal(void *value1, void *value2)
 
 	if (count > UINT32_MAX || count > UINT32_MAX / sizeof(*_buckets) ||
 	    count > UINT32_MAX / 8)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	fullness = count * 8 / _capacity;
 
@@ -355,9 +352,7 @@ default_equal(void *value1, void *value2)
 	void *old;
 
 	if (key == NULL || value == NULL)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	hash = OF_ROL(hash, _rotate);
 	last = _capacity;
@@ -405,8 +400,7 @@ default_equal(void *value1, void *value2)
 		}
 
 		if (i >= last)
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
+			@throw [OFOutOfRangeException exception];
 
 		bucket = [self allocMemoryWithSize: sizeof(*bucket)];
 
@@ -451,9 +445,7 @@ default_equal(void *value1, void *value2)
 	uint32_t i, hash, last;
 
 	if (key == NULL)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	hash = OF_ROL(_keyFunctions.hash(key), _rotate);
 	last = _capacity;
@@ -587,8 +579,7 @@ default_equal(void *value1, void *value2)
 	for (i = 0; i < _capacity && !stop; i++) {
 		if (_mutations != mutations)
 			@throw [OFEnumerationMutationException
-			    exceptionWithClass: [self class]
-					object: self];
+			    exceptionWithObject: self];
 
 		if (_buckets[i] != NULL && _buckets[i] != &deleted)
 			block(_buckets[i]->key, _buckets[i]->value, &stop);
@@ -603,17 +594,14 @@ default_equal(void *value1, void *value2)
 	for (i = 0; i < _capacity; i++) {
 		if (_mutations != mutations)
 			@throw [OFEnumerationMutationException
-			    exceptionWithClass: [self class]
-					object: self];
+			    exceptionWithObject: self];
 
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
 			void *new;
 
 			new = block(_buckets[i]->key, _buckets[i]->value);
 			if (new == NULL)
-				@throw [OFInvalidArgumentException
-				    exceptionWithClass: [self class]
-					      selector: _cmd];
+				@throw [OFInvalidArgumentException exception];
 
 			if (new != _buckets[i]->value) {
 				_valueFunctions.release(_buckets[i]->value);
@@ -682,8 +670,7 @@ default_equal(void *value1, void *value2)
 {
 	if (*_mutationsPtr != _mutations)
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: [_mapTable class]
-				object: _mapTable];
+		    exceptionWithObject: _mapTable];
 
 	_position = 0;
 }
@@ -694,8 +681,7 @@ default_equal(void *value1, void *value2)
 {
 	if (*_mutationsPtr != _mutations)
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: [_mapTable class]
-				object: _mapTable];
+		    exceptionWithObject: _mapTable];
 
 	for (; _position < _capacity && (_buckets[_position] == NULL ||
 	    _buckets[_position] == &deleted); _position++);
@@ -712,8 +698,7 @@ default_equal(void *value1, void *value2)
 {
 	if (*_mutationsPtr != _mutations)
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: [_mapTable class]
-				object: _mapTable];
+		    exceptionWithObject: _mapTable];
 
 	for (; _position < _capacity && (_buckets[_position] == NULL ||
 	    _buckets[_position] == &deleted); _position++);
@@ -753,8 +738,7 @@ default_equal(void *value1, void *value2)
 		ret = [_enumerator nextValue];
 	} @catch (OFEnumerationMutationException *e) {
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: [_object class]
-				object: _object];
+		    exceptionWithObject: _object];
 	}
 
 	return ret;
@@ -766,8 +750,7 @@ default_equal(void *value1, void *value2)
 		[_enumerator reset];
 	} @catch (OFEnumerationMutationException *e) {
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: [_object class]
-				object: _object];
+		    exceptionWithObject: _object];
 	}
 }
 @end

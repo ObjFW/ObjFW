@@ -99,9 +99,8 @@ of_log(OFConstantString *format, ...)
 
 	if (_fd == -1 || _atEndOfStream ||
 	    (ret = read(_fd, buffer, length)) < 0)
-		@throw [OFReadFailedException exceptionWithClass: [self class]
-							  stream: self
-						 requestedLength: length];
+		@throw [OFReadFailedException exceptionWithStream: self
+						  requestedLength: length];
 
 	if (ret == 0)
 		_atEndOfStream = true;
@@ -113,9 +112,8 @@ of_log(OFConstantString *format, ...)
 		     length: (size_t)length
 {
 	if (_fd == -1 || _atEndOfStream || write(_fd, buffer, length) < length)
-		@throw [OFWriteFailedException exceptionWithClass: [self class]
-							   stream: self
-						  requestedLength: length];
+		@throw [OFWriteFailedException exceptionWithStream: self
+						   requestedLength: length];
 }
 
 - (int)fileDescriptorForReading

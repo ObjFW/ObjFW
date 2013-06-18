@@ -25,18 +25,16 @@
 #import "common.h"
 
 @implementation OFBindFailedException
-+ (instancetype)exceptionWithClass: (Class)class
-			    socket: (OFTCPSocket*)socket
-			      host: (OFString*)host
-			      port: (uint16_t)port
++ (instancetype)exceptionWithHost: (OFString*)host
+			     port: (uint16_t)port
+			   socket: (OFTCPSocket*)socket
 {
-	return [[[self alloc] initWithClass: class
-				     socket: socket
-				       host: host
-				       port: port] autorelease];
+	return [[[self alloc] initWithHost: host
+				      port: port
+				    socket: socket] autorelease];
 }
 
-- initWithClass: (Class)class
+- init
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -48,17 +46,16 @@
 	abort();
 }
 
-- initWithClass: (Class)class
-	 socket: (OFTCPSocket*)socket
-	   host: (OFString*)host
-	   port: (uint16_t)port
+- initWithHost: (OFString*)host
+	  port: (uint16_t)port
+	socket: (OFTCPSocket*)socket
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	@try {
-		_socket = [socket retain];
 		_host   = [host copy];
 		_port   = port;
+		_socket = [socket retain];
 		_errNo  = GET_SOCK_ERRNO;
 	} @catch (id e) {
 		[self release];
@@ -70,8 +67,8 @@
 
 - (void)dealloc
 {
-	[_socket release];
 	[_host release];
+	[_socket release];
 
 	[super dealloc];
 }
@@ -79,13 +76,8 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Binding to port %" @PRIu16 @" on host %@ failed in class %@! "
-	    ERRFMT, _port, _host, _inClass, ERRPARAM];
-}
-
-- (OFTCPSocket*)socket
-{
-	OF_GETTER(_socket, false)
+	    @"Binding to port %" @PRIu16 @" on host %@ failed in socket of "
+	    @"type %@! " ERRFMT, _port, _host, [_socket class], ERRPARAM];
 }
 
 - (OFString*)host
@@ -96,6 +88,11 @@
 - (uint16_t)port
 {
 	return _port;
+}
+
+- (OFTCPSocket*)socket
+{
+	OF_GETTER(_socket, false)
 }
 
 - (int)errNo

@@ -46,7 +46,7 @@
 	id object;
 
 	if (index > NSUIntegerMax)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	object = [_array objectAtIndex: index];
 

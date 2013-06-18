@@ -19,20 +19,17 @@
 #import "OFLockFailedException.h"
 #import "OFString.h"
 
-#import "macros.h"
+#import "common.h"
 
 @implementation OFLockFailedException
-+ (instancetype)exceptionWithClass: (Class)class
-			      lock: (id <OFLocking>)lock
++ (instancetype)exceptionWithLock: (id <OFLocking>)lock
 {
-	return [[[self alloc] initWithClass: class
-				       lock: lock] autorelease];
+	return [[[self alloc] initWithLock: lock] autorelease];
 }
 
-- initWithClass: (Class)class
-	   lock: (id <OFLocking>)lock
+- initWithLock: (id <OFLocking>)lock
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	_lock = [lock retain];
 
@@ -48,9 +45,11 @@
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"A lock of type %@ could not be locked in class %@!",
-	    [_lock class], _inClass];
+	if (_lock != nil)
+		return [OFString stringWithFormat:
+		    @"A lock of type %@ could not be locked!", [_lock class]];
+	else
+		return @"A lock could not be locked!";
 }
 
 - (id <OFLocking>)lock

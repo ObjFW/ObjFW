@@ -24,16 +24,14 @@
 #import "common.h"
 
 @implementation OFOpenFileFailedException
-+ (instancetype)exceptionWithClass: (Class)class
-			      path: (OFString*)path
-			      mode: (OFString*)mode
++ (instancetype)exceptionWithPath: (OFString*)path
+			     mode: (OFString*)mode
 {
-	return [[[self alloc] initWithClass: class
-				       path: path
-				       mode: mode] autorelease];
+	return [[[self alloc] initWithPath: path
+				      mode: mode] autorelease];
 }
 
-- initWithClass: (Class)class
+- init
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -45,11 +43,10 @@
 	abort();
 }
 
-- initWithClass: (Class)class
-	   path: (OFString*)path
-	   mode: (OFString*)mode
+- initWithPath: (OFString*)path
+	  mode: (OFString*)mode
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	@try {
 		_path  = [path copy];
@@ -74,13 +71,8 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to open file %@ with mode %@ in class %@! " ERRFMT, _path,
-	    _mode, _inClass, ERRPARAM];
-}
-
-- (int)errNo
-{
-	return _errNo;
+	    @"Failed to open file %@ with mode %@! " ERRFMT, _path, _mode,
+	    ERRPARAM];
 }
 
 - (OFString*)path
@@ -91,5 +83,10 @@
 - (OFString*)mode
 {
 	OF_GETTER(_mode, false)
+}
+
+- (int)errNo
+{
+	return _errNo;
 }
 @end

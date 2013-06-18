@@ -16,7 +16,7 @@
 
 #import "OFException.h"
 
-#ifndef _WIN32
+#ifdef OF_HAVE_SYMLINK
 /*!
  * @brief An exception indicating that creating a symlink failed.
  */
@@ -34,33 +34,22 @@
 /*!
  * @brief Creates a new, autoreleased symlink failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param sourcePath The source for the symlink
  * @param destinationPath The destination for the symlink
  * @return A new, autoreleased symlink failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			sourcePath: (OFString*)sourcePath
-		   destinationPath: (OFString*)destinationPath;
++ (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
+			destinationPath: (OFString*)destinationPath;
 
 /*!
  * @brief Initializes an already allocated symlink failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param sourcePath The source for the symlink
  * @param destinationPath The destination for the symlink
  * @return An initialized symlink failed exception
  */
--   initWithClass: (Class)class_
-       sourcePath: (OFString*)sourcePath
-  destinationPath: (OFString*)destinationPath;
-
-/*!
- * @brief Returns the errno from when the exception was created.
- *
- * @return The errno from when the exception was created
- */
-- (int)errNo;
+- initWithSourcePath: (OFString*)sourcePath
+     destinationPath: (OFString*)destinationPath;
 
 /*!
  * @brief Returns a string with the source for the symlink.
@@ -75,5 +64,12 @@
  * @return A string with the destination for the symlink
  */
 - (OFString*)destinationPath;
+
+/*!
+ * @brief Returns the errno from when the exception was created.
+ *
+ * @return The errno from when the exception was created
+ */
+- (int)errNo;
 @end
 #endif

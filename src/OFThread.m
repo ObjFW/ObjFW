@@ -159,8 +159,8 @@ set_thread_name(OFThread *thread)
 	id oldObject = of_tlskey_get(key->_key);
 
 	if (!of_tlskey_set(key->_key, [object retain]))
-		@throw [OFInvalidArgumentException exceptionWithClass: self
-							     selector: _cmd];
+		/* FIXME: Find a better exception */
+		@throw [OFInvalidArgumentException exception];
 
 	[oldObject release];
 }
@@ -184,7 +184,7 @@ set_thread_name(OFThread *thread)
 + (void)sleepForTimeInterval: (double)seconds
 {
 	if (seconds < 0)
-		@throw [OFOutOfRangeException exceptionWithClass: self];
+		@throw [OFOutOfRangeException exception];
 
 #if defined(HAVE_NANOSLEEP)
 	struct timespec rqtp;
@@ -193,18 +193,18 @@ set_thread_name(OFThread *thread)
 	rqtp.tv_nsec = lrint((seconds - rqtp.tv_sec) * 1000000000);
 
 	if (rqtp.tv_sec != floor(seconds))
-		@throw [OFOutOfRangeException exceptionWithClass: self];
+		@throw [OFOutOfRangeException exception];
 
 	nanosleep(&rqtp, NULL);
 #elif !defined(_WIN32)
 	if (seconds > UINT_MAX)
-		@throw [OFOutOfRangeException exceptionWithClass: self];
+		@throw [OFOutOfRangeException exception];
 
 	sleep((unsigned int)seconds);
 	usleep((useconds_t)lrint((seconds - floor(seconds)) * 1000000));
 #else
 	if (seconds * 1000 > UINT_MAX)
-		@throw [OFOutOfRangeException exceptionWithClass: self];
+		@throw [OFOutOfRangeException exception];
 
 	Sleep((unsigned int)(seconds * 1000));
 #endif
@@ -301,8 +301,7 @@ set_thread_name(OFThread *thread)
 {
 	if (_running == OF_THREAD_RUNNING)
 		@throw [OFThreadStillRunningException
-		    exceptionWithClass: [self class]
-				thread: self];
+		    exceptionWithThread: self];
 
 	if (_running == OF_THREAD_WAITING_FOR_JOIN) {
 		of_thread_detach(_thread);
@@ -315,9 +314,7 @@ set_thread_name(OFThread *thread)
 
 	if (!of_thread_new(&_thread, call_main, self)) {
 		[self release];
-		@throw [OFThreadStartFailedException
-		    exceptionWithClass: [self class]
-				thread: self];
+		@throw [OFThreadStartFailedException exceptionWithThread: self];
 	}
 
 	set_thread_name(self);
@@ -326,9 +323,7 @@ set_thread_name(OFThread *thread)
 - (id)join
 {
 	if (_running == OF_THREAD_NOT_RUNNING || !of_thread_join(_thread))
-		@throw [OFThreadJoinFailedException
-		    exceptionWithClass: [self class]
-				thread: self];
+		@throw [OFThreadJoinFailedException exceptionWithThread: self];
 
 	_running = OF_THREAD_NOT_RUNNING;
 
@@ -376,8 +371,7 @@ set_thread_name(OFThread *thread)
 {
 	if (_running == OF_THREAD_RUNNING)
 		@throw [OFThreadStillRunningException
-		    exceptionWithClass: [self class]
-				thread: self];
+		    exceptionWithThread: self];
 
 	/*
 	 * We should not be running anymore, but call detach in order to free

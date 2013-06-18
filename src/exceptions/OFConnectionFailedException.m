@@ -25,18 +25,16 @@
 #import "common.h"
 
 @implementation OFConnectionFailedException
-+ (instancetype)exceptionWithClass: (Class)class
-			    socket: (OFTCPSocket*)socket
-			      host: (OFString*)host
-			      port: (uint16_t)port
++ (instancetype)exceptionWithHost: (OFString*)host
+			     port: (uint16_t)port
+			   socket: (OFTCPSocket*)socket
 {
-	return [[[self alloc] initWithClass: class
-				     socket: socket
-				       host: host
-				       port: port] autorelease];
+	return [[[self alloc] initWithHost: host
+				      port: port
+				    socket: socket] autorelease];
 }
 
-- initWithClass: (Class)class
+- init
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -48,16 +46,15 @@
 	abort();
 }
 
-- initWithClass: (Class)class
-	 socket: (OFTCPSocket*)socket
-	   host: (OFString*)host
-	   port: (uint16_t)port
+- initWithHost: (OFString*)host
+	  port: (uint16_t)port
+	socket: (OFTCPSocket*)socket
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	@try {
-		_socket = [socket retain];
 		_host   = [host copy];
+		_socket = [socket retain];
 		_port   = port;
 		_errNo  = GET_SOCK_ERRNO;
 	} @catch (id e) {
@@ -70,8 +67,8 @@
 
 - (void)dealloc
 {
-	[_socket release];
 	[_host release];
+	[_socket release];
 
 	[super dealloc];
 }
@@ -80,13 +77,8 @@
 {
 	return [OFString stringWithFormat:
 	    @"A connection to %@ on port %" @PRIu16 @" could not be "
-	    @"established in class %@! " ERRFMT, _host, _port, _inClass,
-	    ERRPARAM];
-}
-
-- (OFTCPSocket*)socket
-{
-	OF_GETTER(_socket, false)
+	    @"established in socket of type %@! " ERRFMT, _host, _port,
+	    [_socket class], ERRPARAM];
 }
 
 - (OFString*)host
@@ -97,6 +89,11 @@
 - (uint16_t)port
 {
 	return _port;
+}
+
+- (OFTCPSocket*)socket
+{
+	OF_GETTER(_socket, false)
 }
 
 - (int)errNo

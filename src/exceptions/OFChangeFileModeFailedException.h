@@ -37,33 +37,22 @@
 /*!
  * @brief Creates a new, autoreleased change file mode failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param path The path of the file
  * @param mode The new mode for the file
  * @return A new, autoreleased change file mode failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			      path: (OFString*)path
-			      mode: (mode_t)mode;
++ (instancetype)exceptionWithPath: (OFString*)path
+			     mode: (mode_t)mode;
 
 /*!
  * @brief Initializes an already allocated change file mode failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param path The path of the file
  * @param mode The new mode for the file
  * @return An initialized change file mode failed exception
  */
-- initWithClass: (Class)class_
-	   path: (OFString*)path
-	   mode: (mode_t)mode;
-
-/*!
- * @brief Returns the errno from when the exception was created.
- *
- * @return The errno from when the exception was created
- */
-- (int)errNo;
+- initWithPath: (OFString*)path
+	  mode: (mode_t)mode;
 
 /*!
  * @brief Returns the path of the file.
@@ -78,4 +67,11 @@
  * @return The new mode for the file
  */
 - (mode_t)mode;
+
+/*!
+ * @brief Returns the errno from when the exception was created.
+ *
+ * @return The errno from when the exception was created
+ */
+- (int)errNo;
 @end

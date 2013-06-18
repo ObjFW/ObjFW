@@ -183,9 +183,8 @@ static struct {
 - initWithObject: (id)object
 {
 	if (object == nil) {
-		Class c = [self class];
 		[self release];
-		@throw [OFInvalidArgumentException exceptionWithClass: c];
+		@throw [OFInvalidArgumentException exception];
 	}
 
 	return [self initWithObjects: object, nil];
@@ -374,7 +373,7 @@ static struct {
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length < [self count])
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	if (![self isKindOfClass: [OFMutableArray class]])
 		return [OFArray_subarray arrayWithArray: self
@@ -412,8 +411,7 @@ static struct {
 	IMP append;
 
 	if (separator == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidArgumentException exception];
 
 	count = [self count];
 
@@ -592,7 +590,7 @@ static struct {
 		[data addItems: &tmp
 			 count: sizeof(tmp)];
 	} else
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	pool = objc_autoreleasePoolPush();
 
@@ -679,7 +677,7 @@ static struct {
 	of_range_t range = of_range(state->state, count);
 
 	if (range.length > SIZE_MAX - range.location)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	if (range.location + range.length > [self count])
 		range.length = [self count] - range.location;
@@ -720,8 +718,7 @@ static struct {
 	OFMutableArray *ret;
 
 	if (object == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidArgumentException exception];
 
 	ret = [[self mutableCopy] autorelease];
 
@@ -856,8 +853,7 @@ static struct {
 {
 	if (mutationsPtr != NULL && *mutationsPtr != mutations)
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: [self class]
-				object: array];
+		    exceptionWithObject: array];
 
 	if (position < count)
 		return [array objectAtIndex: position++];
@@ -869,8 +865,7 @@ static struct {
 {
 	if (mutationsPtr != NULL && *mutationsPtr != mutations)
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: [self class]
-				object: array];
+		    exceptionWithObject: array];
 
 	position = 0;
 }

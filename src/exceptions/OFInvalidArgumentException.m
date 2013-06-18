@@ -16,52 +16,12 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFInvalidArgumentException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 @implementation OFInvalidArgumentException
-+ (instancetype)exceptionWithClass: (Class)class
-			  selector: (SEL)selector
-{
-	return [[[self alloc] initWithClass: class
-				   selector: selector] autorelease];
-}
-
-- initWithClass: (Class)class
-{
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
-}
-
-- initWithClass: (Class)class
-       selector: (SEL)selector
-{
-	self = [super initWithClass: class];
-
-	_selector = selector;
-
-	return self;
-}
-
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"The argument or receiver for method %s of class %@ is invalid!",
-	    sel_getName(_selector), _inClass];
-}
-
-- (SEL)selector
-{
-	return _selector;
+	return @"An invalid argument or receiver has been specified!";
 }
 @end

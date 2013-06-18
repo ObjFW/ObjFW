@@ -16,13 +16,48 @@
 
 #include "config.h"
 
+#include <stdlib.h>
+
 #import "OFInitializationFailedException.h"
 #import "OFString.h"
 
+#import "common.h"
+
 @implementation OFInitializationFailedException
++ (instancetype)exceptionWithClass: (Class)class
+{
+	return [[[self alloc] initWithClass: class] autorelease];
+}
+
+- init
+{
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	abort();
+}
+
+- initWithClass: (Class)class
+{
+	self = [super init];
+
+	_inClass = class;
+
+	return self;
+}
+
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
 	    @"Initialization failed for or in class %@!", _inClass];
+}
+
+- (Class)inClass
+{
+	return _inClass;
 }
 @end

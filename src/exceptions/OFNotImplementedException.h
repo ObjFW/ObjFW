@@ -23,31 +23,33 @@
 @interface OFNotImplementedException: OFException
 {
 	SEL _selector;
+	id _object;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly) SEL selector;
+@property (readonly, retain, nonatomic) id object;
 #endif
 
 /*!
  * @brief Creates a new, autoreleased not implemented exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param selector The selector which is not or not fully implemented
+ * @param object The object which does not (fully) implement the selector
  * @return A new, autoreleased not implemented exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			  selector: (SEL)selector;
++ (instancetype)exceptionWithSelector: (SEL)selector
+			       object: (id)object;
 
 /*!
  * @brief Initializes an already allocated not implemented exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param selector The selector which is not or not fully implemented
+ * @param object The object which does not (fully) implement the selector
  * @return An initialized not implemented exception
  */
-- initWithClass: (Class)class_
-       selector: (SEL)selector;
+- initWithSelector: (SEL)selector
+	    object: (id)object;
 
 /*!
  * @brief Returns the selector which is not or not fully implemented.
@@ -55,4 +57,11 @@
  * @return The selector which is not or not fully implemented
  */
 - (SEL)selector;
+
+/*!
+ * @brief Returns the object which does not (fully) implement the selector.
+ *
+ * @return The object which does not (fully) implement the selector
+ */
+- (id)object;
 @end

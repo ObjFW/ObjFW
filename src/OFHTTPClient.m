@@ -115,8 +115,7 @@ normalize_key(char *str_)
 		@try {
 			_toRead = (size_t)[contentLength decimalValue];
 		} @catch (OFInvalidFormatException *e) {
-			@throw [OFInvalidServerReplyException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidServerReplyException exception];
 		}
 	}
 }
@@ -127,9 +126,8 @@ normalize_key(char *str_)
 	if (_atEndOfStream) {
 		OFReadFailedException *e;
 
-		e = [OFReadFailedException exceptionWithClass: [self class]
-						       stream: self
-					      requestedLength: length];
+		e = [OFReadFailedException exceptionWithStream: self
+					       requestedLength: length];
 
 #ifndef _WIN32
 		e->_errNo = ENOTCONN;
@@ -182,7 +180,7 @@ normalize_key(char *str_)
 		if (_toRead == 0)
 			if ([[_socket readLine] length] > 0)
 				@throw [OFInvalidServerReplyException
-				    exceptionWithClass: [self class]];
+				    exception];
 
 		return length;
 	} else {
@@ -193,8 +191,7 @@ normalize_key(char *str_)
 		@try {
 			line = [_socket readLine];
 		} @catch (OFInvalidEncodingException *e) {
-			@throw [OFInvalidServerReplyException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidServerReplyException exception];
 		}
 
 		range = [line rangeOfString: @";"];
@@ -206,8 +203,7 @@ normalize_key(char *str_)
 			_toRead =
 			    (size_t)[line hexadecimalValue];
 		} @catch (OFInvalidFormatException *e) {
-			@throw [OFInvalidServerReplyException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidServerReplyException exception];
 		}
 
 		if (_toRead == 0) {
@@ -218,12 +214,12 @@ normalize_key(char *str_)
 					line = [_socket readLine];
 				} @catch (OFInvalidEncodingException *e) {
 					@throw [OFInvalidServerReplyException
-					    exceptionWithClass: [self class]];
+					    exception];
 				}
 
 				if ([line length] > 0)
 					@throw [OFInvalidServerReplyException
-					    exceptionWithClass: [self class]];
+					    exception];
 			} else
 				[_socket close];
 		}
@@ -308,8 +304,7 @@ normalize_key(char *str_)
 	if ([[URL scheme] isEqual: @"https"]) {
 		if (of_tls_socket_class == Nil)
 			@throw [OFUnsupportedProtocolException
-			    exceptionWithClass: [self class]
-					   URL: URL];
+			    exceptionWithURL: URL];
 
 		socket = [[[of_tls_socket_class alloc] init]
 		    autorelease];
@@ -348,9 +343,7 @@ normalize_key(char *str_)
 	const char *type = NULL;
 
 	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
-		@throw [OFUnsupportedProtocolException
-		    exceptionWithClass: [self class]
-				   URL: URL];
+		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
 
 	/* Can we reuse the socket? */
 	if (_socket != nil && [[_lastURL scheme] isEqual: [URL scheme]] &&
@@ -460,8 +453,7 @@ normalize_key(char *str_)
 	@try {
 		line = [socket readLine];
 	} @catch (OFInvalidEncodingException *e) {
-		@throw [OFInvalidServerReplyException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidServerReplyException exception];
 	}
 
 	/*
@@ -481,20 +473,17 @@ normalize_key(char *str_)
 		@try {
 			line = [socket readLine];
 		} @catch (OFInvalidEncodingException *e) {
-			@throw [OFInvalidServerReplyException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidServerReplyException exception];
 		}
 	}
 
 	if (![line hasPrefix: @"HTTP/"] || [line characterAtIndex: 8] != ' ')
-		@throw [OFInvalidServerReplyException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidServerReplyException exception];
 
 	version = [line substringWithRange: of_range(5, 3)];
 	if (![version isEqual: @"1.0"] && ![version isEqual: @"1.1"])
 		@throw [OFUnsupportedVersionException
-		    exceptionWithClass: [self class]
-			       version: version];
+		    exceptionWithVersion: version];
 
 	status = (int)[[line substringWithRange: of_range(9, 3)] decimalValue];
 
@@ -508,13 +497,11 @@ normalize_key(char *str_)
 		@try {
 			line = [socket readLine];
 		} @catch (OFInvalidEncodingException *e) {
-			@throw [OFInvalidServerReplyException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidServerReplyException exception];
 		}
 
 		if (line == nil)
-			@throw [OFInvalidServerReplyException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidServerReplyException exception];
 
 		if ([line length] == 0)
 			break;
@@ -522,13 +509,11 @@ normalize_key(char *str_)
 		lineC = [line UTF8String];
 
 		if ((tmp = strchr(lineC, ':')) == NULL)
-			@throw [OFInvalidServerReplyException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidServerReplyException exception];
 
 		if ((keyC = malloc(tmp - lineC + 1)) == NULL)
 			@throw [OFOutOfMemoryException
-			    exceptionWithClass: [self class]
-				 requestedSize: tmp - lineC + 1];
+			    exceptionWithRequestedSize: tmp - lineC + 1];
 
 		memcpy(keyC, lineC, tmp - lineC);
 		keyC[tmp - lineC] = '\0';
@@ -625,9 +610,8 @@ normalize_key(char *str_)
 
 	if (status / 100 != 2)
 		@throw [OFHTTPRequestFailedException
-		    exceptionWithClass: [self class]
-			       request: request
-				 reply: reply];
+		    exceptionWithRequest: request
+				   reply: reply];
 
 	return reply;
 }

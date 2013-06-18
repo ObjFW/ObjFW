@@ -127,8 +127,7 @@
 
 		if (cLen == 0 || c > 0x10FFFF) {
 			[self freeMemory: unicodeString];
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidEncodingException exception];
 		}
 
 		switch (c) {
@@ -161,8 +160,7 @@
 			newCStringLength += 4;
 		else {
 			[self freeMemory: unicodeString];
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidEncodingException exception];
 		}
 
 		i += cLen;
@@ -184,8 +182,7 @@
 		    newCString + j)) == 0) {
 			[self freeMemory: unicodeString];
 			[self freeMemory: newCString];
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidEncodingException exception];
 		}
 		j += d;
 	}
@@ -217,7 +214,7 @@
 		    _s->cStringLength);
 
 	if (index > _s->cStringLength)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	/* Shortcut if old and new character both are ASCII */
 	if (!(character & 0x80) && !(_s->cString[index] & 0x80)) {
@@ -227,13 +224,11 @@
 	}
 
 	if ((lenNew = of_string_utf8_encode(character, buffer)) == 0)
-		@throw [OFInvalidEncodingException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidEncodingException exception];
 
 	if ((lenOld = of_string_utf8_decode(_s->cString + index,
 	    _s->cStringLength - index, &c)) == 0)
-		@throw [OFInvalidEncodingException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidEncodingException exception];
 
 	_s->hashed = false;
 
@@ -291,8 +286,7 @@
 		_s->isUTF8 = true;
 		break;
 	case -1:
-		@throw [OFInvalidEncodingException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidEncodingException exception];
 	}
 
 	_s->hashed = false;
@@ -321,8 +315,7 @@
 		_s->isUTF8 = true;
 		break;
 	case -1:
-		@throw [OFInvalidEncodingException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidEncodingException exception];
 	}
 
 	_s->hashed = false;
@@ -367,9 +360,7 @@
 	size_t UTF8StringLength;
 
 	if (string == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	UTF8StringLength = [string UTF8StringLength];
 
@@ -432,8 +423,7 @@
 
 				break;
 			default:
-				@throw [OFInvalidEncodingException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidEncodingException exception];
 			}
 		}
 
@@ -461,14 +451,11 @@
 	int UTF8StringLength;
 
 	if (format == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	if ((UTF8StringLength = of_vasprintf(&UTF8String, [format UTF8String],
 	    arguments)) == -1)
-		@throw [OFInvalidFormatException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidFormatException exception];
 
 	@try {
 		[self appendUTF8String: UTF8String
@@ -502,14 +489,12 @@
 
 		/* A start byte can't happen first as we reversed everything */
 		if OF_UNLIKELY (_s->cString[i] & 0x40)
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidEncodingException exception];
 
 		/* Next byte must not be ASCII */
 		if OF_UNLIKELY (_s->cStringLength < i + 1 ||
 		    !(_s->cString[i + 1] & 0x80))
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidEncodingException exception];
 
 		/* Next byte is the start byte */
 		if OF_LIKELY (_s->cString[i + 1] & 0x40) {
@@ -524,8 +509,7 @@
 		/* Second next byte must not be ASCII */
 		if OF_UNLIKELY (_s->cStringLength < i + 2 ||
 		    !(_s->cString[i + 2] & 0x80))
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidEncodingException exception];
 
 		/* Second next byte is the start byte */
 		if OF_LIKELY (_s->cString[i + 2] & 0x40) {
@@ -540,8 +524,7 @@
 		/* Third next byte must not be ASCII */
 		if OF_UNLIKELY (_s->cStringLength < i + 3 ||
 		    !(_s->cString[i + 3] & 0x80))
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidEncodingException exception];
 
 		/* Third next byte is the start byte */
 		if OF_LIKELY (_s->cString[i + 3] & 0x40) {
@@ -558,8 +541,7 @@
 		}
 
 		/* UTF-8 does not allow more than 4 bytes per character */
-		@throw [OFInvalidEncodingException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidEncodingException exception];
 	}
 }
 
@@ -569,8 +551,7 @@
 	size_t newCStringLength;
 
 	if (index > _s->length)
-		@throw [OFOutOfRangeException
-		    exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	if (_s->isUTF8)
 		index = of_string_utf8_get_position(_s->cString, index,
@@ -604,7 +585,7 @@
 	size_t end = range.location + range.length;
 
 	if (range.length > SIZE_MAX - range.location || end > _s->length)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	if (_s->isUTF8) {
 		start = of_string_utf8_get_position(_s->cString, start,
@@ -636,7 +617,7 @@
 	size_t newCStringLength, newLength;
 
 	if (range.length > SIZE_MAX - range.location || end > _s->length)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	newLength = _s->length - range.length + [replacement length];
 
@@ -677,7 +658,7 @@
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > [self length])
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	if (_s->isUTF8) {
 		range.location = of_string_utf8_get_position(_s->cString,

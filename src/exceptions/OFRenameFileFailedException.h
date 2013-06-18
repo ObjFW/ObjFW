@@ -33,33 +33,22 @@
 /*!
  * @brief Creates a new, autoreleased rename file failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param sourcePath The original path
  * @param destinationPath The new path
  * @return A new, autoreleased rename file failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			sourcePath: (OFString*)sourcePath
-		   destinationPath: (OFString*)destinationPath;
++ (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
+			destinationPath: (OFString*)destinationPath;
 
 /*!
  * @brief Initializes an already allocated rename failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param sourcePath The original path
  * @param destinationPath The new path
  * @return An initialized rename file failed exception
  */
--   initWithClass: (Class)class_
-       sourcePath: (OFString*)sourcePath
-  destinationPath: (OFString*)destinationPath;
-
-/*!
- * @brief Returns the errno from when the exception was created.
- *
- * @return The errno from when the exception was created
- */
-- (int)errNo;
+- initWithSourcePath: (OFString*)sourcePath
+     destinationPath: (OFString*)destinationPath;
 
 /*!
  * @brief Returns the original path.
@@ -74,4 +63,11 @@
  * @return The new path
  */
 - (OFString*)destinationPath;
+
+/*!
+ * @brief Returns the errno from when the exception was created.
+ *
+ * @return The errno from when the exception was created
+ */
+- (int)errNo;
 @end

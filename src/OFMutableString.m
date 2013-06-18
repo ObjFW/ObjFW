@@ -398,14 +398,11 @@ static struct {
 	int UTF8StringLength;
 
 	if (format == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	if ((UTF8StringLength = of_vasprintf(&UTF8String, [format UTF8String],
 	    arguments)) == -1)
-		@throw [OFInvalidFormatException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidFormatException exception];
 
 	@try {
 		[self appendUTF8String: UTF8String
@@ -501,7 +498,7 @@ static struct {
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > [self length])
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	if (searchLength > range.length) {
 		objc_autoreleasePoolPop(pool);

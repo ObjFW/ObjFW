@@ -33,41 +33,46 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain, nonatomic) OFTCPSocket *socket;
 @property (readonly, copy, nonatomic) OFString *host;
+@property (readonly, retain, nonatomic) OFTCPSocket *socket;
 @property (readonly) int errNo;
 #endif
 
 /*!
  * @brief Creates a new, autoreleased address translation failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param socket The socket which could not translate the address
- * @param host The host for which translation was requested
  * @return A new, autoreleased address translation failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			    socket: (OFTCPSocket*)socket
-			      host: (OFString*)host;
++ (instancetype)exceptionWithSocket: (OFTCPSocket*)socket;
+
+/*!
+ * @brief Creates a new, autoreleased address translation failed exception.
+ *
+ * @param host The host for which translation was requested
+ * @param socket The socket which could not translate the address
+ * @return A new, autoreleased address translation failed exception
+ */
++ (instancetype)exceptionWithHost: (OFString*)host
+			   socket: (OFTCPSocket*)socket;
 
 /*!
  * @brief Initializes an already allocated address translation failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param socket The socket which could not translate the address
- * @param host The host for which translation was requested
  * @return An initialized address translation failed exception
  */
-- initWithClass: (Class)class_
-	 socket: (OFTCPSocket*)socket
-	   host: (OFString*)host;
+- initWithSocket: (OFTCPSocket*)socket;
 
 /*!
- * @brief Returns the socket which could not translate the address.
+ * @brief Initializes an already allocated address translation failed exception.
  *
- * @return The socket which could not translate the address
+ * @param host The host for which translation was requested
+ * @param socket The socket which could not translate the address
+ * @return An initialized address translation failed exception
  */
-- (OFTCPSocket*)socket;
+- initWithHost: (OFString*)host
+	socket: (OFTCPSocket*)socket;
 
 /*!
  * @brief Returns the host for which the address translation was requested.
@@ -75,6 +80,13 @@
  * @return The host for which the address translation was requested
  */
 - (OFString*)host;
+
+/*!
+ * @brief Returns the socket which could not translate the address.
+ *
+ * @return The socket which could not translate the address
+ */
+- (OFTCPSocket*)socket;
 
 /*!
  * @brief Returns the errno from when the exception was created.

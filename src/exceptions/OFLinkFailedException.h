@@ -16,7 +16,7 @@
 
 #import "OFException.h"
 
-#ifndef _WIN32
+#ifdef OF_HAVE_LINK
 /*!
  * @brief An exception indicating that creating a link failed.
  */
@@ -34,33 +34,22 @@
 /*!
  * @brief Creates a new, autoreleased link failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param sourcePath The source for the link
  * @param destinationPath The destination for the link
  * @return A new, autoreleased link failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			sourcePath: (OFString*)sourcePath
-		   destinationPath: (OFString*)destinationPath;
++ (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
+			destinationPath: (OFString*)destinationPath;
 
 /*!
  * @brief Initializes an already allocated link failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param sourcePath The source for the link
  * @param destinationPath The destination for the link
  * @return An initialized link failed exception
  */
--   initWithClass: (Class)class_
-       sourcePath: (OFString*)sourcePath
-  destinationPath: (OFString*)destinationPath;
-
-/*!
- * @brief Returns the errno from when the exception was created.
- *
- * @return The errno from when the exception was created
- */
-- (int)errNo;
+- initWithSourcePath: (OFString*)sourcePath
+     destinationPath: (OFString*)destinationPath;
 
 /*!
  * @brief Returns a string with the source for the link.
@@ -75,5 +64,12 @@
  * @return A string with the destination for the link
  */
 - (OFString*)destinationPath;
+
+/*!
+ * @brief Returns the errno from when the exception was created.
+ *
+ * @return The errno from when the exception was created
+ */
+- (int)errNo;
 @end
 #endif

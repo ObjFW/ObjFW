@@ -886,13 +886,11 @@ static struct {
 		if (stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 		    &st) == -1)
 			@throw [OFOpenFileFailedException
-			    exceptionWithClass: [self class]
-					  path: path
-					  mode: @"rb"];
+			    exceptionWithPath: path
+					 mode: @"rb"];
 
 		if (st.st_size > SIZE_MAX)
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
+			@throw [OFOutOfRangeException exception];
 
 		file = [[OFFile alloc] initWithPath: path
 					       mode: @"rb"];
@@ -960,9 +958,8 @@ static struct {
 
 	if ([reply statusCode] != 200)
 		@throw [OFHTTPRequestFailedException
-		    exceptionWithClass: [request class]
-			       request: request
-				 reply: reply];
+		    exceptionWithRequest: request
+				   reply: reply];
 
 	headers = [reply headers];
 
@@ -987,14 +984,13 @@ static struct {
 
 	if ((contentLength = [headers objectForKey: @"Content-Length"]) != nil)
 		if ([data count] != (size_t)[contentLength decimalValue])
-			@throw [OFTruncatedDataException
-			    exceptionWithClass: [self class]];
+			@throw [OFTruncatedDataException exception];
 
 	self = [[c alloc] initWithCString: (char*)[data items]
 				 encoding: encoding
 				   length: [data count]];
 #else
-	@throw [OFUnsupportedProtocolException exceptionWithClass: c];
+	@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
 #endif
 
 	objc_autoreleasePoolPop(pool);
@@ -1008,20 +1004,14 @@ static struct {
 		void *pool = objc_autoreleasePoolPush();
 
 		if (![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 		if ([self isKindOfClass: [OFMutableString class]]) {
 			if (![[element name] isEqual: @"OFMutableString"])
-				@throw [OFInvalidArgumentException
-				    exceptionWithClass: [self class]
-					      selector: _cmd];
+				@throw [OFInvalidArgumentException exception];
 		} else {
 			if (![[element name] isEqual: @"OFString"])
-				@throw [OFInvalidArgumentException
-				    exceptionWithClass: [self class]
-					      selector: _cmd];
+				@throw [OFInvalidArgumentException exception];
 		}
 
 		self = [self initWithString: [element stringValue]];
@@ -1056,8 +1046,7 @@ static struct {
 			 * need one for the terminating zero.
 			 */
 			if (j + len >= maxLength)
-				@throw [OFOutOfRangeException
-				    exceptionWithClass: [self class]];
+				@throw [OFOutOfRangeException exception];
 
 			switch (len) {
 			case 1:
@@ -1072,8 +1061,7 @@ static struct {
 
 				break;
 			default:
-				@throw [OFInvalidEncodingException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidEncodingException exception];
 			}
 		}
 
@@ -1082,13 +1070,11 @@ static struct {
 		return j;
 	case OF_STRING_ENCODING_ASCII:
 		if (length + 1 > maxLength)
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
+			@throw [OFOutOfRangeException exception];
 
 		for (i = 0; i < length; i++) {
 			if OF_UNLIKELY (characters[i] > 0x80)
-				@throw [OFInvalidEncodingException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidEncodingException exception];
 
 			cString[i] = (char)characters[i];
 		}
@@ -1098,13 +1084,11 @@ static struct {
 		return length;
 	case OF_STRING_ENCODING_ISO_8859_1:
 		if (length + 1 > maxLength)
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
+			@throw [OFOutOfRangeException exception];
 
 		for (i = 0; i < length; i++) {
 			if OF_UNLIKELY (characters[i] > 0xFF)
-				@throw [OFInvalidEncodingException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidEncodingException exception];
 
 			cString[i] = (uint8_t)characters[i];
 		}
@@ -1114,8 +1098,7 @@ static struct {
 		return length;
 	case OF_STRING_ENCODING_ISO_8859_15:
 		if (length + 1 > maxLength)
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
+			@throw [OFOutOfRangeException exception];
 
 		for (i = 0; i < length; i++) {
 			of_unichar_t c = characters[i];
@@ -1129,8 +1112,7 @@ static struct {
 			case 0xBC:
 			case 0xBD:
 			case 0xBE:
-				@throw [OFInvalidEncodingException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidEncodingException exception];
 			}
 
 			if OF_UNLIKELY (c > 0xFF) {
@@ -1161,7 +1143,7 @@ static struct {
 					break;
 				default:
 					@throw [OFInvalidEncodingException
-					    exceptionWithClass: [self class]];
+					    exception];
 				}
 			} else
 				cString[i] = (uint8_t)c;
@@ -1172,15 +1154,13 @@ static struct {
 		return length;
 	case OF_STRING_ENCODING_WINDOWS_1252:
 		if (length + 1 > maxLength)
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
+			@throw [OFOutOfRangeException exception];
 
 		for (i = 0; i < length; i++) {
 			of_unichar_t c = characters[i];
 
 			if OF_UNLIKELY (c >= 0x80 && c <= 0x9F)
-				@throw [OFInvalidEncodingException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidEncodingException exception];
 
 			if OF_UNLIKELY (c > 0xFF) {
 				switch (c) {
@@ -1267,7 +1247,7 @@ static struct {
 					break;
 				default:
 					@throw [OFInvalidEncodingException
-					    exceptionWithClass: [self class]];
+					    exception];
 				}
 			} else
 				cString[i] = (uint8_t)c;
@@ -1277,9 +1257,8 @@ static struct {
 
 		return length;
 	default:
-		@throw [OFNotImplementedException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
 	}
 }
 
@@ -1319,9 +1298,8 @@ static struct {
 
 		break;
 	default:
-		@throw [OFNotImplementedException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
 	}
 
 	return cString;
@@ -1354,8 +1332,7 @@ static struct {
 			    buffer);
 
 			if (len == 0)
-				@throw [OFInvalidEncodingException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidEncodingException exception];
 
 			UTF8StringLength += len;
 		}
@@ -1367,9 +1344,8 @@ static struct {
 	case OF_STRING_ENCODING_WINDOWS_1252:
 		return [self length];
 	default:
-		@throw [OFNotImplementedException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
 	}
 }
 
@@ -1449,9 +1425,7 @@ static struct {
 		return OF_ORDERED_SAME;
 
 	if (![object isKindOfClass: [OFString class]])
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	otherString = (OFString*)object;
 	minimumLength = ([self length] > [otherString length]
@@ -1660,7 +1634,7 @@ static struct {
 		[data addItems: &tmp
 			 count: sizeof(tmp)];
 	} else
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	[data addItems: [self UTF8String]
 		 count: length];
@@ -1699,7 +1673,7 @@ static struct {
 		return of_range(OF_NOT_FOUND, 0);
 
 	if (range.length > SIZE_MAX / sizeof(of_unichar_t))
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	pool = objc_autoreleasePoolPush();
 
@@ -1707,9 +1681,8 @@ static struct {
 	characters = malloc(range.length * sizeof(of_unichar_t));
 
 	if (characters == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithClass: [self class]
-			 requestedSize: range.length * sizeof(of_unichar_t)];
+		@throw [OFOutOfMemoryException exceptionWithRequestedSize:
+		    range.length * sizeof(of_unichar_t)];
 
 	@try {
 		[self getCharacters: characters
@@ -1784,8 +1757,7 @@ static struct {
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > [self length])
-		@throw [OFOutOfRangeException
-		    exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	pool = objc_autoreleasePoolPush();
 	ret = [[OFString alloc]
@@ -2246,16 +2218,14 @@ static struct {
 			if (characters[i] != ' ' && characters[i] != '\t' &&
 			    characters[i] != '\n' && characters[i] != '\r' &&
 			    characters[i] != '\f')
-				@throw [OFInvalidFormatException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidFormatException exception];
 			continue;
 		}
 
 		if (characters[i] >= '0' && characters[i] <= '9') {
 			if (INTMAX_MAX / 10 < value ||
 			    INTMAX_MAX - value * 10 < characters[i] - '0')
-				@throw [OFOutOfRangeException
-				    exceptionWithClass: [self class]];
+				@throw [OFOutOfRangeException exception];
 
 			value = (value * 10) + (characters[i] - '0');
 		} else if (characters[i] == ' ' || characters[i] == '\t' ||
@@ -2263,8 +2233,7 @@ static struct {
 		    characters[i] == '\f')
 			expectWhitespace = true;
 		else
-			@throw [OFInvalidFormatException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidFormatException exception];
 	}
 
 	if (characters[0] == '-')
@@ -2308,8 +2277,7 @@ static struct {
 			if (characters[i] != ' ' && characters[i] != '\t' &&
 			    characters[i] != '\n' && characters[i] != '\r' &&
 			    characters[i] != '\f')
-				@throw [OFInvalidFormatException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidFormatException exception];
 			continue;
 		}
 
@@ -2328,19 +2296,16 @@ static struct {
 			expectWhitespace = true;
 			continue;
 		} else
-			@throw [OFInvalidFormatException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidFormatException exception];
 
 		if (newValue < value)
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
+			@throw [OFOutOfRangeException exception];
 
 		value = newValue;
 	}
 
 	if (!foundValue)
-		@throw [OFInvalidFormatException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -2366,8 +2331,7 @@ static struct {
 			if (*endPointer != ' ' && *endPointer != '\t' &&
 			    *endPointer != '\n' && *endPointer != '\r' &&
 			    *endPointer != '\f')
-				@throw [OFInvalidFormatException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -2393,8 +2357,7 @@ static struct {
 			if (*endPointer != ' ' && *endPointer != '\t' &&
 			    *endPointer != '\n' && *endPointer != '\r' &&
 			    *endPointer != '\f')
-				@throw [OFInvalidFormatException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -2440,8 +2403,7 @@ static struct {
 		of_unichar_t c = characters[i];
 
 		if (c > 0x10FFFF)
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidEncodingException exception];
 
 		if (swap) {
 			if (c > 0xFFFF) {

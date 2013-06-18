@@ -24,14 +24,12 @@
 #import "common.h"
 
 @implementation OFUnsupportedVersionException
-+ (instancetype)exceptionWithClass: (Class)class
-			   version: (OFString*)version
++ (instancetype)exceptionWithVersion: (OFString*)version
 {
-	return [[[self alloc] initWithClass: class
-				    version: version] autorelease];
+	return [[[self alloc] initWithVersion: version] autorelease];
 }
 
-- initWithClass: (Class)class
+- init
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -43,10 +41,9 @@
 	abort();
 }
 
-- initWithClass: (Class)class
-	version: (OFString*)version
+- initWithVersion: (OFString*)version
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	@try {
 		_version = [version copy];
@@ -68,8 +65,8 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Version %@ of the format or protocol is not supported by class "
-	    @"%@", _version, _inClass];
+	    @"Version %@ of the format or protocol is not supported!",
+	    _version];
 }
 
 - (OFString*)version

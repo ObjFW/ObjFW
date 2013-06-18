@@ -27,16 +27,14 @@
 #import "common.h"
 
 @implementation OFReadOrWriteFailedException
-+ (instancetype)exceptionWithClass: (Class)class
-			    stream: (OFStream*)stream
-		   requestedLength: (size_t)requestedLength
++ (instancetype)exceptionWithStream: (OFStream*)stream
+		    requestedLength: (size_t)requestedLength
 {
-	return [[[self alloc] initWithClass: class
-				     stream: stream
-			    requestedLength: requestedLength] autorelease];
+	return [[[self alloc] initWithStream: stream
+			     requestedLength: requestedLength] autorelease];
 }
 
-- initWithClass: (Class)class
+- init
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -48,17 +46,16 @@
 	abort();
 }
 
--   initWithClass: (Class)class
-	   stream: (OFStream*)stream
+-  initWithStream: (OFStream*)stream
   requestedLength: (size_t)requestedLength
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	_stream = [stream retain];
 	_requestedLength = requestedLength;
 
 #ifdef OF_HAVE_SOCKETS
-	if ([class isSubclassOfClass: [OFStreamSocket class]])
+	if ([stream isKindOfClass: [OFStreamSocket class]])
 		_errNo = GET_SOCK_ERRNO;
 	else
 #endif
@@ -72,6 +69,13 @@
 	[_stream release];
 
 	[super dealloc];
+}
+
+- (OFString*)description
+{
+	return [OFString stringWithFormat:
+	    @"Failed to read or write %zu bytes in a stream of type "
+	    @"%@! " ERRFMT, _requestedLength, [_stream class], ERRPARAM];
 }
 
 - (OFStream*)stream

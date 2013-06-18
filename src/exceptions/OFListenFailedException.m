@@ -25,16 +25,14 @@
 #import "common.h"
 
 @implementation OFListenFailedException
-+ (instancetype)exceptionWithClass: (Class)class
-			    socket: (OFTCPSocket*)socket
-			   backLog: (int)backLog
++ (instancetype)exceptionWithSocket: (OFTCPSocket*)socket
+			    backLog: (int)backLog
 {
-	return [[[self alloc] initWithClass: class
-				     socket: socket
-				    backLog: backLog] autorelease];
+	return [[[self alloc] initWithSocket: socket
+				     backLog: backLog] autorelease];
 }
 
-- initWithClass: (Class)class
+- init
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -46,11 +44,10 @@
 	abort();
 }
 
-- initWithClass: (Class)class
-	 socket: (OFTCPSocket*)socket
-	backLog: (int)backLog
+- initWithSocket: (OFTCPSocket*)socket
+	 backLog: (int)backLog
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	_socket  = [socket retain];
 	_backLog = backLog;
@@ -70,7 +67,7 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to listen in socket of type %@ with a back log of %d! "
-	    ERRFMT, _inClass, _backLog, ERRPARAM];
+	    ERRFMT, [_socket class], _backLog, ERRPARAM];
 }
 
 - (OFTCPSocket*)socket

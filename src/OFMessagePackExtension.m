@@ -53,9 +53,7 @@
 
 	@try {
 		if (data == nil || [data itemSize] != 1)
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 		_type = type;
 		_data = [data retain];

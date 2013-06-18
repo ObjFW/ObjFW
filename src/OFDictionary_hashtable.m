@@ -200,24 +200,18 @@ static of_map_table_functions_t valueFunctions = {
 		va_copy(argumentsCopy, arguments);
 
 		if (firstKey == nil)
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 		key = firstKey;
 
 		if ((object = va_arg(arguments, id)) == nil)
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 		count = 1;
 		for (; va_arg(argumentsCopy, id) != nil; count++);
 
 		if (count % 2 != 0)
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 		count /= 2;
 
@@ -234,9 +228,7 @@ static of_map_table_functions_t valueFunctions = {
 			object = va_arg(arguments, id);
 
 			if (key == nil || object == nil)
-				@throw [OFInvalidArgumentException
-				    exceptionWithClass: [self class]
-					      selector: _cmd];
+				@throw [OFInvalidArgumentException exception];
 
 			[_mapTable setValue: object
 				     forKey: key];
@@ -265,8 +257,7 @@ static of_map_table_functions_t valueFunctions = {
 					 namespace: OF_SERIALIZATION_NS];
 
 		if ([keys count] != [objects count])
-			@throw [OFInvalidFormatException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidFormatException exception];
 
 		_mapTable = [[OFMapTable alloc]
 		    initWithKeyFunctions: keyFunctions
@@ -286,8 +277,7 @@ static of_map_table_functions_t valueFunctions = {
 			    OF_SERIALIZATION_NS] firstObject];
 
 			if (key == nil || object == nil)
-				@throw [OFInvalidFormatException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidFormatException exception];
 
 			[_mapTable setValue: [object objectByDeserializing]
 				     forKey: [key objectByDeserializing]];
@@ -313,17 +303,7 @@ static of_map_table_functions_t valueFunctions = {
 
 - (id)objectForKey: (id)key
 {
-	id ret;
-
-	@try {
-		ret = [_mapTable valueForKey: key];
-	} @catch (OFInvalidArgumentException *e) {
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
-	}
-
-	return ret;
+	return [_mapTable valueForKey: key];
 }
 
 - (size_t)count
@@ -458,8 +438,7 @@ static of_map_table_functions_t valueFunctions = {
 		}];
 	} @catch (OFEnumerationMutationException *e) {
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: [self class]
-				object: self];
+		    exceptionWithObject: self];
 	}
 }
 #endif

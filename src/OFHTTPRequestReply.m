@@ -52,10 +52,9 @@
 {
 	if (protocolVersion.major != 1 || protocolVersion.minor > 1)
 		@throw [OFUnsupportedVersionException
-		    exceptionWithClass: [self class]
-			       version: [OFString stringWithFormat: @"%u.%u",
-					    protocolVersion.major,
-					    protocolVersion.minor]];
+		    exceptionWithVersion: [OFString stringWithFormat: @"%u.%u",
+					      protocolVersion.major,
+					      protocolVersion.minor]];
 
 	_protocolVersion = protocolVersion;
 }
@@ -73,14 +72,13 @@
 	of_http_request_protocol_version_t protocolVersion;
 
 	if ([components count] != 2)
-		@throw [OFInvalidFormatException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidFormatException exception];
 
 	major = [[components firstObject] decimalValue];
 	minor = [[components lastObject] decimalValue];
 
 	if (major < 0 || major > UINT8_MAX || minor < 0 || minor > UINT8_MAX)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	protocolVersion.major = (uint8_t)major;
 	protocolVersion.minor = (uint8_t)minor;
@@ -148,8 +146,7 @@
 
 	if ((contentLength = [_headers objectForKey: @"Content-Length"]) != nil)
 		if ([data count] != (size_t)[contentLength decimalValue])
-			@throw [OFTruncatedDataException
-			    exceptionWithClass: [self class]];
+			@throw [OFTruncatedDataException exception];
 
 	ret = [[OFString alloc] initWithCString: (char*)[data items]
 				       encoding: encoding

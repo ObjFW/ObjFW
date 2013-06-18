@@ -23,18 +23,16 @@
 
 #import "common.h"
 
-#ifndef _WIN32
+#ifdef OF_HAVE_LINK
 @implementation OFLinkFailedException
-+ (instancetype)exceptionWithClass: (Class)class
-			sourcePath: (OFString*)sourcePath
-		   destinationPath: (OFString*)destinationPath
++ (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
+			destinationPath: (OFString*)destinationPath
 {
-	return [[[self alloc] initWithClass: class
-				 sourcePath: sourcePath
-			    destinationPath: destinationPath] autorelease];
+	return [[[self alloc] initWithSourcePath: sourcePath
+				 destinationPath: destinationPath] autorelease];
 }
 
-- initWithClass: (Class)class
+- init
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -46,11 +44,10 @@
 	abort();
 }
 
--   initWithClass: (Class)class
-       sourcePath: (OFString*)sourcePath
-  destinationPath: (OFString*)destinationPath
+- initWithSourcePath: (OFString*)sourcePath
+     destinationPath: (OFString*)destinationPath
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	@try {
 		_sourcePath = [sourcePath copy];
@@ -75,13 +72,8 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to link file %@ to %@ in class %@! " ERRFMT, _sourcePath,
-	    _destinationPath, _inClass, ERRPARAM];
-}
-
-- (int)errNo
-{
-	return _errNo;
+	    @"Failed to link file %@ to %@! " ERRFMT, _sourcePath,
+	    _destinationPath, ERRPARAM];
 }
 
 - (OFString*)sourcePath
@@ -92,6 +84,11 @@
 - (OFString*)destinationPath
 {
 	OF_GETTER(_destinationPath, false)
+}
+
+- (int)errNo
+{
+	return _errNo;
 }
 @end
 #endif

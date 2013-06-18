@@ -22,8 +22,7 @@
 @implementation OFTruncatedDataException
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"Truncated data was received or produced in class %@ while it "
-	    @"should not have been truncated!", _inClass];
+	return @"Truncated data was received or produced when it should not "
+	    @"have been truncated!";
 }
 @end

@@ -46,9 +46,7 @@
 
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 		enumerator = [[element elementsForNamespace:
 		    OF_SERIALIZATION_NS] objectEnumerator];
@@ -444,8 +442,7 @@
 
 	if (*_mutationsPtr != _mutations)
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: [self class]
-				object: _list];
+		    exceptionWithObject: _list];
 
 	if (_current == NULL)
 		return nil;
@@ -460,8 +457,7 @@
 {
 	if (*_mutationsPtr != _mutations)
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: [self class]
-				object: _list];
+		    exceptionWithObject: _list];
 
 	_current = [_list firstListObject];
 }

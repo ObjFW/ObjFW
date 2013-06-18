@@ -51,8 +51,7 @@
 	if (_conditionInitialized)
 		if (!of_condition_free(&_condition))
 			@throw [OFConditionStillWaitingException
-			    exceptionWithClass: [self class]
-				     condition: self];
+			    exceptionWithCondition: self];
 
 	[super dealloc];
 }
@@ -61,8 +60,7 @@
 {
 	if (!of_condition_wait(&_condition, &_mutex))
 		@throw [OFConditionWaitFailedException
-		    exceptionWithClass: [self class]
-			     condition: self];
+		    exceptionWithCondition: self];
 }
 
 - (bool)waitForTimeInterval: (double)timeInterval
@@ -80,15 +78,13 @@
 {
 	if (!of_condition_signal(&_condition))
 		@throw [OFConditionSignalFailedException
-		    exceptionWithClass: [self class]
-			     condition: self];
+		    exceptionWithCondition: self];
 }
 
 - (void)broadcast
 {
 	if (!of_condition_broadcast(&_condition))
 		@throw [OFConditionBroadcastFailedException
-		    exceptionWithClass: [self class]
-			     condition: self];
+		    exceptionWithCondition: self];
 }
 @end

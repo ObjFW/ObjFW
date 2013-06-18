@@ -34,46 +34,35 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain, nonatomic) OFTCPSocket *socket;
 @property (readonly, copy, nonatomic) OFString *host;
 @property (readonly) uint16_t port;
+@property (readonly, retain, nonatomic) OFTCPSocket *socket;
 @property (readonly) int errNo;
 #endif
 
 /*!
  * @brief Creates a new, autoreleased bind failed exception.
  *
- * @param class_ The class of the object which caused the exception
- * @param socket The socket which could not be bound
  * @param host The host on which binding failed
  * @param port The port on which binding failed
+ * @param socket The socket which could not be bound
  * @return A new, autoreleased bind failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			    socket: (OFTCPSocket*)socket
-			      host: (OFString*)host
-			      port: (uint16_t)port;
++ (instancetype)exceptionWithHost: (OFString*)host
+			     port: (uint16_t)port
+			   socket: (OFTCPSocket*)socket;
 
 /*!
  * @brief Initializes an already allocated bind failed exception.
  *
- * @param class_ The class of the object which caused the exception
- * @param socket The socket which could not be bound
  * @param host The host on which binding failed
  * @param port The port on which binding failed
+ * @param socket The socket which could not be bound
  * @return An initialized bind failed exception
  */
-- initWithClass: (Class)class_
-	 socket: (OFTCPSocket*)socket
-	   host: (OFString*)host
-	   port: (uint16_t)port;
-
-/*!
- * @brief Returns the socket which could not be bound.
- *
- * @return The socket which could not be bound
- */
-- (OFTCPSocket*)socket;
+- initWithHost: (OFString*)host
+	  port: (uint16_t)port
+	socket: (OFTCPSocket*)socket;
 
 /*!
  * @brief Returns the host on which binding failed.
@@ -88,6 +77,13 @@
  * @return The port on which binding failed
  */
 - (uint16_t)port;
+
+/*!
+ * @brief Returns the socket which could not be bound.
+ *
+ * @return The socket which could not be bound
+ */
+- (OFTCPSocket*)socket;
 
 /*!
  * @brief Returns the errno from when the exception was created.

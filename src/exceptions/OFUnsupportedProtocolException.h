@@ -34,22 +34,18 @@
 /*!
  * @brief Creates a new, autoreleased unsupported protocol exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param URL The URL whose protocol is unsupported
  * @return A new, autoreleased unsupported protocol exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			       URL: (OFURL*)URL;
++ (instancetype)exceptionWithURL: (OFURL*)URL;
 
 /*!
  * @brief Initializes an already allocated unsupported protocol exception
  *
- * @param class_ The class of the object which caused the exception
  * @param URL The URL whose protocol is unsupported
  * @return An initialized unsupported protocol exception
  */
-- initWithClass: (Class)class_
-	    URL: (OFURL*)URL;
+- initWithURL: (OFURL*)URL;
 
 /*!
  * @brief Returns the URL whose protocol is unsupported.

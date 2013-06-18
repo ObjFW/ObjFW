@@ -22,7 +22,6 @@
 @implementation OFInvalidFormatException
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"The format is invalid for class %@!", _inClass];
+	return @"A format is invalid!";
 }
 @end

@@ -19,20 +19,17 @@
 #import "OFStillLockedException.h"
 #import "OFString.h"
 
-#import "macros.h"
+#import "common.h"
 
 @implementation OFStillLockedException
-+ (instancetype)exceptionWithClass: (Class)class
-			      lock: (id <OFLocking>)lock
++ (instancetype)exceptionWithLock: (id <OFLocking>)lock
 {
-	return [[[self alloc] initWithClass: class
-				       lock: lock] autorelease];
+	return [[[self alloc] initWithLock: lock] autorelease];
 }
 
-- initWithClass: (Class)class
-	   lock: (id <OFLocking>)lock
+- initWithLock: (id <OFLocking>)lock
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	_lock = [lock retain];
 
@@ -48,9 +45,13 @@
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"Deallocation of a lock of type %@ was tried in class %@, even "
-	    @"though it was still locked!", [_lock class], _inClass];
+	if (_lock != nil)
+		return [OFString stringWithFormat:
+		    @"Deallocation of a lock of type %@ even though it was "
+		    @"still locked!", [_lock class]];
+	else
+		return @"Deallocation of a lock even though it was still "
+		    @"locked!";
 }
 
 - (id <OFLocking>)lock

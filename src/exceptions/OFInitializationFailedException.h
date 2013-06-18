@@ -20,4 +20,34 @@
  * @brief An exception indicating that initializing something failed.
  */
 @interface OFInitializationFailedException: OFException
+{
+	Class _inClass;
+}
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly) Class inClass;
+#endif
+
+/*!
+ * @brief Creates a new, autoreleased initialization failed exception.
+ *
+ * @param class_ The class for which initialization failed
+ * @return A new, autoreleased initialization failed exception
+ */
++ (instancetype)exceptionWithClass: (Class)class_;
+
+/*!
+ * @brief Initializes an already allocated initialization failed exception.
+ *
+ * @param class_ The class for which initialization failed
+ * @return An initialized initialization failed exception
+ */
+- initWithClass: (Class)class_;
+
+/*!
+ * @brief Returns the class for which initialization failed.
+ *
+ * @return The class for which initialization failed
+ */
+- (Class)inClass;
 @end

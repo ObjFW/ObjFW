@@ -25,18 +25,16 @@
 #import "common.h"
 
 @implementation OFSeekFailedException
-+ (instancetype)exceptionWithClass: (Class)class
-			    stream: (OFSeekableStream*)stream
-			    offset: (off_t)offset
-			    whence: (int)whence
++ (instancetype)exceptionWithStream: (OFSeekableStream*)stream
+			     offset: (off_t)offset
+			     whence: (int)whence
 {
-	return [[[self alloc] initWithClass: class
-				     stream: stream
-				     offset: offset
-				     whence: whence] autorelease];
+	return [[[self alloc] initWithStream: stream
+				      offset: offset
+				      whence: whence] autorelease];
 }
 
-- initWithClass: (Class)class
+- init
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -48,12 +46,11 @@
 	abort();
 }
 
-- initWithClass: (Class)class
-	 stream: (OFSeekableStream*)stream
-	 offset: (off_t)offset
-	 whence: (int)whence
+- initWithStream: (OFSeekableStream*)stream
+	  offset: (off_t)offset
+	  whence: (int)whence
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	_stream = [stream retain];
 	_offset = offset;
@@ -73,7 +70,8 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Seeking failed in class %@! " ERRFMT, _inClass, ERRPARAM];
+	    @"Seeking failed in stream of type %@! " ERRFMT, [_stream class],
+	    ERRPARAM];
 }
 
 - (OFSeekableStream*)stream

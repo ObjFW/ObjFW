@@ -40,11 +40,9 @@ int _OFTCPSocket_SOCKS5_reference;
 
 	if (reply[0] != 5 || reply[1] != 0) {
 		[self close];
-		@throw [OFConnectionFailedException
-		    exceptionWithClass: [self class]
-				socket: self
-				  host: host
-				  port: port];
+		@throw [OFConnectionFailedException exceptionWithHost: host
+								 port: port
+							       socket: self];
 	}
 
 	wasWriteBufferEnabled = [self isWriteBufferEnabled];
@@ -66,11 +64,9 @@ int _OFTCPSocket_SOCKS5_reference;
 
 	if (reply[0] != 5 || reply[1] != 0 || reply[2] != 0) {
 		[self close];
-		@throw [OFConnectionFailedException
-		    exceptionWithClass: [self class]
-				socket: self
-				  host: host
-				  port: port];
+		@throw [OFConnectionFailedException exceptionWithHost: host
+								 port: port
+							       socket: self];
 	}
 
 	/* Skip the rest of the reply */
@@ -89,11 +85,9 @@ int _OFTCPSocket_SOCKS5_reference;
 		break;
 	default:
 		[self close];
-		@throw [OFConnectionFailedException
-		    exceptionWithClass: [self class]
-				socket: self
-				  host: host
-				  port: port];
+		@throw [OFConnectionFailedException exceptionWithHost: host
+								 port: port
+							       socket: self];
 	}
 
 	[self readBigEndianInt16];

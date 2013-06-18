@@ -33,29 +33,18 @@
 /*!
  * @brief Creates a new, autoreleased delete file failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param path The path of the file
  * @return A new, autoreleased delete file failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			      path: (OFString*)path;
++ (instancetype)exceptionWithPath: (OFString*)path;
 
 /*!
  * @brief Initializes an already allocated delete file failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param path The path of the file
  * @return An initialized delete file failed exception
  */
-- initWithClass: (Class)class_
-	   path: (OFString*)path;
-
-/*!
- * @brief Returns the errno from when the exception was created.
- *
- * @return The errno from when the exception was created
- */
-- (int)errNo;
+- initWithPath: (OFString*)path;
 
 /*!
  * @brief Returns the path of the file.
@@ -63,4 +52,11 @@
  * @return The path of the file
  */
 - (OFString*)path;
+
+/*!
+ * @brief Returns the errno from when the exception was created.
+ *
+ * @return The errno from when the exception was created
+ */
+- (int)errNo;
 @end

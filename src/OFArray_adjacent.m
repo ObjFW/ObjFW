@@ -53,8 +53,7 @@
 
 	@try {
 		if (object == nil)
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidArgumentException exception];
 
 		[_array addItem: &object];
 		[object retain];
@@ -148,8 +147,7 @@
 		}
 
 		if (!ok)
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidArgumentException exception];
 
 		[_array addItems: objects
 			   count: count];
@@ -178,9 +176,7 @@
 		if ((![[element name] isEqual: @"OFArray"] &&
 		    ![[element name] isEqual: @"OFMutableArray"]) ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 		enumerator = [[element elementsForNamespace:
 		    OF_SERIALIZATION_NS] objectEnumerator];
@@ -222,7 +218,7 @@
 	@try {
 		ret = *((id*)[_array itemAtIndex: index]);
 	} @catch (OFOutOfRangeException *e) {
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 	}
 
 	return ret;
@@ -235,7 +231,7 @@
 	@try {
 		ret = *((id*)[_array itemAtIndex: index]);
 	} @catch (OFOutOfRangeException *e) {
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 	}
 
 	return ret;
@@ -249,7 +245,7 @@
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > count)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	for (i = 0; i < range.length; i++)
 		buffer[i] = objects[range.location + i];
@@ -296,8 +292,7 @@
 {
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > [_array count])
-		@throw [OFOutOfRangeException
-		    exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	if ([self isKindOfClass: [OFMutableArray class]])
 		return [OFArray

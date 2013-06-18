@@ -16,7 +16,7 @@
 
 #import "OFException.h"
 
-#ifndef _WIN32
+#ifdef OF_HAVE_CHOWN
 /*!
  * @brief An exception indicating that changing the owner of a file failed.
  */
@@ -34,37 +34,26 @@
 /*!
  * @brief Creates a new, autoreleased change file owner failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param path The path of the file
  * @param owner The new owner for the file
  * @param group The new group for the file
  * @return A new, autoreleased change file owner failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			      path: (OFString*)path
-			     owner: (OFString*)owner
-			     group: (OFString*)group;
++ (instancetype)exceptionWithPath: (OFString*)path
+			    owner: (OFString*)owner
+			    group: (OFString*)group;
 
 /*!
  * @brief Initializes an already allocated change file owner failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param path The path of the file
  * @param owner The new owner for the file
  * @param group The new group for the file
  * @return An initialized change file owner failed exception
  */
-- initWithClass: (Class)class_
-	   path: (OFString*)path
-	  owner: (OFString*)owner
-	  group: (OFString*)group;
-
-/*!
- * @brief Returns the errno from when the exception was created.
- *
- * @return The errno from when the exception was created
- */
-- (int)errNo;
+- initWithPath: (OFString*)path
+	 owner: (OFString*)owner
+	 group: (OFString*)group;
 
 /*!
  * @brief Returns the path of the file.
@@ -86,5 +75,12 @@
  * @return The new group for the file
  */
 - (OFString*)group;
+
+/*!
+ * @brief Returns the errno from when the exception was created.
+ *
+ * @return The errno from when the exception was created
+ */
+- (int)errNo;
 @end
 #endif

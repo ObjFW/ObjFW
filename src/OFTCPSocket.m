@@ -334,9 +334,7 @@ static uint16_t freePort = 65532;
 	uint16_t destinationPort = port;
 
 	if (_socket != INVALID_SOCKET)
-		@throw [OFAlreadyConnectedException
-		    exceptionWithClass: [self class]
-				socket: self];
+		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	if (_SOCKS5Host != nil) {
 		/* Connect to the SOCKS5 proxy instead */
@@ -357,9 +355,8 @@ static uint16_t freePort = 65532;
 	if (getaddrinfo([host cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    portCString, &hints, &res0))
 		@throw [OFAddressTranslationFailedException
-		    exceptionWithClass: [self class]
-				socket: self
-				  host: host];
+		    exceptionWithHost: host
+			       socket: self];
 
 	for (res = res0; res != NULL; res = res->ai_next) {
 		if ((_socket = socket(res->ai_family, res->ai_socktype,
@@ -394,10 +391,9 @@ static uint16_t freePort = 65532;
 		if ((_socket = socket(AF_INET, SOCK_STREAM,
 		    0)) == INVALID_SOCKET) {
 			@throw [OFConnectionFailedException
-			    exceptionWithClass: [self class]
-					socket: self
-					  host: host
-					  port: port];
+			    exceptionWithHost: host
+					 port: port
+				       socket: self];
 		}
 
 		if (connect(_socket, (struct sockaddr*)&addr,
@@ -405,10 +401,9 @@ static uint16_t freePort = 65532;
 			close(_socket);
 			_socket = INVALID_SOCKET;
 			@throw [OFConnectionFailedException
-			    exceptionWithClass: [self class]
-					socket: self
-					  host: host
-					  port: port];
+			    exceptionWithHost: host
+					 port: port
+				       socket: self];
 		}
 
 		if (_SOCKS5Host != nil)
@@ -430,9 +425,8 @@ static uint16_t freePort = 65532;
 		[mutex unlock];
 # endif
 		@throw [OFAddressTranslationFailedException
-		    exceptionWithClass: [self class]
-				socket: self
-				  host: host];
+		    exceptionWithHost: host
+			       socket: self];
 	}
 
 	if (he->h_addrtype != AF_INET ||
@@ -441,11 +435,9 @@ static uint16_t freePort = 65532;
 		[addrlist release];
 		[mutex unlock];
 # endif
-		@throw [OFConnectionFailedException
-		    exceptionWithClass: [self class]
-				socket: self
-				  host: host
-				  port: port];
+		@throw [OFConnectionFailedException exceptionWithHost: host
+								 port: port
+							       socket: self];
 	}
 
 # ifdef OF_HAVE_THREADS
@@ -487,11 +479,9 @@ static uint16_t freePort = 65532;
 #endif
 
 	if (_socket == INVALID_SOCKET)
-		@throw [OFConnectionFailedException
-		    exceptionWithClass: [self class]
-				socket: self
-				  host: host
-				  port: port];
+		@throw [OFConnectionFailedException exceptionWithHost: host
+								 port: port
+							       socket: self];
 
 	if (_SOCKS5Host != nil)
 		[self OF_SOCKS5ConnectToHost: destinationHost
@@ -552,14 +542,11 @@ static uint16_t freePort = 65532;
 #endif
 
 	if (_socket != INVALID_SOCKET)
-		@throw [OFAlreadyConnectedException
-		    exceptionWithClass: [self class]
-				socket: self];
+		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	if (_SOCKS5Host != nil)
-		@throw [OFNotImplementedException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
 
 #ifdef __wii__
 	if (port == 0)
@@ -579,31 +566,26 @@ static uint16_t freePort = 65532;
 	if (getaddrinfo([host cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    portCString, &hints, &res))
 		@throw [OFAddressTranslationFailedException
-		    exceptionWithClass: [self class]
-				socket: self
-				  host: host];
+		    exceptionWithHost: host
+			       socket: self];
 
 	if ((_socket = socket(res->ai_family, SOCK_STREAM,
 	    0)) == INVALID_SOCKET)
-		@throw [OFBindFailedException exceptionWithClass: [self class]
-							  socket: self
-							    host: host
-							    port: port];
+		@throw [OFBindFailedException exceptionWithHost: host
+							   port: port
+							 socket: self];
 
 	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, (const char*)&one,
 	    sizeof(one)))
-		@throw [OFSetOptionFailedException
-		    exceptionWithClass: [self class]
-				stream: self];
+		@throw [OFSetOptionFailedException exceptionWithStream: self];
 
 	if (bind(_socket, res->ai_addr, res->ai_addrlen) == -1) {
 		freeaddrinfo(res);
 		close(_socket);
 		_socket = INVALID_SOCKET;
-		@throw [OFBindFailedException exceptionWithClass: [self class]
-							  socket: self
-							    host: host
-							    port: port];
+		@throw [OFBindFailedException exceptionWithHost: host
+							   port: port
+							 socket: self];
 	}
 
 	freeaddrinfo(res);
@@ -623,16 +605,14 @@ static uint16_t freePort = 65532;
 			if ((he = gethostbyname([host cStringWithEncoding:
 			    OF_STRING_ENCODING_NATIVE])) == NULL)
 				@throw [OFAddressTranslationFailedException
-				    exceptionWithClass: [self class]
-						socket: self
-						  host: host];
+				    exceptionWithHost: host
+					       socket: self];
 
 			if (he->h_addrtype != AF_INET ||
 			    he->h_addr_list[0] == NULL) {
 				@throw [OFAddressTranslationFailedException
-				    exceptionWithClass: [self class]
-						socket: self
-						  host: host];
+				    exceptionWithHost: host
+					       socket: self];
 			}
 
 			memcpy(&addr.in.sin_addr.s_addr, he->h_addr_list[0],
@@ -645,24 +625,20 @@ static uint16_t freePort = 65532;
 	}
 
 	if ((_socket = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
-		@throw [OFBindFailedException exceptionWithClass: [self class]
-							  socket: self
-							    host: host
-							    port: port];
+		@throw [OFBindFailedException exceptionWithHost: host
+							   port: port
+							 socket: self];
 
 	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, (const char*)&one,
 	    sizeof(one)))
-		@throw [OFSetOptionFailedException
-		    exceptionWithClass: [self class]
-				stream: self];
+		@throw [OFSetOptionFailedException exceptionWithStream: self];
 
 	if (bind(_socket, (struct sockaddr*)&addr.in, sizeof(addr.in)) == -1) {
 		close(_socket);
 		_socket = INVALID_SOCKET;
-		@throw [OFBindFailedException exceptionWithClass: [self class]
-							  socket: self
-							    host: host
-							    port: port];
+		@throw [OFBindFailedException exceptionWithHost: host
+							   port: port
+							 socket: self];
 	}
 #endif
 
@@ -674,10 +650,9 @@ static uint16_t freePort = 65532;
 	if (getsockname(_socket, (struct sockaddr*)&addr, &addrLen)) {
 		close(_socket);
 		_socket = INVALID_SOCKET;
-		@throw [OFBindFailedException exceptionWithClass: [self class]
-							  socket: self
-							    host: host
-							    port: port];
+		@throw [OFBindFailedException exceptionWithHost: host
+							   port: port
+							 socket: self];
 	}
 
 	if (addr.storage.ss_family == AF_INET)
@@ -690,22 +665,19 @@ static uint16_t freePort = 65532;
 
 	close(_socket);
 	_socket = INVALID_SOCKET;
-	@throw [OFBindFailedException exceptionWithClass: [self class]
-						  socket: self
-						    host: host
-						    port: port];
+	@throw [OFBindFailedException exceptionWithHost: host
+						   port: port
+						 socket: self];
 }
 
 - (void)listenWithBackLog: (int)backLog
 {
 	if (_socket == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithClass: [self class]
-							    socket: self];
+		@throw [OFNotConnectedException exceptionWithSocket: self];
 
 	if (listen(_socket, backLog) == -1)
-		@throw [OFListenFailedException exceptionWithClass: [self class]
-							    socket: self
-							   backLog: backLog];
+		@throw [OFListenFailedException exceptionWithSocket: self
+							    backLog: backLog];
 
 	_listening = true;
 }
@@ -728,8 +700,7 @@ static uint16_t freePort = 65532;
 
 	if ((socket = accept(_socket, (struct sockaddr*)addr,
 	    &addrLen)) == INVALID_SOCKET)
-		@throw [OFAcceptFailedException exceptionWithClass: [self class]
-							    socket: self];
+		@throw [OFAcceptFailedException exceptionWithSocket: self];
 
 	client->_socket = socket;
 	client->_sockAddr = addr;
@@ -759,9 +730,7 @@ static uint16_t freePort = 65532;
 	int v = enable;
 
 	if (setsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE, (char*)&v, sizeof(v)))
-		@throw [OFSetOptionFailedException
-		    exceptionWithClass: [self class]
-				stream: self];
+		@throw [OFSetOptionFailedException exceptionWithStream: self];
 }
 
 - (OFString*)remoteAddress
@@ -769,9 +738,7 @@ static uint16_t freePort = 65532;
 	char *host;
 
 	if (_sockAddr == NULL || _sockAddrLen == 0)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFNotConnectedException exceptionWithSocket: self];
 
 #ifdef HAVE_THREADSAFE_GETADDRINFO
 	host = [self allocMemoryWithSize: NI_MAXHOST];
@@ -780,7 +747,7 @@ static uint16_t freePort = 65532;
 		if (getnameinfo((struct sockaddr*)_sockAddr, _sockAddrLen, host,
 		    NI_MAXHOST, NULL, 0, NI_NUMERICHOST | NI_NUMERICSERV))
 			@throw [OFAddressTranslationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithSocket: self];
 
 		return [OFString stringWithCString: host
 					  encoding: OF_STRING_ENCODING_NATIVE];
@@ -797,7 +764,7 @@ static uint16_t freePort = 65532;
 
 		if (host == NULL)
 			@throw [OFAddressTranslationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithSocket: self];
 
 		return [OFString stringWithCString: host
 					  encoding: OF_STRING_ENCODING_NATIVE];

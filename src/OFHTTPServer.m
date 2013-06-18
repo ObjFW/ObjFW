@@ -145,8 +145,7 @@ normalized_key(OFString *key)
 
 	if (cString == NULL)
 		@throw [OFOutOfMemoryException
-		    exceptionWithClass: nil
-			 requestedSize: strlen([key UTF8String])];
+		    exceptionWithRequestedSize: strlen([key UTF8String])];
 
 	while (*tmp != '\0') {
 		if (!isalnum(*tmp)) {
@@ -690,14 +689,10 @@ normalized_key(OFString *key)
 - (void)start
 {
 	if (_host == nil || _port == 0)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	if (_listeningSocket != nil)
-		@throw [OFAlreadyConnectedException
-		    exceptionWithClass: [self class]
-				socket: _listeningSocket];
+		@throw [OFAlreadyConnectedException exception];
 
 	_listeningSocket = [[OFTCPSocket alloc] init];
 	[_listeningSocket bindToHost: _host

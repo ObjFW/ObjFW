@@ -22,7 +22,6 @@
 @implementation OFInvalidEncodingException
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"The encoding is invalid for class %@!", _inClass];
+	return @"An encoding is invalid!";
 }
 @end

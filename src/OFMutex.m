@@ -50,8 +50,7 @@
 - (void)lock
 {
 	if (!of_mutex_lock(&_mutex))
-		@throw [OFLockFailedException exceptionWithClass: [self class]
-							    lock: self];
+		@throw [OFLockFailedException exceptionWithLock: self];
 }
 
 - (bool)tryLock
@@ -62,8 +61,7 @@
 - (void)unlock
 {
 	if (!of_mutex_unlock(&_mutex))
-		@throw [OFUnlockFailedException exceptionWithClass: [self class]
-							      lock: self];
+		@throw [OFUnlockFailedException exceptionWithLock: self];
 }
 
 - (void)setName: (OFString*)name
@@ -89,9 +87,7 @@
 {
 	if (_initialized)
 		if (!of_mutex_free(&_mutex))
-			@throw [OFStillLockedException
-			    exceptionWithClass: [self class]
-					  lock: self];
+			@throw [OFStillLockedException exceptionWithLock: self];
 
 	[_name release];
 

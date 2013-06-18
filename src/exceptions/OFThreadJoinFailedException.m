@@ -23,14 +23,12 @@
 #import "OFThread.h"
 
 @implementation OFThreadJoinFailedException
-+ (instancetype)exceptionWithClass: (Class)class
-			    thread: (OFThread*)thread
++ (instancetype)exceptionWithThread: (OFThread*)thread
 {
-	return [[[self alloc] initWithClass: class
-				     thread: thread] autorelease];
+	return [[[self alloc] initWithThread: thread] autorelease];
 }
 
-- initWithClass: (Class)class
+- init
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -42,10 +40,9 @@
 	abort();
 }
 
-- initWithClass: (Class)class
-	 thread: (OFThread*)thread
+- initWithThread: (OFThread*)thread
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	_thread = [thread retain];
 
@@ -62,8 +59,8 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Joining a thread of class %@ failed! Most likely, another thread "
-	    @"already waits for the thread to join.", _inClass];
+	    @"Joining a thread of type %@ failed! Most likely, another thread "
+	    @"already waits for the thread to join.", [_thread class]];
 }
 
 - (OFThread*)thread

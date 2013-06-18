@@ -24,16 +24,14 @@
 #import "common.h"
 
 @implementation OFChangeFileModeFailedException
-+ (instancetype)exceptionWithClass: (Class)class
-			      path: (OFString*)path
-			      mode: (mode_t)mode
++ (instancetype)exceptionWithPath: (OFString*)path
+			     mode: (mode_t)mode
 {
-	return [[[self alloc] initWithClass: class
-				       path: path
-				       mode: mode] autorelease];
+	return [[[self alloc] initWithPath: path
+				      mode: mode] autorelease];
 }
 
-- initWithClass: (Class)class
+- init
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -45,11 +43,10 @@
 	abort();
 }
 
-- initWithClass: (Class)class
-	   path: (OFString*)path
-	   mode: (mode_t)mode
+- initWithPath: (OFString*)path
+	  mode: (mode_t)mode
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	@try {
 		_path  = [path copy];
@@ -73,13 +70,8 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to change mode for file %@ to %d in class %@! " ERRFMT,
-	    _path, _mode, _inClass, ERRPARAM];
-}
-
-- (int)errNo
-{
-	return _errNo;
+	    @"Failed to change mode for file %@ to %d! " ERRFMT, _path, _mode,
+	    ERRPARAM];
 }
 
 - (OFString*)path
@@ -90,5 +82,10 @@
 - (mode_t)mode
 {
 	return _mode;
+}
+
+- (int)errNo
+{
+	return _errNo;
 }
 @end

@@ -90,15 +90,13 @@
 	ssize_t ret;
 
 	if (_socket == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithClass: [self class]
-							    socket: self];
+		@throw [OFNotConnectedException exceptionWithSocket: self];
 
 	if (_atEndOfStream) {
 		OFReadFailedException *e;
 
-		e = [OFReadFailedException exceptionWithClass: [self class]
-						       stream: self
-					      requestedLength: length];
+		e = [OFReadFailedException exceptionWithStream: self
+					       requestedLength: length];
 #ifndef _WIN32
 		e->_errNo = ENOTCONN;
 #else
@@ -109,9 +107,8 @@
 	}
 
 	if ((ret = recv(_socket, buffer, length, 0)) < 0)
-		@throw [OFReadFailedException exceptionWithClass: [self class]
-							  stream: self
-						 requestedLength: length];
+		@throw [OFReadFailedException exceptionWithStream: self
+						  requestedLength: length];
 
 	if (ret == 0)
 		_atEndOfStream = true;
@@ -123,15 +120,13 @@
 		     length: (size_t)length
 {
 	if (_socket == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithClass: [self class]
-							    socket: self];
+		@throw [OFNotConnectedException exceptionWithSocket: self];
 
 	if (_atEndOfStream) {
 		OFWriteFailedException *e;
 
-		e = [OFWriteFailedException exceptionWithClass: [self class]
-							stream: self
-					       requestedLength: length];
+		e = [OFWriteFailedException exceptionWithStream: self
+						requestedLength: length];
 #ifndef _WIN32
 		e->_errNo = ENOTCONN;
 #else
@@ -142,9 +137,8 @@
 	}
 
 	if (send(_socket, buffer, length, 0) < length)
-		@throw [OFWriteFailedException exceptionWithClass: [self class]
-							   stream: self
-						  requestedLength: length];
+		@throw [OFWriteFailedException exceptionWithStream: self
+						   requestedLength: length];
 }
 
 #ifdef _WIN32
@@ -154,9 +148,7 @@
 	_blocking = enable;
 
 	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
-		@throw [OFSetOptionFailedException
-		    exceptionWithClass: [self class]
-				stream: self];
+		@throw [OFSetOptionFailedException exceptionWithStream: self];
 }
 #endif
 
@@ -173,8 +165,7 @@
 - (void)close
 {
 	if (_socket == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithClass: [self class]
-							    socket: self];
+		@throw [OFNotConnectedException exceptionWithSocket: self];
 
 	close(_socket);
 	_socket = INVALID_SOCKET;

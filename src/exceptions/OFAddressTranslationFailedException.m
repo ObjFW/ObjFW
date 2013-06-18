@@ -23,33 +23,53 @@
 #import "common.h"
 
 @implementation OFAddressTranslationFailedException
-+ (instancetype)exceptionWithClass: (Class)class
-			    socket: (OFTCPSocket*)socket
-			      host: (OFString*)host
++ (instancetype)exceptionWithSocket: (OFTCPSocket*)socket
 {
-	return [[[self alloc] initWithClass: class
-				     socket: socket
-				       host: host] autorelease];
+	return [[[self alloc] initWithSocket: socket] autorelease];
 }
 
-- initWithClass: (Class)class
++ (instancetype)exceptionWithHost: (OFString*)host
+			   socket: (OFTCPSocket*)socket
 {
-	self = [super initWithClass: class];
+	return [[[self alloc] initWithHost: host
+				    socket: socket] autorelease];
+}
 
-	_errNo = GET_AT_ERRNO;
+- init
+{
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	abort();
+}
+
+- initWithSocket: (OFTCPSocket*)socket
+{
+	self = [super init];
+
+	@try {
+		_socket = [socket retain];
+		_errNo  = GET_AT_ERRNO;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
 
-- initWithClass: (Class)class
-	 socket: (OFTCPSocket*)socket
-	   host: (OFString*)host
+- initWithHost: (OFString*)host
+	socket: (OFTCPSocket*)socket
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	@try {
-		_socket = [socket retain];
 		_host   = [host copy];
+		_socket = [socket retain];
 		_errNo  = GET_AT_ERRNO;
 	} @catch (id e) {
 		[self release];
@@ -61,8 +81,8 @@
 
 - (void)dealloc
 {
-	[_socket release];
 	[_host release];
+	[_socket release];
 
 	[super dealloc];
 }
@@ -71,25 +91,27 @@
 {
 	if (_host != nil)
 		return [OFString stringWithFormat:
-		    @"The host %@ could not be translated to an address in "
-		    @"class %@. This means that either the host was not found, "
-		    @"there was a problem with the name server, there was a "
-		    @"problem with your network connection or you specified an "
-		    @"invalid host. " ERRFMT, _host, _inClass, AT_ERRPARAM];
+		    @"The host %@ could not be translated to an address for a "
+		    @"socket of type %@. This means that either the host was "
+		    @"not found, there was a problem with the name server, "
+		    @"there was a problem with your network connection or you "
+		    @"specified an invalid host. " ERRFMT, _host,
+		    [_socket class], AT_ERRPARAM];
 	else
 		return [OFString stringWithFormat:
-		    @"An address translation failed in class %@! " ERRFMT,
-		    _inClass, AT_ERRPARAM];
-}
-
-- (OFTCPSocket*)socket
-{
-	OF_GETTER(_socket, false)
+		    @"An address could not be translated translation for a "
+		    @"socket of type %@! " ERRFMT, [_socket class],
+		    AT_ERRPARAM];
 }
 
 - (OFString*)host
 {
 	OF_GETTER(_host, false)
+}
+
+- (OFTCPSocket*)socket
+{
+	OF_GETTER(_socket, false)
 }
 
 - (int)errNo

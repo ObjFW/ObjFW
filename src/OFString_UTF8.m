@@ -191,8 +191,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			_s->isUTF8 = true;
 			break;
 		case -1:
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidEncodingException exception];
 		}
 
 		memcpy(_s->cString, UTF8String, UTF8StringLength);
@@ -233,13 +232,12 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			case 1:
 				if (encoding == OF_STRING_ENCODING_ASCII)
 					@throw [OFInvalidEncodingException
-					    exceptionWithClass: [self class]];
+					    exception];
 
 				_s->isUTF8 = true;
 				break;
 			case -1:
-				@throw [OFInvalidEncodingException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidEncodingException exception];
 			}
 
 			memcpy(_s->cString, cString, cStringLength);
@@ -267,7 +265,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 				if (bytes == 0)
 					@throw [OFInvalidEncodingException
-					    exceptionWithClass: [self class]];
+					    exception];
 
 				_s->cStringLength += bytes - 1;
 				_s->cString = [self
@@ -291,8 +289,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			table = of_windows_1252;
 			break;
 		default:
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidEncodingException exception];
 		}
 
 		for (i = j = 0; i < cStringLength; i++) {
@@ -308,16 +305,14 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			character = table[(uint8_t)cString[i]];
 
 			if (character == 0xFFFD)
-				@throw [OFInvalidEncodingException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidEncodingException exception];
 
 			_s->isUTF8 = true;
 			characterBytes = of_string_utf8_encode(character,
 			    buffer);
 
 			if (characterBytes == 0)
-				@throw [OFInvalidEncodingException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidEncodingException exception];
 
 			_s->cStringLength += characterBytes - 1;
 			_s->cString = [self
@@ -365,8 +360,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			_s->isUTF8 = true;
 			break;
 		case -1:
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidEncodingException exception];
 		}
 	} @catch (id e) {
 		[self release];
@@ -435,8 +429,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 				break;
 			default:
-				@throw [OFInvalidEncodingException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidEncodingException exception];
 			}
 		}
 
@@ -490,15 +483,14 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 			/* Missing high surrogate */
 			if ((character & 0xFC00) == 0xDC00)
-				@throw [OFInvalidEncodingException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidEncodingException exception];
 
 			if ((character & 0xFC00) == 0xD800) {
 				of_char16_t nextCharacter;
 
 				if (length <= i + 1)
 					@throw [OFInvalidEncodingException
-					    exceptionWithClass: [self class]];
+					    exception];
 
 				nextCharacter = (swap
 				    ? OF_BSWAP16(string[i + 1])
@@ -506,7 +498,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 				if ((nextCharacter & 0xFC00) != 0xDC00)
 					@throw [OFInvalidEncodingException
-					    exceptionWithClass: [self class]];
+					    exception];
 
 				character = (((character & 0x3FF) << 10) |
 				    (nextCharacter & 0x3FF)) + 0x10000;
@@ -531,8 +523,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 				break;
 			default:
-				@throw [OFInvalidEncodingException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidEncodingException exception];
 			}
 		}
 
@@ -598,8 +589,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 				break;
 			default:
-				@throw [OFInvalidEncodingException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidEncodingException exception];
 			}
 		}
 
@@ -630,16 +620,13 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		int cStringLength;
 
 		if (format == nil)
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 		_s = &_storage;
 
 		if ((cStringLength = of_vasprintf(&tmp, [format UTF8String],
 		    arguments)) == -1)
-			@throw [OFInvalidFormatException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidFormatException exception];
 
 		_s->cStringLength = cStringLength;
 
@@ -650,8 +637,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				_s->isUTF8 = true;
 				break;
 			case -1:
-				@throw [OFInvalidEncodingException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidEncodingException exception];
 			}
 
 			_s->cString = [self
@@ -747,13 +733,11 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	switch (encoding) {
 	case OF_STRING_ENCODING_ASCII:
 		if (_s->isUTF8)
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidEncodingException exception];
 		/* intentional fall-through */
 	case OF_STRING_ENCODING_UTF_8:
 		if (_s->cStringLength + 1 > maxLength)
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
+			@throw [OFOutOfRangeException exception];
 
 		memcpy(cString, _s->cString, _s->cStringLength + 1);
 
@@ -770,8 +754,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	switch (encoding) {
 	case OF_STRING_ENCODING_ASCII:
 		if (_s->isUTF8)
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidEncodingException exception];
 		/* intentional fall-through */
 	case OF_STRING_ENCODING_UTF_8:
 		return _s->cString;
@@ -844,9 +827,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		return OF_ORDERED_SAME;
 
 	if (![object isKindOfClass: [OFString class]])
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	otherString = (OFString*)object;
 	otherCStringLength = [otherString UTF8StringLength];
@@ -878,9 +859,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		return OF_ORDERED_SAME;
 
 	if (![otherString isKindOfClass: [OFString class]])
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	otherCString = [otherString UTF8String];
 	otherCStringLength = [otherString UTF8StringLength];
@@ -916,8 +895,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		    otherCStringLength - j, &c2);
 
 		if (l1 == 0 || l2 == 0 || c1 > 0x10FFFF || c2 > 0x10FFFF)
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidEncodingException exception];
 
 		if (c1 >> 8 < OF_UNICODE_CASEFOLDING_TABLE_SIZE) {
 			of_unichar_t tc =
@@ -968,8 +946,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 		if ((length = of_string_utf8_decode(_s->cString + i,
 		    _s->cStringLength - i, &c)) == 0)
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidEncodingException exception];
 
 		OF_HASH_ADD(hash, (c & 0xFF0000) >> 16);
 		OF_HASH_ADD(hash, (c & 0x00FF00) >>  8);
@@ -991,7 +968,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	of_unichar_t character;
 
 	if (index >= _s->length)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	if (!_s->isUTF8)
 		return _s->cString[index];
@@ -1001,8 +978,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	if (!of_string_utf8_decode(_s->cString + index,
 	    _s->cStringLength - index, &character))
-		@throw [OFInvalidEncodingException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidEncodingException exception];
 
 	return character;
 }
@@ -1016,7 +992,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > _s->length)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	memcpy(buffer, characters + range.location,
 	    range.length * sizeof(of_unichar_t));
@@ -1034,7 +1010,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > _s->length)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	if (_s->isUTF8) {
 		rangeLocation = of_string_utf8_get_position(
@@ -1108,7 +1084,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	size_t end = range.location + range.length;
 
 	if (range.length > SIZE_MAX - range.location || end > _s->length)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	if (_s->isUTF8) {
 		start = of_string_utf8_get_position(_s->cString, start,
@@ -1326,8 +1302,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		    _s->cStringLength - i, &c);
 
 		if (cLen == 0 || c > 0x10FFFF)
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidEncodingException exception];
 
 		ret[j++] = c;
 		i += cLen;
@@ -1355,8 +1330,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		    _s->cStringLength - i, &c);
 
 		if (cLen == 0 || c > 0x10FFFF)
-			@throw [OFInvalidEncodingException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidEncodingException exception];
 
 		if (byteOrder != OF_BYTE_ORDER_NATIVE)
 			ret[j++] = OF_BSWAP32(c);

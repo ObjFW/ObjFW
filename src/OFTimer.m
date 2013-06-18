@@ -353,9 +353,7 @@
 	OFTimer *timer;
 
 	if (![object isKindOfClass: [OFTimer class]])
-		@throw[OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	timer = (OFTimer*)object;
 

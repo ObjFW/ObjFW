@@ -40,26 +40,22 @@
 /*!
  * @brief Creates a new, autoreleased HTTP request failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param request The HTTP request which failed
  * @param reply The reply of the failed HTTP request
  * @return A new, autoreleased HTTP request failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			   request: (OFHTTPRequest*)request
-			     reply: (OFHTTPRequestReply*)reply;
++ (instancetype)exceptionWithRequest: (OFHTTPRequest*)request
+			       reply: (OFHTTPRequestReply*)reply;
 
 /*!
  * @brief Initializes an already allocated HTTP request failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param request The HTTP request which failed
  * @param reply The reply of the failed HTTP request
  * @return A new HTTP request failed exception
  */
-- initWithClass: (Class)class_
-	request: (OFHTTPRequest*)request
-	  reply: (OFHTTPRequestReply*)reply;
+- initWithRequest: (OFHTTPRequest*)request
+	    reply: (OFHTTPRequestReply*)reply;
 
 /*!
  * @brief Returns the HTTP request which failed.

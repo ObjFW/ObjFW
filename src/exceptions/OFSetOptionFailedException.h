@@ -33,22 +33,18 @@
 /*!
  * @brief Creates a new, autoreleased set option failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param stream The stream for which the option could not be set
  * @return A new, autoreleased set option failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			    stream: (OFStream*)stream;
++ (instancetype)exceptionWithStream: (OFStream*)stream;
 
 /*!
  * @brief Initializes an already allocated set option failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param stream The stream for which the option could not be set
  * @return An initialized set option failed exception
  */
-- initWithClass: (Class)class_
-	 stream: (OFStream*)stream;
+- initWithStream: (OFStream*)stream;
 
 /*!
  * @brief Returns the stream for which the option could not be set.

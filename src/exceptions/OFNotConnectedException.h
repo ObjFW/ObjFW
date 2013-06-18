@@ -37,22 +37,18 @@
 /*!
  * @brief Creates a new, autoreleased not connected exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param socket The socket which is not connected
  * @return A new, autoreleased not connected exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			    socket: (OFStreamSocket*)socket;
++ (instancetype)exceptionWithSocket: (OFStreamSocket*)socket;
 
 /*!
  * @brief Initializes an already allocated not connected exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param socket The socket which is not connected
  * @return An initialized not connected exception
  */
-- initWithClass: (Class)class_
-	 socket: (OFStreamSocket*)socket;
+- initWithSocket: (OFStreamSocket*)socket;
 
 /*!
  * @brief Returns the socket which is not connected.

@@ -73,7 +73,7 @@
 	struct kevent event;
 
 	if ([_changeList count] >= INT_MAX)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	EV_SET(&event, fd, EVFILT_READ, EV_ADD, 0, 0, 0);
 	[_changeList addItem: &event];
@@ -84,7 +84,7 @@
 	struct kevent event;
 
 	if ([_changeList count] >= INT_MAX)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	EV_SET(&event, fd, EVFILT_WRITE, EV_ADD, 0, 0, 0);
 	[_changeList addItem: &event];

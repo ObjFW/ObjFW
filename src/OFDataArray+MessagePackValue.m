@@ -568,8 +568,7 @@ error:
 
 	if (parse_object([self items], count, &object) != count ||
 	    object == nil)
-		@throw [OFInvalidFormatException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidFormatException exception];
 
 	return object;
 }

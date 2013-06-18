@@ -32,22 +32,18 @@
 /*!
  * @brief Creates a new, autoreleased unsupported version exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param version The version which is unsupported
  * @return A new, autoreleased unsupported version exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			   version: (OFString*)version;
++ (instancetype)exceptionWithVersion: (OFString*)version;
 
 /*!
  * @brief Initializes an already allocated unsupported protocol exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param version The version which is unsupported
  * @return An initialized unsupported version exception
  */
-- initWithClass: (Class)class_
-	version: (OFString*)version;
+- initWithVersion: (OFString*)version;
 
 /*!
  * @brief Returns the version which is unsupported.

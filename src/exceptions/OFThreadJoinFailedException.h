@@ -37,22 +37,18 @@
 /*!
  * @brief Creates a new, autoreleased thread join failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param thread The thread which could not be joined
  * @return A new, autoreleased thread join failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			    thread: (OFThread*)thread;
++ (instancetype)exceptionWithThread: (OFThread*)thread;
 
 /*!
  * @brief Initializes an already allocated thread join failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param thread The thread which could not be joined
  * @return An initialized thread join failed exception
  */
-- initWithClass: (Class)class_
-	 thread: (OFThread*)thread;
+- initWithThread: (OFThread*)thread;
 
 /*!
  * @brief Returns the thread which could not be joined.

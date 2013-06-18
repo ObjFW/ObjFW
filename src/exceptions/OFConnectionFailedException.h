@@ -43,30 +43,26 @@
 /*!
  * @brief Creates a new, autoreleased connection failed exception.
  *
- * @param class_ The class of the object which caused the exception
- * @param socket The socket which could not connect
  * @param host The host to which the connection failed
  * @param port The port on the host to which the connection failed
+ * @param socket The socket which could not connect
  * @return A new, autoreleased connection failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			    socket: (OFTCPSocket*)socket
-			      host: (OFString*)host
-			      port: (uint16_t)port;
++ (instancetype)exceptionWithHost: (OFString*)host
+			     port: (uint16_t)port
+			   socket: (OFTCPSocket*)socket;
 
 /*!
  * @brief Initializes an already allocated connection failed exception.
  *
- * @param class_ The class of the object which caused the exception
- * @param socket The socket which could not connect
  * @param host The host to which the connection failed
  * @param port The port on the host to which the connection failed
+ * @param socket The socket which could not connect
  * @return An initialized connection failed exception
  */
-- initWithClass: (Class)class_
-	 socket: (OFTCPSocket*)socket
-	   host: (OFString*)host
-	   port: (uint16_t)port;
+- initWithHost: (OFString*)host
+	  port: (uint16_t)port
+	socket: (OFTCPSocket*)socket;
 
 /*!
  * @brief Returns the socket which could not connect.

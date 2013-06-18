@@ -665,8 +665,8 @@ nextObject(const char *restrict *pointer, const char *stop,
 	skipWhitespacesAndComments(&pointer, stop, &line);
 
 	if (pointer < stop || object == nil)
-		@throw [OFInvalidJSONException exceptionWithClass: [self class]
-							     line: line];
+		@throw [OFInvalidJSONException exceptionWithString: self
+							      line: line];
 
 	return object;
 }

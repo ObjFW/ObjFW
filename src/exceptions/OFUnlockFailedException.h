@@ -32,22 +32,18 @@
 /*!
  * @brief Creates a new, autoreleased unlock failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param lock The lock which could not be unlocked
  * @return A new, autoreleased unlock failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			      lock: (id <OFLocking>)lock;
++ (instancetype)exceptionWithLock: (id <OFLocking>)lock;
 
 /*!
  * @brief Initializes an already allocated unlock failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param lock The lock which could not be unlocked
  * @return An initialized unlock failed exception
  */
-- initWithClass: (Class)class_
-	   lock: (id <OFLocking>)lock;
+- initWithLock: (id <OFLocking>)lock;
 
 /*!
  * @brief Returns the lock which could not be unlocked.

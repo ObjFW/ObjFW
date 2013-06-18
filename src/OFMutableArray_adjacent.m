@@ -51,8 +51,7 @@
 - (void)addObject: (id)object
 {
 	if (object == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidArgumentException exception];
 
 	[_array addItem: &object];
 	[object retain];
@@ -64,14 +63,13 @@
 	     atIndex: (size_t)index
 {
 	if (object == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidArgumentException exception];
 
 	@try {
 		[_array insertItem: &object
 			   atIndex: index];
 	} @catch (OFOutOfRangeException *e) {
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 	}
 	[object retain];
 
@@ -89,7 +87,7 @@
 			    atIndex: index
 			      count: count];
 	} @catch (OFOutOfRangeException *e) {
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 	}
 
 	for (i = 0; i < count; i++)
@@ -105,8 +103,7 @@
 	size_t i, count;
 
 	if (oldObject == nil || newObject == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidArgumentException exception];
 
 	objects = [_array items];
 	count = [_array count];
@@ -129,13 +126,12 @@
 	id oldObject;
 
 	if (object == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidArgumentException exception];
 
 	objects = [_array items];
 
 	if (index >= [_array count])
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	oldObject = objects[index];
 	objects[index] = [object retain];
@@ -149,8 +145,7 @@
 	size_t i, count;
 
 	if (oldObject == nil || newObject == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidArgumentException exception];
 
 	objects = [_array items];
 	count = [_array count];
@@ -172,8 +167,7 @@
 	size_t i, count;
 
 	if (object == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidArgumentException exception];
 
 	objects = [_array items];
 	count = [_array count];
@@ -198,8 +192,7 @@
 	size_t i, count;
 
 	if (object == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidArgumentException exception];
 
 	objects = [_array items];
 	count = [_array count];
@@ -243,7 +236,7 @@
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.length > count - range.location)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	copy = [self allocMemoryWithSize: sizeof(*copy)
 				   count: range.length];
@@ -283,7 +276,7 @@
 	id tmp;
 
 	if (index1 >= count || index2 >= count)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	tmp = objects[index1];
 	objects[index1] = objects[index2];
@@ -341,8 +334,7 @@
 	for (i = 0; i < count && !stop; i++) {
 		if (_mutations != mutations)
 			@throw [OFEnumerationMutationException
-			    exceptionWithClass: [self class]
-					object: self];
+			    exceptionWithObject: self];
 
 		block(objects[i], i, &stop);
 	}
@@ -359,15 +351,12 @@
 
 		if (_mutations != mutations)
 			@throw [OFEnumerationMutationException
-			    exceptionWithClass: [self class]
-					object: self];
+			    exceptionWithObject: self];
 
 		new = block(objects[i], i);
 
 		if (new == nil)
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 		if (new != objects[i]) {
 			[objects[i] release];

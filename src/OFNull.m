@@ -50,9 +50,7 @@ static OFNull *null = nil;
 
 	if (![[element name] isEqual: [self className]] ||
 	    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	objc_autoreleasePoolPop(pool);
 

@@ -153,7 +153,7 @@ typedef u32 nfds_t;
 
 #ifdef OPEN_MAX
 	if (nFDs > OPEN_MAX)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 #endif
 
 	if (poll(FDs, (nfds_t)nFDs,

@@ -60,7 +60,7 @@
 - (id)objectAtIndex: (size_t)index
 {
 	if (index >= _range.length)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	return [_array objectAtIndex: index + _range.location];
 }
@@ -70,7 +70,7 @@
 {
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > _range.length)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	range.location += _range.location;
 
@@ -112,7 +112,7 @@
 {
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > _range.length)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	range.location += _range.location;
 

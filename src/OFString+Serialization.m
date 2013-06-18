@@ -44,32 +44,23 @@ int _OFString_Serialization_reference;
 	@try {
 		root = [OFXMLElement elementWithXMLString: self];
 	} @catch (OFMalformedXMLException *e) {
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 	} @catch (OFUnboundNamespaceException *e) {
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 	}
 
 	version = [[root attributeForName: @"version"] stringValue];
 	if (version == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	if ([version decimalValue] != 1)
 		@throw [OFUnsupportedVersionException
-		    exceptionWithClass: [self class]
-			       version: version];
+		    exceptionWithVersion: version];
 
 	elements = [root elementsForNamespace: OF_SERIALIZATION_NS];
 
 	if ([elements count] != 1)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	object = [[[elements firstObject] objectByDeserializing] retain];
 

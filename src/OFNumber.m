@@ -92,8 +92,7 @@
 	case OF_NUMBER_DOUBLE:						\
 		return (t)_value.double_;				\
 	default:							\
-		@throw [OFInvalidFormatException			\
-		    exceptionWithClass: [self class]];			\
+		@throw [OFInvalidFormatException exception];		\
 	}
 #define CALCULATE(o, n)							\
 	switch (_type) {						\
@@ -182,8 +181,7 @@
 		return [OFNumber numberWithDouble:			\
 		    _value.double_ o [n doubleValue]];			\
 	default:							\
-		@throw [OFInvalidFormatException			\
-		    exceptionWithClass: [self class]];			\
+		@throw [OFInvalidFormatException exception];		\
 	}
 #define CALCULATE2(o, n)						\
 	switch (_type) {						\
@@ -267,12 +265,9 @@
 		    _value.uintptr o [n uIntPtrValue]];			\
 	case OF_NUMBER_FLOAT:						\
 	case OF_NUMBER_DOUBLE:						\
-		@throw [OFInvalidArgumentException			\
-		    exceptionWithClass: [self class]			\
-			      selector: _cmd];				\
+		@throw [OFInvalidArgumentException exception];		\
 	default:							\
-		@throw [OFInvalidFormatException			\
-		    exceptionWithClass: [self class]];			\
+		@throw [OFInvalidFormatException exception];		\
 	}
 #define CALCULATE3(o)							\
 	switch (_type) {						\
@@ -338,8 +333,7 @@
 	case OF_NUMBER_DOUBLE:						\
 		return [OFNumber numberWithDouble: _value.double_ o];	\
 	default:							\
-		@throw [OFInvalidFormatException			\
-		    exceptionWithClass: [self class]];			\
+		@throw [OFInvalidFormatException exception];		\
 	}
 
 @implementation OFNumber
@@ -785,9 +779,7 @@
 
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 		typeString = [[element attributeForName: @"type"] stringValue];
 
@@ -799,9 +791,7 @@
 			else if ([[element stringValue] isEqual: @"false"])
 				_value.bool_ = false;
 			else
-				@throw [OFInvalidArgumentException
-				    exceptionWithClass: [self class]
-					      selector: _cmd];
+				@throw [OFInvalidArgumentException exception];
 		} else if ([typeString isEqual: @"unsigned"]) {
 			/*
 			 * FIXME: This will fail if the value is bigger than
@@ -833,9 +823,7 @@
 			_type = OF_NUMBER_DOUBLE;
 			_value.double_ = d.d;
 		} else
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -1014,9 +1002,7 @@
 	OFNumber *number;
 
 	if (![object isKindOfClass: [OFNumber class]])
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	number = (OFNumber*)object;
 
@@ -1257,8 +1243,7 @@
 		return [OFNumber numberWithDouble:
 		    fmod(_value.double_, [number doubleValue])];
 	default:
-		@throw [OFInvalidFormatException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidFormatException exception];
 	}
 }
 
@@ -1321,8 +1306,7 @@
 
 		return ret;
 	default:
-		@throw [OFInvalidFormatException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidFormatException exception];
 	}
 }
 
@@ -1400,8 +1384,7 @@
 
 		break;
 	default:
-		@throw [OFInvalidFormatException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidFormatException exception];
 	}
 
 	[element retain];
@@ -1515,8 +1498,7 @@
 			[data addItems: &tmp
 				 count: sizeof(tmp)];
 		} else
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
+			@throw [OFOutOfRangeException exception];
 	} else {
 		uintmax_t value = [self uIntMaxValue];
 
@@ -1567,8 +1549,7 @@
 			[data addItems: &tmp
 				 count: sizeof(tmp)];
 		} else
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
+			@throw [OFOutOfRangeException exception];
 	}
 
 	return data;

@@ -37,22 +37,18 @@
 /*!
  * @brief Creates a new, autoreleased condition signal failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param condition The condition which could not be signaled
  * @return A new, autoreleased condition signal failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			 condition: (OFCondition*)condition;
++ (instancetype)exceptionWithCondition: (OFCondition*)condition;
 
 /*!
  * @brief Initializes an already allocated condition signal failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param condition The condition which could not be signaled
  * @return An initialized condition signal failed exception
  */
-- initWithClass: (Class)class_
-      condition: (OFCondition*)condition;
+- initWithCondition: (OFCondition*)condition;
 
 /*!
  * @brief Return the condition which could not be signaled.

@@ -56,7 +56,7 @@
 	size_t count = [_dictionary count];
 
 	if (count > NSUIntegerMax)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	return (NSUInteger)count;
 }

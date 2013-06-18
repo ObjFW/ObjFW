@@ -789,9 +789,7 @@
 	j = 0;
 
 	if (delimiterLength == 0)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	/* Look if there's something in our buffer */
 	if (!_waitingForDelimiter && _readBuffer != NULL) {
@@ -1449,14 +1447,11 @@
 	int length;
 
 	if (format == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	if ((length = of_vasprintf(&UTF8String, [format UTF8String],
 	    arguments)) == -1)
-		@throw [OFInvalidFormatException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidFormatException exception];
 
 	@try {
 		[self writeBuffer: UTF8String
@@ -1492,8 +1487,7 @@
 
 		if (readFlags == -1)
 			@throw [OFSetOptionFailedException
-			    exceptionWithClass: [self class]
-					stream: self];
+			    exceptionWithStream: self];
 
 		if (enable)
 			readFlags &= ~O_NONBLOCK;
@@ -1503,8 +1497,7 @@
 		if (fcntl([self fileDescriptorForReading], F_SETFL,
 		    readFlags) == -1)
 			@throw [OFSetOptionFailedException
-			    exceptionWithClass: [self class]
-					stream: self];
+			    exceptionWithStream: self];
 	} @catch (OFNotImplementedException *e) {
 	}
 
@@ -1517,8 +1510,7 @@
 
 		if (writeFlags == -1)
 			@throw [OFSetOptionFailedException
-			    exceptionWithClass: [self class]
-					stream: self];
+			    exceptionWithStream: self];
 
 		if (enable)
 			writeFlags &= ~O_NONBLOCK;
@@ -1528,15 +1520,13 @@
 		if (fcntl([self fileDescriptorForWriting], F_SETFL,
 		    writeFlags) == -1)
 			@throw [OFSetOptionFailedException
-			    exceptionWithClass: [self class]
-					stream: self];
+			    exceptionWithStream: self];
 	} @catch (OFNotImplementedException *e) {
 	}
 
 	if (!readImplemented && !writeImplemented)
-		@throw [OFNotImplementedException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
 
 	_blocking = enable;
 #else

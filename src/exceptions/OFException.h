@@ -30,36 +30,15 @@
  */
 @interface OFException: OFObject
 {
-	Class _inClass;
 	void *_backtrace[OF_BACKTRACE_SIZE];
 }
-
-#ifdef OF_HAVE_PROPERTIES
-@property (readonly) Class inClass;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased exception.
  *
- * @param class_ The class of the object which caused the exception
  * @return A new, autoreleased exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_;
-
-/*!
- * @brief Initializes an already allocated OFException.
- *
- * @param class_ The class of the object which caused the exception
- * @return An initialized OFException
- */
-- initWithClass: (Class)class_;
-
-/*!
- * @brief Returns the class of the object in which the exception occurred.
- *
- * @return The class of the object in which the exception occurred
- */
-- (Class)inClass;
++ (instancetype)exception;
 
 /*!
  * @brief Returns a description of the exception.

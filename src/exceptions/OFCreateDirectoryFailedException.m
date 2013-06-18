@@ -24,14 +24,12 @@
 #import "common.h"
 
 @implementation OFCreateDirectoryFailedException
-+ (instancetype)exceptionWithClass: (Class)class
-			      path: (OFString*)path
++ (instancetype)exceptionWithPath: (OFString*)path
 {
-	return [[[self alloc] initWithClass: class
-				       path: path] autorelease];
+	return [[[self alloc] initWithPath: path] autorelease];
 }
 
-- initWithClass: (Class)class
+- init
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -43,10 +41,9 @@
 	abort();
 }
 
-- initWithClass: (Class)class
-	   path: (OFString*)path
+- initWithPath: (OFString*)path
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	@try {
 		_path  = [path copy];
@@ -69,17 +66,16 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to create directory %@ in class %@! " ERRFMT, _path,
-	    _inClass, ERRPARAM];
-}
-
-- (int)errNo
-{
-	return _errNo;
+	    @"Failed to create directory %@! " ERRFMT, _path, ERRPARAM];
 }
 
 - (OFString*)path
 {
 	OF_GETTER(_path, false)
+}
+
+- (int)errNo
+{
+	return _errNo;
 }
 @end

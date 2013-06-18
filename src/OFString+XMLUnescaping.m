@@ -20,7 +20,7 @@
 
 #import "OFString.h"
 
-#import "OFInvalidEncodingException.h"
+#import "OFInvalidFormatException.h"
 
 #import "autorelease.h"
 #import "macros.h"
@@ -139,8 +139,8 @@ parse_numeric_entity(const char *entity, size_t length)
 				    entityLength);
 
 				if (tmp == nil)
-					@throw [OFInvalidEncodingException
-					    exceptionWithClass: [self class]];
+					@throw [OFInvalidFormatException
+					    exception];
 
 				[ret appendString: tmp];
 				objc_autoreleasePoolPop(pool);
@@ -157,14 +157,13 @@ parse_numeric_entity(const char *entity, size_t length)
 				containsUnknownEntityNamed: n];
 
 				if (tmp == nil)
-					@throw [OFInvalidEncodingException
-					    exceptionWithClass: [self class]];
+					@throw [OFInvalidFormatException
+					    exception];
 
 				[ret appendString: tmp];
 				objc_autoreleasePoolPop(pool);
 			} else
-				@throw [OFInvalidEncodingException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidFormatException exception];
 
 			last = i + 1;
 			inEntity = false;
@@ -172,8 +171,7 @@ parse_numeric_entity(const char *entity, size_t length)
 	}
 
 	if (inEntity)
-		@throw [OFInvalidEncodingException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidFormatException exception];
 
 	[ret appendUTF8String: string + last
 		       length: i - last];
@@ -242,8 +240,8 @@ parse_numeric_entity(const char *entity, size_t length)
 				    entityLength);
 
 				if (tmp == nil)
-					@throw [OFInvalidEncodingException
-					    exceptionWithClass: [self class]];
+					@throw [OFInvalidFormatException
+					    exception];
 
 				[ret appendString: tmp];
 				objc_autoreleasePoolPop(pool);
@@ -259,8 +257,8 @@ parse_numeric_entity(const char *entity, size_t length)
 				tmp = block(self, entityString);
 
 				if (tmp == nil)
-					@throw [OFInvalidEncodingException
-					    exceptionWithClass: [self class]];
+					@throw [OFInvalidFormatException
+					    exception];
 
 				[ret appendString: tmp];
 				objc_autoreleasePoolPop(pool);
@@ -272,8 +270,7 @@ parse_numeric_entity(const char *entity, size_t length)
 	}
 
 	if (inEntity)
-		@throw [OFInvalidEncodingException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidFormatException exception];
 
 	[ret appendUTF8String: string + last
 		       length: i - last];

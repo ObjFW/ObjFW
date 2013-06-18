@@ -269,8 +269,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 	size_t i, count;
 
 	if (oldObject == nil || newObject == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidArgumentException exception];
 
 	count = [self count];
 
@@ -289,8 +288,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 	size_t i, count;
 
 	if (oldObject == nil || newObject == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidArgumentException exception];
 
 	count = [self count];
 
@@ -315,8 +313,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 	size_t i, count;
 
 	if (object == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidArgumentException exception];
 
 	count = [self count];
 
@@ -334,8 +331,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 	size_t i, count;
 
 	if (object == nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidArgumentException exception];
 
 	count = [self count];
 

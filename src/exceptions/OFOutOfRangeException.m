@@ -22,7 +22,6 @@
 @implementation OFOutOfRangeException
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"Value out of range in class %@!", _inClass];
+	return @"Value out of range!";
 }
 @end

@@ -23,17 +23,14 @@
 #import "common.h"
 
 @implementation OFMalformedXMLException
-+ (instancetype)exceptionWithClass: (Class)class
-			    parser: (OFXMLParser*)parser
++ (instancetype)exceptionWithParser: (OFXMLParser*)parser
 {
-	return [[[self alloc] initWithClass: class
-				     parser: parser] autorelease];
+	return [[[self alloc] initWithParser: parser] autorelease];
 }
 
-- initWithClass: (Class)class
-	 parser: (OFXMLParser*)parser
+- initWithParser: (OFXMLParser*)parser
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	_parser = [parser retain];
 
@@ -51,8 +48,8 @@
 {
 	if (_parser != nil)
 		return [OFString stringWithFormat:
-		    @"The XML parser in class %@ encountered malformed XML in "
-		    @"line %zd!", _inClass, [_parser lineNumber]];
+		    @"An XML parser of type %@ encountered malformed XML in "
+		    @"line %zd!", [_parser class], [_parser lineNumber]];
 	else
 		return @"An XML parser encountered malformed XML!";
 }

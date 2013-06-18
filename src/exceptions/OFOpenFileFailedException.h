@@ -33,33 +33,22 @@
 /*!
  * @brief Creates a new, autoreleased open file failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param path A string with the path of the file tried to open
  * @param mode A string with the mode in which the file should have been opened
  * @return A new, autoreleased open file failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			      path: (OFString*)path
-			      mode: (OFString*)mode;
++ (instancetype)exceptionWithPath: (OFString*)path
+			     mode: (OFString*)mode;
 
 /*!
  * @brief Initializes an already allocated open file failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param path A string with the path of the file which couldn't be opened
  * @param mode A string with the mode in which the file should have been opened
  * @return An initialized open file failed exception
  */
-- initWithClass: (Class)class_
-	   path: (OFString*)path
-	   mode: (OFString*)mode;
-
-/*!
- * @brief Returns the errno from when the exception was created.
- *
- * @return The errno from when the exception was created
- */
-- (int)errNo;
+- initWithPath: (OFString*)path
+	  mode: (OFString*)mode;
 
 /*!
  * @brief Returns a string with the path of the file which couldn't be opened.
@@ -75,4 +64,11 @@
  * @return A string with the mode in which the file should have been opened
  */
 - (OFString*)mode;
+
+/*!
+ * @brief Returns the errno from when the exception was created.
+ *
+ * @return The errno from when the exception was created
+ */
+- (int)errNo;
 @end

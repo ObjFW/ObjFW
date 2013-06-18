@@ -37,22 +37,18 @@
 /*!
  * @brief Returns a new, autoreleased condition broadcast failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param condition The condition which could not be broadcasted
  * @return A new, autoreleased condition broadcast failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			 condition: (OFCondition*)condition;
++ (instancetype)exceptionWithCondition: (OFCondition*)condition;
 
 /*!
  * @brief Initializes an already allocated condition broadcast failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param condition The condition which could not be broadcasted
  * @return An initialized condition broadcast failed exception
  */
-- initWithClass: (Class)class_
-      condition: (OFCondition*)condition;
+- initWithCondition: (OFCondition*)condition;
 
 /*!
  * @brief Returns the condition which could not be broadcasted.

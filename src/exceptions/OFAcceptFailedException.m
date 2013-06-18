@@ -25,14 +25,12 @@
 #import "common.h"
 
 @implementation OFAcceptFailedException
-+ (instancetype)exceptionWithClass: (Class)class
-			    socket: (OFTCPSocket*)socket
++ (instancetype)exceptionWithSocket: (OFTCPSocket*)socket
 {
-	return [[[self alloc] initWithClass: class
-				     socket: socket] autorelease];
+	return [[[self alloc] initWithSocket: socket] autorelease];
 }
 
-- initWithClass: (Class)class
+- init
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -44,10 +42,9 @@
 	abort();
 }
 
-- initWithClass: (Class)class
-	 socket: (OFTCPSocket*)socket
+- initWithSocket: (OFTCPSocket*)socket
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	_socket = [socket retain];
 	_errNo = GET_SOCK_ERRNO;
@@ -65,8 +62,8 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to accept connection in socket of type %@! " ERRFMT,
-	    _inClass, ERRPARAM];
+	    @"Failed to accept connection in socket of class %@! " ERRFMT,
+	    [_socket class], ERRPARAM];
 }
 
 - (OFTCPSocket*)socket

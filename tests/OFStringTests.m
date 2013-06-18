@@ -450,8 +450,8 @@ static uint16_t sutf16str[] = {
 			 atIndex: 3]) &&
 	    [s[0] isEqual: @"𝄞ööäöüöbä€"])
 
-	EXPECT_EXCEPTION(@"Detect invalid encoding in -[stringByURLDecoding] "
-	    @"#1", OFInvalidEncodingException, [@"foo%bar" stringByURLDecoding])
+	EXPECT_EXCEPTION(@"Detect invalid format in -[stringByURLDecoding] "
+	    @"#1", OFInvalidFormatException, [@"foo%xbar" stringByURLDecoding])
 	EXPECT_EXCEPTION(@"Detect invalid encoding in -[stringByURLDecoding] "
 	    @"#2", OFInvalidEncodingException,
 	    [@"foo%FFbar" stringByURLDecoding])
@@ -562,17 +562,17 @@ static uint16_t sutf16str[] = {
 	    [[@"&#x1D11E;" stringByXMLUnescaping] isEqual: @"𝄞"])
 
 	EXPECT_EXCEPTION(@"Detect invalid entities in -[stringByXMLUnescaping] "
-	    @"#1", OFInvalidEncodingException, [@"&foo;" stringByXMLUnescaping])
+	    @"#1", OFInvalidFormatException, [@"&foo;" stringByXMLUnescaping])
 	EXPECT_EXCEPTION(@"Detect invalid entities in -[stringByXMLUnescaping] "
-	    @"#2", OFInvalidEncodingException, [@"x&amp" stringByXMLUnescaping])
+	    @"#2", OFInvalidFormatException, [@"x&amp" stringByXMLUnescaping])
 	EXPECT_EXCEPTION(@"Detect invalid entities in -[stringByXMLUnescaping] "
-	    @"#3", OFInvalidEncodingException, [@"&#;" stringByXMLUnescaping])
+	    @"#3", OFInvalidFormatException, [@"&#;" stringByXMLUnescaping])
 	EXPECT_EXCEPTION(@"Detect invalid entities in -[stringByXMLUnescaping] "
-	    @"#4", OFInvalidEncodingException, [@"&#x;" stringByXMLUnescaping])
+	    @"#4", OFInvalidFormatException, [@"&#x;" stringByXMLUnescaping])
 	EXPECT_EXCEPTION(@"Detect invalid entities in -[stringByXMLUnescaping] "
-	    @"#5", OFInvalidEncodingException, [@"&#g;" stringByXMLUnescaping])
+	    @"#5", OFInvalidFormatException, [@"&#g;" stringByXMLUnescaping])
 	EXPECT_EXCEPTION(@"Detect invalid entities in -[stringByXMLUnescaping] "
-	    @"#6", OFInvalidEncodingException, [@"&#xg;" stringByXMLUnescaping])
+	    @"#6", OFInvalidFormatException, [@"&#xg;" stringByXMLUnescaping])
 
 	TEST(@"-[stringByXMLUnescapingWithDelegate:]",
 	    (h = [[[EntityHandler alloc] init] autorelease]) &&

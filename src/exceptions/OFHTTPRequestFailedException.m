@@ -26,16 +26,14 @@
 #import "common.h"
 
 @implementation OFHTTPRequestFailedException
-+ (instancetype)exceptionWithClass: (Class)class
-			   request: (OFHTTPRequest*)request
-			     reply: (OFHTTPRequestReply*)reply
++ (instancetype)exceptionWithRequest: (OFHTTPRequest*)request
+			       reply: (OFHTTPRequestReply*)reply
 {
-	return [[[self alloc] initWithClass: class
-				    request: request
-				      reply: reply] autorelease];
+	return [[[self alloc] initWithRequest: request
+					reply: reply] autorelease];
 }
 
-- initWithClass: (Class)class
+- init
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -47,11 +45,10 @@
 	abort();
 }
 
-- initWithClass: (Class)class
-	request: (OFHTTPRequest*)request
-	  reply: (OFHTTPRequestReply*)reply
+- initWithRequest: (OFHTTPRequest*)request
+	    reply: (OFHTTPRequestReply*)reply
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	_request = [request retain];
 	_reply = [reply retain];
@@ -84,8 +81,8 @@
 	}
 
 	return [OFString stringWithFormat:
-	    @"A HTTP %s request in class %@ with URL %@ failed with code %d",
-	    type, _inClass, [_request URL], [_reply statusCode]];
+	    @"A HTTP %s request with URL %@ failed with code %d!", type,
+	    [_request URL], [_reply statusCode]];
 }
 
 - (OFHTTPRequest*)request

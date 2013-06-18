@@ -61,8 +61,8 @@
 
 		if ((UTF8String2 = strdup([string UTF8String])) == NULL)
 			@throw [OFOutOfMemoryException
-			     exceptionWithClass: [self class]
-				  requestedSize: [string UTF8StringLength]];
+			     exceptionWithRequestedSize: [string
+							     UTF8StringLength]];
 
 		UTF8String = UTF8String2;
 
@@ -78,8 +78,7 @@
 			_scheme = @"https";
 			UTF8String += 8;
 		} else
-			@throw [OFInvalidFormatException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidFormatException exception];
 
 		if ((tmp = strchr(UTF8String, '/')) != NULL) {
 			*tmp = '\0';
@@ -121,8 +120,7 @@
 			portString = [OFString stringWithUTF8String: tmp2];
 
 			if ([portString decimalValue] > 65535)
-				@throw [OFInvalidFormatException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidFormatException exception];
 
 			_port = [portString decimalValue];
 
@@ -199,8 +197,8 @@
 
 		if ((UTF8String2 = strdup([string UTF8String])) == NULL)
 			@throw [OFOutOfMemoryException
-			     exceptionWithClass: [self class]
-				  requestedSize: [string UTF8StringLength]];
+			     exceptionWithRequestedSize:
+			     [string UTF8StringLength]];
 
 		UTF8String = UTF8String2;
 
@@ -260,9 +258,7 @@
 
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 		self = [self initWithString: [element stringValue]];
 
@@ -376,9 +372,7 @@
 - (void)setScheme: (OFString*)scheme
 {
 	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	OF_SETTER(_scheme, scheme, true, 1)
 }
@@ -432,9 +426,7 @@
 {
 	if (([_scheme isEqual: @"http"] || [_scheme isEqual: @"https"]) &&
 	    ![path hasPrefix: @"/"])
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	OF_SETTER(_path, path, true, 1)
 }

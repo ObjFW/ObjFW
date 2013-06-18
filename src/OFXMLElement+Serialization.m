@@ -37,12 +37,10 @@ int _OFXMLElement_Serialization_reference;
 
 	if ((class = objc_getClass([_name cStringWithEncoding:
 	    OF_STRING_ENCODING_ASCII])) == Nil)
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidArgumentException exception];
 
 	if (![class conformsToProtocol: @protocol(OFSerialization)])
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidArgumentException exception];
 
 	object = [[class alloc] initWithSerialization: self];
 

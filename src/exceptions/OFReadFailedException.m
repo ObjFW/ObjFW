@@ -25,7 +25,7 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to read %zu bytes in class %@! " ERRFMT, _requestedLength,
-	    _inClass, ERRPARAM];
+	    @"Failed to read %zu bytes in a stream of type %@! " ERRFMT,
+	    _requestedLength, [_stream class], ERRPARAM];
 }
 @end

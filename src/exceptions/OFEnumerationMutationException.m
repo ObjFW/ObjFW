@@ -24,14 +24,12 @@
 #import "common.h"
 
 @implementation OFEnumerationMutationException
-+ (instancetype)exceptionWithClass: (Class)class
-			    object: (id)object
++ (instancetype)exceptionWithObject: (id)object
 {
-	return [[[self alloc] initWithClass: class
-				     object: object] autorelease];
+	return [[[self alloc] initWithObject: object] autorelease];
 }
 
-- initWithClass: (Class)class
+- init
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -43,10 +41,9 @@
 	abort();
 }
 
-- initWithClass: (Class)class
-	 object: (id)object
+- initWithObject: (id)object
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	_object = [object retain];
 
@@ -63,7 +60,8 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Object of class %@ was mutated during enumeration!", _inClass];
+	    @"Object of class %@ was mutated during enumeration!",
+	    [_object class]];
 }
 
 - (id)object

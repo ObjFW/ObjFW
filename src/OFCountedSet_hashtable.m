@@ -144,9 +144,7 @@
 
 		if (![[element name] isEqual: @"OFCountedSet"] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 		objects = [element elementsForName: @"object"
 					 namespace: OF_SERIALIZATION_NS];
@@ -163,8 +161,7 @@
 			count_ = [objectElement attributeForName: @"count"];
 
 			if (object == nil || count_ == nil)
-				@throw [OFInvalidFormatException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidFormatException exception];
 
 			count = (size_t)[[count_ stringValue] decimalValue];
 
@@ -199,8 +196,7 @@
 		}];
 	} @catch (OFEnumerationMutationException *e) {
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: [self class]
-				object: self];
+		    exceptionWithObject: self];
 	}
 }
 #endif
@@ -210,7 +206,7 @@
 	size_t count = (size_t)(uintptr_t)[_mapTable valueForKey: object];
 
 	if (SIZE_MAX - count < 1 || UINTPTR_MAX - count < 1)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	[_mapTable setValue: (void*)(uintptr_t)(count + 1)
 		     forKey: object];

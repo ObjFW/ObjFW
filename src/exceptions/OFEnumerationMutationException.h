@@ -32,22 +32,18 @@
 /*!
  * @brief Creates a new, autoreleased enumeration mutation exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param object The object which was mutated during enumeration
  * @return A new, autoreleased enumeration mutation exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			    object: (id)object;
++ (instancetype)exceptionWithObject: (id)object;
 
 /*!
  * @brief Initializes an already allocated enumeration mutation exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param object The object which was mutated during enumeration
  * @return An initialized enumeration mutation exception
  */
-- initWithClass: (Class)class_
-	 object: (id)object;
+- initWithObject: (id)object;
 
 /*!
  * @brief Returns the object which was mutated during enumeration.

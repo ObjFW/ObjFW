@@ -21,32 +21,41 @@
  */
 @interface OFInvalidJSONException: OFException
 {
+	OFString *_string;
 	size_t _line;
 }
 
 #ifdef OF_HAVE_PROPERTIES
+@property (readonly, copy, nonatomic) OFString *string;
 @property (readonly) size_t line;
 #endif
 
 /*!
  * @brief Creates a new, autoreleased invalid JSON exception.
  *
- * @param class_ The class of the object which caused the exception
+ * @param string The string containing the invalid JSON representation
  * @param line The line in which the parsing error encountered
  * @return A new, autoreleased invalid JSON exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			      line: (size_t)line;
++ (instancetype)exceptionWithString: (OFString*)string
+			       line: (size_t)line;
 
 /*!
  * @brief Initializes an already allocated invalid JSON exception.
  *
- * @param class_ The class of the object which caused the exception
+ * @param string The string containing the invalid JSON representation
  * @param line The line in which the parsing error encountered
  * @return An initialized invalid JSON exception
  */
-- initWithClass: (Class)class_
-	   line: (size_t)line;
+- initWithString: (OFString*)string
+	    line: (size_t)line;
+
+/*!
+ * @brief Returns the string containing the invalid JSON representation.
+ *
+ * @return The string containing the invalid JSON representation
+ */
+- (OFString*)string;
 
 /*!
  * @brief Returns the line in which parsing the JSON representation failed.

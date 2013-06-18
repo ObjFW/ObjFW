@@ -37,22 +37,18 @@
 /*!
  * @brief Creates a new, autoreleased condition wait failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param condition The condition for which could not be waited
  * @return A new, autoreleased condition wait failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			 condition: (OFCondition*)condition;
++ (instancetype)exceptionWithCondition: (OFCondition*)condition;
 
 /*!
  * @brief Initializes an already allocated condition wait failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param condition The condition for which could not be waited
  * @return An initialized condition wait failed exception
  */
-- initWithClass: (Class)class_
-      condition: (OFCondition*)condition;
+- initWithCondition: (OFCondition*)condition;
 
 /*!
  * @brief Return the condition for which could not be waited.

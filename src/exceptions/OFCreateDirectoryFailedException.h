@@ -33,29 +33,18 @@
 /*!
  * @brief Creates a new, autoreleased create directory failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param path A string with the path of the directory which couldn't be created
  * @return A new, autoreleased create directory failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			      path: (OFString*)path;
++ (instancetype)exceptionWithPath: (OFString*)path;
 
 /*!
  * @brief Initializes an already allocated create directory failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param path A string with the path of the directory which couldn't be created
  * @return An initialized create directory failed exception
  */
-- initWithClass: (Class)class_
-	   path: (OFString*)path;
-
-/*!
- * @brief Returns the errno from when the exception was created.
- *
- * @return The errno from when the exception was created
- */
-- (int)errNo;
+- initWithPath: (OFString*)path;
 
 /*!
  * @brief Returns a string with the path of the directory which couldn't be
@@ -64,4 +53,11 @@
  * @return A string with the path of the directory which couldn't be created
  */
 - (OFString*)path;
+
+/*!
+ * @brief Returns the errno from when the exception was created.
+ *
+ * @return The errno from when the exception was created
+ */
+- (int)errNo;
 @end

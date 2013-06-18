@@ -35,26 +35,22 @@
 /*!
  * @brief Creates a new, autoreleased unbound prefix exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param prefix The prefix which is unbound
  * @param parser The parser which encountered the unbound prefix
  * @return A new, autoreleased unbound prefix exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			    prefix: (OFString*)prefix
-			    parser: (OFXMLParser*)parser;
++ (instancetype)exceptionWithPrefix: (OFString*)prefix
+			     parser: (OFXMLParser*)parser;
 
 /*!
  * @brief Initializes an already allocated unbound prefix exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param prefix The prefix which is unbound
  * @param parser The parser which encountered the unbound prefix
  * @return An initialized unbound prefix exception
  */
-- initWithClass: (Class)class_
-	 prefix: (OFString*)prefix
-	 parser: (OFXMLParser*)parser;
+- initWithPrefix: (OFString*)prefix
+	  parser: (OFXMLParser*)parser;
 
 /*!
  * @brief Returns the unbound prefix.

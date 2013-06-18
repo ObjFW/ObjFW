@@ -37,22 +37,18 @@
 /*!
  * @brief Creates a new, autoreleased thread still running exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param thread The thread which is still running
  * @return A new, autoreleased thread still running exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			    thread: (OFThread*)thread;
++ (instancetype)exceptionWithThread: (OFThread*)thread;
 
 /*!
  * @brief Initializes an already allocated thread still running exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param thread The thread which is still running
  * @return An initialized thread still running exception
  */
-- initWithClass: (Class)class_
-	 thread: (OFThread*)thread;
+- initWithThread: (OFThread*)thread;
 
 /*!
  * @brief Returns the thread which is still running.

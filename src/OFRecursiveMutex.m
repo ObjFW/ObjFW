@@ -50,8 +50,7 @@
 - (void)lock
 {
 	if (!of_rmutex_lock(&_rmutex))
-		@throw [OFLockFailedException exceptionWithClass: [self class]
-							    lock: self];
+		@throw [OFLockFailedException exceptionWithLock: self];
 }
 
 - (bool)tryLock
@@ -62,8 +61,7 @@
 - (void)unlock
 {
 	if (!of_rmutex_unlock(&_rmutex))
-		@throw [OFUnlockFailedException exceptionWithClass: [self class]
-							      lock: self];
+		@throw [OFUnlockFailedException exceptionWithLock: self];
 }
 
 - (void)setName: (OFString*)name
@@ -89,9 +87,7 @@
 {
 	if (_initialized)
 		if (!of_rmutex_free(&_rmutex))
-			@throw [OFStillLockedException
-			    exceptionWithClass: [self class]
-					  lock: self];
+			@throw [OFStillLockedException exceptionWithLock: self];
 
 	[_name release];
 

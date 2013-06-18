@@ -129,8 +129,7 @@
 					   prefix: prefix
 					namespace: namespace];
 		else
-			@throw [OFMalformedXMLException
-			    exceptionWithClass: [self class]];
+			@throw [OFMalformedXMLException exception];
 
 		return;
 	case 1:

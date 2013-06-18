@@ -38,22 +38,18 @@
 /*!
  * @brief Creates a new, autoreleased already connected exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param socket The socket which is already connected
  * @return A new, autoreleased already connected exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			    socket: (OFTCPSocket*)socket;
++ (instancetype)exceptionWithSocket: (OFTCPSocket*)socket;
 
 /*!
  * @brief Initializes an already allocated already connected exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param socket The socket which is already connected
  * @return An initialized already connected exception
  */
-- initWithClass: (Class)class_
-	 socket: (OFTCPSocket*)socket;
+- initWithSocket: (OFTCPSocket*)socket;
 
 /*!
  * @brief Returns the socket which is already connected.

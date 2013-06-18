@@ -22,7 +22,7 @@
 
 #import "OFString+URLEncoding.h"
 
-#import "OFInvalidEncodingException.h"
+#import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
 
 /* Reference for static linking */
@@ -42,9 +42,8 @@ int _OFString_URLEncoding_reference;
 	 * @"" literal.
 	 */
 	if ((retCString = malloc(([self UTF8StringLength] * 3) + 1)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithClass: [self class]
-			 requestedSize: ([self UTF8StringLength] * 3) + 1];
+		@throw [OFOutOfMemoryException exceptionWithRequestedSize:
+		    ([self UTF8StringLength] * 3) + 1];
 
 	for (i = 0; *string != '\0'; string++) {
 		if (isalnum((int)*string) || *string == '-' || *string == '_' ||
@@ -85,8 +84,7 @@ int _OFString_URLEncoding_reference;
 
 	if ((retCString = malloc([self UTF8StringLength] + 1)) == NULL)
 		@throw [OFOutOfMemoryException
-		    exceptionWithClass: [self class]
-			 requestedSize: [self UTF8StringLength] + 1];
+		    exceptionWithRequestedSize: [self UTF8StringLength] + 1];
 
 	for (i = 0; *string; string++) {
 		switch (state) {
@@ -110,8 +108,7 @@ int _OFString_URLEncoding_reference;
 				byte += (*string - 'a' + 10) << shift;
 			else {
 				free(retCString);
-				@throw [OFInvalidEncodingException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidFormatException exception];
 			}
 
 			if (++state == 3) {
@@ -127,8 +124,7 @@ int _OFString_URLEncoding_reference;
 
 	if (state != 0) {
 		free(retCString);
-		@throw [OFInvalidEncodingException
-		    exceptionWithClass: [self class]];
+		@throw [OFInvalidFormatException exception];
 	}
 
 	@try {

@@ -154,8 +154,7 @@ struct {
 
 		if ((ivars = calloc(1, sizeof(*ivars))) == NULL)
 			@throw [OFOutOfMemoryException
-			    exceptionWithClass: [self class]
-				 requestedSize: sizeof(*ivars)];
+			    exceptionWithRequestedSize: sizeof(*ivars)];
 
 		ivars->cString = _cString;
 		ivars->cStringLength = _cStringLength;
@@ -168,8 +167,7 @@ struct {
 				break;
 			case -1:
 				free(ivars);
-				@throw [OFInvalidEncodingException
-				    exceptionWithClass: [self class]];
+				@throw [OFInvalidEncodingException exception];
 		}
 
 		_cString = (char*)ivars;

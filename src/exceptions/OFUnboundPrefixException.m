@@ -25,16 +25,14 @@
 #import "common.h"
 
 @implementation OFUnboundPrefixException
-+ (instancetype)exceptionWithClass: (Class)class
-			    prefix: (OFString*)prefix
-			    parser: (OFXMLParser*)parser
++ (instancetype)exceptionWithPrefix: (OFString*)prefix
+			     parser: (OFXMLParser*)parser
 {
-	return [[[self alloc] initWithClass: class
-				     prefix: prefix
-				     parser: parser] autorelease];
+	return [[[self alloc] initWithPrefix: prefix
+				      parser: parser] autorelease];
 }
 
-- initWithClass: (Class)class
+- init
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -46,11 +44,10 @@
 	abort();
 }
 
-- initWithClass: (Class)class
-	 prefix: (OFString*)prefix
-	 parser: (OFXMLParser*)parser
+- initWithPrefix: (OFString*)prefix
+	  parser: (OFXMLParser*)parser
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	@try {
 		_prefix = [prefix copy];
@@ -74,8 +71,8 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"The XML parser in class %@ encountered the unbound prefix %@ in "
-	    @"line %zd!", _inClass, _prefix, [_parser lineNumber]];
+	    @"An XML parser of type %@ encountered the unbound prefix %@ in "
+	    @"line %zd!", [_parser class], _prefix, [_parser lineNumber]];
 }
 
 - (OFString*)prefix

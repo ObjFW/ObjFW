@@ -32,22 +32,18 @@
 /*!
  * @brief Creates a new, autoreleased hash already calculated exception.
  *
- * @param class_ The class of the object which caused the exception
- * @param hashObject The hash which has already been calculated
+ * @param hash The hash which has already been calculated
  * @return A new, autoreleased hash already calculated exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			      hash: (id <OFHash>)hashObject;
++ (instancetype)exceptionWithHash: (id <OFHash>)hash;
 
 /*!
  * @brief Initializes an already allocated hash already calculated exception.
  *
- * @param class_ The class of the object which caused the exception
- * @param hashObject The hash which has already been calculated
+ * @param hash The hash which has already been calculated
  * @return An initialized hash already calculated exception
  */
-- initWithClass: (Class)class_
-	   hash: (id <OFHash>)hashObject;
+- initWithHash: (id <OFHash>)hash;
 
 /*!
  * @brief Returns the hash which has already been calculated.

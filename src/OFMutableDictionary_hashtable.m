@@ -23,7 +23,6 @@
 #import "OFMapTable.h"
 
 #import "OFEnumerationMutationException.h"
-#import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
 #import "macros.h"
@@ -38,25 +37,13 @@
 - (void)setObject: (id)object
 	   forKey: (id)key
 {
-	@try {
-		[_mapTable setValue: object
-			     forKey: key];
-	} @catch (OFInvalidArgumentException *e) {
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
-	}
+	[_mapTable setValue: object
+		     forKey: key];
 }
 
 - (void)removeObjectForKey: (id)key
 {
-	@try {
-		[_mapTable removeValueForKey: key];
-	} @catch (OFInvalidArgumentException *e) {
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
-	}
+	[_mapTable removeValueForKey: key];
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -69,8 +56,7 @@
 		}];
 	} @catch (OFEnumerationMutationException *e) {
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: [self class]
-				object: self];
+		    exceptionWithObject: self];
 	}
 }
 #endif

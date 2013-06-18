@@ -170,8 +170,7 @@ md5_transform(uint32_t buffer[4], const uint32_t in[16])
 
 	if (_calculated)
 		@throw [OFHashAlreadyCalculatedException
-		    exceptionWithClass: [self class]
-				  hash: self];
+		    exceptionWithHash: self];
 
 	/* Update bitcount */
 	t = _bits[0];

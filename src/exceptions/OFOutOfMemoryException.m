@@ -20,17 +20,15 @@
 #import "OFString.h"
 
 @implementation OFOutOfMemoryException
-+ (instancetype)exceptionWithClass: (Class)class
-		     requestedSize: (size_t)requestedSize
++ (instancetype)exceptionWithRequestedSize: (size_t)requestedSize
 {
-	return [[[self alloc] initWithClass: class
-			      requestedSize: requestedSize] autorelease];
+	return [[[self alloc]
+	    initWithRequestedSize: requestedSize] autorelease];
 }
 
-- initWithClass: (Class)class
-  requestedSize: (size_t)requestedSize
+- initWithRequestedSize: (size_t)requestedSize
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	_requestedSize = requestedSize;
 
@@ -41,11 +39,9 @@
 {
 	if (_requestedSize != 0)
 		return [OFString stringWithFormat:
-		    @"Could not allocate %zu bytes in class %@!",
-		    _requestedSize, _inClass];
+		    @"Could not allocate %zu bytes!", _requestedSize];
 	else
-		return [OFString stringWithFormat:
-		    @"Could not allocate enough memory in class %@!", _inClass];
+		return @"Could not allocate enough memory!";
 }
 
 - (size_t)requestedSize

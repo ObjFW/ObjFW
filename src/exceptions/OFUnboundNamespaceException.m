@@ -25,16 +25,14 @@
 #import "common.h"
 
 @implementation OFUnboundNamespaceException
-+ (instancetype)exceptionWithClass: (Class)class
-			 namespace: (OFString*)namespace
-			   element: (OFXMLElement*)element
++ (instancetype)exceptionWithNamespace: (OFString*)namespace
+			       element: (OFXMLElement*)element
 {
-	return [[[self alloc] initWithClass: class
-				  namespace: namespace
-				    element: element] autorelease];
+	return [[[self alloc] initWithNamespace: namespace
+					element: element] autorelease];
 }
 
-- initWithClass: (Class)class
+- init
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -46,11 +44,10 @@
 	abort();
 }
 
-- initWithClass: (Class)class
-      namespace: (OFString*)namespace
-	element: (OFXMLElement*)element
+- initWithNamespace: (OFString*)namespace
+	    element: (OFXMLElement*)element
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	@try {
 		_namespace = [namespace copy];
@@ -74,7 +71,8 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"The namespace %@ is not bound in class %@", _namespace, _inClass];
+	    @"The namespace %@ is not bound in an element of type %@!",
+	    _namespace, [_element class]];
 }
 
 - (OFString*)namespace

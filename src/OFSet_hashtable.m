@@ -218,9 +218,7 @@ static of_map_table_functions_t valueFunctions = {};
 		if ((![[element name] isEqual: @"OFSet"] &&
 		    ![[element name] isEqual: @"OFMutableSet"]) ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 		enumerator = [[element elementsForNamespace:
 		    OF_SERIALIZATION_NS] objectEnumerator];
@@ -315,8 +313,7 @@ static of_map_table_functions_t valueFunctions = {};
 		}];
 	} @catch (OFEnumerationMutationException *e) {
 		@throw [OFEnumerationMutationException
-		    exceptionWithClass: [self class]
-				object: self];
+		    exceptionWithObject: self];
 	}
 }
 #endif

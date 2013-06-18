@@ -160,8 +160,8 @@ static int parse_mode(const char *mode)
 + (instancetype)fileWithPath: (OFString*)path
 			mode: (OFString*)mode
 {
-	return [[[self alloc] initWithPath: path
-				      mode: mode] autorelease];
+	return [[(OFFile*)[self alloc] initWithPath: path
+					       mode: mode] autorelease];
 }
 
 + (instancetype)fileWithFileDescriptor: (int)filedescriptor
@@ -244,8 +244,7 @@ static int parse_mode(const char *mode)
 	if (_wmkdir([path UTF16String]))
 #endif
 		@throw [OFCreateDirectoryFailedException
-		    exceptionWithClass: self
-				  path: path];
+		    exceptionWithPath: path];
 }
 
 + (void)createDirectoryAtPath: (OFString*)path
@@ -298,9 +297,8 @@ static int parse_mode(const char *mode)
 
 	if ((dir = opendir([path cStringWithEncoding:
 	    OF_STRING_ENCODING_NATIVE])) == NULL)
-		@throw [OFOpenFileFailedException exceptionWithClass: self
-								path: path
-								mode: @"r"];
+		@throw [OFOpenFileFailedException exceptionWithPath: path
+							       mode: @"r"];
 
 	@try {
 		while ((dirent = readdir(dir)) != NULL) {
@@ -330,9 +328,8 @@ static int parse_mode(const char *mode)
 
 	if ((handle = FindFirstFileW([path UTF16String],
 	    &fd)) == INVALID_HANDLE_VALUE)
-		@throw [OFOpenFileFailedException exceptionWithClass: self
-								path: path
-								mode: @"r"];
+		@throw [OFOpenFileFailedException exceptionWithPath: path
+							       mode: @"r"];
 
 	@try {
 		do {
@@ -368,8 +365,7 @@ static int parse_mode(const char *mode)
 	if (_wchdir([path UTF16String]))
 #endif
 		@throw [OFChangeDirectoryFailedException
-		    exceptionWithClass: self
-				  path: path];
+		    exceptionWithPath: path];
 }
 
 #ifdef OF_HAVE_CHMOD
@@ -382,9 +378,8 @@ static int parse_mode(const char *mode)
 	if (_wchmod([path UTF16String], mode))
 # endif
 		@throw [OFChangeFileModeFailedException
-		    exceptionWithClass: self
-				  path: path
-				  mode: mode];
+		    exceptionWithPath: path
+				 mode: mode];
 }
 #endif
 
@@ -401,9 +396,8 @@ static int parse_mode(const char *mode)
 	if (_wstat([path UTF16String], &s) == -1)
 #endif
 		/* FIXME: Maybe use another exception? */
-		@throw [OFOpenFileFailedException exceptionWithClass: self
-								path: path
-								mode: @"r"];
+		@throw [OFOpenFileFailedException exceptionWithPath: path
+							       mode: @"r"];
 
 	return s.st_size;
 }
@@ -421,9 +415,8 @@ static int parse_mode(const char *mode)
 	if (_wstat([path UTF16String], &s) == -1)
 #endif
 		/* FIXME: Maybe use another exception? */
-		@throw [OFOpenFileFailedException exceptionWithClass: self
-								path: path
-								mode: @"r"];
+		@throw [OFOpenFileFailedException exceptionWithPath: path
+							       mode: @"r"];
 
 	/* FIXME: We could be more precise on some OSes */
 	return [OFDate dateWithTimeIntervalSince1970: s.st_mtime];
@@ -438,12 +431,11 @@ static int parse_mode(const char *mode)
 	gid_t gid = -1;
 
 	if (owner == nil && group == nil)
-		@throw [OFInvalidArgumentException exceptionWithClass: self
-							     selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 # ifdef OF_HAVE_THREADS
 	if (!of_mutex_lock(&mutex))
-		@throw [OFLockFailedException exceptionWithClass: self];
+		@throw [OFLockFailedException exception];
 
 	@try {
 # endif
@@ -453,10 +445,9 @@ static int parse_mode(const char *mode)
 			if ((passwd = getpwnam([owner cStringWithEncoding:
 			    OF_STRING_ENCODING_NATIVE])) == NULL)
 				@throw [OFChangeFileOwnerFailedException
-				    exceptionWithClass: self
-						  path: path
-						 owner: owner
-						 group: group];
+				    exceptionWithPath: path
+						owner: owner
+						group: group];
 
 			uid = passwd->pw_uid;
 		}
@@ -467,28 +458,25 @@ static int parse_mode(const char *mode)
 			if ((group_ = getgrnam([group cStringWithEncoding:
 			    OF_STRING_ENCODING_NATIVE])) == NULL)
 				@throw [OFChangeFileOwnerFailedException
-				    exceptionWithClass: self
-						  path: path
-						 owner: owner
-						 group: group];
+				    exceptionWithPath: path
+						owner: owner
+						group: group];
 
 			gid = group_->gr_gid;
 		}
 # ifdef OF_HAVE_THREADS
 	} @finally {
 		if (!of_mutex_unlock(&mutex))
-			@throw [OFUnlockFailedException
-			    exceptionWithClass: self];
+			@throw [OFUnlockFailedException exception];
 	}
 # endif
 
 	if (chown([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    uid, gid))
 		@throw [OFChangeFileOwnerFailedException
-		    exceptionWithClass: self
-				  path: path
-				 owner: owner
-				 group: group];
+		    exceptionWithPath: path
+				owner: owner
+				group: group];
 }
 #endif
 
@@ -512,8 +500,8 @@ static int parse_mode(const char *mode)
 	pageSize = [OFSystemInfo pageSize];
 
 	if ((buffer = malloc(pageSize)) == NULL)
-		@throw [OFOutOfMemoryException exceptionWithClass: self
-						    requestedSize: pageSize];
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: pageSize];
 
 	@try {
 		sourceFile = [OFFile fileWithPath: source
@@ -568,9 +556,8 @@ static int parse_mode(const char *mode)
 	if (_wrename([source UTF16String], [destination UTF16String]))
 #endif
 		@throw [OFRenameFileFailedException
-		    exceptionWithClass: self
-			    sourcePath: source
-		       destinationPath: destination];
+		    exceptionWithSourcePath: source
+			    destinationPath: destination];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -582,8 +569,7 @@ static int parse_mode(const char *mode)
 #else
 	if (_wunlink([path UTF16String]))
 #endif
-		@throw [OFDeleteFileFailedException exceptionWithClass: self
-								  path: path];
+		@throw [OFDeleteFileFailedException exceptionWithPath: path];
 }
 
 + (void)deleteDirectoryAtPath: (OFString*)path
@@ -594,8 +580,7 @@ static int parse_mode(const char *mode)
 	if (_wrmdir([path UTF16String]))
 #endif
 		@throw [OFDeleteDirectoryFailedException
-		    exceptionWithClass: self
-				  path: path];
+		    exceptionWithPath: path];
 }
 
 #ifdef OF_HAVE_LINK
@@ -612,9 +597,9 @@ static int parse_mode(const char *mode)
 
 	if (link([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    [destination cStringWithEncoding: OF_STRING_ENCODING_NATIVE]) != 0)
-		@throw [OFLinkFailedException exceptionWithClass: self
-						      sourcePath: source
-						 destinationPath: destination];
+		@throw [OFLinkFailedException
+		    exceptionWithSourcePath: source
+			    destinationPath: destination];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -635,9 +620,8 @@ static int parse_mode(const char *mode)
 	if (symlink([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    [destination cStringWithEncoding: OF_STRING_ENCODING_NATIVE]) != 0)
 		@throw [OFSymlinkFailedException
-		    exceptionWithClass: self
-			    sourcePath: source
-		       destinationPath: destination];
+		    exceptionWithSourcePath: source
+			    destinationPath: destination];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -664,9 +648,7 @@ static int parse_mode(const char *mode)
 		int flags;
 
 		if ((flags = parse_mode([mode UTF8String])) == -1)
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 #ifndef _WIN32
 		if ((_fd = open([path cStringWithEncoding:
@@ -676,9 +658,8 @@ static int parse_mode(const char *mode)
 		    DEFAULT_MODE)) == -1)
 #endif
 			@throw [OFOpenFileFailedException
-			    exceptionWithClass: [self class]
-					  path: path
-					  mode: mode];
+			    exceptionWithPath: path
+					 mode: mode];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -711,9 +692,8 @@ static int parse_mode(const char *mode)
 
 	if (_fd == -1 || _atEndOfStream ||
 	    (ret = read(_fd, buffer, length)) < 0)
-		@throw [OFReadFailedException exceptionWithClass: [self class]
-							  stream: self
-						 requestedLength: length];
+		@throw [OFReadFailedException exceptionWithStream: self
+						  requestedLength: length];
 
 	if (ret == 0)
 		_atEndOfStream = true;
@@ -725,19 +705,17 @@ static int parse_mode(const char *mode)
 		     length: (size_t)length
 {
 	if (_fd == -1 || _atEndOfStream || write(_fd, buffer, length) < length)
-		@throw [OFWriteFailedException exceptionWithClass: [self class]
-							   stream: self
-						  requestedLength: length];
+		@throw [OFWriteFailedException exceptionWithStream: self
+						   requestedLength: length];
 }
 
 - (void)lowlevelSeekToOffset: (off_t)offset
 		      whence: (int)whence
 {
 	if (lseek(_fd, offset, whence) == -1)
-		@throw [OFSeekFailedException exceptionWithClass: [self class]
-							  stream: self
-							  offset: offset
-							  whence: whence];
+		@throw [OFSeekFailedException exceptionWithStream: self
+							   offset: offset
+							   whence: whence];
 }
 
 - (int)fileDescriptorForReading

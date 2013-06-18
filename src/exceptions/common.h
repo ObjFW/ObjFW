@@ -33,7 +33,7 @@
 #  endif
 # define GET_SOCK_ERRNO	errno
 # endif
-# define ERRFMT			"Error string was: %s"
+# define ERRFMT			@"Error string was: %s"
 # define ERRPARAM		strerror(_errNo)
 # ifdef OF_HAVE_SOCKETS
 #  if !defined(HAVE_THREADSAFE_GETADDRINFO) && defined(HAVE_HSTRERROR)
@@ -49,7 +49,7 @@
 #  define GET_AT_ERRNO		WSAGetLastError()
 #  define GET_SOCK_ERRNO	WSAGetLastError()
 # endif
-# define ERRFMT			"Error code was: %d"
+# define ERRFMT			@"Error code was: %d"
 # define ERRPARAM		_errNo
 # ifdef OF_HAVE_SOCKETS
 #  define AT_ERRPARAM		_errNo

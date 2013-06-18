@@ -54,12 +54,10 @@ static OFMutex *mutex;
 	struct tm tm;							\
 									\
 	if (seconds != floor(_seconds))					\
-		@throw [OFOutOfRangeException				\
-		    exceptionWithClass: [self class]];			\
+		@throw [OFOutOfRangeException exception];		\
 									\
 	if (gmtime_r(&seconds, &tm) == NULL)				\
-		@throw [OFOutOfRangeException				\
-		    exceptionWithClass: [self class]];			\
+		@throw [OFOutOfRangeException exception];		\
 									\
 	return tm.field;
 # define LOCALTIME_RET(field)						\
@@ -67,12 +65,10 @@ static OFMutex *mutex;
 	struct tm tm;							\
 									\
 	if (seconds != floor(_seconds))					\
-		@throw [OFOutOfRangeException				\
-		    exceptionWithClass: [self class]];			\
+		@throw [OFOutOfRangeException exception];		\
 									\
 	if (localtime_r(&seconds, &tm) == NULL)				\
-		@throw [OFOutOfRangeException				\
-		    exceptionWithClass: [self class]];			\
+		@throw [OFOutOfRangeException exception];		\
 									\
 	return tm.field;
 #else
@@ -82,15 +78,13 @@ static OFMutex *mutex;
 	struct tm *tm;							\
 									\
 	if (seconds != floor(_seconds))					\
-		@throw [OFOutOfRangeException				\
-		    exceptionWithClass: [self class]];			\
+		@throw [OFOutOfRangeException exception];		\
 									\
 	[mutex lock];							\
 									\
 	@try {								\
 		if ((tm = gmtime(&seconds)) == NULL)			\
-			@throw [OFOutOfRangeException			\
-			    exceptionWithClass: [self class]];		\
+			@throw [OFOutOfRangeException exception];	\
 									\
 		return tm->field;					\
 	} @finally {							\
@@ -101,15 +95,13 @@ static OFMutex *mutex;
 	struct tm *tm;							\
 									\
 	if (seconds != floor(_seconds))					\
-		@throw [OFOutOfRangeException				\
-		    exceptionWithClass: [self class]];			\
+		@throw [OFOutOfRangeException exception];		\
 									\
 	[mutex lock];							\
 									\
 	@try {								\
 		if ((tm = localtime(&seconds)) == NULL)			\
-			@throw [OFOutOfRangeException			\
-			    exceptionWithClass: [self class]];		\
+			@throw [OFOutOfRangeException exception];	\
 									\
 		return tm->field;					\
 	} @finally {							\
@@ -121,12 +113,10 @@ static OFMutex *mutex;
 	struct tm *tm;							\
 									\
 	if (seconds != floor(_seconds))					\
-		@throw [OFOutOfRangeException				\
-		    exceptionWithClass: [self class]];			\
+		@throw [OFOutOfRangeException exception];		\
 									\
 	if ((tm = gmtime(&seconds)) == NULL)				\
-		@throw [OFOutOfRangeException				\
-		    exceptionWithClass: [self class]];			\
+		@throw [OFOutOfRangeException exception];		\
 									\
 	return tm->field;
 #  define LOCALTIME_RET(field)						\
@@ -134,12 +124,10 @@ static OFMutex *mutex;
 	struct tm *tm;							\
 									\
 	if (seconds != floor(_seconds))					\
-		@throw [OFOutOfRangeException				\
-		    exceptionWithClass: [self class]];			\
+		@throw [OFOutOfRangeException exception];		\
 									\
 	if ((tm = localtime(&seconds)) == NULL)				\
-		@throw [OFOutOfRangeException				\
-		    exceptionWithClass: [self class]];			\
+		@throw [OFOutOfRangeException exception];		\
 									\
 	return tm->field;
 # endif
@@ -257,8 +245,7 @@ static int month_to_day_of_year[12] = {
 
 		if (of_strptime([string UTF8String], [format UTF8String],
 		    &tm) == NULL)
-			@throw [OFInvalidFormatException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidFormatException exception];
 
 		/* Years */
 		_seconds = (int64_t)(tm.tm_year - 70) * 31536000;
@@ -273,8 +260,7 @@ static int month_to_day_of_year[12] = {
 			_seconds += 86400;
 		/* Months */
 		if (tm.tm_mon < 0 || tm.tm_mon > 12)
-			@throw [OFInvalidFormatException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidFormatException exception];
 		_seconds += month_to_day_of_year[tm.tm_mon] * 86400;
 		/* Days */
 		_seconds += (tm.tm_mday - 1) * 86400;
@@ -304,12 +290,10 @@ static int month_to_day_of_year[12] = {
 
 		if (of_strptime([string UTF8String], [format UTF8String],
 		    &tm) == NULL)
-			@throw [OFInvalidFormatException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidFormatException exception];
 
 		if ((_seconds = mktime(&tm)) == -1)
-			@throw [OFInvalidFormatException
-			    exceptionWithClass: [self class]];
+			@throw [OFInvalidFormatException exception];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -331,9 +315,7 @@ static int month_to_day_of_year[12] = {
 
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException
-			    exceptionWithClass: [self class]
-				      selector: _cmd];
+			@throw [OFInvalidArgumentException exception];
 
 		d.u = (uint64_t)[element hexadecimalValue];
 		_seconds = d.d;
@@ -393,9 +375,7 @@ static int month_to_day_of_year[12] = {
 	OFDate *otherDate;
 
 	if (![object isKindOfClass: [OFDate class]])
-		@throw [OFInvalidArgumentException
-		    exceptionWithClass: [self class]
-			      selector: _cmd];
+		@throw [OFInvalidArgumentException exception];
 
 	otherDate = (OFDate*)object;
 
@@ -519,11 +499,11 @@ static int month_to_day_of_year[12] = {
 	char *buffer;
 
 	if (seconds != floor(_seconds))
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 #ifdef HAVE_GMTIME_R
 	if (gmtime_r(&seconds, &tm) == NULL)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 #else
 # ifdef OF_HAVE_THREADS
 	[mutex lock];
@@ -533,8 +513,7 @@ static int month_to_day_of_year[12] = {
 		struct tm *tmp;
 
 		if ((tmp = gmtime(&seconds)) == NULL)
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
+			@throw [OFOutOfRangeException exception];
 
 		tm = *tmp;
 # ifdef OF_HAVE_THREADS
@@ -549,8 +528,7 @@ static int month_to_day_of_year[12] = {
 
 	@try {
 		if (!strftime(buffer, pageSize, [format UTF8String], &tm))
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
+			@throw [OFOutOfRangeException exception];
 
 		ret = [OFString stringWithUTF8String: buffer];
 	} @finally {
@@ -569,11 +547,11 @@ static int month_to_day_of_year[12] = {
 	char *buffer;
 
 	if (seconds != floor(_seconds))
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 #ifdef HAVE_LOCALTIME_R
 	if (localtime_r(&seconds, &tm) == NULL)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 #else
 # ifdef OF_HAVE_THREADS
 	[mutex lock];
@@ -583,8 +561,7 @@ static int month_to_day_of_year[12] = {
 		struct tm *tmp;
 
 		if ((tmp = localtime(&seconds)) == NULL)
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
+			@throw [OFOutOfRangeException exception];
 
 		tm = *tmp;
 # ifdef OF_HAVE_THREADS
@@ -599,8 +576,7 @@ static int month_to_day_of_year[12] = {
 
 	@try {
 		if (!strftime(buffer, pageSize, [format UTF8String], &tm))
-			@throw [OFOutOfRangeException
-			    exceptionWithClass: [self class]];
+			@throw [OFOutOfRangeException exception];
 
 		ret = [OFString stringWithUTF8String: buffer];
 	} @finally {

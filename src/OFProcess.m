@@ -392,9 +392,8 @@ extern char **environ;
 		}
 
 #endif
-		@throw [OFReadFailedException exceptionWithClass: [self class]
-							  stream: self
-						 requestedLength: length];
+		@throw [OFReadFailedException exceptionWithStream: self
+						  requestedLength: length];
 	}
 
 	if (ret == 0)
@@ -416,9 +415,8 @@ extern char **environ;
 	    !WriteFile(_writePipe[1], buffer, length, &ret, NULL) ||
 	    ret < length)
 #endif
-		@throw [OFWriteFailedException exceptionWithClass: [self class]
-							   stream: self
-						  requestedLength: length];
+		@throw [OFWriteFailedException exceptionWithStream: self
+						   requestedLength: length];
 }
 
 - (int)fileDescriptorForReading

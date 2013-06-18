@@ -129,9 +129,7 @@ uncaught_exception_handler(id exception)
 static void
 enumeration_mutation_handler(id object)
 {
-	@throw [OFEnumerationMutationException
-	    exceptionWithClass: [object class]
-			object: object];
+	@throw [OFEnumerationMutationException exceptionWithObject: object];
 }
 
 void
@@ -874,11 +872,11 @@ void _references_to_categories_of_OFObject(void)
 		return NULL;
 
 	if OF_UNLIKELY (size > SIZE_MAX - PRE_IVARS_ALIGN)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	if OF_UNLIKELY ((pointer = malloc(PRE_MEM_ALIGN + size)) == NULL)
-		@throw [OFOutOfMemoryException exceptionWithClass: [self class]
-						    requestedSize: size];
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: size];
 	preMem = pointer;
 
 	preMem->owner = self;
@@ -899,7 +897,7 @@ void _references_to_categories_of_OFObject(void)
 		       count: (size_t)count
 {
 	if OF_UNLIKELY (count > SIZE_MAX / size)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	return [self allocMemoryWithSize: size * count];
 }
@@ -920,13 +918,13 @@ void _references_to_categories_of_OFObject(void)
 
 	if OF_UNLIKELY (PRE_MEM(pointer)->owner != self)
 		@throw [OFMemoryNotPartOfObjectException
-		    exceptionWithClass: [self class]
-			       pointer: pointer];
+		    exceptionWithPointer: pointer
+				  object: self];
 
 	if OF_UNLIKELY ((new = realloc(PRE_MEM(pointer),
 	    PRE_MEM_ALIGN + size)) == NULL)
-		@throw [OFOutOfMemoryException exceptionWithClass: [self class]
-						    requestedSize: size];
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: size];
 	preMem = new;
 
 	if OF_UNLIKELY (preMem != PRE_MEM(pointer)) {
@@ -958,7 +956,7 @@ void _references_to_categories_of_OFObject(void)
 	}
 
 	if OF_UNLIKELY (count > SIZE_MAX / size)
-		@throw [OFOutOfRangeException exceptionWithClass: [self class]];
+		@throw [OFOutOfRangeException exception];
 
 	return [self resizeMemory: pointer
 			     size: size * count];
@@ -971,8 +969,8 @@ void _references_to_categories_of_OFObject(void)
 
 	if OF_UNLIKELY (PRE_MEM(pointer)->owner != self)
 		@throw [OFMemoryNotPartOfObjectException
-		    exceptionWithClass: [self class]
-			       pointer: pointer];
+		    exceptionWithPointer: pointer
+				  object: self];
 
 	if OF_LIKELY (PRE_MEM(pointer)->prev != NULL)
 		PRE_MEM(pointer)->prev->next = PRE_MEM(pointer)->next;
@@ -997,8 +995,8 @@ void _references_to_categories_of_OFObject(void)
 
 - (void)doesNotRecognizeSelector: (SEL)selector
 {
-	@throw [OFNotImplementedException exceptionWithClass: [self class]
-						    selector: selector];
+	@throw [OFNotImplementedException exceptionWithSelector: selector
+							 object: self];
 }
 
 - retain

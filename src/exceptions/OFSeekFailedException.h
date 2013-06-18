@@ -39,30 +39,26 @@
 /*!
  * @brief Creates a new, autoreleased seek failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param stream The stream for which seeking failed
  * @param offset The offset to which seeking failed
  * @param whence To what the offset is relative
  * @return A new, autoreleased seek failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			    stream: (OFSeekableStream*)stream
-			    offset: (off_t)offset
-			    whence: (int)whence;
++ (instancetype)exceptionWithStream: (OFSeekableStream*)stream
+			     offset: (off_t)offset
+			     whence: (int)whence;
 
 /*!
  * @brief Initializes an already allocated seek failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param stream The stream for which seeking failed
  * @param offset The offset to which seeking failed
  * @param whence To what the offset is relative
  * @return An initialized seek failed exception
  */
-- initWithClass: (Class)class_
-	 stream: (OFSeekableStream*)stream
-	 offset: (off_t)offset
-	 whence: (int)whence;
+- initWithStream: (OFSeekableStream*)stream
+	  offset: (off_t)offset
+	  whence: (int)whence;
 
 /*!
  * @brief Returns the stream for which seeking failed.

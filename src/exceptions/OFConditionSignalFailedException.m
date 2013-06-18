@@ -23,14 +23,12 @@
 #import "OFCondition.h"
 
 @implementation OFConditionSignalFailedException
-+ (instancetype)exceptionWithClass: (Class)class
-			 condition: (OFCondition*)condition
++ (instancetype)exceptionWithCondition: (OFCondition*)condition
 {
-	return [[[self alloc] initWithClass: class
-				  condition: condition] autorelease];
+	return [[[self alloc] initWithCondition: condition] autorelease];
 }
 
-- initWithClass: (Class)class
+- init
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -42,10 +40,9 @@
 	abort();
 }
 
-- initWithClass: (Class)class
-      condition: (OFCondition*)condition
+- initWithCondition: (OFCondition*)condition
 {
-	self = [super initWithClass: class];
+	self = [super init];
 
 	_condition = [condition retain];
 
@@ -62,7 +59,7 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Signaling a condition of type %@ failed!", _inClass];
+	    @"Signaling a condition of type %@ failed!", [_condition class]];
 }
 
 - (OFCondition*)condition

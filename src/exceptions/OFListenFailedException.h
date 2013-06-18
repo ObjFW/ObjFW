@@ -39,26 +39,22 @@
 /*!
  * @brief Creates a new, autoreleased listen failed exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param socket The socket which failed to listen
  * @param backLog The requested size of the back log
  * @return A new, autoreleased listen failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-			    socket: (OFTCPSocket*)socket
-			   backLog: (int)backLog;
++ (instancetype)exceptionWithSocket: (OFTCPSocket*)socket
+			    backLog: (int)backLog;
 
 /*!
  * @brief Initializes an already allocated listen failed exception
  *
- * @param class_ The class of the object which caused the exception
  * @param socket The socket which failed to listen
  * @param backLog The requested size of the back log
  * @return An initialized listen failed exception
  */
-- initWithClass: (Class)class_
-	 socket: (OFTCPSocket*)socket
-	backLog: (int)backLog;
+- initWithSocket: (OFTCPSocket*)socket
+	 backLog: (int)backLog;
 
 /*!
  * @brief Returns the socket which failed to listen.

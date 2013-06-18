@@ -31,22 +31,18 @@
 /*!
  * @brief Creates a new, autoreleased no memory exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param requestedSize The size of the memory that couldn't be allocated
  * @return A new, autoreleased no memory exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_
-		     requestedSize: (size_t)requestedSize;
++ (instancetype)exceptionWithRequestedSize: (size_t)requestedSize;
 
 /*!
  * @brief Initializes an already allocated no memory exception.
  *
- * @param class_ The class of the object which caused the exception
  * @param requestedSize The size of the memory that couldn't be allocated
  * @return An initialized no memory exception
  */
-- initWithClass: (Class)class_
-  requestedSize: (size_t)requestedSize;
+- initWithRequestedSize: (size_t)requestedSize;
 
 /*!
  * @brief Returns the size of the memoory that couldn't be allocated.
