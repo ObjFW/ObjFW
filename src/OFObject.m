@@ -107,17 +107,20 @@ uint32_t of_hash_seed;
 static void
 uncaught_exception_handler(id exception)
 {
+	OFString *description = [exception description];
 	OFArray *backtrace = nil;
 
 	fprintf(stderr, "\nRuntime error: Unhandled exception:\n%s\n",
-	    [[exception description] UTF8String]);
+	    [description cStringWithEncoding: OF_STRING_ENCODING_NATIVE]);
 
 	if ([exception respondsToSelector: @selector(backtrace)])
 		backtrace = [exception backtrace];
 
-	if (backtrace != nil)
+	if (backtrace != nil) {
+		OFString *s = [backtrace componentsJoinedByString: @"\n  "];
 		fprintf(stderr, "\nBacktrace:\n  %s\n\n",
-		    [[backtrace componentsJoinedByString: @"\n  "] UTF8String]);
+		      [s cStringWithEncoding: OF_STRING_ENCODING_NATIVE]);
+	}
 
 	abort();
 }
