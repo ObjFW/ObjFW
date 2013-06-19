@@ -21,6 +21,7 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OFMessagePackExtension.h"
 
 #import "OFInvalidFormatException.h"
 
@@ -141,6 +142,8 @@ static size_t
 parse_object(const uint8_t *buffer, size_t length, id *object)
 {
 	size_t i, count;
+	int8_t type;
+	OFDataArray *data;
 
 	if (length < 1)
 		goto error;
@@ -284,8 +287,7 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 		if (length < count + 2)
 			goto error;
 
-		*object = [OFDataArray dataArrayWithItemSize: 1
-						    capacity: count];
+		*object = [OFDataArray dataArrayWithCapacity: count];
 		[*object addItems: buffer + 2
 			    count: count];
 
@@ -299,8 +301,7 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 		if (length < count + 3)
 			goto error;
 
-		*object = [OFDataArray dataArrayWithItemSize: 1
-						    capacity: count];
+		*object = [OFDataArray dataArrayWithCapacity: count];
 		[*object addItems: buffer + 3
 			    count: count];
 
@@ -314,12 +315,178 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 		if (length < count + 5)
 			goto error;
 
-		*object = [OFDataArray dataArrayWithItemSize: 1
-						    capacity: count];
+		*object = [OFDataArray dataArrayWithCapacity: count];
 		[*object addItems: buffer + 5
 			    count: count];
 
 		return count + 5;
+	/* Extensions */
+	case 0xC7: /* ext 8 */
+		if (length < 3)
+			goto error;
+
+		count = buffer[1];
+
+		if (length < count + 3)
+			goto error;
+
+		type = buffer[2];
+
+		data = [[OFDataArray alloc] initWithCapacity: count];
+		@try {
+			[data addItems: buffer + 3
+				 count: count];
+
+			*object = [OFMessagePackExtension
+			    extensionWithType: type
+					 data: data];
+		} @finally {
+			[data release];
+		}
+
+		return count + 3;
+	case 0xC8: /* ext 16 */
+		if (length < 4)
+			goto error;
+
+		count = read_uint16(buffer + 1);
+
+		if (length < count + 4)
+			goto error;
+
+		type = buffer[3];
+
+		data = [[OFDataArray alloc] initWithCapacity: count];
+		@try {
+			[data addItems: buffer + 4
+				 count: count];
+
+			*object = [OFMessagePackExtension
+			    extensionWithType: type
+					 data: data];
+		} @finally {
+			[data release];
+		}
+
+		return count + 4;
+	case 0xC9: /* ext 32 */
+		if (length < 6)
+			goto error;
+
+		count = read_uint32(buffer + 1);
+
+		if (length < count + 6)
+			goto error;
+
+		type = buffer[5];
+
+		data = [[OFDataArray alloc] initWithCapacity: count];
+		@try {
+			[data addItems: buffer + 6
+				 count: count];
+
+			*object = [OFMessagePackExtension
+			    extensionWithType: type
+					 data: data];
+		} @finally {
+			[data release];
+		}
+
+		return count + 6;
+	case 0xD4: /* fixext 1 */
+		if (length < 3)
+			goto error;
+
+		type = buffer[1];
+
+		data = [[OFDataArray alloc] initWithCapacity: 1];
+		@try {
+			[data addItem: buffer + 2];
+
+			*object = [OFMessagePackExtension
+			    extensionWithType: type
+					 data: data];
+		} @finally {
+			[data release];
+		}
+
+		return 3;
+	case 0xD5: /* fixext 2 */
+		if (length < 4)
+			goto error;
+
+		type = buffer[1];
+
+		data = [[OFDataArray alloc] initWithCapacity: 2];
+		@try {
+			[data addItems: buffer + 2
+				 count: 2];
+
+			*object = [OFMessagePackExtension
+			    extensionWithType: type
+					 data: data];
+		} @finally {
+			[data release];
+		}
+
+		return 4;
+	case 0xD6: /* fixtext 4 */
+		if (length < 6)
+			goto error;
+
+		type = buffer[1];
+
+		data = [[OFDataArray alloc] initWithCapacity: 4];
+		@try {
+			[data addItems: buffer + 2
+				 count: 4];
+
+			*object = [OFMessagePackExtension
+			    extensionWithType: type
+					 data: data];
+		} @finally {
+			[data release];
+		}
+
+		return 6;
+	case 0xD7: /* fixtext 8 */
+		if (length < 10)
+			goto error;
+
+		type = buffer[1];
+
+		data = [[OFDataArray alloc] initWithCapacity: 8];
+		@try {
+			[data addItems: buffer + 2
+				 count: 8];
+
+			*object = [OFMessagePackExtension
+			    extensionWithType: type
+					 data: data];
+		} @finally {
+			[data release];
+		}
+
+		return 10;
+	case 0xD8: /* fixext 16 */
+		if (length < 18)
+			goto error;
+
+		type = buffer[1];
+
+		data = [[OFDataArray alloc] initWithCapacity: 16];
+		@try {
+			[data addItems: buffer + 2
+				 count: 16];
+
+			*object = [OFMessagePackExtension
+			    extensionWithType: type
+					 data: data];
+		} @finally {
+			[data release];
+		}
+
+		return 18;
 	/* Strings */
 	case 0xD9: /* str 8 */
 		if (length < 2)

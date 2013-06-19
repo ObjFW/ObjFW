@@ -19,7 +19,7 @@
 
 /*! @file */
 
-/**
+/*!
  * @brief A struct describing the functions to be used by the map table.
  */
 typedef struct of_map_table_functions_t {
@@ -57,7 +57,7 @@ typedef void* (^of_map_table_replace_block_t)(void *key, void *value);
 
 @class OFMapTableEnumerator;
 
-/**
+/*!
  * @brief A class similar to OFDictionary, but providing more options how keys
  *	  and values should be retained, released, compared and hashed.
  */
@@ -208,14 +208,14 @@ typedef void* (^of_map_table_replace_block_t)(void *key, void *value);
 - (void)replaceValuesUsingBlock: (of_map_table_replace_block_t)block;
 #endif
 
-/**
+/*!
  * @brief Returns the key functions used by the map table.
  *
  * @return The key functions used by the map table
  */
 - (of_map_table_functions_t)keyFunctions;
 
-/**
+/*!
  * @brief Returns the value functions used by the map table.
  *
  * @return The value functions used by the map table

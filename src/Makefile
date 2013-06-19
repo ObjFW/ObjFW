@@ -25,6 +25,7 @@ SRCS = OFApplication.m			\
        OFList.m				\
        OFMapTable.m			\
        OFMD5Hash.m			\
+       OFMessagePackExtension.m		\
        OFMutableArray.m			\
        OFMutableDictionary.m		\
        OFMutableSet.m			\

@@ -362,6 +362,8 @@
 		4BB524C2143D1E4E0085FBCC /* OFProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB524C0143D1E4E0085FBCC /* OFProcess.m */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BC090441584F6760040640F /* OFInvalidJSONException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC090421584F6760040640F /* OFInvalidJSONException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BC090451584F6760040640F /* OFInvalidJSONException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BC090431584F6760040640F /* OFInvalidJSONException.m */; };
+		4BCAA9AF1772432F003EF859 /* OFMessagePackExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BCAA9AD1772432E003EF859 /* OFMessagePackExtension.h */; };
+		4BCAA9B01772432F003EF859 /* OFMessagePackExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BCAA9AE1772432E003EF859 /* OFMessagePackExtension.m */; };
 		4BD653C5143B8489006182F0 /* OFTCPSocket+SOCKS5.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD653C3143B8489006182F0 /* OFTCPSocket+SOCKS5.h */; settings = {ATTRIBUTES = (); }; };
 		4BD653C6143B8489006182F0 /* OFTCPSocket+SOCKS5.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BD653C4143B8489006182F0 /* OFTCPSocket+SOCKS5.m */; };
 		4BD77FDE176E4BC40031C497 /* OFUnboundPrefixException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD77FDC176E4BC40031C497 /* OFUnboundPrefixException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -790,6 +792,8 @@
 		4BBA36C511406AB700CBA3AC /* macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = macros.h; path = src/macros.h; sourceTree = "<group>"; };
 		4BC090421584F6760040640F /* OFInvalidJSONException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFInvalidJSONException.h; path = src/exceptions/OFInvalidJSONException.h; sourceTree = "<group>"; };
 		4BC090431584F6760040640F /* OFInvalidJSONException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFInvalidJSONException.m; path = src/exceptions/OFInvalidJSONException.m; sourceTree = "<group>"; };
+		4BCAA9AD1772432E003EF859 /* OFMessagePackExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMessagePackExtension.h; path = src/OFMessagePackExtension.h; sourceTree = "<group>"; };
+		4BCAA9AE1772432E003EF859 /* OFMessagePackExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMessagePackExtension.m; path = src/OFMessagePackExtension.m; sourceTree = "<group>"; };
 		4BD653C3143B8489006182F0 /* OFTCPSocket+SOCKS5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFTCPSocket+SOCKS5.h"; path = "src/OFTCPSocket+SOCKS5.h"; sourceTree = "<group>"; };
 		4BD653C4143B8489006182F0 /* OFTCPSocket+SOCKS5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFTCPSocket+SOCKS5.m"; path = "src/OFTCPSocket+SOCKS5.m"; sourceTree = "<group>"; };
 		4BD77FDC176E4BC40031C497 /* OFUnboundPrefixException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFUnboundPrefixException.h; path = src/exceptions/OFUnboundPrefixException.h; sourceTree = "<group>"; };
@@ -1131,6 +1135,8 @@
 				4B3B0797166978780044E634 /* OFMapTable.m */,
 				4BF1BCC211C9663F0025511F /* OFMD5Hash.h */,
 				4BF1BCC311C9663F0025511F /* OFMD5Hash.m */,
+				4BCAA9AD1772432E003EF859 /* OFMessagePackExtension.h */,
+				4BCAA9AE1772432E003EF859 /* OFMessagePackExtension.m */,
 				4B879A8B177231F000EBCEA4 /* OFMessagePackRepresentation.h */,
 				4B67996F1099E7C50041064A /* OFMutableArray.h */,
 				4B6799701099E7C50041064A /* OFMutableArray.m */,
@@ -1535,6 +1541,7 @@
 				4B552554147AA5DB0003BF47 /* OFString_UTF8.h in Headers */,
 				4BD653C5143B8489006182F0 /* OFTCPSocket+SOCKS5.h in Headers */,
 				4BDF37B51338055600F9A81A /* config.h in Headers */,
+				4BCAA9AF1772432F003EF859 /* OFMessagePackExtension.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1741,6 +1748,7 @@
 				4BA85BCB140ECCE800E91D51 /* OFCountedSet_hashtable.m in Sources */,
 				4B3D23901337FC0D00DD29B8 /* OFDataArray.m in Sources */,
 				4B3D23911337FC0D00DD29B8 /* OFDataArray+Hashing.m in Sources */,
+				4B879A8D177231F000EBCEA4 /* OFDataArray+MessagePackValue.m in Sources */,
 				4B3D23921337FC0D00DD29B8 /* OFDate.m in Sources */,
 				4B3D23931337FC0D00DD29B8 /* OFDictionary.m in Sources */,
 				4B2B3E80140D430500EC2F7C /* OFDictionary_hashtable.m in Sources */,
@@ -1754,6 +1762,7 @@
 				4B3D23991337FC0D00DD29B8 /* OFList.m in Sources */,
 				4B3B0799166978780044E634 /* OFMapTable.m in Sources */,
 				4B3D239A1337FC0D00DD29B8 /* OFMD5Hash.m in Sources */,
+				4BCAA9B01772432F003EF859 /* OFMessagePackExtension.m in Sources */,
 				4B3D239B1337FC0D00DD29B8 /* OFMutableArray.m in Sources */,
 				4B2B3E82140D430500EC2F7C /* OFMutableArray_adjacent.m in Sources */,
 				4B3D239C1337FC0D00DD29B8 /* OFMutableDictionary.m in Sources */,
@@ -1871,7 +1880,6 @@
 				4B17FFB2133A3664003E6DCD /* OFUnsupportedProtocolException.m in Sources */,
 				4BA4846315CC9F1E00D75360 /* OFUnsupportedVersionException.m in Sources */,
 				4B55A117133AC24600B58A93 /* OFWriteFailedException.m in Sources */,
-				4B879A8D177231F000EBCEA4 /* OFDataArray+MessagePackValue.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
