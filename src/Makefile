@@ -15,8 +15,8 @@ SRCS = OFApplication.m			\
        OFConstantString.m		\
        OFCountedSet.m			\
        OFDataArray.m			\
-       OFDataArray+BinaryPackValue.m	\
        OFDataArray+Hashing.m		\
+       OFDataArray+MessagePackValue.m	\
        OFDate.m				\
        OFDictionary.m			\
        OFEnumerator.m			\
@@ -85,11 +85,11 @@ SRCS_THREADS = OFCondition.m		\
 
 INCLUDES_THREADS = threading.h
 INCLUDES := ${SRCS:.m=.h}			\
-	    OFBinaryPackRepresentation.h	\
 	    OFCollection.h			\
 	    OFHash.h				\
 	    OFJSONRepresentation.h		\
 	    OFLocking.h				\
+	    OFMessagePackRepresentation.h	\
 	    OFSerialization.h			\
 	    OFTLSSocket.h			\
 	    ObjFW.h				\

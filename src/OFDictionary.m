@@ -646,7 +646,7 @@ static struct {
 	return JSON;
 }
 
-- (OFDataArray*)binaryPackRepresentation
+- (OFDataArray*)messagePackRepresentation
 {
 	OFDataArray *data;
 	size_t i, count;
@@ -689,11 +689,11 @@ static struct {
 
 		i++;
 
-		child = [key binaryPackRepresentation];
+		child = [key messagePackRepresentation];
 		[data addItems: [child items]
 			 count: [child count]];
 
-		child = [object binaryPackRepresentation];
+		child = [object messagePackRepresentation];
 		[data addItems: [child items]
 			 count: [child count]];
 

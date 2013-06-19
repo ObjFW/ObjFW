@@ -14,16 +14,18 @@
  * file.
  */
 
-#import "OFDataArray.h"
+@class OFDataArray;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern int _OFDataArray_BinaryPackValue_reference;
-#ifdef __cplusplus
-}
-#endif
-
-@interface OFDataArray (BinaryPackValue)
-- (id)binaryPackValue;
+/*!
+ * @brief A protocol implemented by classes that support encoding to a
+ *	  MessagePack representation.
+ */
+@protocol OFMessagePackRepresentation
+/*!
+ * @brief Returns the MessagePack representation of the object as an
+ *	  OFDataArray.
+ *
+ * @return The MessagePack representation of the object as an OFDataArray.
+ */
+- (OFDataArray*)messagePackRepresentation;
 @end

@@ -28,7 +28,7 @@
 #import "OFEnumerator.h"
 #import "OFSerialization.h"
 #import "OFJSONRepresentation.h"
-#import "OFBinaryPackRepresentation.h"
+#import "OFMessagePackRepresentation.h"
 
 /*! @file */
 
@@ -82,7 +82,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * @brief An abstract class for storing objects in an array.
  */
 @interface OFArray: OFObject <OFCopying, OFMutableCopying, OFCollection,
-    OFSerialization, OFJSONRepresentation, OFBinaryPackRepresentation>
+    OFSerialization, OFJSONRepresentation, OFMessagePackRepresentation>
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly) size_t count;
 #endif

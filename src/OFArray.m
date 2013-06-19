@@ -563,7 +563,7 @@ static struct {
 	return [JSON autorelease];
 }
 
-- (OFDataArray*)binaryPackRepresentation
+- (OFDataArray*)messagePackRepresentation
 {
 	OFDataArray *data;
 	size_t i, count;
@@ -604,7 +604,7 @@ static struct {
 
 		i++;
 
-		child = [object binaryPackRepresentation];
+		child = [object messagePackRepresentation];
 		[data addItems: [child items]
 			 count: [child count]];
 

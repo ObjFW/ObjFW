@@ -1429,7 +1429,7 @@
 	return [self description];
 }
 
-- (OFDataArray*)binaryPackRepresentation
+- (OFDataArray*)messagePackRepresentation
 {
 	OFDataArray *data;
 

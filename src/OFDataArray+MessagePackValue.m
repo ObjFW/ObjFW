@@ -14,7 +14,7 @@
  * file.
  */
 
-#import "OFDataArray+BinaryPackValue.h"
+#import "OFDataArray+MessagePackValue.h"
 #import "OFNumber.h"
 #import "OFNull.h"
 #import "OFDataArray.h"
@@ -27,7 +27,7 @@
 #import "autorelease.h"
 #import "macros.h"
 
-int _OFDataArray_BinaryPackValue_reference;
+int _OFDataArray_MessagePackValue_reference;
 
 static size_t parse_object(const uint8_t*, size_t, id*);
 
@@ -145,18 +145,19 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 	if (length < 1)
 		goto error;
 
-	/* Integers */
+	/* positive fixint */
 	if ((buffer[0] & 0x80) == 0) {
 		*object = [OFNumber numberWithUInt8: buffer[0] & 0x7F];
 		return 1;
 	}
+	/* negative fixint */
 	if ((buffer[0] & 0xE0) == 0xE0) {
 		*object = [OFNumber numberWithInt8:
 		    ((int8_t)(buffer[0] & 0x1F)) - 32];
 		return 1;
 	}
 
-	/* String */
+	/* fixstr */
 	if ((buffer[0] & 0xE0) == 0xA0) {
 		count = buffer[0] & 0x1F;
 
@@ -169,12 +170,12 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 		return count + 1;
 	}
 
-	/* Array */
+	/* fixarray */
 	if ((buffer[0] & 0xF0) == 0x90)
 		return parse_array(buffer + 1, length - 1, object,
 		    buffer[0] & 0xF) + 1;
 
-	/* Table */
+	/* fixmap */
 	if ((buffer[0] & 0xF0) == 0x80)
 		return parse_table(buffer + 1, length - 1, object,
 		    buffer[0] & 0xF) + 1;
@@ -182,57 +183,57 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 	/* Prefix byte */
 	switch (*buffer) {
 	/* Unsigned integers */
-	case 0xCC:
+	case 0xCC: /* uint8 */
 		if (length < 2)
 			goto error;
 
 		*object = [OFNumber numberWithUInt8: buffer[1]];
 		return 2;
-	case 0xCD:
+	case 0xCD: /* uint 16 */
 		if (length < 3)
 			goto error;
 
 		*object = [OFNumber numberWithUInt16: read_uint16(buffer + 1)];
 		return 3;
-	case 0xCE:
+	case 0xCE: /* uint 32 */
 		if (length < 5)
 			goto error;
 
 		*object = [OFNumber numberWithUInt32: read_uint32(buffer + 1)];
 		return 5;
-	case 0xCF:
+	case 0xCF: /* uint 64 */
 		if (length < 9)
 			goto error;
 
 		*object = [OFNumber numberWithUInt64: read_uint64(buffer + 1)];
 		return 9;
 	/* Signed integers */
-	case 0xD0:
+	case 0xD0: /* int 8 */
 		if (length < 2)
 			goto error;
 
 		*object = [OFNumber numberWithInt8: buffer[1]];
 		return 2;
-	case 0xD1:
+	case 0xD1: /* int 16 */
 		if (length < 3)
 			goto error;
 
 		*object = [OFNumber numberWithInt16: read_uint16(buffer + 1)];
 		return 3;
-	case 0xD2:
+	case 0xD2: /* int 32 */
 		if (length < 5)
 			goto error;
 
 		*object = [OFNumber numberWithInt32: read_uint32(buffer + 1)];
 		return 5;
-	case 0xD3:
+	case 0xD3: /* int 64 */
 		if (length < 9)
 			goto error;
 
 		*object = [OFNumber numberWithInt64: read_uint64(buffer + 1)];
 		return 9;
-	/* Float */
-	case 0xCA:;
+	/* Floating point */
+	case 0xCA:; /* float 32 */
 		union {
 			uint8_t u8[4];
 			float f;
@@ -246,8 +247,7 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 
 		*object = [OFNumber numberWithFloat: OF_BSWAP_FLOAT_IF_LE(f.f)];
 		return 5;
-	/* Double */
-	case 0xCB:;
+	case 0xCB:; /* float 64 */
 		union {
 			uint8_t u8[8];
 			double d;
@@ -275,7 +275,7 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 		*object = [OFNumber numberWithBool: true];
 		return 1;
 	/* Data */
-	case 0xD5:
+	case 0xC4: /* bin 8 */
 		if (length < 2)
 			goto error;
 
@@ -290,7 +290,7 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 			    count: count];
 
 		return count + 2;
-	case 0xD6:
+	case 0xC5: /* bin 16 */
 		if (length < 3)
 			goto error;
 
@@ -305,7 +305,7 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 			    count: count];
 
 		return count + 3;
-	case 0xD7:
+	case 0xC6: /* bin 32 */
 		if (length < 5)
 			goto error;
 
@@ -321,7 +321,7 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 
 		return count + 5;
 	/* Strings */
-	case 0xD9:
+	case 0xD9: /* str 8 */
 		if (length < 2)
 			goto error;
 
@@ -334,7 +334,7 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 		    stringWithUTF8String: (const char*)buffer + 2
 				  length: count];
 		return count + 2;
-	case 0xDA:
+	case 0xDA: /* str 16 */
 		if (length < 3)
 			goto error;
 
@@ -347,7 +347,7 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 		    stringWithUTF8String: (const char*)buffer + 3
 				  length: count];
 		return count + 3;
-	case 0xDB:
+	case 0xDB: /* str 32 */
 		if (length < 5)
 			goto error;
 
@@ -361,26 +361,26 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 				  length: count];
 		return count + 5;
 	/* Arrays */
-	case 0xDC:
+	case 0xDC: /* array 16 */
 		if (length < 3)
 			goto error;
 
 		return parse_array(buffer + 3, length - 3, object,
 		    read_uint16(buffer + 1)) + 3;
-	case 0xDD:
+	case 0xDD: /* array 32 */
 		if (length < 5)
 			goto error;
 
 		return parse_array(buffer + 5, length - 5, object,
 		    read_uint32(buffer + 1)) + 5;
-	/* Tables */
-	case 0xDE:
+	/* Maps */
+	case 0xDE: /* map 16 */
 		if (length < 3)
 			goto error;
 
 		return parse_table(buffer + 3, length - 3, object,
 		    read_uint16(buffer + 1)) + 3;
-	case 0xDF:
+	case 0xDF: /* map 32 */
 		if (length < 5)
 			goto error;
 
@@ -393,8 +393,8 @@ error:
 	return 0;
 }
 
-@implementation OFDataArray (BinaryPackValue)
-- (id)binaryPackValue
+@implementation OFDataArray (MessagePackValue)
+- (id)messagePackValue
 {
 	size_t count = [self count];
 	id object;

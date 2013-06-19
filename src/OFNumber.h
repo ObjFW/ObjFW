@@ -26,7 +26,7 @@
 #import "OFObject.h"
 #import "OFSerialization.h"
 #import "OFJSONRepresentation.h"
-#import "OFBinaryPackRepresentation.h"
+#import "OFMessagePackRepresentation.h"
 
 /*! @file */
 
@@ -97,7 +97,7 @@ typedef enum of_number_type_t {
  * @brief Provides a way to store a number in an object.
  */
 @interface OFNumber: OFObject <OFCopying, OFComparing, OFSerialization,
-    OFJSONRepresentation, OFBinaryPackRepresentation>
+    OFJSONRepresentation, OFMessagePackRepresentation>
 {
 	union of_number_value {
 		bool		   bool_;

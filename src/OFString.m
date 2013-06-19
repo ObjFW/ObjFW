@@ -1616,7 +1616,7 @@ static struct {
 	return JSON;
 }
 
-- (OFDataArray*)binaryPackRepresentation
+- (OFDataArray*)messagePackRepresentation
 {
 	OFDataArray *data;
 	size_t length;

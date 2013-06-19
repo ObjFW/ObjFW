@@ -89,7 +89,7 @@ static OFNull *null = nil;
 	return @"null";
 }
 
-- (OFDataArray*)binaryPackRepresentation
+- (OFDataArray*)messagePackRepresentation
 {
 	OFDataArray *data = [OFDataArray dataArrayWithItemSize: 1
 						      capacity: 1];

@@ -17,13 +17,13 @@
 #import "OFObject.h"
 #import "OFSerialization.h"
 #import "OFJSONRepresentation.h"
-#import "OFBinaryPackRepresentation.h"
+#import "OFMessagePackRepresentation.h"
 
 /*!
  * @brief A class for representing null values in collections.
  */
 @interface OFNull: OFObject <OFCopying, OFSerialization, OFJSONRepresentation,
-    OFBinaryPackRepresentation>
+    OFMessagePackRepresentation>
 /*!
  * @brief Returns an OFNull singleton.
  *

@@ -16,7 +16,7 @@
 
 #import "OFObject.h"
 #import "OFSerialization.h"
-#import "OFBinaryPackRepresentation.h"
+#import "OFMessagePackRepresentation.h"
 
 @class OFString;
 @class OFURL;
@@ -31,7 +31,7 @@
  * for OFDataArrays with item size 1.
  */
 @interface OFDataArray: OFObject <OFCopying, OFComparing, OFSerialization,
-    OFBinaryPackRepresentation>
+    OFMessagePackRepresentation>
 {
 	uint8_t *_items;
 	size_t _count, _itemSize, _capacity;
@@ -307,4 +307,4 @@
 @end
 
 #import "OFDataArray+Hashing.h"
-#import "OFDataArray+BinaryPackValue.h"
+#import "OFDataArray+MessagePackValue.h"
