@@ -65,6 +65,11 @@ void _references_to_categories_of_OFDataArray(void)
 	return [[[self alloc] initWithItemSize: itemSize] autorelease];
 }
 
++ (instancetype)dataArrayWithCapacity: (size_t)capacity
+{
+	return [[[self alloc] initWithCapacity: capacity] autorelease];
+}
+
 + (instancetype)dataArrayWithItemSize: (size_t)itemSize
 			     capacity: (size_t)capacity
 {
@@ -103,6 +108,12 @@ void _references_to_categories_of_OFDataArray(void)
 {
 	return [self initWithItemSize: itemSize
 			     capacity: 0];
+}
+
+- initWithCapacity: (size_t)capacity
+{
+	return [self initWithItemSize: 1
+			     capacity: capacity];
 }
 
 - initWithItemSize: (size_t)itemSize

@@ -61,6 +61,15 @@
 
 /*!
  * @brief Creates a new OFDataArray with enough memory to hold the specified
+ *	  number of items which all have an item size of 1.
+ *
+ * @param capacity The initial capacity for the OFDataArray
+ * @return A new autoreleased OFDataArray
+ */
++ (instancetype)dataArrayWithCapacity: (size_t)capacity;
+
+/*!
+ * @brief Creates a new OFDataArray with enough memory to hold the specified
  *	  number of items which all have the same specified size.
  *
  * @param itemSize The size of a single element in the OFDataArray
@@ -114,6 +123,15 @@
  * @return An initialized OFDataArray
  */
 - initWithItemSize: (size_t)itemSize;
+
+/*!
+ * @brief Initializes an already allocated OFDataArray with enough memory to
+ *	  hold the specified number of items which all have an item size of 1.
+ *
+ * @param capacity The initial capacity for the OFDataArray
+ * @return An initialized OFDataArray
+ */
+- initWithCapacity: (size_t)capacity;
 
 /*!
  * @brief Initializes an already allocated OFDataArray with enough memory to
