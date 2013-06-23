@@ -29,37 +29,27 @@
 }
 
 + (instancetype)exceptionWithHost: (OFString*)host
+{
+	return [[[self alloc] initWithHost: host] autorelease];
+}
+
++ (instancetype)exceptionWithHost: (OFString*)host
 			   socket: (OFTCPSocket*)socket
 {
 	return [[[self alloc] initWithHost: host
 				    socket: socket] autorelease];
 }
 
-- init
-{
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
-}
-
 - initWithSocket: (OFTCPSocket*)socket
 {
-	self = [super init];
+	return [self initWithHost: nil
+			   socket: socket];
+}
 
-	@try {
-		_socket = [socket retain];
-		_errNo  = GET_AT_ERRNO;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+- initWithHost: (OFString*)host
+{
+	return [self initWithHost: host
+			   socket: nil];
 }
 
 - initWithHost: (OFString*)host
@@ -89,7 +79,7 @@
 
 - (OFString*)description
 {
-	if (_host != nil)
+	if (_host != nil && _socket != nil)
 		return [OFString stringWithFormat:
 		    @"The host %@ could not be translated to an address for a "
 		    @"socket of type %@. This means that either the host was "
@@ -97,10 +87,21 @@
 		    @"there was a problem with your network connection or you "
 		    @"specified an invalid host. " ERRFMT, _host,
 		    [_socket class], AT_ERRPARAM];
+	else if (_socket != nil)
+		return [OFString stringWithFormat:
+		    @"An address could not be translated for a socket of type "
+		    @"%@! " ERRFMT, [_socket class],
+		    AT_ERRPARAM];
+	else if (_host != nil)
+		return [OFString stringWithFormat:
+		    @"The host %@ could not be translated to an address. This "
+		    @"means that either the host was not found, there was a "
+		    @"problem with the name server, there was a problem with "
+		    @"your network connection or you specified an invalid "
+		    @"host. " ERRFMT, _host, AT_ERRPARAM];
 	else
 		return [OFString stringWithFormat:
-		    @"An address could not be translated translation for a "
-		    @"socket of type %@! " ERRFMT, [_socket class],
+		    @"An address could not be translated! " ERRFMT,
 		    AT_ERRPARAM];
 }
 

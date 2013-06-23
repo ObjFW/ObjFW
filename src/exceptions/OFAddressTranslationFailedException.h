@@ -50,6 +50,14 @@
  * @brief Creates a new, autoreleased address translation failed exception.
  *
  * @param host The host for which translation was requested
+ * @return A new, autoreleased address translation failed exception
+ */
++ (instancetype)exceptionWithHost: (OFString*)host;
+
+/*!
+ * @brief Creates a new, autoreleased address translation failed exception.
+ *
+ * @param host The host for which translation was requested
  * @param socket The socket which could not translate the address
  * @return A new, autoreleased address translation failed exception
  */
@@ -63,6 +71,14 @@
  * @return An initialized address translation failed exception
  */
 - initWithSocket: (OFTCPSocket*)socket;
+
+/*!
+ * @brief Initializes an already allocated address translation failed exception.
+ *
+ * @param host The host for which translation was requested
+ * @return An initialized address translation failed exception
+ */
+- initWithHost: (OFString*)host;
 
 /*!
  * @brief Initializes an already allocated address translation failed exception.
