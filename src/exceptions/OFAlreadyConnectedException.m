@@ -30,18 +30,6 @@
 	return [[[self alloc] initWithSocket: socket] autorelease];
 }
 
-- init
-{
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
-}
-
 - initWithSocket: (OFTCPSocket*)socket
 {
 	self = [super init];
@@ -60,9 +48,13 @@
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"The socket of type %@ is already connected or bound and thus "
-	    @"can't be connected or bound again!", [_socket class]];
+	if (_socket)
+		return [OFString stringWithFormat:
+		    @"The socket of type %@ is already connected or bound and "
+		    @"thus can't be connected or bound again!",
+		    [_socket class]];
+	else
+		return @"A connection has already been established!";
 }
 
 - (OFTCPSocket*)socket
