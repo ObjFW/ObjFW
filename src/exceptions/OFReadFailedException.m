@@ -18,6 +18,7 @@
 
 #import "OFReadFailedException.h"
 #import "OFString.h"
+#import "OFStream.h"
 
 #import "common.h"
 

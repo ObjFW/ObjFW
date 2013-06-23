@@ -26,7 +26,8 @@
 @implementation OFDeleteFileFailedException
 + (instancetype)exceptionWithPath: (OFString*)path
 {
-	return [[[self alloc] initWithPath: path] autorelease];
+	return [[(OFDeleteFileFailedException*)[self alloc]
+	    initWithPath: path] autorelease];
 }
 
 - init

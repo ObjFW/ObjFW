@@ -20,6 +20,7 @@
 
 #import "OFReadOrWriteFailedException.h"
 #import "OFString.h"
+#import "OFStream.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFStreamSocket.h"
 #endif

@@ -215,9 +215,7 @@ static Class CDATAClass = Nil;
 	OFXMLParser *parser;
 	OFXMLElementBuilder *builder;
 	OFXMLElement_OFXMLElementBuilderDelegate *delegate;
-	Class c;
 
-	c = [self class];
 	[self release];
 
 	if (string == nil)
@@ -251,9 +249,7 @@ static Class CDATAClass = Nil;
 	OFXMLParser *parser;
 	OFXMLElementBuilder *builder;
 	OFXMLElement_OFXMLElementBuilderDelegate *delegate;
-	Class c;
 
-	c = [self class];
 	[self release];
 
 	pool = objc_autoreleasePoolPush();

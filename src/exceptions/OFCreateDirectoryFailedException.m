@@ -26,7 +26,8 @@
 @implementation OFCreateDirectoryFailedException
 + (instancetype)exceptionWithPath: (OFString*)path
 {
-	return [[[self alloc] initWithPath: path] autorelease];
+	return [[(OFCreateDirectoryFailedException*)[self alloc]
+	    initWithPath: path] autorelease];
 }
 
 - init
