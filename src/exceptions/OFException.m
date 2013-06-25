@@ -43,7 +43,11 @@ struct backtrace_ctx {
 
 extern _Unwind_Reason_Code _Unwind_Backtrace(
     _Unwind_Reason_Code(*)(struct _Unwind_Context*, void*), void*);
+#if defined(__arm__) || defined(__ARM__)
+extern int _Unwind_VRS_Get(struct _Unwind_Context*, int, uint32_t, int, void*);
+#else
 extern uintptr_t _Unwind_GetIP(struct _Unwind_Context*);
+#endif
 
 static _Unwind_Reason_Code
 backtrace_callback(struct _Unwind_Context *ctx, void *data)
@@ -51,7 +55,14 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 	struct backtrace_ctx *bt = data;
 
 	if (bt->i < OF_BACKTRACE_SIZE) {
+#if defined(__arm__) || defined(__ARM__)
+		uintptr_t ip;
+
+		_Unwind_VRS_Get(ctx, 0, 15, 0, &ip);
+		bt->backtrace[bt->i++] = (void*)(ip & ~1);
+#else
 		bt->backtrace[bt->i++] = (void*)_Unwind_GetIP(ctx);
+#endif
 		return _URC_OK;
 	}
 
