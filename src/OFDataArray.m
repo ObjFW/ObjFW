@@ -100,14 +100,20 @@ void _references_to_categories_of_OFDataArray(void)
 
 - init
 {
-	return [self initWithItemSize: 1
-			     capacity: 0];
+	self = [super init];
+
+	_itemSize = 1;
+
+	return self;
 }
 
 - initWithItemSize: (size_t)itemSize
 {
-	return [self initWithItemSize: itemSize
-			     capacity: 0];
+	self = [super init];
+
+	_itemSize = itemSize;
+
+	return self;
 }
 
 - initWithCapacity: (size_t)capacity
@@ -121,16 +127,21 @@ void _references_to_categories_of_OFDataArray(void)
 {
 	self = [super init];
 
-	if (itemSize == 0) {
+	@try {
+		if (itemSize == 0) {
+			[self release];
+			@throw [OFInvalidArgumentException exception];
+		}
+
+		_items = [self allocMemoryWithSize: itemSize
+					     count: capacity];
+
+		_itemSize = itemSize;
+		_capacity = capacity;
+	} @catch (id e) {
 		[self release];
-		@throw [OFInvalidArgumentException exception];
+		@throw e;
 	}
-
-	_items = [self allocMemoryWithSize: itemSize
-				     count: capacity];
-
-	_itemSize = itemSize;
-	_capacity = capacity;
 
 	return self;
 }
@@ -669,79 +680,122 @@ void _references_to_categories_of_OFDataArray(void)
 @end
 
 @implementation OFBigDataArray
+- init
+{
+	return [self initWithItemSize: 1
+			     capacity: 0];
+}
+
+- initWithItemSize: (size_t)itemSize
+{
+	return [self initWithItemSize: itemSize
+			     capacity: 0];
+}
+
 - initWithItemSize: (size_t)itemSize
 	  capacity: (size_t)capacity
 {
-	size_t lastPageByte = [OFSystemInfo pageSize] - 1;
+	self = [super init];
 
-	capacity = (capacity * itemSize + lastPageByte) & ~lastPageByte;
+	@try {
+		size_t size, lastPageByte;
 
-	return [super initWithItemSize: itemSize
-			      capacity: capacity];
+		if (itemSize == 0) {
+			[self release];
+			@throw [OFInvalidArgumentException exception];
+		}
+
+		if (capacity > SIZE_MAX / itemSize)
+			@throw [OFOutOfRangeException exception];
+
+		lastPageByte = [OFSystemInfo pageSize] - 1;
+		size = (capacity * itemSize + lastPageByte) & ~lastPageByte;
+
+		if (size == 0)
+			size = lastPageByte + 1;
+
+		_items = [self allocMemoryWithSize: size];
+
+		_itemSize = itemSize;
+		_capacity = size / itemSize;
+		_size = size;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
 }
 
 - (void)addItem: (const void*)item
 {
-	size_t size, lastPageByte;
-
 	if (SIZE_MAX - _count < 1 || _count + 1 > SIZE_MAX / _itemSize)
 		@throw [OFOutOfRangeException exception];
 
-	lastPageByte = [OFSystemInfo pageSize] - 1;
-	size = ((_count + 1) * _itemSize + lastPageByte) & ~lastPageByte;
+	if (_count + 1 > _capacity) {
+		size_t size, lastPageByte;
 
-	if (size > _capacity) {
+		lastPageByte = [OFSystemInfo pageSize] - 1;
+		size = ((_count + 1) * _itemSize + lastPageByte) &
+		    ~lastPageByte;
+
 		_items = [self resizeMemory: _items
 				       size: size];
-		_capacity = size;
+
+		_capacity = size / _itemSize;
+		_size = size;
 	}
 
 	memcpy(_items + _count * _itemSize, item, _itemSize);
 
 	_count++;
-	_size = size;
 }
 
 - (void)addItems: (const void*)items
 	   count: (size_t)count
 {
-	size_t size, lastPageByte;
-
 	if (count > SIZE_MAX - _count || _count + count > SIZE_MAX / _itemSize)
 		@throw [OFOutOfRangeException exception];
 
-	lastPageByte = [OFSystemInfo pageSize] - 1;
-	size = ((_count + count) * _itemSize + lastPageByte) & ~lastPageByte;
+	if (_count + count > _capacity) {
+		size_t size, lastPageByte;
 
-	if (size > _capacity) {
+		lastPageByte = [OFSystemInfo pageSize] - 1;
+		size = ((_count + count) * _itemSize + lastPageByte) &
+		    ~lastPageByte;
+
 		_items = [self resizeMemory: _items
 				       size: size];
-		_capacity = size;
+
+		_capacity = size / _itemSize;
+		_size = size;
 	}
 
 	memcpy(_items + _count * _itemSize, items, count * _itemSize);
 
 	_count += count;
-	_size = size;
 }
 
 - (void)insertItems: (const void*)items
 	    atIndex: (size_t)index
 	      count: (size_t)count
 {
-	size_t size, lastPageByte;
-
 	if (count > SIZE_MAX - _count || index > _count ||
 	    _count + count > SIZE_MAX / _itemSize)
 		@throw [OFOutOfRangeException exception];
 
-	lastPageByte = [OFSystemInfo pageSize] - 1;
-	size = ((_count + count) * _itemSize + lastPageByte) & ~lastPageByte;
+	if (_count + count > _capacity) {
+		size_t size, lastPageByte;
 
-	if (size > _capacity) {
+		lastPageByte = [OFSystemInfo pageSize] - 1;
+		size = ((_count + count) * _itemSize + lastPageByte) &
+		    ~lastPageByte;
+
 		_items = [self resizeMemory: _items
 				       size: size];
-		_capacity = size;
+
+		_capacity = size / _itemSize;
+		_size = size;
 	}
 
 	memmove(_items + (index + count) * _itemSize,
@@ -749,12 +803,11 @@ void _references_to_categories_of_OFDataArray(void)
 	memcpy(_items + index * _itemSize, items, count * _itemSize);
 
 	_count += count;
-	_size = size;
 }
 
 - (void)removeItemsInRange: (of_range_t)range
 {
-	size_t pageSize, size;
+	size_t lastPageByte, size;
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > _count)
@@ -765,43 +818,41 @@ void _references_to_categories_of_OFDataArray(void)
 	    (_count - range.location - range.length) * _itemSize);
 
 	_count -= range.length;
-	pageSize = [OFSystemInfo pageSize];
-	size = (_count * _itemSize + pageSize - 1) & ~(pageSize - 1);
+	lastPageByte = [OFSystemInfo pageSize] - 1;
+	size = (_count * _itemSize + lastPageByte) & ~lastPageByte;
 
-	if (_size != size && size >= pageSize) {
+	if (_size != size && size > lastPageByte) {
 		@try {
 			_items = [self resizeMemory: _items
 					       size: size];
-			_capacity = size;
+			_capacity = size / _itemSize;
+			_size = size;
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only made it smaller */
 		}
-
-		_size = size;
 	}
 }
 
 - (void)removeLastItem
 {
-	size_t pageSize, size;
+	size_t lastPageByte, size;
 
 	if (_count == 0)
 		return;
 
 	_count--;
-	pageSize = [OFSystemInfo pageSize];
-	size = (_count * _itemSize + pageSize - 1) & ~(pageSize - 1);
+	lastPageByte = [OFSystemInfo pageSize] - 1;
+	size = (_count * _itemSize + lastPageByte) & ~lastPageByte;
 
-	if (_size != size && size >= pageSize) {
+	if (_size != size && size > lastPageByte) {
 		@try {
 			_items = [self resizeMemory: _items
 					       size: size];
-			_capacity = size;
+			_capacity = size / _itemSize;
+			_size = size;
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only made it smaller */
 		}
-
-		_size = size;
 	}
 }
 
@@ -812,7 +863,7 @@ void _references_to_categories_of_OFDataArray(void)
 	@try {
 		_items = [self resizeMemory: _items
 				       size: pageSize];
-		_capacity = pageSize;
+		_capacity = pageSize / _itemSize;
 		_size = pageSize;
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only made it smaller */
