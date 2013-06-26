@@ -18,16 +18,18 @@
 
 #include <stdlib.h>
 
-#import "OFDeleteDirectoryFailedException.h"
+#import "OFCreateSymbolicLinkFailedException.h"
 #import "OFString.h"
 
 #import "common.h"
 
-@implementation OFDeleteDirectoryFailedException
-+ (instancetype)exceptionWithPath: (OFString*)path
+#ifdef OF_HAVE_SYMLINK
+@implementation OFCreateSymbolicLinkFailedException
++ (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
+			destinationPath: (OFString*)destinationPath
 {
-	return [[(OFDeleteDirectoryFailedException*)[self alloc]
-	    initWithPath: path] autorelease];
+	return [[[self alloc] initWithSourcePath: sourcePath
+				 destinationPath: destinationPath] autorelease];
 }
 
 - init
@@ -42,12 +44,14 @@
 	abort();
 }
 
-- initWithPath: (OFString*)path
+- initWithSourcePath: (OFString*)sourcePath
+     destinationPath: (OFString*)destinationPath
 {
 	self = [super init];
 
 	@try {
-		_path  = [path copy];
+		_sourcePath = [sourcePath copy];
+		_destinationPath = [destinationPath copy];
 		_errNo = GET_ERRNO;
 	} @catch (id e) {
 		[self release];
@@ -59,7 +63,8 @@
 
 - (void)dealloc
 {
-	[_path release];
+	[_sourcePath release];
+	[_destinationPath release];
 
 	[super dealloc];
 }
@@ -67,12 +72,18 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to delete directory %@! " ERRFMT, _path, ERRPARAM];
+	    @"Failed to symlink file %@ to %@! " ERRFMT, _sourcePath,
+	    _destinationPath, ERRPARAM];
 }
 
-- (OFString*)path
+- (OFString*)sourcePath
 {
-	OF_GETTER(_path, false)
+	OF_GETTER(_sourcePath, false)
+}
+
+- (OFString*)destinationPath
+{
+	OF_GETTER(_destinationPath, false)
 }
 
 - (int)errNo
@@ -80,3 +91,4 @@
 	return _errNo;
 }
 @end
+#endif

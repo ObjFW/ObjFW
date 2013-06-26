@@ -19,54 +19,55 @@
 #import "OFException.h"
 
 /*!
- * @brief An exception indicating that changing the mode of a file failed.
+ * @brief An exception indicating that changing the permissions of an item
+ *	  failed.
  */
-@interface OFChangeFileModeFailedException: OFException
+@interface OFChangePermissionsFailedException: OFException
 {
 	OFString *_path;
-	mode_t _mode;
+	mode_t _permissions;
 	int _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy, nonatomic) OFString *path;
-@property (readonly) mode_t mode;
+@property (readonly) mode_t permissions;
 @property (readonly) int errNo;
 #endif
 
 /*!
- * @brief Creates a new, autoreleased change file mode failed exception.
+ * @brief Creates a new, autoreleased change permissions failed exception.
  *
- * @param path The path of the file
- * @param mode The new mode for the file
- * @return A new, autoreleased change file mode failed exception
+ * @param path The path of the item
+ * @param permissions The new permissions for the item
+ * @return A new, autoreleased change permissions failed exception
  */
 + (instancetype)exceptionWithPath: (OFString*)path
-			     mode: (mode_t)mode;
+		      permissions: (mode_t)permissions;
 
 /*!
- * @brief Initializes an already allocated change file mode failed exception.
+ * @brief Initializes an already allocated change permissions failed exception.
  *
- * @param path The path of the file
- * @param mode The new mode for the file
- * @return An initialized change file mode failed exception
+ * @param path The path of the item
+ * @param permissions The new permissions for the item
+ * @return An initialized change permissions failed exception
  */
 - initWithPath: (OFString*)path
-	  mode: (mode_t)mode;
+   permissions: (mode_t)permissions;
 
 /*!
- * @brief Returns the path of the file.
+ * @brief Returns the path of the item.
  *
- * @return The path of the file
+ * @return The path of the item
  */
 - (OFString*)path;
 
 /*!
- * @brief Returns the new mode for the file.
+ * @brief Returns the new permissions for the item.
  *
- * @return The new mode for the file
+ * @return The new permissions for the item
  */
-- (mode_t)mode;
+- (mode_t)permissions;
 
 /*!
  * @brief Returns the errno from when the exception was created.

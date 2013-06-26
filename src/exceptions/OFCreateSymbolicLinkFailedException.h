@@ -18,9 +18,9 @@
 
 #ifdef OF_HAVE_SYMLINK
 /*!
- * @brief An exception indicating that creating a symlink failed.
+ * @brief An exception indicating that creating a symbolic link failed.
  */
-@interface OFSymlinkFailedException: OFException
+@interface OFCreateSymbolicLinkFailedException: OFException
 {
 	OFString *_sourcePath, *_destinationPath;
 	int _errNo;
@@ -32,21 +32,22 @@
 #endif
 
 /*!
- * @brief Creates a new, autoreleased symlink failed exception.
+ * @brief Creates a new, autoreleased create symbolic link failed exception.
  *
- * @param sourcePath The source for the symlink
- * @param destinationPath The destination for the symlink
- * @return A new, autoreleased symlink failed exception
+ * @param sourcePath The source for the symbolic link
+ * @param destinationPath The destination for the symbolic link
+ * @return A new, autoreleased create symbolic link failed exception
  */
 + (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
 			destinationPath: (OFString*)destinationPath;
 
 /*!
- * @brief Initializes an already allocated symlink failed exception.
+ * @brief Initializes an already allocated create symbolic link failed
+ *	  exception.
  *
- * @param sourcePath The source for the symlink
- * @param destinationPath The destination for the symlink
- * @return An initialized symlink failed exception
+ * @param sourcePath The source for the symbolic link
+ * @param destinationPath The destination for the symbolic link
+ * @return An initialized create symbolic link failed exception
  */
 - initWithSourcePath: (OFString*)sourcePath
      destinationPath: (OFString*)destinationPath;

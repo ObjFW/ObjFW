@@ -17,9 +17,9 @@
 #import "OFException.h"
 
 /*!
- * @brief An exception indicating that renaming a file failed.
+ * @brief An exception indicating that renaming an item failed.
  */
-@interface OFRenameFileFailedException: OFException
+@interface OFRenameFailedException: OFException
 {
 	OFString *_sourcePath, *_destinationPath;
 	int _errNo;
@@ -31,11 +31,11 @@
 #endif
 
 /*!
- * @brief Creates a new, autoreleased rename file failed exception.
+ * @brief Creates a new, autoreleased rename failed exception.
  *
  * @param sourcePath The original path
  * @param destinationPath The new path
- * @return A new, autoreleased rename file failed exception
+ * @return A new, autoreleased rename failed exception
  */
 + (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
 			destinationPath: (OFString*)destinationPath;
@@ -45,7 +45,7 @@
  *
  * @param sourcePath The original path
  * @param destinationPath The new path
- * @return An initialized rename file failed exception
+ * @return An initialized rename failed exception
  */
 - initWithSourcePath: (OFString*)sourcePath
      destinationPath: (OFString*)destinationPath;

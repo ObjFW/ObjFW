@@ -18,9 +18,9 @@
 
 #ifdef OF_HAVE_CHOWN
 /*!
- * @brief An exception indicating that changing the owner of a file failed.
+ * @brief An exception indicating that changing the owner of an item failed.
  */
-@interface OFChangeFileOwnerFailedException: OFException
+@interface OFChangeOwnerFailedException: OFException
 {
 	OFString *_path, *_owner, *_group;
 	int _errNo;
@@ -32,47 +32,47 @@
 #endif
 
 /*!
- * @brief Creates a new, autoreleased change file owner failed exception.
+ * @brief Creates a new, autoreleased change owner failed exception.
  *
- * @param path The path of the file
- * @param owner The new owner for the file
- * @param group The new group for the file
- * @return A new, autoreleased change file owner failed exception
+ * @param path The path of the item
+ * @param owner The new owner for the item
+ * @param group The new group for the item
+ * @return A new, autoreleased change owner failed exception
  */
 + (instancetype)exceptionWithPath: (OFString*)path
 			    owner: (OFString*)owner
 			    group: (OFString*)group;
 
 /*!
- * @brief Initializes an already allocated change file owner failed exception.
+ * @brief Initializes an already allocated change owner failed exception.
  *
- * @param path The path of the file
- * @param owner The new owner for the file
- * @param group The new group for the file
- * @return An initialized change file owner failed exception
+ * @param path The path of the item
+ * @param owner The new owner for the item
+ * @param group The new group for the item
+ * @return An initialized change owner failed exception
  */
 - initWithPath: (OFString*)path
 	 owner: (OFString*)owner
 	 group: (OFString*)group;
 
 /*!
- * @brief Returns the path of the file.
+ * @brief Returns the path of the item.
  *
- * @return The path of the file
+ * @return The path of the item
  */
 - (OFString*)path;
 
 /*!
- * @brief Returns the new owner for the file.
+ * @brief Returns the new owner for the item.
  *
- * @return The new owner for the file
+ * @return The new owner for the item
  */
 - (OFString*)owner;
 
 /*!
- * @brief Returns the new group for the file.
+ * @brief Returns the new group for the item.
  *
- * @return The new group for the file
+ * @return The new group for the item
  */
 - (OFString*)group;
 

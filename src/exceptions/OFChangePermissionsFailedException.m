@@ -18,16 +18,17 @@
 
 #include <stdlib.h>
 
-#import "OFChangeDirectoryFailedException.h"
+#import "OFChangePermissionsFailedException.h"
 #import "OFString.h"
 
 #import "common.h"
 
-@implementation OFChangeDirectoryFailedException
+@implementation OFChangePermissionsFailedException
 + (instancetype)exceptionWithPath: (OFString*)path
+		      permissions: (mode_t)permissions
 {
-	return [[(OFChangeDirectoryFailedException*)[self alloc]
-	    initWithPath: path] autorelease];
+	return [[[self alloc] initWithPath: path
+			       permissions: permissions] autorelease];
 }
 
 - init
@@ -43,11 +44,13 @@
 }
 
 - initWithPath: (OFString*)path
+   permissions: (mode_t)permissions
 {
 	self = [super init];
 
 	@try {
-		_path  = [path copy];
+		_path = [path copy];
+		_permissions = permissions;
 		_errNo = GET_ERRNO;
 	} @catch (id e) {
 		[self release];
@@ -67,12 +70,18 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to change to directory %@! " ERRFMT, _path, ERRPARAM];
+	    @"Failed to change permissions of item at path %@ to %d! " ERRFMT,
+	    _path, _permissions, ERRPARAM];
 }
 
 - (OFString*)path
 {
 	OF_GETTER(_path, false)
+}
+
+- (mode_t)permissions
+{
+	return _permissions;
 }
 
 - (int)errNo

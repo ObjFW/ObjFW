@@ -57,12 +57,11 @@
 #import "OFDate.h"
 #import "OFSystemInfo.h"
 
-#import "OFChangeDirectoryFailedException.h"
-#import "OFChangeFileModeFailedException.h"
-#import "OFChangeFileOwnerFailedException.h"
+#import "OFChangeCurrentDirectoryPathFailedException.h"
+#import "OFChangeOwnerFailedException.h"
+#import "OFChangePermissionsFailedException.h"
 #import "OFCreateDirectoryFailedException.h"
-#import "OFDeleteDirectoryFailedException.h"
-#import "OFDeleteFileFailedException.h"
+#import "OFCreateSymbolicLinkFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFLinkFailedException.h"
@@ -70,9 +69,9 @@
 #import "OFOpenFileFailedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFReadFailedException.h"
-#import "OFRenameFileFailedException.h"
+#import "OFRemoveFailedException.h"
+#import "OFRenameFailedException.h"
 #import "OFSeekFailedException.h"
-#import "OFSymlinkFailedException.h"
 #import "OFUnlockFailedException.h"
 #import "OFWriteFailedException.h"
 
@@ -160,8 +159,8 @@ static int parse_mode(const char *mode)
 + (instancetype)fileWithPath: (OFString*)path
 			mode: (OFString*)mode
 {
-	return [[(OFFile*)[self alloc] initWithPath: path
-					       mode: mode] autorelease];
+	return [[[self alloc] initWithPath: path
+				      mode: mode] autorelease];
 }
 
 + (instancetype)fileWithFileDescriptor: (int)filedescriptor
@@ -287,7 +286,7 @@ static int parse_mode(const char *mode)
 	objc_autoreleasePoolPop(pool);
 }
 
-+ (OFArray*)filesInDirectoryAtPath: (OFString*)path
++ (OFArray*)contentsOfDirectoryAtPath: (OFString*)path
 {
 	OFMutableArray *files = [OFMutableArray array];
 
@@ -357,31 +356,16 @@ static int parse_mode(const char *mode)
 	return files;
 }
 
-+ (void)changeToDirectoryAtPath: (OFString*)path
++ (void)changeCurrentDirectoryPath: (OFString*)path
 {
 #ifndef _WIN32
 	if (chdir([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
 #else
 	if (_wchdir([path UTF16String]))
 #endif
-		@throw [OFChangeDirectoryFailedException
+		@throw [OFChangeCurrentDirectoryPathFailedException
 		    exceptionWithPath: path];
 }
-
-#ifdef OF_HAVE_CHMOD
-+ (void)changeModeOfFileAtPath: (OFString*)path
-			  mode: (mode_t)mode
-{
-# ifndef _WIN32
-	if (chmod([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE], mode))
-# else
-	if (_wchmod([path UTF16String], mode))
-# endif
-		@throw [OFChangeFileModeFailedException
-		    exceptionWithPath: path
-				 mode: mode];
-}
-#endif
 
 + (off_t)sizeOfFileAtPath: (OFString*)path
 {
@@ -422,8 +406,24 @@ static int parse_mode(const char *mode)
 	return [OFDate dateWithTimeIntervalSince1970: s.st_mtime];
 }
 
+#ifdef OF_HAVE_CHMOD
++ (void)changePermissionsOfItemAtPath: (OFString*)path
+			  permissions: (mode_t)permissions
+{
+# ifndef _WIN32
+	if (chmod([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	    permissions))
+# else
+	if (_wchmod([path UTF16String], permissions))
+# endif
+		@throw [OFChangePermissionsFailedException
+		    exceptionWithPath: path
+			  permissions: permissions];
+}
+#endif
+
 #ifdef OF_HAVE_CHOWN
-+ (void)changeOwnerOfFileAtPath: (OFString*)path
++ (void)changeOwnerOfItemAtPath: (OFString*)path
 			  owner: (OFString*)owner
 			  group: (OFString*)group
 {
@@ -444,7 +444,7 @@ static int parse_mode(const char *mode)
 
 			if ((passwd = getpwnam([owner cStringWithEncoding:
 			    OF_STRING_ENCODING_NATIVE])) == NULL)
-				@throw [OFChangeFileOwnerFailedException
+				@throw [OFChangeOwnerFailedException
 				    exceptionWithPath: path
 						owner: owner
 						group: group];
@@ -457,7 +457,7 @@ static int parse_mode(const char *mode)
 
 			if ((group_ = getgrnam([group cStringWithEncoding:
 			    OF_STRING_ENCODING_NATIVE])) == NULL)
-				@throw [OFChangeFileOwnerFailedException
+				@throw [OFChangeOwnerFailedException
 				    exceptionWithPath: path
 						owner: owner
 						group: group];
@@ -473,10 +473,9 @@ static int parse_mode(const char *mode)
 
 	if (chown([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    uid, gid))
-		@throw [OFChangeFileOwnerFailedException
-		    exceptionWithPath: path
-				owner: owner
-				group: group];
+		@throw [OFChangeOwnerFailedException exceptionWithPath: path
+								 owner: owner
+								 group: group];
 }
 #endif
 
@@ -523,8 +522,8 @@ static int parse_mode(const char *mode)
 			struct stat s;
 
 			if (fstat(sourceFile->_fd, &s) == 0)
-				[self changeModeOfFileAtPath: destination
-							mode: s.st_mode];
+				[self changePermissionsOfItemAtPath: destination
+							permissions: s.st_mode];
 		}
 #else
 		(void)override;
@@ -538,7 +537,7 @@ static int parse_mode(const char *mode)
 	objc_autoreleasePoolPop(pool);
 }
 
-+ (void)renameFileAtPath: (OFString*)source
++ (void)renameItemAtPath: (OFString*)source
 		  toPath: (OFString*)destination
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -555,36 +554,25 @@ static int parse_mode(const char *mode)
 #else
 	if (_wrename([source UTF16String], [destination UTF16String]))
 #endif
-		@throw [OFRenameFileFailedException
+		@throw [OFRenameFailedException
 		    exceptionWithSourcePath: source
 			    destinationPath: destination];
 
 	objc_autoreleasePoolPop(pool);
 }
 
-+ (void)deleteFileAtPath: (OFString*)path
++ (void)removeItemAtPath: (OFString*)path
 {
 #ifndef _WIN32
-	if (unlink([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
+	if (remove([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
 #else
-	if (_wunlink([path UTF16String]))
+	if (_wremove([path UTF16String]))
 #endif
-		@throw [OFDeleteFileFailedException exceptionWithPath: path];
-}
-
-+ (void)deleteDirectoryAtPath: (OFString*)path
-{
-#ifndef _WIN32
-	if (rmdir([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
-#else
-	if (_wrmdir([path UTF16String]))
-#endif
-		@throw [OFDeleteDirectoryFailedException
-		    exceptionWithPath: path];
+		@throw [OFRemoveFailedException exceptionWithPath: path];
 }
 
 #ifdef OF_HAVE_LINK
-+ (void)linkFileAtPath: (OFString*)source
++ (void)linkItemAtPath: (OFString*)source
 		toPath: (OFString*)destination
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -606,8 +594,8 @@ static int parse_mode(const char *mode)
 #endif
 
 #ifdef OF_HAVE_SYMLINK
-+ (void)symlinkFileAtPath: (OFString*)source
-		   toPath: (OFString*)destination
++ (void)createSymbolicLinkAtPath: (OFString*)source
+		 destinationPath: (OFString*)destination
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -619,11 +607,28 @@ static int parse_mode(const char *mode)
 
 	if (symlink([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    [destination cStringWithEncoding: OF_STRING_ENCODING_NATIVE]) != 0)
-		@throw [OFSymlinkFailedException
+		@throw [OFCreateSymbolicLinkFailedException
 		    exceptionWithSourcePath: source
 			    destinationPath: destination];
 
 	objc_autoreleasePoolPop(pool);
+}
+
++ (OFString*)destinationOfSymbolicLinkAtPath: (OFString*)path
+{
+	char destination[PATH_MAX];
+	ssize_t length;
+
+	length = readlink([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	    destination, PATH_MAX);
+
+	if (length < 0)
+		@throw [OFOpenFileFailedException exceptionWithPath: path
+							       mode: @"r"];
+
+	return [OFString stringWithCString: destination
+				  encoding: OF_STRING_ENCODING_NATIVE
+				    length: length];
 }
 #endif
 

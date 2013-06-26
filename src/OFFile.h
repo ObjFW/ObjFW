@@ -111,19 +111,19 @@
 		createParents: (bool)createParents;
 
 /*!
- * @brief Returns an array with the files in the specified directory.
+ * @brief Returns an array with the items in the specified directory.
  *
- * @param path The path of the directory
- * @return An array of OFStrings with the files at the specified path
+ * @param path The path to the directory whose items should be returned
+ * @return An array of OFStrings with the items in the specified directory
  */
-+ (OFArray*)filesInDirectoryAtPath: (OFString*)path;
++ (OFArray*)contentsOfDirectoryAtPath: (OFString*)path;
 
 /*!
  * @brief Changes the current working directory.
  *
  * @param path The new directory to change to
  */
-+ (void)changeToDirectoryAtPath: (OFString*)path;
++ (void)changeCurrentDirectoryPath: (OFString*)path;
 
 /*!
  * @brief Returns the size of the specified file.
@@ -141,30 +141,28 @@
 
 #ifdef OF_HAVE_CHMOD
 /*!
- * @brief Changes the mode of a file.
+ * @brief Changes the permissions of an item.
  *
- * Only changes read-only flag on Windows.
+ * This method only changes the read-only flag on Windows.
  *
- * @param path The path to the file of which the mode should be changed as a
- *	       string
- * @param mode The new mode for the file
+ * @param path The path to the item whose permissions should be changed
+ * @param permissions The new permissions for the item
  */
-+ (void)changeModeOfFileAtPath: (OFString*)path
-			  mode: (mode_t)mode;
++ (void)changePermissionsOfItemAtPath: (OFString*)path
+			  permissions: (mode_t)permissions;
 #endif
 
 #ifdef OF_HAVE_CHOWN
 /*!
- * @brief Changes the owner of a file.
+ * @brief Changes the owner of an item.
  *
- * Not available on Windows.
+ * This method is not available on Windows.
  *
- * @param path The path to the file of which the owner should be changed as a
- *	       string
- * @param owner The new owner for the file
- * @param group The new group for the file
+ * @param path The path to the item whose owner should be changed
+ * @param owner The new owner for the item
+ * @param group The new group for the item
  */
-+ (void)changeOwnerOfFileAtPath: (OFString*)path
++ (void)changeOwnerOfItemAtPath: (OFString*)path
 			  owner: (OFString*)owner
 			  group: (OFString*)group;
 #endif
@@ -179,52 +177,57 @@
 		toPath: (OFString*)destination;
 
 /*!
- * @brief Renames a file.
+ * @brief Renames an item.
  *
- * @param source The file to rename
- * @param destination The new name
+ * @param source The item to rename
+ * @param destination The new name for the item
  */
-+ (void)renameFileAtPath: (OFString*)source
++ (void)renameItemAtPath: (OFString*)source
 		  toPath: (OFString*)destination;
 
 /*!
- * @brief Deletes a file.
+ * @brief Removes the item at the specified path.
  *
- * @param path The path to the file of which should be deleted as a string
- */
-+ (void)deleteFileAtPath: (OFString*)path;
-
-/*!
- * @brief Deletes an empty directory.
+ * If the item at the specified path is a directory, it needs to be empty.
  *
- * @param path The path to the directory which should be deleted as a string
+ * @param path The path to the item which should be removed
  */
-+ (void)deleteDirectoryAtPath: (OFString*)path;
++ (void)removeItemAtPath: (OFString*)path;
 
 #ifdef OF_HAVE_LINK
 /*!
- * @brief Creates a hard link for a file.
+ * @brief Creates a hard link for the specified item.
  *
  * Not available on Windows.
  *
- * @param source The path to the file of which should be linked as a string
- * @param destination The path to where the file should be linked as a string
+ * @param source The path of the item for which a link should be created
+ * @param destination The path of the item which should link to the source
  */
-+ (void)linkFileAtPath: (OFString*)source
++ (void)linkItemAtPath: (OFString*)source
 		toPath: (OFString*)destination;
 #endif
 
 #ifdef OF_HAVE_SYMLINK
 /*!
- * @brief Creates a symbolink link for a file.
+ * @brief Creates a symbolic link for an item.
  *
  * Not available on Windows.
  *
- * @param source The path to the file of which should be symlinked as a string
- * @param destination The path to where the file should be symlinked as a string
+ * @param source The path of the item for which a symbolic link should be
+ *		 created
+ * @param destination The path of the item which should symbolically link to the
+ *		      source
  */
-+ (void)symlinkFileAtPath: (OFString*)source
-		   toPath: (OFString*)destination;
++ (void)createSymbolicLinkAtPath: (OFString*)source
+		 destinationPath: (OFString*)destination;
+
+/*!
+ * @brief Returns the destination of the symbolic link at the specified path.
+ *
+ * @param path The path to the symbolic link
+ * @return The destination of the symbolic link at the specified path
+ */
++ (OFString*)destinationOfSymbolicLinkAtPath: (OFString*)path;
 #endif
 
 /*!

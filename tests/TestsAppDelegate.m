@@ -223,7 +223,7 @@ main(int argc, char *argv[])
 - (void)applicationDidFinishLaunching
 {
 #ifdef __wii__
-	[OFFile changeToDirectoryAtPath: @"/apps/objfw-tests"];
+	[OFFile changeCurrentDirectoryPath: @"/apps/objfw-tests"];
 #endif
 
 	[self objectTests];

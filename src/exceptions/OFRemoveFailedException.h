@@ -17,9 +17,9 @@
 #import "OFException.h"
 
 /*!
- * @brief An exception indicating that deleting a directory failed.
+ * @brief An exception indicating that removing an item failed.
  */
-@interface OFDeleteDirectoryFailedException: OFException
+@interface OFRemoveFailedException: OFException
 {
 	OFString *_path;
 	int _errNo;
@@ -31,25 +31,25 @@
 #endif
 
 /*!
- * @brief Creates a new, autoreleased delete directory failed exception.
+ * @brief Creates a new, autoreleased remove failed exception.
  *
- * @param path The path of the directory
- * @return A new, autoreleased delete directory failed exception
+ * @param path The path of the item which could not be removed
+ * @return A new, autoreleased remove item failed exception
  */
 + (instancetype)exceptionWithPath: (OFString*)path;
 
 /*!
- * @brief Initializes an already allocated delete directory failed exception.
+ * @brief Initializes an already allocated remove failed exception.
  *
- * @param path The path of the directory
- * @return An initialized delete directory failed exception
+ * @param path The path of the item which could not be removed
+ * @return An initialized remove item failed exception
  */
 - initWithPath: (OFString*)path;
 
 /*!
- * @brief Returns the path of the directory.
+ * @brief Returns the path of the item which could not be removed.
  *
- * @return The path of the directory
+ * @return The path of the item which could not be removed
  */
 - (OFString*)path;
 

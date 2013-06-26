@@ -18,16 +18,15 @@
 
 #include <stdlib.h>
 
-#import "OFDeleteFileFailedException.h"
+#import "OFRemoveFailedException.h"
 #import "OFString.h"
 
 #import "common.h"
 
-@implementation OFDeleteFileFailedException
+@implementation OFRemoveFailedException
 + (instancetype)exceptionWithPath: (OFString*)path
 {
-	return [[(OFDeleteFileFailedException*)[self alloc]
-	    initWithPath: path] autorelease];
+	return [[[self alloc] initWithPath: path] autorelease];
 }
 
 - init
@@ -67,7 +66,7 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to delete file %@! " ERRFMT, _path, ERRPARAM];
+	    @"Failed to remove item at path %@! " ERRFMT, _path, ERRPARAM];
 }
 
 - (OFString*)path

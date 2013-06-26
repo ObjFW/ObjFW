@@ -92,9 +92,9 @@
 # import "OFAlreadyConnectedException.h"
 # import "OFBindFailedException.h"
 #endif
-#import "OFChangeDirectoryFailedException.h"
-#import "OFChangeFileModeFailedException.h"
-#import "OFChangeFileOwnerFailedException.h"
+#import "OFChangeCurrentDirectoryPathFailedException.h"
+#import "OFChangeOwnerFailedException.h"
+#import "OFChangePermissionsFailedException.h"
 #ifdef OF_HAVE_THREADS
 # import "OFConditionBroadcastFailedException.h"
 # import "OFConditionSignalFailedException.h"
@@ -106,8 +106,7 @@
 #endif
 #import "OFCopyFileFailedException.h"
 #import "OFCreateDirectoryFailedException.h"
-#import "OFDeleteDirectoryFailedException.h"
-#import "OFDeleteFileFailedException.h"
+#import "OFCreateSymbolicLinkFailedException.h"
 #import "OFEnumerationMutationException.h"
 #import "OFHashAlreadyCalculatedException.h"
 #ifdef OF_HAVE_SOCKETS
@@ -135,11 +134,11 @@
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFReadOrWriteFailedException.h"
-#import "OFRenameFileFailedException.h"
+#import "OFRemoveFailedException.h"
+#import "OFRenameFailedException.h"
 #import "OFSeekFailedException.h"
 #import "OFSetOptionFailedException.h"
 #import "OFStillLockedException.h"
-#import "OFSymlinkFailedException.h"
 #ifdef OF_HAVE_THREADS
 # import "OFThreadJoinFailedException.h"
 # import "OFThreadStartFailedException.h"

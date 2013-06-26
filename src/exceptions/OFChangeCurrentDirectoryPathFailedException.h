@@ -17,9 +17,10 @@
 #import "OFException.h"
 
 /*!
- * @brief An exception indicating changing to a directory failed
+ * @brief An exception indicating that changing the current directory path
+ *	  failed.
  */
-@interface OFChangeDirectoryFailedException: OFException
+@interface OFChangeCurrentDirectoryPathFailedException: OFException
 {
 	OFString *_path;
 	int _errNo;
@@ -31,27 +32,30 @@
 #endif
 
 /*!
- * @brief Creates a new, autoreleased change directory failed exception.
+ * @brief Creates a new, autoreleased change current directory path failed
+ *	  exception.
  *
- * @param path A string with the path of the directory to which couldn't be
+ * @param path The path of the directory to which the current path could not be
  *	       changed
- * @return A new, autoreleased change directory failed exception
+ * @return A new, autoreleased change current directory path failed exception
  */
 + (instancetype)exceptionWithPath: (OFString*)path;
 
 /*!
  * @brief Initializes an already allocated change directory failed exception.
  *
- * @param path A string with the path of the directory to which couldn't be
+ * @param path The path of the directory to which the current path could not be
  *	       changed
- * @return An initialized change directory failed exception
+ * @return An initialized change current directory path failed exception
  */
 - initWithPath: (OFString*)path;
 
 /*!
- * @brief Returns the path to which changing failed.
+ * @brief Returns the path of the directory to which the current path could not
+ *	  be changed.
  *
- * @return The path to which changing failed
+ * @return The path of the directory to which the current path could not be
+ *	   changed
  */
 - (OFString*)path;
 

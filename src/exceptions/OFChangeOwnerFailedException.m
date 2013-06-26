@@ -18,13 +18,13 @@
 
 #include <stdlib.h>
 
-#import "OFChangeFileOwnerFailedException.h"
+#import "OFChangeOwnerFailedException.h"
 #import "OFString.h"
 
 #import "common.h"
 
 #ifdef OF_HAVE_CHOWN
-@implementation OFChangeFileOwnerFailedException
+@implementation OFChangeOwnerFailedException
 + (instancetype)exceptionWithPath: (OFString*)path
 			    owner: (OFString*)owner
 			    group: (OFString*)group
@@ -78,15 +78,15 @@
 {
 	if (_group == nil)
 		return [OFString stringWithFormat:
-		    @"Failed to change owner of file %@ to %@! "
+		    @"Failed to change owner of item at path %@ to %@! "
 		    ERRFMT, _path, _owner, ERRPARAM];
 	else if (_owner == nil)
 		return [OFString stringWithFormat:
-		    @"Failed to change group of file %@ to %@! "
+		    @"Failed to change group of item at path %@ to %@! "
 		    ERRFMT, _path, _group, ERRPARAM];
 	else
 		return [OFString stringWithFormat:
-		    @"Failed to change owner of file %@ to %@:%@! "
+		    @"Failed to change owner of item at path %@ to %@:%@! "
 		    ERRFMT, _path, _owner, _group, ERRPARAM];
 }
 

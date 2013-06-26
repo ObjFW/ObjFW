@@ -18,18 +18,15 @@
 
 #include <stdlib.h>
 
-#import "OFSymlinkFailedException.h"
+#import "OFChangeCurrentDirectoryPathFailedException.h"
 #import "OFString.h"
 
 #import "common.h"
 
-#ifdef OF_HAVE_SYMLINK
-@implementation OFSymlinkFailedException
-+ (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
-			destinationPath: (OFString*)destinationPath
+@implementation OFChangeCurrentDirectoryPathFailedException
++ (instancetype)exceptionWithPath: (OFString*)path
 {
-	return [[[self alloc] initWithSourcePath: sourcePath
-				 destinationPath: destinationPath] autorelease];
+	return [[[self alloc] initWithPath: path] autorelease];
 }
 
 - init
@@ -44,14 +41,12 @@
 	abort();
 }
 
-- initWithSourcePath: (OFString*)sourcePath
-     destinationPath: (OFString*)destinationPath
+- initWithPath: (OFString*)path
 {
 	self = [super init];
 
 	@try {
-		_sourcePath = [sourcePath copy];
-		_destinationPath = [destinationPath copy];
+		_path  = [path copy];
 		_errNo = GET_ERRNO;
 	} @catch (id e) {
 		[self release];
@@ -63,8 +58,7 @@
 
 - (void)dealloc
 {
-	[_sourcePath release];
-	[_destinationPath release];
+	[_path release];
 
 	[super dealloc];
 }
@@ -72,18 +66,13 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to symlink file %@ to %@! " ERRFMT, _sourcePath,
-	    _destinationPath, ERRPARAM];
+	    @"Failed to change the current directory path to %@! " ERRFMT,
+	    _path, ERRPARAM];
 }
 
-- (OFString*)sourcePath
+- (OFString*)path
 {
-	OF_GETTER(_sourcePath, false)
-}
-
-- (OFString*)destinationPath
-{
-	OF_GETTER(_destinationPath, false)
+	OF_GETTER(_path, false)
 }
 
 - (int)errNo
@@ -91,4 +80,3 @@
 	return _errNo;
 }
 @end
-#endif

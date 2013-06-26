@@ -18,17 +18,17 @@
 
 #include <stdlib.h>
 
-#import "OFChangeFileModeFailedException.h"
+#import "OFRenameFailedException.h"
 #import "OFString.h"
 
 #import "common.h"
 
-@implementation OFChangeFileModeFailedException
-+ (instancetype)exceptionWithPath: (OFString*)path
-			     mode: (mode_t)mode
+@implementation OFRenameFailedException
++ (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
+			destinationPath: (OFString*)destinationPath
 {
-	return [[[self alloc] initWithPath: path
-				      mode: mode] autorelease];
+	return [[[self alloc] initWithSourcePath: sourcePath
+				 destinationPath: destinationPath] autorelease];
 }
 
 - init
@@ -43,14 +43,14 @@
 	abort();
 }
 
-- initWithPath: (OFString*)path
-	  mode: (mode_t)mode
+- initWithSourcePath: (OFString*)sourcePath
+     destinationPath: (OFString*)destinationPath
 {
 	self = [super init];
 
 	@try {
-		_path  = [path copy];
-		_mode  = mode;
+		_sourcePath = [sourcePath copy];
+		_destinationPath = [destinationPath copy];
 		_errNo = GET_ERRNO;
 	} @catch (id e) {
 		[self release];
@@ -62,7 +62,8 @@
 
 - (void)dealloc
 {
-	[_path release];
+	[_sourcePath release];
+	[_destinationPath release];
 
 	[super dealloc];
 }
@@ -70,18 +71,18 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to change mode for file %@ to %d! " ERRFMT, _path, _mode,
-	    ERRPARAM];
+	    @"Failed to rename item at path %@ to %@! " ERRFMT, _sourcePath,
+	    _destinationPath, ERRPARAM];
 }
 
-- (OFString*)path
+- (OFString*)sourcePath
 {
-	OF_GETTER(_path, false)
+	OF_GETTER(_sourcePath, false)
 }
 
-- (mode_t)mode
+- (OFString*)destinationPath
 {
-	return _mode;
+	OF_GETTER(_destinationPath, false)
 }
 
 - (int)errNo
