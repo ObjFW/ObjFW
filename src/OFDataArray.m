@@ -201,13 +201,13 @@ void _references_to_categories_of_OFDataArray(void)
 
 	pool = objc_autoreleasePoolPush();
 
-#ifdef OF_HAVE_SOCKETS
 	if ([[URL scheme] isEqual: @"file"]) {
 		self = [[c alloc] initWithContentsOfFile: [URL path]];
 		objc_autoreleasePoolPop(pool);
 		return self;
 	}
 
+#ifdef OF_HAVE_SOCKETS
 	client = [OFHTTPClient client];
 	request = [OFHTTPRequest requestWithURL: URL];
 	reply = [client performRequest: request];

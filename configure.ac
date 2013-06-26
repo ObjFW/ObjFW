@@ -2,10 +2,22 @@ AC_INIT(ObjFW, 0.8-dev, js@webkeks.org)
 AC_CONFIG_SRCDIR(src)
 
 AS_IF([test x"$host" = x"psp"], [
-	OBJCFLAGS="-G0 $OBJCFLAGS"
-	LIBS="$LIBS -lpspdebug -lpspdisplay -lpspge -lpspctrl -lpspsdk -lc"
-	LIBS="$LIBS -lpspnet -lpspnet_inet -lpspnet_apctl -lpspnet_resolver"
-	LIBS="$LIBS -lpsputility -lpspuser -lpspkernel"
+	AS_IF([test x"$DEVKITPSP" = x""], [
+		AC_MSG_ERROR([DEVKITPSP is not set! Please set DEVKITPSP.])
+	])
+
+	OBJCFLAGS="$OBJCFLAGS -G0"
+	CPPFLAGS="$CPPFLAGS -I$DEVKITPSP/psp/sdk/include"
+	LDFLAGS="$LDFLAGS -G0"
+	LIBS="$LIBS -L$DEVKITPSP/psp/sdk/lib -lpspdebug -lpspdisplay -lpspge"
+	LIBS="$LIBS -lpspctrl -lpspsdk -lc -lpspnet -lpspnet_inet"
+	LIBS="$LIBS -lpspnet_apctl -lpspnet_resolver -lpsputility -lpspuser"
+	LIBS="$LIBS -lpspkernel"
+	enable_shared="no"
+	enable_threads="no"	# TODO
+	enable_sockets="no"	# TODO
+
+	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
 AC_CANONICAL_HOST
@@ -36,6 +48,8 @@ AS_IF([test x"$with_wii" = x"yes"], [
 	TESTS_LIBS="$TESTS_LIBS -lwiiuse -lbte"
 	enable_shared="no"
 	enable_threads="no"	# TODO
+
+	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
 AX_CHECK_COMPILER_FLAGS(-std=gnu99, [OBJCFLAGS="$OBJCFLAGS -std=gnu99"])
@@ -850,10 +864,6 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		AC_MSG_RESULT(yes)
 		OBJCFLAGS="$old_OBJCFLAGS"
 	])
-])
-
-AS_IF([test x"$with_wii" = x"yes"], [
-	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$$(basename $@).map'])
 ])
 
 AS_IF([test x"$cross_compiling" = x"yes"], [

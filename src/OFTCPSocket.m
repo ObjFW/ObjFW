@@ -84,6 +84,18 @@ static OFMutex *mutex = nil;
 # define close(sock) closesocket(sock)
 #endif
 
+#ifdef _PSP
+/* PSP defines AF_INET6, even though sockaddr_in6 is missing */
+# undef AF_INET6
+struct sockaddr_storage {
+	uint8_t	       ss_len;
+	sa_family_t    ss_family;
+	in_port_t      ss_data1;
+	struct in_addr ss_data2;
+	int8_t	       ss_data3[8];
+};
+#endif
+
 #ifdef __wii__
 # define accept(sock, addr, addrlen) net_accept(sock, addr, addrlen)
 # define bind(sock, addr, addrlen) net_bind(sock, addr, addrlen)

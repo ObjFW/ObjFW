@@ -80,7 +80,13 @@ main(int argc, char *argv[])
 
 	CON_InitEx(rmode, 10, 20, rmode->fbWidth - 10, rmode->xfbHeight - 20);
 	VIDEO_ClearFrameBuffer(rmode, xfb, COLOR_BLACK);
+#endif
 
+#ifdef _PSP
+	pspDebugScreenInit();
+#endif
+
+#if defined(__wii__) || defined(_PSP)
 	@try {
 		return of_application_main(&argc, &argv,
 		    [TestsAppDelegate class]);
@@ -99,13 +105,16 @@ main(int argc, char *argv[])
 			       inColor: RED];
 		[delegate outputString: @"Press home button to exit!\n"
 			       inColor: NO_COLOR];
+
 		for (;;) {
+# ifdef __wii__
 			WPAD_ScanPads();
 
 			if (WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME)
 				[OFApplication terminateWithStatus: 1];
 
 			VIDEO_WaitVSync();
+# endif
 		}
 	}
 #else
@@ -126,14 +135,17 @@ main(int argc, char *argv[])
 		pspDebugScreenPrintData(&space, 1);
 
 	switch (color) {
-	case 0:
-		pspDebugScreenSetTextColor(0x00FFFF);
+	case NO_COLOR:
+		pspDebugScreenSetTextColor(0xFFFFFF);
 		break;
-	case 1:
+	case RED:
+		pspDebugScreenSetTextColor(0x0000FF);
+		break;
+	case GREEN:
 		pspDebugScreenSetTextColor(0x00FF00);
 		break;
-	case 2:
-		pspDebugScreenSetTextColor(0x0000FF);
+	case YELLOW:
+		pspDebugScreenSetTextColor(0x00FFFF);
 		break;
 	}
 
@@ -210,9 +222,6 @@ main(int argc, char *argv[])
 
 - (void)applicationDidFinishLaunching
 {
-#ifdef _PSP
-	pspDebugScreenInit();
-#endif
 #ifdef __wii__
 	[OFFile changeToDirectoryAtPath: @"/apps/objfw-tests"];
 #endif

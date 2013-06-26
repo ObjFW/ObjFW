@@ -200,7 +200,7 @@ state_format_length_modifier(struct context *ctx)
 #if defined(_WIN32)
 		if (!append_subformat(ctx, "I64", 3))
 			return false;
-#elif defined(__wii__)
+#elif defined(__wii__) || defined(_PSP)
 		if (!append_subformat(ctx, "ll", 2))
 			return false;
 #else
@@ -215,7 +215,7 @@ state_format_length_modifier(struct context *ctx)
 #if defined(_WIN32)
 		if (!append_subformat(ctx, "I", 1))
 			return false;
-#elif defined(__wii__)
+#elif defined(__wii__) || defined(_PSP)
 		if (!append_subformat(ctx, "l", 1))
 			return false;
 #else
@@ -230,7 +230,7 @@ state_format_length_modifier(struct context *ctx)
 #if defined(_WIN32)
 		if (!append_subformat(ctx, "I", 1))
 			return false;
-#elif defined(__wii__)
+#elif defined(__wii__) || defined(_PSP)
 		if (!append_subformat(ctx, "l", 1))
 			return false;
 #else
