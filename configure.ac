@@ -73,7 +73,7 @@ AX_CHECK_COMPILER_FLAGS(-Wsemicolon-before-method-body,
 	[OBJCFLAGS="$OBJCFLAGS -Wsemicolon-before-method-body"])
 AX_CHECK_COMPILER_FLAGS(-Wno-objc-root-class,
 	[OBJCFLAGS="$OBJCFLAGS -Wno-objc-root-class"])
-AX_CHECK_COMPILER_FLAGS(-Wno-deprecated-objc-pointer-introspection,
+AX_CHECK_COMPILER_FLAGS([-Wno-deprecated-objc-pointer-introspection -Werror],
 	[OBJCFLAGS="$OBJCFLAGS -Wno-deprecated-objc-pointer-introspection"])
 AX_CHECK_COMPILER_FLAGS(-Wdocumentation,
 	[OBJCFLAGS="$OBJCFLAGS -Wdocumentation"])
