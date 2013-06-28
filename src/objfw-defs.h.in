@@ -23,4 +23,5 @@
 #undef OF_HAVE_SYS_SOCKET_H
 #undef OF_HAVE_THREADS
 #undef OF_OBJFW_RUNTIME
+#undef OF_UNIVERSAL
 #undef SIZE_MAX

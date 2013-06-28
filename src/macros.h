@@ -38,13 +38,12 @@
 #endif
 
 /* Required to build universal binaries on OS X */
-#if __BIG_ENDIAN__ || __LITTLE_ENDIAN__
-# if __BIG_ENDIAN__ && __LITTLE_ENDIAN__
-#  error __BIG_ENDIAN__ and __LITTLE_ENDIAN__ defined!
-# endif
-# undef OF_BIG_ENDIAN
+#ifdef OF_UNIVERSAL
 # if __BIG_ENDIAN__
 #  define OF_BIG_ENDIAN
+#  define OF_FLOAT_BIG_ENDIAN
+# elif !__LITTLE_ENDIAN__
+#  error OF_UNIVERSAL defined, but neither __BIG_ENDIAN__ nor __LITTLE_ENDIAN__!
 # endif
 #endif
 
