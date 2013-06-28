@@ -97,12 +97,7 @@
 
 		e = [OFReadFailedException exceptionWithStream: self
 					       requestedLength: length];
-#ifndef _WIN32
 		e->_errNo = ENOTCONN;
-#else
-		e->_errNo = WSAENOTCONN;
-#endif
-
 		@throw e;
 	}
 
@@ -127,12 +122,7 @@
 
 		e = [OFWriteFailedException exceptionWithStream: self
 						requestedLength: length];
-#ifndef _WIN32
 		e->_errNo = ENOTCONN;
-#else
-		e->_errNo = WSAENOTCONN;
-#endif
-
 		@throw e;
 	}
 

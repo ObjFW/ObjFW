@@ -128,13 +128,7 @@ normalize_key(char *str_)
 
 		e = [OFReadFailedException exceptionWithStream: self
 					       requestedLength: length];
-
-#ifndef _WIN32
 		e->_errNo = ENOTCONN;
-#else
-		e->_errNo = WSAENOTCONN;
-#endif
-
 		@throw e;
 	}
 
@@ -437,10 +431,9 @@ normalize_key(char *str_)
 	@try {
 		[socket writeString: requestString];
 	} @catch (OFWriteFailedException *e) {
-		/* Reconnect in case a keep-alive connection timed out */
-		socket = [self OF_createSocketForRequest: request];
-		[socket writeString: requestString];
-	} @catch (OFNotConnectedException *e) {
+		if ([e errNo] != ECONNRESET && [e errNo] != EPIPE)
+			@throw e;
+
 		/* Reconnect in case a keep-alive connection timed out */
 		socket = [self OF_createSocketForRequest: request];
 		[socket writeString: requestString];
