@@ -29,8 +29,8 @@ SRCS = OFAllocFailedException.m				\
        OFOutOfRangeException.m				\
        OFReadFailedException.m				\
        OFReadOrWriteFailedException.m			\
-       OFRemoveFailedException.m			\
-       OFRenameFailedException.m			\
+       OFRemoveItemFailedException.m			\
+       OFRenameItemFailedException.m			\
        OFSeekFailedException.m				\
        OFSetOptionFailedException.m			\
        OFStillLockedException.m				\

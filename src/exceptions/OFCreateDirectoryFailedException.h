@@ -23,30 +23,32 @@
  */
 @interface OFCreateDirectoryFailedException: OFException
 {
-	OFString *_path;
+	OFString *_directoryPath;
 	int _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy, nonatomic) OFString *path;
+@property (readonly, copy, nonatomic) OFString *directoryPath;
 @property (readonly) int errNo;
 #endif
 
 /*!
  * @brief Creates a new, autoreleased create directory failed exception.
  *
- * @param path A string with the path of the directory which couldn't be created
+ * @param directoryPath A string with the path of the directory which couldn't
+ *			be created
  * @return A new, autoreleased create directory failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString*)path;
++ (instancetype)exceptionWithDirectoryPath: (OFString*)directoryPath;
 
 /*!
  * @brief Initializes an already allocated create directory failed exception.
  *
- * @param path A string with the path of the directory which couldn't be created
+ * @param directoryPath A string with the path of the directory which couldn't
+ *			be created
  * @return An initialized create directory failed exception
  */
-- initWithPath: (OFString*)path;
+- initWithDirectoryPath: (OFString*)directoryPath;
 
 /*!
  * @brief Returns a string with the path of the directory which couldn't be
@@ -54,7 +56,7 @@
  *
  * @return A string with the path of the directory which couldn't be created
  */
-- (OFString*)path;
+- (OFString*)directoryPath;
 
 /*!
  * @brief Returns the errno from when the exception was created.

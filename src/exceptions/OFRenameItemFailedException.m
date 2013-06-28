@@ -18,12 +18,12 @@
 
 #include <stdlib.h>
 
-#import "OFRenameFailedException.h"
+#import "OFRenameItemFailedException.h"
 #import "OFString.h"
 
 #import "common.h"
 
-@implementation OFRenameFailedException
+@implementation OFRenameItemFailedException
 + (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
 			destinationPath: (OFString*)destinationPath
 {

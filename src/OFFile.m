@@ -69,8 +69,8 @@
 #import "OFOpenFileFailedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFReadFailedException.h"
-#import "OFRemoveFailedException.h"
-#import "OFRenameFailedException.h"
+#import "OFRemoveItemFailedException.h"
+#import "OFRenameItemFailedException.h"
 #import "OFSeekFailedException.h"
 #import "OFUnlockFailedException.h"
 #import "OFWriteFailedException.h"
@@ -243,7 +243,7 @@ static int parse_mode(const char *mode)
 	if (_wmkdir([path UTF16String]))
 #endif
 		@throw [OFCreateDirectoryFailedException
-		    exceptionWithPath: path];
+		    exceptionWithDirectoryPath: path];
 }
 
 + (void)createDirectoryAtPath: (OFString*)path
@@ -364,7 +364,7 @@ static int parse_mode(const char *mode)
 	if (_wchdir([path UTF16String]))
 #endif
 		@throw [OFChangeCurrentDirectoryPathFailedException
-		    exceptionWithPath: path];
+		    exceptionWithDirectoryPath: path];
 }
 
 + (off_t)sizeOfFileAtPath: (OFString*)path
@@ -554,7 +554,7 @@ static int parse_mode(const char *mode)
 #else
 	if (_wrename([source UTF16String], [destination UTF16String]))
 #endif
-		@throw [OFRenameFailedException
+		@throw [OFRenameItemFailedException
 		    exceptionWithSourcePath: source
 			    destinationPath: destination];
 
@@ -568,7 +568,8 @@ static int parse_mode(const char *mode)
 #else
 	if (_wremove([path UTF16String]))
 #endif
-		@throw [OFRemoveFailedException exceptionWithPath: path];
+		@throw [OFRemoveItemFailedException
+		    exceptionWithItemPath: path];
 }
 
 #ifdef OF_HAVE_LINK

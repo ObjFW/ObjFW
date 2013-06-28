@@ -24,9 +24,10 @@
 #import "common.h"
 
 @implementation OFCreateDirectoryFailedException
-+ (instancetype)exceptionWithPath: (OFString*)path
++ (instancetype)exceptionWithDirectoryPath: (OFString*)directoryPath
 {
-	return [[[self alloc] initWithPath: path] autorelease];
+	return [[[self alloc]
+	    initWithDirectoryPath: directoryPath] autorelease];
 }
 
 - init
@@ -41,12 +42,12 @@
 	abort();
 }
 
-- initWithPath: (OFString*)path
+- initWithDirectoryPath: (OFString*)directoryPath
 {
 	self = [super init];
 
 	@try {
-		_path  = [path copy];
+		_directoryPath = [directoryPath copy];
 		_errNo = GET_ERRNO;
 	} @catch (id e) {
 		[self release];
@@ -58,7 +59,7 @@
 
 - (void)dealloc
 {
-	[_path release];
+	[_directoryPath release];
 
 	[super dealloc];
 }
@@ -66,12 +67,13 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to create directory %@! " ERRFMT, _path, ERRPARAM];
+	    @"Failed to create directory %@! " ERRFMT,
+	    _directoryPath, ERRPARAM];
 }
 
-- (OFString*)path
+- (OFString*)directoryPath
 {
-	OF_GETTER(_path, false)
+	OF_GETTER(_directoryPath, false)
 }
 
 - (int)errNo

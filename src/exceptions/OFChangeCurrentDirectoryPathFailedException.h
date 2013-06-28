@@ -24,12 +24,12 @@
  */
 @interface OFChangeCurrentDirectoryPathFailedException: OFException
 {
-	OFString *_path;
+	OFString *_directoryPath;
 	int _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy, nonatomic) OFString *path;
+@property (readonly, copy, nonatomic) OFString *directoryPath;
 @property (readonly) int errNo;
 #endif
 
@@ -37,20 +37,20 @@
  * @brief Creates a new, autoreleased change current directory path failed
  *	  exception.
  *
- * @param path The path of the directory to which the current path could not be
- *	       changed
+ * @param directoryPath The path of the directory to which the current path
+ *			could not be changed
  * @return A new, autoreleased change current directory path failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString*)path;
++ (instancetype)exceptionWithDirectoryPath: (OFString*)directoryPath;
 
 /*!
  * @brief Initializes an already allocated change directory failed exception.
  *
- * @param path The path of the directory to which the current path could not be
- *	       changed
+ * @param directoryPath The path of the directory to which the current path
+ *			could not be changed
  * @return An initialized change current directory path failed exception
  */
-- initWithPath: (OFString*)path;
+- initWithDirectoryPath: (OFString*)directoryPath;
 
 /*!
  * @brief Returns the path of the directory to which the current path could not
@@ -59,7 +59,7 @@
  * @return The path of the directory to which the current path could not be
  *	   changed
  */
-- (OFString*)path;
+- (OFString*)directoryPath;
 
 /*!
  * @brief Returns the errno from when the exception was created.

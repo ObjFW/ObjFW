@@ -18,15 +18,15 @@
 
 #include <stdlib.h>
 
-#import "OFRemoveFailedException.h"
+#import "OFRemoveItemFailedException.h"
 #import "OFString.h"
 
 #import "common.h"
 
-@implementation OFRemoveFailedException
-+ (instancetype)exceptionWithPath: (OFString*)path
+@implementation OFRemoveItemFailedException
++ (instancetype)exceptionWithItemPath: (OFString*)itemPath
 {
-	return [[[self alloc] initWithPath: path] autorelease];
+	return [[[self alloc] initWithItemPath: itemPath] autorelease];
 }
 
 - init
@@ -41,12 +41,12 @@
 	abort();
 }
 
-- initWithPath: (OFString*)path
+- initWithItemPath: (OFString*)itemPath
 {
 	self = [super init];
 
 	@try {
-		_path  = [path copy];
+		_itemPath = [itemPath copy];
 		_errNo = GET_ERRNO;
 	} @catch (id e) {
 		[self release];
@@ -58,7 +58,7 @@
 
 - (void)dealloc
 {
-	[_path release];
+	[_itemPath release];
 
 	[super dealloc];
 }
@@ -66,12 +66,12 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to remove item at path %@! " ERRFMT, _path, ERRPARAM];
+	    @"Failed to remove item at path %@! " ERRFMT, _itemPath, ERRPARAM];
 }
 
-- (OFString*)path
+- (OFString*)itemPath
 {
-	OF_GETTER(_path, false)
+	OF_GETTER(_itemPath, false)
 }
 
 - (int)errNo

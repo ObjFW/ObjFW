@@ -21,7 +21,7 @@
 /*!
  * @brief An exception indicating that renaming an item failed.
  */
-@interface OFRenameFailedException: OFException
+@interface OFRenameItemFailedException: OFException
 {
 	OFString *_sourcePath, *_destinationPath;
 	int _errNo;
