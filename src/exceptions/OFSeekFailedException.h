@@ -14,6 +14,8 @@
  * file.
  */
 
+#include <errno.h>
+
 #include <sys/types.h>
 
 #import "OFException.h"

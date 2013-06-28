@@ -14,6 +14,8 @@
  * file.
  */
 
+#include <errno.h>
+
 #import "OFException.h"
 
 @class OFStream;

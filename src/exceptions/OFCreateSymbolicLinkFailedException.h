@@ -14,6 +14,8 @@
  * file.
  */
 
+#include <errno.h>
+
 #import "OFException.h"
 
 #ifdef OF_HAVE_SYMLINK
