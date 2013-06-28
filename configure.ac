@@ -867,7 +867,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 ])
 
 AS_IF([test x"$cross_compiling" = x"yes"], [
-	AC_SUBST(BIN_PREFIX, "$host-")
+	AC_SUBST(BIN_PREFIX, "${host_alias}-")
 
 	case "$host" in
 		*-*-mingw*)
