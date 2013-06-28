@@ -32,6 +32,7 @@
 # include <pspmoduleinfo.h>
 # include <pspkernel.h>
 # include <pspdebug.h>
+# include <pspctrl.h>
 PSP_MODULE_INFO("ObjFW Tests", 0, 0, 0);
 #endif
 
@@ -49,9 +50,33 @@ enum {
 	YELLOW
 };
 
+#ifdef _PSP
+static int
+exit_cb(int arg1, int arg2, void *arg)
+{
+	sceKernelExitGame();
+
+	return 0;
+}
+
+static int
+callback_thread(SceSize args, void *argp)
+{
+	sceKernelRegisterExitCallback(
+	    sceKernelCreateCallback("Exit Callback", exit_cb, NULL));
+	sceKernelSleepThreadCB();
+
+	return 0;
+}
+#endif
+
 int
 main(int argc, char *argv[])
 {
+#ifdef _PSP
+	int tid;
+#endif
+
 #if defined(OF_OBJFW_RUNTIME) && !defined(_WIN32)
 	/* This does not work on Win32 if ObjFW is built as a DLL */
 	atexit(objc_exit);
@@ -84,6 +109,13 @@ main(int argc, char *argv[])
 
 #ifdef _PSP
 	pspDebugScreenInit();
+
+	sceCtrlSetSamplingCycle(0);
+	sceCtrlSetSamplingMode(PSP_CTRL_MODE_DIGITAL);
+
+	if ((tid = sceKernelCreateThread("update_thread", callback_thread,
+	    0x11, 0xFA0, 0, 0)) >= 0)
+		sceKernelStartThread(tid, 0, 0);
 #endif
 
 #if defined(__wii__) || defined(_PSP)
@@ -103,19 +135,23 @@ main(int argc, char *argv[])
 			       inColor: RED];
 		[delegate outputString: backtrace
 			       inColor: RED];
+# if defined(__wii__)
 		[delegate outputString: @"Press home button to exit!\n"
 			       inColor: NO_COLOR];
 
 		for (;;) {
-# ifdef __wii__
 			WPAD_ScanPads();
 
 			if (WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME)
 				[OFApplication terminateWithStatus: 1];
 
 			VIDEO_WaitVSync();
-# endif
 		}
+# elif defined(_PSP)
+		sceKernelSleepThreadCB();
+# else
+		abort();
+# endif
 	}
 #else
 	return of_application_main(&argc, &argv, [TestsAppDelegate class]);
@@ -218,6 +254,22 @@ main(int argc, char *argv[])
 		VIDEO_WaitVSync();
 	}
 #endif
+#ifdef _PSP
+	[self outputString: @"Press X to continue!\n"
+		   inColor: NO_COLOR];
+	for (;;) {
+		SceCtrlData pad;
+
+		sceCtrlReadBufferPositive(&pad, 1);
+		if (pad.Buttons & PSP_CTRL_CROSS) {
+			for (;;) {
+				sceCtrlReadBufferPositive(&pad, 1);
+				if (!(pad.Buttons & PSP_CTRL_CROSS))
+				    return;
+			}
+		}
+	}
+#endif
 }
 
 - (void)applicationDidFinishLaunching
@@ -264,7 +316,7 @@ main(int argc, char *argv[])
 	[self propertiesTests];
 #endif
 
-#ifdef __wii__
+#if defined(__wii__)
 	[self outputString: @"Press home button to exit!\n"
 		   inColor: NO_COLOR];
 	for (;;) {
@@ -275,6 +327,11 @@ main(int argc, char *argv[])
 
 		VIDEO_WaitVSync();
 	}
+#elif defined(_PSP)
+	[self outputString: [OFString stringWithFormat: @"%zd tests failed!",
+							_fails]
+		   inColor: NO_COLOR];
+	sceKernelSleepThreadCB();
 #else
 	[OFApplication terminateWithStatus: _fails];
 #endif

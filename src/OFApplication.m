@@ -43,6 +43,11 @@ extern void __wgetmainargs(int*, wchar_t***, wchar_t***, int, int*);
 extern char **environ;
 #endif
 
+#ifdef _PSP
+# include <pspkerneltypes.h>
+# include <psploadexec.h>
+#endif
+
 static OFApplication *app = nil;
 
 static void
@@ -137,7 +142,11 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 + (void)terminateWithStatus: (int)status
 {
+#ifdef _PSP
+	sceKernelExitGame();
+#else
 	exit(status);
+#endif
 }
 
 - init
