@@ -101,7 +101,7 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 	uint_fast8_t i;
 
 	for (i = 0; i < OF_BACKTRACE_SIZE && _backtrace[i] != NULL; i++) {
-#ifdef HAVE_DLFCN_H
+#ifdef HAVE_DLADDR
 		Dl_info info;
 
 		if (dladdr(_backtrace[i], &info)) {

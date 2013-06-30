@@ -499,6 +499,7 @@ AC_CHECK_FUNC(arc4random, [
 
 AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
 AC_CHECK_HEADERS(dlfcn.h)
+AC_CHECK_FUNCS(dladdr)
 
 AC_ARG_ENABLE(threads,
 	AS_HELP_STRING([--disable-threads], [disable thread support]))
