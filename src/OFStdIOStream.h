@@ -18,6 +18,9 @@
 
 /*!
  * @brief A class for providing standard input, output and error as OFStream.
+ *
+ * The global variables @ref of_stdin, @ref of_stdout and @ref of_stderr are
+ * instances of this class and need no initialization.
  */
 @interface OFStdIOStream: OFStream
 {
