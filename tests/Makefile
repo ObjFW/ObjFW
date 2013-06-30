@@ -40,7 +40,7 @@ IOS_TMP ?= /tmp/objfw-test
 run: all
 	if [ -z "${DONT_RUN_TESTS}" ]; then ${MAKE} ${MFLAGS} run-tests; fi
 
-run-tests:
+run-tests: all
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}
 	rm -f libobjfw.dll libobjfw.dylib
@@ -86,6 +86,8 @@ run-on-ios: all sign-for-ios
 	echo "Running tests binary on iOS device ${IOS_HOST}..."
 	ssh ${IOS_USER}@${IOS_HOST} \
 		'cd ${IOS_TMP} && ${TEST_LAUNCHER} ./tests'
+
+${PROG_NOINST}: ${LIBOBJFW_DEP}
 
 EBOOT.PBP: ${PROG_NOINST}
 	psp-fixup-imports ${PROG_NOINST}
