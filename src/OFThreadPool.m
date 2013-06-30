@@ -63,8 +63,7 @@
 #ifdef OF_HAVE_BLOCKS
 + (instancetype)jobWithBlock: (of_thread_pool_block_t)block
 {
-	return [[(OFThreadPoolJob*)[self alloc]
-	    initWithBlock: block] autorelease];
+	return [[[self alloc] initWithBlock: block] autorelease];
 }
 #endif
 

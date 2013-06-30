@@ -85,8 +85,8 @@ call_main(id object)
 	 * value on join.
 	 */
 # ifdef OF_HAVE_BLOCKS
-	if (thread->_block != NULL)
-		thread->_returnValue = [thread->_block() retain];
+	if (thread->_threadBlock != NULL)
+		thread->_returnValue = [thread->_threadBlock() retain];
 	else
 # endif
 		thread->_returnValue = [[thread main] retain];
@@ -128,7 +128,7 @@ set_thread_name(OFThread *thread)
 @implementation OFThread
 #ifdef OF_HAVE_THREADS
 # if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
-@synthesize block = _block;
+@synthesize threadBlock = _threadBlock;
 # endif
 
 + (void)initialize
@@ -147,9 +147,9 @@ set_thread_name(OFThread *thread)
 }
 
 # ifdef OF_HAVE_BLOCKS
-+ (instancetype)threadWithBlock: (of_thread_block_t)block
++ (instancetype)threadWithThreadBlock: (of_thread_block_t)threadBlock
 {
-	return [[[self alloc] initWithBlock: block] autorelease];
+	return [[[self alloc] initWithThreadBlock: threadBlock] autorelease];
 }
 # endif
 
@@ -268,12 +268,12 @@ set_thread_name(OFThread *thread)
 }
 
 # ifdef OF_HAVE_BLOCKS
-- initWithBlock: (of_thread_block_t)block
+- initWithThreadBlock: (of_thread_block_t)threadBlock
 {
 	self = [super init];
 
 	@try {
-		_block = [block copy];
+		_threadBlock = [threadBlock copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -382,6 +382,9 @@ set_thread_name(OFThread *thread)
 
 	[_returnValue release];
 	[_runLoop release];
+# ifdef OF_HAVE_BLOCKS
+	[_threadBlock release];
+# endif
 
 	[super dealloc];
 }

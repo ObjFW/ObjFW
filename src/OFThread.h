@@ -68,7 +68,7 @@ typedef id (^of_thread_block_t)(void);
 		OF_THREAD_WAITING_FOR_JOIN
 	} _running;
 # ifdef OF_HAVE_BLOCKS
-	of_thread_block_t _block;
+	of_thread_block_t _threadBlock;
 # endif
 	id _returnValue;
 	OFRunLoop *_runLoop;
@@ -77,7 +77,7 @@ typedef id (^of_thread_block_t)(void);
 
 # ifdef OF_HAVE_PROPERTIES
 #  ifdef OF_HAVE_BLOCKS
-@property (copy) of_thread_block_t block;
+@property (copy) of_thread_block_t threadBlock;
 #  endif
 @property (copy) OFString *name;
 # endif
@@ -93,10 +93,10 @@ typedef id (^of_thread_block_t)(void);
 /*!
  * @brief Creates a new thread with the specified block.
  *
- * @param block A block which is executed by the thread
+ * @param threadBlock A block which is executed by the thread
  * @return A new, autoreleased thread
  */
-+ (instancetype)threadWithBlock: (of_thread_block_t)block;
++ (instancetype)threadWithThreadBlock: (of_thread_block_t)threadBlock;
 # endif
 
 /*!
@@ -177,10 +177,10 @@ typedef id (^of_thread_block_t)(void);
 /*!
  * @brief Initializes an already allocated thread with the specified block.
  *
- * @param block A block which is executed by the thread
+ * @param threadBlock A block which is executed by the thread
  * @return An initialized OFThread.
  */
-- initWithBlock: (of_thread_block_t)block;
+- initWithThreadBlock: (of_thread_block_t)threadBlock;
 # endif
 
 /*!
