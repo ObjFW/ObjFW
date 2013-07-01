@@ -21,7 +21,7 @@ dnl ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 dnl POSSIBILITY OF SUCH DAMAGE.
 dnl
 
-AC_DEFUN([BUILDSYS_INIT], [
+AC_CONFIG_COMMANDS_PRE([
 	AC_SUBST(CC_DEPENDS, $GCC)
 	AC_SUBST(CXX_DEPENDS, $GXX)
 	AC_SUBST(OBJC_DEPENDS, $GOBJC)
@@ -71,6 +71,15 @@ AC_DEFUN([BUILDSYS_INIT], [
 		AC_SUBST(TERM_SETAF4, '\033\13334m')
 		AC_SUBST(TERM_SETAF6, '\033\13336m')
 	])
+])
+
+AC_CONFIG_COMMANDS_POST([
+	${as_echo:="echo"} ${as_me:="configure"}": touching .deps files"
+	for i in $(find . -name Makefile); do
+		DEPSFILE="$(dirname $i)/.deps"
+		test -f "$DEPSFILE" && rm "$DEPSFILE"
+		touch -t 0001010000 "$DEPSFILE"
+	done
 ])
 
 AC_DEFUN([BUILDSYS_PROG_IMPLIB], [
@@ -180,13 +189,4 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 	AC_SUBST(INSTALL_LIB)
 	AC_SUBST(UNINSTALL_LIB)
 	AC_SUBST(CLEAN_LIB)
-])
-
-AC_DEFUN([BUILDSYS_TOUCH_DEPS], [
-	${as_echo:="echo"} ${as_me:="configure"}": touching .deps files"
-	for i in $(find . -name Makefile); do
-		DEPSFILE="$(dirname $i)/.deps"
-		test -f "$DEPSFILE" && rm "$DEPSFILE"
-		touch -t 0001010000 "$DEPSFILE"
-	done
 ])
