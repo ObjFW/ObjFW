@@ -481,7 +481,10 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[replaceCharactersInRange:withString:]",
 	    (s[0] = [OFMutableString stringWithString: @"𝄞öööbä€"]) &&
 	    R([s[0] replaceCharactersInRange: of_range(1, 3)
-				  withString: @"äöü"]) &&
+				  withString: @"äöüß"]) &&
+	    [s[0] isEqual: @"𝄞äöüßbä€"] &&
+	    R([s[0] replaceCharactersInRange: of_range(4, 2)
+				  withString: @"b"]) &&
 	    [s[0] isEqual: @"𝄞äöübä€"] &&
 	    R([s[0] replaceCharactersInRange: of_range(0, 7)
 				  withString: @""]) &&

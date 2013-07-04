@@ -631,14 +631,32 @@
 	newCStringLength = _s->cStringLength - (end - start) +
 	    [replacement UTF8StringLength];
 	_s->hashed = false;
-	_s->cString = [self resizeMemory: _s->cString
-				    size: newCStringLength + 1];
+
+	/*
+	 * If the new string is bigger, we need to resize it first so we can
+	 * memmove() the rest of the string to the end.
+	 *
+	 * We must not resize the string if the new string is smaller, because
+	 * then we can't memove() the rest of the string forward as the rest is
+	 * lost due to the resize!
+	 */
+	if (newCStringLength > _s->cStringLength)
+		_s->cString = [self resizeMemory: _s->cString
+					    size: newCStringLength + 1];
 
 	memmove(_s->cString + start + [replacement UTF8StringLength],
 	    _s->cString + end, _s->cStringLength - end);
 	memcpy(_s->cString + start, [replacement UTF8String],
 	    [replacement UTF8StringLength]);
 	_s->cString[newCStringLength] = '\0';
+
+	/*
+	 * If the new string is smaller, we can safely resize it now as we're
+	 * done with memmove().
+	 */
+	if (newCStringLength < _s->cStringLength)
+		_s->cString = [self resizeMemory: _s->cString
+					    size: newCStringLength + 1];
 
 	_s->cStringLength = newCStringLength;
 	_s->length = newLength;
