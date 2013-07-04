@@ -315,12 +315,21 @@ _Block_object_dispose(const void *obj_, const int flags_)
 }
 
 @implementation OFBlock
-#ifdef OF_APPLE_RUNTIME
 + (void)load
 {
+#ifndef OF_HAVE_ATOMIC_OPS
+	size_t i;
+
+	for (i = 0; i < NUM_SPINLOCKS; i++)
+		if (!of_spinlock_new(&spinlocks[i]))
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: self];
+#endif
+
+#ifdef OF_APPLE_RUNTIME
 	Class tmp;
 
-#ifdef __OBJC2__
+# ifdef __OBJC2__
 	tmp = objc_initializeClassPair(self, "OFStackBlock",
 	    (Class)&_NSConcreteStackBlock,
 	    (Class)&_NSConcreteStackBlock_metaclass);
@@ -372,20 +381,8 @@ _Block_object_dispose(const void *obj_, const int flags_)
 	free(tmp);
 	objc_registerClassPair((Class)&_NSConcreteMallocBlock);
 # endif
-}
 #endif
-
-#ifndef OF_HAVE_ATOMIC_OPS
-+ (void)initialize
-{
-	size_t i;
-
-	for (i = 0; i < NUM_SPINLOCKS; i++)
-		if (!of_spinlock_new(&spinlocks[i]))
-			@throw [OFInitializationFailedException
-			    exceptionWithClass: self];
 }
-#endif
 
 + alloc
 {
