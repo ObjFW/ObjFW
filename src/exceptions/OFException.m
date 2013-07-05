@@ -30,7 +30,7 @@
 
 #import "autorelease.h"
 
-#ifdef _WIN32
+#if defined(_WIN32) && defined(OF_HAVE_SOCKETS)
 # include <errno.h>
 # include <winerror.h>
 #endif

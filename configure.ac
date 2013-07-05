@@ -935,3 +935,16 @@ AS_IF([test x"$old_compiler" = x"yes"], [
 	echo "  ** install Clang >= 3.2."
 	echo
 ])
+
+AS_IF([test x"$enable_threads" != x"no" -a x"$atomic_ops" = x"none" \
+    -a x"ac_cv_func_pthread_spin_lock" != x"yes"], [
+	echo
+	printf "  ** Warning: You have enabled threads, but neither atomic "
+	echo "operations nor"
+	printf "  ** spinlocks are available. Expect *very* poor performance, "
+	echo "as a mutex will"
+	printf "  ** be locked for every retain and release! If you don't "
+	echo "need threads, try"
+	echo "  ** --disable-threads to work around this problem."
+	echo
+])
