@@ -30,6 +30,11 @@
 
 #import "autorelease.h"
 
+#ifdef _WIN32
+# include <errno.h>
+# include <winerror.h>
+#endif
+
 struct _Unwind_Context;
 typedef enum {
 	_URC_OK		  = 0,
@@ -68,6 +73,35 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 
 	return _URC_END_OF_STACK;
 }
+
+#if defined(_WIN32) && defined(OF_HAVE_SOCKETS)
+int
+of_wsaerr_to_errno(int wsaerr)
+{
+	switch (wsaerr) {
+	case WSAEACCES:
+		return EACCES;
+	case WSAEBADF:
+		return EBADF;
+	case WSAEDISCON:
+		return EPIPE;
+	case WSAEFAULT:
+		return EFAULT;
+	case WSAEINTR:
+		return EINTR;
+	case WSAEINVAL:
+		return EINVAL;
+	case WSAENAMETOOLONG:
+		return ENAMETOOLONG;
+	case WSAENOTEMPTY:
+		return ENOTEMPTY;
+	case WSAEWOULDBLOCK:
+		return EAGAIN;
+	default:
+		return wsaerr;
+	}
+}
+#endif
 
 @implementation OFException
 + (instancetype)exception

@@ -117,6 +117,10 @@
 
 - (int)errNo
 {
+#ifdef _WIN32
+	return of_wsaerr_to_errno(_errNo);
+#else
 	return _errNo;
+#endif
 }
 @end
