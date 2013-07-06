@@ -1,0 +1,98 @@
+/*
+ * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013
+ *   Jonathan Schleifer <js@webkeks.org>
+ *
+ * All rights reserved.
+ *
+ * This file is part of ObjFW. It may be distributed under the terms of the
+ * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
+ * the packaging of this file.
+ *
+ * Alternatively, it may be distributed under the terms of the GNU General
+ * Public License, either version 2 or 3, which can be found in the file
+ * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
+ * file.
+ */
+
+#include "config.h"
+
+.globl objc_msg_lookup
+.globl objc_msg_lookup_super
+
+.section .text
+objc_msg_lookup:
+	beqz	$a0, ret_nil
+	nop
+
+	lw	$t0, 0($a0)
+	lw	$t0, 32($t0)
+
+lookup:
+#if defined(_MIPSEL)
+# ifdef OF_SELUID24
+	lbu	$t1, 2($a1)
+# endif
+	lbu	$t2, 1($a1)
+	lbu	$t3, 0($a1)
+#elif defined(_MIPSEB)
+# ifdef OF_SELUID24
+	lbu	$t1, 1($a1)
+# endif
+	lbu	$t2, 2($a1)
+	lbu	$t3, 3($a1)
+#else
+# error Neither _MIPSEL nor _MIPSEB defined!
+#endif
+
+#ifdef OF_SELUID24
+	sll	$t1, $t1, 2
+#endif
+	sll	$t2, $t2, 2
+	sll	$t3, $t3, 2
+
+#ifdef OF_SELUID24
+	addu	$t0, $t0, $t1
+	lw	$t0, 0($t0)
+#endif
+	addu	$t0, $t0, $t2
+	lw	$t0, 0($t0)
+	addu	$t0, $t0, $t3
+	lw	$t0, 0($t0)
+
+	beqz	$t0, objc_not_found_handler
+	nop
+
+	move	$v0, $t0
+	j	$ra
+	nop
+
+objc_msg_lookup_super:
+	lw	$t0, 0($a0)
+	beqz	$t0, ret_nil
+	nop
+
+	lw	$t0, 4($a0)
+	lw	$t0, 32($t0)
+
+	b	lookup
+	nop
+
+ret_nil:
+	lui	$v0, %hi(nil_method)
+	addiu	$v0, %lo(nil_method)
+	j	$ra
+	nop
+
+nil_method:
+	addu	$v0, $zero, $zero
+	j	$ra
+	nop
+
+.type objc_msg_lookup, %function
+.type objc_msg_lookup_super, %function
+.size objc_msg_lookup, objc_msg_lookup_super-objc_msg_lookup
+.size objc_msg_lookup_super, ret_nil-objc_msg_lookup_super
+
+#ifdef __linux__
+.section .note.GNU-stack, "", %progbits
+#endif

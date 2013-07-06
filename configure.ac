@@ -293,6 +293,18 @@ case $objc_runtime in
 				[Whether to use assembly for lookup])
 		])
 
+		AC_EGREP_CPP(yes, [
+			#if defined(__mips) && __mips < 64 && defined(__ELF__)
+			# if defined(_MIPSEL) || defined(_MIPSEB)
+			yes
+			# endif
+			#endif
+		], [
+			AC_SUBST(LOOKUP_S, lookup-mips-elf.S)
+			AC_DEFINE(OF_ASM_LOOKUP, 1,
+				[Whether to use assembly for lookup])
+		])
+
 		AS_IF([test x"$enable_seluid24" = x"yes"], [
 			AC_DEFINE(OF_SELUID24, 1,
 				[Whether to use 24 bit selector UIDs])
