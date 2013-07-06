@@ -22,7 +22,6 @@
 .section .text
 objc_msg_lookup:
 	beqz	$a0, ret_nil
-	nop
 
 	lw	$t0, 0($a0)
 	lw	$t0, 32($t0)
@@ -60,33 +59,27 @@ lookup:
 	lw	$t0, 0($t0)
 
 	beqz	$t0, objc_not_found_handler
-	nop
 
 	move	$v0, $t0
 	j	$ra
-	nop
 
 objc_msg_lookup_super:
 	lw	$t0, 0($a0)
 	beqz	$t0, ret_nil
-	nop
 
 	lw	$t0, 4($a0)
 	lw	$t0, 32($t0)
 
 	b	lookup
-	nop
 
 ret_nil:
 	lui	$v0, %hi(nil_method)
 	addiu	$v0, %lo(nil_method)
 	j	$ra
-	nop
 
 nil_method:
-	addu	$v0, $zero, $zero
+	move	$v0, $zero
 	j	$ra
-	nop
 
 .type objc_msg_lookup, %function
 .type objc_msg_lookup_super, %function
