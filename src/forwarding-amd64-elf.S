@@ -76,8 +76,7 @@ of_forward:
 
 init:
 	leaq	module(%rip), %rdi
-	call	__objc_exec_class@PLT
-	ret
+	jmp	__objc_exec_class@PLT
 
 .section .init_array
 	.quad init

@@ -254,6 +254,8 @@ case $objc_runtime in
 				AC_SUBST(LOOKUP_S, lookup-x86-elf.S)
 				AC_DEFINE(OF_ASM_LOOKUP, 1,
 					[Whether to use assembly for lookup])
+				AC_DEFINE(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR, 1,
+					[Whether we have forwardingTargetForSelector:])
 			])
 		])
 
