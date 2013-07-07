@@ -33,24 +33,29 @@ _of_forward:
 	pushl	%ebp
 	movl	%esp, %ebp
 
-	pushl	8(%ebp)
-	call	_object_getClass
-	addl	$4, %esp
+	pushl	%ebx
+	subl	$20, %esp
 
 	call	get_eip
-L0:
-	pushl	L_sel_forwardingTargetForSelector-L0(%edx)
-	pushl	%eax
+.L0:
+
+	movl	8(%ebp), %eax
+	movl	%eax, (%esp)
+	call	_object_getClass
+
+	movl	%eax, (%esp)
+	movl	L_sel_forwardingTargetForSelector-.L0(%ebx), %eax
+	movl	%eax, 4(%esp)
 	call	_class_respondsToSelector
-	addl	$8, %esp
 	testl	%eax, %eax
 	jz	fail
 
-	pushl	12(%ebp)
-	call	get_eip
-L1:
-	pushl	L_sel_forwardingTargetForSelector-L1(%edx)
-	pushl	8(%ebp)
+	movl	8(%ebp), %eax
+	movl	%eax, (%esp)
+	movl	L_sel_forwardingTargetForSelector-.L0(%ebx), %eax
+	movl	%eax, 4(%esp)
+	movl	12(%ebp), %eax
+	movl	%eax, 8(%esp)
 	call	_objc_msgSend
 
 	testl	%eax, %eax
@@ -61,13 +66,15 @@ L1:
 
 	movl	%eax, 8(%ebp)
 
-	movl	%ebp, %esp
+	addl	$20, %esp
+	popl	%ebx
 	popl	%ebp
 
 	jmp	_objc_msgSend
 
 fail:
-	movl	%ebp, %esp
+	addl	$20, %esp
+	popl	%ebx
 	popl	%ebp
 
 	jmp	_of_method_not_found
@@ -76,24 +83,29 @@ _of_forward_stret:
 	pushl	%ebp
 	movl	%esp, %ebp
 
-	pushl	12(%ebp)
-	call	_object_getClass
-	addl	$4, %esp
+	pushl	%ebx
+	subl	$20, %esp
 
 	call	get_eip
-L2:
-	pushl	L_sel_forwardingTargetForSelector-L2(%edx)
-	pushl	%eax
+.L1:
+
+	movl	12(%ebp), %eax
+	movl	%eax, (%esp)
+	call	_object_getClass
+
+	movl	%eax, (%esp)
+	movl	L_sel_forwardingTargetForSelector-.L1(%ebx), %eax
+	movl	%eax, 4(%esp)
 	call	_class_respondsToSelector
-	addl	$8, %esp
 	testl	%eax, %eax
 	jz	fail_stret
 
-	pushl	16(%ebp)
-	call	get_eip
-L3:
-	pushl	L_sel_forwardingTargetForSelector-L3(%edx)
-	pushl	12(%ebp)
+	movl	12(%ebp), %eax
+	movl	%eax, (%esp)
+	movl	L_sel_forwardingTargetForSelector-.L1(%ebx), %eax
+	movl	%eax, 4(%esp)
+	movl	16(%ebp), %eax
+	movl	%eax, 8(%esp)
 	call	_objc_msgSend
 
 	testl	%eax, %eax
@@ -104,7 +116,8 @@ L3:
 
 	movl	%eax, 12(%ebp)
 
-	movl	%ebp, %esp
+	addl	$20, %esp
+	popl	%ebx
 	popl	%ebp
 
 	jmp	_objc_msgSend_stret
@@ -115,11 +128,12 @@ fail_stret:
 	movl	16(%ebp), %eax
 	movl	%eax, 12(%ebp)
 
-	movl	%ebp, %esp
+	addl	$20, %esp
+	popl	%ebx
 	popl	%ebp
 
 	jmp	_of_method_not_found
 
 get_eip:
-	movl	(%esp), %edx
+	movl	(%esp), %ebx
 	ret
