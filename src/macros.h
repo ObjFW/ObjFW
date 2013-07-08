@@ -110,6 +110,7 @@
 # if defined(__x86_64__) || defined(__i386__) || defined(__arm__) || \
     defined(__ppc__)
 #  define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
+#  define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
 # endif
 #else
 # ifdef __ELF__
