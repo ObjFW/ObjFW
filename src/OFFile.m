@@ -107,7 +107,8 @@
 static of_mutex_t mutex;
 #endif
 
-static int parse_mode(const char *mode)
+static int
+parse_mode(const char *mode)
 {
 	if (!strcmp(mode, "r"))
 		return O_RDONLY;
@@ -194,6 +195,9 @@ static int parse_mode(const char *mode)
 
 + (bool)fileExistsAtPath: (OFString*)path
 {
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
+
 #ifndef _WIN32
 	struct stat s;
 
@@ -215,6 +219,9 @@ static int parse_mode(const char *mode)
 
 + (bool)directoryExistsAtPath: (OFString*)path
 {
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
+
 #ifndef _WIN32
 	struct stat s;
 
@@ -236,6 +243,9 @@ static int parse_mode(const char *mode)
 
 + (void)createDirectoryAtPath: (OFString*)path
 {
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
+
 #ifndef _WIN32
 	if (mkdir([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    DIR_MODE))
@@ -258,6 +268,9 @@ static int parse_mode(const char *mode)
 		[OFFile createDirectoryAtPath: path];
 		return;
 	}
+
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
 
@@ -288,7 +301,12 @@ static int parse_mode(const char *mode)
 
 + (OFArray*)contentsOfDirectoryAtPath: (OFString*)path
 {
-	OFMutableArray *files = [OFMutableArray array];
+	OFMutableArray *files;
+
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	files = [OFMutableArray array];
 
 #ifndef _WIN32
 	DIR *dir;
@@ -358,6 +376,9 @@ static int parse_mode(const char *mode)
 
 + (void)changeCurrentDirectoryPath: (OFString*)path
 {
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
+
 #ifndef _WIN32
 	if (chdir([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
 #else
@@ -369,6 +390,9 @@ static int parse_mode(const char *mode)
 
 + (off_t)sizeOfFileAtPath: (OFString*)path
 {
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
+
 #ifndef _WIN32
 	struct stat s;
 
@@ -388,6 +412,9 @@ static int parse_mode(const char *mode)
 
 + (OFDate*)modificationDateOfFileAtPath: (OFString*)path
 {
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
+
 #ifndef _WIN32
 	struct stat s;
 
@@ -410,6 +437,9 @@ static int parse_mode(const char *mode)
 + (void)changePermissionsOfItemAtPath: (OFString*)path
 			  permissions: (mode_t)permissions
 {
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
+
 # ifndef _WIN32
 	if (chmod([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    permissions))
@@ -430,7 +460,7 @@ static int parse_mode(const char *mode)
 	uid_t uid = -1;
 	gid_t gid = -1;
 
-	if (owner == nil && group == nil)
+	if (path == nil || (owner == nil && group == nil))
 		@throw [OFInvalidArgumentException exception];
 
 # ifdef OF_HAVE_THREADS
@@ -482,12 +512,17 @@ static int parse_mode(const char *mode)
 + (void)copyFileAtPath: (OFString*)source
 		toPath: (OFString*)destination
 {
-	void *pool = objc_autoreleasePoolPush();
+	void *pool;
 	bool override;
 	OFFile *sourceFile = nil;
 	OFFile *destinationFile = nil;
 	char *buffer;
 	size_t pageSize;
+
+	if (source == nil || destination == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	pool = objc_autoreleasePoolPush();
 
 	if ([self directoryExistsAtPath: destination]) {
 		OFString *filename = [source lastPathComponent];
@@ -540,7 +575,12 @@ static int parse_mode(const char *mode)
 + (void)renameItemAtPath: (OFString*)source
 		  toPath: (OFString*)destination
 {
-	void *pool = objc_autoreleasePoolPush();
+	void *pool;
+
+	if (source == nil || destination == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	pool = objc_autoreleasePoolPush();
 
 	if ([self directoryExistsAtPath: destination]) {
 		OFString *filename = [source lastPathComponent];
@@ -563,6 +603,9 @@ static int parse_mode(const char *mode)
 
 + (void)removeItemAtPath: (OFString*)path
 {
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
+
 #ifndef _WIN32
 	if (remove([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
 #else
@@ -576,7 +619,12 @@ static int parse_mode(const char *mode)
 + (void)linkItemAtPath: (OFString*)source
 		toPath: (OFString*)destination
 {
-	void *pool = objc_autoreleasePoolPush();
+	void *pool;
+
+	if (source == nil || destination == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	pool = objc_autoreleasePoolPush();
 
 	if ([self directoryExistsAtPath: destination]) {
 		OFString *filename = [source lastPathComponent];
@@ -598,7 +646,12 @@ static int parse_mode(const char *mode)
 + (void)createSymbolicLinkAtPath: (OFString*)source
 		 destinationPath: (OFString*)destination
 {
-	void *pool = objc_autoreleasePoolPush();
+	void *pool;
+
+	if (source == nil || destination == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	pool = objc_autoreleasePoolPush();
 
 	if ([self directoryExistsAtPath: destination]) {
 		OFString *filename = [source lastPathComponent];
@@ -619,6 +672,9 @@ static int parse_mode(const char *mode)
 {
 	char destination[PATH_MAX];
 	ssize_t length;
+
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
 
 	length = readlink([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    destination, PATH_MAX);
