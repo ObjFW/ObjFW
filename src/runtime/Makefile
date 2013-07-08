@@ -10,7 +10,7 @@ SRCS = arc.m			\
        hashtable.m		\
        init.m			\
        lookup.m			\
-       ${LOOKUP_S}		\
+       lookup-asm.S		\
        property.m		\
        protocol.m		\
        selector.m		\

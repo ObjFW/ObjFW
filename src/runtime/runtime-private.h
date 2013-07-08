@@ -174,6 +174,19 @@ objc_sparsearray_get(const struct objc_sparsearray *s, uint32_t idx)
 #endif
 }
 
+#if defined(__ELF__)
+# if defined(__amd64__) || defined(__x86_64__) || defined(__i386__) || \
+    defined(__ppc__) || defined(__PPC__) || defined(__arm__) || defined(__ARM__)
+#  define OF_ASM_LOOKUP
+# elif defined(__mips) && __mips < 64
+#  define OF_ASM_LOOKUP
+# endif
+#elif defined(__MACH__)
+# if defined(__amd64__) || defined(__x86_64__)
+#  define OF_ASM_LOOKUP
+# endif
+#endif
+
 #define OBJC_ERROR(...)							\
 	{								\
 		fprintf(stderr, "[objc @ " __FILE__ ":%d] ", __LINE__);	\
