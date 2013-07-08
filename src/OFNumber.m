@@ -988,8 +988,17 @@
 
 	number = object;
 
-	if (_type & OF_NUMBER_FLOAT || number->_type & OF_NUMBER_FLOAT)
-		return ([number doubleValue] == [self doubleValue]);
+	if (_type & OF_NUMBER_FLOAT || number->_type & OF_NUMBER_FLOAT) {
+		double value1 = [number doubleValue];
+		double value2 = [self doubleValue];
+
+		if (isnan(value1) && isnan(value2))
+			return true;
+		if (isnan(value1) || isnan(value2))
+			return false;
+
+		return (value1 == value2);
+	}
 
 	if (_type & OF_NUMBER_SIGNED || number->_type & OF_NUMBER_SIGNED)
 		return ([number intMaxValue] == [self intMaxValue]);
@@ -1072,6 +1081,9 @@
 			uint8_t b[sizeof(double)];
 		} d;
 		uint_fast8_t i;
+
+		if (isnan([self doubleValue]))
+			return 0;
 
 		d.d = OF_BSWAP_DOUBLE_IF_BE([self doubleValue]);
 
