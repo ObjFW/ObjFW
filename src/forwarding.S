@@ -16,12 +16,22 @@
 
 #include "config.h"
 
-#if defined(__x86_64__)
-# include "apple-forwarding-x86_64.S"
-#elif defined(__i386__)
-# include "apple-forwarding-i386.S"
-#elif defined(__arm__)
-# include "apple-forwarding-arm.S"
-#elif defined(__ppc__)
-# include "apple-forwarding-ppc.S"
+#ifdef OF_APPLE_RUNTIME
+# if defined(__x86_64__)
+#  include "apple-forwarding-x86_64.S"
+# elif defined(__i386__)
+#  include "apple-forwarding-i386.S"
+# elif defined(__arm__)
+#  include "apple-forwarding-arm.S"
+# elif defined(__ppc__)
+#  include "apple-forwarding-ppc.S"
+# endif
+#else
+# ifdef __ELF__
+#  if defined(__amd64__) || defined(__x86_64__)
+#   include "forwarding-x86_64-elf.S"
+#  elif defined(__i386__)
+#   include "forwarding-x86-elf.S"
+#  endif
+# endif
 #endif

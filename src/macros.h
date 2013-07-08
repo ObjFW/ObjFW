@@ -106,6 +106,19 @@
 # endif
 #endif
 
+#ifdef OF_APPLE_RUNTIME
+# if defined(__x86_64__) || defined(__i386__) || defined(__arm__) || \
+    defined(__ppc__)
+#  define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
+# endif
+#else
+# ifdef __ELF__
+#  if defined(__amd64__) || defined(__x86_64__) || defined(__i386__)
+#   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
+#  endif
+# endif
+#endif
+
 #define OF_ENSURE(cond)							\
 	if (!(cond)) {							\
 		fprintf(stderr, "Failed to ensure condition in "	\

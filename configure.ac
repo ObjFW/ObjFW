@@ -240,11 +240,8 @@ case $objc_runtime in
 			#endif
 		], [
 			AC_SUBST(LOOKUP_S, lookup-amd64-elf.S)
-			AC_SUBST(FORWARDING_S, forwarding-amd64-elf.S)
 			AC_DEFINE(OF_ASM_LOOKUP, 1,
 				[Whether to use assembly for lookup])
-			AC_DEFINE(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR, 1,
-				[Whether we have forwardingTargetForSelector:])
 		], [
 			AC_EGREP_CPP(yes, [
 				#if defined(__i386__) && defined(__ELF__)
@@ -254,8 +251,6 @@ case $objc_runtime in
 				AC_SUBST(LOOKUP_S, lookup-x86-elf.S)
 				AC_DEFINE(OF_ASM_LOOKUP, 1,
 					[Whether to use assembly for lookup])
-				AC_DEFINE(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR, 1,
-					[Whether we have forwardingTargetForSelector:])
 			])
 		])
 
@@ -361,13 +356,6 @@ case $objc_runtime in
 		], [
 			AC_MSG_ERROR([libobjc not found!])
 		])
-
-		dnl We should check for PPC64, as this currently does not
-		dnl support forwardingTargetForSelector: as there is no test
-		dnl machine available.
-		AC_SUBST(FORWARDING_S, "apple-forwarding.S")
-		AC_DEFINE(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR, 1,
-			[Whether we have forwardingTargetForSelector:])
 		;;
 esac
 

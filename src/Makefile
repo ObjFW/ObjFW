@@ -116,7 +116,7 @@ SRCS += OFArray_adjacent.m		\
 	OFSet_hashtable.m		\
 	OFString_UTF8.m			\
 	${ASPRINTF_M}			\
-	${FORWARDING_S}			\
+	forwarding.S			\
 	${FOUNDATION_COMPAT_M}		\
 	iso_8859_15.m			\
 	windows_1252.m
