@@ -29,7 +29,7 @@
 #else
 # ifdef __ELF__
 #  if defined(__amd64__) || defined(__x86_64__)
-#   include "forwarding-x86_64-elf.S"
+#   include "forwarding-amd64-elf.S"
 #  elif defined(__i386__)
 #   include "forwarding-x86-elf.S"
 #  elif defined(__arm__) || defined(__ARM__)
