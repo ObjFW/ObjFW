@@ -32,6 +32,8 @@
 #   include "forwarding-x86_64-elf.S"
 #  elif defined(__i386__)
 #   include "forwarding-x86-elf.S"
+#  elif defined(__arm__) || defined(__ARM__)
+#   include "forwarding-arm-elf.S"
 #  endif
 # endif
 #endif
