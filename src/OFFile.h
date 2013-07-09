@@ -219,7 +219,7 @@
  *		      source
  */
 + (void)createSymbolicLinkAtPath: (OFString*)source
-		 destinationPath: (OFString*)destination;
+	     withDestinationPath: (OFString*)destination;
 
 /*!
  * @brief Returns the destination of the symbolic link at the specified path.

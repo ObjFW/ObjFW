@@ -644,7 +644,7 @@ parse_mode(const char *mode)
 
 #ifdef OF_HAVE_SYMLINK
 + (void)createSymbolicLinkAtPath: (OFString*)source
-		 destinationPath: (OFString*)destination
+	     withDestinationPath: (OFString*)destination
 {
 	void *pool;
 
