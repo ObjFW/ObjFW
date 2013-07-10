@@ -143,8 +143,11 @@ static OFString *strings[] = {
 
 	ok = false;
 	@try {
-		for (OFString *obj in list)
+		for (OFString *obj in list) {
+			(void)obj;
+
 			[list removeListObject: [list lastListObject]];
+		}
 	} @catch (OFEnumerationMutationException *e) {
 		ok = true;
 	}

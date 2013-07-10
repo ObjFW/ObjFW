@@ -113,9 +113,12 @@ static OFString *values[] = {
 
 	ok = false;
 	@try {
-		for (OFString *key in dict)
+		for (OFString *key in dict) {
+			(void)key;
+
 			[dict setObject: @""
 				 forKey: @""];
+		}
 	} @catch (OFEnumerationMutationException *e) {
 		ok = true;
 	}

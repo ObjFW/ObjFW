@@ -225,8 +225,11 @@ static OFString *c_ary[] = {
 	i = 0;
 	@try {
 		for (OFString *s in m[0]) {
+			(void)s;
+
 			if (i == 0)
 				[m[0] addObject: @""];
+
 			i++;
 		}
 	} @catch (OFEnumerationMutationException *e) {
