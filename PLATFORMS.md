@@ -75,6 +75,16 @@ OpenBSD
   * Runtimes: ObjFW
 
 
+PlayStation Portable
+--------------------
+
+  * OS versions: 5.00 M33-4
+  * Architectures: MIPS32
+  * Compiler: GCC 4.6.2 (devkitPSP release 16)
+  * Runtimes: ObjFW
+  * Limitations: No threads, no sockets
+
+
 QNX
 ---
 
@@ -82,6 +92,16 @@ QNX
   * Architectures: x86
   * Compilers: GCC 4.6.1
   * Runtimes: ObjFW
+
+
+Wii
+---
+
+  * OS versions: 4.3E / Homebrew Channel 1.1.0
+  * Architectures: PPC
+  * Compilers: GCC 4.6.3 (devkitPPC release 26)
+  * Runtimes: ObjFW
+  * Limitations: No threads
 
 
 Windows
