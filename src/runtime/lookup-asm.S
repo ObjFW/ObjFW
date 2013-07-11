@@ -18,18 +18,18 @@
 
 #if defined(__ELF__)
 # if defined(__amd64__) || defined(__x86_64__)
-#  include "lookup-amd64-elf.S"
+#  include "lookup-asm-amd64-elf.S"
 # elif defined(__i386__)
-#  include "lookup-x86-elf.S"
+#  include "lookup-asm-x86-elf.S"
 # elif defined(__ppc__) || defined(__PPC__)
-#  include "lookup-ppc-elf.S"
+#  include "lookup-asm-ppc-elf.S"
 # elif defined(__arm__) || defined(__ARM__)
-#  include "lookup-arm-elf.S"
+#  include "lookup-asm-arm-elf.S"
 # elif defined(__mips) && __mips < 64
-#  include "lookup-mips-elf.S"
+#  include "lookup-asm-mips-elf.S"
 # endif
 #elif defined(__MACH__)
 # if defined(__amd64__) || defined(__x86_64__)
-#  include "lookup-amd64-macho.S"
+#  include "lookup-asm-amd64-macho.S"
 # endif
 #endif
