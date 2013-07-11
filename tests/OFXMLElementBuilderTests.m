@@ -16,12 +16,12 @@
 
 #include "config.h"
 
-#include <assert.h>
-
 #import "OFXMLElement.h"
 #import "OFXMLParser.h"
 #import "OFXMLElementBuilder.h"
 #import "OFAutoreleasePool.h"
+
+#import "macros.h"
 
 #import "TestsAppDelegate.h"
 
@@ -33,14 +33,14 @@ static size_t i = 0;
 - (void)elementBuilder: (OFXMLElementBuilder*)builder
        didBuildElement: (OFXMLElement*)element
 {
-	assert(i == 0);
+	OF_ENSURE(i == 0);
 	nodes[i++] = [element retain];
 }
 
 -   (void)elementBuilder: (OFXMLElementBuilder*)builder
   didBuildParentlessNode: (OFXMLNode*)node
 {
-	assert(i == 1);
+	OF_ENSURE(i == 1);
 	nodes[i++] = [node retain];
 }
 
