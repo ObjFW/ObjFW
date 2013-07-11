@@ -43,6 +43,8 @@ lookup:
 	jz	objc_not_found_handler@PLT
 
 	ret
+.type objc_msg_lookup, %function
+.size objc_msg_lookup, .-objc_msg_lookup
 
 objc_msg_lookup_super:
 	movq	(%rdi), %rax
@@ -53,6 +55,8 @@ objc_msg_lookup_super:
 	movq	64(%r8), %r8
 	movq	%rdi, %rax
 	jmp	lookup
+.type objc_msg_lookup_super, %function
+.size objc_msg_lookup_super, .-objc_msg_lookup_super
 
 ret_nil:
 	leaq	nil_method(%rip), %rax
@@ -61,11 +65,6 @@ ret_nil:
 nil_method:
 	movq	%rdi, %rax
 	ret
-
-.type objc_msg_lookup, %function
-.type objc_msg_lookup_super, %function
-.size objc_msg_lookup, objc_msg_lookup_super-objc_msg_lookup
-.size objc_msg_lookup_super, ret_nil-objc_msg_lookup_super
 
 #ifdef __linux__
 .section .note.GNU-stack, "", %progbits

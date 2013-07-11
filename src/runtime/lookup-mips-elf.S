@@ -62,6 +62,8 @@ lookup:
 
 	move	$v0, $t0
 	j	$ra
+.type objc_msg_lookup, %function
+.size objc_msg_lookup, .-objc_msg_lookup
 
 objc_msg_lookup_super:
 	lw	$t0, 0($a0)
@@ -71,6 +73,8 @@ objc_msg_lookup_super:
 	lw	$t0, 32($t0)
 
 	b	lookup
+.type objc_msg_lookup_super, %function
+.size objc_msg_lookup_super, .-objc_msg_lookup_super
 
 ret_nil:
 	lui	$v0, %hi(nil_method)
@@ -80,11 +84,6 @@ ret_nil:
 nil_method:
 	move	$v0, $zero
 	j	$ra
-
-.type objc_msg_lookup, %function
-.type objc_msg_lookup_super, %function
-.size objc_msg_lookup, objc_msg_lookup_super-objc_msg_lookup
-.size objc_msg_lookup_super, ret_nil-objc_msg_lookup_super
 
 #ifdef __linux__
 .section .note.GNU-stack, "", %progbits

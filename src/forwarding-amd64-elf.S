@@ -73,12 +73,14 @@ of_forward:
 	popq	%rbp
 
 	jmp     *%r11
+.type of_forward, %function
+.size of_forward, .-of_forward
 
 init:
 	leaq	module(%rip), %rdi
 	jmp	__objc_exec_class@PLT
 
-.section .init_array
+.section .ctors, "a", %progbits
 	.quad init
 
 .section .rodata
@@ -96,9 +98,6 @@ symtab:
 	.quad 0
 module:
 	.quad 8, 32, 0, symtab
-
-.type of_forward, %function
-.size of_forward, init-of_forward
 
 #ifdef __linux__
 .section .note.GNU-stack, "", %progbits

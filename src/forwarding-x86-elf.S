@@ -54,6 +54,8 @@ of_forward:
 	popl	%ebp
 
 	jmp	*%eax
+.type of_forward, %function
+.size of_forward, .-of_forward
 
 init:
 	pushl	%ebp
@@ -79,7 +81,7 @@ get_eip:
 	movl	(%esp), %ebx
 	ret
 
-.section .init_array
+.section .ctors, "a", %progbits
 	.long init
 
 .section .rodata
@@ -97,9 +99,6 @@ symtab:
 	.long 0
 module:
 	.long 8, 16, 0, symtab
-
-.type of_forward, %function
-.size of_forward, init-of_forward
 
 #ifdef __linux__
 .section .note.GNU-stack, "", %progbits

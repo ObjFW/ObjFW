@@ -42,6 +42,8 @@ lookup:
 
 	mov	r0, r2
 	bx	lr
+.type objc_msg_lookup, %function
+.size objc_msg_lookup, .-objc_msg_lookup
 
 objc_msg_lookup_super:
 	ldr	r2, [r0, #0]
@@ -52,6 +54,8 @@ objc_msg_lookup_super:
 	ldr	r2, [r2, #32]
 
 	b	lookup
+.type objc_msg_lookup_super, %function
+.size objc_msg_lookup_super, .-objc_msg_lookup_super
 
 ret_nil:
 	adr	r0, nil_method
@@ -60,11 +64,6 @@ ret_nil:
 nil_method:
 	mov	r0, #0
 	bx	lr
-
-.type objc_msg_lookup, %function
-.type objc_msg_lookup_super, %function
-.size objc_msg_lookup, objc_msg_lookup_super-objc_msg_lookup
-.size objc_msg_lookup_super, ret_nil-objc_msg_lookup_super
 
 #ifdef __linux__
 .section .note.GNU-stack, "", %progbits

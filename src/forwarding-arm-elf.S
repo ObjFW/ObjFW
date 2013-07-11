@@ -42,6 +42,8 @@ of_forward:
 	ldmfd	sp!, {r0-r3, lr}
 
 	bx	r12
+.type of_forward, %function
+.size of_forward, .-of_forward
 
 init:
 	ldr	r0, module_indirect_L1
@@ -54,7 +56,7 @@ sel_forwardingTargetForSelector__indirect_L0:
 module_indirect_L1:
 	.long module-(.L1+8)
 
-.section .init_array
+.section .ctors, "a", %progbits
 	.long init
 
 .section .rodata
@@ -72,9 +74,6 @@ symtab:
 	.long 0
 module:
 	.long 8, 16, 0, symtab
-
-.type of_forward, %function
-.size of_forward, init-of_forward
 
 #ifdef __linux__
 .section .note.GNU-stack, "", %progbits
