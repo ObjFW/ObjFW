@@ -91,6 +91,21 @@
 # define OF_SENTINEL
 #endif
 
+#ifdef OF_APPLE_RUNTIME
+# if defined(__x86_64__) || defined(__i386__) || defined(__arm__) || \
+    defined(__ppc__)
+#  define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
+#  define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
+# endif
+#else
+# ifdef __ELF__
+#  if defined(__amd64__) || defined(__x86_64__) || defined(__i386__) || \
+    defined(__arm__) || defined(__ARM__)
+#   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
+#  endif
+# endif
+#endif
+
 #if __has_feature(objc_arc)
 # define OF_RETURNS_RETAINED __attribute__((ns_returns_retained))
 # define OF_RETURNS_NOT_RETAINED __attribute__((ns_returns_not_retained))
