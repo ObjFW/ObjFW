@@ -681,16 +681,15 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			AS_IF([test x"$have_threadsafe_getaddrinfo" = x"yes"], [
 				AC_DEFINE(HAVE_THREADSAFE_GETADDRINFO, 1,
 					[Whether getaddrinfo is thread-safe])
-			], [
-				AC_CHECK_FUNCS([h_errno hstrerror])
 			])
 
 			AC_MSG_RESULT($have_threadsafe_getaddrinfo)
 		])
 	], [
 		AC_MSG_RESULT(no)
-		AC_CHECK_FUNCS([h_errno hstrerror])
 	])
+
+	AC_CHECK_FUNCS([h_errno hstrerror])
 ])
 
 AS_IF([test x"$enable_sockets" != x"no" -a x"$enable_threads" != x"no"], [
