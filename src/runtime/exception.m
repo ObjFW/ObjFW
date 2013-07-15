@@ -315,7 +315,7 @@ resolve_value(uint64_t value, uint8_t enc, const uint8_t *start, uint64_t base)
 	value += ((enc & 0x70) == DW_EH_PE_pcrel ? (uintptr_t)start : base);
 
 	if (enc & DW_EH_PE_indirect)
-		value = *(uint64_t*)(uintptr_t)value;
+		value = *(uintptr_t*)(uintptr_t)value;
 
 	return value;
 }
