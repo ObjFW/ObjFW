@@ -69,8 +69,8 @@ NetBSD
 OpenBSD
 -------
 
-  * OS versions: 5.2
-  * Architectures: PPC
+  * OS versions: 5.2, 5.3
+  * Architectures: PPC, SPARC64
   * Compilers: GCC 4.2.1
   * Runtimes: ObjFW
 

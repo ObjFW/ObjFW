@@ -33,6 +33,6 @@ extern void *_OFConstantStringClassReference;
 @interface OFConstantString: OFString
 {
 	char *_cString;
-	size_t _cStringLength;
+	unsigned int _cStringLength;
 }
 @end
