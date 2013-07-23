@@ -1159,10 +1159,9 @@ void _references_to_categories_of_OFObject(void)
 	abort();
 }
 
-+ copyWithZone: (void*)zone
++ copy
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	return self;
 }
 
 + mutableCopyWithZone: (void*)zone

@@ -577,6 +577,16 @@ typedef struct of_rectangle_t
 + (bool)resolveInstanceMethod: (SEL)selector;
 
 /*!
+ * @brief Returns the class.
+ *
+ * This method exists so that classes can be used in collections requiring
+ * conformance to the OFCopying protocol.
+ *
+ * @return The class of the object
+ */
++ copy;
+
+/*!
  * @brief Initializes an already allocated object.
  *
  * Derived classes may override this, but need to do
