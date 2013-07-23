@@ -29,9 +29,9 @@
 # define OBJC_UNSAFE_UNRETAINED
 #endif
 
-typedef struct objc_class *Class;
-typedef struct objc_object *id;
-typedef const struct objc_selector *SEL;
+typedef struct objc_class* Class;
+typedef struct objc_object* id;
+typedef const struct objc_selector* SEL;
 typedef signed char BOOL;
 typedef id (*IMP)(id, SEL, ...);
 
@@ -54,7 +54,7 @@ struct objc_class {
 	struct objc_property_list *properties;
 };
 
-enum objc_abi_class_info {
+enum objc_class_info {
 	OBJC_CLASS_INFO_CLASS	    = 0x001,
 	OBJC_CLASS_INFO_METACLASS   = 0x002,
 	OBJC_CLASS_INFO_NEW_ABI	    = 0x010,

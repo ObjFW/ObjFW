@@ -462,6 +462,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 			])
 
 			AC_CHECK_FUNC(pthread_spin_lock, [
+				have_spinlocks="yes"
 				AC_DEFINE(OF_HAVE_PTHREAD_SPINLOCKS, 1,
 					[Whether we have pthread spinlocks])
 			])
@@ -868,7 +869,7 @@ AS_IF([test x"$old_compiler" = x"yes"], [
 ])
 
 AS_IF([test x"$enable_threads" != x"no" -a x"$atomic_ops" = x"none" \
-    -a x"ac_cv_func_pthread_spin_lock" != x"yes"], [
+    -a x"$have_spinlocks" != x"yes"], [
 	echo
 	printf "  ** Warning: You have enabled threads, but neither atomic "
 	echo "operations nor"
