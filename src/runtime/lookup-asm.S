@@ -25,7 +25,8 @@
 #  include "lookup-asm-ppc-elf.S"
 # elif defined(__arm__) || defined(__ARM__)
 #  include "lookup-asm-arm-elf.S"
-# elif defined(__mips) && __mips < 64
+# elif (defined(_MIPS_SIM) && _MIPS_SIM == _ABIO32) || \
+    (defined(__mips_eabi) && _MIPS_SZPTR == 32)
 #  include "lookup-asm-mips-elf.S"
 # endif
 #elif defined(__MACH__)

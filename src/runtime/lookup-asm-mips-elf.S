@@ -58,10 +58,33 @@ lookup:
 	addu	$t0, $t0, $t3
 	lw	$t0, 0($t0)
 
+#ifdef __PIC__
+	beqz	$t0, forward
+#else
 	beqz	$t0, objc_not_found_handler
+#endif
 
 	move	$v0, $t0
 	j	$ra
+
+ret_nil:
+#ifdef __PIC__
+	addiu	$v0, $t9, nil_method-objc_msg_lookup
+#else
+	la	$v0, nil_method
+#endif
+	j	$ra
+
+#ifdef __PIC__
+forward:
+	lui	$gp, %hi(_gp_disp)
+	addiu	$gp, $gp, %lo(_gp_disp)
+	addu	$gp, $gp, $t9
+	addiu	$gp, $gp, forward-objc_msg_lookup
+
+	lw	$t9, %call16(objc_not_found_handler)($gp)
+	jr	$t9
+#endif
 .type objc_msg_lookup, %function
 .size objc_msg_lookup, .-objc_msg_lookup
 
@@ -75,11 +98,6 @@ objc_msg_lookup_super:
 	b	lookup
 .type objc_msg_lookup_super, %function
 .size objc_msg_lookup_super, .-objc_msg_lookup_super
-
-ret_nil:
-	lui	$v0, %hi(nil_method)
-	addiu	$v0, %lo(nil_method)
-	j	$ra
 
 nil_method:
 	move	$v0, $zero
