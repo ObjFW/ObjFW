@@ -103,6 +103,10 @@
     defined(__arm__) || defined(__ARM__)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #  endif
+#  if (defined(_MIPS_SIM) && _MIPS_SIM == _ABIO32) || \
+    (defined(__mips_eabi) && _MIPS_SZPTR == 32)
+#   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
+#  endif
 # endif
 #endif
 
