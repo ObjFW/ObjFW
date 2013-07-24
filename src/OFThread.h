@@ -113,12 +113,15 @@ typedef id (^of_thread_block_t)(void);
 	forTLSKey: (OFTLSKey*)key;
 
 /*!
- * @brief Returns the object for the specified Thread Local Storage key.
+ * @brief Returns the object for the specified Thread Local Storage key or nil
+ *	  if the key does not exist.
  *
  * @warning The returned object is *not* retained and autoreleased for
  *	    performance reasons!
  *
  * @param key The Thread Local Storage key
+ * @return The object for the specified Thread Local Storage key or nil if the
+ *	   key does not exist.
  */
 + (id)objectForTLSKey: (OFTLSKey*)key;
 

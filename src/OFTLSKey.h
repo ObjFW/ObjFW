@@ -47,7 +47,8 @@
 /*!
  * @brief Creates a new Thread Local Storage key with the specified destructor.
  *
- * @param destructor A destructor that is called when the thread is terminated
+ * @param destructor A destructor that is called when a thread is terminated.
+ *		     The argument for the destructor is the TLS key.
  * @return A new autoreleased Thread Local Storage key
  */
 + (instancetype)TLSKeyWithDestructor: (void(*)(id))destructor;
@@ -58,7 +59,8 @@
  * @brief Initializes an already allocated Thread Local Storage Key with the
  *	  specified destructor.
  *
- * @param destructor A destructor that is called when the thread is terminated
+ * @param destructor A destructor that is called when a thread is terminated.
+ *		     The argument for the destructor is the TLS key.
  * @return An initialized Thread Local Storage key
  */
 - initWithDestructor: (void(*)(id))destructor;
