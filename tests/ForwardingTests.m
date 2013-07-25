@@ -23,7 +23,14 @@
 
 #import "macros.h"
 
+#import "OFNotImplementedException.h"
+
 #import "TestsAppDelegate.h"
+
+#define FMT @"%@ %@ %@ %@ %@ %@ %@ %@ %@ %g %g %g %g %g %g %g %g %g"
+#define ARGS @"a", @"b", @"c", @"d", @"e", @"f", @"g", @"h", @"i", \
+	    1.5, 2.25, 3.125, 4.0625, 5.03125, 6.5, 7.25, 8.0, 9.0
+#define RESULT @"a b c d e f g h i 1.5 2.25 3.125 4.0625 5.03125 6.5 7.25 8 9"
 
 static OFString *module = @"Forwarding";
 static size_t forwardings = 0;
@@ -40,9 +47,15 @@ struct stret_test {
 @interface ForwardingTest (Test)
 + (void)test;
 - (void)test;
-- (OFString*)forwardingTargetTest: (OFConstantString*)fmt, ...;
+- (bool)forwardingTargetTest: (intptr_t)a0
+			    : (intptr_t)a1
+			    : (double)a2
+			    : (double)a3;
+- (OFString*)forwardingTargetVarArgTest: (OFConstantString*)fmt, ...;
 - (long double)forwardingTargetFPRetTest;
 - (struct stret_test)forwardingTargetStRetTest;
+- (void)notExistant;
+- (struct stret_test)notExistantStRet;
 @end
 
 @interface ForwardingTarget: OFObject
@@ -85,17 +98,49 @@ test(id self, SEL _cmd)
 
 - (id)forwardingTargetForSelector: (SEL)selector
 {
-	if (sel_isEqual(selector, @selector(forwardingTargetTest:)) ||
+	/*
+	 * Do some useless calculations in as many registers as possible to
+	 * check if the arguments are properly saved and restored.
+	 */
+	volatile register intptr_t r0 = 0, r1 = 1, r2 = 2, r3 = 3, r4 = 4,
+	    r5 = 5, r6 = 6, r7 = 7, r8 = 8, r9 = 9, r10 = 10, r11 = 11;
+	volatile register double f0 = 0.5, f1 = 1.5, f2 = 2.5, f3 = 3.5,
+	    f4 = 4.5, f5 = 5.5, f6 = 6.5, f7 = 7.5, f8 = 8.5, f9 = 9.5,
+	    f10 = 10.5, f11 = 11.5;
+	double add = r0 * r1 * r2 * r3 * r4 * r5 * r6 * r7 * r8 * r9 * r10 *
+	    r11 * f0 * f1 * f2 * f3 * f4 * f5 * f6 * f7 * f8 * f9 * f10 * f11;
+
+	if (sel_isEqual(selector, @selector(forwardingTargetTest::::)) ||
+	    sel_isEqual(selector, @selector(forwardingTargetVarArgTest:)) ||
 	    sel_isEqual(selector, @selector(forwardingTargetFPRetTest)) ||
 	    sel_isEqual(selector, @selector(forwardingTargetStRetTest)))
-		return target;
+		return (id)((char*)target + (ptrdiff_t)add);
 
 	return nil;
 }
 @end
 
 @implementation ForwardingTarget
-- (OFString*)forwardingTargetTest: (OFConstantString*)fmt, ...
+- (bool)forwardingTargetTest: (intptr_t)a0
+			    : (intptr_t)a1
+			    : (double)a2
+			    : (double)a3
+{
+	OF_ENSURE(self == target);
+
+	if (a0 != 0xDEADBEEF)
+		return false;
+	if (a1 != -1)
+		return false;
+	if (a2 != 1.25)
+		return false;
+	if (a3 != 2.75)
+		return false;
+
+	return true;
+}
+
+- (OFString*)forwardingTargetVarArgTest: (OFConstantString*)fmt, ...
 {
 	va_list args;
 	OFString *ret;
@@ -149,15 +194,24 @@ test(id self, SEL _cmd)
 #ifdef OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 	target = [[[ForwardingTarget alloc] init] autorelease];
 	TEST(@"-[forwardingTargetForSelector:]",
-	   [([t forwardingTargetTest: @"%@ %@ %@ %@ %@ %@ %@ %@ %@", @"1", @"2",
-				     @"3", @"4", @"5", @"6", @"7", @"8", @"9"])
-	   isEqual: @"1 2 3 4 5 6 7 8 9"])
+	    [t forwardingTargetTest: 0xDEADBEEF
+				   : -1
+				   : 1.25
+				   : 2.75])
+	TEST(@"-[forwardingTargetForSelector:] with variable arguments",
+	   [([t forwardingTargetVarArgTest: FMT, ARGS]) isEqual: RESULT])
 	TEST(@"-[forwardingTargetForSelector:] with fp return",
 	    [t forwardingTargetFPRetTest] == 12345678.00006103515625)
 # ifdef OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
 	TEST(@"-[forwardingTargetForSelector:] with struct return",
 	    !memcmp([t forwardingTargetStRetTest].s,
 	    "abcdefghijklmnopqrstuvwxyz", 27))
+# endif
+	EXPECT_EXCEPTION(@"-[forwardingTargetForSelector:] with nil target",
+	    OFNotImplementedException, [t notExistant])
+# ifdef OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
+	EXPECT_EXCEPTION(@"-[forwardingTargetForSelector:] with nil target + "
+	    @"stret", OFNotImplementedException, [t notExistantStRet])
 # endif
 #endif
 

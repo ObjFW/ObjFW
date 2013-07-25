@@ -24,6 +24,13 @@ of_forward:
 	addu	$gp, $gp, $t9
 #endif
 
+	/*
+	 * The registers for floating point arguments don't need to be saved,
+	 * as the ABI specifies that all remaining arguments are passed in
+	 * integer registers if the first argument is passed in an integer
+	 * register. This is always the case, as the first argument is always
+	 * self.
+	 */
 	addiu	$sp, -48
 	sw	$gp, 0($sp)
 	sw	$ra, 4($sp)
