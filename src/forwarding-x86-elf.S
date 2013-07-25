@@ -26,7 +26,6 @@ of_forward:
 
 	call	get_eip
 .L0:
-
 	movl	8(%ebp), %eax
 	movl	%eax, (%esp)
 	leal	sel_forwardingTargetForSelector_-.L0(%ebx), %eax
@@ -54,6 +53,10 @@ of_forward:
 	popl	%ebp
 
 	jmp	*%eax
+
+get_eip:
+	movl	(%esp), %ebx
+	ret
 .type of_forward, %function
 .size of_forward, .-of_forward
 
@@ -66,7 +69,6 @@ init:
 
 	call	get_eip
 .L1:
-
 	leal	module-.L1(%ebx), %eax
 	movl	%eax, (%esp)
 	leal	__objc_exec_class-.L1(%ebx), %eax
@@ -75,10 +77,6 @@ init:
 	addl	$4, %esp
 	popl	%ebx
 	popl	%ebp
-	ret
-
-get_eip:
-	movl	(%esp), %ebx
 	ret
 
 .section .ctors, "a", %progbits
