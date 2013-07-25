@@ -24,14 +24,15 @@ of_forward:
 	addu	$gp, $gp, $t9
 #endif
 
+	addiu	$sp, $sp, -72
+
 	/*
-	 * The registers for floating point arguments don't need to be saved,
-	 * as the ABI specifies that all remaining arguments are passed in
-	 * integer registers if the first argument is passed in an integer
+	 * O32: The registers for floating point arguments don't need to be
+	 * saved, as the ABI specifies that all remaining arguments are passed
+	 * in integer registers if the first argument is passed in an integer
 	 * register. This is always the case, as the first argument is always
 	 * self.
 	 */
-	addiu	$sp, -48
 	sw	$gp, 0($sp)
 	sw	$ra, 4($sp)
 	sw	$a0, 8($sp)
@@ -44,6 +45,15 @@ of_forward:
 	sw	$9, 28($sp)
 	sw	$10, 32($sp)
 	sw	$11, 36($sp)
+
+	swc1	$f12, 40($sp)
+	swc1	$f13, 44($sp)
+	swc1	$f14, 48($sp)
+	swc1	$f15, 52($sp)
+	swc1	$f16, 56($sp)
+	swc1	$f17, 60($sp)
+	swc1	$f18, 64($sp)
+	swc1	$f19, 68($sp)
 #endif
 
 #ifdef __PIC__
@@ -87,6 +97,15 @@ of_forward:
 #endif
 
 #ifdef __mips_eabi
+	lwc1	$f19, 68($sp)
+	lwc1	$f18, 64($sp)
+	lwc1	$f17, 60($sp)
+	lwc1	$f16, 56($sp)
+	lwc1	$f15, 52($sp)
+	lwc1	$f14, 48($sp)
+	lwc1	$f13, 44($sp)
+	lwc1	$f12, 40($sp)
+
 	lw	$11, 36($sp)
 	lw	$10, 32($sp)
 	lw	$9, 28($sp)
@@ -97,7 +116,8 @@ of_forward:
 	lw	$a1, 12($sp)
 	lw	$a0, 8($sp)
 	lw	$ra, 4($sp)
-	addiu	$sp, 48
+
+	addiu	$sp, $sp, 72
 
 #ifdef __PIC__
 	move	$t9, $v0
