@@ -43,6 +43,10 @@ lookup:
 	jz	objc_not_found_handler@PLT
 
 	ret
+
+ret_nil:
+	leaq	nil_method(%rip), %rax
+	ret
 .type objc_msg_lookup, %function
 .size objc_msg_lookup, .-objc_msg_lookup
 
@@ -57,10 +61,6 @@ objc_msg_lookup_super:
 	jmp	lookup
 .type objc_msg_lookup_super, %function
 .size objc_msg_lookup_super, .-objc_msg_lookup_super
-
-ret_nil:
-	leaq	nil_method(%rip), %rax
-	ret
 
 nil_method:
 	movq	%rdi, %rax

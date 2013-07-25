@@ -40,12 +40,13 @@ lookup:
 	movq	(%r8,%rdx,8), %rax
 
 	testq	%rax, %rax
-	jz	forward
+	jz	_objc_not_found_handler
 
 	ret
 
-forward:
-	jmp	_objc_not_found_handler
+ret_nil:
+	leaq	nil_method(%rip), %rax
+	ret
 
 _objc_msg_lookup_super:
 	movq	(%rdi), %rax
@@ -56,10 +57,6 @@ _objc_msg_lookup_super:
 	movq	64(%r8), %r8
 	movq	%rdi, %rax
 	jmp	lookup
-
-ret_nil:
-	leaq	nil_method(%rip), %rax
-	ret
 
 nil_method:
 	movq	%rdi, %rax

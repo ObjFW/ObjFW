@@ -44,14 +44,24 @@ lookup:
 	jz	forward
 
 	ret
-.type objc_msg_lookup, %function
-.size objc_msg_lookup, .-objc_msg_lookup
+
+ret_nil:
+	call	get_eip
+.L2:
+	addl	$nil_method-.L2, %eax
+	ret
 
 forward:
 	call	get_eip
 .L1:
 	addl	$objc_not_found_handler-.L1, %eax
 	jmp	*%eax
+
+get_eip:
+	movl	(%esp), %eax
+	ret
+.type objc_msg_lookup, %function
+.size objc_msg_lookup, .-objc_msg_lookup
 
 objc_msg_lookup_super:
 	movl	4(%esp), %edx
@@ -64,18 +74,8 @@ objc_msg_lookup_super:
 .type objc_msg_lookup_super, %function
 .size objc_msg_lookup_super, .-objc_msg_lookup_super
 
-ret_nil:
-	call	get_eip
-.L2:
-	addl	$nil_method-.L2, %eax
-	ret
-
 nil_method:
 	movl	4(%esp), %eax
-	ret
-
-get_eip:
-	movl	(%esp), %eax
 	ret
 
 #ifdef __linux__

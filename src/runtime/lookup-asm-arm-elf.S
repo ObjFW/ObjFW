@@ -42,6 +42,10 @@ lookup:
 
 	mov	r0, r2
 	bx	lr
+
+ret_nil:
+	adr	r0, nil_method
+	bx	lr
 .type objc_msg_lookup, %function
 .size objc_msg_lookup, .-objc_msg_lookup
 
@@ -56,10 +60,6 @@ objc_msg_lookup_super:
 	b	lookup
 .type objc_msg_lookup_super, %function
 .size objc_msg_lookup_super, .-objc_msg_lookup_super
-
-ret_nil:
-	adr	r0, nil_method
-	bx	lr
 
 nil_method:
 	mov	r0, #0

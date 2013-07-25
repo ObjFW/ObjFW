@@ -66,8 +66,6 @@ objc_msg_lookup_super:
 	lwz	%r5, 32(%r5)
 
 	b	lookup
-.type objc_msg_lookup_super, %function
-.size objc_msg_lookup_super, .-objc_msg_lookup_super
 
 ret_nil:
 	mflr	%r0
@@ -77,12 +75,14 @@ ret_nil:
 	addi	%r3, %r3, nil_method-.L1
 	blr
 
-nil_method:
-	li	%r3, 0
-	blr
-
 get_pc:
 	mflr	%r3
+	blr
+.type objc_msg_lookup_super, %function
+.size objc_msg_lookup_super, .-objc_msg_lookup_super
+
+nil_method:
+	li	%r3, 0
 	blr
 
 #ifdef __linux__
