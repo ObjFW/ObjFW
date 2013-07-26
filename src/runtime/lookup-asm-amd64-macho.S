@@ -22,15 +22,15 @@
 .globl _objc_msg_lookup_super_stret
 
 .section __TEXT, __text, regular, pure_instructions
-_objc_msg_lookup:
-_objc_msg_lookup_stret: /* FIXME */
+.macro generate_lookup
+$0:
 	testq	%rdi, %rdi
 	jz	ret_nil
 
 	movq	(%rdi), %r8
 	movq	64(%r8), %r8
 
-lookup:
+Lmain$0:
 	movq	(%rsi), %rax
 	movzbl	%ah, %ecx
 	movzbl	%al, %edx
@@ -43,16 +43,13 @@ lookup:
 	movq	(%r8,%rdx,8), %rax
 
 	testq	%rax, %rax
-	jz	_objc_not_found_handler
+	jz	$1
 
 	ret
+.endmacro
 
-ret_nil:
-	leaq	nil_method(%rip), %rax
-	ret
-
-_objc_msg_lookup_super:
-_objc_msg_lookup_super_stret: /* FIXME */
+.macro generate_lookup_super:
+$0:
 	movq	(%rdi), %rax
 	testq	%rax, %rax
 	jz	ret_nil
@@ -60,7 +57,17 @@ _objc_msg_lookup_super_stret: /* FIXME */
 	movq	8(%rdi), %r8
 	movq	64(%r8), %r8
 	movq	%rdi, %rax
-	jmp	lookup
+	jmp	Lmain$1
+.endmacro
+
+generate_lookup _objc_msg_lookup, _objc_not_found_handler
+generate_lookup _objc_msg_lookup_stret, _objc_not_found_handler_stret
+generate_lookup_super _objc_msg_lookup_super, _objc_msg_lookup
+generate_lookup_super _objc_msg_lookup_super_stret, _objc_msg_lookup_stret
+
+ret_nil:
+	leaq	nil_method(%rip), %rax
+	ret
 
 nil_method:
 	movq	%rdi, %rax
