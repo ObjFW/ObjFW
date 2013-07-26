@@ -22,15 +22,15 @@
 .globl objc_msg_lookup_super_stret
 
 .section .text
-objc_msg_lookup:
-objc_msg_lookup_stret: /* FIXME */
+.macro generate_lookup name not_found_handler
+\name:
 	testq	%rdi, %rdi
 	jz	ret_nil
 
 	movq	(%rdi), %r8
 	movq	64(%r8), %r8
 
-lookup:
+.main_\name:
 	movq	(%rsi), %rax
 	movzbl	%ah, %ecx
 	movzbl	%al, %edx
@@ -43,18 +43,15 @@ lookup:
 	movq	(%r8,%rdx,8), %rax
 
 	testq	%rax, %rax
-	jz	objc_not_found_handler@PLT
+	jz	\not_found_handler@PLT
 
 	ret
+.type \name, %function
+.size \name, .-\name
+.endm
 
-ret_nil:
-	leaq	nil_method(%rip), %rax
-	ret
-.type objc_msg_lookup, %function
-.size objc_msg_lookup, .-objc_msg_lookup
-
-objc_msg_lookup_super:
-objc_msg_lookup_super_stret: /* FIXME */
+.macro generate_lookup_super name lookup
+\name:
 	movq	(%rdi), %rax
 	testq	%rax, %rax
 	jz	ret_nil
@@ -62,9 +59,19 @@ objc_msg_lookup_super_stret: /* FIXME */
 	movq	8(%rdi), %r8
 	movq	64(%r8), %r8
 	movq	%rdi, %rax
-	jmp	lookup
-.type objc_msg_lookup_super, %function
-.size objc_msg_lookup_super, .-objc_msg_lookup_super
+	jmp	.main_\lookup
+.type \name, %function
+.size \name, .-\name
+.endm
+
+generate_lookup objc_msg_lookup objc_not_found_handler
+generate_lookup objc_msg_lookup_stret objc_not_found_handler_stret
+generate_lookup_super objc_msg_lookup_super objc_msg_lookup
+generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
+
+ret_nil:
+	leaq	nil_method(%rip), %rax
+	ret
 
 nil_method:
 	movq	%rdi, %rax
