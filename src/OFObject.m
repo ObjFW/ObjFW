@@ -63,17 +63,10 @@
 
 #if defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)
 extern id of_forward(id, SEL, ...);
-# ifdef OF_APPLE_RUNTIME
-/*
- * Forwarding for methods returning structs only works with the Apple ABI, as
- * with the GNU ABI, there is no way of knowing if a struct is returned and if
- * so how.
- * As forwardingTargetForSelector: only works for architectures for which
- * assembly has been written anyway, it makes sense to switch to
- * objc_msgSend(_{st,fp}ret) for those architectures to solve this problem.
- */
 extern struct stret of_forward_stret(id, SEL, ...);
-# endif
+#else
+# define of_forward NULL
+# define of_forward_stret NULL
 #endif
 
 struct pre_ivar {
@@ -146,7 +139,7 @@ of_method_not_found(id obj, SEL sel)
 
 #ifdef OF_OBJFW_RUNTIME
 static IMP
-forward_handler(id obj, SEL sel)
+common_forward_handler(id obj, SEL sel, IMP (*lookup)(id, SEL), IMP forward)
 {
 	/* Try resolveClassMethod:/resolveInstanceMethod: */
 	if (class_isMetaClass(object_getClass(obj))) {
@@ -160,7 +153,7 @@ forward_handler(id obj, SEL sel)
 				abort();
 			}
 
-			return objc_msg_lookup(obj, sel);
+			return lookup(obj, sel);
 		}
 	} else {
 		Class c = object_getClass(obj);
@@ -176,7 +169,7 @@ forward_handler(id obj, SEL sel)
 				abort();
 			}
 
-			return objc_msg_lookup(obj, sel);
+			return lookup(obj, sel);
 		}
 	}
 
@@ -186,12 +179,26 @@ forward_handler(id obj, SEL sel)
 		id target = [obj forwardingTargetForSelector: sel];
 
 		if (target != nil && target != obj)
-			return (IMP)of_forward;
+			return forward;
 	}
 #endif
 
 	of_method_not_found(obj, sel);
 	return NULL;
+}
+
+static IMP
+forward_handler(id obj, SEL sel)
+{
+	return common_forward_handler(obj, sel,
+	    objc_msg_lookup, (IMP)of_forward);
+}
+
+static IMP
+forward_handler_stret(id obj, SEL sel)
+{
+	return common_forward_handler(obj, sel,
+	    objc_msg_lookup_stret, (IMP)of_forward_stret);
 }
 #endif
 
@@ -275,7 +282,8 @@ void _references_to_categories_of_OFObject(void)
 
 #if defined(OF_OBJFW_RUNTIME)
 	objc_forward_handler = forward_handler;
-#elif defined(OF_APPLE_RUNTIME) && !defined(__ppc64__)
+	objc_forward_handler_stret = forward_handler_stret;
+#elif defined(OF_APPLE_RUNTIME) && defined(HAVE_FORWARDING_TARGET_FOR_SELECTOR)
 	objc_setForwardHandler(of_forward, of_forward_stret);
 #endif
 

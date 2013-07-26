@@ -24,9 +24,11 @@
 #import "macros.h"
 
 IMP (*objc_forward_handler)(id, SEL) = NULL;
+IMP (*objc_forward_handler_stret)(id, SEL) = NULL;
 
-IMP
-objc_not_found_handler(id obj, SEL sel)
+static IMP
+common_not_found_handler(id obj, SEL sel, IMP (*lookup)(id, SEL),
+    IMP (*forward_handler)(id, SEL))
 {
 	bool is_class = object_getClass(obj)->info & OBJC_CLASS_INFO_METACLASS;
 
@@ -37,7 +39,7 @@ objc_not_found_handler(id obj, SEL sel)
 
 		if (!(cls->info & OBJC_CLASS_INFO_SETUP)) {
 			if (is_class)
-				return objc_msg_lookup(nil, sel);
+				return lookup(nil, sel);
 			else
 				OBJC_ERROR("Could not dispatch message for "
 				    "incomplete class %s!", cls->name);
@@ -49,14 +51,28 @@ objc_not_found_handler(id obj, SEL sel)
 		 * before a message to the class has been sent and it thus has
 		 * been initialized together with its superclasses.
 		 */
-		return objc_msg_lookup(obj, sel);
+		return lookup(obj, sel);
 	}
 
-	if (objc_forward_handler != NULL)
-		return objc_forward_handler(obj, sel);
+	if (forward_handler != NULL)
+		return forward_handler(obj, sel);
 
 	OBJC_ERROR("Selector %c[%s] is not implemented for class %s!",
 	    (is_class ? '+' : '-'), sel_getName(sel), object_getClassName(obj));
+}
+
+IMP
+objc_not_found_handler(id obj, SEL sel)
+{
+	return common_not_found_handler(obj, sel, objc_msg_lookup,
+	    objc_forward_handler);
+}
+
+IMP
+objc_not_found_handler_stret(id obj, SEL sel)
+{
+	return common_not_found_handler(obj, sel, objc_msg_lookup_stret,
+	    objc_forward_handler_stret);
 }
 
 bool
@@ -75,8 +91,8 @@ nil_method(id self, SEL _cmd)
 	return nil;
 }
 
-IMP
-objc_msg_lookup(id obj, SEL sel)
+static OF_INLINE IMP
+common_lookup(id obj, SEL sel, IMP (*not_found_handler)(id, SEL))
 {
 	IMP imp;
 
@@ -87,13 +103,26 @@ objc_msg_lookup(id obj, SEL sel)
 	    (uint32_t)sel->uid);
 
 	if (imp == NULL)
-		return objc_not_found_handler(obj, sel);
+		return not_found_handler(obj, sel);
 
 	return imp;
 }
 
 IMP
-objc_msg_lookup_super(struct objc_super *super, SEL sel)
+objc_msg_lookup(id obj, SEL sel)
+{
+	return common_lookup(obj, sel, objc_not_found_handler);
+}
+
+IMP
+objc_msg_lookup_stret(id obj, SEL sel)
+{
+	return common_lookup(obj, sel, objc_not_found_handler_stret);
+}
+
+static OF_INLINE IMP
+common_lookup_super(struct objc_super *super, SEL sel,
+    IMP (*not_found_handler)(id, SEL))
 {
 	IMP imp;
 
@@ -103,8 +132,20 @@ objc_msg_lookup_super(struct objc_super *super, SEL sel)
 	imp = objc_sparsearray_get(super->cls->dtable, (uint32_t)sel->uid);
 
 	if (imp == NULL)
-		return objc_not_found_handler(super->self, sel);
+		return not_found_handler(super->self, sel);
 
 	return imp;
+}
+
+IMP
+objc_msg_lookup_super(struct objc_super *super, SEL sel)
+{
+	return common_lookup_super(super, sel, objc_not_found_handler);
+}
+
+IMP
+objc_msg_lookup_super_stret(struct objc_super *super, SEL sel)
+{
+	return common_lookup_super(super, sel, objc_not_found_handler_stret);
 }
 #endif

@@ -17,10 +17,13 @@
 #include "config.h"
 
 .globl objc_msg_lookup
+.globl objc_msg_lookup_stret
 .globl objc_msg_lookup_super
+.globl objc_msg_lookup_super_stret
 
 .section .text
 objc_msg_lookup:
+objc_msg_lookup: /* FIXME */
 	movl	4(%esp), %edx
 	testl	%edx, %edx
 	jz	ret_nil
@@ -64,6 +67,7 @@ get_eip:
 .size objc_msg_lookup, .-objc_msg_lookup
 
 objc_msg_lookup_super:
+objc_msg_lookup_super_stret: /* FIXME */
 	movl	4(%esp), %edx
 	cmpl	$0, (%edx)
 	je	ret_nil

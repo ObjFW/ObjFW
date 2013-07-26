@@ -15,9 +15,11 @@
  */
 
 .globl of_forward
+.globl of_forward_stret
 
 .section .text
 of_forward:
+of_forward_stret: /* FIXME */
 	stmfd	sp!, {r0-r3, lr}
 	fstmfdd	sp!, {d0-d7}
 

@@ -15,9 +15,11 @@
  */
 
 .globl of_forward
+.globl of_forward_stret
 
 .section .text
 of_forward:
+of_forward_stret: /* FIXME */
 #ifdef __PIC__
 	lui	$gp, %hi(_gp_disp)
 	addiu	$gp, $gp, %lo(_gp_disp)

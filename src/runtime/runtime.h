@@ -188,7 +188,9 @@ extern Class object_getClass(id);
 extern Class object_setClass(id, Class);
 extern const char* object_getClassName(id);
 extern IMP objc_msg_lookup(id, SEL);
+extern IMP objc_msg_lookup_stret(id, SEL);
 extern IMP objc_msg_lookup_super(struct objc_super*, SEL);
+extern IMP objc_msg_lookup_super_stret(struct objc_super*, SEL);
 extern const char* protocol_getName(Protocol*);
 extern bool protocol_isEqual(Protocol*, Protocol*);
 extern bool protocol_conformsToProtocol(Protocol*, Protocol*);
@@ -196,6 +198,7 @@ extern void objc_exit(void);
 extern objc_uncaught_exception_handler objc_setUncaughtExceptionHandler(
     objc_uncaught_exception_handler);
 extern IMP (*objc_forward_handler)(id, SEL);
+extern IMP (*objc_forward_handler_stret)(id, SEL);
 extern id objc_autorelease(id);
 extern void* objc_autoreleasePoolPush(void);
 extern void objc_autoreleasePoolPop(void*);

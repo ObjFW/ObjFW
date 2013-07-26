@@ -17,10 +17,13 @@
 #include "config.h"
 
 .globl objc_msg_lookup
+.globl objc_msg_lookup_stret
 .globl objc_msg_lookup_super
+.globl objc_msg_lookup_super_stret
 
 .section .text
 objc_msg_lookup:
+objc_msg_lookup_stret: /* FIXME */
 	cmpwi	%r3, 0
 	beq-	ret_nil
 
@@ -58,6 +61,7 @@ forward:
 	b	objc_not_found_handler@plt
 
 objc_msg_lookup_super:
+objc_msg_lookup_super_stret: /* FIXME */
 	lwz	%r5, 0(%r3)
 	cmpwi	%r5, 0
 	beq-	ret_nil

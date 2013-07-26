@@ -15,9 +15,11 @@
  */
 
 .globl of_forward
+.globl of_forward_stret
 
 .section .text
 of_forward:
+of_forward_stret: /* FIXME */
 	pushl	%ebp
 	movl	%esp, %ebp
 

@@ -17,10 +17,13 @@
 #include "config.h"
 
 .globl _objc_msg_lookup
+.globl _objc_msg_lookup_stret
 .globl _objc_msg_lookup_super
+.globl _objc_msg_lookup_super_stret
 
 .section __TEXT, __text, regular, pure_instructions
 _objc_msg_lookup:
+_objc_msg_lookup_stret: /* FIXME */
 	testq	%rdi, %rdi
 	jz	ret_nil
 
@@ -49,6 +52,7 @@ ret_nil:
 	ret
 
 _objc_msg_lookup_super:
+_objc_msg_lookup_super_stret: /* FIXME */
 	movq	(%rdi), %rax
 	testq	%rax, %rax
 	jz	ret_nil
