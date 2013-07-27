@@ -283,7 +283,8 @@ void _references_to_categories_of_OFObject(void)
 #if defined(OF_OBJFW_RUNTIME)
 	objc_forward_handler = forward_handler;
 	objc_forward_handler_stret = forward_handler_stret;
-#elif defined(OF_APPLE_RUNTIME) && defined(HAVE_FORWARDING_TARGET_FOR_SELECTOR)
+#elif defined(OF_APPLE_RUNTIME) && \
+    defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)
 	objc_setForwardHandler(of_forward, of_forward_stret);
 #endif
 
