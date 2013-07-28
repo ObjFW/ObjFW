@@ -19,7 +19,6 @@
 
 .section .text
 of_forward:
-of_forward_stret: /* FIXME */
 	pushl	%ebp
 	movl	%esp, %ebp
 
@@ -55,12 +54,47 @@ of_forward_stret: /* FIXME */
 	popl	%ebp
 
 	jmp	*%eax
-
-get_eip:
-	movl	(%esp), %ebx
-	ret
 .type of_forward, %function
 .size of_forward, .-of_forward
+
+of_forward_stret:
+	pushl	%ebp
+	movl	%esp, %ebp
+
+	pushl	%ebx
+	subl	$20, %esp
+
+	call	get_eip
+.L1:
+	movl	12(%ebp), %eax
+	movl	%eax, (%esp)
+	leal	sel_forwardingTargetForSelector_-.L1(%ebx), %eax
+	movl	%eax, 4(%esp)
+	leal	objc_msg_lookup-.L1(%ebx), %eax
+	call	*%eax
+
+	movl	12(%ebp), %edx
+	movl	%edx, (%esp)
+	leal	sel_forwardingTargetForSelector_-.L1(%ebx), %edx
+	movl	%edx, 4(%esp)
+	movl	16(%ebp), %edx
+	movl	%edx, 8(%esp)
+	call	*%eax
+
+	movl	%eax, 12(%ebp)
+	movl	%eax, (%esp)
+	movl	16(%ebp), %eax
+	movl	%eax, 4(%esp)
+	leal	objc_msg_lookup-.L1(%ebx), %eax
+	call	*%eax
+
+	addl	$20, %esp
+	popl	%ebx
+	popl	%ebp
+
+	jmp	*%eax
+.type of_forward_stret, %function
+.size of_forward_stret, .-of_forward_stret
 
 init:
 	pushl	%ebp
@@ -70,15 +104,19 @@ init:
 	subl	$4, %esp
 
 	call	get_eip
-.L1:
-	leal	module-.L1(%ebx), %eax
+.L2:
+	leal	module-.L2(%ebx), %eax
 	movl	%eax, (%esp)
-	leal	__objc_exec_class-.L1(%ebx), %eax
+	leal	__objc_exec_class-.L2(%ebx), %eax
 	call	*%eax
 
 	addl	$4, %esp
 	popl	%ebx
 	popl	%ebp
+	ret
+
+get_eip:
+	movl	(%esp), %ebx
 	ret
 
 .section .ctors, "a", %progbits

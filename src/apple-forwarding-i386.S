@@ -38,7 +38,6 @@ _of_forward:
 
 	call	get_eip
 .L0:
-
 	movl	8(%ebp), %eax
 	movl	%eax, (%esp)
 	call	_object_getClass
@@ -88,7 +87,6 @@ _of_forward_stret:
 
 	call	get_eip
 .L1:
-
 	movl	12(%ebp), %eax
 	movl	%eax, (%esp)
 	call	_object_getClass
