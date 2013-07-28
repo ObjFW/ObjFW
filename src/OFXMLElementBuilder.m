@@ -24,7 +24,7 @@
 #import "OFXMLComment.h"
 #import "OFXMLProcessingInstructions.h"
 #import "OFXMLParser.h"
-#import "OFMutableArray.h"
+#import "OFArray.h"
 
 #import "OFMalformedXMLException.h"
 

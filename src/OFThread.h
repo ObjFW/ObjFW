@@ -15,22 +15,16 @@
  */
 
 #import "OFObject.h"
+
 #ifdef OF_HAVE_THREADS
-# import "OFTLSKey.h"
-
 # import "threading.h"
-#endif
-
-/* Haiku used to define this for some unknown reason which causes trouble */
-#ifdef protected
-# undef protected
 #endif
 
 /*! @file */
 
 @class OFDate;
-@class OFSortedList;
 @class OFRunLoop;
+@class OFMutableDictionary;
 
 #if defined(OF_HAVE_THREADS) && defined(OF_HAVE_BLOCKS)
 /*!
@@ -73,6 +67,7 @@ typedef id (^of_thread_block_t)(void);
 	id _returnValue;
 	OFRunLoop *_runLoop;
 	OFString *_name;
+	OFMutableDictionary *_threadDictionary;
 }
 
 # ifdef OF_HAVE_PROPERTIES
@@ -100,32 +95,6 @@ typedef id (^of_thread_block_t)(void);
 # endif
 
 /*!
- * @brief Sets the Thread Local Storage for the specified key.
- *
- * The specified object is first retained and then the object stored before is
- * released. You can specify nil as object if you want the old object to be
- * released and don't want any new object for the TLS key.
- *
- * @param key The Thread Local Storage key
- * @param object The object the Thread Local Storage key will be set to
- */
-+ (void)setObject: (id)object
-	forTLSKey: (OFTLSKey*)key;
-
-/*!
- * @brief Returns the object for the specified Thread Local Storage key or nil
- *	  if the key does not exist.
- *
- * @warning The returned object is *not* retained and autoreleased for
- *	    performance reasons!
- *
- * @param key The Thread Local Storage key
- * @return The object for the specified Thread Local Storage key or nil if the
- *	   key does not exist.
- */
-+ (id)objectForTLSKey: (OFTLSKey*)key;
-
-/*!
  * @brief Returns the current thread.
  *
  * @return The current thread
@@ -138,6 +107,14 @@ typedef id (^of_thread_block_t)(void);
  * @return The main thread
  */
 + (OFThread*)mainThread;
+
+/*!
+ * @brief Returns a dictionary to store thread-specific data, meaning it
+ *	  returns a different dictionary for every thread.
+ *
+ * @return A dictionary to store thread-specific data.
+ */
++ (OFMutableDictionary*)threadDictionary;
 #endif
 
 /*!

@@ -18,6 +18,7 @@
 
 #import "OFThread.h"
 #import "OFString.h"
+#import "OFDictionary.h"
 #import "OFAutoreleasePool.h"
 
 #import "TestsAppDelegate.h"
@@ -30,6 +31,9 @@ static OFString *module = @"OFThread";
 @implementation TestThread
 - (id)main
 {
+	[[OFThread threadDictionary] setObject: @"bar"
+					forKey: @"foo"];
+
 	return @"success";
 }
 @end
@@ -39,7 +43,7 @@ static OFString *module = @"OFThread";
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	TestThread *t;
-	OFTLSKey *key;
+	OFMutableDictionary *d;
 
 	TEST(@"+[thread]", (t = [TestThread thread]))
 
@@ -47,16 +51,8 @@ static OFString *module = @"OFThread";
 
 	TEST(@"-[join]", [[t join] isEqual: @"success"])
 
-	TEST(@"OFTLSKey's +[TLSKey]", (key = [OFTLSKey TLSKey]))
-
-	TEST(@"+[setObject:forTLSKey:]",
-	    R([OFThread setObject: @"setme"
-			forTLSKey: key]) &&
-	    R([OFThread setObject: @"foo"
-			forTLSKey: key]))
-
-	TEST(@"+[objectForTLSKey:]",
-	    [[OFThread objectForTLSKey: key] isEqual: @"foo"])
+	TEST(@"-[threadDictionary]", (d = [OFThread threadDictionary]) &&
+	    [d objectForKey: @"foo"] == nil)
 
 	[pool drain];
 }

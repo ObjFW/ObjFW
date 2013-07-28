@@ -41,7 +41,7 @@
 #import "OFThread.h"
 #import "OFList.h"
 #import "OFDate.h"
-#import "OFSortedList.h"
+#import "OFDictionary.h"
 #import "OFAutoreleasePool.h"
 
 #ifdef _WIN32
@@ -95,7 +95,6 @@ call_main(id object)
 
 	thread->_running = OF_THREAD_WAITING_FOR_JOIN;
 
-	[OFTLSKey OF_callAllDestructors];
 # ifdef OF_OBJFW_RUNTIME
 	/*
 	 * As the values returned by objc_autoreleasePoolPush() in the ObjFW
@@ -153,31 +152,24 @@ set_thread_name(OFThread *thread)
 }
 # endif
 
-+ (void)setObject: (id)object
-	forTLSKey: (OFTLSKey*)key
-{
-	id oldObject = of_tlskey_get(key->_key);
-
-	if (!of_tlskey_set(key->_key, [object retain]))
-		/* FIXME: Find a better exception */
-		@throw [OFInvalidArgumentException exception];
-
-	[oldObject release];
-}
-
-+ (id)objectForTLSKey: (OFTLSKey*)key
-{
-	return [[(id)of_tlskey_get(key->_key) retain] autorelease];
-}
-
 + (OFThread*)currentThread
 {
-	return [[(id)of_tlskey_get(threadSelfKey) retain] autorelease];
+	return of_tlskey_get(threadSelfKey);
 }
 
 + (OFThread*)mainThread
 {
 	return mainThread;
+}
+
++ (OFMutableDictionary*)threadDictionary
+{
+	OFThread *thread = of_tlskey_get(threadSelfKey);
+
+	if (thread->_threadDictionary == nil)
+		thread->_threadDictionary = [[OFMutableDictionary alloc] init];
+
+	return thread->_threadDictionary;
 }
 #endif
 
@@ -242,7 +234,6 @@ set_thread_name(OFThread *thread)
 		thread->_running = OF_THREAD_WAITING_FOR_JOIN;
 	}
 
-	[OFTLSKey OF_callAllDestructors];
 # ifdef OF_OBJFW_RUNTIME
 	/*
 	 * As the values returned by objc_autoreleasePoolPush() in the ObjFW
@@ -295,6 +286,9 @@ set_thread_name(OFThread *thread)
 	OFRunLoop *oldRunLoop = _runLoop;
 	_runLoop = nil;
 	[oldRunLoop release];
+
+	[_threadDictionary release];
+	_threadDictionary = nil;
 }
 
 - (void)start
@@ -381,7 +375,6 @@ set_thread_name(OFThread *thread)
 		of_thread_detach(_thread);
 
 	[_returnValue release];
-	[_runLoop release];
 # ifdef OF_HAVE_BLOCKS
 	[_threadBlock release];
 # endif

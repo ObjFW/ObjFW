@@ -81,8 +81,7 @@ SRCS_SOCKETS = OFHTTPClient.m		\
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
 	       OFRecursiveMutex.m	\
-	       OFThreadPool.m		\
-	       OFTLSKey.m
+	       OFThreadPool.m
 
 INCLUDES_THREADS = threading.h
 INCLUDES := ${SRCS:.m=.h}			\
