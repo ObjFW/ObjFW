@@ -22,8 +22,8 @@
 .globl objc_msg_lookup_super_stret
 
 .section .text
-objc_msg_lookup:
-objc_msg_lookup: /* FIXME */
+.macro generate_lookup name not_found_handler
+\name:
 	movl	4(%esp), %edx
 	testl	%edx, %edx
 	jz	ret_nil
@@ -31,7 +31,7 @@ objc_msg_lookup: /* FIXME */
 	movl	(%edx), %edx
 	movl	32(%edx), %edx
 
-lookup:
+.main_\name:
 	movl	8(%esp), %eax
 
 #ifdef OF_SELUID24
@@ -44,42 +44,50 @@ lookup:
 	movl	(%edx,%ecx,4), %eax
 
 	testl	%eax, %eax
-	jz	forward
+	jz	.forward_\name
 
 	ret
 
-ret_nil:
+.forward_\name:
 	call	get_eip
-.L2:
-	addl	$nil_method-.L2, %eax
-	ret
-
-forward:
-	call	get_eip
-.L1:
-	addl	$objc_not_found_handler-.L1, %eax
+.forward_L0_\name:
+	addl	$\not_found_handler-.forward_L0_\name, %eax
 	jmp	*%eax
 
-get_eip:
-	movl	(%esp), %eax
-	ret
-.type objc_msg_lookup, %function
-.size objc_msg_lookup, .-objc_msg_lookup
+.type \name, %function
+.size \name, .-\name
+.endm
 
-objc_msg_lookup_super:
-objc_msg_lookup_super_stret: /* FIXME */
+.macro generate_lookup_super name lookup
+\name:
 	movl	4(%esp), %edx
 	cmpl	$0, (%edx)
 	je	ret_nil
 
 	movl	4(%edx), %edx
 	movl	32(%edx), %edx
-	jmp	lookup
-.type objc_msg_lookup_super, %function
-.size objc_msg_lookup_super, .-objc_msg_lookup_super
+	jmp	.main_\lookup
+.type \name, %function
+.size \name, .-\name
+.endm
+
+generate_lookup objc_msg_lookup objc_not_found_handler
+generate_lookup objc_msg_lookup_stret objc_not_found_handler_stret
+generate_lookup_super objc_msg_lookup_super objc_msg_lookup
+generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
+
+ret_nil:
+	call	get_eip
+.L0:
+	addl	$nil_method-.L0, %eax
+	ret
 
 nil_method:
 	movl	4(%esp), %eax
+	ret
+
+get_eip:
+	movl	(%esp), %eax
 	ret
 
 #ifdef __linux__
