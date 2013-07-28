@@ -22,15 +22,15 @@
 .globl objc_msg_lookup_super_stret
 
 .section .text
-objc_msg_lookup:
-objc_msg_lookup_stret: /* FIXME */
+.macro generate_lookup name not_found_handler
+\name:
 	cmp	r0, #0
 	beq	ret_nil
 
 	ldr	r2, [r0, #0]
 	ldr	r2, [r2, #32]
 
-lookup:
+.main_\name:
 #ifdef OF_SELUID24
 	ldrb	r3, [r1, #2]
 	ldr	r2, [r2, r3, lsl #2]
@@ -41,19 +41,16 @@ lookup:
 	ldr	r2, [r2, r3, lsl #2]
 
 	cmp	r2, #0
-	beq	objc_not_found_handler(PLT)
+	beq	\not_found_handler(PLT)
 
 	mov	r0, r2
 	bx	lr
+.type \name, %function
+.size \name, .-\name
+.endm
 
-ret_nil:
-	adr	r0, nil_method
-	bx	lr
-.type objc_msg_lookup, %function
-.size objc_msg_lookup, .-objc_msg_lookup
-
-objc_msg_lookup_super:
-objc_msg_lookup_super_stret: /* FIXME */
+.macro generate_lookup_super name lookup
+\name:
 	ldr	r2, [r0, #0]
 	cmp	r0, #0
 	beq	ret_nil
@@ -61,9 +58,19 @@ objc_msg_lookup_super_stret: /* FIXME */
 	ldr	r2, [r0, #4]
 	ldr	r2, [r2, #32]
 
-	b	lookup
-.type objc_msg_lookup_super, %function
-.size objc_msg_lookup_super, .-objc_msg_lookup_super
+	b	.main_\lookup
+.type \name, %function
+.size \name, .-\name
+.endm
+
+generate_lookup objc_msg_lookup objc_not_found_handler
+generate_lookup objc_msg_lookup_stret objc_not_found_handler_stret
+generate_lookup_super objc_msg_lookup_super objc_msg_lookup
+generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
+
+ret_nil:
+	adr	r0, nil_method
+	bx	lr
 
 nil_method:
 	mov	r0, #0
