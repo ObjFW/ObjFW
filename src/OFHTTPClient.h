@@ -22,7 +22,7 @@
 
 @class OFHTTPClient;
 @class OFHTTPRequest;
-@class OFHTTPRequestReply;
+@class OFHTTPResponse;
 @class OFURL;
 @class OFTCPSocket;
 @class OFDictionary;
@@ -97,7 +97,7 @@
 	bool _insecureRedirectsAllowed;
 	OFTCPSocket *_socket;
 	OFURL *_lastURL;
-	OFHTTPRequestReply *_lastReply;
+	OFHTTPResponse *_lastResponse;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -141,21 +141,23 @@
 - (bool)insecureRedirectsAllowed;
 
 /*!
- * @brief Performs the specified HTTP request
+ * @brief Performs the specified HTTP request and returns an OFHTTPResponse.
+ *
+ * @return An OFHTTPResponse with the response for the HTTP request
  */
-- (OFHTTPRequestReply*)performRequest: (OFHTTPRequest*)request;
+- (OFHTTPResponse*)performRequest: (OFHTTPRequest*)request;
 
 /*!
- * @brief Performs the HTTP request and returns an OFHTTPRequestReply.
+ * @brief Performs the HTTP request and returns an OFHTTPResponse.
  *
- * @param request The request which was redirected
+ * @param request The request to perform
  * @param redirects The maximum number of redirects after which no further
  *		    attempt is done to follow the redirect, but instead the
- *		    redirect is returned as an OFHTTPRequestReply
- * @return An OFHTTPRequestReply with the reply of the HTTP request
+ *		    redirect is returned as an OFHTTPResponse
+ * @return An OFHTTPResponse with the response for the HTTP request
  */
-- (OFHTTPRequestReply*)performRequest: (OFHTTPRequest*)request
-			    redirects: (size_t)redirects;
+- (OFHTTPResponse*)performRequest: (OFHTTPRequest*)request
+			redirects: (size_t)redirects;
 
 /*!
  * @brief Closes connections that are still open due to keep-alive.

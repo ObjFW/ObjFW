@@ -26,7 +26,7 @@
 #import "OFDictionary.h"
 #import "OFURL.h"
 #import "OFHTTPRequest.h"
-#import "OFHTTPRequestReply.h"
+#import "OFHTTPResponse.h"
 #import "OFTCPSocket.h"
 #import "OFTimer.h"
 
@@ -164,7 +164,7 @@ normalized_key(OFString *key)
 				       freeWhenDone: true];
 }
 
-@interface OFHTTPServerReply: OFHTTPRequestReply
+@interface OFHTTPServerResponse: OFHTTPResponse
 {
 	OFTCPSocket *_socket;
 	OFHTTPServer *_server;
@@ -175,7 +175,7 @@ normalized_key(OFString *key)
 	  server: (OFHTTPServer*)server;
 @end
 
-@implementation OFHTTPServerReply
+@implementation OFHTTPServerResponse
 - initWithSocket: (OFTCPSocket*)socket
 	  server: (OFHTTPServer*)server
 {
@@ -282,7 +282,7 @@ normalized_key(OFString *key)
 	enum {
 		AWAITING_PROLOG,
 		PARSING_HEADERS,
-		SEND_REPLY
+		SEND_RESPONSE
 	} _state;
 	uint8_t _HTTPMinorVersion;
 	of_http_request_type_t _requestType;
@@ -305,7 +305,7 @@ normalized_key(OFString *key)
 	     length: (size_t)length
 	  exception: (OFException*)exception;
 - (bool)sendErrorAndClose: (short)statusCode;
-- (void)createReply;
+- (void)createResponse;
 @end
 
 @implementation OFHTTPServer_Connection
@@ -363,8 +363,8 @@ normalized_key(OFString *key)
 			if (![self parseHeaders: line])
 				return false;
 
-			if (_state == SEND_REPLY) {
-				[self createReply];
+			if (_state == SEND_RESPONSE) {
+				[self createResponse];
 				return false;
 			}
 
@@ -441,7 +441,7 @@ normalized_key(OFString *key)
 		switch (_requestType) {
 		case OF_HTTP_REQUEST_TYPE_GET:
 		case OF_HTTP_REQUEST_TYPE_HEAD:
-			_state = SEND_REPLY;
+			_state = SEND_RESPONSE;
 			break;
 		case OF_HTTP_REQUEST_TYPE_POST:;
 			OFString *tmp;
@@ -535,7 +535,7 @@ normalized_key(OFString *key)
 
 	if ([_POSTData count] >= _contentLength) {
 		@try {
-			[self createReply];
+			[self createResponse];
 		} @catch (OFWriteFailedException *e) {
 			return false;
 		}
@@ -564,11 +564,11 @@ normalized_key(OFString *key)
 	return false;
 }
 
-- (void)createReply
+- (void)createResponse
 {
 	OFURL *URL;
 	OFHTTPRequest *request;
-	OFHTTPServerReply *reply;
+	OFHTTPServerResponse *response;
 	size_t pos;
 
 	[_timer invalidate];
@@ -611,13 +611,13 @@ normalized_key(OFString *key)
 	[request setPOSTData: _POSTData];
 	[request setRemoteAddress: [_socket remoteAddress]];
 
-	reply = [[[OFHTTPServerReply alloc]
+	response = [[[OFHTTPServerResponse alloc]
 	    initWithSocket: _socket
 		    server: _server] autorelease];
 
 	[[_server delegate] server: _server
 		 didReceiveRequest: request
-			     reply: reply];
+			  response: response];
 }
 @end
 

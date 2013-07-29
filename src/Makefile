@@ -73,7 +73,7 @@ SRCS = OFApplication.m			\
 SRCS_PLUGINS = OFPlugin.m
 SRCS_SOCKETS = OFHTTPClient.m		\
 	       OFHTTPRequest.m		\
-	       OFHTTPRequestReply.m	\
+	       OFHTTPResponse.m		\
 	       OFHTTPServer.m		\
 	       OFStreamObserver.m	\
 	       OFStreamSocket.m		\

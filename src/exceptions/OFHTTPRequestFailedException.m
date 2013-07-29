@@ -21,16 +21,16 @@
 #import "OFHTTPRequestFailedException.h"
 #import "OFString.h"
 #import "OFHTTPRequest.h"
-#import "OFHTTPRequestReply.h"
+#import "OFHTTPResponse.h"
 
 #import "common.h"
 
 @implementation OFHTTPRequestFailedException
 + (instancetype)exceptionWithRequest: (OFHTTPRequest*)request
-			       reply: (OFHTTPRequestReply*)reply
+			    response: (OFHTTPResponse*)response
 {
 	return [[[self alloc] initWithRequest: request
-					reply: reply] autorelease];
+				     response: response] autorelease];
 }
 
 - init
@@ -46,12 +46,12 @@
 }
 
 - initWithRequest: (OFHTTPRequest*)request
-	    reply: (OFHTTPRequestReply*)reply
+	 response: (OFHTTPResponse*)response
 {
 	self = [super init];
 
 	_request = [request retain];
-	_reply = [reply retain];
+	_response = [response retain];
 
 	return self;
 }
@@ -59,7 +59,7 @@
 - (void)dealloc
 {
 	[_request release];
-	[_reply release];
+	[_response release];
 
 	[super dealloc];
 }
@@ -82,7 +82,7 @@
 
 	return [OFString stringWithFormat:
 	    @"A HTTP %s request with URL %@ failed with code %d!", type,
-	    [_request URL], [_reply statusCode]];
+	    [_request URL], [_response statusCode]];
 }
 
 - (OFHTTPRequest*)request
@@ -90,8 +90,8 @@
 	OF_GETTER(_request, false)
 }
 
-- (OFHTTPRequestReply*)reply
+- (OFHTTPResponse*)response
 {
-	OF_GETTER(_reply, false)
+	OF_GETTER(_response, false)
 }
 @end

@@ -16,7 +16,7 @@
 
 #include "config.h"
 
-#import "OFHTTPRequestReply.h"
+#import "OFHTTPResponse.h"
 #import "OFString.h"
 #import "OFDictionary.h"
 #import "OFArray.h"
@@ -30,7 +30,7 @@
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedVersionException.h"
 
-@implementation OFHTTPRequestReply
+@implementation OFHTTPResponse
 - init
 {
 	self = [super init];

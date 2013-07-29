@@ -22,7 +22,7 @@
 
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
-#import "OFHTTPRequestReply.h"
+#import "OFHTTPResponse.h"
 #import "OFString.h"
 #import "OFTCPSocket.h"
 #import "OFThread.h"
@@ -93,7 +93,7 @@ static OFCondition *cond;
 	OFURL *url;
 	OFHTTPClient *client;
 	OFHTTPRequest *request;
-	OFHTTPRequestReply *reply = nil;
+	OFHTTPResponse *response = nil;
 	OFDataArray *data;
 
 	cond = [OFCondition condition];
@@ -112,13 +112,13 @@ static OFCondition *cond;
 	TEST(@"-[performRequest:]",
 	    (client = [OFHTTPClient client]) &&
 	    R(request = [OFHTTPRequest requestWithURL: url]) &&
-	    R(reply = [client performRequest: request]))
+	    R(response = [client performRequest: request]))
 
 	TEST(@"Normalization of server header keys",
-	    ([[reply headers] objectForKey: @"Content-Length"] != nil))
+	    ([[response headers] objectForKey: @"Content-Length"] != nil))
 
 	TEST(@"Correct parsing of data",
-	    (data = [reply readDataArrayTillEndOfStream]) &&
+	    (data = [response readDataArrayTillEndOfStream]) &&
 	    [data count] == 7 && !memcmp([data items], "foo\nbar", 7))
 
 	[server join];

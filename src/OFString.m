@@ -31,7 +31,7 @@
 #ifdef OF_HAVE_SOCKETS
 # import "OFHTTPClient.h"
 # import "OFHTTPRequest.h"
-# import "OFHTTPRequestReply.h"
+# import "OFHTTPResponse.h"
 #endif
 #import "OFDataArray.h"
 #import "OFXMLElement.h"
@@ -929,7 +929,7 @@ static struct {
 #ifdef OF_HAVE_SOCKETS
 	OFHTTPClient *client;
 	OFHTTPRequest *request;
-	OFHTTPRequestReply *reply;
+	OFHTTPResponse *response;
 	OFDictionary *headers;
 	OFString *contentType, *contentLength;
 	OFDataArray *data;
@@ -954,14 +954,14 @@ static struct {
 #ifdef OF_HAVE_SOCKETS
 	client = [OFHTTPClient client];
 	request = [OFHTTPRequest requestWithURL: URL];
-	reply = [client performRequest: request];
+	response = [client performRequest: request];
 
-	if ([reply statusCode] != 200)
+	if ([response statusCode] != 200)
 		@throw [OFHTTPRequestFailedException
 		    exceptionWithRequest: request
-				   reply: reply];
+				response: response];
 
-	headers = [reply headers];
+	headers = [response headers];
 
 	if (encoding == OF_STRING_ENCODING_AUTODETECT &&
 	    (contentType = [headers objectForKey: @"Content-Type"]) != nil) {
@@ -980,7 +980,7 @@ static struct {
 	if (encoding == OF_STRING_ENCODING_AUTODETECT)
 		encoding = OF_STRING_ENCODING_UTF_8;
 
-	data = [reply readDataArrayTillEndOfStream];
+	data = [response readDataArrayTillEndOfStream];
 
 	if ((contentLength = [headers objectForKey: @"Content-Length"]) != nil)
 		if ([data count] != (size_t)[contentLength decimalValue])

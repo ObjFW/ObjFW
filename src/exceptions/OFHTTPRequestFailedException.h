@@ -21,7 +21,7 @@
 #endif
 
 @class OFHTTPRequest;
-@class OFHTTPRequestReply;
+@class OFHTTPResponse;
 
 /*!
  * @brief An exception indicating that a HTTP request failed.
@@ -29,33 +29,33 @@
 @interface OFHTTPRequestFailedException: OFException
 {
 	OFHTTPRequest *_request;
-	OFHTTPRequestReply *_reply;
+	OFHTTPResponse *_response;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, retain, nonatomic) OFHTTPRequest *request;
-@property (readonly, retain, nonatomic) OFHTTPRequestReply *reply;
+@property (readonly, retain, nonatomic) OFHTTPResponse *response;
 #endif
 
 /*!
  * @brief Creates a new, autoreleased HTTP request failed exception.
  *
  * @param request The HTTP request which failed
- * @param reply The reply of the failed HTTP request
+ * @param response The response for the failed HTTP request
  * @return A new, autoreleased HTTP request failed exception
  */
 + (instancetype)exceptionWithRequest: (OFHTTPRequest*)request
-			       reply: (OFHTTPRequestReply*)reply;
+			    response: (OFHTTPResponse*)response;
 
 /*!
  * @brief Initializes an already allocated HTTP request failed exception.
  *
  * @param request The HTTP request which failed
- * @param reply The reply of the failed HTTP request
+ * @param response The response for the failed HTTP request
  * @return A new HTTP request failed exception
  */
 - initWithRequest: (OFHTTPRequest*)request
-	    reply: (OFHTTPRequestReply*)reply;
+	 response: (OFHTTPResponse*)response;
 
 /*!
  * @brief Returns the HTTP request which failed.
@@ -65,9 +65,9 @@
 - (OFHTTPRequest*)request;
 
 /*!
- * @brief Returns the reply of the failed HTTP request.
+ * @brief Returns the response for the failed HTTP request.
  *
- * @return The reply of the failed HTTP request
+ * @return The response for the failed HTTP request
  */
-- (OFHTTPRequestReply*)reply;
+- (OFHTTPResponse*)response;
 @end

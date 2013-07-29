@@ -26,7 +26,7 @@
 /*!
  * @brief A class for representing an HTTP request reply as a stream.
  */
-@interface OFHTTPRequestReply: OFStream
+@interface OFHTTPResponse: OFStream
 {
 	of_http_request_protocol_version_t _protocolVersion;
 	short _statusCode;

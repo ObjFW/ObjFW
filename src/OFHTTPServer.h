@@ -22,7 +22,7 @@
 
 @class OFHTTPServer;
 @class OFHTTPRequest;
-@class OFHTTPRequestReply;
+@class OFHTTPResponse;
 @class OFTCPSocket;
 @class OFException;
 
@@ -36,11 +36,11 @@
  *
  * @param server The HTTP server which received the request
  * @param request The request the HTTP server received
- * @param reply The reply the server wants to send to the client
+ * @param response The response the server will send to the client
  */
 -      (void)server: (OFHTTPServer*)server
   didReceiveRequest: (OFHTTPRequest*)request
-	      reply: (OFHTTPRequestReply*)reply;
+	   response: (OFHTTPResponse*)response;
 
 #ifdef OF_HAVE_OPTIONAL_PROTOCOLS
 @optional

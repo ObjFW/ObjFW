@@ -27,7 +27,7 @@
 #ifdef OF_HAVE_SOCKETS
 # import "OFHTTPClient.h"
 # import "OFHTTPRequest.h"
-# import "OFHTTPRequestReply.h"
+# import "OFHTTPResponse.h"
 #endif
 #import "OFDictionary.h"
 #import "OFXMLElement.h"
@@ -190,7 +190,7 @@ void _references_to_categories_of_OFDataArray(void)
 #ifdef OF_HAVE_SOCKETS
 	OFHTTPClient *client;
 	OFHTTPRequest *request;
-	OFHTTPRequestReply *reply;
+	OFHTTPResponse *response;
 	OFDictionary *headers;
 	OFString *contentLength;
 #endif
@@ -210,20 +210,20 @@ void _references_to_categories_of_OFDataArray(void)
 #ifdef OF_HAVE_SOCKETS
 	client = [OFHTTPClient client];
 	request = [OFHTTPRequest requestWithURL: URL];
-	reply = [client performRequest: request];
+	response = [client performRequest: request];
 
-	if ([reply statusCode] != 200)
+	if ([response statusCode] != 200)
 		@throw [OFHTTPRequestFailedException
 		    exceptionWithRequest: request
-				   reply: reply];
+				response: response];
 
 	/*
 	 * TODO: This can be optimized by allocating a data array with the
 	 * capacity from the Content-Length header.
 	 */
-	self = [[reply readDataArrayTillEndOfStream] retain];
+	self = [[response readDataArrayTillEndOfStream] retain];
 
-	headers = [reply headers];
+	headers = [response headers];
 	if ((contentLength = [headers objectForKey: @"Content-Length"]) != nil)
 		if ([self count] != (size_t)[contentLength decimalValue])
 			@throw [OFTruncatedDataException exception];

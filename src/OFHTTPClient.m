@@ -23,7 +23,7 @@
 
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
-#import "OFHTTPRequestReply.h"
+#import "OFHTTPResponse.h"
 #import "OFString.h"
 #import "OFURL.h"
 #import "OFTCPSocket.h"
@@ -66,7 +66,7 @@ normalize_key(char *str_)
 	}
 }
 
-@interface OFHTTPClientReply: OFHTTPRequestReply
+@interface OFHTTPClientResponse: OFHTTPResponse
 {
 	OFTCPSocket *_socket;
 	bool _hasContentLength, _chunked, _keepAlive, _atEndOfStream;
@@ -77,7 +77,7 @@ normalize_key(char *str_)
 - (void)setKeepAlive: (bool)keepAlive;
 @end
 
-@implementation OFHTTPClientReply
+@implementation OFHTTPClientResponse
 - initWithSocket: (OFTCPSocket*)socket
 {
 	self = [super init];
@@ -283,7 +283,7 @@ normalize_key(char *str_)
 	return _insecureRedirectsAllowed;
 }
 
-- (OFHTTPRequestReply*)performRequest: (OFHTTPRequest*)request
+- (OFHTTPResponse*)performRequest: (OFHTTPRequest*)request
 {
 	return [self performRequest: request
 			  redirects: 10];
@@ -318,8 +318,8 @@ normalize_key(char *str_)
 	return socket;
 }
 
-- (OFHTTPRequestReply*)performRequest: (OFHTTPRequest*)request
-			    redirects: (size_t)redirects
+- (OFHTTPResponse*)performRequest: (OFHTTPRequest*)request
+			redirects: (size_t)redirects
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFURL *URL = [request URL];
@@ -329,7 +329,7 @@ normalize_key(char *str_)
 	OFDictionary *headers = [request headers];
 	OFDataArray *POSTData = [request POSTData];
 	OFTCPSocket *socket;
-	OFHTTPClientReply *reply;
+	OFHTTPClientResponse *response;
 	OFString *line, *path, *version, *redirect, *keepAlive;
 	OFMutableDictionary *serverHeaders;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
@@ -356,15 +356,15 @@ normalize_key(char *str_)
 		_lastURL = nil;
 
 		/* Throw away content that has not been read yet */
-		while (![_lastReply isAtEndOfStream]) {
+		while (![_lastResponse isAtEndOfStream]) {
 			char buffer[512];
 
-			[_lastReply readIntoBuffer: buffer
-					    length: 512];
+			[_lastResponse readIntoBuffer: buffer
+					       length: 512];
 		}
 
-		[_lastReply release];
-		_lastReply = nil;
+		[_lastResponse release];
+		_lastResponse = nil;
 	} else
 		socket = [self OF_createSocketForRequest: request];
 
@@ -540,20 +540,20 @@ normalize_key(char *str_)
 			   statusCode: status
 			      request: request];
 
-	reply = [[[OFHTTPClientReply alloc] initWithSocket: socket]
+	response = [[[OFHTTPClientResponse alloc] initWithSocket: socket]
 	    autorelease];
-	[reply setProtocolVersionFromString: version];
-	[reply setStatusCode: status];
-	[reply setHeaders: serverHeaders];
+	[response setProtocolVersionFromString: version];
+	[response setStatusCode: status];
+	[response setHeaders: serverHeaders];
 
 	keepAlive = [serverHeaders objectForKey: @"Connection"];
 	if ([version isEqual: @"1.1"] ||
 	    (keepAlive != nil && [keepAlive isEqual: @"keep-alive"])) {
-		[reply setKeepAlive: true];
+		[response setKeepAlive: true];
 
 		_socket = [socket retain];
 		_lastURL = [URL copy];
-		_lastReply = [reply retain];
+		_lastResponse = [response retain];
 	}
 
 	if (redirects > 0 && (status == 301 || status == 302 ||
@@ -598,16 +598,16 @@ normalize_key(char *str_)
 		}
 	}
 
-	[reply retain];
+	[response retain];
 	objc_autoreleasePoolPop(pool);
-	[reply autorelease];
+	[response autorelease];
 
 	if (status / 100 != 2)
 		@throw [OFHTTPRequestFailedException
 		    exceptionWithRequest: request
-				   reply: reply];
+				response: response];
 
-	return reply;
+	return response;
 }
 
 - (void)close
@@ -619,7 +619,7 @@ normalize_key(char *str_)
 	[_lastURL release];
 	_lastURL = nil;
 
-	[_lastReply release];
-	_lastReply = nil;
+	[_lastResponse release];
+	_lastResponse = nil;
 }
 @end
