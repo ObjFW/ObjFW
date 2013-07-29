@@ -414,11 +414,11 @@ normalize_key(char *str_)
 
 		if (contentType == nil)
 			contentType = @"application/x-www-form-urlencoded; "
-			    @"charset=UTF-8\r\n";
+			    @"charset=UTF-8";
 
 		[requestString appendFormat:
 		    @"Content-Type: %@\r\n"
-		    @"Content-Length: %d\r\n",
+		    @"Content-Length: %zu\r\n",
 		    contentType, [POSTData count] * [POSTData itemSize]];
 	}
 
