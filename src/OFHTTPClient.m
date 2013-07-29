@@ -245,7 +245,8 @@ normalize_key(char *str_)
 
 - (void)close
 {
-	[_socket close];
+	[_socket release];
+	_socket = nil;
 }
 @end
 
@@ -611,6 +612,7 @@ normalize_key(char *str_)
 
 - (void)close
 {
+	[_socket close];
 	[_socket release];
 	_socket = nil;
 
