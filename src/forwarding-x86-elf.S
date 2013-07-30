@@ -85,7 +85,7 @@ of_forward_stret:
 	movl	%eax, (%esp)
 	movl	16(%ebp), %eax
 	movl	%eax, 4(%esp)
-	leal	objc_msg_lookup-.L1(%ebx), %eax
+	leal	objc_msg_lookup_stret-.L1(%ebx), %eax
 	call	*%eax
 
 	addl	$20, %esp

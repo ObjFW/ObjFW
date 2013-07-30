@@ -65,7 +65,7 @@ of_forward_stret:
 
 	str	r0, [sp, #68]
 	ldr	r1, [sp, #72]
-	bl	objc_msg_lookup(PLT)
+	bl	objc_msg_lookup_stret(PLT)
 
 	mov	r12, r0
 	fldmfdd	sp!, {d0-d7}
