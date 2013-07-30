@@ -34,6 +34,8 @@
 #   include "forwarding-x86-elf.S"
 #  elif defined(__arm__) || defined(__ARM__)
 #   include "forwarding-arm-elf.S"
+#  elif defined(__ppc__) || defined(__PPC__)
+#   include "forwarding-ppc-elf.S"
 #  elif (defined(_MIPS_SIM) && _MIPS_SIM == _ABIO32) || \
     (defined(__mips_eabi) && _MIPS_SZPTR == 32)
 #   include "forwarding-mips-elf.S"

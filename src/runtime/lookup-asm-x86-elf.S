@@ -83,7 +83,7 @@ ret_nil:
 	ret
 
 nil_method:
-	movl	4(%esp), %eax
+	xorl	%eax, %eax
 	ret
 
 get_eip:

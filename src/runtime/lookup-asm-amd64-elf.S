@@ -74,7 +74,7 @@ ret_nil:
 	ret
 
 nil_method:
-	movq	%rdi, %rax
+	xorq	%rax, %rax
 	ret
 
 #ifdef __linux__
