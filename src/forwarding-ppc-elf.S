@@ -19,7 +19,6 @@
 
 .section .text
 of_forward:
-of_forward_stret: /* FIXME */
 	stwu	%r1, -112(%r1)
 	mflr	%r0
 	stw	%r0, 116(%r1)
@@ -86,6 +85,75 @@ of_forward_stret: /* FIXME */
 	bctr
 .type of_forward, %function
 .size of_forward, .-of_forward
+
+of_forward_stret:
+	stwu	%r1, -112(%r1)
+	mflr	%r0
+	stw	%r0, 116(%r1)
+
+	/* Save all arguments */
+	stw	%r3, 8(%r1)
+	stw	%r4, 12(%r1)
+	stw	%r5, 16(%r1)
+	stw	%r6, 20(%r1)
+	stw	%r7, 24(%r1)
+	stw	%r8, 28(%r1)
+	stw	%r9, 32(%r1)
+	stw	%r10, 36(%r1)
+
+	/* Save all floating point arguments */
+	stfd	%f1, 40(%r1)
+	stfd	%f2, 48(%r1)
+	stfd	%f3, 56(%r1)
+	stfd	%f4, 64(%r1)
+	stfd	%f5, 72(%r1)
+	stfd	%f6, 80(%r1)
+	stfd	%f7, 88(%r1)
+	stfd	%f8, 96(%r1)
+
+	mr	%r3, %r4
+	lis	%r4, sel_forwardingTargetForSelector_@ha
+	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
+	bl	objc_msg_lookup@plt
+	mtctr	%r3
+
+	lwz	%r3, 12(%r1)
+	lis	%r4, sel_forwardingTargetForSelector_@ha
+	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
+	lwz	%r5, 16(%r1)
+	bctrl
+	stw	%r3, 12(%r1)
+
+	lwz	%r4, 16(%r1)
+	bl	objc_msg_lookup_stret@plt
+	mtctr	%r3
+
+	/* Restore all arguments */
+	lwz	%r3, 8(%r1)
+	lwz	%r4, 12(%r1)
+	lwz	%r5, 16(%r1)
+	lwz	%r6, 20(%r1)
+	lwz	%r7, 24(%r1)
+	lwz	%r8, 28(%r1)
+	lwz	%r9, 32(%r1)
+	lwz	%r10, 36(%r1)
+
+	/* Restore all floating point arguments */
+	lfd	%f1, 40(%r1)
+	lfd	%f2, 48(%r1)
+	lfd	%f3, 56(%r1)
+	lfd	%f4, 64(%r1)
+	lfd	%f5, 72(%r1)
+	lfd	%f6, 80(%r1)
+	lfd	%f7, 88(%r1)
+	lfd	%f8, 96(%r1)
+
+	lwz	%r0, 116(%r1)
+	mtlr	%r0
+	addi	%r1, %r1, 112
+	bctr
+.type of_forward_stret, %function
+.size of_forward_stret, .-of_forward_stret
 
 init:
 	lis	%r3, module@ha

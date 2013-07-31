@@ -100,14 +100,11 @@
 #else
 # ifdef __ELF__
 #  if defined(__amd64__) || defined(__x86_64__) || defined(__i386__) || \
-    defined(__arm__) || defined(__ARM__)
+    defined(__arm__) || defined(__ARM__) || defined(__ppc__) || defined(__PPC__)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #   if __has_feature(objc_msg_lookup_stret)
 #    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
 #   endif
-#  endif
-#  if defined(__ppc__) || defined(__PPC__)
-#   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #  endif
 #  if (defined(_MIPS_SIM) && _MIPS_SIM == _ABIO32) || \
     (defined(__mips_eabi) && _MIPS_SZPTR == 32)
