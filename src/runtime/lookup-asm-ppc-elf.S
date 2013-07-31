@@ -22,15 +22,15 @@
 .globl objc_msg_lookup_super_stret
 
 .section .text
-objc_msg_lookup:
-objc_msg_lookup_stret: /* FIXME */
+.macro generate_lookup name not_found_handler
+\name:
 	cmpwi	%r3, 0
 	beq-	ret_nil
 
 	lwz	%r5, 0(%r3)
 	lwz	%r5, 32(%r5)
 
-lookup:
+.main_\name:
 #ifdef OF_SELUID24
 	lbz	%r6, 1(%r4)
 #endif
@@ -50,18 +50,19 @@ lookup:
 	lwzx	%r5, %r5, %r8
 
 	cmpwi	%r5, 0
-	beq-	forward
+	beq-	.forward_\name
 
 	mr	%r3, %r5
 	blr
-.type objc_msg_lookup, %function
-.size objc_msg_lookup, .-objc_msg_lookup
 
-forward:
-	b	objc_not_found_handler@plt
+.forward_\name:
+	b	\not_found_handler@plt
+.type \name, %function
+.size \name, .-\name
+.endm
 
-objc_msg_lookup_super:
-objc_msg_lookup_super_stret: /* FIXME */
+.macro generate_lookup_super name lookup
+\name:
 	lwz	%r5, 0(%r3)
 	cmpwi	%r5, 0
 	beq-	ret_nil
@@ -69,24 +70,30 @@ objc_msg_lookup_super_stret: /* FIXME */
 	lwz	%r5, 4(%r3)
 	lwz	%r5, 32(%r5)
 
-	b	lookup
+	b	.main_\lookup
+.type \name, %function
+.size \name, .-\name
+.endm
+
+generate_lookup objc_msg_lookup objc_not_found_handler
+generate_lookup objc_msg_lookup_stret objc_not_found_handler_stret
+generate_lookup_super objc_msg_lookup_super objc_msg_lookup
+generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
 
 ret_nil:
 	mflr	%r0
 	bl	get_pc
 	mtlr	%r0
-.L1:
-	addi	%r3, %r3, nil_method-.L1
+.L0:
+	addi	%r3, %r3, nil_method-.L0
+	blr
+
+nil_method:
+	li	%r3, 0
 	blr
 
 get_pc:
 	mflr	%r3
-	blr
-.type objc_msg_lookup_super, %function
-.size objc_msg_lookup_super, .-objc_msg_lookup_super
-
-nil_method:
-	li	%r3, 0
 	blr
 
 #ifdef __linux__
