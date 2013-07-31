@@ -492,8 +492,26 @@ AS_IF([test x"$enable_threads" != x"no"], [
 	], [
 		x++;
 	], [
-		AC_MSG_RESULT(yes)
-		AC_DEFINE(OF_HAVE_COMPILER_TLS, 1, [Whether __thread works])
+		AS_IF([test x"$enable_shared" != x"no"], [
+			old_OBJCFLAGS="$OBJCFLAGS"
+			OBJCFLAGS="$OBJCFLAGS -fPIC"
+			AC_TRY_COMPILE([
+				__thread int x = 0;
+			], [
+				x++;
+			], [
+				AC_MSG_RESULT(yes)
+				AC_DEFINE(OF_HAVE_COMPILER_TLS, 1,
+					[Whether __thread works])
+			], [
+				AC_MSG_RESULT(no)
+			])
+			OBJCFLAGS="$old_OBJCFLAGS"
+		], [
+			AC_MSG_RESULT(yes)
+			AC_DEFINE(OF_HAVE_COMPILER_TLS, 1,
+				[Whether __thread works])
+		])
 	], [
 		AC_MSG_RESULT(no)
 	])
