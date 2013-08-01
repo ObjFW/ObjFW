@@ -109,6 +109,9 @@
 #  if (defined(_MIPS_SIM) && _MIPS_SIM == _ABIO32) || \
     (defined(__mips_eabi) && _MIPS_SZPTR == 32)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
+#   if __has_feature(objc_msg_lookup_stret)
+#    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
+#   endif
 #  endif
 # endif
 #endif
