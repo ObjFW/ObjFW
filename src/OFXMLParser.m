@@ -148,10 +148,11 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		@selector(OF_inCloseTagNameState),
 		@selector(OF_inTagState),
 		@selector(OF_inAttributeNameState),
-		@selector(OF_expectDelimiterState),
+		@selector(OF_expectAttributeEqualSignState),
+		@selector(OF_expectAttributeDelimiterState),
 		@selector(OF_inAttributeValueState),
-		@selector(OF_expectCloseState),
-		@selector(OF_expectSpaceOrCloseState),
+		@selector(OF_expectTagCloseState),
+		@selector(OF_expectSpaceOrTagCloseState),
 		@selector(OF_inExclamationMarkState),
 		@selector(OF_inCDATAOpeningState),
 		@selector(OF_inCDATAState),
@@ -606,7 +607,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		_name = _prefix = nil;
 
 		_state = (_data[_i] == '/'
-		    ? OF_XMLPARSER_EXPECT_CLOSE
+		    ? OF_XMLPARSER_EXPECT_TAG_CLOSE
 		    : OF_XMLPARSER_OUTSIDE_TAG);
 	} else
 		_state = OF_XMLPARSER_IN_TAG;
@@ -684,7 +685,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	_last = _i + 1;
 	_state = (_data[_i] == '>'
 	    ? OF_XMLPARSER_OUTSIDE_TAG
-	    : OF_XMLPARSER_EXPECT_SPACE_OR_CLOSE);
+	    : OF_XMLPARSER_EXPECT_SPACE_OR_TAG_CLOSE);
 
 	if ([_previous count] == 0)
 		_finishedParsing = true;
@@ -702,7 +703,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		if (_data[_i] != ' ' && _data[_i] != '\t' &&
 		    _data[_i] != '\n' && _data[_i] != '\r') {
 			_last = _i;
-			_state = OF_XMLPARSER_IN_ATTR_NAME;
+			_state = OF_XMLPARSER_IN_ATTRIBUTE_NAME;
 			_i--;
 		}
 
@@ -760,7 +761,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	_last = _i + 1;
 	_state = (_data[_i] == '/'
-	    ? OF_XMLPARSER_EXPECT_CLOSE
+	    ? OF_XMLPARSER_EXPECT_TAG_CLOSE
 	    : OF_XMLPARSER_OUTSIDE_TAG);
 }
 
@@ -768,11 +769,12 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 - (void)OF_inAttributeNameState
 {
 	void *pool;
-	OFMutableString *bufferString;
+	OFString *bufferString;
 	const char *bufferCString, *tmp;
 	size_t length, bufferLength;
 
-	if (_data[_i] != '=')
+	if (_data[_i] != '=' && _data[_i] != ' ' && _data[_i] != '\t' &&
+	    _data[_i] != '\n' && _data[_i] != '\r')
 		return;
 
 	if ((length = _i - _last) > 0)
@@ -780,11 +782,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	pool = objc_autoreleasePoolPush();
 
-	bufferString = [OFMutableString stringWithUTF8String: [_buffer items]
-						      length: [_buffer count]];
-	[bufferString deleteEnclosingWhitespaces];
-	/* Prevent a useless copy later */
-	[bufferString makeImmutable];
+	bufferString = [OFString stringWithUTF8String: [_buffer items]
+					       length: [_buffer count]];
 
 	bufferCString = [bufferString UTF8String];
 	bufferLength = [bufferString UTF8StringLength];
@@ -807,11 +806,27 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	[_buffer removeAllItems];
 
 	_last = _i + 1;
-	_state = OF_XMLPARSER_EXPECT_DELIMITER;
+	_state = (_data[_i] == '='
+	    ? OF_XMLPARSER_EXPECT_ATTRIBUTE_DELIMITER
+	    : OF_XMLPARSER_EXPECT_ATTRIBUTE_EQUAL_SIGN);
 }
 
-/* Expecting delimiter */
-- (void)OF_expectDelimiterState
+/* Expecting equal sign of an attribute */
+- (void)OF_expectAttributeEqualSignState
+{
+	if (_data[_i] == '=') {
+		_last = _i + 1;
+		_state = OF_XMLPARSER_EXPECT_ATTRIBUTE_DELIMITER;
+		return;
+	}
+
+	if (_data[_i] != ' ' && _data[_i] != '\t' && _data[_i] != '\n' &&
+	    _data[_i] != '\r')
+		@throw [OFMalformedXMLException exceptionWithParser: self];
+}
+
+/* Expecting name/value delimiter of an attribute */
+- (void)OF_expectAttributeDelimiterState
 {
 	_last = _i + 1;
 
@@ -823,7 +838,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 
 	_delimiter = _data[_i];
-	_state = OF_XMLPARSER_IN_ATTR_VALUE;
+	_state = OF_XMLPARSER_IN_ATTRIBUTE_VALUE;
 }
 
 /* Looking for attribute value */
@@ -866,7 +881,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Expecting closing '>' */
-- (void)OF_expectCloseState
+- (void)OF_expectTagCloseState
 {
 	if (_data[_i] == '>') {
 		_last = _i + 1;
@@ -876,7 +891,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Expecting closing '>' or space */
-- (void)OF_expectSpaceOrCloseState
+- (void)OF_expectSpaceOrTagCloseState
 {
 	if (_data[_i] == '>') {
 		_last = _i + 1;

@@ -182,7 +182,7 @@
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat: @"<OFXMLAttribute, name=%@, "
+	return [OFString stringWithFormat: @"<OFXMLAttribute: name=%@, "
 					   @"namespace=%@, stringValue=%@>",
 					   _name, _namespace, _stringValue];
 }
