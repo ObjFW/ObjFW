@@ -22,14 +22,14 @@
 .globl objc_msg_lookup_super_stret
 
 .section .text
-objc_msg_lookup:
-objc_msg_lookup_stret: /* FIXME */
-	beqz	$a0, ret_nil
+.macro generate_lookup name not_found_handler
+\name:
+	beqz	$a0, .ret_nil_\name
 
 	lw	$t0, 0($a0)
 	lw	$t0, 32($t0)
 
-lookup:
+.main_\name:
 #if defined(_MIPSEL)
 # ifdef OF_SELUID24
 	lbu	$t1, 2($a1)
@@ -62,46 +62,61 @@ lookup:
 	lw	$t0, 0($t0)
 
 #ifdef __PIC__
-	beqz	$t0, forward
+	beqz	$t0, .forward_\name
 #else
-	beqz	$t0, objc_not_found_handler
+	beqz	$t0, \not_found_handler
 #endif
 
 	move	$v0, $t0
 	j	$ra
 
-ret_nil:
+.ret_nil_\name:
 #ifdef __PIC__
-	addiu	$v0, $t9, nil_method-objc_msg_lookup
+	addiu	$v0, $t9, nil_method-\name
 #else
 	la	$v0, nil_method
 #endif
 	j	$ra
 
 #ifdef __PIC__
-forward:
+.forward_\name:
 	lui	$gp, %hi(_gp_disp)
 	addiu	$gp, $gp, %lo(_gp_disp)
 	addu	$gp, $gp, $t9
-	addiu	$gp, $gp, forward-objc_msg_lookup
+	addiu	$gp, $gp, .forward_\name-\name
 
-	lw	$t9, %call16(objc_not_found_handler)($gp)
+	lw	$t9, %call16(\not_found_handler)($gp)
 	jr	$t9
 #endif
-.type objc_msg_lookup, %function
-.size objc_msg_lookup, .-objc_msg_lookup
+.type \name, %function
+.size \name, .-\name
+.endm
 
-objc_msg_lookup_super:
-objc_msg_lookup_super_stret: /* FIXME */
+.macro generate_lookup_super name lookup
+\name:
 	lw	$t0, 0($a0)
-	beqz	$t0, ret_nil
+	beqz	$t0, .ret_nil_\name
 
 	lw	$t0, 4($a0)
 	lw	$t0, 32($t0)
 
-	b	lookup
-.type objc_msg_lookup_super, %function
-.size objc_msg_lookup_super, .-objc_msg_lookup_super
+	b	.main_\lookup
+
+.ret_nil_\name:
+#ifdef __PIC__
+	addiu	$v0, $t9, nil_method-\name
+#else
+	la	$v0, nil_method
+#endif
+	j	$ra
+.type \name, %function
+.size \name, .-\name
+.endm
+
+generate_lookup objc_msg_lookup objc_not_found_handler
+generate_lookup objc_msg_lookup_stret objc_not_found_handler_stret
+generate_lookup_super objc_msg_lookup_super objc_msg_lookup
+generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
 
 nil_method:
 	move	$v0, $zero
