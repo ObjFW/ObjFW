@@ -154,8 +154,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		@selector(OF_expectSpaceOrCloseState),
 		@selector(OF_inExclamationMarkState),
 		@selector(OF_inCDATAOpeningState),
-		@selector(OF_inCDATAState1),
-		@selector(OF_inCDATAState2),
+		@selector(OF_inCDATAState),
 		@selector(OF_inCommentOpeningState),
 		@selector(OF_inCommentState1),
 		@selector(OF_inCommentState2),
@@ -914,51 +913,38 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 
 	if (++_level == 6) {
-		_state = OF_XMLPARSER_IN_CDATA_1;
+		_state = OF_XMLPARSER_IN_CDATA;
 		_level = 0;
 	}
 
 	_last = _i + 1;
 }
 
-- (void)OF_inCDATAState1
+- (void)OF_inCDATAState
 {
+
 	if (_data[_i] == ']')
 		_level++;
-	else
+	else if (_data[_i] == '>' && _level >= 2) {
+		void *pool = objc_autoreleasePoolPush();
+		OFString *CDATA;
+
+		buffer_append(_buffer, _data + _last, _encoding, _i - _last);
+		CDATA = transform_string(_buffer, 2, false, nil);
+
+		if ([_delegate respondsToSelector:
+		    @selector(parser:foundCDATA:)])
+			[_delegate parser: self
+			       foundCDATA: CDATA];
+
+		objc_autoreleasePoolPop(pool);
+
+		[_buffer removeAllItems];
+
+		_last = _i + 1;
+		_state = OF_XMLPARSER_OUTSIDE_TAG;
+	} else
 		_level = 0;
-
-	if (_level == 2)
-		_state = OF_XMLPARSER_IN_CDATA_2;
-}
-
-- (void)OF_inCDATAState2
-{
-	void *pool;
-	OFString *CDATA;
-
-	if (_data[_i] != '>') {
-		_state = OF_XMLPARSER_IN_CDATA_1;
-		_level = (_data[_i] == ']' ? 1 : 0);
-
-		return;
-	}
-
-	pool = objc_autoreleasePoolPush();
-
-	buffer_append(_buffer, _data + _last, _encoding, _i - _last);
-	CDATA = transform_string(_buffer, 2, false, nil);
-
-	if ([_delegate respondsToSelector: @selector(parser:foundCDATA:)])
-		[_delegate parser: self
-		       foundCDATA: CDATA];
-
-	objc_autoreleasePoolPop(pool);
-
-	[_buffer removeAllItems];
-
-	_last = _i + 1;
-	_state = OF_XMLPARSER_OUTSIDE_TAG;
 }
 
 /* Comment */

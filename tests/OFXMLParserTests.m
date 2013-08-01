@@ -71,7 +71,7 @@ enum event_type {
 		TEST(msg, et == STRING && [string isEqual: @"\n\n "])
 		break;
 	case 5:
-		TEST(msg, et == CDATA && [string isEqual: @"f<]]]oo"] &&
+		TEST(msg, et == CDATA && [string isEqual: @"f<]]]oo]"] &&
 		    [parser lineNumber] == 3)
 		break;
 	case 6:
@@ -325,7 +325,7 @@ enum event_type {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	const char *str = "\xEF\xBB\xBF<?xml version='1.0'?><?p?i?>"
 	    "<!DOCTYPE foo><root>\r\r"
-	    " <![CDATA[f<]]]oo]]><bar/>\n"
+	    " <![CDATA[f<]]]oo]]]><bar/>\n"
 	    " <foobar xmlns='urn:objfw:test:foobar'>\r\n"
 	    "  <qux xmlns:foo='urn:objfw:test:foo'>\n"
 	    "   <foo:bla foo:bla = '&#x62;&#x6c;&#x61;' blafoo='foo'>\n"
