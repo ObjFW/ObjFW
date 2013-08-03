@@ -23,9 +23,10 @@
 #import "OFApplication.h"
 #import "OFURL.h"
 #import "OFHTTPRequest.h"
-#import "OFHTTPRequestReply.h"
+#import "OFHTTPResponse.h"
 #import "OFHTTPClient.h"
 #import "OFFile.h"
+#import "OFStdIOStream.h"
 
 #import "autorelease.h"
 
@@ -72,7 +73,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	void *pool = objc_autoreleasePoolPush();
 	OFHTTPRequest *request;
 	OFHTTPClient *client;
-	OFHTTPRequestReply *reply;
+	OFHTTPResponse *response;
 	OFString *line;
 
 	[of_stdout writeString: @"Downloading and parsing UnicodeData.txt..."];
@@ -80,9 +81,9 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	request = [OFHTTPRequest requestWithURL:
 	    [OFURL URLWithString: UNICODE_DATA_URL]];
 	client = [OFHTTPClient client];
-	reply = [client performRequest: request];
+	response = [client performRequest: request];
 
-	while ((line = [reply readLine]) != nil) {
+	while ((line = [response readLine]) != nil) {
 		void *pool2;
 		OFArray *split;
 		OFString **splitObjects;
@@ -121,7 +122,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	void *pool = objc_autoreleasePoolPush();
 	OFHTTPRequest *request;
 	OFHTTPClient *client;
-	OFHTTPRequestReply *reply;
+	OFHTTPResponse *response;
 	OFString *line;
 
 	[of_stdout writeString: @"Downloading and parsing CaseFolding.txt..."];
@@ -129,9 +130,9 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	request = [OFHTTPRequest requestWithURL:
 	    [OFURL URLWithString: CASE_FOLDING_URL]];
 	client = [OFHTTPClient client];
-	reply = [client performRequest: request];
+	response = [client performRequest: request];
 
-	while ((line = [reply readLine]) != nil) {
+	while ((line = [response readLine]) != nil) {
 		void *pool2;
 		OFArray *split;
 		OFString **splitObjects;
