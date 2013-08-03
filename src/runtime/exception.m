@@ -121,6 +121,7 @@ extern _Unwind_Reason_Code _Unwind_RaiseException(struct _Unwind_Exception*);
 extern _Unwind_Reason_Code _Unwind_SjLj_RaiseException(
     struct _Unwind_Exception*);
 #endif
+extern void _Unwind_DeleteException(struct _Unwind_Exception*);
 extern void* _Unwind_GetLanguageSpecificData(struct _Unwind_Context*);
 extern uintptr_t _Unwind_GetRegionStart(struct _Unwind_Context*);
 extern uintptr_t _Unwind_GetDataRelBase(struct _Unwind_Context*);
@@ -268,39 +269,37 @@ read_value(uint8_t enc, const uint8_t **ptr)
 		/* Not implemented */
 		abort();
 
-#define READ_TYPE(type)				\
+#define READ(type)				\
 	{					\
 		value = *(type*)(void*)*ptr;	\
 		*ptr += size_for_encoding(enc);	\
 		break;				\
 	}
-
 	switch (enc & 0x0F) {
 	case DW_EH_PE_absptr:
-		READ_TYPE(uintptr_t)
+		READ(uintptr_t)
 	case DW_EH_PE_uleb128:
 		value = read_uleb128(ptr);
 		break;
 	case DW_EH_PE_udata2:
-		READ_TYPE(uint16_t)
+		READ(uint16_t)
 	case DW_EH_PE_udata4:
-		READ_TYPE(uint32_t)
+		READ(uint32_t)
 	case DW_EH_PE_udata8:
-		READ_TYPE(uint64_t)
+		READ(uint64_t)
 	case DW_EH_PE_sleb128:
 		value = read_sleb128(ptr);
 		break;
 	case DW_EH_PE_sdata2:
-		READ_TYPE(int16_t)
+		READ(int16_t)
 	case DW_EH_PE_sdata4:
-		READ_TYPE(int32_t)
+		READ(int32_t)
 	case DW_EH_PE_sdata8:
-		READ_TYPE(int64_t)
+		READ(int64_t)
 	default:
 		abort();
 	}
-
-#undef READ_TYPE
+#undef READ
 
 	return value;
 }
@@ -529,11 +528,8 @@ PERSONALITY(int version, int actions, uint64_t ex_class,
 	uint8_t found = 0;
 	intptr_t filter = 0;
 
-	if (version != 1)
+	if (version != 1 || ctx == NULL)
 		return _URC_FATAL_PHASE1_ERROR;
-
-	if (ctx == NULL)
-		abort();
 
 	/*
 	 * We already cached everything we found in phase 1, so we only need
@@ -556,7 +552,7 @@ PERSONALITY(int version, int actions, uint64_t ex_class,
 		_Unwind_SetIP(ctx, e->landingpad);
 #endif
 
-		free(ex);
+		_Unwind_DeleteException(ex);
 
 		return _URC_INSTALL_CONTEXT;
 	}
@@ -570,11 +566,11 @@ PERSONALITY(int version, int actions, uint64_t ex_class,
 	if (!find_callsite(ctx, &lsda, &landingpad, &actionrecords))
 		CONTINUE_UNWIND;
 
-	if (landingpad != 0 && actionrecords == NULL)
-		found = CLEANUP_FOUND;
-	else if (landingpad != 0)
+	if (landingpad != 0 && actionrecords != NULL)
 		found = find_actionrecord(actionrecords, &lsda, actions,
 		    foreign, e, &filter);
+	else if (landingpad != 0)
+		found = CLEANUP_FOUND;
 
 	if (!found)
 		CONTINUE_UNWIND;
@@ -602,6 +598,8 @@ PERSONALITY(int version, int actions, uint64_t ex_class,
 		    (uintptr_t)ex);
 		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(1), filter);
 		_Unwind_SetIP(ctx, landingpad);
+
+		_Unwind_DeleteException(ex);
 
 		return _URC_INSTALL_CONTEXT;
 	}
