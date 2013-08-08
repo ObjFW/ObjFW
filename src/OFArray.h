@@ -395,11 +395,11 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 
 @interface OFArrayEnumerator: OFEnumerator
 {
-	OFArray	      *array;
-	size_t	      count;
-	unsigned long mutations;
-	unsigned long *mutationsPtr;
-	size_t	      position;
+	OFArray	      *_array;
+	size_t	      _count;
+	unsigned long _mutations;
+	unsigned long *_mutationsPtr;
+	size_t	      _position;
 }
 
 - initWithArray: (OFArray*)data

@@ -829,44 +829,44 @@ static struct {
 @end
 
 @implementation OFArrayEnumerator
-- initWithArray: (OFArray*)array_
-   mutationsPtr: (unsigned long*)mutationsPtr_
+- initWithArray: (OFArray*)array
+   mutationsPtr: (unsigned long*)mutationsPtr
 {
 	self = [super init];
 
-	array = [array_ retain];
-	count = [array count];
-	mutations = (mutationsPtr_ != NULL ? *mutationsPtr_ : 0);
-	mutationsPtr = mutationsPtr_;
+	_array = [array retain];
+	_count = [array count];
+	_mutations = (mutationsPtr != NULL ? *mutationsPtr : 0);
+	_mutationsPtr = mutationsPtr;
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[array release];
+	[_array release];
 
 	[super dealloc];
 }
 
 - (id)nextObject
 {
-	if (mutationsPtr != NULL && *mutationsPtr != mutations)
+	if (_mutationsPtr != NULL && *_mutationsPtr != _mutations)
 		@throw [OFEnumerationMutationException
-		    exceptionWithObject: array];
+		    exceptionWithObject: _array];
 
-	if (position < count)
-		return [array objectAtIndex: position++];
+	if (_position < _count)
+		return [_array objectAtIndex: _position++];
 
 	return nil;
 }
 
 - (void)reset
 {
-	if (mutationsPtr != NULL && *mutationsPtr != mutations)
+	if (_mutationsPtr != NULL && *_mutationsPtr != _mutations)
 		@throw [OFEnumerationMutationException
-		    exceptionWithObject: array];
+		    exceptionWithObject: _array];
 
-	position = 0;
+	_position = 0;
 }
 @end
