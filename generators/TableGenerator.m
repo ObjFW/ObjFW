@@ -29,6 +29,7 @@
 #import "OFStdIOStream.h"
 
 #import "autorelease.h"
+#import "macros.h"
 
 #import "TableGenerator.h"
 #import "copyright.h"
@@ -60,8 +61,10 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	[of_stdout writeString: @"Writing files..."];
 
-	[self writeTablesToFile: @"../src/unicode.m"];
-	[self writeHeaderToFile: @"../src/unicode.h"];
+	[self writeTablesToFile: [OFString stringWithPath:
+	    OF_PATH_PARENT_DIRECTORY, @"src", @"unicode.m", nil]];
+	[self writeHeaderToFile: [OFString stringWithPath:
+	    OF_PATH_PARENT_DIRECTORY, @"src", @"unicode.h", nil]];
 
 	[of_stdout writeLine: @" done"];
 
