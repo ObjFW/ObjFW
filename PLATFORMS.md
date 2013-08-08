@@ -44,7 +44,7 @@ Linux
 -----
 
   * Architectures: ARM, m68k, MIPS32, PPC, x86, x86_64
-  * Compilers: Clang 3.0-3.2, GCC 4.6.3, GCC 4.7.0 (prerelease), GCC 4.7.1
+  * Compilers: Clang 3.0-3.4, GCC 4.6-4.8
   * Runtimes: ObjFW
 
 
@@ -53,16 +53,16 @@ MacOS X
 
   * OS versions: 10.5, 10.7, 10.8
   * Architectures: PPC, x86, x86_64
-  * Compilers: Clang 3.1-3.2, LLVM GCC 4.2.1
+  * Compilers: Clang 3.1-3.4, LLVM GCC 4.2.1
   * Runtimes: Apple, ObjFW
 
 
 NetBSD
 ------
 
-  * OS versions: 5.1, 5.99.56
+  * OS versions: 5.1-6.1
   * Architectures: x86, x86_64
-  * Compilers: Clang 3.0, GCC 4.1.3 & 4.5.3
+  * Compilers: Clang 3.0-3.2, GCC 4.1.3 & 4.5.3
   * Runtimes: ObjFW
 
 
