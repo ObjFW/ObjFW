@@ -495,6 +495,45 @@ default_equal(void *value1, void *value2)
 	}
 }
 
+- (void)removeAllValues
+{
+	uint32_t i;
+
+	for (i = 0; i < _capacity; i++) {
+		if (_buckets[i] != NULL) {
+			if (_buckets[i] == &deleted) {
+				_buckets[i] = NULL;
+				continue;
+			}
+
+			_keyFunctions.release(_buckets[i]->key);
+			_valueFunctions.release(_buckets[i]->value);
+
+			[self freeMemory: _buckets[i]];
+			_buckets[i] = NULL;
+		}
+	}
+
+	_count = 0;
+	_capacity = MIN_CAPACITY;
+	_buckets = [self resizeMemory: _buckets
+				 size: sizeof(*_buckets)
+				count: _capacity];
+
+	/*
+	 * Get a new random value for _rotate, so that it is not less secure
+	 * than creating a new hash map.
+	 */
+	if (of_hash_seed != 0)
+#if defined(HAVE_ARC4RANDOM)
+		_rotate = arc4random() & 31;
+#elif defined(HAVE_RANDOM)
+		_rotate = random() & 31;
+#else
+		_rotate = rand() & 31;
+#endif
+}
+
 - (bool)containsValue: (void*)value
 {
 	uint32_t i;

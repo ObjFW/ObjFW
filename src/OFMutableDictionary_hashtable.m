@@ -46,6 +46,11 @@
 	[_mapTable removeValueForKey: key];
 }
 
+- (void)removeAllObjects
+{
+	[_mapTable removeAllValues];
+}
+
 #ifdef OF_HAVE_BLOCKS
 - (void)replaceObjectsUsingBlock: (of_dictionary_replace_block_t)block
 {

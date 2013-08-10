@@ -71,6 +71,11 @@ typedef id (^of_dictionary_replace_block_t)(id key, id object);
  */
 - (void)removeObjectForKey: (id)key;
 
+/*!
+ * @brief Removes all objects.
+ */
+- (void)removeAllObjects;
+
 #ifdef OF_HAVE_BLOCKS
 /*!
  * @brief Replaces each object with the object returned by the block.

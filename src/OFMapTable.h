@@ -157,6 +157,11 @@ typedef void* (^of_map_table_replace_block_t)(void *key, void *value);
 - (void)removeValueForKey: (void*)key;
 
 /*!
+ * @brief Removes all values.
+ */
+- (void)removeAllValues;
+
+/*!
  * @brief Checks whether the map table contains a value equal to the specified
  *	  value.
  *

@@ -20,6 +20,8 @@
 
 #import "OFMutableDictionary_hashtable.h"
 
+#import "autorelease.h"
+
 static struct {
 	Class isa;
 } placeholder;
@@ -188,6 +190,19 @@ static struct {
 {
 	[self doesNotRecognizeSelector: _cmd];
 	abort();
+}
+
+- (void)removeAllObjects
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFArray *keys = [self allKeys];
+	OFEnumerator *enumerator = [keys objectEnumerator];
+	id key;
+
+	while ((key = [enumerator nextObject]) != nil)
+		[self removeObjectForKey: key];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - copy
