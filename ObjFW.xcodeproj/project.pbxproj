@@ -353,6 +353,7 @@
 		4BB4B54A16776094002A2DCE /* OFHTTPClientTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB4B54916776094002A2DCE /* OFHTTPClientTests.m */; };
 		4BB524C1143D1E4E0085FBCC /* OFProcess.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB524BF143D1E4E0085FBCC /* OFProcess.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BB524C2143D1E4E0085FBCC /* OFProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB524C0143D1E4E0085FBCC /* OFProcess.m */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BB52CC717B8EA7F00B7EBF5 /* codepage_437.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB52CC617B8EA7F00B7EBF5 /* codepage_437.m */; };
 		4BC090441584F6760040640F /* OFInvalidJSONException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC090421584F6760040640F /* OFInvalidJSONException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BC090451584F6760040640F /* OFInvalidJSONException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BC090431584F6760040640F /* OFInvalidJSONException.m */; };
 		4BCAA9AF1772432F003EF859 /* OFMessagePackExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BCAA9AD1772432E003EF859 /* OFMessagePackExtension.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -777,6 +778,11 @@
 		4BB50DD012F863C700C9393F /* of_asprintf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = of_asprintf.m; path = src/of_asprintf.m; sourceTree = SOURCE_ROOT; };
 		4BB524BF143D1E4E0085FBCC /* OFProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFProcess.h; path = src/OFProcess.h; sourceTree = "<group>"; };
 		4BB524C0143D1E4E0085FBCC /* OFProcess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFProcess.m; path = src/OFProcess.m; sourceTree = "<group>"; };
+		4BB52CC617B8EA7F00B7EBF5 /* codepage_437.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = codepage_437.m; path = src/codepage_437.m; sourceTree = "<group>"; };
+		4BB52CC817B8EA8E00B7EBF5 /* apple-forwarding-arm.S */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; name = "apple-forwarding-arm.S"; path = "src/apple-forwarding-arm.S"; sourceTree = "<group>"; };
+		4BB52CC917B8EA8E00B7EBF5 /* apple-forwarding-i386.S */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; name = "apple-forwarding-i386.S"; path = "src/apple-forwarding-i386.S"; sourceTree = "<group>"; };
+		4BB52CCA17B8EA8E00B7EBF5 /* apple-forwarding-ppc.S */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; name = "apple-forwarding-ppc.S"; path = "src/apple-forwarding-ppc.S"; sourceTree = "<group>"; };
+		4BB52CCB17B8EA8E00B7EBF5 /* apple-forwarding-x86_64.S */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; name = "apple-forwarding-x86_64.S"; path = "src/apple-forwarding-x86_64.S"; sourceTree = "<group>"; };
 		4BBA36C411406AB700CBA3AC /* atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic.h; path = src/atomic.h; sourceTree = "<group>"; };
 		4BBA36C511406AB700CBA3AC /* macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = macros.h; path = src/macros.h; sourceTree = "<group>"; };
 		4BC090421584F6760040640F /* OFInvalidJSONException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFInvalidJSONException.h; path = src/exceptions/OFInvalidJSONException.h; sourceTree = "<group>"; };
@@ -1239,6 +1245,10 @@
 				4B48B95214DC23B100546D39 /* OFXMLProcessingInstructions.h */,
 				4B48B95314DC23B100546D39 /* OFXMLProcessingInstructions.m */,
 				4B6AF97310A8D4450003FB0A /* ObjFW.h */,
+				4BB52CC817B8EA8E00B7EBF5 /* apple-forwarding-arm.S */,
+				4BB52CC917B8EA8E00B7EBF5 /* apple-forwarding-i386.S */,
+				4BB52CCA17B8EA8E00B7EBF5 /* apple-forwarding-ppc.S */,
+				4BB52CCB17B8EA8E00B7EBF5 /* apple-forwarding-x86_64.S */,
 				4B6799561099E7C50041064A /* asprintf.h */,
 				4B6AF96C10A8D3E40003FB0A /* asprintf.m */,
 				4BBA36C411406AB700CBA3AC /* atomic.h */,
@@ -1246,6 +1256,7 @@
 				4B3D236D1337FB5800DD29B8 /* base64.h */,
 				4B3D236E1337FB5800DD29B8 /* base64.m */,
 				4B837D7716829C5F007A3E83 /* block.h */,
+				4BB52CC617B8EA7F00B7EBF5 /* codepage_437.m */,
 				4B837D7816829C5F007A3E83 /* instance.h */,
 				4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */,
 				4BEF2D3017A5BF5200BB8BA3 /* forwarding.S */,
@@ -1804,6 +1815,7 @@
 				4B3D23B11337FC0D00DD29B8 /* OFXMLParser.m in Sources */,
 				4B48B95514DC23B100546D39 /* OFXMLProcessingInstructions.m in Sources */,
 				4B3D23B31337FC0D00DD29B8 /* base64.m in Sources */,
+				4BB52CC717B8EA7F00B7EBF5 /* codepage_437.m in Sources */,
 				4B3D23B41337FC0D00DD29B8 /* iso_8859_15.m in Sources */,
 				4BEF2D3117A5BF5200BB8BA3 /* forwarding.S in Sources */,
 				4B3D23B51337FC0D00DD29B8 /* foundation-compat.m in Sources */,

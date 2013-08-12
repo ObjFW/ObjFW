@@ -115,6 +115,7 @@ SRCS += OFArray_adjacent.m		\
 	OFSet_hashtable.m		\
 	OFString_UTF8.m			\
 	${ASPRINTF_M}			\
+	codepage_437.m			\
 	forwarding.S			\
 	${FOUNDATION_COMPAT_M}		\
 	iso_8859_15.m			\
