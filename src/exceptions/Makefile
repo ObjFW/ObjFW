@@ -7,6 +7,7 @@ SRCS = OFAllocFailedException.m				\
        OFChangeCurrentDirectoryPathFailedException.m	\
        OFChangeOwnerFailedException.m			\
        OFChangePermissionsFailedException.m		\
+       OFChecksumFailedException.m			\
        OFCopyFileFailedException.m			\
        OFCreateDirectoryFailedException.m		\
        OFCreateSymbolicLinkFailedException.m		\

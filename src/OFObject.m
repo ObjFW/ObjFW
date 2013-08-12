@@ -1073,8 +1073,7 @@ void _references_to_categories_of_OFObject(void)
 		 * We can use owner as a sentinel to prevent exploitation in
 		 * case there is a buffer underflow somewhere.
 		 */
-		if OF_UNLIKELY (iter->owner != self)
-			abort();
+		OF_ENSURE(iter->owner == self);
 
 		free(iter);
 
