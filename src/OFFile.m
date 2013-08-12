@@ -771,13 +771,17 @@ parse_mode(const char *mode)
 						   requestedLength: length];
 }
 
-- (void)lowlevelSeekToOffset: (off_t)offset
-		      whence: (int)whence
+- (off_t)lowlevelSeekToOffset: (off_t)offset
+		       whence: (int)whence
 {
-	if (lseek(_fd, offset, whence) == -1)
+	off_t ret = lseek(_fd, offset, whence);
+
+	if (ret == -1)
 		@throw [OFSeekFailedException exceptionWithStream: self
 							   offset: offset
 							   whence: whence];
+
+	return ret;
 }
 
 - (int)fileDescriptorForReading

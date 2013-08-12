@@ -46,9 +46,10 @@
  *		 SEEK_SET | Seek to the specified byte
  *		 SEEK_CUR | Seek to the current location + offset
  *		 SEEK_END | Seek to the end of the stream + offset
+ * @return The new offset form the start of the file
  */
-- (void)seekToOffset: (off_t)offset
-	      whence: (int)whence;
+- (off_t)seekToOffset: (off_t)offset
+	       whence: (int)whence;
 
 /*!
  * @brief Seek the stream on the lowlevel.
@@ -66,7 +67,8 @@
  *		 SEEK_SET | Seek to the specified byte
  *		 SEEK_CUR | Seek to the current location + offset
  *		 SEEK_END | Seek to the end of the stream + offset
+ * @return The new offset from the start of the file
  */
-- (void)lowlevelSeekToOffset: (off_t)offset
-		      whence: (int)whence;
+- (off_t)lowlevelSeekToOffset: (off_t)offset
+		       whence: (int)whence;
 @end

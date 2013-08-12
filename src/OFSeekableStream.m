@@ -17,25 +17,31 @@
 #include "config.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #import "OFSeekableStream.h"
 
 @implementation OFSeekableStream
-- (void)lowlevelSeekToOffset: (off_t)offset
-		      whence: (int)whence
+- (off_t)lowlevelSeekToOffset: (off_t)offset
+		       whence: (int)whence
 {
 	[self doesNotRecognizeSelector: _cmd];
 	abort();
 }
 
-- (void)seekToOffset: (off_t)offset
-	      whence: (int)whence
+- (off_t)seekToOffset: (off_t)offset
+	       whence: (int)whence
 {
-	[self lowlevelSeekToOffset: offset
-			    whence: whence];
+	if (whence == SEEK_CUR)
+		offset -= _readBufferLength;
+
+	offset = [self lowlevelSeekToOffset: offset
+				     whence: whence];
 
 	[self freeMemory: _readBuffer];
 	_readBuffer = NULL;
 	_readBufferLength = 0;
+
+	return offset;
 }
 @end
