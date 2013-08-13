@@ -217,14 +217,14 @@
 	abort();
 }
 
-- OF_initWithFireDate: (OFDate*)fireDate
-	     interval: (double)interval
-	       target: (id)target
-	     selector: (SEL)selector
-	       object: (id)object1
-	       object: (id)object2
-	    arguments: (uint8_t)arguments
-	      repeats: (bool)repeats
+- (instancetype)OF_initWithFireDate: (OFDate*)fireDate
+			   interval: (double)interval
+			     target: (id)target
+			   selector: (SEL)selector
+			     object: (id)object1
+			     object: (id)object2
+			  arguments: (uint8_t)arguments
+			    repeats: (bool)repeats
 {
 	self = [super init];
 

@@ -32,7 +32,7 @@
 
 @implementation OFMethod
 #if defined(OF_OBJFW_RUNTIME)
-- OF_initWithMethod: (struct objc_method*)method
+- (instancetype)OF_initWithMethod: (struct objc_method*)method
 {
 	self = [super init];
 
@@ -49,7 +49,7 @@
 	return self;
 }
 #elif defined(OF_APPLE_RUNTIME)
-- OF_initWithMethod: (Method)method
+- (instancetype)OF_initWithMethod: (Method)method
 {
 	self = [super init];
 
@@ -145,7 +145,7 @@
 
 @implementation OFInstanceVariable
 #if defined(OF_OBJFW_RUNTIME)
-- OF_initWithIvar: (struct objc_ivar*)ivar
+- (instancetype)OF_initWithIvar: (struct objc_ivar*)ivar
 {
 	self = [super init];
 
@@ -161,7 +161,7 @@
 	return self;
 }
 #elif defined(OF_APPLE_RUNTIME)
-- OF_initWithIvar: (Ivar)ivar
+- (instancetype)OF_initWithIvar: (Ivar)ivar
 {
 	self = [super init];
 

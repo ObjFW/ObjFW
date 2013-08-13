@@ -75,7 +75,7 @@ of_log(OFConstantString *format, ...)
 	abort();
 }
 
-- OF_initWithFileDescriptor: (int)fd
+- (instancetype)OF_initWithFileDescriptor: (int)fd
 {
 	self = [super init];
 

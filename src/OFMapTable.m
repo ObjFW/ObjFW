@@ -676,10 +676,10 @@ default_equal(void *value1, void *value2)
 	abort();
 }
 
-- OF_initWithMapTable: (OFMapTable*)mapTable
-	      buckets: (struct of_map_table_bucket**)buckets
-	     capacity: (uint32_t)capacity
-     mutationsPointer: (unsigned long*)mutationsPtr
+- (instancetype)OF_initWithMapTable: (OFMapTable*)mapTable
+			    buckets: (struct of_map_table_bucket**)buckets
+			   capacity: (uint32_t)capacity
+		   mutationsPointer: (unsigned long*)mutationsPtr
 {
 	self = [super init];
 
