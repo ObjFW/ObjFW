@@ -294,6 +294,8 @@
 		4B879A8C177231F000EBCEA4 /* OFDataArray+MessagePackValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B879A89177231F000EBCEA4 /* OFDataArray+MessagePackValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B879A8D177231F000EBCEA4 /* OFDataArray+MessagePackValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B879A8A177231F000EBCEA4 /* OFDataArray+MessagePackValue.m */; };
 		4B879A8E177231F000EBCEA4 /* OFMessagePackRepresentation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B879A8B177231F000EBCEA4 /* OFMessagePackRepresentation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B8B025917BBA7C7009ED983 /* OFZIPArchiveEntry.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8B025717BBA7C7009ED983 /* OFZIPArchiveEntry.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B8B025A17BBA7C7009ED983 /* OFZIPArchiveEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8B025817BBA7C7009ED983 /* OFZIPArchiveEntry.m */; };
 		4B8B16FE133A3B84007CD8B3 /* OFHashAlreadyCalculatedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8B16FC133A3B84007CD8B3 /* OFHashAlreadyCalculatedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B8B16FF133A3B84007CD8B3 /* OFHashAlreadyCalculatedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8B16FD133A3B84007CD8B3 /* OFHashAlreadyCalculatedException.m */; };
 		4B8B170D133A3C11007CD8B3 /* OFConditionBroadcastFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8B1702133A3B8E007CD8B3 /* OFConditionBroadcastFailedException.m */; };
@@ -709,6 +711,8 @@
 		4B879A89177231F000EBCEA4 /* OFDataArray+MessagePackValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFDataArray+MessagePackValue.h"; path = "src/OFDataArray+MessagePackValue.h"; sourceTree = "<group>"; };
 		4B879A8A177231F000EBCEA4 /* OFDataArray+MessagePackValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFDataArray+MessagePackValue.m"; path = "src/OFDataArray+MessagePackValue.m"; sourceTree = "<group>"; };
 		4B879A8B177231F000EBCEA4 /* OFMessagePackRepresentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMessagePackRepresentation.h; path = src/OFMessagePackRepresentation.h; sourceTree = "<group>"; };
+		4B8B025717BBA7C7009ED983 /* OFZIPArchiveEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFZIPArchiveEntry.h; path = src/OFZIPArchiveEntry.h; sourceTree = "<group>"; };
+		4B8B025817BBA7C7009ED983 /* OFZIPArchiveEntry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFZIPArchiveEntry.m; path = src/OFZIPArchiveEntry.m; sourceTree = "<group>"; };
 		4B8B16FC133A3B84007CD8B3 /* OFHashAlreadyCalculatedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFHashAlreadyCalculatedException.h; path = src/exceptions/OFHashAlreadyCalculatedException.h; sourceTree = "<group>"; };
 		4B8B16FD133A3B84007CD8B3 /* OFHashAlreadyCalculatedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHashAlreadyCalculatedException.m; path = src/exceptions/OFHashAlreadyCalculatedException.m; sourceTree = "<group>"; };
 		4B8B1701133A3B8E007CD8B3 /* OFConditionBroadcastFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFConditionBroadcastFailedException.h; path = src/exceptions/OFConditionBroadcastFailedException.h; sourceTree = "<group>"; };
@@ -1256,6 +1260,8 @@
 				4B48B95314DC23B100546D39 /* OFXMLProcessingInstructions.m */,
 				4BE52D1F17B990B4005958D1 /* OFZIPArchive.h */,
 				4BE52D2017B990B4005958D1 /* OFZIPArchive.m */,
+				4B8B025717BBA7C7009ED983 /* OFZIPArchiveEntry.h */,
+				4B8B025817BBA7C7009ED983 /* OFZIPArchiveEntry.m */,
 				4B6AF97310A8D4450003FB0A /* ObjFW.h */,
 				4BB52CC817B8EA8E00B7EBF5 /* apple-forwarding-arm.S */,
 				4BB52CC917B8EA8E00B7EBF5 /* apple-forwarding-i386.S */,
@@ -1471,6 +1477,7 @@
 				4B3D23E31337FCB000DD29B8 /* OFXMLParser.h in Headers */,
 				4B48B95414DC23B100546D39 /* OFXMLProcessingInstructions.h in Headers */,
 				4BE52D2117B990B4005958D1 /* OFZIPArchive.h in Headers */,
+				4B8B025917BBA7C7009ED983 /* OFZIPArchiveEntry.h in Headers */,
 				4B3D23E41337FCB000DD29B8 /* ObjFW.h in Headers */,
 				4B3D23E51337FCB000DD29B8 /* asprintf.h in Headers */,
 				4B3D23E61337FCB000DD29B8 /* atomic.h in Headers */,
@@ -1829,6 +1836,7 @@
 				4B3D23B11337FC0D00DD29B8 /* OFXMLParser.m in Sources */,
 				4B48B95514DC23B100546D39 /* OFXMLProcessingInstructions.m in Sources */,
 				4BE52D2217B990B4005958D1 /* OFZIPArchive.m in Sources */,
+				4B8B025A17BBA7C7009ED983 /* OFZIPArchiveEntry.m in Sources */,
 				4B3D23B31337FC0D00DD29B8 /* base64.m in Sources */,
 				4BB52CC717B8EA7F00B7EBF5 /* codepage_437.m in Sources */,
 				4B3D23B41337FC0D00DD29B8 /* iso_8859_15.m in Sources */,

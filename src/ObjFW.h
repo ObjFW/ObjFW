@@ -48,6 +48,7 @@
 #import "OFStdIOStream.h"
 #import "OFFile.h"
 #import "OFZIPArchive.h"
+#import "OFZIPArchiveEntry.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFStreamSocket.h"
 # import "OFTCPSocket.h"

@@ -18,7 +18,7 @@
 #import "OFString.h"
 
 @class OFFile;
-@class OFMutableArray;
+@class OFDictionary;
 @class OFMutableDictionary;
 @class OFStream;
 
@@ -33,13 +33,12 @@
 	uint16_t _centralDirectoryEntriesInDisk, _centralDirectoryEntries;
 	uint32_t _centralDirectorySize, _centralDirectoryOffset;
 	OFString *_archiveComment;
-	OFMutableArray *_filesInArchive;
-	OFMutableDictionary *_fileHeaders;
+	OFMutableDictionary *_entries;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy) OFString *archiveComment;
-@property (readonly, copy) OFArray *filesInArchive;
+@property (readonly, copy) OFDictionary *entries;
 #endif
 
 /*!
@@ -60,11 +59,14 @@
 - initWithFile: (OFString*)path;
 
 /*!
- * @brief Returns an array with the names of all files in the archive.
+ * @brief Returns the entries in the central directory of the archive as a
+ * 	  dictionary.
  *
- * @return An array with the names of all files in the archive
+ * The dictionary maps the file name to an @ref OFZIPArchiveEntry.
+ *
+ * @return The entries in the central directory of the archive as a dictionary
  */
-- (OFArray*)filesInArchive;
+- (OFDictionary*)entries;
 
 /*!
  * @brief Returns the archive comment.
@@ -82,5 +84,5 @@
 - (OFStream*)streamForReadingFile: (OFString*)path;
 
 - (void)OF_readZIPInfo;
-- (void)OF_readFileHeaders;
+- (void)OF_readEntries;
 @end

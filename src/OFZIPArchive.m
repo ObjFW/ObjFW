@@ -19,7 +19,7 @@
 #include <stdio.h>
 
 #import "OFZIPArchive.h"
-#import "OFArray.h"
+#import "OFZIPArchiveEntry.h"
 #import "OFDictionary.h"
 #import "OFFile.h"
 
@@ -46,23 +46,6 @@
  *  - No support for ZIP64.
  */
 
-@interface OFZIPArchive_FileHeader: OFObject
-{
-@public
-	uint16_t _madeWithVersion, _minVersion, _generalPurposeBitFlag;
-	uint16_t _compressionMethod, _lastModifiedFileTime;
-	uint16_t _lastModifiedFileDate;
-	uint32_t _CRC32, _compressedSize, _uncompressedSize;
-	OFString *_fileName;
-	OFDataArray *_extraField;
-	OFString *_fileComment;
-	uint16_t _startDiskNumber, _internalAttributes;
-	uint32_t _externalAttributes, _localFileHeaderOffset;
-}
-
-- initWithFile: (OFFile*)file;
-@end
-
 @interface OFZIPArchive_LocalFileHeader: OFObject
 {
 @public
@@ -74,7 +57,7 @@
 }
 
 - initWithFile: (OFFile*)file;
-- (bool)matchesFileHeader: (OFZIPArchive_FileHeader*)fileHeader;
+- (bool)matchesEntry: (OFZIPArchiveEntry*)entry;
 @end
 
 @interface OFZIPArchive_FileStream: OFStream
@@ -124,7 +107,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 		_path = [path copy];
 
 		[self OF_readZIPInfo];
-		[self OF_readFileHeaders];
+		[self OF_readEntries];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -138,8 +121,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	[_file release];
 	[_path release];
 	[_archiveComment release];
-	[_filesInArchive release];
-	[_fileHeaders release];
+	[_entries release];
 
 	[super dealloc];
 }
@@ -170,7 +152,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)OF_readFileHeaders
+- (void)OF_readEntries
 {
 	void *pool = objc_autoreleasePoolPush();
 	size_t i;
@@ -178,28 +160,27 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	[_file seekToOffset: _centralDirectoryOffset
 		     whence: SEEK_SET];
 
-	_filesInArchive = [[OFMutableArray alloc] init];
-	_fileHeaders = [[OFMutableDictionary alloc] init];
+	_entries = [[OFMutableDictionary alloc] init];
 
 	for (i = 0; i < _centralDirectoryEntries; i++) {
-		OFZIPArchive_FileHeader *fileHeader =
-		    [[[OFZIPArchive_FileHeader alloc]
-		    initWithFile: _file] autorelease];
+		OFZIPArchiveEntry *entry = [[[OFZIPArchiveEntry alloc]
+		    OF_initWithFile: _file] autorelease];
 
-		[_filesInArchive addObject: fileHeader->_fileName];
-		[_fileHeaders setObject: fileHeader
-				 forKey: fileHeader->_fileName];
+		if ([_entries objectForKey: [entry fileName]] != nil)
+			@throw [OFInvalidFormatException exception];
+
+		[_entries setObject: entry
+			     forKey: [entry fileName]];
 	}
 
-	[_filesInArchive makeImmutable];
-	[_fileHeaders makeImmutable];
+	[_entries makeImmutable];
 
 	objc_autoreleasePoolPop(pool);
 }
 
-- (OFArray*)filesInArchive
+- (OFDictionary*)entries
 {
-	OF_GETTER(_filesInArchive, true)
+	OF_GETTER(_entries, true)
 }
 
 - (OFString*)archiveComment
@@ -211,21 +192,21 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 {
 	OFStream *ret;
 	void *pool = objc_autoreleasePoolPush();
-	OFZIPArchive_FileHeader *fileHeader = [_fileHeaders objectForKey: path];
+	OFZIPArchiveEntry *entry = [_entries objectForKey: path];
 	OFZIPArchive_LocalFileHeader *localFileHeader;
 
-	if (fileHeader == nil) {
+	if (entry == nil) {
 		errno = ENOENT;
 		@throw [OFOpenFileFailedException exceptionWithPath: path
 							       mode: @"rb"];
 	}
 
-	[_file seekToOffset: fileHeader->_localFileHeaderOffset
+	[_file seekToOffset: [entry OF_localFileHeaderOffset]
 		     whence: SEEK_SET];
 	localFileHeader = [[[OFZIPArchive_LocalFileHeader alloc]
 	    initWithFile: _file] autorelease];
 
-	if (![localFileHeader matchesFileHeader: fileHeader])
+	if (![localFileHeader matchesEntry: entry])
 		@throw [OFInvalidFormatException exception];
 
 	if (localFileHeader->_minVersion > 10) {
@@ -251,66 +232,6 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	objc_autoreleasePoolPop(pool);
 
 	return [ret autorelease];
-}
-@end
-
-@implementation OFZIPArchive_FileHeader
-- initWithFile: (OFFile*)file
-{
-	self = [super init];
-
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-		uint16_t fileNameLength, extraFieldLength, fileCommentLength;
-		of_string_encoding_t encoding;
-
-		if ([file readLittleEndianInt32] != 0x02014B50)
-			@throw [OFInvalidFormatException exception];
-
-		_madeWithVersion = [file readLittleEndianInt16];
-		_minVersion = [file readLittleEndianInt16];
-		_generalPurposeBitFlag = [file readLittleEndianInt16];
-		_compressionMethod = [file readLittleEndianInt16];
-		_lastModifiedFileTime = [file readLittleEndianInt16];
-		_lastModifiedFileDate = [file readLittleEndianInt16];
-		_CRC32 = [file readLittleEndianInt32];
-		_compressedSize = [file readLittleEndianInt32];
-		_uncompressedSize = [file readLittleEndianInt32];
-		fileNameLength = [file readLittleEndianInt16];
-		extraFieldLength = [file readLittleEndianInt16];
-		fileCommentLength = [file readLittleEndianInt16];
-		_startDiskNumber = [file readLittleEndianInt16];
-		_internalAttributes = [file readLittleEndianInt16];
-		_externalAttributes = [file readLittleEndianInt32];
-		_localFileHeaderOffset = [file readLittleEndianInt32];
-
-		encoding = (_generalPurposeBitFlag & (1 << 11)
-		    ? OF_STRING_ENCODING_UTF_8
-		    : OF_STRING_ENCODING_CODEPAGE_437);
-
-		_fileName = [[file readStringWithLength: fileNameLength
-					       encoding: encoding] copy];
-		_extraField = [[file
-		    readDataArrayWithCount: extraFieldLength] retain];
-		_fileComment = [[file readStringWithLength: fileCommentLength
-						  encoding: encoding] copy];
-
-		objc_autoreleasePoolPop(pool);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (void)dealloc
-{
-	[_fileName release];
-	[_extraField release];
-	[_fileComment release];
-
-	[super dealloc];
 }
 @end
 
@@ -360,17 +281,17 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	[super dealloc];
 }
 
-- (bool)matchesFileHeader: (OFZIPArchive_FileHeader*)fileHeader
+- (bool)matchesEntry: (OFZIPArchiveEntry*)entry
 {
-	if (_minVersion != fileHeader->_minVersion ||
-	    _generalPurposeBitFlag != fileHeader->_generalPurposeBitFlag ||
-	    _compressionMethod != fileHeader->_compressionMethod ||
-	    _lastModifiedFileTime != fileHeader->_lastModifiedFileTime ||
-	    _lastModifiedFileDate != fileHeader->_lastModifiedFileDate ||
-	    _CRC32 != fileHeader->_CRC32 ||
-	    _compressedSize != fileHeader->_compressedSize ||
-	    _uncompressedSize != fileHeader->_uncompressedSize ||
-	    ![_fileName isEqual: fileHeader->_fileName])
+	if (_minVersion != [entry OF_minVersion] ||
+	    _generalPurposeBitFlag != [entry OF_generalPurposeBitFlag] ||
+	    _compressionMethod != [entry OF_compressionMethod] ||
+	    _lastModifiedFileTime != [entry OF_lastModifiedFileTime] ||
+	    _lastModifiedFileDate != [entry OF_lastModifiedFileDate] ||
+	    _CRC32 != [entry CRC32] ||
+	    _compressedSize != [entry compressedSize] ||
+	    _uncompressedSize != [entry uncompressedSize] ||
+	    ![_fileName isEqual: [entry fileName]])
 		return false;
 
 	return true;
