@@ -24,7 +24,7 @@
 @class OFDate;
 
 /*!
- * @brief This class represents an entry in the central directory of a ZIP
+ * @brief A class which represents an entry in the central directory of a ZIP
  *	  archive.
  */
 @interface OFZIPArchiveEntry: OFObject

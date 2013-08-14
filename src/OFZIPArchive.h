@@ -47,7 +47,7 @@
  * @param path The path to the ZIP file
  * @return A new, autoreleased OFZIPArchive
  */
-+ (instancetype)archiveWithFile: (OFString*)path;
++ (instancetype)archiveWithPath: (OFString*)path;
 
 /*!
  * @brief Initializes an already allocated OFZIPArchive object for the
@@ -56,7 +56,7 @@
  * @param path The path to the ZIP file
  * @return An Initialized OFZIPArchive
  */
-- initWithFile: (OFString*)path;
+- initWithPath: (OFString*)path;
 
 /*!
  * @brief Returns the entries in the central directory of the archive as a

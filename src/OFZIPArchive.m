@@ -92,12 +92,12 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 }
 
 @implementation OFZIPArchive
-+ (instancetype)archiveWithFile: (OFString*)path
++ (instancetype)archiveWithPath: (OFString*)path
 {
-	return [[[self alloc] initWithFile: path] autorelease];
+	return [[[self alloc] initWithPath: path] autorelease];
 }
 
-- initWithFile: (OFString*)path
+- initWithPath: (OFString*)path
 {
 	self = [super init];
 
