@@ -280,8 +280,8 @@ parse_mode(const char *mode)
 		void *pool2 = objc_autoreleasePoolPush();
 
 		if (currentPath != nil)
-			currentPath = [OFString
-			    stringWithPath: currentPath, component, nil];
+			currentPath = [currentPath
+			    stringByAppendingPathComponent: component];
 		else
 			currentPath = component;
 
@@ -525,9 +525,9 @@ parse_mode(const char *mode)
 	pool = objc_autoreleasePoolPush();
 
 	if ([self directoryExistsAtPath: destination]) {
-		OFString *filename = [source lastPathComponent];
-		destination = [OFString stringWithPath: destination, filename,
-							nil];
+		OFArray *components = [OFArray arrayWithObjects:
+		    destination, [source lastPathComponent], nil];
+		destination = [OFString pathWithComponents: components];
 	}
 
 	override = [self fileExistsAtPath: destination];
@@ -583,9 +583,9 @@ parse_mode(const char *mode)
 	pool = objc_autoreleasePoolPush();
 
 	if ([self directoryExistsAtPath: destination]) {
-		OFString *filename = [source lastPathComponent];
-		destination = [OFString stringWithPath: destination, filename,
-							nil];
+		OFArray *components = [OFArray arrayWithObjects:
+		    destination, [source lastPathComponent], nil];
+		destination = [OFString pathWithComponents: components];
 	}
 
 #ifndef _WIN32
@@ -627,9 +627,9 @@ parse_mode(const char *mode)
 	pool = objc_autoreleasePoolPush();
 
 	if ([self directoryExistsAtPath: destination]) {
-		OFString *filename = [source lastPathComponent];
-		destination = [OFString stringWithPath: destination, filename,
-							nil];
+		OFArray *components = [OFArray arrayWithObjects:
+		    destination, [source lastPathComponent], nil];
+		destination = [OFString pathWithComponents: components];
 	}
 
 	if (link([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
@@ -654,9 +654,9 @@ parse_mode(const char *mode)
 	pool = objc_autoreleasePoolPush();
 
 	if ([self directoryExistsAtPath: destination]) {
-		OFString *filename = [source lastPathComponent];
-		destination = [OFString stringWithPath: destination, filename,
-							nil];
+		OFArray *components = [OFArray arrayWithObjects:
+		    destination, [source lastPathComponent], nil];
+		destination = [OFString pathWithComponents: components];
 	}
 
 	if (symlink([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],

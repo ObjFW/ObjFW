@@ -273,14 +273,6 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 + (instancetype)stringWithFormat: (OFConstantString*)format, ...;
 
 /*!
- * @brief Creates a new OFString containing the constructed specified path.
- *
- * @param firstComponent The first component of the path
- * @return A new autoreleased OFString
- */
-+ (instancetype)stringWithPath: (OFString*)firstComponent, ... OF_SENTINEL;
-
-/*!
  * @brief Creates a new OFString with the contents of the specified UTF-8
  *	  encoded file.
  *
@@ -324,6 +316,14 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 + (instancetype)stringWithContentsOfURL: (OFURL*)URL
 			       encoding: (of_string_encoding_t)encoding;
+
+/*!
+ * @brief Creates a path from the specified path components.
+ *
+ * @param components An array of components for the path
+ * @return A new autoreleased OFString
+ */
++ (instancetype)pathWithComponents: (OFArray*)components;
 
 /*!
  * @brief Initializes an already allocated OFString from a UTF-8 encoded C
@@ -513,26 +513,6 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 - initWithFormat: (OFConstantString*)format
        arguments: (va_list)arguments;
-
-/*!
- * @brief Initializes an already allocated OFString with the constructed
- *	  specified path.
- *
- * @param firstComponent The first component of the path
- * @return A new autoreleased OFString
- */
-- initWithPath: (OFString*)firstComponent, ... OF_SENTINEL;
-
-/*!
- * @brief Initializes an already allocated OFString with the constructed
- *	  specified path.
- *
- * @param firstComponent The first component of the path
- * @param arguments A va_list with the other components of the path
- * @return A new autoreleased OFString
- */
-- initWithPath: (OFString*)firstComponent
-     arguments: (va_list)arguments;
 
 /*!
  * @brief Initializes an already allocated OFString with the contents of the

@@ -282,14 +282,16 @@ static uint16_t sutf16str[] = {
 	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
 	    [[a objectAtIndex: i++] isEqual: @"baz"])
 
-	TEST(@"+[stringWithPath:]",
-	    (is = [OFString stringWithPath: @"foo", @"bar", @"baz", nil]) &&
+	TEST(@"+[pathWithComponents:]",
+	    (is = [OFString pathWithComponents: [OFArray arrayWithObjects:
+	    @"foo", @"bar", @"baz", nil]]) &&
 #ifndef _WIN32
 	    [is isEqual: @"foo/bar/baz"] &&
 #else
 	    [is isEqual: @"foo\\bar\\baz"] &&
 #endif
-	    (is = [OFString stringWithPath: @"foo", nil]) &&
+	    (is = [OFString pathWithComponents:
+	    [OFArray arrayWithObjects: @"foo", nil]]) &&
 	    [is isEqual: @"foo"])
 
 	TEST(@"-[pathComponents]",

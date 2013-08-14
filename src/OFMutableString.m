@@ -171,26 +171,6 @@ static struct {
 						      arguments: arguments];
 }
 
-- initWithPath: (OFString*)firstComponent, ...
-{
-	id ret;
-	va_list arguments;
-
-	va_start(arguments, firstComponent);
-	ret = [[OFMutableString_UTF8 alloc] initWithPath: firstComponent
-					       arguments: arguments];
-	va_end(arguments);
-
-	return ret;
-}
-
-- initWithPath: (OFString*)firstComponent
-     arguments: (va_list)arguments
-{
-	return (id)[[OFMutableString_UTF8 alloc] initWithPath: firstComponent
-						    arguments: arguments];
-}
-
 - initWithContentsOfFile: (OFString*)path
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithContentsOfFile: path];

@@ -410,26 +410,6 @@ static struct {
 					       arguments: arguments];
 }
 
-- initWithPath: (OFString*)firstComponent, ...
-{
-	id ret;
-	va_list arguments;
-
-	va_start(arguments, firstComponent);
-	ret = [[OFString_UTF8 alloc] initWithPath: firstComponent
-					arguments: arguments];
-	va_end(arguments);
-
-	return ret;
-}
-
-- initWithPath: (OFString*)firstComponent
-     arguments: (va_list)arguments
-{
-	return (id)[[OFString_UTF8 alloc] initWithPath: firstComponent
-					     arguments: arguments];
-}
-
 - initWithContentsOfFile: (OFString*)path
 {
 	return (id)[[OFString_UTF8 alloc] initWithContentsOfFile: path];
@@ -621,19 +601,6 @@ static struct {
 	return ret;
 }
 
-+ (instancetype)stringWithPath: (OFString*)firstComponent, ...
-{
-	id ret;
-	va_list arguments;
-
-	va_start(arguments, firstComponent);
-	ret = [[[self alloc] initWithPath: firstComponent
-				arguments: arguments] autorelease];
-	va_end(arguments);
-
-	return ret;
-}
-
 + (instancetype)stringWithContentsOfFile: (OFString*)path
 {
 	return [[[self alloc] initWithContentsOfFile: path] autorelease];
@@ -656,6 +623,25 @@ static struct {
 {
 	return [[[self alloc] initWithContentsOfURL: URL
 					   encoding: encoding] autorelease];
+}
+
++ (instancetype)pathWithComponents: (OFArray*)components
+{
+	OFMutableString *ret = [OFMutableString string];
+	void *pool = objc_autoreleasePoolPush();
+	OFEnumerator *enumerator = [components objectEnumerator];
+	OFString *component;
+
+	if ((component = [enumerator nextObject]) != nil)
+		[ret appendString: component];
+	while ((component = [enumerator nextObject]) != nil) {
+		[ret appendString: OF_PATH_DELIMITER_STRING];
+		[ret appendString: component];
+	}
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
 }
 
 - init
@@ -831,32 +817,6 @@ static struct {
 
 - initWithFormat: (OFConstantString*)format
        arguments: (va_list)arguments
-{
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
-}
-
-- initWithPath: (OFString*)firstComponent, ...
-{
-	id ret;
-	va_list arguments;
-
-	va_start(arguments, firstComponent);
-	ret = [self initWithPath: firstComponent
-		       arguments: arguments];
-	va_end(arguments);
-
-	return ret;
-}
-
-- initWithPath: (OFString*)firstComponent
-     arguments: (va_list)arguments
 {
 	@try {
 		[self doesNotRecognizeSelector: _cmd];
@@ -1809,7 +1769,15 @@ static struct {
 
 - (OFString*)stringByAppendingPathComponent: (OFString*)component
 {
-	return [OFString stringWithPath: self, component, nil];
+	void *pool = objc_autoreleasePoolPush();
+	OFString *ret;
+
+	ret = [OFString pathWithComponents:
+	    [OFArray arrayWithObjects: self, component, nil]];
+
+	[ret retain];
+	objc_autoreleasePoolPop(pool);
+	return [ret autorelease];
 }
 
 - (OFString*)stringByPrependingString: (OFString*)string
