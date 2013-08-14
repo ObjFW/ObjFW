@@ -23,37 +23,37 @@
  */
 @interface OFRemoveItemFailedException: OFException
 {
-	OFString *_itemPath;
+	OFString *_path;
 	int _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy, nonatomic) OFString *itemPath;
+@property (readonly, copy, nonatomic) OFString *path;
 @property (readonly) int errNo;
 #endif
 
 /*!
  * @brief Creates a new, autoreleased remove failed exception.
  *
- * @param itemPath The path of the item which could not be removed
+ * @param path The path of the item which could not be removed
  * @return A new, autoreleased remove item failed exception
  */
-+ (instancetype)exceptionWithItemPath: (OFString*)itemPath;
++ (instancetype)exceptionWithPath: (OFString*)path;
 
 /*!
  * @brief Initializes an already allocated remove failed exception.
  *
- * @param itemPath The path of the item which could not be removed
+ * @param path The path of the item which could not be removed
  * @return An initialized remove item failed exception
  */
-- initWithItemPath: (OFString*)itemPath;
+- initWithPath: (OFString*)path;
 
 /*!
  * @brief Returns the path of the item which could not be removed.
  *
  * @return The path of the item which could not be removed
  */
-- (OFString*)itemPath;
+- (OFString*)path;
 
 /*!
  * @brief Returns the errno from when the exception was created.

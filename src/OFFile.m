@@ -253,7 +253,7 @@ parse_mode(const char *mode)
 	if (_wmkdir([path UTF16String]))
 #endif
 		@throw [OFCreateDirectoryFailedException
-		    exceptionWithDirectoryPath: path];
+		    exceptionWithPath: path];
 }
 
 + (void)createDirectoryAtPath: (OFString*)path
@@ -385,7 +385,7 @@ parse_mode(const char *mode)
 	if (_wchdir([path UTF16String]))
 #endif
 		@throw [OFChangeCurrentDirectoryPathFailedException
-		    exceptionWithDirectoryPath: path];
+		    exceptionWithPath: path];
 }
 
 + (off_t)sizeOfFileAtPath: (OFString*)path
@@ -611,8 +611,7 @@ parse_mode(const char *mode)
 #else
 	if (_wremove([path UTF16String]))
 #endif
-		@throw [OFRemoveItemFailedException
-		    exceptionWithItemPath: path];
+		@throw [OFRemoveItemFailedException exceptionWithPath: path];
 }
 
 #ifdef OF_HAVE_LINK

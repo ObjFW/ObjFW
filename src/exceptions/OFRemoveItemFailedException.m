@@ -24,9 +24,9 @@
 #import "common.h"
 
 @implementation OFRemoveItemFailedException
-+ (instancetype)exceptionWithItemPath: (OFString*)itemPath
++ (instancetype)exceptionWithPath: (OFString*)path
 {
-	return [[[self alloc] initWithItemPath: itemPath] autorelease];
+	return [[[self alloc] initWithPath: path] autorelease];
 }
 
 - init
@@ -41,12 +41,12 @@
 	abort();
 }
 
-- initWithItemPath: (OFString*)itemPath
+- initWithPath: (OFString*)path
 {
 	self = [super init];
 
 	@try {
-		_itemPath = [itemPath copy];
+		_path = [path copy];
 		_errNo = GET_ERRNO;
 	} @catch (id e) {
 		[self release];
@@ -58,7 +58,7 @@
 
 - (void)dealloc
 {
-	[_itemPath release];
+	[_path release];
 
 	[super dealloc];
 }
@@ -66,12 +66,12 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to remove item at path %@! " ERRFMT, _itemPath, ERRPARAM];
+	    @"Failed to remove item at path %@! " ERRFMT, _path, ERRPARAM];
 }
 
-- (OFString*)itemPath
+- (OFString*)path
 {
-	OF_GETTER(_itemPath, false)
+	OF_GETTER(_path, false)
 }
 
 - (int)errNo

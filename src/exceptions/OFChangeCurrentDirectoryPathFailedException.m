@@ -24,10 +24,9 @@
 #import "common.h"
 
 @implementation OFChangeCurrentDirectoryPathFailedException
-+ (instancetype)exceptionWithDirectoryPath: (OFString*)directoryPath
++ (instancetype)exceptionWithPath: (OFString*)path
 {
-	return [[[self alloc]
-	    initWithDirectoryPath: directoryPath] autorelease];
+	return [[[self alloc] initWithPath: path] autorelease];
 }
 
 - init
@@ -42,12 +41,12 @@
 	abort();
 }
 
-- initWithDirectoryPath: (OFString*)directoryPath
+- initWithPath: (OFString*)path
 {
 	self = [super init];
 
 	@try {
-		_directoryPath = [directoryPath copy];
+		_path = [path copy];
 		_errNo = GET_ERRNO;
 	} @catch (id e) {
 		[self release];
@@ -59,7 +58,7 @@
 
 - (void)dealloc
 {
-	[_directoryPath release];
+	[_path release];
 
 	[super dealloc];
 }
@@ -68,12 +67,12 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to change the current directory path to %@! " ERRFMT,
-	    _directoryPath, ERRPARAM];
+	    _path, ERRPARAM];
 }
 
-- (OFString*)directoryPath
+- (OFString*)path
 {
-	OF_GETTER(_directoryPath, false)
+	OF_GETTER(_path, false)
 }
 
 - (int)errNo
