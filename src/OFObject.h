@@ -54,14 +54,11 @@
 # define __GCC_VERSION__ 0
 #endif
 
-#if defined(__clang__)
+#if defined(__clang__) || __GCC_VERSION__ >= 406 || defined(OBJC_NEW_PROPERTIES)
 # define OF_HAVE_PROPERTIES
 # define OF_HAVE_OPTIONAL_PROTOCOLS
 # define OF_HAVE_FAST_ENUMERATION
-#elif __GCC_VERSION__ >= 406 || defined(OBJC_NEW_PROPERTIES)
-# define OF_HAVE_PROPERTIES
-# define OF_HAVE_OPTIONAL_PROTOCOLS
-# define OF_HAVE_FAST_ENUMERATION
+# define OF_HAVE_CLASS_EXTENSIONS
 #endif
 
 #if !__has_feature(objc_instancetype)
