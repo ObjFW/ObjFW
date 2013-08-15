@@ -77,6 +77,48 @@
 	[super dealloc];
 }
 
+- (bool)isEqual: (id)object
+{
+	OFHTTPRequest *request;
+
+	if (![object isKindOfClass: [OFHTTPRequest class]])
+		return false;
+
+	request = object;
+
+	if (request->_requestType != _requestType ||
+	    request->_protocolVersion.major != _protocolVersion.major ||
+	    request->_protocolVersion.minor != _protocolVersion.minor ||
+	    ![request->_URL isEqual: _URL] ||
+	    ![request->_headers isEqual: _headers] ||
+	    ![request->_POSTData isEqual: _POSTData] ||
+	    ![request->_MIMEType isEqual: _MIMEType] ||
+	    ![request->_remoteAddress isEqual: _remoteAddress])
+		return false;
+
+	return true;
+}
+
+- (uint32_t)hash
+{
+	uint32_t hash;
+
+	OF_HASH_INIT(hash);
+
+	OF_HASH_ADD(hash, _requestType);
+	OF_HASH_ADD(hash, _protocolVersion.major);
+	OF_HASH_ADD(hash, _protocolVersion.minor);
+	OF_HASH_ADD_HASH(hash, [_URL hash]);
+	OF_HASH_ADD_HASH(hash, [_headers hash]);
+	OF_HASH_ADD_HASH(hash, [_POSTData hash]);
+	OF_HASH_ADD_HASH(hash, [_MIMEType hash]);
+	OF_HASH_ADD_HASH(hash, [_remoteAddress hash]);
+
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
+}
+
 - (void)setURL: (OFURL*)URL
 {
 	OF_SETTER(_URL, URL, true, 1)
