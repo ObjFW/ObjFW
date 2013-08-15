@@ -167,11 +167,11 @@
 				      withString: @"\n\t"];
 
 	ret = [[OFString alloc] initWithFormat:
-	    @"<%@:\n"
+	    @"<%@: %p\n"
 	    @"\tStatus code = %d\n"
 	    @"\tHeaders = %@\n"
 	    @">",
-	    [self class], _statusCode, indentedHeaders];
+	    [self class], self, _statusCode, indentedHeaders];
 
 	objc_autoreleasePoolPop(pool);
 
