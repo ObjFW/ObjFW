@@ -96,6 +96,16 @@
 	OF_GETTER(_fileComment, true)
 }
 
+- (off_t)compressedSize
+{
+	return _compressedSize;
+}
+
+- (off_t)uncompressedSize
+{
+	return _uncompressedSize;
+}
+
 - (OFDate*)modificationDate
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -120,19 +130,32 @@
 	return [date autorelease];
 }
 
-- (off_t)uncompressedSize
-{
-	return _uncompressedSize;
-}
-
-- (off_t)compressedSize
-{
-	return _compressedSize;
-}
-
 - (uint32_t)CRC32
 {
 	return _CRC32;
+}
+
+- (OFString*)description
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFDate *modificationDate = [self modificationDate];
+	OFString *ret;
+
+	ret = [[OFString alloc] initWithFormat: @"<%@: %p\n"
+	    @"\tFile name = %@\n"
+	    @"\tFile comment = %@\n"
+	    @"\tCompressed size = %jd\n"
+	    @"\tUncompressed size = %jd\n"
+	    @"\tModification date = %@\n"
+	    @"\tCRC32 = %" @PRIu32 @"\n"
+	    @"}",
+	    [self class], self, _fileName, _fileComment,
+	    (intmax_t)_compressedSize, (intmax_t)_uncompressedSize,
+	    modificationDate, _CRC32];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
 }
 
 - (uint16_t)OF_madeWithVersion

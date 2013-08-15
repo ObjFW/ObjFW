@@ -42,8 +42,8 @@
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy) OFString *fileName, *fileComment;
+@property (readonly) off_t compressedSize, uncompressedSize;
 @property (readonly, retain) OFDate *modificationDate;
-@property (readonly) off_t uncompressedSize, compressedSize;
 @property (readonly) uint32_t CRC32;
 #endif
 
@@ -64,11 +64,11 @@
 - (OFString*)fileComment;
 
 /*!
- * @brief Returns the last modification date of the entry's file.
+ * @brief Returns the compressed size of the entry's file.
  *
- * @return The last modification date of the entry's file
+ * @return The compressed size of the entry's file
  */
-- (OFDate*)modificationDate;
+- (off_t)compressedSize;
 
 /*!
  * @brief Returns the uncompressed size of the entry's file.
@@ -78,11 +78,11 @@
 - (off_t)uncompressedSize;
 
 /*!
- * @brief Returns the compressed size of the entry's file.
+ * @brief Returns the last modification date of the entry's file.
  *
- * @return The compressed size of the entry's file
+ * @return The last modification date of the entry's file
  */
-- (off_t)compressedSize;
+- (OFDate*)modificationDate;
 
 /*!
  * @brief Returns the CRC32 checksum of the entry's file.

@@ -44,6 +44,7 @@
  *  - Write support is missing.
  *  - The ZIP has to be a file on the local file system.
  *  - No support for ZIP64.
+ *  - No support for data descriptors (useless without compression anyway).
  */
 
 @interface OFZIPArchive_LocalFileHeader: OFObject
