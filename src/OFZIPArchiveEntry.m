@@ -136,6 +136,11 @@
 	return _CRC32;
 }
 
+- (OFDataArray*)extraField
+{
+	return [[_extraField copy] autorelease];
+}
+
 - (OFString*)description
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -149,10 +154,11 @@
 	    @"\tUncompressed size = %jd\n"
 	    @"\tModification date = %@\n"
 	    @"\tCRC32 = %" @PRIu32 @"\n"
+	    @"\tExtra field = %@\n"
 	    @"}",
 	    [self class], self, _fileName, _fileComment,
 	    (intmax_t)_compressedSize, (intmax_t)_uncompressedSize,
-	    modificationDate, _CRC32];
+	    modificationDate, _CRC32, _extraField];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -189,7 +195,7 @@
 	return _lastModifiedFileDate;
 }
 
-- (OFDataArray*)OF_extraField
+- (OFDataArray*)OF_extraFieldNoCopy
 {
 	OF_GETTER(_extraField, true)
 }

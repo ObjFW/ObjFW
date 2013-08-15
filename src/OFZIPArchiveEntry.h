@@ -45,6 +45,7 @@
 @property (readonly) off_t compressedSize, uncompressedSize;
 @property (readonly, retain) OFDate *modificationDate;
 @property (readonly) uint32_t CRC32;
+@property (readonly, copy) OFDataArray *extraField;
 #endif
 
 /*!
@@ -88,4 +89,11 @@
  * @return The CRC32 checksum of the entry's file
  */
 - (uint32_t)CRC32;
+
+/*!
+ * @brief Returns the extra field of the entry.
+ *
+ * @return The extra field of the entry
+ */
+- (OFDataArray*)extraField;
 @end

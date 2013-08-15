@@ -26,7 +26,7 @@
 - (uint16_t)OF_compressionMethod;
 - (uint16_t)OF_lastModifiedFileTime;
 - (uint16_t)OF_lastModifiedFileDate;
-- (OFDataArray*)OF_extraField;
+- (OFDataArray*)OF_extraFieldNoCopy;
 - (uint16_t)OF_startDiskNumber;
 - (uint16_t)OF_internalAttributes;
 - (uint32_t)OF_externalAttributes;
