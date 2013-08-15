@@ -153,10 +153,6 @@
  *	  finished or timed out.
  */
 - (void)stop;
-
-- (bool)OF_socket: (OFTCPSocket*)socket
-  didAcceptSocket: (OFTCPSocket*)clientSocket
-	exception: (OFException*)exception;
 @end
 
 @interface OFObject (OFHTTPServerDelegate) <OFHTTPServerDelegate>

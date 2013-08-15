@@ -41,6 +41,7 @@
 #import "OFThread.h"
 #import "OFTimer.h"
 #import "OFRunLoop.h"
+#import "OFRunLoop+Private.h"
 
 #import "OFAcceptFailedException.h"
 #import "OFAlreadyConnectedException.h"

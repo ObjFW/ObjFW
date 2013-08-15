@@ -37,8 +37,9 @@
 # include <kernel/OS.h>
 #endif
 
-#import "OFRunLoop.h"
 #import "OFThread.h"
+#import "OFThread+Private.h"
+#import "OFRunLoop.h"
 #import "OFList.h"
 #import "OFDate.h"
 #import "OFDictionary.h"

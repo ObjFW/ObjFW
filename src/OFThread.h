@@ -151,8 +151,6 @@ typedef id (^of_thread_block_t)(void);
  */
 + (void)terminateWithObject: (id)object;
 
-+ (void)OF_createMainThread;
-
 # ifdef OF_HAVE_BLOCKS
 /*!
  * @brief Initializes an already allocated thread with the specified block.

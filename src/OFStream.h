@@ -1095,6 +1095,4 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @return Whether the lowlevel is at the end of the stream
  */
 - (bool)lowlevelIsAtEndOfStream;
-
-- (bool)OF_isWaitingForDelimiter;
 @end

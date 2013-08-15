@@ -17,6 +17,7 @@
 #include "config.h"
 
 #import "OFZIPArchiveEntry.h"
+#import "OFZIPArchiveEntry+Private.h"
 #import "OFString.h"
 #import "OFDataArray.h"
 #import "OFFile.h"

@@ -24,6 +24,8 @@
 # include <poll.h>
 #endif
 
+#import "OFStreamObserver.h"
+#import "OFStreamObserver+Private.h"
 #import "OFStreamObserver_poll.h"
 #import "OFDataArray.h"
 

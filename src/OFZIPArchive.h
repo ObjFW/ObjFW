@@ -82,7 +82,4 @@
  * @return A stream for reading the specified file form the archive
  */
 - (OFStream*)streamForReadingFile: (OFString*)path;
-
-- (void)OF_readZIPInfo;
-- (void)OF_readEntries;
 @end

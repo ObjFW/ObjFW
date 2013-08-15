@@ -24,6 +24,7 @@
 
 #import "OFString.h"
 #import "OFString_UTF8.h"
+#import "OFString_UTF8+Private.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFFile.h"

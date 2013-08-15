@@ -21,8 +21,10 @@
 #include <assert.h>
 
 #import "OFTimer.h"
+#import "OFTimer+Private.h"
 #import "OFDate.h"
 #import "OFRunLoop.h"
+#import "OFRunLoop+Private.h"
 #ifdef OF_HAVE_THREADS
 # import "OFCondition.h"
 #endif

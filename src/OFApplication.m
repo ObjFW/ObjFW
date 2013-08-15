@@ -27,7 +27,9 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFRunLoop.h"
+#import "OFRunLoop+Private.h"
 #import "OFThread.h"
+#import "OFThread+Private.h"
 
 #import "autorelease.h"
 #import "macros.h"
@@ -47,6 +49,16 @@ extern char **environ;
 # include <pspkerneltypes.h>
 # include <psploadexec.h>
 #endif
+
+@interface OFApplication (OF_PRIVATE_CATEGORY)
+- (void)OF_setArgumentCount: (int*)argc
+	  andArgumentValues: (char**[])argv;
+#ifdef _WIN32
+- (void)OF_setArgumentCount: (int)argc
+      andWideArgumentValues: (wchar_t*[])argv;
+#endif
+- (void)OF_run;
+@end
 
 static OFApplication *app = nil;
 

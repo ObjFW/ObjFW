@@ -25,9 +25,11 @@
 #include <assert.h>
 
 #import "OFStreamObserver.h"
+#import "OFStreamObserver+Private.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFStream.h"
+#import "OFStream+Private.h"
 #import "OFDataArray.h"
 #ifndef OF_HAVE_PIPE
 # import "OFStreamSocket.h"

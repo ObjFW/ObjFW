@@ -24,6 +24,8 @@
 
 #include <sys/time.h>
 
+#import "OFStreamObserver.h"
+#import "OFStreamObserver+Private.h"
 #import "OFStreamObserver_select.h"
 #import "OFStream.h"
 #import "OFArray.h"

@@ -27,8 +27,6 @@
 	int  _fd;
 	bool _atEndOfStream;
 }
-
-- (instancetype)OF_initWithFileDescriptor: (int)fd;
 @end
 
 #ifdef __cplusplus

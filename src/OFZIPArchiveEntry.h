@@ -47,8 +47,6 @@
 @property (readonly) uint32_t CRC32;
 #endif
 
-- (instancetype)OF_initWithFile: (OFFile*)file;
-
 /*!
  * @brief Returns the file name of the entry.
  *
@@ -90,16 +88,4 @@
  * @return The CRC32 checksum of the entry's file
  */
 - (uint32_t)CRC32;
-
-- (uint16_t)OF_madeWithVersion;
-- (uint16_t)OF_minVersion;
-- (uint16_t)OF_generalPurposeBitFlag;
-- (uint16_t)OF_compressionMethod;
-- (uint16_t)OF_lastModifiedFileTime;
-- (uint16_t)OF_lastModifiedFileDate;
-- (OFDataArray*)OF_extraField;
-- (uint16_t)OF_startDiskNumber;
-- (uint16_t)OF_internalAttributes;
-- (uint32_t)OF_externalAttributes;
-- (uint32_t)OF_localFileHeaderOffset;
 @end

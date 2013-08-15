@@ -169,13 +169,6 @@
  */
 + (void)terminateWithStatus: (int)status;
 
-- (void)OF_setArgumentCount: (int*)argc
-	  andArgumentValues: (char**[])argv;
-#ifdef _WIN32
-- (void)OF_setArgumentCount: (int)argc
-      andWideArgumentValues: (wchar_t*[])argv;
-#endif
-
 /*!
  * @brief Gets args and argv.
  *
@@ -219,8 +212,6 @@
  * @param delegate The delegate for the application
  */
 - (void)setDelegate: (id <OFApplicationDelegate>)delegate;
-
-- (void)OF_run;
 
 /*!
  * @brief Terminates the application.

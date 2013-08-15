@@ -19,6 +19,7 @@
 #include <assert.h>
 
 #import "OFRunLoop.h"
+#import "OFRunLoop+Private.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFStreamObserver.h"
@@ -30,6 +31,7 @@
 #endif
 #import "OFSortedList.h"
 #import "OFTimer.h"
+#import "OFTimer+Private.h"
 #import "OFDate.h"
 
 #import "autorelease.h"

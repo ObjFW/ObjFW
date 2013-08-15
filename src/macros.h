@@ -132,6 +132,12 @@ extern void objc_setProperty(id, SEL, ptrdiff_t, id, BOOL, signed char);
 #define OF_SETTER(ivar, value, atomic, copy) \
 	objc_setProperty(self, _cmd, OF_IVAR_OFFSET(ivar), value, atomic, copy);
 
+#ifdef OF_HAVE_CLASS_EXTENSIONS
+# define OF_PRIVATE_CATEGORY
+#else
+# define OF_PRIVATE_CATEGORY Private
+#endif
+
 static OF_INLINE uint16_t OF_CONST_FUNC
 OF_BSWAP16_CONST(uint16_t i)
 {

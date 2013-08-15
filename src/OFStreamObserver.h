@@ -207,13 +207,6 @@
  * manually stop the observe running in another thread.
  */
 - (void)cancel;
-
-- (void)OF_addFileDescriptorForReading: (int)fd;
-- (void)OF_addFileDescriptorForWriting: (int)fd;
-- (void)OF_removeFileDescriptorForReading: (int)fd;
-- (void)OF_removeFileDescriptorForWriting: (int)fd;
-- (void)OF_processQueue;
-- (bool)OF_processCache;
 @end
 
 @interface OFObject (OFStreamObserverDelegate) <OFStreamObserverDelegate>

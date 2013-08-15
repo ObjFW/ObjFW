@@ -32,10 +32,12 @@
 #endif
 
 #import "OFStream.h"
+#import "OFStream+Private.h"
 #import "OFString.h"
 #import "OFDataArray.h"
 #import "OFSystemInfo.h"
 #import "OFRunLoop.h"
+#import "OFRunLoop+Private.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"

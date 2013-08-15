@@ -281,6 +281,13 @@
 		4B674404163C395900EB1E59 /* OFMutex.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6743FB163C395900EB1E59 /* OFMutex.m */; };
 		4B674405163C395900EB1E59 /* OFRecursiveMutex.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6743FC163C395900EB1E59 /* OFRecursiveMutex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B674406163C395900EB1E59 /* OFRecursiveMutex.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6743FD163C395900EB1E59 /* OFRecursiveMutex.m */; };
+		4B6C8AD817BD5C2E00B194F2 /* OFRunLoop+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6C8AD117BD5C2E00B194F2 /* OFRunLoop+Private.h */; };
+		4B6C8AD917BD5C2E00B194F2 /* OFStream+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6C8AD217BD5C2E00B194F2 /* OFStream+Private.h */; };
+		4B6C8ADA17BD5C2E00B194F2 /* OFStreamObserver+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6C8AD317BD5C2E00B194F2 /* OFStreamObserver+Private.h */; };
+		4B6C8ADB17BD5C2E00B194F2 /* OFString_UTF8+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6C8AD417BD5C2E00B194F2 /* OFString_UTF8+Private.h */; };
+		4B6C8ADC17BD5C2E00B194F2 /* OFThread+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6C8AD517BD5C2E00B194F2 /* OFThread+Private.h */; };
+		4B6C8ADD17BD5C2E00B194F2 /* OFTimer+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6C8AD617BD5C2E00B194F2 /* OFTimer+Private.h */; };
+		4B6C8ADE17BD5C2E00B194F2 /* OFZIPArchiveEntry+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6C8AD717BD5C2E00B194F2 /* OFZIPArchiveEntry+Private.h */; };
 		4B7161AD17A6FC7600B74970 /* OFHTTPResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7161AB17A6FC7600B74970 /* OFHTTPResponse.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7161AE17A6FC7600B74970 /* OFHTTPResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7161AC17A6FC7600B74970 /* OFHTTPResponse.m */; };
 		4B745BA5168B25E600A6C20E /* OFSystemInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B745BA3168B25E600A6C20E /* OFSystemInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -678,6 +685,13 @@
 		4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iso_8859_15.m; path = src/iso_8859_15.m; sourceTree = "<group>"; };
 		4B6AF97210A8D42E0003FB0A /* windows_1252.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = windows_1252.m; path = src/windows_1252.m; sourceTree = "<group>"; };
 		4B6AF97310A8D4450003FB0A /* ObjFW.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ObjFW.h; path = src/ObjFW.h; sourceTree = "<group>"; };
+		4B6C8AD117BD5C2E00B194F2 /* OFRunLoop+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFRunLoop+Private.h"; path = "src/OFRunLoop+Private.h"; sourceTree = "<group>"; };
+		4B6C8AD217BD5C2E00B194F2 /* OFStream+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFStream+Private.h"; path = "src/OFStream+Private.h"; sourceTree = "<group>"; };
+		4B6C8AD317BD5C2E00B194F2 /* OFStreamObserver+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFStreamObserver+Private.h"; path = "src/OFStreamObserver+Private.h"; sourceTree = "<group>"; };
+		4B6C8AD417BD5C2E00B194F2 /* OFString_UTF8+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFString_UTF8+Private.h"; path = "src/OFString_UTF8+Private.h"; sourceTree = "<group>"; };
+		4B6C8AD517BD5C2E00B194F2 /* OFThread+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFThread+Private.h"; path = "src/OFThread+Private.h"; sourceTree = "<group>"; };
+		4B6C8AD617BD5C2E00B194F2 /* OFTimer+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFTimer+Private.h"; path = "src/OFTimer+Private.h"; sourceTree = "<group>"; };
+		4B6C8AD717BD5C2E00B194F2 /* OFZIPArchiveEntry+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFZIPArchiveEntry+Private.h"; path = "src/OFZIPArchiveEntry+Private.h"; sourceTree = "<group>"; };
 		4B6EF66E1235358D0076B512 /* OFArrayTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFArrayTests.m; path = tests/OFArrayTests.m; sourceTree = SOURCE_ROOT; };
 		4B6EF66F1235358D0076B512 /* OFDataArrayTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDataArrayTests.m; path = tests/OFDataArrayTests.m; sourceTree = SOURCE_ROOT; };
 		4B6EF6701235358D0076B512 /* OFDictionaryTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDictionaryTests.m; path = tests/OFDictionaryTests.m; sourceTree = SOURCE_ROOT; };
@@ -1182,6 +1196,7 @@
 				4B6743FD163C395900EB1E59 /* OFRecursiveMutex.m */,
 				4B325ED91605F3A0007836CA /* OFRunLoop.h */,
 				4B325EDA1605F3A0007836CA /* OFRunLoop.m */,
+				4B6C8AD117BD5C2E00B194F2 /* OFRunLoop+Private.h */,
 				4B981CDE116F71DD00294DB7 /* OFSeekableStream.h */,
 				4B981CDF116F71DD00294DB7 /* OFSeekableStream.m */,
 				4B989C2E13771A3700109A30 /* OFSerialization.h */,
@@ -1197,8 +1212,10 @@
 				4B0256E3172B60400062B5F1 /* OFStdIOStream.m */,
 				4B67997D1099E7C50041064A /* OFStream.h */,
 				4B67997E1099E7C50041064A /* OFStream.m */,
+				4B6C8AD217BD5C2E00B194F2 /* OFStream+Private.h */,
 				4BAF5F47123460C900F4E111 /* OFStreamObserver.h */,
 				4BAF5F48123460C900F4E111 /* OFStreamObserver.m */,
+				4B6C8AD317BD5C2E00B194F2 /* OFStreamObserver+Private.h */,
 				4B83F0F2142FDEFD00E4A821 /* OFStreamObserver_kqueue.h */,
 				4B83F0F3142FDEFD00E4A821 /* OFStreamObserver_kqueue.m */,
 				4B64D6EB1425381E007BDFB1 /* OFStreamObserver_poll.h */,
@@ -1223,6 +1240,7 @@
 				4BF1BCCD11C9663F0025511F /* OFString+XMLUnescaping.m */,
 				4B552550147AA5DB0003BF47 /* OFString_UTF8.h */,
 				4B552551147AA5DB0003BF47 /* OFString_UTF8.m */,
+				4B6C8AD417BD5C2E00B194F2 /* OFString_UTF8+Private.h */,
 				4B745BA3168B25E600A6C20E /* OFSystemInfo.h */,
 				4B745BA4168B25E600A6C20E /* OFSystemInfo.m */,
 				4B6799811099E7C50041064A /* OFTCPSocket.h */,
@@ -1231,10 +1249,12 @@
 				4BD653C4143B8489006182F0 /* OFTCPSocket+SOCKS5.m */,
 				4B6799831099E7C50041064A /* OFThread.h */,
 				4B6799841099E7C50041064A /* OFThread.m */,
+				4B6C8AD517BD5C2E00B194F2 /* OFThread+Private.h */,
 				4B9361A61511000C00DCD16B /* OFThreadPool.h */,
 				4B9361A71511000C00DCD16B /* OFThreadPool.m */,
 				4B325EDB1605F3A0007836CA /* OFTimer.h */,
 				4B325EDC1605F3A0007836CA /* OFTimer.m */,
+				4B6C8AD617BD5C2E00B194F2 /* OFTimer+Private.h */,
 				4BA02BA015041F5900002F84 /* OFTLSSocket.h */,
 				4B4A61F212DF5EA20048F3F2 /* OFURL.h */,
 				4B4A61F312DF5EA20048F3F2 /* OFURL.m */,
@@ -1262,6 +1282,7 @@
 				4BE52D2017B990B4005958D1 /* OFZIPArchive.m */,
 				4B8B025717BBA7C7009ED983 /* OFZIPArchiveEntry.h */,
 				4B8B025817BBA7C7009ED983 /* OFZIPArchiveEntry.m */,
+				4B6C8AD717BD5C2E00B194F2 /* OFZIPArchiveEntry+Private.h */,
 				4B6AF97310A8D4450003FB0A /* ObjFW.h */,
 				4BB52CC817B8EA8E00B7EBF5 /* apple-forwarding-arm.S */,
 				4BB52CC917B8EA8E00B7EBF5 /* apple-forwarding-i386.S */,
@@ -1553,12 +1574,19 @@
 				4B2B3E83140D430500EC2F7C /* OFMutableDictionary_hashtable.h in Headers */,
 				4BA85BCC140ECCE800E91D51 /* OFMutableSet_hashtable.h in Headers */,
 				4B552552147AA5DB0003BF47 /* OFMutableString_UTF8.h in Headers */,
+				4B6C8AD817BD5C2E00B194F2 /* OFRunLoop+Private.h in Headers */,
 				4BA85BCE140ECCE800E91D51 /* OFSet_hashtable.h in Headers */,
+				4B6C8AD917BD5C2E00B194F2 /* OFStream+Private.h in Headers */,
+				4B6C8ADA17BD5C2E00B194F2 /* OFStreamObserver+Private.h in Headers */,
 				4B83F0F4142FDEFD00E4A821 /* OFStreamObserver_kqueue.h in Headers */,
 				4B64D6EF1425381E007BDFB1 /* OFStreamObserver_poll.h in Headers */,
 				4B64D6F11425381E007BDFB1 /* OFStreamObserver_select.h in Headers */,
 				4B552554147AA5DB0003BF47 /* OFString_UTF8.h in Headers */,
+				4B6C8ADB17BD5C2E00B194F2 /* OFString_UTF8+Private.h in Headers */,
 				4BD653C5143B8489006182F0 /* OFTCPSocket+SOCKS5.h in Headers */,
+				4B6C8ADC17BD5C2E00B194F2 /* OFThread+Private.h in Headers */,
+				4B6C8ADD17BD5C2E00B194F2 /* OFTimer+Private.h in Headers */,
+				4B6C8ADE17BD5C2E00B194F2 /* OFZIPArchiveEntry+Private.h in Headers */,
 				4BDF37B51338055600F9A81A /* config.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

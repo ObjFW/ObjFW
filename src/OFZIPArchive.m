@@ -20,6 +20,7 @@
 
 #import "OFZIPArchive.h"
 #import "OFZIPArchiveEntry.h"
+#import "OFZIPArchiveEntry+Private.h"
 #import "OFDictionary.h"
 #import "OFFile.h"
 
@@ -46,6 +47,11 @@
  *  - No support for ZIP64.
  *  - No support for data descriptors (useless without compression anyway).
  */
+
+@interface OFZIPArchive (OF_PRIVATE_CATEGORY)
+- (void)OF_readZIPInfo;
+- (void)OF_readEntries;
+@end
 
 @interface OFZIPArchive_LocalFileHeader: OFObject
 {

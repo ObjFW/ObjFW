@@ -328,6 +328,4 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  */
 - (void)waitUntilDone;
 #endif
-
-- (void)OF_setInRunLoop: (OFRunLoop*)inRunLoop;
 @end

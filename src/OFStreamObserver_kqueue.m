@@ -26,6 +26,8 @@
 #include <sys/event.h>
 #include <sys/time.h>
 
+#import "OFStreamObserver.h"
+#import "OFStreamObserver+Private.h"
 #import "OFStreamObserver_kqueue.h"
 #import "OFDataArray.h"
 

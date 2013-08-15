@@ -136,10 +136,6 @@ typedef void* (^of_map_table_replace_block_t)(void *key, void *value);
  */
 - (void*)valueForKey: (void*)key;
 
-- (void)OF_setValue: (void*)value
-	     forKey: (void*)key
-	       hash: (uint32_t)hash;
-
 /*!
  * @brief Sets a value for a key.
  *
@@ -241,11 +237,6 @@ typedef void* (^of_map_table_replace_block_t)(void *key, void *value);
 	unsigned long *_mutationsPtr;
 	uint32_t _position;
 }
-
-- OF_initWithMapTable: (OFMapTable*)mapTable
-	      buckets: (struct of_map_table_bucket**)buckets
-	     capacity: (uint32_t)capacity
-     mutationsPointer: (unsigned long*)mutationsPtr;
 
 /*!
  * @brief Returns the next value.

@@ -47,6 +47,12 @@
  * FIXME: Errors are not reported to the user.
  */
 
+@interface OFHTTPServer (OF_PRIVATE_CATEGORY)
+- (bool)OF_socket: (OFTCPSocket*)socket
+  didAcceptSocket: (OFTCPSocket*)clientSocket
+	exception: (OFException*)exception;
+@end
+
 static const char*
 status_code_to_string(short code)
 {

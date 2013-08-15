@@ -49,6 +49,14 @@
 extern char **environ;
 #endif
 
+@interface OFProcess (OF_PRIVATE_CATEGORY)
+#ifndef _WIN32
+- (char**)OF_environmentForDictionary: (OFDictionary*)dictionary;
+#else
+- (of_char16_t*)OF_environmentForDictionary: (OFDictionary*)dictionary;
+#endif
+@end
+
 @implementation OFProcess
 + (instancetype)processWithProgram: (OFString*)program
 {
