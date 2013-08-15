@@ -52,7 +52,7 @@ typedef struct of_http_request_protocol_version_t {
 /*!
  * @brief A class for storing HTTP requests.
  */
-@interface OFHTTPRequest: OFObject
+@interface OFHTTPRequest: OFObject <OFCopying>
 {
 	OFURL *_URL;
 	of_http_request_type_t _requestType;

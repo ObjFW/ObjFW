@@ -77,6 +77,26 @@
 	[super dealloc];
 }
 
+- copy
+{
+	OFHTTPRequest *copy = [[OFHTTPRequest alloc] init];
+
+	@try {
+		copy->_requestType = _requestType;
+		copy->_protocolVersion = _protocolVersion;
+		[copy setURL: _URL];
+		[copy setHeaders: _headers];
+		[copy setPOSTData: _POSTData];
+		[copy setMIMEType: _MIMEType];
+		[copy setRemoteAddress: _remoteAddress];
+	} @catch (id e) {
+		[copy release];
+		@throw e;
+	}
+
+	return copy;
+}
+
 - (bool)isEqual: (id)object
 {
 	OFHTTPRequest *request;
