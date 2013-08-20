@@ -35,6 +35,7 @@
 # include <winerror.h>
 #endif
 
+#ifdef HAVE_DWARF_EXCEPTIONS
 struct _Unwind_Context;
 typedef enum {
 	_URC_OK		  = 0,
@@ -48,11 +49,11 @@ struct backtrace_ctx {
 
 extern _Unwind_Reason_Code _Unwind_Backtrace(
     _Unwind_Reason_Code(*)(struct _Unwind_Context*, void*), void*);
-#if defined(__arm__) || defined(__ARM__)
+# if defined(__arm__) || defined(__ARM__)
 extern int _Unwind_VRS_Get(struct _Unwind_Context*, int, uint32_t, int, void*);
-#else
+# else
 extern uintptr_t _Unwind_GetIP(struct _Unwind_Context*);
-#endif
+# endif
 
 static _Unwind_Reason_Code
 backtrace_callback(struct _Unwind_Context *ctx, void *data)
@@ -60,19 +61,20 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 	struct backtrace_ctx *bt = data;
 
 	if (bt->i < OF_BACKTRACE_SIZE) {
-#if defined(__arm__) || defined(__ARM__)
+# if defined(__arm__) || defined(__ARM__)
 		uintptr_t ip;
 
 		_Unwind_VRS_Get(ctx, 0, 15, 0, &ip);
 		bt->backtrace[bt->i++] = (void*)(ip & ~1);
-#else
+# else
 		bt->backtrace[bt->i++] = (void*)_Unwind_GetIP(ctx);
-#endif
+# endif
 		return _URC_OK;
 	}
 
 	return _URC_END_OF_STACK;
 }
+#endif
 
 #if defined(_WIN32) && defined(OF_HAVE_SOCKETS)
 int
@@ -109,6 +111,7 @@ of_wsaerr_to_errno(int wsaerr)
 	return [[[self alloc] init] autorelease];
 }
 
+#ifdef HAVE_DWARF_EXCEPTIONS
 - init
 {
 	struct backtrace_ctx ctx;
@@ -121,6 +124,7 @@ of_wsaerr_to_errno(int wsaerr)
 
 	return self;
 }
+#endif
 
 - (OFString*)description
 {
@@ -130,12 +134,13 @@ of_wsaerr_to_errno(int wsaerr)
 
 - (OFArray*)backtrace
 {
+#ifdef HAVE_DWARF_EXCEPTIONS
 	OFMutableArray *backtrace = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 	uint_fast8_t i;
 
 	for (i = 0; i < OF_BACKTRACE_SIZE && _backtrace[i] != NULL; i++) {
-#ifdef HAVE_DLADDR
+# ifdef HAVE_DLADDR
 		Dl_info info;
 
 		if (dladdr(_backtrace[i], &info)) {
@@ -151,7 +156,7 @@ of_wsaerr_to_errno(int wsaerr)
 							info.dli_sname, offset,
 							info.dli_fname]];
 		} else
-#endif
+# endif
 			[backtrace addObject:
 			    [OFString stringWithFormat: @"%p", _backtrace[i]]];
 	}
@@ -161,5 +166,8 @@ of_wsaerr_to_errno(int wsaerr)
 	[backtrace makeImmutable];
 
 	return backtrace;
+#else
+	return nil;
+#endif
 }
 @end
