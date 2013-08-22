@@ -56,7 +56,7 @@
 # import "OFStreamObserver.h"
 
 # import "OFHTTPRequest.h"
-# import "OFHTTPRequestReply.h"
+# import "OFHTTPResponse.h"
 # import "OFHTTPClient.h"
 # import "OFHTTPServer.h"
 #endif
@@ -168,7 +168,6 @@
 #ifdef OF_HAVE_THREADS
 # import "threading.h"
 # import "OFThreadPool.h"
-# import "OFTLSKey.h"
 # import "OFMutex.h"
 # import "OFRecursiveMutex.h"
 # import "OFCondition.h"
