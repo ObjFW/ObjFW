@@ -876,6 +876,13 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 - (OFString*)lastPathComponent;
 
 /*!
+ * @brief Returns the file extension of the path.
+ *
+ * @return The file extension of the path
+ */
+- (OFString*)pathExtension;
+
+/*!
  * @brief Returns the directory name of the path.
  *
  * @return The directory name of the path

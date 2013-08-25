@@ -329,6 +329,12 @@ static uint16_t sutf16str[] = {
 	    [[@"foo/bar" lastPathComponent] isEqual: @"bar"] &&
 	    [[@"foo/bar/baz/" lastPathComponent] isEqual: @"baz"])
 
+	TEST(@"-[pathExtension]",
+	    [[@"foo.bar" pathExtension] isEqual: @"bar"] &&
+	    [[@"foo/.bar" pathExtension] isEqual: @""] &&
+	    [[@"foo/.bar.baz" pathExtension] isEqual: @"baz"] &&
+	    [[@"foo/bar.baz/" pathExtension] isEqual: @"baz"])
+
 	TEST(@"-[stringByDeletingLastPathComponent]",
 	    [[@"/tmp" stringByDeletingLastPathComponent] isEqual: @"/"] &&
 	    [[@"/tmp/" stringByDeletingLastPathComponent] isEqual: @"/"] &&

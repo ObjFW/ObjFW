@@ -2095,6 +2095,26 @@ static struct {
 	return [self substringWithRange: of_range(i, length - i)];
 }
 
+- (OFString*)pathExtension
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *ret, *fileName;
+	size_t pos;
+
+	fileName = [self lastPathComponent];
+	pos = [fileName rangeOfString: @"."
+			      options: OF_STRING_SEARCH_BACKWARDS].location;
+	if (pos == OF_NOT_FOUND || pos == 0)
+		return @"";
+
+	ret = [fileName substringWithRange:
+	    of_range(pos + 1, [fileName length] - pos - 1)];
+
+	[ret retain];
+	objc_autoreleasePoolPop(pool);
+	return [ret autorelease];
+}
+
 - (OFString*)stringByDeletingLastPathComponent
 {
 	void *pool;
@@ -2174,7 +2194,6 @@ static struct {
 
 	[ret retain];
 	objc_autoreleasePoolPop(pool);
-
 	return [ret autorelease];
 }
 
