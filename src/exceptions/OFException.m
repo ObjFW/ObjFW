@@ -35,7 +35,7 @@
 # include <winerror.h>
 #endif
 
-#ifdef HAVE_DWARF_EXCEPTIONS
+#if defined(HAVE_DWARF_EXCEPTIONS) || defined(OBJC_ZEROCOST_EXCEPTIONS)
 struct _Unwind_Context;
 typedef enum {
 	_URC_OK		  = 0,
@@ -111,7 +111,7 @@ of_wsaerr_to_errno(int wsaerr)
 	return [[[self alloc] init] autorelease];
 }
 
-#ifdef HAVE_DWARF_EXCEPTIONS
+#if defined(HAVE_DWARF_EXCEPTIONS) || defined(OBJC_ZEROCOST_EXCEPTIONS)
 - init
 {
 	struct backtrace_ctx ctx;
@@ -134,7 +134,7 @@ of_wsaerr_to_errno(int wsaerr)
 
 - (OFArray*)backtrace
 {
-#ifdef HAVE_DWARF_EXCEPTIONS
+#if defined(HAVE_DWARF_EXCEPTIONS) || defined(OBJC_ZEROCOST_EXCEPTIONS)
 	OFMutableArray *backtrace = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 	uint_fast8_t i;
