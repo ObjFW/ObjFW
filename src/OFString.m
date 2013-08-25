@@ -626,7 +626,7 @@ static struct {
 					   encoding: encoding] autorelease];
 }
 
-+ (instancetype)pathWithComponents: (OFArray*)components
++ (OFString*)pathWithComponents: (OFArray*)components
 {
 	OFMutableString *ret = [OFMutableString string];
 	void *pool = objc_autoreleasePoolPush();
@@ -2142,7 +2142,40 @@ static struct {
 
 	objc_autoreleasePoolPop(pool);
 
-	return @".";
+	return OF_PATH_CURRENT_DIRECTORY;
+}
+
+- (OFString*)stringByDeletingPathExtension
+{
+	void *pool;
+	OFMutableArray *components;
+	OFString *fileName, *ret;
+	size_t pos;
+
+	if ([self length] == 0)
+		return [[self copy] autorelease];
+
+	pool = objc_autoreleasePoolPush();
+	components = [[[self pathComponents] mutableCopy] autorelease];
+	fileName = [components lastObject];
+
+	pos = [fileName rangeOfString: @"."
+			      options: OF_STRING_SEARCH_BACKWARDS].location;
+	if (pos == OF_NOT_FOUND || pos == 0) {
+		objc_autoreleasePoolPop(pool);
+		return [[self copy] autorelease];
+	}
+
+	fileName = [fileName substringWithRange: of_range(0, pos)];
+	[components replaceObjectAtIndex: [components count] - 1
+			      withObject: fileName];
+
+	ret = [OFString pathWithComponents: components];
+
+	[ret retain];
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
 }
 
 - (OFString*)stringByStandardizingPath

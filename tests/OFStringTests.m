@@ -338,6 +338,17 @@ static uint16_t sutf16str[] = {
 	    [[@"/" stringByDeletingLastPathComponent] isEqual: @"/"] &&
 	    [[@"foo" stringByDeletingLastPathComponent] isEqual: @"."])
 
+	TEST(@"-[stringByDeletingPathExtension]",
+	    [[@"foo.bar" stringByDeletingPathExtension] isEqual: @"foo"] &&
+	    [[@"foo..bar" stringByDeletingPathExtension] isEqual: @"foo."] &&
+	    [[@"/foo./bar" stringByDeletingPathExtension]
+	    isEqual: @"/foo./bar"] &&
+	    [[@"/foo./bar.baz" stringByDeletingPathExtension]
+	    isEqual: @"/foo./bar"] &&
+	    [[@"foo.bar/" stringByDeletingPathExtension] isEqual: @"foo"] &&
+	    [[@".foo" stringByDeletingPathExtension] isEqual: @".foo"] &&
+	    [[@".foo.bar" stringByDeletingPathExtension] isEqual: @".foo"])
+
 	TEST(@"-[decimalValue]",
 	    [@"1234" decimalValue] == 1234 &&
 	    [@"\r\n+123  " decimalValue] == 123 &&

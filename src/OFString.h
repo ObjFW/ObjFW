@@ -323,7 +323,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param components An array of components for the path
  * @return A new autoreleased OFString
  */
-+ (instancetype)pathWithComponents: (OFArray*)components;
++ (OFString*)pathWithComponents: (OFArray*)components;
 
 /*!
  * @brief Initializes an already allocated OFString from a UTF-8 encoded C
@@ -881,6 +881,13 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return The directory name of the path
  */
 - (OFString*)stringByDeletingLastPathComponent;
+
+/*!
+ * @brief Returns a new string with the file extension of the path removed.
+ *
+ * @return A new string with the file extension of the path removed
+ */
+- (OFString*)stringByDeletingPathExtension;
 
 /*!
  * @brief Returns the path with relative sub paths resolved.
