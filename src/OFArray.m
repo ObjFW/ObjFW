@@ -398,17 +398,34 @@ static struct {
 - (OFString*)componentsJoinedByString: (OFString*)separator
 {
 	return [self componentsJoinedByString: separator
-				usingSelector: @selector(description)];
+				usingSelector: @selector(description)
+				      options: 0];
+}
+
+- (OFString*)componentsJoinedByString: (OFString*)separator
+			      options: (int)options
+{
+	return [self componentsJoinedByString: separator
+				usingSelector: @selector(description)
+				      options: options];
 }
 
 - (OFString*)componentsJoinedByString: (OFString*)separator
 			usingSelector: (SEL)selector
 {
+	return [self componentsJoinedByString: separator
+				usingSelector: selector
+				      options: 0];
+}
+
+- (OFString*)componentsJoinedByString: (OFString*)separator
+			usingSelector: (SEL)selector
+			      options: (int)options
+{
 	void *pool;
 	OFMutableString *ret;
 	id *objects;
 	size_t i, count;
-	IMP append;
 
 	if (separator == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -421,22 +438,36 @@ static struct {
 		return [[self firstObject] performSelector: selector];
 
 	ret = [OFMutableString string];
-	append = [ret methodForSelector: @selector(appendString:)];
 
 	pool = objc_autoreleasePoolPush();
 	objects = [self objects];
 
-	for (i = 0; i < count - 1; i++) {
-		void *pool2 = objc_autoreleasePoolPush();
+	if (options & OF_ARRAY_SKIP_EMPTY) {
+		for (i = 0; i < count; i++) {
+			void *pool2 = objc_autoreleasePoolPush();
+			OFString *component =
+			    [objects[i] performSelector: selector];
 
-		append(ret, @selector(appendString:),
-		    [objects[i] performSelector: selector]);
-		append(ret, @selector(appendString:), separator);
+			if ([component length] > 0) {
+				if ([ret length] > 0)
+					[ret appendString: separator];
+				[ret appendString: component];
+			}
 
-		objc_autoreleasePoolPop(pool2);
+			objc_autoreleasePoolPop(pool2);
+		}
+	} else {
+		for (i = 0; i < count - 1; i++) {
+			void *pool2 = objc_autoreleasePoolPush();
+
+			[ret appendString:
+			    [objects[i] performSelector: selector]];
+			[ret appendString: separator];
+
+			objc_autoreleasePoolPop(pool2);
+		}
+		[ret appendString: [objects[i] performSelector: selector]];
 	}
-	append(ret, @selector(appendString:),
-	    [objects[i] performSelector: selector]);
 
 	[ret makeImmutable];
 

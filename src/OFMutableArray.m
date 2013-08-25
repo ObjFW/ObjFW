@@ -43,7 +43,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 {
 	of_comparison_result_t ascending, descending;
 
-	if (options & OF_SORT_OPTIONS_DESCENDING) {
+	if (options & OF_ARRAY_SORT_DESCENDING) {
 		ascending = OF_ORDERED_DESCENDING;
 		descending = OF_ORDERED_ASCENDING;
 	} else {

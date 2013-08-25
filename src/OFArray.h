@@ -35,7 +35,8 @@
 @class OFString;
 
 enum {
-	OF_SORT_OPTIONS_DESCENDING = 1
+	OF_ARRAY_SKIP_EMPTY = 1,
+	OF_ARRAY_SORT_DESCENDING = 2,
 };
 
 #ifdef OF_HAVE_BLOCKS
@@ -269,6 +270,20 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 - (OFString*)componentsJoinedByString: (OFString*)separator;
 
 /*!
+ * @brief Creates a string by joining all objects of the array.
+ *
+ * @param separator The string with which the objects should be joined
+ * @param options Options according to which the objects should be joined.@n
+ *		  Possible values are:
+ *		  Value                | Description
+ *		  ---------------------|----------------------
+ * 		  OF_ARRAY_SKIP_EMPTY | Skip empty components
+ * @return A string containing all objects joined by the separator
+ */
+- (OFString*)componentsJoinedByString: (OFString*)separator
+			      options: (int)options;
+
+/*!
  * @brief Creates a string by calling the selector on all objects of the array
  *	  and joining the strings returned by calling the selector.
  *
@@ -278,6 +293,23 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  */
 - (OFString*)componentsJoinedByString: (OFString*)separator
 			usingSelector: (SEL)selector;
+
+/*!
+ * @brief Creates a string by calling the selector on all objects of the array
+ *	  and joining the strings returned by calling the selector.
+ *
+ * @param separator The string with which the objects should be joined
+ * @param selector The selector to perform on the objects
+ * @param options Options according to which the objects should be joined.@n
+ *		  Possible values are:
+ *		  Value                | Description
+ *		  ---------------------|----------------------
+ * 		  OF_ARRAY_SKIP_EMPTY | Skip empty components
+ * @return A string containing all objects joined by the separator
+ */
+- (OFString*)componentsJoinedByString: (OFString*)separator
+			usingSelector: (SEL)selector
+			      options: (int)options;
 
 /*!
  * @brief Performs the specified selector on all objects in the array.
@@ -309,9 +341,9 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  *
  * @param options The options to use when sorting the array.@n
  *		  Possible values are:
- *		  Value                      | Description
- *		  ---------------------------|-------------------------
- *		  OF_SORT_OPTIONS_DESCENDING | Sort in descending order
+ *		  Value                    | Description
+ *		  -------------------------|-------------------------
+ *		  OF_ARRAY_SORT_DESCENDING | Sort in descending order
  * @return A sorted copy of the array
  */
 - (OFArray*)sortedArrayWithOptions: (int)options;
