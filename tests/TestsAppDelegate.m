@@ -328,7 +328,7 @@ main(int argc, char *argv[])
 		VIDEO_WaitVSync();
 	}
 #elif defined(_PSP)
-	[self outputString: [OFString stringWithFormat: @"%zd tests failed!",
+	[self outputString: [OFString stringWithFormat: @"%d tests failed!",
 							_fails]
 		   inColor: NO_COLOR];
 	sceKernelSleepThreadCB();

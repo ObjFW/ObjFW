@@ -67,7 +67,7 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"The JSON representation is invalid in line %zd!", _line];
+	    @"The JSON representation is invalid in line %zu!", _line];
 }
 
 - (OFString*)string
