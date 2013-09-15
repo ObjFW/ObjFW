@@ -2169,7 +2169,7 @@ static struct {
 {
 	void *pool;
 	OFMutableArray *components;
-	OFString *fileName, *ret;
+	OFString *ret, *fileName;
 	size_t pos;
 
 	if ([self length] == 0)

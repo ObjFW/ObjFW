@@ -44,6 +44,7 @@
 #import "OFDate.h"
 #import "OFDictionary.h"
 #import "OFAutoreleasePool.h"
+#import "OFAutoreleasePool+Private.h"
 
 #ifdef _WIN32
 # include <windows.h>
@@ -79,7 +80,7 @@ call_main(id object)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: [thread class]];
 
-	objc_autoreleasePoolPush();
+	thread->_pool = objc_autoreleasePoolPush();
 
 	/*
 	 * Nasty workaround for thread implementations which can't return a
@@ -96,14 +97,8 @@ call_main(id object)
 
 	thread->_running = OF_THREAD_WAITING_FOR_JOIN;
 
-# ifdef OF_OBJFW_RUNTIME
-	/*
-	 * As the values returned by objc_autoreleasePoolPush() in the ObjFW
-	 * runtime are not actually pointers, but sequential numbers, 0 means
-	 * we pop everything.
-	 */
-	objc_autoreleasePoolPop(0);
-# endif
+	objc_autoreleasePoolPop(thread->_pool);
+	[OFAutoreleasePool OF_handleThreadTermination];
 
 	[thread release];
 
@@ -235,14 +230,8 @@ set_thread_name(OFThread *thread)
 		thread->_running = OF_THREAD_WAITING_FOR_JOIN;
 	}
 
-# ifdef OF_OBJFW_RUNTIME
-	/*
-	 * As the values returned by objc_autoreleasePoolPush() in the ObjFW
-	 * runtime are not actually pointers, but sequential numbers, 0 means
-	 * we pop everything.
-	 */
-	objc_autoreleasePoolPop(0);
-# endif
+	objc_autoreleasePoolPop(thread->_pool);
+	[OFAutoreleasePool OF_handleThreadTermination];
 
 	[thread release];
 

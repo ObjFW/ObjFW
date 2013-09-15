@@ -47,6 +47,7 @@
 		4B11005D14329B9A003A45D8 /* OFXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B11005B14329B9A003A45D8 /* OFXMLNode.m */; };
 		4B141BA415FCDF74000C21A8 /* OFSortedList.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B141BA215FCDF74000C21A8 /* OFSortedList.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B141BA515FCDF74000C21A8 /* OFSortedList.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B141BA315FCDF74000C21A8 /* OFSortedList.m */; };
+		4B1473CB17E6391900B46BB8 /* OFAutoreleasePool+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1473CA17E6391900B46BB8 /* OFAutoreleasePool+Private.h */; };
 		4B17FF73133A2A76003E6DCD /* OFException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B17FF71133A28FC003E6DCD /* OFException.m */; };
 		4B17FF74133A2AAB003E6DCD /* OFException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B17FF70133A28FC003E6DCD /* OFException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B17FF77133A2B18003E6DCD /* OFNotImplementedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B17FF75133A2B18003E6DCD /* OFNotImplementedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -489,6 +490,7 @@
 		4B11005B14329B9A003A45D8 /* OFXMLNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLNode.m; path = src/OFXMLNode.m; sourceTree = "<group>"; };
 		4B141BA215FCDF74000C21A8 /* OFSortedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSortedList.h; path = src/OFSortedList.h; sourceTree = "<group>"; };
 		4B141BA315FCDF74000C21A8 /* OFSortedList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSortedList.m; path = src/OFSortedList.m; sourceTree = "<group>"; };
+		4B1473CA17E6391900B46BB8 /* OFAutoreleasePool+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFAutoreleasePool+Private.h"; path = "src/OFAutoreleasePool+Private.h"; sourceTree = "<group>"; };
 		4B175C1D116D130B003C99CB /* OFApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFApplication.h; path = src/OFApplication.h; sourceTree = "<group>"; };
 		4B175C1E116D130B003C99CB /* OFApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFApplication.m; path = src/OFApplication.m; sourceTree = "<group>"; };
 		4B17FF70133A28FC003E6DCD /* OFException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFException.h; path = src/exceptions/OFException.h; sourceTree = "<group>"; };
@@ -1113,6 +1115,7 @@
 				4B9BB7BC141CDE2D000AD1CC /* OFArray_subarray.m */,
 				4B67995C1099E7C50041064A /* OFAutoreleasePool.h */,
 				4B67995D1099E7C50041064A /* OFAutoreleasePool.m */,
+				4B1473CA17E6391900B46BB8 /* OFAutoreleasePool+Private.h */,
 				4BD86D801237A6C600ED9912 /* OFBlock.h */,
 				4BD86D811237A6C600ED9912 /* OFBlock.m */,
 				4BAF5F46123460C900F4E111 /* OFCollection.h */,
@@ -1568,6 +1571,7 @@
 				4B55A109133AC05100B58A93 /* common.h in Headers */,
 				4B2B3E7D140D430500EC2F7C /* OFArray_adjacent.h in Headers */,
 				4B9BB7BD141CDE2D000AD1CC /* OFArray_adjacentSubarray.h in Headers */,
+				4B1473CB17E6391900B46BB8 /* OFAutoreleasePool+Private.h in Headers */,
 				4BA85BCA140ECCE800E91D51 /* OFCountedSet_hashtable.h in Headers */,
 				4B2B3E7F140D430500EC2F7C /* OFDictionary_hashtable.h in Headers */,
 				4B2B3E81140D430500EC2F7C /* OFMutableArray_adjacent.h in Headers */,

@@ -19,6 +19,7 @@
 #include <stdlib.h>
 
 #import "OFAutoreleasePool.h"
+#import "OFAutoreleasePool+Private.h"
 
 #import "macros.h"
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
@@ -78,6 +79,22 @@ static OFAutoreleasePool **cache = NULL;
 	return _objc_rootAutorelease(object);
 }
 
++ (void)OF_handleThreadTermination
+{
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+	OFAutoreleasePool **cache = of_tlskey_get(cacheKey);
+#endif
+	size_t i;
+
+	if (cache != NULL) {
+		for (i = 0; i < MAX_CACHE_SIZE; i++)
+			[cache[i] OF_super_dealloc];
+
+		free(cache);
+		cache = NULL;
+	}
+}
+
 - init
 {
 	self = [super init];
@@ -114,6 +131,11 @@ static OFAutoreleasePool **cache = NULL;
 - (void)drain
 {
 	[self dealloc];
+}
+
+- (void)OF_super_dealloc
+{
+	[super dealloc];
 }
 
 - (void)dealloc
