@@ -92,7 +92,11 @@ of_thread_join(of_thread_t thread)
 	if (pthread_join(thread, &ret))
 		return false;
 
+# ifdef PTHREAD_CANCELED
 	return (ret != PTHREAD_CANCELED);
+# else
+	return true;
+# endif
 #elif defined(_WIN32)
 	if (WaitForSingleObject(thread, INFINITE))
 		return false;
