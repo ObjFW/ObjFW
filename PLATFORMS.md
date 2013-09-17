@@ -5,6 +5,16 @@ ObjFW is known to work on the following platforms, but should run on many
 others as well.
 
 
+Android
+-------
+
+  * OS versions: 4.0.4, 4.1.2
+  * Architectures: ARMv6, ARMv7
+  * Compilers: Clang 3.3
+  * Runtimes: ObjFW
+  * Limitations: Does not work as a shared library
+
+
 DragonFlyBSD
 ------------
 
@@ -35,7 +45,7 @@ Haiku
 iOS
 ---
 
-  * Architectures: ARM
+  * Architectures: ARMv7
   * Compilers: GCC 4.2.1
   * Runtimes: Apple
 
@@ -43,7 +53,7 @@ iOS
 Linux
 -----
 
-  * Architectures: ARM, m68k, MIPS32, PPC, x86, x86_64
+  * Architectures: ARMv6, m68k, MIPS32, PPC, x86, x86_64
   * Compilers: Clang 3.0-3.4, GCC 4.6-4.8
   * Runtimes: ObjFW
 
