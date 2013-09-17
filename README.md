@@ -36,13 +36,31 @@ Using the Mac OS X framework in Xcode
 =====================================
 
   To use the Mac OS X framework in Xcode, you need to add the .framework
-  to your project and add the following flags to "Other C Flags":
+  to your project and add the following flags to `Other C Flags`:
 
     -fconstant-string-class=OFConstantString -fno-constant-cfstrings
 
   Optionally, if you want to use blocks, you also need to add:
 
     -fblocks
+
+
+Building with LLVM/Clang for ARM
+================================
+
+  When using LLVM/Clang to compile for ARM, it is necessary to specify
+  extra flags in order to enable ARM EHABI compliant exceptions. To do
+  so, set `OBJCFLAGS` to this:
+
+    -O2 -g -mllvm -arm-enable-ehabi -mllvm -arm-enable-ehabi-descriptor
+
+  If you are getting errors from the assembler about instructions being
+  unavailable for the architecture, you need to set `OBJC` to this:
+
+    clang -arch armv6 -mfpu=vfp
+
+  Using these flags, ObjFW was compiled successfully for Android and the
+  Raspberry Pi.
 
 
 Bugs and feature requests
