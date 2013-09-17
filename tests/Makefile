@@ -87,6 +87,15 @@ run-on-ios: all sign-for-ios
 	ssh ${IOS_USER}@${IOS_HOST} \
 		'cd ${IOS_TMP} && ${TEST_LAUNCHER} ./tests'
 
+run-on-android: all
+	echo "Uploading files to Android device..."
+	adb push tests /data/local/tmp/objfw/tests
+	adb push testfile.bin /data/local/tmp/objfw/testfile.bin
+	adb push testfile.txt /data/local/tmp/objfw/testfile.txt
+	adb push serialization.xml /data/local/tmp/objfw/serialization.xml
+	echo "Running tests binary on Android device..."
+	adb shell 'cd /data/local/tmp/objfw && ./tests'
+
 ${PROG_NOINST}: ${LIBOBJFW_DEP}
 
 EBOOT.PBP: ${PROG_NOINST}
