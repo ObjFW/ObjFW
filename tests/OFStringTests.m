@@ -379,8 +379,13 @@ static uint16_t sutf16str[] = {
 	    isnan([@"   NAN\t\t" floatValue]))
 
 	TEST(@"-[doubleValue]",
+#ifndef __ANDROID__
 	    [@"\t-0x1.FFFFFFFFFFFFFP-1020 " doubleValue] ==
 	    -0x1.FFFFFFFFFFFFFP-1020 &&
+#else
+	    /* strtod() does not accept 0x on Android */
+	    [@"\t-0.123456789 " doubleValue] == -0.123456789 &&
+#endif
 	    [@"\r-INFINITY\n" doubleValue] == -INFINITY &&
 	    isnan([@"   NAN\t\t" doubleValue]))
 

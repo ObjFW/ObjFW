@@ -407,7 +407,8 @@ parse_mode(const char *mode)
 		@throw [OFOpenFileFailedException exceptionWithPath: path
 							       mode: @"r"];
 
-	return s.st_size;
+	/* On Android, off_t is 32 bit, but st_size is long long there */
+	return (off_t)s.st_size;
 }
 
 + (OFDate*)modificationDateOfFileAtPath: (OFString*)path

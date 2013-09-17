@@ -224,30 +224,34 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 		FreeEnvironmentStringsW(env);
 #elif !defined(OF_IOS)
-		for (; *env != NULL; env++) {
-			OFString *key, *value;
-			char *sep;
+		if (env != NULL) {
+			for (; *env != NULL; env++) {
+				OFString *key, *value;
+				char *sep;
+				const of_string_encoding_t encoding =
+				    OF_STRING_ENCODING_NATIVE;
 
-			pool = objc_autoreleasePoolPush();
+				pool = objc_autoreleasePoolPush();
 
-			if ((sep = strchr(*env, '=')) == NULL) {
-				fprintf(stderr, "Warning: Invalid environment "
-				    "variable: %s\n", *env);
-				continue;
+				if ((sep = strchr(*env, '=')) == NULL) {
+					fprintf(stderr, "Warning: Invalid "
+					    "environment variable: %s\n", *env);
+					continue;
+				}
+
+				key = [OFString
+				    stringWithCString: *env
+					     encoding: encoding
+					       length: sep - *env];
+				value = [OFString
+				    stringWithCString: sep + 1
+					     encoding: encoding];
+
+				[environment setObject: value
+						forKey: key];
+
+				objc_autoreleasePoolPop(pool);
 			}
-
-			key = [OFString
-			    stringWithCString: *env
-				     encoding: OF_STRING_ENCODING_NATIVE
-				       length: sep - *env];
-			value = [OFString
-			    stringWithCString: sep + 1
-				     encoding: OF_STRING_ENCODING_NATIVE];
-
-			[environment setObject: value
-					forKey: key];
-
-			objc_autoreleasePoolPop(pool);
 		}
 #else
 		/*
