@@ -35,6 +35,7 @@
 #import "OFInvalidFormatException.h"
 #import "OFInvalidServerReplyException.h"
 #import "OFNotConnectedException.h"
+#import "OFNotImplementedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
@@ -324,7 +325,7 @@ normalize_key(char *str_)
 	void *pool = objc_autoreleasePoolPush();
 	OFURL *URL = [request URL];
 	OFString *scheme = [URL scheme];
-	of_http_request_type_t requestType = [request requestType];
+	of_http_request_method_t method = [request method];
 	OFMutableString *requestString;
 	OFDictionary *headers = [request headers];
 	OFDataArray *POSTData = [request POSTData];
@@ -335,10 +336,15 @@ normalize_key(char *str_)
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
 	int status;
-	const char *type = NULL;
 
 	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
+
+	if (method != OF_HTTP_REQUEST_METHOD_GET &&
+	    method != OF_HTTP_REQUEST_METHOD_HEAD &&
+	    method != OF_HTTP_REQUEST_METHOD_POST)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
 
 	/* Can we reuse the socket? */
 	if (_socket != nil && [[_lastURL scheme] isEqual: [URL scheme]] &&
@@ -368,13 +374,6 @@ normalize_key(char *str_)
 	} else
 		socket = [self OF_createSocketForRequest: request];
 
-	if (requestType == OF_HTTP_REQUEST_TYPE_GET)
-		type = "GET";
-	if (requestType == OF_HTTP_REQUEST_TYPE_HEAD)
-		type = "HEAD";
-	if (requestType == OF_HTTP_REQUEST_TYPE_POST)
-		type = "POST";
-
 	if ([(path = [URL path]) length] == 0)
 		path = @"/";
 
@@ -386,11 +385,13 @@ normalize_key(char *str_)
 	if ([URL query] != nil)
 		requestString = [OFMutableString stringWithFormat:
 		    @"%s %@?%@ HTTP/%@\r\n",
-		    type, path, [URL query], [request protocolVersionString]];
+		    of_http_request_method_to_string(method), path, [URL query],
+		    [request protocolVersionString]];
 	else
 		requestString = [OFMutableString stringWithFormat:
 		    @"%s %@ HTTP/%@\r\n",
-		    type, path, [request protocolVersionString]];
+		    of_http_request_method_to_string(method), path,
+		    [request protocolVersionString]];
 
 	if ([URL port] == 80)
 		[requestString appendFormat: @"Host: %@\r\n", [URL host]];
@@ -410,7 +411,7 @@ normalize_key(char *str_)
 	    (object = [objectEnumerator nextObject]) != nil)
 		[requestString appendFormat: @"%@: %@\r\n", key, object];
 
-	if (requestType == OF_HTTP_REQUEST_TYPE_POST) {
+	if (method == OF_HTTP_REQUEST_METHOD_POST) {
 		OFString *contentType = [request MIMEType];
 
 		if (contentType == nil)
@@ -440,7 +441,7 @@ normalize_key(char *str_)
 		[socket writeString: requestString];
 	}
 
-	if (requestType == OF_HTTP_REQUEST_TYPE_POST)
+	if (method == OF_HTTP_REQUEST_METHOD_POST)
 		[socket writeBuffer: [POSTData items]
 			     length: [POSTData count] * [POSTData itemSize]];
 
@@ -459,7 +460,7 @@ normalize_key(char *str_)
 		socket = [self OF_createSocketForRequest: request];
 		[socket writeString: requestString];
 
-		if (requestType == OF_HTTP_REQUEST_TYPE_POST)
+		if (method == OF_HTTP_REQUEST_METHOD_POST)
 			[socket writeBuffer: [POSTData items]
 				     length: [POSTData count] *
 					     [POSTData itemSize]];
@@ -577,14 +578,14 @@ normalize_key(char *str_)
 			OFHTTPRequest *newRequest;
 
 			newRequest = [OFHTTPRequest requestWithURL: newURL];
-			[newRequest setRequestType: requestType];
+			[newRequest setMethod: method];
 			[newRequest setHeaders: headers];
 			[newRequest setPOSTData: POSTData];
 			[newRequest setMIMEType: [request MIMEType]];
 
 			if (status == 303) {
 				[newRequest
-				    setRequestType: OF_HTTP_REQUEST_TYPE_GET];
+				    setMethod: OF_HTTP_REQUEST_METHOD_GET];
 				[newRequest setPOSTData: nil];
 				[newRequest setMIMEType: nil];
 			}

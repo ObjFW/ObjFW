@@ -24,7 +24,7 @@
 @class OFHTTPResponse;
 
 /*!
- * @brief An exception indicating that a HTTP request failed.
+ * @brief An exception indicating that an HTTP request failed.
  */
 @interface OFHTTPRequestFailedException: OFException
 {

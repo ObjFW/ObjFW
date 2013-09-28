@@ -291,7 +291,7 @@ normalized_key(OFString *key)
 		SEND_RESPONSE
 	} _state;
 	uint8_t _HTTPMinorVersion;
-	of_http_request_type_t _requestType;
+	of_http_request_method_t _method;
 	OFString *_host, *_path;
 	uint16_t _port;
 	OFMutableDictionary *_headers;
@@ -387,7 +387,7 @@ normalized_key(OFString *key)
 
 - (bool)parseProlog: (OFString*)line
 {
-	OFString *type;
+	OFString *method;
 	size_t pos;
 
 	@try {
@@ -411,15 +411,17 @@ normalized_key(OFString *key)
 	if (pos == OF_NOT_FOUND)
 		return [self sendErrorAndClose: 400];
 
-	type = [line substringWithRange: of_range(0, pos)];
-	if ([type isEqual: @"GET"])
-		_requestType = OF_HTTP_REQUEST_TYPE_GET;
-	else if ([type isEqual: @"POST"])
-		_requestType = OF_HTTP_REQUEST_TYPE_POST;
-	else if ([type isEqual: @"HEAD"])
-		_requestType = OF_HTTP_REQUEST_TYPE_HEAD;
-	else
-		return [self sendErrorAndClose: 501];
+	method = [line substringWithRange: of_range(0, pos)];
+	@try {
+		_method = of_http_request_method_from_string(
+		    [method UTF8String]);
+	} @catch (OFInvalidFormatException *e) {
+		return [self sendErrorAndClose: 405];
+	}
+	if (_method != OF_HTTP_REQUEST_METHOD_GET &&
+	    _method != OF_HTTP_REQUEST_METHOD_HEAD &&
+	    _method != OF_HTTP_REQUEST_METHOD_POST)
+		return [self sendErrorAndClose: 405];
 
 	@try {
 		_path = [line substringWithRange:
@@ -444,12 +446,8 @@ normalized_key(OFString *key)
 	size_t pos;
 
 	if ([line length] == 0) {
-		switch (_requestType) {
-		case OF_HTTP_REQUEST_TYPE_GET:
-		case OF_HTTP_REQUEST_TYPE_HEAD:
-			_state = SEND_RESPONSE;
-			break;
-		case OF_HTTP_REQUEST_TYPE_POST:;
+		switch (_method) {
+		case OF_HTTP_REQUEST_METHOD_POST:;
 			OFString *tmp;
 			char *buffer;
 
@@ -476,6 +474,9 @@ normalized_key(OFString *key)
 			    [OFDate dateWithTimeIntervalSinceNow: 5]];
 
 			return false;
+		default:
+			_state = SEND_RESPONSE;
+			break;
 		}
 
 		return true;
@@ -610,7 +611,7 @@ normalized_key(OFString *key)
 		[URL setPath: _path];
 
 	request = [OFHTTPRequest requestWithURL: URL];
-	[request setRequestType: _requestType];
+	[request setMethod: _method];
 	[request setProtocolVersion:
 	    (of_http_request_protocol_version_t){ 1, _HTTPMinorVersion }];
 	[request setHeaders: _headers];

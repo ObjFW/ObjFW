@@ -66,22 +66,11 @@
 
 - (OFString*)description
 {
-	const char *type = "(unknown)";
-
-	switch ([_request requestType]) {
-	case OF_HTTP_REQUEST_TYPE_GET:
-		type = "GET";
-		break;
-	case OF_HTTP_REQUEST_TYPE_HEAD:
-		type = "HEAD";
-		break;
-	case OF_HTTP_REQUEST_TYPE_POST:
-		type = "POST";
-		break;
-	}
+	const char *method =
+	    of_http_request_method_to_string([_request method]);
 
 	return [OFString stringWithFormat:
-	    @"A HTTP %s request with URL %@ failed with code %d!", type,
+	    @"An HTTP %s request with URL %@ failed with code %d!", method,
 	    [_request URL], [_response statusCode]];
 }
 

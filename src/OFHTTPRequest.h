@@ -30,14 +30,24 @@
 /*!
  * @brief The type of an HTTP request.
  */
-typedef enum of_http_request_type_t {
+typedef enum of_http_request_method_t {
+	/*! OPTIONS */
+	OF_HTTP_REQUEST_METHOD_OPTIONS,
 	/*! GET */
-	OF_HTTP_REQUEST_TYPE_GET,
-	/*! POST */
-	OF_HTTP_REQUEST_TYPE_POST,
+	OF_HTTP_REQUEST_METHOD_GET,
 	/*! HEAD */
-	OF_HTTP_REQUEST_TYPE_HEAD
-} of_http_request_type_t;
+	OF_HTTP_REQUEST_METHOD_HEAD,
+	/*! POST */
+	OF_HTTP_REQUEST_METHOD_POST,
+	/*! PUT */
+	OF_HTTP_REQUEST_METHOD_PUT,
+	/*! DELETE */
+	OF_HTTP_REQUEST_METHOD_DELETE,
+	/*! TRACE */
+	OF_HTTP_REQUEST_METHOD_TRACE,
+	/*! CONNECT */
+	OF_HTTP_REQUEST_METHOD_CONNECT
+} of_http_request_method_t;
 
 /*!
  * @brief The HTTP version of the HTTP request.
@@ -55,7 +65,7 @@ typedef struct of_http_request_protocol_version_t {
 @interface OFHTTPRequest: OFObject <OFCopying>
 {
 	OFURL *_URL;
-	of_http_request_type_t _requestType;
+	of_http_request_method_t _method;
 	of_http_request_protocol_version_t _protocolVersion;
 	OFDictionary *_headers;
 	OFDataArray *_POSTData;
@@ -65,7 +75,7 @@ typedef struct of_http_request_protocol_version_t {
 
 #ifdef OF_HAVE_PROPERTIES
 @property (copy) OFURL *URL;
-@property of_http_request_type_t requestType;
+@property of_http_request_method_t method;
 @property of_http_request_protocol_version_t protocolVersion;
 @property (copy) OFDictionary *headers;
 @property (retain) OFDataArray *POSTData;
@@ -111,18 +121,18 @@ typedef struct of_http_request_protocol_version_t {
 - (OFURL*)URL;
 
 /*!
- * @brief Sets the request type of the HTTP request.
+ * @brief Sets the request method of the HTTP request.
  *
- * @param requestType The request type of the HTTP request
+ * @param method The request method of the HTTP request
  */
-- (void)setRequestType: (of_http_request_type_t)requestType;
+- (void)setMethod: (of_http_request_method_t)method;
 
 /*!
- * @brief Returns the request type of the HTTP request.
+ * @brief Returns the request method of the HTTP request.
  *
- * @return The request type of the HTTP request
+ * @return The request method of the HTTP request
  */
-- (of_http_request_type_t)requestType;
+- (of_http_request_method_t)method;
 
 /*!
  * @brief Sets the protocol version of the HTTP request.
@@ -209,3 +219,27 @@ typedef struct of_http_request_protocol_version_t {
  */
 - (OFString*)remoteAddress;
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*!
+ * @brief Returns a C string describing the specified request method.
+ *
+ * @param method The request method which should be described as a C string
+ * @return A C string describing the specified request method
+ */
+extern const char* of_http_request_method_to_string(
+    of_http_request_method_t method);
+
+/*!
+ * @brief Returns the request method for the specified string.
+ *
+ * @param string The string for which the request method should be returned
+ * @return The request method for the specified string
+ */
+extern of_http_request_method_t of_http_request_method_from_string(
+    const char *string);
+#ifdef __cplusplus
+}
+#endif
