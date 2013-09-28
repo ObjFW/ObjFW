@@ -68,8 +68,7 @@ typedef struct of_http_request_protocol_version_t {
 	of_http_request_method_t _method;
 	of_http_request_protocol_version_t _protocolVersion;
 	OFDictionary *_headers;
-	OFDataArray *_POSTData;
-	OFString *_MIMEType;
+	OFDataArray *_entity;
 	OFString *_remoteAddress;
 }
 
@@ -78,8 +77,7 @@ typedef struct of_http_request_protocol_version_t {
 @property of_http_request_method_t method;
 @property of_http_request_protocol_version_t protocolVersion;
 @property (copy) OFDictionary *headers;
-@property (retain) OFDataArray *POSTData;
-@property (copy) OFString *MIMEType;
+@property (retain) OFDataArray *entity;
 @property (copy) OFString *remoteAddress;
 #endif
 
@@ -178,32 +176,18 @@ typedef struct of_http_request_protocol_version_t {
 - (OFDictionary*)headers;
 
 /*!
- * @brief Sets the POST data of the HTTP request.
+ * @brief Sets the entity body of the HTTP request.
  *
- * @param POSTData The POST data of the HTTP request
+ * @param entity The entity body of the HTTP request
  */
-- (void)setPOSTData: (OFDataArray*)POSTData;
+- (void)setEntity: (OFDataArray*)entity;
 
 /*!
- * @brief Returns the POST data of the HTTP request.
+ * @brief Returns the entity body of the HTTP request.
  *
- * @return The POST data of the HTTP request
+ * @return The entity body of the HTTP request
  */
-- (OFDataArray*)POSTData;
-
-/*!
- * @brief Sets the MIME type for the POST data.
- *
- * @param MIMEType The MIME type for the POST data
- */
-- (void)setMIMEType: (OFString*)MIMEType;
-
-/*!
- * @brief Returns the MIME type for the POST data.
- *
- * @return The MIME type for the POST data
- */
-- (OFString*)MIMEType;
+- (OFDataArray*)entity;
 
 /*!
  * @brief Sets the remote address from which the request originates.

@@ -296,7 +296,7 @@ normalized_key(OFString *key)
 	uint16_t _port;
 	OFMutableDictionary *_headers;
 	size_t _contentLength;
-	OFDataArray *_POSTData;
+	OFDataArray *_entity;
 }
 
 - initWithSocket: (OFTCPSocket*)socket
@@ -349,7 +349,7 @@ normalized_key(OFString *key)
 	[_host release];
 	[_path release];
 	[_headers release];
-	[_POSTData release];
+	[_entity release];
 
 	[super dealloc];
 }
@@ -418,10 +418,6 @@ normalized_key(OFString *key)
 	} @catch (OFInvalidFormatException *e) {
 		return [self sendErrorAndClose: 405];
 	}
-	if (_method != OF_HTTP_REQUEST_METHOD_GET &&
-	    _method != OF_HTTP_REQUEST_METHOD_HEAD &&
-	    _method != OF_HTTP_REQUEST_METHOD_POST)
-		return [self sendErrorAndClose: 405];
 
 	@try {
 		_path = [line substringWithRange:
@@ -446,23 +442,20 @@ normalized_key(OFString *key)
 	size_t pos;
 
 	if ([line length] == 0) {
-		switch (_method) {
-		case OF_HTTP_REQUEST_METHOD_POST:;
-			OFString *tmp;
+		size_t contentLength;
+
+		@try {
+			contentLength = [[_headers
+			    objectForKey: @"Content-Length"] decimalValue];
+		} @catch (OFInvalidFormatException *e) {
+			return [self sendErrorAndClose: 400];
+		}
+
+		if (contentLength > 0) {
 			char *buffer;
 
-			tmp = [_headers objectForKey: @"Content-Length"];
-			if (tmp == nil)
-				return [self sendErrorAndClose: 411];
-
-			@try {
-				_contentLength = (size_t)[tmp decimalValue];
-			} @catch (OFInvalidFormatException *e) {
-				return [self sendErrorAndClose: 400];
-			}
-
 			buffer = [self allocMemoryWithSize: BUFFER_SIZE];
-			_POSTData = [[OFDataArray alloc] init];
+			_entity = [[OFDataArray alloc] init];
 
 			[_socket asyncReadIntoBuffer: buffer
 					      length: BUFFER_SIZE
@@ -474,11 +467,9 @@ normalized_key(OFString *key)
 			    [OFDate dateWithTimeIntervalSinceNow: 5]];
 
 			return false;
-		default:
-			_state = SEND_RESPONSE;
-			break;
 		}
 
+		_state = SEND_RESPONSE;
 		return true;
 	}
 
@@ -537,10 +528,10 @@ normalized_key(OFString *key)
 	if ([socket isAtEndOfStream] || exception != nil)
 		return false;
 
-	[_POSTData addItems: buffer
-		      count: length];
+	[_entity addItems: buffer
+		    count: length];
 
-	if ([_POSTData count] >= _contentLength) {
+	if ([_entity count] >= _contentLength) {
 		@try {
 			[self createResponse];
 		} @catch (OFWriteFailedException *e) {
@@ -615,7 +606,7 @@ normalized_key(OFString *key)
 	[request setProtocolVersion:
 	    (of_http_request_protocol_version_t){ 1, _HTTPMinorVersion }];
 	[request setHeaders: _headers];
-	[request setPOSTData: _POSTData];
+	[request setEntity: _entity];
 	[request setRemoteAddress: [_socket remoteAddress]];
 
 	response = [[[OFHTTPServerResponse alloc]

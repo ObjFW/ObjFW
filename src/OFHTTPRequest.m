@@ -120,8 +120,7 @@ of_http_request_method_from_string(const char *string)
 {
 	[_URL release];
 	[_headers release];
-	[_POSTData release];
-	[_MIMEType release];
+	[_entity release];
 	[_remoteAddress release];
 
 	[super dealloc];
@@ -136,8 +135,7 @@ of_http_request_method_from_string(const char *string)
 		copy->_protocolVersion = _protocolVersion;
 		[copy setURL: _URL];
 		[copy setHeaders: _headers];
-		[copy setPOSTData: _POSTData];
-		[copy setMIMEType: _MIMEType];
+		[copy setEntity: _entity];
 		[copy setRemoteAddress: _remoteAddress];
 	} @catch (id e) {
 		[copy release];
@@ -161,8 +159,7 @@ of_http_request_method_from_string(const char *string)
 	    request->_protocolVersion.minor != _protocolVersion.minor ||
 	    ![request->_URL isEqual: _URL] ||
 	    ![request->_headers isEqual: _headers] ||
-	    ![request->_POSTData isEqual: _POSTData] ||
-	    ![request->_MIMEType isEqual: _MIMEType] ||
+	    ![request->_entity isEqual: _entity] ||
 	    ![request->_remoteAddress isEqual: _remoteAddress])
 		return false;
 
@@ -180,8 +177,7 @@ of_http_request_method_from_string(const char *string)
 	OF_HASH_ADD(hash, _protocolVersion.minor);
 	OF_HASH_ADD_HASH(hash, [_URL hash]);
 	OF_HASH_ADD_HASH(hash, [_headers hash]);
-	OF_HASH_ADD_HASH(hash, [_POSTData hash]);
-	OF_HASH_ADD_HASH(hash, [_MIMEType hash]);
+	OF_HASH_ADD_HASH(hash, [_entity hash]);
 	OF_HASH_ADD_HASH(hash, [_remoteAddress hash]);
 
 	OF_HASH_FINALIZE(hash);
@@ -265,24 +261,14 @@ of_http_request_method_from_string(const char *string)
 	OF_GETTER(_headers, true)
 }
 
-- (void)setPOSTData: (OFDataArray*)POSTData
+- (void)setEntity: (OFDataArray*)entity
 {
-	OF_SETTER(_POSTData, POSTData, true, 0)
+	OF_SETTER(_entity, entity, true, 0)
 }
 
-- (OFDataArray*)POSTData
+- (OFDataArray*)entity
 {
-	OF_GETTER(_POSTData, true)
-}
-
-- (void)setMIMEType: (OFString*)MIMEType
-{
-	OF_SETTER(_MIMEType, MIMEType, true, 1)
-}
-
-- (OFString*)MIMEType
-{
-	OF_GETTER(_MIMEType, true)
+	OF_GETTER(_entity, true)
 }
 
 - (void)setRemoteAddress: (OFString*)remoteAddress
@@ -299,12 +285,12 @@ of_http_request_method_from_string(const char *string)
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *method = of_http_request_method_to_string(_method);
-	OFString *indentedHeaders, *indentedPOSTData, *ret;
+	OFString *indentedHeaders, *indentedEntity, *ret;
 
 	indentedHeaders = [[_headers description]
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
-	indentedPOSTData = [[_POSTData description]
+	indentedEntity = [[_entity description]
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
 
@@ -312,12 +298,11 @@ of_http_request_method_from_string(const char *string)
 	    @"<%@:\n\tURL = %@\n"
 	    @"\tMethod = %s\n"
 	    @"\tHeaders = %@\n"
-	    @"\tPOST data = %@\n"
-	    @"\tPOST data MIME type = %@\n"
+	    @"\tEntity = %@\n"
 	    @"\tRemote address = %@\n"
 	    @">",
-	    [self class], _URL, method, indentedHeaders, indentedPOSTData,
-	    _MIMEType, _remoteAddress];
+	    [self class], _URL, method, indentedHeaders, indentedEntity,
+	    _remoteAddress];
 
 	objc_autoreleasePoolPop(pool);
 

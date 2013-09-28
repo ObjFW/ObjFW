@@ -328,7 +328,7 @@ normalize_key(char *str_)
 	of_http_request_method_t method = [request method];
 	OFMutableString *requestString;
 	OFDictionary *headers = [request headers];
-	OFDataArray *POSTData = [request POSTData];
+	OFDataArray *entity = [request entity];
 	OFTCPSocket *socket;
 	OFHTTPClientResponse *response;
 	OFString *line, *path, *version, *redirect, *keepAlive;
@@ -339,12 +339,6 @@ normalize_key(char *str_)
 
 	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
-
-	if (method != OF_HTTP_REQUEST_METHOD_GET &&
-	    method != OF_HTTP_REQUEST_METHOD_HEAD &&
-	    method != OF_HTTP_REQUEST_METHOD_POST)
-		@throw [OFNotImplementedException exceptionWithSelector: _cmd
-								 object: self];
 
 	/* Can we reuse the socket? */
 	if (_socket != nil && [[_lastURL scheme] isEqual: [URL scheme]] &&
@@ -411,19 +405,6 @@ normalize_key(char *str_)
 	    (object = [objectEnumerator nextObject]) != nil)
 		[requestString appendFormat: @"%@: %@\r\n", key, object];
 
-	if (method == OF_HTTP_REQUEST_METHOD_POST) {
-		OFString *contentType = [request MIMEType];
-
-		if (contentType == nil)
-			contentType = @"application/x-www-form-urlencoded; "
-			    @"charset=UTF-8";
-
-		[requestString appendFormat:
-		    @"Content-Type: %@\r\n"
-		    @"Content-Length: %zu\r\n",
-		    contentType, [POSTData count] * [POSTData itemSize]];
-	}
-
 	if ([request protocolVersion].major == 1 &&
 	    [request protocolVersion].minor == 0)
 		[requestString appendString: @"Connection: keep-alive\r\n"];
@@ -441,9 +422,9 @@ normalize_key(char *str_)
 		[socket writeString: requestString];
 	}
 
-	if (method == OF_HTTP_REQUEST_METHOD_POST)
-		[socket writeBuffer: [POSTData items]
-			     length: [POSTData count] * [POSTData itemSize]];
+	if (entity != nil)
+		[socket writeBuffer: [entity items]
+			     length: [entity count] * [entity itemSize]];
 
 	@try {
 		line = [socket readLine];
@@ -460,10 +441,10 @@ normalize_key(char *str_)
 		socket = [self OF_createSocketForRequest: request];
 		[socket writeString: requestString];
 
-		if (method == OF_HTTP_REQUEST_METHOD_POST)
-			[socket writeBuffer: [POSTData items]
-				     length: [POSTData count] *
-					     [POSTData itemSize]];
+		if (entity != nil)
+			[socket writeBuffer: [entity items]
+				     length: [entity count] *
+					     [entity itemSize]];
 
 		@try {
 			line = [socket readLine];
@@ -580,14 +561,28 @@ normalize_key(char *str_)
 			newRequest = [OFHTTPRequest requestWithURL: newURL];
 			[newRequest setMethod: method];
 			[newRequest setHeaders: headers];
-			[newRequest setPOSTData: POSTData];
-			[newRequest setMIMEType: [request MIMEType]];
+			[newRequest setEntity: entity];
 
 			if (status == 303) {
+				OFMutableDictionary *newHeaders;
+				OFEnumerator *keyEnumerator, *objectEnumerator;
+				id key, object;
+
+				newHeaders = [OFMutableDictionary dictionary];
+				keyEnumerator = [headers keyEnumerator];
+				objectEnumerator = [headers objectEnumerator];
+				while ((key = [keyEnumerator nextObject]) !=
+				    nil &&
+				    (object = [objectEnumerator nextObject]) !=
+				    nil)
+					if (![key hasPrefix: @"Content-"])
+						[newHeaders setObject: object
+							       forKey: key];
+
 				[newRequest
 				    setMethod: OF_HTTP_REQUEST_METHOD_GET];
-				[newRequest setPOSTData: nil];
-				[newRequest setMIMEType: nil];
+				[newRequest setHeaders: newHeaders];
+				[newRequest setEntity: nil];
 			}
 
 			[newRequest retain];
