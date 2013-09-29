@@ -208,6 +208,8 @@ main(int argc, char *argv[])
 
 	[of_stdout writeString: str];
 	[of_stdout writeString: @"\033[m"];
+#elif defined(STDOUT_SIMPLE)
+	[of_stdout writeString: str];
 #else
 # error No output method!
 #endif
@@ -217,32 +219,44 @@ main(int argc, char *argv[])
 	     inModule: (OFString*)module
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+#ifndef STDOUT_SIMPLE
 	[self outputString: [OFString stringWithFormat: @"[%@] %@: testing...",
 							module, test]
 		   inColor: YELLOW];
+#else
+	[self outputString: [OFString stringWithFormat: @"[%@] %@: ",
+							module, test]
+		   inColor: YELLOW];
+#endif
 	[pool release];
 }
 
 - (void)outputSuccess: (OFString*)test
 	     inModule: (OFString*)module
 {
+#ifndef STDOUT_SIMPLE
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	[self outputString: [OFString stringWithFormat: @"[%@] %@: ok\n",
 							module, test]
 		   inColor: GREEN];
 	[pool release];
+#else
+	[self outputString: @"ok\n"
+		   inColor: GREEN];
+#endif
 }
 
 - (void)outputFailure: (OFString*)test
 	     inModule: (OFString*)module
 {
+#ifndef STDOUT_SIMPLE
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	[self outputString: [OFString stringWithFormat: @"[%@] %@: failed\n",
 							module, test]
 		   inColor: RED];
 	[pool release];
 
-#ifdef __wii__
+# ifdef __wii__
 	[self outputString: @"Press A to continue!\n"
 		   inColor: NO_COLOR];
 	for (;;) {
@@ -253,8 +267,8 @@ main(int argc, char *argv[])
 
 		VIDEO_WaitVSync();
 	}
-#endif
-#ifdef _PSP
+# endif
+# ifdef _PSP
 	[self outputString: @"Press X to continue!\n"
 		   inColor: NO_COLOR];
 	for (;;) {
@@ -269,6 +283,10 @@ main(int argc, char *argv[])
 			}
 		}
 	}
+# endif
+#else
+	[self outputString: @"failed\n"
+		   inColor: RED];
 #endif
 }
 

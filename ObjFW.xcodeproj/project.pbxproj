@@ -2213,7 +2213,7 @@
 		4BF33AF7133807310059CEF7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_PREPROCESSOR_DEFINITIONS = STDOUT;
+				GCC_PREPROCESSOR_DEFINITIONS = STDOUT_SIMPLE;
 				INSTALL_PATH = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -2222,7 +2222,7 @@
 		4BF33AF8133807310059CEF7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_PREPROCESSOR_DEFINITIONS = STDOUT;
+				GCC_PREPROCESSOR_DEFINITIONS = STDOUT_SIMPLE;
 				INSTALL_PATH = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
