@@ -445,7 +445,7 @@ normalized_key(OFString *key)
 		size_t contentLength;
 
 		@try {
-			contentLength = [[_headers
+			contentLength = (size_t)[[_headers
 			    objectForKey: @"Content-Length"] decimalValue];
 		} @catch (OFInvalidFormatException *e) {
 			return [self sendErrorAndClose: 400];
