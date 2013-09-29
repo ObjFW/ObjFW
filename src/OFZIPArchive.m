@@ -21,6 +21,7 @@
 #import "OFZIPArchive.h"
 #import "OFZIPArchiveEntry.h"
 #import "OFZIPArchiveEntry+Private.h"
+#import "OFDataArray.h"
 #import "OFDictionary.h"
 #import "OFFile.h"
 

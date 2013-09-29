@@ -19,6 +19,7 @@
 #include <stdlib.h>
 
 #import "OFMutableDictionary_hashtable.h"
+#import "OFArray.h"
 
 #import "autorelease.h"
 
