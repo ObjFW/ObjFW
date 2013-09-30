@@ -544,7 +544,7 @@ normalize_key(char *str_)
 	    (_insecureRedirectsAllowed || [scheme isEqual: @"http"] ||
 	    ![redirect hasPrefix: @"http://"])) {
 		OFURL *newURL;
-		bool follow = true;
+		bool follow;
 
 		newURL = [OFURL URLWithString: redirect
 				relativeToURL: URL];
@@ -554,6 +554,25 @@ normalize_key(char *str_)
 			follow = [_delegate client: self
 			      shouldFollowRedirect: newURL
 					   request: request];
+		else {
+			/*
+			 * 301, 302 and 307 should only redirect with user
+			 * confirmation if the request method is not GET or
+			 * HEAD. Asking the delegate and getting true returned
+			 * is considered user confirmation.
+			 */
+			if (method == OF_HTTP_REQUEST_METHOD_GET ||
+			    method == OF_HTTP_REQUEST_METHOD_HEAD)
+				follow = true;
+			/*
+			 * 303 should always be redirected and converted to a
+			 * GET request.
+			 */
+			else if (status == 303)
+				follow = true;
+			else
+				follow = false;
+		}
 
 		if (follow) {
 			OFHTTPRequest *newRequest;
@@ -563,6 +582,11 @@ normalize_key(char *str_)
 			[newRequest setHeaders: headers];
 			[newRequest setEntity: entity];
 
+			/*
+			 * 303 means the request should be converted to a GET
+			 * request before redirection. This also means stripping
+			 * the entity of the request.
+			 */
 			if (status == 303) {
 				OFMutableDictionary *newHeaders;
 				OFEnumerator *keyEnumerator, *objectEnumerator;
