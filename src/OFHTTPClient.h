@@ -80,11 +80,13 @@
  *
  * @param client The OFHTTPClient which wants to follow a redirect
  * @param URL The URL to which it will follow a redirect
+ * @param statusCode The status code for the redirection
  * @param request The request for which the OFHTTPClient wants to redirect
  * @return A boolean whether the OFHTTPClient should follow the redirect
  */
 -	  (bool)client: (OFHTTPClient*)client
   shouldFollowRedirect: (OFURL*)URL
+	    statusCode: (int)statusCode
 	       request: (OFHTTPRequest*)request;
 @end
 

@@ -550,9 +550,10 @@ normalize_key(char *str_)
 				relativeToURL: URL];
 
 		if ([_delegate respondsToSelector:
-		    @selector(client:shouldFollowRedirect:request:)])
+		    @selector(client:shouldFollowRedirect:statusCode:request:)])
 			follow = [_delegate client: self
 			      shouldFollowRedirect: newURL
+					statusCode: status
 					   request: request];
 		else {
 			/*
