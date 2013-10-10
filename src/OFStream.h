@@ -1053,6 +1053,30 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 #endif
 
 /*!
+ * @brief "Reverses" a read operation, meaning the bytes from the specified
+ *	  buffer will be returned on the next read operation.
+ *
+ * This is useful for reading into a buffer, parsing the data and then giving
+ * back the data which does not need to be processed. This can be used to
+ * optimize situations in which the length of the data that needs to be
+ * processed is not known before all data has been processed - for example in
+ * decompression - in which it would otherwise be necessary to read byte by
+ * byte to avoid consuming bytes that need to be parsed by something else -
+ * for example the data descriptor in a ZIP archive which immediately follows
+ * the compressed data.
+ *
+ * If the stream is a file, this method does not change any data in the file.
+ *
+ * If the stream is seekable, a seek operation will discard any data that was
+ * unread.
+ *
+ * @param buffer The buffer to unread
+ * @param length The length of the buffer to unread
+ */
+- (void)unreadFromBuffer: (const void*)buffer
+		  length: (size_t)length;
+
+/*!
  * @brief Closes the stream.
  */
 - (void)close;

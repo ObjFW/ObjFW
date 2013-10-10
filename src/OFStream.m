@@ -42,6 +42,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
+#import "OFOutOfRangeException.h"
 #import "OFSetOptionFailedException.h"
 
 #import "macros.h"
@@ -1555,6 +1556,21 @@
 	[OFRunLoop OF_cancelAsyncRequestsForStream: self];
 }
 #endif
+
+- (void)unreadFromBuffer: (const void*)buffer
+		  length: (size_t)length
+{
+	if (length > SIZE_MAX - _readBufferLength)
+		@throw [OFOutOfRangeException exception];
+
+	_readBuffer = [self resizeMemory: _readBuffer
+				    size: _readBufferLength + length];
+
+	memmove(_readBuffer + length, _readBuffer, _readBufferLength);
+	memcpy(_readBuffer, buffer, length);
+
+	_readBufferLength += length;
+}
 
 - (void)close
 {
