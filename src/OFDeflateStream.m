@@ -298,7 +298,8 @@ releaseTree(struct huffman_tree *tree)
 			  length: (size_t)length
 {
 	uint8_t *buffer = buffer_;
-	uint_fast16_t bits, value;
+	uint_fast16_t bits;
+	uint16_t value;
 	size_t i, tmp, bytesWritten = 0;
 	char *slidingWindow;
 	uint_fast16_t slidingWindowIndex;
@@ -654,7 +655,6 @@ start:
 
 				for (j = 0; j < CTX.length; j++) {
 					uint_fast16_t index;
-					uint8_t value;
 
 					if OF_UNLIKELY (length == 0) {
 						CTX.length -= j;
