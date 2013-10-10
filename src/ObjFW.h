@@ -46,6 +46,7 @@
 
 #import "OFStream.h"
 #import "OFStdIOStream.h"
+#import "OFDeflateStream.h"
 #import "OFFile.h"
 #import "OFZIPArchive.h"
 #import "OFZIPArchiveEntry.h"

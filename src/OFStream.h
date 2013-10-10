@@ -1067,7 +1067,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *
  * If the stream is a file, this method does not change any data in the file.
  *
- * If the stream is seekable, a seek operation will discard any data that was
+ * If the stream is seekable, a seek operation will discard any data which was
  * unread.
  *
  * @param buffer The buffer to unread
