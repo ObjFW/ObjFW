@@ -24,6 +24,7 @@
 #import "OFDataArray.h"
 #import "OFDictionary.h"
 #import "OFFile.h"
+#import "OFDeflateStream.h"
 
 #import "OFChecksumFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -40,13 +41,11 @@
 
 /*
  * FIXME: Current limitations:
- *  - Compressed files cannot be read.
- *  - Encrypted files cannot be read.
  *  - Split archives are not supported.
  *  - Write support is missing.
  *  - The ZIP has to be a file on the local file system.
  *  - No support for ZIP64.
- *  - No support for data descriptors (useless without compression anyway).
+ *  - Encrypted files cannot be read.
  */
 
 @interface OFZIPArchive (OF_PRIVATE_CATEGORY)
@@ -70,16 +69,18 @@
 
 @interface OFZIPArchive_FileStream: OFStream
 {
+	OFStream *_stream;
 	OFFile *_file;
+	OFZIPArchive_LocalFileHeader *_localFileHeader;
+	bool _hasDataDescriptor;
 	size_t _size;
-	uint32_t _expectedCRC32, _CRC32;
+	uint32_t _CRC32;
 	bool _atEndOfStream;
 }
 
 - initWithArchiveFile: (OFString*)path
 	       offset: (off_t)offset
-		 size: (size_t)size
-		CRC32: (uint32_t)CRC32;
+      localFileHeader: (OFZIPArchive_LocalFileHeader*)localFileHeader;
 @end
 
 static uint32_t
@@ -103,6 +104,18 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 + (instancetype)archiveWithPath: (OFString*)path
 {
 	return [[[self alloc] initWithPath: path] autorelease];
+}
+
+- init
+{
+	@try {
+		[self doesNotRecognizeSelector: _cmd];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	abort();
 }
 
 - initWithPath: (OFString*)path
@@ -217,7 +230,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	if (![localFileHeader matchesEntry: entry])
 		@throw [OFInvalidFormatException exception];
 
-	if (localFileHeader->_minVersion > 10) {
+	if (localFileHeader->_minVersion > 20) {
 		OFString *version = [OFString stringWithFormat: @"%u.%u",
 		    localFileHeader->_minVersion / 10,
 		    localFileHeader->_minVersion % 10];
@@ -226,16 +239,11 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 		    exceptionWithVersion: version];
 	}
 
-	if (localFileHeader->_compressionMethod != 0)
-		@throw [OFNotImplementedException exceptionWithSelector: _cmd
-								 object: self];
-
 	ret = [[OFZIPArchive_FileStream alloc]
 	    initWithArchiveFile: _path
 			 offset: [_file seekToOffset: 0
 					      whence: SEEK_CUR]
-			   size: localFileHeader->_uncompressedSize
-			  CRC32: localFileHeader->_CRC32];
+	        localFileHeader: localFileHeader];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -295,23 +303,26 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	    _generalPurposeBitFlag != [entry OF_generalPurposeBitFlag] ||
 	    _compressionMethod != [entry OF_compressionMethod] ||
 	    _lastModifiedFileTime != [entry OF_lastModifiedFileTime] ||
-	    _lastModifiedFileDate != [entry OF_lastModifiedFileDate] ||
-	    _CRC32 != [entry CRC32] ||
-	    _compressedSize != [entry compressedSize] ||
-	    _uncompressedSize != [entry uncompressedSize] ||
-	    ![_fileName isEqual: [entry fileName]])
+	    _lastModifiedFileDate != [entry OF_lastModifiedFileDate])
+		return false;
+
+	if (!(_generalPurposeBitFlag & (1 << 3)))
+		if (_CRC32 != [entry CRC32] ||
+		    _compressedSize != [entry compressedSize] ||
+		    _uncompressedSize != [entry uncompressedSize])
+			return false;
+
+	if (![_fileName isEqual: [entry fileName]])
 		return false;
 
 	return true;
 }
-
 @end
 
 @implementation OFZIPArchive_FileStream
 - initWithArchiveFile: (OFString*)path
 	       offset: (off_t)offset
-		 size: (size_t)size
-		CRC32: (uint32_t)CRC32
+      localFileHeader: (OFZIPArchive_LocalFileHeader*)localFileHeader
 {
 	self = [super init];
 
@@ -321,9 +332,25 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 		[_file seekToOffset: offset
 			     whence: SEEK_SET];
 
-		_size = size;
+		switch (localFileHeader->_compressionMethod) {
+		case 0: /* No compression */
+			_stream = [_file retain];
+			break;
+		case 8: /* Deflate */
+			_stream = [[OFDeflateStream alloc]
+			    initWithStream: _file];
+			break;
+		default:
+			@throw [OFNotImplementedException
+			    exceptionWithSelector: _cmd
+					   object: self];
+		}
+
+		_localFileHeader = [localFileHeader retain];
+		_hasDataDescriptor = (localFileHeader->_generalPurposeBitFlag &
+		    (1 << 3));
+		_size = localFileHeader->_uncompressedSize;
 		_CRC32 = ~0;
-		_expectedCRC32 = CRC32;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -334,7 +361,9 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 
 - (void)dealloc
 {
+	[_stream release];
 	[_file release];
+	[_localFileHeader release];
 
 	[super dealloc];
 }
@@ -353,23 +382,40 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 		@throw [OFReadFailedException exceptionWithStream: self
 						  requestedLength: length];
 
-	if (_size == 0) {
-		_atEndOfStream = true;
+	if (_hasDataDescriptor) {
+		if ([_stream isAtEndOfStream]) {
+			uint32_t CRC32;
 
-		if (~_CRC32 != _expectedCRC32)
-			@throw [OFChecksumFailedException exception];
+			_atEndOfStream = true;
 
-		return 0;
+			CRC32 = [_file readLittleEndianInt32];
+			if (CRC32 == 0x08074B50)
+				CRC32 = [_file readLittleEndianInt32];
+
+			if (~_CRC32 != CRC32)
+				@throw [OFChecksumFailedException exception];
+
+			return 0;
+		}
+
+		ret = [_stream readIntoBuffer: buffer
+				       length: length];
+	} else {
+		if (_size == 0) {
+			_atEndOfStream = true;
+
+			if (~_CRC32 != _localFileHeader->_CRC32)
+				@throw [OFChecksumFailedException exception];
+
+			return 0;
+		}
+
+		min = (length < _size ? length : _size);
+		ret = [_stream readIntoBuffer: buffer
+				       length: min];
+		_size -= ret;
 	}
 
-	if (length < _size)
-		min = length;
-	else
-		min = _size;
-
-	ret = [_file readIntoBuffer: buffer
-			     length: min];
-	_size -= ret;
 	_CRC32 = crc32(_CRC32, buffer, ret);
 
 	return ret;

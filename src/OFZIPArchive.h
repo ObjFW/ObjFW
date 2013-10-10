@@ -54,7 +54,7 @@
  *	  specified file.
  *
  * @param path The path to the ZIP file
- * @return An Initialized OFZIPArchive
+ * @return An initialized OFZIPArchive
  */
 - initWithPath: (OFString*)path;
 
