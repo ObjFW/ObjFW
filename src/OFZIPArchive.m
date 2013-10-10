@@ -151,11 +151,22 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 {
 	void *pool = objc_autoreleasePoolPush();
 	uint16_t commentLength;
+	size_t offset = 0;
+	bool valid = false;
 
 	[_file seekToOffset: -22
 		     whence: SEEK_END];
 
-	if ([_file readLittleEndianInt32] != 0x06054B50)
+	while (offset++ < 65536) {
+		if ([_file readLittleEndianInt32] == 0x06054B50) {
+			valid = true;
+			break;
+		} else
+			[_file seekToOffset: -5
+				     whence: SEEK_CUR];
+	}
+
+	if (!valid)
 		@throw [OFInvalidFormatException exception];
 
 	_diskNumber = [_file readLittleEndianInt16],
