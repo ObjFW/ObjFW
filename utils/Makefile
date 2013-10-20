@@ -1,5 +1,7 @@
+PROG = objfw-unzip
+SRCS = objfw-unzip.m
+
 include ../buildsys.mk
-include ../extra.mk
 
 DISTCLEAN = objfw-config
 
@@ -23,3 +25,7 @@ uninstall-extra:
 			fi \
 		fi \
 	done
+
+CPPFLAGS += -I../src -I../src/runtime -I..
+LIBS := -L../src -lobjfw ${LIBS}
+LD = ${OBJC}
