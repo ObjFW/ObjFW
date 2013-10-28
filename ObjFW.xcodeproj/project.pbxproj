@@ -1702,7 +1702,7 @@
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0460;
+				LastUpgradeCheck = 0500;
 			};
 			buildConfigurationList = 1DEB919308733D9F0010E9CD /* Build configuration list for PBXProject "ObjFW" */;
 			compatibilityVersion = "Xcode 3.1";
@@ -2026,7 +2026,6 @@
 		1DEB919408733D9F0010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 2;
 				OTHER_CFLAGS = (
@@ -2037,7 +2036,6 @@
 					"-fblocks",
 					"-pipe",
 				);
-				SDKROOT = "";
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Werror",
@@ -2053,7 +2051,6 @@
 		1DEB919508733D9F0010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 2;
 				OTHER_CFLAGS = (
@@ -2064,7 +2061,6 @@
 					"-fblocks",
 					"-pipe",
 				);
-				SDKROOT = "";
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Werror",
