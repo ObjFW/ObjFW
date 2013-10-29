@@ -734,7 +734,8 @@ start:
 #undef CTX
 	}
 
-	assert(0);
+	/* Get rid of a warning, never reached anyway */
+	OF_ENSURE(0);
 }
 
 - (bool)lowlevelIsAtEndOfStream

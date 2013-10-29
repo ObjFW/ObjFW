@@ -391,7 +391,7 @@ static OFRunLoop *mainRunLoop = nil;
 	OFList *queue = [_readQueues objectForKey: stream];
 	of_list_object_t *listObject;
 
-	OF_ENSURE(queue != nil);
+	assert(queue != nil);
 
 	listObject = [queue firstListObject];
 
@@ -614,7 +614,7 @@ static OFRunLoop *mainRunLoop = nil;
 		}
 # endif
 	} else
-		OF_ENSURE(0);
+		assert(0);
 }
 #endif
 
