@@ -241,10 +241,10 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	if (![localFileHeader matchesEntry: entry])
 		@throw [OFInvalidFormatException exception];
 
-	if (localFileHeader->_minVersion > 20) {
+	if ((localFileHeader->_minVersion & 0xFF) > 20) {
 		OFString *version = [OFString stringWithFormat: @"%u.%u",
-		    localFileHeader->_minVersion / 10,
-		    localFileHeader->_minVersion % 10];
+		    (localFileHeader->_minVersion & 0xFF) / 10,
+		    (localFileHeader->_minVersion & 0xFF) % 10];
 
 		@throw [OFUnsupportedVersionException
 		    exceptionWithVersion: version];
