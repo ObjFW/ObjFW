@@ -160,7 +160,7 @@ constructTree(uint8_t lengths[], uint_fast16_t count)
 {
 	struct huffman_tree *tree;
 	uint16_t lengthCount[MAX_BITS + 1] = { 0 };
-	uint16_t code, maxCode, nextCode[MAX_BITS + 1];
+	uint16_t code, maxCode = 0, nextCode[MAX_BITS + 1];
 	uint_fast16_t i;
 
 	for (i = 0; i < count; i++) {
@@ -733,6 +733,8 @@ start:
 		break;
 #undef CTX
 	}
+
+	assert(0);
 }
 
 - (bool)lowlevelIsAtEndOfStream
