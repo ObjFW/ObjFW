@@ -61,7 +61,7 @@ Linux
 MacOS X
 -------
 
-  * OS versions: 10.5, 10.7, 10.8
+  * OS versions: 10.5, 10.7, 10.8, 10.9
   * Architectures: PPC, x86, x86_64
   * Compilers: Clang 3.1-3.4, LLVM GCC 4.2.1
   * Runtimes: Apple, ObjFW
@@ -80,7 +80,7 @@ OpenBSD
 -------
 
   * OS versions: 5.2, 5.3
-  * Architectures: PPC, SPARC64
+  * Architectures: PPC, SPARC64, x86_64
   * Compilers: GCC 4.2.1
   * Runtimes: ObjFW
 
