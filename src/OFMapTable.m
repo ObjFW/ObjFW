@@ -68,10 +68,10 @@ default_equal(void *value1, void *value2)
 @end
 
 @interface OFMapTableEnumerator (OF_PRIVATE_CATEGORY)
-- OF_initWithMapTable: (OFMapTable*)mapTable
-	      buckets: (struct of_map_table_bucket**)buckets
-	     capacity: (uint32_t)capacity
-     mutationsPointer: (unsigned long*)mutationsPtr;
+- (instancetype)OF_initWithMapTable: (OFMapTable*)mapTable
+			    buckets: (struct of_map_table_bucket**)buckets
+			   capacity: (uint32_t)capacity
+		   mutationsPointer: (unsigned long*)mutationsPtr;
 @end
 
 @interface OFMapTableKeyEnumerator: OFMapTableEnumerator
