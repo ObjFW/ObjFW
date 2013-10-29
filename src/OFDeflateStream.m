@@ -57,24 +57,24 @@ struct huffman_tree {
 	uint16_t value;
 };
 
-static uint8_t lengthCodes[29] = {
+static const uint8_t lengthCodes[29] = {
 	/* indices are -257, values -3 */
 	0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16, 20, 24, 28, 32, 40, 48, 56,
 	64, 80, 96, 112, 128, 160, 192, 224, 255
 };
-static uint8_t lengthExtraBits[29] = {
+static const uint8_t lengthExtraBits[29] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4,
 	5, 5, 5, 5, 0
 };
-static uint16_t distanceCodes[30] = {
+static const uint16_t distanceCodes[30] = {
 	1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385,
 	513, 769, 1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577
 };
-static uint8_t distanceExtraBits[30] = {
+static const uint8_t distanceExtraBits[30] = {
 	0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10,
 	10, 11, 11, 12, 12, 13, 13
 };
-static uint8_t codeLengthsOrder[19] = {
+static const uint8_t codeLengthsOrder[19] = {
 	16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15
 };
 static struct huffman_tree *fixedLitLenTree, *fixedDistTree;
@@ -159,7 +159,7 @@ static struct huffman_tree*
 constructTree(uint8_t lengths[], uint_fast16_t count)
 {
 	struct huffman_tree *tree;
-	uint8_t lengthCount[MAX_BITS + 1] = { 0 };
+	uint16_t lengthCount[MAX_BITS + 1] = { 0 };
 	uint16_t code, maxCode, nextCode[MAX_BITS + 1];
 	uint_fast16_t i;
 
@@ -199,24 +199,17 @@ walkTree(OFDeflateStream *stream, struct huffman_tree **tree, uint16_t *value)
 	struct huffman_tree *iter = *tree;
 	uint_fast16_t bits;
 
-	for (;;) {
-		if OF_UNLIKELY (iter->leafs[0] == NULL &&
-		    iter->leafs[1] == NULL)
-			break;
-
+	while (iter->value == 0xFFFF) {
 		if OF_UNLIKELY (!tryReadBits(stream, &bits, 1)) {
 			*tree = iter;
 			return false;
 		}
 
 		if OF_UNLIKELY (iter->leafs[bits] == NULL)
-			break;
+			@throw [OFInvalidFormatException exception];
 
 		iter = iter->leafs[bits];
 	}
-
-	if OF_UNLIKELY (iter->value == 0xFFFF)
-		@throw [OFInvalidFormatException exception];
 
 	*value = iter->value;
 	return true;
