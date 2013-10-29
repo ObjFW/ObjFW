@@ -353,8 +353,9 @@ start:
 				   length: _bufferLength - _bufferIndex];
 		_bufferIndex = _bufferLength = 0;
 
-		CTX.position += [_stream readIntoBuffer: CTX.length
-						 length: 4 - CTX.position];
+		CTX.position += [_stream
+		    readIntoBuffer: CTX.length + CTX.position
+			    length: 4 - CTX.position];
 
 		if OF_UNLIKELY (CTX.position < 4)
 			return bytesWritten;
