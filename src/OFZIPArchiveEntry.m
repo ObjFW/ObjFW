@@ -150,15 +150,17 @@
 	ret = [[OFString alloc] initWithFormat: @"<%@: %p\n"
 	    @"\tFile name = %@\n"
 	    @"\tFile comment = %@\n"
-	    @"\tCompressed size = %jd\n"
-	    @"\tUncompressed size = %jd\n"
+	    @"\tGeneral purpose bit flag = %u\n"
+	    @"\tCompression method = %u\n"
+	    @"\tCompressed size = %ju\n"
+	    @"\tUncompressed size = %ju\n"
 	    @"\tModification date = %@\n"
 	    @"\tCRC32 = %" @PRIu32 @"\n"
 	    @"\tExtra field = %@\n"
 	    @"}",
-	    [self class], self, _fileName, _fileComment,
-	    (intmax_t)_compressedSize, (intmax_t)_uncompressedSize,
-	    modificationDate, _CRC32, _extraField];
+	    [self class], self, _fileName, _fileComment, _generalPurposeBitFlag,
+	    _compressionMethod, (intmax_t)_compressedSize,
+	    (intmax_t)_uncompressedSize, modificationDate, _CRC32, _extraField];
 
 	objc_autoreleasePoolPop(pool);
 
