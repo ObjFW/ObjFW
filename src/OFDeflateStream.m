@@ -424,7 +424,7 @@ start:
 				if OF_UNLIKELY (!tryReadBits(self, &bits, 5))
 					return bytesWritten;
 
-				if OF_UNLIKELY (bits > 30)
+				if OF_UNLIKELY (bits > 29)
 					@throw [OFInvalidFormatException
 					    exception];
 
@@ -441,10 +441,6 @@ start:
 			if OF_LIKELY (CTX.codeLenCodesCount == 0xFF) {
 				if OF_UNLIKELY (!tryReadBits(self, &bits, 4))
 					return bytesWritten;
-
-				if OF_UNLIKELY (bits + 4 > 19)
-					@throw [OFInvalidFormatException
-					    exception];
 
 				CTX.codeLenCodesCount = bits;
 			}
@@ -478,7 +474,7 @@ start:
 			    CTX.litLenCodesCount + CTX.distCodesCount + 258];
 
 		for (i = CTX.receivedCount;
-		    i < CTX.litLenCodesCount + CTX.distCodesCount + 258; i++) {
+		    i < CTX.litLenCodesCount + CTX.distCodesCount + 258;) {
 			uint_fast8_t j, count;
 
 			if OF_LIKELY (CTX.value == 0xFF) {
@@ -491,7 +487,7 @@ start:
 				CTX.treeIter = CTX.codeLenTree;
 
 				if (value < 16) {
-					CTX.lengths[i] = value;
+					CTX.lengths[i++] = value;
 					continue;
 				}
 			} else
@@ -545,7 +541,6 @@ start:
 
 			for (j = 0; j < count; j++)
 				CTX.lengths[i++] = value;
-			i--;
 
 			CTX.value = 0xFF;
 		}
@@ -591,8 +586,8 @@ start:
 				}
 
 				_slidingWindow[_slidingWindowIndex] = CTX.value;
-				_slidingWindowIndex = (_slidingWindowIndex +
-				    1) & 0x7FFF;
+				_slidingWindowIndex =
+				    (_slidingWindowIndex + 1) & 0x7FFF;
 
 				CTX.state = AWAIT_CODE;
 				CTX.treeIter = CTX.litLenTree;
@@ -711,8 +706,8 @@ start:
 				}
 
 				_slidingWindow[_slidingWindowIndex] = value;
-				_slidingWindowIndex = (_slidingWindowIndex +
-				    1) & 0x7FFF;
+				_slidingWindowIndex =
+				    (_slidingWindowIndex + 1) & 0x7FFF;
 
 				CTX.treeIter = CTX.litLenTree;
 				continue;
