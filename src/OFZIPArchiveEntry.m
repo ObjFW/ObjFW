@@ -26,6 +26,7 @@
 #import "autorelease.h"
 #import "macros.h"
 
+#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 
 @implementation OFZIPArchiveEntry
@@ -220,5 +221,22 @@
 - (uint32_t)OF_localFileHeaderOffset
 {
 	return _localFileHeaderOffset;
+}
+
+- (of_comparison_result_t)compare: (id)object
+{
+	OFZIPArchiveEntry *entry;
+
+	if (![object isKindOfClass: [OFZIPArchiveEntry class]])
+		@throw [OFInvalidArgumentException exception];
+
+	entry = object;
+
+	if (_localFileHeaderOffset > entry->_localFileHeaderOffset)
+		return OF_ORDERED_DESCENDING;
+	if (_localFileHeaderOffset < entry->_localFileHeaderOffset)
+		return OF_ORDERED_ASCENDING;
+
+	return OF_ORDERED_SAME;
 }
 @end

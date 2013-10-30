@@ -22,6 +22,7 @@
 #import "OFZIPArchiveEntry.h"
 #import "OFZIPArchiveEntry+Private.h"
 #import "OFDataArray.h"
+#import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFFile.h"
 #import "OFDeflateStream.h"
@@ -143,6 +144,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	[_path release];
 	[_archiveComment release];
 	[_entries release];
+	[_pathToEntryMap release];
 
 	[super dealloc];
 }
@@ -192,25 +194,29 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	[_file seekToOffset: _centralDirectoryOffset
 		     whence: SEEK_SET];
 
-	_entries = [[OFMutableDictionary alloc] init];
+	_entries = [[OFMutableArray alloc] init];
+	_pathToEntryMap = [[OFMutableDictionary alloc] init];
 
 	for (i = 0; i < _centralDirectoryEntries; i++) {
 		OFZIPArchiveEntry *entry = [[[OFZIPArchiveEntry alloc]
 		    OF_initWithFile: _file] autorelease];
 
-		if ([_entries objectForKey: [entry fileName]] != nil)
+		if ([_pathToEntryMap objectForKey: [entry fileName]] != nil)
 			@throw [OFInvalidFormatException exception];
 
-		[_entries setObject: entry
-			     forKey: [entry fileName]];
+		[_entries addObject: entry];
+		[_pathToEntryMap setObject: entry
+				    forKey: [entry fileName]];
 	}
 
+	[_entries sort];
 	[_entries makeImmutable];
+	[_pathToEntryMap makeImmutable];
 
 	objc_autoreleasePoolPop(pool);
 }
 
-- (OFDictionary*)entries
+- (OFArray*)entries
 {
 	OF_GETTER(_entries, true)
 }
@@ -224,7 +230,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 {
 	OFStream *ret;
 	void *pool = objc_autoreleasePoolPush();
-	OFZIPArchiveEntry *entry = [_entries objectForKey: path];
+	OFZIPArchiveEntry *entry = [_pathToEntryMap objectForKey: path];
 	OFZIPArchive_LocalFileHeader *localFileHeader;
 
 	if (entry == nil) {

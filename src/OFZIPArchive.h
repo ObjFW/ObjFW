@@ -18,7 +18,8 @@
 #import "OFString.h"
 
 @class OFFile;
-@class OFDictionary;
+@class OFArray;
+@class OFMutableArray;
 @class OFMutableDictionary;
 @class OFStream;
 
@@ -33,12 +34,13 @@
 	uint16_t _centralDirectoryEntriesInDisk, _centralDirectoryEntries;
 	uint32_t _centralDirectorySize, _centralDirectoryOffset;
 	OFString *_archiveComment;
-	OFMutableDictionary *_entries;
+	OFMutableArray *_entries;
+	OFMutableDictionary *_pathToEntryMap;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy) OFString *archiveComment;
-@property (readonly, copy) OFDictionary *entries;
+@property (readonly, copy) OFArray *entries;
 #endif
 
 /*!
@@ -59,14 +61,16 @@
 - initWithPath: (OFString*)path;
 
 /*!
- * @brief Returns the entries in the central directory of the archive as a
- * 	  dictionary.
+ * @brief Returns the entries of the central directory of the archive as an
+ * 	  array of objects of class @ref OFZIPArchiveEntry.
  *
- * The dictionary maps the file name to an @ref OFZIPArchiveEntry.
+ * The array is sorted by the offset of the local file header, smallest offset
+ * to largest offset. This way, hard disk seeks are minimized when the array is
+ * enumerated to extract all files of the archive.
  *
- * @return The entries in the central directory of the archive as a dictionary
+ * @return The entries of the central directory of the archive as an array
  */
-- (OFDictionary*)entries;
+- (OFArray*)entries;
 
 /*!
  * @brief Returns the archive comment.
