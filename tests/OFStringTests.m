@@ -349,8 +349,13 @@ static uint16_t sutf16str[] = {
 	    [[@"foo..bar" stringByDeletingPathExtension] isEqual: @"foo."] &&
 	    [[@"/foo./bar" stringByDeletingPathExtension]
 	    isEqual: @"/foo./bar"] &&
+#ifndef _WIN32
 	    [[@"/foo./bar.baz" stringByDeletingPathExtension]
 	    isEqual: @"/foo./bar"] &&
+#else
+	    [[@"/foo./bar.baz" stringByDeletingPathExtension]
+	    isEqual: @"\\foo.\\bar"] &&
+#endif
 	    [[@"foo.bar/" stringByDeletingPathExtension] isEqual: @"foo"] &&
 	    [[@".foo" stringByDeletingPathExtension] isEqual: @".foo"] &&
 	    [[@".foo.bar" stringByDeletingPathExtension] isEqual: @".foo"])

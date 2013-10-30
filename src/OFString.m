@@ -170,7 +170,7 @@ of_string_utf32_length(const of_char32_t *string)
 }
 
 static OFString*
-standardize_path(OFArray *components, OFString *currentDirectory,
+standardizePath(OFArray *components, OFString *currentDirectory,
     OFString *parentDirectory, OFString *joinString)
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -2199,14 +2199,14 @@ static struct {
 
 - (OFString*)stringByStandardizingPath
 {
-	return standardize_path([self pathComponents],
+	return standardizePath([self pathComponents],
 	    OF_PATH_CURRENT_DIRECTORY, OF_PATH_PARENT_DIRECTORY,
 	    OF_PATH_DELIMITER_STRING);
 }
 
 - (OFString*)stringByStandardizingURLPath
 {
-	return standardize_path( [self componentsSeparatedByString: @"/"],
+	return standardizePath([self componentsSeparatedByString: @"/"],
 	    @".", @"..", @"/");
 }
 
