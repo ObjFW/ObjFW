@@ -29,3 +29,4 @@ uninstall-extra:
 CPPFLAGS += -I../src -I../src/runtime -I..
 LIBS := -L../src -lobjfw ${LIBS}
 LD = ${OBJC}
+LDFLAGS += ${LDFLAGS_RPATH}
