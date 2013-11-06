@@ -19,6 +19,7 @@ SRCS = OFApplication.m			\
        OFDataArray+MessagePackValue.m	\
        OFDate.m				\
        OFDeflateStream.m		\
+       OFDeflate64Stream.m		\
        OFDictionary.m			\
        OFEnumerator.m			\
        OFFile.m				\

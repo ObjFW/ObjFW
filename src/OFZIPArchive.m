@@ -24,6 +24,7 @@
 #import "OFDictionary.h"
 #import "OFFile.h"
 #import "OFDeflateStream.h"
+#import "OFDeflate64Stream.h"
 
 #import "OFChecksumFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -500,6 +501,10 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 			break;
 		case 8: /* Deflate */
 			_stream = [[OFDeflateStream alloc]
+			    initWithStream: _file];
+			break;
+		case 9: /* Deflate64 */
+			_stream = [[OFDeflate64Stream alloc]
 			    initWithStream: _file];
 			break;
 		default:

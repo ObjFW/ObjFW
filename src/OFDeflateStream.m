@@ -57,6 +57,7 @@ struct huffman_tree {
 	uint16_t value;
 };
 
+static const uint_fast8_t numDistanceCodes = 30;
 static const uint8_t lengthCodes[29] = {
 	/* indices are -257, values -3 */
 	0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16, 20, 24, 28, 32, 40, 48, 56,
@@ -276,6 +277,12 @@ releaseTree(struct huffman_tree *tree)
 
 	_stream = [stream retain];
 	_bitIndex = 8;	/* 0-7 address the bit, 8 means fetch next byte */
+	_slidingWindowMask = 0x7FFF;
+	_codes.numDistanceCodes = numDistanceCodes;
+	_codes.lengthCodes = lengthCodes;
+	_codes.lengthExtraBits = lengthExtraBits;
+	_codes.distanceCodes = distanceCodes;
+	_codes.distanceExtraBits = distanceExtraBits;
 
 	return self;
 }
@@ -294,7 +301,7 @@ releaseTree(struct huffman_tree *tree)
 	uint_fast16_t bits;
 	uint16_t value;
 	size_t i, tmp, bytesWritten = 0;
-	char *slidingWindow;
+	uint8_t *slidingWindow;
 	uint_fast16_t slidingWindowIndex;
 
 	if (_atEndOfStream)
@@ -388,9 +395,10 @@ start:
 				       length: tmp];
 
 		if OF_UNLIKELY (_slidingWindow == NULL) {
-			_slidingWindow = [self allocMemoryWithSize: 0x8000];
+			_slidingWindow =
+			    [self allocMemoryWithSize: _slidingWindowMask + 1];
 			/* Avoid leaking data */
-			memset(_slidingWindow, 0, 0x8000);
+			memset(_slidingWindow, 0, _slidingWindowMask + 1);
 		}
 
 		slidingWindow = _slidingWindow;
@@ -398,7 +406,8 @@ start:
 		for (i = 0; i < tmp; i++) {
 			slidingWindow[slidingWindowIndex] =
 			    buffer[bytesWritten + i];
-			slidingWindowIndex = (slidingWindowIndex + 1) & 0x7FFF;
+			slidingWindowIndex = (slidingWindowIndex + 1) &
+			    _slidingWindowMask;
 		}
 		_slidingWindowIndex = slidingWindowIndex;
 
@@ -574,14 +583,17 @@ start:
 
 				if (_slidingWindow == NULL) {
 					_slidingWindow = [self
-					    allocMemoryWithSize: 0x8000];
+					    allocMemoryWithSize:
+					    _slidingWindowMask + 1];
 					/* Avoid leaking data */
-					memset(_slidingWindow, 0, 0x8000);
+					memset(_slidingWindow, 0,
+					    _slidingWindowMask + 1);
 				}
 
 				_slidingWindow[_slidingWindowIndex] = CTX.value;
 				_slidingWindowIndex =
-				    (_slidingWindowIndex + 1) & 0x7FFF;
+				    (_slidingWindowIndex + 1) &
+				    _slidingWindowMask;
 
 				CTX.state = AWAIT_CODE;
 				CTX.treeIter = CTX.litLenTree;
@@ -604,12 +616,13 @@ start:
 				    &value))
 					return bytesWritten;
 
-				if OF_UNLIKELY (value > 29)
+				if OF_UNLIKELY (value >=
+				    _codes.numDistanceCodes)
 					@throw [OFInvalidFormatException
 					    exception];
 
-				CTX.distance = distanceCodes[value];
-				extraBits = distanceExtraBits[value];
+				CTX.distance = _codes.distanceCodes[value];
+				extraBits = _codes.distanceExtraBits[value];
 
 				if (extraBits > 0) {
 					if OF_UNLIKELY (!tryReadBits(self,
@@ -651,7 +664,7 @@ start:
 					}
 
 					index = (_slidingWindowIndex -
-					    CTX.distance) & 0x7FFF;
+					    CTX.distance) & _slidingWindowMask;
 					value = _slidingWindow[index];
 
 					buffer[bytesWritten++] = value;
@@ -660,7 +673,8 @@ start:
 					_slidingWindow[_slidingWindowIndex] =
 					    value;
 					_slidingWindowIndex =
-					    (_slidingWindowIndex + 1) & 0x7FFF;
+					    (_slidingWindowIndex + 1) &
+					    _slidingWindowMask;
 				}
 
 				CTX.state = AWAIT_CODE;
@@ -694,14 +708,17 @@ start:
 
 				if (_slidingWindow == NULL) {
 					_slidingWindow = [self
-					    allocMemoryWithSize: 0x8000];
+					    allocMemoryWithSize:
+					    _slidingWindowMask + 1];
 					/* Avoid leaking data */
-					memset(_slidingWindow, 0, 0x8000);
+					memset(_slidingWindow, 0,
+					    _slidingWindowMask + 1);
 				}
 
 				_slidingWindow[_slidingWindowIndex] = value;
 				_slidingWindowIndex =
-				    (_slidingWindowIndex + 1) & 0x7FFF;
+				    (_slidingWindowIndex + 1) &
+				    _slidingWindowMask;
 
 				CTX.treeIter = CTX.litLenTree;
 				continue;
@@ -712,8 +729,8 @@ start:
 
 			/* Length of length distance pair */
 			lengthCodeIndex = value - 257;
-			CTX.length = lengthCodes[lengthCodeIndex] + 3;
-			extraBits = lengthExtraBits[lengthCodeIndex];
+			CTX.length = _codes.lengthCodes[lengthCodeIndex] + 3;
+			extraBits = _codes.lengthExtraBits[lengthCodeIndex];
 
 			if (extraBits > 0) {
 				if OF_UNLIKELY (!tryReadBits(self, &bits,

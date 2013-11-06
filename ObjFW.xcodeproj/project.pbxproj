@@ -270,6 +270,8 @@
 		4B64D6F01425381E007BDFB1 /* OFStreamObserver_poll.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B64D6EC1425381E007BDFB1 /* OFStreamObserver_poll.m */; };
 		4B64D6F11425381E007BDFB1 /* OFStreamObserver_select.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B64D6ED1425381E007BDFB1 /* OFStreamObserver_select.h */; };
 		4B64D6F21425381E007BDFB1 /* OFStreamObserver_select.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B64D6EE1425381E007BDFB1 /* OFStreamObserver_select.m */; };
+		4B66B636182ADC45000A69E3 /* OFDeflate64Stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B66B634182ADC45000A69E3 /* OFDeflate64Stream.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B66B637182ADC45000A69E3 /* OFDeflate64Stream.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B66B635182ADC45000A69E3 /* OFDeflate64Stream.m */; };
 		4B6743F1163C384A00EB1E59 /* OFLockFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6743EB163C384A00EB1E59 /* OFLockFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B6743F2163C384A00EB1E59 /* OFLockFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6743EC163C384A00EB1E59 /* OFLockFailedException.m */; };
 		4B6743F3163C384A00EB1E59 /* OFStillLockedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6743ED163C384A00EB1E59 /* OFStillLockedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -638,6 +640,8 @@
 		4B64D6EC1425381E007BDFB1 /* OFStreamObserver_poll.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamObserver_poll.m; path = src/OFStreamObserver_poll.m; sourceTree = "<group>"; };
 		4B64D6ED1425381E007BDFB1 /* OFStreamObserver_select.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamObserver_select.h; path = src/OFStreamObserver_select.h; sourceTree = "<group>"; };
 		4B64D6EE1425381E007BDFB1 /* OFStreamObserver_select.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamObserver_select.m; path = src/OFStreamObserver_select.m; sourceTree = "<group>"; };
+		4B66B634182ADC45000A69E3 /* OFDeflate64Stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFDeflate64Stream.h; path = src/OFDeflate64Stream.h; sourceTree = "<group>"; };
+		4B66B635182ADC45000A69E3 /* OFDeflate64Stream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDeflate64Stream.m; path = src/OFDeflate64Stream.m; sourceTree = "<group>"; };
 		4B6743EB163C384A00EB1E59 /* OFLockFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFLockFailedException.h; path = src/exceptions/OFLockFailedException.h; sourceTree = "<group>"; };
 		4B6743EC163C384A00EB1E59 /* OFLockFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFLockFailedException.m; path = src/exceptions/OFLockFailedException.m; sourceTree = "<group>"; };
 		4B6743ED163C384A00EB1E59 /* OFStillLockedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStillLockedException.h; path = src/exceptions/OFStillLockedException.h; sourceTree = "<group>"; };
@@ -1162,6 +1166,8 @@
 				4BE5F0DA12DF4225005C7A0C /* OFDate.m */,
 				4B86E7C917F8B98200ACA680 /* OFDeflateStream.h */,
 				4B86E7CA17F8B98200ACA680 /* OFDeflateStream.m */,
+				4B66B634182ADC45000A69E3 /* OFDeflate64Stream.h */,
+				4B66B635182ADC45000A69E3 /* OFDeflate64Stream.m */,
 				4B6799621099E7C50041064A /* OFDictionary.h */,
 				4B6799631099E7C50041064A /* OFDictionary.m */,
 				4B2B3E75140D430500EC2F7C /* OFDictionary_hashtable.h */,
@@ -1461,6 +1467,7 @@
 				4B3D23C41337FC8300DD29B8 /* OFDate.h in Headers */,
 				4B3D23C51337FCB000DD29B8 /* OFDictionary.h in Headers */,
 				4B86E7CB17F8B98200ACA680 /* OFDeflateStream.h in Headers */,
+				4B66B636182ADC45000A69E3 /* OFDeflate64Stream.h in Headers */,
 				4B3D23C61337FCB000DD29B8 /* OFEnumerator.h in Headers */,
 				4B17FF74133A2AAB003E6DCD /* OFException.h in Headers */,
 				4B3D23C81337FCB000DD29B8 /* OFFile.h in Headers */,
@@ -1824,6 +1831,7 @@
 				4B879A8D177231F000EBCEA4 /* OFDataArray+MessagePackValue.m in Sources */,
 				4B3D23921337FC0D00DD29B8 /* OFDate.m in Sources */,
 				4B86E7CC17F8B98200ACA680 /* OFDeflateStream.m in Sources */,
+				4B66B637182ADC45000A69E3 /* OFDeflate64Stream.m in Sources */,
 				4B3D23931337FC0D00DD29B8 /* OFDictionary.m in Sources */,
 				4B2B3E80140D430500EC2F7C /* OFDictionary_hashtable.m in Sources */,
 				4B3D23941337FC0D00DD29B8 /* OFEnumerator.m in Sources */,

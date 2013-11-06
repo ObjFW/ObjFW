@@ -19,7 +19,7 @@
 #define OF_DEFLATE_STREAM_BUFFER_SIZE 4096
 
 /*!
- * @brief A class for a stream that handles deflate compression or decompression
+ * @brief A class for a stream that handles Deflate compression or decompression
  *	  transparently for an underlying stream.
  */
 @interface OFDeflateStream: OFStream
@@ -34,8 +34,15 @@
 	uint_fast8_t _bitIndex, _savedBitsLength;
 	uint_fast16_t _savedBits;
 @protected
-	char *_slidingWindow;
-	uint_fast16_t _slidingWindowIndex;
+	uint8_t *_slidingWindow;
+	uint_fast16_t _slidingWindowIndex, _slidingWindowMask;
+	struct {
+		uint_fast8_t numDistanceCodes;
+		const uint8_t *lengthCodes;
+		const uint8_t *lengthExtraBits;
+		const uint16_t *distanceCodes;
+		const uint8_t *distanceExtraBits;
+	} _codes;
 	enum {
 		OF_DEFLATE_STREAM_BLOCK_HEADER,
 		OF_DEFLATE_STREAM_UNCOMPRESSED_BLOCK_HEADER,
