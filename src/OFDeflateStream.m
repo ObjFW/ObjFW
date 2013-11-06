@@ -106,7 +106,7 @@ tryReadBits(OFDeflateStream *stream, uint_fast16_t *bits, uint_fast8_t count)
 
 				stream->_byte = stream->_buffer[0];
 				stream->_bufferIndex = 1;
-				stream->_bufferLength = length;
+				stream->_bufferLength = (uint_fast16_t)length;
 			}
 
 			stream->_bitIndex = 0;
@@ -298,9 +298,9 @@ releaseTree(struct huffman_tree *tree)
 			  length: (size_t)length
 {
 	uint8_t *buffer = buffer_;
-	uint_fast16_t bits;
+	uint_fast16_t bits, i, tmp;
 	uint16_t value;
-	size_t i, tmp, bytesWritten = 0;
+	size_t bytesWritten = 0;
 	uint8_t *slidingWindow;
 	uint_fast16_t slidingWindowIndex;
 
@@ -389,10 +389,11 @@ start:
 			return bytesWritten;
 
 		tmp = (length < CTX.length - CTX.position
-		    ? length : CTX.length - CTX.position);
+		    ? (uint_fast16_t)length : CTX.length - CTX.position);
 
-		tmp = [_stream readIntoBuffer: buffer + bytesWritten
-				       length: tmp];
+		tmp = (uint_fast16_t)[_stream
+		    readIntoBuffer: buffer + bytesWritten
+			    length: tmp];
 
 		if OF_UNLIKELY (_slidingWindow == NULL) {
 			_slidingWindow =

@@ -131,7 +131,7 @@ OF_APPLICATION_DELEGATE(UnZIP)
 
 			written += length;
 			newPercent = (written == size
-			    ? 100 : written * 100 / size);
+			    ? 100 : (int_fast8_t)(written * 100 / size));
 
 			if (percent != newPercent) {
 				percent = newPercent;
