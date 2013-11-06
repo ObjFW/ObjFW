@@ -333,7 +333,6 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 				    forKey: [entry fileName]];
 	}
 
-	[_entries sort];
 	[_entries makeImmutable];
 	[_pathToEntryMap makeImmutable];
 

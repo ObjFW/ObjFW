@@ -64,9 +64,9 @@
  * @brief Returns the entries of the central directory of the archive as an
  * 	  array of objects of class @ref OFZIPArchiveEntry.
  *
- * The array is sorted by the offset of the local file header, smallest offset
- * to largest offset. This way, hard disk seeks are minimized when the array is
- * enumerated to extract all files of the archive.
+ * The objects of the array have the same order as the entries in the central
+ * directory, which does not need to be the order in which the actual files are
+ * stored.
  *
  * @return The entries of the central directory of the archive as an array
  */

@@ -251,21 +251,4 @@ extern uint64_t of_zip_archive_read_field64(uint8_t**, uint16_t*);
 {
 	return _localFileHeaderOffset;
 }
-
-- (of_comparison_result_t)compare: (id)object
-{
-	OFZIPArchiveEntry *entry;
-
-	if (![object isKindOfClass: [OFZIPArchiveEntry class]])
-		@throw [OFInvalidArgumentException exception];
-
-	entry = object;
-
-	if (_localFileHeaderOffset > entry->_localFileHeaderOffset)
-		return OF_ORDERED_DESCENDING;
-	if (_localFileHeaderOffset < entry->_localFileHeaderOffset)
-		return OF_ORDERED_ASCENDING;
-
-	return OF_ORDERED_SAME;
-}
 @end
