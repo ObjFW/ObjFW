@@ -39,7 +39,7 @@ OF_APPLICATION_DELEGATE(UnZIP)
 {
 	OFEnumerator *enumerator = [[archive entries] objectEnumerator];
 	OFZIPArchiveEntry *entry;
-	bool override = false;
+	int_fast8_t override = 0;
 
 	while ((entry = [enumerator nextObject]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
@@ -88,25 +88,33 @@ OF_APPLICATION_DELEGATE(UnZIP)
 			[OFFile createDirectoryAtPath: directory
 					createParents: true];
 
-		if ([OFFile fileExistsAtPath: outFileName] && !override) {
+		if ([OFFile fileExistsAtPath: outFileName] && override != 1) {
 			OFString *line;
+
+			if (override == -1) {
+				[of_stdout writeLine: @" skipped"];
+				continue;
+			}
 
 			do {
 				[of_stderr writeFormat:
-				    @"\rOverride %@? [ynA] ", fileName];
+				    @"\rOverride %@? [ynAN] ", fileName];
 
 				line = [of_stdin readLine];
 			} while (![line isEqual: @"y"] &&
-			    ![line isEqual: @"n"] && ![line isEqual: @"A"]);
+			    ![line isEqual: @"n"] && ![line isEqual: @"N"] &&
+			    ![line isEqual: @"A"]);
 
-			if ([line isEqual: @"n"]) {
+			if ([line isEqual: @"A"])
+				override = 1;
+			else if ([line isEqual: @"N"])
+				override = -1;
+
+			if ([line isEqual: @"n"] || [line isEqual: @"N"]) {
 				[of_stdout writeFormat: @"Skipping %@...\n",
 							fileName];
 				continue;
 			}
-
-			if ([line isEqual: @"A"])
-				override = true;
 
 			[of_stdout writeFormat: @"Extracting %@...", fileName];
 		}
