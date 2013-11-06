@@ -29,6 +29,11 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 
+extern void of_zip_archive_find_extra_field(OFDataArray*, uint16_t, uint8_t**,
+    uint16_t*);
+extern uint32_t of_zip_archive_read_field32(uint8_t**, uint16_t*);
+extern uint64_t of_zip_archive_read_field64(uint8_t**, uint16_t*);
+
 @implementation OFZIPArchiveEntry
 - (instancetype)OF_initWithFile: (OFFile*)file
 {
@@ -38,6 +43,8 @@
 		void *pool = objc_autoreleasePoolPush();
 		uint16_t fileNameLength, extraFieldLength, fileCommentLength;
 		of_string_encoding_t encoding;
+		uint8_t *ZIP64 = NULL;
+		uint16_t ZIP64Size;
 
 		if ([file readLittleEndianInt32] != 0x02014B50)
 			@throw [OFInvalidFormatException exception];
@@ -70,6 +77,28 @@
 		_fileComment = [[file readStringWithLength: fileCommentLength
 						  encoding: encoding] copy];
 
+		of_zip_archive_find_extra_field(_extraField, 0x0001,
+		    &ZIP64, &ZIP64Size);
+
+		if (ZIP64 != NULL) {
+			if (_uncompressedSize == 0xFFFFFFFF)
+				_uncompressedSize = of_zip_archive_read_field64(
+				    &ZIP64, &ZIP64Size);
+			if (_compressedSize == 0xFFFFFFFF)
+				_compressedSize = of_zip_archive_read_field64(
+				    &ZIP64, &ZIP64Size);
+			if (_localFileHeaderOffset == 0xFFFFFFFF)
+				_localFileHeaderOffset =
+				    of_zip_archive_read_field64(&ZIP64,
+				    &ZIP64Size);
+			if (_startDiskNumber == 0xFFFF)
+				_startDiskNumber = of_zip_archive_read_field32(
+				    &ZIP64, &ZIP64Size);
+
+			if (ZIP64Size > 0)
+				@throw [OFInvalidFormatException exception];
+		}
+
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
@@ -98,12 +127,12 @@
 	OF_GETTER(_fileComment, true)
 }
 
-- (off_t)compressedSize
+- (uint64_t)compressedSize
 {
 	return _compressedSize;
 }
 
-- (off_t)uncompressedSize
+- (uint64_t)uncompressedSize
 {
 	return _uncompressedSize;
 }
@@ -218,7 +247,7 @@
 	return _externalAttributes;
 }
 
-- (uint32_t)OF_localFileHeaderOffset
+- (uint64_t)OF_localFileHeaderOffset
 {
 	return _localFileHeaderOffset;
 }

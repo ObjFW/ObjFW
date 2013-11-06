@@ -32,17 +32,20 @@
 	uint16_t _madeWithVersion, _minVersion, _generalPurposeBitFlag;
 	uint16_t _compressionMethod, _lastModifiedFileTime;
 	uint16_t _lastModifiedFileDate;
-	uint32_t _CRC32, _compressedSize, _uncompressedSize;
+	uint32_t _CRC32;
+	uint64_t _compressedSize, _uncompressedSize;
 	OFString *_fileName;
 	OFDataArray *_extraField;
 	OFString *_fileComment;
-	uint16_t _startDiskNumber, _internalAttributes;
-	uint32_t _externalAttributes, _localFileHeaderOffset;
+	uint32_t _startDiskNumber;
+	uint16_t _internalAttributes;
+	uint32_t _externalAttributes;
+	uint64_t _localFileHeaderOffset;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy) OFString *fileName, *fileComment;
-@property (readonly) off_t compressedSize, uncompressedSize;
+@property (readonly) uint64_t compressedSize, uncompressedSize;
 @property (readonly, retain) OFDate *modificationDate;
 @property (readonly) uint32_t CRC32;
 @property (readonly, copy) OFDataArray *extraField;
@@ -67,14 +70,14 @@
  *
  * @return The compressed size of the entry's file
  */
-- (off_t)compressedSize;
+- (uint64_t)compressedSize;
 
 /*!
  * @brief Returns the uncompressed size of the entry's file.
  *
  * @return The uncompressed size of the entry's file
  */
-- (off_t)uncompressedSize;
+- (uint64_t)uncompressedSize;
 
 /*!
  * @brief Returns the last modification date of the entry's file.

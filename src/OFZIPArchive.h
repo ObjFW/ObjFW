@@ -30,9 +30,9 @@
 {
 	OFFile *_file;
 	OFString *_path;
-	uint16_t _diskNumber, _centralDirectoryDisk;
-	uint16_t _centralDirectoryEntriesInDisk, _centralDirectoryEntries;
-	uint32_t _centralDirectorySize, _centralDirectoryOffset;
+	uint32_t _diskNumber, _centralDirectoryDisk;
+	uint64_t _centralDirectoryEntriesInDisk, _centralDirectoryEntries;
+	uint64_t _centralDirectorySize, _centralDirectoryOffset;
 	OFString *_archiveComment;
 	OFMutableArray *_entries;
 	OFMutableDictionary *_pathToEntryMap;

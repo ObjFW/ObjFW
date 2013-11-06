@@ -30,5 +30,5 @@
 - (uint16_t)OF_startDiskNumber;
 - (uint16_t)OF_internalAttributes;
 - (uint32_t)OF_externalAttributes;
-- (uint32_t)OF_localFileHeaderOffset;
+- (uint64_t)OF_localFileHeaderOffset;
 @end

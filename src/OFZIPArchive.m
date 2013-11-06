@@ -16,8 +16,6 @@
 
 #include "config.h"
 
-#include <stdio.h>
-
 #import "OFZIPArchive.h"
 #import "OFZIPArchiveEntry.h"
 #import "OFZIPArchiveEntry+Private.h"
@@ -32,6 +30,7 @@
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
 #import "OFOpenFileFailedException.h"
+#import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFUnsupportedVersionException.h"
 
@@ -45,7 +44,6 @@
  *  - Split archives are not supported.
  *  - Write support is missing.
  *  - The ZIP has to be a file on the local file system.
- *  - No support for ZIP64.
  *  - Encrypted files cannot be read.
  */
 
@@ -59,7 +57,8 @@
 @public
 	uint16_t _minVersion, _generalPurposeBitFlag, _compressionMethod;
 	uint16_t _lastModifiedFileTime, _lastModifiedFileDate;
-	uint32_t _CRC32, _compressedSize, _uncompressedSize;
+	uint32_t _CRC32;
+	uint64_t _compressedSize, _uncompressedSize;
 	OFString *_fileName;
 	OFDataArray *_extraField;
 }
@@ -83,6 +82,77 @@
 	       offset: (off_t)offset
       localFileHeader: (OFZIPArchive_LocalFileHeader*)localFileHeader;
 @end
+
+void
+of_zip_archive_find_extra_field(OFDataArray *extraField, uint16_t tag,
+    uint8_t **data, uint16_t *size)
+{
+	uint8_t *bytes;
+	size_t i, count;
+
+	bytes = [extraField items];
+	count = [extraField count];
+
+	for (i = 0; i < count;) {
+		uint16_t currentTag, currentSize;
+
+		if (i + 3 >= count)
+			@throw [OFInvalidFormatException exception];
+
+		currentTag = (bytes[i + 1] << 8) | bytes[i];
+		currentSize = (bytes[i + 3] << 8) | bytes[i + 2];
+
+		if (i + 3 + currentSize >= count)
+			@throw [OFInvalidFormatException exception];
+
+		if (currentTag == tag) {
+			*data = bytes + i + 4;
+			*size = currentSize;
+			return;
+		}
+
+		i += 4 + currentSize;
+	}
+
+	*data = NULL;
+	*size = 0;
+}
+
+uint32_t
+of_zip_archive_read_field32(uint8_t **data, uint16_t *size)
+{
+	uint32_t field = 0;
+	uint_fast8_t i;
+
+	if (*size < 4)
+		@throw [OFInvalidFormatException exception];
+
+	for (i = 0; i < 4; i++)
+		field |= (uint32_t)(*data)[i] << (i * 8);
+
+	*data += 4;
+	*size -= 4;
+
+	return field;
+}
+
+uint64_t
+of_zip_archive_read_field64(uint8_t **data, uint16_t *size)
+{
+	uint64_t field = 0;
+	uint_fast8_t i;
+
+	if (*size < 8)
+		@throw [OFInvalidFormatException exception];
+
+	for (i = 0; i < 8; i++)
+		field |= (uint64_t)(*data)[i] << (i * 8);
+
+	*data += 8;
+	*size -= 8;
+
+	return field;
+}
 
 static uint32_t
 crc32(uint32_t crc, uint8_t *bytes, size_t length)
@@ -153,20 +223,18 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 {
 	void *pool = objc_autoreleasePoolPush();
 	uint16_t commentLength;
-	size_t offset = 0;
+	off_t offset = -22;
 	bool valid = false;
 
-	[_file seekToOffset: -22
-		     whence: SEEK_END];
+	do {
+		[_file seekToOffset: offset
+			     whence: SEEK_END];
 
-	while (offset++ < 65536) {
 		if ([_file readLittleEndianInt32] == 0x06054B50) {
 			valid = true;
 			break;
-		} else
-			[_file seekToOffset: -5
-				     whence: SEEK_CUR];
-	}
+		}
+	} while (--offset >= -65557);
 
 	if (!valid)
 		@throw [OFInvalidFormatException exception];
@@ -183,6 +251,58 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	    readStringWithLength: commentLength
 			encoding: OF_STRING_ENCODING_CODEPAGE_437] copy];
 
+	if (_diskNumber == 0xFFFF ||
+	    _centralDirectoryDisk == 0xFFFF ||
+	    _centralDirectoryEntriesInDisk == 0xFFFF ||
+	    _centralDirectoryEntries == 0xFFFF ||
+	    _centralDirectorySize == 0xFFFFFFFF ||
+	    _centralDirectoryOffset == 0xFFFFFFFF) {
+		uint64_t offset64, size;
+
+		[_file seekToOffset: offset - 20
+			     whence: SEEK_END];
+
+		if ([_file readLittleEndianInt32] != 0x07064B50) {
+			objc_autoreleasePoolPop(pool);
+			return;
+		}
+
+		/*
+		 * FIXME: Handle number of the disk containing ZIP64 end of
+		 * central directory record.
+		 */
+		[_file readLittleEndianInt32];
+		offset64 = [_file readLittleEndianInt64];
+
+		if ((off_t)offset64 != offset64)
+			@throw [OFOutOfRangeException exception];
+
+		[_file seekToOffset: (off_t)offset64
+			     whence: SEEK_SET];
+
+		if ([_file readLittleEndianInt32] != 0x06064B50)
+			@throw [OFInvalidFormatException exception];
+
+		size = [_file readLittleEndianInt64];
+		if (size < 44)
+			@throw [OFInvalidFormatException exception];
+
+		/* version made by */
+		[_file readLittleEndianInt16];
+		/* version needed to extract */
+		[_file readLittleEndianInt16];
+
+		_diskNumber = [_file readLittleEndianInt32];
+		_centralDirectoryDisk = [_file readLittleEndianInt32];
+		_centralDirectoryEntriesInDisk = [_file readLittleEndianInt64];
+		_centralDirectoryEntries = [_file readLittleEndianInt64];
+		_centralDirectorySize = [_file readLittleEndianInt64];
+		_centralDirectoryOffset = [_file readLittleEndianInt64];
+
+		if ((off_t)_centralDirectoryOffset != _centralDirectoryOffset)
+			@throw [OFOutOfRangeException exception];
+	}
+
 	objc_autoreleasePoolPop(pool);
 }
 
@@ -190,6 +310,9 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 {
 	void *pool = objc_autoreleasePoolPush();
 	size_t i;
+
+	if ((off_t)_centralDirectoryOffset != _centralDirectoryOffset)
+		@throw [OFOutOfRangeException exception];
 
 	[_file seekToOffset: _centralDirectoryOffset
 		     whence: SEEK_SET];
@@ -232,6 +355,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	void *pool = objc_autoreleasePoolPush();
 	OFZIPArchiveEntry *entry = [_pathToEntryMap objectForKey: path];
 	OFZIPArchive_LocalFileHeader *localFileHeader;
+	uint64_t offset;
 
 	if (entry == nil) {
 		errno = ENOENT;
@@ -239,7 +363,11 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 							       mode: @"rb"];
 	}
 
-	[_file seekToOffset: [entry OF_localFileHeaderOffset]
+	offset = [entry OF_localFileHeaderOffset];
+	if ((off_t)offset != offset)
+		@throw [OFOutOfRangeException exception];
+
+	[_file seekToOffset: offset
 		     whence: SEEK_SET];
 	localFileHeader = [[[OFZIPArchive_LocalFileHeader alloc]
 	    initWithFile: _file] autorelease];
@@ -247,7 +375,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	if (![localFileHeader matchesEntry: entry])
 		@throw [OFInvalidFormatException exception];
 
-	if ((localFileHeader->_minVersion & 0xFF) > 20) {
+	if ((localFileHeader->_minVersion & 0xFF) > 45) {
 		OFString *version = [OFString stringWithFormat: @"%u.%u",
 		    (localFileHeader->_minVersion & 0xFF) / 10,
 		    (localFileHeader->_minVersion & 0xFF) % 10];
@@ -276,6 +404,8 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	@try {
 		uint16_t fileNameLength, extraFieldLength;
 		of_string_encoding_t encoding;
+		uint8_t *ZIP64;
+		uint16_t ZIP64Size;
 
 		if ([file readLittleEndianInt32] != 0x04034B50)
 			@throw [OFInvalidFormatException exception];
@@ -298,6 +428,21 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 					       encoding: encoding] copy];
 		_extraField = [[file
 		    readDataArrayWithCount: extraFieldLength] retain];
+
+		of_zip_archive_find_extra_field(_extraField, 0x0001,
+		    &ZIP64, &ZIP64Size);
+
+		if (ZIP64 != NULL) {
+			if (_uncompressedSize == 0xFFFFFFFF)
+				_uncompressedSize = of_zip_archive_read_field64(
+				    &ZIP64, &ZIP64Size);
+			if (_compressedSize == 0xFFFFFFFF)
+				_compressedSize = of_zip_archive_read_field64(
+				    &ZIP64, &ZIP64Size);
+
+			if (ZIP64Size > 0)
+				@throw [OFInvalidFormatException exception];
+		}
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -411,6 +556,11 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 
 			if (~_CRC32 != CRC32)
 				@throw [OFChecksumFailedException exception];
+
+			/*
+			 * FIXME: Check (un)compressed length!
+			 * (Note: Both are 64 bit if the entry uses ZIP64!)
+			 */
 
 			return 0;
 		}
