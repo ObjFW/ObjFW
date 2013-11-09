@@ -83,6 +83,7 @@
 #import "OFMessagePackExtension.h"
 
 #import "OFApplication.h"
+#import "OFOptionsParser.h"
 #import "OFSystemInfo.h"
 #import "OFTimer.h"
 #import "OFRunLoop.h"

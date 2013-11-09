@@ -355,6 +355,8 @@
 		4BA9CFA415E129D30076DC74 /* autorelease.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA9CFA315E129D30076DC74 /* autorelease.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BAA60C814D09699006F068D /* OFJSONTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BAA60C714D09699006F068D /* OFJSONTests.m */; };
 		4BAE7354139C508E00F682ED /* serialization.xml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BAE7353139C507F00F682ED /* serialization.xml */; };
+		4BAFC168182EAA7800BE5E57 /* OFOptionsParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BAFC166182EAA7800BE5E57 /* OFOptionsParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BAFC169182EAA7800BE5E57 /* OFOptionsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BAFC167182EAA7800BE5E57 /* OFOptionsParser.m */; };
 		4BB25E88139C388A00F574EA /* OFObject+Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB25E82139C388A00F574EA /* OFObject+Serialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BB25E89139C388A00F574EA /* OFObject+Serialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB25E83139C388A00F574EA /* OFObject+Serialization.m */; };
 		4BB25E8A139C388A00F574EA /* OFString+Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB25E84139C388A00F574EA /* OFString+Serialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -800,6 +802,8 @@
 		4BAF5F48123460C900F4E111 /* OFStreamObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamObserver.m; path = src/OFStreamObserver.m; sourceTree = "<group>"; };
 		4BAF5F49123460C900F4E111 /* OFStreamSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamSocket.h; path = src/OFStreamSocket.h; sourceTree = "<group>"; };
 		4BAF5F4A123460C900F4E111 /* OFStreamSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamSocket.m; path = src/OFStreamSocket.m; sourceTree = "<group>"; };
+		4BAFC166182EAA7800BE5E57 /* OFOptionsParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFOptionsParser.h; path = src/OFOptionsParser.h; sourceTree = "<group>"; };
+		4BAFC167182EAA7800BE5E57 /* OFOptionsParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFOptionsParser.m; path = src/OFOptionsParser.m; sourceTree = "<group>"; };
 		4BB25E82139C388A00F574EA /* OFObject+Serialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFObject+Serialization.h"; path = "src/OFObject+Serialization.h"; sourceTree = "<group>"; };
 		4BB25E83139C388A00F574EA /* OFObject+Serialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFObject+Serialization.m"; path = "src/OFObject+Serialization.m"; sourceTree = "<group>"; };
 		4BB25E84139C388A00F574EA /* OFString+Serialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFString+Serialization.h"; path = "src/OFString+Serialization.h"; sourceTree = "<group>"; };
@@ -1224,6 +1228,8 @@
 				4B6799781099E7C50041064A /* OFObject.m */,
 				4BB25E82139C388A00F574EA /* OFObject+Serialization.h */,
 				4BB25E83139C388A00F574EA /* OFObject+Serialization.m */,
+				4BAFC166182EAA7800BE5E57 /* OFOptionsParser.h */,
+				4BAFC167182EAA7800BE5E57 /* OFOptionsParser.m */,
 				4B6799791099E7C50041064A /* OFPlugin.h */,
 				4B67997A1099E7C50041064A /* OFPlugin.m */,
 				4BB524BF143D1E4E0085FBCC /* OFProcess.h */,
@@ -1493,6 +1499,7 @@
 				4B3D23D01337FCB000DD29B8 /* OFNumber.h in Headers */,
 				4B3D23D11337FCB000DD29B8 /* OFObject.h in Headers */,
 				4BB25E88139C388A00F574EA /* OFObject+Serialization.h in Headers */,
+				4BAFC168182EAA7800BE5E57 /* OFOptionsParser.h in Headers */,
 				4B3D23D21337FCB000DD29B8 /* OFPlugin.h in Headers */,
 				4BB524C1143D1E4E0085FBCC /* OFProcess.h in Headers */,
 				4B674405163C395900EB1E59 /* OFRecursiveMutex.h in Headers */,
@@ -1858,6 +1865,7 @@
 				4B3D239E1337FC0D00DD29B8 /* OFNumber.m in Sources */,
 				4B3D239F1337FC0D00DD29B8 /* OFObject.m in Sources */,
 				4BB25E89139C388A00F574EA /* OFObject+Serialization.m in Sources */,
+				4BAFC169182EAA7800BE5E57 /* OFOptionsParser.m in Sources */,
 				4B3D23A01337FC0D00DD29B8 /* OFPlugin.m in Sources */,
 				4BB524C2143D1E4E0085FBCC /* OFProcess.m in Sources */,
 				4B674406163C395900EB1E59 /* OFRecursiveMutex.m in Sources */,
