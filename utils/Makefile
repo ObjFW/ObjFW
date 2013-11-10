@@ -1,5 +1,5 @@
-PROG = objfw-unzip
-SRCS = objfw-unzip.m
+PROG = ofzip
+SRCS = OFZIP.m
 
 include ../buildsys.mk
 

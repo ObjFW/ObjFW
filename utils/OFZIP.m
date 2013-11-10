@@ -2,6 +2,7 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFFile.h"
+#import "OFOptionsParser.h"
 #import "OFStdIOStream.h"
 #import "OFZIPArchive.h"
 #import "OFZIPArchiveEntry.h"
@@ -11,25 +12,67 @@
 
 #define BUFFER_SIZE 4096
 
-@interface UnZIP: OFObject
+@interface OFZIP: OFObject
 - (void)extractAllFilesFromArchive: (OFZIPArchive*)archive;
 @end
 
-OF_APPLICATION_DELEGATE(UnZIP)
+OF_APPLICATION_DELEGATE(OFZIP)
 
-@implementation UnZIP
+static void
+help(OFStream *stream, int status)
+{
+	[stream writeFormat: @"Usage: %@ -x archive1.zip [archive2.zip ...]\n",
+			     [OFApplication programName]];
+	[OFApplication terminateWithStatus: status];
+}
+
+@implementation OFZIP
 - (void)applicationDidFinishLaunching
 {
-	OFEnumerator *enumerator = [[OFApplication arguments] objectEnumerator];
+	OFOptionsParser *optionsParser =
+	    [OFOptionsParser parserWithOptions: @"xh"];
+	enum {
+		NONE,
+		EXTRACT
+	} mode;
+	OFEnumerator *enumerator;
 	OFString *file;
+	of_unichar_t option;
 
-	while ((file = [enumerator nextObject]) != nil) {
-		void *pool = objc_autoreleasePoolPush();
+	while ((option = [optionsParser nextOption]) != '\0') {
+		switch (option) {
+		case 'x':
+			mode = EXTRACT;
+			break;
+		case 'h':
+			help(of_stdout, 0);
+			break;
+		case '?':
+			[of_stderr writeFormat: @"%@: Unknown option: -%c\n",
+						[OFApplication programName],
+						[optionsParser lastOption]];
+			[OFApplication terminateWithStatus: 1];
+			break;
+		}
+	}
 
-		[self extractAllFilesFromArchive:
-		    [OFZIPArchive archiveWithPath: file]];
+	switch (mode) {
+	case EXTRACT:
+		enumerator =
+		    [[optionsParser remainingArguments] objectEnumerator];
 
-		objc_autoreleasePoolPop(pool);
+		while ((file = [enumerator nextObject]) != nil) {
+			void *pool = objc_autoreleasePoolPush();
+
+			[self extractAllFilesFromArchive:
+			   [OFZIPArchive archiveWithPath: file]];
+
+			objc_autoreleasePoolPop(pool);
+		}
+		break;
+	default:
+		help(of_stderr, 1);
+		break;
 	}
 
 	[OFApplication terminate];
