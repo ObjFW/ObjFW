@@ -3,6 +3,7 @@
 #import "OFDictionary.h"
 #import "OFFile.h"
 #import "OFOptionsParser.h"
+#import "OFSet.h"
 #import "OFStdIOStream.h"
 #import "OFZIPArchive.h"
 #import "OFZIPArchiveEntry.h"
@@ -13,7 +14,8 @@
 #define BUFFER_SIZE 4096
 
 @interface OFZIP: OFObject
-- (void)extractAllFilesFromArchive: (OFZIPArchive*)archive;
+- (void)extractFiles: (OFArray*)files
+	 fromArchive: (OFZIPArchive*)archive;
 @end
 
 OF_APPLICATION_DELEGATE(OFZIP)
@@ -21,7 +23,7 @@ OF_APPLICATION_DELEGATE(OFZIP)
 static void
 help(OFStream *stream, int status)
 {
-	[stream writeFormat: @"Usage: %@ -x archive1.zip [archive2.zip ...]\n",
+	[stream writeFormat: @"Usage: %@ -x archive1.zip [file1 file2 ...]\n",
 			     [OFApplication programName]];
 	[OFApplication terminateWithStatus: status];
 }
@@ -31,44 +33,49 @@ help(OFStream *stream, int status)
 {
 	OFOptionsParser *optionsParser =
 	    [OFOptionsParser parserWithOptions: @"xh"];
-	enum {
-		NONE,
-		EXTRACT
-	} mode;
-	OFEnumerator *enumerator;
-	OFString *file;
-	of_unichar_t option;
+	of_unichar_t option, mode = '\0';
+	OFArray *remainingArguments;
+	void *pool;
+	OFZIPArchive *archive;
+	OFArray *files;
 
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
 		case 'x':
-			mode = EXTRACT;
+			if (mode != '\0')
+				help(of_stdout, 1);
+
+			mode = option;
 			break;
 		case 'h':
 			help(of_stdout, 0);
 			break;
-		case '?':
+		default:
 			[of_stderr writeFormat: @"%@: Unknown option: -%c\n",
 						[OFApplication programName],
 						[optionsParser lastOption]];
 			[OFApplication terminateWithStatus: 1];
-			break;
 		}
 	}
 
+	remainingArguments = [optionsParser remainingArguments];
+
 	switch (mode) {
-	case EXTRACT:
-		enumerator =
-		    [[optionsParser remainingArguments] objectEnumerator];
+	case 'x':
+		pool = objc_autoreleasePoolPush();
 
-		while ((file = [enumerator nextObject]) != nil) {
-			void *pool = objc_autoreleasePoolPush();
+		if ([remainingArguments count] < 1)
+			help(of_stderr, 1);
 
-			[self extractAllFilesFromArchive:
-			   [OFZIPArchive archiveWithPath: file]];
+		files = [remainingArguments objectsInRange:
+		    of_range(1, [remainingArguments count] - 1)];
+		archive = [OFZIPArchive archiveWithPath:
+		    [remainingArguments firstObject]];
 
-			objc_autoreleasePoolPop(pool);
-		}
+		[self extractFiles: files
+		       fromArchive: archive];
+
+		objc_autoreleasePoolPop(pool);
 		break;
 	default:
 		help(of_stderr, 1);
@@ -78,11 +85,14 @@ help(OFStream *stream, int status)
 	[OFApplication terminate];
 }
 
-- (void)extractAllFilesFromArchive: (OFZIPArchive*)archive
+- (void)extractFiles: (OFArray*)files
+	 fromArchive: (OFZIPArchive*)archive
 {
 	OFEnumerator *enumerator = [[archive entries] objectEnumerator];
 	OFZIPArchiveEntry *entry;
 	int_fast8_t override = 0;
+	bool all = ([files count] == 0);
+	OFMutableSet *missing = [OFMutableSet setWithArray: files];
 
 	while ((entry = [enumerator nextObject]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
@@ -95,6 +105,11 @@ help(OFStream *stream, int status)
 		char buffer[BUFFER_SIZE];
 		off_t written = 0, size = [entry uncompressedSize];
 		int_fast8_t percent = -1, newPercent;
+
+		if (!all && ![files containsObject: fileName])
+			continue;
+
+		[missing removeObject: fileName];
 
 #ifndef _WIN32
 		if ([outFileName hasPrefix: @"/"]) {
@@ -188,6 +203,17 @@ help(OFStream *stream, int status)
 		[of_stdout writeFormat: @"\rExtracting %@... done\n", fileName];
 
 		objc_autoreleasePoolPop(pool);
+	}
+
+	if ([missing count] > 0) {
+		OFString *file;
+
+		enumerator = [missing objectEnumerator];
+		while ((file = [enumerator nextObject]) != nil)
+			[of_stderr writeFormat:
+			    @"File %@ is not in the archive!\n", file];
+
+		[OFApplication terminateWithStatus: 1];
 	}
 }
 @end
