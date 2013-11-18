@@ -254,7 +254,7 @@ help(OFStream *stream, bool full, int status)
 
 		stream = [archive streamForReadingFile: fileName];
 		output = [OFFile fileWithPath: outFileName
-					 mode: @"w"];
+					 mode: @"wb"];
 
 		while (![stream isAtEndOfStream]) {
 			size_t length = [stream readIntoBuffer: buffer
