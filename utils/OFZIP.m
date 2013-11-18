@@ -103,23 +103,26 @@ help(OFStream *stream, bool full, int status)
 
 	remainingArguments = [optionsParser remainingArguments];
 
-	if ([remainingArguments count] < 1)
-		help(of_stderr, false, 1);
-
-	files = [remainingArguments objectsInRange:
-	    of_range(1, [remainingArguments count] - 1)];
-	archive = [OFZIPArchive archiveWithPath:
-	    [remainingArguments firstObject]];
-
 	switch (mode) {
 	case 'l':
-		if ([files count] > 0)
+		if ([remainingArguments count] != 1)
 			help(of_stderr, false, 1);
+
+		archive = [OFZIPArchive archiveWithPath:
+		    [remainingArguments firstObject]];
 
 		[self listFilesInArchive: archive
 				 verbose: verbose];
 		break;
 	case 'x':
+		if ([remainingArguments count] < 1)
+			help(of_stderr, false, 1);
+
+		files = [remainingArguments objectsInRange:
+		    of_range(1, [remainingArguments count] - 1)];
+		archive = [OFZIPArchive archiveWithPath:
+		    [remainingArguments firstObject]];
+
 		[self extractFiles: files
 		       fromArchive: archive
 			  override: override];
