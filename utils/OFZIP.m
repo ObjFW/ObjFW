@@ -16,6 +16,7 @@
 
 #import "OFApplication.h"
 #import "OFArray.h"
+#import "OFDate.h"
 #import "OFDictionary.h"
 #import "OFFile.h"
 #import "OFOptionsParser.h"
@@ -30,6 +31,8 @@
 #define BUFFER_SIZE 4096
 
 @interface OFZIP: OFObject
+- (void)listFilesInArchive: (OFZIPArchive*)archive
+		   verbose: (bool)verbose;
 - (void)extractFiles: (OFArray*)files
 	 fromArchive: (OFZIPArchive*)archive
 	    override: (int_fast8_t)override;
@@ -41,14 +44,16 @@ static void
 help(OFStream *stream, bool full, int status)
 {
 	[stream writeFormat:
-	    @"Usage: %@ -[fnx] archive1.zip [file1 file2 ...]\n",
+	    @"Usage: %@ -[flnvx] archive.zip [file1 file2 ...]\n",
 	    [OFApplication programName]];
 
 	if (full) {
 		[stream writeString: @"\nOptions:\n"
 				     @"    -f  Force / override files\n"
 				     @"    -h  Show this help\n"
+				     @"    -l  List all files in the archive\n"
 				     @"    -n  Never override files\n"
+				     @"    -v  Verbose output for file list\n"
 				     @"    -x  Extract files\n"];
 	}
 
@@ -59,11 +64,11 @@ help(OFStream *stream, bool full, int status)
 - (void)applicationDidFinishLaunching
 {
 	OFOptionsParser *optionsParser =
-	    [OFOptionsParser parserWithOptions: @"fhnx"];
+	    [OFOptionsParser parserWithOptions: @"fhlnvx"];
 	of_unichar_t option, mode = '\0';
 	int_fast8_t override = 0;
+	bool verbose = false;
 	OFArray *remainingArguments;
-	void *pool;
 	OFZIPArchive *archive;
 	OFArray *files;
 
@@ -75,6 +80,10 @@ help(OFStream *stream, bool full, int status)
 		case 'n':
 			override = -1;
 			break;
+		case 'v':
+			verbose = true;
+			break;
+		case 'l':
 		case 'x':
 			if (mode != '\0')
 				help(of_stdout, false, 1);
@@ -94,23 +103,26 @@ help(OFStream *stream, bool full, int status)
 
 	remainingArguments = [optionsParser remainingArguments];
 
-	switch (mode) {
-	case 'x':
-		pool = objc_autoreleasePoolPush();
+	if ([remainingArguments count] < 1)
+		help(of_stderr, false, 1);
 
-		if ([remainingArguments count] < 1)
+	files = [remainingArguments objectsInRange:
+	    of_range(1, [remainingArguments count] - 1)];
+	archive = [OFZIPArchive archiveWithPath:
+	    [remainingArguments firstObject]];
+
+	switch (mode) {
+	case 'l':
+		if ([files count] > 0)
 			help(of_stderr, false, 1);
 
-		files = [remainingArguments objectsInRange:
-		    of_range(1, [remainingArguments count] - 1)];
-		archive = [OFZIPArchive archiveWithPath:
-		    [remainingArguments firstObject]];
-
+		[self listFilesInArchive: archive
+				 verbose: verbose];
+		break;
+	case 'x':
 		[self extractFiles: files
 		       fromArchive: archive
 			  override: override];
-
-		objc_autoreleasePoolPop(pool);
 		break;
 	default:
 		help(of_stderr, true, 1);
@@ -118,6 +130,31 @@ help(OFStream *stream, bool full, int status)
 	}
 
 	[OFApplication terminate];
+}
+
+- (void)listFilesInArchive: (OFZIPArchive*)archive
+		   verbose: (bool)verbose
+{
+	OFEnumerator *enumerator = [[archive entries] objectEnumerator];
+	OFZIPArchiveEntry *entry;
+
+	while ((entry = [enumerator nextObject]) != nil) {
+		void *pool = objc_autoreleasePoolPush();
+
+		if (verbose) {
+			OFString *date = [[entry modificationDate]
+			    localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
+
+			[of_stdout writeFormat:
+			    @"%@: %ju (%ju) bytes; %08X; %@; %@\n",
+			    [entry fileName], [entry uncompressedSize],
+			    [entry compressedSize], [entry CRC32], date,
+			    [entry fileComment]];
+		} else
+			[of_stdout writeLine: [entry fileName]];
+
+		objc_autoreleasePoolPop(pool);
+	}
 }
 
 - (void)extractFiles: (OFArray*)files
