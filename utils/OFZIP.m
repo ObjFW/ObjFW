@@ -31,16 +31,27 @@
 
 @interface OFZIP: OFObject
 - (void)extractFiles: (OFArray*)files
-	 fromArchive: (OFZIPArchive*)archive;
+	 fromArchive: (OFZIPArchive*)archive
+	    override: (int_fast8_t)override;
 @end
 
 OF_APPLICATION_DELEGATE(OFZIP)
 
 static void
-help(OFStream *stream, int status)
+help(OFStream *stream, bool full, int status)
 {
-	[stream writeFormat: @"Usage: %@ -x archive1.zip [file1 file2 ...]\n",
-			     [OFApplication programName]];
+	[stream writeFormat:
+	    @"Usage: %@ -[fnx] archive1.zip [file1 file2 ...]\n",
+	    [OFApplication programName]];
+
+	if (full) {
+		[stream writeString: @"\nOptions:\n"
+				     @"    -f  Force / override files\n"
+				     @"    -h  Show this help\n"
+				     @"    -n  Never override files\n"
+				     @"    -x  Extract files\n"];
+	}
+
 	[OFApplication terminateWithStatus: status];
 }
 
@@ -48,8 +59,9 @@ help(OFStream *stream, int status)
 - (void)applicationDidFinishLaunching
 {
 	OFOptionsParser *optionsParser =
-	    [OFOptionsParser parserWithOptions: @"xh"];
+	    [OFOptionsParser parserWithOptions: @"fhnx"];
 	of_unichar_t option, mode = '\0';
+	int_fast8_t override = 0;
 	OFArray *remainingArguments;
 	void *pool;
 	OFZIPArchive *archive;
@@ -57,14 +69,20 @@ help(OFStream *stream, int status)
 
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
+		case 'f':
+			override = 1;
+			break;
+		case 'n':
+			override = -1;
+			break;
 		case 'x':
 			if (mode != '\0')
-				help(of_stdout, 1);
+				help(of_stdout, false, 1);
 
 			mode = option;
 			break;
 		case 'h':
-			help(of_stdout, 0);
+			help(of_stdout, true, 0);
 			break;
 		default:
 			[of_stderr writeFormat: @"%@: Unknown option: -%c\n",
@@ -81,7 +99,7 @@ help(OFStream *stream, int status)
 		pool = objc_autoreleasePoolPush();
 
 		if ([remainingArguments count] < 1)
-			help(of_stderr, 1);
+			help(of_stderr, false, 1);
 
 		files = [remainingArguments objectsInRange:
 		    of_range(1, [remainingArguments count] - 1)];
@@ -89,12 +107,13 @@ help(OFStream *stream, int status)
 		    [remainingArguments firstObject]];
 
 		[self extractFiles: files
-		       fromArchive: archive];
+		       fromArchive: archive
+			  override: override];
 
 		objc_autoreleasePoolPop(pool);
 		break;
 	default:
-		help(of_stderr, 1);
+		help(of_stderr, true, 1);
 		break;
 	}
 
@@ -103,10 +122,10 @@ help(OFStream *stream, int status)
 
 - (void)extractFiles: (OFArray*)files
 	 fromArchive: (OFZIPArchive*)archive
+	    override: (int_fast8_t)override
 {
 	OFEnumerator *enumerator = [[archive entries] objectEnumerator];
 	OFZIPArchiveEntry *entry;
-	int_fast8_t override = 0;
 	bool all = ([files count] == 0);
 	OFMutableSet *missing = [OFMutableSet setWithArray: files];
 
