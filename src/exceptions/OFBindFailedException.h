@@ -36,9 +36,9 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy, nonatomic) OFString *host;
+@property (readonly, copy) OFString *host;
 @property (readonly) uint16_t port;
-@property (readonly, retain, nonatomic) OFTCPSocket *socket;
+@property (readonly, retain) OFTCPSocket *socket;
 @property (readonly) int errNo;
 #endif
 

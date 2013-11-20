@@ -71,6 +71,6 @@
 
 - (OFString*)version
 {
-	OF_GETTER(_version, false)
+	OF_GETTER(_version, true)
 }
 @end

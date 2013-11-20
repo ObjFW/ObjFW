@@ -29,11 +29,11 @@
 
 #ifdef OF_HAVE_PROPERTIES
 # ifdef __cplusplus
-@property (readonly, copy, nonatomic, getter=namespace) OFString *namespace_;
+@property (readonly, copy, getter=namespace) OFString *namespace_;
 # else
-@property (readonly, copy, nonatomic) OFString *namespace;
+@property (readonly, copy) OFString *namespace;
 # endif
-@property (readonly, retain, nonatomic) OFXMLElement *element;
+@property (readonly, retain) OFXMLElement *element;
 #endif
 
 /*!

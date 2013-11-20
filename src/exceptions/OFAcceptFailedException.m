@@ -68,7 +68,7 @@
 
 - (OFTCPSocket*)socket
 {
-	OF_GETTER(_socket, false)
+	OF_GETTER(_socket, true)
 }
 
 - (int)errNo

@@ -21,6 +21,8 @@
 #import "OFMemoryNotPartOfObjectException.h"
 #import "OFString.h"
 
+#import "macros.h"
+
 @implementation OFMemoryNotPartOfObjectException
 + (instancetype)exceptionWithPointer: (void*)pointer
 			      object: (id)object
@@ -75,6 +77,6 @@
 
 - (id)object
 {
-	return _object;
+	OF_GETTER(_object, true)
 }
 @end

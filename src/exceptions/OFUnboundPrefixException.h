@@ -28,8 +28,8 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy, nonatomic) OFString *prefix;
-@property (readonly, retain, nonatomic) OFXMLParser *parser;
+@property (readonly, copy) OFString *prefix;
+@property (readonly, retain) OFXMLParser *parser;
 #endif
 
 /*!

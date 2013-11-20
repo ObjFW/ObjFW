@@ -26,7 +26,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain, nonatomic) id <OFHash> hashObject;
+@property (readonly, retain) id <OFHash> hashObject;
 #endif
 
 /*!

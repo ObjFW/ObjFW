@@ -28,7 +28,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain, nonatomic) OFURL *URL;
+@property (readonly, retain) OFURL *URL;
 #endif
 
 /*!

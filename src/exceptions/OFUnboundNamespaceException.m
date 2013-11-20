@@ -77,11 +77,11 @@
 
 - (OFString*)namespace
 {
-	OF_GETTER(_namespace, false)
+	OF_GETTER(_namespace, true)
 }
 
 - (OFXMLElement*)element
 {
-	OF_GETTER(_element, false)
+	OF_GETTER(_element, true)
 }
 @end

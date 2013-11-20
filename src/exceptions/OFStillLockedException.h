@@ -26,7 +26,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain, nonatomic) id <OFLocking> lock;
+@property (readonly, retain) id <OFLocking> lock;
 #endif
 
 /*!

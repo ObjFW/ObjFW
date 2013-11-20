@@ -28,7 +28,7 @@
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly) SEL selector;
-@property (readonly, retain, nonatomic) id object;
+@property (readonly, retain) id object;
 #endif
 
 /*!

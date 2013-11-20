@@ -33,8 +33,8 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain, nonatomic) OFHTTPRequest *request;
-@property (readonly, retain, nonatomic) OFHTTPResponse *response;
+@property (readonly, retain) OFHTTPRequest *request;
+@property (readonly, retain) OFHTTPResponse *response;
 #endif
 
 /*!

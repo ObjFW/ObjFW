@@ -71,7 +71,7 @@
 
 - (OFString*)path
 {
-	OF_GETTER(_path, false)
+	OF_GETTER(_path, true)
 }
 
 - (int)errNo

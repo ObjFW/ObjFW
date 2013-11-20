@@ -21,6 +21,8 @@
 #import "OFInvalidJSONException.h"
 #import "OFString.h"
 
+#import "macros.h"
+
 @implementation OFInvalidJSONException
 + (instancetype)exceptionWithString: (OFString*)string
 			       line: (size_t)line
@@ -72,7 +74,7 @@
 
 - (OFString*)string
 {
-	return _string;
+	OF_GETTER(_string, true)
 }
 
 - (size_t)line

@@ -26,7 +26,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain, nonatomic) id object;
+@property (readonly, retain) id object;
 #endif
 
 /*!

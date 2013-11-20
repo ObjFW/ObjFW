@@ -32,7 +32,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain, nonatomic) OFStream *stream;
+@property (readonly, retain) OFStream *stream;
 @property (readonly) size_t requestedLength;
 @property (readonly) int errNo;
 #endif

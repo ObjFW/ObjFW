@@ -27,7 +27,7 @@
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly) void *pointer;
-@property (readonly, retain, nonatomic) id object;
+@property (readonly, retain) id object;
 #endif
 
 /*!

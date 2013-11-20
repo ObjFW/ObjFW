@@ -76,11 +76,11 @@
 
 - (OFHTTPRequest*)request
 {
-	OF_GETTER(_request, false)
+	OF_GETTER(_request, true)
 }
 
 - (OFHTTPResponse*)response
 {
-	OF_GETTER(_response, false)
+	OF_GETTER(_response, true)
 }
 @end

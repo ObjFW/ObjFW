@@ -26,7 +26,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy, nonatomic) OFString *string;
+@property (readonly, copy) OFString *string;
 @property (readonly) size_t line;
 #endif
 

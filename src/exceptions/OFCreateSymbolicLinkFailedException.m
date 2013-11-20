@@ -78,12 +78,12 @@
 
 - (OFString*)sourcePath
 {
-	OF_GETTER(_sourcePath, false)
+	OF_GETTER(_sourcePath, true)
 }
 
 - (OFString*)destinationPath
 {
-	OF_GETTER(_destinationPath, false)
+	OF_GETTER(_destinationPath, true)
 }
 
 - (int)errNo

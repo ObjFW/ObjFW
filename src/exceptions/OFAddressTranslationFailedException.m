@@ -107,12 +107,12 @@
 
 - (OFString*)host
 {
-	OF_GETTER(_host, false)
+	OF_GETTER(_host, true)
 }
 
 - (OFTCPSocket*)socket
 {
-	OF_GETTER(_socket, false)
+	OF_GETTER(_socket, true)
 }
 
 - (int)errNo

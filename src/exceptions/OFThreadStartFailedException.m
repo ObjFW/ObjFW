@@ -64,6 +64,6 @@
 
 - (OFThread*)thread
 {
-	OF_GETTER(_thread, false)
+	OF_GETTER(_thread, true)
 }
 @end

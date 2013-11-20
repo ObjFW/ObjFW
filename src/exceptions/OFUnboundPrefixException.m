@@ -77,11 +77,11 @@
 
 - (OFString*)prefix
 {
-	OF_GETTER(_prefix, false)
+	OF_GETTER(_prefix, true)
 }
 
 - (OFXMLParser*)parser
 {
-	OF_GETTER(_parser, false)
+	OF_GETTER(_parser, true)
 }
 @end

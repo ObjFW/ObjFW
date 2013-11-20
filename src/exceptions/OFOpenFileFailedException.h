@@ -28,7 +28,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy, nonatomic) OFString *path, *mode;
+@property (readonly, copy) OFString *path, *mode;
 @property (readonly) int errNo;
 #endif
 

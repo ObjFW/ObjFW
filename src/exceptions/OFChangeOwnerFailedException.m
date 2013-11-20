@@ -92,17 +92,17 @@
 
 - (OFString*)path
 {
-	OF_GETTER(_path, false)
+	OF_GETTER(_path, true)
 }
 
 - (OFString*)owner
 {
-	OF_GETTER(_owner, false)
+	OF_GETTER(_owner, true)
 }
 
 - (OFString*)group
 {
-	OF_GETTER(_group, false)
+	OF_GETTER(_group, true)
 }
 
 - (int)errNo

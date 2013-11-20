@@ -64,6 +64,6 @@
 
 - (OFCondition*)condition
 {
-	OF_GETTER(_condition, false)
+	OF_GETTER(_condition, true)
 }
 @end

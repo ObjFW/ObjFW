@@ -33,7 +33,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain, nonatomic) OFSeekableStream *stream;
+@property (readonly, retain) OFSeekableStream *stream;
 @property (readonly) off_t offset;
 @property (readonly) int whence, errNo;
 #endif

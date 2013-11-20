@@ -76,7 +76,7 @@
 
 - (OFString*)path
 {
-	OF_GETTER(_path, false)
+	OF_GETTER(_path, true)
 }
 
 - (mode_t)permissions

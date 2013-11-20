@@ -32,7 +32,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain, nonatomic) OFTCPSocket *socket;
+@property (readonly, retain) OFTCPSocket *socket;
 #endif
 
 /*!

@@ -77,12 +77,12 @@
 
 - (OFString*)path
 {
-	OF_GETTER(_path, false)
+	OF_GETTER(_path, true)
 }
 
 - (OFString*)mode
 {
-	OF_GETTER(_mode, false)
+	OF_GETTER(_mode, true)
 }
 
 - (int)errNo

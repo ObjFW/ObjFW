@@ -75,6 +75,6 @@
 
 - (id)object
 {
-	return _object;
+	OF_GETTER(_object, true)
 }
 @end
