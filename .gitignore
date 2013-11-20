@@ -6,6 +6,7 @@
 *.o
 *.orig
 *.so
+*.so.*
 *~
 .deps
 aclocal.m4
