@@ -231,9 +231,15 @@ help(OFStream *stream, bool full, int status)
 
 			do {
 				[of_stderr writeFormat:
-				    @"\rOverride %@? [ynAN] ", fileName];
+				    @"\rOverride %@? [ynAN?] ", fileName];
 
 				line = [of_stdin readLine];
+
+				if ([line isEqual: @"?"])
+					[of_stderr writeString: @" y: yes\n"
+								@" n: no\n"
+								@" A: always\n"
+								@" N: never\n"];
 			} while (![line isEqual: @"y"] &&
 			    ![line isEqual: @"n"] && ![line isEqual: @"N"] &&
 			    ![line isEqual: @"A"]);
