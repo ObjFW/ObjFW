@@ -87,7 +87,7 @@
  * @brief Appends a formatted string to the OFMutableString.
  *
  * See printf for the format syntax. As an addition, %@ is available as format
- * specifier for objects.
+ * specifier for objects and %C for of_unichar_t.
  *
  * @param format A format string which generates the string to append
  */
@@ -97,7 +97,7 @@
  * @brief Appends a formatted string to the OFMutableString.
  *
  * See printf for the format syntax. As an addition, %@ is available as format
- * specifier for objects.
+ * specifier for objects and %C for of_unichar_t.
  *
  * @param format A format string which generates the string to append
  * @param arguments The arguments used in the format string

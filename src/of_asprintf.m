@@ -28,6 +28,8 @@
 
 #import "OFString.h"
 
+#import "OFInvalidEncodingException.h"
+
 #import "asprintf.h"
 #import "autorelease.h"
 #import "macros.h"
@@ -311,6 +313,22 @@ formatConversionSpecifierState(struct context *ctx)
 		} @catch (id e) {
 			free(ctx->buffer);
 			@throw e;
+		}
+
+		break;
+	case 'C':
+		ctx->subformat[ctx->subformatLen - 1] = 's';
+
+		{
+			char buffer[5];
+			size_t len = of_string_utf8_encode(
+			    va_arg(ctx->arguments, of_unichar_t), buffer);
+
+			if (len == 0)
+				@throw [OFInvalidEncodingException exception];
+
+			buffer[len] = 0;
+			tmpLen = asprintf(&tmp, ctx->subformat, buffer);
 		}
 
 		break;

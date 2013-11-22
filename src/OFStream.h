@@ -987,7 +987,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @brief Writes a formatted string into the stream.
  *
  * See printf for the format syntax. As an addition, %@ is available as format
- * specifier for objects.
+ * specifier for objects and %C for of_unichar_t.
  *
  * @param format A string used as format
  * @return The number of bytes written
@@ -998,7 +998,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @brief Writes a formatted string into the stream.
  *
  * See printf for the format syntax. As an addition, %@ is available as format
- * specifier for objects.
+ * specifier for objects and %C for of_unichar_t.
  *
  * @param format A string used as format
  * @param arguments The arguments used in the format string
