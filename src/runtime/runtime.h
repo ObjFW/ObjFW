@@ -41,7 +41,7 @@ struct objc_class {
 	const char *name;
 	unsigned long version;
 	unsigned long info;
-	unsigned long instance_size;
+	long instance_size;
 	struct objc_ivar_list *ivars;
 	struct objc_method_list *methodlist;
 	struct objc_sparsearray *dtable;
@@ -50,7 +50,7 @@ struct objc_class {
 	struct objc_protocol_list *protocols;
 	void *gc_object_type;
 	unsigned long abi_version;
-	void *ivar_offsets;
+	int32_t **ivar_offsets;
 	struct objc_property_list *properties;
 };
 

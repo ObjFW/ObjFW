@@ -22,7 +22,7 @@ struct objc_abi_class {
 	const char *name;
 	unsigned long version;
 	unsigned long info;
-	unsigned long instance_size;
+	long instance_size;
 	void *ivars;
 	struct objc_abi_method_list *methodlist;
 	void *dtable;
@@ -31,7 +31,7 @@ struct objc_abi_class {
 	void *protocols;
 	void *gc_object_type;
 	long abi_version;
-	void *ivar_offsets;
+	int32_t **ivar_offsets;
 	void *properties;
 };
 
