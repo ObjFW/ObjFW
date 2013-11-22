@@ -27,7 +27,8 @@ tarball:
 	rm -f objfw-${PACKAGE_VERSION}.tar
 	gpg -b objfw-${PACKAGE_VERSION}.tar.xz || true
 	echo "Generating documentation..."
-	doxygen
+	rm -fr docs
+	doxygen >/dev/null
 	mv docs objfw-docs-${PACKAGE_VERSION}
 	echo "Generating docs tarball for version ${PACKAGE_VERSION}..."
 	tar cf objfw-docs-${PACKAGE_VERSION}.tar objfw-docs-${PACKAGE_VERSION}
