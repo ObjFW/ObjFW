@@ -319,7 +319,7 @@ formatConversionSpecifierState(struct context *ctx)
 		}
 
 		break;
-	case 'C':
+	case 'k':
 		if (ctx->lengthModifier != LENGTH_MODIFIER_NONE)
 			return false;
 

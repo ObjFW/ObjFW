@@ -94,7 +94,7 @@ help(OFStream *stream, bool full, int status)
 			help(of_stdout, true, 0);
 			break;
 		default:
-			[of_stderr writeFormat: @"%@: Unknown option: -%C\n",
+			[of_stderr writeFormat: @"%@: Unknown option: -%k\n",
 						[OFApplication programName],
 						[optionsParser lastOption]];
 			[OFApplication terminateWithStatus: 1];

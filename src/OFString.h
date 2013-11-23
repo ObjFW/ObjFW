@@ -265,7 +265,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @brief Creates a new OFString from a format string.
  *
  * See printf for the format syntax. As an addition, %@ is available as format
- * specifier for objects and %C for of_unichar_t.
+ * specifier for objects and %k for of_unichar_t.
  *
  * @param format A string used as format to initialize the OFString
  * @return A new autoreleased OFString
@@ -494,7 +494,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @brief Initializes an already allocated OFString with a format string.
  *
  * See printf for the format syntax. As an addition, %@ is available as format
- * specifier for objects and %C for of_unichar_t.
+ * specifier for objects and %k for of_unichar_t.
  *
  * @param format A string used as format to initialize the OFString
  * @return An initialized OFString
@@ -505,7 +505,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @brief Initializes an already allocated OFString with a format string.
  *
  * See printf for the format syntax. As an addition, %@ is available as format
- * specifier for objects and %C for of_unichar_t.
+ * specifier for objects and %k for of_unichar_t.
  *
  * @param format A string used as format to initialize the OFString
  * @param arguments The arguments used in the format string
