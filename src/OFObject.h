@@ -48,6 +48,10 @@
 # define __has_feature(x) 0
 #endif
 
+#ifndef __has_attribute
+# define __has_attribute(x) 0
+#endif
+
 #ifdef __GNUC__
 # define __GCC_VERSION__ (__GNUC__ * 100 + __GNUC_MINOR__)
 #else
@@ -86,6 +90,12 @@
 # define OF_SENTINEL __attribute__((sentinel))
 #else
 # define OF_SENTINEL
+#endif
+
+#if __has_attribute(objc_requires_super)
+# define OF_REQUIRES_SUPER __attribute__((objc_requires_super))
+#else
+# define OF_REQUIRES_SUPER
 #endif
 
 #ifdef OF_APPLE_RUNTIME

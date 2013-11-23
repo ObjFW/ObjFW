@@ -178,7 +178,7 @@ typedef id (^of_thread_block_t)(void);
  *
  * @note Be sure to call [super handleTermination]!
  */
-- (void)handleTermination;
+- (void)handleTermination OF_REQUIRES_SUPER;
 
 /*!
  * @brief Starts the thread.
