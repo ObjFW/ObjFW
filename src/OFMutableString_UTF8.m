@@ -395,36 +395,16 @@
 		bool isUTF8 = false;
 
 		for (i = 0; i < length; i++) {
-			char buffer[4];
+			size_t len = of_string_utf8_encode(characters[i],
+			    tmp + j);
 
-			switch (of_string_utf8_encode(characters[i], buffer)) {
-			case 1:
-				tmp[j++] = buffer[0];
-				break;
-			case 2:
-				isUTF8 = true;
-
-				memcpy(tmp + j, buffer, 2);
-				j += 2;
-
-				break;
-			case 3:
-				isUTF8 = true;
-
-				memcpy(tmp + j, buffer, 3);
-				j += 3;
-
-				break;
-			case 4:
-				isUTF8 = true;
-
-				memcpy(tmp + j, buffer, 4);
-				j += 4;
-
-				break;
-			default:
+			if (len == 0)
 				@throw [OFInvalidEncodingException exception];
-			}
+
+			if (len > 1)
+				isUTF8 = true;
+
+			j += len;
 		}
 
 		tmp[j] = '\0';

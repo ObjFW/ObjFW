@@ -416,26 +416,16 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		_s->length = length;
 
 		for (i = 0; i < length; i++) {
-			char buffer[4];
 			size_t len = of_string_utf8_encode(characters[i],
-			    buffer);
+			    _s->cString + j);
 
-			switch (len) {
-			case 1:
-				_s->cString[j++] = buffer[0];
-				break;
-			case 2:
-			case 3:
-			case 4:
+			if (len == 0)
+				@throw [OFInvalidEncodingException exception];
+
+			if (len > 1)
 				_s->isUTF8 = true;
 
-				memcpy(_s->cString + j, buffer, len);
-				j += len;
-
-				break;
-			default:
-				@throw [OFInvalidEncodingException exception];
-			}
+			j += len;
 		}
 
 		_s->cString[j] = '\0';
@@ -481,7 +471,6 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		_s->length = length;
 
 		for (i = 0; i < length; i++) {
-			char buffer[4];
 			of_unichar_t character =
 			    (swap ? OF_BSWAP16(string[i]) : string[i]);
 			size_t len;
@@ -512,24 +501,15 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				_s->length--;
 			}
 
-			len = of_string_utf8_encode(character, buffer);
+			len = of_string_utf8_encode(character, _s->cString + j);
 
-			switch (len) {
-			case 1:
-				_s->cString[j++] = buffer[0];
-				break;
-			case 2:
-			case 3:
-			case 4:
+			if (len == 0)
+				@throw [OFInvalidEncodingException exception];
+
+			if (len > 1)
 				_s->isUTF8 = true;
 
-				memcpy(_s->cString + j, buffer, len);
-				j += len;
-
-				break;
-			default:
-				@throw [OFInvalidEncodingException exception];
-			}
+			j += len;
 		}
 
 		_s->cString[j] = '\0';
