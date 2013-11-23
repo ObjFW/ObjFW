@@ -28,8 +28,6 @@
 
 #import "OFString.h"
 
-#import "OFInvalidEncodingException.h"
-
 #import "asprintf.h"
 #import "autorelease.h"
 #import "macros.h"
@@ -331,10 +329,47 @@ formatConversionSpecifierState(struct context *ctx)
 			    va_arg(ctx->arguments, of_unichar_t), buffer);
 
 			if (len == 0)
-				@throw [OFInvalidEncodingException exception];
+				return false;
 
 			buffer[len] = 0;
 			tmpLen = asprintf(&tmp, ctx->subformat, buffer);
+		}
+
+		break;
+	case 'K':
+		if (ctx->lengthModifier != LENGTH_MODIFIER_NONE)
+			return false;
+
+		ctx->subformat[ctx->subformatLen - 1] = 's';
+
+		{
+			const of_unichar_t *arg =
+			    va_arg(ctx->arguments, const of_unichar_t*);
+			size_t i, j, len = of_string_utf32_length(arg);
+			char *buffer;
+
+			if (SIZE_MAX / 4 < len || (SIZE_MAX / 4) - len < 1)
+				return false;
+
+			if ((buffer = malloc((len * 4) + 1)) == NULL)
+				return false;
+
+			for (i = j = 0; i < len; i++) {
+				size_t clen = of_string_utf8_encode(arg[i],
+				    buffer + j);
+
+				if (clen == 0) {
+					free(buffer);
+					return false;
+				}
+
+				j += clen;
+			}
+			buffer[j] = 0;
+
+			tmpLen = asprintf(&tmp, ctx->subformat, buffer);
+
+			free(buffer);
 		}
 
 		break;
