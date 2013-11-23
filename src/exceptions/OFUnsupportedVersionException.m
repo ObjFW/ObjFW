@@ -16,12 +16,11 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFUnsupportedVersionException.h"
 #import "OFString.h"
 
 #import "common.h"
+#import "macros.h"
 
 @implementation OFUnsupportedVersionException
 + (instancetype)exceptionWithVersion: (OFString*)version
@@ -31,14 +30,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithVersion: (OFString*)version

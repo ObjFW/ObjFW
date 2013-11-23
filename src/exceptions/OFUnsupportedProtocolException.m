@@ -16,13 +16,12 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFUnsupportedProtocolException.h"
 #import "OFString.h"
 #import "OFURL.h"
 
 #import "common.h"
+#import "macros.h"
 
 @implementation OFUnsupportedProtocolException
 + (instancetype)exceptionWithURL: (OFURL*)url
@@ -32,14 +31,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithURL: (OFURL*)URL

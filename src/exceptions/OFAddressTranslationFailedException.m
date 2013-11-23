@@ -21,6 +21,7 @@
 #import "OFTCPSocket.h"
 
 #import "common.h"
+#import "macros.h"
 
 @implementation OFAddressTranslationFailedException
 + (instancetype)exceptionWithSocket: (OFTCPSocket*)socket
@@ -38,6 +39,11 @@
 {
 	return [[[self alloc] initWithHost: host
 				    socket: socket] autorelease];
+}
+
+- init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithSocket: (OFTCPSocket*)socket

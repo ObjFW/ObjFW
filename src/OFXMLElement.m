@@ -126,14 +126,7 @@ static Class CDATAClass = Nil;
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithName: (OFString*)name

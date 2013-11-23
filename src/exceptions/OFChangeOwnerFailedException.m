@@ -16,12 +16,11 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFChangeOwnerFailedException.h"
 #import "OFString.h"
 
 #import "common.h"
+#import "macros.h"
 
 #ifdef OF_HAVE_CHOWN
 @implementation OFChangeOwnerFailedException
@@ -36,14 +35,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithPath: (OFString*)path

@@ -16,13 +16,12 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFListenFailedException.h"
 #import "OFString.h"
 #import "OFTCPSocket.h"
 
 #import "common.h"
+#import "macros.h"
 
 @implementation OFListenFailedException
 + (instancetype)exceptionWithSocket: (OFTCPSocket*)socket
@@ -34,14 +33,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithSocket: (OFTCPSocket*)socket

@@ -204,14 +204,7 @@ static struct {
 
 - initWithDictionary: (OFDictionary*)dictionary
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithObject: (id)object
@@ -251,14 +244,7 @@ static struct {
 	  forKeys: (id const*)keys
 	    count: (size_t)count
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithKeysAndObjects: (id)firstKey, ...
@@ -277,26 +263,12 @@ static struct {
 - initWithKey: (id)firstKey
     arguments: (va_list)arguments
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithSerialization: (OFXMLElement*)element
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - (id)objectForKey: (id)key

@@ -16,12 +16,11 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFHashAlreadyCalculatedException.h"
 #import "OFString.h"
 
 #import "common.h"
+#import "macros.h"
 
 @implementation OFHashAlreadyCalculatedException
 + (instancetype)exceptionWithHash: (id <OFHash>)hash
@@ -31,14 +30,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithHash: (id <OFHash>)hashObject

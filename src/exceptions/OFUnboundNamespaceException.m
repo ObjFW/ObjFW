@@ -16,13 +16,12 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFUnboundNamespaceException.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
 
 #import "common.h"
+#import "macros.h"
 
 @implementation OFUnboundNamespaceException
 + (instancetype)exceptionWithNamespace: (OFString*)namespace
@@ -34,14 +33,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithNamespace: (OFString*)namespace

@@ -103,14 +103,7 @@ default_equal(void *value1, void *value2)
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithKeyFunctions: (of_map_table_functions_t)keyFunctions
@@ -679,14 +672,7 @@ default_equal(void *value1, void *value2)
 @implementation OFMapTableEnumerator
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - (instancetype)OF_initWithMapTable: (OFMapTable*)mapTable

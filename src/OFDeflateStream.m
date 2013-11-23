@@ -261,14 +261,7 @@ releaseTree(struct huffman_tree *tree)
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithStream: (OFStream*)stream

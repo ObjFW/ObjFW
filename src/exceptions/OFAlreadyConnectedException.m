@@ -16,8 +16,6 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFAlreadyConnectedException.h"
 #import "OFString.h"
 #import "OFTCPSocket.h"

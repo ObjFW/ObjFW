@@ -16,12 +16,11 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFEnumerationMutationException.h"
 #import "OFString.h"
 
 #import "common.h"
+#import "macros.h"
 
 @implementation OFEnumerationMutationException
 + (instancetype)exceptionWithObject: (id)object
@@ -31,14 +30,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithObject: (id)object

@@ -16,12 +16,11 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFOpenFileFailedException.h"
 #import "OFString.h"
 
 #import "common.h"
+#import "macros.h"
 
 @implementation OFOpenFileFailedException
 + (instancetype)exceptionWithPath: (OFString*)path
@@ -33,14 +32,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithPath: (OFString*)path

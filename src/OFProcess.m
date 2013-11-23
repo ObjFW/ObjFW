@@ -44,6 +44,7 @@
 #endif
 
 #import "autorelease.h"
+#import "macros.h"
 
 #ifndef __MACH__
 extern char **environ;
@@ -88,6 +89,11 @@ extern char **environ;
 				  programName: programName
 				    arguments: arguments
 				  environment: environment] autorelease];
+}
+
+- init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithProgram: (OFString*)program

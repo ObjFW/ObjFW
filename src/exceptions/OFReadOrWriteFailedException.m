@@ -16,8 +16,6 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFReadOrWriteFailedException.h"
 #import "OFString.h"
 #import "OFStream.h"
@@ -26,6 +24,7 @@
 #endif
 
 #import "common.h"
+#import "macros.h"
 
 @implementation OFReadOrWriteFailedException
 + (instancetype)exceptionWithStream: (OFStream*)stream
@@ -37,14 +36,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 -  initWithStream: (OFStream*)stream

@@ -180,14 +180,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithPath: (OFString*)path

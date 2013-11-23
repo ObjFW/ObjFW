@@ -392,14 +392,7 @@ _Block_object_dispose(const void *obj_, const int flags_)
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - (void*)allocMemoryWithSize: (size_t)size

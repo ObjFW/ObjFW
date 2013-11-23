@@ -22,6 +22,21 @@
 #import "OFSeekableStream.h"
 
 @implementation OFSeekableStream
+- init
+{
+	if (object_getClass(self) == [OFSeekableStream class]) {
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+			abort();
+		} @catch (id e) {
+			[self release];
+			@throw e;
+		}
+	}
+
+	return [super init];
+}
+
 - (off_t)lowlevelSeekToOffset: (off_t)offset
 		       whence: (int)whence
 {

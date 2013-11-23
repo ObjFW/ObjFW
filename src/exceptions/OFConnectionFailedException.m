@@ -16,13 +16,12 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFConnectionFailedException.h"
 #import "OFString.h"
 #import "OFTCPSocket.h"
 
 #import "common.h"
+#import "macros.h"
 
 @implementation OFConnectionFailedException
 + (instancetype)exceptionWithHost: (OFString*)host
@@ -36,14 +35,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithHost: (OFString*)host

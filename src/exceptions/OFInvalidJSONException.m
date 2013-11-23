@@ -16,8 +16,6 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFInvalidJSONException.h"
 #import "OFString.h"
 
@@ -33,14 +31,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithString: (OFString*)string

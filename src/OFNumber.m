@@ -16,8 +16,6 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #include <math.h>
 
 #import "OFNumber.h"
@@ -479,14 +477,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithBool: (bool)bool_

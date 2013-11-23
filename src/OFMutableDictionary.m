@@ -22,6 +22,7 @@
 #import "OFArray.h"
 
 #import "autorelease.h"
+#import "macros.h"
 
 static struct {
 	Class isa;
@@ -163,14 +164,7 @@ static struct {
 
 - initWithCapacity: (size_t)capacity
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)setObject: (id)object

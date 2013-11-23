@@ -27,6 +27,7 @@
 #import "OFWriteFailedException.h"
 
 #import "autorelease.h"
+#import "macros.h"
 
 OFStdIOStream *of_stdin = nil;
 OFStdIOStream *of_stdout = nil;
@@ -69,14 +70,7 @@ of_log(OFConstantString *format, ...)
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - (instancetype)OF_initWithFileDescriptor: (int)fd

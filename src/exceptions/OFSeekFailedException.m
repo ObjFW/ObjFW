@@ -16,13 +16,12 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFSeekFailedException.h"
 #import "OFString.h"
 #import "OFSeekableStream.h"
 
 #import "common.h"
+#import "macros.h"
 
 @implementation OFSeekFailedException
 + (instancetype)exceptionWithStream: (OFSeekableStream*)stream
@@ -36,14 +35,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithStream: (OFSeekableStream*)stream

@@ -16,11 +16,11 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFThreadStartFailedException.h"
 #import "OFString.h"
 #import "OFThread.h"
+
+#import "macros.h"
 
 @implementation OFThreadStartFailedException
 + (instancetype)exceptionWithThread: (OFThread*)thread
@@ -30,14 +30,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithThread: (OFThread*)thread

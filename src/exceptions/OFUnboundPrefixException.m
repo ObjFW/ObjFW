@@ -16,13 +16,12 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFUnboundPrefixException.h"
 #import "OFString.h"
 #import "OFXMLParser.h"
 
 #import "common.h"
+#import "macros.h"
 
 @implementation OFUnboundPrefixException
 + (instancetype)exceptionWithPrefix: (OFString*)prefix
@@ -34,14 +33,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithPrefix: (OFString*)prefix

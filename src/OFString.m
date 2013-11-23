@@ -694,39 +694,18 @@ static struct {
 	 encoding: (of_string_encoding_t)encoding
 	   length: (size_t)cStringLength
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithString: (OFString*)string
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithCharacters: (const of_unichar_t*)string
 	      length: (size_t)length
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithUTF16String: (const of_char16_t*)string
@@ -756,14 +735,7 @@ static struct {
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithUTF32String: (const of_char32_t*)string
@@ -793,14 +765,7 @@ static struct {
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithFormat: (OFConstantString*)format, ...
@@ -819,14 +784,7 @@ static struct {
 - initWithFormat: (OFConstantString*)format
        arguments: (va_list)arguments
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithContentsOfFile: (OFString*)path

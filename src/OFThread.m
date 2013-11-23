@@ -64,6 +64,7 @@
 # import "atomic.h"
 #endif
 #import "autorelease.h"
+#import "macros.h"
 
 #ifdef OF_HAVE_THREADS
 # import "threading.h"
@@ -374,14 +375,7 @@ set_thread_name(OFThread *thread)
 #else
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 #endif
 @end

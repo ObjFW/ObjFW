@@ -196,14 +196,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 
 - initWithCapacity: (size_t)capacity
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - copy

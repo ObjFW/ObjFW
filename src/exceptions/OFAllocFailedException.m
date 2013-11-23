@@ -21,6 +21,8 @@
 #import "OFAllocFailedException.h"
 #import "OFString.h"
 
+#import "macros.h"
+
 @implementation OFAllocFailedException
 + alloc
 {
@@ -30,14 +32,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - (void*)allocMemoryWithSize: (size_t)size

@@ -16,7 +16,6 @@
 
 #include "config.h"
 
-#include <stdlib.h>
 #include <string.h>
 
 #if defined(OF_APPLE_RUNTIME)
@@ -66,6 +65,11 @@
 	return self;
 }
 #endif
+
+- init
+{
+	OF_INVALID_INIT_METHOD
+}
 
 - (void)dealloc
 {
@@ -178,6 +182,11 @@
 	return self;
 }
 #endif
+
+- init
+{
+	OF_INVALID_INIT_METHOD
+}
 
 - (void)dealloc
 {
@@ -326,6 +335,11 @@
 	}
 
 	return self;
+}
+
+- init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc

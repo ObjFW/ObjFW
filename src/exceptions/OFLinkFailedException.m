@@ -16,12 +16,11 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFLinkFailedException.h"
 #import "OFString.h"
 
 #import "common.h"
+#import "macros.h"
 
 #ifdef OF_HAVE_LINK
 @implementation OFLinkFailedException
@@ -34,14 +33,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithSourcePath: (OFString*)sourcePath

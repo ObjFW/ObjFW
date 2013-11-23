@@ -16,13 +16,12 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFNotConnectedException.h"
 #import "OFString.h"
 #import "OFTCPSocket.h"
 
 #import "common.h"
+#import "macros.h"
 
 @implementation OFNotConnectedException
 + (instancetype)exceptionWithSocket: (OFStreamSocket*)socket
@@ -32,14 +31,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithSocket: (OFStreamSocket*)socket

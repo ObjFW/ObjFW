@@ -16,11 +16,11 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFConditionSignalFailedException.h"
 #import "OFString.h"
 #import "OFCondition.h"
+
+#import "macros.h"
 
 @implementation OFConditionSignalFailedException
 + (instancetype)exceptionWithCondition: (OFCondition*)condition
@@ -30,14 +30,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithCondition: (OFCondition*)condition

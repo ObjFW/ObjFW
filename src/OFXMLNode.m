@@ -21,17 +21,12 @@
 #import "OFXMLNode.h"
 #import "OFString.h"
 
+#import "macros.h"
+
 @implementation OFXMLNode
 - initWithSerialization: (OFXMLElement*)element
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - (OFString*)stringValue

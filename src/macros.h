@@ -132,6 +132,16 @@ extern void objc_setProperty(id, SEL, ptrdiff_t, id, BOOL, signed char);
 #define OF_SETTER(ivar, value, atomic, copy) \
 	objc_setProperty(self, _cmd, OF_IVAR_OFFSET(ivar), value, atomic, copy);
 
+#define OF_INVALID_INIT_METHOD				\
+	@try {						\
+		[self doesNotRecognizeSelector: _cmd];	\
+	} @catch (id e) {				\
+		[self release];				\
+		@throw e;				\
+	}						\
+							\
+	abort();
+
 #ifdef OF_HAVE_CLASS_EXTENSIONS
 # define OF_PRIVATE_CATEGORY
 #else

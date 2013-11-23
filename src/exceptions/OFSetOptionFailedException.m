@@ -16,13 +16,12 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFSetOptionFailedException.h"
 #import "OFString.h"
 #import "OFStream.h"
 
 #import "common.h"
+#import "macros.h"
 
 @implementation OFSetOptionFailedException
 + (instancetype)exceptionWithStream: (OFStream*)stream
@@ -32,14 +31,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithStream: (OFStream*)stream

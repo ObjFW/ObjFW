@@ -16,14 +16,13 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFHTTPRequestFailedException.h"
 #import "OFString.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
 
 #import "common.h"
+#import "macros.h"
 
 @implementation OFHTTPRequestFailedException
 + (instancetype)exceptionWithRequest: (OFHTTPRequest*)request
@@ -35,14 +34,7 @@
 
 - init
 {
-	@try {
-		[self doesNotRecognizeSelector: _cmd];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	abort();
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithRequest: (OFHTTPRequest*)request
