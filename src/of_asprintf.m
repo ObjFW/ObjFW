@@ -295,6 +295,9 @@ formatConversionSpecifierState(struct context *ctx)
 
 	switch (ctx->format[ctx->i]) {
 	case '@':
+		if (ctx->lengthModifier != LENGTH_MODIFIER_NONE)
+			return false;
+
 		ctx->subformat[ctx->subformatLen - 1] = 's';
 
 		@try {
@@ -317,6 +320,9 @@ formatConversionSpecifierState(struct context *ctx)
 
 		break;
 	case 'C':
+		if (ctx->lengthModifier != LENGTH_MODIFIER_NONE)
+			return false;
+
 		ctx->subformat[ctx->subformatLen - 1] = 's';
 
 		{
