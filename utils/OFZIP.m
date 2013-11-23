@@ -149,8 +149,8 @@ help(OFStream *stream, bool full, int status)
 			    localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
 
 			[of_stdout writeFormat:
-			    @"%@: %ju (%ju) bytes; %08X; %@; %@\n",
-			    [entry fileName], [entry uncompressedSize],
+			    @"%@: %" PRIu64 @" (%" PRIu64 @") bytes; %08X; %@; "
+			    @"%@\n", [entry fileName], [entry uncompressedSize],
 			    [entry compressedSize], [entry CRC32], date,
 			    [entry fileComment]];
 		} else
