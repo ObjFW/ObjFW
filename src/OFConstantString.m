@@ -28,6 +28,8 @@
 #import "OFInvalidEncodingException.h"
 #import "OFOutOfMemoryException.h"
 
+#import "macros.h"
+
 #if defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
 # import <objc/runtime.h>
 
@@ -50,43 +52,37 @@ struct {
 @implementation OFString_const
 + alloc
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 
 - (void*)allocMemoryWithSize: (size_t)size
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void*)allocMemoryWithSize: (size_t)size
 		       count: (size_t)count
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void*)resizeMemory: (void*)pointer
 		 size: (size_t)size
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void*)resizeMemory: (void*)pointer
 		 size: (size_t)size
 		count: (size_t)count
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)freeMemory: (void*)pointer
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - retain
@@ -110,8 +106,7 @@ struct {
 
 - (void)dealloc
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 
 	/* Get rid of a stupid warning */
 	[super dealloc];
@@ -177,42 +172,36 @@ struct {
 
 + alloc
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void*)allocMemoryWithSize: (size_t)size
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void*)allocMemoryWithSize: (size_t)size
 		       count: (size_t)count
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void*)resizeMemory: (void*)pointer
 		 size: (size_t)size
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void*)resizeMemory: (void*)pointer
 		 size: (size_t)size
 		count: (size_t)count
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)freeMemory: (void*)pointer
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - retain
@@ -236,8 +225,7 @@ struct {
 
 - (void)dealloc
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 
 	/* Get rid of a stupid warning */
 	[super dealloc];

@@ -118,8 +118,7 @@ static struct {
 
 - (void)dealloc
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 
 	/* Get rid of a stupid warning */
 	[super dealloc];
@@ -170,8 +169,7 @@ static struct {
 - (void)setObject: (id)object
 	   forKey: (id)key
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 -   (void)setObject: (id)object
@@ -183,8 +181,7 @@ static struct {
 
 - (void)removeObjectForKey: (id)key
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)removeAllObjects

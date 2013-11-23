@@ -16,7 +16,6 @@
 
 #include "config.h"
 
-#include <stdlib.h>
 #include <unistd.h>
 
 #import "OFStdIOStream.h"
@@ -153,8 +152,7 @@ of_log(OFConstantString *format, ...)
 
 - (void)dealloc
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 
 	/* Get rid of stupid warning */
 	[super dealloc];

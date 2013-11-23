@@ -456,8 +456,7 @@ static struct {
 
 - (void)dealloc
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 
 	/* Get rid of a stupid warning */
 	[super dealloc];
@@ -1231,8 +1230,7 @@ static struct {
 
 - (size_t)length
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding
@@ -1275,8 +1273,7 @@ static struct {
 
 - (of_unichar_t)characterAtIndex: (size_t)index
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)getCharacters: (of_unichar_t*)buffer

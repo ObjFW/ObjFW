@@ -1110,36 +1110,31 @@ void _references_to_categories_of_OFObject(void)
  */
 + (void*)allocMemoryWithSize: (size_t)size
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 + (void*)allocMemoryWithSize: (size_t)size
 		       count: (size_t)count
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 + (void*)resizeMemory: (void*)pointer
 		 size: (size_t)size
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 + (void*)resizeMemory: (void*)pointer
 		 size: (size_t)size
 		count: (size_t)count
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 + (void)freeMemory: (void*)pointer
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 + retain
@@ -1163,8 +1158,7 @@ void _references_to_categories_of_OFObject(void)
 
 + (void)dealloc
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 + copy
@@ -1174,7 +1168,6 @@ void _references_to_categories_of_OFObject(void)
 
 + mutableCopyWithZone: (void*)zone
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 @end

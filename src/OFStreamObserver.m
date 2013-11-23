@@ -18,8 +18,6 @@
 
 #define __NO_EXT_QNX
 
-#include <stdlib.h>
-
 #include <unistd.h>
 
 #include <assert.h>
@@ -299,26 +297,22 @@ enum {
 
 - (void)OF_addFileDescriptorForReading: (int)fd
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)OF_addFileDescriptorForWriting: (int)fd
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)OF_removeFileDescriptorForReading: (int)fd
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)OF_removeFileDescriptorForWriting: (int)fd
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)OF_processQueue
@@ -401,8 +395,7 @@ enum {
 
 - (bool)observeForTimeInterval: (double)timeInterval
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (bool)observeUntilDate: (OFDate*)date

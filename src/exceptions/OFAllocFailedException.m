@@ -16,8 +16,6 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFAllocFailedException.h"
 #import "OFString.h"
 
@@ -26,8 +24,7 @@
 @implementation OFAllocFailedException
 + alloc
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - init
@@ -37,36 +34,31 @@
 
 - (void*)allocMemoryWithSize: (size_t)size
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void*)allocMemoryForNItems: (size_t)nitems
                      withSize: (size_t)size
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void*)resizeMemory: (void*)ptr
 	       toSize: (size_t)size
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void*)resizeMemory: (void*)ptr
 	     toNItems: (size_t)nitems
 	     withSize: (size_t)size
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)freeMemory: (void*)ptr
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - retain
@@ -90,8 +82,7 @@
 
 - (void)dealloc
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 
 	/* Get rid of a stupid warning */
 	[super dealloc];

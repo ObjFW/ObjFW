@@ -16,8 +16,6 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFNull.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
@@ -26,6 +24,7 @@
 #import "OFInvalidArgumentException.h"
 
 #import "autorelease.h"
+#import "macros.h"
 
 static OFNull *null = nil;
 
@@ -119,8 +118,7 @@ static OFNull *null = nil;
 
 - (void)dealloc
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 
 	/* Get rid of a stupid warning */
 	[super dealloc];

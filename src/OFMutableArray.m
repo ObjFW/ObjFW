@@ -151,8 +151,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 
 - (void)dealloc
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 
 	/* Get rid of a stupid warning */
 	[super dealloc];
@@ -219,8 +218,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 - (void)insertObject: (id)object
 	     atIndex: (size_t)index
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)insertObjectsFromArray: (OFArray*)array
@@ -245,8 +243,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 - (void)replaceObjectAtIndex: (size_t)index
 		  withObject: (id)object
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 -    (void)setObject: (id)object
@@ -297,8 +294,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 
 - (void)removeObjectAtIndex: (size_t)index
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)removeObject: (id)object

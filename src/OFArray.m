@@ -106,8 +106,7 @@ static struct {
 
 - (void)dealloc
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 
 	/* Get rid of a stupid warning */
 	[super dealloc];
@@ -227,8 +226,7 @@ static struct {
 
 - (size_t)count
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)getObjects: (id*)buffer
@@ -269,8 +267,7 @@ static struct {
 
 - (id)objectAtIndex: (size_t)index
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (id)objectAtIndexedSubscript: (size_t)index

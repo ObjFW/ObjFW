@@ -16,7 +16,6 @@
 
 #include "config.h"
 
-#include <stdlib.h>
 #include <string.h>
 
 #include <assert.h>
@@ -700,8 +699,7 @@ default_equal(void *value1, void *value2)
 
 - (void*)nextValue
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)reset

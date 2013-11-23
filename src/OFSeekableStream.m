@@ -21,6 +21,8 @@
 
 #import "OFSeekableStream.h"
 
+#import "macros.h"
+
 @implementation OFSeekableStream
 - init
 {
@@ -40,8 +42,7 @@
 - (off_t)lowlevelSeekToOffset: (off_t)offset
 		       whence: (int)whence
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (off_t)seekToOffset: (off_t)offset

@@ -16,35 +16,31 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFSortedList.h"
+
+#import "macros.h"
 
 @implementation OFSortedList
 - (of_list_object_t*)appendObject: (id)object
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (of_list_object_t*)prependObject: (id)object
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (of_list_object_t*)insertObject: (id)object
 		 beforeListObject: (of_list_object_t*)listObject
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (of_list_object_t*)insertObject: (id)object
 		  afterListObject: (of_list_object_t*)listObject
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (of_list_object_t*)insertObject: (id <OFComparing>)object

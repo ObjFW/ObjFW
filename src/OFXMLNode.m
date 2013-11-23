@@ -16,8 +16,6 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFXMLNode.h"
 #import "OFString.h"
 
@@ -31,8 +29,7 @@
 
 - (OFString*)stringValue
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (intmax_t)decimalValue
@@ -70,8 +67,7 @@
 - (OFString*)XMLStringWithIndentation: (unsigned int)indentation
 				level: (unsigned int)level
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (OFString*)description
@@ -81,8 +77,7 @@
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - copy

@@ -132,6 +132,9 @@ extern void objc_setProperty(id, SEL, ptrdiff_t, id, BOOL, signed char);
 #define OF_SETTER(ivar, value, atomic, copy) \
 	objc_setProperty(self, _cmd, OF_IVAR_OFFSET(ivar), value, atomic, copy);
 
+#define OF_UNRECOGNIZED_SELECTOR		\
+	[self doesNotRecognizeSelector: _cmd];	\
+	abort();
 #define OF_INVALID_INIT_METHOD				\
 	@try {						\
 		[self doesNotRecognizeSelector: _cmd];	\

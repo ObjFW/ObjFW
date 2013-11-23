@@ -24,6 +24,7 @@
 #import "OFMutableSet_hashtable.h"
 
 #import "autorelease.h"
+#import "macros.h"
 
 static struct {
 	Class isa;
@@ -97,8 +98,7 @@ static struct {
 
 - (void)dealloc
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 
 	/* Get rid of a stupid warning */
 	[super dealloc];
@@ -137,14 +137,12 @@ static struct {
 
 - (void)addObject: (id)object
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)removeObject: (id)object
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)minusSet: (OFSet*)set

@@ -16,8 +16,6 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #import "OFAutoreleasePool.h"
 #import "OFAutoreleasePool+Private.h"
 
@@ -182,13 +180,11 @@ static OFAutoreleasePool **cache = NULL;
 
 - retain
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - autorelease
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 @end

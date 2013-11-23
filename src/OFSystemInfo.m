@@ -20,8 +20,6 @@
 
 #import "OFSystemInfo.h"
 
-#include <stdlib.h>
-
 #include <unistd.h>
 
 #ifdef __QNX__
@@ -31,6 +29,8 @@
 #ifdef _WIN32
 # include <windows.h>
 #endif
+
+#import "macros.h"
 
 static size_t pageSize;
 static size_t numberOfCPUs;
@@ -64,8 +64,7 @@ static size_t numberOfCPUs;
 
 + alloc
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 + (size_t)pageSize

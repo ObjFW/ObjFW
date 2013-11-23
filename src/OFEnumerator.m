@@ -22,6 +22,7 @@
 #import "OFArray.h"
 
 #import "autorelease.h"
+#import "macros.h"
 
 @implementation OFEnumerator
 - init
@@ -41,8 +42,7 @@
 
 - (id)nextObject
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (OFArray*)allObjects
@@ -63,7 +63,6 @@
 
 - (void)reset
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 @end

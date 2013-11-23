@@ -16,7 +16,6 @@
 
 #include "config.h"
 
-#include <stdlib.h>
 #include <string.h>
 
 #ifndef _WIN32
@@ -438,8 +437,7 @@ extern char **environ;
 #ifndef _WIN32
 	return _readPipe[0];
 #else
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 #endif
 }
 
@@ -448,8 +446,7 @@ extern char **environ;
 #ifndef _WIN32
 	return _writePipe[1];
 #else
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 #endif
 }
 

@@ -78,22 +78,19 @@
 
 - (bool)lowlevelIsAtEndOfStream
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (size_t)lowlevelReadIntoBuffer: (void*)buffer
 			  length: (size_t)length
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)lowlevelWriteBuffer: (const void*)buffer
 		     length: (size_t)length
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - copy
@@ -1533,21 +1530,18 @@
 
 	_blocking = enable;
 #else
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 #endif
 }
 
 - (int)fileDescriptorForReading
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (int)fileDescriptorForWriting
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 #ifdef OF_HAVE_SOCKETS
@@ -1574,8 +1568,7 @@
 
 - (void)close
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (bool)OF_isWaitingForDelimiter

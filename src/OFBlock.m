@@ -386,8 +386,7 @@ _Block_object_dispose(const void *obj_, const int flags_)
 
 + alloc
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - init
@@ -397,36 +396,31 @@ _Block_object_dispose(const void *obj_, const int flags_)
 
 - (void*)allocMemoryWithSize: (size_t)size
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void*)allocMemoryWithSize: (size_t)size
 		       count: (size_t)count
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void*)resizeMemory: (void*)ptr
 		 size: (size_t)size
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void*)resizeMemory: (void*)ptr
 		 size: (size_t)size
 		count: (size_t)count
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)freeMemory: (void*)ptr
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - retain
@@ -467,8 +461,7 @@ _Block_object_dispose(const void *obj_, const int flags_)
 
 - (void)dealloc
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 
 	/* Get rid of a stupid warning */
 	[super dealloc];

@@ -219,8 +219,7 @@ static struct {
 
 - (void)dealloc
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 
 	/* Get rid of a stupid warning */
 	[super dealloc];
@@ -451,8 +450,7 @@ static struct {
 - (void)replaceCharactersInRange: (of_range_t)range
 		      withString: (OFString*)replacement
 {
-	[self doesNotRecognizeSelector: _cmd];
-	abort();
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)replaceOccurrencesOfString: (OFString*)string
