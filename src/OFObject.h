@@ -98,6 +98,12 @@
 # define OF_REQUIRES_SUPER
 #endif
 
+#if __has_attribute(objc_root_class)
+# define OF_ROOT_CLASS __attribute__((objc_root_class))
+#else
+# define OF_ROOT_CLASS
+#endif
+
 #ifdef OF_APPLE_RUNTIME
 # if defined(__x86_64__) || defined(__i386__) || defined(__arm__) || \
     defined(__ppc__)
@@ -382,6 +388,7 @@ typedef struct of_rectangle_t
 /*!
  * @brief The root class for all other classes inside ObjFW.
  */
+OF_ROOT_CLASS
 @interface OFObject <OFObject>
 {
 @public

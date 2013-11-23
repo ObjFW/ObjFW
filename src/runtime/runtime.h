@@ -23,10 +23,20 @@
 # define __has_feature(x) 0
 #endif
 
+#ifndef __has_attribute
+# define __has_attribute(x) 0
+#endif
+
 #if __has_feature(objc_arc)
 # define OBJC_UNSAFE_UNRETAINED __unsafe_unretained
 #else
 # define OBJC_UNSAFE_UNRETAINED
+#endif
+
+#if __has_attribute(objc_root_class)
+# define OBJC_ROOT_CLASS __attribute__((objc_root_class))
+#else
+# define OBJC_ROOT_CLASS
 #endif
 
 typedef struct objc_class* Class;
@@ -134,6 +144,7 @@ struct objc_property_list {
 };
 
 #ifdef __OBJC__
+OBJC_ROOT_CLASS
 @interface Protocol
 {
 @public
@@ -208,5 +219,6 @@ extern id _objc_rootAutorelease(id);
 #endif
 
 #undef OBJC_UNSAFE_UNRETAINED
+#undef OBJC_ROOT_CLASS
 
 #endif
