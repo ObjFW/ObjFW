@@ -52,7 +52,7 @@ Building with LLVM/Clang for ARM
   extra flags in order to enable ARM EHABI compliant exceptions. To do
   so, set `OBJCFLAGS` to this:
 
-    -O2 -g -mllvm -arm-enable-ehabi -mllvm -arm-enable-ehabi-descriptor
+    -O2 -g -mllvm -arm-enable-ehabi -mllvm -arm-enable-ehabi-descriptors
 
   If you are getting errors from the assembler about instructions being
   unavailable for the architecture, you need to set `OBJC` to this:
@@ -67,4 +67,4 @@ Bugs and feature requests
 =========================
 
   If you find any bugs or have feature requests, feel free to send a
-  mail to js-spam@webkeks.org (remove -spam from the address!).
+  mail to js@webkeks.org!
