@@ -178,7 +178,7 @@ help(OFStream *stream, bool full, int status)
 		OFStream *stream;
 		OFFile *output;
 		char buffer[BUFFER_SIZE];
-		off_t written = 0, size = [entry uncompressedSize];
+		uint64_t written = 0, size = [entry uncompressedSize];
 		int_fast8_t percent = -1, newPercent;
 
 		if (!all && ![files containsObject: fileName])

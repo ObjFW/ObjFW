@@ -74,7 +74,7 @@
 	OFFile *_file;
 	OFZIPArchive_LocalFileHeader *_localFileHeader;
 	bool _hasDataDescriptor;
-	size_t _size;
+	uint64_t _size;
 	uint32_t _CRC32;
 	bool _atEndOfStream;
 }
@@ -308,7 +308,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	if ((off_t)_centralDirectoryOffset != _centralDirectoryOffset)
 		@throw [OFOutOfRangeException exception];
 
-	[_file seekToOffset: _centralDirectoryOffset
+	[_file seekToOffset: (off_t)_centralDirectoryOffset
 		     whence: SEEK_SET];
 
 	_entries = [[OFMutableArray alloc] init];
@@ -360,7 +360,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	if ((off_t)offset != offset)
 		@throw [OFOutOfRangeException exception];
 
-	[_file seekToOffset: offset
+	[_file seekToOffset: (off_t)offset
 		     whence: SEEK_SET];
 	localFileHeader = [[[OFZIPArchive_LocalFileHeader alloc]
 	    initWithFile: _file] autorelease];
@@ -574,7 +574,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 			return 0;
 		}
 
-		min = (length < _size ? length : _size);
+		min = (length < _size ? length : (size_t)_size);
 		ret = [_stream readIntoBuffer: buffer
 				       length: min];
 		_size -= ret;
