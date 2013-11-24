@@ -499,7 +499,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param format A string used as format to initialize the OFString
  * @return An initialized OFString
  */
-- initWithFormat: (OFConstantString*)format, ... OF_FORMAT_FUNCTION(1, 2);
+- initWithFormat: (OFConstantString*)format, ...;
 
 /*!
  * @brief Initializes an already allocated OFString with a format string.
