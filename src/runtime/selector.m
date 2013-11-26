@@ -32,6 +32,8 @@
 static struct objc_hashtable *selectors = NULL;
 static uint32_t selectors_cnt = 0;
 static struct objc_sparsearray *selector_names = NULL;
+static void **free_list = NULL;
+static size_t free_list_cnt = 0;
 
 void
 objc_register_selector(struct objc_abi_selector *sel)
@@ -74,7 +76,6 @@ sel_registerName(const char *name)
 		return (SEL)rsel;
 	}
 
-	/* FIXME: Free on objc_exit() */
 	if ((sel = malloc(sizeof(struct objc_abi_selector))) == NULL)
 		OBJC_ERROR("Not enough memory to allocate selector!");
 
@@ -82,6 +83,13 @@ sel_registerName(const char *name)
 		OBJC_ERROR("Not enough memory to allocate selector!");
 
 	sel->types = NULL;
+
+	if ((free_list = realloc(free_list,
+	    sizeof(void*) * (free_list_cnt + 2))) == NULL)
+		OBJC_ERROR("Not enough memory to allocate selector!");
+
+	free_list[free_list_cnt++] = sel;
+	free_list[free_list_cnt++] = (char*)sel->name;
 
 	objc_register_selector(sel);
 
@@ -125,7 +133,18 @@ objc_free_all_selectors(void)
 	objc_hashtable_free(selectors);
 	objc_sparsearray_free(selector_names);
 
+	if (free_list != NULL) {
+		size_t i;
+
+		for (i = 0; i < free_list_cnt; i++)
+			free(free_list[i]);
+
+		free(free_list);
+	}
+
 	selectors = NULL;
 	selectors_cnt = 0;
 	selector_names = NULL;
+	free_list = NULL;
+	free_list_cnt = 0;
 }
