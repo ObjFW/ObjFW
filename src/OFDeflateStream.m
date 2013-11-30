@@ -50,7 +50,7 @@
 #define PROCESS_PAIR		  OF_DEFLATE_STREAM_PROCESS_PAIR
 #define BUFFER_SIZE		  OF_DEFLATE_STREAM_BUFFER_SIZE
 
-#define MAX_BITS    15
+#define MAX_BITS 15
 
 struct huffman_tree {
 	struct huffman_tree *leafs[2];

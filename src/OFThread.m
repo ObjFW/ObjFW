@@ -175,7 +175,12 @@ set_thread_name(OFThread *thread)
 	if (seconds < 0)
 		@throw [OFOutOfRangeException exception];
 
-#if defined(HAVE_NANOSLEEP)
+#if defined(_WIN32)
+	if (seconds * 1000 > UINT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	Sleep((unsigned int)(seconds * 1000));
+#elif defined(HAVE_NANOSLEEP)
 	struct timespec rqtp;
 
 	rqtp.tv_sec = (time_t)seconds;
@@ -185,17 +190,12 @@ set_thread_name(OFThread *thread)
 		@throw [OFOutOfRangeException exception];
 
 	nanosleep(&rqtp, NULL);
-#elif !defined(_WIN32)
+#else
 	if (seconds > UINT_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	sleep((unsigned int)seconds);
 	usleep((useconds_t)lrint((seconds - floor(seconds)) * 1000000));
-#else
-	if (seconds * 1000 > UINT_MAX)
-		@throw [OFOutOfRangeException exception];
-
-	Sleep((unsigned int)(seconds * 1000));
 #endif
 }
 
