@@ -391,7 +391,7 @@ typedef struct of_rectangle_t
 OF_ROOT_CLASS
 @interface OFObject <OFObject>
 {
-@public
+@private
 	Class _isa;
 }
 
