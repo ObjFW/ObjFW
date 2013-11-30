@@ -28,6 +28,11 @@
 
 #import "TestsAppDelegate.h"
 
+#if defined(_WIN32) && defined(STDOUT)
+# undef STDOUT
+# define STDOUT_SIMPLE
+#endif
+
 #ifdef _PSP
 # include <pspmoduleinfo.h>
 # include <pspkernel.h>
