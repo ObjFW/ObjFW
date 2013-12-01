@@ -38,3 +38,4 @@ tests/PARAM.SFO
 tests/objc_sync/objc_sync
 utils/objfw-config
 utils/ofzip
+utils/ofzip.exe
