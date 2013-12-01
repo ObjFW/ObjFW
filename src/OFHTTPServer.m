@@ -54,7 +54,7 @@
 @end
 
 static const char*
-status_code_to_string(short code)
+statusCodeToString(short code)
 {
 	switch (code) {
 	case 100:
@@ -143,7 +143,7 @@ status_code_to_string(short code)
 }
 
 static OF_INLINE OFString*
-normalized_key(OFString *key)
+normalizedKey(OFString *key)
 {
 	char *cString = strdup([key UTF8String]);
 	uint8_t *tmp = (uint8_t*)cString;
@@ -217,7 +217,7 @@ normalized_key(OFString *key)
 			      @"Server: %@\r\n"
 			      @"Date: %@\r\n",
 			      [self protocolVersionString], _statusCode,
-			      status_code_to_string(_statusCode),
+			      statusCodeToString(_statusCode),
 			      [_server name], date];
 
 	keyEnumerator = [_headers keyEnumerator];
@@ -481,7 +481,7 @@ normalized_key(OFString *key)
 	value = [line substringWithRange:
 	    of_range(pos + 1, [line length] - pos - 1)];
 
-	key = normalized_key([key stringByDeletingTrailingWhitespaces]);
+	key = normalizedKey([key stringByDeletingTrailingWhitespaces]);
 	value = [value stringByDeletingLeadingWhitespaces];
 
 	[_headers setObject: value
@@ -555,7 +555,7 @@ normalized_key(OFString *key)
 			      @"Date: %@\r\n"
 			      @"Server: %@\r\n"
 			      @"\r\n",
-			      statusCode, status_code_to_string(statusCode),
+			      statusCode, statusCodeToString(statusCode),
 			      date, [_server name]];
 	[_socket close];
 

@@ -133,7 +133,7 @@ static OFMutex *mutex;
 # endif
 #endif
 
-static int month_to_day_of_year[12] = {
+static int monthToDayOfYear[12] = {
 	0,
 	31,
 	31 + 28,
@@ -261,7 +261,7 @@ static int month_to_day_of_year[12] = {
 		/* Months */
 		if (tm.tm_mon < 0 || tm.tm_mon > 12)
 			@throw [OFInvalidFormatException exception];
-		_seconds += month_to_day_of_year[tm.tm_mon] * 86400;
+		_seconds += monthToDayOfYear[tm.tm_mon] * 86400;
 		/* Days */
 		_seconds += (tm.tm_mday - 1) * 86400;
 		/* Hours */

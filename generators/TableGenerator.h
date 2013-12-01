@@ -20,18 +20,18 @@
 
 @interface TableGenerator: OFObject
 {
-	of_unichar_t uppercaseTable[0x110000];
-	of_unichar_t lowercaseTable[0x110000];
-	of_unichar_t titlecaseTable[0x110000];
-	of_unichar_t casefoldingTable[0x110000];
-	char uppercaseTableUsed[0x1100];
-	char lowercaseTableUsed[0x1100];
-	char titlecaseTableUsed[0x1100];
-	char casefoldingTableUsed[0x1100];
-	size_t uppercaseTableSize;
-	size_t lowercaseTableSize;
-	size_t titlecaseTableSize;
-	size_t casefoldingTableSize;
+	of_unichar_t _uppercaseTable[0x110000];
+	of_unichar_t _lowercaseTable[0x110000];
+	of_unichar_t _titlecaseTable[0x110000];
+	of_unichar_t _casefoldingTable[0x110000];
+	char _uppercaseTableUsed[0x1100];
+	char _lowercaseTableUsed[0x1100];
+	char _titlecaseTableUsed[0x1100];
+	char _casefoldingTableUsed[0x1100];
+	size_t _uppercaseTableSize;
+	size_t _lowercaseTableSize;
+	size_t _titlecaseTableSize;
+	size_t _casefoldingTableSize;
 }
 
 - (void)parseUnicodeData;

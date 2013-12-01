@@ -18,35 +18,35 @@
 
 #import "OFObject.h"
 
-static SEL cxx_construct = NULL;
-static SEL cxx_destruct = NULL;
+static SEL constructSel = NULL;
+static SEL destructSel = NULL;
 
 static bool
-call_ctors(Class cls, id obj)
+callConstructors(Class cls, id obj)
 {
 	Class super = class_getSuperclass(cls);
-	id (*ctor)(id, SEL);
+	id (*construct)(id, SEL);
 	id (*last)(id, SEL);
 
 	if (super != nil)
-		if (!call_ctors(super, obj))
+		if (!callConstructors(super, obj))
 			return false;
 
-	if (cxx_construct == NULL)
-		cxx_construct = sel_registerName(".cxx_construct");
+	if (constructSel == NULL)
+		constructSel = sel_registerName(".cxx_construct");
 
-	if (!class_respondsToSelector(cls, cxx_construct))
+	if (!class_respondsToSelector(cls, constructSel))
 		return true;
 
-	ctor = (id(*)(id, SEL))
-	    class_getMethodImplementation(cls, cxx_construct);
+	construct = (id(*)(id, SEL))
+	    class_getMethodImplementation(cls, constructSel);
 	last = (id(*)(id, SEL))
-	    class_getMethodImplementation(super, cxx_construct);
+	    class_getMethodImplementation(super, constructSel);
 
-	if (ctor == last)
+	if (construct == last)
 		return true;
 
-	return (ctor(obj, cxx_construct) != nil);
+	return (construct(obj, constructSel) != nil);
 }
 
 id
@@ -59,7 +59,7 @@ objc_constructInstance(Class cls, void *bytes)
 
 	object_setClass(obj, cls);
 
-	if (!call_ctors(cls, obj))
+	if (!callConstructors(cls, obj))
 		return nil;
 
 	return obj;
@@ -71,20 +71,20 @@ objc_destructInstance(id obj)
 	Class cls;
 	void (*last)(id, SEL) = NULL;
 
-	if (cxx_destruct == NULL)
-		cxx_destruct = sel_registerName(".cxx_destruct");
+	if (destructSel == NULL)
+		destructSel = sel_registerName(".cxx_destruct");
 
 	for (cls = object_getClass(obj); cls != Nil;
 	    cls = class_getSuperclass(cls)) {
-		void (*dtor)(id, SEL);
+		void (*destruct)(id, SEL);
 
-		if (class_respondsToSelector(cls, cxx_destruct)) {
-			if ((dtor = (void(*)(id, SEL))
+		if (class_respondsToSelector(cls, destructSel)) {
+			if ((destruct = (void(*)(id, SEL))
 			    class_getMethodImplementation(cls,
-			    cxx_destruct)) != last)
-				dtor(obj, cxx_destruct);
+			    destructSel)) != last)
+				destruct(obj, destructSel);
 
-			last = dtor;
+			last = destruct;
 		} else
 			break;
 	}

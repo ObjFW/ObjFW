@@ -28,7 +28,7 @@
 int _OFString_XMLUnescaping_reference;
 
 static OF_INLINE OFString*
-parse_numeric_entity(const char *entity, size_t length)
+parseNumericEntity(const char *entity, size_t length)
 {
 	of_unichar_t c;
 	size_t i;
@@ -135,7 +135,7 @@ parse_numeric_entity(const char *entity, size_t length)
 				OFString *tmp;
 
 				pool = objc_autoreleasePoolPush();
-				tmp = parse_numeric_entity(entity,
+				tmp = parseNumericEntity(entity,
 				    entityLength);
 
 				if (tmp == nil)
@@ -236,7 +236,7 @@ parse_numeric_entity(const char *entity, size_t length)
 				OFString *tmp;
 
 				pool = objc_autoreleasePoolPush();
-				tmp = parse_numeric_entity(entity,
+				tmp = parseNumericEntity(entity,
 				    entityLength);
 
 				if (tmp == nil)

@@ -30,23 +30,23 @@
 
 int _OFDataArray_MessagePackValue_reference;
 
-static size_t parse_object(const uint8_t*, size_t, id*);
+static size_t parseObject(const uint8_t*, size_t, id*);
 
 static uint16_t
-read_uint16(const uint8_t *buffer)
+readUInt16(const uint8_t *buffer)
 {
 	return ((uint16_t)buffer[0] << 8) | buffer[1];
 }
 
 static uint32_t
-read_uint32(const uint8_t *buffer)
+readUInt32(const uint8_t *buffer)
 {
 	return ((uint32_t)buffer[0] << 24) | ((uint32_t)buffer[1] << 16) |
 	    ((uint32_t)buffer[2] << 8) | buffer[3];
 }
 
 static uint64_t
-read_uint64(const uint8_t *buffer)
+readUInt64(const uint8_t *buffer)
 {
 	return ((uint64_t)buffer[0] << 56) | ((uint64_t)buffer[1] << 48) |
 	    ((uint64_t)buffer[2] << 40) | ((uint64_t)buffer[3] << 32) |
@@ -55,7 +55,7 @@ read_uint64(const uint8_t *buffer)
 }
 
 static size_t
-parse_array(const uint8_t *buffer, size_t length, id *object, size_t count)
+parseArray(const uint8_t *buffer, size_t length, id *object, size_t count)
 {
 	void *pool;
 	size_t i, pos;
@@ -74,7 +74,7 @@ parse_array(const uint8_t *buffer, size_t length, id *object, size_t count)
 
 		pool = objc_autoreleasePoolPush();
 
-		childLength = parse_object(buffer + pos, length - pos, &child);
+		childLength = parseObject(buffer + pos, length - pos, &child);
 		if (childLength == 0 || child == nil) {
 			objc_autoreleasePoolPop(pool);
 
@@ -92,7 +92,7 @@ parse_array(const uint8_t *buffer, size_t length, id *object, size_t count)
 }
 
 static size_t
-parse_table(const uint8_t *buffer, size_t length, id *object, size_t count)
+parseTable(const uint8_t *buffer, size_t length, id *object, size_t count)
 {
 	void *pool;
 	size_t i, pos;
@@ -111,7 +111,7 @@ parse_table(const uint8_t *buffer, size_t length, id *object, size_t count)
 
 		pool = objc_autoreleasePoolPush();
 
-		keyLength = parse_object(buffer + pos, length - pos, &key);
+		keyLength = parseObject(buffer + pos, length - pos, &key);
 		if (keyLength == 0 || key == nil) {
 			objc_autoreleasePoolPop(pool);
 
@@ -120,7 +120,7 @@ parse_table(const uint8_t *buffer, size_t length, id *object, size_t count)
 		}
 		pos += keyLength;
 
-		valueLength = parse_object(buffer + pos, length - pos, &value);
+		valueLength = parseObject(buffer + pos, length - pos, &value);
 		if (valueLength == 0 || value == nil) {
 			objc_autoreleasePoolPop(pool);
 
@@ -139,7 +139,7 @@ parse_table(const uint8_t *buffer, size_t length, id *object, size_t count)
 }
 
 static size_t
-parse_object(const uint8_t *buffer, size_t length, id *object)
+parseObject(const uint8_t *buffer, size_t length, id *object)
 {
 	size_t i, count;
 	int8_t type;
@@ -175,12 +175,12 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 
 	/* fixarray */
 	if ((buffer[0] & 0xF0) == 0x90)
-		return parse_array(buffer + 1, length - 1, object,
+		return parseArray(buffer + 1, length - 1, object,
 		    buffer[0] & 0xF) + 1;
 
 	/* fixmap */
 	if ((buffer[0] & 0xF0) == 0x80)
-		return parse_table(buffer + 1, length - 1, object,
+		return parseTable(buffer + 1, length - 1, object,
 		    buffer[0] & 0xF) + 1;
 
 	/* Prefix byte */
@@ -196,19 +196,19 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 		if (length < 3)
 			goto error;
 
-		*object = [OFNumber numberWithUInt16: read_uint16(buffer + 1)];
+		*object = [OFNumber numberWithUInt16: readUInt16(buffer + 1)];
 		return 3;
 	case 0xCE: /* uint 32 */
 		if (length < 5)
 			goto error;
 
-		*object = [OFNumber numberWithUInt32: read_uint32(buffer + 1)];
+		*object = [OFNumber numberWithUInt32: readUInt32(buffer + 1)];
 		return 5;
 	case 0xCF: /* uint 64 */
 		if (length < 9)
 			goto error;
 
-		*object = [OFNumber numberWithUInt64: read_uint64(buffer + 1)];
+		*object = [OFNumber numberWithUInt64: readUInt64(buffer + 1)];
 		return 9;
 	/* Signed integers */
 	case 0xD0: /* int 8 */
@@ -221,19 +221,19 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 		if (length < 3)
 			goto error;
 
-		*object = [OFNumber numberWithInt16: read_uint16(buffer + 1)];
+		*object = [OFNumber numberWithInt16: readUInt16(buffer + 1)];
 		return 3;
 	case 0xD2: /* int 32 */
 		if (length < 5)
 			goto error;
 
-		*object = [OFNumber numberWithInt32: read_uint32(buffer + 1)];
+		*object = [OFNumber numberWithInt32: readUInt32(buffer + 1)];
 		return 5;
 	case 0xD3: /* int 64 */
 		if (length < 9)
 			goto error;
 
-		*object = [OFNumber numberWithInt64: read_uint64(buffer + 1)];
+		*object = [OFNumber numberWithInt64: readUInt64(buffer + 1)];
 		return 9;
 	/* Floating point */
 	case 0xCA:; /* float 32 */
@@ -296,7 +296,7 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 		if (length < 3)
 			goto error;
 
-		count = read_uint16(buffer + 1);
+		count = readUInt16(buffer + 1);
 
 		if (length < count + 3)
 			goto error;
@@ -310,7 +310,7 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 		if (length < 5)
 			goto error;
 
-		count = read_uint32(buffer + 1);
+		count = readUInt32(buffer + 1);
 
 		if (length < count + 5)
 			goto error;
@@ -349,7 +349,7 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 		if (length < 4)
 			goto error;
 
-		count = read_uint16(buffer + 1);
+		count = readUInt16(buffer + 1);
 
 		if (length < count + 4)
 			goto error;
@@ -373,7 +373,7 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 		if (length < 6)
 			goto error;
 
-		count = read_uint32(buffer + 1);
+		count = readUInt32(buffer + 1);
 
 		if (length < count + 6)
 			goto error;
@@ -505,7 +505,7 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 		if (length < 3)
 			goto error;
 
-		count = read_uint16(buffer + 1);
+		count = readUInt16(buffer + 1);
 
 		if (length < count + 3)
 			goto error;
@@ -518,7 +518,7 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 		if (length < 5)
 			goto error;
 
-		count = read_uint32(buffer + 1);
+		count = readUInt32(buffer + 1);
 
 		if (length < count + 5)
 			goto error;
@@ -532,27 +532,27 @@ parse_object(const uint8_t *buffer, size_t length, id *object)
 		if (length < 3)
 			goto error;
 
-		return parse_array(buffer + 3, length - 3, object,
-		    read_uint16(buffer + 1)) + 3;
+		return parseArray(buffer + 3, length - 3, object,
+		    readUInt16(buffer + 1)) + 3;
 	case 0xDD: /* array 32 */
 		if (length < 5)
 			goto error;
 
-		return parse_array(buffer + 5, length - 5, object,
-		    read_uint32(buffer + 1)) + 5;
+		return parseArray(buffer + 5, length - 5, object,
+		    readUInt32(buffer + 1)) + 5;
 	/* Maps */
 	case 0xDE: /* map 16 */
 		if (length < 3)
 			goto error;
 
-		return parse_table(buffer + 3, length - 3, object,
-		    read_uint16(buffer + 1)) + 3;
+		return parseTable(buffer + 3, length - 3, object,
+		    readUInt16(buffer + 1)) + 3;
 	case 0xDF: /* map 32 */
 		if (length < 5)
 			goto error;
 
-		return parse_table(buffer + 5, length - 5, object,
-		    read_uint32(buffer + 1)) + 5;
+		return parseTable(buffer + 5, length - 5, object,
+		    readUInt32(buffer + 1)) + 5;
 	}
 
 error:
@@ -566,7 +566,7 @@ error:
 	size_t count = [self count];
 	id object;
 
-	if (parse_object([self items], count, &object) != count ||
+	if (parseObject([self items], count, &object) != count ||
 	    object == nil)
 		@throw [OFInvalidFormatException exception];
 

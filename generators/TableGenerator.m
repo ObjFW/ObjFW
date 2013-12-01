@@ -46,25 +46,29 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 {
 	self = [super init];
 
-	uppercaseTableSize   = SIZE_MAX;
-	lowercaseTableSize   = SIZE_MAX;
-	titlecaseTableSize   = SIZE_MAX;
-	casefoldingTableSize = SIZE_MAX;
+	_uppercaseTableSize   = SIZE_MAX;
+	_lowercaseTableSize   = SIZE_MAX;
+	_titlecaseTableSize   = SIZE_MAX;
+	_casefoldingTableSize = SIZE_MAX;
 
 	return self;
 }
 
 - (void)applicationDidFinishLaunching
 {
+	OFString *path;
 	[self parseUnicodeData];
 	[self parseCaseFolding];
 
 	[of_stdout writeString: @"Writing files..."];
 
-	[self writeTablesToFile: [OFString stringWithPath:
+	path = [OFString pathWithComponents: [OFArray arrayWithObjects:
 	    OF_PATH_PARENT_DIRECTORY, @"src", @"unicode.m", nil]];
-	[self writeHeaderToFile: [OFString stringWithPath:
+	[self writeTablesToFile: path];
+
+	path = [OFString pathWithComponents: [OFArray arrayWithObjects:
 	    OF_PATH_PARENT_DIRECTORY, @"src", @"unicode.h", nil]];
+	[self writeHeaderToFile: path];
 
 	[of_stdout writeLine: @" done"];
 
@@ -105,11 +109,11 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		splitObjects = [split objects];
 
 		codep = (of_unichar_t)[splitObjects[0] hexadecimalValue];
-		uppercaseTable[codep] =
+		_uppercaseTable[codep] =
 		    (of_unichar_t)[splitObjects[12] hexadecimalValue];
-		lowercaseTable[codep] =
+		_lowercaseTable[codep] =
 		    (of_unichar_t)[splitObjects[13] hexadecimalValue];
-		titlecaseTable[codep] =
+		_titlecaseTable[codep] =
 		    (of_unichar_t)[splitObjects[14] hexadecimalValue];
 
 		objc_autoreleasePoolPop(pool2);
@@ -158,7 +162,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 			continue;
 
 		codep = (of_unichar_t)[splitObjects[0] hexadecimalValue];
-		casefoldingTable[codep] =
+		_casefoldingTable[codep] =
 		    (of_unichar_t)[splitObjects[2] hexadecimalValue];
 
 		objc_autoreleasePoolPop(pool2);
@@ -180,17 +184,17 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	    @"#include \"config.h\"\n"
 	    @"\n"
 	    @"#import \"OFString.h\"\n\n"
-	    @"static const of_unichar_t nop_page[0x100] = {};\n\n"];
+	    @"static const of_unichar_t emptyPage[0x100] = {};\n\n"];
 
-	/* Write uppercase_page_%u */
+	/* Write uppercasePage%u */
 	for (i = 0; i < 0x110000; i += 0x100) {
 		bool isEmpty = true;
 
 		for (j = i; j < i + 0x100; j++) {
-			if (uppercaseTable[j] != 0) {
+			if (_uppercaseTable[j] != 0) {
 				isEmpty = false;
-				uppercaseTableSize = i >> 8;
-				uppercaseTableUsed[uppercaseTableSize] = 1;
+				_uppercaseTableSize = i >> 8;
+				_uppercaseTableUsed[_uppercaseTableSize] = 1;
 				break;
 			}
 		}
@@ -200,19 +204,19 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 			[file writeString: [OFString stringWithFormat:
 			    @"static const of_unichar_t "
-			    @"uppercase_page_%u[0x100] = {\n", i >> 8]];
+			    @"uppercasePage%u[0x100] = {\n", i >> 8]];
 
 			for (j = i; j < i + 0x100; j += 8)
 				[file writeString: [OFString stringWithFormat:
 				    @"\t%u, %u, %u, %u, %u, %u, %u, %u,\n",
-				    uppercaseTable[j],
-				    uppercaseTable[j + 1],
-				    uppercaseTable[j + 2],
-				    uppercaseTable[j + 3],
-				    uppercaseTable[j + 4],
-				    uppercaseTable[j + 5],
-				    uppercaseTable[j + 6],
-				    uppercaseTable[j + 7]]];
+				    _uppercaseTable[j],
+				    _uppercaseTable[j + 1],
+				    _uppercaseTable[j + 2],
+				    _uppercaseTable[j + 3],
+				    _uppercaseTable[j + 4],
+				    _uppercaseTable[j + 5],
+				    _uppercaseTable[j + 6],
+				    _uppercaseTable[j + 7]]];
 
 			[file writeString: @"};\n\n"];
 
@@ -220,15 +224,15 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		}
 	}
 
-	/* Write lowercase_page_%u */
+	/* Write lowercasePage%u */
 	for (i = 0; i < 0x110000; i += 0x100) {
 		bool isEmpty = true;
 
 		for (j = i; j < i + 0x100; j++) {
-			if (lowercaseTable[j] != 0) {
+			if (_lowercaseTable[j] != 0) {
 				isEmpty = false;
-				lowercaseTableSize = i >> 8;
-				lowercaseTableUsed[lowercaseTableSize] = 1;
+				_lowercaseTableSize = i >> 8;
+				_lowercaseTableUsed[_lowercaseTableSize] = 1;
 				break;
 			}
 		}
@@ -238,19 +242,19 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 			[file writeString: [OFString stringWithFormat:
 			    @"static const of_unichar_t "
-			    @"lowercase_page_%u[0x100] = {\n", i >> 8]];
+			    @"lowercasePage%u[0x100] = {\n", i >> 8]];
 
 			for (j = i; j < i + 0x100; j += 8)
 				[file writeString: [OFString stringWithFormat:
 				    @"\t%u, %u, %u, %u, %u, %u, %u, %u,\n",
-				    lowercaseTable[j],
-				    lowercaseTable[j + 1],
-				    lowercaseTable[j + 2],
-				    lowercaseTable[j + 3],
-				    lowercaseTable[j + 4],
-				    lowercaseTable[j + 5],
-				    lowercaseTable[j + 6],
-				    lowercaseTable[j + 7]]];
+				    _lowercaseTable[j],
+				    _lowercaseTable[j + 1],
+				    _lowercaseTable[j + 2],
+				    _lowercaseTable[j + 3],
+				    _lowercaseTable[j + 4],
+				    _lowercaseTable[j + 5],
+				    _lowercaseTable[j + 6],
+				    _lowercaseTable[j + 7]]];
 
 			[file writeString: @"};\n\n"];
 
@@ -258,17 +262,17 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		}
 	}
 
-	/* Write titlecase_page_%u if it does NOT match uppercase_page_%u */
+	/* Write titlecasePage%u if it does NOT match uppercasePage%u */
 	for (i = 0; i < 0x110000; i += 0x100) {
 		bool isEmpty = true;
 
 		for (j = i; j < i + 0x100; j++) {
-			if (titlecaseTable[j] != 0) {
-				isEmpty = !memcmp(uppercaseTable + i,
-				    titlecaseTable + i,
+			if (_titlecaseTable[j] != 0) {
+				isEmpty = !memcmp(_uppercaseTable + i,
+				    _titlecaseTable + i,
 				    256 * sizeof(of_unichar_t));
-				titlecaseTableSize = i >> 8;
-				titlecaseTableUsed[titlecaseTableSize] =
+				_titlecaseTableSize = i >> 8;
+				_titlecaseTableUsed[_titlecaseTableSize] =
 				    (isEmpty ? 2 : 1);
 				break;
 			}
@@ -279,19 +283,19 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 			[file writeString: [OFString stringWithFormat:
 			    @"static const of_unichar_t "
-			    @"titlecase_page_%u[0x100] = {\n", i >> 8]];
+			    @"titlecasePage%u[0x100] = {\n", i >> 8]];
 
 			for (j = i; j < i + 0x100; j += 8)
 				[file writeString: [OFString stringWithFormat:
 				    @"\t%u, %u, %u, %u, %u, %u, %u, %u,\n",
-				    titlecaseTable[j],
-				    titlecaseTable[j + 1],
-				    titlecaseTable[j + 2],
-				    titlecaseTable[j + 3],
-				    titlecaseTable[j + 4],
-				    titlecaseTable[j + 5],
-				    titlecaseTable[j + 6],
-				    titlecaseTable[j + 7]]];
+				    _titlecaseTable[j],
+				    _titlecaseTable[j + 1],
+				    _titlecaseTable[j + 2],
+				    _titlecaseTable[j + 3],
+				    _titlecaseTable[j + 4],
+				    _titlecaseTable[j + 5],
+				    _titlecaseTable[j + 6],
+				    _titlecaseTable[j + 7]]];
 
 			[file writeString: @"};\n\n"];
 
@@ -299,17 +303,17 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		}
 	}
 
-	/* Write casefolding_page_%u if it does NOT match lowercase_page_%u */
+	/* Write casefoldingPage%u if it does NOT match lowercasePage%u */
 	for (i = 0; i < 0x110000; i += 0x100) {
 		bool isEmpty = true;
 
 		for (j = i; j < i + 0x100; j++) {
-			if (casefoldingTable[j] != 0) {
-				isEmpty = !memcmp(lowercaseTable + i,
-				    casefoldingTable + i,
+			if (_casefoldingTable[j] != 0) {
+				isEmpty = !memcmp(_lowercaseTable + i,
+				    _casefoldingTable + i,
 				    256 * sizeof(of_unichar_t));
-				casefoldingTableSize = i >> 8;
-				casefoldingTableUsed[casefoldingTableSize] =
+				_casefoldingTableSize = i >> 8;
+				_casefoldingTableUsed[_casefoldingTableSize] =
 				    (isEmpty ? 2 : 1);
 				break;
 			}
@@ -320,19 +324,19 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 			[file writeString: [OFString stringWithFormat:
 			    @"static const of_unichar_t "
-			    @"casefolding_page_%u[0x100] = {\n", i >> 8]];
+			    @"casefoldingPage%u[0x100] = {\n", i >> 8]];
 
 			for (j = i; j < i + 0x100; j += 8)
 				[file writeString: [OFString stringWithFormat:
 				    @"\t%u, %u, %u, %u, %u, %u, %u, %u,\n",
-				    casefoldingTable[j],
-				    casefoldingTable[j + 1],
-				    casefoldingTable[j + 2],
-				    casefoldingTable[j + 3],
-				    casefoldingTable[j + 4],
-				    casefoldingTable[j + 5],
-				    casefoldingTable[j + 6],
-				    casefoldingTable[j + 7]]];
+				    _casefoldingTable[j],
+				    _casefoldingTable[j + 1],
+				    _casefoldingTable[j + 2],
+				    _casefoldingTable[j + 3],
+				    _casefoldingTable[j + 4],
+				    _casefoldingTable[j + 5],
+				    _casefoldingTable[j + 6],
+				    _casefoldingTable[j + 7]]];
 
 			[file writeString: @"};\n\n"];
 
@@ -344,24 +348,24 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	 * Those are currently set to the last index.
 	 * But from now on, we need the size.
 	 */
-	uppercaseTableSize++;
-	lowercaseTableSize++;
-	titlecaseTableSize++;
-	casefoldingTableSize++;
+	_uppercaseTableSize++;
+	_lowercaseTableSize++;
+	_titlecaseTableSize++;
+	_casefoldingTableSize++;
 
 	/* Write of_unicode_uppercase_table */
 	[file writeString: [OFString stringWithFormat:
 	    @"const of_unichar_t* const of_unicode_uppercase_table[0x%X] = "
-	    @"{\n\t", uppercaseTableSize]];
+	    @"{\n\t", _uppercaseTableSize]];
 
-	for (i = 0; i < uppercaseTableSize; i++) {
-		if (uppercaseTableUsed[i]) {
+	for (i = 0; i < _uppercaseTableSize; i++) {
+		if (_uppercaseTableUsed[i]) {
 			[file writeString: [OFString stringWithFormat:
-			    @"uppercase_page_%u", i]];
+			    @"uppercasePage%u", i]];
 		} else
-			[file writeString: @"nop_page"];
+			[file writeString: @"emptyPage"];
 
-		if (i + 1 < uppercaseTableSize) {
+		if (i + 1 < _uppercaseTableSize) {
 			if ((i + 1) % 4 == 0)
 				[file writeString: @",\n\t"];
 			else
@@ -374,16 +378,16 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	/* Write of_unicode_lowercase_table */
 	[file writeString: [OFString stringWithFormat:
 	    @"const of_unichar_t* const of_unicode_lowercase_table[0x%X] = "
-	    @"{\n\t", lowercaseTableSize]];
+	    @"{\n\t", _lowercaseTableSize]];
 
-	for (i = 0; i < lowercaseTableSize; i++) {
-		if (lowercaseTableUsed[i]) {
+	for (i = 0; i < _lowercaseTableSize; i++) {
+		if (_lowercaseTableUsed[i]) {
 			[file writeString: [OFString stringWithFormat:
-			    @"lowercase_page_%u", i]];
+			    @"lowercasePage%u", i]];
 		} else
-			[file writeString: @"nop_page"];
+			[file writeString: @"emptyPage"];
 
-		if (i + 1 < lowercaseTableSize) {
+		if (i + 1 < _lowercaseTableSize) {
 			if ((i + 1) % 4 == 0)
 				[file writeString: @",\n\t"];
 			else
@@ -396,19 +400,19 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	/* Write of_unicode_titlecase_table */
 	[file writeString: [OFString stringWithFormat:
 	    @"const of_unichar_t* const of_unicode_titlecase_table[0x%X] = {"
-	    @"\n\t", titlecaseTableSize]];
+	    @"\n\t", _titlecaseTableSize]];
 
-	for (i = 0; i < titlecaseTableSize; i++) {
-		if (titlecaseTableUsed[i] == 1) {
+	for (i = 0; i < _titlecaseTableSize; i++) {
+		if (_titlecaseTableUsed[i] == 1) {
 			[file writeString: [OFString stringWithFormat:
-			    @"titlecase_page_%u", i]];
-		} else if (titlecaseTableUsed[i] == 2) {
+			    @"titlecasePage%u", i]];
+		} else if (_titlecaseTableUsed[i] == 2) {
 			[file writeString: [OFString stringWithFormat:
-			    @"uppercase_page_%u", i]];
+			    @"uppercasePage%u", i]];
 		} else
-			[file writeString: @"nop_page"];
+			[file writeString: @"emptyPage"];
 
-		if (i + 1 < titlecaseTableSize) {
+		if (i + 1 < _titlecaseTableSize) {
 			if ((i + 1) % 4 == 0)
 				[file writeString: @",\n\t"];
 			else
@@ -421,19 +425,19 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	/* Write of_unicode_casefolding_table */
 	[file writeString: [OFString stringWithFormat:
 	    @"const of_unichar_t* const of_unicode_casefolding_table[0x%X] = "
-	    @"{\n\t", casefoldingTableSize]];
+	    @"{\n\t", _casefoldingTableSize]];
 
-	for (i = 0; i < casefoldingTableSize; i++) {
-		if (casefoldingTableUsed[i] == 1) {
+	for (i = 0; i < _casefoldingTableSize; i++) {
+		if (_casefoldingTableUsed[i] == 1) {
 			[file writeString: [OFString stringWithFormat:
-			    @"casefolding_page_%u", i]];
-		} else if (casefoldingTableUsed[i] == 2) {
+			    @"casefoldingPage%u", i]];
+		} else if (_casefoldingTableUsed[i] == 2) {
 			[file writeString: [OFString stringWithFormat:
-			    @"lowercase_page_%u", i]];
+			    @"lowercasePage%u", i]];
 		} else
-			[file writeString: @"nop_page"];
+			[file writeString: @"emptyPage"];
 
-		if (i + 1 < casefoldingTableSize) {
+		if (i + 1 < _casefoldingTableSize) {
 			if ((i + 1) % 3 == 0)
 				[file writeString: @",\n\t"];
 			else
@@ -460,8 +464,8 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	    @"#define OF_UNICODE_LOWERCASE_TABLE_SIZE 0x%X\n"
 	    @"#define OF_UNICODE_TITLECASE_TABLE_SIZE 0x%X\n"
 	    @"#define OF_UNICODE_CASEFOLDING_TABLE_SIZE 0x%X\n\n",
-	    uppercaseTableSize, lowercaseTableSize, titlecaseTableSize,
-	    casefoldingTableSize]];
+	    _uppercaseTableSize, _lowercaseTableSize, _titlecaseTableSize,
+	    _casefoldingTableSize]];
 
 	[file writeString:
 	    @"#ifdef __cplusplus\n"

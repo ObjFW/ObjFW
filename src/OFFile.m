@@ -108,7 +108,7 @@ static of_mutex_t mutex;
 #endif
 
 static int
-parse_mode(const char *mode)
+parseMode(const char *mode)
 {
 	if (!strcmp(mode, "r"))
 		return O_RDONLY;
@@ -702,7 +702,7 @@ parse_mode(const char *mode)
 	@try {
 		int flags;
 
-		if ((flags = parse_mode([mode UTF8String])) == -1)
+		if ((flags = parseMode([mode UTF8String])) == -1)
 			@throw [OFInvalidArgumentException exception];
 
 #ifndef _WIN32

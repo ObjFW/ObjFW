@@ -63,7 +63,7 @@ extern char **environ;
 static OFApplication *app = nil;
 
 static void
-atexit_handler(void)
+atexitHandler(void)
 {
 	id <OFApplicationDelegate> delegate = [app delegate];
 
@@ -180,7 +180,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 		environment = [[OFMutableDictionary alloc] init];
 
-		atexit(atexit_handler);
+		atexit(atexitHandler);
 #if defined(_WIN32)
 		env = GetEnvironmentStringsW();
 

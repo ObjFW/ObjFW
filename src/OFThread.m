@@ -78,7 +78,7 @@ static of_tlskey_t threadSelfKey;
 static OFThread *mainThread;
 
 static id
-call_main(id object)
+callMain(id object)
 {
 	OFThread *thread = (OFThread*)object;
 
@@ -112,7 +112,7 @@ call_main(id object)
 }
 
 static void
-set_thread_name(OFThread *thread)
+setThreadName(OFThread *thread)
 {
 # ifdef __HAIKU__
 	OFString *name = thread->_name;
@@ -302,12 +302,12 @@ set_thread_name(OFThread *thread)
 
 	_running = OF_THREAD_RUNNING;
 
-	if (!of_thread_new(&_thread, call_main, self)) {
+	if (!of_thread_new(&_thread, callMain, self)) {
 		[self release];
 		@throw [OFThreadStartFailedException exceptionWithThread: self];
 	}
 
-	set_thread_name(self);
+	setThreadName(self);
 }
 
 - (id)join
@@ -354,7 +354,7 @@ set_thread_name(OFThread *thread)
 	OF_SETTER(_name, name, true, 1)
 
 	if (_running == OF_THREAD_RUNNING)
-		set_thread_name(self);
+		setThreadName(self);
 }
 
 - (void)dealloc

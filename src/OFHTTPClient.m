@@ -48,7 +48,7 @@
 #import "macros.h"
 
 static OF_INLINE void
-normalize_key(char *str_)
+normalizeKey(char *str_)
 {
 	uint8_t *str = (uint8_t*)str_;
 	bool firstLetter = true;
@@ -493,7 +493,7 @@ normalize_key(char *str_)
 
 		memcpy(keyC, lineC, tmp - lineC);
 		keyC[tmp - lineC] = '\0';
-		normalize_key(keyC);
+		normalizeKey(keyC);
 
 		@try {
 			key = [OFString stringWithUTF8StringNoCopy: keyC

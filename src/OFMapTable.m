@@ -39,24 +39,24 @@ struct of_map_table_bucket {
 static struct of_map_table_bucket deleted = {};
 
 static void*
-default_retain(void *value)
+defaultRetain(void *value)
 {
 	return value;
 }
 
 static void
-default_release(void *value)
+defaultRelease(void *value)
 {
 }
 
 static uint32_t
-default_hash(void *value)
+defaultHash(void *value)
 {
 	return (uint32_t)(uintptr_t)value;
 }
 
 static bool
-default_equal(void *value1, void *value2)
+defaultEqual(void *value1, void *value2)
 {
 	return (value1 == value2);
 }
@@ -128,15 +128,15 @@ default_equal(void *value1, void *value2)
 	if (var == NULL)	\
 		var = value;
 
-		SET_DEFAULT(_keyFunctions.retain, default_retain);
-		SET_DEFAULT(_keyFunctions.release, default_release);
-		SET_DEFAULT(_keyFunctions.hash, default_hash);
-		SET_DEFAULT(_keyFunctions.equal, default_equal);
+		SET_DEFAULT(_keyFunctions.retain, defaultRetain);
+		SET_DEFAULT(_keyFunctions.release, defaultRelease);
+		SET_DEFAULT(_keyFunctions.hash, defaultHash);
+		SET_DEFAULT(_keyFunctions.equal, defaultEqual);
 
-		SET_DEFAULT(_valueFunctions.retain, default_retain);
-		SET_DEFAULT(_valueFunctions.release, default_release);
-		SET_DEFAULT(_valueFunctions.hash, default_hash);
-		SET_DEFAULT(_valueFunctions.equal, default_equal);
+		SET_DEFAULT(_valueFunctions.retain, defaultRetain);
+		SET_DEFAULT(_valueFunctions.release, defaultRelease);
+		SET_DEFAULT(_valueFunctions.hash, defaultHash);
+		SET_DEFAULT(_valueFunctions.equal, defaultEqual);
 
 #undef SET_DEFAULT
 

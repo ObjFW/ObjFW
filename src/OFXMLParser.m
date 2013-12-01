@@ -42,7 +42,7 @@ static SEL selectors[OF_XMLPARSER_NUM_STATES];
 static state_function lookupTable[OF_XMLPARSER_NUM_STATES];
 
 static OF_INLINE void
-buffer_append(OFDataArray *buffer, const char *string,
+appendToBuffer(OFDataArray *buffer, const char *string,
     of_string_encoding_t encoding, size_t length)
 {
 	if (OF_LIKELY(encoding == OF_STRING_ENCODING_UTF_8))
@@ -60,7 +60,7 @@ buffer_append(OFDataArray *buffer, const char *string,
 }
 
 static OFString*
-transform_string(OFDataArray *buffer, size_t cut, bool unescape,
+transformString(OFDataArray *buffer, size_t cut, bool unescape,
     id <OFStringXMLUnescapingDelegate> delegate)
 {
 	char *items;
@@ -95,7 +95,7 @@ transform_string(OFDataArray *buffer, size_t cut, bool unescape,
 }
 
 static OFString*
-namespace_for_prefix(OFString *prefix, OFArray *namespaces)
+namespaceForPrefix(OFString *prefix, OFArray *namespaces)
 {
 	OFDictionary **objects = [namespaces objects];
 	ssize_t i;
@@ -114,7 +114,7 @@ namespace_for_prefix(OFString *prefix, OFArray *namespaces)
 }
 
 static OF_INLINE void
-resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
+resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
     OFXMLParser *self)
 {
 	OFString *attributeNS;
@@ -123,7 +123,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	if (attributePrefix == nil)
 		return;
 
-	attributeNS = namespace_for_prefix(attributePrefix, namespaces);
+	attributeNS = namespaceForPrefix(attributePrefix, namespaces);
 
 	if ((attributePrefix != nil && attributeNS == nil))
 		@throw [OFUnboundPrefixException
@@ -268,7 +268,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	/* In OF_XMLPARSER_IN_TAG, there can be only spaces */
 	if (length - _last > 0 && _state != OF_XMLPARSER_IN_TAG)
-		buffer_append(_buffer, _data + _last, _encoding,
+		appendToBuffer(_buffer, _data + _last, _encoding,
 		    length - _last);
 }
 
@@ -346,11 +346,11 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		return;
 
 	if ((length = _i - _last) > 0)
-		buffer_append(_buffer, _data + _last, _encoding, length);
+		appendToBuffer(_buffer, _data + _last, _encoding, length);
 
 	if ([_buffer count] > 0) {
 		void *pool = objc_autoreleasePoolPush();
-		OFString *characters = transform_string(_buffer, 0, true, self);
+		OFString *characters = transformString(_buffer, 0, true, self);
 
 		if ([_delegate respondsToSelector:
 		    @selector(parser:foundCharacters:)])
@@ -511,8 +511,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		void *pool = objc_autoreleasePoolPush();
 		OFString *PI;
 
-		buffer_append(_buffer, _data + _last, _encoding, _i - _last);
-		PI = transform_string(_buffer, 1, false, nil);
+		appendToBuffer(_buffer, _data + _last, _encoding, _i - _last);
+		PI = transformString(_buffer, 1, false, nil);
 
 		if ([PI isEqual: @"xml"] || [PI hasPrefix: @"xml "] ||
 		    [PI hasPrefix: @"xml\t"] || [PI hasPrefix: @"xml\r"] ||
@@ -549,7 +549,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		return;
 
 	if ((length = _i - _last) > 0)
-		buffer_append(_buffer, _data + _last, _encoding, length);
+		appendToBuffer(_buffer, _data + _last, _encoding, length);
 
 	pool = objc_autoreleasePoolPush();
 
@@ -574,7 +574,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	if (_data[_i] == '>' || _data[_i] == '/') {
 		OFString *namespace;
 
-		namespace = namespace_for_prefix(_prefix, _namespaces);
+		namespace = namespaceForPrefix(_prefix, _namespaces);
 
 		if (_prefix != nil && namespace == nil)
 			@throw [OFUnboundPrefixException
@@ -634,7 +634,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		return;
 
 	if ((length = _i - _last) > 0)
-		buffer_append(_buffer, _data + _last, _encoding, length);
+		appendToBuffer(_buffer, _data + _last, _encoding, length);
 
 	pool = objc_autoreleasePoolPush();
 
@@ -663,7 +663,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	[_buffer removeAllItems];
 
-	namespace = namespace_for_prefix(_prefix, _namespaces);
+	namespace = namespaceForPrefix(_prefix, _namespaces);
 	if (_prefix != nil && namespace == nil)
 		@throw [OFUnboundPrefixException exceptionWithPrefix: _prefix
 							      parser: self];
@@ -713,14 +713,14 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	attributesObjects = [_attributes objects];
 	attributesCount = [_attributes count];
 
-	namespace = namespace_for_prefix(_prefix, _namespaces);
+	namespace = namespaceForPrefix(_prefix, _namespaces);
 
 	if (_prefix != nil && namespace == nil)
 		@throw [OFUnboundPrefixException exceptionWithPrefix: _prefix
 							      parser: self];
 
 	for (j = 0; j < attributesCount; j++)
-		resolve_attribute_namespace(attributesObjects[j], _namespaces,
+		resolveAttributeNamespace(attributesObjects[j], _namespaces,
 		    self);
 
 	pool = objc_autoreleasePoolPush();
@@ -778,7 +778,7 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		return;
 
 	if ((length = _i - _last) > 0)
-		buffer_append(_buffer, _data + _last, _encoding, length);
+		appendToBuffer(_buffer, _data + _last, _encoding, length);
 
 	pool = objc_autoreleasePoolPush();
 
@@ -852,10 +852,10 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		return;
 
 	if ((length = _i - _last) > 0)
-		buffer_append(_buffer, _data + _last, _encoding, length);
+		appendToBuffer(_buffer, _data + _last, _encoding, length);
 
 	pool = objc_autoreleasePoolPush();
-	attributeValue = transform_string(_buffer, 0, true, self);
+	attributeValue = transformString(_buffer, 0, true, self);
 
 	if (_attributePrefix == nil && [_attributeName isEqual: @"xmlns"])
 		[[_namespaces lastObject] setObject: attributeValue
@@ -944,8 +944,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		void *pool = objc_autoreleasePoolPush();
 		OFString *CDATA;
 
-		buffer_append(_buffer, _data + _last, _encoding, _i - _last);
-		CDATA = transform_string(_buffer, 2, false, nil);
+		appendToBuffer(_buffer, _data + _last, _encoding, _i - _last);
+		CDATA = transformString(_buffer, 2, false, nil);
 
 		if ([_delegate respondsToSelector:
 		    @selector(parser:foundCDATA:)])
@@ -994,8 +994,8 @@ resolve_attribute_namespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	pool = objc_autoreleasePoolPush();
 
-	buffer_append(_buffer, _data + _last, _encoding, _i - _last);
-	comment = transform_string(_buffer, 2, false, nil);
+	appendToBuffer(_buffer, _data + _last, _encoding, _i - _last);
+	comment = transformString(_buffer, 2, false, nil);
 
 	if ([_delegate respondsToSelector: @selector(parser:foundComment:)])
 		[_delegate parser: self

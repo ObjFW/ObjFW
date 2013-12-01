@@ -92,13 +92,13 @@ struct pre_mem {
 
 static struct {
 	Class isa;
-} alloc_failed_exception;
+} allocFailedException;
 
 uint32_t of_hash_seed;
 
 #if !defined(OF_APPLE_RUNTIME) || defined(__OBJC2__)
 static void
-uncaught_exception_handler(id exception)
+uncaughtExceptionHandler(id exception)
 {
 	OFString *description = [exception description];
 	OFArray *backtrace = nil;
@@ -120,7 +120,7 @@ uncaught_exception_handler(id exception)
 #endif
 
 static void
-enumeration_mutation_handler(id object)
+enumerationMutationHandler(id object)
 {
 	@throw [OFEnumerationMutationException exceptionWithObject: object];
 }
@@ -139,7 +139,7 @@ of_method_not_found(id obj, SEL sel)
 
 #ifdef OF_OBJFW_RUNTIME
 static IMP
-common_forward_handler(id obj, SEL sel, IMP (*lookup)(id, SEL), IMP forward)
+commonForwardHandler(id obj, SEL sel, IMP (*lookup)(id, SEL), IMP forward)
 {
 	/* Try resolveClassMethod:/resolveInstanceMethod: */
 	if (class_isMetaClass(object_getClass(obj))) {
@@ -188,16 +188,15 @@ common_forward_handler(id obj, SEL sel, IMP (*lookup)(id, SEL), IMP forward)
 }
 
 static IMP
-forward_handler(id obj, SEL sel)
+forwardHandler(id obj, SEL sel)
 {
-	return common_forward_handler(obj, sel,
-	    objc_msg_lookup, (IMP)of_forward);
+	return commonForwardHandler(obj, sel, objc_msg_lookup, (IMP)of_forward);
 }
 
 static IMP
-forward_handler_stret(id obj, SEL sel)
+forwardHandlerStret(id obj, SEL sel)
 {
-	return common_forward_handler(obj, sel,
+	return commonForwardHandler(obj, sel,
 	    objc_msg_lookup_stret, (IMP)of_forward_stret);
 }
 #endif
@@ -206,7 +205,7 @@ forward_handler_stret(id obj, SEL sel)
 void
 objc_enumerationMutation(id object)
 {
-	enumeration_mutation_handler(object);
+	enumerationMutationHandler(object);
 }
 #endif
 
@@ -227,8 +226,8 @@ of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
 	    extraAlignment + extraSize);
 
 	if OF_UNLIKELY (instance == nil) {
-		alloc_failed_exception.isa = [OFAllocFailedException class];
-		@throw (id)&alloc_failed_exception;
+		allocFailedException.isa = [OFAllocFailedException class];
+		@throw (id)&allocFailedException;
 	}
 
 	((struct pre_ivar*)instance)->retainCount = 1;
@@ -277,19 +276,19 @@ void _references_to_categories_of_OFObject(void)
 + (void)load
 {
 #if !defined(OF_APPLE_RUNTIME) || defined(__OBJC2__)
-	objc_setUncaughtExceptionHandler(uncaught_exception_handler);
+	objc_setUncaughtExceptionHandler(uncaughtExceptionHandler);
 #endif
 
 #if defined(OF_OBJFW_RUNTIME)
-	objc_forward_handler = forward_handler;
-	objc_forward_handler_stret = forward_handler_stret;
+	objc_forward_handler = forwardHandler;
+	objc_forward_handler_stret = forwardHandlerStret;
 #elif defined(OF_APPLE_RUNTIME) && \
     defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)
 	objc_setForwardHandler(of_forward, of_forward_stret);
 #endif
 
 #ifdef HAVE_OBJC_ENUMERATIONMUTATION
-	objc_setEnumerationMutationHandler(enumeration_mutation_handler);
+	objc_setEnumerationMutationHandler(enumerationMutationHandler);
 #endif
 
 #if defined(HAVE_ARC4RANDOM)
