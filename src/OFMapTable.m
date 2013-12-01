@@ -21,6 +21,7 @@
 #include <assert.h>
 
 #import "OFMapTable.h"
+#import "OFMapTable+Private.h"
 #import "OFEnumerator.h"
 
 #import "OFEnumerationMutationException.h"
@@ -753,7 +754,7 @@ default_equal(void *value1, void *value2)
 }
 @end
 
-@implementation OFMapTableEnumeratorWrapper
+@implementation OFMapTable_EnumeratorWrapper
 - initWithEnumerator: (OFMapTableEnumerator*)enumerator
 	      object: (id)object
 {

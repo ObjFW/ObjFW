@@ -20,6 +20,7 @@
 #import "OFMutableSet_hashtable.h"
 #import "OFCountedSet_hashtable.h"
 #import "OFMapTable.h"
+#import "OFMapTable+Private.h"
 #import "OFArray.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
@@ -289,7 +290,7 @@ static of_map_table_functions_t valueFunctions = {};
 
 - (OFEnumerator*)objectEnumerator
 {
-	return [[[OFMapTableEnumeratorWrapper alloc]
+	return [[[OFMapTable_EnumeratorWrapper alloc]
 	    initWithEnumerator: [_mapTable keyEnumerator]
 			object: self] autorelease];
 }

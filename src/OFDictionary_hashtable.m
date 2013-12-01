@@ -21,6 +21,7 @@
 #import "OFDictionary_hashtable.h"
 #import "OFMutableDictionary_hashtable.h"
 #import "OFMapTable.h"
+#import "OFMapTable+Private.h"
 #import "OFArray.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
@@ -406,14 +407,14 @@ static of_map_table_functions_t valueFunctions = {
 
 - (OFEnumerator*)keyEnumerator
 {
-	return [[[OFMapTableEnumeratorWrapper alloc]
+	return [[[OFMapTable_EnumeratorWrapper alloc]
 	    initWithEnumerator: [_mapTable keyEnumerator]
 			object: self] autorelease];
 }
 
 - (OFEnumerator*)objectEnumerator
 {
-	return [[[OFMapTableEnumeratorWrapper alloc]
+	return [[[OFMapTable_EnumeratorWrapper alloc]
 	    initWithEnumerator: [_mapTable valueEnumerator]
 			object: self] autorelease];
 }

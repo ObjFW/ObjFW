@@ -251,13 +251,3 @@ typedef void* (^of_map_table_replace_block_t)(void *key, void *value);
  */
 - (void)reset;
 @end
-
-@interface OFMapTableEnumeratorWrapper: OFEnumerator
-{
-	OFMapTableEnumerator *_enumerator;
-	id _object;
-}
-
-- initWithEnumerator: (OFMapTableEnumerator*)enumerator
-	      object: (id)object;
-@end
