@@ -116,9 +116,11 @@
 #if !defined(_WIN32) && !defined(__DJGPP__)
 # define OF_PATH_DELIMITER '/'
 # define OF_PATH_DELIMITER_STRING @"/"
+# define OF_IS_PATH_DELIMITER(c) (c == '/')
 #else
 # define OF_PATH_DELIMITER '\\'
 # define OF_PATH_DELIMITER_STRING @"\\"
+# define OF_IS_PATH_DELIMITER(c) (c == '\\' || c == '/')
 #endif
 #define OF_PATH_CURRENT_DIRECTORY @"."
 #define OF_PATH_PARENT_DIRECTORY @".."

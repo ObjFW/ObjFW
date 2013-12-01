@@ -1096,20 +1096,11 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	pool = objc_autoreleasePoolPush();
 
-#if !defined(_WIN32) && !defined(__DJGPP__)
-	if (_s->cString[pathCStringLength - 1] == OF_PATH_DELIMITER)
-#else
-	if (_s->cString[pathCStringLength - 1] == '/' ||
-	    _s->cString[pathCStringLength - 1] == '\\')
-#endif
+	if (OF_IS_PATH_DELIMITER(_s->cString[pathCStringLength - 1]))
 		pathCStringLength--;
 
 	for (i = 0; i < pathCStringLength; i++) {
-#if !defined(_WIN32) && !defined(__DJGPP__)
-		if (_s->cString[i] == OF_PATH_DELIMITER) {
-#else
-		if (_s->cString[i] == '/' || _s->cString[i] == '\\') {
-#endif
+		if (OF_IS_PATH_DELIMITER(_s->cString[i])) {
 			[ret addObject:
 			    [OFString stringWithUTF8String: _s->cString + last
 						    length: i - last]];
@@ -1135,20 +1126,11 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	if (pathCStringLength == 0)
 		return @"";
 
-#if !defined(_WIN32) && !defined(__DJGPP__)
-	if (_s->cString[pathCStringLength - 1] == OF_PATH_DELIMITER)
-#else
-	if (_s->cString[pathCStringLength - 1] == '/' ||
-	    _s->cString[pathCStringLength - 1] == '\\')
-#endif
+	if (OF_IS_PATH_DELIMITER(_s->cString[pathCStringLength - 1]))
 		pathCStringLength--;
 
 	for (i = pathCStringLength - 1; i >= 0; i--) {
-#if !defined(_WIN32) && !defined(__DJGPP__)
-		if (_s->cString[i] == OF_PATH_DELIMITER) {
-#else
-		if (_s->cString[i] == '/' || _s->cString[i] == '\\') {
-#endif
+		if (OF_IS_PATH_DELIMITER(_s->cString[i])) {
 			i++;
 			break;
 		}
@@ -1172,12 +1154,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	if (pathCStringLength == 0)
 		return @"";
 
-#if !defined(_WIN32) && !defined(__DJGPP__)
-	if (_s->cString[pathCStringLength - 1] == OF_PATH_DELIMITER)
-#else
-	if (_s->cString[pathCStringLength - 1] == '/' ||
-	    _s->cString[pathCStringLength - 1] == '\\')
-#endif
+	if (OF_IS_PATH_DELIMITER(_s->cString[pathCStringLength - 1]))
 		pathCStringLength--;
 
 	if (pathCStringLength == 0)
@@ -1185,19 +1162,11 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 					       length: 1];
 
 	for (i = pathCStringLength - 1; i >= 1; i--)
-#if !defined(_WIN32) && !defined(__DJGPP__)
-		if (_s->cString[i] == OF_PATH_DELIMITER)
-#else
-		if (_s->cString[i] == '/' || _s->cString[i] == '\\')
-#endif
+		if (OF_IS_PATH_DELIMITER(_s->cString[i]))
 			return [OFString stringWithUTF8String: _s->cString
 						       length: i];
 
-#if !defined(_WIN32) && !defined(__DJGPP__)
-	if (_s->cString[0] == OF_PATH_DELIMITER)
-#else
-	if (_s->cString[0] == '/' || _s->cString[0] == '\\')
-#endif
+	if (OF_IS_PATH_DELIMITER(_s->cString[0]))
 		return [OFString stringWithUTF8String: _s->cString
 					       length: 1];
 
